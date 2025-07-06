@@ -193,11 +193,9 @@ impl Sound {
 
     pub(crate) fn to_commands(&self) -> Vec<MmlCommand> {
         let mut commands = Vec::new();
-        let mut prev_note = 0;
         let tones = TONES.lock();
 
-        // TODO: Remove redundant commands
-
+        // Set fixed commands
         commands.push(MmlCommand::Tempo {
             clocks_per_tick: AUDIO_CLOCK_RATE / SOUND_TICKS_PER_SECOND,
         });
@@ -208,9 +206,55 @@ impl Sound {
         commands.push(MmlCommand::Detune {
             semitone_offset: 0.0,
         });
-        commands.push(MmlCommand::Envelope { slot: 0 });
-        commands.push(MmlCommand::Vibrato { slot: 0 });
-        commands.push(MmlCommand::Glide { slot: 0 });
+
+        // Set fade-out slots if needed
+        if self.effects.contains(&EFFECT_FADEOUT) {
+            commands.push(MmlCommand::EnvelopeSet {
+                slot: 1,
+                initial_level: 1.0,
+                segments: vec![(self.speed as u32, 0.0)],
+            });
+        }
+
+        if self.effects.contains(&EFFECT_HALF_FADEOUT) {
+            let ticks2 = (self.speed as f32 / 2.0).round() as u32;
+            let ticks1 = self.speed as u32 - ticks2;
+            commands.push(MmlCommand::EnvelopeSet {
+                slot: 2,
+                initial_level: 1.0,
+                segments: vec![(ticks1, 1.0), (ticks2, 0.0)],
+            });
+        }
+
+        if self.effects.contains(&EFFECT_QUARTER_FADEOUT) {
+            let ticks2 = (self.speed as f32 / 4.0).round() as u32;
+            let ticks1 = self.speed as u32 - ticks2;
+            commands.push(MmlCommand::EnvelopeSet {
+                slot: 3,
+                initial_level: 1.0,
+                segments: vec![(ticks1, 1.0), (ticks2, 0.0)],
+            });
+        }
+
+        // Set vibrato slot if needed
+        if self.effects.contains(&EFFECT_VIBRATO) {
+            commands.push(MmlCommand::VibratoSet {
+                slot: 1,
+                delay_ticks: 0,
+                period_ticks: VIBRATO_PERIOD_TICKS,
+                semitone_depth: VIBRATO_DEPTH_CENTS as f32 / 100.0,
+            });
+        } else {
+            commands.push(MmlCommand::Vibrato { slot: 0 });
+        }
+
+        // Parse notes
+        let mut last_tone: Option<SoundTone> = None;
+        let mut last_volume: Option<SoundVolume> = None;
+        let mut last_fadeout: Option<SoundEffect> = None;
+        let mut last_vibrato: Option<SoundEffect> = None;
+        let mut last_slide: Option<SoundEffect> = None;
+        let mut prev_note: Option<SoundNote> = None;
 
         for (i, note) in self.notes.iter().enumerate() {
             // Rest
@@ -239,61 +283,56 @@ impl Sound {
                 self.effects[i % self.effects.len()]
             };
 
-            // Volume
-            commands.push(MmlCommand::Volume {
-                level: volume as f32 / MAX_VOLUME as f32,
-            });
-
             // Tone
-            commands.push(MmlCommand::Tone { tone });
+            if last_tone.is_none() || last_tone.unwrap() != tone {
+                last_tone = Some(tone);
+                commands.push(MmlCommand::Tone { tone });
+            }
+
+            // Volume
+            if last_volume.is_none() || last_volume.unwrap() != volume {
+                last_volume = Some(volume);
+                commands.push(MmlCommand::Volume {
+                    level: volume as f32 / MAX_VOLUME as f32,
+                });
+            }
 
             // Fade out
-            if effect == EFFECT_FADEOUT {
-                commands.push(MmlCommand::EnvelopeSet {
-                    slot: 1,
-                    initial_level: 1.0,
-                    segments: vec![(self.speed as u32, 0.0)],
-                });
-            } else if effect == EFFECT_HALF_FADEOUT {
-                let ticks2 = (self.speed as f32 / 2.0).round() as u32;
-                let ticks1 = self.speed as u32 - ticks2;
-                commands.push(MmlCommand::EnvelopeSet {
-                    slot: 1,
-                    initial_level: 1.0,
-                    segments: vec![(ticks1, 1.0), (ticks2, 0.0)],
-                });
-            } else if effect == EFFECT_QUARTER_FADEOUT {
-                let ticks2 = (self.speed as f32 / 4.0).round() as u32;
-                let ticks1 = self.speed as u32 - ticks2;
-                commands.push(MmlCommand::EnvelopeSet {
-                    slot: 1,
-                    initial_level: 1.0,
-                    segments: vec![(ticks1, 1.0), (ticks2, 0.0)],
-                });
-            } else {
-                commands.push(MmlCommand::Envelope { slot: 0 });
+            if last_fadeout.is_none() || last_fadeout.unwrap() != effect {
+                last_fadeout = Some(effect);
+
+                if effect == EFFECT_FADEOUT {
+                    commands.push(MmlCommand::Envelope { slot: 1 });
+                } else if effect == EFFECT_HALF_FADEOUT {
+                    commands.push(MmlCommand::Envelope { slot: 2 });
+                } else if effect == EFFECT_QUARTER_FADEOUT {
+                    commands.push(MmlCommand::Envelope { slot: 3 });
+                } else {
+                    commands.push(MmlCommand::Envelope { slot: 0 });
+                }
             }
 
             // Vibrato
-            if effect == EFFECT_VIBRATO {
-                commands.push(MmlCommand::VibratoSet {
-                    slot: 1,
-                    delay_ticks: 0,
-                    period_ticks: VIBRATO_PERIOD_TICKS,
-                    semitone_depth: VIBRATO_DEPTH_CENTS as f32 / 100.0,
-                });
-            } else {
-                commands.push(MmlCommand::Vibrato { slot: 0 });
+            if last_vibrato.is_none() || last_vibrato.unwrap() != effect {
+                last_vibrato = Some(effect);
+
+                if effect == EFFECT_VIBRATO {
+                    commands.push(MmlCommand::Vibrato { slot: 1 });
+                } else {
+                    commands.push(MmlCommand::Vibrato { slot: 0 });
+                }
             }
 
             // Slide
-            if effect == EFFECT_SLIDE {
+            if effect == EFFECT_SLIDE && prev_note.is_some() {
+                last_slide = Some(effect);
                 commands.push(MmlCommand::GlideSet {
                     slot: 1,
-                    semitone_offset: (prev_note - *note) as f32,
+                    semitone_offset: (prev_note.unwrap() - *note) as f32,
                     duration_ticks: self.speed as u32,
                 });
-            } else {
+            } else if last_slide.is_none() || last_slide.unwrap() != effect {
+                last_slide = Some(effect);
                 commands.push(MmlCommand::Glide { slot: 0 });
             }
 
@@ -310,7 +349,7 @@ impl Sound {
                 duration_ticks: self.speed as u32,
             });
 
-            prev_note = *note;
+            prev_note = Some(*note);
         }
 
         commands
