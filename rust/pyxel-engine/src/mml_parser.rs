@@ -142,7 +142,7 @@ pub fn parse_mml(mml: &str) -> Vec<MmlCommand> {
                     level: volume_to_level(vol),
                 });
             }
-        } else if let Some(key_offset) = parse_command::<i32>(&mut stream, "K", RANGE_ALL) {
+        } else if let Some(key_offset) = parse_command(&mut stream, "K", RANGE_ALL) {
             //
             // K<key_offset> - Transpose key in semitones
             //
