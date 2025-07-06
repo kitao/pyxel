@@ -284,13 +284,13 @@ impl Sound {
             };
 
             // Tone
-            if last_tone.is_none() || last_tone.unwrap() != tone {
+            if last_tone.is_none() || tone != last_tone.unwrap() {
                 last_tone = Some(tone);
                 commands.push(MmlCommand::Tone { tone });
             }
 
             // Volume
-            if last_volume.is_none() || last_volume.unwrap() != volume {
+            if last_volume.is_none() || volume != last_volume.unwrap() {
                 last_volume = Some(volume);
                 commands.push(MmlCommand::Volume {
                     level: volume as f32 / MAX_VOLUME as f32,
@@ -298,7 +298,7 @@ impl Sound {
             }
 
             // Fade out
-            if last_fadeout.is_none() || last_fadeout.unwrap() != effect {
+            if last_fadeout.is_none() || effect != last_fadeout.unwrap() {
                 last_fadeout = Some(effect);
 
                 if effect == EFFECT_FADEOUT {
@@ -313,7 +313,7 @@ impl Sound {
             }
 
             // Vibrato
-            if last_vibrato.is_none() || last_vibrato.unwrap() != effect {
+            if last_vibrato.is_none() || effect != last_vibrato.unwrap() {
                 last_vibrato = Some(effect);
 
                 if effect == EFFECT_VIBRATO {
@@ -331,7 +331,7 @@ impl Sound {
                     semitone_offset: (prev_note.unwrap() - *note) as f32,
                     duration_ticks: self.speed as u32,
                 });
-            } else if last_slide.is_none() || last_slide.unwrap() != effect {
+            } else if last_slide.is_none() || effect != last_slide.unwrap() {
                 last_slide = Some(effect);
                 commands.push(MmlCommand::Glide { slot: 0 });
             }

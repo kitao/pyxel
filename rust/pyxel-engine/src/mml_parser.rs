@@ -1,5 +1,6 @@
 use crate::mml_command::MmlCommand;
 use crate::settings::{AUDIO_CLOCK_RATE, TICKS_PER_QUARTER_NOTE};
+use crate::sound::SoundTone;
 
 const RANGE_ALL: (i32, i32) = (i32::MIN, i32::MAX);
 const RANGE_GE0: (i32, i32) = (0, i32::MAX);
@@ -51,91 +52,6 @@ macro_rules! parse_error {
     };
 }
 
-struct ShouldInit {
-    tempo: bool,
-    quantize: bool,
-    tone: bool,
-    volume: bool,
-    transpose: bool,
-    detune: bool,
-    envelope: bool,
-    vibrato: bool,
-    glide: bool,
-}
-
-impl ShouldInit {
-    fn new() -> Self {
-        Self {
-            tempo: true,
-            quantize: true,
-            tone: true,
-            volume: true,
-            transpose: true,
-            detune: true,
-            envelope: true,
-            vibrato: true,
-            glide: true,
-        }
-    }
-
-    fn ensure(&mut self, commands: &mut Vec<MmlCommand>) {
-        if self.tempo {
-            self.tempo = false;
-            commands.push(MmlCommand::Tempo {
-                clocks_per_tick: bpm_to_cpt(DEFAULT_TEMPO),
-            });
-        }
-
-        if self.quantize {
-            self.quantize = false;
-            commands.push(MmlCommand::Quantize {
-                gate_ratio: gate_time_to_gate_ratio(DEFAULT_QUANTIZE),
-            });
-        }
-
-        if self.tone {
-            self.tone = false;
-            commands.push(MmlCommand::Tone { tone: 0 });
-        }
-
-        if self.volume {
-            self.volume = false;
-            commands.push(MmlCommand::Volume {
-                level: volume_to_level(DEFAULT_VOLUME),
-            });
-        }
-
-        if self.transpose {
-            self.transpose = false;
-            commands.push(MmlCommand::Transpose {
-                semitone_offset: 0.0,
-            });
-        }
-
-        if self.detune {
-            self.detune = false;
-            commands.push(MmlCommand::Detune {
-                semitone_offset: 0.0,
-            });
-        }
-
-        if self.envelope {
-            self.envelope = false;
-            commands.push(MmlCommand::Envelope { slot: 0 });
-        }
-
-        if self.vibrato {
-            self.vibrato = false;
-            commands.push(MmlCommand::Vibrato { slot: 0 });
-        }
-
-        if self.glide {
-            self.glide = false;
-            commands.push(MmlCommand::Glide { slot: 0 });
-        }
-    }
-}
-
 pub fn calc_commands_sec(commands: &[MmlCommand]) -> Option<f32> {
     let mut total_clocks = 0;
     let mut command_index: u32 = 0;
@@ -147,21 +63,6 @@ pub fn calc_commands_sec(commands: &[MmlCommand]) -> Option<f32> {
         command_index += 1;
 
         match command {
-            MmlCommand::RepeatStart => {
-                repeat_points.push((command_index, 0)); // Index after RepeatStart
-            }
-            MmlCommand::RepeatEnd { repeat_count } => {
-                if *repeat_count == 0 {
-                    return None;
-                }
-
-                if let Some((index, count)) = repeat_points.pop() {
-                    if count + 1 < *repeat_count {
-                        repeat_points.push((index, count + 1));
-                        command_index = index;
-                    }
-                }
-            }
             MmlCommand::Tempo {
                 clocks_per_tick: cpt,
             } => {
@@ -169,6 +70,21 @@ pub fn calc_commands_sec(commands: &[MmlCommand]) -> Option<f32> {
             }
             MmlCommand::Note { duration_ticks, .. } | MmlCommand::Rest { duration_ticks } => {
                 total_clocks += clocks_per_tick * *duration_ticks;
+            }
+            MmlCommand::RepeatStart => {
+                repeat_points.push((command_index, 0)); // Index after RepeatStart
+            }
+            MmlCommand::RepeatEnd { play_count } => {
+                if *play_count == 0 {
+                    return None;
+                }
+
+                if let Some((index, count)) = repeat_points.pop() {
+                    if count + 1 < *play_count {
+                        repeat_points.push((index, count + 1));
+                        command_index = index;
+                    }
+                }
             }
             _ => {}
         }
@@ -180,93 +96,122 @@ pub fn calc_commands_sec(commands: &[MmlCommand]) -> Option<f32> {
 pub fn parse_mml(mml: &str) -> Vec<MmlCommand> {
     let mut stream = CharStream::new(mml);
     let mut commands = Vec::new();
+
     let mut octave: i32 = DEFAULT_OCTAVE;
     let mut note_ticks: u32 = TICKS_PER_QUARTER_NOTE * 4 / DEFAULT_LENGTH;
-    let mut should_init = ShouldInit::new();
+
+    let mut last_tempo: Option<u32> = None;
+    let mut last_quantize: Option<u32> = None;
+    let mut last_tone: Option<SoundTone> = None;
+    let mut last_volume: Option<u32> = None;
+    let mut last_transpose: Option<i32> = None;
+    let mut last_detune: Option<i32> = None;
+    let mut last_envelope: Option<u32> = None;
+    let mut last_vibrato: Option<u32> = None;
+    let mut last_glide: Option<u32> = None;
 
     // Parse MML commands
     while stream.peek().is_some() {
-        if parse_string(&mut stream, "[").is_ok() {
-            //
-            // [ - Repeat start marker
-            //
-            commands.push(MmlCommand::RepeatStart);
-        } else if parse_string(&mut stream, "]").is_ok() {
-            //
-            // ] - Repeat end (infinite repetition)
-            // ]<count> - Repeat end (repeat <count> times, count >= 1)
-            //
-            let count = parse_number(&mut stream, "count", RANGE_GE1).unwrap_or(0);
-            commands.push(MmlCommand::RepeatEnd {
-                repeat_count: count,
-            });
-        } else if let Some(bpm) = parse_command(&mut stream, "T", RANGE_GE1) {
+        if let Some(bpm) = parse_command(&mut stream, "T", RANGE_GE1) {
             //
             // T<bpm> - Set tempo (bpm >= 1)
             //
-            should_init.tempo = false;
-            commands.push(MmlCommand::Tempo {
-                clocks_per_tick: bpm_to_cpt(bpm),
-            });
+            if last_tempo.is_none() || bpm != last_tempo.unwrap() {
+                last_tempo = Some(bpm);
+                commands.push(MmlCommand::Tempo {
+                    clocks_per_tick: bpm_to_cpt(bpm),
+                });
+            }
         } else if let Some(gate_time) = parse_command(&mut stream, "Q", RANGE_QUANTIZE) {
             //
             // Q<gate_percent> - Set quantize gate time (0 <= gate_percent <= 100)
             //
-            should_init.quantize = false;
-            commands.push(MmlCommand::Quantize {
-                gate_ratio: gate_time_to_gate_ratio(gate_time),
-            });
+            if last_quantize.is_none() || gate_time != last_quantize.unwrap() {
+                last_quantize = Some(gate_time);
+                commands.push(MmlCommand::Quantize {
+                    gate_ratio: gate_time_to_gate_ratio(gate_time),
+                });
+            }
         } else if let Some(vol) = parse_command(&mut stream, "V", RANGE_VOLUME) {
             //
             // V<vol> - Set volume level (0 <= vol <= 127)
             //
-            should_init.volume = false;
-            commands.push(MmlCommand::Volume {
-                level: volume_to_level(vol),
-            });
+            if last_volume.is_none() || vol != last_volume.unwrap() {
+                last_volume = Some(vol);
+                commands.push(MmlCommand::Volume {
+                    level: volume_to_level(vol),
+                });
+            }
         } else if let Some(key_offset) = parse_command::<i32>(&mut stream, "K", RANGE_ALL) {
             //
             // K<key_offset> - Transpose key in semitones
             //
-            should_init.transpose = false;
-            commands.push(MmlCommand::Transpose {
-                semitone_offset: key_offset as f32,
-            });
+            if last_transpose.is_none() || key_offset != last_transpose.unwrap() {
+                last_transpose = Some(key_offset);
+                commands.push(MmlCommand::Transpose {
+                    semitone_offset: key_offset as f32,
+                });
+            }
         } else if let Some(offset_cents) = parse_command(&mut stream, "Y", RANGE_ALL) {
             //
             // Y<offset_cents> - Set detune in cents
             //
-            should_init.detune = false;
-            commands.push(MmlCommand::Detune {
-                semitone_offset: cents_to_semitones(offset_cents),
-            });
+            if last_detune.is_none() || offset_cents != last_detune.unwrap() {
+                last_detune = Some(offset_cents);
+                commands.push(MmlCommand::Detune {
+                    semitone_offset: cents_to_semitones(offset_cents),
+                });
+            }
         } else if let Some(command) = parse_envelope(&mut stream) {
             //
             // @ENV<slot> - Switch to envelope slot (slot >= 0, 0 = off)
             // @ENV<slot> { init_vol, dur_ticks1, vol1, ... } - Define envelope and switch to slot
             //
-            should_init.envelope = false;
-            commands.push(command);
+            if let MmlCommand::Envelope { slot } = &command {
+                if last_envelope.is_none() || last_envelope.unwrap() != *slot {
+                    last_envelope = Some(*slot);
+                    commands.push(command);
+                }
+            } else if let MmlCommand::EnvelopeSet { slot, .. } = &command {
+                last_envelope = Some(*slot);
+                commands.push(command);
+            }
         } else if let Some(command) = parse_vibrato(&mut stream) {
             //
             // @VIB<slot> - Switch to vibrato slot (slot >= 0, 0 = off)
             // @VIB<slot> { delay_ticks, period_ticks, depth_cents } - Define vibrato and switch to slot
             //
-            should_init.vibrato = false;
-            commands.push(command);
+            if let MmlCommand::Vibrato { slot } = &command {
+                if last_vibrato.is_none() || last_vibrato.unwrap() != *slot {
+                    last_vibrato = Some(*slot);
+                    commands.push(command);
+                }
+            } else if let MmlCommand::VibratoSet { slot, .. } = &command {
+                last_vibrato = Some(*slot);
+                commands.push(command);
+            }
         } else if let Some(command) = parse_glide(&mut stream) {
             //
             // @GLI<slot> - Switch to glide slot (slot >= 0, 0 = off)
             // @GLI<slot> { offset_cents, dur_ticks } - Define glide and switch to slot
             //
-            should_init.glide = false;
-            commands.push(command);
+            if let MmlCommand::Glide { slot } = &command {
+                if last_glide.is_none() || last_glide.unwrap() != *slot {
+                    last_glide = Some(*slot);
+                    commands.push(command);
+                }
+            } else if let MmlCommand::GlideSet { slot, .. } = &command {
+                last_glide = Some(*slot);
+                commands.push(command);
+            }
         } else if let Some(tone) = parse_command(&mut stream, "@", RANGE_GE0) {
             //
             // @<tone> - Set tone (tone >= 0)
             //
-            should_init.tone = false;
-            commands.push(MmlCommand::Tone { tone });
+            if last_tone.is_none() || tone != last_tone.unwrap() {
+                last_tone = Some(tone);
+                commands.push(MmlCommand::Tone { tone });
+            }
         } else if let Some(oct) = parse_command(&mut stream, "O", RANGE_OCTAVE) {
             //
             // O<oct> - Set octave (-1 <= oct <= 9)
@@ -299,13 +244,78 @@ pub fn parse_mml(mml: &str) -> Vec<MmlCommand> {
             //
             // C/D/E/F/G/A/B[#+-][<len>][.] - Play note (1 <= len <= 192)
             //
-            should_init.ensure(&mut commands);
+            if last_tempo.is_none() {
+                last_tempo = Some(DEFAULT_TEMPO);
+                commands.push(MmlCommand::Tempo {
+                    clocks_per_tick: bpm_to_cpt(DEFAULT_TEMPO),
+                });
+            }
+            if last_quantize.is_none() {
+                last_quantize = Some(DEFAULT_QUANTIZE);
+                commands.push(MmlCommand::Quantize {
+                    gate_ratio: gate_time_to_gate_ratio(DEFAULT_QUANTIZE),
+                });
+            }
+            if last_tone.is_none() {
+                last_tone = Some(0);
+                commands.push(MmlCommand::Tone { tone: 0 });
+            }
+            if last_volume.is_none() {
+                last_volume = Some(DEFAULT_VOLUME);
+                commands.push(MmlCommand::Volume {
+                    level: volume_to_level(DEFAULT_VOLUME),
+                });
+            }
+            if last_transpose.is_none() {
+                last_transpose = Some(0);
+                commands.push(MmlCommand::Transpose {
+                    semitone_offset: 0.0,
+                });
+            }
+            if last_detune.is_none() {
+                last_detune = Some(0);
+                commands.push(MmlCommand::Detune {
+                    semitone_offset: 0.0,
+                });
+            }
+            if last_envelope.is_none() {
+                last_envelope = Some(0);
+                commands.push(MmlCommand::Envelope { slot: 0 });
+            }
+            if last_vibrato.is_none() {
+                last_vibrato = Some(0);
+                commands.push(MmlCommand::Vibrato { slot: 0 });
+            }
+            if last_glide.is_none() {
+                last_glide = Some(0);
+                commands.push(MmlCommand::Glide { slot: 0 });
+            }
+
             commands.push(command);
         } else if let Some(command) = parse_rest(&mut stream, note_ticks) {
             //
             // R[<len>][.] - Rest (1 <= len <= 192)
             //
+            if last_tempo.is_none() {
+                last_tempo = Some(DEFAULT_TEMPO);
+                commands.push(MmlCommand::Tempo {
+                    clocks_per_tick: bpm_to_cpt(DEFAULT_TEMPO),
+                });
+            }
+
             commands.push(command);
+        } else if parse_string(&mut stream, "[").is_ok() {
+            //
+            // [ - Repeat start marker
+            //
+            commands.push(MmlCommand::RepeatStart);
+        } else if parse_string(&mut stream, "]").is_ok() {
+            //
+            // ] - Repeat end (infinite repetition)
+            // ]<count> - Repeat end (repeat <count> times, count >= 1)
+            //
+            let count = parse_number(&mut stream, "count", RANGE_GE1).unwrap_or(0);
+            commands.push(MmlCommand::RepeatEnd { play_count: count });
         } else {
             let c = *stream.peek().unwrap();
             parse_error!(stream, "Unexpected character '{c}'");

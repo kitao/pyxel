@@ -56,6 +56,8 @@ impl Tone {
 
     pub(crate) fn waveform(&mut self) -> &Vec<f32> {
         if self.wavetable != self.cached_wavetable {
+            assert!(self.sample_bits <= 32);
+
             self.cached_wavetable = self.wavetable.clone();
 
             self.waveform.clear();

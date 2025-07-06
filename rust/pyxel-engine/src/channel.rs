@@ -261,18 +261,6 @@ impl Channel {
             self.command_index += 1;
 
             match command {
-                MmlCommand::RepeatStart => {
-                    self.repeat_points.push((self.command_index, 0)); // Index after RepeatStart
-                }
-                MmlCommand::RepeatEnd { repeat_count } => {
-                    if let Some((index, count)) = self.repeat_points.pop() {
-                        if *repeat_count == 0 || count + 1 < *repeat_count {
-                            self.repeat_points.push((index, count + 1));
-                            self.command_index = index;
-                        }
-                    }
-                }
-
                 MmlCommand::Tempo { clocks_per_tick } => {
                     self.clocks_per_tick = *clocks_per_tick;
                     self.voice.set_clocks_per_tick(*clocks_per_tick);
@@ -404,6 +392,18 @@ impl Channel {
                 MmlCommand::Rest { duration_ticks } => {
                     self.note_duration_clocks = self.clocks_per_tick * *duration_ticks;
                     return;
+                }
+
+                MmlCommand::RepeatStart => {
+                    self.repeat_points.push((self.command_index, 0)); // Index after RepeatStart
+                }
+                MmlCommand::RepeatEnd { play_count } => {
+                    if let Some((index, count)) = self.repeat_points.pop() {
+                        if *play_count == 0 || count + 1 < *play_count {
+                            self.repeat_points.push((index, count + 1));
+                            self.command_index = index;
+                        }
+                    }
                 }
             }
         }

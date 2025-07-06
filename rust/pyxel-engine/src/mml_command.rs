@@ -2,11 +2,6 @@ use crate::sound::SoundTone;
 
 #[derive(Clone, Debug)]
 pub enum MmlCommand {
-    RepeatStart,
-    RepeatEnd {
-        repeat_count: u32,
-    },
-
     Tempo {
         clocks_per_tick: u32,
     },
@@ -62,5 +57,10 @@ pub enum MmlCommand {
     },
     Rest {
         duration_ticks: u32,
+    },
+
+    RepeatStart,
+    RepeatEnd {
+        play_count: u32,
     },
 }
