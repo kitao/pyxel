@@ -47,8 +47,8 @@ pub enum MmlCommand {
     },
     GlideSet {
         slot: u32,
-        semitone_offset: f32,
-        duration_ticks: u32,
+        semitone_offset: Option<f32>,
+        duration_ticks: Option<u32>,
     },
 
     Note {

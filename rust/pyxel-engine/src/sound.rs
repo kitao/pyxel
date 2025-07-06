@@ -248,13 +248,23 @@ impl Sound {
             commands.push(MmlCommand::Vibrato { slot: 0 });
         }
 
+        // Set glide slot if needed
+        if self.effects.contains(&EFFECT_SLIDE) {
+            commands.push(MmlCommand::GlideSet {
+                slot: 1,
+                semitone_offset: None,
+                duration_ticks: None,
+            });
+        } else {
+            commands.push(MmlCommand::Glide { slot: 0 });
+        }
+
         // Parse notes
         let mut last_tone: Option<SoundTone> = None;
         let mut last_volume: Option<SoundVolume> = None;
         let mut last_fadeout: Option<SoundEffect> = None;
         let mut last_vibrato: Option<SoundEffect> = None;
         let mut last_slide: Option<SoundEffect> = None;
-        let mut prev_note: Option<SoundNote> = None;
 
         for (i, note) in self.notes.iter().enumerate() {
             // Rest
@@ -298,58 +308,43 @@ impl Sound {
             }
 
             // Fade out
+            let slot = match effect {
+                EFFECT_FADEOUT => 1,
+                EFFECT_HALF_FADEOUT => 2,
+                EFFECT_QUARTER_FADEOUT => 3,
+                _ => 0,
+            };
             if last_fadeout.is_none() || effect != last_fadeout.unwrap() {
                 last_fadeout = Some(effect);
-
-                if effect == EFFECT_FADEOUT {
-                    commands.push(MmlCommand::Envelope { slot: 1 });
-                } else if effect == EFFECT_HALF_FADEOUT {
-                    commands.push(MmlCommand::Envelope { slot: 2 });
-                } else if effect == EFFECT_QUARTER_FADEOUT {
-                    commands.push(MmlCommand::Envelope { slot: 3 });
-                } else {
-                    commands.push(MmlCommand::Envelope { slot: 0 });
-                }
+                commands.push(MmlCommand::Envelope { slot });
             }
 
             // Vibrato
+            let slot = u32::from(effect == EFFECT_VIBRATO);
             if last_vibrato.is_none() || effect != last_vibrato.unwrap() {
                 last_vibrato = Some(effect);
-
-                if effect == EFFECT_VIBRATO {
-                    commands.push(MmlCommand::Vibrato { slot: 1 });
-                } else {
-                    commands.push(MmlCommand::Vibrato { slot: 0 });
-                }
+                commands.push(MmlCommand::Vibrato { slot });
             }
 
             // Slide
-            if effect == EFFECT_SLIDE && prev_note.is_some() {
+            let slot = u32::from(effect == EFFECT_SLIDE);
+            if last_slide.is_none() || effect != last_slide.unwrap() {
                 last_slide = Some(effect);
-                commands.push(MmlCommand::GlideSet {
-                    slot: 1,
-                    semitone_offset: (prev_note.unwrap() - *note) as f32,
-                    duration_ticks: self.speed as u32,
-                });
-            } else if last_slide.is_none() || effect != last_slide.unwrap() {
-                last_slide = Some(effect);
-                commands.push(MmlCommand::Glide { slot: 0 });
+                commands.push(MmlCommand::Glide { slot });
             }
 
             // Note
             let tone = tones[tone as usize].lock();
-            let midi_note = *note
+            let midi_note = (*note
                 + if tone.mode == ToneMode::Wavetable {
                     36
                 } else {
                     60
-                };
+                }) as u32;
             commands.push(MmlCommand::Note {
-                midi_note: midi_note as u32,
+                midi_note,
                 duration_ticks: self.speed as u32,
             });
-
-            prev_note = Some(*note);
         }
 
         commands
