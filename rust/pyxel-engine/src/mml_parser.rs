@@ -582,15 +582,28 @@ fn parse_glide(stream: &mut CharStream) -> Option<MmlCommand> {
         parse_error!(stream, "Glide slot 0 is reserved for disable");
     }
 
-    let offset_cents = expect_number(stream, "offset_cents", RANGE_ALL);
+    let semitone_offset = if parse_string(stream, "*").is_ok() {
+        None
+    } else {
+        Some(cents_to_semitones(expect_number(
+            stream,
+            "offset_cents",
+            RANGE_ALL,
+        )))
+    };
     expect_string(stream, ",");
-    let dur_ticks = expect_number(stream, "dur_ticks", RANGE_GE0);
+
+    let duration_ticks = if parse_string(stream, "*").is_ok() {
+        None
+    } else {
+        Some(expect_number(stream, "dur_ticks", RANGE_GE0))
+    };
     expect_string(stream, "}");
 
     Some(MmlCommand::GlideSet {
         slot,
-        semitone_offset: cents_to_semitones(offset_cents),
-        duration_ticks: dur_ticks,
+        semitone_offset,
+        duration_ticks,
     })
 }
 

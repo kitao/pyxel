@@ -121,6 +121,7 @@ The following commands are available in Pyxel's MML:
 
 - `@GLI <slot> { offset_cents, dur_ticks }`<br>
   Inside `{ }`, specify "initial pitch offset (cent), time to return to 0 (tick)". 1 tick is 1/48 of a quarter note.<br>
+  Specifying `*` for each parameter automatically applies the pitch offset as the difference from the previous note and the return time as the playback duration of each note, respectively.<br>
   Example: `@GLI 1 { -100, 24 }` (starts 1 semitone down, returns to normal over 24 ticks)
 
 - `O <oct>` (-1 - 9)<br>

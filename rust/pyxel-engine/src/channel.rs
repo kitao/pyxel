@@ -35,6 +35,8 @@ pub struct Channel {
     volume_level: f32,
     transpose_semitones: f32,
     detune_semitones: f32,
+    glide_pending_params: Option<(Option<f32>, Option<u32>)>,
+    last_midi_note: Option<f32>,
     envelope_slots: HashMap<u32, MmlCommand>,
     vibrato_slots: HashMap<u32, MmlCommand>,
     glide_slots: HashMap<u32, MmlCommand>,
@@ -70,6 +72,8 @@ impl Channel {
             volume_level: 1.0,
             transpose_semitones: 0.0,
             detune_semitones: 0.0,
+            glide_pending_params: None,
+            last_midi_note: None,
             envelope_slots: HashMap::new(),
             vibrato_slots: HashMap::new(),
             glide_slots: HashMap::new(),
@@ -161,6 +165,7 @@ impl Channel {
         self.note_duration_clocks = 0;
         self.sound_elapsed_clocks = 0;
         self.command_index = 0;
+        self.last_midi_note = None;
 
         if start_clock > 0 {
             self.process(None, start_clock);
@@ -353,9 +358,17 @@ impl Channel {
                         ..
                     }) = self.glide_slots.get(slot)
                     {
-                        self.voice.glide.set(*semitone_offset, *duration_ticks);
+                        if let (Some(semitone_offset), Some(duration_ticks)) =
+                            (semitone_offset, duration_ticks)
+                        {
+                            self.glide_pending_params = None;
+                            self.voice.glide.set(*semitone_offset, *duration_ticks);
+                        } else {
+                            self.glide_pending_params = Some((*semitone_offset, *duration_ticks));
+                        }
                         self.voice.glide.enable();
                     } else {
+                        self.glide_pending_params = None;
                         self.voice.glide.disable();
                     }
                 }
@@ -367,7 +380,15 @@ impl Channel {
                     assert!(*slot > 0, "Glide slot 0 is reserved for disable");
 
                     self.glide_slots.insert(*slot, command.clone());
-                    self.voice.glide.set(*semitone_offset, *duration_ticks);
+
+                    if let (Some(semitone_offset), Some(duration_ticks)) =
+                        (semitone_offset, duration_ticks)
+                    {
+                        self.glide_pending_params = None;
+                        self.voice.glide.set(*semitone_offset, *duration_ticks);
+                    } else {
+                        self.glide_pending_params = Some((*semitone_offset, *duration_ticks));
+                    }
                     self.voice.glide.enable();
                 }
 
@@ -375,6 +396,7 @@ impl Channel {
                     midi_note,
                     duration_ticks,
                 } => {
+                    // Calculate note parameters
                     let midi_note = *midi_note as f32
                         + self.transpose_semitones
                         + self.detune_semitones
@@ -386,7 +408,17 @@ impl Channel {
                     let playback_clocks =
                         (self.note_duration_clocks as f32 * self.gate_ratio).round() as u32;
 
+                    // Glide with auto parameters
+                    if let Some((pending_offset, pending_ticks)) = self.glide_pending_params {
+                        let resolved_offset = pending_offset
+                            .unwrap_or(self.last_midi_note.unwrap_or(midi_note) - midi_note);
+                        let resolved_ticks = pending_ticks.unwrap_or(*duration_ticks);
+                        self.voice.glide.set(resolved_offset, resolved_ticks);
+                    }
+
+                    // Play note
                     self.voice.play_note(midi_note, velocity, playback_clocks);
+                    self.last_midi_note = Some(midi_note);
                     return;
                 }
                 MmlCommand::Rest { duration_ticks } => {

@@ -8,6 +8,8 @@
 - Renamed the tone_index parameter of the Tone command in MML to tone
 - Changed the types of the Sound class members
 - Changed to use the blip_buf crate
+- Added asterisk parameter support to the @GLI command in MML
+- Removed redundant MML code from Example 9
 
 ## 2.4.0
 
