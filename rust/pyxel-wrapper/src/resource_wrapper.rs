@@ -1,16 +1,58 @@
+use std::sync::Once;
+
 use pyo3::prelude::*;
 
 use crate::pyxel_singleton::pyxel;
 
+static EXCL_OPTION_ONCE: Once = Once::new();
+
 #[pyfunction]
-#[pyo3(signature = (filename, exclude_images=None, exclude_tilemaps=None, exclude_sounds=None, exclude_musics=None))]
+#[pyo3(signature = (filename, exclude_images=None, exclude_tilemaps=None, exclude_sounds=None, exclude_musics=None, excl_images=None, excl_tilemaps=None, excl_sounds=None, excl_musics=None))]
 fn load(
     filename: &str,
     exclude_images: Option<bool>,
     exclude_tilemaps: Option<bool>,
     exclude_sounds: Option<bool>,
     exclude_musics: Option<bool>,
+
+    excl_images: Option<bool>,
+    excl_tilemaps: Option<bool>,
+    excl_sounds: Option<bool>,
+    excl_musics: Option<bool>,
 ) {
+    let exclude_images = if excl_images.is_some() {
+        EXCL_OPTION_ONCE.call_once(|| {
+            println!("excl_* options are deprecated. Use exclude_* instead.");
+        });
+        excl_images
+    } else {
+        exclude_images
+    };
+    let exclude_tilemaps = if excl_tilemaps.is_some() {
+        EXCL_OPTION_ONCE.call_once(|| {
+            println!("excl_* options are deprecated. Use exclude_* instead.");
+        });
+        excl_tilemaps
+    } else {
+        exclude_tilemaps
+    };
+    let exclude_sounds = if excl_sounds.is_some() {
+        EXCL_OPTION_ONCE.call_once(|| {
+            println!("excl_* options are deprecated. Use exclude_* instead.");
+        });
+        excl_sounds
+    } else {
+        exclude_sounds
+    };
+    let exclude_musics = if excl_musics.is_some() {
+        EXCL_OPTION_ONCE.call_once(|| {
+            println!("excl_* options are deprecated. Use exclude_* instead.");
+        });
+        excl_musics
+    } else {
+        exclude_musics
+    };
+
     pyxel().load(
         filename,
         exclude_images,
@@ -21,14 +63,52 @@ fn load(
 }
 
 #[pyfunction]
-#[pyo3(signature = (filename, exclude_images=None, exclude_tilemaps=None, exclude_sounds=None, exclude_musics=None))]
+#[pyo3(signature = (filename, exclude_images=None, exclude_tilemaps=None, exclude_sounds=None, exclude_musics=None, excl_images=None, excl_tilemaps=None, excl_sounds=None, excl_musics=None))]
 fn save(
     filename: &str,
     exclude_images: Option<bool>,
     exclude_tilemaps: Option<bool>,
     exclude_sounds: Option<bool>,
     exclude_musics: Option<bool>,
+
+    excl_images: Option<bool>,
+    excl_tilemaps: Option<bool>,
+    excl_sounds: Option<bool>,
+    excl_musics: Option<bool>,
 ) {
+    let exclude_images = if excl_images.is_some() {
+        EXCL_OPTION_ONCE.call_once(|| {
+            println!("excl_* options are deprecated. Use exclude_* instead.");
+        });
+        excl_images
+    } else {
+        exclude_images
+    };
+    let exclude_tilemaps = if excl_tilemaps.is_some() {
+        EXCL_OPTION_ONCE.call_once(|| {
+            println!("excl_* options are deprecated. Use exclude_* instead.");
+        });
+        excl_tilemaps
+    } else {
+        exclude_tilemaps
+    };
+    let exclude_sounds = if excl_sounds.is_some() {
+        EXCL_OPTION_ONCE.call_once(|| {
+            println!("excl_* options are deprecated. Use exclude_* instead.");
+        });
+        excl_sounds
+    } else {
+        exclude_sounds
+    };
+    let exclude_musics = if excl_musics.is_some() {
+        EXCL_OPTION_ONCE.call_once(|| {
+            println!("excl_* options are deprecated. Use exclude_* instead.");
+        });
+        excl_musics
+    } else {
+        exclude_musics
+    };
+
     pyxel().save(
         filename,
         exclude_images,
