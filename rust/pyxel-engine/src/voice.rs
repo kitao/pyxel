@@ -500,7 +500,7 @@ impl Voice {
     fn write_sample(&mut self, blip_buf: Option<&mut BlipBuf>, clock_offset: u32, amplitude: i32) {
         if let Some(blip_buf) = blip_buf {
             if amplitude != self.last_amplitude {
-                blip_buf.add_delta_fast(clock_offset, amplitude - self.last_amplitude);
+                blip_buf.add_delta(clock_offset, amplitude - self.last_amplitude);
                 self.last_amplitude = amplitude;
             }
         }
