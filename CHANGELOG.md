@@ -3,6 +3,7 @@
 ## 2.4.3
 
 - Added note interpolation processing to suppress click noise
+- Restored the excl options in the load and save functions
 
 ## 2.4.2
 
@@ -41,8 +42,8 @@
 - Added MML string support to the play function
 - Added MML string support to the play method of the Channel class
 - Removed the colors, tones, and channels from the resource format
-- Renamed the excl arguments to exclude in the load and save functions
-- Removed the incl arguments from the load and save functions
+- Renamed the excl options to exclude in the load and save functions
+- Removed the incl options from the load and save functions
 - Updated Example 9 to use new MML syntax
 - Changed the default floating-point type from f64 to f32
 
