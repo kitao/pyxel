@@ -105,7 +105,7 @@ pub const AUDIO_CLOCK_RATE: u32 = 1_789_773; // NTSC NES APU clock rate
 pub const AUDIO_SAMPLE_RATE: u32 = 22_050; // 22.05kHz
 pub const AUDIO_BUFFER_SIZE: u32 = 512; // 512 / 22050 = 23.2ms
 pub const AUDIO_CONTROL_RATE: u32 = 60;
-pub const NOTE_TRANSITION_CLOCKS: u32 = AUDIO_CLOCK_RATE / 2000; // 1 / 2000 = 0.5ms
+pub const NOTE_INTERP_CLOCKS: u32 = AUDIO_CLOCK_RATE / 2000; // 1 / 2000 = 0.5ms
 pub const TICKS_PER_QUARTER_NOTE: u32 = 48;
 pub const SOUND_TICKS_PER_SECOND: u32 = 120;
 
