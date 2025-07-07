@@ -356,20 +356,23 @@ pub struct Voice {
     pub glide: Glide,
 
     clock_rate: u32,
+    note_transition_clocks: u32,
     clocks_per_tick: u32,
     base_frequency: f32,
     velocity: f32,
-    playback_clocks: u32,
+    remaining_note_clocks: u32,
+    elapsed_note_clocks: u32,
     sample_clocks: u32,
     carryover_sample_clocks: u32,
     control_interval_clocks: u32,
     control_elapsed_clocks: u32,
+    last_gain: f32,
     last_amplitude: i32,
 }
 
 impl Voice {
-    pub fn new(clock_rate: u32, control_rate: u32) -> Self {
-        assert!(clock_rate > 0 && control_rate > 0);
+    pub fn new(clock_rate: u32, control_rate: u32, note_transition_clocks: u32) -> Self {
+        assert!(clock_rate > 0 && control_rate > 0 && note_transition_clocks > 0);
 
         let control_interval_clocks = clock_rate / control_rate;
 
@@ -380,14 +383,17 @@ impl Voice {
             glide: Glide::new(),
 
             clock_rate,
+            note_transition_clocks,
             clocks_per_tick: 1,
             base_frequency: 0.0,
             velocity: 0.0,
-            playback_clocks: 0,
+            remaining_note_clocks: 0,
+            elapsed_note_clocks: 0,
             sample_clocks: 0,
             carryover_sample_clocks: 0,
             control_interval_clocks,
             control_elapsed_clocks: 0,
+            last_gain: 0.0,
             last_amplitude: 0,
         }
     }
@@ -398,16 +404,17 @@ impl Voice {
         self.clocks_per_tick = clocks_per_tick;
     }
 
-    pub fn play_note(&mut self, midi_note: f32, velocity: f32, playback_clocks: u32) {
+    pub fn play_note(&mut self, midi_note: f32, velocity: f32, duration_clocks: u32) {
         self.base_frequency = A4_FREQUENCY * ((midi_note - A4_MIDI_NOTE) / 12.0).exp2();
         self.velocity = velocity;
-        self.playback_clocks = playback_clocks;
+        self.remaining_note_clocks = duration_clocks + self.note_transition_clocks;
+        self.elapsed_note_clocks = 0;
 
         self.reset_control_clock();
     }
 
     pub fn cancel_note(&mut self) {
-        self.playback_clocks = 0;
+        self.remaining_note_clocks = self.remaining_note_clocks.min(self.note_transition_clocks);
     }
 
     pub fn process(&mut self, blip_buf: Option<&mut BlipBuf>, clock_offset: u32, clock_count: u32) {
@@ -421,7 +428,8 @@ impl Voice {
 
         if self.carryover_sample_clocks > 0 {
             let process_clocks = self.carryover_sample_clocks.min(clock_count);
-            self.playback_clocks = self.playback_clocks.saturating_sub(process_clocks);
+            self.remaining_note_clocks = self.remaining_note_clocks.saturating_sub(process_clocks);
+            self.elapsed_note_clocks += process_clocks;
             self.carryover_sample_clocks -= process_clocks;
             clock_count -= process_clocks;
 
@@ -433,16 +441,29 @@ impl Voice {
             self.advance_control_clock(self.sample_clocks);
         }
 
-        while self.playback_clocks > 0 && clock_count > 0 {
-            let amplitude = (self.oscillator.sample()
-                * self.envelope.level()
-                * self.velocity
-                * i16::MAX as f32)
-                .round() as i32;
+        while self.remaining_note_clocks > 0 && clock_count > 0 {
+            // Calculate apmlitude and write sample
+            let mut gain = self.envelope.level() * self.velocity;
+
+            if self.remaining_note_clocks < self.note_transition_clocks {
+                gain = self.last_gain * self.remaining_note_clocks as f32
+                    / self.note_transition_clocks as f32;
+            } else if self.elapsed_note_clocks < self.note_transition_clocks {
+                gain = (self.last_gain
+                    * (self.note_transition_clocks - self.elapsed_note_clocks) as f32
+                    + gain * self.elapsed_note_clocks as f32)
+                    / self.note_transition_clocks as f32;
+            } else {
+                self.last_gain = gain;
+            }
+
+            let amplitude = (self.oscillator.sample() * gain * i16::MAX as f32).round() as i32;
             self.write_sample(blip_buf.as_deref_mut(), clock_offset, amplitude);
 
+            // Advance oscillator and control clock
             let process_clocks = self.sample_clocks.min(clock_count);
-            self.playback_clocks = self.playback_clocks.saturating_sub(process_clocks);
+            self.remaining_note_clocks = self.remaining_note_clocks.saturating_sub(process_clocks);
+            self.elapsed_note_clocks += process_clocks;
             clock_offset += process_clocks;
             clock_count -= process_clocks;
 
@@ -455,9 +476,10 @@ impl Voice {
             self.advance_control_clock(self.sample_clocks);
         }
 
-        /*if self.playback_clocks == 0 && clock_count > 0 {
+        if self.remaining_note_clocks == 0 && clock_count > 0 {
+            self.last_gain = 0.0;
             self.write_sample(blip_buf, clock_offset, 0);
-        }*/
+        }
     }
 
     fn reset_control_clock(&mut self) {
