@@ -4,7 +4,9 @@ use blip_buf::BlipBuf;
 
 use crate::mml_command::MmlCommand;
 use crate::pyxel::TONES;
-use crate::settings::{AUDIO_CLOCK_RATE, AUDIO_CONTROL_RATE, DEFAULT_CHANNEL_GAIN};
+use crate::settings::{
+    AUDIO_CLOCK_RATE, AUDIO_CONTROL_RATE, DEFAULT_CHANNEL_GAIN, NOTE_TRANSITION_CLOCKS,
+};
 use crate::sound::{SharedSound, Sound};
 use crate::tone::ToneMode;
 use crate::voice::Voice;
@@ -54,7 +56,7 @@ impl Channel {
             gain: DEFAULT_CHANNEL_GAIN,
             detune: 0,
 
-            voice: Voice::new(AUDIO_CLOCK_RATE, AUDIO_CONTROL_RATE),
+            voice: Voice::new(AUDIO_CLOCK_RATE, AUDIO_CONTROL_RATE, NOTE_TRANSITION_CLOCKS),
             is_playing: false,
             should_loop: false,
             should_resume: false,

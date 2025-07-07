@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.4.3
+
+- Added note interpolation processing to suppress click noise
+
 ## 2.4.2
 
 - Reverted blip_buf add_delta to prevent audio degradation
