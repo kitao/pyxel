@@ -95,6 +95,15 @@ def setup_music():
         16,
     )
     pyxel.sounds[1].set(
+        "b-2b-2b-2b-2a-2a-2a-2a-2 g2g2e-2e-2c2c2f2f2 f2f2g2g2f2f2e2e2 e2e2c2c2c2c2rr"
+        "rrb-1b-1c2c2e-2e-2 f2f2f2f2e-2e-2f2f2 g2g2b-2b-2c3c3f2f2 f2f2e-2e-2e-2e-2f2f2",
+        "0",
+        "5",
+        "vvvfnnnf nfnfnfvv vfnfnfvv vfvvvfvv vfnfnfvf vfnfnfnf nfnfnfvv vfnnnfnf",
+        16,
+    )
+
+    pyxel.sounds[2].set(
         "rrc3c3e-3e-3g3g3 f3f3f3g3g3g3g3g3 rrb-3b-3a-3a-3f3f3 a-3a-3a-3g3g3g3g3g3"
         "rrc3c3e-3e-3g3g3 f3f3f3g3g3g3g3g3 rrb-3b-3a-3a-3f3f3 a-3a-3a-3g3g3g3g3g3",
         "1",
@@ -102,21 +111,49 @@ def setup_music():
         "vvvvvvvv vvvvvvvf",
         32,
     )
-    pyxel.sounds[2].set("a-2a-2ra-2 a-2a-2ra-2 g2g2rg2 g2g2rg2", "2", "5", "f", 32)
-    pyxel.sounds[3].set("c3c3rc3 b-2b-2rb-2 b-2b-2rb-2 c3c3rc3", "2", "5", "f", 32)
-    pyxel.sounds[4].set(
+    pyxel.sounds[3].set(
+        "rrc3c3e-3e-3g3g3 f3f3f3g3g3g3g3g3 rrb-3b-3a-3a-3f3f3 a-3a-3a-3g3g3g3g3g3"
+        "rrc3c3e-3e-3g3g3 f3f3f3g3g3g3g3g3 rrb-3b-3a-3a-3f3f3 a-3a-3a-3g3g3g3g3g3",
+        "1",
+        "3",
+        "vvvvvvvv vvvvvvvf",
+        32,
+    )
+
+    pyxel.sounds[4].set("a-2a-2ra-2 a-2a-2ra-2 g2g2rg2 g2g2rg2", "2", "5", "f", 32)
+    pyxel.sounds[5].set("a-2a-2ra-2 a-2a-2ra-2 g2g2rg2 g2g2rg2", "2", "5", "f", 32)
+
+    pyxel.sounds[6].set("c3c3rc3 b-2b-2rb-2 b-2b-2rb-2 c3c3rc3", "2", "5", "f", 32)
+    pyxel.sounds[7].set("c3c3rc3 b-2b-2rb-2 b-2b-2rb-2 c3c3rc3", "2", "5", "f", 32)
+
+    pyxel.sounds[8].set(
         "e-3e-3re-3 d3d3rd3 d3d3rd3 e3e3re3 e-3e-3re-3 d3d3rd3 d3d3rd3 e-3e-3re-3",
         "2",
         "5",
         "f",
         32,
     )
-    pyxel.sounds[5].set("a-0rra-0 b-0rrb-0 g0rrg0 c1rrc1", "3", "5", "f", 32)
-    pyxel.sounds[6].set(
+    pyxel.sounds[9].set(
+        "e-3e-3re-3 d3d3rd3 d3d3rd3 e3e3re3 e-3e-3re-3 d3d3rd3 d3d3rd3 e-3e-3re-3",
+        "2",
+        "5",
+        "f",
+        32,
+    )
+
+    pyxel.sounds[10].set("a-0rra-0 b-0rrb-0 g0rrg0 c1rrc1", "3", "5", "f", 32)
+    pyxel.sounds[11].set("a-0rra-0 b-0rrb-0 g0rrg0 c1rrc1", "3", "5", "f", 32)
+
+    pyxel.sounds[12].set(
+        "g1rrrd2rrr" * 3 + "g1rd2rd2rrr", "4", "50006000" * 3 + "50506000", "f", 16
+    )
+    pyxel.sounds[13].set(
         "g1rrrd2rrr" * 3 + "g1rd2rd2rrr", "4", "50006000" * 3 + "50506000", "f", 16
     )
 
-    pyxel.musics[0].set([0], [0], [1], [2], [3], [4], [5], [6])
+    pyxel.musics[0].set(
+        [0, 1], [0, 1], [2, 3], [4, 5], [6, 7], [8, 9], [10, 11], [12, 13]
+    )
 
 
 class WavetableEditor:
