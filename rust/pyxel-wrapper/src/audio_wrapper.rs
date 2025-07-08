@@ -7,19 +7,32 @@ use crate::music_wrapper::Music;
 use crate::pyxel_singleton::pyxel;
 use crate::sound_wrapper::Sound;
 
+static PLAY_TICK_ONCE: Once = Once::new();
+static PLAYM_TICK_ONCE: Once = Once::new();
 static CHANNEL_ONCE: Once = Once::new();
 static SOUND_ONCE: Once = Once::new();
 static MUSIC_ONCE: Once = Once::new();
 
 #[pyfunction]
-#[pyo3(signature = (ch, snd, sec=None, r#loop=None, resume=None))]
+#[pyo3(signature = (ch, snd, sec=None, r#loop=None, resume=None, tick=None))]
 fn play(
     ch: u32,
     snd: Bound<'_, PyAny>,
     sec: Option<f32>,
     r#loop: Option<bool>,
     resume: Option<bool>,
+    tick: Option<u32>,
 ) -> PyResult<()> {
+    let sec = if let Some(tick) = tick {
+        PLAY_TICK_ONCE.call_once(|| {
+            println!("tick option of pyxel.play is deprecated. Use sec option instead.");
+        });
+
+        Some(tick as f32 / 120.0)
+    } else {
+        sec
+    };
+
     cast_pyany! {
         snd,
         (u32, { pyxel().play1(ch, snd, sec, r#loop.unwrap_or(false), resume.unwrap_or(false)); }),
@@ -36,8 +49,18 @@ fn play(
 }
 
 #[pyfunction]
-#[pyo3(signature = (msc, sec=None, r#loop=None))]
-fn playm(msc: u32, sec: Option<f32>, r#loop: Option<bool>) {
+#[pyo3(signature = (msc, sec=None, r#loop=None, tick=None))]
+fn playm(msc: u32, sec: Option<f32>, r#loop: Option<bool>, tick: Option<u32>) {
+    let sec = if let Some(tick) = tick {
+        PLAYM_TICK_ONCE.call_once(|| {
+            println!("tick option of pyxel.playm is deprecated. Use sec option instead.");
+        });
+
+        Some(tick as f32 / 120.0)
+    } else {
+        sec
+    };
+
     pyxel().playm(msc, sec, r#loop.unwrap_or(false));
 }
 
