@@ -152,3 +152,23 @@ For example, to edit the `shooter.pyxres` file in the `assets` directory with th
 ```
 
 If you add a `<div>` tag with `id="pyxel-screen"` to an HTML file running Pyxel, that element will be used as the Pyxel screen. By adjusting the position and size of this `<div>` tag, you can change the placement and dimensions of the Pyxel screen.
+
+## Pinning the Pyxel Version
+
+By default, the web version of Pyxel always loads the latest version from the server, so future updates may cause your existing code to stop working.
+
+To prevent this, specify the Pyxel version in your HTML file to pin the version you want to use.
+
+For example, in your HTML code:
+
+```html
+<script src="https://cdn.jsdelivr.net/gh/kitao/pyxel@2.4/wasm/pyxel.js"></script>
+```
+
+or
+
+```html
+<script src="https://cdn.jsdelivr.net/gh/kitao/pyxel@2.4.6/wasm/pyxel.js"></script>
+```
+
+Specify the version number you want to pin in the URL as shown above.
