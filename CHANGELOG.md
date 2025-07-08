@@ -5,6 +5,7 @@
 - Fixed a cargo login warning
 - Restored the tick option of the play and playm functions
 - Added documentation on pinning the Pyxel version for the web version
+- Changed the sound separation in Example 14
 
 ## 2.4.3
 
