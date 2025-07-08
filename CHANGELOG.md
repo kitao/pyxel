@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.4.4
+
+- Restored the tick option of the play and playm functions
+
 ## 2.4.3
 
 - Added note interpolation processing to suppress click noise
