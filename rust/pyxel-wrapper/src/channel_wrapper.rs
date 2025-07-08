@@ -5,7 +5,7 @@ use pyo3::prelude::*;
 use crate::pyxel_singleton::pyxel;
 use crate::sound_wrapper::Sound;
 
-static CHANNEL_PLAY_TICK_ONCE: Once = Once::new();
+static PLAY_TICK_ONCE: Once = Once::new();
 
 #[pyclass]
 #[derive(Clone)]
@@ -56,7 +56,7 @@ impl Channel {
         tick: Option<u32>,
     ) -> PyResult<()> {
         let sec = if let Some(tick) = tick {
-            CHANNEL_PLAY_TICK_ONCE.call_once(|| {
+            PLAY_TICK_ONCE.call_once(|| {
                 println!("tick option of Channel.play is deprecated. Use sec option instead.");
             });
 
