@@ -152,3 +152,23 @@ python -m http.server
 ```
 
 Pyxel を実行する HTML ファイルに`id="pyxel-screen"`の`<div>`タグを追加すると、その要素を Pyxel の画面として使用します。この`<div>`タグの位置やサイズを調整することで、Pyxel の画面の配置や大きさを変更できます。
+
+## Pyxel のバージョンを固定する　
+
+Web 版 Pyxel はサーバー上の最新版を参照しているため、今後のバージョンアップの内容次第で既存のコードが動作しなくなる可能性があります。
+
+この状況を防ぐには、HTML ファイル内で Pyxel のバージョンを指定し、参照するバージョンを固定してください。
+
+具体的には、Pyxel を読み込むコードで、
+
+```html
+<script src="https://cdn.jsdelivr.net/gh/kitao/pyxel@2.4/wasm/pyxel.js"></script>
+```
+
+や
+
+```html
+<script src="https://cdn.jsdelivr.net/gh/kitao/pyxel@2.4.6/wasm/pyxel.js"></script>
+```
+
+のように、固定したいバージョン番号を指定します。
