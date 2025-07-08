@@ -2,6 +2,7 @@
 
 ## 2.4.4
 
+- Fixed a cargo login warning
 - Restored the tick option of the play and playm functions
 
 ## 2.4.3
