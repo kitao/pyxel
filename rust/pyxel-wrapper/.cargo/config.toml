@@ -1,7 +1,5 @@
 [target.wasm32-unknown-emscripten]
 rustflags = [
-    "-C", "symbol-mangling-version=v0",
     "-C", "link-arg=-lSDL2",
     "-C", "link-arg=-lhtml5",
 ]
-build-std = ["std", "panic_abort"]

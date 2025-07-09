@@ -5,11 +5,9 @@
 - Fixed a cargo login warning
 - Restored the tick option of the play and playm functions
 - Added documentation on pinning the Pyxel version for the web version
-- Changed the sound separation in Example 14
+- Cleaned up and improved usability of Example 14
 - Updated the toml crate to version 0.9
-- Updated Pyodide to version 0.28.0
-- Updated Emscripten to version 4.0.9
-- Updated SDL2 to version 2.32.0
+- Updated Pyodide to version 0.27.7
 
 ## 2.4.3
 
