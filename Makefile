@@ -65,7 +65,7 @@ ENSURE_TARGET =
 BUILD_OPTS = --release
 else
 ENSURE_TARGET = rustup target add $(TARGET)
-BUILD_OPTS = -Z build-std --release --target $(TARGET)
+BUILD_OPTS = --release --target $(TARGET)
 endif
 
 .PHONY: \
