@@ -17,7 +17,7 @@
 #	- libsdl2-dev 2.28.4
 #
 #	[Web]
-#	- Emscripten 3.1.58 (the same version used Pyodide)
+#	- Emscripten 4.0.9 (the same version used Pyodide)
 #
 # Advance Preparation:
 #	git clone --depth=1 https://github.com/kitao/pyxel
@@ -57,7 +57,6 @@ EXAMPLES_DIR = $(PYTHON_DIR)/pyxel/examples
 SCRIPTS_DIR = $(ROOT_DIR)/scripts
 WASM_DIR = $(ROOT_DIR)/wasm
 WASM_TARGET = wasm32-unknown-emscripten
-RUSTUP_TOOLCHAIN=nightly-2025-02-01
 CLIPPY_OPTS = -q --all-targets --all-features -- --no-deps
 MATURIN_OPTS = --manylinux 2014 --auditwheel skip
 
@@ -65,8 +64,8 @@ ifeq ($(TARGET),)
 ENSURE_TARGET =
 BUILD_OPTS = --release
 else
-ENSURE_TARGET = rustup target add $(TARGET) --toolchain $(RUSTUP_TOOLCHAIN)
-BUILD_OPTS = --release --target $(TARGET)
+ENSURE_TARGET = rustup target add $(TARGET)
+BUILD_OPTS = -Z build-std --release --target $(TARGET)
 endif
 
 .PHONY: \
@@ -95,14 +94,14 @@ update:
 	@pip3 -q install -U -r $(PYTHON_DIR)/requirements.txt
 
 format:
-	@cd $(RUST_DIR); RUSTUP_TOOLCHAIN=$(RUSTUP_TOOLCHAIN) cargo fmt -- --emit=files
+	@cd $(RUST_DIR); cargo fmt -- --emit=files
 	@ruff format $(ROOT_DIR)
 
 build: format
 	@$(ENSURE_TARGET)
 	@$(SCRIPTS_DIR)/generate_readme_abspath
 	@cp LICENSE $(PYTHON_DIR)/pyxel
-	@cd $(PYTHON_DIR); RUSTUP_TOOLCHAIN=$(RUSTUP_TOOLCHAIN) maturin build -o ../$(DIST_DIR) $(BUILD_OPTS) $(MATURIN_OPTS)
+	@cd $(PYTHON_DIR); maturin build -o ../$(DIST_DIR) $(BUILD_OPTS) $(MATURIN_OPTS)
 
 install: build
 	@pip3 install --force-reinstall `ls -rt $(DIST_DIR)/*.whl | tail -n 1`
