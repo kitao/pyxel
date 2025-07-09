@@ -29,7 +29,7 @@ rand_xoshiro = "0.7"
 semver = "1.0"
 serde = { version = "1.0", features = ["derive"] }
 serde-xml-rs = "0.8"
-toml = "0.8"
+toml = "0.9"
 zip = { version = "4.0", default-features = false, features = ["deflate"] }
 
 [target.'cfg(not(target_os = "emscripten"))'.dependencies]
