@@ -157,27 +157,30 @@ class WavetableEditor:
         self.tone = tone
         self.desc = desc
         self.target = None
+        self.last_col = 0
 
     def update(self):
-        wx = (pyxel.mouse_x - self.x - 1) // 5
-        wy = 15 - (pyxel.mouse_y - self.y - 8) // 3
+        col = (pyxel.mouse_x - self.x - 1) // 5
+        row = 15 - (pyxel.mouse_y - self.y - 8) // 3
 
-        gx = (pyxel.mouse_x - self.x - 168) // 5
-        gy = 16 - (pyxel.mouse_y - self.y - 8) // 3
-
-        if pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT):
-            if 0 <= wx <= 31 and 0 <= wy <= 15:
+        if pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT) and 0 <= row <= 15:
+            if 0 <= col <= 31:
                 self.target = "wave"
-            elif gx == 0 and 0 <= gy <= 16:
+            elif 167 <= pyxel.mouse_x - self.x <= 174:
                 self.target = "gain"
 
         if pyxel.btnr(pyxel.MOUSE_BUTTON_LEFT):
             self.target = None
 
         if self.target == "wave":
-            pyxel.tones[self.tone].wavetable[max(0, min(31, wx))] = max(0, min(15, wy))
+            for x in range(min(self.last_col, col), max(self.last_col, col) + 1):
+                pyxel.tones[self.tone].wavetable[max(0, min(31, x))] = max(
+                    0, min(15, row)
+                )
         elif self.target == "gain":
-            pyxel.tones[self.tone].gain = max(0, min(15, gy / 16))
+            pyxel.tones[self.tone].gain = max(0, min(15, row)) / 15
+
+        self.last_col = col
 
     def draw(self):
         pyxel.text(self.x, self.y, f"TONE:{self.tone} {self.desc}", 12)
