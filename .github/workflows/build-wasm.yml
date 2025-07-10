@@ -12,7 +12,7 @@ jobs:
       - name: Install Emscripten
         uses: mymindstorm/setup-emsdk@v13
         with:
-          version: 3.1.58
+          version: 4.0.9
 
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
@@ -22,7 +22,7 @@ jobs:
       - name: Install Nightly Rust
         uses: dtolnay/rust-toolchain@stable
         with:
-          toolchain: nightly-2025-02-17
+          toolchain: nightly-2025-07-09
           components: rustfmt
 
       - name: Install Python
