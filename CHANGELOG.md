@@ -3,10 +3,6 @@
 ## 2.4.5
 
 - Added a warning message when using the old MML syntax
-- Updated Pyodide to version 0.28.0
-- Updated Emscripten to version 4.0.9
-- Updated SDL2 to version 2.32.0
-- Updated Rust to version nightly-2025-07-09
 
 ## 2.4.4
 
