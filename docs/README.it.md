@@ -715,7 +715,7 @@ Un file dell'applicazione Pyxel può anche essere convertito in un eseguibile o 
   Esempio: `pyxel.sounds[0].mml("T120 Q90 @1 V100 O5 L8 C4&C<G16R16>C.<G16 >C.D16 @VIB1{10,20,20} E2C2")`
 
 - `save(filename, sec, [ffmpeg])`<br>
-  Crea un file WAV contenente il suono ripetuto `count` volte. Se FFmpeg è installato e `ffmpeg` è impostato su `True`, viene creato anche un file MP4.
+  Crea un file WAV che riproduce il suono per i secondi specificati. Se FFmpeg è installato e `ffmpeg` è impostato su `True`, viene creato anche un file MP4.
 
 - `total_sec()`<br>
   Restituisce la durata di riproduzione del suono in secondi. Restituisce `None` se in MML viene utilizzato un loop infinito.

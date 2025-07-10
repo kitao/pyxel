@@ -730,7 +730,7 @@ Pyxel アプリケーションファイルは、`pyxel app2exe`コマンドや`p
   例：`pyxel.musics[0].set([0, 1], [], [3])`
 
 - `save(filename, sec, [ffmpeg])`<br>
-  対象のミュージックを`count`回分繰り返した WAV ファイルを作成します。FFmpeg がインストールされている環境で、`ffmepg`に`True`を指定すると、MP4 ファイルも作成します。
+  ミュージックを指定した秒数分再生した WAV ファイルを作成します。FFmpeg がインストールされている環境で、`ffmepg`に`True`を指定すると、MP4 ファイルも作成します。
 
 ### 上級者向け API
 

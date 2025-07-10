@@ -715,7 +715,7 @@ Pyxel 应用程序文件还可以使用 `pyxel app2exe` 或 `pyxel app2html` 命
   例子：`pyxel.sounds[0].mml("T120 Q90 @1 V100 O5 L8 C4&C<G16R16>C.<G16 >C.D16 @VIB1{10,20,20} E2C2")`
 
 - `save(filename, sec, [ffmpeg])`<br>
-  创建一个包含重复 `count` 次声音的 WAV 文件。如果已安装 FFmpeg 并将 `ffmpeg` 设置为 `True`，还会创建一个 MP4 文件。
+  创建一个播放指定秒数声音的 WAV 文件。如果已安装 FFmpeg 并将 `ffmpeg` 设置为 `True`，还会创建一个 MP4 文件。
 
 - `total_sec()`<br>
   返回声音的播放时间（秒）。如果 MML 使用了无限循环，则返回 `None`。

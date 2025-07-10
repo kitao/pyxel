@@ -715,7 +715,7 @@ Pyxel 애플리케이션 파일은 `pyxel app2exe` 또는 `pyxel app2html` 명�
   예시: `pyxel.sounds[0].mml("T120 Q90 @1 V100 O5 L8 C4&C<G16R16>C.<G16 >C.D16 @VIB1{10,20,20} E2C2")`
 
 - `save(filename, sec, [ffmpeg])`<br>
-  사운드를 `count`번 반복한 WAV 파일을 생성합니다. FFmpeg가 설치되어 있고 `ffmpeg`가 `True`로 설정된 경우, MP4 파일도 생성됩니다.
+  지정한 초 동안 사운드를 재생하는 WAV 파일을 생성합니다. FFmpeg가 설치되어 있고 `ffmpeg`가 `True`로 설정된 경우, MP4 파일도 생성됩니다.
 
 - `total_sec()`<br>
   사운드의 재생 시간을 초 단위로 반환합니다. MML에서 무한 루프가 사용된 경우 `None`을 반환합니다.
