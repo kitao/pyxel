@@ -25,7 +25,7 @@ pub(crate) fn run<F: FnMut()>(callback: F) {
     unsafe {
         emscripten_set_main_loop_arg(
             callback_wrapper::<F>,
-            Box::into_raw(Box::new(callback)).cast::<c_void>(),
+            Box::into_raw(Box::new(callback)).cast::<std::ffi::c_void>(),
             0,
             1,
         );

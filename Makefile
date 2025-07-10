@@ -17,7 +17,7 @@
 #	- libsdl2-dev 2.28.4
 #
 #	[Web]
-#	- Emscripten 4.0.9 (the same version used by Pyodide)
+#	- Emscripten 3.1.58 (the same version used Pyodide)
 #
 # Advance Preparation:
 #	git clone --depth=1 https://github.com/kitao/pyxel
@@ -66,10 +66,6 @@ BUILD_OPTS = --release
 else
 ENSURE_TARGET = rustup target add $(TARGET)
 BUILD_OPTS = --release --target $(TARGET)
-endif
-
-ifeq ($(TARGET),$(WASM_TARGET))
-BUILD_OPTS += -Z build-std
 endif
 
 .PHONY: \
