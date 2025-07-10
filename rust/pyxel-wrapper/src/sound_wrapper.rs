@@ -110,6 +110,15 @@ impl Sound {
     #[pyo3(signature = (code=None))]
     pub fn mml(&self, code: Option<&str>) {
         if let Some(code) = code {
+            if code.contains('x') || code.contains('X') {
+                OLD_MML_ONCE.call_once(|| {
+                    println!("Old MML syntax is deprecated. Use new syntax instead.");
+                });
+
+                self.inner.lock().old_mml(code);
+                return;
+            }
+
             self.inner.lock().mml(code);
         } else {
             self.inner.lock().mml0();
@@ -119,7 +128,7 @@ impl Sound {
     #[pyo3(signature = (code=None))]
     pub fn old_mml(&self, code: Option<&str>) {
         OLD_MML_ONCE.call_once(|| {
-            println!("Sound.old_mml(code) is is deprecated. Use Sound.mml(code) instead.");
+            println!("Sound.old_mml(code) is deprecated. Use Sound.mml(code) instead.");
         });
 
         if let Some(code) = code {

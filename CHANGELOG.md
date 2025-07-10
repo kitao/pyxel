@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.4.5
+
+- Added a warning message when using the old MML syntax
+
 ## 2.4.4
 
 - Fixed a cargo login warning
