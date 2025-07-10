@@ -714,7 +714,7 @@ Pyxel 애플리케이션 파일은 `pyxel app2exe` 또는 `pyxel app2html` 명�
   [MML (Music Macro Language)](https://en.wikipedia.org/wiki/Music_Macro_Language) 문자열을 전달하면 MML 모드로 전환되어 해당 내용에 따라 사운드가 재생됩니다. 이 모드에서는 `notes` 및 `speed`와 같은 일반 매개변수는 무시됩니다. MML 모드를 종료하려면 인수 없이 `mml()`을 호출하세요. MML에 대한 자세한 내용은 [이 페이지](faq-en.md)를 참조하세요.<br>
   예시: `pyxel.sounds[0].mml("T120 Q90 @1 V100 O5 L8 C4&C<G16R16>C.<G16 >C.D16 @VIB1{10,20,20} E2C2")`
 
-- `save(filename, count, [ffmpeg])`<br>
+- `save(filename, sec, [ffmpeg])`<br>
   사운드를 `count`번 반복한 WAV 파일을 생성합니다. FFmpeg가 설치되어 있고 `ffmpeg`가 `True`로 설정된 경우, MP4 파일도 생성됩니다.
 
 - `total_sec()`<br>
@@ -729,7 +729,7 @@ Pyxel 애플리케이션 파일은 `pyxel app2exe` 또는 `pyxel app2html` 명�
   각 채널에 대한 사운드 (0-63) 리스트를 설정합니다. 빈 리스트가 지정되면 해당 채널은 재생에 사용되지 않습니다.<br>
   예시: `pyxel.musics[0].set([0, 1], [], [3])`
 
-- `save(filename, count, [ffmpeg])`<br>
+- `save(filename, sec, [ffmpeg])`<br>
   음악을 `count`번 반복한 WAV 파일을 생성합니다. FFmpeg가 설치되어 있고 `ffmpeg`가 `True`로 설정된 경우, MP4 파일도 생성됩니다.
 
 ### 고급 API

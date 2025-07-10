@@ -729,7 +729,7 @@ Pyxel アプリケーションファイルは、`pyxel app2exe`コマンドや`p
   チャンネルのサウンド (0-63) のリストを設定します。空リストを指定すると、そのチャンネルは再生に使用されません。<br>
   例：`pyxel.musics[0].set([0, 1], [], [3])`
 
-- `save(filename, count, [ffmpeg])`<br>
+- `save(filename, sec, [ffmpeg])`<br>
   対象のミュージックを`count`回分繰り返した WAV ファイルを作成します。FFmpeg がインストールされている環境で、`ffmepg`に`True`を指定すると、MP4 ファイルも作成します。
 
 ### 上級者向け API
