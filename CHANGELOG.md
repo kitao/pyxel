@@ -2,7 +2,7 @@
 
 ## 2.4.5
 
-- Added a warning message when using the old MML syntax
+- Changed to call the old_mml method when the old syntax is detected
 
 ## 2.4.4
 
@@ -20,7 +20,7 @@
 
 ## 2.4.2
 
-- Reverted blip_buf add_delta to prevent audio degradation
+- Reverted the add_delta in blip_buf to prevent audio degradation
 
 ## 2.4.1
 
