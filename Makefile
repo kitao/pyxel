@@ -17,7 +17,7 @@
 #	- libsdl2-dev 2.28.4
 #
 #	[Web]
-#	- Emscripten 3.1.58 (the same version used Pyodide)
+#	- Emscripten 3.1.58 (the same version used by Pyodide)
 #
 # Advance Preparation:
 #	git clone --depth=1 https://github.com/kitao/pyxel
