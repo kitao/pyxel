@@ -715,7 +715,7 @@ Eine Pyxel-Anwendungsdatei kann auch mit den Befehlen `pyxel app2exe` oder `pyxe
   Beispiel: `pyxel.sounds[0].mml("T120 Q90 @1 V100 O5 L8 C4&C<G16R16>C.<G16 >C.D16 @VIB1{10,20,20} E2C2")`
 
 - `save(filename, sec, [ffmpeg])`<br>
-  Erstellt eine WAV-Datei, die den Sound `count`-mal wiederholt. Wenn FFmpeg installiert ist und `ffmpeg` auf `True` gesetzt wird, wird auch eine MP4-Datei erstellt.
+  Erstellt eine WAV-Datei, die den Sound für die angegebene Anzahl von Sekunden abspielt. Wenn FFmpeg installiert ist und `ffmpeg` auf `True` gesetzt wird, wird auch eine MP4-Datei erstellt.
 
 - `total_sec()`<br>
   Gibt die Wiedergabedauer des Sounds in Sekunden zurück. Gibt `None` zurück, wenn in MML eine Endlosschleife verwendet wird.
