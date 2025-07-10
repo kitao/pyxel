@@ -714,7 +714,7 @@ pyxel play PYXEL_APP_FILE
   Передача строки [MML (Music Macro Language)](https://en.wikipedia.org/wiki/Music_Macro_Language) переводит в режим MML и воспроизводит звук в соответствии с её содержимым. В этом режиме обычные параметры, такие как `notes` и `speed`, игнорируются. Чтобы выйти из режима MML, вызовите `mml()` без аргументов. Подробнее о MML см. [на этой странице](faq-en.md).<br>
   Пример: `pyxel.sounds[0].mml("T120 Q90 @1 V100 O5 L8 C4&C<G16R16>C.<G16 >C.D16 @VIB1{10,20,20} E2C2")`
 
-- `save(filename, count, [ffmpeg])`<br>
+- `save(filename, sec, [ffmpeg])`<br>
   Создает WAV-файл, содержащий звук, повторенный `count` раз. Если FFmpeg установлен и `ffmpeg` установлен в значение `True`, также создается MP4-файл.
 
 - `total_sec()`<br>
@@ -729,7 +729,7 @@ pyxel play PYXEL_APP_FILE
   Устанавливает списки звуков (0-63) для каждого канала. Если указан пустой список, этот канал не будет использоваться для воспроизведения.<br>
   Пример: `pyxel.musics[0].set([0, 1], [], [3])`
 
-- `save(filename, count, [ffmpeg])`<br>
+- `save(filename, sec, [ffmpeg])`<br>
   Создает WAV-файл, содержащий музыку, повторенную `count` раз. Если FFmpeg установлен и `ffmpeg` установлен в значение `True`, также создается MP4-файл.
 
 ### Расширенный API

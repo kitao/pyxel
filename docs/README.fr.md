@@ -715,7 +715,7 @@ Un fichier d'application Pyxel peut également être converti en un exécutable 
   En passant une chaîne [MML (Music Macro Language)](https://en.wikipedia.org/wiki/Music_Macro_Language), on passe en mode MML et le son est joué selon son contenu. Dans ce mode, les paramètres normaux comme `notes` et `speed` sont ignorés. Pour quitter le mode MML, appelez `mml()` sans argument. Pour plus de détails sur MML, voir [cette page](faq-en.md).<br>
   Exemple : `pyxel.sounds[0].mml("T120 Q90 @1 V100 O5 L8 C4&C<G16R16>C.<G16 >C.D16 @VIB1{10,20,20} E2C2")`
 
-- `save(filename, count, [ffmpeg])`<br>
+- `save(filename, sec, [ffmpeg])`<br>
   Crée un fichier WAV contenant le son répété `count` fois. Si FFmpeg est installé et que `ffmpeg` est défini sur `True`, un fichier MP4 est également créé.
 
 - `total_sec()`<br>
@@ -730,7 +730,7 @@ Un fichier d'application Pyxel peut également être converti en un exécutable 
   Définit les listes de sons (0-63) pour chaque canal. Si une liste vide est spécifiée, ce canal ne sera pas utilisé pour la lecture.<br>
   Exemple : `pyxel.musics[0].set([0, 1], [], [3])`
 
-- `save(filename, count, [ffmpeg])`<br>
+- `save(filename, sec, [ffmpeg])`<br>
   Crée un fichier WAV contenant la musique répétée `count` fois. Si FFmpeg est installé et que `ffmpeg` est défini sur `True`, un fichier MP4 est également créé.
 
 ### API Avancée

@@ -714,7 +714,7 @@ Un archivo de aplicación Pyxel también se puede convertir en un archivo ejecut
   Al pasar una cadena [MML (Music Macro Language)](https://en.wikipedia.org/wiki/Music_Macro_Language), se cambia al modo MML y se reproduce el sonido según su contenido. En este modo, se ignoran los parámetros normales como `notes` y `speed`. Para salir del modo MML, llama a `mml()` sin argumentos. Para más detalles sobre MML, consulta [esta página](faq-en.md).<br>
   Ejemplo: `pyxel.sounds[0].mml("T120 Q90 @1 V100 O5 L8 C4&C<G16R16>C.<G16 >C.D16 @VIB1{10,20,20} E2C2")`
 
-- `save(filename, count, [ffmpeg])`<br>
+- `save(filename, sec, [ffmpeg])`<br>
   Crea un archivo WAV que contiene el sonido repetido `count` veces. Si FFmpeg está instalado y `ffmpeg` se establece en `True`, también se crea un archivo MP4.
 
 - `total_sec()`<br>
@@ -729,7 +729,7 @@ Un archivo de aplicación Pyxel también se puede convertir en un archivo ejecut
   Establece las listas de sonidos (0-63) para cada canal. Si se especifica una lista vacía, ese canal no se utilizará para la reproducción.<br>
   Ejemplo: `pyxel.musics[0].set([0, 1], [], [3])`
 
-- `save(filename, count, [ffmpeg])`<br>
+- `save(filename, sec, [ffmpeg])`<br>
   Crea un archivo WAV que contiene la música repetida `count` veces. Si FFmpeg está instalado y `ffmpeg` se establece en `True`, también se crea un archivo MP4.
 
 ### API Avanzada

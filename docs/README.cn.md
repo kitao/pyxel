@@ -714,7 +714,7 @@ Pyxel 应用程序文件还可以使用 `pyxel app2exe` 或 `pyxel app2html` 命
   传入 [MML（音乐宏语言）](https://en.wikipedia.org/wiki/Music_Macro_Language) 字符串后，将切换到 MML 模式，并根据内容播放声音。在此模式下，`notes` 和 `speed` 等普通参数将被忽略。要退出 MML 模式，请调用 `mml()`（不带参数）。关于 MML 的详细说明，请参阅[此页面](faq-en.md)。<br>
   例子：`pyxel.sounds[0].mml("T120 Q90 @1 V100 O5 L8 C4&C<G16R16>C.<G16 >C.D16 @VIB1{10,20,20} E2C2")`
 
-- `save(filename, count, [ffmpeg])`<br>
+- `save(filename, sec, [ffmpeg])`<br>
   创建一个包含重复 `count` 次声音的 WAV 文件。如果已安装 FFmpeg 并将 `ffmpeg` 设置为 `True`，还会创建一个 MP4 文件。
 
 - `total_sec()`<br>
@@ -729,7 +729,7 @@ Pyxel 应用程序文件还可以使用 `pyxel app2exe` 或 `pyxel app2html` 命
   设置每个通道的声音 (0-63) 列表。如果指定了空列表，则该通道不会用于播放。<br>
   例子：`pyxel.musics[0].set([0, 1], [], [3])`
 
-- `save(filename, count, [ffmpeg])`<br>
+- `save(filename, sec, [ffmpeg])`<br>
   创建一个包含重复 `count` 次音乐的 WAV 文件。如果已安装 FFmpeg 并将 `ffmpeg` 设置为 `True`，还会创建一个 MP4 文件。
 
 ### 高级 API
