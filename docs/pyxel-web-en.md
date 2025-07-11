@@ -65,6 +65,8 @@ https://kitao.github.io/pyxel/wasm/launcher/?run=taro.my_repo.assets.shooter&edi
 
 You can also automatically generate the app launch URL by entering the necessary information on the [Pyxel Web Launcher page](https://kitao.github.io/pyxel/wasm/launcher/).
 
+In addition to generating app launch URLs, Pyxel Web Launcher also allows you to create URLs for playing multi-channel MML by entering MML sequences separated by semicolons, such as `CDE;EFG`.
+
 ## Convert a Pyxel App to an HTML File
 
 You can convert a Pyxel application file (.pyxapp) into a standalone HTML file using the following command:
