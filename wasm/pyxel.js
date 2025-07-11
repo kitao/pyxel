@@ -446,7 +446,24 @@ async function _executePyxelCommand(pyodide, params) {
         pyxel.cli.edit_pyxel_resource("${params.name}", "${params.editor}")
       `;
       break;
+
+    case "mml":
+      pythonCode = `
+        import pyxel
+        pyxel.init(240, 180, title="Pyxel MML Player")
+        y = 6
+        for i, mml in enumerate("${params.mmlList}".split(";")):
+            pyxel.play(i, mml)
+            cw = pyxel.width // 4 - 2
+            for i in range(0, len(mml), cw):
+                pyxel.text(4, y, mml[i : i + cw], 7)
+                y += 6
+            y += 6
+        pyxel.show()
+      `;
+      break;
   }
+
   try {
     pyodide.runPython(pythonCode);
   } catch (error) {
