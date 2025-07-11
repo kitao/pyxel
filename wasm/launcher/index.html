@@ -38,8 +38,12 @@
               <td><input type="text" size="60" id="additional-packages" /></td>
             </tr>
             <tr>
-              <td>Application Launch URL</td>
-              <td>
+              <td>MML List (separate with ; )</td>
+              <td><input type="text" size="60" id="mml-list" /></td>
+            </tr>
+            <tr>
+              <td style="padding-top: 1em">Application Launch URL</td>
+              <td style="padding-top: 1em">
                 <b><a href="" target="_blank" id="launch-url"></a></b>
               </td>
             </tr>
@@ -79,9 +83,22 @@
         document
           .getElementById("additional-packages")
           .addEventListener("input", generateLaunchUrl);
+        document
+          .getElementById("mml-list")
+          .addEventListener("input", generateLaunchUrl);
       }
 
       function generateLaunchUrl() {
+        const mmlList = document.getElementById("mml-list").value;
+        if (mmlList) {
+          const encodedMmlList = encodeURIComponent(mmlList);
+          const launchUrlHref = document.getElementById("launch-url");
+          launchUrlHref.textContent = launchUrlHref.href =
+            "https://kitao.github.io/pyxel/wasm/launcher/?mml=" +
+            encodedMmlList;
+          return;
+        }
+
         const startupFile = document.getElementById("startup-file").value;
         const virtualGamepad =
           document.getElementById("virtual-gamepad").checked;
@@ -119,7 +136,7 @@
       }
 
       let queries = new URL(document.location).searchParams;
-      let command, paths, ext;
+      let command, paths, ext, mmlList;
 
       if (queries.get("run")) {
         command = "run";
@@ -133,6 +150,9 @@
         command = "edit";
         paths = queries.get("edit").split(".");
         ext = ".pyxres";
+      } else if (queries.get("mml")) {
+        command = "mml";
+        mmlList = queries.get("mml");
       } else {
         printUsage();
       }
@@ -145,6 +165,7 @@
           packages: queries.get("packages"),
           gamepad: queries.get("gamepad"),
           editor: queries.get("editor"),
+          mmlList: mmlList,
         });
       }
     </script>

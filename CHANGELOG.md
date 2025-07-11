@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.4.6
+
+- Added the mml command to Pyxel Web Launcher
+
 ## 2.4.5
 
 - Changed to call the old_mml method when the old syntax is detected
