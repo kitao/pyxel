@@ -448,6 +448,7 @@ async function _executePyxelCommand(pyodide, params) {
       break;
 
     case "mml":
+      console.log(`Playing MML: ${params.mmlList}`);
       pythonCode = `
         import pyxel
         print("${params.mmlList}")
