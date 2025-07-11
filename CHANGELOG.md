@@ -3,6 +3,7 @@
 ## 2.4.6
 
 - Added the mml command to Pyxel Web Launcher
+- Changed the note interpolation time to 1ms
 
 ## 2.4.5
 
