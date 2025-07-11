@@ -730,7 +730,7 @@ Eine Pyxel-Anwendungsdatei kann auch mit den Befehlen `pyxel app2exe` oder `pyxe
   Beispiel: `pyxel.musics[0].set([0, 1], [], [3])`
 
 - `save(filename, sec, [ffmpeg])`<br>
-  Erstellt eine WAV-Datei, die die Musik `count`-mal wiederholt. Wenn FFmpeg installiert ist und `ffmpeg` auf `True` gesetzt wird, wird auch eine MP4-Datei erstellt.
+  Erstellt eine WAV-Datei, die die Musik für die angegebene Anzahl von Sekunden abspielt. Wenn FFmpeg installiert ist und `ffmpeg` auf `True` gesetzt wird, wird auch eine MP4-Datei erstellt.
 
 ### Fortgeschrittene API
 

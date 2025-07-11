@@ -730,7 +730,7 @@ Bir Pyxel uygulama dosyası ayrıca `pyxel app2exe` veya `pyxel app2html` komutl
   Örnek: `pyxel.musics[0].set([0, 1], [], [3])`
 
 - `save(filename, sec, [ffmpeg])`<br>
-  Müziği `count` kez tekrarlayan bir WAV dosyası oluşturur. FFmpeg yüklüyse ve `ffmpeg` `True` olarak ayarlandıysa, bir MP4 dosyası da oluşturulur.
+  Belirtilen saniye boyunca müziği çalan bir WAV dosyası oluşturur. FFmpeg yüklüyse ve `ffmpeg` `True` olarak ayarlandıysa, bir MP4 dosyası da oluşturulur.
 
 ### Gelişmiş API
 
