@@ -415,6 +415,7 @@ async function _executePyxelCommand(pyodide, params) {
   _copyFileFromBase64(pyodide, params.name, params.base64);
 
   let pythonCode = "";
+  console.log(`Executing command: ${params.command}`);
   switch (params.command) {
     case "run":
       if (params.name) {
