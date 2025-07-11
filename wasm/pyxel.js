@@ -53,7 +53,6 @@ async function launchPyxel(params) {
 
   _hookFileOperations(pyodide, params.root || ".");
   await _waitForInput();
-  console.log("before _executePyxelCommand");
   await _executePyxelCommand(pyodide, params);
 }
 
@@ -405,7 +404,6 @@ function _copyFileFromBase64(pyodide, name, base64) {
 }
 
 async function _executePyxelCommand(pyodide, params) {
-  console.log("_executePyxelCommand", params);
   if (params.command === "run" || params.command === "play") {
     await _installBuiltinPackages(pyodide, params.packages);
   }
@@ -417,7 +415,6 @@ async function _executePyxelCommand(pyodide, params) {
   _copyFileFromBase64(pyodide, params.name, params.base64);
 
   let pythonCode = "";
-  console.log(`Executing command: ${params.command}`);
   switch (params.command) {
     case "run":
       if (params.name) {
@@ -451,10 +448,8 @@ async function _executePyxelCommand(pyodide, params) {
       break;
 
     case "mml":
-      console.log(`Playing MML: ${params.mmlList}`);
       pythonCode = `
         import pyxel
-        print("${params.mmlList}")
         pyxel.init(240, 180, title="Pyxel MML Player")
         y = 6
         for i, mml in enumerate("${params.mmlList}".split(";")):
