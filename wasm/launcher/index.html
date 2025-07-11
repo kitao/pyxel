@@ -151,23 +151,23 @@
         paths = queries.get("edit").split(".");
         ext = ".pyxres";
       } else if (queries.get("mml")) {
-        command = "mml";
-        mmlList = queries.get("mml");
+        launchPyxel({
+          mmlList: queries.get("mml"),
+        });
+        return;
       } else {
         printUsage();
+        return;
       }
 
-      if (command) {
-        launchPyxel({
-          root: "https://cdn.jsdelivr.net/gh/" + paths.slice(0, 2).join("/"),
-          command: command,
-          name: paths.slice(2).join("/") + ext,
-          packages: queries.get("packages"),
-          gamepad: queries.get("gamepad"),
-          editor: queries.get("editor"),
-          mmlList: mmlList,
-        });
-      }
+      launchPyxel({
+        root: "https://cdn.jsdelivr.net/gh/" + paths.slice(0, 2).join("/"),
+        command: command,
+        name: paths.slice(2).join("/") + ext,
+        packages: queries.get("packages"),
+        gamepad: queries.get("gamepad"),
+        editor: queries.get("editor"),
+      });
     </script>
   </body>
 </html>
