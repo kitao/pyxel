@@ -121,7 +121,7 @@
         const filePath = dottedPath.split(".").slice(0, -1).join(".");
         const fileExt = dottedPath.split(".").slice(-1)[0];
         var launchUrl = "https://kitao.github.io/pyxel/wasm/launcher/?";
-        launchUrl += fileExt == "py" ? "run" : "play";
+        launchUrl += fileExt === "py" ? "run" : "play";
         launchUrl += "=" + filePath;
 
         if (virtualGamepad) {
@@ -151,23 +151,26 @@
         paths = queries.get("edit").split(".");
         ext = ".pyxres";
       } else if (queries.get("mml")) {
-        launchPyxel({
-          mmlList: queries.get("mml"),
-        });
-        return;
+        command = "mml";
+        mmlList = queries.get("mml");
       } else {
         printUsage();
-        return;
       }
 
-      launchPyxel({
-        root: "https://cdn.jsdelivr.net/gh/" + paths.slice(0, 2).join("/"),
-        command: command,
-        name: paths.slice(2).join("/") + ext,
-        packages: queries.get("packages"),
-        gamepad: queries.get("gamepad"),
-        editor: queries.get("editor"),
-      });
+      if (command === "mml") {
+        launchPyxel({
+          mmlList: mmlList,
+        });
+      } else if (command) {
+        launchPyxel({
+          root: "https://cdn.jsdelivr.net/gh/" + paths.slice(0, 2).join("/"),
+          command: command,
+          name: paths.slice(2).join("/") + ext,
+          packages: queries.get("packages"),
+          gamepad: queries.get("gamepad"),
+          editor: queries.get("editor"),
+        });
+      }
     </script>
   </body>
 </html>
