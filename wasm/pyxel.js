@@ -450,6 +450,7 @@ async function _executePyxelCommand(pyodide, params) {
     case "mml":
       pythonCode = `
         import pyxel
+        print("${params.mmlList}")
         pyxel.init(240, 180, title="Pyxel MML Player")
         y = 6
         for i, mml in enumerate("${params.mmlList}".split(";")):
