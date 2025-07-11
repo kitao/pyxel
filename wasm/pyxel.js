@@ -53,6 +53,7 @@ async function launchPyxel(params) {
 
   _hookFileOperations(pyodide, params.root || ".");
   await _waitForInput();
+  console.log("before _executePyxelCommand");
   await _executePyxelCommand(pyodide, params);
 }
 
@@ -404,6 +405,7 @@ function _copyFileFromBase64(pyodide, name, base64) {
 }
 
 async function _executePyxelCommand(pyodide, params) {
+  console.log("_executePyxelCommand", params);
   if (params.command === "run" || params.command === "play") {
     await _installBuiltinPackages(pyodide, params.packages);
   }
