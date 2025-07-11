@@ -730,7 +730,7 @@ Pyxel 애플리케이션 파일은 `pyxel app2exe` 또는 `pyxel app2html` 명�
   예시: `pyxel.musics[0].set([0, 1], [], [3])`
 
 - `save(filename, sec, [ffmpeg])`<br>
-  음악을 `count`번 반복한 WAV 파일을 생성합니다. FFmpeg가 설치되어 있고 `ffmpeg`가 `True`로 설정된 경우, MP4 파일도 생성됩니다.
+  지정한 초 동안 음악을 재생하는 WAV 파일을 생성합니다. FFmpeg가 설치되어 있고 `ffmpeg`가 `True`로 설정된 경우, MP4 파일도 생성됩니다.
 
 ### 고급 API
 

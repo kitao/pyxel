@@ -730,7 +730,7 @@ Un archivo de aplicación Pyxel también se puede convertir en un archivo ejecut
   Ejemplo: `pyxel.musics[0].set([0, 1], [], [3])`
 
 - `save(filename, sec, [ffmpeg])`<br>
-  Crea un archivo WAV que contiene la música repetida `count` veces. Si FFmpeg está instalado y `ffmpeg` se establece en `True`, también se crea un archivo MP4.
+  Crea un archivo WAV que reproduce la música durante los segundos especificados. Si FFmpeg está instalado y `ffmpeg` se establece en `True`, también se crea un archivo MP4.
 
 ### API Avanzada
 

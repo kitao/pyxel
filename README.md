@@ -734,7 +734,7 @@ A Pyxel application file can also be converted to an executable or an HTML file 
   Example: `pyxel.musics[0].set([0, 1], [], [3])`
 
 - `save(filename, count, [ffmpeg])`<br>
-  Creates a WAV file containing the music repeated `count` times. If FFmpeg is installed and `ffmpeg` is set to `True`, an MP4 file is also created.
+  Creates a WAV file that plays the music for the specified seconds. If FFmpeg is installed and `ffmpeg` is set to `True`, an MP4 file is also created.
 
 ### Advanced API
 
