@@ -63,9 +63,9 @@ For example, to open the `shooter.pyxres` file located in the `assets` directory
 https://kitao.github.io/pyxel/wasm/launcher/?run=taro.my_repo.assets.shooter&editor=tilemap
 ```
 
-You can also automatically generate the app launch URL by entering the necessary information on the [Pyxel Web Launcher page](https://kitao.github.io/pyxel/wasm/launcher/).
+On the [Pyxel Web Launcher page](https://kitao.github.io/pyxel/wasm/launcher/), you can enter the required information to automatically generate a launch URL for your app.
 
-In addition to generating app launch URLs, Pyxel Web Launcher also allows you to create URLs for playing multi-channel MML by entering MML sequences separated by semicolons, such as `CDE;EFG`.
+You can also create a URL to play MML by entering multi-channel MML in the MML List, separated by semicolons (`;`) like `CDE;EFG`.
 
 ## Convert a Pyxel App to an HTML File
 
