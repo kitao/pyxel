@@ -91,11 +91,13 @@
       function generateLaunchUrl() {
         const mmlList = document.getElementById("mml-list").value;
         if (mmlList) {
-          const encodedMmlList = encodeURIComponent(mmlList);
+          const base64Url = btoa(mmlList)
+            .replace(/\+/g, "-")
+            .replace(/\//g, "_")
+            .replace(/=+$/, "");
           const launchUrlHref = document.getElementById("launch-url");
           launchUrlHref.textContent = launchUrlHref.href =
-            "https://kitao.github.io/pyxel/wasm/launcher/?mml=" +
-            encodedMmlList;
+            "https://kitao.github.io/pyxel/wasm/launcher/?mml=" + base64Url;
           return;
         }
 
@@ -152,7 +154,11 @@
         ext = ".pyxres";
       } else if (queries.get("mml")) {
         command = "mml";
-        mmlList = queries.get("mml");
+        let base64 = queries.get("mml").replace(/-/g, "+").replace(/_/g, "/");
+        while (base64.length % 4) {
+          base64 += "=";
+        }
+        mmlList = atob(base64);
       } else {
         printUsage();
       }
