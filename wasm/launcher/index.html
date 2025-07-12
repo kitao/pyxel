@@ -158,7 +158,7 @@
         if (["@", ";", " "].some((char) => mmlList.includes(char))) {
           mmlList = queries.get("mml");
         } else {
-          let base64 = mmlList.get("mml").replace(/-/g, "+").replace(/_/g, "/");
+          let base64 = mmlList.replace(/-/g, "+").replace(/_/g, "/");
           while (base64.length % 4) {
             base64 += "=";
           }
