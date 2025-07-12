@@ -52,47 +52,6 @@ macro_rules! parse_error {
     };
 }
 
-pub fn calc_commands_sec(commands: &[MmlCommand]) -> Option<f32> {
-    let mut total_clocks = 0;
-    let mut command_index: u32 = 0;
-    let mut repeat_points: Vec<(u32, u32)> = Vec::new();
-    let mut clocks_per_tick = bpm_to_cpt(DEFAULT_TEMPO);
-
-    while command_index < commands.len() as u32 {
-        let command = &commands[command_index as usize];
-        command_index += 1;
-
-        match command {
-            MmlCommand::Tempo {
-                clocks_per_tick: cpt,
-            } => {
-                clocks_per_tick = *cpt;
-            }
-            MmlCommand::Note { duration_ticks, .. } | MmlCommand::Rest { duration_ticks } => {
-                total_clocks += clocks_per_tick * *duration_ticks;
-            }
-            MmlCommand::RepeatStart => {
-                repeat_points.push((command_index, 0)); // Index after RepeatStart
-            }
-            MmlCommand::RepeatEnd { play_count } => {
-                if *play_count == 0 {
-                    return None;
-                }
-
-                if let Some((index, count)) = repeat_points.pop() {
-                    if count + 1 < *play_count {
-                        repeat_points.push((index, count + 1));
-                        command_index = index;
-                    }
-                }
-            }
-            _ => {}
-        }
-    }
-
-    Some(total_clocks as f32 / AUDIO_CLOCK_RATE as f32)
-}
-
 pub fn parse_mml(mml: &str) -> Vec<MmlCommand> {
     let mut stream = CharStream::new(mml);
     let mut commands = Vec::new();
@@ -323,6 +282,47 @@ pub fn parse_mml(mml: &str) -> Vec<MmlCommand> {
     }
 
     commands
+}
+
+pub fn calc_commands_sec(commands: &[MmlCommand]) -> Option<f32> {
+    let mut total_clocks = 0;
+    let mut command_index: u32 = 0;
+    let mut repeat_points: Vec<(u32, u32)> = Vec::new();
+    let mut clocks_per_tick = bpm_to_cpt(DEFAULT_TEMPO);
+
+    while command_index < commands.len() as u32 {
+        let command = &commands[command_index as usize];
+        command_index += 1;
+
+        match command {
+            MmlCommand::Tempo {
+                clocks_per_tick: cpt,
+            } => {
+                clocks_per_tick = *cpt;
+            }
+            MmlCommand::Note { duration_ticks, .. } | MmlCommand::Rest { duration_ticks } => {
+                total_clocks += clocks_per_tick * *duration_ticks;
+            }
+            MmlCommand::RepeatStart => {
+                repeat_points.push((command_index, 0)); // Index after RepeatStart
+            }
+            MmlCommand::RepeatEnd { play_count } => {
+                if *play_count == 0 {
+                    return None;
+                }
+
+                if let Some((index, count)) = repeat_points.pop() {
+                    if count + 1 < *play_count {
+                        repeat_points.push((index, count + 1));
+                        command_index = index;
+                    }
+                }
+            }
+            _ => {}
+        }
+    }
+
+    Some(total_clocks as f32 / AUDIO_CLOCK_RATE as f32)
 }
 
 fn skip_whitespace(stream: &mut CharStream) {
