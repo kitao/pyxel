@@ -65,7 +65,7 @@ https://kitao.github.io/pyxel/wasm/launcher/?run=taro.my_repo.assets.shooter&edi
 
 On the [Pyxel Web Launcher page](https://kitao.github.io/pyxel/wasm/launcher/), you can enter the required information to automatically generate a launch URL for your app.
 
-You can also create a URL to play MML by entering multi-channel MML in the MML List, separated by semicolons (`;`) like `CDE;EFG`.
+You can also create a URL to play MML by entering multi-channel MML in the MML List, separated by semicolons (`;`) like `CDE;EFG`. For details on how to use MML, see [this page](faq-en).
 
 ## Convert a Pyxel App to an HTML File
 
