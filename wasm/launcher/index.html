@@ -154,10 +154,11 @@
         ext = ".pyxres";
       } else if (queries.get("mml")) {
         command = "mml";
-        if (queries.get("mml").includes("%")) {
+        mmlList = queries.get("mml");
+        if (["@", ";", " "].some((char) => mmlList.includes(char))) {
           mmlList = queries.get("mml");
         } else {
-          let base64 = queries.get("mml").replace(/-/g, "+").replace(/_/g, "/");
+          let base64 = mmlList.get("mml").replace(/-/g, "+").replace(/_/g, "/");
           while (base64.length % 4) {
             base64 += "=";
           }
