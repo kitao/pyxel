@@ -65,7 +65,7 @@ https://kitao.github.io/pyxel/wasm/launcher/?run=taro.my_repo.assets.shooter&edi
 
 [Pyxel Web Launcher ページ](https://kitao.github.io/pyxel/wasm/launcher/)では、必要な情報を入力して、アプリの起動 URL を自動作成することができます。
 
-また、MML List に複数チャンネルの MML を `CDE;EFG` のようにセミコロン (`;`) で区切って入力することで、MML を再生する URL も作成できます。
+また、MML List に複数チャンネルの MML を `CDE;EFG` のようにセミコロン (`;`) で区切って入力することで、MML を再生する URL も作成できます。MML の使い方は[こちらのページ](faq-jp)を参照してください。
 
 ## Pyxel アプリを HTML ファイルに変換する
 
