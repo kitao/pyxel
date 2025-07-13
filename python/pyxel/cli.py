@@ -415,7 +415,7 @@ def create_html_from_pyxel_app(pyxel_app_file):
     with open(pyxel_app_name + ".html", "w") as f:
         f.write(
             "<!DOCTYPE html>\n"
-            '<script src="https://cdn.jsdelivr.net/gh/kitao/pyxel/wasm/pyxel.js">'
+            f'<script src="https://cdn.jsdelivr.net/gh/kitao/pyxel@{pyxel.VERSION}/wasm/pyxel.js">'
             "</script>\n"
             "<script>\n"
             f'launchPyxel({{ command: "play", name: "{pyxel_app_name}{pyxel.APP_FILE_EXTENSION}", '
