@@ -4,6 +4,8 @@
 
 - Added the mml command to Pyxel Web Launcher
 - Changed the note interpolation time to 1ms
+- Changed to fix the Pyxel version used by the app2html command
+- Updated the web usage instructions
 
 ## 2.4.5
 
