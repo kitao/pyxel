@@ -9,7 +9,7 @@
 
 [ [English](../README.md) | [中文](README.cn.md) | [Deutsch](README.de.md) | [Español](README.es.md) | [Français](README.fr.md) | [Italiano](README.it.md) | [日本語](README.ja.md) | [한국어](README.ko.md) | [Português](README.pt.md) | [Русский](README.ru.md) | [Türkçe](README.tr.md) | [Українська](README.uk.md) ]
 
-**Pyxel**, Python için bir retro oyun motorudur.
+**Pyxel** (/ˈpɪksəl/), Python için bir retro oyun motorudur.
 
 Özellikler, yalnızca 16 renk desteği ve 4 ses kanalıyla retro oyun konsollarından ilham alınarak tasarlanmıştır, böylece piksel sanat tarzı oyunlar yapmayı kolayca keyifle yaşayabilirsiniz.
 

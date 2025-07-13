@@ -9,7 +9,7 @@
 
 [ [English](../README.md) | [中文](README.cn.md) | [Deutsch](README.de.md) | [Español](README.es.md) | [Français](README.fr.md) | [Italiano](README.it.md) | [日本語](README.ja.md) | [한국어](README.ko.md) | [Português](README.pt.md) | [Русский](README.ru.md) | [Türkçe](README.tr.md) | [Українська](README.uk.md) ]
 
-**Pyxel** é um motor de jogos retro para Python.
+**Pyxel** (/ˈpɪksəl/) é um motor de jogos retro para Python.
 
 As especificações são inspiradas em consoles de jogos retro, como o suporte para apenas 16 cores e 4 canais de som, permitindo que você desfrute facilmente da criação de jogos com estilo de arte em pixel.
 

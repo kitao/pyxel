@@ -9,7 +9,7 @@
 
 [ [English](../README.md) | [中文](README.cn.md) | [Deutsch](README.de.md) | [Español](README.es.md) | [Français](README.fr.md) | [Italiano](README.it.md) | [日本語](README.ja.md) | [한국어](README.ko.md) | [Português](README.pt.md) | [Русский](README.ru.md) | [Türkçe](README.tr.md) | [Українська](README.uk.md) ]
 
-**Pyxel (ピクセル)** は、 Python 向けのレトロゲームエンジンです。
+**Pyxel**（ピクセル）は、 Python 向けのレトロゲームエンジンです。
 
 使える色は 16 色のみ、同時に再生できる音は 4 音までなど、レトロゲーム機を意識したシンプルな仕様で、Python を使ってドット絵スタイルのゲームづくりが気軽に楽しめます。
 

@@ -9,7 +9,7 @@
 
 [ [English](../README.md) | [中文](README.cn.md) | [Deutsch](README.de.md) | [Español](README.es.md) | [Français](README.fr.md) | [Italiano](README.it.md) | [日本語](README.ja.md) | [한국어](README.ko.md) | [Português](README.pt.md) | [Русский](README.ru.md) | [Türkçe](README.tr.md) | [Українська](README.uk.md) ]
 
-**Pyxel** — це ретро-ігровий движок для Python.
+**Pyxel** (/ˈpɪksəl/) — це ретро-ігровий движок для Python.
 
 Специфікації натхнені ретро-ігровими консолями, такими як підтримка лише 16 кольорів та 4 звукових канали, що дозволяє легко насолоджуватися створенням ігор у стилі піксельної графіки.
 

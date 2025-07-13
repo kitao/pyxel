@@ -9,7 +9,7 @@
 
 [ [English](README.md) | [中文](docs/README.cn.md) | [Deutsch](docs/README.de.md) | [Español](docs/README.es.md) | [Français](docs/README.fr.md) | [Italiano](docs/README.it.md) | [日本語](docs/README.ja.md) | [한국어](docs/README.ko.md) | [Português](docs/README.pt.md) | [Русский](docs/README.ru.md) | [Türkçe](docs/README.tr.md) | [Українська](docs/README.uk.md) ]
 
-**Pyxel** is a retro game engine for Python.
+**Pyxel** (/ˈpɪksəl/) is a retro game engine for Python.
 
 With simple specifications inspired by retro gaming consoles, such as displaying only 16 colors and supporting 4 sound channels, you can easily enjoy making pixel-art-style games.
 

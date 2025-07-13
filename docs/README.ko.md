@@ -9,7 +9,7 @@
 
 [ [English](../README.md) | [中文](README.cn.md) | [Deutsch](README.de.md) | [Español](README.es.md) | [Français](README.fr.md) | [Italiano](README.it.md) | [日本語](README.ja.md) | [한국어](README.ko.md) | [Português](README.pt.md) | [Русский](README.ru.md) | [Türkçe](README.tr.md) | [Українська](README.uk.md) ]
 
-**Pyxel**은 Python을 위한 복고풍 게임 엔진입니다.
+**Pyxel** (/ˈpɪksəl/) 은 Python을 위한 복고풍 게임 엔진입니다.
 
 사양은 복고풍 게임 콘솔에서 영감을 받아 16색만 지원하고 4개의 사운드 채널을 사용할 수 있어 픽셀 아트 스타일의 게임 제작을 쉽게 즐길 수 있습니다.
 
