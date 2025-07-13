@@ -6,6 +6,7 @@
 - Changed the note interpolation time to 1ms
 - Changed to fix the Pyxel version used by the app2html command
 - Updated the web usage instructions
+- Updated the sysinfo crate to version 0.36
 
 ## 2.4.5
 
