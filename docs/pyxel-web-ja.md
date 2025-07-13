@@ -17,7 +17,7 @@ Web 版 Pyxel の利用方法には、次の 3 種類があります。
 
 ## Pyxel Web Launcher に GitHub リポジトリを指定する
 
-Python コードや Pyxel アプリ (.pyxapp) が GitHub 上で公開されている場合、Pyxel Web Launcher を使用して直接実行できます。
+Python コードや Pyxel アプリ (.pyxapp) が GitHub 上で公開されている場合、Pyxel Web Launcher を使用して直接実行できます。Pyxel Web Launcher は常に最新版の Pyxel を参照します。
 
 Pyxel Web Launcher の URL 書式は以下の通りです。
 
@@ -69,7 +69,7 @@ https://kitao.github.io/pyxel/wasm/launcher/?run=taro.my_repo.assets.shooter&edi
 
 ## Pyxel アプリを HTML ファイルに変換する
 
-Pyxel アプリケーションファイル (.pyxapp) は、次のコマンドで単独で動作する HTML ファイルに変換できます。
+Pyxel アプリケーションファイル (.pyxapp) は、次のコマンドで単独で動作する HTML ファイルに変換できます。作成した HTML ファイルは、変換に使用したバージョンの Pyxel を参照します。
 
 ```sh
 pyxel app2html your_app.pyxapp
@@ -85,6 +85,12 @@ Pyxel カスタムタグを利用するには、以下のスクリプトタグ�
 
 ```html
 <script src="https://cdn.jsdelivr.net/gh/kitao/pyxel/wasm/pyxel.js"></script>
+```
+
+また、`@`の後にバージョン番号を指定することで、実行時に参照する Pyxel のバージョンを固定できます。将来のバージョンアップによる互換性の問題を避けたい場合は、バージョン番号を指定してください。
+
+```html
+<script src="https://cdn.jsdelivr.net/gh/kitao/pyxel@2.4.6/wasm/pyxel.js"></script>
 ```
 
 Python コードを直接実行するには、次のように`pyxel-run`タグの`script`属性にコードを記述します。
@@ -154,23 +160,3 @@ python -m http.server
 ```
 
 Pyxel を実行する HTML ファイルに`id="pyxel-screen"`の`<div>`タグを追加すると、その要素を Pyxel の画面として使用します。この`<div>`タグの位置やサイズを調整することで、Pyxel の画面の配置や大きさを変更できます。
-
-## Pyxel のバージョンを固定する　
-
-Web 版 Pyxel はサーバー上の最新版を参照しているため、今後のバージョンアップの内容次第で既存のコードが動作しなくなる可能性があります。
-
-この状況を防ぐには、HTML ファイル内で Pyxel のバージョンを指定し、参照するバージョンを固定してください。
-
-具体的には、Pyxel を読み込むコードで、
-
-```html
-<script src="https://cdn.jsdelivr.net/gh/kitao/pyxel@2.4/wasm/pyxel.js"></script>
-```
-
-や
-
-```html
-<script src="https://cdn.jsdelivr.net/gh/kitao/pyxel@2.4.6/wasm/pyxel.js"></script>
-```
-
-のように、固定したいバージョン番号を指定します。

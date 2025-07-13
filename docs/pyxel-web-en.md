@@ -17,7 +17,7 @@ Each method is explained below.
 
 ## Specify a GitHub Repository in Pyxel Web Launcher
 
-If your Python code or Pyxel app (.pyxapp) is published on GitHub, you can run it directly using Pyxel Web Launcher.
+If your Python code or Pyxel app (.pyxapp) is published on GitHub, you can run it directly using Pyxel Web Launcher. Pyxel Web Launcher always refers to the latest version of Pyxel.
 
 The URL format for Pyxel Web Launcher is as follows:
 
@@ -79,12 +79,18 @@ The generated HTML file has the virtual gamepad enabled by default, but you can 
 
 ## Create an HTML File Using Pyxel Custom Tags
 
-You can run a Pyxel app by writing Pyxel-specific custom tags in an HTML file.
+You can run a Pyxel app by writing Pyxel-specific custom tags in an HTML file. The generated HTML file will reference the version of Pyxel used during the conversion.
 
 To use Pyxel custom tags, add the following script tag to your HTML file:
 
 ```html
 <script src="https://cdn.jsdelivr.net/gh/kitao/pyxel/wasm/pyxel.js"></script>
+```
+
+You can fix the version of Pyxel referenced at runtime by specifying the version number after `@`. If you want to avoid compatibility issues caused by future updates, be sure to specify the version
+
+```html
+<script src="https://cdn.jsdelivr.net/gh/kitao/pyxel@2.4.6/wasm/pyxel.js"></script>
 ```
 
 To run Python code directly, specify the code in the script attribute of the `pyxel-run` tag, as shown below:
@@ -154,23 +160,3 @@ For example, to edit the `shooter.pyxres` file in the `assets` directory with th
 ```
 
 If you add a `<div>` tag with `id="pyxel-screen"` to an HTML file running Pyxel, that element will be used as the Pyxel screen. By adjusting the position and size of this `<div>` tag, you can change the placement and dimensions of the Pyxel screen.
-
-## Pinning the Pyxel Version
-
-By default, the web version of Pyxel always loads the latest version from the server, so future updates may cause your existing code to stop working.
-
-To prevent this, specify the Pyxel version in your HTML file to pin the version you want to use.
-
-For example, in your HTML code:
-
-```html
-<script src="https://cdn.jsdelivr.net/gh/kitao/pyxel@2.4/wasm/pyxel.js"></script>
-```
-
-or
-
-```html
-<script src="https://cdn.jsdelivr.net/gh/kitao/pyxel@2.4.6/wasm/pyxel.js"></script>
-```
-
-Specify the version number you want to pin in the URL as shown above.
