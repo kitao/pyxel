@@ -1,7 +1,7 @@
 use crate::channel::ChannelGain;
 use crate::image::{Color, Rgb24};
 use crate::keys::{Key, KEY_ESCAPE};
-use crate::sound::{SoundEffect, SoundNote, SoundSpeed, SoundTone, SoundVolume};
+use crate::sound::{SoundEffect, SoundSpeed, SoundTone, SoundVolume};
 use crate::tone::{ToneMode, ToneSample};
 
 // System
@@ -135,8 +135,6 @@ pub const EFFECT_FADEOUT: SoundEffect = 3;
 pub const EFFECT_HALF_FADEOUT: SoundEffect = 4;
 pub const EFFECT_QUARTER_FADEOUT: SoundEffect = 5;
 
-pub const MAX_TONE: SoundTone = 9;
-pub const MAX_NOTE: SoundNote = 12 * 5 - 1; // 5 octaves
 pub const MAX_VOLUME: SoundVolume = 7;
 pub const MAX_EFFECT: SoundEffect = 5;
 
