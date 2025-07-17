@@ -498,8 +498,6 @@ impl Voice {
     }
 
     fn reset_control_clock(&mut self) {
-        self.control_elapsed_clocks = 0;
-
         self.envelope.reset_tick();
         self.vibrato.reset_tick();
         self.glide.reset_tick();
