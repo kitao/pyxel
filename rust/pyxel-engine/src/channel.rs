@@ -147,7 +147,12 @@ impl Channel {
         should_loop: bool,
         should_resume: bool,
     ) {
-        if sounds.is_empty() {
+        if sounds.is_empty()
+            || sounds.iter().all(|sound| {
+                let sound = sound.lock();
+                sound.notes.is_empty() && sound.commands.is_empty()
+            })
+        {
             self.is_playing = false;
             return;
         }
