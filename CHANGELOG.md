@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.4.8
+
+- Fixed to not play when all sounds in the array are empty
+
 ## 2.4.7
 
 - Fixed a vibrato bug when the sound speed is low
