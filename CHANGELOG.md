@@ -3,6 +3,7 @@
 ## 2.4.8
 
 - Fixed to not play when all sounds in the array are empty
+- Added console output to the mml command in Pyxel Web Launcher
 
 ## 2.4.7
 

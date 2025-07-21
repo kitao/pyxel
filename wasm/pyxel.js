@@ -457,6 +457,7 @@ async function _executePyxelCommand(pyodide, params) {
                 channels = pyxel.channels.to_list()
                 channels.append(pyxel.Channel())
                 pyxel.channels.from_list(channels)
+            print(mml)
             pyxel.play(i, mml, loop=True)
             cw = pyxel.width // 4 - 2
             for i in range(0, len(mml), cw):
