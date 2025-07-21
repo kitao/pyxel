@@ -1,6 +1,33 @@
 {
   "entries": [
     {
+      "id": 152,
+      "title": "Hanafuda Tetris",
+      "site": "https://github.com/ninja-cop/hanafuda_tetris/blob/main/hanafuda_tetris_web.html",
+      "author": "saizo",
+      "contact": "https://github.com/ninja-cop",
+      "desc": "Match three Hanafuda cards of the same month",
+      "image": "https://github.com/user-attachments/assets/814c960e-914c-45f9-9179-bc654789d6fe"
+    },
+    {
+      "id": 151,
+      "title": "FAKE DOGMENTARY \"Q\"",
+      "site": "https://hotatecurry.github.io/fakedogmentaryq/fakedog.html",
+      "author": "hotate_curry",
+      "contact": "https://x.com/hotate__curry",
+      "desc": "Souls-like animal welfare action game",
+      "image": "https://github.com/user-attachments/assets/3c373c07-8461-4db5-bcfe-5318ff7386c4"
+    },
+    {
+      "id": 150,
+      "title": "Breakout",
+      "site": "https://github.com/jay-kumogata/PyxelChip8/tree/main/pyxel/breakout",
+      "author": "Jay Kumogata",
+      "contact": "https://x.com/jay_kumogata",
+      "desc": "Breakout game originally made for Chip8",
+      "image": "https://github.com/user-attachments/assets/2db6e4d8-03fc-4fc8-9804-69ed43266b05"
+    },
+    {
       "id": 149,
       "title": "Graffiti Cleanup Rush",
       "site": "https://github.com/LeoI52/graffiti-cleanup-rush",
