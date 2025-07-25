@@ -488,7 +488,11 @@ fn parse_note(stream: &mut CharStream, octave: i32, note_ticks: u32) -> Option<M
     let mut duration_ticks = parse_length_as_ticks(stream, note_ticks);
 
     while parse_string(stream, "&").is_ok() {
-        if let Some(MmlCommand::Note {
+        skip_whitespace(stream);
+        if stream.peek().unwrap_or(&'x').is_ascii_digit() {
+            duration_ticks += parse_length_as_ticks(stream, note_ticks);
+            continue;
+        } else if let Some(MmlCommand::Note {
             midi_note: next_note,
             duration_ticks: next_ticks,
         }) = parse_note(stream, octave, note_ticks)
