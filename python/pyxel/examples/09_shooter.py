@@ -257,12 +257,12 @@ class App:
 
         # Set play music
         a1 = "T150 Q96 @1 @ENV1{127,12,64} O4 L16"
-        a4 = "RR>CC<B->C8 D8.D8C<A8G&G1"
+        a4 = "RR>CC<B->C8 D8.D8C<A8G&1"
 
         b1 = "T150 Q96 @1 @ENV1{112,12,56} @ENV2{64,8,0} O4 L16 @ENV1 "
         b2 = "<B-8.A8.B-4>D8DDGB- A8.<A2R AA>CF G8.F8.G4.E-E-FG"
         b3 = "RRAAGA8 A8.A8GA8."
-        b4 = "RRAAGA8 A8.A8GD8 Q100 C&C4.<B4. @3 O7 @ENV2 FFFF"
+        b4 = "RRAAGA8 A8.A8GD8 Q100 C&4.<B4. @3 O7 @ENV2 FFFF"
 
         c1 = "T150 Q100 @0 V96 O3 L16 @GLI1{400,4} @GLI0 "
         c2 = "[<G.R32>DG]4 [<F.R32>CF]4 [<E-.R32B->E-]4"

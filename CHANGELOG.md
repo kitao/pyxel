@@ -3,6 +3,7 @@
 ## 2.4.9
 
 - Fixed dot note length bug in MML parser
+- Enabled tie notation with numbers only in MML
 
 ## 2.4.8
 
