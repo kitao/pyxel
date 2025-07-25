@@ -450,9 +450,11 @@ fn parse_length_as_ticks(stream: &mut CharStream, note_ticks: u32) -> u32 {
         }
     }
 
+    let mut dot_ticks = note_ticks;
     while parse_string(stream, ".").is_ok() {
-        if note_ticks % 2 == 0 {
-            note_ticks += note_ticks / 2;
+        if dot_ticks % 2 == 0 {
+            dot_ticks /= 2;
+            note_ticks += dot_ticks;
         } else {
             parse_error!(stream, "Cannot apply dot to odd note length");
         }
