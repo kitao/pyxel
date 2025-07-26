@@ -455,7 +455,7 @@ fn parse_note(stream: &mut CharStream, octave: i32, note_ticks: u32) -> Option<M
 
     while parse_string(stream, "&").is_ok() {
         skip_whitespace(stream);
-        if stream.peek().unwrap_or(&'x').is_ascii_digit() {
+        if stream.peek().unwrap_or(&'*').is_ascii_digit() {
             duration_ticks += parse_length_as_ticks(stream, note_ticks);
             continue;
         } else if let Some(MmlCommand::Note {
