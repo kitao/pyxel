@@ -152,7 +152,7 @@ The following commands are available in Pyxel's MML:
   Dotted note/rest. Extends the length by half. Can be repeated for multiple dots.
 
 - `&`<br>
-  Tie. Connects two notes of the same pitch into one. Using it between different pitches causes an error.
+  Tie. Connects two notes of the same pitch into one. Using it between different pitches causes an error. You can also omit the note and specify only the length, e.g., `4&16`.
 
 - `[`<br>
   Start of repeat section.

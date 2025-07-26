@@ -1,5 +1,10 @@
 # Change Log
 
+## 2.4.9
+
+- Fixed dot note length bug in MML parser
+- Enabled tie notation with numbers only in MML
+
 ## 2.4.8
 
 - Fixed to not play when all sounds in the array are empty
