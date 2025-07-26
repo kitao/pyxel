@@ -134,7 +134,7 @@ The following commands are available in Pyxel's MML:
   Lowers the octave by 1 (min -1).
 
 - `L <len>` (1-192)<br>
-  Sets the default note/rest length. L4 is a quarter note. Default is 4.
+  Sets the default note/rest length. L4 is a quarter note, L8 is an eighth note, and L12 is a quarter note triplet. Default is 4.
 
 - `C/D/E/F/G/A/B`<br>
   Plays the specified note. You can specify the length after the note, e.g., `F16`.
