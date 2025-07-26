@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.4.10
+
+- Fixed parameter commands ignored after repeat in MML
+
 ## 2.4.9
 
 - Fixed dot note length bug in MML parser
