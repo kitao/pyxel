@@ -1,6 +1,5 @@
 use crate::mml_command::MmlCommand;
 use crate::settings::{AUDIO_CLOCK_RATE, TICKS_PER_QUARTER_NOTE};
-use crate::sound::SoundTone;
 
 const RANGE_ALL: (i32, i32) = (i32::MIN, i32::MAX);
 const RANGE_GE0: (i32, i32) = (0, i32::MAX);
@@ -59,15 +58,15 @@ pub fn parse_mml(mml: &str) -> Vec<MmlCommand> {
     let mut octave: i32 = DEFAULT_OCTAVE;
     let mut note_ticks: u32 = TICKS_PER_QUARTER_NOTE * 4 / DEFAULT_LENGTH;
 
-    let mut last_tempo: Option<u32> = None;
-    let mut last_quantize: Option<u32> = None;
-    let mut last_tone: Option<SoundTone> = None;
-    let mut last_volume: Option<u32> = None;
-    let mut last_transpose: Option<i32> = None;
-    let mut last_detune: Option<i32> = None;
-    let mut last_envelope: Option<u32> = None;
-    let mut last_vibrato: Option<u32> = None;
-    let mut last_glide: Option<u32> = None;
+    let mut is_tempo_set: bool = false;
+    let mut is_quantize_set: bool = false;
+    let mut is_tone_set: bool = false;
+    let mut is_volume_set: bool = false;
+    let mut is_transpose_set: bool = false;
+    let mut is_detune_set: bool = false;
+    let mut is_envelope_set: bool = false;
+    let mut is_vibrato_set: bool = false;
+    let mut is_glide_set: bool = false;
 
     // Parse MML commands
     while stream.peek().is_some() {
@@ -75,102 +74,69 @@ pub fn parse_mml(mml: &str) -> Vec<MmlCommand> {
             //
             // T<bpm> - Set tempo (bpm >= 1)
             //
-            if last_tempo.is_none() || bpm != last_tempo.unwrap() {
-                last_tempo = Some(bpm);
-                commands.push(MmlCommand::Tempo {
-                    clocks_per_tick: bpm_to_cpt(bpm),
-                });
-            }
+            is_tempo_set = true;
+            commands.push(MmlCommand::Tempo {
+                clocks_per_tick: bpm_to_cpt(bpm),
+            });
         } else if let Some(gate_time) = parse_command(&mut stream, "Q", RANGE_QUANTIZE) {
             //
             // Q<gate_percent> - Set quantize gate time (0 <= gate_percent <= 100)
             //
-            if last_quantize.is_none() || gate_time != last_quantize.unwrap() {
-                last_quantize = Some(gate_time);
-                commands.push(MmlCommand::Quantize {
-                    gate_ratio: gate_time_to_gate_ratio(gate_time),
-                });
-            }
+            is_quantize_set = true;
+            commands.push(MmlCommand::Quantize {
+                gate_ratio: gate_time_to_gate_ratio(gate_time),
+            });
         } else if let Some(vol) = parse_command(&mut stream, "V", RANGE_VOLUME) {
             //
             // V<vol> - Set volume level (0 <= vol <= 127)
             //
-            if last_volume.is_none() || vol != last_volume.unwrap() {
-                last_volume = Some(vol);
-                commands.push(MmlCommand::Volume {
-                    level: volume_to_level(vol),
-                });
-            }
-        } else if let Some(key_offset) = parse_command(&mut stream, "K", RANGE_ALL) {
+            is_volume_set = true;
+            commands.push(MmlCommand::Volume {
+                level: volume_to_level(vol),
+            });
+        } else if let Some(key_offset) = parse_command::<i32>(&mut stream, "K", RANGE_ALL) {
             //
             // K<key_offset> - Transpose key in semitones
             //
-            if last_transpose.is_none() || key_offset != last_transpose.unwrap() {
-                last_transpose = Some(key_offset);
-                commands.push(MmlCommand::Transpose {
-                    semitone_offset: key_offset as f32,
-                });
-            }
+            is_transpose_set = true;
+            commands.push(MmlCommand::Transpose {
+                semitone_offset: key_offset as f32,
+            });
         } else if let Some(offset_cents) = parse_command(&mut stream, "Y", RANGE_ALL) {
             //
             // Y<offset_cents> - Set detune in cents
             //
-            if last_detune.is_none() || offset_cents != last_detune.unwrap() {
-                last_detune = Some(offset_cents);
-                commands.push(MmlCommand::Detune {
-                    semitone_offset: cents_to_semitones(offset_cents),
-                });
-            }
+            is_detune_set = true;
+            commands.push(MmlCommand::Detune {
+                semitone_offset: cents_to_semitones(offset_cents),
+            });
         } else if let Some(command) = parse_envelope(&mut stream) {
             //
             // @ENV<slot> - Switch to envelope slot (slot >= 0, 0 = off)
             // @ENV<slot> { init_vol, dur_ticks1, vol1, ... } - Define envelope and switch to slot
             //
-            if let MmlCommand::Envelope { slot } = &command {
-                if last_envelope.is_none() || last_envelope.unwrap() != *slot {
-                    last_envelope = Some(*slot);
-                    commands.push(command);
-                }
-            } else if let MmlCommand::EnvelopeSet { slot, .. } = &command {
-                last_envelope = Some(*slot);
-                commands.push(command);
-            }
+            is_envelope_set = true;
+            commands.push(command);
         } else if let Some(command) = parse_vibrato(&mut stream) {
             //
             // @VIB<slot> - Switch to vibrato slot (slot >= 0, 0 = off)
             // @VIB<slot> { delay_ticks, period_ticks, depth_cents } - Define vibrato and switch to slot
             //
-            if let MmlCommand::Vibrato { slot } = &command {
-                if last_vibrato.is_none() || last_vibrato.unwrap() != *slot {
-                    last_vibrato = Some(*slot);
-                    commands.push(command);
-                }
-            } else if let MmlCommand::VibratoSet { slot, .. } = &command {
-                last_vibrato = Some(*slot);
-                commands.push(command);
-            }
+            is_vibrato_set = true;
+            commands.push(command);
         } else if let Some(command) = parse_glide(&mut stream) {
             //
             // @GLI<slot> - Switch to glide slot (slot >= 0, 0 = off)
             // @GLI<slot> { offset_cents, dur_ticks } - Define glide and switch to slot
             //
-            if let MmlCommand::Glide { slot } = &command {
-                if last_glide.is_none() || last_glide.unwrap() != *slot {
-                    last_glide = Some(*slot);
-                    commands.push(command);
-                }
-            } else if let MmlCommand::GlideSet { slot, .. } = &command {
-                last_glide = Some(*slot);
-                commands.push(command);
-            }
+            is_glide_set = true;
+            commands.push(command);
         } else if let Some(tone) = parse_command(&mut stream, "@", RANGE_GE0) {
             //
             // @<tone> - Set tone (tone >= 0)
             //
-            if last_tone.is_none() || tone != last_tone.unwrap() {
-                last_tone = Some(tone);
-                commands.push(MmlCommand::Tone { tone });
-            }
+            is_tone_set = true;
+            commands.push(MmlCommand::Tone { tone });
         } else if let Some(oct) = parse_command(&mut stream, "O", RANGE_OCTAVE) {
             //
             // O<oct> - Set octave (-1 <= oct <= 9)
@@ -203,50 +169,50 @@ pub fn parse_mml(mml: &str) -> Vec<MmlCommand> {
             //
             // C/D/E/F/G/A/B[#+-][<len>][.] - Play note (1 <= len <= 192)
             //
-            if last_tempo.is_none() {
-                last_tempo = Some(DEFAULT_TEMPO);
+            if !is_tempo_set {
+                is_tempo_set = true;
                 commands.push(MmlCommand::Tempo {
                     clocks_per_tick: bpm_to_cpt(DEFAULT_TEMPO),
                 });
             }
-            if last_quantize.is_none() {
-                last_quantize = Some(DEFAULT_QUANTIZE);
+            if !is_quantize_set {
+                is_quantize_set = true;
                 commands.push(MmlCommand::Quantize {
                     gate_ratio: gate_time_to_gate_ratio(DEFAULT_QUANTIZE),
                 });
             }
-            if last_tone.is_none() {
-                last_tone = Some(0);
+            if !is_tone_set {
+                is_tone_set = true;
                 commands.push(MmlCommand::Tone { tone: 0 });
             }
-            if last_volume.is_none() {
-                last_volume = Some(DEFAULT_VOLUME);
+            if !is_volume_set {
+                is_volume_set = true;
                 commands.push(MmlCommand::Volume {
                     level: volume_to_level(DEFAULT_VOLUME),
                 });
             }
-            if last_transpose.is_none() {
-                last_transpose = Some(0);
+            if !is_transpose_set {
+                is_transpose_set = true;
                 commands.push(MmlCommand::Transpose {
                     semitone_offset: 0.0,
                 });
             }
-            if last_detune.is_none() {
-                last_detune = Some(0);
+            if !is_detune_set {
+                is_detune_set = true;
                 commands.push(MmlCommand::Detune {
                     semitone_offset: 0.0,
                 });
             }
-            if last_envelope.is_none() {
-                last_envelope = Some(0);
+            if !is_envelope_set {
+                is_envelope_set = true;
                 commands.push(MmlCommand::Envelope { slot: 0 });
             }
-            if last_vibrato.is_none() {
-                last_vibrato = Some(0);
+            if !is_vibrato_set {
+                is_vibrato_set = true;
                 commands.push(MmlCommand::Vibrato { slot: 0 });
             }
-            if last_glide.is_none() {
-                last_glide = Some(0);
+            if !is_glide_set {
+                is_glide_set = true;
                 commands.push(MmlCommand::Glide { slot: 0 });
             }
 
@@ -255,8 +221,8 @@ pub fn parse_mml(mml: &str) -> Vec<MmlCommand> {
             //
             // R[<len>][.] - Rest (1 <= len <= 192)
             //
-            if last_tempo.is_none() {
-                last_tempo = Some(DEFAULT_TEMPO);
+            if !is_tempo_set {
+                is_tempo_set = true;
                 commands.push(MmlCommand::Tempo {
                     clocks_per_tick: bpm_to_cpt(DEFAULT_TEMPO),
                 });
@@ -489,7 +455,7 @@ fn parse_note(stream: &mut CharStream, octave: i32, note_ticks: u32) -> Option<M
 
     while parse_string(stream, "&").is_ok() {
         skip_whitespace(stream);
-        if stream.peek().unwrap_or(&'x').is_ascii_digit() {
+        if stream.peek().unwrap_or(&'*').is_ascii_digit() {
             duration_ticks += parse_length_as_ticks(stream, note_ticks);
             continue;
         } else if let Some(MmlCommand::Note {
