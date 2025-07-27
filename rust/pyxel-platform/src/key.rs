@@ -4,6 +4,7 @@ pub type Key = u32;
 pub type KeyValue = i32;
 
 // Keyboard (https://wiki.libsdl.org/SDL2/SDLKeycodeLookup)
+pub const KEY_UNKNOWN: Key = 0x00;
 pub const KEY_BACKSPACE: Key = 0x08;
 pub const KEY_TAB: Key = 0x09;
 pub const KEY_RETURN: Key = 0x0D;
