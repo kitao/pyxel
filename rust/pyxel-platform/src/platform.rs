@@ -3,6 +3,9 @@ use glow::Context;
 use crate::event::Event;
 use crate::sdl2::platform_sdl2::PlatformSdl2;
 
+pub type AudioCallback = Box<dyn FnMut(&mut [i16]) + Send>;
+pub type LoopCallback = Box<dyn FnMut() + Send>;
+
 pub enum GlProfile {
     None,
     GL,
@@ -31,20 +34,16 @@ pub trait Platform {
     fn display_size(&mut self) -> (u32, u32);
 
     // Audio
-    fn init_audio(
-        &mut self,
-        sample_rate: u32,
-        buffer_size: u32,
-        callback: Box<dyn FnMut(&mut [i16]) + Send>,
-    );
+    fn init_audio(&mut self, sample_rate: u32, buffer_size: u32, callback: AudioCallback);
     fn pause_audio(&mut self, paused: bool);
 
     // Frame
-    fn start_loop(&mut self, callback: Box<dyn FnMut() + Send>);
+    fn start_loop(&mut self, callback: LoopCallback);
     fn step_loop(&mut self);
     fn poll_events(&mut self) -> Vec<Event>;
     fn gl_profile(&mut self) -> GlProfile;
-    fn gl_context(&mut self) -> Context;
+    fn gl_context(&mut self) -> &'static mut Context;
+    fn gl_swap_buffers(&mut self);
 }
 
 static mut PLATFORM: Option<Box<dyn Platform>> = None;
@@ -67,7 +66,7 @@ pub fn init() {
 }
 
 pub fn quit() {
-    platform().quit()
+    platform().quit();
 }
 
 pub fn ticks() -> u32 {
@@ -125,10 +124,14 @@ pub fn set_mouse_visible(visible: bool) {
     platform().set_mouse_visible(visible);
 }
 
+pub fn display_size() -> (u32, u32) {
+    platform().display_size()
+}
+
 //
 // Audio
 //
-pub fn init_audio(sample_rate: u32, buffer_size: u32, callback: Box<dyn FnMut(&mut [i16]) + Send>) {
+pub fn init_audio(sample_rate: u32, buffer_size: u32, callback: AudioCallback) {
     platform().init_audio(sample_rate, buffer_size, callback);
 }
 
@@ -155,6 +158,10 @@ pub fn gl_profile() -> GlProfile {
     platform().gl_profile()
 }
 
-pub fn gl_context() -> Context {
+pub fn gl_context() -> &'static mut Context {
     platform().gl_context()
+}
+
+pub fn gl_swap_buffers() {
+    platform().gl_swap_buffers();
 }
