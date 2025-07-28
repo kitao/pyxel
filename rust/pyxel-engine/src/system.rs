@@ -138,17 +138,8 @@ impl Pyxel {
             for _sy in 0..scale {
                 for x in 0..width {
                     let color = image_data[(width * y + x) as usize];
-                    let rgb = colors[color as usize];
-                    let r = (rgb >> 16) as u8;
-                    let g = (rgb >> 8) as u8;
-                    let b = rgb as u8;
-                    let a = if Some(color) == transparent {
-                        0x00
-                    } else {
-                        0xff
-                    };
-                    let pixel: u32 =
-                        ((r as u32) << 24) | ((g as u32) << 16) | ((b as u32) << 8) | (a as u32);
+                    let pixel = (colors[color as usize] << 8)
+                        + if Some(color) == transparent { 0 } else { 0xff };
                     for _sx in 0..scale {
                         pixels.push(pixel);
                     }

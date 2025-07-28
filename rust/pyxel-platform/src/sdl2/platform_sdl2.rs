@@ -1,8 +1,9 @@
 use std::ffi::CString;
 use std::mem::{transmute, MaybeUninit};
 use std::os::raw::{c_int, c_void};
+use std::process::exit;
 use std::ptr::{addr_of_mut, copy_nonoverlapping, null_mut};
-use std::slice;
+use std::slice::from_raw_parts_mut;
 
 use glow::Context;
 use parking_lot::Mutex;
@@ -12,13 +13,8 @@ use crate::sdl2::poll_events::Gamepad;
 use crate::sdl2::sdl2_sys::*;
 
 extern "C" fn c_audio_callback(userdata: *mut c_void, stream: *mut u8, len: c_int) {
-    unsafe {
-        stream.cast::<i16>().write_bytes(0, len as usize / 2);
-    }
-    return;
     let callback = unsafe { &mut *userdata.cast::<Mutex<Box<dyn FnMut(&mut [i16])>>>() };
-    let stream: &mut [i16] =
-        unsafe { slice::from_raw_parts_mut(stream.cast::<i16>(), len as usize / 2) };
+    let stream: &mut [i16] = unsafe { from_raw_parts_mut(stream.cast::<i16>(), len as usize / 2) };
     let mut guard = callback.lock();
     (*guard)(stream);
 }
@@ -63,6 +59,7 @@ impl PlatformSdl2 {
         unsafe {
             SDL_Quit();
         }
+        exit(0);
     }
 
     pub fn ticks(&self) -> u32 {
@@ -168,7 +165,7 @@ impl PlatformSdl2 {
                 width as i32,
                 height as i32,
                 32,
-                SDL_PIXELFORMAT_RGBA32 as Uint32,
+                SDL_PIXELFORMAT_ABGR32 as Uint32,
             );
 
             let dst_pixels = (*surface).pixels.cast::<u32>();
@@ -245,7 +242,10 @@ impl PlatformSdl2 {
         buffer_size: u32,
         callback: F,
     ) {
-        let userdata = Box::into_raw(Box::new(Mutex::new(callback))).cast::<c_void>();
+        let userdata = Box::into_raw(Box::new(Mutex::new(
+            Box::new(callback) as Box<dyn FnMut(&mut [i16])>
+        )))
+        .cast::<c_void>();
         let desired = SDL_AudioSpec {
             freq: sample_rate as i32,
             format: AUDIO_S16 as u16,
@@ -273,7 +273,7 @@ impl PlatformSdl2 {
     pub fn pause_audio(&mut self, paused: bool) {
         if self.audio_device_id != 0 {
             unsafe {
-                SDL_PauseAudioDevice(self.audio_device_id, i32::from(paused));
+                SDL_PauseAudioDevice(self.audio_device_id, paused as i32);
             }
         }
     }
