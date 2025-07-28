@@ -22,10 +22,10 @@ impl Audio {
         pyxel_platform::init_audio(
             AUDIO_SAMPLE_RATE,
             AUDIO_BUFFER_SIZE,
-            Box::new(move |out: &mut [i16]| {
+            move |out: &mut [i16]| {
                 let channels = CHANNELS.lock();
                 Self::render_samples(&channels, &mut blip_buf, out);
-            }),
+            },
         );
 
         Self {}
