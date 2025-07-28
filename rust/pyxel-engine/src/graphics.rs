@@ -41,7 +41,7 @@ pub struct Graphics {
 impl Graphics {
     pub fn new() -> Self {
         unsafe {
-            let gl = pyxel_platform::glow_context();
+            let gl = pyxel_platform::gl_context();
             gl.disable(glow::FRAMEBUFFER_SRGB);
             gl.disable(glow::BLEND);
 
@@ -58,7 +58,7 @@ impl Graphics {
     }
 
     unsafe fn create_screen_shaders(gl: &mut glow::Context) -> Vec<ScreenShader> {
-        let glsl_version = if pyxel_platform::is_gles_enabled() {
+        let glsl_version = if pyxel_platform::gl_profile() == pyxel_platform::GlProfile::GLES {
             GLES_VERSION
         } else {
             GL_VERSION
@@ -357,13 +357,13 @@ impl Pyxel {
 
     pub(crate) fn render_screen(&mut self) {
         unsafe {
-            let gl = pyxel_platform::glow_context();
+            let gl = pyxel_platform::gl_context();
             self.set_viewport(gl);
             self.use_screen_shader(gl);
             self.bind_screen_texture(gl);
             self.bind_colors_texture(gl);
             gl.draw_arrays(glow::TRIANGLE_STRIP, 0, 4);
-            pyxel_platform::swap_window();
+            pyxel_platform::gl_swap_buffers();
         }
     }
 
@@ -430,7 +430,7 @@ impl Pyxel {
         gl.bind_texture(glow::TEXTURE_2D, Some(self.graphics.screen_texture));
         gl.pixel_store_i32(glow::UNPACK_ALIGNMENT, 1);
 
-        let texture_format = if pyxel_platform::is_gles_enabled() {
+        let texture_format = if pyxel_platform::gl_profile() == pyxel_platform::GlProfile::GLES {
             glow::LUMINANCE
         } else {
             glow::RED

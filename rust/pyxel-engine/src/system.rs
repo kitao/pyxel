@@ -2,7 +2,7 @@ use cfg_if::cfg_if;
 use pyxel_platform::Event;
 
 use crate::image::{Color, Image, SharedImage};
-use crate::keys::{
+use crate::key::{
     Key, GAMEPAD1_BUTTON_A, GAMEPAD1_BUTTON_B, GAMEPAD1_BUTTON_DPAD_DOWN,
     GAMEPAD1_BUTTON_DPAD_LEFT, GAMEPAD1_BUTTON_DPAD_RIGHT, GAMEPAD1_BUTTON_DPAD_UP,
     GAMEPAD1_BUTTON_X, GAMEPAD1_BUTTON_Y, KEY_0, KEY_1, KEY_2, KEY_3, KEY_8, KEY_9, KEY_ALT,
@@ -59,7 +59,7 @@ impl System {
 
 impl Pyxel {
     pub fn run<T: PyxelCallback>(&mut self, mut callback: T) {
-        pyxel_platform::run(move || {
+        pyxel_platform::start_loop(move || {
             self.process_frame(&mut callback);
         });
     }
@@ -132,8 +132,7 @@ impl Pyxel {
         let image_data = &image.canvas.data;
         let scaled_width = width * scale;
         let scaled_height = height * scale;
-        let mut rgba_data: Vec<u8> =
-            Vec::with_capacity((scaled_width * scaled_height * 4) as usize);
+        let mut pixels: Vec<u32> = Vec::with_capacity((scaled_width * scaled_height) as usize);
 
         for y in 0..height {
             for _sy in 0..scale {
@@ -148,17 +147,16 @@ impl Pyxel {
                     } else {
                         0xff
                     };
+                    let pixel: u32 =
+                        ((r as u32) << 24) | ((g as u32) << 16) | ((b as u32) << 8) | (a as u32);
                     for _sx in 0..scale {
-                        rgba_data.push(r);
-                        rgba_data.push(g);
-                        rgba_data.push(b);
-                        rgba_data.push(a);
+                        pixels.push(pixel);
                     }
                 }
             }
         }
 
-        pyxel_platform::set_window_icon(scaled_width, scaled_height, &rgba_data);
+        pyxel_platform::set_window_icon(scaled_width, scaled_height, &pixels);
     }
 
     pub fn perf_monitor(&mut self, enabled: bool) {
@@ -185,11 +183,11 @@ impl Pyxel {
             match event {
                 Event::WindowShown => {
                     self.system.paused = false;
-                    pyxel_platform::set_audio_enabled(true);
+                    pyxel_platform::pause_audio(false);
                 }
                 Event::WindowHidden => {
                     self.system.paused = true;
-                    pyxel_platform::set_audio_enabled(false);
+                    pyxel_platform::pause_audio(true);
                 }
                 Event::KeyPressed { key } => {
                     self.press_key(key);
@@ -301,9 +299,7 @@ impl Pyxel {
     }
 
     fn update_frame(&mut self, callback: Option<&mut dyn PyxelCallback>) {
-        self.system
-            .update_profiler
-            .start(pyxel_platform::elapsed_time());
+        self.system.update_profiler.start(pyxel_platform::ticks());
 
         self.process_events();
 
@@ -315,9 +311,7 @@ impl Pyxel {
 
         if let Some(callback) = callback {
             callback.update(self);
-            self.system
-                .update_profiler
-                .end(pyxel_platform::elapsed_time());
+            self.system.update_profiler.end(pyxel_platform::ticks());
         }
     }
 
@@ -411,9 +405,7 @@ impl Pyxel {
             return;
         }
 
-        self.system
-            .draw_profiler
-            .start(pyxel_platform::elapsed_time());
+        self.system.draw_profiler.start(pyxel_platform::ticks());
 
         if let Some(callback) = callback {
             callback.draw(self);
@@ -425,13 +417,11 @@ impl Pyxel {
         self.render_screen();
         self.capture_screen();
 
-        self.system
-            .draw_profiler
-            .end(pyxel_platform::elapsed_time());
+        self.system.draw_profiler.end(pyxel_platform::ticks());
     }
 
     fn process_frame(&mut self, callback: &mut dyn PyxelCallback) {
-        let tick_count = pyxel_platform::elapsed_time();
+        let tick_count = pyxel_platform::ticks();
         let elapsed_ms = tick_count as f32 - self.system.next_update_ms;
 
         if elapsed_ms < 0.0 {
@@ -449,7 +439,7 @@ impl Pyxel {
             if elapsed_ms > MAX_ELAPSED_MS as f32 {
                 update_count = 1;
                 self.system.next_update_ms =
-                    pyxel_platform::elapsed_time() as f32 + self.system.one_frame_ms;
+                    pyxel_platform::ticks() as f32 + self.system.one_frame_ms;
             } else {
                 update_count = (elapsed_ms / self.system.one_frame_ms) as u32 + 1;
                 self.system.next_update_ms += self.system.one_frame_ms * update_count as f32;
@@ -469,9 +459,7 @@ impl Pyxel {
 
     #[cfg(not(target_os = "emscripten"))]
     fn process_frame_for_flip(&mut self) {
-        self.system
-            .update_profiler
-            .end(pyxel_platform::elapsed_time());
+        self.system.update_profiler.end(pyxel_platform::ticks());
 
         self.update_screen_params();
         self.draw_frame(None);
@@ -481,13 +469,13 @@ impl Pyxel {
         let mut elapsed_ms;
 
         loop {
-            tick_count = pyxel_platform::elapsed_time();
+            tick_count = pyxel_platform::ticks();
             elapsed_ms = tick_count as f32 - self.system.next_update_ms;
 
-            let wait_ms = self.system.next_update_ms - pyxel_platform::elapsed_time() as f32;
+            let wait_ms = self.system.next_update_ms - pyxel_platform::ticks() as f32;
 
             if wait_ms > 0.0 {
-                pyxel_platform::sleep((wait_ms / 2.0) as u32);
+                pyxel_platform::delay((wait_ms / 2.0) as u32);
             } else {
                 break;
             }
@@ -497,8 +485,7 @@ impl Pyxel {
         self.system.fps_profiler.start(tick_count);
 
         if elapsed_ms > MAX_ELAPSED_MS as f32 {
-            self.system.next_update_ms =
-                pyxel_platform::elapsed_time() as f32 + self.system.one_frame_ms;
+            self.system.next_update_ms = pyxel_platform::ticks() as f32 + self.system.one_frame_ms;
         } else {
             self.system.next_update_ms += self.system.one_frame_ms;
         }

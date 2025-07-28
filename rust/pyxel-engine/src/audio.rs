@@ -12,28 +12,22 @@ use crate::pyxel::{Pyxel, CHANNELS};
 use crate::settings::{AUDIO_BUFFER_SIZE, AUDIO_CLOCK_RATE, AUDIO_SAMPLE_RATE};
 use crate::utils;
 
-struct AudioCore {
-    blip_buf: BlipBuf,
-}
-
-impl pyxel_platform::AudioCallback for AudioCore {
-    fn update(&mut self, out: &mut [i16]) {
-        let channels = CHANNELS.lock();
-        Audio::render_samples(&channels, &mut self.blip_buf, out);
-    }
-}
-
 pub struct Audio {}
 
 impl Audio {
     pub fn new() -> Self {
         let mut blip_buf = BlipBuf::new(AUDIO_BUFFER_SIZE);
         blip_buf.set_rates(AUDIO_CLOCK_RATE as f64, AUDIO_SAMPLE_RATE as f64);
-        pyxel_platform::start_audio(
+
+        pyxel_platform::init_audio(
             AUDIO_SAMPLE_RATE,
             AUDIO_BUFFER_SIZE,
-            new_shared_type!(AudioCore { blip_buf }),
+            Box::new(move |out: &mut [i16]| {
+                let channels = CHANNELS.lock();
+                Self::render_samples(&channels, &mut blip_buf, out);
+            }),
         );
+
         Self {}
     }
 

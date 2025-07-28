@@ -8,6 +8,7 @@
     clippy::must_use_candidate,
     clippy::too_many_lines,
     clippy::unreadable_literal,
+    clippy::unused_self,
     clippy::wildcard_imports
 )]
 
@@ -25,5 +26,5 @@ pub use platform::{
     delay, display_size, gl_context, gl_profile, gl_swap_buffers, init, init_audio, init_window,
     is_fullscreen, pause_audio, poll_events, quit, set_fullscreen, set_mouse_pos,
     set_mouse_visible, set_window_icon, set_window_pos, set_window_size, set_window_title,
-    start_loop, step_loop, ticks, window_pos, window_size, AudioCallback, GlProfile, LoopCallback,
+    start_loop, step_loop, ticks, window_pos, window_size, GlProfile,
 };

@@ -1,67 +1,36 @@
+use std::mem::transmute;
+use std::ptr::null_mut;
+
 use glow::Context;
 
 use crate::event::Event;
 use crate::sdl2::platform_sdl2::PlatformSdl2;
 
-pub type AudioCallback = Box<dyn FnMut(&mut [i16]) + Send>;
-pub type LoopCallback = Box<dyn FnMut() + Send>;
-
+#[derive(PartialEq)]
 pub enum GlProfile {
     None,
     GL,
     GLES,
 }
 
-pub trait Platform {
-    // Core
-    fn init(&mut self);
-    fn quit(&mut self);
-    fn ticks(&mut self) -> u32;
-    fn delay(&mut self, ms: u32);
+type Platform = PlatformSdl2;
 
-    // Window
-    fn init_window(&mut self, title: &str, width: u32, height: u32);
-    fn window_pos(&mut self) -> (i32, i32);
-    fn set_window_pos(&mut self, x: i32, y: i32);
-    fn window_size(&mut self) -> (u32, u32);
-    fn set_window_size(&mut self, width: u32, height: u32);
-    fn set_window_title(&mut self, title: &str);
-    fn set_window_icon(&mut self, width: u32, height: u32, pixels: &[u32]);
-    fn is_fullscreen(&mut self) -> bool;
-    fn set_fullscreen(&mut self, enabled: bool);
-    fn set_mouse_pos(&mut self, x: i32, y: i32);
-    fn set_mouse_visible(&mut self, visible: bool);
-    fn display_size(&mut self) -> (u32, u32);
+static mut PLATFORM: *mut Platform = null_mut();
 
-    // Audio
-    fn init_audio(&mut self, sample_rate: u32, buffer_size: u32, callback: AudioCallback);
-    fn pause_audio(&mut self, paused: bool);
-
-    // Frame
-    fn start_loop(&mut self, callback: LoopCallback);
-    fn step_loop(&mut self);
-    fn poll_events(&mut self) -> Vec<Event>;
-    fn gl_profile(&mut self) -> GlProfile;
-    fn gl_context(&mut self) -> &'static mut Context;
-    fn gl_swap_buffers(&mut self);
-}
-
-static mut PLATFORM: Option<Box<dyn Platform>> = None;
-
-fn platform() -> &'static mut dyn Platform {
-    unsafe { PLATFORM.as_mut().unwrap().as_mut() }
+pub fn platform() -> &'static mut Platform {
+    unsafe { &mut *PLATFORM }
 }
 
 //
 // Core
 //
 pub fn init() {
-    let mut platform = PlatformSdl2::new();
+    let mut platform = Platform::new();
 
     platform.init();
 
     unsafe {
-        PLATFORM = Some(Box::new(platform));
+        PLATFORM = transmute::<Box<Platform>, *mut Platform>(Box::new(platform));
     }
 }
 
@@ -131,7 +100,7 @@ pub fn display_size() -> (u32, u32) {
 //
 // Audio
 //
-pub fn init_audio(sample_rate: u32, buffer_size: u32, callback: AudioCallback) {
+pub fn init_audio<F: FnMut(&mut [i16]) + 'static>(sample_rate: u32, buffer_size: u32, callback: F) {
     platform().init_audio(sample_rate, buffer_size, callback);
 }
 
@@ -142,7 +111,7 @@ pub fn pause_audio(paused: bool) {
 //
 // Frame
 //
-pub fn start_loop(callback: Box<dyn FnMut() + Send>) {
+pub fn start_loop<F: FnMut()>(callback: F) {
     platform().start_loop(callback);
 }
 

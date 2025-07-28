@@ -15,11 +15,28 @@ use crate::key::{
     MOUSE_BUTTON_LEFT, MOUSE_BUTTON_MIDDLE, MOUSE_BUTTON_RIGHT, MOUSE_BUTTON_X1, MOUSE_BUTTON_X2,
     MOUSE_POS_X, MOUSE_POS_Y, MOUSE_WHEEL_X, MOUSE_WHEEL_Y,
 };
-use crate::sdl2::platform_sdl2::{open_gamepad, Gamepad, PlatformSdl2};
+use crate::sdl2::platform_sdl2::PlatformSdl2;
 use crate::sdl2::sdl2_sys::*;
 
+pub enum Gamepad {
+    Unused,
+    Controller(i32, *mut SDL_GameController),
+}
+
+impl Gamepad {
+    pub fn open(device_index: i32) -> Option<Gamepad> {
+        let controller = unsafe { SDL_GameControllerOpen(device_index) };
+        if controller.is_null() {
+            None
+        } else {
+            let instance_id = unsafe { SDL_JoystickGetDeviceInstanceID(device_index) };
+            Some(Gamepad::Controller(instance_id, controller))
+        }
+    }
+}
+
 impl PlatformSdl2 {
-    pub fn poll_events_impl(&mut self) -> Vec<Event> {
+    pub fn poll_events(&mut self) -> Vec<Event> {
         let mut pyxel_events = Vec::new();
         let mut sdl_event: SDL_Event = unsafe { zeroed() };
 
@@ -140,7 +157,7 @@ impl PlatformSdl2 {
                 //
                 SDL_CONTROLLERDEVICEADDED => {
                     let device_index = unsafe { sdl_event.cdevice.which };
-                    if let Some(gamepad) = open_gamepad(device_index) {
+                    if let Some(gamepad) = Gamepad::open(device_index) {
                         let unused_gamepad = self
                             .gamepads
                             .iter_mut()

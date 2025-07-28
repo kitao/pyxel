@@ -7,21 +7,20 @@ use std::slice;
 use glow::Context;
 use parking_lot::Mutex;
 
-use crate::event::Event;
-use crate::platform::{AudioCallback, GlProfile, LoopCallback, Platform};
+use crate::platform::GlProfile;
+use crate::sdl2::poll_events::Gamepad;
 use crate::sdl2::sdl2_sys::*;
 
 extern "C" fn c_audio_callback(userdata: *mut c_void, stream: *mut u8, len: c_int) {
-    let callback = unsafe { &mut *userdata.cast::<Mutex<AudioCallback>>() };
+    unsafe {
+        stream.cast::<i16>().write_bytes(0, len as usize / 2);
+    }
+    return;
+    let callback = unsafe { &mut *userdata.cast::<Mutex<Box<dyn FnMut(&mut [i16])>>>() };
     let stream: &mut [i16] =
         unsafe { slice::from_raw_parts_mut(stream.cast::<i16>(), len as usize / 2) };
     let mut guard = callback.lock();
     (*guard)(stream);
-}
-
-pub enum Gamepad {
-    Unused,
-    Controller(i32, *mut SDL_GameController),
 }
 
 pub(crate) struct PlatformSdl2 {
@@ -44,13 +43,11 @@ impl PlatformSdl2 {
             gamepads: Vec::new(),
         }
     }
-}
 
-impl Platform for PlatformSdl2 {
     //
     // Core
     //
-    fn init(&mut self) {
+    pub fn init(&mut self) {
         assert!(
             unsafe { SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMECONTROLLER,) } >= 0,
             "Failed to initialize SDL2"
@@ -59,20 +56,20 @@ impl Platform for PlatformSdl2 {
         self.gamepads.clear();
         let num_joysticks = unsafe { SDL_NumJoysticks() };
         self.gamepads
-            .extend((0..num_joysticks).filter_map(open_gamepad));
+            .extend((0..num_joysticks).filter_map(Gamepad::open));
     }
 
-    fn quit(&mut self) {
+    pub fn quit(&mut self) {
         unsafe {
             SDL_Quit();
         }
     }
 
-    fn ticks(&mut self) -> u32 {
+    pub fn ticks(&self) -> u32 {
         unsafe { SDL_GetTicks() }
     }
 
-    fn delay(&mut self, ms: u32) {
+    pub fn delay(&self, ms: u32) {
         unsafe {
             SDL_Delay(ms);
         }
@@ -81,7 +78,7 @@ impl Platform for PlatformSdl2 {
     //
     // Window
     //
-    fn init_window(&mut self, title: &str, width: u32, height: u32) {
+    pub fn init_window(&mut self, title: &str, width: u32, height: u32) {
         let title = CString::new(title).unwrap();
         unsafe {
             self.window = SDL_CreateWindow(
@@ -127,7 +124,7 @@ impl Platform for PlatformSdl2 {
         }
     }
 
-    fn window_pos(&mut self) -> (i32, i32) {
+    pub fn window_pos(&mut self) -> (i32, i32) {
         let mut x: i32 = 0;
         let mut y: i32 = 0;
         unsafe {
@@ -136,13 +133,13 @@ impl Platform for PlatformSdl2 {
         (x, y)
     }
 
-    fn set_window_pos(&mut self, x: i32, y: i32) {
+    pub fn set_window_pos(&mut self, x: i32, y: i32) {
         unsafe {
             SDL_SetWindowPosition(self.window, x, y);
         }
     }
 
-    fn window_size(&mut self) -> (u32, u32) {
+    pub fn window_size(&mut self) -> (u32, u32) {
         let mut width: i32 = 0;
         let mut height: i32 = 0;
         unsafe {
@@ -151,20 +148,20 @@ impl Platform for PlatformSdl2 {
         (width as u32, height as u32)
     }
 
-    fn set_window_size(&mut self, width: u32, height: u32) {
+    pub fn set_window_size(&mut self, width: u32, height: u32) {
         unsafe {
             SDL_SetWindowSize(self.window, width as i32, height as i32);
         }
     }
 
-    fn set_window_title(&mut self, title: &str) {
+    pub fn set_window_title(&mut self, title: &str) {
         let title = CString::new(title).unwrap();
         unsafe {
             SDL_SetWindowTitle(self.window, title.as_ptr());
         }
     }
 
-    fn set_window_icon(&mut self, width: u32, height: u32, pixels: &[u32]) {
+    pub fn set_window_icon(&mut self, width: u32, height: u32, pixels: &[u32]) {
         unsafe {
             let surface = SDL_CreateRGBSurfaceWithFormat(
                 0,
@@ -190,11 +187,11 @@ impl Platform for PlatformSdl2 {
         }
     }
 
-    fn is_fullscreen(&mut self) -> bool {
+    pub fn is_fullscreen(&mut self) -> bool {
         (unsafe { SDL_GetWindowFlags(self.window) }) & SDL_WINDOW_FULLSCREEN as Uint32 != 0
     }
 
-    fn set_fullscreen(&mut self, enabled: bool) {
+    pub fn set_fullscreen(&mut self, enabled: bool) {
         let enabled = if enabled {
             SDL_WINDOW_FULLSCREEN_DESKTOP as Uint32
         } else {
@@ -205,14 +202,14 @@ impl Platform for PlatformSdl2 {
         }
     }
 
-    fn set_mouse_pos(&mut self, x: i32, y: i32) {
+    pub fn set_mouse_pos(&mut self, x: i32, y: i32) {
         let (window_x, window_y) = self.window_pos();
         unsafe {
             SDL_WarpMouseGlobal(window_x + x, window_y + y);
         }
     }
 
-    fn set_mouse_visible(&mut self, visible: bool) {
+    pub fn set_mouse_visible(&self, visible: bool) {
         let visible = if visible {
             SDL_ENABLE as i32
         } else {
@@ -223,7 +220,7 @@ impl Platform for PlatformSdl2 {
         }
     }
 
-    fn display_size(&mut self) -> (u32, u32) {
+    pub fn display_size(&self) -> (u32, u32) {
         let mut display_mode = SDL_DisplayMode {
             format: 0,
             w: 0,
@@ -242,7 +239,12 @@ impl Platform for PlatformSdl2 {
     //
     // Audio
     //
-    fn init_audio(&mut self, sample_rate: u32, buffer_size: u32, callback: AudioCallback) {
+    pub fn init_audio<F: FnMut(&mut [i16]) + 'static>(
+        &mut self,
+        sample_rate: u32,
+        buffer_size: u32,
+        callback: F,
+    ) {
         let userdata = Box::into_raw(Box::new(Mutex::new(callback))).cast::<c_void>();
         let desired = SDL_AudioSpec {
             freq: sample_rate as i32,
@@ -268,7 +270,7 @@ impl Platform for PlatformSdl2 {
         self.pause_audio(false);
     }
 
-    fn pause_audio(&mut self, paused: bool) {
+    pub fn pause_audio(&mut self, paused: bool) {
         if self.audio_device_id != 0 {
             unsafe {
                 SDL_PauseAudioDevice(self.audio_device_id, i32::from(paused));
@@ -279,7 +281,7 @@ impl Platform for PlatformSdl2 {
     //
     // Frame
     //
-    fn start_loop(&mut self, mut callback: LoopCallback) {
+    pub fn start_loop<F: FnMut()>(&mut self, mut callback: F) {
         loop {
             let start_ms = self.ticks() as f64;
             callback();
@@ -291,15 +293,13 @@ impl Platform for PlatformSdl2 {
         }
     }
 
-    fn step_loop(&mut self) {
+    pub fn step_loop(&self) {
         // TODO
     }
 
-    fn poll_events(&mut self) -> Vec<Event> {
-        self.poll_events_impl()
-    }
+    // poll_events is implemented in poll_events.rs
 
-    fn gl_profile(&mut self) -> GlProfile {
+    pub fn gl_profile(&self) -> GlProfile {
         let value = {
             let mut value: i32 = 0;
             unsafe {
@@ -314,23 +314,13 @@ impl Platform for PlatformSdl2 {
         }
     }
 
-    fn gl_context(&mut self) -> &'static mut Context {
+    pub fn gl_context(&mut self) -> &'static mut Context {
         unsafe { &mut *self.gl_context }
     }
 
-    fn gl_swap_buffers(&mut self) {
+    pub fn gl_swap_buffers(&mut self) {
         unsafe {
             SDL_GL_SwapWindow(self.window);
         }
-    }
-}
-
-pub fn open_gamepad(device_index: i32) -> Option<Gamepad> {
-    let controller = unsafe { SDL_GameControllerOpen(device_index) };
-    if controller.is_null() {
-        None
-    } else {
-        let instance_id = unsafe { SDL_JoystickGetDeviceInstanceID(device_index) };
-        Some(Gamepad::Controller(instance_id, controller))
     }
 }

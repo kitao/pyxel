@@ -1,4 +1,3 @@
-use std::cmp::max;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::LazyLock;
 
@@ -7,7 +6,7 @@ use crate::channel::{Channel, SharedChannel};
 use crate::graphics::Graphics;
 use crate::image::{Color, Image, Rgb24, SharedImage};
 use crate::input::Input;
-use crate::keys::Key;
+use crate::key::Key;
 use crate::music::{Music, SharedMusic};
 use crate::resource::Resource;
 use crate::settings::{
@@ -164,21 +163,21 @@ pub fn init(
     let fps = fps.unwrap_or(DEFAULT_FPS);
 
     // Platform
-    pyxel_platform::init(|display_width, display_height| {
-        let display_scale = max(
-            display_scale.map_or_else(
-                || {
-                    (f32::min(
-                        display_width as f32 / width as f32,
-                        display_height as f32 / height as f32,
-                    ) * DISPLAY_RATIO) as u32
-                },
-                |display_scale| display_scale,
-            ),
-            1,
-        );
-        (title, width * display_scale, height * display_scale)
-    });
+    pyxel_platform::init();
+
+    let (display_width, display_height) = pyxel_platform::display_size();
+    let display_scale = display_scale
+        .unwrap_or(
+            (f32::min(
+                display_width as f32 / width as f32,
+                display_height as f32 / height as f32,
+            ) * DISPLAY_RATIO) as u32,
+        )
+        .max(1);
+    let window_width = width * display_scale;
+    let window_height = height * display_scale;
+
+    pyxel_platform::init_window(title, window_width, window_height);
 
     // System
     let system = System::new(fps, quit_key);

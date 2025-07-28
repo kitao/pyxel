@@ -1,6 +1,6 @@
 use crate::channel::ChannelGain;
 use crate::image::{Color, Rgb24};
-use crate::keys::{Key, KEY_ESCAPE};
+use crate::key::{Key, KEY_ESCAPE};
 use crate::sound::{SoundEffect, SoundSpeed, SoundTone, SoundVolume};
 use crate::tone::{ToneMode, ToneSample};
 
