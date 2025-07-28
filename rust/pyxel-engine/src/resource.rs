@@ -4,7 +4,7 @@ use std::fs::File;
 use std::io::{Read, Write};
 use std::path::{Path, PathBuf, MAIN_SEPARATOR};
 
-use cfg_if::cfg_if;
+//use cfg_if::cfg_if;
 use directories::UserDirs;
 use zip::write::SimpleFileOptions;
 use zip::{ZipArchive, ZipWriter};
@@ -111,8 +111,8 @@ impl Pyxel {
         zip.write_all(toml_text.as_bytes()).unwrap();
         zip.finish().unwrap();
 
-        #[cfg(target_os = "emscripten")]
-        pyxel_platform::emscripten::save_file(filename);
+        //#[cfg(target_os = "emscripten")]
+        //pyxel_platform::emscripten::save_file(filename);
     }
 
     pub fn screenshot(&mut self, scale: Option<u32>) {
@@ -120,8 +120,8 @@ impl Pyxel {
         let scale = max(scale.unwrap_or(self.resource.capture_scale), 1);
         self.screen.lock().save(&filename, scale);
 
-        #[cfg(target_os = "emscripten")]
-        pyxel_platform::emscripten::save_file(&(filename + ".png"));
+        //#[cfg(target_os = "emscripten")]
+        //pyxel_platform::emscripten::save_file(&(filename + ".png"));
     }
 
     pub fn screencast(&mut self, scale: Option<u32>) {
@@ -129,8 +129,8 @@ impl Pyxel {
         let scale = max(scale.unwrap_or(self.resource.capture_scale), 1);
         self.resource.screencast.save(&filename, scale);
 
-        #[cfg(target_os = "emscripten")]
-        pyxel_platform::emscripten::save_file(&(filename + ".gif"));
+        //#[cfg(target_os = "emscripten")]
+        //pyxel_platform::emscripten::save_file(&(filename + ".gif"));
     }
 
     pub fn reset_screencast(&mut self) {
@@ -174,8 +174,8 @@ impl Pyxel {
         if let Some(image) = self.images.lock().get(image_index as usize) {
             image.lock().save(&filename, 1);
 
-            #[cfg(target_os = "emscripten")]
-            pyxel_platform::emscripten::save_file(&(filename + ".png"));
+            //#[cfg(target_os = "emscripten")]
+            //pyxel_platform::emscripten::save_file(&(filename + ".png"));
         }
     }
 
@@ -192,19 +192,13 @@ impl Pyxel {
 
             image.save(&filename, 16);
 
-            #[cfg(target_os = "emscripten")]
-            pyxel_platform::emscripten::save_file(&(filename + ".png"));
+            //#[cfg(target_os = "emscripten")]
+            //pyxel_platform::emscripten::save_file(&(filename + ".png"));
         }
     }
 
     fn datetime_string() -> String {
-        cfg_if! {
-            if #[cfg(target_os = "emscripten")] {
-                pyxel_platform::emscripten::datetime_string()
-            } else {
-                chrono::Local::now().format("%Y%m%d-%H%M%S").to_string()
-            }
-        }
+        chrono::Local::now().format("%Y%m%d-%H%M%S").to_string()
     }
 
     fn prepend_desktop_path(basename: &str) -> String {

@@ -8,12 +8,12 @@ use rand_xoshiro::Xoshiro256StarStar;
 use crate::pyxel::Pyxel;
 
 static RNG: LazyLock<Mutex<Xoshiro256StarStar>> = LazyLock::new(|| {
-    let seed = pyxel_platform::elapsed_time();
+    let seed = pyxel_platform::ticks();
     Mutex::new(Xoshiro256StarStar::seed_from_u64(seed as u64))
 });
 
 static PERLIN: LazyLock<Mutex<Perlin>> = LazyLock::new(|| {
-    let seed = pyxel_platform::elapsed_time();
+    let seed = pyxel_platform::ticks();
     Mutex::new(Perlin::new(seed))
 });
 
