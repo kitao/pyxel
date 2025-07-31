@@ -5,6 +5,7 @@ import os
 import pathlib
 import re
 import runpy
+import shlex
 import shutil
 import subprocess
 import sys
@@ -379,20 +380,33 @@ def create_executable_from_pyxel_app(pyxel_app_file):
             f"os.path.join(os.path.dirname(__file__), '{pyxel_app_name}{pyxel.APP_FILE_EXTENSION}'))"
         )
 
-    cp = subprocess.run("pyinstaller -h", capture_output=True, shell=True)
-    if cp.returncode != 0:
-        print("Pyinstaller is not found. Please install it.")
+    try:
+        subprocess.run([sys.executable, "-m", "PyInstaller", "-h"], capture_output=True, check=True)
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        print("PyInstaller is not found. Please install it.")
         sys.exit(1)
 
-    command = f"{sys.executable} -m PyInstaller --windowed --onefile --distpath . "
-    command += f"--add-data {pyxel_app_file}{os.pathsep}. "
-    modules = pyxel.utils.list_imported_modules(_extract_pyxel_app(pyxel_app_file))[
-        "system"
+    modules = pyxel.utils.list_imported_modules(_extract_pyxel_app(pyxel_app_file))["system"]
+
+    command = [
+        sys.executable,
+        "-m",
+        "PyInstaller",
+        "--windowed",
+        "--onefile",
+        "--distpath",
+        ".",
+        "--add-data",
+        f"{pyxel_app_file}{os.pathsep}.",
     ]
-    command += "".join([f"--hidden-import {module} " for module in modules])
-    command += startup_script_file
-    print(command)
-    subprocess.run(command, shell=True)
+    for module in modules:
+        command.extend(["--hidden-import", module])
+    command.append(startup_script_file)
+
+    # Print the command for debugging
+    print(" ".join(shlex.quote(arg) for arg in command))
+
+    subprocess.run(command, check=True)
 
     if os.path.isdir(app2exe_dir):
         shutil.rmtree(app2exe_dir)
