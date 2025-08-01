@@ -10,7 +10,7 @@ use crate::key::{
 };
 use crate::profiler::Profiler;
 use crate::pyxel::Pyxel;
-use crate::settings::{MAX_ELAPSED_MS, NUM_MEASURE_FRAMES, NUM_SCREEN_TYPES};
+use crate::settings::{MAX_FRAME_DELAY_MS, NUM_MEASURE_FRAMES, NUM_SCREEN_TYPES};
 use crate::utils;
 use crate::watch_info::WatchInfo;
 
@@ -20,8 +20,8 @@ pub trait PyxelCallback {
 }
 
 pub struct System {
-    one_frame_ms: f32,
-    next_update_ms: f32,
+    fps: u32,
+    frame_ms: f32,
     quit_key: Key,
     paused: bool,
     fps_profiler: Profiler,
@@ -39,8 +39,8 @@ pub struct System {
 impl System {
     pub fn new(fps: u32, quit_key: Key) -> Self {
         Self {
-            one_frame_ms: 1000.0 / fps as f32,
-            next_update_ms: 0.0,
+            fps,
+            frame_ms: 1000.0 / fps as f32,
             quit_key,
             paused: false,
             fps_profiler: Profiler::new(NUM_MEASURE_FRAMES),
@@ -59,8 +59,8 @@ impl System {
 
 impl Pyxel {
     pub fn run<T: PyxelCallback>(&mut self, mut callback: T) {
-        pyxel_platform::start_loop(move || {
-            self.process_frame(&mut callback);
+        pyxel_platform::run_frame_loop(self.system.fps, move |delta_ms| {
+            self.process_frame(delta_ms, &mut callback)
         });
     }
 
@@ -132,22 +132,28 @@ impl Pyxel {
         let image_data = &image.canvas.data;
         let scaled_width = width * scale;
         let scaled_height = height * scale;
-        let mut pixels: Vec<u32> = Vec::with_capacity((scaled_width * scaled_height) as usize);
+        let mut rgba: Vec<u8> = Vec::with_capacity((scaled_width * scaled_height * 4) as usize);
 
         for y in 0..height {
             for _sy in 0..scale {
                 for x in 0..width {
                     let color = image_data[(width * y + x) as usize];
-                    let pixel = (colors[color as usize] << 8)
-                        + if Some(color) == transparent { 0 } else { 0xff };
+                    let argb = colors[color as usize];
+                    let r = ((argb >> 16) & 0xff) as u8;
+                    let g = ((argb >> 8) & 0xff) as u8;
+                    let b = (argb & 0xff) as u8;
+                    let a = if Some(color) == transparent { 0 } else { 0xff };
                     for _sx in 0..scale {
-                        pixels.push(pixel);
+                        rgba.push(r);
+                        rgba.push(g);
+                        rgba.push(b);
+                        rgba.push(a);
                     }
                 }
             }
         }
 
-        pyxel_platform::set_window_icon(scaled_width, scaled_height, &pixels);
+        pyxel_platform::set_window_icon(scaled_width, scaled_height, &rgba);
     }
 
     pub fn perf_monitor(&mut self, enabled: bool) {
@@ -392,11 +398,13 @@ impl Pyxel {
     }
 
     fn draw_frame(&mut self, callback: Option<&mut dyn PyxelCallback>) {
+        self.system.draw_profiler.start(pyxel_platform::ticks());
+
         if self.system.paused {
             return;
         }
 
-        self.system.draw_profiler.start(pyxel_platform::ticks());
+        self.update_screen_params();
 
         if let Some(callback) = callback {
             callback.draw(self);
@@ -411,38 +419,22 @@ impl Pyxel {
         self.system.draw_profiler.end(pyxel_platform::ticks());
     }
 
-    fn process_frame(&mut self, callback: &mut dyn PyxelCallback) {
-        let tick_count = pyxel_platform::ticks();
-        let elapsed_ms = tick_count as f32 - self.system.next_update_ms;
+    fn process_frame(&mut self, delta_ms: f32, callback: &mut dyn PyxelCallback) {
+        let ticks = pyxel_platform::ticks();
+        self.system.fps_profiler.end(ticks);
+        self.system.fps_profiler.start(ticks);
 
-        if elapsed_ms < 0.0 {
-            return;
-        }
-
-        if self.frame_count == 0 {
-            self.system.next_update_ms = tick_count as f32 + self.system.one_frame_ms;
+        let update_count = if delta_ms > MAX_FRAME_DELAY_MS as f32 {
+            1
         } else {
-            self.system.fps_profiler.end(tick_count);
-            self.system.fps_profiler.start(tick_count);
+            (delta_ms / self.system.frame_ms) as u32
+        };
 
-            let update_count: u32;
-
-            if elapsed_ms > MAX_ELAPSED_MS as f32 {
-                update_count = 1;
-                self.system.next_update_ms =
-                    pyxel_platform::ticks() as f32 + self.system.one_frame_ms;
-            } else {
-                update_count = (elapsed_ms / self.system.one_frame_ms) as u32 + 1;
-                self.system.next_update_ms += self.system.one_frame_ms * update_count as f32;
-            }
-
-            for _ in 1..update_count {
-                self.update_frame(Some(callback));
-                self.frame_count += 1;
-            }
+        for _ in 1..update_count {
+            self.update_frame(Some(callback));
+            self.frame_count += 1;
         }
 
-        self.update_screen_params();
         self.update_frame(Some(callback));
         self.draw_frame(Some(callback));
         self.frame_count += 1;
@@ -452,34 +444,14 @@ impl Pyxel {
     fn process_frame_for_flip(&mut self) {
         self.system.update_profiler.end(pyxel_platform::ticks());
 
-        self.update_screen_params();
         self.draw_frame(None);
         self.frame_count += 1;
 
-        let mut tick_count;
-        let mut elapsed_ms;
+        pyxel_platform::step_frame(self.system.fps);
 
-        loop {
-            tick_count = pyxel_platform::ticks();
-            elapsed_ms = tick_count as f32 - self.system.next_update_ms;
-
-            let wait_ms = self.system.next_update_ms - pyxel_platform::ticks() as f32;
-
-            if wait_ms > 0.0 {
-                pyxel_platform::delay((wait_ms / 2.0) as u32);
-            } else {
-                break;
-            }
-        }
-
-        self.system.fps_profiler.end(tick_count);
-        self.system.fps_profiler.start(tick_count);
-
-        if elapsed_ms > MAX_ELAPSED_MS as f32 {
-            self.system.next_update_ms = pyxel_platform::ticks() as f32 + self.system.one_frame_ms;
-        } else {
-            self.system.next_update_ms += self.system.one_frame_ms;
-        }
+        let ticks = pyxel_platform::ticks();
+        self.system.fps_profiler.end(ticks);
+        self.system.fps_profiler.start(ticks);
 
         self.update_frame(None);
     }

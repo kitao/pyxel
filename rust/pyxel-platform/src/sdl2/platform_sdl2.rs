@@ -8,7 +8,7 @@ use std::slice::from_raw_parts_mut;
 use glow::Context;
 use parking_lot::Mutex;
 
-use crate::platform::GlProfile;
+use crate::platform::GLProfile;
 use crate::sdl2::poll_events::Gamepad;
 use crate::sdl2::sdl2_sys::*;
 
@@ -26,6 +26,7 @@ pub(crate) struct PlatformSdl2 {
     pub mouse_x: i32,
     pub mouse_y: i32,
     pub gamepads: Vec<Gamepad>,
+    pub next_update_ms: Option<f32>,
 }
 
 impl PlatformSdl2 {
@@ -37,6 +38,7 @@ impl PlatformSdl2 {
             mouse_x: i32::MIN,
             mouse_y: i32::MIN,
             gamepads: Vec::new(),
+            next_update_ms: None,
         }
     }
 
@@ -64,12 +66,6 @@ impl PlatformSdl2 {
 
     pub fn ticks(&self) -> u32 {
         unsafe { SDL_GetTicks() }
-    }
-
-    pub fn delay(&self, ms: u32) {
-        unsafe {
-            SDL_Delay(ms);
-        }
     }
 
     //
@@ -158,26 +154,19 @@ impl PlatformSdl2 {
         }
     }
 
-    pub fn set_window_icon(&mut self, width: u32, height: u32, pixels: &[u32]) {
+    pub fn set_window_icon(&mut self, width: u32, height: u32, rgba: &[u8]) {
         unsafe {
             let surface = SDL_CreateRGBSurfaceWithFormat(
                 0,
                 width as i32,
                 height as i32,
                 32,
-                SDL_PIXELFORMAT_ABGR32 as Uint32,
+                SDL_PIXELFORMAT_RGBA32 as Uint32,
             );
 
-            let dst_pixels = (*surface).pixels.cast::<u32>();
-            let dst_pitch = (*surface).pitch / 4;
-
-            for y in 0..height {
-                copy_nonoverlapping(
-                    pixels.as_ptr().add(width as usize * y as usize),
-                    dst_pixels.add(dst_pitch as usize * y as usize),
-                    width as usize,
-                );
-            }
+            let pixels = (*surface).pixels.cast::<u8>();
+            let size = (height * (*surface).pitch as u32) as usize;
+            copy_nonoverlapping(rgba.as_ptr(), pixels, size);
 
             SDL_SetWindowIcon(self.window, surface);
             SDL_FreeSurface(surface);
@@ -185,7 +174,8 @@ impl PlatformSdl2 {
     }
 
     pub fn is_fullscreen(&mut self) -> bool {
-        (unsafe { SDL_GetWindowFlags(self.window) }) & SDL_WINDOW_FULLSCREEN as Uint32 != 0
+        let window_flags = unsafe { SDL_GetWindowFlags(self.window) };
+        (window_flags & SDL_WINDOW_FULLSCREEN as Uint32) != 0
     }
 
     pub fn set_fullscreen(&mut self, enabled: bool) {
@@ -236,7 +226,7 @@ impl PlatformSdl2 {
     //
     // Audio
     //
-    pub fn init_audio<F: FnMut(&mut [i16]) + 'static>(
+    pub fn start_audio<F: FnMut(&mut [i16]) + 'static>(
         &mut self,
         sample_rate: u32,
         buffer_size: u32,
@@ -281,46 +271,81 @@ impl PlatformSdl2 {
     //
     // Frame
     //
-    pub fn start_loop<F: FnMut()>(&mut self, mut callback: F) {
+    pub fn run_frame_loop<F: FnMut(f32)>(&mut self, fps: u32, mut callback: F) {
+        let frame_ms = 1000.0 / fps as f32;
+        let mut next_update_ms = self.ticks() as f32;
+        let mut last_update_ms = next_update_ms;
+
         loop {
-            let start_ms = self.ticks() as f64;
-            callback();
-            let elapsed_ms = self.ticks() as f64 - start_ms;
-            let wait_ms = 1000.0 / 60.0 - elapsed_ms;
-            if wait_ms > 0.0 {
-                self.delay((wait_ms / 2.0) as u32);
+            loop {
+                let remaining_ms = next_update_ms - self.ticks() as f32;
+                if remaining_ms > 0.0 {
+                    unsafe {
+                        SDL_Delay((remaining_ms as u32 / 2).max(1));
+                    }
+                } else {
+                    break;
+                }
+            }
+
+            callback(next_update_ms - last_update_ms);
+            unsafe {
+                SDL_GL_SwapWindow(self.window);
+            }
+            last_update_ms = next_update_ms;
+
+            let ticks = self.ticks();
+            while next_update_ms <= ticks as f32 {
+                next_update_ms += frame_ms;
             }
         }
     }
 
-    pub fn step_loop(&self) {
-        // TODO
+    pub fn step_frame(&mut self, fps: u32) {
+        let frame_ms = 1000.0 / fps as f32;
+        let mut next_update_ms = self.next_update_ms.unwrap_or(self.ticks() as f32);
+
+        loop {
+            let remaining_ms = next_update_ms - self.ticks() as f32;
+            if remaining_ms > 0.0 {
+                unsafe {
+                    SDL_Delay((remaining_ms as u32 / 2).max(1));
+                }
+            } else {
+                break;
+            }
+        }
+
+        unsafe {
+            SDL_GL_SwapWindow(self.window);
+        }
+
+        let ticks = self.ticks();
+        while next_update_ms <= ticks as f32 {
+            next_update_ms += frame_ms;
+        }
+
+        self.next_update_ms = Some(next_update_ms);
     }
 
     // poll_events is implemented in poll_events.rs
 
-    pub fn gl_profile(&self) -> GlProfile {
-        let value = {
-            let mut value: i32 = 0;
-            unsafe {
-                SDL_GL_GetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, addr_of_mut!(value));
-            }
-            value
-        };
-        if value & (SDL_GL_CONTEXT_PROFILE_ES as i32) != 0 {
-            GlProfile::GLES
+    pub fn gl_profile(&self) -> GLProfile {
+        let mut value: i32 = 0;
+        unsafe {
+            SDL_GL_GetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, addr_of_mut!(value));
+        }
+
+        if value & (SDL_GL_CONTEXT_PROFILE_CORE as i32) != 0 {
+            GLProfile::Gl
+        } else if value & (SDL_GL_CONTEXT_PROFILE_ES as i32) != 0 {
+            GLProfile::Gles
         } else {
-            GlProfile::GL
+            GLProfile::None
         }
     }
 
     pub fn gl_context(&mut self) -> &'static mut Context {
         unsafe { &mut *self.gl_context }
-    }
-
-    pub fn gl_swap_buffers(&mut self) {
-        unsafe {
-            SDL_GL_SwapWindow(self.window);
-        }
     }
 }

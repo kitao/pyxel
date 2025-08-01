@@ -3,6 +3,7 @@ use std::mem::size_of;
 
 use cfg_if::cfg_if;
 use glow::{HasContext, PixelUnpackData};
+use pyxel_platform::GLProfile;
 
 use crate::font::SharedFont;
 use crate::image::Color;
@@ -58,7 +59,7 @@ impl Graphics {
     }
 
     unsafe fn create_screen_shaders(gl: &mut glow::Context) -> Vec<ScreenShader> {
-        let glsl_version = if pyxel_platform::gl_profile() == pyxel_platform::GlProfile::GLES {
+        let glsl_version = if pyxel_platform::gl_profile() == GLProfile::Gles {
             GLES_VERSION
         } else {
             GL_VERSION
@@ -363,7 +364,6 @@ impl Pyxel {
             self.bind_screen_texture(gl);
             self.bind_colors_texture(gl);
             gl.draw_arrays(glow::TRIANGLE_STRIP, 0, 4);
-            pyxel_platform::gl_swap_buffers();
         }
     }
 
@@ -430,7 +430,7 @@ impl Pyxel {
         gl.bind_texture(glow::TEXTURE_2D, Some(self.graphics.screen_texture));
         gl.pixel_store_i32(glow::UNPACK_ALIGNMENT, 1);
 
-        let texture_format = if pyxel_platform::gl_profile() == pyxel_platform::GlProfile::GLES {
+        let texture_format = if pyxel_platform::gl_profile() == GLProfile::Gles {
             glow::LUMINANCE
         } else {
             glow::RED
