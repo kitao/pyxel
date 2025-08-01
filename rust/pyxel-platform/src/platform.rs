@@ -6,14 +6,14 @@ use glow::Context;
 use crate::event::Event;
 use crate::sdl2::platform_sdl2::PlatformSdl2;
 
-#[derive(PartialEq)]
-pub enum GlProfile {
-    None,
-    GL,
-    GLES,
-}
-
 type Platform = PlatformSdl2;
+
+#[derive(PartialEq)]
+pub enum GLProfile {
+    None,
+    Gl,
+    Gles,
+}
 
 static mut PLATFORM: *mut Platform = null_mut();
 
@@ -40,10 +40,6 @@ pub fn quit() {
 
 pub fn ticks() -> u32 {
     platform().ticks()
-}
-
-pub fn delay(ms: u32) {
-    platform().delay(ms);
 }
 
 //
@@ -73,8 +69,8 @@ pub fn set_window_title(title: &str) {
     platform().set_window_title(title);
 }
 
-pub fn set_window_icon(width: u32, height: u32, pixels: &[u32]) {
-    platform().set_window_icon(width, height, pixels);
+pub fn set_window_icon(width: u32, height: u32, rgba: &[u8]) {
+    platform().set_window_icon(width, height, rgba);
 }
 
 pub fn is_fullscreen() -> bool {
@@ -100,8 +96,12 @@ pub fn display_size() -> (u32, u32) {
 //
 // Audio
 //
-pub fn init_audio<F: FnMut(&mut [i16]) + 'static>(sample_rate: u32, buffer_size: u32, callback: F) {
-    platform().init_audio(sample_rate, buffer_size, callback);
+pub fn start_audio<F: FnMut(&mut [i16]) + 'static>(
+    sample_rate: u32,
+    buffer_size: u32,
+    callback: F,
+) {
+    platform().start_audio(sample_rate, buffer_size, callback);
 }
 
 pub fn pause_audio(paused: bool) {
@@ -111,26 +111,22 @@ pub fn pause_audio(paused: bool) {
 //
 // Frame
 //
-pub fn start_loop<F: FnMut()>(callback: F) {
-    platform().start_loop(callback);
+pub fn run_frame_loop<F: FnMut(f32)>(fps: u32, callback: F) {
+    platform().run_frame_loop(fps, callback);
 }
 
-pub fn step_loop() {
-    platform().step_loop();
+pub fn step_frame(fps: u32) {
+    platform().step_frame(fps);
 }
 
 pub fn poll_events() -> Vec<Event> {
     platform().poll_events()
 }
 
-pub fn gl_profile() -> GlProfile {
+pub fn gl_profile() -> GLProfile {
     platform().gl_profile()
 }
 
 pub fn gl_context() -> &'static mut Context {
     platform().gl_context()
-}
-
-pub fn gl_swap_buffers() {
-    platform().gl_swap_buffers();
 }

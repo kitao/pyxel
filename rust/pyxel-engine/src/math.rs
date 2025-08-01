@@ -2,20 +2,17 @@ use std::f32::consts::PI;
 use std::sync::{LazyLock, Mutex};
 
 use noise::{NoiseFn, Perlin};
-use rand::{Rng, SeedableRng};
+use rand::rngs::OsRng;
+use rand::{Rng, SeedableRng, TryRngCore};
 use rand_xoshiro::Xoshiro256StarStar;
 
 use crate::pyxel::Pyxel;
 
-static RNG: LazyLock<Mutex<Xoshiro256StarStar>> = LazyLock::new(|| {
-    let seed = pyxel_platform::ticks();
-    Mutex::new(Xoshiro256StarStar::seed_from_u64(seed as u64))
-});
+static RNG: LazyLock<Mutex<Xoshiro256StarStar>> =
+    LazyLock::new(|| Mutex::new(Xoshiro256StarStar::from_os_rng()));
 
-static PERLIN: LazyLock<Mutex<Perlin>> = LazyLock::new(|| {
-    let seed = pyxel_platform::ticks();
-    Mutex::new(Perlin::new(seed))
-});
+static PERLIN: LazyLock<Mutex<Perlin>> =
+    LazyLock::new(|| Mutex::new(Perlin::new(OsRng.try_next_u32().unwrap())));
 
 impl Pyxel {
     pub fn ceil(x: f32) -> i32 {

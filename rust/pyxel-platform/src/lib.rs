@@ -23,8 +23,8 @@ pub mod key;
 
 pub use event::Event;
 pub use platform::{
-    delay, display_size, gl_context, gl_profile, gl_swap_buffers, init, init_audio, init_window,
-    is_fullscreen, pause_audio, poll_events, quit, set_fullscreen, set_mouse_pos,
-    set_mouse_visible, set_window_icon, set_window_pos, set_window_size, set_window_title,
-    start_loop, step_loop, ticks, window_pos, window_size, GlProfile,
+    display_size, gl_context, gl_profile, init, init_window, is_fullscreen, pause_audio,
+    poll_events, quit, run_frame_loop, set_fullscreen, set_mouse_pos, set_mouse_visible,
+    set_window_icon, set_window_pos, set_window_size, set_window_title, start_audio, step_frame,
+    ticks, window_pos, window_size, GLProfile,
 };

@@ -19,7 +19,7 @@ impl Audio {
         let mut blip_buf = BlipBuf::new(AUDIO_BUFFER_SIZE);
         blip_buf.set_rates(AUDIO_CLOCK_RATE as f64, AUDIO_SAMPLE_RATE as f64);
 
-        pyxel_platform::init_audio(
+        pyxel_platform::start_audio(
             AUDIO_SAMPLE_RATE,
             AUDIO_BUFFER_SIZE,
             move |out: &mut [i16]| {
