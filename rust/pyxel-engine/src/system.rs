@@ -60,7 +60,7 @@ impl System {
 impl Pyxel {
     pub fn run<T: PyxelCallback>(&mut self, mut callback: T) {
         pyxel_platform::run_frame_loop(self.system.fps, move |delta_ms| {
-            self.process_frame(delta_ms, &mut callback)
+            self.process_frame(delta_ms, &mut callback);
         });
     }
 
