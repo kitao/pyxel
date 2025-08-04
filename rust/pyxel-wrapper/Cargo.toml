@@ -18,3 +18,7 @@ pyxel-engine = { path = "../pyxel-engine", version = "2.4.10" }
 
 [target.'cfg(not(target_os = "emscripten"))'.dependencies]
 sysinfo = "0.36"
+
+[features]
+sdl2 = ["pyxel-engine/sdl2"]
+web = ["pyxel-engine/web"]

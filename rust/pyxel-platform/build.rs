@@ -246,5 +246,7 @@ impl SDL2BindingsBuilder {
 }
 
 fn main() {
-    SDL2BindingsBuilder::new().build();
+    if var("CARGO_FEATURE_SDL2").is_ok() {
+        SDL2BindingsBuilder::new().build();
+    }
 }

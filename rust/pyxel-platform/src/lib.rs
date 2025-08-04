@@ -16,8 +16,10 @@
 mod event;
 mod platform;
 
+#[cfg(feature = "sdl2")]
 mod sdl2;
 
+#[cfg(feature = "web")]
 mod web;
 
 pub mod key;

@@ -23,3 +23,7 @@ bindgen = "0.72"
 cmake = "0.1"
 flate2 = "1.0"
 tar = "0.4"
+
+[features]
+sdl2 = []
+web = []
