@@ -119,9 +119,11 @@ install: build
 test: install
 	@cd $(RUST_DIR); cargo test $(BUILD_OPTS)
 	@python3 -m unittest discover $(RUST_DIR)/pyxel-wrapper/tests
+
 	@for f in $(EXAMPLES_DIR)/*.py; do pyxel run "$$f"; done
 	@for f in $(EXAMPLES_DIR)/*.pyxapp; do pyxel play "$$f"; done
 	@pyxel edit $(EXAMPLES_DIR)/assets/sample.pyxres
+
 	@rm -rf testapp testapp.pyxapp
 	@mkdir -p testapp/assets
 	@cp $(EXAMPLES_DIR)/10_platformer.py testapp
@@ -129,6 +131,7 @@ test: install
 	@pyxel package testapp testapp/10_platformer.py
 	@pyxel play testapp.pyxapp
 	@rm -rf testapp testapp.pyxapp
+
 	@pyxel watch $(EXAMPLES_DIR) $(EXAMPLES_DIR)/01_hello_pyxel.py
 
 clean-wasm:
