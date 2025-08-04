@@ -50,32 +50,33 @@
 #
 
 # Project directories
-ROOT_DIR      = .
-DIST_DIR      = $(ROOT_DIR)/dist
-RUST_DIR      = $(ROOT_DIR)/rust
-PYTHON_DIR    = $(ROOT_DIR)/python
-EXAMPLES_DIR  = $(PYTHON_DIR)/pyxel/examples
-SCRIPTS_DIR   = $(ROOT_DIR)/scripts
-WASM_DIR      = $(ROOT_DIR)/wasm
+ROOT_DIR       = .
+DIST_DIR       = $(ROOT_DIR)/dist
+RUST_DIR       = $(ROOT_DIR)/rust
+PYTHON_DIR     = $(ROOT_DIR)/python
+EXAMPLES_DIR   = $(PYTHON_DIR)/pyxel/examples
+SCRIPTS_DIR    = $(ROOT_DIR)/scripts
+WASM_DIR       = $(ROOT_DIR)/wasm
 
 # Build targets
-WASM_TARGET   = wasm32-unknown-emscripten
+WASM_TARGET    = wasm32-unknown-emscripten
 
 # Tool options
-CLIPPY_OPTS   = -q --all-targets --all-features -- --no-deps
-MATURIN_OPTS  = --manylinux 2014 --auditwheel skip
+CLIPPY_OPTS    = -q --all-targets --all-features -- --no-deps
+MATURIN_OPTS   = --manylinux 2014 --auditwheel skip
 
 # Build options
-ENSURE_TARGET =
-BUILD_OPTS    = --release
+ENSURE_TARGET  =
+BUILD_OPTS     = --release
+CARGO_FEATURES = --features sdl2
 
 ifneq ($(TARGET),)
-	ENSURE_TARGET = rustup target add $(TARGET)
-	BUILD_OPTS += --target $(TARGET)
+ENSURE_TARGET = rustup target add $(TARGET)
+BUILD_OPTS += --target $(TARGET)
 endif
 
 ifeq ($(TARGET),$(WASM_TARGET))
-	BUILD_OPTS += --no-default-features --features web
+CARGO_FEATURES = --features web
 endif
 
 .PHONY: \
@@ -111,17 +112,17 @@ build: format
 	@$(ENSURE_TARGET)
 	@$(SCRIPTS_DIR)/generate_readme_abspath
 	@cp LICENSE $(PYTHON_DIR)/pyxel
-	@cd $(PYTHON_DIR); maturin build -o ../$(DIST_DIR) $(BUILD_OPTS) $(MATURIN_OPTS)
+	@cd $(PYTHON_DIR); maturin build -o ../$(DIST_DIR) $(BUILD_OPTS) $(MATURIN_OPTS) $(CARGO_FEATURES)
 
 install: build
 	@pip3 install --force-reinstall `ls -rt $(DIST_DIR)/*.whl | tail -n 1`
 
 test: install
-	@cd $(RUST_DIR); cargo test $(BUILD_OPTS)
+	@cd $(RUST_DIR); cargo test $(BUILD_OPTS) $(CARGO_FEATURES)
 	@python3 -m unittest discover $(RUST_DIR)/pyxel-wrapper/tests
 
-	@for f in $(EXAMPLES_DIR)/*.py; do pyxel run "$$f"; done
-	@for f in $(EXAMPLES_DIR)/*.pyxapp; do pyxel play "$$f"; done
+	@bash -c 'set -e; trap "exit 130" INT; for f in $(EXAMPLES_DIR)/*.py; do pyxel run "$$f"; done'
+	@bash -c 'set -e; trap "exit 130" INT; for f in $(EXAMPLES_DIR)/*.pyxapp; do pyxel play "$$f"; done'
 	@pyxel edit $(EXAMPLES_DIR)/assets/sample.pyxres
 
 	@rm -rf testapp testapp.pyxapp
