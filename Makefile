@@ -49,23 +49,33 @@
 #	(Open localhost:8000/wasm/ in a web browser)
 #
 
-ROOT_DIR = .
-DIST_DIR = $(ROOT_DIR)/dist
-RUST_DIR = $(ROOT_DIR)/rust
-PYTHON_DIR = $(ROOT_DIR)/python
-EXAMPLES_DIR = $(PYTHON_DIR)/pyxel/examples
-SCRIPTS_DIR = $(ROOT_DIR)/scripts
-WASM_DIR = $(ROOT_DIR)/wasm
-WASM_TARGET = wasm32-unknown-emscripten
-CLIPPY_OPTS = -q --all-targets --all-features -- --no-deps
-MATURIN_OPTS = --manylinux 2014 --auditwheel skip
+# Project directories
+ROOT_DIR      = .
+DIST_DIR      = $(ROOT_DIR)/dist
+RUST_DIR      = $(ROOT_DIR)/rust
+PYTHON_DIR    = $(ROOT_DIR)/python
+EXAMPLES_DIR  = $(PYTHON_DIR)/pyxel/examples
+SCRIPTS_DIR   = $(ROOT_DIR)/scripts
+WASM_DIR      = $(ROOT_DIR)/wasm
 
-ifeq ($(TARGET),)
+# Build targets
+WASM_TARGET   = wasm32-unknown-emscripten
+
+# Tool options
+CLIPPY_OPTS   = -q --all-targets --all-features -- --no-deps
+MATURIN_OPTS  = --manylinux 2014 --auditwheel skip
+
+# Build options
 ENSURE_TARGET =
-BUILD_OPTS = --release
-else
-ENSURE_TARGET = rustup target add $(TARGET)
-BUILD_OPTS = --release --target $(TARGET)
+BUILD_OPTS    = --release
+
+ifneq ($(TARGET),)
+	ENSURE_TARGET = rustup target add $(TARGET)
+	BUILD_OPTS += --target $(TARGET)
+endif
+
+ifeq ($(TARGET),$(WASM_TARGET))
+	BUILD_OPTS += --no-default-features --features web
 endif
 
 .PHONY: \
@@ -109,26 +119,8 @@ install: build
 test: install
 	@cd $(RUST_DIR); cargo test $(BUILD_OPTS)
 	@python3 -m unittest discover $(RUST_DIR)/pyxel-wrapper/tests
-	@pyxel run $(EXAMPLES_DIR)/01_hello_pyxel.py
-	@pyxel run $(EXAMPLES_DIR)/02_jump_game.py
-	@pyxel run $(EXAMPLES_DIR)/03_draw_api.py
-	@pyxel run $(EXAMPLES_DIR)/04_sound_api.py
-	@pyxel run $(EXAMPLES_DIR)/05_color_palette.py
-	@pyxel run $(EXAMPLES_DIR)/06_click_game.py
-	@pyxel run $(EXAMPLES_DIR)/07_snake.py
-	@pyxel run $(EXAMPLES_DIR)/08_triangle_api.py
-	@pyxel run $(EXAMPLES_DIR)/09_shooter.py
-	@pyxel run $(EXAMPLES_DIR)/10_platformer.py
-	@pyxel run $(EXAMPLES_DIR)/11_offscreen.py
-	@pyxel run $(EXAMPLES_DIR)/12_perlin_noise.py
-	@pyxel run $(EXAMPLES_DIR)/13_bitmap_font.py
-	@pyxel run $(EXAMPLES_DIR)/14_synthesizer.py
-	@pyxel run $(EXAMPLES_DIR)/15_tiled_map_file.py
-	@pyxel run $(EXAMPLES_DIR)/16_transform.py
-	@pyxel run $(EXAMPLES_DIR)/99_flip_animation.py
-	@pyxel play $(EXAMPLES_DIR)/30sec_of_daylight.pyxapp
-	@pyxel play $(EXAMPLES_DIR)/megaball.pyxapp
-	@pyxel play $(EXAMPLES_DIR)/8bit-bgm-gen.pyxapp
+	@for f in $(EXAMPLES_DIR)/*.py; do pyxel run "$$f"; done
+	@for f in $(EXAMPLES_DIR)/*.pyxapp; do pyxel play "$$f"; done
 	@pyxel edit $(EXAMPLES_DIR)/assets/sample.pyxres
 	@rm -rf testapp testapp.pyxapp
 	@mkdir -p testapp/assets
