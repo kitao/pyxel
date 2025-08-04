@@ -1,4 +1,3 @@
-use cfg_if::cfg_if;
 use pyxel_platform::Event;
 
 use crate::image::{Color, Image, SharedImage};
@@ -60,7 +59,24 @@ impl System {
 impl Pyxel {
     pub fn run<T: PyxelCallback>(&mut self, mut callback: T) {
         pyxel_platform::run_frame_loop(self.system.fps, move |delta_ms| {
-            self.process_frame(delta_ms, &mut callback);
+            let ticks = pyxel_platform::ticks();
+            self.system.fps_profiler.end(ticks);
+            self.system.fps_profiler.start(ticks);
+
+            let update_count = if delta_ms > MAX_FRAME_DELAY_MS as f32 {
+                1
+            } else {
+                (delta_ms / self.system.frame_ms) as u32
+            };
+
+            for _ in 1..update_count {
+                self.update_frame(Some(&mut callback));
+                self.frame_count += 1;
+            }
+
+            self.update_frame(Some(&mut callback));
+            self.draw_frame(Some(&mut callback));
+            self.frame_count += 1;
         });
     }
 
@@ -105,13 +121,21 @@ impl Pyxel {
     }
 
     pub fn flip(&mut self) {
-        cfg_if! {
-            if #[cfg(target_os = "emscripten")] {
-                panic!("flip is not supported for Web");
-            } else {
-                self.process_frame_for_flip();
-            }
-        }
+        #[cfg(target_os = "emscripten")]
+        panic!("flip is not supported for Web");
+
+        self.system.update_profiler.end(pyxel_platform::ticks());
+
+        self.draw_frame(None);
+        self.frame_count += 1;
+
+        pyxel_platform::step_frame(self.system.fps);
+
+        let ticks = pyxel_platform::ticks();
+        self.system.fps_profiler.end(ticks);
+        self.system.fps_profiler.start(ticks);
+
+        self.update_frame(None);
     }
 
     pub fn quit(&self) {
@@ -417,42 +441,5 @@ impl Pyxel {
         self.capture_screen();
 
         self.system.draw_profiler.end(pyxel_platform::ticks());
-    }
-
-    fn process_frame(&mut self, delta_ms: f32, callback: &mut dyn PyxelCallback) {
-        let ticks = pyxel_platform::ticks();
-        self.system.fps_profiler.end(ticks);
-        self.system.fps_profiler.start(ticks);
-
-        let update_count = if delta_ms > MAX_FRAME_DELAY_MS as f32 {
-            1
-        } else {
-            (delta_ms / self.system.frame_ms) as u32
-        };
-
-        for _ in 1..update_count {
-            self.update_frame(Some(callback));
-            self.frame_count += 1;
-        }
-
-        self.update_frame(Some(callback));
-        self.draw_frame(Some(callback));
-        self.frame_count += 1;
-    }
-
-    #[cfg(not(target_os = "emscripten"))]
-    fn process_frame_for_flip(&mut self) {
-        self.system.update_profiler.end(pyxel_platform::ticks());
-
-        self.draw_frame(None);
-        self.frame_count += 1;
-
-        pyxel_platform::step_frame(self.system.fps);
-
-        let ticks = pyxel_platform::ticks();
-        self.system.fps_profiler.end(ticks);
-        self.system.fps_profiler.start(ticks);
-
-        self.update_frame(None);
     }
 }
