@@ -1,3 +1,4 @@
+use cfg_if::cfg_if;
 use pyxel_platform::Event;
 
 use crate::image::{Color, Image, SharedImage};
@@ -121,21 +122,24 @@ impl Pyxel {
     }
 
     pub fn flip(&mut self) {
-        #[cfg(target_os = "emscripten")]
-        panic!("flip is not supported for Web");
+        cfg_if! {
+            if #[cfg(target_os = "emscripten")] {
+                panic!("flip is not supported for Web");
+            } else {
+                self.system.update_profiler.end(pyxel_platform::ticks());
 
-        self.system.update_profiler.end(pyxel_platform::ticks());
+                self.draw_frame(None);
+                self.frame_count += 1;
 
-        self.draw_frame(None);
-        self.frame_count += 1;
+                pyxel_platform::step_frame(self.system.fps);
 
-        pyxel_platform::step_frame(self.system.fps);
+                let ticks = pyxel_platform::ticks();
+                self.system.fps_profiler.end(ticks);
+                self.system.fps_profiler.start(ticks);
 
-        let ticks = pyxel_platform::ticks();
-        self.system.fps_profiler.end(ticks);
-        self.system.fps_profiler.start(ticks);
-
-        self.update_frame(None);
+                self.update_frame(None);
+            }
+        }
     }
 
     pub fn quit(&self) {
