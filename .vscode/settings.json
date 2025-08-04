@@ -1,4 +1,5 @@
 {
+  "rust-analyzer.cargo.features": ["web"],
   "rust-analyzer.linkedProjects": ["rust/Cargo.toml"],
   "python.defaultInterpreterPath": "${workspaceFolder}/venv/bin/python"
 }
