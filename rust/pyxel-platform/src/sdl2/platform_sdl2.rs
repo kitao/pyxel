@@ -19,7 +19,7 @@ extern "C" fn c_audio_callback(userdata: *mut c_void, stream: *mut u8, len: c_in
     (*guard)(stream);
 }
 
-pub(crate) struct PlatformSdl2 {
+pub struct PlatformSdl2 {
     pub window: *mut SDL_Window,
     pub gl_context: *mut Context,
     pub audio_device_id: SDL_AudioDeviceID,
