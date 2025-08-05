@@ -1,6 +1,15 @@
 {
   "entries": [
     {
+      "id": 153,
+      "title": "Old JRPG like",
+      "site": "https://moq.dojin.com/pyxelgames.html",
+      "author": "MoQ(もっQ)",
+      "contact": "https://x.com/ronegray",
+      "desc": "A game like an RPG from the early NES era",
+      "image": "https://github.com/user-attachments/assets/cf2490e1-8576-4032-bc30-69410b56612b"
+    },
+    {
       "id": 152,
       "title": "Hanafuda Tetris",
       "site": "https://github.com/ninja-cop/hanafuda_tetris/blob/main/hanafuda_tetris_web.html",
