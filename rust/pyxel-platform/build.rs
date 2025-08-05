@@ -8,14 +8,14 @@ use tar::Archive;
 
 const SDL2_VERSION: &str = "2.28.4"; // Emscripten 3.1.58 uses SDL 2.28.4
 
-struct SDL2BindingsBuilder {
+struct Sdl2Bindings {
     target: String,
     target_os: String,
     sdl2_dir: String,
     out_dir: String,
 }
 
-impl SDL2BindingsBuilder {
+impl Sdl2Bindings {
     fn new() -> Self {
         let target = var("TARGET").unwrap();
         let target_os = target.splitn(3, '-').nth(2).unwrap().to_string();
@@ -30,8 +30,14 @@ impl SDL2BindingsBuilder {
         }
     }
 
-    fn should_bundle_sdl2(&self) -> bool {
-        self.target_os.contains("windows") || self.target_os == "darwin"
+    fn build(&self) {
+        if bundle_sdl2() {
+            self.download_sdl2();
+            self.build_sdl2();
+        }
+
+        self.link_sdl2();
+        self.generate_bindings()
     }
 
     fn download_sdl2(&self) {
@@ -114,7 +120,7 @@ impl SDL2BindingsBuilder {
     }
 
     fn link_sdl2(&self) {
-        if self.should_bundle_sdl2() {
+        if bundle_sdl2() {
             println!("cargo:rustc-link-lib=static=SDL2main");
             if self.target_os.contains("windows") {
                 println!("cargo:rustc-link-lib=static=SDL2-static");
@@ -151,50 +157,6 @@ impl SDL2BindingsBuilder {
         } else if self.target_os != "emscripten" {
             println!("cargo:rustc-flags=-l SDL2");
         }
-    }
-
-    fn get_bindgen_flags(&self) -> Vec<String> {
-        if let Ok(bindgen_flags) = var("BINDGENFLAGS") {
-            bindgen_flags
-                .split_whitespace()
-                .map(|s| s.to_string())
-                .collect()
-        } else {
-            Vec::new()
-        }
-    }
-
-    fn get_include_flags(&self) -> Vec<String> {
-        let mut include_flags = Vec::new();
-
-        if self.should_bundle_sdl2() {
-            include_flags.push(format!("-I{}/include", self.sdl2_dir));
-        } else if self.target_os == "emscripten" {
-            let output = Command::new("emcc")
-                .args(["--cflags", "--use-port=sdl2"])
-                .output()
-                .expect("Failed to execute emcc");
-            let cflags = str::from_utf8(&output.stdout).unwrap();
-            let sdl2_include_flag = cflags
-                .split_whitespace()
-                .skip_while(|&flag| !flag.starts_with("-isystem"))
-                .nth(1)
-                .unwrap();
-
-            include_flags.push("-I".to_string() + sdl2_include_flag + "/..");
-            include_flags.push("-I".to_string() + sdl2_include_flag);
-        } else {
-            for path in [
-                "/usr/local/include/SDL2",
-                "/usr/include/SDL2",
-                "/usr/local/include",
-                "/usr/include",
-            ] {
-                include_flags.push(format!("-I{path}"));
-            }
-        }
-
-        include_flags
     }
 
     fn generate_bindings(&self) {
@@ -234,19 +196,61 @@ impl SDL2BindingsBuilder {
             .unwrap();
     }
 
-    fn build(&self) {
-        if self.should_bundle_sdl2() {
-            self.download_sdl2();
-            self.build_sdl2();
+    fn get_bindgen_flags(&self) -> Vec<String> {
+        if let Ok(bindgen_flags) = var("BINDGENFLAGS") {
+            bindgen_flags
+                .split_whitespace()
+                .map(|s| s.to_string())
+                .collect()
+        } else {
+            Vec::new()
+        }
+    }
+
+    fn get_include_flags(&self) -> Vec<String> {
+        let mut include_flags = Vec::new();
+
+        if bundle_sdl2() {
+            include_flags.push(format!("-I{}/include", self.sdl2_dir));
+        } else if self.target_os == "emscripten" {
+            let output = Command::new("emcc")
+                .args(["--cflags", "--use-port=sdl2"])
+                .output()
+                .expect("Failed to execute emcc");
+            let cflags = str::from_utf8(&output.stdout).unwrap();
+            let sdl2_include_flag = cflags
+                .split_whitespace()
+                .skip_while(|&flag| !flag.starts_with("-isystem"))
+                .nth(1)
+                .unwrap();
+
+            include_flags.push("-I".to_string() + sdl2_include_flag + "/..");
+            include_flags.push("-I".to_string() + sdl2_include_flag);
+        } else {
+            for path in [
+                "/usr/local/include/SDL2",
+                "/usr/include/SDL2",
+                "/usr/local/include",
+                "/usr/include",
+            ] {
+                include_flags.push(format!("-I{path}"));
+            }
         }
 
-        self.link_sdl2();
-        self.generate_bindings()
+        include_flags
     }
 }
 
+fn use_sdl2() -> bool {
+    var("CARGO_FEATURE_SDL2").is_ok()
+}
+
+fn bundle_sdl2() -> bool {
+    var("CARGO_FEATURE_SDL2_BUNDLE").is_ok()
+}
+
 fn main() {
-    if var("CARGO_FEATURE_SDL2").is_ok() {
-        SDL2BindingsBuilder::new().build();
+    if use_sdl2() {
+        Sdl2Bindings::new().build();
     }
 }
