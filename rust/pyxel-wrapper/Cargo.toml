@@ -21,4 +21,5 @@ sysinfo = "0.36"
 
 [features]
 sdl2 = ["pyxel-engine/sdl2"]
+sdl2_bundle = ["pyxel-engine/sdl2_bundle"]
 web = ["pyxel-engine/web"]
