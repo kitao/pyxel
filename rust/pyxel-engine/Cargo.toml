@@ -35,4 +35,5 @@ zip = { version = "4.0", default-features = false, features = ["deflate"] }
 
 [features]
 sdl2 = ["pyxel-platform/sdl2"]
+sdl2_bundle = ["pyxel-platform/sdl2_bundle"]
 web = ["pyxel-platform/web"]

@@ -50,33 +50,33 @@
 #
 
 # Project directories
-ROOT_DIR       = .
-DIST_DIR       = $(ROOT_DIR)/dist
-RUST_DIR       = $(ROOT_DIR)/rust
-PYTHON_DIR     = $(ROOT_DIR)/python
-EXAMPLES_DIR   = $(PYTHON_DIR)/pyxel/examples
-SCRIPTS_DIR    = $(ROOT_DIR)/scripts
-WASM_DIR       = $(ROOT_DIR)/wasm
+ROOT_DIR = .
+DIST_DIR = $(ROOT_DIR)/dist
+RUST_DIR = $(ROOT_DIR)/rust
+PYTHON_DIR = $(ROOT_DIR)/python
+EXAMPLES_DIR = $(PYTHON_DIR)/pyxel/examples
+SCRIPTS_DIR = $(ROOT_DIR)/scripts
+WASM_DIR = $(ROOT_DIR)/wasm
 
 # Build targets
-WASM_TARGET    = wasm32-unknown-emscripten
+WASM_TARGET = wasm32-unknown-emscripten
 
 # Tool options
-CLIPPY_OPTS    = -q --all-targets --all-features -- --no-deps
-MATURIN_OPTS   = --manylinux 2014 --auditwheel skip
+CLIPPY_OPTS = -q --all-targets --all-features -- --no-deps
+MATURIN_OPTS = --manylinux 2014 --auditwheel skip
 
 # Build options
-ENSURE_TARGET  =
-BUILD_OPTS     = --release
-CARGO_FEATURES = --features sdl2
+TARGET ?= $(shell rustc -vV | awk '/^host:/ {print $$2}')
+BUILD_OPTS = --release --target $(TARGET)
 
-ifneq ($(TARGET),)
-ENSURE_TARGET = rustup target add $(TARGET)
-BUILD_OPTS += --target $(TARGET)
-endif
-
-ifeq ($(TARGET),$(WASM_TARGET))
+ifneq (,$(findstring windows,$(TARGET)))
+CARGO_FEATURES = --features sdl2_bundle
+else ifneq (,$(findstring darwin,$(TARGET)))
+CARGO_FEATURES = --features sdl2_bundle
+else ifneq (,$(findstring emscripten,$(TARGET)))
 CARGO_FEATURES = --features web
+else
+CARGO_FEATURES = --features sdl2
 endif
 
 .PHONY: \
@@ -109,7 +109,7 @@ format:
 	@ruff format $(ROOT_DIR)
 
 build: format
-	@$(ENSURE_TARGET)
+	@rustup target add $(TARGET)
 	@$(SCRIPTS_DIR)/generate_readme_abspath
 	@cp LICENSE $(PYTHON_DIR)/pyxel
 	@cd $(PYTHON_DIR); maturin build -o ../$(DIST_DIR) $(BUILD_OPTS) $(MATURIN_OPTS) $(CARGO_FEATURES)

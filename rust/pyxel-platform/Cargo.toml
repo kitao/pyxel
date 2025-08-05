@@ -26,4 +26,5 @@ tar = "0.4"
 
 [features]
 sdl2 = []
+sdl2_bundle = ["sdl2"]
 web = []
