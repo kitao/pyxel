@@ -403,8 +403,11 @@ def create_executable_from_pyxel_app(pyxel_app_file):
         command.extend(["--hidden-import", module])
     command.append(startup_script_file)
 
-    # Print the command for debugging
-    print(" ".join(shlex.quote(arg) for arg in command))
+    # Print the command for debugging (cross-platform)
+    if sys.platform == "win32":
+        print(subprocess.list2cmdline(command))
+    else:
+        print(" ".join(shlex.quote(arg) for arg in command))
 
     subprocess.run(command, check=True)
 
