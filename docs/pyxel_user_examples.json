@@ -1,6 +1,15 @@
 {
   "entries": [
     {
+      "id": 154,
+      "title": "Towercraft",
+      "site": "https://codeberg.org/son_link/Towercraft",
+      "author": "Son Link",
+      "contact": "https://x.com/sonlink",
+      "desc": "A game to build the tallest tower by stacking floors",
+      "image": "https://github.com/user-attachments/assets/4a5d612a-b1f3-48ee-833e-a523f57322ce"
+    },
+    {
       "id": 153,
       "title": "Old JRPG like",
       "site": "https://moq.dojin.com/pyxelgames.html",
