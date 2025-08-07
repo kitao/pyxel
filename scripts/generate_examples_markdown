@@ -15,7 +15,7 @@ PAGE_HEADER = """\
 
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/H2H27VDKD)
 
-[Pyxel](https://github.com/kitao/pyxel), a retro game engine for Python, is collecting user examples. If you have created a project with Pyxel, please post it [here](https://github.com/kitao/pyxel/issues/609).
+[Pyxel](https://github.com/kitao/pyxel), a retro game engine for Python, is collecting user examples. If you have created a project with Pyxel, please post it [here](https://github.com/kitao/pyxel/issues/639).
 """
 NUM_EXAMPLES_PER_PAGE = 20
 
