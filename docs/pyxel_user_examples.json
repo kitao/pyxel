@@ -1,6 +1,24 @@
 {
   "entries": [
     {
+      "id": 156,
+      "title": "Loop Shot",
+      "site": "https://leo-imbert.itch.io/loop-shot",
+      "author": "Léo Imbert",
+      "contact": "https://github.com/LeoI52",
+      "desc": "A top-down shooter about a looping arena",
+      "image": "https://github.com/user-attachments/assets/4ad0c88f-9f17-415f-997c-cb4d1f70292a"
+    },
+    {
+      "id": 155,
+      "title": "Hanafuda Pon",
+      "site": "https://kitao.github.io/pyxel/wasm/launcher/?play=ninja-cop.hanafudaPon.hanafudaPon",
+      "author": "saizo",
+      "contact": "https://github.com/ninja-cop",
+      "desc": "A game of clearing sets of three matching Hanafuda cards",
+      "image": "https://github.com/user-attachments/assets/932b5840-88de-4fe2-914d-cd09a52747d0"
+    },
+    {
       "id": 154,
       "title": "Towercraft",
       "site": "https://codeberg.org/son_link/Towercraft",
