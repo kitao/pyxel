@@ -1,6 +1,24 @@
 {
   "entries": [
     {
+      "id": 158,
+      "title": "Queue It !",
+      "site": "https://leo-imbert.itch.io/queue-it",
+      "author": "Léo Imbert",
+      "contact": "https://github.com/LeoI52",
+      "desc": "A fast-paced puzzle-platformer",
+      "image": "https://github.com/user-attachments/assets/9dd794d3-f68f-4400-8ff5-ab01f8cbd02a"
+    },
+    {
+      "id": 157,
+      "title": "PyxelTD",
+      "site": "https://kitao.github.io/pyxel/wasm/launcher/?play=5h00t.PyxelTD.app.pyxeltd",
+      "author": "shoot.er",
+      "contact": "https://x.com/m4_sd",
+      "desc": "Simple tower defense",
+      "image": "https://github.com/user-attachments/assets/1220acad-ea05-4728-9dcc-b91ab81ba1b9"
+    },
+    {
       "id": 156,
       "title": "Loop Shot",
       "site": "https://leo-imbert.itch.io/loop-shot",
