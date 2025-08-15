@@ -19,8 +19,8 @@ mod platform;
 #[cfg(feature = "sdl2")]
 mod sdl2;
 
-#[cfg(feature = "web")]
-mod web;
+#[cfg(feature = "html5")]
+mod html5;
 
 pub mod key;
 

@@ -74,7 +74,7 @@ CARGO_FEATURES = --features sdl2_bundle
 else ifneq (,$(findstring darwin,$(TARGET)))
 CARGO_FEATURES = --features sdl2_bundle
 else ifneq (,$(findstring emscripten,$(TARGET)))
-CARGO_FEATURES = --features web
+CARGO_FEATURES = --features html5
 else
 CARGO_FEATURES = --features sdl2
 endif
