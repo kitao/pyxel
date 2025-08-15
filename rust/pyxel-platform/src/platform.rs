@@ -4,10 +4,10 @@ use std::ptr::null_mut;
 use glow::Context;
 
 use crate::event::Event;
+#[cfg(feature = "html5")]
+use crate::html5::platform_html5::PlatformHtml5 as Platform;
 #[cfg(feature = "sdl2")]
 use crate::sdl2::platform_sdl2::PlatformSdl2 as Platform;
-#[cfg(feature = "web")]
-use crate::web::platform_web::PlatformWeb as Platform;
 
 #[derive(PartialEq)]
 pub enum GLProfile {
