@@ -1,5 +1,2 @@
 [target.wasm32-unknown-emscripten]
-rustflags = [
-    "-C", "link-arg=-lSDL2",
-    "-C", "link-arg=-lhtml5",
-]
+rustflags = ["-Clink-arg=-lSDL2", "-Clink-arg=-lhtml5"]
