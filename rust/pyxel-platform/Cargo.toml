@@ -13,7 +13,6 @@ categories = ["game-engines", "graphics", "multimedia"]
 doctest = false
 
 [dependencies]
-cfg-if = "1.0"
 glow = "0.16"
 parking_lot = "0.12"
 paste = "1.0"
@@ -27,4 +26,3 @@ tar = "0.4"
 [features]
 sdl2 = []
 sdl2_bundle = ["sdl2"]
-html5 = []
