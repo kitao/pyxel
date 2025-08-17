@@ -14,7 +14,6 @@ name = "pyxel"
 
 [dependencies]
 blip_buf = "0.1"
-cfg-if = "1.0"
 chrono = { version = "0.4", features = ["wasmbind"] }
 directories = "6.0"
 gif = "0.13"
@@ -36,4 +35,3 @@ zip = { version = "4.0", default-features = false, features = ["deflate"] }
 [features]
 sdl2 = ["pyxel-platform/sdl2"]
 sdl2_bundle = ["pyxel-platform/sdl2_bundle"]
-html5 = ["pyxel-platform/html5"]
