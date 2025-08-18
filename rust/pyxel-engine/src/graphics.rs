@@ -1,7 +1,6 @@
 use std::collections::HashMap;
 use std::mem::size_of;
 
-use cfg_if::cfg_if;
 use glow::{HasContext, PixelUnpackData};
 use pyxel_platform::GLProfile;
 
@@ -10,13 +9,10 @@ use crate::image::Color;
 use crate::pyxel::Pyxel;
 use crate::settings::{BACKGROUND_COLOR, MAX_COLORS, NUM_SCREEN_TYPES};
 
-cfg_if! {
-    if #[cfg(target_os = "macos")] {
-        const GL_VERSION: &str = include_str!("shaders/gles_version.glsl");
-    } else {
-        const GL_VERSION: &str = include_str!("shaders/gl_version.glsl");
-    }
-}
+#[cfg(target_os = "macos")]
+const GL_VERSION: &str = include_str!("shaders/gles_version.glsl");
+#[cfg(not(target_os = "macos"))]
+const GL_VERSION: &str = include_str!("shaders/gl_version.glsl");
 
 const GLES_VERSION: &str = include_str!("shaders/gles_version.glsl");
 const COMMON_VERT: &str = include_str!("shaders/common.vert");
@@ -43,7 +39,10 @@ impl Graphics {
     pub fn new() -> Self {
         unsafe {
             let gl = pyxel_platform::gl_context();
-            gl.disable(glow::FRAMEBUFFER_SRGB);
+
+            if pyxel_platform::gl_profile() != GLProfile::Gles {
+                gl.disable(glow::FRAMEBUFFER_SRGB);
+            }
             gl.disable(glow::BLEND);
 
             let screen_shaders = Self::create_screen_shaders(gl);
