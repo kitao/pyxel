@@ -62,7 +62,7 @@ WASM_DIR = $(ROOT_DIR)/wasm
 WASM_TARGET = wasm32-unknown-emscripten
 
 # Tool options
-CLIPPY_OPTS = -q --all-targets --all-features -- --no-deps
+CLIPPY_OPTS = -q -- --no-deps
 MATURIN_OPTS = --manylinux 2014 --auditwheel skip
 
 # Build options
@@ -78,8 +78,9 @@ CARGO_FEATURES = --features sdl2
 endif
 
 .PHONY: \
-	all clean distclean lint update format build install test \
-	clean-wasm build-wasm fetch-remote-wasm start-test-server test-wasm test-remote-wasm
+	all clean distclean update format lint build install test \
+	clean-wasm lint-wasm build-wasm start-test-server test-wasm \
+	setup-wasm-github test-wasm-github
 
 all: build
 
@@ -89,11 +90,6 @@ clean:
 distclean:
 	@rm -rf $(DIST_DIR)
 	@rm -rf $(RUST_DIR)/target
-
-lint:
-	@cd $(RUST_DIR); cargo clippy $(CLIPPY_OPTS)
-	@cd $(RUST_DIR); cargo clippy --target $(WASM_TARGET) $(CLIPPY_OPTS)
-	@ruff check $(ROOT_DIR)
 
 update:
 	@rustup -q update
@@ -106,7 +102,11 @@ format:
 	@cd $(RUST_DIR); cargo fmt -- --emit=files
 	@ruff format $(ROOT_DIR)
 
-build: format
+lint:
+	@cd $(RUST_DIR); cargo clippy --target $(TARGET) $(CARGO_FEATURES) $(CLIPPY_OPTS)
+	@ruff check $(ROOT_DIR)
+
+build: format lint
 	@rustup target add $(TARGET)
 	@$(SCRIPTS_DIR)/generate_readme_abspath
 	@cp LICENSE $(PYTHON_DIR)/pyxel
@@ -134,17 +134,15 @@ test: install
 	@pyxel watch $(EXAMPLES_DIR) $(EXAMPLES_DIR)/01_hello_pyxel.py
 
 clean-wasm:
-	@make clean TARGET=$(WASM_TARGET)
+	@$(MAKE) clean TARGET=$(WASM_TARGET)
+
+lint-wasm:
+	@$(MAKE) lint TARGET=$(WASM_TARGET)
 
 build-wasm:
 	@embuilder build sdl2 --pic
 	@rm -f $(DIST_DIR)/*-emscripten_*.whl
-	@make build TARGET=$(WASM_TARGET)
-	@$(SCRIPTS_DIR)/install_wasm_wheel
-
-fetch-remote-wasm:
-	@rm -f $(DIST_DIR)/*-emscripten_*.whl
-	@$(SCRIPTS_DIR)/download_wasm_wheel
+	@$(MAKE) build TARGET=$(WASM_TARGET)
 	@$(SCRIPTS_DIR)/install_wasm_wheel
 
 start-test-server:
@@ -153,4 +151,9 @@ start-test-server:
 
 test-wasm: build-wasm start-test-server
 
-test-remote-wasm: fetch-remote-wasm start-test-server
+setup-wasm-github:
+	@rm -f $(DIST_DIR)/*-emscripten_*.whl
+	@$(SCRIPTS_DIR)/download_wasm_wheel
+	@$(SCRIPTS_DIR)/install_wasm_wheel
+
+test-wasm-github: setup-wasm-github start-test-server
