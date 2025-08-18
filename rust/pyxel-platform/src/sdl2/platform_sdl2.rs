@@ -1,7 +1,6 @@
 use std::ffi::CString;
 use std::mem::{transmute, MaybeUninit};
 use std::os::raw::{c_int, c_void};
-use std::process::exit;
 use std::ptr::{addr_of_mut, copy_nonoverlapping, null_mut};
 use std::slice::from_raw_parts_mut;
 
@@ -12,7 +11,24 @@ use crate::platform::GLProfile;
 use crate::sdl2::poll_events::Gamepad;
 use crate::sdl2::sdl2_sys::*;
 
-extern "C" fn c_audio_callback(userdata: *mut c_void, stream: *mut u8, len: c_int) {
+#[cfg(target_os = "emscripten")]
+extern "C" {
+    fn emscripten_force_exit(status: c_int);
+    fn emscripten_run_script(script: *const std::os::raw::c_char);
+    fn emscripten_set_main_loop_arg(
+        func: unsafe extern "C" fn(*mut c_void),
+        arg: *mut c_void,
+        fps: c_int,
+        simulate_infinite_loop: c_int,
+    );
+}
+
+#[cfg(target_os = "emscripten")]
+unsafe extern "C" fn main_loop_callback<F: FnMut(f32)>(arg: *mut c_void) {
+    (*arg.cast::<F>())(10.0);
+}
+
+extern "C" fn audio_callback(userdata: *mut c_void, stream: *mut u8, len: c_int) {
     let callback = unsafe { &mut *userdata.cast::<Mutex<Box<dyn FnMut(&mut [i16])>>>() };
     let stream: &mut [i16] = unsafe { from_raw_parts_mut(stream.cast::<i16>(), len as usize / 2) };
     let mut guard = callback.lock();
@@ -26,6 +42,9 @@ pub struct PlatformSdl2 {
     pub mouse_x: i32,
     pub mouse_y: i32,
     pub gamepads: Vec<Gamepad>,
+    #[cfg(target_os = "emscripten")]
+    pub virtual_gamepad_states: [bool; 8],
+    #[cfg(not(target_os = "emscripten"))]
     pub next_update_ms: Option<f32>,
 }
 
@@ -38,6 +57,9 @@ impl PlatformSdl2 {
             mouse_x: i32::MIN,
             mouse_y: i32::MIN,
             gamepads: Vec::new(),
+            #[cfg(target_os = "emscripten")]
+            virtual_gamepad_states: [false; 8],
+            #[cfg(not(target_os = "emscripten"))]
             next_update_ms: None,
         }
     }
@@ -61,11 +83,27 @@ impl PlatformSdl2 {
         unsafe {
             SDL_Quit();
         }
-        exit(0);
+
+        #[cfg(not(target_os = "emscripten"))]
+        std::process::exit(0);
+
+        #[cfg(target_os = "emscripten")]
+        unsafe {
+            emscripten_force_exit(0);
+        }
     }
 
     pub fn ticks(&self) -> u32 {
         unsafe { SDL_GetTicks() }
+    }
+
+    #[cfg_attr(not(target_os = "emscripten"), allow(unused_variables))]
+    pub fn export_browser_file(&self, filename: &str) {
+        #[cfg(target_os = "emscripten")]
+        unsafe {
+            let script = CString::new(format!("_savePyxelFile('{filename}');")).unwrap();
+            emscripten_run_script(script.as_ptr());
+        }
     }
 
     //
@@ -244,7 +282,7 @@ impl PlatformSdl2 {
             samples: buffer_size as u16,
             padding: 0,
             size: 0,
-            callback: Some(c_audio_callback),
+            callback: Some(audio_callback),
             userdata,
         };
 
@@ -271,6 +309,7 @@ impl PlatformSdl2 {
     //
     // Frame
     //
+    #[cfg(not(target_os = "emscripten"))]
     pub fn run_frame_loop<F: FnMut(f32)>(&mut self, fps: u32, mut callback: F) {
         let frame_ms = 1000.0 / fps as f32;
         let mut next_update_ms = self.ticks() as f32;
@@ -301,6 +340,19 @@ impl PlatformSdl2 {
         }
     }
 
+    #[cfg(target_os = "emscripten")]
+    pub fn run_frame_loop<F: FnMut(f32)>(&mut self, fps: u32, callback: F) {
+        unsafe {
+            emscripten_set_main_loop_arg(
+                main_loop_callback::<F>,
+                Box::into_raw(Box::new(callback)).cast::<c_void>(),
+                fps as c_int,
+                1,
+            );
+        }
+    }
+
+    #[cfg(not(target_os = "emscripten"))]
     pub fn step_frame(&mut self, fps: u32) {
         let frame_ms = 1000.0 / fps as f32;
         let mut next_update_ms = self.next_update_ms.unwrap_or(self.ticks() as f32);
@@ -326,6 +378,11 @@ impl PlatformSdl2 {
         }
 
         self.next_update_ms = Some(next_update_ms);
+    }
+
+    #[cfg(target_os = "emscripten")]
+    pub fn step_frame(&mut self, _fps: u32) {
+        panic!("flip is not supported for Web");
     }
 
     // poll_events is implemented in poll_events.rs

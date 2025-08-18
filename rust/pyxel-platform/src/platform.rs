@@ -4,8 +4,6 @@ use std::ptr::null_mut;
 use glow::Context;
 
 use crate::event::Event;
-#[cfg(feature = "html5")]
-use crate::html5::platform_html5::PlatformHtml5 as Platform;
 #[cfg(feature = "sdl2")]
 use crate::sdl2::platform_sdl2::PlatformSdl2 as Platform;
 
@@ -41,6 +39,10 @@ pub fn quit() {
 
 pub fn ticks() -> u32 {
     platform().ticks()
+}
+
+pub fn export_browser_file(filename: &str) {
+    platform().export_browser_file(filename);
 }
 
 //
