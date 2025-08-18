@@ -187,7 +187,11 @@ function _hookFileOperations(pyodide, root) {
   // Define function to copy path
   let copyPath = (path) => {
     // Check path
-    if (path.startsWith("<") || path.endsWith(PYXEL_WATCH_INFO_FILE)) {
+    if (
+      path.startsWith("<") ||
+      path.endsWith(PYXEL_WATCH_INFO_FILE) ||
+      ["frozen", "_hashlib", "ssl"].includes(path)
+    ) {
       return;
     }
     if (!path.startsWith("/")) {
