@@ -1,5 +1,10 @@
 # Change Log
 
+## 2.4.11
+
+- Refactored the platform abstraction layer
+- Reduced error output in the web version
+
 ## 2.4.10
 
 - Fixed parameter commands ignored after repeat in MML
