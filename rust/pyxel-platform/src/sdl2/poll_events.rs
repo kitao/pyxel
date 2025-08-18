@@ -18,6 +18,11 @@ use crate::key::{
 use crate::sdl2::platform_sdl2::PlatformSdl2;
 use crate::sdl2::sdl2_sys::*;
 
+#[cfg(target_os = "emscripten")]
+extern "C" {
+    fn emscripten_run_script_int(script: *const c_char) -> std::os::raw::c_int;
+}
+
 pub enum Gamepad {
     Unused,
     Controller(i32, *mut SDL_GameController),
@@ -232,6 +237,37 @@ impl PlatformSdl2 {
                         }
                     }
                 }
+
+                #[cfg(target_os = "emscripten")]
+                SDL_JOYBUTTONDOWN => {
+                    if let Some(key_offset) =
+                        self.gamepad_key_offset(unsafe { sdl_event.jbutton.which })
+                    {
+                        let button = unsafe { sdl_event.jbutton.button } as i32;
+                        let key = joystick_button_to_key(button);
+                        if key != KEY_UNKNOWN {
+                            pyxel_events.push(Event::KeyPressed {
+                                key: key + key_offset,
+                            });
+                        }
+                    }
+                }
+
+                #[cfg(target_os = "emscripten")]
+                SDL_JOYBUTTONUP => {
+                    if let Some(key_offset) =
+                        self.gamepad_key_offset(unsafe { sdl_event.jbutton.which })
+                    {
+                        let button = unsafe { sdl_event.jbutton.button } as i32;
+                        let key = joystick_button_to_key(button);
+                        if key != KEY_UNKNOWN {
+                            pyxel_events.push(Event::KeyReleased {
+                                key: key + key_offset,
+                            });
+                        }
+                    }
+                }
+
                 _ => {}
             }
         }
@@ -262,6 +298,40 @@ impl PlatformSdl2 {
                 });
             }
         }
+
+        #[cfg(target_os = "emscripten")]
+        pyxel_events.extend({
+            const INDEX_TO_BUTTON: [Key; 8] = [
+                GAMEPAD1_BUTTON_DPAD_UP,
+                GAMEPAD1_BUTTON_DPAD_DOWN,
+                GAMEPAD1_BUTTON_DPAD_LEFT,
+                GAMEPAD1_BUTTON_DPAD_RIGHT,
+                GAMEPAD1_BUTTON_A,
+                GAMEPAD1_BUTTON_B,
+                GAMEPAD1_BUTTON_X,
+                GAMEPAD1_BUTTON_Y,
+            ];
+
+            let mut events = Vec::new();
+
+            for (i, button) in INDEX_TO_BUTTON.iter().enumerate() {
+                let button_state = unsafe {
+                    let script =
+                        std::ffi::CString::new(format!("_virtualGamepadStates[{i}];")).unwrap();
+                    emscripten_run_script_int(script.as_ptr()) != 0
+                };
+                if button_state != self.virtual_gamepad_states[i] {
+                    self.virtual_gamepad_states[i] = button_state;
+                    if button_state {
+                        events.push(Event::KeyPressed { key: *button });
+                    } else {
+                        events.push(Event::KeyReleased { key: *button });
+                    }
+                }
+            }
+
+            events
+        });
 
         pyxel_events
     }
@@ -318,6 +388,17 @@ fn controller_button_to_key(button: i32) -> Key {
         SDL_CONTROLLER_BUTTON_DPAD_DOWN => GAMEPAD1_BUTTON_DPAD_DOWN,
         SDL_CONTROLLER_BUTTON_DPAD_LEFT => GAMEPAD1_BUTTON_DPAD_LEFT,
         SDL_CONTROLLER_BUTTON_DPAD_RIGHT => GAMEPAD1_BUTTON_DPAD_RIGHT,
+        _ => KEY_UNKNOWN,
+    }
+}
+
+#[cfg(target_os = "emscripten")]
+fn joystick_button_to_key(button: i32) -> Key {
+    match button {
+        12 => GAMEPAD1_BUTTON_DPAD_UP,
+        13 => GAMEPAD1_BUTTON_DPAD_DOWN,
+        14 => GAMEPAD1_BUTTON_DPAD_LEFT,
+        15 => GAMEPAD1_BUTTON_DPAD_RIGHT,
         _ => KEY_UNKNOWN,
     }
 }
