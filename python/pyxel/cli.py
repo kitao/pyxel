@@ -250,13 +250,8 @@ def watch_and_run_python_script(watch_dir, python_script_file):
         worker = _run_python_script_in_separate_process(python_script_file)
 
         while True:
-            if worker.exitcode == pyxel.WATCH_RESET_EXIT_CODE:
-                worker = _run_python_script_in_separate_process(python_script_file)
-                timestamps = _timestamps_in_dir(watch_dir)
-                last_time = time.time()
-                continue
-
             time.sleep(0.5)
+
             cur_time = time.time()
             if cur_time - last_time >= 10:
                 last_time = cur_time
@@ -264,9 +259,13 @@ def watch_and_run_python_script(watch_dir, python_script_file):
 
             last_timestamps = timestamps
             timestamps = _timestamps_in_dir(watch_dir)
-            if timestamps != last_timestamps:
+            if (
+                timestamps != last_timestamps
+                or worker.exitcode == pyxel.WATCH_RESET_EXIT_CODE
+            ):
                 print(f"rerun {python_script_file}")
-                worker.terminate()
+                if worker.is_alive():
+                    worker.terminate()
                 worker = _run_python_script_in_separate_process(python_script_file)
 
     except KeyboardInterrupt:
