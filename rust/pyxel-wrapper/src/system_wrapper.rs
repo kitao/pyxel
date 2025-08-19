@@ -117,6 +117,11 @@ fn fullscreen(enabled: bool) {
     pyxel().fullscreen(enabled);
 }
 
+#[pyfunction]
+fn window_state() -> String {
+    pyxel().window_state()
+}
+
 #[cfg(not(target_os = "emscripten"))]
 #[pyfunction]
 fn process_exists(pid: u32) -> bool {
@@ -136,6 +141,7 @@ pub fn add_system_functions(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(integer_scale, m)?)?;
     m.add_function(wrap_pyfunction!(screen_mode, m)?)?;
     m.add_function(wrap_pyfunction!(fullscreen, m)?)?;
+    m.add_function(wrap_pyfunction!(window_state, m)?)?;
 
     #[cfg(not(target_os = "emscripten"))]
     m.add_function(wrap_pyfunction!(process_exists, m)?)?;

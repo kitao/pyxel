@@ -4,6 +4,7 @@
 
 - Refactored the platform abstraction layer
 - Reduced error output in the web version
+- Added the reset API
 
 ## 2.4.10
 
