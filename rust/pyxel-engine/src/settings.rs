@@ -7,7 +7,9 @@ use crate::tone::{ToneMode, ToneSample};
 // System
 pub const VERSION: &str = "2.4.10";
 pub const BASE_DIR: &str = ".pyxel";
-pub const WATCH_INFO_FILE_ENVVAR: &str = "PYXEL_WATCH_INFO_FILE";
+pub const RESET_STATE_ENV: &str = "PYXEL_RESET_STATE";
+pub const WATCH_STATE_FILE_ENV: &str = "PYXEL_WATCH_STATE_PATH";
+pub const WATCH_RESET_EXIT_CODE: u32 = b'R' as u32;
 pub const DEFAULT_TITLE: &str = "Pyxel";
 pub const DEFAULT_FPS: u32 = 30;
 pub const DEFAULT_QUIT_KEY: Key = KEY_ESCAPE;

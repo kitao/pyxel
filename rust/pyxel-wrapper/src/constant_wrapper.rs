@@ -10,7 +10,9 @@ pub fn add_module_constants(m: &Bound<'_, PyModule>) -> PyResult<()> {
     // Settings
     add_constant!(VERSION)?;
     add_constant!(BASE_DIR)?;
-    add_constant!(WATCH_INFO_FILE_ENVVAR)?;
+    add_constant!(RESET_STATE_ENV)?;
+    add_constant!(WATCH_STATE_FILE_ENV)?;
+    add_constant!(WATCH_RESET_EXIT_CODE)?;
 
     add_constant!(APP_FILE_EXTENSION)?;
     add_constant!(APP_STARTUP_SCRIPT_FILE)?;

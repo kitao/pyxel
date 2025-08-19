@@ -11,7 +11,7 @@ use crate::profiler::Profiler;
 use crate::pyxel::Pyxel;
 use crate::settings::{MAX_FRAME_DELAY_MS, NUM_MEASURE_FRAMES, NUM_SCREEN_TYPES};
 use crate::utils;
-use crate::watch_info::WatchInfo;
+use crate::window_watcher::WindowWatcher;
 
 pub trait PyxelCallback {
     fn update(&mut self, pyxel: &mut Pyxel);
@@ -28,7 +28,7 @@ pub struct System {
     draw_profiler: Profiler,
     perf_monitor_enabled: bool,
     integer_scale_enabled: bool,
-    watch_info: WatchInfo,
+    window_watcher: WindowWatcher,
     pub screen_x: i32,
     pub screen_y: i32,
     pub screen_scale: f32,
@@ -47,7 +47,7 @@ impl System {
             draw_profiler: Profiler::new(NUM_MEASURE_FRAMES),
             perf_monitor_enabled: false,
             integer_scale_enabled: false,
-            watch_info: WatchInfo::new(),
+            window_watcher: WindowWatcher::new(),
             screen_x: 0,
             screen_y: 0,
             screen_scale: 0.0,
@@ -191,6 +191,10 @@ impl Pyxel {
 
     pub fn fullscreen(&self, enabled: bool) {
         pyxel_platform::set_fullscreen(enabled);
+    }
+
+    pub fn window_state(&mut self) -> String {
+        self.system.window_watcher.window_state()
     }
 
     fn process_events(&mut self) {
@@ -431,7 +435,7 @@ impl Pyxel {
             callback.draw(self);
         }
 
-        self.system.watch_info.update();
+        self.system.window_watcher.update();
         self.draw_perf_monitor();
         self.draw_cursor();
         self.render_screen();

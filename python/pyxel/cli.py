@@ -144,7 +144,7 @@ def _create_app_dir():
     return app_dir
 
 
-def _create_watch_info_file():
+def _create_watch_state_file():
     watch_dir = os.path.join(tempfile.gettempdir(), pyxel.BASE_DIR, "watch")
     pathlib.Path(watch_dir).mkdir(parents=True, exist_ok=True)
 
@@ -153,10 +153,10 @@ def _create_watch_info_file():
         if not pyxel.process_exists(pid):
             os.remove(path)
 
-    watch_info_file = os.path.join(watch_dir, str(os.getpid()))
-    with open(watch_info_file, "w") as f:
+    watch_state_file = os.path.join(watch_dir, str(os.getpid()))
+    with open(watch_state_file, "w") as f:
         f.write("")
-    return watch_info_file
+    return watch_state_file
 
 
 def _timestamps_in_dir(dirname):
@@ -241,7 +241,7 @@ def watch_and_run_python_script(watch_dir, python_script_file):
     _check_file_exists(python_script_file)
     _check_file_under_dir(python_script_file, watch_dir)
 
-    os.environ[pyxel.WATCH_INFO_FILE_ENVVAR] = _create_watch_info_file()
+    os.environ[pyxel.WATCH_STATE_FILE_ENV] = _create_watch_state_file()
 
     try:
         print(f"start watching '{watch_dir}' (Ctrl+C to stop)")
@@ -250,6 +250,12 @@ def watch_and_run_python_script(watch_dir, python_script_file):
         worker = _run_python_script_in_separate_process(python_script_file)
 
         while True:
+            if worker.exitcode == pyxel.WATCH_RESET_EXIT_CODE:
+                worker = _run_python_script_in_separate_process(python_script_file)
+                timestamps = _timestamps_in_dir(watch_dir)
+                last_time = time.time()
+                continue
+
             time.sleep(0.5)
             cur_time = time.time()
             if cur_time - last_time >= 10:

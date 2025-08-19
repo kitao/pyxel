@@ -47,7 +47,7 @@ mod tilemap;
 mod tmx_parser;
 mod tone;
 mod voice;
-mod watch_info;
+mod window_watcher;
 
 use pyxel_platform::key;
 
