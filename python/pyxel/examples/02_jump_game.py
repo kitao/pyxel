@@ -34,6 +34,9 @@ class App:
         if pyxel.btnp(pyxel.KEY_Q):
             pyxel.quit()
 
+        if pyxel.btnp(pyxel.KEY_R):
+            pyxel.reset()
+
         self.update_player()
 
         for i, v in enumerate(self.floor):
