@@ -51,6 +51,7 @@ async function launchPyxel(params) {
   let canvas = await _createScreenElements();
   let pyodide = await _loadPyodideAndPyxel(canvas);
 
+  _hookPythonError(pyodide);
   _hookFileOperations(pyodide, params.root || ".");
   await _waitForInput();
   await _executePyxelCommand(pyodide, params);
@@ -163,6 +164,43 @@ async function _loadPyodideAndPyxel(canvas) {
   pyodide.runPython(code);
 
   return pyodide;
+}
+
+function _hookPythonError(pyodide) {
+  pyodide.setStderr({
+    batched: (() => {
+      let errorText = "";
+      let flushTimer = null;
+
+      return (msg) => {
+        pyodide._module._emscripten_cancel_main_loop();
+        errorText += msg + "\n";
+
+        if (!flushTimer) {
+          flushTimer = setTimeout(() => {
+            _displayErrorOverlay(errorText);
+            errorText = "";
+            flushTimer = null;
+          }, 100);
+        }
+      };
+    })(),
+  });
+}
+
+function _displayErrorOverlay(message) {
+  let overlay = document.getElementById("pyxel-error-overlay");
+  if (!overlay) {
+    overlay = document.createElement("pre");
+    overlay.id = "pyxel-error-overlay";
+    overlay.style.position = "absolute";
+    overlay.style.top = 0;
+    overlay.style.left = 0;
+    overlay.style.background = "#000";
+    overlay.style.color = "#fff";
+    document.getElementById("pyxel-screen").appendChild(overlay);
+  }
+  overlay.textContent = message;
 }
 
 function _hookFileOperations(pyodide, root) {
@@ -477,11 +515,8 @@ async function _executePyxelCommand(pyodide, params) {
     pyodide.runPython(pythonCode);
   } catch (error) {
     if (error.name === "PythonError") {
-      document.body.innerHTML = `
-          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-          <pre>${error.message}</pre>
-        `;
-    } else if (error !== "unwind") {
+      _displayErrorOverlay(error.message);
+    } else {
       throw error;
     }
   }
