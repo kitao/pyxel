@@ -436,5 +436,3 @@ def copy_pyxel_examples():
         os.makedirs(os.path.dirname(dst_file), exist_ok=True)
         shutil.copyfile(src_file, dst_file)
         print(f"copied '{dst_file}'")
-
-cli()
