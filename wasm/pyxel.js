@@ -173,6 +173,17 @@ function _hookPythonError(pyodide) {
       let flushTimer = null;
 
       return (msg) => {
+        if (
+          !flushTimer &&
+          !(
+            msg.startsWith("Traceback") ||
+            msg.startsWith("Error:") ||
+            msg.startsWith("Exception:")
+          )
+        ) {
+          return;
+        }
+
         pyodide._module._emscripten_cancel_main_loop();
         errorText += msg + "\n";
 
@@ -193,11 +204,18 @@ function _displayErrorOverlay(message) {
   if (!overlay) {
     overlay = document.createElement("pre");
     overlay.id = "pyxel-error-overlay";
-    overlay.style.position = "absolute";
-    overlay.style.top = 0;
-    overlay.style.left = 0;
-    overlay.style.background = "#000";
-    overlay.style.color = "#fff";
+    Object.assign(overlay.style, {
+      position: "absolute",
+      top: 0,
+      left: 0,
+      width: "100%",
+      height: "100%",
+      background: "rgba(0,0,0,0.7)",
+      color: "#fff",
+      margin: 0,
+      padding: "1em",
+      zIndex: 1000,
+    });
     document.getElementById("pyxel-screen").appendChild(overlay);
   }
   overlay.textContent = message;
