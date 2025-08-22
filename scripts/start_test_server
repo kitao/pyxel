@@ -5,4 +5,7 @@ cd `dirname $0`
 
 ORIGIN_DIR=..
 
-python3 -m http.server --directory $ORIGIN_DIR 8000
+IP=$(python3 -c "import socket; s=socket.socket(socket.AF_INET, socket.SOCK_DGRAM); s.connect(('8.8.8.8', 80)); print(s.getsockname()[0]); s.close()")
+echo "Serving HTTP on $IP port 8000 (http://$IP:8000/) ..."
+
+python3 -m http.server --directory "$ORIGIN_DIR" 8000 2>&1 | grep -v '^Serving HTTP on'
