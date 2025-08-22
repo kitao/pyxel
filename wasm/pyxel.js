@@ -281,15 +281,17 @@ function _displayErrorOverlay(message) {
     overlay.id = "pyxel-error-overlay";
     Object.assign(overlay.style, {
       position: "absolute",
-      top: 0,
-      left: 0,
-      width: "100%",
-      height: "100%",
+      top: "2em",
+      left: "2em",
+      right: "2em",
+      bottom: "2em",
+      zIndex: 1000,
+      margin: "0",
+      padding: "1em",
+      boxSizing: "border-box",
+      overflow: "hidden",
       background: "rgba(0,0,0,0.7)",
       color: "#fff",
-      margin: 0,
-      padding: "1em",
-      zIndex: 1000,
     });
     document.getElementById("pyxel-screen").appendChild(overlay);
   }
