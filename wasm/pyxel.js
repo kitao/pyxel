@@ -51,9 +51,14 @@ async function launchPyxel(params) {
   await _executePyxelCommand(pyodide, params);
 }
 
-function resetPyxel() {
+async function resetPyxel() {
   if (!_pyxelState.initialized) {
     return;
+  }
+
+  let audioContext = _pyxelState.pyodide?._module?.SDL2?.audioContext;
+  if (audioContext && audioContext.state === "running") {
+    await audioContext.suspend();
   }
 
   let pyodide = _pyxelState.pyodide;
@@ -82,7 +87,13 @@ function resetPyxel() {
   `;
   pyodide.runPython(pythonCode);
 
-  _executePyxelCommand(pyodide, _pyxelState.params);
+  await _executePyxelCommand(pyodide, _pyxelState.params);
+
+  setTimeout(() => {
+    if (audioContext && audioContext.state === "suspended") {
+      audioContext.resume();
+    }
+  }, 0);
 }
 
 function _initialize() {
@@ -411,7 +422,7 @@ async function _waitForInput() {
   pyxelScreen.appendChild(promptImage);
   _updateScreenElementsSize();
 
-  await _waitForEvent(document.body, "click");
+  await _waitForEvent(document.body, _isTouchDevice() ? "touchstart" : "click");
   promptImage.remove();
   await new Promise((resolve) => setTimeout(resolve, 0));
 }
@@ -426,6 +437,13 @@ async function _installBuiltinPackages(pyodide, packages) {
 
 function _addVirtualGamepad(mode) {
   if (mode !== "enabled" || !_isTouchDevice()) {
+    return;
+  }
+
+  if (
+    document.getElementById("pyxel-gamepad-cross") ||
+    document.getElementById("pyxel-gamepad-button")
+  ) {
     return;
   }
 
