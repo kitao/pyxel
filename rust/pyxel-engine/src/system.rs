@@ -1,3 +1,5 @@
+use std::sync::atomic::Ordering;
+
 use pyxel_platform::Event;
 
 use crate::image::{Color, Image, SharedImage};
@@ -8,7 +10,7 @@ use crate::key::{
     KEY_RETURN, KEY_SHIFT,
 };
 use crate::profiler::Profiler;
-use crate::pyxel::Pyxel;
+use crate::pyxel::{Pyxel, IS_INITIALIZED};
 use crate::settings::{MAX_FRAME_DELAY_MS, NUM_MEASURE_FRAMES, NUM_SCREEN_TYPES};
 use crate::utils;
 use crate::window_watcher::WindowWatcher;
@@ -136,6 +138,7 @@ impl Pyxel {
     }
 
     pub fn quit(&self) {
+        IS_INITIALIZED.swap(false, Ordering::Relaxed);
         pyxel_platform::quit();
     }
 

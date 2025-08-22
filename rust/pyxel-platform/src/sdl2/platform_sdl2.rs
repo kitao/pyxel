@@ -13,7 +13,6 @@ use crate::sdl2::sdl2_sys::*;
 
 #[cfg(target_os = "emscripten")]
 extern "C" {
-    fn emscripten_force_exit(status: c_int);
     fn emscripten_run_script(script: *const std::os::raw::c_char);
     fn emscripten_set_main_loop_arg(
         func: unsafe extern "C" fn(*mut c_void),
@@ -80,17 +79,19 @@ impl PlatformSdl2 {
     }
 
     pub fn quit(&mut self) {
+        if self.audio_device_id != 0 {
+            unsafe {
+                SDL_CloseAudioDevice(self.audio_device_id);
+                self.audio_device_id = 0;
+            }
+        }
+
         unsafe {
             SDL_Quit();
         }
 
         #[cfg(not(target_os = "emscripten"))]
         std::process::exit(0);
-
-        #[cfg(target_os = "emscripten")]
-        unsafe {
-            emscripten_force_exit(0);
-        }
     }
 
     pub fn ticks(&self) -> u32 {
