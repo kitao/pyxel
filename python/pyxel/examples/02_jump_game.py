@@ -34,7 +34,7 @@ class App:
         if pyxel.btnp(pyxel.KEY_Q):
             pyxel.quit()
 
-        if pyxel.btnp(pyxel.KEY_R):
+        if pyxel.btnp(pyxel.KEY_R) or pyxel.btnp(pyxel.GAMEPAD1_BUTTON_A):
             pyxel.reset()
 
         self.update_player()
