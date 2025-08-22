@@ -17,7 +17,6 @@ def reset():
     except ImportError:
         pass
     else:  # Pyodide
-        quit()
         raise Exception("PYXEL_RESET")
 
     if WATCH_STATE_FILE_ENV in os.environ:  # type: ignore  # noqa: F405
