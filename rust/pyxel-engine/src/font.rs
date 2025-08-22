@@ -126,8 +126,15 @@ impl Font {
         text: &str,
         color: Color,
     ) {
+        let start_x = x;
         let mut x = x;
+        let mut y = y;
         for c in text.chars() {
+            if c == '\n' {
+                x = start_x;
+                y += self.font_bounding_box.height;
+                continue;
+            }
             if let Some(glyph) = self.glyphs.get(&(c as i32)) {
                 self.draw_glyph(canvas, x, y, glyph, color);
                 x += glyph.dwidth;
