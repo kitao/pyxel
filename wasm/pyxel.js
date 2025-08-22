@@ -56,6 +56,13 @@ async function resetPyxel() {
     return;
   }
 
+  document.getElementById("pyxel-error-overlay")?.remove();
+
+  _pyxelState.pyodide.runPython(`
+    import pyxel
+    pyxel.quit()
+  `);
+
   let audioContext = _pyxelState.pyodide?._module?.SDL2?.audioContext;
   if (audioContext && audioContext.state === "running") {
     await audioContext.suspend();
@@ -64,7 +71,7 @@ async function resetPyxel() {
   let pyodide = _pyxelState.pyodide;
   pyodide._module._emscripten_cancel_main_loop();
 
-  let pythonCode = `
+  pyodide.runPython(`
     import importlib
     import sys
     from types import ModuleType
@@ -84,8 +91,7 @@ async function resetPyxel() {
     importlib.invalidate_caches()
 
     sys.modules["__main__"] = ModuleType("__main__")
-  `;
-  pyodide.runPython(pythonCode);
+  `);
 
   await _executePyxelCommand(pyodide, _pyxelState.params);
 
