@@ -38,6 +38,15 @@ impl Gamepad {
             Some(Gamepad::Controller(instance_id, controller))
         }
     }
+
+    pub fn close(&mut self) {
+        if let Gamepad::Controller(_, controller) = self {
+            unsafe {
+                SDL_GameControllerClose(*controller);
+            }
+            *self = Gamepad::Unused;
+        }
+    }
 }
 
 impl PlatformSdl2 {
@@ -186,12 +195,7 @@ impl PlatformSdl2 {
                         .iter_mut()
                         .find(|g| matches!(g, Gamepad::Controller(id, _) if *id == instance_id))
                     {
-                        if let Gamepad::Controller(_, controller) = gamepad {
-                            unsafe {
-                                SDL_GameControllerClose(*controller);
-                            }
-                            *gamepad = Gamepad::Unused;
-                        }
+                        gamepad.close();
                     }
                 }
 

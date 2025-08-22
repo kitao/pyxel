@@ -3,6 +3,7 @@ use std::mem::{transmute, MaybeUninit};
 use std::os::raw::{c_int, c_void};
 use std::ptr::{addr_of_mut, copy_nonoverlapping, null_mut};
 use std::slice::from_raw_parts_mut;
+use std::sync::LazyLock;
 
 use glow::Context;
 use parking_lot::Mutex;
@@ -10,6 +11,9 @@ use parking_lot::Mutex;
 use crate::platform::GLProfile;
 use crate::sdl2::poll_events::Gamepad;
 use crate::sdl2::sdl2_sys::*;
+
+static AUDIO_DEVICE_ID: LazyLock<std::sync::Mutex<Option<SDL_AudioDeviceID>>> =
+    LazyLock::new(|| std::sync::Mutex::new(None));
 
 #[cfg(target_os = "emscripten")]
 extern "C" {
@@ -79,15 +83,18 @@ impl PlatformSdl2 {
     }
 
     pub fn quit(&mut self) {
-        if self.audio_device_id != 0 {
-            unsafe {
-                SDL_CloseAudioDevice(self.audio_device_id);
-                self.audio_device_id = 0;
-            }
-        }
-
+        #[cfg(target_os = "emscripten")]
         unsafe {
-            SDL_Quit();
+            for gamepad in &mut self.gamepads {
+                gamepad.close();
+            }
+
+            if !self.gl_context.is_null() {
+                SDL_GL_DeleteContext(self.gl_context.cast());
+            }
+            if !self.window.is_null() {
+                SDL_DestroyWindow(self.window);
+            }
         }
 
         #[cfg(not(target_os = "emscripten"))]
@@ -271,6 +278,13 @@ impl PlatformSdl2 {
         buffer_size: u32,
         callback: F,
     ) {
+        {
+            if let Some(audio_device_id) = *AUDIO_DEVICE_ID.lock().unwrap() {
+                self.audio_device_id = audio_device_id;
+                return;
+            }
+        }
+
         let userdata = Box::into_raw(Box::new(Mutex::new(
             Box::new(callback) as Box<dyn FnMut(&mut [i16])>
         )))
