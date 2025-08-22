@@ -21,7 +21,7 @@ use crate::system::System;
 use crate::tilemap::{ImageSource, SharedTilemap, Tilemap};
 use crate::tone::{SharedTone, Tone};
 
-static IS_INITIALIZED: AtomicBool = AtomicBool::new(false);
+pub static IS_INITIALIZED: AtomicBool = AtomicBool::new(false);
 
 pub static COLORS: LazyLock<shared_type!(Vec<Rgb24>)> =
     LazyLock::new(|| new_shared_type!(DEFAULT_COLORS.to_vec()));

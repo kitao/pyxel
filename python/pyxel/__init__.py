@@ -13,12 +13,12 @@ _reset_info = {
 
 def reset():
     try:
-        import js  # type: ignore
+        import pyodide  # type: ignore  # noqa: F401
     except ImportError:
         pass
     else:  # Pyodide
-        js.Function("throw new Error('PYXEL_RESET')")()
-        return
+        quit()
+        raise Exception("PYXEL_RESET")
 
     if WATCH_STATE_FILE_ENV in os.environ:  # type: ignore  # noqa: F405
         os._exit(WATCH_RESET_EXIT_CODE)  # type: ignore  # noqa: F405

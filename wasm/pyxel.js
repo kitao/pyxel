@@ -9,10 +9,92 @@ const PYXEL_WORKING_DIRECTORY = "/pyxel_working_directory";
 const PYXEL_WATCH_INFO_FILE = ".pyxel_watch_info";
 const IMPORT_HOOK_PATH = "import_hook.py";
 
+let _pyxelState = {
+  initialized: false,
+  canvas: null,
+  pyodide: null,
+  params: null,
+};
+
+let _virtualGamepadStates = [
+  false, // Up
+  false, // Down
+  false, // Left
+  false, // Right
+  false, // A
+  false, // B
+  false, // X
+  false, // Y
+];
+
+async function launchPyxel(params) {
+  const pyxel_version = PYXEL_WHEEL_PATH.match(/pyxel-([\d.]+)-/)[1];
+  const pyodide_version = PYODIDE_URL.match(/v([\d.]+)\//)[1];
+  console.log(`Launch Pyxel ${pyxel_version} with Pyodide ${pyodide_version}`);
+  console.log(params);
+
+  _allowGamepadConnection();
+  _suppressPinchOperations();
+
+  let canvas = await _createScreenElements();
+  let pyodide = await _loadPyodideAndPyxel(canvas);
+
+  _hookPythonError(pyodide);
+  _hookFileOperations(pyodide, params.root || ".");
+  await _waitForInput();
+
+  _pyxelState.initialized = true;
+  _pyxelState.canvas = canvas;
+  _pyxelState.pyodide = pyodide;
+  _pyxelState.params = params;
+
+  await _executePyxelCommand(pyodide, params);
+}
+
+function resetPyxel() {
+  if (!_pyxelState.initialized) {
+    return;
+  }
+
+  let pyodide = _pyxelState.pyodide;
+  pyodide._module._emscripten_cancel_main_loop();
+
+  let pythonCode = `
+    import importlib
+    import sys
+    from types import ModuleType
+
+    work_dir = "${PYXEL_WORKING_DIRECTORY}"
+    mods = [
+        n
+        for n, m in list(sys.modules.items())
+        if getattr(m, "__file__", "") and m.__file__.startswith(work_dir)
+    ]
+
+    for n in mods:
+        try:
+            del sys.modules[n]
+        except BaseException:
+            pass
+    importlib.invalidate_caches()
+
+    sys.modules["__main__"] = ModuleType("__main__")
+  `;
+  pyodide.runPython(pythonCode);
+
+  _executePyxelCommand(pyodide, _pyxelState.params);
+}
+
 function _initialize() {
   _setIcon();
   _setStyleSheet();
   _registerCustomElements();
+}
+
+function _registerCustomElements() {
+  window.customElements.define("pyxel-run", PyxelRunElement);
+  window.customElements.define("pyxel-play", PyxelPlayElement);
+  window.customElements.define("pyxel-edit", PyxelEditElement);
 }
 
 function _scriptDir() {
@@ -37,24 +119,6 @@ function _setStyleSheet() {
   styleSheetLink.rel = "stylesheet";
   styleSheetLink.href = _scriptDir() + "pyxel.css";
   document.head.appendChild(styleSheetLink);
-}
-
-async function launchPyxel(params) {
-  const pyxel_version = PYXEL_WHEEL_PATH.match(/pyxel-([\d.]+)-/)[1];
-  const pyodide_version = PYODIDE_URL.match(/v([\d.]+)\//)[1];
-  console.log(`Launch Pyxel ${pyxel_version} with Pyodide ${pyodide_version}`);
-  console.log(params);
-
-  _allowGamepadConnection();
-  _suppressPinchOperations();
-
-  let canvas = await _createScreenElements();
-  let pyodide = await _loadPyodideAndPyxel(canvas);
-
-  _hookPythonError(pyodide);
-  _hookFileOperations(pyodide, params.root || ".");
-  await _waitForInput();
-  await _executePyxelCommand(pyodide, params);
 }
 
 function _allowGamepadConnection() {
@@ -173,14 +237,14 @@ function _hookPythonError(pyodide) {
       let flushTimer = null;
 
       return (msg) => {
-        if (
-          !flushTimer &&
-          !(
-            msg.startsWith("Traceback") ||
-            msg.startsWith("Error:") ||
-            msg.startsWith("Exception:")
-          )
-        ) {
+        if (!flushTimer && !msg.startsWith("Traceback")) {
+          return;
+        }
+
+        if (msg.includes("Exception: PYXEL_RESET")) {
+          clearTimeout(flushTimer);
+          flushTimer = null;
+          setTimeout(() => resetPyxel(), 0);
           return;
         }
 
@@ -359,17 +423,6 @@ async function _installBuiltinPackages(pyodide, packages) {
 
   await pyodide.loadPackage(packages.split(","));
 }
-
-_virtualGamepadStates = [
-  false, // Up
-  false, // Down
-  false, // Left
-  false, // Right
-  false, // A
-  false, // B
-  false, // X
-  false, // Y
-];
 
 function _addVirtualGamepad(mode) {
   if (mode !== "enabled" || !_isTouchDevice()) {
@@ -610,12 +663,6 @@ class PyxelEditElement extends HTMLElement {
   attributeChangedCallback(name, _oldValue, newValue) {
     this[name] = newValue;
   }
-}
-
-function _registerCustomElements() {
-  window.customElements.define("pyxel-run", PyxelRunElement);
-  window.customElements.define("pyxel-play", PyxelPlayElement);
-  window.customElements.define("pyxel-edit", PyxelEditElement);
 }
 
 _initialize();
