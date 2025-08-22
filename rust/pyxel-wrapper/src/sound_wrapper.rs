@@ -110,7 +110,7 @@ impl Sound {
     #[pyo3(signature = (code=None))]
     pub fn mml(&self, code: Option<&str>) {
         if let Some(code) = code {
-            if code.contains('x') || code.contains('X') {
+            if code.contains('x') || code.contains('X') || code.contains('~') {
                 OLD_MML_ONCE.call_once(|| {
                     println!("Old MML syntax is deprecated. Use new syntax instead.");
                 });
