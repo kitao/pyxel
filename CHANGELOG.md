@@ -5,7 +5,7 @@
 - Refactored the platform abstraction layer
 - Reduced error output in the web version
 - Added the reset function
-- Now automatically uses old_mml when '~' is used
+- Added automatic use of old_mml when '~' is used
 
 ## 2.4.10
 
@@ -14,11 +14,11 @@
 ## 2.4.9
 
 - Fixed dot note length bug in MML parser
-- Enabled tie notation with numbers only in MML
+- Added support for tie notation with numbers only in MML
 
 ## 2.4.8
 
-- Prevented playback when all sounds in the array are empty
+- Fixed playback when all sounds in the array are empty
 - Added console output to the mml command in Pyxel Web Launcher
 
 ## 2.4.7
@@ -35,7 +35,7 @@
 
 ## 2.4.5
 
-- Now calls the old_mml method when the old syntax is detected
+- Added call to old_mml method when the old syntax is detected
 
 ## 2.4.4
 
@@ -101,7 +101,7 @@
 - Added a screen size specification to the README files
 - Added blank lines to format code
 - Updated the sysinfo crate to version 0.34
-- Made math functions static
+- Changed math functions to static
 - Added the DEFAULT_COLORS constant
 - Updated the Pyxel thanks image
 
@@ -133,7 +133,7 @@
 ## 2.3.12
 
 - Added a Q&A about file loading to the FAQ
-- Enabled overriding screen position and size in the web version
+- Added support for overriding screen position and size in the web version
 - Updated the pyo3 crate to version 2.4
 
 ## 2.3.11
@@ -148,7 +148,7 @@
 
 ## 2.3.9
 
-- Enabled loading of upper-level files in the web version
+- Added support for loading upper-level files in the web version
 - Adjusted click message removal timing in the web version
 - Updated Pyodide to version 0.27.3
 - Stopped downloading unnecessary files in the web version
@@ -162,7 +162,7 @@
 ## 2.3.7
 
 - Added a script for Pyxel User Examples pages
-- Enabled local module imports in the web version
+- Added support for local module imports in the web version
 - Updated Rust to version nightly-2025-02-01
 
 ## 2.3.6
@@ -202,7 +202,7 @@
 - Fixed a bug in loading old resource files
 - Added the `X` command to MML
 - Renamed the `!` command in MML to `~`
-- Enabled adding multiple dots to a note in MML
+- Added support for adding multiple dots to a note in MML
 - Restored the input_keys variable
 - Updated Example 9 to use MML for music setup
 - Updated 8bit BGM Generator to version 1.22
@@ -231,7 +231,7 @@
 
 ## 2.2.9
 
-- Now includes the LICENSE file in the Python package
+- Added the LICENSE file to the Python package
 - Excluded the pycache directory from the copy_examples command
 - Updated the message image for the README files
 - Fixed clippy warnings
@@ -298,7 +298,7 @@
 - Fixed the mypy errors
 - Changed an image layout in the README files
 - Updated Python in GitHub Actions to version 3.12
-- Enabled adding metadata to a Pyxel application file
+- Added support for adding metadata to a Pyxel application file
 - Added metadata to the bundled Pyxel application files
 
 ## 2.2.1
@@ -327,7 +327,7 @@
 
 - Updated the required Python to version 3.8 or higher
 - Avoided using the gil-refs feature in the pyo3 crate
-- Prevented key state changes during special inputs
+- Fixed key state changes during special inputs
 
 ## 2.1.8
 
@@ -487,7 +487,7 @@
 ## 2.0.0
 
 - Switched to the C version of SDL2
-- Now allows resizing of the colors list
+- Added support for resizing the colors list
 - Switched screen rendering to GLSL
 - Updated Pyodide to version 0.24.1
 - Updated Emscripten to version 3.1.45
@@ -582,14 +582,14 @@
 - Updated Emscripten to version 3.1.29
 - Updated Pyodide to version 0.22.0
 - Fixed gamepad input bug
-- Enabled dynamic addition of gamepads
+- Added support for dynamic addition of gamepads
 - Changed a help message for the tilemap editor
 
 ## 1.9.8
 
 - Modified description for Example 13
 - Added system palette colors besides normal palette colors
-- Now keeps the default palette color in Pyxel Editor
+- Fixed to keep the default palette color in Pyxel Editor
 - Updated Emscripten to version 3.1.28
 - Updated the source of Pyodide-SDL2
 
@@ -610,7 +610,7 @@
 
 ## 1.9.5
 
-- Now works without a body tag in Pyxel Web
+- Fixed to work without a body tag in Pyxel Web
 - Added the app2html command to create an HTML page
 
 ## 1.9.4
@@ -648,7 +648,7 @@
 ## 1.8.22
 
 - Added file save function for the web
-- Prevented the web browser Ctrl+S action in Pyxel Editor
+- Fixed to prevent the web browser Ctrl+S action in Pyxel Editor
 
 ## 1.8.21
 
@@ -679,10 +679,10 @@
 ## 1.8.16
 
 - Added access analytics code for the web pages
-- Enabled to launch Pyxel Web from JavaScript
-- Enabled to change a screen div
+- Added support to launch Pyxel Web from JavaScript
+- Added support to change a screen div
 - Fixed the bltm figure for the README files
-- Now displays a message when a screenshot fails
+- Added display of a message when a screenshot fails
 
 ## 1.8.15
 
@@ -697,24 +697,24 @@
 
 ## 1.8.13
 
-- Now specifies the Pyxel version in CDN links
+- Added support to specify the Pyxel version in CDN links
 - Fixed link to the examples
 - Added the starting editor parameter to Pyxel Editor
 
 ## 1.8.12
 
-- Now auto-loads files without the pyxel-asset element
+- Added support to auto-load files without the pyxel-asset element
 
 ## 1.8.11
 
 - Switched to the latest CDN
-- Now cancels frame skip when elapsed time is large
+- Added support to cancel frame skip when elapsed time is large
 - Fixed the version number check
 
 ## 1.8.10
 
 - Added Pyxel Web Launcher
-- Now shows Python error messages on the web
+- Added support to show Python error messages on the web
 
 ## 1.8.9
 
@@ -726,7 +726,7 @@
 
 ## 1.8.8
 
-- Now waits for user input on the PC web
+- Added support to wait for user input on the PC web
 - Changed the server script to detect Windows
 
 ## 1.8.7
@@ -734,7 +734,7 @@
 - Fixed file existence check in Pyxel Editor
 - Fixed sound playback on mobile web devices
 - Removed the onstart attribute from the custom elements
-- Now displays the Pyxel logo while loading
+- Added support to display the Pyxel logo while loading
 - Added "tap to start" menu for the web on mobile devices
 
 ## 1.8.6
@@ -795,7 +795,7 @@
 - Added fall death to Example 10
 - Fixed Example 12 to not capture the screen
 - Consolidated tool settings into pyproject.toml
-- Now works without audio
+- Added support to work without audio
 - Changed to build wheels for each platform
 - Added experimental web browser support
 
@@ -840,13 +840,13 @@
 - Fixed the window to be active when a file is dropped
 - Added the elli and ellib functions
 - Added the fill function
-- Now works even when audio is not installed
+- Added support to work even when audio is not installed
 - Updated the README files
 
 ## 1.6.7
 
 - Fixed a file drop bug
-- Now pauses only when minimized
+- Changed to pause only when minimized
 
 ## 1.6.6
 
@@ -1087,7 +1087,7 @@
 
 - Improved the animated GIF making method
 - Added the README in Portuguese
-- Now works with Python 3.7 on Windows
+- Added support for Python 3.7 on Windows
 - Changed the color change shortcuts to ignore the alt keys
 
 ## 1.3.0
@@ -1145,7 +1145,7 @@
 
 ## 1.2.4
 
-- Now keeps the mouse cursor speed on Linux
+- Fixed to keep the mouse cursor speed on Linux
 - Added Python version check
 
 ## 1.2.3
@@ -1204,7 +1204,7 @@
 ## 1.1.4
 
 - Fixed the index check of the playm function
-- Enabled to access the screen as the image bank #4
+- Added support to access the screen as the image bank #4
 - Changed the area to display the mouse cursor
 - Optimized the image and tilemap functions
 - Updated the README files
@@ -1253,7 +1253,7 @@
 - Simplified comparisons
 - Removed a deprecated function
 - Applied @staticmethod to functions that do not use self
-- Now keeps the previous frame when cls is not called
+- Changed to keep the previous frame when cls is not called
 - Changed frame_count to start from 0
 - Fixed the gamepad constants
 
@@ -1275,7 +1275,7 @@
 
 ## 0.9.8
 
-- Enabled running Pyxel Editor without a filename
+- Added support to run Pyxel Editor without a filename
 
 ## 0.9.7
 
@@ -1303,7 +1303,7 @@
 
 ## 0.9.3
 
-- Enabled opening a resource file by drag and drop in Pyxel Editor
+- Added support to open a resource file by drag and drop in Pyxel Editor
 - Renamed the constants for the mouse buttons
 - Added gamepad support
 - Changed gamepad available for Example 2
@@ -1315,10 +1315,10 @@
 
 ## 0.9.2
 
-- Enabled importing PNG files by drag and drop in the image editor
+- Added support to import PNG files by drag and drop in the image editor
 - Fixed the crash bug caused by unsupported keys
-- Enabled playing the piano with the mouse in the sound editor
-- Enabled repeating undo/redo shortcuts
+- Added support to play the piano with the mouse in the sound editor
+- Added support for repeating undo/redo shortcuts
 
 ## 0.9.1
 
@@ -1333,9 +1333,9 @@
 - Stopped adding unnecessary undo history of the editors
 - Added the setting files for Pipenv
 - Modified the cursor design of the image/tilemap editor
-- Enabled to change the focus size of the tilemap editor
+- Added support to change the focus size of the tilemap editor
 - Added the link to the subreddit in the README files
-- Now exports all constants for keys before init is called
+- Added support to export all constants for keys before init is called
 - Added the contribution section to the README files
 
 ## 0.8.9
