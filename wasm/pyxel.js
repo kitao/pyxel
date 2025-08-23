@@ -258,13 +258,6 @@ function _hookPythonError(pyodide) {
           return;
         }
 
-        if (msg.includes("Exception: PYXEL_RESET")) {
-          clearTimeout(flushTimer);
-          flushTimer = null;
-          setTimeout(() => resetPyxel(), 0);
-          return;
-        }
-
         pyodide._module._emscripten_cancel_main_loop();
         errorText += msg + "\n";
 

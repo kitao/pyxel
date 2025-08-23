@@ -12,8 +12,8 @@ use crate::platform::GLProfile;
 use crate::sdl2::poll_events::Gamepad;
 use crate::sdl2::sdl2_sys::*;
 
-static AUDIO_DEVICE_ID: LazyLock<std::sync::Mutex<Option<SDL_AudioDeviceID>>> =
-    LazyLock::new(|| std::sync::Mutex::new(None));
+static AUDIO_DEVICE_ID: LazyLock<std::sync::Mutex<SDL_AudioDeviceID>> =
+    LazyLock::new(|| std::sync::Mutex::new(0));
 
 #[cfg(target_os = "emscripten")]
 extern "C" {
@@ -84,11 +84,16 @@ impl PlatformSdl2 {
 
     #[cfg(not(target_os = "emscripten"))]
     pub fn quit(&mut self) {
+        unsafe {
+            SDL_Quit();
+        }
         std::process::exit(0);
     }
 
     #[cfg(target_os = "emscripten")]
     pub fn quit(&mut self) {
+        self.pause_audio(true);
+
         for gamepad in &mut self.gamepads {
             gamepad.close();
         }
@@ -285,8 +290,10 @@ impl PlatformSdl2 {
         callback: F,
     ) {
         {
-            if let Some(audio_device_id) = *AUDIO_DEVICE_ID.lock().unwrap() {
+            let audio_device_id = *AUDIO_DEVICE_ID.lock().unwrap();
+            if audio_device_id != 0 {
                 self.audio_device_id = audio_device_id;
+                self.pause_audio(false);
                 return;
             }
         }
@@ -315,6 +322,8 @@ impl PlatformSdl2 {
         if self.audio_device_id == 0 {
             println!("Failed to initialize audio device");
         }
+
+        *AUDIO_DEVICE_ID.lock().unwrap() = self.audio_device_id;
 
         self.pause_audio(false);
     }
