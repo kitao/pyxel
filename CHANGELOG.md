@@ -1,12 +1,5 @@
 # Change Log
 
-## 2.5.0
-
-- Refactored the platform abstraction layer
-- Reduced error output in the web version
-- Added the reset function
-- Changed to automatically use old_mml when '~' is used
-
 ## 2.4.10
 
 - Fixed parameter commands ignored after repeat in MML
