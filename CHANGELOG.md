@@ -1,11 +1,10 @@
 # Change Log
 
-## 2.4.11
+## 2.5.0
 
 - Refactored the platform abstraction layer
 - Reduced error output in the web version
-- Added the reset API
-- Added a reset feature to Example 2
+- Added the reset function
 - Changed to automatically use old_mml when '~' is used
 
 ## 2.4.10
