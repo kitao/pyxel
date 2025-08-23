@@ -1,5 +1,12 @@
 # Change Log
 
+## 2.5.0
+
+- Refactored the platform abstraction layer
+- Reduced error output in the web version
+- Added the reset function
+- Changed to automatically use old_mml when '~' is used
+
 ## 2.4.10
 
 - Fixed parameter commands ignored after repeat in MML
@@ -1280,246 +1287,218 @@
 
 ## 0.9.5
 
-## 0.9.5issue templates
-
-- Added the description of issue templates in the manuals
-- Added issue templatesg of drawing primitives
+- Added issue templates
 - Added the description of issue templates in the manuals
 - Fixed the clipping bug of drawing primitives
 
-## 0.9.4the crush bug when entering the fullscreen mode
+## 0.9.4
 
-- Updated the description for Linux in the manuals
 - Fixed the crush bug when entering the fullscreen mode
 - Updated the description for Linux in the manuals
-- Reverted to check the version number of glfw strictlyor
+- Reverted to check the version number of glfw strictly
 - Increased the sound buffer size
 - Fixed the range of the sound picker in the sound editor
 
-## 0.9.3d to open a resource file by drop in Pyxel Editor
+## 0.9.3
 
-- Renamed the constants for the mouse buttons
 - Enabled to open a resource file by drop in Pyxel Editor
 - Renamed the constants for the mouse buttons
-- Added gamepad supporthen the window is minimized
+- Added gamepad support
 - Changed gamepad available for Example 2
 - Fixed the crash bug when the window is minimized
-- Modified the code of Example 6the bltm API
+- Modified the code of Example 6
 - Added the refimg property to the Tilemap class
 - Removed the img argument from the bltm API
 - Updated the screenshot of Example 3
 
-## 0.9.2d to import png by drop in the image editor
+## 0.9.2
 
-- Fixed the crash bug caused by unsupported keys
-- Enabled to import png by drop in the image editor editor
+- Enabled to import png by drop in the image editor
 - Fixed the crash bug caused by unsupported keys
 - Enabled to play the piano with mouse in the sound editor
 - Enabled to repeat undo/redo shortcuts
 
-## 0.9.1the color pick bug of the image editor
+## 0.9.1
 
-- Changed the focus UI of the image editor
 - Fixed the color pick bug of the image editor
 - Changed the focus UI of the image editor
 
-## 0.9.0the bug where Pyxel Editor cursor malfunctions
+## 0.9.0
 
-- Added new API descriptions to Example 3
 - Fixed the bug where Pyxel Editor cursor malfunctions
-- Added new API descriptions to Example 3ory of the editors
+- Added new API descriptions to Example 3
 - Updated the screenshot of Example 3
 - Change to not add unnecessary undo history of the editors
-- Added the setting files for Pipenvf the tilemap editor
+- Added the setting files for Pipenv
 - Modified the cursor design of the image/tilemap editor
-- Enabled to change the focus size of the tilemap editoris called
+- Enabled to change the focus size of the tilemap editor
 - Added the link to the subreddit in the manuals
 - Changed to exports all constants for keys before init is called
 - Added the contribution section to the manuals
 
-## 0.8.9the tilemap to allow the tiles of 256 or higher
+## 0.8.9
 
-- Updated the screenshots of Pyxel Editor
 - Fixed the tilemap to allow the tiles of 256 or higher
 - Updated the screenshots of Pyxel Editor
 - Fixed the cursor movement of the sound/music editor
-- Changed the caption of Example 2 animated GIF
+- Changed the caption of Example 2
 - Renamed Example 6
 - Fixed the error when saving long animated GIF
 
-## 0.8.8the .pyxel file to the install example script
+## 0.8.8
 
 - Added the .pyxel file to the install example script
 
-## 0.8.7the piano keyboard bug when only enter was pressed
+## 0.8.7
 
-- Fixed the piano keyboard highlights correctly
 - Fixed the piano keyboard bug when only enter was pressed
 - Fixed the piano keyboard highlights correctly
-- Changed the default sound volume to 7nd editor
+- Changed the default sound volume to 7
 - Changed the default sound speed to 30
 - Fixed the sound button bug of the sound editor
 
-## 0.8.6d the operation method of the sound editor
+## 0.8.6
 
-- Changed to allow sound of length 0
 - Changed the operation method of the sound editor
-- Changed to allow sound of length 0file
+- Changed to allow sound of length 0
 - Implemented the music editor
 - Changed Example 2 to use resource file
 
-## 0.8.5ented the undo function of the sound editor
+## 0.8.5
 
-- Changed the click tolerance time
 - Implemented the undo function of the sound editor
 - Changed the click tolerance time
-- Removed the length limitation of the soundym APIs
+- Removed the length limitation of the sound
 - Added the music and playm APIs
 - Changed Example 2 to use the music and playm APIs
 
-## 0.8.4d to follow the mouse position outside the window
+## 0.8.4
 
-- Changed to draw the self mouse cursor
 - Changed to follow the mouse position outside the window
-- Changed to draw the self mouse cursor APIs
-- Added the mouse API PNG and animated GIF
+- Changed to draw the self mouse cursor
+- Added the mouse API
 - Renamed arguments of the blt and bltm APIs
 - Reduced the size of PNG and animated GIF
 - Changed the max length of the sound to 48
-- Added the system option to the sound APItton
-- Refined the help message of Pyxel Editorundo function
+- Added the system option to the sound API
+- Refined the help message of Pyxel Editor
 - Added the ToggleButton and ImageToggleButton
 - Implemented the sound editor except the undo function
 
-## 0.8.3the right click bug in the tilemap editor
+## 0.8.3
 
-- Fixed the key callback bug
 - Fixed the right click bug in the tilemap editor
-- Fixed the key callback bugthe Image class to accept a number as data
-- Added the get method to the Image classlemap class
+- Fixed the key callback bug
+- Added the get method to the Image class
 - Changed the set method of the Image class to accept a number as data
 - Added the get and set methods to the Tilemap class
 - Added the bltm test to Example 3
 - Updated the descriptions of the READMEs
 
-## 0.8.2the set, load, and copy methods of the image class
+## 0.8.2
 
-- Fixed the starting directory of the save and load APIs
 - Fixed the set, load, and copy methods of the image class
 - Fixed the starting directory of the save and load APIs
 - Modified the usage of Pyxel Editor
 
-## 0.8.1the run_with_profiler API
+## 0.8.1
 
-- Added the Tilemap class
 - Added the run_with_profiler API
-- Added the Tilemap class editor
-- Added the bltm API widgets
-- Implemented the tilemap editortor
-- Added the standard widgets Pyxel Editor
-- Changed the usage of Pyxel Editoritor to the READMEs
+- Added the Tilemap class
+- Added the bltm API
+- Implemented the tilemap editor
+- Added the standard widgets
+- Changed the usage of Pyxel Editor
 - Added the help messages to Pyxel Editor
 - Added the description of Pyxel Editor to the READMEs
 
-## 0.8.0d the formatter from yapf to black
+## 0.8.0
 
-- Added the UI module
 - Changed the formatter from yapf to black
-- Added the UI moduletor as a part of Pyxel Editor
-- Added the save and load APIsf the save and load APIs
+- Added the UI module
+- Added the save and load APIs
 - Added the image editor as a part of Pyxel Editor
 - Removed the dirname option of the save and load APIs
 
-## 0.7.12ew key definitions which integrates keys on both sides
+## 0.7.12
 
-- Changed the description of the project
 - Added new key definitions which integrates keys on both sides
-- Changed the description of the projectI
-- Changed the max screen size to 255ly in the slow frame rate condition
-- Fixed the key hold time of the btnp APId Example 6
+- Changed the description of the project
+- Changed the max screen size to 255
+- Fixed the key hold time of the btnp API
 - Fixed to work the btnp API correctly in the slow frame rate condition
 - Changed the screen size of Example 5 and Example 6
 - Updated the screenshot of Example 5
 
-## 0.7.11 the Japanese link name in the READMEs
+## 0.7.11
 
-- Implemented the widget class for Pyxel Editor
 - Changed the Japanese link name in the READMEs
-- Implemented the widget class for Pyxel Editoreen size
-- Added Example 6 by ttrkaya scale automatically
+- Implemented the widget class for Pyxel Editor
+- Added Example 6 by ttrkaya
 - Renamed the constant variable for the max screen size
 - Changed to set the default scale automatically
 
-## 0.7.10creen size error
+## 0.7.10
 
-- Added the link to the Pyxel wiki to the READMEs
-- Added screen size errortuguese to the Pyxel wiki
+- Added screen size error
 - Added the link to the Pyxel wiki to the READMEs
 - Moved the README in Portuguese to the Pyxel wiki
 
-## 0.7.9d the color of the system font texture to white
+## 0.7.9
 
-- Fixed a typo in the README.md
 - Changed the color of the system font texture to white
 - Fixed a typo in the README.md
 - Renamed the modules to use snake case
 - Added glfw version check
 
-## 0.7.8the system option to the image API
+## 0.7.8
 
-- Fixed the color bug of the shader for some environments
-- Added the system option to the image APIhod of the image class
+- Added the system option to the image API
 - Fixed the color bug of the shader for some environments
 - Added the dirname option to the load method of the image class
 - Updated the description of the init API of the READMEs
 
-## 0.7.7the description of the screen size limitation to the READMEs
+## 0.7.7
 
-- Added the Fedora Linux installation to the READMEs
 - Added the description of the screen size limitation to the READMEs
 - Added the Fedora Linux installation to the READMEs
 - Added another fallback to get the desktop folder name
 - Changed the number of the image banks to 3
 - Added some image assets for Pyxel Editor (WIP)
 
-## 0.7.6y the version of GLFW in the READMEs
+## 0.7.6
 
-- Limited the window size to 256 because of OpenGL Point Sprite limitation
 - Specify the version of GLFW in the READMEs
 - Limited the window size to 256 because of OpenGL Point Sprite limitation
 - Fixed the element border lacks bug
 - Added Example 5
 
-## 0.7.5typos in the READMEs
+## 0.7.5
 
+- Fixed typos in the READMEs
 - Updated the Arch Linux installation in the READMEs
-- Fixed typos in the READMEsnstallation in the READMEs
-- Updated the Arch Linux installation in the READMEs
-- Updated the Debian Linux installation in the READMEsent
+- Updated the Debian Linux installation in the READMEs
 - Updated the way to capture screen on Linux
 - Fixed a shader compile error occurs in some environment
 
-## 0.7.4to run without an audio card
+## 0.7.4
 
-- Refactored import order of all files with isort
-- Fixed to run without an audio card Linux
+- Fixed to run without an audio card
 - Refactored import order of all files with isort
 - Fixed the way to capture screen on Linux
 
-## 0.7.3the btnr API
+## 0.7.3
 
+- Fixed the btnr API
 - Fixed a typo in the README.md
-- Fixed a typo in the README.mdEADMEs
-- Added the title logo to the READMEs README.md
+- Added the title logo to the READMEs
 - Added the Portuguese version of the README.md
 
 ## 0.7.2
 
-## 0.7.2
-
 - Changed to not include the screenshots in the PyPI package
-- Changed to not include the screenshots in the PyPI packageile errors
 - Removed unnecessary semicolons in the shader to avoid compile errors
+- Changed the project description for PyPI
 - Added the description of installation on Linux to the READMEs
 - Refactored the way to make a captured image and animation
 - Updated the screenshots of Example 3 and Example 4
