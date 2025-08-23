@@ -5,7 +5,7 @@
 - Refactored the platform abstraction layer
 - Reduced error output in the web version
 - Added the reset function
-- Changed to automatically use old_mml when '~' is used
+- Now automatically uses old_mml when '~' is used
 
 ## 2.4.10
 
@@ -18,7 +18,7 @@
 
 ## 2.4.8
 
-- Fixed to not play when all sounds in the array are empty
+- Prevented playback when all sounds in the array are empty
 - Added console output to the mml command in Pyxel Web Launcher
 
 ## 2.4.7
@@ -29,13 +29,13 @@
 
 - Added the mml command to Pyxel Web Launcher
 - Changed the note interpolation time to 1ms
-- Changed to fix the Pyxel version used by the app2html command
+- Pinned the Pyxel version used by the app2html command
 - Updated the web usage instructions
 - Updated the sysinfo crate to version 0.36
 
 ## 2.4.5
 
-- Changed to call the old_mml method when the old syntax is detected
+- Now calls the old_mml method when the old syntax is detected
 
 ## 2.4.4
 
@@ -62,7 +62,7 @@
 - Made the wavetable field of the Tone class support arbitrary length
 - Renamed the tone_index parameter of the Tone command in MML to tone
 - Changed the types of the Sound class members
-- Changed to use the blip_buf crate
+- Switched to the blip_buf crate
 - Added asterisk parameter support to the @GLI command in MML
 - Removed redundant MML code from Example 9
 
@@ -98,7 +98,7 @@
 - Added SDL2 include paths for Linux
 - Fixed relative path handling in the watch command
 - Updated the message image
-- Added a screen size specification to the READMEs
+- Added a screen size specification to the README files
 - Added blank lines to format code
 - Updated the sysinfo crate to version 0.34
 - Made math functions static
@@ -133,7 +133,7 @@
 ## 2.3.12
 
 - Added a Q&A about file loading to the FAQ
-- Enabled screen position and size override in the web version
+- Enabled overriding screen position and size in the web version
 - Updated the pyo3 crate to version 2.4
 
 ## 2.3.11
@@ -151,7 +151,7 @@
 - Enabled loading of upper-level files in the web version
 - Adjusted click message removal timing in the web version
 - Updated Pyodide to version 0.27.3
-- Changed to stop downloading unnecessary files in the web version
+- Stopped downloading unnecessary files in the web version
 - Fixed a warning in a utility script
 
 ## 2.3.8
@@ -190,7 +190,7 @@
 - Removed NoSleep.js from the web version of Pyxel
 - Fixed a bug in the save method of the Music class
 - Changed the location of the image used for MP4 creation
-- Restored the links to the Discord servers in the READMEs
+- Restored the links to the Discord servers in the README files
 
 ## 2.3.2
 
@@ -202,7 +202,7 @@
 - Fixed a bug in loading old resource files
 - Added the `X` command to MML
 - Renamed the `!` command in MML to `~`
-- Enabled to add multiple dots to a note in MML
+- Enabled adding multiple dots to a note in MML
 - Restored the input_keys variable
 - Updated Example 9 to use MML for music setup
 - Updated 8bit BGM Generator to version 1.22
@@ -231,15 +231,15 @@
 
 ## 2.2.9
 
-- Fixed to include the LICENSE file in the Python package
+- Now includes the LICENSE file in the Python package
 - Excluded the pycache directory from the copy_examples command
-- Updated the message image for the READMEs
+- Updated the message image for the README files
 - Fixed clippy warnings
 
 ## 2.2.8
 
-- Modified a shortcut description in the READMEs
-- Renamed (tile_x, tile_y) to (image_tx, image_ty) in the READMEs
+- Modified a shortcut description in the README files
+- Renamed (tile_x, tile_y) to (image_tx, image_ty) in the README files
 - Replaced the usage of a deprecated API
 - Changed the tilemap editor to load Layer 0 when a TMX file is dropped onto it
 - Updated Maturin to the latest version
@@ -268,7 +268,7 @@
 - Renamed WORKING_DIR to BASE_DIR
 - Added the user_data_dir function
 - Switched from the platform-dir crate to the directories crate
-- Update the glow crate to version 0.15
+- Updated the glow crate to version 0.15
 - Fully revised the translations of all README files
 
 ## 2.2.5
@@ -280,13 +280,13 @@
 
 - Fixed a bug when playing a pyxapp with the same process ID
 - Updated the sysinfo crate to version 0.25
-- Updated the license description in the READMEs
+- Updated the license description in the README files
 - Updated the instructions for using the web version of Pyxel
 - Updated the Q&A
 
 ## 2.2.3
 
-- Updated the description of Pyxel's features in the READMEs
+- Updated the description of Pyxel's features in the README files
 - Ensured that the metadata is in UTF-8 format
 - Added the pyxel.cli.get_pyxel_app_metadata function
 - Added the pyxel.cli.print_pyxel_app_metadata function
@@ -296,14 +296,14 @@
 ## 2.2.2
 
 - Fixed the mypy errors
-- Changed an image layout in the READMEs
+- Changed an image layout in the README files
 - Updated Python in GitHub Actions to version 3.12
 - Enabled adding metadata to a Pyxel application file
 - Added metadata to the bundled Pyxel application files
 
 ## 2.2.1
 
-- Added the watch command description to the READMEs
+- Added the watch command description to the README files
 - Removed an unnecessary line in Example 14
 - Added the Font class
 - Added a font option to the text function
@@ -313,21 +313,21 @@
 
 - Removed the keyword-only arguments
 - Added the rotate and scale options to the blt and bltm functions
-- specified Maturin to version 1.7.0 to prevent linking errors
-- Modified the API notation in Example 4
+- Specified Maturin to version 1.7.0 to prevent linking errors
+- Modified the function notation in Example 4
 - Added Example 16 for rotation and scaling
 
 ## 2.1.10
 
 - Fixed a color rendering issue on Windows
-- Replaced links to Twitter with X in the READMEs
+- Replaced links to Twitter with X in the README files
 - Updated the bindgen crate to version 0.70
 
 ## 2.1.9
 
 - Updated the required Python to version 3.8 or higher
-- Changed to avoid using the gil-refs feature in the pyo3 crate
-- Changed to prevent key state changes during special inputs
+- Avoided using the gil-refs feature in the pyo3 crate
+- Prevented key state changes during special inputs
 
 ## 2.1.8
 
@@ -338,16 +338,16 @@
 
 ## 2.1.7
 
-- Modified a help messages in Pyxel Editor
+- Modified help messages in Pyxel Editor
 - Changed the return value type of the sgn function to integer
 - Fixed the push back process in Example 10 and 15
-- Fixed being able to edit during playback in Pyxel Editor
+- Prevented editing during playback in Pyxel Editor
 - Fixed incorrect array references during playback in Pyxel Editor
 - Updated the sysinfo crate to version 0.31
 
 ## 2.1.6
 
-- Updated the message image for the READMEs
+- Updated the message image for the README files
 - Added Turkish and Ukrainian READMEs
 - Fixed a warning on macOS Sonoma
 - Updated Pyodide to version 0.26.2
@@ -355,8 +355,8 @@
 
 ## 2.1.5
 
-- Updated the description of the set_effects method in the READMEs
-- Added a value change shortcut to the Sound and the music editors
+- Updated the description of the set_effects method in the README files
+- Added a value change shortcut to the sound and music editors
 - Changed the initial value for the noise sound register
 - Suppressed the outdated resource file version warning
 - Changed the mutex control for sound playback
@@ -372,7 +372,7 @@
 
 ## 2.1.2
 
-- Updated the descriptions of the pget and pget functions
+- Updated the descriptions of the pget and pset functions
 - Added the Half-FadeOut and Quarter-FadeOut effects to the Sound class
 - Fixed the warp_mouse function
 
@@ -386,9 +386,9 @@
 
 - Fixed a help message in Pyxel Editor
 - Added a resume option to the play function
-- Changed the API notation in Example 4
+- Changed the function notation in Example 4
 - Changed Example 9 to use the resume option for SFX playback
-- Added the descriptions of the resume option to the READMEs
+- Added the descriptions of the resume option to the README files
 - Updated Pyodide to version 0.26.1
 
 ## 2.0.14
@@ -402,7 +402,7 @@
 
 ## 2.0.12
 
-- Fixed installation instructions for Mac in the READMEs
+- Fixed installation instructions for Mac in the README files
 - Modified build instructions in Makefile
 - Updated Pyodide to version 0.25.1
 - Updated Emscripten to version 3.1.53
@@ -439,8 +439,8 @@
 - Enabled importing a TMX file via drag and drop in the tilemap editor
 - Changed destination for image drag-and-drop in the image editor
 - Refined the code for Example 9 and Example 10
-- Added a incl_colors option to the from_image method of the Image class
-- Added a incl_colors option to the load method of the Image class
+- Added an incl_colors option to the from_image method of the Image class
+- Added an incl_colors option to the load method of the Image class
 - Added Example 15
 - Refined Example 10
 - Fixed a color count change bug on OpenGL ES
@@ -448,7 +448,7 @@
 ## 2.0.6
 
 - Added support for high DPI mode
-- Changed the way to determine whether to use OpenGL or OpenGL ES
+- Changed how to determine whether to use OpenGL or OpenGL ES
 
 ## 2.0.5
 
@@ -468,8 +468,9 @@
 ## 2.0.2
 
 - Changed the order of declarations in the pyi file
-- Changed Music.set to not require specifying all channels
-- Changed to use Ruff for lint and format of Python code
+- Music.set no longer requires specifying all channels
+- Switched to Ruff for linting and formatting Python code
+- Added the usage of the show and flip functions to the README files
 - Added Example 14
 
 ## 2.0.1
@@ -485,9 +486,9 @@
 
 ## 2.0.0
 
-- Changed to use the C version of SDL2
-- Changed to allow resizing of the colors list
-- Changed to use GLSL for rendering the screen
+- Switched to the C version of SDL2
+- Now allows resizing of the colors list
+- Switched screen rendering to GLSL
 - Updated Pyodide to version 0.24.1
 - Updated Emscripten to version 3.1.45
 - Updated SDL2 to 2.24.2
@@ -498,7 +499,7 @@
 - Added images, tilemaps as system lists
 - Marked the image and tilemap functions as deprecated functions
 - Added channels, sounds, and musics as system lists
-- Marked the channel, sounds, adn musics function as deprecated functions
+- Marked the channel, sounds, and music functions as deprecated functions
 - Renamed the reset_capture function to reset_screencast
 - Renamed the set_mouse_pos function to warp_mouse
 - Renamed the drop_files variable to dropped_files
@@ -522,7 +523,7 @@
 
 ## 1.9.17
 
-- Replaced an image in the READMEs
+- Replaced an image in the README files
 - Fixed the app2exe command to include modules correctly
 - Added support for Raspberry Pi (ARMv7)
 - Updated Emscripten to version 3.1.42
@@ -539,7 +540,7 @@
 ## 1.9.15
 
 - Changed the platform specification method in Rust for FreeBSD
-- Changed to use the official Pyodide instead of the customized version
+- Switched to the official Pyodide instead of the customized version
 - Updated Emscripten to version 3.1.36
 - Expanded the supported macOS 10.12+ (Intel), 11.0+ (Apple Silicon)
 
@@ -565,18 +566,18 @@
 
 - Changed Makefile to lint Emscripten code
 - Fixed clippy warnings
-- Modified the instruction for Pyxel.colors list
-- Added error messages for Pyxel command
+- Modified the instructions for the Pyxel.colors list
+- Added error messages for the pyxel command
 - Fixed the default filename of Pyxel Editor for web
 
 ## 1.9.10
 
-- Changed to use the clear function of SDL2
+- Switched to the SDL2 clear function
 - Fixed virtual and real gamepads working at the same time
 
 ## 1.9.9
 
-- Changed to not use array macro
+- Stopped using the array macro
 - Fixed clippy warnings
 - Updated Emscripten to version 3.1.29
 - Updated Pyodide to version 0.22.0
@@ -588,14 +589,14 @@
 
 - Modified description for Example 13
 - Added system palette colors besides normal palette colors
-- Changed to keep the default palette color in Pyxel Editor
+- Now keeps the default palette color in Pyxel Editor
 - Updated Emscripten to version 3.1.28
 - Updated the source of Pyodide-SDL2
 
 ## 1.9.7
 
 - Simplified utility scripts
-- Added show command description to the READMEs
+- Added show command description to the README files
 - Restored the flip function for non-web only
 - Added Example 99 (for non-web only)
 - Added Pyxel palette file (.pyxpal) support
@@ -609,7 +610,7 @@
 
 ## 1.9.5
 
-- Fixed to work without body tag in Pyxel Web
+- Now works without a body tag in Pyxel Web
 - Added the app2html command to create an HTML page
 
 ## 1.9.4
@@ -636,27 +637,27 @@
 - Added the WATCH_INFO_FILE constant
 - Fixed filename for downloads in Pyxel Web
 - Changed the way to specify a file in the package command
-- Fixed some statements in the READMEs
+- Fixed some statements in the README files
 
 ## 1.9.0
 
-- Added a video and a message to users to the READMEs
+- Added a video and a message to users to the README files
 - Updated Pyodide
 - Updated Emscripten to version 3.1.24
 
 ## 1.8.22
 
 - Added file save function for the web
-- Changed to prevent web browser ctrl+s action in Pyxel Editor
+- Prevented the web browser Ctrl+S action in Pyxel Editor
 
 ## 1.8.21
 
-- Changed to use CSS variables for the web
+- Switched to CSS variables for the web
 - Removed unnecessary sleep for the web
 
 ## 1.8.20
 
-- Changed to not set the position style for the screen div
+- Stopped setting the position style for the screen div
 - Added a packages attribute to the script_test example
 
 ## 1.8.19
@@ -680,8 +681,8 @@
 - Added access analytics code for the web pages
 - Enabled to launch Pyxel Web from JavaScript
 - Enabled to change a screen div
-- Fixed the bltm figure for the READMEs
-- Fixed to display message when screenshot failed
+- Fixed the bltm figure for the README files
+- Now displays a message when a screenshot fails
 
 ## 1.8.15
 
@@ -690,30 +691,30 @@
 
 ## 1.8.14
 
-- Added the link to Web examples in the READMEs
+- Added the link to Web examples in the README files
 - Added the packages attribute to HTML custom elements
 - Updated Pyodide-SDL2 to support additional packages
 
 ## 1.8.13
 
-- Changed to specify Pyxel version in CDN links
+- Now specifies the Pyxel version in CDN links
 - Fixed link to the examples
 - Added the starting editor parameter to Pyxel Editor
 
 ## 1.8.12
 
-- Changed to auto load files without the pyxel-asset element
+- Now auto-loads files without the pyxel-asset element
 
 ## 1.8.11
 
-- Changed to use the latest CDN
-- Changed to cancel frame skip when elapsed time is large
+- Switched to the latest CDN
+- Now cancels frame skip when elapsed time is large
 - Fixed the version number check
 
 ## 1.8.10
 
 - Added Pyxel Web Launcher
-- Changed to show an error message from Python on the web
+- Now shows Python error messages on the web
 
 ## 1.8.9
 
@@ -725,29 +726,29 @@
 
 ## 1.8.8
 
-- Changed to wait for user input on the PC web
+- Now waits for user input on the PC web
 - Changed the server script to detect Windows
 
 ## 1.8.7
 
 - Fixed file existence check in Pyxel Editor
-- Fixed to play sounds for the web on mobile devices
+- Fixed sound playback on mobile web devices
 - Removed the onstart attribute from the custom elements
-- Changed to display Pyxel logo while loading
+- Now displays the Pyxel logo while loading
 - Added "tap to start" menu for the web on mobile devices
 
 ## 1.8.6
 
-- Changed to not the sdist wheel
-- Refined the show API
-- Changed to use emscripten_force_exit for quit
-- Surppressed an exception error message on the web
+- Changed to not release the sdist wheel
+- Refined the show function
+- Switched to emscripten_force_exit for quit
+- Suppressed an exception error message on the web
 - Fixed a flip bug in Pyxel Editor
 - Added directory existence check to Pyxel Editor
 
 ## 1.8.5
 
-- Fixed the links to the examples in the READMEs
+- Fixed the links to the examples in the README files
 - Added utility functions to the script for the web
 - Added custom elements for the web
 
@@ -758,7 +759,7 @@
 - Fixed the canvas height on iOS
 - Separated Pyodide-SDL2 into a separate repository
 - Changed to use Pyodide-SDL2 via CDN
-- Added instructions for Web platform to the READMEs
+- Added instructions for the Web platform to the README files
 
 ## 1.8.3
 
@@ -767,12 +768,12 @@
 - Added a utility module for WASM
 - Removed the module_search_path option from CLI
 - Changed functions for CLI to public
-- Fixed to stop playing music on quit on WASM
+- Fixed music not stopping on quit on WASM
 - Removed the flip function for WASM support
 - Fixed the mouse coordinates in WASM
 - Changed to release the sdist wheel as well
-- Change the background color to brighter
-- Added links for Pyxel on WASM to the READEMEs
+- Changed the background color to be brighter
+- Added links for Pyxel on WASM to the README files
 
 ## 1.8.2
 
@@ -784,8 +785,8 @@
 
 - Added 32-bit Windows support
 - Added ARM64 Linux support
-- Changed to use manylinux to build Linux wheels
-- Fixed links in the READMEs
+- Switched to manylinux to build Linux wheels
+- Fixed links in the README files
 
 ## 1.8.0
 
@@ -794,23 +795,23 @@
 - Added fall death to Example 10
 - Fixed Example 12 to not capture the screen
 - Consolidated tool settings into pyproject.toml
-- Fixed to work without audio
+- Now works without audio
 - Changed to build wheels for each platform
 - Added experimental web browser support
 
 ## 1.7.2
 
-- Fixed function names in the READMEs
+- Fixed function names in the README files
 - Added a configuration for isort
-- Added flip functions to Pyxel Editor
+- Added flip features to Pyxel Editor
 - Fixed clippy warnings
 
 ## 1.7.1
 
-- Fixed the description for Tilemap.set in the READMEs
-- Fixed the link to Example 12 in the READMEs
-- Fixed the examples layout in the READMEs
-- Updated links for Discord Servers in the READMEs
+- Fixed the description for Tilemap.set in the README files
+- Fixed the link to Example 12 in the README files
+- Fixed the examples layout in the README files
+- Updated links for Discord servers in the README files
 - Changed the way to set crate versions
 - Added a display_scale option to the init function
 - Changed the default window size slightly smaller
@@ -835,17 +836,17 @@
 
 ## 1.6.8
 
-- Fixed to receive mouse input when window is activated
+- Fixed mouse input not being received when the window is activated
 - Fixed the window to be active when a file is dropped
 - Added the elli and ellib functions
 - Added the fill function
-- Fixed to work even when audio is not installed
-- Updated the READMEs
+- Now works even when audio is not installed
+- Updated the README files
 
 ## 1.6.7
 
 - Fixed a file drop bug
-- Changed to pause only when minimized
+- Now pauses only when minimized
 
 ## 1.6.6
 
@@ -855,8 +856,8 @@
 - Fixed a bug of the play_pos function
 - Added a tick option to the play and playm functions
 - Added a partial playback feature to Pyxel Editor
-- Fixed a mouse click handling in the sound editor
-- Updated the READMEs
+- Fixed mouse click handling in the sound editor
+- Updated the README files
 
 ## 1.6.5
 
@@ -868,17 +869,17 @@
 - Fixed the key repeat bug
 - Added the GitHub Actions workflow to build
 - Removed the cli function
-- Updated the READMEs
+- Updated the README files
 
 ## 1.6.1
 
 - Fixed the pyxel play command on Windows
-- Updated the READMEs
+- Updated the README files
 
 ## 1.6.0
 
-- Fixed the pip command option in the READMEs
-- Fixed to ensure that key inputs are detected
+- Fixed the pip command option in the README files
+- Ensured key inputs are detected
 - Removed the unused click event from the Widget class
 - Bundled the arcade ball physics game by Adam
 
@@ -898,7 +899,7 @@
 - Added the is_fullscreen variable
 - Registered Pyxel to GitHub Sponsors
 - Bundled the 1st Pyxel Jam winning game by Adam
-- Updated the READMEs
+- Updated the README files
 
 ## 1.5.6
 
@@ -907,7 +908,7 @@
 - Added shortcuts for the tilemap editor
 - Added Example 11
 - Changed the Makefile to be usable in MinGW shell
-- Updated the READMEs
+- Updated the README files
 
 ## 1.5.5
 
@@ -922,11 +923,11 @@
 ## 1.5.4
 
 - Added the file operation error messages
-- Refined the python code
+- Refined the Python code
 - Updated the README in Korean
 - Updated the README in Portuguese
 - Changed to stop updating when the window is inactive
-- Changed to the quit to end the application immediately
+- Changed quit to end the application immediately
 - Fixed the animated GIF recorder
 - Modified the vibrato depth parameter
 - Added the SFX and BGM to Example 10
@@ -941,7 +942,7 @@
 
 - Fixed the tilemap editor
 - Replaced the asset for Example 10
-- Fixed the typo in the READMEs
+- Fixed the typo in the README files
 
 ## 1.5.2
 
@@ -981,15 +982,15 @@
 - Added the installer for Windows
 - Simplified the init function arguments
 - Removed maximum screen size limit
-- Enabled to change maximum capture time to reduce reserved memory
-- Added support loading various image formats other than PNG
+- Enabled changing the maximum capture time to reduce reserved memory
+- Added support for loading various image formats other than PNG
 - Optimized GIF animation compression
-- Enabled to add the image banks and tilemap banks dynamically
-- Added drawing methods to the Image and Tilemap class
+- Enabled adding image banks and tilemap banks dynamically
+- Added drawing methods to the Image and Tilemap classes
 - Changed the tile format of tilemap to tuple of (image_tx, image_ty)
 - Renamed the properties of the Sound and Music class
 - Changed the play_pos function to return a tuple of sound and note
-- Supported dynamic palette change with the colors list
+- Added support for dynamic palette change with the colors list
 - Added the input_keys and input_text variables to obtain the entered key
 - Added the drop_files variable to obtain the dropped files
 - Added the icon function to set the application icon
@@ -1000,6 +1001,7 @@
 - Added the functions to capture screen manually
 - Added Example 10
 - Fixed setup.py so that images are referenced correctly on PyPI page
+- Added the flip function
 - Added the pyi file for type hinting
 
 ## 1.4.4
@@ -1010,15 +1012,15 @@
 
 - Added the README in Italian
 - Added the README in Russian
-- Fixed a crush bug when playing sound
+- Fixed a crash bug when playing sound
 
 ## 1.4.2
 
-- Updated the installation instructions in the READMEs
+- Updated the installation instructions in the README files
 - Changed gcc version for Mac
 - Added Example 9
 - Added the Noguchi's tilemap for reference
-- Added figures for the API reference in the READMEs
+- Added figures for the API reference to the README files
 
 ## 1.4.1
 
@@ -1050,7 +1052,7 @@
 
 ## 1.3.6
 
-- Add the quit key to Example 8
+- Added the quit key to Example 8
 - Fixed the key input detection at the first frame
 - Fixed the way to quit the Pyxel application
 
@@ -1061,7 +1063,7 @@
 ## 1.3.4
 
 - Updated the README in Korean
-- Updated the installation instructions in the READMEs
+- Updated the installation instructions in the README files
 - Changed color names along the new palette
 - Changed to optimize an animated GIF with Gifsicle
 
@@ -1072,20 +1074,20 @@
 
 ## 1.3.2
 
-- Updated the installation instructions of the READMEs
-- Added the link to the Discord server to the READMEs
+- Updated the installation instructions in the README files
+- Added the link to the Discord server to the README files
 - Added variable frame rate support for animated GIF
 - Added the mouse_wheel variable
-- Added the fullscreen option to the init API
+- Added the fullscreen option to the init function
 - Changed the way to quit the Pyxel application
-- Removed the border options of the init API
+- Removed the border options of the init function
 - Changed the required version of Python
 
 ## 1.3.1
 
 - Improved the animated GIF making method
 - Added the README in Portuguese
-- Fixed to work with Python 3.7 on Windows
+- Now works with Python 3.7 on Windows
 - Changed the color change shortcuts to ignore the alt keys
 
 ## 1.3.0
@@ -1101,17 +1103,17 @@
 - Changed dll search method for Python 3.8
 - Updated the READMEs
 - Added KEY_NONE constant to ignore key input
-- Added pget API and renamed pix to pset
+- Added the pget function and renamed pix to pset
 - Changed the palette colors
 - Added new Pyxel palette file
 - Changed the animated GIF making method
 
 ## 1.2.10
 
-- Added the tri and trib APIs
-- Modified the install option in the READMEs
-- Added the quit_key option to the init API
-- Added the target options to the load APIs
+- Added the tri and trib functions
+- Modified the install option in the README files
+- Added the quit_key option to the init function
+- Added the target options to the load functions
 - Added the partial load function to Pyxel Editor
 - Added Example 8
 - Modified Example 5
@@ -1128,11 +1130,11 @@
 
 - Added the Chinese version of the README
 - Added the icon option to the Pyxel Packager command
-- Fixed the the copy method of the Tilemap class
+- Fixed the copy method of the Tilemap class
 
 ## 1.2.6
 
-- Updated the instruction for installation in the READMEs
+- Updated the installation instructions in the README files
 - Removed dependency on NumPy
 - Changed the search path of the asset folder in the Pyxel Packager
 - Fixed the undo/redo for copy and paste in Pyxel Editor
@@ -1143,13 +1145,13 @@
 
 ## 1.2.4
 
-- Fixed to keep the mouse cursor speed on Linux
+- Now keeps the mouse cursor speed on Linux
 - Added Python version check
 
 ## 1.2.3
 
 - Fixed an error of tone playback in the sound editor
-- Fixed to keep the image index of tilemaps in Pyxel Editor
+- Fixed the image index of tilemaps being reset in Pyxel Editor
 
 ## 1.2.2
 
@@ -1158,28 +1160,28 @@
 
 ## 1.2.1
 
-- Changed to use SDK_Keycode instead of SDL_Scancode
+- Switched from SDL_Scancode to SDK_Keycode
 - Fixed to use the correct separator in the Pyxel Packager
 
 ## 1.2.0
 
 - Removed support for loading old format
-- Added the build method to the READMEs
-- Added the usage of the show and flip APIs to the READMEs
+- Added the build method to the README files
+- Added the usage of the show and flip functions to the README files
 - Added the Pyxel Packager command
 
 ## 1.1.8
 
 - Added Example 7
 - Fixed the set method of the Music class
-- Added the list of the examples to the READMEs
-- Added the show API
+- Added the list of the examples to the README files
+- Added the show function
 
 ## 1.1.7
 
 - Fixed to stop with ctrl-c
 - Updated the classifiers of setup.py
-- Added the description of APIs to the READMEs
+- Added API descriptions to the README files
 - Added the constants for the default colors
 - Fixed to stop the application with Python exception
 
@@ -1188,24 +1190,24 @@
 - Changed the way to make module properties
 - Added public constants for fonts and banks
 - Removed the screen size limit
-- Added the description of a shortcut
+- Added a description of a shortcut
 
 ## 1.1.5
 
-- Optimized the sound and music APIs
+- Optimized the sound and music functions
 - Added the color class for the default palette
 - Added the shortcut to select a color to the image editor
 - Fixed the sound preview bug of the sound editor
-- Enabled to quit from anywhere
-- Added the flip API
+- Enabled quitting from anywhere
+- Added the flip function
 
 ## 1.1.4
 
-- Fixed the index check of the playm API
+- Fixed the index check of the playm function
 - Enabled to access the screen as the image bank #4
 - Changed the area to display the mouse cursor
-- Optimized the image and tilemap APIs
-- Updated the READMEs
+- Optimized the image and tilemap functions
+- Updated the README files
 
 ## 1.1.3
 
@@ -1215,108 +1217,108 @@
 ## 1.1.2
 
 - Fixed the way to decide the automatic screen size
-- Fixed the API description in the READMEs
+- Fixed API descriptions in the README files
 - Changed the way to handle runtime errors
-- Changed save and load APIs to no return bool
-- Specified the version of Python in the READMEs
-- Added the play_pos API to Example 4
-- Added the description of the included libraries to the READMEs
-- Updated the screenshots of Example 3 and #4
+- Changed the save and load functions to not return bool
+- Specified the version of Python in the README files
+- Added the play_pos function to Example 4
+- Added the description of the included libraries to the README files
+- Updated the screenshots of Examples 3 and 4
 - Fixed game controller input
 - Improved the performance of the tilemap editor
 
 ## 1.1.1
 
-- fixed the install_pyxel_examples script to include .pyxres file
+- Fixed the install_pyxel_examples script to include the .pyxres file
 
 ## 1.1.0
 
 - Modified .gitignore to ignore .vscode files
 - Changed to use SDL2 instead of GLFW
 - Removed the refimg argument from the Tilemap methods
-- Changed the save and load method to return bool value
-- Removed the run_with_profiler API
+- Changed the save and load methods to return a bool
+- Removed the run_with_profiler function
 - Changed the max screen size to 256
-- Added the play_pos API
-- Changed arguments of the clip API
-- Changed arguments of the rect and rectb APIs
+- Added the play_pos function
+- Changed arguments of the clip function
+- Changed arguments of the rect and rectb functions
 - Modified the examples according to the API changes
 - Renamed the resource file extension to .pyxres
 - Added the drop_file property
-- Added the caption API
+- Added the caption function
 - Changed the way to detect the caller script
 
 ## 1.0.1
 
 - Simplified comparisons
 - Removed a deprecated function
-- Applied static decorator to functions do not use self
-- Fixed to keep the previous frame when cls is not called
+- Applied @staticmethod to functions that do not use self
+- Now keeps the previous frame when cls is not called
 - Changed frame_count to start from 0
 - Fixed the gamepad constants
 
 ## 1.0.0
 
-- Added the supplement of installation method to the manuals
+- Added an installation-method supplement to the documentation
 - Added the type hints for Python
 
 ## 0.9.10
 
-- Added the way to import images on Pyxel Editor to the manuals
+- Added image import instructions for Pyxel Editor to the README files
 - Fixed the type hints
 - Added GLFW dll for Windows
 
 ## 0.9.9
 
 - Added the type hints for Python
-- Added the description of run_with_profiler function to the manuals
+- Added a description of the run_with_profiler function to the README files
 
 ## 0.9.8
 
-- Enabled to run Pyxel Editor without filename
+- Enabled running Pyxel Editor without a filename
 
 ## 0.9.7
 
 - Confirmed operation on Debian and Fedora
-- Updated the instruction of installation on Linux
+- Updated the installation instructions for Linux
 
 ## 0.9.6
 
-- Updated the instruction of installation on Linux
+- Updated the installation instructions for Linux
 - Fixed a warning in setup.py
 
 ## 0.9.5
 
 - Added issue templates
-- Added the description of issue templates in the manuals
+- Added a description of the issue templates to the README files
 - Fixed the clipping bug of drawing primitives
 
 ## 0.9.4
 
-- Fixed the crush bug when entering the fullscreen mode
-- Updated the description for Linux in the manuals
+- Fixed a crash when entering fullscreen mode
+- Updated the description for Linux in the README files
 - Reverted to check the version number of glfw strictly
 - Increased the sound buffer size
 - Fixed the range of the sound picker in the sound editor
 
 ## 0.9.3
 
-- Enabled to open a resource file by drop in Pyxel Editor
+- Enabled opening a resource file by drag and drop in Pyxel Editor
 - Renamed the constants for the mouse buttons
 - Added gamepad support
 - Changed gamepad available for Example 2
 - Fixed the crash bug when the window is minimized
 - Modified the code of Example 6
 - Added the refimg property to the Tilemap class
-- Removed the img argument from the bltm API
+- Removed the img argument from the bltm function
 - Updated the screenshot of Example 3
 
 ## 0.9.2
 
-- Enabled to import png by drop in the image editor
+- Enabled importing PNG files by drag and drop in the image editor
 - Fixed the crash bug caused by unsupported keys
-- Enabled to play the piano with mouse in the sound editor
-- Enabled to repeat undo/redo shortcuts
+- Enabled playing the piano with the mouse in the sound editor
+- Enabled repeating undo/redo shortcuts
 
 ## 0.9.1
 
@@ -1326,15 +1328,15 @@
 ## 0.9.0
 
 - Fixed the bug where Pyxel Editor cursor malfunctions
-- Added new API descriptions to Example 3
+- Added new function descriptions to Example 3
 - Updated the screenshot of Example 3
-- Change to not add unnecessary undo history of the editors
+- Stopped adding unnecessary undo history of the editors
 - Added the setting files for Pipenv
 - Modified the cursor design of the image/tilemap editor
 - Enabled to change the focus size of the tilemap editor
-- Added the link to the subreddit in the manuals
-- Changed to exports all constants for keys before init is called
-- Added the contribution section to the manuals
+- Added the link to the subreddit in the README files
+- Now exports all constants for keys before init is called
+- Added the contribution section to the README files
 
 ## 0.8.9
 
@@ -1369,18 +1371,18 @@
 - Implemented the undo function of the sound editor
 - Changed the click tolerance time
 - Removed the length limitation of the sound
-- Added the music and playm APIs
-- Changed Example 2 to use the music and playm APIs
+- Added the music and playm functions
+- Changed Example 2 to use the music and playm functions
 
 ## 0.8.4
 
 - Changed to follow the mouse position outside the window
 - Changed to draw the self mouse cursor
-- Added the mouse API
-- Renamed arguments of the blt and bltm APIs
+- Added the mouse function
+- Renamed arguments of the blt and bltm functions
 - Reduced the size of PNG and animated GIF
 - Changed the max length of the sound to 48
-- Added the system option to the sound API
+- Added the system option to the sound function
 - Refined the help message of Pyxel Editor
 - Added the ToggleButton and ImageToggleButton
 - Implemented the sound editor except the undo function
@@ -1393,46 +1395,46 @@
 - Changed the set method of the Image class to accept a number as data
 - Added the get and set methods to the Tilemap class
 - Added the bltm test to Example 3
-- Updated the descriptions of the READMEs
+- Updated the descriptions of the README files
 
 ## 0.8.2
 
 - Fixed the set, load, and copy methods of the image class
-- Fixed the starting directory of the save and load APIs
+- Fixed the starting directory of the save and load functions
 - Modified the usage of Pyxel Editor
 
 ## 0.8.1
 
-- Added the run_with_profiler API
+- Added the run_with_profiler function
 - Added the Tilemap class
-- Added the bltm API
+- Added the bltm function
 - Implemented the tilemap editor
 - Added the standard widgets
 - Changed the usage of Pyxel Editor
 - Added the help messages to Pyxel Editor
-- Added the description of Pyxel Editor to the READMEs
+- Added the description of Pyxel Editor to the README files
 
 ## 0.8.0
 
 - Changed the formatter from yapf to black
 - Added the UI module
-- Added the save and load APIs
+- Added the save and load functions
 - Added the image editor as a part of Pyxel Editor
-- Removed the dirname option of the save and load APIs
+- Removed the dirname option of the save and load functions
 
 ## 0.7.12
 
 - Added new key definitions which integrates keys on both sides
 - Changed the description of the project
 - Changed the max screen size to 255
-- Fixed the key hold time of the btnp API
-- Fixed to work the btnp API correctly in the slow frame rate condition
+- Fixed the key hold time of the btnp function
+- Fixed to work the btnp function correctly in the slow frame rate condition
 - Changed the screen size of Example 5 and Example 6
 - Updated the screenshot of Example 5
 
 ## 0.7.11
 
-- Changed the Japanese link name in the READMEs
+- Changed the Japanese link name in the README files
 - Implemented the widget class for Pyxel Editor
 - Added Example 6 by ttrkaya
 - Renamed the constant variable for the max screen size
@@ -1441,7 +1443,7 @@
 ## 0.7.10
 
 - Added screen size error
-- Added the link to the Pyxel wiki to the READMEs
+- Added the link to the Pyxel wiki to the README files
 - Moved the README in Portuguese to the Pyxel wiki
 
 ## 0.7.9
@@ -1453,31 +1455,31 @@
 
 ## 0.7.8
 
-- Added the system option to the image API
+- Added the system option to the image function
 - Fixed the color bug of the shader for some environments
 - Added the dirname option to the load method of the image class
-- Updated the description of the init API of the READMEs
+- Updated the description of the init function in the README files
 
 ## 0.7.7
 
-- Added the description of the screen size limitation to the READMEs
-- Added the Fedora Linux installation to the READMEs
+- Added the description of the screen size limitation to the README files
+- Added the Fedora Linux installation to the README files
 - Added another fallback to get the desktop folder name
 - Changed the number of the image banks to 3
 - Added some image assets for Pyxel Editor (WIP)
 
 ## 0.7.6
 
-- Specify the version of GLFW in the READMEs
+- Specified the GLFW version in the README files
 - Limited the window size to 256 because of OpenGL Point Sprite limitation
 - Fixed the element border lacks bug
 - Added Example 5
 
 ## 0.7.5
 
-- Fixed typos in the READMEs
-- Updated the Arch Linux installation in the READMEs
-- Updated the Debian Linux installation in the READMEs
+- Fixed typos in the README files
+- Updated the Arch Linux installation in the README files
+- Updated the Debian Linux installation in the README files
 - Updated the way to capture screen on Linux
 - Fixed a shader compile error occurs in some environment
 
@@ -1489,9 +1491,9 @@
 
 ## 0.7.3
 
-- Fixed the btnr API
+- Fixed the btnr function
 - Fixed a typo in the README.md
-- Added the title logo to the READMEs
+- Added the title logo to the README files
 - Added the Portuguese version of the README.md
 
 ## 0.7.2
@@ -1499,7 +1501,7 @@
 - Changed to not include the screenshots in the PyPI package
 - Removed unnecessary semicolons in the shader to avoid compile errors
 - Changed the project description for PyPI
-- Added the description of installation on Linux to the READMEs
+- Added installation instructions for Linux to the README files
 - Refactored the way to make a captured image and animation
 - Updated the screenshots of Example 3 and Example 4
 
@@ -1514,8 +1516,8 @@
 
 - Modified Example 1 to use the App class
 - Renamed and modified Example 2
-- Remove the logo API and added the logo image
-- Improved the performance of the text API
+- Removed the logo function and added the logo image
+- Improved the performance of the text function
 - Updated the README.md and README.ja.md
 - Replaced Example 2
 - Removed the resize method of the Image class
@@ -1527,9 +1529,9 @@
 - Changed the properties of the Sound class to public
 - Added offset arguments to the Image load method
 - Added the copy method to the Image class
-- Renamed arguments of the image and sound API
+- Renamed arguments of the image and sound functions
 - Added the window icon
-- Added the logo API
+- Added the logo function
 - Added the resize method to the Image class
 - Refined Example 1-4
 
@@ -1539,8 +1541,8 @@
 - Renamed the examples copy script to install_pyxel_examples
 - Removed unnecessary scripts
 - Separated the constant definitions
-- Added the image API and renamed related APIs
-- Added the sound API and renamed related APIs
+- Added image functions and renamed related functions
+- Added sound functions and renamed related functions
 
 ## 0.4.0
 
@@ -1555,7 +1557,7 @@
 - Added the '-'(flat) syntax to the Sound class
 - Added the set method to the Image class again
 - Renamed the track to channel
-- Changed the play API to enable to play a sound list
+- Changed the play function to enable playing a sound list
 
 ## 0.2.0
 
