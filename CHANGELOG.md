@@ -172,7 +172,7 @@
 ## 2.3.5
 
 - Updated the GitHub Action scripts
-- Updated the rand wheel to version 0.9
+- Updated the rand crate to version 0.9
 - Updated the rand_xoshiro to version 0.7
 - Updated 8bit BGM Generator to version 1.30
 - Fixed multi-gamepad support
@@ -915,7 +915,7 @@
 - Fixed to record the screen video with collect interval
 - Renamed the input setters to setbtn, setbtnv and setmpos
 - Changed the input setters to get floating numbers
-- Changed the key definitions to SDL2 Keycode base
+- Changed the key definitions to SDL_Keycode base
 - Updated the example videos
 - Updated Pyxel Editor videos
 - Modified the melody of Example 10
@@ -1030,7 +1030,7 @@
 ## 1.4.0
 
 - Changed the required version of Python
-- Changed the way to quit the Pyxel application
+- Changed the quit behavior of the Pyxel application
 
 ## 1.3.9
 
@@ -1160,7 +1160,7 @@
 
 ## 1.2.1
 
-- Switched from SDL_Scancode to SDK_Keycode
+- Switched from SDL_Scancode to SDL_Keycode
 - Fixed to use the correct separator in the Pyxel Packager
 
 ## 1.2.0
