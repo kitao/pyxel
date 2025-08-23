@@ -10,7 +10,7 @@ use crate::key::{
     KEY_RETURN, KEY_SHIFT,
 };
 use crate::profiler::Profiler;
-use crate::pyxel::{Pyxel, IS_INITIALIZED, RESET_FUNC};
+use crate::pyxel::{Pyxel, IS_INITIALIZED};
 use crate::settings::{MAX_FRAME_DELAY_MS, NUM_MEASURE_FRAMES, NUM_SCREEN_TYPES};
 use crate::utils;
 use crate::window_watcher::WindowWatcher;
@@ -138,8 +138,18 @@ impl Pyxel {
     }
 
     pub fn reset(&mut self) {
-        if let Some(mut callback) = RESET_FUNC.lock().take() {
-            callback();
+        #[cfg(not(target_os = "emscripten"))]
+        if let Some(mut reset_func) = crate::pyxel::RESET_FUNC.lock().take() {
+            reset_func();
+        }
+
+        #[cfg(target_os = "emscripten")]
+        unsafe {
+            extern "C" {
+                fn emscripten_run_script(script: *const std::os::raw::c_char);
+            }
+            let script = std::ffi::CString::new("setTimeout(resetPyxel, 0);").unwrap();
+            emscripten_run_script(script.as_ptr());
         }
     }
 

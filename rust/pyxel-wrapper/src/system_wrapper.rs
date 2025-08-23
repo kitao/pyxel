@@ -4,8 +4,6 @@ use std::process::exit;
 use pyo3::prelude::*;
 use pyo3::types::PyDict;
 use pyxel::{Pyxel, PyxelCallback};
-#[cfg(not(target_os = "emscripten"))]
-use sysinfo::{Pid, System};
 
 use crate::pyxel_singleton::{pyxel, set_pyxel_instance};
 
@@ -24,12 +22,13 @@ fn init(
     capture_scale: Option<u32>,
     capture_sec: Option<u32>,
 ) -> PyResult<()> {
-    let python_code =
-        CString::new("os.chdir(os.path.dirname(inspect.stack()[1].filename) or '.')").unwrap();
     let locals = PyDict::new(py);
     locals.set_item("os", py.import("os")?)?;
     locals.set_item("inspect", py.import("inspect")?)?;
-    py.run(python_code.as_c_str(), None, Some(&locals))?;
+    let script =
+        CString::new(r#"os.chdir(os.path.dirname(inspect.stack()[1].filename) or ".")"#).unwrap();
+    py.run(script.as_c_str(), None, Some(&locals))?;
+
     set_pyxel_instance(pyxel::init(
         width,
         height,
@@ -40,6 +39,7 @@ fn init(
         capture_scale,
         capture_sec,
     ));
+
     Ok(())
 }
 
@@ -144,8 +144,8 @@ fn _window_state() -> String {
 #[pyfunction]
 fn _process_exists(pid: u32) -> bool {
     {
-        let system = System::new_all();
-        system.process(Pid::from_u32(pid)).is_some()
+        let system = sysinfo::System::new_all();
+        system.process(sysinfo::Pid::from_u32(pid)).is_some()
     }
 }
 
