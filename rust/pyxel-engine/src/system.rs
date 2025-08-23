@@ -6,11 +6,11 @@ use crate::image::{Color, Image, SharedImage};
 use crate::key::{
     Key, GAMEPAD1_BUTTON_A, GAMEPAD1_BUTTON_B, GAMEPAD1_BUTTON_DPAD_DOWN,
     GAMEPAD1_BUTTON_DPAD_LEFT, GAMEPAD1_BUTTON_DPAD_RIGHT, GAMEPAD1_BUTTON_DPAD_UP,
-    GAMEPAD1_BUTTON_X, GAMEPAD1_BUTTON_Y, KEY_0, KEY_1, KEY_2, KEY_3, KEY_8, KEY_9, KEY_ALT,
+    GAMEPAD1_BUTTON_X, GAMEPAD1_BUTTON_Y, KEY_0, KEY_1, KEY_2, KEY_3, KEY_8, KEY_9, KEY_ALT, KEY_R,
     KEY_RETURN, KEY_SHIFT,
 };
 use crate::profiler::Profiler;
-use crate::pyxel::{Pyxel, IS_INITIALIZED};
+use crate::pyxel::{Pyxel, IS_INITIALIZED, RESET_FUNC};
 use crate::settings::{MAX_FRAME_DELAY_MS, NUM_MEASURE_FRAMES, NUM_SCREEN_TYPES};
 use crate::utils;
 use crate::window_watcher::WindowWatcher;
@@ -135,6 +135,12 @@ impl Pyxel {
         self.system.fps_profiler.start(ticks);
 
         self.update_frame(None);
+    }
+
+    pub fn reset(&mut self) {
+        if let Some(mut callback) = RESET_FUNC.lock().take() {
+            callback();
+        }
     }
 
     pub fn quit(&self) {
@@ -271,6 +277,9 @@ impl Pyxel {
             } else if self.btnp(KEY_0, None, None) {
                 self.reset_key(KEY_0);
                 self.perf_monitor(!self.system.perf_monitor_enabled);
+            } else if self.btnp(KEY_R, None, None) {
+                self.reset_key(KEY_RETURN);
+                self.reset();
             } else if self.btnp(KEY_RETURN, None, None) {
                 self.reset_key(KEY_RETURN);
                 self.fullscreen(!pyxel_platform::is_fullscreen());

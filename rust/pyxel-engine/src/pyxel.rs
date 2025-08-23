@@ -1,6 +1,8 @@
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::LazyLock;
 
+use parking_lot::Mutex;
+
 use crate::audio::Audio;
 use crate::channel::{Channel, SharedChannel};
 use crate::graphics::Graphics;
@@ -22,6 +24,9 @@ use crate::tilemap::{ImageSource, SharedTilemap, Tilemap};
 use crate::tone::{SharedTone, Tone};
 
 pub static IS_INITIALIZED: AtomicBool = AtomicBool::new(false);
+
+type ResetFunc = Option<Box<dyn FnMut() + Send + 'static>>;
+pub static RESET_FUNC: LazyLock<Mutex<ResetFunc>> = LazyLock::new(|| Mutex::new(None));
 
 pub static COLORS: LazyLock<shared_type!(Vec<Rgb24>)> =
     LazyLock::new(|| new_shared_type!(DEFAULT_COLORS.to_vec()));

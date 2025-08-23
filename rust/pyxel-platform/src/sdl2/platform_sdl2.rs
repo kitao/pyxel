@@ -82,13 +82,18 @@ impl PlatformSdl2 {
             .extend((0..num_joysticks).filter_map(Gamepad::open));
     }
 
+    #[cfg(not(target_os = "emscripten"))]
     pub fn quit(&mut self) {
-        #[cfg(target_os = "emscripten")]
-        unsafe {
-            for gamepad in &mut self.gamepads {
-                gamepad.close();
-            }
+        std::process::exit(0);
+    }
 
+    #[cfg(target_os = "emscripten")]
+    pub fn quit(&mut self) {
+        for gamepad in &mut self.gamepads {
+            gamepad.close();
+        }
+
+        unsafe {
             if !self.gl_context.is_null() {
                 SDL_GL_DeleteContext(self.gl_context.cast());
             }
@@ -96,18 +101,19 @@ impl PlatformSdl2 {
                 SDL_DestroyWindow(self.window);
             }
         }
-
-        #[cfg(not(target_os = "emscripten"))]
-        std::process::exit(0);
     }
 
     pub fn ticks(&self) -> u32 {
         unsafe { SDL_GetTicks() }
     }
 
-    #[cfg_attr(not(target_os = "emscripten"), allow(unused_variables))]
+    #[cfg(not(target_os = "emscripten"))]
+    pub fn export_browser_file(&self, _filename: &str) {
+        // Do nothing
+    }
+
+    #[cfg(target_os = "emscripten")]
     pub fn export_browser_file(&self, filename: &str) {
-        #[cfg(target_os = "emscripten")]
         unsafe {
             let script = CString::new(format!("_savePyxelFile('{filename}');")).unwrap();
             emscripten_run_script(script.as_ptr());

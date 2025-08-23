@@ -81,6 +81,11 @@ fn flip() {
 }
 
 #[pyfunction]
+fn reset() {
+    pyxel().reset();
+}
+
+#[pyfunction]
 fn quit() {
     pyxel().quit();
 }
@@ -118,15 +123,36 @@ fn fullscreen(enabled: bool) {
 }
 
 #[pyfunction]
-fn window_state() -> String {
+fn _reset_func(func: Bound<'_, PyAny>) {
+    let func = func.unbind();
+    *pyxel::RESET_FUNC.lock() = Some(Box::new(move || {
+        Python::with_gil(|py| {
+            if let Err(err) = func.call0(py) {
+                err.print(py);
+                exit(1);
+            }
+        });
+    }));
+}
+
+#[pyfunction]
+fn _window_state() -> String {
     pyxel().window_state()
 }
 
 #[cfg(not(target_os = "emscripten"))]
 #[pyfunction]
-fn process_exists(pid: u32) -> bool {
-    let system = System::new_all();
-    system.process(Pid::from_u32(pid)).is_some()
+fn _process_exists(pid: u32) -> bool {
+    {
+        let system = System::new_all();
+        system.process(Pid::from_u32(pid)).is_some()
+    }
+}
+
+#[cfg(target_os = "emscripten")]
+#[pyfunction]
+fn _process_exists(_pid: u32) -> bool {
+    false
 }
 
 pub fn add_system_functions(m: &Bound<'_, PyModule>) -> PyResult<()> {
@@ -134,6 +160,7 @@ pub fn add_system_functions(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(run, m)?)?;
     m.add_function(wrap_pyfunction!(show, m)?)?;
     m.add_function(wrap_pyfunction!(flip, m)?)?;
+    m.add_function(wrap_pyfunction!(reset, m)?)?;
     m.add_function(wrap_pyfunction!(quit, m)?)?;
     m.add_function(wrap_pyfunction!(title, m)?)?;
     m.add_function(wrap_pyfunction!(icon, m)?)?;
@@ -141,10 +168,8 @@ pub fn add_system_functions(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(integer_scale, m)?)?;
     m.add_function(wrap_pyfunction!(screen_mode, m)?)?;
     m.add_function(wrap_pyfunction!(fullscreen, m)?)?;
-    m.add_function(wrap_pyfunction!(window_state, m)?)?;
-
-    #[cfg(not(target_os = "emscripten"))]
-    m.add_function(wrap_pyfunction!(process_exists, m)?)?;
-
+    m.add_function(wrap_pyfunction!(_reset_func, m)?)?;
+    m.add_function(wrap_pyfunction!(_window_state, m)?)?;
+    m.add_function(wrap_pyfunction!(_process_exists, m)?)?;
     Ok(())
 }

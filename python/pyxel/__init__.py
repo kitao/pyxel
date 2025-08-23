@@ -11,7 +11,7 @@ _reset_info = {
 }
 
 
-def reset():
+def _reset():
     try:
         import pyodide  # type: ignore  # noqa: F401
     except ImportError:
@@ -29,7 +29,7 @@ def reset():
         except OSError:
             pass
 
-    _reset_info["env"][RESET_STATE_ENV] = window_state()  # type: ignore  #noqa: F405
+    _reset_info["env"][RESET_STATE_ENV] = _window_state()  # type: ignore  #noqa: F405
 
     try:
         os.chdir(_reset_info["cwd"])
@@ -41,3 +41,6 @@ def reset():
         [_reset_info["exec"]] + _reset_info["argv"][1:],
         _reset_info["env"],
     )
+
+
+_reset_func(_reset)  # type: ignore  #noqa: F405
