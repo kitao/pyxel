@@ -290,7 +290,11 @@ impl PlatformSdl2 {
             }
 
             if mouse_x != self.mouse_x || mouse_y != self.mouse_y {
+                #[cfg(not(target_os = "emscripten"))]
                 let (window_x, window_y) = crate::window_pos();
+
+                #[cfg(target_os = "emscripten")]
+                let (window_x, window_y) = (0, 0);
 
                 pyxel_events.push(Event::KeyValueChanged {
                     key: MOUSE_POS_X,
