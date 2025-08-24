@@ -73,6 +73,8 @@ async function resetPyxel() {
 
   pyodide.runPython(`
     import importlib
+    import os
+    import shutil
     import sys
     from types import ModuleType
 
@@ -91,6 +93,12 @@ async function resetPyxel() {
     importlib.invalidate_caches()
 
     sys.modules["__main__"] = ModuleType("__main__")
+
+    os.chdir("/")
+    if os.path.exists(work_dir):
+        shutil.rmtree(work_dir)
+    os.makedirs(work_dir, exist_ok=True)
+    os.chdir(work_dir)
   `);
 
   await _executePyxelCommand(pyodide, _pyxelState.params);
