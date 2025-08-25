@@ -327,6 +327,8 @@ pyxel watch WATCH_DIR PYTHON_SCRIPT_FILE
 
 - `Esc`<br>
   退出应用程序
+- `Alt(Option)+R`<br>
+  重置应用程序
 - `Alt(Option)+1`<br>
   将屏幕截图保存到桌面
 - `Alt(Option)+2`<br>
@@ -469,6 +471,9 @@ Pyxel 应用程序文件还可以使用 `pyxel app2exe` 或 `pyxel app2html` 命
 
 - `quit()`<br>
   退出 Pyxel 应用程序。
+
+- `reset()`<br>
+  重置 Pyxel 应用程序。
 
 ### 资源
 

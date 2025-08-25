@@ -327,6 +327,8 @@ Pyxel 애플리케이션이 실행 중일 때, 다음의 특수 키 조작을 �
 
 - `Esc`<br>
   애플리케이션 종료
+- `Alt(Option)+R`<br>
+  애플리케이션을 리셋합니다
 - `Alt(Option)+1`<br>
   화면 캡처를 데스크탑에 저장
 - `Alt(Option)+2`<br>
@@ -469,6 +471,9 @@ Pyxel 애플리케이션 파일은 `pyxel app2exe` 또는 `pyxel app2html` 명�
 
 - `quit()`<br>
   Pyxel 애플리케이션을 종료합니다.
+
+- `reset()`<br>
+  Pyxel 애플리케이션을 리셋합니다.
 
 ### Resource
 

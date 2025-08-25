@@ -327,6 +327,8 @@ Bir Pyxel uygulaması çalışırken, aşağıdaki özel tuş işlemleri gerçek
 
 - `Esc`<br>
   Uygulamadan çık
+- `Alt(Option)+R`<br>
+  Uygulamayı sıfırla
 - `Alt(Option)+1`<br>
   Ekran görüntüsünü masaüstüne kaydet
 - `Alt(Option)+2`<br>
@@ -469,6 +471,9 @@ Bir Pyxel uygulama dosyası ayrıca `pyxel app2exe` veya `pyxel app2html` komutl
 
 - `quit()`<br>
   Pyxel uygulamasını kapatır.
+
+- `reset()`<br>
+  Pyxel uygulamasını sıfırlar.
 
 ### Kaynaklar
 

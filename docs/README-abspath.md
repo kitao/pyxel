@@ -327,6 +327,8 @@ The following special key actions are available while a Pyxel application is run
 
 - `Esc`<br>
   Quit the application
+- `Alt(Option)+R`<br>
+  Reset the application
 - `Alt(Option)+1`<br>
   Save the screenshot to the desktop
 - `Alt(Option)+2`<br>
@@ -469,6 +471,9 @@ A Pyxel application file can also be converted to an executable or an HTML file 
 
 - `quit()`<br>
   Quit the Pyxel application.
+
+- `reset()`<br>
+  Reset the Pyxel application.
 
 ### Resource
 
