@@ -5,7 +5,6 @@
 - Refactored the platform abstraction layer
 - Reduced error output in the web version
 - Added the reset function
-- Updated Example 7 to use the reset function
 - Added automatic use of old_mml when '~' is used
 - Fixed delayed sound playback on Android browsers
 
