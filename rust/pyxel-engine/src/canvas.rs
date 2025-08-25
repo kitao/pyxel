@@ -9,6 +9,7 @@ pub trait ToIndex {
     fn to_index(&self) -> usize;
 }
 
+#[derive(Clone)]
 pub struct Canvas<T: Copy + PartialEq + Default + ToIndex> {
     pub self_rect: RectArea,
     pub clip_rect: RectArea,
