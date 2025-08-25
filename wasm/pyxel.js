@@ -65,6 +65,7 @@ async function resetPyxel() {
 
   let audioContext = _pyxelState.pyodide?._module?.SDL2?.audioContext;
   if (audioContext && audioContext.state === "running") {
+    await new Promise((resolve) => setTimeout(resolve, 50));
     await audioContext.suspend();
   }
 
