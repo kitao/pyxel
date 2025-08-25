@@ -135,6 +135,10 @@ impl Pyxel {
         self.update_frame(None);
     }
 
+    pub fn quit(&self) {
+        pyxel_platform::quit();
+    }
+
     pub fn reset(&mut self) {
         #[cfg(not(target_os = "emscripten"))]
         if let Some(mut reset_func) = crate::pyxel::RESET_FUNC.lock().take() {
@@ -154,10 +158,6 @@ impl Pyxel {
                 emscripten_run_script(script.as_ptr());
             }
         }
-    }
-
-    pub fn quit(&self) {
-        pyxel_platform::quit();
     }
 
     pub fn title(&self, title: &str) {
