@@ -55,6 +55,12 @@ class Snake:
         pyxel.init(
             WIDTH, HEIGHT, title="Snake!", fps=20, display_scale=12, capture_scale=6
         )
+        define_sound_and_music()
+        self.reset()
+        pyxel.run(self.update, self.draw)
+
+    def reset(self):
+        """Initiate key variables (direction, snake, apple, score, etc.)"""
 
         self.direction = RIGHT
         self.snake = deque()
@@ -63,10 +69,7 @@ class Snake:
         self.score = 0
         self.generate_apple()
 
-        define_sound_and_music()
         pyxel.playm(0, loop=True)
-
-        pyxel.run(self.update, self.draw)
 
     ##############
     # Game logic #
@@ -86,7 +89,7 @@ class Snake:
             pyxel.quit()
 
         if pyxel.btnp(pyxel.KEY_R) or pyxel.btnp(pyxel.GAMEPAD1_BUTTON_A):
-            pyxel.reset()
+            self.reset()
 
     def update_direction(self):
         """Watch the keys and change direction."""
