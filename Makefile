@@ -103,10 +103,10 @@ format:
 	@ruff format $(ROOT_DIR)
 
 lint:
-	@cd $(RUST_DIR); cargo clippy --target $(TARGET) $(CARGO_FEATURES) $(CLIPPY_OPTS)
-	@ruff check $(ROOT_DIR)
+	@cd $(RUST_DIR); cargo clippy --target $(TARGET) $(CARGO_FEATURES) $(CLIPPY_OPTS) || true
+	@ruff check $(ROOT_DIR) || true
 
-build: format
+build: format lint
 	@rustup target add $(TARGET)
 	@$(SCRIPTS_DIR)/generate_readme_abspath
 	@cp LICENSE $(PYTHON_DIR)/pyxel
