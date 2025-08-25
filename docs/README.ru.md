@@ -327,6 +327,8 @@ pyxel watch WATCH_DIR PYTHON_SCRIPT_FILE
 
 - `Esc`<br>
   Выйти из приложения
+- `Alt(Option)+R`<br>
+  Сбросить приложение
 - `Alt(Option)+1`<br>
   Сохранить снимок экрана на рабочий стол
 - `Alt(Option)+2`<br>
@@ -469,6 +471,9 @@ pyxel play PYXEL_APP_FILE
 
 - `quit()`<br>
   Завершение работы приложения Pyxel.
+
+- `reset()`<br>
+  Сбрасывает приложение Pyxel.
 
 ### Ресурсы
 

@@ -327,6 +327,8 @@ Durante l'esecuzione di un'applicazione Pyxel, possono essere eseguite le seguen
 
 - `Esc`<br>
   Uscire dall'applicazione
+- `Alt(Option)+R`<br>
+  Reimposta l'applicazione
 - `Alt(Option)+1`<br>
   Salvare lo screenshot sul desktop
 - `Alt(Option)+2`<br>
@@ -469,6 +471,9 @@ Un file dell'applicazione Pyxel può anche essere convertito in un eseguibile o 
 
 - `quit()`<br>
   Chiude l'applicazione Pyxel.
+
+- `reset()`<br>
+  Reimposta l'applicazione Pyxel.
 
 ### Risorsa
 

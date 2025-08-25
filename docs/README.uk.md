@@ -326,7 +326,9 @@ pyxel watch WATCH_DIR PYTHON_SCRIPT_FILE
 Під час виконання програми Pyxel можна виконати наступні спеціальні дії з клавішами:
 
 - `Esc`<br>
-  Вийти з програми
+  Вийти з додатку
+- `Alt(Option)+R`<br>
+  Скинути додаток
 - `Alt(Option)+1`<br>
   Зберегти знімок екрану на робочий стіл
 - `Alt(Option)+2`<br>
@@ -469,6 +471,9 @@ pyxel play PYXEL_APP_FILE
 
 - `quit()`<br>
   Завершує Pyxel-додаток.
+
+- `reset()`<br>
+  Скидає Pyxel-додаток.
 
 ### Ресурси
 

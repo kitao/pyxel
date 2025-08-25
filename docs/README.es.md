@@ -327,6 +327,8 @@ Durante la ejecución de una aplicación Pyxel, se pueden realizar las siguiente
 
 - `Esc`<br>
   Salir de la aplicación
+- `Alt(Option)+R`<br>
+  Reiniciar la aplicación
 - `Alt(Option)+1`<br>
   Guardar la captura de pantalla en el escritorio
 - `Alt(Option)+2`<br>
@@ -469,6 +471,9 @@ Un archivo de aplicación Pyxel también se puede convertir en un archivo ejecut
 
 - `quit()`<br>
   Cierra la aplicación Pyxel.
+
+- `reset()`<br>
+  Reinicia la aplicación Pyxel.
 
 ### Recursos
 

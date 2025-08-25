@@ -327,6 +327,8 @@ Während eine Pyxel-Anwendung läuft, können die folgenden speziellen Tastenakt
 
 - `Esc`<br>
   Die Anwendung beenden
+- `Alt(Option)+R`<br>
+  Die Anwendung zurücksetzen
 - `Alt(Option)+1`<br>
   Den Screenshot auf dem Desktop speichern
 - `Alt(Option)+2`<br>
@@ -469,6 +471,9 @@ Eine Pyxel-Anwendungsdatei kann auch mit den Befehlen `pyxel app2exe` oder `pyxe
 
 - `quit()`<br>
   Beendet die Pyxel-Anwendung.
+
+- `reset()`<br>
+  Setzt die Pyxel-Anwendung zurück.
 
 ### Ressourcen
 
