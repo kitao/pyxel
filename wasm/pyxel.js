@@ -433,7 +433,7 @@ async function _waitForInput() {
 
   await _waitForEvent(document.body, _isTouchDevice() ? "touchstart" : "click");
   promptImage.remove();
-  await new Promise((resolve) => setTimeout(resolve, 0));
+  await new Promise((resolve) => setTimeout(resolve, 1));
 }
 
 async function _installBuiltinPackages(pyodide, packages) {
