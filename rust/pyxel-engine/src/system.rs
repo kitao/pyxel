@@ -150,7 +150,7 @@ impl Pyxel {
             crate::pyxel::reset_static_variables();
 
             unsafe {
-                let script = std::ffi::CString::new("setTimeout(resetPyxel, 0);").unwrap();
+                let script = std::ffi::CString::new("resetPyxel();").unwrap();
                 emscripten_run_script(script.as_ptr());
             }
         }
