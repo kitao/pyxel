@@ -23,94 +23,21 @@ use crate::system::System;
 use crate::tilemap::{ImageSource, SharedTilemap, Tilemap};
 use crate::tone::{SharedTone, Tone};
 
-pub static IS_INITIALIZED: AtomicBool = AtomicBool::new(false);
+static IS_INITIALIZED: AtomicBool = AtomicBool::new(false);
 
 type ResetFunc = Option<Box<dyn FnMut() + Send + 'static>>;
 pub static RESET_FUNC: LazyLock<Mutex<ResetFunc>> = LazyLock::new(|| Mutex::new(None));
 
-pub static COLORS: LazyLock<shared_type!(Vec<Rgb24>)> =
-    LazyLock::new(|| new_shared_type!(DEFAULT_COLORS.to_vec()));
+pub static COLORS: LazyLock<shared_type!(Vec<Rgb24>)> = LazyLock::new(init_colors);
+pub static IMAGES: LazyLock<shared_type!(Vec<SharedImage>)> = LazyLock::new(init_images);
+static TILEMAPS: LazyLock<shared_type!(Vec<SharedTilemap>)> = LazyLock::new(init_tilemaps);
+static CURSOR_IMAGE: LazyLock<SharedImage> = LazyLock::new(init_cursor_image);
+pub static FONT_IMAGE: LazyLock<SharedImage> = LazyLock::new(init_font_image);
 
-pub static IMAGES: LazyLock<shared_type!(Vec<SharedImage>)> = LazyLock::new(|| {
-    new_shared_type!((0..NUM_IMAGES)
-        .map(|_| Image::new(IMAGE_SIZE, IMAGE_SIZE))
-        .collect())
-});
-
-static TILEMAPS: LazyLock<shared_type!(Vec<SharedTilemap>)> = LazyLock::new(|| {
-    new_shared_type!((0..NUM_TILEMAPS)
-        .map(|_| Tilemap::new(TILEMAP_SIZE, TILEMAP_SIZE, ImageSource::Index(0)))
-        .collect())
-});
-
-static CURSOR_IMAGE: LazyLock<SharedImage> = LazyLock::new(|| {
-    let image = Image::new(CURSOR_WIDTH, CURSOR_HEIGHT);
-    image.lock().set(0, 0, &CURSOR_DATA);
-    image
-});
-
-pub static FONT_IMAGE: LazyLock<SharedImage> = LazyLock::new(|| {
-    let width = FONT_WIDTH * NUM_FONT_ROWS;
-    let height = FONT_HEIGHT * (FONT_DATA.len() as u32).div_ceil(NUM_FONT_ROWS);
-    let image = Image::new(width, height);
-    {
-        let mut image = image.lock();
-        for (fi, data) in FONT_DATA.iter().enumerate() {
-            let row = fi as u32 / NUM_FONT_ROWS;
-            let col = fi as u32 % NUM_FONT_ROWS;
-            let mut data = *data;
-            for yi in 0..FONT_HEIGHT {
-                for xi in 0..FONT_WIDTH {
-                    let x = FONT_WIDTH * col + xi;
-                    let y = FONT_HEIGHT * row + yi;
-                    let color = Color::from((data & 0x800000) != 0);
-                    image.canvas.write_data(x as usize, y as usize, color);
-                    data <<= 1;
-                }
-            }
-        }
-    }
-    image
-});
-
-pub static CHANNELS: LazyLock<shared_type!(Vec<SharedChannel>)> =
-    LazyLock::new(|| new_shared_type!((0..NUM_CHANNELS).map(|_| Channel::new()).collect()));
-
-macro_rules! set_default_tone {
-    ($tone:ident, $default_tone:ident) => {{
-        $tone.mode = $default_tone.0;
-        $tone.sample_bits = $default_tone.1;
-        $tone.wavetable = $default_tone.2.to_vec();
-        $tone.gain = $default_tone.3;
-    }};
-}
-
-pub static TONES: LazyLock<shared_type!(Vec<SharedTone>)> = LazyLock::new(|| {
-    new_shared_type!((0..NUM_TONES)
-        .map(|index| {
-            let tone = Tone::new();
-            {
-                let mut tone = tone.lock();
-                {
-                    match index {
-                        0 => set_default_tone!(tone, DEFAULT_TONE_0),
-                        1 => set_default_tone!(tone, DEFAULT_TONE_1),
-                        2 => set_default_tone!(tone, DEFAULT_TONE_2),
-                        3 => set_default_tone!(tone, DEFAULT_TONE_3),
-                        _ => panic!(),
-                    }
-                }
-            }
-            tone
-        })
-        .collect())
-});
-
-pub static SOUNDS: LazyLock<shared_type!(Vec<SharedSound>)> =
-    LazyLock::new(|| new_shared_type!((0..NUM_SOUNDS).map(|_| Sound::new()).collect()));
-
-static MUSICS: LazyLock<shared_type!(Vec<SharedMusic>)> =
-    LazyLock::new(|| new_shared_type!((0..NUM_MUSICS).map(|_| Music::new()).collect()));
+pub static CHANNELS: LazyLock<shared_type!(Vec<SharedChannel>)> = LazyLock::new(init_channels);
+pub static TONES: LazyLock<shared_type!(Vec<SharedTone>)> = LazyLock::new(init_tones);
+pub static SOUNDS: LazyLock<shared_type!(Vec<SharedSound>)> = LazyLock::new(init_sounds);
+static MUSICS: LazyLock<shared_type!(Vec<SharedMusic>)> = LazyLock::new(init_musics);
 
 pub struct Pyxel {
     // System
@@ -253,4 +180,106 @@ pub fn init(
 
     pyxel.icon(&ICON_DATA, ICON_SCALE, ICON_COLKEY);
     pyxel
+}
+
+#[cfg(target_os = "emscripten")]
+pub(crate) fn reset_static_variables() {
+    IS_INITIALIZED.store(false, Ordering::Relaxed);
+    (*COLORS.lock()).clone_from(&init_colors().lock());
+    (*IMAGES.lock()).clone_from(&init_images().lock());
+    (*TILEMAPS.lock()).clone_from(&init_tilemaps().lock());
+    (*CURSOR_IMAGE.lock()).clone_from(&init_cursor_image().lock());
+    (*FONT_IMAGE.lock()).clone_from(&init_font_image().lock());
+    (*CHANNELS.lock()).clone_from(&init_channels().lock());
+    (*TONES.lock()).clone_from(&init_tones().lock());
+    (*SOUNDS.lock()).clone_from(&init_sounds().lock());
+    (*MUSICS.lock()).clone_from(&init_musics().lock());
+}
+
+fn init_colors() -> shared_type!(Vec<Rgb24>) {
+    new_shared_type!(DEFAULT_COLORS.to_vec())
+}
+
+fn init_images() -> shared_type!(Vec<SharedImage>) {
+    new_shared_type!((0..NUM_IMAGES)
+        .map(|_| Image::new(IMAGE_SIZE, IMAGE_SIZE))
+        .collect())
+}
+
+fn init_tilemaps() -> shared_type!(Vec<SharedTilemap>) {
+    new_shared_type!((0..NUM_TILEMAPS)
+        .map(|_| Tilemap::new(TILEMAP_SIZE, TILEMAP_SIZE, ImageSource::Index(0)))
+        .collect())
+}
+
+fn init_cursor_image() -> SharedImage {
+    let image = Image::new(CURSOR_WIDTH, CURSOR_HEIGHT);
+    image.lock().set(0, 0, &CURSOR_DATA);
+    image
+}
+
+fn init_font_image() -> SharedImage {
+    let width = FONT_WIDTH * NUM_FONT_ROWS;
+    let height = FONT_HEIGHT * (FONT_DATA.len() as u32).div_ceil(NUM_FONT_ROWS);
+    let image = Image::new(width, height);
+    {
+        let mut image = image.lock();
+        for (fi, data) in FONT_DATA.iter().enumerate() {
+            let row = fi as u32 / NUM_FONT_ROWS;
+            let col = fi as u32 % NUM_FONT_ROWS;
+            let mut data = *data;
+            for yi in 0..FONT_HEIGHT {
+                for xi in 0..FONT_WIDTH {
+                    let x = FONT_WIDTH * col + xi;
+                    let y = FONT_HEIGHT * row + yi;
+                    let color = Color::from((data & 0x800000) != 0);
+                    image.canvas.write_data(x as usize, y as usize, color);
+                    data <<= 1;
+                }
+            }
+        }
+    }
+    image
+}
+
+fn init_channels() -> shared_type!(Vec<SharedChannel>) {
+    new_shared_type!((0..NUM_CHANNELS).map(|_| Channel::new()).collect())
+}
+
+fn init_tones() -> shared_type!(Vec<SharedTone>) {
+    macro_rules! set_default_tone {
+        ($tone:ident, $default_tone:ident) => {{
+            $tone.mode = $default_tone.0;
+            $tone.sample_bits = $default_tone.1;
+            $tone.wavetable = $default_tone.2.to_vec();
+            $tone.gain = $default_tone.3;
+        }};
+    }
+
+    new_shared_type!((0..NUM_TONES)
+        .map(|index| {
+            let tone = Tone::new();
+            {
+                let mut tone = tone.lock();
+                {
+                    match index {
+                        0 => set_default_tone!(tone, DEFAULT_TONE_0),
+                        1 => set_default_tone!(tone, DEFAULT_TONE_1),
+                        2 => set_default_tone!(tone, DEFAULT_TONE_2),
+                        3 => set_default_tone!(tone, DEFAULT_TONE_3),
+                        _ => panic!(),
+                    }
+                }
+            }
+            tone
+        })
+        .collect())
+}
+
+fn init_sounds() -> shared_type!(Vec<SharedSound>) {
+    new_shared_type!((0..NUM_SOUNDS).map(|_| Sound::new()).collect())
+}
+
+fn init_musics() -> shared_type!(Vec<SharedMusic>) {
+    new_shared_type!((0..NUM_MUSICS).map(|_| Music::new()).collect())
 }

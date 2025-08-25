@@ -23,6 +23,7 @@ impl ToIndex for Color {
     }
 }
 
+#[derive(Clone)]
 pub struct Image {
     pub(crate) canvas: Canvas<Color>,
     pub(crate) palette: [Color; MAX_COLORS as usize],

@@ -1,5 +1,3 @@
-use std::sync::atomic::Ordering;
-
 use pyxel_platform::Event;
 
 use crate::image::{Color, Image, SharedImage};
@@ -10,7 +8,7 @@ use crate::key::{
     KEY_RETURN, KEY_SHIFT,
 };
 use crate::profiler::Profiler;
-use crate::pyxel::{Pyxel, IS_INITIALIZED};
+use crate::pyxel::Pyxel;
 use crate::settings::{MAX_FRAME_DELAY_MS, NUM_MEASURE_FRAMES, NUM_SCREEN_TYPES};
 use crate::utils;
 use crate::window_watcher::WindowWatcher;
@@ -144,17 +142,21 @@ impl Pyxel {
         }
 
         #[cfg(target_os = "emscripten")]
-        unsafe {
+        {
             extern "C" {
                 fn emscripten_run_script(script: *const std::os::raw::c_char);
             }
-            let script = std::ffi::CString::new("setTimeout(resetPyxel, 0);").unwrap();
-            emscripten_run_script(script.as_ptr());
+
+            crate::pyxel::reset_static_variables();
+
+            unsafe {
+                let script = std::ffi::CString::new("setTimeout(resetPyxel, 0);").unwrap();
+                emscripten_run_script(script.as_ptr());
+            }
         }
     }
 
     pub fn quit(&self) {
-        IS_INITIALIZED.swap(false, Ordering::Relaxed);
         pyxel_platform::quit();
     }
 
