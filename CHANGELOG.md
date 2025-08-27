@@ -4,6 +4,7 @@
 
 - Changed to preserve environment variables on reset
 - Changed to skip user input wait if unnecessary in the web version
+- Fixed cargo publish error by adding features sdl2
 
 ## 2.5.0
 
