@@ -3,6 +3,7 @@
 ## 2.5.1
 
 - Changed to preserve environment variables on reset
+- Changed to skip user input wait if unnecessary in the web version
 
 ## 2.5.0
 

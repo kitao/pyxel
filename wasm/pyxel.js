@@ -419,6 +419,10 @@ function _isTouchDevice() {
 }
 
 async function _waitForInput() {
+  if (navigator.userActivation?.isActive) {
+    return;
+  }
+
   let pyxelScreen = document.querySelector("div#pyxel-screen");
   let logoImage = document.querySelector("img#pyxel-logo");
   logoImage.remove();
