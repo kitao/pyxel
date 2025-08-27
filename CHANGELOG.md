@@ -6,6 +6,7 @@
 - Changed to skip user input wait if unnecessary in the web version
 - Fixed cargo publish error by adding features sdl2
 - Added line break support for custom font rendering
+- Fixed app2exe issue with white spaces
 
 ## 2.5.0
 
