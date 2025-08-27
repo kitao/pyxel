@@ -58,10 +58,10 @@ jobs:
         run: |
           echo -n "${{ secrets.CARGO_REGISTRY_TOKEN }}" | cargo login
           cd rust/pyxel-platform
-          cargo publish
+          cargo publish --features sdl2
           sleep 60
           cd ../pyxel-engine
-          cargo publish
+          cargo publish --features sdl2
           sleep 60
           cd ../pyxel-wrapper
-          RUSTFLAGS="-C link-arg=-undefined -C link-arg=dynamic_lookup" cargo publish
+          RUSTFLAGS="-C link-arg=-undefined -C link-arg=dynamic_lookup" cargo publish --features sdl2
