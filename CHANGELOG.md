@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.5.1
+
+- Changed to preserve environment variables on reset
+
 ## 2.5.0
 
 - Refactored the platform abstraction layer
