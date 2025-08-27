@@ -30,7 +30,7 @@
     {
       "id": 155,
       "title": "Hanafuda Pon",
-      "site": "https://kitao.github.io/pyxel/wasm/launcher/?play=ninja-cop.hanafudaPon.hanafudaPon",
+      "site": "https://kitao.github.io/pyxel/wasm/launcher/?play=ninja-cop.RetroGames.hanafudaPon.hanafudaPon",
       "author": "saizo",
       "contact": "https://github.com/ninja-cop",
       "desc": "A game of clearing sets of three matching Hanafuda cards",
@@ -57,7 +57,7 @@
     {
       "id": 152,
       "title": "Hanafuda Tetris",
-      "site": "https://github.com/ninja-cop/hanafuda_tetris/blob/main/hanafuda_tetris_web.html",
+      "site": "https://kitao.github.io/pyxel/wasm/launcher/?play=ninja-cop.RetroGames.hanafudaTetris.hanafudaTetris_1_5",
       "author": "saizo",
       "contact": "https://github.com/ninja-cop",
       "desc": "Match three Hanafuda cards of the same month",
