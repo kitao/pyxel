@@ -5,7 +5,6 @@ from .pyxel_wrapper import *  # type: ignore  # noqa: F403
 
 _reset_info = {
     "exec": sys.executable,
-    "env": os.environ.copy(),
     "cwd": os.getcwd(),
     "argv": getattr(sys, "orig_argv", sys.argv[:]),
 }
@@ -22,7 +21,7 @@ def _reset():
         except OSError:
             pass
 
-    _reset_info["env"][RESET_STATE_ENV] = _window_state()  # type: ignore  #noqa: F405
+    os.environ[RESET_STATE_ENV] = _window_state()  # type: ignore  #noqa: F405
 
     try:
         os.chdir(_reset_info["cwd"])
@@ -32,7 +31,7 @@ def _reset():
     os.execvpe(
         _reset_info["exec"],
         [_reset_info["exec"]] + _reset_info["argv"][1:],
-        _reset_info["env"],
+        os.environ.copy(),
     )
 
 
