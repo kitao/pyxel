@@ -1,5 +1,5 @@
 const PYODIDE_URL = "https://cdn.jsdelivr.net/pyodide/v0.27.7/full/pyodide.js";
-const PYXEL_WHEEL_PATH = "pyxel-2.5.0-cp38-abi3-emscripten_3_1_58_wasm32.whl";
+const PYXEL_WHEEL_PATH = "pyxel-2.5.1-cp38-abi3-emscripten_3_1_58_wasm32.whl";
 const PYXEL_LOGO_PATH = "../docs/images/pyxel_logo_76x32.png";
 const TOUCH_TO_START_PATH = "../docs/images/touch_to_start_114x14.png";
 const CLICK_TO_START_PATH = "../docs/images/click_to_start_114x14.png";
@@ -419,10 +419,6 @@ function _isTouchDevice() {
 }
 
 async function _waitForInput() {
-  if (navigator.userActivation?.isActive) {
-    return;
-  }
-
   let pyxelScreen = document.querySelector("div#pyxel-screen");
   let logoImage = document.querySelector("img#pyxel-logo");
   logoImage.remove();
