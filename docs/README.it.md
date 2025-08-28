@@ -473,7 +473,7 @@ Un file dell'applicazione Pyxel può anche essere convertito in un eseguibile o 
   Chiude l'applicazione Pyxel.
 
 - `reset()`<br>
-  Reimposta l'applicazione Pyxel.
+  Reimposta l'applicazione Pyxel. Le variabili d'ambiente vengono mantenute dopo il reset.
 
 ### Risorsa
 

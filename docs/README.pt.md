@@ -473,7 +473,7 @@ Um arquivo de aplicativo Pyxel também pode ser convertido em um executável ou 
   Encerra a aplicação Pyxel.
 
 - `reset()`<br>
-  Reinicia a aplicação Pyxel.
+  Reinicia a aplicação Pyxel. As variáveis de ambiente são mantidas após o reinício.
 
 ### Recurso
 

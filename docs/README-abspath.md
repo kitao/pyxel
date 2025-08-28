@@ -473,7 +473,7 @@ A Pyxel application file can also be converted to an executable or an HTML file 
   Quit the Pyxel application.
 
 - `reset()`<br>
-  Reset the Pyxel application.
+  Reset the Pyxel application. Environment variables are preserved after reset.
 
 ### Resource
 
