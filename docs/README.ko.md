@@ -473,7 +473,7 @@ Pyxel 애플리케이션 파일은 `pyxel app2exe` 또는 `pyxel app2html` 명�
   Pyxel 애플리케이션을 종료합니다.
 
 - `reset()`<br>
-  Pyxel 애플리케이션을 리셋합니다.
+  Pyxel 애플리케이션을 리셋합니다. 리셋 후에도 환경 변수는 유지됩니다.
 
 ### Resource
 

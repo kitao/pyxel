@@ -473,7 +473,7 @@ Eine Pyxel-Anwendungsdatei kann auch mit den Befehlen `pyxel app2exe` oder `pyxe
   Beendet die Pyxel-Anwendung.
 
 - `reset()`<br>
-  Setzt die Pyxel-Anwendung zurück.
+  Setzt die Pyxel-Anwendung zurück. Umgebungsvariablen bleiben nach dem Zurücksetzen erhalten.
 
 ### Ressourcen
 

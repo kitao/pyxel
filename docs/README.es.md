@@ -473,7 +473,7 @@ Un archivo de aplicación Pyxel también se puede convertir en un archivo ejecut
   Cierra la aplicación Pyxel.
 
 - `reset()`<br>
-  Reinicia la aplicación Pyxel.
+  Reinicia la aplicación Pyxel. Las variables de entorno se conservan después del reinicio.
 
 ### Recursos
 

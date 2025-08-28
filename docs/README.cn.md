@@ -473,7 +473,7 @@ Pyxel 应用程序文件还可以使用 `pyxel app2exe` 或 `pyxel app2html` 命
   退出 Pyxel 应用程序。
 
 - `reset()`<br>
-  重置 Pyxel 应用程序。
+  重置 Pyxel 应用程序。重置后环境变量会被保留。
 
 ### 资源
 

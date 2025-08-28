@@ -473,7 +473,7 @@ Bir Pyxel uygulama dosyası ayrıca `pyxel app2exe` veya `pyxel app2html` komutl
   Pyxel uygulamasını kapatır.
 
 - `reset()`<br>
-  Pyxel uygulamasını sıfırlar.
+  Pyxel uygulamasını sıfırlar. Sıfırlama sonrası ortam değişkenleri korunur.
 
 ### Kaynaklar
 
