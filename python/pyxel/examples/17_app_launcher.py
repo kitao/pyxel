@@ -5,6 +5,14 @@ import pyxel
 
 APP_LAUNCHER_ENV = "PYXEL_APP_LAUNCHER"
 APPS_DIR = (pathlib.Path(__file__).parent / "apps").resolve()
+APP_NAMES = [
+    "30sec_of_daylight",
+    "megaball",
+    "8bit-bgm-gen",
+    "space_rescue",
+    "mega_wing",
+    "cursed_caverns",
+]
 
 ROW_COUNT = 5
 ROW_HEIGHT = 12
@@ -13,6 +21,7 @@ ROW_HEIGHT = 12
 class App:
     def __init__(self):
         pyxel.init(418, 173, title="Pyxel App Launcher")
+        pyxel.integer_scale(True)
 
         self.umplus10 = pyxel.Font("assets/umplus_j10r.bdf")
         self.cursor_index = self.cursor_pos = 0
@@ -21,12 +30,12 @@ class App:
         self.list_view = pyxel.Image(400, ROW_HEIGHT * ROW_COUNT)
 
         self.apps = []
-        for path in APPS_DIR.glob("*.pyxapp"):
+        for name in APP_NAMES:
+            path = APPS_DIR / f"{name}.pyxapp"
             metadata = pyxel.cli.get_pyxel_app_metadata(str(path))
-            metadata["name"] = path.stem
+            metadata["name"] = name
             metadata["filepath"] = str(path)
             self.apps.append(metadata)
-        self.apps.sort(key=lambda x: x["name"].lower())
 
         pyxel.run(self.update, self.draw)
 
