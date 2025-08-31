@@ -21,8 +21,6 @@ def _reset():
         except OSError:
             pass
 
-    os.environ[RESET_STATE_ENV] = _window_state()  # type: ignore  #noqa: F405
-
     try:
         os.chdir(_reset_info["cwd"])
     except Exception:
