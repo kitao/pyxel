@@ -3,7 +3,9 @@
 ## 2.5.2
 
 - Fixed cargo publish error by adding features sdl2_bundle
+- Added an environment variable for the reset function's window state
 - Added three sample games from the Pyxel book
+- Added Example 17 for the app launcher and the reset function
 
 ## 2.5.1
 
