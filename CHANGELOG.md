@@ -3,6 +3,7 @@
 ## 2.5.2
 
 - Fixed cargo publish error by adding features sdl2_bundle
+- Added three sample games from the Pyxel book
 
 ## 2.5.1
 
