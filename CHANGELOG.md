@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.5.2
+
+- Fixed cargo publish error by adding features sdl2_bundle
+
 ## 2.5.1
 
 - Changed to preserve environment variables on reset
