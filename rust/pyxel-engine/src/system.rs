@@ -214,10 +214,6 @@ impl Pyxel {
         pyxel_platform::set_fullscreen(enabled);
     }
 
-    pub fn window_state(&mut self) -> String {
-        self.system.window_watcher.window_state()
-    }
-
     fn process_events(&mut self) {
         self.start_input_frame();
         let events = pyxel_platform::poll_events();

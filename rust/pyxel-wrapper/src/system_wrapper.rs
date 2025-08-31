@@ -135,11 +135,6 @@ fn _reset_func(func: Bound<'_, PyAny>) {
     }));
 }
 
-#[pyfunction]
-fn _window_state() -> String {
-    pyxel().window_state()
-}
-
 #[cfg(not(target_os = "emscripten"))]
 #[pyfunction]
 fn _process_exists(pid: u32) -> bool {
@@ -169,7 +164,6 @@ pub fn add_system_functions(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(screen_mode, m)?)?;
     m.add_function(wrap_pyfunction!(fullscreen, m)?)?;
     m.add_function(wrap_pyfunction!(_reset_func, m)?)?;
-    m.add_function(wrap_pyfunction!(_window_state, m)?)?;
     m.add_function(wrap_pyfunction!(_process_exists, m)?)?;
     Ok(())
 }
