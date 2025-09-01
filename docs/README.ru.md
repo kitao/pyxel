@@ -210,36 +210,28 @@ pyxel copy_examples
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/16_transform.py">Код</a></td>
 </tr>
 <tr>
+<td>17_app_launcher.py</td>
+<td>Pyxel app launcher (вы можете играть в различные игры!)</td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/17_app_launcher.html">Demo</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/17_app_launcher.py">Code</a></td>
+</tr>
+<tr>
 <td>99_flip_animation.py</td>
 <td>Анимация с помощью функции flip (только для не веб-платформ)</td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/docs/images/99_flip_animation.gif">Демонстрация</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/99_flip_animation.py">Код</a></td>
-</tr>
-<tr>
-<td>30sec_of_daylight.pyxapp</td>
-<td>Победившая игра 1-го Pyxel Jam от <a href="https://x.com/helpcomputer0">Adam</a></td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/30sec_of_daylight.html">Демонстрация</a></td>
-<td><a href="https://github.com/kitao/30SecondsOfDaylight">Код</a></td>
-</tr>
-<tr>
-<td>megaball.pyxapp</td>
-<td>Аркадная игра с физикой мячей от <a href="https://x.com/helpcomputer0">Adam</a></td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/megaball.html">Демонстрация</a></td>
-<td><a href="https://github.com/kitao/megaball">Код</a></td>
-</tr>
-<tr>
-<td>8bit-bgm-gen.pyxapp</td>
-<td>Генератор фоновой музыки от <a href="https://x.com/frenchbread1222">frenchbread</a></td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/8bit-bgm-gen.html">Демонстрация</a></td>
-<td><a href="https://github.com/shiromofufactory/8bit-bgm-generator">Код</a></td>
 </tr>
 </table>
 
 Примеры можно выполнить с помощью следующих команд:
 
 ```sh
+# Run sample in examples directory
 cd pyxel_examples
 pyxel run 01_hello_pyxel.py
+
+# Run app in examples/apps directory
+cd apps
 pyxel play 30sec_of_daylight.pyxapp
 ```
 

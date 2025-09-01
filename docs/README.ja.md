@@ -210,36 +210,28 @@ pyxel copy_examples
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/16_transform.py">コード</a></td>
 </tr>
 <tr>
+<td>17_app_launcher.py</td>
+<td>Pyxelアプリランチャー (色々なゲームをプレイできます！)</td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/17_app_launcher.html">Demo</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/17_app_launcher.py">Code</a></td>
+</tr>
+<tr>
 <td>99_flip_animation.py</td>
 <td>flip 関数によるアニメーション (非 Web 環境のみ)</td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/docs/images/99_flip_animation.gif">デモ</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/99_flip_animation.py">コード</a></td>
-</tr>
-<tr>
-<td>30sec_of_daylight.pyxapp</td>
-<td>第 1 回 Pyxel Jam 優勝ゲーム (<a href="https://x.com/helpcomputer0">Adam</a>制作)</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/30sec_of_daylight.html">デモ</a></td>
-<td><a href="https://github.com/kitao/30SecondsOfDaylight">コード</a></td>
-</tr>
-<tr>
-<td>megaball.pyxapp</td>
-<td>アーケードボール物理ゲーム (<a href="https://x.com/helpcomputer0">Adam</a>制作)</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/megaball.html">デモ</a></td>
-<td><a href="https://github.com/kitao/megaball">コード</a></td>
-</tr>
-<tr>
-<td>8bit-bgm-gen.pyxapp</td>
-<td>BGM自動作成ツール (<a href="https://x.com/frenchbread1222">frenchbread</a>制作)</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/8bit-bgm-gen.html">デモ</a></td>
-<td><a href="https://github.com/shiromofufactory/8bit-bgm-generator">コード</a></td>
 </tr>
 </table>
 
 サンプルは以下のコマンドで実行できます。
 
 ```sh
+# Run sample in examples directory
 cd pyxel_examples
 pyxel run 01_hello_pyxel.py
+
+# Run app in examples/apps directory
+cd apps
 pyxel play 30sec_of_daylight.pyxapp
 ```
 

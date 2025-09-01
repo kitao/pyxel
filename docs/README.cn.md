@@ -210,36 +210,28 @@ pyxel copy_examples
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/16_transform.py">代码</a></td>
 </tr>
 <tr>
+<td>17_app_launcher.py</td>
+<td>Pyxel 应用启动器（你可以玩各种游戏！）</td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/17_app_launcher.html">Demo</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/17_app_launcher.py">Code</a></td>
+</tr>
+<tr>
 <td>99_flip_animation.py</td>
 <td>使用翻转函数的动画（仅限非网页平台）</td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/docs/images/99_flip_animation.gif">演示</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/99_flip_animation.py">代码</a></td>
-</tr>
-<tr>
-<td>30sec_of_daylight.pyxapp</td>
-<td>第 1 届 Pyxel Jam 获胜游戏由 <a href="https://x.com/helpcomputer0">Adam</a> 制作</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/30sec_of_daylight.html">演示</a></td>
-<td><a href="https://github.com/kitao/30SecondsOfDaylight">代码</a></td>
-</tr>
-<tr>
-<td>megaball.pyxapp</td>
-<td>由 <a href="https://x.com/helpcomputer0">Adam</a> 制作的街机球物理游戏</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/megaball.html">演示</a></td>
-<td><a href="https://github.com/kitao/megaball">代码</a></td>
-</tr>
-<tr>
-<td>8bit-bgm-gen.pyxapp</td>
-<td>由 <a href="https://x.com/frenchbread1222">frenchbread</a> 制作的背景音乐生成器</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/8bit-bgm-gen.html">演示</a></td>
-<td><a href="https://github.com/shiromofufactory/8bit-bgm-generator">代码</a></td>
 </tr>
 </table>
 
 这些示例可以通过以下命令执行：
 
 ```sh
+# Run sample in examples directory
 cd pyxel_examples
 pyxel run 01_hello_pyxel.py
+
+# Run app in examples/apps directory
+cd apps
 pyxel play 30sec_of_daylight.pyxapp
 ```
 

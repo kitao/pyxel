@@ -210,36 +210,28 @@ Los siguientes ejemplos serán copiados a tu directorio actual:
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/16_transform.py">Código</a></td>
 </tr>
 <tr>
+<td>17_app_launcher.py</td>
+<td>Lanzador de aplicaciones Pyxel (¡puedes jugar a varios juegos!)</td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/17_app_launcher.html">Demo</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/17_app_launcher.py">Code</a></td>
+</tr>
+<tr>
 <td>99_flip_animation.py</td>
 <td>Animación con la función flip (solo para plataformas que no son web)</td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/docs/images/99_flip_animation.gif">Demo</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/99_flip_animation.py">Código</a></td>
-</tr>
-<tr>
-<td>30sec_of_daylight.pyxapp</td>
-<td>Juego ganador del 1er Pyxel Jam por <a href="https://x.com/helpcomputer0">Adam</a></td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/30sec_of_daylight.html">Demo</a></td>
-<td><a href="https://github.com/kitao/30SecondsOfDaylight">Código</a></td>
-</tr>
-<tr>
-<td>megaball.pyxapp</td>
-<td>Juego de física de pelota arcade por <a href="https://x.com/helpcomputer0">Adam</a></td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/megaball.html">Demo</a></td>
-<td><a href="https://github.com/kitao/megaball">Código</a></td>
-</tr>
-<tr>
-<td>8bit-bgm-gen.pyxapp</td>
-<td>Generador de música de fondo por <a href="https://x.com/frenchbread1222">frenchbread</a></td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/8bit-bgm-gen.html">Demo</a></td>
-<td><a href="https://github.com/shiromofufactory/8bit-bgm-generator">Código</a></td>
 </tr>
 </table>
 
 Los ejemplos se pueden ejecutar con los siguientes comandos:
 
 ```sh
+# Run sample in examples directory
 cd pyxel_examples
 pyxel run 01_hello_pyxel.py
+
+# Run app in examples/apps directory
+cd apps
 pyxel play 30sec_of_daylight.pyxapp
 ```
 
