@@ -77,14 +77,17 @@ async function resetPyxel() {
     import os
     import shutil
     import sys
+    import tempfile
     from types import ModuleType
 
     work_dir = "${PYXEL_WORKING_DIRECTORY}"
+    temp_dir = tempfile.gettempdir()
     mods = [
         n
         for n, m in list(sys.modules.items())
-        if getattr(m, "__file__", "") and m.__file__.startswith(work_dir)
-    ]
+        if getattr(m, "__file__", "")
+        and (m.__file__.startswith(work_dir) or m.__file__.startswith(temp_dir))
+    ] + ["__main__"]
 
     for n in mods:
         try:
