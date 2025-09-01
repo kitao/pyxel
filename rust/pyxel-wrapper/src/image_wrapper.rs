@@ -42,7 +42,7 @@ impl Image {
         self.inner.lock().height()
     }
 
-    pub fn data_ptr(&self, py: Python) -> PyObject {
+    pub fn data_ptr(&self, py: Python) -> Py<PyAny> {
         let mut inner = self.inner.lock();
         let python_code = CString::new(format!(
             "import ctypes; c_uint8_array = (ctypes.c_uint8 * {}).from_address({:p})",

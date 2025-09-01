@@ -6,6 +6,7 @@
 - Added an environment variable for the reset function's window state
 - Added three sample games from the Pyxel book
 - Added Example 17 for the app launcher and the reset function
+- Updated the pyo3 crate to version 0.26
 
 ## 2.5.1
 

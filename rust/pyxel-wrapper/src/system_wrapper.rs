@@ -126,7 +126,7 @@ fn fullscreen(enabled: bool) {
 fn _reset_func(func: Bound<'_, PyAny>) {
     let func = func.unbind();
     *pyxel::RESET_FUNC.lock() = Some(Box::new(move || {
-        Python::with_gil(|py| {
+        Python::attach(|py| {
             if let Err(err) = func.call0(py) {
                 err.print(py);
                 exit(1);
