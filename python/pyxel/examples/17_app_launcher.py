@@ -43,13 +43,17 @@ class App:
         if pyxel.btnp(pyxel.KEY_Q):
             pyxel.quit()
 
-        if pyxel.btnp(pyxel.KEY_UP, 15, 6):
+        if pyxel.btnp(pyxel.KEY_UP, 15, 6) or pyxel.btnp(
+            pyxel.GAMEPAD1_BUTTON_DPAD_UP, 15, 6
+        ):
             self.cursor_index = max(self.cursor_index - 1, 0)
 
-        if pyxel.btnp(pyxel.KEY_DOWN, 15, 6):
+        if pyxel.btnp(pyxel.KEY_DOWN, 15, 6) or pyxel.btnp(
+            pyxel.GAMEPAD1_BUTTON_DPAD_DOWN, 15, 6
+        ):
             self.cursor_index = min(self.cursor_index + 1, len(self.apps) - 1)
 
-        if pyxel.btnp(pyxel.KEY_RETURN):
+        if pyxel.btnp(pyxel.KEY_RETURN) or pyxel.btnp(pyxel.GAMEPAD1_BUTTON_A):
             os.environ[APP_LAUNCHER_ENV] = self.apps[self.cursor_index]["filepath"]
             # Prevent the launched app from inheriting the window state
             os.environ.pop(pyxel.WINDOW_STATE_ENV, None)
