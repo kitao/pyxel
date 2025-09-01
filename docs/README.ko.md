@@ -210,36 +210,28 @@ pyxel copy_examples
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/16_transform.py">코드</a></td>
 </tr>
 <tr>
+<td>17_app_launcher.py</td>
+<td>Pyxel 앱 런처 (여러 가지 게임을 플레이할 수 있습니다!)</td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/17_app_launcher.html">Demo</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/17_app_launcher.py">Code</a></td>
+</tr>
+<tr>
 <td>99_flip_animation.py</td>
 <td>flip 함수로 애니메이션 (비 웹 플랫폼 전용)</td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/docs/images/99_flip_animation.gif">데모</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/99_flip_animation.py">코드</a></td>
-</tr>
-<tr>
-<td>30sec_of_daylight.pyxapp</td>
-<td>1회 Pyxel Jam 우승 게임 (<a href="https://x.com/helpcomputer0">Adam</a> 제작)</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/30sec_of_daylight.html">데모</a></td>
-<td><a href="https://github.com/kitao/30SecondsOfDaylight">코드</a></td>
-</tr>
-<tr>
-<td>megaball.pyxapp</td>
-<td>아케이드 볼 물리 게임 (<a href="https://x.com/helpcomputer0">Adam</a> 제작)</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/megaball.html">데모</a></td>
-<td><a href="https://github.com/kitao/megaball">코드</a></td>
-</tr>
-<tr>
-<td>8bit-bgm-gen.pyxapp</td>
-<td>BGM 자동 생성 도구 (<a href="https://x.com/frenchbread1222">frenchbread</a> 제작)</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/8bit-bgm-gen.html">데모</a></td>
-<td><a href="https://github.com/shiromofufactory/8bit-bgm-generator">코드</a></td>
 </tr>
 </table>
 
 예제는 다음 명령어로 실행할 수 있습니다:
 
 ```sh
+# Run sample in examples directory
 cd pyxel_examples
 pyxel run 01_hello_pyxel.py
+
+# Run app in examples/apps directory
+cd apps
 pyxel play 30sec_of_daylight.pyxapp
 ```
 

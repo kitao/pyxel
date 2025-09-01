@@ -210,36 +210,28 @@ Les exemples suivants seront copiés dans votre répertoire actuel :
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/16_transform.py">Code</a></td>
 </tr>
 <tr>
+<td>17_app_launcher.py</td>
+<td>Lanceur d'applications Pyxel (vous pouvez jouer à divers jeux !)</td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/17_app_launcher.html">Demo</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/17_app_launcher.py">Code</a></td>
+</tr>
+<tr>
 <td>99_flip_animation.py</td>
 <td>Animation avec la fonction flip (uniquement pour les plateformes non-web)</td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/docs/images/99_flip_animation.gif">Démonstration</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/99_flip_animation.py">Code</a></td>
-</tr>
-<tr>
-<td>30sec_of_daylight.pyxapp</td>
-<td>Jeu gagnant du 1er Pyxel Jam par <a href="https://x.com/helpcomputer0">Adam</a></td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/30sec_of_daylight.html">Démonstration</a></td>
-<td><a href="https://github.com/kitao/30SecondsOfDaylight">Code</a></td>
-</tr>
-<tr>
-<td>megaball.pyxapp</td>
-<td>Jeu de physique de balle d'arcade par <a href="https://x.com/helpcomputer0">Adam</a></td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/megaball.html">Démonstration</a></td>
-<td><a href="https://github.com/kitao/megaball">Code</a></td>
-</tr>
-<tr>
-<td>8bit-bgm-gen.pyxapp</td>
-<td>Générateur de musique de fond par <a href="https://x.com/frenchbread1222">frenchbread</a></td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/8bit-bgm-gen.html">Démonstration</a></td>
-<td><a href="https://github.com/shiromofufactory/8bit-bgm-generator">Code</a></td>
 </tr>
 </table>
 
 Les exemples peuvent être exécutés avec les commandes suivantes :
 
 ```sh
+# Run sample in examples directory
 cd pyxel_examples
 pyxel run 01_hello_pyxel.py
+
+# Run app in examples/apps directory
+cd apps
 pyxel play 30sec_of_daylight.pyxapp
 ```
 
