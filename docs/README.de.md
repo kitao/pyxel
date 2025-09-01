@@ -319,7 +319,7 @@ Während eine Pyxel-Anwendung läuft, können die folgenden speziellen Tastenakt
 
 - `Esc`<br>
   Die Anwendung beenden
-- `Alt(Option)+R`<br>
+- `Alt(Option)+R` oder `A+B+X+Y+BACK` auf dem Gamepad<br>
   Die Anwendung zurücksetzen
 - `Alt(Option)+1`<br>
   Den Screenshot auf dem Desktop speichern

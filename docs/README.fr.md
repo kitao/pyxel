@@ -319,7 +319,7 @@ Pendant l'exécution d'une application Pyxel, les opérations de touches spécia
 
 - `Esc`<br>
   Quitter l'application
-- `Alt(Option)+R`<br>
+- `Alt(Option)+R` ou `A+B+X+Y+BACK` sur la manette<br>
   Réinitialiser l'application
 - `Alt(Option)+1`<br>
   Enregistrer la capture d'écran sur le bureau

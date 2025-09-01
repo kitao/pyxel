@@ -319,7 +319,7 @@ The following special key actions are available while a Pyxel application is run
 
 - `Esc`<br>
   Quit the application
-- `Alt(Option)+R`<br>
+- `Alt(Option)+R` or `A+B+X+Y+BACK` on gamepad<br>
   Reset the application
 - `Alt(Option)+1`<br>
   Save the screenshot to the desktop

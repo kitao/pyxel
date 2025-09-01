@@ -1,3 +1,4 @@
+use pyxel_platform::key::GAMEPAD1_BUTTON_BACK;
 use pyxel_platform::Event;
 
 use crate::image::{Color, Image, SharedImage};
@@ -297,7 +298,10 @@ impl Pyxel {
             && self.btn(GAMEPAD1_BUTTON_X)
             && self.btn(GAMEPAD1_BUTTON_Y)
         {
-            if self.btnp(GAMEPAD1_BUTTON_DPAD_LEFT, None, None) {
+            if self.btnp(GAMEPAD1_BUTTON_BACK, None, None) {
+                self.reset_key(GAMEPAD1_BUTTON_BACK);
+                self.reset();
+            } else if self.btnp(GAMEPAD1_BUTTON_DPAD_LEFT, None, None) {
                 self.reset_key(GAMEPAD1_BUTTON_DPAD_UP);
                 self.integer_scale(!self.system.integer_scale_enabled);
             } else if self.btnp(GAMEPAD1_BUTTON_DPAD_RIGHT, None, None) {
