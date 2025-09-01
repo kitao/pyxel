@@ -51,7 +51,7 @@ impl Tilemap {
     }
 
     #[getter]
-    pub fn imgsrc(&self, py: Python) -> PyObject {
+    pub fn imgsrc(&self, py: Python) -> Py<PyAny> {
         let tilemap = self.inner.lock();
         match &tilemap.imgsrc {
             pyxel::ImageSource::Index(index) => value_to_pyobj!(py, index),
@@ -70,7 +70,7 @@ impl Tilemap {
         Ok(())
     }
 
-    pub fn data_ptr(&self, py: Python) -> PyObject {
+    pub fn data_ptr(&self, py: Python) -> Py<PyAny> {
         let mut inner = self.inner.lock();
         let python_code = CString::new(format!(
             "import ctypes; c_uint8_array = (ctypes.c_uint8 * {}).from_address({:p})",

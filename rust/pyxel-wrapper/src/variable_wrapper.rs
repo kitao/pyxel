@@ -53,7 +53,7 @@ wrap_shared_vec_as_python_list!(Sounds, Sound, sounds);
 wrap_shared_vec_as_python_list!(Musics, Music, musics);
 
 #[pyfunction]
-fn __getattr__(py: Python, name: &str) -> PyResult<PyObject> {
+fn __getattr__(py: Python, name: &str) -> PyResult<Py<PyAny>> {
     let value = match name {
         // System
         "width" => value_to_pyobj!(py, pyxel().width),
