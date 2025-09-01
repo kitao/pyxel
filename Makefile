@@ -120,7 +120,7 @@ test: install
 	@python3 -m unittest discover $(RUST_DIR)/pyxel-wrapper/tests
 
 	@bash -c 'set -e; trap "exit 130" INT; for f in $(EXAMPLES_DIR)/*.py; do pyxel run "$$f"; done'
-	@bash -c 'set -e; trap "exit 130" INT; for f in $(EXAMPLES_DIR)/*.pyxapp; do pyxel play "$$f"; done'
+	@bash -c 'set -e; trap "exit 130" INT; for f in $(EXAMPLES_DIR)/apps/*.pyxapp; do pyxel play "$$f"; done'
 	@pyxel edit $(EXAMPLES_DIR)/assets/sample.pyxres
 
 	@rm -rf testapp testapp.pyxapp
