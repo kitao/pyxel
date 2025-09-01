@@ -319,7 +319,7 @@ Durante l'esecuzione di un'applicazione Pyxel, possono essere eseguite le seguen
 
 - `Esc`<br>
   Uscire dall'applicazione
-- `Alt(Option)+R`<br>
+- `Alt(Option)+R` oppure `A+B+X+Y+BACK` sul gamepad<br>
   Reimposta l'applicazione
 - `Alt(Option)+1`<br>
   Salvare lo screenshot sul desktop

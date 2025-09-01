@@ -319,7 +319,7 @@ pyxel watch WATCH_DIR PYTHON_SCRIPT_FILE
 
 - `Esc`<br>
   Выйти из приложения
-- `Alt(Option)+R`<br>
+- `Alt(Option)+R` или `A+B+X+Y+BACK` на геймпаде<br>
   Сбросить приложение
 - `Alt(Option)+1`<br>
   Сохранить снимок экрана на рабочий стол

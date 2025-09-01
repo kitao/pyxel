@@ -4,6 +4,7 @@
 
 - Changed the HTML pages for Pyxel to use the latest Pyxel from CDN
 - Enabled confirming with any ABXY gamepad button in Example 17
+- Added a gamepad shortcut for the reset operation
 
 ## 2.5.2
 

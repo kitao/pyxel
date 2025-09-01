@@ -319,7 +319,7 @@ Pyxel 애플리케이션이 실행 중일 때, 다음의 특수 키 조작을 �
 
 - `Esc`<br>
   애플리케이션 종료
-- `Alt(Option)+R`<br>
+- `Alt(Option)+R` 또는 게임패드에서 `A+B+X+Y+BACK`<br>
   애플리케이션을 리셋합니다
 - `Alt(Option)+1`<br>
   화면 캡처를 데스크탑에 저장

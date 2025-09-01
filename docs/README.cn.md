@@ -319,7 +319,7 @@ pyxel watch WATCH_DIR PYTHON_SCRIPT_FILE
 
 - `Esc`<br>
   退出应用程序
-- `Alt(Option)+R`<br>
+- `Alt(Option)+R` 或者在游戏手柄上按 `A+B+X+Y+BACK`<br>
   重置应用程序
 - `Alt(Option)+1`<br>
   将屏幕截图保存到桌面

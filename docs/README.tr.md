@@ -319,7 +319,7 @@ Bir Pyxel uygulaması çalışırken, aşağıdaki özel tuş işlemleri gerçek
 
 - `Esc`<br>
   Uygulamadan çık
-- `Alt(Option)+R`<br>
+- `Alt(Option)+R` veya gamepad'de `A+B+X+Y+BACK`<br>
   Uygulamayı sıfırla
 - `Alt(Option)+1`<br>
   Ekran görüntüsünü masaüstüne kaydet
