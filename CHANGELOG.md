@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.5.3
+
+- Changed the HTML pages for Pyxel to use the latest Pyxel from CDN
+
 ## 2.5.2
 
 - Fixed cargo publish error by adding features sdl2_bundle
