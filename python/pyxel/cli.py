@@ -356,7 +356,11 @@ def package_pyxel_app(app_dir, startup_script_file):
         zf.comment = metadata_comment.encode(encoding="utf-8")
         files = [setting_file] + _files_in_dir(app_dir)
         for file in files:
-            if os.path.basename(file) == pyxel_app_file or "/__pycache__/" in file:
+            if (
+                os.path.basename(file) == pyxel_app_file
+                or "/__pycache__/" in file
+                or file.lower().endswith(".gif")
+            ):
                 continue
             arcname = os.path.relpath(file, app_parent_dir)
             zf.write(file, arcname)
