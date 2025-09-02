@@ -549,10 +549,10 @@ function _addVirtualGamepad(mode) {
         }
       }
 
-      if (menuY >= 0.3 && menuY <= 0.4) {
-        if (menuX >= 0.55 && menuX <= 0.95) {
+      if (menuX >= 0.0 && menuX <= 1.0 && menuY >= 0.2 && menuY <= 0.5) {
+        if (menuX >= 0.5) {
           _virtualGamepadStates[8] = true; // Start
-        } else if (menuX >= 0.05 && menuX <= 0.45) {
+        } else {
           _virtualGamepadStates[9] = true; // Back
         }
       }
