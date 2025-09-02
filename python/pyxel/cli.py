@@ -360,6 +360,7 @@ def package_pyxel_app(app_dir, startup_script_file):
                 os.path.basename(file) == pyxel_app_file
                 or "/__pycache__/" in file
                 or file.lower().endswith(".gif")
+                or file.lower().endswith(".zip")
             ):
                 continue
             arcname = os.path.relpath(file, app_parent_dir)
