@@ -4,7 +4,7 @@ build-backend = "maturin"
 
 [project]
 name = "pyxel"
-version = "2.5.2"
+version = "2.5.3"
 requires-python = ">=3.8"
 authors = [{ name = "Takashi Kitao", email = "takashi.kitao@gmail.com" }]
 description = "A retro game engine for Python"
