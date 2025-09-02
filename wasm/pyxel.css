@@ -96,3 +96,13 @@ img#pyxel-gamepad-button {
   image-rendering: pixelated;
   pointer-events: none;
 }
+
+img#pyxel-gamepad-menu {
+  position: absolute;
+  left: 50%;
+  bottom: 1%;
+  transform: translateX(-50%);
+  --min-width-ratio: 0.2;
+  image-rendering: pixelated;
+  pointer-events: none;
+}

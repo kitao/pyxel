@@ -3,9 +3,9 @@
 ## 2.5.3
 
 - Changed the HTML pages for Pyxel to use the latest Pyxel from CDN
-- Enabled confirming with any ABXY gamepad button in Example 17
 - Added a gamepad shortcut for the reset operation
-- Excluded GIF and ZIP files from a Pyxel application file
+- Excluded GIF and ZIP files from Pyxel application files
+- Added START and BACK buttons to the virtual gamepad for the web
 
 ## 2.5.2
 

@@ -46,7 +46,7 @@ pub struct PlatformSdl2 {
     pub mouse_y: i32,
     pub gamepads: Vec<Gamepad>,
     #[cfg(target_os = "emscripten")]
-    pub virtual_gamepad_states: [bool; 8],
+    pub virtual_gamepad_states: [bool; 10],
     #[cfg(not(target_os = "emscripten"))]
     pub next_update_ms: Option<f32>,
 }
@@ -61,7 +61,7 @@ impl PlatformSdl2 {
             mouse_y: i32::MIN,
             gamepads: Vec::new(),
             #[cfg(target_os = "emscripten")]
-            virtual_gamepad_states: [false; 8],
+            virtual_gamepad_states: [false; 10],
             #[cfg(not(target_os = "emscripten"))]
             next_update_ms: None,
         }

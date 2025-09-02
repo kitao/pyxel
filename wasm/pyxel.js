@@ -5,6 +5,7 @@ const TOUCH_TO_START_PATH = "../docs/images/touch_to_start_114x14.png";
 const CLICK_TO_START_PATH = "../docs/images/click_to_start_114x14.png";
 const GAMEPAD_CROSS_PATH = "../docs/images/gamepad_cross_98x98.png";
 const GAMEPAD_BUTTON_PATH = "../docs/images/gamepad_button_98x98.png";
+const GAMEPAD_MENU_PATH = "../docs/images/gamepad_menu_92x26.png";
 const PYXEL_WORKING_DIRECTORY = "/pyxel_working_directory";
 const PYXEL_WATCH_INFO_FILE = ".pyxel_watch_info";
 const IMPORT_HOOK_PATH = "import_hook.py";
@@ -25,6 +26,8 @@ let _virtualGamepadStates = [
   false, // B
   false, // X
   false, // Y
+  false, // Start
+  false, // Back
 ];
 
 async function launchPyxel(params) {
@@ -188,6 +191,7 @@ function _updateScreenElementsSize() {
   _setMinWidthFromRatio("img#pyxel-prompt", screenSize);
   _setMinWidthFromRatio("img#pyxel-gamepad-cross", screenSize);
   _setMinWidthFromRatio("img#pyxel-gamepad-button", screenSize);
+  _setMinWidthFromRatio("img#pyxel-gamepad-menu", screenSize);
 }
 
 function _waitForEvent(target, event) {
@@ -455,7 +459,8 @@ function _addVirtualGamepad(mode) {
 
   if (
     document.getElementById("pyxel-gamepad-cross") ||
-    document.getElementById("pyxel-gamepad-button")
+    document.getElementById("pyxel-gamepad-button") ||
+    document.getElementById("pyxel-gamepad-menu")
   ) {
     return;
   }
@@ -465,29 +470,40 @@ function _addVirtualGamepad(mode) {
 
   // Add virtual cross key
   let pyxelScreen = document.querySelector("div#pyxel-screen");
-  let crossImage = document.createElement("img");
-  crossImage.id = "pyxel-gamepad-cross";
-  crossImage.src = _scriptDir() + GAMEPAD_CROSS_PATH;
-  crossImage.tabindex = -1;
-  crossImage.onload = () => {
-    pyxelScreen.appendChild(crossImage);
+  let gamepadCrossImage = document.createElement("img");
+  gamepadCrossImage.id = "pyxel-gamepad-cross";
+  gamepadCrossImage.src = _scriptDir() + GAMEPAD_CROSS_PATH;
+  gamepadCrossImage.tabindex = -1;
+  gamepadCrossImage.onload = () => {
+    pyxelScreen.appendChild(gamepadCrossImage);
     _updateScreenElementsSize();
   };
 
-  // Add virtual buttons
-  let buttonImage = document.createElement("img");
-  buttonImage.id = "pyxel-gamepad-button";
-  buttonImage.src = _scriptDir() + GAMEPAD_BUTTON_PATH;
-  buttonImage.tabindex = -1;
-  buttonImage.onload = () => {
-    pyxelScreen.appendChild(buttonImage);
+  // Add virtual action buttons
+  let gamepadButtonImage = document.createElement("img");
+  gamepadButtonImage.id = "pyxel-gamepad-button";
+  gamepadButtonImage.src = _scriptDir() + GAMEPAD_BUTTON_PATH;
+  gamepadButtonImage.tabindex = -1;
+  gamepadButtonImage.onload = () => {
+    pyxelScreen.appendChild(gamepadButtonImage);
+    _updateScreenElementsSize();
+  };
+
+  // Add virtual menu buttons
+  let gamepadMenuImage = document.createElement("img");
+  gamepadMenuImage.id = "pyxel-gamepad-menu";
+  gamepadMenuImage.src = _scriptDir() + GAMEPAD_MENU_PATH;
+  gamepadMenuImage.tabindex = -1;
+  gamepadMenuImage.onload = () => {
+    pyxelScreen.appendChild(gamepadMenuImage);
     _updateScreenElementsSize();
   };
 
   // Set touch event handler
   let touchHandler = (event) => {
-    let crossRect = crossImage.getBoundingClientRect();
-    let buttonRect = buttonImage.getBoundingClientRect();
+    let crossRect = gamepadCrossImage.getBoundingClientRect();
+    let buttonRect = gamepadButtonImage.getBoundingClientRect();
+    let menuRect = gamepadMenuImage.getBoundingClientRect();
     for (let i = 0; i < _virtualGamepadStates.length; i++) {
       _virtualGamepadStates[i] = false;
     }
@@ -498,6 +514,9 @@ function _addVirtualGamepad(mode) {
       let crossY = (clientY - crossRect.bottom) / size + 0.5;
       let buttonX = (clientX - buttonRect.right) / size + 0.5;
       let buttonY = (clientY - buttonRect.bottom) / size + 0.5;
+      let menuX = (clientX - menuRect.left) / size;
+      let menuY = (clientY - menuRect.bottom) / size + 0.5;
+
       if (crossX ** 2 + crossY ** 2 <= 0.5 ** 2) {
         let angle = (Math.atan2(-crossY, crossX) * 180) / Math.PI;
         if (angle > 22.5 && angle < 157.5) {
@@ -513,6 +532,7 @@ function _addVirtualGamepad(mode) {
           _virtualGamepadStates[3] = true; // Right
         }
       }
+
       if (buttonX ** 2 + buttonY ** 2 <= 0.5 ** 2) {
         let angle = (Math.atan2(-buttonY, buttonX) * 180) / Math.PI;
         if (angle > -135 && angle < -45) {
@@ -526,6 +546,14 @@ function _addVirtualGamepad(mode) {
         }
         if (angle > 45 && angle < 135) {
           _virtualGamepadStates[7] = true; // Y
+        }
+      }
+
+      if (menuY >= 0.3 && menuY <= 0.4) {
+        if (menuX >= 0.55 && menuX <= 0.95) {
+          _virtualGamepadStates[8] = true; // Start
+        } else if (menuX >= 0.05 && menuX <= 0.45) {
+          _virtualGamepadStates[9] = true; // Back
         }
       }
     }

@@ -309,7 +309,7 @@ impl PlatformSdl2 {
 
         #[cfg(target_os = "emscripten")]
         pyxel_events.extend({
-            const INDEX_TO_BUTTON: [Key; 8] = [
+            const INDEX_TO_BUTTON: [Key; 10] = [
                 GAMEPAD1_BUTTON_DPAD_UP,
                 GAMEPAD1_BUTTON_DPAD_DOWN,
                 GAMEPAD1_BUTTON_DPAD_LEFT,
@@ -318,6 +318,8 @@ impl PlatformSdl2 {
                 GAMEPAD1_BUTTON_B,
                 GAMEPAD1_BUTTON_X,
                 GAMEPAD1_BUTTON_Y,
+                GAMEPAD1_BUTTON_START,
+                GAMEPAD1_BUTTON_BACK,
             ];
 
             let mut events = Vec::new();
