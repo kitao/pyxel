@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  </head>
+  <body>
+    <h1>Pyxel Web Launcher</h1>
+    <p>
+      Launcher tool for the WebAssembly version of
+      <a href="https://github.com/kitao/pyxel">Pyxel</a>, a retro game engine
+      for Python.
+    </p>
+    <table>
+      <tr>
+        <td style="width: 15em">Startup File URL on GitHub</td>
+        <td><input type="text" size="60" id="startup-file" /></td>
+      </tr>
+      <tr>
+        <td>Enable Virtual Gamepad</td>
+        <td><input type="checkbox" id="virtual-gamepad" checked /></td>
+      </tr>
+      <tr>
+        <td>Additional Packages</td>
+        <td><input type="text" size="60" id="additional-packages" /></td>
+      </tr>
+      <tr>
+        <td>MML List (separate with ; )</td>
+        <td><input type="text" size="60" id="mml-list" /></td>
+      </tr>
+      <tr>
+        <td style="padding-top: 1em">Application Launch URL</td>
+        <td style="padding-top: 1em">
+          <b><a href="" target="_blank" id="launch-url"></a></b>
+        </td>
+      </tr>
+    </table>
+    <ul>
+      <li>
+        Startup file type should be .pyxapp or .py like<br /><a
+          href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/megaball.pyxapp"
+          >https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/megaball.pyxapp</a
+        >
+      </li>
+      <li>
+        Only
+        <a href="https://pyodide.org/en/stable/usage/packages-in-pyodide.html"
+          >packages supported by Pyodide</a
+        >
+        can be used as additonal packages
+      </li>
+      <li>
+        If there are multiple additional packages, separate them with commas
+        like a,b,c
+      </li>
+    </ul>
+    <p>
+      For specific instructions, please refer to
+      <a href="https://github.com/kitao/pyxel/blob/main/docs/pyxel-web-en.md"
+        >this page</a
+      >
+      (<a href="https://github.com/kitao/pyxel/blob/main/docs/pyxel-web-ja.md"
+        >日本語</a
+      >).
+    </p>
+
+    <script>
+      function buildLaunchUrl() {
+        const mmlList = document.getElementById("mml-list").value;
+        if (mmlList) {
+          const base64Url = btoa(mmlList)
+            .replace(/\+/g, "-")
+            .replace(/\//g, "_")
+            .replace(/=+$/, "");
+          const launchUrlHref = document.getElementById("launch-url");
+          launchUrlHref.textContent = launchUrlHref.href =
+            "https://kitao.github.io/pyxel/wasm/launcher/?mml=" + base64Url;
+          return;
+        }
+
+        const startupFile = document.getElementById("startup-file").value;
+        const virtualGamepad =
+          document.getElementById("virtual-gamepad").checked;
+        const additionalPackages = document.getElementById(
+          "additional-packages"
+        ).value;
+        const launchUrlHref = document.getElementById("launch-url");
+        launchUrlHref.textContent = launchUrlHref.href = "";
+
+        if (
+          !startupFile.startsWith("https://github.com/") ||
+          !(startupFile.endsWith(".py") || startupFile.endsWith(".pyxapp")) ||
+          additionalPackages.match(/[^a-zA-Z0-9,]/)
+        ) {
+          return;
+        }
+
+        const paths = startupFile.split("/");
+        const dottedPath = paths.slice(3, 5).concat(paths.slice(7)).join(".");
+        const filePath = dottedPath.split(".").slice(0, -1).join(".");
+        const fileExt = dottedPath.split(".").slice(-1)[0];
+        var launchUrl = "https://kitao.github.io/pyxel/wasm/launcher/?";
+        launchUrl += fileExt === "py" ? "run" : "play";
+        launchUrl += "=" + filePath;
+
+        if (virtualGamepad) {
+          launchUrl += "&gamepad=enabled";
+        }
+
+        if (additionalPackages != "") {
+          launchUrl += "&packages=" + additionalPackages;
+        }
+
+        launchUrlHref.textContent = launchUrlHref.href = launchUrl;
+      }
+
+      document
+        .getElementById("startup-file")
+        .addEventListener("input", buildLaunchUrl);
+      document
+        .getElementById("virtual-gamepad")
+        .addEventListener("change", buildLaunchUrl);
+      document
+        .getElementById("additional-packages")
+        .addEventListener("input", buildLaunchUrl);
+      document
+        .getElementById("mml-list")
+        .addEventListener("input", buildLaunchUrl);
+    </script>
+  </body>
+</html>
