@@ -18,22 +18,22 @@
 Pyxel 開発のモチベーションは、ユーザーの皆さんからのフィードバックです。GitHub で Pyxel へのスター登録をぜひお願いします！
 
 <p>
-<a href="https://kitao.github.io/pyxel/wasm/examples/10_platformer.html">
+<a href="https://kitao.github.io/pyxel/wasm/examples/10-platformer.html">
 <img src="images/10_platformer.gif" width="290">
 </a>
-<a href="https://kitao.github.io/pyxel/wasm/examples/30sec_of_daylight.html">
+<a href="https://kitao.github.io/pyxel/wasm/examples/30sec-of-daylight.html">
 <img src="images/30sec_of_daylight.gif" width="350">
 </a>
-<a href="https://kitao.github.io/pyxel/wasm/examples/02_jump_game.html">
+<a href="https://kitao.github.io/pyxel/wasm/examples/02-jump-game.html">
 <img src="images/02_jump_game.gif" width="330">
 </a>
 <a href="https://kitao.github.io/pyxel/wasm/examples/megaball.html">
 <img src="images/megaball.gif" width="310">
 </a>
-<a href="https://kitao.github.io/pyxel/wasm/examples/image_editor.html">
+<a href="https://kitao.github.io/pyxel/wasm/examples/iamge-editor.html">
 <img src="images/image_tilemap_editor.gif" width="320">
 </a>
-<a href="https://kitao.github.io/pyxel/wasm/examples/sound_editor.html">
+<a href="https://kitao.github.io/pyxel/wasm/examples/sound-editor.html">
 <img src="images/sound_music_editor.gif" width="320">
 </a>
 </p>
@@ -116,103 +116,103 @@ pyxel copy_examples
 <tr>
 <td>01_hello_pyxel.py</td>
 <td>シンプルなアプリケーション</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/01_hello_pyxel.html">デモ</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/01-hello-pyxel.html">デモ</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/01_hello_pyxel.py">コード</a></td>
 </tr>
 <tr>
 <td>02_jump_game.py</td>
 <td>Pyxel リソースファイルを使ったジャンプゲーム</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/02_jump_game.html">デモ</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/02-jump-game.html">デモ</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/02_jump_game.py">コード</a></td>
 </tr>
 <tr>
 <td>03_draw_api.py</td>
 <td>描画 API のデモ</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/03_draw_api.html">デモ</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/03-draw-api.html">デモ</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/03_draw_api.py">コード</a></td>
 </tr>
 <tr>
 <td>04_sound_api.py</td>
 <td>サウンド API のデモ</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/04_sound_api.html">デモ</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/04-sound-api.html">デモ</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/04_sound_api.py">コード</a></td>
 </tr>
 <tr>
 <td>05_color_palette.py</td>
 <td>カラーパレット一覧</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/05_color_palette.html">デモ</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/05-color-palette.html">デモ</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/05_color_palette.py">コード</a></td>
 </tr>
 <tr>
 <td>06_click_game.py</td>
 <td>マウスクリックゲーム</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/06_click_game.html">デモ</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/06-click-game.html">デモ</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/06_click_game.py">コード</a></td>
 </tr>
 <tr>
 <td>07_snake.py</td>
 <td>BGM 付きスネークゲーム</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/07_snake.html">デモ</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/07-snake.html">デモ</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/07_snake.py">コード</a></td>
 </tr>
 <tr>
 <td>08_triangle_api.py</td>
 <td>三角形描画 API のデモ</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/08_triangle_api.html">デモ</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/08-triangle-api.html">デモ</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/08_triangle_api.py">コード</a></td>
 </tr>
 <tr>
 <td>09_shooter.py</td>
 <td>画面遷移とMMLを使ったシューティングゲーム</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/09_shooter.html">デモ</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/09-shooter.html">デモ</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/09_shooter.py">コード</a></td>
 </tr>
 <tr>
 <td>10_platformer.py</td>
 <td>マップを使った横スクロールアクションゲーム</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/10_platformer.html">デモ</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/10-platformer.html">デモ</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/10_platformer.py">コード</a></td>
 </tr>
 <tr>
 <td>11_offscreen.py</td>
 <td>Image クラスによるオフスクリーン描画</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/11_offscreen.html">デモ</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/11-offscreen.html">デモ</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/11_offscreen.py">コード</a></td>
 </tr>
 <tr>
 <td>12_perlin_noise.py</td>
 <td>パーリンノイズアニメーション</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/12_perlin_noise.html">デモ</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/12-perlin-noise.html">デモ</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/12_perlin_noise.py">コード</a></td>
 </tr>
 <tr>
 <td>13_bitmap_font.py</td>
 <td>ビットマップフォント描画</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/13_bitmap_font.html">デモ</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/13-bitmap-font.html">デモ</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/13_bitmap_font.py">コード</a></td>
 </tr>
 <tr>
 <td>14_synthesizer.py</td>
 <td>オーディオ拡張機能によるシンセサイザー</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/14_synthesizer.html">デモ</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/14-synthesizer.html">デモ</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/14_synthesizer.py">コード</a></td>
 </tr>
 <tr>
 <td>15_tiled_map_file.py</td>
 <td>タイルマップファイル (.tmx) の読み込みと描画</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/15_tiled_map_file.html">デモ</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/15-tiled-map-file.html">デモ</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/15_tiled_map_file.py">コード</a></td>
 </tr>
 <tr>
 <td>16_transform.py</td>
 <td>画像の回転と拡大縮小</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/16_transform.html">デモ</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/16-transform.html">デモ</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/16_transform.py">コード</a></td>
 </tr>
 <tr>
 <td>17_app_launcher.py</td>
 <td>Pyxelアプリランチャー (色々なゲームをプレイできます！)</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/17_app_launcher.html">Demo</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/17-app-launcher.html">Demo</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/17_app_launcher.py">Code</a></td>
 </tr>
 <tr>
@@ -362,7 +362,7 @@ Pyxel Editor には、以下の編集モードがあります。
 
 **イメージバンク**の画像を編集する画面です。
 
-<a href="https://kitao.github.io/pyxel/wasm/examples/image_editor.html">
+<a href="https://kitao.github.io/pyxel/wasm/examples/iamge-editor.html">
 <img src="images/image_editor.gif">
 </a>
 
@@ -372,7 +372,7 @@ Pyxel Editor には、以下の編集モードがあります。
 
 イメージバンクの画像をタイル状に並べた**タイルマップ**を編集する画面です。
 
-<a href="https://kitao.github.io/pyxel/wasm/examples/tilemap_editor.html">
+<a href="https://kitao.github.io/pyxel/wasm/examples/tilemap-editor.html">
 <img src="images/tilemap_editor.gif">
 </a>
 
@@ -382,7 +382,7 @@ Pyxel Editor には、以下の編集モードがあります。
 
 メロディーや効果音に使用する**サウンド**を編集する画面です。
 
-<a href="https://kitao.github.io/pyxel/wasm/examples/sound_editor.html">
+<a href="https://kitao.github.io/pyxel/wasm/examples/sound-editor.html">
 <img src="images/sound_editor.gif">
 </a>
 
@@ -390,7 +390,7 @@ Pyxel Editor には、以下の編集モードがあります。
 
 サウンドを再生順に並べた**ミュージック**を編集する画面です。
 
-<a href="https://kitao.github.io/pyxel/wasm/examples/music_editor.html">
+<a href="https://kitao.github.io/pyxel/wasm/examples/music-editor.html">
 <img src="images/music_editor.gif">
 </a>
 

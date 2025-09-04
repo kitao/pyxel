@@ -160,7 +160,7 @@ Pyxel の MML で利用できるコマンドは以下のとおりです。
 - `] <count>`<br>(1-)
   繰り返し終了位置。繰り返し開始位置との間のフレーズを指定した回数だけ再生する。回数を省略した場合は無限に繰り返す。入れ子にすることも可能。
 
-MML の使用例は、サンプル 09_shooter.py の[デモ](https://kitao.github.io/pyxel/wasm/examples/09_shooter.html)や[コード](https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/09_shooter.py)で確認できます。
+MML の使用例は、サンプル 09_shooter.py の[デモ](https://kitao.github.io/pyxel/wasm/examples/09-shooter.html)や[コード](https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/09_shooter.py)で確認できます。
 
 </details>
 
