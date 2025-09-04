@@ -18,22 +18,22 @@
 Pyxel 개발은 사용자 피드백에 의해 이루어집니다. GitHub에서 Pyxel에 별을 주세요!
 
 <p>
-<a href="https://kitao.github.io/pyxel/wasm/examples/10_platformer.html">
+<a href="https://kitao.github.io/pyxel/wasm/examples/10-platformer.html">
 <img src="images/10_platformer.gif" width="290">
 </a>
-<a href="https://kitao.github.io/pyxel/wasm/examples/30sec_of_daylight.html">
+<a href="https://kitao.github.io/pyxel/wasm/examples/30sec-of-daylight.html">
 <img src="images/30sec_of_daylight.gif" width="350">
 </a>
-<a href="https://kitao.github.io/pyxel/wasm/examples/02_jump_game.html">
+<a href="https://kitao.github.io/pyxel/wasm/examples/02-jump-game.html">
 <img src="images/02_jump_game.gif" width="330">
 </a>
 <a href="https://kitao.github.io/pyxel/wasm/examples/megaball.html">
 <img src="images/megaball.gif" width="310">
 </a>
-<a href="https://kitao.github.io/pyxel/wasm/examples/image_editor.html">
+<a href="https://kitao.github.io/pyxel/wasm/examples/iamge-editor.html">
 <img src="images/image_tilemap_editor.gif" width="320">
 </a>
-<a href="https://kitao.github.io/pyxel/wasm/examples/sound_editor.html">
+<a href="https://kitao.github.io/pyxel/wasm/examples/sound-editor.html">
 <img src="images/sound_music_editor.gif" width="320">
 </a>
 </p>
@@ -116,103 +116,103 @@ pyxel copy_examples
 <tr>
 <td>01_hello_pyxel.py</td>
 <td>가장 간단한 애플리케이션</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/01_hello_pyxel.html">데모</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/01-hello-pyxel.html">데모</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/01_hello_pyxel.py">코드</a></td>
 </tr>
 <tr>
 <td>02_jump_game.py</td>
 <td>Pyxel 리소스 파일을 이용한 점프 게임</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/02_jump_game.html">데모</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/02-jump-game.html">데모</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/02_jump_game.py">코드</a></td>
 </tr>
 <tr>
 <td>03_draw_api.py</td>
 <td>그리기 API의 시연</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/03_draw_api.html">데모</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/03-draw-api.html">데모</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/03_draw_api.py">코드</a></td>
 </tr>
 <tr>
 <td>04_sound_api.py</td>
 <td>사운드 API의 시연</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/04_sound_api.html">데모</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/04-sound-api.html">데모</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/04_sound_api.py">코드</a></td>
 </tr>
 <tr>
 <td>05_color_palette.py</td>
 <td>색상 팔레트 목록</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/05_color_palette.html">데모</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/05-color-palette.html">데모</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/05_color_palette.py">코드</a></td>
 </tr>
 <tr>
 <td>06_click_game.py</td>
 <td>마우스 클릭 게임</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/06_click_game.html">데모</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/06-click-game.html">데모</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/06_click_game.py">코드</a></td>
 </tr>
 <tr>
 <td>07_snake.py</td>
 <td>BGM이 있는 스네이크 게임</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/07_snake.html">데모</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/07-snake.html">데모</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/07_snake.py">코드</a></td>
 </tr>
 <tr>
 <td>08_triangle_api.py</td>
 <td>삼각형 그리기 API의 시연</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/08_triangle_api.html">데모</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/08-triangle-api.html">데모</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/08_triangle_api.py">코드</a></td>
 </tr>
 <tr>
 <td>09_shooter.py</td>
 <td>Shoot'em up 게임과 화면 전환 및 MML</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/09_shooter.html">데모</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/09-shooter.html">데모</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/09_shooter.py">코드</a></td>
 </tr>
 <tr>
 <td>10_platformer.py</td>
 <td>맵이 있는 횡스크롤 플랫폼 게임</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/10_platformer.html">데모</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/10-platformer.html">데모</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/10_platformer.py">코드</a></td>
 </tr>
 <tr>
 <td>11_offscreen.py</td>
 <td>Image 클래스를 이용한 오프스크린 렌더링</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/11_offscreen.html">데모</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/11-offscreen.html">데모</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/11_offscreen.py">코드</a></td>
 </tr>
 <tr>
 <td>12_perlin_noise.py</td>
 <td>퍼린 노이즈 애니메이션</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/12_perlin_noise.html">데모</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/12-perlin-noise.html">데모</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/12_perlin_noise.py">코드</a></td>
 </tr>
 <tr>
 <td>13_bitmap_font.py</td>
 <td>비트맵 폰트 그리기</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/13_bitmap_font.html">데모</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/13-bitmap-font.html">데모</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/13_bitmap_font.py">코드</a></td>
 </tr>
 <tr>
 <td>14_synthesizer.py</td>
 <td>오디오 확장 기능을 활용한 신시사이저</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/14_synthesizer.html">데모</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/14-synthesizer.html">데모</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/14_synthesizer.py">코드</a></td>
 </tr>
 <tr>
 <td>15_tiled_map_file.py</td>
 <td>Tiled Map File (.tmx) 로드 및 그리기</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/15_tiled_map_file.html">데모</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/15-tiled-map-file.html">데모</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/15_tiled_map_file.py">코드</a></td>
 </tr>
 <tr>
 <td>16_transform.py</td>
 <td>이미지 회전 및 크기 조정</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/16_transform.html">데모</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/16-transform.html">데모</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/16_transform.py">코드</a></td>
 </tr>
 <tr>
 <td>17_app_launcher.py</td>
 <td>Pyxel 앱 런처 (여러 가지 게임을 플레이할 수 있습니다!)</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/17_app_launcher.html">Demo</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/17-app-launcher.html">Demo</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/17_app_launcher.py">Code</a></td>
 </tr>
 <tr>
@@ -362,7 +362,7 @@ Pyxel Editor에는 다음과 같은 편집 모드가 있습니다.
 
 각 **이미지 뱅크**의 이미지를 편집하는 모드입니다.
 
-<a href="https://kitao.github.io/pyxel/wasm/examples/image_editor.html">
+<a href="https://kitao.github.io/pyxel/wasm/examples/iamge-editor.html">
 <img src="images/image_editor.gif">
 </a>
 
@@ -372,7 +372,7 @@ Pyxel Editor에는 다음과 같은 편집 모드가 있습니다.
 
 이미지 뱅크의 이미지를 타일 패턴으로 배열하여 **타일맵**을 편집하는 모드입니다.
 
-<a href="https://kitao.github.io/pyxel/wasm/examples/tilemap_editor.html">
+<a href="https://kitao.github.io/pyxel/wasm/examples/tilemap-editor.html">
 <img src="images/tilemap_editor.gif">
 </a>
 
@@ -382,7 +382,7 @@ TMX 파일(Tiled Map File)을 타일맵 편집기로 드래그 앤 드롭하면 
 
 멜로디와 **사운드** 효과에 사용되는 사운드를 편집하는 모드입니다.
 
-<a href="https://kitao.github.io/pyxel/wasm/examples/sound_editor.html">
+<a href="https://kitao.github.io/pyxel/wasm/examples/sound-editor.html">
 <img src="images/sound_editor.gif">
 </a>
 
@@ -390,7 +390,7 @@ TMX 파일(Tiled Map File)을 타일맵 편집기로 드래그 앤 드롭하면 
 
 재생 순서에 따라 사운드를 배열한 **뮤직**을 편집하는 모드입니다.
 
-<a href="https://kitao.github.io/pyxel/wasm/examples/music_editor.html">
+<a href="https://kitao.github.io/pyxel/wasm/examples/music-editor.html">
 <img src="images/music_editor.gif">
 </a>
 

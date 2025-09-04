@@ -18,22 +18,22 @@
 Pyxel'in geliştirilmesi, kullanıcı geri bildirimleriyle yönlendirilmektedir. Lütfen GitHub'da Pyxel'e bir yıldız verin!
 
 <p>
-<a href="https://kitao.github.io/pyxel/wasm/examples/10_platformer.html">
+<a href="https://kitao.github.io/pyxel/wasm/examples/10-platformer.html">
 <img src="images/10_platformer.gif" width="290">
 </a>
-<a href="https://kitao.github.io/pyxel/wasm/examples/30sec_of_daylight.html">
+<a href="https://kitao.github.io/pyxel/wasm/examples/30sec-of-daylight.html">
 <img src="images/30sec_of_daylight.gif" width="350">
 </a>
-<a href="https://kitao.github.io/pyxel/wasm/examples/02_jump_game.html">
+<a href="https://kitao.github.io/pyxel/wasm/examples/02-jump-game.html">
 <img src="images/02_jump_game.gif" width="330">
 </a>
 <a href="https://kitao.github.io/pyxel/wasm/examples/megaball.html">
 <img src="images/megaball.gif" width="310">
 </a>
-<a href="https://kitao.github.io/pyxel/wasm/examples/image_editor.html">
+<a href="https://kitao.github.io/pyxel/wasm/examples/iamge-editor.html">
 <img src="images/image_tilemap_editor.gif" width="320">
 </a>
-<a href="https://kitao.github.io/pyxel/wasm/examples/sound_editor.html">
+<a href="https://kitao.github.io/pyxel/wasm/examples/sound-editor.html">
 <img src="images/sound_music_editor.gif" width="320">
 </a>
 </p>
@@ -116,103 +116,103 @@ Aşağıdaki örnekler geçerli dizininize kopyalanacaktır:
 <tr>
 <td>01_hello_pyxel.py</td>
 <td>En basit uygulama</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/01_hello_pyxel.html">Demo</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/01-hello-pyxel.html">Demo</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/01_hello_pyxel.py">Kod</a></td>
 </tr>
 <tr>
 <td>02_jump_game.py</td>
 <td>Pyxel kaynak dosyasıyla zıplama oyunu</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/02_jump_game.html">Demo</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/02-jump-game.html">Demo</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/02_jump_game.py">Kod</a></td>
 </tr>
 <tr>
 <td>03_draw_api.py</td>
 <td>Çizim API'lerinin gösterimi</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/03_draw_api.html">Demo</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/03-draw-api.html">Demo</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/03_draw_api.py">Kod</a></td>
 </tr>
 <tr>
 <td>04_sound_api.py</td>
 <td>Ses API'lerinin gösterimi</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/04_sound_api.html">Demo</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/04-sound-api.html">Demo</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/04_sound_api.py">Kod</a></td>
 </tr>
 <tr>
 <td>05_color_palette.py</td>
 <td>Renk paletleri listesi</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/05_color_palette.html">Demo</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/05-color-palette.html">Demo</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/05_color_palette.py">Kod</a></td>
 </tr>
 <tr>
 <td>06_click_game.py</td>
 <td>Fare tıklama oyunu</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/06_click_game.html">Demo</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/06-click-game.html">Demo</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/06_click_game.py">Kod</a></td>
 </tr>
 <tr>
 <td>07_snake.py</td>
 <td>BGM'li yılan oyunu</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/07_snake.html">Demo</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/07-snake.html">Demo</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/07_snake.py">Kod</a></td>
 </tr>
 <tr>
 <td>08_triangle_api.py</td>
 <td>Üçgen çizim API'lerinin gösterimi</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/08_triangle_api.html">Demo</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/08-triangle-api.html">Demo</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/08_triangle_api.py">Kod</a></td>
 </tr>
 <tr>
 <td>09_shooter.py</td>
 <td>Shoot'em up oyunu ile ekran geçişleri ve MML</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/09_shooter.html">Demo</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/09-shooter.html">Demo</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/09_shooter.py">Kod</a></td>
 </tr>
 <tr>
 <td>10_platformer.py</td>
 <td>Haritalı yan kaydırmalı platform oyunu</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/10_platformer.html">Demo</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/10-platformer.html">Demo</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/10_platformer.py">Kod</a></td>
 </tr>
 <tr>
 <td>11_offscreen.py</td>
 <td>Image sınıfıyla ekran dışı renderleme</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/11_offscreen.html">Demo</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/11-offscreen.html">Demo</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/11_offscreen.py">Kod</a></td>
 </tr>
 <tr>
 <td>12_perlin_noise.py</td>
 <td>Perlin gürültüsü animasyonu</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/12_perlin_noise.html">Demo</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/12-perlin-noise.html">Demo</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/12_perlin_noise.py">Kod</a></td>
 </tr>
 <tr>
 <td>13_bitmap_font.py</td>
 <td>Bitmap font çizimi</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/13_bitmap_font.html">Demo</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/13-bitmap-font.html">Demo</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/13_bitmap_font.py">Kod</a></td>
 </tr>
 <tr>
 <td>14_synthesizer.py</td>
 <td>Ses genişletme özelliklerini kullanan sentezleyici</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/14_synthesizer.html">Demo</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/14-synthesizer.html">Demo</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/14_synthesizer.py">Kod</a></td>
 </tr>
 <tr>
 <td>15_tiled_map_file.py</td>
 <td>Tiled Map File (.tmx) yükleme ve çizme</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/15_tiled_map_file.html">Demo</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/15-tiled-map-file.html">Demo</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/15_tiled_map_file.py">Kod</a></td>
 </tr>
 <tr>
 <td>16_transform.py</td>
 <td>Görüntü döndürme ve ölçeklendirme</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/16_transform.html">Demo</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/16-transform.html">Demo</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/16_transform.py">Kod</a></td>
 </tr>
 <tr>
 <td>17_app_launcher.py</td>
 <td>Pyxel uygulama başlatıcı (çeşitli oyunlar oynayabilirsiniz!)</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/17_app_launcher.html">Demo</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/17-app-launcher.html">Demo</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/17_app_launcher.py">Code</a></td>
 </tr>
 <tr>
@@ -362,7 +362,7 @@ Pyxel Editor aşağıdaki düzenleme modlarına sahiptir.
 
 Her **resim bankasındaki** resmi düzenlemek için kullanılan mod.
 
-<a href="https://kitao.github.io/pyxel/wasm/examples/image_editor.html">
+<a href="https://kitao.github.io/pyxel/wasm/examples/iamge-editor.html">
 <img src="images/image_editor.gif">
 </a>
 
@@ -372,7 +372,7 @@ Resim editörüne bir resim dosyası (PNG/GIF/JPEG) sürükleyip bırakarak, res
 
 Resim bankalarındaki görüntüleri bir **karo haritası** içinde düzenlemek için kullanılan mod.
 
-<a href="https://kitao.github.io/pyxel/wasm/examples/tilemap_editor.html">
+<a href="https://kitao.github.io/pyxel/wasm/examples/tilemap-editor.html">
 <img src="images/tilemap_editor.gif">
 </a>
 
@@ -382,7 +382,7 @@ Bir TMX dosyasını (Tiled Map File) karo haritası editörüne sürükleyip bı
 
 Melodi ve **ses** efektlerinde kullanılan sesleri düzenlemek için mod.
 
-<a href="https://kitao.github.io/pyxel/wasm/examples/sound_editor.html">
+<a href="https://kitao.github.io/pyxel/wasm/examples/sound-editor.html">
 <img src="images/sound_editor.gif">
 </a>
 
@@ -390,7 +390,7 @@ Melodi ve **ses** efektlerinde kullanılan sesleri düzenlemek için mod.
 
 Seslerin çalma sırasına göre dizildiği **müzikleri** düzenlemek için kullanılan mod.
 
-<a href="https://kitao.github.io/pyxel/wasm/examples/music_editor.html">
+<a href="https://kitao.github.io/pyxel/wasm/examples/music-editor.html">
 <img src="images/music_editor.gif">
 </a>
 
