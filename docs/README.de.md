@@ -30,7 +30,7 @@ Die Entwicklung von Pyxel wird durch das Feedback der Benutzer vorangetrieben. B
 <a href="https://kitao.github.io/pyxel/wasm/examples/megaball.html">
 <img src="images/megaball.gif" width="310">
 </a>
-<a href="https://kitao.github.io/pyxel/wasm/examples/iamge-editor.html">
+<a href="https://kitao.github.io/pyxel/wasm/examples/image-editor.html">
 <img src="images/image_tilemap_editor.gif" width="320">
 </a>
 <a href="https://kitao.github.io/pyxel/wasm/examples/sound-editor.html">
@@ -362,7 +362,7 @@ Pyxel Editor hat die folgenden Bearbeitungsmodi.
 
 Der Modus zum Bearbeiten des Bildes in jeder **Bilderbank**.
 
-<a href="https://kitao.github.io/pyxel/wasm/examples/iamge-editor.html">
+<a href="https://kitao.github.io/pyxel/wasm/examples/image-editor.html">
 <img src="images/image_editor.gif">
 </a>
 

@@ -30,7 +30,7 @@ Pyxel 的开发得益于用户的反馈。请在 GitHub 上给 Pyxel 评分！
 <a href="https://kitao.github.io/pyxel/wasm/examples/megaball.html">
 <img src="images/megaball.gif" width="310">
 </a>
-<a href="https://kitao.github.io/pyxel/wasm/examples/iamge-editor.html">
+<a href="https://kitao.github.io/pyxel/wasm/examples/image-editor.html">
 <img src="images/image_tilemap_editor.gif" width="320">
 </a>
 <a href="https://kitao.github.io/pyxel/wasm/examples/sound-editor.html">
@@ -362,7 +362,7 @@ Pyxel Editor 有以下编辑模式。
 
 用于编辑每个**图像库**中图像的模式。
 
-<a href="https://kitao.github.io/pyxel/wasm/examples/iamge-editor.html">
+<a href="https://kitao.github.io/pyxel/wasm/examples/image-editor.html">
 <img src="images/image_editor.gif">
 </a>
 
