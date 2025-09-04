@@ -1,107 +1,111 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" class="h-full">
   <head>
     <meta charset="UTF-8" />
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag() {
-        dataLayer.push(arguments);
-      }
-      gtag("js", new Date());
-      gtag("config", "G-86QMDH8ZNH");
-    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" href="../../docs/images/pyxel_icon_64x64.ico" />
-    <link rel="stylesheet" type="text/css" href="../pyxel.css" />
     <title>Pyxel Web Examples</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style type="text/tailwindcss">
+      @layer components {
+        .link {
+          @apply underline decoration-dotted underline-offset-2
+                 text-indigo-600 hover:text-indigo-700
+                 dark:text-indigo-400 dark:hover:text-indigo-300;
+        }
+        .card {
+          @apply rounded-2xl border border-gray-200 bg-white p-6 shadow-sm
+                 dark:border-gray-700 dark:bg-gray-800;
+        }
+        .page {
+          @apply h-full bg-gray-50 text-gray-800 antialiased
+                 dark:bg-gray-900 dark:text-gray-100;
+        }
+        .container {
+          @apply mx-auto max-w-3xl p-6;
+        }
+      }
+    </style>
   </head>
-  <body class="pyxel-scheme">
-    <h1>Pyxel Web Examples</h1>
-    <p>
-      Examples of the WebAssembly version of
-      <a href="https://github.com/kitao/pyxel">Pyxel</a>, a retro game engine
-      for Python.
-    </p>
-    <ul>
-      <li>
-        <a href="script-test.html">script_test</a>
-      </li>
-      <li>
-        <a href="01-hello-pyxel.html">01_hello_pyxel</a>
-      </li>
-      <li>
-        <a href="02-jump-game.html">02_jump_game</a>
-      </li>
-      <li>
-        <a href="03-draw-api.html">03_draw_api</a>
-      </li>
-      <li>
-        <a href="04-sound-api.html">04_sound_api</a>
-      </li>
-      <li>
-        <a href="05-color-palette.html">05_color_palette</a>
-      </li>
-      <li>
-        <a href="06-click-game.html">06_click_game</a>
-      </li>
-      <li><a href="07-snake.html">07_snake</a></li>
-      <li>
-        <a href="08-triangle-api.html">08_triangle_api</a>
-      </li>
-      <li><a href="09-shooter.html">09_shooter</a></li>
-      <li>
-        <a href="10-platformer.html">10_platformer</a>
-      </li>
-      <li>
-        <a href="11-offscreen.html">11_offscreen</a>
-      </li>
-      <li>
-        <a href="12-perlin-noise.html">12_perlin_noise</a>
-      </li>
-      <li>
-        <a href="13-bitmap-font.html">13_bitmap_font</a>
-      </li>
-      <li>
-        <a href="14-synthesizer.html">14_synthesizer</a>
-      </li>
-      <li>
-        <a href="15-tiled-map-file.html">15_tiled_map_file</a>
-      </li>
-      <li>
-        <a href="16-transform.html">16_transform</a>
-      </li>
-      <li>
-        <a href="17-app-launcher.html">17_app_launcher</a>
-      </li>
-      <li>
-        <a href="30sec-of-daylight.html">30sec_of_daylight</a>
-      </li>
-      <li><a href="megaball.html">megaball</a></li>
-      <li>
-        <a href="image-editor.html">image_editor</a>
-      </li>
-      <li>
-        <a href="tilemap-editor.html">tilemap_editor</a>
-      </li>
-      <li>
-        <a href="sound-editor.html">sound_editor</a>
-      </li>
-      <li>
-        <a href="music-editor.html">music_editor</a>
-      </li>
-    </ul>
-    <p>
-      The HTML files can be referenced
-      <a href="https://github.com/kitao/pyxel/tree/main/wasm/examples">here</a>.
-    </p>
-    <p>
-      For specific instructions, please refer to
-      <a href="https://github.com/kitao/pyxel/blob/main/docs/pyxel-web-en.md"
-        >this page</a
-      >
-      (<a href="https://github.com/kitao/pyxel/blob/main/docs/pyxel-web-ja.md"
-        >日本語</a
-      >).
-    </p>
+
+  <body class="page">
+    <main class="container">
+      <header class="mb-8">
+        <h1 class="text-2xl font-semibold tracking-tight">
+          Pyxel Web Examples
+        </h1>
+        <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">
+          Examples of the WebAssembly version of
+          <a href="https://github.com/kitao/pyxel" class="link">Pyxel</a>, a
+          retro game engine for Python.
+        </p>
+      </header>
+
+      <section class="card">
+        <ul class="columns-1 md:columns-2 gap-4 text-sm space-y-1">
+          <li><a href="script-test.html" class="link">script_test</a></li>
+          <li><a href="01-hello-pyxel.html" class="link">01_hello_pyxel</a></li>
+          <li><a href="02-jump-game.html" class="link">02_jump_game</a></li>
+          <li><a href="03-draw-api.html" class="link">03_draw_api</a></li>
+          <li><a href="04-sound-api.html" class="link">04_sound_api</a></li>
+          <li>
+            <a href="05-color-palette.html" class="link">05_color_palette</a>
+          </li>
+          <li><a href="06-click-game.html" class="link">06_click_game</a></li>
+          <li><a href="07-snake.html" class="link">07_snake</a></li>
+          <li>
+            <a href="08-triangle-api.html" class="link">08_triangle_api</a>
+          </li>
+          <li><a href="09-shooter.html" class="link">09_shooter</a></li>
+          <li><a href="10-platformer.html" class="link">10_platformer</a></li>
+          <li><a href="11-offscreen.html" class="link">11_offscreen</a></li>
+          <li>
+            <a href="12-perlin-noise.html" class="link">12_perlin_noise</a>
+          </li>
+          <li><a href="13-bitmap-font.html" class="link">13_bitmap_font</a></li>
+          <li><a href="14-synthesizer.html" class="link">14_synthesizer</a></li>
+          <li>
+            <a href="15-tiled-map-file.html" class="link">15_tiled_map_file</a>
+          </li>
+          <li><a href="16-transform.html" class="link">16_transform</a></li>
+          <li>
+            <a href="17-app-launcher.html" class="link">17_app_launcher</a>
+          </li>
+          <li>
+            <a href="30sec-of-daylight.html" class="link">30sec_of_daylight</a>
+          </li>
+          <li><a href="megaball.html" class="link">megaball</a></li>
+          <li><a href="image-editor.html" class="link">image_editor</a></li>
+          <li><a href="tilemap-editor.html" class="link">tilemap_editor</a></li>
+          <li><a href="sound-editor.html" class="link">sound_editor</a></li>
+          <li><a href="music-editor.html" class="link">music_editor</a></li>
+        </ul>
+      </section>
+
+      <section class="mt-8">
+        <p class="text-sm text-gray-700 dark:text-gray-300">
+          The HTML files can be referenced
+          <a
+            href="https://github.com/kitao/pyxel/tree/main/wasm/examples"
+            class="link"
+            >here</a
+          >.
+        </p>
+        <p class="mt-2 text-sm text-gray-700 dark:text-gray-300">
+          For specific instructions, please refer to
+          <a
+            href="https://github.com/kitao/pyxel/blob/main/docs/pyxel-web-en.md"
+            class="link"
+            >this page</a
+          >
+          (<a
+            href="https://github.com/kitao/pyxel/blob/main/docs/pyxel-web-ja.md"
+            class="link"
+            >日本語</a
+          >).
+        </p>
+      </section>
+    </main>
   </body>
 </html>
