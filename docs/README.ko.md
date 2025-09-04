@@ -30,7 +30,7 @@ Pyxel 개발은 사용자 피드백에 의해 이루어집니다. GitHub에서 P
 <a href="https://kitao.github.io/pyxel/wasm/examples/megaball.html">
 <img src="images/megaball.gif" width="310">
 </a>
-<a href="https://kitao.github.io/pyxel/wasm/examples/iamge-editor.html">
+<a href="https://kitao.github.io/pyxel/wasm/examples/image-editor.html">
 <img src="images/image_tilemap_editor.gif" width="320">
 </a>
 <a href="https://kitao.github.io/pyxel/wasm/examples/sound-editor.html">
@@ -362,7 +362,7 @@ Pyxel Editor에는 다음과 같은 편집 모드가 있습니다.
 
 각 **이미지 뱅크**의 이미지를 편집하는 모드입니다.
 
-<a href="https://kitao.github.io/pyxel/wasm/examples/iamge-editor.html">
+<a href="https://kitao.github.io/pyxel/wasm/examples/image-editor.html">
 <img src="images/image_editor.gif">
 </a>
 

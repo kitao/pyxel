@@ -30,7 +30,7 @@ Pyxel 開発のモチベーションは、ユーザーの皆さんからのフ�
 <a href="https://kitao.github.io/pyxel/wasm/examples/megaball.html">
 <img src="images/megaball.gif" width="310">
 </a>
-<a href="https://kitao.github.io/pyxel/wasm/examples/iamge-editor.html">
+<a href="https://kitao.github.io/pyxel/wasm/examples/image-editor.html">
 <img src="images/image_tilemap_editor.gif" width="320">
 </a>
 <a href="https://kitao.github.io/pyxel/wasm/examples/sound-editor.html">
@@ -362,7 +362,7 @@ Pyxel Editor には、以下の編集モードがあります。
 
 **イメージバンク**の画像を編集する画面です。
 
-<a href="https://kitao.github.io/pyxel/wasm/examples/iamge-editor.html">
+<a href="https://kitao.github.io/pyxel/wasm/examples/image-editor.html">
 <img src="images/image_editor.gif">
 </a>
 
