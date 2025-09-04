@@ -3,60 +3,87 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="../../docs/images/pyxel_icon_64x64.ico" />
     <title>Pyxel Web Launcher</title>
     <script src="https://cdn.tailwindcss.com"></script>
+
+    <style type="text/tailwindcss">
+      @layer components {
+        .page {
+          @apply h-full bg-gray-50 text-gray-800 antialiased dark:bg-gray-900 dark:text-gray-100;
+        }
+        .container {
+          @apply mx-auto max-w-3xl p-6;
+        }
+        .card {
+          @apply rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800;
+        }
+        .link {
+          @apply underline decoration-dotted underline-offset-2
+                 text-indigo-600 hover:text-indigo-700
+                 dark:text-indigo-400 dark:hover:text-indigo-300;
+        }
+        .link-strong {
+          @apply underline decoration-dotted underline-offset-2
+                 font-semibold break-all
+                 text-indigo-600 hover:text-indigo-700
+                 dark:text-indigo-400 dark:hover:text-indigo-300;
+        }
+        .label {
+          @apply text-sm font-medium;
+        }
+        .input {
+          @apply w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm outline-none
+                 placeholder:text-gray-400 focus:border-indigo-500 dark:border-gray-600 dark:bg-gray-900;
+        }
+        .help {
+          @apply mt-1 list-disc space-y-1 pl-5 text-xs text-gray-600 dark:text-gray-400;
+        }
+        .codechip {
+          @apply rounded bg-gray-100 px-1 py-0.5 text-[10px] dark:bg-gray-800;
+        }
+        .checkbox {
+          @apply h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 dark:border-gray-600;
+        }
+      }
+    </style>
   </head>
 
-  <body
-    class="h-full bg-gray-50 text-gray-800 antialiased dark:bg-gray-900 dark:text-gray-100"
-  >
-    <main class="mx-auto max-w-3xl p-6">
+  <body class="page">
+    <main class="container">
       <header class="mb-8">
         <h1 class="text-2xl font-semibold tracking-tight">
           Pyxel Web Launcher
         </h1>
         <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">
           Launcher tool for the WebAssembly version of
-          <a
-            class="text-indigo-600 dark:text-indigo-400 underline decoration-dashed underline-offset-2 hover:text-indigo-700 dark:hover:text-indigo-300"
-            href="https://github.com/kitao/pyxel"
-            >Pyxel</a
-          >
+          <a class="link" href="https://github.com/kitao/pyxel">Pyxel</a>
         </p>
       </header>
 
-      <section
-        class="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800"
-      >
+      <section class="card">
         <div class="grid grid-cols-1 gap-5">
+          <!-- Startup File -->
           <div class="grid gap-2">
-            <label for="startup-file" class="text-sm font-medium"
+            <label for="startup-file" class="label"
               >Startup File URL on GitHub</label
             >
             <input
               id="startup-file"
               type="text"
               size="60"
-              class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm outline-none ring-0 placeholder:text-gray-400 focus:border-indigo-500 dark:border-gray-600 dark:bg-gray-900"
+              class="input"
               placeholder="https://github.com/USER/REPO/blob/BRANCH/PATH/TO/APP.pyxapp"
             />
-            <ul
-              class="mt-1 list-disc space-y-1 pl-5 text-xs text-gray-600 dark:text-gray-400"
-            >
+            <ul class="help">
               <li>
                 Startup file type should be
-                <code
-                  class="rounded bg-gray-100 px-1 py-0.5 text-[10px] dark:bg-gray-800"
-                  >.pyxapp</code
-                >
+                <code class="codechip">.pyxapp</code>
                 or
-                <code
-                  class="rounded bg-gray-100 px-1 py-0.5 text-[10px] dark:bg-gray-800"
-                  >.py</code
-                >, <br />
-                e.g.
+                <code class="codechip">.py</code><br />
+                Example:
                 <a
-                  class="text-indigo-600 underline decoration-dotted underline-offset-2 dark:text-indigo-400"
+                  class="link"
                   href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/megaball.pyxapp"
                 >
                   https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/megaball.pyxapp
@@ -65,36 +92,36 @@
             </ul>
           </div>
 
+          <!-- Virtual Gamepad -->
           <div class="flex items-center gap-2">
-            <label for="virtual-gamepad" class="text-sm font-medium"
+            <label for="virtual-gamepad" class="label"
               >Enable Virtual Gamepad</label
             >
             <input
               id="virtual-gamepad"
               type="checkbox"
               checked
-              class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 dark:border-gray-600"
+              class="checkbox"
             />
           </div>
 
+          <!-- Additional Packages -->
           <div class="grid gap-2">
-            <label for="additional-packages" class="text-sm font-medium"
+            <label for="additional-packages" class="label"
               >Additional Packages</label
             >
             <input
               id="additional-packages"
               type="text"
               size="60"
-              class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm outline-none focus:border-indigo-500 dark:border-gray-600 dark:bg-gray-900"
+              class="input"
               placeholder="numpy,matplotlib"
             />
-            <ul
-              class="mt-1 list-disc space-y-1 pl-5 text-xs text-gray-600 dark:text-gray-400"
-            >
+            <ul class="help">
               <li>
                 Only
                 <a
-                  class="text-indigo-600 underline decoration-dotted underline-offset-2 dark:text-indigo-400"
+                  class="link"
                   href="https://pyodide.org/en/stable/usage/packages-in-pyodide.html"
                   >packages supported by Pyodide</a
                 >
@@ -102,44 +129,33 @@
               </li>
               <li>
                 If there are multiple packages, separate them with commas like
-                <code
-                  class="rounded bg-gray-100 px-1 py-0.5 text-[10px] dark:bg-gray-800"
-                  >a,b,c</code
-                >.
+                <code class="codechip">a,b,c</code>.
               </li>
             </ul>
           </div>
 
+          <!-- MML List -->
           <div class="grid gap-2">
-            <label for="mml-list" class="text-sm font-medium">MML List</label>
+            <label for="mml-list" class="label">MML List</label>
             <input
               id="mml-list"
               type="text"
               size="60"
-              class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm outline-none focus:border-indigo-500 dark:border-gray-600 dark:bg-gray-900"
+              class="input"
               placeholder="T120 L8 CDEFGAB; T140 L16 C<C>G<G>"
             />
-            <ul
-              class="mt-1 list-disc space-y-1 pl-5 text-xs text-gray-600 dark:text-gray-400"
-            >
+            <ul class="help">
               <li>
                 Separate multiple entries with
-                <code
-                  class="rounded bg-gray-100 px-1 py-0.5 text-[10px] dark:bg-gray-800"
-                  >;</code
-                >
+                <code class="codechip">;</code>
               </li>
             </ul>
           </div>
 
+          <!-- Launch URL -->
           <div class="grid gap-2 pt-2">
-            <span class="text-sm font-medium">Application Launch URL</span>
-            <a
-              id="launch-url"
-              href=""
-              target="_blank"
-              class="break-all text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300 font-semibold"
-            ></a>
+            <span class="label">Application Launch URL</span>
+            <a id="launch-url" href="" target="_blank" class="link-strong"></a>
           </div>
         </div>
       </section>
@@ -148,12 +164,12 @@
         <p class="mt-4 text-sm text-gray-700 dark:text-gray-300">
           For specific instructions, please refer to
           <a
-            class="text-indigo-600 underline decoration-dotted underline-offset-2 dark:text-indigo-400"
+            class="link"
             href="https://github.com/kitao/pyxel/blob/main/docs/pyxel-web-en.md"
             >this page</a
           >
           (<a
-            class="text-indigo-600 underline decoration-dotted underline-offset-2 dark:text-indigo-400"
+            class="link"
             href="https://github.com/kitao/pyxel/blob/main/docs/pyxel-web-ja.md"
             >日本語</a
           >).
