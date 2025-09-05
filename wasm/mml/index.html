@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="ja" class="h-full">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pyxel MML</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style type="text/tailwindcss">
+      @layer components {
+        .page {
+          @apply h-full bg-gray-50 text-gray-800 antialiased dark:bg-gray-900 dark:text-gray-100;
+        }
+        .container {
+          @apply mx-auto max-w-4xl p-6 space-y-6;
+        }
+        .card {
+          @apply border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800;
+        }
+        .input {
+          @apply w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm outline-none placeholder:text-gray-400 focus:border-indigo-500 dark:border-gray-600 dark:bg-gray-900;
+        }
+        .toggle {
+          @apply px-2 py-1 text-xs font-medium rounded-md border border-slate-500 text-gray-700 bg-gray-50 dark:bg-gray-900 dark:text-gray-300;
+        }
+      }
+    </style>
+  </head>
+  <body class="page">
+    <main class="container">
+      <div id="pyxel-screen" class="card min-w-0 h-64 md:h-80 lg:h-40"></div>
+
+      <div class="flex flex-col space-y-2">
+        <div>
+          <div class="flex items-center space-x-4 mb-2">
+            <label for="ch1" class="text-xl">CH1</label>
+            <div class="flex items-center space-x-2">
+              <button
+                id="solo1_btn"
+                type="button"
+                class="toggle"
+                data-target="solo1"
+                aria-pressed="false"
+                onclick="toggleButton(this)"
+              >
+                SOLO
+              </button>
+              <input type="hidden" id="solo1" name="solo1" value="0" />
+              <button
+                id="mute1_btn"
+                type="button"
+                class="toggle"
+                data-target="mute1"
+                aria-pressed="false"
+                onclick="toggleButton(this)"
+              >
+                MUTE
+              </button>
+              <input type="hidden" id="mute1" name="mute1" value="0" />
+            </div>
+          </div>
+          <textarea
+            id="ch1"
+            rows="2"
+            class="input font-mono"
+            placeholder="o4v15cdefrgb+..."
+          ></textarea>
+        </div>
+
+        <div>
+          <div class="flex items-center space-x-4 mb-2">
+            <label for="ch2" class="text-xl">CH2</label>
+            <div class="flex items-center space-x-2">
+              <button
+                id="solo2_btn"
+                type="button"
+                class="toggle"
+                data-target="solo2"
+                aria-pressed="false"
+                onclick="toggleButton(this)"
+              >
+                SOLO
+              </button>
+              <input type="hidden" id="solo2" name="solo2" value="0" />
+              <button
+                id="mute2_btn"
+                type="button"
+                class="toggle"
+                data-target="mute2"
+                aria-pressed="false"
+                onclick="toggleButton(this)"
+              >
+                MUTE
+              </button>
+              <input type="hidden" id="mute2" name="mute2" value="0" />
+            </div>
+          </div>
+          <textarea
+            id="ch2"
+            rows="2"
+            class="input font-mono"
+            placeholder="t120l8..."
+          ></textarea>
+        </div>
+
+        <div>
+          <div class="flex items-center space-x-4 mb-2">
+            <label for="ch3" class="text-xl">CH3</label>
+            <div class="flex items-center space-x-2">
+              <button
+                id="solo3_btn"
+                type="button"
+                class="toggle"
+                data-target="solo3"
+                aria-pressed="false"
+                onclick="toggleButton(this)"
+              >
+                SOLO
+              </button>
+              <input type="hidden" id="solo3" name="solo3" value="0" />
+              <button
+                id="mute3_btn"
+                type="button"
+                class="toggle"
+                data-target="mute3"
+                aria-pressed="false"
+                onclick="toggleButton(this)"
+              >
+                MUTE
+              </button>
+              <input type="hidden" id="mute3" name="mute3" value="0" />
+            </div>
+          </div>
+          <textarea
+            id="ch3"
+            rows="2"
+            class="input font-mono"
+            placeholder="o4v15cdefrgb+..."
+          ></textarea>
+        </div>
+
+        <div>
+          <div class="flex items-center space-x-4 mb-2">
+            <label for="ch4" class="text-xl">CH4</label>
+            <div class="flex items-center space-x-2">
+              <button
+                id="solo4_btn"
+                type="button"
+                class="toggle"
+                data-target="solo4"
+                aria-pressed="false"
+                onclick="toggleButton(this)"
+              >
+                SOLO
+              </button>
+              <input type="hidden" id="solo4" name="solo4" value="0" />
+              <button
+                id="mute4_btn"
+                type="button"
+                class="toggle"
+                data-target="mute4"
+                aria-pressed="false"
+                onclick="toggleButton(this)"
+              >
+                MUTE
+              </button>
+              <input type="hidden" id="mute4" name="mute4" value="0" />
+            </div>
+          </div>
+          <textarea
+            id="ch4"
+            rows="2"
+            class="input font-mono"
+            placeholder="t120l8..."
+          ></textarea>
+        </div>
+      </div>
+
+      <div class="flex items-end space-x-4">
+        <div class="flex-grow">
+          <label for="url" class="block mb-1 text-sm">URL:</label>
+          <div id="url" class="input font-mono">http://example.com/</div>
+        </div>
+        <div class="flex-shrink-0">
+          <img
+            src="https://placehold.co/100x100/000000/ffffff?text=QR"
+            alt="QR Code"
+            class="rounded-md border border-gray-300 dark:border-gray-600"
+          />
+        </div>
+      </div>
+    </main>
+
+    <script>
+      function renderToggle(btn, state) {
+        btn.classList.remove(
+          "bg-indigo-600",
+          "text-white",
+          "bg-white",
+          "text-gray-700",
+          "dark:bg-gray-900",
+          "dark:text-gray-300",
+          "opacity-50",
+          "cursor-not-allowed"
+        );
+        btn.removeAttribute("disabled");
+
+        if (state === 1) {
+          btn.classList.add("bg-slate-600", "text-white");
+        } else if (state === 0) {
+          btn.classList.add(
+            "bg-gray-50",
+            "text-gray-700",
+            "dark:bg-gray-900",
+            "dark:text-gray-300"
+          );
+        } else {
+          btn.classList.add(
+            "bg-gray-300",
+            "text-gray-500",
+            "cursor-not-allowed",
+            "opacity-70"
+          );
+        }
+      }
+
+      // 外部スクリプトからも使える setter（例：setFlag('solo1', -1)）
+      function setFlag(id, state) {
+        const hid = document.getElementById(id);
+        if (!hid) return;
+        hid.value = String(state);
+        const btn = document.getElementById(id + "_btn");
+        if (btn) renderToggle(btn, parseInt(hid.value, 10));
+      }
+      window.setFlag = setFlag; // 外部利用用に公開
+
+      // クリック時：DISABLEなら無反応、そうでなければ ON/OFF をトグル
+      function toggleButton(btn) {
+        if (btn.hasAttribute("disabled")) return; // DISABLEは無反応
+        const hid = document.getElementById(btn.dataset.target);
+        if (!hid) return;
+        const cur = parseInt(hid.value, 10) || 0; // 0 or 1 を想定
+        const next = cur === 1 ? 0 : 1;
+        setFlag(hid.id, next);
+      }
+
+      window.addEventListener("DOMContentLoaded", () => {
+        document
+          .querySelectorAll("button.toggle[data-target]")
+          .forEach((btn) => {
+            const hid = document.getElementById(btn.dataset.target);
+            const state = hid ? parseInt(hid.value, 10) : 0;
+            renderToggle(btn, isNaN(state) ? 0 : state);
+          });
+      });
+    </script>
+  </body>
+</html>
