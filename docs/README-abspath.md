@@ -30,7 +30,7 @@ The development of Pyxel is driven by user feedback. Please give Pyxel a star on
 <a href="https://kitao.github.io/pyxel/wasm/examples/megaball.html">
 <img src="https://raw.githubusercontent.com/kitao/pyxel/main//docs/images/megaball.gif" width="310">
 </a>
-<a href="https://kitao.github.io/pyxel/wasm/examples/iamge-editor.html">
+<a href="https://kitao.github.io/pyxel/wasm/examples/image-editor.html">
 <img src="https://raw.githubusercontent.com/kitao/pyxel/main//docs/images/image_tilemap_editor.gif" width="320">
 </a>
 <a href="https://kitao.github.io/pyxel/wasm/examples/sound-editor.html">
@@ -362,7 +362,7 @@ Pyxel Editor has the following editing modes.
 
 The mode for editing the image in each **image bank**.
 
-<a href="https://kitao.github.io/pyxel/wasm/examples/iamge-editor.html">
+<a href="https://kitao.github.io/pyxel/wasm/examples/image-editor.html">
 <img src="https://raw.githubusercontent.com/kitao/pyxel/main//docs/images/image_editor.gif">
 </a>
 
