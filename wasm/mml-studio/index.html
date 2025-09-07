@@ -5,30 +5,36 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Pyxel MML</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/gh/kitao/pyxel@latest/wasm/pyxel.js"></script>
 
     <style type="text/tailwindcss">
       @layer components {
         .page {
-          @apply h-full bg-gray-50 text-gray-800 antialiased dark:bg-gray-900 dark:text-gray-100;
+          @apply bg-gray-50 dark:bg-gray-900 h-full text-gray-800 dark:text-gray-100 antialiased;
         }
         .container {
-          @apply mx-auto max-w-4xl p-6 space-y-6;
+          @apply space-y-6 mx-auto p-6 max-w-4xl;
         }
         .card {
-          @apply border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800;
+          @apply bg-white dark:bg-gray-800 shadow-sm p-6 border border-gray-200 dark:border-gray-700;
         }
         .input {
-          @apply w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm outline-none placeholder:text-gray-400 focus:border-indigo-500 dark:border-gray-600 dark:bg-gray-900;
+          @apply bg-white dark:bg-gray-900 px-3 py-2 border border-gray-300 focus:border-indigo-500 dark:border-gray-600 rounded-lg outline-none w-full placeholder:text-gray-400 text-sm;
         }
         .toggle {
-          @apply px-2 py-1 text-xs font-medium rounded-md border border-slate-500 text-gray-700 bg-gray-50 dark:bg-gray-900 dark:text-gray-300;
+          @apply bg-gray-50 dark:bg-gray-900 px-2 py-1 border border-slate-500 rounded-md font-medium text-gray-700 dark:text-gray-300 text-xs;
         }
       }
     </style>
   </head>
   <body class="page">
     <main class="container">
-      <div id="pyxel-screen" class="card min-w-0 h-64 md:h-80 lg:h-40"></div>
+      <div class="relative min-w-0 h-32 card">
+        <div
+          id="pyxel-screen"
+          style="position: absolute; inset: 0; width: 100%; height: 100%"
+        ></div>
+      </div>
 
       <div class="flex flex-col space-y-2">
         <div>
@@ -62,7 +68,7 @@
           <textarea
             id="ch1"
             rows="2"
-            class="input font-mono"
+            class="font-mono input"
             placeholder="o4v15cdefrgb+..."
           ></textarea>
         </div>
@@ -98,7 +104,7 @@
           <textarea
             id="ch2"
             rows="2"
-            class="input font-mono"
+            class="font-mono input"
             placeholder="t120l8..."
           ></textarea>
         </div>
@@ -134,7 +140,7 @@
           <textarea
             id="ch3"
             rows="2"
-            class="input font-mono"
+            class="font-mono input"
             placeholder="o4v15cdefrgb+..."
           ></textarea>
         </div>
@@ -170,7 +176,7 @@
           <textarea
             id="ch4"
             rows="2"
-            class="input font-mono"
+            class="font-mono input"
             placeholder="t120l8..."
           ></textarea>
         </div>
@@ -179,13 +185,13 @@
       <div class="flex items-end space-x-4">
         <div class="flex-grow">
           <label for="url" class="block mb-1 text-sm">URL:</label>
-          <div id="url" class="input font-mono">http://example.com/</div>
+          <div id="url" class="font-mono input">http://example.com/</div>
         </div>
         <div class="flex-shrink-0">
           <img
             src="https://placehold.co/100x100/000000/ffffff?text=QR"
             alt="QR Code"
-            class="rounded-md border border-gray-300 dark:border-gray-600"
+            class="border border-gray-300 dark:border-gray-600 rounded-md"
           />
         </div>
       </div>
@@ -254,5 +260,7 @@
           });
       });
     </script>
+
+    <pyxel-run root="." name="mml_studio.py"></pyxel-run>
   </body>
 </html>
