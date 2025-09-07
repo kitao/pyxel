@@ -3,6 +3,7 @@
 ## 2.5.4
 
 - Added two Pyxel apps by Adam for the app launcher
+- Fixed Example 17 Python command execution issue
 
 ## 2.5.3
 
