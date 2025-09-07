@@ -3,21 +3,19 @@
 set -eu
 cd `dirname $0`
 
-LAUNCHER_DIR=../wasm/launcher
-EXAMPLES_DIR=../wasm/examples
+TARGET_DIRS=(../wasm/examples ../wasm/launcher ../wasm/mml-studio)
 SRC_REGEX="src=\\\".*/pyxel.js\\\""
 LOCAL_SRC="src=\\\"../pyxel.js\\\""
 CDN_SRC="src=\\\"https://cdn.jsdelivr.net/gh/kitao/pyxel@latest/wasm/pyxel.js\\\""
 
 if [ "$1" == "local" ]; then
-    find {$LAUNCHER_DIR,$EXAMPLES_DIR}/*.html | xargs sed -i -e "s#$SRC_REGEX#$LOCAL_SRC#"
+    find "${TARGET_DIRS[@]}" -name '*.html' -type f | xargs sed -i -e "s#$SRC_REGEX#$LOCAL_SRC#"
 
 elif [ "$1" == "cdn" ]; then
-    find {$LAUNCHER_DIR,$EXAMPLES_DIR}/*.html | xargs sed -i -e "s#$SRC_REGEX#$CDN_SRC#"
-
+    find "${TARGET_DIRS[@]}" -name '*.html' -type f | xargs sed -i -e "s#$SRC_REGEX#$CDN_SRC#"
 else
     echo "switch_html_scripts local_or_cdn"
     exit 0
 fi
 
-rm -f {$LAUNCHER_DIR,$EXAMPLES_DIR}/*.html-e
+find "${TARGET_DIRS[@]}" -name '*.html-e' -exec rm -f {} +
