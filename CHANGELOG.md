@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.5.4
+
+- Added two Pyxel apps by Adam for the app launcher
+
 ## 2.5.3
 
 - Changed the HTML pages for Pyxel to use the latest Pyxel from CDN
