@@ -3,7 +3,7 @@
 set -eu
 cd `dirname $0`
 
-TARGET_DIRS=(../wasm/examples ../wasm/launcher ../wasm/mml-studio)
+TARGET_DIRS=(../wasm/examples ../wasm/launcher ../wasm/mml-studio ../wasm/code-maker)
 SRC_REGEX="src=\\\".*/pyxel.js\\\""
 LOCAL_SRC="src=\\\"../pyxel.js\\\""
 CDN_SRC="src=\\\"https://cdn.jsdelivr.net/gh/kitao/pyxel@latest/wasm/pyxel.js\\\""
