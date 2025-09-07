@@ -11,6 +11,7 @@ import sys
 import tempfile
 import time
 import urllib.request
+import uuid
 import zipfile
 
 import pyxel
@@ -132,14 +133,17 @@ def _create_app_dir():
     play_dir = os.path.join(tempfile.gettempdir(), pyxel.BASE_DIR, "play")
     pathlib.Path(play_dir).mkdir(parents=True, exist_ok=True)
 
+    now = time.time()
     for path in glob.glob(os.path.join(play_dir, "*")):
-        pid = int(os.path.basename(path))
-        if not pyxel._process_exists(pid):
-            shutil.rmtree(path)
+        if os.path.isdir(path):
+            mtime = os.path.getmtime(path)
+            if now - mtime > 24 * 60 * 60:  # 24 hours
+                try:
+                    shutil.rmtree(path)
+                except Exception:
+                    pass
 
-    app_dir = os.path.join(play_dir, str(os.getpid()))
-    if os.path.exists(app_dir):
-        shutil.rmtree(app_dir)
+    app_dir = os.path.join(play_dir, str(uuid.uuid4()))
     os.mkdir(app_dir)
     return app_dir
 
