@@ -2,16 +2,19 @@ import os
 import pathlib
 
 import pyxel
+import pyxel.cli
 
 APP_LAUNCHER_ENV = "PYXEL_APP_LAUNCHER"
 APPS_DIR = (pathlib.Path(__file__).parent / "apps").resolve()
 APP_NAMES = [
     "30sec_of_daylight",
     "megaball",
-    "8bit-bgm-gen",
+    "vortexion",
+    "laser-jetman",
     "space_rescue",
     "mega_wing",
     "cursed_caverns",
+    "8bit-bgm-gen",
 ]
 
 ROW_COUNT = 5
