@@ -10,34 +10,34 @@
     <style type="text/tailwindcss">
       @layer components {
         .page {
-          @apply h-full bg-gray-50 text-gray-800 antialiased dark:bg-gray-900 dark:text-gray-100;
+          @apply bg-gray-50 dark:bg-gray-900 h-full text-gray-800 dark:text-gray-100 antialiased;
         }
         .container {
-          @apply mx-auto max-w-3xl p-6;
+          @apply mx-auto p-6 max-w-3xl;
         }
         .card {
-          @apply rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800;
+          @apply bg-white dark:bg-gray-800 shadow-sm p-6 border border-gray-200 dark:border-gray-700 rounded-2xl;
         }
         .link {
-          @apply underline decoration-dotted underline-offset-2 text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300;
+          @apply text-indigo-600 hover:text-indigo-700 dark:hover:text-indigo-300 dark:text-indigo-400 underline underline-offset-2;
         }
         .link-strong {
-          @apply underline decoration-dotted underline-offset-2 font-semibold break-all text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300;
+          @apply font-semibold text-indigo-600 hover:text-indigo-700 dark:hover:text-indigo-300 dark:text-indigo-400 decoration-dotted underline underline-offset-2 break-all;
         }
         .label {
-          @apply text-sm font-medium;
+          @apply font-medium text-sm;
         }
         .input {
-          @apply w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm outline-none placeholder:text-gray-400 focus:border-indigo-500 dark:border-gray-600 dark:bg-gray-900;
+          @apply bg-white dark:bg-gray-900 px-3 py-2 border border-gray-300 focus:border-indigo-500 dark:border-gray-600 rounded-lg outline-none w-full placeholder:text-gray-400 text-sm;
         }
         .help {
-          @apply mt-1 list-disc space-y-1 pl-5 text-xs text-gray-600 dark:text-gray-400;
+          @apply space-y-1 mt-1 pl-5 text-gray-600 dark:text-gray-400 text-xs list-disc;
         }
         .codechip {
-          @apply inline-flex items-center align-middle font-mono text-xs leading-tight rounded-md px-1.5 py-0.5 bg-gray-100 text-gray-800 ring-1 ring-inset ring-gray-300 dark:bg-gray-700 dark:text-gray-100 dark:ring-gray-600;
+          @apply inline-flex items-center bg-gray-100 dark:bg-gray-700 px-1.5 py-0.5 rounded-md ring-1 ring-gray-300 dark:ring-gray-600 ring-inset font-mono text-gray-800 dark:text-gray-100 text-xs align-middle leading-tight;
         }
         .checkbox {
-          @apply h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 dark:border-gray-600;
+          @apply border-gray-300 dark:border-gray-600 rounded focus:ring-indigo-500 w-4 h-4 text-indigo-600;
         }
       }
     </style>
@@ -46,19 +46,19 @@
   <body class="page">
     <main class="container">
       <header class="mb-8">
-        <h1 class="text-2xl font-semibold tracking-tight">
+        <h1 class="font-semibold text-2xl tracking-tight">
           Pyxel Web Launcher
         </h1>
-        <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">
+        <p class="mt-2 text-gray-600 dark:text-gray-300 text-sm">
           Launcher tool for the WebAssembly version of
           <a class="link" href="https://github.com/kitao/pyxel">Pyxel</a>
         </p>
       </header>
 
       <section class="card">
-        <div class="grid grid-cols-1 gap-5">
+        <div class="gap-5 grid grid-cols-1">
           <!-- Startup File -->
-          <div class="grid gap-2">
+          <div class="gap-2 grid">
             <label for="startup-file" class="label"
               >Startup File URL on GitHub</label
             >
@@ -100,7 +100,7 @@
           </div>
 
           <!-- Additional Packages -->
-          <div class="grid gap-2">
+          <div class="gap-2 grid">
             <label for="additional-packages" class="label"
               >Additional Packages</label
             >
@@ -129,7 +129,7 @@
           </div>
 
           <!-- MML List -->
-          <div class="grid gap-2">
+          <div class="gap-2 grid">
             <label for="mml-list" class="label">MML List</label>
             <input
               id="mml-list"
@@ -147,7 +147,7 @@
           </div>
 
           <!-- Launch URL -->
-          <div class="grid gap-2 pt-2">
+          <div class="gap-2 grid pt-2">
             <span class="label">Application Launch URL</span>
             <a id="launch-url" href="" target="_blank" class="link-strong"></a>
           </div>
@@ -155,7 +155,7 @@
       </section>
 
       <section class="mt-8">
-        <p class="mt-4 text-sm text-gray-700 dark:text-gray-300">
+        <p class="mt-4 text-gray-700 dark:text-gray-300 text-sm">
           For specific instructions, please refer to
           <a
             class="link"
