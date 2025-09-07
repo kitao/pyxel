@@ -6,6 +6,7 @@
 - Fixed Example 17 Python command execution issue
 - Fixed the reset function issue when called inside pyxapp
 - Updated the design of the web pages
+- Updated the zip crate to version 5.0
 
 ## 2.5.3
 
