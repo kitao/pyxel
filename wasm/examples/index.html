@@ -10,16 +10,16 @@
     <style type="text/tailwindcss">
       @layer components {
         .link {
-          @apply underline decoration-dotted underline-offset-2 text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300;
+          @apply text-indigo-600 hover:text-indigo-700 dark:hover:text-indigo-300 dark:text-indigo-400 underline underline-offset-2;
         }
         .card {
-          @apply rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800;
+          @apply bg-white dark:bg-gray-800 shadow-sm p-6 border border-gray-200 dark:border-gray-700 rounded-2xl;
         }
         .page {
-          @apply h-full bg-gray-50 text-gray-800 antialiased dark:bg-gray-900 dark:text-gray-100;
+          @apply bg-gray-50 dark:bg-gray-900 h-full text-gray-800 dark:text-gray-100 antialiased;
         }
         .container {
-          @apply mx-auto max-w-3xl p-6;
+          @apply mx-auto p-6 max-w-3xl;
         }
       }
     </style>
@@ -28,10 +28,10 @@
   <body class="page">
     <main class="container">
       <header class="mb-8">
-        <h1 class="text-2xl font-semibold tracking-tight">
+        <h1 class="font-semibold text-2xl tracking-tight">
           Pyxel Web Examples
         </h1>
-        <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">
+        <p class="mt-2 text-gray-600 dark:text-gray-300 text-sm">
           Examples of the WebAssembly version of
           <a href="https://github.com/kitao/pyxel" class="link">Pyxel</a>, a
           retro game engine for Python.
@@ -39,7 +39,7 @@
       </header>
 
       <section class="card">
-        <ul class="columns-1 md:columns-2 gap-4 text-sm space-y-1">
+        <ul class="gap-4 space-y-1 columns-1 md:columns-2 text-sm">
           <li><a href="script-test.html" class="link">script_test</a></li>
           <li><a href="01-hello-pyxel.html" class="link">01_hello_pyxel</a></li>
           <li><a href="02-jump-game.html" class="link">02_jump_game</a></li>
@@ -80,7 +80,7 @@
       </section>
 
       <section class="mt-8">
-        <p class="text-sm text-gray-700 dark:text-gray-300">
+        <p class="text-gray-700 dark:text-gray-300 text-sm">
           The HTML files can be referenced
           <a
             href="https://github.com/kitao/pyxel/tree/main/wasm/examples"
@@ -88,7 +88,7 @@
             >here</a
           >.
         </p>
-        <p class="mt-2 text-sm text-gray-700 dark:text-gray-300">
+        <p class="mt-2 text-gray-700 dark:text-gray-300 text-sm">
           For specific instructions, please refer to
           <a
             href="https://github.com/kitao/pyxel/blob/main/docs/pyxel-web-en.md"
