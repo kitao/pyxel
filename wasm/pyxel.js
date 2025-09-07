@@ -98,9 +98,9 @@ async function resetPyxel() {
         except BaseException:
             pass
     importlib.invalidate_caches()
-
     sys.modules["__main__"] = ModuleType("__main__")
 
+    os.chdir("/")
     if os.path.exists(temp_dir):
         shutil.rmtree(temp_dir)
     os.makedirs(temp_dir, exist_ok=True)
