@@ -5,6 +5,7 @@
 - Added two Pyxel apps by Adam for the app launcher
 - Fixed Example 17 Python command execution issue
 - Fixed the reset function issue when called inside pyxapp
+- Updated the design of the web pages
 
 ## 2.5.3
 
