@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.5.5
+
+- Changed exe packaging with PyInstaller for the reset function
+
 ## 2.5.4
 
 - Added two Pyxel apps by Adam for the app launcher
