@@ -26,10 +26,9 @@ def _reset():
     except Exception:
         pass
 
-    os.execvpe(
+    os.execvp(
         _reset_info["exec"],
         [_reset_info["exec"]] + _reset_info["argv"][1:],
-        os.environ.copy(),
     )
 
 
