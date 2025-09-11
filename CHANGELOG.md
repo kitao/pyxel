@@ -3,6 +3,7 @@
 ## 2.5.5
 
 - Changed exe packaging with PyInstaller for the reset function
+- Fixed touch device detection for Firefox in the web version
 
 ## 2.5.4
 
