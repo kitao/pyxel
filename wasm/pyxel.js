@@ -197,13 +197,17 @@ function _updateScreenElementsSize() {
   _setMinWidthFromRatio("img#pyxel-gamepad-menu", screenSize);
 }
 
-function _waitForEvent(target, event) {
+function _waitForEvent(target, ...events) {
   return new Promise((resolve) => {
     let listener = (...args) => {
-      target.removeEventListener(event, listener);
+      for (const ev of events) {
+        target.removeEventListener(ev, listener);
+      }
       resolve(...args);
     };
-    target.addEventListener(event, listener);
+    for (const ev of events) {
+      target.addEventListener(ev, listener);
+    }
   });
 }
 
@@ -438,7 +442,7 @@ async function _waitForInput() {
   pyxelScreen.appendChild(promptImage);
   _updateScreenElementsSize();
 
-  await _waitForEvent(document.body, _isTouchDevice() ? "touchstart" : "click");
+  await _waitForEvent(document.body, "click", "touchstart");
   promptImage.remove();
   await new Promise((resolve) => setTimeout(resolve, 1));
 }
