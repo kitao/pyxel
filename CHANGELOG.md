@@ -6,6 +6,7 @@
 - Fixed touch device detection for Firefox in the web version
 - Changed the mechanism of the reset function and the play command
 - Changed to remove extra directories after the app2exe command
+- Improved automatic file download for the web version
 
 ## 2.5.4
 
