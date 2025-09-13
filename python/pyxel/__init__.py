@@ -21,15 +21,14 @@ def _reset():
         except OSError:
             pass
 
-    try:
-        os.chdir(_reset_info["cwd"])
-    except Exception:
-        pass
+    import subprocess
 
-    os.execvp(
-        _reset_info["exec"],
+    subprocess.Popen(
         [_reset_info["exec"]] + _reset_info["argv"][1:],
+        cwd=_reset_info["cwd"],
+        env=os.environ.copy(),
     )
+    sys.exit(0)
 
 
 _reset_func(_reset)  # type: ignore  #noqa: F405
