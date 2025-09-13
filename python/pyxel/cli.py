@@ -138,7 +138,7 @@ def _create_app_dir():
             pid = int(os.path.basename(path).split("_")[0])
             if pyxel._process_exists(pid):
                 continue
-            if time.time() - os.path.getmtime(path) > 60:
+            if time.time() - os.path.getmtime(path) > 300:
                 shutil.rmtree(path)
         except ValueError:
             shutil.rmtree(path)
