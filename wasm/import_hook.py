@@ -15,18 +15,26 @@ class ImportHook:
             fullname in self.imported_modules
             or fullname in sys.builtin_module_names
             or fullname in sys.modules
+            or fullname in ("_hashlib", "_uuid", "ssl")
         ):
             return None
-        self.imported_modules.add(fullname)
 
         # Skip imported modules from the standard library or installed packages
         spec = importlib.util.find_spec(fullname)
-        if spec and spec.origin:
-            origin = os.path.realpath(spec.origin)
+        if spec:
             if (
-                origin.startswith(os.path.realpath(sys.base_prefix))
-                or "site-packages" in origin
-                or "dist-packages" in origin
+                spec.origin
+                in (
+                    None,
+                    "built-in",
+                    "builtin",
+                    "frozen",
+                )
+                or "site-packages" in spec.origin
+                or "dist-packages" in spec.origin
+                or os.path.realpath(spec.origin).startswith(
+                    os.path.realpath(sys.base_prefix)
+                )
             ):
                 return None
 
@@ -61,6 +69,8 @@ class ImportHook:
             main_module_path = os.path.join(self.main_dir, f"{module_name}.py")
             main_package_path = os.path.join(self.main_dir, module_name, "__init__.py")
             os.path.exists(main_module_path) or os.path.exists(main_package_path)
+
+        self.imported_modules.add(fullname)
         return None
 
 
