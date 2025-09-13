@@ -133,17 +133,19 @@ def _create_app_dir():
     play_dir = os.path.join(tempfile.gettempdir(), pyxel.BASE_DIR, "play")
     pathlib.Path(play_dir).mkdir(parents=True, exist_ok=True)
 
-    now = time.time()
     for path in glob.glob(os.path.join(play_dir, "*")):
-        if os.path.isdir(path):
-            mtime = os.path.getmtime(path)
-            if now - mtime > 24 * 60 * 60:  # 24 hours
-                try:
-                    shutil.rmtree(path)
-                except Exception:
-                    pass
+        try:
+            pid = int(os.path.basename(path).split("_")[0])
+            if pyxel._process_exists(pid):
+                continue
+            if time.time() - os.path.getmtime(path) > 60:
+                shutil.rmtree(path)
+        except ValueError:
+            shutil.rmtree(path)
 
-    app_dir = os.path.join(play_dir, str(uuid.uuid4()))
+    app_dir = os.path.join(play_dir, f"{os.getpid()}_{uuid.uuid4()}")
+    if os.path.exists(app_dir):
+        shutil.rmtree(app_dir)
     os.mkdir(app_dir)
     return app_dir
 
@@ -413,6 +415,9 @@ def create_executable_from_pyxel_app(pyxel_app_file):
     spec_file = os.path.splitext(pyxel_app_file)[0] + ".spec"
     if os.path.isfile(spec_file):
         os.remove(spec_file)
+    build_dir = os.path.join(os.getcwd(), "build")
+    if os.path.isdir(build_dir):
+        shutil.rmtree(build_dir)
 
 
 def create_html_from_pyxel_app(pyxel_app_file):

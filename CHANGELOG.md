@@ -4,6 +4,7 @@
 
 - Changed exe packaging with PyInstaller for the reset function
 - Fixed touch device detection for Firefox in the web version
+- Changed the mechanism of the reset function and the play command
 
 ## 2.5.4
 
