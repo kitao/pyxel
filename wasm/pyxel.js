@@ -303,21 +303,23 @@ function _displayErrorOverlay(message) {
     overlay.id = "pyxel-error-overlay";
     Object.assign(overlay.style, {
       position: "absolute",
-      top: "2em",
-      left: "2em",
-      right: "2em",
-      bottom: "2em",
+      top: "10px",
+      left: "12px",
+      right: "12px",
+      bottom: "10px",
       zIndex: 1000,
       margin: "0",
-      padding: "1em",
+      padding: "8px",
       boxSizing: "border-box",
-      overflow: "hidden",
+      overflow: "auto",
       background: "rgba(0,0,0,0.7)",
       color: "#fff",
+      fontSize: "12px",
     });
     document.getElementById("pyxel-screen").appendChild(overlay);
   }
   overlay.textContent = message;
+  overlay.scrollTop = overlay.scrollHeight;
 }
 
 function _hookFileOperations(pyodide, root) {

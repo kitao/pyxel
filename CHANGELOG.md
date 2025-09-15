@@ -7,6 +7,7 @@
 - Changed the mechanism of the reset function and the play command
 - Changed to remove extra directories after the app2exe command
 - Improved automatic file download for the web version
+- Adjusted the error output display size in the web version
 
 ## 2.5.4
 
