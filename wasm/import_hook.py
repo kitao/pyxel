@@ -19,6 +19,8 @@ class ImportHook:
         ):
             return None
 
+        self.imported_modules.add(fullname)
+
         # Skip imported modules from the standard library or installed packages
         spec = importlib.util.find_spec(fullname)
         if spec:
@@ -70,7 +72,6 @@ class ImportHook:
             main_package_path = os.path.join(self.main_dir, module_name, "__init__.py")
             os.path.exists(main_module_path) or os.path.exists(main_package_path)
 
-        self.imported_modules.add(fullname)
         return None
 
 
