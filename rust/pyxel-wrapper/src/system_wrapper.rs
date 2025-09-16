@@ -123,7 +123,7 @@ fn fullscreen(enabled: bool) {
 }
 
 #[pyfunction]
-fn _reset_func(func: Bound<'_, PyAny>) {
+fn _set_reset_func(func: Bound<'_, PyAny>) {
     let func = func.unbind();
     *pyxel::RESET_FUNC.lock() = Some(Box::new(move || {
         Python::attach(|py| {
@@ -135,9 +135,14 @@ fn _reset_func(func: Bound<'_, PyAny>) {
     }));
 }
 
+#[pyfunction]
+fn _reset_statics() {
+    pyxel::reset_statics();
+}
+
 #[cfg(not(target_os = "emscripten"))]
 #[pyfunction]
-fn _process_exists(pid: u32) -> bool {
+fn _pid_exists(pid: u32) -> bool {
     {
         let system = sysinfo::System::new_all();
         system.process(sysinfo::Pid::from_u32(pid)).is_some()
@@ -146,7 +151,7 @@ fn _process_exists(pid: u32) -> bool {
 
 #[cfg(target_os = "emscripten")]
 #[pyfunction]
-fn _process_exists(_pid: u32) -> bool {
+fn _pid_exists(_pid: u32) -> bool {
     false
 }
 
@@ -163,7 +168,8 @@ pub fn add_system_functions(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(integer_scale, m)?)?;
     m.add_function(wrap_pyfunction!(screen_mode, m)?)?;
     m.add_function(wrap_pyfunction!(fullscreen, m)?)?;
-    m.add_function(wrap_pyfunction!(_reset_func, m)?)?;
-    m.add_function(wrap_pyfunction!(_process_exists, m)?)?;
+    m.add_function(wrap_pyfunction!(_set_reset_func, m)?)?;
+    m.add_function(wrap_pyfunction!(_reset_statics, m)?)?;
+    m.add_function(wrap_pyfunction!(_pid_exists, m)?)?;
     Ok(())
 }

@@ -182,8 +182,7 @@ pub fn init(
     pyxel
 }
 
-#[cfg(target_os = "emscripten")]
-pub(crate) fn reset_static_variables() {
+pub fn reset_statics() {
     IS_INITIALIZED.store(false, Ordering::Relaxed);
     (*COLORS.lock()).clone_from(&init_colors().lock());
     (*IMAGES.lock()).clone_from(&init_images().lock());
