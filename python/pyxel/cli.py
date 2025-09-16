@@ -136,7 +136,7 @@ def _create_app_dir():
     for path in glob.glob(os.path.join(play_dir, "*")):
         try:
             pid = int(os.path.basename(path).split("_")[0])
-            if pyxel._process_exists(pid):
+            if pyxel._pid_exists(pid):
                 continue
             if time.time() - os.path.getmtime(path) > 300:
                 shutil.rmtree(path)
@@ -156,7 +156,7 @@ def _create_watch_state_file():
 
     for path in glob.glob(os.path.join(watch_dir, "*")):
         pid = int(os.path.basename(path))
-        if not pyxel._process_exists(pid):
+        if not pyxel._pid_exists(pid):
             os.remove(path)
 
     watch_state_file = os.path.join(watch_dir, str(os.getpid()))

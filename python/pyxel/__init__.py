@@ -31,4 +31,4 @@ def _reset():
     sys.exit(0)
 
 
-_reset_func(_reset)  # type: ignore  #noqa: F405
+_set_reset_func(_reset)  # type: ignore  #noqa: F405

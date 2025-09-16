@@ -8,6 +8,7 @@
 - Changed to remove extra directories after the app2exe command
 - Improved automatic file download for the web version
 - Adjusted the error output display size in the web version
+- Updated the reset function mechanism
 
 ## 2.5.4
 

@@ -83,6 +83,10 @@ async function resetPyxel() {
     import tempfile
     from types import ModuleType
 
+    import pyxel
+
+    pyxel._reset_statics()
+
     work_dir = "${PYXEL_WORKING_DIRECTORY}"
     temp_dir = tempfile.gettempdir()
     mods = [

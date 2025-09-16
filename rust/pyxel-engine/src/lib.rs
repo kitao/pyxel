@@ -56,7 +56,7 @@ pub use crate::font::{Font, SharedFont};
 pub use crate::image::{Color, Image, Rgb24, SharedImage};
 pub use crate::key::*;
 pub use crate::music::{Music, SharedMusic, SharedSeq};
-pub use crate::pyxel::{init, Pyxel, RESET_FUNC};
+pub use crate::pyxel::{init, reset_statics, Pyxel, RESET_FUNC};
 pub use crate::settings::*;
 pub use crate::sound::{
     SharedSound, Sound, SoundEffect, SoundNote, SoundSpeed, SoundTone, SoundVolume,

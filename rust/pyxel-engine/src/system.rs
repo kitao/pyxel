@@ -152,8 +152,6 @@ impl Pyxel {
                 fn emscripten_run_script(script: *const std::os::raw::c_char);
             }
 
-            crate::pyxel::reset_static_variables();
-
             unsafe {
                 let script = std::ffi::CString::new("resetPyxel();").unwrap();
                 emscripten_run_script(script.as_ptr());
