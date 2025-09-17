@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ja" class="h-full">
+<html lang="en" class="h-full">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -30,7 +30,6 @@
         }
       }
     </style>
-    <script src="https://cdn.jsdelivr.net/gh/kitao/pyxel@latest/wasm/pyxel.js"></script>
   </head>
   <body class="page">
     <main class="container">
@@ -64,9 +63,9 @@
             </button>
             <button
               type="button"
-              class="toggle"
+              class="toggle active"
               data-action="loop"
-              data-state="false"
+              data-state="true"
               onmousedown="handleButtonPress(this)"
             >
               LOOP
@@ -86,11 +85,11 @@
         <div
           class="flex flex-grow items-center mt-2 sm:mt-0 p-0 w-full sm:w-auto h-24 card"
         >
-          <div
+          <iframe
             id="pyxel-screen"
-            class="w-full h-24"
-            style="position: relative; height: 100%"
-          ></div>
+            src="pyxel-screen.html"
+            class="border-0 w-full h-full"
+          ></iframe>
         </div>
       </div>
 
@@ -127,6 +126,8 @@
             rows="2"
             class="font-mono input"
             placeholder="o4v15cdefrgb+..."
+            oninput="handleMmlInput(this)"
+            onkeydown="handleMmlKeydown(event, this)"
           ></textarea>
         </div>
 
@@ -162,6 +163,8 @@
             rows="2"
             class="font-mono input"
             placeholder="t120l8..."
+            oninput="handleMmlInput(this)"
+            onkeydown="handleMmlKeydown(event, this)"
           ></textarea>
         </div>
 
@@ -197,6 +200,8 @@
             rows="2"
             class="font-mono input"
             placeholder="o4v15cdefrgb+..."
+            oninput="handleMmlInput(this)"
+            onkeydown="handleMmlKeydown(event, this)"
           ></textarea>
         </div>
 
@@ -232,6 +237,8 @@
             rows="2"
             class="font-mono input"
             placeholder="t120l8..."
+            oninput="handleMmlInput(this)"
+            onkeydown="handleMmlKeydown(event, this)"
           ></textarea>
         </div>
       </div>
@@ -273,18 +280,58 @@
       }
 
       function handleButtonPress(btn) {
+        const pyxelScreen = document.getElementById("pyxel-screen");
         const action = btn.dataset.action;
+        const varName = "js_" + action;
+        let isActive;
 
         if (action === "play" || action === "stop") {
+          isActive = true;
           setButtonStyle(btn, true);
-          setTimeout(() => setButtonStyle(btn, false), 150);
-          return;
+          setTimeout(() => {
+            setButtonStyle(btn, false);
+            pyxelScreen.contentWindow[varName] = false;
+          }, 150);
+        } else {
+          btn.dataset.state = btn.dataset.state !== "true";
+          isActive = btn.dataset.state === "true";
+          setButtonStyle(btn, isActive);
         }
 
-        btn.dataset.state = btn.dataset.state !== "true";
-        setButtonStyle(btn, btn.dataset.state === "true");
+        pyxelScreen.contentWindow[varName] = isActive;
+
+        if (action === "play") {
+          pyxelScreen.contentWindow.resetPyxel();
+        }
       }
+
+      function handleMmlInput(textarea) {
+        const id = textarea.id;
+        if (id && id.startsWith("ch")) {
+          const pyxelScreen = document.getElementById("pyxel-screen");
+          pyxelScreen.contentWindow[`js_${id}_mml`] = textarea.value;
+        }
+      }
+
+      function handleMmlKeydown(e, textarea) {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          const pyxelScreen = document.getElementById("pyxel-screen");
+          pyxelScreen.contentWindow.resetPyxel();
+        }
+      }
+
+      window.addEventListener("DOMContentLoaded", () => {
+        const pyxelScreen = document.getElementById("pyxel-screen");
+        pyxelScreen.addEventListener("load", () => {
+          document.querySelectorAll("button[data-action]").forEach((btn) => {
+            const action = btn.dataset.action;
+            const varName = "js_" + action;
+            const isActive = btn.dataset.state === "true";
+            pyxelScreen.contentWindow[varName] = isActive;
+          });
+        });
+      });
     </script>
-    <pyxel-run root="." name="mml_studio.py"></pyxel-run>
   </body>
 </html>
