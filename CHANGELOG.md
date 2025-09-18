@@ -10,6 +10,7 @@
 - Adjusted the error output display size in the web version
 - Updated the reset function mechanism
 - Changed to use tone 0 if a non-existent tone number is specified
+- Separated the web MML commands into the Pyxel MML Studio page
 
 ## 2.5.4
 
