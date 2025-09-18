@@ -282,7 +282,7 @@ impl Channel {
                 }
 
                 MmlCommand::Tone { tone } => {
-                    let mut tone = tones[*tone as usize].lock();
+                    let mut tone = tones.get(*tone as usize).unwrap_or(&tones[0]).lock();
                     match tone.mode {
                         ToneMode::Wavetable => self.voice.oscillator.set(tone.waveform()),
                         ToneMode::ShortPeriodNoise => self.voice.oscillator.set_noise(true),

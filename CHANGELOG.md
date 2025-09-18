@@ -9,6 +9,7 @@
 - Improved automatic file download for the web version
 - Adjusted the error output display size in the web version
 - Updated the reset function mechanism
+- Changed to use tone 0 if a non-existent tone number is specified
 
 ## 2.5.4
 
