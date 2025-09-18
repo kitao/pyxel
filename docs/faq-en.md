@@ -162,6 +162,8 @@ The following commands are available in Pyxel's MML:
 
 You can see an example of using MML in the [demo](https://kitao.github.io/pyxel/wasm/examples/09-shooter.html) and [code](https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/09_shooter.py) of the 09_shooter.py example.
 
+</details>
+
 ## File Operations and Data Management
 
 <details>
