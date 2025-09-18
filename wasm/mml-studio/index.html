@@ -8,28 +8,29 @@
     <style type="text/tailwindcss">
       @layer components {
         .page {
-          @apply bg-gray-50 dark:bg-gray-900 h-full text-gray-800 dark:text-gray-100 antialiased;
+          @apply bg-gray-900 h-full text-gray-100 antialiased;
         }
         .container {
           @apply mx-auto p-6 max-w-4xl;
         }
         .card {
-          @apply bg-white dark:bg-gray-800 shadow-sm p-6 border border-gray-200 dark:border-gray-700;
+          @apply bg-gray-800 shadow-sm p-6 border border-gray-700;
         }
         .input {
-          @apply bg-white dark:bg-gray-900 px-3 py-2 border border-gray-300 focus:border-indigo-500 dark:border-gray-600 rounded-lg outline-none w-full placeholder:text-gray-400 text-sm;
+          @apply bg-gray-900 px-3 py-2 border border-gray-600 rounded-lg outline-none w-full placeholder:text-gray-400 text-sm;
         }
         .toggle {
-          @apply bg-gray-50 dark:bg-gray-900 px-2 py-1 border border-slate-500 rounded-md w-14 font-medium text-gray-700 dark:text-gray-300 text-xs;
+          @apply bg-gray-900 px-2 py-1 border border-gray-600 rounded-md w-14 font-medium text-gray-300 text-xs;
         }
         .toggle.active {
           @apply bg-slate-600 text-white;
         }
         .link {
-          @apply text-indigo-600 hover:text-indigo-700 dark:hover:text-indigo-300 dark:text-indigo-400 underline underline-offset-2;
+          @apply text-indigo-400 hover:text-indigo-300 underline underline-offset-2;
         }
       }
     </style>
+    <script src="https://cdn.jsdelivr.net/gh/kitao/pyxel@latest/wasm/pyxel.js"></script>
   </head>
   <body class="page">
     <main class="container">
@@ -72,7 +73,7 @@
             </button>
           </div>
           <a
-            href="https://github.com/kitao/pyxel/wiki/MML"
+            id="mml-guide"
             target="_blank"
             rel="noopener noreferrer"
             class="block sm:self-center mb-2 text-s link"
@@ -125,7 +126,6 @@
             id="ch1"
             rows="2"
             class="font-mono input"
-            placeholder="o4v15cdefrgb+..."
             oninput="handleMmlInput(this)"
             onkeydown="handleMmlKeydown(event, this)"
           ></textarea>
@@ -162,7 +162,6 @@
             id="ch2"
             rows="2"
             class="font-mono input"
-            placeholder="t120l8..."
             oninput="handleMmlInput(this)"
             onkeydown="handleMmlKeydown(event, this)"
           ></textarea>
@@ -199,7 +198,6 @@
             id="ch3"
             rows="2"
             class="font-mono input"
-            placeholder="o4v15cdefrgb+..."
             oninput="handleMmlInput(this)"
             onkeydown="handleMmlKeydown(event, this)"
           ></textarea>
@@ -236,7 +234,6 @@
             id="ch4"
             rows="2"
             class="font-mono input"
-            placeholder="t120l8..."
             oninput="handleMmlInput(this)"
             onkeydown="handleMmlKeydown(event, this)"
           ></textarea>
@@ -250,25 +247,17 @@
         <!-- URL -->
         <div class="flex-grow">
           <label for="url" class="block mb-1 text-xl">URL</label>
-          <div id="url" class="h-20 font-mono break-all input">
-            <a
-              href="http://example.com/XXXXXXXXXXXXXXXX"
-              ,
-              target="_blank"
-              rel="noopener noreferrer"
-              class="link"
-            >
-              http://example.com/XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-            </a>
+          <div id="url" class="h-32 font-mono text-[10px] break-all input">
+            <a target="_blank" rel="noopener noreferrer" class="link"> </a>
           </div>
         </div>
 
         <!-- QR Code -->
         <div class="flex-shrink-0">
           <img
-            src="https://placehold.co/100x100/000000/ffffff?text=QR"
+            id="qr-code"
             alt="QR Code"
-            class="border border-gray-300 dark:border-gray-600 rounded-md min-w-[80px] min-h-[80px]"
+            class="w-32 min-w-[80px] h-32 min-h-[80px]"
           />
         </div>
       </div>
@@ -306,11 +295,9 @@
       }
 
       function handleMmlInput(textarea) {
-        const id = textarea.id;
-        if (id && id.startsWith("ch")) {
-          const pyxelScreen = document.getElementById("pyxel-screen");
-          pyxelScreen.contentWindow[`js_${id}_mml`] = textarea.value;
-        }
+        const pyxelScreen = document.getElementById("pyxel-screen");
+        pyxelScreen.contentWindow[`js_${textarea.id}_mml`] = textarea.value;
+        updateUrl();
       }
 
       function handleMmlKeydown(e, textarea) {
@@ -321,6 +308,60 @@
         }
       }
 
+      function updateUrl() {
+        const pyxelScreen = document.getElementById("pyxel-screen");
+        let mmlStr = "";
+        for (let i = 1; i <= 4; i++) {
+          const textarea = document.getElementById(`ch${i}`);
+          mmlStr += (i > 1 ? ";" : "") + (textarea ? textarea.value : "");
+        }
+
+        const base64Url = btoa(mmlStr)
+          .replace(/\+/g, "-")
+          .replace(/\//g, "_")
+          .replace(/=+$/, "");
+
+        const url = location.origin + location.pathname + "?mml=" + base64Url;
+        const launchUrlHref = document.querySelector("#url a");
+        launchUrlHref.textContent = launchUrlHref.href = url;
+
+        const qrImg = document.getElementById("qr-code");
+        if (qrImg) {
+          qrImg.src =
+            "https://api.qrserver.com/v1/create-qr-code/?color=9ca3af&bgcolor=000000&size=200x200&data=" +
+            encodeURIComponent(url);
+        }
+      }
+
+      // Set MML guide link
+      const link = document.getElementById("mml-guide");
+      link.href = navigator.language.startsWith("ja")
+        ? "https://github.com/kitao/pyxel/blob/main/docs/faq-ja.md"
+        : "https://github.com/kitao/pyxel/blob/main/docs/faq-en.md";
+
+      // Load MML from URL parameter
+      const queries = new URL(document.location).searchParams;
+      if (queries.get("mml")) {
+        let mmlList = queries.get("mml");
+        if (!["@", ";", " "].some((char) => mmlList.includes(char))) {
+          let base64 = mmlList.replace(/-/g, "+").replace(/_/g, "/");
+          while (base64.length % 4) {
+            base64 += "=";
+          }
+          mmlList = atob(base64);
+        }
+
+        const mmlArr = mmlList.split(";", 4);
+        for (let i = 1; i <= 4; i++) {
+          const textarea = document.getElementById(`ch${i}`);
+          if (textarea) {
+            textarea.value = mmlArr[i - 1] || "";
+            handleMmlInput(textarea);
+          }
+        }
+      }
+
+      // Set initial button states to iframe globals
       window.addEventListener("DOMContentLoaded", () => {
         const pyxelScreen = document.getElementById("pyxel-screen");
         pyxelScreen.addEventListener("load", () => {
@@ -331,6 +372,8 @@
             pyxelScreen.contentWindow[varName] = isActive;
           });
         });
+
+        updateUrl();
       });
     </script>
   </body>
