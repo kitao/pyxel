@@ -753,7 +753,7 @@ Pyxel には、ユーザーを混乱させる可能性や、使用に専門知�
 
 ## その他の情報
 
-- [よくある質問](faq-jp.md)
+- [よくある質問](faq-ja.md)
 - [ユーザー作品集](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples)
 - [開発者 X アカウント](https://x.com/kitao)
 - [Discord サーバー（英語）](https://discord.gg/Z87eYHN)
