@@ -17,7 +17,7 @@
           @apply bg-gray-800 shadow-sm p-6 border border-gray-700;
         }
         .input {
-          @apply bg-gray-900 px-3 py-2 border border-gray-600 rounded-lg outline-none w-full placeholder:text-gray-400 text-sm;
+          @apply bg-gray-900 px-3 py-2 border border-gray-600 focus:border-indigo-500 rounded-lg outline-none w-full placeholder:text-gray-400 text-sm;
         }
         .toggle {
           @apply bg-gray-900 px-2 py-1 border border-gray-600 rounded-md w-14 font-medium text-gray-300 text-xs;
@@ -27,6 +27,10 @@
         }
         .link {
           @apply text-indigo-400 hover:text-indigo-300 underline underline-offset-2;
+        }
+        .input-link {
+          @apply flex items-center min-h-[2.25rem] font-mono break-all select-all;
+          @apply input link;
         }
       }
     </style>
@@ -94,172 +98,163 @@
         </div>
       </div>
 
-      <div class="flex flex-col space-y-2">
-        <!-- Channel 1 editing UI -->
-        <div>
-          <div class="flex items-center space-x-4 mb-2">
-            <label for="ch1" class="text-xl">CH1</label>
-            <div class="flex items-center space-x-2">
-              <button
-                type="button"
-                class="toggle"
-                data-action="solo1"
-                data-state="false"
-                onmousedown="handleButtonPress(this)"
-              >
-                SOLO
-              </button>
-              <input type="hidden" id="solo1" name="solo1" value="0" />
-              <button
-                type="button"
-                class="toggle"
-                data-action="mute1"
-                data-state="false"
-                onmousedown="handleButtonPress(this)"
-              >
-                MUTE
-              </button>
-              <input type="hidden" id="mute1" name="mute1" value="0" />
-            </div>
+      <!-- Channel 1 editing UI -->
+      <div class="mb-2">
+        <div class="flex items-center space-x-4 mb-2">
+          <label for="ch1" class="text-xl">CH1</label>
+          <div class="flex items-center space-x-2">
+            <button
+              type="button"
+              class="toggle"
+              data-action="solo1"
+              data-state="false"
+              onmousedown="handleButtonPress(this)"
+            >
+              SOLO
+            </button>
+            <input type="hidden" id="solo1" name="solo1" value="0" />
+            <button
+              type="button"
+              class="toggle"
+              data-action="mute1"
+              data-state="false"
+              onmousedown="handleButtonPress(this)"
+            >
+              MUTE
+            </button>
+            <input type="hidden" id="mute1" name="mute1" value="0" />
           </div>
-          <textarea
-            id="ch1"
-            rows="2"
-            class="font-mono input"
-            oninput="handleMmlInput(this)"
-            onkeydown="handleMmlKeydown(event, this)"
-          ></textarea>
         </div>
-
-        <!-- Channel 2 editing UI -->
-        <div>
-          <div class="flex items-center space-x-4 mb-2">
-            <label for="ch2" class="text-xl">CH2</label>
-            <div class="flex items-center space-x-2">
-              <button
-                type="button"
-                class="toggle"
-                data-action="solo2"
-                data-state="false"
-                onmousedown="handleButtonPress(this)"
-              >
-                SOLO
-              </button>
-              <input type="hidden" id="solo2" name="solo2" value="0" />
-              <button
-                type="button"
-                class="toggle"
-                data-action="mute2"
-                data-state="false"
-                onmousedown="handleButtonPress(this)"
-              >
-                MUTE
-              </button>
-              <input type="hidden" id="mute2" name="mute2" value="0" />
-            </div>
-          </div>
-          <textarea
-            id="ch2"
-            rows="2"
-            class="font-mono input"
-            oninput="handleMmlInput(this)"
-            onkeydown="handleMmlKeydown(event, this)"
-          ></textarea>
-        </div>
-
-        <!-- Channel 3 editing UI -->
-        <div>
-          <div class="flex items-center space-x-4 mb-2">
-            <label for="ch3" class="text-xl">CH3</label>
-            <div class="flex items-center space-x-2">
-              <button
-                type="button"
-                class="toggle"
-                data-action="solo3"
-                data-state="false"
-                onmousedown="handleButtonPress(this)"
-              >
-                SOLO
-              </button>
-              <input type="hidden" id="solo3" name="solo3" value="0" />
-              <button
-                type="button"
-                class="toggle"
-                data-action="mute3"
-                data-state="false"
-                onmousedown="handleButtonPress(this)"
-              >
-                MUTE
-              </button>
-              <input type="hidden" id="mute3" name="mute3" value="0" />
-            </div>
-          </div>
-          <textarea
-            id="ch3"
-            rows="2"
-            class="font-mono input"
-            oninput="handleMmlInput(this)"
-            onkeydown="handleMmlKeydown(event, this)"
-          ></textarea>
-        </div>
-
-        <!-- Channel 4 editing UI -->
-        <div>
-          <div class="flex items-center space-x-4 mb-2">
-            <label for="ch4" class="text-xl">CH4</label>
-            <div class="flex items-center space-x-2">
-              <button
-                type="button"
-                class="toggle"
-                data-action="solo4"
-                data-state="false"
-                onmousedown="handleButtonPress(this)"
-              >
-                SOLO
-              </button>
-              <input type="hidden" id="solo4" name="solo4" value="0" />
-              <button
-                type="button"
-                class="toggle"
-                data-action="mute4"
-                data-state="false"
-                onmousedown="handleButtonPress(this)"
-              >
-                MUTE
-              </button>
-              <input type="hidden" id="mute4" name="mute4" value="0" />
-            </div>
-          </div>
-          <textarea
-            id="ch4"
-            rows="2"
-            class="font-mono input"
-            oninput="handleMmlInput(this)"
-            onkeydown="handleMmlKeydown(event, this)"
-          ></textarea>
-        </div>
+        <textarea
+          id="ch1"
+          rows="2"
+          class="font-mono input"
+          oninput="handleMmlInput(this)"
+          onkeydown="handleMmlKeydown(event, this)"
+        ></textarea>
       </div>
-      <div class="mt-2"></div>
 
-      <div
-        class="flex sm:flex-row flex-col items-start sm:items-end space-x-0 sm:space-x-4 space-y-4 sm:space-y-0"
-      >
-        <!-- URL -->
-        <div class="flex-grow">
-          <label for="url" class="block mb-1 text-xl">URL</label>
-          <div id="url" class="h-32 font-mono text-[10px] break-all input">
-            <a target="_blank" rel="noopener noreferrer" class="link"> </a>
+      <!-- Channel 2 editing UI -->
+      <div class="mb-2">
+        <div class="flex items-center space-x-4 mb-2">
+          <label for="ch2" class="text-xl">CH2</label>
+          <div class="flex items-center space-x-2">
+            <button
+              type="button"
+              class="toggle"
+              data-action="solo2"
+              data-state="false"
+              onmousedown="handleButtonPress(this)"
+            >
+              SOLO
+            </button>
+            <input type="hidden" id="solo2" name="solo2" value="0" />
+            <button
+              type="button"
+              class="toggle"
+              data-action="mute2"
+              data-state="false"
+              onmousedown="handleButtonPress(this)"
+            >
+              MUTE
+            </button>
+            <input type="hidden" id="mute2" name="mute2" value="0" />
           </div>
         </div>
+        <textarea
+          id="ch2"
+          rows="2"
+          class="font-mono input"
+          oninput="handleMmlInput(this)"
+          onkeydown="handleMmlKeydown(event, this)"
+        ></textarea>
+      </div>
+
+      <!-- Channel 3 editing UI -->
+      <div class="mb-2">
+        <div class="flex items-center space-x-4 mb-2">
+          <label for="ch3" class="text-xl">CH3</label>
+          <div class="flex items-center space-x-2">
+            <button
+              type="button"
+              class="toggle"
+              data-action="solo3"
+              data-state="false"
+              onmousedown="handleButtonPress(this)"
+            >
+              SOLO
+            </button>
+            <input type="hidden" id="solo3" name="solo3" value="0" />
+            <button
+              type="button"
+              class="toggle"
+              data-action="mute3"
+              data-state="false"
+              onmousedown="handleButtonPress(this)"
+            >
+              MUTE
+            </button>
+            <input type="hidden" id="mute3" name="mute3" value="0" />
+          </div>
+        </div>
+        <textarea
+          id="ch3"
+          rows="2"
+          class="font-mono input"
+          oninput="handleMmlInput(this)"
+          onkeydown="handleMmlKeydown(event, this)"
+        ></textarea>
+      </div>
+
+      <!-- Channel 4 editing UI -->
+      <div class="mb-2">
+        <div class="flex items-center space-x-4 mb-2">
+          <label for="ch4" class="text-xl">CH4</label>
+          <div class="flex items-center space-x-2">
+            <button
+              type="button"
+              class="toggle"
+              data-action="solo4"
+              data-state="false"
+              onmousedown="handleButtonPress(this)"
+            >
+              SOLO
+            </button>
+            <input type="hidden" id="solo4" name="solo4" value="0" />
+            <button
+              type="button"
+              class="toggle"
+              data-action="mute4"
+              data-state="false"
+              onmousedown="handleButtonPress(this)"
+            >
+              MUTE
+            </button>
+            <input type="hidden" id="mute4" name="mute4" value="0" />
+          </div>
+        </div>
+        <textarea
+          id="ch4"
+          rows="2"
+          class="font-mono input"
+          oninput="handleMmlInput(this)"
+          onkeydown="handleMmlKeydown(event, this)"
+        ></textarea>
+      </div>
+
+      <div class="flex-grow mt-2">
+        <label for="url" class="block text-xl">URL</label>
+        <!-- URL -->
+        <a
+          id="url"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="mt-2 input-link"
+          style="display: block"
+        ></a>
 
         <!-- QR Code -->
-        <div class="flex-shrink-0">
-          <img
-            id="qr-code"
-            alt="QR Code"
-            class="w-32 min-w-[80px] h-32 min-h-[80px]"
-          />
-        </div>
+        <img id="qr-code" alt="QR Code" class="mt-2" />
       </div>
     </main>
 
@@ -322,14 +317,17 @@
           .replace(/=+$/, "");
 
         const url = location.origin + location.pathname + "?mml=" + base64Url;
-        const launchUrlHref = document.querySelector("#url a");
+        const launchUrlHref = document.querySelector("#url");
         launchUrlHref.textContent = launchUrlHref.href = url;
 
+        let qrSize = Math.max(128, Math.min(url.length, 400)); // 128～400pxの範囲
         const qrImg = document.getElementById("qr-code");
         if (qrImg) {
           qrImg.src =
-            "https://api.qrserver.com/v1/create-qr-code/?color=9ca3af&bgcolor=000000&size=200x200&data=" +
+            `https://api.qrserver.com/v1/create-qr-code/?color=9ca3af&bgcolor=000000&size=${qrSize}x${qrSize}&data=` +
             encodeURIComponent(url);
+          qrImg.width = qrSize;
+          qrImg.height = qrSize;
         }
       }
 

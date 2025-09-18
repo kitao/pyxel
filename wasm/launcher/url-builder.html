@@ -10,34 +10,37 @@
     <style type="text/tailwindcss">
       @layer components {
         .page {
-          @apply bg-gray-50 dark:bg-gray-900 h-full text-gray-800 dark:text-gray-100 antialiased;
+          @apply bg-gray-900 h-full text-gray-100 antialiased;
         }
         .container {
           @apply mx-auto p-6 max-w-3xl;
         }
         .card {
-          @apply bg-white dark:bg-gray-800 shadow-sm p-6 border border-gray-200 dark:border-gray-700 rounded-2xl;
+          @apply bg-gray-800 shadow-sm p-6 border border-gray-700 rounded-2xl;
         }
         .link {
-          @apply text-indigo-600 hover:text-indigo-700 dark:hover:text-indigo-300 dark:text-indigo-400 underline underline-offset-2;
+          @apply text-indigo-400 hover:text-indigo-300 underline underline-offset-2;
         }
         .link-strong {
-          @apply font-semibold text-indigo-600 hover:text-indigo-700 dark:hover:text-indigo-300 dark:text-indigo-400 underline underline-offset-2 break-all;
+          @apply font-semibold text-indigo-400 hover:text-indigo-300 underline underline-offset-2 break-all;
         }
         .label {
           @apply font-medium text-sm;
         }
         .input {
-          @apply bg-white dark:bg-gray-900 px-3 py-2 border border-gray-300 focus:border-indigo-500 dark:border-gray-600 rounded-lg outline-none w-full placeholder:text-gray-400 text-sm;
+          @apply bg-gray-900 px-3 py-2 border border-gray-600 focus:border-indigo-500 rounded-lg outline-none w-full placeholder:text-gray-400 text-sm;
+        }
+        .input-link {
+          @apply flex items-center min-h-[2.25rem] font-mono break-all select-all input link;
         }
         .help {
-          @apply space-y-1 mt-1 pl-5 text-gray-600 dark:text-gray-400 text-xs list-disc;
+          @apply space-y-1 mt-1 pl-5 text-gray-400 text-xs list-disc;
         }
         .codechip {
-          @apply inline-flex items-center bg-gray-100 dark:bg-gray-700 px-1.5 py-0.5 rounded-md ring-1 ring-gray-300 dark:ring-gray-600 ring-inset font-mono text-gray-800 dark:text-gray-100 text-xs align-middle leading-tight;
+          @apply inline-flex items-center bg-gray-700 px-1.5 py-0.5 rounded-md ring-1 ring-gray-600 ring-inset font-mono text-gray-100 text-xs align-middle leading-tight;
         }
         .checkbox {
-          @apply border-gray-300 dark:border-gray-600 rounded focus:ring-indigo-500 w-4 h-4 text-indigo-600;
+          @apply border-gray-600 rounded focus:ring-indigo-500 w-4 h-4 text-indigo-600;
         }
       }
     </style>
@@ -49,7 +52,7 @@
         <h1 class="font-semibold text-2xl tracking-tight">
           Pyxel Web Launcher
         </h1>
-        <p class="mt-2 text-gray-600 dark:text-gray-300 text-sm">
+        <p class="mt-2 text-gray-300 text-sm">
           Launcher tool for the WebAssembly version of
           <a class="link" href="https://github.com/kitao/pyxel">Pyxel</a>
         </p>
@@ -128,34 +131,22 @@
             </ul>
           </div>
 
-          <!-- MML List -->
-          <div class="gap-2 grid">
-            <label for="mml-list" class="label">MML List</label>
-            <input
-              id="mml-list"
-              type="text"
-              size="60"
-              class="input"
-              placeholder="T120 L8 CDEFGAB; T140 L16 C<C>G<G>"
-            />
-            <ul class="help">
-              <li>
-                Separate multiple entries with
-                <code class="codechip">;</code>
-              </li>
-            </ul>
-          </div>
-
           <!-- Launch URL -->
           <div class="gap-2 grid pt-2">
             <span class="label">Application Launch URL</span>
-            <a id="launch-url" href="" target="_blank" class="link-strong"></a>
+            <a
+              id="launch-url"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="input-link"
+              style="display: block"
+            ></a>
           </div>
         </div>
       </section>
 
       <section class="mt-8">
-        <p class="mt-4 text-gray-700 dark:text-gray-300 text-sm">
+        <p class="mt-4 text-gray-300 text-sm">
           For specific instructions, please refer to
           <a
             class="link"
@@ -173,18 +164,6 @@
 
     <script>
       function buildLaunchUrl() {
-        const mmlList = document.getElementById("mml-list").value;
-        if (mmlList) {
-          const base64Url = btoa(mmlList)
-            .replace(/\+/g, "-")
-            .replace(/\//g, "_")
-            .replace(/=+$/, "");
-          const launchUrlHref = document.getElementById("launch-url");
-          launchUrlHref.textContent = launchUrlHref.href =
-            "https://kitao.github.io/pyxel/wasm/launcher/?mml=" + base64Url;
-          return;
-        }
-
         const startupFile = document.getElementById("startup-file").value;
         const virtualGamepad =
           document.getElementById("virtual-gamepad").checked;
@@ -229,9 +208,6 @@
         .addEventListener("change", buildLaunchUrl);
       document
         .getElementById("additional-packages")
-        .addEventListener("input", buildLaunchUrl);
-      document
-        .getElementById("mml-list")
         .addEventListener("input", buildLaunchUrl);
     </script>
   </body>

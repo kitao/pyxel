@@ -7,7 +7,7 @@
   <body class="pyxel-scheme">
     <script>
       const queries = new URL(document.location).searchParams;
-      let command, paths, ext, mmlList;
+      let command, paths, ext;
 
       if (queries.get("run")) {
         command = "run";
@@ -21,28 +21,11 @@
         command = "edit";
         paths = queries.get("edit").split(".");
         ext = ".pyxres";
-      } else if (queries.get("mml")) {
-        command = "mml";
-        mmlList = queries.get("mml");
-        if (["@", ";", " "].some((char) => mmlList.includes(char))) {
-          mmlList = queries.get("mml");
-        } else {
-          let base64 = mmlList.replace(/-/g, "+").replace(/_/g, "/");
-          while (base64.length % 4) {
-            base64 += "=";
-          }
-          mmlList = atob(base64);
-        }
       } else {
         location.replace("url-builder.html");
       }
 
-      if (command === "mml") {
-        launchPyxel({
-          command: command,
-          mmlList: mmlList,
-        });
-      } else if (command) {
+      if (command) {
         launchPyxel({
           root: "https://cdn.jsdelivr.net/gh/" + paths.slice(0, 2).join("/"),
           command: command,
