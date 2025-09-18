@@ -198,7 +198,6 @@ By placing a Pyxel palette file (.pyxpal) in the same directory as the Pyxel res
 The following features and improvements are planned:
 
 - Add a Pyxel app launcher
-- Overhaul of sound functions and MML support
 - Improve usability of Pyxel Editor
 - Add Pyxel tutorials for children
 
