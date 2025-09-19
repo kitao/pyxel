@@ -4,6 +4,7 @@
 
 - Enabled starting Pyxel with keyboard input on the web version
 - Stopped unnecessary key capture on the web version
+- Improved Pyxel MML Studio usability
 
 ## 2.5.5
 

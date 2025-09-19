@@ -14,19 +14,28 @@ class App:
 
         self.default_gain = pyxel.channels[0].gain
 
-        loop = js_var("js_loop", False)
-        self.sounds = []
         for i in range(NUM_CHANNELS):
-            sound = pyxel.Sound()
-            sound.mml(js_var(f"js_ch{i + 1}_mml", ""))
-            self.sounds.append(sound)
-            pyxel.play(i, sound, loop=loop)
+            pyxel.sounds[i].mml(js_var(f"js_ch{i + 1}_mml", ""))
+
+        if js_var("js_play", False):
+            self.start_playback()
 
         pyxel.run(self.update, self.draw)
+
+    def start_playback(self):
+        self.loop_enabled = js_var("js_loop", False)
+
+        pyxel.stop()
+        for i in range(NUM_CHANNELS):
+            pyxel.play(i, i, loop=self.loop_enabled)
 
     def update(self):
         if js_var("js_stop", False):
             pyxel.stop()
+
+        is_playing = any(pyxel.play_pos(i) is not None for i in range(NUM_CHANNELS))
+        if is_playing and self.loop_enabled != js_var("js_loop", False):
+            self.start_playback()
 
         solo_enabled = any(
             js_var(f"js_solo{i + 1}", False) for i in range(NUM_CHANNELS)
@@ -48,7 +57,7 @@ class App:
         pyxel.rectb(0, -1, pyxel.width, pyxel.height + 2, 5)
 
         for i in range(NUM_CHANNELS):
-            total_sec = self.sounds[i].total_sec()
+            total_sec = pyxel.sounds[i].total_sec()
             (_, play_sec) = pyxel.play_pos(i) or (None, None)
 
             if total_sec is None or total_sec == 0 or play_sec is None:
