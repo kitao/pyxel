@@ -34,7 +34,7 @@
         }
       }
     </style>
-    <script src="https://cdn.jsdelivr.net/gh/kitao/pyxel@latest/wasm/pyxel.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/kitao/pyxel/wasm/pyxel.js"></script>
   </head>
   <body class="page">
     <main class="container">
@@ -316,12 +316,14 @@
           mmlStr += (i > 1 ? ";" : "") + (textarea ? textarea.value : "");
         }
 
-        const base64Url = btoa(mmlStr)
-          .replace(/\+/g, "-")
-          .replace(/\//g, "_")
-          .replace(/=+$/, "");
-
-        const url = location.origin + location.pathname + "?mml=" + base64Url;
+        let url = location.origin + location.pathname;
+        if (!/^[\s;]*$/.test(mmlStr)) {
+          const base64Url = btoa(mmlStr)
+            .replace(/\+/g, "-")
+            .replace(/\//g, "_")
+            .replace(/=+$/, "");
+          url += "?mml=" + base64Url;
+        }
         const launchUrlHref = document.querySelector("#url");
         launchUrlHref.textContent = launchUrlHref.href = url;
 
