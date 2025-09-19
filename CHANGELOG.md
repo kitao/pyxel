@@ -3,6 +3,7 @@
 ## 2.5.6
 
 - Enabled starting Pyxel with keyboard input on the web version
+- Stopped unnecessary key capture on the web version
 
 ## 2.5.5
 
