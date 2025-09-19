@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.5.6
+
+- Enabled starting Pyxel with keyboard input on the web version
+
 ## 2.5.5
 
 - Changed exe packaging with PyInstaller for the reset function
