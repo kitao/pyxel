@@ -71,6 +71,13 @@ impl PlatformSdl2 {
     // Core
     //
     pub fn init(&mut self) {
+        unsafe {
+            SDL_SetHint(
+                SDL_HINT_EMSCRIPTEN_KEYBOARD_ELEMENT.as_ptr().cast(),
+                CString::new("#pyxel-screen").unwrap().as_ptr(),
+            );
+        }
+
         assert!(
             unsafe { SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMECONTROLLER,) } >= 0,
             "Failed to initialize SDL2"
@@ -141,9 +148,10 @@ impl PlatformSdl2 {
             );
             assert!(!self.window.is_null(), "Failed to create window");
 
-            let name = CString::new("SDL_HINT_MOUSE_FOCUS_CLICKTHROUGH").unwrap();
-            let value = CString::new("1").unwrap();
-            SDL_SetHint(name.as_ptr(), value.as_ptr());
+            SDL_SetHint(
+                SDL_HINT_MOUSE_FOCUS_CLICKTHROUGH.as_ptr().cast(),
+                CString::new("1").unwrap().as_ptr(),
+            );
 
             // Try to initialize OpenGL 2.1
             SDL_GL_SetAttribute(
