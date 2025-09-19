@@ -84,7 +84,7 @@ HTML ファイルに Pyxel 専用のカスタムタグを記述することで�
 Pyxel カスタムタグを利用するには、以下のスクリプトタグを HTML ファイルに追加します。
 
 ```html
-<script src="https://cdn.jsdelivr.net/gh/kitao/pyxel@latest/wasm/pyxel.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/kitao/pyxel/wasm/pyxel.js"></script>
 ```
 
 また、`@`の後にバージョン番号を指定することで、実行時に参照する Pyxel のバージョンを固定できます。将来のバージョンアップによる互換性の問題を避けたい場合は、バージョン番号を指定してください。
