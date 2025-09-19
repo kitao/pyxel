@@ -319,8 +319,7 @@
 
         let url = location.origin + location.pathname;
         if (!/^[\s;]*$/.test(mmlStr)) {
-          const cmpStr = LZString.compressToEncodedURIComponent(mmlStr);
-          url += "?mml=" + cmpStr;
+          url += "?mml=" + LZString.compressToEncodedURIComponent(mmlStr);
         }
         const launchUrlHref = document.querySelector("#url");
         launchUrlHref.textContent = launchUrlHref.href = url;
@@ -345,23 +344,14 @@
       // Load MML from URL parameter
       const queries = new URL(document.location).searchParams;
       if (queries.get("mml")) {
-        let mmlList = queries.get("mml");
-        let decStr = LZString.decompressFromEncodedURIComponent(mmlList);
-        if (decStr !== null && decStr !== "") {
-          mmlList = decStr;
-        } else if (!["@", ";", " "].some((char) => mmlList.includes(char))) {
-          let b64Str = mmlList.replace(/-/g, "+").replace(/_/g, "/");
-          while (b64Str.length % 4) {
-            b64Str += "=";
-          }
-          mmlList = atob(b64Str);
-        }
+        let mmlList = LZString.decompressFromEncodedURIComponent(
+          queries.get("mml")
+        ).split(";", 4);
 
-        const mmlArr = mmlList.split(";", 4);
         for (let i = 1; i <= 4; i++) {
           const textarea = document.getElementById(`ch${i}`);
           if (textarea) {
-            textarea.value = mmlArr[i - 1] || "";
+            textarea.value = mmlList[i - 1] || "";
             handleMmlInput(textarea);
           }
         }
