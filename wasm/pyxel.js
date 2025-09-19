@@ -444,7 +444,7 @@ async function _waitForInput() {
   pyxelScreen.appendChild(promptImage);
   _updateScreenElementsSize();
 
-  await _waitForEvent(document.body, "click", "touchstart");
+  await _waitForEvent(document.body, "click", "touchstart", "keydown");
   promptImage.remove();
   await new Promise((resolve) => setTimeout(resolve, 1));
 }
