@@ -84,7 +84,7 @@ You can run a Pyxel app by writing Pyxel-specific custom tags in an HTML file. T
 To use Pyxel custom tags, add the following script tag to your HTML file:
 
 ```html
-<script src="https://cdn.jsdelivr.net/gh/kitao/pyxel@latest/wasm/pyxel.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/kitao/pyxel/wasm/pyxel.js"></script>
 ```
 
 You can fix the version of Pyxel referenced at runtime by specifying the version number after `@`. If you want to avoid compatibility issues caused by future updates, be sure to specify the version
