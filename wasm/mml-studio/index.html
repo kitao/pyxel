@@ -35,6 +35,7 @@
       }
     </style>
     <script src="https://cdn.jsdelivr.net/gh/kitao/pyxel/wasm/pyxel.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lz-string@1.4.4/libs/lz-string.min.js"></script>
   </head>
   <body class="page">
     <main class="container">
@@ -318,11 +319,8 @@
 
         let url = location.origin + location.pathname;
         if (!/^[\s;]*$/.test(mmlStr)) {
-          const base64Url = btoa(mmlStr)
-            .replace(/\+/g, "-")
-            .replace(/\//g, "_")
-            .replace(/=+$/, "");
-          url += "?mml=" + base64Url;
+          const cmpStr = LZString.compressToEncodedURIComponent(mmlStr);
+          url += "?mml=" + cmpStr;
         }
         const launchUrlHref = document.querySelector("#url");
         launchUrlHref.textContent = launchUrlHref.href = url;
@@ -348,12 +346,15 @@
       const queries = new URL(document.location).searchParams;
       if (queries.get("mml")) {
         let mmlList = queries.get("mml");
-        if (!["@", ";", " "].some((char) => mmlList.includes(char))) {
-          let base64 = mmlList.replace(/-/g, "+").replace(/_/g, "/");
-          while (base64.length % 4) {
-            base64 += "=";
+        let decStr = LZString.decompressFromEncodedURIComponent(mmlList);
+        if (decStr !== null && decStr !== "") {
+          mmlList = decStr;
+        } else if (!["@", ";", " "].some((char) => mmlList.includes(char))) {
+          let b64Str = mmlList.replace(/-/g, "+").replace(/_/g, "/");
+          while (b64Str.length % 4) {
+            b64Str += "=";
           }
-          mmlList = atob(base64);
+          mmlList = atob(b64Str);
         }
 
         const mmlArr = mmlList.split(";", 4);
