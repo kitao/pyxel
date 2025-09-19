@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pyxel MML Studio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style type="text/tailwindcss">
+      @layer components {
+        .page {
+          @apply bg-gray-900 h-full text-gray-100 antialiased;
+        }
+        .container {
+          @apply mx-auto p-6 max-w-4xl;
+        }
+        .card {
+          @apply bg-gray-800 shadow-sm p-6 border border-gray-700;
+        }
+        .input {
+          @apply bg-gray-900 px-3 py-2 border border-gray-600 focus:border-indigo-500 rounded-lg outline-none w-full placeholder:text-gray-400 text-sm;
+        }
+        .toggle {
+          @apply bg-gray-900 px-2 py-1 border border-gray-600 rounded-md w-14 font-medium text-gray-300 text-xs;
+        }
+        .toggle.active {
+          @apply bg-slate-600 text-white;
+        }
+        .link {
+          @apply text-indigo-400 hover:text-indigo-300 underline underline-offset-2;
+        }
+        .input-link {
+          @apply flex items-center min-h-[2.25rem] font-mono break-all select-all;
+          @apply input link;
+        }
+      }
+    </style>
+    <script src="https://cdn.jsdelivr.net/gh/kitao/pyxel/wasm/pyxel.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lz-string@1.4.4/libs/lz-string.min.js"></script>
+  </head>
+  <body class="page">
+    <main class="container">
+      <h1 class="mb-2 font-semibold text-2xl tracking-tight">
+        Pyxel MML Studio
+      </h1>
+      <p class="mt-2 mb-6 text-gray-300 text-sm">
+        Music Macro Language (MML) editor for
+        <a class="link" href="https://github.com/kitao/pyxel">Pyxel</a>, a retro
+        game engine for Python.
+      </p>
+
+      <div
+        class="flex sm:flex-row flex-col items-start sm:items-center mb-4 min-w-0"
+      >
+        <!-- Control buttons and info link -->
+        <div class="flex flex-col mr-0 sm:mr-4 min-w-[100px]">
+          <div class="flex flex-row gap-x-2 mb-2">
+            <button
+              type="button"
+              class="toggle"
+              data-action="play"
+              data-state="false"
+              onmousedown="handleButtonPress(this)"
+            >
+              PLAY
+            </button>
+            <button
+              type="button"
+              class="toggle"
+              data-action="stop"
+              data-state="false"
+              onmousedown="handleButtonPress(this)"
+            >
+              STOP
+            </button>
+            <button
+              type="button"
+              class="toggle active"
+              data-action="loop"
+              data-state="true"
+              onmousedown="handleButtonPress(this)"
+            >
+              LOOP
+            </button>
+          </div>
+          <a
+            id="mml-guide"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="block sm:self-center mb-2 text-sm link"
+          >
+            Pyxel MML Guide
+          </a>
+        </div>
+
+        <!-- Pyxel screen -->
+        <div
+          class="relative flex flex-grow items-center mt-2 sm:mt-0 p-0 w-full sm:w-auto h-24 card"
+        >
+          <div
+            id="pyxel-screen"
+            style="
+              position: static;
+              width: 100%;
+              height: 100%;
+              background: transparent;
+            "
+          ></div>
+          <!--<iframe
+            id="pyxel-screen"
+            src="pyxel-screen.html"
+            class="border-0 w-full h-full"
+          ></iframe>-->
+        </div>
+      </div>
+
+      <!-- Channel 1 editing UI -->
+      <div class="mb-2">
+        <div class="flex items-center space-x-4 mb-2">
+          <label for="ch1" class="text-xl">CH1</label>
+          <div class="flex items-center space-x-2">
+            <button
+              type="button"
+              class="toggle"
+              data-action="solo1"
+              data-state="false"
+              onmousedown="handleButtonPress(this)"
+            >
+              SOLO
+            </button>
+            <input type="hidden" id="solo1" name="solo1" value="0" />
+            <button
+              type="button"
+              class="toggle"
+              data-action="mute1"
+              data-state="false"
+              onmousedown="handleButtonPress(this)"
+            >
+              MUTE
+            </button>
+            <input type="hidden" id="mute1" name="mute1" value="0" />
+          </div>
+        </div>
+        <textarea
+          id="ch1"
+          rows="2"
+          class="font-mono input"
+          oninput="handleMmlInput(this)"
+          onkeydown="handleMmlKeydown(event, this)"
+        ></textarea>
+      </div>
+
+      <!-- Channel 2 editing UI -->
+      <div class="mb-2">
+        <div class="flex items-center space-x-4 mb-2">
+          <label for="ch2" class="text-xl">CH2</label>
+          <div class="flex items-center space-x-2">
+            <button
+              type="button"
+              class="toggle"
+              data-action="solo2"
+              data-state="false"
+              onmousedown="handleButtonPress(this)"
+            >
+              SOLO
+            </button>
+            <input type="hidden" id="solo2" name="solo2" value="0" />
+            <button
+              type="button"
+              class="toggle"
+              data-action="mute2"
+              data-state="false"
+              onmousedown="handleButtonPress(this)"
+            >
+              MUTE
+            </button>
+            <input type="hidden" id="mute2" name="mute2" value="0" />
+          </div>
+        </div>
+        <textarea
+          id="ch2"
+          rows="2"
+          class="font-mono input"
+          oninput="handleMmlInput(this)"
+          onkeydown="handleMmlKeydown(event, this)"
+        ></textarea>
+      </div>
+
+      <!-- Channel 3 editing UI -->
+      <div class="mb-2">
+        <div class="flex items-center space-x-4 mb-2">
+          <label for="ch3" class="text-xl">CH3</label>
+          <div class="flex items-center space-x-2">
+            <button
+              type="button"
+              class="toggle"
+              data-action="solo3"
+              data-state="false"
+              onmousedown="handleButtonPress(this)"
+            >
+              SOLO
+            </button>
+            <input type="hidden" id="solo3" name="solo3" value="0" />
+            <button
+              type="button"
+              class="toggle"
+              data-action="mute3"
+              data-state="false"
+              onmousedown="handleButtonPress(this)"
+            >
+              MUTE
+            </button>
+            <input type="hidden" id="mute3" name="mute3" value="0" />
+          </div>
+        </div>
+        <textarea
+          id="ch3"
+          rows="2"
+          class="font-mono input"
+          oninput="handleMmlInput(this)"
+          onkeydown="handleMmlKeydown(event, this)"
+        ></textarea>
+      </div>
+
+      <!-- Channel 4 editing UI -->
+      <div class="mb-2">
+        <div class="flex items-center space-x-4 mb-2">
+          <label for="ch4" class="text-xl">CH4</label>
+          <div class="flex items-center space-x-2">
+            <button
+              type="button"
+              class="toggle"
+              data-action="solo4"
+              data-state="false"
+              onmousedown="handleButtonPress(this)"
+            >
+              SOLO
+            </button>
+            <input type="hidden" id="solo4" name="solo4" value="0" />
+            <button
+              type="button"
+              class="toggle"
+              data-action="mute4"
+              data-state="false"
+              onmousedown="handleButtonPress(this)"
+            >
+              MUTE
+            </button>
+            <input type="hidden" id="mute4" name="mute4" value="0" />
+          </div>
+        </div>
+        <textarea
+          id="ch4"
+          rows="2"
+          class="font-mono input"
+          oninput="handleMmlInput(this)"
+          onkeydown="handleMmlKeydown(event, this)"
+        ></textarea>
+      </div>
+
+      <div class="flex-grow mt-2">
+        <label for="url" class="block text-xl">URL</label>
+        <!-- URL -->
+        <a
+          id="url"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="mt-2 input-link"
+          style="display: block"
+        ></a>
+
+        <!-- QR Code -->
+        <img id="qr-code" alt="QR Code" class="mt-4" />
+      </div>
+    </main>
+
+    <script>
+      function setButtonStyle(btn, isActive) {
+        btn.classList.toggle("active", isActive);
+      }
+
+      function handleButtonPress(btn) {
+        const action = btn.dataset.action;
+        const varName = "js_" + action;
+        let isActive;
+
+        if (action === "play" || action === "stop") {
+          isActive = true;
+          setButtonStyle(btn, true);
+          setTimeout(() => {
+            setButtonStyle(btn, false);
+            window[varName] = false;
+          }, 150);
+        } else {
+          btn.dataset.state = btn.dataset.state !== "true";
+          isActive = btn.dataset.state === "true";
+          setButtonStyle(btn, isActive);
+        }
+
+        window[varName] = isActive;
+
+        if (action === "play") {
+          window.resetPyxel();
+        }
+      }
+
+      function handleMmlInput(textarea) {
+        window[`js_${textarea.id}_mml`] = textarea.value;
+        updateUrl();
+      }
+
+      function handleMmlKeydown(e, textarea) {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          handleButtonPress(
+            document.querySelector('button[data-action="play"]')
+          );
+        }
+      }
+
+      function updateUrl() {
+        let mmlStr = "";
+        for (let i = 1; i <= 4; i++) {
+          const textarea = document.getElementById(`ch${i}`);
+          mmlStr += (i > 1 ? ";" : "") + (textarea ? textarea.value : "");
+        }
+
+        let url = location.origin + location.pathname;
+        if (!/^[\s;]*$/.test(mmlStr)) {
+          url += "?mml=" + LZString.compressToEncodedURIComponent(mmlStr);
+        }
+        const launchUrlHref = document.querySelector("#url");
+        launchUrlHref.textContent = launchUrlHref.href = url;
+
+        let qrSize = Math.max(128, Math.min(url.length, 400)); // 128～400pxの範囲
+        const qrImg = document.getElementById("qr-code");
+        if (qrImg) {
+          qrImg.src =
+            `https://api.qrserver.com/v1/create-qr-code/?color=9ca3af&bgcolor=000000&size=${qrSize}x${qrSize}&data=` +
+            encodeURIComponent(url);
+          qrImg.width = qrSize;
+          qrImg.height = qrSize;
+        }
+      }
+
+      // Set MML guide link
+      const link = document.getElementById("mml-guide");
+      link.href = navigator.language.startsWith("ja")
+        ? "https://github.com/kitao/pyxel/blob/main/docs/faq-ja.md"
+        : "https://github.com/kitao/pyxel/blob/main/docs/faq-en.md";
+
+      // Load MML from URL parameter
+      const queries = new URL(document.location).searchParams;
+      if (queries.get("mml")) {
+        let mmlList = LZString.decompressFromEncodedURIComponent(
+          queries.get("mml")
+        ).split(";", 4);
+
+        for (let i = 1; i <= 4; i++) {
+          const textarea = document.getElementById(`ch${i}`);
+          if (textarea) {
+            textarea.value = mmlList[i - 1] || "";
+            handleMmlInput(textarea);
+          }
+        }
+      }
+
+      // Set initial button states to iframe globals
+      window.addEventListener("DOMContentLoaded", () => {
+        window.addEventListener("load", () => {
+          document.querySelectorAll("button[data-action]").forEach((btn) => {
+            const action = btn.dataset.action;
+            const varName = "js_" + action;
+            const isActive = btn.dataset.state === "true";
+            window[varName] = isActive;
+          });
+        });
+
+        updateUrl();
+      });
+    </script>
+    <pyxel-run root="." name="mml_studio.py"></pyxel-run>
+  </body>
+</html>
