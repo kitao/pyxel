@@ -226,7 +226,7 @@ Aşağıdaki örnekler geçerli dizininize kopyalanacaktır:
 Örnekler aşağıdaki komutlarla çalıştırılabilir:
 
 ```sh
-# Run sample in examples directory
+# Run example in examples directory
 cd pyxel_examples
 pyxel run 01_hello_pyxel.py
 
@@ -750,6 +750,12 @@ Kodu manuel olarak test eden ve [Sorun Takip Sistemi](https://github.com/kitao/p
 Yamanlar ve düzeltmeler, pull isteği (PR) şeklinde kabul edilmektedir. Pull isteğinin ele aldığı sorunun Sorun Takip Sistemi'nde açık olduğundan emin olun.
 
 Pull isteği göndermek, katkınızı [MIT Lisansı](../LICENSE) altında lisanslamayı kabul ettiğiniz anlamına gelir.
+
+## Web Araçlar ve Örnekler
+
+- [Pyxel Web Examples](https://kitao.github.io/pyxel/wasm/examples/)
+- [Pyxel Web Launcher](https://kitao.github.io/pyxel/wasm/launcher/)
+- [Pyxel MML Studio](https://kitao.github.io/pyxel/wasm/mml-studio/)
 
 ## Diğer Bilgiler
 

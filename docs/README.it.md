@@ -226,7 +226,7 @@ I seguenti esempi saranno copiati nella tua directory corrente:
 Gli esempi possono essere eseguiti con i seguenti comandi:
 
 ```sh
-# Run sample in examples directory
+# Run example in examples directory
 cd pyxel_examples
 pyxel run 01_hello_pyxel.py
 
@@ -750,6 +750,12 @@ Chiunque testi manualmente il codice e segnali bug o suggerimenti per migliorame
 Le patch e le correzioni sono accettate sotto forma di richieste di pull (PR). Assicurati che il problema a cui si riferisce la richiesta di pull sia aperto nel Issue Tracker.
 
 Inviare una richiesta di pull implica che accetti di concedere in licenza il tuo contributo sotto la [Licenza MIT](../LICENSE).
+
+## Strumenti Web e Esempi
+
+- [Pyxel Web Examples](https://kitao.github.io/pyxel/wasm/examples/)
+- [Pyxel Web Launcher](https://kitao.github.io/pyxel/wasm/launcher/)
+- [Pyxel MML Studio](https://kitao.github.io/pyxel/wasm/mml-studio/)
 
 ## Altre Informazioni
 

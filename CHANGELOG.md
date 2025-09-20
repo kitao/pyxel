@@ -3,6 +3,7 @@
 ## 2.5.7
 
 - Specified Tailwind CSS version 3.4.17 for Pyxel web pages
+- Added links to web tools and examples for Pyxel in the READMEs
 
 ## 2.5.6
 
