@@ -226,7 +226,7 @@ pyxel copy_examples
 Приклади можна виконати за допомогою наступних команд:
 
 ```sh
-# Run sample in examples directory
+# Run example in examples directory
 cd pyxel_examples
 pyxel run 01_hello_pyxel.py
 
@@ -751,6 +751,12 @@ Pyxel включає "Розширене API", яке не згадується 
 Патчі та виправлення приймаються у вигляді запитів на витягування (PR). Переконайтеся, що проблема, яку вирішує запит на витягування, відкрита в Трекері проблем.
 
 Подання запиту на витягування означає, що ви погоджуєтеся ліцензувати свій внесок відповідно до [ліцензії MIT](../LICENSE).
+
+## Веб-інструменти та приклади
+
+- [Pyxel Web Examples](https://kitao.github.io/pyxel/wasm/examples/)
+- [Pyxel Web Launcher](https://kitao.github.io/pyxel/wasm/launcher/)
+- [Pyxel MML Studio](https://kitao.github.io/pyxel/wasm/mml-studio/)
 
 ## Інша інформація
 
