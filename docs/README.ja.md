@@ -226,7 +226,7 @@ pyxel copy_examples
 サンプルは以下のコマンドで実行できます。
 
 ```sh
-# Run sample in examples directory
+# Run example in examples directory
 cd pyxel_examples
 pyxel run 01_hello_pyxel.py
 
@@ -750,6 +750,12 @@ Pyxel には、ユーザーを混乱させる可能性や、使用に専門知�
 パッチや修正はプルリクエスト (PR) として受け付けています。提出前に、問題がすでに解決済みでないか[Issue Tracker](https://github.com/kitao/pyxel/issues)で確認をお願いします。
 
 提出されたプルリクエストは、[MIT ライセンス](../LICENSE)で公開することに同意したものと見なされます。
+
+## Web ツール＆サンプル
+
+- [Pyxel Web Examples](https://kitao.github.io/pyxel/wasm/examples/)
+- [Pyxel Web Launcher](https://kitao.github.io/pyxel/wasm/launcher/)
+- [Pyxel MML Studio](https://kitao.github.io/pyxel/wasm/mml-studio/)
 
 ## その他の情報
 

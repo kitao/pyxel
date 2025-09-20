@@ -226,7 +226,7 @@ pyxel copy_examples
 예제는 다음 명령어로 실행할 수 있습니다:
 
 ```sh
-# Run sample in examples directory
+# Run example in examples directory
 cd pyxel_examples
 pyxel run 01_hello_pyxel.py
 
@@ -750,6 +750,12 @@ Pyxel에는 사용자에게 혼란을 줄 수 있거나 사용에 전문 지식�
 패치 및 수정 사항은 풀 리퀘스트(PR) 형식으로 수락됩니다. 풀 리퀘스트가 해결하는 문제는 문제 추적기에서 열려 있어야 합니다.
 
 풀 리퀘스트를 제출하면 [MIT 라이센스](../LICENSE) 아래에서 기여 내용을 라이센스하는 데 동의하는 것으로 간주됩니다.
+
+## 웹 도구 및 예제
+
+- [Pyxel Web Examples](https://kitao.github.io/pyxel/wasm/examples/)
+- [Pyxel Web Launcher](https://kitao.github.io/pyxel/wasm/launcher/)
+- [Pyxel MML Studio](https://kitao.github.io/pyxel/wasm/mml-studio/)
 
 ## 기타 정보
 
