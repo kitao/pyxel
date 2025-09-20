@@ -226,7 +226,7 @@ pyxel copy_examples
 这些示例可以通过以下命令执行：
 
 ```sh
-# Run sample in examples directory
+# Run example in examples directory
 cd pyxel_examples
 pyxel run 01_hello_pyxel.py
 
@@ -750,6 +750,12 @@ Pyxel 包含一个“高级 API”，该 API 在本参考中未提及，因为�
 补丁和修复以拉取请求 (PR) 的形式接受。请确保拉取请求所针对的问题在问题跟踪器中是开放的。
 
 提交拉取请求意味着您同意根据 [MIT 许可证](../LICENSE) 授权您的贡献。
+
+## Web 工具与示例
+
+- [Pyxel Web Examples](https://kitao.github.io/pyxel/wasm/examples/)
+- [Pyxel Web Launcher](https://kitao.github.io/pyxel/wasm/launcher/)
+- [Pyxel MML Studio](https://kitao.github.io/pyxel/wasm/mml-studio/)
 
 ## 其他信息
 
