@@ -71,13 +71,6 @@ impl PlatformSdl2 {
     // Core
     //
     pub fn init(&mut self) {
-        unsafe {
-            SDL_SetHint(
-                SDL_HINT_EMSCRIPTEN_KEYBOARD_ELEMENT.as_ptr().cast(),
-                CString::new("#pyxel-screen").unwrap().as_ptr(),
-            );
-        }
-
         assert!(
             unsafe { SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMECONTROLLER,) } >= 0,
             "Failed to initialize SDL2"
