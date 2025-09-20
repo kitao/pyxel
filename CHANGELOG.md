@@ -2,9 +2,9 @@
 
 ## 2.5.6
 
-- Enabled starting Pyxel with keyboard input on the web version
-- Stopped unnecessary key capture on the web version
+- Changed to use compressed URLs in Pyxel MML Studio
 - Improved Pyxel MML Studio usability
+- Updated the design of the Pyxel web pages
 
 ## 2.5.5
 

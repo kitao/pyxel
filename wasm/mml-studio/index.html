@@ -20,17 +20,20 @@
           @apply bg-gray-900 px-3 py-2 border border-gray-600 focus:border-indigo-500 rounded-lg outline-none w-full placeholder:text-gray-400 text-sm;
         }
         .toggle {
-          @apply bg-gray-900 px-2 py-1 border border-gray-600 rounded-md w-14 font-medium text-gray-300 text-xs;
+          @apply bg-gray-900 px-2 py-1 border border-gray-600 focus:border-indigo-500 rounded-md outline-none w-14 font-medium text-gray-300 text-xs;
         }
         .toggle.active {
-          @apply bg-slate-600 text-white;
+          @apply bg-slate-600 focus:border-gray-400 text-white;
+        }
+        .toggle.disabled {
+          @apply bg-gray-700 opacity-50 focus:border-gray-300 text-gray-400 pointer-events-none;
         }
         .link {
-          @apply text-indigo-400 hover:text-indigo-300 underline underline-offset-2;
+          @apply outline-none focus:ring-1 focus:ring-indigo-300 text-indigo-400 hover:text-indigo-300 underline underline-offset-2;
         }
         .input-link {
           @apply flex items-center min-h-[2.25rem] font-mono break-all select-all;
-          @apply input link;
+          @apply outline-none text-indigo-400 hover:text-indigo-300 input;
         }
       }
     </style>
@@ -56,28 +59,31 @@
           <div class="flex flex-row gap-x-2 mb-2">
             <button
               type="button"
-              class="toggle"
+              class="toggle disabled"
               data-action="play"
               data-state="false"
               onmousedown="handleButtonPress(this)"
+              title="Enter: Play"
             >
               PLAY
             </button>
             <button
               type="button"
-              class="toggle"
+              class="toggle disabled"
               data-action="stop"
               data-state="false"
               onmousedown="handleButtonPress(this)"
+              title="Alt+Enter: Stop"
             >
               STOP
             </button>
             <button
               type="button"
-              class="toggle active"
+              class="toggle active disabled"
               data-action="loop"
               data-state="true"
               onmousedown="handleButtonPress(this)"
+              title="Alt+L: Toggle Loop"
             >
               LOOP
             </button>
@@ -95,11 +101,13 @@
         <!-- Pyxel screen -->
         <div
           class="flex flex-grow items-center mt-2 sm:mt-0 p-0 w-full sm:w-auto h-24 card"
+          tabindex="-1"
         >
           <iframe
             id="pyxel-screen"
             src="pyxel-screen.html"
             class="border-0 w-full h-full"
+            tabindex="-1"
           ></iframe>
         </div>
       </div>
@@ -136,7 +144,6 @@
           rows="2"
           class="font-mono input"
           oninput="handleMmlInput(this)"
-          onkeydown="handleMmlKeydown(event, this)"
         ></textarea>
       </div>
 
@@ -172,7 +179,6 @@
           rows="2"
           class="font-mono input"
           oninput="handleMmlInput(this)"
-          onkeydown="handleMmlKeydown(event, this)"
         ></textarea>
       </div>
 
@@ -208,7 +214,6 @@
           rows="2"
           class="font-mono input"
           oninput="handleMmlInput(this)"
-          onkeydown="handleMmlKeydown(event, this)"
         ></textarea>
       </div>
 
@@ -244,7 +249,6 @@
           rows="2"
           class="font-mono input"
           oninput="handleMmlInput(this)"
-          onkeydown="handleMmlKeydown(event, this)"
         ></textarea>
       </div>
 
@@ -301,14 +305,6 @@
         updateUrl();
       }
 
-      function handleMmlKeydown(e, textarea) {
-        if (e.key === "Enter") {
-          e.preventDefault();
-          const pyxelScreen = document.getElementById("pyxel-screen");
-          pyxelScreen.contentWindow.resetPyxel();
-        }
-      }
-
       function updateUrl() {
         const pyxelScreen = document.getElementById("pyxel-screen");
         let mmlStr = "";
@@ -324,7 +320,7 @@
         const launchUrlHref = document.querySelector("#url");
         launchUrlHref.textContent = launchUrlHref.href = url;
 
-        let qrSize = Math.max(128, Math.min(url.length, 400)); // 128～400pxの範囲
+        let qrSize = Math.max(128, Math.min(url.length, 400));
         const qrImg = document.getElementById("qr-code");
         if (qrImg) {
           qrImg.src =
@@ -335,30 +331,59 @@
         }
       }
 
-      // Set MML guide link
-      const link = document.getElementById("mml-guide");
-      link.href = navigator.language.startsWith("ja")
-        ? "https://github.com/kitao/pyxel/blob/main/docs/faq-ja.md"
-        : "https://github.com/kitao/pyxel/blob/main/docs/faq-en.md";
+      window.addEventListener("DOMContentLoaded", () => {
+        // Register keyboard shortcuts
+        window.addEventListener("keydown", (e) => {
+          if (!e.altKey && e.key === "Enter") {
+            e.preventDefault();
+            const playBtn = document.querySelector(
+              'button[data-action="play"]'
+            );
+            if (playBtn && !playBtn.disabled) {
+              handleButtonPress(playBtn);
+            }
+          } else if (e.altKey && e.key === "Enter") {
+            e.preventDefault();
+            const stopBtn = document.querySelector(
+              'button[data-action="stop"]'
+            );
+            handleButtonPress(stopBtn);
+          } else if (e.altKey && e.code === "KeyL") {
+            e.preventDefault();
+            const loopBtn = document.querySelector(
+              'button[data-action="loop"]'
+            );
+            if (loopBtn && !loopBtn.disabled) {
+              handleButtonPress(loopBtn);
+            }
+          }
+        });
 
-      // Load MML from URL parameter
-      const queries = new URL(document.location).searchParams;
-      if (queries.get("mml")) {
-        let mmlList = LZString.decompressFromEncodedURIComponent(
-          queries.get("mml")
-        ).split(";", 4);
+        // Set MML guide link
+        const link = document.getElementById("mml-guide");
+        link.href = navigator.language.startsWith("ja")
+          ? "https://github.com/kitao/pyxel/blob/main/docs/faq-ja.md"
+          : "https://github.com/kitao/pyxel/blob/main/docs/faq-en.md";
 
-        for (let i = 1; i <= 4; i++) {
-          const textarea = document.getElementById(`ch${i}`);
-          if (textarea) {
-            textarea.value = mmlList[i - 1] || "";
-            handleMmlInput(textarea);
+        // Load MML from URL parameter
+        const queries = new URL(document.location).searchParams;
+        if (queries.get("mml")) {
+          let mmlList = LZString.decompressFromEncodedURIComponent(
+            queries.get("mml")
+          ).split(";", 4);
+
+          for (let i = 1; i <= 4; i++) {
+            const textarea = document.getElementById(`ch${i}`);
+            if (textarea) {
+              textarea.value = mmlList[i - 1] || "";
+              handleMmlInput(textarea);
+            }
           }
         }
-      }
 
-      // Set initial button states to iframe globals
-      window.addEventListener("DOMContentLoaded", () => {
+        updateUrl();
+
+        // Set initial button states to iframe globals
         const pyxelScreen = document.getElementById("pyxel-screen");
         pyxelScreen.addEventListener("load", () => {
           document.querySelectorAll("button[data-action]").forEach((btn) => {
@@ -369,7 +394,26 @@
           });
         });
 
-        updateUrl();
+        // Enable control buttons after Pyxel is initialized
+        function watchPyxelInitialized() {
+          if (
+            pyxelScreen.contentWindow &&
+            pyxelScreen.contentWindow.pyxelContext &&
+            pyxelScreen.contentWindow.pyxelContext.initialized
+          ) {
+            document
+              .querySelectorAll(
+                'button[data-action="play"],button[data-action="stop"],button[data-action="loop"]'
+              )
+              .forEach((btn) => {
+                btn.disabled = false;
+                btn.classList.remove("disabled");
+              });
+          } else {
+            setTimeout(watchPyxelInitialized, 100);
+          }
+        }
+        watchPyxelInitialized();
       });
     </script>
   </body>
