@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.5.7
+
+- Specified Tailwind CSS version 3.4.17 for Pyxel web pages
+
 ## 2.5.6
 
 - Changed to use compressed URLs in Pyxel MML Studio
