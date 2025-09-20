@@ -10,7 +10,7 @@ const PYXEL_WORKING_DIRECTORY = "/pyxel_working_directory";
 const PYXEL_WATCH_INFO_FILE = ".pyxel_watch_info";
 const IMPORT_HOOK_PATH = "import_hook.py";
 
-let _pyxelState = {
+window.pyxelContext = {
   initialized: false,
   canvas: null,
   pyodide: null,
@@ -46,33 +46,33 @@ async function launchPyxel(params) {
   _hookFileOperations(pyodide, params.root || ".");
   await _waitForInput();
 
-  _pyxelState.initialized = true;
-  _pyxelState.canvas = canvas;
-  _pyxelState.pyodide = pyodide;
-  _pyxelState.params = params;
+  pyxelContext.initialized = true;
+  pyxelContext.canvas = canvas;
+  pyxelContext.pyodide = pyodide;
+  pyxelContext.params = params;
 
   await _executePyxelCommand(pyodide, params);
 }
 
 async function resetPyxel() {
-  if (!_pyxelState.initialized) {
+  if (!pyxelContext.initialized) {
     return;
   }
 
   document.getElementById("pyxel-error-overlay")?.remove();
 
-  _pyxelState.pyodide.runPython(`
+  pyxelContext.pyodide.runPython(`
     import pyxel
     pyxel.quit()
   `);
 
-  let audioContext = _pyxelState.pyodide?._module?.SDL2?.audioContext;
+  let audioContext = pyxelContext.pyodide?._module?.SDL2?.audioContext;
   if (audioContext && audioContext.state === "running") {
     await new Promise((resolve) => setTimeout(resolve, 50));
     await audioContext.suspend();
   }
 
-  let pyodide = _pyxelState.pyodide;
+  let pyodide = pyxelContext.pyodide;
   pyodide._module._emscripten_cancel_main_loop();
 
   pyodide.runPython(`
@@ -115,7 +115,7 @@ async function resetPyxel() {
     os.chdir(work_dir)
   `);
 
-  await _executePyxelCommand(pyodide, _pyxelState.params);
+  await _executePyxelCommand(pyodide, pyxelContext.params);
 
   setTimeout(() => {
     if (audioContext && audioContext.state === "suspended") {
@@ -444,7 +444,7 @@ async function _waitForInput() {
   pyxelScreen.appendChild(promptImage);
   _updateScreenElementsSize();
 
-  await _waitForEvent(document.body, "click", "touchstart", "keydown");
+  await _waitForEvent(document.body, "click", "touchstart");
   promptImage.remove();
   await new Promise((resolve) => setTimeout(resolve, 1));
 }
