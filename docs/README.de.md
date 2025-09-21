@@ -660,7 +660,7 @@ Eine Pyxel-Anwendungsdatei kann auch mit den Befehlen `pyxel app2exe` oder `pyxe
 
 - `set(x, y, data)`<br>
   Setzt die Kachelkarte bei (`x`, `y`) mithilfe einer Liste von Strings.<br>
-  Beispiel: `pyxel.tilemap(0).set(0, 0, ["0000 0100 a0b0", "0001 0101 a1b1"])`
+  Beispiel: `pyxel.tilemaps[0].set(0, 0, ["0000 0100 a0b0", "0001 0101 a1b1"])`
 
 - `load(x, y, filename, layer)`<br>
   Lädt die `layer`(0-) aus der TMX-Datei (Tiled Map File) bei (`x`, `y`).

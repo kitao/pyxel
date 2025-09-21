@@ -660,7 +660,7 @@ pyxel play PYXEL_APP_FILE
 
 - `set(x, y, data)`<br>
   Устанавливает карту тайлов в координатах (`x`, `y`) с использованием списка строк.<br>
-  Пример: `pyxel.tilemap(0).set(0, 0, ["0000 0100 a0b0", "0001 0101 a1b1"])`
+  Пример: `pyxel.tilemaps[0].set(0, 0, ["0000 0100 a0b0", "0001 0101 a1b1"])`
 
 - `load(x, y, filename, layer)`<br>
   Загружает `layer`(0-) из файла TMX (Tiled Map File) в координаты (`x`, `y`).

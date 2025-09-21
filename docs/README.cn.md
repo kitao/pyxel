@@ -660,7 +660,7 @@ Pyxel 应用程序文件还可以使用 `pyxel app2exe` 或 `pyxel app2html` 命
 
 - `set(x, y, data)`<br>
   使用字符串列表在 (`x`, `y`) 处设置瓦片地图。<br>
-  例子：`pyxel.tilemap(0).set(0, 0, ["0000 0100 a0b0", "0001 0101 a1b1"])`
+  例子：`pyxel.tilemaps[0].set(0, 0, ["0000 0100 a0b0", "0001 0101 a1b1"])`
 
 - `load(x, y, filename, layer)`<br>
   在 (`x`, `y`) 处从 TMX 文件 (Tiled Map File) 加载 `layer`(0-) 的图层。

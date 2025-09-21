@@ -660,7 +660,7 @@ Bir Pyxel uygulama dosyası ayrıca `pyxel app2exe` veya `pyxel app2html` komutl
 
 - `set(x, y, data)`<br>
   (`x`, `y`) konumuna bir dizi dize kullanarak döşeme haritası ayarlar.<br>
-  Örnek: `pyxel.tilemap(0).set(0, 0, ["0000 0100 a0b0", "0001 0101 a1b1"])`
+  Örnek: `pyxel.tilemaps[0].set(0, 0, ["0000 0100 a0b0", "0001 0101 a1b1"])`
 
 - `load(x, y, filename, layer)`<br>
   TMX dosyasından `layer`(0-) katmanını (`x`, `y`) konumuna yükler.

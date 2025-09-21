@@ -660,7 +660,7 @@ A Pyxel application file can also be converted to an executable or an HTML file 
 
 - `set(x, y, data)`<br>
   Set the tilemap at (`x`, `y`) using a list of strings.<br>
-  Example: `pyxel.tilemap(0).set(0, 0, ["0000 0100 a0b0", "0001 0101 a1b1"])`
+  Example: `pyxel.tilemaps[0].set(0, 0, ["0000 0100 a0b0", "0001 0101 a1b1"])`
 
 - `load(x, y, filename, layer)`<br>
   Load the `layer` (0-) from the TMX file (Tiled Map File) at (`x`, `y`).

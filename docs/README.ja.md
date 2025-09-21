@@ -660,7 +660,7 @@ Pyxel アプリケーションファイルは、`pyxel app2exe`コマンドや`p
 
 - `set(x, y, data)`<br>
   (`x`, `y`) に文字列のリストでタイルマップを設定します。<br>
-  例：`pyxel.tilemap(0).set(0, 0, ["0000 0100 a0b0", "0001 0101 a1b1"])`
+  例：`pyxel.tilemaps[0].set(0, 0, ["0000 0100 a0b0", "0001 0101 a1b1"])`
 
 - `load(x, y, filename, layer)`<br>
   (`x`, `y`) に TMX ファイル (Tiled Map File) の`layer`(0-)を読み込みます。
