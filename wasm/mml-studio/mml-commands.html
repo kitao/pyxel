@@ -17,27 +17,28 @@
           @apply font-semibold text-2xl tracking-tight;
         }
         .subheading {
-          @apply text-gray-500 dark:text-gray-400 text-sm;
+          @apply text-gray-300 text-sm;
+        }
+        .link {
+          @apply outline-none focus:ring-1 focus:ring-indigo-300 text-indigo-400 hover:text-indigo-300 underline underline-offset-2;
         }
         .mono {
           @apply font-mono text-sm;
         }
         .card {
-          @apply bg-white dark:bg-gray-800 shadow-sm px-3 sm:px-4 py-1 sm:py-2 border border-gray-200 dark:border-gray-700 rounded-2xl;
+          @apply bg-white dark:bg-gray-800 shadow-sm px-2 sm:px-3 py-1 sm:py-2 border border-gray-200 dark:border-gray-700 rounded-2xl;
         }
         .rowcard {
           @apply mb-2 sm:mb-0;
         }
         .seg {
-          @apply inline-flex items-center border border-gray-300 dark:border-gray-600 rounded-lg divide-x divide-gray-200 dark:divide-gray-700 overflow-hidden;
+          @apply inline-flex items-center bg-gray-900 mt-1 mb-2 sm:mb-0 border border-gray-600 rounded-lg divide-x divide-gray-700 overflow-hidden;
         }
-
         .seg-btn {
-          @apply px-3 py-1 text-sm text-indigo-700 dark:text-indigo-300 hover:bg-indigo-50 dark:hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/60;
+          @apply bg-gray-900 px-3 py-1 border-none focus:outline-none min-w-[2.3rem] font-medium text-gray-300 text-xs;
         }
-
         .seg-active {
-          @apply bg-indigo-600 dark:bg-indigo-400 text-white dark:text-gray-900;
+          @apply bg-slate-600 text-white;
         }
         .th {
           @apply px-3 pt-1 pb-3 border-gray-200 dark:border-gray-700 border-b font-semibold text-sm text-left;
@@ -55,7 +56,7 @@
           @apply block sm:table-cell;
         }
         .stack tbody tr:first-child td {
-          @apply pt-4;
+          @apply pt-2 sm:pt-4;
         }
         .example {
           @apply bg-gray-50 dark:bg-gray-900 mt-2 p-2 border border-gray-200 dark:border-gray-700 rounded-lg whitespace-pre mono;
@@ -65,9 +66,15 @@
   </head>
   <body class="h-full page">
     <div class="container">
-      <div class="flex justify-between items-center gap-2 mb-2">
+      <div
+        class="flex sm:flex-row flex-col justify-between items-start sm:items-center gap-2 mb-2"
+      >
         <h1 id="pageTitle" class="heading">Pyxel MML Commands</h1>
-        <div class="seg" role="group" aria-label="Language toggle">
+        <div
+          class="self-start sm:self-auto mt-2 sm:mt-0 seg"
+          role="group"
+          aria-label="Language toggle"
+        >
           <button
             id="btnEN"
             class="seg-btn seg-active"
@@ -191,7 +198,7 @@
             en: 'Sets and switches to the specified vibrato slot. Slot 0 cannot be specified.\\nInside `{ }`, specify "delay (tick), period (tick), depth (cent)". 1 tick is 1/48 of a quarter note.\nExample: `@VIB 1 {24, 12, 100}` (after 24 ticks, vibrato with a 12-tick period and ±100 cents depth)',
             ja: "指定したスロットのビブラートを設定して切り替える。スロット 0 は指定できない。\\n{ }内は「ディレイ時間 (tick)、周期 (tick)、深さ (cent)」をこの順で指定する。1 tick は 4 分音符を 48 等分した長さ。",
           },
-          example: "@VIB 1 {24, 12, 100}",
+          example: "@VIB1 {24, 12, 100}",
         },
         {
           cmd: "@GLI <slot>",
@@ -206,7 +213,7 @@
             en: 'Inside `{ }`, specify "initial pitch offset (cent), time to return to 0 (tick)". 1 tick is 1/48 of a quarter note.\\nSpecifying `*` for each parameter automatically applies the pitch offset as the difference from the previous note and the return time as the playback duration of each note, respectively.\nExample: `@GLI 1 { -100, 24 }` (starts 1 semitone down, returns to normal over 24 ticks)',
             ja: "{ }内は「最初の音程変化量 (cent)、0 に戻るまでの時間 (tick)」を指定する。1 tick は 4 分音符を 48 等分した長さ。\\n各パラメータに`*`を指定すると、音程変化量は前回の音程からの差分、変化時間は各音の再生時間が自動的に適用される。",
           },
-          example: "@GLI 1 { -100, 24 }",
+          example: "@GLI1 { -100, 24 }",
         },
         {
           cmd: "O <oct>",
@@ -332,7 +339,7 @@
           const tr = document.createElement("tr");
           tr.className = "rowcard";
           tr.innerHTML = `
-            <td class="w-20 sm:w-28 break-words whitespace-normal td mono shrink-0">
+            <td class="w-full sm:w-28 max-w-none break-words whitespace-normal td mono shrink-0">
               <span class="sm:hidden font-medium text-gray-500 text-xs">Command</span>
               <div>${cmdHTML}</div>
             </td>
