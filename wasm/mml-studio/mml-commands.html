@@ -81,7 +81,7 @@
           </button>
         </div>
       </div>
-      <p id="subtitle" class="mb-3 subheading">
+      <p id="subtitle" class="mb-4 subheading">
         MML command list for
         <a href="https://github.com/kitao/pyxel" class="link">Pyxel</a>, a retro
         game engine for Python.
@@ -116,7 +116,7 @@
         ja: {
           title: "Pyxel MML コマンド",
           subtitle:
-            'Pyxel向けレトロゲームエンジン<a href="https://github.com/kitao/pyxel" class="link">Pyxel</a>専用MMLコマンド一覧。',
+            'Python向けレトロゲームエンジン<a href="https://github.com/kitao/pyxel" class="link">Pyxel</a>用MMLコマンド一覧',
         },
       };
 
@@ -174,7 +174,7 @@
           cmd: "@ENV <slot> { init_vol, dur_ticks1, vol1, dur_ticks2, vol2, ... }",
           desc: {
             en: 'Sets and switches to the specified envelope slot. Slot 0 cannot be specified.\\nInside `{ }`, specify "initial volume (once)", then repeat "duration (tick), volume (vol)". 1 tick is 1/48 of a quarter note.',
-            ja: "指定したスロットのエンベロープを設定して切り替える。スロット 0 は指定できない。\\n{ }内は、「初期音量 (最初の 1 回のみ)」の後、「区間の長さ (tick)、音量 (vol)」を繰り返し指定する。1 tick は 4 分音符を 48 等分した長さ。\n例：`@ENV 1 { 30, 20, 100, 50, 0 }`（音量を 30 から 20 tick かけて 100 にした後, 50 tick かけて 0 に変化させる）",
+            ja: "指定したスロットのエンベロープを設定して切り替える。スロット 0 は指定できない。\\n{ }内は、「初期音量 (最初の 1 回のみ)」の後、「区間の長さ (tick)、音量 (vol)」を繰り返し指定する。1 tick は 4 分音符を 48 等分した長さ。",
           },
           example: "@ENV1 { 30, 20, 100, 50, 0 }",
         },
@@ -189,7 +189,7 @@
           cmd: "@VIB <slot> { delay_ticks, period_ticks, depth_cents }",
           desc: {
             en: 'Sets and switches to the specified vibrato slot. Slot 0 cannot be specified.\\nInside `{ }`, specify "delay (tick), period (tick), depth (cent)". 1 tick is 1/48 of a quarter note.\nExample: `@VIB 1 {24, 12, 100}` (after 24 ticks, vibrato with a 12-tick period and ±100 cents depth)',
-            ja: "指定したスロットのビブラートを設定して切り替える。スロット 0 は指定できない。\\n{ }内は「ディレイ時間 (tick)、周期 (tick)、深さ (cent)」をこの順で指定する。1 tick は 4 分音符を 48 等分した長さ。\n例：`@VIB 1 {24, 12, 100}`（24 tick 経過後、12 tick 周期でプラス半音からマイナス半音の範囲で音程を揺らす）",
+            ja: "指定したスロットのビブラートを設定して切り替える。スロット 0 は指定できない。\\n{ }内は「ディレイ時間 (tick)、周期 (tick)、深さ (cent)」をこの順で指定する。1 tick は 4 分音符を 48 等分した長さ。",
           },
           example: "@VIB 1 {24, 12, 100}",
         },
@@ -204,7 +204,7 @@
           cmd: "@GLI <slot> { offset_cents, dur_ticks }",
           desc: {
             en: 'Inside `{ }`, specify "initial pitch offset (cent), time to return to 0 (tick)". 1 tick is 1/48 of a quarter note.\\nSpecifying `*` for each parameter automatically applies the pitch offset as the difference from the previous note and the return time as the playback duration of each note, respectively.\nExample: `@GLI 1 { -100, 24 }` (starts 1 semitone down, returns to normal over 24 ticks)',
-            ja: "{ }内は「最初の音程変化量 (cent)、0 に戻るまでの時間 (tick)」を指定する。1 tick は 4 分音符を 48 等分した長さ。\\n各パラメータに`*`を指定すると、音程変化量は前回の音程からの差分、変化時間は各音の再生時間が自動的に適用される。\n例：`@GLI 1 { -100, 24 }`（半音下から始まり、24 tick かけて本来の音程に戻る）",
+            ja: "{ }内は「最初の音程変化量 (cent)、0 に戻るまでの時間 (tick)」を指定する。1 tick は 4 分音符を 48 等分した長さ。\\n各パラメータに`*`を指定すると、音程変化量は前回の音程からの差分、変化時間は各音の再生時間が自動的に適用される。",
           },
           example: "@GLI 1 { -100, 24 }",
         },
@@ -275,7 +275,7 @@
           cmd: ".",
           desc: {
             en: "Dotted note/rest. Extends the length by half. Can be repeated for multiple dots.",
-            ja: "付点。音や休符の後ろに記述すると、長さを 1/2 延ばす。複数指定することも可能。\n。",
+            ja: "付点。音や休符の後ろに記述すると、長さを 1/2 延ばす。複数指定することも可能。",
           },
         },
         {
@@ -338,10 +338,9 @@
             </td>
             <td class="td">
               <span class="sm:hidden font-medium text-gray-500 text-xs">Description</span>
-              <div>${(c.desc[currentLang] || "").replaceAll(
-                "\\n",
-                "<br>"
-              )}</div>
+              <div>${(c.desc[currentLang] || "")
+                .replace(/`([^`]+)`/g, "<code>$1</code>")
+                .replaceAll("\\n", "<br>")}</div>
               ${c.example ? `<div class="example">${c.example}</div>` : ""}
             </td>
           `;

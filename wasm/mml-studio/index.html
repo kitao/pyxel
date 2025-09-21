@@ -45,7 +45,7 @@
       <h1 class="mb-2 font-semibold text-2xl tracking-tight">
         Pyxel MML Studio
       </h1>
-      <p class="mt-2 mb-6 text-gray-300 text-sm">
+      <p class="mt-2 mb-4 text-gray-300 text-sm">
         Music Macro Language (MML) editor for
         <a class="link" href="https://github.com/kitao/pyxel">Pyxel</a>, a retro
         game engine for Python.
@@ -89,12 +89,12 @@
             </button>
           </div>
           <a
-            id="mml-guide"
             target="_blank"
             rel="noopener noreferrer"
+            href="mml-commands.html"
             class="block sm:self-center mb-2 text-sm link"
           >
-            Pyxel MML Guide
+            Pyxel MML Commands
           </a>
         </div>
 
@@ -360,12 +360,6 @@
             }
           }
         });
-
-        // Set MML guide link
-        const link = document.getElementById("mml-guide");
-        link.href = navigator.language.startsWith("ja")
-          ? "https://github.com/kitao/pyxel/blob/main/docs/faq-ja.md"
-          : "https://github.com/kitao/pyxel/blob/main/docs/faq-en.md";
 
         // Load MML from URL parameter
         const queries = new URL(document.location).searchParams;
