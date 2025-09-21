@@ -8,7 +8,7 @@
     <style type="text/tailwindcss">
       @layer components {
         .page {
-          @apply bg-gray-50 dark:bg-gray-900 h-full text-gray-800 dark:text-gray-100 antialiased;
+          @apply bg-gray-900 h-full text-gray-100 antialiased;
         }
         .container {
           @apply mx-auto p-6 max-w-3xl;
@@ -26,7 +26,7 @@
           @apply font-mono text-sm;
         }
         .card {
-          @apply bg-white dark:bg-gray-800 shadow-sm px-2 sm:px-3 py-1 sm:py-2 border border-gray-200 dark:border-gray-700 rounded-2xl;
+          @apply bg-gray-800 shadow-sm px-2 sm:px-3 py-1 sm:py-2 border border-gray-700 rounded-2xl;
         }
         .rowcard {
           @apply mb-2 sm:mb-0;
@@ -41,10 +41,10 @@
           @apply bg-slate-600 text-white;
         }
         .th {
-          @apply px-3 pt-1 pb-3 border-gray-200 dark:border-gray-700 border-b font-semibold text-sm text-left;
+          @apply px-3 pt-1 pb-3 border-gray-700 border-b font-semibold text-sm text-left;
         }
         .td {
-          @apply px-3 py-2 border-gray-100 dark:border-gray-800 border-b text-sm align-top;
+          @apply px-3 py-2 border-gray-800 border-b text-sm align-top;
         }
         .stack thead {
           @apply hidden sm:table-header-group;
@@ -59,7 +59,7 @@
           @apply pt-2 sm:pt-4;
         }
         .example {
-          @apply bg-gray-50 dark:bg-gray-900 mt-2 p-2 border border-gray-200 dark:border-gray-700 rounded-lg whitespace-pre mono;
+          @apply bg-gray-900 mt-2 p-2 border border-gray-700 rounded-lg whitespace-pre mono;
         }
       }
     </style>
@@ -69,7 +69,7 @@
       <div
         class="flex sm:flex-row flex-col justify-between items-start sm:items-center gap-2 mb-2"
       >
-        <h1 id="pageTitle" class="heading">Pyxel MML Commands</h1>
+        <h1 id="pageTitle" class="heading"></h1>
         <div
           class="self-start sm:self-auto mt-2 sm:mt-0 seg"
           role="group"
@@ -88,11 +88,7 @@
           </button>
         </div>
       </div>
-      <p id="subtitle" class="mb-4 subheading">
-        MML command list for
-        <a href="https://github.com/kitao/pyxel" class="link">Pyxel</a>, a retro
-        game engine for Python.
-      </p>
+      <p id="subtitle" class="mb-4 subheading"></p>
 
       <div class="overflow-x-auto card">
         <table class="w-full border-collapse stack">
