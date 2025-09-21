@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pyxel MML Command List</title>
+    <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+    <style type="text/tailwindcss">
+      @layer components {
+        .page {
+          @apply bg-gray-50 dark:bg-gray-900 h-full text-gray-800 dark:text-gray-100 antialiased;
+        }
+        .container {
+          @apply mx-auto p-6 max-w-3xl;
+        }
+        .card {
+          @apply bg-white dark:bg-gray-800 shadow-sm p-4 sm:p-6 border border-gray-200 dark:border-gray-700 rounded-2xl;
+        }
+        .mono {
+          @apply font-mono text-sm;
+        }
+        .heading {
+          @apply font-semibold text-2xl tracking-tight;
+        }
+        .subheading {
+          @apply text-gray-500 dark:text-gray-400 text-sm;
+        }
+        .th {
+          @apply px-3 py-2 border-gray-200 dark:border-gray-700 border-b font-semibold text-sm text-left;
+        }
+        .td {
+          @apply px-3 py-2 border-gray-100 dark:border-gray-800 border-b text-sm align-top;
+        }
+        .example {
+          @apply bg-gray-50 dark:bg-gray-900 mt-2 p-2 border border-gray-200 dark:border-gray-700 rounded-lg whitespace-pre mono;
+        }
+        .langbtn {
+          @apply inline-flex items-center gap-1 hover:bg-gray-50 dark:hover:bg-gray-700 px-2.5 py-1 border border-gray-300 dark:border-gray-600 rounded-lg text-sm;
+        }
+        /* Mobile stacking table */
+        .stack thead {
+          @apply hidden sm:table-header-group;
+        }
+        .stack tbody tr {
+          @apply block sm:table-row;
+        }
+        .stack tbody td {
+          @apply block sm:table-cell;
+        }
+        .rowcard {
+          @apply mb-4 sm:mb-0;
+        }
+      }
+    </style>
+  </head>
+  <body class="h-full page">
+    <div class="container">
+      <div class="flex justify-between items-center gap-3 mb-4">
+        <h1 class="heading">Pyxel MML Command List</h1>
+        <button id="langToggle" class="langbtn" aria-label="Toggle language">
+          JA / EN
+        </button>
+      </div>
+      <p id="subtitle" class="mb-6 subheading">
+        Language auto-detected (JA/EN) from your browser. Examples are always
+        shown below the description.
+      </p>
+
+      <div class="overflow-x-auto card">
+        <table class="w-full border-collapse stack">
+          <thead>
+            <tr>
+              <th class="th">Command</th>
+              <th class="th">Description</th>
+            </tr>
+          </thead>
+          <tbody id="cmdTable"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <script>
+      // initial from browser
+      let currentLang = (navigator.language || navigator.userLanguage || "en")
+        .toLowerCase()
+        .startsWith("ja")
+        ? "ja"
+        : "en";
+
+      const STRINGS = {
+        en: {
+          subtitle:
+            "Language auto-detected (JA/EN) from your browser. Examples are always shown below the description.",
+          toggle: "JA / EN",
+        },
+        ja: {
+          subtitle:
+            "ブラウザの設定に応じて日本語/英語を自動切替。例は説明文の下に常時表示されます。",
+          toggle: "EN / JA",
+        },
+      };
+
+      const COMMANDS = [
+        {
+          cmd: "T <bpm>",
+          desc: {
+            ja: "テンポ (BPM) を指定する。デフォルトは 120。",
+            en: "Sets the tempo (BPM). Default is 120.",
+          },
+          example: "T120 C D E",
+        },
+        {
+          cmd: "Q <gate_percent>",
+          desc: {
+            ja: "発音する長さをパーセントで指定する。100 で音の切れ目がなくなり、0 だと発音されない。デフォルトは 80。",
+            en: "Sets the gate time as a percentage. 100 means the note is played with no gap, 0 means it is not played at all. Default is 80.",
+          },
+          example: "Q60 C4 C4 C4",
+        },
+        {
+          cmd: "@ <tone>",
+          desc: {
+            ja: "音色（初期状態では 0:Triangle / 1:Square / 2:Pulse / 3:Noise）を指定する。デフォルトは 0。",
+            en: "Sets the tone (by default: 0:Triangle / 1:Square / 2:Pulse / 3:Noise). Default is 0.",
+          },
+          example: "@0 C D E",
+        },
+        {
+          cmd: "V <vol>",
+          desc: {
+            ja: "音量を指定する。デフォルトは 100。",
+            en: "Sets the volume. Default is 100.",
+          },
+          example: "V80 C D E",
+        },
+        {
+          cmd: "K <key_offset>",
+          desc: {
+            ja: "トランスポーズ量（音程オフセット）を半音単位で指定する。12 で音程が 1 オクターブ上がる。デフォルトは 0。",
+            en: "Sets the transpose amount in semitones. 12 raises the pitch by one octave. Default is 0.",
+          },
+          example: "K12 C D E",
+        },
+        {
+          cmd: "Y <offset_cents>",
+          desc: {
+            ja: "デチューン（音程ずれ）を cent 単位で指定する。100 で半音上がり、-100 で半音下がる。デフォルトは 0。",
+            en: "Sets detune in cents. 100 raises by a semitone, -100 lowers by a semitone. Default is 0.",
+          },
+          example: "Y-50 C C C",
+        },
+        {
+          cmd: "@ENV <slot>",
+          desc: {
+            ja: "エンベロープ（音量変化のカーブ）のスロットを切り替える。0 を指定するとオフになる。",
+            en: "Switches the envelope (volume curve) slot. 0 turns it off.",
+          },
+          example: "@ENV 1 {30, 20, 100, 50, 0}\nC D E F",
+        },
+        {
+          cmd: "@VIB <slot>",
+          desc: {
+            ja: "ビブラート（音程を揺らすエフェクト）のスロットを切り替える。0 を指定するとオフになる。",
+            en: "Switches the vibrato (pitch modulation) slot. 0 turns it off.",
+          },
+          example: "@VIB 1 {24, 12, 100}\nC2 D2 E2 F2",
+        },
+        {
+          cmd: "@GLI <slot>",
+          desc: {
+            ja: "グライド（音程変化のエフェクト）のスロットを切り替える。0 を指定するとオフになる。",
+            en: "Switches the glide (pitch slide) slot. 0 turns it off.",
+          },
+          example: "@GLI 1 {-100, 24}\nC D E",
+        },
+        {
+          cmd: "O <oct>",
+          desc: {
+            ja: "オクターブを指定する。`O4`の A の音が 440 Hz になる。デフォルトは 4。",
+            en: "Sets the octave. `O4`'s A is 440 Hz. Default is 4.",
+          },
+          example: "O5 C D E",
+        },
+        {
+          cmd: ">",
+          desc: {
+            ja: "オクターブを 1 上げる。最大 9。",
+            en: "Raises the octave by 1 (max 9).",
+          },
+          example: "O4 > C",
+        },
+        {
+          cmd: "<",
+          desc: {
+            ja: "オクターブを 1 下げる。最小 -1。",
+            en: "Lowers the octave by 1 (min -1).",
+          },
+          example: "O4 < C",
+        },
+        {
+          cmd: "L <len>",
+          desc: {
+            ja: "音符と休符のデフォルトの長さを指定する。`L4`が 4 分音符、`L8`が 8 分音符、`L12`が 4 分 3 連符。デフォルトは 4。",
+            en: "Sets the default note/rest length. `L4` is a quarter note, `L8` is an eighth note, and `L12` is a quarter note triplet. Default is 4.",
+          },
+          example: "L8 C D E",
+        },
+        {
+          cmd: "C/D/E/F/G/A/B",
+          desc: {
+            ja: "指定した音階の音を再生する。`F16`のように後ろに長さを指定すると、その音だけ長さを変更する。",
+            en: "Plays the specified note. You can specify the length after the note, e.g., `F16`.",
+          },
+          example: "F16 G8",
+        },
+        {
+          cmd: "R",
+          desc: {
+            ja: "休符を再生する。`R8`のように後ろに長さを指定すると、その休符だけ長さを変更する。",
+            en: "Rest. You can specify the length after the rest, e.g., `R8`.",
+          },
+          example: "R8 C D",
+        },
+        {
+          cmd: "# / +",
+          desc: {
+            ja: "音の後ろに記述すると、その音を半音上げる。",
+            en: "Raises the note by a semitone.",
+          },
+          example: "C# D+",
+        },
+        {
+          cmd: "-",
+          desc: {
+            ja: "音の後ろに記述すると、その音を半音下げる。",
+            en: "Lowers the note by a semitone.",
+          },
+          example: "A- B-",
+        },
+        {
+          cmd: ".",
+          desc: {
+            ja: "付点。音や休符の後ろに記述すると、長さを 1/2 延ばす。複数指定することも可能。",
+            en: "Dotted note/rest. Extends the length by half. Can be repeated for multiple dots.",
+          },
+          example: "C4. D8..",
+        },
+        {
+          cmd: "&",
+          desc: {
+            ja: "タイ。同じ音程の次の音を一つの音として繋げる。異なる高さの音に指定するとエラーになる。音を省略して`C4&16`のように書くことも可能。",
+            en: "Tie. Connects two notes of the same pitch into one. Using it between different pitches causes an error. You can also omit the note and specify only the length, e.g., `4&16`.",
+          },
+          example: "C4 &16",
+        },
+        {
+          cmd: "[",
+          desc: { ja: "繰り返し開始位置。", en: "Start of repeat section." },
+          example: "[ C D",
+        },
+        {
+          cmd: "] <count>",
+          desc: {
+            ja: "繰り返し終了位置。繰り返し開始位置との間のフレーズを指定した回数だけ再生する。回数を省略した場合は無限に繰り返す。入れ子にすることも可能。",
+            en: "End of repeat section. Repeats the section between `[` and `]` the specified number of times. If omitted, repeats infinitely. Nested repeats.",
+          },
+          example: "]2",
+        },
+      ];
+
+      const tbody = document.getElementById("cmdTable");
+      const subtitle = document.getElementById("subtitle");
+      const langToggle = document.getElementById("langToggle");
+
+      function render() {
+        // set UI strings
+        subtitle.textContent = STRINGS[currentLang].subtitle;
+        langToggle.textContent = STRINGS[currentLang].toggle;
+        // build rows
+        tbody.innerHTML = "";
+        COMMANDS.forEach((c) => {
+          let cmdHTML = c.cmd;
+          if (c.cmd.startsWith("C/D/E/F/G/A/B")) {
+            cmdHTML = c.cmd.replaceAll("/", "/<wbr>");
+          }
+          const tr = document.createElement("tr");
+          tr.className = "rowcard";
+          tr.innerHTML = `
+            <td class="w-20 sm:w-28 break-words whitespace-normal td mono shrink-0">
+              <span class="sm:hidden font-medium text-gray-500 text-xs">Command</span>
+              <div>${cmdHTML}</div>
+            </td>
+            <td class="td">
+              <span class="sm:hidden font-medium text-gray-500 text-xs">Description</span>
+              <div>${c.desc[currentLang]}</div>
+              ${c.example ? `<div class="example">${c.example}</div>` : ""}
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+      }
+
+      langToggle.addEventListener("click", () => {
+        currentLang = currentLang === "ja" ? "en" : "ja";
+        render();
+      });
+
+      // initial render
+      render();
+    </script>
+  </body>
+</html>
