@@ -660,7 +660,7 @@ Un file dell'applicazione Pyxel può anche essere convertito in un eseguibile o 
 
 - `set(x, y, data)`<br>
   Imposta la mappa a tessere a (`x`, `y`) utilizzando un elenco di stringhe.<br>
-  Esempio: `pyxel.tilemap(0).set(0, 0, ["0000 0100 a0b0", "0001 0101 a1b1"])`
+  Esempio: `pyxel.tilemaps[0].set(0, 0, ["0000 0100 a0b0", "0001 0101 a1b1"])`
 
 - `load(x, y, filename, layer)`<br>
   Carica il `layer`(0-) dal file TMX (Tiled Map File) a (`x`, `y`).

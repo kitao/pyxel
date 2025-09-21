@@ -660,7 +660,7 @@ Um arquivo de aplicativo Pyxel também pode ser convertido em um executável ou 
 
 - `set(x, y, data)`<br>
   Define o mapa de ladrilhos em (`x`, `y`) usando uma lista de strings.<br>
-  Exemplo: `pyxel.tilemap(0).set(0, 0, ["0000 0100 a0b0", "0001 0101 a1b1"])`
+  Exemplo: `pyxel.tilemaps[0].set(0, 0, ["0000 0100 a0b0", "0001 0101 a1b1"])`
 
 - `load(x, y, filename, layer)`<br>
   Carrega a `layer`(0-) do arquivo TMX (Tiled Map File) em (`x`, `y`).

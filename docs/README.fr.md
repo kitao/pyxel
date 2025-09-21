@@ -661,7 +661,7 @@ Un fichier d'application Pyxel peut également être converti en un exécutable 
 
 - `set(x, y, data)`<br>
   Définit la carte de tuiles à (`x`, `y`) à l'aide d'une liste de chaînes.<br>
-  Exemple : `pyxel.tilemap(0).set(0, 0, ["0000 0100 a0b0", "0001 0101 a1b1"])`
+  Exemple : `pyxel.tilemaps[0].set(0, 0, ["0000 0100 a0b0", "0001 0101 a1b1"])`
 
 - `load(x, y, filename, layer)`<br>
   Charge la `layer`(0-) à partir du fichier TMX (Tiled Map File) à (`x`, `y`).

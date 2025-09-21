@@ -660,7 +660,7 @@ Pyxel 애플리케이션 파일은 `pyxel app2exe` 또는 `pyxel app2html` 명�
 
 - `set(x, y, data)`<br>
   문자열 리스트를 사용하여 (`x`, `y`)에 타일맵을 설정합니다.<br>
-  예시: `pyxel.tilemap(0).set(0, 0, ["0000 0100 a0b0", "0001 0101 a1b1"])`
+  예시: `pyxel.tilemaps[0].set(0, 0, ["0000 0100 a0b0", "0001 0101 a1b1"])`
 
 - `load(x, y, filename, layer)`<br>
   (`x`, `y`)에 TMX 파일 (Tiled Map File)로부터 `layer`(0-) 레이어를 로드합니다.

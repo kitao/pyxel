@@ -661,7 +661,7 @@ pyxel play PYXEL_APP_FILE
 
 - `set(x, y, data)`<br>
   Встановлює тайлмап на позиції (`x`, `y`), використовуючи список рядків.<br>
-  Приклад: `pyxel.tilemap(0).set(0, 0, ["0000 0100 a0b0", "0001 0101 a1b1"])`
+  Приклад: `pyxel.tilemaps[0].set(0, 0, ["0000 0100 a0b0", "0001 0101 a1b1"])`
 
 - `load(x, y, filename, layer)`<br>
   Завантажує `layer` (0-) з файлу TMX (Tiled Map File) на позицію (`x`, `y`).
