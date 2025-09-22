@@ -5,7 +5,7 @@
 - Specified Tailwind CSS version 3.4.17 for Pyxel web pages
 - Added links to web tools and examples for Pyxel in the READMEs
 - Updated the URL on reload in Pyxel MML Studio
-- Improved the visualizer in Pyxel MML Studio
+- Improved the usability of Pyxel MML Studio
 
 ## 2.5.6
 

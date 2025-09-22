@@ -405,6 +405,9 @@
                 btn.disabled = false;
                 btn.classList.remove("disabled");
               });
+            handleButtonPress(
+              document.querySelector('button[data-action="play"]')
+            );
           } else {
             setTimeout(watchPyxelInitialized, 100);
           }
