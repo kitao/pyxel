@@ -60,7 +60,13 @@ class App:
             total_sec = pyxel.sounds[i].total_sec()
             (_, play_sec) = pyxel.play_pos(i) or (None, None)
 
-            if total_sec is None or total_sec == 0 or play_sec is None:
+            if play_sec is None:
+                continue
+
+            if total_sec is None:
+                play_sec = play_sec % 5
+                total_sec = 5
+            elif total_sec == 0:
                 continue
 
             x = pyxel.width * play_sec / total_sec
