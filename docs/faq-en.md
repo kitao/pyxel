@@ -80,87 +80,11 @@ In MML mode, normal parameters like `notes` and `speed` are ignored, and the sou
 You can also play an MML string directly by passing it to the `play` function instead of a sound number.<br>
 Example: `pyxel.play(0, "CDEFG")`
 
-The following commands are available in Pyxel's MML:
+The available commands for Pyxel's MML can be found on the [Pyxel MML Commands](https://kitao.github.io/pyxel/wasm/mml-studio/mml-commands.html) page.
 
-- `T <bpm>` (1-)<br>
-  Sets the tempo (BPM). Default is 120.<br>
+Examples of usage can be seen in the [demo](https://kitao.github.io/pyxel/wasm/examples/09-shooter.html) and [code](https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/09_shooter.py) of the 09_shooter.py example.
 
-- `Q <gate_percent>` (0-100)<br>
-  Sets the gate time as a percentage. 100 means the note is played with no gap, 0 means it is not played at all. Default is 80.
-
-- `@ <tone>` (0-)<br>
-  Sets the tone (by default: 0:Triangle / 1:Square / 2:Pulse / 3:Noise). Default is 0.
-
-- `V <vol>` (0-127)<br>
-  Sets the volume. Default is 100.
-
-- `K <key_offset>` (integer)<br>
-  Sets the transpose amount in semitones. 12 raises the pitch by one octave. Default is 0.
-
-- `Y <offset_cents>` (integer)<br>
-  Sets detune in cents. 100 raises by a semitone, -100 lowers by a semitone. Default is 0.
-
-- `@ENV <slot>` (0-)<br>
-  Switches the envelope (volume curve) slot. 0 turns it off.
-
-- `@ENV <slot> { init_vol, dur_ticks1, vol1, dur_ticks2, vol2, ... }`<br>
-  Sets and switches to the specified envelope slot. Slot 0 cannot be specified.<br>
-  Inside `{ }`, specify "initial volume (once)", then repeat "duration (tick), volume (vol)". 1 tick is 1/48 of a quarter note.<br>
-  Example: `@ENV 1 { 30, 20, 100, 50, 0 }` (volume changes from 30 to 100 over 20 ticks, then to 0 over 50 ticks)
-
-- `@VIB <slot>` (0-)<br>
-  Switches the vibrato (pitch modulation) slot. 0 turns it off.
-
-- `@VIB <slot> { delay_ticks, period_ticks, depth_cents }`<br>
-  Sets and switches to the specified vibrato slot. Slot 0 cannot be specified.<br>
-  Inside `{ }`, specify "delay (tick), period (tick), depth (cent)". 1 tick is 1/48 of a quarter note.<br>
-  Example: `@VIB 1 {24, 12, 100}` (after 24 ticks, vibrato with a 12-tick period and ±100 cents depth)
-
-- `@GLI <slot>` (0-)<br>
-  Switches the glide (pitch slide) slot. 0 turns it off.
-
-- `@GLI <slot> { offset_cents, dur_ticks }`<br>
-  Inside `{ }`, specify "initial pitch offset (cent), time to return to 0 (tick)". 1 tick is 1/48 of a quarter note.<br>
-  Specifying `*` for each parameter automatically applies the pitch offset as the difference from the previous note and the return time as the playback duration of each note, respectively.<br>
-  Example: `@GLI 1 { -100, 24 }` (starts 1 semitone down, returns to normal over 24 ticks)
-
-- `O <oct>` (-1 - 9)<br>
-  Sets the octave. `O4`'s A is 440 Hz. Default is 4.
-
-- `>`<br>
-  Raises the octave by 1 (max 9).
-
-- `<`<br>
-  Lowers the octave by 1 (min -1).
-
-- `L <len>` (1-192)<br>
-  Sets the default note/rest length. `L4` is a quarter note, `L8` is an eighth note, and `L12` is a quarter note triplet. Default is 4.
-
-- `C/D/E/F/G/A/B`<br>
-  Plays the specified note. You can specify the length after the note, e.g., `F16`.
-
-- `R`<br>
-  Rest. You can specify the length after the rest, e.g., `R8`.
-
-- `#` or `+`<br>
-  Raises the note by a semitone.
-
-- `-`<br>
-  Lowers the note by a semitone.
-
-- `.`<br>
-  Dotted note/rest. Extends the length by half. Can be repeated for multiple dots.
-
-- `&`<br>
-  Tie. Connects two notes of the same pitch into one. Using it between different pitches causes an error. You can also omit the note and specify only the length, e.g., `4&16`.
-
-- `[`<br>
-  Start of repeat section.
-
-- `] <count>` (1-)<br>
-  End of repeat section. Repeats the section between `[` and `]` the specified number of times. If omitted, repeats infinitely. Nested repeats
-
-You can see an example of using MML in the [demo](https://kitao.github.io/pyxel/wasm/examples/09-shooter.html) and [code](https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/09_shooter.py) of the 09_shooter.py example.
+You can also create and share MML in your browser using [Pyxel MML Studio](https://kitao.github.io/pyxel/wasm/mml-studio/).
 
 </details>
 
