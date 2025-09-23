@@ -11,6 +11,7 @@ const PYXEL_WATCH_INFO_FILE = ".pyxel_watch_info";
 const IMPORT_HOOK_PATH = "import_hook.py";
 
 window.pyxelContext = {
+  resolveInput: null,
   initialized: false,
   canvas: null,
   pyodide: null,
@@ -444,7 +445,18 @@ async function _waitForInput() {
   pyxelScreen.appendChild(promptImage);
   _updateScreenElementsSize();
 
-  await _waitForEvent(document.body, "click", "touchstart");
+  await new Promise((resolve) => {
+    pyxelContext.resolveInput = () => {
+      pyxelContext.resolveInput = null;
+      resolve();
+    };
+    _waitForEvent(document.body, "click", "touchstart").then(() => {
+      if (pyxelContext.resolveInput) {
+        pyxelContext.resolveInput();
+      }
+    });
+  });
+
   promptImage.remove();
   await new Promise((resolve) => setTimeout(resolve, 1));
 }
