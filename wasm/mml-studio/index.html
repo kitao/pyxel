@@ -37,7 +37,7 @@
         }
       }
     </style>
-    <script src="https://cdn.jsdelivr.net/gh/kitao/pyxel@2.5.6/wasm/pyxel.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/kitao/pyxel/wasm/pyxel.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/lz-string@1.4.4/libs/lz-string.min.js"></script>
   </head>
   <body class="page">
@@ -333,9 +333,28 @@
         }
       }
 
+      function resolvePyxelInput() {
+        const pyxelScreen = document.getElementById("pyxel-screen");
+        const ctx = pyxelScreen.contentWindow?.pyxelContext;
+        if (ctx && typeof ctx.resolveInput === "function") {
+          ctx.resolveInput();
+        }
+      }
+
       window.addEventListener("DOMContentLoaded", () => {
+        // Forward user input to Pyxel screen
+        window.addEventListener("click", () => {
+          resolvePyxelInput();
+        });
+
+        window.addEventListener("touchstart", () => {
+          resolvePyxelInput();
+        });
+
         // Register keyboard shortcuts
         window.addEventListener("keydown", (e) => {
+          resolvePyxelInput(); // Forward user input to Pyxel screen
+
           if (!e.altKey && e.key === "Enter") {
             e.preventDefault();
             const playBtn = document.querySelector(
@@ -390,12 +409,12 @@
           });
         });
 
-        // Enable control buttons after Pyxel is initialized
-        function watchPyxelInitialized() {
+        // Enable control buttons after Pyxel input wait starts
+        function watchPyxelInputWait() {
           if (
             pyxelScreen.contentWindow &&
             pyxelScreen.contentWindow.pyxelContext &&
-            pyxelScreen.contentWindow.pyxelContext.initialized
+            pyxelScreen.contentWindow.pyxelContext.resolveInput
           ) {
             document
               .querySelectorAll(
@@ -405,14 +424,11 @@
                 btn.disabled = false;
                 btn.classList.remove("disabled");
               });
-            handleButtonPress(
-              document.querySelector('button[data-action="play"]')
-            );
           } else {
-            setTimeout(watchPyxelInitialized, 100);
+            setTimeout(watchPyxelInputWait, 100);
           }
         }
-        watchPyxelInitialized();
+        watchPyxelInputWait();
       });
     </script>
   </body>

@@ -6,6 +6,7 @@
 - Added links to web tools and examples for Pyxel in the READMEs
 - Updated the URL on reload in Pyxel MML Studio
 - Improved the usability of Pyxel MML Studio
+- Enabled the parent HTML window to control the initial input wait
 
 ## 2.5.6
 
