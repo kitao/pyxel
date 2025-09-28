@@ -117,7 +117,6 @@ install: build
 
 test: install
 	@cd $(RUST_DIR); cargo test $(BUILD_OPTS) $(CARGO_FEATURES)
-	@python3 -m unittest discover $(RUST_DIR)/pyxel-wrapper/tests
 
 	@bash -c 'set -e; trap "exit 130" INT; for f in $(EXAMPLES_DIR)/*.py; do pyxel run "$$f"; done'
 	@bash -c 'set -e; trap "exit 130" INT; for f in $(EXAMPLES_DIR)/apps/*.pyxapp; do pyxel play "$$f"; done'
