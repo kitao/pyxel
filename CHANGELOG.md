@@ -3,6 +3,7 @@
 ## 2.5.8
 
 - Changed desktop OpenGL internal format to GL_R8
+- Fixed Tilemap.data_ptr to expose full map data
 
 ## 2.5.7
 
