@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.5.8
+
+- Changed desktop OpenGL internal format to GL_R8
+
 ## 2.5.7
 
 - Specified Tailwind CSS version 3.4.17 for Pyxel web pages

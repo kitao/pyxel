@@ -429,20 +429,20 @@ impl Pyxel {
         gl.bind_texture(glow::TEXTURE_2D, Some(self.graphics.screen_texture));
         gl.pixel_store_i32(glow::UNPACK_ALIGNMENT, 1);
 
-        let texture_format = if pyxel_platform::gl_profile() == GLProfile::Gles {
-            glow::LUMINANCE
+        let (internal_format, format) = if pyxel_platform::gl_profile() == GLProfile::Gles {
+            (glow::LUMINANCE as i32, glow::LUMINANCE)
         } else {
-            glow::RED
+            (glow::R8 as i32, glow::RED)
         };
 
         gl.tex_image_2d(
             glow::TEXTURE_2D,
             0,
-            texture_format as i32,
+            internal_format,
             self.width as i32,
             self.height as i32,
             0,
-            texture_format,
+            format,
             glow::UNSIGNED_BYTE,
             PixelUnpackData::Slice(Some(&self.screen.lock().canvas.data)),
         );
