@@ -1,6 +1,15 @@
 {
   "entries": [
     {
+      "id": 159,
+      "title": "Game of Pyxels",
+      "site": "https://leo-imbert.itch.io/game-of-pyxels",
+      "author": "Léo Imbert",
+      "contact": "https://github.com/LeoI52",
+      "desc": "A retro-style remake of Conway’s Game of Life",
+      "image": "https://github.com/user-attachments/assets/0b10319a-c648-4876-904a-5bfae82059f7"
+    },
+    {
       "id": 158,
       "title": "Queue It !",
       "site": "https://leo-imbert.itch.io/queue-it",
