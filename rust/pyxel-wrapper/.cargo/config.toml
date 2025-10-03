@@ -1,20 +1,2 @@
 [target.wasm32-unknown-emscripten]
-rustflags = [
-    "-Z",
-    "emscripten-wasm-eh",
-
-    "-Z",
-    "link-native-libraries=yes",
-
-    "-C",
-    "link-arg=-fwasm-exceptions",
-
-    "-C",
-    "link-arg=-sSIDE_MODULE=2",
-
-    "-C",
-    "link-arg=-lSDL2",
-
-    "-C",
-    "link-arg=-lhtml5",
-]
+rustflags = ["-Clink-arg=-lSDL2", "-Clink-arg=-lhtml5"]
