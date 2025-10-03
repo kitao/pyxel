@@ -4,6 +4,8 @@
 
 - Changed desktop OpenGL internal format to GL_R8
 - Fixed Tilemap.data_ptr to expose full map data
+- Changed to bundle SDL2 for Linux
+- Updated the build environment version for Mac to macOS 15
 
 ## 2.5.7
 
