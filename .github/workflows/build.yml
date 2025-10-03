@@ -17,17 +17,19 @@ jobs:
             arch: x86
 
           - target: x86_64-apple-darwin
-            os: macos-13
+            os: macos-15-intel
             arch: x64
+            min_macos: "10.13"
 
           - target: aarch64-apple-darwin
-            os: macos-13
-            arch: x64
+            os: macos-15
+            arch: arm64
+            min_macos: "11.0"
 
     runs-on: ${{ matrix.os }}
     steps:
       - name: Check out repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
@@ -50,7 +52,10 @@ jobs:
         run: pip install -r python/requirements.txt
 
       - name: Build wheel
-        run: make TARGET=${{ matrix.target }}
+        shell: bash
+        run: |
+          export MACOSX_DEPLOYMENT_TARGET=${{ matrix.min_macos }}
+          make TARGET=${{ matrix.target }}
 
       - name: Upload wheel
         uses: actions/upload-artifact@v4
@@ -80,7 +85,7 @@ jobs:
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
