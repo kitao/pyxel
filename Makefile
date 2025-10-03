@@ -63,7 +63,7 @@ WASM_TARGET = wasm32-unknown-emscripten
 
 # Tool options
 CLIPPY_OPTS = -q -- --no-deps
-MATURIN_OPTS = --manylinux 2014 --auditwheel skip
+MATURIN_OPTS = --manylinux 2014
 
 # Build options
 TARGET ?= $(shell rustc -vV | awk '/^host:/ {print $$2}')
