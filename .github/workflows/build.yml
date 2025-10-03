@@ -17,19 +17,17 @@ jobs:
             arch: x86
 
           - target: x86_64-apple-darwin
-            os: macos-15-intel
+            os: macos-13
             arch: x64
-            min_macos: "10.13"
 
           - target: aarch64-apple-darwin
-            os: macos-15
-            arch: arm64
-            min_macos: "11.0"
+            os: macos-13
+            arch: x64
 
     runs-on: ${{ matrix.os }}
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
 
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
@@ -52,10 +50,7 @@ jobs:
         run: pip install -r python/requirements.txt
 
       - name: Build wheel
-        shell: bash
-        run: |
-          export MACOSX_DEPLOYMENT_TARGET=${{ matrix.min_macos }}
-          make TARGET=${{ matrix.target }}
+        run: make TARGET=${{ matrix.target }}
 
       - name: Upload wheel
         uses: actions/upload-artifact@v4
@@ -85,7 +80,7 @@ jobs:
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
 
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
@@ -98,22 +93,40 @@ jobs:
           toolchain: nightly-2025-02-01
           components: rustfmt
 
+      - name: Install Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.12"
+
       - name: Install Python packages
         run: pip install -r python/requirements.txt
 
-      - name: Install build deps (X11/ALSA headers)
+      - name: Build and install SDL2
         run: |
-          if command -v yum >/dev/null 2>&1; then
-            yum install -y gcc gcc-c++ make pkgconfig \
-              alsa-lib-devel \
-              libX11-devel libXext-devel libXcursor-devel libXrandr-devel libXi-devel libXinerama-devel
-          fi
-
-      - name: Build wheel
-        run: |
+          SDL2_VERSION=2.0.10
           export CC=$TARGET_CC
           export AR=$TARGET_AR
           export RANLIB=$TARGET_RANLIB
+
+          curl -sqLO https://github.com/libsdl-org/SDL/releases/download/release-${SDL2_VERSION}/SDL2-${SDL2_VERSION}.tar.gz
+          tar xzf SDL2-${SDL2_VERSION}.tar.gz
+
+          cd SDL2-${SDL2_VERSION}
+          CFLAGS="-O3 -fPIC" ./configure \
+            --build=x86_64-unknown-linux-gnu \
+            --host=${{ matrix.target }} \
+            --prefix=/usr/${{ matrix.target }}
+          make -j4
+          make install
+          cd ..
+
+          rm -rf SDL2-${SDL2_VERSION}
+
+      - name: Build wheel
+        run: |
+          export BINDGENFLAGS="-I/usr/${{ matrix.target }}/include/SDL2 -I/usr/${{ matrix.target }}/${{ matrix.target }}/sysroot/usr/include"
+          export RUSTFLAGS="-L/usr/${{ matrix.target }}/lib"
+
           make TARGET=${{ matrix.target }}
 
       - name: Upload wheel
