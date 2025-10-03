@@ -100,9 +100,13 @@ impl Sdl2Bindings {
         let mut cfg = cmake::Config::new(&self.sdl2_dir);
         cfg.profile("release")
             .cflag("-D__FLTUSED__")
-            .define("SDL_SHARED", "OFF")
-            .define("SDL_STATIC", "ON")
             .define("SDL_MAIN_HANDLED", "ON");
+
+        if self.target_os == "linux-gnu" {
+            cfg.define("SDL_SHARED", "ON").define("SDL_STATIC", "OFF");
+        } else {
+            cfg.define("SDL_SHARED", "OFF").define("SDL_STATIC", "ON");
+        }
 
         if self.target_os == "windows-gnu" {
             cfg.define("VIDEO_OPENGLES", "OFF");
@@ -121,14 +125,9 @@ impl Sdl2Bindings {
 
     fn link_sdl2(&self) {
         if bundle_sdl2() {
-            println!("cargo:rustc-link-lib=static=SDL2main");
             if self.target_os.contains("windows") {
+                println!("cargo:rustc-link-lib=static=SDL2main");
                 println!("cargo:rustc-link-lib=static=SDL2-static");
-            } else {
-                println!("cargo:rustc-link-lib=static=SDL2");
-            }
-
-            if self.target_os.contains("windows") {
                 println!("cargo:rustc-link-lib=shell32");
                 println!("cargo:rustc-link-lib=user32");
                 println!("cargo:rustc-link-lib=gdi32");
@@ -142,6 +141,8 @@ impl Sdl2Bindings {
                 println!("cargo:rustc-link-lib=dxguid");
                 println!("cargo:rustc-link-lib=setupapi");
             } else if self.target_os == "darwin" {
+                println!("cargo:rustc-link-lib=static=SDL2main");
+                println!("cargo:rustc-link-lib=static=SDL2");
                 println!("cargo:rustc-link-lib=framework=Cocoa");
                 println!("cargo:rustc-link-lib=framework=IOKit");
                 println!("cargo:rustc-link-lib=framework=Carbon");
@@ -153,6 +154,8 @@ impl Sdl2Bindings {
                 println!("cargo:rustc-link-lib=framework=AudioToolbox");
                 println!("cargo:rustc-link-lib=framework=Metal");
                 println!("cargo:rustc-link-lib=iconv");
+            } else if self.target_os == "linux-gnu" {
+                println!("cargo:rustc-link-lib=SDL2");
             }
         } else if self.target_os != "emscripten" {
             println!("cargo:rustc-flags=-l SDL2");
