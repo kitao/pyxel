@@ -63,7 +63,7 @@ WASM_TARGET = wasm32-unknown-emscripten
 
 # Tool options
 CLIPPY_OPTS = -q -- --no-deps
-MATURIN_OPTS = --manylinux 2014
+MATURIN_OPTS = --manylinux 2014 --auditwheel skip
 
 # Build options
 TARGET ?= $(shell rustc -vV | awk '/^host:/ {print $$2}')
@@ -72,8 +72,6 @@ BUILD_OPTS = --release --target $(TARGET)
 ifneq (,$(findstring windows,$(TARGET)))
 CARGO_FEATURES = --features sdl2_bundle
 else ifneq (,$(findstring darwin,$(TARGET)))
-CARGO_FEATURES = --features sdl2_bundle
-else ifneq (,$(findstring linux,$(TARGET)))
 CARGO_FEATURES = --features sdl2_bundle
 else
 CARGO_FEATURES = --features sdl2
