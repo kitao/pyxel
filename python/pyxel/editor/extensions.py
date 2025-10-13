@@ -2,12 +2,8 @@ import pyxel
 
 
 def _user_pal():
-    num_user_colors = len(pyxel.colors) - pyxel.NUM_COLORS
-    for i in range(pyxel.NUM_COLORS):
-        if i < num_user_colors:
-            pyxel.pal(i, pyxel.NUM_COLORS + i)
-        else:
-            pyxel.pal(i, 0)
+    for i in range(pyxel.num_user_colors):
+        pyxel.pal(i, pyxel.NUM_COLORS + i)
 
 
 def _rect2(self, x1, y1, x2, y2, val):

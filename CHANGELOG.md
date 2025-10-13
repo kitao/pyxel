@@ -5,6 +5,9 @@
 - Changed desktop OpenGL internal format to GL_R8
 - Fixed Tilemap.data_ptr to expose full map data
 - Updated the build environment version for Mac to macOS 15
+- Added the load_pal function
+- Enabled palette file download for new files in Pyxel Editor
+- Enabled automatic color picker size adjustment in Pyxel Editor
 
 ## 2.5.7
 

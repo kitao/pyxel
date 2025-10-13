@@ -15,6 +15,10 @@ class ColorPicker(Widget):
     def __init__(self, parent, x, y, value, *, with_shadow=False, **kwargs):
         super().__init__(parent, x, y, 65, 17, **kwargs)
         self._with_shadow = with_shadow
+        self._color_width = 4 if pyxel.num_user_colors > 16 else 8
+        self._color_height = 4 if pyxel.num_user_colors > 32 else 8
+        self._num_cols = 64 // self._color_width
+        self._num_rows = 16 // self._color_height
 
         # Initialize value_var
         self.new_var("value_var", value)
@@ -29,13 +33,11 @@ class ColorPicker(Widget):
     def check_value(self, x, y):
         x -= self.x + 1
         y -= self.y + 1
-        if (
-            0 <= x <= self.width - 2
-            and 0 <= y <= self.height - 2
-            and x % 8 != 7
-            and y != 7
-        ):
-            return (y // 8) * 8 + x // 8
+        cw = self._color_width
+        ch = self._color_height
+        if 0 <= x <= self.width - 2 and 0 <= y <= self.height - 2:
+            col = (y // ch) * self._num_cols + x // cw
+            return col if col < pyxel.num_user_colors else None
         else:
             return None
 
@@ -55,29 +57,44 @@ class ColorPicker(Widget):
         )
 
         # Draw colors
+        cw = self._color_width
+        ch = self._color_height
         pyxel.user_pal()
-        for yi in range(2):
-            for xi in range(8):
-                pyxel.rect(self.x + xi * 8 + 1, self.y + yi * 8 + 1, 7, 7, yi * 8 + xi)
+        for yi in range(self._num_rows):
+            for xi in range(self._num_cols):
+                color = yi * self._num_cols + xi
+                if color < pyxel.num_user_colors:
+                    pyxel.rect(
+                        self.x + xi * cw + 1,
+                        self.y + yi * ch + 1,
+                        cw - 1,
+                        ch - 1,
+                        color,
+                    )
         pyxel.pal()
 
         # Draw cursor
         col = self.value_var
-        rgb = (
-            pyxel.colors[col + pyxel.NUM_COLORS]
-            if col + pyxel.NUM_COLORS < len(pyxel.colors)
-            else 0
+        if col >= pyxel.num_user_colors:
+            return
+        x = self.x + cw * (col % self._num_cols) + cw // 2
+        y = self.y + ch * (col // self._num_cols) + ch // 2
+        rgb = pyxel.colors[pyxel.NUM_COLORS + col]
+        brightness = int(
+            ((rgb >> 16) & 0xFF) * 0.299
+            + ((rgb >> 8) & 0xFF) * 0.587
+            + (rgb & 0xFF) * 0.114
         )
-        brightness = ((rgb & 0xFF0000) >> 16) + ((rgb & 0x00FF00) >> 8) + (rgb & 0xFF)
-        pyxel.text(
-            self.x + (col % 8) * 8 + 3,
-            self.y + (col // 8) * 8 + 2,
-            "+",
-            7 if brightness < 0x70 * 3 else 0,
+        pyxel.elli(
+            x - cw // 8,
+            y - ch // 8,
+            1 + cw // 8 * 1.5,
+            1 + ch // 8 * 1.5,
+            7 if brightness < 140 else 0,
         )
 
     def __on_value_set(self, value):
-        return min(value, len(pyxel.colors) - pyxel.NUM_COLORS - 1)
+        return min(value, pyxel.num_user_colors - 1)
 
     def __on_value_change(self, value):
         self.trigger_event("change", value)
