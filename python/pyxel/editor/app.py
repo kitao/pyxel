@@ -47,7 +47,10 @@ class App(Widget):
 
         if os.path.exists(resource_file):
             pyxel.load(resource_file)
+        else:
+            pyxel.load_pal(resource_file)
 
+        pyxel.num_user_colors = len(pyxel.colors)
         colors += pyxel.colors.to_list()
         pyxel.colors.from_list(colors)
 
