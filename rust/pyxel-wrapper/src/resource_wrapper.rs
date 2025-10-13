@@ -119,6 +119,11 @@ fn save(
 }
 
 #[pyfunction]
+fn load_pal(filename: &str) {
+    pyxel().load_pal(filename);
+}
+
+#[pyfunction]
 #[pyo3(signature = (scale=None))]
 fn screenshot(scale: Option<u32>) {
     pyxel().screenshot(scale);
@@ -143,6 +148,7 @@ fn user_data_dir(vendor_name: &str, app_name: &str) -> String {
 pub fn add_resource_functions(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(load, m)?)?;
     m.add_function(wrap_pyfunction!(save, m)?)?;
+    m.add_function(wrap_pyfunction!(load_pal, m)?)?;
     m.add_function(wrap_pyfunction!(screenshot, m)?)?;
     m.add_function(wrap_pyfunction!(screencast, m)?)?;
     m.add_function(wrap_pyfunction!(reset_screencast, m)?)?;
