@@ -14,7 +14,7 @@ use crate::resource_data::ResourceData;
 use crate::screencast::Screencast;
 use crate::settings::{
     BASE_DIR, DEFAULT_CAPTURE_SCALE, DEFAULT_CAPTURE_SEC, PALETTE_FILE_EXTENSION,
-    RESOURCE_ARCHIVE_NAME, RESOURCE_FORMAT_VERSION,
+    RESOURCE_ARCHIVE_NAME, RESOURCE_FILE_EXTENSION, RESOURCE_FORMAT_VERSION,
 };
 
 pub struct Resource {
@@ -60,7 +60,7 @@ impl Pyxel {
                 !exclude_sounds.unwrap_or(false),
                 !exclude_musics.unwrap_or(false),
             );
-            self.load_pyxel_palette_file(filename);
+            self.load_pal(filename);
             return;
         }
 
@@ -81,7 +81,7 @@ impl Pyxel {
                 exclude_sounds.unwrap_or(false),
                 exclude_musics.unwrap_or(false),
             );
-            self.load_pyxel_palette_file(filename);
+            self.load_pal(filename);
         }
     }
 
@@ -111,6 +111,33 @@ impl Pyxel {
         zip.finish().unwrap();
 
         pyxel_platform::export_browser_file(filename);
+    }
+
+    pub fn load_pal(&mut self, filename: &str) {
+        let filename = if filename.to_lowercase().ends_with(RESOURCE_FILE_EXTENSION) {
+            filename[..filename.len() - RESOURCE_FILE_EXTENSION.len()].to_string()
+                + PALETTE_FILE_EXTENSION
+        } else {
+            filename.to_string()
+        };
+
+        if let Ok(mut file) = File::open(Path::new(&filename)) {
+            let mut contents = String::new();
+            file.read_to_string(&mut contents).unwrap();
+
+            let colors: Vec<Rgb24> = contents
+                .replace("\r\n", "\n")
+                .replace('\r', "\n")
+                .split('\n')
+                .filter(|s| !s.is_empty())
+                .map(|s| u32::from_str_radix(s.trim(), 16).unwrap() as Rgb24)
+                .collect();
+            *self.colors.lock() = if colors.is_empty() {
+                vec![0xffffff]
+            } else {
+                colors
+            };
+        }
     }
 
     pub fn screenshot(&mut self, scale: Option<u32>) {
@@ -211,27 +238,6 @@ impl Pyxel {
             .map(|(_, value)| value.trim().parse::<u32>())
             .unwrap()
             .unwrap()
-    }
-
-    fn load_pyxel_palette_file(&mut self, filename: &str) {
-        let filename = filename
-            .rfind('.')
-            .map_or(filename, |i| &filename[..i])
-            .to_string()
-            + PALETTE_FILE_EXTENSION;
-
-        if let Ok(mut file) = File::open(Path::new(&filename)) {
-            let mut contents = String::new();
-            file.read_to_string(&mut contents).unwrap();
-
-            *self.colors.lock() = contents
-                .replace("\r\n", "\n")
-                .replace('\r', "\n")
-                .split('\n')
-                .filter(|s| !s.is_empty())
-                .map(|s| u32::from_str_radix(s.trim(), 16).unwrap() as Rgb24)
-                .collect();
-        }
     }
 
     fn make_dir_name(name: &str) -> String {
