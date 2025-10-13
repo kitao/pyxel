@@ -48,7 +48,7 @@ class ImageEditor(EditorBase):
             self,
             11,
             156,
-            min(7, len(pyxel.colors) - pyxel.NUM_COLORS - 1),
+            min(7, pyxel.num_user_colors - 1),
             with_shadow=False,
         )
         self._color_picker.add_event_listener(
