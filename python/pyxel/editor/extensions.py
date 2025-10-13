@@ -2,7 +2,7 @@ import pyxel
 
 
 def _user_pal():
-    for i in range(pyxel.num_user_colors):
+    for i in range(len(pyxel.colors)):
         pyxel.pal(i, pyxel.NUM_COLORS + i)
 
 
