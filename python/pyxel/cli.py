@@ -189,13 +189,13 @@ def _run_python_script_in_separate_process(python_script_file):
 
 def _extract_pyxel_app(pyxel_app_file):
     _check_file_exists(pyxel_app_file)
-    if os.environ.get("APP_DIR"):
-        app_dir=os.environ["APP_DIR"]
+    if os.environ.get("PYXEL_APP_DIR"):
+        app_dir=os.environ["PYXEL_APP_DIR"]
     else:
         app_dir = _create_app_dir()
         zf = zipfile.ZipFile(pyxel_app_file)
         zf.extractall(app_dir)
-        os.environ["APP_DIR"]=app_dir
+        os.environ["PYXEL_APP_DIR"]=app_dir
 
     pattern = os.path.join(app_dir, "*", pyxel.APP_STARTUP_SCRIPT_FILE)
     for setting_file in glob.glob(pattern):
