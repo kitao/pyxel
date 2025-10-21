@@ -2,14 +2,14 @@ name: build-wasm
 
 on: [workflow_call, workflow_dispatch]
 
+env:
+  PYODIDE_VERSION: "0.28.3"
+  RUST_VERSION: "nightly-2025-02-01"
+  PYTHON_VERSION: "3.13"
+
 jobs:
   build-wasm:
     runs-on: ubuntu-22.04
-
-    env:
-      PYODIDE_VERSION: "0.28.3"
-      RUST_VERSION: "nightly-2025-02-01"
-      PYTHON_VERSION: "3.13"
 
     steps:
       - name: Check out repository
