@@ -39,7 +39,7 @@ jobs:
       #      emscripten-${{ runner.os }}-
 
       - name: Build Emscripten for Pyodide
-        if: steps.cache-emsdk.outputs.cache-hit != 'true'
+        #if: steps.cache-emsdk.outputs.cache-hit != 'true'
         shell: bash
         run: |
           git clone --branch ${{ env.PYODIDE_VERSION }} --depth 1 https://github.com/pyodide/pyodide.git pyodide
