@@ -5,6 +5,12 @@ on: [workflow_call, workflow_dispatch]
 jobs:
   build-wasm:
     runs-on: ubuntu-22.04
+
+    env:
+      PYODIDE_VERSION: "0.28.3"
+      RUST_VERSION: "nightly-2025-02-01"
+      PYTHON_VERSION: "3.13"
+
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -12,23 +18,33 @@ jobs:
       - name: Install Nightly Rust
         uses: dtolnay/rust-toolchain@stable
         with:
-          toolchain: nightly-2025-02-01
+          toolchain: ${{ env.RUST_VERSION }}
           components: rust-src, rustfmt, clippy
 
       - name: Install Python
         uses: actions/setup-python@v4
         with:
-          python-version: "3.13"
+          python-version: ${{ env.PYTHON_VERSION }}
 
       - name: Install Python packages
         run: pip install -r python/requirements.txt
 
+      - name: Cache Emscripten
+        id: cache-emsdk
+        uses: actions/cache@v4
+        with:
+          path: pyodide/emsdk
+          key: emscripten-${{ runner.os }}-pyodide-${{ env.PYODIDE_VERSION }}
+          restore-keys: |
+            emscripten-${{ runner.os }}-
+
       - name: Build Emscripten for Pyodide
+        if: steps.cache-emsdk.outputs.cache-hit != 'true'
         shell: bash
         run: |
-          git clone --branch 0.28.3 --depth 1 https://github.com/pyodide/pyodide.git pyodide
-          cd pyodide/emsdk
-          CMAKE_POLICY_VERSION_MINIMUM=3.5 make
+          git clone --branch ${{ env.PYODIDE_VERSION }} --depth 1 https://github.com/pyodide/pyodide.git pyodide
+          cd pyodide
+          make emsdk
 
       - name: Build wheel
         run: |

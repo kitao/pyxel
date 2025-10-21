@@ -1,3 +1,7 @@
+env:
+  RUST_VERSION: "nightly-2025-02-01"
+  PYTHON_VERSION: "3.13"
+
 name: build
 
 on: [workflow_call, workflow_dispatch]
@@ -39,13 +43,13 @@ jobs:
       - name: Install Nightly Rust
         uses: dtolnay/rust-toolchain@stable
         with:
-          toolchain: nightly-2025-02-01
-          components: rustfmt
+          toolchain: ${{ env.RUST_VERSION }}
+          components: rust-src, rustfmt, clippy
 
       - name: Install Python
         uses: actions/setup-python@v4
         with:
-          python-version: "3.12"
+          python-version: ${{ env.PYTHON_VERSION }}
           architecture: ${{ matrix.arch }}
 
       - name: Install Python packages
@@ -87,21 +91,16 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      - name: Install Rust
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          toolchain: stable
-
       - name: Install Nightly Rust
         uses: dtolnay/rust-toolchain@stable
         with:
-          toolchain: nightly-2025-02-01
-          components: rustfmt
+          toolchain: ${{ env.RUST_VERSION }}
+          components: rust-src, rustfmt, clippy
 
       - name: Install Python
         uses: actions/setup-python@v4
         with:
-          python-version: "3.12"
+          python-version: ${{ env.PYTHON_VERSION }}
 
       - name: Install Python packages
         run: pip install -r python/requirements.txt
