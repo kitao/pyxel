@@ -242,36 +242,6 @@ impl PlatformSdl2 {
                     }
                 }
 
-                #[cfg(target_os = "emscripten")]
-                SDL_JOYBUTTONDOWN => {
-                    if let Some(key_offset) =
-                        self.gamepad_key_offset(unsafe { sdl_event.jbutton.which })
-                    {
-                        let button = unsafe { sdl_event.jbutton.button } as i32;
-                        let key = joystick_button_to_key(button);
-                        if key != KEY_UNKNOWN {
-                            pyxel_events.push(Event::KeyPressed {
-                                key: key + key_offset,
-                            });
-                        }
-                    }
-                }
-
-                #[cfg(target_os = "emscripten")]
-                SDL_JOYBUTTONUP => {
-                    if let Some(key_offset) =
-                        self.gamepad_key_offset(unsafe { sdl_event.jbutton.which })
-                    {
-                        let button = unsafe { sdl_event.jbutton.button } as i32;
-                        let key = joystick_button_to_key(button);
-                        if key != KEY_UNKNOWN {
-                            pyxel_events.push(Event::KeyReleased {
-                                key: key + key_offset,
-                            });
-                        }
-                    }
-                }
-
                 _ => {}
             }
         }
@@ -398,17 +368,6 @@ fn controller_button_to_key(button: i32) -> Key {
         SDL_CONTROLLER_BUTTON_DPAD_DOWN => GAMEPAD1_BUTTON_DPAD_DOWN,
         SDL_CONTROLLER_BUTTON_DPAD_LEFT => GAMEPAD1_BUTTON_DPAD_LEFT,
         SDL_CONTROLLER_BUTTON_DPAD_RIGHT => GAMEPAD1_BUTTON_DPAD_RIGHT,
-        _ => KEY_UNKNOWN,
-    }
-}
-
-#[cfg(target_os = "emscripten")]
-fn joystick_button_to_key(button: i32) -> Key {
-    match button {
-        12 => GAMEPAD1_BUTTON_DPAD_UP,
-        13 => GAMEPAD1_BUTTON_DPAD_DOWN,
-        14 => GAMEPAD1_BUTTON_DPAD_LEFT,
-        15 => GAMEPAD1_BUTTON_DPAD_RIGHT,
         _ => KEY_UNKNOWN,
     }
 }
