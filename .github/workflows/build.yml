@@ -1,10 +1,10 @@
-env:
-  RUST_VERSION: "nightly-2025-02-01"
-  PYTHON_VERSION: "3.13"
-
 name: build
 
 on: [workflow_call, workflow_dispatch]
+
+env:
+  RUST_VERSION: "nightly-2025-02-01"
+  PYTHON_VERSION: "3.13"
 
 jobs:
   build-winmac:
