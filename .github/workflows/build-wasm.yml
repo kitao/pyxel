@@ -44,7 +44,7 @@ jobs:
         run: |
           git clone --branch ${{ env.PYODIDE_VERSION }} --depth 1 https://github.com/pyodide/pyodide.git pyodide
           cd pyodide/emsdk
-          make emsdk
+          CMAKE_POLICY_VERSION_MINIMUM=3.5 make
 
       - name: Build wheel
         run: |
