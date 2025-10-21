@@ -29,14 +29,14 @@ jobs:
       - name: Install Python packages
         run: pip install -r python/requirements.txt
 
-      - name: Cache Emscripten
-        id: cache-emsdk
-        uses: actions/cache@v4
-        with:
-          path: pyodide/emsdk
-          key: emscripten-${{ runner.os }}-pyodide-${{ env.PYODIDE_VERSION }}
-          restore-keys: |
-            emscripten-${{ runner.os }}-
+      #- name: Cache Emscripten
+      #  id: cache-emsdk
+      #  uses: actions/cache@v4
+      #  with:
+      #    path: pyodide/emsdk
+      #    key: emscripten-${{ runner.os }}-pyodide-${{ env.PYODIDE_VERSION }}
+      #    restore-keys: |
+      #      emscripten-${{ runner.os }}-
 
       - name: Build Emscripten for Pyodide
         if: steps.cache-emsdk.outputs.cache-hit != 'true'
