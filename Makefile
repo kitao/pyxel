@@ -115,6 +115,7 @@ lint:
 	@ruff check $(ROOT_DIR) || true
 
 build: format lint
+	@rustup component add rust-src
 	@rustup target add $(TARGET)
 	@$(SCRIPTS_DIR)/generate_readme_abspath
 	@cp LICENSE $(PYTHON_DIR)/pyxel
