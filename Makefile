@@ -14,10 +14,15 @@
 #	[Linux]
 #	- python3-pip
 #	- python3-venv
-#	- libsdl2-dev 2.28.4
+#	- libsdl2-dev 2.32.0
 #
 #	[Web]
-#	- Emscripten 3.1.58 (the same version used by Pyodide)
+#	- Pyodide-customized version of Emscripten 4.0.9
+#	  To build it, run the following commands:
+#		git clone --branch 0.28.3 --depth 1 https://github.com/pyodide/pyodide.git pyodide
+#		cd pyodide/emsdk
+#		CMAKE_POLICY_VERSION_MINIMUM=3.5 make emsdk
+#		source pyodide/emsdk/emsdk/emsdk_env.sh
 #
 # Advance Preparation:
 #	git clone --depth=1 https://github.com/kitao/pyxel
