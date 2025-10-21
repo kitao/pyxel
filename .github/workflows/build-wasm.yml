@@ -7,18 +7,20 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - name: Check out repository
-        uses: actions/checkout@v3
-
-      - name: Install Emscripten
-        uses: mymindstorm/setup-emsdk@v13
-        with:
-          version: 4.0.9
+        uses: actions/checkout@v4
 
       - name: Install Nightly Rust
         uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: nightly-2025-02-01
           components: rust-src, rustfmt, clippy
+
+      - name: Build Emscripten for Pyodide
+        shell: bash
+        run: |
+          git clone --branch 0.28.3 --depth 1 https://github.com/pyodide/pyodide.git pyodide
+          cd pyodide
+          CMAKE_POLICY_VERSION_MINIMUM=3.5 make
 
       - name: Install Python
         uses: actions/setup-python@v4
@@ -29,7 +31,9 @@ jobs:
         run: pip install -r python/requirements.txt
 
       - name: Build wheel
-        run: make build-wasm
+        run: |
+          source pyodide/emsdk/emsdk/emsdk_env.sh
+          make build-wasm
 
       - name: Upload wheel
         uses: actions/upload-artifact@v4
