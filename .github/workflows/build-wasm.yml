@@ -18,7 +18,7 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: nightly-2025-02-01
-          components: rustfmt, clippy
+          components: rust-src, rustfmt, clippy
 
       - name: Install Python
         uses: actions/setup-python@v4
