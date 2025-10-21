@@ -1,6 +1,6 @@
 [package]
 name = "pyxel-platform"
-version = "2.5.8"
+version = "2.5.9"
 authors = ["Takashi Kitao <takashi.kitao@gmail.com>"]
 edition = "2021"
 description = "Platform abstraction layer for Pyxel, a retro game engine for Python"
