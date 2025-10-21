@@ -142,7 +142,7 @@ impl Pyxel {
 
         let colors = self.colors.lock();
         for &color in colors.iter() {
-            writeln!(file, "{:06x}", color).unwrap();
+            writeln!(file, "{color:06x}").unwrap();
         }
 
         pyxel_platform::export_browser_file(&filename);
