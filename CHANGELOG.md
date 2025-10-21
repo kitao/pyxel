@@ -2,7 +2,7 @@
 
 ## 2.5.9
 
-- Added the load_pal function
+- Added the load_pal and save_pal functions
 - Enabled palette file download for new files in Pyxel Editor
 - Enabled automatic color picker size adjustment in Pyxel Editor
 - Updated Emscripten to version 4.0.9

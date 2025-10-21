@@ -114,12 +114,7 @@ impl Pyxel {
     }
 
     pub fn load_pal(&mut self, filename: &str) {
-        let filename = if filename.to_lowercase().ends_with(RESOURCE_FILE_EXTENSION) {
-            filename[..filename.len() - RESOURCE_FILE_EXTENSION.len()].to_string()
-                + PALETTE_FILE_EXTENSION
-        } else {
-            filename.to_string()
-        };
+        let filename = Self::palette_filename(filename);
 
         if let Ok(mut file) = File::open(Path::new(&filename)) {
             let mut contents = String::new();
@@ -138,6 +133,19 @@ impl Pyxel {
                 colors
             };
         }
+    }
+
+    pub fn save_pal(&self, filename: &str) {
+        let filename = Self::palette_filename(filename);
+        let mut file = File::create(Path::new(&filename))
+            .unwrap_or_else(|_| panic!("Failed to open file '{filename}'"));
+
+        let colors = self.colors.lock();
+        for &color in colors.iter() {
+            writeln!(file, "{:06x}", color).unwrap();
+        }
+
+        pyxel_platform::export_browser_file(&filename);
     }
 
     pub fn screenshot(&mut self, scale: Option<u32>) {
@@ -215,6 +223,15 @@ impl Pyxel {
             image.save(&filename, 16);
 
             pyxel_platform::export_browser_file(&(filename + ".png"));
+        }
+    }
+
+    fn palette_filename(filename: &str) -> String {
+        if filename.to_lowercase().ends_with(RESOURCE_FILE_EXTENSION) {
+            filename[..filename.len() - RESOURCE_FILE_EXTENSION.len()].to_string()
+                + PALETTE_FILE_EXTENSION
+        } else {
+            filename.to_string()
         }
     }
 
