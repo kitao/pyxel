@@ -75,9 +75,9 @@ endif
 CARGO_OPTS = --release --target $(TARGET) -Zbuild-std=std,panic_abort
 
 ifneq (,$(or $(findstring windows,$(TARGET)),$(findstring darwin,$(TARGET))))
-CARGO_FEATURES = --features sdl2_bundle
+CARGO_OPTS += --features sdl2_bundle
 else
-CARGO_FEATURES = --features sdl2
+CARGO_OPTS += --features sdl2
 endif
 
 # Tool options
@@ -93,7 +93,7 @@ MATURIN_OPTS = --manylinux 2014 --auditwheel skip
 all: build
 
 clean:
-	@cd $(RUST_DIR); cargo clean $(CARGO_OPTS)
+	@cd $(RUST_DIR); cargo clean --target $(TARGET)
 
 distclean:
 	@rm -rf $(DIST_DIR)
@@ -111,20 +111,20 @@ format:
 	@ruff format $(ROOT_DIR)
 
 lint:
-	@cd $(RUST_DIR); cargo clippy --target $(TARGET) $(CARGO_FEATURES) $(CLIPPY_OPTS) || true
+	@cd $(RUST_DIR); cargo clippy $(CARGO_OPTS) $(CLIPPY_OPTS) || true
 	@ruff check $(ROOT_DIR) || true
 
 build: format lint
 	@rustup target add $(TARGET)
 	@$(SCRIPTS_DIR)/generate_readme_abspath
 	@cp LICENSE $(PYTHON_DIR)/pyxel
-	@cd $(PYTHON_DIR); RUSTFLAGS="$(RUSTFLAGS)" maturin build -o ../$(DIST_DIR) $(CARGO_OPTS) $(MATURIN_OPTS) $(CARGO_FEATURES)
+	@cd $(PYTHON_DIR); RUSTFLAGS="$(RUSTFLAGS)" maturin build -o ../$(DIST_DIR) $(CARGO_OPTS) $(MATURIN_OPTS)
 
 install: build
 	@pip3 install --force-reinstall `ls -rt $(DIST_DIR)/*.whl | tail -n 1`
 
 test: install
-	@cd $(RUST_DIR); cargo test $(CARGO_OPTS) $(CARGO_FEATURES)
+	@cd $(RUST_DIR); cargo test $(CARGO_OPTS)
 
 	@bash -c 'set -e; trap "exit 130" INT; for f in $(EXAMPLES_DIR)/*.py; do pyxel run "$$f"; done'
 	@bash -c 'set -e; trap "exit 130" INT; for f in $(EXAMPLES_DIR)/apps/*.pyxapp; do pyxel play "$$f"; done'
