@@ -20,15 +20,15 @@ jobs:
         with:
           python-version: "3.13"
 
+      - name: Install Python packages
+        run: pip install -r python/requirements.txt
+
       - name: Build Emscripten for Pyodide
         shell: bash
         run: |
           git clone --branch 0.28.3 --depth 1 https://github.com/pyodide/pyodide.git pyodide
-          cd pyodide
+          cd pyodide/emsdk
           CMAKE_POLICY_VERSION_MINIMUM=3.5 make
-
-      - name: Install Python packages
-        run: pip install -r python/requirements.txt
 
       - name: Build wheel
         run: |
