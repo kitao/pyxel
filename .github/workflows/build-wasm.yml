@@ -29,21 +29,21 @@ jobs:
       - name: Install Python packages
         run: pip install -r python/requirements.txt
 
-      #- name: Cache Emscripten
-      #  id: cache-emsdk
-      #  uses: actions/cache@v4
-      #  with:
-      #    path: pyodide/emsdk
-      #    key: emscripten-${{ runner.os }}-pyodide-${{ env.PYODIDE_VERSION }}
-      #    restore-keys: |
-      #      emscripten-${{ runner.os }}-
+      - name: Cache Emscripten
+        id: cache-emsdk
+        uses: actions/cache@v4
+        with:
+          path: pyodide/emsdk
+          key: emscripten-${{ runner.os }}-pyodide-${{ env.PYODIDE_VERSION }}
+          restore-keys: |
+            emscripten-${{ runner.os }}-
 
       - name: Build Emscripten for Pyodide
-        #if: steps.cache-emsdk.outputs.cache-hit != 'true'
+        if: steps.cache-emsdk.outputs.cache-hit != 'true'
         shell: bash
         run: |
           git clone --branch ${{ env.PYODIDE_VERSION }} --depth 1 https://github.com/pyodide/pyodide.git pyodide
-          cd pyodide
+          cd pyodide/emsdk
           make emsdk
 
       - name: Build wheel
