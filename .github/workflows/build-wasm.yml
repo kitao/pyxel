@@ -14,11 +14,6 @@ jobs:
         with:
           version: 4.0.9
 
-      - name: Install Rust
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          toolchain: stable
-
       - name: Install Nightly Rust
         uses: dtolnay/rust-toolchain@stable
         with:
