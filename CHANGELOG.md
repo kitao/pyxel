@@ -9,6 +9,7 @@
 - Updated Pyodide to version 0.28.3
 - Updated SDL2 to version 2.32.0
 - Changed to refer to the main branch for web pages
+- Updated the zip crate to version 6.0
 
 ## 2.5.8
 
