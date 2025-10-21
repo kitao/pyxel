@@ -15,17 +15,17 @@ jobs:
           toolchain: nightly-2025-02-01
           components: rust-src, rustfmt, clippy
 
+      - name: Install Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.13"
+
       - name: Build Emscripten for Pyodide
         shell: bash
         run: |
           git clone --branch 0.28.3 --depth 1 https://github.com/pyodide/pyodide.git pyodide
           cd pyodide
           CMAKE_POLICY_VERSION_MINIMUM=3.5 make
-
-      - name: Install Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.12"
 
       - name: Install Python packages
         run: pip install -r python/requirements.txt
