@@ -5,6 +5,9 @@
 - Added the load_pal function
 - Enabled palette file download for new files in Pyxel Editor
 - Enabled automatic color picker size adjustment in Pyxel Editor
+- Updated Emscripten to version 4.0.9
+- Updated Pyodide to version 0.28.3
+- Updated SDL2 to version 2.32.0
 
 ## 2.5.8
 

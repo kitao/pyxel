@@ -59,23 +59,31 @@ SCRIPTS_DIR = $(ROOT_DIR)/scripts
 WASM_DIR = $(ROOT_DIR)/wasm
 
 # Build targets
+TARGET ?= $(shell rustc -vV | awk '/^host:/ {print $$2}')
 WASM_TARGET = wasm32-unknown-emscripten
+
+# Build options
+ifeq ($(TARGET),$(WASM_TARGET))
+RUSTFLAGS += \
+	-C panic=abort \
+    -C link-arg=-fwasm-exceptions \
+    -C link-arg=-sSIDE_MODULE=2 \
+    -C link-arg=-lSDL2 \
+    -C link-arg=-lhtml5
+endif
+
+CARGO_OPTS = --release --target $(TARGET) -Zbuild-std=std,panic_abort
+
+ifneq (,$(filter %windows% %darwin%,$(TARGET)))
+CARGO_FEATURES = --features sdl2_bundle
+else
+CARGO_FEATURES = --features sdl2
+endif
 
 # Tool options
 CLIPPY_OPTS = -q -- --no-deps
 MATURIN_OPTS = --manylinux 2014 --auditwheel skip
 
-# Build options
-TARGET ?= $(shell rustc -vV | awk '/^host:/ {print $$2}')
-BUILD_OPTS = --release --target $(TARGET)
-
-ifneq (,$(findstring windows,$(TARGET)))
-CARGO_FEATURES = --features sdl2_bundle
-else ifneq (,$(findstring darwin,$(TARGET)))
-CARGO_FEATURES = --features sdl2_bundle
-else
-CARGO_FEATURES = --features sdl2
-endif
 
 .PHONY: \
 	all clean distclean update format lint build install test \
@@ -85,7 +93,7 @@ endif
 all: build
 
 clean:
-	@cd $(RUST_DIR); cargo clean $(BUILD_OPTS)
+	@cd $(RUST_DIR); cargo clean $(CARGO_OPTS)
 
 distclean:
 	@rm -rf $(DIST_DIR)
@@ -110,13 +118,13 @@ build: format lint
 	@rustup target add $(TARGET)
 	@$(SCRIPTS_DIR)/generate_readme_abspath
 	@cp LICENSE $(PYTHON_DIR)/pyxel
-	@cd $(PYTHON_DIR); maturin build -o ../$(DIST_DIR) $(BUILD_OPTS) $(MATURIN_OPTS) $(CARGO_FEATURES)
+	@cd $(PYTHON_DIR); RUSTFLAGS="$(RUSTFLAGS)" maturin build -o ../$(DIST_DIR) $(CARGO_OPTS) $(MATURIN_OPTS) $(CARGO_FEATURES)
 
 install: build
 	@pip3 install --force-reinstall `ls -rt $(DIST_DIR)/*.whl | tail -n 1`
 
 test: install
-	@cd $(RUST_DIR); cargo test $(BUILD_OPTS) $(CARGO_FEATURES)
+	@cd $(RUST_DIR); cargo test $(CARGO_OPTS) $(CARGO_FEATURES)
 
 	@bash -c 'set -e; trap "exit 130" INT; for f in $(EXAMPLES_DIR)/*.py; do pyxel run "$$f"; done'
 	@bash -c 'set -e; trap "exit 130" INT; for f in $(EXAMPLES_DIR)/apps/*.pyxapp; do pyxel play "$$f"; done'
