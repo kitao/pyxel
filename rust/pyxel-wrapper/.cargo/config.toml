@@ -1,2 +1,0 @@
-[target.wasm32-unknown-emscripten]
-rustflags = ["-Clink-arg=-lSDL2", "-Clink-arg=-lhtml5"]
