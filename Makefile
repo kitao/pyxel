@@ -74,7 +74,7 @@ endif
 
 CARGO_OPTS = --release --target $(TARGET) -Zbuild-std=std,panic_abort
 
-ifneq (,$(filter %windows% %darwin%,$(TARGET)))
+ifneq (,$(or $(findstring windows,$(TARGET)),$(findstring darwin,$(TARGET))))
 CARGO_FEATURES = --features sdl2_bundle
 else
 CARGO_FEATURES = --features sdl2
