@@ -19,9 +19,9 @@
 #	[Web]
 #	- Pyodide-customized version of Emscripten 4.0.9
 #	  To build it, run the following commands:
-#		git clone --branch 0.28.3 --depth 1 https://github.com/pyodide/pyodide.git pyodide
+#		git clone --branch 0.29.0 --depth 1 https://github.com/pyodide/pyodide.git pyodide
 #		cd pyodide/emsdk
-#		CMAKE_POLICY_VERSION_MINIMUM=3.5 make emsdk
+#		CMAKE_POLICY_VERSION_MINIMUM=3.5 make
 #		source pyodide/emsdk/emsdk/emsdk_env.sh
 #
 # Advance Preparation:
