@@ -1,5 +1,10 @@
 # Change Log
 
+## 2.5.10
+
+- Updated Pyodide to version 0.29.0
+- Updated the pyo3 crate to version 0.27
+
 ## 2.5.9
 
 - Added the load_pal and save_pal functions
