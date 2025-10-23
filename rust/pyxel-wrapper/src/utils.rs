@@ -8,12 +8,16 @@ macro_rules! cast_pyany {
     ($pyany: ident, $(($type: ty, $block: block)),*) => {
         {
             let mut types = String::new();
+
             loop {
                 $(
                     if !types.is_empty() {
                         types += ", "
                     }
-                    if let Ok($pyany) = <$type>::extract_bound(&$pyany) {
+
+                    let any_ref: &pyo3::Bound<'_, pyo3::PyAny> = $pyany.as_any();
+                    let borrowed: pyo3::Borrowed<'_, '_, pyo3::PyAny> = any_ref.into();
+                    if let Ok($pyany) = <$type>::extract(borrowed) {
                         break $block;
                     }
                     types += stringify!($type);

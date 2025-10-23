@@ -69,7 +69,7 @@ impl Music {
             let rust_seq = seqs
                 .get_item(i)
                 .unwrap()
-                .downcast::<PyList>()
+                .cast::<PyList>()
                 .unwrap()
                 .extract::<Vec<u32>>()
                 .unwrap();
