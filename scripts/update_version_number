@@ -41,6 +41,11 @@ def update_version_numbers():
         '(pyxel-engine", version.*)".*"',
         f'\\1"{version}"',
     )
+    replace_file(
+        "scripts/switch_html_scripts",
+        r"(CDN_SRC=.*pyxel@).*(/wasm/pyxel\.js)",
+        f"\\g<1>{version}\\g<2>",
+    )
 
     for html_file in pathlib.Path("wasm").glob("**/*.html"):
         replace_file(
