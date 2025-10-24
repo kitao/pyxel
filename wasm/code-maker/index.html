@@ -1,589 +1,533 @@
 <!DOCTYPE html>
 <html lang="en" class="h-full">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Pyxel Code Maker (Starter)</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pyxel Code Maker (Starter)</title>
 
-  <!-- TailwindCSS -->
-  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+    <!-- TailwindCSS -->
+    <script src="https://cdn.tailwindcss.com/3.4.17"></script>
 
-  <!-- Ace Editor (+ language tools for autocompletion) -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.6/ace.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.6/ext-language_tools.min.js"></script>
+    <!-- Ace Editor (+ language tools for autocompletion) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.6/ace.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.6/ext-language_tools.min.js"></script>
 
-  <!-- Pyxel (Pyodide/WASM runtime) -->
-  <script src="https://cdn.jsdelivr.net/gh/kitao/pyxel@2.5.9/wasm/pyxel.js"></script>
+    <!-- Pyxel (Pyodide/WASM runtime helper) -->
+    <script src="https://cdn.jsdelivr.net/gh/kitao/pyxel@2.5.9/wasm/pyxel.js"></script>
 
-  <style type="text/tailwindcss">
-    @layer components {$1
-      .toolbar { @apply flex items-center gap-2 bg-gray-800 p-2 border-gray-700 border-b; }
-      .btn { @apply bg-gray-700 hover:bg-gray-600 px-3 py-1.5 border border-gray-600 rounded-md font-medium text-gray-200 text-sm; }
-    }
-      .tabbar { @apply flex items-center gap-2 bg-gray-800 px-3 py-1.5 border-gray-700 border-b; }
-      .tabs-scroll { @apply flex-1 overflow-x-auto whitespace-nowrap; }
-      .tab { @apply inline-flex items-center gap-1 hover:bg-gray-700 mr-1 px-2 py-1 rounded-md font-medium text-gray-300 text-xs; }
-      .tab.active { @apply bg-indigo-600 text-white; }
-      .tab .close { @apply w-4 h-4 inline-flex items-center justify-center rounded hover:bg-black/20; }
-      .dropdown { @apply relative; }
-      .menu { @apply hidden right-0 absolute bg-gray-800 shadow-lg mt-1 border border-gray-700 rounded-md w-56 text-sm; }
-      .menu.open { @apply block; }
-      .menu a, .menu button { @apply hover:bg-gray-700 px-3 py-2 w-full text-left; }
-      .no-scrollbar::-webkit-scrollbar { display: none; }
-      .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-    }
-      .tabbar { @apply flex items-center gap-2 bg-gray-800 px-3 py-1.5 border-gray-700 border-b; }
-      .tab-btn { @apply hover:bg-gray-700 px-2 py-1 rounded-md font-medium text-gray-300 text-xs; }
-      .tab-btn.active { @apply bg-indigo-600 text-white; }
-    }
-    }
-      .toolbar { @apply flex items-center gap-2 bg-gray-800 p-3 border-gray-700 border-b; }
-      .btn { @apply bg-gray-700 hover:bg-gray-600 px-3 py-1.5 border border-gray-600 rounded-lg font-medium text-xs; }
-      .btn-primary { @apply bg-indigo-600 hover:bg-indigo-500 border-indigo-500; }
-      .pane-title { @apply px-3 py-1 border-gray-700 border-b font-semibold text-gray-300 text-xs tracking-wide; }
-    }
-  </style>
-</head>
-<body class="h-full page">
-  <div class="flex flex-col h-full">
-    <!-- Top toolbar: Load / Save / Run / Stop -->
-    <div class="toolbar">
-      <button id="loadBtn" class="btn" title="Load project folder">📂 Load</button>
-      <button id="saveCurrentBtn" class="btn" title="Save current file">💾 Save</button>
-      <div class="grow"></div>
-      <button id="runBtn" class="btn" title="Run (Ctrl/⌘+Enter)">▶ Run</button>
-      <button id="stopBtn" class="btn" title="Stop (Esc)">⏹ Stop</button>
-    </div>
-    <!-- Toolbar -->
-    <div class="toolbar">
-      <button id="openDirBtn" class="btn">Open Folder</button>
-      <button id="saveBtn" class="btn">Save (Ctrl/⌘+S)</button>
-      <button id="saveAllBtn" class="btn">Save All</button>
-      <div class="grow"></div>
-      <button id="runBtn" class="btn btn-primary">Run (Ctrl/⌘+Enter)</button>
-      <button id="stopBtn" class="btn">Stop (Esc)</button>
-    </div>
+    <style type="text/tailwindcss">
+      @layer components {
+        .page {
+          @apply bg-gray-900 text-gray-100 antialiased;
+        }
+        .toolbar {
+          @apply flex items-center gap-2 bg-gray-800 p-2 border-gray-700 border-b;
+        }
+        .btn {
+          @apply bg-gray-700 hover:bg-gray-600 px-3 py-1 border border-gray-600 rounded-md min-w-[3.5rem] font-medium text-gray-300 text-xs text-center;
+        }
+        .btn-primary {
+          @apply bg-indigo-600 hover:bg-indigo-500 border-indigo-500;
+        }
+        .switchbar {
+          @apply flex items-center gap-2 bg-gray-800 px-3 py-1.5 border-gray-700 border-b;
+        }
+        .switch-btn {
+          @apply hover:bg-gray-700 px-2 py-1 rounded-md font-medium text-gray-300 text-xs;
+        }
+        .switch-btn.active {
+          @apply bg-indigo-600 text-white;
+        }
+        .pane-title {
+          @apply px-3 py-1 border-gray-700 border-b font-semibold text-gray-300 text-xs tracking-wide;
+        }
+        .tool-title {
+          @apply mr-2 font-semibold text-gray-200 text-2xl tracking-tight select-none;
+        }
+        .seg {
+          @apply flex items-center bg-gray-900 border border-gray-600 rounded-lg divide-x divide-gray-700 overflow-hidden;
+        }
+        .seg-btn {
+          @apply flex-1 bg-gray-900 px-3 py-1 border-none focus:outline-none min-w-[2rem] font-medium text-gray-300 text-xs text-center;
+        }
+        .seg-active {
+          @apply bg-slate-600 text-white;
+        }
+      }
+    </style>
+    <style>
+      .no-scrollbar::-webkit-scrollbar {
+        display: none;
+      }
+      .no-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+    </style>
+  </head>
 
-    <!-- Main split: Editor | Right column (Pyxel Editor + Screen) -->
-    <div class="flex-1 gap-0 grid grid-cols-1 lg:grid-cols-2 min-h-0">
-      <!-- Left: File tabs (code/resources) -->
-      <div class="flex flex-col border-gray-800 border-r min-h-0">
-        <div class="tabbar">
-          <!-- scrollable tabs -->
-          <div id="tabStrip" class="tabs-scroll no-scrollbar"></div>
-          <!-- Add / All files / Maximize -->
-          <button id="addTabBtn" class="icon-btn" title="New / Import">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4"><path d="M12 5v14M5 12h14"/></svg>
-          </button>
-          <div class="dropdown">
-            <button id="allFilesBtn" class="icon-btn" title="All files">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
-            </button>
-            <div id="allFilesMenu" class="menu"></div>
+  <body class="h-full page">
+    <div class="flex h-full min-h-0">
+      <!-- LEFT SIDE (menu + editor/resource) -->
+      <div
+        class="flex flex-col flex-grow border-gray-800 border-r w-1/2 max-w-[50%] min-h-0"
+      >
+        <!-- Toolbar: Title / Load / Save / [Code | Resources] / Run / Stop -->
+        <div class="toolbar">
+          <div class="tool-title">Pyxel Code Maker</div>
+          <!-- Control groups wrapper (takes remaining horizontal space, right-aligned) -->
+          <div class="flex flex-1 justify-end items-center min-w-0">
+            <!-- Left group: Load / Save -->
+            <div class="flex items-center gap-2">
+              <button id="loadBtn" class="btn" title="Load project folder">
+                Load
+              </button>
+              <button id="saveCurrentBtn" class="btn" title="Save current file">
+                Save
+              </button>
+            </div>
+            <!-- Center group: Code / Res (no explicit center) -->
+            <div class="flex items-center px-6">
+              <div class="seg" role="group" aria-label="Edit target">
+                <button
+                  id="codeTabBtn"
+                  class="seg-btn seg-active"
+                  type="button"
+                  aria-pressed="true"
+                  title="Edit Python code"
+                >
+                  Code
+                </button>
+                <button
+                  id="resTabBtn"
+                  class="seg-btn"
+                  type="button"
+                  aria-pressed="false"
+                  title="Edit Pyxel resources"
+                >
+                  Res
+                </button>
+              </div>
+            </div>
+            <!-- Right group: Run -->
+            <div class="flex items-center gap-2">
+              <button id="runBtn" class="btn" title="Run (Ctrl/⌘+Enter)">
+                Run
+              </button>
+            </div>
           </div>
-          <button id="maximizeLeftBtn" class="icon-btn" title="Maximize / Restore (Fullscreen)">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4"><path d="M4 9V5a1 1 0 0 1 1-1h4M20 9V5a1 1 0 0 0-1-1h-4M4 15v4a1 1 0 0 0 1 1h4M20 15v4a1 1 0 0 1-1 1h-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </button>
         </div>
+
         <!-- Code pane -->
-        <div id="codePane" class="flex min-h-0 tab-pane">
-          <aside class="border-gray-800 border-r w-52 overflow-auto text-sm">
-            <ul id="fileList" class="divide-y divide-gray-800"></ul>
-          </aside>
-          <section class="flex-1 min-w-0">
-            <div id="editor" class="w-full h-full" style="height: calc(100vh - 128px);"></div>
-          </section>
+        <div id="codePane" class="flex flex-1 min-h-0">
+          <div id="editor" class="w-full h-full"></div>
         </div>
+
         <!-- Resource pane -->
-        <div id="resPane" class="hidden flex-1 min-h-0 tab-pane">
-          <iframe id="pyxelEditorFrame" class="border-0 w-full h-full" title="Pyxel Editor"></iframe>
+        <div id="resPane" class="hidden flex-1 min-h-0">
+          <iframe
+            id="pyxelEditorFrame"
+            class="border-0 w-full h-full"
+            title="Pyxel Resource Editor"
+          ></iframe>
         </div>
       </div>
 
-      <!-- Right: Pyxel Screen only -->
-      <div class="flex flex-col min-h-0">
-        <div class="pane-title">Pyxel Screen (runtime)</div>
-        <iframe id="runtimeFrame" class="flex-1" title="Pyxel Runtime"></iframe>
+      <!-- RIGHT SIDE (preview only) -->
+      <div class="flex flex-col flex-1 min-h-0">
+        <iframe
+          id="runtimeFrame"
+          class="flex-1 bg-black border-0 w-full h-full min-h-0"
+          title="Pyxel Runtime"
+        ></iframe>
       </div>
     </div>
-  </div>
-</div>
-</div>
 
-  <script>
-    // ------------------------------
-    // Project state (in-memory)
-    // ------------------------------
-    const project = new Map(); // path -> { handle?, content, kind: 'file' | 'dir' }
-    let currentFilePath = null;
-    let projectRootHandle = null; // FileSystemDirectoryHandle when using File System Access API
+    <script>
+      // -------------------------------------------------
+      // Project state (only 2 logical files)
+      // -------------------------------------------------
+      // - main.py (text, editable in Ace)
+      // - first .pyxres (binary as base64, edited in pyxel-editor iframe)
+      const project = new Map(); // path -> { handle?, content, kind:'file'|'dir' }
+      let projectRootHandle = null;
+      let mainPyPath = "main.py";
+      let resPath = null; // e.g. "assets.pyxres"
+      let currentMode = "code"; // "code" or "res"
 
-    // ------------------------------
-    // Ace setup
-    // ------------------------------
-    const editor = ace.edit("editor");
-    editor.setTheme("ace/theme/monokai");
-    editor.session.setMode("ace/mode/python");
-    editor.setOptions({
-      fontSize: "14px",
-      showPrintMargin: false,
-      highlightActiveLine: true,
-      enableBasicAutocompletion: true,
-      enableLiveAutocompletion: true,
-      enableSnippets: true,
-    });
+      // -------------------------------------------------
+      // Ace Editor setup
+      // -------------------------------------------------
+      const editor = ace.edit("editor");
+      editor.setTheme("ace/theme/monokai");
+      editor.session.setMode("ace/mode/python");
+      editor.setOptions({
+        fontSize: "14px",
+        showPrintMargin: false,
+        highlightActiveLine: true,
+        enableBasicAutocompletion: true,
+        enableLiveAutocompletion: true,
+        enableSnippets: true,
+      });
 
-    // Simple Pyxel API completer (extend as needed)
-    const pyxelCompleter = {
-      getCompletions(editor, session, pos, prefix, callback) {
-        const words = [
-          'pyxel.init','pyxel.run','pyxel.quit','pyxel.cls','pyxel.text','pyxel.pix','pyxel.line','pyxel.rect','pyxel.rectb','pyxel.circ','pyxel.circb','pyxel.blt',
-          'pyxel.btn','pyxel.btnp','pyxel.btnr','pyxel.KEY_Q','pyxel.KEY_SPACE'
-        ];
-        callback(null, words.map(w => ({ caption: w, value: w, meta: 'pyxel' })));
+      const pyxelCompleter = {
+        getCompletions(editor, session, pos, prefix, callback) {
+          const words = [
+            "pyxel.init",
+            "pyxel.run",
+            "pyxel.quit",
+            "pyxel.cls",
+            "pyxel.text",
+            "pyxel.pix",
+            "pyxel.line",
+            "pyxel.rect",
+            "pyxel.rectb",
+            "pyxel.circ",
+            "pyxel.circb",
+            "pyxel.blt",
+            "pyxel.btn",
+            "pyxel.btnp",
+            "pyxel.btnr",
+            "pyxel.KEY_Q",
+            "pyxel.KEY_SPACE",
+          ];
+          callback(
+            null,
+            words.map((w) => ({ caption: w, value: w, meta: "pyxel" }))
+          );
+        },
+      };
+      ace.require("ace/ext/language_tools").addCompleter(pyxelCompleter);
+
+      // -------------------------------------------------
+      // DOM elements
+      // -------------------------------------------------
+      const codePane = document.getElementById("codePane");
+      const resPane = document.getElementById("resPane");
+      const codeTabBtn = document.getElementById("codeTabBtn");
+      const resTabBtn = document.getElementById("resTabBtn");
+
+      const runtimeFrame = document.getElementById("runtimeFrame");
+      const pyxelEditorFrame = document.getElementById("pyxelEditorFrame");
+
+      // Load the two child pages in iframes
+      pyxelEditorFrame.src = "./pyxel-editor.html";
+      runtimeFrame.src = "./pyxel-screen.html";
+
+      // -------------------------------------------------
+      // Helpers to read/write files (File System Access API)
+      // -------------------------------------------------
+      async function readFileHandle(fileHandle) {
+        const file = await fileHandle.getFile();
+        const buf = await file.arrayBuffer();
+        return new Uint8Array(buf);
       }
-    };
-    ace.require('ace/ext/language_tools').addCompleter(pyxelCompleter);
 
-    // ------------------------------
-    // UI elements
-    // ------------------------------
-    const fileListEl = document.getElementById('fileList');
-    const runtimeFrame = document.getElementById('runtimeFrame');
-    const pyxelEditorFrame = document.getElementById('pyxelEditorFrame');
+      async function readTextHandle(fileHandle) {
+        const file = await fileHandle.getFile();
+        return await file.text();
+      }
 
-    // Load a lightweight placeholder for the Pyxel Editor pane.
-    // Replace this URL with your actual editor (e.g., image-editor.html or sound-editor.html)
-    pyxelEditorFrame.srcdoc = `<!doctype html><html><body style="margin:0;background:#111;color:#9ca3af;font:12px system-ui;display:flex;align-items:center;justify-content:center;height:100vh">\
-      <div style="text-align:center;line-height:1.6">\
-        <div>Pyxel Editor placeholder</div>\
-        <div style="font-size:11px">Load your resource editor page here.</div>\
-      </div>\
-    </body></html>`;
+      async function traverseDir(dirHandle, base = "") {
+        for await (const [name, handle] of dirHandle.entries()) {
+          const rel = base ? base + "/" + name : name;
+          if (handle.kind === "directory") {
+            project.set(rel, { kind: "dir", handle });
+            await traverseDir(handle, rel);
+          } else if (handle.kind === "file") {
+            let content;
+            if (/\.(py|txt|md|mml)$/i.test(name)) {
+              content = await readTextHandle(handle);
+            } else {
+              // Non-text file (ex: .pyxres) -> base64
+              const bytes = await readFileHandle(handle);
+              let bin = "";
+              for (let i = 0; i < bytes.length; i++) {
+                bin += String.fromCharCode(bytes[i]);
+              }
+              content = btoa(bin);
+            }
+            project.set(rel, { kind: "file", handle, content });
 
-    // ------------------------------
-    // File list rendering & switching
-    // ------------------------------
-    function renderFileList() {
-      const entries = Array.from(project.keys()).sort();
-      fileListEl.innerHTML = '';
-      for (const path of entries) {
+            // Detect main.py
+            if (!mainPyPath && /(^|\/)main\.py$/i.test(rel)) {
+              mainPyPath = rel;
+            }
+
+            // Detect first .pyxres
+            if (!resPath && /\.pyxres$/i.test(name)) {
+              resPath = rel;
+            }
+          }
+        }
+      }
+
+      async function writeBackFile(path) {
         const meta = project.get(path);
-        if (meta.kind !== 'file') continue;
-        const li = document.createElement('li');
-        li.className = 'px-3 py-2 hover:bg-gray-800 cursor-pointer flex items-center justify-between';
-        const name = document.createElement('span');
-        name.textContent = path;
-        name.className = 'truncate';
-        li.appendChild(name);
-        if (path === currentFilePath) li.classList.add('bg-gray-800');
-        li.addEventListener('click', () => openFile(path));
-        fileListEl.appendChild(li);
-      }
-    }
-
-    function openFile(path) {
-      const meta = project.get(path);
-      if (!meta || meta.kind !== 'file') return;
-      currentFilePath = path;
-      editor.setValue(meta.content ?? '', -1);
-      renderFileList();
-    }
-
-    async function saveCurrentToMemory() {
-      if (!currentFilePath) return;
-      const meta = project.get(currentFilePath);
-      if (!meta) return;
-      meta.content = editor.getValue();
-      project.set(currentFilePath, meta);
-    }
-
-    // ------------------------------
-    // File System Access API helpers
-    // ------------------------------
-    async function readFileHandle(fileHandle) {
-      const file = await fileHandle.getFile();
-      const buf = await file.arrayBuffer();
-      return new Uint8Array(buf);
-    }
-
-    async function readTextHandle(fileHandle) {
-      const file = await fileHandle.getFile();
-      return await file.text();
-    }
-
-    async function traverseDir(dirHandle, base = '') {
-      for await (const [name, handle] of dirHandle.entries()) {
-        const rel = base ? base + '/' + name : name;
-        if (handle.kind === 'directory') {
-          project.set(rel, { kind: 'dir', handle });
-          await traverseDir(handle, rel);
-        } else if (handle.kind === 'file') {
-          let content;
-          if (name.endsWith('.py') || name.endsWith('.txt') || name.endsWith('.md')) {
-            content = await readTextHandle(handle);
-          } else {
-            // store binary as base64 for .pyxres etc.
-            const bytes = await readFileHandle(handle);
-            let bin = '';
-            for (let i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
-            content = btoa(bin);
+        if (!meta || meta.kind !== "file" || !meta.handle) return;
+        const writable = await meta.handle.createWritable();
+        if (/\.(py|txt|md|mml)$/i.test(path)) {
+          // text
+          await writable.write(meta.content ?? "");
+        } else {
+          // base64 -> binary
+          const b64 = meta.content ?? "";
+          const bin = atob(b64);
+          const bytes = new Uint8Array(bin.length);
+          for (let i = 0; i < bin.length; i++) {
+            bytes[i] = bin.charCodeAt(i);
           }
-          project.set(rel, { kind: 'file', handle, content });
+          await writable.write(bytes);
         }
+        await writable.close();
       }
-    }
 
-    async function writeBackFile(path) {
-      const meta = project.get(path);
-      if (!meta || meta.kind !== 'file' || !meta.handle) return;
-      const writable = await meta.handle.createWritable();
-      if (path.endsWith('.py') || path.endsWith('.txt') || path.endsWith('.md')) {
-        await writable.write(meta.content ?? '');
-      } else {
-        // base64 -> binary
-        const b64 = meta.content ?? '';
-        const bin = atob(b64);
-        const bytes = new Uint8Array(bin.length);
-        for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
-        await writable.write(bytes);
-      }
-      await writable.close();
-    }
+      // -------------------------------------------------
+      // Pane switching
+      // -------------------------------------------------
+      function renderMode() {
+        if (currentMode === "code") {
+          // show code pane
+          codePane.classList.remove("hidden");
+          resPane.classList.add("hidden");
 
-    // ------------------------------
-    // Open/Save actions
-    // ------------------------------
-    document.getElementById('openDirBtn').addEventListener('click', async () => {
-      try {
-        project.clear();
-        currentFilePath = null;
-        projectRootHandle = await window.showDirectoryPicker({ mode: 'readwrite' });
-        await traverseDir(projectRootHandle);
-        renderFileList();
-        // try to open main.py or the first .py
-        const main = Array.from(project.keys()).find(p => /(^|\/)main\.py$/.test(p)) ||
-                      Array.from(project.keys()).find(p => p.endsWith('.py'));
-        if (main) openFile(main);
-      } catch (e) {
-        console.warn('Folder open cancelled or not supported', e);
-      }
-    });
+          // segmented toggle visual + accessibility (Code active)
+          codeTabBtn.classList.add("seg-active");
+          resTabBtn.classList.remove("seg-active");
+          codeTabBtn.setAttribute("aria-pressed", "true");
+          resTabBtn.setAttribute("aria-pressed", "false");
 
-    document.getElementById('saveBtn').addEventListener('click', async () => {
-      await saveCurrentToMemory();
-      if (currentFilePath) await writeBackFile(currentFilePath);
-    });
+          // load python text into Ace
+          const meta = project.get(mainPyPath);
+          editor.setValue(meta?.content ?? "", -1);
+          setTimeout(() => editor.resize(), 0);
+        } else {
+          // show resource pane
+          codePane.classList.add("hidden");
+          resPane.classList.remove("hidden");
 
-    document.getElementById('saveAllBtn').addEventListener('click', async () => {
-      await saveCurrentToMemory();
-      const writeOps = [];
-      for (const [path, meta] of project.entries()) {
-        if (meta.kind === 'file' && meta.handle) writeOps.push(writeBackFile(path));
-      }
-      await Promise.all(writeOps);
-    });
+          // segmented toggle visual + accessibility (Resources active)
+          codeTabBtn.classList.remove("seg-active");
+          resTabBtn.classList.add("seg-active");
+          codeTabBtn.setAttribute("aria-pressed", "false");
+          resTabBtn.setAttribute("aria-pressed", "true");
 
-    // Keyboard shortcuts
-    document.addEventListener('keydown', async (e) => {
-      if ((e.ctrlKey || e.metaKey) && e.key === 's') {
-        e.preventDefault();
-        document.getElementById('saveBtn').click();
-      } else if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-        e.preventDefault();
-        document.getElementById('runBtn').click();
-      } else if (e.key === 'Escape') {
-        e.preventDefault();
-        document.getElementById('stopBtn').click();
-      }
-    });
-
-    // ------------------------------
-    // Run/Stop (sessionStorage + blob player)
-    // ------------------------------
-    let playerObjectUrl = null;
-
-    function getActiveCode() {
-      // Prefer main.py from project if present; otherwise editor buffer
-      const mainPath = Array.from(project.keys()).find(p => /(^|\/)main\.py$/.test(p));
-      if (mainPath) return project.get(mainPath)?.content ?? '';
-      return editor.getValue();
-    }
-
-    function getFirstResourceBase64() {
-      const entry = Array.from(project.entries()).find(([p, m]) => m.kind === 'file' && p.endsWith('.pyxres'));
-      return entry ? entry[1].content : '';
-    }
-
-    function buildPlayerHTML() {
-      return `<!doctype html><html><head><meta charset=\"utf-8\">\
-        <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\
-        <style>html,body{height:100%;margin:0;background:#000;color:#ccc}#root{height:100%}</style>\
-        <script src=\"https://cdn.jsdelivr.net/gh/kitao/pyxel/wasm/pyxel.js\"><\/script>\
-      </head><body><div id=\"root\"></div><script>\
-        (async () => {\
-          const code = sessionStorage.getItem('pyxelCode') || '';\
-          const res = sessionStorage.getItem('pyxelResource') || '';\
-          // Create an iframe-like app runner provided by pyxel.js (assumes it exposes a Run API via pyxel.js)\
-          // Minimal loader: write code to a virtual file and execute\
-          try {\
-            // Expose globals used by parent (optional)\
-            window.resetPyxel = () => location.reload();\
-          } catch(e) { console.error(e); }\
-          // Delegate to global helper provided by pyxel.js\
-          if (window.runPyxelAppFromCode) {\
-            window.runPyxelAppFromCode(code, res);\
-          } else {\
-            // Fallback: create a basic runner via a helper embedded in pyxel.js\
-            console.log('Please provide runPyxelAppFromCode in pyxel.js');\
-          }\
-        })();\
-      <\/script></body></html>`;
-    }
-
-    async function runApp() {
-      await saveCurrentToMemory();
-      // Put code & resource in sessionStorage
-      sessionStorage.setItem('pyxelCode', getActiveCode());
-      sessionStorage.setItem('pyxelResource', getFirstResourceBase64());
-
-      // Create/refresh player blob URL
-      if (playerObjectUrl) URL.revokeObjectURL(playerObjectUrl);
-      const blob = new Blob([buildPlayerHTML()], { type: 'text/html' });
-      playerObjectUrl = URL.createObjectURL(blob);
-      runtimeFrame.src = playerObjectUrl;
-    }
-
-    function stopApp() {
-      if (playerObjectUrl) {
-        URL.revokeObjectURL(playerObjectUrl);
-        playerObjectUrl = null;
-      }
-      runtimeFrame.src = 'about:blank';
-    }
-
-    document.getElementById('runBtn').addEventListener('click', runApp);
-    document.getElementById('stopBtn').addEventListener('click', stopApp);
-
-    // Warn if API unsupported
-    if (!('showDirectoryPicker' in window)) {
-      document.getElementById('openDirBtn').title = 'Your browser may not support the File System Access API';
-    }
-
-    // Start with a tiny sample
-    const starter = `import pyxel\n\npyxel.init(160, 120)\n\ndef update():\n  if pyxel.btnp(pyxel.KEY_Q):\n    pyxel.quit()\n\ndef draw():\n  pyxel.cls(0)\n  pyxel.text(40, 56, 'Hello, Pyxel!', 10)\n\npyxel.run(update, draw)`;
-    project.set('main.py', { kind: 'file', handle: null, content: starter });
-    openFile('main.py');
-    renderFileList();
-  </script>
-  <script>
-    // --- Fullscreen helpers (maximize/restore) ---
-    function toggleFullscreen(el) {
-      if (!el) return;
-      if (!document.fullscreenElement) el.requestFullscreen?.({ navigationUI: 'hide' });
-      else document.exitFullscreen?.();
-    }
-
-    // --- File tab management (modular) ---
-    class TabDock {
-      constructor({strip, maxTabs = 12, onActivate, onClose}) {
-        this.strip = strip;               // DOM node for the tab strip
-        this.maxTabs = maxTabs;           // soft limit
-        this.onActivate = onActivate;     // (path) => void
-        this.onClose = onClose;           // (path) => void
-        this.openList = [];               // MRU: index 0 is active
-        this.closedStack = [];            // for reopen
-      }
-      has(path) { return this.openList.includes(path); }
-      list() { return [...this.openList]; }
-      active() { return this.openList[0] || null; }
-      open(path) {
-        if (!path) return;
-        const i = this.openList.indexOf(path);
-        if (i !== -1) this.openList.splice(i,1);
-        this.openList.unshift(path);
-        while (this.openList.length > this.maxTabs) this.openList.pop();
-        this.render();
-        this._scrollActiveIntoView();
-        this.onActivate?.(path);
-      }
-      close(path) {
-        const i = this.openList.indexOf(path);
-        if (i === -1) return;
-        this.openList.splice(i,1);
-        this.closedStack.push(path);
-        this.render();
-        const next = this.active();
-        if (next) this.onActivate?.(next);
-        this.onClose?.(path);
-      }
-      reopen() {
-        const p = this.closedStack.pop();
-        if (p) this.open(p);
-      }
-      pin(path) {
-        // move to head and mark pinned (simple implementation via dataset)
-        const i = this.openList.indexOf(path);
-        if (i !== -1) {
-          this.openList.splice(i,1);
-          this.openList.unshift(path);
-          this.render();
-        }
-      }
-      render() {
-        const active = this.active();
-        this.strip.innerHTML = '';
-        for (const p of this.openList) {
-          const btn = document.createElement('button');
-          btn.className = 'tab' + (p === active ? ' active' : '');
-          btn.dataset.path = p;
-          btn.title = p;
-          btn.innerHTML = `<span class="inline-block max-w-[12rem] truncate align-middle">${p}</span><span class="close" title="Close">✕</span>`;
-          btn.addEventListener('click', (e) => {
-            if ((e.target).classList?.contains('close')) return;
-            this.open(p);
-          });
-          btn.querySelector('.close').addEventListener('click', (e)=>{
-            e.stopPropagation();
-            this.close(p);
-          });
-          this.strip.appendChild(btn);
-        }
-      }
-      _scrollActiveIntoView() {
-        const activeBtn = this.strip.querySelector('.tab.active');
-        activeBtn?.scrollIntoView({inline:'center', behavior:'smooth'});
-      }
-    }
-
-    const tabDock = new TabDock({
-      strip: document.getElementById('tabStrip'),
-      maxTabs: 12,
-      onActivate: (path) => renderActivePane(path),
-      onClose:    () => {/* no-op for now */}
-    });
-
-    function isResource(path){ return path?.toLowerCase().endsWith('.pyxres'); }
-
-    // Render active pane based on extension
-    function renderActivePane(path){
-      const codePane = document.getElementById('codePane');
-      const resPane  = document.getElementById('resPane');
-      if (!path) { codePane.classList.add('hidden'); resPane.classList.add('hidden'); return; }
-      const meta = project.get(path);
-      if (!meta) return;
-      if (isResource(path)) {
-        codePane.classList.add('hidden');
-        resPane.classList.remove('hidden');
-        const f = document.getElementById('pyxelEditorFrame');
-        if (!f.src) f.src = 'resource-editor.html';
-        const payload = {type:'open', path, base64: meta.content||''};
-        const post = () => { try { f.contentWindow?.postMessage(payload, '*'); } catch(e){} };
-        if (f.contentWindow) post(); else f.onload = post;
-      } else {
-        resPane.classList.add('hidden');
-        codePane.classList.remove('hidden');
-        editor.setValue(meta.content||'', -1);
-        setTimeout(()=>editor.resize(),0);
-        currentFilePath = path;
-      }
-    }
-
-    // All files dropdown (reuses existing menu)
-    function renderAllFilesMenu() {
-      const items = Array.from(project.keys()).filter(p=>project.get(p)?.kind==='file').sort();
-      allFilesMenu.innerHTML = items.map(p => `<button data-open="${p}">${p}</button>`).join('') +
-        (tabDock.closedStack.length ? `<div class=\"border-t border-gray-700\"></div><button id=\"reopenBtn\">Reopen Closed Tab</button>` : '');
-      allFilesMenu.querySelectorAll('button[data-open]').forEach(b => b.addEventListener('click', () => {
-        tabDock.open(b.getAttribute('data-open'));
-        allFilesMenu.classList.remove('open');
-      }));
-      document.getElementById('reopenBtn')?.addEventListener('click', () => { tabDock.reopen(); allFilesMenu.classList.remove('open'); });
-    }
-
-    // Hook: file list click opens as a tab
-    fileListEl.addEventListener('click', (e)=>{
-      const li = e.target.closest('li'); if (!li) return;
-      const path = li.textContent.trim(); if (project.has(path)) tabDock.open(path);
-    });
-
-    // (+) minimal new/import
-    document.getElementById('addTabBtn').addEventListener('click', async () => {
-      const choice = prompt('New: enter filename (e.g., new.py or assets.pyxres).\nLeave empty to import local files.');
-      if (!choice) {
-        const input = document.createElement('input'); input.type = 'file'; input.multiple = true;
-        input.addEventListener('change', async () => {
-          for (const f of input.files) {
-            const buf = await f.arrayBuffer(); const arr = new Uint8Array(buf);
-            const isText = /\.(py|txt|md|mml)$/i.test(f.name);
-            const content = isText ? new TextDecoder().decode(arr) : (()=>{ let s=''; for (let i=0;i<arr.length;i++) s += String.fromCharCode(arr[i]); return btoa(s); })();
-            project.set(f.name, {kind:'file', handle:null, content});
+          // send current resource data to the resource iframe
+          if (resPath) {
+            const meta = project.get(resPath);
+            if (meta) {
+              const payload = {
+                type: "open",
+                path: resPath,
+                base64: meta.content || "",
+              };
+              const f = pyxelEditorFrame;
+              const post = () => {
+                try {
+                  f.contentWindow?.postMessage(payload, "*");
+                } catch (e) {
+                  console.warn(e);
+                }
+              };
+              if (f.contentWindow) post();
+              else f.onload = post;
+            }
           }
-          renderFileList();
-          renderAllFilesMenu();
-        }, { once: true });
-        input.click();
-        return;
+        }
       }
-      const name = choice.trim();
-      if (project.has(name)) { alert('File already exists.'); return; }
-      const isPy = /\.py$/i.test(name);
-      const content = isPy ? `import pyxel\n\npyxel.init(160,120)\n\ndef update():\n  if pyxel.btnp(pyxel.KEY_Q):\n    pyxel.quit()\n\ndef draw():\n  pyxel.cls(0)\n  pyxel.text(40,56,'${name}', 10)\n\npyxel.run(update, draw)\n` : '';
-      project.set(name, {kind:'file', handle:null, content});
-      renderFileList();
-      tabDock.open(name);
-    });
 
-    // All files dropdown open/close
-    document.getElementById('allFilesBtn').addEventListener('click', () => { renderAllFilesMenu(); allFilesMenu.classList.toggle('open'); });
-    document.addEventListener('click', (e) => {
-      if (!allFilesMenu.contains(e.target) && e.target.id !== 'allFilesBtn') allFilesMenu.classList.remove('open');
-    });
+      codeTabBtn.addEventListener("click", () => {
+        currentMode = "code";
+        renderMode();
+      });
 
-    // Left maximize
-    document.getElementById('maximizeLeftBtn').addEventListener('click', () => {
-      const activePane = document.querySelector('.tab-pane:not(.hidden)');
-      toggleFullscreen(activePane);
-    });
+      resTabBtn.addEventListener("click", () => {
+        currentMode = "res";
+        renderMode();
+      });
 
-    // Init: open main.py or first available
-    (function initTabs(){
-      const main = Array.from(project.keys()).find(p => /(^|\\/)main\\.py$/.test(p)) ||
-                   Array.from(project.keys()).find(p => p.endsWith('.py')) ||
-                   Array.from(project.keys()).find(p => p.endsWith('.pyxres'));
-      if (main) tabDock.open(main); else tabDock.render();
-    })();
-  // --- Top toolbar actions (Load/Save/Run/Stop) ---
-    async function openProjectFolder() {
-      try {
-        project.clear();
-        currentFilePath = null;
-        projectRootHandle = await window.showDirectoryPicker({ mode: 'readwrite' });
-        await traverseDir(projectRootHandle);
-        renderFileList();
-        const main = Array.from(project.keys()).find(p => /(^|\/)main\.py$/.test(p)) ||
-                     Array.from(project.keys()).find(p => p.endsWith('.py')) ||
-                     Array.from(project.keys()).find(p => p.endsWith('.pyxres'));
-        if (main) tabDock.open(main);
-      } catch (e) {
-        console.warn('Folder open cancelled or not supported', e);
+      // Save current editor buffer back into project map
+      async function saveCurrentToMemory() {
+        if (currentMode === "code") {
+          const meta = project.get(mainPyPath);
+          if (meta) {
+            meta.content = editor.getValue();
+            project.set(mainPyPath, meta);
+          }
+        } else if (currentMode === "res") {
+          // In future: receive updated .pyxres data from pyxelEditorFrame via postMessage
+        }
       }
-    }
-    async function saveCurrentFile() {
-      await saveCurrentToMemory();
-      if (currentFilePath) await writeBackFile(currentFilePath);
-    }
-    document.getElementById('loadBtn')?.addEventListener('click', openProjectFolder);
-    document.getElementById('saveCurrentBtn')?.addEventListener('click', saveCurrentFile);
-    document.getElementById('runBtn')?.addEventListener('click', runApp);
-    document.getElementById('stopBtn')?.addEventListener('click', stopApp);
 
-    // Keyboard shortcuts
-    document.addEventListener('keydown', async (e) => {
-      if ((e.ctrlKey || e.metaKey) && e.key === 's') { e.preventDefault(); await saveCurrentFile(); }
-      else if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') { e.preventDefault(); runApp(); }
-      else if (e.key === 'Escape') { e.preventDefault(); stopApp(); }
-    });
-  </script>
-</body>
+      // -------------------------------------------------
+      // Run / Stop preview
+      // -------------------------------------------------
+      let playerObjectUrl = null;
+
+      function getActiveCode() {
+        // Prefer main.py content from project, fallback to editor buffer
+        if (mainPyPath && project.has(mainPyPath)) {
+          const meta = project.get(mainPyPath);
+          return meta?.content ?? editor.getValue();
+        }
+        return editor.getValue();
+      }
+
+      function getResourceBase64() {
+        if (resPath && project.has(resPath)) {
+          return project.get(resPath).content || "";
+        }
+        return "";
+      }
+
+      function buildPlayerHTML() {
+        // This mini-runner expects pyxel.js to provide runPyxelAppFromCode(code, resBase64)
+        return (
+          '<!doctype html><html><head><meta charset=\\"utf-8\\">' +
+          '<meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1\\">' +
+          "<style>html,body{height:100%;margin:0;background:#000;color:#ccc;font-family:monospace;font-size:12px;}#root{height:100%}</style>" +
+          '<script src=\\"https://cdn.jsdelivr.net/gh/kitao/pyxel/wasm/pyxel.js\\"><\\/script>' +
+          '</head><body><div id=\\"root\\"></div><script>' +
+          "(async () => {" +
+          "  const code = sessionStorage.getItem('pyxelCode') || '';" +
+          "  const res = sessionStorage.getItem('pyxelResource') || '';" +
+          "  try { window.resetPyxel = () => location.reload(); } catch(e) { console.error(e); }" +
+          "  if (window.runPyxelAppFromCode) {" +
+          "    window.runPyxelAppFromCode(code, res);" +
+          "  } else {" +
+          "    console.log('runPyxelAppFromCode() is not defined yet');" +
+          "  }" +
+          "})();" +
+          "<\\/script></body></html>"
+        );
+      }
+
+      async function runApp() {
+        await saveCurrentToMemory();
+        sessionStorage.setItem("pyxelCode", getActiveCode());
+        sessionStorage.setItem("pyxelResource", getResourceBase64());
+
+        if (playerObjectUrl) URL.revokeObjectURL(playerObjectUrl);
+        const blob = new Blob([buildPlayerHTML()], { type: "text/html" });
+        playerObjectUrl = URL.createObjectURL(blob);
+        runtimeFrame.src = playerObjectUrl;
+      }
+
+      function stopApp() {
+        if (playerObjectUrl) {
+          URL.revokeObjectURL(playerObjectUrl);
+          playerObjectUrl = null;
+        }
+        runtimeFrame.src = "about:blank";
+      }
+
+      // -------------------------------------------------
+      // Open / Save project via File System Access API
+      // -------------------------------------------------
+      async function openProjectFolder() {
+        try {
+          project.clear();
+          mainPyPath = "main.py";
+          resPath = null;
+          projectRootHandle = await window.showDirectoryPicker({
+            mode: "readwrite",
+          });
+          await traverseDir(projectRootHandle);
+
+          // Ensure there is at least one main.py
+          if (!project.has(mainPyPath)) {
+            const starter = `import pyxel
+
+pyxel.init(160, 120)
+
+def update():
+  if pyxel.btnp(pyxel.KEY_Q):
+    pyxel.quit()
+
+def draw():
+  pyxel.cls(0)
+  pyxel.text(40, 56, 'Hello, Pyxel!', 10)
+
+pyxel.run(update, draw)
+`;
+            project.set(mainPyPath, {
+              kind: "file",
+              handle: null,
+              content: starter,
+            });
+          }
+
+          renderMode();
+        } catch (e) {
+          console.warn("Folder open cancelled or not supported", e);
+        }
+      }
+
+      async function saveCurrentFile() {
+        await saveCurrentToMemory();
+        if (currentMode === "code" && mainPyPath) {
+          await writeBackFile(mainPyPath);
+        } else if (currentMode === "res" && resPath) {
+          await writeBackFile(resPath);
+        }
+      }
+
+      // -------------------------------------------------
+      // Toolbar/keyboard wiring
+      // -------------------------------------------------
+      document
+        .getElementById("loadBtn")
+        ?.addEventListener("click", openProjectFolder);
+      document
+        .getElementById("saveCurrentBtn")
+        ?.addEventListener("click", saveCurrentFile);
+      document.getElementById("runBtn")?.addEventListener("click", runApp);
+      document.getElementById("stopBtn")?.addEventListener("click", stopApp);
+
+      document.addEventListener("keydown", async (e) => {
+        if ((e.ctrlKey || e.metaKey) && e.key === "s") {
+          e.preventDefault();
+          await saveCurrentFile();
+        } else if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+          e.preventDefault();
+          runApp();
+        } else if (e.key === "Escape") {
+          e.preventDefault();
+          stopApp();
+        }
+      });
+
+      // -------------------------------------------------
+      // Initial buffer (in-memory main.py only)
+      // -------------------------------------------------
+      const starter = `import pyxel
+
+pyxel.init(160, 120)
+
+def update():
+  if pyxel.btnp(pyxel.KEY_Q):
+    pyxel.quit()
+
+def draw():
+  pyxel.cls(0)
+  pyxel.text(40, 56, 'Hello, Pyxel!', 10)
+
+pyxel.run(update, draw)
+`;
+      project.set(mainPyPath, { kind: "file", handle: null, content: starter });
+
+      // Initial render: show code view
+      renderMode();
+
+      // Warn if File System Access API unsupported
+      if (!("showDirectoryPicker" in window)) {
+        document
+          .getElementById("loadBtn")
+          ?.setAttribute(
+            "title",
+            "Your browser may not support the File System Access API"
+          );
+      }
+    </script>
+  </body>
 </html>
