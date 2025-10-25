@@ -13,7 +13,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.6/ext-language_tools.min.js"></script>
 
     <!-- Pyxel (Pyodide/WASM runtime helper) -->
-    <script src="../pyxel.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/kitao/pyxel@2.5.9/wasm/pyxel.js"></script>
     <!-- JSZip (for Load/Save as .zip) -->
     <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
 
@@ -30,18 +30,6 @@
         }
         .btn-primary {
           @apply bg-indigo-600 hover:bg-indigo-500 border-indigo-500;
-        }
-        .switchbar {
-          @apply flex items-center gap-2 bg-gray-800 px-3 py-1.5 border-gray-700 border-b;
-        }
-        .switch-btn {
-          @apply hover:bg-gray-700 px-2 py-1 rounded-md font-medium text-gray-300 text-xs;
-        }
-        .switch-btn.active {
-          @apply bg-indigo-600 text-white;
-        }
-        .pane-title {
-          @apply px-3 py-1 border-gray-700 border-b font-semibold text-gray-300 text-xs tracking-wide;
         }
         .tool-title {
           @apply mr-2 font-semibold text-gray-200 text-2xl tracking-tight select-none;
@@ -76,7 +64,7 @@
         class="flex flex-col min-h-0"
         style="width: 50%; min-width: 200px; max-width: 80%"
       >
-        <!-- Toolbar: Title / Load / Save / [Code | Resources] / Run / Stop -->
+        <!-- Toolbar: Title / Load / Save / [Code | Res] / Run -->
         <div class="toolbar">
           <div class="tool-title">Pyxel Code Maker</div>
           <!-- Control groups wrapper (takes remaining horizontal space, right-aligned) -->
@@ -165,6 +153,7 @@
     />
 
     <script>
+      const MIN_LEFT_PANE_WIDTH = 550; // px, enough for title + buttons
       // -------------------------------------------------
       // Project state (only 2 logical files)
       // -------------------------------------------------
@@ -196,18 +185,12 @@ pyxel.run(update, draw)
       // -------------------------------------------------
       const editor = ace.edit("editor");
       editor.setTheme("ace/theme/monokai");
-      // Change gutter (line number area) background to match Tailwind gray-900
-      editor.renderer.setOption("theme", "ace/theme/monokai");
-      const gutter = editor.renderer.$gutter;
-      if (gutter && gutter.style) {
-        gutter.style.background = "#232d3b"; // Mid tone between previous gutter colors
-      }
-      // Match editor background/text to Tailwind gray-900 and text-gray-100
-      editor.container.style.backgroundColor = "#111827"; // Tailwind gray-900
-      //editor.container.style.color = "#e5e7eb"; // Tailwind text-gray-100
       editor.session.setMode("ace/mode/python");
-      editor.renderer.setScrollMargin(8, 0, 0, 0);
-      editor.renderer.setPadding(8); // Add left margin inside editor content
+
+      // Layout / spacing inside the editor
+      editor.renderer.setScrollMargin(8, 0, 0, 0); // top padding without shifting left gutter
+      editor.renderer.setPadding(8); // left padding for code text
+
       editor.setOptions({
         fontSize: "14px",
         showPrintMargin: false,
@@ -217,17 +200,26 @@ pyxel.run(update, draw)
         enableSnippets: true,
       });
 
-      // Custom ACE theme tweaks for active line and gutter line highlight
+      // Match the surrounding UI colors
+      // Editor background = page bg (gray-900)
+      editor.container.style.backgroundColor = "#111827"; // bg-gray-900
+
+      // Gutter (line number column) base color
+      const gutter = editor.renderer.$gutter;
+      if (gutter && gutter.style) {
+        gutter.style.background = "#232d3b"; // custom blue-gray accent
+      }
+
+      // Inject custom Ace highlight colors to match our UI theme
       const aceThemeStyle = document.createElement("style");
       aceThemeStyle.textContent = `
-        /* Active line highlight in the code area (match separator color) */
+        /* Code area's current line highlight (match separator color) */
         .ace-monokai .ace_marker-layer .ace_active-line,
         .ace_monokai .ace_marker-layer .ace_active-line {
           background-color: #232d3b !important;
         }
 
-        /* Active line highlight in the gutter (line numbers)
-           Match the toolbar bottom border (#374151 / border-gray-700) */
+        /* Gutter current line highlight (match toolbar bottom border gray-700 #374151) */
         .ace-monokai .ace_gutter-active-line,
         .ace_monokai .ace_gutter-active-line {
           background-color: #374151 !important;
@@ -235,6 +227,7 @@ pyxel.run(update, draw)
       `;
       document.head.appendChild(aceThemeStyle);
 
+      // Simple Pyxel-aware autocompletion
       const pyxelCompleter = {
         getCompletions(editor, session, pos, prefix, callback) {
           const words = [
@@ -290,6 +283,7 @@ pyxel.run(update, draw)
         let startPointerId = null;
         let startX = 0;
         let startWidth = 0;
+        // Limit how narrow the left pane can shrink (enough for title + buttons)
         let minAllowedWidth = 200; // will be set on pointerdown
 
         const onPointerMove = (e) => {
@@ -323,9 +317,8 @@ pyxel.run(update, draw)
           startX = e.clientX;
           startWidth = leftPaneEl.getBoundingClientRect().width;
 
-          // Fixed practical minimum that keeps title+buttons roughly usable
-          // but actually lets you drag much further left.
-          minAllowedWidth = 550;
+          // Limit how narrow the left pane can shrink (enough for title + buttons)
+          minAllowedWidth = MIN_LEFT_PANE_WIDTH;
 
           document.body.style.cursor = "col-resize";
           dividerHitEl.setPointerCapture(e.pointerId);
@@ -621,6 +614,9 @@ pyxel.run(update, draw)
 
       // Initial render: show code view
       renderMode();
+
+      // Give keyboard focus to the code editor immediately on load
+      editor.focus();
     </script>
   </body>
 </html>
