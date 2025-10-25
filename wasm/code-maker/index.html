@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Pyxel Code Maker (Starter)</title>
+    <title>Pyxel Code Maker</title>
 
     <!-- TailwindCSS -->
     <script src="https://cdn.tailwindcss.com/3.4.17"></script>
@@ -13,7 +13,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.6/ext-language_tools.min.js"></script>
 
     <!-- Pyxel (Pyodide/WASM runtime helper) -->
-    <script src="https://cdn.jsdelivr.net/gh/kitao/pyxel@2.5.9/wasm/pyxel.js"></script>
+    <script src="../pyxel.js"></script>
+    <!-- JSZip (for Load/Save as .zip) -->
+    <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
 
     <style type="text/tailwindcss">
       @layer components {
@@ -21,7 +23,7 @@
           @apply bg-gray-900 text-gray-100 antialiased;
         }
         .toolbar {
-          @apply flex items-center gap-2 bg-gray-800 p-2 border-gray-700 border-b;
+          @apply flex items-center gap-2 bg-gray-900 px-4 py-3 border-gray-700 border-b;
         }
         .btn {
           @apply bg-gray-700 hover:bg-gray-600 px-3 py-1 border border-gray-600 rounded-md min-w-[3.5rem] font-medium text-gray-300 text-xs text-center;
@@ -67,10 +69,12 @@
   </head>
 
   <body class="h-full page">
-    <div class="flex h-full min-h-0">
+    <div id="mainSplit" class="flex h-full min-h-0">
       <!-- LEFT SIDE (menu + editor/resource) -->
       <div
-        class="flex flex-col flex-grow border-gray-800 border-r w-1/2 max-w-[50%] min-h-0"
+        id="leftPane"
+        class="flex flex-col min-h-0"
+        style="width: 50%; min-width: 200px; max-width: 80%"
       >
         <!-- Toolbar: Title / Load / Save / [Code | Resources] / Run / Stop -->
         <div class="toolbar">
@@ -87,7 +91,7 @@
               </button>
             </div>
             <!-- Center group: Code / Res (no explicit center) -->
-            <div class="flex items-center px-6">
+            <div class="flex items-center px-4">
               <div class="seg" role="group" aria-label="Edit target">
                 <button
                   id="codeTabBtn"
@@ -133,6 +137,16 @@
         </div>
       </div>
 
+      <!-- Divider: draggable vertical bar (thicker, no gap) -->
+      <div
+        id="dividerHit"
+        class="w-2 cursor-col-resize"
+        style="background-color: #232d3b"
+        onpointerenter="this.style.backgroundColor='#3a4a5f'"
+        onpointerleave="this.style.backgroundColor='#232d3b'"
+        title="Drag to resize"
+      ></div>
+
       <!-- RIGHT SIDE (preview only) -->
       <div class="flex flex-col flex-1 min-h-0">
         <iframe
@@ -143,24 +157,57 @@
       </div>
     </div>
 
+    <input
+      id="loadFileInput"
+      type="file"
+      accept=".zip,application/zip"
+      class="hidden"
+    />
+
     <script>
       // -------------------------------------------------
       // Project state (only 2 logical files)
       // -------------------------------------------------
       // - main.py (text, editable in Ace)
       // - first .pyxres (binary as base64, edited in pyxel-editor iframe)
-      const project = new Map(); // path -> { handle?, content, kind:'file'|'dir' }
-      let projectRootHandle = null;
+
+      const project = new Map(); // path -> { content, kind:'file' }
       let mainPyPath = "main.py";
       let resPath = null; // e.g. "assets.pyxres"
       let currentMode = "code"; // "code" or "res"
+
+      const DEFAULT_STARTER_CODE = `import pyxel
+
+pyxel.init(160, 120)
+
+def update():
+  if pyxel.btnp(pyxel.KEY_Q):
+    pyxel.quit()
+
+def draw():
+  pyxel.cls(0)
+  pyxel.text(40, 56, 'Hello, Pyxel!', 10)
+
+pyxel.run(update, draw)
+`;
 
       // -------------------------------------------------
       // Ace Editor setup
       // -------------------------------------------------
       const editor = ace.edit("editor");
       editor.setTheme("ace/theme/monokai");
+      // Change gutter (line number area) background to match Tailwind gray-900
+      editor.renderer.setOption("theme", "ace/theme/monokai");
+      const gutter = editor.renderer.$gutter;
+      if (gutter && gutter.style) {
+        gutter.style.background = "#232d3b"; // Mid tone between previous gutter colors
+      }
+      // Match editor background/text to Tailwind gray-900 and text-gray-100
+      editor.container.style.backgroundColor = "#111827"; // Tailwind gray-900
+      //editor.container.style.color = "#e5e7eb"; // Tailwind text-gray-100
       editor.session.setMode("ace/mode/python");
+      editor.renderer.setScrollMargin(8, 0, 0, 0);
+      editor.renderer.setPadding(8); // Add left margin inside editor content
       editor.setOptions({
         fontSize: "14px",
         showPrintMargin: false,
@@ -169,6 +216,24 @@
         enableLiveAutocompletion: true,
         enableSnippets: true,
       });
+
+      // Custom ACE theme tweaks for active line and gutter line highlight
+      const aceThemeStyle = document.createElement("style");
+      aceThemeStyle.textContent = `
+        /* Active line highlight in the code area (match separator color) */
+        .ace-monokai .ace_marker-layer .ace_active-line,
+        .ace_monokai .ace_marker-layer .ace_active-line {
+          background-color: #232d3b !important;
+        }
+
+        /* Active line highlight in the gutter (line numbers)
+           Match the toolbar bottom border (#374151 / border-gray-700) */
+        .ace-monokai .ace_gutter-active-line,
+        .ace_monokai .ace_gutter-active-line {
+          background-color: #374151 !important;
+        }
+      `;
+      document.head.appendChild(aceThemeStyle);
 
       const pyxelCompleter = {
         getCompletions(editor, session, pos, prefix, callback) {
@@ -215,71 +280,82 @@
       runtimeFrame.src = "./pyxel-screen.html";
 
       // -------------------------------------------------
-      // Helpers to read/write files (File System Access API)
+      // Split resize (drag center divider)
       // -------------------------------------------------
-      async function readFileHandle(fileHandle) {
-        const file = await fileHandle.getFile();
-        const buf = await file.arrayBuffer();
-        return new Uint8Array(buf);
-      }
+      const mainSplit = document.getElementById("mainSplit");
+      const leftPaneEl = document.getElementById("leftPane");
+      const dividerHitEl = document.getElementById("dividerHit");
 
-      async function readTextHandle(fileHandle) {
-        const file = await fileHandle.getFile();
-        return await file.text();
-      }
+      if (dividerHitEl && leftPaneEl && mainSplit) {
+        let startPointerId = null;
+        let startX = 0;
+        let startWidth = 0;
+        let minAllowedWidth = 200; // will be set on pointerdown
 
-      async function traverseDir(dirHandle, base = "") {
-        for await (const [name, handle] of dirHandle.entries()) {
-          const rel = base ? base + "/" + name : name;
-          if (handle.kind === "directory") {
-            project.set(rel, { kind: "dir", handle });
-            await traverseDir(handle, rel);
-          } else if (handle.kind === "file") {
-            let content;
-            if (/\.(py|txt|md|mml)$/i.test(name)) {
-              content = await readTextHandle(handle);
-            } else {
-              // Non-text file (ex: .pyxres) -> base64
-              const bytes = await readFileHandle(handle);
-              let bin = "";
-              for (let i = 0; i < bytes.length; i++) {
-                bin += String.fromCharCode(bytes[i]);
-              }
-              content = btoa(bin);
-            }
-            project.set(rel, { kind: "file", handle, content });
+        const onPointerMove = (e) => {
+          if (startPointerId === null) return;
 
-            // Detect main.py
-            if (!mainPyPath && /(^|\/)main\.py$/i.test(rel)) {
-              mainPyPath = rel;
-            }
+          // delta from drag start
+          const dx = e.clientX - startX;
+          let newW = startWidth + dx;
 
-            // Detect first .pyxres
-            if (!resPath && /\.pyxres$/i.test(name)) {
-              resPath = rel;
-            }
+          // clamp using fixed min/max for this drag session
+          const containerW = mainSplit.getBoundingClientRect().width;
+          const maxW = containerW * 0.8;
+
+          if (newW < minAllowedWidth) newW = minAllowedWidth;
+          if (newW > maxW) newW = maxW;
+
+          leftPaneEl.style.width = newW + "px";
+          editor.resize();
+        };
+
+        const endDrag = () => {
+          if (startPointerId !== null) {
+            startPointerId = null;
+            document.body.style.cursor = "";
+            dividerHitEl.releasePointerCapture(dividerHitEl.pointerId || 0);
           }
-        }
+        };
+
+        dividerHitEl.addEventListener("pointerdown", (e) => {
+          startPointerId = e.pointerId;
+          startX = e.clientX;
+          startWidth = leftPaneEl.getBoundingClientRect().width;
+
+          // Fixed practical minimum that keeps title+buttons roughly usable
+          // but actually lets you drag much further left.
+          minAllowedWidth = 550;
+
+          document.body.style.cursor = "col-resize";
+          dividerHitEl.setPointerCapture(e.pointerId);
+          e.preventDefault();
+        });
+
+        dividerHitEl.addEventListener("pointermove", onPointerMove);
+        dividerHitEl.addEventListener("pointerup", endDrag);
+        dividerHitEl.addEventListener("pointercancel", endDrag);
       }
 
-      async function writeBackFile(path) {
-        const meta = project.get(path);
-        if (!meta || meta.kind !== "file" || !meta.handle) return;
-        const writable = await meta.handle.createWritable();
-        if (/\.(py|txt|md|mml)$/i.test(path)) {
-          // text
-          await writable.write(meta.content ?? "");
-        } else {
-          // base64 -> binary
-          const b64 = meta.content ?? "";
-          const bin = atob(b64);
-          const bytes = new Uint8Array(bin.length);
-          for (let i = 0; i < bin.length; i++) {
-            bytes[i] = bin.charCodeAt(i);
-          }
-          await writable.write(bytes);
+      // -------------------------------------------------
+      // Zip helpers (convert binary <-> base64)
+      // -------------------------------------------------
+
+      function uint8ToBase64(u8) {
+        let bin = "";
+        for (let i = 0; i < u8.length; i++) {
+          bin += String.fromCharCode(u8[i]);
         }
-        await writable.close();
+        return btoa(bin);
+      }
+
+      function base64ToUint8(b64) {
+        const bin = atob(b64 || "");
+        const bytes = new Uint8Array(bin.length);
+        for (let i = 0; i < bin.length; i++) {
+          bytes[i] = bin.charCodeAt(i);
+        }
+        return bytes;
       }
 
       // -------------------------------------------------
@@ -360,9 +436,8 @@
       }
 
       // -------------------------------------------------
-      // Run / Stop preview
+      // Run preview
       // -------------------------------------------------
-      let playerObjectUrl = null;
 
       function getActiveCode() {
         // Prefer main.py content from project, fallback to editor buffer
@@ -380,96 +455,137 @@
         return "";
       }
 
-      function buildPlayerHTML() {
-        // This mini-runner expects pyxel.js to provide runPyxelAppFromCode(code, resBase64)
-        return (
-          '<!doctype html><html><head><meta charset=\\"utf-8\\">' +
-          '<meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1\\">' +
-          "<style>html,body{height:100%;margin:0;background:#000;color:#ccc;font-family:monospace;font-size:12px;}#root{height:100%}</style>" +
-          '<script src=\\"https://cdn.jsdelivr.net/gh/kitao/pyxel/wasm/pyxel.js\\"><\\/script>' +
-          '</head><body><div id=\\"root\\"></div><script>' +
-          "(async () => {" +
-          "  const code = sessionStorage.getItem('pyxelCode') || '';" +
-          "  const res = sessionStorage.getItem('pyxelResource') || '';" +
-          "  try { window.resetPyxel = () => location.reload(); } catch(e) { console.error(e); }" +
-          "  if (window.runPyxelAppFromCode) {" +
-          "    window.runPyxelAppFromCode(code, res);" +
-          "  } else {" +
-          "    console.log('runPyxelAppFromCode() is not defined yet');" +
-          "  }" +
-          "})();" +
-          "<\\/script></body></html>"
-        );
-      }
-
       async function runApp() {
+        // Save current editor buffer into project map first
         await saveCurrentToMemory();
-        sessionStorage.setItem("pyxelCode", getActiveCode());
-        sessionStorage.setItem("pyxelResource", getResourceBase64());
 
-        if (playerObjectUrl) URL.revokeObjectURL(playerObjectUrl);
-        const blob = new Blob([buildPlayerHTML()], { type: "text/html" });
-        playerObjectUrl = URL.createObjectURL(blob);
-        runtimeFrame.src = playerObjectUrl;
-      }
+        // Gather current code (.py) and resource (.pyxres as base64)
+        const payload = {
+          type: "run",
+          code: getActiveCode(),
+          res: getResourceBase64(),
+        };
 
-      function stopApp() {
-        if (playerObjectUrl) {
-          URL.revokeObjectURL(playerObjectUrl);
-          playerObjectUrl = null;
+        // Send message to the runtime iframe (pyxel-screen.html)
+        try {
+          if (runtimeFrame && runtimeFrame.contentWindow) {
+            runtimeFrame.contentWindow.postMessage(payload, "*");
+          } else {
+            console.warn("runtimeFrame is not ready");
+          }
+        } catch (e) {
+          console.error("Failed to post code to runtimeFrame:", e);
         }
-        runtimeFrame.src = "about:blank";
       }
 
       // -------------------------------------------------
-      // Open / Save project via File System Access API
+      // Open / Save project via ZIP
       // -------------------------------------------------
-      async function openProjectFolder() {
+
+      // DOM handle for the hidden <input type="file">
+      const loadFileInput = document.getElementById("loadFileInput");
+
+      // Trigger: called when user clicks "Load"
+      function triggerLoadZip() {
+        if (loadFileInput) {
+          loadFileInput.value = "";
+          loadFileInput.click();
+        }
+      }
+
+      // Handle: read selected .zip, extract main.py and first .pyxres
+      async function handleZipFile(file) {
+        if (!file) return;
         try {
           project.clear();
           mainPyPath = "main.py";
           resPath = null;
-          projectRootHandle = await window.showDirectoryPicker({
-            mode: "readwrite",
+
+          const buf = await file.arrayBuffer();
+          const zip = await JSZip.loadAsync(buf);
+
+          let pyCode = null;
+          let foundResName = null;
+          let foundResB64 = null;
+
+          const entries = Object.entries(zip.files);
+          for (const [path, entry] of entries) {
+            if (entry.dir) continue;
+
+            if (path.endsWith("main.py")) {
+              pyCode = await entry.async("string");
+            } else if (path.toLowerCase().endsWith(".pyxres") && !foundResB64) {
+              const u8 = await entry.async("uint8array");
+              foundResB64 = uint8ToBase64(u8);
+              foundResName = path;
+            }
+          }
+
+          // Fallback main.py if not found
+          if (pyCode == null) {
+            pyCode = DEFAULT_STARTER_CODE;
+          }
+
+          // Set main.py into project
+          project.set(mainPyPath, {
+            kind: "file",
+            content: pyCode,
           });
-          await traverseDir(projectRootHandle);
 
-          // Ensure there is at least one main.py
-          if (!project.has(mainPyPath)) {
-            const starter = `import pyxel
-
-pyxel.init(160, 120)
-
-def update():
-  if pyxel.btnp(pyxel.KEY_Q):
-    pyxel.quit()
-
-def draw():
-  pyxel.cls(0)
-  pyxel.text(40, 56, 'Hello, Pyxel!', 10)
-
-pyxel.run(update, draw)
-`;
-            project.set(mainPyPath, {
+          // If .pyxres found, store it too
+          if (foundResB64) {
+            resPath = foundResName;
+            project.set(resPath, {
               kind: "file",
-              handle: null,
-              content: starter,
+              content: foundResB64,
             });
           }
 
+          // Refresh UI/editor with loaded data
           renderMode();
         } catch (e) {
-          console.warn("Folder open cancelled or not supported", e);
+          console.warn("Failed to load zip:", e);
         }
       }
 
-      async function saveCurrentFile() {
+      // Save current project (main.py + first .pyxres) as zip download
+      async function saveAsZip() {
         await saveCurrentToMemory();
-        if (currentMode === "code" && mainPyPath) {
-          await writeBackFile(mainPyPath);
-        } else if (currentMode === "res" && resPath) {
-          await writeBackFile(resPath);
+
+        const zip = new JSZip();
+
+        // Add main.py
+        const mainMeta = project.get(mainPyPath);
+        if (mainMeta && mainMeta.content != null) {
+          zip.file(mainPyPath, mainMeta.content);
         }
+
+        // Add .pyxres (binary)
+        if (resPath) {
+          const resMeta = project.get(resPath);
+          if (resMeta && resMeta.content != null) {
+            const bytes = base64ToUint8(resMeta.content);
+            zip.file(resPath, bytes);
+          }
+        }
+
+        const blob = await zip.generateAsync({ type: "blob" });
+
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = "pyxel-project.zip";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(a.href);
+      }
+
+      // Attach 'change' listener to hidden file input for actual load
+      if (loadFileInput) {
+        loadFileInput.addEventListener("change", async (e) => {
+          const file = e.target.files && e.target.files[0];
+          await handleZipFile(file);
+        });
       }
 
       // -------------------------------------------------
@@ -477,57 +593,34 @@ pyxel.run(update, draw)
       // -------------------------------------------------
       document
         .getElementById("loadBtn")
-        ?.addEventListener("click", openProjectFolder);
+        ?.addEventListener("click", triggerLoadZip);
+
       document
         .getElementById("saveCurrentBtn")
-        ?.addEventListener("click", saveCurrentFile);
+        ?.addEventListener("click", saveAsZip);
+
       document.getElementById("runBtn")?.addEventListener("click", runApp);
-      document.getElementById("stopBtn")?.addEventListener("click", stopApp);
 
       document.addEventListener("keydown", async (e) => {
         if ((e.ctrlKey || e.metaKey) && e.key === "s") {
           e.preventDefault();
-          await saveCurrentFile();
+          await saveAsZip();
         } else if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
           e.preventDefault();
           runApp();
-        } else if (e.key === "Escape") {
-          e.preventDefault();
-          stopApp();
         }
       });
 
       // -------------------------------------------------
       // Initial buffer (in-memory main.py only)
       // -------------------------------------------------
-      const starter = `import pyxel
-
-pyxel.init(160, 120)
-
-def update():
-  if pyxel.btnp(pyxel.KEY_Q):
-    pyxel.quit()
-
-def draw():
-  pyxel.cls(0)
-  pyxel.text(40, 56, 'Hello, Pyxel!', 10)
-
-pyxel.run(update, draw)
-`;
-      project.set(mainPyPath, { kind: "file", handle: null, content: starter });
+      project.set(mainPyPath, {
+        kind: "file",
+        content: DEFAULT_STARTER_CODE,
+      });
 
       // Initial render: show code view
       renderMode();
-
-      // Warn if File System Access API unsupported
-      if (!("showDirectoryPicker" in window)) {
-        document
-          .getElementById("loadBtn")
-          ?.setAttribute(
-            "title",
-            "Your browser may not support the File System Access API"
-          );
-      }
     </script>
   </body>
 </html>
