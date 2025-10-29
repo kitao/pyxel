@@ -6,6 +6,11 @@
     <script src="https://cdn.jsdelivr.net/gh/kitao/pyxel@2.5.9/wasm/pyxel.js"></script>
   </head>
   <body>
-    <pyxel-run root="." name="mml_studio.py"></pyxel-run>
+    <pyxel-run
+      script="
+        import pyxel.cli
+        pyxel.cli.edit_pyxel_resource('my_resource.pyxres')
+      "
+    ></pyxel-run>
   </body>
 </html>
