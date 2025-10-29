@@ -1,0 +1,3 @@
+pyxel.init
+pyxel.run
+pyxel.quit
