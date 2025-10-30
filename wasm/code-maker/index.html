@@ -22,13 +22,19 @@
           @apply flex items-center gap-2 bg-gray-900 px-4 py-3 border-gray-700 border-b;
         }
         .btn {
-          @apply bg-gray-700 hover:bg-gray-600 px-2 py-1 border border-gray-600 rounded-md min-w-[3.5rem] font-medium text-gray-300 text-xs text-center;
+          @apply bg-gray-900 px-2 py-1 border border-gray-600 rounded-md min-w-[3.5rem] font-medium text-gray-300 text-xs text-center;
         }
         .btn-primary {
           @apply bg-indigo-600 hover:bg-indigo-500 border-indigo-500;
         }
         .btn.disabled {
           @apply bg-gray-700 opacity-50 focus:border-gray-300 text-gray-400 pointer-events-none;
+        }
+        .btn:disabled {
+          @apply bg-gray-700 opacity-50 focus:border-gray-300 text-gray-400 pointer-events-none;
+        }
+        .btn.active {
+          @apply bg-slate-600 text-white;
         }
         .tool-title {
           @apply mr-2 font-semibold text-gray-200 text-2xl tracking-tight select-none;
@@ -56,10 +62,10 @@
   </head>
 
   <body class="h-full page">
-    <div id="mainSplit" class="flex h-full min-h-0">
+    <div id="main-split" class="flex h-full min-h-0">
       <!-- LEFT SIDE (menu + editor/resource) -->
       <div
-        id="leftPane"
+        id="left-pane"
         class="flex flex-col min-h-0"
         style="width: 50%; min-width: 200px; max-width: 80%"
       >
@@ -67,7 +73,7 @@
         <div class="toolbar">
           <div class="tool-title">Pyxel Code Maker</div>
           <!-- Control groups wrapper (takes remaining horizontal space, right-aligned) -->
-          <div class="flex flex-1 justify-end items-center min-w-0">
+          <div class="flex flex-1 justify-end items-center mt-0.5 min-w-0">
             <!-- Left group: Import / Export -->
             <div class="flex items-center gap-2">
               <button id="importBtn" class="btn" title="Import project (.zip)">
@@ -81,7 +87,7 @@
             <div class="flex items-center px-4">
               <div class="seg" role="group" aria-label="Edit target">
                 <button
-                  id="codeTabBtn"
+                  id="code-tab-btn"
                   class="seg-btn seg-active"
                   type="button"
                   aria-pressed="true"
@@ -90,7 +96,7 @@
                   Code
                 </button>
                 <button
-                  id="resTabBtn"
+                  id="res-tab-btn"
                   class="seg-btn"
                   type="button"
                   aria-pressed="false"
@@ -104,9 +110,10 @@
             <div class="flex items-center gap-2">
               <button
                 id="runBtn"
-                class="btn disabled"
+                class="btn"
                 disabled
                 title="Run (Ctrl/⌘+Enter)"
+                onmousedown="animateRunButton(this)"
               >
                 Run
               </button>
@@ -115,14 +122,14 @@
         </div>
 
         <!-- Code pane -->
-        <div id="codePane" class="flex flex-1 min-h-0">
+        <div id="code-pane" class="flex flex-1 min-h-0">
           <div id="editor" class="w-full h-full"></div>
         </div>
 
         <!-- Resource pane -->
-        <div id="resPane" class="hidden flex-1 min-h-0">
+        <div id="res-pane" class="hidden flex-1 min-h-0">
           <iframe
-            id="pyxelEditorFrame"
+            id="pyxel-editor-iframe"
             class="border-0 w-full h-full"
             title="Pyxel Resource Editor"
           ></iframe>
@@ -131,7 +138,7 @@
 
       <!-- Divider: draggable vertical bar (thicker, no gap) -->
       <div
-        id="dividerHit"
+        id="divider-hit"
         class="w-2 cursor-col-resize"
         style="background-color: #232d3b"
         onpointerenter="this.style.backgroundColor='#3a4a5f'"
@@ -145,7 +152,7 @@
         style="background-color: var(--pyxel-background-color)"
       >
         <iframe
-          id="pyxelScreenFrame"
+          id="pyxel-screen-iframe"
           class="flex-1 border-0 w-full h-full min-h-0"
           style="background-color: var(--pyxel-background-color)"
           title="Pyxel Runtime"
@@ -154,22 +161,19 @@
     </div>
 
     <input
-      id="loadFileInput"
+      id="load-file-input"
       type="file"
       accept=".zip,application/zip"
       class="hidden"
     />
     <input
-      id="importFileInput"
+      id="import-file-input"
       type="file"
       accept=".zip,application/zip"
       class="hidden"
     />
 
     <script>
-      const MIN_LEFT_PANE_WIDTH = 550;
-      let currentMode = "code";
-
       // -------------------------------------------------
       // Utility functions
       // -------------------------------------------------
@@ -190,63 +194,32 @@
         return bytes;
       }
 
+      function animateRunButton(btn, ms = 150) {
+        btn.classList.add("active");
+        setTimeout(() => btn.classList.remove("active"), ms);
+      }
+
       function resolvePyxelInput() {
-        if (pyxelScreenFrame?.contentWindow?.pyxelContext?.resolveInput) {
-          pyxelScreenFrame.contentWindow.pyxelContext.resolveInput();
+        if (pyxelScreenIframe?.contentWindow?.pyxelContext?.resolveInput) {
+          pyxelScreenIframe.contentWindow.pyxelContext.resolveInput();
         }
 
-        if (pyxelEditorFrame?.contentWindow?.pyxelContext?.resolveInput) {
-          pyxelEditorFrame.contentWindow.pyxelContext.resolveInput();
+        if (pyxelEditorIframe?.contentWindow?.pyxelContext?.resolveInput) {
+          pyxelEditorIframe.contentWindow.pyxelContext.resolveInput();
         }
       }
 
-      async function loadInitialFiles() {
-        window.code = await (await fetch("main.py")).text();
-        window.res = uint8ToBase64(
-          new Uint8Array(
-            await (await fetch("my_resource.pyxres")).arrayBuffer()
-          )
-        );
+      window.addEventListener("click", () => {
+        resolvePyxelInput();
+      });
 
-        editor.setValue(window.code, -1);
-        editor.focus();
-      }
+      window.addEventListener("touchstart", () => {
+        resolvePyxelInput();
+      });
 
-      function initializeIframes() {
-        return new Promise((resolve) => {
-          let editorLoaded = false;
-          let runtimeLoaded = false;
-
-          const checkBothLoaded = () => {
-            if (editorLoaded && runtimeLoaded) {
-              resolve();
-            }
-          };
-
-          pyxelEditorFrame.onload = () => {
-            editorLoaded = true;
-            checkBothLoaded();
-          };
-
-          pyxelScreenFrame.onload = () => {
-            runtimeLoaded = true;
-            checkBothLoaded();
-          };
-
-          pyxelEditorFrame.src = "pyxel-editor.html";
-          pyxelScreenFrame.src = "pyxel-screen.html";
-        });
-      }
-
-      // -------------------------------------------------
-      // ステップ3: JSの処理を開始
-      // -------------------------------------------------
-      async function initializeApp() {
-        await loadInitialFiles();
-        await initializeIframes();
-        switchPane();
-        setTimeout(watchPyxelInputWait, 100);
-      }
+      window.addEventListener("keydown", (e) => {
+        resolvePyxelInput();
+      });
 
       // -------------------------------------------------
       // Ace Editor setup
@@ -270,7 +243,7 @@
       editor.container.style.backgroundColor = "#111827";
 
       const gutter = editor.renderer.$gutter;
-      if (gutter && gutter.style) {
+      if (gutter?.style) {
         gutter.style.background = "#232d3b";
       }
 
@@ -293,7 +266,7 @@
       // -------------------------------------------------
       let completions = [];
 
-      fetch("./completions.txt")
+      fetch("completions.txt")
         .then((res) => res.text())
         .then((text) => {
           completions = text
@@ -301,8 +274,7 @@
             .split("\n")
             .map((line) => line.trim())
             .filter((line) => line && !line.startsWith("#"));
-        })
-        .catch((err) => console.warn("Failed to load completions:", err));
+        });
 
       const pyxelCompleter = {
         getCompletions(editor, session, pos, prefix, callback) {
@@ -317,79 +289,77 @@
       // -------------------------------------------------
       // DOM elements
       // -------------------------------------------------
-      const codePane = document.getElementById("codePane");
-      const resPane = document.getElementById("resPane");
-      const codeTabBtn = document.getElementById("codeTabBtn");
-      const resTabBtn = document.getElementById("resTabBtn");
+      const codePane = document.getElementById("code-pane");
+      const resPane = document.getElementById("res-pane");
+      const codeTabBtn = document.getElementById("code-tab-btn");
+      const resTabBtn = document.getElementById("res-tab-btn");
 
-      const pyxelScreenFrame = document.getElementById("pyxelScreenFrame");
-      const pyxelEditorFrame = document.getElementById("pyxelEditorFrame");
+      const pyxelScreenIframe = document.getElementById("pyxel-screen-iframe");
+      const pyxelEditorIframe = document.getElementById("pyxel-editor-iframe");
 
-      const loadFileInput = document.getElementById("loadFileInput");
-      const importFileInput = document.getElementById("importFileInput");
+      const loadFileInput = document.getElementById("load-file-input");
+      const importFileInput = document.getElementById("import-file-input");
 
       // -------------------------------------------------
       // Split resize (drag center divider)
       // -------------------------------------------------
-      const mainSplit = document.getElementById("mainSplit");
-      const leftPaneEl = document.getElementById("leftPane");
-      const dividerHitEl = document.getElementById("dividerHit");
+      const mainSplit = document.getElementById("main-split");
+      const leftPaneEl = document.getElementById("left-pane");
+      const dividerHitEl = document.getElementById("divider-hit");
 
-      if (dividerHitEl && leftPaneEl && mainSplit) {
-        let startPointerId = null;
-        let startX = 0;
-        let startWidth = 0;
-        let minAllowedWidth = 200;
+      let startPointerId = null;
+      let startX = 0;
+      let startWidth = 0;
+      let minAllowedWidth = 200;
 
-        const onPointerMove = (e) => {
-          if (startPointerId === null) return;
+      dividerHitEl.addEventListener("pointerdown", (e) => {
+        startPointerId = e.pointerId;
+        startX = e.clientX;
+        startWidth = leftPaneEl.getBoundingClientRect().width;
 
-          const dx = e.clientX - startX;
-          let newW = startWidth + dx;
+        const MIN_LEFT_PANE_WIDTH = 550;
+        minAllowedWidth = MIN_LEFT_PANE_WIDTH;
 
-          const containerW = mainSplit.getBoundingClientRect().width;
-          const maxW = containerW * 0.8;
+        document.body.style.cursor = "col-resize";
+        dividerHitEl.setPointerCapture(e.pointerId);
+        pyxelScreenIframe.style.visibility = "hidden";
+        e.preventDefault();
+      });
 
-          if (newW < minAllowedWidth) newW = minAllowedWidth;
-          if (newW > maxW) newW = maxW;
+      dividerHitEl.addEventListener("pointermove", (e) => {
+        if (startPointerId === null) return;
 
-          leftPaneEl.style.width = newW + "px";
-          editor.resize();
-        };
+        const dx = e.clientX - startX;
+        let newW = startWidth + dx;
 
-        const endDrag = () => {
-          if (startPointerId !== null) {
-            const id = startPointerId;
-            startPointerId = null;
-            document.body.style.cursor = "";
-            dividerHitEl.releasePointerCapture(id);
-            pyxelScreenFrame.style.visibility = "visible";
-          }
-        };
+        const containerW = mainSplit.getBoundingClientRect().width;
+        const maxW = containerW * 0.8;
 
-        dividerHitEl.addEventListener("pointerdown", (e) => {
-          startPointerId = e.pointerId;
-          startX = e.clientX;
-          startWidth = leftPaneEl.getBoundingClientRect().width;
+        if (newW < minAllowedWidth) newW = minAllowedWidth;
+        if (newW > maxW) newW = maxW;
 
-          minAllowedWidth = MIN_LEFT_PANE_WIDTH;
+        leftPaneEl.style.width = newW + "px";
+        editor.resize();
+      });
 
-          document.body.style.cursor = "col-resize";
-          dividerHitEl.setPointerCapture(e.pointerId);
-          pyxelScreenFrame.style.visibility = "hidden";
-          e.preventDefault();
-        });
+      const endDrag = () => {
+        if (startPointerId !== null) {
+          const id = startPointerId;
+          startPointerId = null;
+          document.body.style.cursor = "";
+          dividerHitEl.releasePointerCapture(id);
+          pyxelScreenIframe.style.visibility = "visible";
+        }
+      };
 
-        dividerHitEl.addEventListener("pointermove", onPointerMove);
-        dividerHitEl.addEventListener("pointerup", endDrag);
-        dividerHitEl.addEventListener("pointercancel", endDrag);
-      }
+      dividerHitEl.addEventListener("pointerup", endDrag);
+      dividerHitEl.addEventListener("pointercancel", endDrag);
 
       // -------------------------------------------------
       // Pane switching functions
       // -------------------------------------------------
-      function switchPane() {
-        if (currentMode === "code") {
+      function switchPane(pane) {
+        if (pane === "code") {
           codePane.classList.remove("hidden");
           resPane.classList.add("hidden");
 
@@ -399,7 +369,7 @@
           resTabBtn.setAttribute("aria-pressed", "false");
 
           setTimeout(() => editor.resize(), 0);
-        } else {
+        } else if (pane === "res") {
           codePane.classList.add("hidden");
           resPane.classList.remove("hidden");
 
@@ -410,28 +380,54 @@
         }
       }
 
-      async function saveCurrentToMemory() {
-        window.code = editor.getValue();
+      async function resetPyxelScreen() {
+        const ctrlDown = new KeyboardEvent("keydown", {
+          key: "Control",
+          code: "ControlLeft",
+          ctrlKey: true,
+          bubbles: true,
+        });
+        pyxelEditorIframe.contentWindow.document.dispatchEvent(ctrlDown);
+
+        const sDown = new KeyboardEvent("keydown", {
+          key: "s",
+          code: "KeyS",
+          ctrlKey: true,
+          bubbles: true,
+        });
+        pyxelEditorIframe.contentWindow.document.dispatchEvent(sDown);
+
+        const sUp = new KeyboardEvent("keyup", {
+          key: "s",
+          code: "KeyS",
+          ctrlKey: true,
+          bubbles: true,
+        });
+        pyxelEditorIframe.contentWindow.document.dispatchEvent(sUp);
+
+        const ctrlUp = new KeyboardEvent("keyup", {
+          key: "Control",
+          code: "ControlLeft",
+          ctrlKey: false,
+          bubbles: true,
+        });
+        pyxelEditorIframe.contentWindow.document.dispatchEvent(ctrlUp);
+
+        setTimeout(() => {
+          window.code = editor.getValue();
+          window.res = uint8ToBase64(
+            pyxelEditorIframe.contentWindow.pyxelContext.pyodide.FS.readFile(
+              PYXEL_WORKING_DIRECTORY + "/my_resource.pyxres"
+            )
+          );
+
+          pyxelScreenIframe.contentWindow.resetPyxel();
+        }, 100);
       }
 
       // -------------------------------------------------
       // Project operations
       // -------------------------------------------------
-      async function runApp() {
-        await saveCurrentToMemory();
-        pyxelScreenFrame.contentWindow.resetPyxel();
-      }
-
-      function triggerLoadZip() {
-        loadFileInput.value = "";
-        loadFileInput.click();
-      }
-
-      function triggerImportZip() {
-        importFileInput.value = "";
-        importFileInput.click();
-      }
-
       async function handleZipFile(file) {
         if (!file) return;
         try {
@@ -484,18 +480,18 @@
       }
 
       async function exportAsZip() {
-        await saveCurrentToMemory();
+        //await saveCurrentToMemory();
 
         const zip = new JSZip();
 
         const mainMeta = project.get(mainPyPath);
-        if (mainMeta && mainMeta.content != null) {
+        if (mainMeta?.content != null) {
           zip.file(mainPyPath, mainMeta.content);
         }
 
         if (resPath) {
           const resMeta = project.get(resPath);
-          if (resMeta && resMeta.content != null) {
+          if (resMeta?.content != null) {
             const bytes = base64ToUint8(resMeta.content);
             zip.file(resPath, bytes);
           }
@@ -513,74 +509,96 @@
       }
 
       // -------------------------------------------------
-      // Runボタン有効化の監視
-      // -------------------------------------------------
-      function watchPyxelInputWait() {
-        const pyxelScreenReady =
-          pyxelScreenFrame?.contentWindow?.pyxelContext?.resolveInput;
-        const pyxelEditorReady =
-          pyxelEditorFrame?.contentWindow?.pyxelContext?.resolveInput;
-
-        if (pyxelScreenReady && pyxelEditorReady) {
-          const runBtn = document.getElementById("runBtn");
-          if (runBtn) {
-            runBtn.disabled = false;
-            runBtn.classList.remove("disabled");
-          }
-        } else {
-          setTimeout(watchPyxelInputWait, 100);
-        }
-      }
-
-      // -------------------------------------------------
       // Event listeners registration
       // -------------------------------------------------
       codeTabBtn.addEventListener("click", () => {
-        currentMode = "code";
-        switchPane();
+        switchPane("code");
       });
 
       resTabBtn.addEventListener("click", () => {
-        currentMode = "res";
-        switchPane();
+        switchPane("res");
       });
 
-      document
-        .getElementById("loadBtn")
-        ?.addEventListener("click", triggerLoadZip);
+      document.getElementById("importBtn")?.addEventListener("click", () => {
+        animateRunButton(document.getElementById("importBtn"));
+        importFileInput.value = "";
+        importFileInput.click();
+      });
 
-      document
-        .getElementById("importBtn")
-        ?.addEventListener("click", triggerImportZip);
+      document.getElementById("exportBtn")?.addEventListener("click", () => {
+        animateRunButton(document.getElementById("exportBtn"));
+        exportAsZip();
+      });
 
-      document
-        .getElementById("exportBtn")
-        ?.addEventListener("click", exportAsZip);
-
-      document.getElementById("runBtn")?.addEventListener("click", runApp);
+      const runBtn = document.getElementById("runBtn");
+      runBtn?.addEventListener("click", () => {
+        animateRunButton(runBtn);
+        resetPyxelScreen();
+      });
 
       importFileInput.addEventListener("change", async (e) => {
-        const file = e.target.files && e.target.files[0];
+        const file = e.target.files?.[0];
         await handleZipFile(file);
       });
 
       // -------------------------------------------------
       // DOMContentLoaded: アプリ初期化を開始
       // -------------------------------------------------
-      window.addEventListener("DOMContentLoaded", () => {
-        window.addEventListener("click", () => {
-          resolvePyxelInput();
-        });
+      async function loadInitialFiles() {
+        window.code = await (await fetch("main.py")).text();
+        window.res = uint8ToBase64(
+          new Uint8Array(
+            await (await fetch("my_resource.pyxres")).arrayBuffer()
+          )
+        );
 
-        window.addEventListener("touchstart", () => {
-          resolvePyxelInput();
-        });
+        editor.setValue(window.code, -1);
+        editor.focus();
+      }
 
-        window.addEventListener("keydown", (e) => {
-          resolvePyxelInput();
-        });
+      function initializeIframes() {
+        return new Promise((resolve) => {
+          let pyxelScreenLoaded = false;
+          let pyxelEditorLoaded = false;
 
-        initializeApp();
+          pyxelScreenIframe.onload = () => {
+            pyxelScreenLoaded = true;
+            if (pyxelEditorLoaded) {
+              resolve();
+            }
+          };
+
+          pyxelEditorIframe.onload = () => {
+            pyxelEditorLoaded = true;
+            if (pyxelScreenLoaded) {
+              resolve();
+            }
+          };
+
+          pyxelScreenIframe.src = "pyxel-screen.html";
+          pyxelEditorIframe.src = "pyxel-editor.html";
+        });
+      }
+
+      function watchPyxelInputWait() {
+        if (
+          pyxelScreenIframe?.contentWindow?.pyxelContext?.resolveInput &&
+          pyxelEditorIframe?.contentWindow?.pyxelContext?.resolveInput
+        ) {
+          const runBtn = document.getElementById("runBtn");
+          if (runBtn) {
+            runBtn.disabled = false;
+          }
+        } else {
+          setTimeout(watchPyxelInputWait, 100);
+        }
+      }
+
+      window.addEventListener("DOMContentLoaded", async () => {
+        switchPane("code");
+        await loadInitialFiles();
+        await initializeIframes();
+        watchPyxelInputWait();
       });
     </script>
   </body>
