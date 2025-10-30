@@ -77,7 +77,9 @@
   <body class="h-full page">
     <div id="app-root" class="flex flex-col h-full min-h-0">
       <!-- FULL-WIDTH TOOLBAR (spans from left edge to right edge) -->
-      <div class="toolbar">
+      <div
+        class="flex items-center gap-4 bg-gray-900 px-4 py-3 border-gray-700 border-b toolbar"
+      >
         <div class="flex items-baseline gap-2 min-w-0">
           <div class="tool-title">Pyxel Code Maker</div>
           <div class="truncate tool-tagline">
@@ -87,7 +89,7 @@
           </div>
         </div>
         <!-- Control groups wrapper (takes remaining horizontal space, right-aligned) -->
-        <div class="flex flex-1 justify-end items-center mt-0.5 min-w-0">
+        <div class="flex flex-1 justify-start items-center mt-0.5 min-w-0">
           <!-- Left group: Import / Export -->
           <div class="flex items-center gap-2">
             <button id="importBtn" class="btn" title="Import project (.zip)">
