@@ -61,6 +61,10 @@
         -ms-overflow-style: none;
         scrollbar-width: none;
       }
+      /* When resource pane is active, match right-side background */
+      #left-pane.res-mode {
+        background-color: var(--pyxel-background-color);
+      }
     </style>
   </head>
 
@@ -134,6 +138,7 @@
           <iframe
             id="pyxel-editor-iframe"
             class="border-0 w-full h-full"
+            style="background-color: var(--pyxel-background-color)"
             title="Pyxel Resource Editor"
           ></iframe>
         </div>
@@ -142,8 +147,12 @@
       <!-- Divider: draggable vertical bar (thicker, no gap) -->
       <div
         id="divider-hit"
-        class="z-50 relative w-2 cursor-col-resize select-none"
-        style="background-color: #232d3b; touch-action: none"
+        class="z-50 relative w-2.5 cursor-col-resize select-none"
+        style="
+          background-color: #000000;
+          touch-action: none;
+          pointer-events: none;
+        "
         onpointerenter="this.style.backgroundColor='#3a4a5f'"
         onpointerleave="this.style.backgroundColor='#232d3b'"
         title="Drag to resize"
@@ -313,7 +322,7 @@
       let dragging = false;
       let startX = 0;
       let startWidth = 0;
-      const minAllowedWidth = 550;
+      const minAllowedWidth = 540;
 
       function onMove(e) {
         if (!dragging) return;
@@ -339,8 +348,9 @@
 
         document.body.style.cursor = "";
         document.body.style.userSelect = "";
-        // Re-enable interactions with the right-side iframe
-        if (pyxelScreenIframe) pyxelScreenIframe.style.pointerEvents = "";
+        // Show the right-side iframes again after dragging ends
+        if (pyxelScreenIframe) pyxelScreenIframe.style.display = "";
+        if (pyxelEditorIframe) pyxelEditorIframe.style.display = "";
       }
 
       dividerHitEl.addEventListener("pointerdown", (e) => {
@@ -350,8 +360,9 @@
 
         document.body.style.cursor = "col-resize";
         document.body.style.userSelect = "none";
-        // Prevent the right iframe from stealing pointer events while dragging
-        if (pyxelScreenIframe) pyxelScreenIframe.style.pointerEvents = "none";
+        // Hide the right-side iframes while dragging to prevent flickering
+        if (pyxelScreenIframe) pyxelScreenIframe.style.display = "none";
+        if (pyxelEditorIframe) pyxelEditorIframe.style.display = "none";
 
         window.addEventListener("pointermove", onMove);
         window.addEventListener("pointerup", onUp);
@@ -373,6 +384,7 @@
           codeTabBtn.setAttribute("aria-pressed", "true");
           resTabBtn.setAttribute("aria-pressed", "false");
 
+          leftPaneEl.classList.remove("res-mode");
           setTimeout(() => editor.resize(), 0);
         } else if (pane === "res") {
           codePane.classList.add("hidden");
@@ -382,6 +394,7 @@
           resTabBtn.classList.add("seg-active");
           codeTabBtn.setAttribute("aria-pressed", "false");
           resTabBtn.setAttribute("aria-pressed", "true");
+          leftPaneEl.classList.add("res-mode");
         }
       }
 
@@ -599,6 +612,9 @@
             resTabBtn.disabled = false;
             resTabBtn.classList.remove("disabled");
           }
+          // Enable divider interactions when run button is active
+          dividerHitEl.style.pointerEvents = "auto";
+          dividerHitEl.style.backgroundColor = "#232d3b";
         } else {
           setTimeout(watchPyxelInputWait, 100);
         }
