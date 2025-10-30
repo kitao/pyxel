@@ -39,6 +39,12 @@
         .tool-title {
           @apply mr-2 font-semibold text-gray-200 text-2xl tracking-tight select-none;
         }
+        .tool-tagline {
+          @apply text-gray-300 text-sm leading-5 whitespace-nowrap select-none;
+        }
+        .link {
+          @apply text-indigo-400 hover:text-indigo-300 visited:text-indigo-400 underline underline-offset-2;
+        }
         .seg {
           @apply flex items-center bg-gray-900 border border-gray-600 rounded-lg divide-x divide-gray-700 overflow-hidden;
         }
@@ -69,106 +75,116 @@
   </head>
 
   <body class="h-full page">
-    <div id="main-split" class="flex h-full min-h-0">
-      <!-- LEFT SIDE (menu + editor/resource) -->
-      <div
-        id="left-pane"
-        class="flex flex-col min-h-0"
-        style="width: 50%; min-width: 200px; max-width: 80%"
-      >
-        <!-- Toolbar: Title / Import / Export / [Code | Res] / Run -->
-        <div class="toolbar">
+    <div id="app-root" class="flex flex-col h-full min-h-0">
+      <!-- FULL-WIDTH TOOLBAR (spans from left edge to right edge) -->
+      <div class="toolbar">
+        <div class="flex items-end gap-3 min-w-0">
           <div class="tool-title">Pyxel Code Maker</div>
-          <!-- Control groups wrapper (takes remaining horizontal space, right-aligned) -->
-          <div class="flex flex-1 justify-end items-center mt-0.5 min-w-0">
-            <!-- Left group: Import / Export -->
-            <div class="flex items-center gap-2">
-              <button id="importBtn" class="btn" title="Import project (.zip)">
-                Import
-              </button>
-              <button id="exportBtn" class="btn" title="Export project (.zip)">
-                Export
-              </button>
-            </div>
-            <!-- Center group: Code / Res (no explicit center) -->
-            <div class="flex items-center px-4">
-              <div class="seg" role="group" aria-label="Edit target">
-                <button
-                  id="code-tab-btn"
-                  class="seg-btn seg-active"
-                  type="button"
-                  aria-pressed="true"
-                  title="Edit Python code"
-                >
-                  Code
-                </button>
-                <button
-                  id="res-tab-btn"
-                  class="seg-btn disabled"
-                  type="button"
-                  aria-pressed="false"
-                  title="Edit Pyxel resources"
-                >
-                  Res
-                </button>
-              </div>
-            </div>
-            <!-- Right group: Run -->
-            <div class="flex items-center gap-2">
+          <div class="truncate tool-tagline">
+            Playground for
+            <a class="link" href="https://github.com/kitao/pyxel">Pyxel</a>, a
+            retro game engine for Python.
+          </div>
+        </div>
+        <!-- Control groups wrapper (takes remaining horizontal space, right-aligned) -->
+        <div class="flex flex-1 justify-end items-center mt-0.5 min-w-0">
+          <!-- Left group: Import / Export -->
+          <div class="flex items-center gap-2">
+            <button id="importBtn" class="btn" title="Import project (.zip)">
+              Import
+            </button>
+            <button id="exportBtn" class="btn" title="Export project (.zip)">
+              Export
+            </button>
+          </div>
+          <!-- Center group: Code / Res (no explicit center) -->
+          <div class="flex items-center px-4">
+            <div class="seg" role="group" aria-label="Edit target">
               <button
-                id="runBtn"
-                class="btn"
-                disabled
-                title="Run (Ctrl/⌘+Enter)"
-                onmousedown="animateRunButton(this)"
+                id="code-tab-btn"
+                class="seg-btn seg-active"
+                type="button"
+                aria-pressed="true"
+                title="Edit Python code"
               >
-                Run
+                Code
+              </button>
+              <button
+                id="res-tab-btn"
+                class="seg-btn disabled"
+                type="button"
+                aria-pressed="false"
+                title="Edit Pyxel resources"
+              >
+                Res
               </button>
             </div>
           </div>
-        </div>
-
-        <!-- Code pane -->
-        <div id="code-pane" class="flex flex-1 min-h-0">
-          <div id="editor" class="w-full h-full"></div>
-        </div>
-
-        <!-- Resource pane -->
-        <div id="res-pane" class="hidden flex-1 min-h-0">
-          <iframe
-            id="pyxel-editor-iframe"
-            class="border-0 w-full h-full"
-            style="background-color: var(--pyxel-background-color)"
-            title="Pyxel Resource Editor"
-          ></iframe>
+          <!-- Right group: Run -->
+          <div class="flex items-center gap-2">
+            <button
+              id="runBtn"
+              class="btn"
+              disabled
+              title="Run (Ctrl/⌘+Enter)"
+              onmousedown="animateRunButton(this)"
+            >
+              Run
+            </button>
+          </div>
         </div>
       </div>
 
-      <!-- Divider: draggable vertical bar (thicker, no gap) -->
-      <div
-        id="divider-hit"
-        class="z-50 relative w-2.5 cursor-col-resize select-none"
-        style="
-          background-color: #000000;
-          touch-action: none;
-          pointer-events: none;
-        "
-        onpointerenter="this.style.backgroundColor='#3a4a5f'"
-        onpointerleave="this.style.backgroundColor='#232d3b'"
-        title="Drag to resize"
-      ></div>
+      <!-- CONTENT AREA BELOW TOOLBAR: LEFT/RIGHT SPLIT -->
+      <div id="main-split" class="flex flex-1 min-h-0">
+        <!-- LEFT SIDE (editor/resource panes only) -->
+        <div
+          id="left-pane"
+          class="flex flex-col min-h-0"
+          style="width: 50%; min-width: 200px; max-width: 80%"
+        >
+          <!-- Code pane -->
+          <div id="code-pane" class="flex flex-1 min-h-0">
+            <div id="editor" class="w-full h-full"></div>
+          </div>
 
-      <!-- RIGHT SIDE (preview only) -->
-      <div
-        class="flex flex-col flex-1 min-h-0"
-        style="background-color: var(--pyxel-background-color)"
-      >
-        <iframe
-          id="pyxel-screen-iframe"
-          class="flex-1 border-0 w-full h-full min-h-0"
+          <!-- Resource pane -->
+          <div id="res-pane" class="hidden flex-1 min-h-0">
+            <iframe
+              id="pyxel-editor-iframe"
+              class="border-0 w-full h-full"
+              style="background-color: var(--pyxel-background-color)"
+              title="Pyxel Resource Editor"
+            ></iframe>
+          </div>
+        </div>
+
+        <!-- Divider: draggable vertical bar (thicker, no gap) -->
+        <div
+          id="divider-hit"
+          class="z-50 relative w-2.5 cursor-col-resize select-none"
+          style="
+            background-color: #000000;
+            touch-action: none;
+            pointer-events: none;
+          "
+          onpointerenter="this.style.backgroundColor='#3a4a5f'"
+          onpointerleave="this.style.backgroundColor='#232d3b'"
+          title="Drag to resize"
+        ></div>
+
+        <!-- RIGHT SIDE (preview only) -->
+        <div
+          class="flex flex-col flex-1 min-h-0"
           style="background-color: var(--pyxel-background-color)"
-          title="Pyxel Runtime"
-        ></iframe>
+        >
+          <iframe
+            id="pyxel-screen-iframe"
+            class="flex-1 border-0 w-full h-full min-h-0"
+            style="background-color: var(--pyxel-background-color)"
+            title="Pyxel Runtime"
+          ></iframe>
+        </div>
       </div>
     </div>
 
@@ -322,7 +338,6 @@
       let dragging = false;
       let startX = 0;
       let startWidth = 0;
-      const minAllowedWidth = 540;
 
       function onMove(e) {
         if (!dragging) return;
@@ -330,7 +345,8 @@
         let newW = startWidth + dx;
 
         const containerW = mainSplit.getBoundingClientRect().width;
-        const maxW = containerW * 0.8;
+        const minAllowedWidth = Math.min(200, containerW / 2);
+        const maxW = containerW - minAllowedWidth;
 
         if (newW < minAllowedWidth) newW = minAllowedWidth;
         if (newW > maxW) newW = maxW;
