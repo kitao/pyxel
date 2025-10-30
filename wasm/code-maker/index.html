@@ -45,6 +45,9 @@
         .seg-btn {
           @apply flex-1 bg-gray-900 px-3 py-1 border-none focus:outline-none min-w-[2rem] font-medium text-gray-300 text-xs text-center;
         }
+        .seg-btn.disabled {
+          @apply bg-gray-700 opacity-50 focus:border-gray-300 text-gray-400 pointer-events-none;
+        }
         .seg-active {
           @apply bg-slate-600 text-white;
         }
@@ -97,7 +100,7 @@
                 </button>
                 <button
                   id="res-tab-btn"
-                  class="seg-btn"
+                  class="seg-btn disabled"
                   type="button"
                   aria-pressed="false"
                   title="Edit Pyxel resources"
@@ -139,8 +142,8 @@
       <!-- Divider: draggable vertical bar (thicker, no gap) -->
       <div
         id="divider-hit"
-        class="w-2 cursor-col-resize"
-        style="background-color: #232d3b"
+        class="z-50 relative w-2 cursor-col-resize select-none"
+        style="background-color: #232d3b; touch-action: none"
         onpointerenter="this.style.backgroundColor='#3a4a5f'"
         onpointerleave="this.style.backgroundColor='#232d3b'"
         title="Drag to resize"
@@ -307,28 +310,13 @@
       const leftPaneEl = document.getElementById("left-pane");
       const dividerHitEl = document.getElementById("divider-hit");
 
-      let startPointerId = null;
+      let dragging = false;
       let startX = 0;
       let startWidth = 0;
-      let minAllowedWidth = 200;
+      const minAllowedWidth = 550;
 
-      dividerHitEl.addEventListener("pointerdown", (e) => {
-        startPointerId = e.pointerId;
-        startX = e.clientX;
-        startWidth = leftPaneEl.getBoundingClientRect().width;
-
-        const MIN_LEFT_PANE_WIDTH = 550;
-        minAllowedWidth = MIN_LEFT_PANE_WIDTH;
-
-        document.body.style.cursor = "col-resize";
-        dividerHitEl.setPointerCapture(e.pointerId);
-        pyxelScreenIframe.style.visibility = "hidden";
-        e.preventDefault();
-      });
-
-      dividerHitEl.addEventListener("pointermove", (e) => {
-        if (startPointerId === null) return;
-
+      function onMove(e) {
+        if (!dragging) return;
         const dx = e.clientX - startX;
         let newW = startWidth + dx;
 
@@ -340,20 +328,37 @@
 
         leftPaneEl.style.width = newW + "px";
         editor.resize();
+      }
+
+      function onUp() {
+        if (!dragging) return;
+        dragging = false;
+        window.removeEventListener("pointermove", onMove);
+        window.removeEventListener("pointerup", onUp);
+        window.removeEventListener("pointercancel", onUp);
+
+        document.body.style.cursor = "";
+        document.body.style.userSelect = "";
+        // Re-enable interactions with the right-side iframe
+        if (pyxelScreenIframe) pyxelScreenIframe.style.pointerEvents = "";
+      }
+
+      dividerHitEl.addEventListener("pointerdown", (e) => {
+        dragging = true;
+        startX = e.clientX;
+        startWidth = leftPaneEl.getBoundingClientRect().width;
+
+        document.body.style.cursor = "col-resize";
+        document.body.style.userSelect = "none";
+        // Prevent the right iframe from stealing pointer events while dragging
+        if (pyxelScreenIframe) pyxelScreenIframe.style.pointerEvents = "none";
+
+        window.addEventListener("pointermove", onMove);
+        window.addEventListener("pointerup", onUp);
+        window.addEventListener("pointercancel", onUp);
+
+        e.preventDefault();
       });
-
-      const endDrag = () => {
-        if (startPointerId !== null) {
-          const id = startPointerId;
-          startPointerId = null;
-          document.body.style.cursor = "";
-          dividerHitEl.releasePointerCapture(id);
-          pyxelScreenIframe.style.visibility = "visible";
-        }
-      };
-
-      dividerHitEl.addEventListener("pointerup", endDrag);
-      dividerHitEl.addEventListener("pointercancel", endDrag);
 
       // -------------------------------------------------
       // Pane switching functions
@@ -588,6 +593,11 @@
           const runBtn = document.getElementById("runBtn");
           if (runBtn) {
             runBtn.disabled = false;
+          }
+          const resTabBtn = document.getElementById("res-tab-btn");
+          if (resTabBtn) {
+            resTabBtn.disabled = false;
+            resTabBtn.classList.remove("disabled");
           }
         } else {
           setTimeout(watchPyxelInputWait, 100);
