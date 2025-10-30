@@ -14,5 +14,15 @@
         pyxel.cli.edit_pyxel_resource('my_resource.pyxres')
       "
     ></pyxel-run>
+    <script>
+      const waitForInit = () => {
+        if (window.pyxelContext?.initialized) {
+          window._savePyxelFile = (filename) => {};
+        } else {
+          setTimeout(waitForInit, 50);
+        }
+      };
+      waitForInit();
+    </script>
   </body>
 </html>
