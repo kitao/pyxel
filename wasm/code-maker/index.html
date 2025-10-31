@@ -46,7 +46,7 @@
           @apply text-indigo-400 hover:text-indigo-300 visited:text-indigo-400 underline underline-offset-2;
         }
         .seg {
-          @apply flex items-center bg-gray-900 border border-gray-600 rounded-lg divide-x divide-gray-700 overflow-hidden;
+          @apply flex items-center bg-gray-900 border border-gray-600 rounded-md divide-x divide-gray-700 overflow-hidden;
         }
         .seg-btn {
           @apply flex-1 bg-gray-900 px-3 py-1 border-none focus:outline-none min-w-[2rem] font-medium text-gray-300 text-xs text-center;
@@ -330,6 +330,17 @@
       const loadFileInput = document.getElementById("load-file-input");
       const importFileInput = document.getElementById("import-file-input");
 
+      // 現在のプロジェクトのファイルハンドル / 名前を保持
+      let currentProjectFileHandle = null;
+      let currentProjectFileName = "pyxel-project.zip";
+
+      // project 等の初期化（未定義エラー対策）
+      let resPath = null;
+
+      // iframe 初期化状態を管理（起動直後に import/export が動いても安全にする）
+      let iframesReady = false;
+      let pendingImported = false;
+
       // -------------------------------------------------
       // Split resize (drag center divider)
       // -------------------------------------------------
@@ -464,13 +475,11 @@
       // -------------------------------------------------
       // Project operations
       // -------------------------------------------------
-      async function handleZipFile(file) {
+      async function importProject(file) {
         if (!file) return;
         try {
-          project.clear();
-          mainPyPath = "main.py";
+          // 解析して window.code / window.res に反映するだけ
           resPath = null;
-
           const buf = await file.arrayBuffer();
           const zip = await JSZip.loadAsync(buf);
 
@@ -481,7 +490,6 @@
           const entries = Object.entries(zip.files);
           for (const [path, entry] of entries) {
             if (entry.dir) continue;
-
             if (path.endsWith("main.py")) {
               pyCode = await entry.async("string");
             } else if (path.toLowerCase().endsWith(".pyxres") && !foundResB64) {
@@ -495,49 +503,79 @@
             throw new Error("main.py not found in zip file");
           }
 
-          project.set(mainPyPath, {
-            kind: "file",
-            content: pyCode,
-          });
+          window.code = pyCode;
+          editor.setValue(pyCode, -1);
+          editor.focus();
 
           if (foundResB64) {
             resPath = foundResName;
-            project.set(resPath, {
-              kind: "file",
-              content: foundResB64,
-            });
+            window.res = foundResB64;
           }
 
-          switchPane();
+          // 既存のフック／更新処理を呼ぶ（定義済みの関数がある前提）
+          if (typeof window.onImportedProject === "function") {
+            window.onImportedProject();
+          } else if (iframesReady && typeof resetPyxelScreen === "function") {
+            // iframe が準備できていれば即時実行
+            resetPyxelScreen();
+          } else {
+            // iframe 未準備なら画面切替のみ行い、準備完了時に reset を実行する
+            switchPane("code");
+            pendingImported = true;
+          }
         } catch (e) {
           console.warn("Failed to load zip:", e);
           alert("Failed to import project: " + e.message);
         }
       }
 
-      async function exportAsZip() {
+      async function exportProject() {
         //await saveCurrentToMemory();
 
         const zip = new JSZip();
 
-        const mainMeta = project.get(mainPyPath);
-        if (mainMeta?.content != null) {
-          zip.file(mainPyPath, mainMeta.content);
+        // main.py は window.code、リソースは window.res を使う
+        if (typeof window.code === "string") {
+          zip.file("main.py", window.code);
         }
-
-        if (resPath) {
-          const resMeta = project.get(resPath);
-          if (resMeta?.content != null) {
-            const bytes = base64ToUint8(resMeta.content);
-            zip.file(resPath, bytes);
-          }
+        if (resPath && typeof window.res === "string") {
+          const bytes = base64ToUint8(window.res);
+          // resPath があればその名前で、なければデフォルト名で保存
+          const resName = resPath.split("/").pop() || "my_resource.pyxres";
+          zip.file(resName, bytes);
         }
 
         const blob = await zip.generateAsync({ type: "blob" });
 
+        // showSaveFilePicker が使えるなら、毎回保存ダイアログを出す（既存 handle に自動上書きはしない）
+        if (window.showSaveFilePicker) {
+          try {
+            const handle = await window.showSaveFilePicker({
+              suggestedName: currentProjectFileName,
+              types: [
+                {
+                  description: "ZIP",
+                  accept: { "application/zip": [".zip"] },
+                },
+              ],
+            });
+            const writable = await handle.createWritable();
+            await writable.write(blob);
+            await writable.close();
+            // 保存先ハンドルと名前は更新しておく（次回の suggestedName に使う）
+            currentProjectFileHandle = handle;
+            currentProjectFileName = handle.name || currentProjectFileName;
+            return;
+          } catch (e) {
+            if (e.name === "AbortError") return;
+            console.warn("save failed:", e);
+          }
+        }
+
+        // 3) フォールバック：従来のダウンロードリンク方式
         const a = document.createElement("a");
         a.href = URL.createObjectURL(blob);
-        a.download = "pyxel-project.zip";
+        a.download = currentProjectFileName || "pyxel-project.zip";
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
@@ -555,26 +593,56 @@
         switchPane("res");
       });
 
-      document.getElementById("importBtn")?.addEventListener("click", () => {
-        animateRunButton(document.getElementById("importBtn"));
-        importFileInput.value = "";
-        importFileInput.click();
+      document
+        .getElementById("importBtn")
+        ?.addEventListener("click", async () => {
+          animateRunButton(document.getElementById("importBtn"));
+
+          // 可能なら File System Access API でファイル選択（handle を取得）
+          if (window.showOpenFilePicker) {
+            try {
+              const [handle] = await window.showOpenFilePicker({
+                multiple: false,
+                types: [
+                  {
+                    description: "ZIP",
+                    accept: { "application/zip": [".zip"] },
+                  },
+                ],
+              });
+              const file = await handle.getFile();
+              currentProjectFileHandle = handle;
+              currentProjectFileName = file.name || currentProjectFileName;
+              await importProject(file);
+              return;
+            } catch (e) {
+              // ユーザーがキャンセルした場合は何もしない（下の input フォールバックに進む）
+              if (e.name === "AbortError") return;
+            }
+          }
+
+          // フォールバック：従来の file input を開く
+          importFileInput.value = "";
+          importFileInput.click();
+        });
+
+      importFileInput.addEventListener("change", async (e) => {
+        const file = e.target.files?.[0];
+        // input からの取り込みではハンドルは取得できないため null にし、名前だけ保存
+        currentProjectFileHandle = null;
+        if (file && file.name) currentProjectFileName = file.name;
+        await importProject(file);
       });
 
       document.getElementById("exportBtn")?.addEventListener("click", () => {
         animateRunButton(document.getElementById("exportBtn"));
-        exportAsZip();
+        exportProject();
       });
 
       const runBtn = document.getElementById("runBtn");
       runBtn?.addEventListener("click", () => {
         animateRunButton(runBtn);
         resetPyxelScreen();
-      });
-
-      importFileInput.addEventListener("change", async (e) => {
-        const file = e.target.files?.[0];
-        await handleZipFile(file);
       });
 
       // -------------------------------------------------
@@ -590,25 +658,47 @@
 
         editor.setValue(window.code, -1);
         editor.focus();
+
+        // 初期リソース名を保持しておく
+        if (window.res) {
+          resPath = "my_resource.pyxres";
+        }
       }
 
       function initializeIframes() {
         return new Promise((resolve) => {
           let pyxelScreenLoaded = false;
           let pyxelEditorLoaded = false;
-
-          pyxelScreenIframe.onload = () => {
-            pyxelScreenLoaded = true;
-            if (pyxelEditorLoaded) {
+          // resolve が呼ばれたタイミングで iframesReady をセットする
+          const maybeResolve = () => {
+            if (pyxelScreenLoaded && pyxelEditorLoaded) {
+              iframesReady = true;
+              // もし import が先行していたらここで実行する
+              if (pendingImported) {
+                pendingImported = false;
+                if (typeof resetPyxelScreen === "function") {
+                  try {
+                    resetPyxelScreen();
+                  } catch (e) {
+                    console.warn(
+                      "resetPyxelScreen failed after iframe ready:",
+                      e
+                    );
+                  }
+                }
+              }
               resolve();
             }
           };
 
+          pyxelScreenIframe.onload = () => {
+            pyxelScreenLoaded = true;
+            maybeResolve();
+          };
+
           pyxelEditorIframe.onload = () => {
             pyxelEditorLoaded = true;
-            if (pyxelScreenLoaded) {
-              resolve();
-            }
+            maybeResolve();
           };
 
           pyxelScreenIframe.src = "pyxel-screen.html";
