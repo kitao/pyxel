@@ -4,15 +4,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Pyxel Code Maker</title>
-
     <script src="https://cdn.tailwindcss.com/3.4.17"></script>
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.6/ace.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.6/ext-language_tools.min.js"></script>
-
     <script src="https://cdn.jsdelivr.net/gh/kitao/pyxel@2.5.9/wasm/pyxel.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
-
     <style type="text/tailwindcss">
       @layer components {
         .page {
@@ -92,10 +88,10 @@
         <div class="flex flex-1 justify-start items-center mt-0.5 min-w-0">
           <!-- Left group: Import / Export -->
           <div class="flex items-center gap-2">
-            <button id="importBtn" class="btn" title="Import project (.zip)">
+            <button id="import-btn" class="btn" title="Import project (.zip)">
               Import
             </button>
-            <button id="exportBtn" class="btn" title="Export project (.zip)">
+            <button id="export-btn" class="btn" title="Export project (.zip)">
               Export
             </button>
           </div>
@@ -125,11 +121,10 @@
           <!-- Right group: Run -->
           <div class="flex items-center gap-2">
             <button
-              id="runBtn"
+              id="run-btn"
               class="btn"
               disabled
               title="Run (Ctrl/⌘+Enter)"
-              onmousedown="animateRunButton(this)"
             >
               Run
             </button>
@@ -151,7 +146,7 @@
           </div>
 
           <!-- Resource pane -->
-          <div id="res-pane" class="hidden flex-1 min-h-0">
+          <div id="res-pane" class="hidden flex flex-1 min-h-0">
             <iframe
               id="pyxel-editor-iframe"
               class="border-0 w-full h-full"
@@ -204,9 +199,11 @@
     />
 
     <script>
-      // -------------------------------------------------
-      // Utility functions
-      // -------------------------------------------------
+      const pyxelScreenIframe = document.getElementById("pyxel-screen-iframe");
+      const pyxelEditorIframe = document.getElementById("pyxel-editor-iframe");
+
+      let projectFileName = "pyxel-project.zip";
+
       function uint8ToBase64(u8) {
         let bin = "";
         for (let i = 0; i < u8.length; i++) {
@@ -224,262 +221,80 @@
         return bytes;
       }
 
-      function animateRunButton(btn, ms = 150) {
+      function animateButton(btn) {
         btn.classList.add("active");
-        setTimeout(() => btn.classList.remove("active"), ms);
+        setTimeout(() => btn.classList.remove("active"), 150);
       }
 
-      function resolvePyxelInput() {
-        if (pyxelScreenIframe?.contentWindow?.pyxelContext?.resolveInput) {
-          pyxelScreenIframe.contentWindow.pyxelContext.resolveInput();
+      function copyEditorCodeToWindow() {
+        window.code = editor.getValue();
+      }
+
+      async function copyIframeResToWindow() {
+        if (!pyxelEditorIframe.contentWindow) {
+          return;
         }
 
-        if (pyxelEditorIframe?.contentWindow?.pyxelContext?.resolveInput) {
-          pyxelEditorIframe.contentWindow.pyxelContext.resolveInput();
-        }
+        const doc = pyxelEditorIframe.contentWindow.document;
+        doc.dispatchEvent(
+          new KeyboardEvent("keydown", {
+            key: "Control",
+            code: "ControlLeft",
+            ctrlKey: true,
+            bubbles: true,
+          })
+        );
+        doc.dispatchEvent(
+          new KeyboardEvent("keydown", {
+            key: "s",
+            code: "KeyS",
+            ctrlKey: true,
+            bubbles: true,
+          })
+        );
+        doc.dispatchEvent(
+          new KeyboardEvent("keyup", {
+            key: "s",
+            code: "KeyS",
+            ctrlKey: true,
+            bubbles: true,
+          })
+        );
+        doc.dispatchEvent(
+          new KeyboardEvent("keyup", {
+            key: "Control",
+            code: "ControlLeft",
+            ctrlKey: false,
+            bubbles: true,
+          })
+        );
+
+        await new Promise((resolve) => setTimeout(resolve, 100));
+
+        window.res = uint8ToBase64(
+          pyxelEditorIframe.contentWindow.pyxelContext.pyodide.FS.readFile(
+            PYXEL_WORKING_DIRECTORY + "/my_resource.pyxres"
+          )
+        );
       }
 
-      window.addEventListener("click", () => {
-        resolvePyxelInput();
-      });
-
-      window.addEventListener("touchstart", () => {
-        resolvePyxelInput();
-      });
-
-      window.addEventListener("keydown", (e) => {
-        resolvePyxelInput();
-      });
-
-      // -------------------------------------------------
-      // Ace Editor setup
-      // -------------------------------------------------
-      const editor = ace.edit("editor");
-      editor.setTheme("ace/theme/monokai");
-      editor.session.setMode("ace/mode/python");
-
-      editor.renderer.setScrollMargin(8, 0, 0, 0);
-      editor.renderer.setPadding(8);
-
-      editor.setOptions({
-        fontSize: "14px",
-        showPrintMargin: false,
-        highlightActiveLine: true,
-        enableBasicAutocompletion: true,
-        enableLiveAutocompletion: true,
-        enableSnippets: true,
-      });
-
-      editor.container.style.backgroundColor = "#111827";
-
-      const gutter = editor.renderer.$gutter;
-      if (gutter?.style) {
-        gutter.style.background = "#232d3b";
-      }
-
-      const aceThemeStyle = document.createElement("style");
-      aceThemeStyle.textContent = `
-        .ace-monokai .ace_marker-layer .ace_active-line,
-        .ace_monokai .ace_marker-layer .ace_active-line {
-          background-color: #232d3b !important;
-        }
-
-        .ace-monokai .ace_gutter-active-line,
-        .ace_monokai .ace_gutter-active-line {
-          background-color: #374151 !important;
-        }
-      `;
-      document.head.appendChild(aceThemeStyle);
-
-      // -------------------------------------------------
-      // Completions
-      // -------------------------------------------------
-      let completions = [];
-
-      fetch("completions.txt")
-        .then((res) => res.text())
-        .then((text) => {
-          completions = text
-            .trim()
-            .split("\n")
-            .map((line) => line.trim())
-            .filter((line) => line && !line.startsWith("#"));
-        });
-
-      const pyxelCompleter = {
-        getCompletions(editor, session, pos, prefix, callback) {
-          callback(
-            null,
-            completions.map((w) => ({ caption: w, value: w, meta: "pyxel" }))
-          );
-        },
-      };
-      ace.require("ace/ext/language_tools").addCompleter(pyxelCompleter);
-
-      // -------------------------------------------------
-      // DOM elements
-      // -------------------------------------------------
-      const codePane = document.getElementById("code-pane");
-      const resPane = document.getElementById("res-pane");
-      const codeTabBtn = document.getElementById("code-tab-btn");
-      const resTabBtn = document.getElementById("res-tab-btn");
-
-      const pyxelScreenIframe = document.getElementById("pyxel-screen-iframe");
-      const pyxelEditorIframe = document.getElementById("pyxel-editor-iframe");
-
-      const loadFileInput = document.getElementById("load-file-input");
-      const importFileInput = document.getElementById("import-file-input");
-
-      // 現在のプロジェクトのファイルハンドル / 名前を保持
-      let currentProjectFileHandle = null;
-      let currentProjectFileName = "pyxel-project.zip";
-
-      // project 等の初期化（未定義エラー対策）
-      let resPath = null;
-
-      // iframe 初期化状態を管理（起動直後に import/export が動いても安全にする）
-      let iframesReady = false;
-      let pendingImported = false;
-
-      // -------------------------------------------------
-      // Split resize (drag center divider)
-      // -------------------------------------------------
-      const mainSplit = document.getElementById("main-split");
-      const leftPaneEl = document.getElementById("left-pane");
-      const dividerHitEl = document.getElementById("divider-hit");
-
-      let dragging = false;
-      let startX = 0;
-      let startWidth = 0;
-
-      function onMove(e) {
-        if (!dragging) return;
-        const dx = e.clientX - startX;
-        let newW = startWidth + dx;
-
-        const containerW = mainSplit.getBoundingClientRect().width;
-        const minAllowedWidth = Math.min(200, containerW / 2);
-        const maxW = containerW - minAllowedWidth;
-
-        if (newW < minAllowedWidth) newW = minAllowedWidth;
-        if (newW > maxW) newW = maxW;
-
-        leftPaneEl.style.width = newW + "px";
-        editor.resize();
-      }
-
-      function onUp() {
-        if (!dragging) return;
-        dragging = false;
-        window.removeEventListener("pointermove", onMove);
-        window.removeEventListener("pointerup", onUp);
-        window.removeEventListener("pointercancel", onUp);
-
-        document.body.style.cursor = "";
-        document.body.style.userSelect = "";
-        // Show the right-side iframes again after dragging ends
-        if (pyxelScreenIframe) pyxelScreenIframe.style.display = "";
-        if (pyxelEditorIframe) pyxelEditorIframe.style.display = "";
-      }
-
-      dividerHitEl.addEventListener("pointerdown", (e) => {
-        dragging = true;
-        startX = e.clientX;
-        startWidth = leftPaneEl.getBoundingClientRect().width;
-
-        document.body.style.cursor = "col-resize";
-        document.body.style.userSelect = "none";
-        // Hide the right-side iframes while dragging to prevent flickering
-        if (pyxelScreenIframe) pyxelScreenIframe.style.display = "none";
-        if (pyxelEditorIframe) pyxelEditorIframe.style.display = "none";
-
-        window.addEventListener("pointermove", onMove);
-        window.addEventListener("pointerup", onUp);
-        window.addEventListener("pointercancel", onUp);
-
-        e.preventDefault();
-      });
-
-      // -------------------------------------------------
-      // Pane switching functions
-      // -------------------------------------------------
-      function switchPane(pane) {
-        if (pane === "code") {
-          codePane.classList.remove("hidden");
-          resPane.classList.add("hidden");
-
-          codeTabBtn.classList.add("seg-active");
-          resTabBtn.classList.remove("seg-active");
-          codeTabBtn.setAttribute("aria-pressed", "true");
-          resTabBtn.setAttribute("aria-pressed", "false");
-
-          leftPaneEl.classList.remove("res-mode");
-          setTimeout(() => editor.resize(), 0);
-        } else if (pane === "res") {
-          codePane.classList.add("hidden");
-          resPane.classList.remove("hidden");
-
-          codeTabBtn.classList.remove("seg-active");
-          resTabBtn.classList.add("seg-active");
-          codeTabBtn.setAttribute("aria-pressed", "false");
-          resTabBtn.setAttribute("aria-pressed", "true");
-          leftPaneEl.classList.add("res-mode");
-        }
-      }
-
-      async function resetPyxelScreen() {
-        const ctrlDown = new KeyboardEvent("keydown", {
-          key: "Control",
-          code: "ControlLeft",
-          ctrlKey: true,
-          bubbles: true,
-        });
-        pyxelEditorIframe.contentWindow.document.dispatchEvent(ctrlDown);
-
-        const sDown = new KeyboardEvent("keydown", {
-          key: "s",
-          code: "KeyS",
-          ctrlKey: true,
-          bubbles: true,
-        });
-        pyxelEditorIframe.contentWindow.document.dispatchEvent(sDown);
-
-        const sUp = new KeyboardEvent("keyup", {
-          key: "s",
-          code: "KeyS",
-          ctrlKey: true,
-          bubbles: true,
-        });
-        pyxelEditorIframe.contentWindow.document.dispatchEvent(sUp);
-
-        const ctrlUp = new KeyboardEvent("keyup", {
-          key: "Control",
-          code: "ControlLeft",
-          ctrlKey: false,
-          bubbles: true,
-        });
-        pyxelEditorIframe.contentWindow.document.dispatchEvent(ctrlUp);
-
-        setTimeout(() => {
-          window.code = editor.getValue();
-          window.res = uint8ToBase64(
-            pyxelEditorIframe.contentWindow.pyxelContext.pyodide.FS.readFile(
-              PYXEL_WORKING_DIRECTORY + "/my_resource.pyxres"
-            )
-          );
-
+      function resetPyxelScreen() {
+        if (pyxelScreenIframe.contentWindow != null) {
           pyxelScreenIframe.contentWindow.resetPyxel();
-        }, 100);
+        }
       }
 
-      // -------------------------------------------------
-      // Project operations
-      // -------------------------------------------------
+      function resetPyxelEditor() {
+        if (pyxelEditorIframe.contentWindow != null) {
+          pyxelEditorIframe.contentWindow.resetPyxel();
+        }
+      }
+
       async function importProject(file) {
-        if (!file) return;
+        if (!file) {
+          return;
+        }
         try {
-          // 解析して window.code / window.res に反映するだけ
-          resPath = null;
           const buf = await file.arrayBuffer();
           const zip = await JSZip.loadAsync(buf);
 
@@ -489,7 +304,9 @@
 
           const entries = Object.entries(zip.files);
           for (const [path, entry] of entries) {
-            if (entry.dir) continue;
+            if (entry.dir) {
+              continue;
+            }
             if (path.endsWith("main.py")) {
               pyCode = await entry.async("string");
             } else if (path.toLowerCase().endsWith(".pyxres") && !foundResB64) {
@@ -508,21 +325,11 @@
           editor.focus();
 
           if (foundResB64) {
-            resPath = foundResName;
             window.res = foundResB64;
           }
 
-          // 既存のフック／更新処理を呼ぶ（定義済みの関数がある前提）
-          if (typeof window.onImportedProject === "function") {
-            window.onImportedProject();
-          } else if (iframesReady && typeof resetPyxelScreen === "function") {
-            // iframe が準備できていれば即時実行
-            resetPyxelScreen();
-          } else {
-            // iframe 未準備なら画面切替のみ行い、準備完了時に reset を実行する
-            switchPane("code");
-            pendingImported = true;
-          }
+          resetPyxelScreen();
+          resetPyxelEditor();
         } catch (e) {
           console.warn("Failed to load zip:", e);
           alert("Failed to import project: " + e.message);
@@ -530,28 +337,26 @@
       }
 
       async function exportProject() {
-        //await saveCurrentToMemory();
+        copyEditorCodeToWindow();
+        await copyIframeResToWindow();
 
         const zip = new JSZip();
 
-        // main.py は window.code、リソースは window.res を使う
         if (typeof window.code === "string") {
           zip.file("main.py", window.code);
         }
-        if (resPath && typeof window.res === "string") {
+        if (typeof window.res === "string") {
           const bytes = base64ToUint8(window.res);
-          // resPath があればその名前で、なければデフォルト名で保存
-          const resName = resPath.split("/").pop() || "my_resource.pyxres";
+          const resName = "my_resource.pyxres";
           zip.file(resName, bytes);
         }
 
         const blob = await zip.generateAsync({ type: "blob" });
 
-        // showSaveFilePicker が使えるなら、毎回保存ダイアログを出す（既存 handle に自動上書きはしない）
         if (window.showSaveFilePicker) {
           try {
             const handle = await window.showSaveFilePicker({
-              suggestedName: currentProjectFileName,
+              suggestedName: projectFileName,
               types: [
                 {
                   description: "ZIP",
@@ -562,92 +367,123 @@
             const writable = await handle.createWritable();
             await writable.write(blob);
             await writable.close();
-            // 保存先ハンドルと名前は更新しておく（次回の suggestedName に使う）
-            currentProjectFileHandle = handle;
-            currentProjectFileName = handle.name || currentProjectFileName;
+            projectFileName = handle.name;
             return;
           } catch (e) {
-            if (e.name === "AbortError") return;
+            if (e.name === "AbortError") {
+              return;
+            }
             console.warn("save failed:", e);
           }
         }
 
-        // 3) フォールバック：従来のダウンロードリンク方式
+        // フォールバック：従来のダウンロードリンク方式
         const a = document.createElement("a");
         a.href = URL.createObjectURL(blob);
-        a.download = currentProjectFileName || "pyxel-project.zip";
+        a.download = projectFileName;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(a.href);
       }
 
-      // -------------------------------------------------
-      // Event listeners registration
-      // -------------------------------------------------
-      codeTabBtn.addEventListener("click", () => {
-        switchPane("code");
-      });
+      function initAceEditor() {
+        const editorInstance = ace.edit("editor");
 
-      resTabBtn.addEventListener("click", () => {
-        switchPane("res");
-      });
+        editorInstance.setTheme("ace/theme/monokai");
+        editorInstance.session.setMode("ace/mode/python");
+        editorInstance.renderer.setScrollMargin(8, 0, 0, 0);
+        editorInstance.renderer.setPadding(8);
 
-      document
-        .getElementById("importBtn")
-        ?.addEventListener("click", async () => {
-          animateRunButton(document.getElementById("importBtn"));
+        editorInstance.setOptions({
+          fontSize: "14px",
+          showPrintMargin: false,
+          highlightActiveLine: true,
+          enableBasicAutocompletion: true,
+          enableLiveAutocompletion: true,
+        });
 
-          // 可能なら File System Access API でファイル選択（handle を取得）
-          if (window.showOpenFilePicker) {
-            try {
-              const [handle] = await window.showOpenFilePicker({
-                multiple: false,
-                types: [
-                  {
-                    description: "ZIP",
-                    accept: { "application/zip": [".zip"] },
-                  },
-                ],
-              });
-              const file = await handle.getFile();
-              currentProjectFileHandle = handle;
-              currentProjectFileName = file.name || currentProjectFileName;
-              await importProject(file);
-              return;
-            } catch (e) {
-              // ユーザーがキャンセルした場合は何もしない（下の input フォールバックに進む）
-              if (e.name === "AbortError") return;
-            }
+        editorInstance.container.style.backgroundColor = "#111827";
+
+        const gutter = editorInstance.renderer.$gutter;
+        if (gutter?.style) {
+          gutter.style.background = "#232d3b";
+        }
+
+        const aceThemeStyle = document.createElement("style");
+        aceThemeStyle.textContent = `
+          .ace-monokai .ace_marker-layer .ace_active-line,
+          .ace_monokai .ace_marker-layer .ace_active-line {
+            background-color: #232d3b !important;
           }
 
-          // フォールバック：従来の file input を開く
+          .ace-monokai .ace_gutter-active-line,
+          .ace_monokai .ace_gutter-active-line {
+            background-color: #374151 !important;
+          }
+        `;
+        document.head.appendChild(aceThemeStyle);
+
+        window.editor = editorInstance;
+      }
+
+      function setupButtonHandlers() {
+        const importBtn = document.getElementById("import-btn");
+        const exportBtn = document.getElementById("export-btn");
+        const codeTabBtn = document.getElementById("code-tab-btn");
+        const resTabBtn = document.getElementById("res-tab-btn");
+        const codePane = document.getElementById("code-pane");
+        const resPane = document.getElementById("res-pane");
+        const leftPane = document.getElementById("left-pane");
+        const runBtn = document.getElementById("run-btn");
+        const importFileInput = document.getElementById("import-file-input");
+
+        importBtn.addEventListener("click", async () => {
+          animateButton(importBtn);
           importFileInput.value = "";
           importFileInput.click();
         });
 
-      importFileInput.addEventListener("change", async (e) => {
-        const file = e.target.files?.[0];
-        // input からの取り込みではハンドルは取得できないため null にし、名前だけ保存
-        currentProjectFileHandle = null;
-        if (file && file.name) currentProjectFileName = file.name;
-        await importProject(file);
-      });
+        importFileInput.addEventListener("change", async (e) => {
+          const file = e.target.files?.[0];
+          if (file && file.name) projectFileName = file.name;
+          importProject(file);
+        });
 
-      document.getElementById("exportBtn")?.addEventListener("click", () => {
-        animateRunButton(document.getElementById("exportBtn"));
-        exportProject();
-      });
+        exportBtn.addEventListener("click", async () => {
+          animateButton(exportBtn);
+          await exportProject();
+        });
 
-      const runBtn = document.getElementById("runBtn");
-      runBtn?.addEventListener("click", () => {
-        animateRunButton(runBtn);
-        resetPyxelScreen();
-      });
+        codeTabBtn.addEventListener("click", () => {
+          codePane.classList.remove("hidden");
+          resPane.classList.add("hidden");
+          codeTabBtn.classList.add("seg-active");
+          resTabBtn.classList.remove("seg-active");
+          codeTabBtn.setAttribute("aria-pressed", "true");
+          resTabBtn.setAttribute("aria-pressed", "false");
+          leftPane.classList.remove("res-mode");
+          setTimeout(() => editor.resize(), 0);
+        });
 
-      // -------------------------------------------------
-      // DOMContentLoaded: アプリ初期化を開始
-      // -------------------------------------------------
+        resTabBtn.addEventListener("click", () => {
+          codePane.classList.add("hidden");
+          resPane.classList.remove("hidden");
+          codeTabBtn.classList.remove("seg-active");
+          resTabBtn.classList.add("seg-active");
+          codeTabBtn.setAttribute("aria-pressed", "false");
+          resTabBtn.setAttribute("aria-pressed", "true");
+          leftPane.classList.add("res-mode");
+        });
+
+        runBtn.addEventListener("click", async () => {
+          animateButton(runBtn);
+          copyEditorCodeToWindow();
+          await copyIframeResToWindow();
+          resetPyxelScreen();
+        });
+      }
+
       async function loadInitialFiles() {
         window.code = await (await fetch("main.py")).text();
         window.res = uint8ToBase64(
@@ -659,80 +495,128 @@
         editor.setValue(window.code, -1);
         editor.focus();
 
-        // 初期リソース名を保持しておく
         if (window.res) {
-          resPath = "my_resource.pyxres";
         }
       }
 
-      function initializeIframes() {
-        return new Promise((resolve) => {
-          let pyxelScreenLoaded = false;
-          let pyxelEditorLoaded = false;
-          // resolve が呼ばれたタイミングで iframesReady をセットする
-          const maybeResolve = () => {
-            if (pyxelScreenLoaded && pyxelEditorLoaded) {
-              iframesReady = true;
-              // もし import が先行していたらここで実行する
-              if (pendingImported) {
-                pendingImported = false;
-                if (typeof resetPyxelScreen === "function") {
-                  try {
-                    resetPyxelScreen();
-                  } catch (e) {
-                    console.warn(
-                      "resetPyxelScreen failed after iframe ready:",
-                      e
-                    );
-                  }
-                }
-              }
-              resolve();
-            }
-          };
-
-          pyxelScreenIframe.onload = () => {
-            pyxelScreenLoaded = true;
-            maybeResolve();
-          };
-
-          pyxelEditorIframe.onload = () => {
-            pyxelEditorLoaded = true;
-            maybeResolve();
-          };
-
-          pyxelScreenIframe.src = "pyxel-screen.html";
-          pyxelEditorIframe.src = "pyxel-editor.html";
+      async function initIframes() {
+        const screenLoaded = new Promise((resolve) => {
+          pyxelScreenIframe.onload = () => resolve();
         });
+
+        const editorLoaded = new Promise((resolve) => {
+          pyxelEditorIframe.onload = () => resolve();
+        });
+
+        pyxelScreenIframe.src = "pyxel-screen.html";
+        pyxelEditorIframe.src = "pyxel-editor.html";
+
+        return Promise.all([screenLoaded, editorLoaded]);
       }
 
-      function watchPyxelInputWait() {
+      function waitForPyxelReady() {
         if (
           pyxelScreenIframe?.contentWindow?.pyxelContext?.resolveInput &&
           pyxelEditorIframe?.contentWindow?.pyxelContext?.resolveInput
         ) {
-          const runBtn = document.getElementById("runBtn");
-          if (runBtn) {
-            runBtn.disabled = false;
-          }
+          const runBtn = document.getElementById("run-btn");
+          runBtn.disabled = false;
+
           const resTabBtn = document.getElementById("res-tab-btn");
-          if (resTabBtn) {
-            resTabBtn.disabled = false;
-            resTabBtn.classList.remove("disabled");
-          }
-          // Enable divider interactions when run button is active
+          resTabBtn.disabled = false;
+          resTabBtn.classList.remove("disabled");
+
+          const dividerHitEl = document.getElementById("divider-hit");
           dividerHitEl.style.pointerEvents = "auto";
           dividerHitEl.style.backgroundColor = "#232d3b";
         } else {
-          setTimeout(watchPyxelInputWait, 100);
+          setTimeout(waitForPyxelReady, 100);
         }
       }
 
+      function setupSplitter() {
+        const mainSplit = document.getElementById("main-split");
+        const leftPaneEl = document.getElementById("left-pane");
+        const dividerHitEl = document.getElementById("divider-hit");
+
+        let dragging = false;
+        let startX = 0;
+        let startWidth = 0;
+
+        function onMove(e) {
+          if (!dragging) {
+            return;
+          }
+          const dx = e.clientX - startX;
+          let newW = startWidth + dx;
+          const containerW = mainSplit.getBoundingClientRect().width;
+          const minW = Math.min(200, containerW / 2);
+          const maxW = containerW - minW;
+          newW = Math.max(minW, Math.min(maxW, newW));
+          leftPaneEl.style.width = newW + "px";
+          if (editor && editor.resize) {
+            editor.resize();
+          }
+        }
+
+        function onUp() {
+          if (!dragging) {
+            return;
+          }
+          dragging = false;
+          window.removeEventListener("pointermove", onMove);
+          window.removeEventListener("pointerup", onUp);
+          window.removeEventListener("pointercancel", onUp);
+          document.body.style.cursor = "";
+          document.body.style.userSelect = "";
+          pyxelScreenIframe.style.display = "";
+          pyxelEditorIframe.style.display = "";
+        }
+
+        function onDown(e) {
+          dragging = true;
+          startX = e.clientX;
+          startWidth = leftPaneEl.getBoundingClientRect().width;
+          document.body.style.cursor = "col-resize";
+          document.body.style.userSelect = "none";
+          pyxelScreenIframe.style.display = "none";
+          pyxelEditorIframe.style.display = "none";
+          window.addEventListener("pointermove", onMove);
+          window.addEventListener("pointerup", onUp);
+          window.addEventListener("pointercancel", onUp);
+          e.preventDefault();
+        }
+
+        dividerHitEl.addEventListener("pointerdown", onDown);
+      }
+
+      function setupPyxelInput() {
+        const handlers = ["click", "touchstart", "keydown"];
+        function resolvePyxelInput() {
+          if (pyxelScreenIframe?.contentWindow?.pyxelContext?.resolveInput) {
+            pyxelScreenIframe.contentWindow.pyxelContext.resolveInput();
+          }
+
+          if (pyxelEditorIframe?.contentWindow?.pyxelContext?.resolveInput) {
+            pyxelEditorIframe.contentWindow.pyxelContext.resolveInput();
+          }
+        }
+
+        handlers.forEach((eventName) => {
+          window.addEventListener(eventName, () => {
+            resolvePyxelInput();
+          });
+        });
+      }
+
       window.addEventListener("DOMContentLoaded", async () => {
-        switchPane("code");
+        initAceEditor();
+        setupButtonHandlers();
         await loadInitialFiles();
-        await initializeIframes();
-        watchPyxelInputWait();
+        await initIframes();
+        waitForPyxelReady();
+        setupSplitter();
+        setupPyxelInput();
       });
     </script>
   </body>
