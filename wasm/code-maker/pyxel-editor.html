@@ -10,7 +10,7 @@
       script="
         import js, base64, pyxel.cli
         with open('my_resource.pyxres', 'wb') as f:
-          f.write(base64.b64decode(js.window.parent.res))
+          f.write(base64.b64decode(js.window.parent.project.res))
         pyxel.cli.edit_pyxel_resource('my_resource.pyxres')
       "
     ></pyxel-run>

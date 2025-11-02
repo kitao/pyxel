@@ -15,16 +15,10 @@
           @apply bg-gray-900 text-gray-100 antialiased;
         }
         .toolbar {
-          @apply flex items-center gap-2 bg-gray-900 px-4 py-3 border-gray-700 border-b;
+          @apply flex items-center gap-4 bg-gray-900 px-4 py-3 border-gray-700 border-b;
         }
         .btn {
           @apply bg-gray-900 px-2 py-1 border border-gray-600 rounded-md min-w-[3.5rem] font-medium text-gray-300 text-xs text-center;
-        }
-        .btn-primary {
-          @apply bg-indigo-600 hover:bg-indigo-500 border-indigo-500;
-        }
-        .btn.disabled {
-          @apply bg-gray-700 opacity-50 focus:border-gray-300 text-gray-400 pointer-events-none;
         }
         .btn:disabled {
           @apply bg-gray-700 opacity-50 focus:border-gray-300 text-gray-400 pointer-events-none;
@@ -56,13 +50,6 @@
       }
     </style>
     <style>
-      .no-scrollbar::-webkit-scrollbar {
-        display: none;
-      }
-      .no-scrollbar {
-        -ms-overflow-style: none;
-        scrollbar-width: none;
-      }
       /* When resource pane is active, match right-side background */
       #left-pane.res-mode {
         background-color: var(--pyxel-background-color);
@@ -73,9 +60,7 @@
   <body class="h-full page">
     <div id="app-root" class="flex flex-col h-full min-h-0">
       <!-- FULL-WIDTH TOOLBAR (spans from left edge to right edge) -->
-      <div
-        class="flex items-center gap-4 bg-gray-900 px-4 py-3 border-gray-700 border-b toolbar"
-      >
+      <div class="toolbar">
         <div class="flex items-baseline gap-2 min-w-0">
           <div class="tool-title">Pyxel Code Maker</div>
           <div class="truncate tool-tagline">
@@ -88,22 +73,18 @@
         <div class="flex flex-1 justify-start items-center mt-0.5 min-w-0">
           <!-- Left group: Import / Export -->
           <div class="flex items-center gap-2">
-            <button id="import-btn" class="btn" title="Import project (.zip)">
-              Import
-            </button>
-            <button id="export-btn" class="btn" title="Export project (.zip)">
-              Export
-            </button>
+            <button id="import-btn" class="btn">Import</button>
+            <button id="export-btn" class="btn">Export</button>
           </div>
           <!-- Center group: Code / Res (no explicit center) -->
           <div class="flex items-center px-4">
-            <div class="seg" role="group" aria-label="Edit target">
+            <div class="seg" role="group">
               <button
                 id="code-tab-btn"
                 class="seg-btn seg-active"
                 type="button"
                 aria-pressed="true"
-                title="Edit Python code"
+                title="Alt+T: Toggle"
               >
                 Code
               </button>
@@ -112,7 +93,7 @@
                 class="seg-btn disabled"
                 type="button"
                 aria-pressed="false"
-                title="Edit Pyxel resources"
+                title="Alt+T: Toggle"
               >
                 Res
               </button>
@@ -120,12 +101,7 @@
           </div>
           <!-- Right group: Run -->
           <div class="flex items-center gap-2">
-            <button
-              id="run-btn"
-              class="btn"
-              disabled
-              title="Run (Ctrl/⌘+Enter)"
-            >
+            <button id="run-btn" class="btn" disabled title="Alt+R: Run">
               Run
             </button>
           </div>
@@ -159,7 +135,7 @@
         <!-- Divider: draggable vertical bar (thicker, no gap) -->
         <div
           id="divider-hit"
-          class="z-50 relative w-2.5 cursor-col-resize select-none"
+          class="z-50 relative w-3 cursor-col-resize select-none"
           style="
             background-color: #000000;
             touch-action: none;
@@ -186,12 +162,6 @@
     </div>
 
     <input
-      id="load-file-input"
-      type="file"
-      accept=".zip,application/zip"
-      class="hidden"
-    />
-    <input
       id="import-file-input"
       type="file"
       accept=".zip,application/zip"
@@ -202,7 +172,11 @@
       const pyxelScreenIframe = document.getElementById("pyxel-screen-iframe");
       const pyxelEditorIframe = document.getElementById("pyxel-editor-iframe");
 
-      let projectFileName = "pyxel-project.zip";
+      window.project = {
+        name: "pyxel-project.zip",
+        code: "",
+        res: "",
+      };
 
       function uint8ToBase64(u8) {
         let bin = "";
@@ -227,7 +201,7 @@
       }
 
       function copyEditorCodeToWindow() {
-        window.code = editor.getValue();
+        window.project.code = editor.getValue();
       }
 
       async function copyIframeResToWindow() {
@@ -271,7 +245,7 @@
 
         await new Promise((resolve) => setTimeout(resolve, 100));
 
-        window.res = uint8ToBase64(
+        window.project.res = uint8ToBase64(
           pyxelEditorIframe.contentWindow.pyxelContext.pyodide.FS.readFile(
             PYXEL_WORKING_DIRECTORY + "/my_resource.pyxres"
           )
@@ -291,9 +265,6 @@
       }
 
       async function importProject(file) {
-        if (!file) {
-          return;
-        }
         try {
           const buf = await file.arrayBuffer();
           const zip = await JSZip.loadAsync(buf);
@@ -320,18 +291,17 @@
             throw new Error("main.py not found in zip file");
           }
 
-          window.code = pyCode;
+          window.project.code = pyCode;
           editor.setValue(pyCode, -1);
           editor.focus();
 
           if (foundResB64) {
-            window.res = foundResB64;
+            window.project.res = foundResB64;
           }
 
           resetPyxelScreen();
           resetPyxelEditor();
         } catch (e) {
-          console.warn("Failed to load zip:", e);
           alert("Failed to import project: " + e.message);
         }
       }
@@ -342,11 +312,11 @@
 
         const zip = new JSZip();
 
-        if (typeof window.code === "string") {
-          zip.file("main.py", window.code);
+        if (typeof window.project.code === "string") {
+          zip.file("main.py", window.project.code);
         }
-        if (typeof window.res === "string") {
-          const bytes = base64ToUint8(window.res);
+        if (typeof window.project.res === "string") {
+          const bytes = base64ToUint8(window.project.res);
           const resName = "my_resource.pyxres";
           zip.file(resName, bytes);
         }
@@ -356,7 +326,7 @@
         if (window.showSaveFilePicker) {
           try {
             const handle = await window.showSaveFilePicker({
-              suggestedName: projectFileName,
+              suggestedName: window.project.name,
               types: [
                 {
                   description: "ZIP",
@@ -367,7 +337,7 @@
             const writable = await handle.createWritable();
             await writable.write(blob);
             await writable.close();
-            projectFileName = handle.name;
+            window.project.name = handle.name;
             return;
           } catch (e) {
             if (e.name === "AbortError") {
@@ -380,7 +350,7 @@
         // フォールバック：従来のダウンロードリンク方式
         const a = document.createElement("a");
         a.href = URL.createObjectURL(blob);
-        a.download = projectFileName;
+        a.download = window.project.name;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
@@ -429,6 +399,7 @@
 
       function setupButtonHandlers() {
         const importBtn = document.getElementById("import-btn");
+        const importFileInput = document.getElementById("import-file-input");
         const exportBtn = document.getElementById("export-btn");
         const codeTabBtn = document.getElementById("code-tab-btn");
         const resTabBtn = document.getElementById("res-tab-btn");
@@ -436,7 +407,6 @@
         const resPane = document.getElementById("res-pane");
         const leftPane = document.getElementById("left-pane");
         const runBtn = document.getElementById("run-btn");
-        const importFileInput = document.getElementById("import-file-input");
 
         importBtn.addEventListener("click", async () => {
           animateButton(importBtn);
@@ -446,8 +416,10 @@
 
         importFileInput.addEventListener("change", async (e) => {
           const file = e.target.files?.[0];
-          if (file && file.name) projectFileName = file.name;
-          importProject(file);
+          if (file) {
+            window.project.name = file.name;
+            importProject(file);
+          }
         });
 
         exportBtn.addEventListener("click", async () => {
@@ -485,18 +457,14 @@
       }
 
       async function loadInitialFiles() {
-        window.code = await (await fetch("main.py")).text();
-        window.res = uint8ToBase64(
+        window.project.code = await (await fetch("main.py")).text();
+        window.project.res = uint8ToBase64(
           new Uint8Array(
             await (await fetch("my_resource.pyxres")).arrayBuffer()
           )
         );
-
-        editor.setValue(window.code, -1);
+        editor.setValue(window.project.code, -1);
         editor.focus();
-
-        if (window.res) {
-        }
       }
 
       async function initIframes() {
@@ -511,7 +479,13 @@
         pyxelScreenIframe.src = "pyxel-screen.html";
         pyxelEditorIframe.src = "pyxel-editor.html";
 
-        return Promise.all([screenLoaded, editorLoaded]);
+        pyxelEditorIframe.addEventListener("mouseenter", () => {
+          if (pyxelEditorIframe.contentWindow) {
+            pyxelEditorIframe.contentWindow.focus();
+          }
+        });
+
+        await Promise.all([screenLoaded, editorLoaded]);
       }
 
       function waitForPyxelReady() {
@@ -590,6 +564,49 @@
         dividerHitEl.addEventListener("pointerdown", onDown);
       }
 
+      function setupShortcuts() {
+        function handleShortcutKeydown(e) {
+          const isPlainAlt =
+            e.altKey && !e.ctrlKey && !e.metaKey && !e.shiftKey;
+
+          // Alt+R: Run
+          if (isPlainAlt && e.code === "KeyR") {
+            e.preventDefault();
+            e.stopPropagation();
+            const runBtn = document.getElementById("run-btn");
+            if (!runBtn?.disabled) runBtn.click();
+            return;
+          }
+
+          // Alt+T: Toggle Code/Res
+          if (isPlainAlt && e.code === "KeyT") {
+            e.preventDefault();
+            e.stopPropagation();
+            const codeTabBtn = document.getElementById("code-tab-btn");
+            const resTabBtn = document.getElementById("res-tab-btn");
+            if (!codeTabBtn || !resTabBtn) return;
+            const onCode = codeTabBtn.classList.contains("seg-active");
+            (onCode ? resTabBtn : codeTabBtn).click();
+            if (!onCode) setTimeout(() => window.editor?.focus(), 0);
+            return;
+          }
+        }
+
+        function bindTarget(tgt) {
+          tgt.addEventListener("keydown", handleShortcutKeydown, {
+            capture: true,
+          });
+          tgt.document.addEventListener("keydown", handleShortcutKeydown, {
+            capture: true,
+          });
+        }
+
+        // Bind to all targets
+        bindTarget(window);
+        bindTarget(pyxelScreenIframe.contentWindow);
+        bindTarget(pyxelEditorIframe.contentWindow);
+      }
+
       function setupPyxelInput() {
         const handlers = ["click", "touchstart", "keydown"];
         function resolvePyxelInput() {
@@ -616,6 +633,7 @@
         await initIframes();
         waitForPyxelReady();
         setupSplitter();
+        setupShortcuts();
         setupPyxelInput();
       });
     </script>
