@@ -201,7 +201,7 @@
       }
 
       function copyEditorCodeToWindow() {
-        window.project.code = editor.getValue();
+        project.code = editor.getValue();
       }
 
       async function copyIframeResToWindow() {
@@ -245,7 +245,7 @@
 
         await new Promise((resolve) => setTimeout(resolve, 100));
 
-        window.project.res = uint8ToBase64(
+        project.res = uint8ToBase64(
           pyxelEditorIframe.contentWindow.pyxelContext.pyodide.FS.readFile(
             PYXEL_WORKING_DIRECTORY + "/my_resource.pyxres"
           )
@@ -291,12 +291,12 @@
             throw new Error("main.py not found in zip file");
           }
 
-          window.project.code = pyCode;
+          project.code = pyCode;
           editor.setValue(pyCode, -1);
           editor.focus();
 
           if (foundResB64) {
-            window.project.res = foundResB64;
+            project.res = foundResB64;
           }
 
           resetPyxelScreen();
@@ -312,11 +312,11 @@
 
         const zip = new JSZip();
 
-        if (typeof window.project.code === "string") {
-          zip.file("main.py", window.project.code);
+        if (typeof project.code === "string") {
+          zip.file("main.py", project.code);
         }
-        if (typeof window.project.res === "string") {
-          const bytes = base64ToUint8(window.project.res);
+        if (typeof project.res === "string") {
+          const bytes = base64ToUint8(project.res);
           const resName = "my_resource.pyxres";
           zip.file(resName, bytes);
         }
@@ -326,7 +326,7 @@
         if (window.showSaveFilePicker) {
           try {
             const handle = await window.showSaveFilePicker({
-              suggestedName: window.project.name,
+              suggestedName: project.name,
               types: [
                 {
                   description: "ZIP",
@@ -337,7 +337,7 @@
             const writable = await handle.createWritable();
             await writable.write(blob);
             await writable.close();
-            window.project.name = handle.name;
+            project.name = handle.name;
             return;
           } catch (e) {
             if (e.name === "AbortError") {
@@ -350,7 +350,7 @@
         // フォールバック：従来のダウンロードリンク方式
         const a = document.createElement("a");
         a.href = URL.createObjectURL(blob);
-        a.download = window.project.name;
+        a.download = project.name;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);

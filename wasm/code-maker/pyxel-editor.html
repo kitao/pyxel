@@ -10,14 +10,14 @@
       script="
         import js, base64, pyxel.cli
         with open('my_resource.pyxres', 'wb') as f:
-          f.write(base64.b64decode(js.window.parent.project.res))
+          f.write(base64.b64decode(js.parent.project.res))
         pyxel.cli.edit_pyxel_resource('my_resource.pyxres')
       "
     ></pyxel-run>
     <script>
       const waitForInit = () => {
-        if (window.pyxelContext?.initialized) {
-          window._savePyxelFile = (filename) => {};
+        if (pyxelContext?.initialized) {
+          _savePyxelFile = (filename) => {};
         } else {
           setTimeout(waitForInit, 50);
         }
