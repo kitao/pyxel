@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script src="https://cdn.jsdelivr.net/gh/kitao/pyxel@2.5.9/wasm/pyxel.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/kitao/pyxel/wasm/pyxel.js"></script>
   </head>
   <body>
     <pyxel-run
@@ -14,15 +14,5 @@
         pyxel.cli.edit_pyxel_resource('my_resource.pyxres')
       "
     ></pyxel-run>
-    <script>
-      const waitForInit = () => {
-        if (pyxelContext?.initialized) {
-          _savePyxelFile = (filename) => {};
-        } else {
-          setTimeout(waitForInit, 50);
-        }
-      };
-      waitForInit();
-    </script>
   </body>
 </html>

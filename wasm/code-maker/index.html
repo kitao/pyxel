@@ -7,7 +7,7 @@
     <script src="https://cdn.tailwindcss.com/3.4.17"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.6/ace.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.6/ext-language_tools.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/kitao/pyxel@2.5.9/wasm/pyxel.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/kitao/pyxel/wasm/pyxel.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
     <style type="text/tailwindcss">
       @layer components {
@@ -73,14 +73,14 @@
         <div class="flex flex-1 justify-start items-center mt-0.5 min-w-0">
           <!-- Left group: Import / Export -->
           <div class="flex items-center gap-2">
-            <button id="import-btn" class="btn">Import</button>
-            <button id="export-btn" class="btn">Export</button>
+            <button id="import-button" class="btn">Import</button>
+            <button id="export-button" class="btn">Export</button>
           </div>
           <!-- Center group: Code / Res (no explicit center) -->
           <div class="flex items-center px-4">
             <div class="seg" role="group">
               <button
-                id="code-tab-btn"
+                id="code-tab-button"
                 class="seg-btn seg-active"
                 type="button"
                 aria-pressed="true"
@@ -89,7 +89,7 @@
                 Code
               </button>
               <button
-                id="res-tab-btn"
+                id="resource-tab-button"
                 class="seg-btn disabled"
                 type="button"
                 aria-pressed="false"
@@ -101,7 +101,7 @@
           </div>
           <!-- Right group: Run -->
           <div class="flex items-center gap-2">
-            <button id="run-btn" class="btn" disabled title="Alt+R: Run">
+            <button id="run-button" class="btn" disabled title="Alt+R: Run">
               Run
             </button>
           </div>
@@ -109,7 +109,7 @@
       </div>
 
       <!-- CONTENT AREA BELOW TOOLBAR: LEFT/RIGHT SPLIT -->
-      <div id="main-split" class="flex flex-1 min-h-0">
+      <div id="main-splitter" class="flex flex-1 min-h-0">
         <!-- LEFT SIDE (editor/resource panes only) -->
         <div
           id="left-pane"
@@ -118,13 +118,13 @@
         >
           <!-- Code pane -->
           <div id="code-pane" class="flex flex-1 min-h-0">
-            <div id="editor" class="w-full h-full"></div>
+            <div id="code-editor" class="w-full h-full"></div>
           </div>
 
           <!-- Resource pane -->
-          <div id="res-pane" class="hidden flex flex-1 min-h-0">
+          <div id="resource-pane" class="hidden flex flex-1 min-h-0">
             <iframe
-              id="pyxel-editor-iframe"
+              id="pyxel-editor"
               class="border-0 w-full h-full"
               style="background-color: var(--pyxel-background-color)"
               title="Pyxel Resource Editor"
@@ -134,7 +134,7 @@
 
         <!-- Divider: draggable vertical bar (thicker, no gap) -->
         <div
-          id="divider-hit"
+          id="splitter-handle"
           class="z-50 relative w-3 cursor-col-resize select-none"
           style="
             background-color: #000000;
@@ -152,7 +152,7 @@
           style="background-color: var(--pyxel-background-color)"
         >
           <iframe
-            id="pyxel-screen-iframe"
+            id="pyxel-screen"
             class="flex-1 border-0 w-full h-full min-h-0"
             style="background-color: var(--pyxel-background-color)"
             title="Pyxel Runtime"
@@ -162,15 +162,15 @@
     </div>
 
     <input
-      id="import-file-input"
+      id="import-file"
       type="file"
       accept=".zip,application/zip"
       class="hidden"
     />
 
     <script>
-      const pyxelScreenIframe = document.getElementById("pyxel-screen-iframe");
-      const pyxelEditorIframe = document.getElementById("pyxel-editor-iframe");
+      const pyxelScreen = document.getElementById("pyxel-screen");
+      const pyxelEditor = document.getElementById("pyxel-editor");
 
       window.project = {
         name: "pyxel-project.zip",
@@ -205,11 +205,11 @@
       }
 
       async function copyIframeResToWindow() {
-        if (!pyxelEditorIframe.contentWindow) {
+        if (!pyxelEditor.contentWindow) {
           return;
         }
 
-        const doc = pyxelEditorIframe.contentWindow.document;
+        const doc = pyxelEditor.contentWindow.document;
         doc.dispatchEvent(
           new KeyboardEvent("keydown", {
             key: "Control",
@@ -246,21 +246,21 @@
         await new Promise((resolve) => setTimeout(resolve, 100));
 
         project.res = uint8ToBase64(
-          pyxelEditorIframe.contentWindow.pyxelContext.pyodide.FS.readFile(
+          pyxelEditor.contentWindow.pyxelContext.pyodide.FS.readFile(
             PYXEL_WORKING_DIRECTORY + "/my_resource.pyxres"
           )
         );
       }
 
       function resetPyxelScreen() {
-        if (pyxelScreenIframe.contentWindow != null) {
-          pyxelScreenIframe.contentWindow.resetPyxel();
+        if (pyxelScreen.contentWindow != null) {
+          pyxelScreen.contentWindow.resetPyxel();
         }
       }
 
       function resetPyxelEditor() {
-        if (pyxelEditorIframe.contentWindow != null) {
-          pyxelEditorIframe.contentWindow.resetPyxel();
+        if (pyxelEditor.contentWindow != null) {
+          pyxelEditor.contentWindow.resetPyxel();
         }
       }
 
@@ -358,7 +358,7 @@
       }
 
       function initAceEditor() {
-        const editorInstance = ace.edit("editor");
+        const editorInstance = ace.edit("code-editor");
 
         editorInstance.setTheme("ace/theme/monokai");
         editorInstance.session.setMode("ace/mode/python");
@@ -398,18 +398,20 @@
       }
 
       function setupButtonHandlers() {
-        const importBtn = document.getElementById("import-btn");
-        const importFileInput = document.getElementById("import-file-input");
-        const exportBtn = document.getElementById("export-btn");
-        const codeTabBtn = document.getElementById("code-tab-btn");
-        const resTabBtn = document.getElementById("res-tab-btn");
+        const importButton = document.getElementById("import-button");
+        const importFileInput = document.getElementById("import-file");
+        const exportButton = document.getElementById("export-button");
+        const codeTabButton = document.getElementById("code-tab-button");
+        const resourceTabButton = document.getElementById(
+          "resource-tab-button"
+        );
         const codePane = document.getElementById("code-pane");
-        const resPane = document.getElementById("res-pane");
+        const resPane = document.getElementById("resource-pane");
         const leftPane = document.getElementById("left-pane");
-        const runBtn = document.getElementById("run-btn");
+        const runButton = document.getElementById("run-button");
 
-        importBtn.addEventListener("click", async () => {
-          animateButton(importBtn);
+        importButton.addEventListener("click", async () => {
+          animateButton(importButton);
           importFileInput.value = "";
           importFileInput.click();
         });
@@ -422,34 +424,34 @@
           }
         });
 
-        exportBtn.addEventListener("click", async () => {
-          animateButton(exportBtn);
+        exportButton.addEventListener("click", async () => {
+          animateButton(exportButton);
           await exportProject();
         });
 
-        codeTabBtn.addEventListener("click", () => {
+        codeTabButton.addEventListener("click", () => {
           codePane.classList.remove("hidden");
           resPane.classList.add("hidden");
-          codeTabBtn.classList.add("seg-active");
-          resTabBtn.classList.remove("seg-active");
-          codeTabBtn.setAttribute("aria-pressed", "true");
-          resTabBtn.setAttribute("aria-pressed", "false");
+          codeTabButton.classList.add("seg-active");
+          resourceTabButton.classList.remove("seg-active");
+          codeTabButton.setAttribute("aria-pressed", "true");
+          resourceTabButton.setAttribute("aria-pressed", "false");
           leftPane.classList.remove("res-mode");
           setTimeout(() => editor.resize(), 0);
         });
 
-        resTabBtn.addEventListener("click", () => {
+        resourceTabButton.addEventListener("click", () => {
           codePane.classList.add("hidden");
           resPane.classList.remove("hidden");
-          codeTabBtn.classList.remove("seg-active");
-          resTabBtn.classList.add("seg-active");
-          codeTabBtn.setAttribute("aria-pressed", "false");
-          resTabBtn.setAttribute("aria-pressed", "true");
+          codeTabButton.classList.remove("seg-active");
+          resourceTabButton.classList.add("seg-active");
+          codeTabButton.setAttribute("aria-pressed", "false");
+          resourceTabButton.setAttribute("aria-pressed", "true");
           leftPane.classList.add("res-mode");
         });
 
-        runBtn.addEventListener("click", async () => {
-          animateButton(runBtn);
+        runButton.addEventListener("click", async () => {
+          animateButton(runButton);
           copyEditorCodeToWindow();
           await copyIframeResToWindow();
           resetPyxelScreen();
@@ -469,19 +471,19 @@
 
       async function initIframes() {
         const screenLoaded = new Promise((resolve) => {
-          pyxelScreenIframe.onload = () => resolve();
+          pyxelScreen.onload = () => resolve();
         });
 
         const editorLoaded = new Promise((resolve) => {
-          pyxelEditorIframe.onload = () => resolve();
+          pyxelEditor.onload = () => resolve();
         });
 
-        pyxelScreenIframe.src = "pyxel-screen.html";
-        pyxelEditorIframe.src = "pyxel-editor.html";
+        pyxelScreen.src = "pyxel-screen.html";
+        pyxelEditor.src = "pyxel-editor.html";
 
-        pyxelEditorIframe.addEventListener("mouseenter", () => {
-          if (pyxelEditorIframe.contentWindow) {
-            pyxelEditorIframe.contentWindow.focus();
+        pyxelEditor.addEventListener("mouseenter", () => {
+          if (pyxelEditor.contentWindow) {
+            pyxelEditor.contentWindow.focus();
           }
         });
 
@@ -490,28 +492,32 @@
 
       function waitForPyxelReady() {
         if (
-          pyxelScreenIframe?.contentWindow?.pyxelContext?.resolveInput &&
-          pyxelEditorIframe?.contentWindow?.pyxelContext?.resolveInput
+          pyxelScreen?.contentWindow?.pyxelContext?.resolveInput &&
+          pyxelEditor?.contentWindow?.pyxelContext?.resolveInput
         ) {
-          const runBtn = document.getElementById("run-btn");
-          runBtn.disabled = false;
+          pyxelEditor.contentWindow._savePyxelFile = (filename) => {};
 
-          const resTabBtn = document.getElementById("res-tab-btn");
-          resTabBtn.disabled = false;
-          resTabBtn.classList.remove("disabled");
+          const runButton = document.getElementById("run-button");
+          runButton.disabled = false;
 
-          const dividerHitEl = document.getElementById("divider-hit");
-          dividerHitEl.style.pointerEvents = "auto";
-          dividerHitEl.style.backgroundColor = "#232d3b";
+          const resourceTabButton = document.getElementById(
+            "resource-tab-button"
+          );
+          resourceTabButton.disabled = false;
+          resourceTabButton.classList.remove("disabled");
+
+          const splitterHandleEl = document.getElementById("splitter-handle");
+          splitterHandleEl.style.pointerEvents = "auto";
+          splitterHandleEl.style.backgroundColor = "#232d3b";
         } else {
           setTimeout(waitForPyxelReady, 100);
         }
       }
 
       function setupSplitter() {
-        const mainSplit = document.getElementById("main-split");
+        const mainSplit = document.getElementById("main-splitter");
         const leftPaneEl = document.getElementById("left-pane");
-        const dividerHitEl = document.getElementById("divider-hit");
+        const dividerHitEl = document.getElementById("splitter-handle");
 
         let dragging = false;
         let startX = 0;
@@ -543,8 +549,8 @@
           window.removeEventListener("pointercancel", onUp);
           document.body.style.cursor = "";
           document.body.style.userSelect = "";
-          pyxelScreenIframe.style.display = "";
-          pyxelEditorIframe.style.display = "";
+          pyxelScreen.style.display = "";
+          pyxelEditor.style.display = "";
         }
 
         function onDown(e) {
@@ -553,8 +559,8 @@
           startWidth = leftPaneEl.getBoundingClientRect().width;
           document.body.style.cursor = "col-resize";
           document.body.style.userSelect = "none";
-          pyxelScreenIframe.style.display = "none";
-          pyxelEditorIframe.style.display = "none";
+          pyxelScreen.style.display = "none";
+          pyxelEditor.style.display = "none";
           window.addEventListener("pointermove", onMove);
           window.addEventListener("pointerup", onUp);
           window.addEventListener("pointercancel", onUp);
@@ -573,8 +579,8 @@
           if (isPlainAlt && e.code === "KeyR") {
             e.preventDefault();
             e.stopPropagation();
-            const runBtn = document.getElementById("run-btn");
-            if (!runBtn?.disabled) runBtn.click();
+            const runButton = document.getElementById("run-button");
+            if (!runButton?.disabled) runButton.click();
             return;
           }
 
@@ -582,11 +588,13 @@
           if (isPlainAlt && e.code === "KeyT") {
             e.preventDefault();
             e.stopPropagation();
-            const codeTabBtn = document.getElementById("code-tab-btn");
-            const resTabBtn = document.getElementById("res-tab-btn");
-            if (!codeTabBtn || !resTabBtn) return;
-            const onCode = codeTabBtn.classList.contains("seg-active");
-            (onCode ? resTabBtn : codeTabBtn).click();
+            const codeTabButton = document.getElementById("code-tab-button");
+            const resourceTabButton = document.getElementById(
+              "resource-tab-button"
+            );
+            if (!codeTabButton || !resourceTabButton) return;
+            const onCode = codeTabButton.classList.contains("seg-active");
+            (onCode ? resourceTabButton : codeTabButton).click();
             if (!onCode) setTimeout(() => window.editor?.focus(), 0);
             return;
           }
@@ -603,19 +611,19 @@
 
         // Bind to all targets
         bindTarget(window);
-        bindTarget(pyxelScreenIframe.contentWindow);
-        bindTarget(pyxelEditorIframe.contentWindow);
+        bindTarget(pyxelScreen.contentWindow);
+        bindTarget(pyxelEditor.contentWindow);
       }
 
       function setupPyxelInput() {
         const handlers = ["click", "touchstart", "keydown"];
         function resolvePyxelInput() {
-          if (pyxelScreenIframe?.contentWindow?.pyxelContext?.resolveInput) {
-            pyxelScreenIframe.contentWindow.pyxelContext.resolveInput();
+          if (pyxelScreen?.contentWindow?.pyxelContext?.resolveInput) {
+            pyxelScreen.contentWindow.pyxelContext.resolveInput();
           }
 
-          if (pyxelEditorIframe?.contentWindow?.pyxelContext?.resolveInput) {
-            pyxelEditorIframe.contentWindow.pyxelContext.resolveInput();
+          if (pyxelEditor?.contentWindow?.pyxelContext?.resolveInput) {
+            pyxelEditor.contentWindow.pyxelContext.resolveInput();
           }
         }
 
