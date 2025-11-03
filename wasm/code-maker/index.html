@@ -313,6 +313,7 @@
         const zip = new JSZip();
 
         if (typeof project.code === "string") {
+          zip.file(".pyxapp_startup_file", "main.py");
           zip.file("main.py", project.code);
         }
         if (typeof project.resource === "string") {
