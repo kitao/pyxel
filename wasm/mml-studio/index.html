@@ -105,7 +105,7 @@
           class="flex flex-grow items-center mt-2 sm:mt-0 p-0 w-full sm:w-auto h-24 card"
         >
           <iframe
-            id="pyxel-screen"
+            id="runtime-screen"
             src="pyxel-screen.html"
             class="border-0 w-full h-full"
           ></iframe>
@@ -248,7 +248,7 @@
         <label for="url" class="block text-xl">URL</label>
         <!-- URL -->
         <a
-          id="url"
+          id="share-url"
           target="_blank"
           rel="noopener noreferrer"
           class="mt-2 input-link"
@@ -256,15 +256,15 @@
         ></a>
 
         <!-- QR Code -->
-        <img id="qr-code" alt="QR Code" class="mt-4" />
+        <img id="qr-code-image" alt="QR Code" class="mt-4" />
       </div>
     </main>
 
     <script>
       // Cache frequently used elements
-      const screen = document.getElementById("pyxel-screen");
-      const urlA = document.getElementById("url");
-      const qrImg = document.getElementById("qr-code");
+      const runtimeScreen = document.getElementById("runtime-screen");
+      const shareUrl = document.getElementById("share-url");
+      const qrCodeImage = document.getElementById("qr-code-image");
 
       function setButtonStyle(btn, isActive) {
         btn.classList.toggle("active", isActive);
@@ -280,7 +280,7 @@
           setButtonStyle(btn, true);
           setTimeout(() => {
             setButtonStyle(btn, false);
-            screen.contentWindow[varName] = false;
+            runtimeScreen.contentWindow[varName] = false;
           }, 150);
         } else {
           btn.dataset.state = btn.dataset.state !== "true";
@@ -288,12 +288,15 @@
           setButtonStyle(btn, isActive);
         }
 
-        screen.contentWindow[varName] = isActive;
-        if (action === "play") screen.contentWindow.resetPyxel();
+        runtimeScreen.contentWindow[varName] = isActive;
+        if (action === "play") {
+          runtimeScreen.contentWindow.resetPyxel();
+        }
       }
 
       function handleMmlInput(textarea) {
-        screen.contentWindow["js_" + textarea.id + "_mml"] = textarea.value;
+        runtimeScreen.contentWindow["js_" + textarea.id + "_mml"] =
+          textarea.value;
         updateUrl();
       }
 
@@ -309,23 +312,23 @@
           url += "?mml=" + LZString.compressToEncodedURIComponent(mmlStr);
         }
 
-        urlA.textContent = urlA.href = url;
+        shareUrl.textContent = shareUrl.href = url;
         window.history.replaceState(null, "", url);
 
         const qrSize = Math.max(128, Math.min(url.length, 400));
-        qrImg.src =
+        qrCodeImage.src =
           `https://api.qrserver.com/v1/create-qr-code/?color=9ca3af&bgcolor=000000&size=${qrSize}x${qrSize}&data=` +
           encodeURIComponent(url);
-        qrImg.width = qrSize;
-        qrImg.height = qrSize;
+        qrCodeImage.width = qrSize;
+        qrCodeImage.height = qrSize;
       }
 
       function resolvePyxelInput() {
-        screen.contentWindow?.pyxelContext?.resolveInput?.();
+        runtimeScreen.contentWindow?.pyxelContext?.resolveInput?.();
       }
 
       window.addEventListener("DOMContentLoaded", () => {
-        // Forward user input to Pyxel screen
+        // Forward user input to runtime screen
         ["click", "touchstart"].forEach((ev) =>
           window.addEventListener(ev, resolvePyxelInput)
         );
@@ -338,19 +341,25 @@
             const playBtn = document.querySelector(
               'button[data-action="play"]'
             );
-            if (playBtn && !playBtn.disabled) handleButtonPress(playBtn);
+            if (playBtn && !playBtn.disabled) {
+              handleButtonPress(playBtn);
+            }
           } else if (e.altKey && e.key === "Enter") {
             e.preventDefault();
             const stopBtn = document.querySelector(
               'button[data-action="stop"]'
             );
-            if (stopBtn) handleButtonPress(stopBtn);
+            if (stopBtn) {
+              handleButtonPress(stopBtn);
+            }
           } else if (e.altKey && e.code === "KeyL") {
             e.preventDefault();
             const loopBtn = document.querySelector(
               'button[data-action="loop"]'
             );
-            if (loopBtn && !loopBtn.disabled) handleButtonPress(loopBtn);
+            if (loopBtn && !loopBtn.disabled) {
+              handleButtonPress(loopBtn);
+            }
           }
         });
 
@@ -370,16 +379,16 @@
         updateUrl();
 
         // Set initial button states to iframe globals when iframe is ready
-        screen.addEventListener("load", () => {
+        runtimeScreen.addEventListener("load", () => {
           document.querySelectorAll("button[data-action]").forEach((btn) => {
             const varName = "js_" + btn.dataset.action;
-            screen.contentWindow[varName] = btn.dataset.state === "true";
+            runtimeScreen.contentWindow[varName] = btn.dataset.state === "true";
           });
         });
 
         // Enable control buttons after Pyxel input wait starts
         (function watch() {
-          if (screen.contentWindow?.pyxelContext?.resolveInput) {
+          if (runtimeScreen.contentWindow?.pyxelContext?.resolveInput) {
             document
               .querySelectorAll(
                 'button[data-action="play"],button[data-action="stop"],button[data-action="loop"]'
