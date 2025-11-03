@@ -266,26 +266,26 @@
       const shareUrl = document.getElementById("share-url");
       const qrCodeImage = document.getElementById("qr-code-image");
 
-      function setButtonStyle(btn, isActive) {
-        btn.classList.toggle("active", isActive);
+      function setButtonStyle(button, isActive) {
+        button.classList.toggle("active", isActive);
       }
 
-      function handleButtonPress(btn) {
-        const action = btn.dataset.action;
+      function handleButtonPress(button) {
+        const action = button.dataset.action;
         const varName = "js_" + action;
         let isActive;
 
         if (action === "play" || action === "stop") {
           isActive = true;
-          setButtonStyle(btn, true);
+          setButtonStyle(button, true);
           setTimeout(() => {
-            setButtonStyle(btn, false);
+            setButtonStyle(button, false);
             runtimeScreen.contentWindow[varName] = false;
           }, 150);
         } else {
-          btn.dataset.state = btn.dataset.state !== "true";
-          isActive = btn.dataset.state === "true";
-          setButtonStyle(btn, isActive);
+          button.dataset.state = button.dataset.state !== "true";
+          isActive = button.dataset.state === "true";
+          setButtonStyle(button, isActive);
         }
 
         runtimeScreen.contentWindow[varName] = isActive;
@@ -338,27 +338,27 @@
           resolvePyxelInput();
           if (!e.altKey && e.key === "Enter") {
             e.preventDefault();
-            const playBtn = document.querySelector(
+            const playButton = document.querySelector(
               'button[data-action="play"]'
             );
-            if (playBtn && !playBtn.disabled) {
-              handleButtonPress(playBtn);
+            if (playButton && !playButton.disabled) {
+              handleButtonPress(playButton);
             }
           } else if (e.altKey && e.key === "Enter") {
             e.preventDefault();
-            const stopBtn = document.querySelector(
+            const stopButton = document.querySelector(
               'button[data-action="stop"]'
             );
-            if (stopBtn) {
-              handleButtonPress(stopBtn);
+            if (stopButton) {
+              handleButtonPress(stopButton);
             }
           } else if (e.altKey && e.code === "KeyL") {
             e.preventDefault();
-            const loopBtn = document.querySelector(
+            const loopButton = document.querySelector(
               'button[data-action="loop"]'
             );
-            if (loopBtn && !loopBtn.disabled) {
-              handleButtonPress(loopBtn);
+            if (loopButton && !loopButton.disabled) {
+              handleButtonPress(loopButton);
             }
           }
         });
@@ -380,9 +380,10 @@
 
         // Set initial button states to iframe globals when iframe is ready
         runtimeScreen.addEventListener("load", () => {
-          document.querySelectorAll("button[data-action]").forEach((btn) => {
-            const varName = "js_" + btn.dataset.action;
-            runtimeScreen.contentWindow[varName] = btn.dataset.state === "true";
+          document.querySelectorAll("button[data-action]").forEach((button) => {
+            const varName = "js_" + button.dataset.action;
+            runtimeScreen.contentWindow[varName] =
+              button.dataset.state === "true";
           });
         });
 
@@ -393,8 +394,8 @@
               .querySelectorAll(
                 'button[data-action="play"],button[data-action="stop"],button[data-action="loop"]'
               )
-              .forEach((btn) => {
-                btn.disabled = false;
+              .forEach((button) => {
+                button.disabled = false;
               });
           } else {
             setTimeout(watch, 100);
