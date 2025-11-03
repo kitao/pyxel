@@ -69,21 +69,26 @@
       <div
         class="flex sm:flex-row flex-col justify-between items-start sm:items-center gap-2 mb-2"
       >
-        <h1 id="pageTitle" class="heading"></h1>
+        <h1 id="page-title" class="heading"></h1>
         <div
           class="self-start sm:self-auto mt-2 sm:mt-0 seg"
           role="group"
           aria-label="Language toggle"
         >
           <button
-            id="btnEN"
+            id="lang-en-button"
             class="seg-btn seg-active"
             type="button"
             aria-pressed="true"
           >
             en
           </button>
-          <button id="btnJA" class="seg-btn" type="button" aria-pressed="false">
+          <button
+            id="lang-ja-button"
+            class="seg-btn"
+            type="button"
+            aria-pressed="false"
+          >
             ja
           </button>
         </div>
@@ -98,7 +103,7 @@
               <th class="th">Description</th>
             </tr>
           </thead>
-          <tbody id="cmdTable"></tbody>
+          <tbody id="command-table"></tbody>
         </table>
       </div>
     </div>
@@ -304,28 +309,28 @@
         },
       ];
 
-      const tbody = document.getElementById("cmdTable");
-      const pageTitle = document.getElementById("pageTitle");
+      const commandTable = document.getElementById("command-table");
+      const pageTitle = document.getElementById("page-title");
       const subtitle = document.getElementById("subtitle");
-      const btnEN = document.getElementById("btnEN");
-      const btnJA = document.getElementById("btnJA");
+      const langEnButton = document.getElementById("lang-en-button");
+      const langJaButton = document.getElementById("lang-ja-button");
 
       function render() {
         pageTitle.textContent = STRINGS[currentLang].title;
         subtitle.innerHTML = STRINGS[currentLang].subtitle;
 
-        btnEN.classList.toggle("seg-active", currentLang === "en");
-        btnEN.setAttribute(
+        langEnButton.classList.toggle("seg-active", currentLang === "en");
+        langEnButton.setAttribute(
           "aria-pressed",
           currentLang === "en" ? "true" : "false"
         );
-        btnJA.classList.toggle("seg-active", currentLang === "ja");
-        btnJA.setAttribute(
+        langJaButton.classList.toggle("seg-active", currentLang === "ja");
+        langJaButton.setAttribute(
           "aria-pressed",
           currentLang === "ja" ? "true" : "false"
         );
 
-        tbody.innerHTML = "";
+        commandTable.innerHTML = "";
         COMMANDS.forEach((c) => {
           let cmdHTML = c.cmd;
           if (c.cmd.startsWith("C/D/E/F/G/A/B")) {
@@ -346,15 +351,15 @@
               ${c.example ? `<div class="example">${c.example}</div>` : ""}
             </td>
           `;
-          tbody.appendChild(tr);
+          commandTable.appendChild(tr);
         });
       }
 
-      btnEN.addEventListener("click", () => {
+      langEnButton.addEventListener("click", () => {
         currentLang = "en";
         render();
       });
-      btnJA.addEventListener("click", () => {
+      langJaButton.addEventListener("click", () => {
         currentLang = "ja";
         render();
       });
