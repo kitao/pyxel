@@ -5,7 +5,6 @@
 - Updated Pyodide to version 0.29.0
 - Updated the pyo3 crate to version 0.27
 - Added the Pyxel Code Maker web page
-- Added Pyxel Code Maker zip file support to the play command
 
 ## 2.5.9
 
