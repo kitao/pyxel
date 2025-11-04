@@ -755,6 +755,7 @@ Pyxel には、ユーザーを混乱させる可能性や、使用に専門知�
 
 - [Pyxel Web Examples](https://kitao.github.io/pyxel/wasm/examples/)
 - [Pyxel Web Launcher](https://kitao.github.io/pyxel/wasm/launcher/)
+- [Pyxel Code Maker](https://kitao.github.io/pyxel/wasm/code-maker/)
 - [Pyxel MML Studio](https://kitao.github.io/pyxel/wasm/mml-studio/)
 
 ## その他の情報
