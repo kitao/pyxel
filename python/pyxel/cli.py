@@ -307,11 +307,9 @@ def print_pyxel_app_metadata(pyxel_app_file):
 
 
 def play_pyxel_app(pyxel_app_file):
-    file_ext = os.path.splitext(pyxel_app_file)[1].lower()
-    if file_ext != ".zip":
-        pyxel_app_file = _complete_extension(
-            pyxel_app_file, "play", pyxel.APP_FILE_EXTENSION
-        )
+    pyxel_app_file = _complete_extension(
+        pyxel_app_file, "play", pyxel.APP_FILE_EXTENSION
+    )
     _check_file_exists(pyxel_app_file)
 
     print_pyxel_app_metadata(pyxel_app_file)
