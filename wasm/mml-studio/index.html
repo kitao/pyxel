@@ -329,9 +329,9 @@
 
       window.addEventListener("DOMContentLoaded", () => {
         // Forward user input to runtime screen
-        ["click", "touchstart"].forEach((ev) =>
-          window.addEventListener(ev, resolvePyxelInput)
-        );
+        ["click", "touchstart"].forEach((ev) => {
+          window.addEventListener(ev, resolvePyxelInput);
+        });
 
         // Keyboard shortcuts
         window.addEventListener("keydown", (e) => {
