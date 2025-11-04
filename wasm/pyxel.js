@@ -47,33 +47,33 @@ async function launchPyxel(params) {
   _hookFileOperations(pyodide, params.root || ".");
   await _waitForInput();
 
-  pyxelContext.initialized = true;
-  pyxelContext.canvas = canvas;
-  pyxelContext.pyodide = pyodide;
-  pyxelContext.params = params;
+  window.pyxelContext.initialized = true;
+  window.pyxelContext.canvas = canvas;
+  window.pyxelContext.pyodide = pyodide;
+  window.pyxelContext.params = params;
 
   await _executePyxelCommand(pyodide, params);
 }
 
 async function resetPyxel() {
-  if (!pyxelContext.initialized) {
+  if (!window.pyxelContext.initialized) {
     return;
   }
 
   document.getElementById("pyxel-error-overlay")?.remove();
 
-  pyxelContext.pyodide.runPython(`
+  window.pyxelContext.pyodide.runPython(`
     import pyxel
     pyxel.quit()
   `);
 
-  let audioContext = pyxelContext.pyodide?._module?.SDL2?.audioContext;
+  let audioContext = window.pyxelContext.pyodide?._module?.SDL2?.audioContext;
   if (audioContext && audioContext.state === "running") {
     await new Promise((resolve) => setTimeout(resolve, 50));
     await audioContext.suspend();
   }
 
-  let pyodide = pyxelContext.pyodide;
+  let pyodide = window.pyxelContext.pyodide;
   pyodide._module._emscripten_cancel_main_loop();
 
   pyodide.runPython(`
@@ -116,7 +116,7 @@ async function resetPyxel() {
     os.chdir(work_dir)
   `);
 
-  await _executePyxelCommand(pyodide, pyxelContext.params);
+  await _executePyxelCommand(pyodide, window.pyxelContext.params);
 
   setTimeout(() => {
     if (audioContext && audioContext.state === "suspended") {
@@ -446,13 +446,13 @@ async function _waitForInput() {
   _updateScreenElementsSize();
 
   await new Promise((resolve) => {
-    pyxelContext.resolveInput = () => {
-      pyxelContext.resolveInput = null;
+    window.pyxelContext.resolveInput = () => {
+      window.pyxelContext.resolveInput = null;
       resolve();
     };
     _waitForEvent(document.body, "click", "touchstart").then(() => {
-      if (pyxelContext.resolveInput) {
-        pyxelContext.resolveInput();
+      if (window.pyxelContext.resolveInput) {
+        window.pyxelContext.resolveInput();
       }
     });
   });
