@@ -171,8 +171,8 @@
         const additionalPackages = document.getElementById(
           "additional-packages"
         ).value;
-        const launchUrlHref = document.getElementById("launch-url");
-        launchUrlHref.textContent = launchUrlHref.href = "";
+        const launchLink = document.getElementById("launch-url");
+        launchLink.textContent = launchLink.href = "";
 
         if (
           !startupFile.startsWith("https://github.com/") ||
@@ -186,7 +186,7 @@
         const dottedPath = paths.slice(3, 5).concat(paths.slice(7)).join(".");
         const filePath = dottedPath.split(".").slice(0, -1).join(".");
         const fileExt = dottedPath.split(".").slice(-1)[0];
-        var launchUrl = "https://kitao.github.io/pyxel/wasm/launcher/?";
+        let launchUrl = "https://kitao.github.io/pyxel/wasm/launcher/?";
         launchUrl += fileExt === "py" ? "run" : "play";
         launchUrl += "=" + filePath;
 
@@ -198,7 +198,7 @@
           launchUrl += "&packages=" + additionalPackages;
         }
 
-        launchUrlHref.textContent = launchUrlHref.href = launchUrl;
+        launchLink.textContent = launchLink.href = launchUrl;
       }
 
       document
