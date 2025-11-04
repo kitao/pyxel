@@ -755,6 +755,7 @@ Inviare una richiesta di pull implica che accetti di concedere in licenza il tuo
 
 - [Pyxel Web Examples](https://kitao.github.io/pyxel/wasm/examples/)
 - [Pyxel Web Launcher](https://kitao.github.io/pyxel/wasm/launcher/)
+- [Pyxel Code Maker](https://kitao.github.io/pyxel/wasm/code-maker/)
 - [Pyxel MML Studio](https://kitao.github.io/pyxel/wasm/mml-studio/)
 
 ## Altre Informazioni

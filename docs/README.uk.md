@@ -756,6 +756,7 @@ Pyxel включає "Розширене API", яке не згадується 
 
 - [Pyxel Web Examples](https://kitao.github.io/pyxel/wasm/examples/)
 - [Pyxel Web Launcher](https://kitao.github.io/pyxel/wasm/launcher/)
+- [Pyxel Code Maker](https://kitao.github.io/pyxel/wasm/code-maker/)
 - [Pyxel MML Studio](https://kitao.github.io/pyxel/wasm/mml-studio/)
 
 ## Інша інформація

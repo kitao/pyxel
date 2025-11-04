@@ -759,6 +759,7 @@ Submitting a pull request implies that you agree to license your contribution un
 
 - [Pyxel Web Examples](https://kitao.github.io/pyxel/wasm/examples/)
 - [Pyxel Web Launcher](https://kitao.github.io/pyxel/wasm/launcher/)
+- [Pyxel Code Maker](https://kitao.github.io/pyxel/wasm/code-maker/)
 - [Pyxel MML Studio](https://kitao.github.io/pyxel/wasm/mml-studio/)
 
 ## Other Information
