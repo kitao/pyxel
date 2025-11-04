@@ -71,10 +71,10 @@
         </div>
         <!-- Control groups wrapper (takes remaining horizontal space, right-aligned) -->
         <div class="flex flex-1 justify-start items-center mt-0.5 min-w-0">
-          <!-- Left group: Import / Export -->
+          <!-- Left group: Load / Save -->
           <div class="flex items-center gap-2">
-            <button id="import-button" class="btn">Import</button>
-            <button id="export-button" class="btn">Export</button>
+            <button id="load-button" class="btn">Load</button>
+            <button id="save-button" class="btn">Save</button>
           </div>
           <!-- Center group: Code / Res (no explicit center) -->
           <div class="flex items-center px-4">
@@ -162,7 +162,7 @@
     </div>
 
     <input
-      id="import-file"
+      id="load-file"
       type="file"
       accept=".zip,application/zip"
       class="hidden"
@@ -173,10 +173,11 @@
       const resourceEditor = document.getElementById("resource-editor");
 
       window.project = {
-        name: "pyxel-project.zip",
+        name: "pyxel-project",
         code: "",
         resource: "",
       };
+      window.isCopyingResource = false;
 
       function uint8ToBase64(u8) {
         let bin = "";
@@ -201,133 +202,131 @@
       }
 
       function copyCodeToProject() {
-        project.code = codeEditor.getValue();
+        window.project.code = window.codeEditor.getValue();
       }
 
       async function copyResourceToProject() {
-        if (!resourceEditor.contentWindow) {
+        if (!resourceEditor.contentWindow?.pyxelContext?.pyodide) {
           return;
         }
 
-        const doc = resourceEditor.contentWindow.document;
-        doc.dispatchEvent(
-          new KeyboardEvent("keydown", {
-            key: "Control",
-            code: "ControlLeft",
-            ctrlKey: true,
-            bubbles: true,
-          })
-        );
-        doc.dispatchEvent(
-          new KeyboardEvent("keydown", {
-            key: "s",
-            code: "KeyS",
-            ctrlKey: true,
-            bubbles: true,
-          })
-        );
-        doc.dispatchEvent(
-          new KeyboardEvent("keyup", {
-            key: "s",
-            code: "KeyS",
-            ctrlKey: true,
-            bubbles: true,
-          })
-        );
-        doc.dispatchEvent(
-          new KeyboardEvent("keyup", {
-            key: "Control",
-            code: "ControlLeft",
-            ctrlKey: false,
-            bubbles: true,
-          })
-        );
+        window.isCopyingResource = true;
 
-        await new Promise((resolve) => setTimeout(resolve, 100));
+        try {
+          const doc = resourceEditor.contentWindow.document;
+          doc.dispatchEvent(
+            new KeyboardEvent("keydown", {
+              key: "Control",
+              code: "ControlLeft",
+              ctrlKey: true,
+              bubbles: true,
+            })
+          );
+          doc.dispatchEvent(
+            new KeyboardEvent("keydown", {
+              key: "s",
+              code: "KeyS",
+              ctrlKey: true,
+              bubbles: true,
+            })
+          );
+          doc.dispatchEvent(
+            new KeyboardEvent("keyup", {
+              key: "s",
+              code: "KeyS",
+              ctrlKey: true,
+              bubbles: true,
+            })
+          );
+          doc.dispatchEvent(
+            new KeyboardEvent("keyup", {
+              key: "Control",
+              code: "ControlLeft",
+              ctrlKey: false,
+              bubbles: true,
+            })
+          );
 
-        project.resource = uint8ToBase64(
-          resourceEditor.contentWindow.pyxelContext.pyodide.FS.readFile(
-            PYXEL_WORKING_DIRECTORY + "/my_resource.pyxres"
-          )
-        );
+          await new Promise((resolve) => setTimeout(resolve, 100));
+
+          window.project.resource = uint8ToBase64(
+            resourceEditor.contentWindow.pyxelContext.pyodide.FS.readFile(
+              PYXEL_WORKING_DIRECTORY + "/my_resource.pyxres"
+            )
+          );
+        } finally {
+          window.isCopyingResource = false;
+        }
       }
 
       function resetRuntimeScreen() {
-        if (runtimeScreen.contentWindow != null) {
-          runtimeScreen.contentWindow.resetPyxel();
-        }
+        runtimeScreen.contentWindow?.resetPyxel();
       }
 
       function resetResourceEditor() {
-        if (resourceEditor.contentWindow != null) {
-          resourceEditor.contentWindow.resetPyxel();
-        }
+        resourceEditor.contentWindow?.resetPyxel();
       }
 
-      async function importProject(file) {
+      async function loadProject(file) {
         try {
           const buf = await file.arrayBuffer();
           const zip = await JSZip.loadAsync(buf);
 
-          let pyCode = null;
-          let foundResName = null;
-          let foundResB64 = null;
+          let code = null;
+          let resource = null;
 
-          const entries = Object.entries(zip.files);
-          for (const [path, entry] of entries) {
-            if (entry.dir) {
-              continue;
-            }
-            if (path.endsWith("main.py")) {
-              pyCode = await entry.async("string");
-            } else if (path.toLowerCase().endsWith(".pyxres") && !foundResB64) {
-              const u8 = await entry.async("uint8array");
-              foundResB64 = uint8ToBase64(u8);
-              foundResName = path;
+          for (const [path, entry] of Object.entries(zip.files)) {
+            if (path === `${window.project.name}/main.py`) {
+              code = await entry.async("string");
+            } else if (path === `${window.project.name}/my_resource.pyxres`) {
+              resource = uint8ToBase64(await entry.async("uint8array"));
             }
           }
 
-          if (pyCode == null) {
-            throw new Error("main.py not found in zip file");
+          if (!code) {
+            throw new Error("main.py not found");
+          }
+          if (!resource) {
+            throw new Error("my_resource.pyxres not found");
           }
 
-          project.code = pyCode;
-          codeEditor.setValue(pyCode, -1);
-          codeEditor.focus();
-
-          if (foundResB64) {
-            project.resource = foundResB64;
-          }
+          window.project.code = code;
+          window.project.resource = resource;
+          window.codeEditor.setValue(code, -1);
 
           resetRuntimeScreen();
           resetResourceEditor();
         } catch (e) {
-          alert("Failed to import project: " + e.message);
+          alert("Load failed: " + e.message);
         }
       }
 
-      async function exportProject() {
+      async function saveProject() {
+        if (window.isCopyingResource) {
+          return;
+        }
+
         copyCodeToProject();
         await copyResourceToProject();
+        resetRuntimeScreen();
 
-        const zip = new JSZip();
+        const archive = new JSZip();
+        const directoryName = window.project.name.replace(/\.zip$/i, "");
+        const directory = archive.folder(directoryName);
 
-        if (typeof project.code === "string") {
-          zip.file(".pyxapp_startup_file", "main.py");
-          zip.file("main.py", project.code);
-        }
-        if (typeof project.resource === "string") {
-          const bytes = base64ToUint8(project.resource);
-          const resName = "my_resource.pyxres";
-          zip.file(resName, bytes);
-        }
+        directory.file(".pyxapp_startup_script", "main.py");
+        directory.file("main.py", window.project.code);
+        directory.file(
+          "my_resource.pyxres",
+          base64ToUint8(window.project.resource)
+        );
 
-        const blob = await zip.generateAsync({ type: "blob" });
+        const blob = await archive.generateAsync({ type: "blob" });
 
         if (window.showSaveFilePicker) {
           try {
             const handle = await window.showSaveFilePicker({
-              suggestedName: project.name,
+              suggestedName: window.project.name + ".zip",
               types: [
                 {
                   description: "ZIP",
@@ -338,20 +337,21 @@
             const writable = await handle.createWritable();
             await writable.write(blob);
             await writable.close();
-            project.name = handle.name;
+            window.project.name = handle.name.replace(/\.zip$/i, "");
             return;
           } catch (e) {
             if (e.name === "AbortError") {
               return;
             }
-            console.warn("save failed:", e);
+
+            alert("Save failed: " + e.message);
           }
         }
 
-        // フォールバック：従来のダウンロードリンク方式
+        // Fallback: traditional download link method
         const a = document.createElement("a");
         a.href = URL.createObjectURL(blob);
-        a.download = project.name;
+        a.download = window.project.name + ".zip";
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
@@ -399,9 +399,9 @@
       }
 
       function setupButtonHandlers() {
-        const importButton = document.getElementById("import-button");
-        const importFileInput = document.getElementById("import-file");
-        const exportButton = document.getElementById("export-button");
+        const loadButton = document.getElementById("load-button");
+        const loadFileInput = document.getElementById("load-file");
+        const saveButton = document.getElementById("save-button");
         const codeTabButton = document.getElementById("code-tab-button");
         const resourceTabButton = document.getElementById(
           "resource-tab-button"
@@ -411,23 +411,23 @@
         const leftPane = document.getElementById("left-pane");
         const runButton = document.getElementById("run-button");
 
-        importButton.addEventListener("click", async () => {
-          animateButton(importButton);
-          importFileInput.value = "";
-          importFileInput.click();
+        loadButton.addEventListener("click", async () => {
+          animateButton(loadButton);
+          loadFileInput.value = "";
+          loadFileInput.click();
         });
 
-        importFileInput.addEventListener("change", async (e) => {
+        loadFileInput.addEventListener("change", async (e) => {
           const file = e.target.files?.[0];
           if (file) {
-            window.project.name = file.name;
-            importProject(file);
+            window.project.name = file.name.replace(/\.zip$/i, "");
+            loadProject(file);
           }
         });
 
-        exportButton.addEventListener("click", async () => {
-          animateButton(exportButton);
-          await exportProject();
+        saveButton.addEventListener("click", async () => {
+          animateButton(saveButton);
+          await saveProject();
         });
 
         codeTabButton.addEventListener("click", () => {
@@ -438,7 +438,7 @@
           codeTabButton.setAttribute("aria-pressed", "true");
           resourceTabButton.setAttribute("aria-pressed", "false");
           leftPane.classList.remove("res-mode");
-          setTimeout(() => codeEditor.resize(), 0);
+          setTimeout(() => window.codeEditor.resize(), 0);
         });
 
         resourceTabButton.addEventListener("click", () => {
@@ -466,11 +466,11 @@
             await (await fetch("my_resource.pyxres")).arrayBuffer()
           )
         );
-        codeEditor.setValue(window.project.code, -1);
-        codeEditor.focus();
+        window.codeEditor.setValue(window.project.code, -1);
+        window.codeEditor.focus();
       }
 
-      async function initIframes() {
+      async function setupIframes() {
         const screenLoaded = new Promise((resolve) => {
           runtimeScreen.onload = () => resolve();
         });
@@ -496,7 +496,9 @@
           runtimeScreen?.contentWindow?.pyxelContext?.resolveInput &&
           resourceEditor?.contentWindow?.pyxelContext?.resolveInput
         ) {
-          resourceEditor.contentWindow._savePyxelFile = (filename) => {};
+          resourceEditor.contentWindow._savePyxelFile = (filename) => {
+            saveProject();
+          };
 
           const runButton = document.getElementById("run-button");
           runButton.disabled = false;
@@ -535,9 +537,7 @@
           const maxW = containerW - minW;
           newW = Math.max(minW, Math.min(maxW, newW));
           leftPaneEl.style.width = newW + "px";
-          if (codeEditor && codeEditor.resize) {
-            codeEditor.resize();
-          }
+          window.codeEditor.resize();
         }
 
         function onUp() {
@@ -601,7 +601,7 @@
             const onCode = codeTabButton.classList.contains("seg-active");
             (onCode ? resourceTabButton : codeTabButton).click();
             if (!onCode) {
-              setTimeout(() => window.codeEditor?.focus(), 0);
+              setTimeout(() => window.codeEditor.focus(), 0);
             }
             return;
           }
@@ -645,7 +645,7 @@
         initAceEditor();
         setupButtonHandlers();
         await loadInitialFiles();
-        await initIframes();
+        await setupIframes();
         waitForPyxelReady();
         setupSplitter();
         setupShortcuts();
