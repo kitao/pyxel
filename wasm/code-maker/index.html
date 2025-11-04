@@ -18,10 +18,10 @@
           @apply flex items-center gap-4 bg-gray-900 px-4 py-3 border-gray-700 border-b;
         }
         .btn {
-          @apply bg-gray-900 px-2 py-1 border border-gray-600 rounded-md min-w-[3.5rem] font-medium text-gray-300 text-xs text-center;
+          @apply bg-gray-900 px-2 py-1 border border-gray-600 rounded-md w-14 font-medium text-gray-300 text-xs text-center;
         }
         .btn:disabled {
-          @apply bg-gray-700 opacity-50 focus:border-gray-300 text-gray-400 pointer-events-none;
+          @apply bg-gray-700 opacity-50 text-gray-400 pointer-events-none;
         }
         .btn.active {
           @apply bg-slate-600 text-white;
@@ -39,10 +39,10 @@
           @apply flex items-center bg-gray-900 border border-gray-600 rounded-md divide-x divide-gray-700 overflow-hidden;
         }
         .seg-btn {
-          @apply flex-1 bg-gray-900 px-3 py-1 border-none focus:outline-none min-w-[2rem] font-medium text-gray-300 text-xs text-center;
+          @apply flex-1 bg-gray-900 px-3 py-1 border-none min-w-[2rem] font-medium text-gray-300 text-xs text-center;
         }
         .seg-btn.disabled {
-          @apply bg-gray-700 opacity-50 focus:border-gray-300 text-gray-400 pointer-events-none;
+          @apply bg-gray-700 opacity-50 text-gray-400 pointer-events-none;
         }
         .seg-active {
           @apply bg-slate-600 text-white;
@@ -65,7 +65,7 @@
           <div class="tool-title">Pyxel Code Maker</div>
           <div class="truncate tool-tagline">
             Playground for
-            <a class="link" href="https://github.com/kitao/pyxel">Pyxel</a>, a
+            <a class="link" href="https://github.com/kitao/pyxel" tabindex="-1">Pyxel</a>, a
             retro game engine for Python.
           </div>
         </div>
@@ -73,8 +73,8 @@
         <div class="flex flex-1 justify-start items-center mt-0.5 min-w-0">
           <!-- Left group: Load / Save -->
           <div class="flex items-center gap-2">
-            <button id="load-button" class="btn">Load</button>
-            <button id="save-button" class="btn">Save</button>
+            <button id="load-button" class="btn" tabindex="-1">Load</button>
+            <button id="save-button" class="btn" tabindex="-1">Save</button>
           </div>
           <!-- Center group: Code / Res (no explicit center) -->
           <div class="flex items-center px-4">
@@ -85,6 +85,7 @@
                 type="button"
                 aria-pressed="true"
                 title="Alt+T: Toggle"
+                tabindex="-1"
               >
                 Code
               </button>
@@ -94,6 +95,7 @@
                 type="button"
                 aria-pressed="false"
                 title="Alt+T: Toggle"
+                tabindex="-1"
               >
                 Res
               </button>
@@ -101,7 +103,13 @@
           </div>
           <!-- Right group: Run -->
           <div class="flex items-center gap-2">
-            <button id="run-button" class="btn" disabled title="Alt+R: Run">
+            <button
+              id="run-button"
+              class="btn"
+              disabled
+              title="Alt+R: Run"
+              tabindex="-1"
+            >
               Run
             </button>
           </div>
@@ -128,6 +136,7 @@
               class="border-0 w-full h-full"
               style="background-color: var(--pyxel-background-color)"
               title="Pyxel Resource Editor"
+              tabindex="-1"
             ></iframe>
           </div>
         </div>
@@ -156,6 +165,7 @@
             class="flex-1 border-0 w-full h-full min-h-0"
             style="background-color: var(--pyxel-background-color)"
             title="Pyxel Runtime"
+            tabindex="-1"
           ></iframe>
         </div>
       </div>
@@ -166,6 +176,7 @@
       type="file"
       accept=".zip,application/zip"
       class="hidden"
+      tabindex="-1"
     />
 
     <script>
