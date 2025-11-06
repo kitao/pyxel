@@ -15,7 +15,7 @@ class App:
 
     def draw(self):
         pyxel.cls(0)
-        pyxel.blt(self.x, 60, 0, 0, 0, 16, 16, 2)
+        pyxel.blt(self.x, 60, 0, 0, 0, 8, 8, 2)
         pyxel.text(48, 53, "Pyxel Code Maker", pyxel.rndi(1, 15))
 
 
