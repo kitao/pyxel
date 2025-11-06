@@ -53,7 +53,7 @@
       <div
         class="flex sm:flex-row flex-col items-start sm:items-center mb-4 min-w-0"
       >
-        <!-- Control buttons and info link -->
+        <!-- Controls -->
         <div class="flex flex-col mr-0 sm:mr-4 min-w-[100px]">
           <div class="flex flex-row gap-x-2 mb-2">
             <button
@@ -103,7 +103,7 @@
           </a>
         </div>
 
-        <!-- Pyxel screen -->
+        <!-- Screen -->
         <div
           class="flex flex-grow items-center mt-2 sm:mt-0 p-0 w-full sm:w-auto h-24 card"
         >
@@ -115,7 +115,7 @@
         </div>
       </div>
 
-      <!-- Channel 1 editing UI -->
+      <!-- Channel 1 -->
       <div class="mb-2">
         <div class="flex items-center space-x-4 mb-2">
           <label for="ch1" class="text-xl">CH1</label>
@@ -150,7 +150,7 @@
         ></textarea>
       </div>
 
-      <!-- Channel 2 editing UI -->
+      <!-- Channel 2 -->
       <div class="mb-2">
         <div class="flex items-center space-x-4 mb-2">
           <label for="ch2" class="text-xl">CH2</label>
@@ -185,7 +185,7 @@
         ></textarea>
       </div>
 
-      <!-- Channel 3 editing UI -->
+      <!-- Channel 3 -->
       <div class="mb-2">
         <div class="flex items-center space-x-4 mb-2">
           <label for="ch3" class="text-xl">CH3</label>
@@ -220,7 +220,7 @@
         ></textarea>
       </div>
 
-      <!-- Channel 4 editing UI -->
+      <!-- Channel 4 -->
       <div class="mb-2">
         <div class="flex items-center space-x-4 mb-2">
           <label for="ch4" class="text-xl">CH4</label>
@@ -257,7 +257,7 @@
 
       <div class="flex-grow mt-2">
         <label for="url" class="block text-xl">URL</label>
-        <!-- URL -->
+        <!-- Share URL -->
         <a
           id="share-url"
           target="_blank"
@@ -272,7 +272,7 @@
     </main>
 
     <script>
-      // Cache frequently used elements
+      // Cache elements
       const runtimeScreen = document.getElementById("runtime-screen");
       const shareUrl = document.getElementById("share-url");
       const qrCodeImage = document.getElementById("qr-code-image");
@@ -339,7 +339,7 @@
       }
 
       window.addEventListener("DOMContentLoaded", () => {
-        // Forward user input to runtime screen
+        // Forward input to runtime
         ["click", "touchstart"].forEach((ev) => {
           window.addEventListener(ev, resolvePyxelInput);
         });
@@ -374,7 +374,7 @@
           }
         });
 
-        // Load MML from URL parameter
+        // Load MML from URL
         const mmlParam = new URL(document.location).searchParams.get("mml");
         if (mmlParam) {
           const mmlList = LZString.decompressFromEncodedURIComponent(
@@ -389,7 +389,7 @@
 
         updateUrl();
 
-        // Set initial button states to iframe globals when iframe is ready
+        // Set initial button states
         runtimeScreen.addEventListener("load", () => {
           document.querySelectorAll("button[data-action]").forEach((button) => {
             const varName = "js_" + button.dataset.action;
@@ -398,7 +398,7 @@
           });
         });
 
-        // Enable control buttons after Pyxel input wait starts
+        // Enable buttons when ready
         (function watch() {
           if (runtimeScreen.contentWindow?.pyxelContext?.resolveInput) {
             document
