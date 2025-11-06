@@ -2,7 +2,10 @@
 
 Web 版 Pyxel を使うと Python や Pyxel をインストールせずに、PC、スマートフォン、タブレット等の Web ブラウザーで Pyxel のアプリケーションを実行できます。
 
-Web 版 Pyxel の利用方法には、次の 3 種類があります。
+Web 版 Pyxel の利用方法には、次の 4 種類があります。
+
+- **Pyxel Code Maker でアプリを作成する**<br>
+  オンライン IDE の [Pyxel Code Maker](https://kitao.github.io/pyxel/wasm/code-maker/) を使えば、インストールなしですぐに Pyxel アプリの作成と実行が可能です。ただし、複数ファイルの構成には対応していないため、本格的な開発には通常の開発環境の利用をおすすめします。
 
 - **Pyxel Web Launcher に GitHub リポジトリを指定する**<br>
   Pyxel Web Launcher の URL に GitHub のリポジトリ名を指定すると、指定したリポジトリを直接読み込み、Web ブラウザ上でアプリを実行できます。アプリを GitHub で公開している場合、最も簡単な実行方法です。

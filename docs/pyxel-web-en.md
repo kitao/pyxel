@@ -2,7 +2,10 @@
 
 With the Web version of Pyxel, you can run Pyxel applications on a web browser from a PC, smartphone, or tablet without needing to install Python or Pyxel.
 
-There are three ways to use the Web version of Pyxel.
+There are four ways to use the Web version of Pyxel.
+
+- **Create an App with Pyxel Code Maker**<br>
+  With the online IDE [Pyxel Code Maker](https://kitao.github.io/pyxel/wasm/code-maker/), you can instantly create and run Pyxel apps without any installation. However, since it does not support multi-file structures, it is recommended to use a regular development environment for full-scale projects.
 
 - **Specify a GitHub repository in Pyxel Web Launcher**<br>
   By specifying the name of a GitHub repository in the URL of the Pyxel Web Launcher, the repository is directly loaded, and you can run the app in a web browser. This is the easiest way if the app is published on GitHub.
