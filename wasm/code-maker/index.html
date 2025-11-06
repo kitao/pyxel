@@ -57,7 +57,7 @@
 
   <body class="h-full page">
     <div id="app-root" class="flex flex-col h-full min-h-0">
-      <!-- FULL-WIDTH TOOLBAR (spans from left edge to right edge) -->
+      <!-- Toolbar -->
       <div class="toolbar">
         <div class="flex items-baseline gap-2 min-w-0">
           <div class="tool-title">Pyxel Code Maker</div>
@@ -68,9 +68,9 @@
             >, a retro game engine for Python.
           </div>
         </div>
-        <!-- Control groups wrapper (takes remaining horizontal space, right-aligned) -->
+        <!-- Controls -->
         <div class="flex flex-1 justify-start items-center mt-0.5 min-w-0">
-          <!-- Left group: Load / Save -->
+          <!-- Load / Save -->
           <div class="flex items-center gap-2">
             <button
               id="load-button"
@@ -89,7 +89,7 @@
               Save
             </button>
           </div>
-          <!-- Center group: Code / Res (no explicit center) -->
+          <!-- Code / Res toggle -->
           <div class="flex items-center px-4">
             <div class="seg" role="group">
               <button
@@ -114,7 +114,7 @@
               </button>
             </div>
           </div>
-          <!-- Right group: Run -->
+          <!-- Run -->
           <div class="flex items-center gap-2">
             <button
               id="run-button"
@@ -129,20 +129,20 @@
         </div>
       </div>
 
-      <!-- CONTENT AREA BELOW TOOLBAR: LEFT/RIGHT SPLIT -->
+      <!-- Main content -->
       <div id="main-splitter" class="flex flex-1 min-h-0">
-        <!-- LEFT SIDE (editor/resource panes only) -->
+        <!-- Left pane -->
         <div
           id="left-pane"
           class="flex flex-col min-h-0"
           style="width: 50%; min-width: 200px; max-width: 80%"
         >
-          <!-- Code pane -->
+          <!-- Code editor -->
           <div id="code-pane" class="flex flex-1 min-h-0">
             <div id="code-editor" class="w-full h-full"></div>
           </div>
 
-          <!-- Resource pane -->
+          <!-- Resource editor -->
           <div id="resource-pane" class="hidden flex flex-1 min-h-0">
             <iframe
               id="resource-editor"
@@ -154,7 +154,7 @@
           </div>
         </div>
 
-        <!-- Divider: draggable vertical bar (thicker, no gap) -->
+        <!-- Splitter -->
         <div
           id="splitter-handle"
           class="z-50 relative w-3 cursor-col-resize select-none"
@@ -168,7 +168,7 @@
           title="Drag to resize"
         ></div>
 
-        <!-- RIGHT SIDE (preview only) -->
+        <!-- Right pane -->
         <div
           class="flex flex-col flex-1 min-h-0"
           style="background-color: var(--pyxel-background-color)"
