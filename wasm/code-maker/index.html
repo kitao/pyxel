@@ -598,65 +598,74 @@
       }
 
       function setupShortcuts() {
-        window.addEventListener(
-          "keydown",
-          (e) => {
-            // Ctrl/Cmd+L: Load
-            if ((e.ctrlKey || e.metaKey) && e.key === "l") {
-              e.preventDefault();
-              e.stopPropagation();
-              const loadButton = document.getElementById("load-button");
-              if (loadButton) {
-                loadButton.click();
-              }
-              return;
+        function handleShortcutKeydown(e) {
+          // Ctrl/Cmd+L: Load
+          if ((e.ctrlKey || e.metaKey) && e.key === "l") {
+            e.preventDefault();
+            e.stopPropagation();
+            const loadButton = document.getElementById("load-button");
+            if (loadButton) {
+              loadButton.click();
             }
-
-            // Ctrl/Cmd+S: Save
-            if ((e.ctrlKey || e.metaKey) && e.key === "s") {
-              e.preventDefault();
-              e.stopPropagation();
-              const saveButton = document.getElementById("save-button");
-              if (saveButton) {
-                saveButton.click();
-              }
-              return;
-            }
-
-            // Ctrl/Cmd+.: Toggle Code/Res
-            if ((e.ctrlKey || e.metaKey) && e.key === ".") {
-              e.preventDefault();
-              e.stopPropagation();
-              const codeTabButton = document.getElementById("code-tab-button");
-              const resourceTabButton = document.getElementById(
-                "resource-tab-button"
-              );
-              if (!codeTabButton || !resourceTabButton) {
-                return;
-              }
-              const onCode = codeTabButton.classList.contains("seg-active");
-              (onCode ? resourceTabButton : codeTabButton).click();
-              if (!onCode) {
-                setTimeout(() => window.codeEditor.focus(), 0);
-              }
-              return;
-            }
-
-            // Ctrl/Cmd+Enter: Run
-            if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
-              e.preventDefault();
-              e.stopPropagation();
-              const runButton = document.getElementById("run-button");
-              if (!runButton?.disabled) {
-                runButton.click();
-              }
-              return;
-            }
-          },
-          {
-            capture: true,
+            return;
           }
-        );
+
+          // Ctrl/Cmd+S: Save
+          if ((e.ctrlKey || e.metaKey) && e.key === "s") {
+            e.preventDefault();
+            e.stopPropagation();
+            const saveButton = document.getElementById("save-button");
+            if (saveButton) {
+              saveButton.click();
+            }
+            return;
+          }
+
+          // Ctrl/Cmd+.: Toggle Code/Res
+          if ((e.ctrlKey || e.metaKey) && e.key === ".") {
+            e.preventDefault();
+            e.stopPropagation();
+            const codeTabButton = document.getElementById("code-tab-button");
+            const resourceTabButton = document.getElementById(
+              "resource-tab-button"
+            );
+            if (!codeTabButton || !resourceTabButton) {
+              return;
+            }
+            const onCode = codeTabButton.classList.contains("seg-active");
+            (onCode ? resourceTabButton : codeTabButton).click();
+            if (!onCode) {
+              setTimeout(() => window.codeEditor.focus(), 0);
+            }
+            return;
+          }
+
+          // Ctrl/Cmd+Enter: Run
+          if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+            e.preventDefault();
+            e.stopPropagation();
+            const runButton = document.getElementById("run-button");
+            if (!runButton?.disabled) {
+              runButton.click();
+            }
+            return;
+          }
+        }
+
+        function bindTarget(tgt) {
+          tgt.addEventListener("keydown", handleShortcutKeydown, {
+            capture: true,
+          });
+          if (tgt.document) {
+            tgt.document.addEventListener("keydown", handleShortcutKeydown, {
+              capture: true,
+            });
+          }
+        }
+
+        bindTarget(window);
+        bindTarget(runtimeScreen.contentWindow);
+        bindTarget(resourceEditor.contentWindow);
       }
 
       function setupPyxelInput() {

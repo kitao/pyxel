@@ -74,7 +74,7 @@
               data-action="stop"
               data-state="false"
               onmousedown="handleButtonPress(this)"
-              title="Alt+Enter: Stop"
+              title="ESC: Stop"
               disabled
               tabindex="-1"
             >
@@ -86,7 +86,7 @@
               data-action="loop"
               data-state="true"
               onmousedown="handleButtonPress(this)"
-              title="Alt+L: Toggle Loop"
+              title="Alt/Option+L: Toggle Loop"
               disabled
               tabindex="-1"
             >
@@ -355,12 +355,12 @@
             if (playButton && !playButton.disabled) {
               handleButtonPress(playButton);
             }
-          } else if (e.altKey && e.key === "Enter") {
+          } else if (e.key === "Escape") {
             e.preventDefault();
             const stopButton = document.querySelector(
               'button[data-action="stop"]'
             );
-            if (stopButton) {
+            if (stopButton && !stopButton.disabled) {
               handleButtonPress(stopButton);
             }
           } else if (e.altKey && e.code === "KeyL") {
