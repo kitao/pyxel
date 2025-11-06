@@ -3,7 +3,7 @@ import pyxel
 
 class App:
     def __init__(self):
-        pyxel.init(160, 120, title="Hello Pyxel")
+        pyxel.init(160, 120)
         pyxel.load("my_resource.pyxres")
         self.x = 0
         pyxel.run(self.update, self.draw)
