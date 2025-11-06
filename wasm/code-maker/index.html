@@ -65,16 +65,31 @@
           <div class="tool-title">Pyxel Code Maker</div>
           <div class="truncate tool-tagline">
             Playground for
-            <a class="link" href="https://github.com/kitao/pyxel" tabindex="-1">Pyxel</a>, a
-            retro game engine for Python.
+            <a class="link" href="https://github.com/kitao/pyxel" tabindex="-1"
+              >Pyxel</a
+            >, a retro game engine for Python.
           </div>
         </div>
         <!-- Control groups wrapper (takes remaining horizontal space, right-aligned) -->
         <div class="flex flex-1 justify-start items-center mt-0.5 min-w-0">
           <!-- Left group: Load / Save -->
           <div class="flex items-center gap-2">
-            <button id="load-button" class="btn" tabindex="-1">Load</button>
-            <button id="save-button" class="btn" tabindex="-1">Save</button>
+            <button
+              id="load-button"
+              class="btn"
+              tabindex="-1"
+              title="Ctrl/Cmd+L: Load"
+            >
+              Load
+            </button>
+            <button
+              id="save-button"
+              class="btn"
+              tabindex="-1"
+              title="Ctrl/Cmd+S: Save"
+            >
+              Save
+            </button>
           </div>
           <!-- Center group: Code / Res (no explicit center) -->
           <div class="flex items-center px-4">
@@ -84,7 +99,7 @@
                 class="seg-btn seg-active"
                 type="button"
                 aria-pressed="true"
-                title="Alt+T: Toggle"
+                title="Ctrl/Cmd+.: Toggle Code/Res"
                 tabindex="-1"
               >
                 Code
@@ -94,7 +109,7 @@
                 class="seg-btn disabled"
                 type="button"
                 aria-pressed="false"
-                title="Alt+T: Toggle"
+                title="Ctrl/Cmd+.: Toggle Code/Res"
                 tabindex="-1"
               >
                 Res
@@ -107,7 +122,7 @@
               id="run-button"
               class="btn"
               disabled
-              title="Alt+R: Run"
+              title="Ctrl/Cmd+Enter: Run"
               tabindex="-1"
             >
               Run
@@ -583,54 +598,65 @@
       }
 
       function setupShortcuts() {
-        function handleShortcutKeydown(e) {
-          const isPlainAlt =
-            e.altKey && !e.ctrlKey && !e.metaKey && !e.shiftKey;
-
-          // Alt+R: Run
-          if (isPlainAlt && e.code === "KeyR") {
-            e.preventDefault();
-            e.stopPropagation();
-            const runButton = document.getElementById("run-button");
-            if (!runButton?.disabled) {
-              runButton.click();
-            }
-            return;
-          }
-
-          // Alt+T: Toggle Code/Res
-          if (isPlainAlt && e.code === "KeyT") {
-            e.preventDefault();
-            e.stopPropagation();
-            const codeTabButton = document.getElementById("code-tab-button");
-            const resourceTabButton = document.getElementById(
-              "resource-tab-button"
-            );
-            if (!codeTabButton || !resourceTabButton) {
+        window.addEventListener(
+          "keydown",
+          (e) => {
+            // Ctrl/Cmd+L: Load
+            if ((e.ctrlKey || e.metaKey) && e.key === "l") {
+              e.preventDefault();
+              e.stopPropagation();
+              const loadButton = document.getElementById("load-button");
+              if (loadButton) {
+                loadButton.click();
+              }
               return;
             }
-            const onCode = codeTabButton.classList.contains("seg-active");
-            (onCode ? resourceTabButton : codeTabButton).click();
-            if (!onCode) {
-              setTimeout(() => window.codeEditor.focus(), 0);
+
+            // Ctrl/Cmd+S: Save
+            if ((e.ctrlKey || e.metaKey) && e.key === "s") {
+              e.preventDefault();
+              e.stopPropagation();
+              const saveButton = document.getElementById("save-button");
+              if (saveButton) {
+                saveButton.click();
+              }
+              return;
             }
-            return;
+
+            // Ctrl/Cmd+.: Toggle Code/Res
+            if ((e.ctrlKey || e.metaKey) && e.key === ".") {
+              e.preventDefault();
+              e.stopPropagation();
+              const codeTabButton = document.getElementById("code-tab-button");
+              const resourceTabButton = document.getElementById(
+                "resource-tab-button"
+              );
+              if (!codeTabButton || !resourceTabButton) {
+                return;
+              }
+              const onCode = codeTabButton.classList.contains("seg-active");
+              (onCode ? resourceTabButton : codeTabButton).click();
+              if (!onCode) {
+                setTimeout(() => window.codeEditor.focus(), 0);
+              }
+              return;
+            }
+
+            // Ctrl/Cmd+Enter: Run
+            if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+              e.preventDefault();
+              e.stopPropagation();
+              const runButton = document.getElementById("run-button");
+              if (!runButton?.disabled) {
+                runButton.click();
+              }
+              return;
+            }
+          },
+          {
+            capture: true,
           }
-        }
-
-        function bindTarget(tgt) {
-          tgt.addEventListener("keydown", handleShortcutKeydown, {
-            capture: true,
-          });
-          tgt.document.addEventListener("keydown", handleShortcutKeydown, {
-            capture: true,
-          });
-        }
-
-        // Bind to all targets
-        bindTarget(window);
-        bindTarget(runtimeScreen.contentWindow);
-        bindTarget(resourceEditor.contentWindow);
+        );
       }
 
       function setupPyxelInput() {
