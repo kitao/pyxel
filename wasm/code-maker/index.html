@@ -597,6 +597,10 @@
 
       function setupShortcuts() {
         function handleShortcutKeydown(e) {
+          if (window.isCopyingResource) {
+            return;
+          }
+
           // Ctrl/Cmd+L: Load
           if ((e.ctrlKey || e.metaKey) && e.key === "l") {
             e.preventDefault();
