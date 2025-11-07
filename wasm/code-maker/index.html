@@ -200,6 +200,7 @@
         name: "pyxel-project",
         code: "",
         resource: "",
+        files: {},
       };
       window.isCopyingResource = false;
 
@@ -240,33 +241,15 @@
           const doc = resourceEditor.contentWindow.document;
           doc.dispatchEvent(
             new KeyboardEvent("keydown", {
-              key: "Control",
-              code: "ControlLeft",
-              ctrlKey: true,
-              bubbles: true,
-            })
-          );
-          doc.dispatchEvent(
-            new KeyboardEvent("keydown", {
-              key: "s",
-              code: "KeyS",
-              ctrlKey: true,
+              key: "F13",
+              code: "F13",
               bubbles: true,
             })
           );
           doc.dispatchEvent(
             new KeyboardEvent("keyup", {
-              key: "s",
-              code: "KeyS",
-              ctrlKey: true,
-              bubbles: true,
-            })
-          );
-          doc.dispatchEvent(
-            new KeyboardEvent("keyup", {
-              key: "Control",
-              code: "ControlLeft",
-              ctrlKey: false,
+              key: "F13",
+              code: "F13",
               bubbles: true,
             })
           );
@@ -295,29 +278,31 @@
         try {
           const buf = await file.arrayBuffer();
           const zip = await JSZip.loadAsync(buf);
-
-          let code = null;
-          let resource = null;
+          const files = {};
 
           for (const [path, entry] of Object.entries(zip.files)) {
-            if (path === `${window.project.name}/main.py`) {
-              code = await entry.async("string");
-            } else if (path === `${window.project.name}/my_resource.pyxres`) {
-              resource = uint8ToBase64(await entry.async("uint8array"));
+            if (!entry.dir) {
+              const relativePath = path.split("/").slice(1).join("/");
+              const content = await entry.async("uint8array");
+              files[relativePath] = uint8ToBase64(content);
             }
           }
 
-          if (!code) {
-            throw new Error("main.py not found");
+          if (!files["main.py"]) {
+            throw new Error("Missing main.py");
           }
-          if (!resource) {
-            throw new Error("my_resource.pyxres not found");
+          if (!files["my_resource.pyxres"]) {
+            throw new Error("Missing my_resource.pyxres");
           }
 
-          window.project.code = code;
-          window.project.resource = resource;
-          window.codeEditor.setValue(code, -1);
+          window.project.name = file.name.replace(/\.zip$/i, "");
+          window.project.files = files;
+          window.project.code = new TextDecoder().decode(
+            base64ToUint8(files["main.py"])
+          );
+          window.project.resource = files["my_resource.pyxres"];
 
+          window.codeEditor.setValue(window.project.code, -1);
           resetRuntimeScreen();
           resetResourceEditor();
         } catch (e) {
@@ -334,19 +319,6 @@
         await copyResourceToProject();
         resetRuntimeScreen();
 
-        const archive = new JSZip();
-        const directoryName = window.project.name.replace(/\.zip$/i, "");
-        const directory = archive.folder(directoryName);
-
-        directory.file(".pyxapp_startup_script", "main.py");
-        directory.file("main.py", window.project.code);
-        directory.file(
-          "my_resource.pyxres",
-          base64ToUint8(window.project.resource)
-        );
-
-        const blob = await archive.generateAsync({ type: "blob" });
-
         if (window.showSaveFilePicker) {
           try {
             const handle = await window.showSaveFilePicker({
@@ -358,21 +330,59 @@
                 },
               ],
             });
+
+            window.project.name = handle.name.replace(/\.zip$/i, "");
+
+            const archive = new JSZip();
+
+            for (const [relativePath, base64Content] of Object.entries(
+              window.project.files
+            )) {
+              archive.file(
+                `${window.project.name}/${relativePath}`,
+                base64ToUint8(base64Content)
+              );
+            }
+
+            archive.file(`${window.project.name}/main.py`, window.project.code);
+            archive.file(
+              `${window.project.name}/my_resource.pyxres`,
+              base64ToUint8(window.project.resource)
+            );
+
+            const blob = await archive.generateAsync({ type: "blob" });
             const writable = await handle.createWritable();
             await writable.write(blob);
             await writable.close();
-            window.project.name = handle.name.replace(/\.zip$/i, "");
             return;
           } catch (e) {
             if (e.name === "AbortError") {
               return;
             }
-
             alert("Save failed: " + e.message);
           }
         }
 
         // Fallback: traditional download link method
+        const archive = new JSZip();
+
+        for (const [relativePath, base64Content] of Object.entries(
+          window.project.files
+        )) {
+          archive.file(
+            `${window.project.name}/${relativePath}`,
+            base64ToUint8(base64Content)
+          );
+        }
+
+        archive.file(`${window.project.name}/main.py`, window.project.code);
+        archive.file(
+          `${window.project.name}/my_resource.pyxres`,
+          base64ToUint8(window.project.resource)
+        );
+
+        const blob = await archive.generateAsync({ type: "blob" });
+
         const a = document.createElement("a");
         a.href = URL.createObjectURL(blob);
         a.download = window.project.name + ".zip";
@@ -444,7 +454,6 @@
         loadFileInput.addEventListener("change", async (e) => {
           const file = e.target.files?.[0];
           if (file) {
-            window.project.name = file.name.replace(/\.zip$/i, "");
             loadProject(file);
           }
         });
@@ -490,6 +499,16 @@
             await (await fetch("my_resource.pyxres")).arrayBuffer()
           )
         );
+        window.project.files = {
+          ".pyxapp_startup_script": uint8ToBase64(
+            new TextEncoder().encode("main.py")
+          ),
+          "main.py": uint8ToBase64(
+            new TextEncoder().encode(window.project.code)
+          ),
+          "my_resource.pyxres": window.project.resource,
+        };
+
         window.codeEditor.setValue(window.project.code, -1);
         window.codeEditor.focus();
       }
@@ -597,10 +616,6 @@
 
       function setupShortcuts() {
         function handleShortcutKeydown(e) {
-          if (window.isCopyingResource) {
-            return;
-          }
-
           // Ctrl/Cmd+L: Load
           if ((e.ctrlKey || e.metaKey) && e.key === "l") {
             e.preventDefault();

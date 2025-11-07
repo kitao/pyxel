@@ -216,6 +216,10 @@ class App(Widget):
             ):
                 self._redo_button.is_pressed_var = True
 
+        # Hidden save shortcut for Pyxel Code Maker
+        if pyxel.btn(pyxel.KEY_F13):
+            self._save_button.is_pressed_var = True
+
     def __on_draw(self):
         pyxel.cls(WIDGET_BACKGROUND_COLOR)
         pyxel.rect(0, 0, 240, 9, WIDGET_PANEL_COLOR)
