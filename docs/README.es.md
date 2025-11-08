@@ -98,9 +98,11 @@ Si el comando anterior falla, considera construir Pyxel desde el código fuente 
 
 ### Web
 
-La versión web de Pyxel no requiere instalación de Python o Pyxel y se ejecuta en PCs, smartphones y tabletas con navegadores web compatibles.
+La versión web de Pyxel se puede usar en PCs, así como en smartphones y tablets, siempre que tengas un navegador web compatible, sin instalar Python o Pyxel.
 
-Para obtener instrucciones detalladas, consulta [esta página](pyxel-web-en.md).
+La forma más fácil de usarla es a través del IDE en línea [Pyxel Code Maker](https://kitao.github.io/pyxel/wasm/code-maker/).
+
+Para otros patrones de uso, como incrustar aplicaciones Pyxel en tu propio sitio, consulta [esta página](pyxel-web-en.md).
 
 ### Ejecutar ejemplos
 

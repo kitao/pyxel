@@ -98,9 +98,11 @@ sudo pip3 install -U pyxel
 
 ### Web
 
-Web 版の Pyxel は、Python や Pyxel のインストールを必要とせず、PC だけでなく、対応する Web ブラウザーを持つスマートフォンやタブレットでも動作します。
+Web 版 Pyxel は、Python や Pyxel をインストールすることなく、対応する Web ブラウザーがあれば PC だけでなく、スマートフォンやタブレットでも利用できます。
 
-具体的な使い方については、[こちらのページ](pyxel-web-ja.md)を参照してください。
+最も手軽な利用方法は、オンライン IDE の [Pyxel Code Maker](https://kitao.github.io/pyxel/wasm/code-maker/) を利用する方法です。
+
+自分のサイトに Pyxel アプリを埋め込む方法など、その他の利用パターンについては、[こちらのページ](pyxel-web-ja.md) を参照してください。
 
 ### サンプルを実行する
 

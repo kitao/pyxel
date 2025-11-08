@@ -98,9 +98,11 @@ sudo pip3 install -U pyxel
 
 ### Web
 
-Pyxel의 웹 버전은 Python이나 Pyxel 설치가 필요 없으며, 지원되는 웹 브라우저를 사용하는 PC, 스마트폰 및 태블릿에서 실행됩니다.
+Pyxel의 Web 버전은 Python이나 Pyxel을 설치하지 않고도 호환되는 웹 브라우저만 있으면 PC뿐만 아니라 스마트폰과 태블릿에서도 사용할 수 있습니다.
 
-자세한 지침은 [이 페이지](pyxel-web-en.md)를 참조하세요.
+가장 쉬운 사용 방법은 온라인 IDE [Pyxel Code Maker](https://kitao.github.io/pyxel/wasm/code-maker/)를 이용하는 것입니다.
+
+자신의 사이트에 Pyxel 앱을 임베딩하는 등의 다른 사용 패턴에 대해서는 [이 페이지](pyxel-web-en.md)를 참조하세요.
 
 ### 예제 실행하기
 

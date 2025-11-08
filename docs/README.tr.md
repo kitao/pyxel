@@ -98,9 +98,11 @@ Yukarıdaki komut çalışmazsa, Pyxel'i kaynak kodundan inşa etmeyi düşünü
 
 ### Web
 
-Pyxel'in web sürümü Python veya Pyxel kurulumu gerektirmeden çalışır ve desteklenen web tarayıcılarına sahip PC'ler, akıllı telefonlar ve tabletlerde çalışır.
+Pyxel'in web sürümü, Python veya Pyxel'i yüklemeden, uyumlu bir web tarayıcınız olduğu sürece PC'lerde ve akıllı telefonlarda ve tabletlerde kullanılabilir.
 
-Detaylı talimatlar için [bu sayfaya](pyxel-web-en.md) başvurun.
+Kullanmanın en kolay yolu, çevrimiçi IDE [Pyxel Code Maker](https://kitao.github.io/pyxel/wasm/code-maker/) aracılığıyladır.
+
+Kendi sitenizde Pyxel uygulamalarını gömme gibi diğer kullanım modelleri için, lütfen [bu sayfaya](pyxel-web-en.md) bakın.
 
 ### Örnekleri Çalıştır
 
