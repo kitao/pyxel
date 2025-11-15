@@ -15,7 +15,7 @@
           @apply bg-gray-900 text-gray-100 antialiased;
         }
         .toolbar {
-          @apply flex items-center gap-4 bg-gray-900 px-4 py-3 border-gray-700 border-b;
+          @apply flex items-center gap-4 bg-gray-900 px-4 py-3;
         }
         .btn {
           @apply bg-gray-900 px-2 py-1 border border-gray-600 rounded-md w-14 font-medium text-gray-300 text-xs text-center;
@@ -46,6 +46,15 @@
         }
         .seg-active {
           @apply bg-slate-600 text-white;
+        }
+        .focus-line {
+          @apply flex w-full h-[1px];
+        }
+        .focus-line-segment {
+          @apply flex-1 bg-gray-700;
+        }
+        .focus-line-segment-active {
+          @apply bg-cyan-700;
         }
       }
 
@@ -97,7 +106,7 @@
                 class="seg-btn seg-active"
                 type="button"
                 aria-pressed="true"
-                title="Ctrl/Cmd+.: Toggle Code/Res"
+                title="Ctrl/Cmd+,: Toggle Code/Res"
                 tabindex="-1"
               >
                 Code
@@ -107,7 +116,7 @@
                 class="seg-btn disabled"
                 type="button"
                 aria-pressed="false"
-                title="Ctrl/Cmd+.: Toggle Code/Res"
+                title="Ctrl/Cmd+,: Toggle Code/Res"
                 tabindex="-1"
               >
                 Res
@@ -127,6 +136,11 @@
             </button>
           </div>
         </div>
+      </div>
+      <div id="focus-line" class="focus-line">
+        <div id="focus-line-left" class="focus-line-segment"></div>
+        <div id="focus-line-center" class="focus-line-segment"></div>
+        <div id="focus-line-right" class="focus-line-segment"></div>
       </div>
 
       <!-- Main content -->
@@ -149,7 +163,6 @@
               class="border-0 w-full h-full"
               style="background-color: var(--pyxel-background-color)"
               title="Pyxel Resource Editor"
-              tabindex="-1"
             ></iframe>
           </div>
         </div>
@@ -165,7 +178,7 @@
           "
           onpointerenter="this.style.backgroundColor='#3a4a5f'"
           onpointerleave="this.style.backgroundColor='#232d3b'"
-          title="Drag to resize"
+          title="Ctrl/Cmd+.: Toggle Left/Right Focus"
         ></div>
 
         <!-- Right pane -->
@@ -178,7 +191,6 @@
             class="flex-1 border-0 w-full h-full min-h-0"
             style="background-color: var(--pyxel-background-color)"
             title="Pyxel Runtime"
-            tabindex="-1"
           ></iframe>
         </div>
       </div>
@@ -219,11 +231,6 @@
           bytes[i] = bin.charCodeAt(i);
         }
         return bytes;
-      }
-
-      function animateButton(button) {
-        button.classList.add("active");
-        setTimeout(() => button.classList.remove("active"), 150);
       }
 
       function copyCodeToProject() {
@@ -432,6 +439,11 @@
         window.codeEditor = codeEditor;
       }
 
+      function animateButton(button) {
+        button.classList.add("active");
+        setTimeout(() => button.classList.remove("active"), 150);
+      }
+
       function setupButtonHandlers() {
         const loadButton = document.getElementById("load-button");
         const loadFileInput = document.getElementById("load-file");
@@ -445,7 +457,7 @@
         const leftPane = document.getElementById("left-pane");
         const runButton = document.getElementById("run-button");
 
-        loadButton.addEventListener("click", async () => {
+        loadButton.addEventListener("click", () => {
           animateButton(loadButton);
           loadFileInput.value = "";
           loadFileInput.click();
@@ -471,7 +483,11 @@
           codeTabButton.setAttribute("aria-pressed", "true");
           resourceTabButton.setAttribute("aria-pressed", "false");
           leftPane.classList.remove("res-mode");
-          setTimeout(() => window.codeEditor.resize(), 0);
+          setTimeout(() => {
+            window.codeEditor.resize();
+            window.codeEditor.focus();
+            updateFocusLine("left");
+          }, 0);
         });
 
         resourceTabButton.addEventListener("click", () => {
@@ -482,6 +498,12 @@
           codeTabButton.setAttribute("aria-pressed", "false");
           resourceTabButton.setAttribute("aria-pressed", "true");
           leftPane.classList.add("res-mode");
+          setTimeout(() => {
+            if (resourceEditor.contentWindow) {
+              resourceEditor.contentWindow.focus();
+            }
+            updateFocusLine("left");
+          }, 0);
         });
 
         runButton.addEventListener("click", async () => {
@@ -560,10 +582,109 @@
         }
       }
 
+      function updateFocusLine(state) {
+        const left = document.getElementById("focus-line-left");
+        const right = document.getElementById("focus-line-right");
+        if (!left || !right) {
+          return;
+        }
+        left.classList.remove("focus-line-segment-active");
+        right.classList.remove("focus-line-segment-active");
+
+        if (state === "left") {
+          left.classList.add("focus-line-segment-active");
+        } else if (state === "right") {
+          right.classList.add("focus-line-segment-active");
+        }
+      }
+
+      function setupFocusIndicator() {
+        const leftPane = document.getElementById("left-pane");
+        const rightPane =
+          document.getElementById("main-splitter").lastElementChild;
+        const toolbar = document.querySelector(".toolbar");
+        const splitterHandle = document.getElementById("splitter-handle");
+
+        document.addEventListener(
+          "pointerdown",
+          (e) => {
+            const target = e.target;
+
+            if (toolbar && toolbar.contains(target)) {
+              return;
+            }
+
+            if (splitterHandle && splitterHandle.contains(target)) {
+              return;
+            }
+
+            if (leftPane.contains(target)) {
+              updateFocusLine("left");
+            } else if (rightPane.contains(target)) {
+              updateFocusLine("right");
+            } else {
+              updateFocusLine("none");
+            }
+          },
+          true
+        );
+
+        if (runtimeScreen?.contentWindow?.document) {
+          runtimeScreen.contentWindow.document.addEventListener(
+            "pointerdown",
+            () => {
+              updateFocusLine("right");
+            },
+            true
+          );
+        }
+
+        if (resourceEditor?.contentWindow?.document) {
+          resourceEditor.contentWindow.document.addEventListener(
+            "pointerdown",
+            () => {
+              updateFocusLine("left");
+            },
+            true
+          );
+        }
+      }
+
       function setupSplitter() {
         const mainSplit = document.getElementById("main-splitter");
         const leftPaneEl = document.getElementById("left-pane");
         const dividerHitEl = document.getElementById("splitter-handle");
+
+        const focusLeft = document.getElementById("focus-line-left");
+        const focusCenter = document.getElementById("focus-line-center");
+        const focusRight = document.getElementById("focus-line-right");
+
+        function updateFocusLineLayout() {
+          if (!focusLeft || !focusCenter || !focusRight) {
+            return;
+          }
+
+          const containerRect = mainSplit.getBoundingClientRect();
+          const leftRect = leftPaneEl.getBoundingClientRect();
+          const handleRect = dividerHitEl.getBoundingClientRect();
+
+          const containerWidth = containerRect.width;
+          const leftWidth = leftRect.width;
+          const centerWidth = handleRect.width;
+          const rightWidth = Math.max(
+            containerWidth - leftWidth - centerWidth,
+            0
+          );
+
+          // 左・中央・右をピクセル指定にして、セパレーター分を中央に集約
+          focusLeft.style.flex = "0 0 auto";
+          focusCenter.style.flex = "0 0 auto";
+          focusRight.style.flex = "0 0 auto";
+
+          focusLeft.style.width = leftWidth + "px";
+          focusCenter.style.width = centerWidth + "px";
+          focusRight.style.width = rightWidth + "px";
+        }
 
         let dragging = false;
         let startX = 0;
@@ -581,6 +702,7 @@
           newW = Math.max(minW, Math.min(maxW, newW));
           leftPaneEl.style.width = newW + "px";
           window.codeEditor.resize();
+          updateFocusLineLayout();
         }
 
         function onUp() {
@@ -612,6 +734,8 @@
         }
 
         dividerHitEl.addEventListener("pointerdown", onDown);
+        updateFocusLineLayout();
+        window.addEventListener("resize", updateFocusLineLayout);
       }
 
       function setupShortcuts() {
@@ -638,8 +762,8 @@
             return;
           }
 
-          // Ctrl/Cmd+.: Toggle Code/Res
-          if ((e.ctrlKey || e.metaKey) && e.key === ".") {
+          // Ctrl/Cmd+,: Toggle Code/Res
+          if ((e.ctrlKey || e.metaKey) && e.key === ",") {
             e.preventDefault();
             e.stopPropagation();
             const codeTabButton = document.getElementById("code-tab-button");
@@ -654,6 +778,49 @@
             if (!onCode) {
               setTimeout(() => window.codeEditor.focus(), 0);
             }
+            return;
+          }
+
+          // Ctrl/Cmd+.: Toggle focus between left and right panes
+          if ((e.ctrlKey || e.metaKey) && e.key === ".") {
+            e.preventDefault();
+            e.stopPropagation();
+
+            const leftLine = document.getElementById("focus-line-left");
+            const rightLine = document.getElementById("focus-line-right");
+            const codeTabButton = document.getElementById("code-tab-button");
+            const resourceTabButton = document.getElementById(
+              "resource-tab-button"
+            );
+
+            const leftActive = leftLine?.classList.contains(
+              "focus-line-segment-active"
+            );
+            const rightActive = rightLine?.classList.contains(
+              "focus-line-segment-active"
+            );
+
+            // Decide next target: if right is active, move to left, otherwise to right
+            const moveToLeft = rightActive || (!leftActive && !rightActive);
+
+            if (moveToLeft) {
+              if (codeTabButton?.classList.contains("seg-active")) {
+                if (window.codeEditor) {
+                  window.codeEditor.focus();
+                }
+              } else if (resourceTabButton?.classList.contains("seg-active")) {
+                if (resourceEditor.contentWindow) {
+                  resourceEditor.contentWindow.focus();
+                }
+              }
+              updateFocusLine("left");
+            } else {
+              if (runtimeScreen.contentWindow) {
+                runtimeScreen.contentWindow.focus();
+              }
+              updateFocusLine("right");
+            }
+
             return;
           }
 
@@ -698,21 +865,28 @@
         }
 
         handlers.forEach((eventName) => {
-          window.addEventListener(eventName, () => {
-            resolvePyxelInput();
-          });
+          window.addEventListener(eventName, resolvePyxelInput);
         });
       }
 
       window.addEventListener("DOMContentLoaded", async () => {
+        // UI basics
         initAceEditor();
         setupButtonHandlers();
-        await loadInitialFiles();
-        await setupIframes();
-        waitForPyxelReady();
         setupSplitter();
+
+        // Load project
+        await loadInitialFiles();
+        updateFocusLine("left");
+
+        // Prepare iframes and interactions
+        await setupIframes();
+        setupFocusIndicator();
         setupShortcuts();
         setupPyxelInput();
+
+        // Enable Pyxel controls
+        waitForPyxelReady();
       });
     </script>
   </body>
