@@ -102,7 +102,7 @@ Web version of Pyxel can be used on PCs as well as smartphones and tablets, as l
 
 The easiest way to use it is through the online IDE [Pyxel Code Maker](https://kitao.github.io/pyxel/wasm/code-maker/).
 
-For other usage patterns, such as embedding Pyxel apps on your own site, please refer to [this page](pyxel-web-en.md).
+For other usage patterns, such as embedding Pyxel apps on your own site, please refer to [this page](docs/pyxel-web-en.md).
 
 ### Try Examples
 
