@@ -1,6 +1,33 @@
 {
   "entries": [
     {
+      "id": 163,
+      "title": "Gekka no jin (Moonlit Formation)",
+      "site": "https://kogakure-saizo.itch.io/moonlit-formation",
+      "author": "saizo",
+      "contact": "https://x.com/Saizo_KOGAKURE",
+      "desc": "A new Hanafuda experience in retro pixel art",
+      "image": "https://github.com/user-attachments/assets/f73acd14-0bd0-47b4-8ae2-81b64b0b92ef"
+    },
+    {
+      "id": 162,
+      "title": "Old ARPG like",
+      "site": "https://github.com/ronegray/OldARPGlike/tree/main",
+      "author": "MoQ",
+      "contact": "https://github.com/ronegray",
+      "desc": "Oldschool ARPG(like PC88 era)",
+      "image": "https://github.com/user-attachments/assets/e5d4ef7f-f814-48a4-85ec-cf6353594708"
+    },
+    {
+      "id": 161,
+      "title": "Pyxel Fighter jet Game",
+      "site": "https://github.com/life-is-plastic/pyxel-fighter-jet-game",
+      "author": "life-is-plastic",
+      "contact": "https://github.com/life-is-plastic",
+      "desc": "Top-down airplane flying and shooting game",
+      "image": "https://github.com/user-attachments/assets/f363100b-d5b9-4e87-bcbe-24bd95a7a23a"
+    },
+    {
       "id": 160,
       "title": "Looking for Kiara-chan!",
       "site": "https://game.kiasaga.love/",
