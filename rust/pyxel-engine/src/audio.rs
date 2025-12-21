@@ -45,6 +45,7 @@ impl Audio {
             for channel in &mut *channels {
                 channel.process(Some(blip_buf), CLOCKS_PER_SAMPLE);
             }
+
             blip_buf.end_frame(CLOCKS_PER_SAMPLE);
             num_samples += blip_buf.read_samples(&mut samples[num_samples..], false);
         }
