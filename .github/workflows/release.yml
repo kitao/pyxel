@@ -13,7 +13,7 @@ jobs:
     uses: kitao/pyxel/.github/workflows/build.yml@main
 
   release:
-    runs-on: macos-13
+    runs-on: macos-15
     needs: build
     steps:
       - name: Check out repository
