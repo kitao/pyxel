@@ -4,6 +4,8 @@
 
 - Changed the web version to display all errors
 - Improved error handling for the web version
+- Updated the gif crate to version 0.14
+- Updated the zip crate to version 7.0
 
 ## 2.5.10
 
