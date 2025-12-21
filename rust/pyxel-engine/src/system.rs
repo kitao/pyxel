@@ -215,6 +215,7 @@ impl Pyxel {
 
     fn process_events(&mut self) {
         self.start_input_frame();
+
         let events = pyxel_platform::poll_events();
 
         for event in events {
