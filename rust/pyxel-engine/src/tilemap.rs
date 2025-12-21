@@ -35,7 +35,7 @@ impl Tilemap {
         })
     }
 
-    pub fn from_tmx(filename: &str, layer_index: u32) -> SharedTilemap {
+    pub fn from_tmx(filename: &str, layer_index: u32) -> Result<SharedTilemap, String> {
         parse_tmx(filename, layer_index)
     }
 
@@ -89,8 +89,8 @@ impl Tilemap {
         );
     }
 
-    pub fn load(&mut self, x: i32, y: i32, filename: &str, layer_index: u32) {
-        let tilemap = Self::from_tmx(filename, layer_index);
+    pub fn load(&mut self, x: i32, y: i32, filename: &str, layer_index: u32) -> Result<(), String> {
+        let tilemap = Self::from_tmx(filename, layer_index)?;
         let tilemap_width = tilemap.lock().width();
         let tilemap_height = tilemap.lock().height();
 
@@ -106,6 +106,8 @@ impl Tilemap {
             None,
             None,
         );
+
+        Ok(())
     }
 
     pub fn clip(&mut self, x: f32, y: f32, width: f32, height: f32) {

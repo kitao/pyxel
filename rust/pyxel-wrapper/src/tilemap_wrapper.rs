@@ -1,6 +1,7 @@
 use std::ffi::CString;
 use std::sync::Once;
 
+use pyo3::exceptions::PyException;
 use pyo3::prelude::*;
 
 use crate::image_wrapper::Image;
@@ -36,8 +37,10 @@ impl Tilemap {
     }
 
     #[staticmethod]
-    pub fn from_tmx(filename: &str, layer: u32) -> Self {
-        Self::wrap(pyxel::Tilemap::from_tmx(filename, layer))
+    pub fn from_tmx(filename: &str, layer: u32) -> PyResult<Self> {
+        pyxel::Tilemap::from_tmx(filename, layer)
+            .map(Tilemap::wrap)
+            .map_err(PyException::new_err)
     }
 
     #[getter]
@@ -88,8 +91,11 @@ impl Tilemap {
         self.inner.lock().set(x, y, &data_refs);
     }
 
-    pub fn load(&self, x: i32, y: i32, filename: &str, layer: u32) {
-        self.inner.lock().load(x, y, filename, layer);
+    pub fn load(&self, x: i32, y: i32, filename: &str, layer: u32) -> PyResult<()> {
+        self.inner
+            .lock()
+            .load(x, y, filename, layer)
+            .map_err(PyException::new_err)
     }
 
     #[pyo3(signature = (x=None, y=None, w=None, h=None))]
