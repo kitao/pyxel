@@ -6,6 +6,7 @@
 - Improved error handling for the web version
 - Updated the gif crate to version 0.14
 - Updated the zip crate to version 7.0
+- Changed how to run the quit function in the web version
 
 ## 2.5.10
 

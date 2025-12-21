@@ -24,6 +24,7 @@ extern "C" {
         fps: c_int,
         simulate_infinite_loop: c_int,
     );
+    fn emscripten_cancel_main_loop();
 }
 
 #[cfg(target_os = "emscripten")]
@@ -92,20 +93,11 @@ impl PlatformSdl2 {
 
     #[cfg(target_os = "emscripten")]
     pub fn quit(&mut self) {
-        self.pause_audio(true);
-
-        for gamepad in &mut self.gamepads {
-            gamepad.close();
-        }
-
         unsafe {
-            if !self.gl_context.is_null() {
-                SDL_GL_DeleteContext(self.gl_context.cast());
-            }
-            if !self.window.is_null() {
-                SDL_DestroyWindow(self.window);
-            }
+            emscripten_cancel_main_loop();
         }
+
+        self.pause_audio(true);
     }
 
     pub fn ticks(&self) -> u32 {
