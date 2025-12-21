@@ -332,9 +332,13 @@
 
         commandTable.innerHTML = "";
         COMMANDS.forEach((c) => {
-          let cmdHTML = c.cmd;
+          let cmdHTML = c.cmd
+            .replaceAll("&", "&amp;")
+            .replaceAll("<", "&lt;")
+            .replaceAll(">", "&gt;");
+
           if (c.cmd.startsWith("C/D/E/F/G/A/B")) {
-            cmdHTML = c.cmd.replaceAll("/", "/<wbr>");
+            cmdHTML = cmdHTML.replaceAll("/", "/<wbr>");
           }
           const tr = document.createElement("tr");
           tr.className = "rowcard";
