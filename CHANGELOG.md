@@ -7,7 +7,7 @@
 - Updated the gif crate to version 0.14
 - Updated the zip crate to version 7.0
 - Changed how to run the quit function in the web version
-- Pinned the image crate to version 0.25.8
+- Downgraded the image crate to version 0.24
 
 ## 2.5.10
 
