@@ -350,6 +350,7 @@ function _displayErrorOverlay(message) {
     document.getElementById("pyxel-screen").appendChild(overlay);
   }
   overlay.textContent = message;
+  overlay.scrollTop = overlay.scrollHeight;
 }
 
 function _formatUnknownError(error) {
