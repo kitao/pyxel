@@ -1,5 +1,10 @@
 # Change Log
 
+## 2.5.11
+
+- Changed the web version to display all errors
+- Improved error handling for the web version
+
 ## 2.5.10
 
 - Updated Pyodide to version 0.29.0
