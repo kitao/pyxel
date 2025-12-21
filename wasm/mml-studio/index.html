@@ -36,7 +36,7 @@
         }
       }
     </style>
-    <script src="https://cdn.jsdelivr.net/gh/kitao/pyxel/wasm/pyxel.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/kitao/pyxel@master/wasm/pyxel.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/lz-string@1.4.4/libs/lz-string.min.js"></script>
   </head>
   <body class="page">
@@ -62,7 +62,7 @@
               data-action="play"
               data-state="false"
               onmousedown="handleButtonPress(this)"
-              title="Enter: Play"
+              title="Ctrl/Cmd+Enter: Play"
               disabled
               tabindex="-1"
             >
@@ -74,7 +74,7 @@
               data-action="stop"
               data-state="false"
               onmousedown="handleButtonPress(this)"
-              title="ESC: Stop"
+              title="Ctrl/Cmd+.: Stop"
               disabled
               tabindex="-1"
             >
@@ -86,7 +86,7 @@
               data-action="loop"
               data-state="true"
               onmousedown="handleButtonPress(this)"
-              title="Alt/Option+L: Toggle Loop"
+              title="Ctrl/Cmd+L: Toggle Loop"
               disabled
               tabindex="-1"
             >
@@ -144,7 +144,7 @@
         </div>
         <textarea
           id="ch1"
-          rows="2"
+          rows="4"
           class="font-mono input"
           oninput="handleMmlInput(this)"
         ></textarea>
@@ -179,7 +179,7 @@
         </div>
         <textarea
           id="ch2"
-          rows="2"
+          rows="4"
           class="font-mono input"
           oninput="handleMmlInput(this)"
         ></textarea>
@@ -214,7 +214,7 @@
         </div>
         <textarea
           id="ch3"
-          rows="2"
+          rows="4"
           class="font-mono input"
           oninput="handleMmlInput(this)"
         ></textarea>
@@ -249,7 +249,7 @@
         </div>
         <textarea
           id="ch4"
-          rows="2"
+          rows="4"
           class="font-mono input"
           oninput="handleMmlInput(this)"
         ></textarea>
@@ -347,23 +347,23 @@
         // Keyboard shortcuts
         window.addEventListener("keydown", (e) => {
           resolvePyxelInput();
-          if (!e.altKey && e.key === "Enter") {
-            e.preventDefault();
+          if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
             const playButton = document.querySelector(
               'button[data-action="play"]'
             );
             if (playButton && !playButton.disabled) {
+              e.preventDefault();
               handleButtonPress(playButton);
             }
-          } else if (e.key === "Escape") {
-            e.preventDefault();
+          } else if ((e.ctrlKey || e.metaKey) && e.key === ".") {
             const stopButton = document.querySelector(
               'button[data-action="stop"]'
             );
             if (stopButton && !stopButton.disabled) {
+              e.preventDefault();
               handleButtonPress(stopButton);
             }
-          } else if (e.altKey && e.code === "KeyL") {
+          } else if ((e.ctrlKey || e.metaKey) && e.key === "l") {
             e.preventDefault();
             const loopButton = document.querySelector(
               'button[data-action="loop"]'
