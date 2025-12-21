@@ -125,11 +125,11 @@ impl Channel {
         start_sec: Option<f32>,
         should_loop: bool,
         should_resume: bool,
-    ) {
+    ) -> Result<(), String> {
         let sound = Sound::new();
         {
             let mut sound = sound.lock();
-            sound.mml(code);
+            sound.mml(code)?;
         }
 
         self.play_from_clock(
@@ -138,6 +138,7 @@ impl Channel {
             should_loop,
             should_resume,
         );
+        Ok(())
     }
 
     fn play_from_clock(

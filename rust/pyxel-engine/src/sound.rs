@@ -53,15 +53,16 @@ impl Sound {
         volume_str: &str,
         effect_str: &str,
         speed: SoundSpeed,
-    ) {
-        self.set_notes(note_str);
-        self.set_tones(tone_str);
-        self.set_volumes(volume_str);
-        self.set_effects(effect_str);
+    ) -> Result<(), String> {
+        self.set_notes(note_str)?;
+        self.set_tones(tone_str)?;
+        self.set_volumes(volume_str)?;
+        self.set_effects(effect_str)?;
         self.speed = speed;
+        Ok(())
     }
 
-    pub fn set_notes(&mut self, note_str: &str) {
+    pub fn set_notes(&mut self, note_str: &str) -> Result<(), String> {
         let note_str = simplify_string(note_str);
         let mut chars = note_str.chars();
         self.notes.clear();
@@ -77,7 +78,7 @@ impl Sound {
                     'g' => 7,
                     'a' => 9,
                     'b' => 11,
-                    _ => panic!("Invalid sound note '{c}'"),
+                    _ => return Err(format!("Invalid sound note '{c}'")),
                 };
 
                 let mut c = chars.next().unwrap_or(0 as char);
@@ -92,18 +93,19 @@ impl Sound {
                 if ('0'..='4').contains(&c) {
                     note += (c.to_digit(10).unwrap() as SoundNote) * 12;
                 } else {
-                    panic!("Invalid sound note '{c}'");
+                    return Err(format!("Invalid sound note '{c}'"));
                 }
             } else if c == 'r' {
                 note = -1;
             } else {
-                panic!("Invalid sound note '{c}'");
+                return Err(format!("Invalid sound note '{c}'"));
             }
             self.notes.push(note);
         }
+        Ok(())
     }
 
-    pub fn set_tones(&mut self, tone_str: &str) {
+    pub fn set_tones(&mut self, tone_str: &str) -> Result<(), String> {
         self.tones.clear();
         for c in simplify_string(tone_str).chars() {
             let tone = match c {
@@ -112,24 +114,26 @@ impl Sound {
                 'p' => TONE_PULSE,
                 'n' => TONE_NOISE,
                 '0'..='9' => c.to_digit(10).unwrap() as SoundTone,
-                _ => panic!("Invalid sound tone '{c}'"),
+                _ => return Err(format!("Invalid sound tone '{c}'")),
             };
             self.tones.push(tone);
         }
+        Ok(())
     }
 
-    pub fn set_volumes(&mut self, volume_str: &str) {
+    pub fn set_volumes(&mut self, volume_str: &str) -> Result<(), String> {
         self.volumes.clear();
         for c in simplify_string(volume_str).chars() {
             if ('0'..='7').contains(&c) {
                 self.volumes.push(c.to_digit(10).unwrap() as SoundVolume);
             } else {
-                panic!("Invalid sound volume '{c}'");
+                return Err(format!("Invalid sound volume '{c}'"));
             }
         }
+        Ok(())
     }
 
-    pub fn set_effects(&mut self, effect_str: &str) {
+    pub fn set_effects(&mut self, effect_str: &str) -> Result<(), String> {
         self.effects.clear();
         for c in simplify_string(effect_str).chars() {
             let effect = match c {
@@ -139,30 +143,40 @@ impl Sound {
                 'f' => EFFECT_FADEOUT,
                 'h' => EFFECT_HALF_FADEOUT,
                 'q' => EFFECT_QUARTER_FADEOUT,
-                _ => panic!("Invalid sound effect '{c}'"),
+                _ => return Err(format!("Invalid sound effect '{c}'")),
             };
             self.effects.push(effect);
         }
+        Ok(())
     }
 
-    pub fn mml(&mut self, code: &str) {
-        self.commands = parse_mml(code);
+    pub fn mml(&mut self, code: &str) -> Result<(), String> {
+        self.commands = parse_mml(code)?;
+        Ok(())
     }
 
     pub fn mml0(&mut self) {
         self.commands.clear();
     }
 
-    pub fn old_mml(&mut self, code: &str) {
-        self.commands = parse_old_mml(code);
+    pub fn old_mml(&mut self, code: &str) -> Result<(), String> {
+        self.commands = parse_old_mml(code)?;
+        Ok(())
     }
 
-    pub fn save(&self, filename: &str, duration_sec: f32, use_ffmpeg: Option<bool>) {
-        assert!(duration_sec > 0.0);
+    pub fn save(
+        &self,
+        filename: &str,
+        duration_sec: f32,
+        use_ffmpeg: Option<bool>,
+    ) -> Result<(), String> {
+        if duration_sec <= 0.0 {
+            return Err("duration_sec must be greater than 0".to_string());
+        }
 
         let num_samples = (duration_sec * AUDIO_SAMPLE_RATE as f32).round() as u32;
         if num_samples == 0 {
-            return;
+            return Ok(());
         }
 
         let mut samples = vec![0; num_samples as usize];
@@ -179,8 +193,9 @@ impl Sound {
         }
 
         Audio::render_samples(&channels, &mut blip_buf, &mut samples);
-        Audio::save_samples(filename, &samples, use_ffmpeg.unwrap_or(false));
+        let result = Audio::save_samples(filename, &samples, use_ffmpeg.unwrap_or(false));
         channels.iter().for_each(|channel| channel.lock().stop());
+        result
     }
 
     pub fn total_sec(&self) -> Option<f32> {
@@ -370,7 +385,8 @@ mod tests {
         let sound = Sound::new();
         sound
             .lock()
-            .set("c0d-0d0d#0", "tspn", "012345", "nsvfhq", 123);
+            .set("c0d-0d0d#0", "tspn", "012345", "nsvfhq", 123)
+            .unwrap();
         assert_eq!(&sound.lock().notes, &vec![0, 1, 2, 3]);
         assert_eq!(
             &sound.lock().tones,
@@ -396,14 +412,15 @@ mod tests {
         let sound = Sound::new();
         sound
             .lock()
-            .set_notes(" c 0 d # 1 r e 2 f 3 g 4 r a - 0 b 1 ");
+            .set_notes(" c 0 d # 1 r e 2 f 3 g 4 r a - 0 b 1 ")
+            .unwrap();
         assert_eq!(&sound.lock().notes, &vec![0, 15, -1, 28, 41, 55, -1, 8, 23]);
     }
 
     #[test]
     fn test_sound_set_tone() {
         let sound = Sound::new();
-        sound.lock().set_tones(" t s p n ");
+        sound.lock().set_tones(" t s p n ").unwrap();
         assert_eq!(
             &sound.lock().tones,
             &vec![TONE_TRIANGLE, TONE_SQUARE, TONE_PULSE, TONE_NOISE]
@@ -413,14 +430,14 @@ mod tests {
     #[test]
     fn test_sound_set_volume() {
         let sound = Sound::new();
-        sound.lock().set_volumes(" 0 1 2 3 4 5 6 7 ");
+        sound.lock().set_volumes(" 0 1 2 3 4 5 6 7 ").unwrap();
         assert_eq!(&sound.lock().volumes, &vec![0, 1, 2, 3, 4, 5, 6, 7]);
     }
 
     #[test]
     fn test_sound_set_effect() {
         let sound = Sound::new();
-        sound.lock().set_effects(" n s v f h q");
+        sound.lock().set_effects(" n s v f h q").unwrap();
         assert_eq!(
             &sound.lock().effects,
             &vec![

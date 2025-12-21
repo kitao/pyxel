@@ -50,7 +50,7 @@ impl Audio {
         }
     }
 
-    pub fn save_samples(filename: &str, samples: &[i16], use_ffmpeg: bool) {
+    pub fn save_samples(filename: &str, samples: &[i16], use_ffmpeg: bool) -> Result<(), String> {
         // Save WAV file
         let spec = WavSpec {
             channels: 1,
@@ -60,7 +60,7 @@ impl Audio {
         };
         let filename = utils::add_file_extension(filename, ".wav");
         let mut writer = WavWriter::create(&filename, spec)
-            .unwrap_or_else(|_| panic!("Failed to open file '{filename}'"));
+            .map_err(|e| format!("Failed to open file '{filename}': {e}"))?;
 
         for sample in samples {
             writer.write_sample(*sample).unwrap();
@@ -69,7 +69,7 @@ impl Audio {
 
         // Save MP4 file
         if !use_ffmpeg {
-            return;
+            return Ok(());
         }
 
         let image_data = include_bytes!("assets/pyxel_logo_152x64.png");
@@ -102,9 +102,10 @@ impl Audio {
             .arg(mp4_file)
             .arg("-y")
             .output()
-            .unwrap_or_else(|e| panic!("Failed to execute FFmpeg: {e}"));
+            .map_err(|e| format!("Failed to execute FFmpeg: {e}"))?;
 
         remove_file(png_file).unwrap();
+        Ok(())
     }
 }
 
@@ -157,10 +158,10 @@ impl Pyxel {
         start_sec: Option<f32>,
         should_loop: bool,
         should_resume: bool,
-    ) {
+    ) -> Result<(), String> {
         self.channels.lock()[channel_index as usize]
             .lock()
-            .play_mml(code, start_sec, should_loop, should_resume);
+            .play_mml(code, start_sec, should_loop, should_resume)
     }
 
     pub fn playm(&self, music_index: u32, start_sec: Option<f32>, should_loop: bool) {

@@ -1,5 +1,6 @@
 use std::sync::Once;
 
+use pyo3::exceptions::PyException;
 use pyo3::prelude::*;
 
 use crate::pyxel_singleton::pyxel;
@@ -82,7 +83,12 @@ impl Channel {
                 let sounds = snd.iter().map(|sound| sound.inner.clone()).collect();
                 self.inner.lock().play(sounds, sec, loop_, resume.unwrap_or(false));
             }),
-            (String, { self.inner.lock().play_mml(&snd, sec, r#loop.unwrap_or(false), resume.unwrap_or(false)); })
+            (String, {
+                self.inner
+                    .lock()
+                    .play_mml(&snd, sec, r#loop.unwrap_or(false), resume.unwrap_or(false))
+                    .map_err(PyException::new_err)?;
+            })
         }
 
         Ok(())

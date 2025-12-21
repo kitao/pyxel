@@ -27,7 +27,7 @@ struct NoteInfo {
     is_tied: bool,
 }
 
-pub fn parse_old_mml(mml: &str) -> Vec<MmlCommand> {
+pub fn parse_old_mml(mml: &str) -> Result<Vec<MmlCommand>, String> {
     let shared_sound = Sound::new();
     let mut sound = shared_sound.lock();
     let mut chars = mml.chars().peekable();
@@ -41,52 +41,52 @@ pub fn parse_old_mml(mml: &str) -> Vec<MmlCommand> {
     sound.speed = 9; // T=100
 
     while chars.peek().is_some() {
-        if let Some(value) = parse_command(&mut chars, 't') {
+        if let Some(value) = parse_command(&mut chars, 't')? {
             sound.speed = (900 / value).max(1) as SoundSpeed;
         } else if parse_char(&mut chars, 'l') {
-            length = parse_note_length(&mut chars, length);
-        } else if let Some(value) = parse_command(&mut chars, '@') {
+            length = parse_note_length(&mut chars, length)?;
+        } else if let Some(value) = parse_command(&mut chars, '@')? {
             if value <= 3 {
                 tone = value as SoundTone;
             } else {
-                panic!("Invalid tone value '{value}' in MML");
+                return Err(format!("Invalid tone value '{value}' in MML"));
             }
-        } else if let Some(value) = parse_command(&mut chars, 'o') {
+        } else if let Some(value) = parse_command(&mut chars, 'o')? {
             if value <= 4 {
                 octave = value as SoundNote;
             } else {
-                panic!("Invalid octave value '{value}' in MML");
+                return Err(format!("Invalid octave value '{value}' in MML"));
             }
         } else if parse_char(&mut chars, '>') {
             if octave < 4 {
                 octave += 1;
             } else {
-                panic!("Octave exceeded maximum in MML");
+                return Err("Octave exceeded maximum in MML".to_string());
             }
         } else if parse_char(&mut chars, '<') {
             if octave > 0 {
                 octave -= 1;
             } else {
-                panic!("Octave exceeded minimum in MML");
+                return Err("Octave exceeded minimum in MML".to_string());
             }
-        } else if let Some(value) = parse_command(&mut chars, 'q') {
+        } else if let Some(value) = parse_command(&mut chars, 'q')? {
             if (1..=8).contains(&value) {
                 quantize = value;
             } else {
-                panic!("Invalid quantize value '{value}' in MML");
+                return Err(format!("Invalid quantize value '{value}' in MML"));
             }
-        } else if let Some(value) = parse_command(&mut chars, 'v') {
+        } else if let Some(value) = parse_command(&mut chars, 'v')? {
             if value <= 7 {
                 vol_env = VolEnv::Constant(value as SoundVolume);
             } else {
-                panic!("Invalid volume value '{value}' in MML");
+                return Err(format!("Invalid volume value '{value}' in MML"));
             }
-        } else if let Some((env_index, env_data)) = parse_envelope(&mut chars) {
+        } else if let Some((env_index, env_data)) = parse_envelope(&mut chars)? {
             vol_env = VolEnv::Envelope(env_index);
             if !env_data.is_empty() {
                 envelopes[env_index as usize] = env_data;
             }
-        } else if let Some((note, length)) = parse_note(&mut chars, length) {
+        } else if let Some((note, length)) = parse_note(&mut chars, length)? {
             add_note(&mut sound, &note_info);
 
             let note = note + octave * 12;
@@ -110,7 +110,7 @@ pub fn parse_old_mml(mml: &str) -> Vec<MmlCommand> {
                 note,
                 is_tied: false,
             };
-        } else if let Some(length) = parse_rest(&mut chars, length) {
+        } else if let Some(length) = parse_rest(&mut chars, length)? {
             add_note(&mut sound, &note_info);
 
             note_info = NoteInfo {
@@ -130,13 +130,13 @@ pub fn parse_old_mml(mml: &str) -> Vec<MmlCommand> {
             note_info.is_tied = true;
         } else {
             let c = chars.peek().unwrap();
-            panic!("Invalid command '{c}' in MML");
+            return Err(format!("Invalid command '{c}' in MML"));
         }
     }
 
     add_note(&mut sound, &note_info);
 
-    sound.to_commands()
+    Ok(sound.to_commands())
 }
 
 fn skip_whitespace<T: Iterator<Item = char>>(chars: &mut Peekable<T>) {
@@ -181,30 +181,36 @@ fn parse_char<T: Iterator<Item = char>>(chars: &mut Peekable<T>, target: char) -
     false
 }
 
-fn parse_command<T: Iterator<Item = char>>(chars: &mut Peekable<T>, target: char) -> Option<u32> {
+fn parse_command<T: Iterator<Item = char>>(
+    chars: &mut Peekable<T>,
+    target: char,
+) -> Result<Option<u32>, String> {
     if parse_char(chars, target) {
         if let Some(number) = parse_number(chars) {
-            return Some(number);
+            return Ok(Some(number));
         }
 
-        panic!("Missing value after '{target}' in MML");
+        return Err(format!("Missing value after '{target}' in MML"));
     }
 
-    None
+    Ok(None)
 }
 
 fn parse_envelope<T: Iterator<Item = char>>(
     chars: &mut Peekable<T>,
-) -> Option<(EnvIndex, EnvData)> {
-    let envelope = parse_command(chars, 'x');
-    envelope?;
+) -> Result<Option<(EnvIndex, EnvData)>, String> {
+    let envelope = parse_command(chars, 'x')?;
+    let Some(envelope) = envelope else {
+        return Ok(None);
+    };
 
-    let envelope = envelope.unwrap();
-    assert!(envelope <= 7, "Invalid envelope value '{envelope}' in MML");
+    if envelope > 7 {
+        return Err(format!("Invalid envelope value '{envelope}' in MML"));
+    }
 
     let mut env_data = Vec::new();
     if !parse_char(chars, ':') {
-        return Some((envelope, env_data));
+        return Ok(Some((envelope, env_data)));
     }
 
     skip_whitespace(chars);
@@ -214,7 +220,7 @@ fn parse_envelope<T: Iterator<Item = char>>(
             if volume <= 7 {
                 env_data.push(volume);
             } else {
-                panic!("Invalid envlope volume '{volume}' in MML");
+                return Err(format!("Invalid envlope volume '{volume}' in MML"));
             }
         } else {
             break;
@@ -223,25 +229,27 @@ fn parse_envelope<T: Iterator<Item = char>>(
         skip_whitespace(chars);
     }
 
-    assert!(!env_data.is_empty(), "Missing envelope volumes in MML");
-    Some((envelope, env_data))
+    if env_data.is_empty() {
+        return Err("Missing envelope volumes in MML".to_string());
+    }
+    Ok(Some((envelope, env_data)))
 }
 
 fn parse_note<T: Iterator<Item = char>>(
     chars: &mut Peekable<T>,
     length: u32,
-) -> Option<(SoundNote, u32)> {
+) -> Result<Option<(SoundNote, u32)>, String> {
     skip_whitespace(chars);
 
-    let mut note = match chars.peek()?.to_ascii_lowercase() {
-        'c' => 0,
-        'd' => 2,
-        'e' => 4,
-        'f' => 5,
-        'g' => 7,
-        'a' => 9,
-        'b' => 11,
-        _ => return None,
+    let mut note = match chars.peek().map(char::to_ascii_lowercase) {
+        Some('c') => 0,
+        Some('d') => 2,
+        Some('e') => 4,
+        Some('f') => 5,
+        Some('g') => 7,
+        Some('a') => 9,
+        Some('b') => 11,
+        _ => return Ok(None),
     };
     chars.next();
 
@@ -251,17 +259,20 @@ fn parse_note<T: Iterator<Item = char>>(
         note -= 1;
     }
 
-    Some((note, parse_note_length(chars, length)))
+    Ok(Some((note, parse_note_length(chars, length)?)))
 }
 
-fn parse_note_length<T: Iterator<Item = char>>(chars: &mut Peekable<T>, cur_length: u32) -> u32 {
+fn parse_note_length<T: Iterator<Item = char>>(
+    chars: &mut Peekable<T>,
+    cur_length: u32,
+) -> Result<u32, String> {
     let mut length = cur_length;
 
     if let Some(temp_length) = parse_number(chars) {
         if temp_length <= 32 && 32 % temp_length == 0 {
             length = 32 / temp_length;
         } else {
-            panic!("Invalid note length '{temp_length}' in MML");
+            return Err(format!("Invalid note length '{temp_length}' in MML"));
         }
     }
 
@@ -271,19 +282,22 @@ fn parse_note_length<T: Iterator<Item = char>>(chars: &mut Peekable<T>, cur_leng
             target_length /= 2;
             length += target_length;
         } else {
-            panic!("Length added by dot is too short in MML");
+            return Err("Length added by dot is too short in MML".to_string());
         }
     }
 
-    length
+    Ok(length)
 }
 
-fn parse_rest<T: Iterator<Item = char>>(chars: &mut Peekable<T>, cur_length: u32) -> Option<u32> {
+fn parse_rest<T: Iterator<Item = char>>(
+    chars: &mut Peekable<T>,
+    cur_length: u32,
+) -> Result<Option<u32>, String> {
     if !parse_char(chars, 'r') {
-        return None;
+        return Ok(None);
     }
 
-    Some(parse_note_length(chars, cur_length))
+    Ok(Some(parse_note_length(chars, cur_length)?))
 }
 
 fn add_note(sound: &mut Sound, note_info: &NoteInfo) {

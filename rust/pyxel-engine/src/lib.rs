@@ -7,6 +7,7 @@
     clippy::cast_sign_loss,
     clippy::float_cmp,
     clippy::fn_params_excessive_bools,
+    clippy::missing_errors_doc,
     clippy::missing_panics_doc,
     clippy::must_use_candidate,
     clippy::needless_pass_by_value,

@@ -1,5 +1,6 @@
 use std::sync::Once;
 
+use pyo3::exceptions::PyException;
 use pyo3::prelude::*;
 
 use crate::channel_wrapper::Channel;
@@ -42,7 +43,11 @@ fn play(
             let sounds = snd.iter().map(|sound| sound.inner.clone()).collect();
             pyxel().channels.lock()[ch as usize].lock().play(sounds, sec, r#loop.unwrap_or(false), resume.unwrap_or(false));
         }),
-        (String, { pyxel().play_mml(ch, &snd, sec, r#loop.unwrap_or(false), resume.unwrap_or(false)); })
+        (String, {
+            pyxel()
+                .play_mml(ch, &snd, sec, r#loop.unwrap_or(false), resume.unwrap_or(false))
+                .map_err(PyException::new_err)?;
+        })
     }
 
     Ok(())
