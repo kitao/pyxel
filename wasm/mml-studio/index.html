@@ -62,7 +62,7 @@
               data-action="play"
               data-state="false"
               onmousedown="handleButtonPress(this)"
-              title="Ctrl/Cmd+Enter: Play"
+              title="Ctrl(Cmd)+Enter: Play"
               disabled
               tabindex="-1"
             >
@@ -74,7 +74,7 @@
               data-action="stop"
               data-state="false"
               onmousedown="handleButtonPress(this)"
-              title="Ctrl/Cmd+.: Stop"
+              title="Esc: Stop"
               disabled
               tabindex="-1"
             >
@@ -86,7 +86,7 @@
               data-action="loop"
               data-state="true"
               onmousedown="handleButtonPress(this)"
-              title="Ctrl/Cmd+L: Toggle Loop"
+              title="Ctrl(Cmd+L): Toggle Loop"
               disabled
               tabindex="-1"
             >
@@ -355,7 +355,7 @@
               e.preventDefault();
               handleButtonPress(playButton);
             }
-          } else if ((e.ctrlKey || e.metaKey) && e.key === ".") {
+          } else if (e.key === "Escape") {
             const stopButton = document.querySelector(
               'button[data-action="stop"]'
             );
