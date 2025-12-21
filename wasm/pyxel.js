@@ -16,6 +16,7 @@ window.pyxelContext = {
   canvas: null,
   pyodide: null,
   params: null,
+  hasFatalError: false,
 };
 
 let _virtualGamepadStates = [
@@ -51,8 +52,13 @@ async function launchPyxel(params) {
   window.pyxelContext.canvas = canvas;
   window.pyxelContext.pyodide = pyodide;
   window.pyxelContext.params = params;
+  window.pyxelContext.hasFatalError = false;
 
-  await _executePyxelCommand(pyodide, params);
+  try {
+    await _executePyxelCommand(pyodide, params);
+  } catch (error) {
+    _displayFatalErrorOverlay(error);
+  }
 }
 
 async function resetPyxel() {
@@ -60,81 +66,85 @@ async function resetPyxel() {
     return;
   }
 
-  document.getElementById("pyxel-error-overlay")?.remove();
-
-  window.pyxelContext.pyodide.runPython(`
-    import pyxel
-    pyxel.quit()
-  `);
-
-  let audioContext = window.pyxelContext.pyodide?._module?.SDL2?.audioContext;
-  if (audioContext && audioContext.state === "running") {
-    await new Promise((resolve) => setTimeout(resolve, 50));
-    await audioContext.suspend();
+  if (window.pyxelContext.hasFatalError) {
+    location.reload();
+    return;
   }
 
-  let pyodide = window.pyxelContext.pyodide;
-  pyodide._module._emscripten_cancel_main_loop();
+  try {
+    document.getElementById("pyxel-error-overlay")?.remove();
 
-  pyodide.runPython(`
-    import importlib
-    import os
-    import shutil
-    import sys
-    import tempfile
-    from types import ModuleType
+    window.pyxelContext.pyodide.runPython(`
+      import pyxel
+      pyxel.quit()
+    `);
 
-    import pyxel
-
-    pyxel._reset_statics()
-
-    work_dir = "${PYXEL_WORKING_DIRECTORY}"
-    temp_dir = tempfile.gettempdir()
-    mods = [
-        n
-        for n, m in list(sys.modules.items())
-        if getattr(m, "__file__", "")
-        and (m.__file__.startswith(work_dir) or m.__file__.startswith(temp_dir))
-    ] + ["__main__"]
-
-    for n in mods:
-        try:
-            del sys.modules[n]
-        except BaseException:
-            pass
-    importlib.invalidate_caches()
-    sys.modules["__main__"] = ModuleType("__main__")
-
-    os.chdir("/")
-    if os.path.exists(temp_dir):
-        shutil.rmtree(temp_dir)
-    os.makedirs(temp_dir, exist_ok=True)
-
-    if os.path.exists(work_dir):
-        shutil.rmtree(work_dir)
-    os.makedirs(work_dir, exist_ok=True)
-    os.chdir(work_dir)
-  `);
-
-  await _executePyxelCommand(pyodide, window.pyxelContext.params);
-
-  setTimeout(() => {
-    if (audioContext && audioContext.state === "suspended") {
-      audioContext.resume();
+    let audioContext = window.pyxelContext.pyodide?._module?.SDL2?.audioContext;
+    if (audioContext && audioContext.state === "running") {
+      await new Promise((resolve) => setTimeout(resolve, 50));
+      await audioContext.suspend();
     }
-  }, 0);
+
+    let pyodide = window.pyxelContext.pyodide;
+    pyodide._module._emscripten_cancel_main_loop();
+
+    pyodide.runPython(`
+      import importlib
+      import os
+      import shutil
+      import sys
+      import tempfile
+      from types import ModuleType
+
+      import pyxel
+
+      pyxel._reset_statics()
+
+      work_dir = "${PYXEL_WORKING_DIRECTORY}"
+      temp_dir = tempfile.gettempdir()
+      mods = [
+          n
+          for n, m in list(sys.modules.items())
+          if getattr(m, "__file__", "")
+          and (m.__file__.startswith(work_dir) or m.__file__.startswith(temp_dir))
+      ] + ["__main__"]
+
+      for n in mods:
+          try:
+              del sys.modules[n]
+          except BaseException:
+              pass
+      importlib.invalidate_caches()
+      sys.modules["__main__"] = ModuleType("__main__")
+
+      os.chdir("/")
+      if os.path.exists(temp_dir):
+          shutil.rmtree(temp_dir)
+      os.makedirs(temp_dir, exist_ok=True)
+
+      if os.path.exists(work_dir):
+          shutil.rmtree(work_dir)
+      os.makedirs(work_dir, exist_ok=True)
+      os.chdir(work_dir)
+    `);
+
+    await _executePyxelCommand(pyodide, window.pyxelContext.params);
+
+    setTimeout(() => {
+      if (audioContext && audioContext.state === "suspended") {
+        audioContext.resume();
+      }
+    }, 0);
+  } catch (error) {
+    _displayFatalErrorOverlay(error);
+  }
 }
 
 function _initialize() {
   _setIcon();
   _setStyleSheet();
   _registerCustomElements();
-}
-
-function _registerCustomElements() {
-  window.customElements.define("pyxel-run", PyxelRunElement);
-  window.customElements.define("pyxel-play", PyxelPlayElement);
-  window.customElements.define("pyxel-edit", PyxelEditElement);
+  _hookGlobalErrors();
 }
 
 function _scriptDir() {
@@ -159,6 +169,22 @@ function _setStyleSheet() {
   styleSheetLink.rel = "stylesheet";
   styleSheetLink.href = _scriptDir() + "pyxel.css";
   document.head.appendChild(styleSheetLink);
+}
+
+function _registerCustomElements() {
+  window.customElements.define("pyxel-run", PyxelRunElement);
+  window.customElements.define("pyxel-play", PyxelPlayElement);
+  window.customElements.define("pyxel-edit", PyxelEditElement);
+}
+
+function _hookGlobalErrors() {
+  window.addEventListener("error", (event) => {
+    _displayFatalErrorOverlay(event.error || event.message || event);
+  });
+
+  window.addEventListener("unhandledrejection", (event) => {
+    _displayFatalErrorOverlay(event.reason || event);
+  });
 }
 
 function _allowGamepadConnection() {
@@ -324,13 +350,31 @@ function _displayErrorOverlay(message) {
     document.getElementById("pyxel-screen").appendChild(overlay);
   }
   overlay.textContent = message;
-  overlay.scrollTop = overlay.scrollHeight;
+}
+
+function _formatUnknownError(error) {
+  if (!error) {
+    return "Unknown error";
+  }
+  if (typeof error === "string") {
+    return error;
+  }
+  let name = error.name || "Error";
+  let message = error.message || String(error);
+  let stack = error.stack || "";
+  return `${name}: ${message}${stack ? "\n" + stack : ""}`;
+}
+
+function _displayFatalErrorOverlay(error) {
+  window.pyxelContext.hasFatalError = true;
+  let message = _formatUnknownError(error);
+  _displayErrorOverlay(message);
 }
 
 function _hookFileOperations(pyodide, root) {
   let fs = pyodide.FS;
 
-  // define function to create directories
+  // Define function to create directories
   let createDirs = (absPath, isFile) => {
     let dirs = absPath.split("/");
     dirs.shift();
@@ -640,10 +684,10 @@ async function _executePyxelCommand(pyodide, params) {
   try {
     pyodide.runPython(pythonCode);
   } catch (error) {
-    if (error.name === "PythonError") {
+    if (error?.name === "PythonError") {
       _displayErrorOverlay(error.message);
     } else {
-      throw error;
+      _displayFatalErrorOverlay(error);
     }
   }
 }
