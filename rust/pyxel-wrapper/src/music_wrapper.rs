@@ -1,5 +1,6 @@
 use std::sync::Once;
 
+use pyo3::exceptions::PyException;
 use pyo3::prelude::*;
 use pyo3::types::{PyList, PyTuple};
 
@@ -80,8 +81,11 @@ impl Music {
     }
 
     #[pyo3(signature = (filename, sec, ffmpeg=None))]
-    pub fn save(&self, filename: &str, sec: f32, ffmpeg: Option<bool>) {
-        self.inner.lock().save(filename, sec, ffmpeg);
+    pub fn save(&self, filename: &str, sec: f32, ffmpeg: Option<bool>) -> PyResult<()> {
+        self.inner
+            .lock()
+            .save(filename, sec, ffmpeg)
+            .map_err(PyException::new_err)
     }
 
     #[getter]

@@ -39,20 +39,15 @@ impl Image {
         })
     }
 
-    pub fn from_image(filename: &str, include_colors: Option<bool>) -> SharedImage {
+    pub fn from_image(filename: &str, include_colors: Option<bool>) -> Result<SharedImage, String> {
         let include_colors = include_colors.unwrap_or(false);
         let mut colors = COLORS.lock();
         if include_colors {
             colors.clear();
         }
-
-        let file = image::open(Path::new(&filename));
-        if file.is_err() {
-            println!("Failed to open file '{filename}'");
-            return Self::new(1, 1);
-        }
-
-        let file_image = file.unwrap().to_rgb8();
+        let file_image = image::open(Path::new(&filename))
+            .map_err(|e| format!("Failed to open file '{filename}': {e}"))?
+            .to_rgb8();
         let (width, height) = file_image.dimensions();
         let image = Self::new(width, height);
 
@@ -102,7 +97,7 @@ impl Image {
             }
         }
 
-        image
+        Ok(image)
     }
 
     pub const fn width(&self) -> u32 {
@@ -150,8 +145,14 @@ impl Image {
         );
     }
 
-    pub fn load(&mut self, x: i32, y: i32, filename: &str, include_colors: Option<bool>) {
-        let image = Self::from_image(filename, include_colors);
+    pub fn load(
+        &mut self,
+        x: i32,
+        y: i32,
+        filename: &str,
+        include_colors: Option<bool>,
+    ) -> Result<(), String> {
+        let image = Self::from_image(filename, include_colors)?;
         let width = image.lock().width();
         let height = image.lock().height();
 
@@ -167,9 +168,10 @@ impl Image {
             None,
             None,
         );
+        Ok(())
     }
 
-    pub fn save(&self, filename: &str, scale: u32) {
+    pub fn save(&self, filename: &str, scale: u32) -> Result<(), String> {
         let colors = COLORS.lock();
         let width = self.width();
         let height = self.height();
@@ -194,7 +196,8 @@ impl Image {
         let filename = utils::add_file_extension(filename, ".png");
         image
             .save(&filename)
-            .unwrap_or_else(|_| panic!("Failed to open file '{filename}'"));
+            .map_err(|e| format!("Failed to open file '{filename}': {e}"))?;
+        Ok(())
     }
 
     pub fn clip(&mut self, x: f32, y: f32, width: f32, height: f32) {

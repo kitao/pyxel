@@ -42,12 +42,10 @@ impl Pyxel {
         exclude_tilemaps: Option<bool>,
         exclude_sounds: Option<bool>,
         exclude_musics: Option<bool>,
-    ) {
-        let mut archive = ZipArchive::new(
-            File::open(Path::new(&filename))
-                .unwrap_or_else(|_| panic!("Failed to open file '{filename}'")),
-        )
-        .unwrap();
+    ) -> Result<(), String> {
+        let file = File::open(Path::new(&filename))
+            .map_err(|e| format!("Failed to open file '{filename}': {e}"))?;
+        let mut archive = ZipArchive::new(file).unwrap();
 
         // Old resource file
         if archive.by_name("pyxel_resource/version").is_ok() {
@@ -61,7 +59,7 @@ impl Pyxel {
                 !exclude_musics.unwrap_or(false),
             );
             self.load_pal(filename);
-            return;
+            return Ok(());
         }
 
         // New resource file
@@ -71,7 +69,7 @@ impl Pyxel {
 
         let format_version = Self::parse_format_version(&toml_text);
         if format_version > RESOURCE_FORMAT_VERSION {
-            panic!("Unknown resource file version '{format_version}'");
+            Err(format!("Unknown resource file version '{format_version}'"))
         } else {
             let resource_data = ResourceData::from_toml(&toml_text);
             resource_data.to_runtime(
@@ -82,6 +80,7 @@ impl Pyxel {
                 exclude_musics.unwrap_or(false),
             );
             self.load_pal(filename);
+            Ok(())
         }
     }
 
@@ -92,7 +91,7 @@ impl Pyxel {
         exclude_tilemaps: Option<bool>,
         exclude_sounds: Option<bool>,
         exclude_musics: Option<bool>,
-    ) {
+    ) -> Result<(), String> {
         let toml_text = ResourceData::from_runtime(self).to_toml(
             exclude_images.unwrap_or(false),
             exclude_tilemaps.unwrap_or(false),
@@ -102,7 +101,7 @@ impl Pyxel {
 
         let path = std::path::Path::new(&filename);
         let file = std::fs::File::create(path)
-            .unwrap_or_else(|_| panic!("Failed to open file '{filename}'"));
+            .map_err(|e| format!("Failed to open file '{filename}': {e}"))?;
 
         let mut zip = ZipWriter::new(file);
         zip.start_file(RESOURCE_ARCHIVE_NAME, SimpleFileOptions::default())
@@ -111,6 +110,7 @@ impl Pyxel {
         zip.finish().unwrap();
 
         pyxel_platform::export_browser_file(filename);
+        Ok(())
     }
 
     pub fn load_pal(&mut self, filename: &str) {
@@ -135,10 +135,10 @@ impl Pyxel {
         }
     }
 
-    pub fn save_pal(&self, filename: &str) {
+    pub fn save_pal(&self, filename: &str) -> Result<(), String> {
         let filename = Self::palette_filename(filename);
         let mut file = File::create(Path::new(&filename))
-            .unwrap_or_else(|_| panic!("Failed to open file '{filename}'"));
+            .map_err(|e| format!("Failed to open file '{filename}': {e}"))?;
 
         let colors = self.colors.lock();
         for &color in colors.iter() {
@@ -146,12 +146,13 @@ impl Pyxel {
         }
 
         pyxel_platform::export_browser_file(&filename);
+        Ok(())
     }
 
     pub fn screenshot(&mut self, scale: Option<u32>) {
         let filename = Self::prepend_desktop_path(&format!("pyxel-{}", Self::datetime_string()));
         let scale = max(scale.unwrap_or(self.resource.capture_scale), 1);
-        self.screen.lock().save(&filename, scale);
+        self.screen.lock().save(&filename, scale).unwrap();
 
         pyxel_platform::export_browser_file(&(filename + ".png"));
     }
@@ -203,7 +204,7 @@ impl Pyxel {
         let filename = Self::prepend_desktop_path(&format!("pyxel-image{image_index}"));
 
         if let Some(image) = self.images.lock().get(image_index as usize) {
-            image.lock().save(&filename, 1);
+            image.lock().save(&filename, 1).unwrap();
 
             pyxel_platform::export_browser_file(&(filename + ".png"));
         }
@@ -220,7 +221,7 @@ impl Pyxel {
                 image.pset(i as f32, 0.0, i as Color);
             }
 
-            image.save(&filename, 16);
+            image.save(&filename, 16).unwrap();
 
             pyxel_platform::export_browser_file(&(filename + ".png"));
         }

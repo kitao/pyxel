@@ -32,12 +32,17 @@ impl Music {
         }
     }
 
-    pub fn save(&self, filename: &str, duration_sec: f32, use_ffmpeg: Option<bool>) {
+    pub fn save(
+        &self,
+        filename: &str,
+        duration_sec: f32,
+        use_ffmpeg: Option<bool>,
+    ) -> Result<(), String> {
         assert!(duration_sec > 0.0);
 
         let num_samples = (duration_sec * AUDIO_SAMPLE_RATE as f32).round() as u32;
         if num_samples == 0 {
-            return;
+            return Ok(());
         }
 
         let seqs: Vec<_> = (0..self.seqs.len())
@@ -66,8 +71,9 @@ impl Music {
         }
 
         Audio::render_samples(&channels, &mut blip_buf, &mut samples);
-        Audio::save_samples(filename, &samples, use_ffmpeg.unwrap_or(false));
+        let result = Audio::save_samples(filename, &samples, use_ffmpeg.unwrap_or(false));
         channels.iter().for_each(|channel| channel.lock().stop());
+        result
     }
 }
 

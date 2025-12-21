@@ -1,5 +1,6 @@
 use std::sync::Once;
 
+use pyo3::exceptions::PyException;
 use pyo3::prelude::*;
 
 static OLD_MML_ONCE: Once = Once::new();
@@ -87,60 +88,86 @@ impl Sound {
         volumes: &str,
         effects: &str,
         speed: pyxel::SoundSpeed,
-    ) {
-        self.inner.lock().set(notes, tones, volumes, effects, speed);
+    ) -> PyResult<()> {
+        self.inner
+            .lock()
+            .set(notes, tones, volumes, effects, speed)
+            .map_err(PyException::new_err)
     }
 
-    pub fn set_notes(&self, notes: &str) {
-        self.inner.lock().set_notes(notes);
+    pub fn set_notes(&self, notes: &str) -> PyResult<()> {
+        self.inner
+            .lock()
+            .set_notes(notes)
+            .map_err(PyException::new_err)
     }
 
-    pub fn set_tones(&self, tones: &str) {
-        self.inner.lock().set_tones(tones);
+    pub fn set_tones(&self, tones: &str) -> PyResult<()> {
+        self.inner
+            .lock()
+            .set_tones(tones)
+            .map_err(PyException::new_err)
     }
 
-    pub fn set_volumes(&self, volumes: &str) {
-        self.inner.lock().set_volumes(volumes);
+    pub fn set_volumes(&self, volumes: &str) -> PyResult<()> {
+        self.inner
+            .lock()
+            .set_volumes(volumes)
+            .map_err(PyException::new_err)
     }
 
-    pub fn set_effects(&self, effects: &str) {
-        self.inner.lock().set_effects(effects);
+    pub fn set_effects(&self, effects: &str) -> PyResult<()> {
+        self.inner
+            .lock()
+            .set_effects(effects)
+            .map_err(PyException::new_err)
     }
 
     #[pyo3(signature = (code=None))]
-    pub fn mml(&self, code: Option<&str>) {
+    pub fn mml(&self, code: Option<&str>) -> PyResult<()> {
         if let Some(code) = code {
             if code.contains('x') || code.contains('X') || code.contains('~') {
                 OLD_MML_ONCE.call_once(|| {
                     println!("Old MML syntax is deprecated. Use new syntax instead.");
                 });
 
-                self.inner.lock().old_mml(code);
-                return;
+                return self
+                    .inner
+                    .lock()
+                    .old_mml(code)
+                    .map_err(PyException::new_err);
             }
 
-            self.inner.lock().mml(code);
+            self.inner.lock().mml(code).map_err(PyException::new_err)
         } else {
             self.inner.lock().mml0();
+            Ok(())
         }
     }
 
     #[pyo3(signature = (code=None))]
-    pub fn old_mml(&self, code: Option<&str>) {
+    pub fn old_mml(&self, code: Option<&str>) -> PyResult<()> {
         OLD_MML_ONCE.call_once(|| {
             println!("Sound.old_mml(code) is deprecated. Use Sound.mml(code) instead.");
         });
 
         if let Some(code) = code {
-            self.inner.lock().old_mml(code);
+            self.inner
+                .lock()
+                .old_mml(code)
+                .map_err(PyException::new_err)
         } else {
             self.inner.lock().mml0();
+            Ok(())
         }
     }
 
     #[pyo3(signature = (filename, sec, ffmpeg=None))]
-    pub fn save(&self, filename: &str, sec: f32, ffmpeg: Option<bool>) {
-        self.inner.lock().save(filename, sec, ffmpeg);
+    pub fn save(&self, filename: &str, sec: f32, ffmpeg: Option<bool>) -> PyResult<()> {
+        self.inner
+            .lock()
+            .save(filename, sec, ffmpeg)
+            .map_err(PyException::new_err)
     }
 
     pub fn total_sec(&self) -> Option<f32> {

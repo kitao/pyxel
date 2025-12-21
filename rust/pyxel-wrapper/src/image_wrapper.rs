@@ -1,5 +1,6 @@
 use std::ffi::CString;
 
+use pyo3::exceptions::PyException;
 use pyo3::prelude::*;
 use pyo3::types::PyDict;
 
@@ -28,8 +29,10 @@ impl Image {
 
     #[staticmethod]
     #[pyo3(signature = (filename, incl_colors=None))]
-    pub fn from_image(filename: &str, incl_colors: Option<bool>) -> Self {
-        Self::wrap(pyxel::Image::from_image(filename, incl_colors))
+    pub fn from_image(filename: &str, incl_colors: Option<bool>) -> PyResult<Self> {
+        pyxel::Image::from_image(filename, incl_colors)
+            .map(Self::wrap)
+            .map_err(PyException::new_err)
     }
 
     #[getter]
@@ -61,12 +64,18 @@ impl Image {
     }
 
     #[pyo3(signature = (x, y, filename, incl_colors=None))]
-    pub fn load(&self, x: i32, y: i32, filename: &str, incl_colors: Option<bool>) {
-        self.inner.lock().load(x, y, filename, incl_colors);
+    pub fn load(&self, x: i32, y: i32, filename: &str, incl_colors: Option<bool>) -> PyResult<()> {
+        self.inner
+            .lock()
+            .load(x, y, filename, incl_colors)
+            .map_err(PyException::new_err)
     }
 
-    pub fn save(&self, filename: &str, scale: u32) {
-        self.inner.lock().save(filename, scale);
+    pub fn save(&self, filename: &str, scale: u32) -> PyResult<()> {
+        self.inner
+            .lock()
+            .save(filename, scale)
+            .map_err(PyException::new_err)
     }
 
     #[pyo3(signature = (x=None, y=None, w=None, h=None))]
