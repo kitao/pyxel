@@ -1,4 +1,4 @@
-# <img src="https://raw.githubusercontent.com/kitao/pyxel/main//docs/images/pyxel_logo_152x64.png">
+# <img src="https://raw.githubusercontent.com/kitao/pyxel/main/docs/images/pyxel_logo_152x64.png">
 
 [![Downloads](https://static.pepy.tech/personalized-badge/pyxel?period=total&units=international_system&left_color=grey&right_color=blue&left_text=PyPI%20downloads)](https://pypi.org/project/pyxel/)
 [![GitHub Repo stars](https://img.shields.io/github/stars/kitao/pyxel?style=social)](https://github.com/kitao/pyxel)
@@ -7,40 +7,40 @@
 
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/H2H27VDKD)
 
-[ [English](https://github.com/kitao/pyxel/blob/main//README.md) | [中文](https://github.com/kitao/pyxel/blob/main//docs/README.cn.md) | [Deutsch](https://github.com/kitao/pyxel/blob/main//docs/README.de.md) | [Español](https://github.com/kitao/pyxel/blob/main//docs/README.es.md) | [Français](https://github.com/kitao/pyxel/blob/main//docs/README.fr.md) | [Italiano](https://github.com/kitao/pyxel/blob/main//docs/README.it.md) | [日本語](https://github.com/kitao/pyxel/blob/main//docs/README.ja.md) | [한국어](https://github.com/kitao/pyxel/blob/main//docs/README.ko.md) | [Português](https://github.com/kitao/pyxel/blob/main//docs/README.pt.md) | [Русский](https://github.com/kitao/pyxel/blob/main//docs/README.ru.md) | [Türkçe](https://github.com/kitao/pyxel/blob/main//docs/README.tr.md) | [Українська](https://github.com/kitao/pyxel/blob/main//docs/README.uk.md) ]
+[ [English](https://github.com/kitao/pyxel/blob/main/README.md) | [中文](https://github.com/kitao/pyxel/blob/main/docs/README.cn.md) | [Deutsch](https://github.com/kitao/pyxel/blob/main/docs/README.de.md) | [Español](https://github.com/kitao/pyxel/blob/main/docs/README.es.md) | [Français](https://github.com/kitao/pyxel/blob/main/docs/README.fr.md) | [Italiano](https://github.com/kitao/pyxel/blob/main/docs/README.it.md) | [日本語](https://github.com/kitao/pyxel/blob/main/docs/README.ja.md) | [한국어](https://github.com/kitao/pyxel/blob/main/docs/README.ko.md) | [Português](https://github.com/kitao/pyxel/blob/main/docs/README.pt.md) | [Русский](https://github.com/kitao/pyxel/blob/main/docs/README.ru.md) | [Türkçe](https://github.com/kitao/pyxel/blob/main/docs/README.tr.md) | [Українська](https://github.com/kitao/pyxel/blob/main/docs/README.uk.md) ]
 
 **Pyxel** (/ˈpɪksəl/) is a retro game engine for Python.
 
 With simple specifications inspired by retro gaming consoles, such as displaying only 16 colors and supporting 4 sound channels, you can easily enjoy making pixel-art-style games.
 
-[<img src="https://raw.githubusercontent.com/kitao/pyxel/main//docs/images/pyxel_thanks.png" width="460">](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples) [<img src="https://raw.githubusercontent.com/kitao/pyxel/main//docs/images/pyxel_book.png" width="180">](https://gihyo.jp/book/2025/978-4-297-14657-3)
+[<img src="https://raw.githubusercontent.com/kitao/pyxel/main/docs/images/pyxel_thanks.png" width="460">](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples) [<img src="https://raw.githubusercontent.com/kitao/pyxel/main/docs/images/pyxel_book.png" width="180">](https://gihyo.jp/book/2025/978-4-297-14657-3)
 
 The development of Pyxel is driven by user feedback. Please give Pyxel a star on GitHub!
 
 <p>
 <a href="https://kitao.github.io/pyxel/wasm/examples/10-platformer.html">
-<img src="https://raw.githubusercontent.com/kitao/pyxel/main//docs/images/10_platformer.gif" width="290">
+<img src="https://raw.githubusercontent.com/kitao/pyxel/main/docs/images/10_platformer.gif" width="290">
 </a>
 <a href="https://kitao.github.io/pyxel/wasm/examples/30sec-of-daylight.html">
-<img src="https://raw.githubusercontent.com/kitao/pyxel/main//docs/images/30sec_of_daylight.gif" width="350">
+<img src="https://raw.githubusercontent.com/kitao/pyxel/main/docs/images/30sec_of_daylight.gif" width="350">
 </a>
 <a href="https://kitao.github.io/pyxel/wasm/examples/02-jump-game.html">
-<img src="https://raw.githubusercontent.com/kitao/pyxel/main//docs/images/02_jump_game.gif" width="330">
+<img src="https://raw.githubusercontent.com/kitao/pyxel/main/docs/images/02_jump_game.gif" width="330">
 </a>
 <a href="https://kitao.github.io/pyxel/wasm/examples/megaball.html">
-<img src="https://raw.githubusercontent.com/kitao/pyxel/main//docs/images/megaball.gif" width="310">
+<img src="https://raw.githubusercontent.com/kitao/pyxel/main/docs/images/megaball.gif" width="310">
 </a>
 <a href="https://kitao.github.io/pyxel/wasm/examples/image-editor.html">
-<img src="https://raw.githubusercontent.com/kitao/pyxel/main//docs/images/image_tilemap_editor.gif" width="320">
+<img src="https://raw.githubusercontent.com/kitao/pyxel/main/docs/images/image_tilemap_editor.gif" width="320">
 </a>
 <a href="https://kitao.github.io/pyxel/wasm/examples/sound-editor.html">
-<img src="https://raw.githubusercontent.com/kitao/pyxel/main//docs/images/sound_music_editor.gif" width="320">
+<img src="https://raw.githubusercontent.com/kitao/pyxel/main/docs/images/sound_music_editor.gif" width="320">
 </a>
 </p>
 
 Pyxel's specifications and APIs are inspired by [PICO-8](https://www.lexaloffle.com/pico-8.php) and [TIC-80](https://tic80.com/).
 
-Pyxel is open source under the [MIT License](https://github.com/kitao/pyxel/blob/main//LICENSE) and free to use. Let's start making retro games with Pyxel!
+Pyxel is open source under the [MIT License](https://github.com/kitao/pyxel/blob/main/LICENSE) and free to use. Let's start making retro games with Pyxel!
 
 ## Specifications
 
@@ -58,9 +58,9 @@ Pyxel is open source under the [MIT License](https://github.com/kitao/pyxel/blob
 
 ### Color Palette
 
-<img src="https://raw.githubusercontent.com/kitao/pyxel/main//docs/images/05_color_palette.png">
+<img src="https://raw.githubusercontent.com/kitao/pyxel/main/docs/images/05_color_palette.png">
 
-<img src="https://raw.githubusercontent.com/kitao/pyxel/main//docs/images/pyxel_palette.png">
+<img src="https://raw.githubusercontent.com/kitao/pyxel/main/docs/images/pyxel_palette.png">
 
 ## How to Install
 
@@ -94,7 +94,7 @@ After installing the SDL2 package (`libsdl2-dev` for Ubuntu), [Python3](https://
 sudo pip3 install -U pyxel
 ```
 
-If the previous command fails, consider building Pyxel from source by following the instructions in the [Makefile](https://github.com/kitao/pyxel/blob/main//Makefile).
+If the previous command fails, consider building Pyxel from source by following the instructions in the [Makefile](https://github.com/kitao/pyxel/blob/main/Makefile).
 
 ### Web
 
@@ -102,7 +102,7 @@ Web version of Pyxel can be used on PCs as well as smartphones and tablets, as l
 
 The easiest way to use it is through the online IDE [Pyxel Code Maker](https://kitao.github.io/pyxel/wasm/code-maker/).
 
-For other usage patterns, such as embedding Pyxel apps on your own site, please refer to [this page](https://github.com/kitao/pyxel/blob/main//docs/pyxel-web-en.md).
+For other usage patterns, such as embedding Pyxel apps on your own site, please refer to [this page](https://github.com/kitao/pyxel/blob/main/docs/pyxel-web-en.md).
 
 ### Try Examples
 
@@ -365,7 +365,7 @@ Pyxel Editor has the following editing modes.
 The mode for editing the image in each **image bank**.
 
 <a href="https://kitao.github.io/pyxel/wasm/examples/image-editor.html">
-<img src="https://raw.githubusercontent.com/kitao/pyxel/main//docs/images/image_editor.gif">
+<img src="https://raw.githubusercontent.com/kitao/pyxel/main/docs/images/image_editor.gif">
 </a>
 
 You can drag and drop an image file (PNG/GIF/JPEG) into the image editor to load the image into the currently selected image bank.
@@ -375,7 +375,7 @@ You can drag and drop an image file (PNG/GIF/JPEG) into the image editor to load
 The mode for editing **tilemaps** that arrange images from the image banks in a tile pattern.
 
 <a href="https://kitao.github.io/pyxel/wasm/examples/tilemap-editor.html">
-<img src="https://raw.githubusercontent.com/kitao/pyxel/main//docs/images/tilemap_editor.gif">
+<img src="https://raw.githubusercontent.com/kitao/pyxel/main/docs/images/tilemap_editor.gif">
 </a>
 
 Drag and drop a TMX file (Tiled Map File) onto the tilemap editor to load its layer 0 into the currently selected tilemap.
@@ -385,7 +385,7 @@ Drag and drop a TMX file (Tiled Map File) onto the tilemap editor to load its la
 The mode for editing **sounds** used for melodies and sound effects.
 
 <a href="https://kitao.github.io/pyxel/wasm/examples/sound-editor.html">
-<img src="https://raw.githubusercontent.com/kitao/pyxel/main//docs/images/sound_editor.gif">
+<img src="https://raw.githubusercontent.com/kitao/pyxel/main/docs/images/sound_editor.gif">
 </a>
 
 **Music Editor**
@@ -393,7 +393,7 @@ The mode for editing **sounds** used for melodies and sound effects.
 The mode for editing **musics** in which the sounds are arranged in order of playback.
 
 <a href="https://kitao.github.io/pyxel/wasm/examples/music-editor.html">
-<img src="https://raw.githubusercontent.com/kitao/pyxel/main//docs/images/music_editor.gif">
+<img src="https://raw.githubusercontent.com/kitao/pyxel/main/docs/images/music_editor.gif">
 </a>
 
 ### Other Resource Creation Methods
@@ -487,7 +487,7 @@ A Pyxel application file can also be converted to an executable or an HTML file 
   The current value of the mouse wheel
 
 - `btn(key)`<br>
-  Return `True` if the `key` is pressed, otherwise return `False`. ([Key definition list](https://github.com/kitao/pyxel/blob/main//python/pyxel/__init__.pyi))
+  Return `True` if the `key` is pressed, otherwise return `False`. ([Key definition list](https://github.com/kitao/pyxel/blob/main/python/pyxel/__init__.pyi))
 
 - `btnp(key, [hold], [repeat])`<br>
   Return `True` if the `key` is pressed in that frame, otherwise return `False`. If `hold` and `repeat` are specified, after the `key` has been held down for `hold` frames or more, `True` is returned every `repeat` frames.
@@ -565,12 +565,12 @@ A Pyxel application file can also be converted to an executable or an HTML file 
 - `blt(x, y, img, u, v, w, h, [colkey], [rotate], [scale])`<br>
   Copy the region of size (`w`, `h`) from (`u`, `v`) of the image bank `img`(0-2) to (`x`, `y`). If a negative value is assigned to `w` and/or `h`, the region will be flipped horizontally and/or vertically. If `colkey` is specified, it will be treated as a transparent color. If `rotate`(in degrees), `scale`(1.0 = 100%), or both are specified, the corresponding transformations will be applied.
 
-<img src="https://raw.githubusercontent.com/kitao/pyxel/main//docs/images/blt_figure.png">
+<img src="https://raw.githubusercontent.com/kitao/pyxel/main/docs/images/blt_figure.png">
 
 - `bltm(x, y, tm, u, v, w, h, [colkey], [rotate], [scale])`<br>
   Copy the region of size (`w`, `h`) from (`u`, `v`) of the tilemap `tm`(0-7) to (`x`, `y`). If a negative value is assigned to `w` and/or `h`, the region will be flipped horizontally and/or vertically. If `colkey` is specified, it will be treated as a transparent color. If `rotate`(in degrees), `scale`(1.0 = 100%), or both are specified, the corresponding transformations will be applied. The size of a tile is 8x8 pixels and is stored in a tilemap as a tuple of `(image_tx, image_ty)`.
 
-<img src="https://raw.githubusercontent.com/kitao/pyxel/main//docs/images/bltm_figure.png">
+<img src="https://raw.githubusercontent.com/kitao/pyxel/main/docs/images/bltm_figure.png">
 
 - `text(x, y, s, col)`<br>
   Draw a string `s` in color `col` at (`x`, `y`).
@@ -710,11 +710,11 @@ A Pyxel application file can also be converted to an executable or an HTML file 
   Example: `pyxel.sounds[0].set_effects("nfnf nvvs")`
 
 - `mml(code)`<br>
-  Passing a [MML (Music Macro Language)](https://en.wikipedia.org/wiki/Music_Macro_Language) string switches to MML mode and plays the sound according to its content. In this mode, normal parameters such as `notes` and `speed` are ignored. To exit MML mode, call `mml()`. For more details about MML, see [this page](https://github.com/kitao/pyxel/blob/main//docs/faq-en.md).<br>
+  Passing a [MML (Music Macro Language)](https://en.wikipedia.org/wiki/Music_Macro_Language) string switches to MML mode and plays the sound according to its content. In this mode, normal parameters such as `notes` and `speed` are ignored. To exit MML mode, call `mml()`. For more details about MML, see [this page](https://github.com/kitao/pyxel/blob/main/docs/faq-en.md).<br>
   Example: `pyxel.sounds[0].mml("T120 Q90 @1 V100 O5 L8 C4&C<G16R16>C.<G16 >C.D16 @VIB1{10,20,20} E2C2")`
 
 - `mml(code)`<br>
-  Sets the related parameters using [Music Macro Language (MML)](https://en.wikipedia.org/wiki/Music_Macro_Language). The available commands are `T`(1-900), `@`(0-3), `O`(0-4), `>`, `<`, `Q`(1-8), `V`(0-7), `X`(0-7), `L`(1/2/4/8/16/32), and `CDEFGABR`+`#+-`+`.~&`. For details on the commands, refer to [this page](https://github.com/kitao/pyxel/blob/main//docs/faq-en.md).<br>
+  Sets the related parameters using [Music Macro Language (MML)](https://en.wikipedia.org/wiki/Music_Macro_Language). The available commands are `T`(1-900), `@`(0-3), `O`(0-4), `>`, `<`, `Q`(1-8), `V`(0-7), `X`(0-7), `L`(1/2/4/8/16/32), and `CDEFGABR`+`#+-`+`.~&`. For details on the commands, refer to [this page](https://github.com/kitao/pyxel/blob/main/docs/faq-en.md).<br>
   Example: `pyxel.sounds[0].mml("T120 Q90 @1 V100 O5 L8 C4&C<G16R16>C.<G16 >C.D16 @VIB1{10,20,20} E2C2")`
 
 - `save(filename, sec, [ffmpeg])`<br>
@@ -739,7 +739,7 @@ A Pyxel application file can also be converted to an executable or an HTML file 
 
 Pyxel includes an "Advanced API" that is not mentioned in this reference, as it may confuse users or require specialized knowledge to use.
 
-If you are confident in your skills, try creating amazing works using [this](https://github.com/kitao/pyxel/blob/main//python/pyxel/__init__.pyi) as a guide!
+If you are confident in your skills, try creating amazing works using [this](https://github.com/kitao/pyxel/blob/main/python/pyxel/__init__.pyi) as a guide!
 
 ## How to Contribute
 
@@ -755,7 +755,7 @@ Anyone who manually tests the code and reports bugs or suggestions for enhanceme
 
 Patches and fixes are accepted in the form of pull requests (PRs). Make sure that the issue the pull request addresses is open in the Issue Tracker.
 
-Submitting a pull request implies that you agree to license your contribution under the [MIT License](https://github.com/kitao/pyxel/blob/main//LICENSE).
+Submitting a pull request implies that you agree to license your contribution under the [MIT License](https://github.com/kitao/pyxel/blob/main/LICENSE).
 
 ## Web Tools & Examples
 
@@ -766,7 +766,7 @@ Submitting a pull request implies that you agree to license your contribution un
 
 ## Other Information
 
-- [FAQ](https://github.com/kitao/pyxel/blob/main//docs/faq-en.md)
+- [FAQ](https://github.com/kitao/pyxel/blob/main/docs/faq-en.md)
 - [User Examples](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples)
 - [Developer's X Account](https://x.com/kitao)
 - [Discord Server (English)](https://discord.gg/Z87eYHN)
@@ -774,7 +774,7 @@ Submitting a pull request implies that you agree to license your contribution un
 
 ## License
 
-Pyxel is licensed under the [MIT License](https://github.com/kitao/pyxel/blob/main//LICENSE). It can be reused in proprietary software, provided that all copies of the software or its substantial portions include a copy of the MIT License terms and a copyright notice.
+Pyxel is licensed under the [MIT License](https://github.com/kitao/pyxel/blob/main/LICENSE). It can be reused in proprietary software, provided that all copies of the software or its substantial portions include a copy of the MIT License terms and a copyright notice.
 
 ## Recruiting Sponsors
 
