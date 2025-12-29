@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.5.12
+
+- Fixed double slashes in README-abspath URLs
+
 ## 2.5.11
 
 - Changed the web version to display all errors
