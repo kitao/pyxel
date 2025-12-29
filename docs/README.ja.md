@@ -214,8 +214,8 @@ pyxel copy_examples
 <tr>
 <td>17_app_launcher.py</td>
 <td>Pyxelアプリランチャー (色々なゲームをプレイできます！)</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/17-app-launcher.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/17_app_launcher.py">Code</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/17-app-launcher.html">デモ</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/17_app_launcher.py">コード</a></td>
 </tr>
 <tr>
 <td>99_flip_animation.py</td>
