@@ -400,12 +400,12 @@ The mode for editing **musics** in which the sounds are arranged in order of pla
 
 Pyxel images and tilemaps can also be created using the following methods:
 
-- Create an image from a list of strings using the `Image.set` function or the `Tilemap.set` function
-- Load an image file (PNG/GIF/JPEG) in Pyxel palette with `Image.load` function
+- Create images or tilemaps from lists of strings with the `Image.set` or `Tilemap.set` functions
+- Load palette-ready image files (PNG/GIF/JPEG) with the `Image.load` function
 
-Pyxel sounds can also be created using the following method:
+Pyxel sounds and music can also be created using the following method:
 
-- Create a sound from strings with `Sound.set` function or `Music.set` function
+- Create them from strings with the `Sound.set` or `Music.set` functions
 
 Refer to the API reference for the usage of these functions.
 
@@ -711,10 +711,6 @@ A Pyxel application file can also be converted to an executable or an HTML file 
 
 - `mml(code)`<br>
   Passing a [MML (Music Macro Language)](https://en.wikipedia.org/wiki/Music_Macro_Language) string switches to MML mode and plays the sound according to its content. In this mode, normal parameters such as `notes` and `speed` are ignored. To exit MML mode, call `mml()`. For more details about MML, see [this page](https://github.com/kitao/pyxel/blob/main/docs/faq-en.md).<br>
-  Example: `pyxel.sounds[0].mml("T120 Q90 @1 V100 O5 L8 C4&C<G16R16>C.<G16 >C.D16 @VIB1{10,20,20} E2C2")`
-
-- `mml(code)`<br>
-  Sets the related parameters using [Music Macro Language (MML)](https://en.wikipedia.org/wiki/Music_Macro_Language). The available commands are `T`(1-900), `@`(0-3), `O`(0-4), `>`, `<`, `Q`(1-8), `V`(0-7), `X`(0-7), `L`(1/2/4/8/16/32), and `CDEFGABR`+`#+-`+`.~&`. For details on the commands, refer to [this page](https://github.com/kitao/pyxel/blob/main/docs/faq-en.md).<br>
   Example: `pyxel.sounds[0].mml("T120 Q90 @1 V100 O5 L8 C4&C<G16R16>C.<G16 >C.D16 @VIB1{10,20,20} E2C2")`
 
 - `save(filename, sec, [ffmpeg])`<br>

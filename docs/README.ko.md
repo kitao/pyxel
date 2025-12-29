@@ -400,12 +400,12 @@ TMX 파일(Tiled Map File)을 타일맵 편집기로 드래그 앤 드롭하면 
 
 Pyxel 이미지와 타일맵은 다음 방법을 사용하여 생성할 수도 있습니다:
 
-- `Image.set` 함수 또는 `Tilemap.set` 함수를 사용하여 문자열 목록에서 이미지를 생성합니다.
-- `Image.load` 함수를 사용하여 Pyxel 팔레트의 이미지 파일(PNG/GIF/JPEG)을 로드합니다.
+- `Image.set` 함수 또는 `Tilemap.set` 함수를 사용해 문자열 목록에서 이미지나 타일맵을 만듭니다.
+- `Image.load` 함수로 Pyxel 팔레트에 맞는 이미지 파일(PNG/GIF/JPEG)을 로드합니다.
 
-Pyxel 사운드는 다음 방법을 사용하여 생성할 수도 있습니다:
+Pyxel 사운드와 음악은 다음 방법을 사용하여 생성할 수도 있습니다:
 
-- `Sound.set` 함수 또는 `Music.set` 함수를 사용하여 문자열에서 사운드를 생성합니다.
+- `Sound.set` 함수 또는 `Music.set` 함수로 문자열에서 생성합니다.
 
 이 함수의 사용법은 API 참조를 참조하십시오.
 

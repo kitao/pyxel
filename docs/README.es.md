@@ -400,12 +400,12 @@ El modo para editar **músicas** en el que los sonidos están organizados en ord
 
 Las imágenes y los mapas de teselas de Pyxel también se pueden crear utilizando los siguientes métodos:
 
-- Crear una imagen a partir de una lista de cadenas utilizando la función `Image.set` o la función `Tilemap.set`
-- Cargar un archivo de imagen (PNG/GIF/JPEG) en la paleta de Pyxel con la función `Image.load`
+- Crear imágenes o mapas de teselas a partir de listas de cadenas con las funciones `Image.set` o `Tilemap.set`
+- Cargar archivos de imagen compatibles con la paleta de Pyxel (PNG/GIF/JPEG) con la función `Image.load`
 
-Los sonidos de Pyxel también se pueden crear utilizando el siguiente método:
+Los sonidos y la música de Pyxel también se pueden crear utilizando el siguiente método:
 
-- Crear un sonido a partir de cadenas con la función `Sound.set` o la función `Music.set`
+- Crearlos a partir de cadenas con las funciones `Sound.set` o `Music.set`
 
 Consulta la referencia de la API para el uso de estas funciones.
 

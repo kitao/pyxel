@@ -3,6 +3,7 @@
 ## 2.5.12
 
 - Fixed double slashes in README-abspath URLs
+- Refined the README files
 
 ## 2.5.11
 
@@ -40,7 +41,7 @@
 ## 2.5.7
 
 - Specified Tailwind CSS version 3.4.17 for Pyxel web pages
-- Added links to web tools and examples for Pyxel in the READMEs
+- Added links to web tools and examples for Pyxel in the README files
 - Updated the URL on reload in Pyxel MML Studio
 - Improved the usability of Pyxel MML Studio
 - Enabled the parent HTML window to control the initial input wait
@@ -443,7 +444,7 @@
 ## 2.1.6
 
 - Updated the message image for the README files
-- Added Turkish and Ukrainian READMEs
+- Added Turkish and Ukrainian README files
 - Fixed a warning on macOS Sonoma
 - Updated Pyodide to version 0.26.2
 - Updated the glow crate to version 0.14
@@ -1196,7 +1197,7 @@
 - Updated the SDL to 2.0.10
 - Updated the SDL_image to 2.0.5
 - Changed dll search method for Python 3.8
-- Updated the READMEs
+- Updated the README files
 - Added KEY_NONE constant to ignore key input
 - Added the pget function and renamed pix to pset
 - Changed the palette colors
