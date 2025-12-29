@@ -400,12 +400,12 @@ Der Modus zum Bearbeiten von **Musiken**, in denen die Klänge in der Reihenfolg
 
 Pyxel-Bilder und Kachelkarten können auch mit folgenden Methoden erstellt werden:
 
-- Erstellen Sie ein Bild aus einer Liste von Zeichenfolgen mit der `Image.set`-Funktion oder der `Tilemap.set`-Funktion
-- Laden Sie eine Bilddatei (PNG/GIF/JPEG) mit der `Image.load`-Funktion in die Pyxel-Palette
+- Erstellen Sie Bilder oder Kachelkarten aus Listen von Zeichenfolgen mit den Funktionen `Image.set` oder `Tilemap.set`
+- Laden Sie eine zur Pyxel-Palette passende Bilddatei (PNG/GIF/JPEG) mit der Funktion `Image.load`
 
-Pyxel-Klänge können ebenfalls mit der folgenden Methode erstellt werden:
+Pyxel-Klänge und -Musik können ebenfalls mit der folgenden Methode erstellt werden:
 
-- Erstellen Sie einen Klang aus Zeichenfolgen mit der `Sound.set`-Funktion oder der `Music.set`-Funktion
+- Erstellen Sie sie aus Zeichenfolgen mit den Funktionen `Sound.set` oder `Music.set`
 
 Bitte beachten Sie die API-Referenz für die Verwendung dieser Funktionen.
 

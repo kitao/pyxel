@@ -400,12 +400,12 @@ Seslerin çalma sırasına göre dizildiği **müzikleri** düzenlemek için kul
 
 Pyxel resimleri ve karo haritaları aşağıdaki yöntemlerle de oluşturulabilir:
 
-- `Image.set` fonksiyonu veya `Tilemap.set` fonksiyonu kullanarak bir dize listesinden resim oluşturun
-- `Image.load` fonksiyonu ile Pyxel paletindeki bir resim dosyasını (PNG/GIF/JPEG) yükleyin
+- `Image.set` veya `Tilemap.set` fonksiyonlarıyla dize listelerinden resim veya karo haritası oluşturun
+- `Image.load` fonksiyonuyla Pyxel paletine uygun bir resim dosyasını (PNG/GIF/JPEG) yükleyin
 
-Pyxel sesleri de aşağıdaki yöntemle oluşturulabilir:
+Pyxel sesleri ve müzikleri de aşağıdaki yöntemle oluşturulabilir:
 
-- `Sound.set` fonksiyonu veya `Music.set` fonksiyonu ile dizelerden ses oluşturun
+- `Sound.set` veya `Music.set` fonksiyonlarıyla dizelerden oluşturun
 
 Bu fonksiyonların kullanımı için API referansına bakın.
 

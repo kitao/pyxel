@@ -400,12 +400,12 @@ Le mode pour éditer des **musiques** dans lequel les sons sont organisés dans 
 
 Les images et les cartes de tuiles Pyxel peuvent également être créées en utilisant les méthodes suivantes :
 
-- Créer une image à partir d'une liste de chaînes en utilisant la fonction `Image.set` ou la fonction `Tilemap.set`
-- Charger un fichier d'image (PNG/GIF/JPEG) avec la palette Pyxel en utilisant la fonction `Image.load`
+- Créer des images ou des cartes de tuiles à partir de listes de chaînes avec les fonctions `Image.set` ou `Tilemap.set`
+- Charger des fichiers image compatibles avec la palette Pyxel (PNG/GIF/JPEG) avec la fonction `Image.load`
 
-Les sons Pyxel peuvent également être créés en utilisant la méthode suivante :
+Les sons et la musique Pyxel peuvent également être créés en utilisant la méthode suivante :
 
-- Créer un son à partir de chaînes avec la fonction `Sound.set` ou la fonction `Music.set`
+- Les créer à partir de chaînes avec les fonctions `Sound.set` ou `Music.set`
 
 Référez-vous à la documentation de l'API pour l'utilisation de ces fonctions.
 

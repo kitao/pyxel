@@ -400,12 +400,12 @@ Pyxel Editor 有以下编辑模式。
 
 Pyxel 图像和瓦片地图还可以通过以下方法创建：
 
-- 使用 `Image.set` 函数或 `Tilemap.set` 函数从字符串列表创建图像
-- 使用 `Image.load` 函数加载带有 Pyxel 调色板的图像文件 (PNG/GIF/JPEG)
+- 使用 `Image.set` 或 `Tilemap.set` 函数，从字符串列表创建图像或瓦片地图
+- 使用 `Image.load` 函数加载适用于 Pyxel 调色板的图像文件 (PNG/GIF/JPEG)
 
-Pyxel 声音也可以通过以下方法创建：
+Pyxel 的声音和音乐也可以通过以下方法创建：
 
-- 使用 `Sound.set` 函数或 `Music.set` 函数从字符串创建声音
+- 使用 `Sound.set` 或 `Music.set` 函数从字符串创建
 
 有关这些函数的用法，请参阅 API 参考。
 

@@ -400,12 +400,12 @@ O modo para editar **músicas** em que os sons são organizados em ordem de repr
 
 Imagens e mapas de ladrilhos do Pyxel também podem ser criados usando os seguintes métodos:
 
-- Crie uma imagem a partir de uma lista de strings usando a função `Image.set` ou a função `Tilemap.set`
-- Carregue um arquivo de imagem (PNG/GIF/JPEG) na paleta do Pyxel com a função `Image.load`
+- Crie imagens ou mapas de ladrilhos a partir de listas de strings com as funções `Image.set` ou `Tilemap.set`
+- Carregue arquivos de imagem compatíveis com a paleta do Pyxel (PNG/GIF/JPEG) com a função `Image.load`
 
-Os sons do Pyxel também podem ser criados usando o seguinte método:
+Os sons e as músicas do Pyxel também podem ser criados usando o seguinte método:
 
-- Crie um som a partir de strings com a função `Sound.set` ou a função `Music.set`
+- Crie-os a partir de strings com as funções `Sound.set` ou `Music.set`
 
 Consulte a referência da API para o uso dessas funções.
 

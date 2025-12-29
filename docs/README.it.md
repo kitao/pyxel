@@ -400,12 +400,12 @@ Il modo per modificare le **musiche** in cui i suoni sono disposti in ordine di 
 
 Le immagini e le mappe a tessere di Pyxel possono anche essere create utilizzando i seguenti metodi:
 
-- Crea un'immagine da un elenco di stringhe utilizzando la funzione `Image.set` o la funzione `Tilemap.set`
-- Carica un file immagine (PNG/GIF/JPEG) nella palette Pyxel con la funzione `Image.load`
+- Crea immagini o mappe a tessere da elenchi di stringhe con le funzioni `Image.set` o `Tilemap.set`
+- Carica file immagine compatibili con la palette Pyxel (PNG/GIF/JPEG) con la funzione `Image.load`
 
-I suoni Pyxel possono anche essere creati utilizzando il seguente metodo:
+I suoni e la musica di Pyxel possono anche essere creati utilizzando il seguente metodo:
 
-- Crea un suono da stringhe con la funzione `Sound.set` o la funzione `Music.set`
+- Creali da stringhe con le funzioni `Sound.set` o `Music.set`
 
 Fai riferimento alla documentazione dell'API per l'uso di queste funzioni.
 
