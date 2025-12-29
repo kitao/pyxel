@@ -65,6 +65,7 @@ pub fn parse_tmx(filename: &str, layer_index: u32) -> Result<SharedTilemap, Stri
     if tmx.tilesets.is_empty() {
         return Err("Tileset not found in TMX file".to_string());
     }
+
     let tileset = &tmx.tilesets[0];
     let tileset_columns = tileset
         .columns
@@ -73,6 +74,7 @@ pub fn parse_tmx(filename: &str, layer_index: u32) -> Result<SharedTilemap, Stri
     if layer_index >= tmx.layers.len() as u32 {
         return Err(format!("Layer {layer_index} not found in TMX file"));
     }
+
     let layer = &tmx.layers[layer_index as usize];
     if layer.data.encoding != "csv" {
         return Err("TMX file's encoding is not CSV".to_string());
@@ -92,6 +94,7 @@ pub fn parse_tmx(filename: &str, layer_index: u32) -> Result<SharedTilemap, Stri
         for (i, tile_id) in layer_data.iter().enumerate() {
             let x = i % layer.width as usize;
             let y = i / layer.width as usize;
+
             let tile_id = if *tile_id > tileset.firstgid {
                 tile_id - tileset.firstgid
             } else {
