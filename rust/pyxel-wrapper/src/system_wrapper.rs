@@ -27,6 +27,7 @@ fn init(
     locals.set_item("inspect", py.import("inspect")?)?;
     let script =
         CString::new(r#"os.chdir(os.path.dirname(inspect.stack()[1].filename) or ".")"#).unwrap();
+
     py.run(script.as_c_str(), None, Some(&locals))?;
 
     set_pyxel_instance(pyxel::init(

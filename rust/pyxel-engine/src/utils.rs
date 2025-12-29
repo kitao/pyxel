@@ -45,6 +45,7 @@ pub fn simplify_string(string: &str) -> String {
 pub fn parse_hex_string(string: &str) -> Result<u32, &str> {
     let string = string.to_ascii_lowercase();
     let mut result: u32 = 0;
+
     for c in string.chars() {
         result *= 0x10;
         if c.is_ascii_digit() {
@@ -55,6 +56,7 @@ pub fn parse_hex_string(string: &str) -> Result<u32, &str> {
             return Err("invalid hex string");
         }
     }
+
     Ok(result)
 }
 
@@ -70,6 +72,7 @@ pub fn compress_vec<T: PartialEq + Clone>(vec: &[T]) -> Vec<T> {
     assert!(!vec.is_empty());
     let mut new_vec = vec.to_vec();
     let mut new_len = new_vec.len();
+
     for i in (1..new_vec.len()).rev() {
         if new_vec[i] == new_vec[i - 1] {
             new_len = i;
@@ -77,6 +80,7 @@ pub fn compress_vec<T: PartialEq + Clone>(vec: &[T]) -> Vec<T> {
             break;
         }
     }
+
     new_vec.truncate(new_len);
     new_vec
 }
@@ -92,9 +96,11 @@ pub fn compress_vec2<T: PartialEq + Clone>(vec: &[Vec<T>]) -> Vec<Vec<T>> {
 pub fn expand_vec<T: Clone + Default>(vec: &[T], new_len: usize) -> Vec<T> {
     assert!(!vec.is_empty());
     let mut new_vec = vec.to_vec();
+
     if let Some(last) = new_vec.last().cloned() {
         new_vec.resize_with(new_len, move || last.clone());
     }
+
     new_vec
 }
 
@@ -108,6 +114,7 @@ pub fn expand_vec2<T: Clone + Default>(
         .iter()
         .map(|inner_vec| expand_vec(inner_vec, new_inner_len))
         .collect::<Vec<_>>();
+
     expand_vec(&new_vec, new_outer_len)
 }
 
@@ -118,6 +125,7 @@ pub fn trim_empty_vecs<T: Clone>(vecs: &[Vec<T>]) -> Vec<Vec<T>> {
         .rev()
         .position(|vec| !vec.is_empty())
         .map_or(0, |i| vecs.len() - i);
+
     vecs.truncate(new_len);
     vecs
 }
