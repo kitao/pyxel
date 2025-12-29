@@ -65,7 +65,6 @@ impl Music {
     #[pyo3(signature = (*seqs))]
     pub fn set(&self, seqs: &Bound<'_, PyTuple>) {
         let mut rust_seqs: Vec<Vec<u32>> = Vec::new();
-
         for i in 0..seqs.len() {
             let rust_seq = seqs
                 .get_item(i)

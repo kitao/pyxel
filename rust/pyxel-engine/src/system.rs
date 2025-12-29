@@ -69,7 +69,6 @@ impl Pyxel {
             } else {
                 (delta_ms / self.system.frame_ms) as u32
             };
-
             for _ in 1..update_count {
                 self.update_frame(Some(&mut callback));
                 self.frame_count += 1;

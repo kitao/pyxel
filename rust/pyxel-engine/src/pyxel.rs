@@ -184,6 +184,7 @@ pub fn init(
 
 pub fn reset_statics() {
     IS_INITIALIZED.store(false, Ordering::Relaxed);
+
     (*COLORS.lock()).clone_from(&init_colors().lock());
     (*IMAGES.lock()).clone_from(&init_images().lock());
     (*TILEMAPS.lock()).clone_from(&init_tilemaps().lock());
