@@ -59,10 +59,8 @@ impl Tone {
             assert!(self.sample_bits <= 32);
 
             self.cached_wavetable = self.wavetable.clone();
-
             self.waveform.clear();
             self.waveform.reserve(self.wavetable.len());
-
             let max_sample = (1 << self.sample_bits) - 1;
 
             for &sample in &self.wavetable {
