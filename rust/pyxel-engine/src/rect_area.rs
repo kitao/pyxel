@@ -64,6 +64,7 @@ impl RectArea {
         let bottom = min(self.bottom, rect.bottom);
         let width = right - left + 1;
         let height = bottom - top + 1;
+
         if width > 0 && height > 0 {
             Self::new(left, top, width as u32, height as u32)
         } else {
