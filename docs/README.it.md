@@ -102,7 +102,7 @@ La versione web di Pyxel funziona su PC, smartphone e tablet con un browser comp
 
 Il modo più semplice per utilizzarla è attraverso l'IDE online [Pyxel Code Maker](https://kitao.github.io/pyxel/wasm/code-maker/).
 
-Per altri modelli di utilizzo, come l'incorporamento di app Pyxel nel proprio sito, fare riferimento a [questa pagina](pyxel-web-en.md).
+Per altri modelli di utilizzo, come l'incorporamento di app Pyxel nel proprio sito, fai riferimento a [questa pagina](pyxel-web-en.md).
 
 ### Eseguire esempi
 
@@ -153,7 +153,7 @@ I seguenti esempi saranno copiati nella directory corrente:
 </tr>
 <tr>
 <td>07_snake.py</td>
-<td>Gioco della serpente con BGM</td>
+<td>Gioco del serpente con BGM</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/07-snake.html">Demo</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/07_snake.py">Codice</a></td>
 </tr>
@@ -219,7 +219,7 @@ I seguenti esempi saranno copiati nella directory corrente:
 </tr>
 <tr>
 <td>99_flip_animation.py</td>
-<td>Animazione con la funzione flip (solo per piattaforme non web)</td>
+<td>Animazione con la funzione `flip` (solo per piattaforme non web)</td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/docs/images/99_flip_animation.gif">Demo</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/99_flip_animation.py">Codice</a></td>
 </tr>
@@ -315,14 +315,14 @@ pyxel watch WATCH_DIR PYTHON_SCRIPT_FILE
 
 Interrompi il monitoraggio della directory premendo `Ctrl(Command)+C`.
 
-### Operazioni delle chiavi speciali
+### Operazioni dei tasti speciali
 
 Durante l'esecuzione di un'applicazione Pyxel, possono essere eseguite le seguenti operazioni delle chiavi speciali:
 
 - `Esc`<br>
   Uscire dall'applicazione
 - `Alt(Option)+R` oppure `A+B+X+Y+BACK` sul gamepad<br>
-  Reimposta l'applicazione
+  Reimpostare l'applicazione
 - `Alt(Option)+1`<br>
   Salvare lo screenshot sul desktop
 - `Alt(Option)+2`<br>
@@ -334,7 +334,7 @@ Durante l'esecuzione di un'applicazione Pyxel, possono essere eseguite le seguen
 - `Alt(Option)+9` oppure `A+B+X+Y+DR` sul gamepad<br>
   Passare tra le modalità dello schermo (Crisp/Smooth/Retro)
 - `Alt(Option)+0` oppure `A+B+X+Y+DU` sul gamepad<br>
-  Visualizzare il monitor delle prestazioni (FPS/`update` tempo/`draw` tempo)
+  Attivare/disattivare il monitor delle prestazioni (FPS/tempo di `update`/tempo di `draw`)
 - `Alt(Option)+Enter` oppure `A+B+X+Y+DD` sul gamepad<br>
   Visualizzare a schermo intero
 - `Shift+Alt(Option)+1/2/3`<br>
@@ -560,7 +560,7 @@ Un file dell'applicazione Pyxel può anche essere convertito in un eseguibile o 
   Disegna il contorno di un triangolo con vertici (`x1`, `y1`), (`x2`, `y2`), (`x3`, `y3`) e colore `col`.
 
 - `fill(x, y, col)`<br>
-  Riempi l'area connessa con lo stesso colore di (`x`, `y`) con il colore `col`.
+  Riempie l'area connessa con lo stesso colore di (`x`, `y`) con il colore `col`.
 
 - `blt(x, y, img, u, v, w, h, [colkey], [rotate], [scale])`<br>
   Copia la regione di dimensioni (`w`, `h`) da (`u`, `v`) della banca immagini `img`(0-2) a (`x`, `y`). Se viene assegnato un valore negativo a `w` e/o `h`, la regione verrà capovolta orizzontalmente e/o verticalmente. Se `colkey` è specificato, verrà trattato come un colore trasparente. Se vengono specificati `rotate` (in gradi), `scale` (1.0 = 100%) o entrambi, verranno applicate le trasformazioni corrispondenti.
@@ -620,7 +620,7 @@ Un file dell'applicazione Pyxel può anche essere convertito in un eseguibile o 
   Restituisce l'arcotangente di `y`/`x` in gradi.
 
 - `rseed(seed)`<br>
-  Impostare il seme del generatore di numeri casuali.
+  Imposta il seme del generatore di numeri casuali.
 
 - `rndi(a, b)`<br>
   Restituisce un numero intero casuale maggiore o uguale a `a` e minore o uguale a `b`.

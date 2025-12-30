@@ -11,7 +11,7 @@
 
 **Pyxel** (/ˈpɪksəl/) é um motor de jogos retro para Python.
 
-As especificações são inspiradas em consoles de jogos retro, como o suporte para apenas 16 cores e 4 canais de som, permitindo que você desfrute facilmente da criação de jogos com estilo de arte em pixel.
+As especificações são inspiradas em consoles de jogos retro, como o suporte para apenas 16 cores e 4 canais de som, permitindo que você desfrute facilmente da criação de jogos em estilo pixel art.
 
 [<img src="images/pyxel_thanks.png" width="460">](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples) [<img src="images/pyxel_book.png" width="180">](https://gihyo.jp/book/2025/978-4-297-14657-3)
 
@@ -98,7 +98,7 @@ Se o comando anterior falhar, considere construir o Pyxel a partir do código-fo
 
 ### Web
 
-A versão web do Pyxel funciona em PCs, smartphones e tablets com um navegador compatível, sem instalar Python ou Pyxel.
+A versão Web do Pyxel funciona em PCs, smartphones e tablets com um navegador compatível, sem instalar Python ou Pyxel.
 
 A maneira mais fácil de usá-la é através do IDE online [Pyxel Code Maker](https://kitao.github.io/pyxel/wasm/code-maker/).
 
@@ -219,7 +219,7 @@ Os seguintes exemplos serão copiados para o diretório atual:
 </tr>
 <tr>
 <td>99_flip_animation.py</td>
-<td>Animação com a função flip (apenas para plataformas não web)</td>
+<td>Animação com a função `flip` (apenas para plataformas não web)</td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/docs/images/99_flip_animation.gif">Demonstração</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/99_flip_animation.py">Código</a></td>
 </tr>
@@ -334,7 +334,7 @@ Durante a execução de uma aplicação Pyxel, as seguintes operações de tecla
 - `Alt(Option)+9` ou `A+B+X+Y+DR` no gamepad<br>
   Alternar entre os modos de tela (Crisp/Smooth/Retro)
 - `Alt(Option)+0` ou `A+B+X+Y+DU` no gamepad<br>
-  Alternar o monitor de desempenho (FPS/`update` tempo/`draw` tempo)
+  Alternar o monitor de desempenho (FPS/tempo de `update`/tempo de `draw`)
 - `Alt(Option)+Enter` ou `A+B+X+Y+DD` no gamepad<br>
   Alternar para tela cheia
 - `Shift+Alt(Option)+1/2/3`<br>
@@ -461,7 +461,7 @@ Um arquivo de aplicativo Pyxel também pode ser convertido em um executável ou 
   Mostra a tela e aguarda até que a tecla `Esc` seja pressionada.
 
 - `flip()`<br>
-  Atualiza a tela em um quadro. A aplicação encerra quando a tecla `Esc` é pressionada. Esta função não está disponível na versão web.
+  Atualiza a tela em um quadro. A aplicação encerra quando a tecla `Esc` é pressionada. Esta função não está disponível na versão Web.
 
 - `quit()`<br>
   Encerra a aplicação Pyxel.

@@ -11,11 +11,11 @@
 
 **Pyxel** (/ˈpɪksəl/) 是一个针对 Python 的复古游戏引擎。
 
-其规格受到复古游戏机的启发，例如仅支持 16 种颜色和 4 个音轨，同时可以轻松享受制作像素艺术风格游戏的乐趣。
+其规格受到复古游戏机的启发，例如仅支持 16 种颜色和 4 个声道，同时可以轻松享受制作像素艺术风格游戏的乐趣。
 
 [<img src="images/pyxel_thanks.png" width="460">](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples) [<img src="images/pyxel_book.png" width="180">](https://gihyo.jp/book/2025/978-4-297-14657-3)
 
-Pyxel 的开发得益于用户的反馈。请在 GitHub 上给 Pyxel 评分！
+Pyxel 的开发得益于用户的反馈。请在 GitHub 上给 Pyxel 点个 Star！
 
 <p>
 <a href="https://kitao.github.io/pyxel/wasm/examples/10-platformer.html">
@@ -94,7 +94,7 @@ pipx install pyxel
 sudo pip3 install -U pyxel
 ```
 
-如果之前的命令失败，请按照 [Makefile](../Makefile) 中的说明考虑从源代码构建 Pyxel。
+如果上述命令失败，请按照 [Makefile](../Makefile) 中的说明考虑从源代码构建 Pyxel。
 
 ### Web
 
@@ -159,13 +159,13 @@ pyxel copy_examples
 </tr>
 <tr>
 <td>08_triangle_api.py</td>
-<td>三角形绘图API的演示</td>
+<td>三角形绘图 API 的演示</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/08-triangle-api.html">演示</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/08_triangle_api.py">代码</a></td>
 </tr>
 <tr>
 <td>09_shooter.py</td>
-<td>射击游戏与屏幕切换及MML</td>
+<td>使用屏幕切换和 MML 的射击游戏</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/09-shooter.html">演示</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/09_shooter.py">代码</a></td>
 </tr>
@@ -219,7 +219,7 @@ pyxel copy_examples
 </tr>
 <tr>
 <td>99_flip_animation.py</td>
-<td>使用翻转函数的动画（仅限非网页平台）</td>
+<td>使用 flip 函数的动画（仅限非 Web 平台）</td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/docs/images/99_flip_animation.gif">演示</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/99_flip_animation.py">代码</a></td>
 </tr>

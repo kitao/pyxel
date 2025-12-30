@@ -9,7 +9,7 @@
 
 [ [English](../README.md) | [中文](README.cn.md) | [Deutsch](README.de.md) | [Español](README.es.md) | [Français](README.fr.md) | [Italiano](README.it.md) | [日本語](README.ja.md) | [한국어](README.ko.md) | [Português](README.pt.md) | [Русский](README.ru.md) | [Türkçe](README.tr.md) | [Українська](README.uk.md) ]
 
-**Pyxel** (/ˈpɪksəl/) 은 Python을 위한 복고풍 게임 엔진입니다.
+**Pyxel** (/ˈpɪksəl/)은 Python을 위한 복고풍 게임 엔진입니다.
 
 사양은 복고풍 게임 콘솔에서 영감을 받아 16색만 지원하고 4개의 사운드 채널을 사용할 수 있어 픽셀 아트 스타일의 게임 제작을 쉽게 즐길 수 있습니다.
 
@@ -219,7 +219,7 @@ pyxel copy_examples
 </tr>
 <tr>
 <td>99_flip_animation.py</td>
-<td>flip 함수로 애니메이션 (비 웹 플랫폼 전용)</td>
+<td>`flip` 함수로 애니메이션 (비 웹 플랫폼 전용)</td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/docs/images/99_flip_animation.gif">데모</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/99_flip_animation.py">코드</a></td>
 </tr>
@@ -320,7 +320,7 @@ Pyxel 애플리케이션이 실행 중일 때, 다음의 특수 키 조작을 �
 - `Esc`<br>
   애플리케이션 종료
 - `Alt(Option)+R` 또는 게임패드에서 `A+B+X+Y+BACK`<br>
-  애플리케이션을 리셋합니다
+  애플리케이션 리셋
 - `Alt(Option)+1`<br>
   화면 캡처를 데스크탑에 저장
 - `Alt(Option)+2`<br>
@@ -473,7 +473,7 @@ Pyxel 애플리케이션 파일은 `pyxel app2exe` 또는 `pyxel app2html` 명�
   리소스 파일 (.pyxres)을 로드합니다. 옵션이 `True`로 설정되면 해당 리소스는 로드에서 제외됩니다. 동일한 이름의 팔레트 파일 (.pyxpal)이 리소스 파일과 동일한 위치에 존재하는 경우, 팔레트 표시 색상도 업데이트됩니다. 팔레트 파일은 각 색상을 16진수로 나타낸 값을 줄바꿈으로 구분하여 입력합니다 (예: `1100ff`). 팔레트 파일을 사용하면 Pyxel Editor에서 표시되는 색상도 변경할 수 있습니다.
 
 - `user_data_dir(vendor_name, app_name)`<br>
-  `vendor_name`와 `app_name`을 기반으로 생성된 사용자 데이터 디렉토리를 반환합니다. 디렉토리가 존재하지 않으면 자동으로 생성됩니다. 이 디렉토리는 하이스코어, 게임 진행 상황 등의 데이터를 저장하는 데 사용됩니다.<br>
+  `vendor_name`과 `app_name`을 기반으로 생성된 사용자 데이터 디렉토리를 반환합니다. 디렉토리가 존재하지 않으면 자동으로 생성됩니다. 이 디렉토리는 하이스코어, 게임 진행 상황 등의 데이터를 저장하는 데 사용됩니다.<br>
   예시: `print(pyxel.user_data_dir("Takashi Kitao", "Pyxel Shooter"))`
 
 ### Input
@@ -670,6 +670,8 @@ Pyxel 애플리케이션 파일은 `pyxel app2exe` 또는 `pyxel app2html` 명�
 
 - `pset(x, y, tile)`<br>
   (`x`, `y`)에 타일을 설정합니다. 타일은 `(image_tx, image_ty)`의 튜플로 표현됩니다.
+
+### Sound 클래스
 
 - `notes`<br>
   음정 목록 (0-127). 숫자가 클수록 음정이 높아집니다. 음정 `33`은 'A2' (440 Hz)에 해당합니다. 쉼표는 `-1`로 표현됩니다.

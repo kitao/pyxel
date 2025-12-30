@@ -56,7 +56,7 @@ Pyxel є відкритим програмним забезпеченням пі
 - Інструменти для редагування зображень та звуків
 - Розширювані користувачем кольори, канали та банки
 
-### Кольорова палитра
+### Кольорова палітра
 
 <img src="images/05_color_palette.png">
 
@@ -94,7 +94,7 @@ pipx install pyxel
 sudo pip3 install -U pyxel
 ```
 
-Якщо попередня команда не спрацювала, подумайте про збірку Pyxel з виходу, дотримуючись інструкцій у [Makefile](../Makefile).
+Якщо попередня команда не спрацювала, подумайте про збірку Pyxel з вихідного коду, дотримуючись інструкцій у [Makefile](../Makefile).
 
 ### Web
 
@@ -219,7 +219,7 @@ pyxel copy_examples
 </tr>
 <tr>
 <td>99_flip_animation.py</td>
-<td>Анімація за допомогою функції flip (тільки для платформ, що не є веб)</td>
+<td>Анімація за допомогою функції `flip` (тільки для платформ, що не є веб)</td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/docs/images/99_flip_animation.gif">Демонстрація</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/99_flip_animation.py">Код</a></td>
 </tr>
@@ -498,6 +498,8 @@ pyxel play PYXEL_APP_FILE
 - `mouse(visible)`<br>
   Показує курсор миші, якщо параметр `visible` встановлено у `True`, та приховує, якщо у `False`. Позиція курсору продовжує оновлюватися, навіть якщо він прихований.
 
+### Графіка
+
 - `colors`<br>
   Список кольорів палітри. Кольори відображення вказуються у 24-бітному числовому значенні. Використовуйте `colors.from_list` та `colors.to_list` для безпосереднього присвоєння та отримання списків у Python.<br>
   Приклад: `old_colors = pyxel.colors.to_list(); pyxel.colors.from_list([0x111111, 0x222222, 0x333333]); pyxel.colors[15] = 0x112233`
@@ -572,6 +574,8 @@ pyxel play PYXEL_APP_FILE
 
 - `text(x, y, s, col)`<br>
   Малює рядок `s` кольором `col` на позиції (`x`, `y`).
+
+### Аудіо
 
 - `sounds`<br>
   Список звуків (екземпляри класу Sound) (0-63)<br>
@@ -668,6 +672,8 @@ pyxel play PYXEL_APP_FILE
 
 - `pset(x, y, tile)`<br>
   Малює `tile` на позиції (`x`, `y`). Тайл представлений у вигляді кортежу `(image_tx, image_ty)`.
+
+### Клас Sound
 
 - `notes`<br>
   Список нот (0-127). Чим більше число, тим вища нота. Нота `33` відповідає 'A2' (440 Hz). Пауза позначається як `-1`.
