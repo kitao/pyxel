@@ -28,7 +28,7 @@ Pyxel Web Launcher の URL 書式は以下の通りです。
 https://kitao.github.io/pyxel/wasm/launcher/?<コマンド>=<githubのユーザー名>.<リポジトリ名>.<アプリのディレクトリ>.<拡張子を取ったファイル名>
 ```
 
-コマンドには次の３つが指定できます。
+コマンドには次の 3 つが指定できます。
 
 - `run`: Python スクリプトを実行する
 - `play`: Pyxel アプリを実行する
