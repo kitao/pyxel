@@ -48,8 +48,8 @@ Pyxel is open source under the [MIT License](LICENSE) and free to use. Let's sta
 - Programming in Python
 - Customizable screen size
 - 16-color palette
-- 3 256x256-sized image banks
-- 8 256x256-sized tilemaps
+- 3 256x256 image banks
+- 8 256x256 tilemaps
 - 4 channels with 64 definable sounds
 - 8 music tracks combining any sounds
 - Keyboard, mouse, and gamepad inputs
@@ -98,7 +98,7 @@ If the previous command fails, consider building Pyxel from source by following 
 
 ### Web
 
-Web version of Pyxel can be used on PCs as well as smartphones and tablets, as long as you have a compatible web browser, without installing Python or Pyxel.
+The web version of Pyxel works on PCs, smartphones, and tablets with a compatible browser, without installing Python or Pyxel.
 
 The easiest way to use it is through the online IDE [Pyxel Code Maker](https://kitao.github.io/pyxel/wasm/code-maker/).
 
@@ -112,7 +112,7 @@ After installing Pyxel, you can copy the examples to the current directory with 
 pyxel copy_examples
 ```
 
-The following examples will be copied to your current directory:
+The following examples will be copied to the current directory:
 
 <table>
 <tr>
@@ -241,7 +241,7 @@ pyxel play 30sec_of_daylight.pyxapp
 
 ### Create Application
 
-In your Python script, import the Pyxel module, specify the window size with the `init` function, and then start the Pyxel application with the `run` function.
+In your Python script, import Pyxel, set the window size with `init`, and start the application with `run`.
 
 ```python
 import pyxel
@@ -313,7 +313,7 @@ Additionally, the `pyxel watch` command monitors changes in a specified director
 pyxel watch WATCH_DIR PYTHON_SCRIPT_FILE
 ```
 
-Directory monitoring can be stopped by pressing `Ctrl(Command)+C`.
+Stop directory monitoring by pressing `Ctrl(Command)+C`.
 
 ### Special Key Controls
 
@@ -330,7 +330,7 @@ The following special key actions are available while a Pyxel application is run
 - `Alt(Option)+3`<br>
   Save a screen capture video to the desktop (up to 10 seconds)
 - `Alt(Option)+8` or `A+B+X+Y+DL` on gamepad<br>
-  Toggles screen scaling between maximum and integer
+  Toggle screen scaling between maximum and integer
 - `Alt(Option)+9` or `A+B+X+Y+DR` on gamepad<br>
   Switch between screen modes (Crisp/Smooth/Retro)
 - `Alt(Option)+0` or `A+B+X+Y+DU` on gamepad<br>
@@ -344,7 +344,7 @@ The following special key actions are available while a Pyxel application is run
 
 ### How to Create Resources
 
-Pyxel Editor can create images and sounds used in a Pyxel application.
+Pyxel Editor creates images and sounds used in a Pyxel application.
 
 You can start Pyxel Editor with the following command:
 
@@ -354,7 +354,7 @@ pyxel edit PYXEL_RESOURCE_FILE
 
 If the specified Pyxel resource file (.pyxres) exists, it will be loaded. If it does not exist, a new file with the specified name will be created. If the resource file is omitted, a new file named `my_resource.pyxres` will be created.
 
-After starting Pyxel Editor, you can switch to another resource file by dragging and dropping it onto Pyxel Editor.
+After starting Pyxel Editor, you can switch to another resource file by dragging and dropping it onto the editor.
 
 The created resource file can be loaded using the `load` function.
 
@@ -362,7 +362,7 @@ Pyxel Editor has the following editing modes.
 
 **Image Editor**
 
-The mode for editing the image in each **image bank**.
+The mode for editing images in each **image bank**.
 
 <a href="https://kitao.github.io/pyxel/wasm/examples/image-editor.html">
 <img src="docs/images/image_editor.gif">
@@ -390,7 +390,7 @@ The mode for editing **sounds** used for melodies and sound effects.
 
 **Music Editor**
 
-The mode for editing **musics** in which the sounds are arranged in order of playback.
+The mode for editing **music tracks** in which the sounds are arranged in order of playback.
 
 <a href="https://kitao.github.io/pyxel/wasm/examples/music-editor.html">
 <img src="docs/images/music_editor.gif">
@@ -411,9 +411,9 @@ Refer to the API reference for the usage of these functions.
 
 ### How to Distribute Applications
 
-Pyxel supports a dedicated application distribution file format (Pyxel application file) that is cross-platform.
+Pyxel supports a cross-platform distribution format called a Pyxel application file.
 
-A Pyxel application file (.pyxapp) is created using the `pyxel package` command:
+Create a Pyxel application file (.pyxapp) with the `pyxel package` command:
 
 ```sh
 pyxel package APP_DIR STARTUP_SCRIPT_FILE
@@ -448,7 +448,7 @@ A Pyxel application file can also be converted to an executable or an HTML file 
   The width and height of the screen
 
 - `frame_count`<br>
-  The number of the elapsed frames
+  The number of elapsed frames
 
 - `init(width, height, [title], [fps], [quit_key], [display_scale], [capture_scale], [capture_sec])`<br>
   Initialize the Pyxel application with the screen size (`width`, `height`). The following options can be specified: the window title with `title`, the frame rate with `fps`, the key to quit the application with `quit_key`, the display scale with `display_scale`, the screen capture scale with `capture_scale`, and the maximum recording time of the screen capture video with `capture_sec`.<br>
@@ -475,7 +475,7 @@ A Pyxel application file can also be converted to an executable or an HTML file 
   Load the resource file (.pyxres). If an option is set to `True`, the corresponding resource will be excluded from loading. If a palette file (.pyxpal) with the same name exists in the same location as the resource file, the palette display colors will also be updated. The palette file contains hexadecimal entries for the display colors (e.g. `1100ff`), separated by newlines. The palette file can also be used to change the colors displayed in Pyxel Editor.
 
 - `user_data_dir(vendor_name, app_name)`<br>
-  Returns the user data directory created based on `vendor_name` and `app_name`. If the directory does not exist, it will be created automatically. It is used to store high scores, game progress, and similar data.<br>
+  Return the user data directory created based on `vendor_name` and `app_name`. If the directory does not exist, it will be created automatically. It is used to store high scores, game progress, and similar data.<br>
   Example: `print(pyxel.user_data_dir("Takashi Kitao", "Pyxel Shooter"))`
 
 ### Input
@@ -582,7 +582,7 @@ A Pyxel application file can also be converted to an executable or an HTML file 
   Example: `pyxel.sounds[0].speed = 60`
 
 - `musics`<br>
-  List of the musics (instances of the Music class) (0-7)
+  List of music tracks (instances of the Music class) (0-7)
 
 - `play(ch, snd, [sec], [loop], [resume])`<br>
   Play the sound `snd`(0-63) on channel `ch`(0-3). `snd` can be a sound number, a list of sound numbers, or an MML string. The playback start position can be specified in seconds with `sec`. If `loop` is set to `True`, the sound will loop. To resume the previous sound after playback ends, set `resume` to `True`.
@@ -620,7 +620,7 @@ A Pyxel application file can also be converted to an executable or an HTML file 
   Return the arctangent of `y`/`x` in degrees.
 
 - `rseed(seed)`<br>
-  Sets the seed of the random number generator.
+  Set the seed of the random number generator.
 
 - `rndi(a, b)`<br>
   Return a random integer greater than or equal to `a` and less than or equal to `b`.
@@ -676,7 +676,7 @@ A Pyxel application file can also be converted to an executable or an HTML file 
 ### Sound Class
 
 - `notes`<br>
-  List of notes (0-127). The higher the number, the higher the pitch. Note `33` corresponds to 'A2'(440Hz). Rest notes are represented by `-1`.
+  List of notes (0-127). The higher the number, the higher the pitch. Note `33` corresponds to 'A2' (440 Hz). Rest notes are represented by `-1`.
 
 - `tones`<br>
   List of tones (0:Triangle / 1:Square / 2:Pulse / 3:Noise)
@@ -717,7 +717,7 @@ A Pyxel application file can also be converted to an executable or an HTML file 
   Creates a WAV file that plays the sound for the specified seconds. If FFmpeg is installed and `ffmpeg` is set to `True`, an MP4 file is also created.
 
 - `total_sec()`<br>
-  Returns the playback time of the sound in seconds. Returns `None` if infinite loop is used in MML.
+  Return the playback time of the sound in seconds. Return `None` if an infinite loop is used in MML.
 
 ### Music Class
 
@@ -725,7 +725,7 @@ A Pyxel application file can also be converted to an executable or an HTML file 
   A two-dimensional list of sounds (0-63) across multiple channels
 
 - `set(seq0, seq1, seq2, ...)`<br>
-  Set the lists of sound (0-63) for each channel. If an empty list is specified, that channel will not be used for playback.<br>
+  Set the lists of sounds (0-63) for each channel. If an empty list is specified, that channel will not be used for playback.<br>
   Example: `pyxel.musics[0].set([0, 1], [], [3])`
 
 - `save(filename, sec, [ffmpeg])`<br>

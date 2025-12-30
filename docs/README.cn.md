@@ -48,10 +48,10 @@ Pyxel 在 [MIT 许可证](../LICENSE) 下开源并免费使用。让我们开始
 - 使用 Python 编程
 - 可自定义屏幕尺寸
 - 16 色调色板
-- 3 个 256x256 尺寸图像库
-- 8 个 256x256 尺寸瓦片地图
+- 3 个 256x256 图像库
+- 8 个 256x256 瓦片地图
 - 4 个通道，支持 64 种可定义声音
-- 8 个音乐轨道可以组合任意声音
+- 8 个音乐轨道可组合任意声音
 - 支持键盘、鼠标和游戏手柄输入
 - 图像和声音编辑工具
 - 用户可扩展的颜色、通道和库
@@ -98,7 +98,7 @@ sudo pip3 install -U pyxel
 
 ### Web
 
-Pyxel 的 Web 版本可以在 PC 以及智能手机和平板电脑上使用，只要有兼容的 Web 浏览器，无需安装 Python 或 Pyxel。
+Pyxel 的 Web 版本可在 PC、智能手机和平板电脑的兼容浏览器中使用，无需安装 Python 或 Pyxel。
 
 最简单的使用方法是通过在线 IDE [Pyxel Code Maker](https://kitao.github.io/pyxel/wasm/code-maker/)。
 
@@ -112,7 +112,7 @@ Pyxel 的 Web 版本可以在 PC 以及智能手机和平板电脑上使用，�
 pyxel copy_examples
 ```
 
-以下示例将被复制到您的当前目录：
+以下示例将被复制到当前目录：
 
 <table>
 <tr>
@@ -214,8 +214,8 @@ pyxel copy_examples
 <tr>
 <td>17_app_launcher.py</td>
 <td>Pyxel 应用启动器（你可以玩各种游戏！）</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/17-app-launcher.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/17_app_launcher.py">Code</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/17-app-launcher.html">演示</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/17_app_launcher.py">代码</a></td>
 </tr>
 <tr>
 <td>99_flip_animation.py</td>
@@ -241,7 +241,7 @@ pyxel play 30sec_of_daylight.pyxapp
 
 ### 创建应用程序
 
-在您的 Python 脚本中，导入 Pyxel 模块，通过 `init` 函数指定窗口大小，然后使用 `run` 函数启动 Pyxel 应用程序。
+在您的 Python 脚本中导入 Pyxel，通过 `init` 指定窗口大小，然后用 `run` 启动应用程序。
 
 ```python
 import pyxel
@@ -313,7 +313,7 @@ pyxel run PYTHON_SCRIPT_FILE
 pyxel watch WATCH_DIR PYTHON_SCRIPT_FILE
 ```
 
-可以通过按 `Ctrl(Command)+C` 停止目录监视。
+按 `Ctrl(Command)+C` 停止目录监视。
 
 ### 特殊键操作
 
@@ -344,7 +344,7 @@ pyxel watch WATCH_DIR PYTHON_SCRIPT_FILE
 
 ### 如何创建资源
 
-Pyxel Editor 可以创建用于 Pyxel 应用程序的图像和声音。
+Pyxel Editor 用于创建 Pyxel 应用程序使用的图像和声音。
 
 您可以使用以下命令启动 Pyxel Editor：
 
@@ -354,7 +354,7 @@ pyxel edit PYXEL_RESOURCE_FILE
 
 如果指定的 Pyxel 资源文件 (.pyxres) 存在，则会加载它。如果不存在，则会使用指定的名称创建一个新文件。如果省略资源文件，则会创建一个名为 `my_resource.pyxres` 的新文件。
 
-启动 Pyxel Editor 后，您可以通过将另一个资源文件拖放到 Pyxel Editor 上来切换到该资源文件。
+启动 Pyxel Editor 后，您可以将另一个资源文件拖放到编辑器上以切换到该资源文件。
 
 创建的资源文件可以使用 `load` 函数加载。
 
@@ -411,7 +411,7 @@ Pyxel 的声音和音乐也可以通过以下方法创建：
 
 ### 如何分发应用程序
 
-Pyxel 支持一种专用的跨平台应用程序分发文件格式（Pyxel 应用程序文件）。
+Pyxel 支持一种跨平台分发格式：Pyxel 应用程序文件。
 
 使用 `pyxel package` 命令创建 Pyxel 应用程序文件 (.pyxapp)：
 
@@ -676,7 +676,7 @@ Pyxel 应用程序文件还可以使用 `pyxel app2exe` 或 `pyxel app2html` 命
 ### Sound 类
 
 - `notes`<br>
-  音符 (0-127) 的列表。数值越大，音高越高。音符 `33` 对应 'A2'(440Hz)。休止符表示为 `-1`。
+  音符 (0-127) 的列表。数值越大，音高越高。音符 `33` 对应 'A2' (440 Hz)。休止符表示为 `-1`。
 
 - `tones`<br>
   音色的列表 (0:Triangle / 1:Square / 2:Pulse / 3:Noise)

@@ -213,7 +213,7 @@ pyxel copy_examples
 </tr>
 <tr>
 <td>17_app_launcher.py</td>
-<td>Pyxelアプリランチャー (色々なゲームをプレイできます！)</td>
+<td>Pyxel アプリランチャー (色々なゲームをプレイできます！)</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/17-app-launcher.html">デモ</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/17_app_launcher.py">コード</a></td>
 </tr>
@@ -676,7 +676,7 @@ Pyxel アプリケーションファイルは、`pyxel app2exe`コマンドや`p
 ### Sound クラス
 
 - `notes`<br>
-  音程 (0-127) のリスト。数値が大きいほど音程は高くなり、`33`で 'A2'(440Hz) になります。休符は`-1`です。
+  音程 (0-127) のリスト。数値が大きいほど音程は高くなり、`33`で 'A2' (440 Hz) になります。休符は`-1`です。
 
 - `tones`<br>
   音色 (0:Triangle / 1:Square / 2:Pulse / 3:Noise) のリスト
@@ -710,11 +710,11 @@ Pyxel アプリケーションファイルは、`pyxel app2exe`コマンドや`p
   例：`pyxel.sounds[0].set_effects("nfnf nvvs")`
 
 - `mml(code)`<br>
-  [MML (Music Macro Language)](https://ja.wikipedia.org/wiki/Music_Macro_Language)の文字列を渡すと MML モードに移行し、その内容に沿ってサウンドが再生されます。MML モードでは`notes`や`speed`などの通常のパラメータは無視され、`mml()`で解除できます。MML の詳細は、[こちらのページ](faq-jp.md)を参照してください。<br>
+  [MML (Music Macro Language)](https://ja.wikipedia.org/wiki/Music_Macro_Language)の文字列を渡すと MML モードに移行し、その内容に沿ってサウンドが再生されます。MML モードでは`notes`や`speed`などの通常のパラメータは無視され、`mml()`で解除できます。MML の詳細は、[こちらのページ](faq-ja.md)を参照してください。<br>
   例：`pyxel.sounds[0].mml("T120 Q90 @1 V100 O5 L8 C4&C<G16R16>C.<G16 >C.D16 @VIB1{10,20,20} E2C2")`
 
 - `save(filename, sec, [ffmpeg])`<br>
-  サウンドを指定した秒数分再生した WAV ファイルを作成します。FFmpeg がインストールされている環境で、`ffmepg`に`True`を指定すると、MP4 ファイルも作成します。
+  サウンドを指定した秒数分再生した WAV ファイルを作成します。FFmpeg がインストールされている環境で、`ffmpeg`に`True`を指定すると、MP4 ファイルも作成します。
 
 - `total_sec()`<br>
   サウンドの再生時間を秒で返します。MML で無限ループが使用されている場合は None を返します。
@@ -729,7 +729,7 @@ Pyxel アプリケーションファイルは、`pyxel app2exe`コマンドや`p
   例：`pyxel.musics[0].set([0, 1], [], [3])`
 
 - `save(filename, sec, [ffmpeg])`<br>
-  ミュージックを指定した秒数分再生した WAV ファイルを作成します。FFmpeg がインストールされている環境で、`ffmepg`に`True`を指定すると、MP4 ファイルも作成します。
+  ミュージックを指定した秒数分再生した WAV ファイルを作成します。FFmpeg がインストールされている環境で、`ffmpeg`に`True`を指定すると、MP4 ファイルも作成します。
 
 ### 上級者向け API
 

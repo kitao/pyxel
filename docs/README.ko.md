@@ -48,8 +48,8 @@ Pyxel은 [MIT 라이센스](../LICENSE) 하에 오픈 소스이며 무료로 사
 - Python으로 프로그래밍
 - 사용자 정의 화면 크기
 - 16색 팔레트
-- 3개의 256x256 크기 이미지 뱅크
-- 8개의 256x256 크기 타일 맵
+- 256x256 이미지 뱅크 3개
+- 256x256 타일맵 8개
 - 64개의 정의 가능한 사운드와 4개의 채널
 - 결합 가능한 8개의 음악 트랙
 - 키보드, 마우스 및 게임패드 입력
@@ -98,7 +98,7 @@ sudo pip3 install -U pyxel
 
 ### Web
 
-Pyxel의 Web 버전은 Python이나 Pyxel을 설치하지 않고도 호환되는 웹 브라우저만 있으면 PC뿐만 아니라 스마트폰과 태블릿에서도 사용할 수 있습니다.
+Pyxel의 Web 버전은 호환되는 웹 브라우저만 있으면 PC, 스마트폰, 태블릿에서 사용할 수 있으며, Python이나 Pyxel을 설치할 필요가 없습니다.
 
 가장 쉬운 사용 방법은 온라인 IDE [Pyxel Code Maker](https://kitao.github.io/pyxel/wasm/code-maker/)를 이용하는 것입니다.
 
@@ -214,8 +214,8 @@ pyxel copy_examples
 <tr>
 <td>17_app_launcher.py</td>
 <td>Pyxel 앱 런처 (여러 가지 게임을 플레이할 수 있습니다!)</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/17-app-launcher.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/17_app_launcher.py">Code</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/17-app-launcher.html">데모</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/17_app_launcher.py">코드</a></td>
 </tr>
 <tr>
 <td>99_flip_animation.py</td>
@@ -241,7 +241,7 @@ pyxel play 30sec_of_daylight.pyxapp
 
 ### 애플리케이션 만들기
 
-Python 스크립트에서 Pyxel 모듈을 가져오고, `init` 함수로 창 크기를 지정한 후, `run` 함수로 Pyxel 애플리케이션을 시작합니다.
+Python 스크립트에서 Pyxel을 가져온 뒤 `init` 함수로 창 크기를 지정하고 `run` 함수로 애플리케이션을 시작합니다.
 
 ```python
 import pyxel
@@ -293,8 +293,6 @@ pyxel.circb(60, 60, 40, 7)
 pyxel.show()
 ```
 
-### 애플리케이션 실행하기
-
 작성한 스크립트는 `python` 명령어로 실행할 수 있습니다:
 
 ```sh
@@ -313,7 +311,7 @@ pyxel run PYTHON_SCRIPT_FILE
 pyxel watch WATCH_DIR PYTHON_SCRIPT_FILE
 ```
 
-디렉터리 모니터링은 `Ctrl(Command)+C`를 눌러 중지할 수 있습니다.
+디렉터리 모니터링은 `Ctrl(Command)+C`를 눌러 중지합니다.
 
 ### 특수 키 조작
 
@@ -344,7 +342,7 @@ Pyxel 애플리케이션이 실행 중일 때, 다음의 특수 키 조작을 �
 
 ### 리소스 생성 방법
 
-Pyxel Editor를 사용하여 Pyxel 애플리케이션에서 사용할 이미지와 사운드를 생성할 수 있습니다.
+Pyxel Editor로 Pyxel 애플리케이션에서 사용할 이미지와 사운드를 만들 수 있습니다.
 
 다음 명령으로 Pyxel Editor를 시작할 수 있습니다:
 
@@ -354,7 +352,7 @@ pyxel edit PYXEL_RESOURCE_FILE
 
 지정된 Pyxel 리소스 파일(.pyxres)이 존재하면 해당 파일이 로드됩니다. 존재하지 않는 경우 지정된 이름으로 새 파일이 생성됩니다. 리소스 파일이 생략된 경우 `my_resource.pyxres`라는 새 파일이 생성됩니다.
 
-Pyxel Editor를 시작한 후 다른 리소스 파일로 전환하려면 해당 파일을 Pyxel Editor로 드래그 앤 드롭하면 됩니다.
+Pyxel Editor를 시작한 후 다른 리소스 파일로 전환하려면 해당 파일을 편집기로 드래그 앤 드롭하면 됩니다.
 
 생성된 리소스 파일은 `load` 함수를 사용하여 로드할 수 있습니다.
 
@@ -411,9 +409,9 @@ Pyxel 사운드와 음악은 다음 방법을 사용하여 생성할 수도 있�
 
 ### 애플리케이션 배포 방법
 
-Pyxel은 플랫폼에 관계없이 작동하는 전용 애플리케이션 배포 파일 형식(Pyxel 애플리케이션 파일)을 지원합니다.
+Pyxel은 플랫폼에 관계없이 작동하는 전용 배포 형식인 Pyxel 애플리케이션 파일을 지원합니다.
 
-Pyxel 애플리케이션 파일(.pyxapp)은 `pyxel package` 명령을 사용하여 생성됩니다:
+Pyxel 애플리케이션 파일(.pyxapp)은 `pyxel package` 명령으로 생성합니다:
 
 ```sh
 pyxel package APP_DIR STARTUP_SCRIPT_FILE
@@ -673,10 +671,8 @@ Pyxel 애플리케이션 파일은 `pyxel app2exe` 또는 `pyxel app2html` 명�
 - `pset(x, y, tile)`<br>
   (`x`, `y`)에 타일을 설정합니다. 타일은 `(image_tx, image_ty)`의 튜플로 표현됩니다.
 
-### Sound 클래스
-
 - `notes`<br>
-  음정 목록 (0-127). 숫자가 클수록 음정이 높아집니다. 음정 `33`은 'A2'(440Hz)에 해당합니다. 쉼표는 `-1`로 표현됩니다.
+  음정 목록 (0-127). 숫자가 클수록 음정이 높아집니다. 음정 `33`은 'A2' (440 Hz)에 해당합니다. 쉼표는 `-1`로 표현됩니다.
 
 - `tones`<br>
   음색 목록 (0:Triangle / 1:Square / 2:Pulse / 3:Noise)

@@ -48,8 +48,8 @@ Pyxel ist unter der [MIT-Lizenz](../LICENSE) Open Source und kostenlos zu verwen
 - Programmierung in Python
 - Anpassbare Bildschirmgröße
 - 16-Farben-Palette
-- 3 256x256 große Bildbanken
-- 8 256x256 große Kachelkarten
+- 3 256x256 Bildbanken
+- 8 256x256 Kachelkarten
 - 4 Kanäle mit 64 definierbaren Klängen
 - 8 Musiktracks, die beliebige Klänge kombinieren können
 - Eingaben über Tastatur, Maus und Gamepad
@@ -98,7 +98,7 @@ Wenn der vorherige Befehl fehlschlägt, ziehen Sie in Betracht, Pyxel aus dem Qu
 
 ### Web
 
-Die Webversion von Pyxel kann auf PCs sowie Smartphones und Tablets verwendet werden, solange ein kompatibler Webbrowser vorhanden ist, ohne Python oder Pyxel installieren zu müssen.
+Die Webversion von Pyxel funktioniert auf PCs, Smartphones und Tablets mit einem kompatiblen Browser, ohne Python oder Pyxel zu installieren.
 
 Der einfachste Weg, sie zu verwenden, ist über die Online-IDE [Pyxel Code Maker](https://kitao.github.io/pyxel/wasm/code-maker/).
 
@@ -112,7 +112,7 @@ Nachdem Sie Pyxel installiert haben, können Sie die Beispiele mit dem folgenden
 pyxel copy_examples
 ```
 
-Die folgenden Beispiele werden in Ihr aktuelles Verzeichnis kopiert:
+Die folgenden Beispiele werden in das aktuelle Verzeichnis kopiert:
 
 <table>
 <tr>
@@ -241,7 +241,7 @@ pyxel play 30sec_of_daylight.pyxapp
 
 ### Anwendung erstellen
 
-Importieren Sie das Pyxel-Modul in Ihr Python-Skript, geben Sie die Fenstergröße mit der `init`-Funktion an und starten Sie die Pyxel-Anwendung mit der `run`-Funktion.
+Importieren Sie Pyxel in Ihr Python-Skript, geben Sie die Fenstergröße mit `init` an und starten Sie die Anwendung mit `run`.
 
 ```python
 import pyxel
@@ -313,7 +313,7 @@ Darüber hinaus überwacht der Befehl `pyxel watch` Änderungen in einem angegeb
 pyxel watch WATCH_DIR PYTHON_SCRIPT_FILE
 ```
 
-Die Überwachung des Verzeichnisses kann durch Drücken von `Ctrl(Command)+C` gestoppt werden.
+Beenden Sie die Verzeichnisüberwachung mit `Ctrl(Command)+C`.
 
 ### Sondertastenoperationen
 
@@ -344,7 +344,7 @@ Während eine Pyxel-Anwendung läuft, können die folgenden speziellen Tastenakt
 
 ### So erstellen Sie Ressourcen
 
-Pyxel Editor kann Bilder und Klänge erstellen, die in einer Pyxel-Anwendung verwendet werden.
+Pyxel Editor erstellt Bilder und Klänge, die in einer Pyxel-Anwendung verwendet werden.
 
 Sie können Pyxel Editor mit dem folgenden Befehl starten:
 
@@ -354,7 +354,7 @@ pyxel edit PYXEL_RESOURCE_FILE
 
 Wenn die angegebene Pyxel-Ressourcendatei (.pyxres) vorhanden ist, wird sie geladen. Andernfalls wird eine neue Datei mit dem angegebenen Namen erstellt. Wenn die Ressourcendatei weggelassen wird, wird eine neue Datei mit dem Namen `my_resource.pyxres` erstellt.
 
-Nachdem Sie Pyxel Editor gestartet haben, können Sie zu einer anderen Ressourcendatei wechseln, indem Sie diese auf Pyxel Editor ziehen und ablegen.
+Nachdem Sie Pyxel Editor gestartet haben, können Sie zu einer anderen Ressourcendatei wechseln, indem Sie sie auf den Editor ziehen und ablegen.
 
 Die erstellte Ressourcendatei kann mit der `load`-Funktion geladen werden.
 
@@ -362,7 +362,7 @@ Pyxel Editor hat die folgenden Bearbeitungsmodi.
 
 **Bildeditor**
 
-Der Modus zum Bearbeiten des Bildes in jeder **Bilderbank**.
+Der Modus zum Bearbeiten von Bildern in jeder **Bilderbank**.
 
 <a href="https://kitao.github.io/pyxel/wasm/examples/image-editor.html">
 <img src="images/image_editor.gif">
@@ -390,7 +390,7 @@ Der Modus zum Bearbeiten von **Klängen**, die für Melodien und Effekte verwend
 
 **Musikeditor**
 
-Der Modus zum Bearbeiten von **Musiken**, in denen die Klänge in der Reihenfolge der Wiedergabe angeordnet sind.
+Der Modus zum Bearbeiten von **Musiktracks**, in denen die Klänge in der Reihenfolge der Wiedergabe angeordnet sind.
 
 <a href="https://kitao.github.io/pyxel/wasm/examples/music-editor.html">
 <img src="images/music_editor.gif">
@@ -411,9 +411,9 @@ Bitte beachten Sie die API-Referenz für die Verwendung dieser Funktionen.
 
 ### So verteilen Sie Anwendungen
 
-Pyxel unterstützt ein dediziertes Dateiformat für die Verteilung von Anwendungen (Pyxel-Anwendungsdatei), das plattformübergreifend ist.
+Pyxel unterstützt ein plattformübergreifendes Distributionsformat namens Pyxel-Anwendungsdatei.
 
-Eine Pyxel-Anwendungsdatei (.pyxapp) wird mit dem Befehl `pyxel package` erstellt:
+Erstellen Sie eine Pyxel-Anwendungsdatei (.pyxapp) mit dem Befehl `pyxel package`:
 
 ```sh
 pyxel package APP_DIR STARTUP_SCRIPT_FILE
@@ -676,7 +676,7 @@ Eine Pyxel-Anwendungsdatei kann auch mit den Befehlen `pyxel app2exe` oder `pyxe
 ### Sound-Klasse
 
 - `notes`<br>
-  Liste der Noten (0-127). Je höher die Zahl, desto höher der Ton. Note `33` entspricht 'A2'(440Hz). Pausen werden durch `-1` dargestellt.
+  Liste der Noten (0-127). Je höher die Zahl, desto höher der Ton. Note `33` entspricht 'A2' (440 Hz). Pausen werden durch `-1` dargestellt.
 
 - `tones`<br>
   Liste der Töne (0:Triangle / 1:Square / 2:Pulse / 3:Noise)
