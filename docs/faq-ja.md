@@ -57,7 +57,7 @@ Pyxel のサンプルコードを 01、05、03、04、02 の順に試すのが�
 <details>
 <summary>Pyxel に関する書籍はありますか？</summary>
 
-日本語版のみですが、[公式の書籍](https://gihyo.jp/book/2025/978-4-297-14657-3)が発売されています。
+日本語版のみですが、[公式の書籍](https://gihyo.jp/book/2025/978-4-297-14657-3) が発売されています。
 
 </details>
 
@@ -82,9 +82,9 @@ MML モードでは、`notes` や `speed` などの通常のパラメータは�
 
 Pyxel の MML で利用できるコマンドは [Pyxel MML コマンド](https://kitao.github.io/pyxel/wasm/mml-studio/mml-commands.html) で参照できます。
 
-使用例はサンプル 09_shooter.py の[デモ](https://kitao.github.io/pyxel/wasm/examples/09-shooter.html)や[コード](https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/09_shooter.py)で確認できます。
+使用例はサンプル 09_shooter.py の [デモ](https://kitao.github.io/pyxel/wasm/examples/09-shooter.html) や [コード](https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/09_shooter.py) で確認できます。
 
-また、[Pyxel MML Studio](https://kitao.github.io/pyxel/wasm/mml-studio/)を使えば、MML をブラウザ上で作成・共有できます。
+また、[Pyxel MML Studio](https://kitao.github.io/pyxel/wasm/mml-studio/) を使えば、MML をブラウザ上で作成・共有できます。
 
 </details>
 
@@ -94,14 +94,14 @@ Pyxel の MML で利用できるコマンドは [Pyxel MML コマンド](https:/
 <summary>ファイルが読み込めません。環境が変わると失敗する時があります。</summary>
 
 ファイルを読み込む際に、カレントディレクトリが意図したものになっているかを確認してください。<br>
-Pyxel の`init`関数が呼ばれると、カレントディレクトリはそのスクリプトファイルと同じ場所に変更され、それ以降は相対パスでファイルを指定できます。しかし、`init`を呼ぶ前にファイルを開こうとした場合や`init`の後にカレントディレクトリを変更した場合には読み込みに失敗する可能性があります。
+Pyxel の `init` 関数が呼ばれると、カレントディレクトリはそのスクリプトファイルと同じ場所に変更され、それ以降は相対パスでファイルを指定できます。しかし、`init` を呼ぶ前にファイルを開こうとした場合や `init` の後にカレントディレクトリを変更した場合には読み込みに失敗する可能性があります。
 
 </details>
 
 <details>
 <summary>ハイスコアやゲームの進行状況など、アプリケーション固有のデータを保存する方法はありますか？</summary>
 
-`user_data_dir(vendor_name, app_name)`関数に開発者名とアプリ名を渡すと、プラットフォームに適したデータ保存用のディレクトリを作成し、そのパスを返します。このディレクトリの下でアプリケーション用のファイルの保存や読み込みを行ってください。
+`user_data_dir(vendor_name, app_name)` 関数に開発者名とアプリ名を渡すと、プラットフォームに適したデータ保存用のディレクトリを作成し、そのパスを返します。このディレクトリの下でアプリケーション用のファイルの保存や読み込みを行ってください。
 
 </details>
 
