@@ -1,6 +1,6 @@
 # Web 版 Pyxel の使い方
 
-Web 版 Pyxel を使うと Python や Pyxel をインストールせずに、PC、スマートフォン、タブレット等の Web ブラウザーで Pyxel のアプリケーションを実行できます。
+Web 版 Pyxel を使うと Python や Pyxel をインストールせずに、PC、スマートフォン、タブレット等の Web ブラウザで Pyxel のアプリケーションを実行できます。
 
 Web 版 Pyxel の利用方法には、次の 4 種類があります。
 
@@ -11,7 +11,7 @@ Web 版 Pyxel の利用方法には、次の 4 種類があります。
   Pyxel Web Launcher の URL に GitHub のリポジトリ名を指定すると、指定したリポジトリを直接読み込み、Web ブラウザ上でアプリを実行できます。アプリを GitHub で公開している場合、最も簡単な実行方法です。
 
 - **Pyxel アプリを HTML ファイルに変換する**<br>
-  アプリが Pyxel アプリケーション形式 (.pyxapp) になっている場合は、`pyxel app2html`コマンドを使って HTML ファイルに変換できます。変換後の HTML ファイルはサーバーを必要とせず、単体で実行可能です。
+  アプリが Pyxel アプリケーション形式 (.pyxapp) になっている場合は、`pyxel app2html` コマンドを使って HTML ファイルに変換できます。変換後の HTML ファイルはサーバーを必要とせず、単体で実行可能です。
 
 - **Pyxel カスタムタグを使って HTML ファイルを作成する**<br>
   Pyxel 専用のカスタムタグを使用して、アプリ実行用の HTML ファイルを作成します。作成した HTML ファイルはサーバーでホスティングする必要がありますが、既存の HTML ページへの組み込みやカスタマイズが可能です。
@@ -62,13 +62,13 @@ https://kitao.github.io/pyxel/wasm/launcher/?run=taro.my_repo.src.scenes.title&g
 
 例えば、`assets`ディレクトリにある`shooter.pyxres`ファイルをタイルマップエディタ画面で起動するには、以下の URL を使用します。
 
-```html
-https://kitao.github.io/pyxel/wasm/launcher/?run=taro.my_repo.assets.shooter&editor=tilemap
+```text
+https://kitao.github.io/pyxel/wasm/launcher/?edit=taro.my_repo.assets.shooter&editor=tilemap
 ```
 
 [Pyxel Web Launcher ページ](https://kitao.github.io/pyxel/wasm/launcher/)では、必要な情報を入力して、アプリの起動 URL を自動作成することができます。
 
-また、MML List に複数チャンネルの MML を `CDE;EFG` のようにセミコロン (`;`) で区切って入力することで、MML を再生する URL も作成できます。MML の使い方は[こちらのページ](faq-ja)を参照してください。
+また、MML List に複数チャンネルの MML を `CDE;EFG` のようにセミコロン (`;`) で区切って入力することで、MML を再生する URL も作成できます。MML の使い方は[こちらのページ](faq-ja.md)を参照してください。
 
 ## Pyxel アプリを HTML ファイルに変換する
 
@@ -159,7 +159,7 @@ python -m http.server
 例えば、`assets`ディレクトリにある`shooter.pyxres`ファイルをイメージエディタ画面で起動するには、次のように記述します。
 
 ```html
-<pyxel-edit root="assets" name="sample.pyxres" editor="image"></pyxel-edit>
+<pyxel-edit root="assets" name="shooter.pyxres" editor="image"></pyxel-edit>
 ```
 
 Pyxel を実行する HTML ファイルに`id="pyxel-screen"`の`<div>`タグを追加すると、その要素を Pyxel の画面として使用します。この`<div>`タグの位置やサイズを調整することで、Pyxel の画面の配置や大きさを変更できます。

@@ -11,7 +11,7 @@ There are four ways to use the Web version of Pyxel.
   By specifying the name of a GitHub repository in the URL of the Pyxel Web Launcher, the repository is directly loaded, and you can run the app in a web browser. This is the easiest way if the app is published on GitHub.
 
 - **Convert a Pyxel app to an HTML file**<br>
-  If your app is in Pyxel application format (.pyxapp), you can convert it to an HTML file using `pyxel app2html` command. The resulting HTML file can be run standalone without needing a server.
+  If your app is in Pyxel application format (.pyxapp), you can convert it to an HTML file using the `pyxel app2html` command. The resulting HTML file can be run standalone without needing a server.
 
 - **Create an HTML file using Pyxel custom tags**<br>
   You can create an HTML file to run an app using Pyxel-specific custom tags. The HTML file needs to be hosted on a server, but it allows for embedding into existing HTML pages and various customizations.
@@ -62,13 +62,13 @@ When using the `edit` command, you can specify the Pyxel Editor's startup screen
 
 For example, to open the `shooter.pyxres` file located in the `assets` directory with the Tilemap Editor screen, use the following URL:
 
-```html
-https://kitao.github.io/pyxel/wasm/launcher/?run=taro.my_repo.assets.shooter&editor=tilemap
+```text
+https://kitao.github.io/pyxel/wasm/launcher/?edit=taro.my_repo.assets.shooter&editor=tilemap
 ```
 
 On the [Pyxel Web Launcher page](https://kitao.github.io/pyxel/wasm/launcher/), you can enter the required information to automatically generate a launch URL for your app.
 
-You can also create a URL to play MML by entering multi-channel MML in the MML List, separated by semicolons (`;`) like `CDE;EFG`. For details on how to use MML, see [this page](faq-en).
+You can also create a URL to play MML by entering multi-channel MML in the MML List, separated by semicolons (`;`) like `CDE;EFG`. For details on how to use MML, see [this page](faq-en.md).
 
 ## Convert a Pyxel App to an HTML File
 
@@ -90,7 +90,7 @@ To use Pyxel custom tags, add the following script tag to your HTML file:
 <script src="https://cdn.jsdelivr.net/gh/kitao/pyxel/wasm/pyxel.js"></script>
 ```
 
-You can fix the version of Pyxel referenced at runtime by specifying the version number after `@`. If you want to avoid compatibility issues caused by future updates, be sure to specify the version
+You can fix the version of Pyxel referenced at runtime by specifying the version number after `@`. If you want to avoid compatibility issues caused by future updates, be sure to specify the version.
 
 ```html
 <script src="https://cdn.jsdelivr.net/gh/kitao/pyxel@2.4.6/wasm/pyxel.js"></script>
@@ -159,7 +159,7 @@ You can also launch Pyxel Editor using the `pyxel-edit` tag.
 For example, to edit the `shooter.pyxres` file in the `assets` directory with the Image Editor screen, write the following:
 
 ```html
-<pyxel-edit root="assets" name="sample.pyxres" editor="image"></pyxel-edit>
+<pyxel-edit root="assets" name="shooter.pyxres" editor="image"></pyxel-edit>
 ```
 
 If you add a `<div>` tag with `id="pyxel-screen"` to an HTML file running Pyxel, that element will be used as the Pyxel screen. By adjusting the position and size of this `<div>` tag, you can change the placement and dimensions of the Pyxel screen.
