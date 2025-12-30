@@ -102,7 +102,7 @@ Pyxel 的 Web 版本可在 PC、智能手机和平板电脑的兼容浏览器中
 
 最简单的使用方法是通过在线 IDE [Pyxel Code Maker](https://kitao.github.io/pyxel/wasm/code-maker/)。
 
-对于其他使用模式，例如在您自己的网站上嵌入 Pyxel 应用，请参考[此页面](pyxel-web-en.md)。
+对于其他使用模式，例如在您自己的网站上嵌入 Pyxel 应用，请参考 [此页面](pyxel-web-en.md)。
 
 ### 运行示例
 
@@ -710,7 +710,7 @@ Pyxel 应用程序文件还可以使用 `pyxel app2exe` 或 `pyxel app2html` 命
   例子：`pyxel.sounds[0].set_effects("nfnf nvvs")`
 
 - `mml(code)`<br>
-  传入 [MML（音乐宏语言）](https://en.wikipedia.org/wiki/Music_Macro_Language) 字符串后，将切换到 MML 模式，并根据内容播放声音。在此模式下，`notes` 和 `speed` 等普通参数将被忽略。要退出 MML 模式，请调用 `mml()`（不带参数）。关于 MML 的详细说明，请参阅[此页面](faq-en.md)。<br>
+  传入 [MML（音乐宏语言）](https://en.wikipedia.org/wiki/Music_Macro_Language) 字符串后，将切换到 MML 模式，并根据内容播放声音。在此模式下，`notes` 和 `speed` 等普通参数将被忽略。要退出 MML 模式，请调用 `mml()`（不带参数）。关于 MML 的详细说明，请参阅 [此页面](faq-en.md)。<br>
   例子：`pyxel.sounds[0].mml("T120 Q90 @1 V100 O5 L8 C4&C<G16R16>C.<G16 >C.D16 @VIB1{10,20,20} E2C2")`
 
 - `save(filename, sec, [ffmpeg])`<br>
@@ -735,7 +735,7 @@ Pyxel 应用程序文件还可以使用 `pyxel app2exe` 或 `pyxel app2html` 命
 
 Pyxel 包含一个“高级 API”，该 API 在本参考中未提及，因为它可能会让用户感到困惑或需要专业知识才能使用。
 
-如果您对自己的技能充满信心，可以尝试使用[这个](../python/pyxel/__init__.pyi)作为指南，创造惊人的作品！
+如果您对自己的技能充满信心，可以尝试使用 [这个](../python/pyxel/__init__.pyi) 作为指南，创造惊人的作品！
 
 ## 如何贡献
 
