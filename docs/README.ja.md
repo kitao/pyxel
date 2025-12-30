@@ -183,7 +183,7 @@ pyxel copy_examples
 </tr>
 <tr>
 <td>12_perlin_noise.py</td>
-<td>パーリンノイズアニメーション</td>
+<td>Perlin ノイズアニメーション</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/12-perlin-noise.html">デモ</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/12_perlin_noise.py">コード</a></td>
 </tr>
@@ -213,7 +213,7 @@ pyxel copy_examples
 </tr>
 <tr>
 <td>17_app_launcher.py</td>
-<td>Pyxel アプリランチャー (色々なゲームをプレイできます！)</td>
+<td>Pyxel アプリランチャー (いろいろなゲームをプレイできます！)</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/17-app-launcher.html">デモ</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/17_app_launcher.py">コード</a></td>
 </tr>
@@ -717,7 +717,7 @@ Pyxel アプリケーションファイルは、`pyxel app2exe` コマンドや 
   サウンドを指定した秒数分再生した WAV ファイルを作成します。FFmpeg がインストールされている環境で、`ffmpeg` に `True` を指定すると、MP4 ファイルも作成します。
 
 - `total_sec()`<br>
-  サウンドの再生時間を秒で返します。MML で無限ループが使用されている場合は None を返します。
+  サウンドの再生時間を秒で返します。MML で無限ループが使用されている場合は `None` を返します。
 
 ### Music クラス
 
