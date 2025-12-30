@@ -41,5 +41,6 @@ class OctaveBar(Widget):
     def __on_draw(self):
         x = self.x + 1
         y = self.y + 1 + (3 - self.octave_var) * 24
+
         pyxel.rect(self.x, self.y, self.width, self.height, OCTAVE_BAR_BACKGROUND_COLOR)
         pyxel.rect(x, y, 2, 47, OCTAVE_BAR_COLOR)
