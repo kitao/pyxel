@@ -40,7 +40,7 @@ Die Entwicklung von Pyxel wird durch das Feedback der Benutzer vorangetrieben. B
 
 Die Spezifikationen und APIs von Pyxel sind inspiriert von [PICO-8](https://www.lexaloffle.com/pico-8.php) und [TIC-80](https://tic80.com/).
 
-Pyxel ist unter der [MIT-Lizenz](../LICENSE) Open Source und kostenlos zu verwenden. Lass uns beginnen, Retro-Spiele mit Pyxel zu erstellen!
+Pyxel ist unter der [MIT-Lizenz](../LICENSE) Open Source und kostenlos zu verwenden. Lassen Sie uns beginnen, Retro-Spiele mit Pyxel zu erstellen!
 
 ## Spezifikationen
 
@@ -54,9 +54,9 @@ Pyxel ist unter der [MIT-Lizenz](../LICENSE) Open Source und kostenlos zu verwen
 - 8 Musiktracks, die beliebige Klänge kombinieren können
 - Eingaben über Tastatur, Maus und Gamepad
 - Werkzeuge zum Bearbeiten von Bildern und Klängen
-- Benutzererweiterbare Farben, Kanäle und Datenbanken
+- Benutzererweiterbare Farben, Kanäle und Banken
 
-### Farbpallette
+### Farbpalette
 
 <img src="images/05_color_palette.png">
 
@@ -219,7 +219,7 @@ Die folgenden Beispiele werden in das aktuelle Verzeichnis kopiert:
 </tr>
 <tr>
 <td>99_flip_animation.py</td>
-<td>Animation mit der Flip-Funktion (nur für Nicht-Web-Plattformen)</td>
+<td>Animation mit der `flip`-Funktion (nur für Nicht-Web-Plattformen)</td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/docs/images/99_flip_animation.gif">Demo</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/99_flip_animation.py">Code</a></td>
 </tr>
@@ -334,7 +334,7 @@ Während eine Pyxel-Anwendung läuft, können die folgenden speziellen Tastenakt
 - `Alt(Option)+9` oder `A+B+X+Y+DR` auf dem Gamepad<br>
   Zwischen Bildschirmmodi (Crisp/Smooth/Retro) wechseln
 - `Alt(Option)+0` oder `A+B+X+Y+DU` auf dem Gamepad<br>
-  Den Leistungsmonitor (FPS/`update` Zeit/`draw` Zeit) umschalten
+  Den Leistungsmonitor (FPS/`update`-Zeit/`draw`-Zeit) umschalten
 - `Alt(Option)+Enter` oder `A+B+X+Y+DD` auf dem Gamepad<br>
   Den Vollbildmodus umschalten
 - `Shift+Alt(Option)+1/2/3`<br>
@@ -378,7 +378,7 @@ Der Modus zum Bearbeiten von **Kachelkarten**, in denen Bilder aus den Bilderban
 <img src="images/tilemap_editor.gif">
 </a>
 
-Ziehen Sie eine TMX-Datei (Tiled Map File) in den Kachelkarteneditor, um deren ebene 0 in die aktuell ausgewählte Kachelkarte zu laden.
+Ziehen Sie eine TMX-Datei (Tiled Map File) in den Kachelkarteneditor, um deren Ebene 0 in die aktuell ausgewählte Kachelkarte zu laden.
 
 **Klangeditor**
 
@@ -658,7 +658,7 @@ Eine Pyxel-Anwendungsdatei kann auch mit den Befehlen `pyxel app2exe` oder `pyxe
   Die Breite und Höhe der Kachelkarte
 
 - `imgsrc`<br>
-  Das Bildbank (0-2), das von der Kachelkarte referenziert wird
+  Die Bildbank (0-2), das von der Kachelkarte referenziert wird
 
 - `set(x, y, data)`<br>
   Setzt die Kachelkarte bei (`x`, `y`) mithilfe einer Liste von Strings.<br>

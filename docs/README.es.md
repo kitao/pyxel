@@ -171,7 +171,7 @@ Los siguientes ejemplos serán copiados al directorio actual:
 </tr>
 <tr>
 <td>10_platformer.py</td>
-<td>Juego de plataformas desplazamiento lateral con mapa</td>
+<td>Juego de plataformas de desplazamiento lateral con mapa</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/10-platformer.html">Demo</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/10_platformer.py">Código</a></td>
 </tr>
@@ -219,7 +219,7 @@ Los siguientes ejemplos serán copiados al directorio actual:
 </tr>
 <tr>
 <td>99_flip_animation.py</td>
-<td>Animación con la función flip (solo para plataformas que no son web)</td>
+<td>Animación con la función `flip` (solo para plataformas que no son web)</td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/docs/images/99_flip_animation.gif">Demo</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/99_flip_animation.py">Código</a></td>
 </tr>
@@ -282,7 +282,7 @@ class App:
 App()
 ```
 
-Para crear gráficos simples sin animación, puede usar la función `show` para simplificar su código.
+Para crear gráficos simples sin animación, puedes usar la función `show` para simplificar tu código.
 
 ```python
 import pyxel
@@ -334,7 +334,7 @@ Durante la ejecución de una aplicación Pyxel, se pueden realizar las siguiente
 - `Alt(Option)+9` o `A+B+X+Y+DR` en el gamepad<br>
   Cambiar entre los modos de pantalla (Crisp/Smooth/Retro)
 - `Alt(Option)+0` o `A+B+X+Y+DU` en el gamepad<br>
-  Alternar el monitor de rendimiento (FPS/`update` tiempo/`draw` tiempo)
+  Alternar el monitor de rendimiento (FPS/tiempo de `update`/tiempo de `draw`)
 - `Alt(Option)+Enter` o `A+B+X+Y+DD` en el gamepad<br>
   Alternar pantalla completa
 - `Shift+Alt(Option)+1/2/3`<br>

@@ -38,9 +38,9 @@ Pyxel 開発のモチベーションは、ユーザーの皆さんからのフ�
 </a>
 </p>
 
-Pyxel の仕様や API は、[PICO-8](https://www.lexaloffle.com/pico-8.php)や[TIC-80](https://tic80.com/)を参考にしています。
+Pyxel の仕様や API は、[PICO-8](https://www.lexaloffle.com/pico-8.php) や [TIC-80](https://tic80.com/) を参考にしています。
 
-Pyxel は[MIT ライセンス](../LICENSE)のオープンソースで、無料で自由に使えます。Pyxel でレトロゲームづくりを始めましょう！
+Pyxel は [MIT ライセンス](../LICENSE) のオープンソースで、無料で自由に使えます。Pyxel でレトロゲームづくりを始めましょう！
 
 ## 仕様
 
@@ -72,7 +72,7 @@ Pyxel は[MIT ライセンス](../LICENSE)のオープンソースで、無料�
 pip install -U pyxel
 ```
 
-公式インストーラーで Python をインストールする場合は、`pyxel`コマンドを有効にするために、`Add Python 3.x to PATH`にチェックを入れて Python のインストールを行ってください。
+公式インストーラーで Python をインストールする場合は、`pyxel` コマンドを有効にするために、`Add Python 3.x to PATH` にチェックを入れて Python のインストールを行ってください。
 
 ### Mac
 
@@ -84,17 +84,17 @@ pipx ensurepath
 pipx install pyxel
 ```
 
-Pyxel をインストールした後にバージョンを更新する場合は、`pipx upgrade pyxel`を実行してください。
+Pyxel をインストールした後にバージョンを更新する場合は、`pipx upgrade pyxel` を実行してください。
 
 ### Linux
 
-SDL2 パッケージ (Ubuntu の場合は`libsdl2-dev`)、[Python3](https://www.python.org/) (バージョン 3.8 以上)、`python3-pip`をインストールした後、次のコマンドを実行します。
+SDL2 パッケージ (Ubuntu の場合は`libsdl2-dev`)、[Python3](https://www.python.org/) (バージョン 3.8 以上)、`python3-pip` をインストールした後、次のコマンドを実行します。
 
 ```sh
 sudo pip3 install -U pyxel
 ```
 
-上記で動作しない場合は、[Makefile](../Makefile)に記載されている手順に従ってビルドを試してみてください。
+上記で動作しない場合は、[Makefile](../Makefile) に記載されている手順に従ってビルドを試してみてください。
 
 ### Web
 
@@ -241,7 +241,7 @@ pyxel play 30sec_of_daylight.pyxapp
 
 ### アプリケーションの作成方法
 
-Python スクリプト内で Pyxel モジュールをインポートし、`init`関数でウィンドウサイズを指定した後、`run`関数で Pyxel アプリケーションを開始します。
+Python スクリプト内で Pyxel モジュールをインポートし、`init` 関数でウィンドウサイズを指定した後、`run` 関数で Pyxel アプリケーションを開始します。
 
 ```python
 import pyxel
@@ -259,7 +259,7 @@ def draw():
 pyxel.run(update, draw)
 ```
 
-`run`関数の引数には、フレーム更新処理を行う`update`関数と、描画処理を行う`draw`関数を指定します。
+`run` 関数の引数には、フレーム更新処理を行う `update` 関数と、描画処理を行う `draw` 関数を指定します。
 
 実際のアプリケーションでは、以下のようにクラスを使って Pyxel の処理をラップすることをおすすめします。
 
@@ -282,7 +282,7 @@ class App:
 App()
 ```
 
-アニメーションのないシンプルなグラフィックスを作成する場合は、`show`関数を使用してコードをより簡潔に記述できます。
+アニメーションのないシンプルなグラフィックスを作成する場合は、`show` 関数を使用してコードをより簡潔に記述できます。
 
 ```python
 import pyxel
@@ -295,25 +295,25 @@ pyxel.show()
 
 ### アプリケーションの実行方法
 
-作成した Python スクリプトは、`python`コマンドで実行できます。
+作成した Python スクリプトは、`python` コマンドで実行できます。
 
 ```sh
 python Pythonスクリプトファイル
 ```
 
-`pyxel run`コマンドで実行することも可能です。
+`pyxel run` コマンドで実行することも可能です。
 
 ```sh
 pyxel run Pythonスクリプトファイル
 ```
 
-また、`pyxel watch`コマンドを使うと、指定したディレクトリ内の変更を監視し、変化があった際に自動でプログラムを再実行します。
+また、`pyxel watch` コマンドを使うと、指定したディレクトリ内の変更を監視し、変化があった際に自動でプログラムを再実行します。
 
 ```sh
 pyxel watch WATCH_DIR Pythonスクリプトファイル
 ```
 
-ディレクトリの監視は、`Ctrl(Command)+C`で終了します。
+ディレクトリの監視は、`Ctrl(Command)+C` で終了します。
 
 ### 特殊キー操作
 
@@ -321,7 +321,7 @@ Pyxel アプリケーションの実行中に、以下の特殊キー操作を�
 
 - `Esc`<br>
   アプリケーションを終了する
-- `Alt(Option)+R`または ゲームパッドで`A+B+X+Y+BACK`<br>
+- `Alt(Option)+R` またはゲームパッドで `A+B+X+Y+BACK`<br>
   アプリケーションをリセットする
 - `Alt(Option)+1`<br>
   スクリーンショットをデスクトップに保存する
@@ -329,16 +329,16 @@ Pyxel アプリケーションの実行中に、以下の特殊キー操作を�
   画面キャプチャ動画の録画開始時刻をリセットする
 - `Alt(Option)+3`<br>
   画面キャプチャ動画をデスクトップに保存する (最大 10 秒)
-- `Alt(Option)+8`またはゲームパッドで`A+B+X+Y+DL`<br>
+- `Alt(Option)+8` またはゲームパッドで `A+B+X+Y+DL`<br>
   画面の拡大方法を最大と整数倍で切り替える
-- `Alt(Option)+9`またはゲームパッドで`A+B+X+Y+DR`<br>
+- `Alt(Option)+9` またはゲームパッドで `A+B+X+Y+DR`<br>
   画面モード (Crisp/Smooth/Retro) を切り替える
-- `Alt(Option)+0`またはゲームパッドで`A+B+X+Y+DU`<br>
-  パフォーマンスモニタ (FPS/`update`時間/`draw`時間) の表示を切り替える
-- `Alt(Option)+Enter`またはゲームパッドで`A+B+X+Y+DD`<br>
+- `Alt(Option)+0` またはゲームパッドで `A+B+X+Y+DU`<br>
+  パフォーマンスモニタ (FPS/`update` 時間/`draw` 時間) の表示を切り替える
+- `Alt(Option)+Enter` またはゲームパッドで `A+B+X+Y+DD`<br>
   フルスクリーン表示を切り替える
 - `Shift+Alt(Option)+1/2/3`<br>
-  イメージバンク 0,1,2 をデスクトップに保存する
+  イメージバンク 0, 1, 2 をデスクトップに保存する
 - `Shift+Alt(Option)+0`<br>
   現在のカラーパレットをデスクトップに保存する
 
@@ -352,11 +352,11 @@ Pyxel Editor は次のコマンドで起動します。
 pyxel edit Pyxelリソースファイル
 ```
 
-指定した Pyxel リソースファイル (.pyxres) が存在する場合は読み込み、存在しない場合は指定した名前で新規ファイルを作成します。リソースファイルを省略した場合は、`my_resource.pyxres`というファイル名になります。
+指定した Pyxel リソースファイル (.pyxres) が存在する場合は読み込み、存在しない場合は指定した名前で新規ファイルを作成します。リソースファイルを省略した場合は、`my_resource.pyxres` というファイル名になります。
 
 Pyxel Editor の起動後、別のリソースファイルをドラッグ＆ドロップするとファイルを切り替えることができます。
 
-作成したリソースファイルは、`load`関数で読み込めます。
+作成したリソースファイルは、`load` 関数で読み込めます。
 
 Pyxel Editor には、以下の編集モードがあります。
 
@@ -438,7 +438,7 @@ pyxel package アプリケーションのディレクトリ 起動スクリプ�
 pyxel play Pyxelアプリケーションファイル
 ```
 
-Pyxel アプリケーションファイルは、`pyxel app2exe`コマンドや`pyxel app2html`コマンドで、実行可能ファイルや HTML ファイルに変換できます。
+Pyxel アプリケーションファイルは、`pyxel app2exe` コマンドや `pyxel app2html` コマンドで、実行可能ファイルや HTML ファイルに変換できます。
 
 ## API リファレンス
 
@@ -451,7 +451,7 @@ Pyxel アプリケーションファイルは、`pyxel app2exe`コマンドや`p
   経過フレーム数
 
 - `init(width, height, [title], [fps], [quit_key], [display_scale], [capture_scale], [capture_sec])`<br>
-  Pyxel アプリケーションを画面サイズ (`width`, `height`) で初期化します。`title`でウィンドウタイトル、`fps`で動作フレームレート、`quit_key`でアプリケーション終了キー、`display_scale`で画面表示の倍率、`capture_scale`で画面キャプチャの倍率、`capture_sec`で画面キャプチャ動画の最大録画時間を指定します。<br>
+  Pyxel アプリケーションを画面サイズ (`width`, `height`) で初期化します。`title` でウィンドウタイトル、`fps` で動作フレームレート、`quit_key` でアプリケーション終了キー、`display_scale` で画面表示の倍率、`capture_scale` で画面キャプチャの倍率、`capture_sec` で画面キャプチャ動画の最大録画時間を指定します。<br>
   例：`pyxel.init(160, 120, title="My Pyxel App", fps=60, quit_key=pyxel.KEY_NONE, capture_scale=3, capture_sec=0)`
 
 - `run(update, draw)`<br>

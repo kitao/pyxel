@@ -219,7 +219,7 @@ Les exemples suivants seront copiés dans le répertoire actuel :
 </tr>
 <tr>
 <td>99_flip_animation.py</td>
-<td>Animation avec la fonction flip (uniquement pour les plateformes non web)</td>
+<td>Animation avec la fonction `flip` (uniquement pour les plateformes non web)</td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/docs/images/99_flip_animation.gif">Démonstration</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/99_flip_animation.py">Code</a></td>
 </tr>
@@ -334,7 +334,7 @@ Pendant l'exécution d'une application Pyxel, les opérations de touches spécia
 - `Alt(Option)+9` ou `A+B+X+Y+DR` sur la manette<br>
   Passer d'un mode d'écran à l'autre (Crisp/Smooth/Retro)
 - `Alt(Option)+0` ou `A+B+X+Y+DU` sur la manette<br>
-  Basculer le moniteur de performance (FPS/`update` temps/`draw` temps)
+  Basculer le moniteur de performance (FPS/temps de `update`/temps de `draw`)
 - `Alt(Option)+Enter` ou `A+B+X+Y+DD` sur la manette<br>
   Basculer en plein écran
 - `Shift+Alt(Option)+1/2/3`<br>
@@ -497,6 +497,8 @@ Un fichier d'application Pyxel peut également être converti en un exécutable 
 
 - `mouse(visible)`<br>
   Affiche le curseur de la souris si `visible` est `True`, et le masque si `visible` est `False`. La position du curseur continue de se mettre à jour même lorsqu'il est masqué.
+
+### Graphiques
 
 - `colors`<br>
   Liste des couleurs de la palette. La couleur d'affichage est spécifiée par une valeur numérique de 24 bits. Utilisez `colors.from_list` et `colors.to_list` pour affecter et récupérer directement des listes Python.<br>

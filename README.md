@@ -334,7 +334,7 @@ The following special key actions are available while a Pyxel application is run
 - `Alt(Option)+9` or `A+B+X+Y+DR` on gamepad<br>
   Switch between screen modes (Crisp/Smooth/Retro)
 - `Alt(Option)+0` or `A+B+X+Y+DU` on gamepad<br>
-  Toggle the performance monitor (fps/`update` time/`draw` time)
+  Toggle the performance monitor (FPS/`update` time/`draw` time)
 - `Alt(Option)+Enter` or `A+B+X+Y+DD` on gamepad<br>
   Toggle fullscreen
 - `Shift+Alt(Option)+1/2/3`<br>
@@ -676,7 +676,7 @@ A Pyxel application file can also be converted to an executable or an HTML file 
 ### Sound Class
 
 - `notes`<br>
-  List of notes (0-127). The higher the number, the higher the pitch. Note `33` corresponds to 'A2' (440 Hz). Rest notes are represented by `-1`.
+  List of notes (0-127). Higher values produce higher pitches. Note `33` is 'A2' (440 Hz). Rests are `-1`.
 
 - `tones`<br>
   List of tones (0:Triangle / 1:Square / 2:Pulse / 3:Noise)

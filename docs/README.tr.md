@@ -219,7 +219,7 @@ Aşağıdaki örnekler geçerli dizine kopyalanacaktır:
 </tr>
 <tr>
 <td>99_flip_animation.py</td>
-<td>flip fonksiyonu ile animasyon (sadece web dışı platformlar için)</td>
+<td>`flip` fonksiyonu ile animasyon (sadece Web dışı platformlar için)</td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/docs/images/99_flip_animation.gif">Demo</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/99_flip_animation.py">Kod</a></td>
 </tr>
@@ -396,7 +396,7 @@ Seslerin çalma sırasına göre dizildiği **müzik parçalarını** düzenleme
 <img src="images/music_editor.gif">
 </a>
 
--### Diğer Kaynak Oluşturma Yöntemleri
+### Diğer Kaynak Oluşturma Yöntemleri
 
 Pyxel resimleri ve döşeme haritaları aşağıdaki yöntemlerle de oluşturulabilir:
 
@@ -455,13 +455,13 @@ Bir Pyxel uygulama dosyası ayrıca `pyxel app2exe` veya `pyxel app2html` komutl
   Örnek: `pyxel.init(160, 120, title="My Pyxel App", fps=60, quit_key=pyxel.KEY_NONE, capture_scale=3, capture_sec=0)`
 
 - `run(update, draw)`<br>
-  Pyxel uygulamasını başlatır ve kare güncellemesi için `update` fonksiyonunu ve çizim için `draw` fonksiyonunu çağırır.
+  Pyxel uygulamasını başlatır ve kare güncellemeleri için `update` fonksiyonunu ve çizim için `draw` fonksiyonunu çağırır.
 
 - `show()`<br>
   Ekranı gösterir ve `Esc` tuşuna basılana kadar bekler.
 
 - `flip()`<br>
-  Ekranı bir kare yeniler. Uygulama `Esc` tuşuna basıldığında kapanır. Bu fonksiyon web sürümünde çalışmaz.
+  Ekranı bir kare yeniler. Uygulama `Esc` tuşuna basıldığında kapanır. Bu fonksiyon Web sürümünde çalışmaz.
 
 - `quit()`<br>
   Pyxel uygulamasını kapatır.
@@ -487,7 +487,7 @@ Bir Pyxel uygulama dosyası ayrıca `pyxel app2exe` veya `pyxel app2html` komutl
   Fare tekerleğinin mevcut değeri
 
 - `btn(key)`<br>
-  `key` basılıysa `True`, basılı değilse `False` döndürür. ([TuĢ tanımları listesi](../python/pyxel/__init__.pyi))
+  `key` basılıysa `True`, basılı değilse `False` döndürür. ([Tuş tanımları listesi](../python/pyxel/__init__.pyi))
 
 - `btnp(key, [hold], [repeat])`<br>
   `key` o karede basılmışsa `True`, basılmamışsa `False` döndürür. Eğer `hold` ve `repeat` belirtilirse, `key` en az `hold` kare boyunca basılı tutulduktan sonra her `repeat` karede bir `True` döndürür.
@@ -770,7 +770,7 @@ Pull isteği göndermek, katkınızı [MIT Lisansı](../LICENSE) altında lisans
 
 ## Lisans
 
-Pyxel, [MIT Lisansı](../LICENSE) ile lisanslanmıştır. Tüm kopyalarındaki yazılım veya onun önemli bölümleri, MIT Lisansı koşullarını ve telif hakkı bildirimini içermesi koşuluyla özel yazılımda kullanılabilir.
+Pyxel, [MIT Lisansı](../LICENSE) ile lisanslanmıştır. Tüm kopyalardındaki yazılım veya onun önemli bölümleri, MIT Lisansı koşullarını ve telif hakkı bildirimini içermesi koşuluyla özel yazılımda kullanılabilir.
 
 ## Sponsor Arayışı
 
