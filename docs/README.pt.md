@@ -48,10 +48,10 @@ O Pyxel é de código aberto sob a [Licença MIT](../LICENSE) e é gratuito para
 - Programação em Python
 - Tamanho de tela personalizável
 - Paleta de 16 cores
-- 3 bancos de imagem de 256x256
-- 8 mapas de blocos de 256x256
+- 3 bancos de imagem 256x256
+- 8 mapas de ladrilhos 256x256
 - 4 canais com 64 sons definíveis
-- 8 faixas de música que podem combinar quaisquer sons
+- 8 faixas de música capazes de combinar quaisquer sons
 - Entradas de teclado, mouse e gamepad
 - Ferramentas de edição de imagens e sons
 - Cores, canais e bancos extensíveis pelo usuário
@@ -98,7 +98,7 @@ Se o comando anterior falhar, considere construir o Pyxel a partir do código-fo
 
 ### Web
 
-A versão web do Pyxel pode ser usada em PCs, assim como em smartphones e tablets, desde que você tenha um navegador web compatível, sem instalar Python ou Pyxel.
+A versão web do Pyxel funciona em PCs, smartphones e tablets com um navegador compatível, sem instalar Python ou Pyxel.
 
 A maneira mais fácil de usá-la é através do IDE online [Pyxel Code Maker](https://kitao.github.io/pyxel/wasm/code-maker/).
 
@@ -112,7 +112,7 @@ Após instalar o Pyxel, você pode copiar os exemplos para o diretório atual co
 pyxel copy_examples
 ```
 
-Os seguintes exemplos serão copiados para o seu diretório atual:
+Os seguintes exemplos serão copiados para o diretório atual:
 
 <table>
 <tr>
@@ -214,8 +214,8 @@ Os seguintes exemplos serão copiados para o seu diretório atual:
 <tr>
 <td>17_app_launcher.py</td>
 <td>Launcher de aplicativos Pyxel (você pode jogar vários jogos!)</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/17-app-launcher.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/17_app_launcher.py">Code</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/17-app-launcher.html">Demonstração</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/17_app_launcher.py">Código</a></td>
 </tr>
 <tr>
 <td>99_flip_animation.py</td>
@@ -241,7 +241,7 @@ pyxel play 30sec_of_daylight.pyxapp
 
 ### Criar um aplicativo
 
-No seu script Python, importe o módulo Pyxel, especifique o tamanho da janela com a função `init` e, em seguida, inicie o aplicativo Pyxel com a função `run`.
+No seu script Python, importe o Pyxel, especifique o tamanho da janela com `init` e inicie o aplicativo com `run`.
 
 ```python
 import pyxel
@@ -313,7 +313,7 @@ Além disso, o comando `pyxel watch` monitora alterações em um diretório espe
 pyxel watch WATCH_DIR PYTHON_SCRIPT_FILE
 ```
 
-A vigilância do diretório pode ser interrompida pressionando `Ctrl(Command)+C`.
+Interrompa a vigilância do diretório pressionando `Ctrl(Command)+C`.
 
 ### Operações de Teclas Especiais
 
@@ -344,7 +344,7 @@ Durante a execução de uma aplicação Pyxel, as seguintes operações de tecla
 
 ### Como Criar Recursos
 
-O Pyxel Editor pode criar imagens e sons usados em uma aplicação Pyxel.
+O Pyxel Editor cria imagens e sons usados em uma aplicação Pyxel.
 
 Você pode iniciar o Pyxel Editor com o seguinte comando:
 
@@ -354,7 +354,7 @@ pyxel edit PYXEL_RESOURCE_FILE
 
 Se o arquivo de recurso Pyxel especificado (.pyxres) existir, ele será carregado. Se não existir, um novo arquivo com o nome especificado será criado. Se o arquivo de recurso for omitido, um novo arquivo chamado `my_resource.pyxres` será criado.
 
-Após iniciar o Pyxel Editor, você pode alternar para outro arquivo de recurso arrastando e soltando-o no Pyxel Editor.
+Após iniciar o Pyxel Editor, você pode alternar para outro arquivo de recurso arrastando e soltando-o no editor.
 
 O arquivo de recurso criado pode ser carregado usando a função `load`.
 
@@ -362,7 +362,7 @@ O Pyxel Editor tem os seguintes modos de edição.
 
 **Editor de Imagem**
 
-O modo para editar a imagem em cada **banco de imagens**.
+O modo para editar as imagens em cada **banco de imagens**.
 
 <a href="https://kitao.github.io/pyxel/wasm/examples/image-editor.html">
 <img src="images/image_editor.gif">
@@ -390,7 +390,7 @@ O modo para editar os **sons** utilizados para melodias e efeitos sonoros.
 
 **Editor de Música**
 
-O modo para editar **músicas** em que os sons são organizados em ordem de reprodução.
+O modo para editar as **faixas de música** em que os sons são organizados em ordem de reprodução.
 
 <a href="https://kitao.github.io/pyxel/wasm/examples/music-editor.html">
 <img src="images/music_editor.gif">
@@ -411,9 +411,9 @@ Consulte a referência da API para o uso dessas funções.
 
 ### Como Distribuir Aplicações
 
-O Pyxel suporta um formato de arquivo de distribuição de aplicativo dedicado (arquivo de aplicativo Pyxel) que é multiplataforma.
+O Pyxel suporta um formato de distribuição multiplataforma chamado arquivo de aplicativo Pyxel.
 
-Um arquivo de aplicativo Pyxel (.pyxapp) é criado usando o comando `pyxel package`:
+Crie um arquivo de aplicativo Pyxel (.pyxapp) com o comando `pyxel package`:
 
 ```sh
 pyxel package APP_DIR STARTUP_SCRIPT_FILE
@@ -582,7 +582,7 @@ Um arquivo de aplicativo Pyxel também pode ser convertido em um executável ou 
   Exemplo: `pyxel.sounds[0].speed = 60`
 
 - `musics`<br>
-  Lista das músicas (instâncias da classe Music) (0-7)
+  Lista das faixas de música (instâncias da classe Music) (0-7)
 
 - `play(ch, snd, [sec], [loop], [resume])`<br>
   Reproduz o som `snd`(0-63) no canal `ch`(0-3). `snd` pode ser um número de som, uma lista de números de som ou uma string MML. A posição inicial da reprodução pode ser especificada em segundos com `sec`. Se `loop` for definido como `True`, a reprodução será em loop. Para retomar o som anterior após o término da reprodução, defina `resume` como `True`.
@@ -676,7 +676,7 @@ Um arquivo de aplicativo Pyxel também pode ser convertido em um executável ou 
 ### Classe Sound
 
 - `notes`<br>
-  Lista de notas (0-127). Quanto maior o número, mais alta a nota. A nota `33` corresponde a 'A2'(440Hz). As pausas são representadas por `-1`.
+  Lista de notas (0-127). Quanto maior o número, mais alta a nota. A nota `33` corresponde a 'A2' (440 Hz). As pausas são representadas por `-1`.
 
 - `tones`<br>
   Lista de tons (0:Triangle / 1:Square / 2:Pulse / 3:Noise)

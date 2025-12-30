@@ -48,10 +48,10 @@ Pyxel è open source sotto la [Licenza MIT](../LICENSE) ed è gratuito da usare.
 - Programmazione in Python
 - Dimensione dello schermo personalizzabile
 - Palette di 16 colori
-- 3 banche di immagini di 256x256
-- 8 mappe a tessere di 256x256
+- 3 banche di immagini 256x256
+- 8 mappe a tessere 256x256
 - 4 canali con 64 suoni definibili
-- 8 tracce musicali che possono combinare qualsiasi suono
+- 8 tracce musicali in grado di combinare qualsiasi suono
 - Input da tastiera, mouse e gamepad
 - Strumenti di editing per immagini e suoni
 - Colori, canali e banche estensibili dall'utente
@@ -98,7 +98,7 @@ Se il comando precedente non funziona, considera di costruire Pyxel da sorgente 
 
 ### Web
 
-La versione web di Pyxel può essere utilizzata su PC così come su smartphone e tablet, purché si disponga di un browser web compatibile, senza installare Python o Pyxel.
+La versione web di Pyxel funziona su PC, smartphone e tablet con un browser compatibile, senza installare Python o Pyxel.
 
 Il modo più semplice per utilizzarla è attraverso l'IDE online [Pyxel Code Maker](https://kitao.github.io/pyxel/wasm/code-maker/).
 
@@ -112,7 +112,7 @@ Dopo aver installato Pyxel, puoi copiare gli esempi nella directory corrente con
 pyxel copy_examples
 ```
 
-I seguenti esempi saranno copiati nella tua directory corrente:
+I seguenti esempi saranno copiati nella directory corrente:
 
 <table>
 <tr>
@@ -215,7 +215,7 @@ I seguenti esempi saranno copiati nella tua directory corrente:
 <td>17_app_launcher.py</td>
 <td>Launcher di applicazioni Pyxel (puoi giocare a vari giochi!)</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/17-app-launcher.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/17_app_launcher.py">Code</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/17_app_launcher.py">Codice</a></td>
 </tr>
 <tr>
 <td>99_flip_animation.py</td>
@@ -241,7 +241,7 @@ pyxel play 30sec_of_daylight.pyxapp
 
 ### Creare un'applicazione
 
-Nel tuo script Python, importa il modulo Pyxel, specifica le dimensioni della finestra con la funzione `init`, e poi avvia l'applicazione Pyxel con la funzione `run`.
+Nel tuo script Python, importa Pyxel, specifica le dimensioni della finestra con `init` e avvia l'applicazione con `run`.
 
 ```python
 import pyxel
@@ -313,7 +313,7 @@ Inoltre, il comando `pyxel watch` monitora le modifiche in una directory specifi
 pyxel watch WATCH_DIR PYTHON_SCRIPT_FILE
 ```
 
-Il monitoraggio della directory può essere interrotto premendo `Ctrl(Command)+C`.
+Interrompi il monitoraggio della directory premendo `Ctrl(Command)+C`.
 
 ### Operazioni delle chiavi speciali
 
@@ -344,7 +344,7 @@ Durante l'esecuzione di un'applicazione Pyxel, possono essere eseguite le seguen
 
 ### Come creare risorse
 
-Pyxel Editor può creare immagini e suoni utilizzati in un'applicazione Pyxel.
+Pyxel Editor crea immagini e suoni utilizzati in un'applicazione Pyxel.
 
 Puoi avviare Pyxel Editor con il seguente comando:
 
@@ -354,7 +354,7 @@ pyxel edit PYXEL_RESOURCE_FILE
 
 Se il file di risorse Pyxel specificato (.pyxres) esiste, verrà caricato. Se non esiste, verrà creato un nuovo file con il nome specificato. Se il file di risorse viene omesso, verrà creato un nuovo file chiamato `my_resource.pyxres`.
 
-Dopo aver avviato Pyxel Editor, puoi passare a un altro file di risorse trascinandolo e rilasciandolo su Pyxel Editor.
+Dopo aver avviato Pyxel Editor, puoi passare a un altro file di risorse trascinandolo e rilasciandolo sull'editor.
 
 Il file di risorse creato può essere caricato utilizzando la funzione `load`.
 
@@ -362,7 +362,7 @@ Pyxel Editor ha i seguenti modi di editing.
 
 **Editor di Immagini**
 
-Il modo per modificare l'immagine in ciascuna **banca di immagini**.
+Il modo per modificare le immagini in ciascuna **banca di immagini**.
 
 <a href="https://kitao.github.io/pyxel/wasm/examples/image-editor.html">
 <img src="images/image_editor.gif">
@@ -390,7 +390,7 @@ Il modo per modificare i **suoni** utilizzati per le melodie e gli effetti sonor
 
 **Editor di Musica**
 
-Il modo per modificare le **musiche** in cui i suoni sono disposti in ordine di riproduzione.
+Il modo per modificare le **tracce musicali** in cui i suoni sono disposti in ordine di riproduzione.
 
 <a href="https://kitao.github.io/pyxel/wasm/examples/music-editor.html">
 <img src="images/music_editor.gif">
@@ -411,9 +411,9 @@ Fai riferimento alla documentazione dell'API per l'uso di queste funzioni.
 
 ### Come distribuire le applicazioni
 
-Pyxel supporta un formato di file di distribuzione dell'applicazione dedicato (file dell'applicazione Pyxel) che è multipiattaforma.
+Pyxel supporta un formato di distribuzione multipiattaforma chiamato file dell'applicazione Pyxel.
 
-Un file dell'applicazione Pyxel (.pyxapp) viene creato utilizzando il comando `pyxel package`:
+Crea un file dell'applicazione Pyxel (.pyxapp) con il comando `pyxel package`:
 
 ```sh
 pyxel package APP_DIR STARTUP_SCRIPT_FILE
@@ -582,7 +582,7 @@ Un file dell'applicazione Pyxel può anche essere convertito in un eseguibile o 
   Esempio: `pyxel.sounds[0].speed = 60`
 
 - `musics`<br>
-  Elenco delle musiche (istanze della classe Music) (0-7)
+  Elenco delle tracce musicali (istanze della classe Music) (0-7)
 
 - `play(ch, snd, [sec], [loop], [resume])`<br>
   Riproduce il suono `snd`(0-63) sul canale `ch`(0-3). `snd` può essere un numero di suono, un elenco di numeri di suono o una stringa MML. La posizione di partenza della riproduzione può essere specificata in secondi con `sec`. Se `loop` è impostato su `True`, la riproduzione verrà eseguita in loop. Per riprendere il suono precedente dopo la fine della riproduzione, impostare `resume` su `True`.
@@ -620,7 +620,7 @@ Un file dell'applicazione Pyxel può anche essere convertito in un eseguibile o 
   Restituisce l'arcotangente di `y`/`x` in gradi.
 
 - `rseed(seed)`<br>
-  Imposta il seme del generatore di numeri casuali.
+  Impostare il seme del generatore di numeri casuali.
 
 - `rndi(a, b)`<br>
   Restituisce un numero intero casuale maggiore o uguale a `a` e minore o uguale a `b`.
@@ -676,7 +676,7 @@ Un file dell'applicazione Pyxel può anche essere convertito in un eseguibile o 
 ### Classe Sound
 
 - `notes`<br>
-  Elenco di note (0-127). Più alto è il numero, più acuto è il suono. La nota `33` corrisponde a 'A2'(440Hz). Le note di silenzio sono rappresentate da `-1`.
+  Elenco di note (0-127). Più alto è il numero, più acuto è il suono. La nota `33` corrisponde a 'A2' (440 Hz). Le note di silenzio sono rappresentate da `-1`.
 
 - `tones`<br>
   Elenco di toni (0:Triangle / 1:Square / 2:Pulse / 3:Noise)

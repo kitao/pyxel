@@ -48,10 +48,10 @@ Pyxel est open source sous la [Licence MIT](../LICENSE) et est gratuit à utilis
 - Programmation en Python
 - Taille d'écran personnalisable
 - Palette de 16 couleurs
-- 3 banques d'images de 256x256
-- 8 cartes de tuiles de 256x256
+- 3 banques d'images 256x256
+- 8 cartes de tuiles 256x256
 - 4 canaux avec 64 sons définissables
-- 8 pistes de musique qui peuvent combiner n'importe quel son
+- 8 pistes de musique capables de combiner n'importe quel son
 - Entrées de clavier, de souris et de manette
 - Outils d'édition d'images et de sons
 - Couleurs, canaux et banques extensibles par l'utilisateur
@@ -98,7 +98,7 @@ Si la commande précédente échoue, envisagez de construire Pyxel à partir de 
 
 ### Web
 
-La version web de Pyxel peut être utilisée sur des PC ainsi que sur des smartphones et des tablettes, tant que vous disposez d'un navigateur web compatible, sans installer Python ou Pyxel.
+La version web de Pyxel fonctionne sur PC, smartphone et tablette avec un navigateur compatible, sans installer Python ou Pyxel.
 
 La façon la plus simple de l'utiliser est via l'IDE en ligne [Pyxel Code Maker](https://kitao.github.io/pyxel/wasm/code-maker/).
 
@@ -112,7 +112,7 @@ Après avoir installé Pyxel, vous pouvez copier les exemples dans le répertoir
 pyxel copy_examples
 ```
 
-Les exemples suivants seront copiés dans votre répertoire actuel :
+Les exemples suivants seront copiés dans le répertoire actuel :
 
 <table>
 <tr>
@@ -214,12 +214,12 @@ Les exemples suivants seront copiés dans votre répertoire actuel :
 <tr>
 <td>17_app_launcher.py</td>
 <td>Lanceur d'applications Pyxel (vous pouvez jouer à divers jeux !)</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/17-app-launcher.html">Demo</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/17-app-launcher.html">Démonstration</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/17_app_launcher.py">Code</a></td>
 </tr>
 <tr>
 <td>99_flip_animation.py</td>
-<td>Animation avec la fonction flip (uniquement pour les plateformes non-web)</td>
+<td>Animation avec la fonction flip (uniquement pour les plateformes non web)</td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/docs/images/99_flip_animation.gif">Démonstration</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/99_flip_animation.py">Code</a></td>
 </tr>
@@ -241,7 +241,7 @@ pyxel play 30sec_of_daylight.pyxapp
 
 ### Créer une application
 
-Dans votre script Python, importez le module Pyxel, spécifiez la taille de la fenêtre avec la fonction `init`, puis démarrez l'application Pyxel avec la fonction `run`.
+Dans votre script Python, importez Pyxel, spécifiez la taille de la fenêtre avec `init` et démarrez l'application avec `run`.
 
 ```python
 import pyxel
@@ -313,7 +313,7 @@ De plus, la commande `pyxel watch` surveille les modifications dans un répertoi
 pyxel watch WATCH_DIR PYTHON_SCRIPT_FILE
 ```
 
-La surveillance du répertoire peut être arrêtée en appuyant sur `Ctrl(Command)+C`.
+Interrompez la surveillance du répertoire en appuyant sur `Ctrl(Command)+C`.
 
 ### Opérations de touches spéciales
 
@@ -344,7 +344,7 @@ Pendant l'exécution d'une application Pyxel, les opérations de touches spécia
 
 ### Comment créer des ressources
 
-Pyxel Editor peut créer des images et des sons utilisés dans une application Pyxel.
+Pyxel Editor crée des images et des sons utilisés dans une application Pyxel.
 
 Vous pouvez démarrer Pyxel Editor avec la commande suivante :
 
@@ -354,7 +354,7 @@ pyxel edit PYXEL_RESOURCE_FILE
 
 Si le fichier de ressources Pyxel spécifié (.pyxres) existe, il sera chargé. S'il n'existe pas, un nouveau fichier avec le nom spécifié sera créé. Si le fichier de ressources est omis, un nouveau fichier nommé `my_resource.pyxres` sera créé.
 
-Après avoir démarré Pyxel Editor, vous pouvez passer à un autre fichier de ressources en le faisant glisser et en le déposant sur Pyxel Editor.
+Après avoir démarré Pyxel Editor, vous pouvez passer à un autre fichier de ressources en le faisant glisser et en le déposant sur l'éditeur.
 
 Le fichier de ressources créé peut être chargé en utilisant la fonction `load`.
 
@@ -362,7 +362,7 @@ Pyxel Editor a les modes d'édition suivants.
 
 **Éditeur d'images**
 
-Le mode pour éditer l'image dans chaque **banque d'images**.
+Le mode pour éditer les images dans chaque **banque d'images**.
 
 <a href="https://kitao.github.io/pyxel/wasm/examples/image-editor.html">
 <img src="images/image_editor.gif">
@@ -390,7 +390,7 @@ Le mode pour éditer les **sons** utilisés pour les mélodies et les effets son
 
 **Éditeur de musique**
 
-Le mode pour éditer des **musiques** dans lequel les sons sont organisés dans l'ordre de lecture.
+Le mode pour éditer des **pistes de musique** dans lequel les sons sont organisés dans l'ordre de lecture.
 
 <a href="https://kitao.github.io/pyxel/wasm/examples/music-editor.html">
 <img src="images/music_editor.gif">
@@ -411,9 +411,9 @@ Référez-vous à la documentation de l'API pour l'utilisation de ces fonctions.
 
 ### Comment distribuer des applications
 
-Pyxel prend en charge un format de fichier de distribution d'application dédié (fichier d'application Pyxel) qui est multiplateforme.
+Pyxel prend en charge un format de distribution multiplateforme appelé fichier d'application Pyxel.
 
-Un fichier d'application Pyxel (.pyxapp) est créé en utilisant la commande `pyxel package` :
+Créez un fichier d'application Pyxel (.pyxapp) avec la commande `pyxel package` :
 
 ```sh
 pyxel package APP_DIR STARTUP_SCRIPT_FILE
@@ -432,13 +432,13 @@ Les métadonnées peuvent être affichées à l'exécution en les spécifiant da
 # version: 1.0
 ```
 
-Le fichier d'application créé peut être exécuté en utilisant la commande `pyxel play` :
+Le fichier d'application créé peut être exécuté avec la commande `pyxel play` :
 
 ```sh
 pyxel play PYXEL_APP_FILE
 ```
 
-Un fichier d'application Pyxel peut également être converti en un exécutable ou un fichier HTML en utilisant les commandes `pyxel app2exe` ou `pyxel app2html`.
+Un fichier d'application Pyxel peut également être converti en un exécutable ou un fichier HTML avec les commandes `pyxel app2exe` ou `pyxel app2html`.
 
 ## Référence de l'API
 
@@ -498,8 +498,6 @@ Un fichier d'application Pyxel peut également être converti en un exécutable 
 - `mouse(visible)`<br>
   Affiche le curseur de la souris si `visible` est `True`, et le masque si `visible` est `False`. La position du curseur continue de se mettre à jour même lorsqu'il est masqué.
 
-### Graphiques
-
 - `colors`<br>
   Liste des couleurs de la palette. La couleur d'affichage est spécifiée par une valeur numérique de 24 bits. Utilisez `colors.from_list` et `colors.to_list` pour affecter et récupérer directement des listes Python.<br>
   Exemple : `old_colors = pyxel.colors.to_list(); pyxel.colors.from_list([0x111111, 0x222222, 0x333333]); pyxel.colors[15] = 0x112233`
@@ -510,7 +508,6 @@ Un fichier d'application Pyxel peut également être converti en un exécutable 
 
 - `tilemaps`<br>
   Liste des cartes de tuiles (instances de la classe Tilemap) (0-7)
-  Liste des cartes de tuiles (0-7)
 
 - `clip(x, y, w, h)`<br>
   Définit la zone de dessin de l'écran à partir de (`x`, `y`) avec une largeur de `w` et une hauteur de `h`. Appelez `clip()` pour réinitialiser la zone de dessin à plein écran.
@@ -583,7 +580,7 @@ Un fichier d'application Pyxel peut également être converti en un exécutable 
   Exemple : `pyxel.sounds[0].speed = 60`
 
 - `musics`<br>
-  Liste des musiques (instances de la classe Music) (0-7)
+  Liste des pistes de musique (instances de la classe Music) (0-7)
 
 - `play(ch, snd, [sec], [loop], [resume])`<br>
   Joue le son `snd`(0-63) sur le canal `ch`(0-3). `snd` peut être un numéro de son, une liste de numéros de son ou une chaîne MML. La position de départ de la lecture peut être spécifiée en secondes avec `sec`. Si `loop` est défini sur `True`, le son sera lu en boucle. Pour reprendre le son précédent après la fin de la lecture, définissez `resume` sur `True`.
@@ -677,7 +674,7 @@ Un fichier d'application Pyxel peut également être converti en un exécutable 
 ### Classe Sound
 
 - `notes`<br>
-  Liste de notes (0-127). Plus le nombre est élevé, plus la hauteur du son est aiguë. La note `33` correspond à 'A2'(440Hz). Les notes de silence sont représentées par `-1`.
+  Liste des notes (0-127). Plus le nombre est élevé, plus la hauteur du son est aiguë. La note `33` correspond à 'A2' (440 Hz). Les notes de silence sont représentées par `-1`.
 
 - `tones`<br>
   Liste de tons (0:Triangle / 1:Square / 2:Pulse / 3:Noise)

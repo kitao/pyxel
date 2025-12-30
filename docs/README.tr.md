@@ -48,8 +48,8 @@ Pyxel, [MIT Lisansı](../LICENSE) altında açık kaynaklıdır ve ücretsiz ola
 - Python ile programlama
 - Özelleştirilebilir ekran boyutu
 - 16 renk paleti
-- 3 adet 256x256 boyutunda görüntü bankası
-- 8 adet 256x256 boyutunda karo haritası
+- 3 adet 256x256 görüntü bankası
+- 8 adet 256x256 döşeme haritası
 - 64 tanımlanabilir ses ile 4 kanal
 - Herhangi bir sesi birleştirebilen 8 müzik parçası
 - Klavye, fare ve gamepad girişi
@@ -98,7 +98,7 @@ Yukarıdaki komut çalışmazsa, Pyxel'i kaynak kodundan inşa etmeyi düşünü
 
 ### Web
 
-Pyxel'in web sürümü, Python veya Pyxel'i yüklemeden, uyumlu bir web tarayıcınız olduğu sürece PC'lerde ve akıllı telefonlarda ve tabletlerde kullanılabilir.
+Pyxel'in web sürümü, uyumlu bir tarayıcıyla PC, akıllı telefon ve tablette, Python veya Pyxel yüklemeden kullanılabilir.
 
 Kullanmanın en kolay yolu, çevrimiçi IDE [Pyxel Code Maker](https://kitao.github.io/pyxel/wasm/code-maker/) aracılığıyladır.
 
@@ -112,7 +112,7 @@ Pyxel'i kurduktan sonra, aşağıdaki komutla örnekleri geçerli dizine kopyala
 pyxel copy_examples
 ```
 
-Aşağıdaki örnekler geçerli dizininize kopyalanacaktır:
+Aşağıdaki örnekler geçerli dizine kopyalanacaktır:
 
 <table>
 <tr>
@@ -215,7 +215,7 @@ Aşağıdaki örnekler geçerli dizininize kopyalanacaktır:
 <td>17_app_launcher.py</td>
 <td>Pyxel uygulama başlatıcı (çeşitli oyunlar oynayabilirsiniz!)</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/17-app-launcher.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/17_app_launcher.py">Code</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/17_app_launcher.py">Kod</a></td>
 </tr>
 <tr>
 <td>99_flip_animation.py</td>
@@ -241,7 +241,7 @@ pyxel play 30sec_of_daylight.pyxapp
 
 ### Uygulama Oluşturma
 
-Python betiğinizde Pyxel modülünü içe aktarın, `init` fonksiyonu ile pencere boyutunu belirtin ve ardından `run` fonksiyonu ile Pyxel uygulamasını başlatın.
+Python betiğinizde Pyxel'i içe aktarın, pencere boyutunu `init` ile belirtin ve uygulamayı `run` ile başlatın.
 
 ```python
 import pyxel
@@ -313,7 +313,7 @@ Ek olarak, `pyxel watch` komutu belirtilen bir dizindeki değişiklikleri izler 
 pyxel watch WATCH_DIR PYTHON_SCRIPT_FILE
 ```
 
-Dizin izlemeyi `Ctrl(Command)+C` tuşlarına basarak durdurabilirsiniz.
+Dizin izlemeyi `Ctrl(Command)+C` tuşlarına basarak durdurun.
 
 ### Özel Tuş Operasyonları
 
@@ -344,7 +344,7 @@ Bir Pyxel uygulaması çalışırken, aşağıdaki özel tuş işlemleri gerçek
 
 ### Kaynakları Nasıl Oluşturulur
 
-Pyxel Editor, bir Pyxel uygulamasında kullanılan resim ve sesleri oluşturabilir.
+Pyxel Editor, Pyxel uygulamalarında kullanılan resim ve sesleri oluşturur.
 
 Pyxel Editor'ü aşağıdaki komut ile başlatabilirsiniz:
 
@@ -354,7 +354,7 @@ pyxel edit PYXEL_RESOURCE_FILE
 
 Belirtilen Pyxel kaynak dosyası (.pyxres) mevcutsa, yüklenecektir. Eğer mevcut değilse, belirtilen isimle yeni bir dosya oluşturulacaktır. Kaynak dosyası belirtilmezse, `my_resource.pyxres` adıyla yeni bir dosya oluşturulacaktır.
 
-Pyxel Editor başlatıldıktan sonra, başka bir kaynak dosyasına geçmek için dosyayı Pyxel Editor'ün üzerine sürükleyip bırakabilirsiniz.
+Pyxel Editor başlatıldıktan sonra, başka bir kaynak dosyasına geçmek için dosyayı editöre sürükleyip bırakabilirsiniz.
 
 Oluşturulan kaynak dosyası, `load` fonksiyonu ile yüklenebilir.
 
@@ -362,23 +362,23 @@ Pyxel Editor aşağıdaki düzenleme modlarına sahiptir.
 
 **Resim Editörü**
 
-Her **resim bankasındaki** resmi düzenlemek için kullanılan mod.
+Her **görüntü bankasındaki** görüntüyü düzenlemek için kullanılan mod.
 
 <a href="https://kitao.github.io/pyxel/wasm/examples/image-editor.html">
 <img src="images/image_editor.gif">
 </a>
 
-Resim editörüne bir resim dosyası (PNG/GIF/JPEG) sürükleyip bırakarak, resmi şu anda seçili olan resim bankasına yükleyebilirsiniz.
+Resim editörüne bir resim dosyası (PNG/GIF/JPEG) sürükleyip bırakarak, görüntüyü şu anda seçili olan görüntü bankasına yükleyebilirsiniz.
 
-**Karo Haritası Editörü**
+**Döşeme Haritası Editörü**
 
-Resim bankalarındaki görüntüleri bir **karo haritası** içinde düzenlemek için kullanılan mod.
+Görüntü bankalarındaki görüntüleri bir **döşeme haritası** içinde düzenlemek için kullanılan mod.
 
 <a href="https://kitao.github.io/pyxel/wasm/examples/tilemap-editor.html">
 <img src="images/tilemap_editor.gif">
 </a>
 
-Bir TMX dosyasını (Tiled Map File) karo haritası editörüne sürükleyip bırakarak, şu anda seçili olan karo haritasına katman 0'ı yükleyebilirsiniz.
+Bir TMX dosyasını (Tiled Map File) döşeme haritası editörüne sürükleyip bırakarak, şu anda seçili olan döşeme haritasına katman 0'ı yükleyebilirsiniz.
 
 **Ses Editörü**
 
@@ -390,17 +390,17 @@ Melodi ve **ses** efektlerinde kullanılan sesleri düzenlemek için mod.
 
 **Müzik Editörü**
 
-Seslerin çalma sırasına göre dizildiği **müzikleri** düzenlemek için kullanılan mod.
+Seslerin çalma sırasına göre dizildiği **müzik parçalarını** düzenlemek için kullanılan mod.
 
 <a href="https://kitao.github.io/pyxel/wasm/examples/music-editor.html">
 <img src="images/music_editor.gif">
 </a>
 
-### Diğer Kaynak Oluşturma Yöntemleri
+-### Diğer Kaynak Oluşturma Yöntemleri
 
-Pyxel resimleri ve karo haritaları aşağıdaki yöntemlerle de oluşturulabilir:
+Pyxel resimleri ve döşeme haritaları aşağıdaki yöntemlerle de oluşturulabilir:
 
-- `Image.set` veya `Tilemap.set` fonksiyonlarıyla dize listelerinden resim veya karo haritası oluşturun
+- `Image.set` veya `Tilemap.set` fonksiyonlarıyla dize listelerinden resim veya döşeme haritası oluşturun
 - `Image.load` fonksiyonuyla Pyxel paletine uygun bir resim dosyasını (PNG/GIF/JPEG) yükleyin
 
 Pyxel sesleri ve müzikleri de aşağıdaki yöntemle oluşturulabilir:
@@ -676,7 +676,7 @@ Bir Pyxel uygulama dosyası ayrıca `pyxel app2exe` veya `pyxel app2html` komutl
 ### Sound Sınıfı
 
 - `notes`<br>
-  Notaların listesi (0-127). Sayı büyüdükçe perde yükselir. `33` notası 'A2' (440Hz) ile eşleşir. Sus notaları `-1` ile gösterilir.
+  Notaların listesi (0-127). Sayı büyüdükçe perde yükselir. `33` notası 'A2' (440 Hz) ile eşleşir. Sus notaları `-1` ile gösterilir.
 
 - `tones`<br>
   Ses tonlarının listesi (0:Triangle / 1:Square / 2:Pulse / 3:Noise)
