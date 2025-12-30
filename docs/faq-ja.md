@@ -14,9 +14,9 @@ Pyxel 2.4 ではサウンドエンジンと MML 文法が刷新されていま�
 - Sound クラス、Music クラスの `save` 関数の `count` 引数を `sec` に変更する
 - サウンドの再生秒数が必要な場合は、Sound クラスの `total_sec` 関数を利用する
 - Sound クラスの `mml` 関数には新 MML 文法に沿ったコードを指定する
-- 旧 MML 文法 を使用する場合は、Sound クラスの `old_mml` 関数を使用する
+- 旧 MML 文法を使用する場合は、Sound クラスの `old_mml` 関数を使用する
 - `save`、`load` 関数の `excl_*` オプションを `exclude_*` に変更する
-- `save`、`load` 関数の `include_*` オプションの指定を削除する
+- `save`、`load` 関数の `incl_*` オプションの指定を削除する
 
 新しい MML 文法は後述の「Pyxel の MML の使い方」を参照してください。
 
@@ -39,23 +39,23 @@ Pyxel 2.4 ではサウンドエンジンと MML 文法が刷新されていま�
 </details>
 
 <details>
-<summary>バージョン1.5以降で<code>pyxeleditor</code>コマンドが使えません</summary>
+<summary>バージョン1.5以降で <code>pyxeleditor</code> コマンドが使えません</summary>
 
-バージョン 1.5 以降、Pyxel のツールは`pyxel`コマンドに統合されました。リソースエディタにアクセスするには、次のコマンドを使用してください： `pyxel edit [PYXEL_RESOURCE_FILE]`
+バージョン 1.5 以降、Pyxel のツールは `pyxel` コマンドに統合されました。リソースエディタにアクセスするには、次のコマンドを使用してください: `pyxel edit [PYXEL_RESOURCE_FILE]`
 
 </details>
 
 ## Pyxel の学び方
 
 <details>
-<summary>Pyxelを学習するにはどこから始めればいいですか？</summary>
+<summary>Pyxel を学習するにはどこから始めればいいですか？</summary>
 
 Pyxel のサンプルコードを 01、05、03、04、02 の順に試すのがおすすめです。
 
 </details>
 
 <details>
-<summary>Pyxelに関する書籍はありますか？</summary>
+<summary>Pyxel に関する書籍はありますか？</summary>
 
 日本語版のみですが、[公式の書籍](https://gihyo.jp/book/2025/978-4-297-14657-3)が発売されています。
 
@@ -64,23 +64,23 @@ Pyxel のサンプルコードを 01、05、03、04、02 の順に試すのが�
 ## API 仕様と使い方
 
 <details>
-<summary><code>update</code>関数と<code>draw</code>関数の違いは何ですか？</summary>
+<summary><code>update</code> 関数と <code>draw</code> 関数の違いは何ですか？</summary>
 
-`update`関数は毎フレーム呼び出されますが、`draw`関数は処理時間が許容限界を超えた場合にスキップされることがあります。Pyxel はこの設計により、レンダリング負荷や OS の割り込み処理の影響を軽減して、滑らかなアニメーションを実現しています。
+`update` 関数は毎フレーム呼び出されますが、`draw` 関数は処理時間が許容限界を超えた場合にスキップされることがあります。Pyxel はこの設計により、レンダリング負荷や OS の割り込み処理の影響を軽減して、滑らかなアニメーションを実現しています。
 
 </details>
 
 <details>
-<summary>PyxelのMMLの使い方を教えてください</summary>
+<summary>Pyxel の MML の使い方を教えてください</summary>
 
-Sound クラスの`mml`関数に MML (Music Macro Language) 文字列を渡すと、MML モードに移行し、その内容に沿ってサウンドが再生されるようになります。
+Sound クラスの `mml` 関数に MML (Music Macro Language) 文字列を渡すと、MML モードに移行し、その内容に沿ってサウンドが再生されるようになります。
 
-MML モードでは、`notes`や`speed`などの通常のパラメータは無視され、指定した文字列の内容に沿ってサウンドが再生されます。`mml()`を呼ぶと MML モードをリセットできます。
+MML モードでは、`notes` や `speed` などの通常のパラメータは無視され、指定した文字列の内容に沿ってサウンドが再生されます。`mml()` を呼ぶと MML モードをリセットできます。
 
-`play`関数にサウンド番号の代わりに直接 MML 文字列を渡して再生することもできます。<br>
+`play` 関数にサウンド番号の代わりに直接 MML 文字列を渡して再生することもできます。<br>
 例：`pyxel.play(0, "CDEFG")`
 
-Pyxel の MML で利用できるコマンドは[Pyxel MML コマンド](https://kitao.github.io/pyxel/wasm/mml-studio/mml-commands.html)で参照できます。
+Pyxel の MML で利用できるコマンドは [Pyxel MML コマンド](https://kitao.github.io/pyxel/wasm/mml-studio/mml-commands.html) で参照できます。
 
 使用例はサンプル 09_shooter.py の[デモ](https://kitao.github.io/pyxel/wasm/examples/09-shooter.html)や[コード](https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/09_shooter.py)で確認できます。
 
@@ -108,7 +108,7 @@ Pyxel の`init`関数が呼ばれると、カレントディレクトリはそ�
 ## Pyxel ツールの使い方
 
 <details>
-<summary>Pyxel Editorでパレットの色を変更できますか？</summary>
+<summary>Pyxel Editor でパレットの色を変更できますか？</summary>
 
 Pyxel リソースファイル（.pyxres）と同じディレクトリに、Pyxel パレットファイル（.pyxpal）を配置することで、Pyxel Editor で使用するパレットの色をリソースファイルに合わせることができます。Pyxel パレットファイルの作成方法については、README をご参照ください。
 
@@ -130,7 +130,7 @@ Pyxel リソースファイル（.pyxres）と同じディレクトリに、Pyxe
 ## ライセンスとスポンサーシップ
 
 <details>
-<summary>Pyxelを作者の許可なく商業目的で使用することはできますか？</summary>
+<summary>Pyxel を作者の許可なく商業目的で使用することはできますか？</summary>
 
 MIT ライセンスに従い、ソースコードやライセンス表示用のファイルに著作権およびライセンスの全文を明示すれば、作者の許可を得ることなく自由に販売や配布が可能です。ただし、もし可能であれば、作者にご連絡いただいたり、スポンサーとしてご支援いただけるとありがたいです。
 
