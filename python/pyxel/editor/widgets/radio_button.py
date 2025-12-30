@@ -32,6 +32,7 @@ class RadioButton(Widget):
     def check_value(self, x, y):
         x -= self.x
         y -= self.y
+
         index = min(max(x // 9, 0), self._num_buttons - 1)
         x1 = index * 9
         y1 = 0
