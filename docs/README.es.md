@@ -330,7 +330,7 @@ Durante la ejecución de una aplicación Pyxel, se pueden realizar las siguiente
 - `Alt(Option)+3`<br>
   Guardar un video de captura de pantalla en el escritorio (hasta 10 segundos)
 - `Alt(Option)+8` o `A+B+X+Y+DL` en el gamepad<br>
-  Alterna el escalado de pantalla entre máximo e entero
+  Alternar el escalado de pantalla entre máximo e entero
 - `Alt(Option)+9` o `A+B+X+Y+DR` en el gamepad<br>
   Cambiar entre los modos de pantalla (Crisp/Smooth/Retro)
 - `Alt(Option)+0` o `A+B+X+Y+DU` en el gamepad<br>
@@ -338,7 +338,7 @@ Durante la ejecución de una aplicación Pyxel, se pueden realizar las siguiente
 - `Alt(Option)+Enter` o `A+B+X+Y+DD` en el gamepad<br>
   Alternar pantalla completa
 - `Shift+Alt(Option)+1/2/3`<br>
-  Guarda el banco de imágenes 0, 1 o 2 en el escritorio
+  Guardar el banco de imágenes 0, 1 o 2 en el escritorio
 - `Shift+Alt(Option)+0`<br>
   Guardar la paleta de colores actual en el escritorio
 

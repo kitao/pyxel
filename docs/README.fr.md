@@ -330,7 +330,7 @@ Pendant l'exécution d'une application Pyxel, les opérations de touches spécia
 - `Alt(Option)+3`<br>
   Enregistrer une vidéo de capture d'écran sur le bureau (jusqu'à 10 secondes)
 - `Alt(Option)+8` ou `A+B+X+Y+DL` sur la manette<br>
-  Alterne le mode de mise à l’échelle de l’écran entre maximal et entier
+  Alterner le mode de mise à l’échelle de l’écran entre maximal et entier
 - `Alt(Option)+9` ou `A+B+X+Y+DR` sur la manette<br>
   Passer d'un mode d'écran à l'autre (Crisp/Smooth/Retro)
 - `Alt(Option)+0` ou `A+B+X+Y+DU` sur la manette<br>
