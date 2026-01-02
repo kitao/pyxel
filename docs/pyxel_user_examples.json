@@ -1,6 +1,24 @@
 {
   "entries": [
     {
+      "id": 165,
+      "title": "Mini Metroid",
+      "site": "https://aged99oow.github.io/metroid/",
+      "author": "aged99oow",
+      "contact": "https://x.com/aged99",
+      "desc": "Reduced version of NES Metroid",
+      "image": "https://github.com/user-attachments/assets/3a9a3ff6-d8e7-4a41-a0b1-d7be66f4a4c9"
+    },
+    {
+      "id": 164,
+      "title": "Lama",
+      "site": "https://aged99oow.github.io/lama/",
+      "author": "aged99oow",
+      "contact": "https://x.com/aged99",
+      "desc": "Shedding game to shed or fold for minimum points",
+      "image": "https://github.com/user-attachments/assets/a2ab4617-0864-4982-acfc-5a99235a955a"
+    },
+    {
       "id": 163,
       "title": "Gekka no jin (Moonlit Formation)",
       "site": "https://kogakure-saizo.itch.io/moonlit-formation",
