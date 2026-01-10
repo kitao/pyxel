@@ -4,7 +4,7 @@ on: [workflow_call, workflow_dispatch]
 
 env:
   PYODIDE_VERSION: "0.28.3"
-  RUST_VERSION: "nightly-2025-02-01"
+  RUST_VERSION: "nightly-2025-12-10"
   PYTHON_VERSION: "3.13"
 
 jobs:

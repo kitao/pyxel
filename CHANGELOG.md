@@ -3,6 +3,8 @@
 ## 2.5.13
 
 - Renamed the scripts directory to tools
+- Updated Pyodide to version 0.29.1
+- Updated Rust to version nightly-2025-12-10
 
 ## 2.5.12
 

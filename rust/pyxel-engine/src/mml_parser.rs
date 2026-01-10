@@ -413,7 +413,7 @@ fn parse_length_as_ticks(stream: &mut CharStream, note_ticks: u32) -> Result<u32
     let mut note_ticks = note_ticks;
 
     if let Ok(len) = parse_number::<u32>(stream, "Note length", RANGE_LENGTH) {
-        if WHOLE_NOTE_TICKS % len == 0 {
+        if WHOLE_NOTE_TICKS.is_multiple_of(len) {
             note_ticks = WHOLE_NOTE_TICKS / len;
         } else {
             parse_error!(stream, "Invalid note length '{len}'");
@@ -422,7 +422,7 @@ fn parse_length_as_ticks(stream: &mut CharStream, note_ticks: u32) -> Result<u32
 
     let mut dot_ticks = note_ticks;
     while parse_string(stream, ".").is_ok() {
-        if dot_ticks % 2 == 0 {
+        if dot_ticks.is_multiple_of(2) {
             dot_ticks /= 2;
             note_ticks += dot_ticks;
         } else {
