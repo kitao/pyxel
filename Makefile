@@ -60,7 +60,7 @@ DIST_DIR = $(ROOT_DIR)/dist
 RUST_DIR = $(ROOT_DIR)/rust
 PYTHON_DIR = $(ROOT_DIR)/python
 EXAMPLES_DIR = $(PYTHON_DIR)/pyxel/examples
-SCRIPTS_DIR = $(ROOT_DIR)/scripts
+TOOLS_DIR = $(ROOT_DIR)/tools
 WASM_DIR = $(ROOT_DIR)/wasm
 
 # Build targets
@@ -122,7 +122,7 @@ lint:
 build: format lint
 	@rustup component add rust-src
 	@rustup target add $(TARGET)
-	@$(SCRIPTS_DIR)/generate_readme_abspath
+	@$(TOOLS_DIR)/generate_readme_abspath
 	@cp LICENSE $(PYTHON_DIR)/pyxel
 	@cd $(PYTHON_DIR); RUSTFLAGS="$(RUSTFLAGS)" maturin build -o ../$(DIST_DIR) $(CARGO_OPTS) $(MATURIN_OPTS)
 
@@ -156,17 +156,17 @@ build-wasm:
 	@embuilder build sdl2 --pic
 	@rm -f $(DIST_DIR)/*-emscripten_*.whl
 	@$(MAKE) build TARGET=$(WASM_TARGET)
-	@$(SCRIPTS_DIR)/install_wasm_wheel
+	@$(TOOLS_DIR)/install_wasm_wheel
 
 start-test-server:
-	$(SCRIPTS_DIR)/switch_html_scripts local
-	@bash -c "trap '$(SCRIPTS_DIR)/switch_html_scripts cdn' INT TERM; $(SCRIPTS_DIR)/start_test_server"
+	$(TOOLS_DIR)/switch_html_scripts local
+	@bash -c "trap '$(TOOLS_DIR)/switch_html_scripts cdn' INT TERM; $(TOOLS_DIR)/start_test_server"
 
 test-wasm: build-wasm start-test-server
 
 setup-wasm-github:
 	@rm -f $(DIST_DIR)/*-emscripten_*.whl
-	@$(SCRIPTS_DIR)/download_wasm_wheel
-	@$(SCRIPTS_DIR)/install_wasm_wheel
+	@$(TOOLS_DIR)/download_wasm_wheel
+	@$(TOOLS_DIR)/install_wasm_wheel
 
 test-wasm-github: setup-wasm-github start-test-server

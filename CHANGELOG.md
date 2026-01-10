@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.5.13
+
+- Renamed the scripts directory to tools
+
 ## 2.5.12
 
 - Fixed double slashes in README-abspath URLs
