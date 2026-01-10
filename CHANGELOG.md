@@ -1,17 +1,14 @@
 # Change Log
 
-## 2.5.13
+## 2.5.12
 
+- Fixed double slashes in README-abspath URLs
+- Refined the README files
 - Renamed the scripts directory to tools
 - Updated Pyodide to version 0.29.1
 - Updated Rust to version nightly-2025-12-10
 - Updated the image crate to version 0.25
 - Updated the sysinfo crate to version 0.37
-
-## 2.5.12
-
-- Fixed double slashes in README-abspath URLs
-- Refined the README files
 
 ## 2.5.11
 
