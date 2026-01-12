@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.5.13
+
+- Fixed memory leak in MML parser
+
 ## 2.5.12
 
 - Fixed double slashes in README-abspath URLs
