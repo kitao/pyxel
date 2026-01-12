@@ -16,19 +16,20 @@ const DEFAULT_VOLUME: u32 = 100;
 const DEFAULT_OCTAVE: i32 = 4;
 const DEFAULT_LENGTH: u32 = 4;
 
-struct CharStream<'a> {
-    chars: &'a [char],
+struct CharStream {
+    chars: Vec<char>,
     pos: usize,
 }
 
-impl<'a> CharStream<'a> {
-    fn new(input: &'a str) -> Self {
-        let chars: Vec<char> = input.chars().collect();
-        let chars = Box::leak(chars.into_boxed_slice());
-        Self { chars, pos: 0 }
+impl CharStream {
+    fn new(input: &str) -> Self {
+        Self {
+            chars: input.chars().collect(),
+            pos: 0,
+        }
     }
 
-    fn peek(&mut self) -> Option<&char> {
+    fn peek(&self) -> Option<&char> {
         self.chars.get(self.pos)
     }
 
