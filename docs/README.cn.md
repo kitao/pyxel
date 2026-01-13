@@ -757,8 +757,8 @@ Pyxel 包含一个“高级 API”，该 API 在本参考中未提及，因为�
 
 - [Pyxel Web Examples](https://kitao.github.io/pyxel/wasm/examples/)
 - [Pyxel Web Launcher](https://kitao.github.io/pyxel/wasm/launcher/)
-- [Pyxel Code Maker](https://kitao.github.io/pyxel/wasm/code-maker/)
-- [Pyxel MML Studio](https://kitao.github.io/pyxel/wasm/mml-studio/)
+- [Pyxel Code Maker](https://kitao.github.io/pyxel/wasm/code-maker/) ([Manual](https://qiita.com/kitao/items/b5b3fb28ebf9781eda2e))
+- [Pyxel MML Studio](https://kitao.github.io/pyxel/wasm/mml-studio/) ([Manual](https://qiita.com/kitao/items/a86de4f7d6a0ed656a89))
 
 ## 其他信息
 
