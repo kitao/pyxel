@@ -4,6 +4,7 @@
 
 - Fixed memory leak in MML parser
 - Added slur (legato) support to MML
+- Added links to tool manuals in the README files
 
 ## 2.5.12
 
