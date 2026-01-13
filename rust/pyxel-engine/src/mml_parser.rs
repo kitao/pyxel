@@ -58,19 +58,25 @@ pub fn parse_mml(mml: &str) -> Result<Vec<MmlCommand>, String> {
 
     let mut octave: i32 = DEFAULT_OCTAVE;
     let mut note_ticks: u32 = TICKS_PER_QUARTER_NOTE * 4 / DEFAULT_LENGTH;
+    let mut quantize: u32 = DEFAULT_QUANTIZE;
 
-    let mut is_tempo_set: bool = false;
-    let mut is_quantize_set: bool = false;
-    let mut is_tone_set: bool = false;
-    let mut is_volume_set: bool = false;
-    let mut is_transpose_set: bool = false;
-    let mut is_detune_set: bool = false;
-    let mut is_envelope_set: bool = false;
-    let mut is_vibrato_set: bool = false;
-    let mut is_glide_set: bool = false;
+    let mut is_tempo_set = false;
+    let mut is_quantize_set = false;
+    let mut is_tone_set = false;
+    let mut is_volume_set = false;
+    let mut is_transpose_set = false;
+    let mut is_detune_set = false;
+    let mut is_envelope_set = false;
+    let mut is_vibrato_set = false;
+    let mut is_glide_set = false;
+
+    let mut is_connected;
+    let mut connected_note: Option<u32> = None;
+    let mut last_note_index: Option<usize> = None;
 
     // Parse MML commands
     while stream.peek().is_some() {
+        is_connected = false;
         if let Some(bpm) = parse_command(&mut stream, "T", RANGE_GE1)? {
             //
             // T<bpm> - Set tempo (bpm >= 1)
@@ -84,6 +90,7 @@ pub fn parse_mml(mml: &str) -> Result<Vec<MmlCommand>, String> {
             // Q<gate_percent> - Set quantize gate time (0 <= gate_percent <= 100)
             //
             is_quantize_set = true;
+            quantize = gate_time;
             commands.push(MmlCommand::Quantize {
                 gate_ratio: gate_time_to_gate_ratio(gate_time),
             });
@@ -166,10 +173,41 @@ pub fn parse_mml(mml: &str) -> Result<Vec<MmlCommand>, String> {
             // L<len> - Set default note length (1 <= len <= 192)
             //
             note_ticks = parse_length_as_ticks(&mut stream, note_ticks)?;
-        } else if let Some(command) = parse_note(&mut stream, octave, note_ticks)? {
+        } else if let Some((command, connected)) = parse_note(&mut stream, octave, note_ticks)? {
             //
-            // C/D/E/F/G/A/B[#+-][<len>][.] - Play note (1 <= len <= 192)
+            // C/D/E/F/G/A/B[#+-][<len>][.][&] - Play note (1 <= len <= 192)
             //
+            is_connected = connected;
+
+            // Combine durations if this note is tied to the previous one.
+            if let Some(prev_note) = connected_note.take() {
+                if let MmlCommand::Note {
+                    midi_note,
+                    duration_ticks,
+                } = &command
+                {
+                    if *midi_note == prev_note {
+                        if let Some(index) = last_note_index {
+                            if let MmlCommand::Note {
+                                duration_ticks: prev_ticks,
+                                ..
+                            } = &mut commands[index]
+                            {
+                                *prev_ticks += *duration_ticks;
+                            }
+                        }
+                        if is_connected {
+                            connected_note = Some(prev_note);
+                        } else if is_connected && quantize != 100 {
+                            commands.push(MmlCommand::Quantize {
+                                gate_ratio: gate_time_to_gate_ratio(quantize),
+                            });
+                        }
+                        continue;
+                    }
+                }
+            }
+
             if !is_tempo_set {
                 is_tempo_set = true;
                 commands.push(MmlCommand::Tempo {
@@ -217,6 +255,21 @@ pub fn parse_mml(mml: &str) -> Result<Vec<MmlCommand>, String> {
                 commands.push(MmlCommand::Glide { slot: 0 });
             }
 
+            if is_connected && quantize != 100 {
+                commands.push(MmlCommand::Quantize { gate_ratio: 1.0 });
+            } else if !is_connected && quantize != 100 {
+                commands.push(MmlCommand::Quantize {
+                    gate_ratio: gate_time_to_gate_ratio(quantize),
+                });
+            }
+
+            if is_connected {
+                if let MmlCommand::Note { midi_note, .. } = &command {
+                    connected_note = Some(*midi_note);
+                }
+            }
+
+            last_note_index = Some(commands.len());
             commands.push(command);
         } else if let Some(command) = parse_rest(&mut stream, note_ticks)? {
             //
@@ -229,7 +282,15 @@ pub fn parse_mml(mml: &str) -> Result<Vec<MmlCommand>, String> {
                 });
             }
 
+            if is_connected && quantize != 100 {
+                commands.push(MmlCommand::Quantize {
+                    gate_ratio: gate_time_to_gate_ratio(quantize),
+                });
+            }
+            connected_note = None;
+
             commands.push(command);
+            last_note_index = None;
         } else if parse_string(&mut stream, "[").is_ok() {
             //
             // [ - Repeat start marker
@@ -237,8 +298,7 @@ pub fn parse_mml(mml: &str) -> Result<Vec<MmlCommand>, String> {
             commands.push(MmlCommand::RepeatStart);
         } else if parse_string(&mut stream, "]").is_ok() {
             //
-            // ] - Repeat end (infinite repetition)
-            // ]<count> - Repeat end (repeat <count> times, count >= 1)
+            // ]<count> - Repeat end (count >= 1, 0 = infinite)
             //
             let count = parse_number(&mut stream, "count", RANGE_GE1).unwrap_or(0);
             commands.push(MmlCommand::RepeatEnd { play_count: count });
@@ -247,7 +307,6 @@ pub fn parse_mml(mml: &str) -> Result<Vec<MmlCommand>, String> {
             parse_error!(stream, "Unexpected character '{c}'");
         }
     }
-
     Ok(commands)
 }
 
@@ -260,7 +319,6 @@ pub fn calc_commands_sec(commands: &[MmlCommand]) -> Option<f32> {
     while command_index < commands.len() as u32 {
         let command = &commands[command_index as usize];
         command_index += 1;
-
         match command {
             MmlCommand::Tempo {
                 clocks_per_tick: cpt,
@@ -277,7 +335,6 @@ pub fn calc_commands_sec(commands: &[MmlCommand]) -> Option<f32> {
                 if *play_count == 0 {
                     return None;
                 }
-
                 if let Some((index, count)) = repeat_points.pop() {
                     if count + 1 < *play_count {
                         repeat_points.push((index, count + 1));
@@ -288,7 +345,6 @@ pub fn calc_commands_sec(commands: &[MmlCommand]) -> Option<f32> {
             _ => {}
         }
     }
-
     Some(total_clocks as f32 / AUDIO_CLOCK_RATE as f32)
 }
 
@@ -308,7 +364,6 @@ fn parse_number<T: TryFrom<i32>>(
     range: (i32, i32),
 ) -> Result<T, String> {
     skip_whitespace(stream);
-
     let pos = stream.pos;
     let mut parsed_str = String::new();
 
@@ -317,7 +372,6 @@ fn parse_number<T: TryFrom<i32>>(
             parsed_str.push(stream.next().unwrap());
         }
     }
-
     while let Some(&c) = stream.peek() {
         if c.is_ascii_digit() {
             parsed_str.push(stream.next().unwrap());
@@ -338,7 +392,6 @@ fn parse_number<T: TryFrom<i32>>(
         stream.pos = pos;
         return Err(parsed_str);
     };
-
     if value < range.0 {
         parse_error!(stream, "'{name}' is below minimum {}", range.0);
     }
@@ -346,11 +399,7 @@ fn parse_number<T: TryFrom<i32>>(
         parse_error!(stream, "'{name}' exceeds maximum {}", range.1);
     }
 
-    if let Ok(value) = T::try_from(value) {
-        Ok(value)
-    } else {
-        parse_error!(stream, "Invalid value for '{name}'");
-    }
+    T::try_from(value).map_err(|_| stream.error(&format!("Invalid value for '{name}'")))
 }
 
 fn expect_number<T: TryFrom<i32>>(
@@ -366,7 +415,6 @@ fn expect_number<T: TryFrom<i32>>(
 
 fn parse_string(stream: &mut CharStream, literal: &str) -> Result<String, String> {
     skip_whitespace(stream);
-
     let pos = stream.pos;
     let mut parsed_str = String::new();
 
@@ -386,7 +434,6 @@ fn parse_string(stream: &mut CharStream, literal: &str) -> Result<String, String
             }
         }
     }
-
     Ok(parsed_str)
 }
 
@@ -410,7 +457,6 @@ fn parse_command<T: TryFrom<i32>>(
 
 fn parse_length_as_ticks(stream: &mut CharStream, note_ticks: u32) -> Result<u32, String> {
     const WHOLE_NOTE_TICKS: u32 = TICKS_PER_QUARTER_NOTE * 4;
-
     let mut note_ticks = note_ticks;
 
     if let Ok(len) = parse_number::<u32>(stream, "Note length", RANGE_LENGTH) {
@@ -430,7 +476,6 @@ fn parse_length_as_ticks(stream: &mut CharStream, note_ticks: u32) -> Result<u32
             parse_error!(stream, "Cannot apply dot to odd note length");
         }
     }
-
     Ok(note_ticks)
 }
 
@@ -438,56 +483,55 @@ fn parse_note(
     stream: &mut CharStream,
     octave: i32,
     note_ticks: u32,
-) -> Result<Option<MmlCommand>, String> {
+) -> Result<Option<(MmlCommand, bool)>, String> {
     skip_whitespace(stream);
 
-    let mut midi_note = ((octave + 1) * 12
-        + match stream.peek() {
-            Some(c) => match c.to_ascii_uppercase() {
-                'C' => 0,
-                'D' => 2,
-                'E' => 4,
-                'F' => 5,
-                'G' => 7,
-                'A' => 9,
-                'B' => 11,
-                _ => return Ok(None),
-            },
-            None => return Ok(None),
-        }) as u32;
+    let semitone = match stream.peek() {
+        Some(c) => match c.to_ascii_uppercase() {
+            'C' => 0,
+            'D' => 2,
+            'E' => 4,
+            'F' => 5,
+            'G' => 7,
+            'A' => 9,
+            'B' => 11,
+            _ => return Ok(None),
+        },
+        None => return Ok(None),
+    };
     stream.next();
 
-    if parse_string(stream, "#").is_ok() || parse_string(stream, "+").is_ok() {
-        midi_note += 1;
+    let midi_note = ((octave + 1) * 12 + semitone) as u32;
+    let midi_note = if parse_string(stream, "#").is_ok() || parse_string(stream, "+").is_ok() {
+        midi_note + 1
     } else if parse_string(stream, "-").is_ok() {
-        midi_note = midi_note.saturating_sub(1);
-    }
+        midi_note.saturating_sub(1)
+    } else {
+        midi_note
+    };
 
     let mut duration_ticks = parse_length_as_ticks(stream, note_ticks)?;
 
+    // Extend duration with '&<len>'
+    let mut is_connected = false;
     while parse_string(stream, "&").is_ok() {
         skip_whitespace(stream);
-        if stream.peek().unwrap_or(&'*').is_ascii_digit() {
+        if stream.peek().is_some_and(char::is_ascii_digit) {
             duration_ticks += parse_length_as_ticks(stream, note_ticks)?;
-            continue;
-        } else if let Some(MmlCommand::Note {
-            midi_note: next_note,
-            duration_ticks: next_ticks,
-        }) = parse_note(stream, octave, note_ticks)?
-        {
-            if next_note == midi_note {
-                duration_ticks += next_ticks;
-                continue;
-            }
+        } else {
+            // Set connection flag if '&' followed by non-digit
+            is_connected = true;
+            break;
         }
-
-        parse_error!(stream, "Expected same pitch note after '&'");
     }
 
-    Ok(Some(MmlCommand::Note {
-        midi_note,
-        duration_ticks,
-    }))
+    Ok(Some((
+        MmlCommand::Note {
+            midi_note,
+            duration_ticks,
+        },
+        is_connected,
+    )))
 }
 
 fn parse_rest(stream: &mut CharStream, note_ticks: u32) -> Result<Option<MmlCommand>, String> {
@@ -495,27 +539,27 @@ fn parse_rest(stream: &mut CharStream, note_ticks: u32) -> Result<Option<MmlComm
         return Ok(None);
     }
 
-    Ok(Some(MmlCommand::Rest {
-        duration_ticks: parse_length_as_ticks(stream, note_ticks)?,
-    }))
+    let mut duration_ticks = parse_length_as_ticks(stream, note_ticks)?;
+    while parse_string(stream, "&").is_ok() {
+        duration_ticks += parse_length_as_ticks(stream, note_ticks)?;
+    }
+
+    Ok(Some(MmlCommand::Rest { duration_ticks }))
 }
 
 fn parse_envelope(stream: &mut CharStream) -> Result<Option<MmlCommand>, String> {
     let Some(slot) = parse_command(stream, "@ENV", RANGE_GE0)? else {
         return Ok(None);
     };
-
     if parse_string(stream, "{").is_err() {
         return Ok(Some(MmlCommand::Envelope { slot }));
     }
-
     if slot == 0 {
         parse_error!(stream, "Envelope slot 0 is reserved for disable");
     }
 
     let init_vol = expect_number(stream, "init_vol", RANGE_VOLUME)?;
     let mut segments = Vec::new();
-
     while parse_string(stream, "}").is_err() {
         expect_string(stream, ",")?;
         let dur_ticks = expect_number(stream, "dur_ticks", RANGE_GE0)?;
@@ -535,11 +579,9 @@ fn parse_vibrato(stream: &mut CharStream) -> Result<Option<MmlCommand>, String> 
     let Some(slot) = parse_command(stream, "@VIB", RANGE_GE0)? else {
         return Ok(None);
     };
-
     if parse_string(stream, "{").is_err() {
         return Ok(Some(MmlCommand::Vibrato { slot }));
     }
-
     if slot == 0 {
         parse_error!(stream, "Vibrato slot 0 is reserved for disable");
     }
@@ -563,11 +605,9 @@ fn parse_glide(stream: &mut CharStream) -> Result<Option<MmlCommand>, String> {
     let Some(slot) = parse_command(stream, "@GLI", RANGE_GE0)? else {
         return Ok(None);
     };
-
     if parse_string(stream, "{").is_err() {
         return Ok(Some(MmlCommand::Glide { slot }));
     }
-
     if slot == 0 {
         parse_error!(stream, "Glide slot 0 is reserved for disable");
     }
@@ -582,7 +622,6 @@ fn parse_glide(stream: &mut CharStream) -> Result<Option<MmlCommand>, String> {
         )?))
     };
     expect_string(stream, ",")?;
-
     let duration_ticks = if parse_string(stream, "*").is_ok() {
         None
     } else {
