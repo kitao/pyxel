@@ -1,5 +1,10 @@
 # Change Log
 
+## 2.6.0
+
+- Added font rendering feature using TTF and OTF fonts
+- Updated Example 13 to demonstrate custom font rendering
+
 ## 2.5.13
 
 - Fixed memory leak in MML parser
