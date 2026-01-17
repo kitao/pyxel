@@ -188,10 +188,10 @@ pyxel copy_examples
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/12_perlin_noise.py">代码</a></td>
 </tr>
 <tr>
-<td>13_bitmap_font.py</td>
-<td>绘制位图字体</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/13-bitmap-font.html">演示</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/13_bitmap_font.py">代码</a></td>
+<td>13_custom_font.py</td>
+<td>绘制自定义字体</td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/13-custom-font.html">演示</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/13_custom_font.py">代码</a></td>
 </tr>
 <tr>
 <td>14_synthesizer.py</td>

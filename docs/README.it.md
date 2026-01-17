@@ -188,10 +188,10 @@ I seguenti esempi saranno copiati nella directory corrente:
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/12_perlin_noise.py">Codice</a></td>
 </tr>
 <tr>
-<td>13_bitmap_font.py</td>
-<td>Disegnare un font bitmap</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/13-bitmap-font.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/13_bitmap_font.py">Codice</a></td>
+<td>13_custom_font.py</td>
+<td>Disegnare un font personalizzato</td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/13-custom-font.html">Demo</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/13_custom_font.py">Codice</a></td>
 </tr>
 <tr>
 <td>14_synthesizer.py</td>
