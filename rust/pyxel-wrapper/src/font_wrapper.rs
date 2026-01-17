@@ -15,8 +15,11 @@ impl Font {
 #[pymethods]
 impl Font {
     #[new]
-    pub fn new(filename: &str) -> Self {
-        Self::wrap(pyxel::Font::new(filename))
+    #[pyo3(signature = (filename, font_size=None))]
+    pub fn new(filename: &str, font_size: Option<f32>) -> PyResult<Self> {
+        pyxel::Font::new(filename, font_size)
+            .map(Self::wrap)
+            .map_err(pyo3::exceptions::PyException::new_err)
     }
 
     pub fn text_width(&self, s: &str) -> i32 {
