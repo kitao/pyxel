@@ -234,14 +234,12 @@ impl Font {
                 let start_x = x;
                 let mut x = x;
                 let mut y = y;
-                let line_metrics =
-                    font.horizontal_line_metrics(*size)
-                        .unwrap_or(fontdue::LineMetrics {
-                            ascent: *size,
-                            descent: 0.0,
-                            line_gap: 0.0,
-                            new_line_size: *size,
-                        });
+                let line_metrics = font.horizontal_line_metrics(*size).unwrap_or(LineMetrics {
+                    ascent: *size,
+                    descent: 0.0,
+                    line_gap: 0.0,
+                    new_line_size: *size,
+                });
                 let ascent = line_metrics.ascent.round() as i32;
                 let line_height = line_metrics.new_line_size.ceil() as i32;
 
