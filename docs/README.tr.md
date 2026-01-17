@@ -188,10 +188,10 @@ Aşağıdaki örnekler geçerli dizine kopyalanacaktır:
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/12_perlin_noise.py">Kod</a></td>
 </tr>
 <tr>
-<td>13_bitmap_font.py</td>
-<td>Bitmap font çizimi</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/13-bitmap-font.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/13_bitmap_font.py">Kod</a></td>
+<td>13_custom_font.py</td>
+<td>Özel font çizimi</td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/13-custom-font.html">Demo</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/13_custom_font.py">Kod</a></td>
 </tr>
 <tr>
 <td>14_synthesizer.py</td>
