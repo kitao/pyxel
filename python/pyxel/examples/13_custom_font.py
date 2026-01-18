@@ -19,7 +19,7 @@ def draw_text_with_border(x, y, s, col, bcol, font):
 pyxel.init(128, 128, title="Custom Font")
 pyxel.load("assets/sample.pyxres")
 
-font10 = pyxel.Font("assets/PixelMplus10-Regular.ttf", 10)
+font10 = pyxel.Font("assets/umplus_j10r.bdf")  # BDF doesn't use font size
 font12 = pyxel.Font("assets/PixelMplus12-Regular.ttf", 12)
 
 pyxel.cls(1)
