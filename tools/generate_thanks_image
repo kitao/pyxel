@@ -7,8 +7,9 @@ import pathlib
 import random
 
 import PIL.Image
-import pyxel
 import requests
+
+import pyxel
 
 ROOT_DIR = ".."
 CACHE_DIR = "/tmp/pyxel_user_example_images"
@@ -184,11 +185,11 @@ def draw_message_image(thanks_image):
 
     base_image.load(43, 8, "examples/assets/pyxel_logo_38x16.png")
 
-    base_image.text(10, 29, "Thank you for 16,000 stars", 12)
-    base_image.text(10 + 14 * 4, 29, "16,000", 9)
+    base_image.text(10, 29, "Thank you for 17,000 stars", 12)
+    base_image.text(10 + 14 * 4, 29, "17,000", 9)
 
-    base_image.text(15, 37, "and 1,100,000 downloads!", 12)
-    base_image.text(15 + 4 * 4, 37, "1,100,000", 9)
+    base_image.text(15, 37, "and 1,300,000 downloads!", 12)
+    base_image.text(15 + 4 * 4, 37, "1,300,000", 9)
 
     # Draw layout guide lines for alignment
     if False:
