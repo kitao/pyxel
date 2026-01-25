@@ -1,4 +1,4 @@
-const PYODIDE_URL = "https://cdn.jsdelivr.net/pyodide/v0.29.1/full/pyodide.js";
+const PYODIDE_URL = "https://cdn.jsdelivr.net/pyodide/v0.29.2/full/pyodide.js";
 const PYXEL_WHEEL_PATH = "pyxel-2.6.0-cp38-abi3-emscripten_4_0_9_wasm32.whl";
 const PYXEL_LOGO_PATH = "../docs/images/pyxel_logo_76x32.png";
 const TOUCH_TO_START_PATH = "../docs/images/touch_to_start_114x14.png";
@@ -211,7 +211,7 @@ function _setMinWidthFromRatio(selector, screenSize) {
   }
 
   let minWidthRatio = parseFloat(
-    getComputedStyle(elem).getPropertyValue("--min-width-ratio")
+    getComputedStyle(elem).getPropertyValue("--min-width-ratio"),
   );
   elem.style.minWidth = `${screenSize * minWidthRatio}px`;
 }
@@ -460,7 +460,7 @@ function _hookFileOperations(pyodide, root) {
     a.href = URL.createObjectURL(
       new Blob([fs.readFile(filename)], {
         type: "application/octet-stream",
-      })
+      }),
     );
     a.style.display = "none";
     document.body.appendChild(a);
