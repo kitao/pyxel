@@ -1,5 +1,11 @@
 # Change Log
 
+## 2.6.1
+
+- Increased the audio buffer size to 1024 for the web version
+- Updated Pyodide to version 0.29.2
+- Updated the sysinfo crate to version 0.38
+
 ## 2.6.0
 
 - Added font rendering feature using TTF and OTF fonts
