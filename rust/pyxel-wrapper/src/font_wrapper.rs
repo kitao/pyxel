@@ -1,6 +1,6 @@
 use pyo3::prelude::*;
 
-#[pyclass]
+#[pyclass(from_py_object)]
 #[derive(Clone)]
 pub struct Font {
     pub(crate) inner: pyxel::SharedFont,

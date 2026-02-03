@@ -32,7 +32,7 @@ wrap_sound_as_python_list!(Tones, pyxel::SoundTone, tones);
 wrap_sound_as_python_list!(Volumes, pyxel::SoundVolume, volumes);
 wrap_sound_as_python_list!(Effects, pyxel::SoundEffect, effects);
 
-#[pyclass]
+#[pyclass(from_py_object)]
 #[derive(Clone)]
 pub struct Sound {
     pub(crate) inner: pyxel::SharedSound,

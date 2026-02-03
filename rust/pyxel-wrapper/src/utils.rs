@@ -28,7 +28,7 @@ macro_rules! cast_pyany {
 
 macro_rules! wrap_as_python_list {
     ($wrapper_name:ident, $inner_type:ty, $len:expr, $get_type:ty, $get:expr, $set_type:ty, $set:expr, $list_type:ty, $from_list:expr, $to_list:expr) => {
-        #[pyclass]
+        #[pyclass(skip_from_py_object)]
         #[derive(Clone)]
         pub struct $wrapper_name {
             inner: $inner_type,

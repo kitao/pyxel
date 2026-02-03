@@ -38,7 +38,7 @@ wrap_as_python_list!(
         .collect::<Vec<Vec<u32>>>())
 );
 
-#[pyclass]
+#[pyclass(from_py_object)]
 #[derive(Clone)]
 pub struct Music {
     pub(crate) inner: pyxel::SharedMusic,

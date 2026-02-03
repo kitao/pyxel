@@ -18,7 +18,7 @@ wrap_as_python_list!(
     (|inner: &pyxel::SharedTone| inner.lock().wavetable.clone())
 );
 
-#[pyclass]
+#[pyclass(from_py_object)]
 #[derive(Clone)]
 pub struct Tone {
     pub(crate) inner: pyxel::SharedTone,
