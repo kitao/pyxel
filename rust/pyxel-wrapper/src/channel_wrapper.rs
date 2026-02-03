@@ -8,7 +8,7 @@ use crate::sound_wrapper::Sound;
 
 static PLAY_TICK_ONCE: Once = Once::new();
 
-#[pyclass]
+#[pyclass(from_py_object)]
 #[derive(Clone)]
 pub struct Channel {
     pub(crate) inner: pyxel::SharedChannel,

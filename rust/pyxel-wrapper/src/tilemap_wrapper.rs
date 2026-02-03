@@ -12,7 +12,7 @@ static SET_IMAGE_ONCE: Once = Once::new();
 static REFIMG_ONCE: Once = Once::new();
 static SET_REFIMG_ONCE: Once = Once::new();
 
-#[pyclass]
+#[pyclass(from_py_object)]
 #[derive(Clone)]
 pub struct Tilemap {
     pub(crate) inner: pyxel::SharedTilemap,

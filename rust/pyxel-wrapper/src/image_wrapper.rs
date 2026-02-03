@@ -8,7 +8,7 @@ use crate::font_wrapper::Font;
 use crate::pyxel_singleton::pyxel;
 use crate::tilemap_wrapper::Tilemap;
 
-#[pyclass]
+#[pyclass(from_py_object)]
 #[derive(Clone)]
 pub struct Image {
     pub(crate) inner: pyxel::SharedImage,
