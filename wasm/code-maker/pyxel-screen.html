@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en" class="h-full">
   <head>
     <meta charset="UTF-8" />
@@ -8,8 +8,14 @@
   <body>
     <pyxel-run
       script="
-        import js, base64, pyxel.cli
-        with open('main.py', 'w') as f:
+        import js, base64, pyxel.cli, os
+        project_files = js.parent.project.files.to_py()
+        for path, b64_content in project_files.items():
+          if '/' in path:
+            os.makedirs(os.path.dirname(path), exist_ok=True)
+          with open(path, 'wb') as f:
+            f.write(base64.b64decode(b64_content))
+        with open('main.py', 'w', encoding='utf-8') as f:
           f.write(js.parent.project.code)
         with open('my_resource.pyxres', 'wb') as f:
           f.write(base64.b64decode(js.parent.project.resource))
