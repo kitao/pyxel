@@ -5,6 +5,7 @@
 - Updated Pyodide to version 0.29.3
 - Updated the pyo3 crate to version 0.28
 - Disabled pinch/double-tap zoom on mobile browsers
+- Fixed loading of additional files in Pyxel Code Maker
 
 ## 2.6.1
 
