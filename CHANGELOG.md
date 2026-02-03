@@ -1,5 +1,11 @@
 # Change Log
 
+## 2.6.2
+
+- Updated Pyodide to version 0.29.3
+- Updated the pyo3 crate to version 0.28
+- Disabled pinch/double-tap zoom on mobile browsers
+
 ## 2.6.1
 
 - Increased the audio buffer size to 1024 for the web version
