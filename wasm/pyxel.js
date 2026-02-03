@@ -1,4 +1,4 @@
-const PYODIDE_URL = "https://cdn.jsdelivr.net/pyodide/v0.29.2/full/pyodide.js";
+const PYODIDE_URL = "https://cdn.jsdelivr.net/pyodide/v0.29.3/full/pyodide.js";
 const PYXEL_WHEEL_PATH = "pyxel-2.6.1-cp38-abi3-emscripten_4_0_9_wasm32.whl";
 const PYXEL_LOGO_PATH = "../docs/images/pyxel_logo_76x32.png";
 const TOUCH_TO_START_PATH = "../docs/images/touch_to_start_114x14.png";
@@ -39,7 +39,7 @@ async function launchPyxel(params) {
   console.log(params);
 
   _allowGamepadConnection();
-  _suppressPinchOperations();
+  _suppressTouchZoomGestures();
 
   let canvas = await _createScreenElements();
   let pyodide = await _loadPyodideAndPyxel(canvas);
@@ -193,15 +193,25 @@ function _allowGamepadConnection() {
   });
 }
 
-function _suppressPinchOperations() {
-  let touchHandler = (event) => {
-    if (event.touches.length > 1) {
+function _suppressTouchZoomGestures() {
+  // Ensure viewport disables pinch/double-tap zoom
+  let m = document.querySelector('meta[name="viewport"]');
+  if (!m) {
+    m = document.createElement("meta");
+    m.name = "viewport";
+    document.head.appendChild(m);
+  }
+  m.content =
+    "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no";
+
+  // Suppress pinch-to-zoom by preventing multi-touch gestures
+  const pinchHandler = (event) => {
+    if (event.touches && event.touches.length > 1) {
       event.preventDefault();
     }
   };
-
-  document.addEventListener("touchstart", touchHandler, { passive: false });
-  document.addEventListener("touchmove", touchHandler, { passive: false });
+  document.addEventListener("touchstart", pinchHandler, { passive: false });
+  document.addEventListener("touchmove", pinchHandler, { passive: false });
 }
 
 function _setMinWidthFromRatio(selector, screenSize) {
