@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.6.3
+
+- Adjusted initialization order for the web version
+
 ## 2.6.2
 
 - Updated Pyodide to version 0.29.3
