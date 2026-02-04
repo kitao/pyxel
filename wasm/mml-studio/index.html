@@ -101,6 +101,14 @@
           >
             Pyxel MML Commands
           </a>
+          <a
+            target="_blank"
+            rel="noopener noreferrer"
+            href="https://kitao.github.io/pyxel/wasm/mml-studio/?mml=CoJgjAbAAmUKIDkBqYDeYQHYA0HuZAF8B5AVgBkMACARwgAYAzAFgHNnGIAyAEy4B469AEYBaZgD4qAY2Y9m07vwCGXIe1oBOCIzBdmVVt1VjuE6b24BTUV1oMW7Try6KBYrlKGy3fN-w92OxptMTAqACdJIRZYgxi2Dm4+QQYxSRk5BSVVdXjtXX1DYy5TTwsea1t7JkTnPyUPLwYfZNdG2yCtCHSghKi+h2YBrkYAai5WTyoAbSF5finxya4AXRBuiXkrBTGNqPlXMZzRseY7YRAAOijIyWkz924pq2eL863zh-OdgSplMBXO6MLhWUbTOYtZj8EFgkHrTayBaXKRRWRPFa-f7XW5RCQSbzQozgwlURxmaQYAR5ZwWMlvITmZghHQKaE1OJxADcoEgUBA8GQaAgzGwIFFAGYiFRBUgQOh6PQxaLmPRCDLEEgJQqleLsAwSMxyAZZeEWTNlCBWCAxFaQKsJZFGLKrWoHP9bDFcu7Td1yAAOZRsbgsgE28QadLqHriFlhEDKEPaVjUZwslMJ0QhhhBqgE7Q8UQYRSpESx7SGDCJ9LxxNu+gaFkBsPEoRhuMRgxRhhGGtFhNJiAZqjpF02c7zYYGcf1+RRW6yiXEZgAG3iaR4wh4I+EXFUUzJeyuam0Ki8YEVET4y13hmuJ4gAVRu-3dmWYPmESoH4YPAiX8XZc11mNsWWkBFlFfEFv3vFl+FNVhUSmVQJDBbobGuUt0m6W0riEbDQ3DDY22Ga4eXAaB6GICVyGI7QZgCUQJEYaRGAdKhGLALZRGkboGLEZjWPYrDxAiEAWBHUSOGYdJmnoYCrGEJ9hHQpTlAkZRZh4cYz3GBErFYJ9WG-QzIKoHh8RmB5qTSQRtGUdYIi8bRgJ4ZQz00tyz2MqyrEWVCESs65wI2RhxNEEB+jI3loCXTBjVNVACFwEAUvVF1UAYFK0tmU0ZhmCI2JAQroE1cSMAiU02OYBE8v4fhpHxNiwFIJ0dGoOqGqa1Z-VmRh-yKslCq-RhOBdXRiqqoA"
+            class="block sm:self-center mb-2 text-sm link"
+          >
+            Sample Tune
+          </a>
         </div>
 
         <!-- Screen -->
@@ -349,7 +357,7 @@
           resolvePyxelInput();
           if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
             const playButton = document.querySelector(
-              'button[data-action="play"]'
+              'button[data-action="play"]',
             );
             if (playButton && !playButton.disabled) {
               e.preventDefault();
@@ -357,7 +365,7 @@
             }
           } else if (e.key === "Escape") {
             const stopButton = document.querySelector(
-              'button[data-action="stop"]'
+              'button[data-action="stop"]',
             );
             if (stopButton && !stopButton.disabled) {
               e.preventDefault();
@@ -366,7 +374,7 @@
           } else if ((e.ctrlKey || e.metaKey) && e.key === "l") {
             e.preventDefault();
             const loopButton = document.querySelector(
-              'button[data-action="loop"]'
+              'button[data-action="loop"]',
             );
             if (loopButton && !loopButton.disabled) {
               handleButtonPress(loopButton);
@@ -378,7 +386,7 @@
         const mmlParam = new URL(document.location).searchParams.get("mml");
         if (mmlParam) {
           const mmlList = LZString.decompressFromEncodedURIComponent(
-            mmlParam
+            mmlParam,
           ).split(";", 4);
           for (let i = 1; i <= 4; i++) {
             const t = document.getElementById(`ch${i}`);
@@ -403,7 +411,7 @@
           if (runtimeScreen.contentWindow?.pyxelContext?.resolveInput) {
             document
               .querySelectorAll(
-                'button[data-action="play"],button[data-action="stop"],button[data-action="loop"]'
+                'button[data-action="play"],button[data-action="stop"],button[data-action="loop"]',
               )
               .forEach((button) => {
                 button.disabled = false;
