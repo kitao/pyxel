@@ -435,7 +435,7 @@ def create_html_from_pyxel_app(pyxel_app_file):
     pyxel_app_name = os.path.splitext(os.path.basename(pyxel_app_file))[0]
     with open(pyxel_app_name + ".html", "w") as f:
         f.write(
-            "<!DOCTYPE html>\n"
+            "<!doctype html>\n"
             f'<script src="https://cdn.jsdelivr.net/gh/kitao/pyxel@{pyxel.VERSION}/wasm/pyxel.js">'
             "</script>\n"
             "<script>\n"

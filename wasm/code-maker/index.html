@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en" class="h-full">
   <head>
     <meta charset="UTF-8" />
@@ -251,22 +251,22 @@
               key: "F13",
               code: "F13",
               bubbles: true,
-            })
+            }),
           );
           doc.dispatchEvent(
             new KeyboardEvent("keyup", {
               key: "F13",
               code: "F13",
               bubbles: true,
-            })
+            }),
           );
 
           await new Promise((resolve) => setTimeout(resolve, 100));
 
           window.project.resource = uint8ToBase64(
             resourceEditor.contentWindow.pyxelContext.pyodide.FS.readFile(
-              PYXEL_WORKING_DIRECTORY + "/my_resource.pyxres"
-            )
+              PYXEL_WORKING_DIRECTORY + "/my_resource.pyxres",
+            ),
           );
         } finally {
           window.isCopyingResource = false;
@@ -305,7 +305,7 @@
           window.project.name = file.name.replace(/\.zip$/i, "");
           window.project.files = files;
           window.project.code = new TextDecoder().decode(
-            base64ToUint8(files["main.py"])
+            base64ToUint8(files["main.py"]),
           );
           window.project.resource = files["my_resource.pyxres"];
 
@@ -343,18 +343,18 @@
             const archive = new JSZip();
 
             for (const [relativePath, base64Content] of Object.entries(
-              window.project.files
+              window.project.files,
             )) {
               archive.file(
                 `${window.project.name}/${relativePath}`,
-                base64ToUint8(base64Content)
+                base64ToUint8(base64Content),
               );
             }
 
             archive.file(`${window.project.name}/main.py`, window.project.code);
             archive.file(
               `${window.project.name}/my_resource.pyxres`,
-              base64ToUint8(window.project.resource)
+              base64ToUint8(window.project.resource),
             );
 
             const blob = await archive.generateAsync({ type: "blob" });
@@ -374,18 +374,18 @@
         const archive = new JSZip();
 
         for (const [relativePath, base64Content] of Object.entries(
-          window.project.files
+          window.project.files,
         )) {
           archive.file(
             `${window.project.name}/${relativePath}`,
-            base64ToUint8(base64Content)
+            base64ToUint8(base64Content),
           );
         }
 
         archive.file(`${window.project.name}/main.py`, window.project.code);
         archive.file(
           `${window.project.name}/my_resource.pyxres`,
-          base64ToUint8(window.project.resource)
+          base64ToUint8(window.project.resource),
         );
 
         const blob = await archive.generateAsync({ type: "blob" });
@@ -450,7 +450,7 @@
         const saveButton = document.getElementById("save-button");
         const codeTabButton = document.getElementById("code-tab-button");
         const resourceTabButton = document.getElementById(
-          "resource-tab-button"
+          "resource-tab-button",
         );
         const codePane = document.getElementById("code-pane");
         const resPane = document.getElementById("resource-pane");
@@ -518,15 +518,15 @@
         window.project.code = await (await fetch("main.py")).text();
         window.project.resource = uint8ToBase64(
           new Uint8Array(
-            await (await fetch("my_resource.pyxres")).arrayBuffer()
-          )
+            await (await fetch("my_resource.pyxres")).arrayBuffer(),
+          ),
         );
         window.project.files = {
           ".pyxapp_startup_script": uint8ToBase64(
-            new TextEncoder().encode("main.py")
+            new TextEncoder().encode("main.py"),
           ),
           "main.py": uint8ToBase64(
-            new TextEncoder().encode(window.project.code)
+            new TextEncoder().encode(window.project.code),
           ),
           "my_resource.pyxres": window.project.resource,
         };
@@ -569,7 +569,7 @@
           runButton.disabled = false;
 
           const resourceTabButton = document.getElementById(
-            "resource-tab-button"
+            "resource-tab-button",
           );
           resourceTabButton.disabled = false;
           resourceTabButton.classList.remove("disabled");
@@ -626,7 +626,7 @@
               updateFocusLine("none");
             }
           },
-          true
+          true,
         );
 
         if (runtimeScreen?.contentWindow?.document) {
@@ -635,7 +635,7 @@
             () => {
               updateFocusLine("right");
             },
-            true
+            true,
           );
         }
 
@@ -645,7 +645,7 @@
             () => {
               updateFocusLine("left");
             },
-            true
+            true,
           );
         }
       }
@@ -673,7 +673,7 @@
           const centerWidth = handleRect.width;
           const rightWidth = Math.max(
             containerWidth - leftWidth - centerWidth,
-            0
+            0,
           );
 
           // 左・中央・右をピクセル指定にして、セパレーター分を中央に集約
@@ -768,7 +768,7 @@
             e.stopPropagation();
             const codeTabButton = document.getElementById("code-tab-button");
             const resourceTabButton = document.getElementById(
-              "resource-tab-button"
+              "resource-tab-button",
             );
             if (!codeTabButton || !resourceTabButton) {
               return;
@@ -790,14 +790,14 @@
             const rightLine = document.getElementById("focus-line-right");
             const codeTabButton = document.getElementById("code-tab-button");
             const resourceTabButton = document.getElementById(
-              "resource-tab-button"
+              "resource-tab-button",
             );
 
             const leftActive = leftLine?.classList.contains(
-              "focus-line-segment-active"
+              "focus-line-segment-active",
             );
             const rightActive = rightLine?.classList.contains(
-              "focus-line-segment-active"
+              "focus-line-segment-active",
             );
 
             // Decide next target: if right is active, move to left, otherwise to right

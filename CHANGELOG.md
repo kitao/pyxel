@@ -3,6 +3,7 @@
 ## 2.6.3
 
 - Adjusted initialization order for the web version
+- Normalized HTML doctypes to lowercase
 
 ## 2.6.2
 
