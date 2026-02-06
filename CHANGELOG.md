@@ -4,6 +4,7 @@
 
 - Adjusted initialization order for the web version
 - Normalized HTML doctypes to lowercase
+- Enabled local Pyxel for the test web server
 
 ## 2.6.2
 
