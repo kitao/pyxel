@@ -46,7 +46,7 @@ impl Image {
             colors.clear();
         }
         let file_image = image::open(Path::new(&filename))
-            .map_err(|e| format!("Failed to open file '{filename}': {e}"))?
+            .map_err(|_e| format!("Failed to open file '{filename}'"))?
             .to_rgb8();
         let (width, height) = file_image.dimensions();
         let image = Self::new(width, height);
@@ -196,7 +196,7 @@ impl Image {
         let filename = utils::add_file_extension(filename, ".png");
         image
             .save(&filename)
-            .map_err(|e| format!("Failed to open file '{filename}': {e}"))?;
+            .map_err(|_e| format!("Failed to open file '{filename}'"))?;
         Ok(())
     }
 
