@@ -44,7 +44,7 @@ impl Pyxel {
         exclude_musics: Option<bool>,
     ) -> Result<(), String> {
         let file = File::open(Path::new(&filename))
-            .map_err(|e| format!("Failed to open file '{filename}': {e}"))?;
+            .map_err(|_e| format!("Failed to open file '{filename}'"))?;
         let mut archive = ZipArchive::new(file).unwrap();
 
         // Old resource file
@@ -101,7 +101,7 @@ impl Pyxel {
 
         let path = std::path::Path::new(&filename);
         let file = std::fs::File::create(path)
-            .map_err(|e| format!("Failed to open file '{filename}': {e}"))?;
+            .map_err(|_e| format!("Failed to open file '{filename}'"))?;
 
         let mut zip = ZipWriter::new(file);
         zip.start_file(RESOURCE_ARCHIVE_NAME, SimpleFileOptions::default())
@@ -138,7 +138,7 @@ impl Pyxel {
     pub fn save_pal(&self, filename: &str) -> Result<(), String> {
         let filename = Self::palette_filename(filename);
         let mut file = File::create(Path::new(&filename))
-            .map_err(|e| format!("Failed to open file '{filename}': {e}"))?;
+            .map_err(|_e| format!("Failed to open file '{filename}'"))?;
 
         let colors = self.colors.lock();
         for &color in colors.iter() {
