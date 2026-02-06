@@ -160,8 +160,7 @@ build-wasm:
 	@$(TOOLS_DIR)/install_wasm_wheel
 
 start-test-server:
-	$(TOOLS_DIR)/switch_html_scripts local
-	@bash -c "trap '$(TOOLS_DIR)/switch_html_scripts cdn' INT TERM; $(TOOLS_DIR)/start_test_server"
+	@$(TOOLS_DIR)/start_test_server
 
 test-wasm: build-wasm start-test-server
 
