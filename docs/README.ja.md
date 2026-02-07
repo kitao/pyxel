@@ -719,6 +719,10 @@ Pyxel アプリケーションファイルは、`pyxel app2exe` コマンドや 
   [MML (Music Macro Language)](https://ja.wikipedia.org/wiki/Music_Macro_Language) の文字列を渡すと MML モードに移行し、その内容に沿ってサウンドが再生されます。MML モードでは `notes` や `speed` などの通常のパラメータは無視され、`mml()` で解除できます。MML の詳細は、[こちらのページ](faq-ja.md) を参照してください。<br>
   例：`pyxel.sounds[0].mml("T120 Q90 @1 V100 O5 L8 C4&C<G16R16>C.<G16 >C.D16 @VIB1{10,20,20} E2C2")`
 
+- `pcm(filename)`<br>
+  オーディオファイル (WAV/OGG) を読み込んで再生に使用します。`pcm()` で通常の再生モードに戻します。<br>
+  例：`pyxel.sounds[0].pcm("sounds/bgm.ogg")`
+
 - `save(filename, sec, [ffmpeg])`<br>
   サウンドを指定した秒数分再生した WAV ファイルを作成します。FFmpeg がインストールされている環境で、`ffmpeg` に `True` を指定すると、MP4 ファイルも作成します。
 

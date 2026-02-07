@@ -719,6 +719,10 @@ Bir Pyxel uygulama dosyası ayrıca `pyxel app2exe` veya `pyxel app2html` komutl
   Bir [MML (Music Macro Language)](https://en.wikipedia.org/wiki/Music_Macro_Language) dizesi geçirildiğinde MML moduna geçilir ve içeriğine göre ses çalınır. Bu modda `notes` ve `speed` gibi normal parametreler yok sayılır. MML modundan çıkmak için `mml()` fonksiyonunu argümansız olarak çağırın. MML hakkında daha fazla bilgi için [bu sayfaya](faq-en.md) bakın.<br>
   Örnek: `pyxel.sounds[0].mml("T120 Q90 @1 V100 O5 L8 C4&C<G16R16>C.<G16 >C.D16 @VIB1{10,20,20} E2C2")`
 
+- `pcm(filename)`<br>
+  Oynatma için bir ses dosyası (WAV/OGG) yükler. Normal oynatma moduna dönmek için `pcm()` çağırın.<br>
+  Örnek: `pyxel.sounds[0].pcm("sounds/bgm.ogg")`
+
 - `save(filename, sec, [ffmpeg])`<br>
   Belirtilen saniye boyunca sesi çalan bir WAV dosyası oluşturur. FFmpeg yüklüyse ve `ffmpeg` `True` olarak ayarlandıysa, bir MP4 dosyası da oluşturulur.
 

@@ -719,6 +719,10 @@ Pyxel 应用程序文件还可以使用 `pyxel app2exe` 或 `pyxel app2html` 命
   传入 [MML（音乐宏语言）](https://en.wikipedia.org/wiki/Music_Macro_Language) 字符串后，将切换到 MML 模式，并根据内容播放声音。在此模式下，`notes` 和 `speed` 等普通参数将被忽略。要退出 MML 模式，请调用 `mml()`（不带参数）。关于 MML 的详细说明，请参阅 [此页面](faq-en.md)。<br>
   例子：`pyxel.sounds[0].mml("T120 Q90 @1 V100 O5 L8 C4&C<G16R16>C.<G16 >C.D16 @VIB1{10,20,20} E2C2")`
 
+- `pcm(filename)`<br>
+  加载音频文件 (WAV/OGG) 以用于播放。调用 `pcm()` 返回普通播放模式。<br>
+  例：`pyxel.sounds[0].pcm("sounds/bgm.ogg")`
+
 - `save(filename, sec, [ffmpeg])`<br>
   创建一个播放指定秒数声音的 WAV 文件。如果已安装 FFmpeg 并将 `ffmpeg` 设置为 `True`，还会创建一个 MP4 文件。
 

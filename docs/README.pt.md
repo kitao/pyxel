@@ -719,6 +719,10 @@ Um arquivo de aplicativo Pyxel também pode ser convertido em um executável ou 
   Ao passar uma string [MML (Music Macro Language)](https://en.wikipedia.org/wiki/Music_Macro_Language), o modo MML é ativado e o som é reproduzido conforme seu conteúdo. Nesse modo, parâmetros normais como `notes` e `speed` são ignorados. Para sair do modo MML, chame `mml()` sem argumentos. Para mais detalhes sobre MML, consulte [esta página](faq-en.md).<br>
   Exemplo: `pyxel.sounds[0].mml("T120 Q90 @1 V100 O5 L8 C4&C<G16R16>C.<G16 >C.D16 @VIB1{10,20,20} E2C2")`
 
+- `pcm(filename)`<br>
+  Carrega um arquivo de áudio (WAV/OGG) para reprodução. Use `pcm()` para voltar ao modo de reprodução normal.<br>
+  Exemplo: `pyxel.sounds[0].pcm("sounds/bgm.ogg")`
+
 - `save(filename, sec, [ffmpeg])`<br>
   Cria um arquivo WAV que reproduz o som durante os segundos especificados. Se o FFmpeg estiver instalado e `ffmpeg` for definido como `True`, um arquivo MP4 também será criado.
 
