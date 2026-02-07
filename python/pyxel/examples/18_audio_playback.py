@@ -9,7 +9,6 @@ BGM2_AUDIO_PATH = "assets/audio_bgm2.ogg"
 class App:
     def __init__(self):
         pyxel.init(256, 240, title="Audio Playback")
-        pyxel.integer_scale(True)
 
         self.images = [
             pyxel.Image.from_image(BGM1_IMAGE_PATH),
