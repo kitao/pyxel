@@ -38,8 +38,8 @@ async function launchPyxel(params) {
   console.log(`Launch Pyxel ${pyxel_version} with Pyodide ${pyodide_version}`);
   console.log(params);
 
-  _allowGamepadConnection();
   _suppressTouchZoomGestures();
+  _allowGamepadConnection();
 
   let canvas = await _createScreenElements();
   let pyodide = await _loadPyodideAndPyxel(canvas);
