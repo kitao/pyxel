@@ -35,6 +35,7 @@ mod mml_parser;
 mod music;
 mod old_mml_parser;
 mod old_resource_data;
+mod pcm_decoder;
 mod profiler;
 mod pyxel;
 mod rect_area;

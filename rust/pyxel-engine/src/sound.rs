@@ -4,6 +4,7 @@ use crate::audio::Audio;
 use crate::mml_command::MmlCommand;
 use crate::mml_parser::{calc_commands_sec, parse_mml};
 use crate::old_mml_parser::parse_old_mml;
+use crate::pcm_decoder::{load_pcm, PcmData};
 use crate::pyxel::{CHANNELS, TONES};
 use crate::settings::{
     AUDIO_CLOCK_RATE, AUDIO_SAMPLE_RATE, DEFAULT_SOUND_SPEED, EFFECT_FADEOUT, EFFECT_HALF_FADEOUT,
@@ -29,6 +30,7 @@ pub struct Sound {
     pub speed: SoundSpeed,
 
     pub(crate) commands: Vec<MmlCommand>,
+    pub(crate) pcm: Option<PcmData>,
 }
 
 pub type SharedSound = shared_type!(Sound);
@@ -43,6 +45,7 @@ impl Sound {
             speed: DEFAULT_SOUND_SPEED,
 
             commands: Vec::new(),
+            pcm: None,
         })
     }
 
@@ -151,6 +154,7 @@ impl Sound {
     }
 
     pub fn mml(&mut self, code: &str) -> Result<(), String> {
+        self.pcm0();
         self.commands = parse_mml(code)?;
         Ok(())
     }
@@ -160,8 +164,21 @@ impl Sound {
     }
 
     pub fn old_mml(&mut self, code: &str) -> Result<(), String> {
+        self.pcm0();
         self.commands = parse_old_mml(code)?;
         Ok(())
+    }
+
+    pub fn pcm(&mut self, filename: &str) -> Result<(), String> {
+        self.mml0();
+
+        let pcm = load_pcm(filename, AUDIO_SAMPLE_RATE)?;
+        self.pcm = Some(pcm);
+        Ok(())
+    }
+
+    pub fn pcm0(&mut self) {
+        self.pcm = None;
     }
 
     pub fn save(
@@ -199,7 +216,9 @@ impl Sound {
     }
 
     pub fn total_sec(&self) -> Option<f32> {
-        if self.commands.is_empty() {
+        if let Some(pcm) = &self.pcm {
+            Some(pcm.samples.len() as f32 / AUDIO_SAMPLE_RATE as f32)
+        } else if self.commands.is_empty() {
             Some(self.notes.len() as f32 * self.speed as f32 / SOUND_TICKS_PER_SECOND as f32)
         } else {
             calc_commands_sec(&self.commands)

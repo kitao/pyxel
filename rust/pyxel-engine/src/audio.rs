@@ -49,6 +49,10 @@ impl Audio {
             blip_buf.end_frame(CLOCKS_PER_SAMPLE);
             num_samples += blip_buf.read_samples(&mut samples[num_samples..], false);
         }
+
+        for channel in &mut *channels {
+            channel.mix_pcm(samples);
+        }
     }
 
     pub fn save_samples(filename: &str, samples: &[i16], use_ffmpeg: bool) -> Result<(), String> {
@@ -61,7 +65,7 @@ impl Audio {
         };
         let filename = utils::add_file_extension(filename, ".wav");
         let mut writer = WavWriter::create(&filename, spec)
-            .map_err(|e| format!("Failed to open file '{filename}': {e}"))?;
+            .map_err(|_e| format!("Failed to open file '{filename}'"))?;
 
         for sample in samples {
             writer.write_sample(*sample).unwrap();
@@ -103,7 +107,7 @@ impl Audio {
             .arg(mp4_file)
             .arg("-y")
             .output()
-            .map_err(|e| format!("Failed to execute FFmpeg: {e}"))?;
+            .map_err(|_e| "Failed to execute FFmpeg".to_string())?;
 
         remove_file(png_file).unwrap();
         Ok(())

@@ -5,7 +5,8 @@ use blip_buf::BlipBuf;
 use crate::mml_command::MmlCommand;
 use crate::pyxel::TONES;
 use crate::settings::{
-    AUDIO_CLOCK_RATE, AUDIO_CONTROL_RATE, DEFAULT_CHANNEL_GAIN, NOTE_INTERP_CLOCKS,
+    AUDIO_CLOCK_RATE, AUDIO_CONTROL_RATE, AUDIO_SAMPLE_RATE, DEFAULT_CHANNEL_GAIN,
+    NOTE_INTERP_CLOCKS,
 };
 use crate::sound::{SharedSound, Sound};
 use crate::tone::ToneMode;
@@ -45,6 +46,8 @@ pub struct Channel {
 
     resume_sounds: Vec<SharedSound>,
     resume_should_loop: bool,
+
+    pcm_position: usize,
 }
 
 pub type SharedChannel = shared_type!(Channel);
@@ -82,6 +85,8 @@ impl Channel {
 
             resume_sounds: Vec::new(),
             resume_should_loop: false,
+
+            pcm_position: 0,
         })
     }
 
@@ -151,7 +156,7 @@ impl Channel {
         if sounds.is_empty()
             || sounds.iter().all(|sound| {
                 let sound = sound.lock();
-                sound.notes.is_empty() && sound.commands.is_empty()
+                sound.notes.is_empty() && sound.commands.is_empty() && sound.pcm.is_none()
             })
         {
             self.is_playing = false;
@@ -174,9 +179,18 @@ impl Channel {
         self.sound_elapsed_clocks = 0;
         self.command_index = 0;
         self.last_midi_note = None;
+        self.pcm_position = 0;
+
+        if self.current_sound_is_pcm() {
+            self.voice.cancel_note();
+        }
 
         if start_clock > 0 {
-            self.process(None, start_clock);
+            if self.current_sound_is_pcm() {
+                self.seek_pcm(start_clock);
+            } else {
+                self.process(None, start_clock);
+            }
         }
     }
 
@@ -195,6 +209,11 @@ impl Channel {
     }
 
     pub(crate) fn process(&mut self, blip_buf: Option<&mut BlipBuf>, clock_count: u32) {
+        if self.current_sound_is_pcm() {
+            self.voice.process(blip_buf, 0, clock_count);
+            return;
+        }
+
         let mut blip_buf = blip_buf;
         let start_clock_count = clock_count;
         let mut clock_count = clock_count;
@@ -447,5 +466,124 @@ impl Channel {
                 }
             }
         }
+    }
+
+    pub(crate) fn mix_pcm(&mut self, out: &mut [i16]) {
+        if !self.is_playing || !self.current_sound_is_pcm() {
+            return;
+        }
+
+        let clocks_per_sample = AUDIO_CLOCK_RATE / AUDIO_SAMPLE_RATE;
+        let mut offset = 0usize;
+
+        while offset < out.len() {
+            let mut to_copy = 0usize;
+            let mut end_reached = false;
+            let mut should_advance = false;
+            let gain = self.gain;
+
+            {
+                let sound = self.sounds[self.sound_index as usize].lock();
+                let Some(pcm) = &sound.pcm else {
+                    return;
+                };
+                let len = pcm.samples.len();
+
+                if len == 0 || self.pcm_position >= len {
+                    should_advance = true;
+                } else {
+                    let remaining = len - self.pcm_position;
+                    to_copy = (out.len() - offset).min(remaining);
+                    let samples = &pcm.samples;
+                    for i in 0..to_copy {
+                        let src = samples[self.pcm_position + i] as f32 * gain;
+                        let mixed = out[offset + i] as f32 + src;
+                        out[offset + i] = mixed.clamp(i16::MIN as f32, i16::MAX as f32) as i16;
+                    }
+                    end_reached = self.pcm_position + to_copy >= len;
+                }
+            }
+
+            if should_advance {
+                if !self.advance_pcm_sound() {
+                    return;
+                }
+                continue;
+            }
+
+            self.pcm_position += to_copy;
+            let clocks = clocks_per_sample * to_copy as u32;
+            self.sound_elapsed_clocks += clocks;
+            self.total_elapsed_clocks += clocks;
+            offset += to_copy;
+
+            if end_reached && !self.advance_pcm_sound() {
+                return;
+            }
+        }
+    }
+
+    fn advance_pcm_sound(&mut self) -> bool {
+        self.sound_index += 1;
+        self.sound_elapsed_clocks = 0;
+        self.pcm_position = 0;
+
+        if self.sound_index >= self.sounds.len() as u32 {
+            if self.should_loop {
+                self.sound_index = 0;
+                self.pcm_position = 0;
+            } else if self.should_resume {
+                self.play_from_clock(
+                    self.resume_sounds.clone(),
+                    self.total_elapsed_clocks,
+                    self.resume_should_loop,
+                    false,
+                );
+            } else {
+                self.is_playing = false;
+            }
+        }
+
+        self.is_playing
+    }
+
+    fn seek_pcm(&mut self, start_clock: u32) {
+        let clocks_per_sample = AUDIO_CLOCK_RATE / AUDIO_SAMPLE_RATE;
+        let sample_offset =
+            (start_clock as u64 * AUDIO_SAMPLE_RATE as u64 / AUDIO_CLOCK_RATE as u64) as usize;
+        let mut remaining = sample_offset;
+
+        while remaining > 0 && (self.sound_index as usize) < self.sounds.len() {
+            let len = {
+                let sound = self.sounds[self.sound_index as usize].lock();
+                match &sound.pcm {
+                    Some(pcm) => pcm.samples.len(),
+                    None => break,
+                }
+            };
+
+            if remaining >= len {
+                remaining -= len;
+                self.sound_index += 1;
+                self.sound_elapsed_clocks = 0;
+                self.pcm_position = 0;
+            } else {
+                self.pcm_position = remaining;
+                remaining = 0;
+            }
+        }
+
+        self.sound_elapsed_clocks = (self.pcm_position as u32) * clocks_per_sample;
+        self.total_elapsed_clocks += start_clock;
+
+        if (self.sound_index as usize) >= self.sounds.len() {
+            self.is_playing = false;
+        }
+    }
+
+    fn current_sound_is_pcm(&self) -> bool {
+        self.sounds
+            .get(self.sound_index as usize)
+            .is_some_and(|sound| sound.lock().pcm.is_some())
     }
 }
