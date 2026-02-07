@@ -5,6 +5,7 @@
 - Adjusted initialization order for the web version
 - Normalized HTML doctypes to lowercase
 - Enabled local Pyxel for the test web server
+- Added the pcm method to the Sound class for audio playback
 
 ## 2.6.2
 

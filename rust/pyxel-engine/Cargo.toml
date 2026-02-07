@@ -30,6 +30,7 @@ rand_xoshiro = "0.7"
 semver = "1.0"
 serde = { version = "1.0", features = ["derive"] }
 serde-xml-rs = "0.8"
+symphonia = { version = "0.5", features = ["all-codecs"] }
 toml = "0.9"
 zip = { version = "7.0", default-features = false, features = ["deflate"] }
 

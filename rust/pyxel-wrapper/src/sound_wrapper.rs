@@ -170,6 +170,19 @@ impl Sound {
             .map_err(PyException::new_err)
     }
 
+    #[pyo3(signature = (filename=None))]
+    pub fn pcm(&self, filename: Option<&str>) -> PyResult<()> {
+        if let Some(filename) = filename {
+            self.inner
+                .lock()
+                .pcm(filename)
+                .map_err(PyException::new_err)
+        } else {
+            self.inner.lock().pcm0();
+            Ok(())
+        }
+    }
+
     pub fn total_sec(&self) -> Option<f32> {
         self.inner.lock().total_sec()
     }
