@@ -218,6 +218,12 @@ pyxel copy_examples
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/17_app_launcher.py">代码</a></td>
 </tr>
 <tr>
+<td>18_audio_playback.py</td>
+<td>音频播放</td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/18-audio-playback.html">演示</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/18_audio_playback.py">代码</a></td>
+</tr>
+<tr>
 <td>99_flip_animation.py</td>
 <td>使用 flip 函数的动画（仅限非 Web 平台）</td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/docs/images/99_flip_animation.gif">演示</a></td>
