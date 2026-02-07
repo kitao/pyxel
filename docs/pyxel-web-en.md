@@ -72,7 +72,7 @@ You can also create a URL to play MML by entering multi-channel MML in the MML L
 
 ## Convert a Pyxel App to an HTML File
 
-You can convert a Pyxel application file (.pyxapp) into a standalone HTML file using the following command:
+You can convert a Pyxel application file (.pyxapp) into a standalone HTML file using the following command. The generated HTML file will reference the version of Pyxel used during the conversion.
 
 ```sh
 pyxel app2html your_app.pyxapp
@@ -82,7 +82,7 @@ The generated HTML file has the virtual gamepad enabled by default, but you can 
 
 ## Create an HTML File Using Pyxel Custom Tags
 
-You can run a Pyxel app by writing Pyxel-specific custom tags in an HTML file. The generated HTML file will reference the version of Pyxel used during the conversion.
+You can run a Pyxel app by writing Pyxel-specific custom tags in an HTML file.
 
 To use Pyxel custom tags, add the following script tag to your HTML file:
 
@@ -128,7 +128,7 @@ If you have a Python environment, you can start a simple server with the followi
 
 ```python
 python -m http.server
-# use python3 instead of python for mac and linux
+# use python3 instead of python on macOS and Linux
 ```
 
 After starting the server, you can access it in a browser at `http://localhost:8000/test.html`.
