@@ -8,7 +8,6 @@
 - Added the pcm method to the Sound class for audio playback
 - Added Example 18 for audio playback
 - Renamed the incl_colors to include_colors in the Image class
-- Changed the include_colors to append colors to the palette
 
 ## 2.6.2
 
