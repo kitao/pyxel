@@ -218,6 +218,12 @@ Os seguintes exemplos serão copiados para o diretório atual:
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/17_app_launcher.py">Código</a></td>
 </tr>
 <tr>
+<td>18_audio_playback.py</td>
+<td>Reprodução de áudio</td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/18-audio-playback.html">Demonstração</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/18_audio_playback.py">Código</a></td>
+</tr>
+<tr>
 <td>99_flip_animation.py</td>
 <td>Animação com a função `flip` (apenas para plataformas não web)</td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/docs/images/99_flip_animation.gif">Demonstração</a></td>

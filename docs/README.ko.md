@@ -218,6 +218,12 @@ pyxel copy_examples
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/17_app_launcher.py">코드</a></td>
 </tr>
 <tr>
+<td>18_audio_playback.py</td>
+<td>오디오 재생</td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/18-audio-playback.html">데모</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/18_audio_playback.py">코드</a></td>
+</tr>
+<tr>
 <td>99_flip_animation.py</td>
 <td>`flip` 함수로 애니메이션 (비 웹 플랫폼 전용)</td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/docs/images/99_flip_animation.gif">데모</a></td>
