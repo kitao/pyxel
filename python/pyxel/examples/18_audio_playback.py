@@ -31,17 +31,9 @@ class App:
         if pyxel.btnp(pyxel.KEY_Q):
             pyxel.quit()
 
-        if (
-            pyxel.btnp(pyxel.KEY_RETURN)
-            or pyxel.btnp(pyxel.GAMEPAD1_BUTTON_A)
-            or pyxel.frame_count == 150
-        ):
+        if pyxel.btnp(pyxel.KEY_RETURN) or pyxel.btnp(pyxel.GAMEPAD1_BUTTON_A):
             self.state = 1 - self.state
             self.play_current()
-
-        if pyxel.frame_count == 300:
-            pyxel.screencast()
-            pyxel.quit()
 
     def draw(self):
         pyxel.blt(
