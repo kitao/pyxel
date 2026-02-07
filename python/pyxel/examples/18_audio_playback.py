@@ -1,22 +1,18 @@
 import pyxel
 
-BGM1_IMAGE_PATH = "assets/audio_title.png"
-BGM1_AUDIO_PATH = "assets/audio_bgm1.ogg"
-BGM2_IMAGE_PATH = "assets/audio_play.png"
-BGM2_AUDIO_PATH = "assets/audio_bgm2.ogg"
-
 
 class App:
     def __init__(self):
         pyxel.init(256, 240, title="Audio Playback")
+        pyxel.load_pal("assets/audio_bgm.pyxpal")
 
         self.images = [
-            pyxel.Image.from_image(BGM1_IMAGE_PATH, include_colors=True),
-            pyxel.Image.from_image(BGM2_IMAGE_PATH, include_colors=True),
+            pyxel.Image.from_image("assets/audio_bgm1.png"),
+            pyxel.Image.from_image("assets/audio_bgm2.png"),
         ]
 
-        pyxel.sounds[0].pcm(BGM1_AUDIO_PATH)
-        pyxel.sounds[1].pcm(BGM2_AUDIO_PATH)
+        pyxel.sounds[0].pcm("assets/audio_bgm1.ogg")
+        pyxel.sounds[1].pcm("assets/audio_bgm2.ogg")
 
         # To avoid quality loss, use audio files pre-converted to 22.05kHz.
         # Change gain from the default 0.125 to adjust volume.
