@@ -28,9 +28,14 @@ impl Image {
     }
 
     #[staticmethod]
-    #[pyo3(signature = (filename, incl_colors=None))]
-    pub fn from_image(filename: &str, incl_colors: Option<bool>) -> PyResult<Self> {
-        pyxel::Image::from_image(filename, incl_colors)
+    #[pyo3(signature = (filename, *, include_colors=None, incl_colors=None))]
+    pub fn from_image(
+        filename: &str,
+        include_colors: Option<bool>,
+        incl_colors: Option<bool>,
+    ) -> PyResult<Self> {
+        let include_colors = include_colors.or(incl_colors);
+        pyxel::Image::from_image(filename, include_colors)
             .map(Self::wrap)
             .map_err(PyException::new_err)
     }
@@ -63,11 +68,19 @@ impl Image {
         self.inner.lock().set(x, y, &data_refs);
     }
 
-    #[pyo3(signature = (x, y, filename, incl_colors=None))]
-    pub fn load(&self, x: i32, y: i32, filename: &str, incl_colors: Option<bool>) -> PyResult<()> {
+    #[pyo3(signature = (x, y, filename, *, include_colors=None, incl_colors=None))]
+    pub fn load(
+        &self,
+        x: i32,
+        y: i32,
+        filename: &str,
+        include_colors: Option<bool>,
+        incl_colors: Option<bool>,
+    ) -> PyResult<()> {
+        let include_colors = include_colors.or(incl_colors);
         self.inner
             .lock()
-            .load(x, y, filename, incl_colors)
+            .load(x, y, filename, include_colors)
             .map_err(PyException::new_err)
     }
 

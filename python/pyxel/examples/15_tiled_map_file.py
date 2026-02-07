@@ -47,7 +47,7 @@ class App:
         pyxel.init(464, 256, title="Tiled Map File")
 
         pyxel.images[0] = pyxel.Image.from_image(
-            "assets/urban_rpg.png", incl_colors=True
+            "assets/urban_rpg.png", include_colors=True
         )
         # This example loads a PNG file as the tileset image, but you can also use
         # Pyxel's image bank as the tileset image in the usual way. Images from the
