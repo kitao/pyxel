@@ -42,9 +42,6 @@ impl Image {
     pub fn from_image(filename: &str, include_colors: Option<bool>) -> Result<SharedImage, String> {
         let include_colors = include_colors.unwrap_or(false);
         let mut colors = COLORS.lock();
-        if include_colors {
-            colors.clear();
-        }
         let file_image = image::open(Path::new(&filename))
             .map_err(|_e| format!("Failed to open file '{filename}'"))?
             .to_rgb8();

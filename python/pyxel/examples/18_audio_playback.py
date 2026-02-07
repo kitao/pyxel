@@ -11,8 +11,8 @@ class App:
         pyxel.init(256, 240, title="Audio Playback")
 
         self.images = [
-            pyxel.Image.from_image(BGM1_IMAGE_PATH),
-            pyxel.Image.from_image(BGM2_IMAGE_PATH),
+            pyxel.Image.from_image(BGM1_IMAGE_PATH, include_colors=True),
+            pyxel.Image.from_image(BGM2_IMAGE_PATH, include_colors=True),
         ]
 
         pyxel.sounds[0].pcm(BGM1_AUDIO_PATH)
