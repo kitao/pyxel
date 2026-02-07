@@ -58,8 +58,8 @@ impl Font {
                 y: 0,
             };
 
-            let file = File::open(filename)
-                .map_err(|_e| format!("Failed to open file '{filename}'"))?;
+            let file =
+                File::open(filename).map_err(|_e| format!("Failed to open file '{filename}'"))?;
             for line in BufReader::new(file).lines().map_while(Result::ok) {
                 if line.starts_with("FONTBOUNDINGBOX") {
                     let values: Vec<i32> = line
@@ -125,8 +125,8 @@ impl Font {
                 glyphs: bdf_glyphs,
             }))
         } else {
-            let mut file = File::open(filename)
-                .map_err(|_e| format!("Failed to open file '{filename}'"))?;
+            let mut file =
+                File::open(filename).map_err(|_e| format!("Failed to open file '{filename}'"))?;
             let mut buffer = Vec::new();
             file.read_to_end(&mut buffer).unwrap();
             let font = FontdueFont::from_bytes(buffer, FontSettings::default()).unwrap();
