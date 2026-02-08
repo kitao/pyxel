@@ -1,9 +1,13 @@
 # Change Log
 
-## 2.6.4
+## 2.6.5
 
 - Removed unnecessary files to reduce the wheel size
 - Added gen_bgm for automatic BGM generation and playback
+
+## 2.6.4
+
+- Removed unnecessary files to reduce the wheel size
 
 ## 2.6.3
 

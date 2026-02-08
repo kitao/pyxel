@@ -1351,7 +1351,7 @@ fn generate_melody(
     transpose: i32,
     base: &[Option<i32>],
     rng: &mut Xoshiro256StarStar,
-) -> (Vec<Option<i32>>, Vec<Option<i32>>, MelodyState) {
+) -> (Vec<Option<i32>>, Vec<Option<i32>>) {
     let preset = STYLE_PRESETS[style];
     let density = preset[8].clamp(0, 4) as usize;
     let use_16th = preset[9] != 0;
@@ -1447,15 +1447,11 @@ fn generate_melody(
                     _ => v,
                 })
                 .collect();
-            return (melody_view, sub_seed, state);
+            return (melody_view, sub_seed);
         }
     }
 
-    (
-        vec![Some(-1); TOTAL_STEPS],
-        vec![None; TOTAL_STEPS],
-        default_melody_state(),
-    )
+    (vec![Some(-1); TOTAL_STEPS], vec![None; TOTAL_STEPS])
 }
 
 fn generate_bass(style: usize, bits_per_step: &[[i32; 12]], transpose: i32) -> Vec<Option<i32>> {
@@ -1655,12 +1651,11 @@ fn generate_submelody(
     base: &[Option<i32>],
     transpose: i32,
     lowest: i32,
-    init_state: MelodyState,
     rng: &mut Xoshiro256StarStar,
 ) -> Vec<Option<i32>> {
     let chord_plan = build_melody_chord_plan(style, transpose, lowest);
     let rhythm_sub = pick_rhythm_events(rng, true, true);
-    let mut state = init_state;
+    let mut state = default_melody_state();
 
     let mut sub = sub_seed.to_vec();
     let mut prev_note_loc: i32 = -1;
@@ -1928,7 +1923,7 @@ pub fn gen_bgm(
     let bits_per_step = chord_bits_per_step(style);
     let preset = STYLE_PRESETS[style];
     let bass = generate_bass(style, &bits_per_step, transpose);
-    let (melody, sub_seed, melody_state) = generate_melody(style, transpose, &bass, &mut rng);
+    let (melody, sub_seed) = generate_melody(style, transpose, &bass, &mut rng);
     let melo_tone_idx = TONE_CANDIDATES[preset[5] as usize];
     let sub_tone_idx = TONE_CANDIDATES[preset[6] as usize];
     let base_quantize = ((preset[3].clamp(0, 16) * 100) + 8) / 16;
@@ -1961,14 +1956,7 @@ pub fn gen_bgm(
     if layout == 2 || layout == 3 {
         // submelody only: ch2 is submelody, ch3 silent
         let sub = generate_submelody(
-            style,
-            &melody,
-            &sub_seed,
-            &bass,
-            transpose,
-            preset[7],
-            melody_state,
-            &mut rng,
+            style, &melody, &sub_seed, &bass, transpose, preset[7], &mut rng,
         );
         out[2] = notes_to_mml(&sub, tempo, sub_tone_idx, 64, 94, false);
     }
