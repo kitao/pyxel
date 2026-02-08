@@ -825,6 +825,8 @@ def gen_bgm(
     transpose: int = 0,
     bpm_offset: int = 0,
     seed: Optional[int] = None,
+    play: Optional[bool] = None,
+    loop: Optional[bool] = None,
 ) -> List[str]: ...
 
 # Math

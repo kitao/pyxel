@@ -120,7 +120,9 @@ fn music(msc: u32) -> Music {
     layout=0,
     transpose=0,
     bpm_offset=0,
-    seed=None
+    seed=None,
+    play=None,
+    r#loop=None
 ))]
 fn gen_bgm(
     style: usize,
@@ -128,8 +130,25 @@ fn gen_bgm(
     transpose: i32,
     bpm_offset: i32,
     seed: Option<u64>,
+    play: Option<bool>,
+    r#loop: Option<bool>,
 ) -> Vec<String> {
-    pyxel::gen_bgm(style, layout, transpose, bpm_offset, seed)
+    let mml_list = pyxel::gen_bgm(style, layout, transpose, bpm_offset, seed);
+    if !play.unwrap_or(false) {
+        return mml_list;
+    }
+
+    let should_loop = r#loop.unwrap_or(false);
+    for (ch, mml) in mml_list.iter().enumerate() {
+        let sound = pyxel::Sound::new();
+        if sound.lock().mml(mml).is_ok() {
+            pyxel().channels.lock()[ch]
+                .lock()
+                .play1(sound, None, should_loop, false);
+        }
+    }
+
+    mml_list
 }
 
 pub fn add_audio_functions(m: &Bound<'_, PyModule>) -> PyResult<()> {
