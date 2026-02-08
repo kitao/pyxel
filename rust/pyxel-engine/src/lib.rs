@@ -23,6 +23,7 @@
 #[macro_use]
 mod utils;
 mod audio;
+mod bgm_generator;
 mod canvas;
 mod channel;
 mod font;
@@ -53,6 +54,7 @@ mod window_watcher;
 
 use pyxel_platform::key;
 
+pub use crate::bgm_generator::gen_bgm;
 pub use crate::channel::{Channel, ChannelDetune, ChannelGain, SharedChannel};
 pub use crate::font::{Font, SharedFont};
 pub use crate::image::{Color, Image, Rgb24, SharedImage};
