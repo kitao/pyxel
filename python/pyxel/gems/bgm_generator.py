@@ -976,14 +976,14 @@ class _Composer:
         no_root = self.first_in_chord or self.chord_list["no_root"]
         allowed_types = [1, 3] if no_root else [1, 2, 3]
         notes = self.harmony_note_pool(loc) if is_sub else self.chord_list["notes"]
-        hightest_note = 0
-        hightest_idx = 0
+        highest_note = 0
+        highest_idx = 0
         for idx, noteset in enumerate(notes):
-            if noteset[0] > hightest_note and noteset[1] in allowed_types:
-                hightest_note = noteset[0]
-                hightest_idx = idx
-        if self.prev_note - hightest_note > 12:
-            return hightest_idx
+            if noteset[0] > highest_note and noteset[1] in allowed_types:
+                highest_note = noteset[0]
+                highest_idx = idx
+        if self.prev_note - highest_note > 12:
+            return highest_idx
         while True:
             idx = self.rng.randint(0, len(notes) - 1)
             if notes[idx][1] not in allowed_types:
@@ -1026,7 +1026,7 @@ class _Composer:
             duplicate = (
                 master_note is not None
                 and subnote is not None
-                and (abs(subnote > master_note) < 3)
+                and (abs(subnote - master_note) < 3)
             )
             if duplicate:
                 subnote = self.find_lower_harmony(subnote, master_note, loc + idx)
