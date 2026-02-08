@@ -114,11 +114,30 @@ fn music(msc: u32) -> Music {
     Music::wrap(pyxel().musics.lock()[msc as usize].clone())
 }
 
+#[pyfunction]
+#[pyo3(signature = (
+    style=0,
+    layout=0,
+    transpose=0,
+    bpm_offset=0,
+    seed=None
+))]
+fn gen_bgm(
+    style: usize,
+    layout: usize,
+    transpose: i32,
+    bpm_offset: i32,
+    seed: Option<u64>,
+) -> Vec<String> {
+    pyxel::gen_bgm(style, layout, transpose, bpm_offset, seed)
+}
+
 pub fn add_audio_functions(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(play, m)?)?;
     m.add_function(wrap_pyfunction!(playm, m)?)?;
     m.add_function(wrap_pyfunction!(stop, m)?)?;
     m.add_function(wrap_pyfunction!(play_pos, m)?)?;
+    m.add_function(wrap_pyfunction!(gen_bgm, m)?)?;
 
     // Deprecated functions
     m.add_function(wrap_pyfunction!(channel, m)?)?;
