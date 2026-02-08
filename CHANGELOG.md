@@ -3,6 +3,7 @@
 ## 2.6.4
 
 - Removed unnecessary files to reduce the wheel size
+- Added generate_bgm helper to generate and play BGM
 
 ## 2.6.3
 
