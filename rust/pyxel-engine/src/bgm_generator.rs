@@ -1925,13 +1925,13 @@ fn silent_channel_mml(tempo: i32) -> String {
 
 fn generate_bgm_mml(
     preset: usize,
-    instrumentation: usize,
+    setup: usize,
     transpose: i32,
     bpm_offset: i32,
     seed: Option<u64>,
 ) -> Vec<String> {
     let preset = preset.min(PRESET_COUNT - 1);
-    let instrumentation = instrumentation.min(3);
+    let setup = setup.min(3);
 
     let actual_seed = seed.unwrap_or_else(random_seed);
     let mut rng = Xoshiro256StarStar::seed_from_u64(actual_seed);
@@ -1943,7 +1943,7 @@ fn generate_bgm_mml(
     let mut melody_and_seed = generate_melody(preset, transpose, &bass, &mut rng);
     let mut submelody = None;
 
-    if instrumentation >= 2 {
+    if setup >= 2 {
         let chord_plan =
             build_melody_chord_plan(preset, transpose, preset_def[PRESET_MELO_LOWEST_NOTE]);
         let mut candidate = generate_submelody(
@@ -1985,14 +1985,14 @@ fn generate_bgm_mml(
         silent_channel_mml(tempo),
     ];
 
-    if instrumentation == 0 {
+    if setup == 0 {
         // No submelody, no drum: ch2 is shifted melody with melody tone setup
         let shifted = shifted_melody(&melody);
         mml_list[2] = notes_to_mml(&shifted, tempo, melo_tone_idx, 32, 88, false);
     } else {
-        if instrumentation == 1 || instrumentation == 3 {
+        if setup == 1 || setup == 3 {
             let drum = generate_drums(preset);
-            if instrumentation == 1 {
+            if setup == 1 {
                 // Drum only: ch2 is drum track, ch3 silent
                 mml_list[2] = notes_to_mml(&drum, tempo, 15, 80, 94, true);
             } else {
@@ -2001,7 +2001,7 @@ fn generate_bgm_mml(
             }
         }
 
-        if instrumentation == 2 || instrumentation == 3 {
+        if setup == 2 || setup == 3 {
             // Submelody only: ch2 is submelody, ch3 silent
             let sub = submelody.unwrap_or_else(|| vec![Some(-1); TOTAL_STEPS]);
             mml_list[2] = notes_to_mml(&sub, tempo, sub_tone_idx, 64, 94, false);
@@ -2015,13 +2015,13 @@ impl Pyxel {
     pub fn gen_bgm(
         &mut self,
         preset: usize,
-        instrumentation: usize,
+        setup: usize,
         transpose: i32,
         bpm_offset: i32,
         seed: Option<u64>,
         play: Option<bool>,
     ) -> Vec<String> {
-        let mml_list = generate_bgm_mml(preset, instrumentation, transpose, bpm_offset, seed);
+        let mml_list = generate_bgm_mml(preset, setup, transpose, bpm_offset, seed);
 
         if play.unwrap_or(false) {
             for (ch, mml) in mml_list.iter().enumerate() {
