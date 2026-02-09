@@ -682,6 +682,9 @@ A Pyxel application file can also be converted to an executable or an HTML file 
 - `pset(x, y, tile)`<br>
   Draw a `tile` at (`x`, `y`). A tile is represented as a tuple of `(image_tx, image_ty)`.
 
+- `collide(x, y, w, h, dx, dy, walls)`<br>
+  Resolve collisions after applying the movement (`dx`, `dy`) to the rectangle at position (`x`, `y`) with size (`w`, `h`), and return the adjusted (`dx`, `dy`). `walls` is a list of tiles `(image_tx, image_ty)` treated as walls.
+
 ### Sound Class
 
 - `notes`<br>

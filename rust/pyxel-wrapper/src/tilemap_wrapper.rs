@@ -180,6 +180,19 @@ impl Tilemap {
         self.inner.lock().fill(x, y, tile);
     }
 
+    pub fn collide(
+        &self,
+        x: f32,
+        y: f32,
+        w: f32,
+        h: f32,
+        dx: f32,
+        dy: f32,
+        walls: Vec<pyxel::Tile>,
+    ) -> (f32, f32) {
+        self.inner.lock().collide(x, y, w, h, dx, dy, &walls)
+    }
+
     #[pyo3(signature = (x, y, tm, u, v, w, h, tilekey=None, rotate=None, scale=None))]
     pub fn blt(
         &self,

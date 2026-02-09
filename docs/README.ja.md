@@ -682,6 +682,9 @@ Pyxel アプリケーションファイルは、`pyxel app2exe` コマンドや 
 - `pset(x, y, tile)`<br>
   (`x`, `y`) にタイルを設定します。タイルは `(image_tx, image_ty)` のタプルです。
 
+- `collide(x, y, w, h, dx, dy, walls)`<br>
+  矩形の位置 (`x`, `y`) とサイズ (`w`, `h`) に移動量 (`dx`, `dy`) を適用した衝突を解決し、補正後の (`dx`, `dy`) を返します。`walls` には壁として扱うタイル `(image_tx, image_ty)` のリストを渡します。
+
 ### Sound クラス
 
 - `notes`<br>

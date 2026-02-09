@@ -14,6 +14,8 @@ TILE_SPAWN1 = (0, 1)
 TILE_SPAWN2 = (1, 1)
 TILE_SPAWN3 = (2, 1)
 WALL_TILE_X = 4
+WALL_TILES = [(u, v) for u in range(WALL_TILE_X, 32) for v in range(32)]
+WALL_TILES_WITH_FLOOR = WALL_TILES + [TILE_FLOOR]
 
 scroll_x = 0
 player = None
@@ -22,43 +24,6 @@ enemies = []
 
 def get_tile(tile_x, tile_y):
     return pyxel.tilemaps[0].pget(tile_x, tile_y)
-
-
-def is_colliding(x, y, is_falling):
-    x1 = pyxel.floor(x) // 8
-    y1 = pyxel.floor(y) // 8
-    x2 = (pyxel.ceil(x) + 7) // 8
-    y2 = (pyxel.ceil(y) + 7) // 8
-
-    for yi in range(y1, y2 + 1):
-        for xi in range(x1, x2 + 1):
-            if get_tile(xi, yi)[0] >= WALL_TILE_X:
-                return True
-
-    if is_falling and y % 8 == 1:
-        for xi in range(x1, x2 + 1):
-            if get_tile(xi, y1 + 1) == TILE_FLOOR:
-                return True
-
-    return False
-
-
-def push_back(x, y, dx, dy):
-    for _ in range(pyxel.ceil(abs(dy))):
-        step = pyxel.clamp(dy, -1, 1)
-        if is_colliding(x, y + step, dy > 0):
-            break
-        y += step
-        dy -= step
-
-    for _ in range(pyxel.ceil(abs(dx))):
-        step = pyxel.clamp(dx, -1, 1)
-        if is_colliding(x + step, y, dy > 0):
-            break
-        x += step
-        dx -= step
-
-    return x, y
 
 
 def is_wall(x, y):
@@ -85,6 +50,12 @@ def cleanup_entities(entities):
     for i in range(len(entities) - 1, -1, -1):
         if not entities[i].is_alive:
             del entities[i]
+
+
+def push_back(x, y, dx, dy):
+    walls = WALL_TILES_WITH_FLOOR if dy > 0 else WALL_TILES
+    dx, dy = pyxel.tilemaps[0].collide(x, y, 8, 8, dx, dy, walls)
+    return x + dx, y + dy
 
 
 class Player:

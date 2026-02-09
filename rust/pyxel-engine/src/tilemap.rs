@@ -1,5 +1,6 @@
 use crate::canvas::{Canvas, ToIndex};
 use crate::image::SharedImage;
+use crate::settings::TILE_SIZE;
 use crate::tmx_parser::parse_tmx;
 use crate::utils::{f32_to_u32, parse_hex_string, simplify_string};
 
@@ -304,5 +305,136 @@ impl Tilemap {
                 false,
             );
         }
+    }
+
+    pub fn collide(
+        &self,
+        x: f32,
+        y: f32,
+        w: f32,
+        h: f32,
+        dx: f32,
+        dy: f32,
+        walls: &[Tile],
+    ) -> (f32, f32) {
+        let mut ndx = dx;
+        let mut ndy = dy;
+        let x_first = dx.abs() >= dy.abs();
+
+        let mut cur_x = x;
+        let mut cur_y = y;
+
+        if x_first {
+            ndx = self.collide_resolve_x(cur_x, cur_y, w, h, ndx, walls);
+            cur_x += ndx;
+            ndy = self.collide_resolve_y(cur_x, cur_y, w, h, ndy, walls);
+        } else {
+            ndy = self.collide_resolve_y(cur_x, cur_y, w, h, ndy, walls);
+            cur_y += ndy;
+            ndx = self.collide_resolve_x(cur_x, cur_y, w, h, ndx, walls);
+        }
+
+        (ndx, ndy)
+    }
+
+    fn collide_resolve_x(&self, x: f32, y: f32, w: f32, h: f32, dx: f32, walls: &[Tile]) -> f32 {
+        if dx == 0.0 {
+            return dx;
+        }
+
+        let tile_size = TILE_SIZE as f32;
+        let ty0 = (y / tile_size).floor() as i32;
+        let ty1 = ((y + h - 1.0) / tile_size).floor() as i32;
+
+        if dx > 0.0 {
+            let cur_right = x + w - 1.0;
+            let new_right = x + dx + w - 1.0;
+            let start_tx = (cur_right / tile_size).floor() as i32 + 1;
+            let end_tx = (new_right / tile_size).floor() as i32;
+
+            if start_tx <= end_tx {
+                for tx in start_tx..=end_tx {
+                    for ty in ty0..=ty1 {
+                        if self.collide_is_wall(tx, ty, walls) {
+                            return tx as f32 * tile_size - w - x;
+                        }
+                    }
+                }
+            }
+        } else {
+            let cur_left = x;
+            let new_left = x + dx;
+            let start_tx = (cur_left / tile_size).floor() as i32 - 1;
+            let end_tx = (new_left / tile_size).floor() as i32;
+
+            if start_tx >= end_tx {
+                for tx in (end_tx..=start_tx).rev() {
+                    for ty in ty0..=ty1 {
+                        if self.collide_is_wall(tx, ty, walls) {
+                            return (tx + 1) as f32 * tile_size - x;
+                        }
+                    }
+                }
+            }
+        }
+
+        dx
+    }
+
+    fn collide_resolve_y(&self, x: f32, y: f32, w: f32, h: f32, dy: f32, walls: &[Tile]) -> f32 {
+        if dy == 0.0 {
+            return dy;
+        }
+
+        let tile_size = TILE_SIZE as f32;
+        let tx0 = (x / tile_size).floor() as i32;
+        let tx1 = ((x + w - 1.0) / tile_size).floor() as i32;
+
+        if dy > 0.0 {
+            let cur_bottom = y + h - 1.0;
+            let new_bottom = y + dy + h - 1.0;
+            let start_ty = (cur_bottom / tile_size).floor() as i32 + 1;
+            let end_ty = (new_bottom / tile_size).floor() as i32;
+
+            if start_ty <= end_ty {
+                for ty in start_ty..=end_ty {
+                    for tx in tx0..=tx1 {
+                        if self.collide_is_wall(tx, ty, walls) {
+                            return ty as f32 * tile_size - h - y;
+                        }
+                    }
+                }
+            }
+        } else {
+            let cur_top = y;
+            let new_top = y + dy;
+            let start_ty = (cur_top / tile_size).floor() as i32 - 1;
+            let end_ty = (new_top / tile_size).floor() as i32;
+
+            if start_ty >= end_ty {
+                for ty in (end_ty..=start_ty).rev() {
+                    for tx in tx0..=tx1 {
+                        if self.collide_is_wall(tx, ty, walls) {
+                            return (ty + 1) as f32 * tile_size - y;
+                        }
+                    }
+                }
+            }
+        }
+
+        dy
+    }
+
+    fn collide_is_wall(&self, tx: i32, ty: i32, walls: &[Tile]) -> bool {
+        if tx < 0 || ty < 0 {
+            return false;
+        }
+        let width = self.canvas.width() as i32;
+        let height = self.canvas.height() as i32;
+        if tx >= width || ty >= height {
+            return false;
+        }
+        let tile = self.canvas.read_data(tx as usize, ty as usize);
+        walls.contains(&tile)
     }
 }
