@@ -54,7 +54,7 @@ Pyxel は [MIT ライセンス](../LICENSE) のオープンソースで、無料
 - 任意のサウンドを組み合わせ可能な 8 ミュージック
 - キーボード、マウス、ゲームパッド入力
 - 画像・サウンド編集ツール
-- パレット、発音数、各種バンクのユーザー拡張
+- パレット、同時発音数、各種バンクのユーザー拡張
 
 ### カラーパレット
 
@@ -66,7 +66,7 @@ Pyxel は [MIT ライセンス](../LICENSE) のオープンソースで、無料
 
 ### Windows
 
-[Python3](https://www.python.org/) (バージョン 3.8 以上) をインストールした後、次のコマンドを実行します。
+[Python 3](https://www.python.org/) (バージョン 3.8 以上) をインストールした後、次のコマンドを実行します。
 
 ```sh
 pip install -U pyxel
@@ -88,7 +88,7 @@ Pyxel をインストールした後にバージョンを更新する場合は�
 
 ### Linux
 
-SDL2 パッケージ (Ubuntu の場合は `libsdl2-dev`)、[Python3](https://www.python.org/) (バージョン 3.8 以上)、`python3-pip` をインストールした後、次のコマンドを実行します。
+SDL2 パッケージ (Ubuntu の場合は `libsdl2-dev`)、[Python 3](https://www.python.org/) (バージョン 3.8 以上)、`python3-pip` をインストールした後、次のコマンドを実行します。
 
 ```sh
 sudo pip3 install -U pyxel
@@ -234,11 +234,11 @@ pyxel copy_examples
 サンプルは以下のコマンドで実行できます。
 
 ```sh
-# Run example in examples directory
+# examples ディレクトリのサンプルを実行
 cd pyxel_examples
 pyxel run 01_hello_pyxel.py
 
-# Run app in examples/apps directory
+# examples/apps ディレクトリのアプリを実行
 cd apps
 pyxel play 30sec_of_daylight.pyxapp
 ```

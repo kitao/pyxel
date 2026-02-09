@@ -51,10 +51,10 @@ Pyxel is open source under the [MIT License](LICENSE) and free to use. Let's sta
 - 3 256x256 image banks
 - 8 256x256 tilemaps
 - 4 channels with 64 definable sounds
-- 8 music tracks combining any sounds
+- 8 music tracks composed of sounds
 - Keyboard, mouse, and gamepad inputs
 - Image and sound editing tools
-- User-extensible colors, channels, and banks
+- User-extensible colors, sound channels, and banks
 
 ### Color Palette
 
@@ -66,7 +66,7 @@ Pyxel is open source under the [MIT License](LICENSE) and free to use. Let's sta
 
 ### Windows
 
-After installing [Python3](https://www.python.org/) (version 3.8 or higher), run the following command:
+After installing [Python 3](https://www.python.org/) (version 3.8 or higher), run the following command:
 
 ```sh
 pip install -U pyxel
@@ -88,7 +88,7 @@ To upgrade Pyxel after installation, run `pipx upgrade pyxel`.
 
 ### Linux
 
-After installing the SDL2 package (`libsdl2-dev` for Ubuntu), [Python3](https://www.python.org/) (version 3.8 or higher), and `python3-pip`, run the following command:
+After installing the SDL2 package (`libsdl2-dev` for Ubuntu), [Python 3](https://www.python.org/) (version 3.8 or higher), and `python3-pip`, run the following command:
 
 ```sh
 sudo pip3 install -U pyxel
