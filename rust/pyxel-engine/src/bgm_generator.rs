@@ -15,7 +15,7 @@ const STEPS_PER_BAR: usize = 16;
 const TOTAL_STEPS: usize = BARS * STEPS_PER_BAR;
 const SUB_VALIDATION_RETRIES: usize = 8;
 
-const STYLE_COUNT: usize = 8;
+const PRESET_COUNT: usize = 8;
 const TONE_CANDIDATES: [usize; 6] = [11, 8, 2, 10, 6, 4];
 
 const PRESET_SPEED: usize = 0;
@@ -62,10 +62,10 @@ const DRUM_NOTES_5: [i32; 9] = [21, 19, 18, 17, 16, 15, 14, 13, 12];
 const DRUM_NOTES_6: [i32; 9] = [27, 25, 24, 23, 22, 21, 20, 19, 18];
 const DRUM_NOTES_7: [i32; 9] = [33, 31, 30, 29, 28, 27, 26, 25, 24];
 
-// Style preset fields:
+// Preset fields:
 // Speed, chord, base, base_quantize, drums
 // Melo_tone, sub_tone, melo_lowest_note, melo_density, melo_use16
-const STYLE_PRESETS: [[i32; 10]; STYLE_COUNT] = [
+const PRESET_SETS: [[i32; 10]; PRESET_COUNT] = [
     [216, 0, 4, 14, 4, 0, 0, 28, 2, 1],
     [216, 1, 6, 12, 5, 3, 3, 28, 4, 1],
     [312, 2, 1, 15, 0, 5, 5, 30, 2, 0],
@@ -557,7 +557,7 @@ const CP7: [ChordEntry; 8] = [
     },
 ];
 
-const CHORD_PROGRESSIONS: [&[ChordEntry]; STYLE_COUNT] =
+const CHORD_PROGRESSIONS: [&[ChordEntry]; PRESET_COUNT] =
     [&CP0, &CP1, &CP2, &CP3, &CP4, &CP5, &CP6, &CP7];
 
 fn note_name(note: i32) -> (&'static str, i32) {
@@ -936,8 +936,8 @@ fn resolve_entry_notes(progressions: &[ChordEntry], idx: usize) -> Option<&'stat
         .and_then(|e| e.notes)
 }
 
-fn chord_bits_per_step(style: usize) -> Vec<[i32; 12]> {
-    let chord_idx = STYLE_PRESETS[style][PRESET_CHORD] as usize;
+fn chord_bits_per_step(preset: usize) -> Vec<[i32; 12]> {
+    let chord_idx = PRESET_SETS[preset][PRESET_CHORD] as usize;
     let progression = CHORD_PROGRESSIONS[chord_idx];
     let mut out = vec![[0; 12]; TOTAL_STEPS];
 
@@ -1022,8 +1022,8 @@ fn default_melody_state() -> MelodyState {
     }
 }
 
-fn build_melody_chord_plan(style: usize, transpose: i32, lowest: i32) -> Vec<MelodyChord> {
-    let chord_idx = STYLE_PRESETS[style][PRESET_CHORD] as usize;
+fn build_melody_chord_plan(preset: usize, transpose: i32, lowest: i32) -> Vec<MelodyChord> {
+    let chord_idx = PRESET_SETS[preset][PRESET_CHORD] as usize;
     let progression = CHORD_PROGRESSIONS[chord_idx];
     let mut out: Vec<MelodyChord> = Vec::with_capacity(progression.len());
     for p in progression {
@@ -1374,16 +1374,16 @@ fn pick_target_note_idx(
 }
 
 fn generate_melody(
-    style: usize,
+    preset: usize,
     transpose: i32,
     base: &[Option<i32>],
     rng: &mut Xoshiro256StarStar,
 ) -> (Vec<Option<i32>>, Vec<Option<i32>>) {
-    let preset = STYLE_PRESETS[style];
-    let density = preset[PRESET_MELO_DENSITY].clamp(0, 4) as usize;
-    let use_16th = preset[PRESET_MELO_USE16] != 0;
-    let lowest = preset[PRESET_MELO_LOWEST_NOTE];
-    let chord_plan = build_melody_chord_plan(style, transpose, lowest);
+    let preset_def = PRESET_SETS[preset];
+    let density = preset_def[PRESET_MELO_DENSITY].clamp(0, 4) as usize;
+    let use_16th = preset_def[PRESET_MELO_USE16] != 0;
+    let lowest = preset_def[PRESET_MELO_LOWEST_NOTE];
+    let chord_plan = build_melody_chord_plan(preset, transpose, lowest);
     for _ in 0..MAX_MELODY_ATTEMPTS {
         let mut note_line = vec![NOTE_UNSET; TOTAL_STEPS];
         let mut melody_view = vec![None; TOTAL_STEPS];
@@ -1481,9 +1481,13 @@ fn generate_melody(
     (vec![Some(-1); TOTAL_STEPS], vec![None; TOTAL_STEPS])
 }
 
-fn generate_bass(style: usize, bits_per_step: &[[i32; 12]], transpose: i32) -> Vec<Option<i32>> {
+fn generate_bass(
+    preset: usize,
+    bits_per_step: &[[i32; 12]],
+    transpose: i32,
+) -> Vec<Option<i32>> {
     let mut notes = vec![Some(-1); TOTAL_STEPS];
-    let bass_idx = STYLE_PRESETS[style][PRESET_BASE] as usize;
+    let bass_idx = PRESET_SETS[preset][PRESET_BASE] as usize;
     let (basic, final_pat) = BASS_PATTERNS[bass_idx];
     let adjust_list = [0, -1, 1, -2, 2, -3, 3];
     let base_highest_note = 26i32;
@@ -1672,7 +1676,7 @@ fn place_harmony(
 }
 
 fn generate_submelody(
-    style: usize,
+    preset: usize,
     melody: &[Option<i32>],
     sub_seed: &[Option<i32>],
     base: &[Option<i32>],
@@ -1680,7 +1684,7 @@ fn generate_submelody(
     lowest: i32,
     rng: &mut Xoshiro256StarStar,
 ) -> Vec<Option<i32>> {
-    let chord_plan = build_melody_chord_plan(style, transpose, lowest);
+    let chord_plan = build_melody_chord_plan(preset, transpose, lowest);
     let rhythm_sub = pick_rhythm_events(rng, true, true);
     let mut state = default_melody_state();
 
@@ -1740,9 +1744,9 @@ fn shifted_melody(melody: &[Option<i32>]) -> Vec<Option<i32>> {
     notes
 }
 
-fn generate_drums(style: usize) -> Vec<Option<i32>> {
+fn generate_drums(preset: usize) -> Vec<Option<i32>> {
     let mut notes = vec![None; TOTAL_STEPS];
-    let drum_idx = STYLE_PRESETS[style][PRESET_DRUMS] as usize;
+    let drum_idx = PRESET_SETS[preset][PRESET_DRUMS] as usize;
     let (basic, final_pat) = DRUM_PATTERNS[drum_idx];
     for i in 0..TOTAL_STEPS {
         let bar = i / STEPS_PER_BAR;
@@ -1924,48 +1928,49 @@ fn silent_channel_mml(tempo: i32) -> String {
 }
 
 fn generate_bgm_mml(
-    style: usize,
+    preset: usize,
     layout: usize,
     transpose: i32,
     bpm_offset: i32,
     seed: Option<u64>,
 ) -> Vec<String> {
-    let style = style.min(STYLE_COUNT - 1);
+    let preset = preset.min(PRESET_COUNT - 1);
     let layout = layout.min(3);
 
     let actual_seed = seed.unwrap_or_else(random_seed);
     let mut rng = Xoshiro256StarStar::seed_from_u64(actual_seed);
-    let base_speed = STYLE_PRESETS[style][PRESET_SPEED].max(1);
+    let base_speed = PRESET_SETS[preset][PRESET_SPEED].max(1);
     let tempo = ((28800 / base_speed) + bpm_offset).max(1);
-    let bits_per_step = chord_bits_per_step(style);
-    let preset = STYLE_PRESETS[style];
-    let bass = generate_bass(style, &bits_per_step, transpose);
-    let mut melody_and_seed = generate_melody(style, transpose, &bass, &mut rng);
+    let bits_per_step = chord_bits_per_step(preset);
+    let preset_def = PRESET_SETS[preset];
+    let bass = generate_bass(preset, &bits_per_step, transpose);
+    let mut melody_and_seed = generate_melody(preset, transpose, &bass, &mut rng);
     let mut submelody = None;
 
     if layout >= 2 {
-        let chord_plan = build_melody_chord_plan(style, transpose, preset[PRESET_MELO_LOWEST_NOTE]);
+        let chord_plan =
+            build_melody_chord_plan(preset, transpose, preset_def[PRESET_MELO_LOWEST_NOTE]);
         let mut candidate = generate_submelody(
-            style,
+            preset,
             &melody_and_seed.0,
             &melody_and_seed.1,
             &bass,
             transpose,
-            preset[PRESET_MELO_LOWEST_NOTE],
+            preset_def[PRESET_MELO_LOWEST_NOTE],
             &mut rng,
         );
         for _ in 0..SUB_VALIDATION_RETRIES {
             if melody_has_required_tones(&melody_and_seed.0, Some(&candidate), &chord_plan) {
                 break;
             }
-            melody_and_seed = generate_melody(style, transpose, &bass, &mut rng);
+            melody_and_seed = generate_melody(preset, transpose, &bass, &mut rng);
             candidate = generate_submelody(
-                style,
+                preset,
                 &melody_and_seed.0,
                 &melody_and_seed.1,
                 &bass,
                 transpose,
-                preset[PRESET_MELO_LOWEST_NOTE],
+                preset_def[PRESET_MELO_LOWEST_NOTE],
                 &mut rng,
             );
         }
@@ -1973,9 +1978,9 @@ fn generate_bgm_mml(
     }
 
     let (melody, _) = melody_and_seed;
-    let melo_tone_idx = TONE_CANDIDATES[preset[PRESET_MELO_TONE] as usize];
-    let sub_tone_idx = TONE_CANDIDATES[preset[PRESET_SUB_TONE] as usize];
-    let base_quantize = ((preset[PRESET_BASE_QUANTIZE].clamp(0, 16) * 100) + 8) / 16;
+    let melo_tone_idx = TONE_CANDIDATES[preset_def[PRESET_MELO_TONE] as usize];
+    let sub_tone_idx = TONE_CANDIDATES[preset_def[PRESET_SUB_TONE] as usize];
+    let base_quantize = ((preset_def[PRESET_BASE_QUANTIZE].clamp(0, 16) * 100) + 8) / 16;
 
     let mut mml_list = vec![
         notes_to_mml(&melody, tempo, melo_tone_idx, 96, 88, false),
@@ -1990,7 +1995,7 @@ fn generate_bgm_mml(
         mml_list[2] = notes_to_mml(&shifted, tempo, melo_tone_idx, 32, 88, false);
     } else {
         if layout == 1 || layout == 3 {
-            let drum = generate_drums(style);
+            let drum = generate_drums(preset);
             if layout == 1 {
                 // Drum only: ch2 is drum track, ch3 silent
                 mml_list[2] = notes_to_mml(&drum, tempo, 15, 80, 94, true);
@@ -2013,14 +2018,14 @@ fn generate_bgm_mml(
 impl Pyxel {
     pub fn gen_bgm(
         &mut self,
-        style: usize,
+        preset: usize,
         layout: usize,
         transpose: i32,
         bpm_offset: i32,
         seed: Option<u64>,
         play: Option<bool>,
     ) -> Vec<String> {
-        let mml_list = generate_bgm_mml(style, layout, transpose, bpm_offset, seed);
+        let mml_list = generate_bgm_mml(preset, layout, transpose, bpm_offset, seed);
 
         if play.unwrap_or(false) {
             for (ch, mml) in mml_list.iter().enumerate() {

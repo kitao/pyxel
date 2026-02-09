@@ -819,7 +819,7 @@ def playm(
 def stop(ch: Optional[int] = None) -> None: ...
 def play_pos(ch: int) -> Optional[Tuple[int, float]]: ...
 def gen_bgm(
-    style: int = 0,
+    preset: int = 0,
     layout: int = 0,
     transpose: int = 0,
     bpm_offset: int = 0,
