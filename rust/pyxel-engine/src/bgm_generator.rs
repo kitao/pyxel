@@ -180,381 +180,110 @@ struct ChordEntry {
     repeat: Option<usize>,
 }
 
+macro_rules! ce {
+    ($loc:expr, $notes:expr) => {
+        ChordEntry {
+            loc: $loc,
+            notes: Some($notes),
+            repeat: None,
+        }
+    };
+    ($loc:expr, repeat $idx:expr) => {
+        ChordEntry {
+            loc: $loc,
+            notes: None,
+            repeat: Some($idx),
+        }
+    };
+}
+
 const CP0: [ChordEntry; 9] = [
-    ChordEntry {
-        loc: 0,
-        notes: Some("209019030909"),
-        repeat: None,
-    },
-    ChordEntry {
-        loc: 16,
-        notes: Some("901093090920"),
-        repeat: None,
-    },
-    ChordEntry {
-        loc: 32,
-        notes: Some("209019030909"),
-        repeat: None,
-    },
-    ChordEntry {
-        loc: 48,
-        notes: Some("901093090920"),
-        repeat: None,
-    },
-    ChordEntry {
-        loc: 64,
-        notes: None,
-        repeat: Some(0),
-    },
-    ChordEntry {
-        loc: 80,
-        notes: None,
-        repeat: Some(1),
-    },
-    ChordEntry {
-        loc: 96,
-        notes: Some("209019030909"),
-        repeat: None,
-    },
-    ChordEntry {
-        loc: 112,
-        notes: Some("901093090920"),
-        repeat: None,
-    },
-    ChordEntry {
-        loc: 120,
-        notes: Some("901099010902"),
-        repeat: None,
-    },
+    ce!(0, "209019030909"),
+    ce!(16, "901093090920"),
+    ce!(32, "209019030909"),
+    ce!(48, "901093090920"),
+    ce!(64, repeat 0),
+    ce!(80, repeat 1),
+    ce!(96, "209019030909"),
+    ce!(112, "901093090920"),
+    ce!(120, "901099010902"),
 ];
 const CP1: [ChordEntry; 8] = [
-    ChordEntry {
-        loc: 0,
-        notes: Some("309092090109"),
-        repeat: None,
-    },
-    ChordEntry {
-        loc: 16,
-        notes: Some("903092010901"),
-        repeat: None,
-    },
-    ChordEntry {
-        loc: 32,
-        notes: Some("309092090109"),
-        repeat: None,
-    },
-    ChordEntry {
-        loc: 48,
-        notes: Some("903092010901"),
-        repeat: None,
-    },
-    ChordEntry {
-        loc: 64,
-        notes: Some("909209030930"),
-        repeat: None,
-    },
-    ChordEntry {
-        loc: 80,
-        notes: Some("309201090190"),
-        repeat: None,
-    },
-    ChordEntry {
-        loc: 96,
-        notes: Some("909209030930"),
-        repeat: None,
-    },
-    ChordEntry {
-        loc: 112,
-        notes: Some("309201090190"),
-        repeat: None,
-    },
+    ce!(0, "309092090109"),
+    ce!(16, "903092010901"),
+    ce!(32, "309092090109"),
+    ce!(48, "903092010901"),
+    ce!(64, "909209030930"),
+    ce!(80, "309201090190"),
+    ce!(96, "909209030930"),
+    ce!(112, "309201090190"),
 ];
 const CP2: [ChordEntry; 10] = [
-    ChordEntry {
-        loc: 0,
-        notes: Some("209019030909"),
-        repeat: None,
-    },
-    ChordEntry {
-        loc: 16,
-        notes: Some("903099020901"),
-        repeat: None,
-    },
-    ChordEntry {
-        loc: 32,
-        notes: Some("109309092090"),
-        repeat: None,
-    },
-    ChordEntry {
-        loc: 48,
-        notes: Some("901903099020"),
-        repeat: None,
-    },
-    ChordEntry {
-        loc: 64,
-        notes: None,
-        repeat: Some(0),
-    },
-    ChordEntry {
-        loc: 80,
-        notes: None,
-        repeat: Some(1),
-    },
-    ChordEntry {
-        loc: 96,
-        notes: Some("109309092090"),
-        repeat: None,
-    },
-    ChordEntry {
-        loc: 104,
-        notes: Some("901903099020"),
-        repeat: None,
-    },
-    ChordEntry {
-        loc: 112,
-        notes: Some("209091030909"),
-        repeat: None,
-    },
-    ChordEntry {
-        loc: 120,
-        notes: Some("209019030909"),
-        repeat: None,
-    },
+    ce!(0, "209019030909"),
+    ce!(16, "903099020901"),
+    ce!(32, "109309092090"),
+    ce!(48, "901903099020"),
+    ce!(64, repeat 0),
+    ce!(80, repeat 1),
+    ce!(96, "109309092090"),
+    ce!(104, "901903099020"),
+    ce!(112, "209091030909"),
+    ce!(120, "209019030909"),
 ];
 const CP3: [ChordEntry; 8] = [
-    ChordEntry {
-        loc: 0,
-        notes: Some("309012090109"),
-        repeat: None,
-    },
-    ChordEntry {
-        loc: 16,
-        notes: Some("901020901903"),
-        repeat: None,
-    },
-    ChordEntry {
-        loc: 32,
-        notes: Some("109039010209"),
-        repeat: None,
-    },
-    ChordEntry {
-        loc: 48,
-        notes: Some("209019030909"),
-        repeat: None,
-    },
-    ChordEntry {
-        loc: 64,
-        notes: None,
-        repeat: Some(0),
-    },
-    ChordEntry {
-        loc: 80,
-        notes: None,
-        repeat: Some(1),
-    },
-    ChordEntry {
-        loc: 96,
-        notes: Some("901039090209"),
-        repeat: None,
-    },
-    ChordEntry {
-        loc: 112,
-        notes: Some("019039010209"),
-        repeat: None,
-    },
+    ce!(0, "309012090109"),
+    ce!(16, "901020901903"),
+    ce!(32, "109039010209"),
+    ce!(48, "209019030909"),
+    ce!(64, repeat 0),
+    ce!(80, repeat 1),
+    ce!(96, "901039090209"),
+    ce!(112, "019039010209"),
 ];
 const CP4: [ChordEntry; 9] = [
-    ChordEntry {
-        loc: 0,
-        notes: Some("109039090209"),
-        repeat: None,
-    },
-    ChordEntry {
-        loc: 16,
-        notes: Some("903099020901"),
-        repeat: None,
-    },
-    ChordEntry {
-        loc: 32,
-        notes: Some("309092090109"),
-        repeat: None,
-    },
-    ChordEntry {
-        loc: 48,
-        notes: Some("903099020901"),
-        repeat: None,
-    },
-    ChordEntry {
-        loc: 64,
-        notes: None,
-        repeat: Some(0),
-    },
-    ChordEntry {
-        loc: 80,
-        notes: None,
-        repeat: Some(1),
-    },
-    ChordEntry {
-        loc: 96,
-        notes: None,
-        repeat: Some(2),
-    },
-    ChordEntry {
-        loc: 112,
-        notes: Some("903099020901"),
-        repeat: None,
-    },
-    ChordEntry {
-        loc: 120,
-        notes: Some("903090902901"),
-        repeat: None,
-    },
+    ce!(0, "109039090209"),
+    ce!(16, "903099020901"),
+    ce!(32, "309092090109"),
+    ce!(48, "903099020901"),
+    ce!(64, repeat 0),
+    ce!(80, repeat 1),
+    ce!(96, repeat 2),
+    ce!(112, "903099020901"),
+    ce!(120, "903090902901"),
 ];
 const CP5: [ChordEntry; 11] = [
-    ChordEntry {
-        loc: 0,
-        notes: Some("109039090209"),
-        repeat: None,
-    },
-    ChordEntry {
-        loc: 16,
-        notes: Some("309092090109"),
-        repeat: None,
-    },
-    ChordEntry {
-        loc: 32,
-        notes: Some("903099020901"),
-        repeat: None,
-    },
-    ChordEntry {
-        loc: 48,
-        notes: Some("209019030909"),
-        repeat: None,
-    },
-    ChordEntry {
-        loc: 56,
-        notes: Some("109019030902"),
-        repeat: None,
-    },
-    ChordEntry {
-        loc: 64,
-        notes: None,
-        repeat: Some(0),
-    },
-    ChordEntry {
-        loc: 80,
-        notes: None,
-        repeat: Some(1),
-    },
-    ChordEntry {
-        loc: 96,
-        notes: None,
-        repeat: Some(2),
-    },
-    ChordEntry {
-        loc: 112,
-        notes: Some("209019030909"),
-        repeat: None,
-    },
-    ChordEntry {
-        loc: 120,
-        notes: Some("903093090302"),
-        repeat: None,
-    },
-    ChordEntry {
-        loc: 124,
-        notes: Some("903029030903"),
-        repeat: None,
-    },
+    ce!(0, "109039090209"),
+    ce!(16, "309092090109"),
+    ce!(32, "903099020901"),
+    ce!(48, "209019030909"),
+    ce!(56, "109019030902"),
+    ce!(64, repeat 0),
+    ce!(80, repeat 1),
+    ce!(96, repeat 2),
+    ce!(112, "209019030909"),
+    ce!(120, "903093090302"),
+    ce!(124, "903029030903"),
 ];
 const CP6: [ChordEntry; 9] = [
-    ChordEntry {
-        loc: 0,
-        notes: Some("109030909209"),
-        repeat: None,
-    },
-    ChordEntry {
-        loc: 16,
-        notes: Some("902090109309"),
-        repeat: None,
-    },
-    ChordEntry {
-        loc: 32,
-        notes: Some("109030909209"),
-        repeat: None,
-    },
-    ChordEntry {
-        loc: 48,
-        notes: Some("902090109309"),
-        repeat: None,
-    },
-    ChordEntry {
-        loc: 64,
-        notes: None,
-        repeat: Some(0),
-    },
-    ChordEntry {
-        loc: 80,
-        notes: None,
-        repeat: Some(1),
-    },
-    ChordEntry {
-        loc: 96,
-        notes: Some("109030909209"),
-        repeat: None,
-    },
-    ChordEntry {
-        loc: 112,
-        notes: Some("902090109309"),
-        repeat: None,
-    },
-    ChordEntry {
-        loc: 120,
-        notes: Some("909020901903"),
-        repeat: None,
-    },
+    ce!(0, "109030909209"),
+    ce!(16, "902090109309"),
+    ce!(32, "109030909209"),
+    ce!(48, "902090109309"),
+    ce!(64, repeat 0),
+    ce!(80, repeat 1),
+    ce!(96, "109030909209"),
+    ce!(112, "902090109309"),
+    ce!(120, "909020901903"),
 ];
 const CP7: [ChordEntry; 8] = [
-    ChordEntry {
-        loc: 0,
-        notes: Some("901029010903"),
-        repeat: None,
-    },
-    ChordEntry {
-        loc: 16,
-        notes: Some("309012090109"),
-        repeat: None,
-    },
-    ChordEntry {
-        loc: 32,
-        notes: Some("903019020901"),
-        repeat: None,
-    },
-    ChordEntry {
-        loc: 48,
-        notes: Some("109039030201"),
-        repeat: None,
-    },
-    ChordEntry {
-        loc: 64,
-        notes: None,
-        repeat: Some(0),
-    },
-    ChordEntry {
-        loc: 80,
-        notes: None,
-        repeat: Some(1),
-    },
-    ChordEntry {
-        loc: 96,
-        notes: Some("903019020901"),
-        repeat: None,
-    },
-    ChordEntry {
-        loc: 112,
-        notes: Some("019030909209"),
-        repeat: None,
-    },
+    ce!(0, "901029010903"),
+    ce!(16, "309012090109"),
+    ce!(32, "903019020901"),
+    ce!(48, "109039030201"),
+    ce!(64, repeat 0),
+    ce!(80, repeat 1),
+    ce!(96, "903019020901"),
+    ce!(112, "019030909209"),
 ];
 
 const CHORD_PROGRESSIONS: [&[ChordEntry]; PRESET_COUNT] =
@@ -965,13 +694,13 @@ fn rhythm_has_16th(line: &str) -> bool {
     false
 }
 
-fn build_chord_note_pool(bits: &[i32; 12], transpose: i32, lowest: i32) -> Vec<(i32, i32)> {
+fn build_chord_note_pool(bits: &[i32; 12], key_shift: i32, lowest: i32) -> Vec<(i32, i32)> {
     let mut note_highest = None;
     let mut idx = 0i32;
     let mut results = Vec::new();
     loop {
         let note_type = bits[idx.rem_euclid(12) as usize];
-        let note = 12 + idx + transpose;
+        let note = 12 + idx + key_shift;
         if note >= lowest && (note_type == 1 || note_type == 2 || note_type == 3 || note_type == 9)
         {
             results.push((note, note_type));
@@ -1022,7 +751,7 @@ fn default_melody_state() -> MelodyState {
     }
 }
 
-fn build_melody_chord_plan(preset: usize, transpose: i32, lowest: i32) -> Vec<MelodyChord> {
+fn build_melody_chord_plan(preset: usize, key_shift: i32, lowest: i32) -> Vec<MelodyChord> {
     let chord_idx = PRESET_SETS[preset][PRESET_CHORD] as usize;
     let progression = CHORD_PROGRESSIONS[chord_idx];
     let mut out: Vec<MelodyChord> = Vec::with_capacity(progression.len());
@@ -1047,7 +776,7 @@ fn build_melody_chord_plan(preset: usize, transpose: i32, lowest: i32) -> Vec<Me
                 }
             }
             no_root = note_chord_count > 3;
-            notes = build_chord_note_pool(&notes_origin, transpose, lowest);
+            notes = build_chord_note_pool(&notes_origin, key_shift, lowest);
         }
         out.push(MelodyChord {
             loc: p.loc,
@@ -1138,7 +867,7 @@ fn next_note_events(
     chord_plan: &[MelodyChord],
     melody: Option<&[Option<i32>]>,
     base: Option<&[Option<i32>]>,
-    transpose: i32,
+    key_shift: i32,
     lowest: i32,
     rng: &mut Xoshiro256StarStar,
 ) -> Option<Vec<(usize, i32, usize)>> {
@@ -1192,7 +921,7 @@ fn next_note_events(
     let sub_pool = if is_sub {
         if let (Some(melody), Some(base)) = (melody, base) {
             let chord_bits = &chord.notes_bits;
-            harmony_note_pool_at(loc, melody, base, chord_bits, transpose, lowest)
+            harmony_note_pool_at(loc, melody, base, chord_bits, key_shift, lowest)
         } else {
             Vec::new()
         }
@@ -1375,7 +1104,7 @@ fn pick_target_note_idx(
 
 fn generate_melody(
     preset: usize,
-    transpose: i32,
+    key_shift: i32,
     base: &[Option<i32>],
     rng: &mut Xoshiro256StarStar,
 ) -> (Vec<Option<i32>>, Vec<Option<i32>>) {
@@ -1383,7 +1112,7 @@ fn generate_melody(
     let density = preset_def[PRESET_MELO_DENSITY].clamp(0, 4) as usize;
     let use_16th = preset_def[PRESET_MELO_USE16] != 0;
     let lowest = preset_def[PRESET_MELO_LOWEST_NOTE];
-    let chord_plan = build_melody_chord_plan(preset, transpose, lowest);
+    let chord_plan = build_melody_chord_plan(preset, key_shift, lowest);
     for _ in 0..MAX_MELODY_ATTEMPTS {
         let mut note_line = vec![NOTE_UNSET; TOTAL_STEPS];
         let mut melody_view = vec![None; TOTAL_STEPS];
@@ -1410,7 +1139,7 @@ fn generate_melody(
                 &chord_plan,
                 None,
                 None,
-                transpose,
+                key_shift,
                 lowest,
                 rng,
             );
@@ -1453,7 +1182,7 @@ fn generate_melody(
                     &chord_plan[state.chord_idx].notes_bits,
                     &melody_view,
                     base,
-                    transpose,
+                    key_shift,
                     lowest,
                     loc,
                     NOTE_UNSET,
@@ -1481,7 +1210,7 @@ fn generate_melody(
     (vec![Some(-1); TOTAL_STEPS], vec![None; TOTAL_STEPS])
 }
 
-fn generate_bass(preset: usize, bits_per_step: &[[i32; 12]], transpose: i32) -> Vec<Option<i32>> {
+fn generate_bass(preset: usize, bits_per_step: &[[i32; 12]], key_shift: i32) -> Vec<Option<i32>> {
     let mut notes = vec![Some(-1); TOTAL_STEPS];
     let bass_idx = PRESET_SETS[preset][PRESET_BASE] as usize;
     let (basic, final_pat) = BASS_PATTERNS[bass_idx];
@@ -1497,7 +1226,7 @@ fn generate_bass(preset: usize, bits_per_step: &[[i32; 12]], transpose: i32) -> 
             let step_symbol = *pat_cell as char;
             let idx = bar * STEPS_PER_BAR + step;
             let bits = bits_per_step[idx];
-            let root = root_from_bits(&bits) + transpose;
+            let root = root_from_bits(&bits) + key_shift;
             let mut base_root = 12 + root;
             while base_root + 24 > base_highest_note {
                 base_root -= 12;
@@ -1519,7 +1248,7 @@ fn generate_bass(preset: usize, bits_per_step: &[[i32; 12]], transpose: i32) -> 
             let mut chosen = base_root + base_add;
             for a in adjust_list {
                 let n = base_root + base_add + a;
-                if bits[((n + transpose).rem_euclid(12)) as usize] > 0 {
+                if bits[((n + key_shift).rem_euclid(12)) as usize] > 0 {
                     chosen = n;
                     break;
                 }
@@ -1535,7 +1264,7 @@ fn harmony_note_pool_at(
     melody: &[Option<i32>],
     base: &[Option<i32>],
     chord_bits: &[i32; 12],
-    transpose: i32,
+    key_shift: i32,
     lowest: i32,
 ) -> Vec<(i32, i32)> {
     let mut master_note: Option<i32> = None;
@@ -1566,7 +1295,7 @@ fn harmony_note_pool_at(
     loop {
         let note_type = chord_bits[idx.rem_euclid(12) as usize];
         if note_type == 1 || note_type == 2 || note_type == 3 || note_type == 9 {
-            let note = 12 + idx + transpose;
+            let note = 12 + idx + key_shift;
             if note > master - 3 && has_important_tone {
                 break;
             }
@@ -1589,10 +1318,10 @@ fn find_lower_harmony_at(
     melody: &[Option<i32>],
     base: &[Option<i32>],
     chord_bits: &[i32; 12],
-    transpose: i32,
+    key_shift: i32,
     lowest: i32,
 ) -> i32 {
-    let notes = harmony_note_pool_at(loc, melody, base, chord_bits, transpose, lowest);
+    let notes = harmony_note_pool_at(loc, melody, base, chord_bits, key_shift, lowest);
     if (prev_note - master_note).abs() >= 3 {
         return prev_note;
     }
@@ -1613,7 +1342,7 @@ fn place_harmony(
     chord_bits: &[i32; 12],
     melody: &[Option<i32>],
     base: &[Option<i32>],
-    transpose: i32,
+    key_shift: i32,
     lowest: i32,
     loc: usize,
     note: i32,
@@ -1634,7 +1363,7 @@ fn place_harmony(
                     melody,
                     base,
                     chord_bits,
-                    transpose,
+                    key_shift,
                     lowest,
                 );
                 break;
@@ -1657,7 +1386,7 @@ fn place_harmony(
         if let Some(m) = master_note {
             if (sub_note - m).abs() < 3 {
                 sub_note = find_lower_harmony_at(
-                    sub_note, m, pos, melody, base, chord_bits, transpose, lowest,
+                    sub_note, m, pos, melody, base, chord_bits, key_shift, lowest,
                 );
             }
         }
@@ -1676,11 +1405,11 @@ fn generate_submelody(
     melody: &[Option<i32>],
     sub_seed: &[Option<i32>],
     base: &[Option<i32>],
-    transpose: i32,
+    key_shift: i32,
     lowest: i32,
     rng: &mut Xoshiro256StarStar,
 ) -> Vec<Option<i32>> {
-    let chord_plan = build_melody_chord_plan(preset, transpose, lowest);
+    let chord_plan = build_melody_chord_plan(preset, key_shift, lowest);
     let rhythm_sub = pick_rhythm_events(rng, true, true);
     let mut state = default_melody_state();
 
@@ -1705,7 +1434,7 @@ fn generate_submelody(
             &chord_plan,
             Some(melody),
             Some(base),
-            transpose,
+            key_shift,
             lowest,
             rng,
         ) {
@@ -1716,7 +1445,7 @@ fn generate_submelody(
                     &chord_plan[state.chord_idx].notes_bits,
                     melody,
                     base,
-                    transpose,
+                    key_shift,
                     lowest,
                     l,
                     n,
@@ -1926,7 +1655,7 @@ fn silent_channel_mml(tempo: i32) -> String {
 fn generate_bgm_mml(
     preset: usize,
     setup: usize,
-    transpose: i32,
+    key_shift: i32,
     bpm_offset: i32,
     seed: Option<u64>,
 ) -> Vec<String> {
@@ -1939,19 +1668,19 @@ fn generate_bgm_mml(
     let tempo = ((28800 / base_speed) + bpm_offset).max(1);
     let bits_per_step = chord_bits_per_step(preset);
     let preset_def = PRESET_SETS[preset];
-    let bass = generate_bass(preset, &bits_per_step, transpose);
-    let mut melody_and_seed = generate_melody(preset, transpose, &bass, &mut rng);
+    let bass = generate_bass(preset, &bits_per_step, key_shift);
+    let mut melody_and_seed = generate_melody(preset, key_shift, &bass, &mut rng);
     let mut submelody = None;
 
     if setup >= 2 {
         let chord_plan =
-            build_melody_chord_plan(preset, transpose, preset_def[PRESET_MELO_LOWEST_NOTE]);
+            build_melody_chord_plan(preset, key_shift, preset_def[PRESET_MELO_LOWEST_NOTE]);
         let mut candidate = generate_submelody(
             preset,
             &melody_and_seed.0,
             &melody_and_seed.1,
             &bass,
-            transpose,
+            key_shift,
             preset_def[PRESET_MELO_LOWEST_NOTE],
             &mut rng,
         );
@@ -1959,13 +1688,13 @@ fn generate_bgm_mml(
             if melody_has_required_tones(&melody_and_seed.0, Some(&candidate), &chord_plan) {
                 break;
             }
-            melody_and_seed = generate_melody(preset, transpose, &bass, &mut rng);
+            melody_and_seed = generate_melody(preset, key_shift, &bass, &mut rng);
             candidate = generate_submelody(
                 preset,
                 &melody_and_seed.0,
                 &melody_and_seed.1,
                 &bass,
-                transpose,
+                key_shift,
                 preset_def[PRESET_MELO_LOWEST_NOTE],
                 &mut rng,
             );
@@ -2016,12 +1745,12 @@ impl Pyxel {
         &mut self,
         preset: usize,
         setup: usize,
-        transpose: i32,
+        key_shift: i32,
         bpm_offset: i32,
         seed: Option<u64>,
         play: Option<bool>,
     ) -> Vec<String> {
-        let mml_list = generate_bgm_mml(preset, setup, transpose, bpm_offset, seed);
+        let mml_list = generate_bgm_mml(preset, setup, key_shift, bpm_offset, seed);
 
         if play.unwrap_or(false) {
             for (ch, mml) in mml_list.iter().enumerate() {
