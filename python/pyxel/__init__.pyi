@@ -820,7 +820,7 @@ def stop(ch: Optional[int] = None) -> None: ...
 def play_pos(ch: int) -> Optional[Tuple[int, float]]: ...
 def gen_bgm(
     preset: int = 0,
-    layout: int = 0,
+    instrumentation: int = 0,
     transpose: int = 0,
     bpm_offset: int = 0,
     seed: Optional[int] = None,
