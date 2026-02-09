@@ -7,6 +7,9 @@ use std::fmt::Write as _;
 use rand::{Rng, SeedableRng};
 use rand_xoshiro::Xoshiro256StarStar;
 
+use crate::pyxel::Pyxel;
+use crate::sound::Sound;
+
 const BARS: usize = 8;
 const STEPS_PER_BAR: usize = 16;
 const TOTAL_STEPS: usize = BARS * STEPS_PER_BAR;
@@ -1139,20 +1142,20 @@ fn next_note_events(
     lowest: i32,
     rng: &mut Xoshiro256StarStar,
 ) -> Option<Vec<(usize, i32, usize)>> {
-    let mut pat: Option<i32> = None;
-    let mut pat_idx = 0usize;
+    let mut rhythm_kind: Option<i32> = None;
+    let mut rhythm_idx = 0usize;
     for (i, (rh_loc, rh_pat)) in rhythm_set.iter().enumerate() {
         if loc == *rh_loc {
-            pat_idx = i;
-            pat = Some(*rh_pat);
+            rhythm_idx = i;
+            rhythm_kind = Some(*rh_pat);
             break;
         }
         if loc < *rh_loc {
-            pat_idx = i;
+            rhythm_idx = i;
             break;
         }
     }
-    let note_len = rhythm_set[pat_idx + 1].0 - loc;
+    let note_len = rhythm_set[rhythm_idx + 1].0 - loc;
 
     let mut change_chord = false;
     let mut lookahead = false;
@@ -1177,7 +1180,7 @@ fn next_note_events(
         return if lookahead { Some(Vec::new()) } else { None };
     }
 
-    if pat == Some(-1) {
+    if rhythm_kind == Some(-1) {
         return Some(vec![(loc, -1, note_len)]);
     }
 
@@ -1206,15 +1209,16 @@ fn next_note_events(
     let mut following: Vec<(usize, usize)> = Vec::new();
     let mut prev_loc = loc;
     loop {
-        let pat_loc = rhythm_set[pat_idx + 1 + following.len()].0;
-        let no_next = pat_loc >= next_chord_loc || pat_loc.saturating_sub(prev_loc) > 4;
+        let next_rhythm_loc = rhythm_set[rhythm_idx + 1 + following.len()].0;
+        let no_next =
+            next_rhythm_loc >= next_chord_loc || next_rhythm_loc.saturating_sub(prev_loc) > 4;
         if following.is_empty() || !no_next {
-            following.push((prev_loc, pat_loc - prev_loc));
+            following.push((prev_loc, next_rhythm_loc - prev_loc));
         }
         if no_next {
             break;
         }
-        prev_loc = pat_loc;
+        prev_loc = next_rhythm_loc;
     }
 
     let (first_loc, first_len) = following[0];
@@ -1398,7 +1402,7 @@ fn generate_melody(
             if note_line[loc] != NOTE_UNSET {
                 continue;
             }
-            let notesets = next_note_events(
+            let note_events = next_note_events(
                 rhythm_main,
                 loc,
                 false,
@@ -1410,7 +1414,7 @@ fn generate_melody(
                 lowest,
                 rng,
             );
-            if notesets.is_none() {
+            if note_events.is_none() {
                 let repeat_idx = chord_plan[state.chord_idx].repeat.unwrap_or(0);
                 let repeat_loc = chord_plan[repeat_idx].loc;
                 let target_loc = repeat_loc + (loc - state.cur_chord_loc);
@@ -1428,8 +1432,8 @@ fn generate_melody(
                 }
                 continue;
             }
-            let mut notesets_len = 0usize;
-            for (l, n, len) in notesets.unwrap_or_default() {
+            let mut total_event_len = 0usize;
+            for (l, n, len) in note_events.unwrap_or_default() {
                 place_melody(&mut note_line, l, n, len);
                 let end = (l + len).min(TOTAL_STEPS);
                 for pos in l..end {
@@ -1441,9 +1445,9 @@ fn generate_melody(
                 }
                 state.prev_note = n;
                 state.first_in_chord = false;
-                notesets_len += len;
+                total_event_len += len;
             }
-            if notesets_len > 0 {
+            if total_event_len > 0 {
                 place_harmony(
                     &mut sub_seed,
                     &chord_plan[state.chord_idx].notes_bits,
@@ -1453,7 +1457,7 @@ fn generate_melody(
                     lowest,
                     loc,
                     NOTE_UNSET,
-                    notesets_len,
+                    total_event_len,
                 );
             }
         }
@@ -1490,7 +1494,7 @@ fn generate_bass(style: usize, bits_per_step: &[[i32; 12]], transpose: i32) -> V
             final_pat.as_bytes()
         };
         for (step, pat_cell) in pat.iter().enumerate().take(STEPS_PER_BAR) {
-            let c = *pat_cell as char;
+            let step_symbol = *pat_cell as char;
             let idx = bar * STEPS_PER_BAR + step;
             let bits = bits_per_step[idx];
             let root = root_from_bits(&bits) + transpose;
@@ -1498,15 +1502,15 @@ fn generate_bass(style: usize, bits_per_step: &[[i32; 12]], transpose: i32) -> V
             while base_root + 24 > base_highest_note {
                 base_root -= 12;
             }
-            if c == '.' {
+            if step_symbol == '.' {
                 notes[idx] = None;
                 continue;
             }
-            if c == '0' {
+            if step_symbol == '0' {
                 notes[idx] = Some(-1);
                 continue;
             }
-            let base_add = match c {
+            let base_add = match step_symbol {
                 '1' => 7,
                 '3' => 19,
                 '4' => 24,
@@ -1693,7 +1697,7 @@ fn generate_submelody(
         if (loc as i32) - prev_note_loc < 4 || loc % 4 != 0 {
             continue;
         }
-        if let Some(notesets) = next_note_events(
+        if let Some(note_events) = next_note_events(
             &rhythm_sub,
             loc,
             true,
@@ -1705,8 +1709,8 @@ fn generate_submelody(
             lowest,
             rng,
         ) {
-            let had_events = !notesets.is_empty();
-            for (l, n, len) in notesets {
+            let had_events = !note_events.is_empty();
+            for (l, n, len) in note_events {
                 place_harmony(
                     &mut sub,
                     &chord_plan[state.chord_idx].notes_bits,
@@ -1747,11 +1751,11 @@ fn generate_drums(style: usize) -> Vec<Option<i32>> {
         } else {
             final_pat.as_bytes()
         };
-        let c = pat[i % STEPS_PER_BAR];
-        if c == b'0' {
+        let step_symbol = pat[i % STEPS_PER_BAR];
+        if step_symbol == b'0' {
             notes[i] = None;
         } else {
-            notes[i] = Some(i32::from(c - b'0'));
+            notes[i] = Some(i32::from(step_symbol - b'0'));
         }
     }
     notes
@@ -1919,7 +1923,7 @@ fn silent_channel_mml(tempo: i32) -> String {
     format!("T{tempo} L16 @ENV1{{127}} Q100 V112 @0 @ENV1 @VIB0")
 }
 
-pub fn gen_bgm(
+fn generate_bgm_mml(
     style: usize,
     layout: usize,
     transpose: i32,
@@ -1973,7 +1977,7 @@ pub fn gen_bgm(
     let sub_tone_idx = TONE_CANDIDATES[preset[PRESET_SUB_TONE] as usize];
     let base_quantize = ((preset[PRESET_BASE_QUANTIZE].clamp(0, 16) * 100) + 8) / 16;
 
-    let mut out = vec![
+    let mut mml_list = vec![
         notes_to_mml(&melody, tempo, melo_tone_idx, 96, 88, false),
         notes_to_mml(&bass, tempo, 7, 112, base_quantize, false),
         silent_channel_mml(tempo),
@@ -1983,26 +1987,52 @@ pub fn gen_bgm(
     if layout == 0 {
         // No submelody, no drum: ch2 is shifted melody with melody tone setup
         let shifted = shifted_melody(&melody);
-        out[2] = notes_to_mml(&shifted, tempo, melo_tone_idx, 32, 88, false);
-        return out;
-    }
+        mml_list[2] = notes_to_mml(&shifted, tempo, melo_tone_idx, 32, 88, false);
+    } else {
+        if layout == 1 || layout == 3 {
+            let drum = generate_drums(style);
+            if layout == 1 {
+                // Drum only: ch2 is drum track, ch3 silent
+                mml_list[2] = notes_to_mml(&drum, tempo, 15, 80, 94, true);
+            } else {
+                // Submelody + drum
+                mml_list[3] = notes_to_mml(&drum, tempo, 15, 80, 94, true);
+            }
+        }
 
-    if layout == 1 || layout == 3 {
-        let drum = generate_drums(style);
-        if layout == 1 {
-            // Drum only: ch2 is drum track, ch3 silent
-            out[2] = notes_to_mml(&drum, tempo, 15, 80, 94, true);
-        } else {
-            // Submelody + drum
-            out[3] = notes_to_mml(&drum, tempo, 15, 80, 94, true);
+        if layout == 2 || layout == 3 {
+            // Submelody only: ch2 is submelody, ch3 silent
+            let sub = submelody.unwrap_or_else(|| vec![Some(-1); TOTAL_STEPS]);
+            mml_list[2] = notes_to_mml(&sub, tempo, sub_tone_idx, 64, 94, false);
         }
     }
 
-    if layout == 2 || layout == 3 {
-        // Submelody only: ch2 is submelody, ch3 silent
-        let sub = submelody.unwrap_or_else(|| vec![Some(-1); TOTAL_STEPS]);
-        out[2] = notes_to_mml(&sub, tempo, sub_tone_idx, 64, 94, false);
-    }
+    mml_list
+}
 
-    out
+impl Pyxel {
+    pub fn gen_bgm(
+        &mut self,
+        style: usize,
+        layout: usize,
+        transpose: i32,
+        bpm_offset: i32,
+        seed: Option<u64>,
+        play: Option<bool>,
+    ) -> Vec<String> {
+        let mml_list = generate_bgm_mml(style, layout, transpose, bpm_offset, seed);
+
+        if play.unwrap_or(false) {
+            for (ch, mml) in mml_list.iter().enumerate() {
+                let sound = Sound::new();
+                if sound.lock().mml(mml).is_ok() {
+                    self.channels.lock()[ch]
+                        .lock()
+                        .play1(sound, None, true, false);
+                }
+            }
+        }
+
+        mml_list
+    }
 }
