@@ -1986,7 +1986,7 @@ fn generate_bgm_mml(
     ];
 
     if setup == 0 {
-        // No submelody, no drum: ch2 is shifted melody with melody tone setup
+        // No submelody, no drum: ch2 is shifted melody with melody tone settings
         let shifted = shifted_melody(&melody);
         mml_list[2] = notes_to_mml(&shifted, tempo, melo_tone_idx, 32, 88, false);
     } else {
