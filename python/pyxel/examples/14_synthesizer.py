@@ -174,11 +174,11 @@ class WavetableEditor:
 
         if self.target == "wave":
             for x in range(min(self.last_col, col), max(self.last_col, col) + 1):
-                pyxel.tones[self.tone].wavetable[max(0, min(31, x))] = max(
-                    0, min(15, row)
+                pyxel.tones[self.tone].wavetable[int(pyxel.clamp(x, 0, 31))] = int(
+                    pyxel.clamp(row, 0, 15)
                 )
         elif self.target == "gain":
-            pyxel.tones[self.tone].gain = max(0, min(15, row)) / 15
+            pyxel.tones[self.tone].gain = pyxel.clamp(row, 0, 15) / 15
 
         self.last_col = col
 

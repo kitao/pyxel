@@ -610,6 +610,9 @@ Um arquivo de aplicativo Pyxel também pode ser convertido em um executável ou 
 - `floor(x)`<br>
   Retorna o maior número inteiro menor ou igual a `x`.
 
+- `clamp(x, lower, upper)`<br>
+  Retorna `x` limitado entre `lower` como valor mínimo e `upper` como valor máximo.
+
 - `sgn(x)`<br>
   Retorna `1` quando `x` é positivo, `0` quando é `0` e `-1` quando é negativo.
 

@@ -610,6 +610,9 @@ Eine Pyxel-Anwendungsdatei kann auch mit den Befehlen `pyxel app2exe` oder `pyxe
 - `floor(x)`<br>
   Gibt die größte ganze Zahl zurück, die kleiner oder gleich `x` ist.
 
+- `clamp(x, lower, upper)`<br>
+  Gibt `x` zurück, begrenzt zwischen `lower` als Minimalwert und `upper` als Maximalwert.
+
 - `sgn(x)`<br>
   Gibt `1` zurück, wenn `x` positiv ist, `0`, wenn es `0` ist, und `-1`, wenn es negativ ist.
 

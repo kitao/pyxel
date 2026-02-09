@@ -45,14 +45,14 @@ def is_colliding(x, y, is_falling):
 
 def push_back(x, y, dx, dy):
     for _ in range(pyxel.ceil(abs(dy))):
-        step = max(-1, min(1, dy))
+        step = pyxel.clamp(dy, -1, 1)
         if is_colliding(x, y + step, dy > 0):
             break
         y += step
         dy -= step
 
     for _ in range(pyxel.ceil(abs(dx))):
-        step = max(-1, min(1, dx))
+        step = pyxel.clamp(dx, -1, 1)
         if is_colliding(x + step, y, dy > 0):
             break
         x += step

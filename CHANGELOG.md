@@ -4,6 +4,7 @@
 
 - Removed unnecessary files to reduce the wheel size
 - Added gen_bgm for automatic BGM generation and playback
+- Added clamp function
 
 ## 2.6.4
 

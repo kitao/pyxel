@@ -610,6 +610,9 @@ Pyxel 应用程序文件还可以使用 `pyxel app2exe` 或 `pyxel app2html` 命
 - `floor(x)`<br>
   返回小于或等于 `x` 的最大整数。
 
+- `clamp(x, lower, upper)`<br>
+  返回将 `x` 限制在 `lower` 为最小值、`upper` 为最大值的范围内的值。
+
 - `sgn(x)`<br>
   当 `x` 为正数时返回 `1`，当 `x` 为 `0` 时返回 `0`，当 `x` 为负数时返回 `-1`。
 

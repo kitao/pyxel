@@ -12,6 +12,11 @@ fn floor(x: f32) -> i32 {
 }
 
 #[pyfunction]
+fn clamp(x: f32, lower: f32, upper: f32) -> f32 {
+    Pyxel::clamp(x, lower, upper)
+}
+
+#[pyfunction]
 fn sgn(x: f32) -> i32 {
     Pyxel::sgn(x)
 }
@@ -67,6 +72,7 @@ fn noise(x: f32, y: Option<f32>, z: Option<f32>) -> f32 {
 pub fn add_math_functions(m: &Bound<PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(ceil, m)?)?;
     m.add_function(wrap_pyfunction!(floor, m)?)?;
+    m.add_function(wrap_pyfunction!(clamp, m)?)?;
     m.add_function(wrap_pyfunction!(sgn, m)?)?;
     m.add_function(wrap_pyfunction!(sqrt, m)?)?;
     m.add_function(wrap_pyfunction!(sin, m)?)?;

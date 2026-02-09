@@ -610,6 +610,9 @@ A Pyxel application file can also be converted to an executable or an HTML file 
 - `floor(x)`<br>
   Return the largest integer that is less than or equal to `x`.
 
+- `clamp(x, lower, upper)`<br>
+  Return `x` clamped between `lower` as the minimum value and `upper` as the maximum value.
+
 - `sgn(x)`<br>
   Return `1` when `x` is positive, `0` when it is `0`, and `-1` when it is negative.
 
