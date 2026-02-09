@@ -610,6 +610,9 @@ Bir Pyxel uygulama dosyası ayrıca `pyxel app2exe` veya `pyxel app2html` komutl
 - `floor(x)`<br>
   `x`'ten küçük veya ona eşit en büyük tamsayıyı döndürür.
 
+- `clamp(x, lower, upper)`<br>
+  `lower` minimum, `upper` maksimum olacak şekilde `x` değerini bu aralıkta sınırlar ve sonucu döndürür.
+
 - `sgn(x)`<br>
   `x` pozitif olduğunda `1`, `0` olduğunda `0`, negatif olduğunda `-1` döndürür.
 

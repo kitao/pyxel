@@ -610,6 +610,9 @@ Un file dell'applicazione Pyxel può anche essere convertito in un eseguibile o 
 - `floor(x)`<br>
   Restituisce il numero intero più grande che è minore o uguale a `x`.
 
+- `clamp(x, lower, upper)`<br>
+  Restituisce `x` limitato tra `lower` come valore minimo e `upper` come valore massimo.
+
 - `sgn(x)`<br>
   Restituisce `1` se `x` è positivo, `0` se è `0`, e `-1` se è negativo.
 

@@ -26,14 +26,14 @@ def is_colliding(x, y):
 
 def push_back(x, y, dx, dy):
     for _ in range(pyxel.ceil(abs(dy))):
-        step = max(-1, min(1, dy))
+        step = pyxel.clamp(dy, -1, 1)
         if is_colliding(x, y + step):
             break
         y += step
         dy -= step
 
     for _ in range(pyxel.ceil(abs(dx))):
-        step = max(-1, min(1, dx))
+        step = pyxel.clamp(dx, -1, 1)
         if is_colliding(x + step, y):
             break
         x += step
@@ -98,8 +98,8 @@ class App:
             v += [-1, 0, -1, 1][pyxel.frame_count // 5 % 4]
 
         x, y = push_back(x, y, dx, dy)
-        x = min(max(x, 0), pyxel.width - 16)
-        y = min(max(y, 0), pyxel.height - 16)
+        x = pyxel.clamp(x, 0, pyxel.width - 16)
+        y = pyxel.clamp(y, 0, pyxel.height - 16)
         self.player = (x, y, u, v)
 
         # Update cars

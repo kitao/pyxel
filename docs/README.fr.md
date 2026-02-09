@@ -610,6 +610,9 @@ Un fichier d'application Pyxel peut également être converti en un exécutable 
 - `floor(x)`<br>
   Renvoie l'entier le plus grand qui est inférieur ou égal à `x`.
 
+- `clamp(x, lower, upper)`<br>
+  Renvoie `x` limité entre `lower` comme valeur minimale et `upper` comme valeur maximale.
+
 - `sgn(x)`<br>
   Renvoie `1` si `x` est positif, `0` s'il est égal à `0`, et `-1` s'il est négatif.
 

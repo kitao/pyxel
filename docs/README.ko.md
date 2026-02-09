@@ -608,6 +608,9 @@ Pyxel 애플리케이션 파일은 `pyxel app2exe` 또는 `pyxel app2html` 명�
 - `floor(x)`<br>
   `x`보다 작거나 같은 가장 큰 정수를 반환합니다.
 
+- `clamp(x, lower, upper)`<br>
+  `lower`를 최소값, `upper`를 최대값으로 하여 `x`를 그 범위로 제한한 값을 반환합니다.
+
 - `sgn(x)`<br>
   `x`가 양수일 때 `1`, 0일 때 `0`, 음수일 때 `-1`을 반환합니다.
 
