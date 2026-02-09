@@ -1481,11 +1481,7 @@ fn generate_melody(
     (vec![Some(-1); TOTAL_STEPS], vec![None; TOTAL_STEPS])
 }
 
-fn generate_bass(
-    preset: usize,
-    bits_per_step: &[[i32; 12]],
-    transpose: i32,
-) -> Vec<Option<i32>> {
+fn generate_bass(preset: usize, bits_per_step: &[[i32; 12]], transpose: i32) -> Vec<Option<i32>> {
     let mut notes = vec![Some(-1); TOTAL_STEPS];
     let bass_idx = PRESET_SETS[preset][PRESET_BASE] as usize;
     let (basic, final_pat) = BASS_PATTERNS[bass_idx];
