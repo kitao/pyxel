@@ -117,7 +117,7 @@ fn music(msc: u32) -> Music {
 #[pyfunction]
 #[pyo3(signature = (
     preset=0,
-    instrumentation=0,
+    setup=0,
     transpose=0,
     bpm_offset=0,
     seed=None,
@@ -125,13 +125,13 @@ fn music(msc: u32) -> Music {
 ))]
 fn gen_bgm(
     preset: usize,
-    instrumentation: usize,
+    setup: usize,
     transpose: i32,
     bpm_offset: i32,
     seed: Option<u64>,
     play: Option<bool>,
 ) -> Vec<String> {
-    pyxel().gen_bgm(preset, instrumentation, transpose, bpm_offset, seed, play)
+    pyxel().gen_bgm(preset, setup, transpose, bpm_offset, seed, play)
 }
 
 pub fn add_audio_functions(m: &Bound<'_, PyModule>) -> PyResult<()> {
