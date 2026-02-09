@@ -682,6 +682,9 @@ Un fichier d'application Pyxel peut également être converti en un exécutable 
 - `pset(x, y, tile)`<br>
   Dessine une `tuile` à (`x`, `y`). Une tuile est représentée sous forme de tuple `(image_tx, image_ty)`.
 
+- `collide(x, y, w, h, dx, dy, walls)`<br>
+  Resolve collisions after applying the movement (`dx`, `dy`) to the rectangle at position (`x`, `y`) with size (`w`, `h`), and return the adjusted (`dx`, `dy`). `walls` is a list of tiles `(image_tx, image_ty)` treated as walls.
+
 ### Classe Sound
 
 - `notes`<br>

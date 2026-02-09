@@ -682,6 +682,9 @@ Eine Pyxel-Anwendungsdatei kann auch mit den Befehlen `pyxel app2exe` oder `pyxe
 - `pset(x, y, tile)`<br>
   Zeichnet eine Kachel bei (`x`, `y`). Eine Kachel wird als Tupel `(image_tx, image_ty)` dargestellt.
 
+- `collide(x, y, w, h, dx, dy, walls)`<br>
+  Resolve collisions after applying the movement (`dx`, `dy`) to the rectangle at position (`x`, `y`) with size (`w`, `h`), and return the adjusted (`dx`, `dy`). `walls` is a list of tiles `(image_tx, image_ty)` treated as walls.
+
 ### Sound-Klasse
 
 - `notes`<br>

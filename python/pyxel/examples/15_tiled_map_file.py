@@ -10,38 +10,6 @@ CAR_IMAGES = [
 ]
 
 
-def is_colliding(x, y):
-    x1 = pyxel.floor(x) // 8
-    y1 = pyxel.floor(y) // 8
-    x2 = (pyxel.ceil(x) + 15) // 8
-    y2 = (pyxel.ceil(y) + 15) // 8
-
-    for yi in range(y1, y2 + 1):
-        for xi in range(x1, x2 + 1):
-            if pyxel.tilemaps[2].pget(xi, yi) == (2, 0):
-                return True
-
-    return False
-
-
-def push_back(x, y, dx, dy):
-    for _ in range(pyxel.ceil(abs(dy))):
-        step = pyxel.clamp(dy, -1, 1)
-        if is_colliding(x, y + step):
-            break
-        y += step
-        dy -= step
-
-    for _ in range(pyxel.ceil(abs(dx))):
-        step = pyxel.clamp(dx, -1, 1)
-        if is_colliding(x + step, y):
-            break
-        x += step
-        dx -= step
-
-    return x, y
-
-
 class App:
     def __init__(self):
         pyxel.init(464, 256, title="Tiled Map File")
@@ -97,9 +65,9 @@ class App:
         if v == 1:
             v += [-1, 0, -1, 1][pyxel.frame_count // 5 % 4]
 
-        x, y = push_back(x, y, dx, dy)
-        x = pyxel.clamp(x, 0, pyxel.width - 16)
-        y = pyxel.clamp(y, 0, pyxel.height - 16)
+        dx, dy = pyxel.tilemaps[2].collide(x, y, 16, 16, dx, dy, [(2, 0)])
+        x = pyxel.clamp(x + dx, 0, pyxel.width - 16)
+        y = pyxel.clamp(y + dy, 0, pyxel.height - 16)
         self.player = (x, y, u, v)
 
         # Update cars

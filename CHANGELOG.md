@@ -5,6 +5,8 @@
 - Removed unnecessary files to reduce the wheel size
 - Added gen_bgm for automatic BGM generation and playback
 - Added clamp function
+- Added collide method to Tilemap
+- Updated Examples 10 and 15 to use collide
 
 ## 2.6.4
 

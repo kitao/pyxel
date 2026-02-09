@@ -570,6 +570,16 @@ class Tilemap:
         tile: Tuple[int, int],
     ) -> None: ...
     def fill(self, x: float, y: float, tile: Tuple[int, int]) -> None: ...
+    def collide(
+        self,
+        x: float,
+        y: float,
+        w: float,
+        h: float,
+        dx: float,
+        dy: float,
+        walls: List[Tuple[int, int]],
+    ) -> Tuple[float, float]: ...
     def blt(
         self,
         x: float,
