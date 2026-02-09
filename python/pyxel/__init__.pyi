@@ -821,7 +821,7 @@ def play_pos(ch: int) -> Optional[Tuple[int, float]]: ...
 def gen_bgm(
     preset: int = 0,
     setup: int = 0,
-    transpose: int = 0,
+    key_shift: int = 0,
     bpm_offset: int = 0,
     seed: Optional[int] = None,
     play: Optional[bool] = None,
