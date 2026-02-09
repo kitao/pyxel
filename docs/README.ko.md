@@ -54,7 +54,7 @@ Pyxel은 [MIT 라이센스](../LICENSE) 하에 오픈 소스이며 무료로 사
 - 결합 가능한 8개의 음악 트랙
 - 키보드, 마우스 및 게임패드 입력
 - 이미지 및 사운드 편집 도구
-- 사용자 확장 가능한 색상, 채널 및 뱅크
+- 사용자 확장 가능한 색상, 사운드 채널 및 뱅크
 
 ### 색상 팔레트
 
@@ -66,7 +66,7 @@ Pyxel은 [MIT 라이센스](../LICENSE) 하에 오픈 소스이며 무료로 사
 
 ### Windows
 
-[Python3](https://www.python.org/) (버전 3.8 이상)을 설치한 후, 다음 명령어를 실행하세요:
+[Python 3](https://www.python.org/) (버전 3.8 이상)을 설치한 후, 다음 명령어를 실행하세요:
 
 ```sh
 pip install -U pyxel
@@ -88,7 +88,7 @@ pipx install pyxel
 
 ### Linux
 
-SDL2 패키지(`libsdl2-dev`는 Ubuntu의 경우), [Python3](https://www.python.org/) (버전 3.8 이상), `python3-pip`를 설치한 후, 다음 명령어를 실행하세요:
+SDL2 패키지(`libsdl2-dev`는 Ubuntu의 경우), [Python 3](https://www.python.org/) (버전 3.8 이상), `python3-pip`를 설치한 후, 다음 명령어를 실행하세요:
 
 ```sh
 sudo pip3 install -U pyxel
@@ -234,11 +234,11 @@ pyxel copy_examples
 예제는 다음 명령어로 실행할 수 있습니다:
 
 ```sh
-# Run example in examples directory
+# examples 디렉터리에서 샘플 실행
 cd pyxel_examples
 pyxel run 01_hello_pyxel.py
 
-# Run app in examples/apps directory
+# examples/apps 디렉터리에서 앱 실행
 cd apps
 pyxel play 30sec_of_daylight.pyxapp
 ```

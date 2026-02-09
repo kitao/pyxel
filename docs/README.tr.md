@@ -54,7 +54,7 @@ Pyxel, [MIT Lisansı](../LICENSE) altında açık kaynaklıdır ve ücretsiz ola
 - Herhangi bir sesi birleştirebilen 8 müzik parçası
 - Klavye, fare ve gamepad girişi
 - Görüntü ve ses düzenleme araçları
-- Kullanıcı tarafından genişletilebilir renkler, kanallar ve bankalar
+- Kullanıcı tarafından genişletilebilir renkler, ses kanalları ve bankalar
 
 ### Renk Paleti
 
@@ -66,7 +66,7 @@ Pyxel, [MIT Lisansı](../LICENSE) altında açık kaynaklıdır ve ücretsiz ola
 
 ### Windows
 
-[Python3](https://www.python.org/) (3.8 veya daha yüksek sürüm) kurduktan sonra, aşağıdaki komutu çalıştırın:
+[Python 3](https://www.python.org/) (3.8 veya daha yüksek sürüm) kurduktan sonra, aşağıdaki komutu çalıştırın:
 
 ```sh
 pip install -U pyxel
@@ -88,7 +88,7 @@ Kurulumdan sonra Pyxel'i güncellemek için `pipx upgrade pyxel` komutunu çalı
 
 ### Linux
 
-SDL2 paketini (`libsdl2-dev` Ubuntu için), [Python3](https://www.python.org/) (3.8 veya daha yüksek sürüm) ve `python3-pip` kurduktan sonra, aşağıdaki komutu çalıştırın:
+SDL2 paketini (`libsdl2-dev` Ubuntu için), [Python 3](https://www.python.org/) (3.8 veya daha yüksek sürüm) ve `python3-pip` kurduktan sonra, aşağıdaki komutu çalıştırın:
 
 ```sh
 sudo pip3 install -U pyxel
@@ -234,11 +234,11 @@ Aşağıdaki örnekler geçerli dizine kopyalanacaktır:
 Örnekler aşağıdaki komutlarla çalıştırılabilir:
 
 ```sh
-# Run example in examples directory
+# examples dizinindeki örneği çalıştırın
 cd pyxel_examples
 pyxel run 01_hello_pyxel.py
 
-# Run app in examples/apps directory
+# examples/apps dizinindeki uygulamayı çalıştırın
 cd apps
 pyxel play 30sec_of_daylight.pyxapp
 ```

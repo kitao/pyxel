@@ -54,7 +54,7 @@ Pyxel ist unter der [MIT-Lizenz](../LICENSE) Open Source und kostenlos zu verwen
 - 8 Musiktracks, die beliebige Klänge kombinieren können
 - Eingaben über Tastatur, Maus und Gamepad
 - Werkzeuge zum Bearbeiten von Bildern und Klängen
-- Benutzererweiterbare Farben, Kanäle und Banken
+- Benutzererweiterbare Farben, Sound-Kanäle und Banken
 
 ### Farbpalette
 
@@ -66,7 +66,7 @@ Pyxel ist unter der [MIT-Lizenz](../LICENSE) Open Source und kostenlos zu verwen
 
 ### Windows
 
-Nachdem Sie [Python3](https://www.python.org/) (Version 3.8 oder höher) installiert haben, führen Sie den folgenden Befehl aus:
+Nachdem Sie [Python 3](https://www.python.org/) (Version 3.8 oder höher) installiert haben, führen Sie den folgenden Befehl aus:
 
 ```sh
 pip install -U pyxel
@@ -88,7 +88,7 @@ Um Pyxel nach der Installation zu aktualisieren, führen Sie `pipx upgrade pyxel
 
 ### Linux
 
-Nachdem Sie das SDL2-Paket (`libsdl2-dev` für Ubuntu), [Python3](https://www.python.org/) (Version 3.8 oder höher) und `python3-pip` installiert haben, führen Sie den folgenden Befehl aus:
+Nachdem Sie das SDL2-Paket (`libsdl2-dev` für Ubuntu), [Python 3](https://www.python.org/) (Version 3.8 oder höher) und `python3-pip` installiert haben, führen Sie den folgenden Befehl aus:
 
 ```sh
 sudo pip3 install -U pyxel
@@ -234,11 +234,11 @@ Die folgenden Beispiele werden in das aktuelle Verzeichnis kopiert:
 Die Beispiele können mit den folgenden Befehlen ausgeführt werden:
 
 ```sh
-# Run example in examples directory
+# Beispiel im examples-Verzeichnis ausführen
 cd pyxel_examples
 pyxel run 01_hello_pyxel.py
 
-# Run app in examples/apps directory
+# App im examples/apps-Verzeichnis ausführen
 cd apps
 pyxel play 30sec_of_daylight.pyxapp
 ```

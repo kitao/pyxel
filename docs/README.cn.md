@@ -54,7 +54,7 @@ Pyxel 在 [MIT 许可证](../LICENSE) 下开源并免费使用。让我们开始
 - 8 个音乐轨道可组合任意声音
 - 支持键盘、鼠标和游戏手柄输入
 - 图像和声音编辑工具
-- 用户可扩展的颜色、通道和库
+- 用户可扩展的颜色、声音通道和库
 
 ### 色彩调色板
 
@@ -66,7 +66,7 @@ Pyxel 在 [MIT 许可证](../LICENSE) 下开源并免费使用。让我们开始
 
 ### Windows
 
-在安装 [Python3](https://www.python.org/)（版本 3.8 或更高）后，运行以下命令：
+在安装 [Python 3](https://www.python.org/)（版本 3.8 或更高）后，运行以下命令：
 
 ```sh
 pip install -U pyxel
@@ -88,7 +88,7 @@ pipx install pyxel
 
 ### Linux
 
-在安装 SDL2 包（对于 Ubuntu 为 `libsdl2-dev`）、[Python3](https://www.python.org/)（版本 3.8 或更高）和 `python3-pip` 后，运行以下命令：
+在安装 SDL2 包（对于 Ubuntu 为 `libsdl2-dev`）、[Python 3](https://www.python.org/)（版本 3.8 或更高）和 `python3-pip` 后，运行以下命令：
 
 ```sh
 sudo pip3 install -U pyxel
@@ -234,11 +234,11 @@ pyxel copy_examples
 这些示例可以通过以下命令执行：
 
 ```sh
-# Run example in examples directory
+# 在 examples 目录运行示例
 cd pyxel_examples
 pyxel run 01_hello_pyxel.py
 
-# Run app in examples/apps directory
+# 在 examples/apps 目录运行应用
 cd apps
 pyxel play 30sec_of_daylight.pyxapp
 ```
