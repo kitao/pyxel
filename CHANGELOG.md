@@ -19,9 +19,9 @@
 - Adjusted initialization order for the web version
 - Normalized HTML doctypes to lowercase
 - Enabled local Pyxel for the test web server
-- Added pcm method to the Sound class for audio playback
+- Added pcm method to Sound for audio playback
 - Added Example 18 for audio playback
-- Renamed incl_colors to include_colors in the Image class
+- Renamed incl_colors to include_colors in Image
 
 ## 2.6.2
 
@@ -59,7 +59,7 @@
 
 ## 2.5.11
 
-- Web version now displays all errors
+- Updated web version to display all errors
 - Improved error handling for the web version
 - Updated gif crate to version 0.14
 - Updated zip crate to version 7.0
@@ -81,7 +81,7 @@
 - Updated Emscripten to version 4.0.9
 - Updated Pyodide to version 0.28.3
 - Updated SDL2 to version 2.32.0
-- Web pages now refer to the main branch
+- Updated web pages to refer to the main branch
 - Updated zip crate to version 6.0
 
 ## 2.5.8
@@ -100,7 +100,7 @@
 
 ## 2.5.6
 
-- Pyxel MML Studio now uses compressed URLs
+- Updated Pyxel MML Studio to use compressed URLs
 - Improved Pyxel MML Studio usability
 - Updated design of the Pyxel web pages
 
@@ -113,7 +113,7 @@
 - Improved automatic file download for the web version
 - Adjusted error output display size in the web version
 - Updated reset function mechanism
-- Now uses tone 0 when a non-existent tone number is specified
+- Updated tone selection to use 0 when a non-existent tone number is specified
 - Separated the web MML commands into the Pyxel MML Studio page
 
 ## 2.5.4
@@ -126,7 +126,7 @@
 
 ## 2.5.3
 
-- HTML pages now use the latest Pyxel from CDN
+- Updated HTML pages to use the latest Pyxel from CDN
 - Added a gamepad shortcut for the reset operation
 - Excluded GIF and ZIP files from Pyxel application files
 - Added START and BACK buttons to the virtual gamepad for the web
@@ -142,7 +142,7 @@
 
 ## 2.5.1
 
-- Now preserves environment variables on reset
+- Updated reset to preserve environment variables
 - Fixed cargo publish error by adding features sdl2
 - Added line break support for custom font rendering
 - Fixed app2exe issue with white spaces
@@ -205,11 +205,11 @@
 
 ## 2.4.1
 
-- Renamed noise field of the Tone class to mode
-- Added sample_bits field to the Tone class
-- Made the wavetable field of the Tone class support arbitrary length
+- Renamed noise field of Tone to mode
+- Added sample_bits field to Tone
+- Made the wavetable field of Tone support arbitrary length
 - Renamed tone_index parameter of the Tone command in MML to tone
-- Updated Sound class member types
+- Updated Sound member types
 - Switched to the blip_buf crate
 - Added asterisk parameter support to the @GLI command in MML
 - Removed redundant MML code from Example 9
@@ -226,20 +226,20 @@
 - Updated bindgen crate to version 0.72
 - Fixed GitHub Actions to use Rust nightly-2025-02-01
 - Renewed the sound engine and MML syntax
-- Renamed waveform field of the Tone class to wavetable
-- play and playm now use sec instead of tick
-- play_pos now returns sec instead of note_no
-- Sound and Music save methods now use sec instead of count
-- Added total_sec method to the Sound class
-- mml method of the Sound class now uses the new MML syntax
-- Added old_mml method to the Sound class for the old MML syntax
+- Renamed waveform field of Tone to wavetable
+- Updated play and playm to use sec instead of tick
+- Updated play_pos to return sec instead of note_no
+- Updated Sound and Music save methods to use sec instead of count
+- Added total_sec method to Sound
+- Updated mml method of Sound to use the new MML syntax
+- Added old_mml method to Sound for the old MML syntax
 - Added MML string support to the play function
-- Added MML string support to the play method of the Channel class
+- Added MML string support to the play method of Channel
 - Removed colors, tones, and channels from the resource format
 - Renamed excl options to exclude in the load and save functions
 - Removed incl options from the load and save functions
 - Updated Example 9 to use new MML syntax
-- Default floating-point type is now f32
+- Updated default floating-point type to f32
 
 ## 2.3.18
 
@@ -249,13 +249,13 @@
 - Added a screen size specification to the README files
 - Added blank lines to format code
 - Updated sysinfo crate to version 0.34
-- Math functions are now static
+- Updated math functions to be static
 - Added DEFAULT_COLORS constant
 - Updated Pyxel thanks image
 
 ## 2.3.17
 
-- btn-related functions now use assert
+- Updated btn-related functions to use assert
 - Removed autoplay code from the web version
 
 ## 2.3.16
@@ -315,7 +315,7 @@
 
 ## 2.3.6
 
-- Rotation in blt and bltm is now clockwise
+- Updated blt and bltm rotation to be clockwise
 
 ## 2.3.5
 
@@ -336,7 +336,7 @@
 ## 2.3.3
 
 - Removed NoSleep.js from the web version of Pyxel
-- Fixed a bug in the save method of the Music class
+- Fixed a bug in the save method of Music
 - Moved the image used for MP4 creation
 - Restored links to the Discord servers in the README files
 
@@ -359,9 +359,9 @@
 
 - Added ToneIndex type
 - Adjusted size of sound-related types
-- Added mml method to the Sound class
+- Added mml method to Sound
 - Updated directories crate to version 6.0
-- Sample rate is now 22.05 kHz
+- Updated sample rate to 22.05 kHz
 - Reduced click noise
 - Updated Pyodide to version 0.27.1
 - Updated year in the LICENSE files
@@ -389,7 +389,7 @@
 - Modified a shortcut description in the README files
 - Renamed (tile_x, tile_y) to (image_tx, image_ty) in the README files
 - Replaced the usage of a deprecated API
-- Tilemap editor now loads Layer 0 when a TMX file is dropped onto it
+- Updated Tilemap editor to load Layer 0 when a TMX file is dropped onto it
 - Updated Maturin to the latest version
 - Updated Pyodide to version 0.26.4
 - Updated indexmap crate to version 2.7
@@ -409,7 +409,7 @@
 - Renamed argument of the fullscreen function
 - Added integer-scale toggle feature with Alt(Option)+8
 - Added gamepad shortcuts using A+B+X+Y+DL/DR/DU/DD
-- Default scaling is now maximum
+- Updated default scaling to maximum
 
 ## 2.2.6
 
@@ -455,7 +455,7 @@
 - Removed an unnecessary line in Example 14
 - Added Font class
 - Added a font option to the text function
-- Example 14 now uses native font rendering
+- Updated Example 14 to use native font rendering
 
 ## 2.2.0
 
@@ -487,7 +487,7 @@
 ## 2.1.7
 
 - Modified help messages in Pyxel Editor
-- sgn now returns integer
+- Updated sgn to return integer
 - Fixed push back process in Example 10 and 15
 - Prevented editing during playback in Pyxel Editor
 - Fixed incorrect array references during playback in Pyxel Editor
@@ -521,7 +521,7 @@
 ## 2.1.2
 
 - Updated descriptions of the pget and pset functions
-- Added Half-FadeOut and Quarter-FadeOut effects to the Sound class
+- Added Half-FadeOut and Quarter-FadeOut effects to Sound
 - Fixed warp_mouse function
 
 ## 2.1.1
@@ -535,7 +535,7 @@
 - Fixed a help message in Pyxel Editor
 - Added a resume option to the play function
 - Updated function notation in Example 4
-- Example 9 now uses the resume option for SFX playback
+- Updated Example 9 to use the resume option for SFX playback
 - Added descriptions of the resume option to the README files
 - Updated Pyodide to version 0.26.1
 
@@ -583,12 +583,12 @@
 
 - Turned off the high DPI mode for performance perspective
 - Added a shortcut to output the current color palette
-- Added load_tmx and load method to the Tilemap class
+- Added load_tmx and load method to Tilemap
 - Enabled importing a TMX file via drag and drop in the tilemap editor
 - Updated destination for image drag-and-drop in the image editor
 - Refined the code for Example 9 and Example 10
-- Added an incl_colors option to the from_image method of the Image class
-- Added an incl_colors option to the load method of the Image class
+- Added an incl_colors option to the from_image method of Image
+- Added an incl_colors option to the load method of Image
 - Added Example 15
 - Refined Example 10
 - Fixed a color count change bug on OpenGL ES
@@ -628,8 +628,8 @@
 - Removed source code path from the binary
 - Renamed Waveform and waveforms to Tone and tones
 - Updated resource file format for the tones
-- CDN links now use the latest Pyxel explicitly
-- Sound.set_tones now accepts digits
+- Updated CDN links to use the latest Pyxel explicitly
+- Updated Sound.set_tones to accept digits
 - Added Example 14 (still under development)
 
 ## 2.0.0
