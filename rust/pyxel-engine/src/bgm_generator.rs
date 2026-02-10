@@ -13,8 +13,6 @@ use crate::sound::Sound;
 const BARS: usize = 8;
 const STEPS_PER_BAR: usize = 16;
 const TOTAL_STEPS: usize = BARS * STEPS_PER_BAR;
-const SUB_VALIDATION_RETRIES: usize = 8;
-
 const PRESET_COUNT: usize = 8;
 const TONE_CANDIDATES: [usize; 6] = [11, 8, 2, 10, 6, 4];
 
@@ -28,6 +26,11 @@ const PRESET_SUB_TONE: usize = 6;
 const PRESET_MELO_LOWEST_NOTE: usize = 7;
 const PRESET_MELO_DENSITY: usize = 8;
 const PRESET_MELO_USE16: usize = 9;
+
+fn normalize_transp(transp: i32) -> i32 {
+    let clamped = transp.clamp(-5, 6);
+    (clamped + 6).rem_euclid(12) - 11
+}
 
 // Wave, attack, decay, sustain, release, vibrato
 const TONE_LIBRARY: [[i32; 6]; 16] = [
@@ -738,7 +741,7 @@ struct MelodyState {
 
 const NOTE_UNSET: i32 = -2;
 const NOTE_CONT: i32 = -3;
-const MAX_MELODY_ATTEMPTS: usize = 256;
+// Match original behavior: retry until a valid melody is produced.
 
 fn default_melody_state() -> MelodyState {
     MelodyState {
@@ -809,12 +812,12 @@ fn pick_rhythm_events(
     use_16th: bool,
     is_sub: bool,
 ) -> Vec<(usize, i32)> {
-    let mut results: Vec<(usize, i32)> = Vec::new();
+    let mut results = Vec::new();
     let mut used16 = false;
     loop {
         for bar in 0..BARS {
             let line = if is_sub {
-                "0...0...0...0..."
+                "0.0.0.0.0.0.0.0."
             } else {
                 loop {
                     let idx = rng.random_range(0..RHYTHM_PATTERNS.len());
@@ -830,11 +833,11 @@ fn pick_rhythm_events(
                     }
                 }
             };
-            for (i, ch) in line.as_bytes().iter().enumerate() {
-                let val = match *ch {
+            for (i, ch) in line.bytes().enumerate() {
+                let val = match ch {
                     b'-' => -1,
                     b'0' => 0,
-                    b'1'..=b'9' => i32::from(*ch - b'0'),
+                    b'1'..=b'9' => i32::from(ch - b'0'),
                     _ => continue,
                 };
                 results.push((bar * STEPS_PER_BAR + i, val));
@@ -871,7 +874,7 @@ fn next_note_events(
     lowest: i32,
     rng: &mut Xoshiro256StarStar,
 ) -> Option<Vec<(usize, i32, usize)>> {
-    let mut rhythm_kind: Option<i32> = None;
+    let mut rhythm_kind = None;
     let mut rhythm_idx = 0usize;
     for (i, (rh_loc, rh_pat)) in rhythm_set.iter().enumerate() {
         if loc == *rh_loc {
@@ -886,18 +889,17 @@ fn next_note_events(
     }
     let note_len = rhythm_set[rhythm_idx + 1].0 - loc;
 
-    let mut change_chord = false;
     let mut lookahead = false;
     let (mut next_chord_idx, mut next_chord_loc) = chord_at(chord_plan, loc);
-    if next_chord_idx as i32 > state.cur_chord_idx {
-        change_chord = true;
-    } else if !state.is_repeat && loc + note_len > next_chord_loc {
+    if next_chord_idx as i32 <= state.cur_chord_idx
+        && !state.is_repeat
+        && loc + note_len > next_chord_loc
+    {
         (next_chord_idx, next_chord_loc) = chord_at(chord_plan, loc + note_len);
-        change_chord = true;
         lookahead = true;
     }
 
-    if change_chord {
+    if next_chord_idx as i32 > state.cur_chord_idx || lookahead {
         state.chord_idx = next_chord_idx;
         state.cur_chord_idx = next_chord_idx as i32;
         state.cur_chord_loc = loc;
@@ -906,7 +908,7 @@ fn next_note_events(
     }
 
     if state.is_repeat {
-        return if lookahead { Some(Vec::new()) } else { None };
+        return lookahead.then_some(Vec::new());
     }
 
     if rhythm_kind == Some(-1) {
@@ -919,11 +921,12 @@ fn next_note_events(
     }
     let no_root = state.first_in_chord || chord.no_root;
     let sub_pool = if is_sub {
-        if let (Some(melody), Some(base)) = (melody, base) {
-            let chord_bits = &chord.notes_bits;
-            harmony_note_pool_at(loc, melody, base, chord_bits, key_shift, lowest)
-        } else {
-            Vec::new()
+        match (melody, base) {
+            (Some(melody), Some(base)) => {
+                let chord_bits = &chord.notes_bits;
+                harmony_note_pool_at(loc, melody, base, chord_bits, key_shift, lowest)
+            }
+            _ => Vec::new(),
         }
     } else {
         Vec::new()
@@ -935,7 +938,7 @@ fn next_note_events(
     };
     let mut next_idx = pick_target_note_idx(note_pool, state.prev_note, no_root, is_sub, rng);
 
-    let mut following: Vec<(usize, usize)> = Vec::new();
+    let mut following = Vec::new();
     let mut prev_loc = loc;
     loop {
         let next_rhythm_loc = rhythm_set[rhythm_idx + 1 + following.len()].0;
@@ -964,27 +967,26 @@ fn next_note_events(
 
     if diff == 0 {
         let cnt = following.len() / 2;
-        if cnt > 0 && rng.random_range(0..=1) == 1 && !is_sub {
-            let mut results = Vec::new();
-            for i in 0..cnt {
-                while next_idx == cur_idx {
-                    // Keep Python behavior: retry uses default pick_target_note()
-                    // Semantics (is_sub = false) even when current path is sub.
-                    next_idx =
-                        pick_target_note_idx(&chord.notes, state.prev_note, no_root, false, rng);
-                }
-                let dir = if next_idx > cur_idx { 1isize } else { -1isize };
-                let next_pos = (cur_idx as isize + dir) as usize;
-                let note = note_pool[next_pos].0;
-                let prev_note = state.prev_note;
-                let a = following[i * 2];
-                results.push((a.0, note, a.1));
-                let b = following[i * 2 + 1];
-                results.push((b.0, prev_note, b.1));
-            }
-            return Some(results);
+        if cnt == 0 || is_sub || rng.random_range(0..=1) == 0 {
+            return Some(vec![(first_loc, state.prev_note, first_len)]);
         }
-        return Some(vec![(first_loc, state.prev_note, first_len)]);
+        let mut results = Vec::new();
+        for i in 0..cnt {
+            while next_idx == cur_idx {
+                // Keep Python behavior: retry uses default pick_target_note()
+                // Semantics (is_sub = false) even when current path is sub.
+                next_idx = pick_target_note_idx(&chord.notes, state.prev_note, no_root, false, rng);
+            }
+            let dir = if next_idx > cur_idx { 1isize } else { -1isize };
+            let next_pos = (cur_idx as isize + dir) as usize;
+            let note = note_pool[next_pos].0;
+            let prev_note = state.prev_note;
+            let a = following[i * 2];
+            results.push((a.0, note, a.1));
+            let b = following[i * 2 + 1];
+            results.push((b.0, prev_note, b.1));
+        }
+        return Some(results);
     }
 
     if diff > following.len() {
@@ -1107,13 +1109,14 @@ fn generate_melody(
     key_shift: i32,
     base: &[Option<i32>],
     rng: &mut Xoshiro256StarStar,
+    require_tones: bool,
 ) -> (Vec<Option<i32>>, Vec<Option<i32>>) {
     let preset_def = PRESET_SETS[preset];
     let density = preset_def[PRESET_MELO_DENSITY].clamp(0, 4) as usize;
     let use_16th = preset_def[PRESET_MELO_USE16] != 0;
     let lowest = preset_def[PRESET_MELO_LOWEST_NOTE];
     let chord_plan = build_melody_chord_plan(preset, key_shift, lowest);
-    for _ in 0..MAX_MELODY_ATTEMPTS {
+    loop {
         let mut note_line = vec![NOTE_UNSET; TOTAL_STEPS];
         let mut melody_view = vec![None; TOTAL_STEPS];
         let mut sub_seed = vec![Some(NOTE_UNSET); TOTAL_STEPS];
@@ -1195,7 +1198,7 @@ fn generate_melody(
             continue;
         }
 
-        if melody_has_required_tones(&melody_view, None, &chord_plan) {
+        if !require_tones || melody_has_required_tones(&melody_view, None, &chord_plan) {
             let sub_seed: Vec<Option<i32>> = sub_seed
                 .into_iter()
                 .map(|v| match v {
@@ -1206,8 +1209,6 @@ fn generate_melody(
             return (melody_view, sub_seed);
         }
     }
-
-    (vec![Some(-1); TOTAL_STEPS], vec![None; TOTAL_STEPS])
 }
 
 fn generate_bass(preset: usize, bits_per_step: &[[i32; 12]], key_shift: i32) -> Vec<Option<i32>> {
@@ -1525,43 +1526,47 @@ fn notes_to_mml(
     } else {
         "@VIB0".to_string()
     });
-    let mut used_keys = Vec::new();
-    if drums {
-        used_keys = used_drum_keys(notes);
+    let used_keys = if drums {
+        let used = used_drum_keys(notes);
         let insert_at = tokens
             .iter()
             .position(|t| t.starts_with('Q'))
             .unwrap_or(tokens.len());
-        for (idx, key) in used_keys.iter().enumerate() {
+        for (idx, key) in used.iter().enumerate() {
             tokens.insert(
                 insert_at + idx,
                 env_def_from_drum_key(*key, (idx as i32) + 2),
             );
         }
-    }
+        used
+    } else {
+        Vec::new()
+    };
     let mut cur_oct = None;
     let mut drum_note_idx = [0usize; 10];
-    let mut drum_env_slot = [0i32; 10];
-    if drums {
-        drum_env_slot = drum_env_slots(&used_keys);
-    }
+    let drum_env_slot = if drums {
+        drum_env_slots(&used_keys)
+    } else {
+        [0i32; 10]
+    };
     let mut cur_wave = wave;
     let mut cur_env_slot = 1i32;
     let mut bar_tokens: Vec<Vec<String>> = vec![Vec::new()];
     let mut bar_units = 0usize;
     let mut i = 0usize;
     while i < notes.len() {
-        let Some(event) = notes[i] else {
-            i += 1;
-            continue;
+        let event = match notes[i] {
+            Some(event) => event,
+            None => {
+                i += 1;
+                continue;
+            }
         };
         let mut len = 1usize;
-        let mut j = i + 1;
-        while j < notes.len() && notes[j].is_none() {
+        while i + len < notes.len() && notes[i + len].is_none() {
             len += 1;
-            j += 1;
         }
-        i = j;
+        i += len;
 
         if event == -1 {
             let mut remaining = len;
@@ -1652,27 +1657,23 @@ fn silent_channel_mml(tempo: i32) -> String {
     format!("T{tempo} L16 @ENV1{{127}} Q100 V112 @0 @ENV1 @VIB0")
 }
 
-fn generate_bgm_mml(
-    preset: usize,
-    setup: usize,
-    key_shift: i32,
-    bpm_offset: i32,
-    seed: Option<u64>,
-) -> Vec<String> {
-    let preset = preset.min(PRESET_COUNT - 1);
-    let setup = setup.min(3);
+fn generate_bgm_mml(preset: i32, instr: i32, transp: i32, seed: Option<u64>) -> Vec<String> {
+    let preset = preset.clamp(0, (PRESET_COUNT - 1) as i32) as usize;
+    let instr = instr.clamp(0, 3) as usize;
+    let transp = normalize_transp(transp);
+    let key_shift = transp;
 
     let actual_seed = seed.unwrap_or_else(random_seed);
     let mut rng = Xoshiro256StarStar::seed_from_u64(actual_seed);
     let base_speed = PRESET_SETS[preset][PRESET_SPEED].max(1);
-    let tempo = ((28800 / base_speed) + bpm_offset).max(1);
+    let tempo = (28800 / base_speed).max(1);
     let bits_per_step = chord_bits_per_step(preset);
     let preset_def = PRESET_SETS[preset];
     let bass = generate_bass(preset, &bits_per_step, key_shift);
-    let mut melody_and_seed = generate_melody(preset, key_shift, &bass, &mut rng);
+    let mut melody_and_seed = generate_melody(preset, key_shift, &bass, &mut rng, instr < 2);
     let mut submelody = None;
 
-    if setup >= 2 {
+    if instr >= 2 {
         let chord_plan =
             build_melody_chord_plan(preset, key_shift, preset_def[PRESET_MELO_LOWEST_NOTE]);
         let mut candidate = generate_submelody(
@@ -1684,11 +1685,11 @@ fn generate_bgm_mml(
             preset_def[PRESET_MELO_LOWEST_NOTE],
             &mut rng,
         );
-        for _ in 0..SUB_VALIDATION_RETRIES {
+        loop {
             if melody_has_required_tones(&melody_and_seed.0, Some(&candidate), &chord_plan) {
                 break;
             }
-            melody_and_seed = generate_melody(preset, key_shift, &bass, &mut rng);
+            melody_and_seed = generate_melody(preset, key_shift, &bass, &mut rng, false);
             candidate = generate_submelody(
                 preset,
                 &melody_and_seed.0,
@@ -1714,14 +1715,14 @@ fn generate_bgm_mml(
         silent_channel_mml(tempo),
     ];
 
-    if setup == 0 {
+    if instr == 0 {
         // No submelody, no drum: ch2 is shifted melody with melody tone settings
         let shifted = shifted_melody(&melody);
         mml_list[2] = notes_to_mml(&shifted, tempo, melo_tone_idx, 32, 88, false);
     } else {
-        if setup == 1 || setup == 3 {
+        if instr == 1 || instr == 3 {
             let drum = generate_drums(preset);
-            if setup == 1 {
+            if instr == 1 {
                 // Drum only: ch2 is drum track, ch3 silent
                 mml_list[2] = notes_to_mml(&drum, tempo, 15, 80, 94, true);
             } else {
@@ -1730,7 +1731,7 @@ fn generate_bgm_mml(
             }
         }
 
-        if setup == 2 || setup == 3 {
+        if instr == 2 || instr == 3 {
             // Submelody only: ch2 is submelody, ch3 silent
             let sub = submelody.unwrap_or_else(|| vec![Some(-1); TOTAL_STEPS]);
             mml_list[2] = notes_to_mml(&sub, tempo, sub_tone_idx, 64, 94, false);
@@ -1743,14 +1744,13 @@ fn generate_bgm_mml(
 impl Pyxel {
     pub fn gen_bgm(
         &mut self,
-        preset: usize,
-        setup: usize,
-        key_shift: i32,
-        bpm_offset: i32,
+        preset: i32,
+        transp: i32,
+        instr: i32,
         seed: Option<u64>,
         play: Option<bool>,
     ) -> Vec<String> {
-        let mml_list = generate_bgm_mml(preset, setup, key_shift, bpm_offset, seed);
+        let mml_list = generate_bgm_mml(preset, instr, transp, seed);
 
         if play.unwrap_or(false) {
             for (ch, mml) in mml_list.iter().enumerate() {
