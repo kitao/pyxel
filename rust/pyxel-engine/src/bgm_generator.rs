@@ -4,7 +4,7 @@
 */
 use std::fmt::Write as _;
 
-use rand::{Rng, SeedableRng};
+use rand::{RngExt, SeedableRng};
 use rand_xoshiro::Xoshiro256StarStar;
 
 use crate::pyxel::Pyxel;
@@ -637,8 +637,7 @@ fn format_tokens(tokens: &[String]) -> String {
 }
 
 fn random_seed() -> u64 {
-    let mut rng = rand::rng();
-    rng.random()
+    rand::rng().random()
 }
 
 fn parse_notes_bits(s: &str) -> [i32; 12] {
@@ -1555,12 +1554,9 @@ fn notes_to_mml(
     let mut bar_units = 0usize;
     let mut i = 0usize;
     while i < notes.len() {
-        let event = match notes[i] {
-            Some(event) => event,
-            None => {
-                i += 1;
-                continue;
-            }
+        let Some(event) = notes[i] else {
+            i += 1;
+            continue;
         };
         let mut len = 1usize;
         while i + len < notes.len() && notes[i + len].is_none() {

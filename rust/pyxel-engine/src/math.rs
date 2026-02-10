@@ -2,17 +2,18 @@ use std::f32::consts::PI;
 use std::sync::{LazyLock, Mutex};
 
 use noise::{NoiseFn, Perlin};
-use rand::rngs::OsRng;
-use rand::{Rng, SeedableRng, TryRngCore};
+use rand::{RngExt, SeedableRng};
 use rand_xoshiro::Xoshiro256StarStar;
 
 use crate::pyxel::Pyxel;
 
-static RNG: LazyLock<Mutex<Xoshiro256StarStar>> =
-    LazyLock::new(|| Mutex::new(Xoshiro256StarStar::from_os_rng()));
+static RNG: LazyLock<Mutex<Xoshiro256StarStar>> = LazyLock::new(|| {
+    let mut rng = rand::rng();
+    Mutex::new(Xoshiro256StarStar::from_rng(&mut rng))
+});
 
 static PERLIN: LazyLock<Mutex<Perlin>> =
-    LazyLock::new(|| Mutex::new(Perlin::new(OsRng.try_next_u32().unwrap())));
+    LazyLock::new(|| Mutex::new(Perlin::new(rand::rng().random())));
 
 impl Pyxel {
     pub fn ceil(x: f32) -> i32 {
@@ -45,13 +46,13 @@ impl Pyxel {
     }
 
     pub fn rndi(a: i32, b: i32) -> i32 {
-        let (a, b) = if a < b { (a, b) } else { (b, a) };
-        RNG.lock().unwrap().random_range(a..=b)
+        let (min, max) = if a < b { (a, b) } else { (b, a) };
+        RNG.lock().unwrap().random_range(min..=max)
     }
 
     pub fn rndf(a: f32, b: f32) -> f32 {
-        let (a, b) = if a < b { (a, b) } else { (b, a) };
-        RNG.lock().unwrap().random_range(a..=b)
+        let (min, max) = if a < b { (a, b) } else { (b, a) };
+        RNG.lock().unwrap().random_range(min..=max)
     }
 
     pub fn nseed(seed: u32) {
