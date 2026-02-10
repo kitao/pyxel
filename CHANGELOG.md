@@ -8,6 +8,7 @@
 - Added collide method to Tilemap
 - Updated Examples 10 and 15 to use collide
 - Updated sgn to preserve input types in Python
+- Updated rand to 0.10 and rand_xoshiro to 0.8
 
 ## 2.6.4
 

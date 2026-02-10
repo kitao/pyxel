@@ -25,8 +25,8 @@ indexmap = "2.7"
 noise = "0.9"
 parking_lot = "0.12"
 pyxel-platform = { path = "../pyxel-platform", version = "2.6.4" }
-rand = "0.9"
-rand_xoshiro = "0.7"
+rand = "0.10"
+rand_xoshiro = "0.8"
 semver = "1.0"
 serde = { version = "1.0", features = ["derive"] }
 serde-xml-rs = "0.8"
