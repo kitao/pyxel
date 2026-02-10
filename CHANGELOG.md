@@ -7,6 +7,7 @@
 - Added clamp function
 - Added collide method to Tilemap
 - Updated Examples 10 and 15 to use collide
+- Updated sgn to preserve input types in Python
 
 ## 2.6.4
 

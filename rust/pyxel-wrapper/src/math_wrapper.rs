@@ -1,4 +1,5 @@
 use pyo3::prelude::*;
+use pyo3::types::{PyFloat, PyInt};
 use pyxel::Pyxel;
 
 #[pyfunction]
@@ -12,13 +13,63 @@ fn floor(x: f32) -> i32 {
 }
 
 #[pyfunction]
-fn clamp(x: f32, lower: f32, upper: f32) -> f32 {
-    Pyxel::clamp(x, lower, upper)
+fn clamp(
+    x: Bound<'_, PyAny>,
+    lower: Bound<'_, PyAny>,
+    upper: Bound<'_, PyAny>,
+) -> PyResult<Py<PyAny>> {
+    let py = x.py();
+
+    if let (Ok(xi), Ok(li), Ok(ui)) = (
+        x.extract::<i64>(),
+        lower.extract::<i64>(),
+        upper.extract::<i64>(),
+    ) {
+        let (lo, hi) = if li < ui { (li, ui) } else { (ui, li) };
+        let v = if xi < lo {
+            lo
+        } else if xi > hi {
+            hi
+        } else {
+            xi
+        };
+        let obj = PyInt::new(py, v).into_any().unbind();
+        return Ok(obj);
+    }
+
+    let xf = x.extract::<f64>()?;
+    let lf = lower.extract::<f64>()?;
+    let uf = upper.extract::<f64>()?;
+    let (lo, hi) = if lf < uf { (lf, uf) } else { (uf, lf) };
+    let v = xf.clamp(lo, hi);
+    let obj = PyFloat::new(py, v).into_any().unbind();
+    Ok(obj)
 }
 
 #[pyfunction]
-fn sgn(x: f32) -> i32 {
-    Pyxel::sgn(x)
+fn sgn(x: Bound<'_, PyAny>) -> PyResult<Py<PyAny>> {
+    let py = x.py();
+
+    if let Ok(xi) = x.extract::<i64>() {
+        let v = match xi.cmp(&0) {
+            std::cmp::Ordering::Greater => 1,
+            std::cmp::Ordering::Less => -1,
+            std::cmp::Ordering::Equal => 0,
+        };
+        let obj = PyInt::new(py, v).into_any().unbind();
+        return Ok(obj);
+    }
+
+    let xf = x.extract::<f64>()?;
+    let v = if xf > 0.0 {
+        1.0
+    } else if xf < 0.0 {
+        -1.0
+    } else {
+        0.0
+    };
+    let obj = PyFloat::new(py, v).into_any().unbind();
+    Ok(obj)
 }
 
 #[pyfunction]
