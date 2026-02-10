@@ -602,6 +602,9 @@ Un archivo de aplicación Pyxel también se puede convertir en un archivo ejecut
 - `play_pos(ch)`<br>
   Obtiene la posición de reproducción del sonido en el canal `ch`(0-3) como una tupla de `(sound_no, sec)`. Devuelve `None` cuando se ha detenido la reproducción.
 
+- `gen_bgm(preset, transp, instr, [seed], [play])`<br>
+  Crea una lista MML de BGM con un algoritmo basado en [8bit BGM generator](https://github.com/shiromofufactory/8bit-bgm-generator). `preset` es el número de preset (0-7), `transp` es la altura tonal (-5 a 6) y `instr` es el número de instrumentación (0-3): `0`=melodía+reverb+bajo, `1`=melodía+bajo+batería, `2`=melodía+sub+bajo, `3`=melodía+sub+bajo+batería. Si no se especifica `seed`, el resultado es aleatorio. Si `play` es `True`, se reproduce el MML creado.
+
 ### Matemáticas
 
 - `ceil(x)`<br>

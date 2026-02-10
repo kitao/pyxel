@@ -602,6 +602,9 @@ Eine Pyxel-Anwendungsdatei kann auch mit den Befehlen `pyxel app2exe` oder `pyxe
 - `play_pos(ch)`<br>
   Gibt die Wiedergabeposition des Klangs auf Kanal `ch`(0-3) als Tupel `(sound_no, sec)` zurück. Gibt `None` zurück, wenn die Wiedergabe gestoppt wurde.
 
+- `gen_bgm(preset, transp, instr, [seed], [play])`<br>
+  Erstellt eine BGM‑MML‑Liste mit einem Algorithmus auf Basis von [8bit BGM generator](https://github.com/shiromofufactory/8bit-bgm-generator). `preset` ist die Preset‑Nummer (0-7), `transp` die Tonhöhe (-5 bis 6) und `instr` die Instrumentierungs‑Nummer (0-3): `0`=Melodie+Hall+Bass, `1`=Melodie+Bass+Drums, `2`=Melodie+Sub+Bass, `3`=Melodie+Sub+Bass+Drums. Ohne `seed` ist das Ergebnis zufällig. Wenn `play` `True` ist, wird die erzeugte MML abgespielt.
+
 ### Mathematik
 
 - `ceil(x)`<br>
