@@ -23,20 +23,6 @@ impl Pyxel {
         f32::floor(x) as i32
     }
 
-    pub fn clamp(x: f32, lower: f32, upper: f32) -> f32 {
-        x.clamp(lower, upper)
-    }
-
-    pub fn sgn(x: f32) -> i32 {
-        if x > 0.0 {
-            1
-        } else if x < 0.0 {
-            -1
-        } else {
-            0
-        }
-    }
-
     pub fn sqrt(x: f32) -> f32 {
         f32::sqrt(x)
     }
