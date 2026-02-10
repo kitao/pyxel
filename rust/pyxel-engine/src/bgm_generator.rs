@@ -1,5 +1,5 @@
 /*
-    Based on 8bit BGM Generator by frenchbread
+    Based on 8bit BGM generator by frenchbread
     https://github.com/shiromofufactory/8bit-bgm-generator
 */
 use std::fmt::Write as _;
