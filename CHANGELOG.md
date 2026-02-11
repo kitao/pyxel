@@ -8,7 +8,8 @@
 - Added collide method to Tilemap
 - Updated Examples 10 and 15 to use collide
 - Updated sgn to preserve input types in Python
-- Updated rand to 0.10 and rand_xoshiro to 0.8
+- Updated rand crate to version 0.10
+- Updated rand_xoshiro crate to version 0.8
 
 ## 2.6.4
 
@@ -321,8 +322,8 @@
 
 - Updated GitHub Action scripts
 - Updated rand crate to version 0.9
-- Updated rand_xoshiro to version 0.7
-- Updated 8bit BGM Generator to version 1.30
+- Updated rand_xoshiro crate to version 0.7
+- Updated 8bit BGM generator to version 1.30
 - Fixed multi-gamepad support
 - Fixed text function ignoring camera when font set
 - Aligned Emscripten version with Pyodide
@@ -353,7 +354,7 @@
 - Added support for adding multiple dots to a note in MML
 - Restored input_keys variable
 - Updated Example 9 to use MML for music setup
-- Updated 8bit BGM Generator to version 1.22
+- Updated 8bit BGM generator to version 1.22
 
 ## 2.3.0
 
@@ -528,7 +529,7 @@
 
 - Fixed resume option of the play function
 - Removed non-functional CTRL+Drop feature from Pyxel Editor
-- Updated zip crate version
+- Updated zip crate to a newer version
 
 ## 2.1.0
 
@@ -639,7 +640,7 @@
 - Switched screen rendering to GLSL
 - Updated Pyodide to version 0.24.1
 - Updated Emscripten to version 3.1.45
-- Updated SDL2 to 2.24.2
+- Updated SDL2 to version 2.24.2
 - Added screen_mode function to change screen rendering type
 - Added a shortcut to change the screen mode with Alt(Option)+9
 - Added support for the third and fourth gamepads
