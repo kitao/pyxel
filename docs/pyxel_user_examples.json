@@ -1,6 +1,15 @@
 {
   "entries": [
     {
+      "id": 169,
+      "title": "THE COLORS",
+      "site": "https://github.com/Python-yarouze/the-colors",
+      "author": "FulLine",
+      "contact": "https://x.com/ful_line",
+      "desc": "A color-changing puzzle action game.",
+      "image": "https://github.com/user-attachments/assets/6a5df3a7-ba4c-4a86-9bad-7fe5512bada95"
+    },
+    {
       "id": 168,
       "title": "Cursed Caverns",
       "site": "https://kitao.github.io/pyxel/wasm/launcher/?play=kitao.pyxel.python.pyxel.examples.apps.cursed_caverns&gamepad=enabled",
