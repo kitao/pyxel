@@ -47,6 +47,7 @@ pub struct Channel {
     resume_sounds: Vec<SharedSound>,
     resume_should_loop: bool,
 
+    playing_pcm: bool,
     pcm_position: usize,
 }
 
@@ -86,6 +87,7 @@ impl Channel {
             resume_sounds: Vec::new(),
             resume_should_loop: false,
 
+            playing_pcm: false,
             pcm_position: 0,
         })
     }
@@ -160,6 +162,7 @@ impl Channel {
             })
         {
             self.is_playing = false;
+            self.playing_pcm = false;
             return;
         }
 
@@ -180,13 +183,14 @@ impl Channel {
         self.command_index = 0;
         self.last_midi_note = None;
         self.pcm_position = 0;
+        self.update_playing_pcm();
 
-        if self.current_sound_is_pcm() {
+        if self.playing_pcm {
             self.voice.cancel_note();
         }
 
         if start_clock > 0 {
-            if self.current_sound_is_pcm() {
+            if self.playing_pcm {
                 self.seek_pcm(start_clock);
             } else {
                 self.process(None, start_clock);
@@ -196,6 +200,7 @@ impl Channel {
 
     pub fn stop(&mut self) {
         self.is_playing = false;
+        self.playing_pcm = false;
         self.voice.cancel_note();
     }
 
@@ -209,8 +214,10 @@ impl Channel {
     }
 
     pub(crate) fn process(&mut self, blip_buf: Option<&mut BlipBuf>, clock_count: u32) {
-        if self.current_sound_is_pcm() {
-            self.voice.process(blip_buf, 0, clock_count);
+        if self.playing_pcm {
+            if self.voice.needs_processing() {
+                self.voice.process(blip_buf, 0, clock_count);
+            }
             return;
         }
 
@@ -270,6 +277,7 @@ impl Channel {
                 if self.sound_index >= self.sounds.len() as u32 {
                     if self.should_loop && clock_count < start_clock_count {
                         self.sound_index = 0;
+                        self.update_playing_pcm();
                     } else if self.should_resume {
                         self.play_from_clock(
                             self.resume_sounds.clone(),
@@ -279,7 +287,10 @@ impl Channel {
                         );
                     } else {
                         self.is_playing = false;
+                        self.playing_pcm = false;
                     }
+                } else {
+                    self.update_playing_pcm();
                 }
             }
         }
@@ -469,7 +480,7 @@ impl Channel {
     }
 
     pub(crate) fn mix_pcm(&mut self, out: &mut [i16]) {
-        if !self.is_playing || !self.current_sound_is_pcm() {
+        if !self.is_playing || !self.playing_pcm {
             return;
         }
 
@@ -539,11 +550,15 @@ impl Channel {
                     self.resume_should_loop,
                     false,
                 );
+                return self.is_playing;
             } else {
                 self.is_playing = false;
+                self.playing_pcm = false;
+                return false;
             }
         }
 
+        self.update_playing_pcm();
         self.is_playing
     }
 
@@ -578,12 +593,28 @@ impl Channel {
 
         if (self.sound_index as usize) >= self.sounds.len() {
             self.is_playing = false;
+            self.playing_pcm = false;
+        } else {
+            self.update_playing_pcm();
         }
     }
 
-    fn current_sound_is_pcm(&self) -> bool {
-        self.sounds
+    fn update_playing_pcm(&mut self) {
+        self.playing_pcm = self
+            .sounds
             .get(self.sound_index as usize)
-            .is_some_and(|sound| sound.lock().pcm.is_some())
+            .is_some_and(|sound| sound.lock().pcm.is_some());
+    }
+
+    pub(crate) fn needs_blip_processing(&self) -> bool {
+        if self.playing_pcm {
+            self.voice.needs_processing()
+        } else {
+            self.is_playing || self.voice.needs_processing()
+        }
+    }
+
+    pub(crate) fn is_playing_pcm(&self) -> bool {
+        self.is_playing && self.playing_pcm
     }
 }

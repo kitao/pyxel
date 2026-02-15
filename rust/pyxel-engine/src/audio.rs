@@ -39,19 +39,33 @@ impl Audio {
         const CLOCKS_PER_SAMPLE: u32 = AUDIO_CLOCK_RATE / AUDIO_SAMPLE_RATE;
 
         let mut channels: Vec<_> = channels_.iter().map(|channel| channel.lock()).collect();
+        let needs_blip = channels
+            .iter()
+            .any(|channel| channel.needs_blip_processing());
+        let needs_pcm = channels.iter().any(|channel| channel.is_playing_pcm());
         let mut num_samples = blip_buf.read_samples(samples, false);
 
-        while num_samples < samples.len() {
-            for channel in &mut *channels {
-                channel.process(Some(blip_buf), CLOCKS_PER_SAMPLE);
-            }
+        if needs_blip {
+            while num_samples < samples.len() {
+                for channel in &mut *channels {
+                    if channel.needs_blip_processing() {
+                        channel.process(Some(blip_buf), CLOCKS_PER_SAMPLE);
+                    }
+                }
 
-            blip_buf.end_frame(CLOCKS_PER_SAMPLE);
-            num_samples += blip_buf.read_samples(&mut samples[num_samples..], false);
+                blip_buf.end_frame(CLOCKS_PER_SAMPLE);
+                num_samples += blip_buf.read_samples(&mut samples[num_samples..], false);
+            }
+        } else if num_samples < samples.len() {
+            samples[num_samples..].fill(0);
         }
 
-        for channel in &mut *channels {
-            channel.mix_pcm(samples);
+        if needs_pcm {
+            for channel in &mut *channels {
+                if channel.is_playing_pcm() {
+                    channel.mix_pcm(samples);
+                }
+            }
         }
     }
 

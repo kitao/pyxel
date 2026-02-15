@@ -425,6 +425,12 @@ impl Voice {
         self.remaining_note_clocks = self.remaining_note_clocks.min(self.note_interp_clocks);
     }
 
+    pub(crate) fn needs_processing(&self) -> bool {
+        self.remaining_note_clocks > 0
+            || self.carryover_sample_clocks > 0
+            || self.last_amplitude != 0
+    }
+
     pub fn process(&mut self, blip_buf: Option<&mut BlipBuf>, clock_offset: u32, clock_count: u32) {
         if clock_count == 0 {
             return;

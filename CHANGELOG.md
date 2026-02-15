@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.6.6
+
+- Reduced unnecessary processing in audio callback
+
 ## 2.6.5
 
 - Removed unnecessary files to reduce the wheel size
