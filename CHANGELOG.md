@@ -3,6 +3,7 @@
 ## 2.6.6
 
 - Reduced unnecessary processing in audio callback
+- Added secret feature to Example 15
 
 ## 2.6.5
 

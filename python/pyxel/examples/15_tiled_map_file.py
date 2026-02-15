@@ -45,6 +45,9 @@ class App:
         if pyxel.btnp(pyxel.KEY_Q):
             pyxel.quit()
 
+        if pyxel.btnp(pyxel.KEY_X):
+            pyxel.gen_bgm(pyxel.rndi(0, 7), 0, 3, play=True)
+
         # Update player
         x, y, u, v = self.player
         dx, dy = 0, 0
