@@ -27,10 +27,6 @@ const PRESET_MELO_LOWEST_NOTE: usize = 7;
 const PRESET_MELO_DENSITY: usize = 8;
 const PRESET_MELO_USE16: usize = 9;
 
-fn normalize_transp(transp: i32) -> i32 {
-    transp.clamp(-5, 6)
-}
-
 // Wave, attack, decay, sustain, release, vibrato
 const TONE_LIBRARY: [[i32; 6]; 16] = [
     [0, 0, 0, 100, 0, 0],
@@ -1246,7 +1242,7 @@ fn generate_bass(preset: usize, bits_per_step: &[[i32; 12]], key_shift: i32) -> 
             let mut chosen = base_root + base_add;
             for a in adjust_list {
                 let n = base_root + base_add + a;
-                if matches!(bits[((n + key_shift).rem_euclid(12)) as usize], 1 | 2 | 3) {
+                if matches!(bits[((n + key_shift).rem_euclid(12)) as usize], 1..=3) {
                     chosen = n;
                     break;
                 }
@@ -1458,15 +1454,6 @@ mod tests {
     use super::*;
 
     #[test]
-    fn normalize_transp_keeps_valid_range_values() {
-        for transp in -5..=6 {
-            assert_eq!(normalize_transp(transp), transp);
-        }
-        assert_eq!(normalize_transp(-999), -5);
-        assert_eq!(normalize_transp(999), 6);
-    }
-
-    #[test]
     fn bass_notes_use_chord_tones_only() {
         for preset in 0..PRESET_COUNT {
             let bits_per_step = chord_bits_per_step(preset);
@@ -1481,7 +1468,7 @@ mod tests {
                     }
                     let tone = bits_per_step[loc][((*note + transp).rem_euclid(12)) as usize];
                     assert!(
-                        matches!(tone, 1 | 2 | 3),
+                        matches!(tone, 1..=3),
                         "preset={preset} transp={transp} loc={loc} note={note} tone={tone}"
                     );
                 }
@@ -1492,28 +1479,28 @@ mod tests {
     #[test]
     fn seeded_generation_is_reproducible() {
         let cases = [
-            (0, -5, 0, 1u64),
-            (1, -2, 1, 2u64),
-            (2, 0, 2, 3u64),
-            (3, 4, 3, 4u64),
-            (7, 6, 3, 123_456_789u64),
+            (0, 0, 1u64),
+            (1, 1, 2u64),
+            (2, 2, 3u64),
+            (3, 3, 4u64),
+            (7, 3, 123_456_789u64),
         ];
-        for (preset, transp, instr, seed) in cases {
-            let a = std::panic::catch_unwind(|| generate_bgm_mml(preset, instr, transp, Some(seed)))
+        for (preset, instr, seed) in cases {
+            let a = std::panic::catch_unwind(|| generate_bgm_mml(preset, instr, Some(seed)))
                 .unwrap_or_else(|_| {
                     panic!(
-                        "seeded generation panicked (first run) preset={preset} transp={transp} instr={instr} seed={seed}"
+                        "seeded generation panicked (first run) preset={preset} instr={instr} seed={seed}"
                     )
                 });
-            let b = std::panic::catch_unwind(|| generate_bgm_mml(preset, instr, transp, Some(seed)))
+            let b = std::panic::catch_unwind(|| generate_bgm_mml(preset, instr, Some(seed)))
                 .unwrap_or_else(|_| {
                     panic!(
-                        "seeded generation panicked (second run) preset={preset} transp={transp} instr={instr} seed={seed}"
+                        "seeded generation panicked (second run) preset={preset} instr={instr} seed={seed}"
                     )
                 });
             assert_eq!(
                 a, b,
-                "seeded gen_bgm mismatch preset={preset} transp={transp} instr={instr} seed={seed}"
+                "seeded gen_bgm mismatch preset={preset} instr={instr} seed={seed}"
             );
         }
     }
@@ -1712,11 +1699,10 @@ fn silent_channel_mml(tempo: i32) -> String {
     format!("T{tempo} L16 @ENV1{{127}} Q100 V112 @0 @ENV1 @VIB0")
 }
 
-fn generate_bgm_mml(preset: i32, instr: i32, transp: i32, seed: Option<u64>) -> Vec<String> {
+fn generate_bgm_mml(preset: i32, instr: i32, seed: Option<u64>) -> Vec<String> {
     let preset = preset.clamp(0, (PRESET_COUNT - 1) as i32) as usize;
     let instr = instr.clamp(0, 3) as usize;
-    let transp = normalize_transp(transp);
-    let key_shift = transp;
+    let key_shift = 0;
 
     let actual_seed = seed.unwrap_or_else(random_seed);
     let mut rng = Xoshiro256StarStar::seed_from_u64(actual_seed);
@@ -1800,12 +1786,11 @@ impl Pyxel {
     pub fn gen_bgm(
         &mut self,
         preset: i32,
-        transp: i32,
         instr: i32,
         seed: Option<u64>,
         play: Option<bool>,
     ) -> Vec<String> {
-        let mml_list = generate_bgm_mml(preset, instr, transp, seed);
+        let mml_list = generate_bgm_mml(preset, instr, seed);
 
         if play.unwrap_or(false) {
             for (ch, mml) in mml_list.iter().enumerate() {

@@ -602,8 +602,8 @@ Bir Pyxel uygulama dosyası ayrıca `pyxel app2exe` veya `pyxel app2html` komutl
 - `play_pos(ch)`<br>
   Kanal `ch`(0-3) çalma pozisyonunu `(sound_no, sec)` ikilisi olarak döndürür. Çalma durduğunda `None` döner.
 
-- `gen_bgm(preset, transp, instr, [seed], [play])`<br>
-  [8bit BGM generator](https://github.com/shiromofufactory/8bit-bgm-generator) tabanlı bir algoritma ile BGM MML listesini oluşturur. `preset` ön ayar numarasıdır (0-7), `transp` perde değeridir (-5 ila 6) ve `instr` enstrümantasyon numarasıdır (0-3): `0`=melodi+reverb+bas, `1`=melodi+bas+davul, `2`=melodi+sub+bas, `3`=melodi+sub+bas+davul. `seed` belirtilmezse sonuç rastgeledir. `play` `True` ise oluşturulan MML çalınır.
+- `gen_bgm(preset, instr, [seed], [play])`<br>
+  [8bit BGM generator](https://github.com/shiromofufactory/8bit-bgm-generator) tabanlı bir algoritma ile BGM MML listesini oluşturur. `preset` ön ayar numarasıdır (0-7), `instr` enstrümantasyon numarasıdır (0-3): `0`=melodi+reverb+bas, `1`=melodi+bas+davul, `2`=melodi+sub+bas, `3`=melodi+sub+bas+davul. `seed` belirtilmezse sonuç rastgeledir. `play` `True` ise oluşturulan MML çalınır.
 
 ### Matematik
 

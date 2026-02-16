@@ -45,13 +45,12 @@ class App:
         if pyxel.btnp(pyxel.KEY_Q):
             pyxel.quit()
 
-        if pyxel.btnp(pyxel.KEY_X):
+        if pyxel.frame_count % 240 == 0:
             pyxel.stop()
 
             preset = pyxel.rndi(0, 7)
-            transpose = pyxel.rndi(-5, 6)
             instr = pyxel.rndi(0, 3)
-            pyxel.gen_bgm(preset, transpose, instr, play=True)
+            pyxel.gen_bgm(preset, instr, play=True)
 
         # Update player
         x, y, u, v = self.player

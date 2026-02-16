@@ -600,8 +600,8 @@ Pyxel 애플리케이션 파일은 `pyxel app2exe` 또는 `pyxel app2html` 명�
 - `play_pos(ch)`<br>
   채널 `ch`(0-3)의 사운드 재생 위치를 `(sound_no, sec)`의 튜플로 가져옵니다. 재생이 중지되면 `None`을 반환합니다.
 
-- `gen_bgm(preset, transp, instr, [seed], [play])`<br>
-  [8bit BGM generator](https://github.com/shiromofufactory/8bit-bgm-generator)를 기반으로 한 알고리즘으로 BGM의 MML 리스트를 생성합니다. `preset`는 프리셋 번호(0-7), `transp`는 음높이(-5~6), `instr`는 편성 번호(0-3)이며, `0`=멜로디+리버브+베이스, `1`=멜로디+베이스+드럼, `2`=멜로디+서브+베이스, `3`=멜로디+서브+베이스+드럼입니다. `seed`를 지정하지 않으면 랜덤이 됩니다. `play`가 `True`이면 생성된 MML을 재생합니다.
+- `gen_bgm(preset, instr, [seed], [play])`<br>
+  [8bit BGM generator](https://github.com/shiromofufactory/8bit-bgm-generator)를 기반으로 한 알고리즘으로 BGM의 MML 리스트를 생성합니다. `preset`는 프리셋 번호(0-7), `instr`는 편성 번호(0-3)이며, `0`=멜로디+리버브+베이스, `1`=멜로디+베이스+드럼, `2`=멜로디+서브+베이스, `3`=멜로디+서브+베이스+드럼입니다. `seed`를 지정하지 않으면 랜덤이 됩니다. `play`가 `True`이면 생성된 MML을 재생합니다.
 
 ### Math
 

@@ -602,8 +602,8 @@ Pyxel 应用程序文件还可以使用 `pyxel app2exe` 或 `pyxel app2html` 命
 - `play_pos(ch)`<br>
   获取通道 `ch`(0-3) 的声音播放位置，作为 `(sound_no, sec)` 的元组返回。当播放停止时，返回 `None`。
 
-- `gen_bgm(preset, transp, instr, [seed], [play])`<br>
-  基于 [8bit BGM generator](https://github.com/shiromofufactory/8bit-bgm-generator) 的算法生成 BGM 的 MML 列表。`preset` 为预设编号（0-7），`transp` 为音高（-5 到 6），`instr` 为编制编号（0-3）：`0`=旋律+混响+贝斯，`1`=旋律+贝斯+鼓，`2`=旋律+副旋律+贝斯，`3`=旋律+副旋律+贝斯+鼓。未指定 `seed` 时结果随机。`play` 为 `True` 时会播放生成的 MML。
+- `gen_bgm(preset, instr, [seed], [play])`<br>
+  基于 [8bit BGM generator](https://github.com/shiromofufactory/8bit-bgm-generator) 的算法生成 BGM 的 MML 列表。`preset` 为预设编号（0-7），`instr` 为编制编号（0-3）：`0`=旋律+混响+贝斯，`1`=旋律+贝斯+鼓，`2`=旋律+副旋律+贝斯，`3`=旋律+副旋律+贝斯+鼓。未指定 `seed` 时结果随机。`play` 为 `True` 时会播放生成的 MML。
 
 ### 数学
 
