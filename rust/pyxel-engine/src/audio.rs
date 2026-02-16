@@ -17,15 +17,10 @@ use crate::utils;
 
 pub struct Audio {}
 
-// Temporary stress injection for adaptive-buffer experiments.
-const CALLBACK_STRESS_INTERVAL: u64 = 15;
-const CALLBACK_STRESS_MS: u64 = 20;
-
 struct AudioStreamRenderer {
     blip_buf: BlipBuf,
     adaptive_buffer: AdaptiveBuffer,
     channels: Vec<SharedChannel>,
-    callback_count: u64,
 }
 
 impl AudioStreamRenderer {
@@ -39,20 +34,18 @@ impl AudioStreamRenderer {
             blip_buf,
             adaptive_buffer,
             channels: Vec::new(),
-            callback_count: 0,
         }
     }
 
     fn render(&mut self, out: &mut [i16]) {
-        self.callback_count = self.callback_count.saturating_add(1);
-        self.inject_stress_if_needed();
+        let callback_start_time = std::time::Instant::now();
         self.snapshot_channels();
         let (adaptive_buffer, blip_buf, channels) = (
             &mut self.adaptive_buffer,
             &mut self.blip_buf,
             &self.channels,
         );
-        adaptive_buffer.process(out, |samples| {
+        adaptive_buffer.process(out, callback_start_time, |samples| {
             Audio::render_samples(channels, blip_buf, samples);
         });
     }
@@ -62,26 +55,6 @@ impl AudioStreamRenderer {
 
         let channels = CHANNELS.lock();
         self.channels.extend(channels.iter().cloned());
-    }
-
-    fn inject_stress_if_needed(&self) {
-        if CALLBACK_STRESS_INTERVAL == 0 || CALLBACK_STRESS_MS == 0 {
-            return;
-        }
-        if !self.callback_count.is_multiple_of(CALLBACK_STRESS_INTERVAL) {
-            return;
-        }
-
-        #[cfg(not(target_os = "emscripten"))]
-        std::thread::sleep(std::time::Duration::from_millis(CALLBACK_STRESS_MS));
-
-        #[cfg(target_os = "emscripten")]
-        {
-            let start = std::time::Instant::now();
-            while start.elapsed() < std::time::Duration::from_millis(CALLBACK_STRESS_MS) {
-                std::hint::spin_loop();
-            }
-        }
     }
 }
 
