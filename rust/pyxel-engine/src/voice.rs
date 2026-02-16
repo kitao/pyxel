@@ -2,35 +2,46 @@ use blip_buf::BlipBuf;
 
 const A4_MIDI_NOTE: f32 = 69.0;
 const A4_FREQUENCY: f32 = 440.0;
+const VOICE_GAIN_SHIFT: u32 = 14;
+const VOICE_GAIN_SCALE: i64 = 1_i64 << VOICE_GAIN_SHIFT;
+const VOICE_GAIN_ROUNDING: i64 = 1_i64 << (VOICE_GAIN_SHIFT - 1);
 
 pub struct Oscillator {
-    waveform: Vec<f32>,
+    waveform_samples: Vec<i16>,
     waveform_index: usize,
 
     lfsr: u16,
     tap_bit: u8,
 
-    sample: f32,
+    sample: i32,
 }
 
 impl Oscillator {
     fn new() -> Self {
         Self {
-            waveform: Vec::new(),
+            waveform_samples: Vec::new(),
             waveform_index: 0,
 
             lfsr: 0,
             tap_bit: 0,
 
-            sample: 0.0,
+            sample: 0,
         }
     }
 
     pub fn set(&mut self, waveform: &[f32]) {
         assert!(!waveform.is_empty());
 
-        if waveform != self.waveform {
-            self.waveform = waveform.to_vec();
+        if waveform.len() != self.waveform_samples.len()
+            || waveform
+                .iter()
+                .zip(&self.waveform_samples)
+                .any(|(&sample, &stored)| Self::quantize_sample(sample) != stored)
+        {
+            self.waveform_samples = waveform
+                .iter()
+                .map(|&sample| Self::quantize_sample(sample))
+                .collect();
             self.waveform_index = 0;
         }
 
@@ -49,20 +60,20 @@ impl Oscillator {
         // For short-period noise, it's shifted 15 times (half of the 32-sample period), resulting in 0x0201.
         // For long-period noise, it's shifted 45 times (half of the 93-sample period), resulting in 0x7001.
 
-        if !self.waveform.is_empty() {
-            self.waveform.clear();
+        if !self.waveform_samples.is_empty() {
+            self.waveform_samples.clear();
         }
 
         self.update();
     }
 
-    fn sample(&self) -> f32 {
+    fn sample(&self) -> i32 {
         self.sample
     }
 
     fn cycle_resolution(&self) -> u32 {
         if self.tap_bit == 0 {
-            self.waveform.len() as u32
+            self.waveform_samples.len() as u32
         } else {
             1
         }
@@ -71,7 +82,7 @@ impl Oscillator {
     fn advance_sample(&mut self) {
         if self.tap_bit == 0 {
             self.waveform_index += 1;
-            if self.waveform_index >= self.waveform.len() {
+            if self.waveform_index >= self.waveform_samples.len() {
                 self.waveform_index = 0;
             }
         } else {
@@ -84,12 +95,16 @@ impl Oscillator {
 
     fn update(&mut self) {
         self.sample = if self.tap_bit == 0 {
-            self.waveform[self.waveform_index]
+            self.waveform_samples[self.waveform_index] as i32
         } else if (self.lfsr & 1) == 0 {
-            1.0
+            i16::MAX as i32
         } else {
-            -1.0
+            -(i16::MAX as i32)
         };
+    }
+
+    fn quantize_sample(sample: f32) -> i16 {
+        ((sample * i16::MAX as f32).round() as i32).clamp(i16::MIN as i32, i16::MAX as i32) as i16
     }
 }
 
@@ -382,9 +397,9 @@ pub struct Voice {
     last_amplitude: i32,
 
     note_interp_clocks: u32,
-    interp_start_gain: Option<f32>,
-    interp_end_gain: Option<f32>,
-    last_gain: f32,
+    interp_start_gain: Option<i32>,
+    interp_end_gain: Option<i32>,
+    last_gain: i32,
 }
 
 impl Voice {
@@ -414,7 +429,7 @@ impl Voice {
             note_interp_clocks,
             interp_start_gain: None,
             interp_end_gain: None,
-            last_gain: 0.0,
+            last_gain: 0,
         }
     }
 
@@ -470,28 +485,31 @@ impl Voice {
         }
 
         while self.remaining_note_clocks > 0 && clock_count > 0 {
-            // Calculate apmlitude and write sample
-            let mut gain = self.envelope.level() * self.velocity;
+            // Calculate amplitude and write sample
+            let mut gain = Self::gain_to_fixed(self.envelope.level() * self.velocity);
 
             if self.remaining_note_clocks < self.note_interp_clocks {
                 if self.interp_end_gain.is_none() {
                     self.interp_end_gain = Some(self.last_gain);
                 }
                 let interp_end_gain = self.interp_end_gain.unwrap();
-                gain = interp_end_gain * self.remaining_note_clocks as f32
-                    / self.note_interp_clocks as f32;
+                gain = ((interp_end_gain as i64 * self.remaining_note_clocks as i64
+                    + self.note_interp_clocks as i64 / 2)
+                    / self.note_interp_clocks as i64) as i32;
             } else if self.elapsed_note_clocks < self.note_interp_clocks {
                 if self.interp_start_gain.is_none() {
                     self.interp_start_gain = Some(self.last_gain);
                 }
                 let interp_start_gain = self.interp_start_gain.unwrap();
-                gain = (interp_start_gain
-                    * (self.note_interp_clocks - self.elapsed_note_clocks) as f32
-                    + gain * self.elapsed_note_clocks as f32)
-                    / self.note_interp_clocks as f32;
+                let note_interp_clocks = self.note_interp_clocks as i64;
+                let elapsed_note_clocks = self.elapsed_note_clocks as i64;
+                gain = ((interp_start_gain as i64 * (note_interp_clocks - elapsed_note_clocks)
+                    + gain as i64 * elapsed_note_clocks
+                    + note_interp_clocks / 2)
+                    / note_interp_clocks) as i32;
             }
 
-            let amplitude = (self.oscillator.sample() * gain * i16::MAX as f32).round() as i32;
+            let amplitude = Self::apply_gain_fixed(self.oscillator.sample(), gain);
             self.write_sample(blip_buf.as_deref_mut(), clock_offset, amplitude);
             self.last_gain = gain;
 
@@ -513,7 +531,20 @@ impl Voice {
 
         if self.remaining_note_clocks == 0 && clock_count > 0 {
             self.write_sample(blip_buf, clock_offset, 0);
-            self.last_gain = 0.0;
+            self.last_gain = 0;
+        }
+    }
+
+    fn gain_to_fixed(gain: f32) -> i32 {
+        (gain * VOICE_GAIN_SCALE as f32).round() as i32
+    }
+
+    fn apply_gain_fixed(sample: i32, gain: i32) -> i32 {
+        let product = sample as i64 * gain as i64;
+        if product >= 0 {
+            ((product + VOICE_GAIN_ROUNDING) >> VOICE_GAIN_SHIFT) as i32
+        } else {
+            ((product - VOICE_GAIN_ROUNDING) >> VOICE_GAIN_SHIFT) as i32
         }
     }
 
