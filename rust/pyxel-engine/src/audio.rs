@@ -10,37 +10,42 @@ use crate::adaptive_buffer::AdaptiveBuffer;
 use crate::channel::SharedChannel;
 use crate::pyxel::{Pyxel, CHANNELS};
 use crate::settings::{
-    AUDIO_BUFFER_MAX_SAMPLES, AUDIO_BUFFER_SAMPLES, AUDIO_CLOCKS_PER_SAMPLE, AUDIO_CLOCK_RATE,
-    AUDIO_RENDER_BLOCK_SAMPLES, AUDIO_SAMPLE_RATE,
+    AUDIO_CLOCKS_PER_SAMPLE, AUDIO_CLOCK_RATE, AUDIO_MIN_BUFFER_SAMPLES, AUDIO_RENDER_STEP_SAMPLES,
+    AUDIO_SAMPLE_RATE,
 };
 use crate::utils;
 
 pub struct Audio {}
 
+// Temporary stress injection for adaptive-buffer experiments.
+const CALLBACK_STRESS_INTERVAL: u64 = 15;
+const CALLBACK_STRESS_MS: u64 = 20;
+
 struct AudioStreamRenderer {
     blip_buf: BlipBuf,
     adaptive_buffer: AdaptiveBuffer,
     channels: Vec<SharedChannel>,
+    callback_count: u64,
 }
 
 impl AudioStreamRenderer {
     fn new() -> Self {
-        let mut blip_buf = BlipBuf::new(AUDIO_BUFFER_SAMPLES);
+        let mut blip_buf = BlipBuf::new(AUDIO_MIN_BUFFER_SAMPLES);
         blip_buf.set_rates(AUDIO_CLOCK_RATE as f64, AUDIO_SAMPLE_RATE as f64);
 
-        let adaptive_buffer = AdaptiveBuffer::new(
-            AUDIO_BUFFER_SAMPLES as usize,
-            AUDIO_BUFFER_MAX_SAMPLES as usize,
-        );
+        let adaptive_buffer = AdaptiveBuffer::new();
 
         Self {
             blip_buf,
             adaptive_buffer,
             channels: Vec::new(),
+            callback_count: 0,
         }
     }
 
     fn render(&mut self, out: &mut [i16]) {
+        self.callback_count = self.callback_count.saturating_add(1);
+        self.inject_stress_if_needed();
         self.snapshot_channels();
         let (adaptive_buffer, blip_buf, channels) = (
             &mut self.adaptive_buffer,
@@ -58,6 +63,26 @@ impl AudioStreamRenderer {
         let channels = CHANNELS.lock();
         self.channels.extend(channels.iter().cloned());
     }
+
+    fn inject_stress_if_needed(&self) {
+        if CALLBACK_STRESS_INTERVAL == 0 || CALLBACK_STRESS_MS == 0 {
+            return;
+        }
+        if !self.callback_count.is_multiple_of(CALLBACK_STRESS_INTERVAL) {
+            return;
+        }
+
+        #[cfg(not(target_os = "emscripten"))]
+        std::thread::sleep(std::time::Duration::from_millis(CALLBACK_STRESS_MS));
+
+        #[cfg(target_os = "emscripten")]
+        {
+            let start = std::time::Instant::now();
+            while start.elapsed() < std::time::Duration::from_millis(CALLBACK_STRESS_MS) {
+                std::hint::spin_loop();
+            }
+        }
+    }
 }
 
 impl Audio {
@@ -66,7 +91,7 @@ impl Audio {
 
         pyxel_platform::start_audio(
             AUDIO_SAMPLE_RATE,
-            AUDIO_BUFFER_SAMPLES,
+            AUDIO_MIN_BUFFER_SAMPLES,
             move |out: &mut [i16]| {
                 stream_renderer.render(out);
             },
@@ -86,7 +111,7 @@ impl Audio {
         if needs_blip {
             while num_samples < samples.len() {
                 let target_samples =
-                    ((samples.len() - num_samples) as u32).min(AUDIO_RENDER_BLOCK_SAMPLES);
+                    ((samples.len() - num_samples) as u32).min(AUDIO_RENDER_STEP_SAMPLES);
                 let clock_count = match blip_buf.clocks_needed(target_samples) {
                     0 => AUDIO_CLOCKS_PER_SAMPLE,
                     clocks => clocks,
