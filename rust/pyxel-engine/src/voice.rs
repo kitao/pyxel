@@ -70,7 +70,10 @@ impl Oscillator {
 
     fn advance_sample(&mut self) {
         if self.tap_bit == 0 {
-            self.waveform_index = (self.waveform_index + 1) % self.waveform.len();
+            self.waveform_index += 1;
+            if self.waveform_index >= self.waveform.len() {
+                self.waveform_index = 0;
+            }
         } else {
             let feedback = (self.lfsr ^ (self.lfsr >> self.tap_bit)) & 1;
             self.lfsr = ((self.lfsr >> 1) | (feedback << 14)) & 0x7FFF;
@@ -99,6 +102,7 @@ struct EnvelopeSegment {
 
 pub struct Envelope {
     segments: Vec<EnvelopeSegment>,
+    segment_index: usize,
 
     enabled: bool,
     elapsed_ticks: u32,
@@ -109,6 +113,7 @@ impl Envelope {
     fn new() -> Self {
         Self {
             segments: Vec::new(),
+            segment_index: 0,
             enabled: false,
             elapsed_ticks: 0,
             level: 0.0,
@@ -149,6 +154,13 @@ impl Envelope {
                 slope: 0.0,
             },
         );
+
+        self.segment_index = self.segments.len() - 1;
+        while self.segment_index > 0
+            && self.elapsed_ticks >= self.segments[self.segment_index - 1].start_tick
+        {
+            self.segment_index -= 1;
+        }
     }
 
     pub fn enable(&mut self) {
@@ -165,6 +177,7 @@ impl Envelope {
 
     pub fn reset_tick(&mut self) {
         self.elapsed_ticks = 0;
+        self.segment_index = self.segments.len() - 1;
         self.update();
     }
 
@@ -182,17 +195,18 @@ impl Envelope {
             return;
         }
 
-        for segment in &self.segments {
-            if self.elapsed_ticks >= segment.start_tick {
-                self.level = if segment.slope == 0.0 {
-                    segment.start_level
-                } else {
-                    segment.start_level
-                        + segment.slope * (self.elapsed_ticks - segment.start_tick) as f32
-                };
-                break;
-            }
+        while self.segment_index > 0
+            && self.elapsed_ticks >= self.segments[self.segment_index - 1].start_tick
+        {
+            self.segment_index -= 1;
         }
+
+        let segment = &self.segments[self.segment_index];
+        self.level = if segment.slope == 0.0 {
+            segment.start_level
+        } else {
+            segment.start_level + segment.slope * (self.elapsed_ticks - segment.start_tick) as f32
+        };
     }
 }
 
