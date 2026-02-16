@@ -28,8 +28,7 @@ const PRESET_MELO_DENSITY: usize = 8;
 const PRESET_MELO_USE16: usize = 9;
 
 fn normalize_transp(transp: i32) -> i32 {
-    let clamped = transp.clamp(-5, 6);
-    (clamped + 6).rem_euclid(12) - 11
+    transp.clamp(-5, 6)
 }
 
 // Wave, attack, decay, sustain, release, vibrato
@@ -811,9 +810,9 @@ fn pick_rhythm_events(
     use_16th: bool,
     is_sub: bool,
 ) -> Vec<(usize, i32)> {
-    let mut results = Vec::new();
-    let mut used16 = false;
     loop {
+        let mut results = Vec::new();
+        let mut used16 = false;
         for bar in 0..BARS {
             let line = if is_sub {
                 "0.0.0.0.0.0.0.0."
@@ -843,12 +842,11 @@ fn pick_rhythm_events(
             }
         }
         if is_sub || !use_16th || used16 {
-            break;
+            results.push((TOTAL_STEPS, -1));
+            results.push((TOTAL_STEPS, -1));
+            return results;
         }
     }
-    results.push((TOTAL_STEPS, -1));
-    results.push((TOTAL_STEPS, -1));
-    results
 }
 
 fn place_melody(note_line: &mut [i32], loc: usize, note: i32, note_len: usize) {
@@ -944,7 +942,7 @@ fn next_note_events(
         let no_next =
             next_rhythm_loc >= next_chord_loc || next_rhythm_loc.saturating_sub(prev_loc) > 4;
         if following.is_empty() || !no_next {
-            following.push((prev_loc, next_rhythm_loc - prev_loc));
+            following.push((prev_loc, next_rhythm_loc.saturating_sub(prev_loc)));
         }
         if no_next {
             break;
@@ -1248,7 +1246,7 @@ fn generate_bass(preset: usize, bits_per_step: &[[i32; 12]], key_shift: i32) -> 
             let mut chosen = base_root + base_add;
             for a in adjust_list {
                 let n = base_root + base_add + a;
-                if bits[((n + key_shift).rem_euclid(12)) as usize] > 0 {
+                if matches!(bits[((n + key_shift).rem_euclid(12)) as usize], 1 | 2 | 3) {
                     chosen = n;
                     break;
                 }
@@ -1384,11 +1382,9 @@ fn place_harmony(
             }
         }
         if let Some(m) = master_note {
-            if (sub_note - m).abs() < 3 {
-                sub_note = find_lower_harmony_at(
-                    sub_note, m, pos, melody, base, chord_bits, key_shift, lowest,
-                );
-            }
+            sub_note = find_lower_harmony_at(
+                sub_note, m, pos, melody, base, chord_bits, key_shift, lowest,
+            );
         }
         let out = if prev_sub == Some(sub_note) {
             None
@@ -1438,7 +1434,6 @@ fn generate_submelody(
             lowest,
             rng,
         ) {
-            let had_events = !note_events.is_empty();
             for (l, n, len) in note_events {
                 place_harmony(
                     &mut sub,
@@ -1452,12 +1447,76 @@ fn generate_submelody(
                     len,
                 );
             }
-            if had_events {
-                prev_note_loc = loc as i32;
-            }
+            prev_note_loc = loc as i32;
         }
     }
     sub
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn normalize_transp_keeps_valid_range_values() {
+        for transp in -5..=6 {
+            assert_eq!(normalize_transp(transp), transp);
+        }
+        assert_eq!(normalize_transp(-999), -5);
+        assert_eq!(normalize_transp(999), 6);
+    }
+
+    #[test]
+    fn bass_notes_use_chord_tones_only() {
+        for preset in 0..PRESET_COUNT {
+            let bits_per_step = chord_bits_per_step(preset);
+            for transp in -5..=6 {
+                let bass = generate_bass(preset, &bits_per_step, transp);
+                for (loc, note) in bass.iter().enumerate() {
+                    let Some(note) = note else {
+                        continue;
+                    };
+                    if *note < 0 {
+                        continue;
+                    }
+                    let tone = bits_per_step[loc][((*note + transp).rem_euclid(12)) as usize];
+                    assert!(
+                        matches!(tone, 1 | 2 | 3),
+                        "preset={preset} transp={transp} loc={loc} note={note} tone={tone}"
+                    );
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn seeded_generation_is_reproducible() {
+        let cases = [
+            (0, -5, 0, 1u64),
+            (1, -2, 1, 2u64),
+            (2, 0, 2, 3u64),
+            (3, 4, 3, 4u64),
+            (7, 6, 3, 123_456_789u64),
+        ];
+        for (preset, transp, instr, seed) in cases {
+            let a = std::panic::catch_unwind(|| generate_bgm_mml(preset, instr, transp, Some(seed)))
+                .unwrap_or_else(|_| {
+                    panic!(
+                        "seeded generation panicked (first run) preset={preset} transp={transp} instr={instr} seed={seed}"
+                    )
+                });
+            let b = std::panic::catch_unwind(|| generate_bgm_mml(preset, instr, transp, Some(seed)))
+                .unwrap_or_else(|_| {
+                    panic!(
+                        "seeded generation panicked (second run) preset={preset} transp={transp} instr={instr} seed={seed}"
+                    )
+                });
+            assert_eq!(
+                a, b,
+                "seeded gen_bgm mismatch preset={preset} transp={transp} instr={instr} seed={seed}"
+            );
+        }
+    }
 }
 
 fn shifted_melody(melody: &[Option<i32>]) -> Vec<Option<i32>> {
