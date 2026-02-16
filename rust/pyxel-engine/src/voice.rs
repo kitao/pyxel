@@ -1,3 +1,5 @@
+use std::sync::OnceLock;
+
 use blip_buf::BlipBuf;
 
 const A4_MIDI_NOTE: f32 = 69.0;
@@ -5,6 +7,45 @@ const A4_FREQUENCY: f32 = 440.0;
 const VOICE_GAIN_SHIFT: u32 = 14;
 const VOICE_GAIN_SCALE: i64 = 1_i64 << VOICE_GAIN_SHIFT;
 const VOICE_GAIN_ROUNDING: i64 = 1_i64 << (VOICE_GAIN_SHIFT - 1);
+const PITCH_LUT_MIN_SEMITONE: f32 = -96.0;
+const PITCH_LUT_MAX_SEMITONE: f32 = 96.0;
+const PITCH_LUT_STEPS_PER_SEMITONE: usize = 64;
+const PITCH_LUT_SIZE: usize =
+    ((PITCH_LUT_MAX_SEMITONE - PITCH_LUT_MIN_SEMITONE) as usize * PITCH_LUT_STEPS_PER_SEMITONE) + 1;
+static PITCH_RATIO_LUT: OnceLock<Box<[f32]>> = OnceLock::new();
+
+fn pitch_ratio_lut() -> &'static [f32] {
+    PITCH_RATIO_LUT
+        .get_or_init(|| {
+            (0..PITCH_LUT_SIZE)
+                .map(|index| {
+                    let semitone_offset =
+                        PITCH_LUT_MIN_SEMITONE + index as f32 / PITCH_LUT_STEPS_PER_SEMITONE as f32;
+                    2.0_f32.powf(semitone_offset / 12.0)
+                })
+                .collect::<Vec<_>>()
+                .into_boxed_slice()
+        })
+        .as_ref()
+}
+
+fn semitone_to_pitch_multiplier(semitone_offset: f32) -> f32 {
+    if !(PITCH_LUT_MIN_SEMITONE..=PITCH_LUT_MAX_SEMITONE).contains(&semitone_offset) {
+        return 2.0_f32.powf(semitone_offset / 12.0);
+    }
+
+    let index = (semitone_offset - PITCH_LUT_MIN_SEMITONE) * PITCH_LUT_STEPS_PER_SEMITONE as f32;
+    let left_index = index as usize;
+    let frac = index - left_index as f32;
+    let lut = pitch_ratio_lut();
+    let left = lut[left_index];
+
+    if frac <= 0.0 || left_index + 1 >= lut.len() {
+        left
+    } else {
+        left + (lut[left_index + 1] - left) * frac
+    }
+}
 
 pub struct Oscillator {
     waveform_samples: Vec<i16>,
@@ -32,16 +73,13 @@ impl Oscillator {
     pub fn set(&mut self, waveform: &[f32]) {
         assert!(!waveform.is_empty());
 
-        if waveform.len() != self.waveform_samples.len()
-            || waveform
-                .iter()
-                .zip(&self.waveform_samples)
-                .any(|(&sample, &stored)| Self::quantize_sample(sample) != stored)
-        {
-            self.waveform_samples = waveform
-                .iter()
-                .map(|&sample| Self::quantize_sample(sample))
-                .collect();
+        let quantized_samples: Vec<i16> = waveform
+            .iter()
+            .map(|&sample| Self::quantize_sample(sample))
+            .collect();
+
+        if quantized_samples != self.waveform_samples {
+            self.waveform_samples = quantized_samples;
             self.waveform_index = 0;
         }
 
@@ -302,7 +340,7 @@ impl Vibrato {
         let modulation = 1.0 - 4.0 * ((phase + 0.25).fract() - 0.5).abs();
         let semitone_offset = modulation * self.semitone_depth;
 
-        self.pitch_multiplier = 2.0_f32.powf(semitone_offset / 12.0);
+        self.pitch_multiplier = semitone_to_pitch_multiplier(semitone_offset);
     }
 }
 
@@ -374,7 +412,7 @@ impl Glide {
 
         let semitone_offset =
             self.semitone_offset + self.semitone_slope * self.elapsed_ticks as f32;
-        self.pitch_multiplier = 2.0_f32.powf(semitone_offset / 12.0);
+        self.pitch_multiplier = semitone_to_pitch_multiplier(semitone_offset);
     }
 }
 
@@ -405,6 +443,7 @@ pub struct Voice {
 impl Voice {
     pub fn new(clock_rate: u32, control_rate: u32, note_interp_clocks: u32) -> Self {
         assert!(clock_rate > 0 && control_rate > 0 && note_interp_clocks > 0);
+        let _ = pitch_ratio_lut();
 
         let control_interval_clocks = clock_rate / control_rate;
 
