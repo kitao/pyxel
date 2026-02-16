@@ -37,9 +37,6 @@
 # Build for Specified Target:
 #	make clean build TARGET=target_triple
 #
-# Build for Specified Target:
-#	make clean build TARGET=target_triple
-#
 # Build and Install in Current Python:
 #	make clean install
 #
@@ -88,6 +85,20 @@ endif
 # Tool options
 CLIPPY_OPTS = -q -- --no-deps
 MATURIN_OPTS = --manylinux 2014 --auditwheel skip
+
+# Python/PyO3 options
+PYTHON ?= python3
+
+ifneq ($(TARGET),$(WASM_TARGET))
+PYO3_PYTHON ?= $(shell $(PYTHON) -c "import sys; print(sys.executable)")
+PYO3_ENVIRONMENT_SIGNATURE ?= $(shell $(PYTHON) -c \
+	"import platform, sys; \
+	print(f'{sys.implementation.name}-{sys.version_info.major}.{sys.version_info.minor}-{platform.architecture()[0]}')")
+
+# Keep PyO3's environment fingerprint stable across cargo/maturin commands.
+lint build test: export PYO3_PYTHON := $(PYO3_PYTHON)
+lint build test: export PYO3_ENVIRONMENT_SIGNATURE := $(PYO3_ENVIRONMENT_SIGNATURE)
+endif
 
 
 .PHONY: \
