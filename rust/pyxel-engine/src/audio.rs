@@ -5,7 +5,6 @@ use std::process::Command;
 
 use blip_buf::BlipBuf;
 use hound::{SampleFormat, WavSpec, WavWriter};
-use parking_lot::MutexGuard;
 
 use crate::channel::SharedChannel;
 use crate::pyxel::{Pyxel, CHANNELS};
@@ -26,7 +25,8 @@ impl Audio {
             AUDIO_SAMPLE_RATE,
             AUDIO_BUFFER_SIZE,
             move |out: &mut [i16]| {
-                let channels = CHANNELS.lock();
+                // Snapshot channel handles and release CHANNELS lock before mixing.
+                let channels = CHANNELS.lock().clone();
                 Self::render_samples(&channels, &mut blip_buf, out);
             },
         );
@@ -34,12 +34,8 @@ impl Audio {
         Self {}
     }
 
-    pub fn render_samples(
-        channels_: &MutexGuard<'_, Vec<SharedChannel>>,
-        blip_buf: &mut BlipBuf,
-        samples: &mut [i16],
-    ) {
-        let mut channels: Vec<_> = channels_.iter().map(|channel| channel.lock()).collect();
+    pub fn render_samples(channels: &[SharedChannel], blip_buf: &mut BlipBuf, samples: &mut [i16]) {
+        let mut channels: Vec<_> = channels.iter().map(|channel| channel.lock()).collect();
         let needs_blip = channels
             .iter()
             .any(|channel| channel.needs_blip_processing());

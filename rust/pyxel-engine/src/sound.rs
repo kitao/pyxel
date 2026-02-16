@@ -209,7 +209,7 @@ impl Sound {
             channels[0].play(sounds, None, true, false);
         }
 
-        Audio::render_samples(&channels, &mut blip_buf, &mut samples);
+        Audio::render_samples(channels.as_slice(), &mut blip_buf, &mut samples);
         let result = Audio::save_samples(filename, &samples, use_ffmpeg.unwrap_or(false));
         channels.iter().for_each(|channel| channel.lock().stop());
         result
