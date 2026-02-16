@@ -9,7 +9,10 @@ use parking_lot::MutexGuard;
 
 use crate::channel::SharedChannel;
 use crate::pyxel::{Pyxel, CHANNELS};
-use crate::settings::{AUDIO_BUFFER_SIZE, AUDIO_CLOCK_RATE, AUDIO_SAMPLE_RATE};
+use crate::settings::{
+    AUDIO_BUFFER_SIZE, AUDIO_CLOCKS_PER_SAMPLE, AUDIO_CLOCK_RATE, AUDIO_PROCESS_BLOCK_SAMPLES,
+    AUDIO_SAMPLE_RATE,
+};
 use crate::utils;
 
 pub struct Audio {}
@@ -36,8 +39,6 @@ impl Audio {
         blip_buf: &mut BlipBuf,
         samples: &mut [i16],
     ) {
-        const CLOCKS_PER_SAMPLE: u32 = AUDIO_CLOCK_RATE / AUDIO_SAMPLE_RATE;
-
         let mut channels: Vec<_> = channels_.iter().map(|channel| channel.lock()).collect();
         let needs_blip = channels
             .iter()
@@ -47,13 +48,20 @@ impl Audio {
 
         if needs_blip {
             while num_samples < samples.len() {
+                let target_samples =
+                    ((samples.len() - num_samples) as u32).min(AUDIO_PROCESS_BLOCK_SAMPLES);
+                let clock_count = match blip_buf.clocks_needed(target_samples) {
+                    0 => AUDIO_CLOCKS_PER_SAMPLE,
+                    clocks => clocks,
+                };
+
                 for channel in &mut *channels {
                     if channel.needs_blip_processing() {
-                        channel.process(Some(blip_buf), CLOCKS_PER_SAMPLE);
+                        channel.process(Some(blip_buf), clock_count);
                     }
                 }
 
-                blip_buf.end_frame(CLOCKS_PER_SAMPLE);
+                blip_buf.end_frame(clock_count);
                 num_samples += blip_buf.read_samples(&mut samples[num_samples..], false);
             }
         } else if num_samples < samples.len() {

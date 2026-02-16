@@ -5,8 +5,8 @@ use blip_buf::BlipBuf;
 use crate::mml_command::MmlCommand;
 use crate::pyxel::TONES;
 use crate::settings::{
-    AUDIO_CLOCK_RATE, AUDIO_CONTROL_RATE, AUDIO_SAMPLE_RATE, DEFAULT_CHANNEL_GAIN,
-    NOTE_INTERP_CLOCKS,
+    AUDIO_CLOCKS_PER_SAMPLE, AUDIO_CLOCK_RATE, AUDIO_CONTROL_RATE, AUDIO_SAMPLE_RATE,
+    DEFAULT_CHANNEL_GAIN, NOTE_INTERP_CLOCKS,
 };
 use crate::sound::{SharedSound, Sound};
 use crate::tone::ToneMode;
@@ -484,7 +484,6 @@ impl Channel {
             return;
         }
 
-        let clocks_per_sample = AUDIO_CLOCK_RATE / AUDIO_SAMPLE_RATE;
         let mut offset = 0usize;
 
         while offset < out.len() {
@@ -523,7 +522,7 @@ impl Channel {
             }
 
             self.pcm_position += to_copy;
-            let clocks = clocks_per_sample * to_copy as u32;
+            let clocks = AUDIO_CLOCKS_PER_SAMPLE * to_copy as u32;
             self.sound_elapsed_clocks += clocks;
             self.total_elapsed_clocks += clocks;
             offset += to_copy;
@@ -563,7 +562,6 @@ impl Channel {
     }
 
     fn seek_pcm(&mut self, start_clock: u32) {
-        let clocks_per_sample = AUDIO_CLOCK_RATE / AUDIO_SAMPLE_RATE;
         let sample_offset =
             (start_clock as u64 * AUDIO_SAMPLE_RATE as u64 / AUDIO_CLOCK_RATE as u64) as usize;
         let mut remaining = sample_offset;
@@ -588,7 +586,7 @@ impl Channel {
             }
         }
 
-        self.sound_elapsed_clocks = (self.pcm_position as u32) * clocks_per_sample;
+        self.sound_elapsed_clocks = (self.pcm_position as u32) * AUDIO_CLOCKS_PER_SAMPLE;
         self.total_elapsed_clocks += start_clock;
 
         if (self.sound_index as usize) >= self.sounds.len() {
