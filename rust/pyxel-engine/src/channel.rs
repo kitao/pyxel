@@ -15,6 +15,10 @@ use crate::voice::Voice;
 pub type ChannelGain = f32;
 pub type ChannelDetune = i32;
 
+const PCM_MIX_GAIN_SHIFT: u32 = 14;
+const PCM_MIX_GAIN_SCALE: i64 = 1_i64 << PCM_MIX_GAIN_SHIFT;
+const PCM_MIX_TRUNC_BIAS: i64 = PCM_MIX_GAIN_SCALE - 1;
+
 pub struct Channel {
     pub sounds: Vec<SharedSound>,
     pub gain: ChannelGain,
@@ -484,13 +488,13 @@ impl Channel {
             return;
         }
 
+        let gain_fixed = (self.gain * PCM_MIX_GAIN_SCALE as f32) as i32;
         let mut offset = 0usize;
 
         while offset < out.len() {
             let mut to_copy = 0usize;
             let mut end_reached = false;
             let mut should_advance = false;
-            let gain = self.gain;
 
             {
                 let sound = self.sounds[self.sound_index as usize].lock();
@@ -504,11 +508,15 @@ impl Channel {
                 } else {
                     let remaining = len - self.pcm_position;
                     to_copy = (out.len() - offset).min(remaining);
-                    let samples = &pcm.samples;
-                    for i in 0..to_copy {
-                        let src = samples[self.pcm_position + i] as f32 * gain;
-                        let mixed = out[offset + i] as f32 + src;
-                        out[offset + i] = mixed.clamp(i16::MIN as f32, i16::MAX as f32) as i16;
+                    if gain_fixed != 0 {
+                        let samples = &pcm.samples;
+                        for i in 0..to_copy {
+                            let scaled = samples[self.pcm_position + i] as i64 * gain_fixed as i64;
+                            let src = (scaled + ((scaled >> 63) & PCM_MIX_TRUNC_BIAS))
+                                >> PCM_MIX_GAIN_SHIFT;
+                            let mixed = out[offset + i] as i64 + src;
+                            out[offset + i] = mixed.clamp(i16::MIN as i64, i16::MAX as i64) as i16;
+                        }
                     }
                     end_reached = self.pcm_position + to_copy >= len;
                 }
