@@ -106,11 +106,11 @@ pub const NUM_SCREEN_TYPES: u32 = 3;
 pub const AUDIO_CLOCK_RATE: u32 = 1_789_773; // NTSC NES APU clock rate
 pub const AUDIO_SAMPLE_RATE: u32 = 22_050; // 22.05kHz
 pub const AUDIO_CLOCKS_PER_SAMPLE: u32 = AUDIO_CLOCK_RATE / AUDIO_SAMPLE_RATE;
-#[cfg(target_os = "emscripten")]
-pub const AUDIO_BUFFER_SIZE: u32 = 1024; // 1024 / 22050 = 46.4ms
-#[cfg(not(target_os = "emscripten"))]
-pub const AUDIO_BUFFER_SIZE: u32 = 512; // 512 / 22050 = 23.2ms
-pub const AUDIO_PROCESS_BLOCK_SAMPLES: u32 = 64;
+pub const AUDIO_BUFFER_SAMPLES: u32 = 512; // 512 / 22050 * 1000 = 23.2ms
+pub const AUDIO_BUFFER_MAX_SAMPLES: u32 = 4096; // 4096 / 22050 * 1000 = 185.8ms
+pub const AUDIO_BUFFER_ADJUST_INTERVAL_MS: u32 = 50;
+pub const AUDIO_BUFFER_ADJUST_MARGIN_SAMPLES: u32 = 256; // 256 / 22050 * 1000 = 11.6ms
+pub const AUDIO_RENDER_BLOCK_SAMPLES: u32 = 64;
 pub const AUDIO_CONTROL_RATE: u32 = 60;
 pub const NOTE_INTERP_CLOCKS: u32 = AUDIO_CLOCK_RATE / 1000; // 1 / 1000 = 1ms
 pub const TICKS_PER_QUARTER_NOTE: u32 = 48;

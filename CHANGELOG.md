@@ -2,7 +2,9 @@
 
 ## 2.6.6
 
-- Reduced unnecessary processing in audio callback
+- Added adaptive ring buffer to reduce audio dropouts
+- Reduced synth load with fixed-point amplitude mixing
+- Reduced PCM load with fixed-point mixing
 - Added secret feature to Example 15
 
 ## 2.6.5

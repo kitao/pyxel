@@ -6,28 +6,69 @@ use std::process::Command;
 use blip_buf::BlipBuf;
 use hound::{SampleFormat, WavSpec, WavWriter};
 
+use crate::adaptive_buffer::AdaptiveBuffer;
 use crate::channel::SharedChannel;
 use crate::pyxel::{Pyxel, CHANNELS};
 use crate::settings::{
-    AUDIO_BUFFER_SIZE, AUDIO_CLOCKS_PER_SAMPLE, AUDIO_CLOCK_RATE, AUDIO_PROCESS_BLOCK_SAMPLES,
-    AUDIO_SAMPLE_RATE,
+    AUDIO_BUFFER_MAX_SAMPLES, AUDIO_BUFFER_SAMPLES, AUDIO_CLOCKS_PER_SAMPLE, AUDIO_CLOCK_RATE,
+    AUDIO_RENDER_BLOCK_SAMPLES, AUDIO_SAMPLE_RATE,
 };
 use crate::utils;
 
 pub struct Audio {}
 
+struct AudioStreamRenderer {
+    blip_buf: BlipBuf,
+    adaptive_buffer: AdaptiveBuffer,
+    channels: Vec<SharedChannel>,
+}
+
+impl AudioStreamRenderer {
+    fn new() -> Self {
+        let mut blip_buf = BlipBuf::new(AUDIO_BUFFER_SAMPLES);
+        blip_buf.set_rates(AUDIO_CLOCK_RATE as f64, AUDIO_SAMPLE_RATE as f64);
+
+        let adaptive_buffer = AdaptiveBuffer::new(
+            AUDIO_BUFFER_SAMPLES as usize,
+            AUDIO_BUFFER_MAX_SAMPLES as usize,
+        );
+
+        Self {
+            blip_buf,
+            adaptive_buffer,
+            channels: Vec::new(),
+        }
+    }
+
+    fn render(&mut self, out: &mut [i16]) {
+        self.snapshot_channels();
+        let (adaptive_buffer, blip_buf, channels) = (
+            &mut self.adaptive_buffer,
+            &mut self.blip_buf,
+            &self.channels,
+        );
+        adaptive_buffer.process(out, |samples| {
+            Audio::render_samples(channels, blip_buf, samples);
+        });
+    }
+
+    fn snapshot_channels(&mut self) {
+        self.channels.clear();
+
+        let channels = CHANNELS.lock();
+        self.channels.extend(channels.iter().cloned());
+    }
+}
+
 impl Audio {
     pub fn new() -> Self {
-        let mut blip_buf = BlipBuf::new(AUDIO_BUFFER_SIZE);
-        blip_buf.set_rates(AUDIO_CLOCK_RATE as f64, AUDIO_SAMPLE_RATE as f64);
+        let mut stream_renderer = AudioStreamRenderer::new();
 
         pyxel_platform::start_audio(
             AUDIO_SAMPLE_RATE,
-            AUDIO_BUFFER_SIZE,
+            AUDIO_BUFFER_SAMPLES,
             move |out: &mut [i16]| {
-                // Snapshot channel handles and release CHANNELS lock before mixing.
-                let channels = CHANNELS.lock().clone();
-                Self::render_samples(&channels, &mut blip_buf, out);
+                stream_renderer.render(out);
             },
         );
 
@@ -45,7 +86,7 @@ impl Audio {
         if needs_blip {
             while num_samples < samples.len() {
                 let target_samples =
-                    ((samples.len() - num_samples) as u32).min(AUDIO_PROCESS_BLOCK_SAMPLES);
+                    ((samples.len() - num_samples) as u32).min(AUDIO_RENDER_BLOCK_SAMPLES);
                 let clock_count = match blip_buf.clocks_needed(target_samples) {
                     0 => AUDIO_CLOCKS_PER_SAMPLE,
                     clocks => clocks,

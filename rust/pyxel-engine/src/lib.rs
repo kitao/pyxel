@@ -22,6 +22,7 @@
 
 #[macro_use]
 mod utils;
+mod adaptive_buffer;
 mod audio;
 mod bgm_generator;
 mod canvas;
