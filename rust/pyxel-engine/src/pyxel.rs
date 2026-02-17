@@ -68,6 +68,7 @@ pub struct Pyxel {
     pub font: SharedImage,
 
     // Audio
+    pub(crate) _audio: Audio,
     pub channels: shared_type!(Vec<SharedChannel>),
     pub tones: shared_type!(Vec<SharedTone>),
     pub sounds: shared_type!(Vec<SharedSound>),
@@ -137,7 +138,7 @@ pub fn init(
     let font = FONT_IMAGE.clone();
 
     // Audio
-    let _ = Audio::new();
+    let audio = Audio::new();
     let channels = CHANNELS.clone();
     let tones = TONES.clone();
     let sounds = SOUNDS.clone();
@@ -172,6 +173,7 @@ pub fn init(
         font,
 
         // Audio
+        _audio: audio,
         channels,
         tones,
         sounds,

@@ -6,55 +6,38 @@ use std::process::Command;
 use blip_buf::BlipBuf;
 use hound::{SampleFormat, WavSpec, WavWriter};
 
-use crate::adaptive_buffer::AdaptiveBuffer;
 use crate::channel::SharedChannel;
 use crate::pyxel::{Pyxel, CHANNELS};
 use crate::settings::{
-    AUDIO_CLOCKS_PER_SAMPLE, AUDIO_CLOCK_RATE, AUDIO_MIN_BUFFER_SAMPLES, AUDIO_RENDER_STEP_SAMPLES,
+    AUDIO_BUFFER_SAMPLES, AUDIO_CLOCKS_PER_SAMPLE, AUDIO_CLOCK_RATE, AUDIO_RENDER_STEP_SAMPLES,
     AUDIO_SAMPLE_RATE,
 };
 use crate::utils;
 
-pub struct Audio {}
+pub struct Audio;
 
 struct AudioStreamRenderer {
     blip_buf: BlipBuf,
-    adaptive_buffer: AdaptiveBuffer,
     channels: Vec<SharedChannel>,
 }
 
 impl AudioStreamRenderer {
     fn new() -> Self {
-        let mut blip_buf = BlipBuf::new(AUDIO_MIN_BUFFER_SAMPLES);
+        let mut blip_buf = BlipBuf::new(AUDIO_BUFFER_SAMPLES);
         blip_buf.set_rates(AUDIO_CLOCK_RATE as f64, AUDIO_SAMPLE_RATE as f64);
-
-        let adaptive_buffer = AdaptiveBuffer::new();
 
         Self {
             blip_buf,
-            adaptive_buffer,
             channels: Vec::new(),
         }
     }
 
     fn render(&mut self, out: &mut [i16]) {
-        let callback_start_time = std::time::Instant::now();
-        self.snapshot_channels();
-        let (adaptive_buffer, blip_buf, channels) = (
-            &mut self.adaptive_buffer,
-            &mut self.blip_buf,
-            &self.channels,
-        );
-        adaptive_buffer.process(out, callback_start_time, |samples| {
-            Audio::render_samples(channels, blip_buf, samples);
-        });
-    }
-
-    fn snapshot_channels(&mut self) {
         self.channels.clear();
-
         let channels = CHANNELS.lock();
         self.channels.extend(channels.iter().cloned());
+
+        Audio::render_samples(&self.channels, &mut self.blip_buf, out);
     }
 }
 
@@ -64,13 +47,13 @@ impl Audio {
 
         pyxel_platform::start_audio(
             AUDIO_SAMPLE_RATE,
-            AUDIO_MIN_BUFFER_SAMPLES,
+            AUDIO_BUFFER_SAMPLES,
             move |out: &mut [i16]| {
                 stream_renderer.render(out);
             },
         );
 
-        Self {}
+        Self
     }
 
     pub fn render_samples(channels: &[SharedChannel], blip_buf: &mut BlipBuf, samples: &mut [i16]) {
