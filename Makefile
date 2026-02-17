@@ -1,54 +1,24 @@
 #
-# [How to build]
+# Requirements:
+#   - git, make, cmake, rustup, python 3.8+
+#   - pip3 install -r python/requirements.txt
+#   - Windows: Git Bash
+#   - Linux: python3-pip, python3-venv, libsdl2-dev 2.32.0
 #
-# Required Tools:
-#	- git
-#	- make
-#	- cmake
-#	- rustup
-#	- python 3.8+
+# Native:
+#   - Build: make clean build
+#   - Test:  make clean test (includes watch)
 #
-#	[Windows]
-#	- Git Bash
-#
-#	[Linux]
-#	- python3-pip
-#	- python3-venv
-#	- libsdl2-dev 2.32.0
-#
-#	[Web]
-#	- Pyodide-customized version of Emscripten 4.0.9
-#	  To build it, run the following commands:
-#		git clone --branch 0.29.1 --depth 1 https://github.com/pyodide/pyodide.git pyodide
-#		cd pyodide/emsdk
-#		CMAKE_POLICY_VERSION_MINIMUM=3.5 make
-#		source pyodide/emsdk/emsdk/emsdk_env.sh
-#
-# Advance Preparation:
-#	git clone --depth=1 https://github.com/kitao/pyxel
-#	cd pyxel
-#	(Create and activate a venv if you prefer)
-#	pip3 install -r python/requirements.txt
-#
-# Build for Current Environment:
-#	make clean build
-#	(Generates Python wheel in dist/ directory)
-#
-# Build for Specified Target:
-#	make clean build TARGET=target_triple
-#
-# Build and Install in Current Python:
-#	make clean install
-#
-# Build, Install, and Test in Current Python:
-#	make clean test
-#
-# Build for Web:
-#	make clean-wasm build-wasm
-#
-# Test for Web:
-#	make clean-wasm test-wasm
-#	(Open localhost:8000/wasm/ in a web browser)
+# WASM (Pyodide-customized Emscripten 4.0.9, from Pyodide 0.29.3):
+#   - Setup once:
+#       git clone --branch 0.29.3 --depth 1 https://github.com/pyodide/pyodide.git pyodide
+#       cd pyodide/emsdk
+#       CMAKE_POLICY_VERSION_MINIMUM=3.5 make
+#   - Each new shell before WASM commands:
+#       source pyodide/emsdk/emsdk_env.sh
+#   - Build/Test:
+#       make clean-wasm build-wasm
+#       make clean-wasm test-wasm
 #
 
 # Project directories
@@ -58,20 +28,32 @@ RUST_DIR = $(ROOT_DIR)/rust
 PYTHON_DIR = $(ROOT_DIR)/python
 EXAMPLES_DIR = $(PYTHON_DIR)/pyxel/examples
 TOOLS_DIR = $(ROOT_DIR)/tools
-WASM_DIR = $(ROOT_DIR)/wasm
 
 # Build targets
 TARGET ?= $(shell rustc -vV | awk '/^host:/ {print $$2}')
 WASM_TARGET = wasm32-unknown-emscripten
 
+# WASM path remap flags
+REMAP_SRC_PATH = $(abspath $(ROOT_DIR))
+REMAP_USER_HOME ?= /home/user
+RUST_REMAP_FLAGS = -C remap-path-prefix=$(REMAP_SRC_PATH)=/src/pyxel
+WASM_PREFIX_MAP_FLAGS = -ffile-prefix-map=$(REMAP_SRC_PATH)=/src/pyxel
+ifneq ($(HOME),)
+RUST_REMAP_FLAGS += -C remap-path-prefix=$(HOME)=$(REMAP_USER_HOME)
+WASM_PREFIX_MAP_FLAGS += -ffile-prefix-map=$(HOME)=$(REMAP_USER_HOME)
+endif
+
 # Build options
 ifeq ($(TARGET),$(WASM_TARGET))
 RUSTFLAGS += \
+	$(RUST_REMAP_FLAGS) \
 	-C panic=abort \
     -C link-arg=-fwasm-exceptions \
     -C link-arg=-sSIDE_MODULE=2 \
     -C link-arg=-lSDL2 \
     -C link-arg=-lhtml5
+CFLAGS += $(WASM_PREFIX_MAP_FLAGS)
+CXXFLAGS += $(WASM_PREFIX_MAP_FLAGS)
 endif
 
 CARGO_OPTS = --release --target $(TARGET) -Zbuild-std=std,panic_abort
@@ -93,18 +75,18 @@ ifneq ($(TARGET),$(WASM_TARGET))
 PYO3_PYTHON ?= $(shell $(PYTHON) -c "import sys; print(sys.executable)")
 PYO3_ENVIRONMENT_SIGNATURE ?= $(shell $(PYTHON) -c \
 	"import platform, sys; \
-	print(f'{sys.implementation.name}-{sys.version_info.major}.{sys.version_info.minor}-{platform.architecture()[0]}')")
+	py_impl = sys.implementation.name; \
+	py_ver = f'{sys.version_info.major}.{sys.version_info.minor}'; \
+	print(f'{py_impl}-{py_ver}-{platform.architecture()[0]}')")
 
-# Keep PyO3's environment fingerprint stable across cargo/maturin commands.
+# PyO3 environment fingerprint exports
 lint build test: export PYO3_PYTHON := $(PYO3_PYTHON)
 lint build test: export PYO3_ENVIRONMENT_SIGNATURE := $(PYO3_ENVIRONMENT_SIGNATURE)
 endif
 
-
 .PHONY: \
 	all clean distclean update format lint build install test \
-	clean-wasm lint-wasm build-wasm start-test-server test-wasm \
-	setup-wasm-github test-wasm-github
+	clean-wasm lint-wasm build-wasm start-test-server test-wasm
 
 all: build
 
@@ -136,16 +118,26 @@ build: format lint
 	@rustup target add $(TARGET)
 	@$(TOOLS_DIR)/generate_readme_abspath
 	@cp LICENSE $(PYTHON_DIR)/pyxel
-	@cd $(PYTHON_DIR); RUSTFLAGS="$(RUSTFLAGS)" maturin build -o ../$(DIST_DIR) $(CARGO_OPTS) $(MATURIN_OPTS)
+	@cd $(PYTHON_DIR); \
+		RUSTFLAGS="$(RUSTFLAGS)" \
+		CFLAGS="$(CFLAGS)" \
+		CXXFLAGS="$(CXXFLAGS)" \
+		maturin build -o ../$(DIST_DIR) $(CARGO_OPTS) $(MATURIN_OPTS)
 
 install: build
-	@pip3 install --force-reinstall `ls -rt $(DIST_DIR)/*.whl | tail -n 1`
+	@pip3 install --force-reinstall "$$(ls -rt $(DIST_DIR)/*.whl | tail -n 1)"
 
 test: install
 	@cd $(RUST_DIR); cargo test $(CARGO_OPTS)
 
-	@bash -c 'set -e; trap "exit 130" INT; for f in $(EXAMPLES_DIR)/*.py; do pyxel run "$$f"; done'
-	@bash -c 'set -e; trap "exit 130" INT; for f in $(EXAMPLES_DIR)/apps/*.pyxapp; do pyxel play "$$f"; done'
+	@bash -c 'set -e; trap "exit 130" INT; \
+		for f in $(EXAMPLES_DIR)/*.py; do \
+			pyxel run "$$f"; \
+		done'
+	@bash -c 'set -e; trap "exit 130" INT; \
+		for f in $(EXAMPLES_DIR)/apps/*.pyxapp; do \
+			pyxel play "$$f"; \
+		done'
 	@pyxel edit $(EXAMPLES_DIR)/assets/sample.pyxres
 
 	@rm -rf testapp testapp.pyxapp
@@ -168,16 +160,10 @@ build-wasm:
 	@embuilder build sdl2 --pic
 	@rm -f $(DIST_DIR)/*-emscripten_*.whl
 	@$(MAKE) build TARGET=$(WASM_TARGET)
+	@$(TOOLS_DIR)/check_wasm_wheel
 	@$(TOOLS_DIR)/install_wasm_wheel
 
 start-test-server:
 	@$(TOOLS_DIR)/start_test_server
 
 test-wasm: build-wasm start-test-server
-
-setup-wasm-github:
-	@rm -f $(DIST_DIR)/*-emscripten_*.whl
-	@$(TOOLS_DIR)/download_wasm_wheel
-	@$(TOOLS_DIR)/install_wasm_wheel
-
-test-wasm-github: setup-wasm-github start-test-server

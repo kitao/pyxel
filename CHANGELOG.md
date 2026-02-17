@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.6.7
+
+- Refined the Makefile for clearer, safer WASM builds
+
 ## 2.6.6
 
 - Reduced synth load with fixed-point amplitude mixing
