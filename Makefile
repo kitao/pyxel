@@ -39,11 +39,11 @@ WASM_TARGET = wasm32-unknown-emscripten
 
 # WASM path remap flags
 REMAP_SRC_PATH = $(abspath $(ROOT_DIR))
-REMAP_USER_HOME ?= /home/user
-RUST_REMAP_FLAGS = -C remap-path-prefix=$(REMAP_SRC_PATH)=/src/pyxel
+REMAP_USER_HOME ?= /user
+RUST_REMAP_FLAGS = --remap-path-prefix=$(REMAP_SRC_PATH)=/src/pyxel
 WASM_PREFIX_MAP_FLAGS = -ffile-prefix-map=$(REMAP_SRC_PATH)=/src/pyxel
 ifneq ($(HOME),)
-RUST_REMAP_FLAGS += -C remap-path-prefix=$(HOME)=$(REMAP_USER_HOME)
+RUST_REMAP_FLAGS += --remap-path-prefix=$(HOME)=$(REMAP_USER_HOME)
 WASM_PREFIX_MAP_FLAGS += -ffile-prefix-map=$(HOME)=$(REMAP_USER_HOME)
 endif
 
