@@ -1,0 +1,39 @@
+#!/usr/bin/env python3
+
+import pathlib
+import re
+import sys
+
+ROOT_DIR = pathlib.Path(__file__).resolve().parent.parent
+VERSION_REPLACEMENTS = (
+    ("rust/pyxel-engine/src/settings.rs", '(VERSION.*)".*"'),
+    ("python/pyproject.toml", '(version.*)".*"'),
+    ("rust/pyxel-platform/Cargo.toml", '(version.*)".*"'),
+    ("rust/pyxel-engine/Cargo.toml", '(version.*)".*"'),
+    ("rust/pyxel-engine/Cargo.toml", '(pyxel-platform", version.*)".*"'),
+    ("rust/pyxel-wrapper/Cargo.toml", '(version.*)".*"'),
+    ("rust/pyxel-wrapper/Cargo.toml", '(pyxel-engine", version.*)".*"'),
+)
+
+
+def replace_file(path: pathlib.Path, pattern: str, repl: str) -> None:
+    with path.open("r", encoding="utf-8") as f:
+        code = f.read()
+    code = re.sub(pattern, repl, code, count=1)
+    with path.open("w", encoding="utf-8") as f:
+        f.write(code)
+
+
+def update_version() -> None:
+    if len(sys.argv) != 2:
+        print("update_version version")
+        sys.exit(1)
+
+    version = sys.argv[1]
+
+    for relative_path, pattern in VERSION_REPLACEMENTS:
+        replace_file(ROOT_DIR / relative_path, pattern, f'\\1"{version}"')
+
+
+if __name__ == "__main__":
+    update_version()

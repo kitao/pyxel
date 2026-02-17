@@ -2,7 +2,6 @@
 
 import io
 import json
-import os
 import pathlib
 import random
 
@@ -11,11 +10,12 @@ import requests
 
 import pyxel
 
-ROOT_DIR = ".."
-CACHE_DIR = "/tmp/pyxel_user_example_images"
-USER_EXAMPLES_JSON = "docs/pyxel_user_examples.json"
+ROOT_DIR = pathlib.Path(__file__).resolve().parent.parent
+CACHE_DIR = pathlib.Path("/tmp/pyxel_user_example_images")
+USER_EXAMPLES_JSON = ROOT_DIR / "docs/pyxel_user_examples.json"
+LOGO_IMAGE_FILE = ROOT_DIR / "examples/assets/pyxel_logo_38x16.png"
 
-THANKS_IMAGE_FILE = "docs/images/pyxel_thanks.png"
+THANKS_IMAGE_FILE = ROOT_DIR / "docs/images/pyxel_thanks.png"
 THANKS_IMAGE_WIDTH = 1920
 THANKS_IMAGE_HEIGHT = 1080
 
@@ -103,22 +103,23 @@ MESSAGE_PAD_WIDTH = MESSAGE_WIDTH + MESSAGE_PAD * 2
 MESSAGE_PAD_HEIGHT = MESSAGE_HEIGHT + MESSAGE_PAD * 2
 MESSAGE_PAD_X = MESSAGE_X - MESSAGE_PAD
 MESSAGE_PAD_Y = MESSAGE_Y - MESSAGE_PAD
+DRAW_LAYOUT_GUIDES = False
 
 
-def download_example_image(url, id, frame):
-    os.makedirs(CACHE_DIR, exist_ok=True)
+def download_example_image(url, example_id, frame):
+    CACHE_DIR.mkdir(parents=True, exist_ok=True)
 
-    cache_name = f"{id}_{frame}.png"
-    cache_file = os.path.join(CACHE_DIR, cache_name)
+    cache_name = f"{example_id}_{frame}.png"
+    cache_file = CACHE_DIR / cache_name
 
-    if os.path.exists(cache_file):
+    if cache_file.exists():
         return PIL.Image.open(cache_file)
 
     print(f"download {url} ({cache_name})")
 
-    response = requests.get(url)
+    response = requests.get(url, timeout=30)
     if response.status_code != 200:
-        raise Exception(f"HTTP error: {response.status_code}")
+        raise RuntimeError(f"HTTP error: {response.status_code}")
 
     gif = PIL.Image.open(io.BytesIO(response.content))
     gif.seek(frame - 1)
@@ -131,17 +132,15 @@ def download_example_image(url, id, frame):
 
 def draw_example_images(thanks_image):
     # Load the user examples json
-    with open(USER_EXAMPLES_JSON, "r", encoding="utf-8") as f:
+    with USER_EXAMPLES_JSON.open("r", encoding="utf-8") as f:
         user_examples_json = json.load(f)
+    entries_by_id = {entry["id"]: entry for entry in user_examples_json["entries"]}
 
     # Download and resize example images
     example_images = []
-    for id, frame in EXAMPLE_IMAGES:
-        user_example = next(
-            (x for x in user_examples_json["entries"] if x["id"] == id), None
-        )
-        url = user_example["image"]
-        image = download_example_image(url, id, frame)
+    for example_id, frame in EXAMPLE_IMAGES:
+        url = entries_by_id[example_id]["image"]
+        image = download_example_image(url, example_id, frame)
         image = image.resize(
             (EXAMPLE_WIDTH, int(EXAMPLE_WIDTH * image.height / image.width))
         )
@@ -151,7 +150,7 @@ def draw_example_images(thanks_image):
     random.seed(EXAMPLE_RANDOM_SEED)
     random.shuffle(example_images)
 
-    # Draw exampole images
+    # Draw example images
     example_x = EXAMPLE_X
     while example_x < THANKS_IMAGE_WIDTH:
         col_height = 0
@@ -183,7 +182,7 @@ def draw_message_image(thanks_image):
     base_image.pset(0, BASE_MESSAGE_HEIGHT - 1, 0)
     base_image.pset(BASE_MESSAGE_WIDTH - 1, BASE_MESSAGE_HEIGHT - 1, 0)
 
-    base_image.load(43, 8, "examples/assets/pyxel_logo_38x16.png")
+    base_image.load(43, 8, str(LOGO_IMAGE_FILE))
 
     base_image.text(10, 29, "Thank you for 17,000 stars", 12)
     base_image.text(10 + 14 * 4, 29, "17,000", 9)
@@ -192,7 +191,7 @@ def draw_message_image(thanks_image):
     base_image.text(15 + 4 * 4, 37, "1,300,000", 9)
 
     # Draw layout guide lines for alignment
-    if False:
+    if DRAW_LAYOUT_GUIDES:
         x1 = 2
         y1 = 2
         x2 = BASE_MESSAGE_WIDTH - 3
@@ -255,8 +254,6 @@ def draw_message_image(thanks_image):
 
 
 def generate_thanks_image():
-    os.chdir(pathlib.Path(__file__).parent / ROOT_DIR)
-
     thanks_image = PIL.Image.new(
         "RGB", (THANKS_IMAGE_WIDTH, THANKS_IMAGE_HEIGHT), (0, 0, 0)
     )

@@ -1,17 +1,19 @@
 #!/bin/bash
 
-set -eu
-cd `dirname $0`
+set -euo pipefail
 
-DIST_DIR=../dist
-WASM_DIR=../wasm
-SCRIPT_NAME=pyxel.js
+cd "$(dirname "$0")"
 
-mkdir -p $WASM_DIR
+DIST_DIR="../dist"
+WASM_DIR="../wasm"
+SCRIPT_NAME="pyxel.js"
 
-rm -f $WASM_DIR/*-emscripten_*.whl
-cp -f $DIST_DIR/*-emscripten_*.whl $WASM_DIR
+mkdir -p "$WASM_DIR"
 
-WHEEL_NAME=`cd $WASM_DIR && find *.whl`
-sed -i -e "s#\\(PYXEL_WHEEL_PATH =\\).*;#\\1 \\\"$WHEEL_NAME\\\";#" $WASM_DIR/$SCRIPT_NAME
-rm -f $WASM_DIR/$SCRIPT_NAME-e
+rm -f "$WASM_DIR"/*-emscripten_*.whl
+cp -f "$DIST_DIR"/*-emscripten_*.whl "$WASM_DIR"
+
+WHEEL_NAME="$(basename "$WASM_DIR"/*-emscripten_*.whl)"
+
+sed -i -e "s#\\(PYXEL_WHEEL_PATH =\\).*;#\\1 \\\"$WHEEL_NAME\\\";#" "$WASM_DIR/$SCRIPT_NAME"
+rm -f "$WASM_DIR/$SCRIPT_NAME-e"

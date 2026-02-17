@@ -1,9 +1,13 @@
 #
-# Requirements:
+# Prerequisites:
 #   - git, make, cmake, rustup, python 3.8+
-#   - pip3 install -r python/requirements.txt
 #   - Windows: Git Bash
 #   - Linux: python3-pip, python3-venv, libsdl2-dev 2.32.0
+#
+# Setup:
+#   - ./tools/setup_venv
+#   - macOS/Linux: source venv/bin/activate
+#   - Windows (Git Bash): source venv/Scripts/activate
 #
 # Native:
 #   - Build: make clean build
@@ -116,7 +120,7 @@ lint:
 build: format lint
 	@rustup component add rust-src
 	@rustup target add $(TARGET)
-	@$(TOOLS_DIR)/generate_readme_abspath
+	@$(TOOLS_DIR)/generate_readme_abs_links
 	@cp LICENSE $(PYTHON_DIR)/pyxel
 	@cd $(PYTHON_DIR); \
 		RUSTFLAGS="$(RUSTFLAGS)" \

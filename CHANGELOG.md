@@ -2,7 +2,8 @@
 
 ## 2.6.7
 
-- Refined the Makefile for clearer, safer WASM builds
+- Refined the Makefile for safer WASM builds
+- Renamed and simplified tools scripts
 
 ## 2.6.6
 

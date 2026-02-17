@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
 
 import json
-import os
 import pathlib
 
-ROOT_DIR = ".."
-USER_EXAMPLES_JSON = "docs/pyxel_user_examples.json"
+ROOT_DIR = pathlib.Path(__file__).resolve().parent.parent
+USER_EXAMPLES_JSON = ROOT_DIR / "docs/pyxel_user_examples.json"
 
 PAGE_HEADER = """\
 [![Downloads](https://static.pepy.tech/personalized-badge/pyxel?period=total&units=international_system&left_color=grey&right_color=blue&left_text=PyPI%20downloads)](https://pypi.org/project/pyxel/)
@@ -44,7 +43,7 @@ def generate_markdown_table(entries):
     markdown_lines = ["| Description | Screen Image |", "| --- | --- |"]
 
     for entry in entries:
-        id = entry["id"]
+        example_id = entry["id"]
         title = (
             f"[{entry['title']}]({entry['site']})"
             if "site" in entry
@@ -57,15 +56,15 @@ def generate_markdown_table(entries):
         )
         desc = entry["desc"]
         image = f'<img src="{entry["image"]}" width="320">'
-        markdown_lines.append(f"| #{id}<br>{title} by {author}<br>{desc} | {image} |")
+        markdown_lines.append(
+            f"| #{example_id}<br>{title} by {author}<br>{desc} | {image} |"
+        )
 
     return "\n".join(markdown_lines)
 
 
-def generate_examples_markdown():
-    os.chdir(pathlib.Path(__file__).parent / ROOT_DIR)
-
-    with open(USER_EXAMPLES_JSON, "r", encoding="utf-8") as f:
+def generate_examples_md():
+    with USER_EXAMPLES_JSON.open("r", encoding="utf-8") as f:
         data = json.load(f)
 
     entries = {entry["id"]: entry for entry in data["entries"]}
@@ -82,17 +81,20 @@ def generate_examples_markdown():
         if not subset:
             continue
 
-        subset.sort(key=lambda x: x["id"], reverse=True)
+        subset.sort(key=lambda entry: entry["id"], reverse=True)
         filename = (
             f"pyxel_user_examples_{str(end_id).zfill(3)}_{str(start_id).zfill(3)}.md"
         )
 
         navigation_links = generate_navigation_links(page_ranges, start_id, end_id)
-        markdown_content = f"{PAGE_HEADER}\n\n{navigation_links}\n\n{generate_markdown_table(subset)}\n\n{navigation_links}\n"
+        markdown_content = (
+            f"{PAGE_HEADER}\n\n{navigation_links}\n\n"
+            f"{generate_markdown_table(subset)}\n\n{navigation_links}\n"
+        )
 
-        with open(filename, "w", encoding="utf-8") as f:
+        with (ROOT_DIR / filename).open("w", encoding="utf-8") as f:
             f.write(markdown_content)
 
 
 if __name__ == "__main__":
-    generate_examples_markdown()
+    generate_examples_md()

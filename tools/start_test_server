@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import io
-import os
 import socket
 import sys
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
@@ -51,14 +50,12 @@ INJECT_SNIPPET = (
 )
 
 
-def _get_ip():
+def _get_ip() -> str:
     try:
-        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        s.connect(("8.8.8.8", 80))
-        ip = s.getsockname()[0]
-        s.close()
-        return ip
-    except Exception:
+        with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
+            sock.connect(("8.8.8.8", 80))
+            return sock.getsockname()[0]
+    except OSError:
         return "127.0.0.1"
 
 
@@ -80,14 +77,13 @@ class Handler(SimpleHTTPRequestHandler):
         parsed = urlparse(self.path)
         path = parsed.path
         if path.endswith(".html"):
-            full_path = self.translate_path(path)
-            if not os.path.exists(full_path) or not os.path.isfile(full_path):
+            full_path = Path(self.translate_path(path))
+            if not full_path.is_file():
                 return super().send_head()
             try:
-                with open(full_path, "rb") as f:
-                    data = f.read()
+                data = full_path.read_bytes()
                 text = data.decode("utf-8")
-            except Exception:
+            except (OSError, UnicodeDecodeError):
                 return super().send_head()
 
             injected = _inject_html(text)
@@ -115,7 +111,7 @@ def _inject_html(text: str) -> str:
     return text + INJECT_SNIPPET
 
 
-def main():
+def main() -> int:
     ip = _get_ip()
     print(f"Serving HTTP on {ip} port {PORT} (http://{ip}:{PORT}/) ...")
     server = ThreadingHTTPServer(("", PORT), Handler)
@@ -123,6 +119,7 @@ def main():
         server.serve_forever()
     except KeyboardInterrupt:
         pass
+    return 0
 
 
 if __name__ == "__main__":
