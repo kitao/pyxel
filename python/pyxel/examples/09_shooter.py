@@ -54,17 +54,6 @@ def cleanup_entities(entities):
             del entities[i]
 
 
-def load_bgm(msc, filename, snd1, snd2, snd3):
-    import json
-
-    with open(filename, "rt") as file:
-        bgm = json.loads(file.read())
-        pyxel.sounds[snd1].set(*bgm[0])
-        pyxel.sounds[snd2].set(*bgm[1])
-        pyxel.sounds[snd3].set(*bgm[2])
-        pyxel.musics[msc].set([snd1], [snd2], [snd3])
-
-
 class Background:
     def __init__(self):
         self.stars = []
@@ -273,10 +262,6 @@ class App:
         pyxel.sounds[6].mml(b1 + b2 + b3 + b2 + b4)
         pyxel.sounds[7].mml(c1 + c2 + c3 + c2 + c4)
         pyxel.musics[1].set([5], [6], [7])
-
-        # You can also use 8bit BGM generator for music:
-        #   load_bgm(0, "assets/bgm_title.json", 2, 3, 4)
-        #   load_bgm(1, "assets/bgm_play.json", 5, 6, 7)
 
     def update(self):
         if pyxel.btn(pyxel.KEY_Q):
