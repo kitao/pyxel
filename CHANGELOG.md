@@ -2,10 +2,8 @@
 
 ## 2.6.6
 
-- Added adaptive ring buffer to reduce audio dropouts
 - Reduced synth load with fixed-point amplitude mixing
 - Reduced PCM load with fixed-point mixing
-- Improved Voice note interpolation to reduce click noise at transitions
 - Fixed gen_bgm parity and seed determinism
 - Removed the transp argument from gen_bgm
 - Added BGM generation feature to Example 15
