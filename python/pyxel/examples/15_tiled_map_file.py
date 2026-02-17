@@ -45,7 +45,7 @@ class App:
         if pyxel.btnp(pyxel.KEY_Q):
             pyxel.quit()
 
-        if pyxel.btnp(pyxel.KEY_X):
+        if pyxel.frame_count % 240 == 0:
             pyxel.stop()
 
             # gen_bgm generates a list of MML strings.
