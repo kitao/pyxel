@@ -435,8 +435,9 @@ pub struct Voice {
     last_amplitude: i32,
 
     note_interp_clocks: u32,
-    interp_start_amplitude: Option<i32>,
-    interp_end_amplitude: Option<i32>,
+    interp_start_gain: Option<i32>,
+    interp_end_gain: Option<i32>,
+    last_gain: i32,
 }
 
 impl Voice {
@@ -465,8 +466,9 @@ impl Voice {
             last_amplitude: 0,
 
             note_interp_clocks,
-            interp_start_amplitude: None,
-            interp_end_amplitude: None,
+            interp_start_gain: None,
+            interp_end_gain: None,
+            last_gain: 0,
         }
     }
 
@@ -481,8 +483,8 @@ impl Voice {
         self.velocity = velocity;
         self.remaining_note_clocks = duration_clocks + self.note_interp_clocks;
         self.elapsed_note_clocks = 0;
-        self.interp_start_amplitude = None;
-        self.interp_end_amplitude = None;
+        self.interp_start_gain = None;
+        self.interp_end_gain = None;
 
         self.reset_control_clock();
     }
@@ -523,33 +525,32 @@ impl Voice {
 
         while self.remaining_note_clocks > 0 && clock_count > 0 {
             // Calculate amplitude and write sample
-            let gain = Self::gain_to_fixed(self.envelope.level() * self.velocity);
+            let mut gain = Self::gain_to_fixed(self.envelope.level() * self.velocity);
 
-            let target_amplitude = Self::apply_gain_fixed(self.oscillator.sample(), gain);
-            let amplitude = if self.remaining_note_clocks < self.note_interp_clocks {
-                if self.interp_end_amplitude.is_none() {
-                    self.interp_end_amplitude = Some(self.last_amplitude);
+            if self.remaining_note_clocks < self.note_interp_clocks {
+                if self.interp_end_gain.is_none() {
+                    self.interp_end_gain = Some(self.last_gain);
                 }
-                let interp_end_amplitude = self.interp_end_amplitude.unwrap();
-                ((interp_end_amplitude as i64 * self.remaining_note_clocks as i64
+                let interp_end_gain = self.interp_end_gain.unwrap();
+                gain = ((interp_end_gain as i64 * self.remaining_note_clocks as i64
                     + self.note_interp_clocks as i64 / 2)
-                    / self.note_interp_clocks as i64) as i32
+                    / self.note_interp_clocks as i64) as i32;
             } else if self.elapsed_note_clocks < self.note_interp_clocks {
-                if self.interp_start_amplitude.is_none() {
-                    self.interp_start_amplitude = Some(self.last_amplitude);
+                if self.interp_start_gain.is_none() {
+                    self.interp_start_gain = Some(self.last_gain);
                 }
-                let interp_start_amplitude = self.interp_start_amplitude.unwrap();
+                let interp_start_gain = self.interp_start_gain.unwrap();
                 let note_interp_clocks = self.note_interp_clocks as i64;
                 let elapsed_note_clocks = self.elapsed_note_clocks as i64;
-                ((interp_start_amplitude as i64 * (note_interp_clocks - elapsed_note_clocks)
-                    + target_amplitude as i64 * elapsed_note_clocks
+                gain = ((interp_start_gain as i64 * (note_interp_clocks - elapsed_note_clocks)
+                    + gain as i64 * elapsed_note_clocks
                     + note_interp_clocks / 2)
-                    / note_interp_clocks) as i32
-            } else {
-                target_amplitude
-            };
+                    / note_interp_clocks) as i32;
+            }
 
+            let amplitude = Self::apply_gain_fixed(self.oscillator.sample(), gain);
             self.write_sample(blip_buf.as_deref_mut(), clock_offset, amplitude);
+            self.last_gain = gain;
 
             // Advance oscillator and control clock
             let process_clocks = self.sample_clocks.min(clock_count);
@@ -569,6 +570,7 @@ impl Voice {
 
         if self.remaining_note_clocks == 0 && clock_count > 0 {
             self.write_sample(blip_buf, clock_offset, 0);
+            self.last_gain = 0;
         }
     }
 
