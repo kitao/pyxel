@@ -7,6 +7,8 @@
 - Fixed gen_bgm parity and seed determinism
 - Removed the transp argument from gen_bgm
 - Added BGM generation feature to Example 15
+- Updated toml crate to version 1.0
+- Updated zip crate to version 8.1
 
 ## 2.6.5
 
