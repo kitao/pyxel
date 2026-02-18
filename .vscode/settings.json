@@ -1,5 +1,5 @@
 {
-  "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python",
+  "python.defaultInterpreterPath": "${workspaceFolder}/venv/bin/python",
   "rust-analyzer.cargo.features": ["sdl2"],
   "rust-analyzer.cargo.target": "wasm32-unknown-emscripten",
   "rust-analyzer.linkedProjects": ["rust/Cargo.toml"]
