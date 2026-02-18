@@ -4,6 +4,8 @@
 
 - Refined the Makefile for safer WASM builds
 - Renamed and simplified tools scripts
+- Synced CI Rust version with rust-toolchain.toml
+- Updated CI Python version to 3.14
 
 ## 2.6.6
 

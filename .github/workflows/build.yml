@@ -3,8 +3,7 @@ name: build
 on: [workflow_call, workflow_dispatch]
 
 env:
-  RUST_VERSION: "nightly-2025-12-10"
-  PYTHON_VERSION: "3.13"
+  PYTHON_VERSION: "3.14"
 
 jobs:
   build-winmac:
@@ -34,6 +33,14 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+
+      - &resolve-rust-version
+        name: Resolve Rust version
+        shell: bash
+        run: |
+          RUST_VERSION="$(awk -F'"' '/^channel = / { print $2; exit }' rust/rust-toolchain.toml)"
+          test -n "$RUST_VERSION"
+          echo "RUST_VERSION=$RUST_VERSION" >> "$GITHUB_ENV"
 
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
@@ -90,6 +97,8 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+
+      - *resolve-rust-version
 
       - name: Install Nightly Rust
         uses: dtolnay/rust-toolchain@stable
