@@ -1,5 +1,4 @@
 *.pyc
 .DS_Store
-.claude/
 dist/
 venv/
