@@ -3,17 +3,17 @@
 #   - git, make, cmake, rustup, python 3.8+
 #   - Windows: Git Bash
 #   - Linux: python3-pip, python3-venv, libsdl2-dev 2.32.0
-#
-# Setup:
 #   - ./tools/setup_venv
+#
+# Each new shell:
 #   - macOS/Linux: source venv/bin/activate
 #   - Windows (Git Bash): source venv/Scripts/activate
 #
 # Native:
 #   - Build: make clean build
-#   - Test:  make clean test (includes watch)
+#   - Test: make clean test (includes watch)
 #
-# WASM (Pyodide-customized Emscripten 4.0.9, from Pyodide 0.29.3):
+# WASM:
 #   - Setup once:
 #       git clone --branch 0.29.3 --depth 1 https://github.com/pyodide/pyodide.git pyodide
 #       cd pyodide/emsdk
@@ -52,10 +52,10 @@ ifeq ($(TARGET),$(WASM_TARGET))
 RUSTFLAGS += \
 	$(RUST_REMAP_FLAGS) \
 	-C panic=abort \
-    -C link-arg=-fwasm-exceptions \
-    -C link-arg=-sSIDE_MODULE=2 \
-    -C link-arg=-lSDL2 \
-    -C link-arg=-lhtml5
+	-C link-arg=-fwasm-exceptions \
+	-C link-arg=-sSIDE_MODULE=2 \
+	-C link-arg=-lSDL2 \
+	-C link-arg=-lhtml5
 CFLAGS += $(WASM_PREFIX_MAP_FLAGS)
 CXXFLAGS += $(WASM_PREFIX_MAP_FLAGS)
 endif
@@ -72,20 +72,27 @@ endif
 CLIPPY_OPTS = -q -- --no-deps
 MATURIN_OPTS = --manylinux 2014 --auditwheel skip
 
-# Python/PyO3 options
-PYTHON ?= python3
-
+# PyO3 environment
 ifneq ($(TARGET),$(WASM_TARGET))
-PYO3_PYTHON ?= $(shell $(PYTHON) -c "import sys; print(sys.executable)")
+PYTHON ?= python3
+PYO3_PYTHON ?= $(PYTHON)
 PYO3_ENVIRONMENT_SIGNATURE ?= $(shell $(PYTHON) -c \
-	"import platform, sys; \
-	py_impl = sys.implementation.name; \
-	py_ver = f'{sys.version_info.major}.{sys.version_info.minor}'; \
-	print(f'{py_impl}-{py_ver}-{platform.architecture()[0]}')")
+	"import sys,platform; v=sys.version_info; \
+	a=platform.architecture()[0]; \
+	print(f'{sys.implementation.name}-{v.major}.{v.minor}-{a}')")
 
-# PyO3 environment fingerprint exports
 lint build test: export PYO3_PYTHON := $(PYO3_PYTHON)
 lint build test: export PYO3_ENVIRONMENT_SIGNATURE := $(PYO3_ENVIRONMENT_SIGNATURE)
+endif
+
+# Ensure venv
+ifeq ($(filter clean distclean,$(MAKECMDGOALS)),)
+ifndef VIRTUAL_ENV
+$(shell echo "Error: venv is not activated." >&2)
+$(shell echo "  macOS/Linux: source venv/bin/activate" >&2)
+$(shell echo "  Windows (Git Bash): source venv/Scripts/activate" >&2)
+$(error aborting)
+endif
 endif
 
 .PHONY: \
