@@ -85,16 +85,6 @@ lint build test: export PYO3_PYTHON := $(PYO3_PYTHON)
 lint build test: export PYO3_ENVIRONMENT_SIGNATURE := $(PYO3_ENVIRONMENT_SIGNATURE)
 endif
 
-# Ensure venv
-ifeq ($(filter clean distclean,$(MAKECMDGOALS)),)
-ifndef VIRTUAL_ENV
-$(shell echo "Error: venv is not activated." >&2)
-$(shell echo "  macOS/Linux: source venv/bin/activate" >&2)
-$(shell echo "  Windows (Git Bash): source venv/Scripts/activate" >&2)
-$(error aborting)
-endif
-endif
-
 .PHONY: \
 	all clean distclean update format lint build install test \
 	clean-wasm lint-wasm build-wasm start-test-server test-wasm

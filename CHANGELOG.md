@@ -6,7 +6,6 @@
 - Renamed and simplified tools scripts
 - Synced CI Rust version with rust-toolchain.toml
 - Updated CI Python version to 3.14
-- Added venv activation check to the Makefile
 
 ## 2.6.6
 
