@@ -4,7 +4,7 @@ set -euo pipefail
 
 cd "$(dirname "$0")"
 
-VENV_DIR="../venv"
+VENV_DIR="../.venv"
 REQUIREMENTS="../python/requirements.txt"
 
 rm -rf "$VENV_DIR"

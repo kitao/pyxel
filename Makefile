@@ -6,8 +6,8 @@
 #
 # Setup:
 #   - ./tools/setup_venv
-#   - macOS/Linux: source venv/bin/activate
-#   - Windows (Git Bash): source venv/Scripts/activate
+#   - macOS/Linux: source .venv/bin/activate
+#   - Windows (Git Bash): source .venv/Scripts/activate
 #
 # Native:
 #   - Build: make clean build

@@ -4,6 +4,7 @@
 
 - Refined the Makefile for safer WASM builds
 - Renamed and simplified tools scripts
+- Standardized virtual environment directory to .venv
 - Synced CI Rust version with rust-toolchain.toml
 - Updated CI Python version to 3.14
 

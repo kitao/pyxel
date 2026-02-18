@@ -1,4 +1,4 @@
-dist/
-venv/
 *.pyc
 .DS_Store
+.venv/
+dist/
