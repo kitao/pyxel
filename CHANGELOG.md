@@ -6,6 +6,7 @@
 - Renamed and simplified tools scripts
 - Synced CI Rust version with rust-toolchain.toml
 - Updated CI Python version to 3.14
+- Updated Pyxel thanks image
 
 ## 2.6.6
 
