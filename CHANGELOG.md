@@ -7,6 +7,7 @@
 - Synced CI Rust version with rust-toolchain.toml
 - Updated CI Python version to 3.14
 - Updated Pyxel thanks image
+- Fixed keyboard input for non-US layouts on the web version
 
 ## 2.6.6
 

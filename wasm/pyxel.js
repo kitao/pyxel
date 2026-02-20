@@ -32,6 +32,39 @@ let _virtualGamepadStates = [
   false, // Back
 ];
 
+// Keyboard key correction for non-US layouts (e.g. JIS)
+// Emscripten's SDL2 maps KeyboardEvent.keyCode through a US-layout table,
+// producing incorrect keycodes for non-US keyboards. This captures the actual
+// character from KeyboardEvent.key and builds a code-to-char mapping that is
+// independent of modifier keys (Shift, etc.).
+let _keyCharMap = {}; // Maps KeyboardEvent.code to unshifted char code
+let _lastKeyDownChar = 0;
+let _lastKeyUpChar = 0;
+document.addEventListener(
+  "keydown",
+  (event) => {
+    if (event.key.length === 1) {
+      let charCode = event.key.charCodeAt(0);
+      // Record unshifted mapping when no modifiers are held
+      if (!event.shiftKey && !event.ctrlKey && !event.altKey && !event.metaKey) {
+        _keyCharMap[event.code] = charCode;
+      }
+      // Use recorded unshifted char if available, otherwise use current char
+      _lastKeyDownChar = _keyCharMap[event.code] || charCode;
+    } else {
+      _lastKeyDownChar = 0;
+    }
+  },
+  true,
+);
+document.addEventListener(
+  "keyup",
+  (event) => {
+    _lastKeyUpChar = _keyCharMap[event.code] || 0;
+  },
+  true,
+);
+
 async function launchPyxel(params) {
   const pyxel_version = PYXEL_WHEEL_PATH.match(/pyxel-([\d.]+)-/)[1];
   const pyodide_version = PYODIDE_URL.match(/v([\d.]+)\//)[1];

@@ -95,6 +95,10 @@ impl PlatformSdl2 {
                 SDL_KEYDOWN => {
                     if unsafe { sdl_event.key.repeat } == 0 {
                         let key = unsafe { sdl_event.key.keysym.sym } as Key;
+
+                        #[cfg(target_os = "emscripten")]
+                        let key = correct_emscripten_key(key, "_lastKeyDownChar");
+
                         pyxel_events.push(Event::KeyPressed { key });
 
                         if let Some(unified_key) = key_to_virtual_key(key) {
@@ -106,6 +110,10 @@ impl PlatformSdl2 {
                 SDL_KEYUP => {
                     if unsafe { sdl_event.key.repeat } == 0 {
                         let key = unsafe { sdl_event.key.keysym.sym } as Key;
+
+                        #[cfg(target_os = "emscripten")]
+                        let key = correct_emscripten_key(key, "_lastKeyUpChar");
+
                         pyxel_events.push(Event::KeyReleased { key });
 
                         if let Some(unified_key) = key_to_virtual_key(key) {
@@ -327,6 +335,35 @@ impl PlatformSdl2 {
                 _ => None,
             })
     }
+}
+
+// Correct SDL2 keycode on Emscripten for non-US keyboard layouts.
+// Emscripten's SDL2 maps browser KeyboardEvent.keyCode through a US-layout
+// lookup table, producing incorrect keycodes for JIS and other non-US keyboards.
+// This function queries the actual character from KeyboardEvent.key (captured
+// in JavaScript) and uses it when the SDL2 key is a printable ASCII character.
+#[cfg(target_os = "emscripten")]
+fn correct_emscripten_key(sdl_key: Key, js_var: &str) -> Key {
+    // Only correct printable ASCII keys (0x20 space .. 0x7E tilde)
+    if sdl_key < 0x20 || sdl_key > 0x7E {
+        return sdl_key;
+    }
+
+    let js_key = unsafe {
+        let script = std::ffi::CString::new(format!("{js_var};")).unwrap();
+        emscripten_run_script_int(script.as_ptr())
+    } as u32;
+
+    if js_key < 0x20 || js_key > 0x7E {
+        return sdl_key;
+    }
+
+    // Convert uppercase letters to lowercase (Pyxel uses lowercase key constants)
+    if (0x41..=0x5A).contains(&js_key) {
+        return js_key + 0x20;
+    }
+
+    js_key
 }
 
 fn key_to_virtual_key(key: Key) -> Option<Key> {
