@@ -1,5 +1,6 @@
 import base64
 import glob
+import json
 import multiprocessing
 import os
 import pathlib
@@ -74,17 +75,14 @@ def cli():
 
 
 def _check_newer_version():
-    url = "https://www.github.com/kitao/pyxel"
+    url = "https://pypi.org/pypi/pyxel/json"
     req = urllib.request.Request(url)
     latest_version = None
     try:
         with urllib.request.urlopen(req, timeout=3) as res:
-            pattern = r"/kitao/pyxel/releases/tag/v(\d+\.\d+\.\d+)"
-            text = res.read().decode("utf-8")
-            result = re.search(pattern, text)
-            if result:
-                latest_version = result.group(1)
-    except urllib.error.URLError:
+            data = json.loads(res.read().decode("utf-8"))
+            latest_version = data["info"]["version"]
+    except (urllib.error.URLError, json.JSONDecodeError, KeyError):
         return
     if not latest_version:
         return
