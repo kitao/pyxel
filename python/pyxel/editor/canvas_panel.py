@@ -11,6 +11,7 @@ from .settings import (
     TOOL_RECTB,
     TOOL_SELECT,
 )
+from .utils import draw_corner_markers
 from .widgets import ScrollBar, Widget
 from .widgets.settings import WIDGET_HOLD_TIME, WIDGET_PANEL_COLOR, WIDGET_REPEAT_TIME
 
@@ -106,6 +107,7 @@ class CanvasPanel(Widget):
         self.add_event_listener("mouse_hover", self.__on_mouse_hover)
         self.add_event_listener("update", self.__on_update)
         self.add_event_listener("draw", self.__on_draw)
+        self.add_event_listener("draw_overlay", self.__on_draw_overlay)
 
     def _screen_to_focus(self, x, y):
         x = min(max((x - self.x - 1) // 8, 0), 15)
@@ -504,6 +506,19 @@ class CanvasPanel(Widget):
             ):
                 self.focus_y_var += 1
 
+    def __on_draw_overlay(self):
+        # Draw selection area
+        if self.tool_var == TOOL_SELECT and self._select_x1 >= 0:
+            x = self._select_x1 * 8 + 12
+            y = self._select_y1 * 8 + 17
+            w = self._select_x2 * 8 - x + 20
+            h = self._select_y2 * 8 - y + 25
+            pyxel.clip(self.x - 1, self.y - 1, self.width + 2, self.height + 2)
+            draw_corner_markers(
+                x, y, w, h, PANEL_SELECT_FRAME_COLOR, PANEL_SELECT_BORDER_COLOR
+            )
+            pyxel.clip()
+
     def __on_draw(self):
         self.draw_panel(self.x, self.y, self.width, self.height)
 
@@ -545,15 +560,3 @@ class CanvasPanel(Widget):
         pyxel.line(
             self.x + 64, self.y + 1, self.x + 64, self.y + 128, WIDGET_PANEL_COLOR
         )
-
-        # Draw selection area
-        if self.tool_var == TOOL_SELECT and self._select_x1 >= 0:
-            x = self._select_x1 * 8 + 12
-            y = self._select_y1 * 8 + 17
-            w = self._select_x2 * 8 - x + 20
-            h = self._select_y2 * 8 - y + 25
-            pyxel.clip(self.x + 1, self.y + 1, 128, 128)
-            pyxel.rectb(x, y, w, h, PANEL_SELECT_FRAME_COLOR)
-            pyxel.rectb(x + 1, y + 1, w - 2, h - 2, PANEL_SELECT_BORDER_COLOR)
-            pyxel.rectb(x - 1, y - 1, w + 2, h + 2, PANEL_SELECT_BORDER_COLOR)
-            pyxel.clip()
