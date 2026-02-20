@@ -686,7 +686,7 @@ Um arquivo de aplicativo Pyxel também pode ser convertido em um executável ou 
   Desenha um `ladrilho` em (`x`, `y`). Um ladrilho é representado como uma tupla de `(image_tx, image_ty)`.
 
 - `collide(x, y, w, h, dx, dy, walls)`<br>
-  Resolve collisions after applying the movement (`dx`, `dy`) to the rectangle at position (`x`, `y`) with size (`w`, `h`), and return the adjusted (`dx`, `dy`). `walls` is a list of tiles `(image_tx, image_ty)` treated as walls.
+  Resolve as colisões após aplicar o movimento (`dx`, `dy`) ao retângulo na posição (`x`, `y`) com tamanho (`w`, `h`), e retorna os (`dx`, `dy`) ajustados. `walls` é uma lista de ladrilhos `(image_tx, image_ty)` tratados como paredes.
 
 ### Classe Sound
 

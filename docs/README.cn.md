@@ -686,7 +686,7 @@ Pyxel 应用程序文件还可以使用 `pyxel app2exe` 或 `pyxel app2html` 命
   在 (`x`, `y`) 处绘制一个瓦片。瓦片表示为 `(image_tx, image_ty)` 的元组。
 
 - `collide(x, y, w, h, dx, dy, walls)`<br>
-  Resolve collisions after applying the movement (`dx`, `dy`) to the rectangle at position (`x`, `y`) with size (`w`, `h`), and return the adjusted (`dx`, `dy`). `walls` is a list of tiles `(image_tx, image_ty)` treated as walls.
+  对位于 (`x`, `y`)、大小为 (`w`, `h`) 的矩形应用移动量 (`dx`, `dy`) 后进行碰撞检测，并返回修正后的 (`dx`, `dy`)。`walls` 是作为墙壁处理的图块 `(image_tx, image_ty)` 的列表。
 
 ### Sound 类
 

@@ -686,7 +686,7 @@ Un archivo de aplicación Pyxel también se puede convertir en un archivo ejecut
   Dibuja una `tesela` en (`x`, `y`). Una tesela se representa como una tupla de `(image_tx, image_ty)`.
 
 - `collide(x, y, w, h, dx, dy, walls)`<br>
-  Resolve collisions after applying the movement (`dx`, `dy`) to the rectangle at position (`x`, `y`) with size (`w`, `h`), and return the adjusted (`dx`, `dy`). `walls` is a list of tiles `(image_tx, image_ty)` treated as walls.
+  Resuelve las colisiones tras aplicar el movimiento (`dx`, `dy`) al rectángulo en la posición (`x`, `y`) con tamaño (`w`, `h`), y devuelve los (`dx`, `dy`) ajustados. `walls` es una lista de teselas `(image_tx, image_ty)` tratadas como paredes.
 
 ### Clase Sound
 

@@ -686,7 +686,7 @@ Bir Pyxel uygulama dosyası ayrıca `pyxel app2exe` veya `pyxel app2html` komutl
   (`x`, `y`) konumuna bir `tile` çizer. Döşeme, `(image_tx, image_ty)` ikilisi olarak temsil edilir.
 
 - `collide(x, y, w, h, dx, dy, walls)`<br>
-  Resolve collisions after applying the movement (`dx`, `dy`) to the rectangle at position (`x`, `y`) with size (`w`, `h`), and return the adjusted (`dx`, `dy`). `walls` is a list of tiles `(image_tx, image_ty)` treated as walls.
+  (`x`, `y`) konumundaki (`w`, `h`) boyutundaki dikdörtgene (`dx`, `dy`) hareketini uyguladıktan sonra çarpışmaları çözer ve düzeltilmiş (`dx`, `dy`) değerlerini döndürür. `walls`, duvar olarak kabul edilen `(image_tx, image_ty)` döşemelerinin listesidir.
 
 ### Sound Sınıfı
 

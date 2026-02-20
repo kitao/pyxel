@@ -299,6 +299,8 @@ pyxel.circb(60, 60, 40, 7)
 pyxel.show()
 ```
 
+### 애플리케이션 실행하기
+
 작성한 스크립트는 `python` 명령어로 실행할 수 있습니다:
 
 ```sh
@@ -444,9 +446,9 @@ pyxel play PYXEL_APP_FILE
 
 Pyxel 애플리케이션 파일은 `pyxel app2exe` 또는 `pyxel app2html` 명령을 사용하여 실행 파일이나 HTML 파일로 변환할 수도 있습니다.
 
-## API Reference
+## API 레퍼런스
 
-### System
+### 시스템
 
 - `width`, `height`<br>
   화면의 너비와 높이
@@ -473,7 +475,7 @@ Pyxel 애플리케이션 파일은 `pyxel app2exe` 또는 `pyxel app2html` 명�
 - `reset()`<br>
   Pyxel 애플리케이션을 리셋합니다. 리셋 후에도 환경 변수는 유지됩니다.
 
-### Resource
+### 리소스
 
 - `load(filename, [exclude_images], [exclude_tilemaps], [exclude_sounds], [exclude_musics])`<br>
   리소스 파일 (.pyxres)을 로드합니다. 옵션이 `True`로 설정되면 해당 리소스는 로드에서 제외됩니다. 동일한 이름의 팔레트 파일 (.pyxpal)이 리소스 파일과 동일한 위치에 존재하는 경우, 팔레트 표시 색상도 업데이트됩니다. 팔레트 파일은 각 색상을 16진수로 나타낸 값을 줄바꿈으로 구분하여 입력합니다 (예: `1100ff`). 팔레트 파일을 사용하면 Pyxel Editor에서 표시되는 색상도 변경할 수 있습니다.
@@ -482,7 +484,7 @@ Pyxel 애플리케이션 파일은 `pyxel app2exe` 또는 `pyxel app2html` 명�
   `vendor_name`과 `app_name`을 기반으로 생성된 사용자 데이터 디렉토리를 반환합니다. 디렉토리가 존재하지 않으면 자동으로 생성됩니다. 이 디렉토리는 하이스코어, 게임 진행 상황 등의 데이터를 저장하는 데 사용됩니다.<br>
   예시: `print(pyxel.user_data_dir("Takashi Kitao", "Pyxel Shooter"))`
 
-### Input
+### 입력
 
 - `mouse_x`, `mouse_y`<br>
   현재 마우스 커서의 좌표
@@ -502,7 +504,7 @@ Pyxel 애플리케이션 파일은 `pyxel app2exe` 또는 `pyxel app2html` 명�
 - `mouse(visible)`<br>
   `visible`이 `True`면 마우스 커서를 표시하고, `False`면 숨깁니다. 커서가 숨겨져 있어도 위치는 계속 업데이트됩니다.
 
-### Graphics
+### 그래픽스
 
 - `colors`<br>
   팔레트 표시 색상 목록. 표시 색상은 24비트 숫자로 지정됩니다. Python 리스트를 직접 할당하거나 가져오려면 `colors.from_list` 및 `colors.to_list`를 사용하십시오.<br>
@@ -579,7 +581,7 @@ Pyxel 애플리케이션 파일은 `pyxel app2exe` 또는 `pyxel app2html` 명�
 - `text(x, y, s, col)`<br>
   색상 `col`의 문자열 `s`를 (`x`, `y`)에 그립니다.
 
-### Audio
+### 오디오
 
 - `sounds`<br>
   사운드 (Sound 클래스의 인스턴스) 목록 (0-63)<br>
@@ -603,7 +605,7 @@ Pyxel 애플리케이션 파일은 `pyxel app2exe` 또는 `pyxel app2html` 명�
 - `gen_bgm(preset, instr, [seed], [play])`<br>
   [8bit BGM generator](https://github.com/shiromofufactory/8bit-bgm-generator)를 기반으로 한 알고리즘으로 BGM의 MML 리스트를 생성합니다. `preset`는 프리셋 번호(0-7), `instr`는 편성 번호(0-3)이며, `0`=멜로디+리버브+베이스, `1`=멜로디+베이스+드럼, `2`=멜로디+서브+베이스, `3`=멜로디+서브+베이스+드럼입니다. `seed`를 지정하지 않으면 랜덤이 됩니다. `play`가 `True`이면 생성된 MML을 재생합니다.
 
-### Math
+### 수학
 
 - `ceil(x)`<br>
   `x`보다 크거나 같은 가장 작은 정수를 반환합니다.
@@ -684,7 +686,7 @@ Pyxel 애플리케이션 파일은 `pyxel app2exe` 또는 `pyxel app2html` 명�
   (`x`, `y`)에 타일을 설정합니다. 타일은 `(image_tx, image_ty)`의 튜플로 표현됩니다.
 
 - `collide(x, y, w, h, dx, dy, walls)`<br>
-  Resolve collisions after applying the movement (`dx`, `dy`) to the rectangle at position (`x`, `y`) with size (`w`, `h`), and return the adjusted (`dx`, `dy`). `walls` is a list of tiles `(image_tx, image_ty)` treated as walls.
+  위치 (`x`, `y`), 크기 (`w`, `h`)의 사각형에 이동량 (`dx`, `dy`)를 적용한 후 충돌을 해결하고, 보정된 (`dx`, `dy`)를 반환합니다. `walls`는 벽으로 취급할 타일 `(image_tx, image_ty)`의 리스트입니다.
 
 ### Sound 클래스
 

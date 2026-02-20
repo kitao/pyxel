@@ -686,7 +686,7 @@ pyxel play PYXEL_APP_FILE
   Малює `tile` на позиції (`x`, `y`). Тайл представлений у вигляді кортежу `(image_tx, image_ty)`.
 
 - `collide(x, y, w, h, dx, dy, walls)`<br>
-  Resolve collisions after applying the movement (`dx`, `dy`) to the rectangle at position (`x`, `y`) with size (`w`, `h`), and return the adjusted (`dx`, `dy`). `walls` is a list of tiles `(image_tx, image_ty)` treated as walls.
+  Розв'язує зіткнення після застосування переміщення (`dx`, `dy`) до прямокутника в позиції (`x`, `y`) з розміром (`w`, `h`) і повертає скориговані (`dx`, `dy`). `walls` — це список тайлів `(image_tx, image_ty)`, які вважаються стінами.
 
 ### Клас Sound
 

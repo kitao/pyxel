@@ -686,7 +686,7 @@ Un fichier d'application Pyxel peut également être converti en un exécutable 
   Dessine une `tuile` à (`x`, `y`). Une tuile est représentée sous forme de tuple `(image_tx, image_ty)`.
 
 - `collide(x, y, w, h, dx, dy, walls)`<br>
-  Resolve collisions after applying the movement (`dx`, `dy`) to the rectangle at position (`x`, `y`) with size (`w`, `h`), and return the adjusted (`dx`, `dy`). `walls` is a list of tiles `(image_tx, image_ty)` treated as walls.
+  Résout les collisions après application du mouvement (`dx`, `dy`) au rectangle à la position (`x`, `y`) de taille (`w`, `h`), et retourne les (`dx`, `dy`) corrigés. `walls` est une liste de tuiles `(image_tx, image_ty)` traitées comme des murs.
 
 ### Classe Sound
 

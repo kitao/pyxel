@@ -686,7 +686,7 @@ Un file dell'applicazione Pyxel può anche essere convertito in un eseguibile o 
   Disegna una `tessera` a (`x`, `y`). Una tessera è rappresentata come una tupla `(image_tx, image_ty)`.
 
 - `collide(x, y, w, h, dx, dy, walls)`<br>
-  Resolve collisions after applying the movement (`dx`, `dy`) to the rectangle at position (`x`, `y`) with size (`w`, `h`), and return the adjusted (`dx`, `dy`). `walls` is a list of tiles `(image_tx, image_ty)` treated as walls.
+  Risolve le collisioni dopo aver applicato il movimento (`dx`, `dy`) al rettangolo nella posizione (`x`, `y`) con dimensioni (`w`, `h`), e restituisce i (`dx`, `dy`) corretti. `walls` è una lista di tessere `(image_tx, image_ty)` trattate come muri.
 
 ### Classe Sound
 

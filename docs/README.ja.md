@@ -165,7 +165,7 @@ pyxel copy_examples
 </tr>
 <tr>
 <td>09_shooter.py</td>
-<td>画面遷移とMMLを使ったシューティングゲーム</td>
+<td>画面遷移と MML を使ったシューティングゲーム</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/09-shooter.html">デモ</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/09_shooter.py">コード</a></td>
 </tr>
