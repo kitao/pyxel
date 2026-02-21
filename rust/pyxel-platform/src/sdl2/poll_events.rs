@@ -345,7 +345,7 @@ impl PlatformSdl2 {
 #[cfg(target_os = "emscripten")]
 fn correct_emscripten_key(sdl_key: Key, js_var: &str) -> Key {
     // Only correct printable ASCII keys (0x20 space .. 0x7E tilde)
-    if sdl_key < 0x20 || sdl_key > 0x7E {
+    if !(0x20..=0x7E).contains(&sdl_key) {
         return sdl_key;
     }
 
@@ -354,7 +354,7 @@ fn correct_emscripten_key(sdl_key: Key, js_var: &str) -> Key {
         emscripten_run_script_int(script.as_ptr())
     } as u32;
 
-    if js_key < 0x20 || js_key > 0x7E {
+    if !(0x20..=0x7E).contains(&js_key) {
         return sdl_key;
     }
 
