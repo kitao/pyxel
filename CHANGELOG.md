@@ -9,7 +9,6 @@
 - Updated Pyxel thanks image
 - Fixed keyboard input for non-US layouts on the web version
 - Updated version check to use PyPI JSON API
-- Changed editor focus indicator from border to corner markers
 
 ## 2.6.6
 

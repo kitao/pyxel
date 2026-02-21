@@ -1,7 +1,6 @@
 import pyxel
 
 from .settings import PANEL_FOCUS_BORDER_COLOR, PANEL_FOCUS_COLOR
-from .utils import draw_small_corner_markers
 from .widgets import Widget
 
 
@@ -34,7 +33,6 @@ class TilemapViewer(Widget):
         self.add_event_listener("mouse_hover", self.__on_mouse_hover)
         self.add_event_listener("update", self.__on_update)
         self.add_event_listener("draw", self.__on_draw)
-        self.add_event_listener("draw_overlay", self.__on_draw_overlay)
 
     def _screen_to_focus(self, x, y):
         x = min(max((x - self.x - 1) // 2, 0), 31)
@@ -85,12 +83,10 @@ class TilemapViewer(Widget):
         )
         pyxel.pal()
 
-    def __on_draw_overlay(self):
         # Draw focus
         x = self.x + self.focus_x_var * 2 + 1
         y = self.y + self.focus_y_var * 2 + 1
-        pyxel.clip(self.x, self.y, self.width, self.height)
-        draw_small_corner_markers(
-            x, y, 4, 4, PANEL_FOCUS_COLOR, PANEL_FOCUS_BORDER_COLOR
-        )
+        pyxel.clip(self.x + 1, self.y + 1, self.width - 2, self.height - 2)
+        pyxel.rectb(x, y, 4, 4, PANEL_FOCUS_COLOR)
+        pyxel.rectb(x - 1, y - 1, 6, 6, PANEL_FOCUS_BORDER_COLOR)
         pyxel.clip()

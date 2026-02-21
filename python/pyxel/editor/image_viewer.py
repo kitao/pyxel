@@ -1,7 +1,6 @@
 import pyxel
 
 from .settings import PANEL_FOCUS_BORDER_COLOR, PANEL_FOCUS_COLOR
-from .utils import draw_corner_markers
 from .widgets import ScrollBar, Widget
 
 
@@ -83,7 +82,6 @@ class ImageViewer(Widget):
         self.add_event_listener("mouse_drag", self.__on_mouse_drag)
         self.add_event_listener("mouse_hover", self.__on_mouse_hover)
         self.add_event_listener("draw", self.__on_draw)
-        self.add_event_listener("draw_overlay", self.__on_draw_overlay)
 
     def _screen_to_focus(self, x, y):
         x = min(max(self.viewport_x_var + (x - self.x - 1) // 8, 0), 31)
@@ -151,16 +149,6 @@ class ImageViewer(Widget):
             else f"TARGET:CURSOR ({x * 8},{y * 8})"
         )
 
-    def __on_draw_overlay(self):
-        # Draw focus
-        x = self.x + (self.focus_x_var - self.viewport_x_var) * 8 + 1
-        y = self.y + (self.focus_y_var - self.viewport_y_var) * 8 + 1
-        w = self.focus_w_var * 8
-        h = self.focus_h_var * 8
-        pyxel.clip(self.x - 1, self.y - 1, self.width + 2, self.height + 2)
-        draw_corner_markers(x, y, w, h, PANEL_FOCUS_COLOR, PANEL_FOCUS_BORDER_COLOR)
-        pyxel.clip()
-
     def __on_draw(self):
         self.draw_panel(self.x, self.y, self.width, self.height)
 
@@ -176,3 +164,14 @@ class ImageViewer(Widget):
             self.height - 2,
         )
         pyxel.pal()
+
+        # Draw focus
+        x = self.x + (self.focus_x_var - self.viewport_x_var) * 8 + 1
+        y = self.y + (self.focus_y_var - self.viewport_y_var) * 8 + 1
+        w = self.focus_w_var * 8
+        h = self.focus_h_var * 8
+        pyxel.clip(self.x + 1, self.y + 1, self.width - 2, self.height - 2)
+        pyxel.rectb(x, y, w, h, PANEL_FOCUS_COLOR)
+        pyxel.rectb(x + 1, y + 1, w - 2, h - 2, PANEL_FOCUS_BORDER_COLOR)
+        pyxel.rectb(x - 1, y - 1, w + 2, h + 2, PANEL_FOCUS_BORDER_COLOR)
+        pyxel.clip()

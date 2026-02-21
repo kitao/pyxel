@@ -38,7 +38,6 @@ class Widget:
         mouse_hover (x, y)
         update
         draw
-        draw_overlay
     """
 
     _mouse_capture_info = MouseCaptureInfo()
@@ -212,16 +211,12 @@ class Widget:
             child._update()
 
     def draw_all(self):
-        self._trigger_tree("draw")
-        self._trigger_tree("draw_overlay")
-
-    def _trigger_tree(self, event):
         if not self.is_visible_var:
             return
 
-        self.trigger_event(event)
+        self.trigger_event("draw")
         for child in self._children:
-            child._trigger_tree(event)
+            child.draw_all()
 
     @staticmethod
     def draw_panel(x, y, width, height, *, with_shadow=True):
