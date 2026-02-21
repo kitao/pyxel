@@ -1,6 +1,5 @@
 import base64
 import glob
-import json
 import multiprocessing
 import os
 import pathlib
@@ -11,7 +10,6 @@ import subprocess
 import sys
 import tempfile
 import time
-import urllib.request
 import uuid
 import zipfile
 
@@ -48,7 +46,6 @@ def cli():
         for command in commands:
             if command_name is None or command[0] == command_name:
                 print(f"    pyxel {' '.join(command[0])}")
-        _check_newer_version()
 
     num_args = len(sys.argv)
     if num_args <= 1:
@@ -72,26 +69,6 @@ def cli():
     print(f"invalid command: '{sys.argv[1]}'")
     print_usage()
     sys.exit(1)
-
-
-def _check_newer_version():
-    url = "https://pypi.org/pypi/pyxel/json"
-    req = urllib.request.Request(url)
-    latest_version = None
-    try:
-        with urllib.request.urlopen(req, timeout=3) as res:
-            data = json.loads(res.read().decode("utf-8"))
-            latest_version = data["info"]["version"]
-    except (urllib.error.URLError, json.JSONDecodeError, KeyError):
-        return
-    if not latest_version:
-        return
-
-    def parse_version(version):
-        return list(map(int, version.split(".")))
-
-    if parse_version(latest_version) > parse_version(pyxel.VERSION):
-        print(f"A new version, Pyxel {latest_version}, is available.")
 
 
 def _complete_extension(filename, command, valid_ext):

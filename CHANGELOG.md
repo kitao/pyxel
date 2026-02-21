@@ -8,7 +8,7 @@
 - Updated CI Python version to 3.14
 - Updated Pyxel thanks image
 - Fixed keyboard input for non-US layouts on the web version
-- Updated version check to use PyPI JSON API
+- Removed version update check from the pyxel command
 
 ## 2.6.6
 
