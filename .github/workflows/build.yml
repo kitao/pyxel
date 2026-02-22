@@ -176,7 +176,6 @@ jobs:
           echo "set(CMAKE_CXX_COMPILER $TARGET_CXX)" >> "$TOOLCHAIN"
           echo "set(CMAKE_AR $TARGET_AR CACHE FILEPATH Archiver)" >> "$TOOLCHAIN"
           echo "set(CMAKE_RANLIB $TARGET_RANLIB CACHE FILEPATH Ranlib)" >> "$TOOLCHAIN"
-          echo "set(CMAKE_SYSROOT $SYSROOT)" >> "$TOOLCHAIN"
           echo "set(CMAKE_FIND_ROOT_PATH $SYSROOT)" >> "$TOOLCHAIN"
           echo "set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)" >> "$TOOLCHAIN"
           echo "set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)" >> "$TOOLCHAIN"
