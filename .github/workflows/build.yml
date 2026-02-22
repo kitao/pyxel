@@ -109,7 +109,7 @@ jobs:
         run: |
           apt-get update -qq
           apt-get install -y -qq --no-install-recommends \
-            pkg-config \
+            cmake pkg-config \
             libx11-dev libxext-dev libxcursor-dev libxi-dev \
             libxrandr-dev libxfixes-dev libxss-dev \
             libwayland-dev libxkbcommon-dev libdecor-0-dev \
@@ -162,58 +162,57 @@ jobs:
 
       - name: Build SDL2
         run: |
-          export CC=$TARGET_CC
-          export AR=$TARGET_AR
-          export RANLIB=$TARGET_RANLIB
-
           SYSROOT=/usr/${{ matrix.target }}/${{ matrix.target }}/sysroot
+          PREFIX=/usr/${{ matrix.target }}
 
           curl -sqLO https://www.libsdl.org/release/SDL2-${{ env.SDL2_VERSION }}.tar.gz
           tar xzf SDL2-${{ env.SDL2_VERSION }}.tar.gz
 
-          cd SDL2-${{ env.SDL2_VERSION }}
-          PKG_CONFIG_PATH="$SYSROOT/usr/lib/pkgconfig" \
-          PKG_CONFIG_SYSROOT_DIR="$SYSROOT" \
-          WAYLAND_SCANNER=/usr/bin/wayland-scanner \
-          CFLAGS="-O3 -fPIC -I$SYSROOT/usr/include -I$SYSROOT/usr/include/dbus-1.0" \
-          ./configure \
-            --build=x86_64-unknown-linux-gnu \
-            --host=${{ matrix.target }} \
-            --prefix=/usr/${{ matrix.target }} \
-            --enable-shared \
-            --enable-static \
-            --enable-video-x11 \
-            --enable-x11-shared \
-            --enable-video-x11-xcursor \
-            --enable-video-x11-xinput2 \
-            --enable-video-x11-xrandr \
-            --enable-video-x11-xfixes \
-            --enable-video-x11-scrnsaver \
-            --enable-video-wayland \
-            --enable-wayland-shared \
-            --enable-libdecor \
-            --enable-libdecor-shared \
-            --enable-video-opengl \
-            --enable-video-opengles \
-            --enable-video-opengles2 \
-            --enable-alsa \
-            --enable-alsa-shared \
-            --enable-pulseaudio \
-            --enable-pulseaudio-shared \
-            --enable-dbus \
-            --enable-ibus \
-            --enable-ime \
-            --enable-sdl-dlopen
+          # Create cmake toolchain file for cross-compilation
+          TARGET_CXX="${TARGET_CC/gcc/g++}"
+          cat > /tmp/toolchain.cmake <<EOF
+set(CMAKE_SYSTEM_NAME Linux)
+set(CMAKE_C_COMPILER ${TARGET_CC})
+set(CMAKE_CXX_COMPILER ${TARGET_CXX})
+set(CMAKE_AR ${TARGET_AR} CACHE FILEPATH "Archiver")
+set(CMAKE_RANLIB ${TARGET_RANLIB} CACHE FILEPATH "Ranlib")
+set(CMAKE_SYSROOT ${SYSROOT})
+set(CMAKE_FIND_ROOT_PATH ${SYSROOT})
+set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
+set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
+set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
+set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY)
+EOF
 
-          make -j$(nproc)
-          make install
-          cd ..
+          cmake -S SDL2-${{ env.SDL2_VERSION }} -B sdl2-build \
+            -DCMAKE_TOOLCHAIN_FILE=/tmp/toolchain.cmake \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_INSTALL_PREFIX="$PREFIX" \
+            -DCMAKE_C_FLAGS="-fPIC -I$SYSROOT/usr/include -I$SYSROOT/usr/include/dbus-1.0" \
+            -DCMAKE_POSITION_INDEPENDENT_CODE=ON \
+            -DSDL_SHARED=ON \
+            -DSDL_STATIC=ON \
+            -DSDL_DLOPEN=ON \
+            -DSDL_X11=ON -DSDL_X11_SHARED=ON \
+            -DSDL_WAYLAND=ON -DSDL_WAYLAND_SHARED=ON \
+            -DSDL_WAYLAND_LIBDECOR=ON -DSDL_WAYLAND_LIBDECOR_SHARED=ON \
+            -DSDL_OPENGL=ON \
+            -DSDL_OPENGLES=ON \
+            -DSDL_ALSA=ON -DSDL_ALSA_SHARED=ON \
+            -DSDL_PULSEAUDIO=ON -DSDL_PULSEAUDIO_SHARED=ON \
+            -DSDL_DBUS=ON \
+            -DSDL_IBUS=ON \
+            -DSDL_IME=ON \
+            -DWAYLAND_SCANNER=/usr/bin/wayland-scanner
+
+          cmake --build sdl2-build -j$(nproc)
+          cmake --install sdl2-build
 
           # Verify expected drivers are present
           echo "=== Verifying built SDL2 ==="
           FAIL=0
           for pattern in libX11 libwayland-client libasound libpulse; do
-            if strings /usr/${{ matrix.target }}/lib/libSDL2.so | grep -q "$pattern"; then
+            if strings "$PREFIX/lib/libSDL2.so" | grep -q "$pattern"; then
               echo "PASS: $pattern found"
             else
               echo "FAIL: $pattern NOT found"
@@ -222,7 +221,7 @@ jobs:
           done
           [ $FAIL -eq 0 ] || exit 1
 
-          rm -rf SDL2-${{ env.SDL2_VERSION }}
+          rm -rf SDL2-${{ env.SDL2_VERSION }} sdl2-build
 
       - name: Build wheel
         run: |
