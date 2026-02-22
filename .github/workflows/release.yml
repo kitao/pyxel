@@ -3,7 +3,7 @@ name: release
 on:
   push:
     tags:
-      - "v*.*.*"
+      - "v*"
 
 jobs:
   build:
@@ -30,12 +30,21 @@ jobs:
           PYXEL_VERSION=$(echo $GITHUB_REF | sed 's/refs\/tags\/v//')
           echo "PYXEL_VERSION=${PYXEL_VERSION}" >> $GITHUB_ENV
 
+      - name: Check if pre-release
+        run: |
+          if echo "$PYXEL_VERSION" | grep -qE '(a|b|rc)[0-9]+$'; then
+            echo "IS_PRERELEASE=true" >> $GITHUB_ENV
+          else
+            echo "IS_PRERELEASE=false" >> $GITHUB_ENV
+          fi
+
       - name: Create GitHub release
         uses: softprops/action-gh-release@v2
         with:
           name: Pyxel ${{ env.PYXEL_VERSION }}
           tag_name: ${{ github.ref }}
           files: dist/*
+          prerelease: ${{ env.IS_PRERELEASE == 'true' }}
 
       - name: Install Python
         uses: actions/setup-python@v4

@@ -5,13 +5,24 @@ import re
 import sys
 
 ROOT_DIR = pathlib.Path(__file__).resolve().parent.parent
-VERSION_REPLACEMENTS = (
+PYTHON_VERSION_REPLACEMENTS = (
     ("crates/pyxel-core/src/settings.rs", '(VERSION.*)".*"'),
     ("python/pyproject.toml", '(version.*)".*"'),
+)
+CARGO_VERSION_REPLACEMENTS = (
     ("crates/pyxel-core/Cargo.toml", '(version.*)".*"'),
     ("crates/pyxel-binding/Cargo.toml", '(version.*)".*"'),
     ("crates/pyxel-binding/Cargo.toml", '(pyxel-core", version.*)".*"'),
 )
+PRE_RELEASE_MAP = {"a": "alpha", "b": "beta", "rc": "rc"}
+
+
+def pep440_to_semver(version: str) -> str:
+    m = re.match(r"^(\d+\.\d+\.\d+)(a|b|rc)(\d+)$", version)
+    if m:
+        base, tag, num = m.groups()
+        return f"{base}-{PRE_RELEASE_MAP[tag]}.{num}"
+    return version
 
 
 def replace_file(path: pathlib.Path, pattern: str, repl: str) -> None:
@@ -28,9 +39,12 @@ def update_version() -> None:
         sys.exit(1)
 
     version = sys.argv[1]
+    cargo_version = pep440_to_semver(version)
 
-    for relative_path, pattern in VERSION_REPLACEMENTS:
+    for relative_path, pattern in PYTHON_VERSION_REPLACEMENTS:
         replace_file(ROOT_DIR / relative_path, pattern, f'\\1"{version}"')
+    for relative_path, pattern in CARGO_VERSION_REPLACEMENTS:
+        replace_file(ROOT_DIR / relative_path, pattern, f'\\1"{cargo_version}"')
 
 
 if __name__ == "__main__":
