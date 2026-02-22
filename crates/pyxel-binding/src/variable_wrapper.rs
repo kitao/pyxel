@@ -9,7 +9,7 @@ use crate::sound_wrapper::Sound;
 use crate::tilemap_wrapper::Tilemap;
 use crate::tone_wrapper::Tone;
 
-wrap_as_python_list!(
+wrap_as_python_sequence!(
     Colors,
     u32, // Dummy
     (|_| pyxel().colors.lock().len()),
@@ -22,9 +22,9 @@ wrap_as_python_list!(
     (|_| pyxel().colors.lock().clone())
 );
 
-macro_rules! wrap_shared_vec_as_python_list {
+macro_rules! wrap_shared_vec_as_python_object_list {
     ($wrapper_name:ident, $value_type:ident, $field_name:ident) => {
-        wrap_as_python_list!(
+        wrap_as_python_object_sequence!(
             $wrapper_name,
             u32, // Dummy
             (|_| pyxel().$field_name.lock().len()),
@@ -45,12 +45,12 @@ macro_rules! wrap_shared_vec_as_python_list {
     };
 }
 
-wrap_shared_vec_as_python_list!(Images, Image, images);
-wrap_shared_vec_as_python_list!(Tilemaps, Tilemap, tilemaps);
-wrap_shared_vec_as_python_list!(Channels, Channel, channels);
-wrap_shared_vec_as_python_list!(Tones, Tone, tones);
-wrap_shared_vec_as_python_list!(Sounds, Sound, sounds);
-wrap_shared_vec_as_python_list!(Musics, Music, musics);
+wrap_shared_vec_as_python_object_list!(Images, Image, images);
+wrap_shared_vec_as_python_object_list!(Tilemaps, Tilemap, tilemaps);
+wrap_shared_vec_as_python_object_list!(Channels, Channel, channels);
+wrap_shared_vec_as_python_object_list!(Tones, Tone, tones);
+wrap_shared_vec_as_python_object_list!(Sounds, Sound, sounds);
+wrap_shared_vec_as_python_object_list!(Musics, Music, musics);
 
 #[pyfunction]
 fn __getattr__(py: Python, name: &str) -> PyResult<Py<PyAny>> {

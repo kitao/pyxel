@@ -133,7 +133,7 @@ install: build
 	@pip3 install --force-reinstall "$$(ls -rt $(DIST_DIR)/*.whl | tail -n 1)"
 
 test: install
-	@cd $(CRATES_DIR); cargo test $(CARGO_OPTS)
+	@cd $(CRATES_DIR); cargo test -p pyxel-core $(CARGO_OPTS)
 
 	@bash -c 'set -e; trap "exit 130" INT; \
 		for f in $(EXAMPLES_DIR)/*.py; do \

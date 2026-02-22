@@ -507,8 +507,8 @@ Pyxel 애플리케이션 파일은 `pyxel app2exe` 또는 `pyxel app2html` 명�
 ### 그래픽스
 
 - `colors`<br>
-  팔레트 표시 색상 목록. 표시 색상은 24비트 숫자로 지정됩니다. Python 리스트를 직접 할당하거나 가져오려면 `colors.from_list` 및 `colors.to_list`를 사용하십시오.<br>
-  예시: `old_colors = pyxel.colors.to_list(); pyxel.colors.from_list([0x111111, 0x222222, 0x333333]); pyxel.colors[15] = 0x112233`
+  팔레트 표시 색상 목록. 표시 색상은 24비트 숫자로 지정됩니다. Python 리스트와 같이 조작할 수 있으며, 표시 색상의 추가, 삭제 및 일괄 변경이 가능합니다.<br>
+  예시: `old_colors = list(pyxel.colors); pyxel.colors[:] = [0x111111, 0x222222, 0x333333]; pyxel.colors[15] = 0x112233`
 
 - `images`<br>
   이미지 뱅크 (Image 클래스의 인스턴스) 목록 (0-2)<br>

@@ -507,8 +507,8 @@ Bir Pyxel uygulama dosyası ayrıca `pyxel app2exe` veya `pyxel app2html` komutl
 ### Grafikler
 
 - `colors`<br>
-  Palet görüntü renkleri listesi. Görüntü rengi 24 bitlik sayısal bir değerle belirtilir. Python listelerini doğrudan atamak ve almak için `colors.from_list` ve `colors.to_list` kullanılır.<br>
-  Örnek: `old_colors = pyxel.colors.to_list(); pyxel.colors.from_list([0x111111, 0x222222, 0x333333]); pyxel.colors[15] = 0x112233`
+  Palet görüntü renkleri listesi. Görüntü rengi 24 bitlik sayısal bir değerle belirtilir. Python listesi gibi işlenebilir; renkler toplu olarak eklenebilir, kaldırılabilir veya değiştirilebilir.<br>
+  Örnek: `old_colors = list(pyxel.colors); pyxel.colors[:] = [0x111111, 0x222222, 0x333333]; pyxel.colors[15] = 0x112233`
 
 - `images`<br>
   Görüntü bankalarının listesi (Image sınıfı örnekleri) (0-2)<br>

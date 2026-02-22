@@ -507,8 +507,8 @@ Un file dell'applicazione Pyxel può anche essere convertito in un eseguibile o 
 ### Grafica
 
 - `colors`<br>
-  Elenco dei colori della palette. Il colore di visualizzazione è specificato da un valore numerico a 24 bit. Usa `colors.from_list` e `colors.to_list` per assegnare e recuperare direttamente le liste Python.<br>
-  Esempio: `old_colors = pyxel.colors.to_list(); pyxel.colors.from_list([0x111111, 0x222222, 0x333333]); pyxel.colors[15] = 0x112233`
+  Elenco dei colori della palette. Il colore di visualizzazione è specificato da un valore numerico a 24 bit. Può essere manipolato come una lista Python per aggiungere, rimuovere o sostituire i colori in blocco.<br>
+  Esempio: `old_colors = list(pyxel.colors); pyxel.colors[:] = [0x111111, 0x222222, 0x333333]; pyxel.colors[15] = 0x112233`
 
 - `images`<br>
   Elenco delle banche di immagini (istanze della classe Image) (0-2)<br>

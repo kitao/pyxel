@@ -60,9 +60,7 @@ class PianoRoll(Widget):
         if x < field_len:
             field[x] = y
         else:
-            lst = field.to_list()
-            lst.extend([-1] * (x - field_len) + [y])
-            field.from_list(lst)
+            field.extend([-1] * (x - field_len) + [y])
 
         self.add_post_history(x, 0)
 

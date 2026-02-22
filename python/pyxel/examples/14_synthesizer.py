@@ -72,17 +72,17 @@ def extend_audio():
         channel.gain = gain
         channel.detune = detune
         channels.append(channel)
-    pyxel.channels.from_list(channels)
+    pyxel.channels[:] = channels
 
     tones = []
     for mode, sample_bits, wavetable, gain in EXTENDED_TONES:
         tone = pyxel.Tone()
         tone.mode = mode
         tone.sample_bits = sample_bits
-        tone.wavetable.from_list(wavetable)
+        tone.wavetable[:] = wavetable
         tone.gain = gain
         tones.append(tone)
-    pyxel.tones.from_list(tones)
+    pyxel.tones[:] = tones
 
 
 def setup_music():

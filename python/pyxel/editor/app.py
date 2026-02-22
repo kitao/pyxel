@@ -42,7 +42,7 @@ class App(Widget):
         # Initialize Pyxel
         pyxel.init(APP_WIDTH, APP_HEIGHT, quit_key=pyxel.KEY_NONE)
         pyxel.mouse(True)
-        colors = pyxel.colors.to_list()
+        colors = list(pyxel.colors)
         self._set_title(original_resource_file)
 
         if os.path.exists(resource_file):
@@ -51,8 +51,8 @@ class App(Widget):
             pyxel.load_pal(resource_file)
 
         pyxel.num_user_colors = len(pyxel.colors)
-        colors += pyxel.colors.to_list()
-        pyxel.colors.from_list(colors)
+        colors += list(pyxel.colors)
+        pyxel.colors[:] = colors
 
         # Start initializing application
         super().__init__(None, 0, 0, pyxel.width, pyxel.height)

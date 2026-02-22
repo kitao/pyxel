@@ -99,13 +99,9 @@ class MusicEditor(EditorBase):
         seqs_len = len(music.seqs)
 
         if seqs_len < pyxel.NUM_CHANNELS:
-            seqs = music.seqs.to_list()
-            seqs.extend([[] for _ in range(pyxel.NUM_CHANNELS - seqs_len)])
-            music.seqs.from_list(seqs)
+            music.seqs.extend([[] for _ in range(pyxel.NUM_CHANNELS - seqs_len)])
         elif seqs_len > pyxel.NUM_CHANNELS:
-            seqs = music.seqs.to_list()
-            del seqs[pyxel.NUM_CHANNELS :]
-            music.seqs.from_list(seqs)
+            del music.seqs[pyxel.NUM_CHANNELS :]
 
         return music.seqs[index]
 
@@ -114,21 +110,21 @@ class MusicEditor(EditorBase):
         data["music_index"] = self.music_index_var
 
         if bank_copy:
-            data["old_data"] = [self.get_field(i).to_list() for i in range(4)]
+            data["old_data"] = [list(self.get_field(i)) for i in range(4)]
         else:
             data["old_cursor_pos"] = (x, y)
-            data["old_field"] = self.field_cursor.field.to_list()
+            data["old_field"] = list(self.field_cursor.field)
 
     def add_post_history(self, x=None, y=None, *, bank_copy=False):
         data = self._history_data
 
         if bank_copy:
-            data["new_data"] = [self.get_field(i).to_list() for i in range(4)]
+            data["new_data"] = [list(self.get_field(i)) for i in range(4)]
             if data["new_data"] != data["old_data"]:
                 self.add_history(data)
         else:
             data["new_cursor_pos"] = (x, y)
-            data["new_field"] = self.field_cursor.field.to_list()
+            data["new_field"] = list(self.field_cursor.field)
             if data["new_field"] != data["old_field"]:
                 self.add_history(data)
 
@@ -181,10 +177,10 @@ class MusicEditor(EditorBase):
 
         if "old_data" in data:
             for i in range(4):
-                self.get_field(i).from_list(data["old_data"][i])
+                self.get_field(i)[:] = data["old_data"][i]
         else:
             self.field_cursor.move_to(*data["old_cursor_pos"], False)
-            self.field_cursor.field.from_list(data["old_field"])
+            self.field_cursor.field[:] = data["old_field"]
 
     def __on_redo(self, data):
         self._stop()
@@ -192,10 +188,10 @@ class MusicEditor(EditorBase):
 
         if "new_data" in data:
             for i in range(4):
-                self.get_field(i).from_list(data["new_data"][i])
+                self.get_field(i)[:] = data["new_data"][i]
         else:
             self.field_cursor.move_to(*data["new_cursor_pos"], False)
-            self.field_cursor.field.from_list(data["new_field"])
+            self.field_cursor.field[:] = data["new_field"]
 
     def __on_hide(self):
         self._stop()

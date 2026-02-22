@@ -135,16 +135,16 @@ class SoundEditor(EditorBase):
         data["sound_index"] = self.sound_index_var
         if bank_copy:
             data["old_speed"] = self.speed_var
-            data["old_data"] = [self.get_field(i).to_list() for i in range(4)]
+            data["old_data"] = [list(self.get_field(i)) for i in range(4)]
         else:
             data["old_cursor_pos"] = (x, y)
-            data["old_field"] = self.field_cursor.field.to_list()
+            data["old_field"] = list(self.field_cursor.field)
 
     def add_post_history(self, x=None, y=None, *, bank_copy=False):
         data = self._history_data
         if bank_copy:
             data["new_speed"] = self.speed_var
-            data["new_data"] = [self.get_field(i).to_list() for i in range(4)]
+            data["new_data"] = [list(self.get_field(i)) for i in range(4)]
             if (
                 data["new_speed"] != data["old_speed"]
                 or data["new_data"] != data["old_data"]
@@ -152,7 +152,7 @@ class SoundEditor(EditorBase):
                 self.add_history(data)
         else:
             data["new_cursor_pos"] = (x, y)
-            data["new_field"] = self.field_cursor.field.to_list()
+            data["new_field"] = list(self.field_cursor.field)
             if data["new_field"] != data["old_field"]:
                 self.add_history(data)
 
@@ -232,10 +232,10 @@ class SoundEditor(EditorBase):
         if "old_data" in data:
             pyxel.sounds[self.sound_index_var].speed = data["old_speed"]
             for i in range(4):
-                self.get_field(i).from_list(data["old_data"][i])
+                self.get_field(i)[:] = data["old_data"][i]
         else:
             self.field_cursor.move_to(*data["old_cursor_pos"], False)
-            self.field_cursor.field.from_list(data["old_field"])
+            self.field_cursor.field[:] = data["old_field"]
 
     def __on_redo(self, data):
         self._stop()
@@ -244,10 +244,10 @@ class SoundEditor(EditorBase):
         if "new_data" in data:
             pyxel.sounds[self.sound_index_var].speed = data["new_speed"]
             for i in range(4):
-                self.get_field(i).from_list(data["new_data"][i])
+                self.get_field(i)[:] = data["new_data"][i]
         else:
             self.field_cursor.move_to(*data["new_cursor_pos"], False)
-            self.field_cursor.field.from_list(data["new_field"])
+            self.field_cursor.field[:] = data["new_field"]
 
     def __on_hide(self):
         self._stop()

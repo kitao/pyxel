@@ -5,7 +5,7 @@ use pyo3::prelude::*;
 static NOISE_ONCE: Once = Once::new();
 static WAVEFORM_ONCE: Once = Once::new();
 
-wrap_as_python_list!(
+wrap_as_python_sequence!(
     Wavetable,
     pyxel::SharedTone,
     (|inner: &pyxel::SharedTone| inner.lock().wavetable.len()),

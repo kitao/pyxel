@@ -159,14 +159,13 @@ class FieldCursor:
 
     def insert(self, value):
         self._add_pre_history(self.x, self.y)
-        lst = self.field.to_list()
         x = self.x
         if self.is_selecting:
-            lst[x : x + self.width] = []
+            del self.field[x : x + self.width]
         if not isinstance(value, list):
             value = [value]
-        lst[x:x] = value
-        self.field.from_list(lst[: self._max_field_length])
+        self.field[x:x] = value
+        del self.field[self._max_field_length :]
         self.move_to(x + len(value), self.y, False)
         self._add_post_history(self.x, self.y)
 
@@ -175,15 +174,13 @@ class FieldCursor:
             return
 
         self._add_pre_history(self.x, self.y)
-        lst = self.field.to_list()
         if self.is_selecting:
             x = self.x
             width = self.width
         else:
             x = self.x - 1
             width = 1
-        lst[x : x + width] = []
-        self.field.from_list(lst)
+        del self.field[x : x + width]
         self.move_to(x, self.y, False)
         self._add_post_history(self.x, self.y)
 
@@ -192,11 +189,9 @@ class FieldCursor:
             return
 
         self._add_pre_history(self.x, self.y)
-        lst = self.field.to_list()
         x = self.x
         width = self.width
-        lst[x : x + width] = []
-        self.field.from_list(lst)
+        del self.field[x : x + width]
         self.move_to(x, self.y, False)
         self._add_post_history(self.x, self.y)
 
@@ -207,8 +202,7 @@ class FieldCursor:
         self._select_x = len(self.field) - 1
 
     def copy(self):
-        lst = self.field.to_list()
-        self._field_buffer = (self.y, lst[self.x : self.x + self.width])
+        self._field_buffer = (self.y, self.field[self.x : self.x + self.width])
 
     def cut(self):
         self.copy()
@@ -224,15 +218,15 @@ class FieldCursor:
 
     def shift(self, offset):
         self._add_pre_history(self.x, self.y)
-        lst = self.field.to_list()
         for i in range(self.x, self.x + self.width):
-            if i < len(lst):
-                value = lst[i]
+            if i < len(self.field):
+                value = self.field[i]
                 if value >= 0:
-                    lst[i] = min(max(value + offset, 0), self._max_field_values[self.y])
+                    self.field[i] = min(
+                        max(value + offset, 0), self._max_field_values[self.y]
+                    )
             else:
-                lst.append(0)
-        self.field.from_list(lst)
+                self.field.append(0)
         self._add_post_history(self.x, self.y)
 
     def process_input(self):
@@ -249,13 +243,13 @@ class FieldCursor:
                 if hasattr(self.parent, "speed_var"):
                     self._bank_buffer["speed"] = self.parent.speed_var
                 for i in range(self._max_y + 1):
-                    self._bank_buffer[i] = self._get_field(i).to_list()
+                    self._bank_buffer[i] = list(self._get_field(i))
 
             # Ctrl+Shift+X: Cut bank
             if pyxel.btnp(pyxel.KEY_X):
                 self._add_pre_history(bank_copy=True)
                 for i in range(self._max_y + 1):
-                    self._get_field(i).from_list([])
+                    self._get_field(i).clear()
                 self._add_post_history(bank_copy=True)
 
             # Ctrl+Shift+V: Paste bank
@@ -264,7 +258,7 @@ class FieldCursor:
                 if hasattr(self.parent, "speed_var"):
                     self.parent.speed_var = self._bank_buffer["speed"]
                 for i in range(self._max_y + 1):
-                    self._get_field(i).from_list(self._bank_buffer[i])
+                    self._get_field(i)[:] = self._bank_buffer[i]
                 self._add_post_history(bank_copy=True)
             return
 

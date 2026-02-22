@@ -10,7 +10,8 @@ name = "pyxel_wrapper"
 crate-type = ["cdylib"]
 
 [dependencies]
-pyo3 = { version = "0.28", features = ["abi3-py38", "extension-module"] }
+parking_lot = "0.12"
+pyo3 = { version = "0.28", features = ["abi3-py38", "extension-module", "multiple-pymethods"] }
 pyxel-core = { path = "../pyxel-core" }
 
 [target.'cfg(not(target_os = "emscripten"))'.dependencies]

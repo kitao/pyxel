@@ -5,6 +5,7 @@
 - Restructured project layout and reorganized Rust crates
 - Removed crates.io publishing from release workflow
 - Added pre-release versioning support for PyPI
+- Added Python list-like operations to sequence types
 
 ## 2.6.8
 

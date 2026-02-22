@@ -507,8 +507,8 @@ Pyxel 应用程序文件还可以使用 `pyxel app2exe` 或 `pyxel app2html` 命
 ### 图形
 
 - `colors`<br>
-  调色板显示颜色的列表。显示颜色由 24 位数值指定。使用 `colors.from_list` 和 `colors.to_list` 直接分配和获取 Python 列表。<br>
-  例子：`old_colors = pyxel.colors.to_list(); pyxel.colors.from_list([0x111111, 0x222222, 0x333333]); pyxel.colors[15] = 0x112233`
+  调色板显示颜色的列表。显示颜色由 24 位数值指定。可以像 Python 列表一样操作，添加、删除和批量替换显示颜色。<br>
+  例子：`old_colors = list(pyxel.colors); pyxel.colors[:] = [0x111111, 0x222222, 0x333333]; pyxel.colors[15] = 0x112233`
 
 - `images`<br>
   图像库的列表（Image 类的实例）(0-2)<br>

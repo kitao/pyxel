@@ -7,7 +7,7 @@ static OLD_MML_ONCE: Once = Once::new();
 
 macro_rules! wrap_sound_as_python_list {
     ($wrapper_name:ident, $value_type:ty, $field_name:ident) => {
-        wrap_as_python_list!(
+        wrap_as_python_sequence!(
             $wrapper_name,
             pyxel::SharedSound,
             (|inner: &pyxel::SharedSound| inner.lock().$field_name.len()),
@@ -21,7 +21,7 @@ macro_rules! wrap_sound_as_python_list {
                 .lock()
                 .$field_name
                 .iter()
-                .map(|value| *value)
+                .copied()
                 .collect::<Vec<$value_type>>())
         );
     };

@@ -125,13 +125,13 @@ class ImageEditor(EditorBase):
             )
 
     def __on_drop(self, filename):
-        colors = pyxel.colors.to_list()
+        colors = list(pyxel.colors)
         user_colors = colors[pyxel.NUM_COLORS :]
-        pyxel.colors.from_list(user_colors)
+        pyxel.colors[:] = user_colors
         pyxel.images[self.image_index_var].load(
             self.focus_x_var * 8, self.focus_y_var * 8, filename
         )
-        pyxel.colors.from_list(colors)
+        pyxel.colors[:] = colors
 
     def __on_update(self):
         self.check_tool_button_shortcuts()
