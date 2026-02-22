@@ -169,7 +169,7 @@ jobs:
           tar xzf SDL2-${{ env.SDL2_VERSION }}.tar.gz
 
           # Configure SDL2 with cmake for cross-compilation
-          TARGET_CXX="${TARGET_CC/gcc/g++}"
+          TARGET_CXX=$(echo "$TARGET_CC" | sed 's/gcc/g++/')
 
           cmake -S SDL2-${{ env.SDL2_VERSION }} -B sdl2-build \
             -DCMAKE_SYSTEM_NAME=Linux \
