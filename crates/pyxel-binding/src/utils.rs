@@ -105,10 +105,7 @@ macro_rules! impl_python_sequence_read {
                 }
             }
 
-            fn __iter__(
-                &self,
-                py: pyo3::Python<'_>,
-            ) -> pyo3::PyResult<pyo3::Py<pyo3::PyAny>> {
+            fn __iter__(&self, py: pyo3::Python<'_>) -> pyo3::PyResult<pyo3::Py<pyo3::PyAny>> {
                 use pyo3::prelude::*;
                 let len = $len(&self.inner);
                 let items: Vec<$get_type> = (0..len).map(|i| $get(&self.inner, i)).collect();
@@ -117,10 +114,7 @@ macro_rules! impl_python_sequence_read {
                 Ok(iter.unbind())
             }
 
-            fn __reversed__(
-                &self,
-                py: pyo3::Python<'_>,
-            ) -> pyo3::PyResult<pyo3::Py<pyo3::PyAny>> {
+            fn __reversed__(&self, py: pyo3::Python<'_>) -> pyo3::PyResult<pyo3::Py<pyo3::PyAny>> {
                 use pyo3::prelude::*;
                 let len = $len(&self.inner);
                 let items: Vec<$get_type> = (0..len).rev().map(|i| $get(&self.inner, i)).collect();
