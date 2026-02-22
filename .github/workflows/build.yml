@@ -153,14 +153,10 @@ jobs:
             cp "$DBUS_ARCH_DIR/dbus/dbus-arch-deps.h" $SYSROOT/usr/include/dbus-1.0/dbus/
           fi
 
-          # Copy ALL pkg-config .pc files and fix paths for cross-compilation
+          # Copy pkg-config .pc files to sysroot
           mkdir -p $SYSROOT/usr/lib/pkgconfig
           cp /usr/lib/x86_64-linux-gnu/pkgconfig/*.pc $SYSROOT/usr/lib/pkgconfig/ 2>/dev/null || true
           cp /usr/share/pkgconfig/*.pc $SYSROOT/usr/lib/pkgconfig/ 2>/dev/null || true
-          # Rewrite host-specific libdir to prevent -L/usr/lib/x86_64-linux-gnu
-          # from leaking into the linker search path (which causes it to find
-          # incompatible x86_64 libm/libc/libgcc_s for non-x86_64 targets)
-          sed -i "s|/usr/lib/x86_64-linux-gnu|$SYSROOT/usr/lib|g" $SYSROOT/usr/lib/pkgconfig/*.pc
 
           # Create minimal ELF stubs with correct SONAMEs for cmake
           # FindLibraryAndSONAME(). With SDL_*_SHARED=ON, these are NOT
@@ -209,13 +205,14 @@ jobs:
           echo "set(CMAKE_CXX_COMPILER $TARGET_CXX)" >> "$TOOLCHAIN"
           echo "set(CMAKE_AR $TARGET_AR CACHE FILEPATH Archiver)" >> "$TOOLCHAIN"
           echo "set(CMAKE_RANLIB $TARGET_RANLIB CACHE FILEPATH Ranlib)" >> "$TOOLCHAIN"
-          echo "set(CMAKE_SYSROOT $SYSROOT)" >> "$TOOLCHAIN"
+          echo "set(CMAKE_FIND_ROOT_PATH $SYSROOT)" >> "$TOOLCHAIN"
           echo "set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)" >> "$TOOLCHAIN"
           echo "set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)" >> "$TOOLCHAIN"
           echo "set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)" >> "$TOOLCHAIN"
           echo "set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY)" >> "$TOOLCHAIN"
 
           export PKG_CONFIG_LIBDIR="$SYSROOT/usr/lib/pkgconfig"
+          export PKG_CONFIG_SYSROOT_DIR="$SYSROOT"
           export PKG_CONFIG_PATH=""
 
           cmake -S SDL2-${{ env.SDL2_VERSION }} -B sdl2-build \
@@ -223,6 +220,7 @@ jobs:
             -DCMAKE_BUILD_TYPE=Release \
             -DCMAKE_INSTALL_PREFIX="$PREFIX" \
             -DCMAKE_C_FLAGS="-I$SYSROOT/usr/include -I$SYSROOT/usr/include/dbus-1.0" \
+            -DCMAKE_SHARED_LINKER_FLAGS="-ldl -lpthread" \
             -DSDL_SHARED=ON \
             -DSDL_STATIC=OFF \
             -DSDL_DLOPEN=ON \
