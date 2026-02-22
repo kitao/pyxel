@@ -88,10 +88,10 @@ Pyxel をインストールした後にバージョンを更新する場合は�
 
 ### Linux
 
-SDL2 パッケージ (Ubuntu の場合は `libsdl2-dev`)、[Python 3](https://www.python.org/) (バージョン 3.8 以上)、`python3-pip` をインストールした後、次のコマンドを実行します。
+[Python 3](https://www.python.org/) (バージョン 3.8 以上) をインストールした後、次のコマンドを実行します。
 
 ```sh
-sudo pip3 install -U pyxel
+pip install -U pyxel
 ```
 
 上記で動作しない場合は、[Makefile](../Makefile) に記載されている手順に従ってビルドを試してみてください。

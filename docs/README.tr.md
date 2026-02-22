@@ -88,10 +88,10 @@ Kurulumdan sonra Pyxel'i güncellemek için `pipx upgrade pyxel` komutunu çalı
 
 ### Linux
 
-SDL2 paketini (`libsdl2-dev` Ubuntu için), [Python 3](https://www.python.org/) (3.8 veya daha yüksek sürüm) ve `python3-pip` kurduktan sonra, aşağıdaki komutu çalıştırın:
+[Python 3](https://www.python.org/) (3.8 veya daha yüksek sürüm) kurduktan sonra, aşağıdaki komutu çalıştırın:
 
 ```sh
-sudo pip3 install -U pyxel
+pip install -U pyxel
 ```
 
 Yukarıdaki komut çalışmazsa, Pyxel'i kaynak kodundan inşa etmeyi düşünün ve [Makefile](../Makefile) içindeki talimatları izleyin.

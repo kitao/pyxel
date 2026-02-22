@@ -88,10 +88,10 @@ pipx install pyxel
 
 ### Linux
 
-После установки пакета SDL2 (`libsdl2-dev` для Ubuntu), [Python 3](https://www.python.org/) (версии 3.8 или выше) и `python3-pip` выполните следующую команду:
+После установки [Python 3](https://www.python.org/) (версии 3.8 или выше) выполните следующую команду:
 
 ```sh
-sudo pip3 install -U pyxel
+pip install -U pyxel
 ```
 
 Если предыдущая команда не сработала, подумайте о сборке Pyxel из исходного кода, следуя инструкциям в [Makefile](../Makefile).

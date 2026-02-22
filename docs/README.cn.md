@@ -88,10 +88,10 @@ pipx install pyxel
 
 ### Linux
 
-在安装 SDL2 包（对于 Ubuntu 为 `libsdl2-dev`）、[Python 3](https://www.python.org/)（版本 3.8 或更高）和 `python3-pip` 后，运行以下命令：
+安装 [Python 3](https://www.python.org/)（版本 3.8 或更高）后，运行以下命令：
 
 ```sh
-sudo pip3 install -U pyxel
+pip install -U pyxel
 ```
 
 如果上述命令失败，请按照 [Makefile](../Makefile) 中的说明考虑从源代码构建 Pyxel。

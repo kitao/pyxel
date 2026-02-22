@@ -88,10 +88,10 @@ Pour mettre à jour Pyxel après l'installation, exécutez `pipx upgrade pyxel`.
 
 ### Linux
 
-Après avoir installé le paquet SDL2 (`libsdl2-dev` pour Ubuntu), [Python 3](https://www.python.org/) (version 3.8 ou supérieure) et `python3-pip`, exécutez la commande suivante :
+Après avoir installé [Python 3](https://www.python.org/) (version 3.8 ou supérieure), exécutez la commande suivante :
 
 ```sh
-sudo pip3 install -U pyxel
+pip install -U pyxel
 ```
 
 Si la commande précédente échoue, envisagez de construire Pyxel à partir de la source en suivant les instructions dans le [Makefile](../Makefile).
