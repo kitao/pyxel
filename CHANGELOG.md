@@ -1,5 +1,10 @@
 # Change Log
 
+## 2.7.0
+
+- Restructured project layout and reorganized Rust crates
+- Removed crates.io publishing from release workflow
+
 ## 2.6.8
 
 - Bundled SDL2 in Linux wheels for easier installation

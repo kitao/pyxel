@@ -1,0 +1,21 @@
+[package]
+name = "pyxel-binding"
+version = "2.6.8"
+authors = ["Takashi Kitao <takashi.kitao@gmail.com>"]
+edition = "2021"
+license = "MIT"
+
+[lib]
+name = "pyxel_wrapper"
+crate-type = ["cdylib"]
+
+[dependencies]
+pyo3 = { version = "0.28", features = ["abi3-py38", "extension-module"] }
+pyxel-core = { path = "../pyxel-core" }
+
+[target.'cfg(not(target_os = "emscripten"))'.dependencies]
+sysinfo = "0.38"
+
+[features]
+sdl2_system = ["pyxel-core/sdl2_system"]
+sdl2_bundle = ["pyxel-core/sdl2_bundle"]

@@ -1,0 +1,1506 @@
+{
+  "entries": [
+    {
+      "id": 170,
+      "title": "Falling Sand",
+      "site": "https://github.com/5h00T/FallingSand/",
+      "author": "shoot.er",
+      "contact": "https://x.com/m4_sd",
+      "desc": "Simple falling sand simulation",
+      "image": "https://github.com/user-attachments/assets/6191aacc-5bf0-405b-8990-d6c3d04cfd97"
+    },
+    {
+      "id": 169,
+      "title": "THE COLORS",
+      "site": "https://github.com/Python-yarouze/the-colors",
+      "author": "FulLine",
+      "contact": "https://x.com/ful_line",
+      "desc": "A color-changing puzzle action game",
+      "image": "https://github.com/user-attachments/assets/6a5df3a7-ba4c-4a86-9bad-7fe5512bada95"
+    },
+    {
+      "id": 168,
+      "title": "Cursed Caverns",
+      "site": "https://kitao.github.io/pyxel/wasm/launcher/?play=kitao.pyxel.python.pyxel.examples.apps.cursed_caverns&gamepad=enabled",
+      "author": "Takashi Kitao",
+      "contact": "https://x.com/kitao",
+      "desc": "A platformer from the Pyxel Official Book",
+      "image": "https://github.com/user-attachments/assets/ce8e9c31-4dfe-46d2-ab31-375aebc447e75"
+    },
+    {
+      "id": 167,
+      "title": "Mega Wing",
+      "site": "https://kitao.github.io/pyxel/wasm/launcher/?play=kitao.pyxel.python.pyxel.examples.apps.mega_wing&gamepad=enabled",
+      "author": "Takashi Kitao",
+      "contact": "https://x.com/kitao",
+      "desc": "A shoot-em-up from the Pyxel Official Book",
+      "image": "https://github.com/user-attachments/assets/0c40d162-9a75-42cc-ad9c-30c6772f1085"
+    },
+    {
+      "id": 166,
+      "title": "Space Rescue",
+      "site": "https://kitao.github.io/pyxel/wasm/launcher/?play=kitao.pyxel.python.pyxel.examples.apps.space_rescue&gamepad=enabled",
+      "author": "Takashi Kitao",
+      "contact": "https://x.com/kitao",
+      "desc": "A one-button rescue game from the Pyxel Official Book",
+      "image": "https://github.com/user-attachments/assets/a9d3ccfe-cf2b-436f-8bd7-cf2003c2d4e0"
+    },
+    {
+      "id": 165,
+      "title": "Mini Metroid",
+      "site": "https://aged99oow.github.io/metroid/",
+      "author": "aged99oow",
+      "contact": "https://x.com/aged99",
+      "desc": "A reduced version of NES Metroid",
+      "image": "https://github.com/user-attachments/assets/3a9a3ff6-d8e7-4a41-a0b1-d7be66f4a4c9"
+    },
+    {
+      "id": 164,
+      "title": "Lama",
+      "site": "https://aged99oow.github.io/lama/",
+      "author": "aged99oow",
+      "contact": "https://x.com/aged99",
+      "desc": "A shedding game where you shed or fold for minimum points",
+      "image": "https://github.com/user-attachments/assets/a2ab4617-0864-4982-acfc-5a99235a955a"
+    },
+    {
+      "id": 163,
+      "title": "Gekka no jin (Moonlit Formation)",
+      "site": "https://kogakure-saizo.itch.io/moonlit-formation",
+      "author": "saizo",
+      "contact": "https://x.com/Saizo_KOGAKURE",
+      "desc": "A new Hanafuda experience in retro pixel art",
+      "image": "https://github.com/user-attachments/assets/f73acd14-0bd0-47b4-8ae2-81b64b0b92ef"
+    },
+    {
+      "id": 162,
+      "title": "Old ARPG like",
+      "site": "https://github.com/ronegray/OldARPGlike/tree/main",
+      "author": "MoQ",
+      "contact": "https://github.com/ronegray",
+      "desc": "An old-school action RPG (PC-88 era-inspired)",
+      "image": "https://github.com/user-attachments/assets/e5d4ef7f-f814-48a4-85ec-cf6353594708"
+    },
+    {
+      "id": 161,
+      "title": "Pyxel Fighter jet Game",
+      "site": "https://github.com/life-is-plastic/pyxel-fighter-jet-game",
+      "author": "life-is-plastic",
+      "contact": "https://github.com/life-is-plastic",
+      "desc": "A top-down flying-and-shooting game",
+      "image": "https://github.com/user-attachments/assets/f363100b-d5b9-4e87-bcbe-24bd95a7a23a"
+    },
+    {
+      "id": 160,
+      "title": "Looking for Kiara-chan!",
+      "site": "https://game.kiasaga.love/",
+      "author": "Kikutaro",
+      "contact": "https://x.com/kikutaro_",
+      "desc": "A mystery-solving mini-RPG",
+      "image": "https://github.com/user-attachments/assets/7cca4a4e-f3d7-4c5b-9e3a-33a8cd44f507"
+    },
+    {
+      "id": 159,
+      "title": "Game of Pyxels",
+      "site": "https://leo-imbert.itch.io/game-of-pyxels",
+      "author": "Léo Imbert",
+      "contact": "https://github.com/LeoI52",
+      "desc": "A retro-style remake of Conway’s Game of Life",
+      "image": "https://github.com/user-attachments/assets/0b10319a-c648-4876-904a-5bfae82059f7"
+    },
+    {
+      "id": 158,
+      "title": "Queue It !",
+      "site": "https://leo-imbert.itch.io/queue-it",
+      "author": "Léo Imbert",
+      "contact": "https://github.com/LeoI52",
+      "desc": "A fast-paced puzzle-platformer",
+      "image": "https://github.com/user-attachments/assets/9dd794d3-f68f-4400-8ff5-ab01f8cbd02a"
+    },
+    {
+      "id": 157,
+      "title": "PyxelTD",
+      "site": "https://kitao.github.io/pyxel/wasm/launcher/?play=5h00t.PyxelTD.app.pyxeltd",
+      "author": "shoot.er",
+      "contact": "https://x.com/m4_sd",
+      "desc": "A simple tower defense game",
+      "image": "https://github.com/user-attachments/assets/1220acad-ea05-4728-9dcc-b91ab81ba1b9"
+    },
+    {
+      "id": 156,
+      "title": "Loop Shot",
+      "site": "https://leo-imbert.itch.io/loop-shot",
+      "author": "Léo Imbert",
+      "contact": "https://github.com/LeoI52",
+      "desc": "A top-down shooter about a looping arena",
+      "image": "https://github.com/user-attachments/assets/4ad0c88f-9f17-415f-997c-cb4d1f70292a"
+    },
+    {
+      "id": 155,
+      "title": "Hanafuda Pon",
+      "site": "https://kitao.github.io/pyxel/wasm/launcher/?play=ninja-cop.RetroGames.hanafudaPon.hanafudaPon",
+      "author": "saizo",
+      "contact": "https://github.com/ninja-cop",
+      "desc": "A game of clearing sets of three matching Hanafuda cards",
+      "image": "https://github.com/user-attachments/assets/932b5840-88de-4fe2-914d-cd09a52747d0"
+    },
+    {
+      "id": 154,
+      "title": "Towercraft",
+      "site": "https://codeberg.org/son_link/Towercraft",
+      "author": "Son Link",
+      "contact": "https://x.com/sonlink",
+      "desc": "A game to build the tallest tower by stacking floors",
+      "image": "https://github.com/user-attachments/assets/4a5d612a-b1f3-48ee-833e-a523f57322ce"
+    },
+    {
+      "id": 153,
+      "title": "Old JRPG like",
+      "site": "https://moq.dojin.com/pyxelgames.html",
+      "author": "MoQ(もっQ)",
+      "contact": "https://x.com/ronegray",
+      "desc": "A game like an RPG from the early NES era",
+      "image": "https://github.com/user-attachments/assets/cf2490e1-8576-4032-bc30-69410b56612b"
+    },
+    {
+      "id": 152,
+      "title": "Hanafuda Tetris",
+      "site": "https://kitao.github.io/pyxel/wasm/launcher/?play=ninja-cop.RetroGames.hanafudaTetris.hanafudaTetris_1_5",
+      "author": "saizo",
+      "contact": "https://github.com/ninja-cop",
+      "desc": "A game where you match three Hanafuda cards of the same month",
+      "image": "https://github.com/user-attachments/assets/814c960e-914c-45f9-9179-bc654789d6fe"
+    },
+    {
+      "id": 151,
+      "title": "FAKE DOGMENTARY \"Q\"",
+      "site": "https://hotatecurry.github.io/fakedogmentaryq/fakedog.html",
+      "author": "hotate_curry",
+      "contact": "https://x.com/hotate__curry",
+      "desc": "A Souls-like animal welfare action game",
+      "image": "https://github.com/user-attachments/assets/3c373c07-8461-4db5-bcfe-5318ff7386c4"
+    },
+    {
+      "id": 150,
+      "title": "Breakout",
+      "site": "https://github.com/jay-kumogata/PyxelChip8/tree/main/pyxel/breakout",
+      "author": "Jay Kumogata",
+      "contact": "https://x.com/jay_kumogata",
+      "desc": "A Breakout-style game originally made for CHIP-8",
+      "image": "https://github.com/user-attachments/assets/2db6e4d8-03fc-4fc8-9804-69ed43266b05"
+    },
+    {
+      "id": 149,
+      "title": "Graffiti Cleanup Rush",
+      "site": "https://github.com/LeoI52/graffiti-cleanup-rush",
+      "author": "Léo Imbert",
+      "contact": "https://github.com/LeoI52",
+      "desc": "A score-based arcade clicking game",
+      "image": "https://github.com/user-attachments/assets/df95722f-5ea0-4cff-9031-4b9cea090705"
+    },
+    {
+      "id": 148,
+      "title": "Mastermind",
+      "site": "https://github.com/jay-kumogata/PyxelChip8/tree/main/pyxel/mastermind",
+      "author": "Jay Kumogata",
+      "contact": "https://x.com/jay_kumogata",
+      "desc": "A number-guessing game using hints",
+      "image": "https://github.com/user-attachments/assets/ede0d22f-c5b9-4958-8591-166f96404153"
+    },
+    {
+      "id": 147,
+      "title": "popstar",
+      "site": "https://github.com/c-hui/popstar",
+      "author": "shichunhui",
+      "contact": "mailto:mrshich@foxmail.com",
+      "desc": "A SameGame-style puzzle game",
+      "image": "https://github.com/user-attachments/assets/adaa621d-c78a-4691-aad9-b02180a8b9f4"
+    },
+    {
+      "id": 146,
+      "title": "Pyxel Mandelbrot",
+      "site": "https://github.com/gomatama5/Pyxel_Mandelbrot",
+      "author": "gomatama5",
+      "contact": "https://github.com/gomatama5",
+      "desc": "A Mandelbrot set drawing tool",
+      "image": "https://github.com/user-attachments/assets/46c80c6b-fb2c-4772-a5d6-c829a06f6366"
+    },
+    {
+      "id": 145,
+      "title": "Jump Jump Bouncing Ball",
+      "site": "https://github.com/gomatama5/Jump_Jump_Bouncing_Ball",
+      "author": "gomatama5",
+      "contact": "https://github.com/gomatama5",
+      "desc": "A jumping action game with a physics engine",
+      "image": "https://github.com/user-attachments/assets/4fd09862-644e-4a92-88a8-2df11aa8b6c1"
+    },
+    {
+      "id": 144,
+      "title": "Number Link",
+      "site": "https://github.com/ku-ron/pyxel_minigames/blob/main/main/numberlink/readme.md",
+      "author": "ku-ron",
+      "contact": "https://github.com/ku-ron",
+      "desc": "A puzzle game about connecting matching numbers with a line",
+      "image": "https://github.com/user-attachments/assets/5b6ab5f0-7bb7-4a9e-b791-5344486c8a15"
+    },
+    {
+      "id": 143,
+      "title": "Gem'X Pyxel Clone",
+      "site": "https://sanbunnoichi1962.web.fc2.com/pyxel_contents.html#gemx",
+      "author": "sanbunnoichi",
+      "contact": "mailto:sanbunnoichi1962@gmail.com",
+      "desc": "An Amiga puzzle game clone",
+      "image": "https://github.com/user-attachments/assets/748c96c9-cfa3-4302-bc4f-0f8d9e19876b"
+    },
+    {
+      "id": 142,
+      "title": "L'Épopée Pixellisée",
+      "site": "https://www.pyxelstudio.net/cf2apb4z",
+      "author": "Lamorkitu93",
+      "contact": "https://github.com/Lamorkitu93",
+      "desc": "A platformer",
+      "image": "https://github.com/user-attachments/assets/9cc84780-1e72-4484-b71b-ee8669cb8904"
+    },
+    {
+      "id": 141,
+      "title": "Stalker Bar",
+      "site": "https://sitf.itch.io/stalkerbar",
+      "author": "s1tf",
+      "contact": "https://github.com/s1tf",
+      "desc": "An adventure game",
+      "image": "https://github.com/user-attachments/assets/4271b6b7-8f3b-4126-8e1d-61087375e9b8"
+    },
+    {
+      "id": 140,
+      "title": "Mahjong Solitaire",
+      "site": "https://github.com/BouKiCHi/mahjong",
+      "author": "BouKiCHi",
+      "contact": "https://x.com/boukichi_numloc",
+      "desc": "A simple Mahjong solitaire game",
+      "image": "https://github.com/user-attachments/assets/02c9c3df-c970-4fad-9395-b92176f0dd94"
+    },
+    {
+      "id": 139,
+      "title": "Asteroids",
+      "site": "https://github.com/jay-kumogata/RetroGames/tree/main/pyxel/asteroids",
+      "author": "Jay Kumogata",
+      "contact": "https://x.com/jay_kumogata",
+      "desc": "A multidirectional shooter",
+      "image": "https://github.com/user-attachments/assets/03fcc7af-e634-4d15-b2b3-d03d4bd2eae0"
+    },
+    {
+      "id": 138,
+      "title": "Seagull's Fishing",
+      "site": "https://stone-dot.itch.io/seagulls-fishing",
+      "author": "こいし",
+      "contact": "https://x.com/koishi_dot",
+      "desc": "An easy 60-second score-attack game",
+      "image": "https://github.com/user-attachments/assets/944be73a-8f9d-46f9-ba19-d6bb95fa9e1e"
+    },
+    {
+      "id": 137,
+      "title": "Typing Practice",
+      "site": "https://github.com/samurai-apps/pyxel-games/blob/main/src/91_typing_practice.py",
+      "author": "SamuraiApps",
+      "contact": "https://x.com/samuraiapps",
+      "desc": "A typing practice game using words from Python and Pyxel",
+      "image": "https://github.com/user-attachments/assets/4d1bc96b-96bf-41ae-989f-aec8b6a4e31d"
+    },
+    {
+      "id": 136,
+      "title": "Laser Jetman",
+      "site": "https://github.com/helpcomputer/laser-jetman",
+      "author": "Adam",
+      "contact": "https://x.com/badcomputer0",
+      "desc": "An arcade shoot-em-up",
+      "image": "https://github.com/user-attachments/assets/a8ac96e9-a5ab-4b0d-981c-94f8cf8a7b7a"
+    },
+    {
+      "id": 135,
+      "title": "Rocket Flight",
+      "site": "https://github.com/nadi726/Rocket-Flight",
+      "author": "nadi726",
+      "contact": "https://github.com/nadi726",
+      "desc": "A side-scrolling endless runner",
+      "image": "https://github.com/user-attachments/assets/dceccba5-431b-4066-8f95-1426f390be30"
+    },
+    {
+      "id": 134,
+      "title": "EntroPipes",
+      "site": "https://codeberg.org/son_link/EntroPipes",
+      "author": "Son Link",
+      "contact": "https://x.com/sonlink",
+      "desc": "A puzzle game about rotating and connecting all pipes",
+      "image": "https://github.com/user-attachments/assets/f932b8f8-deaf-4453-b480-c329dd2d918e"
+    },
+    {
+      "id": 133,
+      "title": "Tapping Freecell",
+      "site": "https://tiquer17.github.io/pyxel/freecell/",
+      "author": "tiquer17",
+      "contact": "https://github.com/tiquer17",
+      "desc": "A FreeCell game with touch controls",
+      "image": "https://github.com/user-attachments/assets/f1d1d4b9-2652-46fc-9ee8-3632a1d1b144"
+    },
+    {
+      "id": 132,
+      "title": "AutoRace",
+      "site": "https://github.com/jay-kumogata/RetroGames/tree/main/pyxel/autorace",
+      "author": "Jay Kumogata",
+      "contact": "https://x.com/jay_kumogata",
+      "desc": "An early car racing game",
+      "image": "https://github.com/user-attachments/assets/91485717-9d09-4307-805b-de8ebe4d61b0"
+    },
+    {
+      "id": 131,
+      "title": "HadeGame",
+      "site": "https://github.com/hnsol/pyxel-hadegame/",
+      "author": "hann-solo",
+      "contact": "https://x.com/_hnsol",
+      "desc": "A first-person 3D maze escape game",
+      "image": "https://github.com/user-attachments/assets/22dc8f73-7433-42e2-a336-187f9ff4c616"
+    },
+    {
+      "id": 130,
+      "title": "3D Maze",
+      "site": "https://github.com/Sanzentyo/3D_Maze",
+      "author": "Sanzentyo",
+      "contact": "https://github.com/Sanzentyo",
+      "desc": "A first-person 3D maze escape game",
+      "image": "https://github.com/user-attachments/assets/b9b45d4f-bc57-4ecd-be11-226b90ee8b97"
+    },
+    {
+      "id": 129,
+      "title": "PyxelChip8",
+      "site": "https://github.com/jay-kumogata/PyxelChip8",
+      "author": "Jay Kumogata",
+      "contact": "https://x.com/jay_kumogata",
+      "desc": "A CHIP-8 emulator",
+      "image": "https://github.com/user-attachments/assets/bb304eb3-1248-4bfd-bab0-abf2f743a303"
+    },
+    {
+      "id": 128,
+      "title": "pymunk_de_smartball",
+      "site": "https://sanbunno-ichi.github.io/pymunk_de_smartball/",
+      "author": "sanbunnoichi",
+      "contact": "mailto:sanbunnoichi1962@gmail.com",
+      "desc": "A Smartball simulator using the pymunk library",
+      "image": "https://github.com/user-attachments/assets/a0ef341c-77d7-4315-a806-fce2629fb368"
+    },
+    {
+      "id": 127,
+      "title": "minesweeper",
+      "site": "https://github.com/tiquer17/pyxel/tree/main/minesweeper",
+      "author": "tiquer17",
+      "contact": "https://github.com/tiquer17",
+      "desc": "A Minesweeper game",
+      "image": "https://github.com/user-attachments/assets/30b63ac0-63bc-41b9-967f-f7761f4ee06d"
+    },
+    {
+      "id": 126,
+      "title": "PyxelRogue",
+      "site": "https://github.com/jay-kumogata/RetroGames/tree/main/pyxel/pyxelrogue",
+      "author": "Jay Kumogata",
+      "contact": "https://x.com/jay_kumogata",
+      "desc": "A traditional roguelike game",
+      "image": "https://github.com/user-attachments/assets/028e60bc-ee36-4576-80dd-0a3b19308aa6"
+    },
+    {
+      "id": 125,
+      "title": "Gamaguchi's Munch Panic",
+      "site": "https://github.com/naoto714714/pyxel-mogumogu-panic",
+      "author": "naoto",
+      "contact": "https://github.com/naoto714714",
+      "desc": "A simple action game",
+      "image": "https://github.com/user-attachments/assets/772560f0-e813-4c9c-9144-2924ed3b4bfe"
+    },
+    {
+      "id": 124,
+      "title": "Pyxel2D",
+      "site": "https://github.com/jay-kumogata/Pyxel2D",
+      "author": "Jay Kumogata",
+      "contact": "https://x.com/jay_kumogata",
+      "desc": "A simple physics engine",
+      "image": "https://github.com/user-attachments/assets/b08846e2-14b7-49e2-a59f-f7f97e2bdc55"
+    },
+    {
+      "id": 123,
+      "title": "Columsme",
+      "site": "https://kitao.github.io/pyxel/wasm/launcher/?play=qzk4078.columusume_public.columusume&gamepad=enabled&packages=numpy",
+      "author": "QZK",
+      "contact": "https://x.com/qzakusega",
+      "desc": "A falling-block puzzle game",
+      "image": "https://github.com/user-attachments/assets/96f94c6f-18a6-423a-b2d9-efd71393d540"
+    },
+    {
+      "id": 122,
+      "title": "pymunk_de_pinball",
+      "site": "https://sanbunno-ichi.github.io/pymunk_de_pinball/",
+      "author": "sanbunnoichi",
+      "contact": "mailto:sanbunnoichi1962@gmail.com",
+      "desc": "A pinball simulator using the pymunk library",
+      "image": "https://github.com/user-attachments/assets/1fa943ec-7152-48c0-b9d6-ed829a22d98a"
+    },
+    {
+      "id": 121,
+      "title": "Falling is learning",
+      "site": "https://sqddy.itch.io/falling-is-learning",
+      "author": "squiddy",
+      "contact": "https://github.com/squiddy",
+      "desc": "A memory puzzle",
+      "image": "https://github.com/user-attachments/assets/649c2167-74be-4a26-a044-e11f540a77aa"
+    },
+    {
+      "id": 120,
+      "title": "pyxelvania",
+      "site": "https://kitao.github.io/pyxel/wasm/launcher/?play=hulk89.pyxelvania.pyxelvania",
+      "author": "hulk89",
+      "contact": "https://github.com/Hulk89",
+      "desc": "A simple metroidvania",
+      "image": "https://github.com/user-attachments/assets/29997b0a-0417-4de6-83d6-6645c92893ed"
+    },
+    {
+      "id": 119,
+      "title": "Tower of Ashura",
+      "site": "https://ashura.tsapps.net/",
+      "author": "Goldics",
+      "contact": "https://x.com/tsapps_goldics",
+      "desc": "A simple dungeon-crawling RPG",
+      "image": "https://github.com/user-attachments/assets/62b6e7ff-d133-4d35-9d66-29bc89b36f2a"
+    },
+    {
+      "id": 118,
+      "title": "LLM Action (TBD)",
+      "author": "Kyukkyu",
+      "contact": "https://x.com/Synoyan",
+      "desc": "An action game with a chatty LLM",
+      "image": "https://github.com/user-attachments/assets/7ff9c8e8-9fbe-488a-bd5a-8194e724421e"
+    },
+    {
+      "id": 117,
+      "title": "OMEGA CHRONICLE",
+      "author": "ToraMaru",
+      "contact": "https://x.com/7diY7MaRRUChIFE",
+      "desc": "An RPG",
+      "image": "https://github.com/user-attachments/assets/b5a34b01-4f7f-4294-b6b0-4d121f6ecb1e"
+    },
+    {
+      "id": 116,
+      "title": "Push!",
+      "site": "https://yyuta342.itch.io/push",
+      "author": "yuta",
+      "contact": "https://x.com/yyuta342",
+      "desc": "An action puzzle game",
+      "image": "https://github.com/user-attachments/assets/7d0a6984-4a58-4c29-bfa5-75b83c310d51"
+    },
+    {
+      "id": 115,
+      "title": "Second Best",
+      "site": "https://aged99oow.github.io/second/",
+      "author": "aged99oow",
+      "contact": "https://x.com/aged99",
+      "desc": "An abstract strategy game to block the opponent's best hand",
+      "image": "https://github.com/user-attachments/assets/74469b68-ecd8-4f71-9be9-54f798ccf397"
+    },
+    {
+      "id": 114,
+      "title": "Pyxel Bobbles",
+      "site": "https://github.com/sanbunno-ichi/pyxelpb",
+      "author": "sanbunnoichi",
+      "contact": "mailto:sanbunnoichi1962@gmail.com",
+      "desc": "A Puzzle Bobble-like game",
+      "image": "https://github.com/user-attachments/assets/c2ed6530-c20a-4008-a454-072429f42b2e"
+    },
+    {
+      "id": 113,
+      "title": "Seafish",
+      "site": "https://s3bw.github.io/seafish",
+      "author": "s3bw",
+      "contact": "https://github.com/s3bw",
+      "desc": "A chess AI you can play against",
+      "image": "https://github.com/user-attachments/assets/dd943951-57b0-49e9-a122-c1a1e93c9943"
+    },
+    {
+      "id": 112,
+      "title": "Bubbles",
+      "site": "https://github.com/helpcomputer/bubbles",
+      "author": "Adam",
+      "contact": "https://x.com/badcomputer0",
+      "desc": "An arcade action game",
+      "image": "https://github.com/user-attachments/assets/5b72ad19-c34e-433b-82ab-4a71777eadfb"
+    },
+    {
+      "id": 111,
+      "title": "Sarananda",
+      "site": "https://github.com/kadoyan/sarananda",
+      "author": "KADOYAN",
+      "contact": "https://x.com/kadoyan",
+      "desc": "An escape game set inside an unidentified star",
+      "image": "https://github.com/user-attachments/assets/de0c0fa7-b4a9-4eec-8c3f-d758e4cdad10"
+    },
+    {
+      "id": 110,
+      "title": "Pyxel Block",
+      "site": "https://github.com/sanbunno-ichi/pyxelblk",
+      "author": "sanbunnoichi",
+      "contact": "mailto:sanbunnoichi1962@gmail.com",
+      "desc": "A block-breaking game",
+      "image": "https://github.com/user-attachments/assets/01200335-24d1-497c-a59c-1ced88794b4f"
+    },
+    {
+      "id": 109,
+      "title": "Try Your Flash Memory",
+      "site": "https://github.com/IgarashisanT/TryYourFlashMemory",
+      "author": "IgarashisanT",
+      "contact": "https://x.com/IgarashisanT",
+      "desc": "A short-term memory and visual acuity test",
+      "image": "https://github.com/user-attachments/assets/c6691719-9707-4ae5-8d4d-fbb81c97ebf7"
+    },
+    {
+      "id": 108,
+      "title": "Ticoban",
+      "site": "https://github.com/son-link/ticoban-pyxel",
+      "author": "Son Link",
+      "contact": "https://x.com/sonlink",
+      "desc": "A Sokoban clone",
+      "image": "https://github.com/user-attachments/assets/7ff35262-d86b-4927-937f-f823808bd4a4"
+    },
+    {
+      "id": 107,
+      "title": "Mini Zelda",
+      "site": "https://aged99oow.github.io/zelda/",
+      "author": "aged99oow",
+      "contact": "https://x.com/aged99",
+      "desc": "A reduced version of The Legend of Zelda (NES)",
+      "image": "https://github.com/user-attachments/assets/56796715-96c9-423b-bd63-967d50a2af29"
+    },
+    {
+      "id": 106,
+      "title": "mandelzoom",
+      "site": "https://github.com/sanbunno-ichi/fracanim#mandelzoom",
+      "author": "sanbunnoichi",
+      "contact": "mailto:sanbunnoichi1962@gmail.com",
+      "desc": "A multicolor Mandelbrot drawing tool",
+      "image": "https://github.com/user-attachments/assets/32b513c9-0e5d-46f8-87db-65b894a1749f"
+    },
+    {
+      "id": 105,
+      "title": "Sougwachi",
+      "site": "https://dee-okinawa.com/game/sougachi/",
+      "author": "Yoshinori Honda",
+      "contact": "https://x.com/dee_okinawa",
+      "desc": "A game about distributing New Year's gifts to visiting relatives",
+      "image": "https://github.com/user-attachments/assets/6c2ac3d8-1aea-43ac-80b7-b469b20c8840"
+    },
+    {
+      "id": 104,
+      "title": "Mahjong",
+      "site": "https://github.com/sanbunno-ichi/pyxelmj",
+      "author": "sanbunnoichi",
+      "contact": "mailto:sanbunnoichi1962@gmail.com",
+      "desc": "A two-player Mahjong game against the computer",
+      "image": "https://github.com/user-attachments/assets/b373a4a4-6180-4a6a-bbdf-9ce87df231eb"
+    },
+    {
+      "id": 103,
+      "title": "ACLM",
+      "site": "https://github.com/jay-kumogata/RetroGames/tree/main/pyxel/aclm",
+      "author": "Jay Kumogata",
+      "contact": "https://x.com/jay_kumogata",
+      "desc": "A game where you pilot a plane and defeat an enemy",
+      "image": "https://github.com/user-attachments/assets/0870d855-a590-44b8-b6b2-c558c94e1e94"
+    },
+    {
+      "id": 102,
+      "title": "Pinball",
+      "site": "https://github.com/jay-kumogata/RetroGames/tree/main/pyxel/pinball",
+      "author": "Jay Kumogata",
+      "contact": "https://x.com/jay_kumogata",
+      "desc": "A pinball simulator",
+      "image": "https://github.com/user-attachments/assets/970866ab-7000-4b82-86c1-07bcafabb945"
+    },
+    {
+      "id": 101,
+      "title": "Pen Apple",
+      "site": "https://www.youtube.com/watch?v=I1tEa5poHl0",
+      "author": "RuneBlaze",
+      "desc": "A roguelike deckbuilder powered by LLMs",
+      "image": "https://github.com/user-attachments/assets/f3853a22-3288-49a0-8506-55c983fe0694"
+    },
+    {
+      "id": 100,
+      "title": "Cellular Automata",
+      "site": "https://juliangroen.github.io/cellular-automata/",
+      "author": "Julian",
+      "contact": "https://github.com/juliangroen",
+      "desc": "An implementation of Conway's Game of Life",
+      "image": "https://github.com/user-attachments/assets/1c0d35c1-1600-4dd2-852c-caa4b1991f18"
+    },
+    {
+      "id": 99,
+      "title": "Hieroglyph_Editor",
+      "site": "https://koidemizu.github.io/post/hieroglyph/",
+      "author": "koidemizu",
+      "desc": "A small editor that converts Japanese into hieroglyphs",
+      "image": "https://github.com/user-attachments/assets/678bc5ca-70d6-4d9f-a18c-c299880e567c"
+    },
+    {
+      "id": 98,
+      "title": "Pyxel Invaders",
+      "site": "https://github.com/sanbunno-ichi/pyxelinv",
+      "author": "sanbunnoichi",
+      "contact": "mailto:sanbunnoichi1962@gmail.com",
+      "desc": "A Space Invaders-like shooting game",
+      "image": "https://github.com/user-attachments/assets/c9904134-63f0-4a0b-b9db-c7850306e966"
+    },
+    {
+      "id": 97,
+      "title": "MrColorHD",
+      "site": "https://mrcolorhd.itch.io/carma-junino",
+      "author": "Carma Junino",
+      "desc": "A platformer about a popular Brazilian festival",
+      "image": "https://github.com/user-attachments/assets/40e1c83b-d55a-4568-b827-50df984a5a5c"
+    },
+    {
+      "id": 96,
+      "title": "Mini Typing",
+      "site": "https://aged99oow.github.io/typing/",
+      "author": "aged99oow",
+      "contact": "https://x.com/aged99",
+      "desc": "A Japanese–English translation typing game",
+      "image": "https://github.com/user-attachments/assets/da7f9ff0-ce36-406d-bd63-fbe7fd870887"
+    },
+    {
+      "id": 95,
+      "title": "Poker",
+      "site": "https://github.com/Hiekichi/Poker",
+      "author": "Hiekichi",
+      "desc": "A tabletop card game",
+      "image": "https://github.com/kitao/pyxel/assets/678802/4d0ed46c-e7bf-4b04-9f47-995a34caa31b"
+    },
+    {
+      "id": 94,
+      "title": "Attacker",
+      "site": "https://github.com/Hiekichi/Attacker",
+      "author": "Hiekichi",
+      "desc": "A retro shooting game",
+      "image": "https://github.com/kitao/pyxel/assets/678802/5f43994b-066e-4aa8-b87f-a23883f3890b"
+    },
+    {
+      "id": 93,
+      "title": "Stellar Blazer",
+      "site": "https://github.com/Hiekichi/StellarBlazer",
+      "author": "Hiekichi",
+      "desc": "A shooting game",
+      "image": "https://github.com/kitao/pyxel/assets/678802/321d6e16-e209-4036-88d9-09fb3af7cc5f"
+    },
+    {
+      "id": 92,
+      "title": "Vortexion",
+      "site": "https://github.com/helpcomputer/vortexion",
+      "author": "Adam",
+      "contact": "https://x.com/badcomputer0",
+      "desc": "A shoot-em-up",
+      "image": "https://github.com/kitao/pyxel/assets/678802/0fc00373-b4ee-4e3b-a31c-7d62118e1239"
+    },
+    {
+      "id": 91,
+      "title": "ChottoCopter",
+      "site": "https://github.com/Hiekichi/ChottoCopter",
+      "author": "Hiekichi",
+      "desc": "A hostage rescue game",
+      "image": "https://github.com/kitao/pyxel/assets/678802/532780c6-6230-48f9-933e-77471adfc0ce"
+    },
+    {
+      "id": 90,
+      "title": "CheaperDepth",
+      "site": "https://github.com/Hiekichi/CheeperDepth",
+      "author": "Hiekichi",
+      "desc": "A depth charge game",
+      "image": "https://github.com/kitao/pyxel/assets/678802/8cd77528-ab74-486f-af7a-9ac8146f143c"
+    },
+    {
+      "id": 89,
+      "title": "Kanixian",
+      "site": "https://github.com/Hiekichi/Kanixian",
+      "author": "Hiekichi",
+      "desc": "A shooting game",
+      "image": "https://github.com/kitao/pyxel/assets/678802/ee8e9774-e1a9-4a08-85ac-26127a211ae3"
+    },
+    {
+      "id": 88,
+      "title": "BakudanKun",
+      "site": "https://github.com/Hiekichi/BakudanKunPy",
+      "author": "Hiekichi",
+      "desc": "A bomber game",
+      "image": "https://github.com/kitao/pyxel/assets/678802/297989a0-4cae-4499-8882-d2a0958d6c91"
+    },
+    {
+      "id": 87,
+      "title": "LF3DP",
+      "site": "https://github.com/sichaozhang1112/LF3DP",
+      "author": "GANAH",
+      "contact": "https://github.com/sichaozhang1112/PEANUX",
+      "desc": "A game about drawing a closed-loop sketch of a dream",
+      "image": "https://github.com/user-attachments/assets/baab685e-227c-41e5-916b-67637e52bf31"
+    },
+    {
+      "id": 86,
+      "title": "MazeWalkGame",
+      "site": "https://github.com/Hiekichi/MazeWalkGame",
+      "author": "Hiekichi",
+      "desc": "A dot-eating game",
+      "image": "https://github.com/kitao/pyxel/assets/678802/4a0012a1-c8ea-48dc-ae69-f0832c87c95a"
+    },
+    {
+      "id": 85,
+      "title": "obakeHunt",
+      "site": "https://sirococoa.github.io/obakeHunt/",
+      "author": "sirococoa",
+      "contact": "https://x.com/sirococoa1",
+      "desc": "A shooting game with a finger gun",
+      "image": "https://github.com/kitao/pyxel/assets/678802/1702bff2-b08a-46a9-a47b-5683b14f6ed9"
+    },
+    {
+      "id": 84,
+      "title": "Ostle",
+      "site": "https://aged99oow.github.io/ostle/",
+      "author": "aged99oow",
+      "contact": "https://x.com/aged99",
+      "desc": "An abstract strategy game on a 5x5 square grid",
+      "image": "https://github.com/kitao/pyxel/assets/678802/5645713c-364d-4e19-a679-c26f0fbdbc9a"
+    },
+    {
+      "id": 83,
+      "title": "Dice Arithmetic",
+      "site": "https://aged99oow.github.io/dice/",
+      "author": "aged99oow",
+      "contact": "https://x.com/aged99",
+      "desc": "A game where you make the number closest to the target",
+      "image": "https://github.com/kitao/pyxel/assets/678802/fa2b40cc-9de5-41e8-8c0a-4b24fe723ecc"
+    },
+    {
+      "id": 82,
+      "title": "Sangoku Historia",
+      "site": "https://github.com/shiromofufactory/pyxel-sangokushi-guide",
+      "author": "frenchbread",
+      "contact": "https://x.com/frenchbread1222",
+      "desc": "A strategic simulation game set in the Three Kingdoms",
+      "image": "https://github.com/kitao/pyxel/assets/678802/c5ce82eb-5e36-4ce8-b796-1012330f5692"
+    },
+    {
+      "id": 81,
+      "title": "Lode Runner Remake",
+      "site": "https://dauet.github.io/ld/",
+      "author": "dauet",
+      "contact": "https://x.com/rfsguhfgkohbf",
+      "desc": "A Lode Runner remake (IREM + NES)",
+      "image": "https://github.com/kitao/pyxel/assets/678802/a94b68e8-6081-4456-afb9-ce38e44dc071"
+    },
+    {
+      "id": 80,
+      "title": "Scratch Lesson Port",
+      "site": "https://edward.delaporte.us/pyxel/doodlebug/",
+      "author": "EdTheDev",
+      "contact": "https://github.com/edthedev",
+      "desc": "A Pyxel version of MIT Scratch lessons",
+      "image": "https://github.com/kitao/pyxel/assets/678802/3a7743a5-cbd7-4fe8-b4b1-e7c957cd170c"
+    },
+    {
+      "id": 79,
+      "title": "Shroomy Shroom",
+      "site": "https://takaneichinose.itch.io/shroomy-shroom",
+      "author": "Takane",
+      "contact": "https://x.com/takane_ichi",
+      "desc": "A side-scrolling survival game made for Remix It Jam 2023",
+      "image": "https://github.com/user-attachments/assets/6c921e58-692d-4821-9256-1adc076f430f"
+    },
+    {
+      "id": 78,
+      "title": "Mini RPG",
+      "site": "https://aged99oow.github.io/rpg/",
+      "author": "aged99oow",
+      "contact": "https://x.com/aged99",
+      "desc": "A no-save mini RPG",
+      "image": "https://github.com/user-attachments/assets/62302ec7-4813-4a60-a61e-aee409cd4d24"
+    },
+    {
+      "id": 77,
+      "title": "Mini Pittan",
+      "site": "https://aged99oow.github.io/pittan/",
+      "author": "aged99oow",
+      "contact": "https://x.com/aged99",
+      "desc": "A Japanese word puzzle",
+      "image": "https://github.com/user-attachments/assets/484b81a4-482f-4bec-90f0-1e9f0c97fdde"
+    },
+    {
+      "id": 76,
+      "title": "Pyxel Road Demo",
+      "site": "https://github.com/ChazyChazZz/PyxelRoadDemo",
+      "author": "Ilya",
+      "contact": "https://github.com/ChazyChazZz",
+      "desc": "An OutRun-like road with scalable sprites and a parallax background",
+      "image": "https://github.com/user-attachments/assets/a195e3f9-48b7-437d-bf59-026bfe8b2636"
+    },
+    {
+      "id": 75,
+      "title": "Chip8Mini",
+      "site": "https://github.com/jay-kumogata/Chip8Mini",
+      "author": "Jay Kumogata",
+      "contact": "https://x.com/jay_kumogata",
+      "desc": "A CHIP-8 emulator that runs inside the game cabinet",
+      "image": "https://github.com/user-attachments/assets/d8625a97-439d-4cc1-b6f9-e73028665a4b"
+    },
+    {
+      "id": 74,
+      "title": "Panelund",
+      "site": "https://aged99oow.github.io/panel/",
+      "author": "aged99oow",
+      "contact": "https://x.com/aged99",
+      "desc": "A boss fight where you surround and charge the enemy boss",
+      "image": "https://github.com/user-attachments/assets/0dc31cf4-38b5-440e-816c-69d4bbb36bf4"
+    },
+    {
+      "id": 73,
+      "title": "Othellomino",
+      "site": "https://aged99oow.github.io/othello/",
+      "author": "aged99oow",
+      "contact": "https://x.com/aged99",
+      "desc": "An Othello variant with polyominoes",
+      "image": "https://github.com/user-attachments/assets/e82dee24-67b7-444f-bf27-240c5d52f986"
+    },
+    {
+      "id": 72,
+      "title": "PyGmc4",
+      "site": "https://github.com/jay-kumogata/PyGmc4",
+      "author": "Jay Kumogata",
+      "contact": "https://x.com/jay_kumogata",
+      "desc": "A Gakken GMC-4 emulator in Python",
+      "image": "https://github.com/user-attachments/assets/4b13b36f-98ec-4bb2-b736-374ec8e05a27"
+    },
+    {
+      "id": 71,
+      "title": "mini-space",
+      "site": "https://github.com/bhunao/minispace_pyxel",
+      "author": "bhunao",
+      "contact": "https://github.com/bhunao",
+      "desc": "A mini shooter with many projectiles",
+      "image": "https://github.com/user-attachments/assets/97c3babb-3a52-4b39-9d3b-85ac8d5fd804"
+    },
+    {
+      "id": 70,
+      "title": "Mini Mario",
+      "site": "https://aged99oow.github.io/mario/",
+      "author": "aged99oow",
+      "contact": "https://x.com/aged99",
+      "desc": "A reduced version of Super Mario Bros. (NES)",
+      "image": "https://github.com/user-attachments/assets/0c13ec69-abcc-473f-b7ae-9181ab71513f"
+    },
+    {
+      "id": 69,
+      "title": "Mini Mahjong",
+      "site": "https://aged99oow.github.io/mahjong/",
+      "author": "aged99oow",
+      "contact": "https://x.com/aged99",
+      "desc": "A Mahjong game with reduced tiles",
+      "image": "https://github.com/user-attachments/assets/223307e9-b854-42b3-a83b-7615e6ba3659"
+    },
+    {
+      "id": 68,
+      "title": "Mini Shogi",
+      "site": "https://aged99oow.github.io/shogi/",
+      "author": "aged99oow",
+      "contact": "https://x.com/aged99",
+      "desc": "A shogi game with reduced pieces on a 5x5 board",
+      "image": "https://github.com/user-attachments/assets/2208fc8e-7768-4e9f-a525-52ceadc0f50f"
+    },
+    {
+      "id": 67,
+      "title": "Tiny Tale",
+      "author": "Fbrzd",
+      "contact": "https://x.com/dungeon__world",
+      "desc": "A minimalist RPG with online ranking",
+      "image": "https://github.com/user-attachments/assets/80905dbb-55f5-49dd-9459-22779d1e9280"
+    },
+    {
+      "id": 66,
+      "title": "8bit BGM generator",
+      "site": "https://retro-bgm-generator.web.app/",
+      "author": "frenchbread",
+      "contact": "https://x.com/frenchbread1222",
+      "desc": "A tool to automatically generate 3-channel Pyxel sounds",
+      "image": "https://github.com/user-attachments/assets/7c676e25-d7c4-414c-bcc4-295c4663bc50"
+    },
+    {
+      "id": 65,
+      "title": "kektris",
+      "site": "https://github.com/KonstantinKlepikov/kektris",
+      "author": "KonstantinKlepikov",
+      "contact": "https://github.com/KonstantinKlepikov",
+      "desc": "A four-quadrant Tetris game",
+      "image": "https://github.com/user-attachments/assets/23d55358-8966-4ca6-aeec-64d798d44f15"
+    },
+    {
+      "id": 64,
+      "title": "Target_shooting",
+      "site": "https://koidemizu.github.io/post/action-shooting/",
+      "author": "koidemizu",
+      "contact": "https://github.com/koidemizu",
+      "desc": "A simple action shooting game",
+      "image": "https://github.com/user-attachments/assets/fc105570-89e5-4b51-b3c4-5a57be333d38"
+    },
+    {
+      "id": 63,
+      "title": "Unnamed RPG",
+      "site": "https://github.com/helpcomputer",
+      "author": "Adam",
+      "contact": "https://x.com/helpcomputer0",
+      "desc": "A simple RPG with 1v1 combat and party shuffling",
+      "image": "https://github.com/user-attachments/assets/c1204c94-1511-4ab4-ab0e-1611c2f8299a"
+    },
+    {
+      "id": 62,
+      "title": "Hopping Hiyoko",
+      "site": "https://github.com/rococomico/Pyxel_games",
+      "author": "rococomico",
+      "contact": "https://x.com/rococomico",
+      "desc": "A game about helping chicks reach higher places",
+      "image": "https://github.com/user-attachments/assets/b0f6e2d6-4279-4cf9-bbf8-23004b680708"
+    },
+    {
+      "id": 61,
+      "title": "Baba Is You",
+      "site": "https://github.com/Fraser-Greenlee/baba-is-you",
+      "author": "Fraser Greenlee",
+      "contact": "https://x.com/FraserGreenlee",
+      "desc": "A Baba Is You demake",
+      "image": "https://github.com/user-attachments/assets/f7116ab8-09b0-4968-8267-02b81f3d2d1a"
+    },
+    {
+      "id": 60,
+      "title": "Dragon Quest 1 for Pyxel",
+      "site": "https://pyxel-dq1.web.app/?gamepad=enabled",
+      "author": "frenchbread",
+      "contact": "https://x.com/frenchbread1222",
+      "desc": "A port of the NES game of the same name",
+      "image": "https://github.com/user-attachments/assets/1a175d78-1a41-421e-8225-68fb667c597a"
+    },
+    {
+      "id": 59,
+      "title": "Emergency Button",
+      "site": "https://emergency-button.com/",
+      "author": "Tokoroteen",
+      "contact": "https://x.com/Tokoroteen__",
+      "desc": "A clone of the emergency stop button at a train station",
+      "image": "https://github.com/user-attachments/assets/986ec558-9c2a-4e78-9568-eb9df361ca97"
+    },
+    {
+      "id": 58,
+      "title": "SUSHI SHOOTER",
+      "site": "https://kitao.github.io/pyxel/wasm/launcher/?play=sejiseji.pyxel-sushi.sushishooter&gamepad=enabled&packages=numpy",
+      "author": "sejiseji",
+      "contact": "https://x.com/sejiijes",
+      "desc": "A sushi shooting game",
+      "image": "https://github.com/user-attachments/assets/1dc6b7b4-c831-48ea-815a-ee2f0f8b3555"
+    },
+    {
+      "id": 57,
+      "title": "Floppy Dog",
+      "site": "https://github.com/badrain-games/fancon/",
+      "author": "JosephFerano",
+      "contact": "https://github.com/JosephFerano",
+      "desc": "A Flappy Bird clone",
+      "image": "https://github.com/user-attachments/assets/18230362-cfb3-4696-abbf-ece564ac03b7"
+    },
+    {
+      "id": 56,
+      "title": "Pie, Robot",
+      "site": "https://github.com/jonnyroutley/robot-game",
+      "author": "Jonathan Routley",
+      "contact": "https://github.com/jonnyroutley",
+      "desc": "A pizza-ingredient stacking game",
+      "image": "https://github.com/user-attachments/assets/537a069b-0a5a-4c78-85a7-9f56e6b44d5e"
+    },
+    {
+      "id": 55,
+      "title": "Moscow Nights",
+      "site": "https://aliskda.itch.io/moscownights",
+      "author": "s1tf",
+      "contact": "https://github.com/s1tf",
+      "desc": "A tower defense game",
+      "image": "https://github.com/user-attachments/assets/526f4bbb-8b1e-4ac5-9283-5526a6b8822c"
+    },
+    {
+      "id": 54,
+      "title": "SEKISAI",
+      "site": "https://store.steampowered.com/app/2154790/SEKISAI_puzzle_action/",
+      "author": "sewohayami",
+      "contact": "https://x.com/hayami_sewo",
+      "desc": "A side-scrolling puzzle action game",
+      "image": "https://github.com/user-attachments/assets/31be82f9-a959-4d08-be38-15209be0622f"
+    },
+    {
+      "id": 53,
+      "title": "Tetris Pyxel",
+      "site": "https://github.com/mehrdad-mixtape/Tetris_Pyxel/",
+      "author": "mehrdad-mixtape",
+      "contact": "https://github.com/mehrdad-mixtape",
+      "desc": "A classic Tetris game based on Tetris DX for Game Boy Color",
+      "image": "https://github.com/user-attachments/assets/a1d00010-4272-4175-a858-1bb152ff4d8d"
+    },
+    {
+      "id": 52,
+      "title": "Pyxel Rogue",
+      "site": "https://cereale.itch.io/pyxel-rogue",
+      "author": "Antoine-bdc",
+      "contact": "https://github.com/Antoine-bdc",
+      "desc": "A roguelike shooter with randomly generated rooms",
+      "image": "https://github.com/user-attachments/assets/ffe6096f-c100-4627-8440-efc013489814"
+    },
+    {
+      "id": 51,
+      "title": "Tu-tu-tuweeeeep",
+      "site": "https://cereale.itch.io/tu-tu-tuweeeep",
+      "author": "Antoine-bdc",
+      "contact": "https://github.com/Antoine-bdc",
+      "desc": "A fixed screen platformer with a 30-second time limit",
+      "image": "https://github.com/user-attachments/assets/8371c05d-a3f0-4438-bb97-c25f76b0c0d4"
+    },
+    {
+      "id": 50,
+      "title": "Bit Maze",
+      "site": "https://github.com/takaneichinose/pyxel_bit_maze",
+      "author": "Takane",
+      "contact": "https://x.com/takane_ichi",
+      "desc": "A puzzle-platformer",
+      "image": "https://github.com/user-attachments/assets/85ad22ea-2f85-47ba-90c8-6b3fe056a2fb"
+    },
+    {
+      "id": 49,
+      "title": "Interceptor",
+      "author": "Adam",
+      "contact": "https://x.com/helpcomputer0",
+      "desc": "An action side-scroller",
+      "image": "https://github.com/user-attachments/assets/81da1a94-7a42-4d0c-ad71-26d38e3ce6e3"
+    },
+    {
+      "id": 48,
+      "title": "The last space fighter",
+      "site": "https://github.com/yuiio/last-space-fighter",
+      "author": "Yuiio",
+      "contact": "mailto:yuiio@sotodesign.org",
+      "desc": "A space shooter",
+      "image": "https://github.com/user-attachments/assets/e465b9f8-c0d4-4b50-82b2-69d5f467380a"
+    },
+    {
+      "id": 47,
+      "title": "pytouch",
+      "site": "https://github.com/kra53n/pytouch",
+      "author": "kra53n",
+      "contact": "https://github.com/kra53n",
+      "desc": "A hyper-casual game",
+      "image": "https://github.com/user-attachments/assets/7b863ea9-f14b-4a0f-b3ea-2b569b1f20a2"
+    },
+    {
+      "id": 46,
+      "title": "GrowyGardens",
+      "site": "https://github.com/SuperZooper3/GrowyGardens",
+      "author": "SuperZooper3",
+      "contact": "https://github.com/SuperZooper3",
+      "desc": "A high-speed chaotic farming simulator",
+      "image": "https://github.com/user-attachments/assets/8fd7d107-5349-4e65-a3b9-f6da64b0fb49"
+    },
+    {
+      "id": 45,
+      "title": "platformer: prototype",
+      "site": "https://github.com/lemon24/platformer/blob/master/test.py",
+      "author": "lemon24",
+      "contact": "https://github.com/lemon24",
+      "desc": "A 2D platformer prototype with two layers",
+      "image": "https://github.com/user-attachments/assets/e15d0224-1ab6-47ef-88aa-17f08a93a4ff"
+    },
+    {
+      "id": 44,
+      "title": "PyxelChip8",
+      "site": "https://github.com/jay-kumogata/RetroGames",
+      "author": "Jay Kumogata",
+      "contact": "https://x.com/jay_kumogata",
+      "desc": "A CHIP-8 emulator",
+      "image": "https://github.com/user-attachments/assets/6c5dfa69-7af0-47ef-9723-c7e3c1a9f338"
+    },
+    {
+      "id": 43,
+      "title": "Mini-Solitaire",
+      "site": "https://github.com/SteelWool32/mini-solitaire",
+      "author": "SteelWool32",
+      "contact": "https://github.com/SteelWool32",
+      "desc": "A \"demake\" of Klondike Solitaire",
+      "image": "https://github.com/user-attachments/assets/41e274b2-e2f4-4490-bf92-3d453502a43c"
+    },
+    {
+      "id": 42,
+      "title": "Screen Melt",
+      "site": "https://github.com/ameuret/screenMeltDoom",
+      "author": "ameuret",
+      "contact": "https://github.com/ameuret",
+      "desc": "A screen-melting effect",
+      "image": "https://github.com/user-attachments/assets/38bfb5be-01fa-48fd-bcd1-24b6ada98e09"
+    },
+    {
+      "id": 41,
+      "title": "Tetris",
+      "site": "https://github.com/3w36zj6/Tetris",
+      "author": "3w36zj6",
+      "contact": "https://github.com/3w36zj6",
+      "desc": "A Tetris game",
+      "image": "https://github.com/user-attachments/assets/57098963-3684-43d4-87c6-e7d41dd71fcb"
+    },
+    {
+      "id": 40,
+      "title": "PyxelSand2",
+      "site": "https://github.com/HarryPeach/PyxelSand2",
+      "author": "HarryPeach",
+      "contact": "https://github.com/HarryPeach",
+      "desc": "A \"falling sand\" style game",
+      "image": "https://github.com/user-attachments/assets/af7af765-ed0a-4b30-a63a-94301cb6bb37"
+    },
+    {
+      "id": 39,
+      "title": "Maze generation",
+      "site": "https://github.com/timfi/pyxel_games",
+      "author": "timfi",
+      "contact": "https://github.com/timfi",
+      "desc": "A maze generator",
+      "image": "https://github.com/user-attachments/assets/1935a278-32a4-473c-bfba-dd17fd8f5f74"
+    },
+    {
+      "id": 38,
+      "title": "Sudoku Solver",
+      "site": "https://github.com/timfi/pyxel_games",
+      "author": "timfi",
+      "contact": "https://github.com/timfi",
+      "desc": "A Sudoku solver",
+      "image": "https://github.com/user-attachments/assets/1d593289-d348-4fb6-92bb-9d35119ce6f0"
+    },
+    {
+      "id": 37,
+      "title": "Hybrid",
+      "site": "https://github.com/gediminasz/games",
+      "author": "gediminasz",
+      "contact": "https://github.com/gediminasz",
+      "desc": "A game about splicing DNA",
+      "image": "https://github.com/user-attachments/assets/6cd45388-0af3-4ea5-a308-57801b1e3212"
+    },
+    {
+      "id": 36,
+      "title": "Onset",
+      "site": "https://github.com/gediminasz/games",
+      "author": "gediminasz",
+      "contact": "https://github.com/gediminasz",
+      "desc": "A Guitar Hero-style game where you can play any song",
+      "image": "https://github.com/user-attachments/assets/16bedf38-5aa8-4c67-8429-d4d60d36a104"
+    },
+    {
+      "id": 35,
+      "title": "Typo",
+      "site": "https://github.com/gediminasz/games",
+      "author": "gediminasz",
+      "contact": "https://github.com/gediminasz",
+      "desc": "A typing game",
+      "image": "https://github.com/user-attachments/assets/351e3fa5-201d-4b00-b035-ce89710bb728"
+    },
+    {
+      "id": 34,
+      "title": "pyLodeRunner",
+      "site": "https://github.com/tako2/pyLodeRunner",
+      "author": "tako2",
+      "contact": "https://x.com/tako2",
+      "desc": "A classic Lode Runner clone",
+      "image": "https://github.com/user-attachments/assets/a297e573-3728-4f04-b2ab-a52276134757"
+    },
+    {
+      "id": 33,
+      "title": "Censor",
+      "site": "https://gamedev.ru/flame/forum/?id=252482",
+      "author": "aliskda",
+      "desc": "Papers, Please alike",
+      "image": "https://github.com/user-attachments/assets/1696408e-da00-47d1-8773-f784fc5ac8e9"
+    },
+    {
+      "id": 32,
+      "title": "Ostrov",
+      "site": "https://gamedev.ru/flame/forum/?id=245207",
+      "author": "aliskda",
+      "desc": "A survival game",
+      "image": "https://github.com/user-attachments/assets/3f18a7da-e533-4b66-96cd-cc33b4d8336a"
+    },
+    {
+      "id": 31,
+      "title": "Snow Planet",
+      "site": "https://gamedev.ru/flame/forum/?id=248258",
+      "author": "aliskda",
+      "desc": "A tower defense / RTS game",
+      "image": "https://github.com/user-attachments/assets/88dc0cf1-6243-4f8a-80dc-6b41015f388e"
+    },
+    {
+      "id": 30,
+      "title": "Fiction-X",
+      "site": "https://github.com/k-o-matic/fictionx",
+      "author": "k-o-matic",
+      "desc": "A side-scrolling old-school shooting game",
+      "image": "https://github.com/user-attachments/assets/7a56076f-2cb1-433c-a933-00be2c65d80d"
+    },
+    {
+      "id": 29,
+      "title": "Chip 8 Pyxelized",
+      "author": "Deckarep",
+      "contact": "https://x.com/deckarep",
+      "desc": "A CHIP-8 emulator",
+      "image": "https://github.com/user-attachments/assets/bd36a54b-e7f8-4923-add5-dc3ef72e94c9"
+    },
+    {
+      "id": 28,
+      "title": "Orange Juice Invasion",
+      "site": "https://zoltek-s.itch.io/oji",
+      "author": "Arthus",
+      "contact": "mailto:arthus@meuret.net",
+      "desc": "A vertical shoot-em-up",
+      "image": "https://github.com/user-attachments/assets/46eecfd6-fc57-4395-b0ef-2583df3dd158"
+    },
+    {
+      "id": 27,
+      "title": "Mineral Planets",
+      "site": "https://gamedev.ru/flame/forum/?id=246559",
+      "author": "aliskda",
+      "desc": "A space RTS",
+      "image": "https://github.com/user-attachments/assets/2431418b-7d11-47cd-b510-3b01b4df1ebf"
+    },
+    {
+      "id": 26,
+      "title": "Valkyrie",
+      "author": "Adam",
+      "contact": "https://x.com/helpcomputer0",
+      "desc": "A shoot-em-up",
+      "image": "https://github.com/user-attachments/assets/84a3dfc8-2bfb-443e-a815-957859fdb966"
+    },
+    {
+      "id": 25,
+      "title": "Pyxel Golf",
+      "author": "Adam",
+      "contact": "https://x.com/helpcomputer0",
+      "desc": "A golf game with a course editor",
+      "image": "https://github.com/user-attachments/assets/569b2e54-18cc-45ce-810e-3928e5b48054"
+    },
+    {
+      "id": 24,
+      "title": "World of Trout",
+      "author": "Provo",
+      "desc": "A business simulation game",
+      "image": "https://github.com/user-attachments/assets/4865bf84-71b9-40a8-a283-5ce7e95f9189"
+    },
+    {
+      "id": 23,
+      "title": "Quick shoot!",
+      "author": "miso",
+      "contact": "https://x.com/miso_2324",
+      "desc": "A 360-degree shooter",
+      "image": "https://github.com/user-attachments/assets/9805c039-6370-4a3e-b549-9039f4e0fc13"
+    },
+    {
+      "id": 22,
+      "title": "Bansoko",
+      "site": "https://github.com/kfurtak1024/bansoko",
+      "author": "Krzysztof Furtak",
+      "contact": "https://github.com/kfurtak1024",
+      "desc": "A space-themed Sokoban clone",
+      "image": "https://github.com/user-attachments/assets/0fa0a0a9-31fb-4269-a695-3d3061def18c"
+    },
+    {
+      "id": 21,
+      "title": "Keikogyugo",
+      "site": "https://koidemizu.itch.io/keikogyugo",
+      "author": "koidemizu",
+      "contact": "https://github.com/koidemizu",
+      "desc": "A simulation game based on Japan's \"Sengoku Jidai\"",
+      "image": "https://github.com/user-attachments/assets/e26fc67b-385e-44ba-a9f6-339821f14d8d"
+    },
+    {
+      "id": 20,
+      "title": "Pyxel Raycast",
+      "site": "https://github.com/danmacnaughtan/pyxel-raycast",
+      "author": "Dan MacNaughtan",
+      "contact": "https://github.com/danmacnaughtan",
+      "desc": "A basic raycast example",
+      "image": "https://github.com/user-attachments/assets/7d1517e7-84fc-4cfc-93cf-f81f44c6b1db"
+    },
+    {
+      "id": 19,
+      "title": "Regicide",
+      "site": "https://koidemizu.itch.io/regicide",
+      "author": "koidemizu",
+      "contact": "https://github.com/koidemizu",
+      "desc": "A simple retro action RPG",
+      "image": "https://github.com/user-attachments/assets/197aa320-52db-4a85-9a04-6cbe9eabb6e5"
+    },
+    {
+      "id": 18,
+      "title": "Nyan Cat",
+      "site": "https://github.com/3w36zj6/NyanCat",
+      "author": "3w36zj6",
+      "contact": "https://github.com/3w36zj6",
+      "desc": "A simple shooting game with Nyan Cat",
+      "image": "https://github.com/user-attachments/assets/f272491b-d4e1-4641-8b8c-28f1f701a90a"
+    },
+    {
+      "id": 17,
+      "title": "Onyx of Black",
+      "site": "https://github.com/aburi6800/Python-OnyxOfBlack",
+      "author": "aburi6800",
+      "contact": "https://x.com/aburi6800",
+      "desc": "A retro-style dungeon-crawl RPG",
+      "image": "https://github.com/user-attachments/assets/80c7ce7a-9cb5-4492-9324-ba23d7047a8f"
+    },
+    {
+      "id": 16,
+      "title": "mini shooting",
+      "site": "https://github.com/5h00T/mini_shooting",
+      "author": "shoot.er",
+      "contact": "https://x.com/m4_sd",
+      "desc": "A shoot-em-up with 20 missions",
+      "image": "https://github.com/user-attachments/assets/a0bfa1c9-d89a-4956-be6d-10483fef6276"
+    },
+    {
+      "id": 15,
+      "title": "Megaball",
+      "site": "https://helpcomputer.itch.io/megaball",
+      "author": "Adam",
+      "contact": "https://x.com/helpcomputer0",
+      "desc": "An arcade ball-physics game",
+      "image": "https://github.com/user-attachments/assets/bf443632-b045-493c-88e4-d2d8752c9e63"
+    },
+    {
+      "id": 14,
+      "title": "Maze",
+      "site": "https://github.com/dannyso16/Maze",
+      "author": "odanny",
+      "contact": "https://x.com/dannyso16",
+      "desc": "A simple 2D maze",
+      "image": "https://github.com/user-attachments/assets/83785970-6553-4840-88ee-0708c1f513a6"
+    },
+    {
+      "id": 13,
+      "title": "Pynasour",
+      "site": "https://pypi.org/project/pynasour/",
+      "author": "odanny",
+      "contact": "https://x.com/dannyso16",
+      "desc": "A Chrome T-Rex clone",
+      "image": "https://github.com/user-attachments/assets/02cc50c4-a190-4c81-ae7a-2325487c1c57"
+    },
+    {
+      "id": 12,
+      "title": "Akalabeth: World of Doom",
+      "site": "http://blog.livedoor.jp/cobinee/archives/2008316.html",
+      "author": "CoBinee",
+      "contact": "https://x.com/cobinee",
+      "desc": "An Akalabeth: World of Doom clone",
+      "image": "https://github.com/user-attachments/assets/d729bc22-1b9b-4fce-955c-6d35271b5b63"
+    },
+    {
+      "id": 11,
+      "title": "Tiny Trek",
+      "site": "http://blog.livedoor.jp/cobinee/archives/2008127.html",
+      "author": "CoBinee",
+      "contact": "https://x.com/cobinee",
+      "desc": "A Star Trek text game clone",
+      "image": "https://github.com/user-attachments/assets/e931cf84-7932-4254-b959-5ca32baffd06"
+    },
+    {
+      "id": 10,
+      "title": "SFZ",
+      "site": "http://blog.livedoor.jp/cobinee/archives/2000646.html",
+      "author": "CoBinee",
+      "contact": "https://x.com/cobinee",
+      "desc": "A Fantasy Zone + Space Harrier homage?",
+      "image": "https://github.com/user-attachments/assets/d08057da-106e-411c-9313-8d5549fa78e3"
+    },
+    {
+      "id": 9,
+      "title": "Umeroose",
+      "site": "http://blog.livedoor.jp/cobinee/archives/2000540.html",
+      "author": "CoBinee",
+      "contact": "https://x.com/cobinee",
+      "desc": "A game about filling holes",
+      "image": "https://github.com/user-attachments/assets/f746072a-9d20-48c2-acda-7334e04a0105"
+    },
+    {
+      "id": 8,
+      "title": "Pyxel Lander",
+      "site": "https://humrochagf.itch.io/pyxel-lander",
+      "author": "Humberto Rocha",
+      "contact": "https://x.com/humrochagf",
+      "desc": "A Lunar Lander tribute",
+      "image": "https://github.com/user-attachments/assets/da90692c-e90a-437c-be64-20408a0bcfc6"
+    },
+    {
+      "id": 7,
+      "title": "Numonis",
+      "author": "Sakuramochi",
+      "contact": "https://x.com/mochitetris",
+      "desc": "A falling block puzzle that stacks numbers",
+      "image": "https://github.com/user-attachments/assets/bfc1471a-d502-4e0c-be48-f1fb4f6b88f4"
+    },
+    {
+      "id": 6,
+      "title": "THE TOWER OF DRUAGA",
+      "author": "二天一流 ore",
+      "contact": "https://x.com/ore57436902?lang=vi",
+      "desc": "A port of THE TOWER OF DRUAGA",
+      "image": "https://github.com/user-attachments/assets/2444e54d-1933-4228-956a-4357df47db78"
+    },
+    {
+      "id": 5,
+      "title": "Diddi and the Bugs",
+      "site": "https://diddileija.itch.io/diddi-and-the-bugs",
+      "author": "Diego Ramirez",
+      "contact": "https://github.com/DiddiLeija",
+      "desc": "A simple shooter",
+      "image": "https://github.com/user-attachments/assets/419d5bdb-7ee2-415b-9252-679aa0b17b7e"
+    },
+    {
+      "id": 4,
+      "title": "Lovely Composer",
+      "site": "https://1oogames.itch.io/lovely-composer",
+      "author": "doc1oo (1oo_Games)",
+      "contact": "https://x.com/1oo_games",
+      "desc": "A chiptune music editor",
+      "image": "https://github.com/user-attachments/assets/f93896df-99eb-4f82-98a1-8fb4a89a4c31"
+    },
+    {
+      "id": 3,
+      "title": "GRASLAY",
+      "site": "https://www.freem.ne.jp/win/game/25159",
+      "author": "Ontake44",
+      "contact": "https://x.com/Ontake441",
+      "desc": "A side-scrolling shoot-em-up",
+      "image": "https://github.com/user-attachments/assets/1851685e-30ee-446d-a3f0-5096ba1f646a"
+    },
+    {
+      "id": 2,
+      "title": "Dungeon Witches",
+      "site": "https://1oogames.itch.io/dungeon-witches",
+      "author": "doc1oo (1oo_Games)",
+      "contact": "https://x.com/1oo_games",
+      "desc": "A roguelite game",
+      "image": "https://github.com/user-attachments/assets/05b63acc-345b-4184-82e5-1bd75714b157"
+    },
+    {
+      "id": 1,
+      "title": "30 Seconds of Daylight",
+      "site": "https://github.com/kitao/30SecondsOfDaylight",
+      "author": "Adam",
+      "contact": "https://x.com/helpcomputer0",
+      "desc": "A roguelike game and 1st Pyxel Jam winner",
+      "image": "https://github.com/user-attachments/assets/281136e6-7da0-4a47-9603-a4a73607a417"
+    }
+  ]
+}

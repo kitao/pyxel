@@ -3,11 +3,11 @@
 #   - git, make, cmake, rustup, python 3.8+
 #   - Windows: Git Bash
 #   - Linux: python3-pip, python3-venv, libsdl2-dev 2.32.0
-#   - ./tools/setup_venv
+#   - ./scripts/setup_venv
 #
 # Each new shell:
-#   - macOS/Linux: source venv/bin/activate
-#   - Windows (Git Bash): source venv/Scripts/activate
+#   - macOS/Linux: source .venv/bin/activate
+#   - Windows (Git Bash): source .venv/Scripts/activate
 #
 # Native:
 #   - Build: make clean build
@@ -28,10 +28,10 @@
 # Project directories
 ROOT_DIR = .
 DIST_DIR = $(ROOT_DIR)/dist
-RUST_DIR = $(ROOT_DIR)/rust
+CRATES_DIR = $(ROOT_DIR)/crates
 PYTHON_DIR = $(ROOT_DIR)/python
 EXAMPLES_DIR = $(PYTHON_DIR)/pyxel/examples
-TOOLS_DIR = $(ROOT_DIR)/tools
+SCRIPTS_DIR = $(ROOT_DIR)/scripts
 
 # Build targets
 TARGET ?= $(shell rustc -vV | awk '/^host:/ {print $$2}')
@@ -96,32 +96,32 @@ endif
 all: build
 
 clean:
-	@cd $(RUST_DIR); cargo clean --target $(TARGET)
+	@cd $(CRATES_DIR); cargo clean --target $(TARGET)
 
 distclean:
 	@rm -rf $(DIST_DIR)
-	@rm -rf $(RUST_DIR)/target
+	@rm -rf $(CRATES_DIR)/target
 
 update:
 	@rustup -q update
 	@cargo -q install cargo-outdated
-	@cd $(RUST_DIR); cargo -q update
-	@cd $(RUST_DIR); cargo -q outdated --root-deps-only
+	@cd $(CRATES_DIR); cargo -q update
+	@cd $(CRATES_DIR); cargo -q outdated --root-deps-only
 	@pip3 install --upgrade pip
 	@pip3 -q install -U -r $(PYTHON_DIR)/requirements.txt
 
 format:
-	@cd $(RUST_DIR); cargo fmt -- --emit=files
+	@cd $(CRATES_DIR); cargo fmt -- --emit=files
 	@ruff format $(ROOT_DIR)
 
 lint:
-	@cd $(RUST_DIR); cargo clippy $(CARGO_OPTS) $(CLIPPY_OPTS) || true
+	@cd $(CRATES_DIR); cargo clippy $(CARGO_OPTS) $(CLIPPY_OPTS) || true
 	@ruff check $(ROOT_DIR) || true
 
-build: format lint
+build: format
 	@rustup component add rust-src
 	@rustup target add $(TARGET)
-	@$(TOOLS_DIR)/generate_readme_abs_links
+	@$(SCRIPTS_DIR)/generate_readme_abs_links
 	@cp LICENSE $(PYTHON_DIR)/pyxel
 	@cd $(PYTHON_DIR); \
 		RUSTFLAGS="$(RUSTFLAGS)" \
@@ -133,7 +133,7 @@ install: build
 	@pip3 install --force-reinstall "$$(ls -rt $(DIST_DIR)/*.whl | tail -n 1)"
 
 test: install
-	@cd $(RUST_DIR); cargo test $(CARGO_OPTS)
+	@cd $(CRATES_DIR); cargo test $(CARGO_OPTS)
 
 	@bash -c 'set -e; trap "exit 130" INT; \
 		for f in $(EXAMPLES_DIR)/*.py; do \
@@ -165,10 +165,10 @@ build-wasm:
 	@embuilder build sdl2 --pic
 	@rm -f $(DIST_DIR)/*-emscripten_*.whl
 	@$(MAKE) build TARGET=$(WASM_TARGET)
-	@$(TOOLS_DIR)/check_wasm_wheel
-	@$(TOOLS_DIR)/install_wasm_wheel
+	@$(SCRIPTS_DIR)/check_wasm_wheel
+	@$(SCRIPTS_DIR)/install_wasm_wheel
 
 start-test-server:
-	@$(TOOLS_DIR)/start_test_server
+	@$(SCRIPTS_DIR)/start_test_server
 
 test-wasm: build-wasm start-test-server

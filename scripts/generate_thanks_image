@@ -1,0 +1,267 @@
+#!/usr/bin/env python3
+
+import io
+import json
+import pathlib
+import random
+
+import PIL.Image
+import pyxel
+import requests
+
+ROOT_DIR = pathlib.Path(__file__).resolve().parent.parent
+CACHE_DIR = pathlib.Path("/tmp/pyxel_user_example_images")
+USER_EXAMPLES_JSON = ROOT_DIR / "user-examples.json"
+LOGO_IMAGE_FILE = ROOT_DIR / "examples/assets/pyxel_logo_38x16.png"
+
+THANKS_IMAGE_FILE = ROOT_DIR / "docs/images/pyxel_thanks.png"
+THANKS_IMAGE_WIDTH = 1920
+THANKS_IMAGE_HEIGHT = 1080
+
+EXAMPLE_WIDTH = 212
+EXAMPLE_MARGIN = 4
+NUM_EXAMPLE_COLS = pyxel.ceil(
+    (THANKS_IMAGE_WIDTH + EXAMPLE_MARGIN) / (EXAMPLE_WIDTH + EXAMPLE_MARGIN)
+)
+EXAMPLE_X = pyxel.floor(
+    (THANKS_IMAGE_WIDTH - (EXAMPLE_WIDTH + EXAMPLE_MARGIN) * NUM_EXAMPLE_COLS) / 2
+)
+EXAMPLE_IMAGES = [
+    (1, 23),
+    (2, 318),
+    (3, 220),
+    (4, 25),
+    (10, 793),
+    (12, 362),
+    (15, 83),
+    (17, 2048),
+    (20, 162),
+    (22, 140),
+    (24, 67),
+    (25, 430),
+    (34, 1),
+    (38, 141),
+    (43, 18),
+    (46, 233),
+    (49, 260),
+    (50, 236),
+    (52, 75),
+    (53, 395),
+    (54, 63),
+    (57, 203),
+    (60, 7),
+    (62, 79),
+    (63, 456),
+    (67, 1),
+    (68, 175),
+    (69, 257),
+    (72, 1),
+    (73, 171),
+    (77, 1),
+    (78, 107),
+    (79, 163),
+    (81, 248),
+    (83, 1),
+    (86, 64),
+    (88, 417),
+    (89, 53),
+    (90, 273),
+    (91, 275),
+    (92, 387),
+    (95, 1),
+    (101, 168),
+    (102, 166),
+    (104, 23),
+    (110, 458),
+    (111, 209),
+    (112, 305),
+    (113, 94),
+    (116, 1),
+    (120, 224),
+    (123, 134),
+    (127, 298),
+    (134, 459),
+    (136, 693),
+    (140, 233),
+    (141, 90),
+    (142, 383),
+]
+EXAMPLE_RANDOM_SEED = 18
+
+BASE_MESSAGE_WIDTH = 124
+BASE_MESSAGE_HEIGHT = 50
+BASE_MESSAGE_SCALE = 7
+
+MESSAGE_WIDTH = BASE_MESSAGE_WIDTH * BASE_MESSAGE_SCALE
+MESSAGE_HEIGHT = BASE_MESSAGE_HEIGHT * BASE_MESSAGE_SCALE
+MESSAGE_X = pyxel.floor((THANKS_IMAGE_WIDTH - MESSAGE_WIDTH) / 2)
+MESSAGE_Y = pyxel.floor((THANKS_IMAGE_HEIGHT - MESSAGE_HEIGHT) / 2)
+
+MESSAGE_PAD = 4
+MESSAGE_PAD_WIDTH = MESSAGE_WIDTH + MESSAGE_PAD * 2
+MESSAGE_PAD_HEIGHT = MESSAGE_HEIGHT + MESSAGE_PAD * 2
+MESSAGE_PAD_X = MESSAGE_X - MESSAGE_PAD
+MESSAGE_PAD_Y = MESSAGE_Y - MESSAGE_PAD
+DRAW_LAYOUT_GUIDES = False
+
+
+def download_example_image(url, example_id, frame):
+    CACHE_DIR.mkdir(parents=True, exist_ok=True)
+
+    cache_name = f"{example_id}_{frame}.png"
+    cache_file = CACHE_DIR / cache_name
+
+    if cache_file.exists():
+        return PIL.Image.open(cache_file)
+
+    print(f"download {url} ({cache_name})")
+
+    response = requests.get(url, timeout=30)
+    if response.status_code != 200:
+        raise RuntimeError(f"HTTP error: {response.status_code}")
+
+    gif = PIL.Image.open(io.BytesIO(response.content))
+    gif.seek(frame - 1)
+    image = gif.copy()
+
+    image.save(cache_file)
+
+    return image
+
+
+def draw_example_images(thanks_image):
+    # Load the user examples json
+    with USER_EXAMPLES_JSON.open("r", encoding="utf-8") as f:
+        user_examples = json.load(f)
+    entries_by_id = {entry["id"]: entry for entry in user_examples["entries"]}
+
+    # Download and resize example images
+    example_images = []
+    for example_id, frame in EXAMPLE_IMAGES:
+        url = entries_by_id[example_id]["image"]
+        image = download_example_image(url, example_id, frame)
+        image = image.resize(
+            (EXAMPLE_WIDTH, int(EXAMPLE_WIDTH * image.height / image.width))
+        )
+        example_images.append(image)
+
+    # Randomize image order
+    random.seed(EXAMPLE_RANDOM_SEED)
+    random.shuffle(example_images)
+
+    # Draw example images
+    example_x = EXAMPLE_X
+    while example_x < THANKS_IMAGE_WIDTH:
+        col_height = 0
+        num_col_images = 0
+        while col_height < THANKS_IMAGE_HEIGHT + EXAMPLE_MARGIN:
+            col_height += example_images[num_col_images].height + EXAMPLE_MARGIN
+            num_col_images += 1
+
+        example_y = (THANKS_IMAGE_HEIGHT - col_height - EXAMPLE_MARGIN) // 2
+        for _ in range(num_col_images):
+            image = example_images.pop(0)
+            thanks_image.paste(image, (example_x, example_y))
+            example_y += image.height + EXAMPLE_MARGIN
+
+        example_x += EXAMPLE_WIDTH + EXAMPLE_MARGIN
+        num_col_images = 0
+
+    return thanks_image
+
+
+def draw_message_image(thanks_image):
+    # Create the message image with Pyxel
+    base_image = pyxel.Image(BASE_MESSAGE_WIDTH, BASE_MESSAGE_HEIGHT)
+    base_image.cls(0)
+    base_image.rectb(0, 0, BASE_MESSAGE_WIDTH, BASE_MESSAGE_HEIGHT, 7)
+    base_image.rectb(1, 1, BASE_MESSAGE_WIDTH - 2, BASE_MESSAGE_HEIGHT - 2, 7)
+    base_image.pset(0, 0, 0)
+    base_image.pset(BASE_MESSAGE_WIDTH - 1, 0, 0)
+    base_image.pset(0, BASE_MESSAGE_HEIGHT - 1, 0)
+    base_image.pset(BASE_MESSAGE_WIDTH - 1, BASE_MESSAGE_HEIGHT - 1, 0)
+
+    base_image.load(43, 8, str(LOGO_IMAGE_FILE))
+
+    base_image.text(10, 29, "Thank you for 17,000 stars", 12)
+    base_image.text(10 + 14 * 4, 29, "17,000", 9)
+
+    base_image.text(15, 37, "and 1,400,000 downloads!", 12)
+    base_image.text(15 + 4 * 4, 37, "1,400,000", 9)
+
+    # Draw layout guide lines for alignment
+    if DRAW_LAYOUT_GUIDES:
+        x1 = 2
+        y1 = 2
+        x2 = BASE_MESSAGE_WIDTH - 3
+        y2 = BASE_MESSAGE_HEIGHT - 3
+
+        y = y1 + 15
+        w = 40
+        base_image.line(x1, y, x1 + w, y, 8)
+        base_image.line(x2, y, x2 - w, y, 8)
+
+        y = y1 + 29
+        w = 7
+        base_image.line(x1, y, x1 + w, y, 8)
+        base_image.line(x2, y, x2 - w, y, 8)
+
+        y = y1 + 37
+        w = 12
+        base_image.line(x1, y, x1 + w, y, 8)
+        base_image.line(x2, y, x2 - w, y, 8)
+
+        x = x1 + 49
+        h = 5
+        base_image.line(x, y1, x, y1 + h, 8)
+        base_image.line(x, y2, x, y2 - h, 8)
+
+    # Convert the Pyxel image to a PIL image
+    message_image = PIL.Image.new("RGB", (BASE_MESSAGE_WIDTH, BASE_MESSAGE_HEIGHT))
+
+    pixels = []
+    for y in range(BASE_MESSAGE_HEIGHT):
+        for x in range(BASE_MESSAGE_WIDTH):
+            rgb = pyxel.DEFAULT_COLORS[base_image.pget(x, y)]
+            r = (rgb >> 16) & 0xFF
+            g = (rgb >> 8) & 0xFF
+            b = rgb & 0xFF
+            pixels.append((r, g, b))
+
+    message_image.putdata(pixels)
+
+    # Enlarge the message image
+    message_image = message_image.resize(
+        (MESSAGE_WIDTH, MESSAGE_HEIGHT), resample=PIL.Image.NEAREST
+    )
+
+    # Draw a message padding
+    message_pad_image = PIL.Image.new(
+        "RGB",
+        (
+            MESSAGE_PAD_WIDTH,
+            MESSAGE_PAD_HEIGHT,
+        ),
+        (0, 0, 0),
+    )
+    thanks_image.paste(message_pad_image, (MESSAGE_PAD_X, MESSAGE_PAD_Y))
+
+    # Draw the message on the padding
+    thanks_image.paste(message_image, (MESSAGE_X, MESSAGE_Y))
+
+    return thanks_image
+
+
+def generate_thanks_image():
+    thanks_image = PIL.Image.new(
+        "RGB", (THANKS_IMAGE_WIDTH, THANKS_IMAGE_HEIGHT), (0, 0, 0)
+    )
+    thanks_image = draw_example_images(thanks_image)
+    thanks_image = draw_message_image(thanks_image)
+
+    thanks_image.show()
+    thanks_image.save(THANKS_IMAGE_FILE)
+
+
+if __name__ == "__main__":
+    generate_thanks_image()

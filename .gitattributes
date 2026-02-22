@@ -1,2 +1,22 @@
 * text=auto
+
+# Binary wheels
 *.whl binary diff=zip
+
+# Images
+*.png binary
+*.gif binary
+*.jpg binary
+*.jpeg binary
+*.ico binary
+
+# Audio
+*.ogg binary
+
+# Fonts
+*.ttf binary
+
+# Pyxel assets
+*.pyxapp binary
+*.pyxres binary
+*.pyxpal text

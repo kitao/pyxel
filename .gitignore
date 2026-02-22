@@ -1,4 +1,27 @@
+# Python
 *.pyc
-.DS_Store
+*.py[cod]
+*.so
+*.egg-info/
+__pycache__/
+.mypy_cache/
+.ruff_cache/
+
+# Rust
+Cargo.lock
+*.pdb
+
+# Build
 dist/
-venv/
+dist-*/
+target/
+
+# Environment
+.venv/
+.env
+
+# Tools
+.claude/
+
+# OS
+.DS_Store

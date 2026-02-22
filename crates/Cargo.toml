@@ -1,0 +1,3 @@
+[workspace]
+members = ["pyxel-core", "pyxel-binding"]
+resolver = "2"

@@ -9,8 +9,9 @@ requires-python = ">=3.8"
 authors = [{ name = "Takashi Kitao", email = "takashi.kitao@gmail.com" }]
 description = "A retro game engine for Python"
 readme = "../docs/README-abs-links.md"
-license = { file = "pyxel/LICENSE" }
-keywords = ["game", "gamedev"]
+license = "MIT"
+license-files = ["pyxel/LICENSE"]
+keywords = ["game", "gamedev", "retro", "pixel-art", "game-engine"]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "License :: OSI Approved :: MIT License",
@@ -18,6 +19,7 @@ classifiers = [
     "Operating System :: Microsoft :: Windows",
     "Operating System :: POSIX :: Linux",
     "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
     "Programming Language :: Rust",
     "Topic :: Games/Entertainment",
     "Topic :: Multimedia :: Graphics",
@@ -33,7 +35,7 @@ Changelog = "https://github.com/kitao/pyxel/blob/main/CHANGELOG.md"
 pyxel = "pyxel.cli:cli"
 
 [tool.maturin]
-manifest-path = "../rust/pyxel-wrapper/Cargo.toml"
+manifest-path = "../crates/pyxel-binding/Cargo.toml"
 module-name = "pyxel.pyxel_wrapper"
 
 [tool.maturin.target."x86_64-apple-darwin"]
