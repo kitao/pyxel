@@ -111,7 +111,7 @@ jobs:
           apt-get install -y -qq --no-install-recommends \
             cmake pkg-config \
             libx11-dev libxext-dev libxcursor-dev libxi-dev \
-            libxrandr-dev libxfixes-dev libxss-dev \
+            libxrandr-dev libxfixes-dev libxss-dev libxcb1-dev \
             libwayland-dev libxkbcommon-dev libdecor-0-dev \
             libegl-dev libgl-dev libgles-dev \
             libasound2-dev libpulse-dev \
@@ -121,8 +121,9 @@ jobs:
         run: |
           SYSROOT=/usr/${{ matrix.target }}/${{ matrix.target }}/sysroot
 
-          # X11
+          # X11 and XCB
           cp -r /usr/include/X11 $SYSROOT/usr/include/
+          [ -d /usr/include/xcb ] && cp -r /usr/include/xcb $SYSROOT/usr/include/
 
           # Wayland
           cp /usr/include/wayland-*.h $SYSROOT/usr/include/
@@ -214,6 +215,7 @@ jobs:
             -DSDL_OPENGLES=ON \
             -DSDL_ALSA=ON -DSDL_ALSA_SHARED=ON \
             -DSDL_PULSEAUDIO=ON -DSDL_PULSEAUDIO_SHARED=ON \
+            -DSDL_VULKAN=OFF \
             -DSDL_DBUS=ON \
             -DSDL_IBUS=ON \
             -DSDL_IME=ON \
