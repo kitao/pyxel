@@ -207,7 +207,7 @@ jobs:
           echo "set(CMAKE_CXX_COMPILER $TARGET_CXX)" >> "$TOOLCHAIN"
           echo "set(CMAKE_AR $TARGET_AR CACHE FILEPATH Archiver)" >> "$TOOLCHAIN"
           echo "set(CMAKE_RANLIB $TARGET_RANLIB CACHE FILEPATH Ranlib)" >> "$TOOLCHAIN"
-          echo "set(CMAKE_FIND_ROOT_PATH $SYSROOT)" >> "$TOOLCHAIN"
+          echo "set(CMAKE_SYSROOT $SYSROOT)" >> "$TOOLCHAIN"
           echo "set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)" >> "$TOOLCHAIN"
           echo "set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)" >> "$TOOLCHAIN"
           echo "set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)" >> "$TOOLCHAIN"
@@ -220,10 +220,9 @@ jobs:
             -DCMAKE_TOOLCHAIN_FILE="$TOOLCHAIN" \
             -DCMAKE_BUILD_TYPE=Release \
             -DCMAKE_INSTALL_PREFIX="$PREFIX" \
-            -DCMAKE_C_FLAGS="-fPIC -I$SYSROOT/usr/include -I$SYSROOT/usr/include/dbus-1.0" \
-            -DCMAKE_POSITION_INDEPENDENT_CODE=ON \
+            -DCMAKE_C_FLAGS="-I$SYSROOT/usr/include -I$SYSROOT/usr/include/dbus-1.0" \
             -DSDL_SHARED=ON \
-            -DSDL_STATIC=ON \
+            -DSDL_STATIC=OFF \
             -DSDL_DLOPEN=ON \
             -DSDL_X11=ON -DSDL_X11_SHARED=ON \
             -DSDL_WAYLAND=ON -DSDL_WAYLAND_SHARED=ON \
@@ -234,8 +233,6 @@ jobs:
             -DSDL_PULSEAUDIO=ON -DSDL_PULSEAUDIO_SHARED=ON \
             -DSDL_VULKAN=OFF \
             -DSDL_DBUS=ON \
-            -DSDL_IBUS=ON \
-            -DSDL_IME=ON \
             -DWAYLAND_SCANNER=/usr/bin/wayland-scanner
 
           cmake --build sdl2-build -j$(nproc)
