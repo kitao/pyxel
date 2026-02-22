@@ -174,6 +174,13 @@ jobs:
           stub_lib Xfixes 3
           stub_lib Xss 1
           stub_lib asound 2
+          stub_lib pulse 0
+          stub_lib wayland-client 0
+          stub_lib wayland-cursor 0
+          stub_lib wayland-egl 1
+          stub_lib xkbcommon 0
+          stub_lib decor-0 0
+          stub_lib EGL 1
 
       - name: Build SDL2
         run: |
