@@ -121,9 +121,10 @@ jobs:
         run: |
           SYSROOT=/usr/${{ matrix.target }}/${{ matrix.target }}/sysroot
 
-          # X11 and XCB
-          cp -r /usr/include/X11 $SYSROOT/usr/include/
-          [ -d /usr/include/xcb ] && cp -r /usr/include/xcb $SYSROOT/usr/include/
+          # X11/XCB headers: use sysroot's existing ones (compatible with cross-compiler)
+          # Only copy if missing
+          [ ! -d "$SYSROOT/usr/include/X11" ] && cp -r /usr/include/X11 $SYSROOT/usr/include/
+          [ ! -d "$SYSROOT/usr/include/xcb" ] && [ -d /usr/include/xcb ] && cp -r /usr/include/xcb $SYSROOT/usr/include/
 
           # Wayland
           cp /usr/include/wayland-*.h $SYSROOT/usr/include/
