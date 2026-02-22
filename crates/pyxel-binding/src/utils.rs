@@ -105,9 +105,9 @@ macro_rules! impl_python_sequence_read {
                 }
             }
 
-            fn __iter__<'py>(
+            fn __iter__(
                 &self,
-                py: pyo3::Python<'py>,
+                py: pyo3::Python<'_>,
             ) -> pyo3::PyResult<pyo3::Py<pyo3::PyAny>> {
                 use pyo3::prelude::*;
                 let len = $len(&self.inner);
@@ -117,9 +117,9 @@ macro_rules! impl_python_sequence_read {
                 Ok(iter.unbind())
             }
 
-            fn __reversed__<'py>(
+            fn __reversed__(
                 &self,
-                py: pyo3::Python<'py>,
+                py: pyo3::Python<'_>,
             ) -> pyo3::PyResult<pyo3::Py<pyo3::PyAny>> {
                 use pyo3::prelude::*;
                 let len = $len(&self.inner);
@@ -196,9 +196,9 @@ macro_rules! impl_python_sequence_cmp {
                 Ok(list.into_any().unbind())
             }
 
-            fn __mul__<'py>(
+            fn __mul__(
                 &self,
-                py: pyo3::Python<'py>,
+                py: pyo3::Python<'_>,
                 n: isize,
             ) -> pyo3::PyResult<pyo3::Py<pyo3::PyAny>> {
                 let len = $len(&self.inner);

@@ -121,7 +121,7 @@ impl Seqs {
         }
     }
 
-    fn __iter__<'py>(&self, py: Python<'py>) -> PyResult<Py<PyAny>> {
+    fn __iter__(&self, py: Python<'_>) -> PyResult<Py<PyAny>> {
         let len = self.inner.lock().seqs.len();
         let items: Vec<Seq> = (0..len)
             .map(|i| Seq::wrap(self.inner.lock().seqs[i].clone()))
@@ -131,7 +131,7 @@ impl Seqs {
         Ok(iter.unbind())
     }
 
-    fn __reversed__<'py>(&self, py: Python<'py>) -> PyResult<Py<PyAny>> {
+    fn __reversed__(&self, py: Python<'_>) -> PyResult<Py<PyAny>> {
         let len = self.inner.lock().seqs.len();
         let items: Vec<Seq> = (0..len)
             .rev()
@@ -219,13 +219,12 @@ impl Seqs {
         self.inner.lock().seqs.clear();
     }
 
-    pub fn from_list(&self, list: Vec<Vec<u32>>) -> PyResult<()> {
+    pub fn from_list(&self, list: Vec<Vec<u32>>) {
         static ONCE: std::sync::Once = std::sync::Once::new();
         ONCE.call_once(|| {
             println!("Seqs.from_list() is deprecated. Use slice assignment instead.");
         });
         self.inner.lock().set(&list);
-        Ok(())
     }
 
     pub fn to_list(&self, py: Python) -> PyResult<Py<PyAny>> {
@@ -236,7 +235,7 @@ impl Seqs {
         let inner = self.inner.lock();
         let seqs: Vec<Vec<u32>> = inner.seqs.iter().map(|seq| seq.lock().clone()).collect();
         let list = PyList::new(py, seqs)?;
-        Ok(list.unbind().into_any().into())
+        Ok(list.unbind().into_any())
     }
 }
 
