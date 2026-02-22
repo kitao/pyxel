@@ -5,19 +5,15 @@ on:
     tags:
       - "v*.*.*"
 
-env:
-  PYTHON_VERSION: "3.14"
-
 jobs:
   build:
     uses: kitao/pyxel/.github/workflows/build.yml@main
 
   release:
-    runs-on: macos-15
     needs: build
+    runs-on: macos-15
     steps:
-      - name: Check out repository
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Download wheels
         uses: actions/download-artifact@v4
@@ -34,8 +30,8 @@ jobs:
           PYXEL_VERSION=$(echo $GITHUB_REF | sed 's/refs\/tags\/v//')
           echo "PYXEL_VERSION=${PYXEL_VERSION}" >> $GITHUB_ENV
 
-      - name: Create release
-        uses: softprops/action-gh-release@v1
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v2
         with:
           name: Pyxel ${{ env.PYXEL_VERSION }}
           tag_name: ${{ github.ref }}
@@ -44,9 +40,9 @@ jobs:
       - name: Install Python
         uses: actions/setup-python@v4
         with:
-          python-version: ${{ env.PYTHON_VERSION }}
+          python-version: "3.14"
 
-      - name: Publish wheels
+      - name: Publish to PyPI
         run: |
           pip install twine
           twine upload dist/*
@@ -57,7 +53,7 @@ jobs:
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
 
-      - name: Publish crates
+      - name: Publish to crates.io
         run: |
           echo -n "${{ secrets.CARGO_REGISTRY_TOKEN }}" | cargo login
           cd rust/pyxel-platform
