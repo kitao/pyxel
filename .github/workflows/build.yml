@@ -153,10 +153,14 @@ jobs:
             cp "$DBUS_ARCH_DIR/dbus/dbus-arch-deps.h" $SYSROOT/usr/include/dbus-1.0/dbus/
           fi
 
-          # Copy ALL pkg-config .pc files
+          # Copy ALL pkg-config .pc files and fix paths for cross-compilation
           mkdir -p $SYSROOT/usr/lib/pkgconfig
           cp /usr/lib/x86_64-linux-gnu/pkgconfig/*.pc $SYSROOT/usr/lib/pkgconfig/ 2>/dev/null || true
           cp /usr/share/pkgconfig/*.pc $SYSROOT/usr/lib/pkgconfig/ 2>/dev/null || true
+          # Rewrite host-specific libdir to prevent -L/usr/lib/x86_64-linux-gnu
+          # from leaking into the linker search path (which causes it to find
+          # incompatible x86_64 libm/libc/libgcc_s for non-x86_64 targets)
+          sed -i "s|/usr/lib/x86_64-linux-gnu|$SYSROOT/usr/lib|g" $SYSROOT/usr/lib/pkgconfig/*.pc
 
           # Create library stubs for cmake FindLibraryAndSONAME()
           # With SDL_*_SHARED=ON, these are NOT linked against.
