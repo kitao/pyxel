@@ -183,6 +183,11 @@ jobs:
           curl -sqLO https://www.libsdl.org/release/SDL2-${{ env.SDL2_VERSION }}.tar.gz
           tar xzf SDL2-${{ env.SDL2_VERSION }}.tar.gz
 
+          # Patch: remove XGenericEventCookie forward declaration that conflicts
+          # with Xlib.h when using GCC 4.8 (manylinux2014 cross-compiler)
+          sed -i '/#ifndef SDL_VIDEO_DRIVER_X11_SUPPORTS_GENERIC_EVENTS/,/#endif/d' \
+            SDL2-${{ env.SDL2_VERSION }}/src/video/x11/SDL_x11xinput2.h
+
           # Create cmake toolchain file for cross-compilation
           TARGET_CXX=$(echo "$TARGET_CC" | sed 's/gcc/g++/')
           TOOLCHAIN=/tmp/toolchain.cmake
