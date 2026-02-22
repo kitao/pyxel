@@ -105,25 +105,122 @@ jobs:
 
       - *install-build-deps
 
+      - name: Install SDL2 build dependencies
+        run: |
+          apt-get update -qq
+          apt-get install -y -qq --no-install-recommends \
+            pkg-config \
+            libx11-dev libxext-dev libxcursor-dev libxi-dev \
+            libxrandr-dev libxfixes-dev libxss-dev \
+            libwayland-dev libxkbcommon-dev libdecor-0-dev \
+            libegl-dev libgl-dev libgles-dev \
+            libasound2-dev libpulse-dev \
+            libdbus-1-dev
+
+      - name: Copy headers to cross-compilation sysroot
+        run: |
+          SYSROOT=/usr/${{ matrix.target }}/${{ matrix.target }}/sysroot
+
+          # X11
+          cp -r /usr/include/X11 $SYSROOT/usr/include/
+
+          # Wayland
+          cp /usr/include/wayland-*.h $SYSROOT/usr/include/
+
+          # xkbcommon
+          cp -r /usr/include/xkbcommon $SYSROOT/usr/include/
+
+          # libdecor
+          cp -r /usr/include/libdecor-0 $SYSROOT/usr/include/
+
+          # OpenGL/EGL/GLES (required for Wayland driver detection)
+          for dir in EGL GL GLES GLES2 GLES3 KHR; do
+            [ -d "/usr/include/$dir" ] && cp -r /usr/include/$dir $SYSROOT/usr/include/
+          done
+
+          # ALSA
+          cp -r /usr/include/alsa $SYSROOT/usr/include/
+
+          # PulseAudio
+          cp -r /usr/include/pulse $SYSROOT/usr/include/
+
+          # D-Bus (including arch-specific dbus-arch-deps.h)
+          cp -r /usr/include/dbus-1.0 $SYSROOT/usr/include/
+          DBUS_ARCH_DIR=$(find /usr/lib -path "*/dbus-1.0/include" -type d 2>/dev/null | head -1)
+          if [ -n "$DBUS_ARCH_DIR" ]; then
+            cp "$DBUS_ARCH_DIR/dbus/dbus-arch-deps.h" $SYSROOT/usr/include/dbus-1.0/dbus/
+          fi
+
+          # pkg-config .pc files (needed for Wayland, ALSA, PulseAudio detection)
+          mkdir -p $SYSROOT/usr/lib/pkgconfig
+          PC_SRC=/usr/lib/x86_64-linux-gnu/pkgconfig
+          for pc in alsa libpulse libpulse-simple \
+                    wayland-client wayland-cursor wayland-egl wayland-scanner \
+                    xkbcommon libdecor-0 egl gl glesv2 dbus-1; do
+            [ -f "$PC_SRC/$pc.pc" ] && cp "$PC_SRC/$pc.pc" $SYSROOT/usr/lib/pkgconfig/
+          done
+
       - name: Build SDL2
         run: |
           export CC=$TARGET_CC
           export AR=$TARGET_AR
           export RANLIB=$TARGET_RANLIB
 
+          SYSROOT=/usr/${{ matrix.target }}/${{ matrix.target }}/sysroot
+
           curl -sqLO https://www.libsdl.org/release/SDL2-${{ env.SDL2_VERSION }}.tar.gz
           tar xzf SDL2-${{ env.SDL2_VERSION }}.tar.gz
 
           cd SDL2-${{ env.SDL2_VERSION }}
-          CFLAGS="-O3 -fPIC" ./configure \
+          PKG_CONFIG_PATH="$SYSROOT/usr/lib/pkgconfig" \
+          PKG_CONFIG_SYSROOT_DIR="$SYSROOT" \
+          WAYLAND_SCANNER=/usr/bin/wayland-scanner \
+          CFLAGS="-O3 -fPIC -I$SYSROOT/usr/include -I$SYSROOT/usr/include/dbus-1.0" \
+          ./configure \
             --build=x86_64-unknown-linux-gnu \
             --host=${{ matrix.target }} \
             --prefix=/usr/${{ matrix.target }} \
             --enable-shared \
-            --enable-static
-          make -j4
+            --enable-static \
+            --enable-video-x11 \
+            --enable-x11-shared \
+            --enable-video-x11-xcursor \
+            --enable-video-x11-xinput2 \
+            --enable-video-x11-xrandr \
+            --enable-video-x11-xfixes \
+            --enable-video-x11-scrnsaver \
+            --enable-video-wayland \
+            --enable-wayland-shared \
+            --enable-libdecor \
+            --enable-libdecor-shared \
+            --enable-video-opengl \
+            --enable-video-opengles \
+            --enable-video-opengles2 \
+            --enable-alsa \
+            --enable-alsa-shared \
+            --enable-pulseaudio \
+            --enable-pulseaudio-shared \
+            --enable-dbus \
+            --enable-ibus \
+            --enable-ime \
+            --enable-sdl-dlopen
+
+          make -j$(nproc)
           make install
           cd ..
+
+          # Verify expected drivers are present
+          echo "=== Verifying built SDL2 ==="
+          FAIL=0
+          for pattern in libX11 libwayland-client libasound libpulse; do
+            if strings /usr/${{ matrix.target }}/lib/libSDL2.so | grep -q "$pattern"; then
+              echo "PASS: $pattern found"
+            else
+              echo "FAIL: $pattern NOT found"
+              FAIL=1
+            fi
+          done
+          [ $FAIL -eq 0 ] || exit 1
 
           rm -rf SDL2-${{ env.SDL2_VERSION }}
 
@@ -178,3 +275,32 @@ jobs:
         run: |
           pip install dist/*.whl
           python -c "import pyxel; print(f'Pyxel {pyxel.VERSION} imported successfully')"
+
+      - name: Verify SDL2 drivers (Linux)
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          PYXEL_DIR=$(python -c "import pyxel, os; print(os.path.dirname(pyxel.__file__))")
+          SDL2_LIB=$(find "$PYXEL_DIR" -name "libSDL2*" -name "*.so*" 2>/dev/null | head -1)
+
+          if [ -z "$SDL2_LIB" ]; then
+            # Also check pyxel.libs/ directory
+            SDL2_LIB=$(find "$(dirname "$PYXEL_DIR")" -path "*/pyxel.libs/libSDL2*" -name "*.so*" 2>/dev/null | head -1)
+          fi
+
+          if [ -z "$SDL2_LIB" ]; then
+            echo "FAIL: Could not find bundled SDL2 library"
+            exit 1
+          fi
+
+          echo "Found SDL2 library: $SDL2_LIB"
+          FAIL=0
+          for pattern in libX11.so libwayland-client.so libasound.so libpulse.so; do
+            if strings "$SDL2_LIB" | grep -q "$pattern"; then
+              echo "PASS: $pattern dlopen target found"
+            else
+              echo "FAIL: $pattern dlopen target NOT found"
+              FAIL=1
+            fi
+          done
+          [ $FAIL -eq 0 ] || exit 1

@@ -1,11 +1,12 @@
 # Change Log
 
-## 2.7.0
+## 2.6.9
 
 - Restructured project layout and reorganized Rust crates
 - Removed crates.io publishing from release workflow
 - Added pre-release versioning support for PyPI
 - Added Python list-like operations to sequence types
+- Fixed Linux SDL2 build to include X11/Wayland/ALSA/PulseAudio drivers
 
 ## 2.6.8
 
