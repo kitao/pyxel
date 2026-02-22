@@ -20,5 +20,5 @@ pyxel-engine = { path = "../pyxel-engine", version = "2.6.7" }
 sysinfo = "0.38"
 
 [features]
-sdl2 = ["pyxel-engine/sdl2"]
+sdl2_system = ["pyxel-engine/sdl2_system"]
 sdl2_bundle = ["pyxel-engine/sdl2_bundle"]

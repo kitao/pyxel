@@ -65,12 +65,16 @@ CARGO_OPTS = --release --target $(TARGET) -Zbuild-std=std,panic_abort
 ifneq (,$(or $(findstring windows,$(TARGET)),$(findstring darwin,$(TARGET))))
 CARGO_OPTS += --features sdl2_bundle
 else
-CARGO_OPTS += --features sdl2
+CARGO_OPTS += --features sdl2_system
 endif
 
 # Tool options
 CLIPPY_OPTS = -q -- --no-deps
+ifneq (,$(findstring linux,$(TARGET)))
+MATURIN_OPTS = --manylinux 2014
+else
 MATURIN_OPTS = --manylinux 2014 --auditwheel skip
+endif
 
 # PyO3 environment
 ifneq ($(TARGET),$(WASM_TARGET))

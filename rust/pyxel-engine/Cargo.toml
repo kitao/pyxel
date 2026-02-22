@@ -35,5 +35,5 @@ toml = "1.0"
 zip = { version = "8.1", default-features = false, features = ["deflate"] }
 
 [features]
-sdl2 = ["pyxel-platform/sdl2"]
+sdl2_system = ["pyxel-platform/sdl2_system"]
 sdl2_bundle = ["pyxel-platform/sdl2_bundle"]

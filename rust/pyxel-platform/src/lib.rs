@@ -17,7 +17,7 @@ pub mod key;
 
 mod event;
 mod platform;
-#[cfg(feature = "sdl2")]
+#[cfg(any(feature = "sdl2_system", feature = "sdl2_bundle"))]
 mod sdl2;
 
 pub use event::Event;

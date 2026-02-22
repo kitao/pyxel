@@ -242,7 +242,7 @@ impl Sdl2Bindings {
 }
 
 fn use_sdl2() -> bool {
-    var("CARGO_FEATURE_SDL2").is_ok()
+    var("CARGO_FEATURE_SDL2_SYSTEM").is_ok() || var("CARGO_FEATURE_SDL2_BUNDLE").is_ok()
 }
 
 fn bundle_sdl2() -> bool {

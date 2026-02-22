@@ -1,5 +1,11 @@
 # Change Log
 
+## 2.6.8
+
+- Bundled SDL2 in Linux wheels for easier installation
+- Renamed SDL2 feature flags to sdl2_system and sdl2_bundle
+- Updated Linux CI SDL2 version to 2.32.0
+
 ## 2.6.7
 
 - Refined the Makefile for safer WASM builds

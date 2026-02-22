@@ -4,7 +4,7 @@ use std::ptr::null_mut;
 use glow::Context;
 
 use crate::event::Event;
-#[cfg(feature = "sdl2")]
+#[cfg(any(feature = "sdl2_system", feature = "sdl2_bundle"))]
 use crate::sdl2::platform_sdl2::PlatformSdl2 as Platform;
 
 #[derive(PartialEq)]
