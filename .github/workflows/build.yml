@@ -4,7 +4,7 @@ on: [workflow_call, workflow_dispatch]
 
 env:
   PYTHON_VERSION: "3.14"
-  SDL2_VERSION: "2.32.0"
+  SDL2_VERSION: "2.32.10"
 
 jobs:
   build-winmac:
