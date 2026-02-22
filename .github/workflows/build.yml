@@ -151,14 +151,27 @@ jobs:
             cp "$DBUS_ARCH_DIR/dbus/dbus-arch-deps.h" $SYSROOT/usr/include/dbus-1.0/dbus/
           fi
 
-          # pkg-config .pc files (needed for Wayland, ALSA, PulseAudio detection)
+          # Copy ALL pkg-config .pc files
           mkdir -p $SYSROOT/usr/lib/pkgconfig
-          PC_SRC=/usr/lib/x86_64-linux-gnu/pkgconfig
-          for pc in alsa libpulse libpulse-simple \
-                    wayland-client wayland-cursor wayland-egl wayland-scanner \
-                    xkbcommon libdecor-0 egl gl glesv2 dbus-1; do
-            [ -f "$PC_SRC/$pc.pc" ] && cp "$PC_SRC/$pc.pc" $SYSROOT/usr/lib/pkgconfig/
-          done
+          cp /usr/lib/x86_64-linux-gnu/pkgconfig/*.pc $SYSROOT/usr/lib/pkgconfig/ 2>/dev/null || true
+          cp /usr/share/pkgconfig/*.pc $SYSROOT/usr/lib/pkgconfig/ 2>/dev/null || true
+
+          # Create library stubs for cmake FindLibraryAndSONAME()
+          # With SDL_*_SHARED=ON, these are NOT linked against.
+          # They only exist so cmake can resolve SONAMEs for dlopen.
+          mkdir -p $SYSROOT/usr/lib
+          stub_lib() {
+            touch "$SYSROOT/usr/lib/lib${1}.so.${2}"
+            ln -sf "lib${1}.so.${2}" "$SYSROOT/usr/lib/lib${1}.so"
+          }
+          stub_lib X11 6
+          stub_lib Xext 6
+          stub_lib Xcursor 1
+          stub_lib Xi 6
+          stub_lib Xrandr 2
+          stub_lib Xfixes 3
+          stub_lib Xss 1
+          stub_lib asound 2
 
       - name: Build SDL2
         run: |
@@ -181,6 +194,9 @@ jobs:
           echo "set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)" >> "$TOOLCHAIN"
           echo "set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)" >> "$TOOLCHAIN"
           echo "set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY)" >> "$TOOLCHAIN"
+
+          export PKG_CONFIG_LIBDIR="$SYSROOT/usr/lib/pkgconfig"
+          export PKG_CONFIG_PATH=""
 
           cmake -S SDL2-${{ env.SDL2_VERSION }} -B sdl2-build \
             -DCMAKE_TOOLCHAIN_FILE="$TOOLCHAIN" \
