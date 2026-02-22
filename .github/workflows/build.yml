@@ -4,7 +4,7 @@ on: [workflow_call, workflow_dispatch]
 
 env:
   PYTHON_VERSION: "3.14"
-  SDL2_VERSION: "2.32.10"
+  SDL2_VERSION: "2.32.0"
 
 jobs:
   build-winmac:
@@ -117,9 +117,12 @@ jobs:
             libasound2-dev libpulse-dev \
             libdbus-1-dev
 
-      - name: Copy headers to cross-compilation sysroot
+      - name: Prepare cross-compilation sysroot
         run: |
           SYSROOT=/usr/${{ matrix.target }}/${{ matrix.target }}/sysroot
+          PREFIX=/usr/${{ matrix.target }}
+          echo "SYSROOT=$SYSROOT" >> "$GITHUB_ENV"
+          echo "PREFIX=$PREFIX" >> "$GITHUB_ENV"
 
           # X11/XCB headers: use sysroot's existing ones (compatible with cross-compiler)
           # Only copy if missing
@@ -186,9 +189,6 @@ jobs:
 
       - name: Build SDL2
         run: |
-          SYSROOT=/usr/${{ matrix.target }}/${{ matrix.target }}/sysroot
-          PREFIX=/usr/${{ matrix.target }}
-
           curl -sqLO https://www.libsdl.org/release/SDL2-${{ env.SDL2_VERSION }}.tar.gz
           tar xzf SDL2-${{ env.SDL2_VERSION }}.tar.gz
 
@@ -227,13 +227,13 @@ jobs:
             -DSDL_X11=ON -DSDL_X11_SHARED=ON \
             -DSDL_WAYLAND=ON -DSDL_WAYLAND_SHARED=ON \
             -DSDL_WAYLAND_LIBDECOR=ON -DSDL_WAYLAND_LIBDECOR_SHARED=ON \
+            -DWAYLAND_SCANNER=/usr/bin/wayland-scanner \
             -DSDL_OPENGL=ON \
             -DSDL_OPENGLES=ON \
+            -DSDL_VULKAN=OFF \
             -DSDL_ALSA=ON -DSDL_ALSA_SHARED=ON \
             -DSDL_PULSEAUDIO=ON -DSDL_PULSEAUDIO_SHARED=ON \
-            -DSDL_VULKAN=OFF \
-            -DSDL_DBUS=ON \
-            -DWAYLAND_SCANNER=/usr/bin/wayland-scanner
+            -DSDL_DBUS=ON
 
           cmake --build sdl2-build -j$(nproc)
           cmake --install sdl2-build
@@ -255,9 +255,9 @@ jobs:
 
       - name: Build wheel
         run: |
-          export BINDGENFLAGS="-I/usr/${{ matrix.target }}/include/SDL2 -I/usr/${{ matrix.target }}/${{ matrix.target }}/sysroot/usr/include"
-          export RUSTFLAGS="-L/usr/${{ matrix.target }}/lib"
-          export LD_LIBRARY_PATH="/usr/${{ matrix.target }}/lib:${LD_LIBRARY_PATH:-}"
+          export BINDGENFLAGS="-I$PREFIX/include/SDL2 -I$SYSROOT/usr/include"
+          export RUSTFLAGS="-L$PREFIX/lib"
+          export LD_LIBRARY_PATH="$PREFIX/lib:${LD_LIBRARY_PATH:-}"
 
           make TARGET=${{ matrix.target }}
 
@@ -281,9 +281,22 @@ jobs:
           - target: x86_64-unknown-linux-gnu
             os: ubuntu-24.04
 
+          - target: i686-unknown-linux-gnu
+            os: ubuntu-24.04
+            skip_import: true
+
+          - target: aarch64-unknown-linux-gnu
+            os: ubuntu-24.04
+            skip_import: true
+
+          - target: armv7-unknown-linux-gnueabihf
+            os: ubuntu-24.04
+            skip_import: true
+
     runs-on: ${{ matrix.os }}
     steps:
       - name: Install Python
+        if: ${{ !matrix.skip_import }}
         uses: actions/setup-python@v4
         with:
           python-version: ${{ env.PYTHON_VERSION }}
@@ -300,6 +313,7 @@ jobs:
           unzip -l dist/*.whl | grep -iE '\.so|\.dll|\.dylib|sdl' || echo "No shared libraries found"
 
       - name: Verify import
+        if: ${{ !matrix.skip_import }}
         shell: bash
         run: |
           pip install dist/*.whl
@@ -309,16 +323,12 @@ jobs:
         if: runner.os == 'Linux'
         shell: bash
         run: |
-          PYXEL_DIR=$(python -c "import pyxel, os; print(os.path.dirname(pyxel.__file__))")
-          SDL2_LIB=$(find "$PYXEL_DIR" -name "libSDL2*" -name "*.so*" 2>/dev/null | head -1)
+          mkdir -p /tmp/wheel-contents
+          unzip -o dist/*.whl -d /tmp/wheel-contents
+          SDL2_LIB=$(find /tmp/wheel-contents -name "libSDL2*" -name "*.so*" 2>/dev/null | head -1)
 
           if [ -z "$SDL2_LIB" ]; then
-            # Also check pyxel.libs/ directory
-            SDL2_LIB=$(find "$(dirname "$PYXEL_DIR")" -path "*/pyxel.libs/libSDL2*" -name "*.so*" 2>/dev/null | head -1)
-          fi
-
-          if [ -z "$SDL2_LIB" ]; then
-            echo "FAIL: Could not find bundled SDL2 library"
+            echo "FAIL: Could not find bundled SDL2 library in wheel"
             exit 1
           fi
 
