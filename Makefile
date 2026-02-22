@@ -79,7 +79,7 @@ endif
 # PyO3 environment
 ifneq ($(TARGET),$(WASM_TARGET))
 PYTHON ?= python3
-PYO3_PYTHON ?= $(PYTHON)
+PYO3_PYTHON ?= $(shell which $(PYTHON))
 PYO3_ENVIRONMENT_SIGNATURE ?= $(shell $(PYTHON) -c \
 	"import sys,platform; v=sys.version_info; \
 	a=platform.architecture()[0]; \
