@@ -37,5 +37,5 @@ flate2 = "1.0"
 tar = "0.4"
 
 [features]
-sdl2_system = []
-sdl2_bundle = []
+sdl2_dynamic = []
+sdl2_static = []

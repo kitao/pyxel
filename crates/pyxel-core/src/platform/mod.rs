@@ -2,7 +2,7 @@ pub mod key;
 
 mod event;
 mod facade;
-#[cfg(any(feature = "sdl2_system", feature = "sdl2_bundle"))]
+#[cfg(any(feature = "sdl2_dynamic", feature = "sdl2_static"))]
 mod sdl2;
 
 pub use event::Event;

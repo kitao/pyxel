@@ -31,7 +31,7 @@ impl Sdl2Bindings {
     }
 
     fn build(&self) {
-        if bundle_sdl2() {
+        if static_sdl2() {
             self.download_sdl2();
             self.build_sdl2();
         }
@@ -120,7 +120,7 @@ impl Sdl2Bindings {
     }
 
     fn link_sdl2(&self) {
-        if bundle_sdl2() {
+        if static_sdl2() {
             println!("cargo:rustc-link-lib=static=SDL2main");
             if self.target_os.contains("windows") {
                 println!("cargo:rustc-link-lib=static=SDL2-static");
@@ -211,7 +211,7 @@ impl Sdl2Bindings {
     fn get_include_flags(&self) -> Vec<String> {
         let mut include_flags = Vec::new();
 
-        if bundle_sdl2() {
+        if static_sdl2() {
             include_flags.push(format!("-I{}/include", self.sdl2_dir));
         } else if self.target_os == "emscripten" {
             let output = Command::new("emcc")
@@ -243,11 +243,11 @@ impl Sdl2Bindings {
 }
 
 fn use_sdl2() -> bool {
-    var("CARGO_FEATURE_SDL2_SYSTEM").is_ok() || var("CARGO_FEATURE_SDL2_BUNDLE").is_ok()
+    var("CARGO_FEATURE_SDL2_DYNAMIC").is_ok() || var("CARGO_FEATURE_SDL2_STATIC").is_ok()
 }
 
-fn bundle_sdl2() -> bool {
-    var("CARGO_FEATURE_SDL2_BUNDLE").is_ok()
+fn static_sdl2() -> bool {
+    var("CARGO_FEATURE_SDL2_STATIC").is_ok()
 }
 
 fn main() {

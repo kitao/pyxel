@@ -18,5 +18,5 @@ pyxel-core = { path = "../pyxel-core" }
 sysinfo = "0.38"
 
 [features]
-sdl2_system = ["pyxel-core/sdl2_system"]
-sdl2_bundle = ["pyxel-core/sdl2_bundle"]
+sdl2_dynamic = ["pyxel-core/sdl2_dynamic"]
+sdl2_static = ["pyxel-core/sdl2_static"]

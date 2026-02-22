@@ -63,9 +63,9 @@ endif
 CARGO_OPTS = --release --target $(TARGET) -Zbuild-std=std,panic_abort
 
 ifneq (,$(or $(findstring windows,$(TARGET)),$(findstring darwin,$(TARGET))))
-CARGO_OPTS += --features sdl2_bundle
+CARGO_OPTS += --features sdl2_static
 else
-CARGO_OPTS += --features sdl2_system
+CARGO_OPTS += --features sdl2_dynamic
 endif
 
 # Tool options
