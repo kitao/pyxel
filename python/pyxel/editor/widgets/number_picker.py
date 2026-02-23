@@ -56,6 +56,6 @@ class NumberPicker(Widget):
         pyxel.text(
             self.x + 11,
             self.y + 1,
-            ("{:>" + str(self._number_len) + "}").format(self.value_var),
+            f"{self.value_var:>{self._number_len}}",
             INPUT_TEXT_COLOR,
         )

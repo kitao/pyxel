@@ -1,3 +1,5 @@
+use std::ptr;
+
 use crate::image::{Color, Image};
 use crate::key::{
     Key, GAMEPAD1_BUTTON_A, GAMEPAD1_BUTTON_B, GAMEPAD1_BUTTON_DPAD_DOWN,
@@ -111,7 +113,7 @@ impl Pyxel {
             (&mut *image).draw_image(
                 0.0,
                 0.0,
-                std::ptr::from_mut(pyxel::screen()),
+                ptr::from_mut(pyxel::screen()),
                 0.0,
                 0.0,
                 *pyxel::width() as f32,
@@ -152,12 +154,15 @@ impl Pyxel {
 
         #[cfg(target_os = "emscripten")]
         {
+            use std::ffi::CString;
+            use std::os::raw::c_char;
+
             extern "C" {
-                fn emscripten_run_script(script: *const std::os::raw::c_char);
+                fn emscripten_run_script(script: *const c_char);
             }
 
             unsafe {
-                let script = std::ffi::CString::new("resetPyxel();").unwrap();
+                let script = CString::new("resetPyxel();").unwrap();
                 emscripten_run_script(script.as_ptr());
             }
         }
@@ -439,7 +444,7 @@ impl Pyxel {
             screen.draw_image(
                 x as f32,
                 y as f32,
-                std::ptr::from_mut(pyxel::cursor_image()),
+                ptr::from_mut(pyxel::cursor_image()),
                 0.0,
                 0.0,
                 width as f32,

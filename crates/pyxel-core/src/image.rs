@@ -1,6 +1,7 @@
 use std::array;
 use std::collections::HashMap;
 use std::path::Path;
+use std::ptr;
 
 use image::imageops;
 
@@ -343,7 +344,7 @@ impl Image {
             return;
         }
 
-        if std::ptr::eq(image, std::ptr::from_mut(self)) {
+        if ptr::eq(image, ptr::from_mut(self)) {
             let copy_width = utils::f32_to_u32(width.abs());
             let copy_height = utils::f32_to_u32(height.abs());
             let mut canvas = Canvas::new(copy_width, copy_height);
@@ -400,7 +401,7 @@ impl Image {
         rotate: f32,
         scale: f32,
     ) {
-        if std::ptr::eq(image, std::ptr::from_mut(self)) {
+        if ptr::eq(image, ptr::from_mut(self)) {
             let copy_width = utils::f32_to_u32(width.abs());
             let copy_height = utils::f32_to_u32(height.abs());
             let mut canvas = Canvas::new(copy_width, copy_height);

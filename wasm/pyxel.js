@@ -19,7 +19,7 @@ window.pyxelContext = {
   hasFatalError: false,
 };
 
-let _virtualGamepadStates = [
+const _virtualGamepadStates = [
   false, // Up
   false, // Down
   false, // Left
@@ -37,7 +37,7 @@ let _virtualGamepadStates = [
 // producing incorrect keycodes for non-US keyboards. This captures the actual
 // character from KeyboardEvent.key and builds a code-to-char mapping that is
 // independent of modifier keys (Shift, etc.).
-let _keyCharMap = {}; // Maps KeyboardEvent.code to unshifted char code
+const _keyCharMap = {}; // Maps KeyboardEvent.code to unshifted char code
 let _lastKeyDownChar = 0;
 let _lastKeyUpChar = 0;
 document.addEventListener(
@@ -198,7 +198,7 @@ function _setIcon() {
 }
 
 function _setStyleSheet() {
-  styleSheetLink = document.createElement("link");
+  const styleSheetLink = document.createElement("link");
   styleSheetLink.rel = "stylesheet";
   styleSheetLink.href = _scriptDir() + "pyxel.css";
   document.head.appendChild(styleSheetLink);
@@ -497,7 +497,7 @@ function _hookFileOperations(pyodide, root) {
   };
 
   // Define function to save file
-  _savePyxelFile = (filename) => {
+  window._savePyxelFile = (filename) => {
     let a = document.createElement("a");
     a.download = filename.split(/[\\/]/).pop();
     a.href = URL.createObjectURL(

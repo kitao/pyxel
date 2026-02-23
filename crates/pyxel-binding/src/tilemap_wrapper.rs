@@ -3,6 +3,7 @@ use std::sync::Once;
 
 use pyo3::exceptions::PyException;
 use pyo3::prelude::*;
+use pyo3::types::PyDict;
 
 use crate::image_wrapper::Image;
 
@@ -83,7 +84,7 @@ impl Tilemap {
             inner.data_ptr()
         ))
         .unwrap();
-        let locals = pyo3::types::PyDict::new(py);
+        let locals = PyDict::new(py);
         py.run(python_code.as_c_str(), None, Some(&locals)).unwrap();
         value_to_pyobj!(py, locals.get_item("c_uint8_array").unwrap())
     }

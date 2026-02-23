@@ -7,6 +7,10 @@
 - Optimized drawing performance with bulk fills and reduced overhead
 - Renamed pyxel-core public API to idiomatic Rust names
 - Improved test script with cleanup and app2exe/app2html
+- Cleaned up unnecessary fully-qualified paths across Rust codebase
+- Improved Python code idioms in cli.py and number_picker.py
+- Unified type annotation style in __init__.pyi
+- Fixed implicit globals and let/const usage in pyxel.js
 
 ## 2.6.9
 

@@ -1,3 +1,5 @@
+use std::cmp::Ordering;
+
 use pyo3::prelude::*;
 use pyo3::types::{PyFloat, PyInt};
 use pyxel::Pyxel;
@@ -52,9 +54,9 @@ fn sgn(x: Bound<'_, PyAny>) -> PyResult<Py<PyAny>> {
 
     if let Ok(xi) = x.extract::<i64>() {
         let v = match xi.cmp(&0) {
-            std::cmp::Ordering::Greater => 1,
-            std::cmp::Ordering::Less => -1,
-            std::cmp::Ordering::Equal => 0,
+            Ordering::Greater => 1,
+            Ordering::Less => -1,
+            Ordering::Equal => 0,
         };
         let obj = PyInt::new(py, v).into_any().unbind();
         return Ok(obj);

@@ -1,3 +1,5 @@
+use std::ptr;
+
 use crate::canvas::{Canvas, ToIndex};
 use crate::image::Image;
 use crate::settings::TILE_SIZE;
@@ -234,7 +236,7 @@ impl Tilemap {
             return;
         }
 
-        if std::ptr::eq(tilemap, std::ptr::from_mut(self)) {
+        if ptr::eq(tilemap, ptr::from_mut(self)) {
             let copy_width = f32_to_u32(width.abs());
             let copy_height = f32_to_u32(height.abs());
             let mut canvas = Canvas::new(copy_width, copy_height);
@@ -282,7 +284,7 @@ impl Tilemap {
         rotate: f32,
         scale: f32,
     ) {
-        if std::ptr::eq(tilemap, std::ptr::from_mut(self)) {
+        if ptr::eq(tilemap, ptr::from_mut(self)) {
             let copy_width = f32_to_u32(width.abs());
             let copy_height = f32_to_u32(height.abs());
             let mut canvas = Canvas::new(copy_width, copy_height);

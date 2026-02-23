@@ -99,8 +99,8 @@ impl Pyxel {
             exclude_musics.unwrap_or(false),
         );
 
-        let path = std::path::Path::new(&filename);
-        let file = std::fs::File::create(path)
+        let path = Path::new(&filename);
+        let file = File::create(path)
             .map_err(|_e| format!("Failed to open file '{filename}'"))?;
 
         let mut zip = ZipWriter::new(file);

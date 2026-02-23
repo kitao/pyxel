@@ -57,7 +57,7 @@ def cli():
         if sys.argv[1] != command[0][0]:
             continue
         max_args = len(command[0]) + 1
-        min_args = max_args - len(list(filter(lambda s: s.startswith("["), command[0])))
+        min_args = max_args - sum(1 for s in command[0] if s.startswith("["))
         if min_args <= num_args <= max_args:
             command[1](*sys.argv[2:])
             return
@@ -83,7 +83,7 @@ def _complete_extension(filename, command, valid_ext):
 
 def _files_in_dir(dirname):
     paths = glob.glob(os.path.join(dirname, "**/*"), recursive=True)
-    return sorted(list(filter(os.path.isfile, paths)))
+    return sorted(p for p in paths if os.path.isfile(p))
 
 
 def _check_file_exists(filename):
@@ -146,10 +146,7 @@ def _timestamps_in_dir(dirname):
     paths += glob.glob(os.path.join(dirname, "*/*/*"))
     files = filter(os.path.isfile, paths)
 
-    timestamps = {}
-    for file in files:
-        timestamps[file] = os.path.getmtime(file)
-    return timestamps
+    return {file: os.path.getmtime(file) for file in files}
 
 
 def _run_python_script_in_separate_process(python_script_file):
@@ -193,7 +190,6 @@ def _make_metadata_comment(startup_script_file):
     if not metadata:
         return ""
 
-    metadata_comment = ""
     max_key_len = max(len(key) for key in metadata)
     max_value_len = max(len(value) for _, value in metadata.items())
     border = "-" * min((max_key_len + max_value_len + 3), 80)
