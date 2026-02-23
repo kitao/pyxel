@@ -66,11 +66,12 @@ class ImportHook:
         if is_found and self.main_dir is None:
             self.main_dir = caller_dir
 
-        # Trigger file download from the main directory if needed
+        # Trigger file download from the main directory via hooked stat
         if self.main_dir and self.main_dir != caller_dir:
             main_module_path = os.path.join(self.main_dir, f"{module_name}.py")
             main_package_path = os.path.join(self.main_dir, module_name, "__init__.py")
-            os.path.exists(main_module_path) or os.path.exists(main_package_path)
+            os.path.exists(main_module_path)
+            os.path.exists(main_package_path)
 
         return None
 

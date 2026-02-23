@@ -44,7 +44,7 @@ document.addEventListener(
   "keydown",
   (event) => {
     if (event.key.length === 1) {
-      let charCode = event.key.charCodeAt(0);
+      const charCode = event.key.charCodeAt(0);
       // Record unshifted mapping when no modifiers are held
       if (!event.shiftKey && !event.ctrlKey && !event.altKey && !event.metaKey) {
         _keyCharMap[event.code] = charCode;
@@ -66,16 +66,16 @@ document.addEventListener(
 );
 
 async function launchPyxel(params) {
-  const pyxel_version = PYXEL_WHEEL_PATH.match(/pyxel-([\d.]+)-/)[1];
-  const pyodide_version = PYODIDE_URL.match(/v([\d.]+)\//)[1];
-  console.log(`Launch Pyxel ${pyxel_version} with Pyodide ${pyodide_version}`);
+  const pyxelVersion = PYXEL_WHEEL_PATH.match(/pyxel-([\d.]+)-/)[1];
+  const pyodideVersion = PYODIDE_URL.match(/v([\d.]+)\//)[1];
+  console.log(`Launch Pyxel ${pyxelVersion} with Pyodide ${pyodideVersion}`);
   console.log(params);
 
   _suppressTouchZoomGestures();
   _allowGamepadConnection();
 
-  let canvas = await _createScreenElements();
-  let pyodide = await _loadPyodideAndPyxel(canvas);
+  const canvas = await _createScreenElements();
+  const pyodide = await _loadPyodideAndPyxel(canvas);
 
   _hookPythonError(pyodide);
   _hookFileOperations(pyodide, params.root || ".");
@@ -112,13 +112,13 @@ async function resetPyxel() {
       pyxel.quit()
     `);
 
-    let audioContext = window.pyxelContext.pyodide?._module?.SDL2?.audioContext;
+    const audioContext = window.pyxelContext.pyodide?._module?.SDL2?.audioContext;
     if (audioContext && audioContext.state === "running") {
       await new Promise((resolve) => setTimeout(resolve, 50));
       await audioContext.suspend();
     }
 
-    let pyodide = window.pyxelContext.pyodide;
+    const pyodide = window.pyxelContext.pyodide;
     pyodide._module._emscripten_cancel_main_loop();
 
     pyodide.runPython(`
@@ -181,9 +181,9 @@ function _initialize() {
 }
 
 function _scriptDir() {
-  let scripts = document.getElementsByTagName("script");
+  const scripts = document.getElementsByTagName("script");
   for (const script of scripts) {
-    let match = script.src.match(/(^|.*\/)pyxel\.js$/);
+    const match = script.src.match(/(^|.*\/)pyxel\.js$/);
     if (match) {
       return match[1];
     }
@@ -191,7 +191,7 @@ function _scriptDir() {
 }
 
 function _setIcon() {
-  let iconLink = document.createElement("link");
+  const iconLink = document.createElement("link");
   iconLink.rel = "icon";
   iconLink.href = _scriptDir() + "../docs/images/pyxel_icon_64x64.ico";
   document.head.appendChild(iconLink);
@@ -248,21 +248,21 @@ function _suppressTouchZoomGestures() {
 }
 
 function _setMinWidthFromRatio(selector, screenSize) {
-  let elem = document.querySelector(selector);
+  const elem = document.querySelector(selector);
   if (!elem) {
     return;
   }
 
-  let minWidthRatio = parseFloat(
+  const minWidthRatio = parseFloat(
     getComputedStyle(elem).getPropertyValue("--min-width-ratio"),
   );
   elem.style.minWidth = `${screenSize * minWidthRatio}px`;
 }
 
 function _updateScreenElementsSize() {
-  let pyxelScreen = document.querySelector("div#pyxel-screen");
-  let { width, height } = pyxelScreen.getBoundingClientRect();
-  let screenSize = Math.max(width, height);
+  const pyxelScreen = document.querySelector("div#pyxel-screen");
+  const { width, height } = pyxelScreen.getBoundingClientRect();
+  const screenSize = Math.max(width, height);
 
   _setMinWidthFromRatio("img#pyxel-logo", screenSize);
   _setMinWidthFromRatio("img#pyxel-prompt", screenSize);
@@ -273,7 +273,7 @@ function _updateScreenElementsSize() {
 
 function _waitForEvent(target, ...events) {
   return new Promise((resolve) => {
-    let listener = (...args) => {
+    const listener = (...args) => {
       for (const ev of events) {
         target.removeEventListener(ev, listener);
       }
@@ -300,13 +300,13 @@ async function _createScreenElements() {
   window.addEventListener("resize", _updateScreenElementsSize);
 
   // Add canvas for SDL2
-  let sdl2Canvas = document.createElement("canvas");
+  const sdl2Canvas = document.createElement("canvas");
   sdl2Canvas.id = "canvas";
   sdl2Canvas.tabindex = -1;
   pyxelScreen.appendChild(sdl2Canvas);
 
   // Add image for logo
-  let logoImage = document.createElement("img");
+  const logoImage = document.createElement("img");
   logoImage.id = "pyxel-logo";
   logoImage.src = _scriptDir() + PYXEL_LOGO_PATH;
   logoImage.tabindex = -1;
@@ -319,26 +319,26 @@ async function _createScreenElements() {
 }
 
 async function _loadScript(scriptSrc) {
-  let script = document.createElement("script");
+  const script = document.createElement("script");
   script.src = scriptSrc;
-  let firstScript = document.getElementsByTagName("script")[0];
+  const firstScript = document.getElementsByTagName("script")[0];
   firstScript.parentNode.insertBefore(script, firstScript);
   await _waitForEvent(script, "load");
 }
 
 async function _loadPyodideAndPyxel(canvas) {
   await _loadScript(PYODIDE_URL);
-  let pyodide = await loadPyodide();
+  const pyodide = await loadPyodide();
   pyodide._api._skip_unwind_fatal_error = true;
   pyodide.canvas.setCanvas2D(canvas);
   await pyodide.loadPackage(_scriptDir() + PYXEL_WHEEL_PATH);
 
-  let FS = pyodide.FS;
+  const FS = pyodide.FS;
   FS.mkdir(PYXEL_WORKING_DIRECTORY);
   FS.chdir(PYXEL_WORKING_DIRECTORY);
 
-  let response = await fetch(_scriptDir() + IMPORT_HOOK_PATH);
-  let code = await response.text();
+  const response = await fetch(_scriptDir() + IMPORT_HOOK_PATH);
+  const code = await response.text();
   pyodide.runPython(code);
 
   return pyodide;
@@ -403,24 +403,24 @@ function _formatUnknownError(error) {
   if (typeof error === "string") {
     return error;
   }
-  let name = error.name || "Error";
-  let message = error.message || String(error);
-  let stack = error.stack || "";
+  const name = error.name || "Error";
+  const message = error.message || String(error);
+  const stack = error.stack || "";
   return `${name}: ${message}${stack ? "\n" + stack : ""}`;
 }
 
 function _displayFatalErrorOverlay(error) {
   window.pyxelContext.hasFatalError = true;
-  let message = _formatUnknownError(error);
+  const message = _formatUnknownError(error);
   _displayErrorOverlay(message);
 }
 
 function _hookFileOperations(pyodide, root) {
-  let fs = pyodide.FS;
+  const fs = pyodide.FS;
 
   // Define function to create directories
-  let createDirs = (absPath, isFile) => {
-    let dirs = absPath.split("/");
+  const createDirs = (absPath, isFile) => {
+    const dirs = absPath.split("/");
     dirs.shift();
     if (isFile) {
       dirs.pop();
@@ -435,7 +435,7 @@ function _hookFileOperations(pyodide, root) {
   };
 
   // Define function to copy path
-  let copyPath = (path) => {
+  const copyPath = (path) => {
     // Check path
     if (path.startsWith("<") || path.endsWith(PYXEL_WATCH_INFO_FILE)) {
       return;
@@ -447,15 +447,15 @@ function _hookFileOperations(pyodide, root) {
       return;
     }
     path = path.slice(PYXEL_WORKING_DIRECTORY.length + 1);
-    let srcPath = `${root}/${path}`;
-    let dstPath = `${PYXEL_WORKING_DIRECTORY}/${path}`;
+    const srcPath = `${root}/${path}`;
+    const dstPath = `${PYXEL_WORKING_DIRECTORY}/${path}`;
     if (fs.analyzePath(dstPath).exists) {
       return;
     }
 
     // Download path
     console.log(`Attempting to fetch '${path}'`);
-    let request = new XMLHttpRequest();
+    const request = new XMLHttpRequest();
     request.overrideMimeType("text/plain; charset=x-user-defined");
     request.open("GET", srcPath, false);
     try {
@@ -466,10 +466,10 @@ function _hookFileOperations(pyodide, root) {
     if (request.status !== 200) {
       return;
     }
-    let fileBinary = Uint8Array.from(request.response, (c) => c.charCodeAt(0));
+    const fileBinary = Uint8Array.from(request.response, (c) => c.charCodeAt(0));
 
     // Write path
-    let contentType = request.getResponseHeader("Content-Type") || "";
+    const contentType = request.getResponseHeader("Content-Type") || "";
     if (contentType.includes("text/html") && !path.includes(".")) {
       console.log(`Created directory '${dstPath}'`);
       createDirs(dstPath, false);
@@ -483,14 +483,14 @@ function _hookFileOperations(pyodide, root) {
   };
 
   // Hook file operations
-  let open = fs.open;
+  const open = fs.open;
   fs.open = (path, flags, mode) => {
     if (flags === 557056) {
       copyPath(path);
     }
     return open(path, flags, mode);
   };
-  let stat = fs.stat;
+  const stat = fs.stat;
   fs.stat = (path) => {
     copyPath(path);
     return stat(path);
@@ -498,7 +498,7 @@ function _hookFileOperations(pyodide, root) {
 
   // Define function to save file
   window._savePyxelFile = (filename) => {
-    let a = document.createElement("a");
+    const a = document.createElement("a");
     a.download = filename.split(/[\\/]/).pop();
     a.href = URL.createObjectURL(
       new Blob([fs.readFile(filename)], {
@@ -520,11 +520,11 @@ function _isTouchDevice() {
 }
 
 async function _waitForInput() {
-  let pyxelScreen = document.querySelector("div#pyxel-screen");
-  let logoImage = document.querySelector("img#pyxel-logo");
+  const pyxelScreen = document.querySelector("div#pyxel-screen");
+  const logoImage = document.querySelector("img#pyxel-logo");
   logoImage.remove();
 
-  let promptImage = document.createElement("img");
+  const promptImage = document.createElement("img");
   promptImage.id = "pyxel-prompt";
   promptImage.src =
     _scriptDir() +
@@ -574,8 +574,8 @@ function _addVirtualGamepad(mode) {
   document.querySelector("canvas#canvas").style.height = "80%";
 
   // Add virtual cross key
-  let pyxelScreen = document.querySelector("div#pyxel-screen");
-  let gamepadCrossImage = document.createElement("img");
+  const pyxelScreen = document.querySelector("div#pyxel-screen");
+  const gamepadCrossImage = document.createElement("img");
   gamepadCrossImage.id = "pyxel-gamepad-cross";
   gamepadCrossImage.src = _scriptDir() + GAMEPAD_CROSS_PATH;
   gamepadCrossImage.tabindex = -1;
@@ -585,7 +585,7 @@ function _addVirtualGamepad(mode) {
   };
 
   // Add virtual action buttons
-  let gamepadButtonImage = document.createElement("img");
+  const gamepadButtonImage = document.createElement("img");
   gamepadButtonImage.id = "pyxel-gamepad-button";
   gamepadButtonImage.src = _scriptDir() + GAMEPAD_BUTTON_PATH;
   gamepadButtonImage.tabindex = -1;
@@ -595,7 +595,7 @@ function _addVirtualGamepad(mode) {
   };
 
   // Add virtual menu buttons
-  let gamepadMenuImage = document.createElement("img");
+  const gamepadMenuImage = document.createElement("img");
   gamepadMenuImage.id = "pyxel-gamepad-menu";
   gamepadMenuImage.src = _scriptDir() + GAMEPAD_MENU_PATH;
   gamepadMenuImage.tabindex = -1;
@@ -605,25 +605,25 @@ function _addVirtualGamepad(mode) {
   };
 
   // Set touch event handler
-  let touchHandler = (event) => {
-    let crossRect = gamepadCrossImage.getBoundingClientRect();
-    let buttonRect = gamepadButtonImage.getBoundingClientRect();
-    let menuRect = gamepadMenuImage.getBoundingClientRect();
+  const touchHandler = (event) => {
+    const crossRect = gamepadCrossImage.getBoundingClientRect();
+    const buttonRect = gamepadButtonImage.getBoundingClientRect();
+    const menuRect = gamepadMenuImage.getBoundingClientRect();
     for (let i = 0; i < _virtualGamepadStates.length; i++) {
       _virtualGamepadStates[i] = false;
     }
     for (let i = 0; i < event.touches.length; i++) {
-      let { clientX, clientY } = event.touches[i];
-      let size = crossRect.width;
-      let crossX = (clientX - crossRect.left) / size - 0.5;
-      let crossY = (clientY - crossRect.bottom) / size + 0.5;
-      let buttonX = (clientX - buttonRect.right) / size + 0.5;
-      let buttonY = (clientY - buttonRect.bottom) / size + 0.5;
-      let menuX = (clientX - menuRect.left) / size;
-      let menuY = (clientY - menuRect.bottom) / size + 0.5;
+      const { clientX, clientY } = event.touches[i];
+      const size = crossRect.width;
+      const crossX = (clientX - crossRect.left) / size - 0.5;
+      const crossY = (clientY - crossRect.bottom) / size + 0.5;
+      const buttonX = (clientX - buttonRect.right) / size + 0.5;
+      const buttonY = (clientY - buttonRect.bottom) / size + 0.5;
+      const menuX = (clientX - menuRect.left) / size;
+      const menuY = (clientY - menuRect.bottom) / size + 0.5;
 
       if (crossX ** 2 + crossY ** 2 <= 0.5 ** 2) {
-        let angle = (Math.atan2(-crossY, crossX) * 180) / Math.PI;
+        const angle = (Math.atan2(-crossY, crossX) * 180) / Math.PI;
         if (angle > 22.5 && angle < 157.5) {
           _virtualGamepadStates[0] = true; // Up
         }
@@ -639,7 +639,7 @@ function _addVirtualGamepad(mode) {
       }
 
       if (buttonX ** 2 + buttonY ** 2 <= 0.5 ** 2) {
-        let angle = (Math.atan2(-buttonY, buttonX) * 180) / Math.PI;
+        const angle = (Math.atan2(-buttonY, buttonX) * 180) / Math.PI;
         if (angle > -135 && angle < -45) {
           _virtualGamepadStates[4] = true; // A
         }
@@ -675,17 +675,14 @@ function _copyFileFromBase64(pyodide, name, base64) {
     return;
   }
 
-  let filename = `${PYXEL_WORKING_DIRECTORY}/${name}`;
-  let binary = Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
+  const filename = `${PYXEL_WORKING_DIRECTORY}/${name}`;
+  const binary = Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
   pyodide.FS.writeFile(filename, binary, { encoding: "binary" });
 }
 
 async function _executePyxelCommand(pyodide, params) {
   if (params.command === "run" || params.command === "play") {
     await _installBuiltinPackages(pyodide, params.packages);
-  }
-
-  if (params.command === "run" || params.command === "play") {
     _addVirtualGamepad(params.gamepad);
   }
 
@@ -741,10 +738,6 @@ class PyxelRunElement extends HTMLElement {
     return ["root", "name", "script", "packages", "gamepad"];
   }
 
-  constructor() {
-    super();
-  }
-
   connectedCallback() {
     launchPyxel({
       command: "run",
@@ -766,10 +759,6 @@ class PyxelPlayElement extends HTMLElement {
     return ["root", "name", "packages", "gamepad"];
   }
 
-  constructor() {
-    super();
-  }
-
   connectedCallback() {
     launchPyxel({
       command: "play",
@@ -788,10 +777,6 @@ class PyxelPlayElement extends HTMLElement {
 class PyxelEditElement extends HTMLElement {
   static get observedAttributes() {
     return ["root", "name", "editor"];
-  }
-
-  constructor() {
-    super();
   }
 
   connectedCallback() {

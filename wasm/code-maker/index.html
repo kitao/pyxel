@@ -561,7 +561,7 @@
           runtimeScreen?.contentWindow?.pyxelContext?.resolveInput &&
           resourceEditor?.contentWindow?.pyxelContext?.resolveInput
         ) {
-          resourceEditor.contentWindow._savePyxelFile = (filename) => {
+          resourceEditor.contentWindow._savePyxelFile = () => {
             saveProject();
           };
 
