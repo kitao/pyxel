@@ -135,27 +135,7 @@ install: build
 	@pip3 install --force-reinstall "$$(ls -rt $(DIST_DIR)/*.whl | tail -n 1)"
 
 test: install
-	@cd $(CRATES_DIR); cargo test -p pyxel-core $(CARGO_OPTS)
-
-	@bash -c 'set -e; trap "exit 130" INT; \
-		for f in $(EXAMPLES_DIR)/*.py; do \
-			pyxel run "$$f"; \
-		done'
-	@bash -c 'set -e; trap "exit 130" INT; \
-		for f in $(EXAMPLES_DIR)/apps/*.pyxapp; do \
-			pyxel play "$$f"; \
-		done'
-	@pyxel edit $(EXAMPLES_DIR)/assets/sample.pyxres
-
-	@rm -rf testapp testapp.pyxapp
-	@mkdir -p testapp/assets
-	@cp $(EXAMPLES_DIR)/10_platformer.py testapp
-	@cp $(EXAMPLES_DIR)/assets/platformer.pyxres testapp/assets
-	@pyxel package testapp testapp/10_platformer.py
-	@pyxel play testapp.pyxapp
-	@rm -rf testapp testapp.pyxapp
-
-	@pyxel watch $(EXAMPLES_DIR) $(EXAMPLES_DIR)/01_hello_pyxel.py
+	@CARGO_OPTS="$(CARGO_OPTS)" $(SCRIPTS_DIR)/run_tests
 
 clean-wasm:
 	@$(MAKE) clean TARGET=$(WASM_TARGET)

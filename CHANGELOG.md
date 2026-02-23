@@ -6,6 +6,7 @@
 - Renamed internal Python module to pyxel_binding
 - Optimized drawing performance with bulk fills and reduced overhead
 - Renamed pyxel-core public API to idiomatic Rust names
+- Improved test script with cleanup and app2exe/app2html
 
 ## 2.6.9
 

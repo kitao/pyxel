@@ -1,0 +1,109 @@
+#!/bin/bash
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+CRATES_DIR="$ROOT_DIR/crates"
+EXAMPLES_DIR="$ROOT_DIR/python/pyxel/examples"
+example_name() { basename "$EXAMPLES_DIR"/$1_*.py .py; }
+
+: "${CARGO_OPTS:?CARGO_OPTS must be set}"
+export PYTHONUNBUFFERED=1
+
+BG_PID=0
+CLEANUP_PATHS=()
+
+cleanup() {
+    if [[ $BG_PID -ne 0 ]]; then
+        kill $BG_PID 2>/dev/null || true
+        wait $BG_PID 2>/dev/null || true
+    fi
+    for path in ${CLEANUP_PATHS[@]+"${CLEANUP_PATHS[@]}"}; do
+        rm -rf "$path" 2>/dev/null || true
+    done
+}
+trap cleanup EXIT
+
+# Display command with basenames for readability
+echo_cmd() {
+    local display=()
+    for arg in "$@"; do
+        display+=("${arg##*/}")
+    done
+    echo "${display[*]}"
+}
+
+# Echo and run
+run() {
+    echo_cmd "$@"
+    "$@"
+}
+
+# Echo and run a GUI command in background; Ctrl+C sends SIGTERM
+run_bg() {
+    echo_cmd "$@"
+    "$@" &
+    BG_PID=$!
+    trap 'kill $BG_PID 2>/dev/null; exit 130' INT
+    wait $BG_PID || true
+    trap - INT
+    BG_PID=0
+}
+
+# Rust unit tests
+cd "$CRATES_DIR"
+run cargo test -p pyxel-core $CARGO_OPTS
+
+# Example scripts
+for f in "$EXAMPLES_DIR"/*.py; do
+    run_bg pyxel run "$f"
+done
+
+# Example apps
+for f in "$EXAMPLES_DIR"/apps/*.pyxapp; do
+    run_bg pyxel play "$f"
+done
+
+# Editor
+run_bg pyxel edit "$EXAMPLES_DIR/assets/sample.pyxres"
+
+# Copy examples to work directory
+PACKAGE_EXAMPLE=$(example_name 10)
+WATCH_EXAMPLE=$(example_name 01)
+WORK_DIR="$ROOT_DIR/$PACKAGE_EXAMPLE"
+CLEANUP_PATHS+=("$WORK_DIR")
+
+rm -rf "$WORK_DIR"
+cp -r "$EXAMPLES_DIR" "$WORK_DIR"
+cd "$WORK_DIR"
+
+# Package and play
+run pyxel package . "$PACKAGE_EXAMPLE.py"
+run_bg pyxel play "$PACKAGE_EXAMPLE.pyxapp"
+
+# app2exe (skip if PyInstaller not installed)
+if pyinstaller -h &>/dev/null; then
+    run pyxel app2exe "$PACKAGE_EXAMPLE.pyxapp"
+    run_bg "./$PACKAGE_EXAMPLE/$PACKAGE_EXAMPLE"
+    rm -rf "$PACKAGE_EXAMPLE"
+fi
+
+# app2html
+run pyxel app2html "$PACKAGE_EXAMPLE.pyxapp"
+[[ -f "$PACKAGE_EXAMPLE.html" ]] || { echo "app2html: $PACKAGE_EXAMPLE.html not created"; exit 1; }
+rm -f "$PACKAGE_EXAMPLE.html"
+rm -f "$PACKAGE_EXAMPLE.pyxapp"
+
+# Watch (inject error, restore, let user confirm recovery visually)
+pyxel watch . "$WATCH_EXAMPLE.py" &
+BG_PID=$!
+sleep 3
+
+cat > "$WATCH_EXAMPLE.py" << 'EOF'
+syntax error!!!
+EOF
+sleep 1
+
+sed 's/Hello, Pyxel!/Watch Passed!/' "$EXAMPLES_DIR/$WATCH_EXAMPLE.py" > "$WATCH_EXAMPLE.py"
+trap 'kill $BG_PID 2>/dev/null; exit 0' INT
+wait $BG_PID || true
