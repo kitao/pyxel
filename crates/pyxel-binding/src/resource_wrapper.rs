@@ -55,7 +55,7 @@ fn load(
     };
 
     pyxel()
-        .load(
+        .load_resource(
             filename,
             exclude_images,
             exclude_tilemaps,
@@ -113,7 +113,7 @@ fn save(
     };
 
     pyxel()
-        .save(
+        .save_resource(
             filename,
             exclude_images,
             exclude_tilemaps,
@@ -125,24 +125,24 @@ fn save(
 
 #[pyfunction]
 fn load_pal(filename: &str) {
-    pyxel().load_pal(filename);
+    pyxel().load_palette(filename);
 }
 
 #[pyfunction]
 fn save_pal(filename: &str) -> PyResult<()> {
-    pyxel().save_pal(filename).map_err(PyException::new_err)
+    pyxel().save_palette(filename).map_err(PyException::new_err)
 }
 
 #[pyfunction]
 #[pyo3(signature = (scale=None))]
 fn screenshot(scale: Option<u32>) {
-    pyxel().screenshot(scale);
+    pyxel().take_screenshot(scale);
 }
 
 #[pyfunction]
 #[pyo3(signature = (scale=None))]
 fn screencast(scale: Option<u32>) {
-    pyxel().screencast(scale);
+    pyxel().save_screencast(scale);
 }
 
 #[pyfunction]

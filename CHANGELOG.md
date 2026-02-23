@@ -5,6 +5,7 @@
 - Removed mutexes for resource types to improve performance
 - Renamed internal Python module to pyxel_binding
 - Optimized drawing performance with bulk fills and reduced overhead
+- Renamed pyxel-core public API to idiomatic Rust names
 
 ## 2.6.9
 

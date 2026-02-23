@@ -94,22 +94,22 @@ fn atan2(y: f32, x: f32) -> f32 {
 
 #[pyfunction]
 fn rseed(seed: u32) {
-    Pyxel::rseed(seed);
+    Pyxel::random_seed(seed);
 }
 
 #[pyfunction]
 fn rndi(a: i32, b: i32) -> i32 {
-    Pyxel::rndi(a, b)
+    Pyxel::random_int(a, b)
 }
 
 #[pyfunction]
 fn rndf(a: f32, b: f32) -> f32 {
-    Pyxel::rndf(a, b)
+    Pyxel::random_float(a, b)
 }
 
 #[pyfunction]
 fn nseed(seed: u32) {
-    Pyxel::nseed(seed);
+    Pyxel::noise_seed(seed);
 }
 
 #[pyfunction]

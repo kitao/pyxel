@@ -191,7 +191,7 @@ impl Pyxel {
         );
     }
 
-    pub fn play1(
+    pub fn play_sound(
         &self,
         channel_index: u32,
         sound_index: u32,
@@ -202,7 +202,7 @@ impl Pyxel {
         let sound = pyxel::sounds()[sound_index as usize];
 
         let _lock = AudioLock::new();
-        unsafe { &mut *pyxel::channels()[channel_index as usize] }.play1(
+        unsafe { &mut *pyxel::channels()[channel_index as usize] }.play_sound(
             sound,
             start_sec,
             should_loop,
@@ -227,7 +227,7 @@ impl Pyxel {
         )
     }
 
-    pub fn playm(&self, music_index: u32, start_sec: Option<f32>, should_loop: bool) {
+    pub fn play_music(&self, music_index: u32, start_sec: Option<f32>, should_loop: bool) {
         let num_channels = pyxel::channels().len();
         let music = unsafe { &*pyxel::musics()[music_index as usize] };
 
@@ -236,21 +236,21 @@ impl Pyxel {
         }
     }
 
-    pub fn stop(&self, channel_index: u32) {
+    pub fn stop_channel(&self, channel_index: u32) {
         let _lock = AudioLock::new();
         unsafe { &mut *pyxel::channels()[channel_index as usize] }.stop();
     }
 
-    pub fn stop0(&self) {
+    pub fn stop_all_channels(&self) {
         let num_channels = pyxel::channels().len();
 
         for i in 0..num_channels {
-            self.stop(i as u32);
+            self.stop_channel(i as u32);
         }
     }
 
-    pub fn play_pos(&self, channel_index: u32) -> Option<(u32, f32)> {
+    pub fn play_position(&self, channel_index: u32) -> Option<(u32, f32)> {
         let _lock = AudioLock::new();
-        unsafe { &mut *pyxel::channels()[channel_index as usize] }.play_pos()
+        unsafe { &mut *pyxel::channels()[channel_index as usize] }.play_position()
     }
 }

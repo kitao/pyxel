@@ -135,10 +135,10 @@ impl Sound {
             }
 
             unsafe { &mut *self.inner }
-                .mml(code)
+                .set_mml(code)
                 .map_err(PyException::new_err)
         } else {
-            unsafe { &mut *self.inner }.mml0();
+            unsafe { &mut *self.inner }.clear_mml();
             Ok(())
         }
     }
@@ -154,7 +154,7 @@ impl Sound {
                 .old_mml(code)
                 .map_err(PyException::new_err)
         } else {
-            unsafe { &mut *self.inner }.mml0();
+            unsafe { &mut *self.inner }.clear_mml();
             Ok(())
         }
     }
@@ -170,16 +170,16 @@ impl Sound {
     pub fn pcm(&self, filename: Option<&str>) -> PyResult<()> {
         if let Some(filename) = filename {
             unsafe { &mut *self.inner }
-                .pcm(filename)
+                .load_pcm(filename)
                 .map_err(PyException::new_err)
         } else {
-            unsafe { &mut *self.inner }.pcm0();
+            unsafe { &mut *self.inner }.clear_pcm();
             Ok(())
         }
     }
 
     pub fn total_sec(&self) -> Option<f32> {
-        unsafe { &*self.inner }.total_sec()
+        unsafe { &*self.inner }.total_seconds()
     }
 }
 

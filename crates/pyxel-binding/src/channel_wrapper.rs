@@ -74,13 +74,13 @@ impl Channel {
             snd,
             (u32, {
                 let sound = pyxel::sounds()[snd as usize];
-                unsafe { &mut *self.inner }.play1(sound, sec, loop_, resume.unwrap_or(false));
+                unsafe { &mut *self.inner }.play_sound(sound, sec, loop_, resume.unwrap_or(false));
             }),
             (Vec<u32>, {
                 let sounds = snd.iter().map(|snd| pyxel::sounds()[*snd as usize]).collect();
                 unsafe { &mut *self.inner }.play(sounds, sec, loop_, resume.unwrap_or(false));
             }),
-            (Sound, { unsafe { &mut *self.inner }.play1(snd.inner, sec, loop_, resume.unwrap_or(false)); }),
+            (Sound, { unsafe { &mut *self.inner }.play_sound(snd.inner, sec, loop_, resume.unwrap_or(false)); }),
             (Vec<Sound>, {
                 let sounds = snd.iter().map(|sound| sound.inner).collect();
                 unsafe { &mut *self.inner }.play(sounds, sec, loop_, resume.unwrap_or(false));
@@ -100,7 +100,7 @@ impl Channel {
     }
 
     pub fn play_pos(&self) -> Option<(u32, f32)> {
-        unsafe { &mut *self.inner }.play_pos()
+        unsafe { &mut *self.inner }.play_position()
     }
 }
 

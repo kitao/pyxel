@@ -151,31 +151,31 @@ impl Sound {
         Ok(())
     }
 
-    pub fn mml(&mut self, code: &str) -> Result<(), String> {
-        self.pcm0();
+    pub fn set_mml(&mut self, code: &str) -> Result<(), String> {
+        self.clear_pcm();
         self.commands = parse_mml(code)?;
         Ok(())
     }
 
-    pub fn mml0(&mut self) {
+    pub fn clear_mml(&mut self) {
         self.commands.clear();
     }
 
     pub fn old_mml(&mut self, code: &str) -> Result<(), String> {
-        self.pcm0();
+        self.clear_pcm();
         self.commands = parse_old_mml(code)?;
         Ok(())
     }
 
-    pub fn pcm(&mut self, filename: &str) -> Result<(), String> {
-        self.mml0();
+    pub fn load_pcm(&mut self, filename: &str) -> Result<(), String> {
+        self.clear_mml();
 
         let pcm = load_pcm(filename, AUDIO_SAMPLE_RATE)?;
         self.pcm = Some(pcm);
         Ok(())
     }
 
-    pub fn pcm0(&mut self) {
+    pub fn clear_pcm(&mut self) {
         self.pcm = None;
     }
 
@@ -220,7 +220,7 @@ impl Sound {
         result
     }
 
-    pub fn total_sec(&self) -> Option<f32> {
+    pub fn total_seconds(&self) -> Option<f32> {
         if let Some(pcm) = &self.pcm {
             Some(pcm.samples.len() as f32 / AUDIO_SAMPLE_RATE as f32)
         } else if self.commands.is_empty() {

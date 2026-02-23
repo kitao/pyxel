@@ -30,7 +30,7 @@ impl ResourceItem for Image {
     }
 
     fn clear(&mut self) {
-        self.cls(0);
+        self.clear(0);
     }
 
     fn deserialize(&mut self, _version: u32, input: &str) {
@@ -58,7 +58,7 @@ impl ResourceItem for Tilemap {
     }
 
     fn clear(&mut self) {
-        self.cls((0, 0));
+        self.clear((0, 0));
     }
 
     fn deserialize(&mut self, version: u32, input: &str) {
@@ -194,7 +194,7 @@ impl Pyxel {
                         file.read_to_string(&mut input).unwrap();
                         item.deserialize(version, &input);
                     } else {
-                        item.clear();
+                        ResourceItem::clear(item);
                     }
                 }
             };

@@ -36,10 +36,10 @@ fn play(
 
     cast_pyany! {
         snd,
-        (u32, { pyxel().play1(ch, snd, sec, r#loop.unwrap_or(false), resume.unwrap_or(false)); }),
+        (u32, { pyxel().play_sound(ch, snd, sec, r#loop.unwrap_or(false), resume.unwrap_or(false)); }),
         (Vec<u32>, { pyxel().play(ch, &snd, sec, r#loop.unwrap_or(false), resume.unwrap_or(false)); }),
         (Sound, {
-            unsafe { &mut *pyxel::channels()[ch as usize] }.play1(snd.inner, sec, r#loop.unwrap_or(false), resume.unwrap_or(false));
+            unsafe { &mut *pyxel::channels()[ch as usize] }.play_sound(snd.inner, sec, r#loop.unwrap_or(false), resume.unwrap_or(false));
         }),
         (Vec<Sound>, {
             let sounds = snd.iter().map(|sound| sound.inner).collect();
@@ -68,7 +68,7 @@ fn playm(msc: u32, sec: Option<f32>, r#loop: Option<bool>, tick: Option<u32>) {
         sec
     };
 
-    pyxel().playm(msc, sec, r#loop.unwrap_or(false));
+    pyxel().play_music(msc, sec, r#loop.unwrap_or(false));
 }
 
 #[pyfunction]
@@ -76,17 +76,17 @@ fn playm(msc: u32, sec: Option<f32>, r#loop: Option<bool>, tick: Option<u32>) {
 fn stop(ch: Option<u32>) {
     ch.map_or_else(
         || {
-            pyxel().stop0();
+            pyxel().stop_all_channels();
         },
         |ch| {
-            pyxel().stop(ch);
+            pyxel().stop_channel(ch);
         },
     );
 }
 
 #[pyfunction]
 fn play_pos(ch: u32) -> Option<(u32, f32)> {
-    pyxel().play_pos(ch)
+    pyxel().play_position(ch)
 }
 
 #[pyfunction]

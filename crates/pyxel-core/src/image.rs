@@ -129,7 +129,7 @@ impl Image {
         }
 
         unsafe {
-            self.blt(
+            self.draw_image(
                 x as f32,
                 y as f32,
                 image,
@@ -156,7 +156,7 @@ impl Image {
         let height = unsafe { &*image }.height();
 
         unsafe {
-            self.blt(
+            self.draw_image(
                 x as f32,
                 y as f32,
                 image,
@@ -201,99 +201,118 @@ impl Image {
         Ok(())
     }
 
-    pub fn clip(&mut self, x: f32, y: f32, width: f32, height: f32) {
-        self.canvas.clip(x, y, width, height);
+    pub fn set_clip_rect(&mut self, x: f32, y: f32, width: f32, height: f32) {
+        self.canvas.set_clip_rect(x, y, width, height);
     }
 
-    pub fn clip0(&mut self) {
-        self.canvas.clip0();
+    pub fn reset_clip_rect(&mut self) {
+        self.canvas.reset_clip_rect();
     }
 
-    pub fn camera(&mut self, x: f32, y: f32) {
-        self.canvas.camera(x, y);
+    pub fn set_draw_offset(&mut self, x: f32, y: f32) {
+        self.canvas.set_draw_offset(x, y);
     }
 
-    pub fn camera0(&mut self) {
-        self.canvas.camera0();
+    pub fn reset_draw_offset(&mut self) {
+        self.canvas.reset_draw_offset();
     }
 
-    pub fn pal(&mut self, src_color: Color, dst_color: Color) {
+    pub fn map_color(&mut self, src_color: Color, dst_color: Color) {
         self.palette[src_color as usize] = dst_color;
     }
 
-    pub fn pal0(&mut self) {
+    pub fn reset_color_map(&mut self) {
         for i in 0..self.palette.len() {
             self.palette[i] = i as Color;
         }
     }
 
-    pub fn dither(&mut self, alpha: f32) {
-        self.canvas.dither(alpha);
+    pub fn set_dithering(&mut self, alpha: f32) {
+        self.canvas.set_dithering(alpha);
     }
 
-    pub fn cls(&mut self, color: Color) {
-        self.canvas.cls(self.palette[color as usize]);
+    pub fn clear(&mut self, color: Color) {
+        self.canvas.clear(self.palette[color as usize]);
     }
 
-    pub fn pget(&mut self, x: f32, y: f32) -> Color {
-        self.canvas.pget(x, y)
+    pub fn get_pixel(&mut self, x: f32, y: f32) -> Color {
+        self.canvas.get_value(x, y)
     }
 
-    pub fn pset(&mut self, x: f32, y: f32, color: Color) {
-        self.canvas.pset(x, y, self.palette[color as usize]);
+    pub fn set_pixel(&mut self, x: f32, y: f32, color: Color) {
+        self.canvas.set_value(x, y, self.palette[color as usize]);
     }
 
-    pub fn line(&mut self, x1: f32, y1: f32, x2: f32, y2: f32, color: Color) {
+    pub fn draw_line(&mut self, x1: f32, y1: f32, x2: f32, y2: f32, color: Color) {
         self.canvas
-            .line(x1, y1, x2, y2, self.palette[color as usize]);
+            .draw_line(x1, y1, x2, y2, self.palette[color as usize]);
     }
 
-    pub fn rect(&mut self, x: f32, y: f32, width: f32, height: f32, color: Color) {
+    pub fn draw_rect(&mut self, x: f32, y: f32, width: f32, height: f32, color: Color) {
         self.canvas
-            .rect(x, y, width, height, self.palette[color as usize]);
+            .draw_rect(x, y, width, height, self.palette[color as usize]);
     }
 
-    pub fn rectb(&mut self, x: f32, y: f32, width: f32, height: f32, color: Color) {
+    pub fn draw_rect_border(&mut self, x: f32, y: f32, width: f32, height: f32, color: Color) {
         self.canvas
-            .rectb(x, y, width, height, self.palette[color as usize]);
+            .draw_rect_border(x, y, width, height, self.palette[color as usize]);
     }
 
-    pub fn circ(&mut self, x: f32, y: f32, radius: f32, color: Color) {
-        self.canvas.circ(x, y, radius, self.palette[color as usize]);
-    }
-
-    pub fn circb(&mut self, x: f32, y: f32, radius: f32, color: Color) {
+    pub fn draw_circle(&mut self, x: f32, y: f32, radius: f32, color: Color) {
         self.canvas
-            .circb(x, y, radius, self.palette[color as usize]);
+            .draw_circle(x, y, radius, self.palette[color as usize]);
     }
 
-    pub fn elli(&mut self, x: f32, y: f32, width: f32, height: f32, color: Color) {
+    pub fn draw_circle_border(&mut self, x: f32, y: f32, radius: f32, color: Color) {
         self.canvas
-            .elli(x, y, width, height, self.palette[color as usize]);
+            .draw_circle_border(x, y, radius, self.palette[color as usize]);
     }
 
-    pub fn ellib(&mut self, x: f32, y: f32, width: f32, height: f32, color: Color) {
+    pub fn draw_ellipse(&mut self, x: f32, y: f32, width: f32, height: f32, color: Color) {
         self.canvas
-            .ellib(x, y, width, height, self.palette[color as usize]);
+            .draw_ellipse(x, y, width, height, self.palette[color as usize]);
     }
 
-    pub fn tri(&mut self, x1: f32, y1: f32, x2: f32, y2: f32, x3: f32, y3: f32, color: Color) {
+    pub fn draw_ellipse_border(&mut self, x: f32, y: f32, width: f32, height: f32, color: Color) {
         self.canvas
-            .tri(x1, y1, x2, y2, x3, y3, self.palette[color as usize]);
+            .draw_ellipse_border(x, y, width, height, self.palette[color as usize]);
     }
 
-    pub fn trib(&mut self, x1: f32, y1: f32, x2: f32, y2: f32, x3: f32, y3: f32, color: Color) {
+    pub fn draw_triangle(
+        &mut self,
+        x1: f32,
+        y1: f32,
+        x2: f32,
+        y2: f32,
+        x3: f32,
+        y3: f32,
+        color: Color,
+    ) {
         self.canvas
-            .trib(x1, y1, x2, y2, x3, y3, self.palette[color as usize]);
+            .draw_triangle(x1, y1, x2, y2, x3, y3, self.palette[color as usize]);
     }
 
-    pub fn fill(&mut self, x: f32, y: f32, color: Color) {
-        self.canvas.fill(x, y, self.palette[color as usize]);
+    pub fn draw_triangle_border(
+        &mut self,
+        x1: f32,
+        y1: f32,
+        x2: f32,
+        y2: f32,
+        x3: f32,
+        y3: f32,
+        color: Color,
+    ) {
+        self.canvas
+            .draw_triangle_border(x1, y1, x2, y2, x3, y3, self.palette[color as usize]);
+    }
+
+    pub fn flood_fill(&mut self, x: f32, y: f32, color: Color) {
+        self.canvas.flood_fill(x, y, self.palette[color as usize]);
     }
 
     /// # Safety
     /// `image` must be a valid, non-null pointer to an `Image`.
-    pub unsafe fn blt(
+    pub unsafe fn draw_image(
         &mut self,
         x: f32,
         y: f32,
@@ -309,7 +328,7 @@ impl Image {
         let rotate = rotate.unwrap_or(0.0);
         let scale = scale.unwrap_or(1.0);
         if rotate != 0.0 || scale != 1.0 {
-            self.blt_transform(
+            self.draw_image_with_transform(
                 x,
                 y,
                 image,
@@ -329,7 +348,7 @@ impl Image {
             let copy_height = utils::f32_to_u32(height.abs());
             let mut canvas = Canvas::new(copy_width, copy_height);
 
-            canvas.blt(
+            canvas.blit(
                 0.0,
                 0.0,
                 &self.canvas,
@@ -341,7 +360,7 @@ impl Image {
                 None,
             );
 
-            self.canvas.blt(
+            self.canvas.blit(
                 x,
                 y,
                 &canvas,
@@ -354,7 +373,7 @@ impl Image {
             );
         } else {
             let image = unsafe { &*image };
-            self.canvas.blt(
+            self.canvas.blit(
                 x,
                 y,
                 &image.canvas,
@@ -368,7 +387,7 @@ impl Image {
         }
     }
 
-    fn blt_transform(
+    fn draw_image_with_transform(
         &mut self,
         x: f32,
         y: f32,
@@ -386,7 +405,7 @@ impl Image {
             let copy_height = utils::f32_to_u32(height.abs());
             let mut canvas = Canvas::new(copy_width, copy_height);
 
-            canvas.blt(
+            canvas.blit(
                 0.0,
                 0.0,
                 &self.canvas,
@@ -398,7 +417,7 @@ impl Image {
                 None,
             );
 
-            self.canvas.blt_transform(
+            self.canvas.blit_with_transform(
                 x,
                 y,
                 &canvas,
@@ -414,7 +433,7 @@ impl Image {
             );
         } else {
             let image = unsafe { &*image };
-            self.canvas.blt_transform(
+            self.canvas.blit_with_transform(
                 x,
                 y,
                 &image.canvas,
@@ -433,7 +452,7 @@ impl Image {
 
     /// # Safety
     /// `tilemap` must be a valid, non-null pointer to a `Tilemap`.
-    pub unsafe fn bltm(
+    pub unsafe fn draw_tilemap(
         &mut self,
         x: f32,
         y: f32,
@@ -449,7 +468,7 @@ impl Image {
         let rotate = rotate.unwrap_or(0.0);
         let scale = scale.unwrap_or(1.0);
         if rotate != 0.0 || scale != 1.0 {
-            self.bltm_transform(
+            self.draw_tilemap_with_transform(
                 x,
                 y,
                 tilemap,
@@ -464,8 +483,8 @@ impl Image {
             return;
         }
 
-        let x = utils::f32_to_i32(x) - self.canvas.camera_x;
-        let y = utils::f32_to_i32(y) - self.canvas.camera_y;
+        let x = utils::f32_to_i32(x) - self.canvas.draw_offset_x;
+        let y = utils::f32_to_i32(y) - self.canvas.draw_offset_y;
         let tilemap_x = utils::f32_to_i32(tilemap_x);
         let tilemap_y = utils::f32_to_i32(tilemap_y);
         let width = utils::f32_to_i32(width);
@@ -553,7 +572,7 @@ impl Image {
         }
     }
 
-    fn bltm_transform(
+    fn draw_tilemap_with_transform(
         &mut self,
         x: f32,
         y: f32,
@@ -575,7 +594,7 @@ impl Image {
         {
             let image = unsafe { &mut *image };
             unsafe {
-                image.bltm(
+                image.draw_tilemap(
                     0.0,
                     0.0,
                     tilemap,
@@ -588,13 +607,13 @@ impl Image {
                     None,
                 );
             }
-            image.clip(
+            image.set_clip_rect(
                 -tilemap_x,
                 -tilemap_y,
                 tilemap_width * TILE_SIZE as f32,
                 tilemap_height * TILE_SIZE as f32,
             );
-            self.canvas.blt_transform(
+            self.canvas.blit_with_transform(
                 x,
                 y,
                 &image.canvas,
@@ -611,18 +630,25 @@ impl Image {
         }
     }
 
-    pub fn text(&mut self, x: f32, y: f32, string: &str, color: Color, font: Option<*mut Font>) {
+    pub fn draw_text(
+        &mut self,
+        x: f32,
+        y: f32,
+        string: &str,
+        color: Color,
+        font: Option<*mut Font>,
+    ) {
         if let Some(font) = font {
-            let x = utils::f32_to_i32(x) - self.canvas.camera_x;
-            let y = utils::f32_to_i32(y) - self.canvas.camera_y;
+            let x = utils::f32_to_i32(x) - self.canvas.draw_offset_x;
+            let y = utils::f32_to_i32(y) - self.canvas.draw_offset_y;
             let color = self.palette[color as usize];
             let font = unsafe { &mut *font };
             font.draw(&mut self.canvas, x, y, string, color);
             return;
         }
 
-        let mut x = utils::f32_to_i32(x) - self.canvas.camera_x;
-        let mut y = utils::f32_to_i32(y) - self.canvas.camera_y;
+        let mut x = utils::f32_to_i32(x) - self.canvas.draw_offset_x;
+        let mut y = utils::f32_to_i32(y) - self.canvas.draw_offset_y;
         let color = self.palette[color as usize];
         let font_image: *const Image = pyxel::font_image();
         let font_data = unsafe { &(*font_image).canvas.data };

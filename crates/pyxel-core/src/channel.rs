@@ -113,7 +113,7 @@ impl Channel {
         );
     }
 
-    pub fn play1(
+    pub fn play_sound(
         &mut self,
         sound: *mut Sound,
         start_sec: Option<f32>,
@@ -138,7 +138,7 @@ impl Channel {
         let sound = Sound::new();
         {
             let sound = unsafe { &mut *sound };
-            sound.mml(code)?;
+            sound.set_mml(code)?;
         }
 
         self.play_from_clock(
@@ -206,7 +206,7 @@ impl Channel {
         self.voice.cancel_note();
     }
 
-    pub fn play_pos(&mut self) -> Option<(u32, f32)> {
+    pub fn play_position(&mut self) -> Option<(u32, f32)> {
         if self.is_playing {
             let elapsed_sec = self.sound_elapsed_clocks as f32 / AUDIO_CLOCK_RATE as f32;
             Some((self.sound_index, elapsed_sec))

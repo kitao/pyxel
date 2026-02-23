@@ -40,22 +40,22 @@ impl Pyxel {
         f32::atan2(y, x) * 180.0 / PI
     }
 
-    pub fn rseed(seed: u32) {
+    pub fn random_seed(seed: u32) {
         let rng = Xoshiro256StarStar::seed_from_u64(seed as u64);
         *RNG.lock().unwrap() = rng;
     }
 
-    pub fn rndi(a: i32, b: i32) -> i32 {
-        let (min, max) = if a < b { (a, b) } else { (b, a) };
+    pub fn random_int(min: i32, max: i32) -> i32 {
+        let (min, max) = if min < max { (min, max) } else { (max, min) };
         RNG.lock().unwrap().random_range(min..=max)
     }
 
-    pub fn rndf(a: f32, b: f32) -> f32 {
-        let (min, max) = if a < b { (a, b) } else { (b, a) };
+    pub fn random_float(min: f32, max: f32) -> f32 {
+        let (min, max) = if min < max { (min, max) } else { (max, min) };
         RNG.lock().unwrap().random_range(min..=max)
     }
 
-    pub fn nseed(seed: u32) {
+    pub fn noise_seed(seed: u32) {
         let perlin = Perlin::new(seed);
         *PERLIN.lock().unwrap() = perlin;
     }

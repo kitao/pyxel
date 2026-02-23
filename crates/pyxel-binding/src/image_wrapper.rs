@@ -100,9 +100,9 @@ impl Image {
         h: Option<f32>,
     ) -> PyResult<()> {
         if let (Some(x), Some(y), Some(w), Some(h)) = (x, y, w, h) {
-            unsafe { &mut *self.inner }.clip(x, y, w, h);
+            unsafe { &mut *self.inner }.set_clip_rect(x, y, w, h);
         } else if (x, y, w, h) == (None, None, None, None) {
-            unsafe { &mut *self.inner }.clip0();
+            unsafe { &mut *self.inner }.reset_clip_rect();
         } else {
             python_type_error!("clip() takes 0 or 4 arguments");
         }
@@ -112,9 +112,9 @@ impl Image {
     #[pyo3(signature = (x=None, y=None))]
     pub fn camera(&self, x: Option<f32>, y: Option<f32>) -> PyResult<()> {
         if let (Some(x), Some(y)) = (x, y) {
-            unsafe { &mut *self.inner }.camera(x, y);
+            unsafe { &mut *self.inner }.set_draw_offset(x, y);
         } else if (x, y) == (None, None) {
-            unsafe { &mut *self.inner }.camera0();
+            unsafe { &mut *self.inner }.reset_draw_offset();
         } else {
             python_type_error!("camera() takes 0 or 2 arguments");
         }
@@ -124,9 +124,9 @@ impl Image {
     #[pyo3(signature = (col1=None, col2=None))]
     fn pal(&self, col1: Option<pyxel::Color>, col2: Option<pyxel::Color>) -> PyResult<()> {
         if let (Some(col1), Some(col2)) = (col1, col2) {
-            unsafe { &mut *self.inner }.pal(col1, col2);
+            unsafe { &mut *self.inner }.map_color(col1, col2);
         } else if (col1, col2) == (None, None) {
-            unsafe { &mut *self.inner }.pal0();
+            unsafe { &mut *self.inner }.reset_color_map();
         } else {
             python_type_error!("pal() takes 0 or 2 arguments");
         }
@@ -134,59 +134,59 @@ impl Image {
     }
 
     fn dither(&self, alpha: f32) {
-        unsafe { &mut *self.inner }.dither(alpha);
+        unsafe { &mut *self.inner }.set_dithering(alpha);
     }
 
     pub fn cls(&self, col: pyxel::Color) {
-        unsafe { &mut *self.inner }.cls(col);
+        unsafe { &mut *self.inner }.clear(col);
     }
 
     pub fn pget(&self, x: f32, y: f32) -> pyxel::Color {
-        unsafe { &mut *self.inner }.pget(x, y)
+        unsafe { &mut *self.inner }.get_pixel(x, y)
     }
 
     pub fn pset(&self, x: f32, y: f32, col: pyxel::Color) {
-        unsafe { &mut *self.inner }.pset(x, y, col);
+        unsafe { &mut *self.inner }.set_pixel(x, y, col);
     }
 
     pub fn line(&self, x1: f32, y1: f32, x2: f32, y2: f32, col: pyxel::Color) {
-        unsafe { &mut *self.inner }.line(x1, y1, x2, y2, col);
+        unsafe { &mut *self.inner }.draw_line(x1, y1, x2, y2, col);
     }
 
     pub fn rect(&self, x: f32, y: f32, w: f32, h: f32, col: pyxel::Color) {
-        unsafe { &mut *self.inner }.rect(x, y, w, h, col);
+        unsafe { &mut *self.inner }.draw_rect(x, y, w, h, col);
     }
 
     pub fn rectb(&self, x: f32, y: f32, w: f32, h: f32, col: pyxel::Color) {
-        unsafe { &mut *self.inner }.rectb(x, y, w, h, col);
+        unsafe { &mut *self.inner }.draw_rect_border(x, y, w, h, col);
     }
 
     pub fn circ(&self, x: f32, y: f32, r: f32, col: pyxel::Color) {
-        unsafe { &mut *self.inner }.circ(x, y, r, col);
+        unsafe { &mut *self.inner }.draw_circle(x, y, r, col);
     }
 
     pub fn circb(&self, x: f32, y: f32, r: f32, col: pyxel::Color) {
-        unsafe { &mut *self.inner }.circb(x, y, r, col);
+        unsafe { &mut *self.inner }.draw_circle_border(x, y, r, col);
     }
 
     pub fn elli(&self, x: f32, y: f32, w: f32, h: f32, col: pyxel::Color) {
-        unsafe { &mut *self.inner }.elli(x, y, w, h, col);
+        unsafe { &mut *self.inner }.draw_ellipse(x, y, w, h, col);
     }
 
     pub fn ellib(&self, x: f32, y: f32, w: f32, h: f32, col: pyxel::Color) {
-        unsafe { &mut *self.inner }.ellib(x, y, w, h, col);
+        unsafe { &mut *self.inner }.draw_ellipse_border(x, y, w, h, col);
     }
 
     pub fn tri(&self, x1: f32, y1: f32, x2: f32, y2: f32, x3: f32, y3: f32, col: pyxel::Color) {
-        unsafe { &mut *self.inner }.tri(x1, y1, x2, y2, x3, y3, col);
+        unsafe { &mut *self.inner }.draw_triangle(x1, y1, x2, y2, x3, y3, col);
     }
 
     pub fn trib(&self, x1: f32, y1: f32, x2: f32, y2: f32, x3: f32, y3: f32, col: pyxel::Color) {
-        unsafe { &mut *self.inner }.trib(x1, y1, x2, y2, x3, y3, col);
+        unsafe { &mut *self.inner }.draw_triangle_border(x1, y1, x2, y2, x3, y3, col);
     }
 
     pub fn fill(&self, x: f32, y: f32, col: pyxel::Color) {
-        unsafe { &mut *self.inner }.fill(x, y, col);
+        unsafe { &mut *self.inner }.flood_fill(x, y, col);
     }
 
     #[pyo3(signature = (x, y, img, u, v, w, h, colkey=None, rotate=None, scale=None))]
@@ -207,9 +207,9 @@ impl Image {
             img,
             (u32, {
                 let image = pyxel::images()[img as usize];
-                unsafe { (&mut *self.inner).blt(x, y, image, u, v, w, h, colkey, rotate, scale) };
+                unsafe { (&mut *self.inner).draw_image(x, y, image, u, v, w, h, colkey, rotate, scale) };
             }),
-            (Image, { unsafe { (&mut *self.inner).blt(x, y, img.inner, u, v, w, h, colkey, rotate, scale) }; })
+            (Image, { unsafe { (&mut *self.inner).draw_image(x, y, img.inner, u, v, w, h, colkey, rotate, scale) }; })
         }
         Ok(())
     }
@@ -232,9 +232,9 @@ impl Image {
             tm,
             (u32, {
                 let tilemap = pyxel::tilemaps()[tm as usize];
-                unsafe { (&mut *self.inner).bltm(x, y, tilemap, u, v, w, h, colkey, rotate, scale) };
+                unsafe { (&mut *self.inner).draw_tilemap(x, y, tilemap, u, v, w, h, colkey, rotate, scale) };
             }),
-            (Tilemap, { unsafe { (&mut *self.inner).bltm(x, y, tm.inner, u, v, w, h, colkey, rotate, scale) }; })
+            (Tilemap, { unsafe { (&mut *self.inner).draw_tilemap(x, y, tm.inner, u, v, w, h, colkey, rotate, scale) }; })
         }
         Ok(())
     }
@@ -242,7 +242,7 @@ impl Image {
     #[pyo3(signature = (x, y, s, col, font=None))]
     pub fn text(&self, x: f32, y: f32, s: &str, col: pyxel::Color, font: Option<Font>) {
         let font = font.map(|f| f.inner);
-        unsafe { &mut *self.inner }.text(x, y, s, col, font);
+        unsafe { &mut *self.inner }.draw_text(x, y, s, col, font);
     }
 }
 

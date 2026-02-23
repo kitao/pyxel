@@ -178,7 +178,7 @@ pub fn init(
     Audio::start();
 
     // Icon
-    pyxel().icon(&ICON_DATA, ICON_SCALE, ICON_COLKEY);
+    pyxel().set_icon(&ICON_DATA, ICON_SCALE, ICON_COLKEY);
 }
 
 pub fn reset_statics() {

@@ -1795,9 +1795,9 @@ impl Pyxel {
         if play.unwrap_or(false) {
             for (ch, mml) in mml_list.iter().enumerate() {
                 let sound = Sound::new();
-                if unsafe { &mut *sound }.mml(mml).is_ok() {
+                if unsafe { &mut *sound }.set_mml(mml).is_ok() {
                     crate::platform::lock_audio();
-                    unsafe { &mut *pyxel::channels()[ch] }.play1(sound, None, true, false);
+                    unsafe { &mut *pyxel::channels()[ch] }.play_sound(sound, None, true, false);
                     crate::platform::unlock_audio();
                 }
             }

@@ -35,7 +35,7 @@ impl Resource {
 }
 
 impl Pyxel {
-    pub fn load(
+    pub fn load_resource(
         &mut self,
         filename: &str,
         exclude_images: Option<bool>,
@@ -58,7 +58,7 @@ impl Pyxel {
                 !exclude_sounds.unwrap_or(false),
                 !exclude_musics.unwrap_or(false),
             );
-            self.load_pal(filename);
+            self.load_palette(filename);
             return Ok(());
         }
 
@@ -79,12 +79,12 @@ impl Pyxel {
                 exclude_sounds.unwrap_or(false),
                 exclude_musics.unwrap_or(false),
             );
-            self.load_pal(filename);
+            self.load_palette(filename);
             Ok(())
         }
     }
 
-    pub fn save(
+    pub fn save_resource(
         &mut self,
         filename: &str,
         exclude_images: Option<bool>,
@@ -113,7 +113,7 @@ impl Pyxel {
         Ok(())
     }
 
-    pub fn load_pal(&mut self, filename: &str) {
+    pub fn load_palette(&mut self, filename: &str) {
         let filename = Self::palette_filename(filename);
 
         if let Ok(mut file) = File::open(Path::new(&filename)) {
@@ -135,7 +135,7 @@ impl Pyxel {
         }
     }
 
-    pub fn save_pal(&self, filename: &str) -> Result<(), String> {
+    pub fn save_palette(&self, filename: &str) -> Result<(), String> {
         let filename = Self::palette_filename(filename);
         let mut file = File::create(Path::new(&filename))
             .map_err(|_e| format!("Failed to open file '{filename}'"))?;
@@ -149,7 +149,7 @@ impl Pyxel {
         Ok(())
     }
 
-    pub fn screenshot(&mut self, scale: Option<u32>) {
+    pub fn take_screenshot(&mut self, scale: Option<u32>) {
         let filename = Self::prepend_desktop_path(&format!("pyxel-{}", Self::datetime_string()));
         let scale = max(scale.unwrap_or(self.resource.capture_scale), 1);
         pyxel::screen().save(&filename, scale).unwrap();
@@ -157,7 +157,7 @@ impl Pyxel {
         crate::platform::export_browser_file(&(filename + ".png"));
     }
 
-    pub fn screencast(&mut self, scale: Option<u32>) {
+    pub fn save_screencast(&mut self, scale: Option<u32>) {
         let filename = Self::prepend_desktop_path(&format!("pyxel-{}", Self::datetime_string()));
         let scale = max(scale.unwrap_or(self.resource.capture_scale), 1);
         self.resource.screencast.save(&filename, scale);
@@ -218,7 +218,7 @@ impl Pyxel {
         {
             let image = unsafe { &mut *image };
             for i in 0..num_colors {
-                image.pset(i as f32, 0.0, i as Color);
+                image.set_pixel(i as f32, 0.0, i as Color);
             }
 
             image.save(&filename, 16).unwrap();

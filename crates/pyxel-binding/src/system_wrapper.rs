@@ -73,17 +73,17 @@ fn run<'py>(py: Python, update: Bound<'py, PyAny>, draw: Bound<'py, PyAny>) {
 
 #[pyfunction]
 fn show() {
-    pyxel().show();
+    pyxel().show_screen();
 }
 
 #[pyfunction]
 fn flip() {
-    pyxel().flip();
+    pyxel().flip_screen();
 }
 
 #[pyfunction]
 fn reset() {
-    pyxel().reset();
+    pyxel().restart();
 }
 
 #[pyfunction]
@@ -93,34 +93,34 @@ fn quit() {
 
 #[pyfunction]
 fn title(title: &str) {
-    pyxel().title(title);
+    pyxel().set_title(title);
 }
 
 #[pyfunction]
 #[pyo3(signature = (data, scale, colkey=None))]
 fn icon(data: Vec<String>, scale: u32, colkey: Option<pyxel::Color>) {
     let data_refs: Vec<_> = data.iter().map(String::as_str).collect();
-    pyxel().icon(&data_refs, scale, colkey);
+    pyxel().set_icon(&data_refs, scale, colkey);
 }
 
 #[pyfunction]
 fn perf_monitor(enabled: bool) {
-    pyxel().perf_monitor(enabled);
+    pyxel().set_perf_monitor(enabled);
 }
 
 #[pyfunction]
 fn integer_scale(enabled: bool) {
-    pyxel().integer_scale(enabled);
+    pyxel().set_integer_scale(enabled);
 }
 
 #[pyfunction]
 fn screen_mode(scr: u32) {
-    pyxel().screen_mode(scr);
+    pyxel().set_screen_mode(scr);
 }
 
 #[pyfunction]
 fn fullscreen(enabled: bool) {
-    pyxel().fullscreen(enabled);
+    pyxel().set_fullscreen(enabled);
 }
 
 #[pyfunction]

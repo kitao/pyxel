@@ -108,9 +108,9 @@ impl Tilemap {
         h: Option<f32>,
     ) -> PyResult<()> {
         if let (Some(x), Some(y), Some(w), Some(h)) = (x, y, w, h) {
-            unsafe { &mut *self.inner }.clip(x, y, w, h);
+            unsafe { &mut *self.inner }.set_clip_rect(x, y, w, h);
         } else if (x, y, w, h) == (None, None, None, None) {
-            unsafe { &mut *self.inner }.clip0();
+            unsafe { &mut *self.inner }.reset_clip_rect();
         } else {
             python_type_error!("clip() takes 0 or 4 arguments");
         }
@@ -120,9 +120,9 @@ impl Tilemap {
     #[pyo3(signature = (x=None, y=None))]
     pub fn camera(&self, x: Option<f32>, y: Option<f32>) -> PyResult<()> {
         if let (Some(x), Some(y)) = (x, y) {
-            unsafe { &mut *self.inner }.camera(x, y);
+            unsafe { &mut *self.inner }.set_draw_offset(x, y);
         } else if (x, y) == (None, None) {
-            unsafe { &mut *self.inner }.camera0();
+            unsafe { &mut *self.inner }.reset_draw_offset();
         } else {
             python_type_error!("camera() takes 0 or 2 arguments");
         }
@@ -130,55 +130,55 @@ impl Tilemap {
     }
 
     pub fn cls(&self, tile: pyxel::Tile) {
-        unsafe { &mut *self.inner }.cls(tile);
+        unsafe { &mut *self.inner }.clear(tile);
     }
 
     pub fn pget(&self, x: f32, y: f32) -> pyxel::Tile {
-        unsafe { &mut *self.inner }.pget(x, y)
+        unsafe { &mut *self.inner }.get_tile(x, y)
     }
 
     pub fn pset(&self, x: f32, y: f32, tile: pyxel::Tile) {
-        unsafe { &mut *self.inner }.pset(x, y, tile);
+        unsafe { &mut *self.inner }.set_tile(x, y, tile);
     }
 
     pub fn line(&self, x1: f32, y1: f32, x2: f32, y2: f32, tile: pyxel::Tile) {
-        unsafe { &mut *self.inner }.line(x1, y1, x2, y2, tile);
+        unsafe { &mut *self.inner }.draw_line(x1, y1, x2, y2, tile);
     }
 
     pub fn rect(&self, x: f32, y: f32, w: f32, h: f32, tile: pyxel::Tile) {
-        unsafe { &mut *self.inner }.rect(x, y, w, h, tile);
+        unsafe { &mut *self.inner }.draw_rect(x, y, w, h, tile);
     }
 
     pub fn rectb(&self, x: f32, y: f32, w: f32, h: f32, tile: pyxel::Tile) {
-        unsafe { &mut *self.inner }.rectb(x, y, w, h, tile);
+        unsafe { &mut *self.inner }.draw_rect_border(x, y, w, h, tile);
     }
 
     pub fn circ(&self, x: f32, y: f32, r: f32, tile: pyxel::Tile) {
-        unsafe { &mut *self.inner }.circ(x, y, r, tile);
+        unsafe { &mut *self.inner }.draw_circle(x, y, r, tile);
     }
 
     pub fn circb(&self, x: f32, y: f32, r: f32, tile: pyxel::Tile) {
-        unsafe { &mut *self.inner }.circb(x, y, r, tile);
+        unsafe { &mut *self.inner }.draw_circle_border(x, y, r, tile);
     }
 
     pub fn elli(&self, x: f32, y: f32, w: f32, h: f32, tile: pyxel::Tile) {
-        unsafe { &mut *self.inner }.elli(x, y, w, h, tile);
+        unsafe { &mut *self.inner }.draw_ellipse(x, y, w, h, tile);
     }
 
     pub fn ellib(&self, x: f32, y: f32, w: f32, h: f32, tile: pyxel::Tile) {
-        unsafe { &mut *self.inner }.ellib(x, y, w, h, tile);
+        unsafe { &mut *self.inner }.draw_ellipse_border(x, y, w, h, tile);
     }
 
     pub fn tri(&self, x1: f32, y1: f32, x2: f32, y2: f32, x3: f32, y3: f32, tile: pyxel::Tile) {
-        unsafe { &mut *self.inner }.tri(x1, y1, x2, y2, x3, y3, tile);
+        unsafe { &mut *self.inner }.draw_triangle(x1, y1, x2, y2, x3, y3, tile);
     }
 
     pub fn trib(&self, x1: f32, y1: f32, x2: f32, y2: f32, x3: f32, y3: f32, tile: pyxel::Tile) {
-        unsafe { &mut *self.inner }.trib(x1, y1, x2, y2, x3, y3, tile);
+        unsafe { &mut *self.inner }.draw_triangle_border(x1, y1, x2, y2, x3, y3, tile);
     }
 
     pub fn fill(&self, x: f32, y: f32, tile: pyxel::Tile) {
-        unsafe { &mut *self.inner }.fill(x, y, tile);
+        unsafe { &mut *self.inner }.flood_fill(x, y, tile);
     }
 
     pub fn collide(
@@ -212,10 +212,10 @@ impl Tilemap {
             tm,
             (u32, {
                 let tilemap = pyxel::tilemaps()[tm as usize];
-                unsafe { (&mut *self.inner).blt(x, y, tilemap, u, v, w, h, tilekey, rotate, scale) };
+                unsafe { (&mut *self.inner).draw_tilemap(x, y, tilemap, u, v, w, h, tilekey, rotate, scale) };
             }),
             (Tilemap, {
-                unsafe { (&mut *self.inner).blt(x, y, tm.inner, u, v, w, h, tilekey, rotate, scale) };
+                unsafe { (&mut *self.inner).draw_tilemap(x, y, tm.inner, u, v, w, h, tilekey, rotate, scale) };
             })
         }
         Ok(())

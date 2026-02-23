@@ -79,7 +79,7 @@ impl Pyxel {
         });
     }
 
-    pub fn show(&mut self) {
+    pub fn show_screen(&mut self) {
         struct App {
             image: *mut Image,
         }
@@ -90,7 +90,7 @@ impl Pyxel {
             fn update(&mut self, _pyxel: &mut Pyxel) {}
             fn draw(&mut self, _pyxel: &mut Pyxel) {
                 unsafe {
-                    pyxel::screen().blt(
+                    pyxel::screen().draw_image(
                         0.0,
                         0.0,
                         self.image,
@@ -108,7 +108,7 @@ impl Pyxel {
 
         let image = Image::new(*pyxel::width(), *pyxel::height());
         unsafe {
-            (&mut *image).blt(
+            (&mut *image).draw_image(
                 0.0,
                 0.0,
                 std::ptr::from_mut(pyxel::screen()),
@@ -125,7 +125,7 @@ impl Pyxel {
         self.run(App { image });
     }
 
-    pub fn flip(&mut self) {
+    pub fn flip_screen(&mut self) {
         self.system.update_profiler.end(platform::ticks());
 
         self.draw_frame(None);
@@ -144,7 +144,7 @@ impl Pyxel {
         platform::quit();
     }
 
-    pub fn reset(&mut self) {
+    pub fn restart(&mut self) {
         #[cfg(not(target_os = "emscripten"))]
         if let Some(mut reset_func) = pyxel::reset_func().take() {
             reset_func();
@@ -163,11 +163,11 @@ impl Pyxel {
         }
     }
 
-    pub fn title(&self, title: &str) {
+    pub fn set_title(&self, title: &str) {
         platform::set_window_title(title);
     }
 
-    pub fn icon(&self, data_str: &[&str], scale: u32, transparent: Option<Color>) {
+    pub fn set_icon(&self, data_str: &[&str], scale: u32, transparent: Option<Color>) {
         let colors = pyxel::colors();
         let width = utils::simplify_string(data_str[0]).len() as u32;
         let height = data_str.len() as u32;
@@ -201,19 +201,19 @@ impl Pyxel {
         platform::set_window_icon(scaled_width, scaled_height, &rgba);
     }
 
-    pub fn perf_monitor(&mut self, enabled: bool) {
+    pub fn set_perf_monitor(&mut self, enabled: bool) {
         self.system.perf_monitor_enabled = enabled;
     }
 
-    pub fn integer_scale(&mut self, enabled: bool) {
+    pub fn set_integer_scale(&mut self, enabled: bool) {
         self.system.integer_scale_enabled = enabled;
     }
 
-    pub fn screen_mode(&mut self, screen_mode: u32) {
+    pub fn set_screen_mode(&mut self, screen_mode: u32) {
         self.system.screen_mode = screen_mode;
     }
 
-    pub fn fullscreen(&self, enabled: bool) {
+    pub fn set_fullscreen(&self, enabled: bool) {
         platform::set_fullscreen(enabled);
     }
 
@@ -255,67 +255,67 @@ impl Pyxel {
     }
 
     fn check_special_input(&mut self) {
-        if self.btnp(self.system.quit_key, None, None) {
+        if self.is_button_pressed(self.system.quit_key, None, None) {
             self.reset_key(self.system.quit_key);
             self.quit();
-        } else if self.btn(KEY_ALT) {
-            if self.btn(KEY_SHIFT) {
-                if self.btnp(KEY_0, None, None) {
+        } else if self.is_button_down(KEY_ALT) {
+            if self.is_button_down(KEY_SHIFT) {
+                if self.is_button_pressed(KEY_0, None, None) {
                     self.reset_key(KEY_0);
                     self.dump_palette();
                 } else {
                     for i in 0..=8 {
-                        if self.btnp(KEY_1 + i, None, None) {
+                        if self.is_button_pressed(KEY_1 + i, None, None) {
                             self.reset_key(KEY_1 + i);
                             self.dump_image_bank(i);
                         }
                     }
                 }
-            } else if self.btnp(KEY_1, None, None) {
+            } else if self.is_button_pressed(KEY_1, None, None) {
                 self.reset_key(KEY_1);
-                self.screenshot(None);
-            } else if self.btnp(KEY_2, None, None) {
+                self.take_screenshot(None);
+            } else if self.is_button_pressed(KEY_2, None, None) {
                 self.reset_key(KEY_2);
                 self.reset_screencast();
-            } else if self.btnp(KEY_3, None, None) {
+            } else if self.is_button_pressed(KEY_3, None, None) {
                 self.reset_key(KEY_3);
-                self.screencast(None);
-            } else if self.btnp(KEY_8, None, None) {
+                self.save_screencast(None);
+            } else if self.is_button_pressed(KEY_8, None, None) {
                 self.reset_key(KEY_8);
-                self.integer_scale(!self.system.integer_scale_enabled);
-            } else if self.btnp(KEY_9, None, None) {
+                self.set_integer_scale(!self.system.integer_scale_enabled);
+            } else if self.is_button_pressed(KEY_9, None, None) {
                 self.reset_key(KEY_9);
-                self.screen_mode((self.system.screen_mode + 1) % NUM_SCREEN_TYPES);
-            } else if self.btnp(KEY_0, None, None) {
+                self.set_screen_mode((self.system.screen_mode + 1) % NUM_SCREEN_TYPES);
+            } else if self.is_button_pressed(KEY_0, None, None) {
                 self.reset_key(KEY_0);
-                self.perf_monitor(!self.system.perf_monitor_enabled);
-            } else if self.btnp(KEY_R, None, None) {
+                self.set_perf_monitor(!self.system.perf_monitor_enabled);
+            } else if self.is_button_pressed(KEY_R, None, None) {
                 self.reset_key(KEY_RETURN);
-                self.reset();
-            } else if self.btnp(KEY_RETURN, None, None) {
+                self.restart();
+            } else if self.is_button_pressed(KEY_RETURN, None, None) {
                 self.reset_key(KEY_RETURN);
-                self.fullscreen(!platform::is_fullscreen());
+                self.set_fullscreen(!platform::is_fullscreen());
             }
-        } else if self.btn(GAMEPAD1_BUTTON_A)
-            && self.btn(GAMEPAD1_BUTTON_B)
-            && self.btn(GAMEPAD1_BUTTON_X)
-            && self.btn(GAMEPAD1_BUTTON_Y)
+        } else if self.is_button_down(GAMEPAD1_BUTTON_A)
+            && self.is_button_down(GAMEPAD1_BUTTON_B)
+            && self.is_button_down(GAMEPAD1_BUTTON_X)
+            && self.is_button_down(GAMEPAD1_BUTTON_Y)
         {
-            if self.btnp(GAMEPAD1_BUTTON_BACK, None, None) {
+            if self.is_button_pressed(GAMEPAD1_BUTTON_BACK, None, None) {
                 self.reset_key(GAMEPAD1_BUTTON_BACK);
-                self.reset();
-            } else if self.btnp(GAMEPAD1_BUTTON_DPAD_LEFT, None, None) {
+                self.restart();
+            } else if self.is_button_pressed(GAMEPAD1_BUTTON_DPAD_LEFT, None, None) {
                 self.reset_key(GAMEPAD1_BUTTON_DPAD_UP);
-                self.integer_scale(!self.system.integer_scale_enabled);
-            } else if self.btnp(GAMEPAD1_BUTTON_DPAD_RIGHT, None, None) {
+                self.set_integer_scale(!self.system.integer_scale_enabled);
+            } else if self.is_button_pressed(GAMEPAD1_BUTTON_DPAD_RIGHT, None, None) {
                 self.reset_key(GAMEPAD1_BUTTON_DPAD_DOWN);
-                self.screen_mode((self.system.screen_mode + 1) % NUM_SCREEN_TYPES);
-            } else if self.btnp(GAMEPAD1_BUTTON_DPAD_UP, None, None) {
+                self.set_screen_mode((self.system.screen_mode + 1) % NUM_SCREEN_TYPES);
+            } else if self.is_button_pressed(GAMEPAD1_BUTTON_DPAD_UP, None, None) {
                 self.reset_key(GAMEPAD1_BUTTON_DPAD_LEFT);
-                self.perf_monitor(!self.system.perf_monitor_enabled);
-            } else if self.btnp(GAMEPAD1_BUTTON_DPAD_DOWN, None, None) {
+                self.set_perf_monitor(!self.system.perf_monitor_enabled);
+            } else if self.is_button_pressed(GAMEPAD1_BUTTON_DPAD_DOWN, None, None) {
                 self.reset_key(GAMEPAD1_BUTTON_DPAD_RIGHT);
-                self.fullscreen(!platform::is_fullscreen());
+                self.set_fullscreen(!platform::is_fullscreen());
             }
         }
     }
@@ -372,36 +372,36 @@ impl Pyxel {
 
         let screen = pyxel::screen();
         let clip_rect = screen.canvas.clip_rect;
-        let camera_x = screen.canvas.camera_x;
-        let camera_y = screen.canvas.camera_y;
+        let draw_offset_x = screen.canvas.draw_offset_x;
+        let draw_offset_y = screen.canvas.draw_offset_y;
         let palette1 = screen.palette[1];
         let palette2 = screen.palette[2];
         let alpha = screen.canvas.alpha;
 
-        screen.clip0();
-        screen.camera0();
-        screen.pal(1, 1);
-        screen.pal(2, 9);
-        screen.dither(1.0);
+        screen.reset_clip_rect();
+        screen.reset_draw_offset();
+        screen.map_color(1, 1);
+        screen.map_color(2, 9);
+        screen.set_dithering(1.0);
 
         let fps = format!("{:.*}", 2, self.system.fps_profiler.average_fps());
-        screen.text(1.0, 0.0, &fps, 1, None);
-        screen.text(0.0, 0.0, &fps, 2, None);
+        screen.draw_text(1.0, 0.0, &fps, 1, None);
+        screen.draw_text(0.0, 0.0, &fps, 2, None);
 
         let update_time = format!("{:.*}", 2, self.system.update_profiler.average_time());
-        screen.text(1.0, 6.0, &update_time, 1, None);
-        screen.text(0.0, 6.0, &update_time, 2, None);
+        screen.draw_text(1.0, 6.0, &update_time, 1, None);
+        screen.draw_text(0.0, 6.0, &update_time, 2, None);
 
         let draw_time = format!("{:.*}", 2, self.system.draw_profiler.average_time());
-        screen.text(1.0, 12.0, &draw_time, 1, None);
-        screen.text(0.0, 12.0, &draw_time, 2, None);
+        screen.draw_text(1.0, 12.0, &draw_time, 1, None);
+        screen.draw_text(0.0, 12.0, &draw_time, 2, None);
 
         screen.canvas.clip_rect = clip_rect;
-        screen.canvas.camera_x = camera_x;
-        screen.canvas.camera_y = camera_y;
-        screen.pal(1, palette1);
-        screen.pal(2, palette2);
-        screen.dither(alpha);
+        screen.canvas.draw_offset_x = draw_offset_x;
+        screen.canvas.draw_offset_y = draw_offset_y;
+        screen.map_color(1, palette1);
+        screen.map_color(2, palette2);
+        screen.set_dithering(alpha);
     }
 
     fn draw_cursor(&self) {
@@ -429,14 +429,14 @@ impl Pyxel {
 
         let screen = pyxel::screen();
         let clip_rect = screen.canvas.clip_rect;
-        let camera_x = screen.canvas.camera_x;
-        let camera_y = screen.canvas.camera_y;
+        let draw_offset_x = screen.canvas.draw_offset_x;
+        let draw_offset_y = screen.canvas.draw_offset_y;
         let palette = screen.palette;
 
-        screen.clip0();
-        screen.camera0();
+        screen.reset_clip_rect();
+        screen.reset_draw_offset();
         unsafe {
-            screen.blt(
+            screen.draw_image(
                 x as f32,
                 y as f32,
                 std::ptr::from_mut(pyxel::cursor_image()),
@@ -451,8 +451,8 @@ impl Pyxel {
         }
 
         screen.canvas.clip_rect = clip_rect;
-        screen.canvas.camera_x = camera_x;
-        screen.canvas.camera_y = camera_y;
+        screen.canvas.draw_offset_x = draw_offset_x;
+        screen.canvas.draw_offset_y = draw_offset_y;
         screen.palette = palette;
     }
 

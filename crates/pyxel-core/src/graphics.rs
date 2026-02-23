@@ -218,87 +218,105 @@ impl Graphics {
 }
 
 impl Pyxel {
-    pub fn clip(&self, x: f32, y: f32, width: f32, height: f32) {
-        pyxel::screen().clip(x, y, width, height);
+    pub fn set_clip_rect(&self, x: f32, y: f32, width: f32, height: f32) {
+        pyxel::screen().set_clip_rect(x, y, width, height);
     }
 
-    pub fn clip0(&self) {
-        pyxel::screen().clip0();
+    pub fn reset_clip_rect(&self) {
+        pyxel::screen().reset_clip_rect();
     }
 
-    pub fn camera(&self, x: f32, y: f32) {
-        pyxel::screen().camera(x, y);
+    pub fn set_draw_offset(&self, x: f32, y: f32) {
+        pyxel::screen().set_draw_offset(x, y);
     }
 
-    pub fn camera0(&self) {
-        pyxel::screen().camera0();
+    pub fn reset_draw_offset(&self) {
+        pyxel::screen().reset_draw_offset();
     }
 
-    pub fn pal(&self, src_color: Color, dst_color: Color) {
-        pyxel::screen().pal(src_color, dst_color);
+    pub fn map_color(&self, src_color: Color, dst_color: Color) {
+        pyxel::screen().map_color(src_color, dst_color);
     }
 
-    pub fn pal0(&self) {
-        pyxel::screen().pal0();
+    pub fn reset_color_map(&self) {
+        pyxel::screen().reset_color_map();
     }
 
-    pub fn dither(&self, alpha: f32) {
-        pyxel::screen().dither(alpha);
+    pub fn set_dithering(&self, alpha: f32) {
+        pyxel::screen().set_dithering(alpha);
     }
 
-    pub fn cls(&self, color: Color) {
-        pyxel::screen().cls(color);
+    pub fn clear(&self, color: Color) {
+        pyxel::screen().clear(color);
     }
 
-    pub fn pget(&self, x: f32, y: f32) -> Color {
-        pyxel::screen().pget(x, y)
+    pub fn get_pixel(&self, x: f32, y: f32) -> Color {
+        pyxel::screen().get_pixel(x, y)
     }
 
-    pub fn pset(&self, x: f32, y: f32, color: Color) {
-        pyxel::screen().pset(x, y, color);
+    pub fn set_pixel(&self, x: f32, y: f32, color: Color) {
+        pyxel::screen().set_pixel(x, y, color);
     }
 
-    pub fn line(&self, x1: f32, y1: f32, x2: f32, y2: f32, color: Color) {
-        pyxel::screen().line(x1, y1, x2, y2, color);
+    pub fn draw_line(&self, x1: f32, y1: f32, x2: f32, y2: f32, color: Color) {
+        pyxel::screen().draw_line(x1, y1, x2, y2, color);
     }
 
-    pub fn rect(&self, x: f32, y: f32, width: f32, height: f32, color: Color) {
-        pyxel::screen().rect(x, y, width, height, color);
+    pub fn draw_rect(&self, x: f32, y: f32, width: f32, height: f32, color: Color) {
+        pyxel::screen().draw_rect(x, y, width, height, color);
     }
 
-    pub fn rectb(&self, x: f32, y: f32, width: f32, height: f32, color: Color) {
-        pyxel::screen().rectb(x, y, width, height, color);
+    pub fn draw_rect_border(&self, x: f32, y: f32, width: f32, height: f32, color: Color) {
+        pyxel::screen().draw_rect_border(x, y, width, height, color);
     }
 
-    pub fn circ(&self, x: f32, y: f32, radius: f32, color: Color) {
-        pyxel::screen().circ(x, y, radius, color);
+    pub fn draw_circle(&self, x: f32, y: f32, radius: f32, color: Color) {
+        pyxel::screen().draw_circle(x, y, radius, color);
     }
 
-    pub fn circb(&self, x: f32, y: f32, radius: f32, color: Color) {
-        pyxel::screen().circb(x, y, radius, color);
+    pub fn draw_circle_border(&self, x: f32, y: f32, radius: f32, color: Color) {
+        pyxel::screen().draw_circle_border(x, y, radius, color);
     }
 
-    pub fn elli(&self, x: f32, y: f32, width: f32, height: f32, color: Color) {
-        pyxel::screen().elli(x, y, width, height, color);
+    pub fn draw_ellipse(&self, x: f32, y: f32, width: f32, height: f32, color: Color) {
+        pyxel::screen().draw_ellipse(x, y, width, height, color);
     }
 
-    pub fn ellib(&self, x: f32, y: f32, width: f32, height: f32, color: Color) {
-        pyxel::screen().ellib(x, y, width, height, color);
+    pub fn draw_ellipse_border(&self, x: f32, y: f32, width: f32, height: f32, color: Color) {
+        pyxel::screen().draw_ellipse_border(x, y, width, height, color);
     }
 
-    pub fn tri(&self, x1: f32, y1: f32, x2: f32, y2: f32, x3: f32, y3: f32, color: Color) {
-        pyxel::screen().tri(x1, y1, x2, y2, x3, y3, color);
+    pub fn draw_triangle(
+        &self,
+        x1: f32,
+        y1: f32,
+        x2: f32,
+        y2: f32,
+        x3: f32,
+        y3: f32,
+        color: Color,
+    ) {
+        pyxel::screen().draw_triangle(x1, y1, x2, y2, x3, y3, color);
     }
 
-    pub fn trib(&self, x1: f32, y1: f32, x2: f32, y2: f32, x3: f32, y3: f32, color: Color) {
-        pyxel::screen().trib(x1, y1, x2, y2, x3, y3, color);
+    pub fn draw_triangle_border(
+        &self,
+        x1: f32,
+        y1: f32,
+        x2: f32,
+        y2: f32,
+        x3: f32,
+        y3: f32,
+        color: Color,
+    ) {
+        pyxel::screen().draw_triangle_border(x1, y1, x2, y2, x3, y3, color);
     }
 
-    pub fn fill(&self, x: f32, y: f32, color: Color) {
-        pyxel::screen().fill(x, y, color);
+    pub fn flood_fill(&self, x: f32, y: f32, color: Color) {
+        pyxel::screen().flood_fill(x, y, color);
     }
 
-    pub fn blt(
+    pub fn draw_image(
         &self,
         x: f32,
         y: f32,
@@ -312,7 +330,7 @@ impl Pyxel {
         scale: Option<f32>,
     ) {
         unsafe {
-            pyxel::screen().blt(
+            pyxel::screen().draw_image(
                 x,
                 y,
                 pyxel::images()[image_index as usize],
@@ -327,7 +345,7 @@ impl Pyxel {
         }
     }
 
-    pub fn bltm(
+    pub fn draw_tilemap(
         &self,
         x: f32,
         y: f32,
@@ -341,7 +359,7 @@ impl Pyxel {
         scale: Option<f32>,
     ) {
         unsafe {
-            pyxel::screen().bltm(
+            pyxel::screen().draw_tilemap(
                 x,
                 y,
                 pyxel::tilemaps()[tilemap_index as usize],
@@ -356,8 +374,8 @@ impl Pyxel {
         }
     }
 
-    pub fn text(&self, x: f32, y: f32, string: &str, color: Color, font: Option<*mut Font>) {
-        pyxel::screen().text(x, y, string, color, font);
+    pub fn draw_text(&self, x: f32, y: f32, string: &str, color: Color, font: Option<*mut Font>) {
+        pyxel::screen().draw_text(x, y, string, color, font);
     }
 
     pub(crate) fn render_screen(&mut self) {

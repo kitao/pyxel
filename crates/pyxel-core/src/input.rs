@@ -33,10 +33,10 @@ impl Input {
 }
 
 impl Pyxel {
-    pub fn btn(&mut self, key: Key) -> bool {
+    pub fn is_button_down(&mut self, key: Key) -> bool {
         assert!(
             !self.is_analog_key(key),
-            "btn is called with an analog key 0x{key:X}"
+            "is_button_down is called with an analog key 0x{key:X}"
         );
 
         if let Some((frame_count, key_state)) = self.input.key_states.get(&key) {
@@ -51,7 +51,7 @@ impl Pyxel {
         false
     }
 
-    pub fn btnp(
+    pub fn is_button_pressed(
         &mut self,
         key: Key,
         hold_frame_count: Option<u32>,
@@ -59,7 +59,7 @@ impl Pyxel {
     ) -> bool {
         assert!(
             !self.is_analog_key(key),
-            "btnp is called with an analog key 0x{key:X}"
+            "is_button_pressed is called with an analog key 0x{key:X}"
         );
 
         if let Some((frame_count, key_state)) = self.input.key_states.get(&key) {
@@ -90,10 +90,10 @@ impl Pyxel {
         false
     }
 
-    pub fn btnr(&mut self, key: Key) -> bool {
+    pub fn is_button_released(&mut self, key: Key) -> bool {
         assert!(
             !self.is_analog_key(key),
-            "btnr is called with an analog key 0x{key:X}"
+            "is_button_released is called with an analog key 0x{key:X}"
         );
 
         if let Some((frame_count, key_state)) = self.input.key_states.get(&key) {
@@ -108,20 +108,20 @@ impl Pyxel {
         false
     }
 
-    pub fn btnv(&mut self, key: Key) -> KeyValue {
+    pub fn button_value(&mut self, key: Key) -> KeyValue {
         assert!(
             self.is_analog_key(key),
-            "btnv is called with a non-analog key 0x{key:X}"
+            "button_value is called with a non-analog key 0x{key:X}"
         );
 
         self.input.key_values.get(&key).copied().unwrap_or(0)
     }
 
-    pub fn mouse(&mut self, visible: bool) {
+    pub fn set_mouse_visible(&mut self, visible: bool) {
         self.input.mouse_visible = visible;
     }
 
-    pub fn warp_mouse(&mut self, x: f32, y: f32) {
+    pub fn set_mouse_position(&mut self, x: f32, y: f32) {
         let x = f32_to_i32(x);
         let y = f32_to_i32(y);
         self.input.key_values.insert(MOUSE_POS_X, x);
