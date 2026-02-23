@@ -70,7 +70,7 @@ run_bg pyxel edit "$EXAMPLES_DIR/assets/sample.pyxres"
 # Copy examples to work directory
 PACKAGE_EXAMPLE=$(example_name 10)
 WATCH_EXAMPLE=$(example_name 01)
-WORK_DIR="$ROOT_DIR/$PACKAGE_EXAMPLE"
+WORK_DIR="$(mktemp -d)/$PACKAGE_EXAMPLE"
 CLEANUP_PATHS+=("$WORK_DIR")
 
 rm -rf "$WORK_DIR"
