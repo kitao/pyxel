@@ -201,7 +201,7 @@ Aşağıdaki örnekler geçerli dizine kopyalanacaktır:
 </tr>
 <tr>
 <td>15_tiled_map_file.py</td>
-<td>Tiled Map File (.tmx) yükleme ve çizme</td>
+<td>Tiled Map File (.tmx) çizimi ve otomatik BGM oluşturma</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/15-tiled-map-file.html">Demo</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/15_tiled_map_file.py">Kod</a></td>
 </tr>

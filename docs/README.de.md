@@ -201,7 +201,7 @@ Die folgenden Beispiele werden in das aktuelle Verzeichnis kopiert:
 </tr>
 <tr>
 <td>15_tiled_map_file.py</td>
-<td>Laden und Zeichnen einer Tiled Map File (.tmx)</td>
+<td>Zeichnen einer Tiled Map File (.tmx) und automatische BGM-Erzeugung</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/15-tiled-map-file.html">Demo</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/15_tiled_map_file.py">Code</a></td>
 </tr>

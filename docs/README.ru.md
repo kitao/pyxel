@@ -201,7 +201,7 @@ pyxel copy_examples
 </tr>
 <tr>
 <td>15_tiled_map_file.py</td>
-<td>Загрузка и отрисовка Tiled Map File (.tmx)</td>
+<td>Отрисовка Tiled Map File (.tmx) и автоматическая генерация BGM</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/15-tiled-map-file.html">Демонстрация</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/15_tiled_map_file.py">Код</a></td>
 </tr>

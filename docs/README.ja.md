@@ -201,7 +201,7 @@ pyxel copy_examples
 </tr>
 <tr>
 <td>15_tiled_map_file.py</td>
-<td>タイルマップファイル (.tmx) の読み込みと描画</td>
+<td>タイルマップファイル (.tmx) 描画と BGM 自動作成</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/15-tiled-map-file.html">デモ</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/15_tiled_map_file.py">コード</a></td>
 </tr>

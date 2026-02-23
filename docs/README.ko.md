@@ -201,7 +201,7 @@ pyxel copy_examples
 </tr>
 <tr>
 <td>15_tiled_map_file.py</td>
-<td>Tiled Map File (.tmx) 로드 및 그리기</td>
+<td>Tiled Map File (.tmx) 그리기 및 BGM 자동 생성</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/15-tiled-map-file.html">데모</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/15_tiled_map_file.py">코드</a></td>
 </tr>
