@@ -100,8 +100,7 @@ impl Pyxel {
         );
 
         let path = Path::new(&filename);
-        let file = File::create(path)
-            .map_err(|_e| format!("Failed to open file '{filename}'"))?;
+        let file = File::create(path).map_err(|_e| format!("Failed to open file '{filename}'"))?;
 
         let mut zip = ZipWriter::new(file);
         zip.start_file(RESOURCE_ARCHIVE_NAME, SimpleFileOptions::default())

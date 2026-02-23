@@ -1,7 +1,6 @@
-use std::array;
 use std::collections::HashMap;
 use std::path::Path;
-use std::ptr;
+use std::{array, ptr};
 
 use image::imageops;
 

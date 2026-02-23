@@ -21,10 +21,7 @@ pub fn load_pcm(path: &str, target_rate: u32) -> Result<PcmData, String> {
     let mss = MediaSourceStream::new(Box::new(file), MediaSourceStreamOptions::default());
 
     let mut hint = Hint::new();
-    if let Some(ext) = Path::new(path)
-        .extension()
-        .and_then(|s| s.to_str())
-    {
+    if let Some(ext) = Path::new(path).extension().and_then(|s| s.to_str()) {
         hint.with_extension(ext);
     }
 
