@@ -1,19 +1,17 @@
 use std::ffi::CString;
-use std::mem::{transmute, MaybeUninit};
+use std::mem::MaybeUninit;
 use std::os::raw::{c_int, c_void};
 use std::ptr::{addr_of_mut, copy_nonoverlapping, null_mut};
 use std::slice::from_raw_parts_mut;
-use std::sync::LazyLock;
+use std::sync::atomic::{AtomicU32, Ordering};
 
 use glow::Context;
-use parking_lot::Mutex;
 
 use super::super::facade::GLProfile;
 use super::poll_events::Gamepad;
 use super::sdl2_sys::*;
 
-static AUDIO_DEVICE_ID: LazyLock<std::sync::Mutex<SDL_AudioDeviceID>> =
-    LazyLock::new(|| std::sync::Mutex::new(0));
+static AUDIO_DEVICE_ID: AtomicU32 = AtomicU32::new(0);
 
 #[cfg(target_os = "emscripten")]
 extern "C" {
@@ -33,10 +31,9 @@ unsafe extern "C" fn main_loop_callback<F: FnMut(f32)>(arg: *mut c_void) {
 }
 
 extern "C" fn audio_callback(userdata: *mut c_void, stream: *mut u8, len: c_int) {
-    let callback = unsafe { &mut *userdata.cast::<Mutex<Box<dyn FnMut(&mut [i16])>>>() };
+    let callback = unsafe { &mut *userdata.cast::<Box<dyn FnMut(&mut [i16])>>() };
     let stream: &mut [i16] = unsafe { from_raw_parts_mut(stream.cast::<i16>(), len as usize / 2) };
-    let mut guard = callback.lock();
-    (*guard)(stream);
+    (*callback)(stream);
 }
 
 pub struct PlatformSdl2 {
@@ -160,10 +157,9 @@ impl PlatformSdl2 {
                 );
             }
 
-            self.gl_context =
-                transmute::<Box<Context>, *mut Context>(Box::new(Context::from_loader_function(
-                    |s| SDL_GL_GetProcAddress(s.as_ptr().cast()).cast_const(),
-                )));
+            self.gl_context = Box::into_raw(Box::new(Context::from_loader_function(|s| {
+                SDL_GL_GetProcAddress(s.as_ptr().cast()).cast_const()
+            })));
         }
     }
 
@@ -282,19 +278,15 @@ impl PlatformSdl2 {
         buffer_size: u32,
         callback: F,
     ) {
-        {
-            let audio_device_id = *AUDIO_DEVICE_ID.lock().unwrap();
-            if audio_device_id != 0 {
-                self.audio_device_id = audio_device_id;
-                self.pause_audio(false);
-                return;
-            }
+        let saved_id = AUDIO_DEVICE_ID.load(Ordering::Relaxed);
+        if saved_id != 0 {
+            self.audio_device_id = saved_id;
+            self.pause_audio(false);
+            return;
         }
 
-        let userdata = Box::into_raw(Box::new(Mutex::new(
-            Box::new(callback) as Box<dyn FnMut(&mut [i16])>
-        )))
-        .cast::<c_void>();
+        let userdata = Box::into_raw(Box::new(Box::new(callback) as Box<dyn FnMut(&mut [i16])>))
+            .cast::<c_void>();
         let desired = SDL_AudioSpec {
             freq: sample_rate as i32,
             format: AUDIO_S16 as u16,
@@ -316,7 +308,7 @@ impl PlatformSdl2 {
             println!("Failed to initialize audio device");
         }
 
-        *AUDIO_DEVICE_ID.lock().unwrap() = self.audio_device_id;
+        AUDIO_DEVICE_ID.store(self.audio_device_id, Ordering::Relaxed);
 
         self.pause_audio(false);
     }
@@ -325,6 +317,22 @@ impl PlatformSdl2 {
         if self.audio_device_id != 0 {
             unsafe {
                 SDL_PauseAudioDevice(self.audio_device_id, paused as i32);
+            }
+        }
+    }
+
+    pub fn lock_audio(&self) {
+        if self.audio_device_id != 0 {
+            unsafe {
+                SDL_LockAudioDevice(self.audio_device_id);
+            }
+        }
+    }
+
+    pub fn unlock_audio(&self) {
+        if self.audio_device_id != 0 {
+            unsafe {
+                SDL_UnlockAudioDevice(self.audio_device_id);
             }
         }
     }

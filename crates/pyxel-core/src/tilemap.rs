@@ -1,5 +1,5 @@
 use crate::canvas::{Canvas, ToIndex};
-use crate::image::SharedImage;
+use crate::image::Image;
 use crate::settings::TILE_SIZE;
 use crate::tmx_parser::parse_tmx;
 use crate::utils::{f32_to_u32, parse_hex_string, simplify_string};
@@ -16,7 +16,7 @@ impl ToIndex for Tile {
 #[derive(Clone)]
 pub enum ImageSource {
     Index(u32),
-    Image(SharedImage),
+    Image(*mut Image),
 }
 
 pub struct Tilemap {
@@ -25,18 +25,16 @@ pub struct Tilemap {
     pub(crate) canvas: Canvas<Tile>,
 }
 
-pub type SharedTilemap = shared_type!(Tilemap);
-
 impl Tilemap {
-    pub fn new(width: u32, height: u32, imgsrc: ImageSource) -> SharedTilemap {
-        new_shared_type!(Self {
+    pub fn new(width: u32, height: u32, imgsrc: ImageSource) -> *mut Tilemap {
+        Box::into_raw(Box::new(Self {
             imgsrc,
 
             canvas: Canvas::new(width, height),
-        })
+        }))
     }
 
-    pub fn from_tmx(filename: &str, layer_index: u32) -> Result<SharedTilemap, String> {
+    pub fn from_tmx(filename: &str, layer_index: u32) -> Result<*mut Tilemap, String> {
         parse_tmx(filename, layer_index)
     }
 
@@ -58,7 +56,7 @@ impl Tilemap {
         let tilemap = Self::new(width, height, self.imgsrc.clone());
 
         {
-            let mut tilemap = tilemap.lock();
+            let tilemap = unsafe { &mut *tilemap };
             for y in 0..height {
                 let src_data = simplify_string(data_str[y as usize]);
                 for x in 0..width {
@@ -76,37 +74,41 @@ impl Tilemap {
             }
         }
 
-        self.blt(
-            x as f32,
-            y as f32,
-            tilemap,
-            0.0,
-            0.0,
-            width as f32,
-            height as f32,
-            None,
-            None,
-            None,
-        );
+        unsafe {
+            self.blt(
+                x as f32,
+                y as f32,
+                tilemap,
+                0.0,
+                0.0,
+                width as f32,
+                height as f32,
+                None,
+                None,
+                None,
+            );
+        }
     }
 
     pub fn load(&mut self, x: i32, y: i32, filename: &str, layer_index: u32) -> Result<(), String> {
         let tilemap = Self::from_tmx(filename, layer_index)?;
-        let tilemap_width = tilemap.lock().width();
-        let tilemap_height = tilemap.lock().height();
+        let tilemap_width = unsafe { &*tilemap }.width();
+        let tilemap_height = unsafe { &*tilemap }.height();
 
-        self.blt(
-            x as f32,
-            y as f32,
-            tilemap,
-            0.0,
-            0.0,
-            tilemap_width as f32,
-            tilemap_height as f32,
-            None,
-            None,
-            None,
-        );
+        unsafe {
+            self.blt(
+                x as f32,
+                y as f32,
+                tilemap,
+                0.0,
+                0.0,
+                tilemap_width as f32,
+                tilemap_height as f32,
+                None,
+                None,
+                None,
+            );
+        }
 
         Ok(())
     }
@@ -179,11 +181,13 @@ impl Tilemap {
         self.canvas.fill(x, y, tile);
     }
 
-    pub fn blt(
+    /// # Safety
+    /// `tilemap` must be a valid, non-null pointer to a `Tilemap`.
+    pub unsafe fn blt(
         &mut self,
         x: f32,
         y: f32,
-        tilemap: SharedTilemap,
+        tilemap: *mut Tilemap,
         tilemap_x: f32,
         tilemap_y: f32,
         width: f32,
@@ -211,19 +215,7 @@ impl Tilemap {
             return;
         }
 
-        if let Some(tilemap) = tilemap.try_lock() {
-            self.canvas.blt(
-                x,
-                y,
-                &tilemap.canvas,
-                tilemap_x,
-                tilemap_y,
-                width,
-                height,
-                transparent,
-                None,
-            );
-        } else {
+        if std::ptr::eq(tilemap, std::ptr::from_mut(self)) {
             let copy_width = f32_to_u32(width.abs());
             let copy_height = f32_to_u32(height.abs());
             let mut canvas = Canvas::new(copy_width, copy_height);
@@ -242,24 +234,9 @@ impl Tilemap {
 
             self.canvas
                 .blt(x, y, &canvas, 0.0, 0.0, width, height, transparent, None);
-        }
-    }
-
-    fn blt_transform(
-        &mut self,
-        x: f32,
-        y: f32,
-        tilemap: SharedTilemap,
-        tilemap_x: f32,
-        tilemap_y: f32,
-        width: f32,
-        height: f32,
-        transparent: Option<Tile>,
-        rotate: f32,
-        scale: f32,
-    ) {
-        if let Some(tilemap) = tilemap.try_lock() {
-            self.canvas.blt_transform(
+        } else {
+            let tilemap = unsafe { &*tilemap };
+            self.canvas.blt(
                 x,
                 y,
                 &tilemap.canvas,
@@ -269,11 +246,24 @@ impl Tilemap {
                 height,
                 transparent,
                 None,
-                rotate,
-                scale,
-                false,
             );
-        } else {
+        }
+    }
+
+    fn blt_transform(
+        &mut self,
+        x: f32,
+        y: f32,
+        tilemap: *mut Tilemap,
+        tilemap_x: f32,
+        tilemap_y: f32,
+        width: f32,
+        height: f32,
+        transparent: Option<Tile>,
+        rotate: f32,
+        scale: f32,
+    ) {
+        if std::ptr::eq(tilemap, std::ptr::from_mut(self)) {
             let copy_width = f32_to_u32(width.abs());
             let copy_height = f32_to_u32(height.abs());
             let mut canvas = Canvas::new(copy_width, copy_height);
@@ -296,6 +286,22 @@ impl Tilemap {
                 &canvas,
                 0.0,
                 0.0,
+                width,
+                height,
+                transparent,
+                None,
+                rotate,
+                scale,
+                false,
+            );
+        } else {
+            let tilemap = unsafe { &*tilemap };
+            self.canvas.blt_transform(
+                x,
+                y,
+                &tilemap.canvas,
+                tilemap_x,
+                tilemap_y,
                 width,
                 height,
                 transparent,

@@ -1,13 +1,16 @@
 use pyo3::prelude::*;
 
 #[pyclass(from_py_object)]
-#[derive(Clone)]
+#[derive(Clone, Copy)]
 pub struct Font {
-    pub(crate) inner: pyxel::SharedFont,
+    pub(crate) inner: *mut pyxel::Font,
 }
 
+unsafe impl Send for Font {}
+unsafe impl Sync for Font {}
+
 impl Font {
-    pub fn wrap(inner: pyxel::SharedFont) -> Self {
+    pub fn wrap(inner: *mut pyxel::Font) -> Self {
         Self { inner }
     }
 }
@@ -23,7 +26,7 @@ impl Font {
     }
 
     pub fn text_width(&self, s: &str) -> i32 {
-        self.inner.lock().text_width(s)
+        unsafe { &mut *self.inner }.text_width(s)
     }
 }
 

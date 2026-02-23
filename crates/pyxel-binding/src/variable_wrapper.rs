@@ -4,7 +4,6 @@ use pyo3::prelude::*;
 use crate::channel_wrapper::Channel;
 use crate::image_wrapper::Image;
 use crate::music_wrapper::Music;
-use crate::pyxel_singleton::pyxel;
 use crate::sound_wrapper::Sound;
 use crate::tilemap_wrapper::Tilemap;
 use crate::tone_wrapper::Tone;
@@ -12,69 +11,67 @@ use crate::tone_wrapper::Tone;
 wrap_as_python_sequence!(
     Colors,
     u32, // Dummy
-    (|_| pyxel().colors.lock().len()),
+    (|_| pyxel::colors().len()),
     pyxel::Rgb24,
-    (|_, index| pyxel().colors.lock()[index]),
+    (|_, index| pyxel::colors()[index]),
     pyxel::Rgb24,
-    (|_, index, value| pyxel().colors.lock()[index] = value),
+    (|_, index, value| pyxel::colors()[index] = value),
     Vec<pyxel::Rgb24>,
-    (|_, list| *pyxel().colors.lock() = list),
-    (|_| pyxel().colors.lock().clone())
+    (|_, list| *pyxel::colors() = list),
+    (|_| pyxel::colors().clone())
 );
 
-macro_rules! wrap_shared_vec_as_python_object_list {
-    ($wrapper_name:ident, $value_type:ident, $field_name:ident) => {
+macro_rules! wrap_ptr_vec_as_python_object_list {
+    ($wrapper_name:ident, $value_type:ident, $global_fn:path) => {
         wrap_as_python_object_sequence!(
             $wrapper_name,
             u32, // Dummy
-            (|_| pyxel().$field_name.lock().len()),
+            (|_| $global_fn().len()),
             $value_type,
-            (|_, index: usize| $value_type::wrap(pyxel().$field_name.lock()[index].clone())),
+            (|_, index: usize| $value_type::wrap($global_fn()[index])),
             $value_type,
-            (|_, index, value: $value_type| pyxel().$field_name.lock()[index] = value.inner),
+            (|_, index, value: $value_type| $global_fn()[index] = value.inner),
             Vec<$value_type>,
-            (|_, list: Vec<$value_type>| *pyxel().$field_name.lock() =
-                list.iter().map(|value| value.inner.clone()).collect()),
-            (|_| pyxel()
-                .$field_name
-                .lock()
+            (|_, list: Vec<$value_type>| *$global_fn() =
+                list.iter().map(|value| value.inner).collect()),
+            (|_| $global_fn()
                 .iter()
-                .map(|value| $value_type::wrap(value.clone()))
+                .map(|&ptr| $value_type::wrap(ptr))
                 .collect::<Vec<$value_type>>())
         );
     };
 }
 
-wrap_shared_vec_as_python_object_list!(Images, Image, images);
-wrap_shared_vec_as_python_object_list!(Tilemaps, Tilemap, tilemaps);
-wrap_shared_vec_as_python_object_list!(Channels, Channel, channels);
-wrap_shared_vec_as_python_object_list!(Tones, Tone, tones);
-wrap_shared_vec_as_python_object_list!(Sounds, Sound, sounds);
-wrap_shared_vec_as_python_object_list!(Musics, Music, musics);
+wrap_ptr_vec_as_python_object_list!(Images, Image, pyxel::images);
+wrap_ptr_vec_as_python_object_list!(Tilemaps, Tilemap, pyxel::tilemaps);
+wrap_ptr_vec_as_python_object_list!(Channels, Channel, pyxel::channels);
+wrap_ptr_vec_as_python_object_list!(Tones, Tone, pyxel::tones);
+wrap_ptr_vec_as_python_object_list!(Sounds, Sound, pyxel::sounds);
+wrap_ptr_vec_as_python_object_list!(Musics, Music, pyxel::musics);
 
 #[pyfunction]
 fn __getattr__(py: Python, name: &str) -> PyResult<Py<PyAny>> {
     let value = match name {
         // System
-        "width" => value_to_pyobj!(py, pyxel().width),
-        "height" => value_to_pyobj!(py, pyxel().height),
-        "frame_count" => value_to_pyobj!(py, pyxel().frame_count),
+        "width" => value_to_pyobj!(py, *pyxel::width()),
+        "height" => value_to_pyobj!(py, *pyxel::height()),
+        "frame_count" => value_to_pyobj!(py, *pyxel::frame_count()),
 
         // Input
-        "mouse_x" => value_to_pyobj!(py, pyxel().mouse_x),
-        "mouse_y" => value_to_pyobj!(py, pyxel().mouse_y),
-        "mouse_wheel" => value_to_pyobj!(py, pyxel().mouse_wheel),
-        "input_keys" => value_to_pyobj!(py, pyxel().input_keys.clone()),
-        "input_text" => value_to_pyobj!(py, pyxel().input_text.clone()),
-        "dropped_files" => value_to_pyobj!(py, pyxel().dropped_files.clone()),
+        "mouse_x" => value_to_pyobj!(py, *pyxel::mouse_x()),
+        "mouse_y" => value_to_pyobj!(py, *pyxel::mouse_y()),
+        "mouse_wheel" => value_to_pyobj!(py, *pyxel::mouse_wheel()),
+        "input_keys" => value_to_pyobj!(py, pyxel::input_keys().clone()),
+        "input_text" => value_to_pyobj!(py, pyxel::input_text().clone()),
+        "dropped_files" => value_to_pyobj!(py, pyxel::dropped_files().clone()),
 
         // Graphics
         "colors" => class_to_pyobj!(py, Colors::wrap(0)),
         "images" => class_to_pyobj!(py, Images::wrap(0)),
         "tilemaps" => class_to_pyobj!(py, Tilemaps::wrap(0)),
-        "screen" => class_to_pyobj!(py, Image::wrap(pyxel().screen.clone())),
-        "cursor" => class_to_pyobj!(py, Image::wrap(pyxel().cursor.clone())),
-        "font" => class_to_pyobj!(py, Image::wrap(pyxel().font.clone())),
+        "screen" => class_to_pyobj!(py, Image::wrap(std::ptr::from_mut(pyxel::screen()))),
+        "cursor" => class_to_pyobj!(py, Image::wrap(std::ptr::from_mut(pyxel::cursor_image()))),
+        "font" => class_to_pyobj!(py, Image::wrap(std::ptr::from_mut(pyxel::font_image()))),
 
         // Audio
         "channels" => class_to_pyobj!(py, Channels::wrap(0)),

@@ -1,7 +1,7 @@
 import os
 import sys
 
-from .pyxel_wrapper import *  # type: ignore  # noqa: F403
+from .pyxel_binding import *  # type: ignore  # noqa: F403
 
 _reset_info = {
     "exec": sys.executable,

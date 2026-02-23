@@ -4,7 +4,8 @@ use crate::key::{
     Key, KeyValue, GAMEPAD_KEY_INDEX_INTERVAL, GAMEPAD_KEY_START_INDEX, MOUSE_KEY_START_INDEX,
     MOUSE_POS_X, MOUSE_POS_Y, MOUSE_WHEEL_X, MOUSE_WHEEL_Y,
 };
-use crate::pyxel::Pyxel;
+use crate::platform;
+use crate::pyxel::{self, Pyxel};
 use crate::utils::f32_to_i32;
 
 #[derive(PartialEq)]
@@ -41,7 +42,8 @@ impl Pyxel {
         if let Some((frame_count, key_state)) = self.input.key_states.get(&key) {
             if *key_state == KeyState::Pressed
                 || *key_state == KeyState::ReleasedAndPressed
-                || *frame_count == self.frame_count && *key_state == KeyState::PressedAndReleased
+                || *frame_count == *pyxel::frame_count()
+                    && *key_state == KeyState::PressedAndReleased
             {
                 return true;
             }
@@ -65,7 +67,7 @@ impl Pyxel {
                 return false;
             }
 
-            if *frame_count == self.frame_count {
+            if *frame_count == *pyxel::frame_count() {
                 return true;
             }
 
@@ -79,7 +81,8 @@ impl Pyxel {
                 return false;
             }
 
-            let elapsed_frames = self.frame_count as i32 - (*frame_count + hold_frame_count) as i32;
+            let elapsed_frames =
+                *pyxel::frame_count() as i32 - (*frame_count + hold_frame_count) as i32;
             if elapsed_frames >= 0 && elapsed_frames % repeat_frame_count as i32 == 0 {
                 return true;
             }
@@ -98,7 +101,7 @@ impl Pyxel {
                 return false;
             }
 
-            if *frame_count == self.frame_count {
+            if *frame_count == *pyxel::frame_count() {
                 return true;
             }
         }
@@ -123,7 +126,7 @@ impl Pyxel {
         let y = f32_to_i32(y);
         self.input.key_values.insert(MOUSE_POS_X, x);
         self.input.key_values.insert(MOUSE_POS_Y, y);
-        crate::platform::set_mouse_pos(
+        platform::set_mouse_pos(
             x * self.system.screen_scale as i32 + self.system.screen_x,
             y * self.system.screen_scale as i32 + self.system.screen_y,
         );
@@ -132,10 +135,10 @@ impl Pyxel {
     pub(crate) fn start_input_frame(&mut self) {
         self.input.key_values.insert(MOUSE_WHEEL_X, 0);
         self.input.key_values.insert(MOUSE_WHEEL_Y, 0);
-        self.mouse_wheel = 0;
-        self.input_keys.clear();
-        self.input_text.clear();
-        self.dropped_files.clear();
+        *pyxel::mouse_wheel() = 0;
+        pyxel::input_keys().clear();
+        pyxel::input_text().clear();
+        pyxel::dropped_files().clear();
     }
 
     pub(crate) fn reset_key(&mut self, key: Key) {
@@ -145,30 +148,30 @@ impl Pyxel {
     pub(crate) fn press_key(&mut self, key: Key) {
         let mut key_state = KeyState::Pressed;
         if let Some((last_frame_count, last_key_state)) = self.input.key_states.get(&key) {
-            if *last_frame_count == self.frame_count && *last_key_state != KeyState::Pressed {
+            if *last_frame_count == *pyxel::frame_count() && *last_key_state != KeyState::Pressed {
                 key_state = KeyState::ReleasedAndPressed;
             }
         }
 
         self.input
             .key_states
-            .insert(key, (self.frame_count, key_state));
+            .insert(key, (*pyxel::frame_count(), key_state));
         if key < MOUSE_KEY_START_INDEX {
-            self.input_keys.push(key);
+            pyxel::input_keys().push(key);
         }
     }
 
     pub(crate) fn release_key(&mut self, key: Key) {
         let mut key_state = KeyState::Released;
         if let Some((last_frame_count, last_key_state)) = self.input.key_states.get(&key) {
-            if *last_frame_count == self.frame_count && *last_key_state != KeyState::Released {
+            if *last_frame_count == *pyxel::frame_count() && *last_key_state != KeyState::Released {
                 key_state = KeyState::PressedAndReleased;
             }
         }
 
         self.input
             .key_states
-            .insert(key, (self.frame_count, key_state));
+            .insert(key, (*pyxel::frame_count(), key_state));
     }
 
     pub(crate) fn change_key_value(&mut self, key: Key, value: KeyValue) {
@@ -177,14 +180,14 @@ impl Pyxel {
         match key {
             MOUSE_POS_X => {
                 value = ((value - self.system.screen_x) as f32 / self.system.screen_scale) as i32;
-                self.mouse_x = value;
+                *pyxel::mouse_x() = value;
             }
             MOUSE_POS_Y => {
                 value = ((value - self.system.screen_y) as f32 / self.system.screen_scale) as i32;
-                self.mouse_y = value;
+                *pyxel::mouse_y() = value;
             }
             MOUSE_WHEEL_Y => {
-                self.mouse_wheel = value;
+                *pyxel::mouse_wheel() = value;
             }
             _ => {}
         }
@@ -193,11 +196,11 @@ impl Pyxel {
     }
 
     pub(crate) fn add_input_text(&mut self, text: &str) {
-        self.input_text += text;
+        *pyxel::input_text() += text;
     }
 
     pub(crate) fn add_dropped_file(&mut self, filename: &str) {
-        self.dropped_files.push(filename.to_string());
+        pyxel::dropped_files().push(filename.to_string());
     }
 
     pub(crate) fn is_mouse_visible(&self) -> bool {

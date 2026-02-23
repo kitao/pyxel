@@ -1,12 +1,12 @@
+#![allow(clippy::unsafe_derive_deserialize)]
+
 use serde::{Deserialize, Serialize};
 
-use crate::image::{Color, Image, SharedImage};
-use crate::music::{Music, SharedMusic};
-use crate::pyxel::Pyxel;
-use crate::sound::{
-    SharedSound, Sound, SoundEffect, SoundNote, SoundSpeed, SoundTone, SoundVolume,
-};
-use crate::tilemap::{ImageSource, ImageTileCoord, SharedTilemap, Tilemap};
+use crate::image::{Color, Image};
+use crate::music::Music;
+use crate::pyxel::{self, Pyxel};
+use crate::sound::{Sound, SoundEffect, SoundNote, SoundSpeed, SoundTone, SoundVolume};
+use crate::tilemap::{ImageSource, ImageTileCoord, Tilemap};
 use crate::utils::{compress_vec2, expand_vec2, trim_empty_vecs};
 
 #[derive(Clone, Serialize, Deserialize)]
@@ -17,8 +17,8 @@ struct ImageData {
 }
 
 impl ImageData {
-    fn from_image(image: SharedImage) -> Self {
-        let image = image.lock();
+    fn from_image(image: *mut Image) -> Self {
+        let image = unsafe { &*image };
         let width = image.width();
         let height = image.height();
 
@@ -37,12 +37,12 @@ impl ImageData {
         }
     }
 
-    fn to_image(&self) -> SharedImage {
+    fn to_image(&self) -> *mut Image {
         let data = expand_vec2(&self.data, self.height as usize, self.width as usize);
         let image = Image::new(self.width, self.height);
 
         {
-            let mut image = image.lock();
+            let image = unsafe { &mut *image };
             image.canvas.data = data.into_iter().flatten().collect();
         }
 
@@ -59,8 +59,8 @@ struct TilemapData {
 }
 
 impl TilemapData {
-    fn from_tilemap(tilemap: SharedTilemap) -> Self {
-        let tilemap = tilemap.lock();
+    fn from_tilemap(tilemap: *mut Tilemap) -> Self {
+        let tilemap = unsafe { &*tilemap };
         let width = tilemap.width();
         let height = tilemap.height();
         let imgsrc = match tilemap.imgsrc {
@@ -88,12 +88,12 @@ impl TilemapData {
         }
     }
 
-    fn to_tilemap(&self) -> SharedTilemap {
+    fn to_tilemap(&self) -> *mut Tilemap {
         let data = expand_vec2(&self.data, self.height as usize, (self.width * 2) as usize);
         let tilemap = Tilemap::new(self.width, self.height, ImageSource::Index(self.imgsrc));
 
         {
-            let mut tilemap = tilemap.lock();
+            let tilemap = unsafe { &mut *tilemap };
             let data: Vec<_> = data.clone().into_iter().flatten().collect();
             tilemap.canvas.data = data.chunks(2).map(|chunk| (chunk[0], chunk[1])).collect();
         }
@@ -112,8 +112,8 @@ struct SoundData {
 }
 
 impl SoundData {
-    fn from_sound(sound: SharedSound) -> Self {
-        let sound = sound.lock();
+    fn from_sound(sound: *mut Sound) -> Self {
+        let sound = unsafe { &*sound };
         Self {
             notes: sound.notes.clone(),
             tones: sound.tones.clone(),
@@ -123,11 +123,11 @@ impl SoundData {
         }
     }
 
-    fn to_sound(&self) -> SharedSound {
+    fn to_sound(&self) -> *mut Sound {
         let sound = Sound::new();
 
         {
-            let mut sound = sound.lock();
+            let sound = unsafe { &mut *sound };
             sound.notes.clone_from(&self.notes);
             sound.tones.clone_from(&self.tones);
             sound.volumes.clone_from(&self.volumes);
@@ -145,24 +145,20 @@ struct MusicData {
 }
 
 impl MusicData {
-    fn from_music(music: SharedMusic) -> Self {
-        let music = music.lock();
-        let seqs: Vec<_> = music.seqs.iter().map(|seq| seq.lock().clone()).collect();
-        let seqs = trim_empty_vecs(&seqs);
+    fn from_music(music: *mut Music) -> Self {
+        let music = unsafe { &*music };
+        let seqs = trim_empty_vecs(&music.seqs);
 
         Self { seqs }
     }
 
-    fn to_music(&self) -> SharedMusic {
+    fn to_music(&self) -> *mut Music {
         let seqs = trim_empty_vecs(&self.seqs);
         let music = Music::new();
 
         {
-            let mut music = music.lock();
-            music.seqs = seqs
-                .iter()
-                .map(|seq| new_shared_type!(seq.clone()))
-                .collect();
+            let music = unsafe { &mut *music };
+            music.seqs = seqs;
         }
 
         music
@@ -183,7 +179,7 @@ impl ResourceData {
         toml::from_str(toml_text).unwrap()
     }
 
-    pub fn from_runtime(pyxel: &Pyxel) -> Self {
+    pub fn from_runtime(_pyxel: &Pyxel) -> Self {
         let mut resource_data = ResourceData {
             format_version: 1, // comatible with version 1
             images: Vec::new(),
@@ -192,28 +188,22 @@ impl ResourceData {
             musics: Vec::new(),
         };
 
-        for image in &*pyxel.images.lock() {
-            resource_data
-                .images
-                .push(ImageData::from_image(image.clone()));
+        for &image in pyxel::images().iter() {
+            resource_data.images.push(ImageData::from_image(image));
         }
 
-        for tilemap in &*pyxel.tilemaps.lock() {
+        for &tilemap in pyxel::tilemaps().iter() {
             resource_data
                 .tilemaps
-                .push(TilemapData::from_tilemap(tilemap.clone()));
+                .push(TilemapData::from_tilemap(tilemap));
         }
 
-        for sound in &*pyxel.sounds.lock() {
-            resource_data
-                .sounds
-                .push(SoundData::from_sound(sound.clone()));
+        for &sound in pyxel::sounds().iter() {
+            resource_data.sounds.push(SoundData::from_sound(sound));
         }
 
-        for music in &*pyxel.musics.lock() {
-            resource_data
-                .musics
-                .push(MusicData::from_music(music.clone()));
+        for &music in pyxel::musics().iter() {
+            resource_data.musics.push(MusicData::from_music(music));
         }
 
         resource_data
@@ -221,7 +211,7 @@ impl ResourceData {
 
     pub fn to_runtime(
         &self,
-        pyxel: &Pyxel,
+        _pyxel: &Pyxel,
         exclude_images: bool,
         exclude_tilemaps: bool,
         exclude_sounds: bool,
@@ -232,7 +222,7 @@ impl ResourceData {
             for image_data in &self.images {
                 images.push(image_data.to_image());
             }
-            *pyxel.images.lock() = images;
+            *pyxel::images() = images;
         }
 
         if !exclude_tilemaps && !self.tilemaps.is_empty() {
@@ -240,7 +230,7 @@ impl ResourceData {
             for tilemap_data in &self.tilemaps {
                 tilemaps.push(tilemap_data.to_tilemap());
             }
-            *pyxel.tilemaps.lock() = tilemaps;
+            *pyxel::tilemaps() = tilemaps;
         }
 
         if !exclude_sounds && !self.sounds.is_empty() {
@@ -248,7 +238,7 @@ impl ResourceData {
             for sound_data in &self.sounds {
                 sounds.push(sound_data.to_sound());
             }
-            *pyxel.sounds.lock() = sounds;
+            *pyxel::sounds() = sounds;
         }
 
         if !exclude_musics && !self.musics.is_empty() {
@@ -256,7 +246,7 @@ impl ResourceData {
             for music_data in &self.musics {
                 musics.push(music_data.to_music());
             }
-            *pyxel.musics.lock() = musics;
+            *pyxel::musics() = musics;
         }
     }
 

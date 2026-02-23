@@ -1,4 +1,4 @@
-use crate::image::{Color, Image, SharedImage};
+use crate::image::{Color, Image};
 use crate::key::{
     Key, GAMEPAD1_BUTTON_A, GAMEPAD1_BUTTON_B, GAMEPAD1_BUTTON_DPAD_DOWN,
     GAMEPAD1_BUTTON_DPAD_LEFT, GAMEPAD1_BUTTON_DPAD_RIGHT, GAMEPAD1_BUTTON_DPAD_UP,
@@ -8,10 +8,10 @@ use crate::key::{
 use crate::platform::key::GAMEPAD1_BUTTON_BACK;
 use crate::platform::Event;
 use crate::profiler::Profiler;
-use crate::pyxel::Pyxel;
+use crate::pyxel::{self, Pyxel};
 use crate::settings::{MAX_FRAME_DELAY_MS, NUM_MEASURE_FRAMES, NUM_SCREEN_TYPES};
-use crate::utils;
 use crate::window_watcher::WindowWatcher;
+use crate::{platform, utils};
 
 pub trait PyxelCallback {
     fn update(&mut self, pyxel: &mut Pyxel);
@@ -58,8 +58,8 @@ impl System {
 
 impl Pyxel {
     pub fn run<T: PyxelCallback>(&mut self, mut callback: T) {
-        crate::platform::run_frame_loop(self.system.fps, move |delta_ms| {
-            let ticks = crate::platform::ticks();
+        platform::run_frame_loop(self.system.fps, move |delta_ms| {
+            let ticks = platform::ticks();
             self.system.fps_profiler.end(ticks);
             self.system.fps_profiler.start(ticks);
 
@@ -70,64 +70,70 @@ impl Pyxel {
             };
             for _ in 1..update_count {
                 self.update_frame(Some(&mut callback));
-                self.frame_count += 1;
+                *pyxel::frame_count() += 1;
             }
 
             self.update_frame(Some(&mut callback));
             self.draw_frame(Some(&mut callback));
-            self.frame_count += 1;
+            *pyxel::frame_count() += 1;
         });
     }
 
     pub fn show(&mut self) {
         struct App {
-            image: SharedImage,
+            image: *mut Image,
         }
+
+        unsafe impl Send for App {}
 
         impl PyxelCallback for App {
             fn update(&mut self, _pyxel: &mut Pyxel) {}
-            fn draw(&mut self, pyxel: &mut Pyxel) {
-                pyxel.screen.lock().blt(
-                    0.0,
-                    0.0,
-                    self.image.clone(),
-                    0.0,
-                    0.0,
-                    pyxel.width as f32,
-                    pyxel.height as f32,
-                    None,
-                    None,
-                    None,
-                );
+            fn draw(&mut self, _pyxel: &mut Pyxel) {
+                unsafe {
+                    pyxel::screen().blt(
+                        0.0,
+                        0.0,
+                        self.image,
+                        0.0,
+                        0.0,
+                        *pyxel::width() as f32,
+                        *pyxel::height() as f32,
+                        None,
+                        None,
+                        None,
+                    );
+                }
             }
         }
 
-        let image = Image::new(self.width, self.height);
-        image.lock().blt(
-            0.0,
-            0.0,
-            self.screen.clone(),
-            0.0,
-            0.0,
-            self.width as f32,
-            self.height as f32,
-            None,
-            None,
-            None,
-        );
+        let image = Image::new(*pyxel::width(), *pyxel::height());
+        unsafe {
+            (&mut *image).blt(
+                0.0,
+                0.0,
+                std::ptr::from_mut(pyxel::screen()),
+                0.0,
+                0.0,
+                *pyxel::width() as f32,
+                *pyxel::height() as f32,
+                None,
+                None,
+                None,
+            );
+        }
 
         self.run(App { image });
     }
 
     pub fn flip(&mut self) {
-        self.system.update_profiler.end(crate::platform::ticks());
+        self.system.update_profiler.end(platform::ticks());
 
         self.draw_frame(None);
-        self.frame_count += 1;
+        *pyxel::frame_count() += 1;
 
-        crate::platform::step_frame(self.system.fps);
+        platform::step_frame(self.system.fps);
 
-        let ticks = crate::platform::ticks();
+        let ticks = platform::ticks();
         self.system.fps_profiler.end(ticks);
         self.system.fps_profiler.start(ticks);
 
@@ -135,12 +141,12 @@ impl Pyxel {
     }
 
     pub fn quit(&self) {
-        crate::platform::quit();
+        platform::quit();
     }
 
     pub fn reset(&mut self) {
         #[cfg(not(target_os = "emscripten"))]
-        if let Some(mut reset_func) = crate::pyxel::RESET_FUNC.lock().take() {
+        if let Some(mut reset_func) = pyxel::reset_func().take() {
             reset_func();
         }
 
@@ -158,15 +164,15 @@ impl Pyxel {
     }
 
     pub fn title(&self, title: &str) {
-        crate::platform::set_window_title(title);
+        platform::set_window_title(title);
     }
 
     pub fn icon(&self, data_str: &[&str], scale: u32, transparent: Option<Color>) {
-        let colors = self.colors.lock();
+        let colors = pyxel::colors();
         let width = utils::simplify_string(data_str[0]).len() as u32;
         let height = data_str.len() as u32;
         let image = Image::new(width, height);
-        let mut image = image.lock();
+        let image = unsafe { &mut *image };
         image.set(0, 0, data_str);
         let image_data = &image.canvas.data;
         let scaled_width = width * scale;
@@ -192,7 +198,7 @@ impl Pyxel {
             }
         }
 
-        crate::platform::set_window_icon(scaled_width, scaled_height, &rgba);
+        platform::set_window_icon(scaled_width, scaled_height, &rgba);
     }
 
     pub fn perf_monitor(&mut self, enabled: bool) {
@@ -208,23 +214,23 @@ impl Pyxel {
     }
 
     pub fn fullscreen(&self, enabled: bool) {
-        crate::platform::set_fullscreen(enabled);
+        platform::set_fullscreen(enabled);
     }
 
     fn process_events(&mut self) {
         self.start_input_frame();
 
-        let events = crate::platform::poll_events();
+        let events = platform::poll_events();
 
         for event in events {
             match event {
                 Event::WindowShown => {
                     self.system.paused = false;
-                    crate::platform::pause_audio(false);
+                    platform::pause_audio(false);
                 }
                 Event::WindowHidden => {
                     self.system.paused = true;
-                    crate::platform::pause_audio(true);
+                    platform::pause_audio(true);
                 }
                 Event::KeyPressed { key } => {
                     self.press_key(key);
@@ -242,7 +248,7 @@ impl Pyxel {
                     self.add_dropped_file(&filename);
                 }
                 Event::Quit => {
-                    crate::platform::quit();
+                    platform::quit();
                 }
             }
         }
@@ -288,7 +294,7 @@ impl Pyxel {
                 self.reset();
             } else if self.btnp(KEY_RETURN, None, None) {
                 self.reset_key(KEY_RETURN);
-                self.fullscreen(!crate::platform::is_fullscreen());
+                self.fullscreen(!platform::is_fullscreen());
             }
         } else if self.btn(GAMEPAD1_BUTTON_A)
             && self.btn(GAMEPAD1_BUTTON_B)
@@ -309,40 +315,41 @@ impl Pyxel {
                 self.perf_monitor(!self.system.perf_monitor_enabled);
             } else if self.btnp(GAMEPAD1_BUTTON_DPAD_DOWN, None, None) {
                 self.reset_key(GAMEPAD1_BUTTON_DPAD_RIGHT);
-                self.fullscreen(!crate::platform::is_fullscreen());
+                self.fullscreen(!platform::is_fullscreen());
             }
         }
     }
 
     fn update_screen_params(&mut self) {
-        let (window_width, window_height) = crate::platform::window_size();
+        let (window_width, window_height) = platform::window_size();
 
         if self.system.integer_scale_enabled {
             self.system.screen_scale = f32::max(
                 f32::min(
-                    (window_width as f32 / self.width as f32) as i32 as f32,
-                    (window_height as f32 / self.height as f32) as i32 as f32,
+                    (window_width as f32 / *pyxel::width() as f32) as i32 as f32,
+                    (window_height as f32 / *pyxel::height() as f32) as i32 as f32,
                 ),
                 1.0,
             );
         } else {
             self.system.screen_scale = f32::max(
                 f32::min(
-                    window_width as f32 / self.width as f32,
-                    window_height as f32 / self.height as f32,
+                    window_width as f32 / *pyxel::width() as f32,
+                    window_height as f32 / *pyxel::height() as f32,
                 ),
                 1.0,
             );
         }
 
         self.system.screen_x =
-            (window_width as i32 - (self.width as f32 * self.system.screen_scale) as i32) / 2;
-        self.system.screen_y =
-            (window_height as i32 - (self.height as f32 * self.system.screen_scale) as i32) / 2;
+            (window_width as i32 - (*pyxel::width() as f32 * self.system.screen_scale) as i32) / 2;
+        self.system.screen_y = (window_height as i32
+            - (*pyxel::height() as f32 * self.system.screen_scale) as i32)
+            / 2;
     }
 
     fn update_frame(&mut self, callback: Option<&mut dyn PyxelCallback>) {
-        self.system.update_profiler.start(crate::platform::ticks());
+        self.system.update_profiler.start(platform::ticks());
 
         self.process_events();
 
@@ -354,7 +361,7 @@ impl Pyxel {
 
         if let Some(callback) = callback {
             callback.update(self);
-            self.system.update_profiler.end(crate::platform::ticks());
+            self.system.update_profiler.end(platform::ticks());
         }
     }
 
@@ -363,7 +370,7 @@ impl Pyxel {
             return;
         }
 
-        let mut screen = self.screen.lock();
+        let screen = pyxel::screen();
         let clip_rect = screen.canvas.clip_rect;
         let camera_x = screen.canvas.camera_x;
         let camera_y = screen.canvas.camera_y;
@@ -398,25 +405,29 @@ impl Pyxel {
     }
 
     fn draw_cursor(&self) {
-        let x = self.mouse_x;
-        let y = self.mouse_y;
+        let x = *pyxel::mouse_x();
+        let y = *pyxel::mouse_y();
 
-        crate::platform::set_mouse_visible(
-            x < 0 || x >= self.width as i32 || y < 0 || y >= self.height as i32,
+        platform::set_mouse_visible(
+            x < 0 || x >= *pyxel::width() as i32 || y < 0 || y >= *pyxel::height() as i32,
         );
 
         if !self.is_mouse_visible() {
             return;
         }
 
-        let width = self.cursor.lock().width() as i32;
-        let height = self.cursor.lock().height() as i32;
+        let width = pyxel::cursor_image().width() as i32;
+        let height = pyxel::cursor_image().height() as i32;
 
-        if x <= -width || x >= self.width as i32 || y <= -height || y >= self.height as i32 {
+        if x <= -width
+            || x >= *pyxel::width() as i32
+            || y <= -height
+            || y >= *pyxel::height() as i32
+        {
             return;
         }
 
-        let mut screen = self.screen.lock();
+        let screen = pyxel::screen();
         let clip_rect = screen.canvas.clip_rect;
         let camera_x = screen.canvas.camera_x;
         let camera_y = screen.canvas.camera_y;
@@ -424,18 +435,20 @@ impl Pyxel {
 
         screen.clip0();
         screen.camera0();
-        screen.blt(
-            x as f32,
-            y as f32,
-            self.cursor.clone(),
-            0.0,
-            0.0,
-            width as f32,
-            height as f32,
-            Some(0),
-            None,
-            None,
-        );
+        unsafe {
+            screen.blt(
+                x as f32,
+                y as f32,
+                std::ptr::from_mut(pyxel::cursor_image()),
+                0.0,
+                0.0,
+                width as f32,
+                height as f32,
+                Some(0),
+                None,
+                None,
+            );
+        }
 
         screen.canvas.clip_rect = clip_rect;
         screen.canvas.camera_x = camera_x;
@@ -444,7 +457,7 @@ impl Pyxel {
     }
 
     fn draw_frame(&mut self, callback: Option<&mut dyn PyxelCallback>) {
-        self.system.draw_profiler.start(crate::platform::ticks());
+        self.system.draw_profiler.start(platform::ticks());
 
         if self.system.paused {
             return;
@@ -462,6 +475,6 @@ impl Pyxel {
         self.render_screen();
         self.capture_screen();
 
-        self.system.draw_profiler.end(crate::platform::ticks());
+        self.system.draw_profiler.end(platform::ticks());
     }
 }

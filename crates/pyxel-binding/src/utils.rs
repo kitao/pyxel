@@ -398,6 +398,9 @@ macro_rules! wrap_as_python_sequence {
             inner: $inner_type,
         }
 
+        unsafe impl Send for $wrapper_name {}
+        unsafe impl Sync for $wrapper_name {}
+
         impl $wrapper_name {
             pub const fn wrap(inner: $inner_type) -> Self {
                 Self { inner }
@@ -435,6 +438,9 @@ macro_rules! wrap_as_python_object_sequence {
         pub struct $wrapper_name {
             inner: $inner_type,
         }
+
+        unsafe impl Send for $wrapper_name {}
+        unsafe impl Sync for $wrapper_name {}
 
         impl $wrapper_name {
             pub const fn wrap(inner: $inner_type) -> Self {

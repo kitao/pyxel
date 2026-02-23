@@ -7,7 +7,7 @@ use zip::ZipArchive;
 
 use crate::image::{Color, Image, Rgb24};
 use crate::music::Music;
-use crate::pyxel::Pyxel;
+use crate::pyxel::{self, Pyxel};
 use crate::settings::{
     DEFAULT_SOUND_SPEED, NUM_CHANNELS, NUM_IMAGES, NUM_MUSICS, NUM_SOUNDS, NUM_TILEMAPS,
     PALETTE_FILE_EXTENSION, TILEMAP_SIZE, VERSION,
@@ -145,9 +145,7 @@ impl ResourceItem for Music {
     }
 
     fn clear(&mut self) {
-        self.seqs = (0..NUM_CHANNELS)
-            .map(|_| new_shared_type!(Vec::new()))
-            .collect();
+        self.seqs = (0..NUM_CHANNELS).map(|_| Vec::new()).collect();
     }
 
     fn deserialize(&mut self, _version: u32, input: &str) {
@@ -158,7 +156,7 @@ impl ResourceItem for Music {
                 continue;
             }
             string_loop!(j, value, line, 2, {
-                self.seqs[i].lock().push(parse_hex_string(&value).unwrap());
+                self.seqs[i].push(parse_hex_string(&value).unwrap());
             });
         }
     }
@@ -188,32 +186,31 @@ impl Pyxel {
         );
 
         macro_rules! deserialize {
-            ($type: ty, $list: ident, $count: expr) => {
+            ($type: ty, $accessor: expr, $count: expr) => {
                 for i in 0..$count {
+                    let item = unsafe { &mut *$accessor[i as usize] };
                     if let Ok(mut file) = archive.by_name(&<$type>::resource_name(i)) {
                         let mut input = String::new();
                         file.read_to_string(&mut input).unwrap();
-                        self.$list.lock()[i as usize]
-                            .lock()
-                            .deserialize(version, &input);
+                        item.deserialize(version, &input);
                     } else {
-                        self.$list.lock()[i as usize].lock().clear();
+                        item.clear();
                     }
                 }
             };
         }
 
         if include_images {
-            deserialize!(Image, images, NUM_IMAGES);
+            deserialize!(Image, pyxel::images(), NUM_IMAGES);
         }
         if include_tilemaps {
-            deserialize!(Tilemap, tilemaps, NUM_TILEMAPS);
+            deserialize!(Tilemap, pyxel::tilemaps(), NUM_TILEMAPS);
         }
         if include_sounds {
-            deserialize!(Sound, sounds, NUM_SOUNDS);
+            deserialize!(Sound, pyxel::sounds(), NUM_SOUNDS);
         }
         if include_musics {
-            deserialize!(Music, musics, NUM_MUSICS);
+            deserialize!(Music, pyxel::musics(), NUM_MUSICS);
         }
 
         // Try to load Pyxel palette file
@@ -235,8 +232,8 @@ impl Pyxel {
                 .map(|s| u32::from_str_radix(s.trim(), 16).unwrap() as Rgb24)
                 .collect();
 
-            self.colors.lock().clear();
-            self.colors.lock().extend(colors.iter());
+            pyxel::colors().clear();
+            pyxel::colors().extend(colors.iter());
         }
     }
 }

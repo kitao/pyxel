@@ -1,5 +1,6 @@
 #![warn(clippy::pedantic)]
 #![allow(
+    static_mut_refs,
     clippy::cast_lossless,
     clippy::cast_possible_truncation,
     clippy::cast_possible_wrap,
@@ -57,16 +58,18 @@ mod window_watcher;
 
 use platform::key;
 
-pub use crate::channel::{Channel, ChannelDetune, ChannelGain, SharedChannel};
-pub use crate::font::{Font, SharedFont};
-pub use crate::image::{Color, Image, Rgb24, SharedImage};
+pub use crate::channel::{Channel, ChannelDetune, ChannelGain};
+pub use crate::font::Font;
+pub use crate::image::{Color, Image, Rgb24};
 pub use crate::key::*;
-pub use crate::music::{Music, SharedMusic, SharedSeq};
-pub use crate::pyxel::{init, reset_statics, Pyxel, RESET_FUNC};
-pub use crate::settings::*;
-pub use crate::sound::{
-    SharedSound, Sound, SoundEffect, SoundNote, SoundSpeed, SoundTone, SoundVolume,
+pub use crate::music::Music;
+pub use crate::pyxel::{
+    channels, colors, cursor_image, dropped_files, font_image, frame_count, height, images, init,
+    input_keys, input_text, mouse_wheel, mouse_x, mouse_y, musics, pyxel, reset_func,
+    reset_statics, screen, sounds, tilemaps, tones, width, Pyxel,
 };
+pub use crate::settings::*;
+pub use crate::sound::{Sound, SoundEffect, SoundNote, SoundSpeed, SoundTone, SoundVolume};
 pub use crate::system::PyxelCallback;
-pub use crate::tilemap::{ImageSource, ImageTileCoord, SharedTilemap, Tile, Tilemap};
-pub use crate::tone::{SharedTone, Tone, ToneGain, ToneMode, ToneSample};
+pub use crate::tilemap::{ImageSource, ImageTileCoord, Tile, Tilemap};
+pub use crate::tone::{Tone, ToneGain, ToneMode, ToneSample};

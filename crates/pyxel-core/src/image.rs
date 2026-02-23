@@ -5,14 +5,13 @@ use std::path::Path;
 use image::imageops;
 
 use crate::canvas::{Canvas, CopyArea, ToIndex};
-use crate::font::SharedFont;
-use crate::pyxel::{COLORS, FONT_IMAGE, IMAGES};
+use crate::font::Font;
 use crate::rect_area::RectArea;
 use crate::settings::{
     FONT_HEIGHT, FONT_WIDTH, MAX_COLORS, MAX_FONT_CODE, MIN_FONT_CODE, NUM_FONT_ROWS, TILE_SIZE,
 };
-use crate::tilemap::{ImageSource, SharedTilemap};
-use crate::utils;
+use crate::tilemap::{ImageSource, Tilemap};
+use crate::{pyxel, utils};
 
 pub type Rgb24 = u32;
 pub type Color = u8;
@@ -29,19 +28,17 @@ pub struct Image {
     pub(crate) palette: [Color; MAX_COLORS as usize],
 }
 
-pub type SharedImage = shared_type!(Image);
-
 impl Image {
-    pub fn new(width: u32, height: u32) -> SharedImage {
-        new_shared_type!(Self {
+    pub fn new(width: u32, height: u32) -> *mut Image {
+        Box::into_raw(Box::new(Self {
             canvas: Canvas::new(width, height),
             palette: array::from_fn(|i| i as Color),
-        })
+        }))
     }
 
-    pub fn from_image(filename: &str, include_colors: Option<bool>) -> Result<SharedImage, String> {
+    pub fn from_image(filename: &str, include_colors: Option<bool>) -> Result<*mut Image, String> {
         let include_colors = include_colors.unwrap_or(false);
-        let mut colors = COLORS.lock();
+        let colors = pyxel::colors();
         if include_colors {
             colors.clear();
         }
@@ -52,7 +49,7 @@ impl Image {
         let image = Self::new(width, height);
 
         {
-            let mut image = image.lock();
+            let image = unsafe { &mut *image };
             let mut color_table = HashMap::<(u8, u8, u8), Color>::new();
 
             for y in 0..height {
@@ -118,7 +115,7 @@ impl Image {
         let image = Self::new(width, height);
 
         {
-            let mut image = image.lock();
+            let image = unsafe { &mut *image };
             for y in 0..height {
                 let src_data = utils::simplify_string(data_str[y as usize]);
                 for x in 0..width {
@@ -131,18 +128,20 @@ impl Image {
             }
         }
 
-        self.blt(
-            x as f32,
-            y as f32,
-            image,
-            0.0,
-            0.0,
-            width as f32,
-            height as f32,
-            None,
-            None,
-            None,
-        );
+        unsafe {
+            self.blt(
+                x as f32,
+                y as f32,
+                image,
+                0.0,
+                0.0,
+                width as f32,
+                height as f32,
+                None,
+                None,
+                None,
+            );
+        }
     }
 
     pub fn load(
@@ -153,26 +152,28 @@ impl Image {
         include_colors: Option<bool>,
     ) -> Result<(), String> {
         let image = Self::from_image(filename, include_colors)?;
-        let width = image.lock().width();
-        let height = image.lock().height();
+        let width = unsafe { &*image }.width();
+        let height = unsafe { &*image }.height();
 
-        self.blt(
-            x as f32,
-            y as f32,
-            image,
-            0.0,
-            0.0,
-            width as f32,
-            height as f32,
-            None,
-            None,
-            None,
-        );
+        unsafe {
+            self.blt(
+                x as f32,
+                y as f32,
+                image,
+                0.0,
+                0.0,
+                width as f32,
+                height as f32,
+                None,
+                None,
+                None,
+            );
+        }
         Ok(())
     }
 
     pub fn save(&self, filename: &str, scale: u32) -> Result<(), String> {
-        let colors = COLORS.lock();
+        let colors = pyxel::colors();
         let width = self.width();
         let height = self.height();
         let mut image = image::RgbImage::new(width, height);
@@ -290,11 +291,13 @@ impl Image {
         self.canvas.fill(x, y, self.palette[color as usize]);
     }
 
-    pub fn blt(
+    /// # Safety
+    /// `image` must be a valid, non-null pointer to an `Image`.
+    pub unsafe fn blt(
         &mut self,
         x: f32,
         y: f32,
-        image: SharedImage,
+        image: *mut Image,
         image_x: f32,
         image_y: f32,
         width: f32,
@@ -321,19 +324,7 @@ impl Image {
             return;
         }
 
-        if let Some(image) = image.try_lock() {
-            self.canvas.blt(
-                x,
-                y,
-                &image.canvas,
-                image_x,
-                image_y,
-                width,
-                height,
-                transparent,
-                Some(&self.palette),
-            );
-        } else {
+        if std::ptr::eq(image, std::ptr::from_mut(self)) {
             let copy_width = utils::f32_to_u32(width.abs());
             let copy_height = utils::f32_to_u32(height.abs());
             let mut canvas = Canvas::new(copy_width, copy_height);
@@ -356,6 +347,19 @@ impl Image {
                 &canvas,
                 0.0,
                 0.0,
+                width,
+                height,
+                transparent,
+                Some(&self.palette),
+            );
+        } else {
+            let image = unsafe { &*image };
+            self.canvas.blt(
+                x,
+                y,
+                &image.canvas,
+                image_x,
+                image_y,
                 width,
                 height,
                 transparent,
@@ -368,7 +372,7 @@ impl Image {
         &mut self,
         x: f32,
         y: f32,
-        image: SharedImage,
+        image: *mut Image,
         image_x: f32,
         image_y: f32,
         width: f32,
@@ -377,22 +381,7 @@ impl Image {
         rotate: f32,
         scale: f32,
     ) {
-        if let Some(image) = image.try_lock() {
-            self.canvas.blt_transform(
-                x,
-                y,
-                &image.canvas,
-                image_x,
-                image_y,
-                width,
-                height,
-                transparent,
-                Some(&self.palette),
-                rotate,
-                scale,
-                false,
-            );
-        } else {
+        if std::ptr::eq(image, std::ptr::from_mut(self)) {
             let copy_width = utils::f32_to_u32(width.abs());
             let copy_height = utils::f32_to_u32(height.abs());
             let mut canvas = Canvas::new(copy_width, copy_height);
@@ -423,14 +412,32 @@ impl Image {
                 scale,
                 false,
             );
+        } else {
+            let image = unsafe { &*image };
+            self.canvas.blt_transform(
+                x,
+                y,
+                &image.canvas,
+                image_x,
+                image_y,
+                width,
+                height,
+                transparent,
+                Some(&self.palette),
+                rotate,
+                scale,
+                false,
+            );
         }
     }
 
-    pub fn bltm(
+    /// # Safety
+    /// `tilemap` must be a valid, non-null pointer to a `Tilemap`.
+    pub unsafe fn bltm(
         &mut self,
         x: f32,
         y: f32,
-        tilemap: SharedTilemap,
+        tilemap: *mut Tilemap,
         tilemap_x: f32,
         tilemap_y: f32,
         width: f32,
@@ -464,7 +471,7 @@ impl Image {
         let width = utils::f32_to_i32(width);
         let height = utils::f32_to_i32(height);
 
-        let tilemap = tilemap.lock();
+        let tilemap = unsafe { &*tilemap };
         let tilemap_rect = RectArea::new(
             tilemap.canvas.self_rect.left() * TILE_SIZE as i32,
             tilemap.canvas.self_rect.top() * TILE_SIZE as i32,
@@ -497,10 +504,10 @@ impl Image {
             return;
         }
 
-        let images = IMAGES.lock();
-        let image = match &tilemap.imgsrc {
-            ImageSource::Index(index) => images[*index as usize].lock(),
-            ImageSource::Image(image) => image.lock(),
+        let images = pyxel::images();
+        let image: &Image = match &tilemap.imgsrc {
+            ImageSource::Index(index) => unsafe { &*images[*index as usize] },
+            ImageSource::Image(image) => unsafe { &**image },
         };
 
         for yi in 0..height {
@@ -538,7 +545,7 @@ impl Image {
         &mut self,
         x: f32,
         y: f32,
-        tilemap: SharedTilemap,
+        tilemap: *mut Tilemap,
         tilemap_x: f32,
         tilemap_y: f32,
         width: f32,
@@ -549,24 +556,26 @@ impl Image {
     ) {
         let copy_width = utils::f32_to_u32(width.abs());
         let copy_height = utils::f32_to_u32(height.abs());
-        let tilemap_width = tilemap.lock().width() as f32;
-        let tilemap_height = tilemap.lock().height() as f32;
+        let tilemap_width = unsafe { &*tilemap }.width() as f32;
+        let tilemap_height = unsafe { &*tilemap }.height() as f32;
         let image = Self::new(copy_width, copy_height);
 
         {
-            let mut image = image.lock();
-            image.bltm(
-                0.0,
-                0.0,
-                tilemap,
-                tilemap_x,
-                tilemap_y,
-                width.abs(),
-                height.abs(),
-                None,
-                None,
-                None,
-            );
+            let image = unsafe { &mut *image };
+            unsafe {
+                image.bltm(
+                    0.0,
+                    0.0,
+                    tilemap,
+                    tilemap_x,
+                    tilemap_y,
+                    width.abs(),
+                    height.abs(),
+                    None,
+                    None,
+                    None,
+                );
+            }
             image.clip(
                 -tilemap_x,
                 -tilemap_y,
@@ -590,12 +599,13 @@ impl Image {
         }
     }
 
-    pub fn text(&mut self, x: f32, y: f32, string: &str, color: Color, font: Option<SharedFont>) {
+    pub fn text(&mut self, x: f32, y: f32, string: &str, color: Color, font: Option<*mut Font>) {
         if let Some(font) = font {
             let x = utils::f32_to_i32(x) - self.canvas.camera_x;
             let y = utils::f32_to_i32(y) - self.canvas.camera_y;
             let color = self.palette[color as usize];
-            font.lock().draw(&mut self.canvas, x, y, string, color);
+            let font = unsafe { &mut *font };
+            font.draw(&mut self.canvas, x, y, string, color);
             return;
         }
 
@@ -620,18 +630,20 @@ impl Image {
             let src_x = (code % NUM_FONT_ROWS as i32) * FONT_WIDTH as i32;
             let src_y = (code / NUM_FONT_ROWS as i32) * FONT_HEIGHT as i32;
 
-            self.blt(
-                x as f32,
-                y as f32,
-                FONT_IMAGE.clone(),
-                src_x as f32,
-                src_y as f32,
-                FONT_WIDTH as f32,
-                FONT_HEIGHT as f32,
-                Some(0),
-                Some(0.0),
-                Some(1.0),
-            );
+            unsafe {
+                self.blt(
+                    x as f32,
+                    y as f32,
+                    std::ptr::from_mut(pyxel::font_image()),
+                    src_x as f32,
+                    src_y as f32,
+                    FONT_WIDTH as f32,
+                    FONT_HEIGHT as f32,
+                    Some(0),
+                    Some(0.0),
+                    Some(1.0),
+                );
+            }
             x += FONT_WIDTH as i32;
         }
         self.pal(1, palette1);

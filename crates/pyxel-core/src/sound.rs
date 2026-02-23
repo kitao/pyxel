@@ -1,11 +1,11 @@
 use blip_buf::BlipBuf;
 
 use crate::audio::Audio;
+use crate::channel::Channel;
 use crate::mml_command::MmlCommand;
 use crate::mml_parser::{calc_commands_sec, parse_mml};
 use crate::old_mml_parser::parse_old_mml;
 use crate::pcm_decoder::{load_pcm, PcmData};
-use crate::pyxel::{CHANNELS, TONES};
 use crate::settings::{
     AUDIO_CLOCK_RATE, AUDIO_SAMPLE_RATE, DEFAULT_SOUND_SPEED, EFFECT_FADEOUT, EFFECT_HALF_FADEOUT,
     EFFECT_NONE, EFFECT_QUARTER_FADEOUT, EFFECT_SLIDE, EFFECT_VIBRATO, MAX_VOLUME, TONE_NOISE,
@@ -13,7 +13,7 @@ use crate::settings::{
 };
 use crate::tone::ToneMode;
 use crate::utils::simplify_string;
-use crate::SOUND_TICKS_PER_SECOND;
+use crate::{pyxel, SOUND_TICKS_PER_SECOND};
 
 pub type SoundNote = i8;
 pub type SoundTone = u8;
@@ -33,11 +33,9 @@ pub struct Sound {
     pub(crate) pcm: Option<PcmData>,
 }
 
-pub type SharedSound = shared_type!(Sound);
-
 impl Sound {
-    pub fn new() -> SharedSound {
-        new_shared_type!(Self {
+    pub fn new() -> *mut Sound {
+        Box::into_raw(Box::new(Self {
             notes: Vec::new(),
             tones: Vec::new(),
             volumes: Vec::new(),
@@ -46,7 +44,7 @@ impl Sound {
 
             commands: Vec::new(),
             pcm: None,
-        })
+        }))
     }
 
     pub fn set(
@@ -200,18 +198,25 @@ impl Sound {
         let mut blip_buf = BlipBuf::new(num_samples);
         blip_buf.set_rates(AUDIO_CLOCK_RATE as f64, AUDIO_SAMPLE_RATE as f64);
 
-        let channels = CHANNELS.lock();
-        channels.iter().for_each(|channel| channel.lock().stop());
+        let channels = pyxel::channels();
+        for &channel in channels.iter() {
+            unsafe { &mut *channel }.stop();
+        }
 
         {
-            let mut channels: Vec<_> = channels.iter().map(|channel| channel.lock()).collect();
-            let sounds = vec![new_shared_type!(self.clone())];
+            let mut channels: Vec<&mut Channel> = channels
+                .iter()
+                .map(|&channel| unsafe { &mut *channel })
+                .collect();
+            let sounds = vec![Box::into_raw(Box::new(self.clone()))];
             channels[0].play(sounds, None, true, false);
         }
 
         Audio::render_samples(channels.as_slice(), &mut blip_buf, &mut samples);
         let result = Audio::save_samples(filename, &samples, use_ffmpeg.unwrap_or(false));
-        channels.iter().for_each(|channel| channel.lock().stop());
+        for &channel in channels.iter() {
+            unsafe { &mut *channel }.stop();
+        }
         result
     }
 
@@ -227,7 +232,7 @@ impl Sound {
 
     pub(crate) fn to_commands(&self) -> Vec<MmlCommand> {
         let mut commands = Vec::new();
-        let tones = TONES.lock();
+        let tones = pyxel::tones();
 
         // Set fixed commands
         commands.push(MmlCommand::Tempo {
@@ -368,7 +373,7 @@ impl Sound {
             }
 
             // Note
-            let tone = tones[tone as usize].lock();
+            let tone = unsafe { &mut *tones[tone as usize] };
             let midi_note = (*note
                 + if tone.mode == ToneMode::Wavetable {
                     36
@@ -392,28 +397,29 @@ mod tests {
     #[test]
     fn test_sound_new() {
         let sound = Sound::new();
-        assert_eq!(sound.lock().notes.len(), 0);
-        assert_eq!(sound.lock().tones.len(), 0);
-        assert_eq!(sound.lock().volumes.len(), 0);
-        assert_eq!(sound.lock().effects.len(), 0);
-        assert_eq!(sound.lock().speed, DEFAULT_SOUND_SPEED);
+        let sound = unsafe { &mut *sound };
+        assert_eq!(sound.notes.len(), 0);
+        assert_eq!(sound.tones.len(), 0);
+        assert_eq!(sound.volumes.len(), 0);
+        assert_eq!(sound.effects.len(), 0);
+        assert_eq!(sound.speed, DEFAULT_SOUND_SPEED);
     }
 
     #[test]
     fn test_sound_set() {
         let sound = Sound::new();
+        let sound = unsafe { &mut *sound };
         sound
-            .lock()
             .set("c0d-0d0d#0", "tspn", "012345", "nsvfhq", 123)
             .unwrap();
-        assert_eq!(&sound.lock().notes, &vec![0, 1, 2, 3]);
+        assert_eq!(&sound.notes, &vec![0, 1, 2, 3]);
         assert_eq!(
-            &sound.lock().tones,
+            &sound.tones,
             &vec![TONE_TRIANGLE, TONE_SQUARE, TONE_PULSE, TONE_NOISE]
         );
-        assert_eq!(&sound.lock().volumes, &vec![0, 1, 2, 3, 4, 5]);
+        assert_eq!(&sound.volumes, &vec![0, 1, 2, 3, 4, 5]);
         assert_eq!(
-            &sound.lock().effects,
+            &sound.effects,
             &vec![
                 EFFECT_NONE,
                 EFFECT_SLIDE,
@@ -423,25 +429,26 @@ mod tests {
                 EFFECT_QUARTER_FADEOUT
             ]
         );
-        assert_eq!(sound.lock().speed, 123);
+        assert_eq!(sound.speed, 123);
     }
 
     #[test]
     fn test_sound_set_note() {
         let sound = Sound::new();
+        let sound = unsafe { &mut *sound };
         sound
-            .lock()
             .set_notes(" c 0 d # 1 r e 2 f 3 g 4 r a - 0 b 1 ")
             .unwrap();
-        assert_eq!(&sound.lock().notes, &vec![0, 15, -1, 28, 41, 55, -1, 8, 23]);
+        assert_eq!(&sound.notes, &vec![0, 15, -1, 28, 41, 55, -1, 8, 23]);
     }
 
     #[test]
     fn test_sound_set_tone() {
         let sound = Sound::new();
-        sound.lock().set_tones(" t s p n ").unwrap();
+        let sound = unsafe { &mut *sound };
+        sound.set_tones(" t s p n ").unwrap();
         assert_eq!(
-            &sound.lock().tones,
+            &sound.tones,
             &vec![TONE_TRIANGLE, TONE_SQUARE, TONE_PULSE, TONE_NOISE]
         );
     }
@@ -449,16 +456,18 @@ mod tests {
     #[test]
     fn test_sound_set_volume() {
         let sound = Sound::new();
-        sound.lock().set_volumes(" 0 1 2 3 4 5 6 7 ").unwrap();
-        assert_eq!(&sound.lock().volumes, &vec![0, 1, 2, 3, 4, 5, 6, 7]);
+        let sound = unsafe { &mut *sound };
+        sound.set_volumes(" 0 1 2 3 4 5 6 7 ").unwrap();
+        assert_eq!(&sound.volumes, &vec![0, 1, 2, 3, 4, 5, 6, 7]);
     }
 
     #[test]
     fn test_sound_set_effect() {
         let sound = Sound::new();
-        sound.lock().set_effects(" n s v f h q").unwrap();
+        let sound = unsafe { &mut *sound };
+        sound.set_effects(" n s v f h q").unwrap();
         assert_eq!(
-            &sound.lock().effects,
+            &sound.effects,
             &vec![
                 EFFECT_NONE,
                 EFFECT_SLIDE,

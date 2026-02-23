@@ -5,7 +5,6 @@ use pyo3::exceptions::PyException;
 use pyo3::prelude::*;
 
 use crate::image_wrapper::Image;
-use crate::pyxel_singleton::pyxel;
 
 static IMAGE_ONCE: Once = Once::new();
 static SET_IMAGE_ONCE: Once = Once::new();
@@ -13,13 +12,16 @@ static REFIMG_ONCE: Once = Once::new();
 static SET_REFIMG_ONCE: Once = Once::new();
 
 #[pyclass(from_py_object)]
-#[derive(Clone)]
+#[derive(Clone, Copy)]
 pub struct Tilemap {
-    pub(crate) inner: pyxel::SharedTilemap,
+    pub(crate) inner: *mut pyxel::Tilemap,
 }
 
+unsafe impl Send for Tilemap {}
+unsafe impl Sync for Tilemap {}
+
 impl Tilemap {
-    pub fn wrap(inner: pyxel::SharedTilemap) -> Self {
+    pub fn wrap(inner: *mut pyxel::Tilemap) -> Self {
         Self { inner }
     }
 }
@@ -45,20 +47,20 @@ impl Tilemap {
 
     #[getter]
     pub fn width(&self) -> u32 {
-        self.inner.lock().width()
+        unsafe { &*self.inner }.width()
     }
 
     #[getter]
     pub fn height(&self) -> u32 {
-        self.inner.lock().height()
+        unsafe { &*self.inner }.height()
     }
 
     #[getter]
     pub fn imgsrc(&self, py: Python) -> Py<PyAny> {
-        let tilemap = self.inner.lock();
+        let tilemap = unsafe { &*self.inner };
         match &tilemap.imgsrc {
             pyxel::ImageSource::Index(index) => value_to_pyobj!(py, index),
-            pyxel::ImageSource::Image(image) => class_to_pyobj!(py, Image::wrap(image.clone())),
+            pyxel::ImageSource::Image(image) => class_to_pyobj!(py, Image::wrap(*image)),
         }
     }
 
@@ -69,12 +71,12 @@ impl Tilemap {
             (u32, { pyxel::ImageSource::Index(img) }),
             (Image, { pyxel::ImageSource::Image(img.inner) })
         };
-        self.inner.lock().imgsrc = imgsrc;
+        unsafe { &mut *self.inner }.imgsrc = imgsrc;
         Ok(())
     }
 
     pub fn data_ptr(&self, py: Python) -> Py<PyAny> {
-        let mut inner = self.inner.lock();
+        let inner = unsafe { &mut *self.inner };
         let python_code = CString::new(format!(
             "import ctypes; c_uint8_array = (ctypes.c_uint8 * {}).from_address({:p})",
             inner.width() * inner.height() * 2,
@@ -88,12 +90,11 @@ impl Tilemap {
 
     pub fn set(&mut self, x: i32, y: i32, data: Vec<String>) {
         let data_refs: Vec<_> = data.iter().map(String::as_str).collect();
-        self.inner.lock().set(x, y, &data_refs);
+        unsafe { &mut *self.inner }.set(x, y, &data_refs);
     }
 
     pub fn load(&self, x: i32, y: i32, filename: &str, layer: u32) -> PyResult<()> {
-        self.inner
-            .lock()
+        unsafe { &mut *self.inner }
             .load(x, y, filename, layer)
             .map_err(PyException::new_err)
     }
@@ -107,9 +108,9 @@ impl Tilemap {
         h: Option<f32>,
     ) -> PyResult<()> {
         if let (Some(x), Some(y), Some(w), Some(h)) = (x, y, w, h) {
-            self.inner.lock().clip(x, y, w, h);
+            unsafe { &mut *self.inner }.clip(x, y, w, h);
         } else if (x, y, w, h) == (None, None, None, None) {
-            self.inner.lock().clip0();
+            unsafe { &mut *self.inner }.clip0();
         } else {
             python_type_error!("clip() takes 0 or 4 arguments");
         }
@@ -119,9 +120,9 @@ impl Tilemap {
     #[pyo3(signature = (x=None, y=None))]
     pub fn camera(&self, x: Option<f32>, y: Option<f32>) -> PyResult<()> {
         if let (Some(x), Some(y)) = (x, y) {
-            self.inner.lock().camera(x, y);
+            unsafe { &mut *self.inner }.camera(x, y);
         } else if (x, y) == (None, None) {
-            self.inner.lock().camera0();
+            unsafe { &mut *self.inner }.camera0();
         } else {
             python_type_error!("camera() takes 0 or 2 arguments");
         }
@@ -129,55 +130,55 @@ impl Tilemap {
     }
 
     pub fn cls(&self, tile: pyxel::Tile) {
-        self.inner.lock().cls(tile);
+        unsafe { &mut *self.inner }.cls(tile);
     }
 
     pub fn pget(&self, x: f32, y: f32) -> pyxel::Tile {
-        self.inner.lock().pget(x, y)
+        unsafe { &mut *self.inner }.pget(x, y)
     }
 
     pub fn pset(&self, x: f32, y: f32, tile: pyxel::Tile) {
-        self.inner.lock().pset(x, y, tile);
+        unsafe { &mut *self.inner }.pset(x, y, tile);
     }
 
     pub fn line(&self, x1: f32, y1: f32, x2: f32, y2: f32, tile: pyxel::Tile) {
-        self.inner.lock().line(x1, y1, x2, y2, tile);
+        unsafe { &mut *self.inner }.line(x1, y1, x2, y2, tile);
     }
 
     pub fn rect(&self, x: f32, y: f32, w: f32, h: f32, tile: pyxel::Tile) {
-        self.inner.lock().rect(x, y, w, h, tile);
+        unsafe { &mut *self.inner }.rect(x, y, w, h, tile);
     }
 
     pub fn rectb(&self, x: f32, y: f32, w: f32, h: f32, tile: pyxel::Tile) {
-        self.inner.lock().rectb(x, y, w, h, tile);
+        unsafe { &mut *self.inner }.rectb(x, y, w, h, tile);
     }
 
     pub fn circ(&self, x: f32, y: f32, r: f32, tile: pyxel::Tile) {
-        self.inner.lock().circ(x, y, r, tile);
+        unsafe { &mut *self.inner }.circ(x, y, r, tile);
     }
 
     pub fn circb(&self, x: f32, y: f32, r: f32, tile: pyxel::Tile) {
-        self.inner.lock().circb(x, y, r, tile);
+        unsafe { &mut *self.inner }.circb(x, y, r, tile);
     }
 
     pub fn elli(&self, x: f32, y: f32, w: f32, h: f32, tile: pyxel::Tile) {
-        self.inner.lock().elli(x, y, w, h, tile);
+        unsafe { &mut *self.inner }.elli(x, y, w, h, tile);
     }
 
     pub fn ellib(&self, x: f32, y: f32, w: f32, h: f32, tile: pyxel::Tile) {
-        self.inner.lock().ellib(x, y, w, h, tile);
+        unsafe { &mut *self.inner }.ellib(x, y, w, h, tile);
     }
 
     pub fn tri(&self, x1: f32, y1: f32, x2: f32, y2: f32, x3: f32, y3: f32, tile: pyxel::Tile) {
-        self.inner.lock().tri(x1, y1, x2, y2, x3, y3, tile);
+        unsafe { &mut *self.inner }.tri(x1, y1, x2, y2, x3, y3, tile);
     }
 
     pub fn trib(&self, x1: f32, y1: f32, x2: f32, y2: f32, x3: f32, y3: f32, tile: pyxel::Tile) {
-        self.inner.lock().trib(x1, y1, x2, y2, x3, y3, tile);
+        unsafe { &mut *self.inner }.trib(x1, y1, x2, y2, x3, y3, tile);
     }
 
     pub fn fill(&self, x: f32, y: f32, tile: pyxel::Tile) {
-        self.inner.lock().fill(x, y, tile);
+        unsafe { &mut *self.inner }.fill(x, y, tile);
     }
 
     pub fn collide(
@@ -190,7 +191,7 @@ impl Tilemap {
         dy: f32,
         walls: Vec<pyxel::Tile>,
     ) -> (f32, f32) {
-        self.inner.lock().collide(x, y, w, h, dx, dy, &walls)
+        unsafe { &mut *self.inner }.collide(x, y, w, h, dx, dy, &walls)
     }
 
     #[pyo3(signature = (x, y, tm, u, v, w, h, tilekey=None, rotate=None, scale=None))]
@@ -210,11 +211,11 @@ impl Tilemap {
         cast_pyany! {
             tm,
             (u32, {
-                let tilemap = pyxel().tilemaps.lock()[tm as usize].clone();
-                self.inner.lock().blt(x, y, tilemap, u, v, w, h, tilekey, rotate, scale);
+                let tilemap = pyxel::tilemaps()[tm as usize];
+                unsafe { (&mut *self.inner).blt(x, y, tilemap, u, v, w, h, tilekey, rotate, scale) };
             }),
             (Tilemap, {
-                self.inner.lock().blt(x, y, tm.inner, u, v, w, h, tilekey, rotate, scale);
+                unsafe { (&mut *self.inner).blt(x, y, tm.inner, u, v, w, h, tilekey, rotate, scale) };
             })
         }
         Ok(())
@@ -226,13 +227,10 @@ impl Tilemap {
             println!("Tilemap.image is deprecated. Use Tilemap.imgsrc instead.");
         });
 
-        let tilemap = self.inner.lock();
+        let tilemap = unsafe { &*self.inner };
         match &tilemap.imgsrc {
-            pyxel::ImageSource::Index(index) => {
-                let images = pyxel().images.lock();
-                Image::wrap(images[*index as usize].clone())
-            }
-            pyxel::ImageSource::Image(image) => Image::wrap(image.clone()),
+            pyxel::ImageSource::Index(index) => Image::wrap(pyxel::images()[*index as usize]),
+            pyxel::ImageSource::Image(image) => Image::wrap(*image),
         }
     }
 
@@ -242,7 +240,7 @@ impl Tilemap {
             println!("Tilemap.image is deprecated. Use Tilemap.imgsrc instead.");
         });
 
-        self.inner.lock().imgsrc = pyxel::ImageSource::Image(image.inner);
+        unsafe { &mut *self.inner }.imgsrc = pyxel::ImageSource::Image(image.inner);
     }
 
     #[getter]
@@ -251,7 +249,7 @@ impl Tilemap {
             println!("Tilemap.refimg is deprecated. Use Tilemap.imgsrc instead.");
         });
 
-        let tilemap = self.inner.lock();
+        let tilemap = unsafe { &*self.inner };
         match &tilemap.imgsrc {
             pyxel::ImageSource::Index(index) => Some(*index),
             pyxel::ImageSource::Image(_image) => None,
@@ -264,7 +262,7 @@ impl Tilemap {
             println!("Tilemap.refimg is deprecated. Use Tilemap.imgsrc instead.");
         });
 
-        self.inner.lock().imgsrc = pyxel::ImageSource::Index(img);
+        unsafe { &mut *self.inner }.imgsrc = pyxel::ImageSource::Index(img);
     }
 }
 

@@ -3,10 +3,11 @@ use std::mem::size_of;
 
 use glow::{HasContext, PixelUnpackData};
 
-use crate::font::SharedFont;
+use crate::font::Font;
 use crate::image::Color;
+use crate::platform;
 use crate::platform::GLProfile;
-use crate::pyxel::Pyxel;
+use crate::pyxel::{self, Pyxel};
 use crate::settings::{BACKGROUND_COLOR, MAX_COLORS, NUM_SCREEN_TYPES};
 
 #[cfg(target_os = "macos")]
@@ -38,9 +39,9 @@ pub struct Graphics {
 impl Graphics {
     pub fn new() -> Self {
         unsafe {
-            let gl = crate::platform::gl_context();
+            let gl = platform::gl_context();
 
-            if crate::platform::gl_profile() != GLProfile::Gles {
+            if platform::gl_profile() != GLProfile::Gles {
                 gl.disable(glow::FRAMEBUFFER_SRGB);
             }
             gl.disable(glow::BLEND);
@@ -58,7 +59,7 @@ impl Graphics {
     }
 
     unsafe fn create_screen_shaders(gl: &mut glow::Context) -> Vec<ScreenShader> {
-        let glsl_version = if crate::platform::gl_profile() == GLProfile::Gles {
+        let glsl_version = if platform::gl_profile() == GLProfile::Gles {
             GLES_VERSION
         } else {
             GL_VERSION
@@ -218,83 +219,83 @@ impl Graphics {
 
 impl Pyxel {
     pub fn clip(&self, x: f32, y: f32, width: f32, height: f32) {
-        self.screen.lock().clip(x, y, width, height);
+        pyxel::screen().clip(x, y, width, height);
     }
 
     pub fn clip0(&self) {
-        self.screen.lock().clip0();
+        pyxel::screen().clip0();
     }
 
     pub fn camera(&self, x: f32, y: f32) {
-        self.screen.lock().camera(x, y);
+        pyxel::screen().camera(x, y);
     }
 
     pub fn camera0(&self) {
-        self.screen.lock().camera0();
+        pyxel::screen().camera0();
     }
 
     pub fn pal(&self, src_color: Color, dst_color: Color) {
-        self.screen.lock().pal(src_color, dst_color);
+        pyxel::screen().pal(src_color, dst_color);
     }
 
     pub fn pal0(&self) {
-        self.screen.lock().pal0();
+        pyxel::screen().pal0();
     }
 
     pub fn dither(&self, alpha: f32) {
-        self.screen.lock().dither(alpha);
+        pyxel::screen().dither(alpha);
     }
 
     pub fn cls(&self, color: Color) {
-        self.screen.lock().cls(color);
+        pyxel::screen().cls(color);
     }
 
     pub fn pget(&self, x: f32, y: f32) -> Color {
-        self.screen.lock().pget(x, y)
+        pyxel::screen().pget(x, y)
     }
 
     pub fn pset(&self, x: f32, y: f32, color: Color) {
-        self.screen.lock().pset(x, y, color);
+        pyxel::screen().pset(x, y, color);
     }
 
     pub fn line(&self, x1: f32, y1: f32, x2: f32, y2: f32, color: Color) {
-        self.screen.lock().line(x1, y1, x2, y2, color);
+        pyxel::screen().line(x1, y1, x2, y2, color);
     }
 
     pub fn rect(&self, x: f32, y: f32, width: f32, height: f32, color: Color) {
-        self.screen.lock().rect(x, y, width, height, color);
+        pyxel::screen().rect(x, y, width, height, color);
     }
 
     pub fn rectb(&self, x: f32, y: f32, width: f32, height: f32, color: Color) {
-        self.screen.lock().rectb(x, y, width, height, color);
+        pyxel::screen().rectb(x, y, width, height, color);
     }
 
     pub fn circ(&self, x: f32, y: f32, radius: f32, color: Color) {
-        self.screen.lock().circ(x, y, radius, color);
+        pyxel::screen().circ(x, y, radius, color);
     }
 
     pub fn circb(&self, x: f32, y: f32, radius: f32, color: Color) {
-        self.screen.lock().circb(x, y, radius, color);
+        pyxel::screen().circb(x, y, radius, color);
     }
 
     pub fn elli(&self, x: f32, y: f32, width: f32, height: f32, color: Color) {
-        self.screen.lock().elli(x, y, width, height, color);
+        pyxel::screen().elli(x, y, width, height, color);
     }
 
     pub fn ellib(&self, x: f32, y: f32, width: f32, height: f32, color: Color) {
-        self.screen.lock().ellib(x, y, width, height, color);
+        pyxel::screen().ellib(x, y, width, height, color);
     }
 
     pub fn tri(&self, x1: f32, y1: f32, x2: f32, y2: f32, x3: f32, y3: f32, color: Color) {
-        self.screen.lock().tri(x1, y1, x2, y2, x3, y3, color);
+        pyxel::screen().tri(x1, y1, x2, y2, x3, y3, color);
     }
 
     pub fn trib(&self, x1: f32, y1: f32, x2: f32, y2: f32, x3: f32, y3: f32, color: Color) {
-        self.screen.lock().trib(x1, y1, x2, y2, x3, y3, color);
+        pyxel::screen().trib(x1, y1, x2, y2, x3, y3, color);
     }
 
     pub fn fill(&self, x: f32, y: f32, color: Color) {
-        self.screen.lock().fill(x, y, color);
+        pyxel::screen().fill(x, y, color);
     }
 
     pub fn blt(
@@ -310,18 +311,20 @@ impl Pyxel {
         rotate: Option<f32>,
         scale: Option<f32>,
     ) {
-        self.screen.lock().blt(
-            x,
-            y,
-            self.images.lock()[image_index as usize].clone(),
-            image_x,
-            image_y,
-            width,
-            height,
-            color_key,
-            rotate,
-            scale,
-        );
+        unsafe {
+            pyxel::screen().blt(
+                x,
+                y,
+                pyxel::images()[image_index as usize],
+                image_x,
+                image_y,
+                width,
+                height,
+                color_key,
+                rotate,
+                scale,
+            );
+        }
     }
 
     pub fn bltm(
@@ -337,27 +340,29 @@ impl Pyxel {
         rotate: Option<f32>,
         scale: Option<f32>,
     ) {
-        self.screen.lock().bltm(
-            x,
-            y,
-            self.tilemaps.lock()[tilemap_index as usize].clone(),
-            tilemap_x,
-            tilemap_y,
-            width,
-            height,
-            color_key,
-            rotate,
-            scale,
-        );
+        unsafe {
+            pyxel::screen().bltm(
+                x,
+                y,
+                pyxel::tilemaps()[tilemap_index as usize],
+                tilemap_x,
+                tilemap_y,
+                width,
+                height,
+                color_key,
+                rotate,
+                scale,
+            );
+        }
     }
 
-    pub fn text(&self, x: f32, y: f32, string: &str, color: Color, font: Option<SharedFont>) {
-        self.screen.lock().text(x, y, string, color, font);
+    pub fn text(&self, x: f32, y: f32, string: &str, color: Color, font: Option<*mut Font>) {
+        pyxel::screen().text(x, y, string, color, font);
     }
 
     pub(crate) fn render_screen(&mut self) {
         unsafe {
-            let gl = crate::platform::gl_context();
+            let gl = platform::gl_context();
             self.set_viewport(gl);
             self.use_screen_shader(gl);
             self.bind_screen_texture(gl);
@@ -367,7 +372,7 @@ impl Pyxel {
     }
 
     unsafe fn set_viewport(&self, gl: &mut glow::Context) {
-        let (window_width, window_height) = crate::platform::window_size();
+        let (window_width, window_height) = platform::window_size();
         gl.viewport(0, 0, window_width as i32, window_height as i32);
     }
 
@@ -377,13 +382,13 @@ impl Pyxel {
         let uniform_locations = &shader.uniform_locations;
 
         if let Some(location) = uniform_locations.get("u_screenPos") {
-            let (_, window_height) = crate::platform::window_size();
+            let (_, window_height) = platform::window_size();
             gl.uniform_2_f32(
                 Some(location),
                 self.system.screen_x as f32,
                 (window_height as i32
                     - self.system.screen_y
-                    - (self.height as f32 * self.system.screen_scale) as i32)
+                    - (*pyxel::height() as f32 * self.system.screen_scale) as i32)
                     as f32,
             );
         }
@@ -391,8 +396,8 @@ impl Pyxel {
         if let Some(location) = uniform_locations.get("u_screenSize") {
             gl.uniform_2_f32(
                 Some(location),
-                self.width as f32 * self.system.screen_scale,
-                self.height as f32 * self.system.screen_scale,
+                *pyxel::width() as f32 * self.system.screen_scale,
+                *pyxel::height() as f32 * self.system.screen_scale,
             );
         }
 
@@ -401,7 +406,7 @@ impl Pyxel {
         }
 
         if let Some(location) = uniform_locations.get("u_numColors") {
-            gl.uniform_1_i32(Some(location), self.colors.lock().len() as i32);
+            gl.uniform_1_i32(Some(location), pyxel::colors().len() as i32);
         }
 
         if let Some(location) = uniform_locations.get("u_backgroundColor") {
@@ -429,7 +434,7 @@ impl Pyxel {
         gl.bind_texture(glow::TEXTURE_2D, Some(self.graphics.screen_texture));
         gl.pixel_store_i32(glow::UNPACK_ALIGNMENT, 1);
 
-        let (internal_format, format) = if crate::platform::gl_profile() == GLProfile::Gles {
+        let (internal_format, format) = if platform::gl_profile() == GLProfile::Gles {
             (glow::LUMINANCE as i32, glow::LUMINANCE)
         } else {
             (glow::R8 as i32, glow::RED)
@@ -439,30 +444,28 @@ impl Pyxel {
             glow::TEXTURE_2D,
             0,
             internal_format,
-            self.width as i32,
-            self.height as i32,
+            *pyxel::width() as i32,
+            *pyxel::height() as i32,
             0,
             format,
             glow::UNSIGNED_BYTE,
-            PixelUnpackData::Slice(Some(&self.screen.lock().canvas.data)),
+            PixelUnpackData::Slice(Some(&pyxel::screen().canvas.data)),
         );
     }
 
-    #[allow(clippy::uninlined_format_args)]
     unsafe fn bind_colors_texture(&self, gl: &mut glow::Context) {
         gl.active_texture(glow::TEXTURE1);
         gl.bind_texture(glow::TEXTURE_2D, Some(self.graphics.colors_texture));
         gl.pixel_store_i32(glow::UNPACK_ALIGNMENT, 4);
 
-        let colors = self.colors.lock();
+        let colors = pyxel::colors();
         assert!(
             !colors.is_empty() && colors.len() <= MAX_COLORS as usize,
-            "Number of colors must be between 1 to {}",
-            MAX_COLORS
+            "Number of colors must be between 1 to {MAX_COLORS}",
         );
 
         let mut pixels: Vec<u8> = Vec::with_capacity(colors.len() * 3);
-        for color in &*colors {
+        for color in colors.iter() {
             pixels.push((color >> 16) as u8);
             pixels.push((color >> 8) as u8);
             pixels.push(*color as u8);

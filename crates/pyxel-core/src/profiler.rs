@@ -20,12 +20,10 @@ impl Profiler {
         }
     }
 
-    #[allow(dead_code)]
     pub const fn average_time(&self) -> f32 {
         self.average_time
     }
 
-    #[allow(dead_code)]
     pub const fn average_fps(&self) -> f32 {
         self.average_fps
     }

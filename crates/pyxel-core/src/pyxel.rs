@@ -1,15 +1,16 @@
+use std::array;
+use std::ptr::null_mut;
 use std::sync::atomic::{AtomicBool, Ordering};
-use std::sync::LazyLock;
-
-use parking_lot::Mutex;
 
 use crate::audio::Audio;
-use crate::channel::{Channel, SharedChannel};
+use crate::canvas::Canvas;
+use crate::channel::Channel;
 use crate::graphics::Graphics;
-use crate::image::{Color, Image, Rgb24, SharedImage};
+use crate::image::{Color, Image, Rgb24};
 use crate::input::Input;
 use crate::key::Key;
-use crate::music::{Music, SharedMusic};
+use crate::music::Music;
+use crate::platform;
 use crate::resource::Resource;
 use crate::settings::{
     CURSOR_DATA, CURSOR_HEIGHT, CURSOR_WIDTH, DEFAULT_COLORS, DEFAULT_FPS, DEFAULT_QUIT_KEY,
@@ -18,77 +19,113 @@ use crate::settings::{
     NUM_CHANNELS, NUM_FONT_ROWS, NUM_IMAGES, NUM_MUSICS, NUM_SOUNDS, NUM_TILEMAPS, NUM_TONES,
     TILEMAP_SIZE,
 };
-use crate::sound::{SharedSound, Sound};
+use crate::sound::Sound;
 use crate::system::System;
-use crate::tilemap::{ImageSource, SharedTilemap, Tilemap};
-use crate::tone::{SharedTone, Tone};
+use crate::tilemap::{ImageSource, Tilemap};
+use crate::tone::Tone;
 
 static IS_INITIALIZED: AtomicBool = AtomicBool::new(false);
 
-type ResetFunc = Option<Box<dyn FnMut() + Send + 'static>>;
-pub static RESET_FUNC: LazyLock<Mutex<ResetFunc>> = LazyLock::new(|| Mutex::new(None));
+// Singleton
+static mut PYXEL: *mut Pyxel = null_mut();
 
-pub static COLORS: LazyLock<shared_type!(Vec<Rgb24>)> = LazyLock::new(init_colors);
-pub static IMAGES: LazyLock<shared_type!(Vec<SharedImage>)> = LazyLock::new(init_images);
-static TILEMAPS: LazyLock<shared_type!(Vec<SharedTilemap>)> = LazyLock::new(init_tilemaps);
-static CURSOR_IMAGE: LazyLock<SharedImage> = LazyLock::new(init_cursor_image);
-pub static FONT_IMAGE: LazyLock<SharedImage> = LazyLock::new(init_font_image);
+pub fn pyxel() -> &'static mut Pyxel {
+    unsafe {
+        assert!(!PYXEL.is_null(), "Pyxel not initialized");
+        &mut *PYXEL
+    }
+}
 
-pub static CHANNELS: LazyLock<shared_type!(Vec<SharedChannel>)> = LazyLock::new(init_channels);
-pub static TONES: LazyLock<shared_type!(Vec<SharedTone>)> = LazyLock::new(init_tones);
-pub static SOUNDS: LazyLock<shared_type!(Vec<SharedSound>)> = LazyLock::new(init_sounds);
-static MUSICS: LazyLock<shared_type!(Vec<SharedMusic>)> = LazyLock::new(init_musics);
+fn set_pyxel_instance(instance: Pyxel) {
+    unsafe {
+        PYXEL = Box::into_raw(Box::new(instance));
+    }
+}
+
+// RESET_FUNC
+static mut RESET_FUNC: Option<Box<dyn FnMut() + Send>> = None;
+
+pub fn reset_func() -> &'static mut Option<Box<dyn FnMut() + Send>> {
+    unsafe { &mut RESET_FUNC }
+}
+
+// Macros for global variables
+macro_rules! define_static {
+    ($func:ident, $static:ident, $type:ty, $default:expr) => {
+        static mut $static: $type = $default;
+        pub fn $func() -> &'static mut $type {
+            unsafe { &mut $static }
+        }
+    };
+}
+
+macro_rules! define_global {
+    ($func:ident, $static:ident, $type:ty, $init:expr) => {
+        static mut $static: *mut $type = null_mut();
+        pub fn $func() -> &'static mut $type {
+            unsafe {
+                if $static.is_null() {
+                    $static = Box::into_raw(Box::new($init));
+                }
+                &mut *$static
+            }
+        }
+    };
+}
+
+// System
+define_static!(width, WIDTH, u32, 0);
+define_static!(height, HEIGHT, u32, 0);
+define_static!(frame_count, FRAME_COUNT, u32, 0);
+
+// Input
+define_static!(mouse_x, MOUSE_X, i32, 0);
+define_static!(mouse_y, MOUSE_Y, i32, 0);
+define_static!(mouse_wheel, MOUSE_WHEEL, i32, 0);
+define_static!(input_keys, INPUT_KEYS, Vec<Key>, Vec::new());
+define_static!(input_text, INPUT_TEXT, String, String::new());
+define_static!(dropped_files, DROPPED_FILES, Vec<String>, Vec::new());
+
+// Graphics
+define_global!(colors, COLORS, Vec<Rgb24>, DEFAULT_COLORS.to_vec());
+define_global!(images, IMAGES, Vec<*mut Image>, init_images());
+define_global!(tilemaps, TILEMAPS, Vec<*mut Tilemap>, init_tilemaps());
+define_global!(screen, SCREEN, Image, init_screen());
+define_global!(cursor_image, CURSOR_IMAGE, Image, init_cursor_image());
+define_global!(font_image, FONT_IMAGE, Image, init_font_image());
+
+// Audio
+define_global!(channels, CHANNELS, Vec<*mut Channel>, init_channels());
+define_global!(tones, TONES, Vec<*mut Tone>, init_tones());
+define_global!(sounds, SOUNDS, Vec<*mut Sound>, init_sounds());
+define_global!(musics, MUSICS, Vec<*mut Music>, init_musics());
 
 pub struct Pyxel {
-    // System
     pub(crate) system: System,
-    pub width: u32,
-    pub height: u32,
-    pub frame_count: u32,
-
-    // Resource
     pub(crate) resource: Resource,
-
-    // Input
     pub(crate) input: Input,
-    pub mouse_x: i32,
-    pub mouse_y: i32,
-    pub mouse_wheel: i32,
-    pub input_keys: Vec<Key>,
-    pub input_text: String,
-    pub dropped_files: Vec<String>,
-
-    // Graphics
     pub(crate) graphics: Graphics,
-    pub colors: shared_type!(Vec<Rgb24>),
-    pub images: shared_type!(Vec<SharedImage>),
-    pub tilemaps: shared_type!(Vec<SharedTilemap>),
-    pub screen: SharedImage,
-    pub cursor: SharedImage,
-    pub font: SharedImage,
-
-    // Audio
-    pub(crate) _audio: Audio,
-    pub channels: shared_type!(Vec<SharedChannel>),
-    pub tones: shared_type!(Vec<SharedTone>),
-    pub sounds: shared_type!(Vec<SharedSound>),
-    pub musics: shared_type!(Vec<SharedMusic>),
 }
 
 pub fn init(
-    width: u32,
-    height: u32,
+    w: u32,
+    h: u32,
     title: Option<&str>,
     fps: Option<u32>,
     quit_key: Option<Key>,
     display_scale: Option<u32>,
     capture_scale: Option<u32>,
     capture_sec: Option<u32>,
-) -> Pyxel {
+) {
     assert!(
         !IS_INITIALIZED.swap(true, Ordering::Relaxed),
         "Pyxel already initialized"
     );
+
+    // Set dimensions
+    *width() = w;
+    *height() = h;
+    *frame_count() = 0;
 
     // Default parameters
     let title = title.unwrap_or(DEFAULT_TITLE);
@@ -96,162 +133,205 @@ pub fn init(
     let fps = fps.unwrap_or(DEFAULT_FPS);
 
     // Platform
-    crate::platform::init();
+    platform::init();
 
-    let (display_width, display_height) = crate::platform::display_size();
+    let (display_width, display_height) = platform::display_size();
     let display_scale = display_scale
         .unwrap_or(
             (f32::min(
-                display_width as f32 / width as f32,
-                display_height as f32 / height as f32,
+                display_width as f32 / w as f32,
+                display_height as f32 / h as f32,
             ) * DISPLAY_RATIO) as u32,
         )
         .max(1);
-    let window_width = width * display_scale;
-    let window_height = height * display_scale;
+    let window_width = w * display_scale;
+    let window_height = h * display_scale;
 
-    crate::platform::init_window(title, window_width, window_height);
+    platform::init_window(title, window_width, window_height);
 
-    // System
+    // Resize screen
+    screen().canvas = Canvas::new(w, h);
+    screen().palette = array::from_fn(|i| i as Color);
+
+    // Reset input
+    *mouse_x() = 0;
+    *mouse_y() = 0;
+    *mouse_wheel() = 0;
+    input_keys().clear();
+    input_text().clear();
+    dropped_files().clear();
+
+    // Build Pyxel instance
     let system = System::new(fps, quit_key);
-    let frame_count = 0;
-
-    // Resource
     let resource = Resource::new(capture_scale, capture_sec, fps);
-
-    // Input
     let input = Input::new();
-    let mouse_x = 0;
-    let mouse_y = 0;
-    let mouse_wheel = 0;
-    let input_keys = Vec::new();
-    let input_text = String::new();
-    let dropped_files = Vec::new();
-
-    // Graphics
     let graphics = Graphics::new();
-    let colors = COLORS.clone();
-    let images = IMAGES.clone();
-    let tilemaps = TILEMAPS.clone();
-    let screen = Image::new(width, height);
-    let cursor = CURSOR_IMAGE.clone();
-    let font = FONT_IMAGE.clone();
+
+    set_pyxel_instance(Pyxel {
+        system,
+        resource,
+        input,
+        graphics,
+    });
 
     // Audio
-    let audio = Audio::new();
-    let channels = CHANNELS.clone();
-    let tones = TONES.clone();
-    let sounds = SOUNDS.clone();
-    let musics = MUSICS.clone();
+    Audio::start();
 
-    let pyxel = Pyxel {
-        // System
-        system,
-        width,
-        height,
-        frame_count,
-
-        // Resource
-        resource,
-
-        // Input
-        input,
-        mouse_x,
-        mouse_y,
-        mouse_wheel,
-        input_keys,
-        input_text,
-        dropped_files,
-
-        // Graphics
-        graphics,
-        colors,
-        images,
-        tilemaps,
-        screen,
-        cursor,
-        font,
-
-        // Audio
-        _audio: audio,
-        channels,
-        tones,
-        sounds,
-        musics,
-    };
-
-    pyxel.icon(&ICON_DATA, ICON_SCALE, ICON_COLKEY);
-    pyxel
+    // Icon
+    pyxel().icon(&ICON_DATA, ICON_SCALE, ICON_COLKEY);
 }
 
 pub fn reset_statics() {
     IS_INITIALIZED.store(false, Ordering::Relaxed);
 
-    (*COLORS.lock()).clone_from(&init_colors().lock());
-    (*IMAGES.lock()).clone_from(&init_images().lock());
-    (*TILEMAPS.lock()).clone_from(&init_tilemaps().lock());
-    (*CURSOR_IMAGE.lock()).clone_from(&init_cursor_image().lock());
-    (*FONT_IMAGE.lock()).clone_from(&init_font_image().lock());
-    (*CHANNELS.lock()).clone_from(&init_channels().lock());
-    (*TONES.lock()).clone_from(&init_tones().lock());
-    (*SOUNDS.lock()).clone_from(&init_sounds().lock());
-    (*MUSICS.lock()).clone_from(&init_musics().lock());
+    // Reset scalar statics
+    *width() = 0;
+    *height() = 0;
+    *frame_count() = 0;
+    *mouse_x() = 0;
+    *mouse_y() = 0;
+    *mouse_wheel() = 0;
+    input_keys().clear();
+    input_text().clear();
+    dropped_files().clear();
+
+    // Reset heap globals
+    unsafe {
+        if !COLORS.is_null() {
+            drop(Box::from_raw(COLORS));
+            COLORS = null_mut();
+        }
+        if !IMAGES.is_null() {
+            for &img in &*IMAGES {
+                if !img.is_null() {
+                    drop(Box::from_raw(img));
+                }
+            }
+            drop(Box::from_raw(IMAGES));
+            IMAGES = null_mut();
+        }
+        if !TILEMAPS.is_null() {
+            for &tm in &*TILEMAPS {
+                if !tm.is_null() {
+                    drop(Box::from_raw(tm));
+                }
+            }
+            drop(Box::from_raw(TILEMAPS));
+            TILEMAPS = null_mut();
+        }
+        if !SCREEN.is_null() {
+            drop(Box::from_raw(SCREEN));
+            SCREEN = null_mut();
+        }
+        if !CURSOR_IMAGE.is_null() {
+            drop(Box::from_raw(CURSOR_IMAGE));
+            CURSOR_IMAGE = null_mut();
+        }
+        if !FONT_IMAGE.is_null() {
+            drop(Box::from_raw(FONT_IMAGE));
+            FONT_IMAGE = null_mut();
+        }
+        if !CHANNELS.is_null() {
+            for &ch in &*CHANNELS {
+                if !ch.is_null() {
+                    drop(Box::from_raw(ch));
+                }
+            }
+            drop(Box::from_raw(CHANNELS));
+            CHANNELS = null_mut();
+        }
+        if !TONES.is_null() {
+            for &t in &*TONES {
+                if !t.is_null() {
+                    drop(Box::from_raw(t));
+                }
+            }
+            drop(Box::from_raw(TONES));
+            TONES = null_mut();
+        }
+        if !SOUNDS.is_null() {
+            for &s in &*SOUNDS {
+                if !s.is_null() {
+                    drop(Box::from_raw(s));
+                }
+            }
+            drop(Box::from_raw(SOUNDS));
+            SOUNDS = null_mut();
+        }
+        if !MUSICS.is_null() {
+            for &m in &*MUSICS {
+                if !m.is_null() {
+                    drop(Box::from_raw(m));
+                }
+            }
+            drop(Box::from_raw(MUSICS));
+            MUSICS = null_mut();
+        }
+        RESET_FUNC = None;
+    }
 }
 
-fn init_colors() -> shared_type!(Vec<Rgb24>) {
-    new_shared_type!(DEFAULT_COLORS.to_vec())
+// Init functions for define_global!
+
+fn init_screen() -> Image {
+    Image {
+        canvas: Canvas::new(0, 0),
+        palette: array::from_fn(|i| i as Color),
+    }
 }
 
-fn init_images() -> shared_type!(Vec<SharedImage>) {
-    new_shared_type!((0..NUM_IMAGES)
+fn init_images() -> Vec<*mut Image> {
+    (0..NUM_IMAGES)
         .map(|_| Image::new(IMAGE_SIZE, IMAGE_SIZE))
-        .collect())
+        .collect()
 }
 
-fn init_tilemaps() -> shared_type!(Vec<SharedTilemap>) {
-    new_shared_type!((0..NUM_TILEMAPS)
+fn init_tilemaps() -> Vec<*mut Tilemap> {
+    (0..NUM_TILEMAPS)
         .map(|_| Tilemap::new(TILEMAP_SIZE, TILEMAP_SIZE, ImageSource::Index(0)))
-        .collect())
+        .collect()
 }
 
-fn init_cursor_image() -> SharedImage {
-    let image = Image::new(CURSOR_WIDTH, CURSOR_HEIGHT);
-    image.lock().set(0, 0, &CURSOR_DATA);
+fn init_cursor_image() -> Image {
+    let mut image = Image {
+        canvas: Canvas::new(CURSOR_WIDTH, CURSOR_HEIGHT),
+        palette: array::from_fn(|i| i as Color),
+    };
+    image.set(0, 0, &CURSOR_DATA);
     image
 }
 
-fn init_font_image() -> SharedImage {
-    let width = FONT_WIDTH * NUM_FONT_ROWS;
-    let height = FONT_HEIGHT * (FONT_DATA.len() as u32).div_ceil(NUM_FONT_ROWS);
-    let image = Image::new(width, height);
-
-    {
-        let mut image = image.lock();
-        for (fi, data) in FONT_DATA.iter().enumerate() {
-            let row = fi as u32 / NUM_FONT_ROWS;
-            let col = fi as u32 % NUM_FONT_ROWS;
-            let mut data = *data;
-            for yi in 0..FONT_HEIGHT {
-                for xi in 0..FONT_WIDTH {
-                    let x = FONT_WIDTH * col + xi;
-                    let y = FONT_HEIGHT * row + yi;
-                    let color = Color::from((data & 0x800000) != 0);
-                    image.canvas.write_data(x as usize, y as usize, color);
-                    data <<= 1;
-                }
+fn init_font_image() -> Image {
+    let w = FONT_WIDTH * NUM_FONT_ROWS;
+    let h = FONT_HEIGHT * (FONT_DATA.len() as u32).div_ceil(NUM_FONT_ROWS);
+    let mut image = Image {
+        canvas: Canvas::new(w, h),
+        palette: array::from_fn(|i| i as Color),
+    };
+    for (fi, data) in FONT_DATA.iter().enumerate() {
+        let row = fi as u32 / NUM_FONT_ROWS;
+        let col = fi as u32 % NUM_FONT_ROWS;
+        let mut data = *data;
+        for yi in 0..FONT_HEIGHT {
+            for xi in 0..FONT_WIDTH {
+                let x = FONT_WIDTH * col + xi;
+                let y = FONT_HEIGHT * row + yi;
+                let color = Color::from((data & 0x800000) != 0);
+                image.canvas.write_data(x as usize, y as usize, color);
+                data <<= 1;
             }
         }
     }
     image
 }
 
-fn init_channels() -> shared_type!(Vec<SharedChannel>) {
-    new_shared_type!((0..NUM_CHANNELS).map(|_| Channel::new()).collect())
+fn init_channels() -> Vec<*mut Channel> {
+    (0..NUM_CHANNELS).map(|_| Channel::new()).collect()
 }
 
-fn init_tones() -> shared_type!(Vec<SharedTone>) {
+fn init_tones() -> Vec<*mut Tone> {
     macro_rules! set_default_tone {
-        ($tone:ident, $default_tone:ident) => {{
+        ($tone:expr, $default_tone:ident) => {{
             $tone.mode = $default_tone.0;
             $tone.sample_bits = $default_tone.1;
             $tone.wavetable = $default_tone.2.to_vec();
@@ -259,30 +339,26 @@ fn init_tones() -> shared_type!(Vec<SharedTone>) {
         }};
     }
 
-    new_shared_type!((0..NUM_TONES)
+    (0..NUM_TONES)
         .map(|index| {
             let tone = Tone::new();
-            {
-                let mut tone = tone.lock();
-                {
-                    match index {
-                        0 => set_default_tone!(tone, DEFAULT_TONE_0),
-                        1 => set_default_tone!(tone, DEFAULT_TONE_1),
-                        2 => set_default_tone!(tone, DEFAULT_TONE_2),
-                        3 => set_default_tone!(tone, DEFAULT_TONE_3),
-                        _ => panic!(),
-                    }
-                }
+            let tone_ref = unsafe { &mut *tone };
+            match index {
+                0 => set_default_tone!(tone_ref, DEFAULT_TONE_0),
+                1 => set_default_tone!(tone_ref, DEFAULT_TONE_1),
+                2 => set_default_tone!(tone_ref, DEFAULT_TONE_2),
+                3 => set_default_tone!(tone_ref, DEFAULT_TONE_3),
+                _ => panic!(),
             }
             tone
         })
-        .collect())
+        .collect()
 }
 
-fn init_sounds() -> shared_type!(Vec<SharedSound>) {
-    new_shared_type!((0..NUM_SOUNDS).map(|_| Sound::new()).collect())
+fn init_sounds() -> Vec<*mut Sound> {
+    (0..NUM_SOUNDS).map(|_| Sound::new()).collect()
 }
 
-fn init_musics() -> shared_type!(Vec<SharedMusic>) {
-    new_shared_type!((0..NUM_MUSICS).map(|_| Music::new()).collect())
+fn init_musics() -> Vec<*mut Music> {
+    (0..NUM_MUSICS).map(|_| Music::new()).collect()
 }

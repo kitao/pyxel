@@ -136,7 +136,7 @@ fn blt(
     cast_pyany! {
         img,
         (u32, { pyxel().blt(x, y, img, u, v, w, h, colkey, rotate, scale); }),
-        (Image, { pyxel().screen.lock().blt(x, y, img.inner, u, v, w, h, colkey, rotate, scale); })
+        (Image, { unsafe { pyxel::screen().blt(x, y, img.inner, u, v, w, h, colkey, rotate, scale) }; })
     }
     Ok(())
 }
@@ -158,7 +158,7 @@ fn bltm(
     cast_pyany! {
         tm,
         (u32, { pyxel().bltm(x, y, tm, u, v, w, h, colkey, rotate, scale); }),
-        (Tilemap, { pyxel().screen.lock().bltm(x, y, tm.inner, u, v, w, h, colkey, rotate, scale); })
+        (Tilemap, { unsafe { pyxel::screen().bltm(x, y, tm.inner, u, v, w, h, colkey, rotate, scale) }; })
     }
     Ok(())
 }
@@ -166,11 +166,7 @@ fn bltm(
 #[pyfunction]
 #[pyo3(signature = (x, y, s, col, font=None))]
 fn text(x: f32, y: f32, s: &str, col: pyxel::Color, font: Option<Font>) {
-    let font = if let Some(font) = font {
-        Some(font.inner.clone())
-    } else {
-        None
-    };
+    let font = font.map(|f| f.inner);
     pyxel().text(x, y, s, col, font);
 }
 
@@ -180,9 +176,7 @@ fn image(img: u32) -> Image {
         println!("pyxel.image(img) is deprecated. Use pyxel.images[img] instead.");
     });
 
-    Image {
-        inner: pyxel().images.lock()[img as usize].clone(),
-    }
+    Image::wrap(pyxel::images()[img as usize])
 }
 
 #[pyfunction]
@@ -191,7 +185,7 @@ fn tilemap(tm: u32) -> Tilemap {
         println!("pyxel.tilemap(tm) is deprecated. Use pyxel.tilemaps[tm] instead.");
     });
 
-    Tilemap::wrap(pyxel().tilemaps.lock()[tm as usize].clone())
+    Tilemap::wrap(pyxel::tilemaps()[tm as usize])
 }
 
 pub fn add_graphics_functions(m: &Bound<'_, PyModule>) -> PyResult<()> {

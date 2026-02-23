@@ -1,4 +1,3 @@
-use std::mem::transmute;
 use std::ptr::null_mut;
 
 use glow::Context;
@@ -29,7 +28,7 @@ pub fn init() {
     platform.init();
 
     unsafe {
-        PLATFORM = transmute::<Box<Platform>, *mut Platform>(Box::new(platform));
+        PLATFORM = Box::into_raw(Box::new(platform));
     }
 }
 
@@ -109,6 +108,14 @@ pub fn start_audio<F: FnMut(&mut [i16]) + 'static>(
 
 pub fn pause_audio(paused: bool) {
     platform().pause_audio(paused);
+}
+
+pub fn lock_audio() {
+    platform().lock_audio();
+}
+
+pub fn unlock_audio() {
+    platform().unlock_audio();
 }
 
 //

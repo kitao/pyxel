@@ -1,5 +1,10 @@
 # Change Log
 
+## 2.7.0
+
+- Removed mutexes for resource types to improve performance
+- Renamed internal Python module to pyxel_binding
+
 ## 2.6.9
 
 - Restructured project layout and reorganized Rust crates

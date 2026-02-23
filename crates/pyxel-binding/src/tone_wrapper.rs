@@ -7,25 +7,28 @@ static WAVEFORM_ONCE: Once = Once::new();
 
 wrap_as_python_sequence!(
     Wavetable,
-    pyxel::SharedTone,
-    (|inner: &pyxel::SharedTone| inner.lock().wavetable.len()),
+    *mut pyxel::Tone,
+    (|inner: &*mut pyxel::Tone| unsafe { &**inner }.wavetable.len()),
     pyxel::ToneSample,
-    (|inner: &pyxel::SharedTone, index| inner.lock().wavetable[index]),
+    (|inner: &*mut pyxel::Tone, index| unsafe { &**inner }.wavetable[index]),
     pyxel::ToneSample,
-    (|inner: &pyxel::SharedTone, index, value| inner.lock().wavetable[index] = value),
+    (|inner: &*mut pyxel::Tone, index, value| unsafe { &mut **inner }.wavetable[index] = value),
     Vec<pyxel::ToneSample>,
-    (|inner: &pyxel::SharedTone, list| inner.lock().wavetable = list),
-    (|inner: &pyxel::SharedTone| inner.lock().wavetable.clone())
+    (|inner: &*mut pyxel::Tone, list| unsafe { &mut **inner }.wavetable = list),
+    (|inner: &*mut pyxel::Tone| unsafe { &**inner }.wavetable.clone())
 );
 
 #[pyclass(from_py_object)]
-#[derive(Clone)]
+#[derive(Clone, Copy)]
 pub struct Tone {
-    pub(crate) inner: pyxel::SharedTone,
+    pub(crate) inner: *mut pyxel::Tone,
 }
 
+unsafe impl Send for Tone {}
+unsafe impl Sync for Tone {}
+
 impl Tone {
-    pub fn wrap(inner: pyxel::SharedTone) -> Self {
+    pub fn wrap(inner: *mut pyxel::Tone) -> Self {
         Self { inner }
     }
 }
@@ -39,12 +42,12 @@ impl Tone {
 
     #[getter]
     pub fn mode(&self) -> u32 {
-        self.inner.lock().mode.into()
+        unsafe { &*self.inner }.mode.into()
     }
 
     #[setter]
     pub fn set_mode(&self, mode: u32) {
-        self.inner.lock().mode = pyxel::ToneMode::from(mode);
+        unsafe { &mut *self.inner }.mode = pyxel::ToneMode::from(mode);
     }
 
     #[getter]
@@ -53,7 +56,7 @@ impl Tone {
             println!("Tone.noise is deprecated. Use Tone.mode instead.");
         });
 
-        self.inner.lock().mode.into()
+        unsafe { &*self.inner }.mode.into()
     }
 
     #[setter]
@@ -62,22 +65,22 @@ impl Tone {
             println!("Tone.noise is deprecated. Use Tone.mode instead.");
         });
 
-        self.inner.lock().mode = pyxel::ToneMode::from(mode);
+        unsafe { &mut *self.inner }.mode = pyxel::ToneMode::from(mode);
     }
 
     #[getter]
     pub fn sample_bits(&self) -> pyxel::ToneSample {
-        self.inner.lock().sample_bits
+        unsafe { &*self.inner }.sample_bits
     }
 
     #[setter]
     pub fn set_sample_bits(&self, sample_bits: pyxel::ToneSample) {
-        self.inner.lock().sample_bits = sample_bits;
+        unsafe { &mut *self.inner }.sample_bits = sample_bits;
     }
 
     #[getter]
     pub fn wavetable(&self) -> Wavetable {
-        Wavetable::wrap(self.inner.clone())
+        Wavetable::wrap(self.inner)
     }
 
     #[getter]
@@ -86,17 +89,17 @@ impl Tone {
             println!("Tone.waveform is deprecated. Use Tone.wavetable instead.");
         });
 
-        Wavetable::wrap(self.inner.clone())
+        Wavetable::wrap(self.inner)
     }
 
     #[getter]
     pub fn gain(&self) -> pyxel::ToneGain {
-        self.inner.lock().gain
+        unsafe { &*self.inner }.gain
     }
 
     #[setter]
     pub fn set_gain(&self, gain: pyxel::ToneGain) {
-        self.inner.lock().gain = gain;
+        unsafe { &mut *self.inner }.gain = gain;
     }
 }
 

@@ -6,7 +6,6 @@ use serde::Deserialize;
 use crate::settings::TILE_SIZE;
 use crate::tilemap::{ImageSource, Tilemap};
 use crate::utils::remove_whitespace;
-use crate::SharedTilemap;
 
 #[derive(Debug, Deserialize)]
 struct Tileset {
@@ -46,7 +45,7 @@ struct TiledMapFile {
     layers: Vec<Layer>,
 }
 
-pub fn parse_tmx(filename: &str, layer_index: u32) -> Result<SharedTilemap, String> {
+pub fn parse_tmx(filename: &str, layer_index: u32) -> Result<*mut Tilemap, String> {
     let mut file = File::open(filename).map_err(|_| format!("Failed to open file '{filename}'"))?;
 
     let mut tmx_text = String::new();
@@ -90,7 +89,7 @@ pub fn parse_tmx(filename: &str, layer_index: u32) -> Result<SharedTilemap, Stri
 
     let tilemap = Tilemap::new(layer.width, layer.height, ImageSource::Index(0));
     {
-        let mut tilemap = tilemap.lock();
+        let tilemap = unsafe { &mut *tilemap };
         for (i, tile_id) in layer_data.iter().enumerate() {
             let x = i % layer.width as usize;
             let y = i / layer.width as usize;

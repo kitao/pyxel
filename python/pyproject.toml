@@ -36,7 +36,7 @@ pyxel = "pyxel.cli:cli"
 
 [tool.maturin]
 manifest-path = "../crates/pyxel-binding/Cargo.toml"
-module-name = "pyxel.pyxel_wrapper"
+module-name = "pyxel.pyxel_binding"
 
 [tool.maturin.target."x86_64-apple-darwin"]
 macos-deployment-target = "10.12"

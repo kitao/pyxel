@@ -6,19 +6,34 @@ use std::process::Command;
 use blip_buf::BlipBuf;
 use hound::{SampleFormat, WavSpec, WavWriter};
 
-use crate::channel::SharedChannel;
-use crate::pyxel::{Pyxel, CHANNELS};
+use crate::channel::Channel;
+use crate::pyxel::{self, Pyxel};
 use crate::settings::{
     AUDIO_BUFFER_SAMPLES, AUDIO_CLOCKS_PER_SAMPLE, AUDIO_CLOCK_RATE, AUDIO_RENDER_STEP_SAMPLES,
     AUDIO_SAMPLE_RATE,
 };
-use crate::utils;
+use crate::sound::Sound;
+use crate::{platform, utils};
 
 pub struct Audio;
 
+struct AudioLock;
+
+impl AudioLock {
+    fn new() -> Self {
+        platform::lock_audio();
+        Self
+    }
+}
+
+impl Drop for AudioLock {
+    fn drop(&mut self) {
+        platform::unlock_audio();
+    }
+}
+
 struct AudioStreamRenderer {
     blip_buf: BlipBuf,
-    channels: Vec<SharedChannel>,
 }
 
 impl AudioStreamRenderer {
@@ -26,38 +41,33 @@ impl AudioStreamRenderer {
         let mut blip_buf = BlipBuf::new(AUDIO_BUFFER_SAMPLES);
         blip_buf.set_rates(AUDIO_CLOCK_RATE as f64, AUDIO_SAMPLE_RATE as f64);
 
-        Self {
-            blip_buf,
-            channels: Vec::new(),
-        }
+        Self { blip_buf }
     }
 
     fn render(&mut self, out: &mut [i16]) {
-        self.channels.clear();
-        let channels = CHANNELS.lock();
-        self.channels.extend(channels.iter().cloned());
-
-        Audio::render_samples(&self.channels, &mut self.blip_buf, out);
+        let channels = pyxel::channels();
+        Audio::render_samples(channels, &mut self.blip_buf, out);
     }
 }
 
 impl Audio {
-    pub fn new() -> Self {
+    pub fn start() {
         let mut stream_renderer = AudioStreamRenderer::new();
 
-        crate::platform::start_audio(
+        platform::start_audio(
             AUDIO_SAMPLE_RATE,
             AUDIO_BUFFER_SAMPLES,
             move |out: &mut [i16]| {
                 stream_renderer.render(out);
             },
         );
-
-        Self
     }
 
-    pub fn render_samples(channels: &[SharedChannel], blip_buf: &mut BlipBuf, samples: &mut [i16]) {
-        let mut channels: Vec<_> = channels.iter().map(|channel| channel.lock()).collect();
+    pub fn render_samples(channels: &[*mut Channel], blip_buf: &mut BlipBuf, samples: &mut [i16]) {
+        let mut channels: Vec<&mut Channel> = channels
+            .iter()
+            .map(|&channel| unsafe { &mut *channel })
+            .collect();
         let needs_blip = channels
             .iter()
             .any(|channel| channel.needs_blip_processing());
@@ -167,12 +177,13 @@ impl Pyxel {
             return;
         }
 
-        let sounds = sequence
+        let sounds: Vec<*mut Sound> = sequence
             .iter()
-            .map(|sound_index| self.sounds.lock()[*sound_index as usize].clone())
+            .map(|sound_index| pyxel::sounds()[*sound_index as usize])
             .collect();
 
-        self.channels.lock()[channel_index as usize].lock().play(
+        let _lock = AudioLock::new();
+        unsafe { &mut *pyxel::channels()[channel_index as usize] }.play(
             sounds,
             start_sec,
             should_loop,
@@ -188,8 +199,11 @@ impl Pyxel {
         should_loop: bool,
         should_resume: bool,
     ) {
-        self.channels.lock()[channel_index as usize].lock().play1(
-            self.sounds.lock()[sound_index as usize].clone(),
+        let sound = pyxel::sounds()[sound_index as usize];
+
+        let _lock = AudioLock::new();
+        unsafe { &mut *pyxel::channels()[channel_index as usize] }.play1(
+            sound,
             start_sec,
             should_loop,
             should_resume,
@@ -204,33 +218,31 @@ impl Pyxel {
         should_loop: bool,
         should_resume: bool,
     ) -> Result<(), String> {
-        self.channels.lock()[channel_index as usize]
-            .lock()
-            .play_mml(code, start_sec, should_loop, should_resume)
+        let _lock = AudioLock::new();
+        unsafe { &mut *pyxel::channels()[channel_index as usize] }.play_mml(
+            code,
+            start_sec,
+            should_loop,
+            should_resume,
+        )
     }
 
     pub fn playm(&self, music_index: u32, start_sec: Option<f32>, should_loop: bool) {
-        let num_channels = self.channels.lock().len();
-        let musics = self.musics.lock();
-        let music = musics[music_index as usize].lock();
+        let num_channels = pyxel::channels().len();
+        let music = unsafe { &*pyxel::musics()[music_index as usize] };
 
         for i in 0..min(num_channels, music.seqs.len()) {
-            self.play(
-                i as u32,
-                &music.seqs[i].lock(),
-                start_sec,
-                should_loop,
-                false,
-            );
+            self.play(i as u32, &music.seqs[i], start_sec, should_loop, false);
         }
     }
 
     pub fn stop(&self, channel_index: u32) {
-        self.channels.lock()[channel_index as usize].lock().stop();
+        let _lock = AudioLock::new();
+        unsafe { &mut *pyxel::channels()[channel_index as usize] }.stop();
     }
 
     pub fn stop0(&self) {
-        let num_channels = self.channels.lock().len();
+        let num_channels = pyxel::channels().len();
 
         for i in 0..num_channels {
             self.stop(i as u32);
@@ -238,8 +250,7 @@ impl Pyxel {
     }
 
     pub fn play_pos(&self, channel_index: u32) -> Option<(u32, f32)> {
-        self.channels.lock()[channel_index as usize]
-            .lock()
-            .play_pos()
+        let _lock = AudioLock::new();
+        unsafe { &mut *pyxel::channels()[channel_index as usize] }.play_pos()
     }
 }

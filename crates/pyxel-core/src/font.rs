@@ -36,10 +36,8 @@ pub enum Font {
     },
 }
 
-pub type SharedFont = shared_type!(Font);
-
 impl Font {
-    pub fn new(filename: &str, font_size: Option<f32>) -> Result<SharedFont, String> {
+    pub fn new(filename: &str, font_size: Option<f32>) -> Result<*mut Font, String> {
         if filename.to_lowercase().ends_with(".bdf") {
             let mut bdf_font_bounding_box = BdfBoundingBox {
                 width: 0,
@@ -120,10 +118,10 @@ impl Font {
                 }
             }
 
-            Ok(new_shared_type!(Font::Bdf {
+            Ok(Box::into_raw(Box::new(Font::Bdf {
                 bounding_box: bdf_font_bounding_box,
                 glyphs: bdf_glyphs,
-            }))
+            })))
         } else {
             let mut file =
                 File::open(filename).map_err(|_e| format!("Failed to open file '{filename}'"))?;
@@ -131,11 +129,11 @@ impl Font {
             file.read_to_end(&mut buffer).unwrap();
             let font = FontdueFont::from_bytes(buffer, FontSettings::default()).unwrap();
             let size = font_size.unwrap_or(DEFAULT_FONT_SIZE);
-            Ok(new_shared_type!(Font::Fontdue {
+            Ok(Box::into_raw(Box::new(Font::Fontdue {
                 font,
                 cache: HashMap::new(),
                 size,
-            }))
+            })))
         }
     }
 

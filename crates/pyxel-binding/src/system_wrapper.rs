@@ -5,7 +5,7 @@ use pyo3::prelude::*;
 use pyo3::types::PyDict;
 use pyxel::{Pyxel, PyxelCallback};
 
-use crate::pyxel_singleton::{pyxel, set_pyxel_instance};
+use crate::pyxel_singleton::pyxel;
 
 #[pyfunction]
 #[pyo3(
@@ -30,7 +30,7 @@ fn init(
 
     py.run(script.as_c_str(), None, Some(&locals))?;
 
-    set_pyxel_instance(pyxel::init(
+    pyxel::init(
         width,
         height,
         title,
@@ -39,7 +39,7 @@ fn init(
         display_scale,
         capture_scale,
         capture_sec,
-    ));
+    );
 
     Ok(())
 }
@@ -126,7 +126,7 @@ fn fullscreen(enabled: bool) {
 #[pyfunction]
 fn _set_reset_func(func: Bound<'_, PyAny>) {
     let func = func.unbind();
-    *pyxel::RESET_FUNC.lock() = Some(Box::new(move || {
+    *pyxel::reset_func() = Some(Box::new(move || {
         Python::attach(|py| {
             if let Err(err) = func.call0(py) {
                 err.print(py);

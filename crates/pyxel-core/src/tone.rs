@@ -40,18 +40,16 @@ pub struct Tone {
     waveform: Vec<f32>,
 }
 
-pub type SharedTone = shared_type!(Tone);
-
 impl Tone {
-    pub fn new() -> SharedTone {
-        new_shared_type!(Self {
+    pub fn new() -> *mut Tone {
+        Box::into_raw(Box::new(Self {
             mode: ToneMode::Wavetable,
             sample_bits: DEFAULT_TONE_SAMPLE_BITS,
             wavetable: Vec::new(),
             cached_wavetable: Vec::new(),
             waveform: Vec::new(),
             gain: 1.0,
-        })
+        }))
     }
 
     pub(crate) fn waveform(&mut self) -> &Vec<f32> {

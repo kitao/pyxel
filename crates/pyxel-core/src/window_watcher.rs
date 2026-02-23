@@ -1,6 +1,7 @@
 use std::env::{set_var, var};
 use std::fs::{read_to_string, write};
 
+use crate::platform;
 use crate::settings::{WATCH_STATE_FILE_ENV, WINDOW_STATE_ENV};
 
 pub struct WindowWatcher {
@@ -23,8 +24,8 @@ impl WindowWatcher {
         let window_state = Self::parse_window_state(&state_str);
 
         if let Some((x, y, w, h)) = window_state {
-            crate::platform::set_window_pos(x, y);
-            crate::platform::set_window_size(w, h);
+            platform::set_window_pos(x, y);
+            platform::set_window_size(w, h);
             set_var(WINDOW_STATE_ENV, &state_str);
         }
 
@@ -35,12 +36,12 @@ impl WindowWatcher {
     }
 
     pub fn update(&mut self) {
-        if crate::platform::is_fullscreen() {
+        if platform::is_fullscreen() {
             return;
         }
 
-        let (x, y) = crate::platform::window_pos();
-        let (w, h) = crate::platform::window_size();
+        let (x, y) = platform::window_pos();
+        let (w, h) = platform::window_size();
         let window_state = Some((x, y, w, h));
 
         if self.window_state != window_state {

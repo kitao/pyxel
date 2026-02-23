@@ -3,32 +3,26 @@ use std::cmp::min;
 use blip_buf::BlipBuf;
 
 use crate::audio::Audio;
-use crate::pyxel::{CHANNELS, SOUNDS};
+use crate::channel::Channel;
+use crate::pyxel;
 use crate::settings::{AUDIO_CLOCK_RATE, AUDIO_SAMPLE_RATE};
-
-pub type SharedSeq = shared_type!(Vec<u32>);
 
 #[derive(Clone)]
 pub struct Music {
-    pub seqs: Vec<SharedSeq>,
+    pub seqs: Vec<Vec<u32>>,
 }
 
-pub type SharedMusic = shared_type!(Music);
-
 impl Music {
-    pub fn new() -> SharedMusic {
-        new_shared_type!(Self { seqs: Vec::new() })
+    pub fn new() -> *mut Music {
+        Box::into_raw(Box::new(Self { seqs: Vec::new() }))
     }
 
     pub fn set(&mut self, seqs: &[Vec<u32>]) {
-        self.seqs = seqs
-            .iter()
-            .map(|seq| new_shared_type!(seq.clone()))
-            .collect();
+        self.seqs = seqs.to_vec();
 
-        let num_channels = CHANNELS.lock().len();
+        let num_channels = pyxel::channels().len();
         while self.seqs.len() < num_channels {
-            self.seqs.push(new_shared_type!(Vec::new()));
+            self.seqs.push(Vec::new());
         }
     }
 
@@ -47,11 +41,10 @@ impl Music {
 
         let seqs: Vec<_> = (0..self.seqs.len())
             .map(|i| {
-                let pyxel_sounds = SOUNDS.lock();
+                let pyxel_sounds = pyxel::sounds();
                 self.seqs[i]
-                    .lock()
                     .iter()
-                    .map(|&sound_index| pyxel_sounds[sound_index as usize].clone())
+                    .map(|&sound_index| pyxel_sounds[sound_index as usize])
                     .collect::<Vec<_>>()
             })
             .collect();
@@ -60,19 +53,26 @@ impl Music {
         let mut blip_buf = BlipBuf::new(num_samples);
         blip_buf.set_rates(AUDIO_CLOCK_RATE as f64, AUDIO_SAMPLE_RATE as f64);
 
-        let channels = CHANNELS.lock();
-        channels.iter().for_each(|channel| channel.lock().stop());
+        let channels = pyxel::channels();
+        for &channel in channels.iter() {
+            unsafe { &mut *channel }.stop();
+        }
 
         {
-            let mut channels: Vec<_> = channels.iter().map(|channel| channel.lock()).collect();
+            let mut channels: Vec<&mut Channel> = channels
+                .iter()
+                .map(|&channel| unsafe { &mut *channel })
+                .collect();
             for i in 0..min(channels.len(), seqs.len()) {
                 channels[i].play(seqs[i].clone(), None, true, false);
             }
         }
 
-        Audio::render_samples(&channels, &mut blip_buf, &mut samples);
+        Audio::render_samples(channels.as_slice(), &mut blip_buf, &mut samples);
         let result = Audio::save_samples(filename, &samples, use_ffmpeg.unwrap_or(false));
-        channels.iter().for_each(|channel| channel.lock().stop());
+        for &channel in channels.iter() {
+            unsafe { &mut *channel }.stop();
+        }
         result
     }
 }
@@ -84,21 +84,18 @@ mod tests {
     #[test]
     fn test_music_new() {
         let music = Music::new();
-        assert_eq!(music.lock().seqs.len(), 0);
+        let music = unsafe { &*music };
+        assert_eq!(music.seqs.len(), 0);
     }
 
     #[test]
     fn test_music_set() {
         let music = Music::new();
-        music
-            .lock()
-            .set(&[vec![0, 1, 2], vec![1, 2, 3], vec![2, 3, 4]]);
+        let music = unsafe { &mut *music };
+        music.set(&[vec![0, 1, 2], vec![1, 2, 3], vec![2, 3, 4]]);
 
         for i in 0..3 {
-            assert_eq!(
-                &*music.lock().seqs[i as usize].lock(),
-                &vec![i, i + 1, i + 2]
-            );
+            assert_eq!(&music.seqs[i as usize], &vec![i, i + 1, i + 2]);
         }
     }
 }

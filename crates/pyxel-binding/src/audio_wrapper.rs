@@ -38,10 +38,12 @@ fn play(
         snd,
         (u32, { pyxel().play1(ch, snd, sec, r#loop.unwrap_or(false), resume.unwrap_or(false)); }),
         (Vec<u32>, { pyxel().play(ch, &snd, sec, r#loop.unwrap_or(false), resume.unwrap_or(false)); }),
-        (Sound, { pyxel().channels.lock()[ch as usize].lock().play1(snd.inner, sec, r#loop.unwrap_or(false), resume.unwrap_or(false)); }),
+        (Sound, {
+            unsafe { &mut *pyxel::channels()[ch as usize] }.play1(snd.inner, sec, r#loop.unwrap_or(false), resume.unwrap_or(false));
+        }),
         (Vec<Sound>, {
-            let sounds = snd.iter().map(|sound| sound.inner.clone()).collect();
-            pyxel().channels.lock()[ch as usize].lock().play(sounds, sec, r#loop.unwrap_or(false), resume.unwrap_or(false));
+            let sounds = snd.iter().map(|sound| sound.inner).collect();
+            unsafe { &mut *pyxel::channels()[ch as usize] }.play(sounds, sec, r#loop.unwrap_or(false), resume.unwrap_or(false));
         }),
         (String, {
             pyxel()
@@ -93,7 +95,7 @@ fn channel(ch: u32) -> Channel {
         println!("pyxel.channel(ch) is deprecated. Use pyxel.channels[ch] instead.");
     });
 
-    Channel::wrap(pyxel().channels.lock()[ch as usize].clone())
+    Channel::wrap(pyxel::channels()[ch as usize])
 }
 
 #[pyfunction]
@@ -102,7 +104,7 @@ fn sound(snd: u32) -> Sound {
         println!("pyxel.sound(snd) is deprecated. Use pyxel.sounds[snd] instead.");
     });
 
-    Sound::wrap(pyxel().sounds.lock()[snd as usize].clone())
+    Sound::wrap(pyxel::sounds()[snd as usize])
 }
 
 #[pyfunction]
@@ -111,7 +113,7 @@ fn music(msc: u32) -> Music {
         println!("pyxel.music(msc) is deprecated. Use pyxel.musics[msc] instead.");
     });
 
-    Music::wrap(pyxel().musics.lock()[msc as usize].clone())
+    Music::wrap(pyxel::musics()[msc as usize])
 }
 
 #[pyfunction]

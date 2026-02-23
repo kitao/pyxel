@@ -6,11 +6,10 @@ edition = "2021"
 license = "MIT"
 
 [lib]
-name = "pyxel_wrapper"
+name = "pyxel_binding"
 crate-type = ["cdylib"]
 
 [dependencies]
-parking_lot = "0.12"
 pyo3 = { version = "0.28", features = ["abi3-py38", "extension-module", "multiple-pymethods"] }
 pyxel-core = { path = "../pyxel-core" }
 

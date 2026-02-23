@@ -28,8 +28,8 @@ struct NoteInfo {
 }
 
 pub fn parse_old_mml(mml: &str) -> Result<Vec<MmlCommand>, String> {
-    let shared_sound = Sound::new();
-    let mut sound = shared_sound.lock();
+    let sound_ptr = Sound::new();
+    let sound = unsafe { &mut *sound_ptr };
     let mut chars = mml.chars().peekable();
     let mut length = 4;
     let mut quantize = 7;
@@ -87,7 +87,7 @@ pub fn parse_old_mml(mml: &str) -> Result<Vec<MmlCommand>, String> {
                 envelopes[env_index as usize] = env_data;
             }
         } else if let Some((note, length)) = parse_note(&mut chars, length)? {
-            add_note(&mut sound, &note_info);
+            add_note(sound, &note_info);
 
             let note = note + octave * 12;
             let env_data = match vol_env {
@@ -111,7 +111,7 @@ pub fn parse_old_mml(mml: &str) -> Result<Vec<MmlCommand>, String> {
                 is_tied: false,
             };
         } else if let Some(length) = parse_rest(&mut chars, length)? {
-            add_note(&mut sound, &note_info);
+            add_note(sound, &note_info);
 
             note_info = NoteInfo {
                 length,
@@ -134,7 +134,7 @@ pub fn parse_old_mml(mml: &str) -> Result<Vec<MmlCommand>, String> {
         }
     }
 
-    add_note(&mut sound, &note_info);
+    add_note(sound, &note_info);
 
     Ok(sound.to_commands())
 }

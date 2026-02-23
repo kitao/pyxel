@@ -7,7 +7,7 @@ use std::fmt::Write as _;
 use rand::{RngExt, SeedableRng};
 use rand_xoshiro::Xoshiro256StarStar;
 
-use crate::pyxel::Pyxel;
+use crate::pyxel::{self, Pyxel};
 use crate::sound::Sound;
 
 const BARS: usize = 8;
@@ -1795,10 +1795,10 @@ impl Pyxel {
         if play.unwrap_or(false) {
             for (ch, mml) in mml_list.iter().enumerate() {
                 let sound = Sound::new();
-                if sound.lock().mml(mml).is_ok() {
-                    self.channels.lock()[ch]
-                        .lock()
-                        .play1(sound, None, true, false);
+                if unsafe { &mut *sound }.mml(mml).is_ok() {
+                    crate::platform::lock_audio();
+                    unsafe { &mut *pyxel::channels()[ch] }.play1(sound, None, true, false);
+                    crate::platform::unlock_audio();
                 }
             }
         }

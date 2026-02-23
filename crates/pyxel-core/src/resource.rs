@@ -9,7 +9,7 @@ use zip::write::SimpleFileOptions;
 use zip::{ZipArchive, ZipWriter};
 
 use crate::image::{Color, Image, Rgb24};
-use crate::pyxel::Pyxel;
+use crate::pyxel::{self, Pyxel};
 use crate::resource_data::ResourceData;
 use crate::screencast::Screencast;
 use crate::settings::{
@@ -127,7 +127,7 @@ impl Pyxel {
                 .filter(|s| !s.is_empty())
                 .map(|s| u32::from_str_radix(s.trim(), 16).unwrap() as Rgb24)
                 .collect();
-            *self.colors.lock() = if colors.is_empty() {
+            *pyxel::colors() = if colors.is_empty() {
                 vec![0xffffff]
             } else {
                 colors
@@ -140,7 +140,7 @@ impl Pyxel {
         let mut file = File::create(Path::new(&filename))
             .map_err(|_e| format!("Failed to open file '{filename}'"))?;
 
-        let colors = self.colors.lock();
+        let colors = pyxel::colors();
         for &color in colors.iter() {
             writeln!(file, "{color:06x}").unwrap();
         }
@@ -152,7 +152,7 @@ impl Pyxel {
     pub fn screenshot(&mut self, scale: Option<u32>) {
         let filename = Self::prepend_desktop_path(&format!("pyxel-{}", Self::datetime_string()));
         let scale = max(scale.unwrap_or(self.resource.capture_scale), 1);
-        self.screen.lock().save(&filename, scale).unwrap();
+        pyxel::screen().save(&filename, scale).unwrap();
 
         crate::platform::export_browser_file(&(filename + ".png"));
     }
@@ -192,19 +192,19 @@ impl Pyxel {
 
     pub(crate) fn capture_screen(&mut self) {
         self.resource.screencast.capture(
-            self.width,
-            self.height,
-            &self.screen.lock().canvas.data,
-            &self.colors.lock(),
-            self.frame_count,
+            *pyxel::width(),
+            *pyxel::height(),
+            &pyxel::screen().canvas.data,
+            pyxel::colors(),
+            *pyxel::frame_count(),
         );
     }
 
     pub(crate) fn dump_image_bank(&self, image_index: u32) {
         let filename = Self::prepend_desktop_path(&format!("pyxel-image{image_index}"));
 
-        if let Some(image) = self.images.lock().get(image_index as usize) {
-            image.lock().save(&filename, 1).unwrap();
+        if let Some(&image) = pyxel::images().get(image_index as usize) {
+            unsafe { &*image }.save(&filename, 1).unwrap();
 
             crate::platform::export_browser_file(&(filename + ".png"));
         }
@@ -212,11 +212,11 @@ impl Pyxel {
 
     pub(crate) fn dump_palette(&self) {
         let filename = Self::prepend_desktop_path("pyxel-palette");
-        let num_colors = self.colors.lock().len();
+        let num_colors = pyxel::colors().len();
         let image = Image::new(num_colors as u32, 1);
 
         {
-            let mut image = image.lock();
+            let image = unsafe { &mut *image };
             for i in 0..num_colors {
                 image.pset(i as f32, 0.0, i as Color);
             }

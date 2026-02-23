@@ -5,17 +5,19 @@ use pyo3::prelude::*;
 use pyo3::types::PyDict;
 
 use crate::font_wrapper::Font;
-use crate::pyxel_singleton::pyxel;
 use crate::tilemap_wrapper::Tilemap;
 
 #[pyclass(from_py_object)]
-#[derive(Clone)]
+#[derive(Clone, Copy)]
 pub struct Image {
-    pub(crate) inner: pyxel::SharedImage,
+    pub(crate) inner: *mut pyxel::Image,
 }
 
+unsafe impl Send for Image {}
+unsafe impl Sync for Image {}
+
 impl Image {
-    pub fn wrap(inner: pyxel::SharedImage) -> Self {
+    pub fn wrap(inner: *mut pyxel::Image) -> Self {
         Self { inner }
     }
 }
@@ -42,16 +44,16 @@ impl Image {
 
     #[getter]
     pub fn width(&self) -> u32 {
-        self.inner.lock().width()
+        unsafe { &*self.inner }.width()
     }
 
     #[getter]
     pub fn height(&self) -> u32 {
-        self.inner.lock().height()
+        unsafe { &*self.inner }.height()
     }
 
     pub fn data_ptr(&self, py: Python) -> Py<PyAny> {
-        let mut inner = self.inner.lock();
+        let inner = unsafe { &mut *self.inner };
         let python_code = CString::new(format!(
             "import ctypes; c_uint8_array = (ctypes.c_uint8 * {}).from_address({:p})",
             inner.width() * inner.height(),
@@ -65,7 +67,7 @@ impl Image {
 
     pub fn set(&self, x: i32, y: i32, data: Vec<String>) {
         let data_refs: Vec<_> = data.iter().map(String::as_str).collect();
-        self.inner.lock().set(x, y, &data_refs);
+        unsafe { &mut *self.inner }.set(x, y, &data_refs);
     }
 
     #[pyo3(signature = (x, y, filename, *, include_colors=None, incl_colors=None))]
@@ -78,15 +80,13 @@ impl Image {
         incl_colors: Option<bool>,
     ) -> PyResult<()> {
         let include_colors = include_colors.or(incl_colors);
-        self.inner
-            .lock()
+        unsafe { &mut *self.inner }
             .load(x, y, filename, include_colors)
             .map_err(PyException::new_err)
     }
 
     pub fn save(&self, filename: &str, scale: u32) -> PyResult<()> {
-        self.inner
-            .lock()
+        unsafe { &mut *self.inner }
             .save(filename, scale)
             .map_err(PyException::new_err)
     }
@@ -100,9 +100,9 @@ impl Image {
         h: Option<f32>,
     ) -> PyResult<()> {
         if let (Some(x), Some(y), Some(w), Some(h)) = (x, y, w, h) {
-            self.inner.lock().clip(x, y, w, h);
+            unsafe { &mut *self.inner }.clip(x, y, w, h);
         } else if (x, y, w, h) == (None, None, None, None) {
-            self.inner.lock().clip0();
+            unsafe { &mut *self.inner }.clip0();
         } else {
             python_type_error!("clip() takes 0 or 4 arguments");
         }
@@ -112,9 +112,9 @@ impl Image {
     #[pyo3(signature = (x=None, y=None))]
     pub fn camera(&self, x: Option<f32>, y: Option<f32>) -> PyResult<()> {
         if let (Some(x), Some(y)) = (x, y) {
-            self.inner.lock().camera(x, y);
+            unsafe { &mut *self.inner }.camera(x, y);
         } else if (x, y) == (None, None) {
-            self.inner.lock().camera0();
+            unsafe { &mut *self.inner }.camera0();
         } else {
             python_type_error!("camera() takes 0 or 2 arguments");
         }
@@ -124,9 +124,9 @@ impl Image {
     #[pyo3(signature = (col1=None, col2=None))]
     fn pal(&self, col1: Option<pyxel::Color>, col2: Option<pyxel::Color>) -> PyResult<()> {
         if let (Some(col1), Some(col2)) = (col1, col2) {
-            self.inner.lock().pal(col1, col2);
+            unsafe { &mut *self.inner }.pal(col1, col2);
         } else if (col1, col2) == (None, None) {
-            self.inner.lock().pal0();
+            unsafe { &mut *self.inner }.pal0();
         } else {
             python_type_error!("pal() takes 0 or 2 arguments");
         }
@@ -134,59 +134,59 @@ impl Image {
     }
 
     fn dither(&self, alpha: f32) {
-        self.inner.lock().dither(alpha);
+        unsafe { &mut *self.inner }.dither(alpha);
     }
 
     pub fn cls(&self, col: pyxel::Color) {
-        self.inner.lock().cls(col);
+        unsafe { &mut *self.inner }.cls(col);
     }
 
     pub fn pget(&self, x: f32, y: f32) -> pyxel::Color {
-        self.inner.lock().pget(x, y)
+        unsafe { &mut *self.inner }.pget(x, y)
     }
 
     pub fn pset(&self, x: f32, y: f32, col: pyxel::Color) {
-        self.inner.lock().pset(x, y, col);
+        unsafe { &mut *self.inner }.pset(x, y, col);
     }
 
     pub fn line(&self, x1: f32, y1: f32, x2: f32, y2: f32, col: pyxel::Color) {
-        self.inner.lock().line(x1, y1, x2, y2, col);
+        unsafe { &mut *self.inner }.line(x1, y1, x2, y2, col);
     }
 
     pub fn rect(&self, x: f32, y: f32, w: f32, h: f32, col: pyxel::Color) {
-        self.inner.lock().rect(x, y, w, h, col);
+        unsafe { &mut *self.inner }.rect(x, y, w, h, col);
     }
 
     pub fn rectb(&self, x: f32, y: f32, w: f32, h: f32, col: pyxel::Color) {
-        self.inner.lock().rectb(x, y, w, h, col);
+        unsafe { &mut *self.inner }.rectb(x, y, w, h, col);
     }
 
     pub fn circ(&self, x: f32, y: f32, r: f32, col: pyxel::Color) {
-        self.inner.lock().circ(x, y, r, col);
+        unsafe { &mut *self.inner }.circ(x, y, r, col);
     }
 
     pub fn circb(&self, x: f32, y: f32, r: f32, col: pyxel::Color) {
-        self.inner.lock().circb(x, y, r, col);
+        unsafe { &mut *self.inner }.circb(x, y, r, col);
     }
 
     pub fn elli(&self, x: f32, y: f32, w: f32, h: f32, col: pyxel::Color) {
-        self.inner.lock().elli(x, y, w, h, col);
+        unsafe { &mut *self.inner }.elli(x, y, w, h, col);
     }
 
     pub fn ellib(&self, x: f32, y: f32, w: f32, h: f32, col: pyxel::Color) {
-        self.inner.lock().ellib(x, y, w, h, col);
+        unsafe { &mut *self.inner }.ellib(x, y, w, h, col);
     }
 
     pub fn tri(&self, x1: f32, y1: f32, x2: f32, y2: f32, x3: f32, y3: f32, col: pyxel::Color) {
-        self.inner.lock().tri(x1, y1, x2, y2, x3, y3, col);
+        unsafe { &mut *self.inner }.tri(x1, y1, x2, y2, x3, y3, col);
     }
 
     pub fn trib(&self, x1: f32, y1: f32, x2: f32, y2: f32, x3: f32, y3: f32, col: pyxel::Color) {
-        self.inner.lock().trib(x1, y1, x2, y2, x3, y3, col);
+        unsafe { &mut *self.inner }.trib(x1, y1, x2, y2, x3, y3, col);
     }
 
     pub fn fill(&self, x: f32, y: f32, col: pyxel::Color) {
-        self.inner.lock().fill(x, y, col);
+        unsafe { &mut *self.inner }.fill(x, y, col);
     }
 
     #[pyo3(signature = (x, y, img, u, v, w, h, colkey=None, rotate=None, scale=None))]
@@ -206,10 +206,10 @@ impl Image {
         cast_pyany! {
             img,
             (u32, {
-                let image = pyxel().images.lock()[img as usize].clone();
-                self.inner.lock().blt(x, y, image, u, v, w, h, colkey, rotate, scale);
+                let image = pyxel::images()[img as usize];
+                unsafe { (&mut *self.inner).blt(x, y, image, u, v, w, h, colkey, rotate, scale) };
             }),
-            (Image, { self.inner.lock().blt(x, y, img.inner, u, v, w, h, colkey, rotate, scale); })
+            (Image, { unsafe { (&mut *self.inner).blt(x, y, img.inner, u, v, w, h, colkey, rotate, scale) }; })
         }
         Ok(())
     }
@@ -231,22 +231,18 @@ impl Image {
         cast_pyany! {
             tm,
             (u32, {
-                let tilemap = pyxel().tilemaps.lock()[tm as usize].clone();
-                self.inner.lock().bltm(x, y, tilemap, u, v, w, h, colkey, rotate, scale);
+                let tilemap = pyxel::tilemaps()[tm as usize];
+                unsafe { (&mut *self.inner).bltm(x, y, tilemap, u, v, w, h, colkey, rotate, scale) };
             }),
-            (Tilemap, { self.inner.lock().bltm(x, y, tm.inner, u, v, w, h, colkey, rotate, scale); })
+            (Tilemap, { unsafe { (&mut *self.inner).bltm(x, y, tm.inner, u, v, w, h, colkey, rotate, scale) }; })
         }
         Ok(())
     }
 
     #[pyo3(signature = (x, y, s, col, font=None))]
     pub fn text(&self, x: f32, y: f32, s: &str, col: pyxel::Color, font: Option<Font>) {
-        let font = if let Some(font) = font {
-            Some(font.inner.clone())
-        } else {
-            None
-        };
-        self.inner.lock().text(x, y, s, col, font);
+        let font = font.map(|f| f.inner);
+        unsafe { &mut *self.inner }.text(x, y, s, col, font);
     }
 }
 

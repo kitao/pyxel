@@ -9,16 +9,16 @@ macro_rules! wrap_sound_as_python_list {
     ($wrapper_name:ident, $value_type:ty, $field_name:ident) => {
         wrap_as_python_sequence!(
             $wrapper_name,
-            pyxel::SharedSound,
-            (|inner: &pyxel::SharedSound| inner.lock().$field_name.len()),
+            *mut pyxel::Sound,
+            (|inner: &*mut pyxel::Sound| unsafe { &**inner }.$field_name.len()),
             $value_type,
-            (|inner: &pyxel::SharedSound, index| inner.lock().$field_name[index]),
+            (|inner: &*mut pyxel::Sound, index| unsafe { &**inner }.$field_name[index]),
             $value_type,
-            (|inner: &pyxel::SharedSound, index, value| inner.lock().$field_name[index] = value),
+            (|inner: &*mut pyxel::Sound, index, value| unsafe { &mut **inner }.$field_name
+                [index] = value),
             Vec<$value_type>,
-            (|inner: &pyxel::SharedSound, list| inner.lock().$field_name = list),
-            (|inner: &pyxel::SharedSound| inner
-                .lock()
+            (|inner: &*mut pyxel::Sound, list| unsafe { &mut **inner }.$field_name = list),
+            (|inner: &*mut pyxel::Sound| unsafe { &**inner }
                 .$field_name
                 .iter()
                 .copied()
@@ -33,13 +33,16 @@ wrap_sound_as_python_list!(Volumes, pyxel::SoundVolume, volumes);
 wrap_sound_as_python_list!(Effects, pyxel::SoundEffect, effects);
 
 #[pyclass(from_py_object)]
-#[derive(Clone)]
+#[derive(Clone, Copy)]
 pub struct Sound {
-    pub(crate) inner: pyxel::SharedSound,
+    pub(crate) inner: *mut pyxel::Sound,
 }
 
+unsafe impl Send for Sound {}
+unsafe impl Sync for Sound {}
+
 impl Sound {
-    pub fn wrap(inner: pyxel::SharedSound) -> Self {
+    pub fn wrap(inner: *mut pyxel::Sound) -> Self {
         Self { inner }
     }
 }
@@ -53,32 +56,32 @@ impl Sound {
 
     #[getter]
     pub fn notes(&self) -> Notes {
-        Notes::wrap(self.inner.clone())
+        Notes::wrap(self.inner)
     }
 
     #[getter]
     pub fn tones(&self) -> Tones {
-        Tones::wrap(self.inner.clone())
+        Tones::wrap(self.inner)
     }
 
     #[getter]
     pub fn volumes(&self) -> Volumes {
-        Volumes::wrap(self.inner.clone())
+        Volumes::wrap(self.inner)
     }
 
     #[getter]
     pub fn effects(&self) -> Effects {
-        Effects::wrap(self.inner.clone())
+        Effects::wrap(self.inner)
     }
 
     #[getter]
     pub fn get_speed(&self) -> pyxel::SoundSpeed {
-        self.inner.lock().speed
+        unsafe { &*self.inner }.speed
     }
 
     #[setter]
     pub fn set_speed(&self, speed: pyxel::SoundSpeed) {
-        self.inner.lock().speed = speed;
+        unsafe { &mut *self.inner }.speed = speed;
     }
 
     pub fn set(
@@ -89,36 +92,31 @@ impl Sound {
         effects: &str,
         speed: pyxel::SoundSpeed,
     ) -> PyResult<()> {
-        self.inner
-            .lock()
+        unsafe { &mut *self.inner }
             .set(notes, tones, volumes, effects, speed)
             .map_err(PyException::new_err)
     }
 
     pub fn set_notes(&self, notes: &str) -> PyResult<()> {
-        self.inner
-            .lock()
+        unsafe { &mut *self.inner }
             .set_notes(notes)
             .map_err(PyException::new_err)
     }
 
     pub fn set_tones(&self, tones: &str) -> PyResult<()> {
-        self.inner
-            .lock()
+        unsafe { &mut *self.inner }
             .set_tones(tones)
             .map_err(PyException::new_err)
     }
 
     pub fn set_volumes(&self, volumes: &str) -> PyResult<()> {
-        self.inner
-            .lock()
+        unsafe { &mut *self.inner }
             .set_volumes(volumes)
             .map_err(PyException::new_err)
     }
 
     pub fn set_effects(&self, effects: &str) -> PyResult<()> {
-        self.inner
-            .lock()
+        unsafe { &mut *self.inner }
             .set_effects(effects)
             .map_err(PyException::new_err)
     }
@@ -131,16 +129,16 @@ impl Sound {
                     println!("Old MML syntax is deprecated. Use new syntax instead.");
                 });
 
-                return self
-                    .inner
-                    .lock()
+                return unsafe { &mut *self.inner }
                     .old_mml(code)
                     .map_err(PyException::new_err);
             }
 
-            self.inner.lock().mml(code).map_err(PyException::new_err)
+            unsafe { &mut *self.inner }
+                .mml(code)
+                .map_err(PyException::new_err)
         } else {
-            self.inner.lock().mml0();
+            unsafe { &mut *self.inner }.mml0();
             Ok(())
         }
     }
@@ -152,20 +150,18 @@ impl Sound {
         });
 
         if let Some(code) = code {
-            self.inner
-                .lock()
+            unsafe { &mut *self.inner }
                 .old_mml(code)
                 .map_err(PyException::new_err)
         } else {
-            self.inner.lock().mml0();
+            unsafe { &mut *self.inner }.mml0();
             Ok(())
         }
     }
 
     #[pyo3(signature = (filename, sec, ffmpeg=None))]
     pub fn save(&self, filename: &str, sec: f32, ffmpeg: Option<bool>) -> PyResult<()> {
-        self.inner
-            .lock()
+        unsafe { &mut *self.inner }
             .save(filename, sec, ffmpeg)
             .map_err(PyException::new_err)
     }
@@ -173,18 +169,17 @@ impl Sound {
     #[pyo3(signature = (filename=None))]
     pub fn pcm(&self, filename: Option<&str>) -> PyResult<()> {
         if let Some(filename) = filename {
-            self.inner
-                .lock()
+            unsafe { &mut *self.inner }
                 .pcm(filename)
                 .map_err(PyException::new_err)
         } else {
-            self.inner.lock().pcm0();
+            unsafe { &mut *self.inner }.pcm0();
             Ok(())
         }
     }
 
     pub fn total_sec(&self) -> Option<f32> {
-        self.inner.lock().total_sec()
+        unsafe { &*self.inner }.total_sec()
     }
 }
 

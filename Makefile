@@ -10,6 +10,7 @@
 #   - Windows (Git Bash): source .venv/Scripts/activate
 #
 # Native:
+#   - Lint: make lint
 #   - Build: make clean build
 #   - Test: make clean test (includes watch)
 #
@@ -20,6 +21,7 @@
 #       CMAKE_POLICY_VERSION_MINIMUM=3.5 make
 #   - Each new shell before WASM commands:
 #       source pyodide/emsdk/emsdk_env.sh
+#   - Lint: make lint-wasm
 #   - Build/Test:
 #       make clean-wasm build-wasm
 #       make clean-wasm test-wasm

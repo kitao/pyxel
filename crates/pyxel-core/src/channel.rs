@@ -3,12 +3,12 @@ use std::collections::HashMap;
 use blip_buf::BlipBuf;
 
 use crate::mml_command::MmlCommand;
-use crate::pyxel::TONES;
+use crate::pyxel;
 use crate::settings::{
     AUDIO_CLOCKS_PER_SAMPLE, AUDIO_CLOCK_RATE, AUDIO_SAMPLE_RATE, DEFAULT_CHANNEL_GAIN,
     NOTE_INTERP_CLOCKS, VOICE_CONTROL_RATE,
 };
-use crate::sound::{SharedSound, Sound};
+use crate::sound::Sound;
 use crate::tone::ToneMode;
 use crate::voice::Voice;
 
@@ -20,7 +20,7 @@ const PCM_MIX_GAIN_SCALE: i64 = 1_i64 << PCM_MIX_GAIN_SHIFT;
 const PCM_MIX_TRUNC_BIAS: i64 = PCM_MIX_GAIN_SCALE - 1;
 
 pub struct Channel {
-    pub sounds: Vec<SharedSound>,
+    pub sounds: Vec<*mut Sound>,
     pub gain: ChannelGain,
     pub detune: ChannelDetune,
 
@@ -48,18 +48,16 @@ pub struct Channel {
     vibrato_slots: HashMap<u32, MmlCommand>,
     glide_slots: HashMap<u32, MmlCommand>,
 
-    resume_sounds: Vec<SharedSound>,
+    resume_sounds: Vec<*mut Sound>,
     resume_should_loop: bool,
 
     playing_pcm: bool,
     pcm_position: usize,
 }
 
-pub type SharedChannel = shared_type!(Channel);
-
 impl Channel {
-    pub fn new() -> SharedChannel {
-        new_shared_type!(Self {
+    pub fn new() -> *mut Channel {
+        Box::into_raw(Box::new(Self {
             sounds: Vec::new(),
             gain: DEFAULT_CHANNEL_GAIN,
             detune: 0,
@@ -93,7 +91,7 @@ impl Channel {
 
             playing_pcm: false,
             pcm_position: 0,
-        })
+        }))
     }
 
     fn sec_to_clock(sec: Option<f32>) -> u32 {
@@ -102,7 +100,7 @@ impl Channel {
 
     pub fn play(
         &mut self,
-        sounds: Vec<SharedSound>,
+        sounds: Vec<*mut Sound>,
         start_sec: Option<f32>,
         should_loop: bool,
         should_resume: bool,
@@ -117,7 +115,7 @@ impl Channel {
 
     pub fn play1(
         &mut self,
-        sound: SharedSound,
+        sound: *mut Sound,
         start_sec: Option<f32>,
         should_loop: bool,
         should_resume: bool,
@@ -139,7 +137,7 @@ impl Channel {
     ) -> Result<(), String> {
         let sound = Sound::new();
         {
-            let mut sound = sound.lock();
+            let sound = unsafe { &mut *sound };
             sound.mml(code)?;
         }
 
@@ -154,14 +152,14 @@ impl Channel {
 
     fn play_from_clock(
         &mut self,
-        sounds: Vec<SharedSound>,
+        sounds: Vec<*mut Sound>,
         start_clock: u32,
         should_loop: bool,
         should_resume: bool,
     ) {
         if sounds.is_empty()
-            || sounds.iter().all(|sound| {
-                let sound = sound.lock();
+            || sounds.iter().all(|&sound| {
+                let sound = unsafe { &*sound };
                 sound.notes.is_empty() && sound.commands.is_empty() && sound.pcm.is_none()
             })
         {
@@ -244,7 +242,7 @@ impl Channel {
                 self.repeat_points.clear();
 
                 {
-                    let sound = self.sounds[self.sound_index as usize].lock();
+                    let sound = unsafe { &*self.sounds[self.sound_index as usize] };
                     self.commands = if sound.commands.is_empty() {
                         sound.to_commands()
                     } else {
@@ -301,7 +299,7 @@ impl Channel {
     }
 
     fn advance_command(&mut self) {
-        let tones = TONES.lock();
+        let tones = pyxel::tones();
 
         while self.command_index < self.commands.len() as u32 {
             let command = &self.commands[self.command_index as usize];
@@ -317,7 +315,7 @@ impl Channel {
                 }
 
                 MmlCommand::Tone { tone } => {
-                    let mut tone = tones.get(*tone as usize).unwrap_or(&tones[0]).lock();
+                    let tone = unsafe { &mut **tones.get(*tone as usize).unwrap_or(&tones[0]) };
                     match tone.mode {
                         ToneMode::Wavetable => self.voice.oscillator.set(tone.waveform()),
                         ToneMode::ShortPeriodNoise => self.voice.oscillator.set_noise(true),
@@ -497,7 +495,7 @@ impl Channel {
             let mut should_advance = false;
 
             {
-                let sound = self.sounds[self.sound_index as usize].lock();
+                let sound = unsafe { &*self.sounds[self.sound_index as usize] };
                 let Some(pcm) = &sound.pcm else {
                     return;
                 };
@@ -576,7 +574,7 @@ impl Channel {
 
         while remaining > 0 && (self.sound_index as usize) < self.sounds.len() {
             let len = {
-                let sound = self.sounds[self.sound_index as usize].lock();
+                let sound = unsafe { &*self.sounds[self.sound_index as usize] };
                 match &sound.pcm {
                     Some(pcm) => pcm.samples.len(),
                     None => break,
@@ -609,7 +607,7 @@ impl Channel {
         self.playing_pcm = self
             .sounds
             .get(self.sound_index as usize)
-            .is_some_and(|sound| sound.lock().pcm.is_some());
+            .is_some_and(|&sound| unsafe { &*sound }.pcm.is_some());
     }
 
     pub(crate) fn needs_blip_processing(&self) -> bool {
