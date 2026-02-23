@@ -11,7 +11,7 @@ import requests
 
 ROOT_DIR = pathlib.Path(__file__).resolve().parent.parent
 CACHE_DIR = pathlib.Path("/tmp/pyxel_user_example_images")
-USER_EXAMPLES_JSON = ROOT_DIR / "user-examples.json"
+USER_EXAMPLES_JSON = ROOT_DIR / "scripts/user-examples.json"
 LOGO_IMAGE_FILE = ROOT_DIR / "examples/assets/pyxel_logo_38x16.png"
 
 THANKS_IMAGE_FILE = ROOT_DIR / "docs/images/pyxel_thanks.png"

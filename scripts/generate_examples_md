@@ -4,7 +4,7 @@ import json
 import pathlib
 
 ROOT_DIR = pathlib.Path(__file__).resolve().parent.parent
-USER_EXAMPLES_JSON = ROOT_DIR / "user-examples.json"
+USER_EXAMPLES_JSON = ROOT_DIR / "scripts/user-examples.json"
 
 PAGE_HEADER = """\
 [![Downloads](https://static.pepy.tech/personalized-badge/pyxel?period=total&units=international_system&left_color=grey&right_color=blue&left_text=PyPI%20downloads)](https://pypi.org/project/pyxel/)
