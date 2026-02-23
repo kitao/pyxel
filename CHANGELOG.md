@@ -4,6 +4,7 @@
 
 - Removed mutexes for resource types to improve performance
 - Renamed internal Python module to pyxel_binding
+- Optimized drawing performance for cls, rect, blt, text, and bltm
 
 ## 2.6.9
 

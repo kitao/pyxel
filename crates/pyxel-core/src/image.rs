@@ -510,21 +510,34 @@ impl Image {
             ImageSource::Image(image) => unsafe { &**image },
         };
 
+        let tile_size = TILE_SIZE as i32;
+        let img_w = image.width() as i32;
+        let img_h = image.height() as i32;
+
         for yi in 0..height {
+            let tilemap_y = src_y + sign_y * yi + offset_y;
+            let tile_y = tilemap_y / tile_size;
+            let pixel_y = tilemap_y % tile_size;
+            let dst_yi = (dst_y + yi) as usize;
+
+            let mut cached_tile_x = i32::MIN;
+            let mut tile = (0u8, 0u8);
+
             for xi in 0..width {
                 let tilemap_x = src_x + sign_x * xi + offset_x;
-                let tilemap_y = src_y + sign_y * yi + offset_y;
+                let tile_x = tilemap_x / tile_size;
 
-                let tile_x = tilemap_x / TILE_SIZE as i32;
-                let tile_y = tilemap_y / TILE_SIZE as i32;
-                let tile = tilemap.canvas.read_data(tile_x as usize, tile_y as usize);
+                if tile_x != cached_tile_x {
+                    tile = tilemap.canvas.read_data(tile_x as usize, tile_y as usize);
+                    cached_tile_x = tile_x;
+                }
 
-                let value_x = tile.0 as i32 * TILE_SIZE as i32 + tilemap_x % TILE_SIZE as i32;
-                if value_x < 0 || value_x >= image.width() as i32 {
+                let value_x = tile.0 as i32 * tile_size + tilemap_x % tile_size;
+                if value_x < 0 || value_x >= img_w {
                     continue;
                 }
-                let value_y = tile.1 as i32 * TILE_SIZE as i32 + tilemap_y % TILE_SIZE as i32;
-                if value_y < 0 || value_y >= image.height() as i32 {
+                let value_y = tile.1 as i32 * tile_size + pixel_y;
+                if value_y < 0 || value_y >= img_h {
                     continue;
                 }
                 let value = image.canvas.read_data(value_x as usize, value_y as usize);
@@ -535,8 +548,7 @@ impl Image {
                     }
                 }
                 let value = self.palette[value.to_index()];
-                self.canvas
-                    .write_data((dst_x + xi) as usize, (dst_y + yi) as usize, value);
+                self.canvas.write_data((dst_x + xi) as usize, dst_yi, value);
             }
         }
     }
@@ -609,11 +621,12 @@ impl Image {
             return;
         }
 
-        let mut x = utils::f32_to_i32(x); // No need to reflect camera_x
-        let mut y = utils::f32_to_i32(y); // No need to reflect camera_y
+        let mut x = utils::f32_to_i32(x) - self.canvas.camera_x;
+        let mut y = utils::f32_to_i32(y) - self.canvas.camera_y;
         let color = self.palette[color as usize];
-        let palette1 = self.palette[1];
-        self.pal(1, color);
+        let font_image: *const Image = pyxel::font_image();
+        let font_data = unsafe { &(*font_image).canvas.data };
+        let font_w = unsafe { (*font_image).canvas.width() } as usize;
 
         let start_x = x;
         for c in string.chars() {
@@ -627,26 +640,23 @@ impl Image {
             }
 
             let code = c as i32 - MIN_FONT_CODE as i32;
-            let src_x = (code % NUM_FONT_ROWS as i32) * FONT_WIDTH as i32;
-            let src_y = (code / NUM_FONT_ROWS as i32) * FONT_HEIGHT as i32;
+            let src_x = (code % NUM_FONT_ROWS as i32) as usize;
+            let src_y = (code / NUM_FONT_ROWS as i32) as usize;
 
-            unsafe {
-                self.blt(
-                    x as f32,
-                    y as f32,
-                    std::ptr::from_mut(pyxel::font_image()),
-                    src_x as f32,
-                    src_y as f32,
-                    FONT_WIDTH as f32,
-                    FONT_HEIGHT as f32,
-                    Some(0),
-                    Some(0.0),
-                    Some(1.0),
-                );
+            for fy in 0..FONT_HEIGHT as usize {
+                for fx in 0..FONT_WIDTH as usize {
+                    if font_data[font_w * (src_y * FONT_HEIGHT as usize + fy)
+                        + src_x * FONT_WIDTH as usize
+                        + fx]
+                        != 0
+                    {
+                        self.canvas
+                            .write_data_with_clipping(x + fx as i32, y + fy as i32, color);
+                    }
+                }
             }
             x += FONT_WIDTH as i32;
         }
-        self.pal(1, palette1);
     }
 
     fn color_dist(rgb1: (u8, u8, u8), rgb2: (u8, u8, u8)) -> f32 {
