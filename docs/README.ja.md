@@ -201,7 +201,7 @@ pyxel copy_examples
 </tr>
 <tr>
 <td>15_tiled_map_file.py</td>
-<td>タイルマップファイル (.tmx) 描画と BGM 自動作成</td>
+<td>タイルマップファイル (.tmx) 描画と BGM 自動生成</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/15-tiled-map-file.html">デモ</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/15_tiled_map_file.py">コード</a></td>
 </tr>
@@ -603,7 +603,7 @@ Pyxel アプリケーションファイルは、`pyxel app2exe` コマンドや 
   チャンネル `ch`(0-3) のサウンド再生位置を `(sound_no, sec)` のタプルとして取得します。再生停止時は `None` を返します。
 
 - `gen_bgm(preset, instr, [seed], [play])`<br>
-  [8bit BGM generator](https://github.com/shiromofufactory/8bit-bgm-generator) をベースにしたアルゴリズムで BGM の MML リストを作成します。`preset` はプリセット番号（0-7）、`instr` は編成番号（0-3）で、`0`=メロディ+リバーブ+ベース、`1`=メロディ+ベース+ドラム、`2`=メロディ+サブ+ベース、`3`=メロディ+サブ+ベース+ドラム です。`seed` を指定しない場合はランダムになります。`play` に `True` を指定すると作成した MML を再生します。
+  [8bit BGM generator](https://github.com/shiromofufactory/8bit-bgm-generator) をベースにしたアルゴリズムで BGM の MML リストを生成します。`preset` はプリセット番号（0-7）、`instr` は編成番号（0-3）で、`0`=メロディ+リバーブ+ベース、`1`=メロディ+ベース+ドラム、`2`=メロディ+サブ+ベース、`3`=メロディ+サブ+ベース+ドラム です。`seed` を指定しない場合はランダムになります。`play` に `True` を指定すると生成した MML を再生します。
 
 ### 数学
 

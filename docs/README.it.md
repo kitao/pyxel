@@ -603,7 +603,7 @@ Un file dell'applicazione Pyxel può anche essere convertito in un eseguibile o 
   Ottiene la posizione di riproduzione del suono sul canale `ch`(0-3) sotto forma di tupla `(sound_no, sec)`. Restituisce `None` quando la riproduzione è terminata.
 
 - `gen_bgm(preset, instr, [seed], [play])`<br>
-  Crea una lista MML di BGM con un algoritmo basato su [8bit BGM generator](https://github.com/shiromofufactory/8bit-bgm-generator). `preset` è il numero del preset (0-7), `instr` è il numero di strumentazione (0-3): `0`=melodia+riverbero+basso, `1`=melodia+basso+batteria, `2`=melodia+sub+basso, `3`=melodia+sub+basso+batteria. Se `seed` non è specificato, il risultato è casuale. Se `play` è `True`, viene riprodotto l’MML creato.
+  Genera una lista MML di BGM con un algoritmo basato su [8bit BGM generator](https://github.com/shiromofufactory/8bit-bgm-generator). `preset` è il numero del preset (0-7), `instr` è il numero di strumentazione (0-3): `0`=melodia+riverbero+basso, `1`=melodia+basso+batteria, `2`=melodia+sub+basso, `3`=melodia+sub+basso+batteria. Se `seed` non è specificato, il risultato è casuale. Se `play` è `True`, viene riprodotto l’MML generato.
 
 ### Matematica
 
