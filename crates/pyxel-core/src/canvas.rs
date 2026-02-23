@@ -196,14 +196,27 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         let x = f32_to_i32(x) - self.camera_x;
         let y = f32_to_i32(y) - self.camera_y;
         let radius = f32_to_u32(radius);
+        let r = radius as f32;
 
-        for xi in 0..=radius as i32 {
-            let (x1, y1, x2, y2) = Self::ellipse_area(0.0, 0.0, radius as f32, radius as f32, xi);
-            for yi in y1..=y2 {
-                self.write_data_with_clipping(x + x1, y + yi, value);
-                self.write_data_with_clipping(x + x2, y + yi, value);
-                self.write_data_with_clipping(x + yi, y + x1, value);
-                self.write_data_with_clipping(x + yi, y + x2, value);
+        if self.alpha >= 1.0 {
+            for xi in 0..=radius as i32 {
+                let (x1, y1, x2, y2) = Self::ellipse_area(0.0, 0.0, r, r, xi);
+                for yi in y1..=y2 {
+                    self.write_data_with_clipping(x + x1, y + yi, value);
+                    self.write_data_with_clipping(x + x2, y + yi, value);
+                }
+                self.fill_row_clipped(x + y1, x + y2, y + x1, value);
+                self.fill_row_clipped(x + y1, x + y2, y + x2, value);
+            }
+        } else {
+            for xi in 0..=radius as i32 {
+                let (x1, y1, x2, y2) = Self::ellipse_area(0.0, 0.0, r, r, xi);
+                for yi in y1..=y2 {
+                    self.write_data_with_clipping(x + x1, y + yi, value);
+                    self.write_data_with_clipping(x + x2, y + yi, value);
+                    self.write_data_with_clipping(x + yi, y + x1, value);
+                    self.write_data_with_clipping(x + yi, y + x2, value);
+                }
             }
         }
     }
@@ -242,11 +255,19 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
             }
         }
 
-        for yi in y..=(y + height as i32 / 2) {
-            let (y1, x1, y2, x2) = Self::ellipse_area(cy, cx, rb, ra, yi);
-            for xi in x1..=x2 {
-                self.write_data_with_clipping(xi, y1, value);
-                self.write_data_with_clipping(xi, y2, value);
+        if self.alpha >= 1.0 {
+            for yi in y..=(y + height as i32 / 2) {
+                let (y1, x1, y2, x2) = Self::ellipse_area(cy, cx, rb, ra, yi);
+                self.fill_row_clipped(x1, x2, y1, value);
+                self.fill_row_clipped(x1, x2, y2, value);
+            }
+        } else {
+            for yi in y..=(y + height as i32 / 2) {
+                let (y1, x1, y2, x2) = Self::ellipse_area(cy, cx, rb, ra, yi);
+                for xi in x1..=x2 {
+                    self.write_data_with_clipping(xi, y1, value);
+                    self.write_data_with_clipping(xi, y2, value);
+                }
             }
         }
     }
@@ -387,8 +408,14 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
                 right += 1;
             }
 
-            for xi in left..=right {
-                self.write_data(xi as usize, y as usize, value);
+            if self.alpha >= 1.0 {
+                let w = self.width() as usize;
+                self.data[w * y as usize + left as usize..=w * y as usize + right as usize]
+                    .fill(value);
+            } else {
+                for xi in left..=right {
+                    self.write_data(xi as usize, y as usize, value);
+                }
             }
 
             for scan_y in [y - 1, y + 1] {
@@ -583,6 +610,20 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
             let width = self.width() as usize;
             self.data[width * y as usize + x as usize] = value;
         }
+    }
+
+    fn fill_row_clipped(&mut self, x1: i32, x2: i32, y: i32, value: T) {
+        if y < self.clip_rect.top() || y > self.clip_rect.bottom() {
+            return;
+        }
+        let left = x1.max(self.clip_rect.left());
+        let right = x2.min(self.clip_rect.right());
+        if left > right {
+            return;
+        }
+        let w = self.width() as usize;
+        let y = y as usize;
+        self.data[w * y + left as usize..=w * y + right as usize].fill(value);
     }
 
     fn ellipse_params(x: i32, y: i32, width: u32, height: u32) -> (f32, f32, f32, f32) {
