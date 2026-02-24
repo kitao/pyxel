@@ -271,7 +271,7 @@
         const subtitleEl = document.getElementById("page-subtitle");
         if (subtitleEl) {
           const tmpl = t("subtitle");
-          const link = '<a href="https://github.com/kitao/pyxel" class="link">Pyxel</a>';
+          const link = '<a href="https://github.com/kitao/pyxel" target="_blank" rel="noopener noreferrer" class="link">Pyxel</a>';
           subtitleEl.innerHTML = tmpl.replace("{0}", link);
         }
 
@@ -313,9 +313,9 @@
         if (footerText) {
           const tmpl = t("footer");
           const linkText = t("footer_link");
-          const htmlLink = `<a href="https://github.com/kitao/pyxel/tree/main/wasm/examples" class="link">${linkText}</a>`;
+          const htmlLink = `<a href="https://github.com/kitao/pyxel/tree/main/wasm/examples" target="_blank" rel="noopener noreferrer" class="link">${linkText}</a>`;
           const docLang = currentLang === "ja" ? "ja" : "en";
-          const docsLink = `<a href="https://github.com/kitao/pyxel/blob/main/docs/pyxel-web-${docLang}.md" class="link">${linkText}</a>`;
+          const docsLink = `<a href="https://github.com/kitao/pyxel/blob/main/docs/pyxel-web-${docLang}.md" target="_blank" rel="noopener noreferrer" class="link">${linkText}</a>`;
           footerText.innerHTML = tmpl.replace("{0}", htmlLink).replace("{1}", docsLink);
         }
 
