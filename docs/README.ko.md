@@ -18,22 +18,22 @@
 Pyxel 개발은 사용자 피드백에 의해 이루어집니다. GitHub에서 Pyxel에 별을 주세요!
 
 <p>
-<a href="https://kitao.github.io/pyxel/wasm/examples/10-platformer.html">
+<a href="https://kitao.github.io/pyxel/wasm/examples/examples/10-platformer.html">
 <img src="images/10_platformer.gif" width="290">
 </a>
-<a href="https://kitao.github.io/pyxel/wasm/examples/30sec-of-daylight.html">
+<a href="https://kitao.github.io/pyxel/wasm/examples/apps/30sec-of-daylight.html">
 <img src="images/30sec_of_daylight.gif" width="350">
 </a>
-<a href="https://kitao.github.io/pyxel/wasm/examples/02-jump-game.html">
+<a href="https://kitao.github.io/pyxel/wasm/examples/examples/02-jump-game.html">
 <img src="images/02_jump_game.gif" width="330">
 </a>
-<a href="https://kitao.github.io/pyxel/wasm/examples/megaball.html">
+<a href="https://kitao.github.io/pyxel/wasm/examples/apps/megaball.html">
 <img src="images/megaball.gif" width="310">
 </a>
-<a href="https://kitao.github.io/pyxel/wasm/examples/image-editor.html">
+<a href="https://kitao.github.io/pyxel/wasm/examples/tools/image-editor.html">
 <img src="images/image_tilemap_editor.gif" width="320">
 </a>
-<a href="https://kitao.github.io/pyxel/wasm/examples/sound-editor.html">
+<a href="https://kitao.github.io/pyxel/wasm/examples/tools/sound-editor.html">
 <img src="images/sound_music_editor.gif" width="320">
 </a>
 </p>
@@ -253,7 +253,7 @@ Pyxel Editor에는 다음과 같은 편집 모드가 있습니다.
 
 각 **이미지 뱅크**의 이미지를 편집하는 모드입니다.
 
-<a href="https://kitao.github.io/pyxel/wasm/examples/image-editor.html">
+<a href="https://kitao.github.io/pyxel/wasm/examples/tools/image-editor.html">
 <img src="images/image_editor.gif">
 </a>
 
@@ -263,7 +263,7 @@ Pyxel Editor에는 다음과 같은 편집 모드가 있습니다.
 
 이미지 뱅크의 이미지를 타일 패턴으로 배열하여 **타일맵**을 편집하는 모드입니다.
 
-<a href="https://kitao.github.io/pyxel/wasm/examples/tilemap-editor.html">
+<a href="https://kitao.github.io/pyxel/wasm/examples/tools/tilemap-editor.html">
 <img src="images/tilemap_editor.gif">
 </a>
 
@@ -273,7 +273,7 @@ TMX 파일(Tiled Map File)을 타일맵 편집기로 드래그 앤 드롭하면 
 
 멜로디와 **사운드** 효과에 사용되는 사운드를 편집하는 모드입니다.
 
-<a href="https://kitao.github.io/pyxel/wasm/examples/sound-editor.html">
+<a href="https://kitao.github.io/pyxel/wasm/examples/tools/sound-editor.html">
 <img src="images/sound_editor.gif">
 </a>
 
@@ -281,7 +281,7 @@ TMX 파일(Tiled Map File)을 타일맵 편집기로 드래그 앤 드롭하면 
 
 재생 순서에 따라 사운드를 배열한 **뮤직**을 편집하는 모드입니다.
 
-<a href="https://kitao.github.io/pyxel/wasm/examples/music-editor.html">
+<a href="https://kitao.github.io/pyxel/wasm/examples/tools/music-editor.html">
 <img src="images/music_editor.gif">
 </a>
 

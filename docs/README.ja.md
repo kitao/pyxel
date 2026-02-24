@@ -18,22 +18,22 @@
 Pyxel 開発のモチベーションは、ユーザーの皆さんからのフィードバックです。GitHub で Pyxel へのスター登録をぜひお願いします！
 
 <p>
-<a href="https://kitao.github.io/pyxel/wasm/examples/10-platformer.html">
+<a href="https://kitao.github.io/pyxel/wasm/examples/examples/10-platformer.html">
 <img src="images/10_platformer.gif" width="290">
 </a>
-<a href="https://kitao.github.io/pyxel/wasm/examples/30sec-of-daylight.html">
+<a href="https://kitao.github.io/pyxel/wasm/examples/apps/30sec-of-daylight.html">
 <img src="images/30sec_of_daylight.gif" width="350">
 </a>
-<a href="https://kitao.github.io/pyxel/wasm/examples/02-jump-game.html">
+<a href="https://kitao.github.io/pyxel/wasm/examples/examples/02-jump-game.html">
 <img src="images/02_jump_game.gif" width="330">
 </a>
-<a href="https://kitao.github.io/pyxel/wasm/examples/megaball.html">
+<a href="https://kitao.github.io/pyxel/wasm/examples/apps/megaball.html">
 <img src="images/megaball.gif" width="310">
 </a>
-<a href="https://kitao.github.io/pyxel/wasm/examples/image-editor.html">
+<a href="https://kitao.github.io/pyxel/wasm/examples/tools/image-editor.html">
 <img src="images/image_tilemap_editor.gif" width="320">
 </a>
-<a href="https://kitao.github.io/pyxel/wasm/examples/sound-editor.html">
+<a href="https://kitao.github.io/pyxel/wasm/examples/tools/sound-editor.html">
 <img src="images/sound_music_editor.gif" width="320">
 </a>
 </p>
@@ -253,7 +253,7 @@ Pyxel Editor には、以下の編集モードがあります。
 
 **イメージバンク**の画像を編集する画面です。
 
-<a href="https://kitao.github.io/pyxel/wasm/examples/image-editor.html">
+<a href="https://kitao.github.io/pyxel/wasm/examples/tools/image-editor.html">
 <img src="images/image_editor.gif">
 </a>
 
@@ -263,7 +263,7 @@ Pyxel Editor には、以下の編集モードがあります。
 
 イメージバンクの画像をタイル状に並べた**タイルマップ**を編集する画面です。
 
-<a href="https://kitao.github.io/pyxel/wasm/examples/tilemap-editor.html">
+<a href="https://kitao.github.io/pyxel/wasm/examples/tools/tilemap-editor.html">
 <img src="images/tilemap_editor.gif">
 </a>
 
@@ -273,7 +273,7 @@ Pyxel Editor には、以下の編集モードがあります。
 
 メロディーや効果音に使用する**サウンド**を編集する画面です。
 
-<a href="https://kitao.github.io/pyxel/wasm/examples/sound-editor.html">
+<a href="https://kitao.github.io/pyxel/wasm/examples/tools/sound-editor.html">
 <img src="images/sound_editor.gif">
 </a>
 
@@ -281,7 +281,7 @@ Pyxel Editor には、以下の編集モードがあります。
 
 サウンドを再生順に並べた**ミュージック**を編集する画面です。
 
-<a href="https://kitao.github.io/pyxel/wasm/examples/music-editor.html">
+<a href="https://kitao.github.io/pyxel/wasm/examples/tools/music-editor.html">
 <img src="images/music_editor.gif">
 </a>
 

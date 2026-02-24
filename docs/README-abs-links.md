@@ -18,22 +18,22 @@ With simple specifications inspired by retro gaming consoles, such as displaying
 The development of Pyxel is driven by user feedback. Please give Pyxel a star on GitHub!
 
 <p>
-<a href="https://kitao.github.io/pyxel/wasm/examples/10-platformer.html">
+<a href="https://kitao.github.io/pyxel/wasm/examples/examples/10-platformer.html">
 <img src="https://raw.githubusercontent.com/kitao/pyxel/main/docs/images/10_platformer.gif" width="290">
 </a>
-<a href="https://kitao.github.io/pyxel/wasm/examples/30sec-of-daylight.html">
+<a href="https://kitao.github.io/pyxel/wasm/examples/apps/30sec-of-daylight.html">
 <img src="https://raw.githubusercontent.com/kitao/pyxel/main/docs/images/30sec_of_daylight.gif" width="350">
 </a>
-<a href="https://kitao.github.io/pyxel/wasm/examples/02-jump-game.html">
+<a href="https://kitao.github.io/pyxel/wasm/examples/examples/02-jump-game.html">
 <img src="https://raw.githubusercontent.com/kitao/pyxel/main/docs/images/02_jump_game.gif" width="330">
 </a>
-<a href="https://kitao.github.io/pyxel/wasm/examples/megaball.html">
+<a href="https://kitao.github.io/pyxel/wasm/examples/apps/megaball.html">
 <img src="https://raw.githubusercontent.com/kitao/pyxel/main/docs/images/megaball.gif" width="310">
 </a>
-<a href="https://kitao.github.io/pyxel/wasm/examples/image-editor.html">
+<a href="https://kitao.github.io/pyxel/wasm/examples/tools/image-editor.html">
 <img src="https://raw.githubusercontent.com/kitao/pyxel/main/docs/images/image_tilemap_editor.gif" width="320">
 </a>
-<a href="https://kitao.github.io/pyxel/wasm/examples/sound-editor.html">
+<a href="https://kitao.github.io/pyxel/wasm/examples/tools/sound-editor.html">
 <img src="https://raw.githubusercontent.com/kitao/pyxel/main/docs/images/sound_music_editor.gif" width="320">
 </a>
 </p>
@@ -253,7 +253,7 @@ Pyxel Editor has the following editing modes.
 
 The mode for editing images in each **image bank**.
 
-<a href="https://kitao.github.io/pyxel/wasm/examples/image-editor.html">
+<a href="https://kitao.github.io/pyxel/wasm/examples/tools/image-editor.html">
 <img src="https://raw.githubusercontent.com/kitao/pyxel/main/docs/images/image_editor.gif">
 </a>
 
@@ -263,7 +263,7 @@ You can drag and drop an image file (PNG/GIF/JPEG) into the image editor to load
 
 The mode for editing **tilemaps** that arrange images from the image banks in a tile pattern.
 
-<a href="https://kitao.github.io/pyxel/wasm/examples/tilemap-editor.html">
+<a href="https://kitao.github.io/pyxel/wasm/examples/tools/tilemap-editor.html">
 <img src="https://raw.githubusercontent.com/kitao/pyxel/main/docs/images/tilemap_editor.gif">
 </a>
 
@@ -273,7 +273,7 @@ Drag and drop a TMX file (Tiled Map File) onto the tilemap editor to load its la
 
 The mode for editing **sounds** used for melodies and sound effects.
 
-<a href="https://kitao.github.io/pyxel/wasm/examples/sound-editor.html">
+<a href="https://kitao.github.io/pyxel/wasm/examples/tools/sound-editor.html">
 <img src="https://raw.githubusercontent.com/kitao/pyxel/main/docs/images/sound_editor.gif">
 </a>
 
@@ -281,7 +281,7 @@ The mode for editing **sounds** used for melodies and sound effects.
 
 The mode for editing **music tracks** in which the sounds are arranged in order of playback.
 
-<a href="https://kitao.github.io/pyxel/wasm/examples/music-editor.html">
+<a href="https://kitao.github.io/pyxel/wasm/examples/tools/music-editor.html">
 <img src="https://raw.githubusercontent.com/kitao/pyxel/main/docs/images/music_editor.gif">
 </a>
 

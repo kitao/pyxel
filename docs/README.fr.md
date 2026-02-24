@@ -18,22 +18,22 @@ Les spécifications sont inspirées des consoles de jeux rétro, comme le fait d
 Le développement de Pyxel est motivé par les retours des utilisateurs. Merci de donner une étoile à Pyxel sur GitHub !
 
 <p>
-<a href="https://kitao.github.io/pyxel/wasm/examples/10-platformer.html">
+<a href="https://kitao.github.io/pyxel/wasm/examples/examples/10-platformer.html">
 <img src="images/10_platformer.gif" width="290">
 </a>
-<a href="https://kitao.github.io/pyxel/wasm/examples/30sec-of-daylight.html">
+<a href="https://kitao.github.io/pyxel/wasm/examples/apps/30sec-of-daylight.html">
 <img src="images/30sec_of_daylight.gif" width="350">
 </a>
-<a href="https://kitao.github.io/pyxel/wasm/examples/02-jump-game.html">
+<a href="https://kitao.github.io/pyxel/wasm/examples/examples/02-jump-game.html">
 <img src="images/02_jump_game.gif" width="330">
 </a>
-<a href="https://kitao.github.io/pyxel/wasm/examples/megaball.html">
+<a href="https://kitao.github.io/pyxel/wasm/examples/apps/megaball.html">
 <img src="images/megaball.gif" width="310">
 </a>
-<a href="https://kitao.github.io/pyxel/wasm/examples/image-editor.html">
+<a href="https://kitao.github.io/pyxel/wasm/examples/tools/image-editor.html">
 <img src="images/image_tilemap_editor.gif" width="320">
 </a>
-<a href="https://kitao.github.io/pyxel/wasm/examples/sound-editor.html">
+<a href="https://kitao.github.io/pyxel/wasm/examples/tools/sound-editor.html">
 <img src="images/sound_music_editor.gif" width="320">
 </a>
 </p>
@@ -253,7 +253,7 @@ Pyxel Editor a les modes d'édition suivants.
 
 Le mode pour éditer les images dans chaque **banque d'images**.
 
-<a href="https://kitao.github.io/pyxel/wasm/examples/image-editor.html">
+<a href="https://kitao.github.io/pyxel/wasm/examples/tools/image-editor.html">
 <img src="images/image_editor.gif">
 </a>
 
@@ -263,7 +263,7 @@ Vous pouvez faire glisser et déposer un fichier d'image (PNG/GIF/JPEG) dans l'�
 
 Le mode pour éditer les **cartes de tuiles** qui organisent des images des banques d'images en un motif de tuiles.
 
-<a href="https://kitao.github.io/pyxel/wasm/examples/tilemap-editor.html">
+<a href="https://kitao.github.io/pyxel/wasm/examples/tools/tilemap-editor.html">
 <img src="images/tilemap_editor.gif">
 </a>
 
@@ -273,7 +273,7 @@ Faites glisser et déposer un fichier TMX (Tiled Map File) dans l'éditeur de ca
 
 Le mode pour éditer les **sons** utilisés pour les mélodies et les effets sonores.
 
-<a href="https://kitao.github.io/pyxel/wasm/examples/sound-editor.html">
+<a href="https://kitao.github.io/pyxel/wasm/examples/tools/sound-editor.html">
 <img src="images/sound_editor.gif">
 </a>
 
@@ -281,7 +281,7 @@ Le mode pour éditer les **sons** utilisés pour les mélodies et les effets son
 
 Le mode pour éditer des **pistes de musique** dans lequel les sons sont organisés dans l'ordre de lecture.
 
-<a href="https://kitao.github.io/pyxel/wasm/examples/music-editor.html">
+<a href="https://kitao.github.io/pyxel/wasm/examples/tools/music-editor.html">
 <img src="images/music_editor.gif">
 </a>
 

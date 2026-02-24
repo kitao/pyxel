@@ -82,7 +82,7 @@ MML モードでは、`notes` や `speed` などの通常のパラメータは�
 
 Pyxel の MML で利用できるコマンドは [Pyxel MML コマンド](https://kitao.github.io/pyxel/wasm/mml-studio/mml-commands.html) で参照できます。
 
-使用例はサンプル 09_shooter.py の [デモ](https://kitao.github.io/pyxel/wasm/examples/09-shooter.html) や [コード](https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/09_shooter.py) で確認できます。
+使用例はサンプル 09_shooter.py の [デモ](https://kitao.github.io/pyxel/wasm/examples/examples/09-shooter.html) や [コード](https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/09_shooter.py) で確認できます。
 
 また、[Pyxel MML Studio](https://kitao.github.io/pyxel/wasm/mml-studio/) を使えば、MML をブラウザ上で作成・共有できます。
 
