@@ -139,8 +139,18 @@
             "uk": "Найпростіший застосунок"
           },
           "details": {
-            "en": "Basic Pyxel app demonstrating the init(), run(), update(), and draw() lifecycle.",
-            "ja": "Pyxel の基本的な使い方を示すサンプル。init 関数でウィンドウを初期化し、update 関数と draw 関数で毎フレームの処理と描画を行う、Pyxel アプリの基本構造を学べます。"
+            "en": "A basic sample showing how to use Pyxel. Learn the fundamental structure of a Pyxel app: initializing a window with the init function, and handling per-frame logic and rendering with the update and draw functions.",
+            "cn": "展示 Pyxel 基本用法的示例。通过 init 函数初始化窗口，用 update 函数和 draw 函数处理每帧的逻辑和绘制，学习 Pyxel 应用的基本结构。",
+            "de": "Ein Beispiel für die grundlegende Verwendung von Pyxel. Lernen Sie die Grundstruktur einer Pyxel-App: Fensterinitialisierung mit der init-Funktion sowie Logik und Rendering pro Frame mit den update- und draw-Funktionen.",
+            "es": "Ejemplo que muestra el uso básico de Pyxel. Aprende la estructura fundamental de una app Pyxel: inicialización de la ventana con la función init, y lógica y renderizado por fotograma con las funciones update y draw.",
+            "fr": "Exemple montrant l'utilisation de base de Pyxel. Découvrez la structure fondamentale d'une application Pyxel : initialisation de la fenêtre avec la fonction init, logique et rendu par image avec les fonctions update et draw.",
+            "it": "Esempio che mostra l'utilizzo di base di Pyxel. Impara la struttura fondamentale di un'app Pyxel: inizializzazione della finestra con la funzione init, logica e rendering per frame con le funzioni update e draw.",
+            "ja": "Pyxel の基本的な使い方を示すサンプル。init 関数でウィンドウを初期化し、update 関数と draw 関数で毎フレームの処理と描画を行う、Pyxel アプリの基本構造を学べます。",
+            "ko": "Pyxel의 기본 사용법을 보여주는 샘플. init 함수로 윈도우를 초기화하고, update 함수와 draw 함수로 매 프레임의 처리와 렌더링을 수행하는 Pyxel 앱의 기본 구조를 배울 수 있습니다.",
+            "pt": "Exemplo que mostra o uso básico do Pyxel. Aprenda a estrutura fundamental de um app Pyxel: inicialização da janela com a função init, e lógica e renderização por quadro com as funções update e draw.",
+            "ru": "Пример, демонстрирующий основы Pyxel. Изучите базовую структуру приложения Pyxel: инициализация окна функцией init, покадровая логика и отрисовка функциями update и draw.",
+            "tr": "Pyxel'in temel kullanımını gösteren örnek. init fonksiyonu ile pencere başlatma, update ve draw fonksiyonları ile kare başına işlem ve çizim yapan Pyxel uygulamasının temel yapısını öğrenin.",
+            "uk": "Приклад, що демонструє основи Pyxel. Вивчіть базову структуру застосунку Pyxel: ініціалізація вікна функцією init, покадрова логіка та малювання функціями update і draw."
           }
         },
         {
@@ -162,8 +172,18 @@
             "uk": "Гра зі стрибками з використанням файлу ресурсів Pyxel"
           },
           "details": {
-            "en": "A jump game using Pyxel resource files (.pyxres) for graphics and sound data.",
-            "ja": "Pyxel リソースファイル (.pyxres) から画像とサウンドデータを読み込むジャンプゲーム。スプライト描画、キー入力、当たり判定、スコア管理など、ゲーム制作の基本要素を学べます。"
+            "en": "A jump game that loads graphics and sound data from Pyxel resource files (.pyxres). Covers essential game development elements such as sprite rendering, key input, collision detection, and score management.",
+            "cn": "从 Pyxel 资源文件 (.pyxres) 加载图像和音效数据的跳跃游戏。涵盖精灵绘制、键盘输入、碰撞检测、分数管理等游戏开发基本要素。",
+            "de": "Ein Sprungspiel, das Grafik- und Sounddaten aus Pyxel-Ressourcendateien (.pyxres) lädt. Behandelt grundlegende Spieleentwicklungselemente wie Sprite-Rendering, Tastatureingabe, Kollisionserkennung und Punkteverwaltung.",
+            "es": "Juego de saltos que carga gráficos y datos de sonido desde archivos de recursos Pyxel (.pyxres). Cubre elementos esenciales del desarrollo de juegos como renderizado de sprites, entrada de teclado, detección de colisiones y gestión de puntuación.",
+            "fr": "Jeu de saut chargeant les graphismes et sons depuis des fichiers de ressources Pyxel (.pyxres). Couvre les éléments essentiels du développement de jeux : rendu de sprites, saisie clavier, détection de collisions et gestion du score.",
+            "it": "Gioco di salti che carica grafica e suoni dai file di risorse Pyxel (.pyxres). Copre gli elementi essenziali dello sviluppo di giochi: rendering di sprite, input da tastiera, rilevamento delle collisioni e gestione del punteggio.",
+            "ja": "Pyxel リソースファイル (.pyxres) から画像とサウンドデータを読み込むジャンプゲーム。スプライト描画、キー入力、当たり判定、スコア管理など、ゲーム制作の基本要素を学べます。",
+            "ko": "Pyxel 리소스 파일 (.pyxres)에서 이미지와 사운드 데이터를 로드하는 점프 게임. 스프라이트 렌더링, 키 입력, 충돌 판정, 점수 관리 등 게임 개발의 기본 요소를 배울 수 있습니다.",
+            "pt": "Jogo de salto que carrega gráficos e dados de som de arquivos de recursos Pyxel (.pyxres). Aborda elementos essenciais do desenvolvimento de jogos como renderização de sprites, entrada de teclado, detecção de colisão e gerenciamento de pontuação.",
+            "ru": "Игра с прыжками, загружающая графику и звук из файлов ресурсов Pyxel (.pyxres). Охватывает основные элементы разработки игр: отрисовку спрайтов, ввод с клавиатуры, обнаружение столкновений и управление счётом.",
+            "tr": "Pyxel kaynak dosyalarından (.pyxres) grafik ve ses verisi yükleyen zıplama oyunu. Sprite çizimi, tuş girişi, çarpışma algılama ve skor yönetimi gibi temel oyun geliştirme öğelerini kapsar.",
+            "uk": "Гра зі стрибками, що завантажує графіку та звук з файлів ресурсів Pyxel (.pyxres). Охоплює основні елементи розробки ігор: малювання спрайтів, введення з клавіатури, виявлення зіткнень та керування рахунком."
           }
         },
         {
@@ -185,8 +205,18 @@
             "uk": "Демонстрація API для малювання"
           },
           "details": {
-            "en": "Showcases all Pyxel drawing APIs including rectangles, circles, lines, and text rendering.",
-            "ja": "rect、circ、line、text など Pyxel が提供する描画 API のデモ。各関数の使い方と描画結果を一覧で確認でき、グラフィックス描画の参考になります。"
+            "en": "A demo of the drawing APIs provided by Pyxel, including rect, circ, line, and text. Shows the usage and output of each function at a glance, serving as a handy reference for graphics rendering.",
+            "cn": "展示 Pyxel 提供的 rect、circ、line、text 等绘图 API 的演示。一览各函数的用法和绘制结果，可作为图形绘制的参考。",
+            "de": "Demo der von Pyxel bereitgestellten Zeichen-APIs wie rect, circ, line und text. Zeigt Verwendung und Ergebnis jeder Funktion auf einen Blick als praktische Referenz für Grafikrendering.",
+            "es": "Demo de las APIs de dibujo de Pyxel, incluyendo rect, circ, line y text. Muestra el uso y resultado de cada función de un vistazo, sirviendo como referencia práctica para el renderizado gráfico.",
+            "fr": "Démo des API de dessin fournies par Pyxel, dont rect, circ, line et text. Présente l'utilisation et le résultat de chaque fonction d'un coup d'œil, servant de référence pratique pour le rendu graphique.",
+            "it": "Demo delle API di disegno fornite da Pyxel, tra cui rect, circ, line e text. Mostra l'utilizzo e il risultato di ogni funzione a colpo d'occhio, utile come riferimento per il rendering grafico.",
+            "ja": "rect、circ、line、text など Pyxel が提供する描画 API のデモ。各関数の使い方と描画結果を一覧で確認でき、グラフィックス描画の参考になります。",
+            "ko": "rect, circ, line, text 등 Pyxel이 제공하는 그리기 API의 데모. 각 함수의 사용법과 렌더링 결과를 한눈에 확인할 수 있어 그래픽 렌더링의 참고가 됩니다.",
+            "pt": "Demo das APIs de desenho do Pyxel, incluindo rect, circ, line e text. Mostra o uso e o resultado de cada função de forma visual, servindo como referência prática para renderização gráfica.",
+            "ru": "Демонстрация API рисования Pyxel, включая rect, circ, line и text. Показывает использование и результат каждой функции, служит удобным справочником по графическому рендерингу.",
+            "tr": "rect, circ, line ve text gibi Pyxel çizim API'lerinin demosu. Her fonksiyonun kullanımını ve çizim sonucunu bir bakışta gösterir, grafik çizimi için pratik bir referans sağlar.",
+            "uk": "Демонстрація API малювання Pyxel, включаючи rect, circ, line та text. Показує використання та результат кожної функції, слугує зручним довідником з графічного рендерингу."
           }
         },
         {
@@ -208,8 +238,18 @@
             "uk": "Демонстрація API для звуку"
           },
           "details": {
-            "en": "Demonstrates sound creation, editing, and playback using Pyxel's sound APIs.",
-            "ja": "Pyxel のサウンド API を使って効果音を作成・編集・再生するデモ。音色、音量、エフェクトの設定方法を実際に試しながら確認できます。"
+            "en": "A demo of creating, editing, and playing sound effects using Pyxel's sound APIs. Experiment with tone, volume, and effect settings interactively.",
+            "cn": "使用 Pyxel 的声音 API 创建、编辑和播放音效的演示。可以交互式地试验音色、音量和效果设置。",
+            "de": "Demo zum Erstellen, Bearbeiten und Abspielen von Soundeffekten mit den Sound-APIs von Pyxel. Experimentieren Sie interaktiv mit Klangfarbe, Lautstärke und Effekteinstellungen.",
+            "es": "Demo de creación, edición y reproducción de efectos de sonido usando las APIs de sonido de Pyxel. Experimenta con los ajustes de tono, volumen y efectos de forma interactiva.",
+            "fr": "Démo de création, édition et lecture d'effets sonores avec les API audio de Pyxel. Expérimentez de manière interactive les réglages de timbre, volume et effets.",
+            "it": "Demo di creazione, modifica e riproduzione di effetti sonori con le API audio di Pyxel. Sperimenta in modo interattivo le impostazioni di timbro, volume ed effetti.",
+            "ja": "Pyxel のサウンド API を使って効果音を作成・編集・再生するデモ。音色、音量、エフェクトの設定方法を実際に試しながら確認できます。",
+            "ko": "Pyxel의 사운드 API를 사용하여 효과음을 생성, 편집, 재생하는 데모. 음색, 음량, 이펙트 설정을 실제로 시험해 볼 수 있습니다.",
+            "pt": "Demo de criação, edição e reprodução de efeitos sonoros usando as APIs de som do Pyxel. Experimente de forma interativa as configurações de timbre, volume e efeitos.",
+            "ru": "Демонстрация создания, редактирования и воспроизведения звуковых эффектов с помощью API звука Pyxel. Поэкспериментируйте с настройками тембра, громкости и эффектов в интерактивном режиме.",
+            "tr": "Pyxel'in ses API'lerini kullanarak ses efektleri oluşturma, düzenleme ve çalma demosu. Tını, ses seviyesi ve efekt ayarlarını etkileşimli olarak deneyebilirsiniz.",
+            "uk": "Демонстрація створення, редагування та відтворення звукових ефектів за допомогою API звуку Pyxel. Експериментуйте з налаштуваннями тембру, гучності та ефектів в інтерактивному режимі."
           }
         },
         {
@@ -231,8 +271,18 @@
             "uk": "Список кольорових паліт"
           },
           "details": {
-            "en": "Displays Pyxel's built-in 16-color palette with color codes.",
-            "ja": "Pyxel 組み込みの 16 色パレットをカラーコード付きで一覧表示。各色の番号と RGB 値を確認でき、ゲーム制作時の配色の参考になります。"
+            "en": "Displays Pyxel's built-in 16-color palette with color codes. Check each color's index and RGB value for reference when choosing colors for your games.",
+            "cn": "显示 Pyxel 内置的 16 色调色板及颜色代码。可以查看每种颜色的编号和 RGB 值，为游戏配色提供参考。",
+            "de": "Zeigt die in Pyxel integrierte 16-Farben-Palette mit Farbcodes. Überprüfen Sie Index und RGB-Wert jeder Farbe als Referenz für die Farbauswahl Ihrer Spiele.",
+            "es": "Muestra la paleta de 16 colores integrada de Pyxel con códigos de color. Consulta el índice y valor RGB de cada color como referencia al elegir colores para tus juegos.",
+            "fr": "Affiche la palette de 16 couleurs intégrée de Pyxel avec les codes couleur. Consultez l'index et la valeur RGB de chaque couleur comme référence pour le choix des couleurs de vos jeux.",
+            "it": "Mostra la palette di 16 colori integrata di Pyxel con i codici colore. Controlla l'indice e il valore RGB di ogni colore come riferimento per la scelta dei colori dei tuoi giochi.",
+            "ja": "Pyxel 組み込みの 16 色パレットをカラーコード付きで一覧表示。各色の番号と RGB 値を確認でき、ゲーム制作時の配色の参考になります。",
+            "ko": "Pyxel 내장 16색 팔레트를 컬러 코드와 함께 표시합니다. 각 색상의 번호와 RGB 값을 확인할 수 있어 게임 제작 시 배색 참고가 됩니다.",
+            "pt": "Exibe a paleta de 16 cores integrada do Pyxel com códigos de cor. Consulte o índice e o valor RGB de cada cor como referência ao escolher cores para seus jogos.",
+            "ru": "Отображает встроенную 16-цветную палитру Pyxel с цветовыми кодами. Проверяйте индекс и значение RGB каждого цвета при выборе цветов для ваших игр.",
+            "tr": "Pyxel'in yerleşik 16 renkli paletini renk kodlarıyla gösterir. Oyunlarınız için renk seçerken her rengin indeksini ve RGB değerini kontrol edebilirsiniz.",
+            "uk": "Показує вбудовану 16-кольорову палітру Pyxel з кольоровими кодами. Перевіряйте індекс та значення RGB кожного кольору при виборі кольорів для ваших ігор."
           }
         },
         {
@@ -254,8 +304,18 @@
             "uk": "Гра на клік миші"
           },
           "details": {
-            "en": "A simple mouse click game demonstrating mouse input handling.",
-            "ja": "マウスカーソルの座標取得やクリック検出を実演するシンプルなゲーム。マウス入力を使ったインタラクティブなアプリケーション作りの参考になります。"
+            "en": "A simple game demonstrating mouse cursor position tracking and click detection. Useful as a reference for building interactive applications with mouse input.",
+            "cn": "演示鼠标光标坐标获取和点击检测的简单游戏。为使用鼠标输入构建交互式应用提供参考。",
+            "de": "Ein einfaches Spiel, das Mausposition-Tracking und Klickerkennung demonstriert. Nützlich als Referenz zum Erstellen interaktiver Anwendungen mit Mauseingabe.",
+            "es": "Juego simple que demuestra el seguimiento de la posición del cursor y la detección de clics. Útil como referencia para crear aplicaciones interactivas con entrada de ratón.",
+            "fr": "Jeu simple démontrant le suivi de position du curseur et la détection de clics. Utile comme référence pour créer des applications interactives avec la souris.",
+            "it": "Gioco semplice che dimostra il tracciamento della posizione del cursore e il rilevamento dei clic. Utile come riferimento per creare applicazioni interattive con input del mouse.",
+            "ja": "マウスカーソルの座標取得やクリック検出を実演するシンプルなゲーム。マウス入力を使ったインタラクティブなアプリケーション作りの参考になります。",
+            "ko": "마우스 커서 좌표 추적과 클릭 감지를 시연하는 간단한 게임. 마우스 입력을 사용한 인터랙티브 애플리케이션 제작의 참고가 됩니다.",
+            "pt": "Jogo simples que demonstra o rastreamento da posição do cursor e a detecção de cliques. Útil como referência para criar aplicativos interativos com entrada de mouse.",
+            "ru": "Простая игра, демонстрирующая отслеживание позиции курсора и обнаружение кликов. Полезна как справка по созданию интерактивных приложений с мышью.",
+            "tr": "Fare imleci konumu izleme ve tıklama algılamayı gösteren basit oyun. Fare girişiyle etkileşimli uygulamalar oluşturmak için referans olarak kullanışlıdır.",
+            "uk": "Проста гра, що демонструє відстеження позиції курсору та виявлення кліків. Корисна як довідка зі створення інтерактивних застосунків з мишею."
           }
         },
         {
@@ -277,8 +337,18 @@
             "uk": "Гра «Змійка» з BGM"
           },
           "details": {
-            "en": "Classic snake game featuring background music composed with Pyxel MML.",
-            "ja": "Pyxel 向け MML で作曲した BGM 付きのクラシックなスネークゲーム。グリッドベースの移動処理やリストによる蛇の管理など、ゲームロジックの実装例として参考になります。"
+            "en": "A classic snake game with background music composed in Pyxel MML. A useful reference for game logic such as grid-based movement and managing the snake body with a list.",
+            "cn": "使用 Pyxel MML 作曲 BGM 的经典贪吃蛇游戏。网格移动处理和列表管理蛇身等游戏逻辑的实用参考。",
+            "de": "Klassisches Schlangenspiel mit in Pyxel-MML komponierter Hintergrundmusik. Nützliche Referenz für Spiellogik wie rasterbasierte Bewegung und Verwaltung des Schlangenkörpers mit einer Liste.",
+            "es": "Juego clásico de la serpiente con música de fondo compuesta en Pyxel MML. Referencia útil para lógica de juego como movimiento basado en cuadrícula y gestión del cuerpo de la serpiente con una lista.",
+            "fr": "Jeu de serpent classique avec musique de fond composée en Pyxel MML. Référence utile pour la logique de jeu comme le déplacement sur grille et la gestion du corps du serpent avec une liste.",
+            "it": "Gioco del serpente classico con musica di sottofondo composta in Pyxel MML. Riferimento utile per la logica di gioco come il movimento su griglia e la gestione del corpo del serpente con una lista.",
+            "ja": "Pyxel 向け MML で作曲した BGM 付きのクラシックなスネークゲーム。グリッドベースの移動処理やリストによる蛇の管理など、ゲームロジックの実装例として参考になります。",
+            "ko": "Pyxel MML로 작곡한 BGM이 있는 클래식 스네이크 게임. 그리드 기반 이동 처리와 리스트로 뱀 몸체를 관리하는 등 게임 로직의 구현 참고가 됩니다.",
+            "pt": "Jogo clássico da cobrinha com música de fundo composta em Pyxel MML. Referência útil para lógica de jogo como movimento baseado em grade e gerenciamento do corpo da cobra com uma lista.",
+            "ru": "Классическая «Змейка» с фоновой музыкой на Pyxel MML. Полезный пример логики игры: движение по сетке и управление телом змеи с помощью списка.",
+            "tr": "Pyxel MML ile bestelenmiş BGM'li klasik yılan oyunu. Izgara tabanlı hareket ve yılan gövdesini liste ile yönetme gibi oyun mantığı için pratik bir referans.",
+            "uk": "Класична «Змійка» з фоновою музикою на Pyxel MML. Корисний приклад логіки гри: рух по сітці та керування тілом змії за допомогою списку."
           }
         },
         {
@@ -300,8 +370,18 @@
             "uk": "Демонстрація API для малювання трикутників"
           },
           "details": {
-            "en": "Demonstrates triangle drawing with tri() and trib() functions.",
-            "ja": "tri 関数 (塗りつぶし三角形) と trib 関数 (三角形の枠線) の描画デモ。再帰的なシェルピンスキー三角形の生成を通じて、三角形描画 API の使い方を紹介します。"
+            "en": "A demo of the tri function (filled triangles) and trib function (triangle outlines). Demonstrates triangle drawing APIs through recursive generation of a Sierpinski triangle.",
+            "cn": "tri 函数（填充三角形）和 trib 函数（三角形轮廓）的绘制演示。通过递归生成谢尔宾斯基三角形展示三角形绘图 API 的用法。",
+            "de": "Demo der tri-Funktion (gefüllte Dreiecke) und trib-Funktion (Dreiecksumrisse). Demonstriert die Dreiecks-Zeichen-APIs durch rekursive Erzeugung eines Sierpinski-Dreiecks.",
+            "es": "Demo de la función tri (triángulos rellenos) y la función trib (contornos de triángulos). Presenta las APIs de dibujo de triángulos mediante la generación recursiva de un triángulo de Sierpinski.",
+            "fr": "Démo de la fonction tri (triangles pleins) et de la fonction trib (contours de triangles). Présente les API de dessin de triangles par la génération récursive d'un triangle de Sierpinski.",
+            "it": "Demo della funzione tri (triangoli pieni) e della funzione trib (contorni di triangoli). Presenta le API di disegno dei triangoli attraverso la generazione ricorsiva di un triangolo di Sierpinski.",
+            "ja": "tri 関数 (塗りつぶし三角形) と trib 関数 (三角形の枠線) の描画デモ。再帰的なシェルピンスキー三角形の生成を通じて、三角形描画 API の使い方を紹介します。",
+            "ko": "tri 함수(채워진 삼각형)와 trib 함수(삼각형 윤곽선)의 렌더링 데모. 재귀적인 시에르핀스키 삼각형 생성을 통해 삼각형 그리기 API의 사용법을 소개합니다.",
+            "pt": "Demo da função tri (triângulos preenchidos) e da função trib (contornos de triângulos). Apresenta as APIs de desenho de triângulos por meio da geração recursiva de um triângulo de Sierpinski.",
+            "ru": "Демонстрация функции tri (заполненные треугольники) и функции trib (контуры треугольников). Показывает API рисования треугольников через рекурсивное построение треугольника Серпинского.",
+            "tr": "tri fonksiyonu (dolgulu üçgenler) ve trib fonksiyonu (üçgen çerçeveleri) çizim demosu. Sierpinski üçgeninin özyinelemeli üretimiyle üçgen çizim API'lerinin kullanımını tanıtır.",
+            "uk": "Демонстрація функції tri (заповнені трикутники) та функції trib (контури трикутників). Показує API малювання трикутників через рекурсивну побудову трикутника Серпінського."
           }
         },
         {
@@ -323,8 +403,18 @@
             "uk": "Shoot'em up з переходами між екранами та MML"
           },
           "details": {
-            "en": "A shoot'em up game with screen state transitions, enemy patterns, and MML background music.",
-            "ja": "タイトル・ゲーム・ゲームオーバーの画面遷移、多彩な敵パターン、MML による BGM を備えた本格的なシューティングゲーム。ゲーム制作の実践的なテクニックを学べます。"
+            "en": "A full-featured shoot'em up with title/gameplay/game-over screen transitions, varied enemy patterns, and MML background music. Learn practical game development techniques.",
+            "cn": "具备标题、游戏、游戏结束画面切换、多样化的敌人模式和 MML 背景音乐的完整射击游戏。学习实用的游戏开发技巧。",
+            "de": "Ein vollwertiges Shoot'em up mit Titel-/Spiel-/Game-Over-Bildschirmübergängen, verschiedenen Feindmustern und MML-Hintergrundmusik. Lernen Sie praktische Spieleentwicklungstechniken.",
+            "es": "Shoot'em up completo con transiciones de pantalla título/juego/game over, variados patrones de enemigos y música de fondo MML. Aprende técnicas prácticas de desarrollo de juegos.",
+            "fr": "Shoot'em up complet avec transitions d'écran titre/jeu/game over, motifs d'ennemis variés et musique de fond MML. Apprenez des techniques pratiques de développement de jeux.",
+            "it": "Shoot'em up completo con transizioni schermo titolo/gioco/game over, pattern nemici variati e musica di sottofondo MML. Impara tecniche pratiche di sviluppo di giochi.",
+            "ja": "タイトル・ゲーム・ゲームオーバーの画面遷移、多彩な敵パターン、MML による BGM を備えた本格的なシューティングゲーム。ゲーム制作の実践的なテクニックを学べます。",
+            "ko": "타이틀/게임/게임오버 화면 전환, 다양한 적 패턴, MML 배경음악을 갖춘 본격적인 슈팅 게임. 실전적인 게임 개발 기법을 배울 수 있습니다.",
+            "pt": "Shoot'em up completo com transições de tela título/jogo/game over, padrões variados de inimigos e música de fundo MML. Aprenda técnicas práticas de desenvolvimento de jogos.",
+            "ru": "Полноценный shoot'em up с переходами между экранами (титульный/игровой/game over), разнообразными паттернами врагов и фоновой музыкой MML. Изучите практические приёмы разработки игр.",
+            "tr": "Başlık/oyun/oyun sonu ekran geçişleri, çeşitli düşman desenleri ve MML arka plan müziği içeren tam donanımlı shoot'em up. Pratik oyun geliştirme tekniklerini öğrenin.",
+            "uk": "Повноцінний shoot'em up з переходами між екранами (титульний/ігровий/game over), різноманітними патернами ворогів та фоновою музикою MML. Вивчіть практичні прийоми розробки ігор."
           }
         },
         {
@@ -346,8 +436,18 @@
             "uk": "Горизонтальна платформна гра з картою"
           },
           "details": {
-            "en": "A side-scrolling platform game using tilemaps for level design.",
-            "ja": "タイルマップを使ったレベルデザインによる横スクロールアクションゲーム。マップのスクロール処理、タイルとの当たり判定、キャラクターの移動制御などを実装しています。"
+            "en": "A side-scrolling action game with level design using tilemaps. Implements map scrolling, tile-based collision detection, and character movement control.",
+            "cn": "使用瓦片地图进行关卡设计的横向卷轴动作游戏。实现了地图滚动处理、瓦片碰撞检测和角色移动控制。",
+            "de": "Seitwärts-scrollendes Actionspiel mit Level-Design über Tilemaps. Implementiert Karten-Scrolling, Tile-basierte Kollisionserkennung und Charaktersteuerung.",
+            "es": "Juego de acción de desplazamiento lateral con diseño de niveles usando tilemaps. Implementa desplazamiento del mapa, detección de colisiones basada en tiles y control de movimiento del personaje.",
+            "fr": "Jeu d'action à défilement latéral avec conception de niveaux par tilemaps. Implémente le défilement de la carte, la détection de collisions par tiles et le contrôle du mouvement du personnage.",
+            "it": "Gioco d'azione a scorrimento laterale con level design tramite tilemap. Implementa lo scrolling della mappa, il rilevamento delle collisioni basato su tile e il controllo del movimento del personaggio.",
+            "ja": "タイルマップを使ったレベルデザインによる横スクロールアクションゲーム。マップのスクロール処理、タイルとの当たり判定、キャラクターの移動制御などを実装しています。",
+            "ko": "타일맵을 사용한 레벨 디자인의 횡스크롤 액션 게임. 맵 스크롤 처리, 타일 충돌 판정, 캐릭터 이동 제어 등을 구현합니다.",
+            "pt": "Jogo de ação com rolagem lateral e design de fases usando tilemaps. Implementa rolagem do mapa, detecção de colisão baseada em tiles e controle de movimento do personagem.",
+            "ru": "Горизонтальная экшн-игра с дизайном уровней на тайловых картах. Реализует прокрутку карты, обнаружение столкновений с тайлами и управление движением персонажа.",
+            "tr": "Tilemap ile seviye tasarımı yapılmış yatay kaydırmalı aksiyon oyunu. Harita kaydırma, tile tabanlı çarpışma algılama ve karakter hareket kontrolü uygulanmıştır.",
+            "uk": "Горизонтальна екшн-гра з дизайном рівнів на тайлових картах. Реалізує прокручування карти, виявлення зіткнень з тайлами та керування рухом персонажа."
           }
         },
         {
@@ -369,8 +469,18 @@
             "uk": "Відображення поза екраном з класом Image"
           },
           "details": {
-            "en": "Demonstrates offscreen rendering using the Image class for buffer operations.",
-            "ja": "Image クラスをオフスクリーンバッファとして利用し、事前に描画した画像を画面に転送するテクニックのデモ。blt 関数や bltm 関数のパラメータ説明図の描画例も含まれています。"
+            "en": "A demo of using the Image class as an offscreen buffer, pre-rendering graphics and transferring them to the screen. Also includes visual diagrams of blt and bltm function parameters.",
+            "cn": "将 Image 类用作离屏缓冲区，预先绘制图像再传输到屏幕的技术演示。还包含 blt 和 bltm 函数参数的可视化说明图。",
+            "de": "Demo der Verwendung der Image-Klasse als Offscreen-Puffer: Grafiken vorab rendern und auf den Bildschirm übertragen. Enthält auch visuelle Diagramme der Parameter der blt- und bltm-Funktionen.",
+            "es": "Demo del uso de la clase Image como búfer fuera de pantalla, pre-renderizando gráficos y transfiriéndolos a la pantalla. También incluye diagramas visuales de los parámetros de las funciones blt y bltm.",
+            "fr": "Démo de l'utilisation de la classe Image comme tampon hors écran : pré-rendu des graphismes puis transfert à l'écran. Inclut aussi des diagrammes visuels des paramètres des fonctions blt et bltm.",
+            "it": "Demo dell'uso della classe Image come buffer offscreen: pre-rendering della grafica e trasferimento sullo schermo. Include anche diagrammi visivi dei parametri delle funzioni blt e bltm.",
+            "ja": "Image クラスをオフスクリーンバッファとして利用し、事前に描画した画像を画面に転送するテクニックのデモ。blt 関数や bltm 関数のパラメータ説明図の描画例も含まれています。",
+            "ko": "Image 클래스를 오프스크린 버퍼로 사용하여 미리 렌더링한 그래픽을 화면에 전송하는 기법의 데모. blt 함수와 bltm 함수의 파라미터 설명도도 포함되어 있습니다.",
+            "pt": "Demo do uso da classe Image como buffer offscreen, pré-renderizando gráficos e transferindo-os para a tela. Também inclui diagramas visuais dos parâmetros das funções blt e bltm.",
+            "ru": "Демонстрация использования класса Image в качестве внеэкранного буфера: предварительная отрисовка графики с переносом на экран. Включает наглядные схемы параметров функций blt и bltm.",
+            "tr": "Image sınıfını ekran dışı tampon olarak kullanarak önceden çizilmiş grafikleri ekrana aktarma tekniğinin demosu. blt ve bltm fonksiyon parametrelerinin görsel açıklama şemalarını da içerir.",
+            "uk": "Демонстрація використання класу Image як позаекранного буфера: попереднє малювання графіки з перенесенням на екран. Включає наочні схеми параметрів функцій blt та bltm."
           }
         },
         {
@@ -392,8 +502,18 @@
             "uk": "Анімація Перлін-шуму"
           },
           "details": {
-            "en": "Animated visualization of Perlin noise, a procedural texture generation technique.",
-            "ja": "Pyxel の noise 関数を使った Perlin ノイズのリアルタイムアニメーション。手続き的なパターン生成により、地形や雲のような自然なテクスチャを表現する技法を紹介します。"
+            "en": "Real-time animation of Perlin noise using Pyxel's noise function. Demonstrates procedural pattern generation for creating natural textures like terrain and clouds.",
+            "cn": "使用 Pyxel 的 noise 函数进行 Perlin 噪声的实时动画。介绍通过程序化模式生成来表现地形和云彩等自然纹理的技法。",
+            "de": "Echtzeit-Animation von Perlin-Rauschen mit der noise-Funktion von Pyxel. Zeigt prozedurale Mustergenerierung zur Erzeugung natürlicher Texturen wie Gelände und Wolken.",
+            "es": "Animación en tiempo real de ruido Perlin usando la función noise de Pyxel. Demuestra la generación procedural de patrones para crear texturas naturales como terreno y nubes.",
+            "fr": "Animation en temps réel du bruit de Perlin avec la fonction noise de Pyxel. Présente la génération procédurale de motifs pour créer des textures naturelles comme le terrain et les nuages.",
+            "it": "Animazione in tempo reale del rumore di Perlin con la funzione noise di Pyxel. Dimostra la generazione procedurale di pattern per creare texture naturali come terreno e nuvole.",
+            "ja": "Pyxel の noise 関数を使った Perlin ノイズのリアルタイムアニメーション。手続き的なパターン生成により、地形や雲のような自然なテクスチャを表現する技法を紹介します。",
+            "ko": "Pyxel의 noise 함수를 사용한 Perlin 노이즈의 실시간 애니메이션. 절차적 패턴 생성으로 지형이나 구름 같은 자연스러운 텍스처를 표현하는 기법을 소개합니다.",
+            "pt": "Animação em tempo real de ruído Perlin usando a função noise do Pyxel. Demonstra geração procedural de padrões para criar texturas naturais como terreno e nuvens.",
+            "ru": "Анимация шума Перлина в реальном времени с помощью функции noise Pyxel. Демонстрирует процедурную генерацию паттернов для создания естественных текстур вроде ландшафта и облаков.",
+            "tr": "Pyxel'in noise fonksiyonuyla Perlin gürültüsünün gerçek zamanlı animasyonu. Arazi ve bulut gibi doğal dokuları oluşturmak için prosedürel desen üretimini gösterir.",
+            "uk": "Анімація шуму Перліна в реальному часі за допомогою функції noise Pyxel. Демонструє процедурну генерацію патернів для створення природних текстур на кшталт ландшафту та хмар."
           }
         },
         {
@@ -415,8 +535,18 @@
             "uk": "Малювання користувацького шрифта"
           },
           "details": {
-            "en": "Shows how to load and use custom bitmap fonts for text rendering.",
-            "ja": "BDF フォントや TTF フォントを読み込み、Pyxel のカスタムフォント機能でテキストを描画する方法を紹介します。日本語など多言語フォントの利用方法を学べます。"
+            "en": "Shows how to load BDF and TTF fonts and render text with Pyxel's custom font feature. Learn how to use multilingual fonts including Japanese.",
+            "cn": "介绍如何加载 BDF 和 TTF 字体，使用 Pyxel 的自定义字体功能绘制文本。学习包括日语在内的多语言字体使用方法。",
+            "de": "Zeigt, wie BDF- und TTF-Schriften geladen und Text mit Pyxels benutzerdefinierter Schriftfunktion gerendert wird. Lernen Sie die Verwendung mehrsprachiger Schriften einschließlich Japanisch.",
+            "es": "Muestra cómo cargar fuentes BDF y TTF y renderizar texto con la función de fuentes personalizadas de Pyxel. Aprende a usar fuentes multilingües incluyendo japonés.",
+            "fr": "Montre comment charger des polices BDF et TTF et afficher du texte avec la fonction de polices personnalisées de Pyxel. Apprenez à utiliser des polices multilingues, y compris le japonais.",
+            "it": "Mostra come caricare font BDF e TTF e renderizzare testo con la funzione font personalizzati di Pyxel. Impara a usare font multilingue incluso il giapponese.",
+            "ja": "BDF フォントや TTF フォントを読み込み、Pyxel のカスタムフォント機能でテキストを描画する方法を紹介します。日本語など多言語フォントの利用方法を学べます。",
+            "ko": "BDF 및 TTF 폰트를 로드하여 Pyxel의 커스텀 폰트 기능으로 텍스트를 렌더링하는 방법을 소개합니다. 일본어 등 다국어 폰트 활용법을 배울 수 있습니다.",
+            "pt": "Mostra como carregar fontes BDF e TTF e renderizar texto com o recurso de fontes personalizadas do Pyxel. Aprenda a usar fontes multilíngues incluindo japonês.",
+            "ru": "Показывает, как загружать шрифты BDF и TTF и рендерить текст с помощью функции пользовательских шрифтов Pyxel. Изучите использование многоязычных шрифтов, включая японский.",
+            "tr": "BDF ve TTF fontlarını yükleyip Pyxel'in özel font özelliğiyle metin çizme yöntemini gösterir. Japonca dahil çok dilli fontların kullanımını öğrenin.",
+            "uk": "Показує, як завантажувати шрифти BDF та TTF і рендерити текст за допомогою функції користувацьких шрифтів Pyxel. Вивчіть використання багатомовних шрифтів, включаючи японську."
           }
         },
         {
@@ -438,8 +568,18 @@
             "uk": "Синтезатор з використанням функцій розширення звуку"
           },
           "details": {
-            "en": "An interactive synthesizer showcasing Pyxel's expanded audio features including custom waveforms.",
-            "ja": "Pyxel のオーディオ拡張機能を使ったインタラクティブなシンセサイザー。カスタム波形の定義、エンベロープ、ビブラートなどのエフェクトをリアルタイムに操作できます。"
+            "en": "An interactive synthesizer using Pyxel's expanded audio features. Define custom waveforms and manipulate effects like envelope and vibrato in real time.",
+            "cn": "使用 Pyxel 音频扩展功能的互动合成器。可以实时定义自定义波形、操控包络和颤音等效果。",
+            "de": "Ein interaktiver Synthesizer mit den erweiterten Audiofunktionen von Pyxel. Definieren Sie benutzerdefinierte Wellenformen und steuern Sie Effekte wie Hüllkurve und Vibrato in Echtzeit.",
+            "es": "Sintetizador interactivo usando las funciones de audio expandidas de Pyxel. Define formas de onda personalizadas y manipula efectos como envolvente y vibrato en tiempo real.",
+            "fr": "Synthétiseur interactif utilisant les fonctions audio étendues de Pyxel. Définissez des formes d'onde personnalisées et manipulez des effets comme l'enveloppe et le vibrato en temps réel.",
+            "it": "Sintetizzatore interattivo che utilizza le funzionalità audio espanse di Pyxel. Definisci forme d'onda personalizzate e controlla effetti come inviluppo e vibrato in tempo reale.",
+            "ja": "Pyxel のオーディオ拡張機能を使ったインタラクティブなシンセサイザー。カスタム波形の定義、エンベロープ、ビブラートなどのエフェクトをリアルタイムに操作できます。",
+            "ko": "Pyxel의 오디오 확장 기능을 사용한 인터랙티브 신시사이저. 커스텀 파형 정의, 엔벨로프, 비브라토 등의 이펙트를 실시간으로 조작할 수 있습니다.",
+            "pt": "Sintetizador interativo usando os recursos de áudio expandidos do Pyxel. Defina formas de onda personalizadas e manipule efeitos como envelope e vibrato em tempo real.",
+            "ru": "Интерактивный синтезатор на расширенных аудиофункциях Pyxel. Определяйте пользовательские формы волны и управляйте эффектами вроде огибающей и вибрато в реальном времени.",
+            "tr": "Pyxel'in genişletilmiş ses özelliklerini kullanan etkileşimli sentezleyici. Özel dalga formları tanımlayın ve zarf, vibrato gibi efektleri gerçek zamanlı kontrol edin.",
+            "uk": "Інтерактивний синтезатор на розширених аудіофункціях Pyxel. Визначайте власні форми хвилі та керуйте ефектами на кшталт обвідної та вібрато в реальному часі."
           }
         },
         {
@@ -461,8 +601,18 @@
             "uk": "Малювання Tiled Map File (.tmx) та автоматична генерація BGM"
           },
           "details": {
-            "en": "Loads a Tiled Map Editor (.tmx) file for rendering and demonstrates automatic BGM generation.",
-            "ja": "Tiled Map Editor で作成した .tmx ファイルを読み込んでマップを描画するサンプル。Pyxel の gen_bgm 関数による BGM 自動生成機能も併せて実演します。"
+            "en": "Loads a .tmx file created with Tiled Map Editor to render a map. Also demonstrates automatic BGM generation using Pyxel's gen_bgm function.",
+            "cn": "加载 Tiled Map Editor 创建的 .tmx 文件来绘制地图的示例。同时演示了 Pyxel 的 gen_bgm 函数自动生成 BGM 的功能。",
+            "de": "Lädt eine mit dem Tiled Map Editor erstellte .tmx-Datei zum Rendern einer Karte. Demonstriert auch die automatische BGM-Generierung mit Pyxels gen_bgm-Funktion.",
+            "es": "Carga un archivo .tmx creado con Tiled Map Editor para renderizar un mapa. También demuestra la generación automática de BGM con la función gen_bgm de Pyxel.",
+            "fr": "Charge un fichier .tmx créé avec Tiled Map Editor pour afficher une carte. Démontre également la génération automatique de BGM avec la fonction gen_bgm de Pyxel.",
+            "it": "Carica un file .tmx creato con Tiled Map Editor per renderizzare una mappa. Dimostra anche la generazione automatica di BGM con la funzione gen_bgm di Pyxel.",
+            "ja": "Tiled Map Editor で作成した .tmx ファイルを読み込んでマップを描画するサンプル。Pyxel の gen_bgm 関数による BGM 自動生成機能も併せて実演します。",
+            "ko": "Tiled Map Editor로 만든 .tmx 파일을 로드하여 맵을 렌더링하는 샘플. Pyxel의 gen_bgm 함수를 사용한 BGM 자동 생성 기능도 함께 시연합니다.",
+            "pt": "Carrega um arquivo .tmx criado com o Tiled Map Editor para renderizar um mapa. Também demonstra a geração automática de BGM com a função gen_bgm do Pyxel.",
+            "ru": "Загружает файл .tmx из Tiled Map Editor для отрисовки карты. Также демонстрирует автоматическую генерацию BGM с помощью функции gen_bgm Pyxel.",
+            "tr": "Tiled Map Editor ile oluşturulan .tmx dosyasını yükleyerek harita çizen örnek. Pyxel'in gen_bgm fonksiyonu ile otomatik BGM üretimini de gösterir.",
+            "uk": "Завантажує файл .tmx з Tiled Map Editor для малювання карти. Також демонструє автоматичну генерацію BGM за допомогою функції gen_bgm Pyxel."
           }
         },
         {
@@ -484,8 +634,18 @@
             "uk": "Обертання та масштабування зображень"
           },
           "details": {
-            "en": "Demonstrates image rotation and scaling transformations.",
-            "ja": "blt 関数と bltm 関数の rotate・scale パラメータを使った画像の回転・拡大縮小のデモ。アフィン変換によるリアルタイムの変形処理を確認できます。"
+            "en": "A demo of image rotation and scaling using the rotate and scale parameters of the blt and bltm functions. See real-time affine transformations in action.",
+            "cn": "使用 blt 和 bltm 函数的 rotate、scale 参数进行图像旋转和缩放的演示。可以实时查看仿射变换的效果。",
+            "de": "Demo der Bildrotation und -skalierung mit den rotate- und scale-Parametern der blt- und bltm-Funktionen. Sehen Sie affine Transformationen in Echtzeit.",
+            "es": "Demo de rotación y escalado de imágenes usando los parámetros rotate y scale de las funciones blt y bltm. Observa transformaciones afines en tiempo real.",
+            "fr": "Démo de rotation et mise à l'échelle d'images avec les paramètres rotate et scale des fonctions blt et bltm. Observez les transformations affines en temps réel.",
+            "it": "Demo di rotazione e ridimensionamento delle immagini con i parametri rotate e scale delle funzioni blt e bltm. Osserva le trasformazioni affini in tempo reale.",
+            "ja": "blt 関数と bltm 関数の rotate・scale パラメータを使った画像の回転・拡大縮小のデモ。アフィン変換によるリアルタイムの変形処理を確認できます。",
+            "ko": "blt 함수와 bltm 함수의 rotate, scale 파라미터를 사용한 이미지 회전 및 확대/축소 데모. 어파인 변환에 의한 실시간 변형 처리를 확인할 수 있습니다.",
+            "pt": "Demo de rotação e escalonamento de imagens usando os parâmetros rotate e scale das funções blt e bltm. Veja transformações afins em tempo real.",
+            "ru": "Демонстрация вращения и масштабирования изображений с помощью параметров rotate и scale функций blt и bltm. Наблюдайте аффинные преобразования в реальном времени.",
+            "tr": "blt ve bltm fonksiyonlarının rotate ve scale parametreleriyle görüntü döndürme ve ölçeklendirme demosu. Afin dönüşümlerin gerçek zamanlı etkisini görün.",
+            "uk": "Демонстрація обертання та масштабування зображень за допомогою параметрів rotate і scale функцій blt та bltm. Спостерігайте за афінними перетвореннями в реальному часі."
           }
         },
         {
@@ -507,8 +667,18 @@
             "uk": "Запускач застосунків Pyxel (ви можете грати в різні ігри!)"
           },
           "details": {
-            "en": "A launcher that can run various Pyxel example applications.",
-            "ja": "Pyxel の各種サンプルアプリケーションをメニューから選んで起動できるランチャー。サブプロセスによるアプリ実行やリスト型 UI の実装例としても参考になります。"
+            "en": "A launcher for selecting and running various Pyxel sample applications from a menu. Also serves as a reference for subprocess-based app execution and list-style UI implementation.",
+            "cn": "可以从菜单选择并启动各种 Pyxel 示例应用的启动器。也可作为子进程应用执行和列表式 UI 实现的参考。",
+            "de": "Ein Launcher zum Auswählen und Starten verschiedener Pyxel-Beispielanwendungen aus einem Menü. Dient auch als Referenz für Subprozess-basierte App-Ausführung und Listen-UI-Implementierung.",
+            "es": "Lanzador para seleccionar y ejecutar varias aplicaciones de ejemplo de Pyxel desde un menú. También sirve como referencia para ejecución de apps mediante subprocesos e implementación de UI tipo lista.",
+            "fr": "Lanceur permettant de sélectionner et exécuter diverses applications exemples Pyxel depuis un menu. Sert aussi de référence pour l'exécution d'apps par sous-processus et l'implémentation d'UI en liste.",
+            "it": "Launcher per selezionare e avviare varie applicazioni di esempio Pyxel da un menu. Serve anche come riferimento per l'esecuzione di app tramite sottoprocessi e l'implementazione di UI a lista.",
+            "ja": "Pyxel の各種サンプルアプリケーションをメニューから選んで起動できるランチャー。サブプロセスによるアプリ実行やリスト型 UI の実装例としても参考になります。",
+            "ko": "메뉴에서 다양한 Pyxel 샘플 애플리케이션을 선택하여 실행할 수 있는 런처. 서브프로세스를 통한 앱 실행과 리스트형 UI 구현의 참고가 됩니다.",
+            "pt": "Launcher para selecionar e executar vários aplicativos de exemplo do Pyxel a partir de um menu. Também serve como referência para execução de apps via subprocesso e implementação de UI em lista.",
+            "ru": "Лаунчер для выбора и запуска различных примеров Pyxel из меню. Также полезен как справка по запуску приложений через подпроцессы и реализации интерфейса со списком.",
+            "tr": "Menüden çeşitli Pyxel örnek uygulamalarını seçip çalıştırabilen başlatıcı. Alt süreçle uygulama çalıştırma ve liste tarzı arayüz uygulaması için de referans niteliğindedir.",
+            "uk": "Лаунчер для вибору та запуску різних прикладів Pyxel з меню. Також корисний як довідка із запуску застосунків через підпроцеси та реалізації інтерфейсу зі списком."
           }
         },
         {
@@ -530,8 +700,18 @@
             "uk": "Відтворення аудіо"
           },
           "details": {
-            "en": "Demonstrates audio file playback with Pyxel.",
-            "ja": "OGG 形式の PCM オーディオファイルを読み込んで再生するサンプル。チャンネルゲインの設定や BGM の切り替えなど、オーディオ再生機能の使い方を学べます。"
+            "en": "Loads and plays OGG PCM audio files. Learn audio playback features including channel gain settings and BGM switching.",
+            "cn": "加载和播放 OGG 格式 PCM 音频文件的示例。学习通道增益设置和 BGM 切换等音频播放功能的使用方法。",
+            "de": "Lädt und spielt OGG-PCM-Audiodateien ab. Lernen Sie Audiowiedergabefunktionen wie Kanalverstärkung und BGM-Umschaltung.",
+            "es": "Carga y reproduce archivos de audio OGG PCM. Aprende funciones de reproducción de audio como ajuste de ganancia de canal y cambio de BGM.",
+            "fr": "Charge et lit des fichiers audio OGG PCM. Apprenez les fonctions de lecture audio comme le réglage du gain par canal et le changement de BGM.",
+            "it": "Carica e riproduce file audio OGG PCM. Impara le funzionalità di riproduzione audio come l'impostazione del guadagno per canale e il cambio di BGM.",
+            "ja": "OGG 形式の PCM オーディオファイルを読み込んで再生するサンプル。チャンネルゲインの設定や BGM の切り替えなど、オーディオ再生機能の使い方を学べます。",
+            "ko": "OGG 형식의 PCM 오디오 파일을 로드하고 재생하는 샘플. 채널 게인 설정과 BGM 전환 등 오디오 재생 기능의 사용법을 배울 수 있습니다.",
+            "pt": "Carrega e reproduz arquivos de áudio OGG PCM. Aprenda recursos de reprodução de áudio como configuração de ganho de canal e troca de BGM.",
+            "ru": "Загружает и воспроизводит аудиофайлы OGG PCM. Изучите функции воспроизведения: настройка усиления каналов и переключение BGM.",
+            "tr": "OGG PCM ses dosyalarını yükleyip çalan örnek. Kanal kazanç ayarları ve BGM değiştirme gibi ses çalma özelliklerini öğrenin.",
+            "uk": "Завантажує та відтворює аудіофайли OGG PCM. Вивчіть функції відтворення: налаштування підсилення каналів та перемикання BGM."
           }
         },
         {
@@ -553,8 +733,18 @@
             "uk": "Анімація за допомогою функції flip (тільки для платформ, що не є веб)"
           },
           "details": {
-            "en": "Demonstrates frame-by-frame animation using the flip() function. Desktop/native platforms only.",
-            "ja": "run 関数を使わず flip 関数で 1 フレームずつ手動制御するアニメーション。逐次処理的なコードでゲームループを記述する手法で、Web 版では動作しません。"
+            "en": "An animation with manual frame-by-frame control using the flip function instead of run. A sequential coding approach to game loops. Does not work on the web version.",
+            "cn": "不使用 run 函数，而用 flip 函数逐帧手动控制的动画。以顺序处理方式编写游戏循环，不支持 Web 版。",
+            "de": "Eine Animation mit manueller Einzelbild-Steuerung über die flip-Funktion statt run. Ein sequentieller Programmieransatz für Game-Loops. Funktioniert nicht in der Web-Version.",
+            "es": "Animación con control manual fotograma a fotograma usando la función flip en lugar de run. Un enfoque de programación secuencial para bucles de juego. No funciona en la versión web.",
+            "fr": "Animation avec contrôle manuel image par image via la fonction flip au lieu de run. Une approche de programmation séquentielle pour les boucles de jeu. Ne fonctionne pas sur la version web.",
+            "it": "Animazione con controllo manuale frame per frame usando la funzione flip al posto di run. Un approccio di programmazione sequenziale per i game loop. Non funziona nella versione web.",
+            "ja": "run 関数を使わず flip 関数で 1 フレームずつ手動制御するアニメーション。逐次処理的なコードでゲームループを記述する手法で、Web 版では動作しません。",
+            "ko": "run 함수 대신 flip 함수로 프레임 단위로 수동 제어하는 애니메이션. 순차 처리 코드로 게임 루프를 작성하는 기법으로, 웹 버전에서는 동작하지 않습니다.",
+            "pt": "Animação com controle manual quadro a quadro usando a função flip em vez de run. Uma abordagem de programação sequencial para loops de jogo. Não funciona na versão web.",
+            "ru": "Анимация с покадровым ручным управлением через функцию flip вместо run. Последовательный подход к написанию игрового цикла. Не работает в веб-версии.",
+            "tr": "run fonksiyonu yerine flip fonksiyonuyla kare kare manuel kontrollü animasyon. Oyun döngüsü için sıralı kodlama yaklaşımı. Web sürümünde çalışmaz.",
+            "uk": "Анімація з покадровим ручним керуванням через функцію flip замість run. Послідовний підхід до написання ігрового циклу. Не працює у веб-версії."
           }
         },
         {
@@ -576,8 +766,18 @@
             "uk": "Приклад використання зовнішніх пакетів з Pyxel Web"
           },
           "details": {
-            "en": "Test script for Pyxel web features with external packages (numpy, pandas).",
-            "ja": "Web 版 Pyxel で numpy や pandas などの外部パッケージを利用するサンプル。HTML の script 属性にコードを直接記述し、packages 属性で追加パッケージを指定する方法を示します。"
+            "en": "A sample of using external packages like numpy and pandas with Pyxel Web. Demonstrates writing code directly in the HTML script attribute and specifying additional packages via the packages attribute.",
+            "cn": "在 Web 版 Pyxel 中使用 numpy、pandas 等外部包的示例。展示在 HTML script 属性中直接编写代码，并通过 packages 属性指定额外包的方法。",
+            "de": "Ein Beispiel für die Verwendung externer Pakete wie numpy und pandas mit Pyxel Web. Zeigt, wie Code direkt im HTML-script-Attribut geschrieben und zusätzliche Pakete über das packages-Attribut angegeben werden.",
+            "es": "Ejemplo de uso de paquetes externos como numpy y pandas con Pyxel Web. Demuestra cómo escribir código directamente en el atributo script del HTML y especificar paquetes adicionales mediante el atributo packages.",
+            "fr": "Exemple d'utilisation de packages externes comme numpy et pandas avec Pyxel Web. Montre comment écrire du code directement dans l'attribut script du HTML et spécifier des packages supplémentaires via l'attribut packages.",
+            "it": "Esempio di utilizzo di pacchetti esterni come numpy e pandas con Pyxel Web. Mostra come scrivere codice direttamente nell'attributo script dell'HTML e specificare pacchetti aggiuntivi tramite l'attributo packages.",
+            "ja": "Web 版 Pyxel で numpy や pandas などの外部パッケージを利用するサンプル。HTML の script 属性にコードを直接記述し、packages 属性で追加パッケージを指定する方法を示します。",
+            "ko": "Pyxel Web에서 numpy, pandas 등 외부 패키지를 사용하는 샘플. HTML의 script 속성에 코드를 직접 작성하고 packages 속성으로 추가 패키지를 지정하는 방법을 보여줍니다.",
+            "pt": "Exemplo de uso de pacotes externos como numpy e pandas com Pyxel Web. Demonstra como escrever código diretamente no atributo script do HTML e especificar pacotes adicionais via atributo packages.",
+            "ru": "Пример использования внешних пакетов вроде numpy и pandas с Pyxel Web. Показывает написание кода прямо в атрибуте script HTML и указание дополнительных пакетов через атрибут packages.",
+            "tr": "Pyxel Web ile numpy, pandas gibi harici paketlerin kullanım örneği. HTML'nin script özniteliğinde doğrudan kod yazma ve packages özniteliğiyle ek paketleri belirtme yöntemini gösterir.",
+            "uk": "Приклад використання зовнішніх пакетів на кшталт numpy та pandas з Pyxel Web. Показує написання коду прямо в атрибуті script HTML та вказання додаткових пакетів через атрибут packages."
           }
         }
       ]
@@ -618,8 +818,18 @@
             "uk": "Roguelike-гра від Adam, переможець Pyxel Jam"
           },
           "details": {
-            "en": "Winner of the 1st Pyxel Jam game competition, created by Adam (@helpcomputer).",
-            "ja": "Adam (@helpcomputer) 制作の第1回 Pyxel Jam ゲームコンテスト優勝作品。制限時間内にダンジョンを探索するローグライクゲームで、ランダム生成されるマップを攻略します。"
+            "en": "Winner of the 1st Pyxel Jam game competition, created by Adam (@helpcomputer). A roguelike dungeon explorer where you navigate procedurally generated maps within a time limit.",
+            "cn": "Adam (@helpcomputer) 制作的第 1 届 Pyxel Jam 游戏竞赛获奖作品。在限定时间内探索随机生成地图的 roguelike 地牢游戏。",
+            "de": "Gewinner des 1. Pyxel-Jam-Spielwettbewerbs, erstellt von Adam (@helpcomputer). Ein Roguelike-Dungeon-Spiel, bei dem man prozedural generierte Karten innerhalb eines Zeitlimits erkundet.",
+            "es": "Ganador de la 1ª competición Pyxel Jam, creado por Adam (@helpcomputer). Un roguelike de exploración de mazmorras con mapas generados proceduralmente dentro de un límite de tiempo.",
+            "fr": "Gagnant de la 1ère compétition Pyxel Jam, créé par Adam (@helpcomputer). Un roguelike d'exploration de donjons avec des cartes générées de manière procédurale et un temps limité.",
+            "it": "Vincitore della 1ª competizione Pyxel Jam, creato da Adam (@helpcomputer). Un roguelike di esplorazione di dungeon con mappe generate proceduralmente entro un limite di tempo.",
+            "ja": "Adam (@helpcomputer) 制作の第1回 Pyxel Jam ゲームコンテスト優勝作品。制限時間内にダンジョンを探索するローグライクゲームで、ランダム生成されるマップを攻略します。",
+            "ko": "Adam (@helpcomputer) 제작의 제1회 Pyxel Jam 게임 대회 우승작. 제한 시간 내에 랜덤 생성되는 맵을 탐험하는 로그라이크 던전 게임입니다.",
+            "pt": "Vencedor da 1ª competição Pyxel Jam, criado por Adam (@helpcomputer). Um roguelike de exploração de masmorras com mapas gerados proceduralmente dentro de um limite de tempo.",
+            "ru": "Победитель 1-го конкурса Pyxel Jam от Adam (@helpcomputer). Roguelike-исследование подземелий с процедурно генерируемыми картами и ограничением по времени.",
+            "tr": "Adam (@helpcomputer) tarafından yapılmış 1. Pyxel Jam yarışması birincisi. Süre sınırı içinde rastgele oluşturulan haritalarda zindan keşfi yapılan roguelike oyun.",
+            "uk": "Переможець 1-го конкурсу Pyxel Jam від Adam (@helpcomputer). Roguelike-дослідження підземель з процедурно генерованими картами та обмеженням у часі."
           }
         },
         {
@@ -642,7 +852,17 @@
           },
           "details": {
             "en": "An arcade ball physics game inspired by Taito's Xyzolog, created by Adam (@helpcomputer).",
-            "ja": "Adam (@helpcomputer) 制作のアーケードスタイルのボール物理ゲーム。タイトーの Xyzolog にインスパイアされた作品です。"
+            "cn": "Adam (@helpcomputer) 制作的街机风格弹球物理游戏，灵感来自 Taito 的 Xyzolog。",
+            "de": "Ein Arcade-Ballphysik-Spiel inspiriert von Taitos Xyzolog, erstellt von Adam (@helpcomputer).",
+            "es": "Juego arcade de física de bolas inspirado en Xyzolog de Taito, creado por Adam (@helpcomputer).",
+            "fr": "Jeu d'arcade de physique de balle inspiré par Xyzolog de Taito, créé par Adam (@helpcomputer).",
+            "it": "Gioco arcade di fisica della palla ispirato a Xyzolog di Taito, creato da Adam (@helpcomputer).",
+            "ja": "Adam (@helpcomputer) 制作のアーケードスタイルのボール物理ゲーム。タイトーの Xyzolog にインスパイアされた作品です。",
+            "ko": "Taito의 Xyzolog에서 영감받은 Adam (@helpcomputer) 제작의 아케이드 볼 물리 게임.",
+            "pt": "Jogo arcade de física de bola inspirado em Xyzolog da Taito, criado por Adam (@helpcomputer).",
+            "ru": "Аркадная игра с физикой мяча, вдохновлённая Xyzolog от Taito, создана Adam (@helpcomputer).",
+            "tr": "Adam (@helpcomputer) tarafından yapılmış, Taito'nun Xyzolog'undan esinlenen arcade top fiziği oyunu.",
+            "uk": "Аркадна гра з фізикою м'яча, натхненна Xyzolog від Taito, створена Adam (@helpcomputer)."
           }
         },
         {
@@ -664,8 +884,18 @@
             "uk": "Shoot'em up у стилі MSX/SG-1000 від Adam"
           },
           "details": {
-            "en": "An MSX/SG-1000 inspired shooting game by Adam (@helpcomputer).",
-            "ja": "Adam (@helpcomputer) 制作の MSX や SG-1000 などレトロゲーム機にインスパイアされたシューティングゲーム。1980年代のアーケードシューティングを彷彿とさせる作品です。"
+            "en": "A shooting game inspired by retro consoles like MSX and SG-1000, created by Adam (@helpcomputer). Evokes the spirit of 1980s arcade shooters.",
+            "cn": "Adam (@helpcomputer) 制作的受 MSX 和 SG-1000 等复古游戏机启发的射击游戏。令人回想起 1980 年代的街机射击游戏。",
+            "de": "Ein von Retro-Konsolen wie MSX und SG-1000 inspiriertes Schießspiel von Adam (@helpcomputer). Erinnert an die Arcade-Shooter der 1980er Jahre.",
+            "es": "Juego de disparos inspirado en consolas retro como MSX y SG-1000, creado por Adam (@helpcomputer). Evoca el espíritu de los shooters arcade de los años 80.",
+            "fr": "Jeu de tir inspiré des consoles rétro comme MSX et SG-1000, créé par Adam (@helpcomputer). Évoque l'esprit des shooters arcade des années 1980.",
+            "it": "Gioco di tiro ispirato a console retro come MSX e SG-1000, creato da Adam (@helpcomputer). Evoca lo spirito degli shooter arcade degli anni '80.",
+            "ja": "Adam (@helpcomputer) 制作の MSX や SG-1000 などレトロゲーム機にインスパイアされたシューティングゲーム。1980年代のアーケードシューティングを彷彿とさせる作品です。",
+            "ko": "Adam (@helpcomputer) 제작의 MSX, SG-1000 등 레트로 게임기에서 영감받은 슈팅 게임. 1980년대 아케이드 슈팅의 감성을 되살린 작품입니다.",
+            "pt": "Jogo de tiro inspirado em consoles retro como MSX e SG-1000, criado por Adam (@helpcomputer). Evoca o espírito dos shooters arcade dos anos 1980.",
+            "ru": "Шутер, вдохновлённый ретро-консолями MSX и SG-1000, от Adam (@helpcomputer). Передаёт дух аркадных шутеров 1980-х годов.",
+            "tr": "Adam (@helpcomputer) tarafından yapılmış, MSX ve SG-1000 gibi retro konsollardan esinlenen atış oyunu. 1980'lerin arcade shooter ruhunu yansıtır.",
+            "uk": "Шутер, натхненний ретро-консолями MSX та SG-1000, від Adam (@helpcomputer). Передає дух аркадних шутерів 1980-х років."
           }
         },
         {
@@ -687,8 +917,18 @@
             "uk": "Аркадний шутер у стилі Defender від Adam"
           },
           "details": {
-            "en": "A Defender-inspired arcade shooter with procedurally generated terrain. By Adam (@helpcomputer).",
-            "ja": "Adam (@helpcomputer) 制作の Defender にインスパイアされたアーケードシューター。手続き的に生成される地形の上を飛び回り、敵を撃破していきます。"
+            "en": "A Defender-inspired arcade shooter with procedurally generated terrain, created by Adam (@helpcomputer). Fly over the landscape and shoot down enemies.",
+            "cn": "Adam (@helpcomputer) 制作的受 Defender 启发的街机射击游戏。在程序生成的地形上空飞行，击败敌人。",
+            "de": "Ein von Defender inspirierter Arcade-Shooter mit prozedural generiertem Gelände von Adam (@helpcomputer). Fliegen Sie über die Landschaft und schießen Sie Feinde ab.",
+            "es": "Shooter arcade inspirado en Defender con terreno generado proceduralmente, creado por Adam (@helpcomputer). Vuela sobre el paisaje y derriba enemigos.",
+            "fr": "Shooter arcade inspiré de Defender avec terrain généré de manière procédurale, créé par Adam (@helpcomputer). Survolez le paysage et abattez les ennemis.",
+            "it": "Shooter arcade ispirato a Defender con terreno generato proceduralmente, creato da Adam (@helpcomputer). Vola sul paesaggio e abbatti i nemici.",
+            "ja": "Adam (@helpcomputer) 制作の Defender にインスパイアされたアーケードシューター。手続き的に生成される地形の上を飛び回り、敵を撃破していきます。",
+            "ko": "Adam (@helpcomputer) 제작의 Defender에서 영감받은 아케이드 슈터. 절차적으로 생성되는 지형 위를 날아다니며 적을 격파합니다.",
+            "pt": "Shooter arcade inspirado em Defender com terreno gerado proceduralmente, criado por Adam (@helpcomputer). Voe sobre a paisagem e abata os inimigos.",
+            "ru": "Аркадный шутер в стиле Defender с процедурно генерируемым ландшафтом от Adam (@helpcomputer). Летайте над местностью и уничтожайте врагов.",
+            "tr": "Adam (@helpcomputer) tarafından yapılmış, Defender'dan esinlenen prosedürel arazi oluşturmalı arcade shooter. Arazi üzerinde uçarak düşmanları yok edin.",
+            "uk": "Аркадний шутер у стилі Defender з процедурно генерованим ландшафтом від Adam (@helpcomputer). Літайте над місцевістю та знищуйте ворогів."
           }
         },
         {
@@ -710,8 +950,18 @@
             "uk": "Гра порятунку астронавтів на одній клавіші (приклад з Книги Pyxel)"
           },
           "details": {
-            "en": "A one-button rescue game from the Pyxel Official Book (Gijutsu-Hyoron Publishing).",
-            "ja": "Pyxel 公式書籍 (技術評論社刊) に収録されたサンプルゲーム。ワンキー操作で宇宙飛行士を救出するシンプルながらも奥深いゲームで、ゲーム制作の基礎を学べます。"
+            "en": "A sample game from the Pyxel Official Book (Gijutsu-Hyoron Publishing). A simple yet deep one-button game where you rescue astronauts, covering the basics of game development.",
+            "cn": "收录于 Pyxel 官方书籍（技术评论社出版）的示例游戏。通过单键操作救出宇航员的简单而有深度的游戏，学习游戏开发基础。",
+            "de": "Ein Beispielspiel aus dem offiziellen Pyxel-Buch (Gijutsu-Hyoron-Verlag). Ein einfaches, aber tiefgründiges Ein-Tasten-Spiel zur Rettung von Astronauten, das die Grundlagen der Spieleentwicklung vermittelt.",
+            "es": "Juego de ejemplo del Libro Oficial de Pyxel (editorial Gijutsu-Hyoron). Un juego simple pero profundo de un solo botón donde rescatas astronautas, cubriendo los fundamentos del desarrollo de juegos.",
+            "fr": "Jeu exemple du Livre Officiel Pyxel (éditions Gijutsu-Hyoron). Un jeu à un seul bouton, simple mais profond, où vous sauvez des astronautes, couvrant les bases du développement de jeux.",
+            "it": "Gioco di esempio dal Libro Ufficiale Pyxel (Gijutsu-Hyoron Publishing). Un gioco a un solo tasto, semplice ma profondo, dove si salvano astronauti, coprendo le basi dello sviluppo di giochi.",
+            "ja": "Pyxel 公式書籍 (技術評論社刊) に収録されたサンプルゲーム。ワンキー操作で宇宙飛行士を救出するシンプルながらも奥深いゲームで、ゲーム制作の基礎を学べます。",
+            "ko": "Pyxel 공식 서적 (기술평론사 출판)에 수록된 샘플 게임. 원키 조작으로 우주비행사를 구출하는 심플하면서도 깊이 있는 게임으로, 게임 개발의 기초를 배울 수 있습니다.",
+            "pt": "Jogo de exemplo do Livro Oficial do Pyxel (editora Gijutsu-Hyoron). Um jogo de um botão simples mas profundo onde você resgata astronautas, cobrindo os fundamentos do desenvolvimento de jogos.",
+            "ru": "Пример из официальной книги Pyxel (издательство Gijutsu-Hyoron). Простая, но глубокая игра на одной кнопке по спасению астронавтов, обучающая основам разработки игр.",
+            "tr": "Pyxel Resmi Kitabı'ndan (Gijutsu-Hyoron Yayınevi) örnek oyun. Astronotları kurtardığınız basit ama derin tek tuşlu oyun ile oyun geliştirmenin temellerini öğrenin.",
+            "uk": "Приклад з офіційної книги Pyxel (видавництво Gijutsu-Hyoron). Проста, але глибока гра на одній кнопці з порятунку астронавтів, що навчає основам розробки ігор."
           }
         },
         {
@@ -733,8 +983,18 @@
             "uk": "Shoot'em up із безліччю куль (приклад з Книги Pyxel)"
           },
           "details": {
-            "en": "A shooting game from the Pyxel Official Book (Gijutsu-Hyoron Publishing).",
-            "ja": "Pyxel 公式書籍 (技術評論社刊) に収録されたサンプルゲーム。弾幕が飛び交う本格的なシューティングで、敵パターンやスコアシステムの実装を学べます。"
+            "en": "A sample game from the Pyxel Official Book (Gijutsu-Hyoron Publishing). A full-fledged bullet-heavy shooter for learning enemy pattern and score system implementation.",
+            "cn": "收录于 Pyxel 官方书籍（技术评论社出版）的示例游戏。弹幕飞舞的正统射击游戏，学习敌人模式和分数系统的实现。",
+            "de": "Ein Beispielspiel aus dem offiziellen Pyxel-Buch (Gijutsu-Hyoron-Verlag). Ein vollwertiger Bullet-Hell-Shooter zum Erlernen der Implementierung von Feindmustern und Punktesystemen.",
+            "es": "Juego de ejemplo del Libro Oficial de Pyxel (editorial Gijutsu-Hyoron). Un shooter completo con lluvia de balas para aprender la implementación de patrones de enemigos y sistemas de puntuación.",
+            "fr": "Jeu exemple du Livre Officiel Pyxel (éditions Gijutsu-Hyoron). Un shooter complet à pluie de balles pour apprendre l'implémentation de patterns d'ennemis et de systèmes de score.",
+            "it": "Gioco di esempio dal Libro Ufficiale Pyxel (Gijutsu-Hyoron Publishing). Uno shooter completo ricco di proiettili per imparare l'implementazione di pattern nemici e sistemi di punteggio.",
+            "ja": "Pyxel 公式書籍 (技術評論社刊) に収録されたサンプルゲーム。弾幕が飛び交う本格的なシューティングで、敵パターンやスコアシステムの実装を学べます。",
+            "ko": "Pyxel 공식 서적 (기술평론사 출판)에 수록된 샘플 게임. 탄막이 난무하는 본격 슈팅 게임으로, 적 패턴과 스코어 시스템의 구현을 배울 수 있습니다.",
+            "pt": "Jogo de exemplo do Livro Oficial do Pyxel (editora Gijutsu-Hyoron). Um shooter completo com muitos projéteis para aprender a implementação de padrões de inimigos e sistemas de pontuação.",
+            "ru": "Пример из официальной книги Pyxel (издательство Gijutsu-Hyoron). Полноценный шутер с обилием пуль для изучения реализации паттернов врагов и системы очков.",
+            "tr": "Pyxel Resmi Kitabı'ndan (Gijutsu-Hyoron Yayınevi) örnek oyun. Düşman desenleri ve skor sistemi uygulamasını öğrenmek için yoğun mermili tam donanımlı shooter.",
+            "uk": "Приклад з офіційної книги Pyxel (видавництво Gijutsu-Hyoron). Повноцінний шутер із безліччю куль для вивчення реалізації патернів ворогів та системи очок."
           }
         },
         {
@@ -756,8 +1016,18 @@
             "uk": "Платформер: уникай пасток, збирай самоцвіти (приклад з Книги Pyxel)"
           },
           "details": {
-            "en": "A platformer game from the Pyxel Official Book (Gijutsu-Hyoron Publishing).",
-            "ja": "Pyxel 公式書籍 (技術評論社刊) に収録されたサンプルゲーム。罠を避けながら洞窟内の宝石を集めるプラットフォーマーで、マップデザインや当たり判定を学べます。"
+            "en": "A sample game from the Pyxel Official Book (Gijutsu-Hyoron Publishing). A platformer where you collect gems in caves while dodging traps, covering map design and collision detection.",
+            "cn": "收录于 Pyxel 官方书籍（技术评论社出版）的示例游戏。在洞窟中避开陷阱收集宝石的平台游戏，学习地图设计和碰撞检测。",
+            "de": "Ein Beispielspiel aus dem offiziellen Pyxel-Buch (Gijutsu-Hyoron-Verlag). Ein Plattformspiel, in dem man Edelsteine in Höhlen sammelt und Fallen ausweicht – mit Fokus auf Kartendesign und Kollisionserkennung.",
+            "es": "Juego de ejemplo del Libro Oficial de Pyxel (editorial Gijutsu-Hyoron). Un plataformas donde recoges gemas en cuevas esquivando trampas, cubriendo diseño de mapas y detección de colisiones.",
+            "fr": "Jeu exemple du Livre Officiel Pyxel (éditions Gijutsu-Hyoron). Un platformer où vous collectez des gemmes dans des grottes en évitant les pièges, couvrant le design de cartes et la détection de collisions.",
+            "it": "Gioco di esempio dal Libro Ufficiale Pyxel (Gijutsu-Hyoron Publishing). Un platformer dove si raccolgono gemme nelle caverne evitando trappole, coprendo il design delle mappe e il rilevamento delle collisioni.",
+            "ja": "Pyxel 公式書籍 (技術評論社刊) に収録されたサンプルゲーム。罠を避けながら洞窟内の宝石を集めるプラットフォーマーで、マップデザインや当たり判定を学べます。",
+            "ko": "Pyxel 공식 서적 (기술평론사 출판)에 수록된 샘플 게임. 함정을 피하며 동굴 속 보석을 모으는 플랫포머로, 맵 디자인과 충돌 판정을 배울 수 있습니다.",
+            "pt": "Jogo de exemplo do Livro Oficial do Pyxel (editora Gijutsu-Hyoron). Um platformer onde você coleta gemas em cavernas desviando de armadilhas, cobrindo design de mapas e detecção de colisão.",
+            "ru": "Пример из официальной книги Pyxel (издательство Gijutsu-Hyoron). Платформер, где вы собираете самоцветы в пещерах, уклоняясь от ловушек — изучение дизайна карт и обнаружения столкновений.",
+            "tr": "Pyxel Resmi Kitabı'ndan (Gijutsu-Hyoron Yayınevi) örnek oyun. Tuzaklardan kaçarak mağaralarda mücevher toplanan platformer, harita tasarımı ve çarpışma algılamayı kapsar.",
+            "uk": "Приклад з офіційної книги Pyxel (видавництво Gijutsu-Hyoron). Платформер, де ви збираєте самоцвіти в печерах, уникаючи пасток — вивчення дизайну карт та виявлення зіткнень."
           }
         },
         {
@@ -780,7 +1050,17 @@
           },
           "details": {
             "en": "The tool that became the basis of Pyxel's gen_bgm function, created by shiromofufactory. Automatically generates retro-style BGM from simple parameters.",
-            "ja": "frenchbread (shiromofufactory) 制作の 8ビット BGM 自動生成ツール。Pyxel の gen_bgm 関数のベースとなったツールで、パラメータを指定するだけでレトロゲーム風の BGM を自動生成できます。"
+            "cn": "shiromofufactory 制作的 8 位 BGM 自动生成工具。Pyxel gen_bgm 函数的原型，只需指定参数即可自动生成复古风格的 BGM。",
+            "de": "Das Tool, das die Grundlage für Pyxels gen_bgm-Funktion wurde, erstellt von shiromofufactory. Generiert automatisch Retro-BGM aus einfachen Parametern.",
+            "es": "La herramienta que se convirtió en la base de la función gen_bgm de Pyxel, creada por shiromofufactory. Genera automáticamente BGM de estilo retro a partir de parámetros simples.",
+            "fr": "L'outil à l'origine de la fonction gen_bgm de Pyxel, créé par shiromofufactory. Génère automatiquement des BGM de style rétro à partir de paramètres simples.",
+            "it": "Lo strumento che è diventato la base della funzione gen_bgm di Pyxel, creato da shiromofufactory. Genera automaticamente BGM in stile retro da semplici parametri.",
+            "ja": "frenchbread (shiromofufactory) 制作の 8ビット BGM 自動生成ツール。Pyxel の gen_bgm 関数のベースとなったツールで、パラメータを指定するだけでレトロゲーム風の BGM を自動生成できます。",
+            "ko": "Pyxel의 gen_bgm 함수의 기반이 된 shiromofufactory 제작 도구. 간단한 파라미터 지정만으로 레트로 스타일 BGM을 자동 생성할 수 있습니다.",
+            "pt": "A ferramenta que se tornou a base da função gen_bgm do Pyxel, criada por shiromofufactory. Gera automaticamente BGM em estilo retro a partir de parâmetros simples.",
+            "ru": "Инструмент, ставший основой функции gen_bgm в Pyxel, созданный shiromofufactory. Автоматически генерирует ретро-BGM из простых параметров.",
+            "tr": "Pyxel'in gen_bgm fonksiyonunun temelini oluşturan shiromofufactory tarafından yapılmış araç. Basit parametrelerle retro tarzı BGM otomatik oluşturur.",
+            "uk": "Інструмент, що став основою функції gen_bgm у Pyxel, створений shiromofufactory. Автоматично генерує ретро-BGM з простих параметрів."
           }
         }
       ]
@@ -821,8 +1101,18 @@
             "uk": "Режим редагування зображень Pyxel Editor (у складі Pyxel)"
           },
           "details": {
-            "en": "Pyxel built-in image editor for creating and editing sprite sheets.",
-            "ja": "Pyxel に同梱されているドット絵向け画像エディタ。スプライトやキャラクター画像の作成・編集ができ、イメージバンクを切り替えて管理できます。"
+            "en": "Pyxel's built-in pixel art image editor. Create and edit sprite and character graphics, with support for switching between image banks.",
+            "cn": "Pyxel 内置的像素画图像编辑器。可以创建和编辑精灵和角色图像，支持切换图像库进行管理。",
+            "de": "Pyxels integrierter Pixelart-Bildeditor. Erstellen und bearbeiten Sie Sprite- und Charaktergrafiken mit Unterstützung für den Wechsel zwischen Bildbänken.",
+            "es": "Editor de imágenes pixel art integrado en Pyxel. Crea y edita gráficos de sprites y personajes, con soporte para cambiar entre bancos de imágenes.",
+            "fr": "Éditeur d'images pixel art intégré à Pyxel. Créez et modifiez des graphismes de sprites et personnages, avec prise en charge du changement entre les banques d'images.",
+            "it": "Editor di immagini pixel art integrato in Pyxel. Crea e modifica grafica di sprite e personaggi, con supporto per il passaggio tra banchi di immagini.",
+            "ja": "Pyxel に同梱されているドット絵向け画像エディタ。スプライトやキャラクター画像の作成・編集ができ、イメージバンクを切り替えて管理できます。",
+            "ko": "Pyxel에 내장된 도트 그래픽용 이미지 에디터. 스프라이트와 캐릭터 이미지를 생성·편집할 수 있으며, 이미지 뱅크를 전환하여 관리할 수 있습니다.",
+            "pt": "Editor de imagens pixel art integrado ao Pyxel. Crie e edite gráficos de sprites e personagens, com suporte para alternar entre bancos de imagens.",
+            "ru": "Встроенный редактор изображений для пиксель-арта. Создавайте и редактируйте спрайты и графику персонажей с переключением между банками изображений.",
+            "tr": "Pyxel'in yerleşik piksel sanatı görüntü editörü. Sprite ve karakter grafiklerini oluşturup düzenleyin, görüntü bankları arasında geçiş yaparak yönetin.",
+            "uk": "Вбудований редактор зображень для піксель-арту. Створюйте та редагуйте спрайти й графіку персонажів із перемиканням між банками зображень."
           }
         },
         {
@@ -844,8 +1134,18 @@
             "uk": "Режим редагування тайлових карт Pyxel Editor (у складі Pyxel)"
           },
           "details": {
-            "en": "Pyxel built-in tilemap editor for designing game maps.",
-            "ja": "Pyxel に同梱されているタイルマップエディタ。イメージバンクのタイルを並べてゲームマップを作成でき、複数のタイルマップを切り替えて管理できます。"
+            "en": "Pyxel's built-in tilemap editor. Arrange tiles from image banks to create game maps, with support for switching between multiple tilemaps.",
+            "cn": "Pyxel 内置的瓦片地图编辑器。排列图像库中的瓦片来创建游戏地图，支持切换和管理多个瓦片地图。",
+            "de": "Pyxels integrierter Tilemap-Editor. Ordnen Sie Tiles aus Bildbänken an, um Spielkarten zu erstellen, mit Unterstützung für den Wechsel zwischen mehreren Tilemaps.",
+            "es": "Editor de tilemaps integrado en Pyxel. Organiza tiles de los bancos de imágenes para crear mapas de juego, con soporte para cambiar entre múltiples tilemaps.",
+            "fr": "Éditeur de tilemaps intégré à Pyxel. Arrangez les tiles des banques d'images pour créer des cartes de jeu, avec prise en charge du changement entre plusieurs tilemaps.",
+            "it": "Editor di tilemap integrato in Pyxel. Disponi i tile dai banchi di immagini per creare mappe di gioco, con supporto per il passaggio tra più tilemap.",
+            "ja": "Pyxel に同梱されているタイルマップエディタ。イメージバンクのタイルを並べてゲームマップを作成でき、複数のタイルマップを切り替えて管理できます。",
+            "ko": "Pyxel에 내장된 타일맵 에디터. 이미지 뱅크의 타일을 배치하여 게임 맵을 만들 수 있으며, 여러 타일맵을 전환하여 관리할 수 있습니다.",
+            "pt": "Editor de tilemaps integrado ao Pyxel. Organize tiles dos bancos de imagens para criar mapas de jogo, com suporte para alternar entre múltiplos tilemaps.",
+            "ru": "Встроенный редактор тайловых карт. Размещайте тайлы из банков изображений для создания игровых карт с переключением между несколькими тайловыми картами.",
+            "tr": "Pyxel'in yerleşik tilemap editörü. Görüntü bankalarından tile'ları düzenleyerek oyun haritaları oluşturun, birden fazla tilemap arasında geçiş yaparak yönetin.",
+            "uk": "Вбудований редактор тайлових карт. Розміщуйте тайли з банків зображень для створення ігрових карт із перемиканням між кількома тайловими картами."
           }
         },
         {
@@ -867,8 +1167,18 @@
             "uk": "Режим редагування звуків Pyxel Editor (у складі Pyxel)"
           },
           "details": {
-            "en": "Pyxel built-in sound editor for composing sound effects.",
-            "ja": "Pyxel に同梱されているサウンドエディタ。音色・音量・エフェクトなどをグラフィカルに編集し、ゲーム用の効果音やメロディーフレーズを作成できます。"
+            "en": "Pyxel's built-in sound editor. Graphically edit tone, volume, and effects to create sound effects and melody phrases for your games.",
+            "cn": "Pyxel 内置的声音编辑器。以图形化方式编辑音色、音量和效果，创建游戏用的音效和旋律片段。",
+            "de": "Pyxels integrierter Soundeditor. Bearbeiten Sie Klangfarbe, Lautstärke und Effekte grafisch, um Soundeffekte und Melodiephrasen für Ihre Spiele zu erstellen.",
+            "es": "Editor de sonido integrado en Pyxel. Edita gráficamente tono, volumen y efectos para crear efectos de sonido y frases melódicas para tus juegos.",
+            "fr": "Éditeur de sons intégré à Pyxel. Éditez graphiquement le timbre, le volume et les effets pour créer des effets sonores et des phrases mélodiques pour vos jeux.",
+            "it": "Editor di suoni integrato in Pyxel. Modifica graficamente timbro, volume ed effetti per creare effetti sonori e frasi melodiche per i tuoi giochi.",
+            "ja": "Pyxel に同梱されているサウンドエディタ。音色・音量・エフェクトなどをグラフィカルに編集し、ゲーム用の効果音やメロディーフレーズを作成できます。",
+            "ko": "Pyxel에 내장된 사운드 에디터. 음색, 음량, 이펙트 등을 그래픽으로 편집하여 게임용 효과음과 멜로디 프레이즈를 만들 수 있습니다.",
+            "pt": "Editor de som integrado ao Pyxel. Edite graficamente timbre, volume e efeitos para criar efeitos sonoros e frases melódicas para seus jogos.",
+            "ru": "Встроенный звуковой редактор. Графически редактируйте тембр, громкость и эффекты для создания звуковых эффектов и мелодических фраз для ваших игр.",
+            "tr": "Pyxel'in yerleşik ses editörü. Tını, ses seviyesi ve efektleri görsel olarak düzenleyerek oyunlarınız için ses efektleri ve melodi cümleleri oluşturun.",
+            "uk": "Вбудований звуковий редактор. Графічно редагуйте тембр, гучність та ефекти для створення звукових ефектів та мелодійних фраз для ваших ігор."
           }
         },
         {
@@ -890,8 +1200,18 @@
             "uk": "Режим редагування музики Pyxel Editor (у складі Pyxel)"
           },
           "details": {
-            "en": "Pyxel built-in music editor for composing background music.",
-            "ja": "Pyxel に同梱されているミュージックエディタ。サウンドエディタで作成したフレーズを組み合わせて、最大 4 チャンネルの BGM を構成できます。"
+            "en": "Pyxel's built-in music editor. Combine phrases created in the Sound Editor to compose BGM with up to 4 channels.",
+            "cn": "Pyxel 内置的音乐编辑器。组合声音编辑器中创建的乐句，构成最多 4 个通道的 BGM。",
+            "de": "Pyxels integrierter Musikeditor. Kombinieren Sie im Soundeditor erstellte Phrasen zu BGM mit bis zu 4 Kanälen.",
+            "es": "Editor de música integrado en Pyxel. Combina frases creadas en el Editor de Sonido para componer BGM con hasta 4 canales.",
+            "fr": "Éditeur de musique intégré à Pyxel. Combinez les phrases créées dans l'éditeur de sons pour composer des BGM jusqu'à 4 canaux.",
+            "it": "Editor musicale integrato in Pyxel. Combina le frasi create nell'Editor di Suoni per comporre BGM fino a 4 canali.",
+            "ja": "Pyxel に同梱されているミュージックエディタ。サウンドエディタで作成したフレーズを組み合わせて、最大 4 チャンネルの BGM を構成できます。",
+            "ko": "Pyxel에 내장된 뮤직 에디터. 사운드 에디터에서 만든 프레이즈를 조합하여 최대 4채널의 BGM을 구성할 수 있습니다.",
+            "pt": "Editor de música integrado ao Pyxel. Combine frases criadas no Editor de Som para compor BGM com até 4 canais.",
+            "ru": "Встроенный музыкальный редактор. Комбинируйте фразы из звукового редактора для создания BGM с поддержкой до 4 каналов.",
+            "tr": "Pyxel'in yerleşik müzik editörü. Ses editöründe oluşturulan cümleleri birleştirerek 4 kanala kadar BGM oluşturun.",
+            "uk": "Вбудований музичний редактор. Комбінуйте фрази зі звукового редактора для створення BGM з підтримкою до 4 каналів."
           }
         },
         {
@@ -913,8 +1233,18 @@
             "uk": "Онлайн-середовище розробки Pyxel без налаштування"
           },
           "details": {
-            "en": "Browser-based IDE for creating and running Pyxel applications without installing Pyxel.",
-            "ja": "Pyxel のインストールなしでアプリケーションの作成・実行ができるブラウザベースの開発環境。コードエディタとリソースエディタを内蔵し、すぐに Pyxel 開発を始められます。"
+            "en": "A browser-based development environment for creating and running Pyxel applications without installing Pyxel. Includes a built-in code editor and resource editor to start developing right away.",
+            "cn": "无需安装 Pyxel 即可创建和运行应用的浏览器开发环境。内置代码编辑器和资源编辑器，可以立即开始 Pyxel 开发。",
+            "de": "Eine browserbasierte Entwicklungsumgebung zum Erstellen und Ausführen von Pyxel-Anwendungen ohne Installation. Mit integriertem Code-Editor und Ressourcen-Editor sofort loslegen.",
+            "es": "Entorno de desarrollo en el navegador para crear y ejecutar aplicaciones Pyxel sin instalar Pyxel. Incluye editor de código y editor de recursos integrados para empezar a desarrollar de inmediato.",
+            "fr": "Environnement de développement dans le navigateur pour créer et exécuter des applications Pyxel sans installation. Inclut un éditeur de code et un éditeur de ressources intégrés pour commencer immédiatement.",
+            "it": "Ambiente di sviluppo nel browser per creare ed eseguire applicazioni Pyxel senza installazione. Include un editor di codice e un editor di risorse integrati per iniziare subito.",
+            "ja": "Pyxel のインストールなしでアプリケーションの作成・実行ができるブラウザベースの開発環境。コードエディタとリソースエディタを内蔵し、すぐに Pyxel 開発を始められます。",
+            "ko": "Pyxel 설치 없이 애플리케이션을 만들고 실행할 수 있는 브라우저 기반 개발 환경. 코드 에디터와 리소스 에디터를 내장하여 바로 Pyxel 개발을 시작할 수 있습니다.",
+            "pt": "Ambiente de desenvolvimento no navegador para criar e executar aplicativos Pyxel sem instalação. Inclui editor de código e editor de recursos integrados para começar a desenvolver imediatamente.",
+            "ru": "Браузерная среда разработки для создания и запуска приложений Pyxel без установки. Встроенный редактор кода и редактор ресурсов позволяют начать разработку сразу.",
+            "tr": "Pyxel kurulumu olmadan uygulama oluşturup çalıştırabilen tarayıcı tabanlı geliştirme ortamı. Yerleşik kod editörü ve kaynak editörü ile hemen Pyxel geliştirmeye başlayın.",
+            "uk": "Браузерне середовище розробки для створення та запуску застосунків Pyxel без встановлення. Вбудований редактор коду та редактор ресурсів дозволяють розпочати розробку одразу."
           }
         },
         {
@@ -936,8 +1266,18 @@
             "uk": "Браузерне середовище створення чіптюн-музики"
           },
           "details": {
-            "en": "Browser-based Pyxel MML editor for composing chiptune music and sound effects.",
-            "ja": "ブラウザ上で Pyxel 向け MML を使ってチップチューンを制作できるエディタ。4 チャンネルの編集、リアルタイムプレビュー、URL や QR コードでの楽曲共有が可能です。"
+            "en": "A browser-based editor for composing chiptune music using Pyxel MML. Supports 4-channel editing, real-time preview, and song sharing via URL or QR code.",
+            "cn": "在浏览器中使用 Pyxel MML 制作芯片音乐的编辑器。支持 4 通道编辑、实时预览以及通过 URL 或二维码分享乐曲。",
+            "de": "Ein browserbasierter Editor zum Komponieren von Chiptune-Musik mit Pyxel-MML. Unterstützt 4-Kanal-Bearbeitung, Echtzeitvorschau und Songfreigabe per URL oder QR-Code.",
+            "es": "Editor en el navegador para componer música chiptune con Pyxel MML. Soporta edición de 4 canales, vista previa en tiempo real y compartir canciones por URL o código QR.",
+            "fr": "Éditeur dans le navigateur pour composer de la musique chiptune avec Pyxel MML. Prend en charge l'édition 4 canaux, l'aperçu en temps réel et le partage de morceaux par URL ou QR code.",
+            "it": "Editor nel browser per comporre musica chiptune con Pyxel MML. Supporta editing a 4 canali, anteprima in tempo reale e condivisione brani tramite URL o codice QR.",
+            "ja": "ブラウザ上で Pyxel 向け MML を使ってチップチューンを制作できるエディタ。4 チャンネルの編集、リアルタイムプレビュー、URL や QR コードでの楽曲共有が可能です。",
+            "ko": "브라우저에서 Pyxel MML을 사용하여 칩튠 음악을 제작할 수 있는 에디터. 4채널 편집, 실시간 프리뷰, URL 및 QR 코드를 통한 곡 공유를 지원합니다.",
+            "pt": "Editor no navegador para compor música chiptune com Pyxel MML. Suporta edição de 4 canais, pré-visualização em tempo real e compartilhamento de músicas por URL ou código QR.",
+            "ru": "Браузерный редактор для создания чиптюн-музыки на Pyxel MML. Поддерживает 4-канальное редактирование, предпросмотр в реальном времени и обмен композициями через URL или QR-код.",
+            "tr": "Pyxel MML ile chiptune müzik besteleyen tarayıcı tabanlı editör. 4 kanal düzenleme, gerçek zamanlı önizleme ve URL veya QR kodu ile şarkı paylaşımını destekler.",
+            "uk": "Браузерний редактор для створення чіптюн-музики на Pyxel MML. Підтримує 4-канальне редагування, попередній перегляд у реальному часі та обмін композиціями через URL або QR-код."
           }
         }
       ]
