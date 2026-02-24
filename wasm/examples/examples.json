@@ -802,7 +802,7 @@
         {
           "file": "30 Seconds of Daylight",
           "demo": "apps/30sec-of-daylight.html",
-          "code": "https://github.com/kitao/30SecondsOfDaylight",
+          "code": "https://github.com/helpcomputer/30SecondsOfDaylight",
           "description": {
             "en": "Pyxel Jam-winning roguelike game by Adam",
             "cn": "Adam 制作的 Pyxel Jam 获奖 roguelike 游戏",
