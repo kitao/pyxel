@@ -140,7 +140,7 @@
           },
           "details": {
             "en": "Basic Pyxel app demonstrating the init(), run(), update(), and draw() lifecycle.",
-            "ja": "init()、run()、update()、draw() のライフサイクルを実演する基本的な Pyxel アプリケーション。"
+            "ja": "Pyxel の基本的な使い方を示すサンプル。init 関数でウィンドウを初期化し、update 関数と draw 関数で毎フレームの処理と描画を行う、Pyxel アプリの基本構造を学べます。"
           }
         },
         {
@@ -163,7 +163,7 @@
           },
           "details": {
             "en": "A jump game using Pyxel resource files (.pyxres) for graphics and sound data.",
-            "ja": "Pyxel リソースファイル (.pyxres) を使って画像とサウンドデータを管理するジャンプゲーム。"
+            "ja": "Pyxel リソースファイル (.pyxres) から画像とサウンドデータを読み込むジャンプゲーム。スプライト描画、キー入力、当たり判定、スコア管理など、ゲーム制作の基本要素を学べます。"
           }
         },
         {
@@ -186,7 +186,7 @@
           },
           "details": {
             "en": "Showcases all Pyxel drawing APIs including rectangles, circles, lines, and text rendering.",
-            "ja": "矩形、円、線、テキスト描画など、Pyxel の全描画 API を紹介します。"
+            "ja": "rect、circ、line、text など Pyxel が提供する描画 API のデモ。各関数の使い方と描画結果を一覧で確認でき、グラフィックス描画の参考になります。"
           }
         },
         {
@@ -209,7 +209,7 @@
           },
           "details": {
             "en": "Demonstrates sound creation, editing, and playback using Pyxel's sound APIs.",
-            "ja": "Pyxel のサウンド API を使ったサウンドの作成、編集、再生のデモ。"
+            "ja": "Pyxel のサウンド API を使って効果音を作成・編集・再生するデモ。音色、音量、エフェクトの設定方法を実際に試しながら確認できます。"
           }
         },
         {
@@ -232,7 +232,7 @@
           },
           "details": {
             "en": "Displays Pyxel's built-in 16-color palette with color codes.",
-            "ja": "Pyxel 組み込みの 16 色パレットをカラーコード付きで表示します。"
+            "ja": "Pyxel 組み込みの 16 色パレットをカラーコード付きで一覧表示。各色の番号と RGB 値を確認でき、ゲーム制作時の配色の参考になります。"
           }
         },
         {
@@ -255,7 +255,7 @@
           },
           "details": {
             "en": "A simple mouse click game demonstrating mouse input handling.",
-            "ja": "マウス入力の処理を実演するシンプルなクリックゲーム。"
+            "ja": "マウスカーソルの座標取得やクリック検出を実演するシンプルなゲーム。マウス入力を使ったインタラクティブなアプリケーション作りの参考になります。"
           }
         },
         {
@@ -277,8 +277,8 @@
             "uk": "Гра «Змійка» з BGM"
           },
           "details": {
-            "en": "Classic snake game featuring background music composed with MML (Music Macro Language).",
-            "ja": "MML (Music Macro Language) で作曲した BGM 付きのクラシックなスネークゲーム。"
+            "en": "Classic snake game featuring background music composed with Pyxel MML.",
+            "ja": "Pyxel 向け MML で作曲した BGM 付きのクラシックなスネークゲーム。グリッドベースの移動処理やリストによる蛇の管理など、ゲームロジックの実装例として参考になります。"
           }
         },
         {
@@ -301,7 +301,7 @@
           },
           "details": {
             "en": "Demonstrates triangle drawing with tri() and trib() functions.",
-            "ja": "tri() 関数と trib() 関数による三角形の描画を実演します。"
+            "ja": "tri 関数 (塗りつぶし三角形) と trib 関数 (三角形の枠線) の描画デモ。再帰的なシェルピンスキー三角形の生成を通じて、三角形描画 API の使い方を紹介します。"
           }
         },
         {
@@ -324,7 +324,7 @@
           },
           "details": {
             "en": "A shoot'em up game with screen state transitions, enemy patterns, and MML background music.",
-            "ja": "画面遷移、敵パターン、MML による BGM を備えたシューティングゲーム。"
+            "ja": "タイトル・ゲーム・ゲームオーバーの画面遷移、多彩な敵パターン、MML による BGM を備えた本格的なシューティングゲーム。ゲーム制作の実践的なテクニックを学べます。"
           }
         },
         {
@@ -347,7 +347,7 @@
           },
           "details": {
             "en": "A side-scrolling platform game using tilemaps for level design.",
-            "ja": "タイルマップを使ったレベルデザインによる横スクロールアクションゲーム。"
+            "ja": "タイルマップを使ったレベルデザインによる横スクロールアクションゲーム。マップのスクロール処理、タイルとの当たり判定、キャラクターの移動制御などを実装しています。"
           }
         },
         {
@@ -370,7 +370,7 @@
           },
           "details": {
             "en": "Demonstrates offscreen rendering using the Image class for buffer operations.",
-            "ja": "Image クラスを使ったバッファ操作によるオフスクリーン描画のデモ。"
+            "ja": "Image クラスをオフスクリーンバッファとして利用し、事前に描画した画像を画面に転送するテクニックのデモ。blt 関数や bltm 関数のパラメータ説明図の描画例も含まれています。"
           }
         },
         {
@@ -393,7 +393,7 @@
           },
           "details": {
             "en": "Animated visualization of Perlin noise, a procedural texture generation technique.",
-            "ja": "手続き的テクスチャ生成技法である Perlin ノイズのアニメーション表示。"
+            "ja": "Pyxel の noise 関数を使った Perlin ノイズのリアルタイムアニメーション。手続き的なパターン生成により、地形や雲のような自然なテクスチャを表現する技法を紹介します。"
           }
         },
         {
@@ -416,7 +416,7 @@
           },
           "details": {
             "en": "Shows how to load and use custom bitmap fonts for text rendering.",
-            "ja": "カスタムビットマップフォントを読み込んでテキスト描画に使用する方法を紹介します。"
+            "ja": "BDF フォントや TTF フォントを読み込み、Pyxel のカスタムフォント機能でテキストを描画する方法を紹介します。日本語など多言語フォントの利用方法を学べます。"
           }
         },
         {
@@ -439,7 +439,7 @@
           },
           "details": {
             "en": "An interactive synthesizer showcasing Pyxel's expanded audio features including custom waveforms.",
-            "ja": "カスタム波形を含む Pyxel のオーディオ拡張機能を使ったインタラクティブなシンセサイザー。"
+            "ja": "Pyxel のオーディオ拡張機能を使ったインタラクティブなシンセサイザー。カスタム波形の定義、エンベロープ、ビブラートなどのエフェクトをリアルタイムに操作できます。"
           }
         },
         {
@@ -462,7 +462,7 @@
           },
           "details": {
             "en": "Loads a Tiled Map Editor (.tmx) file for rendering and demonstrates automatic BGM generation.",
-            "ja": "Tiled Map Editor (.tmx) ファイルの読み込み描画と、BGM の自動生成を実演します。"
+            "ja": "Tiled Map Editor で作成した .tmx ファイルを読み込んでマップを描画するサンプル。Pyxel の gen_bgm 関数による BGM 自動生成機能も併せて実演します。"
           }
         },
         {
@@ -485,7 +485,7 @@
           },
           "details": {
             "en": "Demonstrates image rotation and scaling transformations.",
-            "ja": "画像の回転と拡大縮小の変形処理を実演します。"
+            "ja": "blt 関数と bltm 関数の rotate・scale パラメータを使った画像の回転・拡大縮小のデモ。アフィン変換によるリアルタイムの変形処理を確認できます。"
           }
         },
         {
@@ -508,7 +508,7 @@
           },
           "details": {
             "en": "A launcher that can run various Pyxel example applications.",
-            "ja": "さまざまな Pyxel サンプルアプリケーションを実行できるランチャー。"
+            "ja": "Pyxel の各種サンプルアプリケーションをメニューから選んで起動できるランチャー。サブプロセスによるアプリ実行やリスト型 UI の実装例としても参考になります。"
           }
         },
         {
@@ -531,7 +531,7 @@
           },
           "details": {
             "en": "Demonstrates audio file playback with Pyxel.",
-            "ja": "Pyxel によるオーディオファイルの再生を実演します。"
+            "ja": "OGG 形式の PCM オーディオファイルを読み込んで再生するサンプル。チャンネルゲインの設定や BGM の切り替えなど、オーディオ再生機能の使い方を学べます。"
           }
         },
         {
@@ -554,7 +554,7 @@
           },
           "details": {
             "en": "Demonstrates frame-by-frame animation using the flip() function. Desktop/native platforms only.",
-            "ja": "flip() 関数を使ったフレームごとのアニメーション。デスクトップ/ネイティブ環境専用。"
+            "ja": "run 関数を使わず flip 関数で 1 フレームずつ手動制御するアニメーション。逐次処理的なコードでゲームループを記述する手法で、Web 版では動作しません。"
           }
         },
         {
@@ -577,7 +577,7 @@
           },
           "details": {
             "en": "Test script for Pyxel web features with external packages (numpy, pandas).",
-            "ja": "外部パッケージ (numpy、pandas) を使った Pyxel Web 機能のテストスクリプト。"
+            "ja": "Web 版 Pyxel で numpy や pandas などの外部パッケージを利用するサンプル。HTML の script 属性にコードを直接記述し、packages 属性で追加パッケージを指定する方法を示します。"
           }
         }
       ]
@@ -619,7 +619,7 @@
           },
           "details": {
             "en": "Winner of the 1st Pyxel Jam game competition, created by Adam (@helpcomputer).",
-            "ja": "Adam (@helpcomputer) による第1回 Pyxel Jam ゲームコンテスト優勝作品。"
+            "ja": "Adam (@helpcomputer) 制作の第1回 Pyxel Jam ゲームコンテスト優勝作品。制限時間内にダンジョンを探索するローグライクゲームで、ランダム生成されるマップを攻略します。"
           }
         },
         {
@@ -641,8 +641,8 @@
             "uk": "Аркадна гра з фізикою м'яча від Adam"
           },
           "details": {
-            "en": "A breakout-style game inspired by Taito's Xyzolog, created by Adam (@helpcomputer).",
-            "ja": "タイトーの Xyzolog にインスパイアされたブロック崩し。Adam (@helpcomputer) 作。"
+            "en": "An arcade ball physics game inspired by Taito's Xyzolog, created by Adam (@helpcomputer).",
+            "ja": "Adam (@helpcomputer) 制作のアーケードスタイルのボール物理ゲーム。タイトーの Xyzolog にインスパイアされた作品です。"
           }
         },
         {
@@ -665,7 +665,7 @@
           },
           "details": {
             "en": "An MSX/SG-1000 inspired shooting game by Adam (@helpcomputer).",
-            "ja": "MSX/SG-1000 にインスパイアされたシューティングゲーム。Adam (@helpcomputer) 作。"
+            "ja": "Adam (@helpcomputer) 制作の MSX や SG-1000 などレトロゲーム機にインスパイアされたシューティングゲーム。1980年代のアーケードシューティングを彷彿とさせる作品です。"
           }
         },
         {
@@ -688,7 +688,7 @@
           },
           "details": {
             "en": "A Defender-inspired arcade shooter with procedurally generated terrain. By Adam (@helpcomputer).",
-            "ja": "Defender にインスパイアされたアーケードシューター。地形を手続き的に生成。Adam (@helpcomputer) 作。"
+            "ja": "Adam (@helpcomputer) 制作の Defender にインスパイアされたアーケードシューター。手続き的に生成される地形の上を飛び回り、敵を撃破していきます。"
           }
         },
         {
@@ -711,7 +711,7 @@
           },
           "details": {
             "en": "A one-button rescue game from the Pyxel Official Book (Gijutsu-Hyoron Publishing).",
-            "ja": "Pyxel 公式書籍 (技術評論社) 収録のワンボタン救出ゲーム。"
+            "ja": "Pyxel 公式書籍 (技術評論社刊) に収録されたサンプルゲーム。ワンキー操作で宇宙飛行士を救出するシンプルながらも奥深いゲームで、ゲーム制作の基礎を学べます。"
           }
         },
         {
@@ -734,7 +734,7 @@
           },
           "details": {
             "en": "A shooting game from the Pyxel Official Book (Gijutsu-Hyoron Publishing).",
-            "ja": "Pyxel 公式書籍 (技術評論社) 収録のシューティングゲーム。"
+            "ja": "Pyxel 公式書籍 (技術評論社刊) に収録されたサンプルゲーム。弾幕が飛び交う本格的なシューティングで、敵パターンやスコアシステムの実装を学べます。"
           }
         },
         {
@@ -757,7 +757,7 @@
           },
           "details": {
             "en": "A platformer game from the Pyxel Official Book (Gijutsu-Hyoron Publishing).",
-            "ja": "Pyxel 公式書籍 (技術評論社) 収録のプラットフォーマーゲーム。"
+            "ja": "Pyxel 公式書籍 (技術評論社刊) に収録されたサンプルゲーム。罠を避けながら洞窟内の宝石を集めるプラットフォーマーで、マップデザインや当たり判定を学べます。"
           }
         },
         {
@@ -779,8 +779,8 @@
             "uk": "Автоматичний генератор 8-bit BGM від frenchbread"
           },
           "details": {
-            "en": "Automatic 8-bit BGM generator for Pyxel games by shiromofufactory.",
-            "ja": "shiromofufactory による Pyxel ゲーム用 8bit BGM 自動生成ツール。"
+            "en": "The tool that became the basis of Pyxel's gen_bgm function, created by shiromofufactory. Automatically generates retro-style BGM from simple parameters.",
+            "ja": "frenchbread (shiromofufactory) 制作の 8ビット BGM 自動生成ツール。Pyxel の gen_bgm 関数のベースとなったツールで、パラメータを指定するだけでレトロゲーム風の BGM を自動生成できます。"
           }
         }
       ]
@@ -822,7 +822,7 @@
           },
           "details": {
             "en": "Pyxel built-in image editor for creating and editing sprite sheets.",
-            "ja": "スプライトシートの作成・編集ができる Pyxel 組み込みの画像エディタ。"
+            "ja": "Pyxel に同梱されているドット絵向け画像エディタ。スプライトやキャラクター画像の作成・編集ができ、イメージバンクを切り替えて管理できます。"
           }
         },
         {
@@ -845,7 +845,7 @@
           },
           "details": {
             "en": "Pyxel built-in tilemap editor for designing game maps.",
-            "ja": "ゲームマップを設計するための Pyxel 組み込みのタイルマップエディタ。"
+            "ja": "Pyxel に同梱されているタイルマップエディタ。イメージバンクのタイルを並べてゲームマップを作成でき、複数のタイルマップを切り替えて管理できます。"
           }
         },
         {
@@ -868,7 +868,7 @@
           },
           "details": {
             "en": "Pyxel built-in sound editor for composing sound effects.",
-            "ja": "効果音を作成するための Pyxel 組み込みのサウンドエディタ。"
+            "ja": "Pyxel に同梱されているサウンドエディタ。音色・音量・エフェクトなどをグラフィカルに編集し、ゲーム用の効果音やメロディーフレーズを作成できます。"
           }
         },
         {
@@ -891,7 +891,7 @@
           },
           "details": {
             "en": "Pyxel built-in music editor for composing background music.",
-            "ja": "BGM を作成するための Pyxel 組み込みのミュージックエディタ。"
+            "ja": "Pyxel に同梱されているミュージックエディタ。サウンドエディタで作成したフレーズを組み合わせて、最大 4 チャンネルの BGM を構成できます。"
           }
         },
         {
@@ -913,8 +913,8 @@
             "uk": "Онлайн-середовище розробки Pyxel без налаштування"
           },
           "details": {
-            "en": "Browser-based Python code editor for writing and running Pyxel applications online.",
-            "ja": "ブラウザ上で Pyxel アプリケーションの作成・実行ができるオンラインコードエディタ。"
+            "en": "Browser-based IDE for creating and running Pyxel applications without installing Pyxel.",
+            "ja": "Pyxel のインストールなしでアプリケーションの作成・実行ができるブラウザベースの開発環境。コードエディタとリソースエディタを内蔵し、すぐに Pyxel 開発を始められます。"
           }
         },
         {
@@ -936,8 +936,8 @@
             "uk": "Браузерне середовище створення чіптюн-музики"
           },
           "details": {
-            "en": "Browser-based MML (Music Macro Language) editor for composing Pyxel music and sound effects.",
-            "ja": "ブラウザ上で Pyxel の音楽・効果音を MML (Music Macro Language) で作成できるエディタ。"
+            "en": "Browser-based Pyxel MML editor for composing chiptune music and sound effects.",
+            "ja": "ブラウザ上で Pyxel 向け MML を使ってチップチューンを制作できるエディタ。4 チャンネルの編集、リアルタイムプレビュー、URL や QR コードでの楽曲共有が可能です。"
           }
         }
       ]
