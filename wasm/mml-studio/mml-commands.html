@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="../../docs/images/pyxel_icon_64x64.ico" />
     <title>Pyxel MML Commands</title>
     <script src="https://cdn.tailwindcss.com/3.4.17"></script>
     <style type="text/tailwindcss">
@@ -31,14 +32,8 @@
         .rowcard {
           @apply mb-2 sm:mb-0;
         }
-        .seg {
-          @apply inline-flex items-center bg-gray-900 mt-1 mb-2 sm:mb-0 border border-gray-600 rounded-md divide-x divide-gray-700 overflow-hidden;
-        }
-        .seg-btn {
-          @apply bg-gray-900 px-3 py-1 border-none outline-none focus:ring-1 focus:ring-inset focus:ring-indigo-300 min-w-[2.3rem] font-medium text-gray-300 text-xs;
-        }
-        .seg-active {
-          @apply bg-slate-600 text-white;
+        .lang-select {
+          @apply bg-gray-800 px-2 py-1 border border-gray-600 focus-visible:border-indigo-300 rounded-lg outline-none text-gray-200 text-sm;
         }
         .th {
           @apply px-3 pt-1 pb-3 border-gray-700 border-b font-semibold text-sm text-left;
@@ -69,38 +64,20 @@
       <div
         class="flex sm:flex-row flex-col justify-between items-start sm:items-center gap-2 mb-2"
       >
-        <h1 id="page-title" class="heading"></h1>
-        <div
-          class="self-start sm:self-auto mt-2 sm:mt-0 seg"
-          role="group"
-          aria-label="Language toggle"
-        >
-          <button
-            id="lang-en-button"
-            class="seg-btn seg-active"
-            type="button"
-            aria-pressed="true"
-          >
-            en
-          </button>
-          <button
-            id="lang-ja-button"
-            class="seg-btn"
-            type="button"
-            aria-pressed="false"
-          >
-            ja
-          </button>
-        </div>
+        <h1 id="page-title" class="heading">Pyxel MML Commands</h1>
+        <select id="lang-select" class="lang-select self-start sm:self-auto mt-2 sm:mt-0" style="display: none"></select>
       </div>
-      <p id="subtitle" class="mb-4 subheading"></p>
+      <p id="subtitle" class="mb-4 subheading">
+        MML command list for
+        <a href="https://github.com/kitao/pyxel" target="_blank" rel="noopener noreferrer" class="link">Pyxel</a>, a retro game engine for Python.
+      </p>
 
       <div class="overflow-x-auto card">
         <table class="w-full border-collapse stack">
           <thead>
             <tr>
-              <th class="th">Command</th>
-              <th class="th">Description</th>
+              <th id="th-command" class="th">Command</th>
+              <th id="th-description" class="th">Description</th>
             </tr>
           </thead>
           <tbody id="command-table"></tbody>
@@ -109,229 +86,50 @@
     </div>
 
     <script>
-      let currentLang = (navigator.language || navigator.userLanguage || "en")
-        .toLowerCase()
-        .startsWith("ja")
-        ? "ja"
-        : "en";
+      let data = null;
+      let currentLang = "en";
 
-      const STRINGS = {
-        en: {
-          title: "Pyxel MML Commands",
-          subtitle:
-            'MML command list for <a href="https://github.com/kitao/pyxel" target="_blank" rel="noopener noreferrer" class="link">Pyxel</a>, a retro game engine for Python.',
-        },
-        ja: {
-          title: "Pyxel MML コマンド",
-          subtitle:
-            'Python向けレトロゲームエンジン<a href="https://github.com/kitao/pyxel" target="_blank" rel="noopener noreferrer" class="link">Pyxel</a>用MMLコマンド一覧',
-        },
-      };
+      function t(key) {
+        const obj = data?.ui[key];
+        if (!obj) return key;
+        return obj[currentLang] || obj["en"] || "";
+      }
 
-      const COMMANDS = [
-        {
-          cmd: "T <bpm>",
-          desc: {
-            en: "Sets the tempo (BPM). Range: 1-. Default is 120.",
-            ja: "テンポ (BPM) を指定する。範囲は 1-。デフォルトは 120。",
-          },
-        },
-        {
-          cmd: "Q <gate_percent>",
-          desc: {
-            en: "Sets the gate time as a percentage. Range: 0-100. 100 means the note is played with no gap, 0 means it is not played at all. Default is 80.",
-            ja: "発音する長さをパーセントで指定する。範囲は 0-100。100 で音の切れ目がなくなり、0 だと発音されない。デフォルトは 80。",
-          },
-        },
-        {
-          cmd: "@ <tone>",
-          desc: {
-            en: "Sets the tone. Range: 0-3 (by default: 0:Triangle / 1:Square / 2:Pulse / 3:Noise). Default is 0.",
-            ja: "音色を指定する。範囲は 0-3（初期状態では 0:Triangle / 1:Square / 2:Pulse / 3:Noise）。デフォルトは 0。",
-          },
-        },
-        {
-          cmd: "V <vol>",
-          desc: {
-            en: "Sets the volume. Range: 0-127. Default is 100.",
-            ja: "音量を指定する。範囲は 0-127。デフォルトは 100。",
-          },
-        },
-        {
-          cmd: "K <key_offset>",
-          desc: {
-            en: "Sets the transpose amount in semitones. 12 raises the pitch by one octave. Default is 0.",
-            ja: "トランスポーズ量（音程オフセット）を半音単位で指定する。12 で音程が 1 オクターブ上がる。デフォルトは 0。",
-          },
-        },
-        {
-          cmd: "Y <offset_cents>",
-          desc: {
-            en: "Sets detune in cents. 100 raises by a semitone, -100 lowers by a semitone. Default is 0.",
-            ja: "デチューン（音程ずれ）を cent 単位で指定する。100 で半音上がり、-100 で半音下がる。デフォルトは 0。",
-          },
-        },
-        {
-          cmd: "@ENV <slot>",
-          desc: {
-            en: "Switches the envelope (volume curve) slot. Range: 0-. 0 turns it off.",
-            ja: "エンベロープ（音量変化のカーブ）のスロットを切り替える。範囲は 0-。0 を指定するとオフになる。",
-          },
-        },
-        {
-          cmd: "@ENV <slot> { init_vol, dur_ticks1, vol1, dur_ticks2, vol2, ... }",
-          desc: {
-            en: 'Slot range: 1-. Sets and switches to the specified envelope slot. Slot 0 cannot be specified.\\nInside `{ }`, specify "initial volume (once)", then repeat "duration (tick), volume (vol)". 1 tick is 1/48 of a quarter note.',
-            ja: "スロット範囲は 1-。指定したスロットのエンベロープを設定して切り替える。スロット 0 は指定できない。\\n{ }内は、「初期音量 (最初の 1 回のみ)」の後、「区間の長さ (tick)、音量 (vol)」を繰り返し指定する。1 tick は 4 分音符を 48 等分した長さ。",
-          },
-          example: "@ENV1 { 30, 20, 100, 50, 0 }",
-        },
-        {
-          cmd: "@VIB <slot>",
-          desc: {
-            en: "Switches the vibrato (pitch modulation) slot. Range: 0-. 0 turns it off.",
-            ja: "ビブラート（音程を揺らすエフェクト）のスロットを切り替える。範囲は 0-。0 を指定するとオフになる。",
-          },
-        },
-        {
-          cmd: "@VIB <slot> { delay_ticks, period_ticks, depth_cents }",
-          desc: {
-            en: 'Sets and switches to the specified vibrato slot. Slot 0 cannot be specified.\\nInside `{ }`, specify "delay (tick), period (tick), depth (cent)". 1 tick is 1/48 of a quarter note.\nExample: `@VIB 1 {24, 12, 100}` (after 24 ticks, vibrato with a 12-tick period and ±100 cents depth)',
-            ja: "指定したスロットのビブラートを設定して切り替える。スロット 0 は指定できない。\\n{ }内は「ディレイ時間 (tick)、周期 (tick)、深さ (cent)」をこの順で指定する。1 tick は 4 分音符を 48 等分した長さ。",
-          },
-          example: "@VIB1 {24, 12, 100}",
-        },
-        {
-          cmd: "@GLI <slot>",
-          desc: {
-            en: "Switches the glide (pitch slide) slot. Range: 0-. 0 turns it off.",
-            ja: "グライド（音程変化のエフェクト）のスロットを切り替える。範囲は 0-。0 を指定するとオフになる。",
-          },
-        },
-        {
-          cmd: "@GLI <slot> { offset_cents, dur_ticks }",
-          desc: {
-            en: 'Inside `{ }`, specify "initial pitch offset (cent), time to return to 0 (tick)". 1 tick is 1/48 of a quarter note.\\nSpecifying `*` for each parameter automatically applies the pitch offset as the difference from the previous note and the return time as the playback duration of each note, respectively.\nExample: `@GLI 1 { -100, 24 }` (starts 1 semitone down, returns to normal over 24 ticks)',
-            ja: "{ }内は「最初の音程変化量 (cent)、0 に戻るまでの時間 (tick)」を指定する。1 tick は 4 分音符を 48 等分した長さ。\\n各パラメータに`*`を指定すると、音程変化量は前回の音程からの差分、変化時間は各音の再生時間が自動的に適用される。",
-          },
-          example: "@GLI1 { -100, 24 }",
-        },
-        {
-          cmd: "O <oct>",
-          desc: {
-            en: "Sets the octave. Range: -1-9. `O4`'s A is 440 Hz. Default is 4.",
-            ja: "オクターブを指定する。範囲は -1-9。`O4`の A の音が 440 Hz になる。デフォルトは 4。",
-          },
-        },
-        {
-          cmd: ">",
-          desc: {
-            en: "Raises the octave by 1 (max 9).",
-            ja: "オクターブを 1 上げる。最大 9。",
-          },
-        },
-        {
-          cmd: "<",
-          desc: {
-            en: "Lowers the octave by 1 (min -1).",
-            ja: "オクターブを 1 下げる。最小 -1。",
-          },
-        },
-        {
-          cmd: "L <len>",
-          desc: {
-            en: "Sets the default note/rest length. Range: 1-192. `L4` is a quarter note, `L8` is an eighth note, and `L12` is a quarter note triplet. Default is 4.",
-            ja: "音符と休符のデフォルトの長さを指定する。範囲は 1-192。`L4`が 4 分音符、`L8`が 8 分音符、`L12`が 4 分 3 連符。デフォルトは 4。",
-          },
-        },
-        {
-          cmd: "C/D/E/F/G/A/B",
-          desc: {
-            en: "Plays the specified note. You can specify the length after the note, e.g., `F16`.",
-            ja: "指定した音階の音を再生する。`F16`のように後ろに長さを指定すると、その音だけ長さを変更する。",
-          },
-        },
-        {
-          cmd: "R",
-          desc: {
-            en: "Rest. Range: 1-192. You can specify the length after the rest, e.g., `R8`.",
-            ja: "休符を再生する。範囲は 1-192。`R8`のように後ろに長さを指定すると、その休符だけ長さを変更する。",
-          },
-        },
-        {
-          cmd: "#",
-          desc: {
-            en: "Raises the note by a semitone.",
-            ja: "音の後ろに記述すると、その音を半音上げる。",
-          },
-        },
-        {
-          cmd: "+",
-          desc: {
-            en: "Raises the note by a semitone.",
-            ja: "音の後ろに記述すると、その音を半音上げる。",
-          },
-        },
-        {
-          cmd: "-",
-          desc: {
-            en: "Lowers the note by a semitone.",
-            ja: "音の後ろに記述すると、その音を半音下げる。",
-          },
-        },
-        {
-          cmd: ".",
-          desc: {
-            en: "Dotted note/rest. Extends the length by half. Can be repeated for multiple dots.",
-            ja: "付点。音や休符の後ろに記述すると、長さを 1/2 延ばす。複数指定することも可能。",
-          },
-        },
-        {
-          cmd: "&",
-          desc: {
-            en: "Tie/Slur. When connecting the same pitch, it ties the notes into one. When connecting different pitches, it plays them legato (no gap). You can also specify only the length, e.g., `C4&16`.",
-            ja: "タイ/スラー。同じ音程を繋ぐとタイ（1 つの音として繋がる）になり、異なる音程を繋ぐとスラー（レガート、音の切れ目なし）になる。`C4&16`のように長さのみを指定することも可能。",
-          },
-        },
-        {
-          cmd: "[",
-          desc: {
-            en: "Start of repeat section.",
-            ja: "繰り返し開始位置。",
-          },
-        },
-        {
-          cmd: "] <count>",
-          desc: {
-            en: "End of repeat section. Count range: 1-. Repeats the section between `[` and `]` the specified number of times. If omitted, repeats infinitely. Nested repeats",
-            ja: "繰り返し終了位置。回数の範囲は 1-。繰り返し開始位置との間のフレーズを指定した回数だけ再生する。回数を省略した場合は無限に繰り返す。入れ子にすることも可能。",
-          },
-        },
-      ];
+      function extLink(href, text) {
+        return `<a href="${href}" target="_blank" rel="noopener noreferrer" class="link">${text}</a>`;
+      }
 
-      const commandTable = document.getElementById("command-table");
-      const pageTitle = document.getElementById("page-title");
-      const subtitle = document.getElementById("subtitle");
-      const langEnButton = document.getElementById("lang-en-button");
-      const langJaButton = document.getElementById("lang-ja-button");
+      function detectLanguage() {
+        const stored = localStorage.getItem("pyxel-examples-lang");
+        if (stored && data.languages.some((l) => l.code === stored)) {
+          return stored;
+        }
+        const nav = navigator.language || "";
+        const navLower = nav.toLowerCase();
+        if (navLower.startsWith("zh")) return "cn";
+        for (const lang of data.languages) {
+          if (navLower.startsWith(lang.code)) return lang.code;
+        }
+        return "en";
+      }
 
       function render() {
-        pageTitle.textContent = STRINGS[currentLang].title;
-        subtitle.innerHTML = STRINGS[currentLang].subtitle;
+        // Title and subtitle
+        document.getElementById("page-title").textContent = t("title");
+        document.getElementById("subtitle").innerHTML = t("subtitle")
+          .replace("{0}", extLink("https://github.com/kitao/pyxel", "Pyxel"));
 
-        langEnButton.classList.toggle("seg-active", currentLang === "en");
-        langEnButton.setAttribute(
-          "aria-pressed",
-          currentLang === "en" ? "true" : "false",
-        );
-        langJaButton.classList.toggle("seg-active", currentLang === "ja");
-        langJaButton.setAttribute(
-          "aria-pressed",
-          currentLang === "ja" ? "true" : "false",
-        );
+        // Table headers
+        document.getElementById("th-command").textContent = t("th_command");
+        document.getElementById("th-description").textContent = t("th_description");
 
+        // Commands
+        const commandTable = document.getElementById("command-table");
         commandTable.innerHTML = "";
-        COMMANDS.forEach((c) => {
+        const thCmd = t("th_command");
+        const thDesc = t("th_description");
+
+        for (const c of data.commands) {
           let cmdHTML = c.cmd
             .replaceAll("&", "&amp;")
             .replaceAll("<", "&lt;")
@@ -340,35 +138,55 @@
           if (c.cmd.startsWith("C/D/E/F/G/A/B")) {
             cmdHTML = cmdHTML.replaceAll("/", "/<wbr>");
           }
+
+          const descText = (c.desc[currentLang] || c.desc["en"] || "")
+            .replace(/`([^`]+)`/g, "<code>$1</code>")
+            .replaceAll("\\n", "<br>");
+
           const tr = document.createElement("tr");
           tr.className = "rowcard";
           tr.innerHTML = `
             <td class="w-full sm:w-40 max-w-none break-words whitespace-normal td mono shrink-0">
-              <span class="sm:hidden font-medium text-gray-500 text-xs">Command</span>
+              <span class="sm:hidden font-medium text-gray-500 text-xs">${thCmd}</span>
               <div>${cmdHTML}</div>
             </td>
             <td class="td">
-              <span class="sm:hidden font-medium text-gray-500 text-xs">Description</span>
-              <div>${(c.desc[currentLang] || "")
-                .replace(/`([^`]+)`/g, "<code>$1</code>")
-                .replaceAll("\\n", "<br>")}</div>
+              <span class="sm:hidden font-medium text-gray-500 text-xs">${thDesc}</span>
+              <div>${descText}</div>
               ${c.example ? `<div class="example">${c.example}</div>` : ""}
             </td>
           `;
           commandTable.appendChild(tr);
-        });
+        }
+
+        document.documentElement.lang = currentLang === "cn" ? "zh" : currentLang;
       }
 
-      langEnButton.addEventListener("click", () => {
-        currentLang = "en";
-        render();
-      });
-      langJaButton.addEventListener("click", () => {
-        currentLang = "ja";
-        render();
-      });
+      // Init i18n
+      fetch("mml-commands.json")
+        .then((r) => r.json())
+        .then((json) => {
+          data = json;
+          currentLang = detectLanguage();
 
-      render();
+          // Build language selector
+          const langSelect = document.getElementById("lang-select");
+          for (const lang of data.languages) {
+            const opt = document.createElement("option");
+            opt.value = lang.code;
+            opt.textContent = lang.name;
+            langSelect.appendChild(opt);
+          }
+          langSelect.value = currentLang;
+          langSelect.addEventListener("change", () => {
+            currentLang = langSelect.value;
+            localStorage.setItem("pyxel-examples-lang", currentLang);
+            render();
+          });
+          langSelect.style.display = "";
+
+          render();
+        });
     </script>
   </body>
 </html>

@@ -1,0 +1,493 @@
+{
+  "languages": [
+    { "code": "en", "name": "English" },
+    { "code": "cn", "name": "中文" },
+    { "code": "de", "name": "Deutsch" },
+    { "code": "es", "name": "Español" },
+    { "code": "fr", "name": "Français" },
+    { "code": "it", "name": "Italiano" },
+    { "code": "ja", "name": "日本語" },
+    { "code": "ko", "name": "한국어" },
+    { "code": "pt", "name": "Português" },
+    { "code": "ru", "name": "Русский" },
+    { "code": "tr", "name": "Türkçe" },
+    { "code": "uk", "name": "Українська" }
+  ],
+  "ui": {
+    "title": {
+      "en": "Pyxel MML Commands"
+    },
+    "subtitle": {
+      "en": "MML command list for {0}, a retro game engine for Python.",
+      "cn": "Python 复古游戏引擎 {0} 的 MML 命令列表。",
+      "de": "MML-Befehlsliste für {0}, einer Retro-Spiel-Engine für Python.",
+      "es": "Lista de comandos MML para {0}, un motor de juegos retro para Python.",
+      "fr": "Liste des commandes MML pour {0}, un moteur de jeux rétro pour Python.",
+      "it": "Elenco dei comandi MML per {0}, un motore di giochi retrò per Python.",
+      "ja": "Python 向けレトロゲームエンジン {0} の MML コマンド一覧。",
+      "ko": "Python용 레트로 게임 엔진 {0}의 MML 명령어 목록.",
+      "pt": "Lista de comandos MML do {0}, um motor de jogos retrô para Python.",
+      "ru": "Список MML-команд для {0}, ретро-игрового движка для Python.",
+      "tr": "Python için retro oyun motoru {0}'in MML komut listesi.",
+      "uk": "Список MML-команд для {0}, ретро-ігрового рушія для Python."
+    },
+    "th_command": {
+      "en": "Command",
+      "cn": "命令",
+      "de": "Befehl",
+      "es": "Comando",
+      "fr": "Commande",
+      "it": "Comando",
+      "ja": "コマンド",
+      "ko": "명령어",
+      "pt": "Comando",
+      "ru": "Команда",
+      "tr": "Komut",
+      "uk": "Команда"
+    },
+    "th_description": {
+      "en": "Description",
+      "cn": "说明",
+      "de": "Beschreibung",
+      "es": "Descripción",
+      "fr": "Description",
+      "it": "Descrizione",
+      "ja": "説明",
+      "ko": "설명",
+      "pt": "Descrição",
+      "ru": "Описание",
+      "tr": "Açıklama",
+      "uk": "Опис"
+    }
+  },
+  "commands": [
+    {
+      "cmd": "T <bpm>",
+      "desc": {
+        "en": "Sets the tempo (BPM). Range: 1-. Default is 120.",
+        "cn": "设置速度 (BPM)。范围：1-。默认值为 120。",
+        "de": "Setzt das Tempo (BPM). Bereich: 1-. Standard ist 120.",
+        "es": "Establece el tempo (BPM). Rango: 1-. Por defecto es 120.",
+        "fr": "Définit le tempo (BPM). Plage : 1-. Par défaut : 120.",
+        "it": "Imposta il tempo (BPM). Intervallo: 1-. Predefinito: 120.",
+        "ja": "テンポ (BPM) を指定する。範囲は 1-。デフォルトは 120。",
+        "ko": "템포(BPM)를 설정합니다. 범위: 1-. 기본값은 120.",
+        "pt": "Define o andamento (BPM). Intervalo: 1-. Padrão: 120.",
+        "ru": "Устанавливает темп (BPM). Диапазон: 1-. По умолчанию: 120.",
+        "tr": "Tempoyu (BPM) ayarlar. Aralık: 1-. Varsayılan: 120.",
+        "uk": "Встановлює темп (BPM). Діапазон: 1-. За замовчуванням: 120."
+      }
+    },
+    {
+      "cmd": "Q <gate_percent>",
+      "desc": {
+        "en": "Sets the gate time as a percentage. Range: 0-100. 100 means the note is played with no gap, 0 means it is not played at all. Default is 80.",
+        "cn": "以百分比设置门限时间。范围：0-100。100 表示音符之间无间隔，0 表示完全不发声。默认值为 80。",
+        "de": "Setzt die Gate-Zeit als Prozentsatz. Bereich: 0-100. 100 bedeutet, die Note wird ohne Lücke gespielt; 0 bedeutet, sie wird nicht gespielt. Standard ist 80.",
+        "es": "Establece el tiempo de gate como porcentaje. Rango: 0-100. 100 significa que la nota se reproduce sin espacio; 0 significa que no se reproduce. Por defecto es 80.",
+        "fr": "Définit le temps de gate en pourcentage. Plage : 0-100. 100 signifie que la note est jouée sans coupure ; 0 signifie qu'elle n'est pas jouée. Par défaut : 80.",
+        "it": "Imposta il tempo di gate in percentuale. Intervallo: 0-100. 100 significa che la nota è suonata senza interruzione; 0 significa che non è suonata. Predefinito: 80.",
+        "ja": "発音する長さをパーセントで指定する。範囲は 0-100。100 で音の切れ目がなくなり、0 だと発音されない。デフォルトは 80。",
+        "ko": "게이트 타임을 백분율로 설정합니다. 범위: 0-100. 100이면 음 사이에 끊김이 없고, 0이면 소리가 나지 않습니다. 기본값은 80.",
+        "pt": "Define o tempo de gate como porcentagem. Intervalo: 0-100. 100 significa que a nota é tocada sem intervalo; 0 significa que não é tocada. Padrão: 80.",
+        "ru": "Устанавливает время gate в процентах. Диапазон: 0-100. 100 — нота воспроизводится без пауз; 0 — не воспроизводится. По умолчанию: 80.",
+        "tr": "Gate süresini yüzde olarak ayarlar. Aralık: 0-100. 100 nota arasında boşluk olmadan çalınır; 0 hiç çalınmaz. Varsayılan: 80.",
+        "uk": "Встановлює час gate у відсотках. Діапазон: 0-100. 100 — нота відтворюється без пауз; 0 — не відтворюється. За замовчуванням: 80."
+      }
+    },
+    {
+      "cmd": "@ <tone>",
+      "desc": {
+        "en": "Sets the tone. Range: 0-3 (by default: 0:Triangle / 1:Square / 2:Pulse / 3:Noise). Default is 0.",
+        "cn": "设置音色。范围：0-3（默认：0:Triangle / 1:Square / 2:Pulse / 3:Noise）。默认值为 0。",
+        "de": "Setzt den Klang. Bereich: 0-3 (Standard: 0:Triangle / 1:Square / 2:Pulse / 3:Noise). Standard ist 0.",
+        "es": "Establece el tono. Rango: 0-3 (por defecto: 0:Triangle / 1:Square / 2:Pulse / 3:Noise). Por defecto es 0.",
+        "fr": "Définit le timbre. Plage : 0-3 (par défaut : 0:Triangle / 1:Square / 2:Pulse / 3:Noise). Par défaut : 0.",
+        "it": "Imposta il timbro. Intervallo: 0-3 (predefinito: 0:Triangle / 1:Square / 2:Pulse / 3:Noise). Predefinito: 0.",
+        "ja": "音色を指定する。範囲は 0-3（初期状態では 0:Triangle / 1:Square / 2:Pulse / 3:Noise）。デフォルトは 0。",
+        "ko": "음색을 설정합니다. 범위: 0-3 (기본: 0:Triangle / 1:Square / 2:Pulse / 3:Noise). 기본값은 0.",
+        "pt": "Define o timbre. Intervalo: 0-3 (padrão: 0:Triangle / 1:Square / 2:Pulse / 3:Noise). Padrão: 0.",
+        "ru": "Устанавливает тембр. Диапазон: 0-3 (по умолчанию: 0:Triangle / 1:Square / 2:Pulse / 3:Noise). По умолчанию: 0.",
+        "tr": "Tonu ayarlar. Aralık: 0-3 (varsayılan: 0:Triangle / 1:Square / 2:Pulse / 3:Noise). Varsayılan: 0.",
+        "uk": "Встановлює тембр. Діапазон: 0-3 (за замовчуванням: 0:Triangle / 1:Square / 2:Pulse / 3:Noise). За замовчуванням: 0."
+      }
+    },
+    {
+      "cmd": "V <vol>",
+      "desc": {
+        "en": "Sets the volume. Range: 0-127. Default is 100.",
+        "cn": "设置音量。范围：0-127。默认值为 100。",
+        "de": "Setzt die Lautstärke. Bereich: 0-127. Standard ist 100.",
+        "es": "Establece el volumen. Rango: 0-127. Por defecto es 100.",
+        "fr": "Définit le volume. Plage : 0-127. Par défaut : 100.",
+        "it": "Imposta il volume. Intervallo: 0-127. Predefinito: 100.",
+        "ja": "音量を指定する。範囲は 0-127。デフォルトは 100。",
+        "ko": "음량을 설정합니다. 범위: 0-127. 기본값은 100.",
+        "pt": "Define o volume. Intervalo: 0-127. Padrão: 100.",
+        "ru": "Устанавливает громкость. Диапазон: 0-127. По умолчанию: 100.",
+        "tr": "Ses seviyesini ayarlar. Aralık: 0-127. Varsayılan: 100.",
+        "uk": "Встановлює гучність. Діапазон: 0-127. За замовчуванням: 100."
+      }
+    },
+    {
+      "cmd": "K <key_offset>",
+      "desc": {
+        "en": "Sets the transpose amount in semitones. 12 raises the pitch by one octave. Default is 0.",
+        "cn": "以半音为单位设置移调量。12 将音高提高一个八度。默认值为 0。",
+        "de": "Setzt die Transponierung in Halbtönen. 12 erhöht die Tonhöhe um eine Oktave. Standard ist 0.",
+        "es": "Establece la transposición en semitonos. 12 sube el tono una octava. Por defecto es 0.",
+        "fr": "Définit la transposition en demi-tons. 12 monte la hauteur d'une octave. Par défaut : 0.",
+        "it": "Imposta la trasposizione in semitoni. 12 alza l'intonazione di un'ottava. Predefinito: 0.",
+        "ja": "トランスポーズ量（音程オフセット）を半音単位で指定する。12 で音程が 1 オクターブ上がる。デフォルトは 0。",
+        "ko": "반음 단위로 전조량을 설정합니다. 12로 설정하면 1옥타브 올라갑니다. 기본값은 0.",
+        "pt": "Define a transposição em semitons. 12 eleva o tom em uma oitava. Padrão: 0.",
+        "ru": "Устанавливает транспонирование в полутонах. 12 повышает высоту на одну октаву. По умолчанию: 0.",
+        "tr": "Yarım ton cinsinden transpozisyon miktarını ayarlar. 12 ile perde bir oktav yükselir. Varsayılan: 0.",
+        "uk": "Встановлює транспонування в півтонах. 12 підвищує висоту на одну октаву. За замовчуванням: 0."
+      }
+    },
+    {
+      "cmd": "Y <offset_cents>",
+      "desc": {
+        "en": "Sets detune in cents. 100 raises by a semitone, -100 lowers by a semitone. Default is 0.",
+        "cn": "以 cent 为单位设置失谐。100 升高半音，-100 降低半音。默认值为 0。",
+        "de": "Setzt die Verstimmung in Cent. 100 erhöht um einen Halbton, -100 verringert um einen Halbton. Standard ist 0.",
+        "es": "Establece el desfase en cents. 100 sube un semitono, -100 baja un semitono. Por defecto es 0.",
+        "fr": "Définit le désaccordage en cents. 100 monte d'un demi-ton, -100 descend d'un demi-ton. Par défaut : 0.",
+        "it": "Imposta il detune in cent. 100 alza di un semitono, -100 abbassa di un semitono. Predefinito: 0.",
+        "ja": "デチューン（音程ずれ）を cent 単位で指定する。100 で半音上がり、-100 で半音下がる。デフォルトは 0。",
+        "ko": "디튠을 cent 단위로 설정합니다. 100이면 반음 올라가고, -100이면 반음 내려갑니다. 기본값은 0.",
+        "pt": "Define o detune em cents. 100 sobe um semitom, -100 desce um semitom. Padrão: 0.",
+        "ru": "Устанавливает расстройку в центах. 100 повышает на полутон, -100 понижает на полутон. По умолчанию: 0.",
+        "tr": "Detune değerini cent cinsinden ayarlar. 100 yarım ton yükseltir, -100 yarım ton alçaltır. Varsayılan: 0.",
+        "uk": "Встановлює розстроювання в центах. 100 підвищує на півтон, -100 знижує на півтон. За замовчуванням: 0."
+      }
+    },
+    {
+      "cmd": "@ENV <slot>",
+      "desc": {
+        "en": "Switches the envelope (volume curve) slot. Range: 0-. 0 turns it off.",
+        "cn": "切换包络（音量曲线）插槽。范围：0-。0 为关闭。",
+        "de": "Wechselt den Hüllkurven-Slot (Lautstärkekurve). Bereich: 0-. 0 deaktiviert ihn.",
+        "es": "Cambia la ranura de envolvente (curva de volumen). Rango: 0-. 0 lo desactiva.",
+        "fr": "Change le slot d'enveloppe (courbe de volume). Plage : 0-. 0 le désactive.",
+        "it": "Cambia lo slot dell'inviluppo (curva del volume). Intervallo: 0-. 0 lo disattiva.",
+        "ja": "エンベロープ（音量変化のカーブ）のスロットを切り替える。範囲は 0-。0 を指定するとオフになる。",
+        "ko": "엔벨로프(볼륨 커브) 슬롯을 전환합니다. 범위: 0-. 0이면 비활성화됩니다.",
+        "pt": "Alterna o slot de envelope (curva de volume). Intervalo: 0-. 0 desativa.",
+        "ru": "Переключает слот огибающей (кривой громкости). Диапазон: 0-. 0 отключает.",
+        "tr": "Zarf (ses eğrisi) slotunu değiştirir. Aralık: 0-. 0 kapatır.",
+        "uk": "Перемикає слот огинаючої (кривої гучності). Діапазон: 0-. 0 вимикає."
+      }
+    },
+    {
+      "cmd": "@ENV <slot> { init_vol, dur_ticks1, vol1, dur_ticks2, vol2, ... }",
+      "desc": {
+        "en": "Slot range: 1-. Sets and switches to the specified envelope slot. Slot 0 cannot be specified.\\nInside `{ }`, specify \"initial volume (once)\", then repeat \"duration (tick), volume (vol)\". 1 tick is 1/48 of a quarter note.",
+        "cn": "插槽范围：1-。设置并切换到指定的包络插槽。不能指定插槽 0。\\n在 `{ }` 内，先指定「初始音量（仅一次）」，然后重复指定「持续时间 (tick)、音量 (vol)」。1 tick 为四分音符的 1/48。",
+        "de": "Slot-Bereich: 1-. Setzt und wechselt zum angegebenen Hüllkurven-Slot. Slot 0 kann nicht angegeben werden.\\nIn `{ }` erst \"Anfangslautstärke (einmal)\" angeben, dann \"Dauer (Tick), Lautstärke (Vol)\" wiederholen. 1 Tick ist 1/48 einer Viertelnote.",
+        "es": "Rango de ranura: 1-. Configura y cambia a la ranura de envolvente especificada. No se puede especificar la ranura 0.\\nDentro de `{ }`, especificar \"volumen inicial (una vez)\", luego repetir \"duración (tick), volumen (vol)\". 1 tick es 1/48 de una negra.",
+        "fr": "Plage de slot : 1-. Définit et active le slot d'enveloppe spécifié. Le slot 0 ne peut pas être spécifié.\\nDans `{ }`, spécifier « volume initial (une fois) », puis répéter « durée (tick), volume (vol) ». 1 tick vaut 1/48 d'une noire.",
+        "it": "Intervallo slot: 1-. Imposta e attiva lo slot dell'inviluppo specificato. Lo slot 0 non può essere specificato.\\nIn `{ }`, specificare \"volume iniziale (una volta)\", poi ripetere \"durata (tick), volume (vol)\". 1 tick è 1/48 di una semiminima.",
+        "ja": "スロット範囲は 1-。指定したスロットのエンベロープを設定して切り替える。スロット 0 は指定できない。\\n{ }内は、「初期音量 (最初の 1 回のみ)」の後、「区間の長さ (tick)、音量 (vol)」を繰り返し指定する。1 tick は 4 分音符を 48 等分した長さ。",
+        "ko": "슬롯 범위: 1-. 지정한 엔벨로프 슬롯을 설정하고 전환합니다. 슬롯 0은 지정할 수 없습니다.\\n`{ }` 안에 \"초기 음량(1회)\"을 지정한 후, \"지속 시간(tick), 음량(vol)\"을 반복 지정합니다. 1 tick은 4분음표의 1/48입니다.",
+        "pt": "Intervalo de slot: 1-. Define e alterna para o slot de envelope especificado. O slot 0 não pode ser especificado.\\nDentro de `{ }`, especificar \"volume inicial (uma vez)\", depois repetir \"duração (tick), volume (vol)\". 1 tick é 1/48 de uma semínima.",
+        "ru": "Диапазон слотов: 1-. Задаёт и переключает указанный слот огибающей. Слот 0 нельзя указать.\\nВ `{ }` указать «начальная громкость (один раз)», затем повторять «длительность (тик), громкость (vol)». 1 тик = 1/48 четвертной ноты.",
+        "tr": "Slot aralığı: 1-. Belirtilen zarf slotunu ayarlar ve ona geçer. Slot 0 belirtilemez.\\n`{ }` içinde \"başlangıç ses seviyesi (bir kez)\", ardından \"süre (tick), ses seviyesi (vol)\" tekrar belirtilir. 1 tick, dörtlük notanın 1/48'idir.",
+        "uk": "Діапазон слотів: 1-. Задає й перемикає вказаний слот огинаючої. Слот 0 не можна вказати.\\nУ `{ }` вказати «початкова гучність (один раз)», потім повторювати «тривалість (тік), гучність (vol)». 1 тік = 1/48 чвертної ноти."
+      },
+      "example": "@ENV1 { 30, 20, 100, 50, 0 }"
+    },
+    {
+      "cmd": "@VIB <slot>",
+      "desc": {
+        "en": "Switches the vibrato (pitch modulation) slot. Range: 0-. 0 turns it off.",
+        "cn": "切换颤音（音高调制）插槽。范围：0-。0 为关闭。",
+        "de": "Wechselt den Vibrato-Slot (Tonhöhenmodulation). Bereich: 0-. 0 deaktiviert ihn.",
+        "es": "Cambia la ranura de vibrato (modulación de tono). Rango: 0-. 0 lo desactiva.",
+        "fr": "Change le slot de vibrato (modulation de hauteur). Plage : 0-. 0 le désactive.",
+        "it": "Cambia lo slot del vibrato (modulazione dell'intonazione). Intervallo: 0-. 0 lo disattiva.",
+        "ja": "ビブラート（音程を揺らすエフェクト）のスロットを切り替える。範囲は 0-。0 を指定するとオフになる。",
+        "ko": "비브라토(음정 변조) 슬롯을 전환합니다. 범위: 0-. 0이면 비활성화됩니다.",
+        "pt": "Alterna o slot de vibrato (modulação de tom). Intervalo: 0-. 0 desativa.",
+        "ru": "Переключает слот вибрато (модуляции высоты). Диапазон: 0-. 0 отключает.",
+        "tr": "Vibrato (perde modülasyonu) slotunu değiştirir. Aralık: 0-. 0 kapatır.",
+        "uk": "Перемикає слот вібрато (модуляції висоти). Діапазон: 0-. 0 вимикає."
+      }
+    },
+    {
+      "cmd": "@VIB <slot> { delay_ticks, period_ticks, depth_cents }",
+      "desc": {
+        "en": "Sets and switches to the specified vibrato slot. Slot 0 cannot be specified.\\nInside `{ }`, specify \"delay (tick), period (tick), depth (cent)\". 1 tick is 1/48 of a quarter note.",
+        "cn": "设置并切换到指定的颤音插槽。不能指定插槽 0。\\n在 `{ }` 内指定「延迟 (tick)、周期 (tick)、深度 (cent)」。1 tick 为四分音符的 1/48。",
+        "de": "Setzt und wechselt zum angegebenen Vibrato-Slot. Slot 0 kann nicht angegeben werden.\\nIn `{ }` \"Verzögerung (Tick), Periode (Tick), Tiefe (Cent)\" angeben. 1 Tick ist 1/48 einer Viertelnote.",
+        "es": "Configura y cambia a la ranura de vibrato especificada. No se puede especificar la ranura 0.\\nDentro de `{ }`, especificar \"retardo (tick), período (tick), profundidad (cent)\". 1 tick es 1/48 de una negra.",
+        "fr": "Définit et active le slot de vibrato spécifié. Le slot 0 ne peut pas être spécifié.\\nDans `{ }`, spécifier « délai (tick), période (tick), profondeur (cent) ». 1 tick vaut 1/48 d'une noire.",
+        "it": "Imposta e attiva lo slot del vibrato specificato. Lo slot 0 non può essere specificato.\\nIn `{ }`, specificare \"ritardo (tick), periodo (tick), profondità (cent)\". 1 tick è 1/48 di una semiminima.",
+        "ja": "指定したスロットのビブラートを設定して切り替える。スロット 0 は指定できない。\\n{ }内は「ディレイ時間 (tick)、周期 (tick)、深さ (cent)」をこの順で指定する。1 tick は 4 分音符を 48 等分した長さ。",
+        "ko": "지정한 비브라토 슬롯을 설정하고 전환합니다. 슬롯 0은 지정할 수 없습니다.\\n`{ }` 안에 \"딜레이(tick), 주기(tick), 깊이(cent)\"를 지정합니다. 1 tick은 4분음표의 1/48입니다.",
+        "pt": "Define e alterna para o slot de vibrato especificado. O slot 0 não pode ser especificado.\\nDentro de `{ }`, especificar \"atraso (tick), período (tick), profundidade (cent)\". 1 tick é 1/48 de uma semínima.",
+        "ru": "Задаёт и переключает указанный слот вибрато. Слот 0 нельзя указать.\\nВ `{ }` указать «задержка (тик), период (тик), глубина (цент)». 1 тик = 1/48 четвертной ноты.",
+        "tr": "Belirtilen vibrato slotunu ayarlar ve ona geçer. Slot 0 belirtilemez.\\n`{ }` içinde \"gecikme (tick), periyot (tick), derinlik (cent)\" belirtilir. 1 tick, dörtlük notanın 1/48'idir.",
+        "uk": "Задає й перемикає вказаний слот вібрато. Слот 0 не можна вказати.\\nУ `{ }` вказати «затримка (тік), період (тік), глибина (цент)». 1 тік = 1/48 чвертної ноти."
+      },
+      "example": "@VIB1 {24, 12, 100}"
+    },
+    {
+      "cmd": "@GLI <slot>",
+      "desc": {
+        "en": "Switches the glide (pitch slide) slot. Range: 0-. 0 turns it off.",
+        "cn": "切换滑音（音高滑动）插槽。范围：0-。0 为关闭。",
+        "de": "Wechselt den Glide-Slot (Tonhöhengleiten). Bereich: 0-. 0 deaktiviert ihn.",
+        "es": "Cambia la ranura de glide (deslizamiento de tono). Rango: 0-. 0 lo desactiva.",
+        "fr": "Change le slot de glide (glissement de hauteur). Plage : 0-. 0 le désactive.",
+        "it": "Cambia lo slot del glide (scivolamento dell'intonazione). Intervallo: 0-. 0 lo disattiva.",
+        "ja": "グライド（音程変化のエフェクト）のスロットを切り替える。範囲は 0-。0 を指定するとオフになる。",
+        "ko": "글라이드(음정 슬라이드) 슬롯을 전환합니다. 범위: 0-. 0이면 비활성화됩니다.",
+        "pt": "Alterna o slot de glide (deslizamento de tom). Intervalo: 0-. 0 desativa.",
+        "ru": "Переключает слот глайда (скольжения высоты). Диапазон: 0-. 0 отключает.",
+        "tr": "Glide (perde kayması) slotunu değiştirir. Aralık: 0-. 0 kapatır.",
+        "uk": "Перемикає слот глайду (ковзання висоти). Діапазон: 0-. 0 вимикає."
+      }
+    },
+    {
+      "cmd": "@GLI <slot> { offset_cents, dur_ticks }",
+      "desc": {
+        "en": "Inside `{ }`, specify \"initial pitch offset (cent), time to return to 0 (tick)\". 1 tick is 1/48 of a quarter note.\\nSpecifying `*` for each parameter automatically applies the pitch offset as the difference from the previous note and the return time as the playback duration of each note, respectively.",
+        "cn": "在 `{ }` 内指定「初始音高偏移 (cent)、归零时间 (tick)」。1 tick 为四分音符的 1/48。\\n各参数指定 `*` 时，音高偏移自动使用与前一个音符的差值，归零时间自动使用各音符的播放时长。",
+        "de": "In `{ }` \"Anfangs-Tonhöhenversatz (Cent), Zeit bis Rückkehr auf 0 (Tick)\" angeben. 1 Tick ist 1/48 einer Viertelnote.\\nBei `*` für einen Parameter wird der Tonhöhenversatz automatisch als Differenz zur vorherigen Note und die Rückkehrzeit als Wiedergabedauer jeder Note angewendet.",
+        "es": "Dentro de `{ }`, especificar \"desplazamiento de tono inicial (cent), tiempo de retorno a 0 (tick)\". 1 tick es 1/48 de una negra.\\nAl especificar `*` para cada parámetro, el desplazamiento se aplica como la diferencia con la nota anterior y el tiempo de retorno como la duración de cada nota.",
+        "fr": "Dans `{ }`, spécifier « décalage de hauteur initial (cent), temps de retour à 0 (tick) ». 1 tick vaut 1/48 d'une noire.\\nEn spécifiant `*` pour chaque paramètre, le décalage est automatiquement la différence avec la note précédente et le temps de retour est la durée de chaque note.",
+        "it": "In `{ }`, specificare \"offset iniziale dell'intonazione (cent), tempo di ritorno a 0 (tick)\". 1 tick è 1/48 di una semiminima.\\nSpecificando `*` per ogni parametro, l'offset viene applicato come differenza dalla nota precedente e il tempo di ritorno come durata di ogni nota.",
+        "ja": "{ }内は「最初の音程変化量 (cent)、0 に戻るまでの時間 (tick)」を指定する。1 tick は 4 分音符を 48 等分した長さ。\\n各パラメータに`*`を指定すると、音程変化量は前回の音程からの差分、変化時間は各音の再生時間が自動的に適用される。",
+        "ko": "`{ }` 안에 \"초기 음정 오프셋(cent), 0으로 복귀 시간(tick)\"을 지정합니다. 1 tick은 4분음표의 1/48입니다.\\n각 파라미터에 `*`를 지정하면 음정 오프셋은 이전 음과의 차이, 복귀 시간은 각 음의 재생 시간이 자동 적용됩니다.",
+        "pt": "Dentro de `{ }`, especificar \"deslocamento de tom inicial (cent), tempo de retorno a 0 (tick)\". 1 tick é 1/48 de uma semínima.\\nAo especificar `*` para cada parâmetro, o deslocamento é aplicado como a diferença da nota anterior e o tempo de retorno como a duração de cada nota.",
+        "ru": "В `{ }` указать «начальное смещение высоты (цент), время возврата к 0 (тик)». 1 тик = 1/48 четвертной ноты.\\nПри указании `*` для параметра смещение автоматически равно разнице с предыдущей нотой, а время возврата — длительности каждой ноты.",
+        "tr": "`{ }` içinde \"başlangıç perde ofseti (cent), 0'a dönüş süresi (tick)\" belirtilir. 1 tick, dörtlük notanın 1/48'idir.\\nHer parametre için `*` belirtildiğinde, perde ofseti önceki notayla fark olarak, dönüş süresi her notanın çalma süresi olarak otomatik uygulanır.",
+        "uk": "У `{ }` вказати «початкове зміщення висоти (цент), час повернення до 0 (тік)». 1 тік = 1/48 чвертної ноти.\\nПри вказуванні `*` для параметра зміщення автоматично дорівнює різниці з попередньою нотою, а час повернення — тривалості кожної ноти."
+      },
+      "example": "@GLI1 { -100, 24 }"
+    },
+    {
+      "cmd": "O <oct>",
+      "desc": {
+        "en": "Sets the octave. Range: -1-9. `O4`'s A is 440 Hz. Default is 4.",
+        "cn": "设置八度。范围：-1-9。`O4` 的 A 音为 440 Hz。默认值为 4。",
+        "de": "Setzt die Oktave. Bereich: -1-9. `O4`'s A ist 440 Hz. Standard ist 4.",
+        "es": "Establece la octava. Rango: -1-9. El La de `O4` es 440 Hz. Por defecto es 4.",
+        "fr": "Définit l'octave. Plage : -1-9. Le La de `O4` est à 440 Hz. Par défaut : 4.",
+        "it": "Imposta l'ottava. Intervallo: -1-9. Il La di `O4` è 440 Hz. Predefinito: 4.",
+        "ja": "オクターブを指定する。範囲は -1-9。`O4`の A の音が 440 Hz になる。デフォルトは 4。",
+        "ko": "옥타브를 설정합니다. 범위: -1-9. `O4`의 A 음이 440 Hz입니다. 기본값은 4.",
+        "pt": "Define a oitava. Intervalo: -1-9. O Lá de `O4` é 440 Hz. Padrão: 4.",
+        "ru": "Устанавливает октаву. Диапазон: -1-9. Ля `O4` — 440 Гц. По умолчанию: 4.",
+        "tr": "Oktavı ayarlar. Aralık: -1-9. `O4`'ün La'sı 440 Hz'dir. Varsayılan: 4.",
+        "uk": "Встановлює октаву. Діапазон: -1-9. Ля `O4` — 440 Гц. За замовчуванням: 4."
+      }
+    },
+    {
+      "cmd": ">",
+      "desc": {
+        "en": "Raises the octave by 1 (max 9).",
+        "cn": "将八度提高 1（最大 9）。",
+        "de": "Erhöht die Oktave um 1 (max. 9).",
+        "es": "Sube la octava en 1 (máx. 9).",
+        "fr": "Monte l'octave de 1 (max. 9).",
+        "it": "Alza l'ottava di 1 (max. 9).",
+        "ja": "オクターブを 1 上げる。最大 9。",
+        "ko": "옥타브를 1 올립니다 (최대 9).",
+        "pt": "Aumenta a oitava em 1 (máx. 9).",
+        "ru": "Повышает октаву на 1 (макс. 9).",
+        "tr": "Oktavı 1 yükseltir (maks. 9).",
+        "uk": "Підвищує октаву на 1 (макс. 9)."
+      }
+    },
+    {
+      "cmd": "<",
+      "desc": {
+        "en": "Lowers the octave by 1 (min -1).",
+        "cn": "将八度降低 1（最小 -1）。",
+        "de": "Senkt die Oktave um 1 (min. -1).",
+        "es": "Baja la octava en 1 (mín. -1).",
+        "fr": "Baisse l'octave de 1 (min. -1).",
+        "it": "Abbassa l'ottava di 1 (min. -1).",
+        "ja": "オクターブを 1 下げる。最小 -1。",
+        "ko": "옥타브를 1 내립니다 (최소 -1).",
+        "pt": "Diminui a oitava em 1 (mín. -1).",
+        "ru": "Понижает октаву на 1 (мин. -1).",
+        "tr": "Oktavı 1 alçaltır (min. -1).",
+        "uk": "Знижує октаву на 1 (мін. -1)."
+      }
+    },
+    {
+      "cmd": "L <len>",
+      "desc": {
+        "en": "Sets the default note/rest length. Range: 1-192. `L4` is a quarter note, `L8` is an eighth note, and `L12` is a quarter note triplet. Default is 4.",
+        "cn": "设置音符和休止符的默认长度。范围：1-192。`L4` 为四分音符、`L8` 为八分音符、`L12` 为四分音符三连音。默认值为 4。",
+        "de": "Setzt die Standard-Noten-/Pausenlänge. Bereich: 1-192. `L4` ist eine Viertelnote, `L8` eine Achtelnote, `L12` eine Vierteltriole. Standard ist 4.",
+        "es": "Establece la duración predeterminada de notas/silencios. Rango: 1-192. `L4` es una negra, `L8` es una corchea, `L12` es un tresillo de negra. Por defecto es 4.",
+        "fr": "Définit la longueur par défaut des notes/silences. Plage : 1-192. `L4` est une noire, `L8` une croche, `L12` un triolet de noires. Par défaut : 4.",
+        "it": "Imposta la lunghezza predefinita di note/pause. Intervallo: 1-192. `L4` è una semiminima, `L8` una croma, `L12` una terzina di semiminime. Predefinito: 4.",
+        "ja": "音符と休符のデフォルトの長さを指定する。範囲は 1-192。`L4`が 4 分音符、`L8`が 8 分音符、`L12`が 4 分 3 連符。デフォルトは 4。",
+        "ko": "음표와 쉼표의 기본 길이를 설정합니다. 범위: 1-192. `L4`는 4분음표, `L8`은 8분음표, `L12`는 4분음표 셋잇단음표입니다. 기본값은 4.",
+        "pt": "Define o comprimento padrão de notas/pausas. Intervalo: 1-192. `L4` é uma semínima, `L8` é uma colcheia, `L12` é uma tercina de semínimas. Padrão: 4.",
+        "ru": "Устанавливает длительность нот/пауз по умолчанию. Диапазон: 1-192. `L4` — четвертная, `L8` — восьмая, `L12` — четвертная триоль. По умолчанию: 4.",
+        "tr": "Varsayılan nota/sus uzunluğunu ayarlar. Aralık: 1-192. `L4` dörtlük, `L8` sekizlik, `L12` dörtlük üçlemedir. Varsayılan: 4.",
+        "uk": "Встановлює тривалість нот/пауз за замовчуванням. Діапазон: 1-192. `L4` — чвертна, `L8` — восьма, `L12` — чвертна тріоль. За замовчуванням: 4."
+      }
+    },
+    {
+      "cmd": "C/D/E/F/G/A/B",
+      "desc": {
+        "en": "Plays the specified note. You can specify the length after the note, e.g., `F16`.",
+        "cn": "播放指定的音符。可以在音符后指定长度，如 `F16`。",
+        "de": "Spielt die angegebene Note. Die Länge kann nach der Note angegeben werden, z.\u00a0B. `F16`.",
+        "es": "Reproduce la nota especificada. Se puede especificar la duración después de la nota, p. ej., `F16`.",
+        "fr": "Joue la note spécifiée. La longueur peut être indiquée après la note, par ex. `F16`.",
+        "it": "Suona la nota specificata. Si può specificare la lunghezza dopo la nota, es. `F16`.",
+        "ja": "指定した音階の音を再生する。`F16`のように後ろに長さを指定すると、その音だけ長さを変更する。",
+        "ko": "지정한 음을 재생합니다. `F16`처럼 음 뒤에 길이를 지정할 수 있습니다.",
+        "pt": "Toca a nota especificada. O comprimento pode ser especificado após a nota, ex.: `F16`.",
+        "ru": "Воспроизводит указанную ноту. Длительность можно указать после ноты, напр. `F16`.",
+        "tr": "Belirtilen notayı çalar. Notadan sonra uzunluk belirtilebilir, ör. `F16`.",
+        "uk": "Відтворює вказану ноту. Тривалість можна вказати після ноти, напр. `F16`."
+      }
+    },
+    {
+      "cmd": "R",
+      "desc": {
+        "en": "Rest. Range: 1-192. You can specify the length after the rest, e.g., `R8`.",
+        "cn": "休止符。范围：1-192。可以在休止符后指定长度，如 `R8`。",
+        "de": "Pause. Bereich: 1-192. Die Länge kann nach der Pause angegeben werden, z.\u00a0B. `R8`.",
+        "es": "Silencio. Rango: 1-192. Se puede especificar la duración después del silencio, p. ej., `R8`.",
+        "fr": "Silence. Plage : 1-192. La longueur peut être indiquée après le silence, par ex. `R8`.",
+        "it": "Pausa. Intervallo: 1-192. Si può specificare la lunghezza dopo la pausa, es. `R8`.",
+        "ja": "休符を再生する。範囲は 1-192。`R8`のように後ろに長さを指定すると、その休符だけ長さを変更する。",
+        "ko": "쉼표. 범위: 1-192. `R8`처럼 쉼표 뒤에 길이를 지정할 수 있습니다.",
+        "pt": "Pausa. Intervalo: 1-192. O comprimento pode ser especificado após a pausa, ex.: `R8`.",
+        "ru": "Пауза. Диапазон: 1-192. Длительность можно указать после паузы, напр. `R8`.",
+        "tr": "Sus. Aralık: 1-192. Sustan sonra uzunluk belirtilebilir, ör. `R8`.",
+        "uk": "Пауза. Діапазон: 1-192. Тривалість можна вказати після паузи, напр. `R8`."
+      }
+    },
+    {
+      "cmd": "#",
+      "desc": {
+        "en": "Raises the note by a semitone.",
+        "cn": "将音符升高半音。",
+        "de": "Erhöht die Note um einen Halbton.",
+        "es": "Sube la nota un semitono.",
+        "fr": "Monte la note d'un demi-ton.",
+        "it": "Alza la nota di un semitono.",
+        "ja": "音の後ろに記述すると、その音を半音上げる。",
+        "ko": "음을 반음 올립니다.",
+        "pt": "Sobe a nota um semitom.",
+        "ru": "Повышает ноту на полутон.",
+        "tr": "Notayı yarım ton yükseltir.",
+        "uk": "Підвищує ноту на півтон."
+      }
+    },
+    {
+      "cmd": "+",
+      "desc": {
+        "en": "Raises the note by a semitone.",
+        "cn": "将音符升高半音。",
+        "de": "Erhöht die Note um einen Halbton.",
+        "es": "Sube la nota un semitono.",
+        "fr": "Monte la note d'un demi-ton.",
+        "it": "Alza la nota di un semitono.",
+        "ja": "音の後ろに記述すると、その音を半音上げる。",
+        "ko": "음을 반음 올립니다.",
+        "pt": "Sobe a nota um semitom.",
+        "ru": "Повышает ноту на полутон.",
+        "tr": "Notayı yarım ton yükseltir.",
+        "uk": "Підвищує ноту на півтон."
+      }
+    },
+    {
+      "cmd": "-",
+      "desc": {
+        "en": "Lowers the note by a semitone.",
+        "cn": "将音符降低半音。",
+        "de": "Senkt die Note um einen Halbton.",
+        "es": "Baja la nota un semitono.",
+        "fr": "Baisse la note d'un demi-ton.",
+        "it": "Abbassa la nota di un semitono.",
+        "ja": "音の後ろに記述すると、その音を半音下げる。",
+        "ko": "음을 반음 내립니다.",
+        "pt": "Desce a nota um semitom.",
+        "ru": "Понижает ноту на полутон.",
+        "tr": "Notayı yarım ton alçaltır.",
+        "uk": "Знижує ноту на півтон."
+      }
+    },
+    {
+      "cmd": ".",
+      "desc": {
+        "en": "Dotted note/rest. Extends the length by half. Can be repeated for multiple dots.",
+        "cn": "附点。将音符或休止符的长度延长一半。可以多次指定。",
+        "de": "Punktierte Note/Pause. Verlängert die Dauer um die Hälfte. Kann für mehrfache Punktierung wiederholt werden.",
+        "es": "Nota/silencio con puntillo. Extiende la duración a la mitad. Se puede repetir para múltiples puntillos.",
+        "fr": "Note/silence pointé(e). Prolonge la durée de moitié. Peut être répété pour plusieurs points.",
+        "it": "Nota/pausa col punto. Estende la durata della metà. Può essere ripetuto per punti multipli.",
+        "ja": "付点。音や休符の後ろに記述すると、長さを 1/2 延ばす。複数指定することも可能。",
+        "ko": "점음표/점쉼표. 길이를 절반만큼 늘립니다. 여러 번 지정할 수 있습니다.",
+        "pt": "Nota/pausa pontuada. Estende a duração pela metade. Pode ser repetido para múltiplos pontos.",
+        "ru": "Нота/пауза с точкой. Удлиняет длительность на половину. Можно повторять для нескольких точек.",
+        "tr": "Noktalı nota/sus. Süreyi yarısı kadar uzatır. Birden fazla nokta için tekrarlanabilir.",
+        "uk": "Нота/пауза з крапкою. Подовжує тривалість на половину. Можна повторювати для кількох крапок."
+      }
+    },
+    {
+      "cmd": "&",
+      "desc": {
+        "en": "Tie/Slur. When connecting the same pitch, it ties the notes into one. When connecting different pitches, it plays them legato (no gap). You can also specify only the length, e.g., `C4&16`.",
+        "cn": "连音/圆滑线。连接相同音高时为延音（合并为一个音），连接不同音高时为圆滑奏（无间隔）。也可以只指定长度，如 `C4&16`。",
+        "de": "Haltebogen/Bindebogen. Bei gleicher Tonhöhe werden die Noten gebunden. Bei verschiedenen Tonhöhen werden sie legato gespielt (ohne Lücke). Es kann auch nur die Länge angegeben werden, z.\u00a0B. `C4&16`.",
+        "es": "Ligadura. Al conectar la misma altura, une las notas en una. Al conectar alturas diferentes, las toca legato (sin espacio). También se puede especificar solo la duración, p. ej., `C4&16`.",
+        "fr": "Liaison. Quand elle relie la même hauteur, elle lie les notes en une. Quand elle relie des hauteurs différentes, elle les joue legato (sans coupure). On peut aussi ne spécifier que la longueur, par ex. `C4&16`.",
+        "it": "Legatura. Collegando la stessa altezza, unisce le note in una. Collegando altezze diverse, le suona legato (senza interruzione). Si può anche specificare solo la lunghezza, es. `C4&16`.",
+        "ja": "タイ/スラー。同じ音程を繋ぐとタイ（1 つの音として繋がる）になり、異なる音程を繋ぐとスラー（レガート、音の切れ目なし）になる。`C4&16`のように長さのみを指定することも可能。",
+        "ko": "타이/슬러. 같은 음을 연결하면 타이(하나의 음으로 연결), 다른 음을 연결하면 슬러(레가토, 끊김 없음)가 됩니다. `C4&16`처럼 길이만 지정할 수도 있습니다.",
+        "pt": "Ligadura. Ao conectar a mesma altura, une as notas em uma. Ao conectar alturas diferentes, toca legato (sem intervalo). Também se pode especificar apenas o comprimento, ex.: `C4&16`.",
+        "ru": "Лига/легато. При соединении одинаковой высоты ноты объединяются в одну. При разной высоте — играются легато (без разрыва). Можно указать только длительность, напр. `C4&16`.",
+        "tr": "Bağ/Legato. Aynı perdeyi bağladığında notaları birleştirir. Farklı perdeleri bağladığında legato (boşluksuz) çalar. Sadece uzunluk da belirtilebilir, ör. `C4&16`.",
+        "uk": "Ліга/легато. При з'єднанні однакової висоти ноти об'єднуються в одну. При різній висоті — грають легато (без розриву). Можна вказати лише тривалість, напр. `C4&16`."
+      }
+    },
+    {
+      "cmd": "[",
+      "desc": {
+        "en": "Start of repeat section.",
+        "cn": "重复段开始。",
+        "de": "Beginn des Wiederholungsabschnitts.",
+        "es": "Inicio de la sección de repetición.",
+        "fr": "Début de la section de répétition.",
+        "it": "Inizio della sezione di ripetizione.",
+        "ja": "繰り返し開始位置。",
+        "ko": "반복 구간 시작.",
+        "pt": "Início da seção de repetição.",
+        "ru": "Начало секции повтора.",
+        "tr": "Tekrar bölümünün başlangıcı.",
+        "uk": "Початок секції повтору."
+      }
+    },
+    {
+      "cmd": "] <count>",
+      "desc": {
+        "en": "End of repeat section. Count range: 1-. Repeats the section between `[` and `]` the specified number of times. If omitted, repeats infinitely. Nested repeats are supported.",
+        "cn": "重复段结束。次数范围：1-。将 `[` 和 `]` 之间的片段重复指定次数。省略时无限重复。支持嵌套。",
+        "de": "Ende des Wiederholungsabschnitts. Anzahl: 1-. Wiederholt den Abschnitt zwischen `[` und `]` die angegebene Anzahl. Bei Auslassung wird endlos wiederholt. Verschachtelung wird unterstützt.",
+        "es": "Fin de la sección de repetición. Rango de veces: 1-. Repite la sección entre `[` y `]` el número de veces especificado. Si se omite, repite infinitamente. Se admiten repeticiones anidadas.",
+        "fr": "Fin de la section de répétition. Plage : 1-. Répète la section entre `[` et `]` le nombre de fois spécifié. Si omis, répète indéfiniment. Les répétitions imbriquées sont prises en charge.",
+        "it": "Fine della sezione di ripetizione. Intervallo: 1-. Ripete la sezione tra `[` e `]` il numero di volte specificato. Se omesso, ripete all'infinito. Le ripetizioni annidate sono supportate.",
+        "ja": "繰り返し終了位置。回数の範囲は 1-。繰り返し開始位置との間のフレーズを指定した回数だけ再生する。回数を省略した場合は無限に繰り返す。入れ子にすることも可能。",
+        "ko": "반복 구간 끝. 횟수 범위: 1-. `[`와 `]` 사이 구간을 지정한 횟수만큼 반복합니다. 생략하면 무한 반복합니다. 중첩 가능.",
+        "pt": "Fim da seção de repetição. Intervalo de contagem: 1-. Repete a seção entre `[` e `]` o número de vezes especificado. Se omitido, repete infinitamente. Repetições aninhadas são suportadas.",
+        "ru": "Конец секции повтора. Диапазон: 1-. Повторяет секцию между `[` и `]` указанное число раз. Если не указано — повторяет бесконечно. Вложенные повторы поддерживаются.",
+        "tr": "Tekrar bölümünün sonu. Sayı aralığı: 1-. `[` ve `]` arasındaki bölümü belirtilen sayıda tekrarlar. Belirtilmezse sonsuz tekrarlar. İç içe tekrarlar desteklenir.",
+        "uk": "Кінець секції повтору. Діапазон: 1-. Повторює секцію між `[` та `]` вказану кількість разів. Якщо не вказано — повторює нескінченно. Вкладені повтори підтримуються."
+      }
+    }
+  ]
+}

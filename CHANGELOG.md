@@ -3,6 +3,7 @@
 ## 2.7.1
 
 - Redesigned Pyxel Examples page with more details
+- Improved web tools with i18n support and other enhancements
 
 ## 2.7.0
 

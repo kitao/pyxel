@@ -19,7 +19,7 @@
           @apply bg-gray-800 shadow-sm px-6 py-4 border border-gray-700 rounded-2xl;
         }
         .link {
-          @apply outline-none focus:ring-1 focus:ring-indigo-300 text-indigo-400 hover:text-indigo-300 underline underline-offset-2;
+          @apply outline-none focus-visible:ring-1 focus-visible:ring-indigo-300 text-indigo-400 hover:text-indigo-300 underline underline-offset-2 rounded-sm;
         }
         .link-strong {
           @apply font-semibold text-indigo-400 hover:text-indigo-300 underline underline-offset-2 break-all;
@@ -28,7 +28,7 @@
           @apply font-medium text-sm;
         }
         .input {
-          @apply bg-gray-900 px-3 py-2 border border-gray-600 focus:border-indigo-500 rounded-lg outline-none w-full placeholder:text-gray-400 text-sm;
+          @apply bg-gray-900 px-3 py-2 border border-gray-600 focus-visible:border-indigo-300 rounded-lg outline-none w-full placeholder:text-gray-400 text-sm;
         }
         .input-link {
           @apply flex items-center min-h-[2.25rem] font-mono break-all select-all input link;
@@ -40,7 +40,10 @@
           @apply inline-flex items-center bg-gray-700 px-1.5 py-0.5 rounded-md ring-1 ring-gray-600 ring-inset font-mono text-gray-100 text-xs align-middle leading-tight;
         }
         .checkbox {
-          @apply border-gray-600 focus:ring-indigo-500 w-4 h-4 text-indigo-600;
+          @apply border-gray-600 focus-visible:ring-indigo-500 w-4 h-4 text-indigo-600;
+        }
+        .lang-select {
+          @apply bg-gray-800 px-2 py-1 border border-gray-600 focus-visible:border-indigo-300 rounded-lg outline-none text-gray-200 text-sm;
         }
       }
     </style>
@@ -48,22 +51,25 @@
 
   <body class="page">
     <main class="container">
-      <header class="mb-4">
-        <h1 class="font-semibold text-2xl tracking-tight">
-          Pyxel Web Launcher
-        </h1>
-        <p class="mt-2 text-gray-300 text-sm">
-          Launcher tool for the WebAssembly version of
-          <a class="link" href="https://github.com/kitao/pyxel" target="_blank" rel="noopener noreferrer">Pyxel</a>, a
-          retro game engine for Python.
-        </p>
+      <header class="flex flex-wrap justify-between items-start gap-4 mb-4">
+        <select id="lang-select" class="lang-select mt-1" style="display: none"></select>
+        <div class="min-w-0 order-first">
+          <h1 id="page-title" class="font-semibold text-2xl tracking-tight">
+            Pyxel Web Launcher
+          </h1>
+          <p id="page-subtitle" class="mt-2 text-gray-300 text-sm">
+            Launcher tool for the WebAssembly version of
+            <a class="link" href="https://github.com/kitao/pyxel" target="_blank" rel="noopener noreferrer">Pyxel</a>, a
+            retro game engine for Python.
+          </p>
+        </div>
       </header>
 
       <section class="card">
         <div class="gap-5 grid grid-cols-1">
           <!-- Startup File -->
           <div class="gap-2 grid">
-            <label for="startup-file" class="label"
+            <label for="startup-file" class="label" data-i18n="label_startup_file"
               >Startup File URL on GitHub</label
             >
             <input
@@ -74,7 +80,7 @@
               placeholder="https://github.com/USER/REPO/blob/BRANCH/PATH/TO/APP.pyxapp"
             />
             <ul class="help">
-              <li>
+              <li id="help-file-type">
                 Startup file type should be
                 <code class="codechip">.pyxapp</code>
                 or
@@ -94,7 +100,7 @@
 
           <!-- Virtual Gamepad -->
           <div class="flex items-center gap-2">
-            <label for="virtual-gamepad" class="label"
+            <label for="virtual-gamepad" class="label" data-i18n="label_virtual_gamepad"
               >Enable Virtual Gamepad</label
             >
             <input
@@ -107,7 +113,7 @@
 
           <!-- Additional Packages -->
           <div class="gap-2 grid">
-            <label for="additional-packages" class="label"
+            <label for="additional-packages" class="label" data-i18n="label_additional_packages"
               >Additional Packages</label
             >
             <input
@@ -118,7 +124,7 @@
               placeholder="numpy,matplotlib"
             />
             <ul class="help">
-              <li>
+              <li id="help-packages-only">
                 Only
                 <a
                   class="link"
@@ -129,7 +135,7 @@
                 >
                 can be used.
               </li>
-              <li>
+              <li id="help-packages-comma">
                 If there are multiple packages, separate them with commas like
                 <code class="codechip">a,b,c</code>.
               </li>
@@ -138,9 +144,10 @@
 
           <!-- Launch URL -->
           <div class="gap-2 grid pt-2">
-            <span class="label">Application Launch URL</span>
+            <span class="label" data-i18n="label_launch_url">Application Launch URL</span>
             <a
               id="launch-url"
+              tabindex="0"
               target="_blank"
               rel="noopener noreferrer"
               class="input-link"
@@ -151,7 +158,7 @@
       </section>
 
       <section class="mt-4">
-        <p class="mt-4 text-gray-300 text-sm">
+        <p id="footer-text" class="mt-4 text-gray-300 text-sm">
           For specific instructions, please refer to
           <a
             class="link"
@@ -159,19 +166,76 @@
             target="_blank"
             rel="noopener noreferrer"
             >this page</a
-          >
-          (<a
-            class="link"
-            href="https://github.com/kitao/pyxel/blob/main/docs/pyxel-web-ja.md"
-            target="_blank"
-            rel="noopener noreferrer"
-            >日本語</a
-          >).
+          >.
         </p>
       </section>
     </main>
 
     <script>
+      let data = null;
+      let currentLang = "en";
+
+      function t(key) {
+        const obj = data?.ui[key];
+        if (!obj) return key;
+        return obj[currentLang] || obj["en"] || "";
+      }
+
+      function extLink(href, text) {
+        return `<a href="${href}" target="_blank" rel="noopener noreferrer" class="link">${text}</a>`;
+      }
+
+      function chip(text) {
+        return `<code class="codechip">${text}</code>`;
+      }
+
+      function detectLanguage() {
+        const stored = localStorage.getItem("pyxel-examples-lang");
+        if (stored && data.languages.some((l) => l.code === stored)) {
+          return stored;
+        }
+        const nav = navigator.language || "";
+        const navLower = nav.toLowerCase();
+        if (navLower.startsWith("zh")) return "cn";
+        for (const lang of data.languages) {
+          if (navLower.startsWith(lang.code)) return lang.code;
+        }
+        return "en";
+      }
+
+      function updateTexts() {
+        // Title and subtitle
+        document.getElementById("page-title").textContent = t("title");
+        document.getElementById("page-subtitle").innerHTML = t("subtitle")
+          .replace("{0}", extLink("https://github.com/kitao/pyxel", "Pyxel"));
+
+        // Labels
+        document.querySelectorAll("[data-i18n]").forEach((el) => {
+          el.textContent = t(el.dataset.i18n);
+        });
+
+        // Help: file type + example
+        const exampleUrl = "https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/apps/megaball.pyxapp";
+        document.getElementById("help-file-type").innerHTML =
+          t("help_file_type").replace("{0}", chip(".pyxapp")).replace("{1}", chip(".py")) +
+          "<br>" + t("help_example") + " " + extLink(exampleUrl, exampleUrl);
+
+        // Help: packages
+        const pyodideUrl = "https://pyodide.org/en/stable/usage/packages-in-pyodide.html";
+        document.getElementById("help-packages-only").innerHTML =
+          t("help_packages_only").replace("{0}", extLink(pyodideUrl, t("help_packages_link")));
+        document.getElementById("help-packages-comma").innerHTML =
+          t("help_packages_comma").replace("{0}", chip("a,b,c"));
+
+        // Footer
+        const docLang = currentLang === "ja" ? "ja" : "en";
+        const docUrl = `https://github.com/kitao/pyxel/blob/main/docs/pyxel-web-${docLang}.md`;
+        document.getElementById("footer-text").innerHTML =
+          t("footer").replace("{0}", extLink(docUrl, t("footer_link")));
+
+        document.documentElement.lang = currentLang === "cn" ? "zh" : currentLang;
+      }
+
       function buildLaunchUrl() {
         const startupFile = document.getElementById("startup-file").value;
         const virtualGamepad =
@@ -218,6 +282,32 @@
       document
         .getElementById("additional-packages")
         .addEventListener("input", buildLaunchUrl);
+
+      // Init i18n
+      fetch("launcher.json")
+        .then((r) => r.json())
+        .then((json) => {
+          data = json;
+          currentLang = detectLanguage();
+
+          // Build language selector
+          const langSelect = document.getElementById("lang-select");
+          for (const lang of data.languages) {
+            const opt = document.createElement("option");
+            opt.value = lang.code;
+            opt.textContent = lang.name;
+            langSelect.appendChild(opt);
+          }
+          langSelect.value = currentLang;
+          langSelect.addEventListener("change", () => {
+            currentLang = langSelect.value;
+            localStorage.setItem("pyxel-examples-lang", currentLang);
+            updateTexts();
+          });
+          langSelect.style.display = "";
+
+          updateTexts();
+        });
     </script>
   </body>
 </html>

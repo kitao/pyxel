@@ -1279,6 +1279,39 @@
             "tr": "Pyxel MML ile chiptune müzik besteleyen tarayıcı tabanlı editör. 4 kanal düzenleme, gerçek zamanlı önizleme ve URL veya QR kodu ile şarkı paylaşımını destekler.",
             "uk": "Браузерний редактор для створення чіптюн-музики на Pyxel MML. Підтримує 4-канальне редагування, попередній перегляд у реальному часі та обмін композиціями через URL або QR-код."
           }
+        },
+        {
+          "file": "Pyxel Web Launcher",
+          "demo": "../launcher/url-builder.html",
+          "code": "https://github.com/kitao/pyxel/tree/main/wasm/launcher",
+          "description": {
+            "en": "Tool for launching Pyxel apps in the browser via URL",
+            "cn": "通过 URL 在浏览器中启动 Pyxel 应用的工具",
+            "de": "Tool zum Starten von Pyxel-Apps im Browser über URL",
+            "es": "Herramienta para lanzar aplicaciones Pyxel en el navegador mediante URL",
+            "fr": "Outil pour lancer des applications Pyxel dans le navigateur via URL",
+            "it": "Strumento per avviare applicazioni Pyxel nel browser tramite URL",
+            "ja": "URL で Pyxel アプリをブラウザ起動するツール",
+            "ko": "URL로 브라우저에서 Pyxel 앱을 실행하는 도구",
+            "pt": "Ferramenta para executar aplicativos Pyxel no navegador via URL",
+            "ru": "Инструмент для запуска приложений Pyxel в браузере по URL",
+            "tr": "URL ile Pyxel uygulamalarını tarayıcıda başlatma aracı",
+            "uk": "Інструмент для запуску застосунків Pyxel у браузері за URL"
+          },
+          "details": {
+            "en": "Generates launch URLs for running Pyxel applications directly in the browser. Enter a GitHub URL of a .py or .pyxapp file to get a shareable link that runs the app in WebAssembly.",
+            "cn": "生成用于在浏览器中直接运行 Pyxel 应用的启动 URL。输入 GitHub 上 .py 或 .pyxapp 文件的 URL，即可获得一个可分享的 WebAssembly 运行链接。",
+            "de": "Generiert Start-URLs zum direkten Ausführen von Pyxel-Anwendungen im Browser. Geben Sie eine GitHub-URL einer .py- oder .pyxapp-Datei ein, um einen teilbaren Link zu erhalten, der die App in WebAssembly ausführt.",
+            "es": "Genera URLs de lanzamiento para ejecutar aplicaciones Pyxel directamente en el navegador. Introduce la URL de GitHub de un archivo .py o .pyxapp para obtener un enlace compartible que ejecuta la aplicación en WebAssembly.",
+            "fr": "Génère des URL de lancement pour exécuter des applications Pyxel directement dans le navigateur. Entrez l'URL GitHub d'un fichier .py ou .pyxapp pour obtenir un lien partageable qui exécute l'application en WebAssembly.",
+            "it": "Genera URL di avvio per eseguire applicazioni Pyxel direttamente nel browser. Inserisci l'URL GitHub di un file .py o .pyxapp per ottenere un link condivisibile che esegue l'app in WebAssembly.",
+            "ja": "Pyxel アプリケーションをブラウザで直接実行するための起動 URL を生成します。GitHub 上の .py または .pyxapp ファイルの URL を入力すると、WebAssembly で実行可能な共有リンクが得られます。",
+            "ko": "Pyxel 애플리케이션을 브라우저에서 직접 실행하기 위한 실행 URL을 생성합니다. GitHub의 .py 또는 .pyxapp 파일 URL을 입력하면 WebAssembly로 실행 가능한 공유 링크를 얻을 수 있습니다.",
+            "pt": "Gera URLs de lançamento para executar aplicativos Pyxel diretamente no navegador. Insira a URL do GitHub de um arquivo .py ou .pyxapp para obter um link compartilhável que executa o aplicativo em WebAssembly.",
+            "ru": "Генерирует URL-адреса для запуска приложений Pyxel прямо в браузере. Введите URL файла .py или .pyxapp на GitHub, чтобы получить ссылку для запуска приложения через WebAssembly.",
+            "tr": "Pyxel uygulamalarını doğrudan tarayıcıda çalıştırmak için başlatma URL'leri oluşturur. Bir .py veya .pyxapp dosyasının GitHub URL'sini girerek uygulamayı WebAssembly ile çalıştıran paylaşılabilir bir bağlantı elde edin.",
+            "uk": "Генерує URL-адреси для запуску застосунків Pyxel безпосередньо у браузері. Введіть URL файлу .py або .pyxapp на GitHub, щоб отримати посилання для запуску застосунку через WebAssembly."
+          }
         }
       ]
     }
