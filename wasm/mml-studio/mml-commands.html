@@ -20,7 +20,7 @@
           @apply text-gray-300 text-sm;
         }
         .link {
-          @apply outline-none focus:ring-1 focus:ring-indigo-300 text-indigo-400 hover:text-indigo-300 underline underline-offset-2;
+          @apply outline-none focus-visible:ring-1 focus-visible:ring-indigo-300 text-indigo-400 hover:text-indigo-300 underline underline-offset-2 rounded-sm;
         }
         .mono {
           @apply font-mono text-sm;
@@ -35,7 +35,7 @@
           @apply inline-flex items-center bg-gray-900 mt-1 mb-2 sm:mb-0 border border-gray-600 rounded-md divide-x divide-gray-700 overflow-hidden;
         }
         .seg-btn {
-          @apply bg-gray-900 px-3 py-1 border-none focus:outline-none min-w-[2.3rem] font-medium text-gray-300 text-xs;
+          @apply bg-gray-900 px-3 py-1 border-none outline-none focus:ring-1 focus:ring-inset focus:ring-indigo-300 min-w-[2.3rem] font-medium text-gray-300 text-xs;
         }
         .seg-active {
           @apply bg-slate-600 text-white;

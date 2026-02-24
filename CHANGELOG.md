@@ -1,5 +1,10 @@
 # Change Log
 
+## 2.7.1
+
+- Redesigned Pyxel Examples page with i18n support
+- Organized Web example HTML files into subdirectories
+
 ## 2.7.0
 
 - Removed mutexes for resource types to improve performance

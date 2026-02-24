@@ -17,19 +17,19 @@
           @apply bg-gray-800 shadow-sm p-6 border border-gray-700;
         }
         .input {
-          @apply bg-gray-900 px-3 py-2 border border-gray-600 focus:border-indigo-500 rounded-lg outline-none w-full placeholder:text-gray-400 text-sm;
+          @apply bg-gray-900 px-3 py-2 border border-gray-600 focus-visible:border-indigo-300 rounded-lg outline-none w-full placeholder:text-gray-400 text-sm;
         }
         .toggle {
-          @apply bg-gray-900 px-2 py-1 border border-gray-600 focus:border-indigo-500 rounded-md outline-none w-14 font-medium text-gray-300 text-xs;
+          @apply bg-gray-900 px-2 py-1 border border-gray-600 focus:border-indigo-300 rounded-md outline-none w-14 font-medium text-gray-300 text-xs;
         }
         .toggle.active {
-          @apply bg-slate-600 focus:border-gray-400 text-white;
+          @apply bg-slate-600 focus:border-indigo-300 text-white;
         }
         .toggle:disabled {
           @apply bg-gray-700 opacity-50 focus:border-gray-300 text-gray-400 pointer-events-none;
         }
         .link {
-          @apply outline-none focus:ring-1 focus:ring-indigo-300 text-indigo-400 hover:text-indigo-300 underline underline-offset-2;
+          @apply outline-none focus-visible:ring-1 focus-visible:ring-indigo-300 text-indigo-400 hover:text-indigo-300 underline underline-offset-2 rounded-sm;
         }
         .input-link {
           @apply flex items-center outline-none min-h-[2.25rem] font-mono text-indigo-400 hover:text-indigo-300 break-all select-all input;
@@ -61,10 +61,9 @@
               class="toggle"
               data-action="play"
               data-state="false"
-              onmousedown="handleButtonPress(this)"
+              onclick="handleButtonPress(this)"
               title="Ctrl(Cmd)+Enter: Play"
               disabled
-              tabindex="-1"
             >
               PLAY
             </button>
@@ -73,10 +72,9 @@
               class="toggle"
               data-action="stop"
               data-state="false"
-              onmousedown="handleButtonPress(this)"
+              onclick="handleButtonPress(this)"
               title="Esc: Stop"
               disabled
-              tabindex="-1"
             >
               STOP
             </button>
@@ -85,10 +83,9 @@
               class="toggle active"
               data-action="loop"
               data-state="true"
-              onmousedown="handleButtonPress(this)"
+              onclick="handleButtonPress(this)"
               title="Ctrl(Cmd+L): Toggle Loop"
               disabled
-              tabindex="-1"
             >
               LOOP
             </button>
@@ -132,6 +129,7 @@
             id="runtime-screen"
             src="pyxel-screen.html"
             class="border-0 w-full h-full"
+            tabindex="-1"
           ></iframe>
         </div>
       </div>
@@ -146,8 +144,7 @@
               class="toggle"
               data-action="solo1"
               data-state="false"
-              onmousedown="handleButtonPress(this)"
-              tabindex="-1"
+              onclick="handleButtonPress(this)"
             >
               SOLO
             </button>
@@ -156,8 +153,7 @@
               class="toggle"
               data-action="mute1"
               data-state="false"
-              onmousedown="handleButtonPress(this)"
-              tabindex="-1"
+              onclick="handleButtonPress(this)"
             >
               MUTE
             </button>
@@ -181,8 +177,7 @@
               class="toggle"
               data-action="solo2"
               data-state="false"
-              onmousedown="handleButtonPress(this)"
-              tabindex="-1"
+              onclick="handleButtonPress(this)"
             >
               SOLO
             </button>
@@ -191,8 +186,7 @@
               class="toggle"
               data-action="mute2"
               data-state="false"
-              onmousedown="handleButtonPress(this)"
-              tabindex="-1"
+              onclick="handleButtonPress(this)"
             >
               MUTE
             </button>
@@ -216,8 +210,7 @@
               class="toggle"
               data-action="solo3"
               data-state="false"
-              onmousedown="handleButtonPress(this)"
-              tabindex="-1"
+              onclick="handleButtonPress(this)"
             >
               SOLO
             </button>
@@ -226,8 +219,7 @@
               class="toggle"
               data-action="mute3"
               data-state="false"
-              onmousedown="handleButtonPress(this)"
-              tabindex="-1"
+              onclick="handleButtonPress(this)"
             >
               MUTE
             </button>
@@ -251,8 +243,7 @@
               class="toggle"
               data-action="solo4"
               data-state="false"
-              onmousedown="handleButtonPress(this)"
-              tabindex="-1"
+              onclick="handleButtonPress(this)"
             >
               SOLO
             </button>
@@ -261,8 +252,7 @@
               class="toggle"
               data-action="mute4"
               data-state="false"
-              onmousedown="handleButtonPress(this)"
-              tabindex="-1"
+              onclick="handleButtonPress(this)"
             >
               MUTE
             </button>

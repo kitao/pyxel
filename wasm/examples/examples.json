@@ -1,0 +1,946 @@
+{
+  "languages": [
+    { "code": "en", "name": "English" },
+    { "code": "cn", "name": "中文" },
+    { "code": "de", "name": "Deutsch" },
+    { "code": "es", "name": "Español" },
+    { "code": "fr", "name": "Français" },
+    { "code": "it", "name": "Italiano" },
+    { "code": "ja", "name": "日本語" },
+    { "code": "ko", "name": "한국어" },
+    { "code": "pt", "name": "Português" },
+    { "code": "ru", "name": "Русский" },
+    { "code": "tr", "name": "Türkçe" },
+    { "code": "uk", "name": "Українська" }
+  ],
+  "ui": {
+    "title": {
+      "en": "Pyxel Examples"
+    },
+    "subtitle": {
+      "en": "Examples of {0}, a retro game engine for Python.",
+      "cn": "Python 复古游戏引擎 {0} 的示例集。",
+      "de": "Beispiele von {0}, einer Retro-Spielengine für Python.",
+      "es": "Ejemplos de {0}, un motor de juegos retro para Python.",
+      "fr": "Exemples de {0}, un moteur de jeux rétro pour Python.",
+      "it": "Esempi di {0}, un motore di giochi retrò per Python.",
+      "ja": "Python 向けレトロゲームエンジン {0} のサンプル集。",
+      "ko": "Python용 레트로 게임 엔진 {0}의 예제 모음.",
+      "pt": "Exemplos do {0}, um motor de jogos retrô para Python.",
+      "ru": "Примеры {0}, ретро-игрового движка для Python.",
+      "tr": "Python için bir retro oyun motoru olan {0} örnekleri.",
+      "uk": "Приклади {0}, ретро-ігрового рушія для Python."
+    },
+    "demo": {
+      "en": "Run",
+      "cn": "运行",
+      "de": "Start",
+      "es": "Ejecutar",
+      "fr": "Lancer",
+      "it": "Esegui",
+      "ja": "実行",
+      "ko": "실행",
+      "pt": "Executar",
+      "ru": "Запуск",
+      "tr": "Çalıştır",
+      "uk": "Запуск"
+    },
+    "code": {
+      "en": "Code",
+      "cn": "代码",
+      "de": "Code",
+      "es": "Código",
+      "fr": "Code",
+      "it": "Codice",
+      "ja": "コード",
+      "ko": "코드",
+      "pt": "Código",
+      "ru": "Код",
+      "tr": "Kod",
+      "uk": "Код"
+    },
+    "details": {
+      "en": "Details",
+      "cn": "详情",
+      "de": "Details",
+      "es": "Detalles",
+      "fr": "Détails",
+      "it": "Dettagli",
+      "ja": "詳細",
+      "ko": "상세",
+      "pt": "Detalhes",
+      "ru": "Подробности",
+      "tr": "Detaylar",
+      "uk": "Детальніше"
+    },
+    "footer": {
+      "en": "Web version HTML files are available {0}. For detailed usage instructions, see {1}.",
+      "cn": "Web 版 HTML 文件可在{0}查看，详细使用方法请参考{1}。",
+      "de": "HTML-Dateien der Web-Version sind {0} verfügbar. Detaillierte Anleitungen finden Sie {1}.",
+      "es": "Los archivos HTML de la versión web están disponibles {0}. Para instrucciones detalladas, consulte {1}.",
+      "fr": "Les fichiers HTML de la version web sont disponibles {0}. Pour les instructions détaillées, consultez {1}.",
+      "it": "I file HTML della versione web sono disponibili {0}. Per istruzioni dettagliate, consultare {1}.",
+      "ja": "Web 版の HTML ファイルは{0}、詳しい使い方は{1}をご参照ください。",
+      "ko": "웹 버전 HTML 파일은 {0}에서, 자세한 사용법은 {1}을 참조하세요.",
+      "pt": "Os arquivos HTML da versão web estão disponíveis {0}. Para instruções detalhadas, consulte {1}.",
+      "ru": "HTML-файлы веб-версии доступны {0}. Подробные инструкции см. {1}.",
+      "tr": "Web sürümü HTML dosyalarına {0} ulaşabilirsiniz. Ayrıntılı talimatlar için {1} sayfasına bakınız.",
+      "uk": "HTML-файли веб-версії доступні {0}. Докладні інструкції дивіться {1}."
+    },
+    "footer_link": {
+      "en": "here",
+      "cn": "这里",
+      "de": "hier",
+      "es": "aquí",
+      "fr": "ici",
+      "it": "qui",
+      "ja": "こちら",
+      "ko": "여기",
+      "pt": "aqui",
+      "ru": "здесь",
+      "tr": "burada",
+      "uk": "тут"
+    }
+  },
+  "categories": [
+    {
+      "id": "examples",
+      "title": {
+        "en": "Examples",
+        "cn": "示例",
+        "de": "Beispiele",
+        "es": "Ejemplos",
+        "fr": "Exemples",
+        "it": "Esempi",
+        "ja": "サンプル",
+        "ko": "예제",
+        "pt": "Exemplos",
+        "ru": "Примеры",
+        "tr": "Örnekler",
+        "uk": "Приклади"
+      },
+      "items": [
+        {
+          "file": "01_hello_pyxel.py",
+          "demo": "examples/01-hello-pyxel.html",
+          "code": "https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/01_hello_pyxel.py",
+          "description": {
+            "en": "Simplest application",
+            "cn": "最简单的应用",
+            "de": "Die einfachste Anwendung",
+            "es": "La aplicación más simple",
+            "fr": "L'application la plus simple",
+            "it": "Applicazione più semplice",
+            "ja": "シンプルなアプリケーション",
+            "ko": "가장 간단한 애플리케이션",
+            "pt": "Aplicativo mais simples",
+            "ru": "Самое простое приложение",
+            "tr": "En basit uygulama",
+            "uk": "Найпростіший застосунок"
+          },
+          "details": {
+            "en": "Basic Pyxel app demonstrating the init(), run(), update(), and draw() lifecycle.",
+            "ja": "init()、run()、update()、draw() のライフサイクルを実演する基本的な Pyxel アプリケーション。"
+          }
+        },
+        {
+          "file": "02_jump_game.py",
+          "demo": "examples/02-jump-game.html",
+          "code": "https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/02_jump_game.py",
+          "description": {
+            "en": "Jump game with Pyxel resource file",
+            "cn": "使用 Pyxel 资源文件的跳跃游戏",
+            "de": "Sprungspiel mit Pyxel-Ressourcendatei",
+            "es": "Juego de saltos con archivo de recursos de Pyxel",
+            "fr": "Jeu de saut avec fichier de ressources Pyxel",
+            "it": "Gioco di salti con file di risorse Pyxel",
+            "ja": "Pyxel リソースファイルを使ったジャンプゲーム",
+            "ko": "Pyxel 리소스 파일을 이용한 점프 게임",
+            "pt": "Jogo de salto com arquivo de recursos Pyxel",
+            "ru": "Игра с прыжками с использованием файла ресурсов Pyxel",
+            "tr": "Pyxel kaynak dosyasıyla zıplama oyunu",
+            "uk": "Гра зі стрибками з використанням файлу ресурсів Pyxel"
+          },
+          "details": {
+            "en": "A jump game using Pyxel resource files (.pyxres) for graphics and sound data.",
+            "ja": "Pyxel リソースファイル (.pyxres) を使って画像とサウンドデータを管理するジャンプゲーム。"
+          }
+        },
+        {
+          "file": "03_draw_api.py",
+          "demo": "examples/03-draw-api.html",
+          "code": "https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/03_draw_api.py",
+          "description": {
+            "en": "Demonstration of drawing APIs",
+            "cn": "绘图 API 的演示",
+            "de": "Demonstration der Zeichen-APIs",
+            "es": "Demostración de las API de dibujo",
+            "fr": "Démo des APIs de dessin",
+            "it": "Dimostrazione delle API di disegno",
+            "ja": "描画 API のデモ",
+            "ko": "그리기 API의 시연",
+            "pt": "Demonstração das APIs de desenho",
+            "ru": "Демонстрация API для рисования",
+            "tr": "Çizim API'lerinin gösterimi",
+            "uk": "Демонстрація API для малювання"
+          },
+          "details": {
+            "en": "Showcases all Pyxel drawing APIs including rectangles, circles, lines, and text rendering.",
+            "ja": "矩形、円、線、テキスト描画など、Pyxel の全描画 API を紹介します。"
+          }
+        },
+        {
+          "file": "04_sound_api.py",
+          "demo": "examples/04-sound-api.html",
+          "code": "https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/04_sound_api.py",
+          "description": {
+            "en": "Demonstration of sound APIs",
+            "cn": "音频 API 的演示",
+            "de": "Demonstration der Audio-APIs",
+            "es": "Demostración de las API de sonido",
+            "fr": "Démo des APIs de son",
+            "it": "Dimostrazione delle API audio",
+            "ja": "サウンド API のデモ",
+            "ko": "사운드 API의 시연",
+            "pt": "Demonstração das APIs de som",
+            "ru": "Демонстрация API для звука",
+            "tr": "Ses API'lerinin gösterimi",
+            "uk": "Демонстрація API для звуку"
+          },
+          "details": {
+            "en": "Demonstrates sound creation, editing, and playback using Pyxel's sound APIs.",
+            "ja": "Pyxel のサウンド API を使ったサウンドの作成、編集、再生のデモ。"
+          }
+        },
+        {
+          "file": "05_color_palette.py",
+          "demo": "examples/05-color-palette.html",
+          "code": "https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/05_color_palette.py",
+          "description": {
+            "en": "Color palette list",
+            "cn": "颜色调色板列表",
+            "de": "Farbenpalettenliste",
+            "es": "Lista de paletas de colores",
+            "fr": "Liste de palettes de couleurs",
+            "it": "Elenco delle palette di colori",
+            "ja": "カラーパレット一覧",
+            "ko": "색상 팔레트 목록",
+            "pt": "Lista de paletas de cores",
+            "ru": "Список цветовых палитр",
+            "tr": "Renk paletleri listesi",
+            "uk": "Список кольорових паліт"
+          },
+          "details": {
+            "en": "Displays Pyxel's built-in 16-color palette with color codes.",
+            "ja": "Pyxel 組み込みの 16 色パレットをカラーコード付きで表示します。"
+          }
+        },
+        {
+          "file": "06_click_game.py",
+          "demo": "examples/06-click-game.html",
+          "code": "https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/06_click_game.py",
+          "description": {
+            "en": "Mouse click game",
+            "cn": "鼠标点击游戏",
+            "de": "Mausklickspiel",
+            "es": "Juego de clic con el ratón",
+            "fr": "Jeu de clic avec la souris",
+            "it": "Gioco di clic del mouse",
+            "ja": "マウスクリックゲーム",
+            "ko": "마우스 클릭 게임",
+            "pt": "Jogo de clique do mouse",
+            "ru": "Игра на клик мыши",
+            "tr": "Fare tıklama oyunu",
+            "uk": "Гра на клік миші"
+          },
+          "details": {
+            "en": "A simple mouse click game demonstrating mouse input handling.",
+            "ja": "マウス入力の処理を実演するシンプルなクリックゲーム。"
+          }
+        },
+        {
+          "file": "07_snake.py",
+          "demo": "examples/07-snake.html",
+          "code": "https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/07_snake.py",
+          "description": {
+            "en": "Snake game with BGM",
+            "cn": "带有背景音乐的贪吃蛇游戏",
+            "de": "Schlangenspiel mit BGM",
+            "es": "Juego de la serpiente con BGM",
+            "fr": "Jeu de serpent avec BGM",
+            "it": "Gioco del serpente con BGM",
+            "ja": "BGM 付きスネークゲーム",
+            "ko": "BGM이 있는 스네이크 게임",
+            "pt": "Jogo da cobrinha com BGM",
+            "ru": "Игра «Змейка» с BGM",
+            "tr": "BGM'li yılan oyunu",
+            "uk": "Гра «Змійка» з BGM"
+          },
+          "details": {
+            "en": "Classic snake game featuring background music composed with MML (Music Macro Language).",
+            "ja": "MML (Music Macro Language) で作曲した BGM 付きのクラシックなスネークゲーム。"
+          }
+        },
+        {
+          "file": "08_triangle_api.py",
+          "demo": "examples/08-triangle-api.html",
+          "code": "https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/08_triangle_api.py",
+          "description": {
+            "en": "Demonstration of triangle drawing APIs",
+            "cn": "三角形绘图 API 的演示",
+            "de": "Demonstration der Dreiecks-Zeichen-APIs",
+            "es": "Demostración de las API de dibujo de triángulos",
+            "fr": "Démo des APIs de dessin de triangles",
+            "it": "Dimostrazione delle API di disegno di triangoli",
+            "ja": "三角形描画 API のデモ",
+            "ko": "삼각형 그리기 API의 시연",
+            "pt": "Demonstração das APIs de desenho de triângulos",
+            "ru": "Демонстрация API для рисования треугольников",
+            "tr": "Üçgen çizim API'lerinin gösterimi",
+            "uk": "Демонстрація API для малювання трикутників"
+          },
+          "details": {
+            "en": "Demonstrates triangle drawing with tri() and trib() functions.",
+            "ja": "tri() 関数と trib() 関数による三角形の描画を実演します。"
+          }
+        },
+        {
+          "file": "09_shooter.py",
+          "demo": "examples/09-shooter.html",
+          "code": "https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/09_shooter.py",
+          "description": {
+            "en": "Shoot'em up game with screen transitions and MML",
+            "cn": "使用屏幕切换和 MML 的射击游戏",
+            "de": "Shoot'em up Spiel mit Bildschirmübergängen und MML",
+            "es": "Shoot'em up con transiciones de pantalla y MML",
+            "fr": "Shoot'em up avec transitions d'écran et MML",
+            "it": "Shoot'em up con transizioni di schermo e MML",
+            "ja": "画面遷移と MML を使ったシューティングゲーム",
+            "ko": "Shoot'em up 게임과 화면 전환 및 MML",
+            "pt": "Shoot'em up com transições de tela e MML",
+            "ru": "Shoot'em up с переходами между экранами и MML",
+            "tr": "Shoot'em up oyunu ile ekran geçişleri ve MML",
+            "uk": "Shoot'em up з переходами між екранами та MML"
+          },
+          "details": {
+            "en": "A shoot'em up game with screen state transitions, enemy patterns, and MML background music.",
+            "ja": "画面遷移、敵パターン、MML による BGM を備えたシューティングゲーム。"
+          }
+        },
+        {
+          "file": "10_platformer.py",
+          "demo": "examples/10-platformer.html",
+          "code": "https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/10_platformer.py",
+          "description": {
+            "en": "Side-scrolling platform game with map",
+            "cn": "带有地图的横向卷轴平台游戏",
+            "de": "Seiten-scrollendes Plattformspiel mit Karte",
+            "es": "Juego de plataformas de desplazamiento lateral con mapa",
+            "fr": "Jeu de plateforme défilant horizontalement avec carte",
+            "it": "Gioco di piattaforma a scorrimento laterale con mappa",
+            "ja": "マップを使った横スクロールアクションゲーム",
+            "ko": "맵이 있는 횡스크롤 플랫폼 게임",
+            "pt": "Jogo de plataforma em rolagem lateral com mapa",
+            "ru": "Горизонтальная платформенная игра с картой",
+            "tr": "Haritalı yan kaydırmalı platform oyunu",
+            "uk": "Горизонтальна платформна гра з картою"
+          },
+          "details": {
+            "en": "A side-scrolling platform game using tilemaps for level design.",
+            "ja": "タイルマップを使ったレベルデザインによる横スクロールアクションゲーム。"
+          }
+        },
+        {
+          "file": "11_offscreen.py",
+          "demo": "examples/11-offscreen.html",
+          "code": "https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/11_offscreen.py",
+          "description": {
+            "en": "Offscreen rendering with Image class",
+            "cn": "使用 Image 类进行离屏渲染",
+            "de": "Offscreen-Rendering mit der Image-Klasse",
+            "es": "Renderizado fuera de pantalla con la clase Image",
+            "fr": "Rendu hors écran avec la classe Image",
+            "it": "Rendering offscreen con la classe Image",
+            "ja": "Image クラスによるオフスクリーン描画",
+            "ko": "Image 클래스를 이용한 오프스크린 렌더링",
+            "pt": "Renderização offscreen com a classe Image",
+            "ru": "Отрисовка вне экрана с классом Image",
+            "tr": "Image sınıfıyla ekran dışı renderleme",
+            "uk": "Відображення поза екраном з класом Image"
+          },
+          "details": {
+            "en": "Demonstrates offscreen rendering using the Image class for buffer operations.",
+            "ja": "Image クラスを使ったバッファ操作によるオフスクリーン描画のデモ。"
+          }
+        },
+        {
+          "file": "12_perlin_noise.py",
+          "demo": "examples/12-perlin-noise.html",
+          "code": "https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/12_perlin_noise.py",
+          "description": {
+            "en": "Perlin noise animation",
+            "cn": "柏林噪声动画",
+            "de": "Perlin-Rausch-Animation",
+            "es": "Animación de ruido de Perlin",
+            "fr": "Animation de bruit de Perlin",
+            "it": "Animazione di rumore di Perlin",
+            "ja": "Perlin ノイズアニメーション",
+            "ko": "퍼린 노이즈 애니메이션",
+            "pt": "Animação de ruído de Perlin",
+            "ru": "Анимация Перлин-шума",
+            "tr": "Perlin gürültüsü animasyonu",
+            "uk": "Анімація Перлін-шуму"
+          },
+          "details": {
+            "en": "Animated visualization of Perlin noise, a procedural texture generation technique.",
+            "ja": "手続き的テクスチャ生成技法である Perlin ノイズのアニメーション表示。"
+          }
+        },
+        {
+          "file": "13_custom_font.py",
+          "demo": "examples/13-custom-font.html",
+          "code": "https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/13_custom_font.py",
+          "description": {
+            "en": "Drawing a custom font",
+            "cn": "绘制自定义字体",
+            "de": "Zeichnen einer benutzerdefinierten Schriftart",
+            "es": "Dibujo de una fuente personalizada",
+            "fr": "Dessin d'une police personnalisée",
+            "it": "Disegnare un font personalizzato",
+            "ja": "カスタムフォント描画",
+            "ko": "커스텀 폰트 그리기",
+            "pt": "Desenho de uma fonte personalizada",
+            "ru": "Рисование пользовательского шрифта",
+            "tr": "Özel font çizimi",
+            "uk": "Малювання користувацького шрифта"
+          },
+          "details": {
+            "en": "Shows how to load and use custom bitmap fonts for text rendering.",
+            "ja": "カスタムビットマップフォントを読み込んでテキスト描画に使用する方法を紹介します。"
+          }
+        },
+        {
+          "file": "14_synthesizer.py",
+          "demo": "examples/14-synthesizer.html",
+          "code": "https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/14_synthesizer.py",
+          "description": {
+            "en": "Synthesizer using audio expansion features",
+            "cn": "使用音频扩展功能的合成器",
+            "de": "Synthesizer unter Verwendung von Audioerweiterungsfunktionen",
+            "es": "Sintetizador utilizando características de expansión de audio",
+            "fr": "Synthétiseur utilisant des fonctions d'extension audio",
+            "it": "Sintetizzatore che utilizza funzionalità di espansione audio",
+            "ja": "オーディオ拡張機能によるシンセサイザー",
+            "ko": "오디오 확장 기능을 활용한 신시사이저",
+            "pt": "Sintetizador utilizando recursos de expansão de áudio",
+            "ru": "Синтезатор с использованием расширенных функций аудио",
+            "tr": "Ses genişletme özelliklerini kullanan sentezleyici",
+            "uk": "Синтезатор з використанням функцій розширення звуку"
+          },
+          "details": {
+            "en": "An interactive synthesizer showcasing Pyxel's expanded audio features including custom waveforms.",
+            "ja": "カスタム波形を含む Pyxel のオーディオ拡張機能を使ったインタラクティブなシンセサイザー。"
+          }
+        },
+        {
+          "file": "15_tiled_map_file.py",
+          "demo": "examples/15-tiled-map-file.html",
+          "code": "https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/15_tiled_map_file.py",
+          "description": {
+            "en": "Drawing a Tile Map File (.tmx) and auto-generating BGM",
+            "cn": "绘制 Tiled Map File (.tmx) 并自动生成 BGM",
+            "de": "Zeichnen einer Tiled Map File (.tmx) und automatische BGM-Erzeugung",
+            "es": "Dibujo de Tiled Map File (.tmx) y generación automática de BGM",
+            "fr": "Dessin d'un Tiled Map File (.tmx) et génération automatique de BGM",
+            "it": "Disegno di un Tiled Map File (.tmx) e generazione automatica di BGM",
+            "ja": "タイルマップファイル (.tmx) 描画と BGM 自動生成",
+            "ko": "Tiled Map File (.tmx) 그리기 및 BGM 자동 생성",
+            "pt": "Desenho de um Tiled Map File (.tmx) e geração automática de BGM",
+            "ru": "Отрисовка Tiled Map File (.tmx) и автоматическая генерация BGM",
+            "tr": "Tiled Map File (.tmx) çizimi ve otomatik BGM oluşturma",
+            "uk": "Малювання Tiled Map File (.tmx) та автоматична генерація BGM"
+          },
+          "details": {
+            "en": "Loads a Tiled Map Editor (.tmx) file for rendering and demonstrates automatic BGM generation.",
+            "ja": "Tiled Map Editor (.tmx) ファイルの読み込み描画と、BGM の自動生成を実演します。"
+          }
+        },
+        {
+          "file": "16_transform.py",
+          "demo": "examples/16-transform.html",
+          "code": "https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/16_transform.py",
+          "description": {
+            "en": "Image rotation and scaling",
+            "cn": "图像旋转和缩放",
+            "de": "Bildrotation und -skalierung",
+            "es": "Rotación y escalado de imágenes",
+            "fr": "Rotation et mise à l'échelle d'images",
+            "it": "Rotazione e ridimensionamento delle immagini",
+            "ja": "画像の回転と拡大縮小",
+            "ko": "이미지 회전 및 크기 조정",
+            "pt": "Rotação e dimensionamento de imagens",
+            "ru": "Поворот и масштабирование изображений",
+            "tr": "Görüntü döndürme ve ölçeklendirme",
+            "uk": "Обертання та масштабування зображень"
+          },
+          "details": {
+            "en": "Demonstrates image rotation and scaling transformations.",
+            "ja": "画像の回転と拡大縮小の変形処理を実演します。"
+          }
+        },
+        {
+          "file": "17_app_launcher.py",
+          "demo": "examples/17-app-launcher.html",
+          "code": "https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/17_app_launcher.py",
+          "description": {
+            "en": "Pyxel app launcher (you can play various games!)",
+            "cn": "Pyxel 应用启动器（你可以玩各种游戏！）",
+            "de": "Pyxel-App-Launcher (Du kannst verschiedene Spiele spielen!)",
+            "es": "Lanzador de aplicaciones Pyxel (¡puedes jugar a varios juegos!)",
+            "fr": "Lanceur d'applications Pyxel (vous pouvez jouer à divers jeux !)",
+            "it": "Launcher di applicazioni Pyxel (puoi giocare a vari giochi!)",
+            "ja": "Pyxel アプリランチャー (いろいろなゲームをプレイできます！)",
+            "ko": "Pyxel 앱 런처 (여러 가지 게임을 플레이할 수 있습니다!)",
+            "pt": "Launcher de aplicativos Pyxel (você pode jogar vários jogos!)",
+            "ru": "Запускатель приложений Pyxel (вы можете играть в различные игры!)",
+            "tr": "Pyxel uygulama başlatıcı (çeşitli oyunlar oynayabilirsiniz!)",
+            "uk": "Запускач застосунків Pyxel (ви можете грати в різні ігри!)"
+          },
+          "details": {
+            "en": "A launcher that can run various Pyxel example applications.",
+            "ja": "さまざまな Pyxel サンプルアプリケーションを実行できるランチャー。"
+          }
+        },
+        {
+          "file": "18_audio_playback.py",
+          "demo": "examples/18-audio-playback.html",
+          "code": "https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/18_audio_playback.py",
+          "description": {
+            "en": "Audio playback",
+            "cn": "音频播放",
+            "de": "Audio-Wiedergabe",
+            "es": "Reproducción de audio",
+            "fr": "Lecture audio",
+            "it": "Riproduzione audio",
+            "ja": "オーディオ再生",
+            "ko": "오디오 재생",
+            "pt": "Reprodução de áudio",
+            "ru": "Воспроизведение аудио",
+            "tr": "Ses oynatma",
+            "uk": "Відтворення аудіо"
+          },
+          "details": {
+            "en": "Demonstrates audio file playback with Pyxel.",
+            "ja": "Pyxel によるオーディオファイルの再生を実演します。"
+          }
+        },
+        {
+          "file": "99_flip_animation.py",
+          "demo": "https://github.com/kitao/pyxel/blob/main/docs/images/99_flip_animation.gif",
+          "code": "https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/99_flip_animation.py",
+          "description": {
+            "en": "Animation with flip function (non-web platforms only)",
+            "cn": "使用 flip 函数的动画（仅限非 Web 平台）",
+            "de": "Animation mit der flip-Funktion (nur für Nicht-Web-Plattformen)",
+            "es": "Animación con la función flip (solo para plataformas que no son web)",
+            "fr": "Animation avec la fonction flip (uniquement pour les plateformes non web)",
+            "it": "Animazione con la funzione flip (solo per piattaforme non web)",
+            "ja": "flip 関数によるアニメーション (非 Web 環境のみ)",
+            "ko": "flip 함수로 애니메이션 (비 웹 플랫폼 전용)",
+            "pt": "Animação com a função flip (apenas para plataformas não web)",
+            "ru": "Анимация с помощью функции flip (только для не веб-платформ)",
+            "tr": "flip fonksiyonu ile animasyon (sadece Web dışı platformlar için)",
+            "uk": "Анімація за допомогою функції flip (тільки для платформ, що не є веб)"
+          },
+          "details": {
+            "en": "Demonstrates frame-by-frame animation using the flip() function. Desktop/native platforms only.",
+            "ja": "flip() 関数を使ったフレームごとのアニメーション。デスクトップ/ネイティブ環境専用。"
+          }
+        },
+        {
+          "file": "script_test.html",
+          "demo": "examples/script-test.html",
+          "code": "https://github.com/kitao/pyxel/blob/main/wasm/examples/examples/script-test.html",
+          "description": {
+            "en": "Example of using external packages with Pyxel Web",
+            "cn": "在 Pyxel Web 中使用外部包的示例",
+            "de": "Beispiel für die Verwendung externer Pakete mit Pyxel Web",
+            "es": "Ejemplo de uso de paquetes externos con Pyxel Web",
+            "fr": "Exemple d'utilisation de packages externes avec Pyxel Web",
+            "it": "Esempio di utilizzo di pacchetti esterni con Pyxel Web",
+            "ja": "Web 版 Pyxel で外部パッケージを使用するサンプル",
+            "ko": "Pyxel Web에서 외부 패키지를 사용하는 예제",
+            "pt": "Exemplo de uso de pacotes externos com Pyxel Web",
+            "ru": "Пример использования внешних пакетов с Pyxel Web",
+            "tr": "Pyxel Web ile harici paketlerin kullanım örneği",
+            "uk": "Приклад використання зовнішніх пакетів з Pyxel Web"
+          },
+          "details": {
+            "en": "Test script for Pyxel web features with external packages (numpy, pandas).",
+            "ja": "外部パッケージ (numpy、pandas) を使った Pyxel Web 機能のテストスクリプト。"
+          }
+        }
+      ]
+    },
+    {
+      "id": "apps",
+      "title": {
+        "en": "Apps",
+        "cn": "应用",
+        "de": "Apps",
+        "es": "Aplicaciones",
+        "fr": "Applications",
+        "it": "Applicazioni",
+        "ja": "アプリ",
+        "ko": "앱",
+        "pt": "Aplicativos",
+        "ru": "Приложения",
+        "tr": "Uygulamalar",
+        "uk": "Застосунки"
+      },
+      "items": [
+        {
+          "file": "30 Seconds of Daylight",
+          "demo": "apps/30sec-of-daylight.html",
+          "code": "https://github.com/kitao/30SecondsOfDaylight",
+          "description": {
+            "en": "Pyxel Jam-winning roguelike game by Adam",
+            "cn": "Adam 制作的 Pyxel Jam 获奖 roguelike 游戏",
+            "de": "Pyxel Jam-Gewinner-Roguelike-Spiel von Adam",
+            "es": "Roguelike ganador del Pyxel Jam por Adam",
+            "fr": "Roguelike gagnant du Pyxel Jam par Adam",
+            "it": "Roguelike vincitore del Pyxel Jam di Adam",
+            "ja": "Adam 制作の Pyxel Jam 優勝ローグライクゲーム",
+            "ko": "Adam 제작, Pyxel Jam 우승 로그라이크 게임",
+            "pt": "Roguelike vencedor do Pyxel Jam por Adam",
+            "ru": "Roguelike-игра от Adam, победитель Pyxel Jam",
+            "tr": "Adam tarafından Pyxel Jam birincisi roguelike oyunu",
+            "uk": "Roguelike-гра від Adam, переможець Pyxel Jam"
+          },
+          "details": {
+            "en": "Winner of the 1st Pyxel Jam game competition, created by Adam (@helpcomputer).",
+            "ja": "Adam (@helpcomputer) による第1回 Pyxel Jam ゲームコンテスト優勝作品。"
+          }
+        },
+        {
+          "file": "Megaball",
+          "demo": "apps/megaball.html",
+          "code": "https://github.com/helpcomputer/megaball",
+          "description": {
+            "en": "Arcade ball physics game by Adam",
+            "cn": "Adam 制作的街机弹球物理游戏",
+            "de": "Arcade-Ballphysik-Spiel von Adam",
+            "es": "Juego arcade de física de bolas por Adam",
+            "fr": "Jeu d'arcade de physique de balle par Adam",
+            "it": "Gioco arcade di fisica della palla di Adam",
+            "ja": "Adam 制作のアーケードボール物理ゲーム",
+            "ko": "Adam 제작, 아케이드 볼 물리 게임",
+            "pt": "Jogo arcade de física de bola por Adam",
+            "ru": "Аркадная игра с физикой мяча от Adam",
+            "tr": "Adam tarafından arcade top fiziği oyunu",
+            "uk": "Аркадна гра з фізикою м'яча від Adam"
+          },
+          "details": {
+            "en": "A breakout-style game inspired by Taito's Xyzolog, created by Adam (@helpcomputer).",
+            "ja": "タイトーの Xyzolog にインスパイアされたブロック崩し。Adam (@helpcomputer) 作。"
+          }
+        },
+        {
+          "file": "Vortexion",
+          "demo": "apps/vortexion.html",
+          "code": "https://github.com/helpcomputer/vortexion",
+          "description": {
+            "en": "MSX/SG-1000 inspired shoot'em up by Adam",
+            "cn": "Adam 制作的受 MSX/SG-1000 启发的射击游戏",
+            "de": "MSX/SG-1000-inspiriertes Shoot'em up von Adam",
+            "es": "Shoot'em up inspirado en MSX/SG-1000 por Adam",
+            "fr": "Shoot'em up inspiré des MSX/SG-1000 par Adam",
+            "it": "Shoot'em up ispirato a MSX/SG-1000 di Adam",
+            "ja": "Adam 制作の MSX/SG-1000 風シューティングゲーム",
+            "ko": "Adam 제작, MSX/SG-1000에서 영감받은 슈팅 게임",
+            "pt": "Shoot'em up inspirado em MSX/SG-1000 por Adam",
+            "ru": "Shoot'em up в стиле MSX/SG-1000 от Adam",
+            "tr": "Adam tarafından MSX/SG-1000 esinli shoot'em up",
+            "uk": "Shoot'em up у стилі MSX/SG-1000 від Adam"
+          },
+          "details": {
+            "en": "An MSX/SG-1000 inspired shooting game by Adam (@helpcomputer).",
+            "ja": "MSX/SG-1000 にインスパイアされたシューティングゲーム。Adam (@helpcomputer) 作。"
+          }
+        },
+        {
+          "file": "Laser Jetman",
+          "demo": "apps/laser-jetman.html",
+          "code": "https://github.com/helpcomputer/laser-jetman",
+          "description": {
+            "en": "Defender-inspired arcade shooter by Adam",
+            "cn": "Adam 制作的受 Defender 启发的街机射击游戏",
+            "de": "Defender-inspirierter Arcade-Shooter von Adam",
+            "es": "Shooter arcade inspirado en Defender por Adam",
+            "fr": "Shooter arcade inspiré de Defender par Adam",
+            "it": "Shooter arcade ispirato a Defender di Adam",
+            "ja": "Adam 制作の Defender 風アーケードシューター",
+            "ko": "Adam 제작, Defender에서 영감받은 아케이드 슈터",
+            "pt": "Shooter arcade inspirado em Defender por Adam",
+            "ru": "Аркадный шутер в стиле Defender от Adam",
+            "tr": "Adam tarafından Defender esinli arcade shooter",
+            "uk": "Аркадний шутер у стилі Defender від Adam"
+          },
+          "details": {
+            "en": "A Defender-inspired arcade shooter with procedurally generated terrain. By Adam (@helpcomputer).",
+            "ja": "Defender にインスパイアされたアーケードシューター。地形を手続き的に生成。Adam (@helpcomputer) 作。"
+          }
+        },
+        {
+          "file": "Space Rescue",
+          "demo": "apps/space-rescue.html",
+          "code": "https://gihyo.jp/book/2025/978-4-297-14657-3",
+          "description": {
+            "en": "One-key astronaut rescue game (Pyxel Official Book sample)",
+            "cn": "单键宇航员救援游戏 (Pyxel 官方书籍示例)",
+            "de": "Einzel-Tasten-Astronautenrettungsspiel (Pyxel-Buch-Beispiel)",
+            "es": "Juego de rescate de astronautas con una tecla (ejemplo del Libro Oficial de Pyxel)",
+            "fr": "Jeu de sauvetage d'astronautes à une touche (exemple du Livre Officiel Pyxel)",
+            "it": "Gioco di salvataggio astronauti a un tasto (esempio del Libro Ufficiale Pyxel)",
+            "ja": "ワンキー宇宙飛行士救出ゲーム (Pyxel 公式書籍サンプル)",
+            "ko": "원키 우주비행사 구출 게임 (Pyxel 공식 서적 샘플)",
+            "pt": "Jogo de resgate de astronautas com uma tecla (exemplo do Livro Oficial Pyxel)",
+            "ru": "Игра спасения астронавтов на одной клавише (пример из Книги Pyxel)",
+            "tr": "Tek tuşla astronot kurtarma oyunu (Pyxel Resmi Kitabı örneği)",
+            "uk": "Гра порятунку астронавтів на одній клавіші (приклад з Книги Pyxel)"
+          },
+          "details": {
+            "en": "A one-button rescue game from the Pyxel Official Book (Gijutsu-Hyoron Publishing).",
+            "ja": "Pyxel 公式書籍 (技術評論社) 収録のワンボタン救出ゲーム。"
+          }
+        },
+        {
+          "file": "Mega Wing",
+          "demo": "apps/mega-wing.html",
+          "code": "https://gihyo.jp/book/2025/978-4-297-14657-3",
+          "description": {
+            "en": "Bullet-heavy shoot'em up (Pyxel Official Book sample)",
+            "cn": "弹幕射击游戏 (Pyxel 官方书籍示例)",
+            "de": "Schussreiches Shoot'em up (Pyxel-Buch-Beispiel)",
+            "es": "Shoot'em up con lluvia de balas (ejemplo del Libro Oficial de Pyxel)",
+            "fr": "Shoot'em up à pluie de balles (exemple du Livre Officiel Pyxel)",
+            "it": "Shoot'em up ricco di proiettili (esempio del Libro Ufficiale Pyxel)",
+            "ja": "弾幕シューティングゲーム (Pyxel 公式書籍サンプル)",
+            "ko": "탄막 슈팅 게임 (Pyxel 공식 서적 샘플)",
+            "pt": "Shoot'em up com muitos projéteis (exemplo do Livro Oficial Pyxel)",
+            "ru": "Shoot'em up с множеством пуль (пример из Книги Pyxel)",
+            "tr": "Yoğun mermili shoot'em up (Pyxel Resmi Kitabı örneği)",
+            "uk": "Shoot'em up із безліччю куль (приклад з Книги Pyxel)"
+          },
+          "details": {
+            "en": "A shooting game from the Pyxel Official Book (Gijutsu-Hyoron Publishing).",
+            "ja": "Pyxel 公式書籍 (技術評論社) 収録のシューティングゲーム。"
+          }
+        },
+        {
+          "file": "Cursed Caverns",
+          "demo": "apps/cursed-caverns.html",
+          "code": "https://gihyo.jp/book/2025/978-4-297-14657-3",
+          "description": {
+            "en": "Trap-dodging gem-collecting platformer (Pyxel Official Book sample)",
+            "cn": "躲避陷阱收集宝石的平台游戏 (Pyxel 官方书籍示例)",
+            "de": "Fallen-ausweichendes Edelstein-Plattformspiel (Pyxel-Buch-Beispiel)",
+            "es": "Plataformas de esquivar trampas y recoger gemas (ejemplo del Libro Oficial de Pyxel)",
+            "fr": "Platformer d'esquive de pièges et collecte de gemmes (exemple du Livre Officiel Pyxel)",
+            "it": "Platformer con trappole e raccolta di gemme (esempio del Libro Ufficiale Pyxel)",
+            "ja": "罠を避けて宝石を集めるプラットフォーマー (Pyxel 公式書籍サンプル)",
+            "ko": "함정을 피하고 보석을 모으는 플랫포머 (Pyxel 공식 서적 샘플)",
+            "pt": "Platformer de desviar armadilhas e coletar gemas (exemplo do Livro Oficial Pyxel)",
+            "ru": "Платформер: избегай ловушек, собирай самоцветы (пример из Книги Pyxel)",
+            "tr": "Tuzaklardan kaçıp mücevher toplama platformer (Pyxel Resmi Kitabı örneği)",
+            "uk": "Платформер: уникай пасток, збирай самоцвіти (приклад з Книги Pyxel)"
+          },
+          "details": {
+            "en": "A platformer game from the Pyxel Official Book (Gijutsu-Hyoron Publishing).",
+            "ja": "Pyxel 公式書籍 (技術評論社) 収録のプラットフォーマーゲーム。"
+          }
+        },
+        {
+          "file": "8bit BGM Generator",
+          "demo": "apps/8bit-bgm-gen.html",
+          "code": "https://github.com/shiromofufactory/8bit-bgm-generator",
+          "description": {
+            "en": "Automatic 8-bit BGM generator by frenchbread",
+            "cn": "frenchbread 制作的自动 8-bit BGM 生成器",
+            "de": "Automatischer 8-Bit-BGM-Generator von frenchbread",
+            "es": "Generador automático de BGM 8-bit por frenchbread",
+            "fr": "Générateur automatique de BGM 8-bit par frenchbread",
+            "it": "Generatore automatico di BGM 8-bit di frenchbread",
+            "ja": "frenchbread 制作の 8ビット BGM 自動生成ツール",
+            "ko": "frenchbread 제작, 8비트 BGM 자동 생성기",
+            "pt": "Gerador automático de BGM 8-bit por frenchbread",
+            "ru": "Автоматический генератор 8-bit BGM от frenchbread",
+            "tr": "frenchbread tarafından otomatik 8-bit BGM oluşturucu",
+            "uk": "Автоматичний генератор 8-bit BGM від frenchbread"
+          },
+          "details": {
+            "en": "Automatic 8-bit BGM generator for Pyxel games by shiromofufactory.",
+            "ja": "shiromofufactory による Pyxel ゲーム用 8bit BGM 自動生成ツール。"
+          }
+        }
+      ]
+    },
+    {
+      "id": "tools",
+      "title": {
+        "en": "Tools",
+        "cn": "工具",
+        "de": "Werkzeuge",
+        "es": "Herramientas",
+        "fr": "Outils",
+        "it": "Strumenti",
+        "ja": "ツール",
+        "ko": "도구",
+        "pt": "Ferramentas",
+        "ru": "Инструменты",
+        "tr": "Araçlar",
+        "uk": "Інструменти"
+      },
+      "items": [
+        {
+          "file": "Image Editor",
+          "demo": "tools/image-editor.html",
+          "code": "https://github.com/kitao/pyxel/blob/main/python/pyxel/editor/image_editor.py",
+          "description": {
+            "en": "Pyxel Editor image editing mode (bundled with Pyxel)",
+            "cn": "Pyxel Editor 图像编辑模式 (Pyxel 同捆工具)",
+            "de": "Pyxel Editor Bildbearbeitungsmodus (in Pyxel enthalten)",
+            "es": "Modo de edición de imágenes de Pyxel Editor (incluido en Pyxel)",
+            "fr": "Mode d'édition d'images de Pyxel Editor (inclus dans Pyxel)",
+            "it": "Modalità di modifica immagini di Pyxel Editor (incluso in Pyxel)",
+            "ja": "Pyxel 同梱ツール Pyxel Editor の画像編集モード",
+            "ko": "Pyxel Editor 이미지 편집 모드 (Pyxel 동봉 도구)",
+            "pt": "Modo de edição de imagens do Pyxel Editor (incluído no Pyxel)",
+            "ru": "Режим редактирования изображений Pyxel Editor (в составе Pyxel)",
+            "tr": "Pyxel Editor görüntü düzenleme modu (Pyxel ile birlikte)",
+            "uk": "Режим редагування зображень Pyxel Editor (у складі Pyxel)"
+          },
+          "details": {
+            "en": "Pyxel built-in image editor for creating and editing sprite sheets.",
+            "ja": "スプライトシートの作成・編集ができる Pyxel 組み込みの画像エディタ。"
+          }
+        },
+        {
+          "file": "Tilemap Editor",
+          "demo": "tools/tilemap-editor.html",
+          "code": "https://github.com/kitao/pyxel/blob/main/python/pyxel/editor/tilemap_editor.py",
+          "description": {
+            "en": "Pyxel Editor tilemap editing mode (bundled with Pyxel)",
+            "cn": "Pyxel Editor 瓦片地图编辑模式 (Pyxel 同捆工具)",
+            "de": "Pyxel Editor Tilemap-Bearbeitungsmodus (in Pyxel enthalten)",
+            "es": "Modo de edición de tilemap de Pyxel Editor (incluido en Pyxel)",
+            "fr": "Mode d'édition de tilemap de Pyxel Editor (inclus dans Pyxel)",
+            "it": "Modalità di modifica tilemap di Pyxel Editor (incluso in Pyxel)",
+            "ja": "Pyxel 同梱ツール Pyxel Editor のタイルマップ編集モード",
+            "ko": "Pyxel Editor 타일맵 편집 모드 (Pyxel 동봉 도구)",
+            "pt": "Modo de edição de tilemap do Pyxel Editor (incluído no Pyxel)",
+            "ru": "Режим редактирования тайловых карт Pyxel Editor (в составе Pyxel)",
+            "tr": "Pyxel Editor tilemap düzenleme modu (Pyxel ile birlikte)",
+            "uk": "Режим редагування тайлових карт Pyxel Editor (у складі Pyxel)"
+          },
+          "details": {
+            "en": "Pyxel built-in tilemap editor for designing game maps.",
+            "ja": "ゲームマップを設計するための Pyxel 組み込みのタイルマップエディタ。"
+          }
+        },
+        {
+          "file": "Sound Editor",
+          "demo": "tools/sound-editor.html",
+          "code": "https://github.com/kitao/pyxel/blob/main/python/pyxel/editor/sound_editor.py",
+          "description": {
+            "en": "Pyxel Editor sound editing mode (bundled with Pyxel)",
+            "cn": "Pyxel Editor 音效编辑模式 (Pyxel 同捆工具)",
+            "de": "Pyxel Editor Soundbearbeitungsmodus (in Pyxel enthalten)",
+            "es": "Modo de edición de sonido de Pyxel Editor (incluido en Pyxel)",
+            "fr": "Mode d'édition de sons de Pyxel Editor (inclus dans Pyxel)",
+            "it": "Modalità di modifica audio di Pyxel Editor (incluso in Pyxel)",
+            "ja": "Pyxel 同梱ツール Pyxel Editor のサウンド編集モード",
+            "ko": "Pyxel Editor 사운드 편집 모드 (Pyxel 동봉 도구)",
+            "pt": "Modo de edição de som do Pyxel Editor (incluído no Pyxel)",
+            "ru": "Режим редактирования звуков Pyxel Editor (в составе Pyxel)",
+            "tr": "Pyxel Editor ses düzenleme modu (Pyxel ile birlikte)",
+            "uk": "Режим редагування звуків Pyxel Editor (у складі Pyxel)"
+          },
+          "details": {
+            "en": "Pyxel built-in sound editor for composing sound effects.",
+            "ja": "効果音を作成するための Pyxel 組み込みのサウンドエディタ。"
+          }
+        },
+        {
+          "file": "Music Editor",
+          "demo": "tools/music-editor.html",
+          "code": "https://github.com/kitao/pyxel/blob/main/python/pyxel/editor/music_editor.py",
+          "description": {
+            "en": "Pyxel Editor music editing mode (bundled with Pyxel)",
+            "cn": "Pyxel Editor 音乐编辑模式 (Pyxel 同捆工具)",
+            "de": "Pyxel Editor Musikbearbeitungsmodus (in Pyxel enthalten)",
+            "es": "Modo de edición de música de Pyxel Editor (incluido en Pyxel)",
+            "fr": "Mode d'édition de musique de Pyxel Editor (inclus dans Pyxel)",
+            "it": "Modalità di modifica musica di Pyxel Editor (incluso in Pyxel)",
+            "ja": "Pyxel 同梱ツール Pyxel Editor のミュージック編集モード",
+            "ko": "Pyxel Editor 뮤직 편집 모드 (Pyxel 동봉 도구)",
+            "pt": "Modo de edição de música do Pyxel Editor (incluído no Pyxel)",
+            "ru": "Режим редактирования музыки Pyxel Editor (в составе Pyxel)",
+            "tr": "Pyxel Editor müzik düzenleme modu (Pyxel ile birlikte)",
+            "uk": "Режим редагування музики Pyxel Editor (у складі Pyxel)"
+          },
+          "details": {
+            "en": "Pyxel built-in music editor for composing background music.",
+            "ja": "BGM を作成するための Pyxel 組み込みのミュージックエディタ。"
+          }
+        },
+        {
+          "file": "Pyxel Code Maker",
+          "demo": "../code-maker/index.html",
+          "code": "https://github.com/kitao/pyxel/tree/main/wasm/code-maker",
+          "description": {
+            "en": "Zero-setup online Pyxel development environment",
+            "cn": "零配置在线 Pyxel 开发环境",
+            "de": "Einrichtungsfreie Online-Pyxel-Entwicklungsumgebung",
+            "es": "Entorno de desarrollo Pyxel en línea sin configuración",
+            "fr": "Environnement de développement Pyxel en ligne sans configuration",
+            "it": "Ambiente di sviluppo Pyxel online senza configurazione",
+            "ja": "セットアップ不要のオンライン Pyxel 開発環境",
+            "ko": "설정 불필요한 온라인 Pyxel 개발 환경",
+            "pt": "Ambiente de desenvolvimento Pyxel online sem configuração",
+            "ru": "Онлайн-среда разработки Pyxel без установки",
+            "tr": "Kurulum gerektirmeyen çevrimiçi Pyxel geliştirme ortamı",
+            "uk": "Онлайн-середовище розробки Pyxel без налаштування"
+          },
+          "details": {
+            "en": "Browser-based Python code editor for writing and running Pyxel applications online.",
+            "ja": "ブラウザ上で Pyxel アプリケーションの作成・実行ができるオンラインコードエディタ。"
+          }
+        },
+        {
+          "file": "Pyxel MML Studio",
+          "demo": "../mml-studio/index.html",
+          "code": "https://github.com/kitao/pyxel/tree/main/wasm/mml-studio",
+          "description": {
+            "en": "Browser-based chiptune creation environment",
+            "cn": "基于浏览器的芯片音乐创作环境",
+            "de": "Browserbasierte Chiptune-Erstellungsumgebung",
+            "es": "Entorno de creación de chiptune en el navegador",
+            "fr": "Environnement de création de chiptune dans le navigateur",
+            "it": "Ambiente di creazione chiptune basato su browser",
+            "ja": "ブラウザベースのチップチューン制作環境",
+            "ko": "브라우저 기반 칩튠 제작 환경",
+            "pt": "Ambiente de criação de chiptune no navegador",
+            "ru": "Браузерная среда создания чиптюн-музыки",
+            "tr": "Tarayıcı tabanlı chiptune oluşturma ortamı",
+            "uk": "Браузерне середовище створення чіптюн-музики"
+          },
+          "details": {
+            "en": "Browser-based MML (Music Macro Language) editor for composing Pyxel music and sound effects.",
+            "ja": "ブラウザ上で Pyxel の音楽・効果音を MML (Music Macro Language) で作成できるエディタ。"
+          }
+        }
+      ]
+    }
+  ]
+}

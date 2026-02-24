@@ -4,109 +4,333 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" href="../../docs/images/pyxel_icon_64x64.ico" />
-    <title>Pyxel Web Examples</title>
+    <title>Pyxel Examples</title>
     <script src="https://cdn.tailwindcss.com/3.4.17"></script>
 
     <style type="text/tailwindcss">
       @layer components {
-        .link {
-          @apply outline-none focus:ring-1 focus:ring-indigo-300 text-indigo-400 hover:text-indigo-300 underline underline-offset-2;
+        .page {
+          @apply bg-gray-900 min-h-full text-gray-100 antialiased;
+        }
+        .container {
+          @apply mx-auto p-6 max-w-4xl;
         }
         .card {
           @apply bg-gray-800 shadow-sm px-6 py-4 border border-gray-700 rounded-2xl;
         }
-        .page {
-          @apply bg-gray-900 h-full text-gray-100 antialiased;
+        .link {
+          @apply outline-none focus-visible:ring-1 focus-visible:ring-indigo-300 text-indigo-400 hover:text-indigo-300 underline underline-offset-2 rounded-sm;
         }
-        .container {
-          @apply mx-auto p-6 max-w-3xl;
+        .btn-demo {
+          @apply inline-flex items-center justify-center min-w-[4.5rem] bg-indigo-500/20 hover:bg-indigo-500/30 px-3 py-1 border border-indigo-500/40 focus-visible:border-indigo-300 rounded-md outline-none font-medium text-indigo-300 text-xs transition-colors;
         }
+        .btn-code {
+          @apply inline-flex items-center justify-center min-w-[4.5rem] bg-gray-700 hover:bg-gray-600 px-3 py-1 border border-gray-600 focus-visible:border-indigo-300 rounded-md outline-none font-medium text-gray-200 text-xs transition-colors;
+        }
+        .lang-select {
+          @apply bg-gray-800 px-2 py-1 border border-gray-600 focus-visible:border-indigo-300 rounded-lg outline-none text-gray-200 text-sm;
+        }
+      }
+
+      details summary {
+        cursor: pointer;
+        user-select: none;
+        list-style: none;
+        outline: none;
+      }
+      details summary::-webkit-details-marker {
+        display: none;
+      }
+
+      /* Item details: triangle on summary, focus on summary */
+      .card details summary {
+        width: fit-content;
+      }
+      .card details summary::before {
+        content: "\25B6\00A0";
+        font-size: 0.6em;
+        vertical-align: middle;
+      }
+      .card details[open] summary::before {
+        content: "\25BC\00A0";
+      }
+      .card details summary:focus-visible {
+        outline: 1px solid #a5b4fc;
+        outline-offset: 2px;
+        border-radius: 2px;
+      }
+
+      /* Category: triangle on .cat-text, focus on .cat-text */
+      .cat-text::before {
+        content: "\25B6\00A0";
+        font-size: 0.6em;
+        vertical-align: middle;
+      }
+      details[open] > summary .cat-text::before {
+        content: "\25BC\00A0";
+      }
+      summary:focus-visible .cat-text {
+        outline: 1px solid #a5b4fc;
+        outline-offset: 2px;
+        border-radius: 2px;
       }
     </style>
   </head>
 
   <body class="page">
-    <main class="container">
-      <header class="mb-4">
-        <h1 class="font-semibold text-2xl tracking-tight">
-          Pyxel Web Examples
-        </h1>
-        <p class="mt-2 text-gray-300 text-sm">
-          Examples of the WebAssembly version of
-          <a href="https://github.com/kitao/pyxel" class="link">Pyxel</a>, a
-          retro game engine for Python.
-        </p>
-      </header>
-
-      <section class="card">
-        <ul class="gap-4 space-y-1 columns-1 md:columns-2 text-sm">
-          <li><a href="script-test.html" class="link">script_test</a></li>
-          <li><a href="01-hello-pyxel.html" class="link">01_hello_pyxel</a></li>
-          <li><a href="02-jump-game.html" class="link">02_jump_game</a></li>
-          <li><a href="03-draw-api.html" class="link">03_draw_api</a></li>
-          <li><a href="04-sound-api.html" class="link">04_sound_api</a></li>
-          <li>
-            <a href="05-color-palette.html" class="link">05_color_palette</a>
-          </li>
-          <li><a href="06-click-game.html" class="link">06_click_game</a></li>
-          <li><a href="07-snake.html" class="link">07_snake</a></li>
-          <li>
-            <a href="08-triangle-api.html" class="link">08_triangle_api</a>
-          </li>
-          <li><a href="09-shooter.html" class="link">09_shooter</a></li>
-          <li><a href="10-platformer.html" class="link">10_platformer</a></li>
-          <li><a href="11-offscreen.html" class="link">11_offscreen</a></li>
-          <li>
-            <a href="12-perlin-noise.html" class="link">12_perlin_noise</a>
-          </li>
-          <li><a href="13-custom-font.html" class="link">13_custom_font</a></li>
-          <li><a href="14-synthesizer.html" class="link">14_synthesizer</a></li>
-          <li>
-            <a href="15-tiled-map-file.html" class="link">15_tiled_map_file</a>
-          </li>
-          <li><a href="16-transform.html" class="link">16_transform</a></li>
-          <li>
-            <a href="17-app-launcher.html" class="link">17_app_launcher</a>
-          </li>
-          <li>
-            <a href="18-audio-playback.html" class="link"
-              >18_audio_playback</a
-            >
-          </li>
-          <li>
-            <a href="30sec-of-daylight.html" class="link">30sec_of_daylight</a>
-          </li>
-          <li><a href="megaball.html" class="link">megaball</a></li>
-          <li><a href="image-editor.html" class="link">image_editor</a></li>
-          <li><a href="tilemap-editor.html" class="link">tilemap_editor</a></li>
-          <li><a href="sound-editor.html" class="link">sound_editor</a></li>
-          <li><a href="music-editor.html" class="link">music_editor</a></li>
-        </ul>
-      </section>
-
-      <section class="mt-4">
-        <p class="text-gray-300 text-sm">
-          The HTML files can be referenced
-          <a
-            href="https://github.com/kitao/pyxel/tree/main/wasm/examples"
-            class="link"
-            >here</a
-          >.
-        </p>
-        <p class="mt-2 text-gray-300 text-sm">
-          For specific instructions, please refer to
-          <a
-            href="https://github.com/kitao/pyxel/blob/main/docs/pyxel-web-en.md"
-            class="link"
-            >this page</a
-          >
-          (<a
-            href="https://github.com/kitao/pyxel/blob/main/docs/pyxel-web-ja.md"
-            class="link"
-            >日本語</a
-          >).
-        </p>
-      </section>
+    <main class="container" id="app">
+      <div class="flex justify-center items-center py-12 text-gray-500 text-sm">
+        Loading...
+      </div>
     </main>
+
+    <script>
+      let data = null;
+      let currentLang = "en";
+
+      function t(key) {
+        if (!data) return "";
+        const entry = data.ui[key];
+        if (!entry) return key;
+        return entry[currentLang] || entry["en"] || "";
+      }
+
+      function tObj(obj) {
+        if (!obj) return "";
+        return obj[currentLang] || obj["en"] || "";
+      }
+
+      function detectLanguage() {
+        const stored = localStorage.getItem("pyxel-examples-lang");
+        if (stored && data.languages.some((l) => l.code === stored)) {
+          return stored;
+        }
+        const nav = navigator.language || "";
+        const navLower = nav.toLowerCase();
+        if (navLower.startsWith("zh")) return "cn";
+        for (const lang of data.languages) {
+          if (navLower.startsWith(lang.code)) return lang.code;
+        }
+        return "en";
+      }
+
+      function buildPage() {
+        const app = document.getElementById("app");
+        app.innerHTML = "";
+
+        // Header
+        const header = document.createElement("header");
+        header.className = "flex flex-wrap justify-between items-start gap-4 mb-4";
+
+        const titleBlock = document.createElement("div");
+        titleBlock.className = "min-w-0 order-first";
+
+        const h1 = document.createElement("h1");
+        h1.className = "font-semibold text-2xl tracking-tight";
+        h1.id = "page-title";
+        titleBlock.appendChild(h1);
+
+        const subtitle = document.createElement("p");
+        subtitle.className = "mt-2 text-gray-300 text-sm";
+        subtitle.id = "page-subtitle";
+        titleBlock.appendChild(subtitle);
+
+        const langSelect = document.createElement("select");
+        langSelect.className = "lang-select mt-1";
+        langSelect.id = "lang-select";
+        for (const lang of data.languages) {
+          const opt = document.createElement("option");
+          opt.value = lang.code;
+          opt.textContent = lang.name;
+          langSelect.appendChild(opt);
+        }
+        langSelect.value = currentLang;
+        langSelect.addEventListener("change", () => {
+          currentLang = langSelect.value;
+          localStorage.setItem("pyxel-examples-lang", currentLang);
+          updateTexts();
+        });
+
+        header.appendChild(langSelect);
+        header.appendChild(titleBlock);
+        app.appendChild(header);
+
+        // Categories
+        for (const cat of data.categories) {
+          const section = document.createElement("details");
+          section.open = true;
+          section.className = "mt-6";
+
+          const catHeader = document.createElement("summary");
+          catHeader.className =
+            "flex items-center gap-3 mb-3 font-medium text-gray-400 text-sm uppercase tracking-wider";
+          catHeader.dataset.catId = cat.id;
+          const catText = document.createElement("span");
+          catText.className = "cat-text";
+          catHeader.appendChild(catText);
+          const line = document.createElement("span");
+          line.className = "flex-1 bg-gray-700 h-px";
+          catHeader.appendChild(line);
+          section.appendChild(catHeader);
+
+          const card = document.createElement("div");
+          card.className = "card space-y-0 divide-y divide-gray-700";
+
+          for (let i = 0; i < cat.items.length; i++) {
+            const item = cat.items[i];
+            const row = document.createElement("div");
+            row.className = "py-3";
+            row.dataset.catIdx = cat.id;
+            row.dataset.itemIdx = i;
+
+            // Single line: filename + description + buttons
+            const topLine = document.createElement("div");
+            topLine.className =
+              "flex flex-wrap items-center gap-x-3 gap-y-1";
+
+            const fileName = document.createElement("span");
+            fileName.className = "font-mono font-semibold text-sm shrink-0";
+            fileName.textContent = item.file;
+            topLine.appendChild(fileName);
+
+            const desc = document.createElement("span");
+            desc.className = "text-gray-400 text-sm";
+            desc.dataset.descKey = cat.id + "-" + i;
+            topLine.appendChild(desc);
+
+            const buttons = document.createElement("span");
+            buttons.className = "flex items-center justify-end gap-2 ml-auto shrink-0 min-w-[9.5rem]";
+
+            const demoBtn = document.createElement("a");
+            demoBtn.href = item.demo;
+            demoBtn.target = "_blank";
+            demoBtn.rel = "noopener noreferrer";
+            demoBtn.className = "btn-demo";
+            demoBtn.dataset.uiKey = "demo";
+            buttons.appendChild(demoBtn);
+
+            if (item.code) {
+              const codeBtn = document.createElement("a");
+              codeBtn.href = item.code;
+              codeBtn.target = "_blank";
+              codeBtn.rel = "noopener noreferrer";
+              codeBtn.className = "btn-code";
+              codeBtn.dataset.uiKey = "code";
+              buttons.appendChild(codeBtn);
+            }
+
+            topLine.appendChild(buttons);
+            row.appendChild(topLine);
+
+            // Details (collapsible)
+            if (item.details && Object.keys(item.details).length > 0) {
+              const details = document.createElement("details");
+              details.className = "mt-1";
+
+              const summary = document.createElement("summary");
+              summary.className = "text-gray-400 text-xs hover:text-gray-300";
+              summary.dataset.uiKey = "details";
+              details.appendChild(summary);
+
+              const content = document.createElement("div");
+              content.className =
+                "mt-1 pl-3 border-l-2 border-gray-700 text-gray-300 text-sm leading-relaxed";
+              content.dataset.detailKey = cat.id + "-" + i;
+              details.appendChild(content);
+
+              row.appendChild(details);
+            }
+
+            card.appendChild(row);
+          }
+
+          section.appendChild(card);
+          app.appendChild(section);
+        }
+
+        // Footer
+        const footer = document.createElement("section");
+        footer.className = "mt-6 mb-2";
+
+        const footerText = document.createElement("p");
+        footerText.className = "text-gray-300 text-sm";
+        footerText.id = "footer-text";
+        footer.appendChild(footerText);
+
+        app.appendChild(footer);
+
+        updateTexts();
+      }
+
+      function updateTexts() {
+        // Title
+        const titleEl = document.getElementById("page-title");
+        if (titleEl) titleEl.textContent = t("title");
+
+        // Subtitle with Pyxel link
+        const subtitleEl = document.getElementById("page-subtitle");
+        if (subtitleEl) {
+          const tmpl = t("subtitle");
+          const link = '<a href="https://github.com/kitao/pyxel" class="link">Pyxel</a>';
+          subtitleEl.innerHTML = tmpl.replace("{0}", link);
+        }
+
+        // Category headers
+        for (const cat of data.categories) {
+          const el = document.querySelector(`[data-cat-id="${cat.id}"]`);
+          if (el) el.querySelector(".cat-text").textContent = tObj(cat.title);
+        }
+
+        // Descriptions
+        for (const cat of data.categories) {
+          for (let i = 0; i < cat.items.length; i++) {
+            const item = cat.items[i];
+            const descEl = document.querySelector(
+              `[data-desc-key="${cat.id}-${i}"]`,
+            );
+            if (descEl) descEl.textContent = tObj(item.description);
+
+            const detailEl = document.querySelector(
+              `[data-detail-key="${cat.id}-${i}"]`,
+            );
+            if (detailEl) {
+              const text =
+                item.details?.[currentLang] ||
+                item.details?.["en"] ||
+                tObj(item.description);
+              detailEl.textContent = text;
+            }
+          }
+        }
+
+        // UI labels (Demo, Code, Details buttons)
+        document.querySelectorAll("[data-ui-key]").forEach((el) => {
+          el.textContent = t(el.dataset.uiKey);
+        });
+
+        // Footer
+        const footerText = document.getElementById("footer-text");
+        if (footerText) {
+          const tmpl = t("footer");
+          const linkText = t("footer_link");
+          const htmlLink = `<a href="https://github.com/kitao/pyxel/tree/main/wasm/examples" class="link">${linkText}</a>`;
+          const docLang = currentLang === "ja" ? "ja" : "en";
+          const docsLink = `<a href="https://github.com/kitao/pyxel/blob/main/docs/pyxel-web-${docLang}.md" class="link">${linkText}</a>`;
+          footerText.innerHTML = tmpl.replace("{0}", htmlLink).replace("{1}", docsLink);
+        }
+
+        // Update HTML lang
+        document.documentElement.lang = currentLang === "cn" ? "zh" : currentLang;
+      }
+
+      // Init
+      fetch("examples.json")
+        .then((r) => r.json())
+        .then((json) => {
+          data = json;
+          currentLang = detectLanguage();
+          buildPage();
+        });
+    </script>
   </body>
 </html>
