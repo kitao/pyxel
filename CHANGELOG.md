@@ -4,6 +4,7 @@
 
 - Redesigned Pyxel Examples page with i18n support
 - Organized Web example HTML files into subdirectories
+- Replaced examples table in READMEs with link to Examples page
 
 ## 2.7.0
 
