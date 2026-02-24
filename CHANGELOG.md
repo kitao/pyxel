@@ -4,6 +4,7 @@
 
 - Redesigned Pyxel Examples page with more details
 - Improved web tools with i18n support and other enhancements
+- Fixed type hints for Seq, Tilemap.from_tmx, Sound.save, Music.save
 
 ## 2.7.0
 
