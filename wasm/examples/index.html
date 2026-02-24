@@ -42,34 +42,23 @@
         display: none;
       }
 
-      /* Item details: triangle on summary, focus on summary */
+      /* Collapsible triangles */
+      .tri::before {
+        content: "\25B6\00A0";
+        font-size: 0.6em;
+        vertical-align: middle;
+      }
+      details[open] > summary .tri::before,
+      details[open] > .tri::before {
+        content: "\25BC\00A0";
+      }
+
+      /* Item details */
       .card details summary {
         width: fit-content;
       }
-      .card details summary::before {
-        content: "\25B6\00A0";
-        font-size: 0.6em;
-        vertical-align: middle;
-      }
-      .card details[open] summary::before {
-        content: "\25BC\00A0";
-      }
-      .card details summary:focus-visible {
-        outline: 1px solid #a5b4fc;
-        outline-offset: 2px;
-        border-radius: 2px;
-      }
-
-      /* Category: triangle on .cat-text, focus on .cat-text */
-      .cat-text::before {
-        content: "\25B6\00A0";
-        font-size: 0.6em;
-        vertical-align: middle;
-      }
-      details[open] > summary .cat-text::before {
-        content: "\25BC\00A0";
-      }
-      summary:focus-visible .cat-text {
+      .card details summary:focus-visible,
+      summary:focus-visible .tri {
         outline: 1px solid #a5b4fc;
         outline-offset: 2px;
         border-radius: 2px;
@@ -88,16 +77,14 @@
       let data = null;
       let currentLang = "en";
 
-      function t(key) {
-        if (!data) return "";
-        const entry = data.ui[key];
-        if (!entry) return key;
-        return entry[currentLang] || entry["en"] || "";
+      function t(keyOrObj) {
+        const obj = typeof keyOrObj === "string" ? data?.ui[keyOrObj] : keyOrObj;
+        if (!obj) return typeof keyOrObj === "string" ? keyOrObj : "";
+        return obj[currentLang] || obj["en"] || "";
       }
 
-      function tObj(obj) {
-        if (!obj) return "";
-        return obj[currentLang] || obj["en"] || "";
+      function extLink(href, text) {
+        return `<a href="${href}" target="_blank" rel="noopener noreferrer" class="link">${text}</a>`;
       }
 
       function detectLanguage() {
@@ -166,7 +153,7 @@
             "flex items-center gap-3 mb-3 font-medium text-gray-400 text-sm uppercase tracking-wider";
           catHeader.dataset.catId = cat.id;
           const catText = document.createElement("span");
-          catText.className = "cat-text";
+          catText.className = "tri";
           catHeader.appendChild(catText);
           const line = document.createElement("span");
           line.className = "flex-1 bg-gray-700 h-px";
@@ -180,8 +167,6 @@
             const item = cat.items[i];
             const row = document.createElement("div");
             row.className = "py-3";
-            row.dataset.catIdx = cat.id;
-            row.dataset.itemIdx = i;
 
             // Single line: filename + description + buttons
             const topLine = document.createElement("div");
@@ -228,7 +213,7 @@
               details.className = "mt-1";
 
               const summary = document.createElement("summary");
-              summary.className = "text-gray-400 text-xs hover:text-gray-300";
+              summary.className = "tri text-gray-400 text-xs hover:text-gray-300";
               summary.dataset.uiKey = "details";
               details.appendChild(summary);
 
@@ -263,63 +248,36 @@
       }
 
       function updateTexts() {
-        // Title
-        const titleEl = document.getElementById("page-title");
-        if (titleEl) titleEl.textContent = t("title");
+        document.getElementById("page-title").textContent = t("title");
+        document.getElementById("page-subtitle").innerHTML = t("subtitle")
+          .replace("{0}", extLink("https://github.com/kitao/pyxel", "Pyxel"));
 
-        // Subtitle with Pyxel link
-        const subtitleEl = document.getElementById("page-subtitle");
-        if (subtitleEl) {
-          const tmpl = t("subtitle");
-          const link = '<a href="https://github.com/kitao/pyxel" target="_blank" rel="noopener noreferrer" class="link">Pyxel</a>';
-          subtitleEl.innerHTML = tmpl.replace("{0}", link);
-        }
-
-        // Category headers
+        // Categories, descriptions, and details
         for (const cat of data.categories) {
-          const el = document.querySelector(`[data-cat-id="${cat.id}"]`);
-          if (el) el.querySelector(".cat-text").textContent = tObj(cat.title);
-        }
-
-        // Descriptions
-        for (const cat of data.categories) {
+          const header = document.querySelector(`[data-cat-id="${cat.id}"]`);
+          if (header) header.querySelector(".tri").textContent = t(cat.title);
           for (let i = 0; i < cat.items.length; i++) {
             const item = cat.items[i];
-            const descEl = document.querySelector(
-              `[data-desc-key="${cat.id}-${i}"]`,
-            );
-            if (descEl) descEl.textContent = tObj(item.description);
-
-            const detailEl = document.querySelector(
-              `[data-detail-key="${cat.id}-${i}"]`,
-            );
-            if (detailEl) {
-              const text =
-                item.details?.[currentLang] ||
-                item.details?.["en"] ||
-                tObj(item.description);
-              detailEl.textContent = text;
-            }
+            const key = `${cat.id}-${i}`;
+            const descEl = document.querySelector(`[data-desc-key="${key}"]`);
+            if (descEl) descEl.textContent = t(item.description);
+            const detailEl = document.querySelector(`[data-detail-key="${key}"]`);
+            if (detailEl) detailEl.textContent = t(item.details) || t(item.description);
           }
         }
 
-        // UI labels (Demo, Code, Details buttons)
+        // UI labels (Run, Code, Details buttons)
         document.querySelectorAll("[data-ui-key]").forEach((el) => {
           el.textContent = t(el.dataset.uiKey);
         });
 
         // Footer
-        const footerText = document.getElementById("footer-text");
-        if (footerText) {
-          const tmpl = t("footer");
-          const linkText = t("footer_link");
-          const htmlLink = `<a href="https://github.com/kitao/pyxel/tree/main/wasm/examples" target="_blank" rel="noopener noreferrer" class="link">${linkText}</a>`;
-          const docLang = currentLang === "ja" ? "ja" : "en";
-          const docsLink = `<a href="https://github.com/kitao/pyxel/blob/main/docs/pyxel-web-${docLang}.md" target="_blank" rel="noopener noreferrer" class="link">${linkText}</a>`;
-          footerText.innerHTML = tmpl.replace("{0}", htmlLink).replace("{1}", docsLink);
-        }
+        const linkText = t("footer_link");
+        const docLang = currentLang === "ja" ? "ja" : "en";
+        document.getElementById("footer-text").innerHTML = t("footer")
+          .replace("{0}", extLink("https://github.com/kitao/pyxel/tree/main/wasm/examples", linkText))
+          .replace("{1}", extLink(`https://github.com/kitao/pyxel/blob/main/docs/pyxel-web-${docLang}.md`, linkText));
 
-        // Update HTML lang
         document.documentElement.lang = currentLang === "cn" ? "zh" : currentLang;
       }
 

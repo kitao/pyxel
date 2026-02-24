@@ -176,8 +176,6 @@
             touch-action: none;
             pointer-events: none;
           "
-          onpointerenter="this.style.backgroundColor='#3a4a5f'"
-          onpointerleave="this.style.backgroundColor='#232d3b'"
           title="Ctrl(Cmd)+.: Toggle Left/Right Focus"
         ></div>
 
@@ -207,6 +205,9 @@
     <script>
       const runtimeScreen = document.getElementById("runtime-screen");
       const resourceEditor = document.getElementById("resource-editor");
+      const focusLineLeft = document.getElementById("focus-line-left");
+      const focusLineCenter = document.getElementById("focus-line-center");
+      const focusLineRight = document.getElementById("focus-line-right");
 
       window.project = {
         name: "pyxel-project",
@@ -317,6 +318,20 @@
         }
       }
 
+      async function buildArchiveBlob() {
+        const archive = new JSZip();
+        const prefix = window.project.name;
+        for (const [path, b64] of Object.entries(window.project.files)) {
+          archive.file(`${prefix}/${path}`, base64ToUint8(b64));
+        }
+        archive.file(`${prefix}/main.py`, window.project.code);
+        archive.file(
+          `${prefix}/my_resource.pyxres`,
+          base64ToUint8(window.project.resource),
+        );
+        return archive.generateAsync({ type: "blob" });
+      }
+
       async function saveProject() {
         if (window.isCopyingResource) {
           return;
@@ -337,29 +352,9 @@
                 },
               ],
             });
-
             window.project.name = handle.name.replace(/\.zip$/i, "");
-
-            const archive = new JSZip();
-
-            for (const [relativePath, base64Content] of Object.entries(
-              window.project.files,
-            )) {
-              archive.file(
-                `${window.project.name}/${relativePath}`,
-                base64ToUint8(base64Content),
-              );
-            }
-
-            archive.file(`${window.project.name}/main.py`, window.project.code);
-            archive.file(
-              `${window.project.name}/my_resource.pyxres`,
-              base64ToUint8(window.project.resource),
-            );
-
-            const blob = await archive.generateAsync({ type: "blob" });
             const writable = await handle.createWritable();
-            await writable.write(blob);
+            await writable.write(await buildArchiveBlob());
             await writable.close();
             return;
           } catch (e) {
@@ -370,26 +365,8 @@
           }
         }
 
-        // Fallback: traditional download link method
-        const archive = new JSZip();
-
-        for (const [relativePath, base64Content] of Object.entries(
-          window.project.files,
-        )) {
-          archive.file(
-            `${window.project.name}/${relativePath}`,
-            base64ToUint8(base64Content),
-          );
-        }
-
-        archive.file(`${window.project.name}/main.py`, window.project.code);
-        archive.file(
-          `${window.project.name}/my_resource.pyxres`,
-          base64ToUint8(window.project.resource),
-        );
-
-        const blob = await archive.generateAsync({ type: "blob" });
-
+        // Fallback: download link
+        const blob = await buildArchiveBlob();
         const a = document.createElement("a");
         a.href = URL.createObjectURL(blob);
         a.download = window.project.name + ".zip";
@@ -583,19 +560,14 @@
       }
 
       function updateFocusLine(state) {
-        const left = document.getElementById("focus-line-left");
-        const right = document.getElementById("focus-line-right");
-        if (!left || !right) {
-          return;
-        }
-        left.classList.remove("focus-line-segment-active");
-        right.classList.remove("focus-line-segment-active");
-
-        if (state === "left") {
-          left.classList.add("focus-line-segment-active");
-        } else if (state === "right") {
-          right.classList.add("focus-line-segment-active");
-        }
+        focusLineLeft.classList.toggle(
+          "focus-line-segment-active",
+          state === "left",
+        );
+        focusLineRight.classList.toggle(
+          "focus-line-segment-active",
+          state === "right",
+        );
       }
 
       function setupFocusIndicator() {
@@ -655,35 +627,32 @@
         const leftPaneEl = document.getElementById("left-pane");
         const dividerHitEl = document.getElementById("splitter-handle");
 
-        const focusLeft = document.getElementById("focus-line-left");
-        const focusCenter = document.getElementById("focus-line-center");
-        const focusRight = document.getElementById("focus-line-right");
+        dividerHitEl.addEventListener("pointerenter", () => {
+          dividerHitEl.style.backgroundColor = "#3a4a5f";
+        });
+        dividerHitEl.addEventListener("pointerleave", () => {
+          dividerHitEl.style.backgroundColor = "#232d3b";
+        });
 
         function updateFocusLineLayout() {
-          if (!focusLeft || !focusCenter || !focusRight) {
-            return;
-          }
-
           const containerRect = mainSplit.getBoundingClientRect();
           const leftRect = leftPaneEl.getBoundingClientRect();
           const handleRect = dividerHitEl.getBoundingClientRect();
 
-          const containerWidth = containerRect.width;
           const leftWidth = leftRect.width;
           const centerWidth = handleRect.width;
           const rightWidth = Math.max(
-            containerWidth - leftWidth - centerWidth,
+            containerRect.width - leftWidth - centerWidth,
             0,
           );
 
-          // 左・中央・右をピクセル指定にして、セパレーター分を中央に集約
-          focusLeft.style.flex = "0 0 auto";
-          focusCenter.style.flex = "0 0 auto";
-          focusRight.style.flex = "0 0 auto";
+          focusLineLeft.style.flex = "0 0 auto";
+          focusLineCenter.style.flex = "0 0 auto";
+          focusLineRight.style.flex = "0 0 auto";
 
-          focusLeft.style.width = leftWidth + "px";
-          focusCenter.style.width = centerWidth + "px";
-          focusRight.style.width = rightWidth + "px";
+          focusLineLeft.style.width = leftWidth + "px";
+          focusLineCenter.style.width = centerWidth + "px";
+          focusLineRight.style.width = rightWidth + "px";
         }
 
         let dragging = false;
@@ -786,17 +755,15 @@
             e.preventDefault();
             e.stopPropagation();
 
-            const leftLine = document.getElementById("focus-line-left");
-            const rightLine = document.getElementById("focus-line-right");
             const codeTabButton = document.getElementById("code-tab-button");
             const resourceTabButton = document.getElementById(
               "resource-tab-button",
             );
 
-            const leftActive = leftLine?.classList.contains(
+            const leftActive = focusLineLeft.classList.contains(
               "focus-line-segment-active",
             );
-            const rightActive = rightLine?.classList.contains(
+            const rightActive = focusLineRight.classList.contains(
               "focus-line-segment-active",
             );
 
