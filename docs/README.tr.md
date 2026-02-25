@@ -18,22 +18,22 @@
 Pyxel'in geliştirilmesi, kullanıcı geri bildirimleriyle yönlendirilmektedir. Lütfen GitHub'da Pyxel'e bir yıldız verin!
 
 <p>
-<a href="https://kitao.github.io/pyxel/wasm/examples/examples/10-platformer.html">
+<a href="https://kitao.github.io/pyxel/wasm/showcase/examples/10-platformer.html">
 <img src="images/10_platformer.gif" width="290">
 </a>
-<a href="https://kitao.github.io/pyxel/wasm/examples/apps/30sec-of-daylight.html">
+<a href="https://kitao.github.io/pyxel/wasm/showcase/apps/30sec-of-daylight.html">
 <img src="images/30sec_of_daylight.gif" width="350">
 </a>
-<a href="https://kitao.github.io/pyxel/wasm/examples/examples/02-jump-game.html">
+<a href="https://kitao.github.io/pyxel/wasm/showcase/examples/02-jump-game.html">
 <img src="images/02_jump_game.gif" width="330">
 </a>
-<a href="https://kitao.github.io/pyxel/wasm/examples/apps/megaball.html">
+<a href="https://kitao.github.io/pyxel/wasm/showcase/apps/megaball.html">
 <img src="images/megaball.gif" width="310">
 </a>
-<a href="https://kitao.github.io/pyxel/wasm/examples/tools/image-editor.html">
+<a href="https://kitao.github.io/pyxel/wasm/showcase/tools/image-editor.html">
 <img src="images/image_tilemap_editor.gif" width="320">
 </a>
-<a href="https://kitao.github.io/pyxel/wasm/examples/tools/sound-editor.html">
+<a href="https://kitao.github.io/pyxel/wasm/showcase/tools/sound-editor.html">
 <img src="images/sound_music_editor.gif" width="320">
 </a>
 </p>
@@ -112,7 +112,7 @@ Pyxel'i kurduktan sonra, aşağıdaki komutla örnekleri geçerli dizine kopyala
 pyxel copy_examples
 ```
 
-Örnek listesi [bu sayfadan](https://kitao.github.io/pyxel/wasm/examples/) tarayıcıda görüntülenebilir ve çalıştırılabilir.
+Örnek listesi [bu sayfadan](https://kitao.github.io/pyxel/wasm/showcase/) tarayıcıda görüntülenebilir ve çalıştırılabilir.
 
 Yerel ortamda örnekler aşağıdaki komutlarla çalıştırılabilir:
 
@@ -253,7 +253,7 @@ Pyxel Editor aşağıdaki düzenleme modlarına sahiptir.
 
 Her **görüntü bankasındaki** görüntüyü düzenlemek için kullanılan mod.
 
-<a href="https://kitao.github.io/pyxel/wasm/examples/tools/image-editor.html">
+<a href="https://kitao.github.io/pyxel/wasm/showcase/tools/image-editor.html">
 <img src="images/image_editor.gif">
 </a>
 
@@ -263,7 +263,7 @@ Resim editörüne bir resim dosyası (PNG/GIF/JPEG) sürükleyip bırakarak, gö
 
 Görüntü bankalarındaki görüntüleri bir **döşeme haritası** içinde düzenlemek için kullanılan mod.
 
-<a href="https://kitao.github.io/pyxel/wasm/examples/tools/tilemap-editor.html">
+<a href="https://kitao.github.io/pyxel/wasm/showcase/tools/tilemap-editor.html">
 <img src="images/tilemap_editor.gif">
 </a>
 
@@ -273,7 +273,7 @@ Bir TMX dosyasını (Tiled Map File) döşeme haritası editörüne sürükleyip
 
 Melodi ve **ses** efektlerinde kullanılan sesleri düzenlemek için mod.
 
-<a href="https://kitao.github.io/pyxel/wasm/examples/tools/sound-editor.html">
+<a href="https://kitao.github.io/pyxel/wasm/showcase/tools/sound-editor.html">
 <img src="images/sound_editor.gif">
 </a>
 
@@ -281,7 +281,7 @@ Melodi ve **ses** efektlerinde kullanılan sesleri düzenlemek için mod.
 
 Seslerin çalma sırasına göre dizildiği **müzik parçalarını** düzenlemek için kullanılan mod.
 
-<a href="https://kitao.github.io/pyxel/wasm/examples/tools/music-editor.html">
+<a href="https://kitao.github.io/pyxel/wasm/showcase/tools/music-editor.html">
 <img src="images/music_editor.gif">
 </a>
 
@@ -657,7 +657,7 @@ Pull isteği göndermek, katkınızı [MIT Lisansı](../LICENSE) altında lisans
 
 ## Web Araçlar ve Örnekler
 
-- [Pyxel Web Examples](https://kitao.github.io/pyxel/wasm/examples/)
+- [Pyxel Showcase](https://kitao.github.io/pyxel/wasm/showcase/)
 - [Pyxel Web Launcher](https://kitao.github.io/pyxel/wasm/launcher/)
 - [Pyxel Code Maker](https://kitao.github.io/pyxel/wasm/code-maker/) [[User Manual](https://qiita.com/kitao/items/b5b3fb28ebf9781eda2e)]
 - [Pyxel MML Studio](https://kitao.github.io/pyxel/wasm/mml-studio/) [[User Manual](https://qiita.com/kitao/items/a86de4f7d6a0ed656a89)]

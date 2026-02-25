@@ -18,22 +18,22 @@
 Розробка Pyxel здійснюється на основі відгуків користувачів. Будь ласка, поставте Pyxel зірку на GitHub!
 
 <p>
-<a href="https://kitao.github.io/pyxel/wasm/examples/examples/10-platformer.html">
+<a href="https://kitao.github.io/pyxel/wasm/showcase/examples/10-platformer.html">
 <img src="images/10_platformer.gif" width="290">
 </a>
-<a href="https://kitao.github.io/pyxel/wasm/examples/apps/30sec-of-daylight.html">
+<a href="https://kitao.github.io/pyxel/wasm/showcase/apps/30sec-of-daylight.html">
 <img src="images/30sec_of_daylight.gif" width="350">
 </a>
-<a href="https://kitao.github.io/pyxel/wasm/examples/examples/02-jump-game.html">
+<a href="https://kitao.github.io/pyxel/wasm/showcase/examples/02-jump-game.html">
 <img src="images/02_jump_game.gif" width="330">
 </a>
-<a href="https://kitao.github.io/pyxel/wasm/examples/apps/megaball.html">
+<a href="https://kitao.github.io/pyxel/wasm/showcase/apps/megaball.html">
 <img src="images/megaball.gif" width="310">
 </a>
-<a href="https://kitao.github.io/pyxel/wasm/examples/tools/image-editor.html">
+<a href="https://kitao.github.io/pyxel/wasm/showcase/tools/image-editor.html">
 <img src="images/image_tilemap_editor.gif" width="320">
 </a>
-<a href="https://kitao.github.io/pyxel/wasm/examples/tools/sound-editor.html">
+<a href="https://kitao.github.io/pyxel/wasm/showcase/tools/sound-editor.html">
 <img src="images/sound_music_editor.gif" width="320">
 </a>
 </p>
@@ -112,7 +112,7 @@ pip install -U pyxel
 pyxel copy_examples
 ```
 
-Список прикладів можна переглянути та запустити у браузері на [цій сторінці](https://kitao.github.io/pyxel/wasm/examples/).
+Список прикладів можна переглянути та запустити у браузері на [цій сторінці](https://kitao.github.io/pyxel/wasm/showcase/).
 
 У локальному середовищі приклади можна виконати за допомогою наступних команд:
 
@@ -253,7 +253,7 @@ Pyxel Editor має такі режими редагування.
 
 Режим для редагування зображень у кожному **банку зображень**.
 
-<a href="https://kitao.github.io/pyxel/wasm/examples/tools/image-editor.html">
+<a href="https://kitao.github.io/pyxel/wasm/showcase/tools/image-editor.html">
 <img src="images/image_editor.gif">
 </a>
 
@@ -263,7 +263,7 @@ Pyxel Editor має такі режими редагування.
 
 Режим для редагування **тайлмапів**, де зображення з банків зображень розташовані у вигляді плиток.
 
-<a href="https://kitao.github.io/pyxel/wasm/examples/tools/tilemap-editor.html">
+<a href="https://kitao.github.io/pyxel/wasm/showcase/tools/tilemap-editor.html">
 <img src="images/tilemap_editor.gif">
 </a>
 
@@ -273,7 +273,7 @@ Pyxel Editor має такі режими редагування.
 
 Режим для редагування **звуків**, що використовуються для мелодій і звукових ефектів.
 
-<a href="https://kitao.github.io/pyxel/wasm/examples/tools/sound-editor.html">
+<a href="https://kitao.github.io/pyxel/wasm/showcase/tools/sound-editor.html">
 <img src="images/sound_editor.gif">
 </a>
 
@@ -281,7 +281,7 @@ Pyxel Editor має такі режими редагування.
 
 Режим для редагування **музичних треків**, у яких звуки розташовані в порядку відтворення.
 
-<a href="https://kitao.github.io/pyxel/wasm/examples/tools/music-editor.html">
+<a href="https://kitao.github.io/pyxel/wasm/showcase/tools/music-editor.html">
 <img src="images/music_editor.gif">
 </a>
 
@@ -657,7 +657,7 @@ Pyxel включає "Розширене API", яке не згадується 
 
 ## Веб-інструменти та приклади
 
-- [Pyxel Web Examples](https://kitao.github.io/pyxel/wasm/examples/)
+- [Pyxel Showcase](https://kitao.github.io/pyxel/wasm/showcase/)
 - [Pyxel Web Launcher](https://kitao.github.io/pyxel/wasm/launcher/)
 - [Pyxel Code Maker](https://kitao.github.io/pyxel/wasm/code-maker/) [[User Manual](https://qiita.com/kitao/items/b5b3fb28ebf9781eda2e)]
 - [Pyxel MML Studio](https://kitao.github.io/pyxel/wasm/mml-studio/) [[User Manual](https://qiita.com/kitao/items/a86de4f7d6a0ed656a89)]

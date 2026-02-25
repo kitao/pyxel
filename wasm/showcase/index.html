@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" href="../../docs/images/pyxel_icon_64x64.ico" />
-    <title>Pyxel Examples</title>
+    <title>Pyxel Showcase</title>
     <script src="https://cdn.tailwindcss.com/3.4.17"></script>
 
     <style type="text/tailwindcss">
@@ -88,7 +88,7 @@
       }
 
       function detectLanguage() {
-        const stored = localStorage.getItem("pyxel-examples-lang");
+        const stored = localStorage.getItem("pyxel-showcase-lang");
         if (stored && data.languages.some((l) => l.code === stored)) {
           return stored;
         }
@@ -134,7 +134,7 @@
         langSelect.value = currentLang;
         langSelect.addEventListener("change", () => {
           currentLang = langSelect.value;
-          localStorage.setItem("pyxel-examples-lang", currentLang);
+          localStorage.setItem("pyxel-showcase-lang", currentLang);
           updateTexts();
         });
 
@@ -275,14 +275,14 @@
         const linkText = t("footer_link");
         const docLang = currentLang === "ja" ? "ja" : "en";
         document.getElementById("footer-text").innerHTML = t("footer")
-          .replace("{0}", extLink("https://github.com/kitao/pyxel/tree/main/wasm/examples", linkText))
+          .replace("{0}", extLink("https://github.com/kitao/pyxel/tree/main/wasm/showcase", linkText))
           .replace("{1}", extLink(`https://github.com/kitao/pyxel/blob/main/docs/pyxel-web-${docLang}.md`, linkText));
 
         document.documentElement.lang = currentLang === "cn" ? "zh" : currentLang;
       }
 
       // Init
-      fetch("examples.json")
+      fetch("showcase.json")
         .then((r) => r.json())
         .then((json) => {
           data = json;

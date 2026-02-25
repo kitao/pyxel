@@ -82,7 +82,7 @@ Example: `pyxel.play(0, "CDEFG")`
 
 The available commands for Pyxel's MML can be found on the [Pyxel MML Commands](https://kitao.github.io/pyxel/wasm/mml-studio/mml-commands.html) page.
 
-Examples of usage can be seen in the [demo](https://kitao.github.io/pyxel/wasm/examples/examples/09-shooter.html) and [code](https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/09_shooter.py) of the 09_shooter.py example.
+Examples of usage can be seen in the [demo](https://kitao.github.io/pyxel/wasm/showcase/examples/09-shooter.html) and [code](https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/09_shooter.py) of the 09_shooter.py example.
 
 You can also create and share MML in your browser using [Pyxel MML Studio](https://kitao.github.io/pyxel/wasm/mml-studio/).
 

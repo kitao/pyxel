@@ -18,22 +18,22 @@
 Pyxel 的开发得益于用户的反馈。请在 GitHub 上给 Pyxel 点个 Star！
 
 <p>
-<a href="https://kitao.github.io/pyxel/wasm/examples/examples/10-platformer.html">
+<a href="https://kitao.github.io/pyxel/wasm/showcase/examples/10-platformer.html">
 <img src="images/10_platformer.gif" width="290">
 </a>
-<a href="https://kitao.github.io/pyxel/wasm/examples/apps/30sec-of-daylight.html">
+<a href="https://kitao.github.io/pyxel/wasm/showcase/apps/30sec-of-daylight.html">
 <img src="images/30sec_of_daylight.gif" width="350">
 </a>
-<a href="https://kitao.github.io/pyxel/wasm/examples/examples/02-jump-game.html">
+<a href="https://kitao.github.io/pyxel/wasm/showcase/examples/02-jump-game.html">
 <img src="images/02_jump_game.gif" width="330">
 </a>
-<a href="https://kitao.github.io/pyxel/wasm/examples/apps/megaball.html">
+<a href="https://kitao.github.io/pyxel/wasm/showcase/apps/megaball.html">
 <img src="images/megaball.gif" width="310">
 </a>
-<a href="https://kitao.github.io/pyxel/wasm/examples/tools/image-editor.html">
+<a href="https://kitao.github.io/pyxel/wasm/showcase/tools/image-editor.html">
 <img src="images/image_tilemap_editor.gif" width="320">
 </a>
-<a href="https://kitao.github.io/pyxel/wasm/examples/tools/sound-editor.html">
+<a href="https://kitao.github.io/pyxel/wasm/showcase/tools/sound-editor.html">
 <img src="images/sound_music_editor.gif" width="320">
 </a>
 </p>
@@ -112,7 +112,7 @@ Pyxel 的 Web 版本可在 PC、智能手机和平板电脑的兼容浏览器中
 pyxel copy_examples
 ```
 
-示例列表可以在[此页面](https://kitao.github.io/pyxel/wasm/examples/)上通过浏览器查看和运行。
+示例列表可以在[此页面](https://kitao.github.io/pyxel/wasm/showcase/)上通过浏览器查看和运行。
 
 在本地环境中，可以通过以下命令执行示例：
 
@@ -253,7 +253,7 @@ Pyxel Editor 有以下编辑模式。
 
 用于编辑每个**图像库**中图像的模式。
 
-<a href="https://kitao.github.io/pyxel/wasm/examples/tools/image-editor.html">
+<a href="https://kitao.github.io/pyxel/wasm/showcase/tools/image-editor.html">
 <img src="images/image_editor.gif">
 </a>
 
@@ -263,7 +263,7 @@ Pyxel Editor 有以下编辑模式。
 
 用于编辑将图像库中的图像按瓦片模式排列的**瓦片地图**的模式。
 
-<a href="https://kitao.github.io/pyxel/wasm/examples/tools/tilemap-editor.html">
+<a href="https://kitao.github.io/pyxel/wasm/showcase/tools/tilemap-editor.html">
 <img src="images/tilemap_editor.gif">
 </a>
 
@@ -273,7 +273,7 @@ Pyxel Editor 有以下编辑模式。
 
 用于编辑用于旋律和音效的**声音**的模式。
 
-<a href="https://kitao.github.io/pyxel/wasm/examples/tools/sound-editor.html">
+<a href="https://kitao.github.io/pyxel/wasm/showcase/tools/sound-editor.html">
 <img src="images/sound_editor.gif">
 </a>
 
@@ -281,7 +281,7 @@ Pyxel Editor 有以下编辑模式。
 
 用于编辑将声音按播放顺序排列的**音乐**的模式。
 
-<a href="https://kitao.github.io/pyxel/wasm/examples/tools/music-editor.html">
+<a href="https://kitao.github.io/pyxel/wasm/showcase/tools/music-editor.html">
 <img src="images/music_editor.gif">
 </a>
 
@@ -657,7 +657,7 @@ Pyxel 包含一个“高级 API”，该 API 在本参考中未提及，因为�
 
 ## Web 工具与示例
 
-- [Pyxel Web Examples](https://kitao.github.io/pyxel/wasm/examples/)
+- [Pyxel Showcase](https://kitao.github.io/pyxel/wasm/showcase/)
 - [Pyxel Web Launcher](https://kitao.github.io/pyxel/wasm/launcher/)
 - [Pyxel Code Maker](https://kitao.github.io/pyxel/wasm/code-maker/) [[User Manual](https://qiita.com/kitao/items/b5b3fb28ebf9781eda2e)]
 - [Pyxel MML Studio](https://kitao.github.io/pyxel/wasm/mml-studio/) [[User Manual](https://qiita.com/kitao/items/a86de4f7d6a0ed656a89)]

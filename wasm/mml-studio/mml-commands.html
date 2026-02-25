@@ -100,7 +100,7 @@
       }
 
       function detectLanguage() {
-        const stored = localStorage.getItem("pyxel-examples-lang");
+        const stored = localStorage.getItem("pyxel-showcase-lang");
         if (stored && data.languages.some((l) => l.code === stored)) {
           return stored;
         }
@@ -180,7 +180,7 @@
           langSelect.value = currentLang;
           langSelect.addEventListener("change", () => {
             currentLang = langSelect.value;
-            localStorage.setItem("pyxel-examples-lang", currentLang);
+            localStorage.setItem("pyxel-showcase-lang", currentLang);
             render();
           });
           langSelect.style.display = "";

@@ -2,10 +2,9 @@
 
 ## 2.7.1
 
-- Redesigned Pyxel Examples page with more details
+- Redesigned Pyxel Examples page as Pyxel Showcase
 - Improved web tools with i18n support and other enhancements
-- Fixed type hints for Seq, Tilemap.from_tmx, Sound.save, Music.save
-- Fixed broken example and tool links in README files
+- Fixed type hints in pyi for Seq, Tilemap, Sound, and Music
 
 ## 2.7.0
 

@@ -18,22 +18,22 @@ As especificações são inspiradas em consoles de jogos retro, como o suporte p
 O desenvolvimento do Pyxel é impulsionado pelo feedback dos usuários. Por favor, dê uma estrela ao Pyxel no GitHub!
 
 <p>
-<a href="https://kitao.github.io/pyxel/wasm/examples/examples/10-platformer.html">
+<a href="https://kitao.github.io/pyxel/wasm/showcase/examples/10-platformer.html">
 <img src="images/10_platformer.gif" width="290">
 </a>
-<a href="https://kitao.github.io/pyxel/wasm/examples/apps/30sec-of-daylight.html">
+<a href="https://kitao.github.io/pyxel/wasm/showcase/apps/30sec-of-daylight.html">
 <img src="images/30sec_of_daylight.gif" width="350">
 </a>
-<a href="https://kitao.github.io/pyxel/wasm/examples/examples/02-jump-game.html">
+<a href="https://kitao.github.io/pyxel/wasm/showcase/examples/02-jump-game.html">
 <img src="images/02_jump_game.gif" width="330">
 </a>
-<a href="https://kitao.github.io/pyxel/wasm/examples/apps/megaball.html">
+<a href="https://kitao.github.io/pyxel/wasm/showcase/apps/megaball.html">
 <img src="images/megaball.gif" width="310">
 </a>
-<a href="https://kitao.github.io/pyxel/wasm/examples/tools/image-editor.html">
+<a href="https://kitao.github.io/pyxel/wasm/showcase/tools/image-editor.html">
 <img src="images/image_tilemap_editor.gif" width="320">
 </a>
-<a href="https://kitao.github.io/pyxel/wasm/examples/tools/sound-editor.html">
+<a href="https://kitao.github.io/pyxel/wasm/showcase/tools/sound-editor.html">
 <img src="images/sound_music_editor.gif" width="320">
 </a>
 </p>
@@ -112,7 +112,7 @@ Após instalar o Pyxel, você pode copiar os exemplos para o diretório atual co
 pyxel copy_examples
 ```
 
-Os exemplos podem ser visualizados e executados no navegador a partir [desta página](https://kitao.github.io/pyxel/wasm/examples/).
+Os exemplos podem ser visualizados e executados no navegador a partir [desta página](https://kitao.github.io/pyxel/wasm/showcase/).
 
 No ambiente local, os exemplos podem ser executados com os seguintes comandos:
 
@@ -253,7 +253,7 @@ O Pyxel Editor tem os seguintes modos de edição.
 
 O modo para editar as imagens em cada **banco de imagens**.
 
-<a href="https://kitao.github.io/pyxel/wasm/examples/tools/image-editor.html">
+<a href="https://kitao.github.io/pyxel/wasm/showcase/tools/image-editor.html">
 <img src="images/image_editor.gif">
 </a>
 
@@ -263,7 +263,7 @@ Você pode arrastar e soltar um arquivo de imagem (PNG/GIF/JPEG) no editor de im
 
 O modo para editar os **mapas de ladrilhos** que organizam imagens dos bancos de imagens em um padrão de ladrilhos.
 
-<a href="https://kitao.github.io/pyxel/wasm/examples/tools/tilemap-editor.html">
+<a href="https://kitao.github.io/pyxel/wasm/showcase/tools/tilemap-editor.html">
 <img src="images/tilemap_editor.gif">
 </a>
 
@@ -273,7 +273,7 @@ Arraste e solte um arquivo TMX (Tiled Map File) no editor de mapas de ladrilhos 
 
 O modo para editar os **sons** utilizados para melodias e efeitos sonoros.
 
-<a href="https://kitao.github.io/pyxel/wasm/examples/tools/sound-editor.html">
+<a href="https://kitao.github.io/pyxel/wasm/showcase/tools/sound-editor.html">
 <img src="images/sound_editor.gif">
 </a>
 
@@ -281,7 +281,7 @@ O modo para editar os **sons** utilizados para melodias e efeitos sonoros.
 
 O modo para editar as **faixas de música** em que os sons são organizados em ordem de reprodução.
 
-<a href="https://kitao.github.io/pyxel/wasm/examples/tools/music-editor.html">
+<a href="https://kitao.github.io/pyxel/wasm/showcase/tools/music-editor.html">
 <img src="images/music_editor.gif">
 </a>
 
@@ -657,7 +657,7 @@ Enviar um pull request implica que você concorda em licenciar sua contribuiçã
 
 ## Ferramentas e Exemplos Web
 
-- [Pyxel Web Examples](https://kitao.github.io/pyxel/wasm/examples/)
+- [Pyxel Showcase](https://kitao.github.io/pyxel/wasm/showcase/)
 - [Pyxel Web Launcher](https://kitao.github.io/pyxel/wasm/launcher/)
 - [Pyxel Code Maker](https://kitao.github.io/pyxel/wasm/code-maker/) [[User Manual](https://qiita.com/kitao/items/b5b3fb28ebf9781eda2e)]
 - [Pyxel MML Studio](https://kitao.github.io/pyxel/wasm/mml-studio/) [[User Manual](https://qiita.com/kitao/items/a86de4f7d6a0ed656a89)]

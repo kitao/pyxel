@@ -15,21 +15,21 @@
   ],
   "ui": {
     "title": {
-      "en": "Pyxel Examples"
+      "en": "Pyxel Showcase"
     },
     "subtitle": {
-      "en": "Examples of {0}, a retro game engine for Python.",
+      "en": "A collection of demos for {0}, a retro game engine for Python.",
       "cn": "Python 复古游戏引擎 {0} 的示例集。",
-      "de": "Beispiele von {0}, einer Retro-Spielengine für Python.",
-      "es": "Ejemplos de {0}, un motor de juegos retro para Python.",
-      "fr": "Exemples de {0}, un moteur de jeux rétro pour Python.",
-      "it": "Esempi di {0}, un motore di giochi retrò per Python.",
-      "ja": "Python 向けレトロゲームエンジン {0} のサンプル集。",
-      "ko": "Python용 레트로 게임 엔진 {0}의 예제 모음.",
-      "pt": "Exemplos do {0}, um motor de jogos retrô para Python.",
-      "ru": "Примеры {0}, ретро-игрового движка для Python.",
-      "tr": "Python için bir retro oyun motoru olan {0} örnekleri.",
-      "uk": "Приклади {0}, ретро-ігрового рушія для Python."
+      "de": "Eine Sammlung von Demos für {0}, eine Retro-Spielengine für Python.",
+      "es": "Una colección de demos de {0}, un motor de juegos retro para Python.",
+      "fr": "Une collection de démos pour {0}, un moteur de jeux rétro pour Python.",
+      "it": "Una raccolta di demo per {0}, un motore di giochi retrò per Python.",
+      "ja": "Python 向けレトロゲームエンジン {0} のサンプル集です。",
+      "ko": "Python용 레트로 게임 엔진 {0}의 데모 모음입니다.",
+      "pt": "Uma coleção de demos do {0}, um motor de jogos retrô para Python.",
+      "ru": "Коллекция демо для {0}, ретро-игрового движка для Python.",
+      "tr": "Python için bir retro oyun motoru olan {0} demo koleksiyonu.",
+      "uk": "Колекція демо для {0}, ретро-ігрового рушія для Python."
     },
     "demo": {
       "en": "Run",
@@ -750,7 +750,7 @@
         {
           "file": "script_test.html",
           "demo": "examples/script-test.html",
-          "code": "https://github.com/kitao/pyxel/blob/main/wasm/examples/examples/script-test.html",
+          "code": "https://github.com/kitao/pyxel/blob/main/wasm/showcase/examples/script-test.html",
           "description": {
             "en": "Example of using external packages with Pyxel Web",
             "cn": "在 Pyxel Web 中使用外部包的示例",
