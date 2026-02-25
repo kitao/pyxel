@@ -1,0 +1,703 @@
+<!doctype html>
+<html lang="en" class="h-full">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="../../docs/images/pyxel_icon_64x64.ico" />
+    <title>Pyxel API Reference</title>
+    <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+
+    <style type="text/tailwindcss">
+      @layer components {
+        .page {
+          @apply bg-gray-900 min-h-full text-gray-100 antialiased;
+        }
+        .container {
+          @apply mx-auto p-6 max-w-4xl;
+        }
+        .card {
+          @apply bg-gray-800 shadow-sm px-6 py-4 border border-gray-700 rounded-2xl;
+        }
+        .link {
+          @apply outline-none focus-visible:ring-1 focus-visible:ring-indigo-300 text-indigo-400 hover:text-indigo-300 underline underline-offset-2 rounded-sm;
+        }
+        .lang-select {
+          @apply bg-gray-800 px-2 py-1 border border-gray-600 focus-visible:border-indigo-300 rounded-lg outline-none text-gray-200 text-sm;
+        }
+        .search-input {
+          @apply bg-gray-800 px-3 py-1.5 border border-gray-600 focus:border-indigo-400 rounded-lg outline-none text-gray-200 text-sm w-full;
+        }
+        .toggle-label {
+          @apply flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm cursor-pointer select-none whitespace-nowrap transition-colors;
+        }
+        .type-badge {
+          @apply inline-block px-1.5 py-0.5 rounded text-[10px] font-medium uppercase tracking-wide leading-none;
+        }
+        .const-chip {
+          @apply text-[11px] font-mono text-pink-300 bg-pink-500/10 px-2 py-0.5 rounded whitespace-nowrap;
+        }
+      }
+
+      details summary {
+        cursor: pointer;
+        user-select: none;
+        list-style: none;
+        outline: none;
+      }
+      details summary::-webkit-details-marker {
+        display: none;
+      }
+
+      .tri::before {
+        content: "\25B6\00A0";
+        font-size: 0.6em;
+        vertical-align: middle;
+      }
+      details[open] > summary .tri::before,
+      details[open] > .tri::before {
+        content: "\25BC\00A0";
+      }
+
+      .card details summary:focus-visible,
+      summary:focus-visible .tri {
+        outline: 1px solid #a5b4fc;
+        outline-offset: 2px;
+        border-radius: 2px;
+      }
+    </style>
+  </head>
+
+  <body class="page">
+    <main class="container" id="app">
+      <div class="flex justify-center items-center py-12 text-gray-500 text-sm">
+        Loading...
+      </div>
+    </main>
+
+    <script>
+      let data = null;
+      let currentLang = "en";
+      let showAdvanced = false;
+      let searchQuery = "";
+
+      function t(keyOrObj) {
+        const obj = typeof keyOrObj === "string" ? data?.ui[keyOrObj] : keyOrObj;
+        if (!obj) return typeof keyOrObj === "string" ? keyOrObj : "";
+        if (typeof obj === "string") return obj;
+        return obj[currentLang] || obj["en"] || "";
+      }
+
+      function esc(s) {
+        const d = document.createElement("span");
+        d.textContent = s;
+        return d.innerHTML;
+      }
+
+      function extLink(href, text) {
+        return `<a href="${href}" target="_blank" rel="noopener noreferrer" class="link">${text}</a>`;
+      }
+
+      function detectLanguage() {
+        const stored = localStorage.getItem("pyxel-api-ref-lang");
+        if (stored && data.languages.some((l) => l.code === stored)) {
+          return stored;
+        }
+        const nav = navigator.language || "";
+        const navLower = nav.toLowerCase();
+        if (navLower.startsWith("zh")) return "cn";
+        for (const lang of data.languages) {
+          if (navLower.startsWith(lang.code)) return lang.code;
+        }
+        return "en";
+      }
+
+      function badgeColor(type) {
+        switch (type) {
+          case "function":
+            return "bg-indigo-500/20 text-indigo-300 border border-indigo-500/30";
+          case "variable":
+            return "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30";
+          case "class":
+            return "bg-amber-500/20 text-amber-300 border border-amber-500/30";
+          case "constant":
+            return "bg-pink-500/20 text-pink-300 border border-pink-500/30";
+          default:
+            return "bg-gray-500/20 text-gray-300 border border-gray-500/30";
+        }
+      }
+
+      function matchesSearch(item) {
+        if (!searchQuery) return true;
+        const q = searchQuery.toLowerCase();
+        return (
+          item.name.toLowerCase().includes(q) ||
+          item.signature.toLowerCase().includes(q) ||
+          t(item.description).toLowerCase().includes(q)
+        );
+      }
+
+      function isVisible(item) {
+        if (!showAdvanced && item.advanced) return false;
+        return matchesSearch(item);
+      }
+
+      function hasDetails(item) {
+        return (
+          item.params ||
+          item.return ||
+          item.examples ||
+          item.notes ||
+          item.value_type
+        );
+      }
+
+      function buildDetailContent(container, item) {
+        container.innerHTML = "";
+        const wrap = document.createElement("div");
+        wrap.className = "mt-2 pl-3 border-l-2 border-gray-700 space-y-2.5";
+
+        // Variable type
+        if (item.value_type) {
+          const sec = document.createElement("div");
+          sec.innerHTML =
+            `<div class="text-gray-500 text-xs font-medium uppercase tracking-wide mb-1">${esc(t("type_label"))}</div>` +
+            `<code class="text-emerald-300 text-xs font-mono">${esc(item.value_type)}</code>`;
+          wrap.appendChild(sec);
+        }
+
+        // Parameters
+        if (item.params && item.params.length > 0) {
+          const sec = document.createElement("div");
+          let html =
+            `<div class="text-gray-500 text-xs font-medium uppercase tracking-wide mb-1">${esc(t("parameters"))}</div>`;
+          html += '<div class="space-y-1">';
+          for (const p of item.params) {
+            html += '<div class="text-xs leading-relaxed">';
+            html += `<code class="text-indigo-300 font-mono">${esc(p.name)}</code>`;
+            html += ` <span class="text-gray-500">(${esc(p.type)})</span>`;
+            if (p.desc) {
+              html += ` <span class="text-gray-400">\u2014 ${esc(t(p.desc))}</span>`;
+            }
+            html += "</div>";
+          }
+          html += "</div>";
+          sec.innerHTML = html;
+          wrap.appendChild(sec);
+        }
+
+        // Return (skip None)
+        if (item.return && item.return.type !== "None") {
+          const sec = document.createElement("div");
+          let html =
+            `<div class="text-gray-500 text-xs font-medium uppercase tracking-wide mb-1">${esc(t("returns"))}</div>`;
+          html += `<div class="text-xs leading-relaxed"><code class="text-indigo-300 font-mono">${esc(item.return.type)}</code>`;
+          if (item.return.desc) {
+            html += ` <span class="text-gray-400">\u2014 ${esc(t(item.return.desc))}</span>`;
+          }
+          html += "</div>";
+          sec.innerHTML = html;
+          wrap.appendChild(sec);
+        }
+
+        // Examples
+        if (item.examples && item.examples.length > 0) {
+          const sec = document.createElement("div");
+          const code = item.examples.join("\n");
+          sec.innerHTML =
+            `<div class="text-gray-500 text-xs font-medium uppercase tracking-wide mb-1">${esc(t("example"))}</div>` +
+            `<pre class="bg-gray-900/80 rounded-lg px-3 py-2 font-mono text-xs text-gray-300 leading-relaxed overflow-x-auto">${esc(code)}</pre>`;
+          wrap.appendChild(sec);
+        }
+
+        // Notes
+        if (item.notes) {
+          const sec = document.createElement("div");
+          sec.innerHTML =
+            `<div class="text-gray-500 text-xs font-medium uppercase tracking-wide mb-1">${esc(t("notes"))}</div>` +
+            `<p class="text-gray-400 text-xs leading-relaxed">${esc(t(item.notes))}</p>`;
+          wrap.appendChild(sec);
+        }
+
+        container.appendChild(wrap);
+      }
+
+      function buildPage() {
+        const app = document.getElementById("app");
+        app.innerHTML = "";
+
+        // Header
+        const header = document.createElement("header");
+        header.className =
+          "flex flex-wrap justify-between items-start gap-4 mb-4";
+
+        const titleBlock = document.createElement("div");
+        titleBlock.className = "min-w-0 order-first";
+
+        const h1 = document.createElement("h1");
+        h1.className = "font-semibold text-2xl tracking-tight";
+        h1.textContent = t("title");
+        titleBlock.appendChild(h1);
+
+        const subtitle = document.createElement("p");
+        subtitle.className = "mt-2 text-gray-300 text-sm";
+        subtitle.id = "page-subtitle";
+        titleBlock.appendChild(subtitle);
+
+        const langSelect = document.createElement("select");
+        langSelect.className = "lang-select mt-1";
+        langSelect.id = "lang-select";
+        for (const lang of data.languages) {
+          const opt = document.createElement("option");
+          opt.value = lang.code;
+          opt.textContent = lang.name;
+          langSelect.appendChild(opt);
+        }
+        langSelect.value = currentLang;
+        langSelect.addEventListener("change", () => {
+          currentLang = langSelect.value;
+          localStorage.setItem("pyxel-api-ref-lang", currentLang);
+          updateTexts();
+        });
+
+        header.appendChild(langSelect);
+        header.appendChild(titleBlock);
+        app.appendChild(header);
+
+        // Toolbar: search + advanced toggle
+        const toolbar = document.createElement("div");
+        toolbar.className = "flex items-center gap-3 mb-4";
+
+        const searchWrap = document.createElement("div");
+        searchWrap.className = "flex-1 relative";
+        const searchIcon = document.createElement("span");
+        searchIcon.className =
+          "absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-500 text-sm pointer-events-none";
+        searchIcon.innerHTML =
+          '<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>';
+        const searchInput = document.createElement("input");
+        searchInput.type = "text";
+        searchInput.className = "search-input pl-8";
+        searchInput.id = "search-input";
+        searchInput.addEventListener("input", () => {
+          searchQuery = searchInput.value.trim();
+          updateVisibility();
+        });
+        searchWrap.appendChild(searchIcon);
+        searchWrap.appendChild(searchInput);
+
+        const toggleWrap = document.createElement("label");
+        toggleWrap.className = "toggle-label text-gray-400 hover:text-gray-200";
+        const toggleCheck = document.createElement("input");
+        toggleCheck.type = "checkbox";
+        toggleCheck.className =
+          "accent-indigo-500 w-4 h-4 rounded cursor-pointer outline-none focus-visible:ring-1 focus-visible:ring-indigo-300 focus-visible:ring-offset-1 focus-visible:ring-offset-gray-900";
+        toggleCheck.checked = showAdvanced;
+        toggleCheck.addEventListener("change", () => {
+          showAdvanced = toggleCheck.checked;
+          localStorage.setItem(
+            "pyxel-api-ref-advanced",
+            showAdvanced ? "1" : "0"
+          );
+          updateVisibility();
+        });
+        const toggleText = document.createElement("span");
+        toggleText.id = "advanced-label";
+        toggleWrap.appendChild(toggleCheck);
+        toggleWrap.appendChild(toggleText);
+
+        toolbar.appendChild(searchWrap);
+        toolbar.appendChild(toggleWrap);
+        app.appendChild(toolbar);
+
+        // No results message
+        const noResults = document.createElement("div");
+        noResults.id = "no-results";
+        noResults.className =
+          "hidden py-8 text-center text-gray-500 text-sm";
+        app.appendChild(noResults);
+
+        // Categories
+        for (const cat of data.categories) {
+          const section = document.createElement("details");
+          section.open = !cat.collapsed;
+          section.className = "mt-6";
+          section.dataset.catId = cat.id;
+
+          const catHeader = document.createElement("summary");
+          catHeader.className =
+            "flex items-center gap-3 mb-3 font-medium text-gray-400 text-sm uppercase tracking-wider";
+          const catText = document.createElement("span");
+          catText.className = "tri";
+          catText.dataset.catTitle = cat.id;
+          catHeader.appendChild(catText);
+          const line = document.createElement("span");
+          line.className = "flex-1 bg-gray-700 h-px";
+          catHeader.appendChild(line);
+          section.appendChild(catHeader);
+
+          // Items card (functions, variables, classes, named constants)
+          if (cat.items && cat.items.length > 0) {
+            const card = document.createElement("div");
+            card.className = "card space-y-0 divide-y divide-gray-700";
+            card.dataset.itemsCard = cat.id;
+
+            for (let i = 0; i < cat.items.length; i++) {
+              const item = cat.items[i];
+              const row = document.createElement("div");
+              row.className = "py-3";
+              row.dataset.itemKey = cat.id + "-" + i;
+
+              // Signature line
+              const sigLine = document.createElement("div");
+              sigLine.className = "flex items-baseline gap-2";
+
+              const badge = document.createElement("span");
+              badge.className =
+                "type-badge shrink-0 " + badgeColor(item.type);
+              badge.textContent = item.type;
+              sigLine.appendChild(badge);
+
+              const sigWrap = document.createElement("span");
+              const sig = document.createElement("code");
+              sig.className = "font-mono font-semibold text-sm text-indigo-300";
+              sig.textContent = item.signature;
+              sigWrap.appendChild(sig);
+
+              if (item.advanced) {
+                const adv = document.createElement("span");
+                adv.className =
+                  "adv-mark text-amber-500/70 text-[10px] leading-none hidden ml-1.5 align-middle";
+                adv.textContent = "ADV";
+                sigWrap.appendChild(adv);
+              }
+              sigLine.appendChild(sigWrap);
+
+              row.appendChild(sigLine);
+
+              // Description
+              const desc = document.createElement("p");
+              desc.className = "mt-1 text-gray-400 text-sm pl-0.5";
+              desc.dataset.descKey = cat.id + "-" + i;
+              row.appendChild(desc);
+
+              // Details (collapsible)
+              if (hasDetails(item)) {
+                const details = document.createElement("details");
+                details.className = "mt-1";
+
+                const summary = document.createElement("summary");
+                summary.className =
+                  "tri text-gray-400 text-xs hover:text-gray-300 w-fit";
+                summary.dataset.uiKey = "details";
+                details.appendChild(summary);
+
+                const content = document.createElement("div");
+                content.dataset.detailKey = cat.id + "-" + i;
+                details.appendChild(content);
+
+                row.appendChild(details);
+              }
+
+              card.appendChild(row);
+            }
+
+            section.appendChild(card);
+          }
+
+          // Constants grid (compact chip display)
+          if (cat.constants && cat.constants.length > 0) {
+            const grid = document.createElement("div");
+            grid.className = "card py-3 px-4";
+            grid.dataset.constGrid = cat.id;
+            let html = '<div class="flex flex-wrap gap-1.5">';
+            for (let i = 0; i < cat.constants.length; i++) {
+              html += `<code class="const-chip" data-const-key="${cat.id}-${i}">${esc(cat.constants[i])}</code>`;
+            }
+            html += "</div>";
+            grid.innerHTML = html;
+            section.appendChild(grid);
+          }
+
+          // Constant groups (sub-sections within category)
+          if (cat.constant_groups) {
+            for (let g = 0; g < cat.constant_groups.length; g++) {
+              const group = cat.constant_groups[g];
+              const gid = cat.id + "-cg-" + g;
+
+              const groupWrap = group.collapsed
+                ? document.createElement("details")
+                : document.createElement("div");
+              groupWrap.className = "mt-4";
+              groupWrap.dataset.cgId = gid;
+
+              const groupHeader = group.collapsed
+                ? document.createElement("summary")
+                : document.createElement("div");
+              groupHeader.className =
+                "text-xs font-medium text-gray-400 uppercase tracking-wider mb-2";
+              const labelSpan = document.createElement("span");
+              labelSpan.dataset.cgLabel = gid;
+              if (group.collapsed) labelSpan.className = "tri";
+              groupHeader.appendChild(labelSpan);
+              groupWrap.appendChild(groupHeader);
+
+              // Sections within group
+              if (group.sections && group.sections.length > 0) {
+                const card = document.createElement("div");
+                card.className = "card py-3 px-4 space-y-3";
+                card.dataset.constGrid = gid;
+
+                for (let s = 0; s < group.sections.length; s++) {
+                  const sec = group.sections[s];
+                  const sid = gid + "-s-" + s;
+                  const secWrap = document.createElement("div");
+
+                  if (sec.label) {
+                    const label = document.createElement("div");
+                    label.className =
+                      "text-[11px] font-medium text-gray-400 uppercase tracking-wider mb-1";
+                    label.dataset.secLabel = sid;
+                    secWrap.appendChild(label);
+                  }
+
+                  let html = '<div class="flex flex-wrap gap-1.5">';
+                  for (let i = 0; i < sec.constants.length; i++) {
+                    html += `<code class="const-chip" data-const-key="${sid}-${i}">${esc(sec.constants[i])}</code>`;
+                  }
+                  html += "</div>";
+                  const chipDiv = document.createElement("div");
+                  chipDiv.innerHTML = html;
+                  secWrap.appendChild(chipDiv.firstElementChild);
+
+                  if (sec.details && sec.details.length > 0) {
+                    const det = document.createElement("details");
+                    det.className = "mt-1.5";
+                    const sum = document.createElement("summary");
+                    sum.className =
+                      "tri text-gray-400 text-xs hover:text-gray-300 w-fit";
+                    sum.dataset.uiKey = "details";
+                    det.appendChild(sum);
+                    const list = document.createElement("div");
+                    list.className =
+                      "mt-2 pl-3 border-l-2 border-gray-700 space-y-1";
+                    list.dataset.secDetails = sid;
+                    det.appendChild(list);
+                    secWrap.appendChild(det);
+                  }
+
+                  card.appendChild(secWrap);
+                }
+                groupWrap.appendChild(card);
+              }
+
+              section.appendChild(groupWrap);
+            }
+          }
+
+          app.appendChild(section);
+        }
+
+        updateTexts();
+        updateVisibility();
+      }
+
+      function updateTexts() {
+        document.getElementById("page-subtitle").innerHTML = t("subtitle")
+          .replace(
+            "{0}",
+            extLink("https://github.com/kitao/pyxel", "Pyxel")
+          );
+
+        document.getElementById("search-input").placeholder =
+          t("search_placeholder");
+        document.getElementById("advanced-label").textContent =
+          t("show_advanced");
+        document.getElementById("no-results").textContent = t("no_results");
+
+        // UI labels (Details toggle text)
+        document.querySelectorAll("[data-ui-key]").forEach((el) => {
+          el.textContent = t(el.dataset.uiKey);
+        });
+
+        // Category titles
+        for (const cat of data.categories) {
+          const el = document.querySelector(
+            `[data-cat-title="${cat.id}"]`
+          );
+          if (el) el.textContent = t(cat.title);
+        }
+
+        // Descriptions, detail content, and constant groups
+        for (const cat of data.categories) {
+          if (cat.items) {
+            for (let i = 0; i < cat.items.length; i++) {
+              const key = cat.id + "-" + i;
+              const descEl = document.querySelector(
+                `[data-desc-key="${key}"]`
+              );
+              if (descEl) descEl.textContent = t(cat.items[i].description);
+              const detailEl = document.querySelector(
+                `[data-detail-key="${key}"]`
+              );
+              if (detailEl) buildDetailContent(detailEl, cat.items[i]);
+            }
+          }
+          if (cat.constant_groups) {
+            for (let g = 0; g < cat.constant_groups.length; g++) {
+              const group = cat.constant_groups[g];
+              const gid = cat.id + "-cg-" + g;
+              const labelEl = document.querySelector(
+                `[data-cg-label="${gid}"]`
+              );
+              if (labelEl) labelEl.textContent = t(group.label);
+              // Section labels and details
+              if (group.sections) {
+                for (let s = 0; s < group.sections.length; s++) {
+                  const sec = group.sections[s];
+                  const sid = gid + "-s-" + s;
+                  if (sec.label) {
+                    const sl = document.querySelector(
+                      `[data-sec-label="${sid}"]`
+                    );
+                    if (sl) sl.textContent = t(sec.label);
+                  }
+                  if (sec.details) {
+                    const listEl = document.querySelector(
+                      `[data-sec-details="${sid}"]`
+                    );
+                    if (listEl) {
+                      let html = "";
+                      for (let i = 0; i < sec.constants.length; i++) {
+                        html += `<div class="text-xs leading-relaxed"><code class="text-pink-300 font-mono">${esc(sec.constants[i])}</code>`;
+                        if (sec.details[i]) {
+                          html += ` <span class="text-gray-400">\u2014 ${esc(t(sec.details[i]))}</span>`;
+                        }
+                        html += "</div>";
+                      }
+                      listEl.innerHTML = html;
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        document.documentElement.lang =
+          currentLang === "cn" ? "zh" : currentLang;
+      }
+
+      function updateVisibility() {
+        document.querySelectorAll(".adv-mark").forEach((el) => {
+          el.classList.toggle("hidden", !showAdvanced);
+        });
+
+        let totalVisible = 0;
+
+        for (const cat of data.categories) {
+          let catVisible = 0;
+
+          // Items
+          let itemsVisible = 0;
+          if (cat.items) {
+            for (let i = 0; i < cat.items.length; i++) {
+              const key = cat.id + "-" + i;
+              const row = document.querySelector(`[data-item-key="${key}"]`);
+              if (!row) continue;
+              const visible = isVisible(cat.items[i]);
+              row.style.display = visible ? "" : "none";
+              if (visible) itemsVisible++;
+            }
+            const itemsCard = document.querySelector(
+              `[data-items-card="${cat.id}"]`
+            );
+            if (itemsCard)
+              itemsCard.style.display = itemsVisible > 0 ? "" : "none";
+          }
+          catVisible += itemsVisible;
+
+          // Constants
+          if (cat.constants) {
+            const q = searchQuery.toLowerCase();
+            for (let i = 0; i < cat.constants.length; i++) {
+              const el = document.querySelector(
+                `[data-const-key="${cat.id}-${i}"]`
+              );
+              if (!el) continue;
+              const visible =
+                !searchQuery || cat.constants[i].toLowerCase().includes(q);
+              el.style.display = visible ? "" : "none";
+              if (visible) catVisible++;
+            }
+            const grid = document.querySelector(
+              `[data-const-grid="${cat.id}"]`
+            );
+            if (grid) grid.style.display = catVisible > 0 ? "" : "none";
+          }
+
+          // Constant groups
+          if (cat.constant_groups) {
+            for (let g = 0; g < cat.constant_groups.length; g++) {
+              const group = cat.constant_groups[g];
+              const gid = cat.id + "-cg-" + g;
+              let groupVisible = 0;
+
+              if (group.sections) {
+                const q = searchQuery.toLowerCase();
+                for (let s = 0; s < group.sections.length; s++) {
+                  const sec = group.sections[s];
+                  const sid = gid + "-s-" + s;
+                  for (let i = 0; i < sec.constants.length; i++) {
+                    const el = document.querySelector(
+                      `[data-const-key="${sid}-${i}"]`
+                    );
+                    if (!el) continue;
+                    const visible =
+                      !searchQuery ||
+                      sec.constants[i].toLowerCase().includes(q);
+                    el.style.display = visible ? "" : "none";
+                    if (visible) groupVisible++;
+                  }
+                }
+                const grid = document.querySelector(
+                  `[data-const-grid="${gid}"]`
+                );
+                if (grid) grid.style.display = groupVisible > 0 ? "" : "none";
+              }
+
+              const groupEl = document.querySelector(
+                `[data-cg-id="${gid}"]`
+              );
+              if (groupEl)
+                groupEl.style.display = groupVisible > 0 ? "" : "none";
+              catVisible += groupVisible;
+            }
+          }
+
+          totalVisible += catVisible;
+
+          const section = document.querySelector(
+            `details[data-cat-id="${cat.id}"]`
+          );
+          if (section) section.style.display = catVisible > 0 ? "" : "none";
+        }
+
+        document.getElementById("no-results").classList.toggle(
+          "hidden",
+          totalVisible > 0
+        );
+      }
+
+      // Init
+      showAdvanced = localStorage.getItem("pyxel-api-ref-advanced") === "1";
+
+      fetch("api-reference.json")
+        .then((r) => r.json())
+        .then((json) => {
+          data = json;
+          currentLang = detectLanguage();
+          buildPage();
+        });
+    </script>
+  </body>
+</html>

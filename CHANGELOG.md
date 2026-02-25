@@ -4,6 +4,7 @@
 
 - Redesigned Pyxel Examples page as Pyxel Showcase
 - Improved web tools with i18n support and other enhancements
+- Added API Reference page for Pyxel Web
 - Fixed type hints in pyi for Seq, Tilemap, Sound, and Music
 
 ## 2.7.0

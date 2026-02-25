@@ -1,0 +1,4383 @@
+{
+  "languages": [
+    {
+      "code": "en",
+      "name": "English"
+    },
+    {
+      "code": "ja",
+      "name": "日本語"
+    }
+  ],
+  "ui": {
+    "title": "Pyxel API Reference",
+    "subtitle": {
+      "en": "API reference for {0}, a retro game engine for Python.",
+      "ja": "Python 向けレトロゲームエンジン {0} の API リファレンス"
+    },
+    "search_placeholder": {
+      "en": "Search APIs...",
+      "ja": "APIを検索..."
+    },
+    "show_advanced": "Advanced",
+    "no_results": {
+      "en": "No matching APIs found.",
+      "ja": "一致するAPIが見つかりません。"
+    },
+    "details": {
+      "en": "Details",
+      "ja": "詳細"
+    },
+    "parameters": {
+      "en": "Parameters",
+      "ja": "引数"
+    },
+    "returns": {
+      "en": "Returns",
+      "ja": "戻り値"
+    },
+    "example": {
+      "en": "Example",
+      "ja": "記述例"
+    },
+    "notes": {
+      "en": "Note",
+      "ja": "備考"
+    },
+    "type_label": {
+      "en": "Type",
+      "ja": "型"
+    }
+  },
+  "categories": [
+    {
+      "id": "system",
+      "title": {
+        "en": "System",
+        "ja": "システム"
+      },
+      "items": [
+        {
+          "name": "width",
+          "type": "variable",
+          "signature": "width",
+          "description": {
+            "en": "The width of the screen.",
+            "ja": "画面の幅"
+          },
+          "value_type": "int",
+          "advanced": false
+        },
+        {
+          "name": "height",
+          "type": "variable",
+          "signature": "height",
+          "description": {
+            "en": "The height of the screen.",
+            "ja": "画面の高さ"
+          },
+          "value_type": "int",
+          "advanced": false
+        },
+        {
+          "name": "frame_count",
+          "type": "variable",
+          "signature": "frame_count",
+          "description": {
+            "en": "The number of elapsed frames.",
+            "ja": "経過フレーム数"
+          },
+          "value_type": "int",
+          "advanced": false
+        },
+        {
+          "name": "init",
+          "type": "function",
+          "signature": "init(width, height, [title], [fps], [quit_key], [display_scale], [capture_scale], [capture_sec])",
+          "description": {
+            "en": "Initialize the Pyxel application with the screen size (width, height).",
+            "ja": "Pyxelアプリケーションを画面サイズ (width, height) で初期化する。"
+          },
+          "params": [
+            {
+              "name": "width",
+              "type": "int",
+              "desc": {
+                "en": "Screen width",
+                "ja": "画面の幅"
+              }
+            },
+            {
+              "name": "height",
+              "type": "int",
+              "desc": {
+                "en": "Screen height",
+                "ja": "画面の高さ"
+              }
+            },
+            {
+              "name": "title",
+              "type": "str",
+              "desc": {
+                "en": "Window title (default: \"Pyxel\")",
+                "ja": "ウィンドウタイトル（デフォルト: \"Pyxel\"）"
+              }
+            },
+            {
+              "name": "fps",
+              "type": "int",
+              "desc": {
+                "en": "Frame rate (default: 30)",
+                "ja": "フレームレート（デフォルト: 30）"
+              }
+            },
+            {
+              "name": "quit_key",
+              "type": "int",
+              "desc": {
+                "en": "Key to quit the application (default: KEY_ESCAPE)",
+                "ja": "アプリケーション終了キー（デフォルト: KEY_ESCAPE）"
+              }
+            },
+            {
+              "name": "display_scale",
+              "type": "int",
+              "desc": {
+                "en": "Display scale factor (None for auto)",
+                "ja": "表示倍率（Noneで自動）"
+              }
+            },
+            {
+              "name": "capture_scale",
+              "type": "int",
+              "desc": {
+                "en": "Screen capture scale factor (default: 2)",
+                "ja": "画面キャプチャの倍率（デフォルト: 2）"
+              }
+            },
+            {
+              "name": "capture_sec",
+              "type": "int",
+              "desc": {
+                "en": "Maximum recording time for screen capture video (default: 10)",
+                "ja": "画面キャプチャ動画の最大録画時間（デフォルト: 10）"
+              }
+            }
+          ],
+          "return": {
+            "type": "None"
+          },
+          "examples": [
+            "pyxel.init(160, 120, title=\"My Pyxel App\", fps=60, quit_key=pyxel.KEY_NONE, capture_scale=3, capture_sec=0)"
+          ],
+          "advanced": false
+        },
+        {
+          "name": "run",
+          "type": "function",
+          "signature": "run(update, draw)",
+          "description": {
+            "en": "Start the Pyxel application and call the update function for frame update and the draw function for drawing.",
+            "ja": "Pyxelアプリケーションを開始し、フレーム更新時にupdate関数、描画時にdraw関数を呼ぶ。"
+          },
+          "params": [
+            {
+              "name": "update",
+              "type": "callable",
+              "desc": {
+                "en": "Function to update game logic each frame",
+                "ja": "毎フレームのゲームロジックを更新する関数"
+              }
+            },
+            {
+              "name": "draw",
+              "type": "callable",
+              "desc": {
+                "en": "Function to draw the screen each frame",
+                "ja": "毎フレームの画面描画を行う関数"
+              }
+            }
+          ],
+          "return": {
+            "type": "None"
+          },
+          "advanced": false
+        },
+        {
+          "name": "show",
+          "type": "function",
+          "signature": "show()",
+          "description": {
+            "en": "Show the screen and wait until the Esc key is pressed.",
+            "ja": "画面を表示し、Escキーが押されるまで待機する。"
+          },
+          "return": {
+            "type": "None"
+          },
+          "advanced": false
+        },
+        {
+          "name": "flip",
+          "type": "function",
+          "signature": "flip()",
+          "description": {
+            "en": "Refresh the screen by one frame. The application exits when the Esc key is pressed. This function is not available in the web version.",
+            "ja": "画面を1フレーム更新する。Escキーを押すとアプリケーションは終了する。この関数はWeb版では動作しない。"
+          },
+          "return": {
+            "type": "None"
+          },
+          "advanced": false
+        },
+        {
+          "name": "quit",
+          "type": "function",
+          "signature": "quit()",
+          "description": {
+            "en": "Quit the Pyxel application.",
+            "ja": "Pyxelアプリケーションを終了する。"
+          },
+          "return": {
+            "type": "None"
+          },
+          "advanced": false
+        },
+        {
+          "name": "reset",
+          "type": "function",
+          "signature": "reset()",
+          "description": {
+            "en": "Reset the Pyxel application. Environment variables are preserved after reset.",
+            "ja": "Pyxelアプリケーションをリセットする。リセット後も環境変数は保持される。"
+          },
+          "return": {
+            "type": "None"
+          },
+          "advanced": false
+        },
+        {
+          "name": "title",
+          "type": "function",
+          "signature": "title(title)",
+          "description": {
+            "en": "Set the window title.",
+            "ja": "ウィンドウタイトルを設定する。"
+          },
+          "params": [
+            {
+              "name": "title",
+              "type": "str",
+              "desc": {
+                "en": "Window title",
+                "ja": "ウィンドウタイトル"
+              }
+            }
+          ],
+          "return": {
+            "type": "None"
+          },
+          "advanced": true
+        },
+        {
+          "name": "icon",
+          "type": "function",
+          "signature": "icon(data, scale, [colkey])",
+          "description": {
+            "en": "Set the application icon. Specify the icon image as a list of strings.",
+            "ja": "アプリケーションアイコンを設定する。文字列のリストでアイコン画像を指定する。"
+          },
+          "params": [
+            {
+              "name": "data",
+              "type": "list[str]",
+              "desc": {
+                "en": "Icon image as a list of strings",
+                "ja": "文字列のリストによるアイコン画像"
+              }
+            },
+            {
+              "name": "scale",
+              "type": "int",
+              "desc": {
+                "en": "Scale factor",
+                "ja": "倍率"
+              }
+            },
+            {
+              "name": "colkey",
+              "type": "int",
+              "desc": {
+                "en": "Transparent color",
+                "ja": "透明色"
+              }
+            }
+          ],
+          "return": {
+            "type": "None"
+          },
+          "advanced": true
+        },
+        {
+          "name": "fullscreen",
+          "type": "function",
+          "signature": "fullscreen(enabled)",
+          "description": {
+            "en": "Set whether to run in fullscreen mode.",
+            "ja": "フルスクリーンモードを設定する。"
+          },
+          "params": [
+            {
+              "name": "enabled",
+              "type": "bool",
+              "desc": {
+                "en": "Enable fullscreen",
+                "ja": "フルスクリーンを有効にする"
+              }
+            }
+          ],
+          "return": {
+            "type": "None"
+          },
+          "advanced": true
+        },
+        {
+          "name": "screen_mode",
+          "type": "function",
+          "signature": "screen_mode(scr)",
+          "description": {
+            "en": "Set the screen mode.",
+            "ja": "スクリーンモードを設定する。"
+          },
+          "params": [
+            {
+              "name": "scr",
+              "type": "int",
+              "desc": {
+                "en": "Screen mode number",
+                "ja": "スクリーンモード番号"
+              }
+            }
+          ],
+          "return": {
+            "type": "None"
+          },
+          "advanced": true
+        },
+        {
+          "name": "perf_monitor",
+          "type": "function",
+          "signature": "perf_monitor(enabled)",
+          "description": {
+            "en": "Show the performance monitor.",
+            "ja": "パフォーマンスモニターを表示する。"
+          },
+          "params": [
+            {
+              "name": "enabled",
+              "type": "bool",
+              "desc": {
+                "en": "Enable the performance monitor",
+                "ja": "パフォーマンスモニターを有効にする"
+              }
+            }
+          ],
+          "return": {
+            "type": "None"
+          },
+          "advanced": true
+        },
+        {
+          "name": "integer_scale",
+          "type": "function",
+          "signature": "integer_scale(enabled)",
+          "description": {
+            "en": "Enable integer scaling for the display.",
+            "ja": "整数倍スケーリングを有効にする。"
+          },
+          "params": [
+            {
+              "name": "enabled",
+              "type": "bool",
+              "desc": {
+                "en": "Enable integer scaling",
+                "ja": "整数倍スケーリングを有効にする"
+              }
+            }
+          ],
+          "return": {
+            "type": "None"
+          },
+          "advanced": true
+        }
+      ]
+    },
+    {
+      "id": "resource",
+      "title": {
+        "en": "Resource",
+        "ja": "リソース"
+      },
+      "items": [
+        {
+          "name": "load",
+          "type": "function",
+          "signature": "load(filename, [exclude_images], [exclude_tilemaps], [exclude_sounds], [exclude_musics])",
+          "description": {
+            "en": "Load the resource file (.pyxres). If an option is set to True, the corresponding resource will be excluded from loading.",
+            "ja": "リソースファイル (.pyxres) を読み込む。オプションにTrueを指定すると、そのリソースは読み込まれない。"
+          },
+          "params": [
+            {
+              "name": "filename",
+              "type": "str",
+              "desc": {
+                "en": "Resource file path",
+                "ja": "リソースファイルのパス"
+              }
+            },
+            {
+              "name": "exclude_images",
+              "type": "bool",
+              "desc": {
+                "en": "Exclude image banks",
+                "ja": "イメージバンクを除外"
+              }
+            },
+            {
+              "name": "exclude_tilemaps",
+              "type": "bool",
+              "desc": {
+                "en": "Exclude tilemaps",
+                "ja": "タイルマップを除外"
+              }
+            },
+            {
+              "name": "exclude_sounds",
+              "type": "bool",
+              "desc": {
+                "en": "Exclude sounds",
+                "ja": "サウンドを除外"
+              }
+            },
+            {
+              "name": "exclude_musics",
+              "type": "bool",
+              "desc": {
+                "en": "Exclude music tracks",
+                "ja": "ミュージックを除外"
+              }
+            }
+          ],
+          "return": {
+            "type": "None"
+          },
+          "notes": {
+            "en": "If a palette file (.pyxpal) with the same name exists, the palette display colors will also be updated.",
+            "ja": "同名のパレットファイル (.pyxpal) が存在する場合、パレットの表示色も変更される。"
+          },
+          "advanced": false
+        },
+        {
+          "name": "user_data_dir",
+          "type": "function",
+          "signature": "user_data_dir(vendor_name, app_name)",
+          "description": {
+            "en": "Return the user data directory created based on vendor_name and app_name. If the directory does not exist, it will be created automatically.",
+            "ja": "vendor_nameとapp_nameから生成されたユーザーデータ保存用ディレクトリを返す。該当ディレクトリが存在しない場合は自動で作成される。"
+          },
+          "params": [
+            {
+              "name": "vendor_name",
+              "type": "str",
+              "desc": {
+                "en": "Vendor name",
+                "ja": "ベンダー名"
+              }
+            },
+            {
+              "name": "app_name",
+              "type": "str",
+              "desc": {
+                "en": "Application name",
+                "ja": "アプリケーション名"
+              }
+            }
+          ],
+          "return": {
+            "type": "str",
+            "desc": {
+              "en": "Path to the user data directory",
+              "ja": "ユーザーデータディレクトリのパス"
+            }
+          },
+          "examples": [
+            "pyxel.user_data_dir(\"Takashi Kitao\", \"Pyxel Shooter\")"
+          ],
+          "advanced": true
+        },
+        {
+          "name": "save",
+          "type": "function",
+          "signature": "save(filename, [exclude_images], [exclude_tilemaps], [exclude_sounds], [exclude_musics])",
+          "description": {
+            "en": "Save the resource file (.pyxres).",
+            "ja": "リソースファイル (.pyxres) を保存する。"
+          },
+          "return": {
+            "type": "None"
+          },
+          "advanced": true
+        },
+        {
+          "name": "screenshot",
+          "type": "function",
+          "signature": "screenshot([scale])",
+          "description": {
+            "en": "Take a screenshot.",
+            "ja": "スクリーンショットを撮影する。"
+          },
+          "return": {
+            "type": "None"
+          },
+          "advanced": true
+        },
+        {
+          "name": "screencast",
+          "type": "function",
+          "signature": "screencast([scale])",
+          "description": {
+            "en": "Start or save screen recording.",
+            "ja": "画面録画を開始または保存する。"
+          },
+          "return": {
+            "type": "None"
+          },
+          "advanced": true
+        },
+        {
+          "name": "reset_screencast",
+          "type": "function",
+          "signature": "reset_screencast()",
+          "description": {
+            "en": "Reset the screen recording.",
+            "ja": "画面録画をリセットする。"
+          },
+          "return": {
+            "type": "None"
+          },
+          "advanced": true
+        }
+      ]
+    },
+    {
+      "id": "input",
+      "title": {
+        "en": "Input",
+        "ja": "入力"
+      },
+      "items": [
+        {
+          "name": "mouse_x",
+          "type": "variable",
+          "signature": "mouse_x",
+          "description": {
+            "en": "The current x position of the mouse cursor.",
+            "ja": "現在のマウスカーソルのX座標"
+          },
+          "value_type": "int",
+          "advanced": false
+        },
+        {
+          "name": "mouse_y",
+          "type": "variable",
+          "signature": "mouse_y",
+          "description": {
+            "en": "The current y position of the mouse cursor.",
+            "ja": "現在のマウスカーソルのY座標"
+          },
+          "value_type": "int",
+          "advanced": false
+        },
+        {
+          "name": "mouse_wheel",
+          "type": "variable",
+          "signature": "mouse_wheel",
+          "description": {
+            "en": "The current value of the mouse wheel.",
+            "ja": "現在のマウスホイールの値"
+          },
+          "value_type": "int",
+          "advanced": false
+        },
+        {
+          "name": "input_keys",
+          "type": "variable",
+          "signature": "input_keys",
+          "description": {
+            "en": "List of keys input in the current frame.",
+            "ja": "現在のフレームで入力されたキーのリスト"
+          },
+          "value_type": "list[int]",
+          "advanced": true
+        },
+        {
+          "name": "input_text",
+          "type": "variable",
+          "signature": "input_text",
+          "description": {
+            "en": "Text input in the current frame.",
+            "ja": "現在のフレームで入力されたテキスト"
+          },
+          "value_type": "str",
+          "advanced": true
+        },
+        {
+          "name": "dropped_files",
+          "type": "variable",
+          "signature": "dropped_files",
+          "description": {
+            "en": "List of files dropped in the current frame.",
+            "ja": "現在のフレームでドロップされたファイルのリスト"
+          },
+          "value_type": "list[str]",
+          "advanced": true
+        },
+        {
+          "name": "btn",
+          "type": "function",
+          "signature": "btn(key)",
+          "description": {
+            "en": "Return True if the key is pressed, otherwise return False.",
+            "ja": "keyが押されていたらTrue、押されていなければFalseを返す。"
+          },
+          "params": [
+            {
+              "name": "key",
+              "type": "int",
+              "desc": {
+                "en": "Key code",
+                "ja": "キーコード"
+              }
+            }
+          ],
+          "return": {
+            "type": "bool",
+            "desc": {
+              "en": "True if pressed",
+              "ja": "押されていればTrue"
+            }
+          },
+          "advanced": false
+        },
+        {
+          "name": "btnp",
+          "type": "function",
+          "signature": "btnp(key, [hold], [repeat])",
+          "description": {
+            "en": "Return True if the key is pressed in that frame. With hold and repeat, return True at the specified interval.",
+            "ja": "そのフレームにkeyが押されたらTrueを返す。holdとrepeatを指定すると、holdフレーム以上押し続けた時にrepeatフレーム間隔でTrueが返る。"
+          },
+          "params": [
+            {
+              "name": "key",
+              "type": "int",
+              "desc": {
+                "en": "Key code",
+                "ja": "キーコード"
+              }
+            },
+            {
+              "name": "hold",
+              "type": "int",
+              "desc": {
+                "en": "Frames to hold before repeat starts",
+                "ja": "リピート開始までの押下フレーム数"
+              }
+            },
+            {
+              "name": "repeat",
+              "type": "int",
+              "desc": {
+                "en": "Repeat interval in frames",
+                "ja": "リピート間隔（フレーム数）"
+              }
+            }
+          ],
+          "return": {
+            "type": "bool",
+            "desc": {
+              "en": "True if pressed in that frame",
+              "ja": "そのフレームで押されたらTrue"
+            }
+          },
+          "advanced": false
+        },
+        {
+          "name": "btnr",
+          "type": "function",
+          "signature": "btnr(key)",
+          "description": {
+            "en": "Return True if the key is released in that frame, otherwise return False.",
+            "ja": "そのフレームにkeyが離されたらTrue、離されなければFalseを返す。"
+          },
+          "params": [
+            {
+              "name": "key",
+              "type": "int",
+              "desc": {
+                "en": "Key code",
+                "ja": "キーコード"
+              }
+            }
+          ],
+          "return": {
+            "type": "bool",
+            "desc": {
+              "en": "True if released in that frame",
+              "ja": "そのフレームで離されたらTrue"
+            }
+          },
+          "advanced": false
+        },
+        {
+          "name": "mouse",
+          "type": "function",
+          "signature": "mouse(visible)",
+          "description": {
+            "en": "Show the mouse cursor if visible is True, and hide it if False. The cursor position continues to update even when hidden.",
+            "ja": "visibleがTrueならマウスカーソルを表示し、Falseなら非表示にする。非表示でも座標は更新される。"
+          },
+          "params": [
+            {
+              "name": "visible",
+              "type": "bool",
+              "desc": {
+                "en": "Show or hide the cursor",
+                "ja": "カーソルの表示/非表示"
+              }
+            }
+          ],
+          "return": {
+            "type": "None"
+          },
+          "advanced": false
+        },
+        {
+          "name": "btnv",
+          "type": "function",
+          "signature": "btnv(key)",
+          "description": {
+            "en": "Return the analog value of the specified key.",
+            "ja": "指定されたキーのアナログ値を返す。"
+          },
+          "params": [
+            {
+              "name": "key",
+              "type": "int",
+              "desc": {
+                "en": "Key code",
+                "ja": "キーコード"
+              }
+            }
+          ],
+          "return": {
+            "type": "int",
+            "desc": {
+              "en": "Analog value of the key",
+              "ja": "キーのアナログ値"
+            }
+          },
+          "advanced": true
+        },
+        {
+          "name": "warp_mouse",
+          "type": "function",
+          "signature": "warp_mouse(x, y)",
+          "description": {
+            "en": "Move the mouse cursor to the specified position.",
+            "ja": "マウスカーソルを指定位置に移動する。"
+          },
+          "params": [
+            {
+              "name": "x",
+              "type": "float",
+              "desc": {
+                "en": "X coordinate",
+                "ja": "X座標"
+              }
+            },
+            {
+              "name": "y",
+              "type": "float",
+              "desc": {
+                "en": "Y coordinate",
+                "ja": "Y座標"
+              }
+            }
+          ],
+          "return": {
+            "type": "None"
+          },
+          "advanced": true
+        }
+      ],
+      "constant_groups": [
+        {
+          "label": {
+            "en": "Key Constants",
+            "ja": "キー定数"
+          },
+          "collapsed": true,
+          "sections": [
+            {
+              "label": {
+                "en": "Special Keys",
+                "ja": "特殊キー"
+              },
+              "constants": [
+                "KEY_UNKNOWN",
+                "KEY_RETURN",
+                "KEY_ESCAPE",
+                "KEY_BACKSPACE",
+                "KEY_TAB",
+                "KEY_SPACE",
+                "KEY_NONE"
+              ]
+            },
+            {
+              "label": {
+                "en": "Letters",
+                "ja": "英字"
+              },
+              "constants": [
+                "KEY_A",
+                "KEY_B",
+                "KEY_C",
+                "KEY_D",
+                "KEY_E",
+                "KEY_F",
+                "KEY_G",
+                "KEY_H",
+                "KEY_I",
+                "KEY_J",
+                "KEY_K",
+                "KEY_L",
+                "KEY_M",
+                "KEY_N",
+                "KEY_O",
+                "KEY_P",
+                "KEY_Q",
+                "KEY_R",
+                "KEY_S",
+                "KEY_T",
+                "KEY_U",
+                "KEY_V",
+                "KEY_W",
+                "KEY_X",
+                "KEY_Y",
+                "KEY_Z"
+              ]
+            },
+            {
+              "label": {
+                "en": "Numbers",
+                "ja": "数字"
+              },
+              "constants": [
+                "KEY_0",
+                "KEY_1",
+                "KEY_2",
+                "KEY_3",
+                "KEY_4",
+                "KEY_5",
+                "KEY_6",
+                "KEY_7",
+                "KEY_8",
+                "KEY_9"
+              ]
+            },
+            {
+              "label": {
+                "en": "Symbols",
+                "ja": "記号"
+              },
+              "constants": [
+                "KEY_EXCLAIM",
+                "KEY_QUOTEDBL",
+                "KEY_HASH",
+                "KEY_PERCENT",
+                "KEY_DOLLAR",
+                "KEY_AMPERSAND",
+                "KEY_QUOTE",
+                "KEY_LEFTPAREN",
+                "KEY_RIGHTPAREN",
+                "KEY_ASTERISK",
+                "KEY_PLUS",
+                "KEY_COMMA",
+                "KEY_MINUS",
+                "KEY_PERIOD",
+                "KEY_SLASH",
+                "KEY_COLON",
+                "KEY_SEMICOLON",
+                "KEY_LESS",
+                "KEY_EQUALS",
+                "KEY_GREATER",
+                "KEY_QUESTION",
+                "KEY_AT",
+                "KEY_LEFTBRACKET",
+                "KEY_BACKSLASH",
+                "KEY_RIGHTBRACKET",
+                "KEY_CARET",
+                "KEY_UNDERSCORE",
+                "KEY_BACKQUOTE"
+              ]
+            },
+            {
+              "label": {
+                "en": "Function",
+                "ja": "ファンクション"
+              },
+              "constants": [
+                "KEY_F1",
+                "KEY_F2",
+                "KEY_F3",
+                "KEY_F4",
+                "KEY_F5",
+                "KEY_F6",
+                "KEY_F7",
+                "KEY_F8",
+                "KEY_F9",
+                "KEY_F10",
+                "KEY_F11",
+                "KEY_F12",
+                "KEY_F13",
+                "KEY_F14",
+                "KEY_F15",
+                "KEY_F16",
+                "KEY_F17",
+                "KEY_F18",
+                "KEY_F19",
+                "KEY_F20",
+                "KEY_F21",
+                "KEY_F22",
+                "KEY_F23",
+                "KEY_F24"
+              ]
+            },
+            {
+              "label": {
+                "en": "Navigation",
+                "ja": "ナビゲーション"
+              },
+              "constants": [
+                "KEY_INSERT",
+                "KEY_HOME",
+                "KEY_PAGEUP",
+                "KEY_DELETE",
+                "KEY_END",
+                "KEY_PAGEDOWN",
+                "KEY_RIGHT",
+                "KEY_LEFT",
+                "KEY_DOWN",
+                "KEY_UP"
+              ]
+            },
+            {
+              "label": {
+                "en": "Modifiers",
+                "ja": "修飾キー"
+              },
+              "constants": [
+                "KEY_CAPSLOCK",
+                "KEY_LCTRL",
+                "KEY_LSHIFT",
+                "KEY_LALT",
+                "KEY_LGUI",
+                "KEY_RCTRL",
+                "KEY_RSHIFT",
+                "KEY_RALT",
+                "KEY_RGUI",
+                "KEY_MODE",
+                "KEY_SHIFT",
+                "KEY_CTRL",
+                "KEY_ALT",
+                "KEY_GUI"
+              ]
+            },
+            {
+              "label": {
+                "en": "Numpad",
+                "ja": "テンキー"
+              },
+              "constants": [
+                "KEY_NUMLOCKCLEAR",
+                "KEY_KP_DIVIDE",
+                "KEY_KP_MULTIPLY",
+                "KEY_KP_MINUS",
+                "KEY_KP_PLUS",
+                "KEY_KP_ENTER",
+                "KEY_KP_1",
+                "KEY_KP_2",
+                "KEY_KP_3",
+                "KEY_KP_4",
+                "KEY_KP_5",
+                "KEY_KP_6",
+                "KEY_KP_7",
+                "KEY_KP_8",
+                "KEY_KP_9",
+                "KEY_KP_0",
+                "KEY_KP_PERIOD",
+                "KEY_KP_EQUALS",
+                "KEY_KP_COMMA",
+                "KEY_KP_EQUALSAS400",
+                "KEY_KP_00",
+                "KEY_KP_000",
+                "KEY_KP_LEFTPAREN",
+                "KEY_KP_RIGHTPAREN",
+                "KEY_KP_LEFTBRACE",
+                "KEY_KP_RIGHTBRACE",
+                "KEY_KP_TAB",
+                "KEY_KP_BACKSPACE",
+                "KEY_KP_A",
+                "KEY_KP_B",
+                "KEY_KP_C",
+                "KEY_KP_D",
+                "KEY_KP_E",
+                "KEY_KP_F",
+                "KEY_KP_XOR",
+                "KEY_KP_POWER",
+                "KEY_KP_PERCENT",
+                "KEY_KP_LESS",
+                "KEY_KP_GREATER",
+                "KEY_KP_AMPERSAND",
+                "KEY_KP_DBLAMPERSAND",
+                "KEY_KP_VERTICALBAR",
+                "KEY_KP_DBLVERTICALBAR",
+                "KEY_KP_COLON",
+                "KEY_KP_HASH",
+                "KEY_KP_SPACE",
+                "KEY_KP_AT",
+                "KEY_KP_EXCLAM",
+                "KEY_KP_MEMSTORE",
+                "KEY_KP_MEMRECALL",
+                "KEY_KP_MEMCLEAR",
+                "KEY_KP_MEMADD",
+                "KEY_KP_MEMSUBTRACT",
+                "KEY_KP_MEMMULTIPLY",
+                "KEY_KP_MEMDIVIDE",
+                "KEY_KP_PLUSMINUS",
+                "KEY_KP_CLEAR",
+                "KEY_KP_CLEARENTRY",
+                "KEY_KP_BINARY",
+                "KEY_KP_OCTAL",
+                "KEY_KP_DECIMAL",
+                "KEY_KP_HEXADECIMAL"
+              ]
+            },
+            {
+              "label": {
+                "en": "System & Media",
+                "ja": "システム・メディア"
+              },
+              "constants": [
+                "KEY_PRINTSCREEN",
+                "KEY_SCROLLLOCK",
+                "KEY_PAUSE",
+                "KEY_APPLICATION",
+                "KEY_POWER",
+                "KEY_EXECUTE",
+                "KEY_HELP",
+                "KEY_MENU",
+                "KEY_SELECT",
+                "KEY_STOP",
+                "KEY_AGAIN",
+                "KEY_UNDO",
+                "KEY_CUT",
+                "KEY_COPY",
+                "KEY_PASTE",
+                "KEY_FIND",
+                "KEY_MUTE",
+                "KEY_VOLUMEUP",
+                "KEY_VOLUMEDOWN",
+                "KEY_ALTERASE",
+                "KEY_SYSREQ",
+                "KEY_CANCEL",
+                "KEY_CLEAR",
+                "KEY_PRIOR",
+                "KEY_RETURN2",
+                "KEY_SEPARATOR",
+                "KEY_OUT",
+                "KEY_OPER",
+                "KEY_CLEARAGAIN",
+                "KEY_CRSEL",
+                "KEY_EXSEL",
+                "KEY_THOUSANDSSEPARATOR",
+                "KEY_DECIMALSEPARATOR",
+                "KEY_CURRENCYUNIT",
+                "KEY_CURRENCYSUBUNIT",
+                "KEY_AUDIONEXT",
+                "KEY_AUDIOPREV",
+                "KEY_AUDIOSTOP",
+                "KEY_AUDIOPLAY",
+                "KEY_AUDIOMUTE",
+                "KEY_MEDIASELECT",
+                "KEY_WWW",
+                "KEY_MAIL",
+                "KEY_CALCULATOR",
+                "KEY_COMPUTER",
+                "KEY_AC_SEARCH",
+                "KEY_AC_HOME",
+                "KEY_AC_BACK",
+                "KEY_AC_FORWARD",
+                "KEY_AC_STOP",
+                "KEY_AC_REFRESH",
+                "KEY_AC_BOOKMARKS",
+                "KEY_BRIGHTNESSDOWN",
+                "KEY_BRIGHTNESSUP",
+                "KEY_DISPLAYSWITCH",
+                "KEY_KBDILLUMTOGGLE",
+                "KEY_KBDILLUMDOWN",
+                "KEY_KBDILLUMUP",
+                "KEY_EJECT",
+                "KEY_SLEEP",
+                "KEY_APP1",
+                "KEY_APP2",
+                "KEY_AUDIOREWIND",
+                "KEY_AUDIOFASTFORWARD"
+              ]
+            }
+          ]
+        },
+        {
+          "label": {
+            "en": "Mouse Constants",
+            "ja": "マウス定数"
+          },
+          "collapsed": true,
+          "sections": [
+            {
+              "label": {
+                "en": "Cursor & Wheel",
+                "ja": "カーソル・ホイール"
+              },
+              "constants": [
+                "MOUSE_POS_X",
+                "MOUSE_POS_Y",
+                "MOUSE_WHEEL_X",
+                "MOUSE_WHEEL_Y"
+              ]
+            },
+            {
+              "label": {
+                "en": "Buttons",
+                "ja": "ボタン"
+              },
+              "constants": [
+                "MOUSE_BUTTON_LEFT",
+                "MOUSE_BUTTON_MIDDLE",
+                "MOUSE_BUTTON_RIGHT",
+                "MOUSE_BUTTON_X1",
+                "MOUSE_BUTTON_X2",
+                "MOUSE_BUTTON_UNKNOWN"
+              ]
+            }
+          ]
+        },
+        {
+          "label": {
+            "en": "Gamepad Constants",
+            "ja": "ゲームパッド定数"
+          },
+          "collapsed": true,
+          "sections": [
+            {
+              "label": {
+                "en": "Gamepad 1",
+                "ja": "ゲームパッド1"
+              },
+              "constants": [
+                "GAMEPAD1_AXIS_LEFTX",
+                "GAMEPAD1_AXIS_LEFTY",
+                "GAMEPAD1_AXIS_RIGHTX",
+                "GAMEPAD1_AXIS_RIGHTY",
+                "GAMEPAD1_AXIS_TRIGGERLEFT",
+                "GAMEPAD1_AXIS_TRIGGERRIGHT",
+                "GAMEPAD1_BUTTON_A",
+                "GAMEPAD1_BUTTON_B",
+                "GAMEPAD1_BUTTON_X",
+                "GAMEPAD1_BUTTON_Y",
+                "GAMEPAD1_BUTTON_BACK",
+                "GAMEPAD1_BUTTON_GUIDE",
+                "GAMEPAD1_BUTTON_START",
+                "GAMEPAD1_BUTTON_LEFTSTICK",
+                "GAMEPAD1_BUTTON_RIGHTSTICK",
+                "GAMEPAD1_BUTTON_LEFTSHOULDER",
+                "GAMEPAD1_BUTTON_RIGHTSHOULDER",
+                "GAMEPAD1_BUTTON_DPAD_UP",
+                "GAMEPAD1_BUTTON_DPAD_DOWN",
+                "GAMEPAD1_BUTTON_DPAD_LEFT",
+                "GAMEPAD1_BUTTON_DPAD_RIGHT"
+              ]
+            },
+            {
+              "label": {
+                "en": "Gamepad 2",
+                "ja": "ゲームパッド2"
+              },
+              "constants": [
+                "GAMEPAD2_AXIS_LEFTX",
+                "GAMEPAD2_AXIS_LEFTY",
+                "GAMEPAD2_AXIS_RIGHTX",
+                "GAMEPAD2_AXIS_RIGHTY",
+                "GAMEPAD2_AXIS_TRIGGERLEFT",
+                "GAMEPAD2_AXIS_TRIGGERRIGHT",
+                "GAMEPAD2_BUTTON_A",
+                "GAMEPAD2_BUTTON_B",
+                "GAMEPAD2_BUTTON_X",
+                "GAMEPAD2_BUTTON_Y",
+                "GAMEPAD2_BUTTON_BACK",
+                "GAMEPAD2_BUTTON_GUIDE",
+                "GAMEPAD2_BUTTON_START",
+                "GAMEPAD2_BUTTON_LEFTSTICK",
+                "GAMEPAD2_BUTTON_RIGHTSTICK",
+                "GAMEPAD2_BUTTON_LEFTSHOULDER",
+                "GAMEPAD2_BUTTON_RIGHTSHOULDER",
+                "GAMEPAD2_BUTTON_DPAD_UP",
+                "GAMEPAD2_BUTTON_DPAD_DOWN",
+                "GAMEPAD2_BUTTON_DPAD_LEFT",
+                "GAMEPAD2_BUTTON_DPAD_RIGHT"
+              ]
+            },
+            {
+              "label": {
+                "en": "Gamepad 3",
+                "ja": "ゲームパッド3"
+              },
+              "constants": [
+                "GAMEPAD3_AXIS_LEFTX",
+                "GAMEPAD3_AXIS_LEFTY",
+                "GAMEPAD3_AXIS_RIGHTX",
+                "GAMEPAD3_AXIS_RIGHTY",
+                "GAMEPAD3_AXIS_TRIGGERLEFT",
+                "GAMEPAD3_AXIS_TRIGGERRIGHT",
+                "GAMEPAD3_BUTTON_A",
+                "GAMEPAD3_BUTTON_B",
+                "GAMEPAD3_BUTTON_X",
+                "GAMEPAD3_BUTTON_Y",
+                "GAMEPAD3_BUTTON_BACK",
+                "GAMEPAD3_BUTTON_GUIDE",
+                "GAMEPAD3_BUTTON_START",
+                "GAMEPAD3_BUTTON_LEFTSTICK",
+                "GAMEPAD3_BUTTON_RIGHTSTICK",
+                "GAMEPAD3_BUTTON_LEFTSHOULDER",
+                "GAMEPAD3_BUTTON_RIGHTSHOULDER",
+                "GAMEPAD3_BUTTON_DPAD_UP",
+                "GAMEPAD3_BUTTON_DPAD_DOWN",
+                "GAMEPAD3_BUTTON_DPAD_LEFT",
+                "GAMEPAD3_BUTTON_DPAD_RIGHT"
+              ]
+            },
+            {
+              "label": {
+                "en": "Gamepad 4",
+                "ja": "ゲームパッド4"
+              },
+              "constants": [
+                "GAMEPAD4_AXIS_LEFTX",
+                "GAMEPAD4_AXIS_LEFTY",
+                "GAMEPAD4_AXIS_RIGHTX",
+                "GAMEPAD4_AXIS_RIGHTY",
+                "GAMEPAD4_AXIS_TRIGGERLEFT",
+                "GAMEPAD4_AXIS_TRIGGERRIGHT",
+                "GAMEPAD4_BUTTON_A",
+                "GAMEPAD4_BUTTON_B",
+                "GAMEPAD4_BUTTON_X",
+                "GAMEPAD4_BUTTON_Y",
+                "GAMEPAD4_BUTTON_BACK",
+                "GAMEPAD4_BUTTON_GUIDE",
+                "GAMEPAD4_BUTTON_START",
+                "GAMEPAD4_BUTTON_LEFTSTICK",
+                "GAMEPAD4_BUTTON_RIGHTSTICK",
+                "GAMEPAD4_BUTTON_LEFTSHOULDER",
+                "GAMEPAD4_BUTTON_RIGHTSHOULDER",
+                "GAMEPAD4_BUTTON_DPAD_UP",
+                "GAMEPAD4_BUTTON_DPAD_DOWN",
+                "GAMEPAD4_BUTTON_DPAD_LEFT",
+                "GAMEPAD4_BUTTON_DPAD_RIGHT"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "graphics",
+      "title": {
+        "en": "Graphics",
+        "ja": "グラフィックス"
+      },
+      "items": [
+        {
+          "name": "colors",
+          "type": "variable",
+          "signature": "colors",
+          "description": {
+            "en": "List of the palette display colors. Specified by 24-bit numerical value. Supports Python list operations.",
+            "ja": "パレットの表示色リスト。24ビット数値で指定する。Pythonリストと同様の操作が可能。"
+          },
+          "value_type": "list[int]",
+          "examples": [
+            "old_colors = list(pyxel.colors)",
+            "pyxel.colors[15] = 0x112233"
+          ],
+          "advanced": false
+        },
+        {
+          "name": "images",
+          "type": "variable",
+          "signature": "images",
+          "description": {
+            "en": "List of the image banks (instances of the Image class) (0-2).",
+            "ja": "イメージバンク (Imageクラスのインスタンス) のリスト (0-2)"
+          },
+          "value_type": "list[Image]",
+          "examples": [
+            "pyxel.images[0].load(0, 0, \"title.png\")"
+          ],
+          "advanced": false
+        },
+        {
+          "name": "tilemaps",
+          "type": "variable",
+          "signature": "tilemaps",
+          "description": {
+            "en": "List of the tilemaps (instances of the Tilemap class) (0-7).",
+            "ja": "タイルマップ (Tilemapクラスのインスタンス) のリスト (0-7)"
+          },
+          "value_type": "list[Tilemap]",
+          "advanced": false
+        },
+        {
+          "name": "screen",
+          "type": "variable",
+          "signature": "screen",
+          "description": {
+            "en": "The screen image (Image class instance).",
+            "ja": "スクリーンイメージ (Imageクラスのインスタンス)"
+          },
+          "value_type": "Image",
+          "advanced": true
+        },
+        {
+          "name": "cursor",
+          "type": "variable",
+          "signature": "cursor",
+          "description": {
+            "en": "The cursor image (Image class instance).",
+            "ja": "カーソルイメージ (Imageクラスのインスタンス)"
+          },
+          "value_type": "Image",
+          "advanced": true
+        },
+        {
+          "name": "font",
+          "type": "variable",
+          "signature": "font",
+          "description": {
+            "en": "The font image (Image class instance).",
+            "ja": "フォントイメージ (Imageクラスのインスタンス)"
+          },
+          "value_type": "Image",
+          "advanced": true
+        },
+        {
+          "name": "clip",
+          "type": "function",
+          "signature": "clip(x, y, w, h)",
+          "description": {
+            "en": "Set the drawing area of the screen from (x, y) with a width of w and a height of h. Call clip() to reset to full screen.",
+            "ja": "画面の描画領域を (x, y) から幅w、高さhに設定する。clip()で全画面にリセットする。"
+          },
+          "params": [
+            {
+              "name": "x",
+              "type": "float",
+              "desc": {
+                "en": "X coordinate of the upper-left corner",
+                "ja": "左上隅のX座標"
+              }
+            },
+            {
+              "name": "y",
+              "type": "float",
+              "desc": {
+                "en": "Y coordinate of the upper-left corner",
+                "ja": "左上隅のY座標"
+              }
+            },
+            {
+              "name": "w",
+              "type": "float",
+              "desc": {
+                "en": "Width of the clipping area",
+                "ja": "クリッピング領域の幅"
+              }
+            },
+            {
+              "name": "h",
+              "type": "float",
+              "desc": {
+                "en": "Height of the clipping area",
+                "ja": "クリッピング領域の高さ"
+              }
+            }
+          ],
+          "return": {
+            "type": "None"
+          },
+          "advanced": false
+        },
+        {
+          "name": "clip",
+          "type": "function",
+          "signature": "clip()",
+          "description": {
+            "en": "Reset the drawing area to full screen.",
+            "ja": "描画領域を全画面にリセットする。"
+          },
+          "return": {
+            "type": "None"
+          },
+          "advanced": false
+        },
+        {
+          "name": "camera",
+          "type": "function",
+          "signature": "camera(x, y)",
+          "description": {
+            "en": "Change the upper-left corner coordinates of the screen to (x, y). Call camera() to reset to (0, 0).",
+            "ja": "画面の左上隅の座標を (x, y) に変更する。camera()で (0, 0) にリセットする。"
+          },
+          "params": [
+            {
+              "name": "x",
+              "type": "float",
+              "desc": {
+                "en": "X coordinate",
+                "ja": "X座標"
+              }
+            },
+            {
+              "name": "y",
+              "type": "float",
+              "desc": {
+                "en": "Y coordinate",
+                "ja": "Y座標"
+              }
+            }
+          ],
+          "return": {
+            "type": "None"
+          },
+          "advanced": false
+        },
+        {
+          "name": "camera",
+          "type": "function",
+          "signature": "camera()",
+          "description": {
+            "en": "Reset the upper-left corner coordinates to (0, 0).",
+            "ja": "画面の左上隅の座標を (0, 0) にリセットする。"
+          },
+          "return": {
+            "type": "None"
+          },
+          "advanced": false
+        },
+        {
+          "name": "pal",
+          "type": "function",
+          "signature": "pal(col1, col2)",
+          "description": {
+            "en": "Replace color col1 with col2 when drawing. Call pal() to reset to the initial palette.",
+            "ja": "描画時に色col1をcol2に置き換える。pal()で初期状態にリセットする。"
+          },
+          "params": [
+            {
+              "name": "col1",
+              "type": "int",
+              "desc": {
+                "en": "Color to replace",
+                "ja": "置き換え元の色"
+              }
+            },
+            {
+              "name": "col2",
+              "type": "int",
+              "desc": {
+                "en": "Replacement color",
+                "ja": "置き換え先の色"
+              }
+            }
+          ],
+          "return": {
+            "type": "None"
+          },
+          "advanced": false
+        },
+        {
+          "name": "pal",
+          "type": "function",
+          "signature": "pal()",
+          "description": {
+            "en": "Reset the palette to the initial state.",
+            "ja": "パレットを初期状態にリセットする。"
+          },
+          "return": {
+            "type": "None"
+          },
+          "advanced": false
+        },
+        {
+          "name": "dither",
+          "type": "function",
+          "signature": "dither(alpha)",
+          "description": {
+            "en": "Apply dithering (pseudo-transparency) when drawing. Set alpha in the range 0.0-1.0.",
+            "ja": "描画時にディザリング (擬似半透明) を適用する。alphaは0.0-1.0の範囲で設定する。"
+          },
+          "params": [
+            {
+              "name": "alpha",
+              "type": "float",
+              "desc": {
+                "en": "Opacity (0.0=transparent, 1.0=opaque)",
+                "ja": "不透明度（0.0=透明、1.0=不透明）"
+              }
+            }
+          ],
+          "return": {
+            "type": "None"
+          },
+          "advanced": false
+        },
+        {
+          "name": "cls",
+          "type": "function",
+          "signature": "cls(col)",
+          "description": {
+            "en": "Clear the screen with color col.",
+            "ja": "画面を色colでクリアする。"
+          },
+          "params": [
+            {
+              "name": "col",
+              "type": "int",
+              "desc": {
+                "en": "Color",
+                "ja": "色"
+              }
+            }
+          ],
+          "return": {
+            "type": "None"
+          },
+          "advanced": false
+        },
+        {
+          "name": "pget",
+          "type": "function",
+          "signature": "pget(x, y)",
+          "description": {
+            "en": "Get the color of the pixel at (x, y).",
+            "ja": "(x, y) のピクセルの色を取得する。"
+          },
+          "params": [
+            {
+              "name": "x",
+              "type": "float",
+              "desc": {
+                "en": "X coordinate",
+                "ja": "X座標"
+              }
+            },
+            {
+              "name": "y",
+              "type": "float",
+              "desc": {
+                "en": "Y coordinate",
+                "ja": "Y座標"
+              }
+            }
+          ],
+          "return": {
+            "type": "int",
+            "desc": {
+              "en": "Color of the pixel",
+              "ja": "ピクセルの色"
+            }
+          },
+          "advanced": false
+        },
+        {
+          "name": "pset",
+          "type": "function",
+          "signature": "pset(x, y, col)",
+          "description": {
+            "en": "Draw a pixel of color col at (x, y).",
+            "ja": "(x, y) に色colのピクセルを描画する。"
+          },
+          "params": [
+            {
+              "name": "x",
+              "type": "float",
+              "desc": {
+                "en": "X coordinate",
+                "ja": "X座標"
+              }
+            },
+            {
+              "name": "y",
+              "type": "float",
+              "desc": {
+                "en": "Y coordinate",
+                "ja": "Y座標"
+              }
+            },
+            {
+              "name": "col",
+              "type": "int",
+              "desc": {
+                "en": "Color",
+                "ja": "色"
+              }
+            }
+          ],
+          "return": {
+            "type": "None"
+          },
+          "advanced": false
+        },
+        {
+          "name": "line",
+          "type": "function",
+          "signature": "line(x1, y1, x2, y2, col)",
+          "description": {
+            "en": "Draw a line of color col from (x1, y1) to (x2, y2).",
+            "ja": "色colの直線を (x1, y1)-(x2, y2) に描画する。"
+          },
+          "return": {
+            "type": "None"
+          },
+          "advanced": false,
+          "params": [
+            {
+              "name": "x1",
+              "type": "float",
+              "desc": {
+                "en": "Start X coordinate",
+                "ja": "始点のX座標"
+              }
+            },
+            {
+              "name": "y1",
+              "type": "float",
+              "desc": {
+                "en": "Start Y coordinate",
+                "ja": "始点のY座標"
+              }
+            },
+            {
+              "name": "x2",
+              "type": "float",
+              "desc": {
+                "en": "End X coordinate",
+                "ja": "終点のX座標"
+              }
+            },
+            {
+              "name": "y2",
+              "type": "float",
+              "desc": {
+                "en": "End Y coordinate",
+                "ja": "終点のY座標"
+              }
+            },
+            {
+              "name": "col",
+              "type": "int",
+              "desc": {
+                "en": "Color",
+                "ja": "色"
+              }
+            }
+          ]
+        },
+        {
+          "name": "rect",
+          "type": "function",
+          "signature": "rect(x, y, w, h, col)",
+          "description": {
+            "en": "Draw a filled rectangle of width w, height h, and color col at (x, y).",
+            "ja": "幅w、高さh、色colの矩形を (x, y) に描画する。"
+          },
+          "return": {
+            "type": "None"
+          },
+          "advanced": false,
+          "params": [
+            {
+              "name": "x",
+              "type": "float",
+              "desc": {
+                "en": "X coordinate",
+                "ja": "X座標"
+              }
+            },
+            {
+              "name": "y",
+              "type": "float",
+              "desc": {
+                "en": "Y coordinate",
+                "ja": "Y座標"
+              }
+            },
+            {
+              "name": "w",
+              "type": "float",
+              "desc": {
+                "en": "Width",
+                "ja": "幅"
+              }
+            },
+            {
+              "name": "h",
+              "type": "float",
+              "desc": {
+                "en": "Height",
+                "ja": "高さ"
+              }
+            },
+            {
+              "name": "col",
+              "type": "int",
+              "desc": {
+                "en": "Color",
+                "ja": "色"
+              }
+            }
+          ]
+        },
+        {
+          "name": "rectb",
+          "type": "function",
+          "signature": "rectb(x, y, w, h, col)",
+          "description": {
+            "en": "Draw the outline of a rectangle of width w, height h, and color col at (x, y).",
+            "ja": "幅w、高さh、色colの矩形の輪郭線を (x, y) に描画する。"
+          },
+          "return": {
+            "type": "None"
+          },
+          "advanced": false,
+          "params": [
+            {
+              "name": "x",
+              "type": "float",
+              "desc": {
+                "en": "X coordinate",
+                "ja": "X座標"
+              }
+            },
+            {
+              "name": "y",
+              "type": "float",
+              "desc": {
+                "en": "Y coordinate",
+                "ja": "Y座標"
+              }
+            },
+            {
+              "name": "w",
+              "type": "float",
+              "desc": {
+                "en": "Width",
+                "ja": "幅"
+              }
+            },
+            {
+              "name": "h",
+              "type": "float",
+              "desc": {
+                "en": "Height",
+                "ja": "高さ"
+              }
+            },
+            {
+              "name": "col",
+              "type": "int",
+              "desc": {
+                "en": "Color",
+                "ja": "色"
+              }
+            }
+          ]
+        },
+        {
+          "name": "circ",
+          "type": "function",
+          "signature": "circ(x, y, r, col)",
+          "description": {
+            "en": "Draw a filled circle of radius r and color col at (x, y).",
+            "ja": "半径r、色colの円を (x, y) に描画する。"
+          },
+          "return": {
+            "type": "None"
+          },
+          "advanced": false,
+          "params": [
+            {
+              "name": "x",
+              "type": "float",
+              "desc": {
+                "en": "Center X coordinate",
+                "ja": "中心のX座標"
+              }
+            },
+            {
+              "name": "y",
+              "type": "float",
+              "desc": {
+                "en": "Center Y coordinate",
+                "ja": "中心のY座標"
+              }
+            },
+            {
+              "name": "r",
+              "type": "float",
+              "desc": {
+                "en": "Radius",
+                "ja": "半径"
+              }
+            },
+            {
+              "name": "col",
+              "type": "int",
+              "desc": {
+                "en": "Color",
+                "ja": "色"
+              }
+            }
+          ]
+        },
+        {
+          "name": "circb",
+          "type": "function",
+          "signature": "circb(x, y, r, col)",
+          "description": {
+            "en": "Draw the outline of a circle of radius r and color col at (x, y).",
+            "ja": "半径r、色colの円の輪郭線を (x, y) に描画する。"
+          },
+          "return": {
+            "type": "None"
+          },
+          "advanced": false,
+          "params": [
+            {
+              "name": "x",
+              "type": "float",
+              "desc": {
+                "en": "Center X coordinate",
+                "ja": "中心のX座標"
+              }
+            },
+            {
+              "name": "y",
+              "type": "float",
+              "desc": {
+                "en": "Center Y coordinate",
+                "ja": "中心のY座標"
+              }
+            },
+            {
+              "name": "r",
+              "type": "float",
+              "desc": {
+                "en": "Radius",
+                "ja": "半径"
+              }
+            },
+            {
+              "name": "col",
+              "type": "int",
+              "desc": {
+                "en": "Color",
+                "ja": "色"
+              }
+            }
+          ]
+        },
+        {
+          "name": "elli",
+          "type": "function",
+          "signature": "elli(x, y, w, h, col)",
+          "description": {
+            "en": "Draw a filled ellipse of width w, height h, and color col at (x, y).",
+            "ja": "幅w、高さh、色colの楕円を (x, y) に描画する。"
+          },
+          "return": {
+            "type": "None"
+          },
+          "advanced": false,
+          "params": [
+            {
+              "name": "x",
+              "type": "float",
+              "desc": {
+                "en": "X coordinate",
+                "ja": "X座標"
+              }
+            },
+            {
+              "name": "y",
+              "type": "float",
+              "desc": {
+                "en": "Y coordinate",
+                "ja": "Y座標"
+              }
+            },
+            {
+              "name": "w",
+              "type": "float",
+              "desc": {
+                "en": "Width",
+                "ja": "幅"
+              }
+            },
+            {
+              "name": "h",
+              "type": "float",
+              "desc": {
+                "en": "Height",
+                "ja": "高さ"
+              }
+            },
+            {
+              "name": "col",
+              "type": "int",
+              "desc": {
+                "en": "Color",
+                "ja": "色"
+              }
+            }
+          ]
+        },
+        {
+          "name": "ellib",
+          "type": "function",
+          "signature": "ellib(x, y, w, h, col)",
+          "description": {
+            "en": "Draw the outline of an ellipse of width w, height h, and color col at (x, y).",
+            "ja": "幅w、高さh、色colの楕円の輪郭線を (x, y) に描画する。"
+          },
+          "return": {
+            "type": "None"
+          },
+          "advanced": false,
+          "params": [
+            {
+              "name": "x",
+              "type": "float",
+              "desc": {
+                "en": "X coordinate",
+                "ja": "X座標"
+              }
+            },
+            {
+              "name": "y",
+              "type": "float",
+              "desc": {
+                "en": "Y coordinate",
+                "ja": "Y座標"
+              }
+            },
+            {
+              "name": "w",
+              "type": "float",
+              "desc": {
+                "en": "Width",
+                "ja": "幅"
+              }
+            },
+            {
+              "name": "h",
+              "type": "float",
+              "desc": {
+                "en": "Height",
+                "ja": "高さ"
+              }
+            },
+            {
+              "name": "col",
+              "type": "int",
+              "desc": {
+                "en": "Color",
+                "ja": "色"
+              }
+            }
+          ]
+        },
+        {
+          "name": "tri",
+          "type": "function",
+          "signature": "tri(x1, y1, x2, y2, x3, y3, col)",
+          "description": {
+            "en": "Draw a filled triangle with vertices (x1, y1), (x2, y2), (x3, y3) and color col.",
+            "ja": "頂点が (x1, y1)、(x2, y2)、(x3, y3)、色colの三角形を描画する。"
+          },
+          "return": {
+            "type": "None"
+          },
+          "advanced": false,
+          "params": [
+            {
+              "name": "x1",
+              "type": "float",
+              "desc": {
+                "en": "Vertex 1 X",
+                "ja": "頂点1のX座標"
+              }
+            },
+            {
+              "name": "y1",
+              "type": "float",
+              "desc": {
+                "en": "Vertex 1 Y",
+                "ja": "頂点1のY座標"
+              }
+            },
+            {
+              "name": "x2",
+              "type": "float",
+              "desc": {
+                "en": "Vertex 2 X",
+                "ja": "頂点2のX座標"
+              }
+            },
+            {
+              "name": "y2",
+              "type": "float",
+              "desc": {
+                "en": "Vertex 2 Y",
+                "ja": "頂点2のY座標"
+              }
+            },
+            {
+              "name": "x3",
+              "type": "float",
+              "desc": {
+                "en": "Vertex 3 X",
+                "ja": "頂点3のX座標"
+              }
+            },
+            {
+              "name": "y3",
+              "type": "float",
+              "desc": {
+                "en": "Vertex 3 Y",
+                "ja": "頂点3のY座標"
+              }
+            },
+            {
+              "name": "col",
+              "type": "int",
+              "desc": {
+                "en": "Color",
+                "ja": "色"
+              }
+            }
+          ]
+        },
+        {
+          "name": "trib",
+          "type": "function",
+          "signature": "trib(x1, y1, x2, y2, x3, y3, col)",
+          "description": {
+            "en": "Draw the outline of a triangle with vertices (x1, y1), (x2, y2), (x3, y3) and color col.",
+            "ja": "頂点が (x1, y1)、(x2, y2)、(x3, y3)、色colの三角形の輪郭線を描画する。"
+          },
+          "return": {
+            "type": "None"
+          },
+          "advanced": false,
+          "params": [
+            {
+              "name": "x1",
+              "type": "float",
+              "desc": {
+                "en": "Vertex 1 X",
+                "ja": "頂点1のX座標"
+              }
+            },
+            {
+              "name": "y1",
+              "type": "float",
+              "desc": {
+                "en": "Vertex 1 Y",
+                "ja": "頂点1のY座標"
+              }
+            },
+            {
+              "name": "x2",
+              "type": "float",
+              "desc": {
+                "en": "Vertex 2 X",
+                "ja": "頂点2のX座標"
+              }
+            },
+            {
+              "name": "y2",
+              "type": "float",
+              "desc": {
+                "en": "Vertex 2 Y",
+                "ja": "頂点2のY座標"
+              }
+            },
+            {
+              "name": "x3",
+              "type": "float",
+              "desc": {
+                "en": "Vertex 3 X",
+                "ja": "頂点3のX座標"
+              }
+            },
+            {
+              "name": "y3",
+              "type": "float",
+              "desc": {
+                "en": "Vertex 3 Y",
+                "ja": "頂点3のY座標"
+              }
+            },
+            {
+              "name": "col",
+              "type": "int",
+              "desc": {
+                "en": "Color",
+                "ja": "色"
+              }
+            }
+          ]
+        },
+        {
+          "name": "fill",
+          "type": "function",
+          "signature": "fill(x, y, col)",
+          "description": {
+            "en": "Fill the area connected with the same color as (x, y) with color col.",
+            "ja": "(x, y) と同じ色でつながっている領域を色colで塗りつぶす。"
+          },
+          "return": {
+            "type": "None"
+          },
+          "advanced": false,
+          "params": [
+            {
+              "name": "x",
+              "type": "float",
+              "desc": {
+                "en": "X coordinate",
+                "ja": "X座標"
+              }
+            },
+            {
+              "name": "y",
+              "type": "float",
+              "desc": {
+                "en": "Y coordinate",
+                "ja": "Y座標"
+              }
+            },
+            {
+              "name": "col",
+              "type": "int",
+              "desc": {
+                "en": "Fill color",
+                "ja": "塗りつぶす色"
+              }
+            }
+          ]
+        },
+        {
+          "name": "blt",
+          "type": "function",
+          "signature": "blt(x, y, img, u, v, w, h, [colkey], [rotate], [scale])",
+          "description": {
+            "en": "Copy the region of size (w, h) from (u, v) of the image bank img (0-2) to (x, y). Negative w/h flips the image. colkey sets the transparent color. rotate and scale apply transformations.",
+            "ja": "イメージバンクimg (0-2) の (u, v) からサイズ (w, h) の領域を (x, y) にコピーする。w、hに負の値を指定すると反転する。colkeyで透明色を指定。rotateとscaleで変換を適用する。"
+          },
+          "return": {
+            "type": "None"
+          },
+          "advanced": false,
+          "params": [
+            {
+              "name": "x",
+              "type": "float",
+              "desc": {
+                "en": "Destination X",
+                "ja": "コピー先X座標"
+              }
+            },
+            {
+              "name": "y",
+              "type": "float",
+              "desc": {
+                "en": "Destination Y",
+                "ja": "コピー先Y座標"
+              }
+            },
+            {
+              "name": "img",
+              "type": "int/Image",
+              "desc": {
+                "en": "Image bank number (0-2) or Image instance",
+                "ja": "イメージバンク番号 (0-2) またはImageインスタンス"
+              }
+            },
+            {
+              "name": "u",
+              "type": "float",
+              "desc": {
+                "en": "Source X in the image bank",
+                "ja": "イメージバンク内のソースX"
+              }
+            },
+            {
+              "name": "v",
+              "type": "float",
+              "desc": {
+                "en": "Source Y in the image bank",
+                "ja": "イメージバンク内のソースY"
+              }
+            },
+            {
+              "name": "w",
+              "type": "float",
+              "desc": {
+                "en": "Width (negative to flip)",
+                "ja": "幅（負で反転）"
+              }
+            },
+            {
+              "name": "h",
+              "type": "float",
+              "desc": {
+                "en": "Height (negative to flip)",
+                "ja": "高さ（負で反転）"
+              }
+            },
+            {
+              "name": "colkey",
+              "type": "int",
+              "desc": {
+                "en": "Transparent color",
+                "ja": "透明色"
+              }
+            },
+            {
+              "name": "rotate",
+              "type": "float",
+              "desc": {
+                "en": "Rotation in degrees",
+                "ja": "回転角度（度）"
+              }
+            },
+            {
+              "name": "scale",
+              "type": "float",
+              "desc": {
+                "en": "Scale factor (1.0 = 100%)",
+                "ja": "拡大率（1.0=100%）"
+              }
+            }
+          ]
+        },
+        {
+          "name": "bltm",
+          "type": "function",
+          "signature": "bltm(x, y, tm, u, v, w, h, [colkey], [rotate], [scale])",
+          "description": {
+            "en": "Copy the region of size (w, h) from (u, v) of the tilemap tm (0-7) to (x, y). One tile is 8x8 pixels stored as (image_tx, image_ty).",
+            "ja": "タイルマップtm (0-7) の (u, v) からサイズ (w, h) の領域を (x, y) にコピーする。1タイルは8x8ピクセルで (image_tx, image_ty) として格納される。"
+          },
+          "return": {
+            "type": "None"
+          },
+          "advanced": false,
+          "params": [
+            {
+              "name": "x",
+              "type": "float",
+              "desc": {
+                "en": "Destination X",
+                "ja": "コピー先X座標"
+              }
+            },
+            {
+              "name": "y",
+              "type": "float",
+              "desc": {
+                "en": "Destination Y",
+                "ja": "コピー先Y座標"
+              }
+            },
+            {
+              "name": "tm",
+              "type": "int/Tilemap",
+              "desc": {
+                "en": "Tilemap number (0-7) or Tilemap instance",
+                "ja": "タイルマップ番号 (0-7) またはTilemapインスタンス"
+              }
+            },
+            {
+              "name": "u",
+              "type": "float",
+              "desc": {
+                "en": "Source X in the tilemap",
+                "ja": "タイルマップ内のソースX"
+              }
+            },
+            {
+              "name": "v",
+              "type": "float",
+              "desc": {
+                "en": "Source Y in the tilemap",
+                "ja": "タイルマップ内のソースY"
+              }
+            },
+            {
+              "name": "w",
+              "type": "float",
+              "desc": {
+                "en": "Width (negative to flip)",
+                "ja": "幅（負で反転）"
+              }
+            },
+            {
+              "name": "h",
+              "type": "float",
+              "desc": {
+                "en": "Height (negative to flip)",
+                "ja": "高さ（負で反転）"
+              }
+            },
+            {
+              "name": "colkey",
+              "type": "int",
+              "desc": {
+                "en": "Transparent color",
+                "ja": "透明色"
+              }
+            },
+            {
+              "name": "rotate",
+              "type": "float",
+              "desc": {
+                "en": "Rotation in degrees",
+                "ja": "回転角度（度）"
+              }
+            },
+            {
+              "name": "scale",
+              "type": "float",
+              "desc": {
+                "en": "Scale factor (1.0 = 100%)",
+                "ja": "拡大率（1.0=100%）"
+              }
+            }
+          ]
+        },
+        {
+          "name": "text",
+          "type": "function",
+          "signature": "text(x, y, s, col, [font])",
+          "description": {
+            "en": "Draw a string s in color col at (x, y).",
+            "ja": "色colの文字列sを (x, y) に描画する。"
+          },
+          "return": {
+            "type": "None"
+          },
+          "advanced": false,
+          "params": [
+            {
+              "name": "x",
+              "type": "float",
+              "desc": {
+                "en": "X coordinate",
+                "ja": "X座標"
+              }
+            },
+            {
+              "name": "y",
+              "type": "float",
+              "desc": {
+                "en": "Y coordinate",
+                "ja": "Y座標"
+              }
+            },
+            {
+              "name": "s",
+              "type": "str",
+              "desc": {
+                "en": "String to draw",
+                "ja": "描画する文字列"
+              }
+            },
+            {
+              "name": "col",
+              "type": "int",
+              "desc": {
+                "en": "Color",
+                "ja": "色"
+              }
+            },
+            {
+              "name": "font",
+              "type": "Font",
+              "desc": {
+                "en": "Custom font (optional)",
+                "ja": "カスタムフォント（省略可）"
+              }
+            }
+          ]
+        }
+      ],
+      "constant_groups": [
+        {
+          "label": {
+            "en": "Color Constants",
+            "ja": "カラー定数"
+          },
+          "collapsed": true,
+          "sections": [
+            {
+              "constants": [
+                "COLOR_BLACK",
+                "COLOR_NAVY",
+                "COLOR_PURPLE",
+                "COLOR_GREEN",
+                "COLOR_BROWN",
+                "COLOR_DARK_BLUE",
+                "COLOR_LIGHT_BLUE",
+                "COLOR_WHITE",
+                "COLOR_RED",
+                "COLOR_ORANGE",
+                "COLOR_YELLOW",
+                "COLOR_LIME",
+                "COLOR_CYAN",
+                "COLOR_GRAY",
+                "COLOR_PINK",
+                "COLOR_PEACH"
+              ],
+              "details": [
+                {
+                  "en": "0 — Black (#000000)",
+                  "ja": "0 — 黒 (#000000)"
+                },
+                {
+                  "en": "1 — Navy (#2b335f)",
+                  "ja": "1 — 紺 (#2b335f)"
+                },
+                {
+                  "en": "2 — Purple (#7e2072)",
+                  "ja": "2 — 紫 (#7e2072)"
+                },
+                {
+                  "en": "3 — Green (#19959c)",
+                  "ja": "3 — 緑 (#19959c)"
+                },
+                {
+                  "en": "4 — Brown (#8b4852)",
+                  "ja": "4 — 茶 (#8b4852)"
+                },
+                {
+                  "en": "5 — Dark Blue (#395c98)",
+                  "ja": "5 — 暗青 (#395c98)"
+                },
+                {
+                  "en": "6 — Light Blue (#a9c1ff)",
+                  "ja": "6 — 淡青 (#a9c1ff)"
+                },
+                {
+                  "en": "7 — White (#eeeeee)",
+                  "ja": "7 — 白 (#eeeeee)"
+                },
+                {
+                  "en": "8 — Red (#d4186c)",
+                  "ja": "8 — 赤 (#d4186c)"
+                },
+                {
+                  "en": "9 — Orange (#d38441)",
+                  "ja": "9 — 橙 (#d38441)"
+                },
+                {
+                  "en": "10 — Yellow (#e9c35b)",
+                  "ja": "10 — 黄 (#e9c35b)"
+                },
+                {
+                  "en": "11 — Lime (#70c6a9)",
+                  "ja": "11 — 黄緑 (#70c6a9)"
+                },
+                {
+                  "en": "12 — Cyan (#7696de)",
+                  "ja": "12 — 水 (#7696de)"
+                },
+                {
+                  "en": "13 — Gray (#a3a3a3)",
+                  "ja": "13 — 灰 (#a3a3a3)"
+                },
+                {
+                  "en": "14 — Pink (#ff9798)",
+                  "ja": "14 — 桃 (#ff9798)"
+                },
+                {
+                  "en": "15 — Peach (#edc7b0)",
+                  "ja": "15 — 肌 (#edc7b0)"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "audio",
+      "title": {
+        "en": "Audio",
+        "ja": "オーディオ"
+      },
+      "items": [
+        {
+          "name": "sounds",
+          "type": "variable",
+          "signature": "sounds",
+          "description": {
+            "en": "List of the sounds (instances of the Sound class) (0-63).",
+            "ja": "サウンド (Soundクラスのインスタンス) のリスト (0-63)"
+          },
+          "value_type": "list[Sound]",
+          "examples": [
+            "pyxel.sounds[0].speed = 60"
+          ],
+          "advanced": false
+        },
+        {
+          "name": "musics",
+          "type": "variable",
+          "signature": "musics",
+          "description": {
+            "en": "List of music tracks (instances of the Music class) (0-7).",
+            "ja": "ミュージック (Musicクラスのインスタンス) のリスト (0-7)"
+          },
+          "value_type": "list[Music]",
+          "advanced": false
+        },
+        {
+          "name": "channels",
+          "type": "variable",
+          "signature": "channels",
+          "description": {
+            "en": "List of the channels (instances of the Channel class).",
+            "ja": "チャンネル (Channelクラスのインスタンス) のリスト"
+          },
+          "value_type": "list[Channel]",
+          "advanced": true
+        },
+        {
+          "name": "play",
+          "type": "function",
+          "signature": "play(ch, snd, [sec], [loop], [resume])",
+          "description": {
+            "en": "Play the sound snd (0-63) on channel ch (0-3). snd can be a sound number, a list, or an MML string.",
+            "ja": "チャンネルch (0-3) でサウンドsnd (0-63) を再生する。sndにはサウンド番号、リスト、またはMML文字列を指定できる。"
+          },
+          "params": [
+            {
+              "name": "ch",
+              "type": "int",
+              "desc": {
+                "en": "Channel number (0-3)",
+                "ja": "チャンネル番号 (0-3)"
+              }
+            },
+            {
+              "name": "snd",
+              "type": "int/list/Sound/str",
+              "desc": {
+                "en": "Sound number (0-63), list of numbers, Sound instance, list of Sounds, or MML string",
+                "ja": "サウンド番号 (0-63)、番号のリスト、Soundインスタンス、Soundのリスト、またはMML文字列"
+              }
+            },
+            {
+              "name": "sec",
+              "type": "float",
+              "desc": {
+                "en": "Playback start position in seconds",
+                "ja": "再生開始位置（秒）"
+              }
+            },
+            {
+              "name": "loop",
+              "type": "bool",
+              "desc": {
+                "en": "Loop playback",
+                "ja": "ループ再生"
+              }
+            },
+            {
+              "name": "resume",
+              "type": "bool",
+              "desc": {
+                "en": "Resume previous sound after playback ends",
+                "ja": "再生終了後に以前の音へ復帰"
+              }
+            }
+          ],
+          "return": {
+            "type": "None"
+          },
+          "advanced": false
+        },
+        {
+          "name": "playm",
+          "type": "function",
+          "signature": "playm(msc, [sec], [loop])",
+          "description": {
+            "en": "Play the music msc (0-7).",
+            "ja": "ミュージックmsc (0-7) を再生する。"
+          },
+          "params": [
+            {
+              "name": "msc",
+              "type": "int",
+              "desc": {
+                "en": "Music number (0-7)",
+                "ja": "ミュージック番号 (0-7)"
+              }
+            },
+            {
+              "name": "sec",
+              "type": "float",
+              "desc": {
+                "en": "Playback start position in seconds",
+                "ja": "再生開始位置（秒）"
+              }
+            },
+            {
+              "name": "loop",
+              "type": "bool",
+              "desc": {
+                "en": "Loop playback",
+                "ja": "ループ再生"
+              }
+            }
+          ],
+          "return": {
+            "type": "None"
+          },
+          "advanced": false
+        },
+        {
+          "name": "stop",
+          "type": "function",
+          "signature": "stop([ch])",
+          "description": {
+            "en": "Stop playback of the specified channel ch (0-3). Call stop() to stop all channels.",
+            "ja": "指定したチャンネルch (0-3) の再生を停止する。stop()で全チャンネルの再生を停止する。"
+          },
+          "params": [
+            {
+              "name": "ch",
+              "type": "int",
+              "desc": {
+                "en": "Channel number (0-3). Omit to stop all.",
+                "ja": "チャンネル番号 (0-3)。省略で全停止。"
+              }
+            }
+          ],
+          "return": {
+            "type": "None"
+          },
+          "advanced": false
+        },
+        {
+          "name": "stop",
+          "type": "function",
+          "signature": "stop()",
+          "description": {
+            "en": "Stop playback of all channels.",
+            "ja": "全チャンネルの再生を停止する。"
+          },
+          "return": {
+            "type": "None"
+          },
+          "advanced": false
+        },
+        {
+          "name": "play_pos",
+          "type": "function",
+          "signature": "play_pos(ch)",
+          "description": {
+            "en": "Get the sound playback position of channel ch (0-3) as a tuple of (sound_no, sec). Return None when playback has stopped.",
+            "ja": "チャンネルch (0-3) のサウンド再生位置を (sound_no, sec) のタプルとして取得する。再生停止時はNoneを返す。"
+          },
+          "params": [
+            {
+              "name": "ch",
+              "type": "int",
+              "desc": {
+                "en": "Channel number (0-3)",
+                "ja": "チャンネル番号 (0-3)"
+              }
+            }
+          ],
+          "return": {
+            "type": "tuple/None",
+            "desc": {
+              "en": "(sound_no, sec) or None",
+              "ja": "(sound_no, sec) またはNone"
+            }
+          },
+          "advanced": false
+        },
+        {
+          "name": "gen_bgm",
+          "type": "function",
+          "signature": "gen_bgm(preset, instr, [seed], [play])",
+          "description": {
+            "en": "Generate a BGM MML list using an algorithm. preset (0-7) selects the preset, instr (0-3) selects the instrumentation.",
+            "ja": "アルゴリズムでBGMのMMLリストを生成する。preset (0-7) でプリセット、instr (0-3) で編成を指定する。"
+          },
+          "params": [
+            {
+              "name": "preset",
+              "type": "int",
+              "desc": {
+                "en": "Preset number (0-7)",
+                "ja": "プリセット番号 (0-7)"
+              }
+            },
+            {
+              "name": "instr",
+              "type": "int",
+              "desc": {
+                "en": "Instrumentation: 0=melody+reverb+bass, 1=melody+bass+drums, 2=melody+sub+bass, 3=melody+sub+bass+drums",
+                "ja": "編成: 0=メロディ+リバーブ+ベース、1=メロディ+ベース+ドラム、2=メロディ+サブ+ベース、3=メロディ+サブ+ベース+ドラム"
+              }
+            },
+            {
+              "name": "seed",
+              "type": "int",
+              "desc": {
+                "en": "Random seed (omit for random)",
+                "ja": "乱数シード（省略でランダム）"
+              }
+            },
+            {
+              "name": "play",
+              "type": "bool",
+              "desc": {
+                "en": "Play the generated MML",
+                "ja": "生成したMMLを再生する"
+              }
+            }
+          ],
+          "return": {
+            "type": "list[str]",
+            "desc": {
+              "en": "List of MML strings",
+              "ja": "MML文字列のリスト"
+            }
+          },
+          "advanced": false
+        }
+      ],
+      "constant_groups": [
+        {
+          "label": {
+            "en": "Tone & Effect Constants",
+            "ja": "トーン・エフェクト定数"
+          },
+          "collapsed": true,
+          "sections": [
+            {
+              "label": {
+                "en": "Tones",
+                "ja": "トーン"
+              },
+              "constants": [
+                "TONE_TRIANGLE",
+                "TONE_SQUARE",
+                "TONE_PULSE",
+                "TONE_NOISE"
+              ],
+              "details": [
+                {
+                  "en": "0 — Triangle wave",
+                  "ja": "0 — 三角波"
+                },
+                {
+                  "en": "1 — Square wave",
+                  "ja": "1 — 矩形波"
+                },
+                {
+                  "en": "2 — Pulse wave",
+                  "ja": "2 — パルス波"
+                },
+                {
+                  "en": "3 — Noise",
+                  "ja": "3 — ノイズ"
+                }
+              ]
+            },
+            {
+              "label": {
+                "en": "Effects",
+                "ja": "エフェクト"
+              },
+              "constants": [
+                "EFFECT_NONE",
+                "EFFECT_SLIDE",
+                "EFFECT_VIBRATO",
+                "EFFECT_FADEOUT",
+                "EFFECT_HALF_FADEOUT",
+                "EFFECT_QUARTER_FADEOUT"
+              ],
+              "details": [
+                {
+                  "en": "0 — No effect",
+                  "ja": "0 — エフェクトなし"
+                },
+                {
+                  "en": "1 — Slide",
+                  "ja": "1 — スライド"
+                },
+                {
+                  "en": "2 — Vibrato",
+                  "ja": "2 — ビブラート"
+                },
+                {
+                  "en": "3 — Fade out",
+                  "ja": "3 — フェードアウト"
+                },
+                {
+                  "en": "4 — Half fade out",
+                  "ja": "4 — ハーフフェードアウト"
+                },
+                {
+                  "en": "5 — Quarter fade out",
+                  "ja": "5 — クォーターフェードアウト"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "math",
+      "title": {
+        "en": "Math",
+        "ja": "数学"
+      },
+      "items": [
+        {
+          "name": "ceil",
+          "type": "function",
+          "signature": "ceil(x)",
+          "description": {
+            "en": "Return the smallest integer greater than or equal to x.",
+            "ja": "x以上の最小の整数を返す。"
+          },
+          "params": [
+            {
+              "name": "x",
+              "type": "float",
+              "desc": {
+                "en": "Value",
+                "ja": "値"
+              }
+            }
+          ],
+          "return": {
+            "type": "int",
+            "desc": {
+              "en": "Smallest integer >= x",
+              "ja": "x以上の最小の整数"
+            }
+          },
+          "advanced": false
+        },
+        {
+          "name": "floor",
+          "type": "function",
+          "signature": "floor(x)",
+          "description": {
+            "en": "Return the largest integer less than or equal to x.",
+            "ja": "x以下の最大の整数を返す。"
+          },
+          "params": [
+            {
+              "name": "x",
+              "type": "float",
+              "desc": {
+                "en": "Value",
+                "ja": "値"
+              }
+            }
+          ],
+          "return": {
+            "type": "int",
+            "desc": {
+              "en": "Largest integer <= x",
+              "ja": "x以下の最大の整数"
+            }
+          },
+          "advanced": false
+        },
+        {
+          "name": "clamp",
+          "type": "function",
+          "signature": "clamp(x, lower, upper)",
+          "description": {
+            "en": "Return x clamped between lower and upper.",
+            "ja": "xをlower-upper範囲に収めた値を返す。"
+          },
+          "return": {
+            "type": "int/float",
+            "desc": {
+              "en": "Clamped value",
+              "ja": "範囲内に収めた値"
+            }
+          },
+          "advanced": false,
+          "params": [
+            {
+              "name": "x",
+              "type": "int/float",
+              "desc": {
+                "en": "Value to clamp",
+                "ja": "クランプする値"
+              }
+            },
+            {
+              "name": "lower",
+              "type": "int/float",
+              "desc": {
+                "en": "Minimum value",
+                "ja": "最小値"
+              }
+            },
+            {
+              "name": "upper",
+              "type": "int/float",
+              "desc": {
+                "en": "Maximum value",
+                "ja": "最大値"
+              }
+            }
+          ]
+        },
+        {
+          "name": "sgn",
+          "type": "function",
+          "signature": "sgn(x)",
+          "description": {
+            "en": "Return 1 when x is positive, 0 when it is 0, and -1 when it is negative.",
+            "ja": "xが正の時に1、0の時に0、負の時に-1を返す。"
+          },
+          "return": {
+            "type": "int/float",
+            "desc": {
+              "en": "Sign of the value (1, 0, or -1)",
+              "ja": "値の符号 (1, 0, -1)"
+            }
+          },
+          "advanced": false,
+          "params": [
+            {
+              "name": "x",
+              "type": "int/float",
+              "desc": {
+                "en": "Value",
+                "ja": "値"
+              }
+            }
+          ]
+        },
+        {
+          "name": "sqrt",
+          "type": "function",
+          "signature": "sqrt(x)",
+          "description": {
+            "en": "Return the square root of x.",
+            "ja": "xの平方根を返す。"
+          },
+          "params": [
+            {
+              "name": "x",
+              "type": "float",
+              "desc": {
+                "en": "Value",
+                "ja": "値"
+              }
+            }
+          ],
+          "return": {
+            "type": "float",
+            "desc": {
+              "en": "Square root of x",
+              "ja": "xの平方根"
+            }
+          },
+          "advanced": false
+        },
+        {
+          "name": "sin",
+          "type": "function",
+          "signature": "sin(deg)",
+          "description": {
+            "en": "Return the sine of deg degrees.",
+            "ja": "deg度の正弦を返す。"
+          },
+          "params": [
+            {
+              "name": "deg",
+              "type": "float",
+              "desc": {
+                "en": "Angle in degrees",
+                "ja": "角度（度数法）"
+              }
+            }
+          ],
+          "return": {
+            "type": "float",
+            "desc": {
+              "en": "Sine value",
+              "ja": "正弦の値"
+            }
+          },
+          "advanced": false
+        },
+        {
+          "name": "cos",
+          "type": "function",
+          "signature": "cos(deg)",
+          "description": {
+            "en": "Return the cosine of deg degrees.",
+            "ja": "deg度の余弦を返す。"
+          },
+          "params": [
+            {
+              "name": "deg",
+              "type": "float",
+              "desc": {
+                "en": "Angle in degrees",
+                "ja": "角度（度数法）"
+              }
+            }
+          ],
+          "return": {
+            "type": "float",
+            "desc": {
+              "en": "Cosine value",
+              "ja": "余弦の値"
+            }
+          },
+          "advanced": false
+        },
+        {
+          "name": "atan2",
+          "type": "function",
+          "signature": "atan2(y, x)",
+          "description": {
+            "en": "Return the arctangent of y/x in degrees.",
+            "ja": "y/xの逆正接を度で返す。"
+          },
+          "return": {
+            "type": "float",
+            "desc": {
+              "en": "Angle in degrees",
+              "ja": "角度（度数法）"
+            }
+          },
+          "advanced": false,
+          "params": [
+            {
+              "name": "y",
+              "type": "float",
+              "desc": {
+                "en": "Y value",
+                "ja": "Y値"
+              }
+            },
+            {
+              "name": "x",
+              "type": "float",
+              "desc": {
+                "en": "X value",
+                "ja": "X値"
+              }
+            }
+          ]
+        },
+        {
+          "name": "rseed",
+          "type": "function",
+          "signature": "rseed(seed)",
+          "description": {
+            "en": "Set the seed of the random number generator.",
+            "ja": "乱数生成器のシードを設定する。"
+          },
+          "params": [
+            {
+              "name": "seed",
+              "type": "int",
+              "desc": {
+                "en": "Seed value",
+                "ja": "シード値"
+              }
+            }
+          ],
+          "return": {
+            "type": "None"
+          },
+          "advanced": false
+        },
+        {
+          "name": "rndi",
+          "type": "function",
+          "signature": "rndi(a, b)",
+          "description": {
+            "en": "Return a random integer from a to b (inclusive).",
+            "ja": "a以上b以下のランダムな整数を返す。"
+          },
+          "return": {
+            "type": "int",
+            "desc": {
+              "en": "Random integer from a to b",
+              "ja": "a以上b以下のランダムな整数"
+            }
+          },
+          "advanced": false,
+          "params": [
+            {
+              "name": "a",
+              "type": "int",
+              "desc": {
+                "en": "Minimum value (inclusive)",
+                "ja": "最小値（含む）"
+              }
+            },
+            {
+              "name": "b",
+              "type": "int",
+              "desc": {
+                "en": "Maximum value (inclusive)",
+                "ja": "最大値（含む）"
+              }
+            }
+          ]
+        },
+        {
+          "name": "rndf",
+          "type": "function",
+          "signature": "rndf(a, b)",
+          "description": {
+            "en": "Return a random float from a to b (inclusive).",
+            "ja": "a以上b以下のランダムな小数を返す。"
+          },
+          "return": {
+            "type": "float",
+            "desc": {
+              "en": "Random float from a to b",
+              "ja": "a以上b以下のランダムな小数"
+            }
+          },
+          "advanced": false,
+          "params": [
+            {
+              "name": "a",
+              "type": "float",
+              "desc": {
+                "en": "Minimum value (inclusive)",
+                "ja": "最小値（含む）"
+              }
+            },
+            {
+              "name": "b",
+              "type": "float",
+              "desc": {
+                "en": "Maximum value (inclusive)",
+                "ja": "最大値（含む）"
+              }
+            }
+          ]
+        },
+        {
+          "name": "nseed",
+          "type": "function",
+          "signature": "nseed(seed)",
+          "description": {
+            "en": "Set the seed of Perlin noise.",
+            "ja": "Perlinノイズのシードを設定する。"
+          },
+          "params": [
+            {
+              "name": "seed",
+              "type": "int",
+              "desc": {
+                "en": "Seed value",
+                "ja": "シード値"
+              }
+            }
+          ],
+          "return": {
+            "type": "None"
+          },
+          "advanced": false
+        },
+        {
+          "name": "noise",
+          "type": "function",
+          "signature": "noise(x, [y], [z])",
+          "description": {
+            "en": "Return the Perlin noise value for the specified coordinates.",
+            "ja": "指定された座標のPerlinノイズ値を返す。"
+          },
+          "return": {
+            "type": "float",
+            "desc": {
+              "en": "Perlin noise value",
+              "ja": "Perlinノイズ値"
+            }
+          },
+          "advanced": false,
+          "params": [
+            {
+              "name": "x",
+              "type": "float",
+              "desc": {
+                "en": "X coordinate",
+                "ja": "X座標"
+              }
+            },
+            {
+              "name": "y",
+              "type": "float",
+              "desc": {
+                "en": "Y coordinate",
+                "ja": "Y座標"
+              }
+            },
+            {
+              "name": "z",
+              "type": "float",
+              "desc": {
+                "en": "Z coordinate",
+                "ja": "Z座標"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "image",
+      "title": {
+        "en": "Image Class",
+        "ja": "Imageクラス"
+      },
+      "items": [
+        {
+          "name": "Image",
+          "type": "class",
+          "signature": "Image(width, height)",
+          "description": {
+            "en": "Create a new Image instance with the specified size.",
+            "ja": "指定サイズで新しいImageインスタンスを作成する。"
+          },
+          "return": {
+            "type": "Image",
+            "desc": {
+              "en": "New Image instance",
+              "ja": "新しいImageインスタンス"
+            }
+          },
+          "advanced": true,
+          "params": [
+            {
+              "name": "width",
+              "type": "int",
+              "desc": {
+                "en": "Image width",
+                "ja": "イメージの幅"
+              }
+            },
+            {
+              "name": "height",
+              "type": "int",
+              "desc": {
+                "en": "Image height",
+                "ja": "イメージの高さ"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Image.from_image",
+          "type": "class",
+          "signature": "Image.from_image(filename, [include_colors])",
+          "description": {
+            "en": "Create an Image instance from an image file.",
+            "ja": "画像ファイルからImageインスタンスを作成する。"
+          },
+          "return": {
+            "type": "Image",
+            "desc": {
+              "en": "Image instance from file",
+              "ja": "ファイルから作成したImageインスタンス"
+            }
+          },
+          "advanced": true,
+          "params": [
+            {
+              "name": "filename",
+              "type": "str",
+              "desc": {
+                "en": "Image file path",
+                "ja": "画像ファイルのパス"
+              }
+            },
+            {
+              "name": "include_colors",
+              "type": "bool",
+              "desc": {
+                "en": "Include palette colors from file (optional)",
+                "ja": "ファイルからパレット色を取り込む（省略可）"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Image.width",
+          "type": "variable",
+          "signature": "Image.width",
+          "description": {
+            "en": "The width of the image.",
+            "ja": "イメージの幅"
+          },
+          "value_type": "int",
+          "advanced": false
+        },
+        {
+          "name": "Image.height",
+          "type": "variable",
+          "signature": "Image.height",
+          "description": {
+            "en": "The height of the image.",
+            "ja": "イメージの高さ"
+          },
+          "value_type": "int",
+          "advanced": false
+        },
+        {
+          "name": "Image.set",
+          "type": "function",
+          "signature": "Image.set(x, y, data)",
+          "description": {
+            "en": "Set the image at (x, y) using a list of strings.",
+            "ja": "(x, y) に文字列のリストでイメージを設定する。"
+          },
+          "examples": [
+            "pyxel.images[0].set(10, 10, [\"0123\", \"4567\", \"89ab\", \"cdef\"])"
+          ],
+          "return": {
+            "type": "None"
+          },
+          "advanced": false,
+          "params": [
+            {
+              "name": "x",
+              "type": "int",
+              "desc": {
+                "en": "X coordinate",
+                "ja": "X座標"
+              }
+            },
+            {
+              "name": "y",
+              "type": "int",
+              "desc": {
+                "en": "Y coordinate",
+                "ja": "Y座標"
+              }
+            },
+            {
+              "name": "data",
+              "type": "list[str]",
+              "desc": {
+                "en": "Image data as a list of strings",
+                "ja": "文字列のリストによるイメージデータ"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Image.load",
+          "type": "function",
+          "signature": "Image.load(x, y, filename, [include_colors])",
+          "description": {
+            "en": "Load an image file (PNG/GIF/JPEG) at (x, y).",
+            "ja": "(x, y) に画像ファイル (PNG/GIF/JPEG) を読み込む。"
+          },
+          "return": {
+            "type": "None"
+          },
+          "advanced": false,
+          "params": [
+            {
+              "name": "x",
+              "type": "int",
+              "desc": {
+                "en": "X coordinate",
+                "ja": "X座標"
+              }
+            },
+            {
+              "name": "y",
+              "type": "int",
+              "desc": {
+                "en": "Y coordinate",
+                "ja": "Y座標"
+              }
+            },
+            {
+              "name": "filename",
+              "type": "str",
+              "desc": {
+                "en": "Image file path (PNG/GIF/JPEG)",
+                "ja": "画像ファイルのパス (PNG/GIF/JPEG)"
+              }
+            },
+            {
+              "name": "include_colors",
+              "type": "bool",
+              "desc": {
+                "en": "Include palette colors from file (optional)",
+                "ja": "ファイルからパレット色を取り込む（省略可）"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Image.pget",
+          "type": "function",
+          "signature": "Image.pget(x, y)",
+          "description": {
+            "en": "Get the color of the pixel at (x, y).",
+            "ja": "(x, y) のピクセルの色を取得する。"
+          },
+          "return": {
+            "type": "int",
+            "desc": {
+              "en": "Color of the pixel",
+              "ja": "ピクセルの色"
+            }
+          },
+          "advanced": false,
+          "params": [
+            {
+              "name": "x",
+              "type": "float",
+              "desc": {
+                "en": "X coordinate",
+                "ja": "X座標"
+              }
+            },
+            {
+              "name": "y",
+              "type": "float",
+              "desc": {
+                "en": "Y coordinate",
+                "ja": "Y座標"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Image.pset",
+          "type": "function",
+          "signature": "Image.pset(x, y, col)",
+          "description": {
+            "en": "Draw a pixel with the color col at (x, y).",
+            "ja": "(x, y) に色colのピクセルを描画する。"
+          },
+          "return": {
+            "type": "None"
+          },
+          "advanced": false,
+          "params": [
+            {
+              "name": "x",
+              "type": "float",
+              "desc": {
+                "en": "X coordinate",
+                "ja": "X座標"
+              }
+            },
+            {
+              "name": "y",
+              "type": "float",
+              "desc": {
+                "en": "Y coordinate",
+                "ja": "Y座標"
+              }
+            },
+            {
+              "name": "col",
+              "type": "int",
+              "desc": {
+                "en": "Color",
+                "ja": "色"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Image.data_ptr",
+          "type": "function",
+          "signature": "Image.data_ptr()",
+          "description": {
+            "en": "Return the raw data pointer of the image.",
+            "ja": "イメージの生データポインタを返す。"
+          },
+          "return": {
+            "type": "Any",
+            "desc": {
+              "en": "Raw data pointer",
+              "ja": "生データポインタ"
+            }
+          },
+          "advanced": true
+        },
+        {
+          "name": "Image.save",
+          "type": "function",
+          "signature": "Image.save(filename, scale)",
+          "description": {
+            "en": "Save the image to a file.",
+            "ja": "イメージをファイルに保存する。"
+          },
+          "return": {
+            "type": "None"
+          },
+          "advanced": true
+        }
+      ]
+    },
+    {
+      "id": "tilemap",
+      "title": {
+        "en": "Tilemap Class",
+        "ja": "Tilemapクラス"
+      },
+      "items": [
+        {
+          "name": "Tilemap",
+          "type": "class",
+          "signature": "Tilemap(width, height, img)",
+          "description": {
+            "en": "Create a new Tilemap instance.",
+            "ja": "新しいTilemapインスタンスを作成する。"
+          },
+          "return": {
+            "type": "Tilemap",
+            "desc": {
+              "en": "New Tilemap instance",
+              "ja": "新しいTilemapインスタンス"
+            }
+          },
+          "advanced": true,
+          "params": [
+            {
+              "name": "width",
+              "type": "int",
+              "desc": {
+                "en": "Tilemap width",
+                "ja": "タイルマップの幅"
+              }
+            },
+            {
+              "name": "height",
+              "type": "int",
+              "desc": {
+                "en": "Tilemap height",
+                "ja": "タイルマップの高さ"
+              }
+            },
+            {
+              "name": "img",
+              "type": "int/Image",
+              "desc": {
+                "en": "Image bank number (0-2) or Image instance",
+                "ja": "イメージバンク番号 (0-2) またはImageインスタンス"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Tilemap.from_tmx",
+          "type": "class",
+          "signature": "Tilemap.from_tmx(filename, layer)",
+          "description": {
+            "en": "Create a Tilemap instance from a TMX file.",
+            "ja": "TMXファイルからTilemapインスタンスを作成する。"
+          },
+          "return": {
+            "type": "Tilemap",
+            "desc": {
+              "en": "Tilemap instance from TMX file",
+              "ja": "TMXファイルから作成したTilemapインスタンス"
+            }
+          },
+          "advanced": true,
+          "params": [
+            {
+              "name": "filename",
+              "type": "str",
+              "desc": {
+                "en": "TMX file path",
+                "ja": "TMXファイルのパス"
+              }
+            },
+            {
+              "name": "layer",
+              "type": "int",
+              "desc": {
+                "en": "Layer number (0-)",
+                "ja": "レイヤー番号 (0-)"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Tilemap.width",
+          "type": "variable",
+          "signature": "Tilemap.width",
+          "description": {
+            "en": "The width of the tilemap.",
+            "ja": "タイルマップの幅"
+          },
+          "value_type": "int",
+          "advanced": false
+        },
+        {
+          "name": "Tilemap.height",
+          "type": "variable",
+          "signature": "Tilemap.height",
+          "description": {
+            "en": "The height of the tilemap.",
+            "ja": "タイルマップの高さ"
+          },
+          "value_type": "int",
+          "advanced": false
+        },
+        {
+          "name": "Tilemap.imgsrc",
+          "type": "variable",
+          "signature": "Tilemap.imgsrc",
+          "description": {
+            "en": "The image bank (0-2) referenced by the tilemap.",
+            "ja": "タイルマップが参照するイメージバンク (0-2)"
+          },
+          "value_type": "int/Image",
+          "advanced": false
+        },
+        {
+          "name": "Tilemap.set",
+          "type": "function",
+          "signature": "Tilemap.set(x, y, data)",
+          "description": {
+            "en": "Set the tilemap at (x, y) using a list of strings.",
+            "ja": "(x, y) に文字列のリストでタイルマップを設定する。"
+          },
+          "examples": [
+            "pyxel.tilemaps[0].set(0, 0, [\"0000 0100 a0b0\", \"0001 0101 a1b1\"])"
+          ],
+          "return": {
+            "type": "None"
+          },
+          "advanced": false,
+          "params": [
+            {
+              "name": "x",
+              "type": "int",
+              "desc": {
+                "en": "X coordinate",
+                "ja": "X座標"
+              }
+            },
+            {
+              "name": "y",
+              "type": "int",
+              "desc": {
+                "en": "Y coordinate",
+                "ja": "Y座標"
+              }
+            },
+            {
+              "name": "data",
+              "type": "list[str]",
+              "desc": {
+                "en": "Tilemap data as a list of strings",
+                "ja": "文字列のリストによるタイルマップデータ"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Tilemap.load",
+          "type": "function",
+          "signature": "Tilemap.load(x, y, filename, layer)",
+          "description": {
+            "en": "Load the layer (0-) from the TMX file at (x, y).",
+            "ja": "(x, y) にTMXファイルのlayer (0-) を読み込む。"
+          },
+          "return": {
+            "type": "None"
+          },
+          "advanced": false,
+          "params": [
+            {
+              "name": "x",
+              "type": "int",
+              "desc": {
+                "en": "X coordinate",
+                "ja": "X座標"
+              }
+            },
+            {
+              "name": "y",
+              "type": "int",
+              "desc": {
+                "en": "Y coordinate",
+                "ja": "Y座標"
+              }
+            },
+            {
+              "name": "filename",
+              "type": "str",
+              "desc": {
+                "en": "TMX file path",
+                "ja": "TMXファイルのパス"
+              }
+            },
+            {
+              "name": "layer",
+              "type": "int",
+              "desc": {
+                "en": "Layer number (0-)",
+                "ja": "レイヤー番号 (0-)"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Tilemap.pget",
+          "type": "function",
+          "signature": "Tilemap.pget(x, y)",
+          "description": {
+            "en": "Get the tile at (x, y). A tile is a tuple of (image_tx, image_ty).",
+            "ja": "(x, y) のタイルを取得する。タイルは (image_tx, image_ty) のタプル。"
+          },
+          "return": {
+            "type": "tuple",
+            "desc": {
+              "en": "(image_tx, image_ty)",
+              "ja": "(image_tx, image_ty)"
+            }
+          },
+          "advanced": false,
+          "params": [
+            {
+              "name": "x",
+              "type": "float",
+              "desc": {
+                "en": "X coordinate",
+                "ja": "X座標"
+              }
+            },
+            {
+              "name": "y",
+              "type": "float",
+              "desc": {
+                "en": "Y coordinate",
+                "ja": "Y座標"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Tilemap.pset",
+          "type": "function",
+          "signature": "Tilemap.pset(x, y, tile)",
+          "description": {
+            "en": "Set a tile at (x, y). A tile is a tuple of (image_tx, image_ty).",
+            "ja": "(x, y) にタイルを設定する。タイルは (image_tx, image_ty) のタプル。"
+          },
+          "return": {
+            "type": "None"
+          },
+          "advanced": false,
+          "params": [
+            {
+              "name": "x",
+              "type": "float",
+              "desc": {
+                "en": "X coordinate",
+                "ja": "X座標"
+              }
+            },
+            {
+              "name": "y",
+              "type": "float",
+              "desc": {
+                "en": "Y coordinate",
+                "ja": "Y座標"
+              }
+            },
+            {
+              "name": "tile",
+              "type": "tuple",
+              "desc": {
+                "en": "Tile as (image_tx, image_ty)",
+                "ja": "タイル (image_tx, image_ty)"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Tilemap.collide",
+          "type": "function",
+          "signature": "Tilemap.collide(x, y, w, h, dx, dy, walls)",
+          "description": {
+            "en": "Resolve collisions after applying movement (dx, dy) to the rectangle at (x, y) with size (w, h), and return the adjusted (dx, dy).",
+            "ja": "矩形の位置 (x, y) とサイズ (w, h) に移動量 (dx, dy) を適用した衝突を解決し、補正後の (dx, dy) を返す。"
+          },
+          "params": [
+            {
+              "name": "x",
+              "type": "float",
+              "desc": {
+                "en": "Rectangle X position",
+                "ja": "矩形のX位置"
+              }
+            },
+            {
+              "name": "y",
+              "type": "float",
+              "desc": {
+                "en": "Rectangle Y position",
+                "ja": "矩形のY位置"
+              }
+            },
+            {
+              "name": "w",
+              "type": "float",
+              "desc": {
+                "en": "Rectangle width",
+                "ja": "矩形の幅"
+              }
+            },
+            {
+              "name": "h",
+              "type": "float",
+              "desc": {
+                "en": "Rectangle height",
+                "ja": "矩形の高さ"
+              }
+            },
+            {
+              "name": "dx",
+              "type": "float",
+              "desc": {
+                "en": "Movement in X",
+                "ja": "X方向の移動量"
+              }
+            },
+            {
+              "name": "dy",
+              "type": "float",
+              "desc": {
+                "en": "Movement in Y",
+                "ja": "Y方向の移動量"
+              }
+            },
+            {
+              "name": "walls",
+              "type": "list[tuple]",
+              "desc": {
+                "en": "List of wall tiles (image_tx, image_ty)",
+                "ja": "壁タイル (image_tx, image_ty) のリスト"
+              }
+            }
+          ],
+          "return": {
+            "type": "tuple",
+            "desc": {
+              "en": "Adjusted (dx, dy)",
+              "ja": "補正後の (dx, dy)"
+            }
+          },
+          "advanced": false
+        },
+        {
+          "name": "Tilemap.data_ptr",
+          "type": "function",
+          "signature": "Tilemap.data_ptr()",
+          "description": {
+            "en": "Return the raw data pointer of the tilemap.",
+            "ja": "タイルマップの生データポインタを返す。"
+          },
+          "return": {
+            "type": "Any",
+            "desc": {
+              "en": "Raw data pointer",
+              "ja": "生データポインタ"
+            }
+          },
+          "advanced": true
+        }
+      ]
+    },
+    {
+      "id": "sound",
+      "title": {
+        "en": "Sound Class",
+        "ja": "Soundクラス"
+      },
+      "items": [
+        {
+          "name": "Sound.notes",
+          "type": "variable",
+          "signature": "Sound.notes",
+          "description": {
+            "en": "List of notes (0-127). Higher values produce higher pitches. 33 = 'A2' (440 Hz). Rests are -1.",
+            "ja": "音程 (0-127) のリスト。数値が大きいほど音程は高く、33で'A2' (440Hz)。休符は-1。"
+          },
+          "value_type": "list[int]",
+          "advanced": false
+        },
+        {
+          "name": "Sound.tones",
+          "type": "variable",
+          "signature": "Sound.tones",
+          "description": {
+            "en": "List of tones (0:Triangle / 1:Square / 2:Pulse / 3:Noise).",
+            "ja": "音色 (0:Triangle / 1:Square / 2:Pulse / 3:Noise) のリスト"
+          },
+          "value_type": "list[int]",
+          "advanced": false
+        },
+        {
+          "name": "Sound.volumes",
+          "type": "variable",
+          "signature": "Sound.volumes",
+          "description": {
+            "en": "List of volumes (0-7).",
+            "ja": "音量 (0-7) のリスト"
+          },
+          "value_type": "list[int]",
+          "advanced": false
+        },
+        {
+          "name": "Sound.effects",
+          "type": "variable",
+          "signature": "Sound.effects",
+          "description": {
+            "en": "List of effects (0:None / 1:Slide / 2:Vibrato / 3:FadeOut / 4:Half-FadeOut / 5:Quarter-FadeOut).",
+            "ja": "エフェクト (0:None / 1:Slide / 2:Vibrato / 3:FadeOut / 4:Half-FadeOut / 5:Quarter-FadeOut) のリスト"
+          },
+          "value_type": "list[int]",
+          "advanced": false
+        },
+        {
+          "name": "Sound.speed",
+          "type": "variable",
+          "signature": "Sound.speed",
+          "description": {
+            "en": "Playback speed. 1 is the fastest. At 120, one note equals 1 second.",
+            "ja": "再生速度。1が最も速く、120で1音の長さが1秒になる。"
+          },
+          "value_type": "int",
+          "advanced": false
+        },
+        {
+          "name": "Sound.set",
+          "type": "function",
+          "signature": "Sound.set(notes, tones, volumes, effects, speed)",
+          "description": {
+            "en": "Set notes, tones, volumes, and effects using strings.",
+            "ja": "文字列で音程、音色、音量、エフェクトを設定する。"
+          },
+          "return": {
+            "type": "None"
+          },
+          "advanced": false,
+          "params": [
+            {
+              "name": "notes",
+              "type": "str",
+              "desc": {
+                "en": "Note string",
+                "ja": "音程文字列"
+              }
+            },
+            {
+              "name": "tones",
+              "type": "str",
+              "desc": {
+                "en": "Tone string",
+                "ja": "音色文字列"
+              }
+            },
+            {
+              "name": "volumes",
+              "type": "str",
+              "desc": {
+                "en": "Volume string",
+                "ja": "音量文字列"
+              }
+            },
+            {
+              "name": "effects",
+              "type": "str",
+              "desc": {
+                "en": "Effect string",
+                "ja": "エフェクト文字列"
+              }
+            },
+            {
+              "name": "speed",
+              "type": "int",
+              "desc": {
+                "en": "Playback speed",
+                "ja": "再生速度"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Sound.set_notes",
+          "type": "function",
+          "signature": "Sound.set_notes(notes)",
+          "description": {
+            "en": "Set the notes using a string of CDEFGAB+#-+01234 or R.",
+            "ja": "CDEFGAB+#-+01234またはRの文字列で音程を設定する。"
+          },
+          "examples": [
+            "pyxel.sounds[0].set_notes(\"g2b-2d3r rf3f3f3\")"
+          ],
+          "return": {
+            "type": "None"
+          },
+          "advanced": false,
+          "params": [
+            {
+              "name": "notes",
+              "type": "str",
+              "desc": {
+                "en": "Notes string",
+                "ja": "notes文字列"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Sound.set_tones",
+          "type": "function",
+          "signature": "Sound.set_tones(tones)",
+          "description": {
+            "en": "Set the tones with a string of TSPN.",
+            "ja": "TSPNの文字列で音色を設定する。"
+          },
+          "examples": [
+            "pyxel.sounds[0].set_tones(\"ttss pppn\")"
+          ],
+          "return": {
+            "type": "None"
+          },
+          "advanced": false,
+          "params": [
+            {
+              "name": "tones",
+              "type": "str",
+              "desc": {
+                "en": "Tones string",
+                "ja": "tones文字列"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Sound.set_volumes",
+          "type": "function",
+          "signature": "Sound.set_volumes(volumes)",
+          "description": {
+            "en": "Set the volumes with a string of 01234567.",
+            "ja": "01234567の文字列で音量を設定する。"
+          },
+          "examples": [
+            "pyxel.sounds[0].set_volumes(\"7777 7531\")"
+          ],
+          "return": {
+            "type": "None"
+          },
+          "advanced": false,
+          "params": [
+            {
+              "name": "volumes",
+              "type": "str",
+              "desc": {
+                "en": "Volumes string",
+                "ja": "volumes文字列"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Sound.set_effects",
+          "type": "function",
+          "signature": "Sound.set_effects(effects)",
+          "description": {
+            "en": "Set the effects with a string of NSVFHQ.",
+            "ja": "NSVFHQの文字列でエフェクトを設定する。"
+          },
+          "examples": [
+            "pyxel.sounds[0].set_effects(\"nfnf nvvs\")"
+          ],
+          "return": {
+            "type": "None"
+          },
+          "advanced": false,
+          "params": [
+            {
+              "name": "effects",
+              "type": "str",
+              "desc": {
+                "en": "Effects string",
+                "ja": "effects文字列"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Sound.mml",
+          "type": "function",
+          "signature": "Sound.mml(code)",
+          "description": {
+            "en": "Switch to MML mode with the given MML string. Call mml() to exit MML mode.",
+            "ja": "MML文字列を渡すとMMLモードに移行する。mml()で解除する。"
+          },
+          "examples": [
+            "pyxel.sounds[0].mml(\"T120 Q90 @1 V100 O5 L8 C4&C<G16R16>C.\")"
+          ],
+          "return": {
+            "type": "None"
+          },
+          "advanced": false,
+          "params": [
+            {
+              "name": "code",
+              "type": "str",
+              "desc": {
+                "en": "MML string (omit to exit MML mode)",
+                "ja": "MML文字列（省略でMMLモード解除）"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Sound.pcm",
+          "type": "function",
+          "signature": "Sound.pcm(filename)",
+          "description": {
+            "en": "Load an audio file (WAV/OGG) for playback. Call pcm() to return to normal mode.",
+            "ja": "オーディオファイル (WAV/OGG) を読み込んで再生に使用する。pcm()で通常モードに戻す。"
+          },
+          "examples": [
+            "pyxel.sounds[0].pcm(\"sounds/bgm.ogg\")"
+          ],
+          "return": {
+            "type": "None"
+          },
+          "advanced": false,
+          "params": [
+            {
+              "name": "filename",
+              "type": "str",
+              "desc": {
+                "en": "Audio file path (WAV/OGG). Omit to return to normal mode.",
+                "ja": "オーディオファイルのパス (WAV/OGG)。省略で通常モードに戻す。"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Sound.save",
+          "type": "function",
+          "signature": "Sound.save(filename, sec, [ffmpeg])",
+          "description": {
+            "en": "Create a WAV file of the sound for the specified seconds.",
+            "ja": "サウンドを指定した秒数分再生したWAVファイルを作成する。"
+          },
+          "return": {
+            "type": "None"
+          },
+          "advanced": false,
+          "params": [
+            {
+              "name": "filename",
+              "type": "str",
+              "desc": {
+                "en": "Output WAV file path",
+                "ja": "出力WAVファイルのパス"
+              }
+            },
+            {
+              "name": "sec",
+              "type": "float",
+              "desc": {
+                "en": "Duration in seconds",
+                "ja": "再生秒数"
+              }
+            },
+            {
+              "name": "ffmpeg",
+              "type": "bool",
+              "desc": {
+                "en": "Also create MP4 file",
+                "ja": "MP4ファイルも作成する"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Sound.total_sec",
+          "type": "function",
+          "signature": "Sound.total_sec()",
+          "description": {
+            "en": "Return the playback time in seconds. Return None for infinite loops.",
+            "ja": "サウンドの再生時間を秒で返す。無限ループ時はNoneを返す。"
+          },
+          "return": {
+            "type": "float/None",
+            "desc": {
+              "en": "Playback time in seconds, or None for infinite loops",
+              "ja": "再生時間（秒）。無限ループ時はNone"
+            }
+          },
+          "advanced": false
+        }
+      ]
+    },
+    {
+      "id": "music",
+      "title": {
+        "en": "Music Class",
+        "ja": "Musicクラス"
+      },
+      "items": [
+        {
+          "name": "Music.seqs",
+          "type": "variable",
+          "signature": "Music.seqs",
+          "description": {
+            "en": "A two-dimensional list of sounds (0-63) across multiple channels.",
+            "ja": "サウンド (0-63) のリストをチャンネル数分連ねた2次元リスト"
+          },
+          "value_type": "list[list[int]]",
+          "advanced": false
+        },
+        {
+          "name": "Music.set",
+          "type": "function",
+          "signature": "Music.set(seq0, seq1, seq2, ...)",
+          "description": {
+            "en": "Set the lists of sounds (0-63) for each channel. An empty list means the channel is not used.",
+            "ja": "チャンネルのサウンド (0-63) のリストを設定する。空リストを指定するとそのチャンネルは再生に使用されない。"
+          },
+          "examples": [
+            "pyxel.musics[0].set([0, 1], [], [3])"
+          ],
+          "return": {
+            "type": "None"
+          },
+          "advanced": false,
+          "params": [
+            {
+              "name": "seq0, seq1, ...",
+              "type": "list[int]",
+              "desc": {
+                "en": "Sound lists for each channel. Empty list = unused.",
+                "ja": "各チャンネルのサウンドリスト。空リスト=未使用。"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Music.save",
+          "type": "function",
+          "signature": "Music.save(filename, sec, [ffmpeg])",
+          "description": {
+            "en": "Create a WAV file of the music for the specified seconds.",
+            "ja": "ミュージックを指定した秒数分再生したWAVファイルを作成する。"
+          },
+          "return": {
+            "type": "None"
+          },
+          "advanced": false,
+          "params": [
+            {
+              "name": "filename",
+              "type": "str",
+              "desc": {
+                "en": "Output WAV file path",
+                "ja": "出力WAVファイルのパス"
+              }
+            },
+            {
+              "name": "sec",
+              "type": "float",
+              "desc": {
+                "en": "Duration in seconds",
+                "ja": "再生秒数"
+              }
+            },
+            {
+              "name": "ffmpeg",
+              "type": "bool",
+              "desc": {
+                "en": "Also create MP4 file",
+                "ja": "MP4ファイルも作成する"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
