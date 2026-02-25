@@ -1,6 +1,6 @@
 [package]
 name = "pyxel-binding"
-version = "2.7.0"
+version = "2.7.1"
 authors = ["Takashi Kitao <takashi.kitao@gmail.com>"]
 edition = "2021"
 license = "MIT"

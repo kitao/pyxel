@@ -5,7 +5,7 @@ use crate::sound::{SoundEffect, SoundSpeed, SoundTone, SoundVolume};
 use crate::tone::{ToneMode, ToneSample};
 
 // System
-pub const VERSION: &str = "2.7.0";
+pub const VERSION: &str = "2.7.1";
 pub const BASE_DIR: &str = ".pyxel";
 pub const WINDOW_STATE_ENV: &str = "PYXEL_WINDOW_STATE";
 pub const WATCH_STATE_FILE_ENV: &str = "PYXEL_WATCH_STATE_FILE";
