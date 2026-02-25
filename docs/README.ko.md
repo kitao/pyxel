@@ -104,9 +104,34 @@ Pyxel의 Web 버전은 호환되는 웹 브라우저만 있으면 PC, 스마트�
 
 자신의 사이트에 Pyxel 앱을 임베딩하는 등의 다른 사용 패턴에 대해서는 [이 페이지](pyxel-web-en.md)를 참조하세요.
 
+## 기본 사용법
+
+### Pyxel 명령어
+
+Pyxel을 설치하면 `pyxel` 명령어를 사용할 수 있습니다. `pyxel` 뒤에 명령어 이름을 지정하여 다양한 작업을 수행합니다.
+
+인수 없이 실행하면 사용 가능한 명령어 목록을 확인할 수 있습니다:
+
+```sh
+pyxel
+```
+
+```
+Pyxel 2.7.1, a retro game engine for Python
+usage:
+    pyxel run PYTHON_SCRIPT_FILE(.py)
+    pyxel watch WATCH_DIR PYTHON_SCRIPT_FILE(.py)
+    pyxel play PYXEL_APP_FILE(.pyxapp)
+    pyxel edit [PYXEL_RESOURCE_FILE(.pyxres)]
+    pyxel package APP_DIR STARTUP_SCRIPT_FILE(.py)
+    pyxel app2exe PYXEL_APP_FILE(.pyxapp)
+    pyxel app2html PYXEL_APP_FILE(.pyxapp)
+    pyxel copy_examples
+```
+
 ### 예제 실행하기
 
-Pyxel을 설치한 후, 다음 명령어로 예제를 현재 디렉토리로 복사할 수 있습니다:
+다음 명령어로 예제를 현재 디렉토리로 복사할 수 있습니다:
 
 ```sh
 pyxel copy_examples
@@ -126,9 +151,9 @@ cd apps
 pyxel play 30sec_of_daylight.pyxapp
 ```
 
-## 사용 방법
+## 애플리케이션 만들기
 
-### 애플리케이션 만들기
+### 프로그램 작성
 
 Python 스크립트에서 Pyxel을 가져온 뒤 `init` 함수로 창 크기를 지정하고 `run` 함수로 애플리케이션을 시작합니다.
 
@@ -182,7 +207,7 @@ pyxel.circb(60, 60, 40, 7)
 pyxel.show()
 ```
 
-### 애플리케이션 실행하기
+### 프로그램 실행
 
 작성한 스크립트는 `python` 명령어로 실행할 수 있습니다:
 
@@ -231,7 +256,9 @@ Pyxel 애플리케이션이 실행 중일 때, 다음의 특수 키 조작을 �
 - `Shift+Alt(Option)+0`<br>
   현재 색상 팔레트를 데스크탑에 저장
 
-### 리소스 생성 방법
+## 리소스 만들기
+
+### Pyxel Editor
 
 Pyxel Editor로 Pyxel 애플리케이션에서 사용할 이미지와 사운드를 만들 수 있습니다.
 
@@ -285,7 +312,7 @@ TMX 파일(Tiled Map File)을 타일맵 편집기로 드래그 앤 드롭하면 
 <img src="images/music_editor.gif">
 </a>
 
-### 기타 리소스 생성 방법
+### 기타 생성 방법
 
 Pyxel 이미지와 타일맵은 다음 방법을 사용하여 생성할 수도 있습니다:
 
@@ -298,7 +325,7 @@ Pyxel 사운드와 음악은 다음 방법을 사용하여 생성할 수도 있�
 
 이 함수의 사용법은 API 참조를 참조하십시오.
 
-### 애플리케이션 배포 방법
+## 애플리케이션 배포 방법
 
 Pyxel은 플랫폼에 관계없이 작동하는 전용 배포 형식인 Pyxel 애플리케이션 파일을 지원합니다.
 
@@ -331,313 +358,11 @@ Pyxel 애플리케이션 파일은 `pyxel app2exe` 또는 `pyxel app2html` 명�
 
 ## API 레퍼런스
 
-### 시스템
+Pyxel API의 전체 목록은 [Pyxel API Reference](https://kitao.github.io/pyxel/wasm/api-reference/) 에서 확인할 수 있습니다.
 
-- `width`, `height`<br>
-  화면의 너비와 높이
+Pyxel에는 전문 지식이 필요한 "고급 API"도 포함되어 있습니다. 레퍼런스 페이지에서 "Advanced" 체크박스를 선택하면 확인할 수 있습니다.
 
-- `frame_count`<br>
-  경과한 프레임 수
-
-- `init(width, height, [title], [fps], [quit_key], [display_scale], [capture_scale], [capture_sec])`<br>
-  화면 크기 (`width`, `height`)로 Pyxel 애플리케이션을 초기화합니다. 다음 옵션을 지정할 수 있습니다: `title`로 창 제목, `fps`로 프레임 속도, `quit_key`로 애플리케이션 종료 키, `display_scale`로 화면 표시 배율, `capture_scale`로 화면 캡처 배율, `capture_sec`로 화면 캡처 비디오의 최대 녹화 시간을 지정합니다.<br>
-  예시: `pyxel.init(160, 120, title="My Pyxel App", fps=60, quit_key=pyxel.KEY_NONE, capture_scale=3, capture_sec=0)`
-
-- `run(update, draw)`<br>
-  Pyxel 애플리케이션을 시작하고 프레임 업데이트를 위해 `update` 함수를, 화면 그리기를 위해 `draw` 함수를 호출합니다.
-
-- `show()`<br>
-  화면을 표시하고 `Esc` 키가 눌릴 때까지 대기합니다.
-
-- `flip()`<br>
-  화면을 한 프레임 갱신합니다. `Esc` 키가 눌리면 애플리케이션이 종료됩니다. 이 함수는 웹 버전에서는 사용할 수 없습니다.
-
-- `quit()`<br>
-  Pyxel 애플리케이션을 종료합니다.
-
-- `reset()`<br>
-  Pyxel 애플리케이션을 리셋합니다. 리셋 후에도 환경 변수는 유지됩니다.
-
-### 리소스
-
-- `load(filename, [exclude_images], [exclude_tilemaps], [exclude_sounds], [exclude_musics])`<br>
-  리소스 파일 (.pyxres)을 로드합니다. 옵션이 `True`로 설정되면 해당 리소스는 로드에서 제외됩니다. 동일한 이름의 팔레트 파일 (.pyxpal)이 리소스 파일과 동일한 위치에 존재하는 경우, 팔레트 표시 색상도 업데이트됩니다. 팔레트 파일은 각 색상을 16진수로 나타낸 값을 줄바꿈으로 구분하여 입력합니다 (예: `1100ff`). 팔레트 파일을 사용하면 Pyxel Editor에서 표시되는 색상도 변경할 수 있습니다.
-
-- `user_data_dir(vendor_name, app_name)`<br>
-  `vendor_name`과 `app_name`을 기반으로 생성된 사용자 데이터 디렉토리를 반환합니다. 디렉토리가 존재하지 않으면 자동으로 생성됩니다. 이 디렉토리는 하이스코어, 게임 진행 상황 등의 데이터를 저장하는 데 사용됩니다.<br>
-  예시: `print(pyxel.user_data_dir("Takashi Kitao", "Pyxel Shooter"))`
-
-### 입력
-
-- `mouse_x`, `mouse_y`<br>
-  현재 마우스 커서의 좌표
-
-- `mouse_wheel`<br>
-  현재 마우스 휠 값
-
-- `btn(key)`<br>
-  `key`가 눌려있으면 `True`를 반환하고, 그렇지 않으면 `False`를 반환합니다. ([키 정의 목록](../python/pyxel/__init__.pyi))
-
-- `btnp(key, [hold], [repeat])`<br>
-  그 프레임에서 `key`가 눌렸으면 `True`를 반환하고, 그렇지 않으면 `False`를 반환합니다. `hold` 및 `repeat`가 지정되면, `key`가 `hold` 프레임 이상 눌려 있는 경우 `repeat` 프레임마다 `True`를 반환합니다.
-
-- `btnr(key)`<br>
-  그 프레임에서 `key`가 해제되었으면 `True`를 반환하고, 그렇지 않으면 `False`를 반환합니다.
-
-- `mouse(visible)`<br>
-  `visible`이 `True`면 마우스 커서를 표시하고, `False`면 숨깁니다. 커서가 숨겨져 있어도 위치는 계속 업데이트됩니다.
-
-### 그래픽스
-
-- `colors`<br>
-  팔레트 표시 색상 목록. 표시 색상은 24비트 숫자로 지정됩니다. Python 리스트와 같이 조작할 수 있으며, 표시 색상의 추가, 삭제 및 일괄 변경이 가능합니다.<br>
-  예시: `old_colors = list(pyxel.colors); pyxel.colors[:] = [0x111111, 0x222222, 0x333333]; pyxel.colors[15] = 0x112233`
-
-- `images`<br>
-  이미지 뱅크 (Image 클래스의 인스턴스) 목록 (0-2)<br>
-  예시: `pyxel.images[0].load(0, 0, "title.png")`
-
-- `tilemaps`<br>
-  타일맵 (Tilemap 클래스의 인스턴스) 목록 (0-7)
-
-- `clip(x, y, w, h)`<br>
-  (`x`, `y`)부터 너비 `w`, 높이 `h`로 화면의 그리기 영역을 설정합니다. `clip()`을 호출하면 그리기 영역이 전체 화면으로 재설정됩니다.
-
-- `camera(x, y)`<br>
-  화면의 좌상단 좌표를 (`x`, `y`)로 변경합니다. `camera()`를 호출하면 좌상단 좌표가 (`0`, `0`)로 재설정됩니다.
-
-- `pal(col1, col2)`<br>
-  그릴 때 색상 `col1`을 `col2`로 대체합니다. `pal()`을 호출하면 초기 팔레트로 재설정됩니다.
-
-- `dither(alpha)`<br>
-  그릴 때 디더링(유사 반투명)을 적용합니다. `alpha`를 `0.0`-`1.0` 범위로 설정하며, `0.0`은 투명, `1.0`은 불투명을 나타냅니다.
-
-- `cls(col)`<br>
-  화면을 색상 `col`로 지웁니다.
-
-- `pget(x, y)`<br>
-  (`x`, `y`)의 픽셀 색상을 가져옵니다.
-
-- `pset(x, y, col)`<br>
-  (`x`, `y`)에 색상 `col`의 픽셀을 그립니다.
-
-- `line(x1, y1, x2, y2, col)`<br>
-  색상 `col`의 선을 (`x1`, `y1`)에서 (`x2`, `y2`)로 그립니다.
-
-- `rect(x, y, w, h, col)`<br>
-  너비 `w`, 높이 `h`의 색상 `col`의 사각형을 (`x`, `y`)에 그립니다.
-
-- `rectb(x, y, w, h, col)`<br>
-  너비 `w`, 높이 `h`의 색상 `col`의 사각형 외곽선을 (`x`, `y`)에 그립니다.
-
-- `circ(x, y, r, col)`<br>
-  반지름 `r`의 색상 `col`의 원을 (`x`, `y`)에 그립니다.
-
-- `circb(x, y, r, col)`<br>
-  반지름 `r`의 색상 `col`의 원 외곽선을 (`x`, `y`)에 그립니다.
-
-- `elli(x, y, w, h, col)`<br>
-  너비 `w`, 높이 `h`의 색상 `col`의 타원을 (`x`, `y`)에 그립니다.
-
-- `ellib(x, y, w, h, col)`<br>
-  너비 `w`, 높이 `h`의 색상 `col`의 타원 외곽선을 (`x`, `y`)에 그립니다.
-
-- `tri(x1, y1, x2, y2, x3, y3, col)`<br>
-  정점이 (`x1`, `y1`), (`x2`, `y2`), (`x3`, `y3`)인 색상 `col`의 삼각형을 그립니다.
-
-- `trib(x1, y1, x2, y2, x3, y3, col)`<br>
-  정점이 (`x1`, `y1`), (`x2`, `y2`), (`x3`, `y3`)인 색상 `col`의 삼각형 외곽선을 그립니다.
-
-- `fill(x, y, col)`<br>
-  (`x`, `y`)와 같은 색상으로 연결된 영역을 색상 `col`로 채웁니다.
-
-- `blt(x, y, img, u, v, w, h, [colkey], [rotate], [scale])`<br>
-  이미지 뱅크 `img`(0-2)의 (`u`, `v`)에서 크기 (`w`, `h`)의 영역을 (`x`, `y`)로 복사합니다. `w`와/또는 `h`에 음수를 지정하면 수평 및/또는 수직으로 영역이 뒤집힙니다. `colkey`가 지정되면 이를 투명색으로 처리합니다. `rotate`(도 단위), `scale`(1.0 = 100%) 또는 둘 다 지정하면 해당 변환이 적용됩니다.
-
-<img src="images/blt_figure.png">
-
-- `bltm(x, y, tm, u, v, w, h, [colkey], [rotate], [scale])`<br>
-  타일맵 `tm`(0-7)의 (`u`, `v`)에서 크기 (`w`, `h`)의 영역을 (`x`, `y`)로 복사합니다. `w`와/또는 `h`에 음수를 지정하면 수평 및/또는 수직으로 영역이 뒤집힙니다. `colkey`가 지정되면 이를 투명색으로 처리합니다. `rotate`(도 단위), `scale`(1.0 = 100%) 또는 둘 다 지정하면 해당 변환이 적용됩니다. 타일의 크기는 8x8 픽셀이며, 타일맵에 `(image_tx, image_ty)`의 튜플로 저장됩니다.
-
-<img src="images/bltm_figure.png">
-
-- `text(x, y, s, col)`<br>
-  색상 `col`의 문자열 `s`를 (`x`, `y`)에 그립니다.
-
-### 오디오
-
-- `sounds`<br>
-  사운드 (Sound 클래스의 인스턴스) 목록 (0-63)<br>
-  예시: `pyxel.sounds[0].speed = 60`
-
-- `musics`<br>
-  뮤직 (Music 클래스의 인스턴스) 목록 (0-7)
-
-- `play(ch, snd, [sec], [loop], [resume])`<br>
-  채널 `ch`(0-3)에서 사운드 `snd`(0-63)를 재생합니다. `snd`는 사운드 번호, 사운드 번호의 리스트, 또는 MML 문자열이 될 수 있습니다. 재생 시작 위치는 `sec`(초)로 지정할 수 있습니다. `loop`를 `True`로 설정하면 루프 재생이 수행됩니다. 재생이 끝난 후 이전 사운드로 돌아가려면 `resume`을 `True`로 설정합니다.
-
-- `playm(msc, [sec], [loop])`<br>
-  뮤직 `msc`(0-7)를 재생합니다. 재생 시작 위치는 `sec`(초)로 지정할 수 있습니다. `loop`를 `True`로 설정하면 루프 재생이 수행됩니다.
-
-- `stop([ch])`<br>
-  지정한 채널 `ch`(0-3)의 재생을 중지합니다. `stop()`을 호출하면 모든 채널의 재생이 중지됩니다.
-
-- `play_pos(ch)`<br>
-  채널 `ch`(0-3)의 사운드 재생 위치를 `(sound_no, sec)`의 튜플로 가져옵니다. 재생이 중지되면 `None`을 반환합니다.
-
-- `gen_bgm(preset, instr, [seed], [play])`<br>
-  [8bit BGM generator](https://github.com/shiromofufactory/8bit-bgm-generator)를 기반으로 한 알고리즘으로 BGM의 MML 리스트를 생성합니다. `preset`는 프리셋 번호(0-7), `instr`는 편성 번호(0-3)이며, `0`=멜로디+리버브+베이스, `1`=멜로디+베이스+드럼, `2`=멜로디+서브+베이스, `3`=멜로디+서브+베이스+드럼입니다. `seed`를 지정하지 않으면 랜덤이 됩니다. `play`가 `True`이면 생성된 MML을 재생합니다.
-
-### 수학
-
-- `ceil(x)`<br>
-  `x`보다 크거나 같은 가장 작은 정수를 반환합니다.
-
-- `floor(x)`<br>
-  `x`보다 작거나 같은 가장 큰 정수를 반환합니다.
-
-- `clamp(x, lower, upper)`<br>
-  `lower`를 최소값, `upper`를 최대값으로 하여 `x`를 그 범위로 제한한 값을 반환합니다.
-
-- `sgn(x)`<br>
-  `x`가 양수일 때 `1`, 0일 때 `0`, 음수일 때 `-1`을 반환합니다.
-
-- `sqrt(x)`<br>
-  `x`의 제곱근을 반환합니다.
-
-- `sin(deg)`<br>
-  `deg`도의 사인 값을 반환합니다.
-
-- `cos(deg)`<br>
-  `deg`도의 코사인 값을 반환합니다.
-
-- `atan2(y, x)`<br>
-  `y`/`x`의 아크탄젠트 값을 도 단위로 반환합니다.
-
-- `rseed(seed)`<br>
-  난수 생성기의 시드를 설정합니다.
-
-- `rndi(a, b)`<br>
-  `a` 이상 `b` 이하의 임의의 정수를 반환합니다.
-
-- `rndf(a, b)`<br>
-  `a` 이상 `b` 이하의 임의의 부동소수점을 반환합니다.
-
-- `nseed(seed)`<br>
-  퍼린 노이즈의 시드를 설정합니다.
-
-- `noise(x, [y], [z])`<br>
-  지정된 좌표의 퍼린 노이즈 값을 반환합니다.
-
-### Image 클래스
-
-- `width`, `height`<br>
-  이미지의 너비와 높이
-
-- `set(x, y, data)`<br>
-  문자열 리스트를 사용하여 (`x`, `y`)에 이미지를 설정합니다.<br>
-  예시: `pyxel.images[0].set(10, 10, ["0123", "4567", "89ab", "cdef"])`
-
-- `load(x, y, filename)`<br>
-  (`x`, `y`)에 이미지 파일 (PNG/GIF/JPEG)을 로드합니다.
-
-- `pget(x, y)`<br>
-  (`x`, `y`)의 픽셀 색상을 가져옵니다.
-
-- `pset(x, y, col)`<br>
-  (`x`, `y`)에 색상 `col`의 픽셀을 그립니다.
-
-### Tilemap 클래스
-
-- `width`, `height`<br>
-  타일맵의 너비와 높이
-
-- `imgsrc`<br>
-  타일맵이 참조하는 이미지 뱅크(0-2)
-
-- `set(x, y, data)`<br>
-  문자열 리스트를 사용하여 (`x`, `y`)에 타일맵을 설정합니다.<br>
-  예시: `pyxel.tilemaps[0].set(0, 0, ["0000 0100 a0b0", "0001 0101 a1b1"])`
-
-- `load(x, y, filename, layer)`<br>
-  (`x`, `y`)에 TMX 파일 (Tiled Map File)로부터 `layer`(0-) 레이어를 로드합니다.
-
-- `pget(x, y)`<br>
-  (`x`, `y`)의 타일을 가져옵니다. 타일은 `(image_tx, image_ty)`의 튜플로 표현됩니다.
-
-- `pset(x, y, tile)`<br>
-  (`x`, `y`)에 타일을 설정합니다. 타일은 `(image_tx, image_ty)`의 튜플로 표현됩니다.
-
-- `collide(x, y, w, h, dx, dy, walls)`<br>
-  위치 (`x`, `y`), 크기 (`w`, `h`)의 사각형에 이동량 (`dx`, `dy`)를 적용한 후 충돌을 해결하고, 보정된 (`dx`, `dy`)를 반환합니다. `walls`는 벽으로 취급할 타일 `(image_tx, image_ty)`의 리스트입니다.
-
-### Sound 클래스
-
-- `notes`<br>
-  음정 목록 (0-127). 숫자가 클수록 음정이 높아집니다. 음정 `33`은 'A2' (440 Hz)에 해당합니다. 쉼표는 `-1`로 표현됩니다.
-
-- `tones`<br>
-  음색 목록 (0:Triangle / 1:Square / 2:Pulse / 3:Noise)
-
-- `volumes`<br>
-  볼륨 목록 (0-7)
-
-- `effects`<br>
-  효과 목록 (0:None / 1:Slide / 2:Vibrato / 3:FadeOut / 4:Half-FadeOut / 5:Quarter-FadeOut)
-
-- `speed`<br>
-  재생 속도. `1`이 가장 빠르고, 숫자가 클수록 재생 속도가 느려집니다. `120`에서는 1음의 길이가 1초가 됩니다.
-
-- `set(notes, tones, volumes, effects, speed)`<br>
-  문자열을 사용하여 음정, 음색, 볼륨, 효과를 설정합니다. 음색, 볼륨 또는 효과의 길이가 음정보다 짧으면 처음부터 반복됩니다.
-
-- `set_notes(notes)`<br>
-  `CDEFGAB`+`#-`+`01234` 또는 `R`로 이루어진 문자열로 음정을 설정합니다. 대소문자를 구분하지 않으며, 공백은 무시됩니다.<br>
-  예시: `pyxel.sounds[0].set_notes("g2b-2d3r rf3f3f3")`
-
-- `set_tones(tones)`<br>
-  `TSPN`으로 이루어진 문자열로 음색을 설정합니다. 대소문자를 구분하지 않으며, 공백은 무시됩니다.<br>
-  예시: `pyxel.sounds[0].set_tones("ttss pppn")`
-
-- `set_volumes(volumes)`<br>
-  `01234567`로 이루어진 문자열로 볼륨을 설정합니다. 대소문자를 구분하지 않으며, 공백은 무시됩니다.<br>
-  예시: `pyxel.sounds[0].set_volumes("7777 7531")`
-
-- `set_effects(effects)`<br>
-  `NSVFHQ`로 이루어진 문자열로 효과를 설정합니다. 대소문자를 구분하지 않으며, 공백은 무시됩니다.<br>
-  예시: `pyxel.sounds[0].set_effects("nfnf nvvs")`
-
-- `mml(code)`<br>
-  [MML (Music Macro Language)](https://en.wikipedia.org/wiki/Music_Macro_Language) 문자열을 전달하면 MML 모드로 전환되어 해당 내용에 따라 사운드가 재생됩니다. 이 모드에서는 `notes` 및 `speed`와 같은 일반 매개변수는 무시됩니다. MML 모드를 종료하려면 인수 없이 `mml()`을 호출하세요. MML에 대한 자세한 내용은 [이 페이지](faq-en.md)를 참조하세요.<br>
-  예시: `pyxel.sounds[0].mml("T120 Q90 @1 V100 O5 L8 C4&C<G16R16>C.<G16 >C.D16 @VIB1{10,20,20} E2C2")`
-
-- `pcm(filename)`<br>
-  오디오 파일(WAV/OGG)을 불러와 재생에 사용합니다. `pcm()`으로 일반 재생 모드로 돌아갑니다.<br>
-  예: `pyxel.sounds[0].pcm("sounds/bgm.ogg")`
-
-- `save(filename, sec, [ffmpeg])`<br>
-  지정한 초 동안 사운드를 재생하는 WAV 파일을 생성합니다. FFmpeg가 설치되어 있고 `ffmpeg`가 `True`로 설정된 경우, MP4 파일도 생성됩니다.
-
-- `total_sec()`<br>
-  사운드의 재생 시간을 초 단위로 반환합니다. MML에서 무한 루프가 사용된 경우 `None`을 반환합니다.
-
-### Music 클래스
-
-- `seqs`<br>
-  여러 채널의 사운드 (0-63)로 이루어진 2차원 리스트
-
-- `set(seq0, seq1, seq2, ...)`<br>
-  각 채널에 대한 사운드 (0-63) 리스트를 설정합니다. 빈 리스트가 지정되면 해당 채널은 재생에 사용되지 않습니다.<br>
-  예시: `pyxel.musics[0].set([0, 1], [], [3])`
-
-- `save(filename, sec, [ffmpeg])`<br>
-  지정한 초 동안 음악을 재생하는 WAV 파일을 생성합니다. FFmpeg가 설치되어 있고 `ffmpeg`가 `True`로 설정된 경우, MP4 파일도 생성됩니다.
-
-### 고급 API
-
-Pyxel에는 사용자에게 혼란을 줄 수 있거나 사용에 전문 지식이 필요할 수 있는 "고급 API"가 포함되어 있지만, 이 문서에서는 언급되지 않았습니다.
-
-자신의 능력에 자신이 있다면 [이것](../python/pyxel/__init__.pyi)을 가이드로 사용하여 놀라운 작품을 만들어 보세요!
+실력에 자신이 있다면 고급 API를 활용하여 놀라운 작품을 만들어 보세요!
 
 ## 기여 방법
 
@@ -658,6 +383,7 @@ Pyxel에는 사용자에게 혼란을 줄 수 있거나 사용에 전문 지식�
 ## 웹 도구 및 예제
 
 - [Pyxel Showcase](https://kitao.github.io/pyxel/wasm/showcase/)
+- [Pyxel API Reference](https://kitao.github.io/pyxel/wasm/api-reference/)
 - [Pyxel Web Launcher](https://kitao.github.io/pyxel/wasm/launcher/)
 - [Pyxel Code Maker](https://kitao.github.io/pyxel/wasm/code-maker/) [[User Manual](https://qiita.com/kitao/items/b5b3fb28ebf9781eda2e)]
 - [Pyxel MML Studio](https://kitao.github.io/pyxel/wasm/mml-studio/) [[User Manual](https://qiita.com/kitao/items/a86de4f7d6a0ed656a89)]

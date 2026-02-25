@@ -104,9 +104,34 @@ Kullanmanın en kolay yolu, çevrimiçi IDE [Pyxel Code Maker](https://kitao.git
 
 Kendi sitenizde Pyxel uygulamalarını gömme gibi diğer kullanım modelleri için, lütfen [bu sayfaya](pyxel-web-en.md) bakın.
 
-### Örnekleri Çalıştır
+## Temel Kullanım
 
-Pyxel'i kurduktan sonra, aşağıdaki komutla örnekleri geçerli dizine kopyalayabilirsiniz:
+### Pyxel Komutu
+
+Pyxel'i yüklemek `pyxel` komutunu ekler. Çeşitli işlemler gerçekleştirmek için `pyxel`'den sonra bir komut adı belirtin.
+
+Mevcut komutların listesini görmek için argümansız çalıştırın:
+
+```sh
+pyxel
+```
+
+```
+Pyxel 2.7.1, a retro game engine for Python
+usage:
+    pyxel run PYTHON_SCRIPT_FILE(.py)
+    pyxel watch WATCH_DIR PYTHON_SCRIPT_FILE(.py)
+    pyxel play PYXEL_APP_FILE(.pyxapp)
+    pyxel edit [PYXEL_RESOURCE_FILE(.pyxres)]
+    pyxel package APP_DIR STARTUP_SCRIPT_FILE(.py)
+    pyxel app2exe PYXEL_APP_FILE(.pyxapp)
+    pyxel app2html PYXEL_APP_FILE(.pyxapp)
+    pyxel copy_examples
+```
+
+### Örnekleri Çalıştırma
+
+Aşağıdaki komutla örnekleri geçerli dizine kopyalayabilirsiniz:
 
 ```sh
 pyxel copy_examples
@@ -126,9 +151,9 @@ cd apps
 pyxel play 30sec_of_daylight.pyxapp
 ```
 
-## Nasıl Kullanılır
+## Uygulama Oluşturma
 
-### Uygulama Oluşturma
+### Program Oluşturma
 
 Python betiğinizde Pyxel'i içe aktarın, pencere boyutunu `init` ile belirtin ve uygulamayı `run` ile başlatın.
 
@@ -231,7 +256,9 @@ Bir Pyxel uygulaması çalışırken, aşağıdaki özel tuş işlemleri gerçek
 - `Shift+Alt(Option)+0`<br>
   Geçerli renk paletini masaüstüne kaydet
 
-### Kaynakları Nasıl Oluşturulur
+## Kaynak Oluşturma
+
+### Pyxel Editor
 
 Pyxel Editor, Pyxel uygulamalarında kullanılan resim ve sesleri oluşturur.
 
@@ -298,7 +325,7 @@ Pyxel sesleri ve müzikleri de aşağıdaki yöntemle oluşturulabilir:
 
 Bu fonksiyonların kullanımı için API referansına bakın.
 
-### Uygulamaları Nasıl Dağıtılır
+## Uygulama Dağıtımı
 
 Pyxel, platformlar arası çalışan özel bir uygulama dağıtım dosyası formatını (Pyxel uygulama dosyası) destekler.
 
@@ -329,315 +356,13 @@ pyxel play PYXEL_APP_FILE
 
 Bir Pyxel uygulama dosyası ayrıca `pyxel app2exe` veya `pyxel app2html` komutları kullanılarak çalıştırılabilir bir dosya veya HTML dosyasına dönüştürülebilir.
 
-## API Başvurusu
+## API Referansı
 
-### Sistem
+Pyxel API'lerinin tam listesi [Pyxel API Reference](https://kitao.github.io/pyxel/wasm/api-reference/) adresinde mevcuttur.
 
-- `width`, `height`<br>
-  Ekranın genişliği ve yüksekliği
+Pyxel ayrıca uzmanlık bilgisi gerektiren bir "Gelişmiş API" içerir. Referans sayfasında "Advanced" onay kutusunu işaretleyerek görüntüleyebilirsiniz.
 
-- `frame_count`<br>
-  Geçen kare sayısı
-
-- `init(width, height, [title], [fps], [quit_key], [display_scale], [capture_scale], [capture_sec])`<br>
-  Pyxel uygulamasını ekran boyutlarıyla (`width`, `height`) başlatır. Şu seçenekler belirtilebilir: pencere başlığı `title`, kare hızı `fps`, uygulamayı kapatma tuşu `quit_key`, ekran ölçeği `display_scale`, ekran yakalama ölçeği `capture_scale` ve ekran yakalama videosunun maksimum kayıt süresi `capture_sec`.<br>
-  Örnek: `pyxel.init(160, 120, title="My Pyxel App", fps=60, quit_key=pyxel.KEY_NONE, capture_scale=3, capture_sec=0)`
-
-- `run(update, draw)`<br>
-  Pyxel uygulamasını başlatır ve kare güncellemeleri için `update` fonksiyonunu ve çizim için `draw` fonksiyonunu çağırır.
-
-- `show()`<br>
-  Ekranı gösterir ve `Esc` tuşuna basılana kadar bekler.
-
-- `flip()`<br>
-  Ekranı bir kare yeniler. Uygulama `Esc` tuşuna basıldığında kapanır. Bu fonksiyon Web sürümünde çalışmaz.
-
-- `quit()`<br>
-  Pyxel uygulamasını kapatır.
-
-- `reset()`<br>
-  Pyxel uygulamasını sıfırlar. Sıfırlama sonrası ortam değişkenleri korunur.
-
-### Kaynaklar
-
-- `load(filename, [exclude_images], [exclude_tilemaps], [exclude_sounds], [exclude_musics])`<br>
-  Kaynak dosyasını (.pyxres) yükler. Bir seçenek `True` olarak ayarlandığında, ilgili kaynak yüklemeden hariç tutulur. Eğer aynı konumda aynı ada sahip bir palet dosyası (.pyxpal) varsa, palet görüntü renkleri de güncellenir. Palet dosyası, görüntü renklerini 16'lık sayılar (örn. `1100ff`) ile satır satır içerir. Bu palet dosyası, Pyxel Editor'deki renkleri değiştirmek için de kullanılabilir.
-
-- `user_data_dir(vendor_name, app_name)`<br>
-  `vendor_name` ve `app_name` temel alınarak oluşturulan kullanıcı veri dizinini döndürür. Dizin mevcut değilse, otomatik olarak oluşturulur. Yüksek skorları, oyun ilerlemesini ve benzeri verileri saklamak için kullanılır.<br>
-  Örnek: `print(pyxel.user_data_dir("Takashi Kitao", "Pyxel Shooter"))`
-
-### Girdi
-
-- `mouse_x`, `mouse_y`<br>
-  Fare imlecinin mevcut konumu
-
-- `mouse_wheel`<br>
-  Fare tekerleğinin mevcut değeri
-
-- `btn(key)`<br>
-  `key` basılıysa `True`, basılı değilse `False` döndürür. ([Tuş tanımları listesi](../python/pyxel/__init__.pyi))
-
-- `btnp(key, [hold], [repeat])`<br>
-  `key` o karede basılmışsa `True`, basılmamışsa `False` döndürür. Eğer `hold` ve `repeat` belirtilirse, `key` en az `hold` kare boyunca basılı tutulduktan sonra her `repeat` karede bir `True` döndürür.
-
-- `btnr(key)`<br>
-  `key` o karede serbest bırakılmışsa `True`, serbest bırakılmamışsa `False` döndürür.
-
-- `mouse(visible)`<br>
-  `visible` `True` ise fare imlecini gösterir, `False` ise gizler. İmleç gizlenmiş olsa bile konumu güncellenmeye devam eder.
-
-### Grafikler
-
-- `colors`<br>
-  Palet görüntü renkleri listesi. Görüntü rengi 24 bitlik sayısal bir değerle belirtilir. Python listesi gibi işlenebilir; renkler toplu olarak eklenebilir, kaldırılabilir veya değiştirilebilir.<br>
-  Örnek: `old_colors = list(pyxel.colors); pyxel.colors[:] = [0x111111, 0x222222, 0x333333]; pyxel.colors[15] = 0x112233`
-
-- `images`<br>
-  Görüntü bankalarının listesi (Image sınıfı örnekleri) (0-2)<br>
-  Örnek: `pyxel.images[0].load(0, 0, "title.png")`
-
-- `tilemaps`<br>
-  Döşeme haritalarının listesi (Tilemap sınıfı örnekleri) (0-7)
-
-- `clip(x, y, w, h)`<br>
-  Ekranın çizim alanını (`x`, `y`) koordinatlarından genişlik `w` ve yükseklik `h` olarak ayarlar. Çizim alanını tam ekran olarak sıfırlamak için `clip()` çağrılır.
-
-- `camera(x, y)`<br>
-  Ekranın sol üst köşesinin koordinatlarını (`x`, `y`) olarak değiştirir. Sol üst köşe koordinatlarını (`0`, `0`) olarak sıfırlamak için `camera()` çağrılır.
-
-- `pal(col1, col2)`<br>
-  Çizim sırasında `col1` rengini `col2` ile değiştirir. Başlangıç paletine sıfırlamak için `pal()` çağrılır.
-
-- `dither(alpha)`<br>
-  Çizim sırasında dithering (sahte şeffaflık) uygular. `alpha` değerini `0.0` ile `1.0` arasında ayarlayın, `0.0` tamamen şeffaf, `1.0` ise opaktır.
-
-- `cls(col)`<br>
-  Ekranı `col` rengiyle temizler.
-
-- `pget(x, y)`<br>
-  (`x`, `y`) noktasındaki pikselin rengini alır.
-
-- `pset(x, y, col)`<br>
-  (`x`, `y`) noktasına `col` renginde bir piksel çizer.
-
-- `line(x1, y1, x2, y2, col)`<br>
-  (`x1`, `y1`) ile (`x2`, `y2`) arasında `col` renginde bir çizgi çizer.
-
-- `rect(x, y, w, h, col)`<br>
-  (`x`, `y`) noktasından `w` genişlik ve `h` yükseklik ile `col` renginde bir dikdörtgen çizer.
-
-- `rectb(x, y, w, h, col)`<br>
-  (`x`, `y`) noktasından `w` genişlik ve `h` yükseklik ile `col` renginde bir dikdörtgenin dış çizgilerini çizer.
-
-- `circ(x, y, r, col)`<br>
-  (`x`, `y`) noktasına yarıçapı `r` olan `col` renginde bir daire çizer.
-
-- `circb(x, y, r, col)`<br>
-  (`x`, `y`) noktasına yarıçapı `r` olan `col` renginde bir dairenin dış çizgilerini çizer.
-
-- `elli(x, y, w, h, col)`<br>
-  (`x`, `y`) noktasından `w` genişlik ve `h` yükseklik ile `col` renginde bir elips çizer.
-
-- `ellib(x, y, w, h, col)`<br>
-  (`x`, `y`) noktasından `w` genişlik ve `h` yükseklik ile `col` renginde bir elipsin dış çizgilerini çizer.
-
-- `tri(x1, y1, x2, y2, x3, y3, col)`<br>
-  Tepeleri (`x1`, `y1`), (`x2`, `y2`), (`x3`, `y3`) olan `col` renginde bir üçgen çizer.
-
-- `trib(x1, y1, x2, y2, x3, y3, col)`<br>
-  Tepeleri (`x1`, `y1`), (`x2`, `y2`), (`x3`, `y3`) olan `col` renginde bir üçgenin dış çizgilerini çizer.
-
-- `fill(x, y, col)`<br>
-  (`x`, `y`) ile aynı renkle bağlanan alanı `col` rengiyle doldurur.
-
-- `blt(x, y, img, u, v, w, h, [colkey], [rotate], [scale])`<br>
-  Görüntü bankası `img`(0-2) içinde (`u`, `v`) noktasından (`w`, `h`) boyutundaki bölgeyi (`x`, `y`) noktasına kopyalar. `w` ve/veya `h` için negatif bir değer atanırsa, bölge yatay ve/veya dikey olarak çevrilir. Eğer `colkey` belirtilirse, şeffaf renk olarak kabul edilir. Eğer `rotate`(derece olarak), `scale`(1.0 = %100) veya her ikisi belirtilirse, uygun dönüşümler uygulanır.
-
-<img src="images/blt_figure.png">
-
-- `bltm(x, y, tm, u, v, w, h, [colkey], [rotate], [scale])`<br>
-  Karo Haritası `tm` (0-7) içindeki (`u`, `v`) konumundan başlayarak (`w`, `h`) boyutundaki bölgeyi (`x`, `y`) konumuna kopyalar. `w` ve/veya `h` için negatif bir değer atanırsa, bölge yatay ve/veya dikey olarak çevrilir. Eğer `colkey` belirtilirse, şeffaf renk olarak kabul edilir. Eğer `rotate` (derece cinsinden), `scale` (1.0 = %100) veya her ikisi belirtilirse, uygun dönüşümler uygulanır. Bir döşemenin boyutu 8x8 pikseldir ve döşeme haritasında `(image_tx, image_ty)` şeklinde bir ikili olarak saklanır.
-
-<img src="images/bltm_figure.png">
-
-- `text(x, y, s, col)`<br>
-  `s` metnini, `col` renginde (`x`, `y`) noktasına çizer.
-
-### Ses
-
-- `sounds`<br>
-  Seslerin listesi (Sound sınıfı örnekleri) (0-63)<br>
-  Örnek: `pyxel.sounds[0].speed = 60`
-
-- `musics`<br>
-  Müziklerin listesi (Music sınıfı örnekleri) (0-7)
-
-- `play(ch, snd, [sec], [loop], [resume])`<br>
-  Kanal `ch`(0-3) üzerinde ses `snd`(0-63) çalınır. `snd` bir ses numarası, bir ses numaraları listesi veya bir MML dizesi olabilir. Çalma başlangıç konumu saniye cinsinden `sec` ile belirtilebilir. Eğer `loop` `True` olarak ayarlanırsa, ses döngüye alınır. Çalma bittikten sonra önceki sese devam etmek için `resume` `True` olarak ayarlanır.
-
-- `playm(msc, [sec], [loop])`<br>
-  Müzik `msc`(0-7) çalınır. Çalma başlangıç konumu saniye cinsinden `sec` ile belirtilebilir. Eğer `loop` `True` olarak ayarlanırsa, müzik döngüye alınır.
-
-- `stop([ch])`<br>
-  Belirtilen `ch`(0-3) kanalındaki çalmayı durdurur. Tüm kanalların çalmasını durdurmak için `stop()` çağrılır.
-
-- `play_pos(ch)`<br>
-  Kanal `ch`(0-3) çalma pozisyonunu `(sound_no, sec)` ikilisi olarak döndürür. Çalma durduğunda `None` döner.
-
-- `gen_bgm(preset, instr, [seed], [play])`<br>
-  [8bit BGM generator](https://github.com/shiromofufactory/8bit-bgm-generator) tabanlı bir algoritma ile BGM MML listesini oluşturur. `preset` ön ayar numarasıdır (0-7), `instr` enstrümantasyon numarasıdır (0-3): `0`=melodi+reverb+bas, `1`=melodi+bas+davul, `2`=melodi+sub+bas, `3`=melodi+sub+bas+davul. `seed` belirtilmezse sonuç rastgeledir. `play` `True` ise oluşturulan MML çalınır.
-
-### Matematik
-
-- `ceil(x)`<br>
-  `x`'ten büyük veya ona eşit en küçük tamsayıyı döndürür.
-
-- `floor(x)`<br>
-  `x`'ten küçük veya ona eşit en büyük tamsayıyı döndürür.
-
-- `clamp(x, lower, upper)`<br>
-  `lower` minimum, `upper` maksimum olacak şekilde `x` değerini bu aralıkta sınırlar ve sonucu döndürür.
-
-- `sgn(x)`<br>
-  `x` pozitif olduğunda `1`, `0` olduğunda `0`, negatif olduğunda `-1` döndürür.
-
-- `sqrt(x)`<br>
-  `x`'in karekökünü döndürür.
-
-- `sin(deg)`<br>
-  `deg` derece için sinüs değerini döndürür.
-
-- `cos(deg)`<br>
-  `deg` derece için kosinüs değerini döndürür.
-
-- `atan2(y, x)`<br>
-  `y`/`x`'in ters tanjantını derece olarak döndürür.
-
-- `rseed(seed)`<br>
-  Rastgele sayı üreticisinin tohumunu ayarlar.
-
-- `rndi(a, b)`<br>
-  `a` ile `b` arasında rastgele bir tamsayı döndürür.
-
-- `rndf(a, b)`<br>
-  `a` ile `b` arasında rastgele bir ondalıklı sayı döndürür.
-
-- `nseed(seed)`<br>
-  Perlin gürültüsü için tohum ayarlar.
-
-- `noise(x, [y], [z])`<br>
-  Belirtilen koordinatlar için Perlin gürültü değerini döndürür.
-
-### Image Sınıfı
-
-- `width`, `height`<br>
-  Görüntünün genişliği ve yüksekliği
-
-- `set(x, y, data)`<br>
-  (`x`, `y`) konumuna bir dizi dize kullanarak görüntü ayarlar.<br>
-  Örnek: `pyxel.images[0].set(10, 10, ["0123", "4567", "89ab", "cdef"])`
-
-- `load(x, y, filename)`<br>
-  (`x`, `y`) konumuna bir görüntü dosyasını (PNG/GIF/JPEG) yükler.
-
-- `pget(x, y)`<br>
-  (`x`, `y`) konumundaki pikselin rengini alır.
-
-- `pset(x, y, col)`<br>
-  (`x`, `y`) konumuna `col` renginde bir piksel çizer.
-
-### Tilemap Sınıfı
-
-- `width`, `height`<br>
-  Döşeme haritasının genişliği ve yüksekliği
-
-- `imgsrc`<br>
-  Döşeme haritasının referans aldığı görüntü bankası (0-2)
-
-- `set(x, y, data)`<br>
-  (`x`, `y`) konumuna bir dizi dize kullanarak döşeme haritası ayarlar.<br>
-  Örnek: `pyxel.tilemaps[0].set(0, 0, ["0000 0100 a0b0", "0001 0101 a1b1"])`
-
-- `load(x, y, filename, layer)`<br>
-  TMX dosyasından `layer`(0-) katmanını (`x`, `y`) konumuna yükler.
-
-- `pget(x, y)`<br>
-  (`x`, `y`) konumundaki döşemeyi alır. Döşeme, `(image_tx, image_ty)` ikilisi olarak temsil edilir.
-
-- `pset(x, y, tile)`<br>
-  (`x`, `y`) konumuna bir `tile` çizer. Döşeme, `(image_tx, image_ty)` ikilisi olarak temsil edilir.
-
-- `collide(x, y, w, h, dx, dy, walls)`<br>
-  (`x`, `y`) konumundaki (`w`, `h`) boyutundaki dikdörtgene (`dx`, `dy`) hareketini uyguladıktan sonra çarpışmaları çözer ve düzeltilmiş (`dx`, `dy`) değerlerini döndürür. `walls`, duvar olarak kabul edilen `(image_tx, image_ty)` döşemelerinin listesidir.
-
-### Sound Sınıfı
-
-- `notes`<br>
-  Notaların listesi (0-127). Sayı büyüdükçe perde yükselir. `33` notası 'A2' (440 Hz) ile eşleşir. Sus notaları `-1` ile gösterilir.
-
-- `tones`<br>
-  Ses tonlarının listesi (0:Triangle / 1:Square / 2:Pulse / 3:Noise)
-
-- `volumes`<br>
-  Ses seviyelerinin listesi (0-7)
-
-- `effects`<br>
-  Efektlerin listesi (0:None / 1:Slide / 2:Vibrato / 3:FadeOut / 4:Half-FadeOut / 5:Quarter-FadeOut)
-
-- `speed`<br>
-  Çalma hızı. `1` en hızlısıdır ve sayı büyüdükçe çalma hızı yavaşlar. `120`'de, bir notanın süresi 1 saniyeye eşittir.
-
-- `set(notes, tones, volumes, effects, speed)`<br>
-  Bir dize kullanarak notaları, tonları, ses seviyelerini ve efektleri ayarlar. Eğer tonların, ses seviyelerinin veya efektlerin uzunluğu notalardan kısaysa, baştan itibaren tekrarlanır.
-
-- `set_notes(notes)`<br>
-  `CDEFGAB`+`#-`+`01234` veya `R` ile notaları ayarlar. Büyük/küçük harf duyarsızdır ve boşluklar göz ardı edilir.<br>
-  Örnek: `pyxel.sounds[0].set_notes("g2b-2d3r rf3f3f3")`
-
-- `set_tones(tones)`<br>
-  `TSPN` dizesiyle tonları ayarlar. Büyük/küçük harf duyarsızdır ve boşluklar göz ardı edilir.<br>
-  Örnek: `pyxel.sounds[0].set_tones("ttss pppn")`
-
-- `set_volumes(volumes)`<br>
-  `01234567` dizesiyle ses seviyelerini ayarlar. Büyük/küçük harf duyarsızdır ve boşluklar göz ardı edilir.<br>
-  Örnek: `pyxel.sounds[0].set_volumes("7777 7531")`
-
-- `set_effects(effects)`<br>
-  `NSVFHQ` dizesiyle efektleri ayarlar. Büyük/küçük harf duyarsızdır ve boşluklar göz ardı edilir.<br>
-  Örnek: `pyxel.sounds[0].set_effects("nfnf nvvs")`
-
-- `mml(code)`<br>
-  Bir [MML (Music Macro Language)](https://en.wikipedia.org/wiki/Music_Macro_Language) dizesi geçirildiğinde MML moduna geçilir ve içeriğine göre ses çalınır. Bu modda `notes` ve `speed` gibi normal parametreler yok sayılır. MML modundan çıkmak için `mml()` fonksiyonunu argümansız olarak çağırın. MML hakkında daha fazla bilgi için [bu sayfaya](faq-en.md) bakın.<br>
-  Örnek: `pyxel.sounds[0].mml("T120 Q90 @1 V100 O5 L8 C4&C<G16R16>C.<G16 >C.D16 @VIB1{10,20,20} E2C2")`
-
-- `pcm(filename)`<br>
-  Oynatma için bir ses dosyası (WAV/OGG) yükler. Normal oynatma moduna dönmek için `pcm()` çağırın.<br>
-  Örnek: `pyxel.sounds[0].pcm("sounds/bgm.ogg")`
-
-- `save(filename, sec, [ffmpeg])`<br>
-  Belirtilen saniye boyunca sesi çalan bir WAV dosyası oluşturur. FFmpeg yüklüyse ve `ffmpeg` `True` olarak ayarlandıysa, bir MP4 dosyası da oluşturulur.
-
-- `total_sec()`<br>
-  Sesi saniye cinsinden çalma süresini döndürür. MML'de sonsuz döngü kullanılmışsa `None` döndürür.
-
-### Music Sınıfı
-
-- `seqs`<br>
-  Birden fazla kanal boyunca seslerin (0-63) iki boyutlu listesi
-
-- `set(seq0, seq1, seq2, ...)`<br>
-  Her kanal için ses listelerini (0-63) ayarlar. Boş bir liste belirtilirse, o kanal çalma için kullanılmaz.<br>
-  Örnek: `pyxel.musics[0].set([0, 1], [], [3])`
-
-- `save(filename, sec, [ffmpeg])`<br>
-  Belirtilen saniye boyunca müziği çalan bir WAV dosyası oluşturur. FFmpeg yüklüyse ve `ffmpeg` `True` olarak ayarlandıysa, bir MP4 dosyası da oluşturulur.
-
-### Gelişmiş API
-
-Pyxel, kullanıcıları yanıltma veya kullanmak için özel bilgi gerektirme potansiyeli nedeniyle, bu referansta yer almayan "Gelişmiş API" içerir.
-
-Eğer yeteneklerinize güveniyorsanız, [bu](../python/pyxel/__init__.pyi) rehber olarak kullanarak harika eserler yaratmayı deneyin!
+Yeteneklerinize güveniyorsanız, Gelişmiş API'yi kullanarak gerçekten şaşırtıcı eserler yaratmayı deneyin!
 
 ## Katkıda Bulunma
 
@@ -658,6 +383,7 @@ Pull isteği göndermek, katkınızı [MIT Lisansı](../LICENSE) altında lisans
 ## Web Araçlar ve Örnekler
 
 - [Pyxel Showcase](https://kitao.github.io/pyxel/wasm/showcase/)
+- [Pyxel API Reference](https://kitao.github.io/pyxel/wasm/api-reference/)
 - [Pyxel Web Launcher](https://kitao.github.io/pyxel/wasm/launcher/)
 - [Pyxel Code Maker](https://kitao.github.io/pyxel/wasm/code-maker/) [[User Manual](https://qiita.com/kitao/items/b5b3fb28ebf9781eda2e)]
 - [Pyxel MML Studio](https://kitao.github.io/pyxel/wasm/mml-studio/) [[User Manual](https://qiita.com/kitao/items/a86de4f7d6a0ed656a89)]

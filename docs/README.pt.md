@@ -104,9 +104,34 @@ A maneira mais fácil de usá-la é através do IDE online [Pyxel Code Maker](ht
 
 Para outros padrões de uso, como incorporar aplicativos Pyxel em seu próprio site, consulte [esta página](pyxel-web-en.md).
 
+## Uso básico
+
+### Comando Pyxel
+
+A instalação do Pyxel adiciona o comando `pyxel`. Especifique um nome de comando após `pyxel` para realizar diversas operações.
+
+Execute-o sem argumentos para ver a lista de comandos disponíveis:
+
+```sh
+pyxel
+```
+
+```
+Pyxel 2.7.1, a retro game engine for Python
+usage:
+    pyxel run PYTHON_SCRIPT_FILE(.py)
+    pyxel watch WATCH_DIR PYTHON_SCRIPT_FILE(.py)
+    pyxel play PYXEL_APP_FILE(.pyxapp)
+    pyxel edit [PYXEL_RESOURCE_FILE(.pyxres)]
+    pyxel package APP_DIR STARTUP_SCRIPT_FILE(.py)
+    pyxel app2exe PYXEL_APP_FILE(.pyxapp)
+    pyxel app2html PYXEL_APP_FILE(.pyxapp)
+    pyxel copy_examples
+```
+
 ### Executar exemplos
 
-Após instalar o Pyxel, você pode copiar os exemplos para o diretório atual com o seguinte comando:
+O seguinte comando copia os exemplos do Pyxel para o diretório atual:
 
 ```sh
 pyxel copy_examples
@@ -126,9 +151,9 @@ cd apps
 pyxel play 30sec_of_daylight.pyxapp
 ```
 
-## Como usar
+## Criação de aplicações
 
-### Criar um aplicativo
+### Criar um programa
 
 No seu script Python, importe o Pyxel, especifique o tamanho da janela com `init` e inicie o aplicativo com `run`.
 
@@ -182,7 +207,7 @@ pyxel.circb(60, 60, 40, 7)
 pyxel.show()
 ```
 
-### Executar o aplicativo
+### Executar um programa
 
 Um script criado pode ser executado usando o comando `python`:
 
@@ -204,7 +229,7 @@ pyxel watch WATCH_DIR PYTHON_SCRIPT_FILE
 
 Interrompa a vigilância do diretório pressionando `Ctrl(Command)+C`.
 
-### Operações de Teclas Especiais
+### Controles de teclas especiais
 
 Durante a execução de uma aplicação Pyxel, as seguintes operações de teclas especiais podem ser realizadas:
 
@@ -231,7 +256,9 @@ Durante a execução de uma aplicação Pyxel, as seguintes operações de tecla
 - `Shift+Alt(Option)+0`<br>
   Salvar a paleta de cores atual na área de trabalho
 
-### Como Criar Recursos
+## Criação de recursos
+
+### Pyxel Editor
 
 O Pyxel Editor cria imagens e sons usados em uma aplicação Pyxel.
 
@@ -285,7 +312,7 @@ O modo para editar as **faixas de música** em que os sons são organizados em o
 <img src="images/music_editor.gif">
 </a>
 
-### Outros Métodos de Criação de Recursos
+### Outros métodos de criação
 
 Imagens e mapas de ladrilhos do Pyxel também podem ser criados usando os seguintes métodos:
 
@@ -298,7 +325,7 @@ Os sons e as músicas do Pyxel também podem ser criados usando o seguinte méto
 
 Consulte a referência da API para o uso dessas funções.
 
-### Como Distribuir Aplicações
+## Distribuição de aplicações
 
 O Pyxel suporta um formato de distribuição multiplataforma chamado arquivo de aplicativo Pyxel.
 
@@ -331,313 +358,11 @@ Um arquivo de aplicativo Pyxel também pode ser convertido em um executável ou 
 
 ## Referência da API
 
-### Sistema
+A lista completa das APIs do Pyxel está disponível em [Pyxel API Reference](https://kitao.github.io/pyxel/wasm/api-reference/).
 
-- `width`, `height`<br>
-  A largura e altura da tela
+O Pyxel também inclui uma "API avançada" que requer conhecimento especializado. Você pode visualizá-la marcando a caixa "Advanced" na página de referência.
 
-- `frame_count`<br>
-  O número de quadros transcorridos
-
-- `init(width, height, [title], [fps], [quit_key], [display_scale], [capture_scale], [capture_sec])`<br>
-  Inicializa a aplicação Pyxel com o tamanho da tela (`width`, `height`). As seguintes opções podem ser especificadas: o título da janela com `title`, a taxa de quadros com `fps`, a tecla para encerrar a aplicação com `quit_key`, a escala de exibição com `display_scale`, a escala de captura de tela com `capture_scale` e o tempo máximo de gravação do vídeo de captura de tela com `capture_sec`.<br>
-  Exemplo: `pyxel.init(160, 120, title="My Pyxel App", fps=60, quit_key=pyxel.KEY_NONE, capture_scale=3, capture_sec=0)`
-
-- `run(update, draw)`<br>
-  Inicia a aplicação Pyxel e chama a função `update` para atualização de quadros e a função `draw` para desenhar.
-
-- `show()`<br>
-  Mostra a tela e aguarda até que a tecla `Esc` seja pressionada.
-
-- `flip()`<br>
-  Atualiza a tela em um quadro. A aplicação encerra quando a tecla `Esc` é pressionada. Esta função não está disponível na versão Web.
-
-- `quit()`<br>
-  Encerra a aplicação Pyxel.
-
-- `reset()`<br>
-  Reinicia a aplicação Pyxel. As variáveis de ambiente são mantidas após o reinício.
-
-### Recurso
-
-- `load(filename, [exclude_images], [exclude_tilemaps], [exclude_sounds], [exclude_musics])`<br>
-  Carrega o arquivo de recursos (.pyxres). Se uma opção for definida como `True`, o recurso correspondente será excluído do carregamento. Se um arquivo de paleta (.pyxpal) com o mesmo nome existir no mesmo local do arquivo de recursos, as cores da paleta de exibição também serão atualizadas. O arquivo de paleta contém entradas hexadecimais para as cores de exibição (por exemplo, `1100ff`), separadas por novas linhas. O arquivo de paleta também pode ser usado para alterar as cores exibidas no Pyxel Editor.
-
-- `user_data_dir(vendor_name, app_name)`<br>
-  Retorna o diretório de dados do usuário criado com base em `vendor_name` e `app_name`. Se o diretório não existir, ele será criado automaticamente. Ele é usado para armazenar pontuações altas, progresso do jogo e dados semelhantes.<br>
-  Exemplo: `print(pyxel.user_data_dir("Takashi Kitao", "Pyxel Shooter"))`
-
-### Entrada
-
-- `mouse_x`, `mouse_y`<br>
-  A posição atual do cursor do mouse
-
-- `mouse_wheel`<br>
-  O valor atual da roda do mouse
-
-- `btn(key)`<br>
-  Retorna `True` se a tecla `key` estiver pressionada, caso contrário, retorna `False`. ([Lista de definições de teclas](../python/pyxel/__init__.pyi))
-
-- `btnp(key, [hold], [repeat])`<br>
-  Retorna `True` se a tecla `key` for pressionada naquele quadro, caso contrário, retorna `False`. Se `hold` e `repeat` forem especificados, depois que a tecla `key` for mantida pressionada por `hold` quadros ou mais, `True` será retornado a cada `repeat` quadros.
-
-- `btnr(key)`<br>
-  Retorna `True` se a tecla `key` for liberada naquele quadro, caso contrário, retorna `False`.
-
-- `mouse(visible)`<br>
-  Mostra o cursor do mouse se `visible` for `True` e o oculta se `visible` for `False`. A posição do cursor continua a ser atualizada mesmo quando ele está oculto.
-
-### Gráficos
-
-- `colors`<br>
-  Lista de cores da paleta de exibição. A cor de exibição é especificada por um valor numérico de 24 bits. Pode ser manipulado como uma lista Python para adicionar, remover ou substituir cores em massa.<br>
-  Exemplo: `old_colors = list(pyxel.colors); pyxel.colors[:] = [0x111111, 0x222222, 0x333333]; pyxel.colors[15] = 0x112233`
-
-- `images`<br>
-  Lista dos bancos de imagens (instâncias da classe Image) (0-2)<br>
-  Exemplo: `pyxel.images[0].load(0, 0, "title.png")`
-
-- `tilemaps`<br>
-  Lista dos mapas de ladrilhos (instâncias da classe Tilemap) (0-7)
-
-- `clip(x, y, w, h)`<br>
-  Define a área de desenho da tela de (`x`, `y`) com uma largura de `w` e uma altura de `h`. Chame `clip()` para redefinir a área de desenho para a tela inteira.
-
-- `camera(x, y)`<br>
-  Altera as coordenadas do canto superior esquerdo da tela para (`x`, `y`). Chame `camera()` para redefinir as coordenadas do canto superior esquerdo para (`0`, `0`).
-
-- `pal(col1, col2)`<br>
-  Substitui a cor `col1` por `col2` ao desenhar. Chame `pal()` para redefinir para a paleta inicial.
-
-- `dither(alpha)`<br>
-  Aplica dithering (pseudo-transparência) ao desenhar. Defina `alpha` na faixa de `0.0`-`1.0`, onde `0.0` é transparente e `1.0` é opaco.
-
-- `cls(col)`<br>
-  Limpa a tela com a cor `col`.
-
-- `pget(x, y)`<br>
-  Obtém a cor do pixel em (`x`, `y`).
-
-- `pset(x, y, col)`<br>
-  Desenha um pixel da cor `col` em (`x`, `y`).
-
-- `line(x1, y1, x2, y2, col)`<br>
-  Desenha uma linha da cor `col` de (`x1`, `y1`) a (`x2`, `y2`).
-
-- `rect(x, y, w, h, col)`<br>
-  Desenha um retângulo de largura `w`, altura `h` e cor `col` de (`x`, `y`).
-
-- `rectb(x, y, w, h, col)`<br>
-  Desenha o contorno de um retângulo de largura `w`, altura `h` e cor `col` de (`x`, `y`).
-
-- `circ(x, y, r, col)`<br>
-  Desenha um círculo de raio `r` e cor `col` em (`x`, `y`).
-
-- `circb(x, y, r, col)`<br>
-  Desenha o contorno de um círculo de raio `r` e cor `col` em (`x`, `y`).
-
-- `elli(x, y, w, h, col)`<br>
-  Desenha uma elipse de largura `w`, altura `h` e cor `col` de (`x`, `y`).
-
-- `ellib(x, y, w, h, col)`<br>
-  Desenha o contorno de uma elipse de largura `w`, altura `h` e cor `col` de (`x`, `y`).
-
-- `tri(x1, y1, x2, y2, x3, y3, col)`<br>
-  Desenha um triângulo com vértices em (`x1`, `y1`), (`x2`, `y2`), (`x3`, `y3`) e cor `col`.
-
-- `trib(x1, y1, x2, y2, x3, y3, col)`<br>
-  Desenha o contorno de um triângulo com vértices em (`x1`, `y1`), (`x2`, `y2`), (`x3`, `y3`) e cor `col`.
-
-- `fill(x, y, col)`<br>
-  Preenche a área conectada com a mesma cor de (`x`, `y`) com a cor `col`.
-
-- `blt(x, y, img, u, v, w, h, [colkey], [rotate], [scale])`<br>
-  Copia a região de tamanho (`w`, `h`) de (`u`, `v`) do banco de imagens `img`(0-2) para (`x`, `y`). Se um valor negativo for atribuído a `w` e/ou `h`, a região será invertida horizontalmente e/ou verticalmente. Se `colkey` for especificado, ele será tratado como uma cor transparente. Se `rotate`(em graus), `scale`(1.0 = 100%) ou ambos forem especificados, as transformações correspondentes serão aplicadas.
-
-<img src="images/blt_figure.png">
-
-- `bltm(x, y, tm, u, v, w, h, [colkey], [rotate], [scale])`<br>
-  Copia a região de tamanho (`w`, `h`) de (`u`, `v`) do mapa de ladrilhos `tm`(0-7) para (`x`, `y`). Se um valor negativo for atribuído a `w` e/ou `h`, a região será invertida horizontalmente e/ou verticalmente. Se `colkey` for especificado, ele será tratado como uma cor transparente. Se `rotate`(em graus), `scale`(1.0 = 100%) ou ambos forem especificados, as transformações correspondentes serão aplicadas. O tamanho de um ladrilho é 8x8 pixels e é armazenado em um mapa de ladrilhos como uma tupla de `(image_tx, image_ty)`.
-
-<img src="images/bltm_figure.png">
-
-- `text(x, y, s, col)`<br>
-  Desenha uma string `s` com a cor `col` em (`x`, `y`).
-
-### Áudio
-
-- `sounds`<br>
-  Lista dos sons (instâncias da classe Sound) (0-63)<br>
-  Exemplo: `pyxel.sounds[0].speed = 60`
-
-- `musics`<br>
-  Lista das faixas de música (instâncias da classe Music) (0-7)
-
-- `play(ch, snd, [sec], [loop], [resume])`<br>
-  Reproduz o som `snd`(0-63) no canal `ch`(0-3). `snd` pode ser um número de som, uma lista de números de som ou uma string MML. A posição inicial da reprodução pode ser especificada em segundos com `sec`. Se `loop` for definido como `True`, a reprodução será em loop. Para retomar o som anterior após o término da reprodução, defina `resume` como `True`.
-
-- `playm(msc, [sec], [loop])`<br>
-  Reproduz a música `msc`(0-7). A posição inicial da reprodução pode ser especificada em segundos com `sec`. Se `loop` for definido como `True`, a música será reproduzida em loop.
-
-- `stop([ch])`<br>
-  Interrompe a reprodução do canal especificado `ch`(0-3). Chame `stop()` para interromper todos os canais.
-
-- `play_pos(ch)`<br>
-  Obtém a posição de reprodução do som do canal `ch`(0-3) como uma tupla de `(sound_no, sec)`. Retorna `None` quando a reprodução for interrompida.
-
-- `gen_bgm(preset, instr, [seed], [play])`<br>
-  Gera uma lista MML de BGM com um algoritmo baseado em [8bit BGM generator](https://github.com/shiromofufactory/8bit-bgm-generator). `preset` é o número do preset (0-7), `instr` é o número de instrumentação (0-3): `0`=melodia+reverb+baixo, `1`=melodia+baixo+bateria, `2`=melodia+sub+baixo, `3`=melodia+sub+baixo+bateria. Se `seed` não for especificado, o resultado é aleatório. Se `play` for `True`, o MML gerado é reproduzido.
-
-### Matemática
-
-- `ceil(x)`<br>
-  Retorna o menor número inteiro maior ou igual a `x`.
-
-- `floor(x)`<br>
-  Retorna o maior número inteiro menor ou igual a `x`.
-
-- `clamp(x, lower, upper)`<br>
-  Retorna `x` limitado entre `lower` como valor mínimo e `upper` como valor máximo.
-
-- `sgn(x)`<br>
-  Retorna `1` quando `x` é positivo, `0` quando é `0` e `-1` quando é negativo.
-
-- `sqrt(x)`<br>
-  Retorna a raiz quadrada de `x`.
-
-- `sin(deg)`<br>
-  Retorna o seno de `deg` graus.
-
-- `cos(deg)`<br>
-  Retorna o cosseno de `deg` graus.
-
-- `atan2(y, x)`<br>
-  Retorna a arctangente de `y`/`x` em graus.
-
-- `rseed(seed)`<br>
-  Define a semente do gerador de números aleatórios.
-
-- `rndi(a, b)`<br>
-  Retorna um número inteiro aleatório maior ou igual a `a` e menor ou igual a `b`.
-
-- `rndf(a, b)`<br>
-  Retorna um número flutuante aleatório maior ou igual a `a` e menor ou igual a `b`.
-
-- `nseed(seed)`<br>
-  Define a semente do ruído Perlin.
-
-- `noise(x, [y], [z])`<br>
-  Retorna o valor do ruído Perlin para as coordenadas especificadas.
-
-### Classe Image
-
-- `width`, `height`<br>
-  A largura e altura da imagem
-
-- `set(x, y, data)`<br>
-  Define a imagem em (`x`, `y`) usando uma lista de strings.<br>
-  Exemplo: `pyxel.images[0].set(10, 10, ["0123", "4567", "89ab", "cdef"])`
-
-- `load(x, y, filename)`<br>
-  Carrega um arquivo de imagem (PNG/GIF/JPEG) em (`x`, `y`).
-
-- `pget(x, y)`<br>
-  Obtém a cor do pixel em (`x`, `y`).
-
-- `pset(x, y, col)`<br>
-  Desenha um pixel com a cor `col` em (`x`, `y`).
-
-### Classe Tilemap
-
-- `width`, `height`<br>
-  A largura e altura do mapa de ladrilhos
-
-- `imgsrc`<br>
-  O banco de imagens (0-2) referenciado pelo mapa de ladrilhos
-
-- `set(x, y, data)`<br>
-  Define o mapa de ladrilhos em (`x`, `y`) usando uma lista de strings.<br>
-  Exemplo: `pyxel.tilemaps[0].set(0, 0, ["0000 0100 a0b0", "0001 0101 a1b1"])`
-
-- `load(x, y, filename, layer)`<br>
-  Carrega a `layer`(0-) do arquivo TMX (Tiled Map File) em (`x`, `y`).
-
-- `pget(x, y)`<br>
-  Obtém o ladrilho em (`x`, `y`). Um ladrilho é representado como uma tupla de `(image_tx, image_ty)`.
-
-- `pset(x, y, tile)`<br>
-  Desenha um `ladrilho` em (`x`, `y`). Um ladrilho é representado como uma tupla de `(image_tx, image_ty)`.
-
-- `collide(x, y, w, h, dx, dy, walls)`<br>
-  Resolve as colisões após aplicar o movimento (`dx`, `dy`) ao retângulo na posição (`x`, `y`) com tamanho (`w`, `h`), e retorna os (`dx`, `dy`) ajustados. `walls` é uma lista de ladrilhos `(image_tx, image_ty)` tratados como paredes.
-
-### Classe Sound
-
-- `notes`<br>
-  Lista de notas (0-127). Quanto maior o número, mais alta a nota. A nota `33` corresponde a 'A2' (440 Hz). As pausas são representadas por `-1`.
-
-- `tones`<br>
-  Lista de tons (0:Triangle / 1:Square / 2:Pulse / 3:Noise)
-
-- `volumes`<br>
-  Lista de volumes (0-7)
-
-- `effects`<br>
-  Lista de efeitos (0:None / 1:Slide / 2:Vibrato / 3:FadeOut / 4:Half-FadeOut / 5:Quarter-FadeOut)
-
-- `speed`<br>
-  Velocidade de reprodução. `1` é a mais rápida e, quanto maior o número, mais lenta a reprodução. Em `120`, a duração de uma nota é de 1 segundo.
-
-- `set(notes, tones, volumes, effects, speed)`<br>
-  Define notas, tons, volumes e efeitos usando uma string. Se o comprimento de tons, volumes ou efeitos for menor que o de notas, eles serão repetidos desde o início.
-
-- `set_notes(notes)`<br>
-  Define as notas usando uma string composta por `CDEFGAB`+`#-`+`01234` ou `R`. Não diferencia maiúsculas de minúsculas e ignora espaços em branco.<br>
-  Exemplo: `pyxel.sounds[0].set_notes("g2b-2d3r rf3f3f3")`
-
-- `set_tones(tones)`<br>
-  Define os tons com uma string composta por `TSPN`. Não diferencia maiúsculas de minúsculas e ignora espaços em branco.<br>
-  Exemplo: `pyxel.sounds[0].set_tones("ttss pppn")`
-
-- `set_volumes(volumes)`<br>
-  Define os volumes com uma string composta por `01234567`. Não diferencia maiúsculas de minúsculas e ignora espaços em branco.<br>
-  Exemplo: `pyxel.sounds[0].set_volumes("7777 7531")`
-
-- `set_effects(effects)`<br>
-  Define os efeitos com uma string composta por `NSVFHQ`. Não diferencia maiúsculas de minúsculas e ignora espaços em branco.<br>
-  Exemplo: `pyxel.sounds[0].set_effects("nfnf nvvs")`
-
-- `mml(code)`<br>
-  Ao passar uma string [MML (Music Macro Language)](https://en.wikipedia.org/wiki/Music_Macro_Language), o modo MML é ativado e o som é reproduzido conforme seu conteúdo. Nesse modo, parâmetros normais como `notes` e `speed` são ignorados. Para sair do modo MML, chame `mml()` sem argumentos. Para mais detalhes sobre MML, consulte [esta página](faq-en.md).<br>
-  Exemplo: `pyxel.sounds[0].mml("T120 Q90 @1 V100 O5 L8 C4&C<G16R16>C.<G16 >C.D16 @VIB1{10,20,20} E2C2")`
-
-- `pcm(filename)`<br>
-  Carrega um arquivo de áudio (WAV/OGG) para reprodução. Use `pcm()` para voltar ao modo de reprodução normal.<br>
-  Exemplo: `pyxel.sounds[0].pcm("sounds/bgm.ogg")`
-
-- `save(filename, sec, [ffmpeg])`<br>
-  Cria um arquivo WAV que reproduz o som durante os segundos especificados. Se o FFmpeg estiver instalado e `ffmpeg` for definido como `True`, um arquivo MP4 também será criado.
-
-- `total_sec()`<br>
-  Retorna o tempo de reprodução do som em segundos. Retorna `None` se um loop infinito for usado no MML.
-
-### Classe Music
-
-- `seqs`<br>
-  Uma lista bidimensional de sons (0-63) em vários canais
-
-- `set(seq0, seq1, seq2, ...)`<br>
-  Define as listas de sons (0-63) para cada canal. Se uma lista vazia for especificada, esse canal não será usado para reprodução.<br>
-  Exemplo: `pyxel.musics[0].set([0, 1], [], [3])`
-
-- `save(filename, sec, [ffmpeg])`<br>
-  Cria um arquivo WAV que reproduz a música durante os segundos especificados. Se o FFmpeg estiver instalado e `ffmpeg` for definido como `True`, um arquivo MP4 também será criado.
-
-### API Avançada
-
-O Pyxel inclui uma "API Avançada" que não é mencionada nesta referência, pois pode confundir os usuários ou exigir conhecimento especializado para uso.
-
-Se você tem confiança em suas habilidades, tente criar obras incríveis usando [isto](../python/pyxel/__init__.pyi) como guia!
+Se você confia em suas habilidades, tente usar a API avançada para criar obras verdadeiramente surpreendentes!
 
 ## Como Contribuir
 
@@ -658,6 +383,7 @@ Enviar um pull request implica que você concorda em licenciar sua contribuiçã
 ## Ferramentas e Exemplos Web
 
 - [Pyxel Showcase](https://kitao.github.io/pyxel/wasm/showcase/)
+- [Pyxel API Reference](https://kitao.github.io/pyxel/wasm/api-reference/)
 - [Pyxel Web Launcher](https://kitao.github.io/pyxel/wasm/launcher/)
 - [Pyxel Code Maker](https://kitao.github.io/pyxel/wasm/code-maker/) [[User Manual](https://qiita.com/kitao/items/b5b3fb28ebf9781eda2e)]
 - [Pyxel MML Studio](https://kitao.github.io/pyxel/wasm/mml-studio/) [[User Manual](https://qiita.com/kitao/items/a86de4f7d6a0ed656a89)]
