@@ -715,6 +715,7 @@ async function _executePyxelCommand(pyodide, params) {
         }
       });
       params.name ||= "";
+      params.editor ||= "";
       pythonCode = `
         import pyxel.cli
         pyxel.cli.edit_pyxel_resource("${params.name}", "${params.editor}")

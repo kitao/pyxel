@@ -98,7 +98,7 @@
       }
 
       function detectLanguage() {
-        const stored = localStorage.getItem("pyxel-api-ref-lang");
+        const stored = localStorage.getItem("pyxel-lang");
         if (stored && data.languages.some((l) => l.code === stored)) {
           return stored;
         }
@@ -255,7 +255,7 @@
         langSelect.value = currentLang;
         langSelect.addEventListener("change", () => {
           currentLang = langSelect.value;
-          localStorage.setItem("pyxel-api-ref-lang", currentLang);
+          localStorage.setItem("pyxel-lang", currentLang);
           updateTexts();
         });
 
