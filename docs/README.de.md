@@ -112,7 +112,7 @@ Nachdem Sie Pyxel installiert haben, können Sie die Beispiele mit dem folgenden
 pyxel copy_examples
 ```
 
-Die Beispiele können auf [dieser Seite](https://kitao.github.io/pyxel/wasm/showcase/) im Browser angesehen und ausgeführt werden.
+Die Beispiele können auf [Pyxel Showcase](https://kitao.github.io/pyxel/wasm/showcase/) im Browser angesehen und ausgeführt werden.
 
 In der lokalen Umgebung können die Beispiele mit den folgenden Befehlen ausgeführt werden:
 

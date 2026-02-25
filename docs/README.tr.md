@@ -112,7 +112,7 @@ Pyxel'i kurduktan sonra, aşağıdaki komutla örnekleri geçerli dizine kopyala
 pyxel copy_examples
 ```
 
-Örnek listesi [bu sayfadan](https://kitao.github.io/pyxel/wasm/showcase/) tarayıcıda görüntülenebilir ve çalıştırılabilir.
+Örnek listesi [Pyxel Showcase](https://kitao.github.io/pyxel/wasm/showcase/) üzerinden tarayıcıda görüntülenebilir ve çalıştırılabilir.
 
 Yerel ortamda örnekler aşağıdaki komutlarla çalıştırılabilir:
 

@@ -112,7 +112,7 @@ Pyxel 的 Web 版本可在 PC、智能手机和平板电脑的兼容浏览器中
 pyxel copy_examples
 ```
 
-示例列表可以在[此页面](https://kitao.github.io/pyxel/wasm/showcase/)上通过浏览器查看和运行。
+示例列表可以在[Pyxel Showcase](https://kitao.github.io/pyxel/wasm/showcase/)上通过浏览器查看和运行。
 
 在本地环境中，可以通过以下命令执行示例：
 

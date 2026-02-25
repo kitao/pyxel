@@ -112,7 +112,7 @@ Pyxel をインストールした後、次のコマンドでカレントディ�
 pyxel copy_examples
 ```
 
-サンプル一覧は[こちらのページ](https://kitao.github.io/pyxel/wasm/showcase/)からブラウザで確認・実行できます。
+サンプル一覧は[Pyxel Showcase](https://kitao.github.io/pyxel/wasm/showcase/)からブラウザで確認・実行できます。
 
 ローカル環境では以下のコマンドで実行できます。
 

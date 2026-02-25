@@ -112,7 +112,7 @@ Pyxel을 설치한 후, 다음 명령어로 예제를 현재 디렉토리로 복
 pyxel copy_examples
 ```
 
-예제 목록은 [이 페이지](https://kitao.github.io/pyxel/wasm/showcase/)에서 브라우저로 확인하고 실행할 수 있습니다.
+예제 목록은 [Pyxel Showcase](https://kitao.github.io/pyxel/wasm/showcase/)에서 브라우저로 확인하고 실행할 수 있습니다.
 
 로컬 환경에서는 다음 명령어로 실행할 수 있습니다:
 

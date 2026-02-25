@@ -112,7 +112,7 @@ pip install -U pyxel
 pyxel copy_examples
 ```
 
-Список примеров можно просмотреть и запустить в браузере на [этой странице](https://kitao.github.io/pyxel/wasm/showcase/).
+Список примеров можно просмотреть и запустить в браузере на [Pyxel Showcase](https://kitao.github.io/pyxel/wasm/showcase/).
 
 В локальной среде примеры можно выполнить с помощью следующих команд:
 

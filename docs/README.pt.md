@@ -112,7 +112,7 @@ Após instalar o Pyxel, você pode copiar os exemplos para o diretório atual co
 pyxel copy_examples
 ```
 
-Os exemplos podem ser visualizados e executados no navegador a partir [desta página](https://kitao.github.io/pyxel/wasm/showcase/).
+Os exemplos podem ser visualizados e executados no navegador a partir do [Pyxel Showcase](https://kitao.github.io/pyxel/wasm/showcase/).
 
 No ambiente local, os exemplos podem ser executados com os seguintes comandos:
 
