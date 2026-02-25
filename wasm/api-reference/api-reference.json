@@ -93,7 +93,7 @@
         {
           "name": "init",
           "type": "function",
-          "signature": "init(width, height, [title], [fps], [quit_key], [display_scale], [capture_scale], [capture_sec])",
+          "signature": "init(width, height, title=\"Pyxel\", fps=30, quit_key=KEY_ESCAPE, display_scale=None, capture_scale=2, capture_sec=10)",
           "description": {
             "en": "Initialize the Pyxel application with the screen size (width, height).",
             "ja": "Pyxelアプリケーションを画面サイズ (width, height) で初期化する。"
@@ -281,7 +281,7 @@
         {
           "name": "icon",
           "type": "function",
-          "signature": "icon(data, scale, [colkey])",
+          "signature": "icon(data, scale, colkey=None)",
           "description": {
             "en": "Set the application icon. Specify the icon image as a list of strings.",
             "ja": "アプリケーションアイコンを設定する。文字列のリストでアイコン画像を指定する。"
@@ -368,8 +368,8 @@
           "type": "function",
           "signature": "perf_monitor(enabled)",
           "description": {
-            "en": "Show the performance monitor.",
-            "ja": "パフォーマンスモニターを表示する。"
+            "en": "Show or hide the performance monitor.",
+            "ja": "パフォーマンスモニターの表示/非表示を設定する。"
           },
           "params": [
             {
@@ -421,7 +421,7 @@
         {
           "name": "load",
           "type": "function",
-          "signature": "load(filename, [exclude_images], [exclude_tilemaps], [exclude_sounds], [exclude_musics])",
+          "signature": "load(filename, exclude_images=False, exclude_tilemaps=False, exclude_sounds=False, exclude_musics=False)",
           "description": {
             "en": "Load the resource file (.pyxres). If an option is set to True, the corresponding resource will be excluded from loading.",
             "ja": "リソースファイル (.pyxres) を読み込む。オプションにTrueを指定すると、そのリソースは読み込まれない。"
@@ -518,11 +518,53 @@
         {
           "name": "save",
           "type": "function",
-          "signature": "save(filename, [exclude_images], [exclude_tilemaps], [exclude_sounds], [exclude_musics])",
+          "signature": "save(filename, exclude_images=False, exclude_tilemaps=False, exclude_sounds=False, exclude_musics=False)",
           "description": {
-            "en": "Save the resource file (.pyxres).",
-            "ja": "リソースファイル (.pyxres) を保存する。"
+            "en": "Save the resource file (.pyxres). If an option is set to True, the corresponding resource will be excluded from saving.",
+            "ja": "リソースファイル (.pyxres) を保存する。オプションにTrueを指定すると、そのリソースは保存されない。"
           },
+          "params": [
+            {
+              "name": "filename",
+              "type": "str",
+              "desc": {
+                "en": "Resource file path",
+                "ja": "リソースファイルのパス"
+              }
+            },
+            {
+              "name": "exclude_images",
+              "type": "bool",
+              "desc": {
+                "en": "Exclude image banks",
+                "ja": "イメージバンクを除外"
+              }
+            },
+            {
+              "name": "exclude_tilemaps",
+              "type": "bool",
+              "desc": {
+                "en": "Exclude tilemaps",
+                "ja": "タイルマップを除外"
+              }
+            },
+            {
+              "name": "exclude_sounds",
+              "type": "bool",
+              "desc": {
+                "en": "Exclude sounds",
+                "ja": "サウンドを除外"
+              }
+            },
+            {
+              "name": "exclude_musics",
+              "type": "bool",
+              "desc": {
+                "en": "Exclude music tracks",
+                "ja": "ミュージックを除外"
+              }
+            }
+          ],
           "return": {
             "type": "None"
           },
@@ -531,11 +573,21 @@
         {
           "name": "screenshot",
           "type": "function",
-          "signature": "screenshot([scale])",
+          "signature": "screenshot(scale=2)",
           "description": {
             "en": "Take a screenshot.",
             "ja": "スクリーンショットを撮影する。"
           },
+          "params": [
+            {
+              "name": "scale",
+              "type": "int",
+              "desc": {
+                "en": "Scale factor",
+                "ja": "倍率"
+              }
+            }
+          ],
           "return": {
             "type": "None"
           },
@@ -544,11 +596,21 @@
         {
           "name": "screencast",
           "type": "function",
-          "signature": "screencast([scale])",
+          "signature": "screencast(scale=2)",
           "description": {
             "en": "Start or save screen recording.",
             "ja": "画面録画を開始または保存する。"
           },
+          "params": [
+            {
+              "name": "scale",
+              "type": "int",
+              "desc": {
+                "en": "Scale factor",
+                "ja": "倍率"
+              }
+            }
+          ],
           "return": {
             "type": "None"
           },
@@ -562,6 +624,52 @@
             "en": "Reset the screen recording.",
             "ja": "画面録画をリセットする。"
           },
+          "return": {
+            "type": "None"
+          },
+          "advanced": true
+        },
+        {
+          "name": "load_pal",
+          "type": "function",
+          "signature": "load_pal(filename)",
+          "description": {
+            "en": "Load a palette file (.pyxpal).",
+            "ja": "パレットファイル (.pyxpal) を読み込む。"
+          },
+          "params": [
+            {
+              "name": "filename",
+              "type": "str",
+              "desc": {
+                "en": "Palette file path",
+                "ja": "パレットファイルのパス"
+              }
+            }
+          ],
+          "return": {
+            "type": "None"
+          },
+          "advanced": true
+        },
+        {
+          "name": "save_pal",
+          "type": "function",
+          "signature": "save_pal(filename)",
+          "description": {
+            "en": "Save a palette file (.pyxpal).",
+            "ja": "パレットファイル (.pyxpal) を保存する。"
+          },
+          "params": [
+            {
+              "name": "filename",
+              "type": "str",
+              "desc": {
+                "en": "Palette file path",
+                "ja": "パレットファイルのパス"
+              }
+            }
+          ],
           "return": {
             "type": "None"
           },
@@ -672,7 +780,7 @@
         {
           "name": "btnp",
           "type": "function",
-          "signature": "btnp(key, [hold], [repeat])",
+          "signature": "btnp(key, hold=0, repeat=0)",
           "description": {
             "en": "Return True if the key is pressed in that frame. With hold and repeat, return True at the specified interval.",
             "ja": "そのフレームにkeyが押されたらTrueを返す。holdとrepeatを指定すると、holdフレーム以上押し続けた時にrepeatフレーム間隔でTrueが返る。"
@@ -1719,7 +1827,7 @@
           "signature": "rect(x, y, w, h, col)",
           "description": {
             "en": "Draw a filled rectangle of width w, height h, and color col at (x, y).",
-            "ja": "幅w、高さh、色colの矩形を (x, y) に描画する。"
+            "ja": "幅w、高さh、色colの塗りつぶし矩形を (x, y) に描画する。"
           },
           "return": {
             "type": "None"
@@ -1829,7 +1937,7 @@
           "signature": "circ(x, y, r, col)",
           "description": {
             "en": "Draw a filled circle of radius r and color col at (x, y).",
-            "ja": "半径r、色colの円を (x, y) に描画する。"
+            "ja": "半径r、色colの塗りつぶし円を (x, y) に描画する。"
           },
           "return": {
             "type": "None"
@@ -1923,7 +2031,7 @@
           "signature": "elli(x, y, w, h, col)",
           "description": {
             "en": "Draw a filled ellipse of width w, height h, and color col at (x, y).",
-            "ja": "幅w、高さh、色colの楕円を (x, y) に描画する。"
+            "ja": "幅w、高さh、色colの塗りつぶし楕円を (x, y) に描画する。"
           },
           "return": {
             "type": "None"
@@ -2033,7 +2141,7 @@
           "signature": "tri(x1, y1, x2, y2, x3, y3, col)",
           "description": {
             "en": "Draw a filled triangle with vertices (x1, y1), (x2, y2), (x3, y3) and color col.",
-            "ja": "頂点が (x1, y1)、(x2, y2)、(x3, y3)、色colの三角形を描画する。"
+            "ja": "頂点が (x1, y1)、(x2, y2)、(x3, y3)、色colの塗りつぶし三角形を描画する。"
           },
           "return": {
             "type": "None"
@@ -2211,10 +2319,10 @@
         {
           "name": "blt",
           "type": "function",
-          "signature": "blt(x, y, img, u, v, w, h, [colkey], [rotate], [scale])",
+          "signature": "blt(x, y, img, u, v, w, h, colkey=None, rotate=0, scale=1)",
           "description": {
-            "en": "Copy the region of size (w, h) from (u, v) of the image bank img (0-2) to (x, y). Negative w/h flips the image. colkey sets the transparent color. rotate and scale apply transformations.",
-            "ja": "イメージバンクimg (0-2) の (u, v) からサイズ (w, h) の領域を (x, y) にコピーする。w、hに負の値を指定すると反転する。colkeyで透明色を指定。rotateとscaleで変換を適用する。"
+            "en": "Copy the region of size (w, h) from (u, v) of image bank img (0-2 or Image instance) to (x, y). Negative w/h flips the image. colkey sets the transparent color. rotate and scale apply transformations.",
+            "ja": "イメージバンクimg (0-2またはImageインスタンス) の (u, v) からサイズ (w, h) の領域を (x, y) にコピーする。w、hに負の値を指定すると反転する。colkeyで透明色を指定。rotateとscaleで変換を適用する。"
           },
           "return": {
             "type": "None"
@@ -2306,10 +2414,10 @@
         {
           "name": "bltm",
           "type": "function",
-          "signature": "bltm(x, y, tm, u, v, w, h, [colkey], [rotate], [scale])",
+          "signature": "bltm(x, y, tm, u, v, w, h, colkey=None, rotate=0, scale=1)",
           "description": {
-            "en": "Copy the region of size (w, h) from (u, v) of the tilemap tm (0-7) to (x, y). One tile is 8x8 pixels stored as (image_tx, image_ty).",
-            "ja": "タイルマップtm (0-7) の (u, v) からサイズ (w, h) の領域を (x, y) にコピーする。1タイルは8x8ピクセルで (image_tx, image_ty) として格納される。"
+            "en": "Copy the region of size (w, h) from (u, v) of tilemap tm (0-7 or Tilemap instance) to (x, y). Each tile is 8x8 pixels stored as (image_tx, image_ty). Negative w/h flips the image. colkey sets the transparent color. rotate and scale apply transformations.",
+            "ja": "タイルマップtm (0-7またはTilemapインスタンス) の (u, v) からサイズ (w, h) の領域を (x, y) にコピーする。各タイルは8x8ピクセルで (image_tx, image_ty) として格納される。w、hに負の値を指定すると反転する。colkeyで透明色を指定。rotateとscaleで変換を適用する。"
           },
           "return": {
             "type": "None"
@@ -2401,7 +2509,7 @@
         {
           "name": "text",
           "type": "function",
-          "signature": "text(x, y, s, col, [font])",
+          "signature": "text(x, y, s, col, font=None)",
           "description": {
             "en": "Draw a string s in color col at (x, y).",
             "ja": "色colの文字列sを (x, y) に描画する。"
@@ -2549,6 +2657,61 @@
               ]
             }
           ]
+        },
+        {
+          "label": {
+            "en": "Resource Constants",
+            "ja": "リソース定数"
+          },
+          "collapsed": true,
+          "sections": [
+            {
+              "constants": [
+                "NUM_COLORS",
+                "NUM_IMAGES",
+                "IMAGE_SIZE",
+                "NUM_TILEMAPS",
+                "TILEMAP_SIZE",
+                "TILE_SIZE",
+                "FONT_WIDTH",
+                "FONT_HEIGHT"
+              ],
+              "details": [
+                {
+                  "en": "16 — Number of palette colors",
+                  "ja": "16 — パレットの色数"
+                },
+                {
+                  "en": "3 — Number of image banks (0-2)",
+                  "ja": "3 — イメージバンク数 (0-2)"
+                },
+                {
+                  "en": "256 — Image width and height",
+                  "ja": "256 — イメージの幅と高さ"
+                },
+                {
+                  "en": "8 — Number of tilemaps (0-7)",
+                  "ja": "8 — タイルマップ数 (0-7)"
+                },
+                {
+                  "en": "256 — Tilemap width and height",
+                  "ja": "256 — タイルマップの幅と高さ"
+                },
+                {
+                  "en": "8 — Tile size in pixels",
+                  "ja": "8 — タイルサイズ（ピクセル）"
+                },
+                {
+                  "en": "4 — Built-in font width",
+                  "ja": "4 — 内蔵フォントの幅"
+                },
+                {
+                  "en": "6 — Built-in font height",
+                  "ja": "6 — 内蔵フォントの高さ"
+                }
+              ]
+            }
+          ]
         }
       ]
     },
@@ -2585,12 +2748,23 @@
           "advanced": false
         },
         {
+          "name": "tones",
+          "type": "variable",
+          "signature": "tones",
+          "description": {
+            "en": "List of the tone definitions (instances of the Tone class) (0-3).",
+            "ja": "トーン定義 (Toneクラスのインスタンス) のリスト (0-3)"
+          },
+          "value_type": "list[Tone]",
+          "advanced": true
+        },
+        {
           "name": "channels",
           "type": "variable",
           "signature": "channels",
           "description": {
-            "en": "List of the channels (instances of the Channel class).",
-            "ja": "チャンネル (Channelクラスのインスタンス) のリスト"
+            "en": "List of the channels (instances of the Channel class) (0-3).",
+            "ja": "チャンネル (Channelクラスのインスタンス) のリスト (0-3)"
           },
           "value_type": "list[Channel]",
           "advanced": true
@@ -2598,10 +2772,10 @@
         {
           "name": "play",
           "type": "function",
-          "signature": "play(ch, snd, [sec], [loop], [resume])",
+          "signature": "play(ch, snd, sec=0, loop=False, resume=False)",
           "description": {
-            "en": "Play the sound snd (0-63) on channel ch (0-3). snd can be a sound number, a list, or an MML string.",
-            "ja": "チャンネルch (0-3) でサウンドsnd (0-63) を再生する。sndにはサウンド番号、リスト、またはMML文字列を指定できる。"
+            "en": "Play the sound snd on channel ch (0-3). snd can be a sound number (0-63), a list of numbers, a Sound instance, a list of Sounds, or an MML string.",
+            "ja": "チャンネルch (0-3) でサウンドsndを再生する。sndにはサウンド番号 (0-63)、番号のリスト、Soundインスタンス、Soundのリスト、またはMML文字列を指定できる。"
           },
           "params": [
             {
@@ -2653,7 +2827,7 @@
         {
           "name": "playm",
           "type": "function",
-          "signature": "playm(msc, [sec], [loop])",
+          "signature": "playm(msc, sec=0, loop=False)",
           "description": {
             "en": "Play the music msc (0-7).",
             "ja": "ミュージックmsc (0-7) を再生する。"
@@ -2692,7 +2866,7 @@
         {
           "name": "stop",
           "type": "function",
-          "signature": "stop([ch])",
+          "signature": "stop(ch=None)",
           "description": {
             "en": "Stop playback of the specified channel ch (0-3). Call stop() to stop all channels.",
             "ja": "指定したチャンネルch (0-3) の再生を停止する。stop()で全チャンネルの再生を停止する。"
@@ -2755,7 +2929,7 @@
         {
           "name": "gen_bgm",
           "type": "function",
-          "signature": "gen_bgm(preset, instr, [seed], [play])",
+          "signature": "gen_bgm(preset, instr, seed=None, play=False)",
           "description": {
             "en": "Generate a BGM MML list using an algorithm. preset (0-7) selects the preset, instr (0-3) selects the instrumentation.",
             "ja": "アルゴリズムでBGMのMMLリストを生成する。preset (0-7) でプリセット、instr (0-3) で編成を指定する。"
@@ -2879,6 +3053,41 @@
                 {
                   "en": "5 — Quarter fade out",
                   "ja": "5 — クォーターフェードアウト"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "label": {
+            "en": "Resource Constants",
+            "ja": "リソース定数"
+          },
+          "collapsed": true,
+          "sections": [
+            {
+              "constants": [
+                "NUM_CHANNELS",
+                "NUM_TONES",
+                "NUM_SOUNDS",
+                "NUM_MUSICS"
+              ],
+              "details": [
+                {
+                  "en": "4 — Number of audio channels (0-3)",
+                  "ja": "4 — オーディオチャンネル数 (0-3)"
+                },
+                {
+                  "en": "4 — Number of tone types (0-3)",
+                  "ja": "4 — トーン種類数 (0-3)"
+                },
+                {
+                  "en": "64 — Number of sounds (0-63)",
+                  "ja": "64 — サウンド数 (0-63)"
+                },
+                {
+                  "en": "8 — Number of music tracks (0-7)",
+                  "ja": "8 — ミュージック数 (0-7)"
                 }
               ]
             }
@@ -3252,7 +3461,7 @@
         {
           "name": "noise",
           "type": "function",
-          "signature": "noise(x, [y], [z])",
+          "signature": "noise(x, y=0, z=0)",
           "description": {
             "en": "Return the Perlin noise value for the specified coordinates.",
             "ja": "指定された座標のPerlinノイズ値を返す。"
@@ -3291,6 +3500,77 @@
               }
             }
           ]
+        }
+      ]
+    },
+    {
+      "id": "font",
+      "title": {
+        "en": "Font Class",
+        "ja": "Fontクラス"
+      },
+      "items": [
+        {
+          "name": "Font",
+          "type": "class",
+          "signature": "Font(filename, font_size=10)",
+          "description": {
+            "en": "Create a Font instance from a font file (BDF/OTF/TTF/TTC).",
+            "ja": "フォントファイル (BDF/OTF/TTF/TTC) からFontインスタンスを作成する。"
+          },
+          "params": [
+            {
+              "name": "filename",
+              "type": "str",
+              "desc": {
+                "en": "Font file path (BDF/OTF/TTF/TTC)",
+                "ja": "フォントファイルのパス (BDF/OTF/TTF/TTC)"
+              }
+            },
+            {
+              "name": "font_size",
+              "type": "float",
+              "desc": {
+                "en": "Font size (default: 10.0, not used for BDF)",
+                "ja": "フォントサイズ（デフォルト: 10.0、BDFでは不要）"
+              }
+            }
+          ],
+          "return": {
+            "type": "Font",
+            "desc": {
+              "en": "New Font instance",
+              "ja": "新しいFontインスタンス"
+            }
+          },
+          "advanced": true
+        },
+        {
+          "name": "Font.text_width",
+          "type": "function",
+          "signature": "Font.text_width(s)",
+          "description": {
+            "en": "Return the display width of the string s in this font.",
+            "ja": "このフォントで文字列sを表示した際の幅を返す。"
+          },
+          "params": [
+            {
+              "name": "s",
+              "type": "str",
+              "desc": {
+                "en": "String to measure",
+                "ja": "計測する文字列"
+              }
+            }
+          ],
+          "return": {
+            "type": "int",
+            "desc": {
+              "en": "Width in pixels",
+              "ja": "ピクセル幅"
+            }
+          },
+          "advanced": true
         }
       ]
     },
@@ -3339,7 +3619,7 @@
         {
           "name": "Image.from_image",
           "type": "class",
-          "signature": "Image.from_image(filename, [include_colors])",
+          "signature": "Image.from_image(filename, include_colors=False)",
           "description": {
             "en": "Create an Image instance from an image file.",
             "ja": "画像ファイルからImageインスタンスを作成する。"
@@ -3438,7 +3718,7 @@
         {
           "name": "Image.load",
           "type": "function",
-          "signature": "Image.load(x, y, filename, [include_colors])",
+          "signature": "Image.load(x, y, filename, include_colors=False)",
           "description": {
             "en": "Load an image file (PNG/GIF/JPEG) at (x, y).",
             "ja": "(x, y) に画像ファイル (PNG/GIF/JPEG) を読み込む。"
@@ -3557,6 +3837,16 @@
           ]
         },
         {
+          "name": "Image Drawing",
+          "type": "function",
+          "signature": "Image.{cls, line, rect, rectb, circ, circb, elli, ellib, tri, trib, fill, blt, bltm, text, clip, camera, pal, dither}",
+          "description": {
+            "en": "Image instances support all drawing functions from the Graphics section. They work the same way but draw on the image instead of the screen.",
+            "ja": "Imageインスタンスはグラフィックスセクションの全描画関数をサポート。画面ではなくイメージに描画する。"
+          },
+          "advanced": false
+        },
+        {
           "name": "Image.data_ptr",
           "type": "function",
           "signature": "Image.data_ptr()",
@@ -3581,6 +3871,24 @@
             "en": "Save the image to a file.",
             "ja": "イメージをファイルに保存する。"
           },
+          "params": [
+            {
+              "name": "filename",
+              "type": "str",
+              "desc": {
+                "en": "Output file path",
+                "ja": "出力ファイルのパス"
+              }
+            },
+            {
+              "name": "scale",
+              "type": "int",
+              "desc": {
+                "en": "Scale factor",
+                "ja": "倍率"
+              }
+            }
+          ],
           "return": {
             "type": "None"
           },
@@ -3700,8 +4008,8 @@
           "type": "variable",
           "signature": "Tilemap.imgsrc",
           "description": {
-            "en": "The image bank (0-2) referenced by the tilemap.",
-            "ja": "タイルマップが参照するイメージバンク (0-2)"
+            "en": "The image bank (0-2) or Image instance referenced by the tilemap.",
+            "ja": "タイルマップが参照するイメージバンク (0-2) またはImageインスタンス"
           },
           "value_type": "int/Image",
           "advanced": false
@@ -3870,6 +4178,16 @@
           ]
         },
         {
+          "name": "Tilemap Drawing",
+          "type": "function",
+          "signature": "Tilemap.{cls, line, rect, rectb, circ, circb, elli, ellib, tri, trib, fill, blt, clip, camera}",
+          "description": {
+            "en": "Tilemap instances support drawing functions from the Graphics section. They work the same way but draw tiles on the tilemap instead of pixels on the screen. Use a tile tuple (image_tx, image_ty) instead of a color value.",
+            "ja": "Tilemapインスタンスはグラフィックスセクションの描画関数をサポート。画面へのピクセル描画の代わりにタイルマップへタイルを描画する。色の代わりにタイルのタプル (image_tx, image_ty) を指定する。"
+          },
+          "advanced": false
+        },
+        {
           "name": "Tilemap.collide",
           "type": "function",
           "signature": "Tilemap.collide(x, y, w, h, dx, dy, walls)",
@@ -3971,6 +4289,23 @@
       },
       "items": [
         {
+          "name": "Sound",
+          "type": "class",
+          "signature": "Sound()",
+          "description": {
+            "en": "Create a new Sound instance.",
+            "ja": "新しいSoundインスタンスを作成する。"
+          },
+          "return": {
+            "type": "Sound",
+            "desc": {
+              "en": "New Sound instance",
+              "ja": "新しいSoundインスタンス"
+            }
+          },
+          "advanced": true
+        },
+        {
           "name": "Sound.notes",
           "type": "variable",
           "signature": "Sound.notes",
@@ -4019,8 +4354,8 @@
           "type": "variable",
           "signature": "Sound.speed",
           "description": {
-            "en": "Playback speed. 1 is the fastest. At 120, one note equals 1 second.",
-            "ja": "再生速度。1が最も速く、120で1音の長さが1秒になる。"
+            "en": "Playback speed. 1 is the fastest, and the larger the number, the slower the playback speed. At 120, one note equals 1 second.",
+            "ja": "再生速度。1が最も速く、数値が大きいほど遅くなる。120で1音の長さが1秒になる。"
           },
           "value_type": "int",
           "advanced": false
@@ -4030,8 +4365,8 @@
           "type": "function",
           "signature": "Sound.set(notes, tones, volumes, effects, speed)",
           "description": {
-            "en": "Set notes, tones, volumes, and effects using strings.",
-            "ja": "文字列で音程、音色、音量、エフェクトを設定する。"
+            "en": "Set notes, tones, volumes, and effects using strings. If the tones, volumes, or effects string is shorter than the notes, it repeats from the beginning.",
+            "ja": "文字列で音程、音色、音量、エフェクトを設定する。音色、音量、エフェクトの長さが音程より短い場合は先頭から繰り返される。"
           },
           "return": {
             "type": "None"
@@ -4085,8 +4420,8 @@
           "type": "function",
           "signature": "Sound.set_notes(notes)",
           "description": {
-            "en": "Set the notes using a string of CDEFGAB+#-+01234 or R.",
-            "ja": "CDEFGAB+#-+01234またはRの文字列で音程を設定する。"
+            "en": "Set the notes using a string of CDEFGAB+#-+01234 or R. Case-insensitive, whitespace is ignored.",
+            "ja": "CDEFGAB+#-+01234またはRの文字列で音程を設定する。大文字小文字不問、空白は無視される。"
           },
           "examples": [
             "pyxel.sounds[0].set_notes(\"g2b-2d3r rf3f3f3\")"
@@ -4111,8 +4446,8 @@
           "type": "function",
           "signature": "Sound.set_tones(tones)",
           "description": {
-            "en": "Set the tones with a string of TSPN.",
-            "ja": "TSPNの文字列で音色を設定する。"
+            "en": "Set the tones with a string of TSPN. Case-insensitive, whitespace is ignored.",
+            "ja": "TSPNの文字列で音色を設定する。大文字小文字不問、空白は無視される。"
           },
           "examples": [
             "pyxel.sounds[0].set_tones(\"ttss pppn\")"
@@ -4137,8 +4472,8 @@
           "type": "function",
           "signature": "Sound.set_volumes(volumes)",
           "description": {
-            "en": "Set the volumes with a string of 01234567.",
-            "ja": "01234567の文字列で音量を設定する。"
+            "en": "Set the volumes with a string of 01234567. Whitespace is ignored.",
+            "ja": "01234567の文字列で音量を設定する。空白は無視される。"
           },
           "examples": [
             "pyxel.sounds[0].set_volumes(\"7777 7531\")"
@@ -4163,8 +4498,8 @@
           "type": "function",
           "signature": "Sound.set_effects(effects)",
           "description": {
-            "en": "Set the effects with a string of NSVFHQ.",
-            "ja": "NSVFHQの文字列でエフェクトを設定する。"
+            "en": "Set the effects with a string of NSVFHQ. Case-insensitive, whitespace is ignored.",
+            "ja": "NSVFHQの文字列でエフェクトを設定する。大文字小文字不問、空白は無視される。"
           },
           "examples": [
             "pyxel.sounds[0].set_effects(\"nfnf nvvs\")"
@@ -4189,8 +4524,8 @@
           "type": "function",
           "signature": "Sound.mml(code)",
           "description": {
-            "en": "Switch to MML mode with the given MML string. Call mml() to exit MML mode.",
-            "ja": "MML文字列を渡すとMMLモードに移行する。mml()で解除する。"
+            "en": "Switch to MML mode with the given MML string. In MML mode, normal parameters such as notes and speed are ignored. Call mml() to exit MML mode.",
+            "ja": "MML文字列を渡すとMMLモードに移行する。MMLモード中はnotesやspeedなどの通常パラメータは無視される。mml()で解除する。"
           },
           "examples": [
             "pyxel.sounds[0].mml(\"T120 Q90 @1 V100 O5 L8 C4&C<G16R16>C.\")"
@@ -4239,15 +4574,15 @@
         {
           "name": "Sound.save",
           "type": "function",
-          "signature": "Sound.save(filename, sec, [ffmpeg])",
+          "signature": "Sound.save(filename, sec, ffmpeg=False)",
           "description": {
-            "en": "Create a WAV file of the sound for the specified seconds.",
+            "en": "Create a WAV file of the sound for the specified duration in seconds.",
             "ja": "サウンドを指定した秒数分再生したWAVファイルを作成する。"
           },
           "return": {
             "type": "None"
           },
-          "advanced": false,
+          "advanced": true,
           "params": [
             {
               "name": "filename",
@@ -4269,8 +4604,8 @@
               "name": "ffmpeg",
               "type": "bool",
               "desc": {
-                "en": "Also create MP4 file",
-                "ja": "MP4ファイルも作成する"
+                "en": "Also create MP4 file (requires FFmpeg)",
+                "ja": "MP4ファイルも作成する（要FFmpeg）"
               }
             }
           ]
@@ -4290,7 +4625,7 @@
               "ja": "再生時間（秒）。無限ループ時はNone"
             }
           },
-          "advanced": false
+          "advanced": true
         }
       ]
     },
@@ -4301,6 +4636,23 @@
         "ja": "Musicクラス"
       },
       "items": [
+        {
+          "name": "Music",
+          "type": "class",
+          "signature": "Music()",
+          "description": {
+            "en": "Create a new Music instance.",
+            "ja": "新しいMusicインスタンスを作成する。"
+          },
+          "return": {
+            "type": "Music",
+            "desc": {
+              "en": "New Music instance",
+              "ja": "新しいMusicインスタンス"
+            }
+          },
+          "advanced": true
+        },
         {
           "name": "Music.seqs",
           "type": "variable",
@@ -4341,15 +4693,15 @@
         {
           "name": "Music.save",
           "type": "function",
-          "signature": "Music.save(filename, sec, [ffmpeg])",
+          "signature": "Music.save(filename, sec, ffmpeg=False)",
           "description": {
-            "en": "Create a WAV file of the music for the specified seconds.",
+            "en": "Create a WAV file of the music for the specified duration in seconds.",
             "ja": "ミュージックを指定した秒数分再生したWAVファイルを作成する。"
           },
           "return": {
             "type": "None"
           },
-          "advanced": false,
+          "advanced": true,
           "params": [
             {
               "name": "filename",
@@ -4371,11 +4723,206 @@
               "name": "ffmpeg",
               "type": "bool",
               "desc": {
-                "en": "Also create MP4 file",
-                "ja": "MP4ファイルも作成する"
+                "en": "Also create MP4 file (requires FFmpeg)",
+                "ja": "MP4ファイルも作成する（要FFmpeg）"
               }
             }
           ]
+        }
+      ]
+    },
+    {
+      "id": "channel",
+      "title": {
+        "en": "Channel Class",
+        "ja": "Channelクラス"
+      },
+      "items": [
+        {
+          "name": "Channel",
+          "type": "class",
+          "signature": "Channel()",
+          "description": {
+            "en": "Create a new Channel instance.",
+            "ja": "新しいChannelインスタンスを作成する。"
+          },
+          "return": {
+            "type": "Channel",
+            "desc": {
+              "en": "New Channel instance",
+              "ja": "新しいChannelインスタンス"
+            }
+          },
+          "advanced": true
+        },
+        {
+          "name": "Channel.gain",
+          "type": "variable",
+          "signature": "Channel.gain",
+          "description": {
+            "en": "The gain (volume) of the channel (default: 0.125).",
+            "ja": "チャンネルのゲイン（音量）（デフォルト: 0.125）"
+          },
+          "value_type": "float",
+          "advanced": true
+        },
+        {
+          "name": "Channel.detune",
+          "type": "variable",
+          "signature": "Channel.detune",
+          "description": {
+            "en": "The detune value for pitch adjustment (default: 0).",
+            "ja": "ピッチ調整のデチューン値（デフォルト: 0）"
+          },
+          "value_type": "int",
+          "advanced": true
+        },
+        {
+          "name": "Channel.play",
+          "type": "function",
+          "signature": "Channel.play(snd, sec=0, loop=False, resume=False)",
+          "description": {
+            "en": "Play the sound snd on this channel. snd can be a sound number, a list, a Sound instance, a list of Sounds, or an MML string.",
+            "ja": "このチャンネルでサウンドsndを再生する。sndにはサウンド番号、リスト、Soundインスタンス、Soundのリスト、またはMML文字列を指定できる。"
+          },
+          "params": [
+            {
+              "name": "snd",
+              "type": "int/list/Sound/str",
+              "desc": {
+                "en": "Sound number (0-63), list of numbers, Sound instance, list of Sounds, or MML string",
+                "ja": "サウンド番号 (0-63)、番号のリスト、Soundインスタンス、Soundのリスト、またはMML文字列"
+              }
+            },
+            {
+              "name": "sec",
+              "type": "float",
+              "desc": {
+                "en": "Playback start position in seconds",
+                "ja": "再生開始位置（秒）"
+              }
+            },
+            {
+              "name": "loop",
+              "type": "bool",
+              "desc": {
+                "en": "Loop playback (default: False)",
+                "ja": "ループ再生（デフォルト: False）"
+              }
+            },
+            {
+              "name": "resume",
+              "type": "bool",
+              "desc": {
+                "en": "Resume previous sound after playback ends (default: False)",
+                "ja": "再生終了後に以前の音へ復帰（デフォルト: False）"
+              }
+            }
+          ],
+          "return": {
+            "type": "None"
+          },
+          "advanced": true
+        },
+        {
+          "name": "Channel.stop",
+          "type": "function",
+          "signature": "Channel.stop()",
+          "description": {
+            "en": "Stop playback on this channel.",
+            "ja": "このチャンネルの再生を停止する。"
+          },
+          "return": {
+            "type": "None"
+          },
+          "advanced": true
+        },
+        {
+          "name": "Channel.play_pos",
+          "type": "function",
+          "signature": "Channel.play_pos()",
+          "description": {
+            "en": "Get the playback position as a tuple of (sound_no, sec). Return None when playback has stopped.",
+            "ja": "再生位置を (sound_no, sec) のタプルとして取得する。再生停止時はNoneを返す。"
+          },
+          "return": {
+            "type": "tuple/None",
+            "desc": {
+              "en": "(sound_no, sec) or None",
+              "ja": "(sound_no, sec) またはNone"
+            }
+          },
+          "advanced": true
+        }
+      ]
+    },
+    {
+      "id": "tone",
+      "title": {
+        "en": "Tone Class",
+        "ja": "Toneクラス"
+      },
+      "items": [
+        {
+          "name": "Tone",
+          "type": "class",
+          "signature": "Tone()",
+          "description": {
+            "en": "Create a new Tone instance.",
+            "ja": "新しいToneインスタンスを作成する。"
+          },
+          "return": {
+            "type": "Tone",
+            "desc": {
+              "en": "New Tone instance",
+              "ja": "新しいToneインスタンス"
+            }
+          },
+          "advanced": true
+        },
+        {
+          "name": "Tone.mode",
+          "type": "variable",
+          "signature": "Tone.mode",
+          "description": {
+            "en": "Tone mode (0:Wavetable / 1:ShortPeriodNoise / 2:LongPeriodNoise).",
+            "ja": "トーンモード (0:Wavetable / 1:ShortPeriodNoise / 2:LongPeriodNoise)"
+          },
+          "value_type": "int",
+          "advanced": true
+        },
+        {
+          "name": "Tone.sample_bits",
+          "type": "variable",
+          "signature": "Tone.sample_bits",
+          "description": {
+            "en": "Sample bits for the wavetable (default: 4).",
+            "ja": "ウェーブテーブルのサンプルビット数（デフォルト: 4）"
+          },
+          "value_type": "int",
+          "advanced": true
+        },
+        {
+          "name": "Tone.wavetable",
+          "type": "variable",
+          "signature": "Tone.wavetable",
+          "description": {
+            "en": "Wavetable data as a list of sample values.",
+            "ja": "サンプル値のリストによるウェーブテーブルデータ"
+          },
+          "value_type": "list[int]",
+          "advanced": true
+        },
+        {
+          "name": "Tone.gain",
+          "type": "variable",
+          "signature": "Tone.gain",
+          "description": {
+            "en": "Tone gain (default: 1.0).",
+            "ja": "トーンゲイン（デフォルト: 1.0）"
+          },
+          "value_type": "float",
+          "advanced": true
         }
       ]
     }
