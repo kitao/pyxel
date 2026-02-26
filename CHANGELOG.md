@@ -1,5 +1,10 @@
 # Change Log
 
+## 2.7.2
+
+- Added manual page for Pyxel Code Maker
+- Added manual page for Pyxel MML Studio
+
 ## 2.7.1
 
 - Redesigned Pyxel Examples page as Pyxel Showcase

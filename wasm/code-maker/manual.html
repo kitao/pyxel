@@ -1,0 +1,413 @@
+<!doctype html>
+<html lang="en" class="h-full">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="../../docs/images/pyxel_icon_64x64.ico" />
+    <title>Pyxel Code Maker Manual</title>
+    <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+
+    <style type="text/tailwindcss">
+      @layer components {
+        .page {
+          @apply bg-gray-900 min-h-full text-gray-100 antialiased;
+        }
+        .container {
+          @apply mx-auto p-6 max-w-3xl;
+        }
+        .card {
+          @apply bg-gray-800 shadow-sm px-6 py-4 border border-gray-700 rounded-2xl;
+        }
+        .link {
+          @apply outline-none focus-visible:ring-1 focus-visible:ring-indigo-300 text-indigo-400 hover:text-indigo-300 underline underline-offset-2 rounded-sm;
+        }
+        .lang-select {
+          @apply bg-gray-800 px-2 py-1 border border-gray-600 focus-visible:border-indigo-300 rounded-lg outline-none text-gray-200 text-sm;
+        }
+        .section-title {
+          @apply font-medium text-lg text-gray-200 mb-2;
+        }
+        .body-text {
+          @apply text-gray-300 text-sm leading-relaxed;
+        }
+        .codechip {
+          @apply inline-flex items-center bg-gray-700 px-1.5 py-0.5 rounded-md ring-1 ring-gray-600 ring-inset font-mono text-gray-100 text-xs align-middle leading-tight;
+        }
+        .btn-chip {
+          @apply inline-flex items-center bg-gray-900 px-2 py-0.5 border border-gray-600 rounded-md font-medium text-gray-300 text-xs;
+        }
+        .th {
+          @apply px-3 pt-1 pb-3 border-gray-700 border-b font-semibold text-sm text-left;
+        }
+        .td {
+          @apply px-3 py-2 border-gray-700/50 border-b text-sm align-middle;
+        }
+        .shortcut-key {
+          @apply font-mono text-xs text-indigo-300;
+        }
+        .legend-label {
+          @apply text-xs font-medium text-gray-400 uppercase tracking-wide;
+        }
+        .legend-desc {
+          @apply text-sm text-gray-300;
+        }
+      }
+    </style>
+  </head>
+
+  <body class="page">
+    <main class="container" id="app">
+      <div class="flex justify-center items-center py-12 text-gray-500 text-sm">
+        Loading...
+      </div>
+    </main>
+
+    <script>
+      let data = null;
+      let currentLang = "en";
+
+      function t(keyOrObj) {
+        const obj =
+          typeof keyOrObj === "string" ? data?.ui[keyOrObj] : keyOrObj;
+        if (!obj) return typeof keyOrObj === "string" ? keyOrObj : "";
+        if (typeof obj === "string") return obj;
+        return obj[currentLang] || obj["en"] || "";
+      }
+
+      function esc(s) {
+        const d = document.createElement("span");
+        d.textContent = s;
+        return d.innerHTML;
+      }
+
+      function extLink(href, text) {
+        return `<a href="${href}" target="_blank" rel="noopener noreferrer" class="link">${text}</a>`;
+      }
+
+      function chip(text) {
+        return `<code class="codechip">${esc(text)}</code>`;
+      }
+
+      function btnChip(text) {
+        return `<span class="btn-chip">${esc(text)}</span>`;
+      }
+
+      function detectLanguage() {
+        const stored = localStorage.getItem("pyxel-lang");
+        if (stored && data.languages.some((l) => l.code === stored)) {
+          return stored;
+        }
+        const nav = navigator.language || "";
+        const navLower = nav.toLowerCase();
+        if (navLower.startsWith("zh")) return "cn";
+        for (const lang of data.languages) {
+          if (navLower.startsWith(lang.code)) return lang.code;
+        }
+        return "en";
+      }
+
+      function buildPage() {
+        const app = document.getElementById("app");
+        app.innerHTML = "";
+
+        // Header
+        const header = document.createElement("header");
+        header.className = "flex items-start gap-4 mb-6";
+
+        const titleBlock = document.createElement("div");
+        titleBlock.className = "flex-1 min-w-0 order-first";
+
+        const h1 = document.createElement("h1");
+        h1.className = "font-semibold text-2xl tracking-tight";
+        h1.id = "page-title";
+        titleBlock.appendChild(h1);
+
+        const subtitle = document.createElement("p");
+        subtitle.className = "mt-2 text-gray-300 text-sm";
+        subtitle.id = "page-subtitle";
+        titleBlock.appendChild(subtitle);
+
+        const langSelect = document.createElement("select");
+        langSelect.className = "lang-select mt-1";
+        langSelect.id = "lang-select";
+        for (const lang of data.languages) {
+          const opt = document.createElement("option");
+          opt.value = lang.code;
+          opt.textContent = lang.name;
+          langSelect.appendChild(opt);
+        }
+        langSelect.value = currentLang;
+        langSelect.addEventListener("change", () => {
+          currentLang = langSelect.value;
+          localStorage.setItem("pyxel-lang", currentLang);
+          updateTexts();
+        });
+
+        header.appendChild(langSelect);
+        header.appendChild(titleBlock);
+        app.appendChild(header);
+
+        // Sections wrapper
+        const sections = document.createElement("div");
+        sections.className = "space-y-6";
+
+        // --- Overview ---
+        const overviewCard = document.createElement("section");
+        overviewCard.className = "card";
+        overviewCard.innerHTML = `
+          <h2 id="sec-overview-title" class="section-title"></h2>
+          <p id="sec-overview-body" class="body-text"></p>
+        `;
+        sections.appendChild(overviewCard);
+
+        // --- Screen Layout ---
+        const layoutCard = document.createElement("section");
+        layoutCard.className = "card";
+        layoutCard.innerHTML = `
+          <h2 id="sec-layout-title" class="section-title"></h2>
+          <p id="sec-layout-body" class="body-text mb-4"></p>
+
+          <!-- Layout diagram -->
+          <div class="border border-gray-600 rounded-lg overflow-hidden select-none mb-4">
+            <!-- Toolbar mockup -->
+            <div class="flex items-center gap-2 bg-[#111827] px-3 py-2">
+              <span class="font-semibold text-gray-200 text-sm mr-1 truncate">Pyxel Code Maker</span>
+              <span class="text-gray-500 text-xs truncate hidden sm:inline">Playground for Pyxel</span>
+              <div class="flex items-center gap-1.5 ml-auto shrink-0">
+                <span class="btn-chip">Load</span>
+                <span class="btn-chip">Save</span>
+                <span class="inline-flex items-center border border-gray-600 rounded-md overflow-hidden divide-x divide-gray-600">
+                  <span class="bg-slate-600 px-2 py-0.5 text-xs text-white font-medium">Code</span>
+                  <span class="bg-gray-900 px-2 py-0.5 text-xs text-gray-400 font-medium">Res</span>
+                </span>
+                <span class="btn-chip">Run</span>
+              </div>
+            </div>
+            <!-- Focus line -->
+            <div class="flex h-[2px]">
+              <div class="flex-1 bg-cyan-700"></div>
+              <div class="w-3 bg-gray-700"></div>
+              <div class="flex-1 bg-gray-700"></div>
+            </div>
+            <!-- Main area -->
+            <div class="flex" style="height: 140px">
+              <div class="flex-1 bg-[#111827] flex items-center justify-center">
+                <div class="text-center text-gray-500 text-xs sm:text-sm">
+                  <div id="diagram-editing-label"></div>
+                  <div id="diagram-editing-sublabel" class="text-[10px] sm:text-xs mt-0.5 text-gray-600"></div>
+                </div>
+              </div>
+              <div class="w-3 bg-[#232d3b] shrink-0"></div>
+              <div class="flex-1 bg-[#202224] flex items-center justify-center">
+                <span id="diagram-runtime-label" class="text-gray-500 text-xs sm:text-sm"></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Legend -->
+          <div class="space-y-2" id="layout-legend"></div>
+        `;
+        sections.appendChild(layoutCard);
+
+        // --- Toolbar ---
+        const toolbarCard = document.createElement("section");
+        toolbarCard.className = "card";
+        toolbarCard.innerHTML = `
+          <h2 id="sec-toolbar-title" class="section-title"></h2>
+          <p id="sec-toolbar-body" class="body-text mb-3"></p>
+          <div id="toolbar-items" class="space-y-2.5"></div>
+        `;
+        sections.appendChild(toolbarCard);
+
+        // --- Code Editor ---
+        const codeCard = document.createElement("section");
+        codeCard.className = "card";
+        codeCard.innerHTML = `
+          <h2 id="sec-code-title" class="section-title"></h2>
+          <p id="sec-code-body" class="body-text"></p>
+        `;
+        sections.appendChild(codeCard);
+
+        // --- Resource Editor ---
+        const resourceCard = document.createElement("section");
+        resourceCard.className = "card";
+        resourceCard.innerHTML = `
+          <h2 id="sec-resource-title" class="section-title"></h2>
+          <p id="sec-resource-body" class="body-text"></p>
+        `;
+        sections.appendChild(resourceCard);
+
+        // --- Runtime Screen ---
+        const runtimeCard = document.createElement("section");
+        runtimeCard.className = "card";
+        runtimeCard.innerHTML = `
+          <h2 id="sec-runtime-title" class="section-title"></h2>
+          <p id="sec-runtime-body" class="body-text"></p>
+        `;
+        sections.appendChild(runtimeCard);
+
+        // --- Keyboard Shortcuts ---
+        const shortcutsCard = document.createElement("section");
+        shortcutsCard.className = "card";
+        shortcutsCard.innerHTML = `
+          <h2 id="sec-shortcuts-title" class="section-title"></h2>
+          <p id="sec-shortcuts-body" class="body-text mb-3"></p>
+          <div class="overflow-x-auto">
+            <table class="w-full border-collapse">
+              <thead>
+                <tr>
+                  <th id="th-shortcut" class="th"></th>
+                  <th id="th-action" class="th"></th>
+                </tr>
+              </thead>
+              <tbody id="shortcuts-table"></tbody>
+            </table>
+          </div>
+        `;
+        sections.appendChild(shortcutsCard);
+
+        // --- Project Files ---
+        const projectCard = document.createElement("section");
+        projectCard.className = "card";
+        projectCard.innerHTML = `
+          <h2 id="sec-project-title" class="section-title"></h2>
+          <div id="sec-project-body" class="body-text space-y-2"></div>
+        `;
+        sections.appendChild(projectCard);
+
+        app.appendChild(sections);
+
+        updateTexts();
+      }
+
+      function updateTexts() {
+        // Title & subtitle
+        document.getElementById("page-title").textContent = t("title");
+        document.getElementById("page-subtitle").innerHTML = t("subtitle")
+          .replace(
+            "{0}",
+            extLink("https://github.com/kitao/pyxel", "Pyxel"),
+          );
+
+        // Overview
+        document.getElementById("sec-overview-title").textContent =
+          t("overview_title");
+        document.getElementById("sec-overview-body").textContent =
+          t("overview_body");
+
+        // Screen Layout
+        document.getElementById("sec-layout-title").textContent =
+          t("layout_title");
+        document.getElementById("sec-layout-body").textContent =
+          t("layout_body");
+
+        // Diagram labels
+        document.getElementById("diagram-editing-label").textContent =
+          t("layout_editing_area");
+        document.getElementById("diagram-editing-sublabel").textContent =
+          "(Code / Resource)";
+        document.getElementById("diagram-runtime-label").textContent =
+          t("layout_runtime");
+
+        // Layout legend
+        const legendEl = document.getElementById("layout-legend");
+        const legendItems = [
+          { key: "layout_toolbar", descKey: "layout_toolbar_desc" },
+          { key: "layout_focus_line", descKey: "layout_focus_line_desc" },
+          { key: "layout_editing_area", descKey: "layout_editing_area_desc" },
+          { key: "layout_splitter", descKey: "layout_splitter_desc" },
+          { key: "layout_runtime", descKey: "layout_runtime_desc" },
+        ];
+        legendEl.innerHTML = legendItems
+          .map(
+            (item) =>
+              `<div class="flex items-baseline gap-2">
+                <span class="legend-label shrink-0 w-28">${esc(t(item.key))}</span>
+                <span class="legend-desc">${esc(t(item.descKey))}</span>
+              </div>`,
+          )
+          .join("");
+
+        // Toolbar
+        document.getElementById("sec-toolbar-title").textContent =
+          t("toolbar_title");
+        document.getElementById("sec-toolbar-body").textContent =
+          t("toolbar_body");
+
+        const toolbarItemsEl = document.getElementById("toolbar-items");
+        toolbarItemsEl.innerHTML = data.toolbar_items
+          .map(
+            (item) =>
+              `<div class="flex items-baseline gap-3">
+                ${btnChip(item.label)}
+                <span class="body-text">${esc(t(item.desc))}</span>
+              </div>`,
+          )
+          .join("");
+
+        // Code Editor
+        document.getElementById("sec-code-title").textContent =
+          t("code_title");
+        document.getElementById("sec-code-body").innerHTML = esc(
+          t("code_body"),
+        ).replace("{0}", chip("main.py"));
+
+        // Resource Editor
+        document.getElementById("sec-resource-title").textContent =
+          t("resource_title");
+        document.getElementById("sec-resource-body").innerHTML = esc(
+          t("resource_body"),
+        ).replace("{0}", chip("my_resource.pyxres"));
+
+        // Runtime Screen
+        document.getElementById("sec-runtime-title").textContent =
+          t("runtime_title");
+        document.getElementById("sec-runtime-body").innerHTML = esc(
+          t("runtime_body"),
+        ).replace(
+          "{0}",
+          `<span class="shortcut-key">Ctrl(Cmd)+Enter</span>`,
+        );
+
+        // Keyboard Shortcuts
+        document.getElementById("sec-shortcuts-title").textContent =
+          t("shortcuts_title");
+        document.getElementById("sec-shortcuts-body").textContent =
+          t("shortcuts_body");
+        document.getElementById("th-shortcut").textContent = t("th_shortcut");
+        document.getElementById("th-action").textContent = t("th_action");
+
+        const shortcutsTable = document.getElementById("shortcuts-table");
+        shortcutsTable.innerHTML = data.shortcuts
+          .map(
+            (s) =>
+              `<tr>
+                <td class="td"><span class="shortcut-key">${esc(s.key)}</span></td>
+                <td class="td text-gray-300">${esc(t(s.action))}</td>
+              </tr>`,
+          )
+          .join("");
+
+        // Project Files
+        document.getElementById("sec-project-title").textContent =
+          t("project_title");
+        document.getElementById("sec-project-body").innerHTML =
+          `<p>${esc(t("project_body_1")).replace("{0}", chip("main.py")).replace("{1}", chip("my_resource.pyxres"))}</p>` +
+          `<p>${esc(t("project_body_2")).replace("{0}", chip(".pyxapp"))}</p>` +
+          `<pre class="bg-gray-900/80 rounded-lg px-3 py-2 font-mono text-xs text-gray-300 mt-2">pyxel play project_name.zip</pre>`;
+
+        document.documentElement.lang =
+          currentLang === "cn" ? "zh" : currentLang;
+      }
+
+      // Init
+      fetch("manual.json")
+        .then((r) => r.json())
+        .then((json) => {
+          data = json;
+          currentLang = detectLanguage();
+          buildPage();
+        });
+    </script>
+  </body>
+</html>

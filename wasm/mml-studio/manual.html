@@ -1,0 +1,416 @@
+<!doctype html>
+<html lang="en" class="h-full">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="../../docs/images/pyxel_icon_64x64.ico" />
+    <title>Pyxel MML Studio Manual</title>
+    <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+
+    <style type="text/tailwindcss">
+      @layer components {
+        .page {
+          @apply bg-gray-900 min-h-full text-gray-100 antialiased;
+        }
+        .container {
+          @apply mx-auto p-6 max-w-3xl;
+        }
+        .card {
+          @apply bg-gray-800 shadow-sm px-6 py-4 border border-gray-700 rounded-2xl;
+        }
+        .link {
+          @apply outline-none focus-visible:ring-1 focus-visible:ring-indigo-300 text-indigo-400 hover:text-indigo-300 underline underline-offset-2 rounded-sm;
+        }
+        .lang-select {
+          @apply bg-gray-800 px-2 py-1 border border-gray-600 focus-visible:border-indigo-300 rounded-lg outline-none text-gray-200 text-sm;
+        }
+        .section-title {
+          @apply font-medium text-lg text-gray-200 mb-2;
+        }
+        .body-text {
+          @apply text-gray-300 text-sm leading-relaxed;
+        }
+        .codechip {
+          @apply inline-flex items-center bg-gray-700 px-1.5 py-0.5 rounded-md ring-1 ring-gray-600 ring-inset font-mono text-gray-100 text-xs align-middle leading-tight;
+        }
+        .btn-chip {
+          @apply inline-flex items-center bg-gray-900 px-2 py-0.5 border border-gray-600 rounded-md font-medium text-gray-300 text-xs;
+        }
+        .link-chip {
+          @apply inline-flex items-center text-indigo-400 text-xs font-medium;
+        }
+        .th {
+          @apply px-3 pt-1 pb-3 border-gray-700 border-b font-semibold text-sm text-left;
+        }
+        .td {
+          @apply px-3 py-2 border-gray-700/50 border-b text-sm align-middle;
+        }
+        .shortcut-key {
+          @apply font-mono text-xs text-indigo-300;
+        }
+        .legend-label {
+          @apply text-xs font-medium text-gray-400 uppercase tracking-wide;
+        }
+        .legend-desc {
+          @apply text-sm text-gray-300;
+        }
+      }
+    </style>
+  </head>
+
+  <body class="page">
+    <main class="container" id="app">
+      <div class="flex justify-center items-center py-12 text-gray-500 text-sm">
+        Loading...
+      </div>
+    </main>
+
+    <script>
+      let data = null;
+      let currentLang = "en";
+
+      function t(keyOrObj) {
+        const obj =
+          typeof keyOrObj === "string" ? data?.ui[keyOrObj] : keyOrObj;
+        if (!obj) return typeof keyOrObj === "string" ? keyOrObj : "";
+        if (typeof obj === "string") return obj;
+        return obj[currentLang] || obj["en"] || "";
+      }
+
+      function esc(s) {
+        const d = document.createElement("span");
+        d.textContent = s;
+        return d.innerHTML;
+      }
+
+      function extLink(href, text) {
+        return `<a href="${href}" target="_blank" rel="noopener noreferrer" class="link">${text}</a>`;
+      }
+
+      function chip(text) {
+        return `<code class="codechip">${esc(text)}</code>`;
+      }
+
+      function btnChip(text) {
+        return `<span class="btn-chip">${esc(text)}</span>`;
+      }
+
+      function linkChip(text) {
+        return `<span class="link-chip">${esc(text)}</span>`;
+      }
+
+      function detectLanguage() {
+        const stored = localStorage.getItem("pyxel-lang");
+        if (stored && data.languages.some((l) => l.code === stored)) {
+          return stored;
+        }
+        const nav = navigator.language || "";
+        const navLower = nav.toLowerCase();
+        if (navLower.startsWith("zh")) return "cn";
+        for (const lang of data.languages) {
+          if (navLower.startsWith(lang.code)) return lang.code;
+        }
+        return "en";
+      }
+
+      function buildPage() {
+        const app = document.getElementById("app");
+        app.innerHTML = "";
+
+        // Header
+        const header = document.createElement("header");
+        header.className = "flex items-start gap-4 mb-6";
+
+        const titleBlock = document.createElement("div");
+        titleBlock.className = "flex-1 min-w-0 order-first";
+
+        const h1 = document.createElement("h1");
+        h1.className = "font-semibold text-2xl tracking-tight";
+        h1.id = "page-title";
+        titleBlock.appendChild(h1);
+
+        const subtitle = document.createElement("p");
+        subtitle.className = "mt-2 text-gray-300 text-sm";
+        subtitle.id = "page-subtitle";
+        titleBlock.appendChild(subtitle);
+
+        const langSelect = document.createElement("select");
+        langSelect.className = "lang-select mt-1";
+        langSelect.id = "lang-select";
+        for (const lang of data.languages) {
+          const opt = document.createElement("option");
+          opt.value = lang.code;
+          opt.textContent = lang.name;
+          langSelect.appendChild(opt);
+        }
+        langSelect.value = currentLang;
+        langSelect.addEventListener("change", () => {
+          currentLang = langSelect.value;
+          localStorage.setItem("pyxel-lang", currentLang);
+          updateTexts();
+        });
+
+        header.appendChild(langSelect);
+        header.appendChild(titleBlock);
+        app.appendChild(header);
+
+        // Sections wrapper
+        const sections = document.createElement("div");
+        sections.className = "space-y-6";
+
+        // --- Overview ---
+        const overviewCard = document.createElement("section");
+        overviewCard.className = "card";
+        overviewCard.innerHTML = `
+          <h2 id="sec-overview-title" class="section-title"></h2>
+          <p id="sec-overview-body" class="body-text"></p>
+        `;
+        sections.appendChild(overviewCard);
+
+        // --- Screen Layout ---
+        const layoutCard = document.createElement("section");
+        layoutCard.className = "card";
+        layoutCard.innerHTML = `
+          <h2 id="sec-layout-title" class="section-title"></h2>
+          <p id="sec-layout-body" class="body-text mb-4"></p>
+
+          <!-- Layout diagram -->
+          <div class="border border-gray-600 rounded-lg overflow-hidden select-none mb-4">
+            <!-- Control area -->
+            <div class="flex sm:flex-row flex-col items-start sm:items-center gap-3 bg-[#111827] px-3 py-3">
+              <div class="flex flex-col gap-1.5 shrink-0">
+                <div class="flex gap-1.5">
+                  <span class="btn-chip">PLAY</span>
+                  <span class="btn-chip">STOP</span>
+                  <span class="inline-flex items-center bg-slate-600 px-2 py-0.5 border border-gray-600 rounded-md font-medium text-white text-xs">LOOP</span>
+                </div>
+                <span class="link-chip">Pyxel MML Commands</span>
+                <span class="text-gray-400 text-xs">Sample Tune <span class="text-indigo-400">A</span> / <span class="text-indigo-400">B</span></span>
+              </div>
+              <div class="flex-1 bg-[#202224] rounded border border-gray-700 h-16 w-full sm:w-auto flex items-center justify-center">
+                <span id="diagram-runtime-label" class="text-gray-500 text-xs"></span>
+              </div>
+            </div>
+            <!-- Channels -->
+            <div class="bg-gray-900 px-3 py-2 space-y-2">
+              <div class="flex items-center gap-2">
+                <span class="text-gray-300 text-sm font-medium w-8">CH1</span>
+                <span class="btn-chip">SOLO</span>
+                <span class="btn-chip">MUTE</span>
+              </div>
+              <div class="bg-gray-900 border border-gray-600 rounded-lg h-8 w-full"></div>
+              <div class="flex items-center gap-2">
+                <span class="text-gray-300 text-sm font-medium w-8">CH2</span>
+                <span class="btn-chip">SOLO</span>
+                <span class="btn-chip">MUTE</span>
+              </div>
+              <div class="bg-gray-900 border border-gray-600 rounded-lg h-8 w-full"></div>
+              <div class="text-center text-gray-600 text-xs py-1">CH3, CH4 ...</div>
+            </div>
+            <!-- URL / QR -->
+            <div class="bg-gray-900 border-t border-gray-700 px-3 py-2">
+              <div class="text-gray-300 text-sm font-medium mb-1">URL</div>
+              <div class="bg-gray-900 border border-gray-600 rounded-lg h-7 w-full mb-2"></div>
+              <div class="flex justify-start">
+                <div class="bg-gray-800 border border-gray-600 rounded w-12 h-12 flex items-center justify-center">
+                  <span class="text-gray-600 text-[8px]">QR</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Legend -->
+          <div class="space-y-2" id="layout-legend"></div>
+        `;
+        sections.appendChild(layoutCard);
+
+        // --- Controls ---
+        const controlsCard = document.createElement("section");
+        controlsCard.className = "card";
+        controlsCard.innerHTML = `
+          <h2 id="sec-controls-title" class="section-title"></h2>
+          <p id="sec-controls-body" class="body-text mb-3"></p>
+          <div id="control-items" class="space-y-2.5"></div>
+        `;
+        sections.appendChild(controlsCard);
+
+        // --- Channel Input ---
+        const channelsCard = document.createElement("section");
+        channelsCard.className = "card";
+        channelsCard.innerHTML = `
+          <h2 id="sec-channels-title" class="section-title"></h2>
+          <p id="sec-channels-body" class="body-text mb-3"></p>
+          <div id="channel-items" class="space-y-2.5"></div>
+        `;
+        sections.appendChild(channelsCard);
+
+        // --- Sharing ---
+        const sharingCard = document.createElement("section");
+        sharingCard.className = "card";
+        sharingCard.innerHTML = `
+          <h2 id="sec-sharing-title" class="section-title"></h2>
+          <p id="sec-sharing-body" class="body-text"></p>
+        `;
+        sections.appendChild(sharingCard);
+
+        // --- Keyboard Shortcuts ---
+        const shortcutsCard = document.createElement("section");
+        shortcutsCard.className = "card";
+        shortcutsCard.innerHTML = `
+          <h2 id="sec-shortcuts-title" class="section-title"></h2>
+          <p id="sec-shortcuts-body" class="body-text mb-3"></p>
+          <div class="overflow-x-auto">
+            <table class="w-full border-collapse">
+              <thead>
+                <tr>
+                  <th id="th-shortcut" class="th"></th>
+                  <th id="th-action" class="th"></th>
+                </tr>
+              </thead>
+              <tbody id="shortcuts-table"></tbody>
+            </table>
+          </div>
+        `;
+        sections.appendChild(shortcutsCard);
+
+        // --- MML Command Reference ---
+        const mmlRefCard = document.createElement("section");
+        mmlRefCard.className = "card";
+        mmlRefCard.innerHTML = `
+          <h2 id="sec-mml-ref-title" class="section-title"></h2>
+          <p id="sec-mml-ref-body" class="body-text"></p>
+        `;
+        sections.appendChild(mmlRefCard);
+
+        app.appendChild(sections);
+
+        updateTexts();
+      }
+
+      function updateTexts() {
+        // Title & subtitle
+        document.getElementById("page-title").textContent = t("title");
+        document.getElementById("page-subtitle").innerHTML = t("subtitle")
+          .replace(
+            "{0}",
+            extLink("https://github.com/kitao/pyxel", "Pyxel"),
+          );
+
+        // Overview
+        document.getElementById("sec-overview-title").textContent =
+          t("overview_title");
+        document.getElementById("sec-overview-body").textContent =
+          t("overview_body");
+
+        // Screen Layout
+        document.getElementById("sec-layout-title").textContent =
+          t("layout_title");
+        document.getElementById("sec-layout-body").textContent =
+          t("layout_body");
+
+        // Diagram label
+        document.getElementById("diagram-runtime-label").textContent =
+          t("layout_runtime");
+
+        // Layout legend
+        const legendEl = document.getElementById("layout-legend");
+        const legendItems = [
+          { key: "layout_controls", descKey: "layout_controls_desc" },
+          { key: "layout_channels", descKey: "layout_channels_desc" },
+          { key: "layout_output", descKey: "layout_output_desc" },
+        ];
+        legendEl.innerHTML = legendItems
+          .map(
+            (item) =>
+              `<div class="flex items-baseline gap-2">
+                <span class="legend-label shrink-0 w-28">${esc(t(item.key))}</span>
+                <span class="legend-desc">${esc(t(item.descKey))}</span>
+              </div>`,
+          )
+          .join("");
+
+        // Controls
+        document.getElementById("sec-controls-title").textContent =
+          t("controls_title");
+        document.getElementById("sec-controls-body").textContent =
+          t("controls_body");
+
+        const controlItemsEl = document.getElementById("control-items");
+        controlItemsEl.innerHTML = data.control_items
+          .map(
+            (item) =>
+              `<div class="flex items-baseline gap-3">
+                ${item.type === "link" ? linkChip(item.label) : btnChip(item.label)}
+                <span class="body-text">${esc(t(item.desc))}</span>
+              </div>`,
+          )
+          .join("");
+
+        // Channel Input
+        document.getElementById("sec-channels-title").textContent =
+          t("channels_title");
+        document.getElementById("sec-channels-body").innerHTML = esc(
+          t("channels_body"),
+        ).replace("{0}", chip("CDE"));
+
+        const channelItemsEl = document.getElementById("channel-items");
+        channelItemsEl.innerHTML = data.channel_items
+          .map(
+            (item) =>
+              `<div class="flex items-baseline gap-3">
+                ${btnChip(item.label)}
+                <span class="body-text">${esc(t(item.desc))}</span>
+              </div>`,
+          )
+          .join("");
+
+        // Sharing
+        document.getElementById("sec-sharing-title").textContent =
+          t("sharing_title");
+        document.getElementById("sec-sharing-body").textContent =
+          t("sharing_body");
+
+        // Keyboard Shortcuts
+        document.getElementById("sec-shortcuts-title").textContent =
+          t("shortcuts_title");
+        document.getElementById("sec-shortcuts-body").textContent =
+          t("shortcuts_body");
+        document.getElementById("th-shortcut").textContent = t("th_shortcut");
+        document.getElementById("th-action").textContent = t("th_action");
+
+        const shortcutsTable = document.getElementById("shortcuts-table");
+        shortcutsTable.innerHTML = data.shortcuts
+          .map(
+            (s) =>
+              `<tr>
+                <td class="td"><span class="shortcut-key">${esc(s.key)}</span></td>
+                <td class="td text-gray-300">${esc(t(s.action))}</td>
+              </tr>`,
+          )
+          .join("");
+
+        // MML Command Reference
+        document.getElementById("sec-mml-ref-title").textContent =
+          t("mml_ref_title");
+        document.getElementById("sec-mml-ref-body").innerHTML = esc(
+          t("mml_ref_body"),
+        ).replace(
+          "{0}",
+          extLink("mml-commands.html", t("mml_ref_link")),
+        );
+
+        document.documentElement.lang =
+          currentLang === "cn" ? "zh" : currentLang;
+      }
+
+      // Init
+      fetch("manual.json")
+        .then((r) => r.json())
+        .then((json) => {
+          data = json;
+          currentLang = detectLanguage();
+          buildPage();
+        });
+    </script>
+  </body>
+</html>
