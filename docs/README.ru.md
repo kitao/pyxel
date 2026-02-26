@@ -117,7 +117,7 @@ pyxel
 ```
 
 ```
-Pyxel 2.7.1, a retro game engine for Python
+Pyxel, a retro game engine for Python
 usage:
     pyxel run PYTHON_SCRIPT_FILE(.py)
     pyxel watch WATCH_DIR PYTHON_SCRIPT_FILE(.py)

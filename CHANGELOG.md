@@ -4,6 +4,7 @@
 
 - Added manual page for Pyxel Code Maker
 - Added manual page for Pyxel MML Studio
+- Removed version number from pyxel command example in READMEs
 
 ## 2.7.1
 
