@@ -137,8 +137,6 @@ usage:
 pyxel copy_examples
 ```
 
-Список прикладів можна переглянути та запустити у браузері на [Pyxel Showcase](https://kitao.github.io/pyxel/wasm/showcase/).
-
 У локальному середовищі приклади можна виконати за допомогою наступних команд:
 
 ```sh
@@ -150,6 +148,8 @@ pyxel run 01_hello_pyxel.py
 cd apps
 pyxel play 30sec_of_daylight.pyxapp
 ```
+
+Список прикладів також можна переглянути та запустити у браузері на [Pyxel Showcase](https://kitao.github.io/pyxel/wasm/showcase/).
 
 ## Створення додатків
 

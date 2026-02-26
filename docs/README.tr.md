@@ -137,8 +137,6 @@ Aşağıdaki komutla örnekleri geçerli dizine kopyalayabilirsiniz:
 pyxel copy_examples
 ```
 
-Örnek listesi [Pyxel Showcase](https://kitao.github.io/pyxel/wasm/showcase/) üzerinden tarayıcıda görüntülenebilir ve çalıştırılabilir.
-
 Yerel ortamda örnekler aşağıdaki komutlarla çalıştırılabilir:
 
 ```sh
@@ -150,6 +148,8 @@ pyxel run 01_hello_pyxel.py
 cd apps
 pyxel play 30sec_of_daylight.pyxapp
 ```
+
+Örnek listesi [Pyxel Showcase](https://kitao.github.io/pyxel/wasm/showcase/) üzerinden tarayıcıda da görüntülenebilir ve çalıştırılabilir.
 
 ## Uygulama Oluşturma
 

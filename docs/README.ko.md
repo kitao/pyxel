@@ -137,8 +137,6 @@ usage:
 pyxel copy_examples
 ```
 
-예제 목록은 [Pyxel Showcase](https://kitao.github.io/pyxel/wasm/showcase/)에서 브라우저로 확인하고 실행할 수 있습니다.
-
 로컬 환경에서는 다음 명령어로 실행할 수 있습니다:
 
 ```sh
@@ -150,6 +148,8 @@ pyxel run 01_hello_pyxel.py
 cd apps
 pyxel play 30sec_of_daylight.pyxapp
 ```
+
+예제 목록은 [Pyxel Showcase](https://kitao.github.io/pyxel/wasm/showcase/)에서 브라우저로도 확인하고 실행할 수 있습니다.
 
 ## 애플리케이션 만들기
 

@@ -137,8 +137,6 @@ El siguiente comando copia los ejemplos de Pyxel al directorio actual:
 pyxel copy_examples
 ```
 
-Los ejemplos se pueden ver y ejecutar en el navegador desde [Pyxel Showcase](https://kitao.github.io/pyxel/wasm/showcase/).
-
 En el entorno local, los ejemplos se pueden ejecutar con los siguientes comandos:
 
 ```sh
@@ -150,6 +148,8 @@ pyxel run 01_hello_pyxel.py
 cd apps
 pyxel play 30sec_of_daylight.pyxapp
 ```
+
+Los ejemplos también se pueden ver y ejecutar en el navegador desde [Pyxel Showcase](https://kitao.github.io/pyxel/wasm/showcase/).
 
 ## Creación de aplicaciones
 

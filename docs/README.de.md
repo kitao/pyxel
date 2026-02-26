@@ -137,8 +137,6 @@ Mit dem folgenden Befehl können Sie die Beispiele in das aktuelle Verzeichnis k
 pyxel copy_examples
 ```
 
-Die Beispiele können auf [Pyxel Showcase](https://kitao.github.io/pyxel/wasm/showcase/) im Browser angesehen und ausgeführt werden.
-
 In der lokalen Umgebung können die Beispiele mit den folgenden Befehlen ausgeführt werden:
 
 ```sh
@@ -150,6 +148,8 @@ pyxel run 01_hello_pyxel.py
 cd apps
 pyxel play 30sec_of_daylight.pyxapp
 ```
+
+Die Beispiele können auch auf [Pyxel Showcase](https://kitao.github.io/pyxel/wasm/showcase/) im Browser angesehen und ausgeführt werden.
 
 ## Anwendungen erstellen
 
