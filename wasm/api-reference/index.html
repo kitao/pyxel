@@ -143,9 +143,9 @@
 
       function hasDetails(item) {
         return (
-          item.params ||
-          item.return ||
-          item.examples ||
+          (item.params && item.params.length > 0) ||
+          (item.return && item.return.type !== "None") ||
+          (item.examples && item.examples.length > 0) ||
           item.notes ||
           item.value_type
         );
