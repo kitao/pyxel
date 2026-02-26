@@ -498,18 +498,18 @@
           "type": "function",
           "signature": "show()",
           "description": {
-            "en": "Show the screen and wait until the Esc key is pressed.",
-            "cn": "显示画面并等待，直到按下Esc键。",
-            "de": "Zeigt den Bildschirm an und wartet, bis die Esc-Taste gedrückt wird.",
-            "es": "Muestra la pantalla y espera hasta que se presione la tecla Esc.",
-            "fr": "Affiche l'écran et attend que la touche Esc soit pressée.",
-            "it": "Mostra lo schermo e attende finché non viene premuto il tasto Esc.",
-            "ja": "画面を表示し、Escキーが押されるまで待機する。",
-            "ko": "화면을 표시하고 Esc 키가 눌릴 때까지 대기한다.",
-            "pt": "Exibe a tela e aguarda até que a tecla Esc seja pressionada.",
-            "ru": "Отображает экран и ожидает нажатия клавиши Esc.",
-            "tr": "Ekranı gösterir ve Esc tuşuna basılana kadar bekler.",
-            "uk": "Показує екран і чекає, поки не буде натиснуто клавішу Esc."
+            "en": "Show the screen and wait until the quit key is pressed.",
+            "cn": "显示画面并等待，直到按下退出键。",
+            "de": "Zeigt den Bildschirm an und wartet, bis die Quit-Taste gedrückt wird.",
+            "es": "Muestra la pantalla y espera hasta que se presione la tecla de salida.",
+            "fr": "Affiche l'écran et attend que la touche de fermeture soit pressée.",
+            "it": "Mostra lo schermo e attende finché non viene premuto il tasto di uscita.",
+            "ja": "画面を表示し、終了キーが押されるまで待機する。",
+            "ko": "화면을 표시하고 종료 키가 눌릴 때까지 대기한다.",
+            "pt": "Exibe a tela e aguarda até que a tecla de saída seja pressionada.",
+            "ru": "Отображает экран и ожидает нажатия клавиши выхода.",
+            "tr": "Ekranı gösterir ve çıkış tuşuna basılana kadar bekler.",
+            "uk": "Показує екран і чекає, поки не буде натиснуто клавішу виходу."
           },
           "return": {
             "type": "None"
@@ -521,18 +521,18 @@
           "type": "function",
           "signature": "flip()",
           "description": {
-            "en": "Refresh the screen by one frame. The application exits when the Esc key is pressed. This function is not available in the web version.",
-            "cn": "更新一帧画面。按下Esc键时应用程序退出。此函数在Web版中不可用。",
-            "de": "Aktualisiert den Bildschirm um einen Frame. Die Anwendung wird beim Drücken der Esc-Taste beendet. Diese Funktion ist in der Web-Version nicht verfügbar.",
-            "es": "Actualiza la pantalla en un fotograma. La aplicación se cierra al presionar la tecla Esc. Esta función no está disponible en la versión web.",
-            "fr": "Rafraîchit l'écran d'une frame. L'application se termine lorsque la touche Esc est pressée. Cette fonction n'est pas disponible dans la version web.",
-            "it": "Aggiorna lo schermo di un frame. L'applicazione si chiude quando viene premuto il tasto Esc. Questa funzione non è disponibile nella versione web.",
-            "ja": "画面を1フレーム更新する。Escキーを押すとアプリケーションは終了する。この関数はWeb版では動作しない。",
-            "ko": "화면을 1프레임 갱신한다. Esc 키를 누르면 애플리케이션이 종료된다. 이 함수는 웹 버전에서는 동작하지 않는다.",
-            "pt": "Atualiza a tela em um quadro. A aplicação é encerrada ao pressionar a tecla Esc. Esta função não está disponível na versão web.",
-            "ru": "Обновляет экран на один кадр. Приложение завершается при нажатии клавиши Esc. Эта функция недоступна в веб-версии.",
-            "tr": "Ekranı bir kare günceller. Esc tuşuna basıldığında uygulama kapanır. Bu fonksiyon web sürümünde kullanılamaz.",
-            "uk": "Оновлює екран на один кадр. Застосунок завершується при натисканні клавіші Esc. Ця функція недоступна у веб-версії."
+            "en": "Refresh the screen by one frame. The application exits when the quit key is pressed. This function is not available in the web version.",
+            "cn": "更新一帧画面。按下退出键时应用程序退出。此函数在Web版中不可用。",
+            "de": "Aktualisiert den Bildschirm um einen Frame. Die Anwendung wird beim Drücken der Quit-Taste beendet. Diese Funktion ist in der Web-Version nicht verfügbar.",
+            "es": "Actualiza la pantalla en un fotograma. La aplicación se cierra al presionar la tecla de salida. Esta función no está disponible en la versión web.",
+            "fr": "Rafraîchit l'écran d'une frame. L'application se termine lorsque la touche de fermeture est pressée. Cette fonction n'est pas disponible dans la version web.",
+            "it": "Aggiorna lo schermo di un frame. L'applicazione si chiude quando viene premuto il tasto di uscita. Questa funzione non è disponibile nella versione web.",
+            "ja": "画面を1フレーム更新する。終了キーを押すとアプリケーションは終了する。この関数はWeb版では動作しない。",
+            "ko": "화면을 1프레임 갱신한다. 종료 키를 누르면 애플리케이션이 종료된다. 이 함수는 웹 버전에서는 동작하지 않는다.",
+            "pt": "Atualiza a tela em um quadro. A aplicação é encerrada ao pressionar a tecla de saída. Esta função não está disponível na versão web.",
+            "ru": "Обновляет экран на один кадр. Приложение завершается при нажатии клавиши выхода. Эта функция недоступна в веб-версии.",
+            "tr": "Ekranı bir kare günceller. Çıkış tuşuna basıldığında uygulama kapanır. Bu fonksiyon web sürümünde kullanılamaz.",
+            "uk": "Оновлює екран на один кадр. Застосунок завершується при натисканні клавіші виходу. Ця функція недоступна у веб-версії."
           },
           "return": {
             "type": "None"
@@ -567,18 +567,18 @@
           "type": "function",
           "signature": "reset()",
           "description": {
-            "en": "Reset the Pyxel application. Environment variables are preserved after reset.",
-            "cn": "重置Pyxel应用程序。重置后环境变量会被保留。",
-            "de": "Setzt die Pyxel-Anwendung zurück. Umgebungsvariablen bleiben nach dem Zurücksetzen erhalten.",
-            "es": "Reinicia la aplicación Pyxel. Las variables de entorno se conservan tras el reinicio.",
-            "fr": "Réinitialise l'application Pyxel. Les variables d'environnement sont conservées après la réinitialisation.",
-            "it": "Reimposta l'applicazione Pyxel. Le variabili d'ambiente vengono mantenute dopo il reset.",
-            "ja": "Pyxelアプリケーションをリセットする。リセット後も環境変数は保持される。",
-            "ko": "Pyxel 애플리케이션을 리셋한다. 리셋 후에도 환경 변수는 유지된다.",
-            "pt": "Reinicia a aplicação Pyxel. As variáveis de ambiente são preservadas após o reinício.",
-            "ru": "Сбрасывает приложение Pyxel. Переменные окружения сохраняются после сброса.",
-            "tr": "Pyxel uygulamasını sıfırlar. Ortam değişkenleri sıfırlama sonrasında korunur.",
-            "uk": "Скидає застосунок Pyxel. Змінні оточення зберігаються після скидання."
+            "en": "Restart the Pyxel application from the beginning.",
+            "cn": "从头重新启动Pyxel应用程序。",
+            "de": "Startet die Pyxel-Anwendung von Anfang an neu.",
+            "es": "Reinicia la aplicación Pyxel desde el principio.",
+            "fr": "Redémarre l'application Pyxel depuis le début.",
+            "it": "Riavvia l'applicazione Pyxel dall'inizio.",
+            "ja": "Pyxelアプリケーションを最初から再起動する。",
+            "ko": "Pyxel 애플리케이션을 처음부터 다시 시작한다.",
+            "pt": "Reinicia a aplicação Pyxel desde o início.",
+            "ru": "Перезапускает приложение Pyxel с начала.",
+            "tr": "Pyxel uygulamasını baştan yeniden başlatır.",
+            "uk": "Перезапускає застосунок Pyxel з початку."
           },
           "return": {
             "type": "None"
@@ -685,7 +685,7 @@
             },
             {
               "name": "colkey",
-              "type": "int",
+              "type": "int/None",
               "desc": {
                 "en": "Transparent color",
                 "cn": "透明色",
@@ -755,36 +755,36 @@
           "type": "function",
           "signature": "screen_mode(scr)",
           "description": {
-            "en": "Set the screen mode.",
-            "cn": "设置屏幕模式。",
-            "de": "Setzt den Bildschirmmodus.",
-            "es": "Establece el modo de pantalla.",
-            "fr": "Définit le mode d'écran.",
-            "it": "Imposta la modalità dello schermo.",
-            "ja": "スクリーンモードを設定する。",
-            "ko": "스크린 모드를 설정한다.",
-            "pt": "Define o modo de tela.",
-            "ru": "Устанавливает режим экрана.",
-            "tr": "Ekran modunu ayarlar.",
-            "uk": "Встановлює режим екрана."
+            "en": "Set the screen mode (0: crisp / 1: smooth / 2: retro).",
+            "cn": "设置屏幕模式 (0: crisp / 1: smooth / 2: retro)。",
+            "de": "Setzt den Bildschirmmodus (0: crisp / 1: smooth / 2: retro).",
+            "es": "Establece el modo de pantalla (0: crisp / 1: smooth / 2: retro).",
+            "fr": "Définit le mode d'écran (0: crisp / 1: smooth / 2: retro).",
+            "it": "Imposta la modalità dello schermo (0: crisp / 1: smooth / 2: retro).",
+            "ja": "スクリーンモードを設定する (0: crisp / 1: smooth / 2: retro)。",
+            "ko": "스크린 모드를 설정한다 (0: crisp / 1: smooth / 2: retro).",
+            "pt": "Define o modo de tela (0: crisp / 1: smooth / 2: retro).",
+            "ru": "Устанавливает режим экрана (0: crisp / 1: smooth / 2: retro).",
+            "tr": "Ekran modunu ayarlar (0: crisp / 1: smooth / 2: retro).",
+            "uk": "Встановлює режим екрана (0: crisp / 1: smooth / 2: retro)."
           },
           "params": [
             {
               "name": "scr",
               "type": "int",
               "desc": {
-                "en": "Screen mode number",
-                "cn": "屏幕模式编号",
-                "de": "Bildschirmmodus-Nummer",
-                "es": "Número de modo de pantalla",
-                "fr": "Numéro de mode d'écran",
-                "it": "Numero modalità schermo",
-                "ja": "スクリーンモード番号",
-                "ko": "스크린 모드 번호",
-                "pt": "Número do modo de tela",
-                "ru": "Номер режима экрана",
-                "tr": "Ekran modu numarası",
-                "uk": "Номер режиму екрана"
+                "en": "Screen mode number (0: crisp / 1: smooth / 2: retro)",
+                "cn": "屏幕模式编号 (0: crisp / 1: smooth / 2: retro)",
+                "de": "Bildschirmmodus-Nummer (0: crisp / 1: smooth / 2: retro)",
+                "es": "Número de modo de pantalla (0: crisp / 1: smooth / 2: retro)",
+                "fr": "Numéro de mode d'écran (0: crisp / 1: smooth / 2: retro)",
+                "it": "Numero modalità schermo (0: crisp / 1: smooth / 2: retro)",
+                "ja": "スクリーンモード番号 (0: crisp / 1: smooth / 2: retro)",
+                "ko": "스크린 모드 번호 (0: crisp / 1: smooth / 2: retro)",
+                "pt": "Número do modo de tela (0: crisp / 1: smooth / 2: retro)",
+                "ru": "Номер режима экрана (0: crisp / 1: smooth / 2: retro)",
+                "tr": "Ekran modu numarası (0: crisp / 1: smooth / 2: retro)",
+                "uk": "Номер режиму екрана (0: crisp / 1: smooth / 2: retro)"
               }
             }
           ],
@@ -1268,18 +1268,18 @@
           "type": "function",
           "signature": "screencast(scale=2)",
           "description": {
-            "en": "Start or save screen recording.",
-            "cn": "开始或保存屏幕录制。",
-            "de": "Startet oder speichert die Bildschirmaufnahme.",
-            "es": "Inicia o guarda la grabación de pantalla.",
-            "fr": "Démarre ou enregistre la capture vidéo de l'écran.",
-            "it": "Avvia o salva la registrazione dello schermo.",
-            "ja": "画面録画を開始または保存する。",
-            "ko": "화면 녹화를 시작하거나 저장한다.",
-            "pt": "Inicia ou salva a gravação de tela.",
-            "ru": "Начинает или сохраняет запись экрана.",
-            "tr": "Ekran kaydını başlatır veya kaydeder.",
-            "uk": "Починає або зберігає запис екрана."
+            "en": "Save the screen recording as a GIF file.",
+            "cn": "保存屏幕录制为GIF文件。",
+            "de": "Speichert die Bildschirmaufnahme als GIF-Datei.",
+            "es": "Guarda la grabación de pantalla como un archivo GIF.",
+            "fr": "Enregistre la capture vidéo de l'écran au format GIF.",
+            "it": "Salva la registrazione dello schermo come file GIF.",
+            "ja": "画面録画をGIFファイルとして保存する。",
+            "ko": "화면 녹화를 GIF 파일로 저장한다.",
+            "pt": "Salva a gravação de tela como um arquivo GIF.",
+            "ru": "Сохраняет запись экрана в файл GIF.",
+            "tr": "Ekran kaydını GIF dosyası olarak kaydeder.",
+            "uk": "Зберігає запис екрана у файл GIF."
           },
           "params": [
             {
@@ -1311,18 +1311,18 @@
           "type": "function",
           "signature": "reset_screencast()",
           "description": {
-            "en": "Reset the screen recording.",
-            "cn": "重置屏幕录制。",
-            "de": "Setzt die Bildschirmaufnahme zurück.",
-            "es": "Restablece la grabación de pantalla.",
-            "fr": "Réinitialise la capture vidéo de l'écran.",
-            "it": "Reimposta la registrazione dello schermo.",
-            "ja": "画面録画をリセットする。",
-            "ko": "화면 녹화를 리셋한다.",
-            "pt": "Redefine a gravação de tela.",
-            "ru": "Сбрасывает запись экрана.",
-            "tr": "Ekran kaydını sıfırlar.",
-            "uk": "Скидає запис екрана."
+            "en": "Reset the screen recording buffer.",
+            "cn": "重置屏幕录制缓冲区。",
+            "de": "Setzt den Bildschirmaufnahme-Puffer zurück.",
+            "es": "Restablece el búfer de grabación de pantalla.",
+            "fr": "Réinitialise le tampon de capture vidéo de l'écran.",
+            "it": "Reimposta il buffer di registrazione dello schermo.",
+            "ja": "画面録画バッファをリセットする。",
+            "ko": "화면 녹화 버퍼를 리셋한다.",
+            "pt": "Redefine o buffer de gravação de tela.",
+            "ru": "Сбрасывает буфер записи экрана.",
+            "tr": "Ekran kaydı arabelleğini sıfırlar.",
+            "uk": "Скидає буфер запису екрана."
           },
           "return": {
             "type": "None"
@@ -1622,18 +1622,18 @@
           "type": "function",
           "signature": "btnp(key, hold=0, repeat=0)",
           "description": {
-            "en": "Return True if the key is pressed in that frame. With hold and repeat, return True at the specified interval.",
+            "en": "Return True if the key is pressed in that frame. When hold and repeat are specified, after holding the key for hold frames, return True every repeat frames.",
             "cn": "如果在该帧按下key则返回True。指定hold和repeat后，按住hold帧以上时每隔repeat帧返回True。",
-            "de": "Gibt True zurück, wenn die Taste in diesem Frame gedrückt wurde. Mit hold und repeat wird True im angegebenen Intervall zurückgegeben.",
-            "es": "Devuelve True si la tecla se presionó en ese fotograma. Con hold y repeat, devuelve True en el intervalo especificado.",
-            "fr": "Renvoie True si la touche est pressée dans ce frame. Avec hold et repeat, renvoie True à l'intervalle spécifié.",
-            "it": "Restituisce True se il tasto viene premuto in quel frame. Con hold e repeat, restituisce True all'intervallo specificato.",
+            "de": "Gibt True zurück, wenn die Taste in diesem Frame gedrückt wurde. Wenn hold und repeat angegeben sind, wird nach dem Halten der Taste für hold Frames alle repeat Frames True zurückgegeben.",
+            "es": "Devuelve True si la tecla se presionó en ese fotograma. Cuando se especifican hold y repeat, después de mantener la tecla durante hold fotogramas, devuelve True cada repeat fotogramas.",
+            "fr": "Renvoie True si la touche est pressée dans ce frame. Lorsque hold et repeat sont spécifiés, après avoir maintenu la touche pendant hold frames, renvoie True tous les repeat frames.",
+            "it": "Restituisce True se il tasto viene premuto in quel frame. Quando hold e repeat sono specificati, dopo aver tenuto premuto il tasto per hold frame, restituisce True ogni repeat frame.",
             "ja": "そのフレームにkeyが押されたらTrueを返す。holdとrepeatを指定すると、holdフレーム以上押し続けた時にrepeatフレーム間隔でTrueが返る。",
             "ko": "해당 프레임에 key가 눌리면 True를 반환한다. hold와 repeat를 지정하면, hold 프레임 이상 누르고 있을 때 repeat 프레임 간격으로 True가 반환된다.",
-            "pt": "Retorna True se a tecla for pressionada nesse quadro. Com hold e repeat, retorna True no intervalo especificado.",
-            "ru": "Возвращает True, если клавиша нажата в этом кадре. С параметрами hold и repeat возвращает True через указанный интервал.",
-            "tr": "O karede tuşa basılmışsa True döndürür. hold ve repeat ile belirtilen aralıkta True döndürür.",
-            "uk": "Повертає True, якщо клавішу натиснуто в цьому кадрі. З параметрами hold і repeat повертає True через вказаний інтервал."
+            "pt": "Retorna True se a tecla for pressionada nesse quadro. Quando hold e repeat são especificados, após manter a tecla pressionada por hold quadros, retorna True a cada repeat quadros.",
+            "ru": "Возвращает True, если клавиша нажата в этом кадре. При указании hold и repeat, после удержания клавиши в течение hold кадров, возвращает True каждые repeat кадров.",
+            "tr": "O karede tuşa basılmışsa True döndürür. hold ve repeat belirtildiğinde, tuş hold kare boyunca basılı tutulduktan sonra her repeat karede True döndürür.",
+            "uk": "Повертає True, якщо клавішу натиснуто в цьому кадрі. Коли вказано hold і repeat, після утримання клавіші протягом hold кадрів повертає True кожні repeat кадрів."
           },
           "params": [
             {
@@ -1815,18 +1815,18 @@
           "type": "function",
           "signature": "btnv(key)",
           "description": {
-            "en": "Return the analog value of the specified key.",
-            "cn": "返回指定键的模拟值。",
-            "de": "Gibt den Analogwert der angegebenen Taste zurück.",
-            "es": "Devuelve el valor analógico de la tecla especificada.",
-            "fr": "Renvoie la valeur analogique de la touche spécifiée.",
-            "it": "Restituisce il valore analogico del tasto specificato.",
-            "ja": "指定されたキーのアナログ値を返す。",
-            "ko": "지정된 키의 아날로그 값을 반환한다.",
-            "pt": "Retorna o valor analógico da tecla especificada.",
-            "ru": "Возвращает аналоговое значение указанной клавиши.",
-            "tr": "Belirtilen tuşun analog değerini döndürür.",
-            "uk": "Повертає аналогове значення зазначеної клавіші."
+            "en": "Return the analog value of the specified key (e.g., gamepad axis value).",
+            "cn": "返回指定键的模拟值（如游戏手柄轴的值）。",
+            "de": "Gibt den analogen Wert der angegebenen Taste zurück (z.B. Gamepad-Achsenwert).",
+            "es": "Devuelve el valor analógico de la tecla especificada (p.ej., valor del eje del gamepad).",
+            "fr": "Renvoie la valeur analogique de la touche spécifiée (ex. valeur de l'axe de la manette).",
+            "it": "Restituisce il valore analogico del tasto specificato (es. valore dell'asse del gamepad).",
+            "ja": "指定キーのアナログ値を返す（例: ゲームパッドの軸の値）。",
+            "ko": "지정 키의 아날로그 값을 반환한다 (예: 게임패드 축 값).",
+            "pt": "Retorna o valor analógico da tecla especificada (ex: valor do eixo do gamepad).",
+            "ru": "Возвращает аналоговое значение указанной клавиши (например, значение оси геймпада).",
+            "tr": "Belirtilen tuşun analog değerini döndürür (örn. gamepad eksen değeri).",
+            "uk": "Повертає аналогове значення вказаної клавіші (наприклад, значення осі геймпада)."
           },
           "params": [
             {
@@ -2873,18 +2873,18 @@
           "type": "function",
           "signature": "camera(x, y)",
           "description": {
-            "en": "Change the upper-left corner coordinates of the screen to (x, y). Call camera() to reset to (0, 0).",
-            "cn": "将画面左上角的坐标变更为 (x, y)。调用camera()重置为 (0, 0)。",
-            "de": "Ändert die Koordinaten der oberen linken Ecke des Bildschirms auf (x, y). camera() setzt auf (0, 0) zurück.",
-            "es": "Cambia las coordenadas de la esquina superior izquierda de la pantalla a (x, y). Llama a camera() para restablecer a (0, 0).",
-            "fr": "Change les coordonnées du coin supérieur gauche de l'écran en (x, y). Appeler camera() pour réinitialiser à (0, 0).",
-            "it": "Cambia le coordinate dell'angolo superiore sinistro dello schermo in (x, y). Chiamare camera() per reimpostare a (0, 0).",
-            "ja": "画面の左上隅の座標を (x, y) に変更する。camera()で (0, 0) にリセットする。",
-            "ko": "화면의 좌상단 좌표를 (x, y)로 변경한다.camera()로 (0, 0)으로 리셋한다.",
-            "pt": "Altera as coordenadas do canto superior esquerdo da tela para (x, y). Chame camera() para redefinir para (0, 0).",
-            "ru": "Изменяет координаты верхнего левого угла экрана на (x, y). Вызов camera() сбрасывает на (0, 0).",
-            "tr": "Ekranın sol üst köşe koordinatlarını (x, y) olarak değiştirir. (0, 0) konumuna sıfırlamak için camera() çağrılır.",
-            "uk": "Змінює координати верхнього лівого кута екрана на (x, y). Виклик camera() скидає на (0, 0)."
+            "en": "Set the drawing offset to (x, y). All subsequent drawing operations will be shifted by (-x, -y).",
+            "cn": "设置绘图偏移为 (x, y)。之后的所有绘图操作将偏移 (-x, -y)。",
+            "de": "Setzt den Zeichenversatz auf (x, y). Alle nachfolgenden Zeichenoperationen werden um (-x, -y) verschoben.",
+            "es": "Establece el desplazamiento de dibujo en (x, y). Todas las operaciones de dibujo posteriores se desplazarán (-x, -y).",
+            "fr": "Définit le décalage de dessin à (x, y). Toutes les opérations de dessin suivantes seront décalées de (-x, -y).",
+            "it": "Imposta l'offset di disegno a (x, y). Tutte le operazioni di disegno successive saranno spostate di (-x, -y).",
+            "ja": "描画オフセットを (x, y) に設定する。以降の描画操作は (-x, -y) だけずれる。",
+            "ko": "그리기 오프셋을 (x, y)로 설정한다. 이후 모든 그리기 연산이 (-x, -y)만큼 이동한다.",
+            "pt": "Define o deslocamento de desenho para (x, y). Todas as operações de desenho subsequentes serão deslocadas em (-x, -y).",
+            "ru": "Устанавливает смещение рисования на (x, y). Все последующие операции рисования будут смещены на (-x, -y).",
+            "tr": "Çizim ofsetini (x, y) olarak ayarlar. Sonraki tüm çizim işlemleri (-x, -y) kadar kaydırılır.",
+            "uk": "Встановлює зміщення малювання на (x, y). Усі подальші операції малювання будуть зміщені на (-x, -y)."
           },
           "params": [
             {
@@ -2934,18 +2934,18 @@
           "type": "function",
           "signature": "camera()",
           "description": {
-            "en": "Reset the upper-left corner coordinates to (0, 0).",
-            "cn": "将画面左上角的坐标重置为 (0, 0)。",
-            "de": "Setzt die Koordinaten der oberen linken Ecke auf (0, 0) zurück.",
-            "es": "Restablece las coordenadas de la esquina superior izquierda a (0, 0).",
-            "fr": "Réinitialise les coordonnées du coin supérieur gauche à (0, 0).",
-            "it": "Reimposta le coordinate dell'angolo superiore sinistro a (0, 0).",
-            "ja": "画面の左上隅の座標を (0, 0) にリセットする。",
-            "ko": "화면의 좌상단 좌표를 (0, 0)으로 리셋한다.",
-            "pt": "Redefine as coordenadas do canto superior esquerdo para (0, 0).",
-            "ru": "Сбрасывает координаты верхнего левого угла на (0, 0).",
-            "tr": "Sol üst köşe koordinatlarını (0, 0) konumuna sıfırlar.",
-            "uk": "Скидає координати верхнього лівого кута на (0, 0)."
+            "en": "Reset the drawing offset to (0, 0).",
+            "cn": "将绘图偏移重置为 (0, 0)。",
+            "de": "Setzt den Zeichenversatz auf (0, 0) zurück.",
+            "es": "Restablece el desplazamiento de dibujo a (0, 0).",
+            "fr": "Réinitialise le décalage de dessin à (0, 0).",
+            "it": "Reimposta l'offset di disegno a (0, 0).",
+            "ja": "描画オフセットを (0, 0) にリセットする。",
+            "ko": "그리기 오프셋을 (0, 0)으로 리셋한다.",
+            "pt": "Redefine o deslocamento de desenho para (0, 0).",
+            "ru": "Сбрасывает смещение рисования на (0, 0).",
+            "tr": "Çizim ofsetini (0, 0) konumuna sıfırlar.",
+            "uk": "Скидає зміщення малювання на (0, 0)."
           },
           "return": {
             "type": "None"
@@ -2957,18 +2957,18 @@
           "type": "function",
           "signature": "pal(col1, col2)",
           "description": {
-            "en": "Replace color col1 with col2 when drawing. Call pal() to reset to the initial palette.",
-            "cn": "绘制时将颜色col1替换为col2。调用pal()重置为初始状态。",
-            "de": "Ersetzt beim Zeichnen Farbe col1 durch col2. pal() setzt auf die Anfangspalette zurück.",
-            "es": "Reemplaza el color col1 con col2 al dibujar. Llama a pal() para restablecer la paleta inicial.",
-            "fr": "Remplace la couleur col1 par col2 lors du dessin. Appeler pal() pour réinitialiser la palette initiale.",
-            "it": "Sostituisce il colore col1 con col2 durante il disegno. Chiamare pal() per reimpostare la palette iniziale.",
-            "ja": "描画時に色col1をcol2に置き換える。pal()で初期状態にリセットする。",
-            "ko": "그리기 시 색col1을 col2로 치환한다.pal()로 초기 상태로 리셋한다.",
-            "pt": "Substitui a cor col1 por col2 ao desenhar. Chame pal() para redefinir para a paleta inicial.",
-            "ru": "Заменяет цвет col1 на col2 при рисовании. Вызов pal() сбрасывает на начальную палитру.",
-            "tr": "Çizim sırasında col1 rengini col2 ile değiştirir. Başlangıç paletine sıfırlamak için pal() çağrılır.",
-            "uk": "Замінює колір col1 на col2 при малюванні. Виклик pal() скидає на початкову палітру."
+            "en": "Replace color col1 with col2 when drawing.",
+            "cn": "绘制时将颜色col1替换为col2。",
+            "de": "Ersetzt beim Zeichnen Farbe col1 durch col2.",
+            "es": "Reemplaza el color col1 con col2 al dibujar.",
+            "fr": "Remplace la couleur col1 par col2 lors du dessin.",
+            "it": "Sostituisce il colore col1 con col2 durante il disegno.",
+            "ja": "描画時に色col1をcol2に置き換える。",
+            "ko": "그리기 시 색col1을 col2로 치환한다.",
+            "pt": "Substitui a cor col1 por col2 ao desenhar.",
+            "ru": "Заменяет цвет col1 на col2 при рисовании.",
+            "tr": "Çizim sırasında col1 rengini col2 ile değiştirir.",
+            "uk": "Замінює колір col1 на col2 при малюванні."
           },
           "params": [
             {
@@ -4577,7 +4577,7 @@
             },
             {
               "name": "colkey",
-              "type": "int",
+              "type": "int/None",
               "desc": {
                 "en": "Transparent color",
                 "cn": "透明色",
@@ -4597,36 +4597,36 @@
               "name": "rotate",
               "type": "float",
               "desc": {
-                "en": "Rotation in degrees",
-                "cn": "旋转角度（度）",
-                "de": "Drehwinkel in Grad",
-                "es": "Rotación en grados",
-                "fr": "Rotation en degrés",
-                "it": "Rotazione in gradi",
-                "ja": "回転角度（度）",
-                "ko": "회전 각도 (도)",
-                "pt": "Rotação em graus",
-                "ru": "Поворот в градусах",
-                "tr": "Derece cinsinden döndürme",
-                "uk": "Поворот у градусах"
+                "en": "Rotation angle in degrees (centered on the copy region)",
+                "cn": "旋转角度（度）（以复制区域为中心）",
+                "de": "Rotationswinkel in Grad (zentriert auf den Kopierbereich)",
+                "es": "Ángulo de rotación en grados (centrado en la región de copia)",
+                "fr": "Angle de rotation en degrés (centré sur la région de copie)",
+                "it": "Angolo di rotazione in gradi (centrato sulla regione di copia)",
+                "ja": "回転角度（度）（コピー領域の中心を基準）",
+                "ko": "회전 각도 (도) (복사 영역 중심 기준)",
+                "pt": "Ângulo de rotação em graus (centrado na região de cópia)",
+                "ru": "Угол поворота в градусах (относительно центра копируемой области)",
+                "tr": "Derece cinsinden döndürme açısı (kopyalama bölgesinin merkezinde)",
+                "uk": "Кут повороту в градусах (відносно центру області копіювання)"
               }
             },
             {
               "name": "scale",
               "type": "float",
               "desc": {
-                "en": "Scale factor (1.0 = 100%)",
-                "cn": "缩放率（1.0=100%）",
-                "de": "Skalierungsfaktor (1.0 = 100%)",
-                "es": "Factor de escala (1.0 = 100%)",
-                "fr": "Facteur d'échelle (1.0 = 100%)",
-                "it": "Fattore di scala (1.0 = 100%)",
-                "ja": "拡大率（1.0=100%）",
-                "ko": "배율 (1.0 = 100%)",
-                "pt": "Fator de escala (1.0 = 100%)",
-                "ru": "Масштаб (1.0 = 100%)",
-                "tr": "Ölçek faktörü (1.0 = %100)",
-                "uk": "Масштаб (1.0 = 100%)"
+                "en": "Scale factor (centered on the copy region)",
+                "cn": "缩放倍率（以复制区域为中心）",
+                "de": "Skalierungsfaktor (zentriert auf den Kopierbereich)",
+                "es": "Factor de escala (centrado en la región de copia)",
+                "fr": "Facteur d'échelle (centré sur la région de copie)",
+                "it": "Fattore di scala (centrato sulla regione di copia)",
+                "ja": "拡大縮小率（コピー領域の中心を基準）",
+                "ko": "배율 (복사 영역 중심 기준)",
+                "pt": "Fator de escala (centrado na região de cópia)",
+                "ru": "Масштаб (относительно центра копируемой области)",
+                "tr": "Ölçek faktörü (kopyalama bölgesinin merkezinde)",
+                "uk": "Масштаб (відносно центру області копіювання)"
               }
             }
           ]
@@ -4782,7 +4782,7 @@
             },
             {
               "name": "colkey",
-              "type": "int",
+              "type": "int/None",
               "desc": {
                 "en": "Transparent color",
                 "cn": "透明色",
@@ -4802,36 +4802,36 @@
               "name": "rotate",
               "type": "float",
               "desc": {
-                "en": "Rotation in degrees",
-                "cn": "旋转角度（度）",
-                "de": "Drehwinkel in Grad",
-                "es": "Rotación en grados",
-                "fr": "Rotation en degrés",
-                "it": "Rotazione in gradi",
-                "ja": "回転角度（度）",
-                "ko": "회전 각도 (도)",
-                "pt": "Rotação em graus",
-                "ru": "Поворот в градусах",
-                "tr": "Derece cinsinden döndürme",
-                "uk": "Поворот у градусах"
+                "en": "Rotation angle in degrees (centered on the copy region)",
+                "cn": "旋转角度（度）（以复制区域为中心）",
+                "de": "Rotationswinkel in Grad (zentriert auf den Kopierbereich)",
+                "es": "Ángulo de rotación en grados (centrado en la región de copia)",
+                "fr": "Angle de rotation en degrés (centré sur la région de copie)",
+                "it": "Angolo di rotazione in gradi (centrato sulla regione di copia)",
+                "ja": "回転角度（度）（コピー領域の中心を基準）",
+                "ko": "회전 각도 (도) (복사 영역 중심 기준)",
+                "pt": "Ângulo de rotação em graus (centrado na região de cópia)",
+                "ru": "Угол поворота в градусах (относительно центра копируемой области)",
+                "tr": "Derece cinsinden döndürme açısı (kopyalama bölgesinin merkezinde)",
+                "uk": "Кут повороту в градусах (відносно центру області копіювання)"
               }
             },
             {
               "name": "scale",
               "type": "float",
               "desc": {
-                "en": "Scale factor (1.0 = 100%)",
-                "cn": "缩放率（1.0=100%）",
-                "de": "Skalierungsfaktor (1.0 = 100%)",
-                "es": "Factor de escala (1.0 = 100%)",
-                "fr": "Facteur d'échelle (1.0 = 100%)",
-                "it": "Fattore di scala (1.0 = 100%)",
-                "ja": "拡大率（1.0=100%）",
-                "ko": "배율 (1.0 = 100%)",
-                "pt": "Fator de escala (1.0 = 100%)",
-                "ru": "Масштаб (1.0 = 100%)",
-                "tr": "Ölçek faktörü (1.0 = %100)",
-                "uk": "Масштаб (1.0 = 100%)"
+                "en": "Scale factor (centered on the copy region)",
+                "cn": "缩放倍率（以复制区域为中心）",
+                "de": "Skalierungsfaktor (zentriert auf den Kopierbereich)",
+                "es": "Factor de escala (centrado en la región de copia)",
+                "fr": "Facteur d'échelle (centré sur la région de copie)",
+                "it": "Fattore di scala (centrato sulla regione di copia)",
+                "ja": "拡大縮小率（コピー領域の中心を基準）",
+                "ko": "배율 (복사 영역 중심 기준)",
+                "pt": "Fator de escala (centrado na região de cópia)",
+                "ru": "Масштаб (относительно центра копируемой области)",
+                "tr": "Ölçek faktörü (kopyalama bölgesinin merkezinde)",
+                "uk": "Масштаб (відносно центру області копіювання)"
               }
             }
           ]
@@ -5666,38 +5666,38 @@
         {
           "name": "stop",
           "type": "function",
-          "signature": "stop(ch=None)",
+          "signature": "stop(ch)",
           "description": {
-            "en": "Stop playback of the specified channel ch (0-3). Call stop() to stop all channels.",
-            "cn": "停止指定通道ch（0-3）的播放。调用stop()可停止所有通道的播放。",
-            "de": "Stoppt die Wiedergabe des angegebenen Kanals ch (0-3). Rufen Sie stop() auf, um alle Kanäle zu stoppen.",
-            "es": "Detiene la reproducción del canal especificado ch (0-3). Llame a stop() para detener todos los canales.",
-            "fr": "Arrête la lecture du canal spécifié ch (0-3). Appelez stop() pour arrêter tous les canaux.",
-            "it": "Interrompe la riproduzione del canale specificato ch (0-3). Chiamare stop() per interrompere tutti i canali.",
-            "ja": "指定したチャンネルch (0-3) の再生を停止する。stop()で全チャンネルの再生を停止する。",
-            "ko": "지정한 채널 ch(0-3)의 재생을 정지한다.stop()으로 모든 채널의 재생을 정지한다.",
-            "pt": "Para a reprodução do canal especificado ch (0-3). Chame stop() para parar todos os canais.",
-            "ru": "Останавливает воспроизведение указанного канала ch (0-3). Вызовите stop() для остановки всех каналов.",
-            "tr": "Belirtilen kanal ch (0-3) çalmasını durdurur. Tüm kanalları durdurmak için stop() çağırın.",
-            "uk": "Зупиняє відтворення вказаного каналу ch (0-3). Викличте stop() для зупинки всіх каналів."
+            "en": "Stop playback of the specified channel ch (0-3).",
+            "cn": "停止指定通道ch（0-3）的播放。",
+            "de": "Stoppt die Wiedergabe des angegebenen Kanals ch (0-3).",
+            "es": "Detiene la reproducción del canal especificado ch (0-3).",
+            "fr": "Arrête la lecture du canal spécifié ch (0-3).",
+            "it": "Interrompe la riproduzione del canale specificato ch (0-3).",
+            "ja": "指定したチャンネルch (0-3) の再生を停止する。",
+            "ko": "지정한 채널 ch(0-3)의 재생을 정지한다.",
+            "pt": "Para a reprodução do canal especificado ch (0-3).",
+            "ru": "Останавливает воспроизведение указанного канала ch (0-3).",
+            "tr": "Belirtilen kanal ch (0-3) çalmasını durdurur.",
+            "uk": "Зупиняє відтворення вказаного каналу ch (0-3)."
           },
           "params": [
             {
               "name": "ch",
               "type": "int",
               "desc": {
-                "en": "Channel number (0-3). Omit to stop all.",
-                "cn": "通道编号 (0-3)。省略则全部停止。",
-                "de": "Kanalnummer (0-3). Weglassen stoppt alle.",
-                "es": "Número de canal (0-3). Omitir para detener todos.",
-                "fr": "Numéro de canal (0-3). Omettre pour tout arrêter.",
-                "it": "Numero di canale (0-3). Omettere per fermare tutti.",
-                "ja": "チャンネル番号 (0-3)。省略で全停止。",
-                "ko": "채널 번호 (0-3). 생략 시 모두 정지.",
-                "pt": "Número do canal (0-3). Omitir para parar todos.",
-                "ru": "Номер канала (0-3). Пропустить для остановки всех.",
-                "tr": "Kanal numarası (0-3). Tümünü durdurmak için atlayın.",
-                "uk": "Номер каналу (0-3). Пропустити для зупинки всіх."
+                "en": "Channel number (0-3)",
+                "cn": "通道编号 (0-3)",
+                "de": "Kanalnummer (0-3)",
+                "es": "Número de canal (0-3)",
+                "fr": "Numéro de canal (0-3)",
+                "it": "Numero di canale (0-3)",
+                "ja": "チャンネル番号 (0-3)",
+                "ko": "채널 번호 (0-3)",
+                "pt": "Número do canal (0-3)",
+                "ru": "Номер канала (0-3)",
+                "tr": "Kanal numarası (0-3)",
+                "uk": "Номер каналу (0-3)"
               }
             }
           ],
@@ -5768,20 +5768,20 @@
             }
           ],
           "return": {
-            "type": "tuple/None",
+            "type": "tuple[int, float]/None",
             "desc": {
-              "en": "(sound_no, sec) or None",
-              "cn": "(sound_no, sec) 或 None",
-              "de": "(sound_no, sec) oder None",
-              "es": "(sound_no, sec) o None",
-              "fr": "(sound_no, sec) ou None",
-              "it": "(sound_no, sec) o None",
-              "ja": "(sound_no, sec) またはNone",
-              "ko": "(sound_no, sec) 또는 None",
-              "pt": "(sound_no, sec) ou None",
-              "ru": "(sound_no, sec) или None",
-              "tr": "(sound_no, sec) veya None",
-              "uk": "(sound_no, sec) або None"
+              "en": "(sound_index, sec) or None",
+              "cn": "(sound_index, sec) 或 None",
+              "de": "(sound_index, sec) oder None",
+              "es": "(sound_index, sec) o None",
+              "fr": "(sound_index, sec) ou None",
+              "it": "(sound_index, sec) o None",
+              "ja": "(sound_index, sec) またはNone",
+              "ko": "(sound_index, sec) 또는 None",
+              "pt": "(sound_index, sec) ou None",
+              "ru": "(sound_index, sec) или None",
+              "tr": "(sound_index, sec) veya None",
+              "uk": "(sound_index, sec) або None"
             }
           },
           "advanced": false
@@ -6745,18 +6745,18 @@
               "name": "seed",
               "type": "int",
               "desc": {
-                "en": "Seed value",
-                "cn": "种子值",
-                "de": "Startwert",
-                "es": "Valor semilla",
-                "fr": "Valeur de graine",
-                "it": "Valore seme",
-                "ja": "シード値",
-                "ko": "시드 값",
-                "pt": "Valor semente",
-                "ru": "Начальное значение",
-                "tr": "Tohum değeri",
-                "uk": "Початкове значення"
+                "en": "Seed value (non-negative integer)",
+                "cn": "种子值（非负整数）",
+                "de": "Seed-Wert (nicht-negative Ganzzahl)",
+                "es": "Valor de semilla (entero no negativo)",
+                "fr": "Valeur de graine (entier non négatif)",
+                "it": "Valore del seme (intero non negativo)",
+                "ja": "シード値（非負整数）",
+                "ko": "시드 값 (음이 아닌 정수)",
+                "pt": "Valor da semente (inteiro não negativo)",
+                "ru": "Значение зерна (неотрицательное целое)",
+                "tr": "Tohum değeri (negatif olmayan tam sayı)",
+                "uk": "Значення зерна (невід'ємне ціле)"
               }
             }
           ],
@@ -6938,18 +6938,18 @@
               "name": "seed",
               "type": "int",
               "desc": {
-                "en": "Seed value",
-                "cn": "种子值",
-                "de": "Startwert",
-                "es": "Valor semilla",
-                "fr": "Valeur de graine",
-                "it": "Valore seme",
-                "ja": "シード値",
-                "ko": "시드 값",
-                "pt": "Valor semente",
-                "ru": "Начальное значение",
-                "tr": "Tohum değeri",
-                "uk": "Початкове значення"
+                "en": "Seed value (non-negative integer)",
+                "cn": "种子值（非负整数）",
+                "de": "Seed-Wert (nicht-negative Ganzzahl)",
+                "es": "Valor de semilla (entero no negativo)",
+                "fr": "Valeur de graine (entier non négatif)",
+                "it": "Valore del seme (intero non negativo)",
+                "ja": "シード値（非負整数）",
+                "ko": "시드 값 (음이 아닌 정수)",
+                "pt": "Valor da semente (inteiro não negativo)",
+                "ru": "Значение зерна (неотрицательное целое)",
+                "tr": "Tohum değeri (negatif olmayan tam sayı)",
+                "uk": "Значення зерна (невід'ємне ціле)"
               }
             }
           ],
@@ -7418,18 +7418,18 @@
           "type": "function",
           "signature": "Image.set(x, y, data)",
           "description": {
-            "en": "Set the image at (x, y) using a list of strings.",
-            "cn": "在(x, y)处使用字符串列表设置图像。",
-            "de": "Setzt das Bild an (x, y) mithilfe einer Liste von Strings.",
-            "es": "Establece la imagen en (x, y) usando una lista de cadenas.",
-            "fr": "Définit l'image en (x, y) à l'aide d'une liste de chaînes.",
-            "it": "Imposta l'immagine in (x, y) usando una lista di stringhe.",
-            "ja": "(x, y) に文字列のリストでイメージを設定する。",
-            "ko": "(x, y)에 문자열 목록으로 이미지를 설정한다.",
-            "pt": "Define a imagem em (x, y) usando uma lista de strings.",
-            "ru": "Устанавливает изображение в (x, y) с помощью списка строк.",
-            "tr": "(x, y) konumunda bir dize listesi kullanarak görüntüyü ayarlar.",
-            "uk": "Встановлює зображення в (x, y) за допомогою списку рядків."
+            "en": "Set the image at (x, y) using a list of hex-digit strings. Each character represents a color index (0-f).",
+            "cn": "使用十六进制数字字符串列表在 (x, y) 处设置图像。每个字符代表一个颜色索引 (0-f)。",
+            "de": "Setzt das Bild an (x, y) mit einer Liste von Hex-Strings. Jedes Zeichen repräsentiert einen Farbindex (0-f).",
+            "es": "Establece la imagen en (x, y) usando una lista de cadenas hexadecimales. Cada carácter representa un índice de color (0-f).",
+            "fr": "Définit l'image à (x, y) à l'aide d'une liste de chaînes hexadécimales. Chaque caractère représente un indice de couleur (0-f).",
+            "it": "Imposta l'immagine a (x, y) usando una lista di stringhe esadecimali. Ogni carattere rappresenta un indice di colore (0-f).",
+            "ja": "16進数文字列のリストで (x, y) の位置に画像を設定する。各文字はカラーインデックス (0-f) を表す。",
+            "ko": "16진수 문자열 리스트로 (x, y) 위치에 이미지를 설정한다. 각 문자는 색상 인덱스 (0-f)를 나타낸다.",
+            "pt": "Define a imagem em (x, y) usando uma lista de strings hexadecimais. Cada caractere representa um índice de cor (0-f).",
+            "ru": "Устанавливает изображение в (x, y) с помощью списка шестнадцатеричных строк. Каждый символ представляет индекс цвета (0-f).",
+            "tr": "(x, y) konumunda onaltılık rakam dizelerinin listesiyle görüntü ayarlar. Her karakter bir renk indeksini (0-f) temsil eder.",
+            "uk": "Встановлює зображення в (x, y) за допомогою списку шістнадцяткових рядків. Кожен символ представляє індекс кольору (0-f)."
           },
           "examples": [
             "pyxel.images[0].set(10, 10, [\"0123\", \"4567\", \"89ab\", \"cdef\"])"
@@ -7771,18 +7771,18 @@
           "type": "function",
           "signature": "Image.data_ptr()",
           "description": {
-            "en": "Return the raw data pointer of the image.",
-            "cn": "返回图像的原始数据指针。",
-            "de": "Gibt den Rohdatenzeiger des Bildes zurück.",
-            "es": "Devuelve el puntero de datos sin procesar de la imagen.",
-            "fr": "Renvoie le pointeur de données brutes de l'image.",
-            "it": "Restituisce il puntatore ai dati grezzi dell'immagine.",
-            "ja": "イメージの生データポインタを返す。",
-            "ko": "이미지의 원시 데이터 포인터를 반환한다.",
-            "pt": "Retorna o ponteiro de dados brutos da imagem.",
-            "ru": "Возвращает указатель на необработанные данные изображения.",
-            "tr": "Görüntünün ham veri işaretçisini döndürür.",
-            "uk": "Повертає вказівник на необроблені дані зображення."
+            "en": "Return the raw data pointer of the image as a ctypes c_uint8 array.",
+            "cn": "以ctypes c_uint8数组形式返回图像的原始数据指针。",
+            "de": "Gibt den Rohdatenzeiger des Bildes als ctypes c_uint8-Array zurück.",
+            "es": "Devuelve el puntero de datos brutos de la imagen como un array ctypes c_uint8.",
+            "fr": "Renvoie le pointeur de données brutes de l'image sous forme de tableau ctypes c_uint8.",
+            "it": "Restituisce il puntatore ai dati grezzi dell'immagine come array ctypes c_uint8.",
+            "ja": "画像の生データポインタをctypes c_uint8配列として返す。",
+            "ko": "이미지의 원시 데이터 포인터를 ctypes c_uint8 배열로 반환한다.",
+            "pt": "Retorna o ponteiro de dados brutos da imagem como um array ctypes c_uint8.",
+            "ru": "Возвращает указатель на необработанные данные изображения в виде массива ctypes c_uint8.",
+            "tr": "Görüntünün ham veri işaretçisini ctypes c_uint8 dizisi olarak döndürür.",
+            "uk": "Повертає вказівник на необроблені дані зображення у вигляді масиву ctypes c_uint8."
           },
           "return": {
             "type": "Any",
@@ -8119,18 +8119,18 @@
           "type": "function",
           "signature": "Tilemap.set(x, y, data)",
           "description": {
-            "en": "Set the tilemap at (x, y) using a list of strings.",
-            "cn": "在(x, y)处使用字符串列表设置瓦片地图。",
-            "de": "Setzt die Tilemap an (x, y) mithilfe einer Liste von Strings.",
-            "es": "Establece el tilemap en (x, y) usando una lista de cadenas.",
-            "fr": "Définit la tilemap en (x, y) à l'aide d'une liste de chaînes.",
-            "it": "Imposta la tilemap in (x, y) usando una lista di stringhe.",
-            "ja": "(x, y) に文字列のリストでタイルマップを設定する。",
-            "ko": "(x, y)에 문자열 목록으로 타일맵을 설정한다.",
-            "pt": "Define o tilemap em (x, y) usando uma lista de strings.",
-            "ru": "Устанавливает тайловую карту в (x, y) с помощью списка строк.",
-            "tr": "(x, y) konumunda bir dize listesi kullanarak tilemap'i ayarlar.",
-            "uk": "Встановлює тайлову карту в (x, y) за допомогою списку рядків."
+            "en": "Set the tilemap at (x, y) using a list of strings. Each tile is a 4-digit hex value representing (image_tx, image_ty), separated by spaces.",
+            "cn": "使用字符串列表在 (x, y) 处设置瓦片地图。每个瓦片为4位十六进制值，表示 (image_tx, image_ty)，以空格分隔。",
+            "de": "Setzt die Tilemap an (x, y) mit einer Liste von Strings. Jede Kachel ist ein 4-stelliger Hex-Wert für (image_tx, image_ty), getrennt durch Leerzeichen.",
+            "es": "Establece el tilemap en (x, y) usando una lista de cadenas. Cada tile es un valor hexadecimal de 4 dígitos que representa (image_tx, image_ty), separados por espacios.",
+            "fr": "Définit la tilemap à (x, y) à l'aide d'une liste de chaînes. Chaque tuile est une valeur hexadécimale à 4 chiffres représentant (image_tx, image_ty), séparées par des espaces.",
+            "it": "Imposta la tilemap a (x, y) usando una lista di stringhe. Ogni tile è un valore esadecimale a 4 cifre che rappresenta (image_tx, image_ty), separati da spazi.",
+            "ja": "文字列のリストで (x, y) の位置にタイルマップを設定する。各タイルは (image_tx, image_ty) を表す4桁の16進数値で、スペースで区切る。",
+            "ko": "문자열 리스트로 (x, y) 위치에 타일맵을 설정한다. 각 타일은 (image_tx, image_ty)를 나타내는 4자리 16진수 값이며, 공백으로 구분한다.",
+            "pt": "Define o tilemap em (x, y) usando uma lista de strings. Cada tile é um valor hexadecimal de 4 dígitos representando (image_tx, image_ty), separados por espaços.",
+            "ru": "Устанавливает тайлмап в (x, y) с помощью списка строк. Каждый тайл — 4-значное шестнадцатеричное значение (image_tx, image_ty), разделённые пробелами.",
+            "tr": "(x, y) konumunda dize listesiyle tilemap ayarlar. Her karo, boşluklarla ayrılmış 4 haneli onaltılık değerle (image_tx, image_ty) temsil edilir.",
+            "uk": "Встановлює тайлмап в (x, y) за допомогою списку рядків. Кожен тайл — 4-значне шістнадцяткове значення (image_tx, image_ty), розділені пробілами."
           },
           "examples": [
             "pyxel.tilemaps[0].set(0, 0, [\"0000 0100 a0b0\", \"0001 0101 a1b1\"])"
@@ -8312,7 +8312,7 @@
             "uk": "Повертає тайл у (x, y). Тайл — це кортеж (image_tx, image_ty)."
           },
           "return": {
-            "type": "tuple",
+            "type": "tuple[int, int]",
             "desc": {
               "en": "(image_tx, image_ty)",
               "cn": "(image_tx, image_ty)",
@@ -8429,7 +8429,7 @@
             },
             {
               "name": "tile",
-              "type": "tuple",
+              "type": "tuple[int, int]",
               "desc": {
                 "en": "Tile as (image_tx, image_ty)",
                 "cn": "瓦片 (image_tx, image_ty)",
@@ -8472,18 +8472,18 @@
           "type": "function",
           "signature": "Tilemap.collide(x, y, w, h, dx, dy, walls)",
           "description": {
-            "en": "Resolve collisions after applying movement (dx, dy) to the rectangle at (x, y) with size (w, h), and return the adjusted (dx, dy).",
-            "cn": "对位于(x, y)、大小为(w, h)的矩形应用移动量(dx, dy)后解决碰撞，并返回调整后的(dx, dy)。",
-            "de": "Löst Kollisionen nach Anwendung der Bewegung (dx, dy) auf das Rechteck an (x, y) mit der Größe (w, h) und gibt das angepasste (dx, dy) zurück.",
-            "es": "Resuelve las colisiones tras aplicar el movimiento (dx, dy) al rectángulo en (x, y) con tamaño (w, h) y devuelve el (dx, dy) ajustado.",
-            "fr": "Résout les collisions après application du mouvement (dx, dy) au rectangle en (x, y) de taille (w, h) et renvoie le (dx, dy) ajusté.",
-            "it": "Risolve le collisioni dopo aver applicato il movimento (dx, dy) al rettangolo in (x, y) con dimensione (w, h) e restituisce il (dx, dy) corretto.",
-            "ja": "矩形の位置 (x, y) とサイズ (w, h) に移動量 (dx, dy) を適用した衝突を解決し、補正後の (dx, dy) を返す。",
-            "ko": "위치 (x, y), 크기 (w, h)인 사각형에 이동량 (dx, dy)를 적용한 후 충돌을 해결하고 보정된 (dx, dy)를 반환한다.",
-            "pt": "Resolve colisões após aplicar o movimento (dx, dy) ao retângulo em (x, y) com tamanho (w, h) e retorna o (dx, dy) ajustado.",
-            "ru": "Разрешает столкновения после применения движения (dx, dy) к прямоугольнику в (x, y) размером (w, h) и возвращает скорректированные (dx, dy).",
-            "tr": "(x, y) konumundaki (w, h) boyutlu dikdörtgene (dx, dy) hareketi uygulandıktan sonra çarpışmaları çözer ve düzeltilmiş (dx, dy) değerini döndürür.",
-            "uk": "Розв'язує зіткнення після застосування руху (dx, dy) до прямокутника в (x, y) розміром (w, h) і повертає скориговані (dx, dy)."
+            "en": "Resolve collisions after applying pixel movement (dx, dy) to the pixel rectangle at (x, y) with pixel size (w, h), and return the adjusted (dx, dy). walls is a list of tile coordinates that act as obstacles.",
+            "cn": "将像素移动量 (dx, dy) 应用于位于 (x, y) 的像素矩形（大小为 (w, h)）后解决碰撞，返回调整后的 (dx, dy)。walls是作为障碍物的瓦片坐标列表。",
+            "de": "Löst Kollisionen auf, nachdem die Pixelbewegung (dx, dy) auf das Pixelrechteck bei (x, y) mit Pixelgröße (w, h) angewendet wurde, und gibt das angepasste (dx, dy) zurück. walls ist eine Liste von Kachelkoordinaten, die als Hindernisse dienen.",
+            "es": "Resuelve colisiones tras aplicar el movimiento en píxeles (dx, dy) al rectángulo en píxeles en (x, y) con tamaño (w, h), y devuelve el (dx, dy) ajustado. walls es una lista de coordenadas de tiles que actúan como obstáculos.",
+            "fr": "Résout les collisions après application du mouvement en pixels (dx, dy) au rectangle en pixels à (x, y) de taille (w, h), et renvoie le (dx, dy) ajusté. walls est une liste de coordonnées de tuiles faisant office d'obstacles.",
+            "it": "Risolve le collisioni dopo aver applicato il movimento in pixel (dx, dy) al rettangolo in pixel a (x, y) con dimensione (w, h), e restituisce il (dx, dy) corretto. walls è una lista di coordinate tile che fungono da ostacoli.",
+            "ja": "ピクセル座標 (x, y)、ピクセルサイズ (w, h) の矩形にピクセル移動量 (dx, dy) を適用した後の衝突判定を行い、調整済みの (dx, dy) を返す。wallsは障害物となるタイル座標のリスト。",
+            "ko": "픽셀 좌표 (x, y), 픽셀 크기 (w, h)의 사각형에 픽셀 이동량 (dx, dy)를 적용한 후 충돌을 해결하고, 조정된 (dx, dy)를 반환한다. walls는 장애물 역할을 하는 타일 좌표 리스트이다.",
+            "pt": "Resolve colisões após aplicar o movimento em pixels (dx, dy) ao retângulo em pixels em (x, y) com tamanho (w, h), e retorna o (dx, dy) ajustado. walls é uma lista de coordenadas de tiles que atuam como obstáculos.",
+            "ru": "Разрешает столкновения после применения пиксельного движения (dx, dy) к пиксельному прямоугольнику в (x, y) с размером (w, h) и возвращает скорректированные (dx, dy). walls — список координат тайлов-препятствий.",
+            "tr": "Piksel hareket (dx, dy) değerini (x, y) konumundaki piksel dikdörtgenine (w, h boyutunda) uyguladıktan sonra çarpışmaları çözer ve ayarlanmış (dx, dy) değerini döndürür. walls, engel olarak işlev gören karo koordinatları listesidir.",
+            "uk": "Розв'язує зіткнення після застосування піксельного руху (dx, dy) до піксельного прямокутника в (x, y) з розміром (w, h) і повертає скориговані (dx, dy). walls — список координат тайлів-перешкод."
           },
           "params": [
             {
@@ -8596,7 +8596,7 @@
             },
             {
               "name": "walls",
-              "type": "list[tuple]",
+              "type": "list[tuple[int, int]]",
               "desc": {
                 "en": "List of wall tiles (image_tx, image_ty)",
                 "cn": "墙壁瓦片 (image_tx, image_ty) 的列表",
@@ -8614,7 +8614,7 @@
             }
           ],
           "return": {
-            "type": "tuple",
+            "type": "tuple[float, float]",
             "desc": {
               "en": "Adjusted (dx, dy)",
               "cn": "校正后的 (dx, dy)",
@@ -8637,18 +8637,18 @@
           "type": "function",
           "signature": "Tilemap.data_ptr()",
           "description": {
-            "en": "Return the raw data pointer of the tilemap.",
-            "cn": "返回瓦片地图的原始数据指针。",
-            "de": "Gibt den Rohdatenzeiger der Tilemap zurück.",
-            "es": "Devuelve el puntero de datos sin procesar del tilemap.",
-            "fr": "Renvoie le pointeur de données brutes du tilemap.",
-            "it": "Restituisce il puntatore ai dati grezzi della tilemap.",
-            "ja": "タイルマップの生データポインタを返す。",
-            "ko": "타일맵의 원시 데이터 포인터를 반환한다.",
-            "pt": "Retorna o ponteiro de dados brutos do tilemap.",
-            "ru": "Возвращает указатель на необработанные данные тайловой карты.",
-            "tr": "Tilemap'in ham veri işaretçisini döndürür.",
-            "uk": "Повертає вказівник на необроблені дані тайлової карти."
+            "en": "Return the raw data pointer of the tilemap as a ctypes c_uint8 array (2 bytes per tile: image_tx, image_ty).",
+            "cn": "以ctypes c_uint8数组形式返回瓦片地图的原始数据指针（每个瓦片2字节：image_tx, image_ty）。",
+            "de": "Gibt den Rohdatenzeiger der Tilemap als ctypes c_uint8-Array zurück (2 Bytes pro Kachel: image_tx, image_ty).",
+            "es": "Devuelve el puntero de datos brutos del tilemap como un array ctypes c_uint8 (2 bytes por tile: image_tx, image_ty).",
+            "fr": "Renvoie le pointeur de données brutes de la tilemap sous forme de tableau ctypes c_uint8 (2 octets par tuile : image_tx, image_ty).",
+            "it": "Restituisce il puntatore ai dati grezzi della tilemap come array ctypes c_uint8 (2 byte per tile: image_tx, image_ty).",
+            "ja": "タイルマップの生データポインタをctypes c_uint8配列として返す（タイルあたり2バイト：image_tx, image_ty）。",
+            "ko": "타일맵의 원시 데이터 포인터를 ctypes c_uint8 배열로 반환한다 (타일당 2바이트: image_tx, image_ty).",
+            "pt": "Retorna o ponteiro de dados brutos do tilemap como um array ctypes c_uint8 (2 bytes por tile: image_tx, image_ty).",
+            "ru": "Возвращает указатель на необработанные данные тайлмапа в виде массива ctypes c_uint8 (2 байта на тайл: image_tx, image_ty).",
+            "tr": "Tilemap'in ham veri işaretçisini ctypes c_uint8 dizisi olarak döndürür (karo başına 2 bayt: image_tx, image_ty).",
+            "uk": "Повертає вказівник на необроблені дані тайлмапу у вигляді масиву ctypes c_uint8 (2 байти на тайл: image_tx, image_ty)."
           },
           "return": {
             "type": "Any",
@@ -8730,18 +8730,18 @@
           "type": "variable",
           "signature": "Sound.notes",
           "description": {
-            "en": "List of notes (0-127). Higher values produce higher pitches. 33 = 'A2' (440 Hz). Rests are -1.",
-            "cn": "音符列表（0-127）。数值越大音高越高，33为'A2'（440Hz）。休止符为-1。",
-            "de": "Liste der Noten (0-127). Höhere Werte erzeugen höhere Tonhöhen. 33 = 'A2' (440 Hz). Pausen sind -1.",
-            "es": "Lista de notas (0-127). Los valores más altos producen tonos más altos. 33 = 'A2' (440 Hz). Los silencios son -1.",
-            "fr": "Liste des notes (0-127). Les valeurs plus élevées produisent des sons plus aigus. 33 = 'A2' (440 Hz). Les silences sont -1.",
-            "it": "Lista delle note (0-127). Valori più alti producono tonalità più alte. 33 = 'A2' (440 Hz). Le pause sono -1.",
-            "ja": "音程 (0-127) のリスト。数値が大きいほど音程は高く、33で'A2' (440Hz)。休符は-1。",
-            "ko": "음정(0-127) 목록.값이 클수록 음이 높아지며, 33은 'A2'(440Hz).쉼표는 -1.",
-            "pt": "Lista de notas (0-127). Valores mais altos produzem tons mais altos. 33 = 'A2' (440 Hz). Pausas são -1.",
-            "ru": "Список нот (0-127). Более высокие значения дают более высокий тон. 33 = 'A2' (440 Гц). Паузы обозначаются -1.",
-            "tr": "Nota listesi (0-127). Değer büyüdükçe perde yükselir. 33 = 'A2' (440 Hz). Suslar -1'dir.",
-            "uk": "Список нот (0-127). Більші значення дають вищий тон. 33 = 'A2' (440 Гц). Паузи позначаються -1."
+            "en": "List of notes (0-59). Higher values produce higher pitches. 33 = 'A2' (440 Hz). Rests are -1.",
+            "cn": "音符列表（0-59）。数值越大音高越高，33为'A2'（440Hz）。休止符为-1。",
+            "de": "Liste der Noten (0-59). Höhere Werte erzeugen höhere Tonhöhen. 33 = 'A2' (440 Hz). Pausen sind -1.",
+            "es": "Lista de notas (0-59). Los valores más altos producen tonos más altos. 33 = 'A2' (440 Hz). Los silencios son -1.",
+            "fr": "Liste des notes (0-59). Les valeurs plus élevées produisent des sons plus aigus. 33 = 'A2' (440 Hz). Les silences sont -1.",
+            "it": "Lista delle note (0-59). Valori più alti producono tonalità più alte. 33 = 'A2' (440 Hz). Le pause sono -1.",
+            "ja": "音程 (0-59) のリスト。数値が大きいほど音程は高く、33で'A2' (440Hz)。休符は-1。",
+            "ko": "음정(0-59) 목록.값이 클수록 음이 높아지며, 33은 'A2'(440Hz).쉼표는 -1.",
+            "pt": "Lista de notas (0-59). Valores mais altos produzem tons mais altos. 33 = 'A2' (440 Hz). Pausas são -1.",
+            "ru": "Список нот (0-59). Более высокие значения дают более высокий тон. 33 = 'A2' (440 Гц). Паузы обозначаются -1.",
+            "tr": "Nota listesi (0-59). Değer büyüdükçe perde yükselir. 33 = 'A2' (440 Hz). Suslar -1'dir.",
+            "uk": "Список нот (0-59). Більші значення дають вищий тон. 33 = 'A2' (440 Гц). Паузи позначаються -1."
           },
           "value_type": "list[int]",
           "advanced": false
@@ -8950,18 +8950,18 @@
           "type": "function",
           "signature": "Sound.set_notes(notes)",
           "description": {
-            "en": "Set the notes using a string of CDEFGAB+#-+01234 or R. Case-insensitive, whitespace is ignored.",
-            "cn": "使用CDEFGAB+#-+01234或R的字符串设置音符。不区分大小写，空白被忽略。",
-            "de": "Setzt die Noten mithilfe eines Strings aus CDEFGAB+#-+01234 oder R. Groß-/Kleinschreibung wird nicht beachtet, Leerzeichen werden ignoriert.",
-            "es": "Establece las notas usando una cadena de CDEFGAB+#-+01234 o R. No distingue mayúsculas de minúsculas, los espacios se ignoran.",
-            "fr": "Définit les notes à l'aide d'une chaîne de CDEFGAB+#-+01234 ou R. Insensible à la casse, les espaces sont ignorés.",
-            "it": "Imposta le note usando una stringa di CDEFGAB+#-+01234 o R. Non sensibile alle maiuscole, gli spazi sono ignorati.",
-            "ja": "CDEFGAB+#-+01234またはRの文字列で音程を設定する。大文字小文字不問、空白は無視される。",
-            "ko": "CDEFGAB+#-+01234 또는 R 문자열로 음정을 설정한다.대소문자 불문, 공백은 무시된다.",
-            "pt": "Define as notas usando uma string de CDEFGAB+#-+01234 ou R. Não diferencia maiúsculas de minúsculas, espaços são ignorados.",
-            "ru": "Устанавливает ноты с помощью строки из CDEFGAB+#-+01234 или R. Регистр не учитывается, пробелы игнорируются.",
-            "tr": "CDEFGAB+#-+01234 veya R dizesiyle notaları ayarlar. Büyük/küçük harf duyarsız, boşluklar yok sayılır.",
-            "uk": "Встановлює ноти за допомогою рядка з CDEFGAB+#-+01234 або R. Регістр не враховується, пробіли ігноруються."
+            "en": "Set the notes using a string made of note names (CDEFGAB), optional sharp (#) or flat (-), octave (0-4), and rests (R). Case-insensitive, whitespace is ignored.",
+            "cn": "使用音名 (CDEFGAB)、可选的升号 (#) 或降号 (-)、八度 (0-4) 和休止符 (R) 组成的字符串设置音符。不区分大小写，空白被忽略。",
+            "de": "Setzt die Noten mithilfe eines Strings aus Notennamen (CDEFGAB), optionalem Kreuz (#) oder b (-), Oktave (0-4) und Pausen (R). Groß-/Kleinschreibung wird nicht beachtet, Leerzeichen werden ignoriert.",
+            "es": "Establece las notas usando una cadena de nombres de notas (CDEFGAB), sostenido (#) o bemol (-) opcionales, octava (0-4) y silencios (R). No distingue mayúsculas de minúsculas, los espacios se ignoran.",
+            "fr": "Définit les notes à l'aide d'une chaîne composée de noms de notes (CDEFGAB), dièse (#) ou bémol (-) optionnels, octave (0-4) et silences (R). Insensible à la casse, les espaces sont ignorés.",
+            "it": "Imposta le note usando una stringa di nomi di note (CDEFGAB), diesis (#) o bemolle (-) opzionali, ottava (0-4) e pause (R). Non sensibile alle maiuscole, gli spazi sono ignorati.",
+            "ja": "音名 (CDEFGAB)、任意のシャープ (#) またはフラット (-)、オクターブ (0-4)、休符 (R) からなる文字列で音程を設定する。大文字小文字不問、空白は無視される。",
+            "ko": "음명 (CDEFGAB), 선택적 샤프 (#) 또는 플랫 (-), 옥타브 (0-4), 쉼표 (R)로 구성된 문자열로 음정을 설정한다. 대소문자 불문, 공백은 무시된다.",
+            "pt": "Define as notas usando uma string de nomes de notas (CDEFGAB), sustenido (#) ou bemol (-) opcionais, oitava (0-4) e pausas (R). Não diferencia maiúsculas de minúsculas, espaços são ignorados.",
+            "ru": "Устанавливает ноты с помощью строки из названий нот (CDEFGAB), необязательных диез (#) или бемоль (-), октавы (0-4) и пауз (R). Регистр не учитывается, пробелы игнорируются.",
+            "tr": "Nota adları (CDEFGAB), isteğe bağlı diyez (#) veya bemol (-), oktav (0-4) ve suslar (R) dizesiyle notaları ayarlar. Büyük/küçük harf duyarsız, boşluklar yok sayılır.",
+            "uk": "Встановлює ноти за допомогою рядка з назв нот (CDEFGAB), необов'язкових дієз (#) або бемоль (-), октави (0-4) та пауз (R). Регістр не враховується, пробіли ігноруються."
           },
           "examples": [
             "pyxel.sounds[0].set_notes(\"g2b-2d3r rf3f3f3\")"
@@ -8996,18 +8996,18 @@
           "type": "function",
           "signature": "Sound.set_tones(tones)",
           "description": {
-            "en": "Set the tones with a string of TSPN. Case-insensitive, whitespace is ignored.",
-            "cn": "使用TSPN的字符串设置音色。不区分大小写，空白被忽略。",
-            "de": "Setzt die Töne mit einem String aus TSPN. Groß-/Kleinschreibung wird nicht beachtet, Leerzeichen werden ignoriert.",
-            "es": "Establece los tonos con una cadena de TSPN. No distingue mayúsculas de minúsculas, los espacios se ignoran.",
-            "fr": "Définit les timbres avec une chaîne de TSPN. Insensible à la casse, les espaces sont ignorés.",
-            "it": "Imposta i toni con una stringa di TSPN. Non sensibile alle maiuscole, gli spazi sono ignorati.",
-            "ja": "TSPNの文字列で音色を設定する。大文字小文字不問、空白は無視される。",
-            "ko": "TSPN 문자열로 음색을 설정한다.대소문자 불문, 공백은 무시된다.",
-            "pt": "Define os timbres com uma string de TSPN. Não diferencia maiúsculas de minúsculas, espaços são ignorados.",
-            "ru": "Устанавливает тембры строкой из TSPN. Регистр не учитывается, пробелы игнорируются.",
-            "tr": "TSPN dizesiyle tonları ayarlar. Büyük/küçük harf duyarsız, boşluklar yok sayılır.",
-            "uk": "Встановлює тембри рядком з TSPN. Регістр не враховується, пробіли ігноруються."
+            "en": "Set the tones with a string of TSPN (or 0-9 for custom tone numbers). Case-insensitive, whitespace is ignored.",
+            "cn": "使用TSPN（或0-9表示自定义音色编号）的字符串设置音色。不区分大小写，空白被忽略。",
+            "de": "Setzt die Töne mit einem String aus TSPN (oder 0-9 für benutzerdefinierte Tonnummern). Groß-/Kleinschreibung wird nicht beachtet, Leerzeichen werden ignoriert.",
+            "es": "Establece los tonos con una cadena de TSPN (o 0-9 para números de tono personalizados). No distingue mayúsculas de minúsculas, los espacios se ignoran.",
+            "fr": "Définit les timbres avec une chaîne de TSPN (ou 0-9 pour des numéros de timbre personnalisés). Insensible à la casse, les espaces sont ignorés.",
+            "it": "Imposta i toni con una stringa di TSPN (o 0-9 per numeri di tono personalizzati). Non sensibile alle maiuscole, gli spazi sono ignorati.",
+            "ja": "TSPNの文字列で音色を設定する（0-9でカスタム音色番号も指定可能）。大文字小文字不問、空白は無視される。",
+            "ko": "TSPN 문자열로 음색을 설정한다 (0-9로 커스텀 음색 번호도 지정 가능). 대소문자 불문, 공백은 무시된다.",
+            "pt": "Define os timbres com uma string de TSPN (ou 0-9 para números de timbre personalizados). Não diferencia maiúsculas de minúsculas, espaços são ignorados.",
+            "ru": "Устанавливает тембры с помощью строки из TSPN (или 0-9 для пользовательских номеров тембров). Регистр не учитывается, пробелы игнорируются.",
+            "tr": "TSPN (veya özel ton numaraları için 0-9) dizesiyle tonları ayarlar. Büyük/küçük harf duyarsız, boşluklar yok sayılır.",
+            "uk": "Встановлює тембри за допомогою рядка з TSPN (або 0-9 для власних номерів тембрів). Регістр не враховується, пробіли ігноруються."
           },
           "examples": [
             "pyxel.sounds[0].set_tones(\"ttss pppn\")"
@@ -9134,18 +9134,18 @@
           "type": "function",
           "signature": "Sound.mml(code)",
           "description": {
-            "en": "Switch to MML mode with the given MML string. In MML mode, normal parameters such as notes and speed are ignored. Call mml() to exit MML mode.",
-            "cn": "传入MML字符串切换到MML模式。MML模式下notes和speed等普通参数被忽略。调用mml()退出MML模式。",
-            "de": "Wechselt mit dem angegebenen MML-String in den MML-Modus. Im MML-Modus werden normale Parameter wie notes und speed ignoriert. Rufen Sie mml() auf, um den MML-Modus zu verlassen.",
-            "es": "Cambia al modo MML con la cadena MML dada. En el modo MML, los parámetros normales como notes y speed se ignoran. Llame a mml() para salir del modo MML.",
-            "fr": "Passe en mode MML avec la chaîne MML donnée. En mode MML, les paramètres normaux tels que notes et speed sont ignorés. Appelez mml() pour quitter le mode MML.",
-            "it": "Passa alla modalità MML con la stringa MML fornita. In modalità MML, i parametri normali come notes e speed vengono ignorati. Chiamare mml() per uscire dalla modalità MML.",
-            "ja": "MML文字列を渡すとMMLモードに移行する。MMLモード中はnotesやspeedなどの通常パラメータは無視される。mml()で解除する。",
-            "ko": "주어진 MML 문자열로 MML 모드로 전환한다.MML 모드에서는 notes, speed 등 일반 파라미터가 무시된다.mml()로 해제한다.",
-            "pt": "Alterna para o modo MML com a string MML fornecida. No modo MML, parâmetros normais como notes e speed são ignorados. Chame mml() para sair do modo MML.",
-            "ru": "Переключает в режим MML с заданной строкой MML. В режиме MML обычные параметры, такие как notes и speed, игнорируются. Вызовите mml() для выхода из режима MML.",
-            "tr": "Verilen MML dizesiyle MML moduna geçer. MML modunda notes ve speed gibi normal parametreler yok sayılır. MML modundan çıkmak için mml() çağırın.",
-            "uk": "Перемикає в режим MML із заданим рядком MML. У режимі MML звичайні параметри, такі як notes та speed, ігноруються. Викличте mml() для виходу з режиму MML."
+            "en": "Switch to MML mode with the given MML string. In MML mode, normal parameters such as notes and speed are ignored.",
+            "cn": "使用给定的MML字符串切换到MML模式。MML模式下，音符和速度等普通参数将被忽略。",
+            "de": "Wechselt mit dem angegebenen MML-String in den MML-Modus. Im MML-Modus werden normale Parameter wie Noten und Geschwindigkeit ignoriert.",
+            "es": "Cambia al modo MML con la cadena MML dada. En modo MML, los parámetros normales como notas y velocidad se ignoran.",
+            "fr": "Passe en mode MML avec la chaîne MML donnée. En mode MML, les paramètres normaux tels que les notes et la vitesse sont ignorés.",
+            "it": "Passa alla modalità MML con la stringa MML data. In modalità MML, i parametri normali come note e velocità vengono ignorati.",
+            "ja": "指定したMML文字列でMMLモードに切り替える。MMLモードでは音程や速度などの通常パラメータは無視される。",
+            "ko": "주어진 MML 문자열로 MML 모드로 전환한다. MML 모드에서는 음정이나 속도 등의 일반 파라미터가 무시된다.",
+            "pt": "Muda para o modo MML com a string MML fornecida. No modo MML, parâmetros normais como notas e velocidade são ignorados.",
+            "ru": "Переключает в режим MML с заданной строкой MML. В режиме MML обычные параметры, такие как ноты и скорость, игнорируются.",
+            "tr": "Verilen MML dizesiyle MML moduna geçer. MML modunda nota ve hız gibi normal parametreler yok sayılır.",
+            "uk": "Перемикає в режим MML із заданим рядком MML. У режимі MML звичайні параметри, такі як ноти та швидкість, ігноруються."
           },
           "examples": [
             "pyxel.sounds[0].mml(\"T120 Q90 @1 V100 O5 L8 C4&C<G16R16>C.\")"
@@ -9159,39 +9159,63 @@
               "name": "code",
               "type": "str",
               "desc": {
-                "en": "MML string (omit to exit MML mode)",
-                "cn": "MML字符串（省略则退出MML模式）",
-                "de": "MML-String (weglassen zum Beenden des MML-Modus)",
-                "es": "Cadena MML (omitir para salir del modo MML)",
-                "fr": "Chaîne MML (omettre pour quitter le mode MML)",
-                "it": "Stringa MML (omettere per uscire dalla modalità MML)",
-                "ja": "MML文字列（省略でMMLモード解除）",
-                "ko": "MML 문자열 (생략 시 MML 모드 해제)",
-                "pt": "String MML (omitir para sair do modo MML)",
-                "ru": "Строка MML (пропустить для выхода из режима MML)",
-                "tr": "MML dizesi (MML modundan çıkmak için atlayın)",
-                "uk": "Рядок MML (пропустити для виходу з режиму MML)"
+                "en": "MML string",
+                "cn": "MML字符串",
+                "de": "MML-String",
+                "es": "Cadena MML",
+                "fr": "Chaîne MML",
+                "it": "Stringa MML",
+                "ja": "MML文字列",
+                "ko": "MML 문자열",
+                "pt": "String MML",
+                "ru": "Строка MML",
+                "tr": "MML dizesi",
+                "uk": "Рядок MML"
               }
             }
           ]
+        },
+        {
+          "name": "Sound.mml",
+          "type": "function",
+          "signature": "Sound.mml()",
+          "description": {
+            "en": "Exit MML mode and return to normal mode.",
+            "cn": "退出MML模式，返回普通模式。",
+            "de": "Verlässt den MML-Modus und kehrt zum normalen Modus zurück.",
+            "es": "Sale del modo MML y vuelve al modo normal.",
+            "fr": "Quitte le mode MML et revient au mode normal.",
+            "it": "Esce dalla modalità MML e torna alla modalità normale.",
+            "ja": "MMLモードを終了し、通常モードに戻る。",
+            "ko": "MML 모드를 종료하고 일반 모드로 돌아간다.",
+            "pt": "Sai do modo MML e retorna ao modo normal.",
+            "ru": "Выходит из режима MML и возвращается в обычный режим.",
+            "tr": "MML modundan çıkar ve normal moda döner.",
+            "uk": "Виходить з режиму MML і повертається до звичайного режиму."
+          },
+          "return": {
+            "type": "None"
+          },
+          "advanced": false,
+          "params": []
         },
         {
           "name": "Sound.pcm",
           "type": "function",
           "signature": "Sound.pcm(filename)",
           "description": {
-            "en": "Load an audio file (WAV/OGG) for playback. Call pcm() to return to normal mode.",
-            "cn": "加载音频文件（WAV/OGG）用于播放。调用pcm()返回正常模式。",
-            "de": "Lädt eine Audiodatei (WAV/OGG) zur Wiedergabe. Rufen Sie pcm() auf, um zum normalen Modus zurückzukehren.",
-            "es": "Carga un archivo de audio (WAV/OGG) para su reproducción. Llame a pcm() para volver al modo normal.",
-            "fr": "Charge un fichier audio (WAV/OGG) pour la lecture. Appelez pcm() pour revenir au mode normal.",
-            "it": "Carica un file audio (WAV/OGG) per la riproduzione. Chiamare pcm() per tornare alla modalità normale.",
-            "ja": "オーディオファイル (WAV/OGG) を読み込んで再生に使用する。pcm()で通常モードに戻す。",
-            "ko": "오디오 파일(WAV/OGG)을 로드하여 재생에 사용한다.pcm()으로 일반 모드로 복귀한다.",
-            "pt": "Carrega um arquivo de áudio (WAV/OGG) para reprodução. Chame pcm() para retornar ao modo normal.",
-            "ru": "Загружает аудиофайл (WAV/OGG) для воспроизведения. Вызовите pcm() для возврата в обычный режим.",
-            "tr": "Çalma için bir ses dosyası (WAV/OGG) yükler. Normal moda dönmek için pcm() çağırın.",
-            "uk": "Завантажує аудіофайл (WAV/OGG) для відтворення. Викличте pcm() для повернення до звичайного режиму."
+            "en": "Load an audio file (WAV/OGG) for playback.",
+            "cn": "加载音频文件 (WAV/OGG) 以进行播放。",
+            "de": "Lädt eine Audiodatei (WAV/OGG) zur Wiedergabe.",
+            "es": "Carga un archivo de audio (WAV/OGG) para reproducción.",
+            "fr": "Charge un fichier audio (WAV/OGG) pour la lecture.",
+            "it": "Carica un file audio (WAV/OGG) per la riproduzione.",
+            "ja": "オーディオファイル (WAV/OGG) を読み込んで再生する。",
+            "ko": "오디오 파일 (WAV/OGG)을 로드하여 재생한다.",
+            "pt": "Carrega um arquivo de áudio (WAV/OGG) para reprodução.",
+            "ru": "Загружает аудиофайл (WAV/OGG) для воспроизведения.",
+            "tr": "Çalma için ses dosyası (WAV/OGG) yükler.",
+            "uk": "Завантажує аудіофайл (WAV/OGG) для відтворення."
           },
           "examples": [
             "pyxel.sounds[0].pcm(\"sounds/bgm.ogg\")"
@@ -9205,21 +9229,45 @@
               "name": "filename",
               "type": "str",
               "desc": {
-                "en": "Audio file path (WAV/OGG). Omit to return to normal mode.",
-                "cn": "音频文件路径 (WAV/OGG)。省略则恢复正常模式。",
-                "de": "Audiodateipfad (WAV/OGG). Weglassen für Normalmodus.",
-                "es": "Ruta del archivo de audio (WAV/OGG). Omitir para volver al modo normal.",
-                "fr": "Chemin du fichier audio (WAV/OGG). Omettre pour revenir au mode normal.",
-                "it": "Percorso file audio (WAV/OGG). Omettere per tornare alla modalità normale.",
-                "ja": "オーディオファイルのパス (WAV/OGG)。省略で通常モードに戻す。",
-                "ko": "오디오 파일 경로 (WAV/OGG). 생략 시 일반 모드로 복귀.",
-                "pt": "Caminho do arquivo de áudio (WAV/OGG). Omitir para voltar ao modo normal.",
-                "ru": "Путь к аудиофайлу (WAV/OGG). Пропустить для возврата в обычный режим.",
-                "tr": "Ses dosyası yolu (WAV/OGG). Normal moda dönmek için atlayın.",
-                "uk": "Шлях до аудіофайлу (WAV/OGG). Пропустити для повернення до звичайного режиму."
+                "en": "Audio file path (WAV/OGG)",
+                "cn": "音频文件路径 (WAV/OGG)",
+                "de": "Audiodateipfad (WAV/OGG)",
+                "es": "Ruta del archivo de audio (WAV/OGG)",
+                "fr": "Chemin du fichier audio (WAV/OGG)",
+                "it": "Percorso del file audio (WAV/OGG)",
+                "ja": "オーディオファイルパス (WAV/OGG)",
+                "ko": "오디오 파일 경로 (WAV/OGG)",
+                "pt": "Caminho do arquivo de áudio (WAV/OGG)",
+                "ru": "Путь к аудиофайлу (WAV/OGG)",
+                "tr": "Ses dosyası yolu (WAV/OGG)",
+                "uk": "Шлях до аудіофайлу (WAV/OGG)"
               }
             }
           ]
+        },
+        {
+          "name": "Sound.pcm",
+          "type": "function",
+          "signature": "Sound.pcm()",
+          "description": {
+            "en": "Exit PCM mode and return to normal mode.",
+            "cn": "退出PCM模式，返回普通模式。",
+            "de": "Verlässt den PCM-Modus und kehrt zum normalen Modus zurück.",
+            "es": "Sale del modo PCM y vuelve al modo normal.",
+            "fr": "Quitte le mode PCM et revient au mode normal.",
+            "it": "Esce dalla modalità PCM e torna alla modalità normale.",
+            "ja": "PCMモードを終了し、通常モードに戻る。",
+            "ko": "PCM 모드를 종료하고 일반 모드로 돌아간다.",
+            "pt": "Sai do modo PCM e retorna ao modo normal.",
+            "ru": "Выходит из режима PCM и возвращается в обычный режим.",
+            "tr": "PCM modundan çıkar ve normal moda döner.",
+            "uk": "Виходить з режиму PCM і повертається до звичайного режиму."
+          },
+          "return": {
+            "type": "None"
+          },
+          "advanced": false,
+          "params": []
         },
         {
           "name": "Sound.save",
@@ -9763,33 +9811,33 @@
           "signature": "Channel.play_pos()",
           "description": {
             "en": "Get the playback position as a tuple of (sound_no, sec). Return None when playback has stopped.",
-            "cn": "以 (sound_no, sec) 元组形式获取播放位置。播放停止时返回None。",
-            "de": "Gibt die Wiedergabeposition als Tupel (sound_no, sec) zurück. Gibt None zurück, wenn die Wiedergabe gestoppt wurde.",
-            "es": "Obtiene la posición de reproducción como una tupla (sound_no, sec). Devuelve None cuando la reproducción se ha detenido.",
-            "fr": "Récupère la position de lecture sous forme de tuple (sound_no, sec). Renvoie None lorsque la lecture est arrêtée.",
-            "it": "Restituisce la posizione di riproduzione come tupla (sound_no, sec). Restituisce None quando la riproduzione è terminata.",
-            "ja": "再生位置を (sound_no, sec) のタプルとして取得する。再生停止時はNoneを返す。",
-            "ko": "재생 위치를 (sound_no, sec) 튜플로 가져온다.재생이 정지하면 None을 반환한다.",
-            "pt": "Obtém a posição de reprodução como uma tupla (sound_no, sec). Retorna None quando a reprodução parou.",
-            "ru": "Возвращает позицию воспроизведения в виде кортежа (sound_no, sec). Возвращает None, когда воспроизведение остановлено.",
-            "tr": "Oynatma konumunu (sound_no, sec) demeti olarak döndürür. Oynatma durduğunda None döndürür.",
-            "uk": "Повертає позицію відтворення як кортеж (sound_no, sec). Повертає None, коли відтворення зупинено."
+            "cn": "以 (sound_index, sec) 元组形式获取播放位置。播放停止时返回None。",
+            "de": "Gibt die Wiedergabeposition als Tupel (sound_index, sec) zurück. Gibt None zurück, wenn die Wiedergabe gestoppt wurde.",
+            "es": "Obtiene la posición de reproducción como una tupla (sound_index, sec). Devuelve None cuando la reproducción se ha detenido.",
+            "fr": "Récupère la position de lecture sous forme de tuple (sound_index, sec). Renvoie None lorsque la lecture est arrêtée.",
+            "it": "Restituisce la posizione di riproduzione come tupla (sound_index, sec). Restituisce None quando la riproduzione è terminata.",
+            "ja": "再生位置を (sound_index, sec) のタプルとして取得する。再生停止時はNoneを返す。",
+            "ko": "재생 위치를 (sound_index, sec) 튜플로 가져온다.재생이 정지하면 None을 반환한다.",
+            "pt": "Obtém a posição de reprodução como uma tupla (sound_index, sec). Retorna None quando a reprodução parou.",
+            "ru": "Возвращает позицию воспроизведения в виде кортежа (sound_index, sec). Возвращает None, когда воспроизведение остановлено.",
+            "tr": "Oynatma konumunu (sound_index, sec) demeti olarak döndürür. Oynatma durduğunda None döndürür.",
+            "uk": "Повертає позицію відтворення як кортеж (sound_index, sec). Повертає None, коли відтворення зупинено."
           },
           "return": {
-            "type": "tuple/None",
+            "type": "tuple[int, float]/None",
             "desc": {
-              "en": "(sound_no, sec) or None",
-              "cn": "(sound_no, sec) 或 None",
-              "de": "(sound_no, sec) oder None",
-              "es": "(sound_no, sec) o None",
-              "fr": "(sound_no, sec) ou None",
-              "it": "(sound_no, sec) o None",
-              "ja": "(sound_no, sec) またはNone",
-              "ko": "(sound_no, sec) 또는 None",
-              "pt": "(sound_no, sec) ou None",
-              "ru": "(sound_no, sec) или None",
-              "tr": "(sound_no, sec) veya None",
-              "uk": "(sound_no, sec) або None"
+              "en": "(sound_index, sec) or None",
+              "cn": "(sound_index, sec) 或 None",
+              "de": "(sound_index, sec) oder None",
+              "es": "(sound_index, sec) o None",
+              "fr": "(sound_index, sec) ou None",
+              "it": "(sound_index, sec) o None",
+              "ja": "(sound_index, sec) またはNone",
+              "ko": "(sound_index, sec) 또는 None",
+              "pt": "(sound_index, sec) ou None",
+              "ru": "(sound_index, sec) или None",
+              "tr": "(sound_index, sec) veya None",
+              "uk": "(sound_index, sec) або None"
             }
           },
           "advanced": true
@@ -9897,18 +9945,18 @@
           "type": "variable",
           "signature": "Tone.wavetable",
           "description": {
-            "en": "Wavetable data as a list of sample values.",
-            "cn": "以采样值列表表示的波形表数据",
-            "de": "Wavetable-Daten als Liste von Samplewerten.",
-            "es": "Datos de la wavetable como una lista de valores de muestra.",
-            "fr": "Données de la wavetable sous forme de liste de valeurs d'échantillons.",
-            "it": "Dati della wavetable come lista di valori di campionamento.",
-            "ja": "サンプル値のリストによるウェーブテーブルデータ",
-            "ko": "샘플 값 리스트로 된 웨이브테이블 데이터",
-            "pt": "Dados da wavetable como uma lista de valores de amostra.",
-            "ru": "Данные wavetable в виде списка значений сэмплов.",
-            "tr": "Örnek değerlerinin listesi olarak wavetable verileri.",
-            "uk": "Дані wavetable у вигляді списку значень семплів."
+            "en": "Wavetable data as a list of sample values. Each value must be in range 0 to (2^sample_bits - 1).",
+            "cn": "波表数据，为样本值列表。每个值必须在0到 (2^sample_bits - 1) 范围内。",
+            "de": "Wavetable-Daten als Liste von Samplewerten. Jeder Wert muss im Bereich 0 bis (2^sample_bits - 1) liegen.",
+            "es": "Datos de tabla de ondas como una lista de valores de muestra. Cada valor debe estar en el rango de 0 a (2^sample_bits - 1).",
+            "fr": "Données de table d'ondes sous forme de liste de valeurs d'échantillon. Chaque valeur doit être comprise entre 0 et (2^sample_bits - 1).",
+            "it": "Dati della wavetable come lista di valori campione. Ogni valore deve essere nell'intervallo da 0 a (2^sample_bits - 1).",
+            "ja": "波形テーブルデータ（サンプル値のリスト）。各値は0から (2^sample_bits - 1) の範囲内。",
+            "ko": "웨이브테이블 데이터 (샘플 값 리스트). 각 값은 0에서 (2^sample_bits - 1) 범위 내여야 한다.",
+            "pt": "Dados da wavetable como uma lista de valores de amostra. Cada valor deve estar no intervalo de 0 a (2^sample_bits - 1).",
+            "ru": "Данные волновой таблицы в виде списка значений сэмплов. Каждое значение должно быть в диапазоне от 0 до (2^sample_bits - 1).",
+            "tr": "Dalga tablosu verisi, örnekleme değerleri listesi. Her değer 0 ile (2^sample_bits - 1) aralığında olmalıdır.",
+            "uk": "Дані хвильової таблиці у вигляді списку значень семплів. Кожне значення має бути в діапазоні від 0 до (2^sample_bits - 1)."
           },
           "value_type": "list[int]",
           "advanced": true

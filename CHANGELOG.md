@@ -6,6 +6,7 @@
 - Improved web tools with i18n support and other enhancements
 - Added API Reference page for Pyxel Web
 - Fixed type hints in pyi for Seq, Tilemap, Sound, and Music
+- Removed keyword-only separators from pyi and PyO3 bindings
 
 ## 2.7.0
 

@@ -458,7 +458,6 @@ class Image:
     @staticmethod
     def from_image(
         filename: str,
-        *,
         include_colors: Optional[bool] = None,
     ) -> Image: ...
     def data_ptr(self) -> Any: ...
@@ -468,7 +467,6 @@ class Image:
         x: int,
         y: int,
         filename: str,
-        *,
         include_colors: Optional[bool] = None,
     ) -> None: ...
     def save(self, filename: str, scale: int) -> None: ...
@@ -513,7 +511,6 @@ class Image:
         w: float,
         h: float,
         colkey: Optional[int] = None,
-        *,
         rotate: Optional[float] = None,
         scale: Optional[float] = None,
     ) -> None: ...
@@ -527,7 +524,6 @@ class Image:
         w: float,
         h: float,
         colkey: Optional[int] = None,
-        *,
         rotate: Optional[float] = None,
         scale: Optional[float] = None,
     ) -> None: ...
@@ -620,7 +616,6 @@ class Tilemap:
         w: float,
         h: float,
         tilekey: Optional[Tuple[int, int]] = None,
-        *,
         rotate: Optional[float] = None,
         scale: Optional[float] = None,
     ) -> None: ...
@@ -634,7 +629,6 @@ class Channel:
     def play(
         self,
         snd: Union[int, Seq[int], Sound, Seq[Sound], str],
-        *,
         sec: Optional[float] = None,
         loop: Optional[bool] = None,
         resume: Optional[bool] = None,
@@ -703,7 +697,6 @@ frame_count: int
 def init(
     width: int,
     height: int,
-    *,
     title: Optional[str] = None,
     fps: Optional[int] = None,
     quit_key: Optional[int] = None,
@@ -726,7 +719,6 @@ def fullscreen(enabled: bool) -> None: ...
 # Resource
 def load(
     filename: str,
-    *,
     exclude_images: Optional[bool] = None,
     exclude_tilemaps: Optional[bool] = None,
     exclude_sounds: Optional[bool] = None,
@@ -734,7 +726,6 @@ def load(
 ) -> None: ...
 def save(
     filename: str,
-    *,
     exclude_images: Optional[bool] = None,
     exclude_tilemaps: Optional[bool] = None,
     exclude_sounds: Optional[bool] = None,
@@ -757,7 +748,7 @@ dropped_files: List[str]
 
 def btn(key: int) -> bool: ...
 def btnp(
-    key: int, *, hold: Optional[int] = None, repeat: Optional[int] = None
+    key: int, hold: Optional[int] = None, repeat: Optional[int] = None
 ) -> bool: ...
 def btnr(key: int) -> bool: ...
 def btnv(key: int) -> int: ...
@@ -822,7 +813,6 @@ def blt(
     w: float,
     h: float,
     colkey: Optional[int] = None,
-    *,
     rotate: Optional[float] = None,
     scale: Optional[float] = None,
 ) -> None: ...
@@ -835,7 +825,6 @@ def bltm(
     w: float,
     h: float,
     colkey: Optional[int] = None,
-    *,
     rotate: Optional[float] = None,
     scale: Optional[float] = None,
 ) -> None: ...
@@ -850,14 +839,12 @@ musics: Seq[Music]
 def play(
     ch: int,
     snd: Union[int, Seq[int], Sound, Seq[Sound], str],
-    *,
     sec: Optional[float] = None,
     loop: Optional[bool] = None,
     resume: Optional[bool] = None,
 ) -> None: ...
 def playm(
     msc: int,
-    *,
     sec: Optional[float] = None,
     loop: Optional[bool] = None,
 ) -> None: ...

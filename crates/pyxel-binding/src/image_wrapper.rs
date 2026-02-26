@@ -30,7 +30,7 @@ impl Image {
     }
 
     #[staticmethod]
-    #[pyo3(signature = (filename, *, include_colors=None, incl_colors=None))]
+    #[pyo3(signature = (filename, include_colors=None, incl_colors=None))]
     pub fn from_image(
         filename: &str,
         include_colors: Option<bool>,
@@ -70,7 +70,7 @@ impl Image {
         unsafe { &mut *self.inner }.set(x, y, &data_refs);
     }
 
-    #[pyo3(signature = (x, y, filename, *, include_colors=None, incl_colors=None))]
+    #[pyo3(signature = (x, y, filename, include_colors=None, incl_colors=None))]
     pub fn load(
         &self,
         x: i32,
