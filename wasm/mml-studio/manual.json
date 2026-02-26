@@ -57,18 +57,18 @@
       "uk": "Огляд"
     },
     "overview_body": {
-      "en": "Pyxel MML Studio is a browser-based chiptune music creation environment powered by Pyxel's NES-style sound engine. Enter melodies using MML (Music Macro Language) across up to 4 channels, and share your music via URL or QR code — all without installation.",
-      "cn": "Pyxel MML Studio 是基于 Pyxel 的 FC 风格音频引擎的浏览器芯片音乐制作环境。使用 MML（Music Macro Language）在最多 4 个通道中输入旋律，并通过 URL 或二维码分享作品，无需安装。",
-      "de": "Pyxel MML Studio ist eine browserbasierte Chiptune-Musikerstellungsumgebung, die auf Pyxels NES-Soundengine basiert. Geben Sie Melodien mit MML (Music Macro Language) auf bis zu 4 Kanälen ein und teilen Sie Ihre Musik per URL oder QR-Code — ganz ohne Installation.",
-      "es": "Pyxel MML Studio es un entorno de creación de música chiptune basado en navegador, impulsado por el motor de sonido estilo NES de Pyxel. Ingresa melodías usando MML (Music Macro Language) en hasta 4 canales y comparte tu música mediante URL o código QR, todo sin instalación.",
-      "fr": "Pyxel MML Studio est un environnement de création musicale chiptune dans le navigateur, basé sur le moteur sonore style NES de Pyxel. Entrez des mélodies en MML (Music Macro Language) sur jusqu'à 4 canaux et partagez votre musique par URL ou QR code, le tout sans installation.",
-      "it": "Pyxel MML Studio è un ambiente di creazione musicale chiptune basato sul browser, alimentato dal motore audio in stile NES di Pyxel. Inserisci melodie usando MML (Music Macro Language) su fino a 4 canali e condividi la tua musica tramite URL o codice QR, tutto senza installazione.",
-      "ja": "Pyxel MML Studioは、Pyxelのファミコンスタイルサウンドエンジンによるブラウザベースのチップチューン音楽制作環境です。MML（Music Macro Language）で最大4チャンネルのメロディを入力し、URLやQRコードで作品を共有できます。インストールは不要です。",
-      "ko": "Pyxel MML Studio는 Pyxel의 NES 스타일 사운드 엔진 기반 브라우저 칩튠 음악 제작 환경입니다. MML(Music Macro Language)로 최대 4채널의 멜로디를 입력하고, URL이나 QR 코드로 작품을 공유할 수 있습니다. 설치가 필요 없습니다.",
-      "pt": "O Pyxel MML Studio é um ambiente de criação de música chiptune baseado em navegador, alimentado pelo motor de som estilo NES do Pyxel. Insira melodias usando MML (Music Macro Language) em até 4 canais e compartilhe sua música via URL ou código QR — tudo sem instalação.",
-      "ru": "Pyxel MML Studio — это браузерная среда создания чиптюн-музыки на основе звукового движка Pyxel в стиле NES. Вводите мелодии с помощью MML (Music Macro Language) на до 4 каналах и делитесь музыкой через URL или QR-код — без установки.",
-      "tr": "Pyxel MML Studio, Pyxel'in NES tarzı ses motoruyla çalışan tarayıcı tabanlı bir chiptune müzik oluşturma ortamıdır. MML (Music Macro Language) ile 4 kanala kadar melodi girin ve müziğinizi URL veya QR kodu ile paylaşın — kurulum gerektirmez.",
-      "uk": "Pyxel MML Studio — це браузерне середовище створення чіптюн-музики на основі звукового рушія Pyxel у стилі NES. Вводьте мелодії за допомогою MML (Music Macro Language) на до 4 каналах і діліться музикою через URL або QR-код — без встановлення."
+      "en": "Pyxel MML Studio is a browser-based chiptune music creation tool powered by Pyxel's NES-style sound engine. Enter melodies using MML (Music Macro Language) across up to 4 channels, and share your music via URL or QR code — all without installation.",
+      "cn": "Pyxel MML Studio 是基于 Pyxel 的 FC 风格音频引擎的浏览器芯片音乐制作工具。使用 MML（Music Macro Language）在最多 4 个通道中输入旋律，并通过 URL 或二维码分享作品，无需安装。",
+      "de": "Pyxel MML Studio ist ein browserbasiertes Chiptune-Musikerstellungstool, das auf Pyxels NES-Soundengine basiert. Geben Sie Melodien mit MML (Music Macro Language) auf bis zu 4 Kanälen ein und teilen Sie Ihre Musik per URL oder QR-Code — ganz ohne Installation.",
+      "es": "Pyxel MML Studio es una herramienta de creación de música chiptune basada en navegador, impulsada por el motor de sonido estilo NES de Pyxel. Ingresa melodías usando MML (Music Macro Language) en hasta 4 canales y comparte tu música mediante URL o código QR, todo sin instalación.",
+      "fr": "Pyxel MML Studio est un outil de création musicale chiptune dans le navigateur, basé sur le moteur sonore style NES de Pyxel. Entrez des mélodies en MML (Music Macro Language) sur jusqu'à 4 canaux et partagez votre musique par URL ou QR code, le tout sans installation.",
+      "it": "Pyxel MML Studio è uno strumento di creazione musicale chiptune basato sul browser, alimentato dal motore audio in stile NES di Pyxel. Inserisci melodie usando MML (Music Macro Language) su fino a 4 canali e condividi la tua musica tramite URL o codice QR, tutto senza installazione.",
+      "ja": "Pyxel MML Studioは、Pyxelのファミコンスタイルサウンドエンジンによるブラウザベースのチップチューン音楽制作ツールです。MML（Music Macro Language）で最大4チャンネルのメロディを入力し、URLやQRコードで作品を共有できます。インストールは不要です。",
+      "ko": "Pyxel MML Studio는 Pyxel의 NES 스타일 사운드 엔진 기반 브라우저 칩튠 음악 제작 도구입니다. MML(Music Macro Language)로 최대 4채널의 멜로디를 입력하고, URL이나 QR 코드로 작품을 공유할 수 있습니다. 설치가 필요 없습니다.",
+      "pt": "O Pyxel MML Studio é uma ferramenta de criação de música chiptune baseada em navegador, alimentada pelo motor de som estilo NES do Pyxel. Insira melodias usando MML (Music Macro Language) em até 4 canais e compartilhe sua música via URL ou código QR — tudo sem instalação.",
+      "ru": "Pyxel MML Studio — это браузерный инструмент создания чиптюн-музыки на основе звукового движка Pyxel в стиле NES. Вводите мелодии с помощью MML (Music Macro Language) на до 4 каналах и делитесь музыкой через URL или QR-код — без установки.",
+      "tr": "Pyxel MML Studio, Pyxel'in NES tarzı ses motoruyla çalışan tarayıcı tabanlı bir chiptune müzik oluşturma aracıdır. MML (Music Macro Language) ile 4 kanala kadar melodi girin ve müziğinizi URL veya QR kodu ile paylaşın — kurulum gerektirmez.",
+      "uk": "Pyxel MML Studio — це браузерний інструмент створення чіптюн-музики на основі звукового рушія Pyxel у стилі NES. Вводьте мелодії за допомогою MML (Music Macro Language) на до 4 каналах і діліться музикою через URL або QR-код — без встановлення."
     },
     "layout_title": {
       "en": "Screen Layout",
