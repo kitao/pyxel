@@ -1,102 +1,115 @@
 # Web 版 Pyxel の使い方
 
-Web 版 Pyxel を使うと Python や Pyxel をインストールせずに、PC、スマートフォン、タブレット等の Web ブラウザで Pyxel のアプリケーションを実行できます。
+Pyxel アプリは Web ブラウザ上で実行できます。Python や Pyxel のインストールは不要で、PC・スマートフォン・タブレットから利用可能です。
 
-Web 版 Pyxel の利用方法には、次の 4 種類があります。
+このページでは、Pyxel アプリの Web 公開方法と、ブラウザ上で使える Web ツールについて説明します。
 
-- **Pyxel Code Maker でアプリを作成する**<br>
-  オンライン IDE の [Pyxel Code Maker](https://kitao.github.io/pyxel/wasm/code-maker/) を使えば、インストールなしですぐに Pyxel アプリの作成と実行が可能です。ただし、複数ファイルの構成には対応していないため、本格的な開発には通常の開発環境の利用をおすすめします。
+## アプリの Web 公開
 
-- **Pyxel Web Launcher に GitHub リポジトリを指定する**<br>
-  Pyxel Web Launcher の URL に GitHub のリポジトリ名を指定すると、指定したリポジトリを直接読み込み、Web ブラウザ上でアプリを実行できます。アプリを GitHub で公開している場合、最も簡単な実行方法です。
+Pyxel アプリを Web 上で公開する方法は 3 種類あります。
 
-- **Pyxel アプリを HTML ファイルに変換する**<br>
-  アプリが Pyxel アプリケーション形式 (.pyxapp) になっている場合は、`pyxel app2html` コマンドを使って HTML ファイルに変換できます。変換後の HTML ファイルはサーバーを必要とせず、単体で実行可能です。
+| 方法 | 特徴 |
+| --- | --- |
+| [Web Launcher](#web-launcher) | GitHub リポジトリを URL 指定で直接実行。最も手軽 |
+| [app2html](#app2html) | Pyxel アプリケーション (.pyxapp) を HTML に変換して公開 |
+| [カスタムタグ](#カスタムタグ) | Pyxel 専用タグで既存の HTML ページに組み込み |
 
-- **Pyxel カスタムタグを使って HTML ファイルを作成する**<br>
-  Pyxel 専用のカスタムタグを使用して、アプリ実行用の HTML ファイルを作成します。作成した HTML ファイルはサーバーでホスティングする必要がありますが、既存の HTML ページへの組み込みやカスタマイズが可能です。
+### Web Launcher
 
-それぞれの利用方法について説明します。
+[Pyxel Web Launcher](https://kitao.github.io/pyxel/wasm/launcher/) は、GitHub 上で公開されている Python スクリプトや Pyxel アプリ (.pyxapp) を URL 指定で直接実行できるツールです。
 
-## Pyxel Web Launcher に GitHub リポジトリを指定する
+必要な情報を入力するだけで起動 URL を自動作成できるほか、以下の書式で手動作成も可能です。なお、Web Launcher では常に最新版の Pyxel が使用されます。
 
-Python コードや Pyxel アプリケーションファイル (.pyxapp) が GitHub 上で公開されている場合、Pyxel Web Launcher を使用して直接実行できます。Pyxel Web Launcher は常に最新版の Pyxel を参照します。
-
-Pyxel Web Launcher の URL 書式は以下の通りです。
+#### URL 書式
 
 ```
-https://kitao.github.io/pyxel/wasm/launcher/?<コマンド>=<githubのユーザー名>.<リポジトリ名>.<アプリのディレクトリ>.<拡張子を取ったファイル名>
+https://kitao.github.io/pyxel/wasm/launcher/?<コマンド>=<ユーザー名>.<リポジトリ名>.<パス>.<ファイル名（拡張子なし）>
 ```
 
-コマンドには次の 3 つが指定できます。
+パスの区切りにはドット (`.`) を使用します（例: `src/scenes` → `src.scenes`）。
 
-- `run`: Python スクリプトを実行する
-- `play`: Pyxel アプリを実行する
-- `edit`: Pyxel Editor を起動する
+#### コマンド
 
-例えば、ユーザー名が `taro`、リポジトリ名が `my_repo`、ファイルのディレクトリが `src/scenes`、Python スクリプトが `title.py` の場合は、URL は以下のようになります。
+| コマンド | 動作 |
+| --- | --- |
+| `run` | Python スクリプト (.py) を実行 |
+| `play` | Pyxel アプリ (.pyxapp) を実行 |
+| `edit` | Pyxel Editor でリソースファイル (.pyxres) を編集 |
+
+#### URL の例
+
+ユーザー `taro` のリポジトリ `my_repo` にある `src/scenes/title.py` を実行する場合:
 
 ```
 https://kitao.github.io/pyxel/wasm/launcher/?run=taro.my_repo.src.scenes.title
 ```
 
-`dist/games` にある `shooter.pyxapp` を実行する場合の URL は次の通りです。
+同じリポジトリの `dist/games/shooter.pyxapp` を実行する場合:
 
 ```
 https://kitao.github.io/pyxel/wasm/launcher/?play=taro.my_repo.dist.games.shooter
 ```
 
-複数のファイルに分かれたアプリを `run` コマンドで実行すると読み込みに時間がかかるため、その場合は Pyxel アプリケーションファイル（.pyxapp）に変換して `play` コマンドで実行することをおすすめします。
+#### 属性
 
-`run` および `play` コマンドには、バーチャルゲームパッドを有効にする `gamepad` 属性や、追加パッケージを指定する `packages` 属性を指定することが可能です。
+`run` および `play` コマンドには以下の属性を追加できます。
 
-例えば、バーチャルゲームパッドを有効にし、追加パッケージとして NumPy と Pandas を使用する場合は、次のような URL になります。
+| 属性 | 説明 |
+| --- | --- |
+| `gamepad=enabled` | バーチャルゲームパッド（タッチデバイスに表示される画面上コントローラー）を有効化 |
+| `packages=pkg1,pkg2` | 追加の [Pyodide 対応パッケージ](https://pyodide.org/en/stable/usage/packages-in-pyodide.html)（Web 版 Python で使用可能なライブラリ）を指定 |
+
+`run` コマンドに属性を追加した URL の例:
 
 ```
 https://kitao.github.io/pyxel/wasm/launcher/?run=taro.my_repo.src.scenes.title&gamepad=enabled&packages=numpy,pandas
 ```
 
-なお、追加できるパッケージは [Pyodide 対応パッケージ](https://pyodide.org/en/stable/usage/packages-in-pyodide.html) に限られます。
+`edit` コマンドには `editor` 属性で起動画面を指定できます（`image`、`tilemap`、`sound`、`music`）。
 
-`edit` コマンドを使用する場合、`editor` 属性で Pyxel Editor の起動画面を指定できます。
+`edit` コマンドの URL の例:
 
-例えば、`assets` ディレクトリにある `shooter.pyxres` ファイルをタイルマップエディタ画面で起動するには、以下の URL を使用します。
-
-```text
+```
 https://kitao.github.io/pyxel/wasm/launcher/?edit=taro.my_repo.assets.shooter&editor=tilemap
 ```
 
-[Pyxel Web Launcher ページ](https://kitao.github.io/pyxel/wasm/launcher/) では、必要な情報を入力して、アプリの起動 URL を自動作成することができます。
+複数ファイルのアプリを `run` で実行すると読み込みに時間がかかるため、`pyxel package` コマンドで `.pyxapp` に変換して `play` で実行することをおすすめします。
 
-また、MML List に複数チャンネルの MML を `CDE;EFG` のようにセミコロン (`;`) で区切って入力することで、MML を再生する URL も作成できます。MML の使い方は [こちらのページ](faq-ja.md) を参照してください。
+### app2html
 
-## Pyxel アプリを HTML ファイルに変換する
-
-Pyxel アプリケーションファイル (.pyxapp) は、次のコマンドで単独で動作する HTML ファイルに変換できます。作成した HTML ファイルは、変換に使用したバージョンの Pyxel を参照します。
+`pyxel app2html` コマンドで、Pyxel アプリケーション (.pyxapp) を HTML ファイルに変換できます。
 
 ```sh
 pyxel app2html your_app.pyxapp
 ```
 
-作成された HTML ファイルでは、バーチャルゲームパッドがデフォルトで有効になっていますが、カスタムタグを編集することで無効にすることも可能です。
+アプリのデータは HTML に埋め込まれるため、生成されたファイルを配布するだけで公開できます。
 
-## Pyxel カスタムタグを使って HTML ファイルを作成する
+Pyxel のランタイムは変換時のバージョンに固定されるため、将来のバージョンアップで動作が変わる心配がありません。
 
-HTML ファイルに Pyxel 専用のカスタムタグを記述することで、Pyxel アプリを実行できます。
+バーチャルゲームパッドはデフォルトで有効になっています（タッチデバイスでのみ表示）。無効にするには、生成された HTML 内の `gamepad: "enabled"` を削除してください。
 
-Pyxel カスタムタグを利用するには、以下のスクリプトタグを HTML ファイルに追加します。
+### カスタムタグ
+
+HTML ファイルに Pyxel のカスタムタグを記述することで、Pyxel アプリを既存の Web ページに組み込めます。
+
+#### セットアップ
+
+以下のスクリプトタグを HTML に追加します。
 
 ```html
 <script src="https://cdn.jsdelivr.net/gh/kitao/pyxel/wasm/pyxel.js"></script>
 ```
 
-また、`@` の後にバージョン番号を指定することで、実行時に参照する Pyxel のバージョンを固定できます。将来のバージョンアップによる互換性の問題を避けたい場合は、バージョン番号を指定してください。
+将来のバージョンアップによる互換性の問題を避けたい場合は、`@` の後にバージョン番号を指定してバージョンを固定できます。
 
 ```html
-<script src="https://cdn.jsdelivr.net/gh/kitao/pyxel@2.4.6/wasm/pyxel.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/kitao/pyxel@v2.7.2/wasm/pyxel.js"></script>
 ```
 
-Python コードを直接実行するには、次のように `pyxel-run` タグの `script` 属性にコードを記述します。
+#### pyxel-run
+
+Python コードを直接実行するには `script` 属性にコードを記述します。
 
 ```html
 <pyxel-run
@@ -110,30 +123,19 @@ pyxel.show()
 ></pyxel-run>
 ```
 
-外部の Python ファイルを読み込んで実行する場合は、`pyxel-run` タグに `root` と `name` 属性を指定します。
+外部ファイルを読み込む場合は `root` と `name` を指定します。`root` はファイル検索の起点となるディレクトリ、`name` はファイルパスです。
 
-`root` は検索の起点となるディレクトリ、`name` はファイルパスです。
-
-例えば先ほどのコードを `test.py` というファイルに保存し、HTML ファイルと同じディレクトリに配置した場合、次のように記述します。
+この方法では[サーバーでのホスティング](#ローカルでの実行)が必要です。
 
 ```html
 <pyxel-run root="." name="test.py"></pyxel-run>
 ```
 
-`root` がカレントディレクトリの場合 (`root="."`)、`root` 属性は省略可能です。
+`root` がカレントディレクトリの場合（`root="."`）、`root` 属性は省略できます。
 
-ローカルの HTML ファイルから外部ファイルを読み込むにはサーバーでのホスティングが必要です。
+#### pyxel-play
 
-Python 環境があれば、次のコマンドで簡易サーバーを起動できます。
-
-```python
-python -m http.server
-# MacやLinuxの場合はpython3を使用してください
-```
-
-サーバー起動後、ブラウザで `http://localhost:8000/test.html` にアクセスできます。
-
-同様に、Pyxel アプリ (.pyxapp) は `pyxel-play` タグで実行できます。
+Pyxel アプリ (.pyxapp) を実行します。`root` には URL も指定できます。
 
 ```html
 <pyxel-play
@@ -142,24 +144,43 @@ python -m http.server
 ></pyxel-play>
 ```
 
-この例では、`root` 属性に URL を指定しています。
+#### pyxel-edit
 
-`pyxel-run` タグと `pyxel-play` タグには、バーチャルゲームパッドを有効にする `gamepad` 属性や、追加パッケージを指定する `packages` 属性を指定できます。
-
-例えば、バーチャルゲームパッドを有効にし、NumPy と Pandas を使用する場合は次のようになります。
-
-```html
-<pyxel-run name="test.py" gamepad="enabled" packages="numpy,pandas"></pyxel-run>
-```
-
-使用できるパッケージは [Pyodide 対応パッケージ](https://pyodide.org/en/stable/usage/packages-in-pyodide.html) に限られます。
-
-また、`pyxel-edit` タグを使って Pyxel Editor を起動できます。
-
-例えば、`assets` ディレクトリにある `shooter.pyxres` ファイルをイメージエディタ画面で起動するには、次のように記述します。
+Pyxel Editor を起動します。`editor` 属性で起動画面を指定できます。
 
 ```html
 <pyxel-edit root="assets" name="shooter.pyxres" editor="image"></pyxel-edit>
 ```
 
-Pyxel を実行する HTML ファイルに `id="pyxel-screen"` の `<div>` タグを追加すると、その要素を Pyxel の画面として使用します。この `<div>` タグの位置やサイズを調整することで、Pyxel の画面の配置や大きさを変更できます。
+#### 共通属性（pyxel-run / pyxel-play のみ）
+
+| 属性 | 説明 |
+| --- | --- |
+| `gamepad="enabled"` | バーチャルゲームパッドを有効化（タッチデバイスでのみ表示） |
+| `packages="pkg1,pkg2"` | 追加の [Pyodide 対応パッケージ](https://pyodide.org/en/stable/usage/packages-in-pyodide.html)を指定 |
+
+#### 画面のカスタマイズ
+
+デフォルトでは Pyxel の画面はページ全体に表示されます。HTML に `id="pyxel-screen"` の `<div>` タグを配置すると、その要素内に画面が表示されるようになり、位置やサイズを自由に調整できます。
+
+#### ローカルでの実行
+
+外部ファイルを読み込むカスタムタグを使用する場合はサーバーでのホスティングが必要です。Python 環境があれば簡易サーバーを利用できます。
+
+```sh
+python -m http.server
+# Mac や Linux の場合は python3 を使用
+```
+
+サーバー起動後、ブラウザで `http://localhost:8000/test.html` にアクセスします。
+
+## Web ツール
+
+Pyxel はアプリの開発に役立つオンラインツールも提供しています。各ツールの詳しい使い方は、それぞれのページにあるマニュアルを参照してください。
+
+| ツール | 概要 |
+| --- | --- |
+| [Pyxel Code Maker](https://kitao.github.io/pyxel/wasm/code-maker/) | Pyxel アプリを作成・実行できるオンライン IDE |
+| [Pyxel Showcase](https://kitao.github.io/pyxel/wasm/showcase/) | サンプルコードやアプリを一覧・実行できるギャラリー |
+| [Pyxel MML Studio](https://kitao.github.io/pyxel/wasm/mml-studio/) | MML（Music Macro Language）でチップチューンを作曲・再生できるエディタ |
+| [Pyxel API Reference](https://kitao.github.io/pyxel/wasm/api-reference/) | Pyxel API の検索・閲覧ができるリファレンス |

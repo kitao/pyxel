@@ -1,56 +1,19 @@
 # Pyxel よくある質問
 
-## 新バージョンへの移行方法
-
-<details>
-<summary>バージョン2.4への移行方法</summary>
-
-Pyxel 2.4 ではサウンドエンジンと MML 文法が刷新されています。<br>
-コードをバージョン 2.4 に対応させるには、以下の変更を行ってください。
-
-- Tone クラスの `waveform` フィールドを `wavetable` にリネームする
-- `play` 関数、`playm` 関数の `tick` 引数を `sec`（小数形式の秒数）に変更する
-- `play_pos` 関数の戻り値が `(sound_no, sec)` に変わったことに対応する
-- Sound クラス、Music クラスの `save` 関数の `count` 引数を `sec` に変更する
-- サウンドの再生秒数が必要な場合は、Sound クラスの `total_sec` 関数を利用する
-- Sound クラスの `mml` 関数には新 MML 文法に沿ったコードを指定する
-- 旧 MML 文法を使用する場合は、Sound クラスの `old_mml` 関数を使用する
-- `save`、`load` 関数の `excl_*` オプションを `exclude_*` に変更する
-- `save`、`load` 関数の `incl_*` オプションの指定を削除する
-
-新しい MML 文法は後述の「Pyxel の MML の使い方」を参照してください。
-
-</details>
-
-<details>
-<summary>バージョン1.5への移行方法</summary>
-
-コードをバージョン 1.5 に対応させるには、以下の変更を行ってください。
-
-- `init` の `caption` オプションを `title` にリネームする
-- `init` の `scale` オプションを `display_scale` にリネームする
-- `init` から `palette` オプションを削除する (初期化後に `colors` 配列でパレットカラーを変更できます)
-- `init` から `fullscreen` オプションを削除する (初期化後に `fullscreen` 関数でフルスクリーンを切り替えることができます)
-- キー名の未定義エラーが発生した場合、[キー定義](https://github.com/kitao/pyxel/blob/main/python/pyxel/__init__.pyi) に従ってキー名をリネームする
-- `Image` クラスおよび `Tilemap` クラスの `get` と `set` をそれぞれ `pget` と `pset` に変更する
-- `bltm` の `u`, `v`, `w`, `h` パラメータを 8 倍に変更する (`bltm` はピクセル単位で動作するようになりました)
-- `Sound` および `Music` クラスのメンバーとメソッドを新しい名前に更新する
-
-</details>
-
-<details>
-<summary>バージョン1.5以降で <code>pyxeleditor</code> コマンドが使えません</summary>
-
-バージョン 1.5 以降、Pyxel のツールは `pyxel` コマンドに統合されました。リソースエディタにアクセスするには、次のコマンドを使用してください: `pyxel edit [PYXEL_RESOURCE_FILE]`
-
-</details>
-
 ## Pyxel の学び方
 
 <details>
 <summary>Pyxel を学習するにはどこから始めればいいですか？</summary>
 
-Pyxel のサンプルコードを 01、05、03、04、02 の順に試すのがおすすめです。
+Pyxel のサンプルコードを以下の順に試すのがおすすめです。
+
+1. 01_hello_pyxel — Pyxel の基本
+2. 05_color_palette — カラーパレット
+3. 03_draw_api — 描画 API
+4. 04_sound_api — サウンド API
+5. 02_jump_game — ゲーム実装
+
+サンプルコードは `pyxel copy_examples` でコピーできるほか、[Pyxel Showcase](https://kitao.github.io/pyxel/wasm/showcase/) でブラウザ上でも実行できます。
 
 </details>
 
@@ -73,16 +36,21 @@ Pyxel のサンプルコードを 01、05、03、04、02 の順に試すのが�
 <details>
 <summary>Pyxel の MML の使い方を教えてください</summary>
 
-Sound クラスの `mml` 関数に MML (Music Macro Language) 文字列を渡すと、MML モードに移行し、その内容に沿ってサウンドが再生されるようになります。
+MML（Music Macro Language）は、音符やテンポなどを文字列で記述してサウンドを定義する言語です。
 
-MML モードでは、`notes` や `speed` などの通常のパラメータは無視され、指定した文字列の内容に沿ってサウンドが再生されます。`mml()` を呼ぶと MML モードをリセットできます。
+Sound クラスの `mml` 関数に MML 文字列を渡すと、その Sound が MML の内容に沿って再生されるようになります。`mml()` を引数なしで呼ぶと MML 設定を解除できます。
 
-`play` 関数にサウンド番号の代わりに直接 MML 文字列を渡して再生することもできます。<br>
-例：`pyxel.play(0, "CDEFG")`
+```python
+pyxel.sounds[0].mml("CDEFGAB>C")
+```
 
-Pyxel の MML で利用できるコマンドは [Pyxel MML コマンド](https://kitao.github.io/pyxel/wasm/mml-studio/mml-commands.html) で参照できます。
+`play` 関数にサウンド番号の代わりに MML 文字列を直接渡して再生することもできます。
 
-使用例はサンプル 09_shooter.py の [デモ](https://kitao.github.io/pyxel/wasm/showcase/examples/09-shooter.html) や [コード](https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/09_shooter.py) で確認できます。
+```python
+pyxel.play(0, "CDEFG")
+```
+
+利用できる MML コマンドは [Pyxel MML コマンド](https://kitao.github.io/pyxel/wasm/mml-studio/mml-commands.html) を参照してください。使用例はサンプル 09_shooter.py の [デモ](https://kitao.github.io/pyxel/wasm/showcase/examples/09-shooter.html) や [コード](https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/09_shooter.py) で確認できます。
 
 また、[Pyxel MML Studio](https://kitao.github.io/pyxel/wasm/mml-studio/) を使えば、MML をブラウザ上で作成・共有できます。
 
@@ -108,22 +76,47 @@ Pyxel の `init` 関数が呼ばれると、カレントディレクトリはそ
 ## Pyxel ツールの使い方
 
 <details>
-<summary>Pyxel Editor でパレットの色を変更できますか？</summary>
+<summary>インストールせずに Pyxel を試せますか？</summary>
 
-Pyxel リソースファイル（.pyxres）と同じディレクトリに、Pyxel パレットファイル（.pyxpal）を配置することで、Pyxel Editor で使用するパレットの色をリソースファイルに合わせることができます。Pyxel パレットファイルの作成方法については、README をご参照ください。
+[Pyxel Code Maker](https://kitao.github.io/pyxel/wasm/code-maker/) を使えば、ブラウザ上で Pyxel アプリの作成・実行ができます。ただし、複数ファイル構成には対応していないため、本格的な開発にはローカル環境をおすすめします。
+
+[Pyxel Showcase](https://kitao.github.io/pyxel/wasm/showcase/) では、サンプルコードやアプリをブラウザ上で一覧・実行できます。
 
 </details>
 
-## 今後の開発計画
+<details>
+<summary>自作の Pyxel アプリを Web で公開するにはどうすればいいですか？</summary>
+
+Web Launcher、app2html、カスタムタグの 3 つの方法があります。詳しくは [Web 版 Pyxel の使い方](pyxel-web-ja.md) を参照してください。
+
+</details>
 
 <details>
-<summary>今後のリリースで予定している機能は？</summary>
+<summary>Pyxel Editor でパレットの色を変更できますか？</summary>
 
-以下の機能追加や改善を予定しています。
+Pyxel リソースファイル（.pyxres）と同じディレクトリに、拡張子を .pyxpal に変えた同名のファイルを配置すると、Pyxel Editor のパレット表示色が変更されます。パレットファイルは `save_pal` 関数で作成できるほか、1 行に 1 色の 16 進数カラーコードを記述したテキストファイルとして手動で作成することもできます。
 
-- Pyxel アプリランチャーの追加
-- Pyxel Editor の操作性向上
-- 子供向け Pyxel チュートリアルの追加
+</details>
+
+## バージョン移行ガイド
+
+<details>
+<summary>バージョン 2.4 への移行方法</summary>
+
+Pyxel 2.4 ではサウンドエンジンと MML 文法が刷新されています。<br>
+コードをバージョン 2.4 に対応させるには、以下の変更を行ってください。
+
+- Tone クラスの `waveform` フィールドを `wavetable` にリネームする
+- `play` 関数、`playm` 関数の `tick` 引数を `sec`（小数形式の秒数）に変更する
+- `play_pos` 関数の戻り値が `(sound_no, sec)` に変わったことに対応する
+- Sound クラス、Music クラスの `save` 関数の `count` 引数を `sec` に変更する
+- サウンドの再生秒数が必要な場合は、Sound クラスの `total_sec` 関数を利用する
+- Sound クラスの `mml` 関数には新 MML 文法に沿ったコードを指定する
+- 旧 MML 文法を使用する場合は、Sound クラスの `old_mml` 関数を使用する
+- `save`、`load` 関数の `excl_*` オプションを `exclude_*` に変更する
+- `save`、`load` 関数の `incl_*` オプションの指定を削除する
+
+新しい MML 文法は上記の「[Pyxel の MML の使い方](#api-仕様と使い方)」を参照してください。
 
 </details>
 
