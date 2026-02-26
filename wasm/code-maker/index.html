@@ -18,7 +18,7 @@
           @apply flex items-center gap-4 bg-gray-900 px-4 py-3;
         }
         .btn {
-          @apply bg-gray-900 px-2 py-1 border border-gray-600 rounded-md w-14 font-medium text-gray-300 text-xs text-center;
+          @apply shrink-0 bg-gray-900 px-2 py-1 border border-gray-600 rounded-md w-14 font-medium text-gray-300 text-xs text-center;
         }
         .btn:disabled {
           @apply bg-gray-700 opacity-50 text-gray-400 pointer-events-none;
@@ -36,7 +36,7 @@
           @apply text-indigo-400 hover:text-indigo-300 visited:text-indigo-400 underline underline-offset-2;
         }
         .seg {
-          @apply flex items-center bg-gray-900 border border-gray-600 rounded-md divide-x divide-gray-700 overflow-hidden;
+          @apply flex shrink-0 items-center bg-gray-900 border border-gray-600 rounded-md divide-x divide-gray-700 overflow-hidden;
         }
         .seg-btn {
           @apply flex-1 bg-gray-900 px-3 py-1 border-none min-w-[2rem] font-medium text-gray-300 text-xs text-center;
@@ -67,20 +67,21 @@
   <body class="h-full page">
     <div id="app-root" class="flex flex-col h-full min-h-0">
       <!-- Toolbar -->
-      <div class="toolbar">
-        <div class="flex items-baseline gap-2 min-w-0">
-          <div class="tool-title">Pyxel Code Maker</div>
-          <div class="truncate tool-tagline">
+      <div class="toolbar flex-wrap">
+        <div class="flex flex-wrap items-baseline gap-x-2 min-w-0 basis-full sm:basis-auto">
+          <div class="tool-title whitespace-nowrap shrink-0">Pyxel Code Maker</div>
+          <div class="tool-tagline !whitespace-normal">
             Playground for
             <a class="link" href="https://github.com/kitao/pyxel" target="_blank" rel="noopener noreferrer" tabindex="-1"
               >Pyxel</a
             >, a retro game engine for Python.
+            (<a class="link" href="manual.html" target="_blank" rel="noopener noreferrer" tabindex="-1">Manual</a>)
           </div>
         </div>
         <!-- Controls -->
-        <div class="flex flex-1 justify-start items-center mt-0.5 min-w-0">
+        <div class="flex flex-wrap shrink-0 max-w-full items-center gap-2 mt-0.5">
           <!-- Load / Save -->
-          <div class="flex items-center gap-2">
+          <div class="flex shrink-0 items-center gap-2">
             <button
               id="load-button"
               class="btn"
@@ -99,7 +100,7 @@
             </button>
           </div>
           <!-- Code / Res toggle -->
-          <div class="flex items-center px-4">
+          <div class="flex shrink-0 items-center">
             <div class="seg" role="group">
               <button
                 id="code-tab-button"
@@ -124,7 +125,7 @@
             </div>
           </div>
           <!-- Run -->
-          <div class="flex items-center gap-2">
+          <div class="flex shrink-0 items-center gap-2">
             <button
               id="run-button"
               class="btn"
@@ -134,10 +135,6 @@
             >
               Run
             </button>
-          </div>
-          <!-- Manual -->
-          <div class="flex items-center ml-4">
-            <a class="link text-sm" href="manual.html" target="_blank" rel="noopener noreferrer" tabindex="-1">Manual</a>
           </div>
         </div>
       </div>

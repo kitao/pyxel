@@ -385,8 +385,8 @@ Pyxel には、使用に専門知識が必要な「上級者向け API」もあ�
 - [Pyxel Showcase](https://kitao.github.io/pyxel/wasm/showcase/)
 - [Pyxel API Reference](https://kitao.github.io/pyxel/wasm/api-reference/)
 - [Pyxel Web Launcher](https://kitao.github.io/pyxel/wasm/launcher/)
-- [Pyxel Code Maker](https://kitao.github.io/pyxel/wasm/code-maker/) [[ユーザーマニュアル](https://qiita.com/kitao/items/6f3d080f8e1c5d2f2715)]
-- [Pyxel MML Studio](https://kitao.github.io/pyxel/wasm/mml-studio/) [[ユーザーマニュアル](https://qiita.com/kitao/items/01156ae7ade59d8ff2cc)]
+- [Pyxel Code Maker](https://kitao.github.io/pyxel/wasm/code-maker/)
+- [Pyxel MML Studio](https://kitao.github.io/pyxel/wasm/mml-studio/)
 
 ## その他の情報
 
