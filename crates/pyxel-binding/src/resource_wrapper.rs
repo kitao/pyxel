@@ -124,8 +124,8 @@ fn save(
 }
 
 #[pyfunction]
-fn load_pal(filename: &str) {
-    pyxel().load_palette(filename);
+fn load_pal(filename: &str) -> PyResult<()> {
+    pyxel().load_palette(filename).map_err(PyException::new_err)
 }
 
 #[pyfunction]
@@ -135,14 +135,14 @@ fn save_pal(filename: &str) -> PyResult<()> {
 
 #[pyfunction]
 #[pyo3(signature = (scale=None))]
-fn screenshot(scale: Option<u32>) {
-    pyxel().take_screenshot(scale);
+fn screenshot(scale: Option<u32>) -> PyResult<()> {
+    pyxel().take_screenshot(scale).map_err(PyException::new_err)
 }
 
 #[pyfunction]
 #[pyo3(signature = (scale=None))]
-fn screencast(scale: Option<u32>) {
-    pyxel().save_screencast(scale);
+fn screencast(scale: Option<u32>) -> PyResult<()> {
+    pyxel().save_screencast(scale).map_err(PyException::new_err)
 }
 
 #[pyfunction]
@@ -151,8 +151,10 @@ fn reset_screencast() {
 }
 
 #[pyfunction]
-fn user_data_dir(vendor_name: &str, app_name: &str) -> String {
-    pyxel().user_data_dir(vendor_name, app_name)
+fn user_data_dir(vendor_name: &str, app_name: &str) -> PyResult<String> {
+    pyxel()
+        .user_data_dir(vendor_name, app_name)
+        .map_err(PyException::new_err)
 }
 
 pub fn add_resource_functions(m: &Bound<'_, PyModule>) -> PyResult<()> {

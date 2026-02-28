@@ -50,40 +50,40 @@ pub fn parse_tmx(filename: &str, layer_index: u32) -> Result<*mut Tilemap, Strin
 
     let mut tmx_text = String::new();
     file.read_to_string(&mut tmx_text)
-        .map_err(|_| "Failed to read TMX file".to_string())?;
+        .map_err(|_| format!("Failed to read file '{filename}'"))?;
 
-    let tmx: TiledMapFile =
-        serde_xml_rs::from_str(&tmx_text).map_err(|_| "Failed to parse TMX file".to_string())?;
+    let tmx: TiledMapFile = serde_xml_rs::from_str(&tmx_text)
+        .map_err(|_| format!("Failed to parse file '{filename}'"))?;
 
     if tmx.tilewidth != TILE_SIZE || tmx.tileheight != TILE_SIZE {
-        return Err(format!(
-            "TMX file's tile size is not {TILE_SIZE}x{TILE_SIZE}"
-        ));
+        return Err(format!("Invalid tile size in file '{filename}'"));
     }
 
     if tmx.tilesets.is_empty() {
-        return Err("Tileset not found in TMX file".to_string());
+        return Err(format!("No tileset found in file '{filename}'"));
     }
 
     let tileset = &tmx.tilesets[0];
     let tileset_columns = tileset
         .columns
-        .ok_or_else(|| "Tileset is not embedded in TMX file".to_string())?;
+        .ok_or_else(|| format!("No embedded tileset in file '{filename}'"))?;
 
     if layer_index >= tmx.layers.len() as u32 {
-        return Err(format!("Layer {layer_index} not found in TMX file"));
+        return Err(format!(
+            "Layer {layer_index} not found in file '{filename}'"
+        ));
     }
 
     let layer = &tmx.layers[layer_index as usize];
     if layer.data.encoding != "csv" {
-        return Err("TMX file's encoding is not CSV".to_string());
+        return Err(format!("Unsupported encoding in file '{filename}'"));
     }
 
     let layer_data: Vec<u32> = remove_whitespace(&layer.data.tiles)
         .split(',')
         .map(|s| {
             s.parse::<u32>()
-                .map_err(|_| "Failed to parse CSV tile data".to_string())
+                .map_err(|_| format!("Failed to parse file '{filename}'"))
         })
         .collect::<Result<_, _>>()?;
 

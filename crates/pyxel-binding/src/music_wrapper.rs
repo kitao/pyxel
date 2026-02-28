@@ -291,20 +291,15 @@ impl Music {
     }
 
     #[pyo3(signature = (*seqs))]
-    pub fn set(&self, seqs: &Bound<'_, PyTuple>) {
+    pub fn set(&self, seqs: &Bound<'_, PyTuple>) -> PyResult<()> {
         let mut rust_seqs: Vec<Vec<u32>> = Vec::new();
         for i in 0..seqs.len() {
-            let rust_seq = seqs
-                .get_item(i)
-                .unwrap()
-                .cast::<PyList>()
-                .unwrap()
-                .extract::<Vec<u32>>()
-                .unwrap();
+            let rust_seq: Vec<u32> = seqs.get_item(i)?.extract()?;
             rust_seqs.push(rust_seq);
         }
 
         unsafe { &mut *self.inner }.set(&rust_seqs);
+        Ok(())
     }
 
     #[pyo3(signature = (filename, sec, ffmpeg=None))]

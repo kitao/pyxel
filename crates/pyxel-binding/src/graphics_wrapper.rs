@@ -1,5 +1,6 @@
 use std::sync::Once;
 
+use pyo3::exceptions::PyValueError;
 use pyo3::prelude::*;
 
 use crate::font_wrapper::Font;
@@ -135,7 +136,12 @@ fn blt(
 ) -> PyResult<()> {
     cast_pyany! {
         img,
-        (u32, { pyxel().draw_image(x, y, img, u, v, w, h, colkey, rotate, scale); }),
+        (u32, {
+            if img as usize >= pyxel::images().len() {
+                return Err(PyValueError::new_err("Invalid image index"));
+            }
+            pyxel().draw_image(x, y, img, u, v, w, h, colkey, rotate, scale);
+        }),
         (Image, { unsafe { pyxel::screen().draw_image(x, y, img.inner, u, v, w, h, colkey, rotate, scale) }; })
     }
     Ok(())
@@ -157,7 +163,12 @@ fn bltm(
 ) -> PyResult<()> {
     cast_pyany! {
         tm,
-        (u32, { pyxel().draw_tilemap(x, y, tm, u, v, w, h, colkey, rotate, scale); }),
+        (u32, {
+            if tm as usize >= pyxel::tilemaps().len() {
+                return Err(PyValueError::new_err("Invalid tilemap index"));
+            }
+            pyxel().draw_tilemap(x, y, tm, u, v, w, h, colkey, rotate, scale);
+        }),
         (Tilemap, { unsafe { pyxel::screen().draw_tilemap(x, y, tm.inner, u, v, w, h, colkey, rotate, scale) }; })
     }
     Ok(())
@@ -171,21 +182,29 @@ fn text(x: f32, y: f32, s: &str, col: pyxel::Color, font: Option<Font>) {
 }
 
 #[pyfunction]
-fn image(img: u32) -> Image {
+fn image(img: u32) -> PyResult<Image> {
     IMAGE_ONCE.call_once(|| {
         println!("pyxel.image(img) is deprecated. Use pyxel.images[img] instead.");
     });
 
-    Image::wrap(pyxel::images()[img as usize])
+    pyxel::images()
+        .get(img as usize)
+        .copied()
+        .map(Image::wrap)
+        .ok_or_else(|| PyValueError::new_err("Invalid image index"))
 }
 
 #[pyfunction]
-fn tilemap(tm: u32) -> Tilemap {
+fn tilemap(tm: u32) -> PyResult<Tilemap> {
     TILEMAP_ONCE.call_once(|| {
         println!("pyxel.tilemap(tm) is deprecated. Use pyxel.tilemaps[tm] instead.");
     });
 
-    Tilemap::wrap(pyxel::tilemaps()[tm as usize])
+    pyxel::tilemaps()
+        .get(tm as usize)
+        .copied()
+        .map(Tilemap::wrap)
+        .ok_or_else(|| PyValueError::new_err("Invalid tilemap index"))
 }
 
 pub fn add_graphics_functions(m: &Bound<'_, PyModule>) -> PyResult<()> {

@@ -56,15 +56,16 @@ impl Font {
                 y: 0,
             };
 
+            let parse_err = || format!("Failed to parse file '{filename}'");
             let file =
-                File::open(filename).map_err(|_e| format!("Failed to open file '{filename}'"))?;
+                File::open(filename).map_err(|_| format!("Failed to open file '{filename}'"))?;
             for line in BufReader::new(file).lines().map_while(Result::ok) {
                 if line.starts_with("FONTBOUNDINGBOX") {
                     let values: Vec<i32> = line
                         .split_whitespace()
                         .skip(1)
-                        .map(|v| v.parse().unwrap())
-                        .collect();
+                        .map(|v| v.parse().map_err(|_| parse_err()))
+                        .collect::<Result<_, _>>()?;
                     bdf_font_bounding_box = BdfBoundingBox {
                         width: values[0],
                         height: values[1],
@@ -75,22 +76,23 @@ impl Font {
                     code = Some(
                         line.split_whitespace()
                             .nth(1)
-                            .unwrap()
+                            .ok_or_else(parse_err)?
                             .parse::<i32>()
-                            .unwrap(),
+                            .map_err(|_| parse_err())?,
                     );
                 } else if line.starts_with("DWIDTH") {
                     dwidth = line
                         .split_whitespace()
                         .nth(1)
-                        .map(|v| v.parse().unwrap())
-                        .unwrap();
+                        .ok_or_else(parse_err)?
+                        .parse()
+                        .map_err(|_| parse_err())?;
                 } else if line.starts_with("BBX") {
                     let values: Vec<i32> = line
                         .split_whitespace()
                         .skip(1)
-                        .map(|v| v.parse().unwrap())
-                        .collect();
+                        .map(|v| v.parse().map_err(|_| parse_err()))
+                        .collect::<Result<_, _>>()?;
                     bbx = BdfBoundingBox {
                         width: values[0],
                         height: values[1],
@@ -113,7 +115,8 @@ impl Font {
                     bitmap = None;
                 } else if let Some(ref mut bitmap) = bitmap {
                     let hex_string = line.trim();
-                    let bin_string = u32::from_str_radix(hex_string, 16).unwrap();
+                    let bin_string =
+                        u32::from_str_radix(hex_string, 16).map_err(|_| parse_err())?;
                     bitmap.push(bin_string.reverse_bits() >> (32 - hex_string.len() * 4));
                 }
             }
@@ -124,10 +127,12 @@ impl Font {
             })))
         } else {
             let mut file =
-                File::open(filename).map_err(|_e| format!("Failed to open file '{filename}'"))?;
+                File::open(filename).map_err(|_| format!("Failed to open file '{filename}'"))?;
             let mut buffer = Vec::new();
-            file.read_to_end(&mut buffer).unwrap();
-            let font = FontdueFont::from_bytes(buffer, FontSettings::default()).unwrap();
+            file.read_to_end(&mut buffer)
+                .map_err(|_| format!("Failed to read file '{filename}'"))?;
+            let font = FontdueFont::from_bytes(buffer, FontSettings::default())
+                .map_err(|_| format!("Failed to parse file '{filename}'"))?;
             let size = font_size.unwrap_or(DEFAULT_FONT_SIZE);
             Ok(Box::into_raw(Box::new(Font::Fontdue {
                 font,

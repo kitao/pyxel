@@ -101,14 +101,15 @@ impl Screencast {
         self.num_captured_screens += 1;
     }
 
-    pub fn save(&mut self, filename: &str, scale: u32) {
+    pub fn save(&mut self, filename: &str, scale: u32) -> Result<(), String> {
         if self.num_captured_screens == 0 {
-            return;
+            return Ok(());
         }
 
         let filename = add_file_extension(filename, ".gif");
+        let save_err = || format!("Failed to save file '{filename}'");
         let mut file =
-            File::create(&filename).unwrap_or_else(|_| panic!("Unable to open file '{filename}'"));
+            File::create(&filename).map_err(|_| format!("Failed to create file '{filename}'"))?;
 
         let screen = self.screen(0);
         let mut encoder = Encoder::new(
@@ -117,9 +118,11 @@ impl Screencast {
             (screen.height * scale) as u16,
             &[],
         )
-        .unwrap();
+        .map_err(|_| save_err())?;
 
-        encoder.set_repeat(Repeat::Infinite).unwrap();
+        encoder
+            .set_repeat(Repeat::Infinite)
+            .map_err(|_| save_err())?;
 
         // Write first frame
         let mut base_image = screen.to_rgb_image();
@@ -143,7 +146,7 @@ impl Screencast {
                 palette: Some(palette),
                 buffer: Cow::Borrowed(&buffer),
             })
-            .unwrap();
+            .map_err(|_| save_err())?;
 
         // Write subsequent frames
         for i in 1..self.num_captured_screens {
@@ -166,10 +169,11 @@ impl Screencast {
                     palette: Some(palette),
                     buffer: Cow::Borrowed(&buffer),
                 })
-                .unwrap();
+                .map_err(|_| save_err())?;
         }
 
         self.reset();
+        Ok(())
     }
 
     fn screen(&self, index: u32) -> &Screen {

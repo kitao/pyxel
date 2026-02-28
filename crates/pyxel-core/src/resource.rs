@@ -44,8 +44,9 @@ impl Pyxel {
         exclude_musics: Option<bool>,
     ) -> Result<(), String> {
         let file = File::open(Path::new(&filename))
-            .map_err(|_e| format!("Failed to open file '{filename}'"))?;
-        let mut archive = ZipArchive::new(file).unwrap();
+            .map_err(|_| format!("Failed to open file '{filename}'"))?;
+        let mut archive =
+            ZipArchive::new(file).map_err(|_| format!("Failed to parse file '{filename}'"))?;
 
         // Old resource file
         if archive.by_name("pyxel_resource/version").is_ok() {
@@ -58,20 +59,25 @@ impl Pyxel {
                 !exclude_sounds.unwrap_or(false),
                 !exclude_musics.unwrap_or(false),
             );
-            self.load_palette(filename);
+            self.load_palette(filename)?;
             return Ok(());
         }
 
         // New resource file
-        let mut file = archive.by_name(RESOURCE_ARCHIVE_NAME).unwrap();
+        let mut file = archive
+            .by_name(RESOURCE_ARCHIVE_NAME)
+            .map_err(|_| format!("Failed to read file '{filename}'"))?;
         let mut toml_text = String::new();
-        file.read_to_string(&mut toml_text).unwrap();
+        file.read_to_string(&mut toml_text)
+            .map_err(|_| format!("Failed to read file '{filename}'"))?;
 
-        let format_version = Self::parse_format_version(&toml_text);
+        let format_version = Self::parse_format_version(&toml_text)?;
         if format_version > RESOURCE_FORMAT_VERSION {
-            Err(format!("Unknown resource file version '{format_version}'"))
+            Err(format!(
+                "Unsupported resource format version '{format_version}'"
+            ))
         } else {
-            let resource_data = ResourceData::from_toml(&toml_text);
+            let resource_data = ResourceData::from_toml(&toml_text)?;
             resource_data.to_runtime(
                 self,
                 exclude_images.unwrap_or(false),
@@ -79,7 +85,7 @@ impl Pyxel {
                 exclude_sounds.unwrap_or(false),
                 exclude_musics.unwrap_or(false),
             );
-            self.load_palette(filename);
+            self.load_palette(filename)?;
             Ok(())
         }
     }
@@ -100,75 +106,86 @@ impl Pyxel {
         );
 
         let path = Path::new(&filename);
-        let file = File::create(path).map_err(|_e| format!("Failed to open file '{filename}'"))?;
+        let file = File::create(path).map_err(|_| format!("Failed to create file '{filename}'"))?;
 
         let mut zip = ZipWriter::new(file);
         zip.start_file(RESOURCE_ARCHIVE_NAME, SimpleFileOptions::default())
-            .unwrap();
-        zip.write_all(toml_text.as_bytes()).unwrap();
-        zip.finish().unwrap();
+            .map_err(|_| format!("Failed to save file '{filename}'"))?;
+        zip.write_all(toml_text.as_bytes())
+            .map_err(|_| format!("Failed to save file '{filename}'"))?;
+        zip.finish()
+            .map_err(|_| format!("Failed to save file '{filename}'"))?;
 
         crate::platform::export_browser_file(filename);
         Ok(())
     }
 
-    pub fn load_palette(&mut self, filename: &str) {
+    pub fn load_palette(&mut self, filename: &str) -> Result<(), String> {
         let filename = Self::palette_filename(filename);
 
         if let Ok(mut file) = File::open(Path::new(&filename)) {
             let mut contents = String::new();
-            file.read_to_string(&mut contents).unwrap();
+            file.read_to_string(&mut contents)
+                .map_err(|_| format!("Failed to read file '{filename}'"))?;
 
             let colors: Vec<Rgb24> = contents
                 .replace("\r\n", "\n")
                 .replace('\r', "\n")
                 .split('\n')
                 .filter(|s| !s.is_empty())
-                .map(|s| u32::from_str_radix(s.trim(), 16).unwrap() as Rgb24)
-                .collect();
+                .map(|s| {
+                    u32::from_str_radix(s.trim(), 16)
+                        .map(|v| v as Rgb24)
+                        .map_err(|_| format!("Failed to parse file '{filename}'"))
+                })
+                .collect::<Result<_, _>>()?;
             *pyxel::colors() = if colors.is_empty() {
                 vec![0xffffff]
             } else {
                 colors
             };
         }
+        Ok(())
     }
 
     pub fn save_palette(&self, filename: &str) -> Result<(), String> {
         let filename = Self::palette_filename(filename);
         let mut file = File::create(Path::new(&filename))
-            .map_err(|_e| format!("Failed to open file '{filename}'"))?;
+            .map_err(|_| format!("Failed to create file '{filename}'"))?;
 
         let colors = pyxel::colors();
         for &color in colors.iter() {
-            writeln!(file, "{color:06x}").unwrap();
+            writeln!(file, "{color:06x}")
+                .map_err(|_| format!("Failed to save file '{filename}'"))?;
         }
 
         crate::platform::export_browser_file(&filename);
         Ok(())
     }
 
-    pub fn take_screenshot(&mut self, scale: Option<u32>) {
+    pub fn take_screenshot(&mut self, scale: Option<u32>) -> Result<(), String> {
         let filename = Self::prepend_desktop_path(&format!("pyxel-{}", Self::datetime_string()));
         let scale = max(scale.unwrap_or(self.resource.capture_scale), 1);
-        pyxel::screen().save(&filename, scale).unwrap();
+        pyxel::screen().save(&filename, scale)?;
 
         crate::platform::export_browser_file(&(filename + ".png"));
+        Ok(())
     }
 
-    pub fn save_screencast(&mut self, scale: Option<u32>) {
+    pub fn save_screencast(&mut self, scale: Option<u32>) -> Result<(), String> {
         let filename = Self::prepend_desktop_path(&format!("pyxel-{}", Self::datetime_string()));
         let scale = max(scale.unwrap_or(self.resource.capture_scale), 1);
-        self.resource.screencast.save(&filename, scale);
+        self.resource.screencast.save(&filename, scale)?;
 
         crate::platform::export_browser_file(&(filename + ".gif"));
+        Ok(())
     }
 
     pub fn reset_screencast(&mut self) {
         self.resource.screencast.reset();
     }
 
-    pub fn user_data_dir(&self, vendor_name: &str, app_name: &str) -> String {
+    pub fn user_data_dir(&self, vendor_name: &str, app_name: &str) -> Result<String, String> {
         let home_dir = UserDirs::new()
             .map_or_else(PathBuf::new, |user_dirs| user_dirs.home_dir().to_path_buf());
         let app_data_dir = home_dir
@@ -177,8 +194,10 @@ impl Pyxel {
             .join(Self::make_dir_name(app_name));
 
         if !app_data_dir.exists() {
-            fs::create_dir_all(&app_data_dir).unwrap();
-            println!("created '{}'", app_data_dir.to_string_lossy());
+            let dir = app_data_dir.to_string_lossy();
+            fs::create_dir_all(&app_data_dir)
+                .map_err(|_| format!("Failed to create directory '{dir}'"))?;
+            println!("Created '{dir}'");
         }
 
         let mut app_data_dir = app_data_dir.to_string_lossy().to_string();
@@ -186,7 +205,7 @@ impl Pyxel {
             app_data_dir.push(MAIN_SEPARATOR);
         }
 
-        app_data_dir
+        Ok(app_data_dir)
     }
 
     pub(crate) fn capture_screen(&mut self) {
@@ -203,8 +222,10 @@ impl Pyxel {
         let filename = Self::prepend_desktop_path(&format!("pyxel-image{image_index}"));
 
         if let Some(&image) = pyxel::images().get(image_index as usize) {
-            unsafe { &*image }.save(&filename, 1).unwrap();
-
+            if let Err(e) = unsafe { &*image }.save(&filename, 1) {
+                println!("{e}");
+                return;
+            }
             crate::platform::export_browser_file(&(filename + ".png"));
         }
     }
@@ -220,8 +241,10 @@ impl Pyxel {
                 image.set_pixel(i as f32, 0.0, i as Color);
             }
 
-            image.save(&filename, 16).unwrap();
-
+            if let Err(e) = image.save(&filename, 16) {
+                println!("{e}");
+                return;
+            }
             crate::platform::export_browser_file(&(filename + ".png"));
         }
     }
@@ -247,14 +270,13 @@ impl Pyxel {
         desktop_dir.join(basename).to_string_lossy().to_string()
     }
 
-    fn parse_format_version(toml_text: &str) -> u32 {
+    fn parse_format_version(toml_text: &str) -> Result<u32, String> {
         toml_text
             .lines()
             .find(|line| line.trim().starts_with("format_version"))
             .and_then(|line| line.split_once('='))
-            .map(|(_, value)| value.trim().parse::<u32>())
-            .unwrap()
-            .unwrap()
+            .and_then(|(_, value)| value.trim().parse::<u32>().ok())
+            .ok_or_else(|| "Failed to parse resource format version".to_string())
     }
 
     fn make_dir_name(name: &str) -> String {

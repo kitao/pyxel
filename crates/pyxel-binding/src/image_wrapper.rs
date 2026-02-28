@@ -1,6 +1,6 @@
 use std::ffi::CString;
 
-use pyo3::exceptions::PyException;
+use pyo3::exceptions::{PyException, PyValueError};
 use pyo3::prelude::*;
 use pyo3::types::PyDict;
 
@@ -52,7 +52,7 @@ impl Image {
         unsafe { &*self.inner }.height()
     }
 
-    pub fn data_ptr(&self, py: Python) -> Py<PyAny> {
+    pub fn data_ptr(&self, py: Python) -> PyResult<Py<PyAny>> {
         let inner = unsafe { &mut *self.inner };
         let python_code = CString::new(format!(
             "import ctypes; c_uint8_array = (ctypes.c_uint8 * {}).from_address({:p})",
@@ -61,8 +61,11 @@ impl Image {
         ))
         .unwrap();
         let locals = PyDict::new(py);
-        py.run(python_code.as_c_str(), None, Some(&locals)).unwrap();
-        value_to_pyobj!(py, locals.get_item("c_uint8_array").unwrap())
+        py.run(python_code.as_c_str(), None, Some(&locals))?;
+        let array = locals
+            .get_item("c_uint8_array")?
+            .ok_or_else(|| PyException::new_err("Failed to create data pointer"))?;
+        Ok(array.unbind())
     }
 
     pub fn set(&self, x: i32, y: i32, data: Vec<String>) {
@@ -206,7 +209,8 @@ impl Image {
         cast_pyany! {
             img,
             (u32, {
-                let image = pyxel::images()[img as usize];
+                let image = pyxel::images().get(img as usize).copied()
+                    .ok_or_else(|| PyValueError::new_err("Invalid image index"))?;
                 unsafe { (&mut *self.inner).draw_image(x, y, image, u, v, w, h, colkey, rotate, scale) };
             }),
             (Image, { unsafe { (&mut *self.inner).draw_image(x, y, img.inner, u, v, w, h, colkey, rotate, scale) }; })
@@ -231,7 +235,8 @@ impl Image {
         cast_pyany! {
             tm,
             (u32, {
-                let tilemap = pyxel::tilemaps()[tm as usize];
+                let tilemap = pyxel::tilemaps().get(tm as usize).copied()
+                    .ok_or_else(|| PyValueError::new_err("Invalid tilemap index"))?;
                 unsafe { (&mut *self.inner).draw_tilemap(x, y, tilemap, u, v, w, h, colkey, rotate, scale) };
             }),
             (Tilemap, { unsafe { (&mut *self.inner).draw_tilemap(x, y, tm.inner, u, v, w, h, colkey, rotate, scale) }; })

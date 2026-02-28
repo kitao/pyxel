@@ -1,6 +1,6 @@
 use std::sync::Once;
 
-use pyo3::exceptions::PyException;
+use pyo3::exceptions::{PyException, PyValueError};
 use pyo3::prelude::*;
 
 use crate::sound_wrapper::Sound;
@@ -73,11 +73,18 @@ impl Channel {
         cast_pyany! {
             snd,
             (u32, {
-                let sound = pyxel::sounds()[snd as usize];
+                let sound = pyxel::sounds().get(snd as usize).copied()
+                    .ok_or_else(|| PyValueError::new_err("Invalid sound index"))?;
                 unsafe { &mut *self.inner }.play_sound(sound, sec, loop_, resume.unwrap_or(false));
             }),
             (Vec<u32>, {
-                let sounds = snd.iter().map(|snd| pyxel::sounds()[*snd as usize]).collect();
+                let all_sounds = pyxel::sounds();
+                for i in &snd {
+                    if *i as usize >= all_sounds.len() {
+                        return Err(PyValueError::new_err("Invalid sound index"));
+                    }
+                }
+                let sounds = snd.iter().map(|i| all_sounds[*i as usize]).collect();
                 unsafe { &mut *self.inner }.play(sounds, sec, loop_, resume.unwrap_or(false));
             }),
             (Sound, { unsafe { &mut *self.inner }.play_sound(snd.inner, sec, loop_, resume.unwrap_or(false)); }),

@@ -17,7 +17,7 @@ pub struct PcmData {
 }
 
 pub fn load_pcm(path: &str, target_rate: u32) -> Result<PcmData, String> {
-    let file = File::open(path).map_err(|_e| format!("Failed to open '{path}'"))?;
+    let file = File::open(path).map_err(|_| format!("Failed to open file '{path}'"))?;
     let mss = MediaSourceStream::new(Box::new(file), MediaSourceStreamOptions::default());
 
     let mut hint = Hint::new();
@@ -32,21 +32,21 @@ pub fn load_pcm(path: &str, target_rate: u32) -> Result<PcmData, String> {
             &FormatOptions::default(),
             &MetadataOptions::default(),
         )
-        .map_err(|_e| format!("Failed to probe '{path}'"))?;
+        .map_err(|_| format!("Failed to probe file '{path}'"))?;
     let mut format = probed.format;
 
     let track = format
         .default_track()
-        .ok_or_else(|| format!("No supported audio tracks in '{path}'"))?;
+        .ok_or_else(|| format!("No audio track found in file '{path}'"))?;
     let track_id = track.id;
     let codec_params = track.codec_params.clone();
     let mut decoder = get_codecs()
         .make(&codec_params, &DecoderOptions::default())
-        .map_err(|_e| format!("Failed to create decoder for '{path}'"))?;
+        .map_err(|_| format!("Failed to decode file '{path}'"))?;
 
     let mut sample_rate = codec_params
         .sample_rate
-        .ok_or_else(|| format!("Unknown sample rate in '{path}'"))?;
+        .ok_or_else(|| format!("Unknown sample rate in file '{path}'"))?;
     let mut mono_samples: Vec<f32> = Vec::new();
 
     loop {
@@ -54,9 +54,9 @@ pub fn load_pcm(path: &str, target_rate: u32) -> Result<PcmData, String> {
             Ok(packet) => packet,
             Err(SymphoniaError::IoError(e)) if e.kind() == ErrorKind::UnexpectedEof => break,
             Err(SymphoniaError::ResetRequired) => {
-                return Err(format!("Stream reset required for '{path}'"));
+                return Err(format!("Failed to read file '{path}'"));
             }
-            Err(_e) => return Err(format!("Failed to read audio packet in '{path}'")),
+            Err(_) => return Err(format!("Failed to read file '{path}'")),
         };
 
         if packet.track_id() != track_id {
@@ -66,8 +66,8 @@ pub fn load_pcm(path: &str, target_rate: u32) -> Result<PcmData, String> {
         let decoded = match decoder.decode(&packet) {
             Ok(decoded) => decoded,
             Err(SymphoniaError::DecodeError(_)) => continue,
-            Err(_e) => {
-                return Err(format!("Failed to decode audio packet in '{path}'"));
+            Err(_) => {
+                return Err(format!("Failed to decode file '{path}'"));
             }
         };
 
@@ -92,7 +92,7 @@ pub fn load_pcm(path: &str, target_rate: u32) -> Result<PcmData, String> {
     }
 
     if mono_samples.is_empty() {
-        return Err(format!("No audio samples decoded from '{path}'"));
+        return Err(format!("No audio data found in file '{path}'"));
     }
 
     let mono_samples = if sample_rate == target_rate {

@@ -278,13 +278,17 @@ impl Pyxel {
                 }
             } else if self.is_button_pressed(KEY_1, None, None) {
                 self.reset_key(KEY_1);
-                self.take_screenshot(None);
+                if let Err(e) = self.take_screenshot(None) {
+                    println!("{e}");
+                }
             } else if self.is_button_pressed(KEY_2, None, None) {
                 self.reset_key(KEY_2);
                 self.reset_screencast();
             } else if self.is_button_pressed(KEY_3, None, None) {
                 self.reset_key(KEY_3);
-                self.save_screencast(None);
+                if let Err(e) = self.save_screencast(None) {
+                    println!("{e}");
+                }
             } else if self.is_button_pressed(KEY_8, None, None) {
                 self.reset_key(KEY_8);
                 self.set_integer_scale(!self.system.integer_scale_enabled);

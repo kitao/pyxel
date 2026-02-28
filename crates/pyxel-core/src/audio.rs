@@ -114,13 +114,14 @@ impl Audio {
             sample_format: SampleFormat::Int,
         };
         let filename = utils::add_file_extension(filename, ".wav");
+        let save_err = || format!("Failed to save file '{filename}'");
         let mut writer = WavWriter::create(&filename, spec)
-            .map_err(|_e| format!("Failed to open file '{filename}'"))?;
+            .map_err(|_| format!("Failed to create file '{filename}'"))?;
 
         for sample in samples {
-            writer.write_sample(*sample).unwrap();
+            writer.write_sample(*sample).map_err(|_| save_err())?;
         }
-        writer.finalize().unwrap();
+        writer.finalize().map_err(|_| save_err())?;
 
         // Save MP4 file
         if !use_ffmpeg {
@@ -129,11 +130,13 @@ impl Audio {
 
         let image_data = include_bytes!("assets/pyxel_logo_152x64.png");
         let image_path = temp_dir().join("pyxel_mp4_image.png");
-        let png_file = image_path.to_str().unwrap();
+        let png_file = image_path
+            .to_str()
+            .ok_or_else(|| "Failed to create temporary file path".to_string())?;
         let wav_file = &filename;
         let mp4_file = filename.replace(".wav", ".mp4");
 
-        write(&image_path, image_data).unwrap();
+        write(&image_path, image_data).map_err(|_| "Failed to save temporary file".to_string())?;
         Command::new("ffmpeg")
             .arg("-loop")
             .arg("1")
@@ -157,9 +160,9 @@ impl Audio {
             .arg(mp4_file)
             .arg("-y")
             .output()
-            .map_err(|_e| "Failed to execute FFmpeg".to_string())?;
+            .map_err(|_| "Failed to execute FFmpeg".to_string())?;
 
-        remove_file(png_file).unwrap();
+        let _ = remove_file(png_file);
         Ok(())
     }
 }

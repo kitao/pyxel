@@ -68,7 +68,9 @@ impl Graphics {
         let mut screen_shaders = Vec::new();
         for &screen_frag in &SCREEN_FRAGS {
             // Vertex shader
-            let vertex_shader = gl.create_shader(glow::VERTEX_SHADER).unwrap();
+            let vertex_shader = gl
+                .create_shader(glow::VERTEX_SHADER)
+                .expect("Failed to create OpenGL vertex shader");
             gl.shader_source(vertex_shader, &format!("{glsl_version}{COMMON_VERT}"));
             gl.compile_shader(vertex_shader);
             assert!(
@@ -78,7 +80,9 @@ impl Graphics {
             );
 
             // Fragment shader
-            let fragment_shader = gl.create_shader(glow::FRAGMENT_SHADER).unwrap();
+            let fragment_shader = gl
+                .create_shader(glow::FRAGMENT_SHADER)
+                .expect("Failed to create OpenGL fragment shader");
             gl.shader_source(
                 fragment_shader,
                 &format!("{glsl_version}{COMMON_FRAG}{screen_frag}"),
@@ -91,7 +95,9 @@ impl Graphics {
             );
 
             // Shader program
-            let shader_program = gl.create_program().unwrap();
+            let shader_program = gl
+                .create_program()
+                .expect("Failed to create OpenGL shader program");
             gl.attach_shader(shader_program, vertex_shader);
             gl.attach_shader(shader_program, fragment_shader);
             gl.link_program(shader_program);
@@ -125,8 +131,10 @@ impl Graphics {
 
             // Vertex array
             let vertices: [f32; 8] = [-1.0, 1.0, -1.0, -1.0, 1.0, 1.0, 1.0, -1.0];
-            let vertex_array = gl.create_vertex_array().unwrap();
-            let vertex_buffer = gl.create_buffer().unwrap();
+            let vertex_array = gl
+                .create_vertex_array()
+                .expect("Failed to create OpenGL vertex array");
+            let vertex_buffer = gl.create_buffer().expect("Failed to create OpenGL buffer");
 
             gl.bind_vertex_array(Some(vertex_array));
             gl.bind_buffer(glow::ARRAY_BUFFER, Some(vertex_buffer));
@@ -136,7 +144,9 @@ impl Graphics {
                 glow::STATIC_DRAW,
             );
 
-            let position = gl.get_attrib_location(shader_program, "position").unwrap();
+            let position = gl
+                .get_attrib_location(shader_program, "position")
+                .expect("Failed to find OpenGL attribute 'position'");
             gl.vertex_attrib_pointer_f32(
                 position,
                 2,
@@ -159,7 +169,9 @@ impl Graphics {
     }
 
     unsafe fn create_screen_texture(gl: &mut glow::Context) -> glow::NativeTexture {
-        let screen_texture = gl.create_texture().unwrap();
+        let screen_texture = gl
+            .create_texture()
+            .expect("Failed to create OpenGL screen texture");
         gl.active_texture(glow::TEXTURE0);
         gl.bind_texture(glow::TEXTURE_2D, Some(screen_texture));
 
@@ -188,7 +200,9 @@ impl Graphics {
     }
 
     unsafe fn create_colors_texture(gl: &mut glow::Context) -> glow::NativeTexture {
-        let colors_texture = gl.create_texture().unwrap();
+        let colors_texture = gl
+            .create_texture()
+            .expect("Failed to create OpenGL colors texture");
         gl.active_texture(glow::TEXTURE1);
         gl.bind_texture(glow::TEXTURE_2D, Some(colors_texture));
 

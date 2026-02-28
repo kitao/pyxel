@@ -1,7 +1,7 @@
 use std::ffi::CString;
 use std::sync::Once;
 
-use pyo3::exceptions::PyException;
+use pyo3::exceptions::{PyException, PyValueError};
 use pyo3::prelude::*;
 use pyo3::types::PyDict;
 
@@ -76,7 +76,7 @@ impl Tilemap {
         Ok(())
     }
 
-    pub fn data_ptr(&self, py: Python) -> Py<PyAny> {
+    pub fn data_ptr(&self, py: Python) -> PyResult<Py<PyAny>> {
         let inner = unsafe { &mut *self.inner };
         let python_code = CString::new(format!(
             "import ctypes; c_uint8_array = (ctypes.c_uint8 * {}).from_address({:p})",
@@ -85,8 +85,11 @@ impl Tilemap {
         ))
         .unwrap();
         let locals = PyDict::new(py);
-        py.run(python_code.as_c_str(), None, Some(&locals)).unwrap();
-        value_to_pyobj!(py, locals.get_item("c_uint8_array").unwrap())
+        py.run(python_code.as_c_str(), None, Some(&locals))?;
+        let array = locals
+            .get_item("c_uint8_array")?
+            .ok_or_else(|| PyException::new_err("Failed to create data pointer"))?;
+        Ok(array.unbind())
     }
 
     pub fn set(&mut self, x: i32, y: i32, data: Vec<String>) {
@@ -212,7 +215,8 @@ impl Tilemap {
         cast_pyany! {
             tm,
             (u32, {
-                let tilemap = pyxel::tilemaps()[tm as usize];
+                let tilemap = pyxel::tilemaps().get(tm as usize).copied()
+                    .ok_or_else(|| PyValueError::new_err("Invalid tilemap index"))?;
                 unsafe { (&mut *self.inner).draw_tilemap(x, y, tilemap, u, v, w, h, tilekey, rotate, scale) };
             }),
             (Tilemap, {
@@ -223,15 +227,19 @@ impl Tilemap {
     }
 
     #[getter]
-    pub fn image(&self) -> Image {
+    pub fn image(&self) -> PyResult<Image> {
         IMAGE_ONCE.call_once(|| {
             println!("Tilemap.image is deprecated. Use Tilemap.imgsrc instead.");
         });
 
         let tilemap = unsafe { &*self.inner };
         match &tilemap.imgsrc {
-            pyxel::ImageSource::Index(index) => Image::wrap(pyxel::images()[*index as usize]),
-            pyxel::ImageSource::Image(image) => Image::wrap(*image),
+            pyxel::ImageSource::Index(index) => pyxel::images()
+                .get(*index as usize)
+                .copied()
+                .map(Image::wrap)
+                .ok_or_else(|| PyValueError::new_err("Invalid image index")),
+            pyxel::ImageSource::Image(image) => Ok(Image::wrap(*image)),
         }
     }
 

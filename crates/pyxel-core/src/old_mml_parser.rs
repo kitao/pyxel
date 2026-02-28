@@ -220,7 +220,7 @@ fn parse_envelope<T: Iterator<Item = char>>(
             if volume <= 7 {
                 env_data.push(volume);
             } else {
-                return Err(format!("Invalid envlope volume '{volume}' in MML"));
+                return Err(format!("Invalid envelope volume '{volume}' in MML"));
             }
         } else {
             break;

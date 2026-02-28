@@ -175,8 +175,8 @@ pub struct ResourceData {
 }
 
 impl ResourceData {
-    pub fn from_toml(toml_text: &str) -> Self {
-        toml::from_str(toml_text).unwrap()
+    pub fn from_toml(toml_text: &str) -> Result<Self, String> {
+        toml::from_str(toml_text).map_err(|_| "Failed to parse resource data".to_string())
     }
 
     pub fn from_runtime(_pyxel: &Pyxel) -> Self {

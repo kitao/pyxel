@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.7.3
+
+- Improved error handling and unified error messages
+
 ## 2.7.2
 
 - Added manual page for Pyxel Code Maker
