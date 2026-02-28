@@ -81,21 +81,34 @@ impl Music {
 mod tests {
     use super::*;
 
-    #[test]
-    fn test_music_new() {
-        let music = Music::new();
-        let music = unsafe { &*music };
-        assert_eq!(music.seqs.len(), 0);
+    fn new_music() -> &'static mut Music {
+        unsafe { &mut *Music::new() }
     }
 
     #[test]
-    fn test_music_set() {
-        let music = Music::new();
-        let music = unsafe { &mut *music };
-        music.set(&[vec![0, 1, 2], vec![1, 2, 3], vec![2, 3, 4]]);
+    fn test_new() {
+        let music = new_music();
+        assert!(music.seqs.is_empty());
+    }
 
-        for i in 0..3 {
-            assert_eq!(&music.seqs[i as usize], &vec![i, i + 1, i + 2]);
+    #[test]
+    fn test_set() {
+        let music = new_music();
+        music.set(&[vec![0, 1, 2], vec![1, 2, 3], vec![2, 3, 4]]);
+        assert_eq!(music.seqs[0], [0, 1, 2]);
+        assert_eq!(music.seqs[1], [1, 2, 3]);
+        assert_eq!(music.seqs[2], [2, 3, 4]);
+    }
+
+    #[test]
+    fn test_set_pads_channels() {
+        let music = new_music();
+        music.set(&[vec![0]]);
+        // Should be padded to at least NUM_CHANNELS
+        assert!(music.seqs.len() >= 2);
+        assert_eq!(music.seqs[0], [0]);
+        for seq in &music.seqs[1..] {
+            assert!(seq.is_empty());
         }
     }
 }

@@ -394,33 +394,35 @@ impl Sound {
 mod tests {
     use super::*;
 
+    fn new_sound() -> &'static mut Sound {
+        unsafe { &mut *Sound::new() }
+    }
+
     #[test]
-    fn test_sound_new() {
-        let sound = Sound::new();
-        let sound = unsafe { &mut *sound };
-        assert_eq!(sound.notes.len(), 0);
-        assert_eq!(sound.tones.len(), 0);
-        assert_eq!(sound.volumes.len(), 0);
-        assert_eq!(sound.effects.len(), 0);
+    fn test_new() {
+        let sound = new_sound();
+        assert!(sound.notes.is_empty());
+        assert!(sound.tones.is_empty());
+        assert!(sound.volumes.is_empty());
+        assert!(sound.effects.is_empty());
         assert_eq!(sound.speed, DEFAULT_SOUND_SPEED);
     }
 
     #[test]
-    fn test_sound_set() {
-        let sound = Sound::new();
-        let sound = unsafe { &mut *sound };
+    fn test_set() {
+        let sound = new_sound();
         sound
             .set("c0d-0d0d#0", "tspn", "012345", "nsvfhq", 123)
             .unwrap();
-        assert_eq!(&sound.notes, &vec![0, 1, 2, 3]);
+        assert_eq!(sound.notes, [0, 1, 2, 3]);
         assert_eq!(
-            &sound.tones,
-            &vec![TONE_TRIANGLE, TONE_SQUARE, TONE_PULSE, TONE_NOISE]
+            sound.tones,
+            [TONE_TRIANGLE, TONE_SQUARE, TONE_PULSE, TONE_NOISE]
         );
-        assert_eq!(&sound.volumes, &vec![0, 1, 2, 3, 4, 5]);
+        assert_eq!(sound.volumes, [0, 1, 2, 3, 4, 5]);
         assert_eq!(
-            &sound.effects,
-            &vec![
+            sound.effects,
+            [
                 EFFECT_NONE,
                 EFFECT_SLIDE,
                 EFFECT_VIBRATO,
@@ -433,42 +435,79 @@ mod tests {
     }
 
     #[test]
-    fn test_sound_set_note() {
-        let sound = Sound::new();
-        let sound = unsafe { &mut *sound };
+    fn test_set_notes() {
+        let sound = new_sound();
         sound
             .set_notes(" c 0 d # 1 r e 2 f 3 g 4 r a - 0 b 1 ")
             .unwrap();
-        assert_eq!(&sound.notes, &vec![0, 15, -1, 28, 41, 55, -1, 8, 23]);
+        assert_eq!(sound.notes, [0, 15, -1, 28, 41, 55, -1, 8, 23]);
     }
 
     #[test]
-    fn test_sound_set_tone() {
-        let sound = Sound::new();
-        let sound = unsafe { &mut *sound };
+    fn test_set_notes_all_octaves() {
+        let sound = new_sound();
+        sound.set_notes("c0c1c2c3c4").unwrap();
+        assert_eq!(sound.notes, [0, 12, 24, 36, 48]);
+    }
+
+    #[test]
+    fn test_set_notes_invalid() {
+        let sound = new_sound();
+        assert!(sound.set_notes("x0").is_err());
+        assert!(sound.set_notes("c5").is_err());
+    }
+
+    #[test]
+    fn test_set_notes_empty() {
+        let sound = new_sound();
+        sound.set_notes("").unwrap();
+        assert!(sound.notes.is_empty());
+    }
+
+    #[test]
+    fn test_set_tones() {
+        let sound = new_sound();
         sound.set_tones(" t s p n ").unwrap();
         assert_eq!(
-            &sound.tones,
-            &vec![TONE_TRIANGLE, TONE_SQUARE, TONE_PULSE, TONE_NOISE]
+            sound.tones,
+            [TONE_TRIANGLE, TONE_SQUARE, TONE_PULSE, TONE_NOISE]
         );
     }
 
     #[test]
-    fn test_sound_set_volume() {
-        let sound = Sound::new();
-        let sound = unsafe { &mut *sound };
-        sound.set_volumes(" 0 1 2 3 4 5 6 7 ").unwrap();
-        assert_eq!(&sound.volumes, &vec![0, 1, 2, 3, 4, 5, 6, 7]);
+    fn test_set_tones_numeric() {
+        let sound = new_sound();
+        sound.set_tones("0123").unwrap();
+        assert_eq!(sound.tones, [0, 1, 2, 3]);
     }
 
     #[test]
-    fn test_sound_set_effect() {
-        let sound = Sound::new();
-        let sound = unsafe { &mut *sound };
+    fn test_set_tones_invalid() {
+        let sound = new_sound();
+        assert!(sound.set_tones("x").is_err());
+    }
+
+    #[test]
+    fn test_set_volumes() {
+        let sound = new_sound();
+        sound.set_volumes(" 0 1 2 3 4 5 6 7 ").unwrap();
+        assert_eq!(sound.volumes, [0, 1, 2, 3, 4, 5, 6, 7]);
+    }
+
+    #[test]
+    fn test_set_volumes_invalid() {
+        let sound = new_sound();
+        assert!(sound.set_volumes("8").is_err());
+        assert!(sound.set_volumes("a").is_err());
+    }
+
+    #[test]
+    fn test_set_effects() {
+        let sound = new_sound();
         sound.set_effects(" n s v f h q").unwrap();
         assert_eq!(
-            &sound.effects,
-            &vec![
+            sound.effects,
+            [
                 EFFECT_NONE,
                 EFFECT_SLIDE,
                 EFFECT_VIBRATO,
@@ -477,5 +516,34 @@ mod tests {
                 EFFECT_QUARTER_FADEOUT
             ]
         );
+    }
+
+    #[test]
+    fn test_set_effects_invalid() {
+        let sound = new_sound();
+        assert!(sound.set_effects("x").is_err());
+    }
+
+    #[test]
+    fn test_set_clears_previous() {
+        let sound = new_sound();
+        sound.set_notes("c0d0e0").unwrap();
+        assert_eq!(sound.notes.len(), 3);
+        sound.set_notes("c0").unwrap();
+        assert_eq!(sound.notes.len(), 1);
+    }
+
+    #[test]
+    fn test_total_seconds_empty() {
+        let sound = new_sound();
+        assert_eq!(sound.total_seconds(), Some(0.0));
+    }
+
+    #[test]
+    fn test_total_seconds_with_notes() {
+        let sound = new_sound();
+        sound.set_notes("c0d0e0f0").unwrap();
+        let expected = 4.0 * DEFAULT_SOUND_SPEED as f32 / SOUND_TICKS_PER_SECOND as f32;
+        assert_eq!(sound.total_seconds(), Some(expected));
     }
 }

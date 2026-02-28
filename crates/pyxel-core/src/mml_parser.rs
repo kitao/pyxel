@@ -651,3 +651,313 @@ fn volume_to_level(volume: u32) -> f32 {
 fn cents_to_semitones(cents: i32) -> f32 {
     cents as f32 / 100.0
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    // Helper to extract specific commands from parsed MML
+    fn parse(mml: &str) -> Vec<MmlCommand> {
+        parse_mml(mml).unwrap()
+    }
+
+    fn note_commands(commands: &[MmlCommand]) -> Vec<(u32, u32)> {
+        commands
+            .iter()
+            .filter_map(|cmd| match cmd {
+                MmlCommand::Note {
+                    midi_note,
+                    duration_ticks,
+                } => Some((*midi_note, *duration_ticks)),
+                _ => None,
+            })
+            .collect()
+    }
+
+    fn rest_commands(commands: &[MmlCommand]) -> Vec<u32> {
+        commands
+            .iter()
+            .filter_map(|cmd| match cmd {
+                MmlCommand::Rest { duration_ticks } => Some(*duration_ticks),
+                _ => None,
+            })
+            .collect()
+    }
+
+    // Basic notes
+
+    #[test]
+    fn test_single_note() {
+        let cmds = parse("C");
+        let notes = note_commands(&cmds);
+        // C4 = MIDI 60, default length = quarter note = 48 ticks
+        assert_eq!(notes, [(60, 48)]);
+    }
+
+    #[test]
+    fn test_note_names() {
+        let cmds = parse("O4 CDEFGAB");
+        let notes = note_commands(&cmds);
+        let midi_notes: Vec<u32> = notes.iter().map(|(n, _)| *n).collect();
+        assert_eq!(midi_notes, [60, 62, 64, 65, 67, 69, 71]);
+    }
+
+    #[test]
+    fn test_sharp_and_flat() {
+        let cmds = parse("C+ C# C-");
+        let notes = note_commands(&cmds);
+        assert_eq!(notes[0].0, 61); // C#
+        assert_eq!(notes[1].0, 61); // C#
+        assert_eq!(notes[2].0, 59); // Cb = B3
+    }
+
+    // Octave
+
+    #[test]
+    fn test_octave() {
+        let cmds = parse("O3 C O5 C");
+        let notes = note_commands(&cmds);
+        assert_eq!(notes[0].0, 48); // C3
+        assert_eq!(notes[1].0, 72); // C5
+    }
+
+    #[test]
+    fn test_octave_shift() {
+        let cmds = parse("O4 C > C < C");
+        let notes = note_commands(&cmds);
+        assert_eq!(notes[0].0, 60); // C4
+        assert_eq!(notes[1].0, 72); // C5
+        assert_eq!(notes[2].0, 60); // C4
+    }
+
+    // Note length
+
+    #[test]
+    fn test_note_length() {
+        let cmds = parse("C1 C2 C4 C8 C16");
+        let notes = note_commands(&cmds);
+        let ticks: Vec<u32> = notes.iter().map(|(_, t)| *t).collect();
+        // whole=192, half=96, quarter=48, eighth=24, sixteenth=12
+        assert_eq!(ticks, [192, 96, 48, 24, 12]);
+    }
+
+    #[test]
+    fn test_dotted_note() {
+        let cmds = parse("C4.");
+        let notes = note_commands(&cmds);
+        // quarter dot = 48 + 24 = 72
+        assert_eq!(notes[0].1, 72);
+    }
+
+    #[test]
+    fn test_default_length() {
+        let cmds = parse("L8 C D E");
+        let notes = note_commands(&cmds);
+        for (_, ticks) in &notes {
+            assert_eq!(*ticks, 24); // eighth note
+        }
+    }
+
+    // Rest
+
+    #[test]
+    fn test_rest() {
+        let cmds = parse("C R C");
+        let rests = rest_commands(&cmds);
+        assert_eq!(rests, [48]); // default quarter note rest
+    }
+
+    #[test]
+    fn test_rest_with_length() {
+        let cmds = parse("R8 R16");
+        let rests = rest_commands(&cmds);
+        assert_eq!(rests, [24, 12]);
+    }
+
+    // Tempo
+
+    #[test]
+    fn test_tempo() {
+        let cmds = parse("T120 C");
+        let has_tempo = cmds.iter().any(|cmd| matches!(cmd, MmlCommand::Tempo { .. }));
+        assert!(has_tempo);
+    }
+
+    // Volume
+
+    #[test]
+    fn test_volume() {
+        let cmds = parse("V100 C");
+        let has_volume = cmds.iter().any(|cmd| matches!(cmd, MmlCommand::Volume { .. }));
+        assert!(has_volume);
+    }
+
+    // Repeat
+
+    #[test]
+    fn test_repeat() {
+        let cmds = parse("[C D]3");
+        let has_start = cmds.iter().any(|cmd| matches!(cmd, MmlCommand::RepeatStart));
+        let has_end = cmds
+            .iter()
+            .any(|cmd| matches!(cmd, MmlCommand::RepeatEnd { play_count: 3 }));
+        assert!(has_start);
+        assert!(has_end);
+    }
+
+    // Tie
+
+    #[test]
+    fn test_tie_extends_duration() {
+        let cmds = parse("C4&4");
+        let notes = note_commands(&cmds);
+        // 48 + 48 = 96
+        assert_eq!(notes[0].1, 96);
+    }
+
+    // Error cases
+
+    #[test]
+    fn test_invalid_character() {
+        assert!(parse_mml("X").is_err());
+    }
+
+    #[test]
+    fn test_octave_overflow() {
+        // Starting at O9 and going up should error
+        assert!(parse_mml("O9 > C").is_err());
+    }
+
+    #[test]
+    fn test_octave_underflow() {
+        assert!(parse_mml("O-1 < C").is_err());
+    }
+
+    // Case insensitive
+
+    #[test]
+    fn test_case_insensitive() {
+        let upper = note_commands(&parse("C D E"));
+        let lower = note_commands(&parse("c d e"));
+        assert_eq!(upper, lower);
+    }
+
+    // Whitespace
+
+    #[test]
+    fn test_whitespace_ignored() {
+        let no_space = note_commands(&parse("CDE"));
+        let with_space = note_commands(&parse("C D E"));
+        assert_eq!(no_space, with_space);
+    }
+
+    // calc_commands_sec
+
+    #[test]
+    fn test_calc_commands_sec_basic() {
+        let cmds = parse("T120 C4");
+        let sec = calc_commands_sec(&cmds);
+        assert!(sec.is_some());
+        assert!(sec.unwrap() > 0.0);
+    }
+
+    #[test]
+    fn test_calc_commands_sec_infinite_loop() {
+        let cmds = parse("[C]0"); // 0 = infinite repeat
+        let sec = calc_commands_sec(&cmds);
+        assert!(sec.is_none());
+    }
+
+    #[test]
+    fn test_calc_commands_sec_finite_repeat() {
+        let cmds = parse("T120 [C4]2");
+        let sec = calc_commands_sec(&cmds);
+        assert!(sec.is_some());
+        // Should be roughly twice the duration of a single note
+        let single = calc_commands_sec(&parse("T120 C4")).unwrap();
+        assert!((sec.unwrap() - single * 2.0).abs() < 0.01);
+    }
+
+    // Envelope / Vibrato / Glide
+
+    #[test]
+    fn test_envelope_definition() {
+        let cmds = parse("@ENV1{127, 10, 64} C");
+        let has_env = cmds.iter().any(|cmd| {
+            matches!(
+                cmd,
+                MmlCommand::EnvelopeSet {
+                    slot: 1,
+                    ..
+                }
+            )
+        });
+        assert!(has_env);
+    }
+
+    #[test]
+    fn test_envelope_slot_zero_reserved() {
+        assert!(parse_mml("@ENV0{127}").is_err());
+    }
+
+    #[test]
+    fn test_vibrato_definition() {
+        let cmds = parse("@VIB1{10, 20, 50} C");
+        let has_vib = cmds.iter().any(|cmd| {
+            matches!(
+                cmd,
+                MmlCommand::VibratoSet {
+                    slot: 1,
+                    ..
+                }
+            )
+        });
+        assert!(has_vib);
+    }
+
+    #[test]
+    fn test_glide_definition() {
+        let cmds = parse("@GLI1{100, 10} C");
+        let has_glide = cmds.iter().any(|cmd| {
+            matches!(
+                cmd,
+                MmlCommand::GlideSet {
+                    slot: 1,
+                    ..
+                }
+            )
+        });
+        assert!(has_glide);
+    }
+
+    #[test]
+    fn test_glide_wildcard() {
+        let cmds = parse("@GLI1{*, *} C");
+        let has_glide = cmds.iter().any(|cmd| {
+            matches!(
+                cmd,
+                MmlCommand::GlideSet {
+                    slot: 1,
+                    semitone_offset: None,
+                    duration_ticks: None,
+                }
+            )
+        });
+        assert!(has_glide);
+    }
+
+    // Empty MML
+
+    #[test]
+    fn test_empty_mml() {
+        let cmds = parse("");
+        assert!(cmds.is_empty());
+    }
+
+    #[test]
+    fn test_rest_only() {
+        let cmds = parse("R4 R8");
+        assert_eq!(rest_commands(&cmds), [48, 24]);
+        assert!(note_commands(&cmds).is_empty());
+    }
+}
