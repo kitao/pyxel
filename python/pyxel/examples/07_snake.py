@@ -22,7 +22,12 @@ RIGHT = (1, 0)
 class App:
     def __init__(self):
         pyxel.init(
-            SCREEN_W, SCREEN_H, title="Snake!", fps=20, display_scale=12, capture_scale=6
+            SCREEN_W,
+            SCREEN_H,
+            title="Snake!",
+            fps=20,
+            display_scale=12,
+            capture_scale=6,
         )
         self.init_sound()
         self.reset()
@@ -41,10 +46,14 @@ class App:
         )
 
         melody1 = (
-            "c3 c3 c3 d3 e3 r e3 r" "rrrrrrrr"
-            "e3 e3 e3 f3 d3 r c3 r" "rrrrrrrr"
-            "c3 c3 c3 d3 e3 r e3 r" "rrrrrrrr"
-            "b2 b2 b2 f3 d3 r c3 r" "rrrrrrrr"
+            "c3 c3 c3 d3 e3 r e3 r"
+            "rrrrrrrr"
+            "e3 e3 e3 f3 d3 r c3 r"
+            "rrrrrrrr"
+            "c3 c3 c3 d3 e3 r e3 r"
+            "rrrrrrrr"
+            "b2 b2 b2 f3 d3 r c3 r"
+            "rrrrrrrr"
         )
         melody2 = (
             "rrrr e3e3e3e3 d3d3c3c3 b2b2c3c3"
@@ -179,7 +188,9 @@ class App:
 
     def draw_death(self):
         pyxel.cls(8)
-        for i, text in enumerate(["GAME OVER", f"{self.score:04}", "(Q)UIT", "(R)ESTART"]):
+        for i, text in enumerate(
+            ["GAME OVER", f"{self.score:04}", "(Q)UIT", "(R)ESTART"]
+        ):
             x = (SCREEN_W - len(text) * pyxel.FONT_WIDTH) // 2
             pyxel.text(x, 5 + (pyxel.FONT_HEIGHT + 2) * i, text, 0)
 

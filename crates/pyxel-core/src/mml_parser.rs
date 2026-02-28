@@ -779,7 +779,9 @@ mod tests {
     #[test]
     fn test_tempo() {
         let cmds = parse("T120 C");
-        let has_tempo = cmds.iter().any(|cmd| matches!(cmd, MmlCommand::Tempo { .. }));
+        let has_tempo = cmds
+            .iter()
+            .any(|cmd| matches!(cmd, MmlCommand::Tempo { .. }));
         assert!(has_tempo);
     }
 
@@ -788,7 +790,9 @@ mod tests {
     #[test]
     fn test_volume() {
         let cmds = parse("V100 C");
-        let has_volume = cmds.iter().any(|cmd| matches!(cmd, MmlCommand::Volume { .. }));
+        let has_volume = cmds
+            .iter()
+            .any(|cmd| matches!(cmd, MmlCommand::Volume { .. }));
         assert!(has_volume);
     }
 
@@ -797,7 +801,9 @@ mod tests {
     #[test]
     fn test_repeat() {
         let cmds = parse("[C D]3");
-        let has_start = cmds.iter().any(|cmd| matches!(cmd, MmlCommand::RepeatStart));
+        let has_start = cmds
+            .iter()
+            .any(|cmd| matches!(cmd, MmlCommand::RepeatStart));
         let has_end = cmds
             .iter()
             .any(|cmd| matches!(cmd, MmlCommand::RepeatEnd { play_count: 3 }));
@@ -883,15 +889,9 @@ mod tests {
     #[test]
     fn test_envelope_definition() {
         let cmds = parse("@ENV1{127, 10, 64} C");
-        let has_env = cmds.iter().any(|cmd| {
-            matches!(
-                cmd,
-                MmlCommand::EnvelopeSet {
-                    slot: 1,
-                    ..
-                }
-            )
-        });
+        let has_env = cmds
+            .iter()
+            .any(|cmd| matches!(cmd, MmlCommand::EnvelopeSet { slot: 1, .. }));
         assert!(has_env);
     }
 
@@ -903,30 +903,18 @@ mod tests {
     #[test]
     fn test_vibrato_definition() {
         let cmds = parse("@VIB1{10, 20, 50} C");
-        let has_vib = cmds.iter().any(|cmd| {
-            matches!(
-                cmd,
-                MmlCommand::VibratoSet {
-                    slot: 1,
-                    ..
-                }
-            )
-        });
+        let has_vib = cmds
+            .iter()
+            .any(|cmd| matches!(cmd, MmlCommand::VibratoSet { slot: 1, .. }));
         assert!(has_vib);
     }
 
     #[test]
     fn test_glide_definition() {
         let cmds = parse("@GLI1{100, 10} C");
-        let has_glide = cmds.iter().any(|cmd| {
-            matches!(
-                cmd,
-                MmlCommand::GlideSet {
-                    slot: 1,
-                    ..
-                }
-            )
-        });
+        let has_glide = cmds
+            .iter()
+            .any(|cmd| matches!(cmd, MmlCommand::GlideSet { slot: 1, .. }));
         assert!(has_glide);
     }
 
