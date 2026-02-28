@@ -3,6 +3,7 @@
 ## 2.7.3
 
 - Improved error handling and unified error messages
+- Rewrote examples 06 and 07 for consistency
 
 ## 2.7.2
 
