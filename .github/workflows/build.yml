@@ -114,7 +114,7 @@ jobs:
             libxrandr-dev libxfixes-dev libxss-dev libxcb1-dev \
             libwayland-dev libxkbcommon-dev libdecor-0-dev \
             libegl-dev libgl-dev libgles-dev \
-            libdrm-dev \
+            libdrm-dev libgbm-dev \
             libasound2-dev libpulse-dev \
             libdbus-1-dev
 
@@ -139,14 +139,15 @@ jobs:
           # libdecor
           cp -r /usr/include/libdecor-0 $SYSROOT/usr/include/
 
-          # OpenGL/EGL/GLES (required for Wayland driver detection)
+          # OpenGL/EGL/GLES (required for Wayland and KMSDRM detection)
           for dir in EGL GL GLES GLES2 GLES3 KHR; do
             [ -d "/usr/include/$dir" ] && cp -r /usr/include/$dir $SYSROOT/usr/include/
           done
 
-          # DRM (for KMSDRM video driver)
+          # DRM/GBM (for KMSDRM video driver)
           cp -r /usr/include/libdrm $SYSROOT/usr/include/
-          cp -r /usr/include/xf86drm*.h $SYSROOT/usr/include/
+          cp /usr/include/xf86drm*.h $SYSROOT/usr/include/
+          cp /usr/include/gbm.h $SYSROOT/usr/include/
 
           # ALSA
           cp -r /usr/include/alsa $SYSROOT/usr/include/
@@ -166,7 +167,13 @@ jobs:
           cp /usr/lib/x86_64-linux-gnu/pkgconfig/*.pc $SYSROOT/usr/lib/pkgconfig/ 2>/dev/null || true
           cp /usr/share/pkgconfig/*.pc $SYSROOT/usr/lib/pkgconfig/ 2>/dev/null || true
 
-          # Override libdrm.pc with sysroot-compatible paths
+          # Normalize arch-specific lib paths so pkg-config works without
+          # PKG_CONFIG_SYSROOT_DIR (which double-prefixes with CMAKE_FIND_ROOT_PATH)
+          sed -i 's|/lib/[a-z0-9_]*-linux-gnu[a-z]*/|/lib/|g' $SYSROOT/usr/lib/pkgconfig/*.pc
+          sed -i 's|/lib/[a-z0-9_]*-linux-gnu[a-z]*$|/lib|g' $SYSROOT/usr/lib/pkgconfig/*.pc
+
+          # Override DRM/GBM/EGL .pc files with minimal definitions
+          # (host copies have Requires.private chains that fail to resolve)
           cat > $SYSROOT/usr/lib/pkgconfig/libdrm.pc <<'PCEOF'
           prefix=/usr
           includedir=${prefix}/include
@@ -176,6 +183,26 @@ jobs:
           Version: 2.4.0
           Cflags: -I${includedir}/libdrm
           Libs: -L${libdir} -ldrm
+          PCEOF
+          cat > $SYSROOT/usr/lib/pkgconfig/gbm.pc <<'PCEOF'
+          prefix=/usr
+          includedir=${prefix}/include
+          libdir=${prefix}/lib
+          Name: gbm
+          Description: Mesa gbm library
+          Version: 23.0.0
+          Cflags: -I${includedir}
+          Libs: -L${libdir} -lgbm
+          PCEOF
+          cat > $SYSROOT/usr/lib/pkgconfig/egl.pc <<'PCEOF'
+          prefix=/usr
+          includedir=${prefix}/include
+          libdir=${prefix}/lib
+          Name: EGL
+          Description: EGL library and headers
+          Version: 1.5
+          Cflags: -I${includedir}
+          Libs: -L${libdir} -lEGL
           PCEOF
 
           # Create minimal ELF stubs with correct SONAMEs for cmake
@@ -203,6 +230,7 @@ jobs:
           stub_lib xkbcommon 0
           stub_lib decor-0 0
           stub_lib drm 2
+          stub_lib gbm 1
           stub_lib EGL 1
 
       - name: Build SDL2
@@ -230,14 +258,13 @@ jobs:
           echo "set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY)" >> "$TOOLCHAIN"
 
           export PKG_CONFIG_LIBDIR="$SYSROOT/usr/lib/pkgconfig"
-          export PKG_CONFIG_SYSROOT_DIR="$SYSROOT"
           export PKG_CONFIG_PATH=""
 
           cmake -S SDL2-${{ env.SDL2_VERSION }} -B sdl2-build \
             -DCMAKE_TOOLCHAIN_FILE="$TOOLCHAIN" \
             -DCMAKE_BUILD_TYPE=Release \
             -DCMAKE_INSTALL_PREFIX="$PREFIX" \
-            -DCMAKE_C_FLAGS="-I$SYSROOT/usr/include -I$SYSROOT/usr/include/dbus-1.0 -I$SYSROOT/usr/include/libdrm" \
+            -DCMAKE_C_FLAGS="-std=gnu99 -I$SYSROOT/usr/include -I$SYSROOT/usr/include/dbus-1.0 -I$SYSROOT/usr/include/libdrm" \
             -DCMAKE_SHARED_LINKER_FLAGS="-ldl -lpthread" \
             -DSDL_SHARED=ON \
             -DSDL_STATIC=OFF \
