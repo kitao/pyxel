@@ -114,6 +114,7 @@ jobs:
             libxrandr-dev libxfixes-dev libxss-dev libxcb1-dev \
             libwayland-dev libxkbcommon-dev libdecor-0-dev \
             libegl-dev libgl-dev libgles-dev \
+            libdrm-dev \
             libasound2-dev libpulse-dev \
             libdbus-1-dev
 
@@ -142,6 +143,10 @@ jobs:
           for dir in EGL GL GLES GLES2 GLES3 KHR; do
             [ -d "/usr/include/$dir" ] && cp -r /usr/include/$dir $SYSROOT/usr/include/
           done
+
+          # DRM (for KMSDRM video driver)
+          cp -r /usr/include/libdrm $SYSROOT/usr/include/
+          cp -r /usr/include/xf86drm*.h $SYSROOT/usr/include/
 
           # ALSA
           cp -r /usr/include/alsa $SYSROOT/usr/include/
@@ -185,6 +190,7 @@ jobs:
           stub_lib wayland-egl 1
           stub_lib xkbcommon 0
           stub_lib decor-0 0
+          stub_lib drm 2
           stub_lib EGL 1
 
       - name: Build SDL2
@@ -228,6 +234,7 @@ jobs:
             -DSDL_WAYLAND=ON -DSDL_WAYLAND_SHARED=ON \
             -DSDL_WAYLAND_LIBDECOR=ON -DSDL_WAYLAND_LIBDECOR_SHARED=ON \
             -DWAYLAND_SCANNER=/usr/bin/wayland-scanner \
+            -DSDL_KMSDRM=ON -DSDL_KMSDRM_SHARED=ON \
             -DSDL_OPENGL=ON \
             -DSDL_OPENGLES=ON \
             -DSDL_VULKAN=OFF \
@@ -241,7 +248,7 @@ jobs:
           # Verify expected drivers are present
           echo "=== Verifying built SDL2 ==="
           FAIL=0
-          for pattern in libX11 libwayland-client libasound libpulse; do
+          for pattern in libX11 libwayland-client libdrm libasound libpulse; do
             if strings "$PREFIX/lib/libSDL2.so" | grep -q "$pattern"; then
               echo "PASS: $pattern found"
             else
@@ -334,7 +341,7 @@ jobs:
 
           echo "Found SDL2 library: $SDL2_LIB"
           FAIL=0
-          for pattern in libX11.so libwayland-client.so libasound.so libpulse.so; do
+          for pattern in libX11.so libwayland-client.so libdrm.so libasound.so libpulse.so; do
             if strings "$SDL2_LIB" | grep -q "$pattern"; then
               echo "PASS: $pattern dlopen target found"
             else

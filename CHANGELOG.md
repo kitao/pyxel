@@ -2,10 +2,12 @@
 
 ## 2.7.3
 
-- Improved error handling and unified error messages
+- Added KMSDRM video driver for embedded Linux devices
+- Added MCP server for AI-assisted development
+- Added VS Code extension
 - Rewrote examples 06 and 07 for consistency
 - Expanded Rust unit tests across 10 modules
-- Added VS Code extension
+- Improved error handling and unified error messages
 
 ## 2.7.2
 
