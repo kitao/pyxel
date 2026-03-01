@@ -208,7 +208,7 @@ def run_python_script(python_script_file):
     python_script_file = _complete_extension(python_script_file, "run", ".py")
     _check_file_exists(python_script_file)
 
-    sys.path.append(os.path.dirname(python_script_file))
+    sys.path.insert(0, os.path.abspath(os.path.dirname(python_script_file)))
     runpy.run_path(python_script_file, run_name="__main__")
 
 
@@ -289,7 +289,7 @@ def play_pyxel_app(pyxel_app_file):
     startup_script_file = _extract_pyxel_app(pyxel_app_file)
 
     if startup_script_file:
-        sys.path.append(os.path.dirname(startup_script_file))
+        sys.path.insert(0, os.path.abspath(os.path.dirname(startup_script_file)))
         runpy.run_path(startup_script_file, run_name="__main__")
         return
 

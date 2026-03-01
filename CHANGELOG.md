@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.7.4
+
+- Fixed module import failure after directory change
+
 ## 2.7.3
 
 - Added KMSDRM video driver for embedded Linux devices
