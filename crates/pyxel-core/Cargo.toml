@@ -1,6 +1,6 @@
 [package]
 name = "pyxel-core"
-version = "2.7.2"
+version = "2.7.3"
 authors = ["Takashi Kitao <takashi.kitao@gmail.com>"]
 edition = "2021"
 license = "MIT"
