@@ -104,6 +104,10 @@ La forma más fácil de usarla es a través del IDE en línea [Pyxel Code Maker]
 
 Para otros patrones de uso, como incrustar aplicaciones Pyxel en tu propio sitio, consulta [esta página](pyxel-web-en.md).
 
+### VS Code
+
+Con la [extensión Pyxel para Visual Studio Code](https://marketplace.visualstudio.com/items?itemName=kitao.pyxel-vscode), puedes ejecutar y desarrollar aplicaciones Pyxel en VS Code sin instalar Python ni Pyxel.
+
 ## Uso básico
 
 ### Comando Pyxel
@@ -380,13 +384,14 @@ Los parches y correcciones se aceptan en forma de solicitudes de extracción (PR
 
 Enviar una solicitud de extracción implica que aceptas licenciar tu contribución bajo la [Licencia MIT](../LICENSE).
 
-## Herramientas y Ejemplos Web
+## Herramientas y Ejemplos
 
 - [Pyxel Showcase](https://kitao.github.io/pyxel/wasm/showcase/)
 - [Pyxel API Reference](https://kitao.github.io/pyxel/wasm/api-reference/)
 - [Pyxel Web Launcher](https://kitao.github.io/pyxel/wasm/launcher/)
 - [Pyxel Code Maker](https://kitao.github.io/pyxel/wasm/code-maker/)
 - [Pyxel MML Studio](https://kitao.github.io/pyxel/wasm/mml-studio/)
+- [Pyxel VS Code Extension](https://marketplace.visualstudio.com/items?itemName=kitao.pyxel-vscode)
 
 ## Otra Información
 

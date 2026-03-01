@@ -104,6 +104,10 @@ Pyxel 的 Web 版本可在 PC、智能手机和平板电脑的兼容浏览器中
 
 对于其他使用模式，例如在您自己的网站上嵌入 Pyxel 应用，请参考 [此页面](pyxel-web-en.md)。
 
+### VS Code
+
+使用 [Pyxel Visual Studio Code 扩展](https://marketplace.visualstudio.com/items?itemName=kitao.pyxel-vscode)，无需安装 Python 或 Pyxel，即可在 VS Code 上运行和开发 Pyxel 应用。
+
 ## 基本用法
 
 ### Pyxel 命令
@@ -380,13 +384,14 @@ Pyxel 还包含需要专业知识的”高级 API”。在参考页面勾选”A
 
 提交拉取请求意味着您同意根据 [MIT 许可证](../LICENSE) 授权您的贡献。
 
-## Web 工具与示例
+## 工具与示例
 
 - [Pyxel Showcase](https://kitao.github.io/pyxel/wasm/showcase/)
 - [Pyxel API Reference](https://kitao.github.io/pyxel/wasm/api-reference/)
 - [Pyxel Web Launcher](https://kitao.github.io/pyxel/wasm/launcher/)
 - [Pyxel Code Maker](https://kitao.github.io/pyxel/wasm/code-maker/)
 - [Pyxel MML Studio](https://kitao.github.io/pyxel/wasm/mml-studio/)
+- [Pyxel VS Code 扩展](https://marketplace.visualstudio.com/items?itemName=kitao.pyxel-vscode)
 
 ## 其他信息
 

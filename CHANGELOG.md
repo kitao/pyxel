@@ -2,6 +2,7 @@
 
 ## 2.7.4
 
+- Added VS Code extension info to READMEs
 - Fixed module import failure after directory change
 
 ## 2.7.3

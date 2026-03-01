@@ -104,6 +104,10 @@ Kullanmanın en kolay yolu, çevrimiçi IDE [Pyxel Code Maker](https://kitao.git
 
 Kendi sitenizde Pyxel uygulamalarını gömme gibi diğer kullanım modelleri için, lütfen [bu sayfaya](pyxel-web-en.md) bakın.
 
+### VS Code
+
+[Pyxel Visual Studio Code eklentisi](https://marketplace.visualstudio.com/items?itemName=kitao.pyxel-vscode) ile Python veya Pyxel yüklemeden VS Code üzerinde Pyxel uygulamalarını çalıştırabilir ve geliştirebilirsiniz.
+
 ## Temel Kullanım
 
 ### Pyxel Komutu
@@ -380,13 +384,14 @@ Yamanlar ve düzeltmeler, pull isteği (PR) şeklinde kabul edilmektedir. Pull i
 
 Pull isteği göndermek, katkınızı [MIT Lisansı](../LICENSE) altında lisanslamayı kabul ettiğiniz anlamına gelir.
 
-## Web Araçlar ve Örnekler
+## Araçlar ve Örnekler
 
 - [Pyxel Showcase](https://kitao.github.io/pyxel/wasm/showcase/)
 - [Pyxel API Reference](https://kitao.github.io/pyxel/wasm/api-reference/)
 - [Pyxel Web Launcher](https://kitao.github.io/pyxel/wasm/launcher/)
 - [Pyxel Code Maker](https://kitao.github.io/pyxel/wasm/code-maker/)
 - [Pyxel MML Studio](https://kitao.github.io/pyxel/wasm/mml-studio/)
+- [Pyxel VS Code Eklentisi](https://marketplace.visualstudio.com/items?itemName=kitao.pyxel-vscode)
 
 ## Diğer Bilgiler
 
