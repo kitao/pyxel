@@ -392,6 +392,7 @@ Enviar um pull request implica que você concorda em licenciar sua contribuiçã
 - [Pyxel Code Maker](https://kitao.github.io/pyxel/wasm/code-maker/)
 - [Pyxel MML Studio](https://kitao.github.io/pyxel/wasm/mml-studio/)
 - [Pyxel VS Code Extension](https://marketplace.visualstudio.com/items?itemName=kitao.pyxel-vscode)
+- [Pyxel MCP Server](https://github.com/kitao/pyxel-mcp)
 
 ## Outras Informações
 

@@ -392,6 +392,7 @@ Soumettre une demande de tirage implique que vous acceptez de licencier votre co
 - [Pyxel Code Maker](https://kitao.github.io/pyxel/wasm/code-maker/)
 - [Pyxel MML Studio](https://kitao.github.io/pyxel/wasm/mml-studio/)
 - [Pyxel VS Code Extension](https://marketplace.visualstudio.com/items?itemName=kitao.pyxel-vscode)
+- [Pyxel MCP Server](https://github.com/kitao/pyxel-mcp)
 
 ## Autres Informations
 
