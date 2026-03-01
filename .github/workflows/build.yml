@@ -125,18 +125,13 @@ jobs:
           echo "SYSROOT=$SYSROOT" >> "$GITHUB_ENV"
           echo "PREFIX=$PREFIX" >> "$GITHUB_ENV"
 
-          # X11/XCB headers: use sysroot's existing ones (compatible with cross-compiler)
-          # Only copy if missing
+          # X11/XCB headers (only copy if missing)
           [ ! -d "$SYSROOT/usr/include/X11" ] && cp -r /usr/include/X11 $SYSROOT/usr/include/
           [ ! -d "$SYSROOT/usr/include/xcb" ] && [ -d /usr/include/xcb ] && cp -r /usr/include/xcb $SYSROOT/usr/include/
 
-          # Wayland
+          # Wayland / xkbcommon / libdecor
           cp /usr/include/wayland-*.h $SYSROOT/usr/include/
-
-          # xkbcommon
           cp -r /usr/include/xkbcommon $SYSROOT/usr/include/
-
-          # libdecor
           cp -r /usr/include/libdecor-0 $SYSROOT/usr/include/
 
           # OpenGL/EGL/GLES (required for Wayland and KMSDRM detection)
@@ -149,10 +144,8 @@ jobs:
           cp /usr/include/xf86drm*.h $SYSROOT/usr/include/
           cp /usr/include/gbm.h $SYSROOT/usr/include/
 
-          # ALSA
+          # ALSA / PulseAudio
           cp -r /usr/include/alsa $SYSROOT/usr/include/
-
-          # PulseAudio
           cp -r /usr/include/pulse $SYSROOT/usr/include/
 
           # D-Bus (including arch-specific dbus-arch-deps.h)
@@ -205,10 +198,8 @@ jobs:
           Libs: -L${libdir} -lEGL
           PCEOF
 
-          # Create minimal ELF stubs with correct SONAMEs for cmake
-          # FindLibraryAndSONAME(). With SDL_*_SHARED=ON, these are NOT
-          # linked against. They exist so cmake can resolve SONAMEs for
-          # dlopen (e.g. "libX11.so.6" not "libX11.so").
+          # Create stub .so files with SONAMEs for cmake to resolve
+          # (not linked against; SDL uses dlopen at runtime)
           mkdir -p $SYSROOT/usr/lib
           stub_lib() {
             echo "" | $TARGET_CC -shared -Wl,-soname,"lib${1}.so.${2}" \
@@ -268,7 +259,6 @@ jobs:
             -DCMAKE_SHARED_LINKER_FLAGS="-ldl -lpthread" \
             -DSDL_SHARED=ON \
             -DSDL_STATIC=OFF \
-            -DSDL_DLOPEN=ON \
             -DSDL_X11=ON -DSDL_X11_SHARED=ON \
             -DSDL_WAYLAND=ON -DSDL_WAYLAND_SHARED=ON \
             -DSDL_WAYLAND_LIBDECOR=ON -DSDL_WAYLAND_LIBDECOR_SHARED=ON \
