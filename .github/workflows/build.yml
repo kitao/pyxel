@@ -225,7 +225,7 @@ jobs:
             -DCMAKE_TOOLCHAIN_FILE="$TOOLCHAIN" \
             -DCMAKE_BUILD_TYPE=Release \
             -DCMAKE_INSTALL_PREFIX="$PREFIX" \
-            -DCMAKE_C_FLAGS="-I$SYSROOT/usr/include -I$SYSROOT/usr/include/dbus-1.0" \
+            -DCMAKE_C_FLAGS="-I$SYSROOT/usr/include -I$SYSROOT/usr/include/dbus-1.0 -I$SYSROOT/usr/include/libdrm" \
             -DCMAKE_SHARED_LINKER_FLAGS="-ldl -lpthread" \
             -DSDL_SHARED=ON \
             -DSDL_STATIC=OFF \
