@@ -147,6 +147,16 @@ jobs:
           # DRM (for KMSDRM video driver)
           cp -r /usr/include/libdrm $SYSROOT/usr/include/
           cp -r /usr/include/xf86drm*.h $SYSROOT/usr/include/
+          cat > $SYSROOT/usr/lib/pkgconfig/libdrm.pc <<'PCEOF'
+          prefix=/usr
+          includedir=${prefix}/include
+          libdir=${prefix}/lib
+          Name: libdrm
+          Description: Userspace interface to kernel DRM services
+          Version: 2.4.0
+          Cflags: -I${includedir}/libdrm
+          Libs: -L${libdir} -ldrm
+          PCEOF
 
           # ALSA
           cp -r /usr/include/alsa $SYSROOT/usr/include/
