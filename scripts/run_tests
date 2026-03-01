@@ -97,7 +97,7 @@ rm -f "$PACKAGE_EXAMPLE.pyxapp"
 # Watch (inject error, restore, let user confirm recovery visually)
 pyxel watch . "$WATCH_EXAMPLE.py" &
 BG_PID=$!
-sleep 3
+sleep 2
 
 cat > "$WATCH_EXAMPLE.py" << 'EOF'
 syntax error!!!
