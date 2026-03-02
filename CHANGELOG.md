@@ -2,6 +2,7 @@
 
 ## 2.7.4
 
+- Fixed mouse not working on Wayland and in virtual machines
 - Added VS Code extension info to READMEs
 - Fixed module import failure after directory change
 

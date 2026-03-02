@@ -236,9 +236,8 @@ impl PlatformSdl2 {
     }
 
     pub fn set_mouse_pos(&mut self, x: i32, y: i32) {
-        let (window_x, window_y) = self.window_pos();
         unsafe {
-            SDL_WarpMouseGlobal(window_x + x, window_y + y);
+            SDL_WarpMouseInWindow(self.window, x, y);
         }
     }
 

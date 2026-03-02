@@ -263,24 +263,18 @@ impl PlatformSdl2 {
 
             if unsafe { SDL_GetWindowFlags(self.window) } & SDL_WINDOW_INPUT_FOCUS as Uint32 != 0 {
                 unsafe {
-                    SDL_GetGlobalMouseState(&raw mut mouse_x, &raw mut mouse_y);
+                    SDL_GetMouseState(&raw mut mouse_x, &raw mut mouse_y);
                 }
             }
 
             if mouse_x != self.mouse_x || mouse_y != self.mouse_y {
-                #[cfg(not(target_os = "emscripten"))]
-                let (window_x, window_y) = super::super::window_pos();
-
-                #[cfg(target_os = "emscripten")]
-                let (window_x, window_y) = (0, 0);
-
                 pyxel_events.push(Event::KeyValueChanged {
                     key: MOUSE_POS_X,
-                    value: mouse_x - window_x,
+                    value: mouse_x,
                 });
                 pyxel_events.push(Event::KeyValueChanged {
                     key: MOUSE_POS_Y,
-                    value: mouse_y - window_y,
+                    value: mouse_y,
                 });
             }
         }
