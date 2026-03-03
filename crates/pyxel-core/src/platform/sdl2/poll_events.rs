@@ -273,15 +273,28 @@ impl PlatformSdl2 {
         // Mouse Motion (polling fallback)
         //
         #[cfg(not(target_os = "emscripten"))]
-        if !self.is_wayland {
-            let mut global_x = 0;
-            let mut global_y = 0;
-            unsafe {
-                SDL_GetGlobalMouseState(&raw mut global_x, &raw mut global_y);
-            }
-            let (window_x, window_y) = self.window_pos();
-            let mouse_x = global_x - window_x;
-            let mouse_y = global_y - window_y;
+        {
+            let (mouse_x, mouse_y) = if self.is_wayland {
+                // Wayland: SDL_GetGlobalMouseState is unsupported, so use
+                // SDL_GetMouseState which returns window-relative coordinates
+                // from SDL's internal event state.
+                let mut x = 0;
+                let mut y = 0;
+                unsafe {
+                    SDL_GetMouseState(&raw mut x, &raw mut y);
+                }
+                (x, y)
+            } else {
+                // X11: SDL_GetGlobalMouseState tracks the cursor even outside
+                // the window, which is useful for drag operations.
+                let mut global_x = 0;
+                let mut global_y = 0;
+                unsafe {
+                    SDL_GetGlobalMouseState(&raw mut global_x, &raw mut global_y);
+                }
+                let (window_x, window_y) = self.window_pos();
+                (global_x - window_x, global_y - window_y)
+            };
 
             if mouse_x != self.mouse_x || mouse_y != self.mouse_y {
                 self.mouse_x = mouse_x;

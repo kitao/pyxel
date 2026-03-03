@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.7.6
+
+- Fixed mouse not working on Wayland with XWayland fallback
+
 ## 2.7.5
 
 - Fixed SDL2 mouse handling on Wayland and outside the window
