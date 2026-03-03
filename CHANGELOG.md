@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.7.5
+
+- Fixed SDL2 mouse handling on Wayland and outside the window
+
 ## 2.7.4
 
 - Fixed mouse not working on Wayland and in virtual machines

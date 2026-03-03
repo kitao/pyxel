@@ -1,4 +1,4 @@
-use std::ffi::CString;
+use std::ffi::{CStr, CString};
 use std::mem::MaybeUninit;
 use std::os::raw::{c_int, c_void};
 use std::ptr::{addr_of_mut, copy_nonoverlapping, null_mut};
@@ -42,6 +42,7 @@ pub struct PlatformSdl2 {
     pub audio_device_id: SDL_AudioDeviceID,
     pub mouse_x: i32,
     pub mouse_y: i32,
+    pub is_wayland: bool,
     pub gamepads: Vec<Gamepad>,
     #[cfg(target_os = "emscripten")]
     pub virtual_gamepad_states: [bool; 10],
@@ -57,6 +58,7 @@ impl PlatformSdl2 {
             audio_device_id: 0,
             mouse_x: i32::MIN,
             mouse_y: i32::MIN,
+            is_wayland: false,
             gamepads: Vec::new(),
             #[cfg(target_os = "emscripten")]
             virtual_gamepad_states: [false; 10],
@@ -73,6 +75,13 @@ impl PlatformSdl2 {
             unsafe { SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMECONTROLLER,) } >= 0,
             "Failed to initialize SDL2"
         );
+
+        let driver = unsafe { SDL_GetCurrentVideoDriver() };
+        self.is_wayland = if driver.is_null() {
+            false
+        } else {
+            unsafe { CStr::from_ptr(driver) }.to_bytes() == b"wayland"
+        };
 
         self.gamepads.clear();
         let num_joysticks = unsafe { SDL_NumJoysticks() };

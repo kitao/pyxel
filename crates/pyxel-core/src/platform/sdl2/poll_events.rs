@@ -163,6 +163,21 @@ impl PlatformSdl2 {
                     }
                 }
 
+                SDL_MOUSEMOTION => {
+                    let x = unsafe { sdl_event.motion.x };
+                    let y = unsafe { sdl_event.motion.y };
+                    self.mouse_x = x;
+                    self.mouse_y = y;
+                    pyxel_events.push(Event::KeyValueChanged {
+                        key: MOUSE_POS_X,
+                        value: x,
+                    });
+                    pyxel_events.push(Event::KeyValueChanged {
+                        key: MOUSE_POS_Y,
+                        value: y,
+                    });
+                }
+
                 SDL_MOUSEWHEEL => {
                     pyxel_events.push(Event::KeyValueChanged {
                         key: MOUSE_WHEEL_X,
@@ -255,19 +270,22 @@ impl PlatformSdl2 {
         }
 
         //
-        // Mouse Motion
+        // Mouse Motion (polling fallback)
         //
-        {
-            let mut mouse_x = i32::MIN;
-            let mut mouse_y = i32::MIN;
-
-            if unsafe { SDL_GetWindowFlags(self.window) } & SDL_WINDOW_INPUT_FOCUS as Uint32 != 0 {
-                unsafe {
-                    SDL_GetMouseState(&raw mut mouse_x, &raw mut mouse_y);
-                }
+        #[cfg(not(target_os = "emscripten"))]
+        if !self.is_wayland {
+            let mut global_x = 0;
+            let mut global_y = 0;
+            unsafe {
+                SDL_GetGlobalMouseState(&raw mut global_x, &raw mut global_y);
             }
+            let (window_x, window_y) = self.window_pos();
+            let mouse_x = global_x - window_x;
+            let mouse_y = global_y - window_y;
 
             if mouse_x != self.mouse_x || mouse_y != self.mouse_y {
+                self.mouse_x = mouse_x;
+                self.mouse_y = mouse_y;
                 pyxel_events.push(Event::KeyValueChanged {
                     key: MOUSE_POS_X,
                     value: mouse_x,
