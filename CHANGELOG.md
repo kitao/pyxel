@@ -2,7 +2,7 @@
 
 # 2.7.7
 
-- Fixed Wayland mouse detection to use actual SDL2 video driver
+- Fixed SDL2 not selecting Wayland driver on Wayland
 
 ## 2.7.6
 
