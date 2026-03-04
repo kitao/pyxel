@@ -287,6 +287,17 @@ jobs:
           done
           [ $FAIL -eq 0 ] || exit 1
 
+          # Verify Wayland protocol code was compiled
+          echo "=== Verifying Wayland protocol support ==="
+          if strings "$PREFIX/lib/libSDL2.so" | grep -q "wl_compositor"; then
+            echo "PASS: Wayland protocol code present"
+          else
+            echo "FAIL: Wayland protocol code missing (wayland-scanner issue?)"
+            echo "wayland-scanner path: $(which wayland-scanner 2>&1 || echo 'NOT FOUND')"
+            echo "wayland-scanner version: $(wayland-scanner --version 2>&1 || echo 'UNKNOWN')"
+            exit 1
+          fi
+
           rm -rf SDL2-${{ env.SDL2_VERSION }} sdl2-build
 
       - name: Build wheel
