@@ -1,0 +1,170 @@
+#!/usr/bin/env python3
+"""Diagnose SDL2 Wayland initialization issues in installed pyxel wheel."""
+
+import ctypes
+import ctypes.util
+import glob
+import os
+import sys
+
+
+def find_bundled_sdl2():
+    """Find SDL2 library bundled with pyxel."""
+    try:
+        import pyxel
+        pkg_dir = os.path.dirname(pyxel.__file__)
+    except ImportError:
+        print("ERROR: pyxel is not installed")
+        sys.exit(1)
+
+    # Check .libs directory (auditwheel/manylinux bundled)
+    patterns = [
+        os.path.join(pkg_dir, ".pyxel_lib", "libSDL2*.so*"),
+        os.path.join(pkg_dir, ".libs", "libSDL2*.so*"),
+        os.path.join(pkg_dir, "pyxel.libs", "libSDL2*.so*"),
+    ]
+    # Also check parent .libs (package level)
+    parent = os.path.dirname(pkg_dir)
+    patterns += [
+        os.path.join(parent, "pyxel.libs", "libSDL2*.so*"),
+        os.path.join(parent, "*.libs", "libSDL2*.so*"),
+    ]
+
+    for pattern in patterns:
+        matches = glob.glob(pattern)
+        if matches:
+            return matches[0]
+
+    # Try system SDL2
+    path = ctypes.util.find_library("SDL2")
+    if path:
+        return path
+
+    return None
+
+
+def check_wayland_libs():
+    """Check if Wayland runtime libraries are available."""
+    libs = [
+        "libwayland-client.so.0",
+        "libwayland-cursor.so.0",
+        "libwayland-egl.so.1",
+        "libxkbcommon.so.0",
+        "libdecor-0.so.0",
+        "libEGL.so.1",
+    ]
+    print("\n=== Wayland runtime libraries ===")
+    for lib in libs:
+        try:
+            ctypes.CDLL(lib)
+            print(f"  {lib}: FOUND")
+        except OSError:
+            required = lib != "libdecor-0.so.0"
+            tag = "MISSING (required)" if required else "MISSING (optional)"
+            print(f"  {lib}: {tag}")
+
+
+def diagnose(sdl2_path):
+    """Run SDL2 initialization diagnostics."""
+    print(f"SDL2 library: {sdl2_path}")
+
+    try:
+        sdl2 = ctypes.CDLL(sdl2_path)
+    except OSError as e:
+        print(f"ERROR: Cannot load SDL2: {e}")
+        return
+
+    # Set up function signatures
+    sdl2.SDL_Init.restype = ctypes.c_int
+    sdl2.SDL_Init.argtypes = [ctypes.c_uint]
+    sdl2.SDL_GetError.restype = ctypes.c_char_p
+    sdl2.SDL_GetError.argtypes = []
+    sdl2.SDL_Quit.restype = None
+    sdl2.SDL_Quit.argtypes = []
+    sdl2.SDL_GetCurrentVideoDriver.restype = ctypes.c_char_p
+    sdl2.SDL_GetCurrentVideoDriver.argtypes = []
+
+    SDL_INIT_VIDEO = 0x00000020
+
+    # Test 1: Default initialization
+    print("\n=== Test 1: Default SDL_Init (no SDL_VIDEODRIVER) ===")
+    os.environ.pop("SDL_VIDEODRIVER", None)
+    ret = sdl2.SDL_Init(SDL_INIT_VIDEO)
+    if ret >= 0:
+        driver = sdl2.SDL_GetCurrentVideoDriver()
+        print(f"  SUCCESS - Video driver: {driver.decode() if driver else 'None'}")
+        sdl2.SDL_Quit()
+    else:
+        err = sdl2.SDL_GetError()
+        print(f"  FAILED - Error: {err.decode() if err else 'unknown'}")
+        sdl2.SDL_Quit()
+
+    # Test 2: Force Wayland
+    print("\n=== Test 2: SDL_Init with SDL_VIDEODRIVER=wayland ===")
+    os.environ["SDL_VIDEODRIVER"] = "wayland"
+    ret = sdl2.SDL_Init(SDL_INIT_VIDEO)
+    if ret >= 0:
+        driver = sdl2.SDL_GetCurrentVideoDriver()
+        print(f"  SUCCESS - Video driver: {driver.decode() if driver else 'None'}")
+        sdl2.SDL_Quit()
+    else:
+        err = sdl2.SDL_GetError()
+        print(f"  FAILED - Error: {err.decode() if err else 'unknown'}")
+        sdl2.SDL_Quit()
+
+    # Test 3: Force X11
+    print("\n=== Test 3: SDL_Init with SDL_VIDEODRIVER=x11 ===")
+    os.environ["SDL_VIDEODRIVER"] = "x11"
+    ret = sdl2.SDL_Init(SDL_INIT_VIDEO)
+    if ret >= 0:
+        driver = sdl2.SDL_GetCurrentVideoDriver()
+        print(f"  SUCCESS - Video driver: {driver.decode() if driver else 'None'}")
+        sdl2.SDL_Quit()
+    else:
+        err = sdl2.SDL_GetError()
+        print(f"  FAILED - Error: {err.decode() if err else 'unknown'}")
+        sdl2.SDL_Quit()
+
+    os.environ.pop("SDL_VIDEODRIVER", None)
+
+
+def check_sdl2_wayland_symbols(sdl2_path):
+    """Check if SDL2 has Wayland-related symbols."""
+    print("\n=== SDL2 Wayland symbols ===")
+    try:
+        sdl2 = ctypes.CDLL(sdl2_path)
+        symbols = [
+            "Wayland_VideoInit",
+            "Wayland_CreateWindow",
+            "Wayland_GetDisplayDPI",
+        ]
+        for sym in symbols:
+            try:
+                getattr(sdl2, sym)
+                print(f"  {sym}: FOUND")
+            except AttributeError:
+                print(f"  {sym}: MISSING")
+    except OSError:
+        print("  Cannot load SDL2 for symbol check")
+
+
+def main():
+    print("=== Pyxel SDL2 Wayland Diagnostics ===\n")
+
+    # Environment info
+    print(f"WAYLAND_DISPLAY: {os.environ.get('WAYLAND_DISPLAY', 'NOT SET')}")
+    print(f"XDG_SESSION_TYPE: {os.environ.get('XDG_SESSION_TYPE', 'NOT SET')}")
+    print(f"DISPLAY: {os.environ.get('DISPLAY', 'NOT SET')}")
+
+    sdl2_path = find_bundled_sdl2()
+    if not sdl2_path:
+        print("\nERROR: Cannot find SDL2 library")
+        sys.exit(1)
+
+    check_wayland_libs()
+    check_sdl2_wayland_symbols(sdl2_path)
+    diagnose(sdl2_path)
+
+
+if __name__ == "__main__":
+    main()
