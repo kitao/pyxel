@@ -86,6 +86,16 @@ def diagnose(sdl2_path):
 
     SDL_INIT_VIDEO = 0x00000020
 
+    # Enable verbose logging to capture Wayland init details
+    try:
+        sdl2.SDL_LogSetAllPriority.restype = None
+        sdl2.SDL_LogSetAllPriority.argtypes = [ctypes.c_int]
+        SDL_LOG_PRIORITY_VERBOSE = 1
+        sdl2.SDL_LogSetAllPriority(SDL_LOG_PRIORITY_VERBOSE)
+        print("\n(SDL2 verbose logging enabled)\n")
+    except AttributeError:
+        print("\n(SDL_LogSetAllPriority not found)\n")
+
     # Test 1: Default initialization
     print("\n=== Test 1: Default SDL_Init (no SDL_VIDEODRIVER) ===")
     os.environ.pop("SDL_VIDEODRIVER", None)
@@ -128,24 +138,27 @@ def diagnose(sdl2_path):
     os.environ.pop("SDL_VIDEODRIVER", None)
 
 
-def check_sdl2_wayland_symbols(sdl2_path):
-    """Check if SDL2 has Wayland-related symbols."""
-    print("\n=== SDL2 Wayland symbols ===")
+def check_sdl2_wayland_strings(sdl2_path):
+    """Check SDL2 binary for Wayland-related strings."""
+    import subprocess
+    print("\n=== SDL2 Wayland strings ===")
     try:
-        sdl2 = ctypes.CDLL(sdl2_path)
-        symbols = [
+        out = subprocess.run(
+            ["strings", sdl2_path],
+            capture_output=True, text=True, timeout=10
+        ).stdout
+        markers = [
+            "wl_compositor",
+            "wl_display",
+            "wayland",
+            "libwayland-client",
             "Wayland_VideoInit",
-            "Wayland_CreateWindow",
-            "Wayland_GetDisplayDPI",
         ]
-        for sym in symbols:
-            try:
-                getattr(sdl2, sym)
-                print(f"  {sym}: FOUND")
-            except AttributeError:
-                print(f"  {sym}: MISSING")
-    except OSError:
-        print("  Cannot load SDL2 for symbol check")
+        for m in markers:
+            found = m in out
+            print(f"  {m}: {'FOUND' if found else 'MISSING'}")
+    except Exception as e:
+        print(f"  Error: {e}")
 
 
 def main():
@@ -162,7 +175,7 @@ def main():
         sys.exit(1)
 
     check_wayland_libs()
-    check_sdl2_wayland_symbols(sdl2_path)
+    check_sdl2_wayland_strings(sdl2_path)
     diagnose(sdl2_path)
 
 
