@@ -1,4 +1,4 @@
-use std::ffi::CString;
+use std::ffi::{CStr, CString};
 use std::mem::MaybeUninit;
 use std::os::raw::{c_int, c_void};
 use std::ptr::{addr_of_mut, copy_nonoverlapping, null_mut};
@@ -76,7 +76,9 @@ impl PlatformSdl2 {
             "Failed to initialize SDL2"
         );
 
-        self.is_wayland = std::env::var("WAYLAND_DISPLAY").is_ok_and(|v| !v.is_empty());
+        let driver = unsafe { SDL_GetCurrentVideoDriver() };
+        self.is_wayland =
+            !driver.is_null() && unsafe { CStr::from_ptr(driver) }.to_bytes() == b"wayland";
 
         self.gamepads.clear();
         let num_joysticks = unsafe { SDL_NumJoysticks() };

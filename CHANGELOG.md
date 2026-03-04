@@ -1,8 +1,12 @@
 # Change Log
 
+# 2.7.7
+
+- Fixed Wayland mouse detection to use actual SDL2 video driver
+
 ## 2.7.6
 
-- Simplified Linux self-build by relaxing manylinux constraint
+- Consolidated manylinux options in Makefile
 - Fixed mouse not working on Wayland with XWayland fallback
 
 ## 2.7.5
