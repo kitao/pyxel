@@ -295,7 +295,7 @@ jobs:
           export RUSTFLAGS="-L$PREFIX/lib"
           export LD_LIBRARY_PATH="$PREFIX/lib:${LD_LIBRARY_PATH:-}"
 
-          make TARGET=${{ matrix.target }}
+          make TARGET=${{ matrix.target }} MATURIN_OPTS="--manylinux 2014"
 
       - *upload-wheel
 

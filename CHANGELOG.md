@@ -2,6 +2,7 @@
 
 ## 2.7.6
 
+- Simplified Linux self-build by relaxing manylinux constraint
 - Fixed mouse not working on Wayland with XWayland fallback
 
 ## 2.7.5

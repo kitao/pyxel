@@ -2,7 +2,7 @@
 # Prerequisites:
 #   - git, make, cmake, rustup, python 3.8+
 #   - Windows: Git Bash
-#   - Linux: python3-pip, python3-venv, libsdl2-dev 2.32.0
+#   - Linux: python3-pip, python3-venv, clang, libclang-dev, libsdl2-dev 2.32.0
 #   - ./scripts/setup_venv
 #
 # Each new shell:
@@ -72,11 +72,7 @@ endif
 
 # Tool options
 CLIPPY_OPTS = -q -- --no-deps
-ifneq (,$(findstring linux,$(TARGET)))
-MATURIN_OPTS = --manylinux 2014
-else
-MATURIN_OPTS = --manylinux 2014 --auditwheel skip
-endif
+MATURIN_OPTS ?= --manylinux off
 
 # PyO3 environment
 ifneq ($(TARGET),$(WASM_TARGET))
