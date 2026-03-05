@@ -259,6 +259,7 @@ jobs:
             -DCMAKE_SHARED_LINKER_FLAGS="-ldl -lpthread" \
             -DSDL_SHARED=ON \
             -DSDL_STATIC=OFF \
+            -DHAVE_XGENERICEVENT=1 \
             -DSDL_X11=ON -DSDL_X11_SHARED=ON \
             -DSDL_WAYLAND=ON -DSDL_WAYLAND_SHARED=ON \
             -DSDL_WAYLAND_LIBDECOR=ON -DSDL_WAYLAND_LIBDECOR_SHARED=ON \
