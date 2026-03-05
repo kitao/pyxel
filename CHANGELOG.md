@@ -2,8 +2,7 @@
 
 # 2.7.7
 
-- Upgraded Linux build to manylinux_2_28 for Wayland support
-- Dropped 32-bit Linux (i686) target
+- Fixed Wayland driver selection on X11/Wayland environments
 
 ## 2.7.6
 

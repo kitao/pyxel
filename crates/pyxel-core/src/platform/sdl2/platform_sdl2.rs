@@ -71,11 +71,30 @@ impl PlatformSdl2 {
     // Core
     //
     pub fn init(&mut self) {
-        assert!(
-            unsafe { SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMECONTROLLER) } >= 0,
-            "Failed to initialize SDL2: {}",
-            unsafe { CStr::from_ptr(SDL_GetError()) }.to_string_lossy()
-        );
+        let sdl_flags = SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMECONTROLLER;
+
+        // Prefer Wayland driver on Wayland sessions (workaround for bundled
+        // SDL2 failing to auto-detect Wayland). Falls back to auto-detection.
+        let initialized = if std::env::var("XDG_SESSION_TYPE").is_ok_and(|v| v == "wayland")
+            && std::env::var("SDL_VIDEODRIVER").is_err()
+        {
+            std::env::set_var("SDL_VIDEODRIVER", "wayland");
+            let ok = unsafe { SDL_Init(sdl_flags) } >= 0;
+            if !ok {
+                std::env::remove_var("SDL_VIDEODRIVER");
+            }
+            ok
+        } else {
+            false
+        };
+
+        if !initialized {
+            assert!(
+                unsafe { SDL_Init(sdl_flags) } >= 0,
+                "Failed to initialize SDL2: {}",
+                unsafe { CStr::from_ptr(SDL_GetError()) }.to_string_lossy()
+            );
+        }
 
         let driver = unsafe { SDL_GetCurrentVideoDriver() };
         self.is_wayland =
