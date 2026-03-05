@@ -2,7 +2,9 @@
 
 # 2.7.7
 
-- Fixed Wayland driver selection on X11/Wayland environments
+- Fixed mouse input on Linux with cross-compiled SDL2
+- Migrated Linux CI to manylinux_2_28 (dropped i686 support)
+- Added Wayland native driver preference
 
 ## 2.7.6
 
