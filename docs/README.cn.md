@@ -64,7 +64,7 @@ Pyxel 在 [MIT 许可证](../LICENSE) 下开源并免费使用。让我们开始
 
 ## 如何安装
 
-### Windows/Mac/Linux
+### Windows / Mac / Linux
 
 安装 [Python 3](https://www.python.org/)（版本 3.8 或更高）后，运行以下命令：
 

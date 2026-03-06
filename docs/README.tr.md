@@ -64,7 +64,7 @@ Pyxel, [MIT Lisansı](../LICENSE) altında açık kaynaklıdır ve ücretsiz ola
 
 ## Nasıl Kurulur
 
-### Windows/Mac/Linux
+### Windows / Mac / Linux
 
 [Python 3](https://www.python.org/) (3.8 veya daha yüksek sürüm) kurduktan sonra, aşağıdaki komutu çalıştırın:
 

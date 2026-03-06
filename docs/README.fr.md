@@ -64,7 +64,7 @@ Pyxel est open source sous la [Licence MIT](../LICENSE) et est gratuit à utilis
 
 ## Comment installer
 
-### Windows/Mac/Linux
+### Windows / Mac / Linux
 
 Après avoir installé [Python 3](https://www.python.org/) (version 3.8 ou supérieure), exécutez la commande suivante :
 

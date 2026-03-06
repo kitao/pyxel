@@ -64,7 +64,7 @@ Pyxel은 [MIT 라이센스](../LICENSE) 하에 오픈 소스이며 무료로 사
 
 ## 설치 방법
 
-### Windows/Mac/Linux
+### Windows / Mac / Linux
 
 [Python 3](https://www.python.org/) (버전 3.8 이상)을 설치한 후, 다음 명령어를 실행하세요:
 
