@@ -39,6 +39,17 @@ See `Makefile` for prerequisites, WASM setup, and all available targets.
 - `std::sync::Once` must be fully-qualified in macros for hygiene; import in regular code
 - `platform::lock_audio()` / `unlock_audio()` for SDL2 audio sync
 
+## Release
+
+```
+git tag -a v{VERSION} -m "Pyxel {VERSION}"
+git push origin v{VERSION}
+```
+
+Always confirm the version number before releasing.
+Verify that `develop` and `main` are in sync before tagging.
+Pushing the tag triggers `release.yml` — builds, creates a GitHub Release, and publishes to PyPI.
+
 ## CHANGELOG
 
 Maintained in `CHANGELOG.md` at the repo root.
