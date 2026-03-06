@@ -2,6 +2,9 @@
 
 # 2.7.8
 
+- Fixed inconsistent naming and return types in Rust and Python
+- Updated CI to setup-python v5
+- Simplified venv setup with --upgrade-deps
 - Unified README installation instructions across platforms
 
 # 2.7.7
