@@ -3,7 +3,7 @@ import pyxel
 from .settings import EDITOR_IMAGE, PIANO_KEYBOARD_PLAY_COLOR, PIANO_KEYBOARD_REST_COLOR
 from .widgets import Widget
 
-key_table = [
+KEY_TABLE = [
     pyxel.KEY_Z,
     pyxel.KEY_S,
     pyxel.KEY_X,
@@ -131,7 +131,7 @@ class PianoKeyboard(Widget):
 
         self.note_var = self._mouse_note
 
-        for i, key in enumerate(key_table):
+        for i, key in enumerate(KEY_TABLE):
             if pyxel.btn(key):
                 self.note_var = self.octave_var * 12 + i
                 break

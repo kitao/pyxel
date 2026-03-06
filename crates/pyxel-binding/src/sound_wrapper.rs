@@ -75,7 +75,7 @@ impl Sound {
     }
 
     #[getter]
-    pub fn get_speed(&self) -> pyxel::SoundSpeed {
+    pub fn speed(&self) -> pyxel::SoundSpeed {
         unsafe { &*self.inner }.speed
     }
 
