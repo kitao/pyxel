@@ -64,7 +64,7 @@ Pyxel is open source under the [MIT License](https://github.com/kitao/pyxel/blob
 
 ## How to Install
 
-### Windows
+### Windows/Mac/Linux
 
 After installing [Python 3](https://www.python.org/) (version 3.8 or higher), run the following command:
 
@@ -72,41 +72,21 @@ After installing [Python 3](https://www.python.org/) (version 3.8 or higher), ru
 pip install -U pyxel
 ```
 
-When installing Python using the official installer, make sure to check the `Add Python 3.x to PATH` option to enable the `pyxel` command.
-
-### Mac
-
-After installing [Homebrew](https://brew.sh/), run the following commands:
-
-```sh
-brew install pipx
-pipx ensurepath
-pipx install pyxel
-```
-
-To upgrade Pyxel after installation, run `pipx upgrade pyxel`.
-
-### Linux
-
-After installing [Python 3](https://www.python.org/) (version 3.8 or higher), run the following command:
-
-```sh
-pip install -U pyxel
-```
-
-If the previous command fails, consider building Pyxel from source by following the instructions in the [Makefile](https://github.com/kitao/pyxel/blob/main/Makefile).
+**Note:** On Windows, make sure to check `Add python.exe to PATH` when installing Python to enable the `pyxel` command.
 
 ### Web
 
-The web version of Pyxel works on PCs, smartphones, and tablets with a compatible browser, without installing Python or Pyxel.
+The web version of Pyxel can be used without installation on PCs, smartphones, tablets, and other devices with a compatible browser.
 
-The easiest way to use it is through the online IDE [Pyxel Code Maker](https://kitao.github.io/pyxel/wasm/code-maker/).
+The web-based development environment [Pyxel Code Maker](https://kitao.github.io/pyxel/wasm/code-maker/) is ready to use simply by opening it in your browser.
 
-For other usage patterns, such as embedding Pyxel apps on your own site, please refer to [this page](https://github.com/kitao/pyxel/blob/main/docs/pyxel-web-en.md).
+For other usage, such as embedding Pyxel apps on your own site, please refer to [this page](https://github.com/kitao/pyxel/blob/main/docs/pyxel-web-en.md).
 
 ### VS Code
 
-With the [Pyxel Visual Studio Code extension](https://marketplace.visualstudio.com/items?itemName=kitao.pyxel-vscode), you can run and develop Pyxel apps in VS Code without installing Python or Pyxel.
+By adding the Pyxel extension to [Visual Studio Code](https://code.visualstudio.com/) (VS Code), you can develop and run Pyxel apps without installing Python or Pyxel.
+
+To add the Pyxel extension, search for "[Pyxel](https://marketplace.visualstudio.com/items?itemName=kitao.pyxel-vscode)" in the VS Code Extensions view and click the install button.
 
 ## Basic Usage
 

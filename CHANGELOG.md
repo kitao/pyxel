@@ -1,5 +1,9 @@
 # Change Log
 
+# 2.7.8
+
+- Unified README installation instructions across platforms
+
 # 2.7.7
 
 - Fixed mouse input on Linux with cross-compiled SDL2

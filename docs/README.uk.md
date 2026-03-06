@@ -64,7 +64,7 @@ Pyxel є відкритим програмним забезпеченням пі
 
 ## Як встановити
 
-### Windows
+### Windows/Mac/Linux
 
 Після встановлення [Python 3](https://www.python.org/) (версія 3.8 або вища) виконайте наступну команду:
 
@@ -72,41 +72,21 @@ Pyxel є відкритим програмним забезпеченням пі
 pip install -U pyxel
 ```
 
-Під час встановлення Python за допомогою офіційного установника переконайтеся, що ви вибрали опцію `Add Python 3.x to PATH`, щоб активувати команду `pyxel`.
-
-### Mac
-
-Після встановлення [Homebrew](https://brew.sh/) виконайте наступні команди:
-
-```sh
-brew install pipx
-pipx ensurepath
-pipx install pyxel
-```
-
-Щоб оновити Pyxel після установки, виконайте `pipx upgrade pyxel`.
-
-### Linux
-
-Після встановлення [Python 3](https://www.python.org/) (версія 3.8 або вища) виконайте наступну команду:
-
-```sh
-pip install -U pyxel
-```
-
-Якщо попередня команда не спрацювала, подумайте про збірку Pyxel з вихідного коду, дотримуючись інструкцій у [Makefile](../Makefile).
+**Примітка:** У Windows при встановленні Python обов'язково позначте `Add python.exe to PATH`, щоб активувати команду `pyxel`.
 
 ### Web
 
-Веб-версія Pyxel працює на ПК, смартфонах і планшетах із сумісним браузером, без встановлення Python або Pyxel.
+Веб-версію Pyxel можна використовувати без встановлення на ПК, смартфонах, планшетах та інших пристроях із сумісним браузером.
 
-Найпростіший спосіб використовувати її — через онлайн-IDE [Pyxel Code Maker](https://kitao.github.io/pyxel/wasm/code-maker/).
+Веб-середовище розробки [Pyxel Code Maker](https://kitao.github.io/pyxel/wasm/code-maker/) готове до використання — просто відкрийте його у браузері.
 
-Для інших моделей використання, таких як вбудовування додатків Pyxel на ваш власний сайт, зверніться до [цієї сторінки](pyxel-web-en.md).
+Для інших варіантів використання, таких як вбудовування додатків Pyxel на ваш власний сайт, зверніться до [цієї сторінки](pyxel-web-uk.md).
 
 ### VS Code
 
-За допомогою [розширення Pyxel для Visual Studio Code](https://marketplace.visualstudio.com/items?itemName=kitao.pyxel-vscode) ви можете запускати та розробляти додатки Pyxel у VS Code без встановлення Python або Pyxel.
+Додавши розширення Pyxel до [Visual Studio Code](https://code.visualstudio.com/) (VS Code), ви можете розробляти та запускати додатки Pyxel без встановлення Python або Pyxel.
+
+Щоб додати розширення Pyxel, знайдіть «[Pyxel](https://marketplace.visualstudio.com/items?itemName=kitao.pyxel-vscode)» у вікні розширень VS Code та натисніть кнопку встановлення.
 
 ## Основи використання
 

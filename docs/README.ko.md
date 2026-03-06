@@ -64,7 +64,7 @@ Pyxel은 [MIT 라이센스](../LICENSE) 하에 오픈 소스이며 무료로 사
 
 ## 설치 방법
 
-### Windows
+### Windows/Mac/Linux
 
 [Python 3](https://www.python.org/) (버전 3.8 이상)을 설치한 후, 다음 명령어를 실행하세요:
 
@@ -72,41 +72,21 @@ Pyxel은 [MIT 라이센스](../LICENSE) 하에 오픈 소스이며 무료로 사
 pip install -U pyxel
 ```
 
-공식 설치 프로그램을 사용하여 Python을 설치할 때 `Add Python 3.x to PATH` 옵션을 체크하여 `pyxel` 명령을 활성화하세요.
-
-### Mac
-
-[Homebrew](https://brew.sh/)를 설치한 후, 다음 명령어를 실행하세요:
-
-```sh
-brew install pipx
-pipx ensurepath
-pipx install pyxel
-```
-
-설치 후 Pyxel을 업그레이드하려면 `pipx upgrade pyxel`을 실행하세요.
-
-### Linux
-
-[Python 3](https://www.python.org/) (버전 3.8 이상)를 설치한 후, 다음 명령어를 실행하세요:
-
-```sh
-pip install -U pyxel
-```
-
-이전 명령이 작동하지 않으면 [Makefile](../Makefile)에 있는 지침에 따라 소스에서 Pyxel을 빌드하는 것을 고려하세요.
+**참고:** Windows에서는 Python을 설치할 때 `Add python.exe to PATH`를 체크하여 `pyxel` 명령을 활성화하세요.
 
 ### Web
 
-Pyxel의 Web 버전은 호환되는 웹 브라우저만 있으면 PC, 스마트폰, 태블릿에서 사용할 수 있으며, Python이나 Pyxel을 설치할 필요가 없습니다.
+Pyxel의 Web 버전은 호환되는 브라우저가 있는 PC, 스마트폰, 태블릿 등의 기기에서 설치 없이 사용할 수 있습니다.
 
-가장 쉬운 사용 방법은 온라인 IDE [Pyxel Code Maker](https://kitao.github.io/pyxel/wasm/code-maker/)를 이용하는 것입니다.
+웹 기반 개발 환경 [Pyxel Code Maker](https://kitao.github.io/pyxel/wasm/code-maker/)는 브라우저에서 열기만 하면 바로 사용할 수 있습니다.
 
-자신의 사이트에 Pyxel 앱을 임베딩하는 등의 다른 사용 패턴에 대해서는 [이 페이지](pyxel-web-en.md)를 참조하세요.
+자신의 사이트에 Pyxel 앱을 임베딩하는 등의 다른 사용 방법에 대해서는 [이 페이지](pyxel-web-ko.md)를 참조하세요.
 
 ### VS Code
 
-[Pyxel Visual Studio Code 확장](https://marketplace.visualstudio.com/items?itemName=kitao.pyxel-vscode)을 사용하면 Python이나 Pyxel을 설치하지 않고도 VS Code에서 Pyxel 앱을 실행하고 개발할 수 있습니다.
+[Visual Studio Code](https://code.visualstudio.com/) (VS Code)에 Pyxel 확장을 추가하면 Python이나 Pyxel을 설치하지 않고도 Pyxel 앱을 개발하고 실행할 수 있습니다.
+
+Pyxel 확장을 추가하려면 VS Code의 확장 뷰에서 "[Pyxel](https://marketplace.visualstudio.com/items?itemName=kitao.pyxel-vscode)"을 검색하고 설치 버튼을 클릭하세요.
 
 ## 기본 사용법
 

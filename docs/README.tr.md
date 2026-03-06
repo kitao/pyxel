@@ -64,7 +64,7 @@ Pyxel, [MIT Lisansı](../LICENSE) altında açık kaynaklıdır ve ücretsiz ola
 
 ## Nasıl Kurulur
 
-### Windows
+### Windows/Mac/Linux
 
 [Python 3](https://www.python.org/) (3.8 veya daha yüksek sürüm) kurduktan sonra, aşağıdaki komutu çalıştırın:
 
@@ -72,41 +72,21 @@ Pyxel, [MIT Lisansı](../LICENSE) altında açık kaynaklıdır ve ücretsiz ola
 pip install -U pyxel
 ```
 
-Python'u resmi yükleyici ile kurarken, `Add Python 3.x to PATH` seçeneğini işaretlemeyi unutmayın, böylece `pyxel` komutunu etkinleştirmiş olursunuz.
-
-### Mac
-
-[Homebrew](https://brew.sh/) kurduktan sonra, aşağıdaki komutları çalıştırın:
-
-```sh
-brew install pipx
-pipx ensurepath
-pipx install pyxel
-```
-
-Kurulumdan sonra Pyxel'i güncellemek için `pipx upgrade pyxel` komutunu çalıştırın.
-
-### Linux
-
-[Python 3](https://www.python.org/) (3.8 veya daha yüksek sürüm) kurduktan sonra, aşağıdaki komutu çalıştırın:
-
-```sh
-pip install -U pyxel
-```
-
-Yukarıdaki komut çalışmazsa, Pyxel'i kaynak kodundan inşa etmeyi düşünün ve [Makefile](../Makefile) içindeki talimatları izleyin.
+**Not:** Windows'ta Python kurulumu sırasında `pyxel` komutunu etkinleştirmek için `Add python.exe to PATH` seçeneğini işaretlediğinizden emin olun.
 
 ### Web
 
-Pyxel'in web sürümü, uyumlu bir tarayıcıyla PC, akıllı telefon ve tablette, Python veya Pyxel yüklemeden kullanılabilir.
+Pyxel'in web sürümü, uyumlu bir tarayıcıya sahip PC, akıllı telefon, tablet ve diğer cihazlarda kurulum gerektirmeden kullanılabilir.
 
-Kullanmanın en kolay yolu, çevrimiçi IDE [Pyxel Code Maker](https://kitao.github.io/pyxel/wasm/code-maker/) aracılığıyladır.
+Web tabanlı geliştirme ortamı [Pyxel Code Maker](https://kitao.github.io/pyxel/wasm/code-maker/), tarayıcınızda açmanız yeterli olacak şekilde kullanıma hazırdır.
 
-Kendi sitenizde Pyxel uygulamalarını gömme gibi diğer kullanım modelleri için, lütfen [bu sayfaya](pyxel-web-en.md) bakın.
+Kendi sitenizde Pyxel uygulamalarını gömme gibi diğer kullanımlar için lütfen [bu sayfaya](pyxel-web-tr.md) bakın.
 
 ### VS Code
 
-[Pyxel Visual Studio Code eklentisi](https://marketplace.visualstudio.com/items?itemName=kitao.pyxel-vscode) ile Python veya Pyxel yüklemeden VS Code üzerinde Pyxel uygulamalarını çalıştırabilir ve geliştirebilirsiniz.
+[Visual Studio Code](https://code.visualstudio.com/) (VS Code) uygulamasına Pyxel eklentisini ekleyerek, Python veya Pyxel yüklemeden Pyxel uygulamalarını geliştirebilir ve çalıştırabilirsiniz.
+
+Pyxel eklentisini eklemek için VS Code Eklentiler görünümünde "[Pyxel](https://marketplace.visualstudio.com/items?itemName=kitao.pyxel-vscode)" araması yapın ve yükle düğmesine tıklayın.
 
 ## Temel Kullanım
 

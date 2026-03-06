@@ -64,7 +64,7 @@ O Pyxel é de código aberto sob a [Licença MIT](../LICENSE) e é gratuito para
 
 ## Como instalar
 
-### Windows
+### Windows/Mac/Linux
 
 Após instalar o [Python 3](https://www.python.org/) (versão 3.8 ou superior), execute o seguinte comando:
 
@@ -72,41 +72,21 @@ Após instalar o [Python 3](https://www.python.org/) (versão 3.8 ou superior), 
 pip install -U pyxel
 ```
 
-Ao instalar o Python usando o instalador oficial, certifique-se de marcar a opção `Add Python 3.x to PATH` para habilitar o comando `pyxel`.
-
-### Mac
-
-Após instalar o [Homebrew](https://brew.sh/), execute os seguintes comandos:
-
-```sh
-brew install pipx
-pipx ensurepath
-pipx install pyxel
-```
-
-Para atualizar o Pyxel após a instalação, execute `pipx upgrade pyxel`.
-
-### Linux
-
-Após instalar o [Python 3](https://www.python.org/) (versão 3.8 ou superior), execute o seguinte comando:
-
-```sh
-pip install -U pyxel
-```
-
-Se o comando anterior falhar, considere construir o Pyxel a partir do código-fonte seguindo as instruções no [Makefile](../Makefile).
+**Nota:** No Windows, certifique-se de marcar `Add python.exe to PATH` ao instalar o Python para habilitar o comando `pyxel`.
 
 ### Web
 
-A versão Web do Pyxel funciona em PCs, smartphones e tablets com um navegador compatível, sem instalar Python ou Pyxel.
+A versão web do Pyxel pode ser usada sem instalação em PCs, smartphones, tablets e outros dispositivos com um navegador compatível.
 
-A maneira mais fácil de usá-la é através do IDE online [Pyxel Code Maker](https://kitao.github.io/pyxel/wasm/code-maker/).
+O ambiente de desenvolvimento web [Pyxel Code Maker](https://kitao.github.io/pyxel/wasm/code-maker/) está pronto para uso, basta abri-lo no navegador.
 
-Para outros padrões de uso, como incorporar aplicativos Pyxel em seu próprio site, consulte [esta página](pyxel-web-en.md).
+Para outros usos, como incorporar aplicativos Pyxel em seu próprio site, consulte [esta página](pyxel-web-pt.md).
 
 ### VS Code
 
-Com a [extensão Pyxel para Visual Studio Code](https://marketplace.visualstudio.com/items?itemName=kitao.pyxel-vscode), você pode executar e desenvolver aplicativos Pyxel no VS Code sem instalar Python ou Pyxel.
+Adicionando a extensão Pyxel ao [Visual Studio Code](https://code.visualstudio.com/) (VS Code), você pode desenvolver e executar aplicativos Pyxel sem instalar Python ou Pyxel.
+
+Para adicionar a extensão Pyxel, pesquise por "[Pyxel](https://marketplace.visualstudio.com/items?itemName=kitao.pyxel-vscode)" na visualização de Extensões do VS Code e clique no botão de instalação.
 
 ## Uso básico
 

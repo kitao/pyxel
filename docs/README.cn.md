@@ -64,29 +64,7 @@ Pyxel 在 [MIT 许可证](../LICENSE) 下开源并免费使用。让我们开始
 
 ## 如何安装
 
-### Windows
-
-在安装 [Python 3](https://www.python.org/)（版本 3.8 或更高）后，运行以下命令：
-
-```sh
-pip install -U pyxel
-```
-
-在使用官方安装程序安装 Python 时，请确保勾选 `Add Python 3.x to PATH` 选项，以启用 `pyxel` 命令。
-
-### Mac
-
-在安装 [Homebrew](https://brew.sh/) 后，运行以下命令：
-
-```sh
-brew install pipx
-pipx ensurepath
-pipx install pyxel
-```
-
-安装 Pyxel 后，要升级 Pyxel，请运行 `pipx upgrade pyxel`。
-
-### Linux
+### Windows/Mac/Linux
 
 安装 [Python 3](https://www.python.org/)（版本 3.8 或更高）后，运行以下命令：
 
@@ -94,19 +72,21 @@ pipx install pyxel
 pip install -U pyxel
 ```
 
-如果上述命令失败，请按照 [Makefile](../Makefile) 中的说明考虑从源代码构建 Pyxel。
+**注意：** 在 Windows 上，安装 Python 时请确保勾选 `Add python.exe to PATH`，以启用 `pyxel` 命令。
 
 ### Web
 
-Pyxel 的 Web 版本可在 PC、智能手机和平板电脑的兼容浏览器中使用，无需安装 Python 或 Pyxel。
+Web 版 Pyxel 可在 PC、智能手机、平板电脑等具有兼容浏览器的设备上使用，无需安装。
 
-最简单的使用方法是通过在线 IDE [Pyxel Code Maker](https://kitao.github.io/pyxel/wasm/code-maker/)。
+Web 版开发环境 [Pyxel Code Maker](https://kitao.github.io/pyxel/wasm/code-maker/) 只需在浏览器中打开即可使用。
 
-对于其他使用模式，例如在您自己的网站上嵌入 Pyxel 应用，请参考 [此页面](pyxel-web-en.md)。
+如需在自己的网站中嵌入 Pyxel 应用等其他用法，请参考[此页面](pyxel-web-cn.md)。
 
 ### VS Code
 
-使用 [Pyxel Visual Studio Code 扩展](https://marketplace.visualstudio.com/items?itemName=kitao.pyxel-vscode)，无需安装 Python 或 Pyxel，即可在 VS Code 上运行和开发 Pyxel 应用。
+在 [Visual Studio Code](https://code.visualstudio.com/)（VS Code）中添加 Pyxel 扩展后，无需安装 Python 或 Pyxel 即可开发和运行 Pyxel 应用。
+
+添加 Pyxel 扩展的方法是，在 VS Code 的扩展视图中搜索「[Pyxel](https://marketplace.visualstudio.com/items?itemName=kitao.pyxel-vscode)」，然后点击安装按钮。
 
 ## 基本用法
 
