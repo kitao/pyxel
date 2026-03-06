@@ -2,6 +2,7 @@
 
 # 2.7.8
 
+- Added console.error output for WASM runtime errors
 - Fixed inconsistent naming and return types in Rust and Python
 - Updated CI to setup-python v5
 - Simplified venv setup with --upgrade-deps

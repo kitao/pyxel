@@ -371,6 +371,7 @@ function _hookPythonError(pyodide) {
 }
 
 function _displayErrorOverlay(message) {
+  console.error(message);
   let overlay = document.getElementById("pyxel-error-overlay");
   if (!overlay) {
     overlay = document.createElement("pre");
