@@ -620,7 +620,7 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         canvas: &Self,
         cam: (f32, f32, f32),
         rot: (f32, f32, f32),
-        fov: f32,
+        fov: Option<f32>,
         transparent: Option<T>,
         palette: Option<&[T]>,
     ) {
@@ -835,7 +835,7 @@ impl PerspectiveProjection {
         offset_y: i32,
         cam: (f32, f32, f32),
         rot: (f32, f32, f32),
-        fov: f32,
+        fov: Option<f32>,
     ) -> Option<Self> {
         let (cam_x, cam_y, cam_z) = cam;
         if cam_z.abs() < f32::EPSILON {
@@ -848,7 +848,11 @@ impl PerspectiveProjection {
             return None;
         }
 
-        let fov = fov.clamp(1.0, 179.0);
+        let tan_hfov = (fov.unwrap_or(60.0) * PI / 360.0).tan();
+        if !tan_hfov.is_finite() || tan_hfov.abs() < f32::EPSILON {
+            return None;
+        }
+
         let (rot_x, rot_y, rot_z) = rot;
         let rot_x = rot_x * PI / 180.0;
         let rot_y = rot_y * PI / 180.0;
@@ -878,7 +882,7 @@ impl PerspectiveProjection {
             r12: -sy * sx,
             r21: sx,
             r22: cx,
-            tan_hfov: (fov * PI / 360.0).tan(),
+            tan_hfov,
             aspect: w as f32 / h as f32,
             half_w: w as f32 / 2.0,
             half_h: h as f32 / 2.0,

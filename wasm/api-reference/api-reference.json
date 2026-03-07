@@ -4839,7 +4839,7 @@
         {
           "name": "blt3d",
           "type": "function",
-          "signature": "blt3d(x, y, w, h, img, cam, rot, fov=90.0, colkey=None)",
+          "signature": "blt3d(x, y, w, h, img, cam, rot, fov=60, colkey=None)",
           "description": {
             "en": "Draw the image bank img (0-2 or Image instance) with perspective projection onto the screen rectangle (x, y, w, h). cam is the camera ground position and altitude, rot is the rotation in degrees. fov sets the field of view in degrees. colkey sets the transparent color.",
             "cn": "将图像库img (0-2或Image实例) 以透视投影绘制到屏幕矩形 (x, y, w, h)。cam为相机的地面坐标和高度，rot为旋转角度，单位为度。fov设置视野角度。colkey指定透明色。",
@@ -5026,7 +5026,7 @@
         {
           "name": "bltm3d",
           "type": "function",
-          "signature": "bltm3d(x, y, w, h, tm, cam, rot, fov=90.0, colkey=None)",
+          "signature": "bltm3d(x, y, w, h, tm, cam, rot, fov=60, colkey=None)",
           "description": {
             "en": "Draw the tilemap tm (0-7 or Tilemap instance) with perspective projection onto the screen rectangle (x, y, w, h). cam is the camera ground position and altitude, rot is the rotation in degrees. fov sets the field of view in degrees. colkey sets the transparent color.",
             "cn": "将瓦片地图tm (0-7或Tilemap实例) 以透视投影绘制到屏幕矩形 (x, y, w, h)。cam为相机的地面坐标和高度，rot为旋转角度，单位为度。fov设置视野角度。colkey指定透明色。",

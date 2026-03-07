@@ -641,7 +641,7 @@ impl Image {
         image: *mut Image,
         cam: (f32, f32, f32),
         rot: (f32, f32, f32),
-        fov: f32,
+        fov: Option<f32>,
         transparent: Option<Color>,
     ) {
         if ptr::eq(image, ptr::from_mut(self)) {
@@ -686,7 +686,7 @@ impl Image {
         tilemap: *mut Tilemap,
         cam: (f32, f32, f32),
         rot: (f32, f32, f32),
-        fov: f32,
+        fov: Option<f32>,
         transparent: Option<Color>,
     ) {
         let Some(proj) = PerspectiveProjection::new(

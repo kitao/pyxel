@@ -397,7 +397,7 @@ impl Pyxel {
         image_index: u32,
         cam: (f32, f32, f32),
         rot: (f32, f32, f32),
-        fov: f32,
+        fov: Option<f32>,
         color_key: Option<Color>,
     ) {
         unsafe {
@@ -424,7 +424,7 @@ impl Pyxel {
         tilemap_index: u32,
         cam: (f32, f32, f32),
         rot: (f32, f32, f32),
-        fov: f32,
+        fov: Option<f32>,
         color_key: Option<Color>,
     ) {
         unsafe {

@@ -175,7 +175,7 @@ fn bltm(
 }
 
 #[pyfunction]
-#[pyo3(signature = (x, y, w, h, img, cam, rot, fov=90.0, colkey=None))]
+#[pyo3(signature = (x, y, w, h, img, cam, rot, fov=None, colkey=None))]
 fn blt3d(
     x: f32,
     y: f32,
@@ -184,7 +184,7 @@ fn blt3d(
     img: Bound<'_, PyAny>,
     cam: (f32, f32, f32),
     rot: (f32, f32, f32),
-    fov: f32,
+    fov: Option<f32>,
     colkey: Option<pyxel::Color>,
 ) -> PyResult<()> {
     cast_pyany! {
@@ -201,7 +201,7 @@ fn blt3d(
 }
 
 #[pyfunction]
-#[pyo3(signature = (x, y, w, h, tm, cam, rot, fov=90.0, colkey=None))]
+#[pyo3(signature = (x, y, w, h, tm, cam, rot, fov=None, colkey=None))]
 fn bltm3d(
     x: f32,
     y: f32,
@@ -210,7 +210,7 @@ fn bltm3d(
     tm: Bound<'_, PyAny>,
     cam: (f32, f32, f32),
     rot: (f32, f32, f32),
-    fov: f32,
+    fov: Option<f32>,
     colkey: Option<pyxel::Color>,
 ) -> PyResult<()> {
     cast_pyany! {
