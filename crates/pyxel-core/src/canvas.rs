@@ -813,8 +813,8 @@ pub(crate) struct PerspectiveProjection {
     r12: f32,
     r21: f32,
     r22: f32,
-    sr: f32,
-    cr: f32,
+    sz: f32,
+    cz: f32,
     tan_hfov: f32,
     aspect: f32,
     half_w: f32,
@@ -849,35 +849,35 @@ impl PerspectiveProjection {
         }
 
         let fov = fov.clamp(1.0, 179.0);
-        let (pitch, yaw, roll) = rot;
-        let pitch = pitch * PI / 180.0;
-        let yaw = yaw * PI / 180.0;
-        let roll = roll * PI / 180.0;
+        let (rot_x, rot_y, rot_z) = rot;
+        let rot_x = rot_x * PI / 180.0;
+        let rot_y = rot_y * PI / 180.0;
+        let rot_z = rot_z * PI / 180.0;
 
-        let (sp, cp) = (pitch.sin(), pitch.cos());
-        let (sy, cy) = (yaw.sin(), yaw.cos());
-        let (sr, cr) = (roll.sin(), roll.cos());
+        let (sx, cx) = (rot_x.sin(), rot_x.cos());
+        let (sy, cy) = (rot_y.sin(), rot_y.cos());
+        let (sz, cz) = (rot_z.sin(), rot_z.cos());
 
-        // R_z(yaw-90) * R_x(pitch) with view X-axis negated for Y-down ground plane
-        // Yaw convention: yaw=0 faces +X, yaw=90 faces +Y (matches Pyxel cos/sin)
-        // Roll is applied in view space before the world transform
+        // R_z(rot_y-90) * R_x(rot_x) with view X-axis negated for Y-down ground plane
+        // rot_y=0 faces +X, rot_y=90 faces +Y (matches Pyxel cos/sin)
+        // rot_z is applied in view space before the world transform
         //
-        //   r00 = -sin(yaw),   r01 = cos(yaw)*cos(pitch),  r02 = -cos(yaw)*sin(pitch)
-        //   r10 = cos(yaw),    r11 = sin(yaw)*cos(pitch),   r12 = -sin(yaw)*sin(pitch)
-        //   r20 = 0,           r21 = sin(pitch),             r22 = cos(pitch)
+        //   r00 = -sin(rot_y),  r01 = cos(rot_y)*cos(rot_x),  r02 = -cos(rot_y)*sin(rot_x)
+        //   r10 = cos(rot_y),   r11 = sin(rot_y)*cos(rot_x),   r12 = -sin(rot_y)*sin(rot_x)
+        //   r20 = 0,            r21 = sin(rot_x),               r22 = cos(rot_x)
 
         Some(Self {
             cam_x,
             cam_y,
             cam_z,
             r00: -sy,
-            r01: cy * cp,
-            r02: -cy * sp,
+            r01: cy * cx,
+            r02: -cy * sx,
             r10: cy,
-            r11: sy * cp,
-            r12: -sy * sp,
-            r21: sp,
-            r22: cp,
+            r11: sy * cx,
+            r12: -sy * sx,
+            r21: sx,
+            r22: cx,
             tan_hfov: (fov * PI / 360.0).tan(),
             aspect: w as f32 / h as f32,
             half_w: w as f32 / 2.0,
@@ -886,8 +886,8 @@ impl PerspectiveProjection {
             dst_y: f32_to_i32(y) - offset_y,
             w,
             h,
-            sr,
-            cr,
+            sz,
+            cz,
         })
     }
 
@@ -898,9 +898,9 @@ impl PerspectiveProjection {
         let vx = ndc_x * self.tan_hfov * self.aspect;
         let vy = -ndc_y * self.tan_hfov;
 
-        // Apply roll in view space (positive = lean right)
-        let vx2 = vx * self.cr + vy * self.sr;
-        let vy2 = -vx * self.sr + vy * self.cr;
+        // Apply rot_z in view space (positive = lean right)
+        let vx2 = vx * self.cz + vy * self.sz;
+        let vy2 = -vx * self.sz + vy * self.cz;
 
         // World-space ray direction via rotation matrix
         let world_z = self.r21 * vy2 - self.r22;
