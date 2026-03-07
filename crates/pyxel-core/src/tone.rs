@@ -127,8 +127,8 @@ mod tests {
         let tone = unsafe { &mut *Tone::new() };
         tone.sample_bits = 1;
         tone.wavetable = vec![0, 1];
-        let w1 = tone.waveform().clone();
-        let w2 = tone.waveform().clone();
+        let w1 = tone.waveform().to_vec();
+        let w2 = tone.waveform().to_vec();
         assert_eq!(w1, w2);
     }
 
@@ -137,9 +137,9 @@ mod tests {
         let tone = unsafe { &mut *Tone::new() };
         tone.sample_bits = 1;
         tone.wavetable = vec![0, 1];
-        let w1 = tone.waveform().clone();
+        let w1 = tone.waveform().to_vec();
         tone.wavetable = vec![1, 0];
-        let w2 = tone.waveform().clone();
+        let w2 = tone.waveform().to_vec();
         assert_ne!(w1, w2);
     }
 }

@@ -2,6 +2,7 @@
 
 ## 2.7.8
 
+- Updated glow crate to version 0.17
 - Added blt3d and bltm3d for pseudo-3D perspective rendering
 - Added Example 19 for perspective rendering
 - Added console.error output for WASM runtime errors

@@ -14,7 +14,7 @@ chrono = { version = "0.4", features = ["wasmbind"] }
 directories = "6.0"
 fontdue = "0.9"
 gif = "0.14"
-glow = "0.16"
+glow = "0.17"
 hound = "3.5"
 image = "0.25"
 indexmap = "2.7"
