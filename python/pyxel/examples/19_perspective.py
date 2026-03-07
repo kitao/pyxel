@@ -9,12 +9,12 @@ class App:
         pyxel.load("assets/sample.pyxres")
 
         self.cam_x = 64
-        self.cam_y = 128
-        self.cam_z = 32
-        self.rot_x = 40
+        self.cam_y = 143
+        self.cam_z = 25
+        self.rot_x = 55
         self.rot_y = -90
         self.rot_z = 0
-        self.fov = 90
+        self.fov = 60
         self.speed = 1.5
 
         pyxel.run(self.update, self.draw)
@@ -30,16 +30,16 @@ class App:
             self.rot_y += 2
 
         if pyxel.btn(pyxel.KEY_UP):
-            self.rot_x = min(90, self.rot_x + 2)
+            self.rot_x = min(self.rot_x + 2, 100)
         if pyxel.btn(pyxel.KEY_DOWN):
-            self.rot_x = max(1, self.rot_x - 2)
+            self.rot_x = max(self.rot_x - 2, 1)
 
         if pyxel.btn(pyxel.KEY_Q):
-            self.rot_z = max(self.rot_z - 2, -30)
+            self.rot_z = max(self.rot_z - 5, -45)
         elif pyxel.btn(pyxel.KEY_E):
-            self.rot_z = min(self.rot_z + 2, 30)
+            self.rot_z = min(self.rot_z + 5, 45)
         else:
-            self.rot_z *= 0.85
+            self.rot_z *= 0.75
 
         # Move (WASD + RF)
         fwd_x = pyxel.cos(self.rot_y) * self.speed
@@ -68,9 +68,9 @@ class App:
 
         # FOV (TG)
         if pyxel.btn(pyxel.KEY_T):
-            self.fov = min(self.fov + 2, 150)
+            self.fov = min(self.fov + 2, 179)
         if pyxel.btn(pyxel.KEY_G):
-            self.fov = max(self.fov - 2, 30)
+            self.fov = max(self.fov - 2, 1)
 
     def draw(self):
         pyxel.cls(0)
