@@ -715,6 +715,39 @@
           }
         },
         {
+          "file": "19_perspective.py",
+          "demo": "examples/19-perspective.html",
+          "code": "https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/19_perspective.py",
+          "description": {
+            "en": "3D perspective rendering",
+            "cn": "3D透视渲染",
+            "de": "3D-Perspektivdarstellung",
+            "es": "Renderizado en perspectiva 3D",
+            "fr": "Rendu en perspective 3D",
+            "it": "Rendering in prospettiva 3D",
+            "ja": "3D描画",
+            "ko": "3D 원근 렌더링",
+            "pt": "Renderização em perspectiva 3D",
+            "ru": "3D-перспективная визуализация",
+            "tr": "3D perspektif oluşturma",
+            "uk": "3D-перспективна візуалізація"
+          },
+          "details": {
+            "en": "A demo of pseudo-3D perspective rendering using blt3d and bltm3d functions. Fly over a Mode 7-style ground plane with FPS-like controls for camera movement, rotation, altitude, roll, and field of view.",
+            "cn": "使用 blt3d 和 bltm3d 函数进行伪3D透视渲染的演示。通过类似FPS的操作控制相机移动、旋转、高度、翻滚和视野角，在 Mode 7 风格的地面上飞行。",
+            "de": "Demo der Pseudo-3D-Perspektivdarstellung mit den Funktionen blt3d und bltm3d. Fliegen Sie im Mode-7-Stil über eine Bodenebene mit FPS-ähnlicher Steuerung für Kamerabewegung, Drehung, Höhe, Rollen und Sichtfeld.",
+            "es": "Demo de renderizado en perspectiva pseudo-3D con las funciones blt3d y bltm3d. Sobrevuela un plano de suelo estilo Mode 7 con controles tipo FPS para movimiento, rotación, altitud, alabeo y campo de visión.",
+            "fr": "Démo de rendu en perspective pseudo-3D avec les fonctions blt3d et bltm3d. Survolez un plan de sol style Mode 7 avec des contrôles type FPS pour le mouvement, la rotation, l'altitude, le roulis et le champ de vision.",
+            "it": "Demo di rendering prospettico pseudo-3D con le funzioni blt3d e bltm3d. Sorvola un piano in stile Mode 7 con controlli tipo FPS per movimento, rotazione, altitudine, rollio e campo visivo.",
+            "ja": "blt3d・bltm3d 関数を使った3D描画のデモ。Mode 7 スタイルの地面をFPS風の操作で飛び回り、カメラの移動・回転・高度・ロール・視野角を体験できます。",
+            "ko": "blt3d와 bltm3d 함수를 사용한 의사 3D 원근 렌더링 데모. Mode 7 스타일의 지면을 FPS 조작으로 비행하며 카메라 이동, 회전, 고도, 롤, 시야각을 체험할 수 있습니다.",
+            "pt": "Demo de renderização em perspectiva pseudo-3D com as funções blt3d e bltm3d. Sobrevoe um plano no estilo Mode 7 com controles tipo FPS para movimento, rotação, altitude, rolagem e campo de visão.",
+            "ru": "Демонстрация псевдо-3D перспективной визуализации с помощью функций blt3d и bltm3d. Летайте над поверхностью в стиле Mode 7 с управлением как в FPS: движение, вращение, высота, крен и угол обзора.",
+            "tr": "blt3d ve bltm3d fonksiyonlarıyla sahte 3D perspektif oluşturma demosu. Mode 7 tarzı zemin üzerinde FPS benzeri kontrollerle kamera hareketi, döndürme, yükseklik, yalpalama ve görüş alanını deneyimleyin.",
+            "uk": "Демонстрація псевдо-3D перспективної візуалізації за допомогою функцій blt3d та bltm3d. Літайте над поверхнею в стилі Mode 7 з керуванням як у FPS: рух, обертання, висота, крен та кут огляду."
+          }
+        },
+        {
           "file": "99_flip_animation.py",
           "demo": "https://github.com/kitao/pyxel/blob/main/docs/images/99_flip_animation.gif",
           "code": "https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/99_flip_animation.py",

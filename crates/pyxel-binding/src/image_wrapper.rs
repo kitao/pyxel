@@ -244,6 +244,56 @@ impl Image {
         Ok(())
     }
 
+    #[pyo3(signature = (x, y, w, h, img, cam, rot, fov=90.0, colkey=None))]
+    pub fn blt3d(
+        &self,
+        x: f32,
+        y: f32,
+        w: f32,
+        h: f32,
+        img: Bound<'_, PyAny>,
+        cam: (f32, f32, f32),
+        rot: (f32, f32, f32),
+        fov: f32,
+        colkey: Option<pyxel::Color>,
+    ) -> PyResult<()> {
+        cast_pyany! {
+            img,
+            (u32, {
+                let image = pyxel::images().get(img as usize).copied()
+                    .ok_or_else(|| PyValueError::new_err("Invalid image index"))?;
+                unsafe { (&mut *self.inner).draw_image_3d(x, y, w, h, image, cam, rot, fov, colkey) };
+            }),
+            (Image, { unsafe { (&mut *self.inner).draw_image_3d(x, y, w, h, img.inner, cam, rot, fov, colkey) }; })
+        }
+        Ok(())
+    }
+
+    #[pyo3(signature = (x, y, w, h, tm, cam, rot, fov=90.0, colkey=None))]
+    pub fn bltm3d(
+        &self,
+        x: f32,
+        y: f32,
+        w: f32,
+        h: f32,
+        tm: Bound<'_, PyAny>,
+        cam: (f32, f32, f32),
+        rot: (f32, f32, f32),
+        fov: f32,
+        colkey: Option<pyxel::Color>,
+    ) -> PyResult<()> {
+        cast_pyany! {
+            tm,
+            (u32, {
+                let tilemap = pyxel::tilemaps().get(tm as usize).copied()
+                    .ok_or_else(|| PyValueError::new_err("Invalid tilemap index"))?;
+                unsafe { (&mut *self.inner).draw_tilemap_3d(x, y, w, h, tilemap, cam, rot, fov, colkey) };
+            }),
+            (Tilemap, { unsafe { (&mut *self.inner).draw_tilemap_3d(x, y, w, h, tm.inner, cam, rot, fov, colkey) }; })
+        }
+        Ok(())
+    }
+
     #[pyo3(signature = (x, y, s, col, font=None))]
     pub fn text(&self, x: f32, y: f32, s: &str, col: pyxel::Color, font: Option<Font>) {
         let font = font.map(|f| f.inner);

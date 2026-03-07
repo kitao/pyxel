@@ -388,6 +388,60 @@ impl Pyxel {
         }
     }
 
+    pub fn draw_image_3d(
+        &self,
+        x: f32,
+        y: f32,
+        width: f32,
+        height: f32,
+        image_index: u32,
+        cam: (f32, f32, f32),
+        rot: (f32, f32, f32),
+        fov: f32,
+        color_key: Option<Color>,
+    ) {
+        unsafe {
+            pyxel::screen().draw_image_3d(
+                x,
+                y,
+                width,
+                height,
+                pyxel::images()[image_index as usize],
+                cam,
+                rot,
+                fov,
+                color_key,
+            );
+        }
+    }
+
+    pub fn draw_tilemap_3d(
+        &self,
+        x: f32,
+        y: f32,
+        width: f32,
+        height: f32,
+        tilemap_index: u32,
+        cam: (f32, f32, f32),
+        rot: (f32, f32, f32),
+        fov: f32,
+        color_key: Option<Color>,
+    ) {
+        unsafe {
+            pyxel::screen().draw_tilemap_3d(
+                x,
+                y,
+                width,
+                height,
+                pyxel::tilemaps()[tilemap_index as usize],
+                cam,
+                rot,
+                fov,
+                color_key,
+            );
+        }
+    }
+
     pub fn draw_text(&self, x: f32, y: f32, string: &str, color: Color, font: Option<*mut Font>) {
         pyxel::screen().draw_text(x, y, string, color, font);
     }

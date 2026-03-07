@@ -527,6 +527,30 @@ class Image:
         rotate: Optional[float] = None,
         scale: Optional[float] = None,
     ) -> None: ...
+    def blt3d(
+        self,
+        x: float,
+        y: float,
+        w: float,
+        h: float,
+        img: Union[int, Image],
+        cam: Tuple[float, float, float],
+        rot: Tuple[float, float, float],
+        fov: float = 90.0,
+        colkey: Optional[int] = None,
+    ) -> None: ...
+    def bltm3d(
+        self,
+        x: float,
+        y: float,
+        w: float,
+        h: float,
+        tm: Union[int, Tilemap],
+        cam: Tuple[float, float, float],
+        rot: Tuple[float, float, float],
+        fov: float = 90.0,
+        colkey: Optional[int] = None,
+    ) -> None: ...
     def text(
         self, x: float, y: float, s: str, col: int, font: Optional[Font] = None
     ) -> None: ...
@@ -827,6 +851,28 @@ def bltm(
     colkey: Optional[int] = None,
     rotate: Optional[float] = None,
     scale: Optional[float] = None,
+) -> None: ...
+def blt3d(
+    x: float,
+    y: float,
+    w: float,
+    h: float,
+    img: Union[int, Image],
+    cam: Tuple[float, float, float],
+    rot: Tuple[float, float, float],
+    fov: float = 90.0,
+    colkey: Optional[int] = None,
+) -> None: ...
+def bltm3d(
+    x: float,
+    y: float,
+    w: float,
+    h: float,
+    tm: Union[int, Tilemap],
+    cam: Tuple[float, float, float],
+    rot: Tuple[float, float, float],
+    fov: float = 90.0,
+    colkey: Optional[int] = None,
 ) -> None: ...
 def text(x: float, y: float, s: str, col: int, font: Optional[Font] = None) -> None: ...
 

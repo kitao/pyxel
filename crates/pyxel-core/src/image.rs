@@ -4,7 +4,7 @@ use std::{array, ptr};
 
 use image::imageops;
 
-use crate::canvas::{Canvas, CopyArea, ToIndex};
+use crate::canvas::{Canvas, CopyArea, PerspectiveProjection, ToIndex};
 use crate::font::Font;
 use crate::rect_area::RectArea;
 use crate::settings::{
@@ -627,6 +627,131 @@ impl Image {
                 scale,
                 true,
             );
+        }
+    }
+
+    /// # Safety
+    /// `image` must be a valid, non-null pointer to an `Image`.
+    pub unsafe fn draw_image_3d(
+        &mut self,
+        x: f32,
+        y: f32,
+        width: f32,
+        height: f32,
+        image: *mut Image,
+        cam: (f32, f32, f32),
+        rot: (f32, f32, f32),
+        fov: f32,
+        transparent: Option<Color>,
+    ) {
+        if ptr::eq(image, ptr::from_mut(self)) {
+            let src = self.clone();
+            self.canvas.blit_perspective(
+                x,
+                y,
+                width,
+                height,
+                &src.canvas,
+                cam,
+                rot,
+                fov,
+                transparent,
+                Some(&self.palette),
+            );
+        } else {
+            let image = unsafe { &*image };
+            self.canvas.blit_perspective(
+                x,
+                y,
+                width,
+                height,
+                &image.canvas,
+                cam,
+                rot,
+                fov,
+                transparent,
+                Some(&self.palette),
+            );
+        }
+    }
+
+    /// # Safety
+    /// `tilemap` must be a valid, non-null pointer to a `Tilemap`.
+    pub unsafe fn draw_tilemap_3d(
+        &mut self,
+        x: f32,
+        y: f32,
+        width: f32,
+        height: f32,
+        tilemap: *mut Tilemap,
+        cam: (f32, f32, f32),
+        rot: (f32, f32, f32),
+        fov: f32,
+        transparent: Option<Color>,
+    ) {
+        let Some(proj) = PerspectiveProjection::new(
+            x,
+            y,
+            width,
+            height,
+            self.canvas.draw_offset_x,
+            self.canvas.draw_offset_y,
+            cam,
+            rot,
+            fov,
+        ) else {
+            return;
+        };
+
+        let tilemap = unsafe { &*tilemap };
+        let tile_size = TILE_SIZE as i32;
+        let tm_w = tilemap.canvas.width() as i32;
+        let tm_h = tilemap.canvas.height() as i32;
+
+        let images = pyxel::images();
+        let image: &Image = match &tilemap.imgsrc {
+            ImageSource::Index(index) => unsafe { &*images[*index as usize] },
+            ImageSource::Image(image) => unsafe { &**image },
+        };
+        let img_w = image.width() as i32;
+        let img_h = image.height() as i32;
+
+        let x1 = proj.dst_x.max(self.canvas.clip_rect.left());
+        let x2 = (proj.dst_x + proj.w - 1).min(self.canvas.clip_rect.right());
+        let y1 = proj.dst_y.max(self.canvas.clip_rect.top());
+        let y2 = (proj.dst_y + proj.h - 1).min(self.canvas.clip_rect.bottom());
+
+        for yi in y1..=y2 {
+            for xi in x1..=x2 {
+                let Some((src_xf, src_yf)) = proj.project(xi, yi) else {
+                    continue;
+                };
+                let src_xi = utils::f32_to_i32(src_xf);
+                let src_yi = utils::f32_to_i32(src_yf);
+
+                // Convert pixel coords to tile coords
+                let tile_x = src_xi.div_euclid(tile_size);
+                let tile_y = src_yi.div_euclid(tile_size);
+                if tile_x < 0 || tile_x >= tm_w || tile_y < 0 || tile_y >= tm_h {
+                    continue;
+                }
+
+                let tile = tilemap.canvas.read_data(tile_x as usize, tile_y as usize);
+                let px = tile.0 as i32 * tile_size + src_xi.rem_euclid(tile_size);
+                let py = tile.1 as i32 * tile_size + src_yi.rem_euclid(tile_size);
+                if px < 0 || px >= img_w || py < 0 || py >= img_h {
+                    continue;
+                }
+
+                let value = image.canvas.read_data(px as usize, py as usize);
+                if let Some(transparent) = transparent {
+                    if value == transparent {
+                        continue;
+                    }
+                }
+                let value = self.palette[value.to_index()];
+                self.canvas.write_data(xi as usize, yi as usize, value);
+            }
         }
     }
 

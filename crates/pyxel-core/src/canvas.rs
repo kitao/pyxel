@@ -611,6 +611,62 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         }
     }
 
+    pub fn blit_perspective(
+        &mut self,
+        x: f32,
+        y: f32,
+        width: f32,
+        height: f32,
+        canvas: &Self,
+        cam: (f32, f32, f32),
+        rot: (f32, f32, f32),
+        fov: f32,
+        transparent: Option<T>,
+        palette: Option<&[T]>,
+    ) {
+        let Some(proj) = PerspectiveProjection::new(
+            x,
+            y,
+            width,
+            height,
+            self.draw_offset_x,
+            self.draw_offset_y,
+            cam,
+            rot,
+            fov,
+        ) else {
+            return;
+        };
+
+        let src_w = canvas.width() as i32;
+        let src_h = canvas.height() as i32;
+        let x1 = proj.dst_x.max(self.clip_rect.left());
+        let x2 = (proj.dst_x + proj.w - 1).min(self.clip_rect.right());
+        let y1 = proj.dst_y.max(self.clip_rect.top());
+        let y2 = (proj.dst_y + proj.h - 1).min(self.clip_rect.bottom());
+
+        for yi in y1..=y2 {
+            for xi in x1..=x2 {
+                let Some((src_xf, src_yf)) = proj.project(xi, yi) else {
+                    continue;
+                };
+                let src_xi = f32_to_i32(src_xf);
+                let src_yi = f32_to_i32(src_yf);
+                if src_xi < 0 || src_xi >= src_w || src_yi < 0 || src_yi >= src_h {
+                    continue;
+                }
+                let value = canvas.read_data(src_xi as usize, src_yi as usize);
+                if let Some(transparent) = transparent {
+                    if value == transparent {
+                        continue;
+                    }
+                }
+                let value = palette.map_or(value, |palette| palette[value.to_index()]);
+                self.write_data(xi as usize, yi as usize, value);
+            }
+        }
+    }
+
     pub fn read_data(&self, x: usize, y: usize) -> T {
         let width = self.width() as usize;
         self.data[width * y + x]
@@ -742,6 +798,125 @@ impl CopyArea {
             width,
             height,
         }
+    }
+}
+
+pub(crate) struct PerspectiveProjection {
+    cam_x: f32,
+    cam_y: f32,
+    cam_z: f32,
+    r00: f32,
+    r01: f32,
+    r02: f32,
+    r10: f32,
+    r11: f32,
+    r12: f32,
+    r21: f32,
+    r22: f32,
+    sr: f32,
+    cr: f32,
+    tan_hfov: f32,
+    aspect: f32,
+    half_w: f32,
+    half_h: f32,
+    pub(crate) dst_x: i32,
+    pub(crate) dst_y: i32,
+    pub(crate) w: i32,
+    pub(crate) h: i32,
+}
+
+impl PerspectiveProjection {
+    pub(crate) fn new(
+        x: f32,
+        y: f32,
+        width: f32,
+        height: f32,
+        offset_x: i32,
+        offset_y: i32,
+        cam: (f32, f32, f32),
+        rot: (f32, f32, f32),
+        fov: f32,
+    ) -> Option<Self> {
+        let (cam_x, cam_y, cam_z) = cam;
+        if cam_z.abs() < f32::EPSILON {
+            return None;
+        }
+
+        let w = f32_to_i32(width);
+        let h = f32_to_i32(height);
+        if w <= 0 || h <= 0 {
+            return None;
+        }
+
+        let fov = fov.clamp(1.0, 179.0);
+        let (pitch, yaw, roll) = rot;
+        let pitch = pitch * PI / 180.0;
+        let yaw = yaw * PI / 180.0;
+        let roll = roll * PI / 180.0;
+
+        let (sp, cp) = (pitch.sin(), pitch.cos());
+        let (sy, cy) = (yaw.sin(), yaw.cos());
+        let (sr, cr) = (roll.sin(), roll.cos());
+
+        // R_z(yaw-90) * R_x(pitch) with view X-axis negated for Y-down ground plane
+        // Yaw convention: yaw=0 faces +X, yaw=90 faces +Y (matches Pyxel cos/sin)
+        // Roll is applied in view space before the world transform
+        //
+        //   r00 = -sin(yaw),   r01 = cos(yaw)*cos(pitch),  r02 = -cos(yaw)*sin(pitch)
+        //   r10 = cos(yaw),    r11 = sin(yaw)*cos(pitch),   r12 = -sin(yaw)*sin(pitch)
+        //   r20 = 0,           r21 = sin(pitch),             r22 = cos(pitch)
+
+        Some(Self {
+            cam_x,
+            cam_y,
+            cam_z,
+            r00: -sy,
+            r01: cy * cp,
+            r02: -cy * sp,
+            r10: cy,
+            r11: sy * cp,
+            r12: -sy * sp,
+            r21: sp,
+            r22: cp,
+            tan_hfov: (fov * PI / 360.0).tan(),
+            aspect: w as f32 / h as f32,
+            half_w: w as f32 / 2.0,
+            half_h: h as f32 / 2.0,
+            dst_x: f32_to_i32(x) - offset_x,
+            dst_y: f32_to_i32(y) - offset_y,
+            w,
+            h,
+            sr,
+            cr,
+        })
+    }
+
+    pub(crate) fn project(&self, xi: i32, yi: i32) -> Option<(f32, f32)> {
+        let ndc_x = ((xi - self.dst_x) as f32 + 0.5 - self.half_w) / self.half_w;
+        let ndc_y = ((yi - self.dst_y) as f32 + 0.5 - self.half_h) / self.half_h;
+
+        let vx = ndc_x * self.tan_hfov * self.aspect;
+        let vy = -ndc_y * self.tan_hfov;
+
+        // Apply roll in view space (positive = lean right)
+        let vx2 = vx * self.cr + vy * self.sr;
+        let vy2 = -vx * self.sr + vy * self.cr;
+
+        // World-space ray direction via rotation matrix
+        let world_z = self.r21 * vy2 - self.r22;
+        if world_z.abs() < f32::EPSILON {
+            return None;
+        }
+
+        let t = -self.cam_z / world_z;
+        if t <= 0.0 {
+            return None;
+        }
+
+        let world_x = self.r00 * vx2 + self.r01 * vy2 - self.r02;
+        let world_y = self.r10 * vx2 + self.r11 * vy2 - self.r12;
+
+        Some((self.cam_x + t * world_x, self.cam_y + t * world_y))
     }
 }
 

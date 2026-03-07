@@ -175,6 +175,58 @@ fn bltm(
 }
 
 #[pyfunction]
+#[pyo3(signature = (x, y, w, h, img, cam, rot, fov=90.0, colkey=None))]
+fn blt3d(
+    x: f32,
+    y: f32,
+    w: f32,
+    h: f32,
+    img: Bound<'_, PyAny>,
+    cam: (f32, f32, f32),
+    rot: (f32, f32, f32),
+    fov: f32,
+    colkey: Option<pyxel::Color>,
+) -> PyResult<()> {
+    cast_pyany! {
+        img,
+        (u32, {
+            if img as usize >= pyxel::images().len() {
+                return Err(PyValueError::new_err("Invalid image index"));
+            }
+            pyxel().draw_image_3d(x, y, w, h, img, cam, rot, fov, colkey);
+        }),
+        (Image, { unsafe { pyxel::screen().draw_image_3d(x, y, w, h, img.inner, cam, rot, fov, colkey) }; })
+    }
+    Ok(())
+}
+
+#[pyfunction]
+#[pyo3(signature = (x, y, w, h, tm, cam, rot, fov=90.0, colkey=None))]
+fn bltm3d(
+    x: f32,
+    y: f32,
+    w: f32,
+    h: f32,
+    tm: Bound<'_, PyAny>,
+    cam: (f32, f32, f32),
+    rot: (f32, f32, f32),
+    fov: f32,
+    colkey: Option<pyxel::Color>,
+) -> PyResult<()> {
+    cast_pyany! {
+        tm,
+        (u32, {
+            if tm as usize >= pyxel::tilemaps().len() {
+                return Err(PyValueError::new_err("Invalid tilemap index"));
+            }
+            pyxel().draw_tilemap_3d(x, y, w, h, tm, cam, rot, fov, colkey);
+        }),
+        (Tilemap, { unsafe { pyxel::screen().draw_tilemap_3d(x, y, w, h, tm.inner, cam, rot, fov, colkey) }; })
+    }
+    Ok(())
+}
+
+#[pyfunction]
 #[pyo3(signature = (x, y, s, col, font=None))]
 fn text(x: f32, y: f32, s: &str, col: pyxel::Color, font: Option<Font>) {
     let font = font.map(|f| f.inner);
@@ -227,6 +279,8 @@ pub fn add_graphics_functions(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(fill, m)?)?;
     m.add_function(wrap_pyfunction!(blt, m)?)?;
     m.add_function(wrap_pyfunction!(bltm, m)?)?;
+    m.add_function(wrap_pyfunction!(blt3d, m)?)?;
+    m.add_function(wrap_pyfunction!(bltm3d, m)?)?;
     m.add_function(wrap_pyfunction!(text, m)?)?;
 
     // Deprecated functions

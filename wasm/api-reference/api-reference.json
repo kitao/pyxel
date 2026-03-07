@@ -4837,6 +4837,380 @@
           ]
         },
         {
+          "name": "blt3d",
+          "type": "function",
+          "signature": "blt3d(x, y, w, h, img, cam, rot, fov=90.0, colkey=None)",
+          "description": {
+            "en": "Draw the image bank img (0-2 or Image instance) with perspective projection onto the screen rectangle (x, y, w, h). cam is the camera position (x, y, z), rot is the rotation (pitch, yaw, roll) in degrees. fov sets the field of view in degrees. colkey sets the transparent color.",
+            "cn": "将图像库img (0-2或Image实例) 以透视投影绘制到屏幕矩形 (x, y, w, h)。cam为相机位置 (x, y, z)，rot为旋转 (pitch, yaw, roll)，单位为度。fov设置视野角度。colkey指定透明色。",
+            "de": "Zeichnet die Bildbank img (0-2 oder Image-Instanz) mit perspektivischer Projektion in das Bildschirmrechteck (x, y, w, h). cam ist die Kameraposition (x, y, z), rot die Drehung (Pitch, Yaw, Roll) in Grad. fov setzt das Sichtfeld in Grad. colkey legt die transparente Farbe fest.",
+            "es": "Dibuja el banco de imágenes img (0-2 o instancia de Image) con proyección de perspectiva en el rectángulo (x, y, w, h). cam es la posición de la cámara (x, y, z), rot es la rotación (pitch, yaw, roll) en grados. fov establece el campo de visión. colkey establece el color transparente.",
+            "fr": "Dessine la banque d'images img (0-2 ou instance Image) avec projection en perspective dans le rectangle (x, y, w, h). cam est la position de la caméra (x, y, z), rot la rotation (pitch, yaw, roll) en degrés. fov définit le champ de vision. colkey définit la couleur transparente.",
+            "it": "Disegna il banco immagini img (0-2 o istanza Image) con proiezione prospettica nel rettangolo (x, y, w, h). cam è la posizione della camera (x, y, z), rot la rotazione (pitch, yaw, roll) in gradi. fov imposta il campo visivo. colkey imposta il colore trasparente.",
+            "ja": "イメージバンクimg (0-2またはImageインスタンス) を透視投影で画面矩形 (x, y, w, h) に描画する。camはカメラ位置 (x, y, z)、rotは回転 (pitch, yaw, roll) で単位は度。fovは視野角。colkeyで透明色を指定。",
+            "ko": "이미지 뱅크img (0-2 또는 Image 인스턴스) 를 원근 투영으로 화면 사각형 (x, y, w, h) 에 그린다. cam은 카메라 위치 (x, y, z), rot는 회전 (pitch, yaw, roll) (도 단위). fov는 시야각. colkey로 투명색을 지정.",
+            "pt": "Desenha o banco de imagens img (0-2 ou instância Image) com projeção de perspectiva no retângulo (x, y, w, h). cam é a posição da câmera (x, y, z), rot a rotação (pitch, yaw, roll) em graus. fov define o campo de visão. colkey define a cor transparente.",
+            "ru": "Рисует банк изображений img (0-2 или экземпляр Image) с перспективной проекцией в экранный прямоугольник (x, y, w, h). cam — позиция камеры (x, y, z), rot — вращение (pitch, yaw, roll) в градусах. fov задаёт угол обзора. colkey задаёт прозрачный цвет.",
+            "tr": "img görüntü bankasını (0-2 veya Image örneği) perspektif projeksiyonla ekran dikdörtgenine (x, y, w, h) çizer. cam kamera konumu (x, y, z), rot döndürme (pitch, yaw, roll) derece cinsindendir. fov görüş alanını belirler. colkey saydam rengi belirler.",
+            "uk": "Малює банк зображень img (0-2 або екземпляр Image) з перспективною проєкцією у екранний прямокутник (x, y, w, h). cam — позиція камери (x, y, z), rot — обертання (pitch, yaw, roll) у градусах. fov задає кут огляду. colkey задає прозорий колір."
+          },
+          "return": {
+            "type": "None"
+          },
+          "advanced": false,
+          "params": [
+            {
+              "name": "x",
+              "type": "float",
+              "desc": {
+                "en": "Destination X",
+                "cn": "目标X坐标",
+                "de": "Ziel-X-Koordinate",
+                "es": "X de destino",
+                "fr": "X de destination",
+                "it": "X di destinazione",
+                "ja": "描画先X座標",
+                "ko": "대상 X 좌표",
+                "pt": "X de destino",
+                "ru": "Координата X назначения",
+                "tr": "Hedef X koordinatı",
+                "uk": "Координата X призначення"
+              }
+            },
+            {
+              "name": "y",
+              "type": "float",
+              "desc": {
+                "en": "Destination Y",
+                "cn": "目标Y坐标",
+                "de": "Ziel-Y-Koordinate",
+                "es": "Y de destino",
+                "fr": "Y de destination",
+                "it": "Y di destinazione",
+                "ja": "描画先Y座標",
+                "ko": "대상 Y 좌표",
+                "pt": "Y de destino",
+                "ru": "Координата Y назначения",
+                "tr": "Hedef Y koordinatı",
+                "uk": "Координата Y призначення"
+              }
+            },
+            {
+              "name": "w",
+              "type": "float",
+              "desc": {
+                "en": "Display width",
+                "cn": "显示宽度",
+                "de": "Anzeigebreite",
+                "es": "Ancho de visualización",
+                "fr": "Largeur d'affichage",
+                "it": "Larghezza di visualizzazione",
+                "ja": "表示幅",
+                "ko": "표시 폭",
+                "pt": "Largura de exibição",
+                "ru": "Ширина отображения",
+                "tr": "Görüntü genişliği",
+                "uk": "Ширина відображення"
+              }
+            },
+            {
+              "name": "h",
+              "type": "float",
+              "desc": {
+                "en": "Display height",
+                "cn": "显示高度",
+                "de": "Anzeigehöhe",
+                "es": "Alto de visualización",
+                "fr": "Hauteur d'affichage",
+                "it": "Altezza di visualizzazione",
+                "ja": "表示高さ",
+                "ko": "표시 높이",
+                "pt": "Altura de exibição",
+                "ru": "Высота отображения",
+                "tr": "Görüntü yüksekliği",
+                "uk": "Висота відображення"
+              }
+            },
+            {
+              "name": "img",
+              "type": "int/Image",
+              "desc": {
+                "en": "Image bank number (0-2) or Image instance",
+                "cn": "图像库编号 (0-2) 或Image实例",
+                "de": "Bildbank-Nummer (0-2) oder Image-Instanz",
+                "es": "Número de banco de imagen (0-2) o instancia Image",
+                "fr": "Numéro de banque d'images (0-2) ou instance Image",
+                "it": "Numero banco immagini (0-2) o istanza Image",
+                "ja": "イメージバンク番号 (0-2) またはImageインスタンス",
+                "ko": "이미지 뱅크 번호 (0-2) 또는 Image 인스턴스",
+                "pt": "Número do banco de imagem (0-2) ou instância Image",
+                "ru": "Номер банка изображений (0-2) или экземпляр Image",
+                "tr": "Görüntü bankası numarası (0-2) veya Image örneği",
+                "uk": "Номер банку зображень (0-2) або екземпляр Image"
+              }
+            },
+            {
+              "name": "cam",
+              "type": "(float, float, float)",
+              "desc": {
+                "en": "Camera position (x, y, z)",
+                "cn": "相机位置 (x, y, z)",
+                "de": "Kameraposition (x, y, z)",
+                "es": "Posición de la cámara (x, y, z)",
+                "fr": "Position de la caméra (x, y, z)",
+                "it": "Posizione della camera (x, y, z)",
+                "ja": "カメラ位置 (x, y, z)",
+                "ko": "카메라 위치 (x, y, z)",
+                "pt": "Posição da câmera (x, y, z)",
+                "ru": "Позиция камеры (x, y, z)",
+                "tr": "Kamera konumu (x, y, z)",
+                "uk": "Позиція камери (x, y, z)"
+              }
+            },
+            {
+              "name": "rot",
+              "type": "(float, float, float)",
+              "desc": {
+                "en": "Rotation in degrees (pitch, yaw, roll)",
+                "cn": "旋转角度 (pitch, yaw, roll)",
+                "de": "Rotation in Grad (Pitch, Yaw, Roll)",
+                "es": "Rotación en grados (pitch, yaw, roll)",
+                "fr": "Rotation en degrés (pitch, yaw, roll)",
+                "it": "Rotazione in gradi (pitch, yaw, roll)",
+                "ja": "回転角度 (pitch, yaw, roll)",
+                "ko": "회전 각도 (pitch, yaw, roll)",
+                "pt": "Rotação em graus (pitch, yaw, roll)",
+                "ru": "Вращение в градусах (pitch, yaw, roll)",
+                "tr": "Derece cinsinden döndürme (pitch, yaw, roll)",
+                "uk": "Обертання в градусах (pitch, yaw, roll)"
+              }
+            },
+            {
+              "name": "fov",
+              "type": "float",
+              "desc": {
+                "en": "Field of view in degrees",
+                "cn": "视野角度",
+                "de": "Sichtfeld in Grad",
+                "es": "Campo de visión en grados",
+                "fr": "Champ de vision en degrés",
+                "it": "Campo visivo in gradi",
+                "ja": "視野角（度）",
+                "ko": "시야각 (도)",
+                "pt": "Campo de visão em graus",
+                "ru": "Угол обзора в градусах",
+                "tr": "Derece cinsinden görüş alanı",
+                "uk": "Кут огляду в градусах"
+              }
+            },
+            {
+              "name": "colkey",
+              "type": "int/None",
+              "desc": {
+                "en": "Transparent color",
+                "cn": "透明色",
+                "de": "Transparenzfarbe",
+                "es": "Color transparente",
+                "fr": "Couleur transparente",
+                "it": "Colore trasparente",
+                "ja": "透明色",
+                "ko": "투명색",
+                "pt": "Cor transparente",
+                "ru": "Прозрачный цвет",
+                "tr": "Saydam renk",
+                "uk": "Прозорий колір"
+              }
+            }
+          ]
+        },
+        {
+          "name": "bltm3d",
+          "type": "function",
+          "signature": "bltm3d(x, y, w, h, tm, cam, rot, fov=90.0, colkey=None)",
+          "description": {
+            "en": "Draw the tilemap tm (0-7 or Tilemap instance) with perspective projection onto the screen rectangle (x, y, w, h). cam is the camera position (x, y, z), rot is the rotation (pitch, yaw, roll) in degrees. fov sets the field of view in degrees. colkey sets the transparent color.",
+            "cn": "将瓦片地图tm (0-7或Tilemap实例) 以透视投影绘制到屏幕矩形 (x, y, w, h)。cam为相机位置 (x, y, z)，rot为旋转 (pitch, yaw, roll)，单位为度。fov设置视野角度。colkey指定透明色。",
+            "de": "Zeichnet die Tilemap tm (0-7 oder Tilemap-Instanz) mit perspektivischer Projektion in das Bildschirmrechteck (x, y, w, h). cam ist die Kameraposition (x, y, z), rot die Drehung (Pitch, Yaw, Roll) in Grad. fov setzt das Sichtfeld in Grad. colkey legt die transparente Farbe fest.",
+            "es": "Dibuja el tilemap tm (0-7 o instancia de Tilemap) con proyección de perspectiva en el rectángulo (x, y, w, h). cam es la posición de la cámara (x, y, z), rot es la rotación (pitch, yaw, roll) en grados. fov establece el campo de visión. colkey establece el color transparente.",
+            "fr": "Dessine le tilemap tm (0-7 ou instance Tilemap) avec projection en perspective dans le rectangle (x, y, w, h). cam est la position de la caméra (x, y, z), rot la rotation (pitch, yaw, roll) en degrés. fov définit le champ de vision. colkey définit la couleur transparente.",
+            "it": "Disegna la tilemap tm (0-7 o istanza Tilemap) con proiezione prospettica nel rettangolo (x, y, w, h). cam è la posizione della camera (x, y, z), rot la rotazione (pitch, yaw, roll) in gradi. fov imposta il campo visivo. colkey imposta il colore trasparente.",
+            "ja": "タイルマップtm (0-7またはTilemapインスタンス) を透視投影で画面矩形 (x, y, w, h) に描画する。camはカメラ位置 (x, y, z)、rotは回転 (pitch, yaw, roll) で単位は度。fovは視野角。colkeyで透明色を指定。",
+            "ko": "타일맵tm (0-7 또는 Tilemap 인스턴스) 를 원근 투영으로 화면 사각형 (x, y, w, h) 에 그린다. cam은 카메라 위치 (x, y, z), rot는 회전 (pitch, yaw, roll) (도 단위). fov는 시야각. colkey로 투명색을 지정.",
+            "pt": "Desenha o tilemap tm (0-7 ou instância Tilemap) com projeção de perspectiva no retângulo (x, y, w, h). cam é a posição da câmera (x, y, z), rot a rotação (pitch, yaw, roll) em graus. fov define o campo de visão. colkey define a cor transparente.",
+            "ru": "Рисует тайлмап tm (0-7 или экземпляр Tilemap) с перспективной проекцией в экранный прямоугольник (x, y, w, h). cam — позиция камеры (x, y, z), rot — вращение (pitch, yaw, roll) в градусах. fov задаёт угол обзора. colkey задаёт прозрачный цвет.",
+            "tr": "tm tilemap'ini (0-7 veya Tilemap örneği) perspektif projeksiyonla ekran dikdörtgenine (x, y, w, h) çizer. cam kamera konumu (x, y, z), rot döndürme (pitch, yaw, roll) derece cinsindendir. fov görüş alanını belirler. colkey saydam rengi belirler.",
+            "uk": "Малює тайлмап tm (0-7 або екземпляр Tilemap) з перспективною проєкцією у екранний прямокутник (x, y, w, h). cam — позиція камери (x, y, z), rot — обертання (pitch, yaw, roll) у градусах. fov задає кут огляду. colkey задає прозорий колір."
+          },
+          "return": {
+            "type": "None"
+          },
+          "advanced": false,
+          "params": [
+            {
+              "name": "x",
+              "type": "float",
+              "desc": {
+                "en": "Destination X",
+                "cn": "目标X坐标",
+                "de": "Ziel-X-Koordinate",
+                "es": "X de destino",
+                "fr": "X de destination",
+                "it": "X di destinazione",
+                "ja": "描画先X座標",
+                "ko": "대상 X 좌표",
+                "pt": "X de destino",
+                "ru": "Координата X назначения",
+                "tr": "Hedef X koordinatı",
+                "uk": "Координата X призначення"
+              }
+            },
+            {
+              "name": "y",
+              "type": "float",
+              "desc": {
+                "en": "Destination Y",
+                "cn": "目标Y坐标",
+                "de": "Ziel-Y-Koordinate",
+                "es": "Y de destino",
+                "fr": "Y de destination",
+                "it": "Y di destinazione",
+                "ja": "描画先Y座標",
+                "ko": "대상 Y 좌표",
+                "pt": "Y de destino",
+                "ru": "Координата Y назначения",
+                "tr": "Hedef Y koordinatı",
+                "uk": "Координата Y призначення"
+              }
+            },
+            {
+              "name": "w",
+              "type": "float",
+              "desc": {
+                "en": "Display width",
+                "cn": "显示宽度",
+                "de": "Anzeigebreite",
+                "es": "Ancho de visualización",
+                "fr": "Largeur d'affichage",
+                "it": "Larghezza di visualizzazione",
+                "ja": "表示幅",
+                "ko": "표시 폭",
+                "pt": "Largura de exibição",
+                "ru": "Ширина отображения",
+                "tr": "Görüntü genişliği",
+                "uk": "Ширина відображення"
+              }
+            },
+            {
+              "name": "h",
+              "type": "float",
+              "desc": {
+                "en": "Display height",
+                "cn": "显示高度",
+                "de": "Anzeigehöhe",
+                "es": "Alto de visualización",
+                "fr": "Hauteur d'affichage",
+                "it": "Altezza di visualizzazione",
+                "ja": "表示高さ",
+                "ko": "표시 높이",
+                "pt": "Altura de exibição",
+                "ru": "Высота отображения",
+                "tr": "Görüntü yüksekliği",
+                "uk": "Висота відображення"
+              }
+            },
+            {
+              "name": "tm",
+              "type": "int/Tilemap",
+              "desc": {
+                "en": "Tilemap number (0-7) or Tilemap instance",
+                "cn": "瓦片地图编号 (0-7) 或Tilemap实例",
+                "de": "Tilemap-Nummer (0-7) oder Tilemap-Instanz",
+                "es": "Número de tilemap (0-7) o instancia Tilemap",
+                "fr": "Numéro de tilemap (0-7) ou instance Tilemap",
+                "it": "Numero tilemap (0-7) o istanza Tilemap",
+                "ja": "タイルマップ番号 (0-7) またはTilemapインスタンス",
+                "ko": "타일맵 번호 (0-7) 또는 Tilemap 인스턴스",
+                "pt": "Número do tilemap (0-7) ou instância Tilemap",
+                "ru": "Номер тайловой карты (0-7) или экземпляр Tilemap",
+                "tr": "Tilemap numarası (0-7) veya Tilemap örneği",
+                "uk": "Номер тайлової карти (0-7) або екземпляр Tilemap"
+              }
+            },
+            {
+              "name": "cam",
+              "type": "(float, float, float)",
+              "desc": {
+                "en": "Camera position (x, y, z)",
+                "cn": "相机位置 (x, y, z)",
+                "de": "Kameraposition (x, y, z)",
+                "es": "Posición de la cámara (x, y, z)",
+                "fr": "Position de la caméra (x, y, z)",
+                "it": "Posizione della camera (x, y, z)",
+                "ja": "カメラ位置 (x, y, z)",
+                "ko": "카메라 위치 (x, y, z)",
+                "pt": "Posição da câmera (x, y, z)",
+                "ru": "Позиция камеры (x, y, z)",
+                "tr": "Kamera konumu (x, y, z)",
+                "uk": "Позиція камери (x, y, z)"
+              }
+            },
+            {
+              "name": "rot",
+              "type": "(float, float, float)",
+              "desc": {
+                "en": "Rotation in degrees (pitch, yaw, roll)",
+                "cn": "旋转角度 (pitch, yaw, roll)",
+                "de": "Rotation in Grad (Pitch, Yaw, Roll)",
+                "es": "Rotación en grados (pitch, yaw, roll)",
+                "fr": "Rotation en degrés (pitch, yaw, roll)",
+                "it": "Rotazione in gradi (pitch, yaw, roll)",
+                "ja": "回転角度 (pitch, yaw, roll)",
+                "ko": "회전 각도 (pitch, yaw, roll)",
+                "pt": "Rotação em graus (pitch, yaw, roll)",
+                "ru": "Вращение в градусах (pitch, yaw, roll)",
+                "tr": "Derece cinsinden döndürme (pitch, yaw, roll)",
+                "uk": "Обертання в градусах (pitch, yaw, roll)"
+              }
+            },
+            {
+              "name": "fov",
+              "type": "float",
+              "desc": {
+                "en": "Field of view in degrees",
+                "cn": "视野角度",
+                "de": "Sichtfeld in Grad",
+                "es": "Campo de visión en grados",
+                "fr": "Champ de vision en degrés",
+                "it": "Campo visivo in gradi",
+                "ja": "視野角（度）",
+                "ko": "시야각 (도)",
+                "pt": "Campo de visão em graus",
+                "ru": "Угол обзора в градусах",
+                "tr": "Derece cinsinden görüş alanı",
+                "uk": "Кут огляду в градусах"
+              }
+            },
+            {
+              "name": "colkey",
+              "type": "int/None",
+              "desc": {
+                "en": "Transparent color",
+                "cn": "透明色",
+                "de": "Transparenzfarbe",
+                "es": "Color transparente",
+                "fr": "Couleur transparente",
+                "it": "Colore trasparente",
+                "ja": "透明色",
+                "ko": "투명색",
+                "pt": "Cor transparente",
+                "ru": "Прозрачный цвет",
+                "tr": "Saydam renk",
+                "uk": "Прозорий колір"
+              }
+            }
+          ]
+        },
+        {
           "name": "text",
           "type": "function",
           "signature": "text(x, y, s, col, font=None)",
@@ -7749,7 +8123,7 @@
         {
           "name": "Image Drawing",
           "type": "function",
-          "signature": "Image.{cls, line, rect, rectb, circ, circb, elli, ellib, tri, trib, fill, blt, bltm, text, clip, camera, pal, dither}",
+          "signature": "Image.{cls, line, rect, rectb, circ, circb, elli, ellib, tri, trib, fill, blt, bltm, blt3d, bltm3d, text, clip, camera, pal, dither}",
           "description": {
             "en": "Image instances support all drawing functions from the Graphics section. They work the same way but draw on the image instead of the screen.",
             "cn": "Image实例支持图形部分的所有绘图函数。用法相同，但绘制到图像上而不是屏幕上。",
