@@ -446,7 +446,7 @@ class Seq(Generic[T]):
 
 # Font class
 class Font:
-    def __init__(self, filename: str, font_size: Optional[float] = None) -> None: ...
+    def __init__(self, filename: str, font_size: float = 10) -> None: ...
     def text_width(self, s: str) -> int: ...
 
 # Image class
@@ -458,7 +458,7 @@ class Image:
     @staticmethod
     def from_image(
         filename: str,
-        include_colors: Optional[bool] = None,
+        include_colors: bool = False,
     ) -> Image: ...
     def data_ptr(self) -> Any: ...
     def set(self, x: int, y: int, data: List[str]) -> None: ...
@@ -467,7 +467,7 @@ class Image:
         x: int,
         y: int,
         filename: str,
-        include_colors: Optional[bool] = None,
+        include_colors: bool = False,
     ) -> None: ...
     def save(self, filename: str, scale: int) -> None: ...
     def clip(
@@ -511,8 +511,8 @@ class Image:
         w: float,
         h: float,
         colkey: Optional[int] = None,
-        rotate: Optional[float] = None,
-        scale: Optional[float] = None,
+        rotate: float = 0,
+        scale: float = 1,
     ) -> None: ...
     def bltm(
         self,
@@ -524,8 +524,8 @@ class Image:
         w: float,
         h: float,
         colkey: Optional[int] = None,
-        rotate: Optional[float] = None,
-        scale: Optional[float] = None,
+        rotate: float = 0,
+        scale: float = 1,
     ) -> None: ...
     def blt3d(
         self,
@@ -536,7 +536,7 @@ class Image:
         img: Union[int, Image],
         cam: Tuple[float, float, float],
         rot: Tuple[float, float, float],
-        fov: float = 90.0,
+        fov: float = 60,
         colkey: Optional[int] = None,
     ) -> None: ...
     def bltm3d(
@@ -548,7 +548,7 @@ class Image:
         tm: Union[int, Tilemap],
         cam: Tuple[float, float, float],
         rot: Tuple[float, float, float],
-        fov: float = 90.0,
+        fov: float = 60,
         colkey: Optional[int] = None,
     ) -> None: ...
     def text(
@@ -640,8 +640,8 @@ class Tilemap:
         w: float,
         h: float,
         tilekey: Optional[Tuple[int, int]] = None,
-        rotate: Optional[float] = None,
-        scale: Optional[float] = None,
+        rotate: float = 0,
+        scale: float = 1,
     ) -> None: ...
 
 # Channel class
@@ -653,9 +653,9 @@ class Channel:
     def play(
         self,
         snd: Union[int, Seq[int], Sound, Seq[Sound], str],
-        sec: Optional[float] = None,
-        loop: Optional[bool] = None,
-        resume: Optional[bool] = None,
+        sec: float = 0,
+        loop: bool = False,
+        resume: bool = False,
     ) -> None: ...
     def stop(self) -> None: ...
     def play_pos(self) -> Optional[Tuple[int, float]]: ...
@@ -696,7 +696,7 @@ class Sound:
     ) -> None: ...
     def pcm(self, filename: Optional[str] = None) -> None: ...
     def save(
-        self, filename: str, sec: float, ffmpeg: Optional[bool] = None
+        self, filename: str, sec: float, ffmpeg: bool = False
     ) -> None: ...
     def total_sec(self) -> Optional[float]: ...
 
@@ -710,7 +710,7 @@ class Music:
         *seqs: List[int],
     ) -> None: ...
     def save(
-        self, filename: str, sec: float, ffmpeg: Optional[bool] = None
+        self, filename: str, sec: float, ffmpeg: bool = False
     ) -> None: ...
 
 # System
@@ -721,12 +721,12 @@ frame_count: int
 def init(
     width: int,
     height: int,
-    title: Optional[str] = None,
-    fps: Optional[int] = None,
-    quit_key: Optional[int] = None,
+    title: str = "Pyxel",
+    fps: int = 30,
+    quit_key: int = KEY_ESCAPE,
     display_scale: Optional[int] = None,
-    capture_scale: Optional[int] = None,
-    capture_sec: Optional[int] = None,
+    capture_scale: int = 2,
+    capture_sec: int = 10,
 ) -> None: ...
 def run(update: Callable[[], None], draw: Callable[[], None]) -> None: ...
 def show() -> None: ...
@@ -743,22 +743,22 @@ def fullscreen(enabled: bool) -> None: ...
 # Resource
 def load(
     filename: str,
-    exclude_images: Optional[bool] = None,
-    exclude_tilemaps: Optional[bool] = None,
-    exclude_sounds: Optional[bool] = None,
-    exclude_musics: Optional[bool] = None,
+    exclude_images: bool = False,
+    exclude_tilemaps: bool = False,
+    exclude_sounds: bool = False,
+    exclude_musics: bool = False,
 ) -> None: ...
 def save(
     filename: str,
-    exclude_images: Optional[bool] = None,
-    exclude_tilemaps: Optional[bool] = None,
-    exclude_sounds: Optional[bool] = None,
-    exclude_musics: Optional[bool] = None,
+    exclude_images: bool = False,
+    exclude_tilemaps: bool = False,
+    exclude_sounds: bool = False,
+    exclude_musics: bool = False,
 ) -> None: ...
 def load_pal(filename: str) -> None: ...
 def save_pal(filename: str) -> None: ...
-def screenshot(scale: Optional[int] = None) -> None: ...
-def screencast(scale: Optional[int] = None) -> None: ...
+def screenshot(scale: int = 2) -> None: ...
+def screencast(scale: int = 2) -> None: ...
 def reset_screencast() -> None: ...
 def user_data_dir(vendor_name: str, app_name: str) -> str: ...
 
@@ -772,7 +772,7 @@ dropped_files: List[str]
 
 def btn(key: int) -> bool: ...
 def btnp(
-    key: int, hold: Optional[int] = None, repeat: Optional[int] = None
+    key: int, hold: int = 0, repeat: int = 0
 ) -> bool: ...
 def btnr(key: int) -> bool: ...
 def btnv(key: int) -> int: ...
@@ -837,8 +837,8 @@ def blt(
     w: float,
     h: float,
     colkey: Optional[int] = None,
-    rotate: Optional[float] = None,
-    scale: Optional[float] = None,
+    rotate: float = 0,
+    scale: float = 1,
 ) -> None: ...
 def bltm(
     x: float,
@@ -849,8 +849,8 @@ def bltm(
     w: float,
     h: float,
     colkey: Optional[int] = None,
-    rotate: Optional[float] = None,
-    scale: Optional[float] = None,
+    rotate: float = 0,
+    scale: float = 1,
 ) -> None: ...
 def blt3d(
     x: float,
@@ -860,7 +860,7 @@ def blt3d(
     img: Union[int, Image],
     cam: Tuple[float, float, float],
     rot: Tuple[float, float, float],
-    fov: float = 90.0,
+    fov: float = 60,
     colkey: Optional[int] = None,
 ) -> None: ...
 def bltm3d(
@@ -871,7 +871,7 @@ def bltm3d(
     tm: Union[int, Tilemap],
     cam: Tuple[float, float, float],
     rot: Tuple[float, float, float],
-    fov: float = 90.0,
+    fov: float = 60,
     colkey: Optional[int] = None,
 ) -> None: ...
 def text(x: float, y: float, s: str, col: int, font: Optional[Font] = None) -> None: ...
@@ -885,14 +885,14 @@ musics: Seq[Music]
 def play(
     ch: int,
     snd: Union[int, Seq[int], Sound, Seq[Sound], str],
-    sec: Optional[float] = None,
-    loop: Optional[bool] = None,
-    resume: Optional[bool] = None,
+    sec: float = 0,
+    loop: bool = False,
+    resume: bool = False,
 ) -> None: ...
 def playm(
     msc: int,
-    sec: Optional[float] = None,
-    loop: Optional[bool] = None,
+    sec: float = 0,
+    loop: bool = False,
 ) -> None: ...
 def stop(ch: Optional[int] = None) -> None: ...
 def play_pos(ch: int) -> Optional[Tuple[int, float]]: ...
@@ -900,7 +900,7 @@ def gen_bgm(
     preset: int,
     instr: int,
     seed: Optional[int] = None,
-    play: Optional[bool] = None,
+    play: bool = False,
 ) -> List[str]: ...
 
 # Math
@@ -918,4 +918,4 @@ def rseed(seed: int) -> None: ...
 def rndi(a: int, b: int) -> int: ...
 def rndf(a: float, b: float) -> float: ...
 def nseed(seed: int) -> None: ...
-def noise(x: float, y: Optional[float] = None, z: Optional[float] = None) -> float: ...
+def noise(x: float, y: float = 0, z: float = 0) -> float: ...
