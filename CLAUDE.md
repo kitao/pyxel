@@ -39,6 +39,11 @@ See `Makefile` for prerequisites, WASM setup, and all available targets.
 - `std::sync::Once` must be fully-qualified in macros for hygiene; import in regular code
 - `platform::lock_audio()` / `unlock_audio()` for SDL2 audio sync
 
+**API defaults:**
+
+- `api-reference.json` and `__init__.pyi` reflect the Rust implementation's default values
+- The binding layer passes values through as-is — no defaults in PyO3 bindings
+
 ## Release
 
 Always confirm the version number before releasing.
