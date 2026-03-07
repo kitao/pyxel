@@ -15,7 +15,6 @@ class App:
         self.rot_y = -90
         self.rot_z = 0
         self.fov = 60
-        self.speed = 1.5
 
         pyxel.run(self.update, self.draw)
 
@@ -42,10 +41,10 @@ class App:
             self.rot_z *= 0.75
 
         # Move (WASD + RF)
-        fwd_x = pyxel.cos(self.rot_y) * self.speed
-        fwd_y = pyxel.sin(self.rot_y) * self.speed
-        right_x = pyxel.cos(self.rot_y + 90) * self.speed
-        right_y = pyxel.sin(self.rot_y + 90) * self.speed
+        fwd_x = pyxel.cos(self.rot_y) * 1.5
+        fwd_y = pyxel.sin(self.rot_y) * 1.5
+        right_x = pyxel.cos(self.rot_y + 90) * 1.5
+        right_y = pyxel.sin(self.rot_y + 90) * 1.5
 
         if pyxel.btn(pyxel.KEY_W):
             self.cam_x += fwd_x
