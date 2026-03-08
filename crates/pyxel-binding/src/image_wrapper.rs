@@ -244,7 +244,7 @@ impl Image {
         Ok(())
     }
 
-    #[pyo3(signature = (x, y, w, h, img, cam, rot, fov=None, colkey=None))]
+    #[pyo3(signature = (x, y, w, h, img, pos, rot, fov=None, colkey=None))]
     pub fn blt3d(
         &self,
         x: f32,
@@ -252,7 +252,7 @@ impl Image {
         w: f32,
         h: f32,
         img: Bound<'_, PyAny>,
-        cam: (f32, f32, f32),
+        pos: (f32, f32, f32),
         rot: (f32, f32, f32),
         fov: Option<f32>,
         colkey: Option<pyxel::Color>,
@@ -262,14 +262,14 @@ impl Image {
             (u32, {
                 let image = pyxel::images().get(img as usize).copied()
                     .ok_or_else(|| PyValueError::new_err("Invalid image index"))?;
-                unsafe { (&mut *self.inner).draw_image_3d(x, y, w, h, image, cam, rot, fov, colkey) };
+                unsafe { (&mut *self.inner).draw_image_3d(x, y, w, h, image, pos, rot, fov, colkey) };
             }),
-            (Image, { unsafe { (&mut *self.inner).draw_image_3d(x, y, w, h, img.inner, cam, rot, fov, colkey) }; })
+            (Image, { unsafe { (&mut *self.inner).draw_image_3d(x, y, w, h, img.inner, pos, rot, fov, colkey) }; })
         }
         Ok(())
     }
 
-    #[pyo3(signature = (x, y, w, h, tm, cam, rot, fov=None, colkey=None))]
+    #[pyo3(signature = (x, y, w, h, tm, pos, rot, fov=None, colkey=None))]
     pub fn bltm3d(
         &self,
         x: f32,
@@ -277,7 +277,7 @@ impl Image {
         w: f32,
         h: f32,
         tm: Bound<'_, PyAny>,
-        cam: (f32, f32, f32),
+        pos: (f32, f32, f32),
         rot: (f32, f32, f32),
         fov: Option<f32>,
         colkey: Option<pyxel::Color>,
@@ -287,9 +287,9 @@ impl Image {
             (u32, {
                 let tilemap = pyxel::tilemaps().get(tm as usize).copied()
                     .ok_or_else(|| PyValueError::new_err("Invalid tilemap index"))?;
-                unsafe { (&mut *self.inner).draw_tilemap_3d(x, y, w, h, tilemap, cam, rot, fov, colkey) };
+                unsafe { (&mut *self.inner).draw_tilemap_3d(x, y, w, h, tilemap, pos, rot, fov, colkey) };
             }),
-            (Tilemap, { unsafe { (&mut *self.inner).draw_tilemap_3d(x, y, w, h, tm.inner, cam, rot, fov, colkey) }; })
+            (Tilemap, { unsafe { (&mut *self.inner).draw_tilemap_3d(x, y, w, h, tm.inner, pos, rot, fov, colkey) }; })
         }
         Ok(())
     }

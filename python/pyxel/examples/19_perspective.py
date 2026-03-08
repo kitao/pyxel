@@ -12,7 +12,7 @@ class App:
         self.cam_y = 143
         self.cam_z = 25
         self.rot_x = 55
-        self.rot_y = -90
+        self.rot_y = 0
         self.rot_z = 0
         self.fov = 60
 
@@ -41,17 +41,17 @@ class App:
             self.rot_z *= 0.75
 
         # Move (WASD + RF)
-        fwd_x = pyxel.cos(self.rot_y) * 1.5
-        fwd_y = pyxel.sin(self.rot_y) * 1.5
-        right_x = pyxel.cos(self.rot_y + 90) * 1.5
-        right_y = pyxel.sin(self.rot_y + 90) * 1.5
+        up_x = pyxel.sin(self.rot_y) * 1.5
+        up_y = -pyxel.cos(self.rot_y) * 1.5
+        right_x = pyxel.cos(self.rot_y) * 1.5
+        right_y = pyxel.sin(self.rot_y) * 1.5
 
         if pyxel.btn(pyxel.KEY_W):
-            self.cam_x += fwd_x
-            self.cam_y += fwd_y
+            self.cam_x += up_x
+            self.cam_y += up_y
         if pyxel.btn(pyxel.KEY_S):
-            self.cam_x -= fwd_x
-            self.cam_y -= fwd_y
+            self.cam_x -= up_x
+            self.cam_y -= up_y
 
         if pyxel.btn(pyxel.KEY_A):
             self.cam_x -= right_x
@@ -75,12 +75,12 @@ class App:
         pyxel.cls(0)
 
         # Perspective views
-        cam = (self.cam_x, self.cam_y, self.cam_z)
+        pos = (self.cam_x, self.cam_y, self.cam_z)
         rot = (self.rot_x, self.rot_y, self.rot_z)
         hw = pyxel.width // 2
         vh = pyxel.height - HUD_HEIGHT
-        pyxel.blt3d(0, HUD_HEIGHT, hw, vh, 0, cam, rot, fov=self.fov)
-        pyxel.bltm3d(hw + 2, HUD_HEIGHT, hw, vh, 0, cam, rot, fov=self.fov)
+        pyxel.blt3d(0, HUD_HEIGHT, hw, vh, 0, pos, rot, fov=self.fov)
+        pyxel.bltm3d(hw + 2, HUD_HEIGHT, hw, vh, 0, pos, rot, fov=self.fov)
 
         # Divider
         pyxel.line(hw, HUD_HEIGHT, hw, pyxel.height - 1, 0)

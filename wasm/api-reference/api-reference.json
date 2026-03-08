@@ -4839,20 +4839,20 @@
         {
           "name": "blt3d",
           "type": "function",
-          "signature": "blt3d(x, y, w, h, img, cam, rot, fov=60, colkey=None)",
+          "signature": "blt3d(x, y, w, h, img, pos, rot, fov=60, colkey=None)",
           "description": {
-            "en": "Draw the image bank img (0-2 or Image instance) with perspective projection onto the screen rectangle (x, y, w, h). cam is the camera ground position and altitude, rot is the rotation in degrees. fov sets the field of view in degrees. colkey sets the transparent color.",
-            "cn": "将图像库img (0-2或Image实例) 以透视投影绘制到屏幕矩形 (x, y, w, h)。cam为相机的地面坐标和高度，rot为旋转角度，单位为度。fov设置视野角度。colkey指定透明色。",
-            "de": "Zeichnet die Bildbank img (0-2 oder Image-Instanz) mit perspektivischer Projektion in das Bildschirmrechteck (x, y, w, h). cam ist die Bodenposition und Höhe der Kamera, rot die Rotation in Grad. fov setzt das Sichtfeld in Grad. colkey legt die transparente Farbe fest.",
-            "es": "Dibuja el banco de imágenes img (0-2 o instancia de Image) con proyección de perspectiva en el rectángulo (x, y, w, h). cam es la posición en el plano y altitud de la cámara, rot es la rotación en grados. fov establece el campo de visión. colkey establece el color transparente.",
-            "fr": "Dessine la banque d'images img (0-2 ou instance Image) avec projection en perspective dans le rectangle (x, y, w, h). cam est la position au sol et l'altitude de la caméra, rot la rotation en degrés. fov définit le champ de vision. colkey définit la couleur transparente.",
-            "it": "Disegna il banco immagini img (0-2 o istanza Image) con proiezione prospettica nel rettangolo (x, y, w, h). cam è la posizione a terra e l'altitudine della camera, rot la rotazione in gradi. fov imposta il campo visivo. colkey imposta il colore trasparente.",
-            "ja": "イメージバンクimg (0-2またはImageインスタンス) を透視投影で画面矩形 (x, y, w, h) に描画する。camはカメラの地面座標と高さ、rotは回転角度（度）。fovは視野角。colkeyで透明色を指定。",
-            "ko": "이미지 뱅크img (0-2 또는 Image 인스턴스) 를 원근 투영으로 화면 사각형 (x, y, w, h) 에 그린다. cam은 카메라의 지면 좌표와 높이, rot는 회전 각도 (도 단위). fov는 시야각. colkey로 투명색을 지정.",
-            "pt": "Desenha o banco de imagens img (0-2 ou instância Image) com projeção de perspectiva no retângulo (x, y, w, h). cam é a posição no solo e a altitude da câmera, rot a rotação em graus. fov define o campo de visão. colkey define a cor transparente.",
-            "ru": "Рисует банк изображений img (0-2 или экземпляр Image) с перспективной проекцией в экранный прямоугольник (x, y, w, h). cam — позиция камеры на плоскости и высота, rot — углы поворота в градусах. fov задаёт угол обзора. colkey задаёт прозрачный цвет.",
-            "tr": "img görüntü bankasını (0-2 veya Image örneği) perspektif projeksiyonla ekran dikdörtgenine (x, y, w, h) çizer. cam kameranın zemin konumu ve yüksekliği, rot derece cinsinden döndürme. fov görüş alanını belirler. colkey saydam rengi belirler.",
-            "uk": "Малює банк зображень img (0-2 або екземпляр Image) з перспективною проєкцією у екранний прямокутник (x, y, w, h). cam — позиція камери на площині та висота, rot — кути обертання в градусах. fov задає кут огляду. colkey задає прозорий колір."
+            "en": "Draw the image bank img (0-2 or Image instance) with perspective projection onto the screen rectangle (x, y, w, h). pos is the camera position where x, y match 2D coordinates and z is height. rot is the rotation in degrees. fov sets the field of view in degrees. colkey sets the transparent color.",
+            "cn": "将图像库img (0-2或Image实例) 以透视投影绘制到屏幕矩形 (x, y, w, h)。pos为相机位置，x, y与2D坐标一致，z为高度。rot为旋转角度，单位为度。fov设置视野角度。colkey指定透明色。",
+            "de": "Zeichnet die Bildbank img (0-2 oder Image-Instanz) mit perspektivischer Projektion in das Bildschirmrechteck (x, y, w, h). pos ist die Kameraposition, wobei x, y den 2D-Koordinaten entsprechen und z die Höhe ist. rot ist die Rotation in Grad. fov setzt das Sichtfeld in Grad. colkey legt die transparente Farbe fest.",
+            "es": "Dibuja el banco de imágenes img (0-2 o instancia de Image) con proyección de perspectiva en el rectángulo (x, y, w, h). pos es la posición de la cámara donde x, y coinciden con las coordenadas 2D y z es la altitud. rot es la rotación en grados. fov establece el campo de visión. colkey establece el color transparente.",
+            "fr": "Dessine la banque d'images img (0-2 ou instance Image) avec projection en perspective dans le rectangle (x, y, w, h). pos est la position de la caméra où x, y correspondent aux coordonnées 2D et z est l'altitude. rot est la rotation en degrés. fov définit le champ de vision. colkey définit la couleur transparente.",
+            "it": "Disegna il banco immagini img (0-2 o istanza Image) con proiezione prospettica nel rettangolo (x, y, w, h). pos è la posizione della camera dove x, y corrispondono alle coordinate 2D e z è l'altitudine. rot è la rotazione in gradi. fov imposta il campo visivo. colkey imposta il colore trasparente.",
+            "ja": "イメージバンクimg (0-2またはImageインスタンス) を透視投影で画面矩形 (x, y, w, h) に描画する。posはカメラ位置で、x, yは2D座標と一致し、zは高さ。rotは回転角度（度）。fovは視野角。colkeyで透明色を指定。",
+            "ko": "이미지 뱅크img (0-2 또는 Image 인스턴스) 를 원근 투영으로 화면 사각형 (x, y, w, h) 에 그린다. pos은 카메라 위치로 x, y는 2D 좌표와 일치하고 z는 높이. rot는 회전 각도 (도 단위). fov는 시야각. colkey로 투명색을 지정.",
+            "pt": "Desenha o banco de imagens img (0-2 ou instância Image) com projeção de perspectiva no retângulo (x, y, w, h). pos é a posição da câmera onde x, y correspondem às coordenadas 2D e z é a altitude. rot é a rotação em graus. fov define o campo de visão. colkey define a cor transparente.",
+            "ru": "Рисует банк изображений img (0-2 или экземпляр Image) с перспективной проекцией в экранный прямоугольник (x, y, w, h). pos — позиция камеры, где x, y совпадают с 2D-координатами, а z — высота. rot — углы поворота в градусах. fov задаёт угол обзора. colkey задаёт прозрачный цвет.",
+            "tr": "img görüntü bankasını (0-2 veya Image örneği) perspektif projeksiyonla ekran dikdörtgenine (x, y, w, h) çizer. pos kamera konumudur; x, y 2D koordinatlarla eşleşir, z yüksekliktir. rot derece cinsinden döndürme. fov görüş alanını belirler. colkey saydam rengi belirler.",
+            "uk": "Малює банк зображень img (0-2 або екземпляр Image) з перспективною проєкцією у екранний прямокутник (x, y, w, h). pos — позиція камери, де x, y відповідають 2D-координатам, а z — висота. rot — кути обертання в градусах. fov задає кут огляду. colkey задає прозорий колір."
           },
           "return": {
             "type": "None"
@@ -4950,21 +4950,21 @@
               }
             },
             {
-              "name": "cam",
+              "name": "pos",
               "type": "(float, float, float)",
               "desc": {
-                "en": "Camera position. cam_x, cam_y are ground coordinates, cam_z is altitude",
-                "cn": "相机位置。cam_x, cam_y为地面坐标，cam_z为高度",
-                "de": "Kameraposition. cam_x, cam_y sind Bodenkoordinaten, cam_z ist die Höhe",
-                "es": "Posición de la cámara. cam_x, cam_y son coordenadas del suelo, cam_z es la altitud",
-                "fr": "Position de la caméra. cam_x, cam_y sont les coordonnées au sol, cam_z est l'altitude",
-                "it": "Posizione della camera. cam_x, cam_y sono le coordinate a terra, cam_z è l'altitudine",
-                "ja": "カメラ位置。cam_x, cam_yは地面座標、cam_zは高さ",
-                "ko": "카메라 위치. cam_x, cam_y는 지면 좌표, cam_z는 높이",
-                "pt": "Posição da câmera. cam_x, cam_y são coordenadas do solo, cam_z é a altitude",
-                "ru": "Позиция камеры. cam_x, cam_y — координаты на плоскости, cam_z — высота",
-                "tr": "Kamera konumu. cam_x, cam_y zemin koordinatları, cam_z yükseklik",
-                "uk": "Позиція камери. cam_x, cam_y — координати на площині, cam_z — висота"
+                "en": "Camera position (x, y, z). x, y match 2D coordinates, z is height",
+                "cn": "相机位置(x, y, z)。x, y与2D坐标一致，z为高度",
+                "de": "Kameraposition (x, y, z). x, y entsprechen 2D-Koordinaten, z ist die Höhe",
+                "es": "Posición de la cámara (x, y, z). x, y coinciden con las coordenadas 2D, z es la altitud",
+                "fr": "Position de la caméra (x, y, z). x, y correspondent aux coordonnées 2D, z est l'altitude",
+                "it": "Posizione della camera (x, y, z). x, y corrispondono alle coordinate 2D, z è l'altitudine",
+                "ja": "カメラ位置(x, y, z)。x, yは2D座標と一致、zは高さ",
+                "ko": "카메라 위치 (x, y, z). x, y는 2D 좌표와 일치, z는 높이",
+                "pt": "Posição da câmera (x, y, z). x, y correspondem às coordenadas 2D, z é a altitude",
+                "ru": "Позиция камеры (x, y, z). x, y совпадают с 2D-координатами, z — высота",
+                "tr": "Kamera konumu (x, y, z). x, y 2D koordinatlarla eşleşir, z yükseklik",
+                "uk": "Позиція камери (x, y, z). x, y відповідають 2D-координатам, z — висота"
               }
             },
             {
@@ -5026,20 +5026,20 @@
         {
           "name": "bltm3d",
           "type": "function",
-          "signature": "bltm3d(x, y, w, h, tm, cam, rot, fov=60, colkey=None)",
+          "signature": "bltm3d(x, y, w, h, tm, pos, rot, fov=60, colkey=None)",
           "description": {
-            "en": "Draw the tilemap tm (0-7 or Tilemap instance) with perspective projection onto the screen rectangle (x, y, w, h). cam is the camera ground position and altitude, rot is the rotation in degrees. fov sets the field of view in degrees. colkey sets the transparent color.",
-            "cn": "将瓦片地图tm (0-7或Tilemap实例) 以透视投影绘制到屏幕矩形 (x, y, w, h)。cam为相机的地面坐标和高度，rot为旋转角度，单位为度。fov设置视野角度。colkey指定透明色。",
-            "de": "Zeichnet die Tilemap tm (0-7 oder Tilemap-Instanz) mit perspektivischer Projektion in das Bildschirmrechteck (x, y, w, h). cam ist die Bodenposition und Höhe der Kamera, rot die Rotation in Grad. fov setzt das Sichtfeld in Grad. colkey legt die transparente Farbe fest.",
-            "es": "Dibuja el tilemap tm (0-7 o instancia de Tilemap) con proyección de perspectiva en el rectángulo (x, y, w, h). cam es la posición en el plano y altitud de la cámara, rot es la rotación en grados. fov establece el campo de visión. colkey establece el color transparente.",
-            "fr": "Dessine le tilemap tm (0-7 ou instance Tilemap) avec projection en perspective dans le rectangle (x, y, w, h). cam est la position au sol et l'altitude de la caméra, rot la rotation en degrés. fov définit le champ de vision. colkey définit la couleur transparente.",
-            "it": "Disegna la tilemap tm (0-7 o istanza Tilemap) con proiezione prospettica nel rettangolo (x, y, w, h). cam è la posizione a terra e l'altitudine della camera, rot la rotazione in gradi. fov imposta il campo visivo. colkey imposta il colore trasparente.",
-            "ja": "タイルマップtm (0-7またはTilemapインスタンス) を透視投影で画面矩形 (x, y, w, h) に描画する。camはカメラの地面座標と高さ、rotは回転角度（度）。fovは視野角。colkeyで透明色を指定。",
-            "ko": "타일맵tm (0-7 또는 Tilemap 인스턴스) 를 원근 투영으로 화면 사각형 (x, y, w, h) 에 그린다. cam은 카메라의 지면 좌표와 높이, rot는 회전 각도 (도 단위). fov는 시야각. colkey로 투명색을 지정.",
-            "pt": "Desenha o tilemap tm (0-7 ou instância Tilemap) com projeção de perspectiva no retângulo (x, y, w, h). cam é a posição no solo e a altitude da câmera, rot a rotação em graus. fov define o campo de visão. colkey define a cor transparente.",
-            "ru": "Рисует тайлмап tm (0-7 или экземпляр Tilemap) с перспективной проекцией в экранный прямоугольник (x, y, w, h). cam — позиция камеры на плоскости и высота, rot — углы поворота в градусах. fov задаёт угол обзора. colkey задаёт прозрачный цвет.",
-            "tr": "tm tilemap'ini (0-7 veya Tilemap örneği) perspektif projeksiyonla ekran dikdörtgenine (x, y, w, h) çizer. cam kameranın zemin konumu ve yüksekliği, rot derece cinsinden döndürme. fov görüş alanını belirler. colkey saydam rengi belirler.",
-            "uk": "Малює тайлмап tm (0-7 або екземпляр Tilemap) з перспективною проєкцією у екранний прямокутник (x, y, w, h). cam — позиція камери на площині та висота, rot — кути обертання в градусах. fov задає кут огляду. colkey задає прозорий колір."
+            "en": "Draw the tilemap tm (0-7 or Tilemap instance) with perspective projection onto the screen rectangle (x, y, w, h). pos is the camera position where x, y match 2D coordinates and z is height. rot is the rotation in degrees. fov sets the field of view in degrees. colkey sets the transparent color.",
+            "cn": "将瓦片地图tm (0-7或Tilemap实例) 以透视投影绘制到屏幕矩形 (x, y, w, h)。pos为相机位置，x, y与2D坐标一致，z为高度。rot为旋转角度，单位为度。fov设置视野角度。colkey指定透明色。",
+            "de": "Zeichnet die Tilemap tm (0-7 oder Tilemap-Instanz) mit perspektivischer Projektion in das Bildschirmrechteck (x, y, w, h). pos ist die Kameraposition, wobei x, y den 2D-Koordinaten entsprechen und z die Höhe ist. rot ist die Rotation in Grad. fov setzt das Sichtfeld in Grad. colkey legt die transparente Farbe fest.",
+            "es": "Dibuja el tilemap tm (0-7 o instancia de Tilemap) con proyección de perspectiva en el rectángulo (x, y, w, h). pos es la posición de la cámara donde x, y coinciden con las coordenadas 2D y z es la altitud. rot es la rotación en grados. fov establece el campo de visión. colkey establece el color transparente.",
+            "fr": "Dessine le tilemap tm (0-7 ou instance Tilemap) avec projection en perspective dans le rectangle (x, y, w, h). pos est la position de la caméra où x, y correspondent aux coordonnées 2D et z est l'altitude. rot est la rotation en degrés. fov définit le champ de vision. colkey définit la couleur transparente.",
+            "it": "Disegna la tilemap tm (0-7 o istanza Tilemap) con proiezione prospettica nel rettangolo (x, y, w, h). pos è la posizione della camera dove x, y corrispondono alle coordinate 2D e z è l'altitudine. rot è la rotazione in gradi. fov imposta il campo visivo. colkey imposta il colore trasparente.",
+            "ja": "タイルマップtm (0-7またはTilemapインスタンス) を透視投影で画面矩形 (x, y, w, h) に描画する。posはカメラ位置で、x, yは2D座標と一致し、zは高さ。rotは回転角度（度）。fovは視野角。colkeyで透明色を指定。",
+            "ko": "타일맵tm (0-7 또는 Tilemap 인스턴스) 를 원근 투영으로 화면 사각형 (x, y, w, h) 에 그린다. pos은 카메라 위치로 x, y는 2D 좌표와 일치하고 z는 높이. rot는 회전 각도 (도 단위). fov는 시야각. colkey로 투명색을 지정.",
+            "pt": "Desenha o tilemap tm (0-7 ou instância Tilemap) com projeção de perspectiva no retângulo (x, y, w, h). pos é a posição da câmera onde x, y correspondem às coordenadas 2D e z é a altitude. rot é a rotação em graus. fov define o campo de visão. colkey define a cor transparente.",
+            "ru": "Рисует тайлмап tm (0-7 или экземпляр Tilemap) с перспективной проекцией в экранный прямоугольник (x, y, w, h). pos — позиция камеры, где x, y совпадают с 2D-координатами, а z — высота. rot — углы поворота в градусах. fov задаёт угол обзора. colkey задаёт прозрачный цвет.",
+            "tr": "tm tilemap'ini (0-7 veya Tilemap örneği) perspektif projeksiyonla ekran dikdörtgenine (x, y, w, h) çizer. pos kamera konumudur; x, y 2D koordinatlarla eşleşir, z yüksekliktir. rot derece cinsinden döndürme. fov görüş alanını belirler. colkey saydam rengi belirler.",
+            "uk": "Малює тайлмап tm (0-7 або екземпляр Tilemap) з перспективною проєкцією у екранний прямокутник (x, y, w, h). pos — позиція камери, де x, y відповідають 2D-координатам, а z — висота. rot — кути обертання в градусах. fov задає кут огляду. colkey задає прозорий колір."
           },
           "return": {
             "type": "None"
@@ -5137,21 +5137,21 @@
               }
             },
             {
-              "name": "cam",
+              "name": "pos",
               "type": "(float, float, float)",
               "desc": {
-                "en": "Camera position. cam_x, cam_y are ground coordinates, cam_z is altitude",
-                "cn": "相机位置。cam_x, cam_y为地面坐标，cam_z为高度",
-                "de": "Kameraposition. cam_x, cam_y sind Bodenkoordinaten, cam_z ist die Höhe",
-                "es": "Posición de la cámara. cam_x, cam_y son coordenadas del suelo, cam_z es la altitud",
-                "fr": "Position de la caméra. cam_x, cam_y sont les coordonnées au sol, cam_z est l'altitude",
-                "it": "Posizione della camera. cam_x, cam_y sono le coordinate a terra, cam_z è l'altitudine",
-                "ja": "カメラ位置。cam_x, cam_yは地面座標、cam_zは高さ",
-                "ko": "카메라 위치. cam_x, cam_y는 지면 좌표, cam_z는 높이",
-                "pt": "Posição da câmera. cam_x, cam_y são coordenadas do solo, cam_z é a altitude",
-                "ru": "Позиция камеры. cam_x, cam_y — координаты на плоскости, cam_z — высота",
-                "tr": "Kamera konumu. cam_x, cam_y zemin koordinatları, cam_z yükseklik",
-                "uk": "Позиція камери. cam_x, cam_y — координати на площині, cam_z — висота"
+                "en": "Camera position (x, y, z). x, y match 2D coordinates, z is height",
+                "cn": "相机位置(x, y, z)。x, y与2D坐标一致，z为高度",
+                "de": "Kameraposition (x, y, z). x, y entsprechen 2D-Koordinaten, z ist die Höhe",
+                "es": "Posición de la cámara (x, y, z). x, y coinciden con las coordenadas 2D, z es la altitud",
+                "fr": "Position de la caméra (x, y, z). x, y correspondent aux coordonnées 2D, z est l'altitude",
+                "it": "Posizione della camera (x, y, z). x, y corrispondono alle coordinate 2D, z è l'altitudine",
+                "ja": "カメラ位置(x, y, z)。x, yは2D座標と一致、zは高さ",
+                "ko": "카메라 위치 (x, y, z). x, y는 2D 좌표와 일치, z는 높이",
+                "pt": "Posição da câmera (x, y, z). x, y correspondem às coordenadas 2D, z é a altitude",
+                "ru": "Позиция камеры (x, y, z). x, y совпадают с 2D-координатами, z — высота",
+                "tr": "Kamera konumu (x, y, z). x, y 2D koordinatlarla eşleşir, z yükseklik",
+                "uk": "Позиція камери (x, y, z). x, y відповідають 2D-координатам, z — висота"
               }
             },
             {

@@ -175,14 +175,14 @@ fn bltm(
 }
 
 #[pyfunction]
-#[pyo3(signature = (x, y, w, h, img, cam, rot, fov=None, colkey=None))]
+#[pyo3(signature = (x, y, w, h, img, pos, rot, fov=None, colkey=None))]
 fn blt3d(
     x: f32,
     y: f32,
     w: f32,
     h: f32,
     img: Bound<'_, PyAny>,
-    cam: (f32, f32, f32),
+    pos: (f32, f32, f32),
     rot: (f32, f32, f32),
     fov: Option<f32>,
     colkey: Option<pyxel::Color>,
@@ -193,22 +193,22 @@ fn blt3d(
             if img as usize >= pyxel::images().len() {
                 return Err(PyValueError::new_err("Invalid image index"));
             }
-            pyxel().draw_image_3d(x, y, w, h, img, cam, rot, fov, colkey);
+            pyxel().draw_image_3d(x, y, w, h, img, pos, rot, fov, colkey);
         }),
-        (Image, { unsafe { pyxel::screen().draw_image_3d(x, y, w, h, img.inner, cam, rot, fov, colkey) }; })
+        (Image, { unsafe { pyxel::screen().draw_image_3d(x, y, w, h, img.inner, pos, rot, fov, colkey) }; })
     }
     Ok(())
 }
 
 #[pyfunction]
-#[pyo3(signature = (x, y, w, h, tm, cam, rot, fov=None, colkey=None))]
+#[pyo3(signature = (x, y, w, h, tm, pos, rot, fov=None, colkey=None))]
 fn bltm3d(
     x: f32,
     y: f32,
     w: f32,
     h: f32,
     tm: Bound<'_, PyAny>,
-    cam: (f32, f32, f32),
+    pos: (f32, f32, f32),
     rot: (f32, f32, f32),
     fov: Option<f32>,
     colkey: Option<pyxel::Color>,
@@ -219,9 +219,9 @@ fn bltm3d(
             if tm as usize >= pyxel::tilemaps().len() {
                 return Err(PyValueError::new_err("Invalid tilemap index"));
             }
-            pyxel().draw_tilemap_3d(x, y, w, h, tm, cam, rot, fov, colkey);
+            pyxel().draw_tilemap_3d(x, y, w, h, tm, pos, rot, fov, colkey);
         }),
-        (Tilemap, { unsafe { pyxel::screen().draw_tilemap_3d(x, y, w, h, tm.inner, cam, rot, fov, colkey) }; })
+        (Tilemap, { unsafe { pyxel::screen().draw_tilemap_3d(x, y, w, h, tm.inner, pos, rot, fov, colkey) }; })
     }
     Ok(())
 }

@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.7.9
+
+- Aligned 3D coordinate system so rot=(0,0,0) matches 2D screen axes
+
 ## 2.7.8
 
 - Updated glow crate to version 0.17

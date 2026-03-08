@@ -618,7 +618,7 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         width: f32,
         height: f32,
         canvas: &Self,
-        cam: (f32, f32, f32),
+        pos: (f32, f32, f32),
         rot: (f32, f32, f32),
         fov: Option<f32>,
         transparent: Option<T>,
@@ -631,7 +631,7 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
             height,
             self.draw_offset_x,
             self.draw_offset_y,
-            cam,
+            pos,
             rot,
             fov,
         ) else {
@@ -833,11 +833,11 @@ impl PerspectiveProjection {
         height: f32,
         offset_x: i32,
         offset_y: i32,
-        cam: (f32, f32, f32),
+        pos: (f32, f32, f32),
         rot: (f32, f32, f32),
         fov: Option<f32>,
     ) -> Option<Self> {
-        let (cam_x, cam_y, cam_z) = cam;
+        let (cam_x, cam_y, cam_z) = pos;
         if cam_z.abs() < f32::EPSILON {
             return None;
         }
@@ -862,24 +862,24 @@ impl PerspectiveProjection {
         let (sy, cy) = (rot_y.sin(), rot_y.cos());
         let (sz, cz) = (rot_z.sin(), rot_z.cos());
 
-        // R_z(rot_y-90) * R_x(rot_x) with view X-axis negated for Y-down ground plane
-        // rot_y=0 faces +X, rot_y=90 faces +Y (matches Pyxel cos/sin)
+        // R_z(rot_y) * diag(1,-1,1) * R_x(rot_x)
+        // rot_y=0 looks down -Z with screen-right=+X, screen-down=+Y (matches 2D)
         // rot_z is applied in view space before the world transform
         //
-        //   r00 = -sin(rot_y),  r01 = cos(rot_y)*cos(rot_x),  r02 = -cos(rot_y)*sin(rot_x)
-        //   r10 = cos(rot_y),   r11 = sin(rot_y)*cos(rot_x),   r12 = -sin(rot_y)*sin(rot_x)
+        //   r00 = cos(rot_y),   r01 = sin(rot_y)*cos(rot_x),   r02 = -sin(rot_y)*sin(rot_x)
+        //   r10 = sin(rot_y),   r11 = -cos(rot_y)*cos(rot_x),  r12 = cos(rot_y)*sin(rot_x)
         //   r20 = 0,            r21 = sin(rot_x),               r22 = cos(rot_x)
 
         Some(Self {
             cam_x,
             cam_y,
             cam_z,
-            r00: -sy,
-            r01: cy * cx,
-            r02: -cy * sx,
-            r10: cy,
-            r11: sy * cx,
-            r12: -sy * sx,
+            r00: cy,
+            r01: sy * cx,
+            r02: -sy * sx,
+            r10: sy,
+            r11: -cy * cx,
+            r12: cy * sx,
             r21: sx,
             r22: cx,
             tan_hfov,
