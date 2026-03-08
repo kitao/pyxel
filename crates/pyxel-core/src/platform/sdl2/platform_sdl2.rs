@@ -72,11 +72,6 @@ impl PlatformSdl2 {
     //
     pub fn init(&mut self, headless: bool) {
         if headless {
-            assert!(
-                unsafe { SDL_Init(0) } >= 0,
-                "Failed to initialize SDL2: {}",
-                unsafe { CStr::from_ptr(SDL_GetError()) }.to_string_lossy()
-            );
             return;
         }
 

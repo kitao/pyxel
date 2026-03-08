@@ -1,4 +1,5 @@
 use std::ptr::null_mut;
+use std::sync::atomic::{AtomicBool, Ordering};
 
 use glow::Context;
 
@@ -14,17 +15,23 @@ pub enum GLProfile {
 }
 
 static mut PLATFORM: *mut Platform = null_mut();
+static HEADLESS: AtomicBool = AtomicBool::new(false);
 
-pub fn platform() -> &'static mut Platform {
+fn platform() -> &'static mut Platform {
     unsafe { &mut *PLATFORM }
+}
+
+fn is_headless() -> bool {
+    HEADLESS.load(Ordering::Relaxed)
 }
 
 //
 // Core
 //
 pub fn init(headless: bool) {
-    let mut platform = Platform::new();
+    HEADLESS.store(headless, Ordering::Relaxed);
 
+    let mut platform = Platform::new();
     platform.init(headless);
 
     unsafe {
@@ -33,65 +40,101 @@ pub fn init(headless: bool) {
 }
 
 pub fn quit() {
-    platform().quit();
+    if !is_headless() {
+        platform().quit();
+    }
+    std::process::exit(0);
 }
 
 pub fn ticks() -> u32 {
+    if is_headless() {
+        return 0;
+    }
     platform().ticks()
 }
 
 pub fn export_browser_file(filename: &str) {
-    platform().export_browser_file(filename);
+    if !is_headless() {
+        platform().export_browser_file(filename);
+    }
 }
 
 //
 // Window
 //
 pub fn init_window(title: &str, width: u32, height: u32) {
-    platform().init_window(title, width, height);
+    if !is_headless() {
+        platform().init_window(title, width, height);
+    }
 }
 
 pub fn window_pos() -> (i32, i32) {
+    if is_headless() {
+        return (0, 0);
+    }
     platform().window_pos()
 }
 
 pub fn set_window_pos(x: i32, y: i32) {
-    platform().set_window_pos(x, y);
+    if !is_headless() {
+        platform().set_window_pos(x, y);
+    }
 }
 
 pub fn window_size() -> (u32, u32) {
+    if is_headless() {
+        return (0, 0);
+    }
     platform().window_size()
 }
 
 pub fn set_window_size(width: u32, height: u32) {
-    platform().set_window_size(width, height);
+    if !is_headless() {
+        platform().set_window_size(width, height);
+    }
 }
 
 pub fn set_window_title(title: &str) {
-    platform().set_window_title(title);
+    if !is_headless() {
+        platform().set_window_title(title);
+    }
 }
 
 pub fn set_window_icon(width: u32, height: u32, rgba: &[u8]) {
-    platform().set_window_icon(width, height, rgba);
+    if !is_headless() {
+        platform().set_window_icon(width, height, rgba);
+    }
 }
 
 pub fn is_fullscreen() -> bool {
+    if is_headless() {
+        return false;
+    }
     platform().is_fullscreen()
 }
 
 pub fn set_fullscreen(enabled: bool) {
-    platform().set_fullscreen(enabled);
+    if !is_headless() {
+        platform().set_fullscreen(enabled);
+    }
 }
 
 pub fn set_mouse_pos(x: i32, y: i32) {
-    platform().set_mouse_pos(x, y);
+    if !is_headless() {
+        platform().set_mouse_pos(x, y);
+    }
 }
 
 pub fn set_mouse_visible(visible: bool) {
-    platform().set_mouse_visible(visible);
+    if !is_headless() {
+        platform().set_mouse_visible(visible);
+    }
 }
 
 pub fn display_size() -> (u32, u32) {
+    if is_headless() {
+        return (0, 0);
+    }
     platform().display_size()
 }
 
@@ -103,40 +146,59 @@ pub fn start_audio<F: FnMut(&mut [i16]) + 'static>(
     buffer_size: u32,
     callback: F,
 ) {
-    platform().start_audio(sample_rate, buffer_size, callback);
+    if !is_headless() {
+        platform().start_audio(sample_rate, buffer_size, callback);
+    }
 }
 
 pub fn pause_audio(paused: bool) {
-    platform().pause_audio(paused);
+    if !is_headless() {
+        platform().pause_audio(paused);
+    }
 }
 
 pub fn lock_audio() {
-    platform().lock_audio();
+    if !is_headless() {
+        platform().lock_audio();
+    }
 }
 
 pub fn unlock_audio() {
-    platform().unlock_audio();
+    if !is_headless() {
+        platform().unlock_audio();
+    }
 }
 
 //
 // Frame
 //
 pub fn run_frame_loop<F: FnMut(f32)>(fps: u32, callback: F) {
-    platform().run_frame_loop(fps, callback);
+    if !is_headless() {
+        platform().run_frame_loop(fps, callback);
+    }
 }
 
 pub fn step_frame(fps: u32) {
-    platform().step_frame(fps);
+    if !is_headless() {
+        platform().step_frame(fps);
+    }
 }
 
 pub fn poll_events() -> Vec<Event> {
+    if is_headless() {
+        return Vec::new();
+    }
     platform().poll_events()
 }
 
 pub fn gl_profile() -> GLProfile {
+    if is_headless() {
+        return GLProfile::None;
+    }
     platform().gl_profile()
 }
 
 pub fn gl_context() -> &'static mut Context {
+    assert!(!is_headless(), "GL context is not available in headless mode");
     platform().gl_context()
 }

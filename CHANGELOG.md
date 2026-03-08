@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.7.11
+
+- Added headless guards to platform facade layer
+
 ## 2.7.10
 
 - Added padding to default window icon for better OS integration
