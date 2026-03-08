@@ -44,18 +44,6 @@ See `Makefile` for prerequisites, WASM setup, and all available targets.
 - `api-reference.json` and `__init__.pyi` reflect the Rust implementation's default values
 - The binding layer passes values through as-is — no defaults in PyO3 bindings
 
-## Release
-
-Always confirm the version number before releasing.
-Verify that `develop` and `main` are in sync before tagging.
-
-```
-git tag -a v{VERSION} -m "Pyxel {VERSION}"
-git push origin v{VERSION}
-```
-
-Pushing the tag triggers `release.yml` — builds, creates a GitHub Release, and publishes to PyPI.
-
 ## CHANGELOG
 
 Maintained in `CHANGELOG.md` at the repo root.
