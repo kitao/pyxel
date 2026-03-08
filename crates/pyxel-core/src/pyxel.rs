@@ -74,6 +74,7 @@ macro_rules! define_global {
 }
 
 // System
+define_static!(is_headless, IS_HEADLESS, bool, false);
 define_static!(width, WIDTH, u32, 0);
 define_static!(height, HEIGHT, u32, 0);
 define_static!(frame_count, FRAME_COUNT, u32, 0);
@@ -104,7 +105,7 @@ pub struct Pyxel {
     pub(crate) system: System,
     pub(crate) resource: Resource,
     pub(crate) input: Input,
-    pub(crate) graphics: Graphics,
+    pub(crate) graphics: Option<Graphics>,
 }
 
 pub fn init(
@@ -116,11 +117,15 @@ pub fn init(
     display_scale: Option<u32>,
     capture_scale: Option<u32>,
     capture_sec: Option<u32>,
+    headless: Option<bool>,
 ) {
     assert!(
         !IS_INITIALIZED.swap(true, Ordering::Relaxed),
         "Pyxel already initialized"
     );
+
+    let headless = headless.unwrap_or(false);
+    *is_headless() = headless;
 
     // Set dimensions
     *width() = w;
@@ -133,21 +138,23 @@ pub fn init(
     let fps = fps.unwrap_or(DEFAULT_FPS);
 
     // Platform
-    platform::init();
+    platform::init(headless);
 
-    let (display_width, display_height) = platform::display_size();
-    let display_scale = display_scale
-        .unwrap_or(
-            (f32::min(
-                display_width as f32 / w as f32,
-                display_height as f32 / h as f32,
-            ) * DISPLAY_RATIO) as u32,
-        )
-        .max(1);
-    let window_width = w * display_scale;
-    let window_height = h * display_scale;
+    if !headless {
+        let (display_width, display_height) = platform::display_size();
+        let display_scale = display_scale
+            .unwrap_or(
+                (f32::min(
+                    display_width as f32 / w as f32,
+                    display_height as f32 / h as f32,
+                ) * DISPLAY_RATIO) as u32,
+            )
+            .max(1);
+        let window_width = w * display_scale;
+        let window_height = h * display_scale;
 
-    platform::init_window(title, window_width, window_height);
+        platform::init_window(title, window_width, window_height);
+    }
 
     // Resize screen
     screen().canvas = Canvas::new(w, h);
@@ -162,10 +169,14 @@ pub fn init(
     dropped_files().clear();
 
     // Build Pyxel instance
-    let system = System::new(fps, quit_key);
+    let system = System::new(fps, quit_key, headless);
     let resource = Resource::new(capture_scale, capture_sec, fps);
     let input = Input::new();
-    let graphics = Graphics::new();
+    let graphics = if headless {
+        None
+    } else {
+        Some(Graphics::new())
+    };
 
     set_pyxel_instance(Pyxel {
         system,
@@ -174,17 +185,17 @@ pub fn init(
         graphics,
     });
 
-    // Audio
-    Audio::start();
-
-    // Icon
-    pyxel().set_icon(&ICON_DATA, ICON_SCALE, ICON_COLKEY);
+    if !headless {
+        Audio::start();
+        pyxel().set_icon(&ICON_DATA, ICON_SCALE, ICON_COLKEY);
+    }
 }
 
 pub fn reset_statics() {
     IS_INITIALIZED.store(false, Ordering::Relaxed);
 
     // Reset scalar statics
+    *is_headless() = false;
     *width() = 0;
     *height() = 0;
     *frame_count() = 0;

@@ -38,7 +38,7 @@ pub struct System {
 }
 
 impl System {
-    pub fn new(fps: u32, quit_key: Key) -> Self {
+    pub fn new(fps: u32, quit_key: Key, headless: bool) -> Self {
         Self {
             fps,
             frame_ms: 1000.0 / fps as f32,
@@ -49,7 +49,11 @@ impl System {
             draw_profiler: Profiler::new(NUM_MEASURE_FRAMES),
             perf_monitor_enabled: false,
             integer_scale_enabled: false,
-            window_watcher: WindowWatcher::new(),
+            window_watcher: if headless {
+                WindowWatcher::new_headless()
+            } else {
+                WindowWatcher::new()
+            },
             screen_x: 0,
             screen_y: 0,
             screen_scale: 0.0,
@@ -60,6 +64,14 @@ impl System {
 
 impl Pyxel {
     pub fn run<T: PyxelCallback>(&mut self, mut callback: T) {
+        if *pyxel::is_headless() {
+            loop {
+                self.update_frame(Some(&mut callback));
+                self.draw_frame(Some(&mut callback));
+                *pyxel::frame_count() += 1;
+            }
+        }
+
         platform::run_frame_loop(self.system.fps, move |delta_ms| {
             let ticks = platform::ticks();
             self.system.fps_profiler.end(ticks);
@@ -108,6 +120,10 @@ impl Pyxel {
             }
         }
 
+        if *pyxel::is_headless() {
+            return;
+        }
+
         let image = Image::new(*pyxel::width(), *pyxel::height());
         unsafe {
             (&mut *image).draw_image(
@@ -128,6 +144,11 @@ impl Pyxel {
     }
 
     pub fn flip_screen(&mut self) {
+        if *pyxel::is_headless() {
+            *pyxel::frame_count() += 1;
+            return;
+        }
+
         self.system.update_profiler.end(platform::ticks());
 
         self.draw_frame(None);
@@ -169,10 +190,18 @@ impl Pyxel {
     }
 
     pub fn set_title(&self, title: &str) {
+        if *pyxel::is_headless() {
+            return;
+        }
+
         platform::set_window_title(title);
     }
 
     pub fn set_icon(&self, data_str: &[&str], scale: u32, transparent: Option<Color>) {
+        if *pyxel::is_headless() {
+            return;
+        }
+
         let colors = pyxel::colors();
         let width = utils::simplify_string(data_str[0]).len() as u32;
         let height = data_str.len() as u32;
@@ -219,6 +248,10 @@ impl Pyxel {
     }
 
     pub fn set_fullscreen(&self, enabled: bool) {
+        if *pyxel::is_headless() {
+            return;
+        }
+
         platform::set_fullscreen(enabled);
     }
 
@@ -358,6 +391,13 @@ impl Pyxel {
     }
 
     fn update_frame(&mut self, callback: Option<&mut dyn PyxelCallback>) {
+        if *pyxel::is_headless() {
+            if let Some(callback) = callback {
+                callback.update(self);
+            }
+            return;
+        }
+
         self.system.update_profiler.start(platform::ticks());
 
         self.process_events();
@@ -466,6 +506,13 @@ impl Pyxel {
     }
 
     fn draw_frame(&mut self, callback: Option<&mut dyn PyxelCallback>) {
+        if *pyxel::is_headless() {
+            if let Some(callback) = callback {
+                callback.draw(self);
+            }
+            return;
+        }
+
         self.system.draw_profiler.start(platform::ticks());
 
         if self.system.paused {

@@ -70,7 +70,16 @@ impl PlatformSdl2 {
     //
     // Core
     //
-    pub fn init(&mut self) {
+    pub fn init(&mut self, headless: bool) {
+        if headless {
+            assert!(
+                unsafe { SDL_Init(0) } >= 0,
+                "Failed to initialize SDL2: {}",
+                unsafe { CStr::from_ptr(SDL_GetError()) }.to_string_lossy()
+            );
+            return;
+        }
+
         let sdl_flags = SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMECONTROLLER;
 
         // Prefer Wayland driver on Wayland sessions (workaround for bundled

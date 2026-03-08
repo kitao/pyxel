@@ -35,6 +35,13 @@ impl WindowWatcher {
         }
     }
 
+    pub fn new_headless() -> Self {
+        Self {
+            watch_state_file: None,
+            window_state: None,
+        }
+    }
+
     pub fn update(&mut self) {
         if platform::is_fullscreen() {
             return;

@@ -22,10 +22,10 @@ pub fn platform() -> &'static mut Platform {
 //
 // Core
 //
-pub fn init() {
+pub fn init(headless: bool) {
     let mut platform = Platform::new();
 
-    platform.init();
+    platform.init(headless);
 
     unsafe {
         PLATFORM = Box::into_raw(Box::new(platform));

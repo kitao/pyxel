@@ -447,6 +447,10 @@ impl Pyxel {
     }
 
     pub(crate) fn render_screen(&mut self) {
+        if self.graphics.is_none() {
+            return;
+        }
+
         unsafe {
             let gl = platform::gl_context();
             self.set_viewport(gl);
@@ -463,7 +467,8 @@ impl Pyxel {
     }
 
     unsafe fn use_screen_shader(&self, gl: &mut glow::Context) {
-        let shader = &self.graphics.screen_shaders[self.system.screen_mode as usize];
+        let shader =
+            &self.graphics.as_ref().unwrap().screen_shaders[self.system.screen_mode as usize];
         gl.use_program(Some(shader.shader_program));
         let uniform_locations = &shader.uniform_locations;
 
@@ -517,7 +522,10 @@ impl Pyxel {
 
     unsafe fn bind_screen_texture(&self, gl: &mut glow::Context) {
         gl.active_texture(glow::TEXTURE0);
-        gl.bind_texture(glow::TEXTURE_2D, Some(self.graphics.screen_texture));
+        gl.bind_texture(
+            glow::TEXTURE_2D,
+            Some(self.graphics.as_ref().unwrap().screen_texture),
+        );
         gl.pixel_store_i32(glow::UNPACK_ALIGNMENT, 1);
 
         let (internal_format, format) = if platform::gl_profile() == GLProfile::Gles {
@@ -541,7 +549,10 @@ impl Pyxel {
 
     unsafe fn bind_colors_texture(&self, gl: &mut glow::Context) {
         gl.active_texture(glow::TEXTURE1);
-        gl.bind_texture(glow::TEXTURE_2D, Some(self.graphics.colors_texture));
+        gl.bind_texture(
+            glow::TEXTURE_2D,
+            Some(self.graphics.as_ref().unwrap().colors_texture),
+        );
         gl.pixel_store_i32(glow::UNPACK_ALIGNMENT, 4);
 
         let colors = pyxel::colors();

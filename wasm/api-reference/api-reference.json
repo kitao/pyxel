@@ -263,7 +263,7 @@
         {
           "name": "init",
           "type": "function",
-          "signature": "init(width, height, title=\"Pyxel\", fps=30, quit_key=KEY_ESCAPE, display_scale=None, capture_scale=2, capture_sec=10)",
+          "signature": "init(width, height, title=\"Pyxel\", fps=30, quit_key=KEY_ESCAPE, display_scale=None, capture_scale=2, capture_sec=10, headless=False)",
           "description": {
             "en": "Initialize the Pyxel application with the screen size (width, height).",
             "cn": "以画面大小 (width, height) 初始化Pyxel应用程序。",
@@ -421,6 +421,24 @@
                 "ru": "Максимальное время записи видео (по умолчанию: 10)",
                 "tr": "Ekran kaydı maksimum süresi (varsayılan: 10)",
                 "uk": "Максимальний час запису відео (за замовчуванням: 10)"
+              }
+            },
+            {
+              "name": "headless",
+              "type": "bool",
+              "desc": {
+                "en": "Run without window, audio device, or display (default: False)",
+                "cn": "无窗口、音频设备或显示运行（默认: False）",
+                "de": "Ohne Fenster, Audiogerät oder Anzeige ausführen (Standard: False)",
+                "es": "Ejecutar sin ventana, dispositivo de audio ni pantalla (predeterminado: False)",
+                "fr": "Exécuter sans fenêtre, périphérique audio ou affichage (par défaut : False)",
+                "it": "Esegui senza finestra, dispositivo audio o display (predefinito: False)",
+                "ja": "ウィンドウ・音声デバイス・画面表示なしで実行する（デフォルト: False）",
+                "ko": "창, 오디오 장치, 디스플레이 없이 실행 (기본값: False)",
+                "pt": "Executar sem janela, dispositivo de áudio ou exibição (padrão: False)",
+                "ru": "Запуск без окна, аудиоустройства или отображения (по умолчанию: False)",
+                "tr": "Pencere, ses cihazı veya ekran olmadan çalıştır (varsayılan: False)",
+                "uk": "Запуск без вікна, аудіопристрою або відображення (за замовчуванням: False)"
               }
             }
           ],

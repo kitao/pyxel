@@ -126,10 +126,12 @@ impl Pyxel {
         let y = f32_to_i32(y);
         self.input.key_values.insert(MOUSE_POS_X, x);
         self.input.key_values.insert(MOUSE_POS_Y, y);
-        platform::set_mouse_pos(
-            x * self.system.screen_scale as i32 + self.system.screen_x,
-            y * self.system.screen_scale as i32 + self.system.screen_y,
-        );
+        if !*pyxel::is_headless() {
+            platform::set_mouse_pos(
+                x * self.system.screen_scale as i32 + self.system.screen_x,
+                y * self.system.screen_scale as i32 + self.system.screen_y,
+            );
+        }
     }
 
     pub(crate) fn start_input_frame(&mut self) {

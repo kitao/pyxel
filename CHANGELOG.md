@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.7.10
+
+- Added headless parameter to init() for windowless operation
+
 ## 2.7.9
 
 - Aligned 3D coordinate system so rot=(0,0,0) matches 2D screen axes
