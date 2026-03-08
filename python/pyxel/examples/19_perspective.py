@@ -67,9 +67,9 @@ class App:
 
         # FOV (TG)
         if pyxel.btn(pyxel.KEY_T):
-            self.fov = min(self.fov + 2, 179)
-        if pyxel.btn(pyxel.KEY_G):
             self.fov = max(self.fov - 2, 1)
+        if pyxel.btn(pyxel.KEY_G):
+            self.fov = min(self.fov + 2, 179)
 
     def draw(self):
         pyxel.cls(0)
