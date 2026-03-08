@@ -2,6 +2,7 @@
 
 ## 2.7.10
 
+- Added padding to default window icon for better OS integration
 - Added headless parameter to init() for windowless operation
 
 ## 2.7.9
