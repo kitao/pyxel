@@ -1,5 +1,10 @@
 # Change Log
 
+## 2.7.12
+
+- Added preset mood descriptions to gen_bgm API reference
+- Added channel count info to gen_bgm instr descriptions
+
 ## 2.7.11
 
 - Added headless guards to platform facade layer
