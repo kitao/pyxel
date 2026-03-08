@@ -3,7 +3,7 @@ use std::sync::Once;
 
 use pyo3::exceptions::{PyException, PyValueError};
 use pyo3::prelude::*;
-use pyo3::types::{PyDict, PyList};
+use pyo3::types::PyDict;
 
 use crate::image_wrapper::Image;
 
@@ -145,10 +145,6 @@ impl Tilemap {
         unsafe { &mut *self.inner }.set_tile(x, y, tile);
     }
 
-    pub fn fget(&self, x: f32, y: f32, bit: u32) -> bool {
-        unsafe { &mut *self.inner }.fget(x, y, bit)
-    }
-
     pub fn line(&self, x1: f32, y1: f32, x2: f32, y2: f32, tile: pyxel::Tile) {
         unsafe { &mut *self.inner }.draw_line(x1, y1, x2, y2, tile);
     }
@@ -197,24 +193,9 @@ impl Tilemap {
         h: f32,
         dx: f32,
         dy: f32,
-        walls: Bound<'_, PyAny>,
-    ) -> PyResult<(f32, f32)> {
-        let walls: &Bound<'_, PyList> = walls
-            .cast()
-            .map_err(|_| PyValueError::new_err("walls must be a list"))?;
-        let mut specs = Vec::with_capacity(walls.len());
-        for item in walls.iter() {
-            if let Ok(bit) = item.extract::<u32>() {
-                specs.push(pyxel::WallSpec::FlagBit(bit));
-            } else if let Ok(tile) = item.extract::<pyxel::Tile>() {
-                specs.push(pyxel::WallSpec::Tile(tile));
-            } else {
-                return Err(PyValueError::new_err(
-                    "walls must contain int (flag bit) or tuple (tile)",
-                ));
-            }
-        }
-        Ok(unsafe { &*self.inner }.collide(x, y, w, h, dx, dy, &specs))
+        walls: Vec<pyxel::Tile>,
+    ) -> (f32, f32) {
+        unsafe { &mut *self.inner }.collide(x, y, w, h, dx, dy, &walls)
     }
 
     #[pyo3(signature = (x, y, tm, u, v, w, h, tilekey=None, rotate=None, scale=None))]

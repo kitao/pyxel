@@ -8846,18 +8846,18 @@
           "type": "function",
           "signature": "Tilemap.collide(x, y, w, h, dx, dy, walls)",
           "description": {
-            "en": "Resolve collisions after applying pixel movement (dx, dy) to the pixel rectangle at (x, y) with pixel size (w, h), and return the adjusted (dx, dy). walls is a list of flag bit numbers (int) and/or tile coordinates (image_tx, image_ty) that act as obstacles.",
-            "cn": "将像素移动量 (dx, dy) 应用于位于 (x, y) 的像素矩形（大小为 (w, h)）后解决碰撞，返回调整后的 (dx, dy)。walls是作为障碍物的标志位编号和/或瓦片坐标的列表。",
-            "de": "Löst Kollisionen auf, nachdem die Pixelbewegung (dx, dy) auf das Pixelrechteck bei (x, y) mit Pixelgröße (w, h) angewendet wurde, und gibt das angepasste (dx, dy) zurück. walls ist eine Liste von Flag-Bitnummern und/oder Kachelkoordinaten, die als Hindernisse dienen.",
-            "es": "Resuelve colisiones tras aplicar el movimiento en píxeles (dx, dy) al rectángulo en píxeles en (x, y) con tamaño (w, h), y devuelve el (dx, dy) ajustado. walls es una lista de números de bit de flag y/o coordenadas de tiles que actúan como obstáculos.",
-            "fr": "Résout les collisions après application du mouvement en pixels (dx, dy) au rectangle en pixels à (x, y) de taille (w, h), et renvoie le (dx, dy) ajusté. walls est une liste de numéros de bit de flag et/ou de coordonnées de tuiles faisant office d'obstacles.",
-            "it": "Risolve le collisioni dopo aver applicato il movimento in pixel (dx, dy) al rettangolo in pixel a (x, y) con dimensione (w, h), e restituisce il (dx, dy) corretto. walls è una lista di numeri di bit flag e/o coordinate tile che fungono da ostacoli.",
-            "ja": "ピクセル座標 (x, y)、ピクセルサイズ (w, h) の矩形にピクセル移動量 (dx, dy) を適用した後の衝突判定を行い、調整済みの (dx, dy) を返す。wallsは障害物となるフラグビット番号やタイル座標のリスト。",
-            "ko": "픽셀 좌표 (x, y), 픽셀 크기 (w, h)의 사각형에 픽셀 이동량 (dx, dy)를 적용한 후 충돌을 해결하고, 조정된 (dx, dy)를 반환한다. walls는 장애물 역할을 하는 플래그 비트 번호 및/또는 타일 좌표 리스트이다.",
-            "pt": "Resolve colisões após aplicar o movimento em pixels (dx, dy) ao retângulo em pixels em (x, y) com tamanho (w, h), e retorna o (dx, dy) ajustado. walls é uma lista de números de bit de flag e/ou coordenadas de tiles que atuam como obstáculos.",
-            "ru": "Разрешает столкновения после применения пиксельного движения (dx, dy) к пиксельному прямоугольнику в (x, y) с размером (w, h) и возвращает скорректированные (dx, dy). walls — список номеров битов флагов и/или координат тайлов-препятствий.",
-            "tr": "Piksel hareket (dx, dy) değerini (x, y) konumundaki piksel dikdörtgenine (w, h boyutunda) uyguladıktan sonra çarpışmaları çözer ve ayarlanmış (dx, dy) değerini döndürür. walls, engel olarak işlev gören bayrak bit numaraları ve/veya karo koordinatları listesidir.",
-            "uk": "Розв'язує зіткнення після застосування піксельного руху (dx, dy) до піксельного прямокутника в (x, y) з розміром (w, h) і повертає скориговані (dx, dy). walls — список номерів бітів прапорців та/або координат тайлів-перешкод."
+            "en": "Resolve collisions after applying pixel movement (dx, dy) to the pixel rectangle at (x, y) with pixel size (w, h), and return the adjusted (dx, dy). walls is a list of tile coordinates that act as obstacles.",
+            "cn": "将像素移动量 (dx, dy) 应用于位于 (x, y) 的像素矩形（大小为 (w, h)）后解决碰撞，返回调整后的 (dx, dy)。walls是作为障碍物的瓦片坐标列表。",
+            "de": "Löst Kollisionen auf, nachdem die Pixelbewegung (dx, dy) auf das Pixelrechteck bei (x, y) mit Pixelgröße (w, h) angewendet wurde, und gibt das angepasste (dx, dy) zurück. walls ist eine Liste von Kachelkoordinaten, die als Hindernisse dienen.",
+            "es": "Resuelve colisiones tras aplicar el movimiento en píxeles (dx, dy) al rectángulo en píxeles en (x, y) con tamaño (w, h), y devuelve el (dx, dy) ajustado. walls es una lista de coordenadas de tiles que actúan como obstáculos.",
+            "fr": "Résout les collisions après application du mouvement en pixels (dx, dy) au rectangle en pixels à (x, y) de taille (w, h), et renvoie le (dx, dy) ajusté. walls est une liste de coordonnées de tuiles faisant office d'obstacles.",
+            "it": "Risolve le collisioni dopo aver applicato il movimento in pixel (dx, dy) al rettangolo in pixel a (x, y) con dimensione (w, h), e restituisce il (dx, dy) corretto. walls è una lista di coordinate tile che fungono da ostacoli.",
+            "ja": "ピクセル座標 (x, y)、ピクセルサイズ (w, h) の矩形にピクセル移動量 (dx, dy) を適用した後の衝突判定を行い、調整済みの (dx, dy) を返す。wallsは障害物となるタイル座標のリスト。",
+            "ko": "픽셀 좌표 (x, y), 픽셀 크기 (w, h)의 사각형에 픽셀 이동량 (dx, dy)를 적용한 후 충돌을 해결하고, 조정된 (dx, dy)를 반환한다. walls는 장애물 역할을 하는 타일 좌표 리스트이다.",
+            "pt": "Resolve colisões após aplicar o movimento em pixels (dx, dy) ao retângulo em pixels em (x, y) com tamanho (w, h), e retorna o (dx, dy) ajustado. walls é uma lista de coordenadas de tiles que atuam como obstáculos.",
+            "ru": "Разрешает столкновения после применения пиксельного движения (dx, dy) к пиксельному прямоугольнику в (x, y) с размером (w, h) и возвращает скорректированные (dx, dy). walls — список координат тайлов-препятствий.",
+            "tr": "Piksel hareket (dx, dy) değerini (x, y) konumundaki piksel dikdörtgenine (w, h boyutunda) uyguladıktan sonra çarpışmaları çözer ve ayarlanmış (dx, dy) değerini döndürür. walls, engel olarak işlev gören karo koordinatları listesidir.",
+            "uk": "Розв'язує зіткнення після застосування піксельного руху (dx, dy) до піксельного прямокутника в (x, y) з розміром (w, h) і повертає скориговані (dx, dy). walls — список координат тайлів-перешкод."
           },
           "params": [
             {
@@ -8970,20 +8970,20 @@
             },
             {
               "name": "walls",
-              "type": "list[int | tuple[int, int]]",
+              "type": "list[tuple[int, int]]",
               "desc": {
-                "en": "List of flag bit numbers and/or wall tiles (image_tx, image_ty)",
-                "cn": "标志位编号和/或墙壁瓦片 (image_tx, image_ty) 的列表",
-                "de": "Liste der Flag-Bitnummern und/oder Wandkacheln (image_tx, image_ty)",
-                "es": "Lista de números de bit de flag y/o tiles de pared (image_tx, image_ty)",
-                "fr": "Liste de numéros de bit de flag et/ou de tuiles de mur (image_tx, image_ty)",
-                "it": "Lista di numeri di bit flag e/o tile muro (image_tx, image_ty)",
-                "ja": "フラグビット番号や壁タイル (image_tx, image_ty) のリスト",
-                "ko": "플래그 비트 번호 및/또는 벽 타일 (image_tx, image_ty) 리스트",
-                "pt": "Lista de números de bit de flag e/ou tiles de parede (image_tx, image_ty)",
-                "ru": "Список номеров битов флагов и/или тайлов стен (image_tx, image_ty)",
-                "tr": "Bayrak bit numaraları ve/veya duvar karoları (image_tx, image_ty) listesi",
-                "uk": "Список номерів бітів прапорців та/або тайлів стін (image_tx, image_ty)"
+                "en": "List of wall tiles (image_tx, image_ty)",
+                "cn": "墙壁瓦片 (image_tx, image_ty) 的列表",
+                "de": "Liste der Wandkacheln (image_tx, image_ty)",
+                "es": "Lista de tiles de pared (image_tx, image_ty)",
+                "fr": "Liste de tuiles de mur (image_tx, image_ty)",
+                "it": "Lista di tile muro (image_tx, image_ty)",
+                "ja": "壁タイル (image_tx, image_ty) のリスト",
+                "ko": "벽 타일 (image_tx, image_ty) 리스트",
+                "pt": "Lista de tiles de parede (image_tx, image_ty)",
+                "ru": "Список тайлов стен (image_tx, image_ty)",
+                "tr": "Duvar karoları listesi (image_tx, image_ty)",
+                "uk": "Список тайлів стін (image_tx, image_ty)"
               }
             }
           ],

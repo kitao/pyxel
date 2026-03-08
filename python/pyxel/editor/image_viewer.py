@@ -110,19 +110,6 @@ class ImageViewer(Widget):
 
     def __on_mouse_down(self, key, x, y):
         if key == pyxel.MOUSE_BUTTON_LEFT:
-            # Toggle tile flag with Alt+click
-            if pyxel.btn(pyxel.KEY_ALT) and not self._is_tilemap_mode:
-                px = x - self.x - 1
-                py = y - self.y - 1
-                tx = self.viewport_x_var + px // 8
-                ty = self.viewport_y_var + py // 8
-                if 0 <= tx < 32 and 0 <= ty < 32:
-                    lx = px % 8
-                    ly = py % 8
-                    bit = (0 if lx < 4 else 1) if ly < 4 else (3 if lx < 4 else 2)
-                    img = pyxel.images[self.image_index_var]
-                    img.fset(tx, ty, bit, not img.fget(tx, ty, bit))
-                return
             self.focus_x_var, self.focus_y_var = self._screen_to_focus(x, y)
             self._press_x = self.focus_x_var
             self._press_y = self.focus_y_var
@@ -155,11 +142,6 @@ class ImageViewer(Widget):
                 self._drag_offset_y -= offset * 8
 
     def __on_mouse_hover(self, x, y):
-        if pyxel.btn(pyxel.KEY_ALT) and not self._is_tilemap_mode:
-            tx, ty = self._screen_to_focus(x, y)
-            self.help_message_var = f"FLAG:ALT+CLICK ({tx},{ty})"
-            return
-
         x, y = self._screen_to_focus(x, y)
         self.help_message_var = (
             f"TILE:SHIFT+CURSOR ({x},{y})"
@@ -182,39 +164,6 @@ class ImageViewer(Widget):
             self.height - 2,
         )
         pyxel.pal()
-
-        # Draw flag indicators
-        if pyxel.btn(pyxel.KEY_ALT) and not self._is_tilemap_mode:
-            flag_colors = (8, 10, 11, 12)
-            petal_rects = (
-                ((2, 2, 2, 2),),  # bit 0: top-left
-                ((4, 2, 2, 2),),  # bit 1: top-right
-                ((4, 4, 2, 2),),  # bit 2: bottom-right
-                ((2, 4, 2, 2),),  # bit 3: bottom-left
-            )
-            vx = self.viewport_x_var
-            vy = self.viewport_y_var
-            cols = (self.width - 2) // 8
-            rows = (self.height - 2) // 8
-            pyxel.clip(self.x + 1, self.y + 1, self.width - 2, self.height - 2)
-            for row in range(rows):
-                for col in range(cols):
-                    tx = vx + col
-                    ty = vy + row
-                    if tx >= 32 or ty >= 32:
-                        continue
-                    img = pyxel.images[self.image_index_var]
-                    bx = self.x + 1 + col * 8
-                    by = self.y + 1 + row * 8
-                    pyxel.rect(bx + 2, by + 1, 4, 1, 0)
-                    pyxel.rect(bx + 2, by + 6, 4, 1, 0)
-                    pyxel.rect(bx + 1, by + 2, 1, 4, 0)
-                    pyxel.rect(bx + 6, by + 2, 1, 4, 0)
-                    for bit in range(4):
-                        c = flag_colors[bit] if img.fget(tx, ty, bit) else 1
-                        for ox, oy, pw, ph in petal_rects[bit]:
-                            pyxel.rect(bx + ox, by + oy, pw, ph, c)
-            pyxel.clip()
 
         # Draw focus
         x = self.x + (self.focus_x_var - self.viewport_x_var) * 8 + 1

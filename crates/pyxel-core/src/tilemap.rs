@@ -2,7 +2,6 @@ use std::ptr;
 
 use crate::canvas::{Canvas, ToIndex};
 use crate::image::Image;
-use crate::pyxel;
 use crate::settings::TILE_SIZE;
 use crate::tmx_parser::parse_tmx;
 use crate::utils::{f32_to_u32, parse_hex_string, simplify_string};
@@ -20,12 +19,6 @@ impl ToIndex for Tile {
 pub enum ImageSource {
     Index(u32),
     Image(*mut Image),
-}
-
-#[derive(Clone, Copy)]
-pub enum WallSpec {
-    Tile(Tile),
-    FlagBit(u32),
 }
 
 pub struct Tilemap {
@@ -148,15 +141,6 @@ impl Tilemap {
 
     pub fn set_tile(&mut self, x: f32, y: f32, tile: Tile) {
         self.canvas.set_value(x, y, tile);
-    }
-
-    pub fn fget(&mut self, x: f32, y: f32, bit: u32) -> bool {
-        let (tx, ty) = self.canvas.get_value(x, y);
-        let image = match &self.imgsrc {
-            ImageSource::Index(index) => unsafe { &*pyxel::images()[*index as usize] },
-            ImageSource::Image(image) => unsafe { &**image },
-        };
-        image.fget(tx as u32, ty as u32, bit)
     }
 
     pub fn draw_line(&mut self, x1: f32, y1: f32, x2: f32, y2: f32, tile: Tile) {
@@ -358,7 +342,7 @@ impl Tilemap {
         height: f32,
         dx: f32,
         dy: f32,
-        walls: &[WallSpec],
+        walls: &[Tile],
     ) -> (f32, f32) {
         let mut ndx = dx;
         let mut ndy = dy;
@@ -387,7 +371,7 @@ impl Tilemap {
         width: f32,
         height: f32,
         dx: f32,
-        walls: &[WallSpec],
+        walls: &[Tile],
     ) -> f32 {
         if dx == 0.0 {
             return dx;
@@ -439,7 +423,7 @@ impl Tilemap {
         width: f32,
         height: f32,
         dy: f32,
-        walls: &[WallSpec],
+        walls: &[Tile],
     ) -> f32 {
         if dy == 0.0 {
             return dy;
@@ -484,7 +468,7 @@ impl Tilemap {
         dy
     }
 
-    fn collide_is_wall(&self, tx: i32, ty: i32, walls: &[WallSpec]) -> bool {
+    fn collide_is_wall(&self, tx: i32, ty: i32, walls: &[Tile]) -> bool {
         if tx < 0 || ty < 0 {
             return false;
         }
@@ -494,15 +478,6 @@ impl Tilemap {
             return false;
         }
         let tile = self.canvas.read_data(tx as usize, ty as usize);
-        walls.iter().any(|wall| match wall {
-            WallSpec::Tile(t) => tile == *t,
-            WallSpec::FlagBit(bit) => {
-                let image = match &self.imgsrc {
-                    ImageSource::Index(index) => unsafe { &*pyxel::images()[*index as usize] },
-                    ImageSource::Image(image) => unsafe { &**image },
-                };
-                image.fget(tile.0 as u32, tile.1 as u32, *bit)
-            }
-        })
+        walls.contains(&tile)
     }
 }
