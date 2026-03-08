@@ -48,9 +48,10 @@ pub fn quit() {
 
 pub fn ticks() -> u32 {
     if is_headless() {
-        return 0;
+        0
+    } else {
+        platform().ticks()
     }
-    platform().ticks()
 }
 
 pub fn export_browser_file(filename: &str) {
@@ -70,9 +71,10 @@ pub fn init_window(title: &str, width: u32, height: u32) {
 
 pub fn window_pos() -> (i32, i32) {
     if is_headless() {
-        return (0, 0);
+        (0, 0)
+    } else {
+        platform().window_pos()
     }
-    platform().window_pos()
 }
 
 pub fn set_window_pos(x: i32, y: i32) {
@@ -83,9 +85,10 @@ pub fn set_window_pos(x: i32, y: i32) {
 
 pub fn window_size() -> (u32, u32) {
     if is_headless() {
-        return (0, 0);
+        (0, 0)
+    } else {
+        platform().window_size()
     }
-    platform().window_size()
 }
 
 pub fn set_window_size(width: u32, height: u32) {
@@ -108,9 +111,10 @@ pub fn set_window_icon(width: u32, height: u32, rgba: &[u8]) {
 
 pub fn is_fullscreen() -> bool {
     if is_headless() {
-        return false;
+        false
+    } else {
+        platform().is_fullscreen()
     }
-    platform().is_fullscreen()
 }
 
 pub fn set_fullscreen(enabled: bool) {
@@ -133,9 +137,10 @@ pub fn set_mouse_visible(visible: bool) {
 
 pub fn display_size() -> (u32, u32) {
     if is_headless() {
-        return (0, 0);
+        (0, 0)
+    } else {
+        platform().display_size()
     }
-    platform().display_size()
 }
 
 //
@@ -186,16 +191,18 @@ pub fn step_frame(fps: u32) {
 
 pub fn poll_events() -> Vec<Event> {
     if is_headless() {
-        return Vec::new();
+        Vec::new()
+    } else {
+        platform().poll_events()
     }
-    platform().poll_events()
 }
 
 pub fn gl_profile() -> GLProfile {
     if is_headless() {
-        return GLProfile::None;
+        GLProfile::None
+    } else {
+        platform().gl_profile()
     }
-    platform().gl_profile()
 }
 
 pub fn gl_context() -> &'static mut Context {
