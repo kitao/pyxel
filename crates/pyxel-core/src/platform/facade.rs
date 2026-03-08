@@ -199,6 +199,9 @@ pub fn gl_profile() -> GLProfile {
 }
 
 pub fn gl_context() -> &'static mut Context {
-    assert!(!is_headless(), "GL context is not available in headless mode");
+    assert!(
+        !is_headless(),
+        "GL context is not available in headless mode"
+    );
     platform().gl_context()
 }
