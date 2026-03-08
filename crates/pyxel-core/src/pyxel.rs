@@ -277,6 +277,7 @@ fn init_screen() -> Image {
     Image {
         canvas: Canvas::new(0, 0),
         palette: array::from_fn(|i| i as Color),
+        flags: Vec::new(),
     }
 }
 
@@ -296,6 +297,7 @@ fn init_cursor_image() -> Image {
     let mut image = Image {
         canvas: Canvas::new(CURSOR_WIDTH, CURSOR_HEIGHT),
         palette: array::from_fn(|i| i as Color),
+        flags: Vec::new(),
     };
     image.set(0, 0, &CURSOR_DATA);
     image
@@ -307,6 +309,7 @@ fn init_font_image() -> Image {
     let mut image = Image {
         canvas: Canvas::new(w, h),
         palette: array::from_fn(|i| i as Color),
+        flags: Vec::new(),
     };
     for (fi, data) in FONT_DATA.iter().enumerate() {
         let row = fi as u32 / NUM_FONT_ROWS;

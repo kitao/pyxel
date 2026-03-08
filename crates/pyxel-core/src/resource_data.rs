@@ -5,6 +5,7 @@ use serde::{Deserialize, Serialize};
 use crate::image::{Color, Image};
 use crate::music::Music;
 use crate::pyxel::{self, Pyxel};
+use crate::settings::TILE_SIZE;
 use crate::sound::{Sound, SoundEffect, SoundNote, SoundSpeed, SoundTone, SoundVolume};
 use crate::tilemap::{ImageSource, ImageTileCoord, Tilemap};
 use crate::utils::{compress_vec2, expand_vec2, trim_empty_vecs};
@@ -14,6 +15,8 @@ struct ImageData {
     width: u32,
     height: u32,
     data: Vec<Vec<Color>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    flags: Vec<Vec<u8>>,
 }
 
 impl ImageData {
@@ -30,10 +33,19 @@ impl ImageData {
             .collect();
         let data = compress_vec2(&data);
 
+        let flags = if image.flags.iter().any(|&f| f != 0) {
+            let tw = (width / TILE_SIZE) as usize;
+            let flags: Vec<Vec<_>> = image.flags.chunks(tw).map(<[u8]>::to_vec).collect();
+            compress_vec2(&flags)
+        } else {
+            Vec::new()
+        };
+
         Self {
             width,
             height,
             data,
+            flags,
         }
     }
 
@@ -44,6 +56,13 @@ impl ImageData {
         {
             let image = unsafe { &mut *image };
             image.canvas.data = data.into_iter().flatten().collect();
+
+            if !self.flags.is_empty() {
+                let tw = (self.width / TILE_SIZE) as usize;
+                let th = (self.height / TILE_SIZE) as usize;
+                let flags = expand_vec2(&self.flags, th, tw);
+                image.flags = flags.into_iter().flatten().collect();
+            }
         }
 
         image

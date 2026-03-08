@@ -68,6 +68,14 @@ impl Image {
         Ok(array.unbind())
     }
 
+    pub fn fget(&self, tx: u32, ty: u32, bit: u32) -> bool {
+        unsafe { &*self.inner }.fget(tx, ty, bit)
+    }
+
+    pub fn fset(&self, tx: u32, ty: u32, bit: u32, val: bool) {
+        unsafe { &mut *self.inner }.fset(tx, ty, bit, val);
+    }
+
     pub fn set(&self, x: i32, y: i32, data: Vec<String>) {
         let data_refs: Vec<_> = data.iter().map(String::as_str).collect();
         unsafe { &mut *self.inner }.set(x, y, &data_refs);

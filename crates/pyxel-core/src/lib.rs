@@ -71,5 +71,5 @@ pub use crate::pyxel::{
 pub use crate::settings::*;
 pub use crate::sound::{Sound, SoundEffect, SoundNote, SoundSpeed, SoundTone, SoundVolume};
 pub use crate::system::PyxelCallback;
-pub use crate::tilemap::{ImageSource, ImageTileCoord, Tile, Tilemap};
+pub use crate::tilemap::{ImageSource, ImageTileCoord, Tile, Tilemap, WallSpec};
 pub use crate::tone::{Tone, ToneGain, ToneMode, ToneSample};

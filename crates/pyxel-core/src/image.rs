@@ -26,13 +26,17 @@ impl ToIndex for Color {
 pub struct Image {
     pub(crate) canvas: Canvas<Color>,
     pub(crate) palette: [Color; MAX_COLORS as usize],
+    pub(crate) flags: Vec<u8>,
 }
 
 impl Image {
     pub fn new(width: u32, height: u32) -> *mut Image {
+        let tw = (width / TILE_SIZE) as usize;
+        let th = (height / TILE_SIZE) as usize;
         Box::into_raw(Box::new(Self {
             canvas: Canvas::new(width, height),
             palette: array::from_fn(|i| i as Color),
+            flags: vec![0u8; tw * th],
         }))
     }
 
@@ -107,6 +111,24 @@ impl Image {
 
     pub fn data_ptr(&mut self) -> *mut Color {
         self.canvas.data_ptr()
+    }
+
+    pub fn fget(&self, tx: u32, ty: u32, bit: u32) -> bool {
+        let tw = self.width() / TILE_SIZE;
+        let idx = (ty * tw + tx) as usize;
+        self.flags.get(idx).is_some_and(|f| f & (1 << bit) != 0)
+    }
+
+    pub fn fset(&mut self, tx: u32, ty: u32, bit: u32, val: bool) {
+        let tw = self.width() / TILE_SIZE;
+        let idx = (ty * tw + tx) as usize;
+        if let Some(f) = self.flags.get_mut(idx) {
+            if val {
+                *f |= 1 << bit;
+            } else {
+                *f &= !(1 << bit);
+            }
+        }
     }
 
     pub fn set(&mut self, x: i32, y: i32, data_str: &[&str]) {
