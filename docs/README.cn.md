@@ -366,14 +366,14 @@ Pyxel 还包含需要专业知识的”高级 API”。在参考页面勾选”A
 
 ## 工具与示例
 
-- [Pyxel Showcase](https://kitao.github.io/pyxel/wasm/showcase/)
-- [Pyxel API Reference](https://kitao.github.io/pyxel/wasm/api-reference/)
-- [Pyxel Web Launcher](https://kitao.github.io/pyxel/wasm/launcher/)
-- [Pyxel Code Maker](https://kitao.github.io/pyxel/wasm/code-maker/)
-- [Pyxel MML Studio](https://kitao.github.io/pyxel/wasm/mml-studio/)
-- [Pyxel VS Code 扩展](https://marketplace.visualstudio.com/items?itemName=kitao.pyxel-vscode)
-- [Pyxel MCP 服务器](https://github.com/kitao/pyxel-mcp)
-- [Pyxel Claude Code 技能](https://github.com/kitao/pyxel-skill)
+- [Showcase](https://kitao.github.io/pyxel/wasm/showcase/)
+- [API Reference](https://kitao.github.io/pyxel/wasm/api-reference/)
+- [Web Launcher](https://kitao.github.io/pyxel/wasm/launcher/)
+- [Code Maker](https://kitao.github.io/pyxel/wasm/code-maker/)
+- [MML Studio](https://kitao.github.io/pyxel/wasm/mml-studio/)
+- [VS Code 扩展](https://marketplace.visualstudio.com/items?itemName=kitao.pyxel-vscode)
+- [MCP 服务器](https://github.com/kitao/pyxel-mcp)
+- [Claude Code 技能](https://github.com/kitao/pyxel-skill)
 
 ## 其他信息
 

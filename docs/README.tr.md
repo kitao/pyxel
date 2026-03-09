@@ -366,14 +366,14 @@ Pull isteği göndermek, katkınızı [MIT Lisansı](../LICENSE) altında lisans
 
 ## Araçlar ve Örnekler
 
-- [Pyxel Showcase](https://kitao.github.io/pyxel/wasm/showcase/)
-- [Pyxel API Reference](https://kitao.github.io/pyxel/wasm/api-reference/)
-- [Pyxel Web Launcher](https://kitao.github.io/pyxel/wasm/launcher/)
-- [Pyxel Code Maker](https://kitao.github.io/pyxel/wasm/code-maker/)
-- [Pyxel MML Studio](https://kitao.github.io/pyxel/wasm/mml-studio/)
-- [Pyxel VS Code Eklentisi](https://marketplace.visualstudio.com/items?itemName=kitao.pyxel-vscode)
-- [Pyxel MCP Sunucusu](https://github.com/kitao/pyxel-mcp)
-- [Pyxel Claude Code Becerisi](https://github.com/kitao/pyxel-skill)
+- [Showcase](https://kitao.github.io/pyxel/wasm/showcase/)
+- [API Reference](https://kitao.github.io/pyxel/wasm/api-reference/)
+- [Web Launcher](https://kitao.github.io/pyxel/wasm/launcher/)
+- [Code Maker](https://kitao.github.io/pyxel/wasm/code-maker/)
+- [MML Studio](https://kitao.github.io/pyxel/wasm/mml-studio/)
+- [VS Code Eklentisi](https://marketplace.visualstudio.com/items?itemName=kitao.pyxel-vscode)
+- [MCP Sunucusu](https://github.com/kitao/pyxel-mcp)
+- [Claude Code Becerisi](https://github.com/kitao/pyxel-skill)
 
 ## Diğer Bilgiler
 

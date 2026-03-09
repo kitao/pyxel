@@ -366,14 +366,14 @@ Enviar una solicitud de extracción implica que aceptas licenciar tu contribuci�
 
 ## Herramientas y Ejemplos
 
-- [Pyxel Showcase](https://kitao.github.io/pyxel/wasm/showcase/)
-- [Pyxel API Reference](https://kitao.github.io/pyxel/wasm/api-reference/)
-- [Pyxel Web Launcher](https://kitao.github.io/pyxel/wasm/launcher/)
-- [Pyxel Code Maker](https://kitao.github.io/pyxel/wasm/code-maker/)
-- [Pyxel MML Studio](https://kitao.github.io/pyxel/wasm/mml-studio/)
-- [Pyxel VS Code Extension](https://marketplace.visualstudio.com/items?itemName=kitao.pyxel-vscode)
-- [Pyxel MCP Server](https://github.com/kitao/pyxel-mcp)
-- [Pyxel Claude Code Skill](https://github.com/kitao/pyxel-skill)
+- [Showcase](https://kitao.github.io/pyxel/wasm/showcase/)
+- [API Reference](https://kitao.github.io/pyxel/wasm/api-reference/)
+- [Web Launcher](https://kitao.github.io/pyxel/wasm/launcher/)
+- [Code Maker](https://kitao.github.io/pyxel/wasm/code-maker/)
+- [MML Studio](https://kitao.github.io/pyxel/wasm/mml-studio/)
+- [VS Code Extension](https://marketplace.visualstudio.com/items?itemName=kitao.pyxel-vscode)
+- [MCP Server](https://github.com/kitao/pyxel-mcp)
+- [Claude Code Skill](https://github.com/kitao/pyxel-skill)
 
 ## Otra Información
 
