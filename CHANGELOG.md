@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.8.0
+
+- Reverted default window icon padding
+
 ## 2.7.12
 
 - Fixed quit causing fatal error on web
