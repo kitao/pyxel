@@ -373,6 +373,7 @@ Pull isteği göndermek, katkınızı [MIT Lisansı](../LICENSE) altında lisans
 - [Pyxel MML Studio](https://kitao.github.io/pyxel/wasm/mml-studio/)
 - [Pyxel VS Code Eklentisi](https://marketplace.visualstudio.com/items?itemName=kitao.pyxel-vscode)
 - [Pyxel MCP Sunucusu](https://github.com/kitao/pyxel-mcp)
+- [Pyxel Claude Code Becerisi](https://github.com/kitao/pyxel-skill)
 
 ## Diğer Bilgiler
 

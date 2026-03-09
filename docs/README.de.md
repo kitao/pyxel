@@ -373,6 +373,7 @@ Die Einreichung eines Pull-Requests impliziert, dass Sie zustimmen, Ihren Beitra
 - [Pyxel MML Studio](https://kitao.github.io/pyxel/wasm/mml-studio/)
 - [Pyxel VS Code Extension](https://marketplace.visualstudio.com/items?itemName=kitao.pyxel-vscode)
 - [Pyxel MCP Server](https://github.com/kitao/pyxel-mcp)
+- [Pyxel Claude Code Skill](https://github.com/kitao/pyxel-skill)
 
 ## Weitere Informationen
 

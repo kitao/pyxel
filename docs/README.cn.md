@@ -373,6 +373,7 @@ Pyxel 还包含需要专业知识的”高级 API”。在参考页面勾选”A
 - [Pyxel MML Studio](https://kitao.github.io/pyxel/wasm/mml-studio/)
 - [Pyxel VS Code 扩展](https://marketplace.visualstudio.com/items?itemName=kitao.pyxel-vscode)
 - [Pyxel MCP 服务器](https://github.com/kitao/pyxel-mcp)
+- [Pyxel Claude Code 技能](https://github.com/kitao/pyxel-skill)
 
 ## 其他信息
 

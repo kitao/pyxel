@@ -373,6 +373,7 @@ Pyxel에는 전문 지식이 필요한 "고급 API"도 포함되어 있습니다
 - [Pyxel MML Studio](https://kitao.github.io/pyxel/wasm/mml-studio/)
 - [Pyxel VS Code 확장](https://marketplace.visualstudio.com/items?itemName=kitao.pyxel-vscode)
 - [Pyxel MCP 서버](https://github.com/kitao/pyxel-mcp)
+- [Pyxel Claude Code 스킬](https://github.com/kitao/pyxel-skill)
 
 ## 기타 정보
 
