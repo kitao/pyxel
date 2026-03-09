@@ -2,6 +2,7 @@
 
 ## 2.8.0
 
+- Added project sharing via Gist, GitHub, and URL to Code Maker
 - Reverted default window icon padding
 
 ## 2.7.12

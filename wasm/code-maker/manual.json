@@ -451,37 +451,37 @@
   },
   "toolbar_items": [
     {
-      "label": "Load",
+      "label": "Load ▼",
       "desc": {
-        "en": "Load a project file (ZIP format) from your computer.",
-        "cn": "从计算机加载项目文件（ZIP 格式）。",
-        "de": "Eine Projektdatei (ZIP-Format) vom Computer laden.",
-        "es": "Cargar un archivo de proyecto (formato ZIP) desde su computadora.",
-        "fr": "Charger un fichier de projet (format ZIP) depuis votre ordinateur.",
-        "it": "Carica un file di progetto (formato ZIP) dal computer.",
-        "ja": "コンピューターからプロジェクトファイル（ZIP形式）を読み込みます。",
-        "ko": "컴퓨터에서 프로젝트 파일(ZIP 형식)을 불러옵니다.",
-        "pt": "Carregar um arquivo de projeto (formato ZIP) do seu computador.",
-        "ru": "Загрузить файл проекта (формат ZIP) с компьютера.",
-        "tr": "Bilgisayarınızdan bir proje dosyası (ZIP formatı) yükleyin.",
-        "uk": "Завантажити файл проєкту (формат ZIP) з комп'ютера."
+        "en": "Open a menu to load a project from your computer, Gist, GitHub, or a URL.",
+        "cn": "打开菜单，从计算机、Gist、GitHub 或 URL 加载项目。",
+        "de": "Menü zum Laden eines Projekts vom Computer, Gist, GitHub oder einer URL öffnen.",
+        "es": "Abrir un menú para cargar un proyecto desde su computadora, Gist, GitHub o una URL.",
+        "fr": "Ouvrir un menu pour charger un projet depuis votre ordinateur, Gist, GitHub ou une URL.",
+        "it": "Aprire un menu per caricare un progetto dal computer, Gist, GitHub o un URL.",
+        "ja": "コンピューター、Gist、GitHub、URLからプロジェクトを読み込むメニューを開きます。",
+        "ko": "컴퓨터, Gist, GitHub 또는 URL에서 프로젝트를 불러오는 메뉴를 엽니다.",
+        "pt": "Abrir um menu para carregar um projeto do computador, Gist, GitHub ou uma URL.",
+        "ru": "Открыть меню для загрузки проекта с компьютера, Gist, GitHub или по URL.",
+        "tr": "Bilgisayardan, Gist, GitHub veya URL'den proje yüklemek için menü açın.",
+        "uk": "Відкрити меню для завантаження проєкту з комп'ютера, Gist, GitHub або за URL."
       }
     },
     {
-      "label": "Save",
+      "label": "Save ▼",
       "desc": {
-        "en": "Save the current project as a ZIP file.",
-        "cn": "将当前项目保存为 ZIP 文件。",
-        "de": "Das aktuelle Projekt als ZIP-Datei speichern.",
-        "es": "Guardar el proyecto actual como archivo ZIP.",
-        "fr": "Enregistrer le projet actuel en fichier ZIP.",
-        "it": "Salva il progetto corrente come file ZIP.",
-        "ja": "現在のプロジェクトをZIPファイルとして保存します。",
-        "ko": "현재 프로젝트를 ZIP 파일로 저장합니다.",
-        "pt": "Salvar o projeto atual como arquivo ZIP.",
-        "ru": "Сохранить текущий проект как ZIP-файл.",
-        "tr": "Mevcut projeyi ZIP dosyası olarak kaydedin.",
-        "uk": "Зберегти поточний проєкт як ZIP-файл."
+        "en": "Open a menu to save the project locally or copy it for sharing via Gist.",
+        "cn": "打开菜单，将项目保存到本地或复制以通过 Gist 分享。",
+        "de": "Menü zum lokalen Speichern des Projekts oder Kopieren zum Teilen über Gist öffnen.",
+        "es": "Abrir un menú para guardar el proyecto localmente o copiarlo para compartir vía Gist.",
+        "fr": "Ouvrir un menu pour enregistrer le projet localement ou le copier pour le partager via Gist.",
+        "it": "Aprire un menu per salvare il progetto localmente o copiarlo per condividerlo tramite Gist.",
+        "ja": "プロジェクトをローカルに保存するか、Gist共有用にコピーするメニューを開きます。",
+        "ko": "프로젝트를 로컬에 저장하거나 Gist를 통해 공유하기 위해 복사하는 메뉴를 엽니다.",
+        "pt": "Abrir um menu para salvar o projeto localmente ou copiá-lo para compartilhar via Gist.",
+        "ru": "Открыть меню для локального сохранения проекта или копирования для обмена через Gist.",
+        "tr": "Projeyi yerel olarak kaydetmek veya Gist ile paylaşmak için kopyalamak üzere menü açın.",
+        "uk": "Відкрити меню для локального збереження проєкту або копіювання для обміну через Gist."
       }
     },
     {
@@ -523,35 +523,35 @@
     {
       "key": "Ctrl(Cmd)+L",
       "action": {
-        "en": "Load project",
-        "cn": "加载项目",
-        "de": "Projekt laden",
-        "es": "Cargar proyecto",
-        "fr": "Charger le projet",
-        "it": "Carica progetto",
-        "ja": "プロジェクトを読み込む",
-        "ko": "프로젝트 불러오기",
-        "pt": "Carregar projeto",
-        "ru": "Загрузить проект",
-        "tr": "Proje yükle",
-        "uk": "Завантажити проєкт"
+        "en": "Load file",
+        "cn": "加载文件",
+        "de": "Datei laden",
+        "es": "Cargar archivo",
+        "fr": "Charger le fichier",
+        "it": "Carica file",
+        "ja": "ファイルを読み込む",
+        "ko": "파일 불러오기",
+        "pt": "Carregar arquivo",
+        "ru": "Загрузить файл",
+        "tr": "Dosya yükle",
+        "uk": "Завантажити файл"
       }
     },
     {
       "key": "Ctrl(Cmd)+S",
       "action": {
-        "en": "Save project",
-        "cn": "保存项目",
-        "de": "Projekt speichern",
-        "es": "Guardar proyecto",
-        "fr": "Enregistrer le projet",
-        "it": "Salva progetto",
-        "ja": "プロジェクトを保存する",
-        "ko": "프로젝트 저장",
-        "pt": "Salvar projeto",
-        "ru": "Сохранить проект",
-        "tr": "Proje kaydet",
-        "uk": "Зберегти проєкт"
+        "en": "Save file",
+        "cn": "保存文件",
+        "de": "Datei speichern",
+        "es": "Guardar archivo",
+        "fr": "Enregistrer le fichier",
+        "it": "Salva file",
+        "ja": "ファイルに保存する",
+        "ko": "파일 저장",
+        "pt": "Salvar arquivo",
+        "ru": "Сохранить файл",
+        "tr": "Dosya kaydet",
+        "uk": "Зберегти файл"
       }
     },
     {
