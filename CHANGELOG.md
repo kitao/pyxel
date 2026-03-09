@@ -4,7 +4,6 @@
 
 - Reverted default window icon padding
 - Added project sharing via Gist, GitHub, and URL to Code Maker
-- Added shareable URL parameters (?gist, ?github, ?url) to Code Maker
 - Changed Web Launcher URL format from dot to slash separators
 
 ## 2.7.12
