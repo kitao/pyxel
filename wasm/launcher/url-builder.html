@@ -82,57 +82,76 @@
             <ul class="help">
               <li id="help-file-type">
                 Startup file type should be
-                <code class="codechip">.py</code>
-                or
-                <code class="codechip">.pyxapp</code>.
+                <code class="codechip">.py</code>,
+                <code class="codechip">.pyxapp</code>, or
+                <code class="codechip">.pyxres</code>.
               </li>
               <li id="help-example-py"></li>
               <li id="help-example-pyxapp"></li>
+              <li id="help-example-pyxres"></li>
             </ul>
           </div>
 
-          <!-- Virtual Gamepad -->
-          <div class="flex items-center gap-2">
-            <label for="virtual-gamepad" class="label" data-i18n="label_virtual_gamepad"
-              >Enable Virtual Gamepad</label
-            >
-            <input
-              id="virtual-gamepad"
-              type="checkbox"
-              checked
-              class="checkbox"
-            />
+          <!-- Options for run/play -->
+          <div id="run-play-options">
+            <!-- Virtual Gamepad -->
+            <div class="flex items-center gap-2">
+              <label for="virtual-gamepad" class="label" data-i18n="label_virtual_gamepad"
+                >Enable Virtual Gamepad</label
+              >
+              <input
+                id="virtual-gamepad"
+                type="checkbox"
+                checked
+                class="checkbox"
+              />
+            </div>
+
+            <!-- Additional Packages -->
+            <div class="gap-2 grid mt-5">
+              <label for="additional-packages" class="label" data-i18n="label_additional_packages"
+                >Additional Packages</label
+              >
+              <input
+                id="additional-packages"
+                type="text"
+                size="60"
+                class="input"
+                placeholder="numpy,matplotlib"
+              />
+              <ul class="help">
+                <li id="help-packages-comma">
+                  If there are multiple packages, separate them with commas like
+                  <code class="codechip">a,b,c</code>.
+                </li>
+                <li id="help-packages-only">
+                  Only
+                  <a
+                    class="link"
+                    href="https://pyodide.org/en/stable/usage/packages-in-pyodide.html"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    >packages supported by Pyodide</a
+                  >
+                  can be used.
+                </li>
+              </ul>
+            </div>
           </div>
 
-          <!-- Additional Packages -->
-          <div class="gap-2 grid">
-            <label for="additional-packages" class="label" data-i18n="label_additional_packages"
-              >Additional Packages</label
-            >
-            <input
-              id="additional-packages"
-              type="text"
-              size="60"
-              class="input"
-              placeholder="numpy,matplotlib"
-            />
-            <ul class="help">
-              <li id="help-packages-comma">
-                If there are multiple packages, separate them with commas like
-                <code class="codechip">a,b,c</code>.
-              </li>
-              <li id="help-packages-only">
-                Only
-                <a
-                  class="link"
-                  href="https://pyodide.org/en/stable/usage/packages-in-pyodide.html"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  >packages supported by Pyodide</a
-                >
-                can be used.
-              </li>
-            </ul>
+          <!-- Options for edit -->
+          <div id="edit-options" style="display: none">
+            <div class="gap-2 grid">
+              <label for="editor-screen" class="label" data-i18n="label_editor_screen"
+                >Editor Startup Screen</label
+              >
+              <select id="editor-screen" class="input">
+                <option value="image">Image</option>
+                <option value="tilemap">Tilemap</option>
+                <option value="sound">Sound</option>
+                <option value="music">Music</option>
+              </select>
+            </div>
           </div>
 
           <!-- Launch URL -->
@@ -209,11 +228,13 @@
 
         // Help: file type + examples
         document.getElementById("help-file-type").innerHTML =
-          t("help_file_type").replace("{0}", chip(".py")).replace("{1}", chip(".pyxapp"));
+          t("help_file_type").replace("{0}", chip(".py")).replace("{1}", chip(".pyxapp")).replace("{2}", chip(".pyxres"));
         const pyUrl = "https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/01_hello_pyxel.py";
         const pyxappUrl = "https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/apps/megaball.pyxapp";
-        document.getElementById("help-example-py").innerHTML = t("help_example_1") + " " + extLink(pyUrl, pyUrl);
-        document.getElementById("help-example-pyxapp").innerHTML = t("help_example_2") + " " + extLink(pyxappUrl, pyxappUrl);
+        const pyxresUrl = "https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/assets/sample.pyxres";
+        document.getElementById("help-example-py").innerHTML = "run: " + extLink(pyUrl, pyUrl);
+        document.getElementById("help-example-pyxapp").innerHTML = "play: " + extLink(pyxappUrl, pyxappUrl);
+        document.getElementById("help-example-pyxres").innerHTML = "edit: " + extLink(pyxresUrl, pyxresUrl);
 
         // Help: packages
         document.getElementById("help-packages-comma").innerHTML =
@@ -231,6 +252,18 @@
         document.documentElement.lang = currentLang === "cn" ? "zh" : currentLang;
       }
 
+      function getFileExt(url) {
+        const match = url.match(/\.([^./?#]+)$/);
+        return match ? match[1] : "";
+      }
+
+      function updateOptions() {
+        const ext = getFileExt(document.getElementById("startup-file").value);
+        const isEdit = ext === "pyxres";
+        document.getElementById("run-play-options").style.display = isEdit ? "none" : "";
+        document.getElementById("edit-options").style.display = isEdit ? "" : "none";
+      }
+
       function buildLaunchUrl() {
         const startupFile = document.getElementById("startup-file").value;
         const virtualGamepad =
@@ -238,13 +271,17 @@
         const additionalPackages = document.getElementById(
           "additional-packages",
         ).value;
+        const editorScreen = document.getElementById("editor-screen").value;
         const launchLink = document.getElementById("launch-url");
         launchLink.textContent = launchLink.href = "";
 
+        const ext = getFileExt(startupFile);
+        const isEdit = ext === "pyxres";
+
         if (
           !startupFile.startsWith("https://github.com/") ||
-          !(startupFile.endsWith(".py") || startupFile.endsWith(".pyxapp")) ||
-          additionalPackages.match(/[^a-zA-Z0-9,]/)
+          !(ext === "py" || ext === "pyxapp" || ext === "pyxres") ||
+          (!isEdit && additionalPackages.match(/[^a-zA-Z0-9,]/))
         ) {
           return;
         }
@@ -255,32 +292,37 @@
         const repo = paths[4];
         const branch = paths[6];
         const filePath = paths.slice(7).join("/");
-        const fileExt = filePath.split(".").pop();
         const filePathNoExt = filePath.replace(/\.[^.]+$/, "");
-        let launchUrl = "https://kitao.github.io/pyxel/wasm/launcher/?";
-        launchUrl += fileExt === "py" ? "run" : "play";
-        launchUrl += `=${user}/${repo}/${branch}/${filePathNoExt}`;
+        const command = isEdit ? "edit" : ext === "py" ? "run" : "play";
+        let launchUrl = `https://kitao.github.io/pyxel/wasm/launcher/?${command}=${user}/${repo}/${branch}/${filePathNoExt}`;
 
-        if (virtualGamepad) {
-          launchUrl += "&gamepad=enabled";
-        }
-
-        if (additionalPackages !== "") {
-          launchUrl += "&packages=" + additionalPackages;
+        if (isEdit) {
+          launchUrl += `&editor=${editorScreen}`;
+        } else {
+          if (virtualGamepad) {
+            launchUrl += "&gamepad=enabled";
+          }
+          if (additionalPackages !== "") {
+            launchUrl += "&packages=" + additionalPackages;
+          }
         }
 
         launchLink.textContent = launchLink.href = launchUrl;
       }
 
-      document
-        .getElementById("startup-file")
-        .addEventListener("input", buildLaunchUrl);
+      document.getElementById("startup-file").addEventListener("input", () => {
+        updateOptions();
+        buildLaunchUrl();
+      });
       document
         .getElementById("virtual-gamepad")
         .addEventListener("change", buildLaunchUrl);
       document
         .getElementById("additional-packages")
         .addEventListener("input", buildLaunchUrl);
+      document
+        .getElementById("editor-screen")
+        .addEventListener("change", buildLaunchUrl);
 
       // Init i18n
       fetch("launcher.json")

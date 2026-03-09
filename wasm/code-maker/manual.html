@@ -275,6 +275,15 @@
         `;
         sections.appendChild(projectCard);
 
+        // --- Sharing via URL ---
+        const sharingCard = document.createElement("section");
+        sharingCard.className = "card";
+        sharingCard.innerHTML = `
+          <h2 id="sec-sharing-title" class="section-title"></h2>
+          <p id="sec-sharing-body" class="body-text"></p>
+        `;
+        sections.appendChild(sharingCard);
+
         app.appendChild(sections);
 
         updateTexts();
@@ -336,13 +345,24 @@
 
         const toolbarItemsEl = document.getElementById("toolbar-items");
         toolbarItemsEl.innerHTML = data.toolbar_items
-          .map(
-            (item) =>
-              `<div class="flex items-baseline gap-3">
+          .map((item) => {
+            let html = `<div class="flex items-baseline gap-3">
                 ${btnChip(item.label)}
                 <span class="body-text">${esc(t(item.desc))}</span>
-              </div>`,
-          )
+              </div>`;
+            if (item.sub_items) {
+              html += `<div class="ml-6 mt-1 space-y-1">${item.sub_items
+                .map(
+                  (sub) =>
+                    `<div class="flex items-baseline gap-2">
+                      <span class="text-xs font-medium text-gray-400 shrink-0 w-14">${esc(sub.label)}</span>
+                      <span class="body-text">${esc(t(sub.desc))}</span>
+                    </div>`,
+                )
+                .join("")}</div>`;
+            }
+            return html;
+          })
           .join("");
 
         // Code Editor
@@ -395,6 +415,12 @@
           `<p>${esc(t("project_body_1")).replace("{0}", chip("main.py")).replace("{1}", chip("my_resource.pyxres"))}</p>` +
           `<p>${esc(t("project_body_2")).replace("{0}", chip(".pyxapp"))}</p>` +
           `<pre class="bg-gray-900/80 rounded-lg px-3 py-2 font-mono text-xs text-gray-300 mt-2">pyxel play project_name.zip</pre>`;
+
+        // Sharing via URL
+        document.getElementById("sec-sharing-title").textContent =
+          t("sharing_title");
+        document.getElementById("sec-sharing-body").textContent =
+          t("sharing_body");
 
         document.documentElement.lang =
           currentLang === "cn" ? "zh" : currentLang;

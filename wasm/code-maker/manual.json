@@ -447,42 +447,176 @@
       "ru": "Формат ZIP совместим с форматом {0} Pyxel. Сохранённые проекты также можно запускать в локальной среде Pyxel:",
       "tr": "ZIP formatı, Pyxel'in {0} formatıyla uyumludur. Kaydedilen projeler yerel Pyxel ortamında da çalıştırılabilir:",
       "uk": "Формат ZIP сумісний із форматом {0} Pyxel. Збережені проєкти також можна запускати в локальному середовищі Pyxel:"
+    },
+    "sharing_title": {
+      "en": "Sharing via URL",
+      "cn": "通过 URL 分享",
+      "de": "Teilen über URL",
+      "es": "Compartir vía URL",
+      "fr": "Partage via URL",
+      "it": "Condivisione tramite URL",
+      "ja": "URLでの共有",
+      "ko": "URL로 공유",
+      "pt": "Compartilhamento via URL",
+      "ru": "Обмен через URL",
+      "tr": "URL ile Paylaşım",
+      "uk": "Обмін через URL"
+    },
+    "sharing_body": {
+      "en": "When you load a project from Gist, GitHub, or a URL, the browser address bar is updated with a shareable link. You can share this URL with others to let them open the same project directly in Pyxel Code Maker.",
+      "cn": "当您从 Gist、GitHub 或 URL 加载项目时，浏览器地址栏会更新为可分享的链接。您可以将此 URL 分享给他人，让他们直接在 Pyxel Code Maker 中打开同一项目。",
+      "de": "Wenn Sie ein Projekt von Gist, GitHub oder einer URL laden, wird die Adresszeile des Browsers mit einem teilbaren Link aktualisiert. Sie können diese URL mit anderen teilen, damit sie dasselbe Projekt direkt in Pyxel Code Maker öffnen können.",
+      "es": "Cuando carga un proyecto desde Gist, GitHub o una URL, la barra de direcciones del navegador se actualiza con un enlace compartible. Puede compartir esta URL con otros para que abran el mismo proyecto directamente en Pyxel Code Maker.",
+      "fr": "Lorsque vous chargez un projet depuis Gist, GitHub ou une URL, la barre d'adresse du navigateur est mise à jour avec un lien partageable. Vous pouvez partager cette URL avec d'autres pour qu'ils ouvrent le même projet directement dans Pyxel Code Maker.",
+      "it": "Quando si carica un progetto da Gist, GitHub o un URL, la barra degli indirizzi del browser viene aggiornata con un link condivisibile. È possibile condividere questo URL con altri per permettere loro di aprire lo stesso progetto direttamente in Pyxel Code Maker.",
+      "ja": "Gist、GitHub、またはURLからプロジェクトを読み込むと、ブラウザのアドレスバーが共有可能なリンクに更新されます。このURLを他の人と共有することで、同じプロジェクトをPyxel Code Makerで直接開いてもらうことができます。",
+      "ko": "Gist, GitHub 또는 URL에서 프로젝트를 불러오면 브라우저 주소 표시줄이 공유 가능한 링크로 업데이트됩니다. 이 URL을 다른 사람과 공유하여 같은 프로젝트를 Pyxel Code Maker에서 바로 열 수 있습니다.",
+      "pt": "Quando você carrega um projeto do Gist, GitHub ou uma URL, a barra de endereço do navegador é atualizada com um link compartilhável. Você pode compartilhar esta URL com outros para que abram o mesmo projeto diretamente no Pyxel Code Maker.",
+      "ru": "При загрузке проекта из Gist, GitHub или по URL адресная строка браузера обновляется общей ссылкой. Вы можете поделиться этим URL с другими, чтобы они могли открыть тот же проект прямо в Pyxel Code Maker.",
+      "tr": "Gist, GitHub veya URL'den bir proje yüklediğinizde, tarayıcının adres çubuğu paylaşılabilir bir bağlantıyla güncellenir. Bu URL'yi başkalarıyla paylaşarak aynı projeyi doğrudan Pyxel Code Maker'da açmalarını sağlayabilirsiniz.",
+      "uk": "Коли ви завантажуєте проєкт з Gist, GitHub або за URL, адресний рядок браузера оновлюється посиланням для обміну. Ви можете поділитися цим URL з іншими, щоб вони могли відкрити той самий проєкт безпосередньо у Pyxel Code Maker."
     }
   },
   "toolbar_items": [
     {
       "label": "Load ▼",
       "desc": {
-        "en": "Open a menu to load a project from your computer, Gist, GitHub, or a URL.",
-        "cn": "打开菜单，从计算机、Gist、GitHub 或 URL 加载项目。",
-        "de": "Menü zum Laden eines Projekts vom Computer, Gist, GitHub oder einer URL öffnen.",
-        "es": "Abrir un menú para cargar un proyecto desde su computadora, Gist, GitHub o una URL.",
-        "fr": "Ouvrir un menu pour charger un projet depuis votre ordinateur, Gist, GitHub ou une URL.",
-        "it": "Aprire un menu per caricare un progetto dal computer, Gist, GitHub o un URL.",
-        "ja": "コンピューター、Gist、GitHub、URLからプロジェクトを読み込むメニューを開きます。",
-        "ko": "컴퓨터, Gist, GitHub 또는 URL에서 프로젝트를 불러오는 메뉴를 엽니다.",
-        "pt": "Abrir um menu para carregar um projeto do computador, Gist, GitHub ou uma URL.",
-        "ru": "Открыть меню для загрузки проекта с компьютера, Gist, GitHub или по URL.",
-        "tr": "Bilgisayardan, Gist, GitHub veya URL'den proje yüklemek için menü açın.",
-        "uk": "Відкрити меню для завантаження проєкту з комп'ютера, Gist, GitHub або за URL."
-      }
+        "en": "Open a menu to load a project.",
+        "cn": "打开菜单以加载项目。",
+        "de": "Menü zum Laden eines Projekts öffnen.",
+        "es": "Abrir un menú para cargar un proyecto.",
+        "fr": "Ouvrir un menu pour charger un projet.",
+        "it": "Aprire un menu per caricare un progetto.",
+        "ja": "プロジェクトを読み込むメニューを開きます。",
+        "ko": "프로젝트를 불러오는 메뉴를 엽니다.",
+        "pt": "Abrir um menu para carregar um projeto.",
+        "ru": "Открыть меню для загрузки проекта.",
+        "tr": "Proje yüklemek için menü açın.",
+        "uk": "Відкрити меню для завантаження проєкту."
+      },
+      "sub_items": [
+        {
+          "label": "File",
+          "desc": {
+            "en": "Load a project ZIP file from your computer.",
+            "cn": "从计算机加载项目 ZIP 文件。",
+            "de": "Eine Projekt-ZIP-Datei vom Computer laden.",
+            "es": "Cargar un archivo ZIP de proyecto desde su computadora.",
+            "fr": "Charger un fichier ZIP de projet depuis votre ordinateur.",
+            "it": "Caricare un file ZIP di progetto dal computer.",
+            "ja": "コンピューターからプロジェクトのZIPファイルを読み込みます。",
+            "ko": "컴퓨터에서 프로젝트 ZIP 파일을 불러옵니다.",
+            "pt": "Carregar um arquivo ZIP de projeto do computador.",
+            "ru": "Загрузить ZIP-файл проекта с компьютера.",
+            "tr": "Bilgisayardan proje ZIP dosyası yükleyin.",
+            "uk": "Завантажити ZIP-файл проєкту з комп'ютера."
+          }
+        },
+        {
+          "label": "Gist",
+          "desc": {
+            "en": "Load from a GitHub Gist. Enter a Gist URL.",
+            "cn": "从 GitHub Gist 加载。输入 Gist URL。",
+            "de": "Aus einem GitHub Gist laden. Gist-URL eingeben.",
+            "es": "Cargar desde un GitHub Gist. Ingrese una URL de Gist.",
+            "fr": "Charger depuis un GitHub Gist. Entrez une URL de Gist.",
+            "it": "Caricare da un GitHub Gist. Inserire un URL di Gist.",
+            "ja": "GitHub Gistから読み込みます。GistのURLを入力します。",
+            "ko": "GitHub Gist에서 불러옵니다. Gist URL을 입력합니다.",
+            "pt": "Carregar de um GitHub Gist. Insira uma URL de Gist.",
+            "ru": "Загрузить из GitHub Gist. Введите URL Gist.",
+            "tr": "GitHub Gist'ten yükleyin. Gist URL'si girin.",
+            "uk": "Завантажити з GitHub Gist. Введіть URL Gist."
+          }
+        },
+        {
+          "label": "GitHub",
+          "desc": {
+            "en": "Load a ZIP file from a GitHub repository. Enter a GitHub file URL.",
+            "cn": "从 GitHub 仓库加载 ZIP 文件。输入 GitHub 文件 URL。",
+            "de": "Eine ZIP-Datei aus einem GitHub-Repository laden. GitHub-Datei-URL eingeben.",
+            "es": "Cargar un archivo ZIP desde un repositorio de GitHub. Ingrese una URL de archivo de GitHub.",
+            "fr": "Charger un fichier ZIP depuis un dépôt GitHub. Entrez une URL de fichier GitHub.",
+            "it": "Caricare un file ZIP da un repository GitHub. Inserire un URL di file GitHub.",
+            "ja": "GitHubリポジトリからZIPファイルを読み込みます。GitHubのファイルURLを入力します。",
+            "ko": "GitHub 저장소에서 ZIP 파일을 불러옵니다. GitHub 파일 URL을 입력합니다.",
+            "pt": "Carregar um arquivo ZIP de um repositório GitHub. Insira uma URL de arquivo do GitHub.",
+            "ru": "Загрузить ZIP-файл из репозитория GitHub. Введите URL файла на GitHub.",
+            "tr": "GitHub deposundan ZIP dosyası yükleyin. GitHub dosya URL'si girin.",
+            "uk": "Завантажити ZIP-файл з репозиторію GitHub. Введіть URL файлу на GitHub."
+          }
+        },
+        {
+          "label": "URL",
+          "desc": {
+            "en": "Load a project ZIP file from any URL.",
+            "cn": "从任意 URL 加载项目 ZIP 文件。",
+            "de": "Eine Projekt-ZIP-Datei von einer beliebigen URL laden.",
+            "es": "Cargar un archivo ZIP de proyecto desde cualquier URL.",
+            "fr": "Charger un fichier ZIP de projet depuis n'importe quelle URL.",
+            "it": "Caricare un file ZIP di progetto da qualsiasi URL.",
+            "ja": "任意のURLからプロジェクトのZIPファイルを読み込みます。",
+            "ko": "임의의 URL에서 프로젝트 ZIP 파일을 불러옵니다.",
+            "pt": "Carregar um arquivo ZIP de projeto de qualquer URL.",
+            "ru": "Загрузить ZIP-файл проекта по любому URL.",
+            "tr": "Herhangi bir URL'den proje ZIP dosyası yükleyin.",
+            "uk": "Завантажити ZIP-файл проєкту за будь-яким URL."
+          }
+        }
+      ]
     },
     {
       "label": "Save ▼",
       "desc": {
-        "en": "Open a menu to save the project locally or copy it for sharing via Gist.",
-        "cn": "打开菜单，将项目保存到本地或复制以通过 Gist 分享。",
-        "de": "Menü zum lokalen Speichern des Projekts oder Kopieren zum Teilen über Gist öffnen.",
-        "es": "Abrir un menú para guardar el proyecto localmente o copiarlo para compartir vía Gist.",
-        "fr": "Ouvrir un menu pour enregistrer le projet localement ou le copier pour le partager via Gist.",
-        "it": "Aprire un menu per salvare il progetto localmente o copiarlo per condividerlo tramite Gist.",
-        "ja": "プロジェクトをローカルに保存するか、Gist共有用にコピーするメニューを開きます。",
-        "ko": "프로젝트를 로컬에 저장하거나 Gist를 통해 공유하기 위해 복사하는 메뉴를 엽니다.",
-        "pt": "Abrir um menu para salvar o projeto localmente ou copiá-lo para compartilhar via Gist.",
-        "ru": "Открыть меню для локального сохранения проекта или копирования для обмена через Gist.",
-        "tr": "Projeyi yerel olarak kaydetmek veya Gist ile paylaşmak için kopyalamak üzere menü açın.",
-        "uk": "Відкрити меню для локального збереження проєкту або копіювання для обміну через Gist."
-      }
+        "en": "Open a menu to save the project.",
+        "cn": "打开菜单以保存项目。",
+        "de": "Menü zum Speichern des Projekts öffnen.",
+        "es": "Abrir un menú para guardar el proyecto.",
+        "fr": "Ouvrir un menu pour enregistrer le projet.",
+        "it": "Aprire un menu per salvare il progetto.",
+        "ja": "プロジェクトを保存するメニューを開きます。",
+        "ko": "프로젝트를 저장하는 메뉴를 엽니다.",
+        "pt": "Abrir um menu para salvar o projeto.",
+        "ru": "Открыть меню для сохранения проекта.",
+        "tr": "Projeyi kaydetmek için menü açın.",
+        "uk": "Відкрити меню для збереження проєкту."
+      },
+      "sub_items": [
+        {
+          "label": "File",
+          "desc": {
+            "en": "Save the project as a ZIP file to your computer.",
+            "cn": "将项目保存为 ZIP 文件到计算机。",
+            "de": "Das Projekt als ZIP-Datei auf dem Computer speichern.",
+            "es": "Guardar el proyecto como archivo ZIP en su computadora.",
+            "fr": "Enregistrer le projet comme fichier ZIP sur votre ordinateur.",
+            "it": "Salvare il progetto come file ZIP sul computer.",
+            "ja": "プロジェクトをZIPファイルとしてコンピューターに保存します。",
+            "ko": "프로젝트를 ZIP 파일로 컴퓨터에 저장합니다.",
+            "pt": "Salvar o projeto como arquivo ZIP no computador.",
+            "ru": "Сохранить проект как ZIP-файл на компьютер.",
+            "tr": "Projeyi ZIP dosyası olarak bilgisayara kaydedin.",
+            "uk": "Зберегти проєкт як ZIP-файл на комп'ютер."
+          }
+        },
+        {
+          "label": "Gist",
+          "desc": {
+            "en": "Copy the project data to the clipboard for sharing via GitHub Gist.",
+            "cn": "将项目数据复制到剪贴板，用于通过 GitHub Gist 分享。",
+            "de": "Projektdaten zum Teilen über GitHub Gist in die Zwischenablage kopieren.",
+            "es": "Copiar los datos del proyecto al portapapeles para compartir vía GitHub Gist.",
+            "fr": "Copier les données du projet dans le presse-papiers pour les partager via GitHub Gist.",
+            "it": "Copiare i dati del progetto negli appunti per condividerli tramite GitHub Gist.",
+            "ja": "GitHub Gistで共有するためにプロジェクトデータをクリップボードにコピーします。",
+            "ko": "GitHub Gist를 통해 공유하기 위해 프로젝트 데이터를 클립보드에 복사합니다.",
+            "pt": "Copiar os dados do projeto para a área de transferência para compartilhar via GitHub Gist.",
+            "ru": "Скопировать данные проекта в буфер обмена для обмена через GitHub Gist.",
+            "tr": "GitHub Gist ile paylaşmak için proje verilerini panoya kopyalayın.",
+            "uk": "Скопіювати дані проєкту до буфера обміну для обміну через GitHub Gist."
+          }
+        }
+      ]
     },
     {
       "label": "Code / Res",
@@ -546,7 +680,7 @@
         "es": "Guardar archivo",
         "fr": "Enregistrer le fichier",
         "it": "Salva file",
-        "ja": "ファイルに保存する",
+        "ja": "ファイルを保存する",
         "ko": "파일 저장",
         "pt": "Salvar arquivo",
         "ru": "Сохранить файл",
