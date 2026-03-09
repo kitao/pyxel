@@ -52,4 +52,4 @@ Maintained in `CHANGELOG.md` at the repo root.
 - Concise English, one item per line, start with a verb (Added, Fixed, Removed, etc.)
 - Flat list only — no nested sub-items
 - Under 60 characters; 80 max for complex entries
-- Newest entries first within each section
+- Newest entries last within each section
