@@ -43,7 +43,6 @@ pub fn quit() {
     if !is_headless() {
         platform().quit();
     }
-    std::process::exit(0);
 }
 
 pub fn ticks() -> u32 {

@@ -2,6 +2,7 @@
 
 ## 2.7.12
 
+- Fixed quit() causing fatal error on web
 - Added preset mood descriptions to gen_bgm API reference
 - Added channel count info to gen_bgm instr descriptions
 
