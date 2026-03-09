@@ -426,6 +426,7 @@
           const buf = await file.arrayBuffer();
           const name = file.name.replace(/\.zip$/i, "");
           await loadProjectFromZip(buf, name);
+          updateShareUrl();
         } catch (e) {
           alert("Load failed: " + e.message);
         }
@@ -457,6 +458,7 @@
         const buf = base64ToUint8(content).buffer;
         const name = file.filename.replace(/\.[^.]+$/, "") || "untitled";
         await loadProjectFromZip(buf, name);
+        updateShareUrl("gist", gistId);
       }
 
       async function loadFromGitHub(input) {
@@ -476,6 +478,7 @@
           throw new Error("File not found");
         }
         await loadProjectFromZip(await res.arrayBuffer(), name);
+        updateShareUrl("github", `${user}/${repo}/${branch}/${path.replace(/\.zip$/i, "")}`);
       }
 
       async function loadFromUrl(url) {
@@ -485,6 +488,7 @@
         }
         const name = url.split("/").pop().replace(/\.zip$/i, "") || "untitled";
         await loadProjectFromZip(await res.arrayBuffer(), name);
+        updateShareUrl("url", url);
       }
 
       async function buildArchiveBlob() {
@@ -600,6 +604,16 @@
         document.head.appendChild(aceThemeStyle);
 
         window.codeEditor = codeEditor;
+      }
+
+      function updateShareUrl(param, value) {
+        const base = location.href.split("?")[0];
+        if (param && value) {
+          const encoded = encodeURIComponent(value).replace(/%2F/g, "/");
+          history.replaceState(null, "", `${base}?${param}=${encoded}`);
+        } else {
+          history.replaceState(null, "", base);
+        }
       }
 
       function animateButton(button) {
@@ -1179,6 +1193,32 @@
 
         // Prepare iframes and interactions
         await setupIframes();
+
+        // Load from URL parameters
+        const params = new URL(location.href).searchParams;
+        const gistParam = params.get("gist");
+        const githubParam = params.get("github");
+        if (gistParam) {
+          try {
+            await loadFromGist(gistParam);
+          } catch (e) {
+            alert("Load failed: " + e.message);
+          }
+        } else if (githubParam) {
+          try {
+            const parts = githubParam.split("/");
+            const ghUrl = `https://github.com/${parts[0]}/${parts[1]}/blob/${parts.slice(2).join("/")}.zip`;
+            await loadFromGitHub(ghUrl);
+          } catch (e) {
+            alert("Load failed: " + e.message);
+          }
+        } else if (params.get("url")) {
+          try {
+            await loadFromUrl(params.get("url"));
+          } catch (e) {
+            alert("Load failed: " + e.message);
+          }
+        }
         setupFocusIndicator();
         setupShortcuts();
         setupPyxelInput();
