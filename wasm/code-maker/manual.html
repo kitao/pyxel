@@ -246,6 +246,33 @@
         `;
         sections.appendChild(runtimeCard);
 
+        // --- Project Files ---
+        const projectCard = document.createElement("section");
+        projectCard.className = "card";
+        projectCard.innerHTML = `
+          <h2 id="sec-project-title" class="section-title"></h2>
+          <div id="sec-project-body" class="body-text space-y-2"></div>
+        `;
+        sections.appendChild(projectCard);
+
+        // --- Drag & Drop ---
+        const dragdropCard = document.createElement("section");
+        dragdropCard.className = "card";
+        dragdropCard.innerHTML = `
+          <h2 id="sec-dragdrop-title" class="section-title"></h2>
+          <p id="sec-dragdrop-body" class="body-text"></p>
+        `;
+        sections.appendChild(dragdropCard);
+
+        // --- Sharing via URL ---
+        const sharingCard = document.createElement("section");
+        sharingCard.className = "card";
+        sharingCard.innerHTML = `
+          <h2 id="sec-sharing-title" class="section-title"></h2>
+          <p id="sec-sharing-body" class="body-text"></p>
+        `;
+        sections.appendChild(sharingCard);
+
         // --- Keyboard Shortcuts ---
         const shortcutsCard = document.createElement("section");
         shortcutsCard.className = "card";
@@ -265,24 +292,6 @@
           </div>
         `;
         sections.appendChild(shortcutsCard);
-
-        // --- Project Files ---
-        const projectCard = document.createElement("section");
-        projectCard.className = "card";
-        projectCard.innerHTML = `
-          <h2 id="sec-project-title" class="section-title"></h2>
-          <div id="sec-project-body" class="body-text space-y-2"></div>
-        `;
-        sections.appendChild(projectCard);
-
-        // --- Sharing via URL ---
-        const sharingCard = document.createElement("section");
-        sharingCard.className = "card";
-        sharingCard.innerHTML = `
-          <h2 id="sec-sharing-title" class="section-title"></h2>
-          <p id="sec-sharing-body" class="body-text"></p>
-        `;
-        sections.appendChild(sharingCard);
 
         app.appendChild(sections);
 
@@ -389,6 +398,27 @@
           `<span class="shortcut-key">Ctrl(Cmd)+Enter</span>`,
         );
 
+        // Project Files
+        document.getElementById("sec-project-title").textContent =
+          t("project_title");
+        document.getElementById("sec-project-body").innerHTML =
+          `<p>${esc(t("project_body_1")).replace("{0}", chip("main.py")).replace("{1}", chip("my_resource.pyxres"))}</p>` +
+          `<p>${esc(t("project_body_2")).replace("{0}", chip(".pyxapp"))}</p>` +
+          `<pre class="bg-gray-900/80 rounded-lg px-3 py-2 font-mono text-xs text-gray-300 mt-2">pyxel play project_name.zip</pre>`;
+
+        // Drag & Drop
+        document.getElementById("sec-dragdrop-title").textContent =
+          t("dragdrop_title");
+        document.getElementById("sec-dragdrop-body").innerHTML = esc(
+          t("dragdrop_body"),
+        ).replace("{0}", chip(".py")).replace("{1}", chip(".pyxres"));
+
+        // Sharing via URL
+        document.getElementById("sec-sharing-title").textContent =
+          t("sharing_title");
+        document.getElementById("sec-sharing-body").textContent =
+          t("sharing_body");
+
         // Keyboard Shortcuts
         document.getElementById("sec-shortcuts-title").textContent =
           t("shortcuts_title");
@@ -407,20 +437,6 @@
               </tr>`,
           )
           .join("");
-
-        // Project Files
-        document.getElementById("sec-project-title").textContent =
-          t("project_title");
-        document.getElementById("sec-project-body").innerHTML =
-          `<p>${esc(t("project_body_1")).replace("{0}", chip("main.py")).replace("{1}", chip("my_resource.pyxres"))}</p>` +
-          `<p>${esc(t("project_body_2")).replace("{0}", chip(".pyxapp"))}</p>` +
-          `<pre class="bg-gray-900/80 rounded-lg px-3 py-2 font-mono text-xs text-gray-300 mt-2">pyxel play project_name.zip</pre>`;
-
-        // Sharing via URL
-        document.getElementById("sec-sharing-title").textContent =
-          t("sharing_title");
-        document.getElementById("sec-sharing-body").textContent =
-          t("sharing_body");
 
         document.documentElement.lang =
           currentLang === "cn" ? "zh" : currentLang;

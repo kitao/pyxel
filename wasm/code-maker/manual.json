@@ -406,6 +406,34 @@
       "tr": "İşlem",
       "uk": "Дія"
     },
+    "dragdrop_title": {
+      "en": "Drag & Drop",
+      "cn": "拖放",
+      "de": "Drag & Drop",
+      "es": "Arrastrar y soltar",
+      "fr": "Glisser-déposer",
+      "it": "Trascina e rilascia",
+      "ja": "ドラッグ＆ドロップ",
+      "ko": "드래그 앤 드롭",
+      "pt": "Arrastar e soltar",
+      "ru": "Перетаскивание",
+      "tr": "Sürükle ve Bırak",
+      "uk": "Перетягування"
+    },
+    "dragdrop_body": {
+      "en": "You can import files by dragging and dropping them onto the page. Drop a {0} file to replace the code, or a {1} file to replace the resource. The file type is detected automatically by extension.",
+      "cn": "可以将文件拖放到页面上来导入。拖放 {0} 文件可替换代码，拖放 {1} 文件可替换资源。文件类型根据扩展名自动识别。",
+      "de": "Sie können Dateien importieren, indem Sie sie auf die Seite ziehen und ablegen. Eine {0}-Datei ersetzt den Code, eine {1}-Datei ersetzt die Ressource. Der Dateityp wird automatisch anhand der Erweiterung erkannt.",
+      "es": "Puede importar archivos arrastrándolos y soltándolos en la página. Suelte un archivo {0} para reemplazar el código, o un archivo {1} para reemplazar el recurso. El tipo de archivo se detecta automáticamente por la extensión.",
+      "fr": "Vous pouvez importer des fichiers en les glissant-déposant sur la page. Déposez un fichier {0} pour remplacer le code, ou un fichier {1} pour remplacer la ressource. Le type de fichier est détecté automatiquement par l'extension.",
+      "it": "È possibile importare file trascinandoli e rilasciandoli sulla pagina. Rilasciare un file {0} per sostituire il codice, o un file {1} per sostituire la risorsa. Il tipo di file viene rilevato automaticamente dall'estensione.",
+      "ja": "ページ上にファイルをドラッグ＆ドロップして読み込むことができます。{0}ファイルをドロップするとコードが、{1}ファイルをドロップするとリソースが置き換わります。ファイルの種類は拡張子で自動判別されます。",
+      "ko": "페이지에 파일을 드래그 앤 드롭하여 가져올 수 있습니다. {0} 파일을 드롭하면 코드가, {1} 파일을 드롭하면 리소스가 교체됩니다. 파일 유형은 확장자로 자동 감지됩니다.",
+      "pt": "Você pode importar arquivos arrastando e soltando na página. Solte um arquivo {0} para substituir o código, ou um arquivo {1} para substituir o recurso. O tipo de arquivo é detectado automaticamente pela extensão.",
+      "ru": "Вы можете импортировать файлы, перетаскивая их на страницу. Перетащите файл {0} для замены кода или файл {1} для замены ресурса. Тип файла определяется автоматически по расширению.",
+      "tr": "Dosyaları sayfaya sürükleyip bırakarak içe aktarabilirsiniz. Kodu değiştirmek için {0} dosyasını, kaynağı değiştirmek için {1} dosyasını bırakın. Dosya türü uzantıya göre otomatik olarak algılanır.",
+      "uk": "Ви можете імпортувати файли, перетягуючи їх на сторінку. Перетягніть файл {0} для заміни коду або файл {1} для заміни ресурсу. Тип файлу визначається автоматично за розширенням."
+    },
     "project_title": {
       "en": "Project Files",
       "cn": "项目文件",
