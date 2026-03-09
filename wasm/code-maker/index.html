@@ -136,7 +136,6 @@
                 <button class="dropdown-item" tabindex="-1" data-action="load-local">File</button>
                 <button class="dropdown-item" tabindex="-1" data-action="load-gist">Gist</button>
                 <button class="dropdown-item" tabindex="-1" data-action="load-github">GitHub</button>
-                <button class="dropdown-item" tabindex="-1" data-action="load-url">URL</button>
               </div>
             </div>
             <!-- Save dropdown -->
@@ -279,18 +278,6 @@
         <div class="flex justify-end gap-2 mt-3">
           <button class="modal-btn modal-btn-secondary" data-modal-close>Cancel</button>
           <button id="btn-load-github" class="modal-btn modal-btn-primary">Load</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Load from URL modal -->
-    <div id="modal-load-url" class="modal-overlay hidden">
-      <div class="modal">
-        <div class="modal-title">Load from URL</div>
-        <input id="input-load-url" type="text" placeholder="https://example.com/PATH/TO/PROJECT.zip" class="modal-input" />
-        <div class="flex justify-end gap-2 mt-3">
-          <button class="modal-btn modal-btn-secondary" data-modal-close>Cancel</button>
-          <button id="btn-load-url" class="modal-btn modal-btn-primary">Load</button>
         </div>
       </div>
     </div>
@@ -479,16 +466,6 @@
         }
         await loadProjectFromZip(await res.arrayBuffer(), name);
         updateShareUrl("github", `${user}/${repo}/${branch}/${path.replace(/\.zip$/i, "")}`);
-      }
-
-      async function loadFromUrl(url) {
-        const res = await fetch(url);
-        if (!res.ok) {
-          throw new Error("Download failed");
-        }
-        const name = url.split("/").pop().replace(/\.zip$/i, "") || "untitled";
-        await loadProjectFromZip(await res.arrayBuffer(), name);
-        updateShareUrl("url", url);
       }
 
       async function buildArchiveBlob() {
@@ -708,9 +685,6 @@
               case "load-github":
                 showModal("modal-load-github");
                 break;
-              case "load-url":
-                showModal("modal-load-url");
-                break;
               case "save-local":
                 saveProject();
                 break;
@@ -771,18 +745,6 @@
             closeModal(document.getElementById("btn-load-github"));
             try {
               await loadFromGitHub(value);
-            } catch (e) {
-              alert("Load failed: " + e.message);
-            }
-          }
-        });
-
-        document.getElementById("btn-load-url").addEventListener("click", async () => {
-          const value = document.getElementById("input-load-url").value.trim();
-          if (value) {
-            closeModal(document.getElementById("btn-load-url"));
-            try {
-              await loadFromUrl(value);
             } catch (e) {
               alert("Load failed: " + e.message);
             }
@@ -1267,12 +1229,6 @@
             const parts = githubParam.split("/");
             const ghUrl = `https://github.com/${parts[0]}/${parts[1]}/blob/${parts.slice(2).join("/")}.zip`;
             await loadFromGitHub(ghUrl);
-          } catch (e) {
-            alert("Load failed: " + e.message);
-          }
-        } else if (params.get("url")) {
-          try {
-            await loadFromUrl(params.get("url"));
           } catch (e) {
             alert("Load failed: " + e.message);
           }

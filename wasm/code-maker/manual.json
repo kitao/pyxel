@@ -491,18 +491,18 @@
       "uk": "Обмін через URL"
     },
     "sharing_body": {
-      "en": "When you load a project from Gist, GitHub, or a URL, the browser address bar is updated with a shareable link. You can share this URL with others to let them open the same project directly in Pyxel Code Maker.",
-      "cn": "当您从 Gist、GitHub 或 URL 加载项目时，浏览器地址栏会更新为可分享的链接。您可以将此 URL 分享给他人，让他们直接在 Pyxel Code Maker 中打开同一项目。",
-      "de": "Wenn Sie ein Projekt von Gist, GitHub oder einer URL laden, wird die Adresszeile des Browsers mit einem teilbaren Link aktualisiert. Sie können diese URL mit anderen teilen, damit sie dasselbe Projekt direkt in Pyxel Code Maker öffnen können.",
-      "es": "Cuando carga un proyecto desde Gist, GitHub o una URL, la barra de direcciones del navegador se actualiza con un enlace compartible. Puede compartir esta URL con otros para que abran el mismo proyecto directamente en Pyxel Code Maker.",
-      "fr": "Lorsque vous chargez un projet depuis Gist, GitHub ou une URL, la barre d'adresse du navigateur est mise à jour avec un lien partageable. Vous pouvez partager cette URL avec d'autres pour qu'ils ouvrent le même projet directement dans Pyxel Code Maker.",
-      "it": "Quando si carica un progetto da Gist, GitHub o un URL, la barra degli indirizzi del browser viene aggiornata con un link condivisibile. È possibile condividere questo URL con altri per permettere loro di aprire lo stesso progetto direttamente in Pyxel Code Maker.",
-      "ja": "Gist、GitHub、またはURLからプロジェクトを読み込むと、ブラウザのアドレスバーが共有可能なリンクに更新されます。このURLを他の人と共有することで、同じプロジェクトをPyxel Code Makerで直接開いてもらうことができます。",
-      "ko": "Gist, GitHub 또는 URL에서 프로젝트를 불러오면 브라우저 주소 표시줄이 공유 가능한 링크로 업데이트됩니다. 이 URL을 다른 사람과 공유하여 같은 프로젝트를 Pyxel Code Maker에서 바로 열 수 있습니다.",
-      "pt": "Quando você carrega um projeto do Gist, GitHub ou uma URL, a barra de endereço do navegador é atualizada com um link compartilhável. Você pode compartilhar esta URL com outros para que abram o mesmo projeto diretamente no Pyxel Code Maker.",
-      "ru": "При загрузке проекта из Gist, GitHub или по URL адресная строка браузера обновляется общей ссылкой. Вы можете поделиться этим URL с другими, чтобы они могли открыть тот же проект прямо в Pyxel Code Maker.",
-      "tr": "Gist, GitHub veya URL'den bir proje yüklediğinizde, tarayıcının adres çubuğu paylaşılabilir bir bağlantıyla güncellenir. Bu URL'yi başkalarıyla paylaşarak aynı projeyi doğrudan Pyxel Code Maker'da açmalarını sağlayabilirsiniz.",
-      "uk": "Коли ви завантажуєте проєкт з Gist, GitHub або за URL, адресний рядок браузера оновлюється посиланням для обміну. Ви можете поділитися цим URL з іншими, щоб вони могли відкрити той самий проєкт безпосередньо у Pyxel Code Maker."
+      "en": "When you load a project from Gist or GitHub, the browser address bar is updated with a shareable link. You can share this URL with others to let them open the same project directly in Pyxel Code Maker.",
+      "cn": "当您从 Gist 或 GitHub 加载项目时，浏览器地址栏会更新为可分享的链接。您可以将此 URL 分享给他人，让他们直接在 Pyxel Code Maker 中打开同一项目。",
+      "de": "Wenn Sie ein Projekt von Gist oder GitHub laden, wird die Adresszeile des Browsers mit einem teilbaren Link aktualisiert. Sie können diese URL mit anderen teilen, damit sie dasselbe Projekt direkt in Pyxel Code Maker öffnen können.",
+      "es": "Cuando carga un proyecto desde Gist o GitHub, la barra de direcciones del navegador se actualiza con un enlace compartible. Puede compartir esta URL con otros para que abran el mismo proyecto directamente en Pyxel Code Maker.",
+      "fr": "Lorsque vous chargez un projet depuis Gist ou GitHub, la barre d'adresse du navigateur est mise à jour avec un lien partageable. Vous pouvez partager cette URL avec d'autres pour qu'ils ouvrent le même projet directement dans Pyxel Code Maker.",
+      "it": "Quando si carica un progetto da Gist o GitHub, la barra degli indirizzi del browser viene aggiornata con un link condivisibile. È possibile condividere questo URL con altri per permettere loro di aprire lo stesso progetto direttamente in Pyxel Code Maker.",
+      "ja": "GistまたはGitHubからプロジェクトを読み込むと、ブラウザのアドレスバーが共有可能なリンクに更新されます。このURLを他の人と共有することで、同じプロジェクトをPyxel Code Makerで直接開いてもらうことができます。",
+      "ko": "Gist 또는 GitHub에서 프로젝트를 불러오면 브라우저 주소 표시줄이 공유 가능한 링크로 업데이트됩니다. 이 URL을 다른 사람과 공유하여 같은 프로젝트를 Pyxel Code Maker에서 바로 열 수 있습니다.",
+      "pt": "Quando você carrega um projeto do Gist ou GitHub, a barra de endereço do navegador é atualizada com um link compartilhável. Você pode compartilhar esta URL com outros para que abram o mesmo projeto diretamente no Pyxel Code Maker.",
+      "ru": "При загрузке проекта из Gist или GitHub адресная строка браузера обновляется общей ссылкой. Вы можете поделиться этим URL с другими, чтобы они могли открыть тот же проект прямо в Pyxel Code Maker.",
+      "tr": "Gist veya GitHub'dan bir proje yüklediğinizde, tarayıcının adres çubuğu paylaşılabilir bir bağlantıyla güncellenir. Bu URL'yi başkalarıyla paylaşarak aynı projeyi doğrudan Pyxel Code Maker'da açmalarını sağlayabilirsiniz.",
+      "uk": "Коли ви завантажуєте проєкт з Gist або GitHub, адресний рядок браузера оновлюється посиланням для обміну. Ви можете поділитися цим URL з іншими, щоб вони могли відкрити той самий проєкт безпосередньо у Pyxel Code Maker."
     }
   },
   "toolbar_items": [
@@ -572,23 +572,6 @@
             "ru": "Загрузить ZIP-файл из репозитория GitHub. Введите URL файла на GitHub.",
             "tr": "GitHub deposundan ZIP dosyası yükleyin. GitHub dosya URL'si girin.",
             "uk": "Завантажити ZIP-файл з репозиторію GitHub. Введіть URL файлу на GitHub."
-          }
-        },
-        {
-          "label": "URL",
-          "desc": {
-            "en": "Load a project ZIP file from any URL.",
-            "cn": "从任意 URL 加载项目 ZIP 文件。",
-            "de": "Eine Projekt-ZIP-Datei von einer beliebigen URL laden.",
-            "es": "Cargar un archivo ZIP de proyecto desde cualquier URL.",
-            "fr": "Charger un fichier ZIP de projet depuis n'importe quelle URL.",
-            "it": "Caricare un file ZIP di progetto da qualsiasi URL.",
-            "ja": "任意のURLからプロジェクトのZIPファイルを読み込みます。",
-            "ko": "임의의 URL에서 프로젝트 ZIP 파일을 불러옵니다.",
-            "pt": "Carregar um arquivo ZIP de projeto de qualquer URL.",
-            "ru": "Загрузить ZIP-файл проекта по любому URL.",
-            "tr": "Herhangi bir URL'den proje ZIP dosyası yükleyin.",
-            "uk": "Завантажити ZIP-файл проєкту за будь-яким URL."
           }
         }
       ]

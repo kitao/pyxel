@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.8.1
+
+- Removed URL loading from Code Maker
+
 ## 2.8.0
 
 - Reverted default window icon padding
