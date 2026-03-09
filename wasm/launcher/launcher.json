@@ -101,19 +101,33 @@
       "tr": "Başlangıç dosya türü {0} veya {1} olmalıdır.",
       "uk": "Тип файлу запуску має бути {0} або {1}."
     },
-    "help_example": {
-      "en": "Example:",
-      "cn": "示例：",
-      "de": "Beispiel:",
-      "es": "Ejemplo:",
-      "fr": "Exemple :",
-      "it": "Esempio:",
-      "ja": "例：",
-      "ko": "예시:",
-      "pt": "Exemplo:",
-      "ru": "Пример:",
-      "tr": "Örnek:",
-      "uk": "Приклад:"
+    "help_example_1": {
+      "en": "Example 1:",
+      "cn": "示例 1：",
+      "de": "Beispiel 1:",
+      "es": "Ejemplo 1:",
+      "fr": "Exemple 1 :",
+      "it": "Esempio 1:",
+      "ja": "例１：",
+      "ko": "예시 1:",
+      "pt": "Exemplo 1:",
+      "ru": "Пример 1:",
+      "tr": "Örnek 1:",
+      "uk": "Приклад 1:"
+    },
+    "help_example_2": {
+      "en": "Example 2:",
+      "cn": "示例 2：",
+      "de": "Beispiel 2:",
+      "es": "Ejemplo 2:",
+      "fr": "Exemple 2 :",
+      "it": "Esempio 2:",
+      "ja": "例２：",
+      "ko": "예시 2:",
+      "pt": "Exemplo 2:",
+      "ru": "Пример 2:",
+      "tr": "Örnek 2:",
+      "uk": "Приклад 2:"
     },
     "help_packages_only": {
       "en": "Only {0} can be used.",

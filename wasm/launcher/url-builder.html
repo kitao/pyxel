@@ -82,19 +82,12 @@
             <ul class="help">
               <li id="help-file-type">
                 Startup file type should be
-                <code class="codechip">.pyxapp</code>
+                <code class="codechip">.py</code>
                 or
-                <code class="codechip">.py</code>.<br />
-                Example:
-                <a
-                  class="link"
-                  href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/apps/megaball.pyxapp"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/apps/megaball.pyxapp
-                </a>
+                <code class="codechip">.pyxapp</code>.
               </li>
+              <li id="help-example-py"></li>
+              <li id="help-example-pyxapp"></li>
             </ul>
           </div>
 
@@ -124,6 +117,10 @@
               placeholder="numpy,matplotlib"
             />
             <ul class="help">
+              <li id="help-packages-comma">
+                If there are multiple packages, separate them with commas like
+                <code class="codechip">a,b,c</code>.
+              </li>
               <li id="help-packages-only">
                 Only
                 <a
@@ -134,10 +131,6 @@
                   >packages supported by Pyodide</a
                 >
                 can be used.
-              </li>
-              <li id="help-packages-comma">
-                If there are multiple packages, separate them with commas like
-                <code class="codechip">a,b,c</code>.
               </li>
             </ul>
           </div>
@@ -214,18 +207,20 @@
           el.textContent = t(el.dataset.i18n);
         });
 
-        // Help: file type + example
-        const exampleUrl = "https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/apps/megaball.pyxapp";
+        // Help: file type + examples
         document.getElementById("help-file-type").innerHTML =
-          t("help_file_type").replace("{0}", chip(".pyxapp")).replace("{1}", chip(".py")) +
-          "<br>" + t("help_example") + " " + extLink(exampleUrl, exampleUrl);
+          t("help_file_type").replace("{0}", chip(".py")).replace("{1}", chip(".pyxapp"));
+        const pyUrl = "https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/01_hello_pyxel.py";
+        const pyxappUrl = "https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/apps/megaball.pyxapp";
+        document.getElementById("help-example-py").innerHTML = t("help_example_1") + " " + extLink(pyUrl, pyUrl);
+        document.getElementById("help-example-pyxapp").innerHTML = t("help_example_2") + " " + extLink(pyxappUrl, pyxappUrl);
 
         // Help: packages
+        document.getElementById("help-packages-comma").innerHTML =
+          t("help_packages_comma").replace("{0}", chip("a,b,c"));
         const pyodideUrl = "https://pyodide.org/en/stable/usage/packages-in-pyodide.html";
         document.getElementById("help-packages-only").innerHTML =
           t("help_packages_only").replace("{0}", extLink(pyodideUrl, t("help_packages_link")));
-        document.getElementById("help-packages-comma").innerHTML =
-          t("help_packages_comma").replace("{0}", chip("a,b,c"));
 
         // Footer
         const docLang = currentLang === "ja" ? "ja" : "en";
@@ -254,13 +249,17 @@
           return;
         }
 
+        // https://github.com/USER/REPO/blob/BRANCH/PATH/TO/FILE.ext
         const paths = startupFile.split("/");
-        const dottedPath = paths.slice(3, 5).concat(paths.slice(7)).join(".");
-        const filePath = dottedPath.split(".").slice(0, -1).join(".");
-        const fileExt = dottedPath.split(".").slice(-1)[0];
+        const user = paths[3];
+        const repo = paths[4];
+        const branch = paths[6];
+        const filePath = paths.slice(7).join("/");
+        const fileExt = filePath.split(".").pop();
+        const filePathNoExt = filePath.replace(/\.[^.]+$/, "");
         let launchUrl = "https://kitao.github.io/pyxel/wasm/launcher/?";
         launchUrl += fileExt === "py" ? "run" : "play";
-        launchUrl += "=" + filePath;
+        launchUrl += `=${user}/${repo}/${branch}/${filePathNoExt}`;
 
         if (virtualGamepad) {
           launchUrl += "&gamepad=enabled";

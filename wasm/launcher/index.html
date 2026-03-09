@@ -8,29 +8,41 @@
   <body class="pyxel-scheme">
     <script>
       const queries = new URL(document.location).searchParams;
-      let command, paths, ext;
+      let command, value, ext;
 
       if (queries.get("run")) {
         command = "run";
-        paths = queries.get("run").split(".");
+        value = queries.get("run");
         ext = ".py";
       } else if (queries.get("play")) {
         command = "play";
-        paths = queries.get("play").split(".");
+        value = queries.get("play");
         ext = ".pyxapp";
       } else if (queries.get("edit")) {
         command = "edit";
-        paths = queries.get("edit").split(".");
+        value = queries.get("edit");
         ext = ".pyxres";
       } else {
         location.replace("url-builder.html");
       }
 
       if (command) {
+        let root, name;
+        if (value.includes("/")) {
+          // New format: user/repo/branch/path/to/file
+          const parts = value.split("/");
+          root = `https://cdn.jsdelivr.net/gh/${parts[0]}/${parts[1]}@${parts[2]}`;
+          name = parts.slice(3).join("/") + ext;
+        } else {
+          // Legacy format: user.repo.path.to.file
+          const parts = value.split(".");
+          root = `https://cdn.jsdelivr.net/gh/${parts[0]}/${parts[1]}`;
+          name = parts.slice(2).join("/") + ext;
+        }
         launchPyxel({
-          root: "https://cdn.jsdelivr.net/gh/" + paths.slice(0, 2).join("/"),
-          command: command,
-          name: paths.slice(2).join("/") + ext,
+          root,
+          command,
+          name,
           packages: queries.get("packages"),
           gamepad: queries.get("gamepad"),
           editor: queries.get("editor"),

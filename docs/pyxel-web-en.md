@@ -23,10 +23,8 @@ Simply enter the required information to automatically generate a launch URL, or
 #### URL Format
 
 ```
-https://kitao.github.io/pyxel/wasm/launcher/?<command>=<username>.<repository>.<path>.<filename without extension>
+https://kitao.github.io/pyxel/wasm/launcher/?<command>=<username>/<repository>/<branch>/<path>/<filename without extension>
 ```
-
-Dots (`.`) are used as path separators (e.g., `src/scenes` becomes `src.scenes`).
 
 #### Commands
 
@@ -38,16 +36,16 @@ Dots (`.`) are used as path separators (e.g., `src/scenes` becomes `src.scenes`)
 
 #### URL Examples
 
-To run `src/scenes/title.py` in user `taro`'s repository `my_repo`:
+To run `src/scenes/title.py` in user `taro`'s repository `my_repo` (branch `main`):
 
 ```
-https://kitao.github.io/pyxel/wasm/launcher/?run=taro.my_repo.src.scenes.title
+https://kitao.github.io/pyxel/wasm/launcher/?run=taro/my_repo/main/src/scenes/title
 ```
 
 To run `dist/games/shooter.pyxapp` in the same repository:
 
 ```
-https://kitao.github.io/pyxel/wasm/launcher/?play=taro.my_repo.dist.games.shooter
+https://kitao.github.io/pyxel/wasm/launcher/?play=taro/my_repo/main/dist/games/shooter
 ```
 
 #### Attributes
@@ -62,7 +60,7 @@ The following attributes can be added to the `run` and `play` commands.
 Example URL with attributes added to the `run` command:
 
 ```
-https://kitao.github.io/pyxel/wasm/launcher/?run=taro.my_repo.src.scenes.title&gamepad=enabled&packages=numpy,pandas
+https://kitao.github.io/pyxel/wasm/launcher/?run=taro/my_repo/main/src/scenes/title&gamepad=enabled&packages=numpy,pandas
 ```
 
 For the `edit` command, you can specify the startup screen using the `editor` attribute (`image`, `tilemap`, `sound`, `music`).
@@ -70,7 +68,7 @@ For the `edit` command, you can specify the startup screen using the `editor` at
 Example URL for the `edit` command:
 
 ```
-https://kitao.github.io/pyxel/wasm/launcher/?edit=taro.my_repo.assets.shooter&editor=tilemap
+https://kitao.github.io/pyxel/wasm/launcher/?edit=taro/my_repo/main/assets/shooter&editor=tilemap
 ```
 
 Running a multi-file app with `run` may take longer to load. It is recommended to convert it to a `.pyxapp` using the `pyxel package` command and run it with `play`.
