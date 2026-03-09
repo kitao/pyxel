@@ -5,6 +5,7 @@
 - Reverted default window icon padding
 - Added project sharing via Gist, GitHub, and URL to Code Maker
 - Changed Web Launcher URL format from dot to slash separators
+- Added drag-and-drop support for .py and .pyxres files in Code Maker
 - Fixed deprecated warning in voxatron.pyxapp
 
 ## 2.7.12

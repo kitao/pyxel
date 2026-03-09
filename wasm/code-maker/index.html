@@ -1164,6 +1164,60 @@
         bindTarget(resourceEditor.contentWindow);
       }
 
+      function setupFileDrop() {
+        function handleFile(file) {
+          const name = file.name;
+          if (name.endsWith(".py")) {
+            file.text().then((text) => {
+              window.codeEditor.setValue(text, -1);
+              window.project.code = text;
+              window.project.files["main.py"] = uint8ToBase64(
+                new TextEncoder().encode(text),
+              );
+            });
+          } else if (name.endsWith(".pyxres")) {
+            file.arrayBuffer().then((buf) => {
+              const b64 = uint8ToBase64(new Uint8Array(buf));
+              window.project.resource = b64;
+              window.project.files["my_resource.pyxres"] = b64;
+              resetResourceEditor();
+            });
+          }
+        }
+
+        function bindDrop(doc) {
+          doc.addEventListener("dragover", (e) => {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = "copy";
+          });
+          doc.addEventListener("drop", (e) => {
+            e.preventDefault();
+            const file = e.dataTransfer.files?.[0];
+            if (file) {
+              handleFile(file);
+            }
+          });
+        }
+
+        function bindIframe(iframe) {
+          function bind() {
+            try {
+              if (iframe.contentDocument) {
+                bindDrop(iframe.contentDocument);
+              }
+            } catch (e) {
+              // Cross-origin iframe
+            }
+          }
+          iframe.addEventListener("load", bind);
+          bind();
+        }
+
+        bindDrop(document);
+        bindIframe(runtimeScreen);
+        bindIframe(resourceEditor);
+      }
+
       function setupPyxelInput() {
         const handlers = ["click", "touchstart", "keydown"];
         function resolvePyxelInput() {
@@ -1222,6 +1276,7 @@
         setupFocusIndicator();
         setupShortcuts();
         setupPyxelInput();
+        setupFileDrop();
 
         // Enable Pyxel controls
         waitForPyxelReady();
