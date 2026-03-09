@@ -1169,6 +1169,10 @@
           const name = file.name;
           if (name.endsWith(".py")) {
             file.text().then((text) => {
+              text = text.replace(
+                /((?:\w+\.)?\bload\()(["'])[^"']*\.pyxres\2/g,
+                '$1$2my_resource.pyxres$2',
+              );
               window.codeEditor.setValue(text, -1);
               window.project.code = text;
               window.project.files["main.py"] = uint8ToBase64(
