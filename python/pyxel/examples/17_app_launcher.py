@@ -14,7 +14,6 @@ APP_NAMES = [
     "space_rescue",
     "mega_wing",
     "cursed_caverns",
-    "8bit-bgm-gen",
 ]
 
 ROW_COUNT = 5
