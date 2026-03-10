@@ -3,6 +3,7 @@
 ## 2.8.1
 
 - Removed URL loading from Code Maker
+- Removed unverified KMSDRM support from Linux SDL2 build
 
 ## 2.8.0
 
