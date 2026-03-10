@@ -39,7 +39,7 @@ run() {
     "$@"
 }
 
-# Echo and run a GUI command in background; Ctrl+C sends SIGTERM
+# Echo and run a GUI command in background; Ctrl+C to stop
 run_bg() {
     echo_cmd "$@"
     "$@" &
@@ -81,20 +81,13 @@ cd "$WORK_DIR"
 run pyxel package . "$PACKAGE_EXAMPLE.py"
 run_bg pyxel play "$PACKAGE_EXAMPLE.pyxapp"
 
-# app2exe (skip if PyInstaller not installed)
-if pyinstaller -h &>/dev/null; then
-    run pyxel app2exe "$PACKAGE_EXAMPLE.pyxapp"
-    run_bg "./$PACKAGE_EXAMPLE/$PACKAGE_EXAMPLE"
-    rm -rf "$PACKAGE_EXAMPLE"
-fi
-
 # app2html
 run pyxel app2html "$PACKAGE_EXAMPLE.pyxapp"
 [[ -f "$PACKAGE_EXAMPLE.html" ]] || { echo "app2html: $PACKAGE_EXAMPLE.html not created"; exit 1; }
 rm -f "$PACKAGE_EXAMPLE.html"
 rm -f "$PACKAGE_EXAMPLE.pyxapp"
 
-# Watch (inject error, restore, let user confirm recovery visually)
+# Watch (inject error, then restore)
 pyxel watch . "$WATCH_EXAMPLE.py" &
 BG_PID=$!
 sleep 2
