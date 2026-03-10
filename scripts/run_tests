@@ -87,7 +87,7 @@ run pyxel app2html "$PACKAGE_EXAMPLE.pyxapp"
 rm -f "$PACKAGE_EXAMPLE.html"
 rm -f "$PACKAGE_EXAMPLE.pyxapp"
 
-# Watch (inject error, then restore)
+# Watch (inject error, restore, Ctrl+C to stop)
 pyxel watch . "$WATCH_EXAMPLE.py" &
 BG_PID=$!
 sleep 2
@@ -98,7 +98,5 @@ EOF
 sleep 1
 
 sed 's/Hello, Pyxel!/Watch Passed!/' "$EXAMPLES_DIR/$WATCH_EXAMPLE.py" > "$WATCH_EXAMPLE.py"
-sleep 2
-kill $BG_PID 2>/dev/null || true
-wait $BG_PID 2>/dev/null || true
-BG_PID=0
+trap 'kill $BG_PID 2>/dev/null; exit 0' INT
+wait $BG_PID || true
