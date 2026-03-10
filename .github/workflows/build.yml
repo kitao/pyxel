@@ -273,16 +273,8 @@ jobs:
           # Bundle SDL2 for X11/Wayland (other backends use system SDL2)
           mkdir -p python/pyxel/_sdl2
           cp $PREFIX/lib/libSDL2-2.0.so.0 python/pyxel/_sdl2/
-          make TARGET=${{ matrix.target }} MATURIN_OPTS="--manylinux off --auditwheel skip"
+          make TARGET=${{ matrix.target }} MATURIN_OPTS="--manylinux 2_28 --auditwheel skip"
           rm -rf python/pyxel/_sdl2
-
-          # Repair wheel, keeping SDL2 as a standalone bundle
-          pip install auditwheel
-          WHEEL=$(ls dist/*linux*.whl | head -1)
-          ARCH=$(echo "${{ matrix.target }}" | cut -d- -f1 | sed 's/armv7/armv7l/')
-          auditwheel repair --plat manylinux_2_28_$ARCH \
-            --exclude libSDL2-2.0.so.0 -w dist/ "$WHEEL"
-          rm "$WHEEL"
 
       - *upload-wheel
 
