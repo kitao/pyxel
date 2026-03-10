@@ -80,7 +80,7 @@ A versão web do Pyxel pode ser usada sem instalação em PCs, smartphones, tabl
 
 O ambiente de desenvolvimento web [Pyxel Code Maker](https://kitao.github.io/pyxel/wasm/code-maker/) está pronto para uso, basta abri-lo no navegador.
 
-Para outros usos, como incorporar aplicativos Pyxel em seu próprio site, consulte [esta página](pyxel-web-pt.md).
+Para outros usos, como incorporar aplicativos Pyxel em seu próprio site, consulte [esta página](pyxel-web-en.md).
 
 ### VS Code
 

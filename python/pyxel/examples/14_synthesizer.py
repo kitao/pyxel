@@ -204,6 +204,7 @@ class WavetableEditor:
         pyxel.rectb(x, y, w, h, 4)
         pyxel.rect(x + 1, y + 1, w - 1, h - 1, 9)
 
+    @classmethod
     def draw_rect(cls, x, y):
         pyxel.rect(x, y, 4, 2, 1)
 

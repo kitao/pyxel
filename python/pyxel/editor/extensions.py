@@ -40,13 +40,13 @@ def _get_slice(self, x, y, width, height):
     return data
 
 
-def _set_slice(self, x, y, slice):
-    width = len(slice[0])
-    height = len(slice)
+def _set_slice(self, x, y, data):
+    width = len(data[0])
+    height = len(data)
 
     for yi in range(height):
         for xi in range(width):
-            self.pset(x + xi, y + yi, slice[yi][xi])
+            self.pset(x + xi, y + yi, data[yi][xi])
 
 
 pyxel.user_pal = _user_pal  # type: ignore

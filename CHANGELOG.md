@@ -747,7 +747,7 @@
 ## 2.0.2
 
 - Reordered declarations in the pyi file
-- Music.set no longer requires specifying all channels
+- Relaxed Music.set to not require specifying all channels
 - Switched to Ruff for linting and formatting Python code
 - Added usage of the show and flip functions to the README files
 - Added Example 14

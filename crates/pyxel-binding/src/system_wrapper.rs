@@ -146,10 +146,8 @@ fn _reset_statics() {
 #[cfg(not(target_os = "emscripten"))]
 #[pyfunction]
 fn _pid_exists(pid: u32) -> bool {
-    {
-        let system = sysinfo::System::new_all();
-        system.process(sysinfo::Pid::from_u32(pid)).is_some()
-    }
+    let system = sysinfo::System::new_all();
+    system.process(sysinfo::Pid::from_u32(pid)).is_some()
 }
 
 #[cfg(target_os = "emscripten")]

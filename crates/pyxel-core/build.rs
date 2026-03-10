@@ -171,7 +171,7 @@ impl Sdl2Bindings {
             .use_core()
             .generate_comments(false)
             .prepend_enum_name(false)
-            .clang_arg(format!("--target={}", self.target.clone()))
+            .clang_arg(format!("--target={}", self.target))
             .clang_args(self.get_bindgen_flags())
             .clang_args(self.get_include_flags());
 

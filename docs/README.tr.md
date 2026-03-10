@@ -80,7 +80,7 @@ Pyxel'in web sürümü, uyumlu bir tarayıcıya sahip PC, akıllı telefon, tabl
 
 Web tabanlı geliştirme ortamı [Pyxel Code Maker](https://kitao.github.io/pyxel/wasm/code-maker/), tarayıcınızda açmanız yeterli olacak şekilde kullanıma hazırdır.
 
-Kendi sitenizde Pyxel uygulamalarını gömme gibi diğer kullanımlar için lütfen [bu sayfaya](pyxel-web-tr.md) bakın.
+Kendi sitenizde Pyxel uygulamalarını gömme gibi diğer kullanımlar için lütfen [bu sayfaya](pyxel-web-en.md) bakın.
 
 ### VS Code
 

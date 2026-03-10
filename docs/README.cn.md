@@ -80,7 +80,7 @@ Web 版 Pyxel 可在 PC、智能手机、平板电脑等具有兼容浏览器的
 
 Web 版开发环境 [Pyxel Code Maker](https://kitao.github.io/pyxel/wasm/code-maker/) 只需在浏览器中打开即可使用。
 
-如需在自己的网站中嵌入 Pyxel 应用等其他用法，请参考[此页面](pyxel-web-cn.md)。
+如需在自己的网站中嵌入 Pyxel 应用等其他用法，请参考[此页面](pyxel-web-en.md)。
 
 ### VS Code
 

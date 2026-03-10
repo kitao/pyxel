@@ -149,5 +149,4 @@ class TilemapEditor(EditorBase):
         self.draw_panel(157, 156, 72, 17)
 
         pyxel.text(18, 162, "TILEMAP", TEXT_LABEL_COLOR)
-        pyxel.text(18, 162, "TILEMAP", TEXT_LABEL_COLOR)
         pyxel.text(170, 162, "IMAGE", TEXT_LABEL_COLOR)

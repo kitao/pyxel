@@ -93,6 +93,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - *resolve-rust-version
+
       - *install-rust
 
       - name: Install Python

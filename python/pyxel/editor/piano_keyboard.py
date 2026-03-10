@@ -160,7 +160,7 @@ class PianoKeyboard(Widget):
         play_pos = pyxel.play_pos(0)
         notes = self.get_field(0)
 
-        if play_pos is not None and not notes:
+        if play_pos is not None and notes:
             note = notes[round(play_pos[1] * 120 / self.speed_var)]
         elif play_pos is None and self.note_var is not None:
             note = self.note_var

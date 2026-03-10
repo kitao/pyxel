@@ -5,6 +5,9 @@ on:
     tags:
       - "v*"
 
+env:
+  PYTHON_VERSION: "3.14"
+
 jobs:
   build:
     uses: kitao/pyxel/.github/workflows/build.yml@main
@@ -49,7 +52,7 @@ jobs:
       - name: Install Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.14"
+          python-version: ${{ env.PYTHON_VERSION }}
 
       - name: Publish to PyPI
         run: |

@@ -80,7 +80,7 @@ Pyxel의 Web 버전은 호환되는 브라우저가 있는 PC, 스마트폰, 태
 
 웹 기반 개발 환경 [Pyxel Code Maker](https://kitao.github.io/pyxel/wasm/code-maker/)는 브라우저에서 열기만 하면 바로 사용할 수 있습니다.
 
-자신의 사이트에 Pyxel 앱을 임베딩하는 등의 다른 사용 방법에 대해서는 [이 페이지](pyxel-web-ko.md)를 참조하세요.
+자신의 사이트에 Pyxel 앱을 임베딩하는 등의 다른 사용 방법에 대해서는 [이 페이지](pyxel-web-en.md)를 참조하세요.
 
 ### VS Code
 
