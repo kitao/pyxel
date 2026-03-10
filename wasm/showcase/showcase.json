@@ -1062,6 +1062,39 @@
             "tr": "Pyxel Resmi Kitabı'ndan (Gijutsu-Hyoron Yayınevi) örnek oyun. Tuzaklardan kaçarak mağaralarda mücevher toplanan platformer, harita tasarımı ve çarpışma algılamayı kapsar.",
             "uk": "Приклад з офіційної книги Pyxel (видавництво Gijutsu-Hyoron). Платформер, де ви збираєте самоцвіти в печерах, уникаючи пасток — вивчення дизайну карт та виявлення зіткнень."
           }
+        },
+        {
+          "file": "8bit BGM Generator",
+          "demo": "apps/8bit-bgm-gen.html",
+          "code": "https://github.com/shiromofufactory/8bit-bgm-generator",
+          "description": {
+            "en": "Automatic 8-bit BGM generator by frenchbread",
+            "cn": "frenchbread 制作的自动 8-bit BGM 生成器",
+            "de": "Automatischer 8-Bit-BGM-Generator von frenchbread",
+            "es": "Generador automático de BGM 8-bit por frenchbread",
+            "fr": "Générateur automatique de BGM 8-bit par frenchbread",
+            "it": "Generatore automatico di BGM 8-bit di frenchbread",
+            "ja": "frenchbread 制作の 8ビット BGM 自動生成ツール",
+            "ko": "frenchbread 제작, 8비트 BGM 자동 생성기",
+            "pt": "Gerador automático de BGM 8-bit por frenchbread",
+            "ru": "Автоматический генератор 8-bit BGM от frenchbread",
+            "tr": "frenchbread tarafından otomatik 8-bit BGM oluşturucu",
+            "uk": "Автоматичний генератор 8-bit BGM від frenchbread"
+          },
+          "details": {
+            "en": "The tool that became the basis of Pyxel's gen_bgm function, created by shiromofufactory. Automatically generates retro-style BGM from simple parameters.",
+            "cn": "shiromofufactory 制作的 8 位 BGM 自动生成工具。Pyxel gen_bgm 函数的原型，只需指定参数即可自动生成复古风格的 BGM。",
+            "de": "Das Tool, das die Grundlage für Pyxels gen_bgm-Funktion wurde, erstellt von shiromofufactory. Generiert automatisch Retro-BGM aus einfachen Parametern.",
+            "es": "La herramienta que se convirtió en la base de la función gen_bgm de Pyxel, creada por shiromofufactory. Genera automáticamente BGM de estilo retro a partir de parámetros simples.",
+            "fr": "L'outil à l'origine de la fonction gen_bgm de Pyxel, créé par shiromofufactory. Génère automatiquement des BGM de style rétro à partir de paramètres simples.",
+            "it": "Lo strumento che è diventato la base della funzione gen_bgm di Pyxel, creato da shiromofufactory. Genera automaticamente BGM in stile retro da semplici parametri.",
+            "ja": "frenchbread (shiromofufactory) 制作の 8ビット BGM 自動生成ツール。Pyxel の gen_bgm 関数のベースとなったツールで、パラメータを指定するだけでレトロゲーム風の BGM を自動生成できます。",
+            "ko": "Pyxel의 gen_bgm 함수의 기반이 된 shiromofufactory 제작 도구. 간단한 파라미터 지정만으로 레트로 스타일 BGM을 자동 생성할 수 있습니다.",
+            "pt": "A ferramenta que se tornou a base da função gen_bgm do Pyxel, criada por shiromofufactory. Gera automaticamente BGM em estilo retro a partir de parâmetros simples.",
+            "ru": "Инструмент, ставший основой функции gen_bgm в Pyxel, созданный shiromofufactory. Автоматически генерирует ретро-BGM из простых параметров.",
+            "tr": "Pyxel'in gen_bgm fonksiyonunun temelini oluşturan shiromofufactory tarafından yapılmış araç. Basit parametrelerle retro tarzı BGM otomatik oluşturur.",
+            "uk": "Інструмент, що став основою функції gen_bgm у Pyxel, створений shiromofufactory. Автоматично генерує ретро-BGM з простих параметрів."
+          }
         }
       ]
     },
