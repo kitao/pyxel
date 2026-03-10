@@ -1,5 +1,19 @@
+import ctypes
 import os
 import sys
+
+if sys.platform == "linux":
+    _sdl2_path = os.path.join(os.path.dirname(__file__), "_sdl2", "libSDL2-2.0.so.0")
+    try:
+        if os.environ.get("DISPLAY") or os.environ.get("WAYLAND_DISPLAY"):
+            ctypes.CDLL(_sdl2_path, mode=ctypes.RTLD_GLOBAL)
+        else:
+            try:
+                ctypes.CDLL("libSDL2-2.0.so.0", mode=ctypes.RTLD_GLOBAL)
+            except OSError:
+                ctypes.CDLL(_sdl2_path, mode=ctypes.RTLD_GLOBAL)
+    except OSError:
+        pass
 
 from .pyxel_binding import *  # type: ignore  # noqa: F403
 
