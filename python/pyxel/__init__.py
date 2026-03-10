@@ -3,7 +3,7 @@ import os
 import sys
 
 if sys.platform == "linux":
-    _sdl2_path = os.path.join(os.path.dirname(__file__), "_sdl2", "libSDL2-2.0.so.0")
+    _sdl2_path = os.path.join(os.path.dirname(__file__), "libs", "libSDL2-2.0.so.0")
     try:
         if os.environ.get("DISPLAY") or os.environ.get("WAYLAND_DISPLAY"):
             ctypes.CDLL(_sdl2_path, mode=ctypes.RTLD_GLOBAL)

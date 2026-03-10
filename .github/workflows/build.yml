@@ -272,10 +272,10 @@ jobs:
           export LD_LIBRARY_PATH="$PREFIX/lib:${LD_LIBRARY_PATH:-}"
 
           # Bundle SDL2 for X11/Wayland (other backends use system SDL2)
-          mkdir -p python/pyxel/_sdl2
-          cp $PREFIX/lib/libSDL2-2.0.so.0 python/pyxel/_sdl2/
+          mkdir -p python/pyxel/libs
+          cp $PREFIX/lib/libSDL2-2.0.so.0 python/pyxel/libs/
           make TARGET=${{ matrix.target }} MATURIN_OPTS="--manylinux 2_28 --auditwheel skip"
-          rm -rf python/pyxel/_sdl2
+          rm -rf python/pyxel/libs
 
       - *upload-wheel
 
@@ -337,10 +337,10 @@ jobs:
         run: |
           mkdir -p /tmp/wheel-contents
           unzip -o dist/*.whl -d /tmp/wheel-contents
-          SDL2_LIB=$(find /tmp/wheel-contents -path "*/_sdl2/libSDL2*" -name "*.so*" 2>/dev/null | head -1)
+          SDL2_LIB=$(find /tmp/wheel-contents -path "*/libs/libSDL2*" -name "*.so*" 2>/dev/null | head -1)
 
           if [ -z "$SDL2_LIB" ]; then
-            echo "FAIL: Could not find bundled SDL2 in _sdl2/ directory"
+            echo "FAIL: Could not find bundled SDL2 in libs/ directory"
             exit 1
           fi
 
