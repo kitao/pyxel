@@ -105,5 +105,7 @@ EOF
 sleep 1
 
 sed 's/Hello, Pyxel!/Watch Passed!/' "$EXAMPLES_DIR/$WATCH_EXAMPLE.py" > "$WATCH_EXAMPLE.py"
-trap 'kill $BG_PID 2>/dev/null; exit 0' INT
-wait $BG_PID || true
+sleep 2
+kill $BG_PID 2>/dev/null || true
+wait $BG_PID 2>/dev/null || true
+BG_PID=0
