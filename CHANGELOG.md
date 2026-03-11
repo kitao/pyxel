@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.8.2
+
+- Prioritized system SDL2 over bundled SDL2 on Linux
+
 ## 2.8.1
 
 - Removed URL loading from Code Maker
