@@ -136,6 +136,7 @@
                 <button class="dropdown-item" tabindex="-1" data-action="load-local">File</button>
                 <button class="dropdown-item" tabindex="-1" data-action="load-gist">Gist</button>
                 <button class="dropdown-item" tabindex="-1" data-action="load-github">GitHub</button>
+                <button class="dropdown-item" tabindex="-1" data-action="load-url">URL</button>
               </div>
             </div>
             <!-- Save dropdown -->
@@ -282,6 +283,18 @@
       </div>
     </div>
 
+    <!-- Load from URL modal -->
+    <div id="modal-load-url" class="modal-overlay hidden">
+      <div class="modal">
+        <div class="modal-title">Load from URL</div>
+        <input id="input-load-url" type="text" placeholder="https://example.com/PROJECT.zip" class="modal-input" />
+        <div class="flex justify-end gap-2 mt-3">
+          <button class="modal-btn modal-btn-secondary" data-modal-close>Cancel</button>
+          <button id="btn-load-url" class="modal-btn modal-btn-primary">Load</button>
+        </div>
+      </div>
+    </div>
+
     <!-- Save to Gist modal -->
     <div id="modal-save-gist" class="modal-overlay hidden">
       <div class="modal">
@@ -370,11 +383,11 @@
       }
 
       function resetRuntimeScreen() {
-        runtimeScreen.contentWindow?.resetPyxel();
+        runtimeScreen.contentWindow?.resetPyxel?.();
       }
 
       function resetResourceEditor() {
-        resourceEditor.contentWindow?.resetPyxel();
+        resourceEditor.contentWindow?.resetPyxel?.();
       }
 
       async function loadProjectFromZip(buf, name) {
@@ -466,6 +479,20 @@
         }
         await loadProjectFromZip(await res.arrayBuffer(), name);
         updateShareUrl("github", `${user}/${repo}/${branch}/${path.replace(/\.zip$/i, "")}`);
+      }
+
+      async function loadFromUrl(input) {
+        const url = input.trim();
+        if (!/^https?:\/\/.+/i.test(url)) {
+          throw new Error("Invalid URL");
+        }
+        const name = url.split("/").pop().replace(/\.zip$/i, "") || "untitled";
+        const res = await fetch(url);
+        if (!res.ok) {
+          throw new Error("File not found");
+        }
+        await loadProjectFromZip(await res.arrayBuffer(), name);
+        updateShareUrl("url", url);
       }
 
       async function buildArchiveBlob() {
@@ -586,7 +613,7 @@
       function updateShareUrl(param, value) {
         const base = location.href.split("?")[0];
         if (param && value) {
-          const encoded = encodeURIComponent(value).replace(/%2F/g, "/");
+          const encoded = encodeURIComponent(value).replace(/%3A/g, ":").replace(/%2F/g, "/");
           history.replaceState(null, "", `${base}?${param}=${encoded}`);
         } else {
           history.replaceState(null, "", base);
@@ -685,6 +712,9 @@
               case "load-github":
                 showModal("modal-load-github");
                 break;
+              case "load-url":
+                showModal("modal-load-url");
+                break;
               case "save-local":
                 saveProject();
                 break;
@@ -751,6 +781,18 @@
           }
         });
 
+        document.getElementById("btn-load-url").addEventListener("click", async () => {
+          const value = document.getElementById("input-load-url").value.trim();
+          if (value) {
+            closeModal(document.getElementById("btn-load-url"));
+            try {
+              await loadFromUrl(value);
+            } catch (e) {
+              alert("Load failed: " + e.message);
+            }
+          }
+        });
+
         // Enter key submits modals
         document.querySelectorAll(".modal-input").forEach((input) => {
           input.addEventListener("keydown", (e) => {
@@ -804,23 +846,8 @@
       }
 
       async function loadInitialFiles() {
-        window.project.code = await (await fetch("main.py")).text();
-        window.project.resource = uint8ToBase64(
-          new Uint8Array(
-            await (await fetch("my_resource.pyxres")).arrayBuffer(),
-          ),
-        );
-        window.project.files = {
-          ".pyxapp_startup_script": uint8ToBase64(
-            new TextEncoder().encode("main.py"),
-          ),
-          "main.py": uint8ToBase64(
-            new TextEncoder().encode(window.project.code),
-          ),
-          "my_resource.pyxres": window.project.resource,
-        };
-
-        window.codeEditor.setValue(window.project.code, -1);
+        const res = await fetch("pyxel-project.zip");
+        await loadProjectFromZip(await res.arrayBuffer(), "pyxel-project");
         window.codeEditor.focus();
       }
 
@@ -1188,6 +1215,7 @@
         const params = new URL(location.href).searchParams;
         const gistParam = params.get("gist");
         const githubParam = params.get("github");
+        const urlParam = params.get("url");
         if (gistParam) {
           try {
             await loadFromGist(gistParam);
@@ -1199,6 +1227,12 @@
             const parts = githubParam.split("/");
             const ghUrl = `https://github.com/${parts[0]}/${parts[1]}/blob/${parts.slice(2).join("/")}.zip`;
             await loadFromGitHub(ghUrl);
+          } catch (e) {
+            alert("Load failed: " + e.message);
+          }
+        } else if (urlParam) {
+          try {
+            await loadFromUrl(urlParam);
           } catch (e) {
             alert("Load failed: " + e.message);
           }

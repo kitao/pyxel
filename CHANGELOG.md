@@ -1,5 +1,10 @@
 # Change Log
 
+## 2.8.3
+
+- Added URL loading support to Code Maker
+- Changed Code Maker to load default project from zip file
+
 ## 2.8.2
 
 - Prioritized system SDL2 over bundled SDL2 on Linux
