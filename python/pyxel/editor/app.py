@@ -172,8 +172,16 @@ class App(Widget):
         self.help_message_var = "SAVE:CTRL+S"
 
     def __on_update(self):
-        if pyxel.dropped_files:
-            dropped_file = pyxel.dropped_files[-1]
+        _dropped_files = getattr(pyxel, "_dropped_files", [])
+        pyxel._dropped_files = []
+        dropped_file = (
+            pyxel.dropped_files[-1]
+            if pyxel.dropped_files
+            else _dropped_files[-1]
+            if _dropped_files
+            else None
+        )
+        if dropped_file:
             file_ext = os.path.splitext(dropped_file)[1]
 
             if file_ext == pyxel.RESOURCE_FILE_EXTENSION:

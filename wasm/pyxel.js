@@ -173,6 +173,18 @@ async function resetPyxel() {
   }
 }
 
+function dropFileToPyxel(name, data) {
+  if (!window.pyxelContext.initialized) {
+    return;
+  }
+  const path = "/tmp/" + name.replace(/[^a-zA-Z0-9._-]/g, "_");
+  const pyodide = window.pyxelContext.pyodide;
+  pyodide.FS.writeFile(path, new Uint8Array(data));
+  pyodide.runPython(
+    `import pyxel; pyxel._dropped_files = getattr(pyxel, '_dropped_files', []) + ['${path}']`
+  );
+}
+
 function _initialize() {
   _setIcon();
   _setStyleSheet();
@@ -298,6 +310,19 @@ async function _createScreenElements() {
 
   pyxelScreen.oncontextmenu = (event) => event.preventDefault();
   window.addEventListener("resize", _updateScreenElementsSize);
+
+  // Handle file drop
+  pyxelScreen.addEventListener("dragover", (e) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "copy";
+  });
+  pyxelScreen.addEventListener("drop", (e) => {
+    e.preventDefault();
+    const file = e.dataTransfer.files?.[0];
+    if (file) {
+      file.arrayBuffer().then((buf) => dropFileToPyxel(file.name, buf));
+    }
+  });
 
   // Add canvas for SDL2
   const sdl2Canvas = document.createElement("canvas");
