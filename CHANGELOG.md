@@ -5,6 +5,7 @@
 - Prioritized system SDL2 over bundled SDL2 on Linux
 - Added external file drop support for web-based editor
 - Fixed crash when dropping non-image files on the image editor
+- Fixed crash when dropping non-TMX files on the tilemap editor
 
 ## 2.8.1
 

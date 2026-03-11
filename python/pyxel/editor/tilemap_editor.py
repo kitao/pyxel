@@ -137,9 +137,12 @@ class TilemapEditor(EditorBase):
             )
 
     def __on_drop(self, filename):
-        pyxel.tilemaps[self.tilemap_index_var].load(
-            self.focus_x_var * 8, self.focus_y_var * 8, filename, 0
-        )
+        try:
+            pyxel.tilemaps[self.tilemap_index_var].load(
+                self.focus_x_var * 8, self.focus_y_var * 8, filename, 0
+            )
+        except Exception:
+            pass
 
     def __on_update(self):
         self.check_tool_button_shortcuts()
