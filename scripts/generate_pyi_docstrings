@@ -1,0 +1,346 @@
+#!/usr/bin/env python3
+
+# Add docstrings to __init__.pyi from api-reference.json.
+# Idempotent: produces the same output regardless of how many times it runs.
+
+import json
+import re
+from pathlib import Path
+
+ROOT_DIR = Path(__file__).resolve().parent.parent
+PYI_PATH = ROOT_DIR / "python" / "pyxel" / "__init__.pyi"
+API_JSON_PATH = ROOT_DIR / "wasm" / "api-reference" / "api-reference.json"
+
+CLASS_CATEGORIES = {
+    "image": "Image",
+    "tilemap": "Tilemap",
+    "sound": "Sound",
+    "music": "Music",
+    "channel": "Channel",
+    "tone": "Tone",
+    "font": "Font",
+}
+
+
+def load_api_reference():
+    with open(API_JSON_PATH) as f:
+        return json.load(f)
+
+
+def build_doc_map(api_data):
+    """Build (class_name_or_none, func_name) -> item mapping."""
+    doc_map = {}
+
+    for category in api_data["categories"]:
+        scope = CLASS_CATEGORIES.get(category["id"])
+
+        for item in category.get("items", []):
+            if not isinstance(item, dict) or "name" not in item:
+                continue
+
+            name = item["name"]
+            if scope and "." in name:
+                # "Image.set" -> ("Image", "set")
+                key = (scope, name.split(".", 1)[1])
+            elif scope and name == scope:
+                # Constructor: "Image" -> ("Image", "__init__")
+                key = (scope, "__init__")
+            else:
+                key = (scope, name)
+
+            if key in doc_map:
+                # Merge duplicate entries (e.g. camera(x,y) and camera())
+                _merge_items(doc_map[key], item)
+            else:
+                doc_map[key] = item
+
+    return doc_map
+
+
+def _merge_items(existing, new):
+    """Merge two API entries with the same name.
+
+    The entry with params becomes the primary description.
+    The no-args variant's description is appended.
+    """
+    en = "en"
+    existing_desc = existing.get("description", {}).get(en, "")
+    new_desc = new.get("description", {}).get(en, "")
+
+    if new.get("params") and not existing.get("params"):
+        # New has params, existing doesn't -> swap: new becomes primary
+        existing["description"][en] = f"{new_desc} Call without arguments to {_lowercase_first(existing_desc)}"
+        existing["params"] = new["params"]
+    elif existing.get("params") and not new.get("params"):
+        # Existing has params, new doesn't -> append new as note
+        existing["description"][en] = f"{existing_desc} Call without arguments to {_lowercase_first(new_desc)}"
+    else:
+        # Both have or lack params -> just join
+        existing["description"][en] = f"{existing_desc} {new_desc}"
+
+
+def _lowercase_first(s):
+    """Lowercase the first character of a string."""
+    return s[0].lower() + s[1:] if s else s
+
+
+def _fallback_item(class_name, func_name, doc_map):
+    """Fall back to module-level graphics function for class drawing methods.
+
+    For Image: reuse as-is (same signature).
+    For Tilemap: adapt descriptions (color -> tile, screen -> tilemap).
+    """
+    import copy
+
+    source = doc_map.get((None, func_name))
+    if not source:
+        return None
+
+    if class_name == "Image":
+        return source
+
+    if class_name == "Tilemap":
+        item = copy.deepcopy(source)
+        _adapt_for_tilemap(item)
+        return item
+
+    return None
+
+
+def _adapt_for_tilemap(item):
+    """Adapt a graphics function description for Tilemap context."""
+    en = "en"
+    desc = item.get("description", {}).get(en, "")
+
+    # blt-specific: image bank -> tilemap
+    desc = desc.replace("image bank img (0-2 or Image instance)", "tilemap tm (0-7 or Tilemap instance)")
+    desc = desc.replace("flips the image", "flips the tilemap")
+    desc = desc.replace("colkey sets the transparent color", "tilekey sets the transparent tile")
+
+    # General: screen -> tilemap
+    desc = desc.replace("the screen", "the tilemap")
+    desc = desc.replace("full screen", "the full tilemap")
+
+    # Color -> tile
+    desc = desc.replace("a pixel of color col", "a tile")
+    desc = desc.replace("a pixel with the color col", "a tile")
+    desc = desc.replace("a string s in color col", "a string s with tile")
+    desc = desc.replace("the same color as", "the same tile as")
+    desc = desc.replace("color col", "tile")
+    desc = desc.replace("and color col", "and tile")
+    item["description"][en] = desc
+
+    for p in item.get("params", []):
+        if p["name"] == "col":
+            p["name"] = "tile"
+            p["desc"] = {en: "Tile (image_x, image_y)"}
+        elif p["name"] == "colkey":
+            p["name"] = "tilekey"
+            p["desc"] = {en: "Transparent tile"}
+        elif p["name"] == "img":
+            p["name"] = "tm"
+            p["desc"] = {en: "Tilemap number (0-7) or Tilemap instance"}
+
+
+def make_docstring(item, indent):
+    """Generate docstring lines for a function."""
+    desc = item.get("description", {}).get("en", "")
+    if not desc:
+        return None
+
+    params = item.get("params", [])
+    param_lines = []
+    for p in params:
+        p_desc = p.get("desc", {}).get("en", "")
+        if p_desc:
+            param_lines.append(f"{indent}    {p['name']}: {p_desc}")
+
+    ret_desc = item.get("return", {}).get("desc", {}).get("en", "")
+    notes = item.get("notes", {}).get("en", "")
+    examples = item.get("examples", [])
+
+    if not param_lines and not ret_desc and not notes and not examples:
+        return [f'{indent}"""{desc}"""']
+
+    lines = [f'{indent}"""{desc}', f"{indent}"]
+    has_section = False
+
+    if param_lines:
+        lines.append(f"{indent}Args:")
+        lines.extend(param_lines)
+        has_section = True
+
+    if ret_desc:
+        if has_section:
+            lines.append(f"{indent}")
+        lines.append(f"{indent}Returns:")
+        lines.append(f"{indent}    {ret_desc}")
+        has_section = True
+
+    if notes:
+        if has_section:
+            lines.append(f"{indent}")
+        lines.append(f"{indent}Note:")
+        lines.append(f"{indent}    {notes}")
+        has_section = True
+
+    if examples:
+        if has_section:
+            lines.append(f"{indent}")
+        lines.append(f"{indent}Example::")
+        for ex in examples:
+            lines.append(f"{indent}    {ex}")
+
+    lines.append(f'{indent}"""')
+    return lines
+
+
+def strip_docstrings(content):
+    """Remove all docstrings and restore single-line def: ... format."""
+    lines = content.splitlines()
+    result = []
+    i = 0
+
+    while i < len(lines):
+        stripped = lines[i].strip()
+
+        # Skip docstring blocks
+        if stripped.startswith('"""'):
+            if stripped.count('"""') >= 2:
+                i += 1
+            else:
+                i += 1
+                while i < len(lines) and '"""' not in lines[i]:
+                    i += 1
+                i += 1
+            continue
+
+        # Merge standalone ... back into def line
+        if stripped == "..." and result:
+            prev = result[-1].rstrip()
+            if prev.endswith(":"):
+                result[-1] = prev + " ..."
+                i += 1
+                continue
+
+        result.append(lines[i])
+        i += 1
+
+    return "\n".join(result) + "\n"
+
+
+def add_docstrings(content, doc_map):
+    """Insert docstrings into normalized .pyi content."""
+    lines = content.splitlines(keepends=True)
+    result = []
+    current_class = None
+    last_decorator = None
+    i = 0
+
+    while i < len(lines):
+        line = lines[i]
+        stripped = line.strip()
+
+        # Track class scope
+        cm = re.match(r"^class (\w+)", line)
+        if cm:
+            current_class = cm.group(1)
+        elif (
+            stripped
+            and not line[0:1].isspace()
+            and not stripped.startswith(("#", "@", "class "))
+        ):
+            current_class = None
+
+        # Match variable annotation (e.g. "width: int" or "    width: int")
+        vm = re.match(r"^(\s*)(\w+)\s*:\s*\S+", line)
+        if vm and not stripped.startswith(("def ", "class ")):
+            var_indent = vm.group(1)
+            var_name = vm.group(2)
+            item = doc_map.get((current_class, var_name))
+
+            if item:
+                desc = item.get("description", {}).get("en", "")
+                if desc:
+                    result.append(line)
+                    result.append(f'{var_indent}"""{desc}"""\n')
+                    i += 1
+                    continue
+
+        # Track decorators
+        if stripped.startswith("@"):
+            last_decorator = stripped
+
+        # Match start of def
+        dm = re.match(r"^(\s*)def (\w+)\(", line)
+        if dm:
+            func_indent = dm.group(1)
+            func_name = dm.group(2)
+            body_indent = func_indent + "    "
+            is_overload = last_decorator == "@overload"
+            last_decorator = None
+
+            # Collect full def signature (may span multiple lines)
+            def_lines = []
+            j = i
+            while j < len(lines):
+                def_lines.append(lines[j])
+                if lines[j].rstrip().endswith(": ..."):
+                    break
+                j += 1
+            j += 1
+
+            # Add docstring if available and not an overload
+            if not is_overload:
+                item = doc_map.get((current_class, func_name))
+
+                # Fallback to module-level graphics function for class methods
+                if not item and current_class:
+                    item = _fallback_item(current_class, func_name, doc_map)
+
+                if item:
+                    ds = make_docstring(item, body_indent)
+                    if ds:
+                        last = def_lines[-1].rstrip()
+                        def_lines[-1] = last[:-4] + "\n"  # remove ' ...'
+                        result.extend(def_lines)
+                        for dl in ds:
+                            result.append(dl + "\n")
+                        result.append(body_indent + "...\n")
+                        i = j
+                        continue
+
+            result.extend(def_lines)
+            i = j
+            continue
+
+        if not stripped.startswith("@"):
+            last_decorator = None
+
+        result.append(line)
+        i += 1
+
+    return "".join(result)
+
+
+def generate_pyi_docstrings():
+    print("Loading api-reference.json...")
+    api_data = load_api_reference()
+    doc_map = build_doc_map(api_data)
+    print(f"  {len(doc_map)} entries")
+
+    print(f"Reading {PYI_PATH.relative_to(ROOT_DIR)}...")
+    content = PYI_PATH.read_text()
+
+    print("Normalizing...")
+    content = strip_docstrings(content)
+
+    print("Adding docstrings...")
+    content = add_docstrings(content, doc_map)
+
+    PYI_PATH.write_text(content)
+    print("Done.")
+
+
+if __name__ == "__main__":
+    generate_pyi_docstrings()

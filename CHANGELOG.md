@@ -4,6 +4,8 @@
 
 - Added URL loading support to Code Maker
 - Changed Code Maker to load default project from zip file
+- Added script to generate type stub docstrings
+- Added docstrings to type stubs from API reference
 
 ## 2.8.2
 
