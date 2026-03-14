@@ -62,7 +62,7 @@
         let h = `<div class="overflow-x-auto"><table class="w-full border-collapse">
           <thead><tr><th class="th">${esc(ths)}</th><th class="th">${esc(tha)}</th></tr></thead><tbody>`;
         for (const i of items)
-          h += `<tr><td class="td"><span class="key">${esc(i.key)}</span></td><td class="td text-gray-300">${esc(t(i.action))}</td></tr>`;
+          h += `<tr><td class="td"><span class="key">${esc(t(i.key))}</span></td><td class="td text-gray-300">${esc(t(i.action))}</td></tr>`;
         return h + "</tbody></table></div>";
       }
 
@@ -79,7 +79,7 @@
         for (const i of items)
           h += `<div class="flex items-baseline gap-3">
             <code class="font-mono text-xs text-pink-300 bg-pink-500/10 px-1.5 py-0.5 rounded shrink-0">${esc(i.key)}</code>
-            <span class="text-sm text-gray-200 font-medium shrink-0">${esc(i.label)}</span>
+            <span class="text-sm text-gray-200 font-medium shrink-0">${esc(t(i.label))}</span>
             <span class="text-sm text-gray-400">${esc(t(i.desc))}</span>
           </div>`;
         return h + "</div>";
@@ -91,7 +91,7 @@
           <thead><tr><th class="th" style="width:50px"></th><th class="th">${esc(ths)}</th><th class="th">${esc(tha)}</th></tr></thead><tbody>`;
         for (const r of rows)
           h += `<tr><td class="td">${icon(r.icon)}</td>
-                <td class="td"><span class="key">${esc(r.key)}</span></td>
+                <td class="td"><span class="key">${esc(t(r.key))}</span></td>
                 <td class="td text-gray-300">${esc(t(r.desc))}</td></tr>`;
         return h + "</tbody></table></div>";
       }

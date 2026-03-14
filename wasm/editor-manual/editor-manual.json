@@ -1921,7 +1921,20 @@
         "pt": "Número de bancos de imagem",
         "it": "Numero banchi immagini"
       },
-      "value": "0〜2（3枚）"
+      "value": {
+        "ja": "0〜2（3枚）",
+        "en": "0–2 (3 banks)",
+        "cn": "0〜2（3 个）",
+        "de": "0–2 (3 Stück)",
+        "es": "0–2 (3 bancos)",
+        "ru": "0–2 (3 шт.)",
+        "uk": "0–2 (3 шт.)",
+        "tr": "0–2 (3 adet)",
+        "ko": "0〜2 (3개)",
+        "fr": "0–2 (3 banques)",
+        "pt": "0–2 (3 bancos)",
+        "it": "0–2 (3 banchi)"
+      }
     },
     {
       "label": {
@@ -1938,7 +1951,20 @@
         "pt": "Tamanho",
         "it": "Dimensione"
       },
-      "value": "256×256ピクセル / 枚"
+      "value": {
+        "ja": "256×256ピクセル / 枚",
+        "en": "256×256 pixels each",
+        "cn": "每个 256×256 像素",
+        "de": "256×256 Pixel pro Bank",
+        "es": "256×256 píxeles cada uno",
+        "ru": "256×256 пикселей каждый",
+        "uk": "256×256 пікселів кожен",
+        "tr": "Her biri 256×256 piksel",
+        "ko": "각 256×256 픽셀",
+        "fr": "256×256 pixels chacune",
+        "pt": "256×256 pixels cada",
+        "it": "256×256 pixel ciascuno"
+      }
     },
     {
       "label": {
@@ -2296,7 +2322,7 @@
   ],
   "image_canvas_shortcuts": [
     {
-      "key": "右クリック",
+      "key": "Right Click",
       "action": {
         "ja": "カーソル位置の色を取得する（カラーピック）",
         "en": "Pick the color at the cursor position (color pick)",
@@ -2313,7 +2339,7 @@
       }
     },
     {
-      "key": "右ドラッグ",
+      "key": "Right Drag",
       "action": {
         "ja": "ビューをパン移動する",
         "en": "Pan the view",
@@ -2385,7 +2411,7 @@
       }
     },
     {
-      "key": "クリック",
+      "key": "Click",
       "action": {
         "ja": "クリック位置に編集エリアを移動する",
         "en": "Move the editing area to the clicked position",
@@ -2402,7 +2428,7 @@
       }
     },
     {
-      "key": "右ドラッグ",
+      "key": "Right Drag",
       "action": {
         "ja": "ビューをパン移動する",
         "en": "Pan the view",
@@ -2435,7 +2461,20 @@
         "pt": "Número de tilemaps",
         "it": "Numero tilemap"
       },
-      "value": "0〜7（8枚）"
+      "value": {
+        "ja": "0〜7（8枚）",
+        "en": "0–7 (8 maps)",
+        "cn": "0〜7（8 个）",
+        "de": "0–7 (8 Stück)",
+        "es": "0–7 (8 mapas)",
+        "ru": "0–7 (8 шт.)",
+        "uk": "0–7 (8 шт.)",
+        "tr": "0–7 (8 adet)",
+        "ko": "0〜7 (8개)",
+        "fr": "0–7 (8 cartes)",
+        "pt": "0–7 (8 mapas)",
+        "it": "0–7 (8 mappe)"
+      }
     },
     {
       "label": {
@@ -2452,7 +2491,20 @@
         "pt": "Tamanho",
         "it": "Dimensione"
       },
-      "value": "256×256タイル / 枚"
+      "value": {
+        "ja": "256×256タイル / 枚",
+        "en": "256×256 tiles each",
+        "cn": "每个 256×256 图块",
+        "de": "256×256 Kacheln pro Karte",
+        "es": "256×256 tiles cada uno",
+        "ru": "256×256 тайлов каждая",
+        "uk": "256×256 тайлів кожна",
+        "tr": "Her biri 256×256 karo",
+        "ko": "각 256×256 타일",
+        "fr": "256×256 tuiles chacune",
+        "pt": "256×256 tiles cada",
+        "it": "256×256 tile ciascuna"
+      }
     },
     {
       "label": {
@@ -2517,7 +2569,7 @@
   ],
   "tilemap_canvas_shortcuts": [
     {
-      "key": "右クリック",
+      "key": "Right Click",
       "action": {
         "ja": "カーソル位置のタイルを取得する（タイルピック）",
         "en": "Pick the tile at the cursor position (tile pick)",
@@ -2534,7 +2586,7 @@
       }
     },
     {
-      "key": "右ドラッグ",
+      "key": "Right Drag",
       "action": {
         "ja": "ビューをパン移動する",
         "en": "Pan the view",
@@ -2570,7 +2622,7 @@
       }
     },
     {
-      "key": "クリック/ドラッグ",
+      "key": "Click/Drag",
       "action": {
         "ja": "クリック位置に編集エリアを移動する",
         "en": "Move the editing area to the clicked position",
@@ -2606,7 +2658,7 @@
       }
     },
     {
-      "key": "ドラッグ",
+      "key": "Drag",
       "action": {
         "ja": "複数タイルを矩形選択する",
         "en": "Select multiple tiles in a rectangle",
@@ -2623,7 +2675,7 @@
       }
     },
     {
-      "key": "右ドラッグ",
+      "key": "Right Drag",
       "action": {
         "ja": "ビューをパン移動する",
         "en": "Pan the view",
@@ -2656,7 +2708,20 @@
         "pt": "Número de sons",
         "it": "Numero suoni"
       },
-      "value": "0〜63（64種類）"
+      "value": {
+        "ja": "0〜63（64種類）",
+        "en": "0–63 (64 sounds)",
+        "cn": "0〜63（64 种）",
+        "de": "0–63 (64 Stück)",
+        "es": "0–63 (64 sonidos)",
+        "ru": "0–63 (64 шт.)",
+        "uk": "0–63 (64 шт.)",
+        "tr": "0–63 (64 adet)",
+        "ko": "0〜63 (64개)",
+        "fr": "0–63 (64 sons)",
+        "pt": "0–63 (64 sons)",
+        "it": "0–63 (64 suoni)"
+      }
     },
     {
       "label": {
@@ -2768,7 +2833,7 @@
   ],
   "sound_keyboard_shortcuts": [
     {
-      "key": "鍵盤キー → Enter",
+      "key": "Keyboard Key → Enter",
       "action": {
         "ja": "押した鍵盤キーの音をピアノロールに入力する",
         "en": "Input the pressed keyboard note into the piano roll",
@@ -3048,7 +3113,20 @@
   "sound_tones": [
     {
       "key": "T",
-      "label": "Triangle",
+      "label": {
+        "ja": "Triangle（三角波）",
+        "en": "Triangle",
+        "cn": "Triangle（三角波）",
+        "de": "Triangle",
+        "es": "Triangle",
+        "ru": "Triangle",
+        "uk": "Triangle",
+        "tr": "Triangle",
+        "ko": "Triangle（삼각파）",
+        "fr": "Triangle",
+        "pt": "Triangle",
+        "it": "Triangle"
+      },
       "desc": {
         "ja": "三角波。やわらかく優しい音色。フルートに近い",
         "en": "Triangle wave. Soft and gentle tone. Similar to a flute",
@@ -3066,7 +3144,20 @@
     },
     {
       "key": "S",
-      "label": "Square",
+      "label": {
+        "ja": "Square（矩形波）",
+        "en": "Square",
+        "cn": "Square（方波）",
+        "de": "Square",
+        "es": "Square",
+        "ru": "Square",
+        "uk": "Square",
+        "tr": "Square",
+        "ko": "Square（구형파）",
+        "fr": "Square",
+        "pt": "Square",
+        "it": "Square"
+      },
       "desc": {
         "ja": "矩形波。電子的ではっきりした音色。クラリネットやオルガンに近い",
         "en": "Square wave. Electronic and clear tone. Similar to a clarinet or organ",
@@ -3084,7 +3175,20 @@
     },
     {
       "key": "P",
-      "label": "Pulse",
+      "label": {
+        "ja": "Pulse（パルス波）",
+        "en": "Pulse",
+        "cn": "Pulse（脉冲波）",
+        "de": "Pulse",
+        "es": "Pulse",
+        "ru": "Pulse",
+        "uk": "Pulse",
+        "tr": "Pulse",
+        "ko": "Pulse（펄스파）",
+        "fr": "Pulse",
+        "pt": "Pulse",
+        "it": "Pulse"
+      },
       "desc": {
         "ja": "パルス波。明るく派手な音色。トランペットに近い",
         "en": "Pulse wave. Bright and flashy tone. Similar to a trumpet",
@@ -3102,7 +3206,20 @@
     },
     {
       "key": "N",
-      "label": "Noise",
+      "label": {
+        "ja": "Noise（ノイズ）",
+        "en": "Noise",
+        "cn": "Noise（噪声）",
+        "de": "Noise",
+        "es": "Noise",
+        "ru": "Noise",
+        "uk": "Noise",
+        "tr": "Noise",
+        "ko": "Noise（노이즈）",
+        "fr": "Noise",
+        "pt": "Noise",
+        "it": "Noise"
+      },
       "desc": {
         "ja": "ノイズ。音程のない音。打楽器や爆発などの効果音向き",
         "en": "Noise. Unpitched sound. Suitable for percussion and explosion effects",
@@ -3122,7 +3239,20 @@
   "sound_effects": [
     {
       "key": "N",
-      "label": "None",
+      "label": {
+        "ja": "None（なし）",
+        "en": "None",
+        "cn": "None（无）",
+        "de": "None",
+        "es": "None",
+        "ru": "None",
+        "uk": "None",
+        "tr": "None",
+        "ko": "None（없음）",
+        "fr": "None",
+        "pt": "None",
+        "it": "None"
+      },
       "desc": {
         "ja": "エフェクトなし",
         "en": "No effect",
@@ -3140,7 +3270,20 @@
     },
     {
       "key": "S",
-      "label": "Slide",
+      "label": {
+        "ja": "Slide（スライド）",
+        "en": "Slide",
+        "cn": "Slide（滑音）",
+        "de": "Slide",
+        "es": "Slide",
+        "ru": "Slide",
+        "uk": "Slide",
+        "tr": "Slide",
+        "ko": "Slide（슬라이드）",
+        "fr": "Slide",
+        "pt": "Slide",
+        "it": "Slide"
+      },
       "desc": {
         "ja": "直前の音から滑らかに音程をつなげる",
         "en": "Smoothly glide the pitch from the previous note",
@@ -3158,7 +3301,20 @@
     },
     {
       "key": "V",
-      "label": "Vibrato",
+      "label": {
+        "ja": "Vibrato（ビブラート）",
+        "en": "Vibrato",
+        "cn": "Vibrato（颤音）",
+        "de": "Vibrato",
+        "es": "Vibrato",
+        "ru": "Vibrato",
+        "uk": "Vibrato",
+        "tr": "Vibrato",
+        "ko": "Vibrato（비브라토）",
+        "fr": "Vibrato",
+        "pt": "Vibrato",
+        "it": "Vibrato"
+      },
       "desc": {
         "ja": "音を周期的に揺らす",
         "en": "Periodically oscillate the pitch",
@@ -3176,7 +3332,20 @@
     },
     {
       "key": "F",
-      "label": "FadeOut",
+      "label": {
+        "ja": "FadeOut（フェードアウト）",
+        "en": "FadeOut",
+        "cn": "FadeOut（淡出）",
+        "de": "FadeOut",
+        "es": "FadeOut",
+        "ru": "FadeOut",
+        "uk": "FadeOut",
+        "tr": "FadeOut",
+        "ko": "FadeOut（페이드아웃）",
+        "fr": "FadeOut",
+        "pt": "FadeOut",
+        "it": "FadeOut"
+      },
       "desc": {
         "ja": "音の全体を使って徐々に音量を下げる。同音程の音を区切る際にも使用",
         "en": "Gradually decrease the volume over the entire note. Also used to separate notes of the same pitch",
@@ -3194,7 +3363,20 @@
     },
     {
       "key": "H",
-      "label": "Half-FadeOut",
+      "label": {
+        "ja": "Half-FadeOut（ハーフフェードアウト）",
+        "en": "Half-FadeOut",
+        "cn": "Half-FadeOut（半淡出）",
+        "de": "Half-FadeOut",
+        "es": "Half-FadeOut",
+        "ru": "Half-FadeOut",
+        "uk": "Half-FadeOut",
+        "tr": "Half-FadeOut",
+        "ko": "Half-FadeOut（하프 페이드아웃）",
+        "fr": "Half-FadeOut",
+        "pt": "Half-FadeOut",
+        "it": "Half-FadeOut"
+      },
       "desc": {
         "ja": "音の後半で徐々に音量を下げる。Fより発音時間が長い",
         "en": "Gradually decrease the volume in the second half of the note. Longer sustain than F",
@@ -3212,7 +3394,20 @@
     },
     {
       "key": "Q",
-      "label": "Quarter-FadeOut",
+      "label": {
+        "ja": "Quarter-FadeOut（クォーターフェードアウト）",
+        "en": "Quarter-FadeOut",
+        "cn": "Quarter-FadeOut（四分淡出）",
+        "de": "Quarter-FadeOut",
+        "es": "Quarter-FadeOut",
+        "ru": "Quarter-FadeOut",
+        "uk": "Quarter-FadeOut",
+        "tr": "Quarter-FadeOut",
+        "ko": "Quarter-FadeOut（쿼터 페이드아웃）",
+        "fr": "Quarter-FadeOut",
+        "pt": "Quarter-FadeOut",
+        "it": "Quarter-FadeOut"
+      },
       "desc": {
         "ja": "音の最後の1/4で徐々に音量を下げる。Hより発音時間が長い",
         "en": "Gradually decrease the volume in the last quarter of the note. Longer sustain than H",
@@ -3245,7 +3440,20 @@
         "pt": "Número de músicas",
         "it": "Numero musiche"
       },
-      "value": "0〜7（8曲）"
+      "value": {
+        "ja": "0〜7（8曲）",
+        "en": "0–7 (8 tracks)",
+        "cn": "0〜7（8 首）",
+        "de": "0–7 (8 Stücke)",
+        "es": "0–7 (8 pistas)",
+        "ru": "0–7 (8 треков)",
+        "uk": "0–7 (8 треків)",
+        "tr": "0–7 (8 parça)",
+        "ko": "0〜7 (8곡)",
+        "fr": "0–7 (8 morceaux)",
+        "pt": "0–7 (8 faixas)",
+        "it": "0–7 (8 brani)"
+      }
     },
     {
       "label": {
@@ -3619,7 +3827,7 @@
       }
     },
     {
-      "key": "Shift+クリック（[+]/[-]ボタン）",
+      "key": "Shift+Click ([+]/[-] buttons)",
       "action": {
         "ja": "番号や値を±10単位で変更する",
         "en": "Change number or value in increments of ±10",
