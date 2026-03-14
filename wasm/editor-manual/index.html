@@ -108,7 +108,7 @@
         // crop width / 480 * 100 = percentage of container
         const a = D.annotations[editor][index];
         const pct = (a.w / 480 * 100).toFixed(1);
-        return `<img src="images/area_${editor}_${a.id}.png" alt="" class="pix rounded border border-gray-700 my-2" style="width:${pct}%">`;
+        return `<img src="images/${editor}_${a.id}.png" alt="" class="pix rounded border border-gray-700 my-2" style="width:${pct}%">`;
       }
 
       function annotatedImg(src, annotations) {
