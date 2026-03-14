@@ -66,17 +66,17 @@
     },
     "subtitle": {
       "ja": "{0} 付属のリソースエディタのマニュアル",
-      "en": "Manual for the resource editor bundled with {0}",
+      "en": "Manual for the resource editor bundled with {0}.",
       "cn": "{0} 附带的资源编辑器手册",
-      "de": "Handbuch für den mit {0} mitgelieferten Ressourcen-Editor",
-      "es": "Manual del editor de recursos incluido en {0}",
-      "ru": "Руководство по редактору ресурсов, входящему в состав {0}",
-      "uk": "Посібник з редактора ресурсів, що входить до складу {0}",
-      "tr": "{0} ile birlikte gelen kaynak düzenleyicisi kılavuzu",
+      "de": "Handbuch für den mit {0} mitgelieferten Ressourcen-Editor.",
+      "es": "Manual del editor de recursos incluido en {0}.",
+      "ru": "Руководство по редактору ресурсов, входящему в состав {0}.",
+      "uk": "Посібник з редактора ресурсів, що входить до складу {0}.",
+      "tr": "{0} ile birlikte gelen kaynak düzenleyicisi kılavuzu.",
       "ko": "{0} 에 포함된 리소스 에디터 매뉴얼",
-      "fr": "Manuel de l'éditeur de ressources fourni avec {0}",
-      "pt": "Manual do editor de recursos incluído no {0}",
-      "it": "Manuale dell'editor di risorse incluso in {0}"
+      "fr": "Manuel de l'éditeur de ressources fourni avec {0}.",
+      "pt": "Manual do editor de recursos incluído no {0}.",
+      "it": "Manuale dell'editor di risorse incluso in {0}."
     },
     "th_shortcut": {
       "ja": "ショートカット",

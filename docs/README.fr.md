@@ -294,7 +294,7 @@ Un fichier d'application Pyxel peut également être converti en un exécutable 
 
 ## Référence de l’API
 
-La liste complète des API Pyxel est disponible sur [Pyxel API Reference](https://kitao.github.io/pyxel/wasm/api-reference/).
+La liste complète des API Pyxel est disponible sur [Référence API de Pyxel](https://kitao.github.io/pyxel/wasm/api-reference/).
 
 Pyxel comprend également une « API avancée » qui nécessite des connaissances spécialisées. Vous pouvez la consulter en cochant la case « Advanced » sur la page de référence.
 
@@ -318,15 +318,15 @@ Soumettre une demande de tirage implique que vous acceptez de licencier votre co
 
 ## Outils et Exemples
 
-- [Showcase](https://kitao.github.io/pyxel/wasm/showcase/)
-- [API Reference](https://kitao.github.io/pyxel/wasm/api-reference/)
-- [Editor Manual](https://kitao.github.io/pyxel/wasm/editor-manual/)
-- [Web Launcher](https://kitao.github.io/pyxel/wasm/launcher/)
-- [Code Maker](https://kitao.github.io/pyxel/wasm/code-maker/)
-- [MML Studio](https://kitao.github.io/pyxel/wasm/mml-studio/)
+- [Pyxel Showcase](https://kitao.github.io/pyxel/wasm/showcase/)
+- [Référence API de Pyxel](https://kitao.github.io/pyxel/wasm/api-reference/)
+- [Manuel de Pyxel Editor](https://kitao.github.io/pyxel/wasm/editor-manual/)
+- [Pyxel Web Launcher](https://kitao.github.io/pyxel/wasm/launcher/)
+- [Pyxel Code Maker](https://kitao.github.io/pyxel/wasm/code-maker/)
+- [Pyxel MML Studio](https://kitao.github.io/pyxel/wasm/mml-studio/)
 - [VS Code Extension](https://marketplace.visualstudio.com/items?itemName=kitao.pyxel-vscode)
 - [MCP Server](https://github.com/kitao/pyxel-mcp)
-- [Compétence Claude Code](https://github.com/kitao/pyxel-skill)
+- [Claude Code Skill](https://github.com/kitao/pyxel-skill)
 
 ## Autres Informations
 

@@ -50,20 +50,33 @@
     }
   ],
   "ui": {
-    "title": "Pyxel API Reference",
+    "title": {
+      "en": "Pyxel API Reference",
+      "cn": "Pyxel API 参考",
+      "de": "Pyxel API-Referenz",
+      "es": "Referencia de API de Pyxel",
+      "fr": "Référence API de Pyxel",
+      "it": "Riferimento API di Pyxel",
+      "ja": "Pyxel API リファレンス",
+      "ko": "Pyxel API 레퍼런스",
+      "pt": "Referência de API do Pyxel",
+      "ru": "Справочник API Pyxel",
+      "tr": "Pyxel API Referansı",
+      "uk": "Довідник API Pyxel"
+    },
     "subtitle": {
-      "en": "API reference for {0}, a retro game engine for Python",
+      "en": "API reference for {0}, a retro game engine for Python.",
       "cn": "Python 复古游戏引擎 {0} 的 API 参考",
-      "de": "API-Referenz für {0}, eine Retro-Spielengine für Python",
-      "es": "Referencia de API de {0}, un motor de juegos retro para Python",
-      "fr": "Référence API de {0}, un moteur de jeux rétro pour Python",
-      "it": "Riferimento API per {0}, un motore di giochi retro per Python",
+      "de": "API-Referenz für {0}, eine Retro-Spielengine für Python.",
+      "es": "Referencia de API de {0}, un motor de juegos retro para Python.",
+      "fr": "Référence API de {0}, un moteur de jeux rétro pour Python.",
+      "it": "Riferimento API per {0}, un motore di giochi retro per Python.",
       "ja": "Python 向けレトロゲームエンジン {0} の API リファレンス",
       "ko": "Python용 레트로 게임 엔진 {0}의 API 레퍼런스",
-      "pt": "Referência de API do {0}, um motor de jogos retrô para Python",
-      "ru": "Справочник API {0}, ретро-игрового движка для Python",
-      "tr": "Python için retro oyun motoru {0} API referansı",
-      "uk": "Довідник API {0}, ретро-ігрового рушія для Python"
+      "pt": "Referência de API do {0}, um motor de jogos retrô para Python.",
+      "ru": "Справочник API {0}, ретро-игрового движка для Python.",
+      "tr": "Python için retro oyun motoru {0} API referansı.",
+      "uk": "Довідник API {0}, ретро-ігрового рушія для Python."
     },
     "search_placeholder": {
       "en": "Search APIs...",

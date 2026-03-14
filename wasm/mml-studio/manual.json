@@ -65,18 +65,18 @@
       "uk": "Посібник Pyxel MML Studio"
     },
     "subtitle": {
-      "en": "Manual for the {0} online MML creation tool",
+      "en": "Manual for the {0} online MML creation tool.",
       "cn": "{0} 在线 MML 制作工具手册",
-      "de": "Handbuch für das {0}-Online-MML-Erstellungstool",
-      "es": "Manual de la herramienta de creación MML en línea de {0}",
-      "fr": "Manuel de l'outil de création MML en ligne de {0}",
-      "it": "Manuale dello strumento di creazione MML online di {0}",
+      "de": "Handbuch für das {0}-Online-MML-Erstellungstool.",
+      "es": "Manual de la herramienta de creación MML en línea de {0}.",
+      "fr": "Manuel de l'outil de création MML en ligne de {0}.",
+      "it": "Manuale dello strumento di creazione MML online di {0}.",
       "ja": "{0} のオンラインMML制作ツールマニュアル",
       "ko": "{0} 온라인 MML 제작 도구 매뉴얼",
-      "pt": "Manual da ferramenta de criação MML online do {0}",
-      "ru": "Руководство по онлайн-инструменту создания MML для {0}",
-      "tr": "{0} çevrimiçi MML oluşturma aracı kılavuzu",
-      "uk": "Посібник онлайн-інструменту створення MML для {0}"
+      "pt": "Manual da ferramenta de criação MML online do {0}.",
+      "ru": "Руководство по онлайн-инструменту создания MML для {0}.",
+      "tr": "{0} çevrimiçi MML oluşturma aracı kılavuzu.",
+      "uk": "Посібник онлайн-інструменту створення MML для {0}."
     },
     "overview_title": {
       "en": "Overview",

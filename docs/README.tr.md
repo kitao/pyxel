@@ -294,7 +294,7 @@ Bir Pyxel uygulama dosyası ayrıca `pyxel app2exe` veya `pyxel app2html` komutl
 
 ## API Referansı
 
-Pyxel API'lerinin tam listesi [Pyxel API Reference](https://kitao.github.io/pyxel/wasm/api-reference/) adresinde mevcuttur.
+Pyxel API'lerinin tam listesi [Pyxel API Referansı](https://kitao.github.io/pyxel/wasm/api-reference/) adresinde mevcuttur.
 
 Pyxel ayrıca uzmanlık bilgisi gerektiren bir "Gelişmiş API" içerir. Referans sayfasında "Advanced" onay kutusunu işaretleyerek görüntüleyebilirsiniz.
 
@@ -318,12 +318,12 @@ Pull isteği göndermek, katkınızı [MIT Lisansı](../LICENSE) altında lisans
 
 ## Araçlar ve Örnekler
 
-- [Showcase](https://kitao.github.io/pyxel/wasm/showcase/)
-- [API Reference](https://kitao.github.io/pyxel/wasm/api-reference/)
-- [Editor Manual](https://kitao.github.io/pyxel/wasm/editor-manual/)
-- [Web Launcher](https://kitao.github.io/pyxel/wasm/launcher/)
-- [Code Maker](https://kitao.github.io/pyxel/wasm/code-maker/)
-- [MML Studio](https://kitao.github.io/pyxel/wasm/mml-studio/)
+- [Pyxel Showcase](https://kitao.github.io/pyxel/wasm/showcase/)
+- [Pyxel API Referansı](https://kitao.github.io/pyxel/wasm/api-reference/)
+- [Pyxel Editor Kılavuzu](https://kitao.github.io/pyxel/wasm/editor-manual/)
+- [Pyxel Web Launcher](https://kitao.github.io/pyxel/wasm/launcher/)
+- [Pyxel Code Maker](https://kitao.github.io/pyxel/wasm/code-maker/)
+- [Pyxel MML Studio](https://kitao.github.io/pyxel/wasm/mml-studio/)
 - [VS Code Eklentisi](https://marketplace.visualstudio.com/items?itemName=kitao.pyxel-vscode)
 - [MCP Sunucusu](https://github.com/kitao/pyxel-mcp)
 - [Claude Code Becerisi](https://github.com/kitao/pyxel-skill)

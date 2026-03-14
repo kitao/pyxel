@@ -15,7 +15,18 @@
   ],
   "ui": {
     "title": {
-      "en": "Pyxel MML Commands"
+      "en": "Pyxel MML Commands",
+      "cn": "Pyxel MML 命令列表",
+      "de": "Pyxel MML-Befehlsliste",
+      "es": "Lista de comandos MML de Pyxel",
+      "fr": "Liste des commandes MML de Pyxel",
+      "it": "Elenco dei comandi MML di Pyxel",
+      "ja": "Pyxel MML コマンド一覧",
+      "ko": "Pyxel MML 명령어 목록",
+      "pt": "Lista de comandos MML do Pyxel",
+      "ru": "Список MML-команд Pyxel",
+      "tr": "Pyxel MML Komut Listesi",
+      "uk": "Список MML-команд Pyxel"
     },
     "subtitle": {
       "en": "MML command list for {0}, a retro game engine for Python.",

@@ -65,18 +65,18 @@
       "uk": "Посібник Pyxel Code Maker"
     },
     "subtitle": {
-      "en": "Manual for the {0} online development environment",
+      "en": "Manual for the {0} online development environment.",
       "cn": "{0} 在线开发环境手册",
-      "de": "Handbuch für die {0}-Online-Entwicklungsumgebung",
-      "es": "Manual del entorno de desarrollo en línea de {0}",
-      "fr": "Manuel de l'environnement de développement en ligne {0}",
-      "it": "Manuale dell'ambiente di sviluppo online di {0}",
+      "de": "Handbuch für die {0}-Online-Entwicklungsumgebung.",
+      "es": "Manual del entorno de desarrollo en línea de {0}.",
+      "fr": "Manuel de l'environnement de développement en ligne de {0}.",
+      "it": "Manuale dell'ambiente di sviluppo online di {0}.",
       "ja": "{0} のオンライン開発環境マニュアル",
       "ko": "{0} 온라인 개발 환경 매뉴얼",
-      "pt": "Manual do ambiente de desenvolvimento online do {0}",
-      "ru": "Руководство по онлайн-среде разработки {0}",
-      "tr": "{0} çevrimiçi geliştirme ortamı kılavuzu",
-      "uk": "Посібник онлайн-середовища розробки {0}"
+      "pt": "Manual do ambiente de desenvolvimento online do {0}.",
+      "ru": "Руководство по онлайн-среде разработки {0}.",
+      "tr": "{0} çevrimiçi geliştirme ortamı kılavuzu.",
+      "uk": "Посібник онлайн-середовища розробки {0}."
     },
     "overview_title": {
       "en": "Overview",

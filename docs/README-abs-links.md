@@ -318,12 +318,12 @@ Submitting a pull request implies that you agree to license your contribution un
 
 ## Tools & Examples
 
-- [Showcase](https://kitao.github.io/pyxel/wasm/showcase/)
-- [API Reference](https://kitao.github.io/pyxel/wasm/api-reference/)
-- [Editor Manual](https://kitao.github.io/pyxel/wasm/editor-manual/)
-- [Web Launcher](https://kitao.github.io/pyxel/wasm/launcher/)
-- [Code Maker](https://kitao.github.io/pyxel/wasm/code-maker/)
-- [MML Studio](https://kitao.github.io/pyxel/wasm/mml-studio/)
+- [Pyxel Showcase](https://kitao.github.io/pyxel/wasm/showcase/)
+- [Pyxel API Reference](https://kitao.github.io/pyxel/wasm/api-reference/)
+- [Pyxel Editor Manual](https://kitao.github.io/pyxel/wasm/editor-manual/)
+- [Pyxel Web Launcher](https://kitao.github.io/pyxel/wasm/launcher/)
+- [Pyxel Code Maker](https://kitao.github.io/pyxel/wasm/code-maker/)
+- [Pyxel MML Studio](https://kitao.github.io/pyxel/wasm/mml-studio/)
 - [VS Code Extension](https://marketplace.visualstudio.com/items?itemName=kitao.pyxel-vscode)
 - [MCP Server](https://github.com/kitao/pyxel-mcp)
 - [Claude Code Skill](https://github.com/kitao/pyxel-skill)

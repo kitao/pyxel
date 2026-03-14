@@ -294,7 +294,7 @@ Pyxel 应用程序文件还可以使用 `pyxel app2exe` 或 `pyxel app2html` 命
 
 ## API 参考
 
-Pyxel 的完整 API 列表请参阅 [Pyxel API Reference](https://kitao.github.io/pyxel/wasm/api-reference/)。
+Pyxel 的完整 API 列表请参阅 [Pyxel API 参考](https://kitao.github.io/pyxel/wasm/api-reference/)。
 
 Pyxel 还包含需要专业知识的”高级 API”。在参考页面勾选”Advanced”复选框即可查看。
 
@@ -318,12 +318,12 @@ Pyxel 还包含需要专业知识的”高级 API”。在参考页面勾选”A
 
 ## 工具与示例
 
-- [Showcase](https://kitao.github.io/pyxel/wasm/showcase/)
-- [API Reference](https://kitao.github.io/pyxel/wasm/api-reference/)
-- [Editor Manual](https://kitao.github.io/pyxel/wasm/editor-manual/)
-- [Web Launcher](https://kitao.github.io/pyxel/wasm/launcher/)
-- [Code Maker](https://kitao.github.io/pyxel/wasm/code-maker/)
-- [MML Studio](https://kitao.github.io/pyxel/wasm/mml-studio/)
+- [Pyxel Showcase](https://kitao.github.io/pyxel/wasm/showcase/)
+- [Pyxel API 参考](https://kitao.github.io/pyxel/wasm/api-reference/)
+- [Pyxel Editor 手册](https://kitao.github.io/pyxel/wasm/editor-manual/)
+- [Pyxel Web Launcher](https://kitao.github.io/pyxel/wasm/launcher/)
+- [Pyxel Code Maker](https://kitao.github.io/pyxel/wasm/code-maker/)
+- [Pyxel MML Studio](https://kitao.github.io/pyxel/wasm/mml-studio/)
 - [VS Code 扩展](https://marketplace.visualstudio.com/items?itemName=kitao.pyxel-vscode)
 - [MCP 服务器](https://github.com/kitao/pyxel-mcp)
 - [Claude Code 技能](https://github.com/kitao/pyxel-skill)

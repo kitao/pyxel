@@ -255,6 +255,7 @@
         const $ = (id) => document.getElementById(id);
 
         // Header
+        document.title = t("title");
         $("p-title").textContent = t("title");
         $("p-sub").innerHTML = t("subtitle").replace("{0}", extLink("https://github.com/kitao/pyxel", "Pyxel"));
 

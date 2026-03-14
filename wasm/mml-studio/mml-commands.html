@@ -115,6 +115,7 @@
 
       function render() {
         // Title and subtitle
+        document.title = t("title");
         document.getElementById("page-title").textContent = t("title");
         document.getElementById("subtitle").innerHTML = t("subtitle")
           .replace("{0}", extLink("https://github.com/kitao/pyxel", "Pyxel"));
