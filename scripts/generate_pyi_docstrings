@@ -162,7 +162,7 @@ def make_docstring(item, indent):
     if not param_lines and not ret_desc and not notes and not examples:
         return [f'{indent}"""{desc}"""']
 
-    lines = [f'{indent}"""{desc}', f"{indent}"]
+    lines = [f'{indent}"""{desc}', ""]
     has_section = False
 
     if param_lines:
@@ -172,21 +172,21 @@ def make_docstring(item, indent):
 
     if ret_desc:
         if has_section:
-            lines.append(f"{indent}")
+            lines.append("")
         lines.append(f"{indent}Returns:")
         lines.append(f"{indent}    {ret_desc}")
         has_section = True
 
     if notes:
         if has_section:
-            lines.append(f"{indent}")
+            lines.append("")
         lines.append(f"{indent}Note:")
         lines.append(f"{indent}    {notes}")
         has_section = True
 
     if examples:
         if has_section:
-            lines.append(f"{indent}")
+            lines.append("")
         lines.append(f"{indent}Example::")
         for ex in examples:
             lines.append(f"{indent}    {ex}")
