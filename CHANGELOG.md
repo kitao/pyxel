@@ -6,6 +6,7 @@
 - Changed Code Maker to load default project from zip file
 - Added script to generate type stub docstrings
 - Added docstrings to type stubs from API reference
+- Moved WASM-only images from docs/images to wasm/images
 
 ## 2.8.2
 
