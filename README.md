@@ -246,55 +246,11 @@ The following special key actions are available while a Pyxel application is run
 
 Pyxel Editor creates images and sounds used in a Pyxel application.
 
-You can start Pyxel Editor with the following command:
-
 ```sh
 pyxel edit PYXEL_RESOURCE_FILE
 ```
 
-If the specified Pyxel resource file (.pyxres) exists, it will be loaded. If it does not exist, a new file with the specified name will be created. If the resource file is omitted, a new file named `my_resource.pyxres` will be created.
-
-After starting Pyxel Editor, you can switch to another resource file by dragging and dropping it onto the editor.
-
-The created resource file can be loaded using the `load` function.
-
-Pyxel Editor has the following editing modes.
-
-**Image Editor**
-
-The mode for editing images in each **image bank**.
-
-<a href="https://kitao.github.io/pyxel/wasm/showcase/tools/image-editor.html">
-<img src="docs/images/image_editor.gif">
-</a>
-
-You can drag and drop an image file (PNG/GIF/JPEG) into the image editor to load the image into the currently selected image bank.
-
-**Tilemap Editor**
-
-The mode for editing **tilemaps** that arrange images from the image banks in a tile pattern.
-
-<a href="https://kitao.github.io/pyxel/wasm/showcase/tools/tilemap-editor.html">
-<img src="docs/images/tilemap_editor.gif">
-</a>
-
-Drag and drop a TMX file (Tiled Map File) onto the tilemap editor to load its layer 0 into the currently selected tilemap.
-
-**Sound Editor**
-
-The mode for editing **sounds** used for melodies and sound effects.
-
-<a href="https://kitao.github.io/pyxel/wasm/showcase/tools/sound-editor.html">
-<img src="docs/images/sound_editor.gif">
-</a>
-
-**Music Editor**
-
-The mode for editing **music tracks** in which the sounds are arranged in order of playback.
-
-<a href="https://kitao.github.io/pyxel/wasm/showcase/tools/music-editor.html">
-<img src="docs/images/music_editor.gif">
-</a>
+For detailed usage instructions, see the [Pyxel Editor Manual](https://kitao.github.io/pyxel/wasm/editor-manual/).
 
 ### Other Creation Methods
 
@@ -368,6 +324,7 @@ Submitting a pull request implies that you agree to license your contribution un
 
 - [Showcase](https://kitao.github.io/pyxel/wasm/showcase/)
 - [API Reference](https://kitao.github.io/pyxel/wasm/api-reference/)
+- [Editor Manual](https://kitao.github.io/pyxel/wasm/editor-manual/)
 - [Web Launcher](https://kitao.github.io/pyxel/wasm/launcher/)
 - [Code Maker](https://kitao.github.io/pyxel/wasm/code-maker/)
 - [MML Studio](https://kitao.github.io/pyxel/wasm/mml-studio/)

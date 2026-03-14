@@ -246,55 +246,11 @@ Pendant l'exécution d'une application Pyxel, les opérations de touches spécia
 
 Pyxel Editor crée des images et des sons utilisés dans une application Pyxel.
 
-Vous pouvez démarrer Pyxel Editor avec la commande suivante :
-
 ```sh
 pyxel edit PYXEL_RESOURCE_FILE
 ```
 
-Si le fichier de ressources Pyxel spécifié (.pyxres) existe, il sera chargé. S'il n'existe pas, un nouveau fichier avec le nom spécifié sera créé. Si le fichier de ressources est omis, un nouveau fichier nommé `my_resource.pyxres` sera créé.
-
-Après avoir démarré Pyxel Editor, vous pouvez passer à un autre fichier de ressources en le faisant glisser et en le déposant sur l'éditeur.
-
-Le fichier de ressources créé peut être chargé en utilisant la fonction `load`.
-
-Pyxel Editor a les modes d'édition suivants.
-
-**Éditeur d'images**
-
-Le mode pour éditer les images dans chaque **banque d'images**.
-
-<a href="https://kitao.github.io/pyxel/wasm/showcase/tools/image-editor.html">
-<img src="images/image_editor.gif">
-</a>
-
-Vous pouvez faire glisser et déposer un fichier d'image (PNG/GIF/JPEG) dans l'éditeur d'images pour charger l'image dans la banque d'images actuellement sélectionnée.
-
-**Éditeur de cartes de tuiles**
-
-Le mode pour éditer les **cartes de tuiles** qui organisent des images des banques d'images en un motif de tuiles.
-
-<a href="https://kitao.github.io/pyxel/wasm/showcase/tools/tilemap-editor.html">
-<img src="images/tilemap_editor.gif">
-</a>
-
-Faites glisser et déposer un fichier TMX (Tiled Map File) dans l'éditeur de cartes de tuiles pour charger sa couche 0 dans la carte de tuiles actuellement sélectionnée.
-
-**Éditeur de sons**
-
-Le mode pour éditer les **sons** utilisés pour les mélodies et les effets sonores.
-
-<a href="https://kitao.github.io/pyxel/wasm/showcase/tools/sound-editor.html">
-<img src="images/sound_editor.gif">
-</a>
-
-**Éditeur de musique**
-
-Le mode pour éditer des **pistes de musique** dans lequel les sons sont organisés dans l'ordre de lecture.
-
-<a href="https://kitao.github.io/pyxel/wasm/showcase/tools/music-editor.html">
-<img src="images/music_editor.gif">
-</a>
+Pour des instructions détaillées, consultez le [Manuel de Pyxel Editor](https://kitao.github.io/pyxel/wasm/editor-manual/).
 
 ### Autres méthodes de création
 
@@ -368,6 +324,7 @@ Soumettre une demande de tirage implique que vous acceptez de licencier votre co
 
 - [Showcase](https://kitao.github.io/pyxel/wasm/showcase/)
 - [API Reference](https://kitao.github.io/pyxel/wasm/api-reference/)
+- [Editor Manual](https://kitao.github.io/pyxel/wasm/editor-manual/)
 - [Web Launcher](https://kitao.github.io/pyxel/wasm/launcher/)
 - [Code Maker](https://kitao.github.io/pyxel/wasm/code-maker/)
 - [MML Studio](https://kitao.github.io/pyxel/wasm/mml-studio/)

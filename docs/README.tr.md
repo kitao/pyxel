@@ -246,55 +246,11 @@ Bir Pyxel uygulaması çalışırken, aşağıdaki özel tuş işlemleri gerçek
 
 Pyxel Editor, Pyxel uygulamalarında kullanılan resim ve sesleri oluşturur.
 
-Pyxel Editor'ü aşağıdaki komut ile başlatabilirsiniz:
-
 ```sh
 pyxel edit PYXEL_RESOURCE_FILE
 ```
 
-Belirtilen Pyxel kaynak dosyası (.pyxres) mevcutsa, yüklenecektir. Eğer mevcut değilse, belirtilen isimle yeni bir dosya oluşturulacaktır. Kaynak dosyası belirtilmezse, `my_resource.pyxres` adıyla yeni bir dosya oluşturulacaktır.
-
-Pyxel Editor başlatıldıktan sonra, başka bir kaynak dosyasına geçmek için dosyayı editöre sürükleyip bırakabilirsiniz.
-
-Oluşturulan kaynak dosyası, `load` fonksiyonu ile yüklenebilir.
-
-Pyxel Editor aşağıdaki düzenleme modlarına sahiptir.
-
-**Resim Editörü**
-
-Her **görüntü bankasındaki** görüntüyü düzenlemek için kullanılan mod.
-
-<a href="https://kitao.github.io/pyxel/wasm/showcase/tools/image-editor.html">
-<img src="images/image_editor.gif">
-</a>
-
-Resim editörüne bir resim dosyası (PNG/GIF/JPEG) sürükleyip bırakarak, görüntüyü şu anda seçili olan görüntü bankasına yükleyebilirsiniz.
-
-**Döşeme Haritası Editörü**
-
-Görüntü bankalarındaki görüntüleri bir **döşeme haritası** içinde düzenlemek için kullanılan mod.
-
-<a href="https://kitao.github.io/pyxel/wasm/showcase/tools/tilemap-editor.html">
-<img src="images/tilemap_editor.gif">
-</a>
-
-Bir TMX dosyasını (Tiled Map File) döşeme haritası editörüne sürükleyip bırakarak, şu anda seçili olan döşeme haritasına katman 0'ı yükleyebilirsiniz.
-
-**Ses Editörü**
-
-Melodi ve **ses** efektlerinde kullanılan sesleri düzenlemek için mod.
-
-<a href="https://kitao.github.io/pyxel/wasm/showcase/tools/sound-editor.html">
-<img src="images/sound_editor.gif">
-</a>
-
-**Müzik Editörü**
-
-Seslerin çalma sırasına göre dizildiği **müzik parçalarını** düzenlemek için kullanılan mod.
-
-<a href="https://kitao.github.io/pyxel/wasm/showcase/tools/music-editor.html">
-<img src="images/music_editor.gif">
-</a>
+Ayrıntılı kullanım talimatları için [Pyxel Editor Kılavuzu](https://kitao.github.io/pyxel/wasm/editor-manual/)'na bakın.
 
 ### Diğer Kaynak Oluşturma Yöntemleri
 
@@ -368,6 +324,7 @@ Pull isteği göndermek, katkınızı [MIT Lisansı](../LICENSE) altında lisans
 
 - [Showcase](https://kitao.github.io/pyxel/wasm/showcase/)
 - [API Reference](https://kitao.github.io/pyxel/wasm/api-reference/)
+- [Editor Manual](https://kitao.github.io/pyxel/wasm/editor-manual/)
 - [Web Launcher](https://kitao.github.io/pyxel/wasm/launcher/)
 - [Code Maker](https://kitao.github.io/pyxel/wasm/code-maker/)
 - [MML Studio](https://kitao.github.io/pyxel/wasm/mml-studio/)

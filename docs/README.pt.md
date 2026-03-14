@@ -246,55 +246,11 @@ Durante a execução de uma aplicação Pyxel, as seguintes operações de tecla
 
 O Pyxel Editor cria imagens e sons usados em uma aplicação Pyxel.
 
-Você pode iniciar o Pyxel Editor com o seguinte comando:
-
 ```sh
 pyxel edit PYXEL_RESOURCE_FILE
 ```
 
-Se o arquivo de recurso Pyxel especificado (.pyxres) existir, ele será carregado. Se não existir, um novo arquivo com o nome especificado será criado. Se o arquivo de recurso for omitido, um novo arquivo chamado `my_resource.pyxres` será criado.
-
-Após iniciar o Pyxel Editor, você pode alternar para outro arquivo de recurso arrastando e soltando-o no editor.
-
-O arquivo de recurso criado pode ser carregado usando a função `load`.
-
-O Pyxel Editor tem os seguintes modos de edição.
-
-**Editor de Imagem**
-
-O modo para editar as imagens em cada **banco de imagens**.
-
-<a href="https://kitao.github.io/pyxel/wasm/showcase/tools/image-editor.html">
-<img src="images/image_editor.gif">
-</a>
-
-Você pode arrastar e soltar um arquivo de imagem (PNG/GIF/JPEG) no editor de imagem para carregar a imagem no banco de imagens atualmente selecionado.
-
-**Editor de Mapas de Ladrilhos**
-
-O modo para editar os **mapas de ladrilhos** que organizam imagens dos bancos de imagens em um padrão de ladrilhos.
-
-<a href="https://kitao.github.io/pyxel/wasm/showcase/tools/tilemap-editor.html">
-<img src="images/tilemap_editor.gif">
-</a>
-
-Arraste e solte um arquivo TMX (Tiled Map File) no editor de mapas de ladrilhos para carregar sua camada 0 no mapa de ladrilhos atualmente selecionado.
-
-**Editor de Som**
-
-O modo para editar os **sons** utilizados para melodias e efeitos sonoros.
-
-<a href="https://kitao.github.io/pyxel/wasm/showcase/tools/sound-editor.html">
-<img src="images/sound_editor.gif">
-</a>
-
-**Editor de Música**
-
-O modo para editar as **faixas de música** em que os sons são organizados em ordem de reprodução.
-
-<a href="https://kitao.github.io/pyxel/wasm/showcase/tools/music-editor.html">
-<img src="images/music_editor.gif">
-</a>
+Para instruções detalhadas, consulte o [Manual do Pyxel Editor](https://kitao.github.io/pyxel/wasm/editor-manual/).
 
 ### Outros métodos de criação
 
@@ -368,6 +324,7 @@ Enviar um pull request implica que você concorda em licenciar sua contribuiçã
 
 - [Showcase](https://kitao.github.io/pyxel/wasm/showcase/)
 - [API Reference](https://kitao.github.io/pyxel/wasm/api-reference/)
+- [Editor Manual](https://kitao.github.io/pyxel/wasm/editor-manual/)
 - [Web Launcher](https://kitao.github.io/pyxel/wasm/launcher/)
 - [Code Maker](https://kitao.github.io/pyxel/wasm/code-maker/)
 - [MML Studio](https://kitao.github.io/pyxel/wasm/mml-studio/)

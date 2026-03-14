@@ -246,55 +246,11 @@ pyxel watch WATCH_DIR PYTHON_SCRIPT_FILE
 
 Pyxel Editor 用于创建 Pyxel 应用程序使用的图像和声音。
 
-您可以使用以下命令启动 Pyxel Editor：
-
 ```sh
 pyxel edit PYXEL_RESOURCE_FILE
 ```
 
-如果指定的 Pyxel 资源文件 (.pyxres) 存在，则会加载它。如果不存在，则会使用指定的名称创建一个新文件。如果省略资源文件，则会创建一个名为 `my_resource.pyxres` 的新文件。
-
-启动 Pyxel Editor 后，您可以将另一个资源文件拖放到编辑器上以切换到该资源文件。
-
-创建的资源文件可以使用 `load` 函数加载。
-
-Pyxel Editor 有以下编辑模式。
-
-**图像编辑器**
-
-用于编辑每个**图像库**中图像的模式。
-
-<a href="https://kitao.github.io/pyxel/wasm/showcase/tools/image-editor.html">
-<img src="images/image_editor.gif">
-</a>
-
-您可以将图像文件 (PNG/GIF/JPEG) 拖放到图像编辑器中，以将图像加载到当前选择的图像库中。
-
-**瓦片地图编辑器**
-
-用于编辑将图像库中的图像按瓦片模式排列的**瓦片地图**的模式。
-
-<a href="https://kitao.github.io/pyxel/wasm/showcase/tools/tilemap-editor.html">
-<img src="images/tilemap_editor.gif">
-</a>
-
-将 TMX 文件（Tiled Map File）拖放到瓦片地图编辑器上，以将其第 0 层加载到当前选择的瓦片地图中。
-
-**声音编辑器**
-
-用于编辑用于旋律和音效的**声音**的模式。
-
-<a href="https://kitao.github.io/pyxel/wasm/showcase/tools/sound-editor.html">
-<img src="images/sound_editor.gif">
-</a>
-
-**音乐编辑器**
-
-用于编辑将声音按播放顺序排列的**音乐**的模式。
-
-<a href="https://kitao.github.io/pyxel/wasm/showcase/tools/music-editor.html">
-<img src="images/music_editor.gif">
-</a>
+详细操作方法请参阅 [Pyxel Editor 手册](https://kitao.github.io/pyxel/wasm/editor-manual/)。
 
 ### 其他创建方法
 
@@ -368,6 +324,7 @@ Pyxel 还包含需要专业知识的”高级 API”。在参考页面勾选”A
 
 - [Showcase](https://kitao.github.io/pyxel/wasm/showcase/)
 - [API Reference](https://kitao.github.io/pyxel/wasm/api-reference/)
+- [Editor Manual](https://kitao.github.io/pyxel/wasm/editor-manual/)
 - [Web Launcher](https://kitao.github.io/pyxel/wasm/launcher/)
 - [Code Maker](https://kitao.github.io/pyxel/wasm/code-maker/)
 - [MML Studio](https://kitao.github.io/pyxel/wasm/mml-studio/)
