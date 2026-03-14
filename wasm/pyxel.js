@@ -1,11 +1,11 @@
 const PYODIDE_URL = "https://cdn.jsdelivr.net/pyodide/v0.29.3/full/pyodide.js";
 const PYXEL_WHEEL_PATH = "pyxel-2.8.2-cp38-abi3-emscripten_4_0_9_wasm32.whl";
-const PYXEL_LOGO_PATH = "../docs/images/pyxel_logo_76x32.png";
-const TOUCH_TO_START_PATH = "../docs/images/touch_to_start_114x14.png";
-const CLICK_TO_START_PATH = "../docs/images/click_to_start_114x14.png";
-const GAMEPAD_CROSS_PATH = "../docs/images/gamepad_cross_98x98.png";
-const GAMEPAD_BUTTON_PATH = "../docs/images/gamepad_button_98x98.png";
-const GAMEPAD_MENU_PATH = "../docs/images/gamepad_menu_92x26.png";
+const PYXEL_LOGO_PATH = "images/pyxel_logo_76x32.png";
+const TOUCH_TO_START_PATH = "images/touch_to_start_114x14.png";
+const CLICK_TO_START_PATH = "images/click_to_start_114x14.png";
+const GAMEPAD_CROSS_PATH = "images/gamepad_cross_98x98.png";
+const GAMEPAD_BUTTON_PATH = "images/gamepad_button_98x98.png";
+const GAMEPAD_MENU_PATH = "images/gamepad_menu_92x26.png";
 const PYXEL_WORKING_DIRECTORY = "/pyxel_working_directory";
 const PYXEL_WATCH_INFO_FILE = ".pyxel_watch_info";
 const IMPORT_HOOK_PATH = "import_hook.py";
@@ -205,7 +205,7 @@ function _scriptDir() {
 function _setIcon() {
   const iconLink = document.createElement("link");
   iconLink.rel = "icon";
-  iconLink.href = _scriptDir() + "../docs/images/pyxel_icon_64x64.ico";
+  iconLink.href = _scriptDir() + "images/pyxel_icon_64x64.ico";
   document.head.appendChild(iconLink);
 }
 
