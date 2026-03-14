@@ -20,7 +20,7 @@
     "subtitle": {
       "en": "Launch tool for the web version of {0}, a retro game engine for Python.",
       "cn": "Python 复古游戏引擎 {0} 的 Web 版启动工具",
-      "de": "Launcher-Tool für die Web-Version von {0}, einer Retro-Spiel-Engine für Python.",
+      "de": "Launcher-Tool für die Web-Version von {0}, einer Retro-Spielengine für Python.",
       "es": "Herramienta de lanzamiento para la versión web de {0}, un motor de juegos retro para Python.",
       "fr": "Outil de lancement pour la version web de {0}, un moteur de jeux rétro pour Python.",
       "it": "Strumento di avvio per la versione web di {0}, un motore di giochi retrò per Python.",

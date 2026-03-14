@@ -28,7 +28,7 @@
       "ko": "Python용 레트로 게임 엔진 {0}의 데모 모음",
       "pt": "Uma coleção de demos do {0}, um motor de jogos retrô para Python.",
       "ru": "Коллекция демо для {0}, ретро-игрового движка для Python.",
-      "tr": "Python için bir retro oyun motoru olan {0} demo koleksiyonu.",
+      "tr": "Python için retro oyun motoru {0} demo koleksiyonu.",
       "uk": "Колекція демо для {0}, ретро-ігрового рушія для Python."
     },
     "demo": {
@@ -922,7 +922,7 @@
             "de": "Ein von Retro-Konsolen wie MSX und SG-1000 inspiriertes Schießspiel von Adam (@helpcomputer). Erinnert an die Arcade-Shooter der 1980er Jahre.",
             "es": "Juego de disparos inspirado en consolas retro como MSX y SG-1000, creado por Adam (@helpcomputer). Evoca el espíritu de los shooters arcade de los años 80.",
             "fr": "Jeu de tir inspiré des consoles rétro comme MSX et SG-1000, créé par Adam (@helpcomputer). Évoque l'esprit des shooters arcade des années 1980.",
-            "it": "Gioco di tiro ispirato a console retro come MSX e SG-1000, creato da Adam (@helpcomputer). Evoca lo spirito degli shooter arcade degli anni '80.",
+            "it": "Gioco di tiro ispirato a console retrò come MSX e SG-1000, creato da Adam (@helpcomputer). Evoca lo spirito degli shooter arcade degli anni '80.",
             "ja": "Adam (@helpcomputer) 制作の MSX や SG-1000 などレトロゲーム機にインスパイアされたシューティングゲーム。1980年代のアーケードシューティングを彷彿とさせる作品です。",
             "ko": "Adam (@helpcomputer) 제작의 MSX, SG-1000 등 레트로 게임기에서 영감받은 슈팅 게임. 1980년대 아케이드 슈팅의 감성을 되살린 작품입니다.",
             "pt": "Jogo de tiro inspirado em consoles retro como MSX e SG-1000, criado por Adam (@helpcomputer). Evoca o espírito dos shooters arcade dos anos 1980.",

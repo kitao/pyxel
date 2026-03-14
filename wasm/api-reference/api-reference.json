@@ -70,7 +70,7 @@
       "de": "API-Referenz für {0}, eine Retro-Spielengine für Python.",
       "es": "Referencia de API de {0}, un motor de juegos retro para Python.",
       "fr": "Référence API de {0}, un moteur de jeux rétro pour Python.",
-      "it": "Riferimento API per {0}, un motore di giochi retro per Python.",
+      "it": "Riferimento API di {0}, un motore di giochi retrò per Python.",
       "ja": "Python 向けレトロゲームエンジン {0} の API リファレンス",
       "ko": "Python용 레트로 게임 엔진 {0}의 API 레퍼런스",
       "pt": "Referência de API do {0}, um motor de jogos retrô para Python.",
@@ -92,7 +92,20 @@
       "tr": "API ara...",
       "uk": "Пошук API..."
     },
-    "show_advanced": "Advanced",
+    "show_advanced": {
+      "en": "Advanced",
+      "cn": "高级",
+      "de": "Fortgeschritten",
+      "es": "Avanzado",
+      "fr": "Avancé",
+      "it": "Avanzato",
+      "ja": "上級者向け",
+      "ko": "고급",
+      "pt": "Avançado",
+      "ru": "Продвинутые",
+      "tr": "İleri",
+      "uk": "Просунуті"
+    },
     "no_results": {
       "en": "No matching APIs found.",
       "cn": "未找到匹配的API。",
