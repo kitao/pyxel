@@ -21,8 +21,6 @@
         .th { @apply px-3 pt-1 pb-2 border-gray-700 border-b font-semibold text-sm text-left; }
         .td { @apply px-3 py-1.5 border-gray-700/50 border-b text-sm align-middle; }
         .key { @apply font-mono text-xs text-indigo-300; }
-        .note { @apply bg-amber-500/10 border border-amber-500/30 rounded-lg px-4 py-3 text-sm text-amber-200 mt-3; }
-        .icon-cell { @apply flex items-center gap-2; }
         .pix { image-rendering: pixelated; }
         /* Editor section toggle */
         .editor-toggle summary { cursor: pointer; user-select: none; list-style: none; }
@@ -110,7 +108,7 @@
         // crop width / 480 * 100 = percentage of container
         const a = D.annotations[editor][index];
         const pct = (a.w / 480 * 100).toFixed(1);
-        return `<img src="images/area_${editor}_${index}.png" alt="" class="pix rounded border border-gray-700 my-2" style="width:${pct}%">`;
+        return `<img src="images/area_${editor}_${a.id}.png" alt="" class="pix rounded border border-gray-700 my-2" style="width:${pct}%">`;
       }
 
       function annotatedImg(src, annotations) {
@@ -127,8 +125,7 @@
           else { tx = a.x+a.w/2; ty = a.y+a.h/2; }
           svg += `<text x="${tx}" y="${ty}" text-anchor="${anc}" dominant-baseline="${bl}" fill="${c}" font-size="10" font-weight="700" paint-order="stroke" stroke="#1f2937" stroke-width="3.5" stroke-linejoin="round">${label}</text>`;
         }
-        let legend = "";
-        return `<div class="relative my-3"><img src="${src}" alt="" class="w-full rounded-lg border border-gray-700 block pix"><svg class="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 480 360" preserveAspectRatio="xMidYMid meet">${svg}</svg></div>${legend}`;
+        return `<div class="relative my-3"><img src="${src}" alt="" class="w-full rounded-lg border border-gray-700 block pix"><svg class="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 480 360" preserveAspectRatio="xMidYMid meet">${svg}</svg></div>`;
       }
 
       function keyboardDiagram() {

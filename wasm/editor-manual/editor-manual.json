@@ -1138,7 +1138,8 @@
           "fr": "Vue agrandie de la zone d'édition. Dessinez directement à la souris ici",
           "pt": "Visualização ampliada da área de edição. Desenhe diretamente aqui com o mouse",
           "it": "Vista ingrandita dell'area di modifica. Disegnare direttamente qui con il mouse"
-        }
+        },
+        "id": "canvas"
       },
       {
         "label": {
@@ -1173,7 +1174,8 @@
           "fr": "Vue réduite de la banque d'images complète. Le cadre blanc indique la zone d'édition, déplaçable avec les touches fléchées",
           "pt": "Visualização reduzida de todo o banco de imagens. A moldura branca indica a área de edição atual, movível com as setas do teclado",
           "it": "Vista ridotta dell'intero banco immagini. La cornice bianca indica l'area di modifica corrente, spostabile con i tasti freccia"
-        }
+        },
+        "id": "bankview"
       },
       {
         "label": {
@@ -1208,7 +1210,8 @@
           "fr": "Palette de 16 couleurs. Sélectionnez la couleur par clic ou raccourci clavier",
           "pt": "Paleta de 16 cores. Selecione a cor de desenho por clique ou atalho",
           "it": "Palette di 16 colori. Selezionare il colore di disegno con clic o scorciatoia"
-        }
+        },
+        "id": "palette"
       },
       {
         "label": {
@@ -1243,7 +1246,8 @@
           "fr": "Sélection de l'outil de dessin. Chaque outil a un raccourci clavier assigné",
           "pt": "Seleção de ferramenta de desenho. Cada ferramenta possui um atalho atribuído",
           "it": "Selezione dello strumento di disegno. A ogni strumento è assegnata una scorciatoia"
-        }
+        },
+        "id": "tools"
       },
       {
         "label": {
@@ -1278,7 +1282,8 @@
           "fr": "Change la banque d'images à éditer (0~2)",
           "pt": "Alterna o banco de imagens em edição (0~2)",
           "it": "Cambia il banco immagini in modifica (0~2)"
-        }
+        },
+        "id": "banknum"
       }
     ],
     "tilemap": [
@@ -1315,7 +1320,8 @@
           "fr": "Vue agrandie de la zone d'édition. Placez les tuiles sélectionnées",
           "pt": "Visualização ampliada da área de edição. Posicione a imagem de tile selecionada",
           "it": "Vista ingrandita dell'area di modifica. Posiziona le immagini tile selezionate"
-        }
+        },
+        "id": "canvas"
       },
       {
         "label": {
@@ -1350,7 +1356,8 @@
           "fr": "Vue réduite de la tilemap complète. Le cadre blanc indique la zone d'édition, déplaçable avec les touches fléchées",
           "pt": "Visualização reduzida de todo o tilemap. A moldura branca indica a área de edição atual, movível com as setas do teclado",
           "it": "Vista ridotta dell'intera tilemap. La cornice bianca indica l'area di modifica corrente, spostabile con i tasti freccia"
-        }
+        },
+        "id": "mapview"
       },
       {
         "label": {
@@ -1385,7 +1392,8 @@
           "fr": "Affichage de la banque d'images de référence. Sélectionnez la tuile avec le cadre blanc. Sélection multiple par glisser",
           "pt": "Exibição do banco de imagens de referência. Selecione a imagem de tile com a moldura branca. Arraste para seleção múltipla",
           "it": "Vista del banco immagini di riferimento. Selezionare l'immagine tile da posizionare con la cornice bianca. Selezione multipla tramite trascinamento"
-        }
+        },
+        "id": "tileview"
       },
       {
         "label": {
@@ -1420,7 +1428,8 @@
           "fr": "Change la tilemap à éditer (0~7)",
           "pt": "Alterna o tilemap em edição (0~7)",
           "it": "Cambia la tilemap in modifica (0~7)"
-        }
+        },
+        "id": "tmnum"
       },
       {
         "label": {
@@ -1455,7 +1464,8 @@
           "fr": "Outils de dessin communs avec l'éditeur d'images",
           "pt": "Ferramentas de desenho compartilhadas com o editor de imagem",
           "it": "Strumenti di disegno condivisi con l'editor immagini"
-        }
+        },
+        "id": "tools"
       },
       {
         "label": {
@@ -1490,7 +1500,8 @@
           "fr": "Change la banque d'images de référence pour les tuiles (0~2)",
           "pt": "Alterna o banco de imagens de referência para tiles (0~2)",
           "it": "Cambia il banco immagini di riferimento per le immagini tile (0~2)"
-        }
+        },
+        "id": "imgnum"
       }
     ],
     "sound": [
@@ -1527,7 +1538,8 @@
           "fr": "Change le son à éditer (0~63)",
           "pt": "Alterna o som em edição (0~63)",
           "it": "Cambia il suono in modifica (0~63)"
-        }
+        },
+        "id": "sndnum"
       },
       {
         "label": {
@@ -1562,7 +1574,8 @@
           "fr": "Définit la durée de lecture par note (1~99)",
           "pt": "Define o tempo de reprodução por nota (1~99)",
           "it": "Imposta la durata di riproduzione per nota (1~99)"
-        }
+        },
+        "id": "speed"
       },
       {
         "label": {
@@ -1597,7 +1610,8 @@
           "fr": "Contrôle la lecture, l'arrêt et la lecture en boucle du son",
           "pt": "Controla reprodução, parada e reprodução em loop do som",
           "it": "Controlla riproduzione, arresto e riproduzione in loop del suono"
-        }
+        },
+        "id": "playback"
       },
       {
         "label": {
@@ -1632,7 +1646,8 @@
           "fr": "Affiche l'octave de départ (0~3) pour la saisie au clavier",
           "pt": "Exibe a oitava inicial (0~3) para entrada pelo teclado",
           "it": "Mostra l'ottava iniziale (0~3) per l'input da tastiera"
-        }
+        },
+        "id": "octave_l"
       },
       {
         "label": {
@@ -1667,7 +1682,8 @@
           "fr": "Saisissez les notes en cliquant. Les carrés rouges sont les notes, les carrés bleus les silences",
           "pt": "Insira a altura das notas clicando. Quadrados vermelhos indicam notas, azuis indicam pausas",
           "it": "Inserisce l'altezza delle note cliccando. Il quadrato rosso indica una nota, il quadrato blu una pausa"
-        }
+        },
+        "id": "piano"
       },
       {
         "label": {
@@ -1702,7 +1718,8 @@
           "fr": "Affiche l'octave de départ (0~3) pour la saisie au clavier",
           "pt": "Exibe a oitava inicial (0~3) para entrada pelo teclado",
           "it": "Mostra l'ottava iniziale (0~3) per l'input da tastiera"
-        }
+        },
+        "id": "octave_r"
       },
       {
         "label": {
@@ -1737,7 +1754,8 @@
           "fr": "Définit le timbre (TON), le volume (VOL) et l'effet (EFX) pour chaque note",
           "pt": "Define o timbre (TON), volume (VOL) e efeito (EFX) por nota",
           "it": "Imposta timbro (TON), volume (VOL) ed effetto (EFX) per ogni nota"
-        }
+        },
+        "id": "property"
       }
     ],
     "music": [
@@ -1774,7 +1792,8 @@
           "fr": "Change la musique à éditer (0~7)",
           "pt": "Alterna a música em edição (0~7)",
           "it": "Cambia la musica in modifica (0~7)"
-        }
+        },
+        "id": "mscnum"
       },
       {
         "label": {
@@ -1809,7 +1828,8 @@
           "fr": "Contrôle la lecture, l'arrêt et la lecture en boucle de la musique",
           "pt": "Controla reprodução, parada e reprodução em loop da música",
           "it": "Controlla riproduzione, arresto e riproduzione in loop della musica"
-        }
+        },
+        "id": "playback"
       },
       {
         "label": {
@@ -1844,7 +1864,8 @@
           "fr": "Place les numéros de sons dans l'ordre de lecture sur 4 canaux",
           "pt": "Posiciona números de som em ordem de reprodução nos 4 canais",
           "it": "Dispone i numeri dei suoni in ordine di riproduzione sui 4 canali"
-        }
+        },
+        "id": "sequence"
       },
       {
         "label": {
@@ -1879,7 +1900,8 @@
           "fr": "Boutons d'insertion de numéros de sons (0~63). Bleu si créé, gris sinon. Survolez pour pré-écouter",
           "pt": "Botões para inserir números de som (0~63). Criados em azul, não criados em cinza. Passe o mouse para pré-escuta",
           "it": "Pulsanti per inserire un numero di suono (0~63). I suoni creati appaiono in blu, quelli non creati in grigio. Anteprima al passaggio del mouse"
-        }
+        },
+        "id": "buttons"
       }
     ]
   },

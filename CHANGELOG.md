@@ -7,6 +7,7 @@
 - Added script to generate type stub docstrings
 - Added docstrings to type stubs from API reference
 - Moved WASM-only images from docs/images to wasm/images
+- Added multilingual editor manual with 12 language support
 
 ## 2.8.2
 
