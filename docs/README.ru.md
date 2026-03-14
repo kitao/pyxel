@@ -246,10 +246,6 @@ pyxel watch WATCH_DIR PYTHON_SCRIPT_FILE
 
 Pyxel Editor позволяет создавать изображения и звуки для приложений Pyxel.
 
-```sh
-pyxel edit PYXEL_RESOURCE_FILE
-```
-
 Подробные инструкции см. в [Руководстве по Pyxel Editor](https://kitao.github.io/pyxel/wasm/editor-manual/).
 
 ### Другие методы создания

@@ -246,10 +246,6 @@ Während eine Pyxel-Anwendung läuft, können die folgenden speziellen Tastenakt
 
 Pyxel Editor erstellt Bilder und Klänge, die in einer Pyxel-Anwendung verwendet werden.
 
-```sh
-pyxel edit PYXEL_RESOURCE_FILE
-```
-
 Eine ausführliche Bedienungsanleitung finden Sie im [Pyxel Editor Handbuch](https://kitao.github.io/pyxel/wasm/editor-manual/).
 
 ### Andere Erstellungsmethoden

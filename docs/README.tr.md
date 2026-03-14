@@ -246,10 +246,6 @@ Bir Pyxel uygulaması çalışırken, aşağıdaki özel tuş işlemleri gerçek
 
 Pyxel Editor, Pyxel uygulamalarında kullanılan resim ve sesleri oluşturur.
 
-```sh
-pyxel edit PYXEL_RESOURCE_FILE
-```
-
 Ayrıntılı kullanım talimatları için [Pyxel Editor Kılavuzu](https://kitao.github.io/pyxel/wasm/editor-manual/)'na bakın.
 
 ### Diğer Kaynak Oluşturma Yöntemleri

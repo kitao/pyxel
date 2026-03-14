@@ -246,10 +246,6 @@ The following special key actions are available while a Pyxel application is run
 
 Pyxel Editor creates images and sounds used in a Pyxel application.
 
-```sh
-pyxel edit PYXEL_RESOURCE_FILE
-```
-
 For detailed usage instructions, see the [Pyxel Editor Manual](https://kitao.github.io/pyxel/wasm/editor-manual/).
 
 ### Other Creation Methods

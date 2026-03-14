@@ -246,10 +246,6 @@ pyxel watch WATCH_DIR PYTHON_SCRIPT_FILE
 
 Pyxel Editor 用于创建 Pyxel 应用程序使用的图像和声音。
 
-```sh
-pyxel edit PYXEL_RESOURCE_FILE
-```
-
 详细操作方法请参阅 [Pyxel Editor 手册](https://kitao.github.io/pyxel/wasm/editor-manual/)。
 
 ### 其他创建方法

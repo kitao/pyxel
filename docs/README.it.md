@@ -246,10 +246,6 @@ Durante l'esecuzione di un'applicazione Pyxel, possono essere eseguite le seguen
 
 Pyxel Editor crea immagini e suoni utilizzati in un'applicazione Pyxel.
 
-```sh
-pyxel edit PYXEL_RESOURCE_FILE
-```
-
 Per istruzioni dettagliate, consultare il [Manuale di Pyxel Editor](https://kitao.github.io/pyxel/wasm/editor-manual/).
 
 ### Altri metodi di creazione
