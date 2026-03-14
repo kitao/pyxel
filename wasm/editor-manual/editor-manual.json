@@ -65,18 +65,18 @@
       "it": "Manuale di Pyxel Editor"
     },
     "subtitle": {
-      "ja": "{0} 内蔵のリソースエディタの操作マニュアル",
-      "en": "Operation manual for the built-in resource editor of {0}",
-      "cn": "{0} 内置资源编辑器操作手册",
-      "de": "Bedienungsanleitung für den in {0} integrierten Ressourcen-Editor",
-      "es": "Manual de operación del editor de recursos integrado en {0}",
-      "ru": "Руководство по встроенному редактору ресурсов {0}",
-      "uk": "Посібник з вбудованого редактора ресурсів {0}",
-      "tr": "{0} yerleşik kaynak düzenleyicisinin kullanım kılavuzu",
-      "ko": "{0} 내장 리소스 에디터 조작 매뉴얼",
-      "fr": "Manuel d'utilisation de l'éditeur de ressources intégré à {0}",
-      "pt": "Manual de operação do editor de recursos integrado do {0}",
-      "it": "Manuale operativo dell'editor di risorse integrato in {0}"
+      "ja": "{0} 付属のリソースエディタの操作マニュアル",
+      "en": "Operation manual for the resource editor bundled with {0}",
+      "cn": "{0} 附带的资源编辑器操作手册",
+      "de": "Bedienungsanleitung für den mit {0} mitgelieferten Ressourcen-Editor",
+      "es": "Manual de operación del editor de recursos incluido en {0}",
+      "ru": "Руководство по редактору ресурсов, входящему в состав {0}",
+      "uk": "Посібник з редактора ресурсів, що входить до складу {0}",
+      "tr": "{0} ile birlikte gelen kaynak düzenleyicisinin kullanım kılavuzu",
+      "ko": "{0} 에 포함된 리소스 에디터 조작 매뉴얼",
+      "fr": "Manuel d'utilisation de l'éditeur de ressources fourni avec {0}",
+      "pt": "Manual de operação do editor de recursos incluído no {0}",
+      "it": "Manuale operativo dell'editor di risorse incluso in {0}"
     },
     "th_shortcut": {
       "ja": "ショートカット",
