@@ -8,6 +8,7 @@
 - Added docstrings to type stubs from API reference
 - Moved WASM-only images from docs/images to wasm/images
 - Added multilingual editor manual with 12 language support
+- Unified default width of WASM tool pages
 
 ## 2.8.2
 
