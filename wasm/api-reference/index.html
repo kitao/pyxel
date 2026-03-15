@@ -5,12 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" href="../images/pyxel_icon_64x64.ico" />
     <title>Pyxel API Reference</title>
-    <link rel="stylesheet" href="../pyxel-pages.css" />
     <script src="../pyxel-pages.js"></script>
     <script src="https://cdn.tailwindcss.com/3.4.17"></script>
 
     <style type="text/tailwindcss">
       @layer components {
+        .page {
+          @apply bg-gray-900 min-h-full text-gray-100 antialiased;
+        }
+        .page-container {
+          @apply mx-auto p-6 max-w-3xl;
+        }
+        .card {
+          @apply bg-gray-800 shadow-sm px-6 py-5 border border-gray-700 rounded-2xl;
+        }
+        .link {
+          @apply outline-none focus-visible:ring-1 focus-visible:ring-indigo-300 text-indigo-400 hover:text-indigo-300 underline underline-offset-2 rounded-sm;
+        }
+        .lang-select {
+          @apply bg-gray-800 px-2 py-1 border border-gray-600 focus-visible:border-indigo-300 rounded-lg outline-none text-gray-200 text-sm;
+        }
         .search-input {
           @apply bg-gray-800 px-3 py-1.5 border border-gray-600 focus:border-indigo-400 rounded-lg outline-none text-gray-200 text-sm w-full;
         }
@@ -292,6 +306,11 @@
             card.className = "card space-y-0 divide-y divide-gray-700";
             card.dataset.itemsCard = cat.id;
 
+            const cardTitle = document.createElement("h2");
+            cardTitle.className = "font-semibold text-xl text-gray-100 mb-3";
+            cardTitle.dataset.catTitle2 = cat.id;
+            card.appendChild(cardTitle);
+
             for (let i = 0; i < cat.items.length; i++) {
               const item = cat.items[i];
               const row = document.createElement("div");
@@ -477,6 +496,10 @@
             `[data-cat-title="${cat.id}"]`
           );
           if (el) el.textContent = t(cat.title);
+          const el2 = document.querySelector(
+            `[data-cat-title2="${cat.id}"]`
+          );
+          if (el2) el2.textContent = t(cat.title);
         }
 
         // Descriptions, detail content, and constant groups
