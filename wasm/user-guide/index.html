@@ -338,7 +338,7 @@ pyxel.show()`, "python")}
         $("s-apiref").innerHTML = `
           <h2 class="section-title">${esc(t("apiref_title"))}</h2>
           <p class="body">${t("apiref_body")
-            .replace("{0}", link("../api-reference/", "Pyxel API Reference"))}</p>
+            .replace("{0}", link("../api-reference/", esc(t("tool_api_reference"))))}</p>
           <p class="body mt-2">${esc(t("apiref_advanced"))}</p>
           <p class="body mt-2">${esc(t("apiref_challenge"))}</p>`;
 
