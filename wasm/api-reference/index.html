@@ -5,25 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" href="../images/pyxel_icon_64x64.ico" />
     <title>Pyxel API Reference</title>
+    <link rel="stylesheet" href="../pyxel-common.css" />
     <script src="https://cdn.tailwindcss.com/3.4.17"></script>
 
     <style type="text/tailwindcss">
       @layer components {
-        .page {
-          @apply bg-gray-900 min-h-full text-gray-100 antialiased;
-        }
-        .container {
-          @apply mx-auto p-6 max-w-4xl;
-        }
-        .card {
-          @apply bg-gray-800 shadow-sm px-6 py-4 border border-gray-700 rounded-2xl;
-        }
-        .link {
-          @apply outline-none focus-visible:ring-1 focus-visible:ring-indigo-300 text-indigo-400 hover:text-indigo-300 underline underline-offset-2 rounded-sm;
-        }
-        .lang-select {
-          @apply bg-gray-800 px-2 py-1 border border-gray-600 focus-visible:border-indigo-300 rounded-lg outline-none text-gray-200 text-sm;
-        }
         .search-input {
           @apply bg-gray-800 px-3 py-1.5 border border-gray-600 focus:border-indigo-400 rounded-lg outline-none text-gray-200 text-sm w-full;
         }
@@ -68,7 +54,7 @@
   </head>
 
   <body class="page">
-    <main class="container" id="app">
+    <main class="page-container" id="app">
       <div class="flex justify-center items-center py-12 text-gray-500 text-sm">
         Loading...
       </div>

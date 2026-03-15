@@ -5,48 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" href="../images/pyxel_icon_64x64.ico" />
     <title>Pyxel MML Studio Manual</title>
+    <link rel="stylesheet" href="../pyxel-common.css" />
     <script src="https://cdn.tailwindcss.com/3.4.17"></script>
 
     <style type="text/tailwindcss">
       @layer components {
-        .page {
-          @apply bg-gray-900 min-h-full text-gray-100 antialiased;
-        }
-        .container {
-          @apply mx-auto p-6 max-w-4xl;
-        }
-        .card {
-          @apply bg-gray-800 shadow-sm px-6 py-4 border border-gray-700 rounded-2xl;
-        }
-        .link {
-          @apply outline-none focus-visible:ring-1 focus-visible:ring-indigo-300 text-indigo-400 hover:text-indigo-300 underline underline-offset-2 rounded-sm;
-        }
-        .lang-select {
-          @apply bg-gray-800 px-2 py-1 border border-gray-600 focus-visible:border-indigo-300 rounded-lg outline-none text-gray-200 text-sm;
-        }
-        .section-title {
-          @apply font-medium text-lg text-gray-200 mb-2;
-        }
-        .body-text {
-          @apply text-gray-300 text-sm leading-relaxed;
-        }
-        .codechip {
-          @apply inline-flex items-center bg-gray-700 px-1.5 py-0.5 rounded-md ring-1 ring-gray-600 ring-inset font-mono text-gray-100 text-xs align-middle leading-tight;
-        }
         .btn-chip {
           @apply inline-flex items-center bg-gray-900 px-2 py-0.5 border border-gray-600 rounded-md font-medium text-gray-300 text-xs;
         }
         .link-chip {
           @apply inline-flex items-center text-indigo-400 text-xs font-medium;
-        }
-        .th {
-          @apply px-3 pt-1 pb-3 border-gray-700 border-b font-semibold text-sm text-left;
-        }
-        .td {
-          @apply px-3 py-2 border-gray-700/50 border-b text-sm align-middle;
-        }
-        .shortcut-key {
-          @apply font-mono text-xs text-indigo-300;
         }
         .legend-label {
           @apply text-xs font-medium text-gray-400 uppercase tracking-wide;
@@ -59,7 +27,7 @@
   </head>
 
   <body class="page">
-    <main class="container" id="app">
+    <main class="page-container" id="app">
       <div class="flex justify-center items-center py-12 text-gray-500 text-sm">
         Loading...
       </div>
@@ -88,7 +56,7 @@
       }
 
       function chip(text) {
-        return `<code class="codechip">${esc(text)}</code>`;
+        return `<code class="chip">${esc(text)}</code>`;
       }
 
       function btnChip(text) {
@@ -163,7 +131,7 @@
         overviewCard.className = "card";
         overviewCard.innerHTML = `
           <h2 id="sec-overview-title" class="section-title"></h2>
-          <p id="sec-overview-body" class="body-text"></p>
+          <p id="sec-overview-body" class="body"></p>
         `;
         sections.appendChild(overviewCard);
 
@@ -172,7 +140,7 @@
         layoutCard.className = "card";
         layoutCard.innerHTML = `
           <h2 id="sec-layout-title" class="section-title"></h2>
-          <p id="sec-layout-body" class="body-text mb-4"></p>
+          <p id="sec-layout-body" class="body mb-4"></p>
 
           <!-- Layout diagram -->
           <div class="border border-gray-600 rounded-lg overflow-hidden select-none mb-4">
@@ -229,7 +197,7 @@
         controlsCard.className = "card";
         controlsCard.innerHTML = `
           <h2 id="sec-controls-title" class="section-title"></h2>
-          <p id="sec-controls-body" class="body-text mb-3"></p>
+          <p id="sec-controls-body" class="body mb-3"></p>
           <div id="control-items" class="space-y-2.5"></div>
         `;
         sections.appendChild(controlsCard);
@@ -239,7 +207,7 @@
         channelsCard.className = "card";
         channelsCard.innerHTML = `
           <h2 id="sec-channels-title" class="section-title"></h2>
-          <p id="sec-channels-body" class="body-text mb-3"></p>
+          <p id="sec-channels-body" class="body mb-3"></p>
           <div id="channel-items" class="space-y-2.5"></div>
         `;
         sections.appendChild(channelsCard);
@@ -249,7 +217,7 @@
         sharingCard.className = "card";
         sharingCard.innerHTML = `
           <h2 id="sec-sharing-title" class="section-title"></h2>
-          <p id="sec-sharing-body" class="body-text"></p>
+          <p id="sec-sharing-body" class="body"></p>
         `;
         sections.appendChild(sharingCard);
 
@@ -258,7 +226,7 @@
         shortcutsCard.className = "card";
         shortcutsCard.innerHTML = `
           <h2 id="sec-shortcuts-title" class="section-title"></h2>
-          <p id="sec-shortcuts-body" class="body-text mb-3"></p>
+          <p id="sec-shortcuts-body" class="body mb-3"></p>
           <div class="overflow-x-auto">
             <table class="w-full border-collapse">
               <thead>
@@ -278,7 +246,7 @@
         mmlRefCard.className = "card";
         mmlRefCard.innerHTML = `
           <h2 id="sec-mml-ref-title" class="section-title"></h2>
-          <p id="sec-mml-ref-body" class="body-text"></p>
+          <p id="sec-mml-ref-body" class="body"></p>
         `;
         sections.appendChild(mmlRefCard);
 
@@ -342,7 +310,7 @@
             (item) =>
               `<div class="flex items-baseline gap-3">
                 ${item.type === "link" ? linkChip(item.label) : btnChip(item.label)}
-                <span class="body-text">${esc(t(item.desc))}</span>
+                <span class="body">${esc(t(item.desc))}</span>
               </div>`,
           )
           .join("");
@@ -360,7 +328,7 @@
             (item) =>
               `<div class="flex items-baseline gap-3">
                 ${btnChip(item.label)}
-                <span class="body-text">${esc(t(item.desc))}</span>
+                <span class="body">${esc(t(item.desc))}</span>
               </div>`,
           )
           .join("");
@@ -384,7 +352,7 @@
           .map(
             (s) =>
               `<tr>
-                <td class="td"><span class="shortcut-key">${esc(s.key)}</span></td>
+                <td class="td"><span class="key">${esc(s.key)}</span></td>
                 <td class="td text-gray-300">${esc(t(s.action))}</td>
               </tr>`,
           )

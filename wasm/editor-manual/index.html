@@ -5,23 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" href="../images/pyxel_icon_64x64.ico" />
     <title>Pyxel Editor Manual</title>
+    <link rel="stylesheet" href="../pyxel-common.css" />
     <script src="https://cdn.tailwindcss.com/3.4.17"></script>
     <style type="text/tailwindcss">
       @layer components {
-        .page { @apply bg-gray-900 min-h-full text-gray-100 antialiased; }
-        .container { @apply mx-auto p-6 max-w-4xl; }
-        .card { @apply bg-gray-800 shadow-sm px-6 py-5 border border-gray-700 rounded-2xl; }
-        .link { @apply outline-none focus-visible:ring-1 focus-visible:ring-indigo-300 text-indigo-400 hover:text-indigo-300 underline underline-offset-2 rounded-sm; }
-        .lang-select { @apply bg-gray-800 px-2 py-1 border border-gray-600 focus-visible:border-indigo-300 rounded-lg outline-none text-gray-200 text-sm; }
-        .section-title { @apply font-medium text-lg text-gray-200 mb-2; }
-        .sub-title { @apply font-semibold text-sm text-gray-200 mt-5 mb-2; }
         .area-title { @apply font-semibold text-base mt-5 mb-2 pl-2 border-l-[3px]; }
-        .body { @apply text-gray-300 text-sm leading-relaxed; }
-        .chip { @apply inline-flex items-center bg-gray-700 px-1.5 py-0.5 rounded-md ring-1 ring-gray-600 ring-inset font-mono text-gray-100 text-xs align-middle leading-tight; }
-        .th { @apply px-3 pt-1 pb-2 border-gray-700 border-b font-semibold text-sm text-left; }
-        .td { @apply px-3 py-1.5 border-gray-700/50 border-b text-sm align-middle; }
-        .key { @apply font-mono text-xs text-indigo-300; }
-        .pix { image-rendering: pixelated; }
         /* Editor section toggle */
         .editor-toggle summary { cursor: pointer; user-select: none; list-style: none; }
         .editor-toggle summary::-webkit-details-marker { display: none; }
@@ -31,7 +19,7 @@
     </style>
   </head>
   <body class="page">
-    <main class="container" id="app">
+    <main class="page-container" id="app">
       <div class="flex justify-center items-center py-12 text-gray-500 text-sm">Loading...</div>
     </main>
     <script>

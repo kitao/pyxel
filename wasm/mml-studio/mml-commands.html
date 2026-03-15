@@ -5,41 +5,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" href="../images/pyxel_icon_64x64.ico" />
     <title>Pyxel MML Commands</title>
+    <link rel="stylesheet" href="../pyxel-common.css" />
     <script src="https://cdn.tailwindcss.com/3.4.17"></script>
     <style type="text/tailwindcss">
       @layer components {
-        .page {
-          @apply bg-gray-900 h-full text-gray-100 antialiased;
-        }
-        .container {
-          @apply mx-auto p-6 max-w-3xl;
-        }
+        .page { height: 100%; min-height: auto; }
         .heading {
           @apply font-semibold text-2xl tracking-tight;
         }
         .subheading {
           @apply text-gray-300 text-sm;
         }
-        .link {
-          @apply outline-none focus-visible:ring-1 focus-visible:ring-indigo-300 text-indigo-400 hover:text-indigo-300 underline underline-offset-2 rounded-sm;
-        }
         .mono {
           @apply font-mono text-sm;
         }
         .card {
-          @apply bg-gray-800 shadow-sm px-2 sm:px-3 py-1 sm:py-2 border border-gray-700 rounded-2xl;
+          padding: 0.25rem 0.5rem;
+        }
+        @media (min-width: 640px) {
+          .card { padding: 0.5rem 0.75rem; }
         }
         .rowcard {
           @apply mb-2 sm:mb-0;
         }
-        .lang-select {
-          @apply bg-gray-800 px-2 py-1 border border-gray-600 focus-visible:border-indigo-300 rounded-lg outline-none text-gray-200 text-sm;
-        }
-        .th {
-          @apply px-3 pt-1 pb-3 border-gray-700 border-b font-semibold text-sm text-left;
-        }
         .td {
-          @apply px-3 py-2 border-gray-800 border-b text-sm align-top;
+          border-color: #1f2937;
+          vertical-align: top;
         }
         .stack thead {
           @apply hidden sm:table-header-group;
@@ -60,7 +51,7 @@
     </style>
   </head>
   <body class="page">
-    <div class="container">
+    <div class="page-container">
       <div
         class="flex sm:flex-row flex-col justify-between items-start sm:items-center gap-2 mb-2"
       >

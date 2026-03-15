@@ -5,30 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" href="../images/pyxel_icon_64x64.ico" />
     <title>Pyxel Showcase</title>
+    <link rel="stylesheet" href="../pyxel-common.css" />
     <script src="https://cdn.tailwindcss.com/3.4.17"></script>
 
     <style type="text/tailwindcss">
       @layer components {
-        .page {
-          @apply bg-gray-900 min-h-full text-gray-100 antialiased;
-        }
-        .container {
-          @apply mx-auto p-6 max-w-4xl;
-        }
-        .card {
-          @apply bg-gray-800 shadow-sm px-6 py-4 border border-gray-700 rounded-2xl;
-        }
-        .link {
-          @apply outline-none focus-visible:ring-1 focus-visible:ring-indigo-300 text-indigo-400 hover:text-indigo-300 underline underline-offset-2 rounded-sm;
-        }
         .btn-demo {
           @apply inline-flex items-center justify-center min-w-[4.5rem] bg-indigo-500/20 hover:bg-indigo-500/30 px-3 py-1 border border-indigo-500/40 focus-visible:border-indigo-300 rounded-md outline-none font-medium text-indigo-300 text-xs transition-colors;
         }
         .btn-code {
           @apply inline-flex items-center justify-center min-w-[4.5rem] bg-gray-700 hover:bg-gray-600 px-3 py-1 border border-gray-600 focus-visible:border-indigo-300 rounded-md outline-none font-medium text-gray-200 text-xs transition-colors;
-        }
-        .lang-select {
-          @apply bg-gray-800 px-2 py-1 border border-gray-600 focus-visible:border-indigo-300 rounded-lg outline-none text-gray-200 text-sm;
         }
       }
 
@@ -67,7 +53,7 @@
   </head>
 
   <body class="page">
-    <main class="container" id="app">
+    <main class="page-container" id="app">
       <div class="flex justify-center items-center py-12 text-gray-500 text-sm">
         Loading...
       </div>

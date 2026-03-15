@@ -1,5 +1,11 @@
 # Change Log
 
+## 2.8.4
+
+- Added multilingual user guide and simplified README
+- Added shared CSS for WASM document pages
+- Fixed translation inconsistencies across WASM pages
+
 ## 2.8.3
 
 - Added URL loading support to Code Maker

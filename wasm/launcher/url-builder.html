@@ -5,22 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" href="../images/pyxel_icon_64x64.ico" />
     <title>Pyxel Web Launcher</title>
+    <link rel="stylesheet" href="../pyxel-common.css" />
     <script src="https://cdn.tailwindcss.com/3.4.17"></script>
 
     <style type="text/tailwindcss">
       @layer components {
-        .page {
-          @apply bg-gray-900 h-full text-gray-100 antialiased;
-        }
-        .container {
-          @apply mx-auto p-6 max-w-4xl;
-        }
-        .card {
-          @apply bg-gray-800 shadow-sm px-6 py-4 border border-gray-700 rounded-2xl;
-        }
-        .link {
-          @apply outline-none focus-visible:ring-1 focus-visible:ring-indigo-300 text-indigo-400 hover:text-indigo-300 underline underline-offset-2 rounded-sm;
-        }
+        .page { height: 100%; min-height: auto; }
         .link-strong {
           @apply font-semibold text-indigo-400 hover:text-indigo-300 underline underline-offset-2 break-all;
         }
@@ -36,21 +26,15 @@
         .help {
           @apply space-y-1 mt-1 pl-5 text-gray-400 text-xs list-disc;
         }
-        .codechip {
-          @apply inline-flex items-center bg-gray-700 px-1.5 py-0.5 rounded-md ring-1 ring-gray-600 ring-inset font-mono text-gray-100 text-xs align-middle leading-tight;
-        }
         .checkbox {
           @apply accent-indigo-500 w-4 h-4 rounded cursor-pointer outline-none focus-visible:ring-1 focus-visible:ring-indigo-300 focus-visible:ring-offset-1 focus-visible:ring-offset-gray-900;
-        }
-        .lang-select {
-          @apply bg-gray-800 px-2 py-1 border border-gray-600 focus-visible:border-indigo-300 rounded-lg outline-none text-gray-200 text-sm;
         }
       }
     </style>
   </head>
 
   <body class="page">
-    <main class="container">
+    <main class="page-container">
       <header class="flex items-start gap-4 mb-4">
         <select id="lang-select" class="lang-select mt-1" style="display: none"></select>
         <div class="flex-1 min-w-0 order-first">
@@ -82,9 +66,9 @@
             <ul class="help">
               <li id="help-file-type">
                 Startup file type should be
-                <code class="codechip">.py</code>,
-                <code class="codechip">.pyxapp</code>, or
-                <code class="codechip">.pyxres</code>.
+                <code class="chip">.py</code>,
+                <code class="chip">.pyxapp</code>, or
+                <code class="chip">.pyxres</code>.
               </li>
               <li id="help-example-py"></li>
               <li id="help-example-pyxapp"></li>
@@ -122,7 +106,7 @@
               <ul class="help">
                 <li id="help-packages-comma">
                   If there are multiple packages, separate them with commas like
-                  <code class="codechip">a,b,c</code>.
+                  <code class="chip">a,b,c</code>.
                 </li>
                 <li id="help-packages-only">
                   Only
@@ -198,7 +182,7 @@
       }
 
       function chip(text) {
-        return `<code class="codechip">${text}</code>`;
+        return `<code class="chip">${text}</code>`;
       }
 
       function detectLanguage() {
