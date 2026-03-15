@@ -6,6 +6,7 @@
     <link rel="icon" href="../images/pyxel_icon_64x64.ico" />
     <title>Pyxel Code Maker Manual</title>
     <link rel="stylesheet" href="../pyxel-pages.css" />
+    <script src="../pyxel-pages.js"></script>
     <script src="https://cdn.tailwindcss.com/3.4.17"></script>
 
     <style type="text/tailwindcss">
@@ -42,36 +43,8 @@
         return obj[currentLang] || obj["en"] || "";
       }
 
-      function esc(s) {
-        const d = document.createElement("span");
-        d.textContent = s;
-        return d.innerHTML;
-      }
-
-      function link(href, text) {
-        return `<a href="${href}" target="_blank" rel="noopener noreferrer" class="link">${text}</a>`;
-      }
-
-      function chip(text) {
-        return `<code class="chip">${esc(text)}</code>`;
-      }
-
       function btnChip(text) {
         return `<span class="btn-chip">${esc(text)}</span>`;
-      }
-
-      function detectLanguage() {
-        const stored = localStorage.getItem("pyxel-lang");
-        if (stored && data.languages.some((l) => l.code === stored)) {
-          return stored;
-        }
-        const nav = navigator.language || "";
-        const navLower = nav.toLowerCase();
-        if (navLower.startsWith("zh")) return "cn";
-        for (const lang of data.languages) {
-          if (navLower.startsWith(lang.code)) return lang.code;
-        }
-        return "en";
       }
 
       function buildPage() {
@@ -95,19 +68,8 @@
         subtitle.id = "page-subtitle";
         titleBlock.appendChild(subtitle);
 
-        const langSelect = document.createElement("select");
-        langSelect.className = "lang-select mt-1";
-        langSelect.id = "lang-select";
-        for (const lang of data.languages) {
-          const opt = document.createElement("option");
-          opt.value = lang.code;
-          opt.textContent = lang.name;
-          langSelect.appendChild(opt);
-        }
-        langSelect.value = currentLang;
-        langSelect.addEventListener("change", () => {
-          currentLang = langSelect.value;
-          localStorage.setItem("pyxel-lang", currentLang);
+        const langSelect = buildLangSelector(data.languages, currentLang, (v) => {
+          currentLang = v;
           updateTexts();
         });
 
@@ -407,8 +369,7 @@
           )
           .join("");
 
-        document.documentElement.lang =
-          currentLang === "cn" ? "zh" : currentLang;
+        setDocLang(currentLang);
       }
 
       // Init
@@ -416,7 +377,7 @@
         .then((r) => r.json())
         .then((json) => {
           data = json;
-          currentLang = detectLanguage();
+          currentLang = detectLanguage(data.languages);
           buildPage();
         });
     </script>

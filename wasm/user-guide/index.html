@@ -6,6 +6,7 @@
     <link rel="icon" href="../../docs/images/pyxel_icon_64x64.ico" />
     <title>Pyxel User Guide</title>
     <link rel="stylesheet" href="../pyxel-pages.css" />
+    <script src="../pyxel-pages.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/github-dark.min.css" />
     <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/highlight.min.js"></script>
     <script src="https://cdn.tailwindcss.com/3.4.17"></script>
@@ -27,19 +28,7 @@
         if (typeof o === "string") return D?.ui[o] ? t(D.ui[o]) : o;
         return o[lang] || o["en"] || "";
       };
-      const esc = (s) => { const d = document.createElement("span"); d.textContent = s; return d.innerHTML; };
-      const link = (href, text) => `<a href="${href}" target="_blank" rel="noopener noreferrer" class="link">${text}</a>`;
-      const chip = (s) => `<code class="chip">${esc(s)}</code>`;
       const code = (s, lang) => `<pre class="code-block"><code class="language-${lang || "plaintext"}">${esc(s)}</code></pre>`;
-
-      function detectLang() {
-        const s = localStorage.getItem("pyxel-lang");
-        if (s && D.languages.some(l => l.code === s)) return s;
-        const n = (navigator.language || "").toLowerCase();
-        if (n.startsWith("zh")) return "cn";
-        for (const l of D.languages) { if (n.startsWith(l.code)) return l.code; }
-        return "en";
-      }
 
       function shortcutTable(items) {
         let h = `<div class="overflow-x-auto"><table class="w-full border-collapse">
@@ -61,14 +50,7 @@
         titleDiv.className = "flex-1 min-w-0 order-first";
         titleDiv.innerHTML = `<h1 class="font-semibold text-2xl tracking-tight" id="p-title"></h1>
           <p class="mt-2 text-gray-300 text-sm" id="p-sub"></p>`;
-        const sel = document.createElement("select");
-        sel.className = "lang-select mt-1";
-        for (const l of D.languages) {
-          const o = document.createElement("option");
-          o.value = l.code; o.textContent = l.name; sel.appendChild(o);
-        }
-        sel.value = lang;
-        sel.addEventListener("change", () => { lang = sel.value; localStorage.setItem("pyxel-lang", lang); update(); });
+        const sel = buildLangSelector(D.languages, lang, (v) => { lang = v; update(); });
         hdr.appendChild(sel); hdr.appendChild(titleDiv); app.appendChild(hdr);
 
         // Content
@@ -361,13 +343,13 @@ pyxel.show()`, "python")}
           <p class="body">${t("sponsors_body")
             .replace("{0}", link("https://github.com/sponsors/kitao", esc(t("sponsors_link"))))}</p>`;
 
-        document.documentElement.lang = lang === "cn" ? "zh" : lang;
+        setDocLang(lang);
         hljs.highlightAll();
       }
 
       // Init
       fetch("user-guide.json").then(r => r.json()).then(json => {
-        D = json; lang = detectLang(); build();
+        D = json; lang = detectLanguage(D.languages); build();
       });
     </script>
   </body>

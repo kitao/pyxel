@@ -6,6 +6,7 @@
     <link rel="icon" href="../images/pyxel_icon_64x64.ico" />
     <title>Pyxel Editor Manual</title>
     <link rel="stylesheet" href="../pyxel-pages.css" />
+    <script src="../pyxel-pages.js"></script>
     <script src="https://cdn.tailwindcss.com/3.4.17"></script>
     <style type="text/tailwindcss">
       @layer components {
@@ -30,19 +31,7 @@
         if (typeof o === "string") return D?.ui[o] ? t(D.ui[o]) : o;
         return o[lang] || o["en"] || "";
       };
-      const esc = (s) => { const d = document.createElement("span"); d.textContent = s; return d.innerHTML; };
-      const link = (href, text) => `<a href="${href}" target="_blank" rel="noopener noreferrer" class="link">${text}</a>`;
-      const chip = (s) => `<code class="chip">${esc(s)}</code>`;
       const icon = (src, size = 28) => `<img src="${src}" style="width:${size}px;height:${size}px" class="pix inline-block align-middle" alt="">`;
-
-      function detectLang() {
-        const s = localStorage.getItem("pyxel-lang");
-        if (s && D.languages.some(l => l.code === s)) return s;
-        const n = (navigator.language || "").toLowerCase();
-        if (n.startsWith("zh")) return "cn";
-        for (const l of D.languages) { if (n.startsWith(l.code)) return l.code; }
-        return "en";
-      }
 
       /* --- Render helpers --- */
       function shortcutTable(items) {
@@ -179,14 +168,7 @@
         titleDiv.className = "flex-1 min-w-0 order-first";
         titleDiv.innerHTML = `<h1 class="font-semibold text-2xl tracking-tight" id="p-title"></h1>
           <p class="mt-2 text-gray-300 text-sm" id="p-sub"></p>`;
-        const sel = document.createElement("select");
-        sel.className = "lang-select mt-1";
-        for (const l of D.languages) {
-          const o = document.createElement("option");
-          o.value = l.code; o.textContent = l.name; sel.appendChild(o);
-        }
-        sel.value = lang;
-        sel.addEventListener("change", () => { lang = sel.value; localStorage.setItem("pyxel-lang", lang); update(); });
+        const sel = buildLangSelector(D.languages, lang, (v) => { lang = v; update(); });
         hdr.appendChild(sel); hdr.appendChild(titleDiv); app.appendChild(hdr);
 
         // Content
@@ -417,12 +399,12 @@
           ${areaCrop("music", 3)}
           <p class="body">${esc(t("music_buttons_body"))}</p>`;
 
-        document.documentElement.lang = lang === "cn" ? "zh" : lang;
+        setDocLang(lang);
       }
 
       // Init
       fetch("editor-manual.json").then(r => r.json()).then(json => {
-        D = json; lang = detectLang(); build();
+        D = json; lang = detectLanguage(D.languages); build();
       });
     </script>
   </body>

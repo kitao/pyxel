@@ -6,6 +6,7 @@
 - Added shared CSS for WASM document pages
 - Fixed translation inconsistencies across WASM pages
 - Fixed crash in sound editor when playback reaches end of notes
+- Extracted shared language detection into pyxel-pages.js
 
 ## 2.8.3
 

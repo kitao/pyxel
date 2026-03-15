@@ -6,6 +6,7 @@
     <link rel="icon" href="../images/pyxel_icon_64x64.ico" />
     <title>Pyxel MML Commands</title>
     <link rel="stylesheet" href="../pyxel-pages.css" />
+    <script src="../pyxel-pages.js"></script>
     <script src="https://cdn.tailwindcss.com/3.4.17"></script>
     <style type="text/tailwindcss">
       @layer components {
@@ -86,24 +87,6 @@
         return obj[currentLang] || obj["en"] || "";
       }
 
-      function link(href, text) {
-        return `<a href="${href}" target="_blank" rel="noopener noreferrer" class="link">${text}</a>`;
-      }
-
-      function detectLanguage() {
-        const stored = localStorage.getItem("pyxel-lang");
-        if (stored && data.languages.some((l) => l.code === stored)) {
-          return stored;
-        }
-        const nav = navigator.language || "";
-        const navLower = nav.toLowerCase();
-        if (navLower.startsWith("zh")) return "cn";
-        for (const lang of data.languages) {
-          if (navLower.startsWith(lang.code)) return lang.code;
-        }
-        return "en";
-      }
-
       function render() {
         // Title and subtitle
         document.title = t("title");
@@ -151,7 +134,7 @@
           commandTable.appendChild(tr);
         }
 
-        document.documentElement.lang = currentLang === "cn" ? "zh" : currentLang;
+        setDocLang(currentLang);
       }
 
       // Init i18n
@@ -159,23 +142,11 @@
         .then((r) => r.json())
         .then((json) => {
           data = json;
-          currentLang = detectLanguage();
-
-          // Build language selector
-          const langSelect = document.getElementById("lang-select");
-          for (const lang of data.languages) {
-            const opt = document.createElement("option");
-            opt.value = lang.code;
-            opt.textContent = lang.name;
-            langSelect.appendChild(opt);
-          }
-          langSelect.value = currentLang;
-          langSelect.addEventListener("change", () => {
-            currentLang = langSelect.value;
-            localStorage.setItem("pyxel-lang", currentLang);
+          currentLang = detectLanguage(data.languages);
+          buildLangSelector(data.languages, currentLang, (v) => {
+            currentLang = v;
             render();
-          });
-          langSelect.style.display = "";
+          }, document.getElementById("lang-select"));
 
           render();
         });
