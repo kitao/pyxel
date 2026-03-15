@@ -1366,6 +1366,20 @@
       "tr": "Sıkça Sorulan Sorular",
       "uk": "Часті запитання"
     },
+    "other_web_usage": {
+      "en": "Web Usage",
+      "cn": "Web 使用方法",
+      "de": "Web-Nutzung",
+      "es": "Uso Web",
+      "fr": "Utilisation Web",
+      "it": "Utilizzo Web",
+      "ja": "Web版の使い方",
+      "ko": "웹 사용법",
+      "pt": "Uso Web",
+      "ru": "Использование в вебе",
+      "tr": "Web Kullanımı",
+      "uk": "Використання у вебі"
+    },
     "other_examples": {
       "en": "User Examples",
       "cn": "用户示例",
@@ -1409,18 +1423,18 @@
       "uk": "Сервер Discord (Англійська)"
     },
     "other_book": {
-      "en": "Official Pyxel Guidebook (Japanese)",
-      "cn": "Pyxel 官方指南书（日语）",
-      "de": "Offizielles Pyxel-Handbuch (Japanisch)",
-      "es": "Guía oficial de Pyxel (japonés)",
-      "fr": "Guide officiel Pyxel (japonais)",
-      "it": "Guida ufficiale Pyxel (giapponese)",
+      "en": "Official Guidebook (Japanese)",
+      "cn": "官方指南书（日语）",
+      "de": "Offizielles Handbuch (Japanisch)",
+      "es": "Guía oficial (japonés)",
+      "fr": "Guide officiel (japonais)",
+      "it": "Guida ufficiale (giapponese)",
       "ja": "書籍『ゲームで学ぶ Python！ Pyxel ではじめるレトロゲームプログラミング』",
-      "ko": "Pyxel 공식 가이드북 (일본어)",
-      "pt": "Guia oficial do Pyxel (japonês)",
-      "ru": "Официальное руководство Pyxel (японский)",
-      "tr": "Resmi Pyxel Kılavuzu (Japonca)",
-      "uk": "Офіційний посібник Pyxel (японською)"
+      "ko": "공식 가이드북 (일본어)",
+      "pt": "Guia oficial (japonês)",
+      "ru": "Официальное руководство (японский)",
+      "tr": "Resmi Kılavuz (Japonca)",
+      "uk": "Офіційний посібник (японською)"
     },
     "other_discord_ja": {
       "en": "Discord Server (Japanese)",

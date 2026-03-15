@@ -302,8 +302,11 @@ pyxel.show()`, "python")}
         ].map(([u, n]) => `<li>${link(u, n)}</li>`).join("");
         const faqUrl = lang === "ja" ? "https://github.com/kitao/pyxel/blob/main/docs/faq-ja.md"
           : "https://github.com/kitao/pyxel/blob/main/docs/faq-en.md";
+        const webUsageUrl = lang === "ja" ? "https://github.com/kitao/pyxel/blob/main/docs/web-usage-ja.md"
+          : "https://github.com/kitao/pyxel/blob/main/docs/web-usage-en.md";
         const others = [
           [faqUrl, t("other_faq")],
+          [webUsageUrl, t("other_web_usage")],
           ["https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples", t("other_examples")],
           ["https://x.com/kitao", t("other_x")],
           ["https://discord.gg/Z87eYHN", t("other_discord_en")],
