@@ -87,7 +87,7 @@ With [Pyxel Code Maker](https://kitao.github.io/pyxel/wasm/code-maker/), you can
 <details>
 <summary>How do I publish my Pyxel app on the web?</summary>
 
-There are three methods: Web Launcher, app2html, and Custom Tags. For details, see [How to Use Pyxel for Web](pyxel-web-en.md).
+There are three methods: Web Launcher, app2html, and Custom Tags. For details, see [How to Use Pyxel for Web](web-usage-en.md).
 
 </details>
 
