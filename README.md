@@ -5,15 +5,17 @@
 [![GitHub forks](https://img.shields.io/github/forks/kitao/pyxel?style=social)](https://github.com/kitao/pyxel)
 [![GitHub Sponsors](https://img.shields.io/github/sponsors/kitao?label=Sponsor%20me&logo=github%20sponsors&style=social)](https://github.com/sponsors/kitao)
 
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/H2H27VDKD)
+
 **Pyxel** (/ˈpɪksəl/) is a retro game engine for Python.
 
 With simple specifications inspired by retro gaming consoles, such as displaying only 16 colors and supporting 4 sound channels, you can easily enjoy making pixel-art-style games.
 
 Pyxel is open source under the [MIT License](LICENSE) and free to use. Let's start making retro games with Pyxel!
 
-And if you like Pyxel, please consider giving it a star on GitHub.
+Also, if you like Pyxel, please give it a star on GitHub.
 
-[![Pyxel User Guide](docs/images/user_guide_button.svg)](https://kitao.github.io/pyxel/wasm/user-guide/)
+**[▸ Pyxel User Guide / ユーザーガイド](https://kitao.github.io/pyxel/wasm/user-guide/)**
 
 [<img src="docs/images/pyxel_thanks.png" width="553">](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples) [<img src="docs/images/pyxel_book.png" width="190">](https://gihyo.jp/book/2025/978-4-297-14657-3)
 
@@ -37,5 +39,3 @@ And if you like Pyxel, please consider giving it a star on GitHub.
 <img src="docs/images/sound_music_editor.gif" width="256">
 </a>
 </p>
-
-[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/H2H27VDKD)
