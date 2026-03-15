@@ -5,6 +5,7 @@
 - Added multilingual user guide and simplified README
 - Added shared CSS for WASM document pages
 - Fixed translation inconsistencies across WASM pages
+- Fixed crash in sound editor when playback reaches end of notes
 
 ## 2.8.3
 
