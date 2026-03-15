@@ -442,20 +442,6 @@
       "tr": "Kendi sitenizde Pyxel uygulamalarını gömme gibi diğer kullanımlar için lütfen {0} bakın.",
       "uk": "Для інших варіантів використання, таких як вбудовування додатків Pyxel на ваш власний сайт, зверніться до {0}."
     },
-    "install_web_other_link": {
-      "en": "this page",
-      "cn": "此页面",
-      "de": "diese Seite",
-      "es": "esta página",
-      "fr": "cette page",
-      "it": "questa pagina",
-      "ja": "こちらのページ",
-      "ko": "이 페이지",
-      "pt": "esta página",
-      "ru": "этой странице",
-      "tr": "bu sayfaya",
-      "uk": "цієї сторінки"
-    },
     "install_vscode_title": {
       "en": "VS Code",
       "cn": "VS Code",
