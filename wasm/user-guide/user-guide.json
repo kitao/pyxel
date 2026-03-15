@@ -1100,19 +1100,19 @@
       "tr": "Pyxel API'lerinin tam listesi {0} adresinde mevcuttur.",
       "uk": "Повний список API Pyxel доступний на сторінці {0}."
     },
-    "apiref_advanced": {
-      "en": "Pyxel also includes an \"Advanced API\" that requires specialized knowledge. You can view it by checking the \"Advanced\" checkbox on the reference page.",
-      "cn": "Pyxel 还包含需要专业知识的“高级 API”。在参考页面勾选“Advanced”复选框即可查看。",
-      "de": "Pyxel enthält auch eine \"Advanced API\", die Fachwissen erfordert. Sie können sie anzeigen, indem Sie auf der Referenzseite das Kontrollkästchen \"Advanced\" aktivieren.",
-      "es": "Pyxel también incluye una \"API avanzada\" que requiere conocimientos especializados. Puede verla marcando la casilla \"Advanced\" en la página de referencia.",
-      "fr": "Pyxel comprend également une « API avancée » qui nécessite des connaissances spécialisées. Vous pouvez la consulter en cochant la case « Advanced » sur la page de référence.",
-      "it": "Pyxel include anche una \"API avanzata\" che richiede conoscenze specializzate. Puoi visualizzarla selezionando la casella \"Advanced\" nella pagina di riferimento.",
-      "ja": "Pyxel には、使用に専門知識が必要な「上級者向け API」もあります。リファレンスページで「Advanced」にチェックを入れると表示されます。",
-      "ko": "Pyxel에는 전문 지식이 필요한 \"고급 API\"도 포함되어 있습니다. 레퍼런스 페이지에서 \"Advanced\" 체크박스를 선택하면 확인할 수 있습니다.",
-      "pt": "O Pyxel também inclui uma \"API avançada\" que requer conhecimento especializado. Você pode visualizá-la marcando a caixa \"Advanced\" na página de referência.",
-      "ru": "Pyxel также включает «расширенный API», для использования которого требуются специальные знания. Его можно просмотреть, установив флажок «Advanced» на странице справочника.",
-      "tr": "Pyxel ayrıca uzmanlık bilgisi gerektiren bir \"Gelişmiş API\" içerir. Referans sayfasında \"Advanced\" onay kutusunu işaretleyerek görüntüleyebilirsiniz.",
-      "uk": "Pyxel також містить «розширений API», для використання якого потрібні спеціальні знання. Його можна переглянути, встановивши прапорець «Advanced» на сторінці довідника."
+    “apiref_advanced”: {
+      “en”: “Pyxel also includes advanced APIs that require specialized knowledge. You can view them by checking the \”Advanced\” checkbox on the reference page.”,
+      “cn”: “Pyxel 还包含需要专业知识的高级 API。在参考页面勾选”高级”复选框即可查看。”,
+      “de”: “Pyxel enthält auch erweiterte APIs, die Fachwissen erfordern. Sie können sie anzeigen, indem Sie auf der Referenzseite das Kontrollkästchen \”Fortgeschritten\” aktivieren.”,
+      “es”: “Pyxel también incluye APIs avanzadas que requieren conocimientos especializados. Puede verlas marcando la casilla \”Avanzado\” en la página de referencia.”,
+      “fr”: “Pyxel comprend également des API avancées qui nécessitent des connaissances spécialisées. Vous pouvez les consulter en cochant la case « Avancé » sur la page de référence.”,
+      “it”: “Pyxel include anche API avanzate che richiedono conoscenze specializzate. Puoi visualizzarle selezionando la casella \”Avanzato\” nella pagina di riferimento.”,
+      “ja”: “Pyxel には、専門知識が必要な上級者向けの API もあります。リファレンスページで「上級者向け」にチェックを入れると表示されます。”,
+      “ko”: “Pyxel에는 전문 지식이 필요한 고급 API도 포함되어 있습니다. 레퍼런스 페이지에서 \”고급\” 체크박스를 선택하면 확인할 수 있습니다.”,
+      “pt”: “O Pyxel também inclui APIs avançadas que requerem conhecimento especializado. Você pode visualizá-las marcando a caixa \”Avançado\” na página de referência.”,
+      “ru”: “Pyxel также включает расширенные API, для использования которых требуются специальные знания. Их можно просмотреть, установив флажок «Продвинутые» на странице справочника.”,
+      “tr”: “Pyxel ayrıca uzmanlık bilgisi gerektiren gelişmiş API'ler içerir. Referans sayfasında \”İleri\” onay kutusunu işaretleyerek görüntüleyebilirsiniz.”,
+      “uk”: “Pyxel також містить розширені API, для використання яких потрібні спеціальні знання. Їх можно переглянути, встановивши прапорець «Просунуті» на сторінці довідника.”
     },
     "apiref_challenge": {
       "en": "If you're confident in your skills, try using the Advanced API to create truly amazing works!",
