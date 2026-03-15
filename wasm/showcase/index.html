@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" href="../images/pyxel_icon_64x64.ico" />
     <title>Pyxel Showcase</title>
-    <link rel="stylesheet" href="../pyxel-common.css" />
+    <link rel="stylesheet" href="../pyxel-pages.css" />
     <script src="https://cdn.tailwindcss.com/3.4.17"></script>
 
     <style type="text/tailwindcss">
@@ -69,7 +69,7 @@
         return obj[currentLang] || obj["en"] || "";
       }
 
-      function extLink(href, text) {
+      function link(href, text) {
         return `<a href="${href}" target="_blank" rel="noopener noreferrer" class="link">${text}</a>`;
       }
 
@@ -237,7 +237,7 @@
         document.title = t("title");
         document.getElementById("page-title").textContent = t("title");
         document.getElementById("page-subtitle").innerHTML = t("subtitle")
-          .replace("{0}", extLink("https://github.com/kitao/pyxel", "Pyxel"));
+          .replace("{0}", link("https://github.com/kitao/pyxel", "Pyxel"));
 
         // Categories, descriptions, and details
         for (const cat of data.categories) {
@@ -262,8 +262,8 @@
         const linkText = t("footer_link");
         const docLang = currentLang === "ja" ? "ja" : "en";
         document.getElementById("footer-text").innerHTML = t("footer")
-          .replace("{0}", extLink("https://github.com/kitao/pyxel/tree/main/wasm/showcase", linkText))
-          .replace("{1}", extLink(`https://github.com/kitao/pyxel/blob/main/docs/pyxel-web-${docLang}.md`, linkText));
+          .replace("{0}", link("https://github.com/kitao/pyxel/tree/main/wasm/showcase", linkText))
+          .replace("{1}", link(`https://github.com/kitao/pyxel/blob/main/docs/pyxel-web-${docLang}.md`, linkText));
 
         document.documentElement.lang = currentLang === "cn" ? "zh" : currentLang;
       }

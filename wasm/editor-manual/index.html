@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" href="../images/pyxel_icon_64x64.ico" />
     <title>Pyxel Editor Manual</title>
-    <link rel="stylesheet" href="../pyxel-common.css" />
+    <link rel="stylesheet" href="../pyxel-pages.css" />
     <script src="https://cdn.tailwindcss.com/3.4.17"></script>
     <style type="text/tailwindcss">
       @layer components {
@@ -31,7 +31,7 @@
         return o[lang] || o["en"] || "";
       };
       const esc = (s) => { const d = document.createElement("span"); d.textContent = s; return d.innerHTML; };
-      const extLink = (href, text) => `<a href="${href}" target="_blank" rel="noopener noreferrer" class="link">${text}</a>`;
+      const link = (href, text) => `<a href="${href}" target="_blank" rel="noopener noreferrer" class="link">${text}</a>`;
       const chip = (s) => `<code class="chip">${esc(s)}</code>`;
       const icon = (src, size = 28) => `<img src="${src}" style="width:${size}px;height:${size}px" class="pix inline-block align-middle" alt="">`;
 
@@ -245,7 +245,7 @@
         // Header
         document.title = t("title");
         $("p-title").textContent = t("title");
-        $("p-sub").innerHTML = t("subtitle").replace("{0}", extLink("https://github.com/kitao/pyxel", "Pyxel"));
+        $("p-sub").innerHTML = t("subtitle").replace("{0}", link("https://github.com/kitao/pyxel", "Pyxel"));
 
         // Overview
         let editorCards = "";
@@ -348,7 +348,7 @@
           <h3 class="sub-title">${esc(t("tilemap_multi_title"))}</h3>
           <p class="body">${esc(t("tilemap_multi_body"))}</p>
           <h3 class="sub-title">${esc(t("tilemap_tmx_title"))}</h3>
-          <p class="body">${esc(t("tilemap_tmx_body")).replace("{0}", extLink("https://www.mapeditor.org/", "Tiled"))}</p>`;
+          <p class="body">${esc(t("tilemap_tmx_body")).replace("{0}", link("https://www.mapeditor.org/", "Tiled"))}</p>`;
 
         // Sound Editor
         $("s-sound-title").textContent = t("sound_title");

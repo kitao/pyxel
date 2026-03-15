@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" href="../images/pyxel_icon_64x64.ico" />
     <title>Pyxel Web Launcher</title>
-    <link rel="stylesheet" href="../pyxel-common.css" />
+    <link rel="stylesheet" href="../pyxel-pages.css" />
     <script src="https://cdn.tailwindcss.com/3.4.17"></script>
 
     <style type="text/tailwindcss">
@@ -177,7 +177,7 @@
         return obj[currentLang] || obj["en"] || "";
       }
 
-      function extLink(href, text) {
+      function link(href, text) {
         return `<a href="${href}" target="_blank" rel="noopener noreferrer" class="link">${text}</a>`;
       }
 
@@ -204,7 +204,7 @@
         document.title = t("title");
         document.getElementById("page-title").textContent = t("title");
         document.getElementById("page-subtitle").innerHTML = t("subtitle")
-          .replace("{0}", extLink("https://github.com/kitao/pyxel", "Pyxel"));
+          .replace("{0}", link("https://github.com/kitao/pyxel", "Pyxel"));
 
         // Labels
         document.querySelectorAll("[data-i18n]").forEach((el) => {
@@ -217,22 +217,22 @@
         const pyUrl = "https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/01_hello_pyxel.py";
         const pyxappUrl = "https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/apps/megaball.pyxapp";
         const pyxresUrl = "https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/assets/sample.pyxres";
-        document.getElementById("help-example-py").innerHTML = "run: " + extLink(pyUrl, pyUrl);
-        document.getElementById("help-example-pyxapp").innerHTML = "play: " + extLink(pyxappUrl, pyxappUrl);
-        document.getElementById("help-example-pyxres").innerHTML = "edit: " + extLink(pyxresUrl, pyxresUrl);
+        document.getElementById("help-example-py").innerHTML = "run: " + link(pyUrl, pyUrl);
+        document.getElementById("help-example-pyxapp").innerHTML = "play: " + link(pyxappUrl, pyxappUrl);
+        document.getElementById("help-example-pyxres").innerHTML = "edit: " + link(pyxresUrl, pyxresUrl);
 
         // Help: packages
         document.getElementById("help-packages-comma").innerHTML =
           t("help_packages_comma").replace("{0}", chip("a,b,c"));
         const pyodideUrl = "https://pyodide.org/en/stable/usage/packages-in-pyodide.html";
         document.getElementById("help-packages-only").innerHTML =
-          t("help_packages_only").replace("{0}", extLink(pyodideUrl, t("help_packages_link")));
+          t("help_packages_only").replace("{0}", link(pyodideUrl, t("help_packages_link")));
 
         // Footer
         const docLang = currentLang === "ja" ? "ja" : "en";
         const docUrl = `https://github.com/kitao/pyxel/blob/main/docs/pyxel-web-${docLang}.md`;
         document.getElementById("footer-text").innerHTML =
-          t("footer").replace("{0}", extLink(docUrl, t("footer_link")));
+          t("footer").replace("{0}", link(docUrl, t("footer_link")));
 
         document.documentElement.lang = currentLang === "cn" ? "zh" : currentLang;
       }

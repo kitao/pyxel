@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" href="../images/pyxel_icon_64x64.ico" />
     <title>Pyxel MML Commands</title>
-    <link rel="stylesheet" href="../pyxel-common.css" />
+    <link rel="stylesheet" href="../pyxel-pages.css" />
     <script src="https://cdn.tailwindcss.com/3.4.17"></script>
     <style type="text/tailwindcss">
       @layer components {
@@ -86,7 +86,7 @@
         return obj[currentLang] || obj["en"] || "";
       }
 
-      function extLink(href, text) {
+      function link(href, text) {
         return `<a href="${href}" target="_blank" rel="noopener noreferrer" class="link">${text}</a>`;
       }
 
@@ -109,7 +109,7 @@
         document.title = t("title");
         document.getElementById("page-title").textContent = t("title");
         document.getElementById("subtitle").innerHTML = t("subtitle")
-          .replace("{0}", extLink("https://github.com/kitao/pyxel", "Pyxel"));
+          .replace("{0}", link("https://github.com/kitao/pyxel", "Pyxel"));
 
         // Table headers
         document.getElementById("th-command").textContent = t("th_command");
