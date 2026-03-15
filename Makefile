@@ -120,6 +120,7 @@ build: format
 	@rustup component add rust-src
 	@rustup target add $(TARGET)
 	@$(SCRIPTS_DIR)/generate_readme_abs_links
+	@$(SCRIPTS_DIR)/generate_pyi_docstrings
 	@cp LICENSE $(PYTHON_DIR)/pyxel
 	@cd $(PYTHON_DIR); \
 		RUSTFLAGS="$(RUSTFLAGS)" \
