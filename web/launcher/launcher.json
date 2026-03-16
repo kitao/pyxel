@@ -172,18 +172,18 @@
       "uk": "Докладні інструкції див. на {0}."
     },
     "footer_link": {
-      "en": "this page",
-      "cn": "此页面",
-      "de": "diese Seite",
-      "es": "esta página",
-      "fr": "cette page",
-      "it": "questa pagina",
-      "ja": "こちらのページ",
-      "ko": "이 페이지",
-      "pt": "esta página",
-      "ru": "этой странице",
-      "tr": "bu sayfa",
-      "uk": "цій сторінці"
+      "en": "here",
+      "cn": "这里",
+      "de": "hier",
+      "es": "aquí",
+      "fr": "ici",
+      "it": "qui",
+      "ja": "こちら",
+      "ko": "여기",
+      "pt": "aqui",
+      "ru": "здесь",
+      "tr": "burada",
+      "uk": "тут"
     }
   }
 }
