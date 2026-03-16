@@ -21,7 +21,7 @@
     {
       "id": 168,
       "title": "Cursed Caverns",
-      "site": "https://kitao.github.io/pyxel/wasm/launcher/?play=kitao.pyxel.python.pyxel.examples.apps.cursed_caverns&gamepad=enabled",
+      "site": "https://kitao.github.io/pyxel/web/launcher/?play=kitao.pyxel.python.pyxel.examples.apps.cursed_caverns&gamepad=enabled",
       "author": "Takashi Kitao",
       "contact": "https://x.com/kitao",
       "desc": "A platformer from the Pyxel Official Book",
@@ -30,7 +30,7 @@
     {
       "id": 167,
       "title": "Mega Wing",
-      "site": "https://kitao.github.io/pyxel/wasm/launcher/?play=kitao.pyxel.python.pyxel.examples.apps.mega_wing&gamepad=enabled",
+      "site": "https://kitao.github.io/pyxel/web/launcher/?play=kitao.pyxel.python.pyxel.examples.apps.mega_wing&gamepad=enabled",
       "author": "Takashi Kitao",
       "contact": "https://x.com/kitao",
       "desc": "A shoot-em-up from the Pyxel Official Book",
@@ -39,7 +39,7 @@
     {
       "id": 166,
       "title": "Space Rescue",
-      "site": "https://kitao.github.io/pyxel/wasm/launcher/?play=kitao.pyxel.python.pyxel.examples.apps.space_rescue&gamepad=enabled",
+      "site": "https://kitao.github.io/pyxel/web/launcher/?play=kitao.pyxel.python.pyxel.examples.apps.space_rescue&gamepad=enabled",
       "author": "Takashi Kitao",
       "contact": "https://x.com/kitao",
       "desc": "A one-button rescue game from the Pyxel Official Book",
@@ -120,7 +120,7 @@
     {
       "id": 157,
       "title": "PyxelTD",
-      "site": "https://kitao.github.io/pyxel/wasm/launcher/?play=5h00t.PyxelTD.app.pyxeltd",
+      "site": "https://kitao.github.io/pyxel/web/launcher/?play=5h00t.PyxelTD.app.pyxeltd",
       "author": "shoot.er",
       "contact": "https://x.com/m4_sd",
       "desc": "A simple tower defense game",
@@ -138,7 +138,7 @@
     {
       "id": 155,
       "title": "Hanafuda Pon",
-      "site": "https://kitao.github.io/pyxel/wasm/launcher/?play=ninja-cop.RetroGames.hanafudaPon.hanafudaPon",
+      "site": "https://kitao.github.io/pyxel/web/launcher/?play=ninja-cop.RetroGames.hanafudaPon.hanafudaPon",
       "author": "saizo",
       "contact": "https://github.com/ninja-cop",
       "desc": "A game of clearing sets of three matching Hanafuda cards",
@@ -165,7 +165,7 @@
     {
       "id": 152,
       "title": "Hanafuda Tetris",
-      "site": "https://kitao.github.io/pyxel/wasm/launcher/?play=ninja-cop.RetroGames.hanafudaTetris.hanafudaTetris_1_5",
+      "site": "https://kitao.github.io/pyxel/web/launcher/?play=ninja-cop.RetroGames.hanafudaTetris.hanafudaTetris_1_5",
       "author": "saizo",
       "contact": "https://github.com/ninja-cop",
       "desc": "A game where you match three Hanafuda cards of the same month",
@@ -426,7 +426,7 @@
     {
       "id": 123,
       "title": "Columsme",
-      "site": "https://kitao.github.io/pyxel/wasm/launcher/?play=qzk4078.columusume_public.columusume&gamepad=enabled&packages=numpy",
+      "site": "https://kitao.github.io/pyxel/web/launcher/?play=qzk4078.columusume_public.columusume&gamepad=enabled&packages=numpy",
       "author": "QZK",
       "contact": "https://x.com/qzakusega",
       "desc": "A falling-block puzzle game",
@@ -453,7 +453,7 @@
     {
       "id": 120,
       "title": "pyxelvania",
-      "site": "https://kitao.github.io/pyxel/wasm/launcher/?play=hulk89.pyxelvania.pyxelvania",
+      "site": "https://kitao.github.io/pyxel/web/launcher/?play=hulk89.pyxelvania.pyxelvania",
       "author": "hulk89",
       "contact": "https://github.com/Hulk89",
       "desc": "A simple metroidvania",
@@ -997,7 +997,7 @@
     {
       "id": 58,
       "title": "SUSHI SHOOTER",
-      "site": "https://kitao.github.io/pyxel/wasm/launcher/?play=sejiseji.pyxel-sushi.sushishooter&gamepad=enabled&packages=numpy",
+      "site": "https://kitao.github.io/pyxel/web/launcher/?play=sejiseji.pyxel-sushi.sushishooter&gamepad=enabled&packages=numpy",
       "author": "sejiseji",
       "contact": "https://x.com/sejiijes",
       "desc": "A sushi shooting game",

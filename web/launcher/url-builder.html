@@ -233,7 +233,7 @@
         const filePath = paths.slice(7).join("/");
         const filePathNoExt = filePath.replace(/\.[^.]+$/, "");
         const command = isEdit ? "edit" : ext === "py" ? "run" : "play";
-        let launchUrl = `https://kitao.github.io/pyxel/wasm/launcher/?${command}=${user}/${repo}/${branch}/${filePathNoExt}`;
+        let launchUrl = `https://kitao.github.io/pyxel/web/launcher/?${command}=${user}/${repo}/${branch}/${filePathNoExt}`;
 
         if (isEdit) {
           launchUrl += `&editor=${editorScreen}`;

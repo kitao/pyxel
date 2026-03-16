@@ -783,7 +783,7 @@
         {
           "file": "script_test.html",
           "demo": "examples/script-test.html",
-          "code": "https://github.com/kitao/pyxel/blob/main/wasm/showcase/examples/script-test.html",
+          "code": "https://github.com/kitao/pyxel/blob/main/web/showcase/examples/script-test.html",
           "description": {
             "en": "Example of using external packages with Pyxel Web",
             "cn": "在 Pyxel Web 中使用外部包的示例",
@@ -1217,7 +1217,7 @@
         {
           "file": "Pyxel Code Maker",
           "demo": "../code-maker/index.html",
-          "code": "https://github.com/kitao/pyxel/tree/main/wasm/code-maker",
+          "code": "https://github.com/kitao/pyxel/tree/main/web/code-maker",
           "description": {
             "en": "Zero-setup online Pyxel development environment",
             "cn": "零配置在线 Pyxel 开发环境",
@@ -1250,7 +1250,7 @@
         {
           "file": "Pyxel MML Studio",
           "demo": "../mml-studio/index.html",
-          "code": "https://github.com/kitao/pyxel/tree/main/wasm/mml-studio",
+          "code": "https://github.com/kitao/pyxel/tree/main/web/mml-studio",
           "description": {
             "en": "Browser-based chiptune creation environment",
             "cn": "基于浏览器的芯片音乐创作环境",
