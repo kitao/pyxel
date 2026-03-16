@@ -16,14 +16,14 @@ There are three ways to publish Pyxel apps on the web.
 
 ### Web Launcher
 
-[Pyxel Web Launcher](https://kitao.github.io/pyxel/wasm/launcher/) is a tool that can directly run Python scripts and Pyxel apps (.pyxapp) published on GitHub by specifying their URL.
+[Pyxel Web Launcher](https://kitao.github.io/pyxel/web/launcher/) is a tool that can directly run Python scripts and Pyxel apps (.pyxapp) published on GitHub by specifying their URL.
 
 Simply enter the required information to automatically generate a launch URL, or manually create one using the format below. Note that Web Launcher always uses the latest version of Pyxel.
 
 #### URL Format
 
 ```
-https://kitao.github.io/pyxel/wasm/launcher/?<command>=<username>/<repository>/<branch>/<path>/<filename without extension>
+https://kitao.github.io/pyxel/web/launcher/?<command>=<username>/<repository>/<branch>/<path>/<filename without extension>
 ```
 
 #### Commands
@@ -39,13 +39,13 @@ https://kitao.github.io/pyxel/wasm/launcher/?<command>=<username>/<repository>/<
 To run `src/scenes/title.py` in user `taro`'s repository `my_repo` (branch `main`):
 
 ```
-https://kitao.github.io/pyxel/wasm/launcher/?run=taro/my_repo/main/src/scenes/title
+https://kitao.github.io/pyxel/web/launcher/?run=taro/my_repo/main/src/scenes/title
 ```
 
 To run `dist/games/shooter.pyxapp` in the same repository:
 
 ```
-https://kitao.github.io/pyxel/wasm/launcher/?play=taro/my_repo/main/dist/games/shooter
+https://kitao.github.io/pyxel/web/launcher/?play=taro/my_repo/main/dist/games/shooter
 ```
 
 #### Attributes
@@ -60,7 +60,7 @@ The following attributes can be added to the `run` and `play` commands.
 Example URL with attributes added to the `run` command:
 
 ```
-https://kitao.github.io/pyxel/wasm/launcher/?run=taro/my_repo/main/src/scenes/title&gamepad=enabled&packages=numpy,pandas
+https://kitao.github.io/pyxel/web/launcher/?run=taro/my_repo/main/src/scenes/title&gamepad=enabled&packages=numpy,pandas
 ```
 
 For the `edit` command, you can specify the startup screen using the `editor` attribute (`image`, `tilemap`, `sound`, `music`).
@@ -68,7 +68,7 @@ For the `edit` command, you can specify the startup screen using the `editor` at
 Example URL for the `edit` command:
 
 ```
-https://kitao.github.io/pyxel/wasm/launcher/?edit=taro/my_repo/main/assets/shooter&editor=tilemap
+https://kitao.github.io/pyxel/web/launcher/?edit=taro/my_repo/main/assets/shooter&editor=tilemap
 ```
 
 Running a multi-file app with `run` may take longer to load. It is recommended to convert it to a `.pyxapp` using the `pyxel package` command and run it with `play`.
@@ -178,7 +178,7 @@ Pyxel also provides online tools to help with app development. For detailed usag
 
 | Tool | Description |
 | --- | --- |
-| [Pyxel Code Maker](https://kitao.github.io/pyxel/wasm/code-maker/) | An online IDE for creating and running Pyxel apps |
-| [Pyxel Showcase](https://kitao.github.io/pyxel/wasm/showcase/) | A gallery for browsing and running sample code and apps |
-| [Pyxel MML Studio](https://kitao.github.io/pyxel/wasm/mml-studio/) | An editor for composing and playing chiptunes with MML (Music Macro Language) |
-| [Pyxel API Reference](https://kitao.github.io/pyxel/wasm/api-reference/) | A searchable reference for the Pyxel API |
+| [Pyxel Code Maker](https://kitao.github.io/pyxel/web/code-maker/) | An online IDE for creating and running Pyxel apps |
+| [Pyxel Showcase](https://kitao.github.io/pyxel/web/showcase/) | A gallery for browsing and running sample code and apps |
+| [Pyxel MML Studio](https://kitao.github.io/pyxel/web/mml-studio/) | An editor for composing and playing chiptunes with MML (Music Macro Language) |
+| [Pyxel API Reference](https://kitao.github.io/pyxel/web/api-reference/) | A searchable reference for the Pyxel API |

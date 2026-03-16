@@ -13,7 +13,7 @@ It is recommended to try Pyxel's example code in the following order.
 4. 04_sound_api — Sound API
 5. 02_jump_game — Game implementation
 
-You can copy the examples with `pyxel copy_examples`, or run them in your browser on [Pyxel Showcase](https://kitao.github.io/pyxel/wasm/showcase/).
+You can copy the examples with `pyxel copy_examples`, or run them in your browser on [Pyxel Showcase](https://kitao.github.io/pyxel/web/showcase/).
 
 </details>
 
@@ -50,9 +50,9 @@ You can also play an MML string directly by passing it to the `play` function in
 pyxel.play(0, "CDEFG")
 ```
 
-For available MML commands, see [Pyxel MML Commands](https://kitao.github.io/pyxel/wasm/mml-studio/mml-commands.html). For usage examples, see the [demo](https://kitao.github.io/pyxel/wasm/showcase/examples/09-shooter.html) and [code](https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/09_shooter.py) of the 09_shooter.py example.
+For available MML commands, see [Pyxel MML Commands](https://kitao.github.io/pyxel/web/mml-studio/mml-commands.html). For usage examples, see the [demo](https://kitao.github.io/pyxel/web/showcase/examples/09-shooter.html) and [code](https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/09_shooter.py) of the 09_shooter.py example.
 
-You can also create and share MML in your browser using [Pyxel MML Studio](https://kitao.github.io/pyxel/wasm/mml-studio/).
+You can also create and share MML in your browser using [Pyxel MML Studio](https://kitao.github.io/pyxel/web/mml-studio/).
 
 </details>
 
@@ -78,9 +78,9 @@ Pass the developer name (`vendor_name`) and application name (`app_name`) to the
 <details>
 <summary>Can I try Pyxel without installing it?</summary>
 
-With [Pyxel Code Maker](https://kitao.github.io/pyxel/wasm/code-maker/), you can create and run Pyxel apps in your browser. However, it does not support multi-file projects, so a local environment is recommended for full-scale development.
+With [Pyxel Code Maker](https://kitao.github.io/pyxel/web/code-maker/), you can create and run Pyxel apps in your browser. However, it does not support multi-file projects, so a local environment is recommended for full-scale development.
 
-[Pyxel Showcase](https://kitao.github.io/pyxel/wasm/showcase/) lets you browse and run sample code and apps in your browser.
+[Pyxel Showcase](https://kitao.github.io/pyxel/web/showcase/) lets you browse and run sample code and apps in your browser.
 
 </details>
 
