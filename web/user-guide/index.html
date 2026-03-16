@@ -285,6 +285,7 @@ pyxel.show()`, "python")}
           ["../showcase/", "Pyxel Showcase"],
           ["../api-reference/", t("tool_api_reference")],
           ["../editor-manual/", t("tool_editor_manual")],
+          ["../web-usage/", t("other_web_usage")],
           ["../launcher/", "Pyxel Web Launcher"],
           ["../code-maker/", "Pyxel Code Maker"],
           ["../mml-studio/", "Pyxel MML Studio"],
@@ -296,10 +297,8 @@ pyxel.show()`, "python")}
         ].map(([u, n]) => `<li>${link(u, n)}</li>`).join("");
         const faqUrl = lang === "ja" ? "https://github.com/kitao/pyxel/blob/main/docs/faq-ja.md"
           : "https://github.com/kitao/pyxel/blob/main/docs/faq-en.md";
-        const webUsageUrl = "../web-usage/";
         const others = [
           [faqUrl, t("other_faq")],
-          [webUsageUrl, t("other_web_usage")],
           ["https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples", t("other_examples")],
           ["https://x.com/kitao", t("other_x")],
           ["https://discord.gg/Z87eYHN", t("other_discord_en")],

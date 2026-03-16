@@ -9,6 +9,7 @@
 - Extracted shared language detection into pyxel-pages.js
 - Replaced Tailwind CDN with local CLI build for web pages
 - Moved web pages from wasm/ to web/ with redirect support
+- Added web usage guide page with multilingual support
 
 ## 2.8.3
 
