@@ -9,7 +9,7 @@ from pathlib import Path
 
 ROOT_DIR = Path(__file__).resolve().parent.parent
 PYI_PATH = ROOT_DIR / "python" / "pyxel" / "__init__.pyi"
-API_JSON_PATH = ROOT_DIR / "wasm" / "api-reference" / "api-reference.json"
+API_JSON_PATH = ROOT_DIR / "web" / "api-reference" / "api-reference.json"
 
 CLASS_CATEGORIES = {
     "image": "Image",
