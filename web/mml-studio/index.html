@@ -1,0 +1,400 @@
+<!doctype html>
+<html lang="en" class="h-full">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pyxel MML Studio</title>
+    <link rel="icon" href="../../wasm/images/pyxel_icon_64x64.ico" />
+    <link rel="stylesheet" href="../styles.css">
+    <script src="https://cdn.jsdelivr.net/gh/kitao/pyxel/wasm/pyxel.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lz-string@1.4.4/libs/lz-string.min.js"></script>
+  </head>
+  <body class="page h-full">
+    <main class="mx-auto p-6 max-w-4xl">
+      <h1 class="mb-2 font-semibold text-2xl tracking-tight">
+        Pyxel MML Studio
+      </h1>
+      <p class="mt-2 mb-4 text-gray-300 text-sm">
+        Music Macro Language (MML) editor for
+        <a class="link" href="https://github.com/kitao/pyxel" target="_blank" rel="noopener noreferrer">Pyxel</a>, a retro
+        game engine for Python.
+        (<a class="link" href="manual.html" target="_blank" rel="noopener noreferrer">Manual</a>)
+      </p>
+
+      <div
+        class="flex sm:flex-row flex-col items-start sm:items-center mb-4 min-w-0"
+      >
+        <!-- Controls -->
+        <div class="flex flex-col mr-0 sm:mr-4 min-w-[100px]">
+          <div class="flex flex-row gap-x-2 mb-2">
+            <button
+              type="button"
+              class="toggle"
+              data-action="play"
+              data-state="false"
+              onclick="handleButtonPress(this)"
+              title="Ctrl(Cmd)+Enter: Play"
+              disabled
+            >
+              PLAY
+            </button>
+            <button
+              type="button"
+              class="toggle"
+              data-action="stop"
+              data-state="false"
+              onclick="handleButtonPress(this)"
+              title="Esc: Stop"
+              disabled
+            >
+              STOP
+            </button>
+            <button
+              type="button"
+              class="toggle active"
+              data-action="loop"
+              data-state="true"
+              onclick="handleButtonPress(this)"
+              title="Ctrl(Cmd)+L: Toggle Loop"
+              disabled
+            >
+              LOOP
+            </button>
+          </div>
+          <a
+            target="_blank"
+            rel="noopener noreferrer"
+            href="mml-commands.html"
+            class="block sm:self-center mb-2 text-sm link"
+          >
+            Pyxel MML Commands
+          </a>
+          <div
+            class="flex justify-start sm:justify-center items-center mb-2 text-indigo-400 text-sm"
+          >
+            <span class="mr-1">Sample Tune</span>
+            <a
+              target="_blank"
+              rel="noopener noreferrer"
+              href="https://kitao.github.io/pyxel/wasm/mml-studio/?mml=C4RgDGAEACKQ9gFkgR3FANiAbJAbiAExQAmiAZgBwmUCml5A5lQHS2oCcpiaEJtTAIaVGggHwBjahIA8kKgCMAtJUGFJAagGNIw5vSbzaNKscgyFlTSQkb+t-uUHLVlSIwYjELGR9NuULkgSQgBuUAgYOHgAZlR0SAw3AkjyREEhQWQ05XTEMUZEOVyxWkQyQshlEgslSRlxEgz3O1oGsXEJcnYbC0ZjW19OKHIwiKhoKFj4yKT8SlJCCSLcgDIqpURCtNLkMlsVzaz3fOWZHOQywX0Seo3rxFXGZSyxYeCwoA"
+              class="mx-0.5 link"
+              >A</a
+            >
+            <span class="mx-0.5">/</span>
+            <a
+              target="_blank"
+              rel="noopener noreferrer"
+              href="https://kitao.github.io/pyxel/wasm/mml-studio/?mml=CoJgjAbAAmUKIDkBqYDeYQHYA0HuZAF8B5AVgBkMACARwgAYAzAFgHNnGIAyAEy4B469AEYBaZgD4qAY2Y9m07vwCGXIe1oBOCIzBdmVVt1VjuE6b24BTUV1oMW7Try6KBYrlKGy3fN-w92OxptMTAqACdJIRZYgxi2Dm4+QQYxSRk5BSVVdXjtXX1DYy5TTwsea1t7JkTnPyUPLwYfZNdG2yCtCHSghKi+h2YBrkYAai5WTyoAbSF5finxya4AXRBuiXkrBTGNqPlXMZzRseY7YRAAOijIyWkz924pq2eL863zh-OdgSplMBXO6MLhWUbTOYtZj8EFgkHrTayBaXKRRWRPFa-f7XW5RCQSbzQozgwlURxmaQYAR5ZwWMlvITmZghHQKaE1OJxADcoEgUBA8GQaAgzGwIFFAGYiFRBUgQOh6PQxaLmPRCDLEEgJQqleLsAwSMxyAZZeEWTNlCBWCAxFaQKsJZFGLKrWoHP9bDFcu7Td1yAAOZRsbgsgE28QadLqHriFlhEDKEPaVjUZwslMJ0QhhhBqgE7Q8UQYRSpESx7SGDCJ9LxxNu+gaFkBsPEoRhuMRgxRhhGGtFhNJiAZqjpF02c7zYYGcf1+RRW6yiXEZgAG3iaR4wh4I+EXFUUzJeyuam0Ki8YEVET4y13hmuJ4gAVRu-3dmWYPmESoH4YPAiX8XZc11mNsWWkBFlFfEFv3vFl+FNVhUSmVQJDBbobGuUt0m6W0riEbDQ3DDY22Ga4eXAaB6GICVyGI7QZgCUQJEYaRGAdKhGLALZRGkboGLEZjWPYrDxAiEAWBHUSOGYdJmnoYCrGEJ9hHQpTlAkZRZh4cYz3GBErFYJ9WG-QzIKoHh8RmB5qTSQRtGUdYIi8bRgJ4ZQz00tyz2MqyrEWVCESs65wI2RhxNEEB+jI3loCXTBjVNVACFwEAUvVF1UAYFK0tmU0ZhmCI2JAQroE1cSMAiU02OYBE8v4fhpHxNiwFIJ0dGoOqGqa1Z-VmRh-yKslCq-RhOBdXRiqqoA"
+              class="mx-0.5 link"
+            >
+              B
+            </a>
+          </div>
+        </div>
+
+        <!-- Screen -->
+        <div
+          class="flex flex-grow items-center mt-2 sm:mt-0 p-0 w-full sm:w-auto h-24 bg-gray-800 shadow-sm border border-gray-700"
+        >
+          <iframe
+            id="runtime-screen"
+            src="pyxel-screen.html"
+            class="border-0 w-full h-full"
+            tabindex="-1"
+          ></iframe>
+        </div>
+      </div>
+
+      <!-- Channel 1 -->
+      <div class="mb-2">
+        <div class="flex items-center space-x-4 mb-2">
+          <label for="ch1" class="text-xl">CH1</label>
+          <div class="flex items-center space-x-2">
+            <button
+              type="button"
+              class="toggle"
+              data-action="solo1"
+              data-state="false"
+              onclick="handleButtonPress(this)"
+            >
+              SOLO
+            </button>
+            <button
+              type="button"
+              class="toggle"
+              data-action="mute1"
+              data-state="false"
+              onclick="handleButtonPress(this)"
+            >
+              MUTE
+            </button>
+          </div>
+        </div>
+        <textarea
+          id="ch1"
+          rows="4"
+          class="font-mono input"
+          oninput="handleMmlInput(this)"
+        ></textarea>
+      </div>
+
+      <!-- Channel 2 -->
+      <div class="mb-2">
+        <div class="flex items-center space-x-4 mb-2">
+          <label for="ch2" class="text-xl">CH2</label>
+          <div class="flex items-center space-x-2">
+            <button
+              type="button"
+              class="toggle"
+              data-action="solo2"
+              data-state="false"
+              onclick="handleButtonPress(this)"
+            >
+              SOLO
+            </button>
+            <button
+              type="button"
+              class="toggle"
+              data-action="mute2"
+              data-state="false"
+              onclick="handleButtonPress(this)"
+            >
+              MUTE
+            </button>
+          </div>
+        </div>
+        <textarea
+          id="ch2"
+          rows="4"
+          class="font-mono input"
+          oninput="handleMmlInput(this)"
+        ></textarea>
+      </div>
+
+      <!-- Channel 3 -->
+      <div class="mb-2">
+        <div class="flex items-center space-x-4 mb-2">
+          <label for="ch3" class="text-xl">CH3</label>
+          <div class="flex items-center space-x-2">
+            <button
+              type="button"
+              class="toggle"
+              data-action="solo3"
+              data-state="false"
+              onclick="handleButtonPress(this)"
+            >
+              SOLO
+            </button>
+            <button
+              type="button"
+              class="toggle"
+              data-action="mute3"
+              data-state="false"
+              onclick="handleButtonPress(this)"
+            >
+              MUTE
+            </button>
+          </div>
+        </div>
+        <textarea
+          id="ch3"
+          rows="4"
+          class="font-mono input"
+          oninput="handleMmlInput(this)"
+        ></textarea>
+      </div>
+
+      <!-- Channel 4 -->
+      <div class="mb-2">
+        <div class="flex items-center space-x-4 mb-2">
+          <label for="ch4" class="text-xl">CH4</label>
+          <div class="flex items-center space-x-2">
+            <button
+              type="button"
+              class="toggle"
+              data-action="solo4"
+              data-state="false"
+              onclick="handleButtonPress(this)"
+            >
+              SOLO
+            </button>
+            <button
+              type="button"
+              class="toggle"
+              data-action="mute4"
+              data-state="false"
+              onclick="handleButtonPress(this)"
+            >
+              MUTE
+            </button>
+          </div>
+        </div>
+        <textarea
+          id="ch4"
+          rows="4"
+          class="font-mono input"
+          oninput="handleMmlInput(this)"
+        ></textarea>
+      </div>
+
+      <div class="flex-grow mt-2">
+        <label for="url" class="block text-xl">URL</label>
+        <!-- Share URL -->
+        <a
+          id="share-url"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="mt-2 flex items-center outline-none min-h-[2.25rem] font-mono text-indigo-400 hover:text-indigo-300 break-all select-all input"
+          style="display: block"
+        ></a>
+
+        <!-- QR Code -->
+        <img id="qr-code-image" alt="QR Code" class="mt-4" />
+      </div>
+    </main>
+
+    <script>
+      // Cache elements
+      const runtimeScreen = document.getElementById("runtime-screen");
+      const shareUrl = document.getElementById("share-url");
+      const qrCodeImage = document.getElementById("qr-code-image");
+
+      function setButtonStyle(button, isActive) {
+        button.classList.toggle("active", isActive);
+      }
+
+      function handleButtonPress(button) {
+        const action = button.dataset.action;
+        const varName = "js_" + action;
+        let isActive;
+
+        if (action === "play" || action === "stop") {
+          isActive = true;
+          setButtonStyle(button, true);
+          setTimeout(() => {
+            setButtonStyle(button, false);
+            runtimeScreen.contentWindow[varName] = false;
+          }, 150);
+        } else {
+          button.dataset.state = button.dataset.state !== "true";
+          isActive = button.dataset.state === "true";
+          setButtonStyle(button, isActive);
+        }
+
+        runtimeScreen.contentWindow[varName] = isActive;
+        if (action === "play") {
+          runtimeScreen.contentWindow.resetPyxel();
+        }
+      }
+
+      function handleMmlInput(textarea) {
+        runtimeScreen.contentWindow["js_" + textarea.id + "_mml"] =
+          textarea.value;
+        updateUrl();
+      }
+
+      function updateUrl() {
+        let mmlStr = "";
+        for (let i = 1; i <= 4; i++) {
+          const t = document.getElementById(`ch${i}`);
+          mmlStr += (i > 1 ? ";" : "") + t.value;
+        }
+
+        let url = location.origin + location.pathname;
+        if (!/^[\s;]*$/.test(mmlStr)) {
+          url += "?mml=" + LZString.compressToEncodedURIComponent(mmlStr);
+        }
+
+        shareUrl.textContent = shareUrl.href = url;
+        window.history.replaceState(null, "", url);
+
+        const qrSize = Math.max(128, Math.min(url.length, 400));
+        qrCodeImage.src =
+          `https://api.qrserver.com/v1/create-qr-code/?color=9ca3af&bgcolor=000000&size=${qrSize}x${qrSize}&data=` +
+          encodeURIComponent(url);
+        qrCodeImage.width = qrSize;
+        qrCodeImage.height = qrSize;
+      }
+
+      function resolvePyxelInput() {
+        runtimeScreen.contentWindow?.pyxelContext?.resolveInput?.();
+      }
+
+      window.addEventListener("DOMContentLoaded", () => {
+        // Forward input to runtime
+        ["click", "touchstart"].forEach((ev) => {
+          window.addEventListener(ev, resolvePyxelInput);
+        });
+
+        // Keyboard shortcuts
+        window.addEventListener("keydown", (e) => {
+          resolvePyxelInput();
+          if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+            const playButton = document.querySelector(
+              'button[data-action="play"]',
+            );
+            if (playButton && !playButton.disabled) {
+              e.preventDefault();
+              handleButtonPress(playButton);
+            }
+          } else if (e.key === "Escape") {
+            const stopButton = document.querySelector(
+              'button[data-action="stop"]',
+            );
+            if (stopButton && !stopButton.disabled) {
+              e.preventDefault();
+              handleButtonPress(stopButton);
+            }
+          } else if ((e.ctrlKey || e.metaKey) && e.key === "l") {
+            e.preventDefault();
+            const loopButton = document.querySelector(
+              'button[data-action="loop"]',
+            );
+            if (loopButton && !loopButton.disabled) {
+              handleButtonPress(loopButton);
+            }
+          }
+        });
+
+        // Load MML from URL
+        const mmlParam = new URL(document.location).searchParams.get("mml");
+        if (mmlParam) {
+          const mmlList = LZString.decompressFromEncodedURIComponent(
+            mmlParam,
+          ).split(";", 4);
+          for (let i = 1; i <= 4; i++) {
+            const t = document.getElementById(`ch${i}`);
+            t.value = mmlList[i - 1] || "";
+            handleMmlInput(t);
+          }
+        }
+
+        updateUrl();
+
+        // Set initial button states
+        runtimeScreen.addEventListener("load", () => {
+          document.querySelectorAll("button[data-action]").forEach((button) => {
+            const varName = "js_" + button.dataset.action;
+            runtimeScreen.contentWindow[varName] =
+              button.dataset.state === "true";
+          });
+        });
+
+        // Enable buttons when ready
+        (function watch() {
+          if (runtimeScreen.contentWindow?.pyxelContext?.resolveInput) {
+            document
+              .querySelectorAll(
+                'button[data-action="play"],button[data-action="stop"],button[data-action="loop"]',
+              )
+              .forEach((button) => {
+                button.disabled = false;
+              });
+          } else {
+            setTimeout(watch, 100);
+          }
+        })();
+      });
+    </script>
+  </body>
+</html>

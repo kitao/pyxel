@@ -8,7 +8,7 @@ const GAMEPAD_BUTTON_PATH = "images/gamepad_button_98x98.png";
 const GAMEPAD_MENU_PATH = "images/gamepad_menu_92x26.png";
 const PYXEL_WORKING_DIRECTORY = "/pyxel_working_directory";
 const PYXEL_WATCH_INFO_FILE = ".pyxel_watch_info";
-const IMPORT_HOOK_PATH = "import_hook.py";
+const IMPORT_HOOK_PATH = "scripts/import_hook.py";
 
 window.pyxelContext = {
   resolveInput: null,

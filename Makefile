@@ -27,7 +27,7 @@
 #       make clean-wasm test-wasm
 #
 # Web pages:
-#   - Setup once: cd wasm && npm install
+#   - Setup once: cd web && npm install
 #   - Build: make pages
 #
 
@@ -157,4 +157,4 @@ start-test-server:
 test-wasm: build-wasm start-test-server
 
 pages:
-	@cd $(ROOT_DIR)/wasm && npx @tailwindcss/cli -i styles/input.css -o pyxel-pages.css --minify
+	@cd $(ROOT_DIR)/web && npx @tailwindcss/cli -i styles/input.css -o styles.css --minify

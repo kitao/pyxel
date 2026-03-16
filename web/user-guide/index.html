@@ -1,0 +1,353 @@
+<!doctype html>
+<html lang="en" class="h-full">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pyxel User Guide</title>
+    <link rel="icon" href="../../wasm/images/pyxel_icon_64x64.ico" />
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/github-dark.min.css" />
+    <script src="../shared.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/highlight.min.js"></script>
+  </head>
+  <body class="page min-h-full">
+    <main class="page-container" id="app">
+      <div class="flex justify-center items-center py-12 text-gray-500 text-sm">Loading...</div>
+    </main>
+    <script>
+      let D, lang = "en";
+
+      const t = (o) => {
+        if (!o) return "";
+        if (typeof o === "string") return D?.ui[o] ? t(D.ui[o]) : o;
+        return o[lang] || o["en"] || "";
+      };
+      const code = (s, lang) => `<pre class="code-block"><code class="language-${lang || "plaintext"}">${esc(s)}</code></pre>`;
+
+      function shortcutTable(items) {
+        let h = `<div class="overflow-x-auto"><table class="w-full border-collapse">
+          <thead><tr><th class="th">Key</th><th class="th">Action</th></tr></thead><tbody>`;
+        const inlineCode = (s) => esc(s).replace(/`([^`]+)`/g, (_, m) => chip(m));
+        for (const i of items)
+          h += `<tr><td class="td"><span class="key">${esc(t(i.key))}</span></td><td class="td text-gray-300">${inlineCode(t(i.action))}</td></tr>`;
+        return h + "</tbody></table></div>";
+      }
+
+      function build() {
+        const app = document.getElementById("app");
+        app.innerHTML = "";
+
+        // Header
+        const hdr = document.createElement("header");
+        hdr.className = "flex items-start gap-4 mb-6";
+        const titleDiv = document.createElement("div");
+        titleDiv.className = "flex-1 min-w-0 order-first";
+        titleDiv.innerHTML = `<h1 class="font-semibold text-2xl tracking-tight" id="p-title"></h1>
+          <p class="mt-2 text-gray-300 text-sm" id="p-sub"></p>`;
+        const sel = buildLangSelector(D.languages, lang, (v) => { lang = v; update(); });
+        hdr.appendChild(sel); hdr.appendChild(titleDiv); app.appendChild(hdr);
+
+        // Content
+        const wrap = document.createElement("div");
+        wrap.className = "space-y-6";
+        wrap.id = "content";
+        wrap.innerHTML = `
+          <section class="card" id="s-overview"></section>
+          <section class="card" id="s-specs"></section>
+          <section class="card" id="s-install"></section>
+          <section class="card" id="s-usage"></section>
+          <section class="card" id="s-creating"></section>
+          <section class="card" id="s-resources"></section>
+          <section class="card" id="s-dist"></section>
+          <section class="card" id="s-apiref"></section>
+          <section class="card" id="s-links"></section>
+          <section class="card" id="s-contrib"></section>
+          <section class="card" id="s-license"></section>
+          <section class="card" id="s-sponsors"></section>
+        `;
+        app.appendChild(wrap);
+        update();
+      }
+
+      function update() {
+        const $ = (id) => document.getElementById(id);
+        const pyxelLink = link("https://github.com/kitao/pyxel", "Pyxel");
+
+        // Header
+        document.title = t("title");
+        $("p-title").textContent = t("title");
+        $("p-sub").innerHTML = t("subtitle").replace("{0}", pyxelLink);
+
+        // Overview
+        $("s-overview").innerHTML = `
+          <div class="pb-2 mb-3 border-b border-gray-600">
+            <img src="../../docs/images/pyxel_logo_152x64.png" alt="Pyxel" class="pix" style="height:64px">
+          </div>
+          <p class="body">${t("overview_body").replace("{0}", "<strong>Pyxel</strong>")}</p>
+          <p class="body mt-2">${t("overview_license")
+            .replace(/\{0\}/g, "Pyxel")
+            .replace("{1}", link("https://github.com/kitao/pyxel/blob/main/LICENSE", "MIT License"))}</p>
+          <p class="body mt-2">${t("overview_star")
+            .replace("{0}", link("https://github.com/kitao/pyxel", "GitHub"))}</p>
+          <div class="flex items-end gap-2 mt-3">
+            <a href="https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples" target="_blank" rel="noopener noreferrer" style="flex:553"><img src="../../docs/images/pyxel_thanks.png" class="w-full"></a>
+            <a href="https://gihyo.jp/book/2025/978-4-297-14657-3" target="_blank" rel="noopener noreferrer" style="flex:190"><img src="../../docs/images/pyxel_book.png" class="w-full"></a>
+          </div>
+          <div class="flex items-end gap-2 mt-4">
+            <a href="../showcase/examples/02-jump-game.html" target="_blank" rel="noopener noreferrer" style="flex:253"><img src="../../docs/images/02_jump_game.gif" class="w-full rounded border border-gray-700"></a>
+            <a href="../showcase/examples/10-platformer.html" target="_blank" rel="noopener noreferrer" style="flex:222"><img src="../../docs/images/10_platformer.gif" class="w-full rounded border border-gray-700"></a>
+            <a href="../showcase/apps/30sec-of-daylight.html" target="_blank" rel="noopener noreferrer" style="flex:268"><img src="../../docs/images/30sec_of_daylight.gif" class="w-full rounded border border-gray-700"></a>
+          </div>
+          <div class="flex items-end gap-2 mt-2">
+            <a href="../showcase/apps/megaball.html" target="_blank" rel="noopener noreferrer" style="flex:231"><img src="../../docs/images/megaball.gif" class="w-full rounded border border-gray-700"></a>
+            <a href="../showcase/tools/image-editor.html" target="_blank" rel="noopener noreferrer" style="flex:256"><img src="../../docs/images/image_tilemap_editor.gif" class="w-full rounded border border-gray-700"></a>
+            <a href="../showcase/tools/sound-editor.html" target="_blank" rel="noopener noreferrer" style="flex:256"><img src="../../docs/images/sound_music_editor.gif" class="w-full rounded border border-gray-700"></a>
+          </div>`;
+
+        // Specifications
+        const specs = ["specs_platform","specs_language","specs_screen","specs_colors","specs_images",
+          "specs_tilemaps","specs_sounds","specs_music","specs_input","specs_tools","specs_extensible"]
+          .map(k => `<li>${esc(t(k))}</li>`).join("");
+        $("s-specs").innerHTML = `
+          <h2 class="section-title">${esc(t("specs_title"))}</h2>
+          <ul class="list">${specs}</ul>
+          <h3 class="sub-title">${esc(t("palette_title"))}</h3>
+          <img src="../../docs/images/05_color_palette.png" alt="Color Palette" class="my-2 rounded border border-gray-700" style="image-rendering:pixelated">
+          <img src="../../docs/images/pyxel_palette.png" alt="Palette" class="my-2 rounded border border-gray-700">
+          <p class="body mt-3">${t("overview_inspired")
+            .replace("{0}", "Pyxel")
+            .replace("{1}", link("https://www.lexaloffle.com/pico-8.php", "PICO-8"))
+            .replace("{2}", link("https://tic80.com/", "TIC-80"))}</p>`;
+
+        // Install
+        $("s-install").innerHTML = `
+          <h2 class="section-title">${esc(t("install_title"))}</h2>
+          <h3 class="sub-title">${esc(t("install_desktop_title"))}</h3>
+          <p class="body">${t("install_desktop_body").replace("{0}", link("https://www.python.org/", "Python 3"))}</p>
+          ${code("pip install -U pyxel", "sh")}
+          <p class="body"><strong>Note:</strong> ${t("install_desktop_note")
+            .replace("{0}", chip("Add python.exe to PATH"))
+            .replace("{1}", chip("pyxel"))}</p>
+          <h3 class="sub-title">${esc(t("install_web_title"))}</h3>
+          <p class="body">${esc(t("install_web_body"))}</p>
+          <p class="body mt-2">${t("install_web_codemaker")
+            .replace("{0}", link("../code-maker/", "Pyxel Code Maker"))}</p>
+          <p class="body mt-2">${t("install_web_other")
+            .replace("{0}", link(lang === "ja" ? "https://github.com/kitao/pyxel/blob/main/docs/web-usage-ja.md" : "https://github.com/kitao/pyxel/blob/main/docs/web-usage-en.md", esc(t("other_web_usage"))))}</p>
+          <h3 class="sub-title">${esc(t("install_vscode_title"))}</h3>
+          <p class="body">${t("install_vscode_body")
+            .replace("{0}", link("https://code.visualstudio.com/", "Visual Studio Code"))}</p>
+          <p class="body mt-2">${t("install_vscode_howto")
+            .replace("{0}", link("https://marketplace.visualstudio.com/items?itemName=kitao.pyxel-vscode", "Pyxel"))}</p>`;
+
+        // Basic Usage
+        $("s-usage").innerHTML = `
+          <h2 class="section-title">${esc(t("usage_title"))}</h2>
+          <h3 class="sub-title">${esc(t("usage_command_title"))}</h3>
+          <p class="body">${t("usage_command_body").replace(/\{0\}/g, chip("pyxel"))}</p>
+          <p class="body mt-2">${esc(t("usage_command_noargs"))}</p>
+          ${code("pyxel", "sh")}
+          ${code(`Pyxel, a retro game engine for Python
+usage:
+    pyxel run PYTHON_SCRIPT_FILE(.py)
+    pyxel watch WATCH_DIR PYTHON_SCRIPT_FILE(.py)
+    pyxel play PYXEL_APP_FILE(.pyxapp)
+    pyxel edit [PYXEL_RESOURCE_FILE(.pyxres)]
+    pyxel package APP_DIR STARTUP_SCRIPT_FILE(.py)
+    pyxel app2exe PYXEL_APP_FILE(.pyxapp)
+    pyxel app2html PYXEL_APP_FILE(.pyxapp)
+    pyxel copy_examples`)}
+          <h3 class="sub-title">${esc(t("usage_examples_title"))}</h3>
+          <p class="body">${esc(t("usage_examples_copy"))}</p>
+          ${code("pyxel copy_examples", "sh")}
+          <p class="body">${esc(t("usage_examples_run"))}</p>
+          ${code(`# ${t("usage_examples_run_comment1")}
+cd pyxel_examples
+pyxel run 01_hello_pyxel.py
+
+# ${t("usage_examples_run_comment2")}
+cd apps
+pyxel play 30sec_of_daylight.pyxapp`, "sh")}
+          <p class="body">${t("usage_examples_showcase")
+            .replace("{0}", link("../showcase/", "Pyxel Showcase"))}</p>`;
+
+        // Creating Applications
+        $("s-creating").innerHTML = `
+          <h2 class="section-title">${esc(t("creating_title"))}</h2>
+          <h3 class="sub-title">${esc(t("creating_program_title"))}</h3>
+          <p class="body">${t("creating_program_body")
+            .replace("{0}", chip("init"))
+            .replace("{1}", chip("run"))}</p>
+          ${code(`import pyxel
+
+pyxel.init(160, 120)
+
+def update():
+    if pyxel.btnp(pyxel.KEY_Q):
+        pyxel.quit()
+
+def draw():
+    pyxel.cls(0)
+    pyxel.rect(10, 10, 20, 20, 11)
+
+pyxel.run(update, draw)`, "python")}
+          <p class="body">${t("creating_program_run_desc")
+            .replace("{0}", chip("run"))
+            .replace("{1}", chip("update"))
+            .replace("{2}", chip("draw"))}</p>
+          <p class="body mt-2">${esc(t("creating_program_class"))}</p>
+          ${code(`import pyxel
+
+class App:
+    def __init__(self):
+        pyxel.init(160, 120)
+        self.x = 0
+        pyxel.run(self.update, self.draw)
+
+    def update(self):
+        self.x = (self.x + 1) % pyxel.width
+
+    def draw(self):
+        pyxel.cls(0)
+        pyxel.rect(self.x, 0, 8, 8, 9)
+
+App()`, "python")}
+          <p class="body">${t("creating_program_show").replace("{0}", chip("show"))}</p>
+          ${code(`import pyxel
+
+pyxel.init(120, 120)
+pyxel.cls(1)
+pyxel.circb(60, 60, 40, 7)
+pyxel.show()`, "python")}
+          <h3 class="sub-title">${esc(t("creating_run_title"))}</h3>
+          <p class="body">${t("creating_run_python").replace("{0}", chip("python"))}</p>
+          ${code("python PYTHON_SCRIPT_FILE", "sh")}
+          <p class="body">${t("creating_run_pyxel").replace("{0}", chip("pyxel run"))}</p>
+          ${code("pyxel run PYTHON_SCRIPT_FILE", "sh")}
+          <p class="body">${t("creating_run_watch").replace("{0}", chip("pyxel watch"))}</p>
+          ${code("pyxel watch WATCH_DIR PYTHON_SCRIPT_FILE", "sh")}
+          <p class="body">${t("creating_run_watch_stop").replace("{0}", chip("Ctrl(Cmd)+C"))}</p>
+          <h3 class="sub-title">${esc(t("creating_keys_title"))}</h3>
+          <p class="body mb-2">${esc(t("creating_keys_body"))}</p>
+          ${shortcutTable(D.special_keys)}`;
+
+        // Resources
+        $("s-resources").innerHTML = `
+          <h2 class="section-title">${esc(t("resources_title"))}</h2>
+          <h3 class="sub-title">${esc(t("resources_editor_title"))}</h3>
+          <p class="body">${esc(t("resources_editor_body"))}</p>
+          <p class="body mt-2">${t("resources_editor_link")
+            .replace("{0}", link("../editor-manual/", "Pyxel Editor Manual"))}</p>
+          <h3 class="sub-title">${esc(t("resources_other_title"))}</h3>
+          <p class="body">${esc(t("resources_other_images"))}</p>
+          <ul class="list mt-1">
+            <li>${t("resources_other_image_set").replace("{0}", chip("Image.set")).replace("{1}", chip("Tilemap.set"))}</li>
+            <li>${t("resources_other_image_load").replace("{0}", chip("Image.load"))}</li>
+          </ul>
+          <p class="body mt-3">${esc(t("resources_other_sounds"))}</p>
+          <ul class="list mt-1">
+            <li>${t("resources_other_sound_set").replace("{0}", chip("Sound.set")).replace("{1}", chip("Music.set"))}</li>
+          </ul>
+          <p class="body mt-3">${esc(t("resources_other_refer"))}</p>`;
+
+        // Distributing
+        $("s-dist").innerHTML = `
+          <h2 class="section-title">${esc(t("dist_title"))}</h2>
+          <p class="body">${esc(t("dist_body"))}</p>
+          <p class="body mt-2">${t("dist_create").replace("{0}", chip("pyxel package"))}</p>
+          ${code("pyxel package APP_DIR STARTUP_SCRIPT_FILE", "sh")}
+          <p class="body">${esc(t("dist_include"))}</p>
+          <p class="body mt-2">${t("dist_metadata")
+            .replace("{0}", chip("title"))
+            .replace("{1}", chip("author"))}</p>
+          ${code(`# title: Pyxel Platformer
+# author: Takashi Kitao
+# desc: A Pyxel platformer example
+# site: https://github.com/kitao/pyxel
+# license: MIT
+# version: 1.0`, "python")}
+          <p class="body">${t("dist_play").replace("{0}", chip("pyxel play"))}</p>
+          ${code("pyxel play PYXEL_APP_FILE", "sh")}
+          <p class="body">${t("dist_convert")
+            .replace("{0}", chip("pyxel app2exe"))
+            .replace("{1}", chip("pyxel app2html"))}</p>`;
+
+        // API Reference
+        $("s-apiref").innerHTML = `
+          <h2 class="section-title">${esc(t("apiref_title"))}</h2>
+          <p class="body">${t("apiref_body")
+            .replace("{0}", link("../api-reference/", esc(t("tool_api_reference"))))}</p>
+          <p class="body mt-2">${esc(t("apiref_advanced"))}</p>
+          <p class="body mt-2">${esc(t("apiref_challenge"))}</p>`;
+
+        // Links
+        const intTools = [
+          ["../showcase/", "Pyxel Showcase"],
+          ["../api-reference/", t("tool_api_reference")],
+          ["../editor-manual/", t("tool_editor_manual")],
+          ["../launcher/", "Pyxel Web Launcher"],
+          ["../code-maker/", "Pyxel Code Maker"],
+          ["../mml-studio/", "Pyxel MML Studio"],
+        ].map(([u, n]) => `<li>${link(u, n)}</li>`).join("");
+        const extTools = [
+          ["https://marketplace.visualstudio.com/items?itemName=kitao.pyxel-vscode", t("tool_vscode")],
+          ["https://github.com/kitao/pyxel-mcp", t("tool_mcp")],
+          ["https://github.com/kitao/pyxel-skill", t("tool_skill")],
+        ].map(([u, n]) => `<li>${link(u, n)}</li>`).join("");
+        const faqUrl = lang === "ja" ? "https://github.com/kitao/pyxel/blob/main/docs/faq-ja.md"
+          : "https://github.com/kitao/pyxel/blob/main/docs/faq-en.md";
+        const webUsageUrl = lang === "ja" ? "https://github.com/kitao/pyxel/blob/main/docs/web-usage-ja.md"
+          : "https://github.com/kitao/pyxel/blob/main/docs/web-usage-en.md";
+        const others = [
+          [faqUrl, t("other_faq")],
+          [webUsageUrl, t("other_web_usage")],
+          ["https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples", t("other_examples")],
+          ["https://x.com/kitao", t("other_x")],
+          ["https://discord.gg/Z87eYHN", t("other_discord_en")],
+          ["https://discord.gg/qHA5BCS", t("other_discord_ja")],
+          ["https://gihyo.jp/book/2025/978-4-297-14657-3", t("other_book")],
+        ].map(([u, n]) => `<li>${link(u, esc(n))}</li>`).join("");
+        $("s-links").innerHTML = `
+          <h2 class="section-title">${esc(t("links_title"))}</h2>
+          <h3 class="sub-title">${esc(t("tools_title"))}</h3>
+          <ul class="link-list">${intTools + extTools}</ul>
+          <h3 class="sub-title">${esc(t("other_title"))}</h3>
+          <ul class="link-list">${others}</ul>`;
+
+        // Contribute
+        $("s-contrib").innerHTML = `
+          <h2 class="section-title">${esc(t("contrib_title"))}</h2>
+          <h3 class="sub-title">${esc(t("contrib_issues_title"))}</h3>
+          <p class="body">${t("contrib_issues_body")
+            .replace("{0}", link("https://github.com/kitao/pyxel/issues", "Issue Tracker"))}</p>
+          <h3 class="sub-title">${esc(t("contrib_testing_title"))}</h3>
+          <p class="body">${t("contrib_testing_body")
+            .replace("{0}", link("https://github.com/kitao/pyxel/issues", "Issue Tracker"))}</p>
+          <h3 class="sub-title">${esc(t("contrib_pr_title"))}</h3>
+          <p class="body">${esc(t("contrib_pr_body"))}</p>
+          <p class="body mt-2">${t("contrib_pr_license")
+            .replace("{0}", link("https://github.com/kitao/pyxel/blob/main/LICENSE", "MIT License"))}</p>`;
+
+        // License
+        $("s-license").innerHTML = `
+          <h2 class="section-title">${esc(t("license_title"))}</h2>
+          <p class="body">${t("license_body")
+            .replace("{0}", link("https://github.com/kitao/pyxel/blob/main/LICENSE", "MIT License"))}</p>`;
+
+        // Sponsors
+        $("s-sponsors").innerHTML = `
+          <h2 class="section-title">${esc(t("sponsors_title"))}</h2>
+          <p class="body">${t("sponsors_body")
+            .replace("{0}", link("https://github.com/sponsors/kitao", esc(t("sponsors_link"))))}</p>`;
+
+        setDocLang(lang);
+        hljs.highlightAll();
+      }
+
+      // Init
+      fetch("user-guide.json").then(r => r.json()).then(json => {
+        D = json; lang = detectLanguage(D.languages); build();
+      });
+    </script>
+  </body>
+</html>
