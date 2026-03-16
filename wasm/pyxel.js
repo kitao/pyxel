@@ -32,6 +32,34 @@ const _virtualGamepadStates = [
   false, // Back
 ];
 
+// Safari emits Arrow key events with location=3 (numpad), which Emscripten
+// does not recognize. Re-dispatch them with location=0 (standard).
+if (/safari/i.test(navigator.userAgent) && !/chrome/i.test(navigator.userAgent)) {
+  const fixArrowEvent = (event) => {
+    if (event.isTrusted && event.location === 3 && event.key.startsWith("Arrow")) {
+      event.stopImmediatePropagation();
+      event.preventDefault();
+      document.dispatchEvent(
+        new KeyboardEvent(event.type, {
+          key: event.key,
+          code: event.code,
+          location: 0,
+          keyCode: event.keyCode,
+          repeat: event.repeat,
+          ctrlKey: event.ctrlKey,
+          shiftKey: event.shiftKey,
+          altKey: event.altKey,
+          metaKey: event.metaKey,
+          bubbles: true,
+          cancelable: true,
+        }),
+      );
+    }
+  };
+  document.addEventListener("keydown", fixArrowEvent, true);
+  document.addEventListener("keyup", fixArrowEvent, true);
+}
+
 // Keyboard key correction for non-US layouts (e.g. JIS)
 // Emscripten's SDL2 maps KeyboardEvent.keyCode through a US-layout table,
 // producing incorrect keycodes for non-US keyboards. This captures the actual
