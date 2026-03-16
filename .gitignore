@@ -11,6 +11,9 @@ __pycache__/
 Cargo.lock
 *.pdb
 
+# Node
+node_modules/
+
 # Build
 dist/
 dist-*/

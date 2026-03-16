@@ -1,6 +1,6 @@
 #
 # Prerequisites:
-#   - git, make, cmake, rustup, python 3.8+
+#   - git, make, cmake, rustup, python 3.8+, node.js
 #   - Windows: Git Bash
 #   - Linux: python3-pip, python3-venv, clang, libclang-dev, libsdl2-dev 2.32.0
 #   - ./scripts/setup_venv
@@ -25,6 +25,10 @@
 #   - Build/Test:
 #       make clean-wasm build-wasm
 #       make clean-wasm test-wasm
+#
+# Web pages:
+#   - Setup once: cd wasm && npm install
+#   - Build: make pages
 #
 
 # Project directories
@@ -89,7 +93,8 @@ endif
 
 .PHONY: \
 	all clean distclean update format lint build install test \
-	clean-wasm lint-wasm build-wasm start-test-server test-wasm
+	clean-wasm lint-wasm build-wasm start-test-server test-wasm \
+	pages
 
 all: build
 
@@ -150,3 +155,6 @@ start-test-server:
 	@$(SCRIPTS_DIR)/start_test_server
 
 test-wasm: build-wasm start-test-server
+
+pages:
+	@cd $(ROOT_DIR)/wasm && npx @tailwindcss/cli -i styles/input.css -o pyxel-pages.css --minify

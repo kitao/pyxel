@@ -3,71 +3,13 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" href="../images/pyxel_icon_64x64.ico" />
     <title>Pyxel Showcase</title>
+    <link rel="icon" href="../images/pyxel_icon_64x64.ico" />
+    <link rel="stylesheet" href="../pyxel-pages.css">
     <script src="../pyxel-pages.js"></script>
-    <script src="https://cdn.tailwindcss.com/3.4.17"></script>
-
-    <style type="text/tailwindcss">
-      @layer components {
-        .page {
-          @apply bg-gray-900 min-h-full text-gray-100 antialiased;
-        }
-        .page-container {
-          @apply mx-auto p-6 max-w-3xl;
-        }
-        .card {
-          @apply bg-gray-800 shadow-sm px-6 py-5 border border-gray-700 rounded-2xl;
-        }
-        .link {
-          @apply outline-none focus-visible:ring-1 focus-visible:ring-indigo-300 text-indigo-400 hover:text-indigo-300 underline underline-offset-2 rounded-sm;
-        }
-        .lang-select {
-          @apply bg-gray-800 px-2 py-1 border border-gray-600 focus-visible:border-indigo-300 rounded-lg outline-none text-gray-200 text-sm;
-        }
-        .btn-demo {
-          @apply inline-flex items-center justify-center min-w-[4.5rem] bg-indigo-500/20 hover:bg-indigo-500/30 px-3 py-1 border border-indigo-500/40 focus-visible:border-indigo-300 rounded-md outline-none font-medium text-indigo-300 text-xs transition-colors;
-        }
-        .btn-code {
-          @apply inline-flex items-center justify-center min-w-[4.5rem] bg-gray-700 hover:bg-gray-600 px-3 py-1 border border-gray-600 focus-visible:border-indigo-300 rounded-md outline-none font-medium text-gray-200 text-xs transition-colors;
-        }
-      }
-
-      details summary {
-        cursor: pointer;
-        user-select: none;
-        list-style: none;
-        outline: none;
-      }
-      details summary::-webkit-details-marker {
-        display: none;
-      }
-
-      /* Collapsible triangles */
-      .tri::before {
-        content: "\25B6\00A0";
-        font-size: 0.6em;
-        vertical-align: middle;
-      }
-      details[open] > summary .tri::before,
-      details[open] > .tri::before {
-        content: "\25BC\00A0";
-      }
-
-      /* Item details */
-      .card details summary {
-        width: fit-content;
-      }
-      .card details summary:focus-visible,
-      summary:focus-visible .tri {
-        outline: 1px solid #a5b4fc;
-        outline-offset: 2px;
-        border-radius: 2px;
-      }
-    </style>
   </head>
 
-  <body class="page">
+  <body class="page min-h-full">
     <main class="page-container" id="app">
       <div class="flex justify-center items-center py-12 text-gray-500 text-sm">
         Loading...

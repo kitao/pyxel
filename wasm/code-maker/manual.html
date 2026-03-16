@@ -3,73 +3,13 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" href="../images/pyxel_icon_64x64.ico" />
     <title>Pyxel Code Maker Manual</title>
+    <link rel="icon" href="../images/pyxel_icon_64x64.ico" />
+    <link rel="stylesheet" href="../pyxel-pages.css">
     <script src="../pyxel-pages.js"></script>
-    <script src="https://cdn.tailwindcss.com/3.4.17"></script>
-
-    <style type="text/tailwindcss">
-      @layer components {
-        .page {
-          @apply bg-gray-900 min-h-full text-gray-100 antialiased;
-        }
-        .page-container {
-          @apply mx-auto p-6 max-w-3xl;
-        }
-        .card {
-          @apply bg-gray-800 shadow-sm px-6 py-5 border border-gray-700 rounded-2xl;
-        }
-        .link {
-          @apply outline-none focus-visible:ring-1 focus-visible:ring-indigo-300 text-indigo-400 hover:text-indigo-300 underline underline-offset-2 rounded-sm;
-        }
-        .lang-select {
-          @apply bg-gray-800 px-2 py-1 border border-gray-600 focus-visible:border-indigo-300 rounded-lg outline-none text-gray-200 text-sm;
-        }
-        .chip {
-          @apply inline-flex items-center bg-gray-700 px-1.5 py-0.5 rounded-md ring-1 ring-gray-600 ring-inset font-mono text-gray-100 text-xs align-middle leading-tight;
-        }
-        .section-title {
-          @apply font-semibold text-xl text-gray-100 pb-2 mb-3 border-b border-gray-600;
-        }
-        .sub-title {
-          @apply font-semibold text-base text-gray-200 mt-6 mb-2;
-        }
-        .body {
-          @apply text-gray-300 text-sm leading-relaxed;
-        }
-        .list {
-          @apply text-gray-300 text-sm leading-relaxed list-disc pl-5 space-y-1;
-        }
-        .th {
-          @apply font-semibold text-sm text-left;
-          padding: 0.25rem 0.75rem 0.5rem;
-          border-bottom: 1px solid #374151;
-        }
-        .td {
-          @apply text-sm align-middle;
-          padding: 0.375rem 0.75rem;
-          border-bottom: 1px solid rgb(55 65 81 / 0.5);
-        }
-        .key {
-          @apply font-mono text-xs text-indigo-300;
-        }
-        .pix {
-          image-rendering: pixelated;
-        }
-        .btn-chip {
-          @apply inline-flex items-center bg-gray-900 px-2 py-0.5 border border-gray-600 rounded-md font-medium text-gray-300 text-xs;
-        }
-        .legend-label {
-          @apply text-xs font-medium text-gray-400 uppercase tracking-wide;
-        }
-        .legend-desc {
-          @apply text-sm text-gray-300;
-        }
-      }
-    </style>
   </head>
 
-  <body class="page">
+  <body class="page min-h-full">
     <main class="page-container" id="app">
       <div class="flex justify-center items-center py-12 text-gray-500 text-sm">
         Loading...

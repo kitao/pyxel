@@ -3,74 +3,15 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" href="../images/pyxel_icon_64x64.ico" />
     <title>Pyxel MML Commands</title>
+    <link rel="icon" href="../images/pyxel_icon_64x64.ico" />
+    <link rel="stylesheet" href="../pyxel-pages.css">
     <script src="../pyxel-pages.js"></script>
-    <script src="https://cdn.tailwindcss.com/3.4.17"></script>
-    <style type="text/tailwindcss">
-      @layer components {
-        .page {
-          @apply bg-gray-900 h-full text-gray-100 antialiased;
-        }
-        .page-container {
-          @apply mx-auto p-6 max-w-3xl;
-        }
-        .card {
-          @apply bg-gray-800 shadow-sm border border-gray-700 rounded-2xl;
-          padding: 0.25rem 0.5rem;
-        }
-        @media (min-width: 640px) {
-          .card { padding: 0.5rem 0.75rem; }
-        }
-        .link {
-          @apply outline-none focus-visible:ring-1 focus-visible:ring-indigo-300 text-indigo-400 hover:text-indigo-300 underline underline-offset-2 rounded-sm;
-        }
-        .lang-select {
-          @apply bg-gray-800 px-2 py-1 border border-gray-600 focus-visible:border-indigo-300 rounded-lg outline-none text-gray-200 text-sm;
-        }
-        .th {
-          @apply font-semibold text-sm text-left;
-          padding: 0.25rem 0.75rem 0.5rem;
-          border-bottom: 1px solid #374151;
-        }
-        .td {
-          @apply text-sm;
-          padding: 0.375rem 0.75rem;
-          border-bottom: 1px solid rgb(55 65 81 / 0.5);
-          border-color: #1f2937;
-          vertical-align: top;
-        }
-        .heading {
-          @apply font-semibold text-2xl tracking-tight;
-        }
-        .subheading {
-          @apply text-gray-300 text-sm;
-        }
-        .mono {
-          @apply font-mono text-sm;
-        }
-        .rowcard {
-          @apply mb-2 sm:mb-0;
-        }
-        .stack thead {
-          @apply hidden sm:table-header-group;
-        }
-        .stack tbody tr {
-          @apply block sm:table-row;
-        }
-        .stack tbody td {
-          @apply block sm:table-cell;
-        }
-        .stack tbody tr:first-child td {
-          @apply pt-2 sm:pt-4;
-        }
-        .example {
-          @apply bg-gray-900 mt-2 p-2 border border-gray-700 rounded-lg whitespace-pre mono;
-        }
-      }
+    <style>
+      .td { border-color: #1f2937; vertical-align: top; }
     </style>
   </head>
-  <body class="page">
+  <body class="page h-full">
     <div class="page-container">
       <div
         class="flex sm:flex-row flex-col justify-between items-start sm:items-center gap-2 mb-2"
@@ -83,7 +24,7 @@
         <a href="https://github.com/kitao/pyxel" target="_blank" rel="noopener noreferrer" class="link">Pyxel</a>, a retro game engine for Python.
       </p>
 
-      <div class="overflow-x-auto card">
+      <div class="overflow-x-auto card-compact">
         <table class="w-full border-collapse stack">
           <thead>
             <tr>

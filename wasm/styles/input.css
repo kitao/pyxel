@@ -1,0 +1,296 @@
+@import "tailwindcss";
+
+@layer components {
+  /* === Common === */
+  .page {
+    @apply bg-gray-900 text-gray-100 antialiased;
+  }
+  .page-container {
+    @apply mx-auto p-6 max-w-3xl;
+  }
+  .card {
+    @apply bg-gray-800 shadow-sm px-6 py-5 border border-gray-700 rounded-2xl;
+  }
+  .card-compact {
+    @apply bg-gray-800 shadow-sm border border-gray-700 rounded-2xl px-2 py-1 sm:px-3 sm:py-2;
+  }
+  .link {
+    @apply outline-none focus-visible:ring-1 focus-visible:ring-indigo-300 text-indigo-400 hover:text-indigo-300 visited:text-indigo-400 underline underline-offset-2 rounded-sm;
+  }
+  .lang-select {
+    @apply bg-gray-800 px-2 py-1 border border-gray-600 focus-visible:border-indigo-300 rounded-lg outline-none text-gray-200 text-sm;
+  }
+  .input {
+    @apply bg-gray-900 px-3 py-2 border border-gray-600 focus-visible:border-indigo-300 rounded-lg outline-none w-full placeholder:text-gray-400 text-sm;
+  }
+  .chip {
+    @apply inline-flex items-center bg-gray-700 px-1.5 py-0.5 rounded-md ring-1 ring-gray-600 ring-inset font-mono text-gray-100 text-xs align-middle leading-tight;
+  }
+  .section-title {
+    @apply font-semibold text-xl text-gray-100 pb-2 mb-3 border-b border-gray-600;
+  }
+  .sub-title {
+    @apply font-semibold text-base text-gray-200 mt-6 mb-2;
+  }
+  .body {
+    @apply text-gray-300 text-sm leading-relaxed;
+  }
+  .key {
+    @apply font-mono text-xs text-indigo-300;
+  }
+  .list {
+    @apply text-gray-300 text-sm leading-relaxed list-disc pl-5 space-y-1;
+  }
+  .btn-chip {
+    @apply inline-flex items-center bg-gray-900 px-2 py-0.5 border border-gray-600 rounded-md font-medium text-gray-300 text-xs;
+  }
+  .legend-label {
+    @apply text-xs font-medium text-gray-400 uppercase tracking-wide;
+  }
+  .legend-desc {
+    @apply text-sm text-gray-300;
+  }
+  .th {
+    @apply font-semibold text-sm text-left;
+    padding: 0.25rem 0.75rem 0.5rem;
+    border-bottom: 1px solid #374151;
+  }
+  .td {
+    @apply text-sm align-middle;
+    padding: 0.375rem 0.75rem;
+    border-bottom: 1px solid rgb(55 65 81 / 0.5);
+  }
+
+  /* === API Reference === */
+  .search-input {
+    @apply bg-gray-800 px-3 py-1.5 border border-gray-600 focus:border-indigo-400 rounded-lg outline-none text-gray-200 text-sm w-full;
+  }
+  .toggle-label {
+    @apply flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm cursor-pointer select-none whitespace-nowrap transition-colors;
+  }
+  .type-badge {
+    @apply inline-block px-1.5 py-0.5 rounded text-[10px] font-medium uppercase tracking-wide leading-none;
+  }
+  .const-chip {
+    @apply text-[11px] font-mono text-pink-300 bg-pink-500/10 px-2 py-0.5 rounded whitespace-nowrap;
+  }
+
+  /* === User Guide === */
+  .code-block {
+    @apply bg-[#0d1117] rounded-lg font-mono text-sm leading-5 text-indigo-300 overflow-x-auto whitespace-pre;
+    padding: 0.625rem 1rem;
+    margin: 0.75rem 0;
+  }
+  .link-list {
+    @apply text-sm leading-relaxed space-y-1.5;
+  }
+
+  /* === Editor Manual === */
+  .area-title {
+    @apply font-semibold text-base mt-5 mb-2 pl-2 border-l-[3px];
+  }
+
+  /* === Showcase === */
+  .btn-demo {
+    @apply inline-flex items-center justify-center min-w-[4.5rem] bg-indigo-500/20 hover:bg-indigo-500/30 px-3 py-1 border border-indigo-500/40 focus-visible:border-indigo-300 rounded-md outline-none font-medium text-indigo-300 text-xs transition-colors;
+  }
+  .btn-code {
+    @apply inline-flex items-center justify-center min-w-[4.5rem] bg-gray-700 hover:bg-gray-600 px-3 py-1 border border-gray-600 focus-visible:border-indigo-300 rounded-md outline-none font-medium text-gray-200 text-xs transition-colors;
+  }
+
+  /* === Launcher === */
+  .link-strong {
+    @apply font-semibold text-indigo-400 hover:text-indigo-300 underline underline-offset-2 break-all;
+  }
+  .label {
+    @apply font-medium text-sm;
+  }
+  .input-link {
+    @apply flex items-center min-h-[2.25rem] font-mono break-all select-all
+      bg-gray-900 px-3 py-2 border border-gray-600 focus-visible:border-indigo-300 rounded-lg outline-none w-full placeholder:text-gray-400 text-sm
+      focus-visible:ring-1 focus-visible:ring-indigo-300 text-indigo-400 hover:text-indigo-300 visited:text-indigo-400 underline underline-offset-2;
+  }
+  .help {
+    @apply space-y-1 mt-1 pl-5 text-gray-400 text-xs list-disc;
+  }
+  .checkbox {
+    @apply accent-indigo-500 w-4 h-4 rounded cursor-pointer outline-none focus-visible:ring-1 focus-visible:ring-indigo-300 focus-visible:ring-offset-1 focus-visible:ring-offset-gray-900;
+  }
+
+  /* === Code Maker === */
+  .toolbar {
+    @apply flex items-center gap-4 bg-gray-900 px-4 py-3;
+  }
+  .btn {
+    @apply shrink-0 bg-gray-900 px-2 py-1 border border-gray-600 rounded-md w-14 font-medium text-gray-300 text-xs text-center;
+  }
+  .btn:disabled {
+    @apply bg-gray-700 opacity-50 text-gray-400 pointer-events-none;
+  }
+  .btn.active {
+    @apply bg-slate-600 text-white;
+  }
+  .tool-title {
+    @apply mr-2 font-semibold text-gray-200 text-2xl tracking-tight select-none;
+  }
+  .tool-tagline {
+    @apply text-gray-300 text-sm leading-5 whitespace-nowrap select-none;
+  }
+  .seg {
+    @apply flex shrink-0 items-center bg-gray-900 border border-gray-600 rounded-md divide-x divide-gray-700 overflow-hidden;
+  }
+  .seg-btn {
+    @apply flex-1 bg-gray-900 px-3 py-1 border-none min-w-[2rem] font-medium text-gray-300 text-xs text-center;
+  }
+  .seg-btn.disabled {
+    @apply bg-gray-700 opacity-50 text-gray-400 pointer-events-none;
+  }
+  .seg-active {
+    @apply bg-slate-600 text-white;
+  }
+  .btn-dropdown {
+    @apply shrink-0 bg-gray-900 px-2 py-1 border border-gray-600 rounded-md font-medium text-gray-300 text-xs text-center cursor-pointer select-none;
+  }
+  .btn-dropdown.active {
+    @apply bg-slate-600 text-white;
+  }
+  .dropdown-menu {
+    @apply absolute top-full left-0 mt-1 bg-gray-800 border border-gray-600 rounded-md shadow-xl overflow-hidden z-[60];
+    min-width: 100%;
+  }
+  .dropdown-item {
+    @apply block w-full px-3 py-1.5 text-left text-xs text-gray-200 hover:bg-gray-600 hover:text-white whitespace-nowrap cursor-pointer;
+  }
+  .dropdown-item:first-child {
+    @apply pt-2;
+  }
+  .dropdown-item:last-child {
+    @apply pb-2;
+  }
+  .modal-overlay {
+    @apply fixed inset-0 bg-black/50 flex items-center justify-center z-[70];
+  }
+  .modal {
+    @apply bg-gray-800 border border-gray-600 rounded-lg shadow-2xl p-4;
+    min-width: 30rem;
+  }
+  .modal-title {
+    @apply text-xs font-medium text-gray-200 mb-3;
+  }
+  .modal-input {
+    @apply w-full bg-gray-900 border border-gray-600 rounded px-2 py-1.5 text-xs text-gray-200 placeholder-gray-500 outline-none focus:border-gray-400;
+  }
+  .modal-btn {
+    @apply text-xs px-3 py-1 rounded cursor-pointer;
+  }
+  .modal-btn-primary {
+    @apply bg-slate-600 text-white;
+  }
+  .modal-btn-secondary {
+    @apply bg-gray-700 text-gray-300;
+  }
+  .focus-line {
+    @apply flex w-full h-[1px];
+  }
+  .focus-line-segment {
+    @apply flex-1 bg-gray-700;
+  }
+  .focus-line-segment-active {
+    @apply bg-cyan-700;
+  }
+
+  /* === MML Studio === */
+  .toggle {
+    @apply bg-gray-900 px-2 py-1 border border-gray-600 focus:border-indigo-300 rounded-md outline-none w-14 font-medium text-gray-300 text-xs;
+  }
+  .toggle.active {
+    @apply bg-slate-600 focus:border-indigo-300 text-white;
+  }
+  .toggle:disabled {
+    @apply bg-gray-700 opacity-50 focus:border-gray-300 text-gray-400 pointer-events-none;
+  }
+
+  /* === MML Studio Manual === */
+  .link-chip {
+    @apply inline-flex items-center text-indigo-400 text-xs font-medium;
+  }
+
+  /* === MML Commands === */
+  .heading {
+    @apply font-semibold text-2xl tracking-tight;
+  }
+  .subheading {
+    @apply text-gray-300 text-sm;
+  }
+  .mono {
+    @apply font-mono text-sm;
+  }
+  .rowcard {
+    @apply mb-2 sm:mb-0;
+  }
+  .example {
+    @apply bg-gray-900 mt-2 p-2 border border-gray-700 rounded-lg whitespace-pre font-mono text-sm;
+  }
+  .stack thead {
+    @apply hidden sm:table-header-group;
+  }
+  .stack tbody tr {
+    @apply block sm:table-row;
+  }
+  .stack tbody td {
+    @apply block sm:table-cell;
+  }
+  .stack tbody tr:first-child td {
+    @apply pt-2 sm:pt-4;
+  }
+}
+
+/* Pixelated rendering */
+.pix {
+  image-rendering: pixelated;
+}
+
+/* Collapsible details/summary */
+details summary {
+  cursor: pointer;
+  user-select: none;
+  list-style: none;
+  outline: none;
+}
+
+details summary::-webkit-details-marker {
+  display: none;
+}
+
+.tri::before {
+  content: "\25B6\00A0";
+  font-size: 0.6em;
+  vertical-align: middle;
+}
+
+details[open] > summary .tri::before,
+details[open] > .tri::before {
+  content: "\25BC\00A0";
+}
+
+.card details summary {
+  width: fit-content;
+}
+
+.card details summary:focus-visible,
+summary:focus-visible .tri {
+  outline: 1px solid #a5b4fc;
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* User Guide: highlight.js overrides */
+.code-block code {
+  font-size: inherit;
+  padding: 0;
+  background: none;
+}
+
+.hljs {
+  background: transparent;
+}

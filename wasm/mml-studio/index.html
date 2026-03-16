@@ -3,45 +3,14 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" href="../images/pyxel_icon_64x64.ico" />
     <title>Pyxel MML Studio</title>
-    <script src="https://cdn.tailwindcss.com/3.4.17"></script>
-    <style type="text/tailwindcss">
-      @layer components {
-        .page {
-          @apply bg-gray-900 h-full text-gray-100 antialiased;
-        }
-        .container {
-          @apply mx-auto p-6 max-w-4xl;
-        }
-        .card {
-          @apply bg-gray-800 shadow-sm p-6 border border-gray-700;
-        }
-        .input {
-          @apply bg-gray-900 px-3 py-2 border border-gray-600 focus-visible:border-indigo-300 rounded-lg outline-none w-full placeholder:text-gray-400 text-sm;
-        }
-        .toggle {
-          @apply bg-gray-900 px-2 py-1 border border-gray-600 focus:border-indigo-300 rounded-md outline-none w-14 font-medium text-gray-300 text-xs;
-        }
-        .toggle.active {
-          @apply bg-slate-600 focus:border-indigo-300 text-white;
-        }
-        .toggle:disabled {
-          @apply bg-gray-700 opacity-50 focus:border-gray-300 text-gray-400 pointer-events-none;
-        }
-        .link {
-          @apply outline-none focus-visible:ring-1 focus-visible:ring-indigo-300 text-indigo-400 hover:text-indigo-300 underline underline-offset-2 rounded-sm;
-        }
-        .input-link {
-          @apply flex items-center outline-none min-h-[2.25rem] font-mono text-indigo-400 hover:text-indigo-300 break-all select-all input;
-        }
-      }
-    </style>
+    <link rel="icon" href="../images/pyxel_icon_64x64.ico" />
+    <link rel="stylesheet" href="../pyxel-pages.css">
     <script src="https://cdn.jsdelivr.net/gh/kitao/pyxel/wasm/pyxel.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/lz-string@1.4.4/libs/lz-string.min.js"></script>
   </head>
-  <body class="page">
-    <main class="container">
+  <body class="page h-full">
+    <main class="mx-auto p-6 max-w-4xl">
       <h1 class="mb-2 font-semibold text-2xl tracking-tight">
         Pyxel MML Studio
       </h1>
@@ -125,7 +94,7 @@
 
         <!-- Screen -->
         <div
-          class="flex flex-grow items-center mt-2 sm:mt-0 p-0 w-full sm:w-auto h-24 card"
+          class="flex flex-grow items-center mt-2 sm:mt-0 p-0 w-full sm:w-auto h-24 bg-gray-800 shadow-sm border border-gray-700"
         >
           <iframe
             id="runtime-screen"
@@ -275,7 +244,7 @@
           id="share-url"
           target="_blank"
           rel="noopener noreferrer"
-          class="mt-2 input-link"
+          class="mt-2 flex items-center outline-none min-h-[2.25rem] font-mono text-indigo-400 hover:text-indigo-300 break-all select-all input"
           style="display: block"
         ></a>
 

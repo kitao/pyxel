@@ -7,6 +7,7 @@
 - Fixed translation inconsistencies across WASM pages
 - Fixed crash in sound editor when playback reaches end of notes
 - Extracted shared language detection into pyxel-pages.js
+- Replaced Tailwind CDN with local CLI build for web pages
 
 ## 2.8.3
 

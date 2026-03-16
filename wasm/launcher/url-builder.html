@@ -3,55 +3,14 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" href="../images/pyxel_icon_64x64.ico" />
     <title>Pyxel Web Launcher</title>
+    <link rel="icon" href="../images/pyxel_icon_64x64.ico" />
+    <link rel="stylesheet" href="../pyxel-pages.css">
     <script src="../pyxel-pages.js"></script>
-    <script src="https://cdn.tailwindcss.com/3.4.17"></script>
-
-    <style type="text/tailwindcss">
-      @layer components {
-        .page {
-          @apply bg-gray-900 h-full text-gray-100 antialiased;
-        }
-        .container {
-          @apply mx-auto p-6 max-w-3xl;
-        }
-        .card {
-          @apply bg-gray-800 shadow-sm px-6 py-4 border border-gray-700 rounded-2xl;
-        }
-        .link {
-          @apply outline-none focus-visible:ring-1 focus-visible:ring-indigo-300 text-indigo-400 hover:text-indigo-300 underline underline-offset-2 rounded-sm;
-        }
-        .link-strong {
-          @apply font-semibold text-indigo-400 hover:text-indigo-300 underline underline-offset-2 break-all;
-        }
-        .label {
-          @apply font-medium text-sm;
-        }
-        .input {
-          @apply bg-gray-900 px-3 py-2 border border-gray-600 focus-visible:border-indigo-300 rounded-lg outline-none w-full placeholder:text-gray-400 text-sm;
-        }
-        .input-link {
-          @apply flex items-center min-h-[2.25rem] font-mono break-all select-all input link;
-        }
-        .help {
-          @apply space-y-1 mt-1 pl-5 text-gray-400 text-xs list-disc;
-        }
-        .chip {
-          @apply inline-flex items-center bg-gray-700 px-1.5 py-0.5 rounded-md ring-1 ring-gray-600 ring-inset font-mono text-gray-100 text-xs align-middle leading-tight;
-        }
-        .checkbox {
-          @apply accent-indigo-500 w-4 h-4 rounded cursor-pointer outline-none focus-visible:ring-1 focus-visible:ring-indigo-300 focus-visible:ring-offset-1 focus-visible:ring-offset-gray-900;
-        }
-        .lang-select {
-          @apply bg-gray-800 px-2 py-1 border border-gray-600 focus-visible:border-indigo-300 rounded-lg outline-none text-gray-200 text-sm;
-        }
-      }
-    </style>
   </head>
 
-  <body class="page">
-    <main class="container">
+  <body class="page h-full">
+    <main class="page-container">
       <header class="flex items-start gap-4 mb-4">
         <select id="lang-select" class="lang-select mt-1" style="display: none"></select>
         <div class="flex-1 min-w-0 order-first">

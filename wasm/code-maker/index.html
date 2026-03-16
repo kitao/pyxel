@@ -4,108 +4,20 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Pyxel Code Maker</title>
-    <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+    <link rel="icon" href="../images/pyxel_icon_64x64.ico" />
+    <link rel="stylesheet" href="../pyxel-pages.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.6/ace.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.6/ext-language_tools.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/kitao/pyxel/wasm/pyxel.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
-    <style type="text/tailwindcss">
-      @layer components {
-        .page {
-          @apply bg-gray-900 text-gray-100 antialiased;
-        }
-        .toolbar {
-          @apply flex items-center gap-4 bg-gray-900 px-4 py-3;
-        }
-        .btn {
-          @apply shrink-0 bg-gray-900 px-2 py-1 border border-gray-600 rounded-md w-14 font-medium text-gray-300 text-xs text-center;
-        }
-        .btn:disabled {
-          @apply bg-gray-700 opacity-50 text-gray-400 pointer-events-none;
-        }
-        .btn.active {
-          @apply bg-slate-600 text-white;
-        }
-        .tool-title {
-          @apply mr-2 font-semibold text-gray-200 text-2xl tracking-tight select-none;
-        }
-        .tool-tagline {
-          @apply text-gray-300 text-sm leading-5 whitespace-nowrap select-none;
-        }
-        .link {
-          @apply text-indigo-400 hover:text-indigo-300 visited:text-indigo-400 underline underline-offset-2;
-        }
-        .seg {
-          @apply flex shrink-0 items-center bg-gray-900 border border-gray-600 rounded-md divide-x divide-gray-700 overflow-hidden;
-        }
-        .seg-btn {
-          @apply flex-1 bg-gray-900 px-3 py-1 border-none min-w-[2rem] font-medium text-gray-300 text-xs text-center;
-        }
-        .seg-btn.disabled {
-          @apply bg-gray-700 opacity-50 text-gray-400 pointer-events-none;
-        }
-        .seg-active {
-          @apply bg-slate-600 text-white;
-        }
-        .btn-dropdown {
-          @apply shrink-0 bg-gray-900 px-2 py-1 border border-gray-600 rounded-md font-medium text-gray-300 text-xs text-center cursor-pointer select-none;
-        }
-        .btn-dropdown.active {
-          @apply bg-slate-600 text-white;
-        }
-        .dropdown-menu {
-          @apply absolute top-full left-0 mt-1 bg-gray-800 border border-gray-600 rounded-md shadow-xl overflow-hidden z-[60];
-          min-width: 100%;
-        }
-        .dropdown-item {
-          @apply block w-full px-3 py-1.5 text-left text-xs text-gray-200 hover:bg-gray-600 hover:text-white whitespace-nowrap cursor-pointer;
-        }
-        .dropdown-item:first-child {
-          @apply pt-2;
-        }
-        .dropdown-item:last-child {
-          @apply pb-2;
-        }
-        .modal-overlay {
-          @apply fixed inset-0 bg-black/50 flex items-center justify-center z-[70];
-        }
-        .modal {
-          @apply bg-gray-800 border border-gray-600 rounded-lg shadow-2xl p-4;
-          min-width: 30rem;
-        }
-        .modal-title {
-          @apply text-xs font-medium text-gray-200 mb-3;
-        }
-        .modal-input {
-          @apply w-full bg-gray-900 border border-gray-600 rounded px-2 py-1.5 text-xs text-gray-200 placeholder-gray-500 outline-none focus:border-gray-400;
-        }
-        .modal-btn {
-          @apply text-xs px-3 py-1 rounded cursor-pointer;
-        }
-        .modal-btn-primary {
-          @apply bg-slate-600 text-white;
-        }
-        .modal-btn-secondary {
-          @apply bg-gray-700 text-gray-300;
-        }
-        .focus-line {
-          @apply flex w-full h-[1px];
-        }
-        .focus-line-segment {
-          @apply flex-1 bg-gray-700;
-        }
-        .focus-line-segment-active {
-          @apply bg-cyan-700;
-        }
-      }
-
+    <style>
       #left-pane.res-mode {
         background-color: var(--pyxel-background-color);
       }
     </style>
   </head>
 
-  <body class="h-full page">
+  <body class="page h-full">
     <div id="app-root" class="flex flex-col h-full min-h-0">
       <!-- Toolbar -->
       <div class="toolbar flex-wrap">
