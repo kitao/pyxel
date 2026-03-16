@@ -87,7 +87,7 @@ Pyxel の `init` 関数が呼ばれると、カレントディレクトリはそ
 <details>
 <summary>自作の Pyxel アプリを Web で公開するにはどうすればいいですか？</summary>
 
-Web Launcher、app2html、カスタムタグの 3 つの方法があります。詳しくは [Web 版 Pyxel の使い方](web-usage-ja.md) を参照してください。
+Web Launcher、app2html、カスタムタグの 3 つの方法があります。詳しくは [Web 版 Pyxel の使い方](https://kitao.github.io/pyxel/web/web-usage/) を参照してください。
 
 </details>
 

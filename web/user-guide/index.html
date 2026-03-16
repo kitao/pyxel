@@ -133,7 +133,7 @@
           <p class="body mt-2">${t("install_web_codemaker")
             .replace("{0}", link("../code-maker/", "Pyxel Code Maker"))}</p>
           <p class="body mt-2">${t("install_web_other")
-            .replace("{0}", link(lang === "ja" ? "https://github.com/kitao/pyxel/blob/main/docs/web-usage-ja.md" : "https://github.com/kitao/pyxel/blob/main/docs/web-usage-en.md", esc(t("other_web_usage"))))}</p>
+            .replace("{0}", link("../web-usage/", esc(t("other_web_usage"))))}</p>
           <h3 class="sub-title">${esc(t("install_vscode_title"))}</h3>
           <p class="body">${t("install_vscode_body")
             .replace("{0}", link("https://code.visualstudio.com/", "Visual Studio Code"))}</p>
@@ -296,8 +296,7 @@ pyxel.show()`, "python")}
         ].map(([u, n]) => `<li>${link(u, n)}</li>`).join("");
         const faqUrl = lang === "ja" ? "https://github.com/kitao/pyxel/blob/main/docs/faq-ja.md"
           : "https://github.com/kitao/pyxel/blob/main/docs/faq-en.md";
-        const webUsageUrl = lang === "ja" ? "https://github.com/kitao/pyxel/blob/main/docs/web-usage-ja.md"
-          : "https://github.com/kitao/pyxel/blob/main/docs/web-usage-en.md";
+        const webUsageUrl = "../web-usage/";
         const others = [
           [faqUrl, t("other_faq")],
           [webUsageUrl, t("other_web_usage")],

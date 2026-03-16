@@ -134,7 +134,7 @@
           For specific instructions, please refer to
           <a
             class="link"
-            href="https://github.com/kitao/pyxel/blob/main/docs/web-usage-en.md"
+            href="../web-usage/"
             target="_blank"
             rel="noopener noreferrer"
             >this page</a
@@ -183,8 +183,7 @@
           t("help_packages_only").replace("{0}", link(pyodideUrl, t("help_packages_link")));
 
         // Footer
-        const docLang = currentLang === "ja" ? "ja" : "en";
-        const docUrl = `https://github.com/kitao/pyxel/blob/main/docs/web-usage-${docLang}.md`;
+        const docUrl = "../web-usage/";
         document.getElementById("footer-text").innerHTML =
           t("footer").replace("{0}", link(docUrl, t("footer_link")));
 

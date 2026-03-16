@@ -188,10 +188,9 @@
 
         // Footer
         const linkText = t("footer_link");
-        const docLang = currentLang === "ja" ? "ja" : "en";
         document.getElementById("footer-text").innerHTML = t("footer")
           .replace("{0}", link("https://github.com/kitao/pyxel/tree/main/web/showcase", linkText))
-          .replace("{1}", link(`https://github.com/kitao/pyxel/blob/main/docs/web-usage-${docLang}.md`, linkText));
+          .replace("{1}", link("../web-usage/", linkText));
 
         setDocLang(currentLang);
       }
