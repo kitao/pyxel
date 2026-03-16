@@ -25,6 +25,7 @@ target/
 
 # Tools
 .claude/
+/examples
 
 # OS
 .DS_Store
