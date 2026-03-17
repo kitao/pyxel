@@ -157,20 +157,23 @@ def _split_plus(expr):
     return parts if len(parts) > 1 else [expr]
 
 
-def _transform_url(url):
+def _transform_url(url, doc_name=None):
     if url.startswith(("http://", "https://")):
         return url
     if url.startswith("../../docs/images/"):
         return url.replace("../../docs/images/", "images/")
     if url.startswith("../"):
         return f"{PYXEL_WEB}/{url[3:]}"
+    if doc_name:
+        return f"{PYXEL_WEB}/{doc_name}/{url}"
     return url
 
 
 class JsEval:
-    def __init__(self, ui, data):
+    def __init__(self, ui, data, doc_name=None):
         self._ui = ui
         self._data = data
+        self._doc_name = doc_name
         self._vars = {}
 
     def _t(self, key):
@@ -263,7 +266,7 @@ class JsEval:
             url_s, rest = _parse_arg(inner)
             rest = _skip_comma(rest)
             text_s, _ = _parse_arg(rest)
-            return f"[{self.eval(text_s)}]({_transform_url(self.eval(url_s))})"
+            return f"[{self.eval(text_s)}]({_transform_url(self.eval(url_s), self._doc_name)})"
 
         # code(content, lang) -> code block
         if expr.startswith("code("):
@@ -296,7 +299,7 @@ class JsEval:
             inner = expr[10:_find_matching(expr, 10, "(", ")") - 1]
             return self._prop_table(inner)
 
-        # iconTable(expr) -> shortcut/desc table (skip icon column)
+        # iconTable(expr) -> icon list with shortcut and description
         if expr.startswith("iconTable("):
             inner = expr[10:_find_matching(expr, 10, "(", ")") - 1]
             return self._icon_table(inner)
@@ -307,12 +310,72 @@ class JsEval:
             label_s, _ = _parse_arg(inner)
             return f"\n#### {self.eval(label_s)}\n"
 
-        # Web-only visual helpers -> skip
-        if any(expr.startswith(f) for f in (
-            "annotatedImg(", "areaCrop(", "keyboardDiagram(", "toolIcons(",
-            "icon(",
-        )):
+        # annotatedImg(src, annotations) -> image link (skip annotations)
+        if expr.startswith("annotatedImg("):
+            inner = expr[13:_find_matching(expr, 13, "(", ")") - 1]
+            src_s, _ = _parse_arg(inner)
+            url = _transform_url(self.eval(src_s), self._doc_name)
+            return f"\n![{url}]({url})\n"
+
+        # areaCrop(editor, index) -> image from annotations
+        if expr.startswith("areaCrop("):
+            inner = expr[9:_find_matching(expr, 9, "(", ")") - 1]
+            editor_s, rest = _parse_arg(inner)
+            rest = _skip_comma(rest)
+            index_s, _ = _parse_arg(rest)
+            editor = self.eval(editor_s)
+            index = int(self.eval(index_s))
+            annotations = self._data.get("annotations", {}).get(editor, [])
+            if index < len(annotations):
+                aid = annotations[index].get("id", "")
+                url = _transform_url(
+                    f"images/{editor}_{aid}.png", self._doc_name
+                )
+                return f"\n![{url}]({url})\n"
             return ""
+
+        # toolIcons() -> tool list with icons from D.image_tools
+        if expr.startswith("toolIcons("):
+            tool_icons = ["tool_select", "tool_pencil", "tool_rectb",
+                          "tool_rect", "tool_circb", "tool_circ",
+                          "tool_bucket"]
+            tools = self._data.get("image_tools", [])
+            rows = []
+            for i, tool in enumerate(tools):
+                icon = tool_icons[i] if i < len(tool_icons) else ""
+                img = ""
+                if icon:
+                    url = _transform_url(
+                        f"images/{icon}.png", self._doc_name
+                    )
+                    img = f"![{icon}]({url}) "
+                rows.append(f"- {img}{tool['key']} — {t(tool['desc'])}")
+            return "\n" + "\n".join(rows) + "\n"
+
+        # keyboardDiagram() -> keyboard-note mapping table
+        if expr.startswith("keyboardDiagram("):
+            kl = self._data.get("sound_keyboard_layout", {})
+            notes = t(kl.get("notes", {}))
+            rows = [f"\n**{t(kl.get('upper_label', {}))}**\n",
+                    "| Note | Key |", "| --- | --- |"]
+            for i, key in enumerate(kl.get("upper", [])):
+                rows.append(f"| {notes[i]} | {key} |")
+            rows += [f"\n**{t(kl.get('lower_label', {}))}**\n",
+                     "| Note | Key |", "| --- | --- |"]
+            for i, key in enumerate(kl.get("lower", [])):
+                rows.append(f"| {notes[i]} | {key} |")
+            rows.append(
+                f"\n| {t(kl.get('rest_label', {}))} | {kl.get('rest_key', '')} |"
+            )
+            return "\n".join(rows) + "\n"
+
+        # icon(src) -> inline image
+        if expr.startswith("icon("):
+            inner = expr[5:_find_matching(expr, 5, "(", ")") - 1]
+            src_s, _ = _parse_arg(inner)
+            src = self.eval(src_s)
+            url = _transform_url(src, self._doc_name)
+            return f"![{src}]({url})"
 
         # table(headers, rows)
         if expr.startswith("table("):
@@ -430,13 +493,18 @@ class JsEval:
             return ""
         rows = []
         for item in items:
+            icon = item.get("icon", "")
             key = item.get("key", "")
             if isinstance(key, dict):
                 key = t(key)
             desc = t(item.get("desc", ""))
-            rows.append(f"| {key} | {desc} |")
-        return "\n| Shortcut | Action |\n| --- | --- |\n" \
-            + "\n".join(rows) + "\n"
+            img = f"![{icon}]({_transform_url(icon, self._doc_name)}) " \
+                if icon else ""
+            if key and key != "—":
+                rows.append(f"- {img}{key} — {desc}")
+            else:
+                rows.append(f"- {img}{desc}")
+        return "\n" + "\n".join(rows) + "\n"
 
     def _resolve_data_ref(self, inner):
         inner = inner.strip()
@@ -585,7 +653,7 @@ def generate_from_html(html_path, json_path, doc_name):
     html_text = html_path.read_text(encoding="utf-8")
     with open(json_path, encoding="utf-8") as f:
         data = json.load(f)
-    ev = JsEval(data["ui"], data)
+    ev = JsEval(data["ui"], data, doc_name)
 
     # Extract update() body
     m = re.search(r"function update\(\)\s*\{", html_text)
@@ -633,7 +701,7 @@ def generate_from_html(html_path, json_path, doc_name):
                            lambda m: f"\n#### {_strip_html(m.group(1))}\n", evaluated)
         evaluated = re.sub(
             r'<img\s[^>]*src="([^"]*)"[^>]*alt="([^"]*)"[^>]*/?>',
-            lambda m: f"\n![{m.group(2)}]({_transform_url(m.group(1))})\n",
+            lambda m: f"\n![{m.group(2)}]({_transform_url(m.group(1), doc_name)})\n",
             evaluated,
         )
         evaluated = re.sub(
