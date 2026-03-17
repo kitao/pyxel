@@ -262,12 +262,16 @@ If you're confident in your skills, try using the Advanced API to create truly a
 
 ## Links
 
-### Tools & Examples
+### Documentation
 
-- [Pyxel Showcase](https://kitao.github.io/pyxel/web/showcase/)
 - [Pyxel API Reference](https://kitao.github.io/pyxel/web/api-reference/)
 - [Pyxel Editor Manual](https://kitao.github.io/pyxel/web/editor-manual/)
 - [How to Use Pyxel for Web](https://kitao.github.io/pyxel/web/web-usage/)
+- [FAQ](https://github.com/kitao/pyxel/blob/main/docs/faq.md)
+
+### Tools
+
+- [Pyxel Showcase](https://kitao.github.io/pyxel/web/showcase/)
 - [Pyxel Web Launcher](https://kitao.github.io/pyxel/web/launcher/)
 - [Pyxel Code Maker](https://kitao.github.io/pyxel/web/code-maker/)
 - [Pyxel MML Studio](https://kitao.github.io/pyxel/web/mml-studio/)
@@ -277,7 +281,6 @@ If you're confident in your skills, try using the Advanced API to create truly a
 
 ### Other Information
 
-- [FAQ](https://github.com/kitao/pyxel/blob/main/docs/faq.md)
 - [User Examples](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples)
 - [Developer's X Account](https://x.com/kitao)
 - [Discord Server (English)](https://discord.gg/Z87eYHN)

@@ -281,24 +281,24 @@ pyxel.show()`, "python")}
           <p class="body mt-2">${esc(t("apiref_challenge"))}</p>`;
 
         // Links
-        const intTools = [
-          ["../showcase/", "Pyxel Showcase"],
+        const faqUrl = lang === "ja" ? "https://github.com/kitao/pyxel/blob/main/docs/faq-ja.md"
+          : "https://github.com/kitao/pyxel/blob/main/docs/faq.md";
+        const docs = [
           ["../api-reference/", t("tool_api_reference")],
           ["../editor-manual/", t("tool_editor_manual")],
           ["../web-usage/", t("other_web_usage")],
+          [faqUrl, t("other_faq")],
+        ].map(([u, n]) => `<li>${link(u, esc(n))}</li>`).join("");
+        const tools = [
+          ["../showcase/", "Pyxel Showcase"],
           ["../launcher/", "Pyxel Web Launcher"],
           ["../code-maker/", "Pyxel Code Maker"],
           ["../mml-studio/", "Pyxel MML Studio"],
-        ].map(([u, n]) => `<li>${link(u, n)}</li>`).join("");
-        const extTools = [
           ["https://marketplace.visualstudio.com/items?itemName=kitao.pyxel-vscode", t("tool_vscode")],
           ["https://github.com/kitao/pyxel-mcp", t("tool_mcp")],
           ["https://github.com/kitao/pyxel-skill", t("tool_skill")],
-        ].map(([u, n]) => `<li>${link(u, n)}</li>`).join("");
-        const faqUrl = lang === "ja" ? "https://github.com/kitao/pyxel/blob/main/docs/faq-ja.md"
-          : "https://github.com/kitao/pyxel/blob/main/docs/faq.md";
+        ].map(([u, n]) => `<li>${link(u, esc(n))}</li>`).join("");
         const others = [
-          [faqUrl, t("other_faq")],
           ["https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples", t("other_examples")],
           ["https://x.com/kitao", t("other_x")],
           ["https://discord.gg/Z87eYHN", t("other_discord_en")],
@@ -307,8 +307,10 @@ pyxel.show()`, "python")}
         ].map(([u, n]) => `<li>${link(u, esc(n))}</li>`).join("");
         $("s-links").innerHTML = `
           <h2 class="section-title">${esc(t("links_title"))}</h2>
+          <h3 class="sub-title">${esc(t("docs_title"))}</h3>
+          <ul class="link-list">${docs}</ul>
           <h3 class="sub-title">${esc(t("tools_title"))}</h3>
-          <ul class="link-list">${intTools + extTools}</ul>
+          <ul class="link-list">${tools}</ul>
           <h3 class="sub-title">${esc(t("other_title"))}</h3>
           <ul class="link-list">${others}</ul>`;
 
