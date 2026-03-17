@@ -129,7 +129,7 @@
     {
       "id": 157,
       "title": "PyxelTD",
-      "site": "https://kitao.github.io/pyxel/web/launcher/?play=5h00t.PyxelTD.app.pyxeltd",
+      "site": "https://github.com/5h00T/PyxelTD",
       "author": "shoot.er",
       "contact": "https://x.com/m4_sd",
       "desc": "A simple tower defense game",
@@ -147,7 +147,7 @@
     {
       "id": 155,
       "title": "Hanafuda Pon",
-      "site": "https://kitao.github.io/pyxel/web/launcher/?play=ninja-cop.RetroGames.hanafudaPon.hanafudaPon",
+      "site": "https://github.com/ninja-cop/RetroGames/tree/main/hanafudaPon",
       "author": "saizo",
       "contact": "https://github.com/ninja-cop",
       "desc": "A game of clearing sets of three matching Hanafuda cards",
@@ -174,7 +174,7 @@
     {
       "id": 152,
       "title": "Hanafuda Tetris",
-      "site": "https://kitao.github.io/pyxel/web/launcher/?play=ninja-cop.RetroGames.hanafudaTetris.hanafudaTetris_1_5",
+      "site": "https://github.com/ninja-cop/RetroGames/tree/main/hanafudaTetris",
       "author": "saizo",
       "contact": "https://github.com/ninja-cop",
       "desc": "A game where you match three Hanafuda cards of the same month",
@@ -435,7 +435,7 @@
     {
       "id": 123,
       "title": "Columsme",
-      "site": "https://kitao.github.io/pyxel/web/launcher/?play=qzk4078.columusume_public.columusume&gamepad=enabled&packages=numpy",
+      "site": "https://github.com/qzk4078/columusume_public",
       "author": "QZK",
       "contact": "https://x.com/qzakusega",
       "desc": "A falling-block puzzle game",
@@ -462,7 +462,7 @@
     {
       "id": 120,
       "title": "pyxelvania",
-      "site": "https://kitao.github.io/pyxel/web/launcher/?play=hulk89.pyxelvania.pyxelvania",
+      "site": "https://github.com/hulk89/pyxelvania",
       "author": "hulk89",
       "contact": "https://github.com/Hulk89",
       "desc": "A simple metroidvania",
@@ -1006,7 +1006,7 @@
     {
       "id": 58,
       "title": "SUSHI SHOOTER",
-      "site": "https://kitao.github.io/pyxel/web/launcher/?play=sejiseji.pyxel-sushi.sushishooter&gamepad=enabled&packages=numpy",
+      "site": "https://github.com/sejiseji/pyxel-sushi",
       "author": "sejiseji",
       "contact": "https://x.com/sejiijes",
       "desc": "A sushi shooting game",
