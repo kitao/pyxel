@@ -1,10 +1,5 @@
 # Change Log
 
-## 2.8.5
-
-- Added auto-generated markdown docs from web pages
-- Added resource file format documentation
-
 ## 2.8.4
 
 - Added multilingual user guide and simplified README
@@ -16,6 +11,8 @@
 - Moved web pages from wasm/ to web/ with redirect support
 - Added web usage guide page with multilingual support
 - Fixed arrow keys not working in Safari on web
+- Added auto-generated markdown docs from web pages
+- Added resource file format documentation
 
 ## 2.8.3
 
