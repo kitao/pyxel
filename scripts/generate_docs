@@ -8,6 +8,7 @@ import re
 ROOT_DIR = pathlib.Path(__file__).resolve().parent.parent
 WEB_DIR = ROOT_DIR / "web"
 API_REF_JSON = WEB_DIR / "api-reference" / "api-reference.json"
+MML_COMMANDS_JSON = WEB_DIR / "mml-studio" / "mml-commands.json"
 USER_GUIDE_HTML = WEB_DIR / "user-guide" / "index.html"
 USER_GUIDE_JSON = WEB_DIR / "user-guide" / "user-guide.json"
 WEB_USAGE_HTML = WEB_DIR / "web-usage" / "index.html"
@@ -776,6 +777,48 @@ def generate_api_reference():
 
 
 # ---------------------------------------------------------------------------
+# MML Commands (from JSON)
+# ---------------------------------------------------------------------------
+
+
+def generate_mml_commands():
+    with open(MML_COMMANDS_JSON, encoding="utf-8") as f:
+        mml_data = json.load(f)
+    lines = []
+
+    title = t(mml_data["ui"]["title"])
+    url = f"{PYXEL_WEB}/mml-studio/"
+    lines.append(f"# {title}")
+    lines.append("")
+    lines.append(
+        f"*This document was auto-generated from the "
+        f"[{title}]({url}) web page, "
+        f"which also offers multilingual support.*"
+    )
+    lines.append("")
+
+    th_cmd = t(mml_data["ui"]["th_command"])
+    th_desc = t(mml_data["ui"]["th_description"])
+    lines.append(f"| {th_cmd} | {th_desc} |")
+    lines.append("| --- | --- |")
+
+    for cmd in mml_data["commands"]:
+        command = cmd["cmd"].replace("|", "\\|")
+        desc = t(cmd["desc"])
+        example = cmd.get("example")
+        cell_desc = desc.replace("\\n", " ").replace("\n", " ").replace("|", "\\|")
+        if example:
+            cell_desc += f" Example: `{example}`"
+        lines.append(f"| `{command}` | {cell_desc} |")
+
+    lines.append("")
+
+    path = DOCS_DIR / "mml-commands.md"
+    path.write_text("\n".join(lines), encoding="utf-8")
+    print(f"Generated {path.relative_to(ROOT_DIR)}")
+
+
+# ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
 
@@ -783,5 +826,6 @@ def generate_api_reference():
 if __name__ == "__main__":
     generate_from_html(USER_GUIDE_HTML, USER_GUIDE_JSON, "user-guide")
     generate_api_reference()
+    generate_mml_commands()
     generate_from_html(EDITOR_MANUAL_HTML, EDITOR_MANUAL_JSON, "editor-manual")
     generate_from_html(WEB_USAGE_HTML, WEB_USAGE_JSON, "web-usage")
