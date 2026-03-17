@@ -3,6 +3,7 @@
 ## 2.8.5
 
 - Added auto-generated markdown docs from web pages
+- Added resource file format documentation
 
 ## 2.8.4
 
