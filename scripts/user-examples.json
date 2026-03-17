@@ -1,6 +1,15 @@
 {
   "entries": [
     {
+      "id": 171,
+      "title": "Pyxel Pacman",
+      "site": "https://sanbunnoichi1962.web.fc2.com/pyxel/pyxelpac.html",
+      "author": "sanbunnoichi",
+      "contact": "mailto:sanbunnoichi1962@gmail.com",
+      "desc": "Pacman like game",
+      "image": "https://github.com/user-attachments/assets/4ba43352-7788-422c-9f7c-709210af05aa"
+    },
+    {
       "id": 170,
       "title": "Falling Sand",
       "site": "https://github.com/5h00T/FallingSand/",
@@ -16,7 +25,7 @@
       "author": "FulLine",
       "contact": "https://x.com/ful_line",
       "desc": "A color-changing puzzle action game",
-      "image": "https://github.com/user-attachments/assets/6a5df3a7-ba4c-4a86-9bad-7fe5512bada95"
+      "image": "https://github.com/user-attachments/assets/6a5df3a7-ba4c-4a86-9bad-7fe5512bada9"
     },
     {
       "id": 168,
@@ -25,7 +34,7 @@
       "author": "Takashi Kitao",
       "contact": "https://x.com/kitao",
       "desc": "A platformer from the Pyxel Official Book",
-      "image": "https://github.com/user-attachments/assets/ce8e9c31-4dfe-46d2-ab31-375aebc447e75"
+      "image": "https://github.com/user-attachments/assets/ce8e9c31-4dfe-46d2-ab31-375aebc447e7"
     },
     {
       "id": 167,
@@ -836,9 +845,9 @@
     {
       "id": 76,
       "title": "Pyxel Road Demo",
-      "site": "https://github.com/ChazyChazZz/PyxelRoadDemo",
+      "site": "https://github.com/ilya-ssh/PyxelRoadDemo",
       "author": "Ilya",
-      "contact": "https://github.com/ChazyChazZz",
+      "contact": "https://github.com/ilya-ssh",
       "desc": "An OutRun-like road with scalable sprites and a parallax background",
       "image": "https://github.com/user-attachments/assets/a195e3f9-48b7-437d-bf59-026bfe8b2636"
     },
@@ -1212,7 +1221,6 @@
     {
       "id": 34,
       "title": "pyLodeRunner",
-      "site": "https://github.com/tako2/pyLodeRunner",
       "author": "tako2",
       "contact": "https://x.com/tako2",
       "desc": "A classic Lode Runner clone",
@@ -1399,7 +1407,7 @@
     {
       "id": 12,
       "title": "Akalabeth: World of Doom",
-      "site": "http://blog.livedoor.jp/cobinee/archives/2008316.html",
+      "site": "https://github.com/CoBinee/akalabeth-pyxel",
       "author": "CoBinee",
       "contact": "https://x.com/cobinee",
       "desc": "An Akalabeth: World of Doom clone",
@@ -1408,7 +1416,7 @@
     {
       "id": 11,
       "title": "Tiny Trek",
-      "site": "http://blog.livedoor.jp/cobinee/archives/2008127.html",
+      "site": "https://github.com/CoBinee/tinytrek-pyxel",
       "author": "CoBinee",
       "contact": "https://x.com/cobinee",
       "desc": "A Star Trek text game clone",
@@ -1417,7 +1425,7 @@
     {
       "id": 10,
       "title": "SFZ",
-      "site": "http://blog.livedoor.jp/cobinee/archives/2000646.html",
+      "site": "https://github.com/CoBinee/sfz-pyxel",
       "author": "CoBinee",
       "contact": "https://x.com/cobinee",
       "desc": "A Fantasy Zone + Space Harrier homage?",
@@ -1426,7 +1434,7 @@
     {
       "id": 9,
       "title": "Umeroose",
-      "site": "http://blog.livedoor.jp/cobinee/archives/2000540.html",
+      "site": "https://github.com/CoBinee/umeroose-pyxel",
       "author": "CoBinee",
       "contact": "https://x.com/cobinee",
       "desc": "A game about filling holes",
