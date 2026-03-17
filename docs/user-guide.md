@@ -1,0 +1,309 @@
+# Pyxel User Guide
+
+*This document was auto-generated from the [Pyxel User Guide](https://kitao.github.io/pyxel/web/user-guide/) web page, which also offers multilingual support.*
+
+![Pyxel](images/pyxel_logo_152x64.png)
+
+**Pyxel** (/ˈpɪksəl/) is a retro game engine for Python. With simple specifications inspired by retro gaming consoles, such as displaying only 16 colors and supporting 4 sound channels, you can easily enjoy making pixel-art-style games.
+
+Pyxel is open source under the [MIT License](https://github.com/kitao/pyxel/blob/main/LICENSE) and free to use. Let's start making retro games with Pyxel!
+
+Also, if you like Pyxel, please give it a star on [GitHub](https://github.com/kitao/pyxel).
+
+## Specifications
+
+- Runs on Windows, Mac, Linux, and Web
+- Programming in Python
+- Customizable screen size
+- 16-color palette
+- 3 256x256 image banks
+- 8 256x256 tilemaps
+- 4 channels with 64 definable sounds
+- 8 music tracks composed of sounds
+- Keyboard, mouse, and gamepad inputs
+- Image and sound editing tools
+- User-extensible colors, sound channels, and banks
+
+### Color Palette
+
+![Color Palette](images/05_color_palette.png)
+
+![Palette](images/pyxel_palette.png)
+
+Pyxel's specifications and APIs are inspired by [PICO-8](https://www.lexaloffle.com/pico-8.php) and [TIC-80](https://tic80.com/).
+
+## How to Install
+
+### Windows / Mac / Linux
+
+After installing [Python 3](https://www.python.org/) (version 3.8 or higher), run the following command:
+
+```sh
+pip install -U pyxel
+```
+
+**Note:** On Windows, make sure to check `Add python.exe to PATH` when installing Python to enable the `pyxel` command.
+
+### Web
+
+The web version of Pyxel can be used without installation on PCs, smartphones, tablets, and other devices with a compatible browser.
+
+The web-based development environment [Pyxel Code Maker](https://kitao.github.io/pyxel/web/code-maker/) is ready to use simply by opening it in your browser.
+
+For other usage, such as embedding Pyxel apps on your own site, please refer to [How to Use Pyxel for Web](https://kitao.github.io/pyxel/web/web-usage/).
+
+### VS Code
+
+By adding the Pyxel extension to [Visual Studio Code](https://code.visualstudio.com/) (VS Code), you can develop and run Pyxel apps without installing Python or Pyxel.
+
+To add the Pyxel extension, search for "[Pyxel](https://marketplace.visualstudio.com/items?itemName=kitao.pyxel-vscode)" in the VS Code Extensions view and click the install button.
+
+## Basic Usage
+
+### Pyxel Command
+
+Installing Pyxel adds the `pyxel` command. Specify a command name after `pyxel` to perform various operations.
+
+Run it without arguments to see the list of available commands:
+
+```sh
+pyxel
+```
+```
+Pyxel, a retro game engine for Python
+usage:
+    pyxel run PYTHON_SCRIPT_FILE(.py)
+    pyxel watch WATCH_DIR PYTHON_SCRIPT_FILE(.py)
+    pyxel play PYXEL_APP_FILE(.pyxapp)
+    pyxel edit [PYXEL_RESOURCE_FILE(.pyxres)]
+    pyxel package APP_DIR STARTUP_SCRIPT_FILE(.py)
+    pyxel app2exe PYXEL_APP_FILE(.pyxapp)
+    pyxel app2html PYXEL_APP_FILE(.pyxapp)
+    pyxel copy_examples
+```
+
+### Try Examples
+
+The following command copies Pyxel examples to the current directory:
+
+```sh
+pyxel copy_examples
+```
+
+You can run examples locally with the following commands:
+
+```sh
+# Run example in examples directory
+cd pyxel_examples
+pyxel run 01_hello_pyxel.py
+
+# Run app in examples/apps directory
+cd apps
+pyxel play 30sec_of_daylight.pyxapp
+```
+
+Examples can also be viewed and run in the browser from [Pyxel Showcase](https://kitao.github.io/pyxel/web/showcase/).
+
+## Creating Applications
+
+### Create a Program
+
+In your Python script, import Pyxel, set the window size with `init`, and start the application with `run`.
+
+```python
+import pyxel
+
+pyxel.init(160, 120)
+
+def update():
+    if pyxel.btnp(pyxel.KEY_Q):
+        pyxel.quit()
+
+def draw():
+    pyxel.cls(0)
+    pyxel.rect(10, 10, 20, 20, 11)
+
+pyxel.run(update, draw)
+```
+
+The arguments of the `run` function are the `update` function, which processes frame updates, and the `draw` function, which handles screen drawing.
+
+In an actual application, it is recommended to wrap Pyxel code in a class, as shown below:
+
+```python
+import pyxel
+
+class App:
+    def __init__(self):
+        pyxel.init(160, 120)
+        self.x = 0
+        pyxel.run(self.update, self.draw)
+
+    def update(self):
+        self.x = (self.x + 1) % pyxel.width
+
+    def draw(self):
+        pyxel.cls(0)
+        pyxel.rect(self.x, 0, 8, 8, 9)
+
+App()
+```
+
+For creating simple graphics without animation, you can use the `show` function to simplify your code.
+
+```python
+import pyxel
+
+pyxel.init(120, 120)
+pyxel.cls(1)
+pyxel.circb(60, 60, 40, 7)
+pyxel.show()
+```
+
+### Run a Program
+
+A created script can be executed using the `python` command:
+
+```sh
+python PYTHON_SCRIPT_FILE
+```
+
+It can also be run with the `pyxel run` command:
+
+```sh
+pyxel run PYTHON_SCRIPT_FILE
+```
+
+Additionally, the `pyxel watch` command monitors changes in a specified directory and automatically re-runs the program when changes are detected:
+
+```sh
+pyxel watch WATCH_DIR PYTHON_SCRIPT_FILE
+```
+
+Stop directory monitoring by pressing `Ctrl(Cmd)+C`.
+
+### Special Key Controls
+
+The following special key actions are available while a Pyxel application is running:
+
+| Shortcut | Action |
+| --- | --- |
+| Esc | Quit the application |
+| Alt(Option)+R or A+B+X+Y+BACK on gamepad | Reset the application |
+| Alt(Option)+1 | Save the screenshot to the desktop |
+| Alt(Option)+2 | Reset the recording start time of the screen capture video |
+| Alt(Option)+3 | Save a screen capture video to the desktop (up to 10 seconds) |
+| Alt(Option)+8 or A+B+X+Y+DL on gamepad | Toggle screen scaling between maximum and integer |
+| Alt(Option)+9 or A+B+X+Y+DR on gamepad | Switch between screen modes (Crisp/Smooth/Retro) |
+| Alt(Option)+0 or A+B+X+Y+DU on gamepad | Toggle the performance monitor (FPS/`update` time/`draw` time) |
+| Alt(Option)+Enter or A+B+X+Y+DD on gamepad | Toggle fullscreen |
+| Shift+Alt(Option)+1/2/3 | Save image bank 0, 1, or 2 to the desktop |
+| Shift+Alt(Option)+0 | Save the current color palette to the desktop |
+
+## Creating Resources
+
+### Pyxel Editor
+
+Pyxel Editor creates images and sounds used in a Pyxel application.
+
+For detailed usage instructions, see the [Pyxel Editor Manual](https://kitao.github.io/pyxel/web/editor-manual/).
+
+### Other Creation Methods
+
+Pyxel images and tilemaps can also be created using the following methods:
+
+- Create images or tilemaps from lists of strings with the `Image.set` or `Tilemap.set` functions
+- Load palette-ready image files (PNG/GIF/JPEG) with the `Image.load` function
+
+Pyxel sounds and music can also be created using the following method:
+
+- Create them from strings with the `Sound.set` or `Music.set` functions
+
+Refer to the API reference for the usage of these functions.
+
+## Distributing Applications
+
+Pyxel supports a cross-platform distribution format called a Pyxel application file.
+
+Create a Pyxel application file (.pyxapp) with the `pyxel package` command:
+
+```sh
+pyxel package APP_DIR STARTUP_SCRIPT_FILE
+```
+
+If you need to include resources or additional modules, place them in the application directory.
+
+Metadata can be displayed at runtime by specifying it in the following format within the startup script. Fields other than `title` and `author` are optional.
+
+```python
+# title: Pyxel Platformer
+# author: Takashi Kitao
+# desc: A Pyxel platformer example
+# site: https://github.com/kitao/pyxel
+# license: MIT
+# version: 1.0
+```
+
+The created application file can be run using the `pyxel play` command:
+
+```sh
+pyxel play PYXEL_APP_FILE
+```
+
+A Pyxel application file can also be converted to an executable or an HTML file using the `pyxel app2exe` or `pyxel app2html` commands.
+
+## API Reference
+
+A complete list of Pyxel APIs is available at [Pyxel API Reference](https://kitao.github.io/pyxel/web/api-reference/).
+
+Pyxel also includes advanced APIs that require specialized knowledge. You can view them by checking the "Advanced" checkbox on the reference page.
+
+If you're confident in your skills, try using the Advanced API to create truly amazing works!
+
+## Links
+
+### Tools & Examples
+
+- [Pyxel Showcase](https://kitao.github.io/pyxel/web/showcase/)
+- [Pyxel API Reference](https://kitao.github.io/pyxel/web/api-reference/)
+- [Pyxel Editor Manual](https://kitao.github.io/pyxel/web/editor-manual/)
+- [How to Use Pyxel for Web](https://kitao.github.io/pyxel/web/web-usage/)
+- [Pyxel Web Launcher](https://kitao.github.io/pyxel/web/launcher/)
+- [Pyxel Code Maker](https://kitao.github.io/pyxel/web/code-maker/)
+- [Pyxel MML Studio](https://kitao.github.io/pyxel/web/mml-studio/)
+- [VS Code Extension](https://marketplace.visualstudio.com/items?itemName=kitao.pyxel-vscode)
+- [MCP Server](https://github.com/kitao/pyxel-mcp)
+- [Claude Code Skill](https://github.com/kitao/pyxel-skill)
+
+### Other Information
+
+- [FAQ](https://github.com/kitao/pyxel/blob/main/docs/faq-en.md)
+- [User Examples](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples)
+- [Developer's X Account](https://x.com/kitao)
+- [Discord Server (English)](https://discord.gg/Z87eYHN)
+- [Discord Server (Japanese)](https://discord.gg/qHA5BCS)
+- [Official Guidebook (Japanese)](https://gihyo.jp/book/2025/978-4-297-14657-3)
+
+## How to Contribute
+
+### Submitting Issues
+
+Use the [Issue Tracker](https://github.com/kitao/pyxel/issues) to submit bug reports and feature or enhancement requests. Before submitting a new issue, make sure there are no similar open issues.
+
+### Functional Testing
+
+Anyone who manually tests the code and reports bugs or suggestions for enhancements in the [Issue Tracker](https://github.com/kitao/pyxel/issues) is very welcome!
+
+### Submitting Pull Requests
+
+Patches and fixes are accepted in the form of pull requests (PRs). Make sure that the issue the pull request addresses is open in the Issue Tracker.
+
+Submitting a pull request implies that you agree to license your contribution under the [MIT License](https://github.com/kitao/pyxel/blob/main/LICENSE).
+
+## License
+
+Pyxel is licensed under the [MIT License](https://github.com/kitao/pyxel/blob/main/LICENSE). It can be reused in proprietary software, provided that all copies of the software or its substantial portions include a copy of the MIT License terms and a copyright notice.
+
+## Recruiting Sponsors
+
+Pyxel is looking for sponsors on GitHub Sponsors. Please consider sponsoring Pyxel to support its continued maintenance and feature development. As a benefit, sponsors can consult directly with the Pyxel developer. For more details, please visit [here](https://github.com/sponsors/kitao).

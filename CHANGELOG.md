@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.8.5
+
+- Added auto-generated markdown docs from web pages
+
 ## 2.8.4
 
 - Added multilingual user guide and simplified README

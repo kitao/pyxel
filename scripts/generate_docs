@@ -1,0 +1,787 @@
+#!/usr/bin/env python3
+
+import html
+import json
+import pathlib
+import re
+
+ROOT_DIR = pathlib.Path(__file__).resolve().parent.parent
+WEB_DIR = ROOT_DIR / "web"
+API_REF_JSON = WEB_DIR / "api-reference" / "api-reference.json"
+USER_GUIDE_HTML = WEB_DIR / "user-guide" / "index.html"
+USER_GUIDE_JSON = WEB_DIR / "user-guide" / "user-guide.json"
+WEB_USAGE_HTML = WEB_DIR / "web-usage" / "index.html"
+WEB_USAGE_JSON = WEB_DIR / "web-usage" / "web-usage.json"
+EDITOR_MANUAL_HTML = WEB_DIR / "editor-manual" / "index.html"
+EDITOR_MANUAL_JSON = WEB_DIR / "editor-manual" / "editor-manual.json"
+DOCS_DIR = ROOT_DIR / "docs"
+PYXEL_WEB = "https://kitao.github.io/pyxel/web"
+
+
+def t(obj):
+    if not obj:
+        return ""
+    if isinstance(obj, str):
+        return obj
+    return obj.get("en", "")
+
+
+# ---------------------------------------------------------------------------
+# JS expression evaluator (produces Markdown directly)
+# ---------------------------------------------------------------------------
+
+
+def _find_matching(text, start, open_ch, close_ch):
+    depth = 1
+    i = start
+    while i < len(text) and depth > 0:
+        ch = text[i]
+        if ch == "\\" and i + 1 < len(text):
+            i += 2
+            continue
+        if ch in ('"', "'", "`"):
+            q = ch
+            i += 1
+            while i < len(text) and text[i] != q:
+                if text[i] == "\\":
+                    i += 1
+                i += 1
+            i += 1
+            continue
+        if ch == open_ch:
+            depth += 1
+        elif ch == close_ch:
+            depth -= 1
+        i += 1
+    return i
+
+
+def _parse_arg(text):
+    text = text.lstrip()
+    if not text:
+        return "", ""
+    if text[0] in ('"', "'"):
+        q = text[0]
+        i = 1
+        while i < len(text):
+            if text[i] == "\\" and i + 1 < len(text):
+                i += 2
+                continue
+            if text[i] == q:
+                return text[:i + 1], text[i + 1:].lstrip()
+            i += 1
+    elif text[0] == "`":
+        i = 1
+        while i < len(text):
+            if text[i] == "\\" and i + 1 < len(text):
+                i += 2
+                continue
+            if text[i] == "$" and i + 1 < len(text) and text[i + 1] == "{":
+                i = _find_matching(text, i + 2, "{", "}")
+                continue
+            if text[i] == "`":
+                return text[:i + 1], text[i + 1:].lstrip()
+            i += 1
+    elif text[0] == "/":
+        i = 1
+        while i < len(text) and text[i] != "/":
+            if text[i] == "\\":
+                i += 1
+            i += 1
+        i += 1
+        while i < len(text) and text[i].isalpha():
+            i += 1
+        return text[:i], text[i:].lstrip()
+    elif text[0] == "[":
+        end = _find_matching(text, 1, "[", "]")
+        return text[:end], text[end:].lstrip()
+    else:
+        depth = 0
+        i = 0
+        while i < len(text):
+            ch = text[i]
+            if ch in ('"', "'", "`"):
+                q = ch
+                i += 1
+                while i < len(text) and text[i] != q:
+                    if text[i] == "\\":
+                        i += 1
+                    i += 1
+                i += 1
+                continue
+            if ch in ("(", "[", "{"):
+                depth += 1
+            elif ch in (")", "]", "}"):
+                if depth == 0:
+                    break
+                depth -= 1
+            elif ch == "," and depth == 0:
+                break
+            i += 1
+        return text[:i].rstrip(), text[i:].lstrip()
+    return text, ""
+
+
+def _skip_comma(text):
+    text = text.lstrip()
+    return text[1:].lstrip() if text.startswith(",") else text
+
+
+def _split_plus(expr):
+    parts = []
+    current = []
+    depth = 0
+    in_str = None
+    for ch in expr:
+        if in_str:
+            current.append(ch)
+            if ch != "\\" and ch == in_str:
+                in_str = None
+            continue
+        if ch in ('"', "'", "`"):
+            in_str = ch
+            current.append(ch)
+            continue
+        if ch in ("(", "[", "{"):
+            depth += 1
+        elif ch in (")", "]", "}"):
+            depth -= 1
+        if ch == "+" and depth == 0:
+            parts.append("".join(current))
+            current = []
+            continue
+        current.append(ch)
+    if current:
+        parts.append("".join(current))
+    return parts if len(parts) > 1 else [expr]
+
+
+def _transform_url(url):
+    if url.startswith(("http://", "https://")):
+        return url
+    if url.startswith("../../docs/images/"):
+        return url.replace("../../docs/images/", "images/")
+    if url.startswith("../"):
+        return f"{PYXEL_WEB}/{url[3:]}"
+    return url
+
+
+class JsEval:
+    def __init__(self, ui, data):
+        self._ui = ui
+        self._data = data
+        self._vars = {}
+
+    def _t(self, key):
+        val = self._ui.get(key)
+        return t(val) if val is not None else key
+
+    def eval_template(self, template):
+        result = []
+        i = 0
+        while i < len(template):
+            if template[i] == "\\" and i + 1 < len(template):
+                c = template[i + 1]
+                result.append("\n" if c == "n" else "/" if c == "/" else c)
+                i += 2
+            elif template[i:i + 2] == "${":
+                end = _find_matching(template, i + 2, "{", "}")
+                result.append(self.eval(template[i + 2:end - 1]))
+                i = end
+            else:
+                result.append(template[i])
+                i += 1
+        return "".join(result)
+
+    def eval(self, expr):
+        expr = expr.strip()
+        if not expr:
+            return ""
+
+        # Ternary: lang === "ja" ? ja_expr : en_expr -> English branch
+        m = re.match(r'lang\s*===\s*"ja"\s*\?\s*', expr)
+        if m:
+            _, rest = _parse_arg(expr[m.end():])
+            rest = rest.strip()
+            if rest.startswith(":"):
+                rest = rest[1:].strip()
+            en_expr, _ = _parse_arg(rest)
+            return self.eval(en_expr)
+
+        # String literals
+        if len(expr) >= 2:
+            if (expr[0] == '"' and expr[-1] == '"') or \
+               (expr[0] == "'" and expr[-1] == "'"):
+                s = expr[1:-1]
+                return s.replace("\\n", "\n").replace("\\/", "/") \
+                        .replace('\\"', '"').replace("\\'", "'")
+            if expr[0] == "`" and expr[-1] == "`":
+                return self.eval_template(expr[1:-1])
+
+        # Variable or property access (e.g. e.label)
+        if re.match(r'^\w+$', expr) and expr in self._vars:
+            val = self._vars[expr]
+            return t(val) if isinstance(val, dict) else val
+        m = re.match(r'^(\w+)\.(\w+)$', expr)
+        if m and m.group(1) in self._vars:
+            obj = self._vars[m.group(1)]
+            if isinstance(obj, dict):
+                val = obj.get(m.group(2), "")
+                return t(val) if isinstance(val, dict) else val
+
+        # t("key") / t(var) / t(var.prop)
+        m = re.match(r't\("([^"]+)"\)$', expr)
+        if m:
+            return self._t(m.group(1))
+        m = re.match(r't\((\w+)\.(\w+)\)$', expr)
+        if m:
+            obj = self._vars.get(m.group(1))
+            if isinstance(obj, dict):
+                return t(obj.get(m.group(2), ""))
+            return ""
+        m = re.match(r't\((\w+)\)$', expr)
+        if m:
+            return self._t(self._vars.get(m.group(1), m.group(1)))
+
+        # esc(t("key")).replace(...) chain (must come before bare esc)
+        if expr.startswith("esc(t(") and ".replace(" in expr:
+            return self._replace_chain(expr)
+
+        # esc(inner) -> just evaluate inner
+        if expr.startswith("esc("):
+            return self.eval(expr[4:_find_matching(expr, 4, "(", ")") - 1])
+
+        # chip("text") -> `text`
+        if expr.startswith("chip("):
+            inner = expr[5:_find_matching(expr, 5, "(", ")") - 1]
+            return f"`{self.eval(inner)}`"
+
+        # link("url", "text") -> [text](url)
+        if expr.startswith("link("):
+            inner = expr[5:_find_matching(expr, 5, "(", ")") - 1]
+            url_s, rest = _parse_arg(inner)
+            rest = _skip_comma(rest)
+            text_s, _ = _parse_arg(rest)
+            return f"[{self.eval(text_s)}]({_transform_url(self.eval(url_s))})"
+
+        # code(content, lang) -> code block
+        if expr.startswith("code("):
+            inner = expr[5:_find_matching(expr, 5, "(", ")") - 1]
+            content_s, rest = _parse_arg(inner.strip())
+            rest = _skip_comma(rest)
+            lang = ""
+            if rest and rest[0] != ")":
+                lang_s, _ = _parse_arg(rest)
+                lang = self.eval(lang_s)
+            return f"\n```{lang}\n{self.eval(content_s)}\n```\n"
+
+        # D.prop, D.prop[N].field, D.prop.sub[N].field access
+        m = re.match(r'D\.([\w.]+?)(?:\[(\d+)\](?:\.(\w+))?)?$', expr)
+        if m:
+            return self._data_access(m.group(1), m.group(2), m.group(3))
+
+        # shortcutTable(expr) -> Markdown table from [{key, action}]
+        if expr.startswith("shortcutTable("):
+            inner = expr[14:_find_matching(expr, 14, "(", ")") - 1]
+            return self._shortcut_table(inner)
+
+        # specsGrid(expr) -> label: value list
+        if expr.startswith("specsGrid("):
+            inner = expr[10:_find_matching(expr, 10, "(", ")") - 1]
+            return self._specs_grid(inner)
+
+        # propTable(expr) -> key/label/desc table
+        if expr.startswith("propTable("):
+            inner = expr[10:_find_matching(expr, 10, "(", ")") - 1]
+            return self._prop_table(inner)
+
+        # iconTable(expr) -> shortcut/desc table (skip icon column)
+        if expr.startswith("iconTable("):
+            inner = expr[10:_find_matching(expr, 10, "(", ")") - 1]
+            return self._icon_table(inner)
+
+        # areaTitle(label, index) -> ### heading
+        if expr.startswith("areaTitle("):
+            inner = expr[10:_find_matching(expr, 10, "(", ")") - 1]
+            label_s, _ = _parse_arg(inner)
+            return f"\n#### {self.eval(label_s)}\n"
+
+        # Web-only visual helpers -> skip
+        if any(expr.startswith(f) for f in (
+            "annotatedImg(", "areaCrop(", "keyboardDiagram(", "toolIcons(",
+            "icon(",
+        )):
+            return ""
+
+        # table(headers, rows)
+        if expr.startswith("table("):
+            inner = expr[6:_find_matching(expr, 6, "(", ")") - 1]
+            return self._table(inner)
+
+        # t("key").replace(...) or esc(t("key")).replace(...) chain
+        if re.match(r'(?:esc\()?t\("', expr) and ".replace(" in expr:
+            return self._replace_chain(expr)
+
+        # [].map(([u,n]) => `...`).join("") / [].map(k => `...`).join("")
+        if ".map(" in expr and ".join(" in expr:
+            return self._map_join(expr)
+
+        # String concatenation
+        parts = _split_plus(expr)
+        if len(parts) > 1:
+            return "".join(self.eval(p.strip()) for p in parts)
+
+        return expr
+
+    def _replace_chain(self, expr):
+        # Handle both t("key").replace(...) and esc(t("key")).replace(...)
+        m = re.match(r'(?:esc\()?t\("([^"]+)"\)\)?', expr)
+        if not m:
+            return expr
+        text = self._t(m.group(1))
+        rest = expr[m.end():]
+        while rest.strip().startswith(".replace("):
+            rest = rest.strip()[9:]
+            pat_s, rest = _parse_arg(rest)
+            rest = _skip_comma(rest)
+            repl_s, rest = _parse_arg(rest)
+            rest = rest.strip()
+            if rest.startswith(")"):
+                rest = rest[1:]
+            repl = self.eval(repl_s)
+            rm = re.match(r'/(.+?)/g?', pat_s)
+            if rm:
+                pat = rm.group(1).replace("\\{", "{").replace("\\}", "}")
+                text = text.replace(pat, repl)
+            else:
+                text = text.replace(self.eval(pat_s), repl, 1)
+        return text
+
+    def _parse_array(self, arr_str):
+        arr_str = arr_str.strip().strip("[]")
+        items = []
+        while arr_str.strip():
+            item, arr_str = _parse_arg(arr_str.strip())
+            items.append(self.eval(item.strip()))
+            arr_str = _skip_comma(arr_str)
+        return items
+
+    def _data_access(self, prop, index, field):
+        val = self._data
+        for part in prop.split("."):
+            if isinstance(val, dict):
+                val = val.get(part)
+            else:
+                return ""
+            if val is None:
+                return ""
+        if index is not None:
+            val = val[int(index)]
+            if field:
+                val = val.get(field, "")
+        if isinstance(val, dict):
+            return t(val)
+        if isinstance(val, str):
+            return val
+        return val
+
+    def _shortcut_table(self, inner):
+        items = self._resolve_data_ref(inner)
+        if not isinstance(items, list):
+            return ""
+        rows = []
+        for item in items:
+            key = t(item["key"]) if isinstance(item["key"], dict) \
+                else item["key"]
+            action = t(item["action"])
+            action = re.sub(r'`([^`]+)`', r'`\1`', action)
+            rows.append(f"| {key} | {action} |")
+        return "\n| Shortcut | Action |\n| --- | --- |\n" \
+            + "\n".join(rows) + "\n"
+
+    def _specs_grid(self, inner):
+        items = self._resolve_data_ref(inner)
+        if not isinstance(items, list):
+            return ""
+        rows = []
+        for item in items:
+            label = t(item["label"])
+            val = item["value"]
+            val = t(val) if isinstance(val, dict) else str(val)
+            rows.append(f"- **{label}:** {val}")
+        return "\n" + "\n".join(rows) + "\n"
+
+    def _prop_table(self, inner):
+        items = self._resolve_data_ref(inner)
+        if not isinstance(items, list):
+            return ""
+        rows = []
+        for item in items:
+            rows.append(
+                f"| `{item['key']}` | {t(item['label'])} | {t(item['desc'])} |"
+            )
+        return "\n| Key | Name | Description |\n| --- | --- | --- |\n" \
+            + "\n".join(rows) + "\n"
+
+    def _icon_table(self, inner):
+        items = self._resolve_icon_table_arg(inner)
+        if not isinstance(items, list):
+            return ""
+        rows = []
+        for item in items:
+            key = item.get("key", "")
+            if isinstance(key, dict):
+                key = t(key)
+            desc = t(item.get("desc", ""))
+            rows.append(f"| {key} | {desc} |")
+        return "\n| Shortcut | Action |\n| --- | --- |\n" \
+            + "\n".join(rows) + "\n"
+
+    def _resolve_data_ref(self, inner):
+        inner = inner.strip()
+        m = re.match(r'D\.(\w+)$', inner)
+        if m:
+            return self._data.get(m.group(1), [])
+        return self.eval(inner)
+
+    def _resolve_icon_table_arg(self, inner):
+        inner = inner.strip()
+        # D.xxx.map(b => ({icon: b.icon, key: b.key || "—", desc: b.desc}))
+        m = re.match(r'D\.(\w+)\.map\(', inner)
+        if m:
+            return self._data.get(m.group(1), [])
+        return self._resolve_data_ref(inner)
+
+    def _table(self, inner):
+        headers_s, rest = _parse_arg(inner.strip())
+        rest = _skip_comma(rest)
+        rows_s, _ = _parse_arg(rest)
+        headers = self._parse_array(headers_s)
+        # Parse 2d array for rows
+        rows_inner = rows_s.strip().strip("[]")
+        rows = []
+        while rows_inner.strip():
+            rows_inner = rows_inner.strip()
+            if rows_inner.startswith("["):
+                row_s, rows_inner = _parse_arg(rows_inner)
+                rows.append(self._parse_array(row_s))
+                rows_inner = _skip_comma(rows_inner)
+            else:
+                break
+        md = "\n| " + " | ".join(headers) + " |\n"
+        md += "| " + " | ".join("---" for _ in headers) + " |\n"
+        for row in rows:
+            md += "| " + " | ".join(row) + " |\n"
+        return md
+
+    def _map_join(self, expr):
+        arr_end = expr.index(".map(")
+        arr_str = expr[:arr_end].strip()
+        # Destructured: ([u,n]) => `...`
+        m = re.search(
+            r'\.map\(\(\[(\w+),\s*(\w+)\]\)\s*=>\s*`(.*?)`\)'
+            r'\.join\(["\'].*?["\']\)', expr, re.DOTALL,
+        )
+        if m:
+            pairs_inner = arr_str.strip().strip("[]")
+            items = []
+            while pairs_inner.strip():
+                pairs_inner = pairs_inner.strip()
+                if pairs_inner.startswith("["):
+                    pair_s, pairs_inner = _parse_arg(pairs_inner)
+                    pair = self._parse_array(pair_s)
+                    if len(pair) >= 2:
+                        saved = dict(self._vars)
+                        self._vars[m.group(1)] = pair[0]
+                        self._vars[m.group(2)] = pair[1]
+                        items.append(self.eval_template(m.group(3)))
+                        self._vars = saved
+                    pairs_inner = _skip_comma(pairs_inner)
+                else:
+                    break
+            return "".join(items)
+        # Simple: k => `...`
+        m = re.search(
+            r'\.map\((\w+)\s*=>\s*`(.*?)`\)\.join\(["\'].*?["\']\)',
+            expr, re.DOTALL,
+        )
+        if m:
+            keys = self._parse_array(arr_str)
+            items = []
+            for key in keys:
+                saved = dict(self._vars)
+                self._vars[m.group(1)] = key
+                items.append(self.eval_template(m.group(2)))
+                self._vars = saved
+            return "".join(items)
+        return expr
+
+    def extract_variables(self, body):
+        # const/let x = expr;
+        for m in re.finditer(r'(?:const|let)\s+(\w+)\s*=\s*', body):
+            expr_start = m.end()
+            j = expr_start
+            depth = 0
+            in_str = None
+            while j < len(body):
+                ch = body[j]
+                if in_str:
+                    if ch == "\\" and j + 1 < len(body):
+                        j += 2
+                        continue
+                    if ch == in_str:
+                        in_str = None
+                    j += 1
+                    continue
+                if ch in ('"', "'", "`"):
+                    in_str = ch
+                    j += 1
+                    continue
+                if ch in ("(", "[", "{"):
+                    depth += 1
+                elif ch in (")", "]", "}"):
+                    depth -= 1
+                elif ch == ";" and depth == 0:
+                    break
+                j += 1
+            self._vars[m.group(1)] = self.eval(body[expr_start:j].strip())
+
+        # for (const x of D.yyy) { varName += `...`; } -> list
+        for m in re.finditer(
+            r'for\s*\(\s*const\s+(\w+)\s+of\s+D\.(\w+)\s*\)\s*\{[^}]*?'
+            r'(\w+)\s*\+=\s*`(.*?)`', body, re.DOTALL,
+        ):
+            item_var, data_key, target_var, tmpl = m.groups()
+            items = self._data.get(data_key, [])
+            result = []
+            for item in items:
+                if isinstance(item, dict) and "label" in item \
+                        and "desc" in item:
+                    result.append(
+                        f"- **{t(item['label'])}:** {t(item['desc'])}\n"
+                    )
+                else:
+                    saved = dict(self._vars)
+                    self._vars[item_var] = item
+                    result.append(self.eval_template(tmpl))
+                    self._vars = saved
+            self._vars[target_var] = "".join(result)
+
+
+# ---------------------------------------------------------------------------
+# HTML template -> Markdown
+# ---------------------------------------------------------------------------
+
+
+def _strip_html(text):
+    text = re.sub(r'<strong>(.*?)</strong>', r'**\1**', text)
+    text = re.sub(r'</?(?:div|section|span|p|ul|li|a|img|td|th|tr|thead'
+                  r'|tbody|table|pre|code|h[1-6])[^>]*>', '', text)
+    return html.unescape(text).strip()
+
+
+def generate_from_html(html_path, json_path, doc_name):
+    html_text = html_path.read_text(encoding="utf-8")
+    with open(json_path, encoding="utf-8") as f:
+        data = json.load(f)
+    ev = JsEval(data["ui"], data)
+
+    # Extract update() body
+    m = re.search(r"function update\(\)\s*\{", html_text)
+    if not m:
+        return
+    body = html_text[m.end():_find_matching(html_text, m.end(), "{", "}") - 1]
+
+    # Extract variables
+    ev.extract_variables(body)
+
+    # Extract innerHTML sections
+    lines = []
+    for sm in re.finditer(r'\$\("([^"]+)"\)\.innerHTML\s*=\s*`', body):
+        sec_id = sm.group(1)
+        if sec_id in ("p-title", "p-sub"):
+            continue
+        start = sm.end()
+        i = start
+        depth = 0
+        while i < len(body):
+            ch = body[i]
+            if ch == "\\" and i + 1 < len(body):
+                i += 2
+                continue
+            if depth == 0 and ch == "`":
+                break
+            if ch == "$" and i + 1 < len(body) and body[i + 1] == "{":
+                depth += 1
+                i += 2
+                continue
+            if depth > 0:
+                if ch == "{":
+                    depth += 1
+                elif ch == "}":
+                    depth -= 1
+            i += 1
+        evaluated = ev.eval_template(body[start:i])
+
+        # Convert HTML structure to Markdown
+        evaluated = re.sub(r'<h2[^>]*>(.*?)</h2>',
+                           lambda m: f"\n## {_strip_html(m.group(1))}\n", evaluated)
+        evaluated = re.sub(r'<h3[^>]*>(.*?)</h3>',
+                           lambda m: f"\n### {_strip_html(m.group(1))}\n", evaluated)
+        evaluated = re.sub(r'<h4[^>]*>(.*?)</h4>',
+                           lambda m: f"\n#### {_strip_html(m.group(1))}\n", evaluated)
+        evaluated = re.sub(
+            r'<img\s[^>]*src="([^"]*)"[^>]*alt="([^"]*)"[^>]*/?>',
+            lambda m: f"\n![{m.group(2)}]({_transform_url(m.group(1))})\n",
+            evaluated,
+        )
+        evaluated = re.sub(
+            r'<ul[^>]*>(.*?)</ul>',
+            lambda m: "\n" + "".join(
+                f"- {_strip_html(li)}\n"
+                for li in re.findall(r'<li>(.*?)</li>', m.group(1), re.DOTALL)
+            ), evaluated, flags=re.DOTALL,
+        )
+        evaluated = re.sub(r'<strong>(.*?)</strong>', r'**\1**', evaluated)
+        lines.append(evaluated)
+
+    # Assemble
+    title = t(data["ui"].get("title", ""))
+    url = f"{PYXEL_WEB}/{doc_name}/"
+    header = (
+        f"# {title}\n\n"
+        f"*This document was auto-generated from the "
+        f"[{title}]({url}) web page, "
+        f"which also offers multilingual support.*\n"
+    )
+    raw = header + "\n".join(lines)
+
+    # Protect code blocks from tag stripping and whitespace cleanup
+    saved_blocks = []
+
+    def save_block(m):
+        idx = len(saved_blocks)
+        saved_blocks.append(m.group(0))
+        return f"\x00BLK{idx}\x00"
+
+    raw = re.sub(r'\n```[^\n]*\n.*?\n```\n', save_block,
+                 raw, flags=re.DOTALL)
+
+    # Convert paragraphs to separated text, then strip remaining tags
+    raw = re.sub(r'<p[^>]*>', '\n', raw)
+    raw = re.sub(r'</p>', '\n', raw)
+    raw = re.sub(r'</?[^>]+>', '', raw)
+    raw = html.unescape(raw)
+
+    # Clean up whitespace (code blocks are protected)
+    cleaned = []
+    for line in raw.splitlines():
+        cleaned.append(line.strip())
+    result = re.sub(r"\n{3,}", "\n\n", "\n".join(cleaned)).strip() + "\n"
+
+    # Restore code blocks
+    for i, block in enumerate(saved_blocks):
+        result = result.replace(f"\x00BLK{i}\x00", block.strip())
+
+    path = DOCS_DIR / f"{doc_name}.md"
+    path.write_text(result, encoding="utf-8")
+    print(f"Generated {path.relative_to(ROOT_DIR)}")
+
+
+# ---------------------------------------------------------------------------
+# API Reference (from JSON)
+# ---------------------------------------------------------------------------
+
+
+def generate_api_reference():
+    with open(API_REF_JSON, encoding="utf-8") as f:
+        api_data = json.load(f)
+    lines = []
+
+    title = t(api_data["ui"]["title"])
+    url = f"{PYXEL_WEB}/api-reference/"
+    lines.append(f"# {title}")
+    lines.append("")
+    lines.append(
+        f"*This document was auto-generated from the "
+        f"[{title}]({url}) web page, "
+        f"which also offers multilingual support.*"
+    )
+    lines.append("")
+
+    for cat in api_data["categories"]:
+        lines.append(f"## {t(cat['title'])}")
+        lines.append("")
+
+        for item in cat.get("items", []):
+            sig = item["signature"]
+            desc = t(item.get("description"))
+            advanced = " *(Advanced)*" if item.get("advanced") else ""
+            lines.append(f"### `{sig}` — {item['type']}{advanced}")
+            lines.append("")
+            if desc:
+                lines.append(desc)
+                lines.append("")
+            if item.get("value_type"):
+                lines.append(f"- **Type:** `{item['value_type']}`")
+                lines.append("")
+            if item.get("params"):
+                lines.append("**Parameters:**")
+                lines.append("")
+                for p in item["params"]:
+                    p_desc = t(p.get("desc"))
+                    suffix = f" — {p_desc}" if p_desc else ""
+                    lines.append(f"- `{p['name']}` (*{p['type']}*){suffix}")
+                lines.append("")
+            ret = item.get("return")
+            if ret and ret.get("type") and ret["type"] != "None":
+                ret_desc = t(ret.get("desc"))
+                suffix = f" — {ret_desc}" if ret_desc else ""
+                lines.append(f"**Returns:** `{ret['type']}`{suffix}")
+                lines.append("")
+            if item.get("examples"):
+                lines.append("**Example:**")
+                lines.append("")
+                lines.append("```python")
+                for ex in item["examples"]:
+                    lines.append(ex)
+                lines.append("```")
+                lines.append("")
+            if item.get("notes"):
+                lines.append(f"**Note:** {t(item['notes'])}")
+                lines.append("")
+
+        for group in cat.get("constant_groups", []):
+            lines.append(f"### {t(group['label'])}")
+            lines.append("")
+            for sec in group.get("sections", []):
+                sec_label = t(sec.get("label"))
+                if sec_label:
+                    lines.append(f"**{sec_label}:**")
+                    lines.append("")
+                constants = sec["constants"]
+                details = sec.get("details", [])
+                if details:
+                    for i, const in enumerate(constants):
+                        detail = t(details[i]) if i < len(details) else ""
+                        suffix = f" — {detail}" if detail else ""
+                        lines.append(f"- `{const}`{suffix}")
+                else:
+                    lines.append(" ".join(f"`{c}`" for c in constants))
+                lines.append("")
+
+    path = DOCS_DIR / "api-reference.md"
+    path.write_text("\n".join(lines), encoding="utf-8")
+    print(f"Generated {path.relative_to(ROOT_DIR)}")
+
+
+# ---------------------------------------------------------------------------
+# Main
+# ---------------------------------------------------------------------------
+
+
+if __name__ == "__main__":
+    generate_from_html(USER_GUIDE_HTML, USER_GUIDE_JSON, "user-guide")
+    generate_api_reference()
+    generate_from_html(EDITOR_MANUAL_HTML, EDITOR_MANUAL_JSON, "editor-manual")
+    generate_from_html(WEB_USAGE_HTML, WEB_USAGE_JSON, "web-usage")
