@@ -1301,7 +1301,7 @@ class Sound:
     def mml(
         self, code: Optional[str] = None, old_syntax: Optional[bool] = None
     ) -> None:
-        """Switch to MML mode with the given MML string. In MML mode, normal parameters such as notes and speed are ignored. Call without arguments to exit MML mode and return to normal mode.
+        """Switch to MML mode with the given MML string. In MML mode, normal parameters such as notes and speed are ignored. For available MML commands, see the Pyxel MML Commands page. Call without arguments to exit MML mode and return to normal mode.
 
         Args:
             code: MML string

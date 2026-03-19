@@ -1320,7 +1320,7 @@ pyxel.sounds[0].set_effects("nfnf nvvs")
 
 ### `Sound.mml(code)` — function
 
-Switch to MML mode with the given MML string. In MML mode, normal parameters such as notes and speed are ignored.
+Switch to MML mode with the given MML string. In MML mode, normal parameters such as notes and speed are ignored. For available MML commands, see the Pyxel MML Commands page.
 
 **Parameters:**
 

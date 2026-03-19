@@ -265,6 +265,7 @@ If you're confident in your skills, try using the Advanced API to create truly a
 ### Documentation
 
 - [Pyxel API Reference](https://kitao.github.io/pyxel/web/api-reference/)
+- [Pyxel MML Commands](https://kitao.github.io/pyxel/web/mml-studio/mml-commands.html)
 - [Pyxel Editor Manual](https://kitao.github.io/pyxel/web/editor-manual/)
 - [How to Use Pyxel for Web](https://kitao.github.io/pyxel/web/web-usage/)
 - [FAQ](https://github.com/kitao/pyxel/blob/main/docs/faq.md)

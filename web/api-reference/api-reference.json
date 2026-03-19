@@ -9552,18 +9552,18 @@
           "type": "function",
           "signature": "Sound.mml(code)",
           "description": {
-            "en": "Switch to MML mode with the given MML string. In MML mode, normal parameters such as notes and speed are ignored.",
-            "cn": "使用给定的MML字符串切换到MML模式。MML模式下，音符和速度等普通参数将被忽略。",
-            "de": "Wechselt mit dem angegebenen MML-String in den MML-Modus. Im MML-Modus werden normale Parameter wie Noten und Geschwindigkeit ignoriert.",
-            "es": "Cambia al modo MML con la cadena MML dada. En modo MML, los parámetros normales como notas y velocidad se ignoran.",
-            "fr": "Passe en mode MML avec la chaîne MML donnée. En mode MML, les paramètres normaux tels que les notes et la vitesse sont ignorés.",
-            "it": "Passa alla modalità MML con la stringa MML data. In modalità MML, i parametri normali come note e velocità vengono ignorati.",
-            "ja": "指定したMML文字列でMMLモードに切り替える。MMLモードでは音程や速度などの通常パラメータは無視される。",
-            "ko": "주어진 MML 문자열로 MML 모드로 전환한다. MML 모드에서는 음정이나 속도 등의 일반 파라미터가 무시된다.",
-            "pt": "Muda para o modo MML com a string MML fornecida. No modo MML, parâmetros normais como notas e velocidade são ignorados.",
-            "ru": "Переключает в режим MML с заданной строкой MML. В режиме MML обычные параметры, такие как ноты и скорость, игнорируются.",
-            "tr": "Verilen MML dizesiyle MML moduna geçer. MML modunda nota ve hız gibi normal parametreler yok sayılır.",
-            "uk": "Перемикає в режим MML із заданим рядком MML. У режимі MML звичайні параметри, такі як ноти та швидкість, ігноруються."
+            "en": "Switch to MML mode with the given MML string. In MML mode, normal parameters such as notes and speed are ignored. For available MML commands, see the Pyxel MML Commands page.",
+            "cn": "使用给定的MML字符串切换到MML模式。MML模式下，音符和速度等普通参数将被忽略。有关可用的MML命令，请参阅Pyxel MML 命令页面。",
+            "de": "Wechselt mit dem angegebenen MML-String in den MML-Modus. Im MML-Modus werden normale Parameter wie Noten und Geschwindigkeit ignoriert. Verfügbare MML-Befehle finden Sie auf der Seite Pyxel MML-Befehle.",
+            "es": "Cambia al modo MML con la cadena MML dada. En modo MML, los parámetros normales como notas y velocidad se ignoran. Para los comandos MML disponibles, consulte la página Comandos MML de Pyxel.",
+            "fr": "Passe en mode MML avec la chaîne MML donnée. En mode MML, les paramètres normaux tels que les notes et la vitesse sont ignorés. Pour les commandes MML disponibles, consultez la page Commandes MML de Pyxel.",
+            "it": "Passa alla modalità MML con la stringa MML data. In modalità MML, i parametri normali come note e velocità vengono ignorati. Per i comandi MML disponibili, consultare la pagina Comandi MML di Pyxel.",
+            "ja": "指定したMML文字列でMMLモードに切り替える。MMLモードでは音程や速度などの通常パラメータは無視される。利用できるMMLコマンドはPyxel MML コマンドページを参照してください。",
+            "ko": "주어진 MML 문자열로 MML 모드로 전환한다. MML 모드에서는 음정이나 속도 등의 일반 파라미터가 무시된다. 사용 가능한 MML 명령어는 Pyxel MML 명령어 페이지를 참조하세요.",
+            "pt": "Muda para o modo MML com a string MML fornecida. No modo MML, parâmetros normais como notas e velocidade são ignorados. Para os comandos MML disponíveis, consulte a página Comandos MML do Pyxel.",
+            "ru": "Переключает в режим MML с заданной строкой MML. В режиме MML обычные параметры, такие как ноты и скорость, игнорируются. Доступные MML-команды см. на странице MML-команды Pyxel.",
+            "tr": "Verilen MML dizesiyle MML moduna geçer. MML modunda nota ve hız gibi normal parametreler yok sayılır. Kullanılabilir MML komutları için Pyxel MML Komutları sayfasına bakın.",
+            "uk": "Перемикає в режим MML із заданим рядком MML. У режимі MML звичайні параметри, такі як ноти та швидкість, ігноруються. Доступні MML-команди див. на сторінці MML-команди Pyxel."
           },
           "examples": [
             "pyxel.sounds[0].mml(\"T120 Q90 @1 V100 O5 L8 C4&C<G16R16>C.\")"

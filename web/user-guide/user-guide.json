@@ -1282,6 +1282,20 @@
       "tr": "Pyxel API Referansı",
       "uk": "Довідник API Pyxel"
     },
+    "tool_mml_commands": {
+      "en": "Pyxel MML Commands",
+      "cn": "Pyxel MML 命令",
+      "de": "Pyxel MML-Befehle",
+      "es": "Comandos MML de Pyxel",
+      "fr": "Commandes MML de Pyxel",
+      "it": "Comandi MML di Pyxel",
+      "ja": "Pyxel MML コマンド",
+      "ko": "Pyxel MML 명령어",
+      "pt": "Comandos MML do Pyxel",
+      "ru": "MML-команды Pyxel",
+      "tr": "Pyxel MML Komutları",
+      "uk": "MML-команди Pyxel"
+    },
     "tool_editor_manual": {
       "en": "Pyxel Editor Manual",
       "cn": "Pyxel Editor 手册",
