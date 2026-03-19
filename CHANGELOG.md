@@ -3,6 +3,7 @@
 ## 2.8.5
 
 - Optimized blt and bltm rendering with fast paths
+- Enabled Python atexit handlers on program termination
 
 ## 2.8.4
 

@@ -40,6 +40,9 @@ pub fn init(headless: bool) {
 }
 
 pub fn quit() {
+    if let Some(mut callback) = crate::quit_callback().take() {
+        callback();
+    }
     if !is_headless() {
         platform().quit();
     }

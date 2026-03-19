@@ -23,12 +23,22 @@ fn init(
     capture_sec: Option<u32>,
     headless: Option<bool>,
 ) -> PyResult<()> {
+    // Capture reset info before chdir
+    let sys = py.import("sys")?;
+    let os_mod = py.import("os")?;
+    let exec_path: String = sys.getattr("executable")?.extract()?;
+    let cwd: String = os_mod.call_method0("getcwd")?.extract()?;
+    let orig_argv: Vec<String> = sys
+        .getattr("orig_argv")
+        .or_else(|_| sys.getattr("argv"))?
+        .extract()?;
+
+    // Change to script directory
     let locals = PyDict::new(py);
-    locals.set_item("os", py.import("os")?)?;
+    locals.set_item("os", os_mod)?;
     locals.set_item("inspect", py.import("inspect")?)?;
     let script =
         CString::new(r#"os.chdir(os.path.dirname(inspect.stack()[1].filename) or ".")"#).unwrap();
-
     py.run(script.as_c_str(), None, Some(&locals))?;
 
     pyxel::init(
@@ -42,6 +52,48 @@ fn init(
         capture_sec,
         headless,
     );
+
+    // Register reset callback
+    *pyxel::reset_callback() = Some(Box::new(move || {
+        Python::attach(|py| {
+            let locals = PyDict::new(py);
+            locals.set_item("exec_path", &exec_path).unwrap();
+            locals.set_item("cwd", &cwd).unwrap();
+            locals.set_item("orig_argv", &orig_argv).unwrap();
+            let script = CString::new(
+                r"
+import os, subprocess, sys
+if os.environ.get('PYXEL_WATCH_STATE_FILE'):
+    os._exit(0x52)
+if sys.platform == 'darwin':
+    try:
+        f = open(os.devnull, 'wb')
+        os.dup2(f.fileno(), 2)
+        f.close()
+    except OSError:
+        pass
+subprocess.Popen(
+    [exec_path] + orig_argv[1:],
+    cwd=cwd,
+    env=os.environ.copy(),
+)
+sys.exit(0)
+",
+            )
+            .unwrap();
+            if let Err(err) = py.run(script.as_c_str(), None, Some(&locals)) {
+                err.print(py);
+                exit(1);
+            }
+        });
+    }));
+
+    // Register quit callback to run Python atexit handlers
+    *pyxel::quit_callback() = Some(Box::new(|| {
+        Python::attach(|py| {
+            let _ = py.run(c"import atexit; atexit._run_exitfuncs()", None, None);
+        });
+    }));
 
     Ok(())
 }
@@ -126,19 +178,6 @@ fn fullscreen(enabled: bool) {
 }
 
 #[pyfunction]
-fn _set_reset_func(func: Bound<'_, PyAny>) {
-    let func = func.unbind();
-    *pyxel::reset_func() = Some(Box::new(move || {
-        Python::attach(|py| {
-            if let Err(err) = func.call0(py) {
-                err.print(py);
-                exit(1);
-            }
-        });
-    }));
-}
-
-#[pyfunction]
 fn _reset_statics() {
     pyxel::reset_statics();
 }
@@ -169,7 +208,6 @@ pub fn add_system_functions(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(integer_scale, m)?)?;
     m.add_function(wrap_pyfunction!(screen_mode, m)?)?;
     m.add_function(wrap_pyfunction!(fullscreen, m)?)?;
-    m.add_function(wrap_pyfunction!(_set_reset_func, m)?)?;
     m.add_function(wrap_pyfunction!(_reset_statics, m)?)?;
     m.add_function(wrap_pyfunction!(_pid_exists, m)?)?;
     Ok(())

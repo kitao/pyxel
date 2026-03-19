@@ -169,8 +169,8 @@ impl Pyxel {
 
     pub fn restart(&mut self) {
         #[cfg(not(target_os = "emscripten"))]
-        if let Some(mut reset_func) = pyxel::reset_func().take() {
-            reset_func();
+        if let Some(mut callback) = pyxel::reset_callback().take() {
+            callback();
         }
 
         #[cfg(target_os = "emscripten")]

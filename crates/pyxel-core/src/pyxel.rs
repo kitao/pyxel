@@ -42,11 +42,18 @@ fn set_pyxel_instance(instance: Pyxel) {
     }
 }
 
-// RESET_FUNC
-static mut RESET_FUNC: Option<Box<dyn FnMut() + Send>> = None;
+// RESET_CALLBACK
+static mut RESET_CALLBACK: Option<Box<dyn FnMut() + Send>> = None;
 
-pub fn reset_func() -> &'static mut Option<Box<dyn FnMut() + Send>> {
-    unsafe { &mut RESET_FUNC }
+pub fn reset_callback() -> &'static mut Option<Box<dyn FnMut() + Send>> {
+    unsafe { &mut RESET_CALLBACK }
+}
+
+// QUIT_CALLBACK
+static mut QUIT_CALLBACK: Option<Box<dyn FnMut() + Send>> = None;
+
+pub fn quit_callback() -> &'static mut Option<Box<dyn FnMut() + Send>> {
+    unsafe { &mut QUIT_CALLBACK }
 }
 
 // Macros for global variables
@@ -278,7 +285,8 @@ pub fn reset_statics() {
             drop(Box::from_raw(MUSICS));
             MUSICS = null_mut();
         }
-        RESET_FUNC = None;
+        RESET_CALLBACK = None;
+        QUIT_CALLBACK = None;
     }
 }
 
