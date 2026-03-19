@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.8.5
+
+- Optimized blt and bltm rendering with fast paths
+
 ## 2.8.4
 
 - Added multilingual user guide and simplified README

@@ -500,25 +500,45 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
             return;
         }
 
-        // Fast path: no flip, no transparency, no palette, full alpha
-        if sign_x == 1
-            && sign_y == 1
-            && transparent.is_none()
-            && palette.is_none()
-            && self.alpha >= 1.0
-        {
+        // Fast path: no flip, full alpha
+        if sign_x == 1 && sign_y == 1 && self.alpha >= 1.0 {
             let dst_w = self.width() as usize;
             let src_w = canvas.width() as usize;
             let width = width as usize;
             for yi in 0..height as usize {
-                let dst_start = dst_w * (dst_y as usize + yi) + dst_x as usize;
-                let src_start = src_w * (src_y as usize + yi) + src_x as usize;
-                self.data[dst_start..dst_start + width]
-                    .copy_from_slice(&canvas.data[src_start..src_start + width]);
+                let di = dst_w * (dst_y as usize + yi) + dst_x as usize;
+                let si = src_w * (src_y as usize + yi) + src_x as usize;
+                let dst = &mut self.data[di..di + width];
+                let src = &canvas.data[si..si + width];
+                match (transparent, palette) {
+                    (None, None) => dst.copy_from_slice(src),
+                    (Some(tkey), None) => {
+                        for i in 0..width {
+                            let val = src[i];
+                            if val != tkey {
+                                dst[i] = val;
+                            }
+                        }
+                    }
+                    (None, Some(pal)) => {
+                        for i in 0..width {
+                            dst[i] = pal[src[i].to_index()];
+                        }
+                    }
+                    (Some(tkey), Some(pal)) => {
+                        for i in 0..width {
+                            let val = src[i];
+                            if val != tkey {
+                                dst[i] = pal[val.to_index()];
+                            }
+                        }
+                    }
+                }
             }
             return;
         }
 
+        // General path: flip and/or dithering
         for yi in 0..height {
             for xi in 0..width {
                 let value_x = src_x + sign_x * xi + offset_x;

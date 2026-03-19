@@ -530,8 +530,60 @@ impl Image {
         };
 
         let tile_size = TILE_SIZE as i32;
-        let img_w = image.width() as i32;
-        let img_h = image.height() as i32;
+        let img_w = image.width() as usize;
+        let img_h = image.height() as usize;
+
+        // Fast path: no flip, full alpha
+        if sign_x == 1 && sign_y == 1 && self.canvas.alpha >= 1.0 {
+            let dst_w = self.canvas.width() as usize;
+            let palette = &self.palette;
+
+            for yi in 0..height {
+                let tilemap_y = src_y + yi;
+                let tile_y = tilemap_y / tile_size;
+                let pixel_y = tilemap_y % tile_size;
+                let dst_row = dst_w * (dst_y + yi) as usize + dst_x as usize;
+
+                let mut xi = 0;
+                while xi < width {
+                    let tilemap_x = src_x + xi;
+                    let tile_x = tilemap_x / tile_size;
+                    let tile = tilemap.canvas.read_data(tile_x as usize, tile_y as usize);
+
+                    let pixel_x = tilemap_x % tile_size;
+                    let chunk = (tile_size - pixel_x).min(width - xi) as usize;
+
+                    let img_x = (tile.0 as i32 * tile_size + pixel_x) as usize;
+                    let img_y = (tile.1 as i32 * tile_size + pixel_y) as usize;
+
+                    if img_y < img_h && img_x < img_w {
+                        let valid = chunk.min(img_w - img_x);
+                        let si = img_w * img_y + img_x;
+                        let di = dst_row + xi as usize;
+                        let src = &image.canvas.data[si..si + valid];
+                        let dst = &mut self.canvas.data[di..di + valid];
+                        if let Some(tkey) = transparent {
+                            for i in 0..valid {
+                                let val = src[i];
+                                if val != tkey {
+                                    dst[i] = palette[val as usize];
+                                }
+                            }
+                        } else {
+                            for i in 0..valid {
+                                dst[i] = palette[src[i] as usize];
+                            }
+                        }
+                    }
+                    xi += chunk as i32;
+                }
+            }
+            return;
+        }
+
+        // General path: flip and/or dithering
+        let img_w = img_w as i32;
+        let img_h = img_h as i32;
 
         for yi in 0..height {
             let tilemap_y = src_y + sign_y * yi + offset_y;
