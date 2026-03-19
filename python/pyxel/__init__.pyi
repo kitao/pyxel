@@ -1402,7 +1402,7 @@ def init(
         display_scale: Display scale factor (None for auto)
         capture_scale: Screen capture scale factor (default: 2)
         capture_sec: Maximum recording time for screen capture video (default: 10)
-        headless: Run without window, audio device, or display (default: False)
+        headless: Run without a window (default: False)
 
     Example::
         pyxel.init(160, 120, title="My Pyxel App", fps=60, quit_key=pyxel.KEY_NONE, capture_scale=3, capture_sec=0)

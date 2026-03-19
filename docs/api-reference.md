@@ -36,7 +36,7 @@ Initialize the Pyxel application with the screen size (width, height).
 - `display_scale` (*int*) — Display scale factor (None for auto)
 - `capture_scale` (*int*) — Screen capture scale factor (default: 2)
 - `capture_sec` (*int*) — Maximum recording time for screen capture video (default: 10)
-- `headless` (*bool*) — Run without window, audio device, or display (default: False)
+- `headless` (*bool*) — Run without a window (default: False)
 
 **Example:**
 
