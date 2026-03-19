@@ -282,7 +282,7 @@ If you're confident in your skills, try using the Advanced API to create truly a
 
 ### Other Information
 
-- [User Examples](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples)
+- [User Examples](https://kitao.github.io/pyxel-user-examples/)
 - [Developer's X Account](https://x.com/kitao)
 - [Discord Server (English)](https://discord.gg/Z87eYHN)
 - [Discord Server (Japanese)](https://discord.gg/qHA5BCS)

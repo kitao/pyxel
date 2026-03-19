@@ -17,7 +17,7 @@ Also, if you like Pyxel, please give it a star on GitHub.
 
 **[▸ Pyxel User Guide / ユーザーガイド](https://kitao.github.io/pyxel/web/user-guide/)**
 
-[<img src="https://raw.githubusercontent.com/kitao/pyxel/main/docs/images/pyxel_thanks.png" width="553">](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples) [<img src="https://raw.githubusercontent.com/kitao/pyxel/main/docs/images/pyxel_book.png" width="190">](https://gihyo.jp/book/2025/978-4-297-14657-3)
+[<img src="https://raw.githubusercontent.com/kitao/pyxel/main/docs/images/pyxel_thanks.png" width="553">](https://kitao.github.io/pyxel-user-examples/) [<img src="https://raw.githubusercontent.com/kitao/pyxel/main/docs/images/pyxel_book.png" width="190">](https://gihyo.jp/book/2025/978-4-297-14657-3)
 
 <p>
 <a href="https://kitao.github.io/pyxel/web/showcase/examples/02-jump-game.html">
