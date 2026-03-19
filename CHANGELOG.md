@@ -4,6 +4,7 @@
 
 - Optimized blt and bltm rendering with fast paths
 - Enabled Python atexit handlers on program termination
+- Enabled audio playback in headless mode
 
 ## 2.8.4
 

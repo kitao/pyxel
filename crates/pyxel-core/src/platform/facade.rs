@@ -153,27 +153,19 @@ pub fn start_audio<F: FnMut(&mut [i16]) + 'static>(
     buffer_size: u32,
     callback: F,
 ) {
-    if !is_headless() {
-        platform().start_audio(sample_rate, buffer_size, callback);
-    }
+    platform().start_audio(sample_rate, buffer_size, callback);
 }
 
 pub fn pause_audio(paused: bool) {
-    if !is_headless() {
-        platform().pause_audio(paused);
-    }
+    platform().pause_audio(paused);
 }
 
 pub fn lock_audio() {
-    if !is_headless() {
-        platform().lock_audio();
-    }
+    platform().lock_audio();
 }
 
 pub fn unlock_audio() {
-    if !is_headless() {
-        platform().unlock_audio();
-    }
+    platform().unlock_audio();
 }
 
 //

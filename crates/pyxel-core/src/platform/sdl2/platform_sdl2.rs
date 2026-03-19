@@ -72,6 +72,7 @@ impl PlatformSdl2 {
     //
     pub fn init(&mut self, headless: bool) {
         if headless {
+            unsafe { SDL_Init(SDL_INIT_AUDIO) };
             return;
         }
 
