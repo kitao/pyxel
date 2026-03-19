@@ -205,6 +205,7 @@ The following special key actions are available while a Pyxel application is run
 ### Pyxel Editor
 
 Pyxel Editor creates images and sounds used in a Pyxel application.
+The created data is saved as a Pyxel resource file (.pyxres).
 
 For detailed usage instructions, see the [Pyxel Editor Manual](https://kitao.github.io/pyxel/web/editor-manual/).
 
@@ -268,6 +269,7 @@ If you're confident in your skills, try using the Advanced API to create truly a
 - [Pyxel MML Commands](https://kitao.github.io/pyxel/web/mml-studio/mml-commands.html)
 - [Pyxel Editor Manual](https://kitao.github.io/pyxel/web/editor-manual/)
 - [How to Use Pyxel for Web](https://kitao.github.io/pyxel/web/web-usage/)
+- [Pyxel Resource File Format](https://github.com/kitao/pyxel/blob/main/docs/pyxres-format.md)
 - [FAQ](https://github.com/kitao/pyxel/blob/main/docs/faq.md)
 
 ### Tools

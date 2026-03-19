@@ -848,6 +848,20 @@
       "tr": "Pyxel Editor, Pyxel uygulamalarında kullanılan resim ve sesleri oluşturur.",
       "uk": "Pyxel Editor дозволяє створювати зображення та звуки для програм Pyxel."
     },
+    "resources_editor_save": {
+      "en": "The created data is saved as a Pyxel resource file (.pyxres).",
+      "cn": "创建的数据将保存为 Pyxel 资源文件（.pyxres）。",
+      "de": "Die erstellten Daten werden als Pyxel-Ressourcendatei (.pyxres) gespeichert.",
+      "es": "Los datos creados se guardan como un archivo de recursos de Pyxel (.pyxres).",
+      "fr": "Les données créées sont enregistrées sous forme de fichier de ressources Pyxel (.pyxres).",
+      "it": "I dati creati vengono salvati come file di risorse Pyxel (.pyxres).",
+      "ja": "作成したデータは Pyxel リソースファイル（.pyxres）として保存されます。",
+      "ko": "생성된 데이터는 Pyxel 리소스 파일(.pyxres)로 저장됩니다.",
+      "pt": "Os dados criados são salvos como um arquivo de recursos Pyxel (.pyxres).",
+      "ru": "Созданные данные сохраняются в файле ресурсов Pyxel (.pyxres).",
+      "tr": "Oluşturulan veriler Pyxel kaynak dosyası (.pyxres) olarak kaydedilir.",
+      "uk": "Створені дані зберігаються у файлі ресурсів Pyxel (.pyxres)."
+    },
     "resources_editor_link": {
       "en": "For detailed usage instructions, see the {0}.",
       "cn": "详细操作方法请参阅 {0}。",
@@ -1365,6 +1379,20 @@
       "ru": "Дополнительная информация",
       "tr": "Diğer Bilgiler",
       "uk": "Інша інформація"
+    },
+    "other_pyxres_format": {
+      "en": "Pyxel Resource File Format",
+      "cn": "Pyxel 资源文件格式",
+      "de": "Pyxel-Ressourcendateiformat",
+      "es": "Formato de archivo de recursos de Pyxel",
+      "fr": "Format de fichier de ressources Pyxel",
+      "it": "Formato file risorse Pyxel",
+      "ja": "Pyxel リソースファイルフォーマット",
+      "ko": "Pyxel 리소스 파일 형식",
+      "pt": "Formato de arquivo de recursos Pyxel",
+      "ru": "Формат файла ресурсов Pyxel",
+      "tr": "Pyxel Kaynak Dosya Biçimi",
+      "uk": "Формат файлу ресурсів Pyxel"
     },
     "other_faq": {
       "en": "FAQ",

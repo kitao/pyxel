@@ -235,7 +235,8 @@ pyxel.show()`, "python")}
         $("s-resources").innerHTML = `
           <h2 class="section-title">${esc(t("resources_title"))}</h2>
           <h3 class="sub-title">${esc(t("resources_editor_title"))}</h3>
-          <p class="body">${esc(t("resources_editor_body"))}</p>
+          <p class="body">${esc(t("resources_editor_body"))}
+            ${esc(t("resources_editor_save"))}</p>
           <p class="body mt-2">${t("resources_editor_link")
             .replace("{0}", link("../editor-manual/", esc(t("tool_editor_manual"))))}</p>
           <h3 class="sub-title">${esc(t("resources_other_title"))}</h3>
@@ -288,6 +289,7 @@ pyxel.show()`, "python")}
           ["../mml-studio/mml-commands.html", t("tool_mml_commands")],
           ["../editor-manual/", t("tool_editor_manual")],
           ["../web-usage/", t("other_web_usage")],
+          ["https://github.com/kitao/pyxel/blob/main/docs/pyxres-format.md", t("other_pyxres_format")],
           [faqUrl, t("other_faq")],
         ].map(([u, n]) => `<li>${link(u, esc(n))}</li>`).join("");
         const tools = [
