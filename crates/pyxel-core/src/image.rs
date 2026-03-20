@@ -8,7 +8,8 @@ use crate::canvas::{Canvas, CopyArea, PerspectiveProjection, ToIndex};
 use crate::font::Font;
 use crate::rect_area::RectArea;
 use crate::settings::{
-    FONT_HEIGHT, FONT_WIDTH, MAX_COLORS, MAX_FONT_CODE, MIN_FONT_CODE, NUM_FONT_ROWS, TILE_SIZE,
+    FONT_HEIGHT, FONT_WIDTH, MAX_COLORS, MAX_FONT_CODE, MIN_FONT_CODE, NUM_FONT_ROWS, TILE_MASK,
+    TILE_SHIFT, TILE_SIZE,
 };
 use crate::tilemap::{ImageSource, Tilemap};
 use crate::{pyxel, utils};
@@ -540,21 +541,21 @@ impl Image {
 
             for yi in 0..height {
                 let tilemap_y = src_y + yi;
-                let tile_y = tilemap_y / tile_size;
-                let pixel_y = tilemap_y % tile_size;
+                let tile_y = (tilemap_y >> TILE_SHIFT) as usize;
+                let pixel_y = (tilemap_y & TILE_MASK) as usize;
                 let dst_row = dst_w * (dst_y + yi) as usize + dst_x as usize;
 
                 let mut xi = 0;
                 while xi < width {
                     let tilemap_x = src_x + xi;
-                    let tile_x = tilemap_x / tile_size;
-                    let tile = tilemap.canvas.read_data(tile_x as usize, tile_y as usize);
+                    let tile_x = (tilemap_x >> TILE_SHIFT) as usize;
+                    let tile = tilemap.canvas.read_data(tile_x, tile_y);
 
-                    let pixel_x = tilemap_x % tile_size;
+                    let pixel_x = tilemap_x & TILE_MASK;
                     let chunk = (tile_size - pixel_x).min(width - xi) as usize;
 
                     let img_x = (tile.0 as i32 * tile_size + pixel_x) as usize;
-                    let img_y = (tile.1 as i32 * tile_size + pixel_y) as usize;
+                    let img_y = tile.1 as usize * TILE_SIZE as usize + pixel_y;
 
                     if img_y < img_h && img_x < img_w {
                         let valid = chunk.min(img_w - img_x);
@@ -587,8 +588,8 @@ impl Image {
 
         for yi in 0..height {
             let tilemap_y = src_y + sign_y * yi + offset_y;
-            let tile_y = tilemap_y / tile_size;
-            let pixel_y = tilemap_y % tile_size;
+            let tile_y = (tilemap_y >> TILE_SHIFT) as usize;
+            let pixel_y = tilemap_y & TILE_MASK;
             let dst_yi = (dst_y + yi) as usize;
 
             let mut cached_tile_x = i32::MIN;
@@ -596,14 +597,14 @@ impl Image {
 
             for xi in 0..width {
                 let tilemap_x = src_x + sign_x * xi + offset_x;
-                let tile_x = tilemap_x / tile_size;
+                let tile_x = tilemap_x >> TILE_SHIFT;
 
                 if tile_x != cached_tile_x {
-                    tile = tilemap.canvas.read_data(tile_x as usize, tile_y as usize);
+                    tile = tilemap.canvas.read_data(tile_x as usize, tile_y);
                     cached_tile_x = tile_x;
                 }
 
-                let value_x = tile.0 as i32 * tile_size + tilemap_x % tile_size;
+                let value_x = tile.0 as i32 * tile_size + (tilemap_x & TILE_MASK);
                 if value_x < 0 || value_x >= img_w {
                     continue;
                 }
@@ -773,36 +774,37 @@ impl Image {
         let y1 = proj.dst_y.max(self.canvas.clip_rect.top());
         let y2 = (proj.dst_y + proj.h - 1).min(self.canvas.clip_rect.bottom());
 
+        let (wx_step, wy_step, wz_step) = proj.x_steps();
+
         for yi in y1..=y2 {
+            let (mut wx, mut wy, mut wz) = proj.world_base(x1, yi);
+
             for xi in x1..=x2 {
-                let Some((src_xf, src_yf)) = proj.project(xi, yi) else {
-                    continue;
-                };
-                let src_xi = utils::f32_to_i32(src_xf);
-                let src_yi = utils::f32_to_i32(src_yf);
+                if wz.abs() >= f32::EPSILON {
+                    let t = -proj.cam_z / wz;
+                    if t > 0.0 {
+                        let src_xi = utils::f32_to_i32(proj.cam_x + t * wx);
+                        let src_yi = utils::f32_to_i32(proj.cam_y + t * wy);
 
-                // Convert pixel coords to tile coords
-                let tile_x = src_xi.div_euclid(tile_size);
-                let tile_y = src_yi.div_euclid(tile_size);
-                if tile_x < 0 || tile_x >= tm_w || tile_y < 0 || tile_y >= tm_h {
-                    continue;
-                }
-
-                let tile = tilemap.canvas.read_data(tile_x as usize, tile_y as usize);
-                let px = tile.0 as i32 * tile_size + src_xi.rem_euclid(tile_size);
-                let py = tile.1 as i32 * tile_size + src_yi.rem_euclid(tile_size);
-                if px < 0 || px >= img_w || py < 0 || py >= img_h {
-                    continue;
-                }
-
-                let value = image.canvas.read_data(px as usize, py as usize);
-                if let Some(transparent) = transparent {
-                    if value == transparent {
-                        continue;
+                        let tile_x = src_xi >> TILE_SHIFT;
+                        let tile_y = src_yi >> TILE_SHIFT;
+                        if tile_x >= 0 && tile_x < tm_w && tile_y >= 0 && tile_y < tm_h {
+                            let tile = tilemap.canvas.read_data(tile_x as usize, tile_y as usize);
+                            let px = tile.0 as i32 * tile_size + (src_xi & TILE_MASK);
+                            let py = tile.1 as i32 * tile_size + (src_yi & TILE_MASK);
+                            if px >= 0 && px < img_w && py >= 0 && py < img_h {
+                                let value = image.canvas.read_data(px as usize, py as usize);
+                                if transparent.is_none_or(|tkey| value != tkey) {
+                                    let value = self.palette[value.to_index()];
+                                    self.canvas.write_data(xi as usize, yi as usize, value);
+                                }
+                            }
+                        }
                     }
                 }
-                let value = self.palette[value.to_index()];
-                self.canvas.write_data(xi as usize, yi as usize, value);
+                wx += wx_step;
+                wy += wy_step;
+                wz += wz_step;
             }
         }
     }
@@ -845,16 +847,35 @@ impl Image {
             let code = c as i32 - MIN_FONT_CODE as i32;
             let src_x = (code % NUM_FONT_ROWS as i32) as usize;
             let src_y = (code / NUM_FONT_ROWS as i32) as usize;
+            let font_row = font_w * src_y * FONT_HEIGHT as usize + src_x * FONT_WIDTH as usize;
 
-            for fy in 0..FONT_HEIGHT as usize {
-                for fx in 0..FONT_WIDTH as usize {
-                    if font_data[font_w * (src_y * FONT_HEIGHT as usize + fy)
-                        + src_x * FONT_WIDTH as usize
-                        + fx]
-                        != 0
-                    {
-                        self.canvas
-                            .write_data_with_clipping(x + fx as i32, y + fy as i32, color);
+            // Fast path: character fully inside clip rect and no dithering
+            if self.canvas.alpha >= 1.0
+                && x >= self.canvas.clip_rect.left()
+                && x + FONT_WIDTH as i32 - 1 <= self.canvas.clip_rect.right()
+                && y >= self.canvas.clip_rect.top()
+                && y + FONT_HEIGHT as i32 - 1 <= self.canvas.clip_rect.bottom()
+            {
+                let canvas_w = self.canvas.width() as usize;
+                for fy in 0..FONT_HEIGHT as usize {
+                    for fx in 0..FONT_WIDTH as usize {
+                        if font_data[font_row + font_w * fy + fx] != 0 {
+                            self.canvas.data
+                                [canvas_w * (y + fy as i32) as usize + (x + fx as i32) as usize] =
+                                color;
+                        }
+                    }
+                }
+            } else {
+                for fy in 0..FONT_HEIGHT as usize {
+                    for fx in 0..FONT_WIDTH as usize {
+                        if font_data[font_row + font_w * fy + fx] != 0 {
+                            self.canvas.write_data_with_clipping(
+                                x + fx as i32,
+                                y + fy as i32,
+                                color,
+                            );
+                        }
                     }
                 }
             }

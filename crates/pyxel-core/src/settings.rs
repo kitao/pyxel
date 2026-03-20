@@ -51,12 +51,14 @@ pub const PALETTE_FILE_EXTENSION: &str = ".pyxpal";
 
 // Graphics
 pub const NUM_COLORS: u32 = 16;
-pub const MAX_COLORS: u32 = 255;
+pub const MAX_COLORS: u32 = 256;
 pub const NUM_IMAGES: u32 = 3;
 pub const IMAGE_SIZE: u32 = 256;
 pub const NUM_TILEMAPS: u32 = 8;
 pub const TILEMAP_SIZE: u32 = 256;
 pub const TILE_SIZE: u32 = 8;
+pub const TILE_SHIFT: u32 = 3; // log2(TILE_SIZE)
+pub const TILE_MASK: i32 = TILE_SIZE as i32 - 1;
 pub const DEFAULT_COLORS: [Rgb24; NUM_COLORS as usize] = [
     0x000000, 0x2b335f, 0x7e2072, 0x19959c, 0x8b4852, 0x395c98, 0xa9c1ff, 0xeeeeee, //
     0xd4186c, 0xd38441, 0xe9c35b, 0x70c6a9, 0x7696de, 0xa3a3a3, 0xff9798, 0xedc7b0,

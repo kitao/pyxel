@@ -3,6 +3,10 @@
 ## 2.8.5
 
 - Optimized blt and bltm rendering with fast paths
+- Optimized tilemap, text, and perspective rendering
+- Optimized screen and palette texture uploads
+- Increased maximum color palette size from 255 to 256
+- Optimized GIF screencast saving with buffer reuse
 - Enabled Python atexit handlers on program termination
 - Enabled audio playback in headless mode
 

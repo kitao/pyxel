@@ -152,7 +152,7 @@ An optional text file with one RGB color per line in 6-digit hexadecimal format.
 | Property | Value |
 | --- | --- |
 | Default colors | 16 |
-| Maximum colors | 255 |
+| Maximum colors | 256 |
 | Format | One `RRGGBB` hex value per line |
 
 If no `.pyxpal` file is present, the built-in default palette is used:

@@ -538,7 +538,83 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
             return;
         }
 
-        // General path: flip and/or dithering
+        // Flip-only path: no dithering, row-level operations
+        if self.alpha >= 1.0 {
+            let dst_w = self.width() as usize;
+            let src_w = canvas.width() as usize;
+            let width_usize = width as usize;
+
+            for yi in 0..height {
+                let sy = (src_y + sign_y * yi + offset_y) as usize;
+                let di_base = dst_w * (dst_y + yi) as usize + dst_x as usize;
+                let dst = &mut self.data[di_base..di_base + width_usize];
+
+                if sign_x == 1 {
+                    // Y-flip only: source row is contiguous
+                    let si = src_w * sy + src_x as usize;
+                    let src = &canvas.data[si..si + width_usize];
+                    match (transparent, palette) {
+                        (None, None) => dst.copy_from_slice(src),
+                        (Some(tkey), None) => {
+                            for i in 0..width_usize {
+                                let val = src[i];
+                                if val != tkey {
+                                    dst[i] = val;
+                                }
+                            }
+                        }
+                        (None, Some(pal)) => {
+                            for i in 0..width_usize {
+                                dst[i] = pal[src[i].to_index()];
+                            }
+                        }
+                        (Some(tkey), Some(pal)) => {
+                            for i in 0..width_usize {
+                                let val = src[i];
+                                if val != tkey {
+                                    dst[i] = pal[val.to_index()];
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    // X-flip: reverse pixel order within row
+                    let sx_start = (src_x + offset_x) as usize;
+                    let src_row = &canvas.data[src_w * sy..];
+                    match (transparent, palette) {
+                        (None, None) => {
+                            for xi in 0..width_usize {
+                                dst[xi] = src_row[sx_start - xi];
+                            }
+                        }
+                        (Some(tkey), None) => {
+                            for xi in 0..width_usize {
+                                let val = src_row[sx_start - xi];
+                                if val != tkey {
+                                    dst[xi] = val;
+                                }
+                            }
+                        }
+                        (None, Some(pal)) => {
+                            for xi in 0..width_usize {
+                                dst[xi] = pal[src_row[sx_start - xi].to_index()];
+                            }
+                        }
+                        (Some(tkey), Some(pal)) => {
+                            for xi in 0..width_usize {
+                                let val = src_row[sx_start - xi];
+                                if val != tkey {
+                                    dst[xi] = pal[val.to_index()];
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return;
+        }
+
+        // General path: dithering
         for yi in 0..height {
             for xi in 0..width {
                 let value_x = src_x + sign_x * xi + offset_x;
@@ -665,24 +741,30 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         let y1 = proj.dst_y.max(self.clip_rect.top());
         let y2 = (proj.dst_y + proj.h - 1).min(self.clip_rect.bottom());
 
+        let (wx_step, wy_step, wz_step) = proj.x_steps();
+
         for yi in y1..=y2 {
+            let (mut wx, mut wy, mut wz) = proj.world_base(x1, yi);
+
             for xi in x1..=x2 {
-                let Some((src_xf, src_yf)) = proj.project(xi, yi) else {
-                    continue;
-                };
-                let src_xi = f32_to_i32(src_xf);
-                let src_yi = f32_to_i32(src_yf);
-                if src_xi < 0 || src_xi >= src_w || src_yi < 0 || src_yi >= src_h {
-                    continue;
-                }
-                let value = canvas.read_data(src_xi as usize, src_yi as usize);
-                if let Some(transparent) = transparent {
-                    if value == transparent {
-                        continue;
+                if wz.abs() >= f32::EPSILON {
+                    let t = -proj.cam_z / wz;
+                    if t > 0.0 {
+                        let src_xi = f32_to_i32(proj.cam_x + t * wx);
+                        let src_yi = f32_to_i32(proj.cam_y + t * wy);
+                        if src_xi >= 0 && src_xi < src_w && src_yi >= 0 && src_yi < src_h {
+                            let value = canvas.read_data(src_xi as usize, src_yi as usize);
+                            if transparent.is_none_or(|tkey| value != tkey) {
+                                let value =
+                                    palette.map_or(value, |palette| palette[value.to_index()]);
+                                self.write_data(xi as usize, yi as usize, value);
+                            }
+                        }
                     }
                 }
-                let value = palette.map_or(value, |palette| palette[value.to_index()]);
-                self.write_data(xi as usize, yi as usize, value);
+                wx += wx_step;
+                wy += wy_step;
+                wz += wz_step;
             }
         }
     }
@@ -822,9 +904,9 @@ impl CopyArea {
 }
 
 pub(crate) struct PerspectiveProjection {
-    cam_x: f32,
-    cam_y: f32,
-    cam_z: f32,
+    pub(crate) cam_x: f32,
+    pub(crate) cam_y: f32,
+    pub(crate) cam_z: f32,
     r00: f32,
     r01: f32,
     r02: f32,
@@ -915,32 +997,31 @@ impl PerspectiveProjection {
         })
     }
 
-    pub(crate) fn project(&self, xi: i32, yi: i32) -> Option<(f32, f32)> {
+    // Per-pixel step values (constant for all xi, yi)
+    pub(crate) fn x_steps(&self) -> (f32, f32, f32) {
+        let vx_step = self.tan_hfov * self.aspect / self.half_w;
+        let vx2_step = vx_step * self.cz;
+        let vy2_step = -vx_step * self.sz;
+        (
+            self.r00 * vx2_step + self.r01 * vy2_step, // wx_step
+            self.r10 * vx2_step + self.r11 * vy2_step, // wy_step
+            self.r21 * vy2_step,                       // wz_step
+        )
+    }
+
+    // Base world-space values for a given (xi, yi)
+    pub(crate) fn world_base(&self, xi: i32, yi: i32) -> (f32, f32, f32) {
         let ndc_x = ((xi - self.dst_x) as f32 + 0.5 - self.half_w) / self.half_w;
         let ndc_y = ((yi - self.dst_y) as f32 + 0.5 - self.half_h) / self.half_h;
-
         let vx = ndc_x * self.tan_hfov * self.aspect;
         let vy = -ndc_y * self.tan_hfov;
-
-        // Apply rot_z in view space (positive = lean right)
         let vx2 = vx * self.cz + vy * self.sz;
         let vy2 = -vx * self.sz + vy * self.cz;
-
-        // World-space ray direction via rotation matrix
-        let world_z = self.r21 * vy2 - self.r22;
-        if world_z.abs() < f32::EPSILON {
-            return None;
-        }
-
-        let t = -self.cam_z / world_z;
-        if t <= 0.0 {
-            return None;
-        }
-
-        let world_x = self.r00 * vx2 + self.r01 * vy2 - self.r02;
-        let world_y = self.r10 * vx2 + self.r11 * vy2 - self.r12;
-
-        Some((self.cam_x + t * world_x, self.cam_y + t * world_y))
+        (
+            self.r00 * vx2 + self.r01 * vy2 - self.r02,
+            self.r10 * vx2 + self.r11 * vy2 - self.r12,
+            self.r21 * vy2 - self.r22,
+        )
     }
 }
 

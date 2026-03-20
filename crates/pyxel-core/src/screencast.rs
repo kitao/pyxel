@@ -1,5 +1,4 @@
 use std::borrow::Cow;
-use std::cmp::{max, min};
 use std::fs::File;
 
 use gif::{DisposalMethod, Encoder, Frame, Repeat};
@@ -20,19 +19,10 @@ struct Screen {
 }
 
 impl Screen {
-    fn to_rgb_image(&self) -> Vec<Vec<Rgb24>> {
-        let mut rgb_image: Vec<Vec<Rgb24>> = Vec::new();
-
-        for y in 0..self.height {
-            let mut rgb_line: Vec<Rgb24> = Vec::new();
-            for x in 0..self.width {
-                let rgb = self.colors[self.image[(self.width * y + x) as usize] as usize];
-                rgb_line.push(rgb);
-            }
-            rgb_image.push(rgb_line);
+    fn write_rgb(&self, out: &mut [Rgb24]) {
+        for (i, &color) in self.image.iter().enumerate() {
+            out[i] = self.colors[color as usize];
         }
-
-        rgb_image
     }
 }
 
@@ -112,10 +102,14 @@ impl Screencast {
             File::create(&filename).map_err(|_| format!("Failed to create file '{filename}'"))?;
 
         let screen = self.screen(0);
+        let width = screen.width;
+        let height = screen.height;
+        let pixel_count = (width * height) as usize;
+
         let mut encoder = Encoder::new(
             &mut file,
-            (screen.width * scale) as u16,
-            (screen.height * scale) as u16,
+            (width * scale) as u16,
+            (height * scale) as u16,
             &[],
         )
         .map_err(|_| save_err())?;
@@ -124,12 +118,28 @@ impl Screencast {
             .set_repeat(Repeat::Infinite)
             .map_err(|_| save_err())?;
 
+        // Preallocate buffers
+        let mut base_rgb = vec![0u32; pixel_count];
+        let mut new_rgb = vec![0u32; pixel_count];
+        let mut diff_rgb = vec![0u32; pixel_count];
+        let mut color_table = IndexMap::<Rgb24, u8>::with_capacity(256);
+        let mut index_buf = Vec::<u8>::with_capacity(pixel_count);
+        let mut scaled_buf = Vec::<u8>::with_capacity((width * scale * height * scale) as usize);
+        let mut palette = Vec::<u8>::with_capacity(256 * 3);
+
         // Write first frame
-        let mut base_image = screen.to_rgb_image();
-        let (rect, palette, buffer) = Self::make_gif_buffer(
-            RectArea::new(0, 0, screen.width, screen.height),
-            &base_image,
+        self.screen(0).write_rgb(&mut base_rgb);
+        let full_rect = RectArea::new(0, 0, width, height);
+        Self::encode_region(
+            &base_rgb,
+            width,
+            full_rect,
             scale,
+            false,
+            &mut color_table,
+            &mut index_buf,
+            &mut scaled_buf,
+            &mut palette,
         );
 
         encoder
@@ -138,38 +148,82 @@ impl Screencast {
                 dispose: DisposalMethod::Any,
                 transparent: None,
                 needs_user_input: false,
-                top: rect.top() as u16,
-                left: rect.left() as u16,
-                width: rect.width() as u16,
-                height: rect.height() as u16,
+                top: 0,
+                left: 0,
+                width: (width * scale) as u16,
+                height: (height * scale) as u16,
                 interlaced: false,
-                palette: Some(palette),
-                buffer: Cow::Borrowed(&buffer),
+                palette: Some(palette.clone()),
+                buffer: Cow::Borrowed(&scaled_buf),
             })
             .map_err(|_| save_err())?;
 
         // Write subsequent frames
         for i in 1..self.num_captured_screens {
-            let screen = &self.screen(i);
-            let image = screen.to_rgb_image();
-            let (rect, image) = Self::make_diff_image(&mut base_image, &image);
-            let (rect, palette, buffer) = Self::make_gif_buffer(rect, &image, scale);
+            self.screen(i).write_rgb(&mut new_rgb);
+            let diff_rect =
+                Self::compute_diff(&mut base_rgb, &new_rgb, width, height, &mut diff_rgb);
 
-            encoder
-                .write_frame(&Frame {
-                    delay: self.screen_delay(i),
-                    dispose: DisposalMethod::Keep,
-                    transparent: Some(0),
-                    needs_user_input: false,
-                    top: rect.top() as u16,
-                    left: rect.left() as u16,
-                    width: rect.width() as u16,
-                    height: rect.height() as u16,
-                    interlaced: false,
-                    palette: Some(palette),
-                    buffer: Cow::Borrowed(&buffer),
-                })
-                .map_err(|_| save_err())?;
+            let overflow = Self::encode_region(
+                &diff_rgb,
+                width,
+                diff_rect,
+                scale,
+                true,
+                &mut color_table,
+                &mut index_buf,
+                &mut scaled_buf,
+                &mut palette,
+            );
+
+            if overflow {
+                // Too many colors for diff; write as full frame
+                Self::encode_region(
+                    &new_rgb,
+                    width,
+                    full_rect,
+                    scale,
+                    false,
+                    &mut color_table,
+                    &mut index_buf,
+                    &mut scaled_buf,
+                    &mut palette,
+                );
+
+                encoder
+                    .write_frame(&Frame {
+                        delay: self.screen_delay(i),
+                        dispose: DisposalMethod::Any,
+                        transparent: None,
+                        needs_user_input: false,
+                        top: 0,
+                        left: 0,
+                        width: (width * scale) as u16,
+                        height: (height * scale) as u16,
+                        interlaced: false,
+                        palette: Some(palette.clone()),
+                        buffer: Cow::Borrowed(&scaled_buf),
+                    })
+                    .map_err(|_| save_err())?;
+            } else {
+                let sr = Self::scale_rect(diff_rect, scale);
+
+                encoder
+                    .write_frame(&Frame {
+                        delay: self.screen_delay(i),
+                        dispose: DisposalMethod::Keep,
+                        transparent: Some(0),
+                        needs_user_input: false,
+                        top: sr.top() as u16,
+                        left: sr.left() as u16,
+                        width: sr.width() as u16,
+                        height: sr.height() as u16,
+                        interlaced: false,
+                        palette: Some(palette.clone()),
+                        buffer: Cow::Borrowed(&scaled_buf),
+                    })
+                    .map_err(|_| save_err())?;
+            }
         }
 
         self.reset();
@@ -193,62 +247,128 @@ impl Screencast {
         (100.0 / self.fps as f32 * num_elapsed_frames as f32 + 0.5) as u16
     }
 
-    fn make_gif_buffer(
-        rect: RectArea,
-        image: &[Vec<Rgb24>],
-        scale: u32,
-    ) -> (RectArea, Vec<u8>, Vec<u8>) {
-        let mut color_table = IndexMap::<Rgb24, u8>::new();
-        color_table.insert(TRANSPARENT, 0);
+    fn compute_diff(
+        base: &mut [Rgb24],
+        new: &[Rgb24],
+        width: u32,
+        height: u32,
+        diff: &mut [Rgb24],
+    ) -> RectArea {
+        let w = width as usize;
+        let h = height as usize;
+        let mut min_x = w;
+        let mut min_y = h;
+        let mut max_x = 0;
+        let mut max_y = 0;
 
-        let mut num_colors = 1;
-        let mut buffer = Vec::new();
-
-        for line in image {
-            for rgb in line {
-                if let Some(index) = color_table.get(rgb) {
-                    buffer.push(*index);
+        for y in 0..h {
+            for x in 0..w {
+                let i = y * w + x;
+                let rgb = new[i];
+                if rgb == base[i] {
+                    diff[i] = TRANSPARENT;
                 } else {
-                    color_table.insert(*rgb, num_colors);
-                    buffer.push(num_colors);
-                    num_colors += 1;
+                    min_x = min_x.min(x);
+                    min_y = min_y.min(y);
+                    max_x = max_x.max(x);
+                    max_y = max_y.max(y);
+                    base[i] = rgb;
+                    diff[i] = rgb;
                 }
             }
         }
 
-        let rect = if buffer.is_empty() {
-            buffer = vec![0];
-            RectArea::new(0, 0, 1, 1)
+        if min_x > max_x {
+            RectArea::new(0, 0, 0, 0)
         } else {
-            let width = rect.width();
-            let height = rect.height();
-            let scaled_width = width * scale;
-            let scaled_height = height * scale;
+            RectArea::new(
+                min_x as i32,
+                min_y as i32,
+                (max_x - min_x + 1) as u32,
+                (max_y - min_y + 1) as u32,
+            )
+        }
+    }
 
-            let mut scaled_buffer: Vec<u8> = Vec::new();
-            for y in 0..scaled_height {
-                for x in 0..scaled_width {
-                    let index = (y / scale) * width + x / scale;
-                    scaled_buffer.push(buffer[index as usize]);
+    // Encode a region of a flat RGB image into GIF index buffer + palette.
+    // Returns true if color overflow occurred (> 256 entries needed).
+    #[allow(clippy::too_many_arguments)]
+    fn encode_region(
+        src: &[Rgb24],
+        src_width: u32,
+        rect: RectArea,
+        scale: u32,
+        use_transparent: bool,
+        color_table: &mut IndexMap<Rgb24, u8>,
+        index_buf: &mut Vec<u8>,
+        scaled_buf: &mut Vec<u8>,
+        palette: &mut Vec<u8>,
+    ) -> bool {
+        color_table.clear();
+        index_buf.clear();
+        scaled_buf.clear();
+        palette.clear();
+
+        let mut next_index: u16 = 0;
+        if use_transparent {
+            color_table.insert(TRANSPARENT, 0);
+            next_index = 1;
+        }
+
+        let rw = rect.width() as usize;
+        let rh = rect.height() as usize;
+
+        // Empty region: emit a minimal 1x1 frame
+        if rw == 0 || rh == 0 {
+            let s = scale as usize;
+            scaled_buf.resize(s * s, 0);
+            palette.extend_from_slice(&[0, 0, 0]);
+            return false;
+        }
+
+        // Build index buffer from the rect region
+        let src_w = src_width as usize;
+        let rx = rect.left() as usize;
+        let ry = rect.top() as usize;
+
+        for y in 0..rh {
+            let row = (ry + y) * src_w + rx;
+            for x in 0..rw {
+                let rgb = src[row + x];
+                if let Some(&index) = color_table.get(&rgb) {
+                    index_buf.push(index);
+                } else {
+                    if next_index >= 256 {
+                        return true;
+                    }
+                    let index = next_index as u8;
+                    color_table.insert(rgb, index);
+                    index_buf.push(index);
+                    next_index += 1;
                 }
             }
+        }
 
-            buffer = scaled_buffer;
+        // Scale
+        if scale == 1 {
+            std::mem::swap(index_buf, scaled_buf);
+        } else {
+            let sw = rw * scale as usize;
+            let sh = rh * scale as usize;
+            let s = scale as usize;
+            scaled_buf.reserve(sw * sh);
+            for y in 0..sh {
+                let src_row = (y / s) * rw;
+                for x in 0..sw {
+                    scaled_buf.push(index_buf[src_row + x / s]);
+                }
+            }
+        }
 
-            RectArea::new(
-                rect.left() * scale as i32,
-                rect.top() * scale as i32,
-                scaled_width,
-                scaled_height,
-            )
-        };
-
-        let mut palette: Vec<u8> = Vec::new();
-        for (rgb, _) in color_table {
+        // Build palette
+        for (&rgb, _) in color_table.iter() {
             if rgb == TRANSPARENT {
-                palette.push(0);
-                palette.push(0);
-                palette.push(0);
+                palette.extend_from_slice(&[0, 0, 0]);
             } else {
                 palette.push((rgb >> 16) as u8);
                 palette.push((rgb >> 8) as u8);
@@ -256,57 +376,19 @@ impl Screencast {
             }
         }
 
-        (rect, palette, buffer)
+        false
     }
 
-    fn make_diff_image(
-        base_image: &mut [Vec<Rgb24>],
-        new_image: &[Vec<Rgb24>],
-    ) -> (RectArea, Vec<Vec<Rgb24>>) {
-        let mut min_x = i16::MAX;
-        let mut min_y = i16::MAX;
-        let mut max_x = i16::MIN;
-        let mut max_y = i16::MIN;
-
-        let width = base_image[0].len();
-        let height = base_image.len();
-        let mut diff_image: Vec<Vec<Rgb24>> = Vec::new();
-
-        for y in 0..height {
-            let mut diff_line: Vec<Rgb24> = Vec::new();
-            for x in 0..width {
-                let rgb = new_image[y][x];
-                if rgb == base_image[y][x] {
-                    diff_line.push(TRANSPARENT);
-                } else {
-                    min_x = min(min_x, x as i16);
-                    min_y = min(min_y, y as i16);
-                    max_x = max(max_x, x as i16);
-                    max_y = max(max_y, y as i16);
-                    base_image[y][x] = rgb;
-                    diff_line.push(rgb);
-                }
-            }
-            diff_image.push(diff_line);
-        }
-
-        if min_x > max_x || min_y > max_y {
-            return (RectArea::new(0, 0, 0, 0), Vec::new());
-        }
-
-        diff_image = diff_image[min_y as usize..=max_y as usize].to_vec();
-        for diff_line in &mut diff_image {
-            *diff_line = diff_line[min_x as usize..=max_x as usize].to_vec();
-        }
-
-        (
+    fn scale_rect(rect: RectArea, scale: u32) -> RectArea {
+        if rect.is_empty() {
+            RectArea::new(0, 0, scale, scale)
+        } else {
             RectArea::new(
-                min_x as i32,
-                min_y as i32,
-                diff_image[0].len() as u32,
-                diff_image.len() as u32,
-            ),
-            diff_image,
-        )
+                rect.left() * scale as i32,
+                rect.top() * scale as i32,
+                rect.width() * scale,
+                rect.height() * scale,
+            )
+        }
     }
 }

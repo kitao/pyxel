@@ -4,7 +4,7 @@ use std::mem::size_of;
 use glow::{HasContext, PixelUnpackData};
 
 use crate::font::Font;
-use crate::image::Color;
+use crate::image::{Color, Rgb24};
 use crate::platform;
 use crate::platform::GLProfile;
 use crate::pyxel::{self, Pyxel};
@@ -33,7 +33,9 @@ pub struct ScreenShader {
 pub struct Graphics {
     screen_shaders: Vec<ScreenShader>,
     screen_texture: glow::NativeTexture,
+    screen_texture_initialized: bool,
     colors_texture: glow::NativeTexture,
+    cached_colors: Vec<Rgb24>,
 }
 
 impl Graphics {
@@ -53,7 +55,9 @@ impl Graphics {
             Self {
                 screen_shaders,
                 screen_texture,
+                screen_texture_initialized: false,
                 colors_texture,
+                cached_colors: Vec::new(),
             }
         }
     }
@@ -520,12 +524,10 @@ impl Pyxel {
         gl.bind_vertex_array(Some(shader.vertex_array));
     }
 
-    unsafe fn bind_screen_texture(&self, gl: &mut glow::Context) {
+    unsafe fn bind_screen_texture(&mut self, gl: &mut glow::Context) {
+        let graphics = self.graphics.as_mut().unwrap();
         gl.active_texture(glow::TEXTURE0);
-        gl.bind_texture(
-            glow::TEXTURE_2D,
-            Some(self.graphics.as_ref().unwrap().screen_texture),
-        );
+        gl.bind_texture(glow::TEXTURE_2D, Some(graphics.screen_texture));
         gl.pixel_store_i32(glow::UNPACK_ALIGNMENT, 1);
 
         let (internal_format, format) = if platform::gl_profile() == GLProfile::Gles {
@@ -534,32 +536,55 @@ impl Pyxel {
             (glow::R8 as i32, glow::RED)
         };
 
-        gl.tex_image_2d(
-            glow::TEXTURE_2D,
-            0,
-            internal_format,
-            *pyxel::width() as i32,
-            *pyxel::height() as i32,
-            0,
-            format,
-            glow::UNSIGNED_BYTE,
-            PixelUnpackData::Slice(Some(&pyxel::screen().canvas.data)),
-        );
+        let w = *pyxel::width() as i32;
+        let h = *pyxel::height() as i32;
+        let data = &pyxel::screen().canvas.data;
+
+        if graphics.screen_texture_initialized {
+            gl.tex_sub_image_2d(
+                glow::TEXTURE_2D,
+                0,
+                0,
+                0,
+                w,
+                h,
+                format,
+                glow::UNSIGNED_BYTE,
+                PixelUnpackData::Slice(Some(data)),
+            );
+        } else {
+            gl.tex_image_2d(
+                glow::TEXTURE_2D,
+                0,
+                internal_format,
+                w,
+                h,
+                0,
+                format,
+                glow::UNSIGNED_BYTE,
+                PixelUnpackData::Slice(Some(data)),
+            );
+            graphics.screen_texture_initialized = true;
+        }
     }
 
-    unsafe fn bind_colors_texture(&self, gl: &mut glow::Context) {
-        gl.active_texture(glow::TEXTURE1);
-        gl.bind_texture(
-            glow::TEXTURE_2D,
-            Some(self.graphics.as_ref().unwrap().colors_texture),
-        );
-        gl.pixel_store_i32(glow::UNPACK_ALIGNMENT, 4);
-
+    unsafe fn bind_colors_texture(&mut self, gl: &mut glow::Context) {
         let colors = pyxel::colors();
         assert!(
             !colors.is_empty() && colors.len() <= MAX_COLORS as usize,
             "Number of colors must be between 1 to {MAX_COLORS}",
         );
+
+        let graphics = self.graphics.as_mut().unwrap();
+        if graphics.cached_colors == *colors {
+            gl.active_texture(glow::TEXTURE1);
+            gl.bind_texture(glow::TEXTURE_2D, Some(graphics.colors_texture));
+            return;
+        }
+
+        gl.active_texture(glow::TEXTURE1);
+        gl.bind_texture(glow::TEXTURE_2D, Some(graphics.colors_texture));
+        gl.pixel_store_i32(glow::UNPACK_ALIGNMENT, 4);
 
         let mut pixels: Vec<u8> = Vec::with_capacity(colors.len() * 3);
         for color in colors.iter() {
@@ -568,16 +593,31 @@ impl Pyxel {
             pixels.push(*color as u8);
         }
 
-        gl.tex_image_2d(
-            glow::TEXTURE_2D,
-            0,
-            glow::RGB as i32,
-            colors.len() as i32,
-            1,
-            0,
-            glow::RGB,
-            glow::UNSIGNED_BYTE,
-            PixelUnpackData::Slice(Some(&pixels)),
-        );
+        if graphics.cached_colors.len() == colors.len() {
+            gl.tex_sub_image_2d(
+                glow::TEXTURE_2D,
+                0,
+                0,
+                0,
+                colors.len() as i32,
+                1,
+                glow::RGB,
+                glow::UNSIGNED_BYTE,
+                PixelUnpackData::Slice(Some(pixels.as_slice())),
+            );
+        } else {
+            gl.tex_image_2d(
+                glow::TEXTURE_2D,
+                0,
+                glow::RGB as i32,
+                colors.len() as i32,
+                1,
+                0,
+                glow::RGB,
+                glow::UNSIGNED_BYTE,
+                PixelUnpackData::Slice(Some(&pixels)),
+            );
+        }
+        graphics.cached_colors.clone_from(colors);
     }
 }
