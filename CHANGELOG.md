@@ -2,7 +2,8 @@
 
 ## 2.8.6
 
-- Cleaned up code style across Rust, Python, and JavaScript files
+- Cleaned up code style across the codebase
+- Fixed WASM key sticking on rapid input
 
 ## 2.8.5
 

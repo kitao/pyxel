@@ -60,40 +60,42 @@ if (/safari/i.test(navigator.userAgent) && !/chrome/i.test(navigator.userAgent))
   document.addEventListener("keyup", fixArrowEvent, true);
 }
 
-// Keyboard key correction for non-US layouts (e.g. JIS)
-// Emscripten's SDL2 maps KeyboardEvent.keyCode through a US-layout table,
-// producing incorrect keycodes for non-US keyboards. This captures the actual
-// character from KeyboardEvent.key and builds a code-to-char mapping that is
-// independent of modifier keys (Shift, etc.).
+// Keyboard key correction for non-US layouts (e.g. JIS, AZERTY)
+// Emscripten's SDL2 maps physical keys through a US-layout table, producing
+// incorrect keycodes for non-US keyboards. This builds a persistent per-key
+// correction map from SDL scancode to the actual character, using the browser's
+// KeyboardEvent.key (which reflects the true layout).
 //
-// Char codes are queued (not stored in a single variable) so that each SDL
-// event dequeues the value from the matching browser event. A single variable
-// would be overwritten when multiple key events arrive in a single frame,
-// causing keys to "stick" because the release event gets the wrong key code.
-const _keyCharMap = {}; // Maps KeyboardEvent.code to unshifted char code
-const _keyDownCharQueue = [];
-const _keyUpCharQueue = [];
+// Unlike the previous queue-based approach, this map is keyed by physical key
+// (SDL scancode) so it never goes out of sync between keydown and keyup events.
+// The same correction is used for both press and release of a given key.
+const _scanCorrection = {}; // Maps SDL scancode to unshifted char code
+
+// SDL scancodes for printable ASCII keys (USB HID usage codes)
+const _CODE_TO_SCANCODE = {
+  KeyA: 4, KeyB: 5, KeyC: 6, KeyD: 7, KeyE: 8, KeyF: 9,
+  KeyG: 10, KeyH: 11, KeyI: 12, KeyJ: 13, KeyK: 14, KeyL: 15,
+  KeyM: 16, KeyN: 17, KeyO: 18, KeyP: 19, KeyQ: 20, KeyR: 21,
+  KeyS: 22, KeyT: 23, KeyU: 24, KeyV: 25, KeyW: 26, KeyX: 27,
+  KeyY: 28, KeyZ: 29,
+  Digit1: 30, Digit2: 31, Digit3: 32, Digit4: 33, Digit5: 34,
+  Digit6: 35, Digit7: 36, Digit8: 37, Digit9: 38, Digit0: 39,
+  Space: 44, Minus: 45, Equal: 46, BracketLeft: 47, BracketRight: 48,
+  Backslash: 49, Semicolon: 51, Quote: 52, Backquote: 53,
+  Comma: 54, Period: 55, Slash: 56,
+};
 document.addEventListener(
   "keydown",
   (event) => {
-    if (event.key.length === 1) {
-      const charCode = event.key.charCodeAt(0);
-      // Record unshifted mapping when no modifiers are held
-      if (!event.shiftKey && !event.ctrlKey && !event.altKey && !event.metaKey) {
-        _keyCharMap[event.code] = charCode;
+    if (
+      event.key.length === 1 &&
+      !event.shiftKey && !event.ctrlKey && !event.altKey && !event.metaKey
+    ) {
+      const scancode = _CODE_TO_SCANCODE[event.code];
+      if (scancode !== undefined) {
+        _scanCorrection[scancode] = event.key.charCodeAt(0);
       }
-      // Use recorded unshifted char if available, otherwise use current char
-      _keyDownCharQueue.push(_keyCharMap[event.code] || charCode);
-    } else {
-      _keyDownCharQueue.push(0);
     }
-  },
-  true,
-);
-document.addEventListener(
-  "keyup",
-  (event) => {
-    _keyUpCharQueue.push(_keyCharMap[event.code] || 0);
   },
   true,
 );

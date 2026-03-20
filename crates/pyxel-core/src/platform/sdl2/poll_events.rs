@@ -96,9 +96,9 @@ impl PlatformSdl2 {
                 SDL_KEYDOWN => {
                     let key = unsafe { sdl_event.key.keysym.sym } as Key;
 
-                    // Dequeue outside the repeat check to stay in sync with JS queue
                     #[cfg(target_os = "emscripten")]
-                    let key = correct_emscripten_key(key, "_keyDownCharQueue");
+                    let key = correct_emscripten_key(key, unsafe { sdl_event.key.keysym.scancode }
+                        as u32);
 
                     if unsafe { sdl_event.key.repeat } == 0 {
                         pyxel_events.push(Event::KeyPressed { key });
@@ -113,7 +113,8 @@ impl PlatformSdl2 {
                     let key = unsafe { sdl_event.key.keysym.sym } as Key;
 
                     #[cfg(target_os = "emscripten")]
-                    let key = correct_emscripten_key(key, "_keyUpCharQueue");
+                    let key = correct_emscripten_key(key, unsafe { sdl_event.key.keysym.scancode }
+                        as u32);
 
                     if unsafe { sdl_event.key.repeat } == 0 {
                         pyxel_events.push(Event::KeyReleased { key });
@@ -365,16 +366,19 @@ impl PlatformSdl2 {
 }
 
 // Correct SDL2 keycode on Emscripten for non-US keyboard layouts.
-// Emscripten's SDL2 maps browser KeyboardEvent.keyCode through a US-layout
-// lookup table, producing incorrect keycodes for JIS and other non-US keyboards.
-// This function dequeues the actual character from a JS queue (populated by
-// keydown/keyup listeners in pyxel.js) and uses it when the SDL2 key is a
-// printable ASCII character.
+// Emscripten's SDL2 maps physical keys through a US-layout table, producing
+// incorrect keycodes for JIS and other non-US keyboards. This function looks
+// up the actual character from a persistent per-scancode correction map
+// (populated by keydown listeners in pyxel.js).
+//
+// Using a persistent map keyed by SDL scancode (physical key) instead of a
+// per-event queue ensures that keydown and keyup for the same physical key
+// always receive the same correction, eliminating key sticking caused by
+// queue desynchronization.
 #[cfg(target_os = "emscripten")]
-fn correct_emscripten_key(sdl_key: Key, js_queue: &str) -> Key {
-    // Always dequeue to keep the JS queue in sync with SDL events
+fn correct_emscripten_key(sdl_key: Key, scancode: u32) -> Key {
     let js_key = unsafe {
-        let script = std::ffi::CString::new(format!("{js_queue}.shift()||0;")).unwrap();
+        let script = std::ffi::CString::new(format!("_scanCorrection[{scancode}]||0;")).unwrap();
         emscripten_run_script_int(script.as_ptr())
     } as u32;
 
