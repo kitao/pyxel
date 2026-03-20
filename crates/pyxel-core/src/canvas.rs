@@ -686,22 +686,84 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         let y1 = f32_to_i32(dst_cy - offset_y).max(self.clip_rect.top());
         let y2 = f32_to_i32(dst_cy + offset_y).min(self.clip_rect.bottom());
 
+        // Pre-compute per-pixel stepping
+        let cos_s = cos / scale;
+        let sin_s = sin / scale;
+        let step_sx = sign_x * cos_s;
+        let step_sy = sign_x * sin_s;
+
+        // Fast path: no dithering
+        if self.alpha >= 1.0 {
+            let dst_w = self.width() as usize;
+            let src_w = canvas.width() as usize;
+            let ca_l = canvas_area.left();
+            let ca_r = canvas_area.right();
+            let ca_t = canvas_area.top();
+            let ca_b = canvas_area.bottom();
+            macro_rules! scan {
+                (|$val:ident, $di:ident| $body:expr) => {
+                    for yi in y1..=y2 {
+                        let oy = (yi as f32 - dst_cy) * sign_y;
+                        let ox0 = (x1 as f32 - dst_cx) * sign_x;
+                        let mut sx = src_cx + ox0 * cos_s - oy * sin_s;
+                        let mut sy = src_cy + ox0 * sin_s + oy * cos_s;
+                        let di_row = dst_w * yi as usize;
+                        for xi in x1..=x2 {
+                            let vx = f32_to_i32(sx);
+                            let vy = f32_to_i32(sy);
+                            sx += step_sx;
+                            sy += step_sy;
+                            if vx >= ca_l && vx <= ca_r && vy >= ca_t && vy <= ca_b {
+                                let $val = canvas.data[src_w * vy as usize + vx as usize];
+                                let $di = di_row + xi as usize;
+                                $body
+                            }
+                        }
+                    }
+                };
+            }
+            match (transparent, palette) {
+                (None, None) => scan!(|val, di| {
+                    self.data[di] = val;
+                }),
+                (Some(tkey), None) => scan!(|val, di| {
+                    if val != tkey {
+                        self.data[di] = val;
+                    }
+                }),
+                (None, Some(pal)) => scan!(|val, di| {
+                    self.data[di] = pal[val.to_index()];
+                }),
+                (Some(tkey), Some(pal)) => scan!(|val, di| {
+                    if val != tkey {
+                        self.data[di] = pal[val.to_index()];
+                    }
+                }),
+            }
+            return;
+        }
+
+        // Dithering path
         for yi in y1..=y2 {
+            let oy = (yi as f32 - dst_cy) * sign_y;
+            let ox0 = (x1 as f32 - dst_cx) * sign_x;
+            let mut sx = src_cx + ox0 * cos_s - oy * sin_s;
+            let mut sy = src_cy + ox0 * sin_s + oy * cos_s;
             for xi in x1..=x2 {
-                let offset_x = (xi as f32 - dst_cx) * sign_x;
-                let offset_y = (yi as f32 - dst_cy) * sign_y;
-                let value_x = f32_to_i32(src_cx + (offset_x * cos - offset_y * sin) / scale);
-                let value_y = f32_to_i32(src_cy + (offset_x * sin + offset_y * cos) / scale);
-                if !canvas_area.contains(value_x, value_y) {
+                let vx = f32_to_i32(sx);
+                let vy = f32_to_i32(sy);
+                sx += step_sx;
+                sy += step_sy;
+                if !canvas_area.contains(vx, vy) {
                     continue;
                 }
-                let value = canvas.read_data(value_x as usize, value_y as usize);
-                if let Some(transparent) = transparent {
-                    if value == transparent {
+                let value = canvas.read_data(vx as usize, vy as usize);
+                if let Some(tkey) = transparent {
+                    if value == tkey {
                         continue;
                     }
                 }
-                let value = palette.map_or(value, |palette| palette[value.to_index()]);
+                let value = palette.map_or(value, |p| p[value.to_index()]);
                 self.write_data(xi as usize, yi as usize, value);
             }
         }
@@ -743,9 +805,60 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
 
         let (wx_step, wy_step, wz_step) = proj.x_steps();
 
+        // Fast path: no dithering
+        if self.alpha >= 1.0 {
+            let dst_w = self.width() as usize;
+            let src_wu = src_w as usize;
+            macro_rules! scan {
+                (|$val:ident, $di:ident| $body:expr) => {
+                    for yi in y1..=y2 {
+                        let (mut wx, mut wy, mut wz) = proj.world_base(x1, yi);
+                        let di_row = dst_w * yi as usize;
+                        for xi in x1..=x2 {
+                            if wz.abs() >= f32::EPSILON {
+                                let t = -proj.cam_z / wz;
+                                if t > 0.0 {
+                                    let sxi = f32_to_i32(proj.cam_x + t * wx);
+                                    let syi = f32_to_i32(proj.cam_y + t * wy);
+                                    if sxi >= 0 && sxi < src_w && syi >= 0 && syi < src_h {
+                                        let $val =
+                                            canvas.data[src_wu * syi as usize + sxi as usize];
+                                        let $di = di_row + xi as usize;
+                                        $body
+                                    }
+                                }
+                            }
+                            wx += wx_step;
+                            wy += wy_step;
+                            wz += wz_step;
+                        }
+                    }
+                };
+            }
+            match (transparent, palette) {
+                (None, None) => scan!(|val, di| {
+                    self.data[di] = val;
+                }),
+                (Some(tkey), None) => scan!(|val, di| {
+                    if val != tkey {
+                        self.data[di] = val;
+                    }
+                }),
+                (None, Some(pal)) => scan!(|val, di| {
+                    self.data[di] = pal[val.to_index()];
+                }),
+                (Some(tkey), Some(pal)) => scan!(|val, di| {
+                    if val != tkey {
+                        self.data[di] = pal[val.to_index()];
+                    }
+                }),
+            }
+            return;
+        }
+
+        // Dithering path
         for yi in y1..=y2 {
             let (mut wx, mut wy, mut wz) = proj.world_base(x1, yi);
-
             for xi in x1..=x2 {
                 if wz.abs() >= f32::EPSILON {
                     let t = -proj.cam_z / wz;
@@ -755,8 +868,7 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
                         if src_xi >= 0 && src_xi < src_w && src_yi >= 0 && src_yi < src_h {
                             let value = canvas.read_data(src_xi as usize, src_yi as usize);
                             if transparent.is_none_or(|tkey| value != tkey) {
-                                let value =
-                                    palette.map_or(value, |palette| palette[value.to_index()]);
+                                let value = palette.map_or(value, |p| p[value.to_index()]);
                                 self.write_data(xi as usize, yi as usize, value);
                             }
                         }
