@@ -18,14 +18,14 @@
 
     <script>
       let data = null;
-      let currentLang = "en";
+      let lang = "en";
 
       function t(keyOrObj) {
         const obj =
           typeof keyOrObj === "string" ? data?.ui[keyOrObj] : keyOrObj;
         if (!obj) return typeof keyOrObj === "string" ? keyOrObj : "";
         if (typeof obj === "string") return obj;
-        return obj[currentLang] || obj["en"] || "";
+        return obj[lang] || obj["en"] || "";
       }
 
       function btnChip(text) {
@@ -57,8 +57,8 @@
         subtitle.id = "page-subtitle";
         titleBlock.appendChild(subtitle);
 
-        const langSelect = buildLangSelector(data.languages, currentLang, (v) => {
-          currentLang = v;
+        const langSelect = buildLangSelector(data.languages, lang, (v) => {
+          lang = v;
           updateTexts();
         });
 
@@ -312,7 +312,7 @@
           link("mml-commands.html", t("mml_ref_link")),
         );
 
-        setDocLang(currentLang);
+        setDocLang(lang);
       }
 
       // Init
@@ -320,7 +320,7 @@
         .then((r) => r.json())
         .then((json) => {
           data = json;
-          currentLang = detectLanguage(data.languages);
+          lang = detectLanguage(data.languages);
           buildPage();
         });
     </script>

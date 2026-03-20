@@ -83,9 +83,7 @@ class SoundField(Widget):
         elif cursor_y == 2:
             for i in range(8):
                 key = pyxel.KEY_0 if i == 0 else pyxel.KEY_1 + i - 1
-                if pyxel.btnp(
-                    key, hold=WIDGET_HOLD_TIME, repeat=WIDGET_REPEAT_TIME
-                ) or pyxel.btnp(key, hold=WIDGET_HOLD_TIME, repeat=WIDGET_REPEAT_TIME):
+                if pyxel.btnp(key, hold=WIDGET_HOLD_TIME, repeat=WIDGET_REPEAT_TIME):
                     value = i
                     break
 

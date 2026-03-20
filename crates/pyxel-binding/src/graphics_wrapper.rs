@@ -121,7 +121,7 @@ fn fill(x: f32, y: f32, col: pyxel::Color) {
 }
 
 #[pyfunction]
-#[pyo3(signature = (x, y ,img, u, v, w, h, colkey=None, rotate=None, scale=None))]
+#[pyo3(signature = (x, y, img, u, v, w, h, colkey=None, rotate=None, scale=None))]
 fn blt(
     x: f32,
     y: f32,

@@ -13,14 +13,17 @@
       <div class="flex justify-center items-center py-12 text-gray-500 text-sm">Loading...</div>
     </main>
     <script>
-      let D, lang = "en";
+      let data, lang = "en";
 
-      const t = (o) => {
+      function t(o) {
         if (!o) return "";
-        if (typeof o === "string") return D?.ui[o] ? t(D.ui[o]) : o;
+        if (typeof o === "string") return data?.ui[o] ? t(data.ui[o]) : o;
         return o[lang] || o["en"] || "";
-      };
-      const icon = (src, size = 28) => `<img src="${src}" style="width:${size}px;height:${size}px" class="pix inline-block align-middle" alt="">`;
+      }
+
+      function icon(src, size = 28) {
+        return `<img src="${src}" style="width:${size}px;height:${size}px" class="pix inline-block align-middle" alt="">`;
+      }
 
       /* --- Render helpers --- */
       function shortcutTable(items) {
@@ -72,7 +75,7 @@
       function areaCrop(editor, index) {
         // Display at same scale as full screenshot (which is w-full on 480px native)
         // crop width / 480 * 100 = percentage of container
-        const a = D.annotations[editor][index];
+        const a = data.annotations[editor][index];
         const pct = (a.w / 480 * 100).toFixed(1);
         return `<img src="images/${editor}_${a.id}.png" alt="" class="pix rounded border border-gray-700 my-2" style="width:${pct}%">`;
       }
@@ -95,7 +98,7 @@
       }
 
       function keyboardDiagram() {
-        const kl = D.sound_keyboard_layout;
+        const kl = data.sound_keyboard_layout;
         const notes = t(kl.notes);
         const blacks = [1, 3, 6, 8, 10]; // indices of sharp notes
         function renderOctave(keys, label) {
@@ -135,13 +138,13 @@
 
       function toolIcons() {
         return iconTable([
-          { icon: "images/tool_select.png", key: "S", desc: D.image_tools[0].desc },
-          { icon: "images/tool_pencil.png", key: "P", desc: D.image_tools[1].desc },
-          { icon: "images/tool_rectb.png", key: "R", desc: D.image_tools[2].desc },
-          { icon: "images/tool_rect.png", key: "Shift+R", desc: D.image_tools[3].desc },
-          { icon: "images/tool_circb.png", key: "C", desc: D.image_tools[4].desc },
-          { icon: "images/tool_circ.png", key: "Shift+C", desc: D.image_tools[5].desc },
-          { icon: "images/tool_bucket.png", key: "B", desc: D.image_tools[6].desc },
+          { icon: "images/tool_select.png", key: "S", desc: data.image_tools[0].desc },
+          { icon: "images/tool_pencil.png", key: "P", desc: data.image_tools[1].desc },
+          { icon: "images/tool_rectb.png", key: "R", desc: data.image_tools[2].desc },
+          { icon: "images/tool_rect.png", key: "Shift+R", desc: data.image_tools[3].desc },
+          { icon: "images/tool_circb.png", key: "C", desc: data.image_tools[4].desc },
+          { icon: "images/tool_circ.png", key: "Shift+C", desc: data.image_tools[5].desc },
+          { icon: "images/tool_bucket.png", key: "B", desc: data.image_tools[6].desc },
         ]);
       }
 
@@ -157,8 +160,13 @@
         titleDiv.className = "flex-1 min-w-0 order-first";
         titleDiv.innerHTML = `<h1 class="font-semibold text-2xl tracking-tight" id="p-title"></h1>
           <p class="mt-2 text-gray-300 text-sm" id="p-sub"></p>`;
-        const sel = buildLangSelector(D.languages, lang, (v) => { lang = v; update(); });
-        hdr.appendChild(sel); hdr.appendChild(titleDiv); app.appendChild(hdr);
+        const sel = buildLangSelector(data.languages, lang, (v) => {
+          lang = v;
+          update();
+        });
+        hdr.appendChild(sel);
+        hdr.appendChild(titleDiv);
+        app.appendChild(hdr);
 
         // Content
         const wrap = document.createElement("div");
@@ -220,7 +228,7 @@
 
         // Overview
         let editorCards = "";
-        for (const e of D.overview_editors) {
+        for (const e of data.overview_editors) {
           editorCards += `<div class="flex items-start gap-3 bg-gray-900/50 rounded-lg px-4 py-3">
             ${icon(e.icon)}
             <div>
@@ -243,9 +251,9 @@
           <h3 class="sub-title">${esc(t("menubar_title"))}</h3>
           <p class="body">${esc(t("menubar_body"))}</p>
           <img src="images/ui_menubar.png" alt="Menu Bar" class="pix rounded-lg border border-gray-700 my-3 w-full">
-          ${iconTable(D.menubar_buttons.map(b => ({icon: b.icon, key: b.key || "—", desc: b.desc})))}
+          ${iconTable(data.menubar_buttons.map(b => ({icon: b.icon, key: b.key || "—", desc: b.desc})))}
           <h3 class="sub-title">${esc(t("other_shortcuts_title"))}</h3>
-          ${shortcutTable(D.common_extra_shortcuts)}
+          ${shortcutTable(data.common_extra_shortcuts)}
           <h3 class="sub-title">${esc(t("starting_usage_title"))}</h3>
           <p class="body">${esc(t("starting_usage_body")).replace("{0}", chip("pyxel.load()"))}</p>
           <h3 class="sub-title">${esc(t("starting_load_title"))}</h3>
@@ -257,29 +265,29 @@
           <h2 class="section-title">${esc(t("image_title"))}</h2>
           <p class="body">${esc(t("image_body"))}</p>
           <h3 class="sub-title">${esc(t("image_specs_title"))}</h3>
-          ${specsGrid(D.image_specs)}
+          ${specsGrid(data.image_specs)}
           <h3 class="sub-title">${esc(t("image_ui_title"))}</h3>
-          ${annotatedImg("images/image_editor.gif", D.annotations.image)}
-          ${areaTitle(D.annotations.image[0].label, 0)}
+          ${annotatedImg("images/image_editor.gif", data.annotations.image)}
+          ${areaTitle(data.annotations.image[0].label, 0)}
           ${areaCrop("image", 0)}
           <p class="body mb-2">${esc(t("image_canvas_body"))}</p>
-          ${shortcutTable(D.image_canvas_shortcuts)}
-          ${areaTitle(D.annotations.image[1].label, 1)}
+          ${shortcutTable(data.image_canvas_shortcuts)}
+          ${areaTitle(data.annotations.image[1].label, 1)}
           ${areaCrop("image", 1)}
           <p class="body mb-2">${esc(t("image_bankview_body"))}</p>
-          ${shortcutTable(D.image_nav_shortcuts)}
-          ${areaTitle(D.annotations.image[3].label, 3)}
+          ${shortcutTable(data.image_nav_shortcuts)}
+          ${areaTitle(data.annotations.image[3].label, 3)}
           ${areaCrop("image", 3)}
           <p class="body mb-2">${esc(t("image_tools_body"))}</p>
           ${toolIcons()}
           <h4 class="sub-title">${esc(t("image_selection_title"))}</h4>
           <p class="body mb-2">${esc(t("image_selection_body"))}</p>
-          ${shortcutTable(D.image_selection_shortcuts)}
-          ${areaTitle(D.annotations.image[2].label, 2)}
+          ${shortcutTable(data.image_selection_shortcuts)}
+          ${areaTitle(data.annotations.image[2].label, 2)}
           ${areaCrop("image", 2)}
           <p class="body mb-2">${esc(t("image_palette_body"))}</p>
-          ${shortcutTable(D.image_colors)}
-          ${areaTitle(D.annotations.image[4].label, 4)}
+          ${shortcutTable(data.image_colors)}
+          ${areaTitle(data.annotations.image[4].label, 4)}
           ${areaCrop("image", 4)}
           <p class="body">${esc(t("image_banknum_body"))}</p>
           <h3 class="sub-title">${esc(t("image_file_title"))}</h3>
@@ -291,28 +299,28 @@
           <h2 class="section-title">${esc(t("tilemap_title"))}</h2>
           <p class="body">${esc(t("tilemap_body"))}</p>
           <h3 class="sub-title">${esc(t("tilemap_specs_title"))}</h3>
-          ${specsGrid(D.tilemap_specs)}
+          ${specsGrid(data.tilemap_specs)}
           <h3 class="sub-title">${esc(t("tilemap_ui_title"))}</h3>
-          ${annotatedImg("images/tilemap_editor.gif", D.annotations.tilemap)}
-          ${areaTitle(D.annotations.tilemap[0].label, 0)}
+          ${annotatedImg("images/tilemap_editor.gif", data.annotations.tilemap)}
+          ${areaTitle(data.annotations.tilemap[0].label, 0)}
           ${areaCrop("tilemap", 0)}
           <p class="body mb-2">${esc(t("tilemap_canvas_body"))}</p>
-          ${shortcutTable(D.tilemap_canvas_shortcuts)}
-          ${areaTitle(D.annotations.tilemap[1].label, 1)}
+          ${shortcutTable(data.tilemap_canvas_shortcuts)}
+          ${areaTitle(data.annotations.tilemap[1].label, 1)}
           ${areaCrop("tilemap", 1)}
           <p class="body mb-2">${esc(t("tilemap_mapview_body"))}</p>
-          ${shortcutTable(D.tilemap_mapview_shortcuts)}
-          ${areaTitle(D.annotations.tilemap[2].label, 2)}
+          ${shortcutTable(data.tilemap_mapview_shortcuts)}
+          ${areaTitle(data.annotations.tilemap[2].label, 2)}
           ${areaCrop("tilemap", 2)}
           <p class="body mb-2">${esc(t("tilemap_tileview_body"))}</p>
-          ${shortcutTable(D.tilemap_tileview_shortcuts)}
-          ${areaTitle(D.annotations.tilemap[3].label, 3)}
+          ${shortcutTable(data.tilemap_tileview_shortcuts)}
+          ${areaTitle(data.annotations.tilemap[3].label, 3)}
           ${areaCrop("tilemap", 3)}
           <p class="body">${esc(t("tilemap_tmnum_body"))}</p>
-          ${areaTitle(D.annotations.tilemap[5].label, 5)}
+          ${areaTitle(data.annotations.tilemap[5].label, 5)}
           ${areaCrop("tilemap", 5)}
           <p class="body">${esc(t("tilemap_imgnum_body"))}</p>
-          ${areaTitle(D.annotations.tilemap[4].label, 4)}
+          ${areaTitle(data.annotations.tilemap[4].label, 4)}
           ${areaCrop("tilemap", 4)}
           <p class="body mb-2">${esc(t("image_tools_body"))}</p>
           ${toolIcons()}
@@ -327,43 +335,43 @@
           <h2 class="section-title">${esc(t("sound_title"))}</h2>
           <p class="body">${esc(t("sound_body"))}</p>
           <h3 class="sub-title">${esc(t("sound_specs_title"))}</h3>
-          ${specsGrid(D.sound_specs)}
+          ${specsGrid(data.sound_specs)}
           <h3 class="sub-title">${esc(t("sound_ui_title"))}</h3>
-          ${annotatedImg("images/sound_editor.gif", D.annotations.sound)}
-          ${areaTitle(D.annotations.sound[0].label, 0)}
+          ${annotatedImg("images/sound_editor.gif", data.annotations.sound)}
+          ${areaTitle(data.annotations.sound[0].label, 0)}
           ${areaCrop("sound", 0)}
           <p class="body">${esc(t("sound_sndnum_body"))}</p>
-          ${areaTitle(D.annotations.sound[1].label, 1)}
+          ${areaTitle(data.annotations.sound[1].label, 1)}
           ${areaCrop("sound", 1)}
           <p class="body">${esc(t("sound_speed_body"))}</p>
-          ${areaTitle(D.annotations.sound[2].label, 2)}
+          ${areaTitle(data.annotations.sound[2].label, 2)}
           ${areaCrop("sound", 2)}
-          ${iconTable(D.playback_buttons.map(b => ({icon: b.icon, key: b.key || "—", desc: b.desc})))}
-          ${areaTitle(D.annotations.sound[4].label, 4)}
+          ${iconTable(data.playback_buttons.map(b => ({icon: b.icon, key: b.key || "—", desc: b.desc})))}
+          ${areaTitle(data.annotations.sound[4].label, 4)}
           ${areaCrop("sound", 4)}
           <p class="body mb-2">${esc(t("sound_piano_body"))}</p>
-          ${shortcutTable(D.sound_piano_shortcuts)}
+          ${shortcutTable(data.sound_piano_shortcuts)}
           <h4 class="sub-title">${esc(t("sound_range_title"))}</h4>
-          ${shortcutTable(D.sound_selection_shortcuts)}
-          ${areaTitle(D.annotations.sound[3].label, 3)}
+          ${shortcutTable(data.sound_selection_shortcuts)}
+          ${areaTitle(data.annotations.sound[3].label, 3)}
           ${areaCrop("sound", 3)}
           <p class="body mb-2">${esc(t("sound_octave_body"))}</p>
-          ${shortcutTable(D.sound_octave_shortcuts)}
+          ${shortcutTable(data.sound_octave_shortcuts)}
           <h3 class="sub-title">${esc(t("sound_keyboard_title"))}</h3>
           <p class="body mb-2">${esc(t("sound_keyboard_body"))}</p>
           ${keyboardDiagram()}
-          ${shortcutTable(D.sound_keyboard_shortcuts)}
-          ${areaTitle(D.annotations.sound[6].label, 6)}
+          ${shortcutTable(data.sound_keyboard_shortcuts)}
+          ${areaTitle(data.annotations.sound[6].label, 6)}
           ${areaCrop("sound", 6)}
           <p class="body">${esc(t("sound_property_body"))}</p>
           <h4 class="sub-title">${esc(t("sound_tone_title"))}</h4>
           <p class="body mb-2">${esc(t("sound_tone_body"))}</p>
-          ${propTable(D.sound_tones)}
+          ${propTable(data.sound_tones)}
           <h4 class="sub-title">${esc(t("sound_volume_title"))}</h4>
           <p class="body">${esc(t("sound_volume_body"))}</p>
           <h4 class="sub-title">${esc(t("sound_effect_title"))}</h4>
           <p class="body mb-2">${esc(t("sound_effect_body"))}</p>
-          ${propTable(D.sound_effects)}`;
+          ${propTable(data.sound_effects)}`;
 
         // Music Editor
         $("s-music-title").textContent = t("music_title");
@@ -371,20 +379,20 @@
           <h2 class="section-title">${esc(t("music_title"))}</h2>
           <p class="body">${esc(t("music_body"))}</p>
           <h3 class="sub-title">${esc(t("music_specs_title"))}</h3>
-          ${specsGrid(D.music_specs)}
+          ${specsGrid(data.music_specs)}
           <h3 class="sub-title">${esc(t("music_ui_title"))}</h3>
-          ${annotatedImg("images/music_editor.gif", D.annotations.music)}
-          ${areaTitle(D.annotations.music[0].label, 0)}
+          ${annotatedImg("images/music_editor.gif", data.annotations.music)}
+          ${areaTitle(data.annotations.music[0].label, 0)}
           ${areaCrop("music", 0)}
           <p class="body">${esc(t("music_mscnum_body"))}</p>
-          ${areaTitle(D.annotations.music[1].label, 1)}
+          ${areaTitle(data.annotations.music[1].label, 1)}
           ${areaCrop("music", 1)}
-          ${iconTable(D.playback_buttons.map(b => ({icon: b.icon, key: b.key || "—", desc: b.desc})))}
-          ${areaTitle(D.annotations.music[2].label, 2)}
+          ${iconTable(data.playback_buttons.map(b => ({icon: b.icon, key: b.key || "—", desc: b.desc})))}
+          ${areaTitle(data.annotations.music[2].label, 2)}
           ${areaCrop("music", 2)}
           <p class="body mb-2">${esc(t("music_sequence_body"))}</p>
-          ${shortcutTable(D.music_sequence_shortcuts)}
-          ${areaTitle(D.annotations.music[3].label, 3)}
+          ${shortcutTable(data.music_sequence_shortcuts)}
+          ${areaTitle(data.annotations.music[3].label, 3)}
           ${areaCrop("music", 3)}
           <p class="body">${esc(t("music_buttons_body"))}</p>`;
 
@@ -392,9 +400,13 @@
       }
 
       // Init
-      fetch("editor-manual.json").then(r => r.json()).then(json => {
-        D = json; lang = detectLanguage(D.languages); build();
-      });
+      fetch("editor-manual.json")
+        .then((r) => r.json())
+        .then((json) => {
+          data = json;
+          lang = detectLanguage(data.languages);
+          build();
+        });
     </script>
   </body>
 </html>

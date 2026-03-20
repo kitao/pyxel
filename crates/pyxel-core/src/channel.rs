@@ -15,6 +15,7 @@ use crate::voice::Voice;
 pub type ChannelGain = f32;
 pub type ChannelDetune = i32;
 
+// Fixed-point Q14 scaling for PCM gain multiplication
 const PCM_MIX_GAIN_SHIFT: u32 = 14;
 const PCM_MIX_GAIN_SCALE: i64 = 1_i64 << PCM_MIX_GAIN_SHIFT;
 const PCM_MIX_TRUNC_BIAS: i64 = PCM_MIX_GAIN_SCALE - 1;

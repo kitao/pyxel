@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ja" class="h-full">
+<html lang="en" class="h-full">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -15,14 +15,17 @@
       <div class="flex justify-center items-center py-12 text-gray-500 text-sm">Loading...</div>
     </main>
     <script>
-      let D, lang = "ja";
+      let data, lang = "en";
 
-      const t = (o) => {
+      function t(o) {
         if (!o) return "";
-        if (typeof o === "string") return D?.ui[o] ? t(D.ui[o]) : o;
+        if (typeof o === "string") return data?.ui[o] ? t(data.ui[o]) : o;
         return o[lang] || o["en"] || "";
-      };
-      const code = (s, lang) => `<pre class="code-block"><code class="language-${lang || "plaintext"}">${esc(s)}</code></pre>`;
+      }
+
+      function code(s, syntax) {
+        return `<pre class="code-block"><code class="language-${syntax || "plaintext"}">${esc(s)}</code></pre>`;
+      }
 
       function table(headers, rows) {
         let h = `<div class="overflow-x-auto"><table class="w-full border-collapse"><thead><tr>`;
@@ -47,8 +50,13 @@
         titleDiv.className = "flex-1 min-w-0 order-first";
         titleDiv.innerHTML = `<h1 class="font-semibold text-2xl tracking-tight" id="p-title"></h1>
           <p class="mt-2 text-gray-300 text-sm" id="p-sub"></p>`;
-        const sel = buildLangSelector(D.languages, lang, (v) => { lang = v; update(); });
-        hdr.appendChild(sel); hdr.appendChild(titleDiv); app.appendChild(hdr);
+        const sel = buildLangSelector(data.languages, lang, (v) => {
+          lang = v;
+          update();
+        });
+        hdr.appendChild(sel);
+        hdr.appendChild(titleDiv);
+        app.appendChild(hdr);
 
         // Content
         const wrap = document.createElement("div");
@@ -254,9 +262,13 @@ pyxel.show()
       }
 
       // Init
-      fetch("web-usage.json").then(r => r.json()).then(json => {
-        D = json; lang = detectLanguage(D.languages); build();
-      });
+      fetch("web-usage.json")
+        .then((r) => r.json())
+        .then((json) => {
+          data = json;
+          lang = detectLanguage(data.languages);
+          build();
+        });
     </script>
   </body>
 </html>

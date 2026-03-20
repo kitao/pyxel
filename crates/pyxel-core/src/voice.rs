@@ -4,9 +4,10 @@ use blip_buf::BlipBuf;
 
 const A4_MIDI_NOTE: f32 = 69.0;
 const A4_FREQUENCY: f32 = 440.0;
+// Fixed-point Q14 scaling for voice gain multiplication
 const VOICE_GAIN_SHIFT: u32 = 14;
 const VOICE_GAIN_SCALE: i64 = 1_i64 << VOICE_GAIN_SHIFT;
-const VOICE_GAIN_ROUNDING: i64 = 1_i64 << (VOICE_GAIN_SHIFT - 1);
+const VOICE_GAIN_ROUNDING: i64 = 1_i64 << (VOICE_GAIN_SHIFT - 1); // Half-unit bias for rounding
 const PITCH_LUT_MIN_SEMITONE: f32 = -96.0;
 const PITCH_LUT_MAX_SEMITONE: f32 = 96.0;
 const PITCH_LUT_STEPS_PER_SEMITONE: usize = 64;

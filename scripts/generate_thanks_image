@@ -165,9 +165,6 @@ def draw_example_images(thanks_image):
             example_y += image.height + EXAMPLE_MARGIN
 
         example_x += EXAMPLE_WIDTH + EXAMPLE_MARGIN
-        num_col_images = 0
-
-    return thanks_image
 
 
 def draw_message_image(thanks_image):
@@ -249,15 +246,13 @@ def draw_message_image(thanks_image):
     # Draw the message on the padding
     thanks_image.paste(message_image, (MESSAGE_X, MESSAGE_Y))
 
-    return thanks_image
-
 
 def generate_thanks_image():
     thanks_image = PIL.Image.new(
         "RGB", (THANKS_IMAGE_WIDTH, THANKS_IMAGE_HEIGHT), (0, 0, 0)
     )
-    thanks_image = draw_example_images(thanks_image)
-    thanks_image = draw_message_image(thanks_image)
+    draw_example_images(thanks_image)
+    draw_message_image(thanks_image)
 
     thanks_image.show()
     thanks_image.save(THANKS_IMAGE_FILE)

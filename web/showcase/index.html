@@ -18,12 +18,12 @@
 
     <script>
       let data = null;
-      let currentLang = "en";
+      let lang = "en";
 
       function t(keyOrObj) {
         const obj = typeof keyOrObj === "string" ? data?.ui[keyOrObj] : keyOrObj;
         if (!obj) return typeof keyOrObj === "string" ? keyOrObj : "";
-        return obj[currentLang] || obj["en"] || "";
+        return obj[lang] || obj["en"] || "";
       }
 
       function buildPage() {
@@ -47,8 +47,8 @@
         subtitle.id = "page-subtitle";
         titleBlock.appendChild(subtitle);
 
-        const langSelect = buildLangSelector(data.languages, currentLang, (v) => {
-          currentLang = v;
+        const langSelect = buildLangSelector(data.languages, lang, (v) => {
+          lang = v;
           updateTexts();
         });
 
@@ -192,7 +192,7 @@
           .replace("{0}", link("https://github.com/kitao/pyxel/tree/main/web/showcase", linkText))
           .replace("{1}", link("../web-usage/", linkText));
 
-        setDocLang(currentLang);
+        setDocLang(lang);
       }
 
       // Init
@@ -200,7 +200,7 @@
         .then((r) => r.json())
         .then((json) => {
           data = json;
-          currentLang = detectLanguage(data.languages);
+          lang = detectLanguage(data.languages);
           buildPage();
         });
     </script>

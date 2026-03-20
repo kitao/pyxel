@@ -301,7 +301,7 @@ fn parse_rest<T: Iterator<Item = char>>(
 }
 
 fn add_note(sound: &mut Sound, note_info: &NoteInfo) {
-    // Hnadle empty note
+    // Handle empty note
     if note_info.length == 0 {
         return;
     }

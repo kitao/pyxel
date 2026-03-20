@@ -17,6 +17,7 @@ pub struct PcmData {
 }
 
 pub fn load_pcm(path: &str, target_rate: u32) -> Result<PcmData, String> {
+    // Open and probe audio file
     let file = File::open(path).map_err(|_| format!("Failed to open file '{path}'"))?;
     let mss = MediaSourceStream::new(Box::new(file), MediaSourceStreamOptions::default());
 
@@ -44,6 +45,7 @@ pub fn load_pcm(path: &str, target_rate: u32) -> Result<PcmData, String> {
         .make(&codec_params, &DecoderOptions::default())
         .map_err(|_| format!("Failed to decode file '{path}'"))?;
 
+    // Decode audio packets into mono samples
     let mut sample_rate = codec_params
         .sample_rate
         .ok_or_else(|| format!("Unknown sample rate in file '{path}'"))?;
@@ -91,6 +93,7 @@ pub fn load_pcm(path: &str, target_rate: u32) -> Result<PcmData, String> {
         }
     }
 
+    // Resample and convert to i16
     if mono_samples.is_empty() {
         return Err(format!("No audio data found in file '{path}'"));
     }

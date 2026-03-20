@@ -64,7 +64,7 @@ class App:
                 continue
 
             if total_sec is None:
-                play_sec = play_sec % 5
+                play_sec = play_sec % 5  # Show progress in 5-second window
                 total_sec = 5
             elif total_sec == 0:
                 continue

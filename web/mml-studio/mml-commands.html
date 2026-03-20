@@ -39,12 +39,12 @@
 
     <script>
       let data = null;
-      let currentLang = "en";
+      let lang = "en";
 
       function t(key) {
         const obj = data?.ui[key];
         if (!obj) return key;
-        return obj[currentLang] || obj["en"] || "";
+        return obj[lang] || obj["en"] || "";
       }
 
       function render() {
@@ -65,16 +65,12 @@
         const thDesc = t("th_description");
 
         for (const c of data.commands) {
-          let cmdHTML = c.cmd
-            .replaceAll("&", "&amp;")
-            .replaceAll("<", "&lt;")
-            .replaceAll(">", "&gt;");
-
+          let cmdHTML = esc(c.cmd);
           if (c.cmd.startsWith("C/D/E/F/G/A/B")) {
             cmdHTML = cmdHTML.replaceAll("/", "/<wbr>");
           }
 
-          const descText = (c.desc[currentLang] || c.desc["en"] || "")
+          const descText = (c.desc[lang] || c.desc["en"] || "")
             .replace(/`([^`]+)`/g, "<code>$1</code>")
             .replaceAll("\\n", "<br>");
 
@@ -94,7 +90,7 @@
           commandTable.appendChild(tr);
         }
 
-        setDocLang(currentLang);
+        setDocLang(lang);
       }
 
       // Init i18n
@@ -102,9 +98,9 @@
         .then((r) => r.json())
         .then((json) => {
           data = json;
-          currentLang = detectLanguage(data.languages);
-          buildLangSelector(data.languages, currentLang, (v) => {
-            currentLang = v;
+          lang = detectLanguage(data.languages);
+          buildLangSelector(data.languages, lang, (v) => {
+            lang = v;
             render();
           }, document.getElementById("lang-select"));
 

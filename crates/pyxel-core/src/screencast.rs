@@ -238,6 +238,7 @@ impl Screencast {
         let frame_count = self.screen(index).frame_count;
         let next_frame_count = self.screen(index + 1).frame_count;
 
+        // Ring buffer wraparound: next screen was captured before current
         let num_elapsed_frames = if frame_count > next_frame_count {
             1
         } else {

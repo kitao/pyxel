@@ -15,5 +15,6 @@ cp -f "$DIST_DIR"/*-emscripten_*.whl "$WASM_DIR"
 
 WHEEL_NAME="$(basename "$WASM_DIR"/*-emscripten_*.whl)"
 
+# macOS sed -i creates a backup with the -e suffix; remove it after
 sed -i -e "s#\\(PYXEL_WHEEL_PATH =\\).*;#\\1 \\\"$WHEEL_NAME\\\";#" "$WASM_DIR/$SCRIPT_NAME"
 rm -f "$WASM_DIR/$SCRIPT_NAME-e"

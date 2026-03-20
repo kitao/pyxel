@@ -702,6 +702,7 @@ fn build_chord_note_pool(bits: &[i32; 12], key_shift: i32, lowest: i32) -> Vec<(
         {
             results.push((note, note_type));
             if note_highest.is_none() {
+                // Limit range to ~1 octave above the first valid note
                 note_highest = Some(note + 15);
             }
         }

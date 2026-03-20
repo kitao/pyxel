@@ -80,6 +80,7 @@ class ColorPicker(Widget):
         x = self.x + cw * (col % self._num_cols) + cw // 2
         y = self.y + ch * (col // self._num_cols) + ch // 2
         rgb = pyxel.colors[pyxel.NUM_COLORS + col]
+        # ITU-R BT.601 luma
         brightness = int(
             ((rgb >> 16) & 0xFF) * 0.299
             + ((rgb >> 8) & 0xFF) * 0.587

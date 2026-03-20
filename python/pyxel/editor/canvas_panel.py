@@ -180,7 +180,7 @@ class CanvasPanel(Widget):
 
         for y in range(16):
             for x in range(16):
-                if self._edit_canvas.pget(x, y) != (255, 255):
+                if self._edit_canvas.pget(x, y) != (255, 255):  # Skip non-empty tiles
                     continue
                 tile = (
                     self.tile_x_var + (x - self._press_x) % self.tile_w_var,

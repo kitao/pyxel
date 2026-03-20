@@ -544,7 +544,7 @@ function _hookFileOperations(pyodide, root) {
   // Hook file operations
   const open = fs.open;
   fs.open = (path, flags, mode) => {
-    if (flags === 557056) {
+    if (flags === 557056) { // O_RDONLY for stat-like access
       copyPath(path);
     }
     return open(path, flags, mode);

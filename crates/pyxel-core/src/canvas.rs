@@ -98,6 +98,8 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         self.write_data_with_clipping(x, y, value);
     }
 
+    // Drawing primitives
+
     pub fn draw_line(&mut self, x1: f32, y1: f32, x2: f32, y2: f32, value: T) {
         let x1 = f32_to_i32(x1) - self.draw_offset_x;
         let y1 = f32_to_i32(y1) - self.draw_offset_y;
@@ -393,6 +395,8 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         self.draw_line(x2, y2, x3, y3, value);
     }
 
+    // Flood fill
+
     pub fn flood_fill(&mut self, x: f32, y: f32, value: T) {
         let x = f32_to_i32(x) - self.draw_offset_x;
         let y = f32_to_i32(y) - self.draw_offset_y;
@@ -455,6 +459,8 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
             }
         }
     }
+
+    // Blit operations
 
     pub fn blit(
         &mut self,
@@ -866,6 +872,8 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
             }
         }
     }
+
+    // Internal helpers
 
     pub fn read_data(&self, x: usize, y: usize) -> T {
         let width = self.width() as usize;

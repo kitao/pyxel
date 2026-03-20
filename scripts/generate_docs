@@ -279,8 +279,8 @@ class JsEval:
                 lang = self.eval(lang_s)
             return f"\n```{lang}\n{self.eval(content_s)}\n```\n"
 
-        # D.prop, D.prop[N].field, D.prop.sub[N].field access
-        m = re.match(r'D\.([\w.]+?)(?:\[(\d+)\](?:\.(\w+))?)?$', expr)
+        # data.prop, data.prop[N].field, data.prop.sub[N].field access
+        m = re.match(r'data\.([\w.]+?)(?:\[(\d+)\](?:\.(\w+))?)?$', expr)
         if m:
             return self._data_access(m.group(1), m.group(2), m.group(3))
 
@@ -508,15 +508,15 @@ class JsEval:
 
     def _resolve_data_ref(self, inner):
         inner = inner.strip()
-        m = re.match(r'D\.(\w+)$', inner)
+        m = re.match(r'data\.(\w+)$', inner)
         if m:
             return self._data.get(m.group(1), [])
         return self.eval(inner)
 
     def _resolve_icon_table_arg(self, inner):
         inner = inner.strip()
-        # D.xxx.map(b => ({icon: b.icon, key: b.key || "—", desc: b.desc}))
-        m = re.match(r'D\.(\w+)\.map\(', inner)
+        # data.xxx.map(b => ({icon: b.icon, key: b.key || "—", desc: b.desc}))
+        m = re.match(r'data\.(\w+)\.map\(', inner)
         if m:
             return self._data.get(m.group(1), [])
         return self._resolve_data_ref(inner)
@@ -615,9 +615,9 @@ class JsEval:
                 j += 1
             self._vars[m.group(1)] = self.eval(body[expr_start:j].strip())
 
-        # for (const x of D.yyy) { varName += `...`; } -> list
+        # for (const x of data.yyy) { varName += `...`; } -> list
         for m in re.finditer(
-            r'for\s*\(\s*const\s+(\w+)\s+of\s+D\.(\w+)\s*\)\s*\{[^}]*?'
+            r'for\s*\(\s*const\s+(\w+)\s+of\s+data\.(\w+)\s*\)\s*\{[^}]*?'
             r'(\w+)\s*\+=\s*`(.*?)`', body, re.DOTALL,
         ):
             item_var, data_key, target_var, tmpl = m.groups()

@@ -72,7 +72,7 @@ impl TilemapData {
             .canvas
             .data
             .iter()
-            .flat_map(|(tx, ty)| [*tx, *ty].to_vec())
+            .flat_map(|(tx, ty)| [*tx, *ty])
             .collect();
         let data: Vec<Vec<_>> = data
             .chunks((width * 2) as usize)

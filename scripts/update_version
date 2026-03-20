@@ -26,11 +26,8 @@ def pep440_to_semver(version: str) -> str:
 
 
 def replace_file(path: pathlib.Path, pattern: str, repl: str) -> None:
-    with path.open("r", encoding="utf-8") as f:
-        code = f.read()
-    code = re.sub(pattern, repl, code, count=1)
-    with path.open("w", encoding="utf-8") as f:
-        f.write(code)
+    code = path.read_text(encoding="utf-8")
+    path.write_text(re.sub(pattern, repl, code, count=1), encoding="utf-8")
 
 
 def update_version() -> None:

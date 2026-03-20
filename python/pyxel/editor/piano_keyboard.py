@@ -67,7 +67,7 @@ class PianoKeyboard(Widget):
     def _screen_to_note(self, x, y):
         x -= self.x
         y -= self.y
-        octave = (4 - y // 24) * 12
+        octave = (4 - y // 24) * 12  # Each octave is 24px high
         y %= 24
         if octave > 59:
             return 59
