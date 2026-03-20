@@ -93,12 +93,13 @@ impl PlatformSdl2 {
                 // Keyboard
                 //
                 SDL_KEYDOWN => {
+                    let key = unsafe { sdl_event.key.keysym.sym } as Key;
+
+                    // Dequeue outside the repeat check to stay in sync with JS queue
+                    #[cfg(target_os = "emscripten")]
+                    let key = correct_emscripten_key(key, "_keyDownCharQueue");
+
                     if unsafe { sdl_event.key.repeat } == 0 {
-                        let key = unsafe { sdl_event.key.keysym.sym } as Key;
-
-                        #[cfg(target_os = "emscripten")]
-                        let key = correct_emscripten_key(key, "_lastKeyDownChar");
-
                         pyxel_events.push(Event::KeyPressed { key });
 
                         if let Some(unified_key) = key_to_virtual_key(key) {
@@ -108,12 +109,12 @@ impl PlatformSdl2 {
                 }
 
                 SDL_KEYUP => {
+                    let key = unsafe { sdl_event.key.keysym.sym } as Key;
+
+                    #[cfg(target_os = "emscripten")]
+                    let key = correct_emscripten_key(key, "_keyUpCharQueue");
+
                     if unsafe { sdl_event.key.repeat } == 0 {
-                        let key = unsafe { sdl_event.key.keysym.sym } as Key;
-
-                        #[cfg(target_os = "emscripten")]
-                        let key = correct_emscripten_key(key, "_lastKeyUpChar");
-
                         pyxel_events.push(Event::KeyReleased { key });
 
                         if let Some(unified_key) = key_to_virtual_key(key) {
@@ -365,21 +366,19 @@ impl PlatformSdl2 {
 // Correct SDL2 keycode on Emscripten for non-US keyboard layouts.
 // Emscripten's SDL2 maps browser KeyboardEvent.keyCode through a US-layout
 // lookup table, producing incorrect keycodes for JIS and other non-US keyboards.
-// This function queries the actual character from KeyboardEvent.key (captured
-// in JavaScript) and uses it when the SDL2 key is a printable ASCII character.
+// This function dequeues the actual character from a JS queue (populated by
+// keydown/keyup listeners in pyxel.js) and uses it when the SDL2 key is a
+// printable ASCII character.
 #[cfg(target_os = "emscripten")]
-fn correct_emscripten_key(sdl_key: Key, js_var: &str) -> Key {
-    // Only correct printable ASCII keys (0x20 space .. 0x7E tilde)
-    if !(0x20..=0x7E).contains(&sdl_key) {
-        return sdl_key;
-    }
-
+fn correct_emscripten_key(sdl_key: Key, js_queue: &str) -> Key {
+    // Always dequeue to keep the JS queue in sync with SDL events
     let js_key = unsafe {
-        let script = std::ffi::CString::new(format!("{js_var};")).unwrap();
+        let script = std::ffi::CString::new(format!("{js_queue}.shift()||0;")).unwrap();
         emscripten_run_script_int(script.as_ptr())
     } as u32;
 
-    if !(0x20..=0x7E).contains(&js_key) {
+    // Only correct printable ASCII keys (0x20 space .. 0x7E tilde)
+    if !(0x20..=0x7E).contains(&sdl_key) || !(0x20..=0x7E).contains(&js_key) {
         return sdl_key;
     }
 

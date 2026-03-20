@@ -65,9 +65,14 @@ if (/safari/i.test(navigator.userAgent) && !/chrome/i.test(navigator.userAgent))
 // producing incorrect keycodes for non-US keyboards. This captures the actual
 // character from KeyboardEvent.key and builds a code-to-char mapping that is
 // independent of modifier keys (Shift, etc.).
+//
+// Char codes are queued (not stored in a single variable) so that each SDL
+// event dequeues the value from the matching browser event. A single variable
+// would be overwritten when multiple key events arrive in a single frame,
+// causing keys to "stick" because the release event gets the wrong key code.
 const _keyCharMap = {}; // Maps KeyboardEvent.code to unshifted char code
-let _lastKeyDownChar = 0;
-let _lastKeyUpChar = 0;
+const _keyDownCharQueue = [];
+const _keyUpCharQueue = [];
 document.addEventListener(
   "keydown",
   (event) => {
@@ -78,9 +83,9 @@ document.addEventListener(
         _keyCharMap[event.code] = charCode;
       }
       // Use recorded unshifted char if available, otherwise use current char
-      _lastKeyDownChar = _keyCharMap[event.code] || charCode;
+      _keyDownCharQueue.push(_keyCharMap[event.code] || charCode);
     } else {
-      _lastKeyDownChar = 0;
+      _keyDownCharQueue.push(0);
     }
   },
   true,
@@ -88,7 +93,7 @@ document.addEventListener(
 document.addEventListener(
   "keyup",
   (event) => {
-    _lastKeyUpChar = _keyCharMap[event.code] || 0;
+    _keyUpCharQueue.push(_keyCharMap[event.code] || 0);
   },
   true,
 );

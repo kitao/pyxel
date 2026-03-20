@@ -9,6 +9,7 @@
 - Optimized GIF screencast saving with buffer reuse
 - Enabled Python atexit handlers on program termination
 - Enabled audio playback in headless mode
+- Fixed WASM keyboard keys sticking on rapid input
 
 ## 2.8.4
 
