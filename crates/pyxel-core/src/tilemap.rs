@@ -21,6 +21,17 @@ pub enum ImageSource {
     Image(*mut Image),
 }
 
+impl ImageSource {
+    /// # Safety
+    /// The Image pointer (for `ImageSource::Image`) must be valid.
+    pub(crate) unsafe fn resolve(&self) -> &Image {
+        match self {
+            ImageSource::Index(index) => &*crate::pyxel::images()[*index as usize],
+            ImageSource::Image(image) => &**image,
+        }
+    }
+}
+
 pub struct Tilemap {
     pub imgsrc: ImageSource,
 

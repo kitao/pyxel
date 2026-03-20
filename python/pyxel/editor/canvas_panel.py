@@ -112,6 +112,13 @@ class CanvasPanel(Widget):
         y = min(max((y - self.y - 1) // 8, 0), 15)
         return x, y
 
+    def _selection_rect(self):
+        x = self.focus_x_var * 8 + self._select_x1
+        y = self.focus_y_var * 8 + self._select_y1
+        w = self._select_x2 - self._select_x1 + 1
+        h = self._select_y2 - self._select_y1 + 1
+        return x, y, w, h
+
     def _add_pre_history(self, *, bank_copy=False):
         self._history_data = data = {}
 
@@ -215,7 +222,7 @@ class CanvasPanel(Widget):
             self._reset_edit_canvas()
             self._select_x1 = self._select_x2 = x
             self._select_y1 = self._select_y2 = y
-        elif self.tool_var >= TOOL_PENCIL and self.tool_var <= TOOL_CIRC:
+        elif TOOL_PENCIL <= self.tool_var <= TOOL_CIRC:
             self._reset_edit_canvas()
             self._edit_canvas.pset(x, y, self.color_var)
             self._finish_edit_canvas()
@@ -405,19 +412,12 @@ class CanvasPanel(Widget):
 
             # Ctrl+C: Copy
             if pyxel.btnp(pyxel.KEY_C):
-                self._canvas_buffer = self.canvas_var.get_slice(
-                    self.focus_x_var * 8 + self._select_x1,
-                    self.focus_y_var * 8 + self._select_y1,
-                    self._select_x2 - self._select_x1 + 1,
-                    self._select_y2 - self._select_y1 + 1,
-                )
+                x, y, w, h = self._selection_rect()
+                self._canvas_buffer = self.canvas_var.get_slice(x, y, w, h)
 
             # Ctrl+X: Cut
             if pyxel.btnp(pyxel.KEY_X):
-                x = self.focus_x_var * 8 + self._select_x1
-                y = self.focus_y_var * 8 + self._select_y1
-                w = self._select_x2 - self._select_x1 + 1
-                h = self._select_y2 - self._select_y1 + 1
+                x, y, w, h = self._selection_rect()
                 self._canvas_buffer = self.canvas_var.get_slice(x, y, w, h)
                 self._add_pre_history()
                 self.canvas_var.rect(x, y, w, h, (0, 0) if self._is_tilemap_mode else 0)
@@ -443,20 +443,14 @@ class CanvasPanel(Widget):
         ):
             # H: Flip horizontal
             if pyxel.btnp(pyxel.KEY_H):
-                x = self.focus_x_var * 8 + self._select_x1
-                y = self.focus_y_var * 8 + self._select_y1
-                w = self._select_x2 - self._select_x1 + 1
-                h = self._select_y2 - self._select_y1 + 1
+                x, y, w, h = self._selection_rect()
                 self._add_pre_history()
                 self.canvas_var.blt(x, y, self.canvas_var, x, y, -w, h)
                 self._add_post_history()
 
             # V: Flip vertical
             if pyxel.btnp(pyxel.KEY_V):
-                x = self.focus_x_var * 8 + self._select_x1
-                y = self.focus_y_var * 8 + self._select_y1
-                w = self._select_x2 - self._select_x1 + 1
-                h = self._select_y2 - self._select_y1 + 1
+                x, y, w, h = self._selection_rect()
                 self._add_pre_history()
                 self.canvas_var.blt(x, y, self.canvas_var, x, y, w, -h)
                 self._add_post_history()

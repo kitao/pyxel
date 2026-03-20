@@ -186,27 +186,23 @@ impl Envelope {
                 0.0
             };
 
-            self.segments.insert(
-                0,
-                EnvelopeSegment {
-                    start_tick,
-                    start_level,
-                    slope,
-                },
-            );
+            self.segments.push(EnvelopeSegment {
+                start_tick,
+                start_level,
+                slope,
+            });
 
             start_tick += duration;
             start_level = target_level;
         }
 
-        self.segments.insert(
-            0,
-            EnvelopeSegment {
-                start_tick,
-                start_level,
-                slope: 0.0,
-            },
-        );
+        self.segments.push(EnvelopeSegment {
+            start_tick,
+            start_level,
+            slope: 0.0,
+        });
+
+        self.segments.reverse();
 
         self.segment_index = self.segments.len() - 1;
         while self.segment_index > 0

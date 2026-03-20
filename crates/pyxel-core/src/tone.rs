@@ -35,7 +35,6 @@ pub struct Tone {
     pub sample_bits: u32,
     pub wavetable: Vec<ToneSample>,
     pub gain: ToneGain,
-
     cached_wavetable: Vec<ToneSample>,
     waveform: Vec<f32>,
 }
@@ -46,9 +45,9 @@ impl Tone {
             mode: ToneMode::Wavetable,
             sample_bits: DEFAULT_TONE_SAMPLE_BITS,
             wavetable: Vec::new(),
+            gain: 1.0,
             cached_wavetable: Vec::new(),
             waveform: Vec::new(),
-            gain: 1.0,
         }))
     }
 

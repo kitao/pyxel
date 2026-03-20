@@ -312,7 +312,7 @@ impl Music {
     #[getter]
     pub fn snds_list(&self) -> Seqs {
         SNDS_LIST_ONCE.call_once(|| {
-            println!("Music.snds_list[ch] is deprecated. Use Music.seqs[ch] instead.",);
+            println!("Music.snds_list[ch] is deprecated. Use Music.seqs[ch] instead.");
         });
 
         Seqs::wrap(self.inner)

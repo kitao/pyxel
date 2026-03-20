@@ -500,6 +500,65 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
             return;
         }
 
+        macro_rules! copy_row {
+            (slice: $dst:expr, $src:expr) => {
+                match (transparent, palette) {
+                    (None, None) => $dst.copy_from_slice($src),
+                    (Some(tkey), None) => {
+                        for i in 0..$dst.len() {
+                            let val = $src[i];
+                            if val != tkey {
+                                $dst[i] = val;
+                            }
+                        }
+                    }
+                    (None, Some(pal)) => {
+                        for i in 0..$dst.len() {
+                            $dst[i] = pal[$src[i].to_index()];
+                        }
+                    }
+                    (Some(tkey), Some(pal)) => {
+                        for i in 0..$dst.len() {
+                            let val = $src[i];
+                            if val != tkey {
+                                $dst[i] = pal[val.to_index()];
+                            }
+                        }
+                    }
+                }
+            };
+            (rev: $dst:expr, $src_row:expr, $start:expr) => {
+                match (transparent, palette) {
+                    (None, None) => {
+                        for i in 0..$dst.len() {
+                            $dst[i] = $src_row[$start - i];
+                        }
+                    }
+                    (Some(tkey), None) => {
+                        for i in 0..$dst.len() {
+                            let val = $src_row[$start - i];
+                            if val != tkey {
+                                $dst[i] = val;
+                            }
+                        }
+                    }
+                    (None, Some(pal)) => {
+                        for i in 0..$dst.len() {
+                            $dst[i] = pal[$src_row[$start - i].to_index()];
+                        }
+                    }
+                    (Some(tkey), Some(pal)) => {
+                        for i in 0..$dst.len() {
+                            let val = $src_row[$start - i];
+                            if val != tkey {
+                                $dst[i] = pal[val.to_index()];
+                            }
+                        }
+                    }
+                }
+            };
+        }
+
         // Fast path: no flip, full alpha
         if sign_x == 1 && sign_y == 1 && self.alpha >= 1.0 {
             let dst_w = self.width() as usize;
@@ -510,30 +569,7 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
                 let si = src_w * (src_y as usize + yi) + src_x as usize;
                 let dst = &mut self.data[di..di + width];
                 let src = &canvas.data[si..si + width];
-                match (transparent, palette) {
-                    (None, None) => dst.copy_from_slice(src),
-                    (Some(tkey), None) => {
-                        for i in 0..width {
-                            let val = src[i];
-                            if val != tkey {
-                                dst[i] = val;
-                            }
-                        }
-                    }
-                    (None, Some(pal)) => {
-                        for i in 0..width {
-                            dst[i] = pal[src[i].to_index()];
-                        }
-                    }
-                    (Some(tkey), Some(pal)) => {
-                        for i in 0..width {
-                            let val = src[i];
-                            if val != tkey {
-                                dst[i] = pal[val.to_index()];
-                            }
-                        }
-                    }
-                }
+                copy_row!(slice: dst, src);
             }
             return;
         }
@@ -553,62 +589,12 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
                     // Y-flip only: source row is contiguous
                     let si = src_w * sy + src_x as usize;
                     let src = &canvas.data[si..si + width_usize];
-                    match (transparent, palette) {
-                        (None, None) => dst.copy_from_slice(src),
-                        (Some(tkey), None) => {
-                            for i in 0..width_usize {
-                                let val = src[i];
-                                if val != tkey {
-                                    dst[i] = val;
-                                }
-                            }
-                        }
-                        (None, Some(pal)) => {
-                            for i in 0..width_usize {
-                                dst[i] = pal[src[i].to_index()];
-                            }
-                        }
-                        (Some(tkey), Some(pal)) => {
-                            for i in 0..width_usize {
-                                let val = src[i];
-                                if val != tkey {
-                                    dst[i] = pal[val.to_index()];
-                                }
-                            }
-                        }
-                    }
+                    copy_row!(slice: dst, src);
                 } else {
                     // X-flip: reverse pixel order within row
                     let sx_start = (src_x + offset_x) as usize;
                     let src_row = &canvas.data[src_w * sy..];
-                    match (transparent, palette) {
-                        (None, None) => {
-                            for xi in 0..width_usize {
-                                dst[xi] = src_row[sx_start - xi];
-                            }
-                        }
-                        (Some(tkey), None) => {
-                            for xi in 0..width_usize {
-                                let val = src_row[sx_start - xi];
-                                if val != tkey {
-                                    dst[xi] = val;
-                                }
-                            }
-                        }
-                        (None, Some(pal)) => {
-                            for xi in 0..width_usize {
-                                dst[xi] = pal[src_row[sx_start - xi].to_index()];
-                            }
-                        }
-                        (Some(tkey), Some(pal)) => {
-                            for xi in 0..width_usize {
-                                let val = src_row[sx_start - xi];
-                                if val != tkey {
-                                    dst[xi] = pal[val.to_index()];
-                                }
-                            }
-                        }
-                    }
+                    copy_row!(rev: dst, src_row, sx_start);
                 }
             }
             return;

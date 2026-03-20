@@ -8,7 +8,7 @@ use crate::image::{Color, Rgb24};
 use crate::rect_area::RectArea;
 use crate::utils::add_file_extension;
 
-const TRANSPARENT: Rgb24 = 0xffffffff;
+const TRANSPARENT: Rgb24 = 0xffff_ffff;
 
 struct Screen {
     width: u32,

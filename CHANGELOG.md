@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.8.6
+
+- Cleaned up code style across Rust, Python, and JavaScript files
+
 ## 2.8.5
 
 - Optimized blt and bltm rendering with fast paths

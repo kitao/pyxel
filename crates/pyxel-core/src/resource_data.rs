@@ -94,7 +94,7 @@ impl TilemapData {
 
         {
             let tilemap = unsafe { &mut *tilemap };
-            let data: Vec<_> = data.clone().into_iter().flatten().collect();
+            let data: Vec<_> = data.into_iter().flatten().collect();
             tilemap.canvas.data = data.chunks(2).map(|chunk| (chunk[0], chunk[1])).collect();
         }
 
@@ -180,33 +180,25 @@ impl ResourceData {
     }
 
     pub fn from_runtime(_pyxel: &Pyxel) -> Self {
-        let mut resource_data = ResourceData {
-            format_version: 1, // comatible with version 1
-            images: Vec::new(),
-            tilemaps: Vec::new(),
-            sounds: Vec::new(),
-            musics: Vec::new(),
-        };
-
-        for &image in pyxel::images().iter() {
-            resource_data.images.push(ImageData::from_image(image));
+        ResourceData {
+            format_version: 1, // compatible with version 1
+            images: pyxel::images()
+                .iter()
+                .map(|&img| ImageData::from_image(img))
+                .collect(),
+            tilemaps: pyxel::tilemaps()
+                .iter()
+                .map(|&tm| TilemapData::from_tilemap(tm))
+                .collect(),
+            sounds: pyxel::sounds()
+                .iter()
+                .map(|&snd| SoundData::from_sound(snd))
+                .collect(),
+            musics: pyxel::musics()
+                .iter()
+                .map(|&mus| MusicData::from_music(mus))
+                .collect(),
         }
-
-        for &tilemap in pyxel::tilemaps().iter() {
-            resource_data
-                .tilemaps
-                .push(TilemapData::from_tilemap(tilemap));
-        }
-
-        for &sound in pyxel::sounds().iter() {
-            resource_data.sounds.push(SoundData::from_sound(sound));
-        }
-
-        for &music in pyxel::musics().iter() {
-            resource_data.musics.push(MusicData::from_music(music));
-        }
-
-        resource_data
     }
 
     pub fn to_runtime(
@@ -218,35 +210,16 @@ impl ResourceData {
         exclude_musics: bool,
     ) {
         if !exclude_images && !self.images.is_empty() {
-            let mut images = Vec::new();
-            for image_data in &self.images {
-                images.push(image_data.to_image());
-            }
-            *pyxel::images() = images;
+            *pyxel::images() = self.images.iter().map(ImageData::to_image).collect();
         }
-
         if !exclude_tilemaps && !self.tilemaps.is_empty() {
-            let mut tilemaps = Vec::new();
-            for tilemap_data in &self.tilemaps {
-                tilemaps.push(tilemap_data.to_tilemap());
-            }
-            *pyxel::tilemaps() = tilemaps;
+            *pyxel::tilemaps() = self.tilemaps.iter().map(TilemapData::to_tilemap).collect();
         }
-
         if !exclude_sounds && !self.sounds.is_empty() {
-            let mut sounds = Vec::new();
-            for sound_data in &self.sounds {
-                sounds.push(sound_data.to_sound());
-            }
-            *pyxel::sounds() = sounds;
+            *pyxel::sounds() = self.sounds.iter().map(SoundData::to_sound).collect();
         }
-
         if !exclude_musics && !self.musics.is_empty() {
-            let mut musics = Vec::new();
-            for music_data in &self.musics {
-                musics.push(music_data.to_music());
-            }
-            *pyxel::musics() = musics;
+            *pyxel::musics() = self.musics.iter().map(MusicData::to_music).collect();
         }
     }
 

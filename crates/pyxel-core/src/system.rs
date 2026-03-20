@@ -1,6 +1,6 @@
 use std::ptr;
 
-use crate::image::{Color, Image};
+use crate::image::{rgb_to_rgb8, Color, Image};
 use crate::key::{
     Key, GAMEPAD1_BUTTON_A, GAMEPAD1_BUTTON_B, GAMEPAD1_BUTTON_DPAD_DOWN,
     GAMEPAD1_BUTTON_DPAD_LEFT, GAMEPAD1_BUTTON_DPAD_RIGHT, GAMEPAD1_BUTTON_DPAD_UP,
@@ -217,10 +217,7 @@ impl Pyxel {
             for _sy in 0..scale {
                 for x in 0..width {
                     let color = image_data[(width * y + x) as usize];
-                    let argb = colors[color as usize];
-                    let r = ((argb >> 16) & 0xff) as u8;
-                    let g = ((argb >> 8) & 0xff) as u8;
-                    let b = (argb & 0xff) as u8;
+                    let (r, g, b) = rgb_to_rgb8(colors[color as usize]);
                     let a = if Some(color) == transparent { 0 } else { 0xff };
                     for _sx in 0..scale {
                         rgba.push(r);
@@ -347,16 +344,16 @@ impl Pyxel {
                 self.reset_key(GAMEPAD1_BUTTON_BACK);
                 self.restart();
             } else if self.is_button_pressed(GAMEPAD1_BUTTON_DPAD_LEFT, None, None) {
-                self.reset_key(GAMEPAD1_BUTTON_DPAD_UP);
+                self.reset_key(GAMEPAD1_BUTTON_DPAD_LEFT);
                 self.set_integer_scale(!self.system.integer_scale_enabled);
             } else if self.is_button_pressed(GAMEPAD1_BUTTON_DPAD_RIGHT, None, None) {
-                self.reset_key(GAMEPAD1_BUTTON_DPAD_DOWN);
+                self.reset_key(GAMEPAD1_BUTTON_DPAD_RIGHT);
                 self.set_screen_mode((self.system.screen_mode + 1) % NUM_SCREEN_TYPES);
             } else if self.is_button_pressed(GAMEPAD1_BUTTON_DPAD_UP, None, None) {
-                self.reset_key(GAMEPAD1_BUTTON_DPAD_LEFT);
+                self.reset_key(GAMEPAD1_BUTTON_DPAD_UP);
                 self.set_perf_monitor(!self.system.perf_monitor_enabled);
             } else if self.is_button_pressed(GAMEPAD1_BUTTON_DPAD_DOWN, None, None) {
-                self.reset_key(GAMEPAD1_BUTTON_DPAD_RIGHT);
+                self.reset_key(GAMEPAD1_BUTTON_DPAD_DOWN);
                 self.set_fullscreen(!platform::is_fullscreen());
             }
         }
@@ -364,30 +361,17 @@ impl Pyxel {
 
     fn update_screen_params(&mut self) {
         let (window_width, window_height) = platform::window_size();
+        let w = *pyxel::width() as f32;
+        let h = *pyxel::height() as f32;
 
+        let mut scale = f32::min(window_width as f32 / w, window_height as f32 / h);
         if self.system.integer_scale_enabled {
-            self.system.screen_scale = f32::max(
-                f32::min(
-                    (window_width as f32 / *pyxel::width() as f32) as i32 as f32,
-                    (window_height as f32 / *pyxel::height() as f32) as i32 as f32,
-                ),
-                1.0,
-            );
-        } else {
-            self.system.screen_scale = f32::max(
-                f32::min(
-                    window_width as f32 / *pyxel::width() as f32,
-                    window_height as f32 / *pyxel::height() as f32,
-                ),
-                1.0,
-            );
+            scale = scale.floor();
         }
+        self.system.screen_scale = scale.max(1.0);
 
-        self.system.screen_x =
-            (window_width as i32 - (*pyxel::width() as f32 * self.system.screen_scale) as i32) / 2;
-        self.system.screen_y = (window_height as i32
-            - (*pyxel::height() as f32 * self.system.screen_scale) as i32)
-            / 2;
+        self.system.screen_x = (window_width as i32 - (w * self.system.screen_scale) as i32) / 2;
+        self.system.screen_y = (window_height as i32 - (h * self.system.screen_scale) as i32) / 2;
     }
 
     fn update_frame(&mut self, callback: Option<&mut dyn PyxelCallback>) {
@@ -433,15 +417,15 @@ impl Pyxel {
         screen.map_color(2, 9);
         screen.set_dithering(1.0);
 
-        let fps = format!("{:.*}", 2, self.system.fps_profiler.average_fps());
+        let fps = format!("{:.2}", self.system.fps_profiler.average_fps());
         screen.draw_text(1.0, 0.0, &fps, 1, None);
         screen.draw_text(0.0, 0.0, &fps, 2, None);
 
-        let update_time = format!("{:.*}", 2, self.system.update_profiler.average_time());
+        let update_time = format!("{:.2}", self.system.update_profiler.average_time());
         screen.draw_text(1.0, 6.0, &update_time, 1, None);
         screen.draw_text(0.0, 6.0, &update_time, 2, None);
 
-        let draw_time = format!("{:.*}", 2, self.system.draw_profiler.average_time());
+        let draw_time = format!("{:.2}", self.system.draw_profiler.average_time());
         screen.draw_text(1.0, 12.0, &draw_time, 1, None);
         screen.draw_text(0.0, 12.0, &draw_time, 2, None);
 

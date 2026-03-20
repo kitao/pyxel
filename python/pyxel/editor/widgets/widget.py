@@ -230,11 +230,7 @@ class Widget:
             pyxel.line(x + w, y + 2, x + w, y + h - 1, WIDGET_SHADOW_COLOR)
             pyxel.pset(x + w - 1, y + h - 1, WIDGET_SHADOW_COLOR)
 
-    def new_var(self, name, value):
-        member_name = self._widget_var_name(name)
-        widget_var = WidgetVar(value)
-        setattr(self, member_name, widget_var)
-
+    def _bind_var_property(self, name, member_name):
         def getter(self):
             return getattr(self, member_name).get()
 
@@ -242,20 +238,17 @@ class Widget:
             getattr(self, member_name).set(value)
 
         setattr(self.__class__, name, property(getter, setter))
+
+    def new_var(self, name, value):
+        member_name = self._widget_var_name(name)
+        setattr(self, member_name, WidgetVar(value))
+        self._bind_var_property(name, member_name)
 
     def copy_var(self, name, src_widget, src_name=None):
         member_name = self._widget_var_name(name)
         src_member_name = self._widget_var_name(src_name or name)
-        widget_var = getattr(src_widget, src_member_name)
-        setattr(self, member_name, widget_var)
-
-        def getter(self):
-            return getattr(self, member_name).get()
-
-        def setter(self, value):
-            getattr(self, member_name).set(value)
-
-        setattr(self.__class__, name, property(getter, setter))
+        setattr(self, member_name, getattr(src_widget, src_member_name))
+        self._bind_var_property(name, member_name)
 
     def add_var_event_listener(self, name, event, listener):
         member_name = self._widget_var_name(name)

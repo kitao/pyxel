@@ -632,45 +632,30 @@ function _addVirtualGamepad(mode) {
   // Make canvas smaller
   document.querySelector("canvas#canvas").style.height = "80%";
 
-  // Add virtual cross key
   const pyxelScreen = document.querySelector("div#pyxel-screen");
-  const gamepadCrossImage = document.createElement("img");
-  gamepadCrossImage.id = "pyxel-gamepad-cross";
-  gamepadCrossImage.src = _scriptDir() + GAMEPAD_CROSS_PATH;
-  gamepadCrossImage.tabindex = -1;
-  gamepadCrossImage.onload = () => {
-    pyxelScreen.appendChild(gamepadCrossImage);
-    _updateScreenElementsSize();
+
+  const createGamepadElement = (id, path) => {
+    const img = document.createElement("img");
+    img.id = id;
+    img.src = _scriptDir() + path;
+    img.tabindex = -1;
+    img.onload = () => {
+      pyxelScreen.appendChild(img);
+      _updateScreenElementsSize();
+    };
+    return img;
   };
 
-  // Add virtual action buttons
-  const gamepadButtonImage = document.createElement("img");
-  gamepadButtonImage.id = "pyxel-gamepad-button";
-  gamepadButtonImage.src = _scriptDir() + GAMEPAD_BUTTON_PATH;
-  gamepadButtonImage.tabindex = -1;
-  gamepadButtonImage.onload = () => {
-    pyxelScreen.appendChild(gamepadButtonImage);
-    _updateScreenElementsSize();
-  };
-
-  // Add virtual menu buttons
-  const gamepadMenuImage = document.createElement("img");
-  gamepadMenuImage.id = "pyxel-gamepad-menu";
-  gamepadMenuImage.src = _scriptDir() + GAMEPAD_MENU_PATH;
-  gamepadMenuImage.tabindex = -1;
-  gamepadMenuImage.onload = () => {
-    pyxelScreen.appendChild(gamepadMenuImage);
-    _updateScreenElementsSize();
-  };
+  const gamepadCrossImage = createGamepadElement("pyxel-gamepad-cross", GAMEPAD_CROSS_PATH);
+  const gamepadButtonImage = createGamepadElement("pyxel-gamepad-button", GAMEPAD_BUTTON_PATH);
+  const gamepadMenuImage = createGamepadElement("pyxel-gamepad-menu", GAMEPAD_MENU_PATH);
 
   // Set touch event handler
   const touchHandler = (event) => {
     const crossRect = gamepadCrossImage.getBoundingClientRect();
     const buttonRect = gamepadButtonImage.getBoundingClientRect();
     const menuRect = gamepadMenuImage.getBoundingClientRect();
-    for (let i = 0; i < _virtualGamepadStates.length; i++) {
-      _virtualGamepadStates[i] = false;
-    }
+    _virtualGamepadStates.fill(false);
     for (let i = 0; i < event.touches.length; i++) {
       const { clientX, clientY } = event.touches[i];
       const size = crossRect.width;

@@ -11,11 +11,15 @@ use crate::settings::{
     FONT_HEIGHT, FONT_WIDTH, MAX_COLORS, MAX_FONT_CODE, MIN_FONT_CODE, NUM_FONT_ROWS, TILE_MASK,
     TILE_SHIFT, TILE_SIZE,
 };
-use crate::tilemap::{ImageSource, Tilemap};
+use crate::tilemap::Tilemap;
 use crate::{pyxel, utils};
 
 pub type Rgb24 = u32;
 pub type Color = u8;
+
+pub fn rgb_to_rgb8(rgb: Rgb24) -> (u8, u8, u8) {
+    ((rgb >> 16) as u8, (rgb >> 8) as u8, rgb as u8)
+}
 
 impl ToIndex for Color {
     fn to_index(&self) -> usize {
@@ -27,6 +31,7 @@ impl ToIndex for Color {
 pub struct Image {
     pub(crate) canvas: Canvas<Color>,
     pub(crate) palette: [Color; MAX_COLORS as usize],
+    pub(crate) palette_is_identity: bool,
 }
 
 impl Image {
@@ -34,6 +39,7 @@ impl Image {
         Box::into_raw(Box::new(Self {
             canvas: Canvas::new(width, height),
             palette: array::from_fn(|i| i as Color),
+            palette_is_identity: true,
         }))
     }
 
@@ -182,9 +188,7 @@ impl Image {
         for y in 0..height {
             for x in 0..width {
                 let rgb = colors[self.canvas.read_data(x as usize, y as usize) as usize];
-                let r = (rgb >> 16) as u8;
-                let g = (rgb >> 8) as u8;
-                let b = rgb as u8;
+                let (r, g, b) = rgb_to_rgb8(rgb);
                 image.put_pixel(x, y, image::Rgb([r, g, b]));
             }
         }
@@ -220,12 +224,14 @@ impl Image {
 
     pub fn map_color(&mut self, src_color: Color, dst_color: Color) {
         self.palette[src_color as usize] = dst_color;
+        self.palette_is_identity = false;
     }
 
     pub fn reset_color_map(&mut self) {
         for i in 0..self.palette.len() {
             self.palette[i] = i as Color;
         }
+        self.palette_is_identity = true;
     }
 
     pub fn set_dithering(&mut self, alpha: f32) {
@@ -344,7 +350,12 @@ impl Image {
             return;
         }
 
-        if ptr::eq(image, ptr::from_mut(self)) {
+        let palette: Option<&[Color]> = if self.palette_is_identity {
+            None
+        } else {
+            Some(&self.palette)
+        };
+        if ptr::eq(image.cast_const(), ptr::from_ref(self)) {
             let copy_width = utils::f32_to_u32(width.abs());
             let copy_height = utils::f32_to_u32(height.abs());
             let mut canvas = Canvas::new(copy_width, copy_height);
@@ -361,17 +372,8 @@ impl Image {
                 None,
             );
 
-            self.canvas.blit(
-                x,
-                y,
-                &canvas,
-                0.0,
-                0.0,
-                width,
-                height,
-                transparent,
-                Some(&self.palette),
-            );
+            self.canvas
+                .blit(x, y, &canvas, 0.0, 0.0, width, height, transparent, palette);
         } else {
             let image = unsafe { &*image };
             self.canvas.blit(
@@ -383,7 +385,7 @@ impl Image {
                 width,
                 height,
                 transparent,
-                Some(&self.palette),
+                palette,
             );
         }
     }
@@ -401,7 +403,12 @@ impl Image {
         rotate: f32,
         scale: f32,
     ) {
-        if ptr::eq(image, ptr::from_mut(self)) {
+        let palette: Option<&[Color]> = if self.palette_is_identity {
+            None
+        } else {
+            Some(&self.palette)
+        };
+        if ptr::eq(image.cast_const(), ptr::from_ref(self)) {
             let copy_width = utils::f32_to_u32(width.abs());
             let copy_height = utils::f32_to_u32(height.abs());
             let mut canvas = Canvas::new(copy_width, copy_height);
@@ -427,7 +434,7 @@ impl Image {
                 width,
                 height,
                 transparent,
-                Some(&self.palette),
+                palette,
                 rotate,
                 scale,
                 false,
@@ -443,7 +450,7 @@ impl Image {
                 width,
                 height,
                 transparent,
-                Some(&self.palette),
+                palette,
                 rotate,
                 scale,
                 false,
@@ -524,11 +531,7 @@ impl Image {
             return;
         }
 
-        let images = pyxel::images();
-        let image: &Image = match &tilemap.imgsrc {
-            ImageSource::Index(index) => unsafe { &*images[*index as usize] },
-            ImageSource::Image(image) => unsafe { &**image },
-        };
+        let image: &Image = unsafe { tilemap.imgsrc.resolve() };
 
         let tile_size = TILE_SIZE as i32;
         let img_w = image.width() as usize;
@@ -537,7 +540,11 @@ impl Image {
         // Fast path: no flip, full alpha
         if sign_x == 1 && sign_y == 1 && self.canvas.alpha >= 1.0 {
             let dst_w = self.canvas.width() as usize;
-            let palette = &self.palette;
+            let palette: Option<&[Color]> = if self.palette_is_identity {
+                None
+            } else {
+                Some(&self.palette)
+            };
 
             for yi in 0..height {
                 let tilemap_y = src_y + yi;
@@ -563,16 +570,28 @@ impl Image {
                         let di = dst_row + xi as usize;
                         let src = &image.canvas.data[si..si + valid];
                         let dst = &mut self.canvas.data[di..di + valid];
-                        if let Some(tkey) = transparent {
-                            for i in 0..valid {
-                                let val = src[i];
-                                if val != tkey {
-                                    dst[i] = palette[val as usize];
+                        match (transparent, palette) {
+                            (None, None) => dst.copy_from_slice(src),
+                            (Some(tkey), None) => {
+                                for i in 0..valid {
+                                    let val = src[i];
+                                    if val != tkey {
+                                        dst[i] = val;
+                                    }
                                 }
                             }
-                        } else {
-                            for i in 0..valid {
-                                dst[i] = palette[src[i] as usize];
+                            (None, Some(pal)) => {
+                                for i in 0..valid {
+                                    dst[i] = pal[src[i] as usize];
+                                }
+                            }
+                            (Some(tkey), Some(pal)) => {
+                                for i in 0..valid {
+                                    let val = src[i];
+                                    if val != tkey {
+                                        dst[i] = pal[val as usize];
+                                    }
+                                }
                             }
                         }
                     }
@@ -583,6 +602,11 @@ impl Image {
         }
 
         // General path: flip and/or dithering
+        let palette: Option<&[Color]> = if self.palette_is_identity {
+            None
+        } else {
+            Some(&self.palette)
+        };
         let img_w = img_w as i32;
         let img_h = img_h as i32;
 
@@ -619,7 +643,7 @@ impl Image {
                         continue;
                     }
                 }
-                let value = self.palette[value.to_index()];
+                let value = palette.map_or(value, |pal| pal[value.to_index()]);
                 self.canvas.write_data((dst_x + xi) as usize, dst_yi, value);
             }
         }
@@ -666,6 +690,11 @@ impl Image {
                 tilemap_width * TILE_SIZE as f32,
                 tilemap_height * TILE_SIZE as f32,
             );
+            let palette: Option<&[Color]> = if self.palette_is_identity {
+                None
+            } else {
+                Some(&self.palette)
+            };
             self.canvas.blit_with_transform(
                 x,
                 y,
@@ -675,7 +704,7 @@ impl Image {
                 width,
                 height,
                 transparent,
-                Some(&self.palette),
+                palette,
                 rotate,
                 scale,
                 true,
@@ -697,7 +726,12 @@ impl Image {
         fov: Option<f32>,
         transparent: Option<Color>,
     ) {
-        if ptr::eq(image, ptr::from_mut(self)) {
+        let palette: Option<&[Color]> = if self.palette_is_identity {
+            None
+        } else {
+            Some(&self.palette)
+        };
+        if ptr::eq(image.cast_const(), ptr::from_ref(self)) {
             let src = self.clone();
             self.canvas.blit_perspective(
                 x,
@@ -709,7 +743,7 @@ impl Image {
                 rot,
                 fov,
                 transparent,
-                Some(&self.palette),
+                palette,
             );
         } else {
             let image = unsafe { &*image };
@@ -723,7 +757,7 @@ impl Image {
                 rot,
                 fov,
                 transparent,
-                Some(&self.palette),
+                palette,
             );
         }
     }
@@ -761,11 +795,7 @@ impl Image {
         let tm_w = tilemap.canvas.width() as i32;
         let tm_h = tilemap.canvas.height() as i32;
 
-        let images = pyxel::images();
-        let image: &Image = match &tilemap.imgsrc {
-            ImageSource::Index(index) => unsafe { &*images[*index as usize] },
-            ImageSource::Image(image) => unsafe { &**image },
-        };
+        let image: &Image = unsafe { tilemap.imgsrc.resolve() };
         let img_w = image.width() as i32;
         let img_h = image.height() as i32;
 
@@ -774,6 +804,11 @@ impl Image {
         let y1 = proj.dst_y.max(self.canvas.clip_rect.top());
         let y2 = (proj.dst_y + proj.h - 1).min(self.canvas.clip_rect.bottom());
 
+        let palette: Option<&[Color]> = if self.palette_is_identity {
+            None
+        } else {
+            Some(&self.palette)
+        };
         let (wx_step, wy_step, wz_step) = proj.x_steps();
 
         for yi in y1..=y2 {
@@ -795,7 +830,7 @@ impl Image {
                             if px >= 0 && px < img_w && py >= 0 && py < img_h {
                                 let value = image.canvas.read_data(px as usize, py as usize);
                                 if transparent.is_none_or(|tkey| value != tkey) {
-                                    let value = self.palette[value.to_index()];
+                                    let value = palette.map_or(value, |pal| pal[value.to_index()]);
                                     self.canvas.write_data(xi as usize, yi as usize, value);
                                 }
                             }

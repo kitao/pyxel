@@ -16,6 +16,7 @@ use super::super::key::{
     MOUSE_POS_X, MOUSE_POS_Y, MOUSE_WHEEL_X, MOUSE_WHEEL_Y,
 };
 use super::platform_sdl2::PlatformSdl2;
+#[allow(clippy::wildcard_imports)]
 use super::sdl2_sys::*;
 
 #[cfg(target_os = "emscripten")]

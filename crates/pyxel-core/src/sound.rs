@@ -82,13 +82,13 @@ impl Sound {
                     _ => return Err(format!("Invalid sound note '{c}'")),
                 };
 
-                let mut c = chars.next().unwrap_or(0 as char);
+                let mut c = chars.next().unwrap_or('\0');
                 if c == '#' {
                     note += 1;
-                    c = chars.next().unwrap_or(0 as char);
+                    c = chars.next().unwrap_or('\0');
                 } else if c == '-' {
                     note -= 1;
-                    c = chars.next().unwrap_or(0 as char);
+                    c = chars.next().unwrap_or('\0');
                 }
 
                 if ('0'..='4').contains(&c) {

@@ -16,6 +16,7 @@ pub const DEFAULT_QUIT_KEY: Key = KEY_ESCAPE;
 pub const DEFAULT_CAPTURE_SCALE: u32 = 2;
 pub const DEFAULT_CAPTURE_SEC: u32 = 10;
 pub const DISPLAY_RATIO: f32 = 0.75;
+#[allow(clippy::unreadable_literal)]
 pub const BACKGROUND_COLOR: Rgb24 = 0x202224;
 pub const MAX_FRAME_DELAY_MS: u32 = 100;
 pub const NUM_MEASURE_FRAMES: u32 = 10;
@@ -59,6 +60,7 @@ pub const TILEMAP_SIZE: u32 = 256;
 pub const TILE_SIZE: u32 = 8;
 pub const TILE_SHIFT: u32 = 3; // log2(TILE_SIZE)
 pub const TILE_MASK: i32 = TILE_SIZE as i32 - 1;
+#[allow(clippy::unreadable_literal)]
 pub const DEFAULT_COLORS: [Rgb24; NUM_COLORS as usize] = [
     0x000000, 0x2b335f, 0x7e2072, 0x19959c, 0x8b4852, 0x395c98, 0xa9c1ff, 0xeeeeee, //
     0xd4186c, 0xd38441, 0xe9c35b, 0x70c6a9, 0x7696de, 0xa3a3a3, 0xff9798, 0xedc7b0,
@@ -89,6 +91,7 @@ pub const MAX_FONT_CODE: char = 127 as char;
 pub const NUM_FONT_ROWS: u32 = 16;
 pub const FONT_WIDTH: u32 = 4;
 pub const FONT_HEIGHT: u32 = 6;
+#[allow(clippy::unreadable_literal)]
 pub const FONT_DATA: [u32; MAX_FONT_CODE as usize - MIN_FONT_CODE as usize + 1] = [
     0x000000, 0x444040, 0xaa0000, 0xaeaea0, 0x6c6c40, 0x824820, 0x4a4ac0, 0x440000, 0x244420,
     0x844480, 0xa4e4a0, 0x04e400, 0x000480, 0x00e000, 0x000040, 0x224880, 0x6aaac0, 0x4c4440,
@@ -149,8 +152,8 @@ pub const MAX_VOLUME: SoundVolume = 7;
 pub const MAX_EFFECT: SoundEffect = 5;
 
 pub const DEFAULT_TONE_SAMPLE_BITS: u32 = 4;
-pub const DEFAULT_TONE_0: (ToneMode, u32, [ToneSample; 32], f32) = (
-    // Triangle
+// Triangle
+pub const DEFAULT_TONE_0: (ToneMode, u32, [ToneSample; 32], ChannelGain) = (
     ToneMode::Wavetable,
     4,
     [
@@ -159,24 +162,12 @@ pub const DEFAULT_TONE_0: (ToneMode, u32, [ToneSample; 32], f32) = (
     ],
     1.0,
 );
-pub const DEFAULT_TONE_1: (ToneMode, u32, [ToneSample; 2], ChannelGain) = (
-    // Square
-    ToneMode::Wavetable,
-    1,
-    [1, 0],
-    0.3,
-);
-pub const DEFAULT_TONE_2: (ToneMode, u32, [ToneSample; 4], ChannelGain) = (
-    // Pulse
-    ToneMode::Wavetable,
-    1,
-    [1, 0, 0, 0],
-    0.3,
-);
-pub const DEFAULT_TONE_3: (ToneMode, u32, [ToneSample; 0], ChannelGain) = (
-    // Noise
-    ToneMode::LongPeriodNoise,
-    0,
-    [0; 0],
-    0.6,
-);
+// Square
+pub const DEFAULT_TONE_1: (ToneMode, u32, [ToneSample; 2], ChannelGain) =
+    (ToneMode::Wavetable, 1, [1, 0], 0.3);
+// Pulse
+pub const DEFAULT_TONE_2: (ToneMode, u32, [ToneSample; 4], ChannelGain) =
+    (ToneMode::Wavetable, 1, [1, 0, 0, 0], 0.3);
+// Noise
+pub const DEFAULT_TONE_3: (ToneMode, u32, [ToneSample; 0], ChannelGain) =
+    (ToneMode::LongPeriodNoise, 0, [], 0.6);

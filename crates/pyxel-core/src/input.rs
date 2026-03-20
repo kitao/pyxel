@@ -40,10 +40,9 @@ impl Pyxel {
         );
 
         if let Some((frame_count, key_state)) = self.input.key_states.get(&key) {
-            if *key_state == KeyState::Pressed
-                || *key_state == KeyState::ReleasedAndPressed
-                || *frame_count == *pyxel::frame_count()
-                    && *key_state == KeyState::PressedAndReleased
+            if matches!(key_state, KeyState::Pressed | KeyState::ReleasedAndPressed)
+                || (*frame_count == *pyxel::frame_count()
+                    && *key_state == KeyState::PressedAndReleased)
             {
                 return true;
             }
@@ -176,9 +175,7 @@ impl Pyxel {
             .insert(key, (*pyxel::frame_count(), key_state));
     }
 
-    pub(crate) fn change_key_value(&mut self, key: Key, value: KeyValue) {
-        let mut value = value;
-
+    pub(crate) fn change_key_value(&mut self, key: Key, mut value: KeyValue) {
         match key {
             MOUSE_POS_X => {
                 value = ((value - self.system.screen_x) as f32 / self.system.screen_scale) as i32;

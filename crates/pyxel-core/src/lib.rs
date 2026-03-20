@@ -12,15 +12,12 @@
     clippy::missing_errors_doc,
     clippy::missing_panics_doc,
     clippy::must_use_candidate,
-    clippy::needless_pass_by_value,
     clippy::similar_names,
     clippy::struct_excessive_bools,
     clippy::struct_field_names,
     clippy::too_many_arguments,
     clippy::too_many_lines,
-    clippy::unreadable_literal,
-    clippy::unused_self,
-    clippy::wildcard_imports
+    clippy::unused_self
 )]
 
 #[macro_use]

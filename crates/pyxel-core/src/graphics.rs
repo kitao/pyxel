@@ -4,7 +4,7 @@ use std::mem::size_of;
 use glow::{HasContext, PixelUnpackData};
 
 use crate::font::Font;
-use crate::image::{Color, Rgb24};
+use crate::image::{rgb_to_rgb8, Color, Rgb24};
 use crate::platform;
 use crate::platform::GLProfile;
 use crate::pyxel::{self, Pyxel};
@@ -172,13 +172,7 @@ impl Graphics {
         screen_shaders
     }
 
-    unsafe fn create_screen_texture(gl: &mut glow::Context) -> glow::NativeTexture {
-        let screen_texture = gl
-            .create_texture()
-            .expect("Failed to create OpenGL screen texture");
-        gl.active_texture(glow::TEXTURE0);
-        gl.bind_texture(glow::TEXTURE_2D, Some(screen_texture));
-
+    unsafe fn set_texture_nearest_clamp(gl: &mut glow::Context) {
         gl.tex_parameter_i32(
             glow::TEXTURE_2D,
             glow::TEXTURE_MIN_FILTER,
@@ -199,7 +193,15 @@ impl Graphics {
             glow::TEXTURE_WRAP_T,
             glow::CLAMP_TO_EDGE as i32,
         );
+    }
 
+    unsafe fn create_screen_texture(gl: &mut glow::Context) -> glow::NativeTexture {
+        let screen_texture = gl
+            .create_texture()
+            .expect("Failed to create OpenGL screen texture");
+        gl.active_texture(glow::TEXTURE0);
+        gl.bind_texture(glow::TEXTURE_2D, Some(screen_texture));
+        Self::set_texture_nearest_clamp(gl);
         screen_texture
     }
 
@@ -209,28 +211,7 @@ impl Graphics {
             .expect("Failed to create OpenGL colors texture");
         gl.active_texture(glow::TEXTURE1);
         gl.bind_texture(glow::TEXTURE_2D, Some(colors_texture));
-
-        gl.tex_parameter_i32(
-            glow::TEXTURE_2D,
-            glow::TEXTURE_MIN_FILTER,
-            glow::NEAREST as i32,
-        );
-        gl.tex_parameter_i32(
-            glow::TEXTURE_2D,
-            glow::TEXTURE_MAG_FILTER,
-            glow::NEAREST as i32,
-        );
-        gl.tex_parameter_i32(
-            glow::TEXTURE_2D,
-            glow::TEXTURE_WRAP_S,
-            glow::CLAMP_TO_EDGE as i32,
-        );
-        gl.tex_parameter_i32(
-            glow::TEXTURE_2D,
-            glow::TEXTURE_WRAP_T,
-            glow::CLAMP_TO_EDGE as i32,
-        );
-
+        Self::set_texture_nearest_clamp(gl);
         colors_texture
     }
 }
@@ -505,11 +486,12 @@ impl Pyxel {
         }
 
         if let Some(location) = uniform_locations.get("u_backgroundColor") {
+            let (r, g, b) = rgb_to_rgb8(BACKGROUND_COLOR);
             gl.uniform_3_f32(
                 Some(location),
-                ((BACKGROUND_COLOR >> 16) as u8) as f32 / 255.0,
-                ((BACKGROUND_COLOR >> 8) as u8) as f32 / 255.0,
-                (BACKGROUND_COLOR as u8) as f32 / 255.0,
+                r as f32 / 255.0,
+                g as f32 / 255.0,
+                b as f32 / 255.0,
             );
         }
 
@@ -588,9 +570,10 @@ impl Pyxel {
 
         let mut pixels: Vec<u8> = Vec::with_capacity(colors.len() * 3);
         for color in colors.iter() {
-            pixels.push((color >> 16) as u8);
-            pixels.push((color >> 8) as u8);
-            pixels.push(*color as u8);
+            let (r, g, b) = rgb_to_rgb8(*color);
+            pixels.push(r);
+            pixels.push(g);
+            pixels.push(b);
         }
 
         if graphics.cached_colors.len() == colors.len() {

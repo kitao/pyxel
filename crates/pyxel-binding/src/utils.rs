@@ -97,10 +97,8 @@ macro_rules! impl_python_sequence_read {
                     let idx: isize = key.extract()?;
                     let i = resolve_index!(idx, $len(&self.inner))?;
                     let value = $get(&self.inner, i);
-                    let obj = pyo3::IntoPyObject::into_pyobject(value, py).map_err(|e| {
-                        let err: pyo3::PyErr = e.into();
-                        err
-                    })?;
+                    let obj = pyo3::IntoPyObject::into_pyobject(value, py)
+                        .map_err(Into::<pyo3::PyErr>::into)?;
                     Ok(obj.into_any().unbind())
                 }
             }

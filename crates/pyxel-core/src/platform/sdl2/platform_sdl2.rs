@@ -9,6 +9,7 @@ use glow::Context;
 
 use super::super::facade::GLProfile;
 use super::poll_events::Gamepad;
+#[allow(clippy::wildcard_imports)]
 use super::sdl2_sys::*;
 
 static AUDIO_DEVICE_ID: AtomicU32 = AtomicU32::new(0);

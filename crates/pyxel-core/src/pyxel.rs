@@ -214,77 +214,42 @@ pub fn reset_statics() {
     dropped_files().clear();
 
     // Reset heap globals
+    macro_rules! drop_global {
+        ($static:ident) => {
+            unsafe {
+                if !$static.is_null() {
+                    drop(Box::from_raw($static));
+                    $static = null_mut();
+                }
+            }
+        };
+        (vec: $static:ident) => {
+            unsafe {
+                if !$static.is_null() {
+                    for &item in &*$static {
+                        if !item.is_null() {
+                            drop(Box::from_raw(item));
+                        }
+                    }
+                    drop(Box::from_raw($static));
+                    $static = null_mut();
+                }
+            }
+        };
+    }
+
+    drop_global!(COLORS);
+    drop_global!(vec: IMAGES);
+    drop_global!(vec: TILEMAPS);
+    drop_global!(SCREEN);
+    drop_global!(CURSOR_IMAGE);
+    drop_global!(FONT_IMAGE);
+    drop_global!(vec: CHANNELS);
+    drop_global!(vec: TONES);
+    drop_global!(vec: SOUNDS);
+    drop_global!(vec: MUSICS);
+
     unsafe {
-        if !COLORS.is_null() {
-            drop(Box::from_raw(COLORS));
-            COLORS = null_mut();
-        }
-        if !IMAGES.is_null() {
-            for &img in &*IMAGES {
-                if !img.is_null() {
-                    drop(Box::from_raw(img));
-                }
-            }
-            drop(Box::from_raw(IMAGES));
-            IMAGES = null_mut();
-        }
-        if !TILEMAPS.is_null() {
-            for &tm in &*TILEMAPS {
-                if !tm.is_null() {
-                    drop(Box::from_raw(tm));
-                }
-            }
-            drop(Box::from_raw(TILEMAPS));
-            TILEMAPS = null_mut();
-        }
-        if !SCREEN.is_null() {
-            drop(Box::from_raw(SCREEN));
-            SCREEN = null_mut();
-        }
-        if !CURSOR_IMAGE.is_null() {
-            drop(Box::from_raw(CURSOR_IMAGE));
-            CURSOR_IMAGE = null_mut();
-        }
-        if !FONT_IMAGE.is_null() {
-            drop(Box::from_raw(FONT_IMAGE));
-            FONT_IMAGE = null_mut();
-        }
-        if !CHANNELS.is_null() {
-            for &ch in &*CHANNELS {
-                if !ch.is_null() {
-                    drop(Box::from_raw(ch));
-                }
-            }
-            drop(Box::from_raw(CHANNELS));
-            CHANNELS = null_mut();
-        }
-        if !TONES.is_null() {
-            for &t in &*TONES {
-                if !t.is_null() {
-                    drop(Box::from_raw(t));
-                }
-            }
-            drop(Box::from_raw(TONES));
-            TONES = null_mut();
-        }
-        if !SOUNDS.is_null() {
-            for &s in &*SOUNDS {
-                if !s.is_null() {
-                    drop(Box::from_raw(s));
-                }
-            }
-            drop(Box::from_raw(SOUNDS));
-            SOUNDS = null_mut();
-        }
-        if !MUSICS.is_null() {
-            for &m in &*MUSICS {
-                if !m.is_null() {
-                    drop(Box::from_raw(m));
-                }
-            }
-            drop(Box::from_raw(MUSICS));
-            MUSICS = null_mut();
-        }
         RESET_CALLBACK = None;
         QUIT_CALLBACK = None;
     }
@@ -296,6 +261,7 @@ fn init_screen() -> Image {
     Image {
         canvas: Canvas::new(0, 0),
         palette: array::from_fn(|i| i as Color),
+        palette_is_identity: true,
     }
 }
 
@@ -315,6 +281,7 @@ fn init_cursor_image() -> Image {
     let mut image = Image {
         canvas: Canvas::new(CURSOR_WIDTH, CURSOR_HEIGHT),
         palette: array::from_fn(|i| i as Color),
+        palette_is_identity: true,
     };
     image.set(0, 0, &CURSOR_DATA);
     image
@@ -326,6 +293,7 @@ fn init_font_image() -> Image {
     let mut image = Image {
         canvas: Canvas::new(w, h),
         palette: array::from_fn(|i| i as Color),
+        palette_is_identity: true,
     };
     for (fi, data) in FONT_DATA.iter().enumerate() {
         let row = fi as u32 / NUM_FONT_ROWS;
@@ -335,7 +303,7 @@ fn init_font_image() -> Image {
             for xi in 0..FONT_WIDTH {
                 let x = FONT_WIDTH * col + xi;
                 let y = FONT_HEIGHT * row + yi;
-                let color = Color::from((data & 0x800000) != 0);
+                let color = Color::from((data & 0x0080_0000) != 0);
                 image.canvas.write_data(x as usize, y as usize, color);
                 data <<= 1;
             }
@@ -349,24 +317,24 @@ fn init_channels() -> Vec<*mut Channel> {
 }
 
 fn init_tones() -> Vec<*mut Tone> {
-    macro_rules! set_default_tone {
-        ($tone:expr, $default_tone:ident) => {{
-            $tone.mode = $default_tone.0;
-            $tone.sample_bits = $default_tone.1;
-            $tone.wavetable = $default_tone.2.to_vec();
-            $tone.gain = $default_tone.3;
+    macro_rules! set_tone {
+        ($tone:expr, $default:ident) => {{
+            $tone.mode = $default.0;
+            $tone.sample_bits = $default.1;
+            $tone.wavetable = $default.2.to_vec();
+            $tone.gain = $default.3;
         }};
     }
 
     (0..NUM_TONES)
         .map(|index| {
             let tone = Tone::new();
-            let tone_ref = unsafe { &mut *tone };
+            let t = unsafe { &mut *tone };
             match index {
-                0 => set_default_tone!(tone_ref, DEFAULT_TONE_0),
-                1 => set_default_tone!(tone_ref, DEFAULT_TONE_1),
-                2 => set_default_tone!(tone_ref, DEFAULT_TONE_2),
-                3 => set_default_tone!(tone_ref, DEFAULT_TONE_3),
+                0 => set_tone!(t, DEFAULT_TONE_0),
+                1 => set_tone!(t, DEFAULT_TONE_1),
+                2 => set_tone!(t, DEFAULT_TONE_2),
+                3 => set_tone!(t, DEFAULT_TONE_3),
                 _ => panic!(),
             }
             tone

@@ -1,4 +1,3 @@
-use std::cmp::max;
 use std::fs;
 use std::fs::File;
 use std::io::{Read, Write};
@@ -28,7 +27,7 @@ impl Resource {
         let capture_sec = capture_sec.unwrap_or(DEFAULT_CAPTURE_SEC);
 
         Self {
-            capture_scale: max(capture_scale, 1),
+            capture_scale: capture_scale.max(1),
             screencast: Screencast::new(fps, capture_sec),
         }
     }
@@ -140,7 +139,7 @@ impl Pyxel {
                 })
                 .collect::<Result<_, _>>()?;
             *pyxel::colors() = if colors.is_empty() {
-                vec![0xffffff]
+                vec![0x00ff_ffff]
             } else {
                 colors
             };
@@ -165,7 +164,7 @@ impl Pyxel {
 
     pub fn take_screenshot(&mut self, scale: Option<u32>) -> Result<(), String> {
         let filename = Self::prepend_desktop_path(&format!("pyxel-{}", Self::datetime_string()));
-        let scale = max(scale.unwrap_or(self.resource.capture_scale), 1);
+        let scale = scale.unwrap_or(self.resource.capture_scale).max(1);
         pyxel::screen().save(&filename, scale)?;
 
         crate::platform::export_browser_file(&(filename + ".png"));
@@ -174,7 +173,7 @@ impl Pyxel {
 
     pub fn save_screencast(&mut self, scale: Option<u32>) -> Result<(), String> {
         let filename = Self::prepend_desktop_path(&format!("pyxel-{}", Self::datetime_string()));
-        let scale = max(scale.unwrap_or(self.resource.capture_scale), 1);
+        let scale = scale.unwrap_or(self.resource.capture_scale).max(1);
         self.resource.screencast.save(&filename, scale)?;
 
         crate::platform::export_browser_file(&(filename + ".gif"));
