@@ -94,6 +94,7 @@ endif
 .PHONY: \
 	all clean distclean update format lint build install test \
 	clean-wasm lint-wasm build-wasm start-test-server test-wasm \
+	lint-embed build-embed run-embed \
 	pages
 
 all: build
@@ -156,6 +157,18 @@ start-test-server:
 	@$(SCRIPTS_DIR)/start_test_server
 
 test-wasm: build-wasm start-test-server
+
+lint-embed:
+	@cd $(CRATES_DIR); cargo clippy -p pyxel-embed $(CARGO_OPTS) $(CLIPPY_OPTS)
+
+build-embed: format
+	@rustup component add rust-src
+	@cd $(CRATES_DIR); \
+		RUSTFLAGS="$(RUSTFLAGS)" \
+		cargo build -p pyxel-embed $(CARGO_OPTS)
+
+run-embed: build-embed
+	@$(CRATES_DIR)/target/$(TARGET)/release/pyxel-embed $(ARGS)
 
 pages:
 	@cd $(ROOT_DIR)/web && npx @tailwindcss/cli -i styles/input.css -o styles.css --minify

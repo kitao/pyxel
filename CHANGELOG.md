@@ -1,5 +1,7 @@
 # Change Log
 
+## 2.8.7
+
 ## 2.8.6
 
 - Cleaned up code style across the codebase

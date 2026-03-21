@@ -1,0 +1,24 @@
+[package]
+name = "pyxel-embed"
+version = "2.8.6"
+authors = ["Takashi Kitao <takashi.kitao@gmail.com>"]
+edition = "2021"
+license = "MIT"
+
+[lib]
+name = "pyxel_embed"
+
+[[bin]]
+name = "pyxel-embed"
+path = "src/main.rs"
+
+[dependencies]
+pyxel-core = { path = "../pyxel-core" }
+rustpython = { version = "0.4", default-features = false, features = ["stdlib", "freeze-stdlib"] }
+rustpython-vm = { version = "0.4", features = ["compiler"] }
+crossbeam-utils = "0.8"
+libc = "0.2"
+
+[features]
+sdl2_dynamic = ["pyxel-core/sdl2_dynamic"]
+sdl2_static = ["pyxel-core/sdl2_static"]
