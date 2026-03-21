@@ -30,13 +30,13 @@ Initialize the Pyxel application with the screen size (width, height).
 
 - `width` (*int*) — Screen width
 - `height` (*int*) — Screen height
-- `title` (*str*) — Window title (default: "Pyxel")
-- `fps` (*int*) — Frame rate (default: 30)
-- `quit_key` (*int*) — Key to quit the application (default: KEY_ESCAPE)
+- `title` (*str*) — Window title. Defaults to "Pyxel".
+- `fps` (*int*) — Frame rate. Defaults to 30.
+- `quit_key` (*int*) — Key to quit the application. Defaults to KEY_ESCAPE.
 - `display_scale` (*int*) — Display scale factor (None for auto)
-- `capture_scale` (*int*) — Screen capture scale factor (default: 2)
-- `capture_sec` (*int*) — Maximum recording time for screen capture video (default: 10)
-- `headless` (*bool*) — Run without a window (default: False)
+- `capture_scale` (*int*) — Screen capture scale factor. Defaults to 2.
+- `capture_sec` (*int*) — Maximum recording time for screen capture video. Defaults to 10.
+- `headless` (*bool*) — Run without a window. Defaults to False.
 
 **Example:**
 
@@ -85,7 +85,7 @@ Set the application icon. Specify the icon image as a list of strings.
 
 - `data` (*list[str]*) — Icon image as a list of strings
 - `scale` (*int*) — Scale factor
-- `colkey` (*int/None*) — Transparent color
+- `colkey` (*int/None*) — Transparent color. Optional.
 
 ### `fullscreen(enabled)` — function *(Advanced)*
 
@@ -128,10 +128,10 @@ Load the resource file (.pyxres). If an option is set to True, the corresponding
 **Parameters:**
 
 - `filename` (*str*) — Resource file path
-- `exclude_images` (*bool*) — Exclude image banks
-- `exclude_tilemaps` (*bool*) — Exclude tilemaps
-- `exclude_sounds` (*bool*) — Exclude sounds
-- `exclude_musics` (*bool*) — Exclude music tracks
+- `exclude_images` (*bool*) — Exclude image banks. Defaults to False.
+- `exclude_tilemaps` (*bool*) — Exclude tilemaps. Defaults to False.
+- `exclude_sounds` (*bool*) — Exclude sounds. Defaults to False.
+- `exclude_musics` (*bool*) — Exclude music tracks. Defaults to False.
 
 **Note:** If a palette file (.pyxpal) with the same name exists, the palette display colors will also be updated.
 
@@ -159,10 +159,10 @@ Save the resource file (.pyxres). If an option is set to True, the corresponding
 **Parameters:**
 
 - `filename` (*str*) — Resource file path
-- `exclude_images` (*bool*) — Exclude image banks
-- `exclude_tilemaps` (*bool*) — Exclude tilemaps
-- `exclude_sounds` (*bool*) — Exclude sounds
-- `exclude_musics` (*bool*) — Exclude music tracks
+- `exclude_images` (*bool*) — Exclude image banks. Defaults to False.
+- `exclude_tilemaps` (*bool*) — Exclude tilemaps. Defaults to False.
+- `exclude_sounds` (*bool*) — Exclude sounds. Defaults to False.
+- `exclude_musics` (*bool*) — Exclude music tracks. Defaults to False.
 
 ### `screenshot(scale=2)` — function *(Advanced)*
 
@@ -170,7 +170,7 @@ Take a screenshot.
 
 **Parameters:**
 
-- `scale` (*int*) — Scale factor
+- `scale` (*int*) — Scale factor. Defaults to 2.
 
 ### `screencast(scale=2)` — function *(Advanced)*
 
@@ -178,7 +178,7 @@ Save the screen recording as a GIF file.
 
 **Parameters:**
 
-- `scale` (*int*) — Scale factor
+- `scale` (*int*) — Scale factor. Defaults to 2.
 
 ### `reset_screencast()` — function *(Advanced)*
 
@@ -255,8 +255,8 @@ Return True if the key is pressed in that frame. When hold and repeat are specif
 **Parameters:**
 
 - `key` (*int*) — Key code
-- `hold` (*int*) — Frames to hold before repeat starts
-- `repeat` (*int*) — Repeat interval in frames
+- `hold` (*int*) — Frames to hold before repeat starts. Defaults to 0.
+- `repeat` (*int*) — Repeat interval in frames. Defaults to 0.
 
 **Returns:** `bool` — True if pressed in that frame
 
@@ -625,9 +625,9 @@ Copy the region of size (w, h) from (u, v) of image bank img (0-2 or Image insta
 - `v` (*float*) — Source Y in the image bank
 - `w` (*float*) — Width (negative to flip)
 - `h` (*float*) — Height (negative to flip)
-- `colkey` (*int/None*) — Transparent color
-- `rotate` (*float*) — Rotation angle in degrees (centered on the copy region)
-- `scale` (*float*) — Scale factor (centered on the copy region)
+- `colkey` (*int/None*) — Transparent color. Optional.
+- `rotate` (*float*) — Rotation angle in degrees (centered on the copy region). Defaults to 0.
+- `scale` (*float*) — Scale factor (centered on the copy region). Defaults to 1.
 
 ### `bltm(x, y, tm, u, v, w, h, colkey=None, rotate=0, scale=1)` — function
 
@@ -642,9 +642,9 @@ Copy the region of size (w, h) from (u, v) of tilemap tm (0-7 or Tilemap instanc
 - `v` (*float*) — Source Y in the tilemap
 - `w` (*float*) — Width (negative to flip)
 - `h` (*float*) — Height (negative to flip)
-- `colkey` (*int/None*) — Transparent color
-- `rotate` (*float*) — Rotation angle in degrees (centered on the copy region)
-- `scale` (*float*) — Scale factor (centered on the copy region)
+- `colkey` (*int/None*) — Transparent color. Optional.
+- `rotate` (*float*) — Rotation angle in degrees (centered on the copy region). Defaults to 0.
+- `scale` (*float*) — Scale factor (centered on the copy region). Defaults to 1.
 
 ### `blt3d(x, y, w, h, img, pos, rot, fov=60, colkey=None)` — function *(Advanced)*
 
@@ -659,8 +659,8 @@ Draw the image bank img (0-2 or Image instance) with perspective projection onto
 - `img` (*int/Image*) — Image bank number (0-2) or Image instance
 - `pos` (*(float, float, float)*) — Camera position (x, y, z). x, y match 2D coordinates, z is height
 - `rot` (*(float, float, float)*) — Rotation in degrees. rot_x is vertical, rot_y is horizontal, rot_z is tilt
-- `fov` (*float*) — Field of view in degrees
-- `colkey` (*int/None*) — Transparent color
+- `fov` (*float*) — Field of view in degrees. Defaults to 60.
+- `colkey` (*int/None*) — Transparent color. Optional.
 
 ### `bltm3d(x, y, w, h, tm, pos, rot, fov=60, colkey=None)` — function *(Advanced)*
 
@@ -675,8 +675,8 @@ Draw the tilemap tm (0-7 or Tilemap instance) with perspective projection onto t
 - `tm` (*int/Tilemap*) — Tilemap number (0-7) or Tilemap instance
 - `pos` (*(float, float, float)*) — Camera position (x, y, z). x, y match 2D coordinates, z is height
 - `rot` (*(float, float, float)*) — Rotation in degrees. rot_x is vertical, rot_y is horizontal, rot_z is tilt
-- `fov` (*float*) — Field of view in degrees
-- `colkey` (*int/None*) — Transparent color
+- `fov` (*float*) — Field of view in degrees. Defaults to 60.
+- `colkey` (*int/None*) — Transparent color. Optional.
 
 ### `text(x, y, s, col, font=None)` — function
 
@@ -688,7 +688,7 @@ Draw a string s in color col at (x, y).
 - `y` (*float*) — Y coordinate
 - `s` (*str*) — String to draw
 - `col` (*int*) — Color
-- `font` (*Font*) — Custom font (optional)
+- `font` (*Font*) — Custom font. Optional.
 
 ### Color Constants
 
@@ -760,9 +760,9 @@ Play the sound snd on channel ch (0-3). snd can be a sound number (0-63), a list
 
 - `ch` (*int*) — Channel number (0-3)
 - `snd` (*int/list/Sound/str*) — Sound number (0-63), list of numbers, Sound instance, list of Sounds, or MML string
-- `sec` (*float*) — Playback start position in seconds
-- `loop` (*bool*) — Loop playback
-- `resume` (*bool*) — Resume previous sound after playback ends
+- `sec` (*float*) — Playback start position in seconds. Defaults to 0.
+- `loop` (*bool*) — Loop playback. Defaults to False.
+- `resume` (*bool*) — Resume previous sound after playback ends. Defaults to False.
 
 ### `playm(msc, sec=0, loop=False)` — function
 
@@ -771,8 +771,8 @@ Play the music msc (0-7).
 **Parameters:**
 
 - `msc` (*int*) — Music number (0-7)
-- `sec` (*float*) — Playback start position in seconds
-- `loop` (*bool*) — Loop playback
+- `sec` (*float*) — Playback start position in seconds. Defaults to 0.
+- `loop` (*bool*) — Loop playback. Defaults to False.
 
 ### `stop(ch)` — function
 
@@ -805,7 +805,7 @@ Generate a BGM MML list using an algorithm. preset (0-7) selects the preset, ins
 - `preset` (*int*) — Preset number (0-7). 0-1: title, departure (medium tempo), 2-3: town, peaceful (slow tempo), 4-5: field, adventure (medium tempo), 6-7: battle, crisis (fast tempo)
 - `instr` (*int*) — Instrumentation (0-3). 0: melody+reverb+bass (3ch), 1: melody+bass+drums (3ch), 2: melody+sub+bass (3ch), 3: melody+sub+bass+drums (4ch)
 - `seed` (*int*) — Random seed (omit for random)
-- `play` (*bool*) — Play the generated MML
+- `play` (*bool*) — Play the generated MML. Defaults to False.
 
 **Returns:** `list[str]` — List of MML strings
 
@@ -964,8 +964,8 @@ Return the Perlin noise value for the specified coordinates.
 **Parameters:**
 
 - `x` (*float*) — X coordinate
-- `y` (*float*) — Y coordinate
-- `z` (*float*) — Z coordinate
+- `y` (*float*) — Y coordinate. Defaults to 0.
+- `z` (*float*) — Z coordinate. Defaults to 0.
 
 **Returns:** `float` — Perlin noise value
 
@@ -978,7 +978,7 @@ Create a Font instance from a font file (BDF/OTF/TTF/TTC).
 **Parameters:**
 
 - `filename` (*str*) — Font file path (BDF/OTF/TTF/TTC)
-- `font_size` (*float*) — Font size (default: 10.0, not used for BDF)
+- `font_size` (*float*) — Font size. Defaults to 10.0. Not used for BDF.
 
 **Returns:** `Font` — New Font instance
 
@@ -1012,7 +1012,7 @@ Create an Image instance from an image file.
 **Parameters:**
 
 - `filename` (*str*) — Image file path
-- `include_colors` (*bool*) — Include palette colors from file (optional)
+- `include_colors` (*bool*) — Include palette colors from file. Defaults to False.
 
 **Returns:** `Image` — Image instance from file
 
@@ -1053,7 +1053,7 @@ Load an image file (PNG/GIF/JPEG) at (x, y).
 - `x` (*int*) — X coordinate
 - `y` (*int*) — Y coordinate
 - `filename` (*str*) — Image file path (PNG/GIF/JPEG)
-- `include_colors` (*bool*) — Include palette colors from file (optional)
+- `include_colors` (*bool*) — Include palette colors from file. Defaults to False.
 
 ### `Image.pget(x, y)` — function
 
@@ -1362,7 +1362,7 @@ Create a WAV file of the sound for the specified duration in seconds.
 
 - `filename` (*str*) — Output WAV file path
 - `sec` (*float*) — Duration in seconds
-- `ffmpeg` (*bool*) — Also create MP4 file (requires FFmpeg)
+- `ffmpeg` (*bool*) — Also create MP4 file (requires FFmpeg). Defaults to False.
 
 ### `Sound.total_sec()` — function *(Advanced)*
 
@@ -1406,7 +1406,7 @@ Create a WAV file of the music for the specified duration in seconds.
 
 - `filename` (*str*) — Output WAV file path
 - `sec` (*float*) — Duration in seconds
-- `ffmpeg` (*bool*) — Also create MP4 file (requires FFmpeg)
+- `ffmpeg` (*bool*) — Also create MP4 file (requires FFmpeg). Defaults to False.
 
 ## Channel Class
 
@@ -1418,13 +1418,13 @@ Create a new Channel instance.
 
 ### `Channel.gain` — variable *(Advanced)*
 
-The gain (volume) of the channel (default: 0.125).
+The gain (volume) of the channel. Defaults to 0.125.
 
 - **Type:** `float`
 
 ### `Channel.detune` — variable *(Advanced)*
 
-The detune value for pitch adjustment (default: 0).
+The detune value for pitch adjustment. Defaults to 0.
 
 - **Type:** `int`
 
@@ -1435,9 +1435,9 @@ Play the sound snd on this channel. snd can be a sound number, a list, a Sound i
 **Parameters:**
 
 - `snd` (*int/list/Sound/str*) — Sound number (0-63), list of numbers, Sound instance, list of Sounds, or MML string
-- `sec` (*float*) — Playback start position in seconds
-- `loop` (*bool*) — Loop playback (default: False)
-- `resume` (*bool*) — Resume previous sound after playback ends (default: False)
+- `sec` (*float*) — Playback start position in seconds. Defaults to 0.
+- `loop` (*bool*) — Loop playback. Defaults to False.
+- `resume` (*bool*) — Resume previous sound after playback ends. Defaults to False.
 
 ### `Channel.stop()` — function *(Advanced)*
 
@@ -1465,7 +1465,7 @@ Tone mode (0: Wavetable, 1: ShortPeriodNoise, 2: LongPeriodNoise).
 
 ### `Tone.sample_bits` — variable *(Advanced)*
 
-Sample bits for the wavetable (default: 4).
+Sample bits for the wavetable. Defaults to 4.
 
 - **Type:** `int`
 
@@ -1477,6 +1477,6 @@ Wavetable data as a list of sample values. Each value must be in range 0 to (2^s
 
 ### `Tone.gain` — variable *(Advanced)*
 
-Tone gain (default: 1.0).
+Tone gain. Defaults to 1.0.
 
 - **Type:** `float`
