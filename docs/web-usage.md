@@ -62,12 +62,11 @@ The following additional parameters can be specified for the `run` and `play` co
 | Parameter | Description |
 | --- | --- |
 | `gamepad=enabled` | Display a virtual gamepad on touch devices (smartphones and tablets) |
-| `packages=pkg1,pkg2` | Specify additional [Pyodide-compatible packages](https://pyodide.org/en/stable/usage/packages-in-pyodide.html) (packages available in web-based Python) |
 
 Example URL with additional parameters for the `run` command:
 
 ```
-https://kitao.github.io/pyxel/web/launcher/?run=taro/my_repo/main/src/scenes/title&gamepad=enabled&packages=numpy,pandas
+https://kitao.github.io/pyxel/web/launcher/?run=taro/my_repo/main/src/scenes/title&gamepad=enabled
 ```
 
 The `edit` command has the `editor` parameter to specify which editor to launch: `image`, `tilemap`, `sound`, `music`
@@ -170,7 +169,6 @@ The following common attributes are available for `pyxel-run` and `pyxel-play`.
 | Attribute | Description |
 | --- | --- |
 | `gamepad="enabled"` | Enable the virtual gamepad (automatically displayed on touch devices) |
-| `packages="pkg1,pkg2"` | Specify additional [Pyodide-compatible packages](https://pyodide.org/en/stable/usage/packages-in-pyodide.html) |
 
 ### Customizing Screen Display
 

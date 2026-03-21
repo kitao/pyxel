@@ -484,20 +484,6 @@
       "tr": "Dokunmatik cihazlarda (akıllı telefonlar ve tabletler) sanal bir oyun kumandası görüntüle",
       "uk": "Відображати віртуальний геймпад на сенсорних пристроях (смартфонах та планшетах)"
     },
-    "attr_packages": {
-      "en": "Specify additional {0} (packages available in web-based Python)",
-      "cn": "指定额外的 {0}（Web 版 Python 中可用的软件包）",
-      "de": "Zusätzliche {0} angeben (in webbasiertem Python verfügbare Pakete)",
-      "es": "Especificar {0} adicionales (paquetes disponibles en Python basado en web)",
-      "fr": "Spécifier des {0} supplémentaires (paquets disponibles dans Python en ligne)",
-      "it": "Specificare {0} aggiuntivi (pacchetti disponibili in Python basato sul web)",
-      "ja": "追加の {0} （Web 版 Python で使用可能なパッケージ）を指定",
-      "ko": "추가 {0} (웹 기반 Python에서 사용 가능한 패키지) 지정",
-      "pt": "Especificar {0} adicionais (pacotes disponíveis no Python baseado em web)",
-      "ru": "Указать дополнительные {0} (пакеты, доступные в веб-версии Python)",
-      "tr": "Ek {0} belirt (web tabanlı Python'da kullanılabilir paketler)",
-      "uk": "Вказати додаткові {0} (пакети, доступні у веб-версії Python)"
-    },
     "launcher_attrs_run_example": {
       "en": "Example URL with additional parameters for the {0} command:",
       "cn": "为 {0} 命令附加参数的 URL 示例：",
@@ -903,20 +889,6 @@
       "ru": "Включить виртуальный геймпад (автоматически отображается на сенсорных устройствах)",
       "tr": "Sanal oyun kumandasını etkinleştir (dokunmatik cihazlarda otomatik olarak görüntülenir)",
       "uk": "Увімкнути віртуальний геймпад (автоматично відображається на сенсорних пристроях)"
-    },
-    "custom_tags_attr_packages": {
-      "en": "Specify additional {0}",
-      "cn": "指定额外的 {0}",
-      "de": "Zusätzliche {0} angeben",
-      "es": "Especificar {0} adicionales",
-      "fr": "Spécifier des {0} supplémentaires",
-      "it": "Specificare {0} aggiuntivi",
-      "ja": "追加の {0} を指定",
-      "ko": "추가 {0} 지정",
-      "pt": "Especificar {0} adicionais",
-      "ru": "Указать дополнительные {0}",
-      "tr": "Ek {0} belirt",
-      "uk": "Вказати додаткові {0}"
     },
     "custom_tags_screen_title": {
       "en": "Customizing Screen Display",

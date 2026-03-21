@@ -67,36 +67,6 @@
               />
             </div>
 
-            <!-- Additional Packages -->
-            <div class="gap-2 grid mt-5">
-              <label for="additional-packages" class="label" data-i18n="label_additional_packages"
-                >Additional Packages</label
-              >
-              <input
-                id="additional-packages"
-                type="text"
-                size="60"
-                class="input"
-                placeholder="numpy,matplotlib"
-              />
-              <ul class="help">
-                <li id="help-packages-comma">
-                  If there are multiple packages, separate them with commas like
-                  <code class="chip">a,b,c</code>.
-                </li>
-                <li id="help-packages-only">
-                  Only
-                  <a
-                    class="link"
-                    href="https://pyodide.org/en/stable/usage/packages-in-pyodide.html"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    >packages supported by Pyodide</a
-                  >
-                  can be used.
-                </li>
-              </ul>
-            </div>
           </div>
 
           <!-- Options for edit -->
@@ -175,13 +145,6 @@
         document.getElementById("help-example-pyxapp").innerHTML = "play: " + link(pyxappUrl, pyxappUrl);
         document.getElementById("help-example-pyxres").innerHTML = "edit: " + link(pyxresUrl, pyxresUrl);
 
-        // Help: packages
-        document.getElementById("help-packages-comma").innerHTML =
-          t("help_packages_comma").replace("{0}", chip("a,b,c"));
-        const pyodideUrl = "https://pyodide.org/en/stable/usage/packages-in-pyodide.html";
-        document.getElementById("help-packages-only").innerHTML =
-          t("help_packages_only").replace("{0}", link(pyodideUrl, t("help_packages_link")));
-
         // Footer
         const docUrl = "../web-usage/";
         document.getElementById("footer-text").innerHTML =
@@ -206,9 +169,6 @@
         const startupFile = document.getElementById("startup-file").value;
         const virtualGamepad =
           document.getElementById("virtual-gamepad").checked;
-        const additionalPackages = document.getElementById(
-          "additional-packages",
-        ).value;
         const editorScreen = document.getElementById("editor-screen").value;
         const launchLink = document.getElementById("launch-url");
         launchLink.textContent = launchLink.href = "";
@@ -218,8 +178,7 @@
 
         if (
           !startupFile.startsWith("https://github.com/") ||
-          !(ext === "py" || ext === "pyxapp" || ext === "pyxres") ||
-          (!isEdit && additionalPackages.match(/[^a-zA-Z0-9,]/))
+          !(ext === "py" || ext === "pyxapp" || ext === "pyxres")
         ) {
           return;
         }
@@ -240,9 +199,6 @@
           if (virtualGamepad) {
             launchUrl += "&gamepad=enabled";
           }
-          if (additionalPackages !== "") {
-            launchUrl += "&packages=" + additionalPackages;
-          }
         }
 
         launchLink.textContent = launchLink.href = launchUrl;
@@ -255,9 +211,6 @@
       document
         .getElementById("virtual-gamepad")
         .addEventListener("change", buildLaunchUrl);
-      document
-        .getElementById("additional-packages")
-        .addEventListener("input", buildLaunchUrl);
       document
         .getElementById("editor-screen")
         .addEventListener("change", buildLaunchUrl);

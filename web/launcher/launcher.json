@@ -59,20 +59,6 @@
       "tr": "Sanal oyun kumandasını etkinleştir",
       "uk": "Увімкнути віртуальний геймпад"
     },
-    "label_additional_packages": {
-      "en": "Additional Packages",
-      "cn": "附加包",
-      "de": "Zusätzliche Pakete",
-      "es": "Paquetes adicionales",
-      "fr": "Packages supplémentaires",
-      "it": "Pacchetti aggiuntivi",
-      "ja": "追加パッケージ",
-      "ko": "추가 패키지",
-      "pt": "Pacotes adicionais",
-      "ru": "Дополнительные пакеты",
-      "tr": "Ek paketler",
-      "uk": "Додаткові пакети"
-    },
     "label_launch_url": {
       "en": "Application Launch URL",
       "cn": "应用程序启动 URL",
@@ -100,48 +86,6 @@
       "ru": "Тип файла запуска должен быть {0}, {1} или {2}.",
       "tr": "Başlangıç dosya türü {0}, {1} veya {2} olmalıdır.",
       "uk": "Тип файлу запуску має бути {0}, {1} або {2}."
-    },
-    "help_packages_only": {
-      "en": "Only {0} can be used.",
-      "cn": "只能使用 {0}。",
-      "de": "Es können nur {0} verwendet werden.",
-      "es": "Solo se pueden usar {0}.",
-      "fr": "Seuls les {0} peuvent être utilisés.",
-      "it": "Si possono usare solo {0}.",
-      "ja": "{0}のみ使用可能",
-      "ko": "{0}만 사용할 수 있습니다.",
-      "pt": "Somente {0} podem ser usados.",
-      "ru": "Можно использовать только {0}.",
-      "tr": "Yalnızca {0} kullanılabilir.",
-      "uk": "Можна використовувати лише {0}."
-    },
-    "help_packages_link": {
-      "en": "packages supported by Pyodide",
-      "cn": "Pyodide 支持的包",
-      "de": "von Pyodide unterstützte Pakete",
-      "es": "paquetes compatibles con Pyodide",
-      "fr": "packages pris en charge par Pyodide",
-      "it": "pacchetti supportati da Pyodide",
-      "ja": "Pyodide がサポートするパッケージ",
-      "ko": "Pyodide가 지원하는 패키지",
-      "pt": "pacotes suportados pelo Pyodide",
-      "ru": "пакеты, поддерживаемые Pyodide",
-      "tr": "Pyodide tarafından desteklenen paketler",
-      "uk": "пакети, підтримувані Pyodide"
-    },
-    "help_packages_comma": {
-      "en": "If there are multiple packages, separate them with commas like {0}.",
-      "cn": "如果有多个包，请用逗号分隔，如 {0}。",
-      "de": "Bei mehreren Paketen diese mit Kommas trennen, z.\u00a0B. {0}.",
-      "es": "Si hay varios paquetes, sepárelos con comas como {0}.",
-      "fr": "S'il y a plusieurs packages, séparez-les par des virgules comme {0}.",
-      "it": "Se ci sono più pacchetti, separarli con virgole come {0}.",
-      "ja": "複数のパッケージは {0} のようにカンマ区切りで指定",
-      "ko": "여러 패키지가 있는 경우 {0}처럼 쉼표로 구분하세요.",
-      "pt": "Se houver vários pacotes, separe-os com vírgulas como {0}.",
-      "ru": "Если пакетов несколько, разделите их запятыми, например {0}.",
-      "tr": "Birden fazla paket varsa, {0} gibi virgülle ayırın.",
-      "uk": "Якщо пакетів кілька, розділіть їх комами, наприклад {0}."
     },
     "label_editor_screen": {
       "en": "Editor Startup Screen",
