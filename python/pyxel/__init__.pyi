@@ -451,7 +451,7 @@ class Font:
 
         Args:
             filename: Font file path (BDF/OTF/TTF/TTC)
-            font_size: Font size (default: 10.0, not used for BDF)
+            font_size: Font size. Defaults to 10.0. Not used for BDF.
 
         Returns:
             New Font instance
@@ -495,7 +495,7 @@ class Image:
 
         Args:
             filename: Image file path
-            include_colors: Include palette colors from file (optional)
+            include_colors: Include palette colors from file. Defaults to False.
 
         Returns:
             Image instance from file
@@ -533,7 +533,7 @@ class Image:
             x: X coordinate
             y: Y coordinate
             filename: Image file path (PNG/GIF/JPEG)
-            include_colors: Include palette colors from file (optional)
+            include_colors: Include palette colors from file. Defaults to False.
         """
         ...
     def save(self, filename: str, scale: int) -> None:
@@ -751,9 +751,9 @@ class Image:
             v: Source Y in the image bank
             w: Width (negative to flip)
             h: Height (negative to flip)
-            colkey: Transparent color
-            rotate: Rotation angle in degrees (centered on the copy region)
-            scale: Scale factor (centered on the copy region)
+            colkey: Transparent color. Optional.
+            rotate: Rotation angle in degrees (centered on the copy region). Defaults to 0.
+            scale: Scale factor (centered on the copy region). Defaults to 1.
         """
         ...
     def bltm(
@@ -779,9 +779,9 @@ class Image:
             v: Source Y in the tilemap
             w: Width (negative to flip)
             h: Height (negative to flip)
-            colkey: Transparent color
-            rotate: Rotation angle in degrees (centered on the copy region)
-            scale: Scale factor (centered on the copy region)
+            colkey: Transparent color. Optional.
+            rotate: Rotation angle in degrees (centered on the copy region). Defaults to 0.
+            scale: Scale factor (centered on the copy region). Defaults to 1.
         """
         ...
     def blt3d(
@@ -806,8 +806,8 @@ class Image:
             img: Image bank number (0-2) or Image instance
             pos: Camera position (x, y, z). x, y match 2D coordinates, z is height
             rot: Rotation in degrees. rot_x is vertical, rot_y is horizontal, rot_z is tilt
-            fov: Field of view in degrees
-            colkey: Transparent color
+            fov: Field of view in degrees. Defaults to 60.
+            colkey: Transparent color. Optional.
         """
         ...
     def bltm3d(
@@ -832,8 +832,8 @@ class Image:
             tm: Tilemap number (0-7) or Tilemap instance
             pos: Camera position (x, y, z). x, y match 2D coordinates, z is height
             rot: Rotation in degrees. rot_x is vertical, rot_y is horizontal, rot_z is tilt
-            fov: Field of view in degrees
-            colkey: Transparent color
+            fov: Field of view in degrees. Defaults to 60.
+            colkey: Transparent color. Optional.
         """
         ...
     def text(
@@ -846,7 +846,7 @@ class Image:
             y: Y coordinate
             s: String to draw
             col: Color
-            font: Custom font (optional)
+            font: Custom font. Optional.
         """
         ...
 
@@ -1154,17 +1154,17 @@ class Tilemap:
             w: Width (negative to flip)
             h: Height (negative to flip)
             tilekey: Transparent tile
-            rotate: Rotation angle in degrees (centered on the copy region)
-            scale: Scale factor (centered on the copy region)
+            rotate: Rotation angle in degrees (centered on the copy region). Defaults to 0.
+            scale: Scale factor (centered on the copy region). Defaults to 1.
         """
         ...
 
 # Channel class
 class Channel:
     gain: float
-    """The gain (volume) of the channel (default: 0.125)."""
+    """The gain (volume) of the channel. Defaults to 0.125."""
     detune: int
-    """The detune value for pitch adjustment (default: 0)."""
+    """The detune value for pitch adjustment. Defaults to 0."""
 
     def __init__(self) -> None:
         """Create a new Channel instance.
@@ -1184,9 +1184,9 @@ class Channel:
 
         Args:
             snd: Sound number (0-63), list of numbers, Sound instance, list of Sounds, or MML string
-            sec: Playback start position in seconds
-            loop: Loop playback (default: False)
-            resume: Resume previous sound after playback ends (default: False)
+            sec: Playback start position in seconds. Defaults to 0.
+            loop: Loop playback. Defaults to False.
+            resume: Resume previous sound after playback ends. Defaults to False.
         """
         ...
     def stop(self) -> None:
@@ -1205,12 +1205,12 @@ class Tone:
     mode: int
     """Tone mode (0: Wavetable, 1: ShortPeriodNoise, 2: LongPeriodNoise)."""
     sample_bits: int
-    """Sample bits for the wavetable (default: 4)."""
+    """Sample bits for the wavetable. Defaults to 4."""
     wavetable: Seq[int]
     """Wavetable data as a list of sample values. Each value must be in range 0 to (2^sample_bits - 1)."""
     waveform: Seq[int]  # Deprecated: use wavetable
     gain: float
-    """Tone gain (default: 1.0)."""
+    """Tone gain. Defaults to 1.0."""
 
     def __init__(self) -> None:
         """Create a new Tone instance.
@@ -1326,7 +1326,7 @@ class Sound:
         Args:
             filename: Output WAV file path
             sec: Duration in seconds
-            ffmpeg: Also create MP4 file (requires FFmpeg)
+            ffmpeg: Also create MP4 file (requires FFmpeg). Defaults to False.
         """
         ...
     def total_sec(self) -> Optional[float]:
@@ -1368,7 +1368,7 @@ class Music:
         Args:
             filename: Output WAV file path
             sec: Duration in seconds
-            ffmpeg: Also create MP4 file (requires FFmpeg)
+            ffmpeg: Also create MP4 file (requires FFmpeg). Defaults to False.
         """
         ...
 
@@ -1396,13 +1396,13 @@ def init(
     Args:
         width: Screen width
         height: Screen height
-        title: Window title (default: "Pyxel")
-        fps: Frame rate (default: 30)
-        quit_key: Key to quit the application (default: KEY_ESCAPE)
+        title: Window title. Defaults to "Pyxel".
+        fps: Frame rate. Defaults to 30.
+        quit_key: Key to quit the application. Defaults to KEY_ESCAPE.
         display_scale: Display scale factor (None for auto)
-        capture_scale: Screen capture scale factor (default: 2)
-        capture_sec: Maximum recording time for screen capture video (default: 10)
-        headless: Run without a window (default: False)
+        capture_scale: Screen capture scale factor. Defaults to 2.
+        capture_sec: Maximum recording time for screen capture video. Defaults to 10.
+        headless: Run without a window. Defaults to False.
 
     Example::
         pyxel.init(160, 120, title="My Pyxel App", fps=60, quit_key=pyxel.KEY_NONE, capture_scale=3, capture_sec=0)
@@ -1448,7 +1448,7 @@ def icon(data: List[str], scale: int, colkey: Optional[int] = None) -> None:
     Args:
         data: Icon image as a list of strings
         scale: Scale factor
-        colkey: Transparent color
+        colkey: Transparent color. Optional.
     """
     ...
 
@@ -1496,10 +1496,10 @@ def load(
 
     Args:
         filename: Resource file path
-        exclude_images: Exclude image banks
-        exclude_tilemaps: Exclude tilemaps
-        exclude_sounds: Exclude sounds
-        exclude_musics: Exclude music tracks
+        exclude_images: Exclude image banks. Defaults to False.
+        exclude_tilemaps: Exclude tilemaps. Defaults to False.
+        exclude_sounds: Exclude sounds. Defaults to False.
+        exclude_musics: Exclude music tracks. Defaults to False.
 
     Note:
         If a palette file (.pyxpal) with the same name exists, the palette display colors will also be updated.
@@ -1517,10 +1517,10 @@ def save(
 
     Args:
         filename: Resource file path
-        exclude_images: Exclude image banks
-        exclude_tilemaps: Exclude tilemaps
-        exclude_sounds: Exclude sounds
-        exclude_musics: Exclude music tracks
+        exclude_images: Exclude image banks. Defaults to False.
+        exclude_tilemaps: Exclude tilemaps. Defaults to False.
+        exclude_sounds: Exclude sounds. Defaults to False.
+        exclude_musics: Exclude music tracks. Defaults to False.
     """
     ...
 
@@ -1544,7 +1544,7 @@ def screenshot(scale: int = 2) -> None:
     """Take a screenshot.
 
     Args:
-        scale: Scale factor
+        scale: Scale factor. Defaults to 2.
     """
     ...
 
@@ -1552,7 +1552,7 @@ def screencast(scale: int = 2) -> None:
     """Save the screen recording as a GIF file.
 
     Args:
-        scale: Scale factor
+        scale: Scale factor. Defaults to 2.
     """
     ...
 
@@ -1605,8 +1605,8 @@ def btnp(key: int, hold: int = 0, repeat: int = 0) -> bool:
 
     Args:
         key: Key code
-        hold: Frames to hold before repeat starts
-        repeat: Repeat interval in frames
+        hold: Frames to hold before repeat starts. Defaults to 0.
+        repeat: Repeat interval in frames. Defaults to 0.
 
     Returns:
         True if pressed in that frame
@@ -1899,9 +1899,9 @@ def blt(
         v: Source Y in the image bank
         w: Width (negative to flip)
         h: Height (negative to flip)
-        colkey: Transparent color
-        rotate: Rotation angle in degrees (centered on the copy region)
-        scale: Scale factor (centered on the copy region)
+        colkey: Transparent color. Optional.
+        rotate: Rotation angle in degrees (centered on the copy region). Defaults to 0.
+        scale: Scale factor (centered on the copy region). Defaults to 1.
     """
     ...
 
@@ -1927,9 +1927,9 @@ def bltm(
         v: Source Y in the tilemap
         w: Width (negative to flip)
         h: Height (negative to flip)
-        colkey: Transparent color
-        rotate: Rotation angle in degrees (centered on the copy region)
-        scale: Scale factor (centered on the copy region)
+        colkey: Transparent color. Optional.
+        rotate: Rotation angle in degrees (centered on the copy region). Defaults to 0.
+        scale: Scale factor (centered on the copy region). Defaults to 1.
     """
     ...
 
@@ -1954,8 +1954,8 @@ def blt3d(
         img: Image bank number (0-2) or Image instance
         pos: Camera position (x, y, z). x, y match 2D coordinates, z is height
         rot: Rotation in degrees. rot_x is vertical, rot_y is horizontal, rot_z is tilt
-        fov: Field of view in degrees
-        colkey: Transparent color
+        fov: Field of view in degrees. Defaults to 60.
+        colkey: Transparent color. Optional.
     """
     ...
 
@@ -1980,8 +1980,8 @@ def bltm3d(
         tm: Tilemap number (0-7) or Tilemap instance
         pos: Camera position (x, y, z). x, y match 2D coordinates, z is height
         rot: Rotation in degrees. rot_x is vertical, rot_y is horizontal, rot_z is tilt
-        fov: Field of view in degrees
-        colkey: Transparent color
+        fov: Field of view in degrees. Defaults to 60.
+        colkey: Transparent color. Optional.
     """
     ...
 
@@ -1993,7 +1993,7 @@ def text(x: float, y: float, s: str, col: int, font: Optional[Font] = None) -> N
         y: Y coordinate
         s: String to draw
         col: Color
-        font: Custom font (optional)
+        font: Custom font. Optional.
     """
     ...
 
@@ -2019,9 +2019,9 @@ def play(
     Args:
         ch: Channel number (0-3)
         snd: Sound number (0-63), list of numbers, Sound instance, list of Sounds, or MML string
-        sec: Playback start position in seconds
-        loop: Loop playback
-        resume: Resume previous sound after playback ends
+        sec: Playback start position in seconds. Defaults to 0.
+        loop: Loop playback. Defaults to False.
+        resume: Resume previous sound after playback ends. Defaults to False.
     """
     ...
 
@@ -2034,8 +2034,8 @@ def playm(
 
     Args:
         msc: Music number (0-7)
-        sec: Playback start position in seconds
-        loop: Loop playback
+        sec: Playback start position in seconds. Defaults to 0.
+        loop: Loop playback. Defaults to False.
     """
     ...
 
@@ -2070,7 +2070,7 @@ def gen_bgm(
         preset: Preset number (0-7). 0-1: title, departure (medium tempo), 2-3: town, peaceful (slow tempo), 4-5: field, adventure (medium tempo), 6-7: battle, crisis (fast tempo)
         instr: Instrumentation (0-3). 0: melody+reverb+bass (3ch), 1: melody+bass+drums (3ch), 2: melody+sub+bass (3ch), 3: melody+sub+bass+drums (4ch)
         seed: Random seed (omit for random)
-        play: Play the generated MML
+        play: Play the generated MML. Defaults to False.
 
     Returns:
         List of MML strings
@@ -2216,8 +2216,8 @@ def noise(x: float, y: float = 0, z: float = 0) -> float:
 
     Args:
         x: X coordinate
-        y: Y coordinate
-        z: Z coordinate
+        y: Y coordinate. Defaults to 0.
+        z: Z coordinate. Defaults to 0.
 
     Returns:
         Perlin noise value

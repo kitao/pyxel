@@ -78,7 +78,7 @@
         const $ = (id) => document.getElementById(id);
         const pyxelLink = link("https://github.com/kitao/pyxel", "Pyxel");
         const launcherLink = link("../launcher/", "Pyxel Web Launcher");
-        const pyodideLink = link("https://pyodide.org/en/stable/usage/packages-in-pyodide.html", lang === "ja" ? "Pyodide 対応パッケージ" : "Pyodide-compatible packages");
+
 
         // Header
         document.title = t("title");
@@ -148,11 +148,10 @@
             [t("th_attribute"), t("th_description")],
             [
               [chip("gamepad=enabled"), esc(t("attr_gamepad"))],
-              [chip("packages=pkg1,pkg2"), t("attr_packages").replace("{0}", pyodideLink)],
             ]
           )}
           <p class="body mt-3">${t("launcher_attrs_run_example").replace("{0}", chip("run"))}</p>
-          ${code("https://kitao.github.io/pyxel/web/launcher/?run=taro/my_repo/main/src/scenes/title&gamepad=enabled&packages=numpy,pandas")}
+          ${code("https://kitao.github.io/pyxel/web/launcher/?run=taro/my_repo/main/src/scenes/title&gamepad=enabled")}
           <p class="body">${t("launcher_attrs_edit")
             .replace("{0}", chip("edit"))
             .replace("{1}", chip("editor"))
@@ -239,7 +238,6 @@ pyxel.show()
             [lang === "ja" ? "属性" : "Attribute", t("th_description")],
             [
               [chip('gamepad="enabled"'), esc(t("custom_tags_attr_gamepad"))],
-              [chip('packages="pkg1,pkg2"'), t("custom_tags_attr_packages").replace("{0}", pyodideLink)],
             ]
           )}
 

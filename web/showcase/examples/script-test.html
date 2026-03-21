@@ -12,29 +12,35 @@
     <pyxel-run
       script="
         import pyxel
-        import numpy as np
-        import pandas as pd
 
-        pyxel.init(200, 100)
-        x = 0
+        pyxel.init(160, 120)
+        stars = [(pyxel.rndi(0, 159), pyxel.rndi(0, 119)) for _ in range(40)]
 
         def update():
-          global x
-          x += 1
-          if x > 220:
-            x -= 300
+          pass
 
         def draw():
-          pyxel.cls(2)
-          pyxel.line(0, 0, 100, 100, 7)
-          pyxel.rect(40, 55, 40, 40, 8)
-          pyxel.circ(x, 25, 20, 3)
-          pyxel.text(105, 80, f'NumPy  version: {np.__version__}', 9);
-          pyxel.text(105, 90, f'Pandas version: {pd.__version__}', 9);
+          pyxel.cls(1)
+          for sx, sy in stars:
+            pyxel.pset(sx, sy, 6 if (sx + pyxel.frame_count) % 60 < 5 else 5)
+
+          pyxel.text(47, 22, 'Pyxel Script Test', 7)
+
+          t = pyxel.frame_count * 2
+          cx, cy = 80, 67
+          for i in range(6):
+            a = t + i * 60
+            x, y = cx + pyxel.cos(a) * 30, cy + pyxel.sin(a) * 30
+            pyxel.line(cx, cy, x, y, 13)
+
+          pyxel.circ(cx + pyxel.cos(t) * 30, cy + pyxel.sin(t) * 30, 5, 10)
+          rx, ry = cx + pyxel.cos(t + 120) * 30, cy + pyxel.sin(t + 120) * 30
+          pyxel.rect(rx - 5, ry - 5, 10, 10, 8)
+          tx, ty = cx + pyxel.cos(t + 240) * 30, cy + pyxel.sin(t + 240) * 30
+          pyxel.tri(tx, ty - 5, tx - 5, ty + 4, tx + 5, ty + 4, 11)
 
         pyxel.run(update, draw)
       "
-      packages="numpy,pandas"
       gamepad="enabled"
     ></pyxel-run>
   </body>

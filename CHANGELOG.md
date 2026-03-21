@@ -2,6 +2,8 @@
 
 ## 2.8.7
 
+- Updated script-test.html showcase example
+
 ## 2.8.6
 
 - Cleaned up code style across the codebase
