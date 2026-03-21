@@ -399,18 +399,18 @@
               "name": "display_scale",
               "type": "int",
               "desc": {
-                "en": "Display scale factor (None for auto)",
-                "cn": "显示缩放倍率（None为自动）",
-                "de": "Anzeige-Skalierungsfaktor (None für automatisch)",
-                "es": "Factor de escala de pantalla (None para automático)",
-                "fr": "Facteur d'échelle d'affichage (None pour automatique)",
-                "it": "Fattore di scala del display (None per automatico)",
-                "ja": "表示倍率（Noneで自動）",
-                "ko": "표시 배율 (None이면 자동)",
-                "pt": "Fator de escala de exibição (None para automático)",
-                "ru": "Масштаб отображения (None для автоматического)",
-                "tr": "Görüntü ölçek faktörü (otomatik için None)",
-                "uk": "Масштаб відображення (None для автоматичного)"
+                "en": "Display scale factor. If omitted, automatically determined.",
+                "cn": "显示缩放倍率。省略时自动决定。",
+                "de": "Anzeige-Skalierungsfaktor. Wenn weggelassen, automatisch bestimmt.",
+                "es": "Factor de escala de pantalla. Si se omite, se determina automáticamente.",
+                "fr": "Facteur d'échelle d'affichage. Si omis, déterminé automatiquement.",
+                "it": "Fattore di scala del display. Se omesso, determinato automaticamente.",
+                "ja": "表示倍率。省略時は自動決定。",
+                "ko": "표시 배율. 생략 시 자동 결정.",
+                "pt": "Fator de escala de exibição. Se omitido, determinado automaticamente.",
+                "ru": "Масштаб отображения. Если не указан, определяется автоматически.",
+                "tr": "Görüntü ölçek faktörü. Belirtilmezse otomatik belirlenir.",
+                "uk": "Масштаб відображення. Якщо не вказано, визначається автоматично."
               }
             },
             {
@@ -731,18 +731,18 @@
               "name": "colkey",
               "type": "int/None",
               "desc": {
-                "en": "Transparent color. Optional.",
-                "cn": "透明色。可选。",
-                "de": "Transparenzfarbe. Optional.",
-                "es": "Color transparente. Opcional.",
-                "fr": "Couleur transparente. Optionnel.",
-                "it": "Colore trasparente. Opzionale.",
-                "ja": "透明色。省略可能。",
-                "ko": "투명색. 선택 사항.",
-                "pt": "Cor transparente. Opcional.",
-                "ru": "Прозрачный цвет. Необязательный параметр.",
-                "tr": "Saydam renk. İsteğe bağlı.",
-                "uk": "Прозорий колір. Необов'язковий."
+                "en": "Transparent color. If omitted, no transparency.",
+                "cn": "透明色。省略时不透明处理。",
+                "de": "Transparenzfarbe. Wenn weggelassen, keine Transparenz.",
+                "es": "Color transparente. Si se omite, sin transparencia.",
+                "fr": "Couleur transparente. Si omis, pas de transparence.",
+                "it": "Colore trasparente. Se omesso, nessuna trasparenza.",
+                "ja": "透明色。省略時は透過なし。",
+                "ko": "투명색. 생략 시 투명 처리 없음.",
+                "pt": "Cor transparente. Se omitido, sem transparência.",
+                "ru": "Прозрачный цвет. Если не указан, без прозрачности.",
+                "tr": "Saydam renk. Belirtilmezse saydamlık uygulanmaz.",
+                "uk": "Прозорий колір. Якщо не вказано, без прозорості."
               }
             }
           ],
@@ -1720,18 +1720,18 @@
               "name": "repeat",
               "type": "int",
               "desc": {
-                "en": "Repeat interval in frames. Defaults to 0.",
-                "cn": "重复间隔（帧数）。默认为 0。",
-                "de": "Wiederholungsintervall in Frames. Standard ist 0.",
-                "es": "Intervalo de repetición en frames. Por defecto es 0.",
-                "fr": "Intervalle de répétition en frames. Par défaut : 0.",
-                "it": "Intervallo di ripetizione in frame. Il valore predefinito è 0.",
-                "ja": "リピート間隔（フレーム数）。デフォルトは 0。",
-                "ko": "리피트 간격 (프레임 수). 기본값은 0.",
-                "pt": "Intervalo de repetição em frames. O padrão é 0.",
-                "ru": "Интервал повтора в кадрах. По умолчанию 0.",
-                "tr": "Tekrar aralığı (kare sayısı). Varsayılan 0.",
-                "uk": "Інтервал повтору в кадрах. За замовчуванням 0."
+                "en": "Repeat interval in frames. If 0, no repeat.",
+                "cn": "重复间隔（帧数）。为 0 时不重复。",
+                "de": "Wiederholungsintervall in Frames. Bei 0 keine Wiederholung.",
+                "es": "Intervalo de repetición en frames. Si es 0, no se repite.",
+                "fr": "Intervalle de répétition en frames. Si 0, pas de répétition.",
+                "it": "Intervallo di ripetizione in frame. Se 0, nessuna ripetizione.",
+                "ja": "リピート間隔（フレーム数）。0 の場合リピートなし。",
+                "ko": "리피트 간격 (프레임 수). 0이면 리피트 없음.",
+                "pt": "Intervalo de repetição em frames. Se 0, sem repetição.",
+                "ru": "Интервал повтора в кадрах. При 0 повтор не выполняется.",
+                "tr": "Tekrar aralığı (kare sayısı). 0 ise tekrar yapılmaz.",
+                "uk": "Інтервал повтору в кадрах. При 0 повтор не виконується."
               }
             }
           ],
@@ -4623,18 +4623,18 @@
               "name": "colkey",
               "type": "int/None",
               "desc": {
-                "en": "Transparent color. Optional.",
-                "cn": "透明色。可选。",
-                "de": "Transparenzfarbe. Optional.",
-                "es": "Color transparente. Opcional.",
-                "fr": "Couleur transparente. Optionnel.",
-                "it": "Colore trasparente. Opzionale.",
-                "ja": "透明色。省略可能。",
-                "ko": "투명색. 선택 사항.",
-                "pt": "Cor transparente. Opcional.",
-                "ru": "Прозрачный цвет. Необязательный параметр.",
-                "tr": "Saydam renk. İsteğe bağlı.",
-                "uk": "Прозорий колір. Необов'язковий."
+                "en": "Transparent color. If omitted, no transparency.",
+                "cn": "透明色。省略时不透明处理。",
+                "de": "Transparenzfarbe. Wenn weggelassen, keine Transparenz.",
+                "es": "Color transparente. Si se omite, sin transparencia.",
+                "fr": "Couleur transparente. Si omis, pas de transparence.",
+                "it": "Colore trasparente. Se omesso, nessuna trasparenza.",
+                "ja": "透明色。省略時は透過なし。",
+                "ko": "투명색. 생략 시 투명 처리 없음.",
+                "pt": "Cor transparente. Se omitido, sem transparência.",
+                "ru": "Прозрачный цвет. Если не указан, без прозрачности.",
+                "tr": "Saydam renk. Belirtilmezse saydamlık uygulanmaz.",
+                "uk": "Прозорий колір. Якщо не вказано, без прозорості."
               }
             },
             {
@@ -4828,18 +4828,18 @@
               "name": "colkey",
               "type": "int/None",
               "desc": {
-                "en": "Transparent color. Optional.",
-                "cn": "透明色。可选。",
-                "de": "Transparenzfarbe. Optional.",
-                "es": "Color transparente. Opcional.",
-                "fr": "Couleur transparente. Optionnel.",
-                "it": "Colore trasparente. Opzionale.",
-                "ja": "透明色。省略可能。",
-                "ko": "투명색. 선택 사항.",
-                "pt": "Cor transparente. Opcional.",
-                "ru": "Прозрачный цвет. Необязательный параметр.",
-                "tr": "Saydam renk. İsteğe bağlı.",
-                "uk": "Прозорий колір. Необов'язковий."
+                "en": "Transparent color. If omitted, no transparency.",
+                "cn": "透明色。省略时不透明处理。",
+                "de": "Transparenzfarbe. Wenn weggelassen, keine Transparenz.",
+                "es": "Color transparente. Si se omite, sin transparencia.",
+                "fr": "Couleur transparente. Si omis, pas de transparence.",
+                "it": "Colore trasparente. Se omesso, nessuna trasparenza.",
+                "ja": "透明色。省略時は透過なし。",
+                "ko": "투명색. 생략 시 투명 처리 없음.",
+                "pt": "Cor transparente. Se omitido, sem transparência.",
+                "ru": "Прозрачный цвет. Если не указан, без прозрачности.",
+                "tr": "Saydam renk. Belirtilmezse saydamlık uygulanmaz.",
+                "uk": "Прозорий колір. Якщо не вказано, без прозорості."
               }
             },
             {
@@ -5051,18 +5051,18 @@
               "name": "colkey",
               "type": "int/None",
               "desc": {
-                "en": "Transparent color. Optional.",
-                "cn": "透明色。可选。",
-                "de": "Transparenzfarbe. Optional.",
-                "es": "Color transparente. Opcional.",
-                "fr": "Couleur transparente. Optionnel.",
-                "it": "Colore trasparente. Opzionale.",
-                "ja": "透明色。省略可能。",
-                "ko": "투명색. 선택 사항.",
-                "pt": "Cor transparente. Opcional.",
-                "ru": "Прозрачный цвет. Необязательный параметр.",
-                "tr": "Saydam renk. İsteğe bağlı.",
-                "uk": "Прозорий колір. Необов'язковий."
+                "en": "Transparent color. If omitted, no transparency.",
+                "cn": "透明色。省略时不透明处理。",
+                "de": "Transparenzfarbe. Wenn weggelassen, keine Transparenz.",
+                "es": "Color transparente. Si se omite, sin transparencia.",
+                "fr": "Couleur transparente. Si omis, pas de transparence.",
+                "it": "Colore trasparente. Se omesso, nessuna trasparenza.",
+                "ja": "透明色。省略時は透過なし。",
+                "ko": "투명색. 생략 시 투명 처리 없음.",
+                "pt": "Cor transparente. Se omitido, sem transparência.",
+                "ru": "Прозрачный цвет. Если не указан, без прозрачности.",
+                "tr": "Saydam renk. Belirtilmezse saydamlık uygulanmaz.",
+                "uk": "Прозорий колір. Якщо не вказано, без прозорості."
               }
             }
           ]
@@ -5238,18 +5238,18 @@
               "name": "colkey",
               "type": "int/None",
               "desc": {
-                "en": "Transparent color. Optional.",
-                "cn": "透明色。可选。",
-                "de": "Transparenzfarbe. Optional.",
-                "es": "Color transparente. Opcional.",
-                "fr": "Couleur transparente. Optionnel.",
-                "it": "Colore trasparente. Opzionale.",
-                "ja": "透明色。省略可能。",
-                "ko": "투명색. 선택 사항.",
-                "pt": "Cor transparente. Opcional.",
-                "ru": "Прозрачный цвет. Необязательный параметр.",
-                "tr": "Saydam renk. İsteğe bağlı.",
-                "uk": "Прозорий колір. Необов'язковий."
+                "en": "Transparent color. If omitted, no transparency.",
+                "cn": "透明色。省略时不透明处理。",
+                "de": "Transparenzfarbe. Wenn weggelassen, keine Transparenz.",
+                "es": "Color transparente. Si se omite, sin transparencia.",
+                "fr": "Couleur transparente. Si omis, pas de transparence.",
+                "it": "Colore trasparente. Se omesso, nessuna trasparenza.",
+                "ja": "透明色。省略時は透過なし。",
+                "ko": "투명색. 생략 시 투명 처리 없음.",
+                "pt": "Cor transparente. Se omitido, sem transparência.",
+                "ru": "Прозрачный цвет. Если не указан, без прозрачности.",
+                "tr": "Saydam renk. Belirtilmezse saydamlık uygulanmaz.",
+                "uk": "Прозорий колір. Якщо не вказано, без прозорості."
               }
             }
           ]
@@ -5353,18 +5353,18 @@
               "name": "font",
               "type": "Font",
               "desc": {
-                "en": "Custom font. Optional.",
-                "cn": "自定义字体。可选。",
-                "de": "Benutzerdefinierte Schriftart. Optional.",
-                "es": "Fuente personalizada. Opcional.",
-                "fr": "Police personnalisée. Optionnel.",
-                "it": "Font personalizzato. Opzionale.",
-                "ja": "カスタムフォント。省略可能。",
-                "ko": "커스텀 폰트. 선택 사항.",
-                "pt": "Fonte personalizada. Opcional.",
-                "ru": "Пользовательский шрифт. Необязательный параметр.",
-                "tr": "Özel yazı tipi. İsteğe bağlı.",
-                "uk": "Користувацький шрифт. Необов'язковий."
+                "en": "Custom font. If omitted, the standard font is used.",
+                "cn": "自定义字体。省略时使用标准字体。",
+                "de": "Benutzerdefinierte Schriftart. Wenn weggelassen, wird die Standardschriftart verwendet.",
+                "es": "Fuente personalizada. Si se omite, se usa la fuente estándar.",
+                "fr": "Police personnalisée. Si omis, la police standard est utilisée.",
+                "it": "Font personalizzato. Se omesso, viene usato il font standard.",
+                "ja": "カスタムフォント。省略時は通常フォントを使用。",
+                "ko": "커스텀 폰트. 생략 시 표준 폰트 사용.",
+                "pt": "Fonte personalizada. Se omitido, a fonte padrão é usada.",
+                "ru": "Пользовательский шрифт. Если не указан, используется стандартный шрифт.",
+                "tr": "Özel yazı tipi. Belirtilmezse standart yazı tipi kullanılır.",
+                "uk": "Користувацький шрифт. Якщо не вказано, використовується стандартний шрифт."
               }
             }
           ]
