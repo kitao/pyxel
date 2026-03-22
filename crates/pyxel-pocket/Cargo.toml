@@ -1,0 +1,25 @@
+[package]
+name = "pyxel-pocket"
+version = "2.8.6"
+authors = ["Takashi Kitao <takashi.kitao@gmail.com>"]
+edition = "2021"
+license = "MIT"
+
+[lib]
+name = "pyxel_pocket"
+
+[[bin]]
+name = "pyxel-pocket"
+path = "src/main.rs"
+
+[dependencies]
+paste = "1.0"
+pyxel-core = { path = "../pyxel-core" }
+
+[build-dependencies]
+bindgen = "0.72"
+cc = "1.2"
+
+[features]
+sdl2_dynamic = ["pyxel-core/sdl2_dynamic"]
+sdl2_static = ["pyxel-core/sdl2_static"]
