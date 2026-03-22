@@ -6,12 +6,6 @@ body:
       value: |
         Share your Pyxel creation! Enter your creation's title in the Title field above.
         Pyxelで作った作品を共有してください！上のTitleに作品名を入力してください。
-
-        - Description / 作品の説明
-        - Creation URL / 作品URL (optional / 任意)
-        - Your name / あなたの名前
-        - Contact / 連絡先 (optional / 任意)
-        - GIF / GIFアニメ
   - type: input
     id: description
     attributes:
@@ -22,7 +16,7 @@ body:
   - type: input
     id: url
     attributes:
-      label: "Creation URL / 作品URL"
+      label: "Creation URL / 作品URL (optional / 任意)"
       description: "GitHub repo, itch.io, etc."
     validations:
       required: false
@@ -35,7 +29,7 @@ body:
   - type: input
     id: contact
     attributes:
-      label: "Contact / 連絡先"
+      label: "Contact / 連絡先 (optional / 任意)"
       description: "Email, GitHub, or X account / メール、GitHub、Xアカウント"
     validations:
       required: false
@@ -43,6 +37,6 @@ body:
     id: gif
     attributes:
       label: "GIF / GIFアニメ"
-      description: "Drag & drop here. Max 2MB. Alt(Option)+2 to record, Alt(Option)+3 to save / ここにドラッグ&ドロップ。最大2MB。Alt(Option)+2で録画開始、Alt(Option)+3で保存"
+      description: "You can record a GIF in your Pyxel app with Alt(Option)+2 and save with Alt(Option)+3. Drag & drop here. Max 2MB. / Pyxelアプリの実行中にAlt(Option)+2で録画開始、Alt(Option)+3で保存できます。ここにドラッグ&ドロップしてください。最大2MB。"
     validations:
       required: true
