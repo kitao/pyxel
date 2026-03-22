@@ -20,6 +20,7 @@ body:
     id: version
     attributes:
       label: "Pyxel Version / Pyxelバージョン"
+      description: "Run `pyxel --version` to check / `pyxel --version` で確認できます"
       placeholder: "e.g. 2.8.7"
     validations:
       required: true
@@ -27,7 +28,8 @@ body:
     id: python
     attributes:
       label: "Python Version / Pythonバージョン"
-      placeholder: "e.g. 3.12.0 (N/A for web)"
+      description: "Run `python --version` to check. Not required for web version. / `python --version` で確認できます。Web版の場合は不要です。"
+      placeholder: "e.g. 3.12.0"
     validations:
       required: false
   - type: textarea
