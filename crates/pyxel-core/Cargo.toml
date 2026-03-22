@@ -1,6 +1,6 @@
 [package]
 name = "pyxel-core"
-version = "2.8.6"
+version = "2.8.7"
 authors = ["Takashi Kitao <takashi.kitao@gmail.com>"]
 edition = "2021"
 license = "MIT"
@@ -18,6 +18,7 @@ glow = "0.17"
 hound = "3.5"
 image = "0.25"
 indexmap = "2.7"
+libc = "0.2"
 noise = "0.9"
 paste = "1.0"
 rand = "0.10"

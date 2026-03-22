@@ -26,6 +26,20 @@ fn is_headless() -> bool {
 }
 
 //
+// SIGINT
+//
+static SIGINT_RECEIVED: AtomicBool = AtomicBool::new(false);
+
+#[cfg(not(target_os = "emscripten"))]
+extern "C" fn sigint_handler(_sig: std::os::raw::c_int) {
+    SIGINT_RECEIVED.store(true, Ordering::Relaxed);
+}
+
+pub fn is_sigint_received() -> bool {
+    SIGINT_RECEIVED.swap(false, Ordering::Relaxed)
+}
+
+//
 // Core
 //
 pub fn init(headless: bool) {
@@ -37,23 +51,25 @@ pub fn init(headless: bool) {
     unsafe {
         PLATFORM = Box::into_raw(Box::new(platform));
     }
+
+    #[cfg(not(target_os = "emscripten"))]
+    unsafe {
+        libc::signal(
+            libc::SIGINT,
+            sigint_handler as *const () as libc::sighandler_t,
+        );
+    }
 }
 
 pub fn quit() {
     if let Some(mut callback) = crate::quit_callback().take() {
         callback();
     }
-    if !is_headless() {
-        platform().quit();
-    }
+    platform().quit();
 }
 
 pub fn ticks() -> u32 {
-    if is_headless() {
-        0
-    } else {
-        platform().ticks()
-    }
+    platform().ticks()
 }
 
 pub fn export_browser_file(filename: &str) {
@@ -172,15 +188,11 @@ pub fn unlock_audio() {
 // Frame
 //
 pub fn run_frame_loop<F: FnMut(f32)>(fps: u32, callback: F) {
-    if !is_headless() {
-        platform().run_frame_loop(fps, callback);
-    }
+    platform().run_frame_loop(fps, callback);
 }
 
 pub fn step_frame(fps: u32) {
-    if !is_headless() {
-        platform().step_frame(fps);
-    }
+    platform().step_frame(fps);
 }
 
 pub fn poll_events() -> Vec<Event> {

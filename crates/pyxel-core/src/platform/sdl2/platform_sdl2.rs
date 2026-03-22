@@ -73,11 +73,11 @@ impl PlatformSdl2 {
     //
     pub fn init(&mut self, headless: bool) {
         if headless {
-            unsafe { SDL_Init(SDL_INIT_AUDIO) };
+            unsafe { SDL_Init(0) };
             return;
         }
 
-        let sdl_flags = SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMECONTROLLER;
+        let sdl_flags = SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER;
 
         // Prefer Wayland driver on Wayland sessions (workaround for bundled
         // SDL2 failing to auto-detect Wayland). Falls back to auto-detection.
@@ -309,6 +309,10 @@ impl PlatformSdl2 {
         buffer_size: u32,
         callback: F,
     ) {
+        unsafe {
+            SDL_InitSubSystem(SDL_INIT_AUDIO);
+        }
+
         let saved_id = AUDIO_DEVICE_ID.load(Ordering::Relaxed);
         if saved_id != 0 {
             self.audio_device_id = saved_id;
@@ -390,8 +394,10 @@ impl PlatformSdl2 {
             }
 
             callback(next_update_ms - last_update_ms);
-            unsafe {
-                SDL_GL_SwapWindow(self.window);
+            if !self.window.is_null() {
+                unsafe {
+                    SDL_GL_SwapWindow(self.window);
+                }
             }
             last_update_ms = next_update_ms;
 
@@ -430,8 +436,10 @@ impl PlatformSdl2 {
             }
         }
 
-        unsafe {
-            SDL_GL_SwapWindow(self.window);
+        if !self.window.is_null() {
+            unsafe {
+                SDL_GL_SwapWindow(self.window);
+            }
         }
 
         let ticks = self.ticks();

@@ -1,0 +1,44 @@
+title: "Your Creation Title / 作品名"
+labels: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Share your Pyxel creation! Your submission will be featured on the [Pyxel User Examples](https://kitao.github.io/pyxel-user-examples/) page. Enter your creation's title in the Title field above.
+        Pyxelで作った作品を投稿してください！投稿された作品は [Pyxel User Examples](https://kitao.github.io/pyxel-user-examples/) ページで紹介されます。上のTitleに作品名を入力してください。
+  - type: input
+    id: description
+    attributes:
+      label: "Description / 作品の説明"
+      description: "Brief one-line description of your creation / 作品を一行で説明してください"
+      placeholder: "e.g. Side-scrolling action game / 横スクロールアクションゲーム"
+    validations:
+      required: true
+  - type: input
+    id: url
+    attributes:
+      label: "Creation URL (optional) / 作品URL（任意）"
+      description: "URL of your published creation, if available / 作品を公開している場合はURLを記入してください"
+    validations:
+      required: false
+  - type: input
+    id: author
+    attributes:
+      label: "Your name / あなたの名前"
+      description: "Name to be credited on the examples page / 紹介ページに掲載する名前を記入してください"
+    validations:
+      required: true
+  - type: input
+    id: contact
+    attributes:
+      label: "Contact (optional) / 連絡先（任意）"
+      description: "Email, GitHub, or X account for the examples page / 紹介ページに掲載する連絡先を記入してください（メール、GitHub、Xアカウント）"
+    validations:
+      required: false
+  - type: textarea
+    id: gif
+    attributes:
+      label: "Screen Capture GIF / 画面キャプチャGIF"
+      description: "In your Pyxel app, press Alt(Option)+2 to start recording and Alt(Option)+3 to save as GIF. Drag & drop the saved file here. Preferably under 3MB. / Pyxelアプリの実行中に Alt(Option)+2 で録画開始、Alt(Option)+3 でGIFとして保存できます。保存したファイルをここにドラッグ&ドロップしてください。目安3MB以下。"
+    validations:
+      required: true

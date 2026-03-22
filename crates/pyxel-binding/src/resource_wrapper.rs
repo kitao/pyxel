@@ -134,15 +134,19 @@ fn save_pal(filename: &str) -> PyResult<()> {
 }
 
 #[pyfunction]
-#[pyo3(signature = (scale=None))]
-fn screenshot(scale: Option<u32>) -> PyResult<()> {
-    pyxel().take_screenshot(scale).map_err(PyException::new_err)
+#[pyo3(signature = (filename=None, scale=None))]
+fn screenshot(filename: Option<&str>, scale: Option<u32>) -> PyResult<()> {
+    pyxel()
+        .take_screenshot(filename, scale)
+        .map_err(PyException::new_err)
 }
 
 #[pyfunction]
-#[pyo3(signature = (scale=None))]
-fn screencast(scale: Option<u32>) -> PyResult<()> {
-    pyxel().save_screencast(scale).map_err(PyException::new_err)
+#[pyo3(signature = (filename=None, scale=None))]
+fn screencast(filename: Option<&str>, scale: Option<u32>) -> PyResult<()> {
+    pyxel()
+        .save_screencast(filename, scale)
+        .map_err(PyException::new_err)
 }
 
 #[pyfunction]

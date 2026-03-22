@@ -1,0 +1,43 @@
+name: "Bug Report / バグ報告"
+description: "Report a bug / バグを報告する"
+labels: ["bug"]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: "What happened? / 何が起きましたか？"
+      description: "Describe the steps to reproduce and the expected behavior / 再現手順と期待する動作を記入してください"
+      placeholder: "e.g. I ran `pyxel run game.py` but the window stays black. / 例: `pyxel run game.py` を実行したが画面が真っ黒になった"
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: "OS"
+      description: "Include your browser if using the web version / Web版の場合はブラウザも記入してください"
+      placeholder: "e.g. Windows 11 / macOS 15 / Android 15, Chrome 130"
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: "Pyxel Version / Pyxelバージョン"
+      description: "Run `pyxel` to check. If unknown, leave blank. / `pyxel` コマンドで確認できます。不明な場合は空欄で構いません。"
+      placeholder: "e.g. 2.8.7"
+    validations:
+      required: false
+  - type: input
+    id: python
+    attributes:
+      label: "Python Version / Pythonバージョン"
+      description: "Run `python --version` to check. Not required for web version. / `python --version` で確認できます。Web版の場合は不要です。"
+      placeholder: "e.g. 3.12.0"
+    validations:
+      required: false
+  - type: textarea
+    id: additional
+    attributes:
+      label: "Screenshots or code (optional) / スクリーンショットやコード（任意）"
+      description: "Drag & drop images or paste code here / 画像やコードを貼り付けてください"
+    validations:
+      required: false

@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: "Question / 質問"
+    url: https://github.com/kitao/pyxel/discussions/categories/q-a
+    about: "Ask questions and get help / 質問や相談をする"
+  - name: "User Examples / ユーザー作品"
+    url: https://github.com/kitao/pyxel/discussions/categories/user-examples
+    about: "Share your Pyxel creations / Pyxelで作った作品を投稿する"
