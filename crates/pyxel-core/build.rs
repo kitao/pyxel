@@ -155,7 +155,7 @@ impl Sdl2Bindings {
                 println!("cargo:rustc-link-lib=iconv");
             }
         } else if self.target_os != "emscripten" {
-            println!("cargo:rustc-flags=-l SDL2");
+            println!("cargo:rustc-link-lib=SDL2");
         }
     }
 
