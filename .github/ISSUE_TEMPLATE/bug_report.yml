@@ -6,15 +6,15 @@ body:
     id: description
     attributes:
       label: "What happened? / 何が起きましたか？"
-      description: "Steps to reproduce and expected behavior / 再現手順と期待する動作"
-      placeholder: "e.g. I ran `pyxel run game.py` but the window stays black. / 例: `pyxel run game.py` を実行したが画面が真っ黒になる"
+      description: "Describe the steps to reproduce and the expected behavior / 再現手順と期待する動作を記入してください"
+      placeholder: "e.g. I ran `pyxel run game.py` but the window stays black. / 例: `pyxel run game.py` を実行したが画面が真っ黒になった"
     validations:
       required: true
   - type: input
     id: environment
     attributes:
       label: "OS"
-      description: "Include browser for web version / Web版の場合はブラウザも記入してください"
+      description: "Include your browser if using the web version / Web版の場合はブラウザも記入してください"
       placeholder: "e.g. Windows 11 / macOS 15 / Android 15, Chrome 130"
     validations:
       required: true
@@ -22,10 +22,10 @@ body:
     id: version
     attributes:
       label: "Pyxel Version / Pyxelバージョン"
-      description: "Run `pyxel` to check / `pyxel` コマンドで確認できます"
+      description: "Run `pyxel` to check. If unknown, leave blank. / `pyxel` コマンドで確認できます。不明な場合は空欄で構いません。"
       placeholder: "e.g. 2.8.7"
     validations:
-      required: true
+      required: false
   - type: input
     id: python
     attributes:
@@ -38,5 +38,6 @@ body:
     id: additional
     attributes:
       label: "Screenshots or code (optional) / スクリーンショットやコード（任意）"
+      description: "Drag & drop images or paste code here / 画像のドラッグ&ドロップやコードの貼り付けができます"
     validations:
       required: false

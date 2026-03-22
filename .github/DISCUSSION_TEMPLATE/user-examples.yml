@@ -10,7 +10,8 @@ body:
     id: description
     attributes:
       label: "Description / 作品の説明"
-      placeholder: "e.g. Side-scrolling platform game / 横スクロールプラットフォームゲーム"
+      description: "Brief one-line description of your creation / 作品の簡単な一行説明"
+      placeholder: "e.g. Side-scrolling action game / 横スクロールアクションゲーム"
     validations:
       required: true
   - type: input
@@ -37,7 +38,7 @@ body:
   - type: textarea
     id: gif
     attributes:
-      label: "GIF / GIFアニメ"
-      description: "You can record a GIF in your Pyxel app with Alt(Option)+2 and save with Alt(Option)+3. Drag & drop here. Max 2MB. / Pyxelアプリの実行中にAlt(Option)+2で録画開始、Alt(Option)+3で保存できます。ここにドラッグ&ドロップしてください。最大2MB。"
+      label: "Screen Capture GIF / 画面キャプチャGIF"
+      description: "In your Pyxel app, press Alt(Option)+2 to start recording and Alt(Option)+3 to save as GIF. Drag & drop the saved file here. Max 2MB. / Pyxelアプリの実行中に Alt(Option)+2 で録画開始、Alt(Option)+3 でGIFとして保存できます。保存したファイルをここにドラッグ&ドロップしてください。最大2MB。"
     validations:
       required: true
