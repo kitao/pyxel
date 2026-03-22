@@ -3,6 +3,8 @@
 ## 2.8.7
 
 - Updated script-test.html showcase example
+- Fixed headless mode to run the same frame loop as normal mode
+- Added SIGINT handling to allow Ctrl+C during event loop
 
 ## 2.8.6
 

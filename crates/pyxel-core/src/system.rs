@@ -64,14 +64,6 @@ impl System {
 
 impl Pyxel {
     pub fn run<T: PyxelCallback>(&mut self, mut callback: T) {
-        if *pyxel::is_headless() {
-            loop {
-                self.update_frame(Some(&mut callback));
-                self.draw_frame(Some(&mut callback));
-                *pyxel::frame_count() += 1;
-            }
-        }
-
         platform::run_frame_loop(self.system.fps, move |delta_ms| {
             let ticks = platform::ticks();
             self.system.fps_profiler.end(ticks);
@@ -145,6 +137,9 @@ impl Pyxel {
 
     pub fn flip_screen(&mut self) {
         if *pyxel::is_headless() {
+            if platform::is_sigint_received() {
+                platform::quit();
+            }
             *pyxel::frame_count() += 1;
             return;
         }
@@ -253,6 +248,10 @@ impl Pyxel {
     }
 
     fn process_events(&mut self) {
+        if platform::is_sigint_received() {
+            platform::quit();
+        }
+
         self.start_input_frame();
 
         let events = platform::poll_events();
@@ -375,13 +374,6 @@ impl Pyxel {
     }
 
     fn update_frame(&mut self, callback: Option<&mut dyn PyxelCallback>) {
-        if *pyxel::is_headless() {
-            if let Some(callback) = callback {
-                callback.update(self);
-            }
-            return;
-        }
-
         self.system.update_profiler.start(platform::ticks());
 
         self.process_events();
@@ -490,13 +482,6 @@ impl Pyxel {
     }
 
     fn draw_frame(&mut self, callback: Option<&mut dyn PyxelCallback>) {
-        if *pyxel::is_headless() {
-            if let Some(callback) = callback {
-                callback.draw(self);
-            }
-            return;
-        }
-
         self.system.draw_profiler.start(platform::ticks());
 
         if self.system.paused {
