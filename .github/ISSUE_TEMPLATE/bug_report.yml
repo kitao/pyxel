@@ -38,6 +38,6 @@ body:
     id: additional
     attributes:
       label: "Screenshots or code (optional) / スクリーンショットやコード（任意）"
-      description: "Drag & drop images or paste code here / 画像のドラッグ&ドロップやコードの貼り付けができます"
+      description: "Drag & drop images or paste code here / 画像やコードを貼り付けてください"
     validations:
       required: false
