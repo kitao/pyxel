@@ -3,6 +3,6 @@ contact_links:
   - name: "Question / 質問"
     url: https://github.com/kitao/pyxel/discussions/categories/q-a
     about: "Ask questions and get help / 質問や相談はこちら"
-  - name: "Share Your Creations / 作品を共有する"
+  - name: "User Examples / ユーザー作品"
     url: https://github.com/kitao/pyxel/discussions/categories/user-examples
-    about: "Show your Pyxel games and apps / Pyxelで作った作品を投稿する"
+    about: "Share your Pyxel games and apps / Pyxelで作った作品を投稿する"

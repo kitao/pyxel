@@ -9,16 +9,16 @@ body:
 
         Items marked with * are required. / * が付いた項目は必須です。
 
-        - Screenshot or GIF* / スクリーンショットまたはGIFアニメ*
-        - URL (optional / 任意)
         - Description* / 作品の説明*
+        - URL (optional / 任意)
         - Your name* / あなたの名前*
         - Contact (optional / 任意) / 連絡先（任意）
+        - Screenshot or GIF* / スクリーンショットまたはGIFアニメ*
   - type: textarea
-    id: screenshot
+    id: description
     attributes:
-      label: "Screenshot or GIF / スクリーンショットまたはGIFアニメ"
-      description: "Alt(Option)+2 to record, Alt(Option)+3 to save / Alt(Option)+2で録画開始、Alt(Option)+3で保存"
+      label: "Description / 作品の説明"
+      placeholder: "e.g. Side-scrolling platform game / 横スクロールプラットフォームゲーム"
     validations:
       required: true
   - type: input
@@ -28,13 +28,6 @@ body:
       description: "GitHub repo, itch.io, etc."
     validations:
       required: false
-  - type: textarea
-    id: description
-    attributes:
-      label: "Description / 作品の説明"
-      placeholder: "e.g. Side-scrolling platform game / 横スクロールプラットフォームゲーム"
-    validations:
-      required: true
   - type: input
     id: author
     attributes:
@@ -48,3 +41,10 @@ body:
       description: "Email, GitHub, or X account (optional) / メール、GitHub、Xアカウント（任意）"
     validations:
       required: false
+  - type: textarea
+    id: screenshot
+    attributes:
+      label: "Screenshot or GIF / スクリーンショットまたはGIFアニメ"
+      description: "Drag & drop image here. Alt(Option)+2 to record, Alt(Option)+3 to save / 画像をここにドラッグ&ドロップ。Alt(Option)+2で録画開始、Alt(Option)+3で保存"
+    validations:
+      required: true

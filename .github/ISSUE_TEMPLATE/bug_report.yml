@@ -2,6 +2,13 @@ name: "Bug Report / バグ報告"
 description: "Report a bug / バグを報告する"
 labels: ["bug"]
 body:
+  - type: textarea
+    id: description
+    attributes:
+      label: "What happened? / 何が起きましたか？"
+      description: "Steps to reproduce and expected behavior / 再現手順と期待する動作"
+    validations:
+      required: true
   - type: input
     id: environment
     attributes:
@@ -23,13 +30,6 @@ body:
       placeholder: "e.g. 3.12.0 (N/A for web)"
     validations:
       required: false
-  - type: textarea
-    id: description
-    attributes:
-      label: "What happened? / 何が起きましたか？"
-      description: "Steps to reproduce and expected behavior / 再現手順と期待する動作"
-    validations:
-      required: true
   - type: textarea
     id: additional
     attributes:
