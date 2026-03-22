@@ -4,21 +4,16 @@ body:
   - type: markdown
     attributes:
       value: |
-        Share your Pyxel creation! Items marked with * are required.
-        Pyxelで作った作品を共有してください！ * が付いた項目は必須です。
+        Share your Pyxel creation! Enter your work's title in the Title field above.
+        Pyxelで作った作品を共有してください！上のTitleに作品名を入力してください。
 
-        - Title* / 作品タイトル*
+        Items marked with * are required. / * が付いた項目は必須です。
+
         - Screenshot or GIF* / スクリーンショットまたはGIFアニメ*
         - URL (optional / 任意)
         - Description* / 作品の説明*
         - Your name* / あなたの名前*
         - Contact (optional / 任意) / 連絡先（任意）
-  - type: input
-    id: title
-    attributes:
-      label: "Title / 作品タイトル"
-    validations:
-      required: true
   - type: textarea
     id: screenshot
     attributes:
