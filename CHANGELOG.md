@@ -4,6 +4,11 @@
 
 - Added GitHub issue and discussion templates
 - Fixed envelope tick underflow on empty segments
+- Fixed Alt+R restart resetting the wrong key
+- Fixed unreachable MML tie quantize branch
+- Fixed KeyError in image editor bank copy/paste
+- Fixed temporary image, tilemap, and sound memory leaks
+- Fixed doc generator stripping HTML tags inside inline code
 
 ## 2.8.7
 
