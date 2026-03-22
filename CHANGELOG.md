@@ -3,6 +3,7 @@
 ## 2.8.8
 
 - Added GitHub issue and discussion templates
+- Fixed envelope tick underflow on empty segments
 
 ## 2.8.7
 

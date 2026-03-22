@@ -227,7 +227,7 @@ impl Envelope {
 
     pub fn reset_tick(&mut self) {
         self.elapsed_ticks = 0;
-        self.segment_index = self.segments.len() - 1;
+        self.segment_index = self.segments.len().saturating_sub(1);
         self.update();
     }
 
