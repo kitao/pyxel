@@ -99,7 +99,10 @@ fn main() {
         .compile("pocketpy");
 
     // Generate Rust FFI bindings
+    // PocketPy's C API is target-independent, so when cross-compiling for
+    // Emscripten we override bindgen's target to use the host's system headers.
     let target = env::var("TARGET").unwrap();
+    let host = env::var("HOST").unwrap();
     let mut builder = bindgen::Builder::default()
         .header(format!("{pocketpy_dir}/pocketpy.h"))
         .allowlist_function("py_.*")
@@ -108,22 +111,10 @@ fn main() {
         .allowlist_function("KeyError|StopIteration|TypeError")
         .use_core()
         .generate_comments(false)
-        .clang_arg(format!("--target={target}"));
-
-    // Add sysroot for cross-compilation targets
-    if target.contains("emscripten") {
-        let output = Command::new("emcc")
-            .args(["--cflags"])
-            .output()
-            .expect("Failed to execute emcc");
-        let cflags = std::str::from_utf8(&output.stdout).unwrap();
-        for flag in cflags.split_whitespace() {
-            if flag.starts_with("-isystem") || flag.starts_with("--sysroot") {
-                builder = builder.clang_arg(flag);
-            }
-        }
+        .layout_tests(target == host);
+    if target != host {
+        builder = builder.clang_arg(format!("--target={host}"));
     }
-
     let bindings = builder
         .generate()
         .expect("Failed to generate bindings");

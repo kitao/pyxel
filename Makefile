@@ -14,21 +14,12 @@
 #   - Build: make clean build
 #   - Test: make clean test (includes watch)
 #
-# WASM:
-#   - Setup once:
-#       git clone --branch 0.29.3 --depth 1 https://github.com/pyodide/pyodide.git pyodide
-#       cd pyodide/emsdk
-#       CMAKE_POLICY_VERSION_MINIMUM=3.5 make
-#   - Each new shell before WASM commands:
-#       source pyodide/emsdk/emsdk_env.sh
+# WASM (pyxel-pocket):
+#   - Setup once: install Emscripten SDK
+#   - Each new shell: source emsdk/emsdk_env.sh
 #   - Lint: make lint-wasm
-#   - Build/Test:
-#       make clean-wasm build-wasm
-#       make clean-wasm test-wasm
-#
-# Pocket (PocketPy):
-#   - Lint: make lint-pocket
-#   - Build: make clean-pocket build-pocket
+#   - Build: make clean-wasm build-wasm
+#   - Test: make test-wasm (builds and starts local server at :8000)
 #
 # Web pages:
 #   - Setup once: cd web && npm install
@@ -58,17 +49,12 @@ WASM_PREFIX_MAP_FLAGS += -ffile-prefix-map=$(HOME)=$(REMAP_USER_HOME)
 endif
 
 # Build options
-ifeq ($(TARGET),$(WASM_TARGET))
-RUSTFLAGS += \
+WASM_RUSTFLAGS = \
 	$(RUST_REMAP_FLAGS) \
 	-C panic=abort \
 	-C link-arg=-fwasm-exceptions \
-	-C link-arg=-sSIDE_MODULE=2 \
-	-C link-arg=-lSDL2 \
-	-C link-arg=-lhtml5
-CFLAGS += $(WASM_PREFIX_MAP_FLAGS)
-CXXFLAGS += $(WASM_PREFIX_MAP_FLAGS)
-endif
+	-C link-arg=-sUSE_SDL=2 \
+	-C link-arg=-sALLOW_MEMORY_GROWTH
 
 CARGO_OPTS = --release --target $(TARGET) -Zbuild-std=std,panic_abort
 
@@ -95,10 +81,12 @@ lint build test: export PYO3_PYTHON := $(PYO3_PYTHON)
 lint build test: export PYO3_ENVIRONMENT_SIGNATURE := $(PYO3_ENVIRONMENT_SIGNATURE)
 endif
 
+WASM_DIST_DIR = $(DIST_DIR)/wasm
+
 .PHONY: \
 	all clean distclean update format lint build install test \
-	clean-wasm lint-wasm build-wasm start-test-server test-wasm \
-	clean-pocket lint-pocket build-pocket pages
+	clean-wasm lint-wasm build-wasm test-wasm \
+	pages
 
 all: build
 
@@ -144,33 +132,26 @@ test: install
 	@CARGO_OPTS="$(CARGO_OPTS)" $(SCRIPTS_DIR)/run_tests
 
 clean-wasm:
-	@$(MAKE) clean TARGET=$(WASM_TARGET)
+	@cd $(CRATES_DIR); cargo clean -p pyxel-pocket --target $(WASM_TARGET)
 
 lint-wasm:
-	@$(MAKE) lint TARGET=$(WASM_TARGET)
+	@cd $(CRATES_DIR); cargo clippy -p pyxel-pocket \
+		--release --target $(WASM_TARGET) -Zbuild-std=std,panic_abort \
+		--features sdl2_dynamic $(CLIPPY_OPTS) || true
 
 build-wasm:
-	@embuilder build sdl2 --pic
-	@rm -f $(DIST_DIR)/*-emscripten_*.whl
-	@$(MAKE) build TARGET=$(WASM_TARGET)
-	@$(SCRIPTS_DIR)/check_wasm_wheel
-	@$(SCRIPTS_DIR)/install_wasm_wheel
-
-start-test-server:
-	@$(SCRIPTS_DIR)/start_test_server
-
-test-wasm: build-wasm start-test-server
-
-clean-pocket:
-	@cd $(CRATES_DIR); cargo clean -p pyxel-pocket --target $(TARGET)
-
-lint-pocket:
-	@cd $(CRATES_DIR); cargo clippy -p pyxel-pocket $(CARGO_OPTS) $(CLIPPY_OPTS) || true
-
-build-pocket:
 	@cd $(CRATES_DIR); \
-		RUSTFLAGS="$(RUSTFLAGS)" \
-		cargo build -p pyxel-pocket $(CARGO_OPTS)
+		RUSTFLAGS="$(WASM_RUSTFLAGS)" \
+		CFLAGS="$(WASM_PREFIX_MAP_FLAGS)" \
+		CXXFLAGS="$(WASM_PREFIX_MAP_FLAGS)" \
+		cargo build -p pyxel-pocket --bin pyxel-pocket \
+		--release --target $(WASM_TARGET) -Zbuild-std=std,panic_abort \
+		--features sdl2_dynamic
+	@cp $(CRATES_DIR)/target/$(WASM_TARGET)/release/deps/pyxel_pocket.wasm $(ROOT_DIR)/wasm/
+	@cp $(CRATES_DIR)/target/$(WASM_TARGET)/release/deps/pyxel_pocket.js $(ROOT_DIR)/wasm/
+
+test-wasm: build-wasm
+	@$(SCRIPTS_DIR)/start_test_server
 
 pages:
 	@cd $(ROOT_DIR)/web && npx @tailwindcss/cli -i styles/input.css -o styles.css --minify

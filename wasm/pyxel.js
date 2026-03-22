@@ -1,5 +1,4 @@
-const PYODIDE_URL = "https://cdn.jsdelivr.net/pyodide/v0.29.3/full/pyodide.js";
-const PYXEL_WHEEL_PATH = "pyxel-2.8.7-cp38-abi3-emscripten_4_0_9_wasm32.whl";
+const PYXEL_POCKET_PATH = "pyxel_pocket.js";
 const PYXEL_LOGO_PATH = "images/pyxel_logo_76x32.png";
 const TOUCH_TO_START_PATH = "images/touch_to_start_114x14.png";
 const CLICK_TO_START_PATH = "images/click_to_start_114x14.png";
@@ -8,13 +7,11 @@ const GAMEPAD_BUTTON_PATH = "images/gamepad_button_98x98.png";
 const GAMEPAD_MENU_PATH = "images/gamepad_menu_92x26.png";
 const PYXEL_WORKING_DIRECTORY = "/pyxel_working_directory";
 const PYXEL_WATCH_INFO_FILE = ".pyxel_watch_info";
-const IMPORT_HOOK_PATH = "scripts/import_hook.py";
 
 window.pyxelContext = {
   resolveInput: null,
   initialized: false,
   canvas: null,
-  pyodide: null,
   params: null,
   hasFatalError: false,
 };
@@ -101,123 +98,37 @@ document.addEventListener(
 );
 
 async function launchPyxel(params) {
-  const pyxelVersion = PYXEL_WHEEL_PATH.match(/pyxel-([\d.]+)-/)[1];
-  const pyodideVersion = PYODIDE_URL.match(/v([\d.]+)\//)[1];
-  console.log(`Launch Pyxel ${pyxelVersion} with Pyodide ${pyodideVersion}`);
+  console.log("Launch Pyxel Pocket");
   console.log(params);
 
   _suppressTouchZoomGestures();
   _allowGamepadConnection();
 
   const canvas = await _createScreenElements();
-  const pyodide = await _loadPyodideAndPyxel(canvas);
-
-  _hookPythonError(pyodide);
-  _hookFileOperations(pyodide, params.root || ".");
   await _waitForInput();
 
   window.pyxelContext.initialized = true;
   window.pyxelContext.canvas = canvas;
-  window.pyxelContext.pyodide = pyodide;
   window.pyxelContext.params = params;
   window.pyxelContext.hasFatalError = false;
 
   try {
-    await _executePyxelCommand(pyodide, params);
+    await _executePyxelCommand(canvas, params);
   } catch (error) {
     _displayFatalErrorOverlay(error);
   }
 }
 
-async function resetPyxel() {
-  if (!window.pyxelContext.initialized) {
-    return;
-  }
-
-  if (window.pyxelContext.hasFatalError) {
-    location.reload();
-    return;
-  }
-
-  try {
-    document.getElementById("pyxel-error-overlay")?.remove();
-
-    window.pyxelContext.pyodide.runPython(`
-      import pyxel
-      pyxel.quit()
-    `);
-
-    const audioContext = window.pyxelContext.pyodide?._module?.SDL2?.audioContext;
-    if (audioContext && audioContext.state === "running") {
-      await new Promise((resolve) => setTimeout(resolve, 50));
-      await audioContext.suspend();
-    }
-
-    const pyodide = window.pyxelContext.pyodide;
-    pyodide._module._emscripten_cancel_main_loop();
-
-    pyodide.runPython(`
-      import importlib
-      import os
-      import shutil
-      import sys
-      import tempfile
-      from types import ModuleType
-
-      import pyxel
-
-      pyxel._reset_statics()
-
-      work_dir = "${PYXEL_WORKING_DIRECTORY}"
-      temp_dir = tempfile.gettempdir()
-      mods = [
-          n
-          for n, m in list(sys.modules.items())
-          if getattr(m, "__file__", "")
-          and (m.__file__.startswith(work_dir) or m.__file__.startswith(temp_dir))
-      ] + ["__main__"]
-
-      for n in mods:
-          try:
-              del sys.modules[n]
-          except BaseException:
-              pass
-      importlib.invalidate_caches()
-      sys.modules["__main__"] = ModuleType("__main__")
-
-      os.chdir("/")
-      if os.path.exists(temp_dir):
-          shutil.rmtree(temp_dir)
-      os.makedirs(temp_dir, exist_ok=True)
-
-      if os.path.exists(work_dir):
-          shutil.rmtree(work_dir)
-      os.makedirs(work_dir, exist_ok=True)
-      os.chdir(work_dir)
-    `);
-
-    await _executePyxelCommand(pyodide, window.pyxelContext.params);
-
-    setTimeout(() => {
-      if (audioContext && audioContext.state === "suspended") {
-        audioContext.resume();
-      }
-    }, 0);
-  } catch (error) {
-    _displayFatalErrorOverlay(error);
-  }
+function resetPyxel() {
+  location.reload();
 }
 
 function dropFileToPyxel(name, data) {
-  if (!window.pyxelContext.initialized) {
+  if (!window.pyxelContext.initialized || typeof FS === "undefined") {
     return;
   }
   const path = "/tmp/" + name.replace(/[^a-zA-Z0-9._-]/g, "_");
-  const pyodide = window.pyxelContext.pyodide;
-  pyodide.FS.writeFile(path, new Uint8Array(data));
-  pyodide.runPython(
-    `import pyxel; pyxel._dropped_files = getattr(pyxel, '_dropped_files', []) + ['${path}']`
-  );
+  FS.writeFile(path, new Uint8Array(data));
 }
 
 function _initialize() {
@@ -386,49 +297,6 @@ async function _loadScript(scriptSrc) {
   await _waitForEvent(script, "load");
 }
 
-async function _loadPyodideAndPyxel(canvas) {
-  await _loadScript(PYODIDE_URL);
-  const pyodide = await loadPyodide();
-  pyodide._api._skip_unwind_fatal_error = true;
-  pyodide.canvas.setCanvas2D(canvas);
-  await pyodide.loadPackage(_scriptDir() + PYXEL_WHEEL_PATH);
-
-  const FS = pyodide.FS;
-  FS.mkdir(PYXEL_WORKING_DIRECTORY);
-  FS.chdir(PYXEL_WORKING_DIRECTORY);
-
-  const response = await fetch(_scriptDir() + IMPORT_HOOK_PATH);
-  const code = await response.text();
-  pyodide.runPython(code);
-
-  return pyodide;
-}
-
-function _hookPythonError(pyodide) {
-  pyodide.setStderr({
-    batched: (() => {
-      let errorText = "";
-      let flushTimer = null;
-
-      return (msg) => {
-        if (!flushTimer && !msg.startsWith("Traceback")) {
-          return;
-        }
-
-        pyodide._module._emscripten_cancel_main_loop();
-        errorText += msg + "\n";
-
-        if (!flushTimer) {
-          flushTimer = setTimeout(() => {
-            _displayErrorOverlay(errorText);
-            errorText = "";
-            flushTimer = null;
-          }, 100);
-        }
-      };
-    })(),
-  });
-}
 
 function _displayErrorOverlay(message) {
   console.error(message);
@@ -476,103 +344,80 @@ function _displayFatalErrorOverlay(error) {
   _displayErrorOverlay(message);
 }
 
-function _hookFileOperations(pyodide, root) {
-  const fs = pyodide.FS;
+function _hookFileOperations(root) {
+  if (!root || typeof FS === "undefined") {
+    return;
+  }
 
-  // Define function to create directories
   const createDirs = (absPath, isFile) => {
     const dirs = absPath.split("/");
     dirs.shift();
-    if (isFile) {
-      dirs.pop();
-    }
+    if (isFile) dirs.pop();
     let path = "";
     for (const dir of dirs) {
       path += "/" + dir;
-      if (!fs.analyzePath(path).exists) {
-        fs.mkdir(path, 0o777);
+      if (!FS.analyzePath(path).exists) {
+        FS.mkdir(path, 0o777);
       }
     }
   };
 
-  // Define function to copy path
+  let _fetching = false;
   const copyPath = (path) => {
-    // Check path
-    if (path.startsWith("<") || path.endsWith(PYXEL_WATCH_INFO_FILE)) {
-      return;
-    }
-    if (!path.startsWith("/")) {
-      path = fs.cwd() + "/" + path;
-    }
-    if (!path.startsWith(PYXEL_WORKING_DIRECTORY)) {
-      return;
-    }
+    if (_fetching) return;
+    if (path.startsWith("<") || path.endsWith(PYXEL_WATCH_INFO_FILE)) return;
+    if (!path.startsWith("/")) path = FS.cwd() + "/" + path;
+    if (!path.startsWith(PYXEL_WORKING_DIRECTORY)) return;
     path = path.slice(PYXEL_WORKING_DIRECTORY.length + 1);
     const srcPath = `${root}/${path}`;
     const dstPath = `${PYXEL_WORKING_DIRECTORY}/${path}`;
-    if (fs.analyzePath(dstPath).exists) {
-      return;
-    }
 
-    // Download path
-    console.log(`Attempting to fetch '${path}'`);
-    const request = new XMLHttpRequest();
-    request.overrideMimeType("text/plain; charset=x-user-defined");
-    request.open("GET", srcPath, false);
+    _fetching = true;
     try {
-      request.send();
-    } catch (error) {
-      return;
-    }
-    if (request.status !== 200) {
-      return;
-    }
-    const fileBinary = Uint8Array.from(request.response, (c) => c.charCodeAt(0));
+      if (FS.analyzePath(dstPath).exists) return;
 
-    // Write path
-    const contentType = request.getResponseHeader("Content-Type") || "";
-    if (contentType.includes("text/html") && !path.includes(".")) {
-      console.log(`Created directory '${dstPath}'`);
-      createDirs(dstPath, false);
-    } else {
-      createDirs(dstPath, true);
-      fs.writeFile(dstPath, fileBinary, {
-        encoding: "binary",
-      });
-      console.log(`Copied '${srcPath}' to '${dstPath}'`);
+      console.log(`Attempting to fetch '${path}'`);
+      const request = new XMLHttpRequest();
+      request.overrideMimeType("text/plain; charset=x-user-defined");
+      request.open("GET", srcPath, false);
+      try { request.send(); } catch (error) { return; }
+      if (request.status !== 200) return;
+      const fileBinary = Uint8Array.from(request.response, (c) => c.charCodeAt(0));
+
+      const contentType = request.getResponseHeader("Content-Type") || "";
+      if (contentType.includes("text/html") && !path.includes(".")) {
+        createDirs(dstPath, false);
+      } else {
+        createDirs(dstPath, true);
+        FS.writeFile(dstPath, fileBinary, { encoding: "binary" });
+        console.log(`Copied '${srcPath}' to '${dstPath}'`);
+      }
+    } finally {
+      _fetching = false;
     }
   };
 
-  // Hook file operations
-  const open = fs.open;
-  fs.open = (path, flags, mode) => {
-    if (flags === 557056) { // O_RDONLY for stat-like access
-      copyPath(path);
-    }
+  const open = FS.open;
+  FS.open = (path, flags, mode) => {
+    copyPath(path);
     return open(path, flags, mode);
   };
-  const stat = fs.stat;
-  fs.stat = (path) => {
+  const stat = FS.stat;
+  FS.stat = (path) => {
     copyPath(path);
     return stat(path);
   };
 
-  // Define function to save file
   window._savePyxelFile = (filename) => {
     const a = document.createElement("a");
     a.download = filename.split(/[\\/]/).pop();
     a.href = URL.createObjectURL(
-      new Blob([fs.readFile(filename)], {
-        type: "application/octet-stream",
-      }),
+      new Blob([FS.readFile(filename)], { type: "application/octet-stream" }),
     );
     a.style.display = "none";
     document.body.appendChild(a);
     a.click();
-    setTimeout(() => {
-      document.body.removeChild(a);
-      URL.revokeObjectURL(a.href);
-    }, 2000);
+    setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(a.href); }, 2000);
   };
 }
 
@@ -608,14 +453,6 @@ async function _waitForInput() {
 
   promptImage.remove();
   await new Promise((resolve) => setTimeout(resolve, 1));
-}
-
-async function _installBuiltinPackages(pyodide, packages) {
-  if (!packages) {
-    return;
-  }
-
-  await pyodide.loadPackage(packages.split(","));
 }
 
 function _addVirtualGamepad(mode) {
@@ -716,68 +553,54 @@ function _addVirtualGamepad(mode) {
   document.addEventListener("touchend", touchHandler, { passive: false });
 }
 
-function _copyFileFromBase64(pyodide, name, base64) {
-  if (!name || !base64) {
-    return;
-  }
-
-  const filename = `${PYXEL_WORKING_DIRECTORY}/${name}`;
-  const binary = Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
-  pyodide.FS.writeFile(filename, binary, { encoding: "binary" });
-}
-
-async function _executePyxelCommand(pyodide, params) {
+async function _executePyxelCommand(canvas, params) {
   if (params.command === "run" || params.command === "play") {
-    await _installBuiltinPackages(pyodide, params.packages);
     _addVirtualGamepad(params.gamepad);
   }
 
-  _copyFileFromBase64(pyodide, params.name, params.base64);
-
-  let pythonCode = "";
-  switch (params.command) {
-    case "run":
-      if (params.name) {
-        pythonCode = `
-          import pyxel.cli
-          pyxel.cli.run_python_script("${params.name}")
-        `;
-      } else if (params.script) {
-        pythonCode = params.script;
-      }
-      break;
-
-    case "play":
-      pythonCode = `
-        import pyxel.cli
-        pyxel.cli.play_pyxel_app("${params.name}")
-      `;
-      break;
-
-    case "edit":
-      document.addEventListener("keydown", (event) => {
-        if ((event.ctrlKey || event.metaKey) && event.key === "s") {
-          event.preventDefault();
-        }
-      });
-      params.name ||= "";
-      params.editor ||= "";
-      pythonCode = `
-        import pyxel.cli
-        pyxel.cli.edit_pyxel_resource("${params.name}", "${params.editor}")
-      `;
-      break;
-  }
-
-  try {
-    pyodide.runPython(pythonCode);
-  } catch (error) {
-    if (error?.name === "PythonError") {
-      _displayErrorOverlay(error.message);
-    } else {
-      _displayFatalErrorOverlay(error);
+  // Determine script content and filename
+  const scriptName = params.name || "__main__.py";
+  let scriptContent;
+  if (params.script) {
+    scriptContent = params.script;
+  } else if (params.base64) {
+    scriptContent = new TextDecoder().decode(
+      Uint8Array.from(atob(params.base64), (c) => c.charCodeAt(0)),
+    );
+  } else if (params.name) {
+    const root = params.root || ".";
+    const response = await fetch(`${root}/${params.name}`);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch '${params.name}': ${response.status}`);
     }
+    scriptContent = await response.text();
+  } else {
+    throw new Error("No script specified");
   }
+
+  const root = params.root || ".";
+
+  // Set up Emscripten Module and load pyxel-pocket WASM
+  window.Module = {
+    canvas: canvas,
+    arguments: [scriptName],
+    preRun: [
+      function () {
+        FS.mkdir(PYXEL_WORKING_DIRECTORY);
+        FS.chdir(PYXEL_WORKING_DIRECTORY);
+        FS.writeFile(scriptName, scriptContent);
+        _hookFileOperations(root);
+      },
+    ],
+    print: function (text) {
+      console.log(text);
+    },
+    printErr: function (text) {
+      console.error(text);
+    },
+  };
+
+  await _loadScript(_scriptDir() + PYXEL_POCKET_PATH);
 }
 
 class PyxelRunElement extends HTMLElement {
