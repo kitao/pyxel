@@ -10,7 +10,7 @@ unsafe impl Send for Font {}
 unsafe impl Sync for Font {}
 
 impl Font {
-    pub fn wrap(inner: *mut pyxel::Font) -> Self {
+    fn wrap(inner: *mut pyxel::Font) -> Self {
         Self { inner }
     }
 }
@@ -19,13 +19,13 @@ impl Font {
 impl Font {
     #[new]
     #[pyo3(signature = (filename, font_size=None))]
-    pub fn new(filename: &str, font_size: Option<f32>) -> PyResult<Self> {
+    fn new(filename: &str, font_size: Option<f32>) -> PyResult<Self> {
         pyxel::Font::new(filename, font_size)
             .map(Self::wrap)
             .map_err(pyo3::exceptions::PyException::new_err)
     }
 
-    pub fn text_width(&self, s: &str) -> i32 {
+    fn text_width(&self, s: &str) -> i32 {
         unsafe { &mut *self.inner }.text_width(s)
     }
 }

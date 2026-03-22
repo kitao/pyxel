@@ -39,7 +39,7 @@ unsafe impl Send for Seqs {}
 unsafe impl Sync for Seqs {}
 
 impl Seqs {
-    pub fn wrap(inner: *mut pyxel::Music) -> Self {
+    fn wrap(inner: *mut pyxel::Music) -> Self {
         Self { inner }
     }
 }
@@ -189,11 +189,11 @@ impl Seqs {
         }
     }
 
-    pub fn append(&self, value: Vec<u32>) {
+    fn append(&self, value: Vec<u32>) {
         unsafe { &mut *self.inner }.seqs.push(value);
     }
 
-    pub fn extend(&self, values: Vec<Vec<u32>>) {
+    fn extend(&self, values: Vec<Vec<u32>>) {
         let music = unsafe { &mut *self.inner };
         for val in values {
             music.seqs.push(val);
@@ -201,7 +201,7 @@ impl Seqs {
     }
 
     #[pyo3(signature = (index, value))]
-    pub fn insert(&self, index: isize, value: Vec<u32>) {
+    fn insert(&self, index: isize, value: Vec<u32>) {
         let music = unsafe { &mut *self.inner };
         let len = music.seqs.len();
         let i = if index < 0 {
@@ -220,7 +220,7 @@ impl Seqs {
     }
 
     #[pyo3(signature = (index=None))]
-    pub fn pop(&self, index: Option<isize>) -> PyResult<Seq> {
+    fn pop(&self, index: Option<isize>) -> PyResult<Seq> {
         let music = unsafe { &mut *self.inner };
         let len = music.seqs.len();
         if len == 0 {
@@ -239,11 +239,11 @@ impl Seqs {
         }))
     }
 
-    pub fn clear(&self) {
+    fn clear(&self) {
         unsafe { &mut *self.inner }.seqs.clear();
     }
 
-    pub fn from_list(&self, list: Vec<Vec<u32>>) {
+    fn from_list(&self, list: Vec<Vec<u32>>) {
         static ONCE: Once = Once::new();
         ONCE.call_once(|| {
             println!("Seqs.from_list() is deprecated. Use slice assignment instead.");
@@ -251,7 +251,7 @@ impl Seqs {
         unsafe { &mut *self.inner }.set(&list);
     }
 
-    pub fn to_list(&self, py: Python) -> PyResult<Py<PyAny>> {
+    fn to_list(&self, py: Python) -> PyResult<Py<PyAny>> {
         static ONCE: Once = Once::new();
         ONCE.call_once(|| {
             println!("Seqs.to_list() is deprecated. Use list(seq) instead.");
@@ -281,17 +281,17 @@ impl Music {
 #[pymethods]
 impl Music {
     #[new]
-    pub fn new() -> Self {
+    fn new() -> Self {
         Self::wrap(pyxel::Music::new())
     }
 
     #[getter]
-    pub fn seqs(&self) -> Seqs {
+    fn seqs(&self) -> Seqs {
         Seqs::wrap(self.inner)
     }
 
     #[pyo3(signature = (*seqs))]
-    pub fn set(&self, seqs: &Bound<'_, PyTuple>) -> PyResult<()> {
+    fn set(&self, seqs: &Bound<'_, PyTuple>) -> PyResult<()> {
         let mut rust_seqs: Vec<Vec<u32>> = Vec::new();
         for i in 0..seqs.len() {
             let rust_seq: Vec<u32> = seqs.get_item(i)?.extract()?;
@@ -303,14 +303,14 @@ impl Music {
     }
 
     #[pyo3(signature = (filename, sec, ffmpeg=None))]
-    pub fn save(&self, filename: &str, sec: f32, ffmpeg: Option<bool>) -> PyResult<()> {
+    fn save(&self, filename: &str, sec: f32, ffmpeg: Option<bool>) -> PyResult<()> {
         unsafe { &mut *self.inner }
             .save(filename, sec, ffmpeg)
             .map_err(PyException::new_err)
     }
 
     #[getter]
-    pub fn snds_list(&self) -> Seqs {
+    fn snds_list(&self) -> Seqs {
         SNDS_LIST_ONCE.call_once(|| {
             println!("Music.snds_list[ch] is deprecated. Use Music.seqs[ch] instead.");
         });

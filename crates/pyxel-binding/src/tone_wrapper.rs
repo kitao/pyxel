@@ -36,22 +36,22 @@ impl Tone {
 #[pymethods]
 impl Tone {
     #[new]
-    pub fn new() -> Self {
+    fn new() -> Self {
         Self::wrap(pyxel::Tone::new())
     }
 
     #[getter]
-    pub fn mode(&self) -> u32 {
+    fn mode(&self) -> u32 {
         unsafe { &*self.inner }.mode.into()
     }
 
     #[setter]
-    pub fn set_mode(&self, mode: u32) {
+    fn set_mode(&self, mode: u32) {
         unsafe { &mut *self.inner }.mode = pyxel::ToneMode::from(mode);
     }
 
     #[getter]
-    pub fn noise(&self) -> u32 {
+    fn noise(&self) -> u32 {
         NOISE_ONCE.call_once(|| {
             println!("Tone.noise is deprecated. Use Tone.mode instead.");
         });
@@ -60,7 +60,7 @@ impl Tone {
     }
 
     #[setter]
-    pub fn set_noise(&self, mode: u32) {
+    fn set_noise(&self, mode: u32) {
         NOISE_ONCE.call_once(|| {
             println!("Tone.noise is deprecated. Use Tone.mode instead.");
         });
@@ -69,22 +69,22 @@ impl Tone {
     }
 
     #[getter]
-    pub fn sample_bits(&self) -> pyxel::ToneSample {
+    fn sample_bits(&self) -> pyxel::ToneSample {
         unsafe { &*self.inner }.sample_bits
     }
 
     #[setter]
-    pub fn set_sample_bits(&self, sample_bits: pyxel::ToneSample) {
+    fn set_sample_bits(&self, sample_bits: pyxel::ToneSample) {
         unsafe { &mut *self.inner }.sample_bits = sample_bits;
     }
 
     #[getter]
-    pub fn wavetable(&self) -> Wavetable {
+    fn wavetable(&self) -> Wavetable {
         Wavetable::wrap(self.inner)
     }
 
     #[getter]
-    pub fn waveform(&self) -> Wavetable {
+    fn waveform(&self) -> Wavetable {
         WAVEFORM_ONCE.call_once(|| {
             println!("Tone.waveform is deprecated. Use Tone.wavetable instead.");
         });
@@ -93,12 +93,12 @@ impl Tone {
     }
 
     #[getter]
-    pub fn gain(&self) -> pyxel::ToneGain {
+    fn gain(&self) -> pyxel::ToneGain {
         unsafe { &*self.inner }.gain
     }
 
     #[setter]
-    pub fn set_gain(&self, gain: pyxel::ToneGain) {
+    fn set_gain(&self, gain: pyxel::ToneGain) {
         unsafe { &mut *self.inner }.gain = gain;
     }
 }

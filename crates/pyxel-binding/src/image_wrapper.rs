@@ -25,13 +25,13 @@ impl Image {
 #[pymethods]
 impl Image {
     #[new]
-    pub fn new(width: u32, height: u32) -> Self {
+    fn new(width: u32, height: u32) -> Self {
         Self::wrap(pyxel::Image::new(width, height))
     }
 
     #[staticmethod]
     #[pyo3(signature = (filename, include_colors=None, incl_colors=None))]
-    pub fn from_image(
+    fn from_image(
         filename: &str,
         include_colors: Option<bool>,
         incl_colors: Option<bool>,
@@ -43,16 +43,16 @@ impl Image {
     }
 
     #[getter]
-    pub fn width(&self) -> u32 {
+    fn width(&self) -> u32 {
         unsafe { &*self.inner }.width()
     }
 
     #[getter]
-    pub fn height(&self) -> u32 {
+    fn height(&self) -> u32 {
         unsafe { &*self.inner }.height()
     }
 
-    pub fn data_ptr(&self, py: Python) -> PyResult<Py<PyAny>> {
+    fn data_ptr(&self, py: Python) -> PyResult<Py<PyAny>> {
         let inner = unsafe { &mut *self.inner };
         let python_code = CString::new(format!(
             "import ctypes; c_uint8_array = (ctypes.c_uint8 * {}).from_address({:p})",
@@ -68,13 +68,13 @@ impl Image {
         Ok(array.unbind())
     }
 
-    pub fn set(&self, x: i32, y: i32, data: Vec<String>) {
+    fn set(&self, x: i32, y: i32, data: Vec<String>) {
         let data_refs: Vec<_> = data.iter().map(String::as_str).collect();
         unsafe { &mut *self.inner }.set(x, y, &data_refs);
     }
 
     #[pyo3(signature = (x, y, filename, include_colors=None, incl_colors=None))]
-    pub fn load(
+    fn load(
         &self,
         x: i32,
         y: i32,
@@ -88,20 +88,14 @@ impl Image {
             .map_err(PyException::new_err)
     }
 
-    pub fn save(&self, filename: &str, scale: u32) -> PyResult<()> {
+    fn save(&self, filename: &str, scale: u32) -> PyResult<()> {
         unsafe { &mut *self.inner }
             .save(filename, scale)
             .map_err(PyException::new_err)
     }
 
     #[pyo3(signature = (x=None, y=None, w=None, h=None))]
-    pub fn clip(
-        &self,
-        x: Option<f32>,
-        y: Option<f32>,
-        w: Option<f32>,
-        h: Option<f32>,
-    ) -> PyResult<()> {
+    fn clip(&self, x: Option<f32>, y: Option<f32>, w: Option<f32>, h: Option<f32>) -> PyResult<()> {
         if let (Some(x), Some(y), Some(w), Some(h)) = (x, y, w, h) {
             unsafe { &mut *self.inner }.set_clip_rect(x, y, w, h);
         } else if (x, y, w, h) == (None, None, None, None) {
@@ -113,7 +107,7 @@ impl Image {
     }
 
     #[pyo3(signature = (x=None, y=None))]
-    pub fn camera(&self, x: Option<f32>, y: Option<f32>) -> PyResult<()> {
+    fn camera(&self, x: Option<f32>, y: Option<f32>) -> PyResult<()> {
         if let (Some(x), Some(y)) = (x, y) {
             unsafe { &mut *self.inner }.set_draw_offset(x, y);
         } else if (x, y) == (None, None) {
@@ -125,7 +119,7 @@ impl Image {
     }
 
     #[pyo3(signature = (col1=None, col2=None))]
-    pub fn pal(&self, col1: Option<pyxel::Color>, col2: Option<pyxel::Color>) -> PyResult<()> {
+    fn pal(&self, col1: Option<pyxel::Color>, col2: Option<pyxel::Color>) -> PyResult<()> {
         if let (Some(col1), Some(col2)) = (col1, col2) {
             unsafe { &mut *self.inner }.map_color(col1, col2);
         } else if (col1, col2) == (None, None) {
@@ -136,64 +130,64 @@ impl Image {
         Ok(())
     }
 
-    pub fn dither(&self, alpha: f32) {
+    fn dither(&self, alpha: f32) {
         unsafe { &mut *self.inner }.set_dithering(alpha);
     }
 
-    pub fn cls(&self, col: pyxel::Color) {
+    fn cls(&self, col: pyxel::Color) {
         unsafe { &mut *self.inner }.clear(col);
     }
 
-    pub fn pget(&self, x: f32, y: f32) -> pyxel::Color {
+    fn pget(&self, x: f32, y: f32) -> pyxel::Color {
         unsafe { &mut *self.inner }.get_pixel(x, y)
     }
 
-    pub fn pset(&self, x: f32, y: f32, col: pyxel::Color) {
+    fn pset(&self, x: f32, y: f32, col: pyxel::Color) {
         unsafe { &mut *self.inner }.set_pixel(x, y, col);
     }
 
-    pub fn line(&self, x1: f32, y1: f32, x2: f32, y2: f32, col: pyxel::Color) {
+    fn line(&self, x1: f32, y1: f32, x2: f32, y2: f32, col: pyxel::Color) {
         unsafe { &mut *self.inner }.draw_line(x1, y1, x2, y2, col);
     }
 
-    pub fn rect(&self, x: f32, y: f32, w: f32, h: f32, col: pyxel::Color) {
+    fn rect(&self, x: f32, y: f32, w: f32, h: f32, col: pyxel::Color) {
         unsafe { &mut *self.inner }.draw_rect(x, y, w, h, col);
     }
 
-    pub fn rectb(&self, x: f32, y: f32, w: f32, h: f32, col: pyxel::Color) {
+    fn rectb(&self, x: f32, y: f32, w: f32, h: f32, col: pyxel::Color) {
         unsafe { &mut *self.inner }.draw_rect_border(x, y, w, h, col);
     }
 
-    pub fn circ(&self, x: f32, y: f32, r: f32, col: pyxel::Color) {
+    fn circ(&self, x: f32, y: f32, r: f32, col: pyxel::Color) {
         unsafe { &mut *self.inner }.draw_circle(x, y, r, col);
     }
 
-    pub fn circb(&self, x: f32, y: f32, r: f32, col: pyxel::Color) {
+    fn circb(&self, x: f32, y: f32, r: f32, col: pyxel::Color) {
         unsafe { &mut *self.inner }.draw_circle_border(x, y, r, col);
     }
 
-    pub fn elli(&self, x: f32, y: f32, w: f32, h: f32, col: pyxel::Color) {
+    fn elli(&self, x: f32, y: f32, w: f32, h: f32, col: pyxel::Color) {
         unsafe { &mut *self.inner }.draw_ellipse(x, y, w, h, col);
     }
 
-    pub fn ellib(&self, x: f32, y: f32, w: f32, h: f32, col: pyxel::Color) {
+    fn ellib(&self, x: f32, y: f32, w: f32, h: f32, col: pyxel::Color) {
         unsafe { &mut *self.inner }.draw_ellipse_border(x, y, w, h, col);
     }
 
-    pub fn tri(&self, x1: f32, y1: f32, x2: f32, y2: f32, x3: f32, y3: f32, col: pyxel::Color) {
+    fn tri(&self, x1: f32, y1: f32, x2: f32, y2: f32, x3: f32, y3: f32, col: pyxel::Color) {
         unsafe { &mut *self.inner }.draw_triangle(x1, y1, x2, y2, x3, y3, col);
     }
 
-    pub fn trib(&self, x1: f32, y1: f32, x2: f32, y2: f32, x3: f32, y3: f32, col: pyxel::Color) {
+    fn trib(&self, x1: f32, y1: f32, x2: f32, y2: f32, x3: f32, y3: f32, col: pyxel::Color) {
         unsafe { &mut *self.inner }.draw_triangle_border(x1, y1, x2, y2, x3, y3, col);
     }
 
-    pub fn fill(&self, x: f32, y: f32, col: pyxel::Color) {
+    fn fill(&self, x: f32, y: f32, col: pyxel::Color) {
         unsafe { &mut *self.inner }.flood_fill(x, y, col);
     }
 
     #[pyo3(signature = (x, y, img, u, v, w, h, colkey=None, rotate=None, scale=None))]
-    pub fn blt(
+    fn blt(
         &self,
         x: f32,
         y: f32,
@@ -219,7 +213,7 @@ impl Image {
     }
 
     #[pyo3(signature = (x, y, tm, u, v, w, h, colkey=None, rotate=None, scale=None))]
-    pub fn bltm(
+    fn bltm(
         &self,
         x: f32,
         y: f32,
@@ -245,7 +239,7 @@ impl Image {
     }
 
     #[pyo3(signature = (x, y, w, h, img, pos, rot, fov=None, colkey=None))]
-    pub fn blt3d(
+    fn blt3d(
         &self,
         x: f32,
         y: f32,
@@ -270,7 +264,7 @@ impl Image {
     }
 
     #[pyo3(signature = (x, y, w, h, tm, pos, rot, fov=None, colkey=None))]
-    pub fn bltm3d(
+    fn bltm3d(
         &self,
         x: f32,
         y: f32,
@@ -295,7 +289,7 @@ impl Image {
     }
 
     #[pyo3(signature = (x, y, s, col, font=None))]
-    pub fn text(&self, x: f32, y: f32, s: &str, col: pyxel::Color, font: Option<Font>) {
+    fn text(&self, x: f32, y: f32, s: &str, col: pyxel::Color, font: Option<Font>) {
         let font = font.map(|f| f.inner);
         unsafe { &mut *self.inner }.draw_text(x, y, s, col, font);
     }

@@ -306,20 +306,20 @@ macro_rules! impl_python_sequence_write {
                 $from_list(&self.inner, lst);
             }
 
-            pub fn append(&self, value: $set_type) {
+            fn append(&self, value: $set_type) {
                 let mut lst = $to_list(&self.inner);
                 lst.push(value);
                 $from_list(&self.inner, lst);
             }
 
-            pub fn extend(&self, values: Vec<$set_type>) {
+            fn extend(&self, values: Vec<$set_type>) {
                 let mut lst = $to_list(&self.inner);
                 lst.extend(values);
                 $from_list(&self.inner, lst);
             }
 
             #[pyo3(signature = (index, value))]
-            pub fn insert(&self, index: isize, value: $set_type) {
+            fn insert(&self, index: isize, value: $set_type) {
                 let mut lst = $to_list(&self.inner);
                 let len = lst.len();
                 let i = if index < 0 {
@@ -335,7 +335,7 @@ macro_rules! impl_python_sequence_write {
             }
 
             #[pyo3(signature = (index=None))]
-            pub fn pop(&self, index: Option<isize>) -> pyo3::PyResult<$get_type> {
+            fn pop(&self, index: Option<isize>) -> pyo3::PyResult<$get_type> {
                 let mut lst = $to_list(&self.inner);
                 let len = lst.len();
                 if len == 0 {
@@ -350,11 +350,11 @@ macro_rules! impl_python_sequence_write {
                 Ok(value)
             }
 
-            pub fn clear(&self) {
+            fn clear(&self) {
                 $from_list(&self.inner, Vec::new());
             }
 
-            pub fn from_list(&self, lst: $list_type) -> pyo3::PyResult<()> {
+            fn from_list(&self, lst: $list_type) -> pyo3::PyResult<()> {
                 static ONCE: std::sync::Once = std::sync::Once::new();
                 ONCE.call_once(|| {
                     println!(
@@ -366,7 +366,7 @@ macro_rules! impl_python_sequence_write {
                 Ok(())
             }
 
-            pub fn to_list(&self, py: pyo3::Python) -> pyo3::PyResult<pyo3::Py<pyo3::PyAny>> {
+            fn to_list(&self, py: pyo3::Python) -> pyo3::PyResult<pyo3::Py<pyo3::PyAny>> {
                 static ONCE: std::sync::Once = std::sync::Once::new();
                 ONCE.call_once(|| {
                     println!(

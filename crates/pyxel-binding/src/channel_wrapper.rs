@@ -25,32 +25,32 @@ impl Channel {
 #[pymethods]
 impl Channel {
     #[new]
-    pub fn new() -> Self {
+    fn new() -> Self {
         Self::wrap(pyxel::Channel::new())
     }
 
     #[getter]
-    pub fn get_gain(&self) -> pyxel::ChannelGain {
+    fn get_gain(&self) -> pyxel::ChannelGain {
         unsafe { &*self.inner }.gain
     }
 
     #[setter]
-    pub fn set_gain(&self, gain: pyxel::ChannelGain) {
+    fn set_gain(&self, gain: pyxel::ChannelGain) {
         unsafe { &mut *self.inner }.gain = gain;
     }
 
     #[getter]
-    pub fn get_detune(&self) -> pyxel::ChannelDetune {
+    fn get_detune(&self) -> pyxel::ChannelDetune {
         unsafe { &*self.inner }.detune
     }
 
     #[setter]
-    pub fn set_detune(&self, detune: pyxel::ChannelDetune) {
+    fn set_detune(&self, detune: pyxel::ChannelDetune) {
         unsafe { &mut *self.inner }.detune = detune;
     }
 
     #[pyo3(signature = (snd, sec=None, r#loop=None, resume=None, tick=None))]
-    pub fn play(
+    fn play(
         &self,
         snd: Bound<'_, PyAny>,
         sec: Option<f32>,
@@ -102,11 +102,11 @@ impl Channel {
         Ok(())
     }
 
-    pub fn stop(&mut self) {
+    fn stop(&mut self) {
         unsafe { &mut *self.inner }.stop();
     }
 
-    pub fn play_pos(&self) -> Option<(u32, f32)> {
+    fn play_pos(&self) -> Option<(u32, f32)> {
         unsafe { &mut *self.inner }.play_position()
     }
 }
