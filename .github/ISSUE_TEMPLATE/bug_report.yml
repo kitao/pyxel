@@ -1,0 +1,38 @@
+name: "Bug Report / バグ報告"
+description: "Report a bug / バグを報告する"
+labels: ["bug"]
+body:
+  - type: input
+    id: environment
+    attributes:
+      label: "OS and browser / OSとブラウザ"
+      placeholder: "e.g. Windows 11 / macOS 15, Chrome 130 / Android 15, Firefox"
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: "Pyxel Version / Pyxelバージョン"
+      placeholder: "e.g. 2.8.7"
+    validations:
+      required: true
+  - type: input
+    id: python
+    attributes:
+      label: "Python Version / Pythonバージョン"
+      placeholder: "e.g. 3.12.0 (N/A for web)"
+    validations:
+      required: false
+  - type: textarea
+    id: description
+    attributes:
+      label: "What happened? / 何が起きましたか？"
+      description: "Steps to reproduce and expected behavior / 再現手順と期待する動作"
+    validations:
+      required: true
+  - type: textarea
+    id: additional
+    attributes:
+      label: "Screenshots or code / スクリーンショットやコード"
+    validations:
+      required: false

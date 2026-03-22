@@ -1,0 +1,55 @@
+title: "[Creation] "
+labels: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Share your Pyxel creation! Items marked with * are required.
+        Pyxelで作った作品を共有してください！ * が付いた項目は必須です。
+
+        - Title* / 作品タイトル*
+        - Screenshot or GIF* / スクリーンショットまたはGIFアニメ*
+        - URL (optional / 任意)
+        - Description* / 作品の説明*
+        - Your name* / あなたの名前*
+        - Contact (optional / 任意) / 連絡先（任意）
+  - type: input
+    id: title
+    attributes:
+      label: "Title / 作品タイトル"
+    validations:
+      required: true
+  - type: textarea
+    id: screenshot
+    attributes:
+      label: "Screenshot or GIF / スクリーンショットまたはGIFアニメ"
+      description: "Alt(Option)+2 to record, Alt(Option)+3 to save / Alt(Option)+2で録画開始、Alt(Option)+3で保存"
+    validations:
+      required: true
+  - type: input
+    id: url
+    attributes:
+      label: "URL"
+      description: "GitHub repo, itch.io, etc."
+    validations:
+      required: false
+  - type: textarea
+    id: description
+    attributes:
+      label: "Description / 作品の説明"
+      placeholder: "e.g. Side-scrolling platform game / 横スクロールプラットフォームゲーム"
+    validations:
+      required: true
+  - type: input
+    id: author
+    attributes:
+      label: "Your name / あなたの名前"
+    validations:
+      required: true
+  - type: input
+    id: contact
+    attributes:
+      label: "Contact / 連絡先"
+      description: "Email, GitHub, or X account (optional) / メール、GitHub、Xアカウント（任意）"
+    validations:
+      required: false

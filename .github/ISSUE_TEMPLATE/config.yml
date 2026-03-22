@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: "Share Your Creations / 作品を共有する"
+    url: https://github.com/kitao/pyxel/discussions/categories/show-and-tell
+    about: "Show your Pyxel games and apps / Pyxelで作った作品を投稿する"
