@@ -14,7 +14,7 @@ body:
         - Your name* / あなたの名前*
         - Contact / 連絡先
         - GIF* / GIFアニメ*
-  - type: textarea
+  - type: input
     id: description
     attributes:
       label: "Description / 作品の説明"
