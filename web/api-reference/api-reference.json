@@ -965,18 +965,18 @@
               "name": "filename",
               "type": "str",
               "desc": {
-                "en": "Resource file path",
-                "cn": "资源文件路径",
-                "de": "Ressourcendateipfad",
-                "es": "Ruta del archivo de recursos",
-                "fr": "Chemin du fichier de ressources",
-                "it": "Percorso del file di risorse",
-                "ja": "リソースファイルのパス",
-                "ko": "리소스 파일 경로",
-                "pt": "Caminho do arquivo de recursos",
-                "ru": "Путь к файлу ресурсов",
-                "tr": "Kaynak dosya yolu",
-                "uk": "Шлях до файлу ресурсів"
+                "en": "Resource file name",
+                "cn": "资源文件名",
+                "de": "Ressourcendateiname",
+                "es": "Nombre del archivo de recursos",
+                "fr": "Nom du fichier de ressources",
+                "it": "Nome del file di risorse",
+                "ja": "リソースファイル名",
+                "ko": "리소스 파일명",
+                "pt": "Nome do arquivo de recursos",
+                "ru": "Имя файла ресурсов",
+                "tr": "Kaynak dosya adı",
+                "uk": "Ім'я файлу ресурсів"
               }
             },
             {
@@ -1172,18 +1172,18 @@
               "name": "filename",
               "type": "str",
               "desc": {
-                "en": "Resource file path",
-                "cn": "资源文件路径",
-                "de": "Ressourcendateipfad",
-                "es": "Ruta del archivo de recursos",
-                "fr": "Chemin du fichier de ressources",
-                "it": "Percorso del file di risorse",
-                "ja": "リソースファイルのパス",
-                "ko": "리소스 파일 경로",
-                "pt": "Caminho do arquivo de recursos",
-                "ru": "Путь к файлу ресурсов",
-                "tr": "Kaynak dosya yolu",
-                "uk": "Шлях до файлу ресурсів"
+                "en": "Resource file name",
+                "cn": "资源文件名",
+                "de": "Ressourcendateiname",
+                "es": "Nombre del archivo de recursos",
+                "fr": "Nom du fichier de ressources",
+                "it": "Nome del file di risorse",
+                "ja": "リソースファイル名",
+                "ko": "리소스 파일명",
+                "pt": "Nome do arquivo de recursos",
+                "ru": "Имя файла ресурсов",
+                "tr": "Kaynak dosya adı",
+                "uk": "Ім'я файлу ресурсів"
               }
             },
             {
@@ -1267,7 +1267,7 @@
         {
           "name": "screenshot",
           "type": "function",
-          "signature": "screenshot(scale=2)",
+          "signature": "screenshot(filename=None, scale=None)",
           "description": {
             "en": "Take a screenshot.",
             "cn": "截取屏幕截图。",
@@ -1284,21 +1284,39 @@
           },
           "params": [
             {
-              "name": "scale",
-              "type": "int",
+              "name": "filename",
+              "type": "str/None",
               "desc": {
-                "en": "Scale factor. Defaults to 2.",
-                "cn": "缩放倍率。默认为 2。",
-                "de": "Skalierungsfaktor. Standard ist 2.",
-                "es": "Factor de escala. Por defecto es 2.",
-                "fr": "Facteur d'échelle. Par défaut : 2.",
-                "it": "Fattore di scala. Il valore predefinito è 2.",
-                "ja": "倍率。デフォルトは 2。",
-                "ko": "배율. 기본값은 2.",
-                "pt": "Fator de escala. O padrão é 2.",
-                "ru": "Масштаб. По умолчанию 2.",
-                "tr": "Ölçek faktörü. Varsayılan 2.",
-                "uk": "Масштаб. За замовчуванням 2."
+                "en": "File name. If omitted, saved to desktop.",
+                "cn": "文件名。省略时保存到桌面。",
+                "de": "Dateiname. Wird auf dem Desktop gespeichert, wenn weggelassen.",
+                "es": "Nombre del archivo. Si se omite, se guarda en el escritorio.",
+                "fr": "Nom du fichier. Si omis, sauvegardé sur le bureau.",
+                "it": "Nome del file. Se omesso, salvato sul desktop.",
+                "ja": "ファイル名。省略時はデスクトップに保存される。",
+                "ko": "파일명. 생략 시 데스크톱에 저장된다.",
+                "pt": "Nome do arquivo. Se omitido, salvo na área de trabalho.",
+                "ru": "Имя файла. Если не указано, сохраняется на рабочий стол.",
+                "tr": "Dosya adı. Belirtilmezse masaüstüne kaydedilir.",
+                "uk": "Ім'я файлу. Якщо не вказано, зберігається на робочий стіл."
+              }
+            },
+            {
+              "name": "scale",
+              "type": "int/None",
+              "desc": {
+                "en": "Scale factor. Defaults to capture_scale.",
+                "cn": "缩放倍率。默认为 capture_scale。",
+                "de": "Skalierungsfaktor. Standard ist capture_scale.",
+                "es": "Factor de escala. Por defecto es capture_scale.",
+                "fr": "Facteur d'échelle. Par défaut : capture_scale.",
+                "it": "Fattore di scala. Il valore predefinito è capture_scale.",
+                "ja": "倍率。デフォルトは capture_scale。",
+                "ko": "배율. 기본값은 capture_scale.",
+                "pt": "Fator de escala. O padrão é capture_scale.",
+                "ru": "Масштаб. По умолчанию capture_scale.",
+                "tr": "Ölçek faktörü. Varsayılan capture_scale.",
+                "uk": "Масштаб. За замовчуванням capture_scale."
               }
             }
           ],
@@ -1310,7 +1328,7 @@
         {
           "name": "screencast",
           "type": "function",
-          "signature": "screencast(scale=2)",
+          "signature": "screencast(filename=None, scale=None)",
           "description": {
             "en": "Save the screen recording as a GIF file.",
             "cn": "保存屏幕录制为GIF文件。",
@@ -1327,21 +1345,39 @@
           },
           "params": [
             {
-              "name": "scale",
-              "type": "int",
+              "name": "filename",
+              "type": "str/None",
               "desc": {
-                "en": "Scale factor. Defaults to 2.",
-                "cn": "缩放倍率。默认为 2。",
-                "de": "Skalierungsfaktor. Standard ist 2.",
-                "es": "Factor de escala. Por defecto es 2.",
-                "fr": "Facteur d'échelle. Par défaut : 2.",
-                "it": "Fattore di scala. Il valore predefinito è 2.",
-                "ja": "倍率。デフォルトは 2。",
-                "ko": "배율. 기본값은 2.",
-                "pt": "Fator de escala. O padrão é 2.",
-                "ru": "Масштаб. По умолчанию 2.",
-                "tr": "Ölçek faktörü. Varsayılan 2.",
-                "uk": "Масштаб. За замовчуванням 2."
+                "en": "File name. If omitted, saved to desktop.",
+                "cn": "文件名。省略时保存到桌面。",
+                "de": "Dateiname. Wird auf dem Desktop gespeichert, wenn weggelassen.",
+                "es": "Nombre del archivo. Si se omite, se guarda en el escritorio.",
+                "fr": "Nom du fichier. Si omis, sauvegardé sur le bureau.",
+                "it": "Nome del file. Se omesso, salvato sul desktop.",
+                "ja": "ファイル名。省略時はデスクトップに保存される。",
+                "ko": "파일명. 생략 시 데스크톱에 저장된다.",
+                "pt": "Nome do arquivo. Se omitido, salvo na área de trabalho.",
+                "ru": "Имя файла. Если не указано, сохраняется на рабочий стол.",
+                "tr": "Dosya adı. Belirtilmezse masaüstüne kaydedilir.",
+                "uk": "Ім'я файлу. Якщо не вказано, зберігається на робочий стіл."
+              }
+            },
+            {
+              "name": "scale",
+              "type": "int/None",
+              "desc": {
+                "en": "Scale factor. Defaults to capture_scale.",
+                "cn": "缩放倍率。默认为 capture_scale。",
+                "de": "Skalierungsfaktor. Standard ist capture_scale.",
+                "es": "Factor de escala. Por defecto es capture_scale.",
+                "fr": "Facteur d'échelle. Par défaut : capture_scale.",
+                "it": "Fattore di scala. Il valore predefinito è capture_scale.",
+                "ja": "倍率。デフォルトは capture_scale。",
+                "ko": "배율. 기본값은 capture_scale.",
+                "pt": "Fator de escala. O padrão é capture_scale.",
+                "ru": "Масштаб. По умолчанию capture_scale.",
+                "tr": "Ölçek faktörü. Varsayılan capture_scale.",
+                "uk": "Масштаб. За замовчуванням capture_scale."
               }
             }
           ],
@@ -1396,18 +1432,18 @@
               "name": "filename",
               "type": "str",
               "desc": {
-                "en": "Palette file path",
-                "cn": "调色板文件路径",
-                "de": "Palettendateipfad",
-                "es": "Ruta del archivo de paleta",
-                "fr": "Chemin du fichier de palette",
-                "it": "Percorso del file tavolozza",
-                "ja": "パレットファイルのパス",
-                "ko": "팔레트 파일 경로",
-                "pt": "Caminho do arquivo de paleta",
-                "ru": "Путь к файлу палитры",
-                "tr": "Palet dosyası yolu",
-                "uk": "Шлях до файлу палітри"
+                "en": "Palette file name",
+                "cn": "调色板文件名",
+                "de": "Palettendateiname",
+                "es": "Nombre del archivo de paleta",
+                "fr": "Nom du fichier de palette",
+                "it": "Nome del file tavolozza",
+                "ja": "パレットファイル名",
+                "ko": "팔레트 파일명",
+                "pt": "Nome do arquivo de paleta",
+                "ru": "Имя файла палитры",
+                "tr": "Palet dosya adı",
+                "uk": "Ім'я файлу палітри"
               }
             }
           ],
@@ -1439,18 +1475,18 @@
               "name": "filename",
               "type": "str",
               "desc": {
-                "en": "Palette file path",
-                "cn": "调色板文件路径",
-                "de": "Palettendateipfad",
-                "es": "Ruta del archivo de paleta",
-                "fr": "Chemin du fichier de palette",
-                "it": "Percorso del file tavolozza",
-                "ja": "パレットファイルのパス",
-                "ko": "팔레트 파일 경로",
-                "pt": "Caminho do arquivo de paleta",
-                "ru": "Путь к файлу палитры",
-                "tr": "Palet dosyası yolu",
-                "uk": "Шлях до файлу палітри"
+                "en": "Palette file name",
+                "cn": "调色板文件名",
+                "de": "Palettendateiname",
+                "es": "Nombre del archivo de paleta",
+                "fr": "Nom du fichier de palette",
+                "it": "Nome del file tavolozza",
+                "ja": "パレットファイル名",
+                "ko": "팔레트 파일명",
+                "pt": "Nome do arquivo de paleta",
+                "ru": "Имя файла палитры",
+                "tr": "Palet dosya adı",
+                "uk": "Ім'я файлу палітри"
               }
             }
           ],
@@ -7511,18 +7547,18 @@
               "name": "filename",
               "type": "str",
               "desc": {
-                "en": "Font file path (BDF/OTF/TTF/TTC)",
-                "cn": "字体文件路径 (BDF/OTF/TTF/TTC)",
-                "de": "Schriftdateipfad (BDF/OTF/TTF/TTC)",
-                "es": "Ruta del archivo de fuente (BDF/OTF/TTF/TTC)",
-                "fr": "Chemin du fichier de police (BDF/OTF/TTF/TTC)",
-                "it": "Percorso file font (BDF/OTF/TTF/TTC)",
-                "ja": "フォントファイルのパス (BDF/OTF/TTF/TTC)",
-                "ko": "폰트 파일 경로 (BDF/OTF/TTF/TTC)",
-                "pt": "Caminho do arquivo de fonte (BDF/OTF/TTF/TTC)",
-                "ru": "Путь к файлу шрифта (BDF/OTF/TTF/TTC)",
-                "tr": "Yazı tipi dosya yolu (BDF/OTF/TTF/TTC)",
-                "uk": "Шлях до файлу шрифту (BDF/OTF/TTF/TTC)"
+                "en": "Font file name (BDF/OTF/TTF/TTC)",
+                "cn": "字体文件名 (BDF/OTF/TTF/TTC)",
+                "de": "Schriftdateiname (BDF/OTF/TTF/TTC)",
+                "es": "Nombre del archivo de fuente (BDF/OTF/TTF/TTC)",
+                "fr": "Nom du fichier de police (BDF/OTF/TTF/TTC)",
+                "it": "Nome file font (BDF/OTF/TTF/TTC)",
+                "ja": "フォントファイル名 (BDF/OTF/TTF/TTC)",
+                "ko": "폰트 파일명 (BDF/OTF/TTF/TTC)",
+                "pt": "Nome do arquivo de fonte (BDF/OTF/TTF/TTC)",
+                "ru": "Имя файла шрифта (BDF/OTF/TTF/TTC)",
+                "tr": "Yazı tipi dosya adı (BDF/OTF/TTF/TTC)",
+                "uk": "Ім'я файлу шрифту (BDF/OTF/TTF/TTC)"
               }
             },
             {
@@ -7755,18 +7791,18 @@
               "name": "filename",
               "type": "str",
               "desc": {
-                "en": "Image file path",
-                "cn": "图像文件路径",
-                "de": "Bilddateipfad",
-                "es": "Ruta del archivo de imagen",
-                "fr": "Chemin du fichier image",
-                "it": "Percorso del file immagine",
-                "ja": "画像ファイルのパス",
-                "ko": "이미지 파일 경로",
-                "pt": "Caminho do arquivo de imagem",
-                "ru": "Путь к файлу изображения",
-                "tr": "Görüntü dosyası yolu",
-                "uk": "Шлях до файлу зображення"
+                "en": "Image file name",
+                "cn": "图像文件名",
+                "de": "Bilddateiname",
+                "es": "Nombre del archivo de imagen",
+                "fr": "Nom du fichier image",
+                "it": "Nome del file immagine",
+                "ja": "画像ファイル名",
+                "ko": "이미지 파일명",
+                "pt": "Nome do arquivo de imagem",
+                "ru": "Имя файла изображения",
+                "tr": "Görüntü dosya adı",
+                "uk": "Ім'я файлу зображення"
               }
             },
             {
@@ -7976,18 +8012,18 @@
               "name": "filename",
               "type": "str",
               "desc": {
-                "en": "Image file path (PNG/GIF/JPEG)",
-                "cn": "图像文件路径 (PNG/GIF/JPEG)",
-                "de": "Bilddateipfad (PNG/GIF/JPEG)",
-                "es": "Ruta del archivo de imagen (PNG/GIF/JPEG)",
-                "fr": "Chemin du fichier image (PNG/GIF/JPEG)",
-                "it": "Percorso del file immagine (PNG/GIF/JPEG)",
-                "ja": "画像ファイルのパス (PNG/GIF/JPEG)",
-                "ko": "이미지 파일 경로 (PNG/GIF/JPEG)",
-                "pt": "Caminho do arquivo de imagem (PNG/GIF/JPEG)",
-                "ru": "Путь к файлу изображения (PNG/GIF/JPEG)",
-                "tr": "Görüntü dosyası yolu (PNG/GIF/JPEG)",
-                "uk": "Шлях до файлу зображення (PNG/GIF/JPEG)"
+                "en": "Image file name (PNG/GIF/JPEG)",
+                "cn": "图像文件名 (PNG/GIF/JPEG)",
+                "de": "Bilddateiname (PNG/GIF/JPEG)",
+                "es": "Nombre del archivo de imagen (PNG/GIF/JPEG)",
+                "fr": "Nom du fichier image (PNG/GIF/JPEG)",
+                "it": "Nome del file immagine (PNG/GIF/JPEG)",
+                "ja": "画像ファイル名 (PNG/GIF/JPEG)",
+                "ko": "이미지 파일명 (PNG/GIF/JPEG)",
+                "pt": "Nome do arquivo de imagem (PNG/GIF/JPEG)",
+                "ru": "Имя файла изображения (PNG/GIF/JPEG)",
+                "tr": "Görüntü dosya adı (PNG/GIF/JPEG)",
+                "uk": "Ім'я файлу зображення (PNG/GIF/JPEG)"
               }
             },
             {
@@ -8244,18 +8280,18 @@
               "name": "filename",
               "type": "str",
               "desc": {
-                "en": "Output file path",
-                "cn": "输出文件路径",
-                "de": "Ausgabedateipfad",
-                "es": "Ruta del archivo de salida",
-                "fr": "Chemin du fichier de sortie",
-                "it": "Percorso del file di output",
-                "ja": "出力ファイルのパス",
-                "ko": "출력 파일 경로",
-                "pt": "Caminho do arquivo de saída",
-                "ru": "Путь к выходному файлу",
-                "tr": "Çıktı dosyası yolu",
-                "uk": "Шлях до вихідного файлу"
+                "en": "Output file name",
+                "cn": "输出文件名",
+                "de": "Ausgabedateiname",
+                "es": "Nombre del archivo de salida",
+                "fr": "Nom du fichier de sortie",
+                "it": "Nome del file di output",
+                "ja": "出力ファイル名",
+                "ko": "출력 파일명",
+                "pt": "Nome do arquivo de saída",
+                "ru": "Имя выходного файла",
+                "tr": "Çıktı dosya adı",
+                "uk": "Ім'я вихідного файлу"
               }
             },
             {
@@ -8435,18 +8471,18 @@
               "name": "filename",
               "type": "str",
               "desc": {
-                "en": "TMX file path",
-                "cn": "TMX文件路径",
-                "de": "TMX-Dateipfad",
-                "es": "Ruta del archivo TMX",
-                "fr": "Chemin du fichier TMX",
-                "it": "Percorso del file TMX",
-                "ja": "TMXファイルのパス",
-                "ko": "TMX 파일 경로",
-                "pt": "Caminho do arquivo TMX",
-                "ru": "Путь к файлу TMX",
-                "tr": "TMX dosya yolu",
-                "uk": "Шлях до файлу TMX"
+                "en": "TMX file name",
+                "cn": "TMX文件名",
+                "de": "TMX-Dateiname",
+                "es": "Nombre del archivo TMX",
+                "fr": "Nom du fichier TMX",
+                "it": "Nome del file TMX",
+                "ja": "TMXファイル名",
+                "ko": "TMX 파일명",
+                "pt": "Nome do arquivo TMX",
+                "ru": "Имя файла TMX",
+                "tr": "TMX dosya adı",
+                "uk": "Ім'я файлу TMX"
               }
             },
             {
@@ -8677,18 +8713,18 @@
               "name": "filename",
               "type": "str",
               "desc": {
-                "en": "TMX file path",
-                "cn": "TMX文件路径",
-                "de": "TMX-Dateipfad",
-                "es": "Ruta del archivo TMX",
-                "fr": "Chemin du fichier TMX",
-                "it": "Percorso del file TMX",
-                "ja": "TMXファイルのパス",
-                "ko": "TMX 파일 경로",
-                "pt": "Caminho do arquivo TMX",
-                "ru": "Путь к файлу TMX",
-                "tr": "TMX dosya yolu",
-                "uk": "Шлях до файлу TMX"
+                "en": "TMX file name",
+                "cn": "TMX文件名",
+                "de": "TMX-Dateiname",
+                "es": "Nombre del archivo TMX",
+                "fr": "Nom du fichier TMX",
+                "it": "Nome del file TMX",
+                "ja": "TMXファイル名",
+                "ko": "TMX 파일명",
+                "pt": "Nome do arquivo TMX",
+                "ru": "Имя файла TMX",
+                "tr": "TMX dosya adı",
+                "uk": "Ім'я файлу TMX"
               }
             },
             {
@@ -9647,18 +9683,18 @@
               "name": "filename",
               "type": "str",
               "desc": {
-                "en": "Audio file path (WAV/OGG)",
-                "cn": "音频文件路径 (WAV/OGG)",
-                "de": "Audiodateipfad (WAV/OGG)",
-                "es": "Ruta del archivo de audio (WAV/OGG)",
-                "fr": "Chemin du fichier audio (WAV/OGG)",
-                "it": "Percorso del file audio (WAV/OGG)",
-                "ja": "オーディオファイルパス (WAV/OGG)",
-                "ko": "오디오 파일 경로 (WAV/OGG)",
-                "pt": "Caminho do arquivo de áudio (WAV/OGG)",
-                "ru": "Путь к аудиофайлу (WAV/OGG)",
-                "tr": "Ses dosyası yolu (WAV/OGG)",
-                "uk": "Шлях до аудіофайлу (WAV/OGG)"
+                "en": "Audio file name (WAV/OGG)",
+                "cn": "音频文件名 (WAV/OGG)",
+                "de": "Audiodateiname (WAV/OGG)",
+                "es": "Nombre del archivo de audio (WAV/OGG)",
+                "fr": "Nom du fichier audio (WAV/OGG)",
+                "it": "Nome del file audio (WAV/OGG)",
+                "ja": "オーディオファイル名 (WAV/OGG)",
+                "ko": "오디오 파일명 (WAV/OGG)",
+                "pt": "Nome do arquivo de áudio (WAV/OGG)",
+                "ru": "Имя аудиофайла (WAV/OGG)",
+                "tr": "Ses dosya adı (WAV/OGG)",
+                "uk": "Ім'я аудіофайлу (WAV/OGG)"
               }
             }
           ]
@@ -9714,18 +9750,18 @@
               "name": "filename",
               "type": "str",
               "desc": {
-                "en": "Output WAV file path",
-                "cn": "输出WAV文件路径",
-                "de": "Ausgabe-WAV-Dateipfad",
-                "es": "Ruta del archivo WAV de salida",
-                "fr": "Chemin du fichier WAV de sortie",
-                "it": "Percorso file WAV di output",
-                "ja": "出力WAVファイルのパス",
-                "ko": "출력 WAV 파일 경로",
-                "pt": "Caminho do arquivo WAV de saída",
-                "ru": "Путь к выходному WAV-файлу",
-                "tr": "Çıktı WAV dosya yolu",
-                "uk": "Шлях до вихідного WAV-файлу"
+                "en": "Output WAV file name",
+                "cn": "输出WAV文件名",
+                "de": "Ausgabe-WAV-Dateiname",
+                "es": "Nombre del archivo WAV de salida",
+                "fr": "Nom du fichier WAV de sortie",
+                "it": "Nome file WAV di output",
+                "ja": "出力WAVファイル名",
+                "ko": "출력 WAV 파일명",
+                "pt": "Nome do arquivo WAV de saída",
+                "ru": "Имя выходного WAV-файла",
+                "tr": "Çıktı WAV dosya adı",
+                "uk": "Ім'я вихідного WAV-файлу"
               }
             },
             {
@@ -9953,18 +9989,18 @@
               "name": "filename",
               "type": "str",
               "desc": {
-                "en": "Output WAV file path",
-                "cn": "输出WAV文件路径",
-                "de": "Ausgabe-WAV-Dateipfad",
-                "es": "Ruta del archivo WAV de salida",
-                "fr": "Chemin du fichier WAV de sortie",
-                "it": "Percorso file WAV di output",
-                "ja": "出力WAVファイルのパス",
-                "ko": "출력 WAV 파일 경로",
-                "pt": "Caminho do arquivo WAV de saída",
-                "ru": "Путь к выходному WAV-файлу",
-                "tr": "Çıktı WAV dosya yolu",
-                "uk": "Шлях до вихідного WAV-файлу"
+                "en": "Output WAV file name",
+                "cn": "输出WAV文件名",
+                "de": "Ausgabe-WAV-Dateiname",
+                "es": "Nombre del archivo WAV de salida",
+                "fr": "Nom du fichier WAV de sortie",
+                "it": "Nome file WAV di output",
+                "ja": "出力WAVファイル名",
+                "ko": "출력 WAV 파일명",
+                "pt": "Nome do arquivo WAV de saída",
+                "ru": "Имя выходного WAV-файла",
+                "tr": "Çıktı WAV dosya adı",
+                "uk": "Ім'я вихідного WAV-файлу"
               }
             },
             {

@@ -307,7 +307,7 @@ impl Pyxel {
                 }
             } else if self.is_button_pressed(KEY_1, None, None) {
                 self.reset_key(KEY_1);
-                if let Err(e) = self.take_screenshot(None) {
+                if let Err(e) = self.take_screenshot(None, None) {
                     println!("{e}");
                 }
             } else if self.is_button_pressed(KEY_2, None, None) {
@@ -315,7 +315,7 @@ impl Pyxel {
                 self.reset_screencast();
             } else if self.is_button_pressed(KEY_3, None, None) {
                 self.reset_key(KEY_3);
-                if let Err(e) = self.save_screencast(None) {
+                if let Err(e) = self.save_screencast(None, None) {
                     println!("{e}");
                 }
             } else if self.is_button_pressed(KEY_8, None, None) {

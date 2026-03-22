@@ -162,8 +162,15 @@ impl Pyxel {
         Ok(())
     }
 
-    pub fn take_screenshot(&mut self, scale: Option<u32>) -> Result<(), String> {
-        let filename = Self::prepend_desktop_path(&format!("pyxel-{}", Self::datetime_string()));
+    pub fn take_screenshot(
+        &mut self,
+        filename: Option<&str>,
+        scale: Option<u32>,
+    ) -> Result<(), String> {
+        let filename = filename.map_or_else(
+            || Self::prepend_desktop_path(&format!("pyxel-{}", Self::datetime_string())),
+            str::to_string,
+        );
         let scale = scale.unwrap_or(self.resource.capture_scale).max(1);
         pyxel::screen().save(&filename, scale)?;
 
@@ -171,8 +178,15 @@ impl Pyxel {
         Ok(())
     }
 
-    pub fn save_screencast(&mut self, scale: Option<u32>) -> Result<(), String> {
-        let filename = Self::prepend_desktop_path(&format!("pyxel-{}", Self::datetime_string()));
+    pub fn save_screencast(
+        &mut self,
+        filename: Option<&str>,
+        scale: Option<u32>,
+    ) -> Result<(), String> {
+        let filename = filename.map_or_else(
+            || Self::prepend_desktop_path(&format!("pyxel-{}", Self::datetime_string())),
+            str::to_string,
+        );
         let scale = scale.unwrap_or(self.resource.capture_scale).max(1);
         self.resource.screencast.save(&filename, scale)?;
 
