@@ -1540,7 +1540,7 @@ def save_pal(filename: str) -> None:
     """
     ...
 
-def screenshot(scale: int = 2) -> None:
+def screenshot(filename: Optional[str] = None, scale: int = 2) -> None:
     """Take a screenshot.
 
     Args:
@@ -1549,7 +1549,7 @@ def screenshot(scale: int = 2) -> None:
     """
     ...
 
-def screencast(scale: int = 2) -> None:
+def screencast(filename: Optional[str] = None, scale: int = 2) -> None:
     """Save the screen recording as a GIF file.
 
     Args:

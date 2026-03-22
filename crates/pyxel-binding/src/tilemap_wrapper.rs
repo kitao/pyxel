@@ -92,7 +92,7 @@ impl Tilemap {
         Ok(array.unbind())
     }
 
-    pub fn set(&mut self, x: i32, y: i32, data: Vec<String>) {
+    pub fn set(&self, x: i32, y: i32, data: Vec<String>) {
         let data_refs: Vec<_> = data.iter().map(String::as_str).collect();
         unsafe { &mut *self.inner }.set(x, y, &data_refs);
     }

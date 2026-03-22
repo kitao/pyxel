@@ -125,7 +125,7 @@ impl Image {
     }
 
     #[pyo3(signature = (col1=None, col2=None))]
-    fn pal(&self, col1: Option<pyxel::Color>, col2: Option<pyxel::Color>) -> PyResult<()> {
+    pub fn pal(&self, col1: Option<pyxel::Color>, col2: Option<pyxel::Color>) -> PyResult<()> {
         if let (Some(col1), Some(col2)) = (col1, col2) {
             unsafe { &mut *self.inner }.map_color(col1, col2);
         } else if (col1, col2) == (None, None) {
@@ -136,7 +136,7 @@ impl Image {
         Ok(())
     }
 
-    fn dither(&self, alpha: f32) {
+    pub fn dither(&self, alpha: f32) {
         unsafe { &mut *self.inner }.set_dithering(alpha);
     }
 
