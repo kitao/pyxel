@@ -39,6 +39,6 @@ body:
     id: gif
     attributes:
       label: "Screen Capture GIF / 画面キャプチャGIF"
-      description: "In your Pyxel app, press Alt(Option)+2 to start recording and Alt(Option)+3 to save as GIF. Drag & drop the saved file here. Max 2MB. / Pyxelアプリの実行中に Alt(Option)+2 で録画開始、Alt(Option)+3 でGIFとして保存できます。保存したファイルをここにドラッグ&ドロップしてください。最大2MB。"
+      description: "In your Pyxel app, press Alt(Option)+2 to start recording and Alt(Option)+3 to save as GIF. Drag & drop the saved file here. Preferably under 3MB. / Pyxelアプリの実行中に Alt(Option)+2 で録画開始、Alt(Option)+3 でGIFとして保存できます。保存したファイルをここにドラッグ&ドロップしてください。目安3MB以下。"
     validations:
       required: true
