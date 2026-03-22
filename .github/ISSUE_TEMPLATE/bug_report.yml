@@ -7,7 +7,7 @@ body:
     attributes:
       label: "What happened? / 何が起きましたか？"
       description: "Steps to reproduce and expected behavior / 再現手順と期待する動作"
-      placeholder: "e.g. I ran `pyxel run game.py` but the window stays black. Expected to see my game."
+      placeholder: "e.g. I ran `pyxel run game.py` but the window stays black. / 例: `pyxel run game.py` を実行したが画面が真っ黒になる"
     validations:
       required: true
   - type: input
@@ -37,6 +37,6 @@ body:
   - type: textarea
     id: additional
     attributes:
-      label: "Screenshots or code / スクリーンショットやコード"
+      label: "Screenshots or code (optional) / スクリーンショットやコード（任意）"
     validations:
       required: false
