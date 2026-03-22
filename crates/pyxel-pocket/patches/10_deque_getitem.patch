@@ -1,0 +1,8 @@
+// Add __getitem__ and __setitem__ to deque class in the embedded Python source
+// Enables deque[0], deque[-1] etc.
+// Note: strings use \n and \" because the deque source is inside a C string literal
+
+@@@ FIND
+def __len__(self) -> int:\n        return (self._tail - self._head) % self._capacity\n\n    def __contains__
+@@@ REPLACE
+def __getitem__(self, i: int):\n        n = len(self)\n        if i < 0:\n            i += n\n        if i < 0 or i >= n:\n            raise IndexError(\"deque index out of range\")\n        return self._data[(self._head + i) % self._capacity]\n\n    def __setitem__(self, i: int, value):\n        n = len(self)\n        if i < 0:\n            i += n\n        if i < 0 or i >= n:\n            raise IndexError(\"deque index out of range\")\n        self._data[(self._head + i) % self._capacity] = value\n\n    def __len__(self) -> int:\n        return (self._tail - self._head) % self._capacity\n\n    def __contains__

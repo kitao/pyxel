@@ -26,6 +26,10 @@
 #       make clean-wasm build-wasm
 #       make clean-wasm test-wasm
 #
+# Pocket (PocketPy):
+#   - Lint: make lint-pocket
+#   - Build: make clean-pocket build-pocket
+#
 # Web pages:
 #   - Setup once: cd web && npm install
 #   - Build: make pages
@@ -94,7 +98,7 @@ endif
 .PHONY: \
 	all clean distclean update format lint build install test \
 	clean-wasm lint-wasm build-wasm start-test-server test-wasm \
-	pages
+	clean-pocket lint-pocket build-pocket pages
 
 all: build
 
@@ -156,6 +160,17 @@ start-test-server:
 	@$(SCRIPTS_DIR)/start_test_server
 
 test-wasm: build-wasm start-test-server
+
+clean-pocket:
+	@cd $(CRATES_DIR); cargo clean -p pyxel-pocket --target $(TARGET)
+
+lint-pocket:
+	@cd $(CRATES_DIR); cargo clippy -p pyxel-pocket $(CARGO_OPTS) $(CLIPPY_OPTS) || true
+
+build-pocket:
+	@cd $(CRATES_DIR); \
+		RUSTFLAGS="$(RUSTFLAGS)" \
+		cargo build -p pyxel-pocket $(CARGO_OPTS)
 
 pages:
 	@cd $(ROOT_DIR)/web && npx @tailwindcss/cli -i styles/input.css -o styles.css --minify

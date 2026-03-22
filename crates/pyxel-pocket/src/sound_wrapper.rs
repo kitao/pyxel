@@ -292,10 +292,8 @@ unsafe extern "C" fn sound_save_file(_argc: i32, argv: ffi::py_StackRef) -> bool
 unsafe extern "C" fn sound_pcm(_argc: i32, argv: ffi::py_StackRef) -> bool {
     if arg_is_none(argv, 1) {
         snd(argv).clear_pcm();
-    } else {
-        if let Err(e) = snd(argv).load_pcm(arg_str(argv, 1)) {
-            return raise_exc(&e);
-        }
+    } else if let Err(e) = snd(argv).load_pcm(arg_str(argv, 1)) {
+        return raise_exc(&e);
     }
     ret_none();
     true

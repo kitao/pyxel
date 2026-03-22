@@ -99,7 +99,8 @@ fn main() {
         .compile("pocketpy");
 
     // Generate Rust FFI bindings
-    let bindings = bindgen::Builder::default()
+    let target = env::var("TARGET").unwrap();
+    let mut builder = bindgen::Builder::default()
         .header(format!("{pocketpy_dir}/pocketpy.h"))
         .allowlist_function("py_.*")
         .allowlist_type("py_.*")
@@ -107,6 +108,23 @@ fn main() {
         .allowlist_function("KeyError|StopIteration|TypeError")
         .use_core()
         .generate_comments(false)
+        .clang_arg(format!("--target={target}"));
+
+    // Add sysroot for cross-compilation targets
+    if target.contains("emscripten") {
+        let output = Command::new("emcc")
+            .args(["--cflags"])
+            .output()
+            .expect("Failed to execute emcc");
+        let cflags = std::str::from_utf8(&output.stdout).unwrap();
+        for flag in cflags.split_whitespace() {
+            if flag.starts_with("-isystem") || flag.starts_with("--sysroot") {
+                builder = builder.clang_arg(flag);
+            }
+        }
+    }
+
+    let bindings = builder
         .generate()
         .expect("Failed to generate bindings");
 

@@ -52,6 +52,75 @@ pub fn initialize() {
         ffi::py_initialize();
     }
     register_pyxel_module();
+    register_compat_modules();
+}
+
+/// Register compatibility modules missing from PocketPy's standard library.
+fn register_compat_modules() {
+    // Register pathlib as a native module so `import pathlib` works
+    unsafe {
+        ffi::py_newmodule(c"pathlib".as_ptr());
+    }
+    exec(
+        r#"
+import os as _os
+
+class Path:
+    def __init__(self, *parts):
+        self._path = "/".join(str(p) for p in parts)
+    @property
+    def parent(self):
+        return Path(_os.path.dirname(self._path))
+    @property
+    def name(self):
+        return _os.path.basename(self._path)
+    @property
+    def stem(self):
+        n = self.name
+        i = n.rfind(".")
+        return n[:i] if i > 0 else n
+    @property
+    def suffix(self):
+        n = self.name
+        i = n.rfind(".")
+        return n[i:] if i > 0 else ""
+    def __truediv__(self, other):
+        return Path(self._path + "/" + str(other))
+    def __rtruediv__(self, other):
+        return Path(str(other) + "/" + self._path)
+    def resolve(self):
+        return Path(_os.path.abspath(self._path))
+    def exists(self):
+        return _os.path.exists(self._path)
+    def is_file(self):
+        return _os.path.isfile(self._path)
+    def is_dir(self):
+        return _os.path.isdir(self._path)
+    def iterdir(self):
+        return [Path(self._path + "/" + n) for n in _os.listdir(self._path)]
+    def glob(self, pattern):
+        results = []
+        for p in self.iterdir():
+            if p.name.endswith(pattern.replace("*", "")):
+                results.append(p)
+        return results
+    def __str__(self):
+        return self._path
+    def __repr__(self):
+        return "Path('" + self._path + "')"
+    def __eq__(self, other):
+        return str(self) == str(other)
+    def __ne__(self, other):
+        return str(self) != str(other)
+    def __hash__(self):
+        return hash(self._path)
+
+import pathlib as _pathlib
+_pathlib.Path = Path
+del _os, _pathlib, Path
+"#,
+        "<pathlib_compat>",
+    );
 }
 
 /// Finalize PocketPy VM.
