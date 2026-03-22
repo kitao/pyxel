@@ -1,4 +1,11 @@
+#!/usr/bin/env python3
+
+import pathlib
+
 import pyxel
+
+ROOT_DIR = pathlib.Path(__file__).resolve().parent.parent
+OUTPUT_DIR = ROOT_DIR / "wasm" / "images"
 
 BT1_W = 24
 BT1_L = 25
@@ -134,17 +141,17 @@ class App:
         if pyxel.btnp(pyxel.KEY_RETURN):
             cross_image = pyxel.Image(BT1_AREA_W, BT1_AREA_W)
             cross_image.blt(0, 0, pyxel.screen, BT1_AREA_X, 0, BT1_AREA_W, BT1_AREA_W)
-            cross_image.save(f"gamepad_cross_{BT1_AREA_W}x{BT1_AREA_W}.png", 1)
+            cross_image.save(str(OUTPUT_DIR / f"gamepad_cross_{BT1_AREA_W}x{BT1_AREA_W}.png"), 1)
 
             menu_image = pyxel.Image(BT2_AREA_W, BT2_AREA_H)
             menu_image.blt(
                 0, 0, pyxel.screen, BT2_AREA_X, BT2_AREA_Y, BT2_AREA_W, BT2_AREA_W
             )
-            menu_image.save(f"gamepad_menu_{BT2_AREA_W}x{BT2_AREA_H}.png", 1)
+            menu_image.save(str(OUTPUT_DIR / f"gamepad_menu_{BT2_AREA_W}x{BT2_AREA_H}.png"), 1)
 
             button_image = pyxel.Image(BT3_AREA_W, BT3_AREA_W)
             button_image.blt(0, 0, pyxel.screen, BT3_AREA_X, 0, BT3_AREA_W, BT3_AREA_W)
-            button_image.save(f"gamepad_button_{BT3_AREA_W}x{BT3_AREA_W}.png", 1)
+            button_image.save(str(OUTPUT_DIR / f"gamepad_button_{BT3_AREA_W}x{BT3_AREA_W}.png"), 1)
 
     def draw(self):
         pyxel.cls(0)
