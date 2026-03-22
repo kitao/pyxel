@@ -33,7 +33,7 @@ Initialize the Pyxel application with the screen size (width, height).
 - `title` (*str*) — Window title. Defaults to "Pyxel".
 - `fps` (*int*) — Frame rate. Defaults to 30.
 - `quit_key` (*int*) — Key to quit the application. Defaults to KEY_ESCAPE.
-- `display_scale` (*int*) — Display scale factor (None for auto)
+- `display_scale` (*int*) — Display scale factor. If omitted, automatically determined.
 - `capture_scale` (*int*) — Screen capture scale factor. Defaults to 2.
 - `capture_sec` (*int*) — Maximum recording time for screen capture video. Defaults to 10.
 - `headless` (*bool*) — Run without a window. Defaults to False.
@@ -85,7 +85,7 @@ Set the application icon. Specify the icon image as a list of strings.
 
 - `data` (*list[str]*) — Icon image as a list of strings
 - `scale` (*int*) — Scale factor
-- `colkey` (*int/None*) — Transparent color. Optional.
+- `colkey` (*int/None*) — Transparent color. If omitted, no transparency.
 
 ### `fullscreen(enabled)` — function *(Advanced)*
 
@@ -256,7 +256,7 @@ Return True if the key is pressed in that frame. When hold and repeat are specif
 
 - `key` (*int*) — Key code
 - `hold` (*int*) — Frames to hold before repeat starts. Defaults to 0.
-- `repeat` (*int*) — Repeat interval in frames. Defaults to 0.
+- `repeat` (*int*) — Repeat interval in frames. If 0, no repeat.
 
 **Returns:** `bool` — True if pressed in that frame
 
@@ -625,7 +625,7 @@ Copy the region of size (w, h) from (u, v) of image bank img (0-2 or Image insta
 - `v` (*float*) — Source Y in the image bank
 - `w` (*float*) — Width (negative to flip)
 - `h` (*float*) — Height (negative to flip)
-- `colkey` (*int/None*) — Transparent color. Optional.
+- `colkey` (*int/None*) — Transparent color. If omitted, no transparency.
 - `rotate` (*float*) — Rotation angle in degrees (centered on the copy region). Defaults to 0.
 - `scale` (*float*) — Scale factor (centered on the copy region). Defaults to 1.
 
@@ -642,7 +642,7 @@ Copy the region of size (w, h) from (u, v) of tilemap tm (0-7 or Tilemap instanc
 - `v` (*float*) — Source Y in the tilemap
 - `w` (*float*) — Width (negative to flip)
 - `h` (*float*) — Height (negative to flip)
-- `colkey` (*int/None*) — Transparent color. Optional.
+- `colkey` (*int/None*) — Transparent color. If omitted, no transparency.
 - `rotate` (*float*) — Rotation angle in degrees (centered on the copy region). Defaults to 0.
 - `scale` (*float*) — Scale factor (centered on the copy region). Defaults to 1.
 
@@ -660,7 +660,7 @@ Draw the image bank img (0-2 or Image instance) with perspective projection onto
 - `pos` (*(float, float, float)*) — Camera position (x, y, z). x, y match 2D coordinates, z is height
 - `rot` (*(float, float, float)*) — Rotation in degrees. rot_x is vertical, rot_y is horizontal, rot_z is tilt
 - `fov` (*float*) — Field of view in degrees. Defaults to 60.
-- `colkey` (*int/None*) — Transparent color. Optional.
+- `colkey` (*int/None*) — Transparent color. If omitted, no transparency.
 
 ### `bltm3d(x, y, w, h, tm, pos, rot, fov=60, colkey=None)` — function *(Advanced)*
 
@@ -676,7 +676,7 @@ Draw the tilemap tm (0-7 or Tilemap instance) with perspective projection onto t
 - `pos` (*(float, float, float)*) — Camera position (x, y, z). x, y match 2D coordinates, z is height
 - `rot` (*(float, float, float)*) — Rotation in degrees. rot_x is vertical, rot_y is horizontal, rot_z is tilt
 - `fov` (*float*) — Field of view in degrees. Defaults to 60.
-- `colkey` (*int/None*) — Transparent color. Optional.
+- `colkey` (*int/None*) — Transparent color. If omitted, no transparency.
 
 ### `text(x, y, s, col, font=None)` — function
 
@@ -688,7 +688,7 @@ Draw a string s in color col at (x, y).
 - `y` (*float*) — Y coordinate
 - `s` (*str*) — String to draw
 - `col` (*int*) — Color
-- `font` (*Font*) — Custom font. Optional.
+- `font` (*Font*) — Custom font. If omitted, the standard font is used.
 
 ### Color Constants
 

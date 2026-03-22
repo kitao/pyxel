@@ -751,7 +751,7 @@ class Image:
             v: Source Y in the image bank
             w: Width (negative to flip)
             h: Height (negative to flip)
-            colkey: Transparent color. Optional.
+            colkey: Transparent color. If omitted, no transparency.
             rotate: Rotation angle in degrees (centered on the copy region). Defaults to 0.
             scale: Scale factor (centered on the copy region). Defaults to 1.
         """
@@ -779,7 +779,7 @@ class Image:
             v: Source Y in the tilemap
             w: Width (negative to flip)
             h: Height (negative to flip)
-            colkey: Transparent color. Optional.
+            colkey: Transparent color. If omitted, no transparency.
             rotate: Rotation angle in degrees (centered on the copy region). Defaults to 0.
             scale: Scale factor (centered on the copy region). Defaults to 1.
         """
@@ -807,7 +807,7 @@ class Image:
             pos: Camera position (x, y, z). x, y match 2D coordinates, z is height
             rot: Rotation in degrees. rot_x is vertical, rot_y is horizontal, rot_z is tilt
             fov: Field of view in degrees. Defaults to 60.
-            colkey: Transparent color. Optional.
+            colkey: Transparent color. If omitted, no transparency.
         """
         ...
     def bltm3d(
@@ -833,7 +833,7 @@ class Image:
             pos: Camera position (x, y, z). x, y match 2D coordinates, z is height
             rot: Rotation in degrees. rot_x is vertical, rot_y is horizontal, rot_z is tilt
             fov: Field of view in degrees. Defaults to 60.
-            colkey: Transparent color. Optional.
+            colkey: Transparent color. If omitted, no transparency.
         """
         ...
     def text(
@@ -846,7 +846,7 @@ class Image:
             y: Y coordinate
             s: String to draw
             col: Color
-            font: Custom font. Optional.
+            font: Custom font. If omitted, the standard font is used.
         """
         ...
 
@@ -1399,7 +1399,7 @@ def init(
         title: Window title. Defaults to "Pyxel".
         fps: Frame rate. Defaults to 30.
         quit_key: Key to quit the application. Defaults to KEY_ESCAPE.
-        display_scale: Display scale factor (None for auto)
+        display_scale: Display scale factor. If omitted, automatically determined.
         capture_scale: Screen capture scale factor. Defaults to 2.
         capture_sec: Maximum recording time for screen capture video. Defaults to 10.
         headless: Run without a window. Defaults to False.
@@ -1448,7 +1448,7 @@ def icon(data: List[str], scale: int, colkey: Optional[int] = None) -> None:
     Args:
         data: Icon image as a list of strings
         scale: Scale factor
-        colkey: Transparent color. Optional.
+        colkey: Transparent color. If omitted, no transparency.
     """
     ...
 
@@ -1606,7 +1606,7 @@ def btnp(key: int, hold: int = 0, repeat: int = 0) -> bool:
     Args:
         key: Key code
         hold: Frames to hold before repeat starts. Defaults to 0.
-        repeat: Repeat interval in frames. Defaults to 0.
+        repeat: Repeat interval in frames. If 0, no repeat.
 
     Returns:
         True if pressed in that frame
@@ -1899,7 +1899,7 @@ def blt(
         v: Source Y in the image bank
         w: Width (negative to flip)
         h: Height (negative to flip)
-        colkey: Transparent color. Optional.
+        colkey: Transparent color. If omitted, no transparency.
         rotate: Rotation angle in degrees (centered on the copy region). Defaults to 0.
         scale: Scale factor (centered on the copy region). Defaults to 1.
     """
@@ -1927,7 +1927,7 @@ def bltm(
         v: Source Y in the tilemap
         w: Width (negative to flip)
         h: Height (negative to flip)
-        colkey: Transparent color. Optional.
+        colkey: Transparent color. If omitted, no transparency.
         rotate: Rotation angle in degrees (centered on the copy region). Defaults to 0.
         scale: Scale factor (centered on the copy region). Defaults to 1.
     """
@@ -1955,7 +1955,7 @@ def blt3d(
         pos: Camera position (x, y, z). x, y match 2D coordinates, z is height
         rot: Rotation in degrees. rot_x is vertical, rot_y is horizontal, rot_z is tilt
         fov: Field of view in degrees. Defaults to 60.
-        colkey: Transparent color. Optional.
+        colkey: Transparent color. If omitted, no transparency.
     """
     ...
 
@@ -1981,7 +1981,7 @@ def bltm3d(
         pos: Camera position (x, y, z). x, y match 2D coordinates, z is height
         rot: Rotation in degrees. rot_x is vertical, rot_y is horizontal, rot_z is tilt
         fov: Field of view in degrees. Defaults to 60.
-        colkey: Transparent color. Optional.
+        colkey: Transparent color. If omitted, no transparency.
     """
     ...
 
@@ -1993,7 +1993,7 @@ def text(x: float, y: float, s: str, col: int, font: Optional[Font] = None) -> N
         y: Y coordinate
         s: String to draw
         col: Color
-        font: Custom font. Optional.
+        font: Custom font. If omitted, the standard font is used.
     """
     ...
 

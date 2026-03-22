@@ -1,5 +1,7 @@
 # Change Log
 
+## 3.0.0
+
 ## 2.8.7
 
 - Updated script-test.html showcase example
