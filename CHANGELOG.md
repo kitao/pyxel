@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.8.8
+
+- Added GitHub issue and discussion templates
+
 ## 2.8.7
 
 - Updated script-test.html showcase example
