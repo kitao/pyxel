@@ -10,10 +10,10 @@ body:
         Items marked with * are required. / * が付いた項目は必須です。
 
         - Description* / 作品の説明*
-        - URL (optional / 任意)
+        - URL
         - Your name* / あなたの名前*
-        - Contact (optional / 任意) / 連絡先（任意）
-        - Screenshot or GIF* / スクリーンショットまたはGIFアニメ*
+        - Contact / 連絡先
+        - GIF* / GIFアニメ*
   - type: textarea
     id: description
     attributes:
@@ -38,13 +38,13 @@ body:
     id: contact
     attributes:
       label: "Contact / 連絡先"
-      description: "Email, GitHub, or X account (optional) / メール、GitHub、Xアカウント（任意）"
+      description: "Email, GitHub, or X account / メール、GitHub、Xアカウント"
     validations:
       required: false
   - type: textarea
-    id: screenshot
+    id: gif
     attributes:
-      label: "Screenshot or GIF / スクリーンショットまたはGIFアニメ"
-      description: "Drag & drop image here. Alt(Option)+2 to record, Alt(Option)+3 to save / 画像をここにドラッグ&ドロップ。Alt(Option)+2で録画開始、Alt(Option)+3で保存"
+      label: "GIF / GIFアニメ"
+      description: "Drag & drop here. Alt(Option)+2 to record, Alt(Option)+3 to save / ここにドラッグ&ドロップ。Alt(Option)+2で録画開始、Alt(Option)+3で保存"
     validations:
       required: true
