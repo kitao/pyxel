@@ -344,6 +344,3 @@ impl PyTilemap {
         Ok(())
     }
 }
-
-// Helper: extract Vec<String> from Python list (re-export from image_wrapper)
-pub use crate::image_wrapper::extract_str_vec;

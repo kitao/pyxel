@@ -162,7 +162,7 @@ define_ptr_collection!(PyTones, "_Tones", PyTone, pyxel::tones, "tone");
 #[derive(Debug, PyPayload)]
 pub struct PyColors;
 
-#[pyclass(with(AsSequence))]
+#[pyclass(with(AsSequence, AsMapping))]
 impl PyColors {
     #[pymethod(magic)]
     fn getitem(&self, index: i32, vm: &VirtualMachine) -> PyResult<PyObjectRef> {
@@ -172,6 +172,52 @@ impl PyColors {
             return Err(vm.new_index_error("color index out of range".into()));
         }
         Ok(vm.new_pyobj(colors[idx]))
+    }
+
+    #[pymethod(magic)]
+    fn setitem_mapping(
+        &self,
+        key: PyObjectRef,
+        value: PyObjectRef,
+        vm: &VirtualMachine,
+    ) -> PyResult<()> {
+        if key.payload::<PySlice>().is_some() {
+            // Slice assignment: colors[:] = [...]
+            let py_list = value
+                .payload::<PyList>()
+                .ok_or_else(|| vm.new_type_error("expected list".into()))?;
+            let items = py_list.borrow_vec();
+            let colors = pyxel::colors();
+            for (i, item) in items.iter().enumerate() {
+                if i >= colors.len() {
+                    break;
+                }
+                let v: u32 = item
+                    .payload::<PyInt>()
+                    .and_then(|n| n.as_bigint().try_into().ok())
+                    .ok_or_else(|| vm.new_type_error("expected int".into()))?;
+                colors[i] = v;
+            }
+            Ok(())
+        } else if let Some(idx_int) = key.payload::<PyInt>() {
+            let i: i64 = idx_int
+                .as_bigint()
+                .try_into()
+                .map_err(|_| vm.new_overflow_error("index too large".into()))?;
+            let colors = pyxel::colors();
+            let idx = resolve_index(i as i32, colors.len());
+            if idx >= colors.len() {
+                return Err(vm.new_index_error("color index out of range".into()));
+            }
+            let v: u32 = value
+                .payload::<PyInt>()
+                .and_then(|n| n.as_bigint().try_into().ok())
+                .ok_or_else(|| vm.new_type_error("expected int".into()))?;
+            colors[idx] = v;
+            Ok(())
+        } else {
+            Err(vm.new_type_error("indices must be integers or slices".into()))
+        }
     }
 
     #[pymethod(magic)]
@@ -188,6 +234,29 @@ impl PyColors {
     #[pymethod(magic)]
     fn len(&self) -> usize {
         pyxel::colors().len()
+    }
+}
+
+impl AsMapping for PyColors {
+    fn as_mapping() -> &'static PyMappingMethods {
+        static AS_MAPPING: PyMappingMethods = PyMappingMethods {
+            length: AtomicCell::new(None),
+            subscript: AtomicCell::new(Some(|mapping, key, vm| {
+                let idx = key
+                    .payload::<PyInt>()
+                    .and_then(|v| v.as_bigint().try_into().ok())
+                    .ok_or_else(|| vm.new_type_error("expected int index".into()))?;
+                PyColors::mapping_downcast(mapping).getitem(idx, vm)
+            })),
+            ass_subscript: AtomicCell::new(Some(|mapping, key, value, vm| {
+                if let Some(value) = value {
+                    PyColors::mapping_downcast(mapping).setitem_mapping(key.to_owned(), value, vm)
+                } else {
+                    Err(vm.new_type_error("cannot delete colors".into()))
+                }
+            })),
+        };
+        &AS_MAPPING
     }
 }
 
@@ -222,20 +291,45 @@ impl AsSequence for PyColors {
 // Module __getattr__ for dynamic variables and collections
 pub fn module_getattr(name: PyStrRef, vm: &VirtualMachine) -> PyResult<PyObjectRef> {
     match name.as_str() {
+        // System
         "width" => Ok(vm.new_pyobj(*pyxel::width())),
         "height" => Ok(vm.new_pyobj(*pyxel::height())),
         "frame_count" => Ok(vm.new_pyobj(*pyxel::frame_count())),
-        "mouse_x" => Ok(vm.new_pyobj(*pyxel::mouse_x() as f64)),
-        "mouse_y" => Ok(vm.new_pyobj(*pyxel::mouse_y() as f64)),
+
+        // Input
+        "mouse_x" => Ok(vm.new_pyobj(*pyxel::mouse_x())),
+        "mouse_y" => Ok(vm.new_pyobj(*pyxel::mouse_y())),
         "mouse_wheel" => Ok(vm.new_pyobj(*pyxel::mouse_wheel())),
+        "input_keys" => {
+            let keys: Vec<PyObjectRef> = pyxel::input_keys()
+                .iter()
+                .map(|&k| vm.new_pyobj(k))
+                .collect();
+            Ok(vm.new_pyobj(keys))
+        }
+        "input_text" => Ok(vm.new_pyobj(pyxel::input_text().clone())),
+        "dropped_files" => {
+            let files: Vec<PyObjectRef> = pyxel::dropped_files()
+                .iter()
+                .map(|s| vm.new_pyobj(s.clone()))
+                .collect();
+            Ok(vm.new_pyobj(files))
+        }
+
+        // Graphics
         "colors" => Ok(vm.new_pyobj(PyColors)),
-        "screen" => Ok(vm.new_pyobj(PyImage::wrap(std::ptr::from_mut(pyxel::screen())))),
         "images" => Ok(vm.new_pyobj(PyImages)),
-        "sounds" => Ok(vm.new_pyobj(PySounds)),
         "tilemaps" => Ok(vm.new_pyobj(PyTilemaps)),
-        "musics" => Ok(vm.new_pyobj(PyMusics)),
+        "screen" => Ok(vm.new_pyobj(PyImage::wrap(std::ptr::from_mut(pyxel::screen())))),
+        "cursor" => Ok(vm.new_pyobj(PyImage::wrap(std::ptr::from_mut(pyxel::cursor_image())))),
+        "font" => Ok(vm.new_pyobj(PyImage::wrap(std::ptr::from_mut(pyxel::font_image())))),
+
+        // Audio
         "channels" => Ok(vm.new_pyobj(PyChannels)),
         "tones" => Ok(vm.new_pyobj(PyTones)),
+        "sounds" => Ok(vm.new_pyobj(PySounds)),
+        "musics" => Ok(vm.new_pyobj(PyMusics)),
+
         _ => Err(vm.new_attribute_error(format!(
             "module 'pyxel' has no attribute '{}'",
             name.as_str()

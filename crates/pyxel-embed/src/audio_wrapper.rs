@@ -1,55 +1,62 @@
-use rustpython_vm::builtins::{PyInt, PyList};
+use rustpython_vm::builtins::PyList;
 use rustpython_vm::function::FuncArgs;
 use rustpython_vm::{PyObjectRef, PyResult, VirtualMachine};
 
 use crate::helpers::*;
-
-// Extract bool from a PyObjectRef (for kwargs)
-fn to_bool(obj: &PyObjectRef) -> bool {
-    if let Some(v) = obj.payload::<PyInt>() {
-        let i: i64 = v.as_bigint().try_into().unwrap_or(0);
-        return i != 0;
-    }
-    false
-}
-
-// Extract Vec<u32> from a Python list of ints
-fn to_u32_list(obj: &PyObjectRef, vm: &VirtualMachine) -> PyResult<Vec<u32>> {
-    let list = obj
-        .payload::<PyList>()
-        .ok_or_else(|| vm.new_type_error("expected list of int".into()))?;
-    let items = list.borrow_vec();
-    items.iter().map(|item| u(item, vm)).collect()
-}
+use crate::sound_wrapper::PySound;
 
 pub fn play(args: FuncArgs, vm: &VirtualMachine) -> PyResult<()> {
     let a = &args.args;
     let ch = u(&a[0], vm)?;
     let snd_obj = &a[1];
+    let sec = kw_f32(&args, "sec", vm)?.or_else(|| args.args.get(2).and_then(|o| f(o, vm).ok()));
     let loop_ = args
         .kwargs
         .get("loop")
-        .map(|o| to_bool(o))
-        .or_else(|| ob(a, 2, vm))
+        .map(to_bool)
+        .or_else(|| ob(a, 3, vm))
         .unwrap_or(false);
     let resume = args
         .kwargs
         .get("resume")
-        .map(|o| to_bool(o))
-        .or_else(|| ob(a, 3, vm))
+        .map(to_bool)
+        .or_else(|| ob(a, 4, vm))
         .unwrap_or(false);
 
-    // snd: int, list of int, or str
+    // snd: int, list of int, Sound, list of Sound, or str (MML)
     if let Ok(snd) = u(snd_obj, vm) {
-        pyxel::pyxel().play_sound(ch, snd, None, loop_, resume);
-    } else if let Ok(snd_list) = to_u32_list(snd_obj, vm) {
-        pyxel::pyxel().play(ch, &snd_list, None, loop_, resume);
+        pyxel::pyxel().play_sound(ch, snd, sec, loop_, resume);
+    } else if let Some(sound) = snd_obj.payload::<PySound>() {
+        unsafe { &mut *pyxel::channels()[ch as usize] }.play_sound(sound.inner, sec, loop_, resume);
+    } else if let Some(list) = snd_obj.payload::<PyList>() {
+        let items = list.borrow_vec();
+        // Try as list of Sound objects first, then list of int
+        if items
+            .first()
+            .is_some_and(|o| o.payload::<PySound>().is_some())
+        {
+            let sounds: Vec<*mut pyxel::Sound> = items
+                .iter()
+                .map(|item| {
+                    item.payload::<PySound>()
+                        .map(|s| s.inner)
+                        .ok_or_else(|| vm.new_type_error("expected Sound in list".into()))
+                })
+                .collect::<PyResult<_>>()?;
+            unsafe { &mut *pyxel::channels()[ch as usize] }.play(sounds, sec, loop_, resume);
+        } else {
+            let snd_list: Vec<u32> = items
+                .iter()
+                .map(|item| u(item, vm))
+                .collect::<PyResult<_>>()?;
+            pyxel::pyxel().play(ch, &snd_list, sec, loop_, resume);
+        }
     } else if let Some(code) = s(snd_obj) {
         pyxel::pyxel()
-            .play_mml(ch, code, None, loop_, resume)
+            .play_mml(ch, code, sec, loop_, resume)
             .map_err(|e| vm.new_value_error(e))?;
     } else {
-        return Err(vm.new_type_error("expected int, list, or str for snd".into()));
+        return Err(vm.new_type_error("expected int, list, Sound, or str for snd".into()));
     }
     Ok(())
 }
@@ -57,13 +64,17 @@ pub fn play(args: FuncArgs, vm: &VirtualMachine) -> PyResult<()> {
 pub fn playm(args: FuncArgs, vm: &VirtualMachine) -> PyResult<()> {
     let a = &args.args;
     let msc = u(&a[0], vm)?;
+    let sec = kw_f32(&args, "sec", vm)?.or_else(|| {
+        a.get(1)
+            .and_then(|o| if vm.is_none(o) { None } else { f(o, vm).ok() })
+    });
     let loop_ = args
         .kwargs
         .get("loop")
-        .map(|o| to_bool(o))
-        .or_else(|| ob(a, 1, vm))
+        .map(to_bool)
+        .or_else(|| ob(a, 2, vm))
         .unwrap_or(false);
-    pyxel::pyxel().play_music(msc, None, loop_);
+    pyxel::pyxel().play_music(msc, sec, loop_);
     Ok(())
 }
 
@@ -104,8 +115,8 @@ pub fn gen_bgm(args: FuncArgs, vm: &VirtualMachine) -> PyResult<PyObjectRef> {
     let play = args
         .kwargs
         .get("play")
-        .map(|o| to_bool(o))
-        .or_else(|| a.get(3).map(|o| to_bool(o)));
+        .map(to_bool)
+        .or_else(|| a.get(3).map(to_bool));
     let result = pyxel::pyxel().gen_bgm(preset, instr, seed, play);
     let list: Vec<PyObjectRef> = result.iter().map(|s| vm.new_pyobj(s.clone())).collect();
     Ok(vm.new_pyobj(list))

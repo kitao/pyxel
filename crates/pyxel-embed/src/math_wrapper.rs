@@ -1,5 +1,5 @@
 use rustpython_vm::function::FuncArgs;
-use rustpython_vm::{PyResult, VirtualMachine};
+use rustpython_vm::{PyObjectRef, PyResult, VirtualMachine};
 
 use crate::helpers::*;
 
@@ -53,13 +53,10 @@ pub fn noise(args: FuncArgs, vm: &VirtualMachine) -> PyResult<f64> {
     Ok(pyxel::Pyxel::noise(x, y, z) as f64)
 }
 
-pub fn clamp(args: FuncArgs, vm: &VirtualMachine) -> PyResult<rustpython_vm::PyObjectRef> {
+pub fn clamp(args: FuncArgs, vm: &VirtualMachine) -> PyResult<PyObjectRef> {
     let a = &args.args;
-    // Try integer first, then float
-    if let (Ok(x), Ok(lo), Ok(hi)) = (u(&a[0], vm), u(&a[1], vm), u(&a[2], vm)) {
-        let x = x as i64;
-        let lo = lo as i64;
-        let hi = hi as i64;
+    // Try signed integer first, then float
+    if let (Ok(x), Ok(lo), Ok(hi)) = (i64_val(&a[0], vm), i64_val(&a[1], vm), i64_val(&a[2], vm)) {
         let (lo, hi) = if lo < hi { (lo, hi) } else { (hi, lo) };
         let v = x.max(lo).min(hi);
         return Ok(vm.new_pyobj(v));
@@ -70,4 +67,25 @@ pub fn clamp(args: FuncArgs, vm: &VirtualMachine) -> PyResult<rustpython_vm::PyO
     let (lo, hi) = if lo < hi { (lo, hi) } else { (hi, lo) };
     let v = x.max(lo).min(hi);
     Ok(vm.new_pyobj(v as f64))
+}
+
+pub fn sgn(args: FuncArgs, vm: &VirtualMachine) -> PyResult<PyObjectRef> {
+    let obj = &args.args[0];
+    if let Ok(xi) = i64_val(obj, vm) {
+        let v = match xi.cmp(&0) {
+            std::cmp::Ordering::Greater => 1i64,
+            std::cmp::Ordering::Less => -1,
+            std::cmp::Ordering::Equal => 0,
+        };
+        return Ok(vm.new_pyobj(v));
+    }
+    let xf = f(obj, vm)? as f64;
+    let v = if xf > 0.0 {
+        1.0
+    } else if xf < 0.0 {
+        -1.0
+    } else {
+        0.0
+    };
+    Ok(vm.new_pyobj(v))
 }

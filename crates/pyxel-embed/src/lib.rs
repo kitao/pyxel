@@ -20,6 +20,12 @@ mod variable_wrapper;
 use rustpython_vm as vm;
 pub use vm::Interpreter;
 
+/// Capture the original working directory before any chdir happens.
+/// Must be called at the very start of main().
+pub fn save_original_cwd() {
+    system_wrapper::set_original_cwd();
+}
+
 pub fn create_interpreter() -> Interpreter {
     rustpython::InterpreterConfig::new()
         .init_stdlib()
@@ -94,8 +100,28 @@ mod pyxel_module {
         super::system_wrapper::reset()
     }
     #[pyfunction]
+    fn title(a: A, v: &V) -> R {
+        super::system_wrapper::title(a, v)
+    }
+    #[pyfunction]
+    fn icon(a: A, v: &V) -> R {
+        super::system_wrapper::icon(a, v)
+    }
+    #[pyfunction]
+    fn perf_monitor(a: A, v: &V) -> R {
+        super::system_wrapper::perf_monitor(a, v)
+    }
+    #[pyfunction]
     fn integer_scale(a: A, v: &V) -> R {
         super::system_wrapper::integer_scale(a, v)
+    }
+    #[pyfunction]
+    fn screen_mode(a: A, v: &V) -> R {
+        super::system_wrapper::screen_mode(a, v)
+    }
+    #[pyfunction]
+    fn fullscreen(a: A, v: &V) -> R {
+        super::system_wrapper::fullscreen(a, v)
     }
 
     // Graphics
@@ -209,6 +235,10 @@ mod pyxel_module {
     fn mouse(visible: bool) {
         super::input_wrapper::mouse(visible)
     }
+    #[pyfunction]
+    fn warp_mouse(a: A, v: &V) -> R {
+        super::input_wrapper::warp_mouse(a, v)
+    }
 
     // Math
     #[pyfunction]
@@ -259,6 +289,10 @@ mod pyxel_module {
     fn clamp(a: A, v: &V) -> PyResult<super::vm::PyObjectRef> {
         super::math_wrapper::clamp(a, v)
     }
+    #[pyfunction]
+    fn sgn(a: A, v: &V) -> PyResult<super::vm::PyObjectRef> {
+        super::math_wrapper::sgn(a, v)
+    }
 
     // Audio
     #[pyfunction]
@@ -288,8 +322,32 @@ mod pyxel_module {
         super::resource_wrapper::load(a, v)
     }
     #[pyfunction]
+    fn save(a: A, v: &V) -> R {
+        super::resource_wrapper::save(a, v)
+    }
+    #[pyfunction]
     fn load_pal(a: A, v: &V) -> R {
         super::resource_wrapper::load_pal(a, v)
+    }
+    #[pyfunction]
+    fn save_pal(a: A, v: &V) -> R {
+        super::resource_wrapper::save_pal(a, v)
+    }
+    #[pyfunction]
+    fn screenshot(a: A, v: &V) -> R {
+        super::resource_wrapper::screenshot(a, v)
+    }
+    #[pyfunction]
+    fn screencast(a: A, v: &V) -> R {
+        super::resource_wrapper::screencast(a, v)
+    }
+    #[pyfunction]
+    fn reset_screencast() {
+        super::resource_wrapper::reset_screencast()
+    }
+    #[pyfunction]
+    fn user_data_dir(a: A, v: &V) -> PyResult<String> {
+        super::resource_wrapper::user_data_dir(a, v)
     }
 
     // _Colors collection class (impl in variable_wrapper.rs)
@@ -404,7 +462,7 @@ mod pyxel_module {
         super::variable_wrapper::PyTones::make_class(&vm.ctx)
     }
 
-    // Live sequence wrapper types (must be initialized before use)
+    // Live sequence wrapper types
     #[pyattr]
     #[allow(non_snake_case)]
     fn _Notes(vm: &V) -> super::vm::builtins::PyTypeRef {
@@ -442,7 +500,9 @@ mod pyxel_module {
         super::variable_wrapper::module_getattr(name, v)
     }
 
-    // Constants (must be inline due to #[pymodule] macro constraints)
+    // Settings constants
+    #[pyattr]
+    const VERSION: &str = pyxel::VERSION;
     #[pyattr]
     const NUM_COLORS: u32 = pyxel::NUM_COLORS;
     #[pyattr]
@@ -456,6 +516,47 @@ mod pyxel_module {
     #[pyattr]
     const TILE_SIZE: u32 = pyxel::TILE_SIZE;
     #[pyattr]
+    #[allow(non_snake_case)]
+    fn DEFAULT_COLORS(vm: &V) -> super::vm::PyObjectRef {
+        let colors: Vec<super::vm::PyObjectRef> = pyxel::DEFAULT_COLORS
+            .iter()
+            .map(|&c| vm.new_pyobj(c))
+            .collect();
+        vm.new_pyobj(colors)
+    }
+    #[pyattr]
+    const COLOR_BLACK: u8 = pyxel::COLOR_BLACK;
+    #[pyattr]
+    const COLOR_NAVY: u8 = pyxel::COLOR_NAVY;
+    #[pyattr]
+    const COLOR_PURPLE: u8 = pyxel::COLOR_PURPLE;
+    #[pyattr]
+    const COLOR_GREEN: u8 = pyxel::COLOR_GREEN;
+    #[pyattr]
+    const COLOR_BROWN: u8 = pyxel::COLOR_BROWN;
+    #[pyattr]
+    const COLOR_DARK_BLUE: u8 = pyxel::COLOR_DARK_BLUE;
+    #[pyattr]
+    const COLOR_LIGHT_BLUE: u8 = pyxel::COLOR_LIGHT_BLUE;
+    #[pyattr]
+    const COLOR_WHITE: u8 = pyxel::COLOR_WHITE;
+    #[pyattr]
+    const COLOR_RED: u8 = pyxel::COLOR_RED;
+    #[pyattr]
+    const COLOR_ORANGE: u8 = pyxel::COLOR_ORANGE;
+    #[pyattr]
+    const COLOR_YELLOW: u8 = pyxel::COLOR_YELLOW;
+    #[pyattr]
+    const COLOR_LIME: u8 = pyxel::COLOR_LIME;
+    #[pyattr]
+    const COLOR_CYAN: u8 = pyxel::COLOR_CYAN;
+    #[pyattr]
+    const COLOR_GRAY: u8 = pyxel::COLOR_GRAY;
+    #[pyattr]
+    const COLOR_PINK: u8 = pyxel::COLOR_PINK;
+    #[pyattr]
+    const COLOR_PEACH: u8 = pyxel::COLOR_PEACH;
+    #[pyattr]
     const FONT_WIDTH: u32 = pyxel::FONT_WIDTH;
     #[pyattr]
     const FONT_HEIGHT: u32 = pyxel::FONT_HEIGHT;
@@ -467,6 +568,8 @@ mod pyxel_module {
     const NUM_SOUNDS: u32 = pyxel::NUM_SOUNDS;
     #[pyattr]
     const NUM_MUSICS: u32 = pyxel::NUM_MUSICS;
+
+    // Tone constants
     #[pyattr]
     const TONE_TRIANGLE: u8 = pyxel::TONE_TRIANGLE;
     #[pyattr]
@@ -475,6 +578,8 @@ mod pyxel_module {
     const TONE_PULSE: u8 = pyxel::TONE_PULSE;
     #[pyattr]
     const TONE_NOISE: u8 = pyxel::TONE_NOISE;
+
+    // Effect constants
     #[pyattr]
     const EFFECT_NONE: u8 = pyxel::EFFECT_NONE;
     #[pyattr]
@@ -487,6 +592,8 @@ mod pyxel_module {
     const EFFECT_HALF_FADEOUT: u8 = pyxel::EFFECT_HALF_FADEOUT;
     #[pyattr]
     const EFFECT_QUARTER_FADEOUT: u8 = pyxel::EFFECT_QUARTER_FADEOUT;
+
+    // Key constants
     #[pyattr]
     const KEY_UNKNOWN: u32 = pyxel::KEY_UNKNOWN;
     #[pyattr]
@@ -499,6 +606,36 @@ mod pyxel_module {
     const KEY_ESCAPE: u32 = pyxel::KEY_ESCAPE;
     #[pyattr]
     const KEY_SPACE: u32 = pyxel::KEY_SPACE;
+    #[pyattr]
+    const KEY_EXCLAIM: u32 = pyxel::KEY_EXCLAIM;
+    #[pyattr]
+    const KEY_QUOTEDBL: u32 = pyxel::KEY_QUOTEDBL;
+    #[pyattr]
+    const KEY_HASH: u32 = pyxel::KEY_HASH;
+    #[pyattr]
+    const KEY_DOLLAR: u32 = pyxel::KEY_DOLLAR;
+    #[pyattr]
+    const KEY_PERCENT: u32 = pyxel::KEY_PERCENT;
+    #[pyattr]
+    const KEY_AMPERSAND: u32 = pyxel::KEY_AMPERSAND;
+    #[pyattr]
+    const KEY_QUOTE: u32 = pyxel::KEY_QUOTE;
+    #[pyattr]
+    const KEY_LEFTPAREN: u32 = pyxel::KEY_LEFTPAREN;
+    #[pyattr]
+    const KEY_RIGHTPAREN: u32 = pyxel::KEY_RIGHTPAREN;
+    #[pyattr]
+    const KEY_ASTERISK: u32 = pyxel::KEY_ASTERISK;
+    #[pyattr]
+    const KEY_PLUS: u32 = pyxel::KEY_PLUS;
+    #[pyattr]
+    const KEY_COMMA: u32 = pyxel::KEY_COMMA;
+    #[pyattr]
+    const KEY_MINUS: u32 = pyxel::KEY_MINUS;
+    #[pyattr]
+    const KEY_PERIOD: u32 = pyxel::KEY_PERIOD;
+    #[pyattr]
+    const KEY_SLASH: u32 = pyxel::KEY_SLASH;
     #[pyattr]
     const KEY_0: u32 = pyxel::KEY_0;
     #[pyattr]
@@ -519,6 +656,32 @@ mod pyxel_module {
     const KEY_8: u32 = pyxel::KEY_8;
     #[pyattr]
     const KEY_9: u32 = pyxel::KEY_9;
+    #[pyattr]
+    const KEY_COLON: u32 = pyxel::KEY_COLON;
+    #[pyattr]
+    const KEY_SEMICOLON: u32 = pyxel::KEY_SEMICOLON;
+    #[pyattr]
+    const KEY_LESS: u32 = pyxel::KEY_LESS;
+    #[pyattr]
+    const KEY_EQUALS: u32 = pyxel::KEY_EQUALS;
+    #[pyattr]
+    const KEY_GREATER: u32 = pyxel::KEY_GREATER;
+    #[pyattr]
+    const KEY_QUESTION: u32 = pyxel::KEY_QUESTION;
+    #[pyattr]
+    const KEY_AT: u32 = pyxel::KEY_AT;
+    #[pyattr]
+    const KEY_LEFTBRACKET: u32 = pyxel::KEY_LEFTBRACKET;
+    #[pyattr]
+    const KEY_BACKSLASH: u32 = pyxel::KEY_BACKSLASH;
+    #[pyattr]
+    const KEY_RIGHTBRACKET: u32 = pyxel::KEY_RIGHTBRACKET;
+    #[pyattr]
+    const KEY_CARET: u32 = pyxel::KEY_CARET;
+    #[pyattr]
+    const KEY_UNDERSCORE: u32 = pyxel::KEY_UNDERSCORE;
+    #[pyattr]
+    const KEY_BACKQUOTE: u32 = pyxel::KEY_BACKQUOTE;
     #[pyattr]
     const KEY_A: u32 = pyxel::KEY_A;
     #[pyattr]
@@ -574,23 +737,7 @@ mod pyxel_module {
     #[pyattr]
     const KEY_DELETE: u32 = pyxel::KEY_DELETE;
     #[pyattr]
-    const KEY_UP: u32 = pyxel::KEY_UP;
-    #[pyattr]
-    const KEY_DOWN: u32 = pyxel::KEY_DOWN;
-    #[pyattr]
-    const KEY_LEFT: u32 = pyxel::KEY_LEFT;
-    #[pyattr]
-    const KEY_RIGHT: u32 = pyxel::KEY_RIGHT;
-    #[pyattr]
-    const KEY_HOME: u32 = pyxel::KEY_HOME;
-    #[pyattr]
-    const KEY_END: u32 = pyxel::KEY_END;
-    #[pyattr]
-    const KEY_PAGEUP: u32 = pyxel::KEY_PAGEUP;
-    #[pyattr]
-    const KEY_PAGEDOWN: u32 = pyxel::KEY_PAGEDOWN;
-    #[pyattr]
-    const KEY_INSERT: u32 = pyxel::KEY_INSERT;
+    const KEY_CAPSLOCK: u32 = pyxel::KEY_CAPSLOCK;
     #[pyattr]
     const KEY_F1: u32 = pyxel::KEY_F1;
     #[pyattr]
@@ -616,19 +763,43 @@ mod pyxel_module {
     #[pyattr]
     const KEY_F12: u32 = pyxel::KEY_F12;
     #[pyattr]
-    const KEY_LSHIFT: u32 = pyxel::KEY_LSHIFT;
+    const KEY_PRINTSCREEN: u32 = pyxel::KEY_PRINTSCREEN;
     #[pyattr]
-    const KEY_RSHIFT: u32 = pyxel::KEY_RSHIFT;
+    const KEY_SCROLLLOCK: u32 = pyxel::KEY_SCROLLLOCK;
+    #[pyattr]
+    const KEY_PAUSE: u32 = pyxel::KEY_PAUSE;
+    #[pyattr]
+    const KEY_INSERT: u32 = pyxel::KEY_INSERT;
+    #[pyattr]
+    const KEY_HOME: u32 = pyxel::KEY_HOME;
+    #[pyattr]
+    const KEY_PAGEUP: u32 = pyxel::KEY_PAGEUP;
+    #[pyattr]
+    const KEY_END: u32 = pyxel::KEY_END;
+    #[pyattr]
+    const KEY_PAGEDOWN: u32 = pyxel::KEY_PAGEDOWN;
+    #[pyattr]
+    const KEY_RIGHT: u32 = pyxel::KEY_RIGHT;
+    #[pyattr]
+    const KEY_LEFT: u32 = pyxel::KEY_LEFT;
+    #[pyattr]
+    const KEY_DOWN: u32 = pyxel::KEY_DOWN;
+    #[pyattr]
+    const KEY_UP: u32 = pyxel::KEY_UP;
     #[pyattr]
     const KEY_LCTRL: u32 = pyxel::KEY_LCTRL;
     #[pyattr]
-    const KEY_RCTRL: u32 = pyxel::KEY_RCTRL;
+    const KEY_LSHIFT: u32 = pyxel::KEY_LSHIFT;
     #[pyattr]
     const KEY_LALT: u32 = pyxel::KEY_LALT;
     #[pyattr]
-    const KEY_RALT: u32 = pyxel::KEY_RALT;
-    #[pyattr]
     const KEY_LGUI: u32 = pyxel::KEY_LGUI;
+    #[pyattr]
+    const KEY_RCTRL: u32 = pyxel::KEY_RCTRL;
+    #[pyattr]
+    const KEY_RSHIFT: u32 = pyxel::KEY_RSHIFT;
+    #[pyattr]
+    const KEY_RALT: u32 = pyxel::KEY_RALT;
     #[pyattr]
     const KEY_RGUI: u32 = pyxel::KEY_RGUI;
     #[pyattr]
@@ -641,6 +812,8 @@ mod pyxel_module {
     const KEY_ALT: u32 = pyxel::KEY_ALT;
     #[pyattr]
     const KEY_GUI: u32 = pyxel::KEY_GUI;
+
+    // Mouse constants
     #[pyattr]
     const MOUSE_POS_X: u32 = pyxel::MOUSE_POS_X;
     #[pyattr]
@@ -656,6 +829,24 @@ mod pyxel_module {
     #[pyattr]
     const MOUSE_BUTTON_RIGHT: u32 = pyxel::MOUSE_BUTTON_RIGHT;
     #[pyattr]
+    const MOUSE_BUTTON_X1: u32 = pyxel::MOUSE_BUTTON_X1;
+    #[pyattr]
+    const MOUSE_BUTTON_X2: u32 = pyxel::MOUSE_BUTTON_X2;
+
+    // Gamepad 1 constants
+    #[pyattr]
+    const GAMEPAD1_AXIS_LEFTX: u32 = pyxel::GAMEPAD1_AXIS_LEFTX;
+    #[pyattr]
+    const GAMEPAD1_AXIS_LEFTY: u32 = pyxel::GAMEPAD1_AXIS_LEFTY;
+    #[pyattr]
+    const GAMEPAD1_AXIS_RIGHTX: u32 = pyxel::GAMEPAD1_AXIS_RIGHTX;
+    #[pyattr]
+    const GAMEPAD1_AXIS_RIGHTY: u32 = pyxel::GAMEPAD1_AXIS_RIGHTY;
+    #[pyattr]
+    const GAMEPAD1_AXIS_TRIGGERLEFT: u32 = pyxel::GAMEPAD1_AXIS_TRIGGERLEFT;
+    #[pyattr]
+    const GAMEPAD1_AXIS_TRIGGERRIGHT: u32 = pyxel::GAMEPAD1_AXIS_TRIGGERRIGHT;
+    #[pyattr]
     const GAMEPAD1_BUTTON_A: u32 = pyxel::GAMEPAD1_BUTTON_A;
     #[pyattr]
     const GAMEPAD1_BUTTON_B: u32 = pyxel::GAMEPAD1_BUTTON_B;
@@ -664,7 +855,19 @@ mod pyxel_module {
     #[pyattr]
     const GAMEPAD1_BUTTON_Y: u32 = pyxel::GAMEPAD1_BUTTON_Y;
     #[pyattr]
+    const GAMEPAD1_BUTTON_BACK: u32 = pyxel::GAMEPAD1_BUTTON_BACK;
+    #[pyattr]
+    const GAMEPAD1_BUTTON_GUIDE: u32 = pyxel::GAMEPAD1_BUTTON_GUIDE;
+    #[pyattr]
     const GAMEPAD1_BUTTON_START: u32 = pyxel::GAMEPAD1_BUTTON_START;
+    #[pyattr]
+    const GAMEPAD1_BUTTON_LEFTSTICK: u32 = pyxel::GAMEPAD1_BUTTON_LEFTSTICK;
+    #[pyattr]
+    const GAMEPAD1_BUTTON_RIGHTSTICK: u32 = pyxel::GAMEPAD1_BUTTON_RIGHTSTICK;
+    #[pyattr]
+    const GAMEPAD1_BUTTON_LEFTSHOULDER: u32 = pyxel::GAMEPAD1_BUTTON_LEFTSHOULDER;
+    #[pyattr]
+    const GAMEPAD1_BUTTON_RIGHTSHOULDER: u32 = pyxel::GAMEPAD1_BUTTON_RIGHTSHOULDER;
     #[pyattr]
     const GAMEPAD1_BUTTON_DPAD_UP: u32 = pyxel::GAMEPAD1_BUTTON_DPAD_UP;
     #[pyattr]
@@ -674,15 +877,151 @@ mod pyxel_module {
     #[pyattr]
     const GAMEPAD1_BUTTON_DPAD_RIGHT: u32 = pyxel::GAMEPAD1_BUTTON_DPAD_RIGHT;
 
+    // Gamepad 2 constants
+    #[pyattr]
+    const GAMEPAD2_AXIS_LEFTX: u32 = pyxel::GAMEPAD2_AXIS_LEFTX;
+    #[pyattr]
+    const GAMEPAD2_AXIS_LEFTY: u32 = pyxel::GAMEPAD2_AXIS_LEFTY;
+    #[pyattr]
+    const GAMEPAD2_AXIS_RIGHTX: u32 = pyxel::GAMEPAD2_AXIS_RIGHTX;
+    #[pyattr]
+    const GAMEPAD2_AXIS_RIGHTY: u32 = pyxel::GAMEPAD2_AXIS_RIGHTY;
+    #[pyattr]
+    const GAMEPAD2_AXIS_TRIGGERLEFT: u32 = pyxel::GAMEPAD2_AXIS_TRIGGERLEFT;
+    #[pyattr]
+    const GAMEPAD2_AXIS_TRIGGERRIGHT: u32 = pyxel::GAMEPAD2_AXIS_TRIGGERRIGHT;
+    #[pyattr]
+    const GAMEPAD2_BUTTON_A: u32 = pyxel::GAMEPAD2_BUTTON_A;
+    #[pyattr]
+    const GAMEPAD2_BUTTON_B: u32 = pyxel::GAMEPAD2_BUTTON_B;
+    #[pyattr]
+    const GAMEPAD2_BUTTON_X: u32 = pyxel::GAMEPAD2_BUTTON_X;
+    #[pyattr]
+    const GAMEPAD2_BUTTON_Y: u32 = pyxel::GAMEPAD2_BUTTON_Y;
+    #[pyattr]
+    const GAMEPAD2_BUTTON_BACK: u32 = pyxel::GAMEPAD2_BUTTON_BACK;
+    #[pyattr]
+    const GAMEPAD2_BUTTON_GUIDE: u32 = pyxel::GAMEPAD2_BUTTON_GUIDE;
+    #[pyattr]
+    const GAMEPAD2_BUTTON_START: u32 = pyxel::GAMEPAD2_BUTTON_START;
+    #[pyattr]
+    const GAMEPAD2_BUTTON_LEFTSTICK: u32 = pyxel::GAMEPAD2_BUTTON_LEFTSTICK;
+    #[pyattr]
+    const GAMEPAD2_BUTTON_RIGHTSTICK: u32 = pyxel::GAMEPAD2_BUTTON_RIGHTSTICK;
+    #[pyattr]
+    const GAMEPAD2_BUTTON_LEFTSHOULDER: u32 = pyxel::GAMEPAD2_BUTTON_LEFTSHOULDER;
+    #[pyattr]
+    const GAMEPAD2_BUTTON_RIGHTSHOULDER: u32 = pyxel::GAMEPAD2_BUTTON_RIGHTSHOULDER;
+    #[pyattr]
+    const GAMEPAD2_BUTTON_DPAD_UP: u32 = pyxel::GAMEPAD2_BUTTON_DPAD_UP;
+    #[pyattr]
+    const GAMEPAD2_BUTTON_DPAD_DOWN: u32 = pyxel::GAMEPAD2_BUTTON_DPAD_DOWN;
+    #[pyattr]
+    const GAMEPAD2_BUTTON_DPAD_LEFT: u32 = pyxel::GAMEPAD2_BUTTON_DPAD_LEFT;
+    #[pyattr]
+    const GAMEPAD2_BUTTON_DPAD_RIGHT: u32 = pyxel::GAMEPAD2_BUTTON_DPAD_RIGHT;
+
+    // Gamepad 3 constants
+    #[pyattr]
+    const GAMEPAD3_AXIS_LEFTX: u32 = pyxel::GAMEPAD3_AXIS_LEFTX;
+    #[pyattr]
+    const GAMEPAD3_AXIS_LEFTY: u32 = pyxel::GAMEPAD3_AXIS_LEFTY;
+    #[pyattr]
+    const GAMEPAD3_AXIS_RIGHTX: u32 = pyxel::GAMEPAD3_AXIS_RIGHTX;
+    #[pyattr]
+    const GAMEPAD3_AXIS_RIGHTY: u32 = pyxel::GAMEPAD3_AXIS_RIGHTY;
+    #[pyattr]
+    const GAMEPAD3_AXIS_TRIGGERLEFT: u32 = pyxel::GAMEPAD3_AXIS_TRIGGERLEFT;
+    #[pyattr]
+    const GAMEPAD3_AXIS_TRIGGERRIGHT: u32 = pyxel::GAMEPAD3_AXIS_TRIGGERRIGHT;
+    #[pyattr]
+    const GAMEPAD3_BUTTON_A: u32 = pyxel::GAMEPAD3_BUTTON_A;
+    #[pyattr]
+    const GAMEPAD3_BUTTON_B: u32 = pyxel::GAMEPAD3_BUTTON_B;
+    #[pyattr]
+    const GAMEPAD3_BUTTON_X: u32 = pyxel::GAMEPAD3_BUTTON_X;
+    #[pyattr]
+    const GAMEPAD3_BUTTON_Y: u32 = pyxel::GAMEPAD3_BUTTON_Y;
+    #[pyattr]
+    const GAMEPAD3_BUTTON_BACK: u32 = pyxel::GAMEPAD3_BUTTON_BACK;
+    #[pyattr]
+    const GAMEPAD3_BUTTON_GUIDE: u32 = pyxel::GAMEPAD3_BUTTON_GUIDE;
+    #[pyattr]
+    const GAMEPAD3_BUTTON_START: u32 = pyxel::GAMEPAD3_BUTTON_START;
+    #[pyattr]
+    const GAMEPAD3_BUTTON_LEFTSTICK: u32 = pyxel::GAMEPAD3_BUTTON_LEFTSTICK;
+    #[pyattr]
+    const GAMEPAD3_BUTTON_RIGHTSTICK: u32 = pyxel::GAMEPAD3_BUTTON_RIGHTSTICK;
+    #[pyattr]
+    const GAMEPAD3_BUTTON_LEFTSHOULDER: u32 = pyxel::GAMEPAD3_BUTTON_LEFTSHOULDER;
+    #[pyattr]
+    const GAMEPAD3_BUTTON_RIGHTSHOULDER: u32 = pyxel::GAMEPAD3_BUTTON_RIGHTSHOULDER;
+    #[pyattr]
+    const GAMEPAD3_BUTTON_DPAD_UP: u32 = pyxel::GAMEPAD3_BUTTON_DPAD_UP;
+    #[pyattr]
+    const GAMEPAD3_BUTTON_DPAD_DOWN: u32 = pyxel::GAMEPAD3_BUTTON_DPAD_DOWN;
+    #[pyattr]
+    const GAMEPAD3_BUTTON_DPAD_LEFT: u32 = pyxel::GAMEPAD3_BUTTON_DPAD_LEFT;
+    #[pyattr]
+    const GAMEPAD3_BUTTON_DPAD_RIGHT: u32 = pyxel::GAMEPAD3_BUTTON_DPAD_RIGHT;
+
+    // Gamepad 4 constants
+    #[pyattr]
+    const GAMEPAD4_AXIS_LEFTX: u32 = pyxel::GAMEPAD4_AXIS_LEFTX;
+    #[pyattr]
+    const GAMEPAD4_AXIS_LEFTY: u32 = pyxel::GAMEPAD4_AXIS_LEFTY;
+    #[pyattr]
+    const GAMEPAD4_AXIS_RIGHTX: u32 = pyxel::GAMEPAD4_AXIS_RIGHTX;
+    #[pyattr]
+    const GAMEPAD4_AXIS_RIGHTY: u32 = pyxel::GAMEPAD4_AXIS_RIGHTY;
+    #[pyattr]
+    const GAMEPAD4_AXIS_TRIGGERLEFT: u32 = pyxel::GAMEPAD4_AXIS_TRIGGERLEFT;
+    #[pyattr]
+    const GAMEPAD4_AXIS_TRIGGERRIGHT: u32 = pyxel::GAMEPAD4_AXIS_TRIGGERRIGHT;
+    #[pyattr]
+    const GAMEPAD4_BUTTON_A: u32 = pyxel::GAMEPAD4_BUTTON_A;
+    #[pyattr]
+    const GAMEPAD4_BUTTON_B: u32 = pyxel::GAMEPAD4_BUTTON_B;
+    #[pyattr]
+    const GAMEPAD4_BUTTON_X: u32 = pyxel::GAMEPAD4_BUTTON_X;
+    #[pyattr]
+    const GAMEPAD4_BUTTON_Y: u32 = pyxel::GAMEPAD4_BUTTON_Y;
+    #[pyattr]
+    const GAMEPAD4_BUTTON_BACK: u32 = pyxel::GAMEPAD4_BUTTON_BACK;
+    #[pyattr]
+    const GAMEPAD4_BUTTON_GUIDE: u32 = pyxel::GAMEPAD4_BUTTON_GUIDE;
+    #[pyattr]
+    const GAMEPAD4_BUTTON_START: u32 = pyxel::GAMEPAD4_BUTTON_START;
+    #[pyattr]
+    const GAMEPAD4_BUTTON_LEFTSTICK: u32 = pyxel::GAMEPAD4_BUTTON_LEFTSTICK;
+    #[pyattr]
+    const GAMEPAD4_BUTTON_RIGHTSTICK: u32 = pyxel::GAMEPAD4_BUTTON_RIGHTSTICK;
+    #[pyattr]
+    const GAMEPAD4_BUTTON_LEFTSHOULDER: u32 = pyxel::GAMEPAD4_BUTTON_LEFTSHOULDER;
+    #[pyattr]
+    const GAMEPAD4_BUTTON_RIGHTSHOULDER: u32 = pyxel::GAMEPAD4_BUTTON_RIGHTSHOULDER;
+    #[pyattr]
+    const GAMEPAD4_BUTTON_DPAD_UP: u32 = pyxel::GAMEPAD4_BUTTON_DPAD_UP;
+    #[pyattr]
+    const GAMEPAD4_BUTTON_DPAD_DOWN: u32 = pyxel::GAMEPAD4_BUTTON_DPAD_DOWN;
+    #[pyattr]
+    const GAMEPAD4_BUTTON_DPAD_LEFT: u32 = pyxel::GAMEPAD4_BUTTON_DPAD_LEFT;
+    #[pyattr]
+    const GAMEPAD4_BUTTON_DPAD_RIGHT: u32 = pyxel::GAMEPAD4_BUTTON_DPAD_RIGHT;
+
     // String constants
     #[pyattr]
-    const WINDOW_STATE_ENV: &'static str = pyxel::WINDOW_STATE_ENV;
+    const WINDOW_STATE_ENV: &str = pyxel::WINDOW_STATE_ENV;
     #[pyattr]
-    const APP_FILE_EXTENSION: &'static str = pyxel::APP_FILE_EXTENSION;
+    const APP_FILE_EXTENSION: &str = pyxel::APP_FILE_EXTENSION;
     #[pyattr]
-    const APP_STARTUP_SCRIPT_FILE: &'static str = pyxel::APP_STARTUP_SCRIPT_FILE;
+    const APP_STARTUP_SCRIPT_FILE: &str = pyxel::APP_STARTUP_SCRIPT_FILE;
     #[pyattr]
-    const BASE_DIR: &'static str = pyxel::BASE_DIR;
+    const RESOURCE_FILE_EXTENSION: &str = pyxel::RESOURCE_FILE_EXTENSION;
+    #[pyattr]
+    const PALETTE_FILE_EXTENSION: &str = pyxel::PALETTE_FILE_EXTENSION;
+    #[pyattr]
+    const BASE_DIR: &str = pyxel::BASE_DIR;
 
     // Utility functions
     #[pyfunction]

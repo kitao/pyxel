@@ -76,8 +76,24 @@ impl PyImage {
         let x = i(&a[0], vm)?;
         let y = i(&a[1], vm)?;
         let filename = s(&a[2]).ok_or_else(|| vm.new_type_error("expected str".into()))?;
-        let _ = unsafe { &mut *self.inner }.load(x, y, filename, None);
-        Ok(())
+        let include_colors = args
+            .kwargs
+            .get("include_colors")
+            .map(to_bool)
+            .or_else(|| ob(a, 3, vm));
+        unsafe { &mut *self.inner }
+            .load(x, y, filename, include_colors)
+            .map_err(|e| vm.new_value_error(e))
+    }
+
+    #[pymethod]
+    fn save(&self, args: FuncArgs, vm: &VirtualMachine) -> PyResult<()> {
+        let a = &args.args;
+        let filename = s(&a[0]).ok_or_else(|| vm.new_type_error("expected str".into()))?;
+        let scale = u(&a[1], vm)?;
+        unsafe { &mut *self.inner }
+            .save(filename, scale)
+            .map_err(|e| vm.new_value_error(e))
     }
 
     #[pymethod]
@@ -294,6 +310,111 @@ impl PyImage {
         }
         Ok(())
     }
+
+    #[pymethod]
+    fn pal(&self, args: FuncArgs, vm: &VirtualMachine) -> PyResult<()> {
+        let a = &args.args;
+        if a.is_empty() {
+            self.img_mut().reset_color_map();
+        } else {
+            self.img_mut().map_color(c(&a[0], vm)?, c(&a[1], vm)?);
+        }
+        Ok(())
+    }
+
+    #[pymethod]
+    fn dither(&self, args: FuncArgs, vm: &VirtualMachine) -> PyResult<()> {
+        self.img_mut().set_dithering(f(&args.args[0], vm)?);
+        Ok(())
+    }
+
+    #[pymethod]
+    fn bltm(&self, args: FuncArgs, vm: &VirtualMachine) -> PyResult<()> {
+        let a = &args.args;
+        let x = f(&a[0], vm)?;
+        let y = f(&a[1], vm)?;
+        let u_coord = f(&a[3], vm)?;
+        let v_coord = f(&a[4], vm)?;
+        let w = f(&a[5], vm)?;
+        let h = f(&a[6], vm)?;
+        let colkey = oc(a, 7, vm)?;
+        let rotate = of(a, 8, vm)?;
+        let scale = of(a, 9, vm)?;
+
+        let tm_obj = &a[2];
+        let tm_ptr = if let Ok(idx) = u(tm_obj, vm) {
+            *pyxel::tilemaps()
+                .get(idx as usize)
+                .ok_or_else(|| vm.new_value_error("invalid tilemap index".into()))?
+        } else if let Some(tm) = tm_obj.payload::<crate::tilemap_wrapper::PyTilemap>() {
+            tm.inner
+        } else {
+            return Err(vm.new_type_error("expected int or Tilemap".into()));
+        };
+        unsafe {
+            self.img_mut()
+                .draw_tilemap(x, y, tm_ptr, u_coord, v_coord, w, h, colkey, rotate, scale);
+        }
+        Ok(())
+    }
+
+    #[pymethod]
+    fn blt3d(&self, args: FuncArgs, vm: &VirtualMachine) -> PyResult<()> {
+        let a = &args.args;
+        let x = f(&a[0], vm)?;
+        let y = f(&a[1], vm)?;
+        let w = f(&a[2], vm)?;
+        let h = f(&a[3], vm)?;
+        let img_obj = &a[4];
+        let pos = extract_f32_tuple3(&a[5], vm)?;
+        let rot = extract_f32_tuple3(&a[6], vm)?;
+        let fov = of(a, 7, vm)?;
+        let colkey = oc(a, 8, vm)?;
+
+        let img_ptr = if let Ok(idx) = u(img_obj, vm) {
+            *pyxel::images()
+                .get(idx as usize)
+                .ok_or_else(|| vm.new_value_error("invalid image index".into()))?
+        } else if let Some(img) = img_obj.payload::<PyImage>() {
+            img.inner
+        } else {
+            return Err(vm.new_type_error("expected int or Image".into()));
+        };
+        unsafe {
+            self.img_mut()
+                .draw_image_3d(x, y, w, h, img_ptr, pos, rot, fov, colkey);
+        }
+        Ok(())
+    }
+
+    #[pymethod]
+    fn bltm3d(&self, args: FuncArgs, vm: &VirtualMachine) -> PyResult<()> {
+        let a = &args.args;
+        let x = f(&a[0], vm)?;
+        let y = f(&a[1], vm)?;
+        let w = f(&a[2], vm)?;
+        let h = f(&a[3], vm)?;
+        let tm_obj = &a[4];
+        let pos = extract_f32_tuple3(&a[5], vm)?;
+        let rot = extract_f32_tuple3(&a[6], vm)?;
+        let fov = of(a, 7, vm)?;
+        let colkey = oc(a, 8, vm)?;
+
+        let tm_ptr = if let Ok(idx) = u(tm_obj, vm) {
+            *pyxel::tilemaps()
+                .get(idx as usize)
+                .ok_or_else(|| vm.new_value_error("invalid tilemap index".into()))?
+        } else if let Some(tm) = tm_obj.payload::<crate::tilemap_wrapper::PyTilemap>() {
+            tm.inner
+        } else {
+            return Err(vm.new_type_error("expected int or Tilemap".into()));
+        };
+        unsafe {
+            self.img_mut()
+                .draw_tilemap_3d(x, y, w, h, tm_ptr, pos, rot, fov, colkey);
+        }
+        Ok(())
+    }
 }
 
 impl Constructor for PyImage {
@@ -306,30 +427,35 @@ impl Constructor for PyImage {
     }
 }
 
-// Helper to extract i32 (not in helpers.rs yet)
-fn i(obj: &rustpython_vm::PyObjectRef, vm: &VirtualMachine) -> PyResult<i32> {
-    use rustpython_vm::builtins::PyInt;
-    if let Some(v) = obj.payload::<PyInt>() {
-        let val: i64 = v
-            .as_bigint()
-            .try_into()
-            .map_err(|_| vm.new_overflow_error("int too large".into()))?;
-        return Ok(val as i32);
+fn extract_f32_tuple3(
+    obj: &rustpython_vm::PyObjectRef,
+    vm: &VirtualMachine,
+) -> PyResult<(f32, f32, f32)> {
+    use rustpython_vm::builtins::PyTuple;
+    let tup = obj
+        .payload::<PyTuple>()
+        .ok_or_else(|| vm.new_type_error("expected tuple of 3 floats".into()))?;
+    let items = tup.as_slice();
+    if items.len() != 3 {
+        return Err(vm.new_value_error("expected tuple of 3 elements".into()));
     }
-    Err(vm.new_type_error("expected int".into()))
+    Ok((f(&items[0], vm)?, f(&items[1], vm)?, f(&items[2], vm)?))
 }
 
-// Helper to extract Vec<String> from a Python list
+// Helper to extract Vec<String> from a Python list or tuple
 pub fn extract_str_vec(obj: &PyObjectRef, vm: &VirtualMachine) -> PyResult<Vec<String>> {
-    use rustpython_vm::builtins::PyList;
-    if let Some(list) = obj.payload::<PyList>() {
-        let items = list.borrow_vec();
-        let mut result = Vec::with_capacity(items.len());
-        for item in items.iter() {
-            let val = s(item).ok_or_else(|| vm.new_type_error("expected str in list".into()))?;
-            result.push(val.to_owned());
-        }
-        return Ok(result);
+    use rustpython_vm::builtins::{PyList, PyTuple};
+    let items: Vec<PyObjectRef> = if let Some(list) = obj.payload::<PyList>() {
+        list.borrow_vec().to_vec()
+    } else if let Some(tup) = obj.payload::<PyTuple>() {
+        tup.as_slice().to_vec()
+    } else {
+        return Err(vm.new_type_error("expected list or tuple".into()));
+    };
+    let mut result = Vec::with_capacity(items.len());
+    for item in &items {
+        let val = s(item).ok_or_else(|| vm.new_type_error("expected str in list".into()))?;
+        result.push(val.to_owned());
     }
-    Err(vm.new_type_error("expected list".into()))
+    Ok(result)
 }

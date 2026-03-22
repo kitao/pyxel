@@ -1,11 +1,8 @@
-use std::path::Path;
-use std::{env, fs};
+use std::env;
 
 fn find_pyxel_python_dir() -> Option<String> {
-    // Look for python/pyxel/ relative to the binary
     let exe = env::current_exe().ok()?;
     let mut dir = exe.parent()?;
-    // Walk up from binary location to find repo root with python/pyxel/
     for _ in 0..10 {
         let candidate = dir.join("python").join("pyxel");
         if candidate.join("cli.py").exists() {
@@ -17,75 +14,73 @@ fn find_pyxel_python_dir() -> Option<String> {
 }
 
 fn main() {
+    pyxel_embed::save_original_cwd();
     let interp = pyxel_embed::create_interpreter();
     let args: Vec<String> = env::args().collect();
 
-    // Set pyxel.__path__ so "import pyxel.cli" works, and patch runpy workaround
-    if let Some(pyxel_dir) = find_pyxel_python_dir() {
-        let setup = format!(
-            r#"
+    let pyxel_dir = find_pyxel_python_dir().unwrap_or_else(|| {
+        eprintln!("Error: cannot find python/pyxel/ directory");
+        std::process::exit(1);
+    });
+
+    // Build sys.argv as if invoked via `pyxel <subcommand> ...`
+    let sys_argv: Vec<String> = {
+        let mut v = vec!["pyxel".to_string()];
+        v.extend_from_slice(&args[1..]);
+        v
+    };
+
+    // Set up pyxel module path and patch runpy for RustPython compatibility
+    let setup = format!(
+        r#"
+import sys
+sys.argv = {sys_argv:?}
+
 import pyxel
-pyxel.__path__ = [r"{}"]
+pyxel.__path__ = [r"{pyxel_dir}"]
 
-# Patch play_pyxel_app to use exec instead of runpy (RustPython compatibility)
-def _patch_cli():
-    try:
-        import pyxel.cli as cli
-        import os, sys
-        _orig_play = cli.play_pyxel_app
-        def _play_pyxel_app(pyxel_app_file):
-            file_ext = os.path.splitext(pyxel_app_file)[1].lower()
-            if file_ext != ".zip":
-                pyxel_app_file = cli._complete_extension(pyxel_app_file, "play", pyxel.APP_FILE_EXTENSION)
-            cli._check_file_exists(pyxel_app_file)
-            cli.print_pyxel_app_metadata(pyxel_app_file)
-            startup_script_file = cli._extract_pyxel_app(pyxel_app_file)
-            if startup_script_file:
-                sys.path.insert(0, os.path.abspath(os.path.dirname(startup_script_file)))
-                os.chdir(os.path.dirname(startup_script_file))
-                with open(startup_script_file) as f:
-                    code = f.read()
-                exec(compile(code, startup_script_file, "exec"), {{"__name__": "__main__", "__file__": startup_script_file}})
-                return
-            print(f"file not found: '{{pyxel.APP_STARTUP_SCRIPT_FILE}}'")
-            sys.exit(1)
-        cli.play_pyxel_app = _play_pyxel_app
-    except Exception:
-        pass
-_patch_cli()
-del _patch_cli
+# Patch run_python_script / play_pyxel_app to use exec instead of runpy
+import pyxel.cli as _cli
+import os as _os
+
+def _run_python_script(python_script_file):
+    python_script_file = _cli._complete_extension(python_script_file, "run", ".py")
+    _cli._check_file_exists(python_script_file)
+    python_script_file = _os.path.abspath(python_script_file)
+    sys.path.insert(0, _os.path.dirname(python_script_file))
+    _os.chdir(_os.path.dirname(python_script_file) or ".")
+    with open(python_script_file) as _f:
+        _code = _f.read()
+    exec(compile(_code, python_script_file, "exec"), {{"__name__": "__main__", "__file__": python_script_file}})
+
+def _play_pyxel_app(pyxel_app_file):
+    file_ext = _os.path.splitext(pyxel_app_file)[1].lower()
+    if file_ext != ".zip":
+        pyxel_app_file = _cli._complete_extension(pyxel_app_file, "play", pyxel.APP_FILE_EXTENSION)
+    _cli._check_file_exists(pyxel_app_file)
+    _cli.print_pyxel_app_metadata(pyxel_app_file)
+    startup_script_file = _cli._extract_pyxel_app(pyxel_app_file)
+    if startup_script_file:
+        sys.path.insert(0, _os.path.abspath(_os.path.dirname(startup_script_file)))
+        _os.chdir(_os.path.dirname(startup_script_file))
+        with open(startup_script_file) as _f:
+            _code = _f.read()
+        exec(compile(_code, startup_script_file, "exec"), {{"__name__": "__main__", "__file__": startup_script_file}})
+        return
+    print(f"file not found: '{{pyxel.APP_STARTUP_SCRIPT_FILE}}'")
+    sys.exit(1)
+
+_cli.run_python_script = _run_python_script
+_cli.play_pyxel_app = _play_pyxel_app
 "#,
-            pyxel_dir.replace('\\', "\\\\")
-        );
-        pyxel_embed::exec_source(&interp, &setup);
-    }
+        sys_argv = sys_argv,
+        pyxel_dir = pyxel_dir.replace('\\', "\\\\"),
+    );
+    pyxel_embed::exec_source(&interp, &setup);
 
-    if args.len() < 2 {
-        pyxel_embed::exec_source(&interp, "import pyxel; pyxel.init(160, 120, 'Test'); pyxel.cls(1); pyxel.text(10, 10, 'Hello!', 7)");
-        pyxel_embed::exec_source(&interp, "import pyxel; pyxel.show()");
-    } else {
-        let script_path = Path::new(&args[1]);
-        let script = fs::read_to_string(script_path).unwrap_or_else(|e| {
-            eprintln!("Error reading {}: {e}", args[1]);
-            std::process::exit(1);
-        });
-
-        // Change to script directory for relative resource paths
-        if let Some(dir) = script_path
-            .canonicalize()
-            .ok()
-            .and_then(|p| p.parent().map(|d| d.to_path_buf()))
-        {
-            let _ = env::set_current_dir(&dir);
-        }
-
-        let abs_path = script_path
-            .canonicalize()
-            .unwrap_or_else(|_| script_path.to_path_buf());
-        pyxel_embed::exec_source_with_file(
-            &interp,
-            &script,
-            Some(abs_path.to_str().unwrap_or("<script>")),
-        );
-    }
+    // Dispatch via cli
+    pyxel_embed::exec_source(
+        &interp,
+        "import sys; import pyxel.cli; pyxel.cli.cli(); sys.stdout.flush()",
+    );
 }

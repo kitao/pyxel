@@ -23,3 +23,9 @@ pub fn btnv(args: FuncArgs, vm: &VirtualMachine) -> PyResult<i32> {
 pub fn mouse(visible: bool) {
     pyxel::pyxel().set_mouse_visible(visible);
 }
+
+pub fn warp_mouse(args: FuncArgs, vm: &VirtualMachine) -> PyResult<()> {
+    let a = &args.args;
+    pyxel::pyxel().set_mouse_position(f(&a[0], vm)?, f(&a[1], vm)?);
+    Ok(())
+}
