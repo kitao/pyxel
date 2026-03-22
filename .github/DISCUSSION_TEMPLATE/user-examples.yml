@@ -1,14 +1,14 @@
-title: "Your Work Title / 作品名"
+title: "Your Creation Title / 作品名"
 labels: []
 body:
   - type: markdown
     attributes:
       value: |
-        Share your Pyxel creation! Enter your work's title in the Title field above.
+        Share your Pyxel creation! Enter your creation's title in the Title field above.
         Pyxelで作った作品を共有してください！上のTitleに作品名を入力してください。
 
         - Description / 作品の説明
-        - Work URL / 作品URL (optional / 任意)
+        - Creation URL / 作品URL (optional / 任意)
         - Your name / あなたの名前
         - Contact / 連絡先 (optional / 任意)
         - GIF / GIFアニメ
@@ -22,7 +22,7 @@ body:
   - type: input
     id: url
     attributes:
-      label: "Work URL / 作品URL"
+      label: "Creation URL / 作品URL"
       description: "GitHub repo, itch.io, etc."
     validations:
       required: false
