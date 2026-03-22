@@ -45,6 +45,6 @@ body:
     id: gif
     attributes:
       label: "GIF / GIFアニメ"
-      description: "Drag & drop here. Alt(Option)+2 to record, Alt(Option)+3 to save / ここにドラッグ&ドロップ。Alt(Option)+2で録画開始、Alt(Option)+3で保存"
+      description: "Drag & drop here. Max 2MB. Alt(Option)+2 to record, Alt(Option)+3 to save / ここにドラッグ&ドロップ。最大2MB。Alt(Option)+2で録画開始、Alt(Option)+3で保存"
     validations:
       required: true
