@@ -7,20 +7,22 @@ body:
     attributes:
       label: "What happened? / 何が起きましたか？"
       description: "Steps to reproduce and expected behavior / 再現手順と期待する動作"
+      placeholder: "e.g. I ran `pyxel run game.py` but the window stays black. Expected to see my game."
     validations:
       required: true
   - type: input
     id: environment
     attributes:
-      label: "OS and browser / OSとブラウザ"
-      placeholder: "e.g. Windows 11 / macOS 15, Chrome 130 / Android 15, Firefox"
+      label: "OS"
+      description: "Include browser for web version / Web版の場合はブラウザも記入してください"
+      placeholder: "e.g. Windows 11 / macOS 15 / Android 15, Chrome 130"
     validations:
       required: true
   - type: input
     id: version
     attributes:
       label: "Pyxel Version / Pyxelバージョン"
-      description: "Run `pyxel --version` to check / `pyxel --version` で確認できます"
+      description: "Run `pyxel` to check / `pyxel` コマンドで確認できます"
       placeholder: "e.g. 2.8.7"
     validations:
       required: true
