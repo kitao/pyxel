@@ -1,0 +1,24 @@
+// Add output handlers for x/X/o/b format types
+// Inserted between the 'd' and 's' type handlers
+
+@@@ FIND
+        c11_sbuf__write_i64(&buf, py_toint(val));
+    } else if(type == 's') {
+@@@ REPLACE
+        c11_sbuf__write_i64(&buf, py_toint(val));
+    } else if(type == 'x' || type == 'X') {
+        if(!py_checkint(val)) { c11_sbuf__dtor(&buf); return false; }
+        char _xbuf[32]; snprintf(_xbuf, sizeof(_xbuf), type == 'x' ? "%llx" : "%llX", (long long)py_toint(val));
+        c11_sbuf__write_cstr(&buf, _xbuf);
+    } else if(type == 'o') {
+        if(!py_checkint(val)) { c11_sbuf__dtor(&buf); return false; }
+        char _obuf[32]; snprintf(_obuf, sizeof(_obuf), "%llo", (long long)py_toint(val));
+        c11_sbuf__write_cstr(&buf, _obuf);
+    } else if(type == 'b') {
+        if(!py_checkint(val)) { c11_sbuf__dtor(&buf); return false; }
+        py_i64 _bval = py_toint(val); char _bbuf[66]; int _bi = 0;
+        if(_bval == 0) { _bbuf[_bi++] = '0'; }
+        else { py_i64 _bv = _bval < 0 ? -_bval : _bval; while(_bv > 0) { _bbuf[_bi++] = '0' + (_bv & 1); _bv >>= 1; } if(_bval < 0) _bbuf[_bi++] = '-'; }
+        for(int _bj = 0; _bj < _bi / 2; _bj++) { char _bt = _bbuf[_bj]; _bbuf[_bj] = _bbuf[_bi-1-_bj]; _bbuf[_bi-1-_bj] = _bt; }
+        _bbuf[_bi] = '\0'; c11_sbuf__write_cstr(&buf, _bbuf);
+    } else if(type == 's') {

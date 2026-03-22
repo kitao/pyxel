@@ -1,0 +1,33 @@
+// Generator expressions in function arguments: any(x for x in lst)
+// When a single expression is followed by 'for' inside a function call,
+// treat it as a list comprehension (same pattern as exprList)
+
+@@@ FIND
+            } else {
+                // positional argument
+                if(e->kwargs.length > 0) {
+                    return SyntaxError(self, "positional argument follows keyword argument");
+                }
+                c11_vector__push(Expr*, &e->args, Ctx__s_popx(ctx()));
+            }
+        }
+    } while(match(TK_COMMA));
+    consume(TK_RPAREN);
+@@@ REPLACE
+            } else {
+                // positional argument
+                if(e->kwargs.length > 0) {
+                    return SyntaxError(self, "positional argument follows keyword argument");
+                }
+                /* [pyxel-pocket] generator expr as function arg: f(x for x in y) */
+                if(e->args.length == 0 && e->kwargs.length == 0 && match(TK_FOR)) {
+                    check(consume_comp(self, OP_BUILD_LIST, OP_LIST_APPEND));
+                    c11_vector__push(Expr*, &e->args, Ctx__s_popx(ctx()));
+                    consume(TK_RPAREN);
+                    return NULL;
+                }
+                c11_vector__push(Expr*, &e->args, Ctx__s_popx(ctx()));
+            }
+        }
+    } while(match(TK_COMMA));
+    consume(TK_RPAREN);

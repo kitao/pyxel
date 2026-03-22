@@ -1,0 +1,21 @@
+// Fix width parsing for format specs with no width (e.g. {:o})
+// Without this, empty spec causes "invalid format specifier" error
+
+@@@ FIND
+    } else {
+        // {10s}
+        IntParsingResult res = c11__parse_uint(spec, &width, 10);
+        if(res != IntParsing_SUCCESS) return ValueError("invalid format specifier");
+        precision = -1;
+    }
+@@@ REPLACE
+    } else {
+        // {10s} or just {s}
+        if(spec.size == 0) {
+            width = -1;
+        } else {
+            IntParsingResult res = c11__parse_uint(spec, &width, 10);
+            if(res != IntParsing_SUCCESS) return ValueError("invalid format specifier");
+        }
+        precision = -1;
+    }

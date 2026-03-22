@@ -352,7 +352,8 @@ pub unsafe fn add_sound_class(m: ffi::py_GlobalRef) {
     ffi::py_bindproperty(TP_SOUND, c"volumes".as_ptr(), Some(volumes_getter), None);
     ffi::py_bindproperty(TP_SOUND, c"effects".as_ptr(), Some(effects_getter), None);
     ffi::py_bindproperty(TP_SOUND, c"speed".as_ptr(), Some(sound_speed_getter), Some(sound_speed_setter));
-    bind(ffi::py_tpobject(TP_SOUND), c"set(self, notes, tones, volumes, effects, speed)", Some(sound_set));
+    // Use default=None to force FuncType_NORMAL so kwargs work
+    bind(ffi::py_tpobject(TP_SOUND), c"set(self, notes=None, tones=None, volumes=None, effects=None, speed=None)", Some(sound_set));
     ffi::py_bindmethod(TP_SOUND, c"set_notes".as_ptr(), Some(sound_set_notes));
     ffi::py_bindmethod(TP_SOUND, c"set_tones".as_ptr(), Some(sound_set_tones));
     ffi::py_bindmethod(TP_SOUND, c"set_volumes".as_ptr(), Some(sound_set_volumes));

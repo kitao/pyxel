@@ -1,0 +1,67 @@
+// Nested list/set/dict comprehensions: [x for a in b for c in d]
+// Loop on additional 'for' clauses in consume_comp
+
+@@@ FIND
+static Error* consume_comp(Compiler* self, Opcode op0, Opcode op1) {
+    // [expr]
+    Error* err;
+    int line = prev()->line;
+    bool has_cond = false;
+    check(EXPR_VARS(self));  // [expr, vars]
+    consume(TK_IN);
+    check(parse_expression(self, PREC_TERNARY + 1, false));  // [expr, vars, iter]
+    if(match(TK_IF)) {
+        check(parse_expression(self, PREC_TERNARY + 1, false));  // [expr, vars, iter, cond]
+        has_cond = true;
+    }
+    CompExpr* ce = CompExpr__new(line, op0, op1);
+    if(has_cond) ce->cond = Ctx__s_popx(ctx());
+    ce->iter = Ctx__s_popx(ctx());
+    ce->vars = Ctx__s_popx(ctx());
+    ce->expr = Ctx__s_popx(ctx());
+    Ctx__s_push(ctx(), (Expr*)ce);
+    return NULL;
+}
+@@@ REPLACE
+static Error* consume_comp(Compiler* self, Opcode op0, Opcode op1) {
+    // [pyxel-pocket] supports nested comprehensions: [x for a in b for c in d]
+    Error* err;
+    int line = prev()->line;
+    bool has_cond = false;
+    check(EXPR_VARS(self));
+    consume(TK_IN);
+    check(parse_expression(self, PREC_TERNARY + 1, false));
+    if(match(TK_IF)) {
+        check(parse_expression(self, PREC_TERNARY + 1, false));
+        has_cond = true;
+    }
+    CompExpr* ce = CompExpr__new(line, op0, op1);
+    if(has_cond) ce->cond = Ctx__s_popx(ctx());
+    ce->iter = Ctx__s_popx(ctx());
+    ce->vars = Ctx__s_popx(ctx());
+    ce->expr = Ctx__s_popx(ctx());
+    Ctx__s_push(ctx(), (Expr*)ce);
+    /* handle nested for clauses by wrapping in another CompExpr */
+    while(match(TK_FOR)) {
+        Expr* inner = Ctx__s_popx(ctx());
+        check(EXPR_VARS(self));
+        consume(TK_IN);
+        check(parse_expression(self, PREC_TERNARY + 1, false));
+        bool has_cond2 = false;
+        if(match(TK_IF)) {
+            check(parse_expression(self, PREC_TERNARY + 1, false));
+            has_cond2 = true;
+        }
+        CompExpr* outer = CompExpr__new(line, op0, op1);
+        outer->expr = inner;
+        /* swap: inner comp becomes the expr of outer, outer iterates */
+        if(has_cond2) outer->cond = Ctx__s_popx(ctx());
+        outer->iter = Ctx__s_popx(ctx());
+        outer->vars = Ctx__s_popx(ctx());
+        /* the inner comprehension's op should be the append op */
+        ((CompExpr*)inner)->op0 = OP_BUILD_LIST; /* dummy, won't emit */
+        ((CompExpr*)inner)->op1 = op1;
+        Ctx__s_push(ctx(), (Expr*)outer);
+    }
+    return NULL;
+}

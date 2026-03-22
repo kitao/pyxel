@@ -1,0 +1,29 @@
+// Implicit string literal concatenation: "a" "b" -> "ab"
+// In the parser's exprLiteral, consume adjacent TK_STR tokens and merge
+
+@@@ FIND
+static Error* exprLiteral(Compiler* self) {
+    LiteralExpr* e = LiteralExpr__new(prev()->line, &prev()->value);
+    Ctx__s_push(ctx(), (Expr*)e);
+    return NULL;
+}
+@@@ REPLACE
+static Error* exprLiteral(Compiler* self) {
+    /* [pyxel-pocket] implicit string concatenation */
+    if(prev()->value.index == TokenValue_STR && curr()->type == TK_STR) {
+        c11_sbuf _cat; c11_sbuf__ctor(&_cat);
+        c11_sbuf__write_cstr(&_cat, prev()->value._str->data);
+        while(curr()->type == TK_STR) {
+            advance();
+            c11_sbuf__write_cstr(&_cat, prev()->value._str->data);
+        }
+        c11_string* merged = c11_sbuf__submit(&_cat);
+        TokenValue tv = {TokenValue_STR, ._str = merged};
+        LiteralExpr* e = LiteralExpr__new(prev()->line, &tv);
+        Ctx__s_push(ctx(), (Expr*)e);
+        return NULL;
+    }
+    LiteralExpr* e = LiteralExpr__new(prev()->line, &prev()->value);
+    Ctx__s_push(ctx(), (Expr*)e);
+    return NULL;
+}

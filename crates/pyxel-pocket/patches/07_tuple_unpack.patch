@@ -1,0 +1,41 @@
+// Tuple unpacking in for-loop targets: for i, (x, y) in ...
+// Extend EXPR_VARS to handle parenthesized sub-patterns
+
+@@@ FIND
+static Error* EXPR_VARS(Compiler* self) {
+    int count = 0;
+    do {
+        consume(TK_ID);
+        py_Name name = py_namev(Token__sv(prev()));
+        NameExpr* e = NameExpr__new(prev()->line, name, name_scope(self));
+        Ctx__s_push(ctx(), (Expr*)e);
+        count += 1;
+    } while(match(TK_COMMA));
+@@@ REPLACE
+static Error* EXPR_VARS(Compiler* self) {
+    int count = 0;
+    do {
+        if(match(TK_LPAREN)) {
+            /* [pyxel-pocket] nested tuple unpacking: (x, y) */
+            int sub_count = 0;
+            do {
+                consume(TK_ID);
+                py_Name sname = py_namev(Token__sv(prev()));
+                NameExpr* se = NameExpr__new(prev()->line, sname, name_scope(self));
+                Ctx__s_push(ctx(), (Expr*)se);
+                sub_count += 1;
+            } while(match(TK_COMMA));
+            consume(TK_RPAREN);
+            if(sub_count > 1) {
+                SequenceExpr* sub = TupleExpr__new(prev()->line, sub_count);
+                for(int si = sub_count - 1; si >= 0; si--) sub->items[si] = Ctx__s_popx(ctx());
+                Ctx__s_push(ctx(), (Expr*)sub);
+            }
+        } else {
+            consume(TK_ID);
+            py_Name name = py_namev(Token__sv(prev()));
+            NameExpr* e = NameExpr__new(prev()->line, name, name_scope(self));
+            Ctx__s_push(ctx(), (Expr*)e);
+        }
+        count += 1;
+    } while(match(TK_COMMA));

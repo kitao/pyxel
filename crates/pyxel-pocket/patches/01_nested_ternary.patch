@@ -1,0 +1,10 @@
+// Allow nested ternary expressions without parentheses
+// e.g. `a if x else b if y else c`
+// PocketPy rejects this by default as "ambiguous"
+
+@@@ FIND
+    if(e->cond->vt->is_ternary || e->false_expr->vt->is_ternary || e->true_expr->vt->is_ternary) {
+        return SyntaxError(self, "nested ternary expressions without `()` are ambiguous");
+    }
+@@@ REPLACE
+    // [pyxel-pocket] nested ternary allowed

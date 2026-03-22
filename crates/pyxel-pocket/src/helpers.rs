@@ -285,18 +285,17 @@ macro_rules! impl_object_collection {
                 let (start, stop, step) = slice_indices(key, items.len());
                 let val_list = arg(argv, 2);
                 let new_len = ffi::py_list_len(val_list);
+                let new_vals: Vec<_> = (0..new_len)
+                    .map(|i| *(ffi::py_touserdata(ffi::py_list_getitem(val_list, i)) as *mut _))
+                    .collect();
                 if step == 1 {
-                    for (pos, idx) in (start as usize..stop as usize).enumerate() {
-                        if pos < new_len as usize {
-                            let obj = ffi::py_list_getitem(val_list, pos as i32);
-                            items[idx] = *(ffi::py_touserdata(obj) as *mut _);
-                        }
-                    }
+                    items.splice(start as usize..stop as usize, new_vals);
                 } else {
                     let indices = collect_indices(start, stop, step);
                     for (pos, &idx) in indices.iter().enumerate() {
-                        let obj = ffi::py_list_getitem(val_list, pos as i32);
-                        items[idx] = *(ffi::py_touserdata(obj) as *mut _);
+                        if pos < new_vals.len() {
+                            items[idx] = new_vals[pos];
+                        }
                     }
                 }
             } else {

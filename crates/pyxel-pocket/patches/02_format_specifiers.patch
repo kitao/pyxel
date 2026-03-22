@@ -1,0 +1,23 @@
+// Add format specifiers: x, X, o, b for integer formatting
+// e.g. f"{255:06X}" -> "0000FF"
+
+@@@ FIND
+        case 'f':
+        case 'd':
+        case 's':
+            type = spec.data[spec.size - 1];
+            spec.size--;  // remove last char
+            break;
+        default: type = ' '; break;
+@@@ REPLACE
+        case 'f':
+        case 'd':
+        case 's':
+        case 'x':
+        case 'X':
+        case 'o':
+        case 'b':
+            type = spec.data[spec.size - 1];
+            spec.size--;
+            break;
+        default: type = ' '; break;
