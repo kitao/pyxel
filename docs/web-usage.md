@@ -172,7 +172,7 @@ The following common attributes are available for `pyxel-run` and `pyxel-play`.
 
 ### Customizing Screen Display
 
-By default, the Pyxel screen is displayed across the entire page. Place a `` tag with `id="pyxel-screen"` in the HTML to render the screen inside that element, allowing you to adjust its position and size.
+By default, the Pyxel screen is displayed across the entire page. Place a `<div>` tag with `id="pyxel-screen"` in the HTML to render the screen inside that element, allowing you to adjust its position and size.
 
 ### Running in a Local Environment
 

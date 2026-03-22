@@ -147,11 +147,13 @@ class CanvasPanel(Widget):
             data["new_data"] = self.canvas_var.get_slice(0, 0, 256, 256)
             if self._is_tilemap_mode:
                 data["new_imgsrc"] = self.canvas_var.imgsrc
-
-            if (
-                data["new_data"] != data["old_data"]
-                or data["new_imgsrc"] != data["old_imgsrc"]
-            ):
+                changed = (
+                    data["new_data"] != data["old_data"]
+                    or data["new_imgsrc"] != data["old_imgsrc"]
+                )
+            else:
+                changed = data["new_data"] != data["old_data"]
+            if changed:
                 self.add_history(data)
         else:
             data["new_canvas"] = self.canvas_var.get_slice(

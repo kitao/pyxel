@@ -92,6 +92,14 @@ impl Pyxel {
 
         unsafe impl Send for App {}
 
+        impl Drop for App {
+            fn drop(&mut self) {
+                unsafe {
+                    drop(Box::from_raw(self.image));
+                }
+            }
+        }
+
         impl PyxelCallback for App {
             fn update(&mut self, _pyxel: &mut Pyxel) {}
             fn draw(&mut self, _pyxel: &mut Pyxel) {
@@ -328,7 +336,7 @@ impl Pyxel {
                 self.reset_key(KEY_0);
                 self.set_perf_monitor(!self.system.perf_monitor_enabled);
             } else if self.is_button_pressed(KEY_R, None, None) {
-                self.reset_key(KEY_RETURN);
+                self.reset_key(KEY_R);
                 self.restart();
             } else if self.is_button_pressed(KEY_RETURN, None, None) {
                 self.reset_key(KEY_RETURN);

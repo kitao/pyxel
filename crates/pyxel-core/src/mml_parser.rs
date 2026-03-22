@@ -198,10 +198,6 @@ pub fn parse_mml(mml: &str) -> Result<Vec<MmlCommand>, String> {
                         }
                         if is_connected {
                             connected_note = Some(prev_note);
-                        } else if is_connected && quantize != 100 {
-                            commands.push(MmlCommand::Quantize {
-                                gate_ratio: gate_time_to_gate_ratio(quantize),
-                            });
                         }
                         continue;
                     }

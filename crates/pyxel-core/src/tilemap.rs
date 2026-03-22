@@ -100,6 +100,7 @@ impl Tilemap {
                 None,
                 None,
             );
+            drop(Box::from_raw(tilemap));
         }
     }
 
@@ -121,6 +122,7 @@ impl Tilemap {
                 None,
                 None,
             );
+            drop(Box::from_raw(tilemap));
         }
 
         Ok(())

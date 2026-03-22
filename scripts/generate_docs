@@ -258,7 +258,7 @@ class JsEval:
         # chip("text") -> `text`
         if expr.startswith("chip("):
             inner = expr[5:_find_matching(expr, 5, "(", ")") - 1]
-            return f"`{self.eval(inner)}`"
+            return f"`{html.escape(self.eval(inner))}`"
 
         # link("url", "text") -> [text](url)
         if expr.startswith("link("):
@@ -737,6 +737,7 @@ def generate_from_html(html_path, json_path, doc_name):
                  raw, flags=re.DOTALL)
 
     # Convert paragraphs to separated text, then strip remaining tags
+    raw = re.sub(r'<code[^>]*>(.*?)</code>', r'`\1`', raw)
     raw = re.sub(r'<p[^>]*>', '\n', raw)
     raw = re.sub(r'</p>', '\n', raw)
     raw = re.sub(r'</?[^>]+>', '', raw)

@@ -203,12 +203,14 @@ impl Sound {
             unsafe { &mut *channel }.stop();
         }
 
+        let temp_sound = Box::into_raw(Box::new(self.clone()));
+
         {
             let mut channels: Vec<&mut Channel> = channels
                 .iter()
                 .map(|&channel| unsafe { &mut *channel })
                 .collect();
-            let sounds = vec![Box::into_raw(Box::new(self.clone()))];
+            let sounds = vec![temp_sound];
             channels[0].play(sounds, None, true, false);
         }
 
@@ -216,6 +218,9 @@ impl Sound {
         let result = Audio::save_samples(filename, &samples, use_ffmpeg.unwrap_or(false));
         for &channel in channels.iter() {
             unsafe { &mut *channel }.stop();
+        }
+        unsafe {
+            drop(Box::from_raw(temp_sound));
         }
         result
     }

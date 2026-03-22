@@ -148,6 +148,7 @@ impl Image {
                 None,
                 None,
             );
+            drop(Box::from_raw(image));
         }
     }
 
@@ -175,6 +176,7 @@ impl Image {
                 None,
                 None,
             );
+            drop(Box::from_raw(image));
         }
         Ok(())
     }
@@ -709,6 +711,10 @@ impl Image {
                 scale,
                 true,
             );
+        }
+
+        unsafe {
+            drop(Box::from_raw(image));
         }
     }
 

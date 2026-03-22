@@ -1645,15 +1645,6 @@ def mouse(visible: bool) -> None:
     """
     ...
 
-def warp_mouse(x: float, y: float) -> None:
-    """Move the mouse cursor to the specified position.
-
-    Args:
-        x: X coordinate
-        y: Y coordinate
-    """
-    ...
-
 # Graphics
 colors: Seq[int]
 """List of the palette display colors. Specified by 24-bit numerical value. Supports Python list operations."""
