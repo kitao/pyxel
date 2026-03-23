@@ -85,9 +85,9 @@ All fields are required.
 | `width` | u32 | Tilemap width in tiles |
 | `height` | u32 | Tilemap height in tiles |
 | `imgsrc` | u32 | Source image bank index (0–2) |
-| `data` | array of arrays of u8 | 2D tile data in interleaved format (see below) |
+| `data` | array of arrays of u16 | 2D tile data in interleaved format (see below) |
 
-Each tile in the tilemap is a coordinate pair `(tile_x, tile_y)` (`u8`, `u8`) pointing to the position of the 8×8 tile in the source image bank. In the TOML data, these pairs are **interleaved** within each row: `[tx0, ty0, tx1, ty1, ...]`, so each row has `width × 2` elements.
+Each tile in the tilemap is a coordinate pair `(tile_x, tile_y)` (`u16`, `u16`) pointing to the position of the 8×8 tile in the source image bank. In the TOML data, these pairs are **interleaved** within each row: `[tx0, ty0, tx1, ty1, ...]`, so each row has `width × 2` elements.
 
 For example, a tilemap row of 3 tiles referencing image positions (10, 6), (11, 6), and (12, 6) is stored as `[10, 6, 11, 6, 12, 6]`.
 
