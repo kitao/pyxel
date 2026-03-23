@@ -8,7 +8,7 @@
 - Fixed temporary image, tilemap, and sound memory leaks
 - Fixed doc generator stripping HTML tags inside inline code
 - Changed tilemap tile coordinate type from u8 to u16
-- Fixed mouse position when cursor is outside window
+- Fixed initial mouse cursor position
 
 ## 2.8.7
 

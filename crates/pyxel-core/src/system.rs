@@ -56,7 +56,7 @@ impl System {
             },
             screen_x: 0,
             screen_y: 0,
-            screen_scale: 0.0,
+            screen_scale: 1.0,
             screen_mode: 0,
         }
     }
