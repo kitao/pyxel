@@ -276,7 +276,7 @@ impl PlatformSdl2 {
         // Mouse Motion (polling fallback)
         //
         #[cfg(not(target_os = "emscripten"))]
-        {
+        if unsafe { SDL_GetWindowFlags(self.window) } & SDL_WINDOW_INPUT_FOCUS as Uint32 != 0 {
             let (mouse_x, mouse_y) = if self.is_wayland {
                 // Wayland: SDL_GetGlobalMouseState is unsupported, so use
                 // SDL_GetMouseState which returns window-relative coordinates
