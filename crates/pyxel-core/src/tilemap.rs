@@ -6,7 +6,7 @@ use crate::settings::TILE_SIZE;
 use crate::tmx_parser::parse_tmx;
 use crate::utils::{f32_to_u32, parse_hex_string, simplify_string};
 
-pub type ImageTileCoord = u8;
+pub type ImageTileCoord = u16;
 pub type Tile = (ImageTileCoord, ImageTileCoord);
 
 impl ToIndex for Tile {

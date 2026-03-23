@@ -4,7 +4,7 @@ use std::io::Read;
 use serde::Deserialize;
 
 use crate::settings::TILE_SIZE;
-use crate::tilemap::{ImageSource, Tilemap};
+use crate::tilemap::{ImageSource, ImageTileCoord, Tilemap};
 use crate::utils::remove_whitespace;
 
 #[derive(Debug, Deserialize)]
@@ -99,8 +99,8 @@ pub fn parse_tmx(filename: &str, layer_index: u32) -> Result<*mut Tilemap, Strin
             } else {
                 0
             };
-            let tile_x = (tile_id % tileset_columns) as u8;
-            let tile_y = (tile_id / tileset_columns) as u8;
+            let tile_x = (tile_id % tileset_columns) as ImageTileCoord;
+            let tile_y = (tile_id / tileset_columns) as ImageTileCoord;
             tilemap.canvas.write_data(x, y, (tile_x, tile_y));
         }
     }

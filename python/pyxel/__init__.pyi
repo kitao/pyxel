@@ -884,7 +884,7 @@ class Tilemap:
         """
         ...
     def data_ptr(self) -> Any:
-        """Return the raw data pointer of the tilemap as a ctypes c_uint8 array (2 bytes per tile: image_tx, image_ty).
+        """Return the raw data pointer of the tilemap as a ctypes c_uint16 array (4 bytes per tile: image_tx, image_ty).
 
         Returns:
             Raw data pointer

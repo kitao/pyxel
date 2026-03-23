@@ -79,7 +79,7 @@ impl Tilemap {
     fn data_ptr(&self, py: Python) -> PyResult<Py<PyAny>> {
         let inner = unsafe { &mut *self.inner };
         let python_code = CString::new(format!(
-            "import ctypes; c_uint8_array = (ctypes.c_uint8 * {}).from_address({:p})",
+            "import ctypes; c_uint16_array = (ctypes.c_uint16 * {}).from_address({:p})",
             inner.width() * inner.height() * 2,
             inner.data_ptr()
         ))
@@ -87,7 +87,7 @@ impl Tilemap {
         let locals = PyDict::new(py);
         py.run(python_code.as_c_str(), None, Some(&locals))?;
         let array = locals
-            .get_item("c_uint8_array")?
+            .get_item("c_uint16_array")?
             .ok_or_else(|| PyException::new_err("Failed to create data pointer"))?;
         Ok(array.unbind())
     }

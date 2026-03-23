@@ -1210,7 +1210,7 @@ Resolve collisions after applying pixel movement (dx, dy) to the pixel rectangle
 
 ### `Tilemap.data_ptr()` — function *(Advanced)*
 
-Return the raw data pointer of the tilemap as a ctypes c_uint8 array (2 bytes per tile: image_tx, image_ty).
+Return the raw data pointer of the tilemap as a ctypes c_uint16 array (4 bytes per tile: image_tx, image_ty).
 
 **Returns:** `Any` — Raw data pointer
 

@@ -3,12 +3,11 @@
 ## 2.8.8
 
 - Added GitHub issue and discussion templates
-- Fixed envelope tick underflow on empty segments
-- Fixed Alt+R restart resetting the wrong key
-- Fixed unreachable MML tie quantize branch
-- Fixed KeyError in image editor bank copy/paste
+- Fixed MML audio engine edge cases
+- Fixed editor input and copy/paste issues
 - Fixed temporary image, tilemap, and sound memory leaks
 - Fixed doc generator stripping HTML tags inside inline code
+- Changed tilemap tile coordinate type from u8 to u16
 
 ## 2.8.7
 

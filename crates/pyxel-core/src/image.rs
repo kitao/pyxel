@@ -11,7 +11,7 @@ use crate::settings::{
     FONT_HEIGHT, FONT_WIDTH, MAX_COLORS, MAX_FONT_CODE, MIN_FONT_CODE, NUM_FONT_ROWS, TILE_MASK,
     TILE_SHIFT, TILE_SIZE,
 };
-use crate::tilemap::Tilemap;
+use crate::tilemap::{Tile, Tilemap};
 use crate::{pyxel, utils};
 
 pub type Rgb24 = u32;
@@ -619,7 +619,7 @@ impl Image {
             let dst_yi = (dst_y + yi) as usize;
 
             let mut cached_tile_x = i32::MIN;
-            let mut tile = (0u8, 0u8);
+            let mut tile: Tile = (0, 0);
 
             for xi in 0..width {
                 let tilemap_x = src_x + sign_x * xi + offset_x;
