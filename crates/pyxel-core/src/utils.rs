@@ -2,7 +2,7 @@ macro_rules! string_loop {
     ($index: ident, $piece: ident, $string: ident, $step: expr, $block: block) => {
         for $index in 0..($string.len() / $step) {
             let __index = $index * $step;
-            let $piece = $string[__index..__index + $step].to_string();
+            let $piece = &$string[__index..__index + $step];
             $block
         }
     };
@@ -27,7 +27,11 @@ pub fn remove_whitespace(string: &str) -> String {
 }
 
 pub fn simplify_string(string: &str) -> String {
-    remove_whitespace(string).to_ascii_lowercase()
+    string
+        .chars()
+        .filter(|c| !c.is_ascii_whitespace())
+        .map(|c| c.to_ascii_lowercase())
+        .collect()
 }
 
 pub fn parse_hex_string(string: &str) -> Result<u32, &str> {
@@ -52,25 +56,15 @@ pub fn add_file_extension(filename: &str, ext: &str) -> String {
     if filename.to_lowercase().ends_with(ext) {
         filename.to_string()
     } else {
-        filename.to_string() + ext
+        format!("{filename}{ext}")
     }
 }
 
 pub fn compress_vec<T: PartialEq + Clone>(vec: &[T]) -> Vec<T> {
     assert!(!vec.is_empty());
-    let mut new_vec = vec.to_vec();
-    let mut new_len = new_vec.len();
-
-    for i in (1..new_vec.len()).rev() {
-        if new_vec[i] == new_vec[i - 1] {
-            new_len = i;
-        } else {
-            break;
-        }
-    }
-
-    new_vec.truncate(new_len);
-    new_vec
+    let last = vec.last().unwrap();
+    let new_len = vec.iter().rposition(|v| v != last).map_or(1, |i| i + 2);
+    vec[..new_len].to_vec()
 }
 
 pub fn compress_vec2<T: PartialEq + Clone>(vec: &[Vec<T>]) -> Vec<Vec<T>> {
@@ -81,18 +75,15 @@ pub fn compress_vec2<T: PartialEq + Clone>(vec: &[Vec<T>]) -> Vec<Vec<T>> {
         .collect::<Vec<_>>()
 }
 
-pub fn expand_vec<T: Clone + Default>(vec: &[T], new_len: usize) -> Vec<T> {
+pub fn expand_vec<T: Clone>(vec: &[T], new_len: usize) -> Vec<T> {
     assert!(!vec.is_empty());
     let mut new_vec = vec.to_vec();
-
-    if let Some(last) = new_vec.last().cloned() {
-        new_vec.resize_with(new_len, move || last.clone());
-    }
-
+    let last = new_vec.last().cloned().unwrap();
+    new_vec.resize(new_len, last);
     new_vec
 }
 
-pub fn expand_vec2<T: Clone + Default>(
+pub fn expand_vec2<T: Clone>(
     vec: &[Vec<T>],
     new_outer_len: usize,
     new_inner_len: usize,

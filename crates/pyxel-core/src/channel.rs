@@ -1,5 +1,3 @@
-use std::collections::HashMap;
-
 use blip_buf::BlipBuf;
 
 use crate::mml_command::MmlCommand;
@@ -45,9 +43,9 @@ pub struct Channel {
     detune_semitones: f32,
     glide_pending_params: Option<(Option<f32>, Option<u32>)>,
     last_midi_note: Option<f32>,
-    envelope_slots: HashMap<u32, MmlCommand>,
-    vibrato_slots: HashMap<u32, MmlCommand>,
-    glide_slots: HashMap<u32, MmlCommand>,
+    envelope_slots: Vec<Option<MmlCommand>>,
+    vibrato_slots: Vec<Option<MmlCommand>>,
+    glide_slots: Vec<Option<MmlCommand>>,
 
     resume_sounds: Vec<*mut Sound>,
     resume_should_loop: bool,
@@ -83,9 +81,9 @@ impl Channel {
             detune_semitones: 0.0,
             glide_pending_params: None,
             last_midi_note: None,
-            envelope_slots: HashMap::new(),
-            vibrato_slots: HashMap::new(),
-            glide_slots: HashMap::new(),
+            envelope_slots: Vec::new(),
+            vibrato_slots: Vec::new(),
+            glide_slots: Vec::new(),
 
             resume_sounds: Vec::new(),
             resume_should_loop: false,
@@ -137,11 +135,7 @@ impl Channel {
         should_resume: bool,
     ) -> Result<(), String> {
         let sound = Sound::new();
-        {
-            let sound = unsafe { &mut *sound };
-            sound.set_mml(code)?;
-        }
-
+        unsafe { &mut *sound }.set_mml(code)?;
         self.play_from_clock(
             vec![sound],
             Self::sec_to_clock(start_sec),
@@ -337,11 +331,11 @@ impl Channel {
                 }
 
                 MmlCommand::Envelope { slot } => {
-                    if let Some(MmlCommand::EnvelopeSet {
+                    if let Some(Some(MmlCommand::EnvelopeSet {
                         initial_level,
                         segments,
                         ..
-                    }) = self.envelope_slots.get(slot)
+                    })) = self.envelope_slots.get(*slot as usize)
                     {
                         self.voice.envelope.set(*initial_level, segments);
                         self.voice.envelope.enable();
@@ -355,19 +349,22 @@ impl Channel {
                     segments,
                 } => {
                     assert!(*slot > 0, "Envelope slot 0 is reserved for disable");
-
-                    self.envelope_slots.insert(*slot, command.clone());
+                    let slot = *slot as usize;
+                    if slot >= self.envelope_slots.len() {
+                        self.envelope_slots.resize(slot + 1, None);
+                    }
+                    self.envelope_slots[slot] = Some(command.clone());
                     self.voice.envelope.set(*initial_level, segments);
                     self.voice.envelope.enable();
                 }
 
                 MmlCommand::Vibrato { slot } => {
-                    if let Some(MmlCommand::VibratoSet {
+                    if let Some(Some(MmlCommand::VibratoSet {
                         delay_ticks,
                         period_ticks,
                         semitone_depth,
                         ..
-                    }) = self.vibrato_slots.get(slot)
+                    })) = self.vibrato_slots.get(*slot as usize)
                     {
                         self.voice
                             .vibrato
@@ -384,8 +381,11 @@ impl Channel {
                     semitone_depth,
                 } => {
                     assert!(*slot > 0, "Vibrato slot 0 is reserved for disable");
-
-                    self.vibrato_slots.insert(*slot, command.clone());
+                    let slot = *slot as usize;
+                    if slot >= self.vibrato_slots.len() {
+                        self.vibrato_slots.resize(slot + 1, None);
+                    }
+                    self.vibrato_slots[slot] = Some(command.clone());
                     self.voice
                         .vibrato
                         .set(*delay_ticks, *period_ticks, *semitone_depth);
@@ -393,11 +393,11 @@ impl Channel {
                 }
 
                 MmlCommand::Glide { slot } => {
-                    if let Some(MmlCommand::GlideSet {
+                    if let Some(Some(MmlCommand::GlideSet {
                         semitone_offset,
                         duration_ticks,
                         ..
-                    }) = self.glide_slots.get(slot)
+                    })) = self.glide_slots.get(*slot as usize)
                     {
                         if let (Some(semitone_offset), Some(duration_ticks)) =
                             (semitone_offset, duration_ticks)
@@ -419,8 +419,11 @@ impl Channel {
                     duration_ticks,
                 } => {
                     assert!(*slot > 0, "Glide slot 0 is reserved for disable");
-
-                    self.glide_slots.insert(*slot, command.clone());
+                    let slot = *slot as usize;
+                    if slot >= self.glide_slots.len() {
+                        self.glide_slots.resize(slot + 1, None);
+                    }
+                    self.glide_slots[slot] = Some(command.clone());
 
                     if let (Some(semitone_offset), Some(duration_ticks)) =
                         (semitone_offset, duration_ticks)

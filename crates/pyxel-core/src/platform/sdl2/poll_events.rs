@@ -33,26 +33,22 @@ impl Gamepad {
     pub fn open(device_index: i32) -> Option<Gamepad> {
         let controller = unsafe { SDL_GameControllerOpen(device_index) };
         if controller.is_null() {
-            None
-        } else {
-            let instance_id = unsafe { SDL_JoystickGetDeviceInstanceID(device_index) };
-            Some(Gamepad::Controller(instance_id, controller))
+            return None;
         }
+        let instance_id = unsafe { SDL_JoystickGetDeviceInstanceID(device_index) };
+        Some(Gamepad::Controller(instance_id, controller))
     }
 
     pub fn close(&mut self) {
         if let Gamepad::Controller(_, controller) = self {
-            unsafe {
-                SDL_GameControllerClose(*controller);
-            }
+            unsafe { SDL_GameControllerClose(*controller) };
             *self = Gamepad::Unused;
         }
     }
 }
 
 impl PlatformSdl2 {
-    pub fn poll_events(&mut self) -> Vec<Event> {
-        let mut pyxel_events = Vec::new();
+    pub fn poll_events(&mut self, pyxel_events: &mut Vec<Event>) {
         let mut sdl_event: SDL_Event = unsafe { zeroed() };
 
         while unsafe { SDL_PollEvent(addr_of_mut!(sdl_event)) } != 0 {
@@ -73,21 +69,15 @@ impl PlatformSdl2 {
                 },
 
                 SDL_DROPFILE => {
-                    unsafe {
-                        SDL_RaiseWindow(self.window);
-                    }
-
+                    unsafe { SDL_RaiseWindow(self.window) };
                     let filename = unsafe { CStr::from_ptr(sdl_event.drop.file) };
                     let filename = filename.to_string_lossy().into_owned();
                     pyxel_events.push(Event::FileDropped { filename });
-
-                    unsafe {
-                        SDL_free(sdl_event.drop.file.cast());
-                    }
+                    unsafe { SDL_free(sdl_event.drop.file.cast()) };
                 }
 
                 SDL_QUIT => {
-                    pyxel_events.extend(vec![Event::Quit]);
+                    pyxel_events.push(Event::Quit);
                 }
 
                 //
@@ -102,7 +92,6 @@ impl PlatformSdl2 {
 
                     if unsafe { sdl_event.key.repeat } == 0 {
                         pyxel_events.push(Event::KeyPressed { key });
-
                         if let Some(unified_key) = key_to_virtual_key(key) {
                             pyxel_events.push(Event::KeyPressed { key: unified_key });
                         }
@@ -118,7 +107,6 @@ impl PlatformSdl2 {
 
                     if unsafe { sdl_event.key.repeat } == 0 {
                         pyxel_events.push(Event::KeyReleased { key });
-
                         if let Some(unified_key) = key_to_virtual_key(key) {
                             pyxel_events.push(Event::KeyReleased { key: unified_key });
                         }
@@ -137,30 +125,14 @@ impl PlatformSdl2 {
                 // Mouse Button
                 //
                 SDL_MOUSEBUTTONDOWN => {
-                    let key = match unsafe { sdl_event.button.button } as u32 {
-                        SDL_BUTTON_LEFT => MOUSE_BUTTON_LEFT,
-                        SDL_BUTTON_MIDDLE => MOUSE_BUTTON_MIDDLE,
-                        SDL_BUTTON_RIGHT => MOUSE_BUTTON_RIGHT,
-                        SDL_BUTTON_X1 => MOUSE_BUTTON_X1,
-                        SDL_BUTTON_X2 => MOUSE_BUTTON_X2,
-                        _ => KEY_UNKNOWN,
-                    };
-
+                    let key = Self::sdl_button_to_key(unsafe { sdl_event.button.button } as u32);
                     if key != KEY_UNKNOWN {
                         pyxel_events.push(Event::KeyPressed { key });
                     }
                 }
 
                 SDL_MOUSEBUTTONUP => {
-                    let key = match unsafe { sdl_event.button.button } as u32 {
-                        SDL_BUTTON_LEFT => MOUSE_BUTTON_LEFT,
-                        SDL_BUTTON_MIDDLE => MOUSE_BUTTON_MIDDLE,
-                        SDL_BUTTON_RIGHT => MOUSE_BUTTON_RIGHT,
-                        SDL_BUTTON_X1 => MOUSE_BUTTON_X1,
-                        SDL_BUTTON_X2 => MOUSE_BUTTON_X2,
-                        _ => KEY_UNKNOWN,
-                    };
-
+                    let key = Self::sdl_button_to_key(unsafe { sdl_event.button.button } as u32);
                     if key != KEY_UNKNOWN {
                         pyxel_events.push(Event::KeyReleased { key });
                     }
@@ -183,18 +155,13 @@ impl PlatformSdl2 {
                 SDL_CONTROLLERDEVICEADDED => {
                     let device_index = unsafe { sdl_event.cdevice.which };
                     if let Some(gamepad) = Gamepad::open(device_index) {
-                        let unused_gamepad = self
+                        match self
                             .gamepads
                             .iter_mut()
-                            .find(|gamepad| matches!(gamepad, Gamepad::Unused));
-
-                        match unused_gamepad {
-                            Some(unused_gamepad) => {
-                                *unused_gamepad = gamepad;
-                            }
-                            None => {
-                                self.gamepads.push(gamepad);
-                            }
+                            .find(|g| matches!(g, Gamepad::Unused))
+                        {
+                            Some(slot) => *slot = gamepad,
+                            None => self.gamepads.push(gamepad),
                         }
                     }
                 }
@@ -214,8 +181,7 @@ impl PlatformSdl2 {
                     if let Some(key_offset) =
                         self.gamepad_key_offset(unsafe { sdl_event.caxis.which })
                     {
-                        let axis = unsafe { sdl_event.caxis.axis } as i32;
-                        let key = controller_axis_to_key(axis);
+                        let key = controller_axis_to_key(unsafe { sdl_event.caxis.axis } as i32);
                         if key != KEY_UNKNOWN {
                             pyxel_events.push(Event::KeyValueChanged {
                                 key: key + key_offset,
@@ -229,8 +195,8 @@ impl PlatformSdl2 {
                     if let Some(key_offset) =
                         self.gamepad_key_offset(unsafe { sdl_event.cbutton.which })
                     {
-                        let button = unsafe { sdl_event.cbutton.button } as i32;
-                        let key = controller_button_to_key(button);
+                        let key =
+                            controller_button_to_key(unsafe { sdl_event.cbutton.button } as i32);
                         if key != KEY_UNKNOWN {
                             pyxel_events.push(Event::KeyPressed {
                                 key: key + key_offset,
@@ -243,8 +209,8 @@ impl PlatformSdl2 {
                     if let Some(key_offset) =
                         self.gamepad_key_offset(unsafe { sdl_event.cbutton.which })
                     {
-                        let button = unsafe { sdl_event.cbutton.button } as i32;
-                        let key = controller_button_to_key(button);
+                        let key =
+                            controller_button_to_key(unsafe { sdl_event.cbutton.button } as i32);
                         if key != KEY_UNKNOWN {
                             pyxel_events.push(Event::KeyReleased {
                                 key: key + key_offset,
@@ -260,40 +226,35 @@ impl PlatformSdl2 {
         //
         // Mouse Motion (polling)
         //
-        {
-            let (mouse_x, mouse_y) = if self.is_wayland || cfg!(target_os = "emscripten") {
-                let mut x = 0;
-                let mut y = 0;
-                unsafe {
-                    SDL_GetMouseState(&raw mut x, &raw mut y);
-                }
-                (x, y)
-            } else {
-                let mut global_x = 0;
-                let mut global_y = 0;
-                unsafe {
-                    SDL_GetGlobalMouseState(&raw mut global_x, &raw mut global_y);
-                }
-                let (window_x, window_y) = self.window_pos();
-                (global_x - window_x, global_y - window_y)
-            };
+        let (mouse_x, mouse_y) = if self.is_wayland || cfg!(target_os = "emscripten") {
+            let (mut x, mut y) = (0, 0);
+            unsafe { SDL_GetMouseState(&raw mut x, &raw mut y) };
+            (x, y)
+        } else {
+            let (mut gx, mut gy) = (0, 0);
+            unsafe { SDL_GetGlobalMouseState(&raw mut gx, &raw mut gy) };
+            let (wx, wy) = self.window_pos();
+            (gx - wx, gy - wy)
+        };
 
-            if mouse_x != self.mouse_x || mouse_y != self.mouse_y {
-                self.mouse_x = mouse_x;
-                self.mouse_y = mouse_y;
-                pyxel_events.push(Event::KeyValueChanged {
-                    key: MOUSE_POS_X,
-                    value: mouse_x,
-                });
-                pyxel_events.push(Event::KeyValueChanged {
-                    key: MOUSE_POS_Y,
-                    value: mouse_y,
-                });
-            }
+        if mouse_x != self.mouse_x || mouse_y != self.mouse_y {
+            self.mouse_x = mouse_x;
+            self.mouse_y = mouse_y;
+            pyxel_events.push(Event::KeyValueChanged {
+                key: MOUSE_POS_X,
+                value: mouse_x,
+            });
+            pyxel_events.push(Event::KeyValueChanged {
+                key: MOUSE_POS_Y,
+                value: mouse_y,
+            });
         }
 
+        //
+        // Virtual Gamepad (Emscripten)
+        //
         #[cfg(target_os = "emscripten")]
-        pyxel_events.extend({
+        {
             const INDEX_TO_BUTTON: [Key; 10] = [
                 GAMEPAD1_BUTTON_DPAD_UP,
                 GAMEPAD1_BUTTON_DPAD_DOWN,
@@ -307,28 +268,34 @@ impl PlatformSdl2 {
                 GAMEPAD1_BUTTON_BACK,
             ];
 
-            let mut events = Vec::new();
-
-            for (i, button) in INDEX_TO_BUTTON.iter().enumerate() {
-                let button_state = unsafe {
+            for (i, &button) in INDEX_TO_BUTTON.iter().enumerate() {
+                let pressed = unsafe {
                     let script =
                         std::ffi::CString::new(format!("_virtualGamepadStates[{i}];")).unwrap();
                     emscripten_run_script_int(script.as_ptr()) != 0
                 };
-                if button_state != self.virtual_gamepad_states[i] {
-                    self.virtual_gamepad_states[i] = button_state;
-                    if button_state {
-                        events.push(Event::KeyPressed { key: *button });
+                if pressed != self.virtual_gamepad_states[i] {
+                    self.virtual_gamepad_states[i] = pressed;
+                    let event = if pressed {
+                        Event::KeyPressed { key: button }
                     } else {
-                        events.push(Event::KeyReleased { key: *button });
-                    }
+                        Event::KeyReleased { key: button }
+                    };
+                    pyxel_events.push(event);
                 }
             }
+        }
+    }
 
-            events
-        });
-
-        pyxel_events
+    fn sdl_button_to_key(button: u32) -> Key {
+        match button {
+            SDL_BUTTON_LEFT => MOUSE_BUTTON_LEFT,
+            SDL_BUTTON_MIDDLE => MOUSE_BUTTON_MIDDLE,
+            SDL_BUTTON_RIGHT => MOUSE_BUTTON_RIGHT,
+            SDL_BUTTON_X1 => MOUSE_BUTTON_X1,
+            SDL_BUTTON_X2 => MOUSE_BUTTON_X2,
+            _ => KEY_UNKNOWN,
+        }
     }
 
     fn gamepad_key_offset(&self, instance_id: i32) -> Option<Key> {

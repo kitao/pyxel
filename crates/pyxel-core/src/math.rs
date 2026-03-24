@@ -7,6 +7,9 @@ use rand_xoshiro::Xoshiro256StarStar;
 
 use crate::pyxel::Pyxel;
 
+const DEG_TO_RAD: f32 = PI / 180.0;
+const RAD_TO_DEG: f32 = 180.0 / PI;
+
 static RNG: LazyLock<Mutex<Xoshiro256StarStar>> = LazyLock::new(|| {
     let mut rng = rand::rng();
     Mutex::new(Xoshiro256StarStar::from_rng(&mut rng))
@@ -17,32 +20,31 @@ static PERLIN: LazyLock<Mutex<Perlin>> =
 
 impl Pyxel {
     pub fn ceil(x: f32) -> i32 {
-        f32::ceil(x) as i32
+        x.ceil() as i32
     }
 
     pub fn floor(x: f32) -> i32 {
-        f32::floor(x) as i32
+        x.floor() as i32
     }
 
     pub fn sqrt(x: f32) -> f32 {
-        f32::sqrt(x)
+        x.sqrt()
     }
 
     pub fn sin(deg: f32) -> f32 {
-        f32::sin(deg * PI / 180.0)
+        (deg * DEG_TO_RAD).sin()
     }
 
     pub fn cos(deg: f32) -> f32 {
-        f32::cos(deg * PI / 180.0)
+        (deg * DEG_TO_RAD).cos()
     }
 
     pub fn atan2(y: f32, x: f32) -> f32 {
-        f32::atan2(y, x) * 180.0 / PI
+        f32::atan2(y, x) * RAD_TO_DEG
     }
 
     pub fn random_seed(seed: u32) {
-        let rng = Xoshiro256StarStar::seed_from_u64(seed as u64);
-        *RNG.lock().unwrap() = rng;
+        *RNG.lock().unwrap() = Xoshiro256StarStar::seed_from_u64(seed as u64);
     }
 
     pub fn random_int(min: i32, max: i32) -> i32 {
@@ -56,8 +58,7 @@ impl Pyxel {
     }
 
     pub fn noise_seed(seed: u32) {
-        let perlin = Perlin::new(seed);
-        *PERLIN.lock().unwrap() = perlin;
+        *PERLIN.lock().unwrap() = Perlin::new(seed);
     }
 
     pub fn noise(x: f32, y: f32, z: f32) -> f32 {

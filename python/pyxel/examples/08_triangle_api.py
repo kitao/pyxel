@@ -32,16 +32,16 @@ class App:
         else:
             pyxel.trib(x1, y1, x2, y2, x3, y3, col)
 
-        h1 = (x1 + x2) / 2
-        w1 = (y1 + y2) / 2
-        h2 = (x2 + x3) / 2
-        w2 = (y2 + y3) / 2
-        h3 = (x3 + x1) / 2
-        w3 = (y3 + y1) / 2
+        mx1 = (x1 + x2) / 2
+        my1 = (y1 + y2) / 2
+        mx2 = (x2 + x3) / 2
+        my2 = (y2 + y3) / 2
+        mx3 = (x3 + x1) / 2
+        my3 = (y3 + y1) / 2
 
-        self.triangles.append((x1, y1, h1, w1, h3, w3, n - 1))
-        self.triangles.append((h1, w1, x2, y2, h2, w2, n - 1))
-        self.triangles.append((h3, w3, h2, w2, x3, y3, n - 1))
+        self.triangles.append((x1, y1, mx1, my1, mx3, my3, n - 1))
+        self.triangles.append((mx1, my1, x2, y2, mx2, my2, n - 1))
+        self.triangles.append((mx3, my3, mx2, my2, x3, y3, n - 1))
 
 
 App()

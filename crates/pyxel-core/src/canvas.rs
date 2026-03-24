@@ -5,6 +5,7 @@ use std::mem::swap;
 use crate::rect_area::RectArea;
 use crate::utils::{f32_to_i32, f32_to_u32};
 
+const ELLIPSE_ROUNDING_BIAS: f32 = 0.01;
 const DITHERING_MATRIX: [[f32; 4]; 4] = [
     [1.0 / 16.0, 9.0 / 16.0, 3.0 / 16.0, 11.0 / 16.0],
     [13.0 / 16.0, 5.0 / 16.0, 15.0 / 16.0, 7.0 / 16.0],
@@ -82,7 +83,7 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         self.data.fill(value);
     }
 
-    pub fn get_value(&mut self, x: f32, y: f32) -> T {
+    pub fn get_value(&self, x: f32, y: f32) -> T {
         let x = f32_to_i32(x);
         let y = f32_to_i32(y);
         if self.clip_rect.contains(x, y) {
@@ -115,11 +116,11 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
                 (x2, y2, x1, y1)
             };
             let length = end_x - start_x + 1;
-            let alpha = (end_y - start_y) as f32 / (end_x - start_x) as f32;
+            let slope = (end_y - start_y) as f32 / (end_x - start_x) as f32;
             for xi in 0..length {
                 self.write_data_with_clipping(
                     start_x + xi,
-                    start_y + f32_to_i32(alpha * xi as f32),
+                    start_y + f32_to_i32(slope * xi as f32),
                     value,
                 );
             }
@@ -130,10 +131,10 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
                 (x2, y2, x1, y1)
             };
             let length = end_y - start_y + 1;
-            let alpha = (end_x - start_x) as f32 / (end_y - start_y) as f32;
+            let slope = (end_x - start_x) as f32 / (end_y - start_y) as f32;
             for yi in 0..length {
                 self.write_data_with_clipping(
-                    start_x + f32_to_i32(alpha * yi as f32),
+                    start_x + f32_to_i32(slope * yi as f32),
                     start_y + yi,
                     value,
                 );
@@ -227,9 +228,10 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         let x = f32_to_i32(x) - self.draw_offset_x;
         let y = f32_to_i32(y) - self.draw_offset_y;
         let radius = f32_to_u32(radius);
+        let r = radius as f32;
 
         for xi in 0..=radius as i32 {
-            let (x1, y1, x2, y2) = Self::ellipse_area(0.0, 0.0, radius as f32, radius as f32, xi);
+            let (x1, y1, x2, y2) = Self::ellipse_area(0.0, 0.0, r, r, xi);
             self.write_data_with_clipping(x + x1, y + y1, value);
             self.write_data_with_clipping(x + x2, y + y1, value);
             self.write_data_with_clipping(x + x1, y + y2, value);
@@ -612,10 +614,8 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
                 let value_x = src_x + sign_x * xi + offset_x;
                 let value_y = src_y + sign_y * yi + offset_y;
                 let value = canvas.read_data(value_x as usize, value_y as usize);
-                if let Some(transparent) = transparent {
-                    if value == transparent {
-                        continue;
-                    }
+                if transparent.is_some_and(|tkey| value == tkey) {
+                    continue;
                 }
                 let value = palette.map_or(value, |palette| palette[value.to_index()]);
                 self.write_data((dst_x + xi) as usize, (dst_y + yi) as usize, value);
@@ -750,10 +750,8 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
                     continue;
                 }
                 let value = canvas.read_data(vx as usize, vy as usize);
-                if let Some(tkey) = transparent {
-                    if value == tkey {
-                        continue;
-                    }
+                if transparent.is_some_and(|tkey| value == tkey) {
+                    continue;
                 }
                 let value = palette.map_or(value, |p| p[value.to_index()]);
                 self.write_data(xi as usize, yi as usize, value);
@@ -924,14 +922,16 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
             rb
         };
 
-        let x1 = f32_to_i32(cx - dx - 0.01);
-        let y1 = f32_to_i32(cy - dy - 0.01);
-        let x2 = f32_to_i32(cx + dx + 0.01);
-        let y2 = f32_to_i32(cy + dy + 0.01);
+        let x1 = f32_to_i32(cx - dx - ELLIPSE_ROUNDING_BIAS);
+        let y1 = f32_to_i32(cy - dy - ELLIPSE_ROUNDING_BIAS);
+        let x2 = f32_to_i32(cx + dx + ELLIPSE_ROUNDING_BIAS);
+        let y2 = f32_to_i32(cy + dy + ELLIPSE_ROUNDING_BIAS);
 
         (x1, y1, x2, y2)
     }
 
+    /// Determine whether to write a pixel based on dithering alpha.
+    /// Uses ordered dithering (4x4 Bayer matrix) for semi-transparent drawing.
     fn should_write(&self, x: i32, y: i32) -> bool {
         if self.alpha >= 1.0 {
             return true;

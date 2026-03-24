@@ -151,10 +151,12 @@ def draw_example_images(thanks_image):
 
     # Draw example images
     example_x = EXAMPLE_X
-    while example_x < THANKS_IMAGE_WIDTH:
+    while example_x < THANKS_IMAGE_WIDTH and example_images:
         col_height = 0
         num_col_images = 0
         while col_height < THANKS_IMAGE_HEIGHT + EXAMPLE_MARGIN:
+            if num_col_images >= len(example_images):
+                break
             col_height += example_images[num_col_images].height + EXAMPLE_MARGIN
             num_col_images += 1
 

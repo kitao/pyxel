@@ -47,14 +47,7 @@ class MusicEditor(EditorBase):
         self.copy_var("music_index_var", self._music_picker, "value_var")
 
         # Initialize play button
-        self._play_button = ImageButton(
-            self,
-            185,
-            17,
-            img=EDITOR_IMAGE,
-            u=126,
-            v=0,
-        )
+        self._play_button = ImageButton(self, 185, 17, img=EDITOR_IMAGE, u=126, v=0)
         self._play_button.add_event_listener("press", self.__on_play_button_press)
         self._play_button.add_event_listener(
             "mouse_hover", self.__on_play_button_mouse_hover
@@ -94,21 +87,17 @@ class MusicEditor(EditorBase):
     def get_field(self, index):
         if index >= pyxel.NUM_CHANNELS:
             return
-
         music = pyxel.musics[self.music_index_var]
         seqs_len = len(music.seqs)
-
         if seqs_len < pyxel.NUM_CHANNELS:
             music.seqs.extend([[] for _ in range(pyxel.NUM_CHANNELS - seqs_len)])
         elif seqs_len > pyxel.NUM_CHANNELS:
             del music.seqs[pyxel.NUM_CHANNELS :]
-
         return music.seqs[index]
 
     def add_pre_history(self, x=None, y=None, *, bank_copy=False):
         self._history_data = data = {}
         data["music_index"] = self.music_index_var
-
         if bank_copy:
             data["old_data"] = [list(self.get_field(i)) for i in range(4)]
         else:
@@ -117,7 +106,6 @@ class MusicEditor(EditorBase):
 
     def add_post_history(self, x=None, y=None, *, bank_copy=False):
         data = self._history_data
-
         if bank_copy:
             data["new_data"] = [list(self.get_field(i)) for i in range(4)]
             if data["new_data"] != data["old_data"]:
@@ -137,11 +125,10 @@ class MusicEditor(EditorBase):
 
         tick = 0
         if is_partial:
+            music = pyxel.musics[self.music_index_var]
             for i in range(self.field_cursor.x):
-                music = pyxel.musics[self.music_index_var]
                 sound = pyxel.sounds[music.seqs[self.field_cursor.y][i]]
                 tick += len(sound.notes) * sound.speed
-
         pyxel.playm(self.music_index_var, sec=tick / 120, loop=self.should_loop_var)
 
     def _stop(self):
@@ -150,8 +137,18 @@ class MusicEditor(EditorBase):
         self._play_button.is_enabled_var = True
         self._stop_button.is_enabled_var = False
         self._loop_button.is_enabled_var = True
-
         pyxel.stop()
+
+    def _restore_state(self, data, prefix):
+        """Shared undo/redo logic for restoring music state."""
+        self._stop()
+        self.music_index_var = data["music_index"]
+        if f"{prefix}_data" in data:
+            for i in range(4):
+                self.get_field(i)[:] = data[f"{prefix}_data"][i]
+        else:
+            self.field_cursor.move_to(*data[f"{prefix}_cursor_pos"], False)
+            self.field_cursor.field[:] = data[f"{prefix}_field"]
 
     def __on_music_picker_mouse_hover(self, x, y):
         self.help_message_var = "COPY_ALL:CTRL+SHIFT+C/X/V"
@@ -172,37 +169,19 @@ class MusicEditor(EditorBase):
         self.help_message_var = "LOOP:L"
 
     def __on_undo(self, data):
-        self._stop()
-        self.music_index_var = data["music_index"]
-
-        if "old_data" in data:
-            for i in range(4):
-                self.get_field(i)[:] = data["old_data"][i]
-        else:
-            self.field_cursor.move_to(*data["old_cursor_pos"], False)
-            self.field_cursor.field[:] = data["old_field"]
+        self._restore_state(data, "old")
 
     def __on_redo(self, data):
-        self._stop()
-        self.music_index_var = data["music_index"]
-
-        if "new_data" in data:
-            for i in range(4):
-                self.get_field(i)[:] = data["new_data"][i]
-        else:
-            self.field_cursor.move_to(*data["new_cursor_pos"], False)
-            self.field_cursor.field[:] = data["new_field"]
+        self._restore_state(data, "new")
 
     def __on_hide(self):
         self._stop()
 
     def __on_update(self):
         if self.is_playing_var:
-            self.is_playing_var = None
-            for i in range(pyxel.NUM_CHANNELS):
-                if pyxel.play_pos(i) is not None:
-                    self.is_playing_var = True
-                    break
+            self.is_playing_var = any(
+                pyxel.play_pos(i) is not None for i in range(pyxel.NUM_CHANNELS)
+            )
 
         if pyxel.btnp(pyxel.KEY_SPACE):
             if self.is_playing_var:

@@ -145,7 +145,7 @@ class App:
 
             menu_image = pyxel.Image(BT2_AREA_W, BT2_AREA_H)
             menu_image.blt(
-                0, 0, pyxel.screen, BT2_AREA_X, BT2_AREA_Y, BT2_AREA_W, BT2_AREA_W
+                0, 0, pyxel.screen, BT2_AREA_X, BT2_AREA_Y, BT2_AREA_W, BT2_AREA_H
             )
             menu_image.save(str(OUTPUT_DIR / f"gamepad_menu_{BT2_AREA_W}x{BT2_AREA_H}.png"), 1)
 

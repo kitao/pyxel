@@ -11,12 +11,9 @@ pub struct WindowWatcher {
 
 impl WindowWatcher {
     pub fn new() -> Self {
-        let (watch_state_file, state_str) = if let Ok(watch_state_file) = var(WATCH_STATE_FILE_ENV)
-        {
-            (
-                Some(watch_state_file.clone()),
-                read_to_string(watch_state_file).unwrap_or_default(),
-            )
+        let (watch_state_file, state_str) = if let Ok(path) = var(WATCH_STATE_FILE_ENV) {
+            let content = read_to_string(&path).unwrap_or_default();
+            (Some(path), content)
         } else {
             (None, var(WINDOW_STATE_ENV).unwrap_or_default())
         };
@@ -26,7 +23,7 @@ impl WindowWatcher {
         if let Some((x, y, w, h)) = window_state {
             platform::set_window_pos(x, y);
             platform::set_window_size(w, h);
-            set_var(WINDOW_STATE_ENV, &state_str);
+            unsafe { set_var(WINDOW_STATE_ENV, &state_str) };
         }
 
         Self {
@@ -55,7 +52,7 @@ impl WindowWatcher {
             self.window_state = window_state;
 
             let state_str = Self::format_window_state(window_state);
-            set_var(WINDOW_STATE_ENV, &state_str);
+            unsafe { set_var(WINDOW_STATE_ENV, &state_str) };
             if let Some(watch_state_file) = &self.watch_state_file {
                 write(watch_state_file, &state_str).unwrap();
             }
@@ -72,10 +69,6 @@ impl WindowWatcher {
     }
 
     fn format_window_state(window_state: Option<(i32, i32, u32, u32)>) -> String {
-        if let Some((x, y, w, h)) = window_state {
-            format!("{x} {y} {w} {h}")
-        } else {
-            String::new()
-        }
+        window_state.map_or_else(String::new, |(x, y, w, h)| format!("{x} {y} {w} {h}"))
     }
 }

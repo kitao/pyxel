@@ -144,12 +144,8 @@ pub fn parse_old_mml(mml: &str) -> Result<Vec<MmlCommand>, String> {
 }
 
 fn skip_whitespace<T: Iterator<Item = char>>(chars: &mut Peekable<T>) {
-    while let Some(&c) = chars.peek() {
-        if c.is_whitespace() {
-            chars.next();
-        } else {
-            break;
-        }
+    while chars.peek().is_some_and(|c| c.is_whitespace()) {
+        chars.next();
     }
 }
 
@@ -157,12 +153,8 @@ fn parse_number<T: Iterator<Item = char>>(chars: &mut Peekable<T>) -> Option<u32
     skip_whitespace(chars);
 
     let mut number_str = String::new();
-    while let Some(&c) = chars.peek() {
-        if c.is_ascii_digit() {
-            number_str.push(chars.next().unwrap());
-        } else {
-            break;
-        }
+    while chars.peek().is_some_and(char::is_ascii_digit) {
+        number_str.push(chars.next().unwrap());
     }
 
     if number_str.is_empty() {
@@ -174,14 +166,13 @@ fn parse_number<T: Iterator<Item = char>>(chars: &mut Peekable<T>) -> Option<u32
 
 fn parse_char<T: Iterator<Item = char>>(chars: &mut Peekable<T>, target: char) -> bool {
     skip_whitespace(chars);
-
-    if let Some(&c) = chars.peek() {
-        if c.eq_ignore_ascii_case(&target) {
-            chars.next();
-            return true;
-        }
+    if chars
+        .peek()
+        .is_some_and(|c| c.eq_ignore_ascii_case(&target))
+    {
+        chars.next();
+        return true;
     }
-
     false
 }
 
@@ -189,22 +180,18 @@ fn parse_command<T: Iterator<Item = char>>(
     chars: &mut Peekable<T>,
     target: char,
 ) -> Result<Option<u32>, String> {
-    if parse_char(chars, target) {
-        if let Some(number) = parse_number(chars) {
-            return Ok(Some(number));
-        }
-
-        return Err(format!("Missing value after '{target}' in MML"));
+    if !parse_char(chars, target) {
+        return Ok(None);
     }
-
-    Ok(None)
+    parse_number(chars)
+        .map(Some)
+        .ok_or_else(|| format!("Missing value after '{target}' in MML"))
 }
 
 fn parse_envelope<T: Iterator<Item = char>>(
     chars: &mut Peekable<T>,
 ) -> Result<Option<(EnvIndex, EnvData)>, String> {
-    let envelope = parse_command(chars, 'x')?;
-    let Some(envelope) = envelope else {
+    let Some(envelope) = parse_command(chars, 'x')? else {
         return Ok(None);
     };
 
@@ -219,17 +206,14 @@ fn parse_envelope<T: Iterator<Item = char>>(
 
     skip_whitespace(chars);
     while let Some(&c) = chars.peek() {
-        if c.is_ascii_digit() {
-            let volume = chars.next().unwrap().to_string().parse().unwrap();
-            if volume <= 7 {
-                env_data.push(volume);
-            } else {
-                return Err(format!("Invalid envelope volume '{volume}' in MML"));
-            }
-        } else {
+        if !c.is_ascii_digit() {
             break;
         }
-
+        let volume = (chars.next().unwrap() as u32) - ('0' as u32);
+        if volume > 7 {
+            return Err(format!("Invalid envelope volume '{volume}' in MML"));
+        }
+        env_data.push(volume as SoundVolume);
         skip_whitespace(chars);
     }
 
@@ -245,15 +229,17 @@ fn parse_note<T: Iterator<Item = char>>(
 ) -> Result<Option<(SoundNote, u32)>, String> {
     skip_whitespace(chars);
 
-    let mut note = match chars.peek().map(char::to_ascii_lowercase) {
-        Some('c') => 0,
-        Some('d') => 2,
-        Some('e') => 4,
-        Some('f') => 5,
-        Some('g') => 7,
-        Some('a') => 9,
-        Some('b') => 11,
-        _ => return Ok(None),
+    let Some(mut note) = chars.peek().and_then(|c| match c.to_ascii_lowercase() {
+        'c' => Some(0),
+        'd' => Some(2),
+        'e' => Some(4),
+        'f' => Some(5),
+        'g' => Some(7),
+        'a' => Some(9),
+        'b' => Some(11),
+        _ => None,
+    }) else {
+        return Ok(None);
     };
     chars.next();
 
@@ -300,8 +286,7 @@ fn parse_rest<T: Iterator<Item = char>>(
     if !parse_char(chars, 'r') {
         return Ok(None);
     }
-
-    Ok(Some(parse_note_length(chars, cur_length)?))
+    parse_note_length(chars, cur_length).map(Some)
 }
 
 fn add_note(sound: &mut Sound, note_info: &NoteInfo) {

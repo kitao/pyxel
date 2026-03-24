@@ -47,9 +47,7 @@ def spawn_enemy(left_x, right_x):
 
 
 def cleanup_entities(entities):
-    for i in range(len(entities) - 1, -1, -1):
-        if not entities[i].is_alive:
-            del entities[i]
+    entities[:] = [e for e in entities if e.is_alive]
 
 
 def push_back(x, y, dx, dy):

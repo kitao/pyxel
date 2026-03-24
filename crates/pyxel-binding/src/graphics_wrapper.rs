@@ -1,6 +1,3 @@
-use std::sync::Once;
-
-use pyo3::exceptions::PyValueError;
 use pyo3::prelude::*;
 
 use crate::font_wrapper::Font;
@@ -8,8 +5,7 @@ use crate::image_wrapper::Image;
 use crate::pyxel_singleton::pyxel;
 use crate::tilemap_wrapper::Tilemap;
 
-static IMAGE_ONCE: Once = Once::new();
-static TILEMAP_ONCE: Once = Once::new();
+// Drawing state
 
 #[pyfunction]
 #[pyo3(signature = (x=None, y=None, w=None, h=None))]
@@ -54,6 +50,8 @@ fn pal(col1: Option<pyxel::Color>, col2: Option<pyxel::Color>) -> PyResult<()> {
 fn dither(alpha: f32) {
     pyxel().set_dithering(alpha);
 }
+
+// Primitive drawing
 
 #[pyfunction]
 fn cls(col: pyxel::Color) {
@@ -120,6 +118,8 @@ fn fill(x: f32, y: f32, col: pyxel::Color) {
     pyxel().flood_fill(x, y, col);
 }
 
+// Blit operations
+
 #[pyfunction]
 #[pyo3(signature = (x, y, img, u, v, w, h, colkey=None, rotate=None, scale=None))]
 fn blt(
@@ -136,12 +136,12 @@ fn blt(
 ) -> PyResult<()> {
     cast_pyany! {
         img,
+
         (u32, {
-            if img as usize >= pyxel::images().len() {
-                return Err(PyValueError::new_err("Invalid image index"));
-            }
+            validate_index!(img, pyxel::images().len(), "image");
             pyxel().draw_image(x, y, img, u, v, w, h, colkey, rotate, scale);
         }),
+
         (Image, { unsafe { pyxel::screen().draw_image(x, y, img.inner, u, v, w, h, colkey, rotate, scale) }; })
     }
     Ok(())
@@ -163,12 +163,12 @@ fn bltm(
 ) -> PyResult<()> {
     cast_pyany! {
         tm,
+
         (u32, {
-            if tm as usize >= pyxel::tilemaps().len() {
-                return Err(PyValueError::new_err("Invalid tilemap index"));
-            }
+            validate_index!(tm, pyxel::tilemaps().len(), "tilemap");
             pyxel().draw_tilemap(x, y, tm, u, v, w, h, colkey, rotate, scale);
         }),
+
         (Tilemap, { unsafe { pyxel::screen().draw_tilemap(x, y, tm.inner, u, v, w, h, colkey, rotate, scale) }; })
     }
     Ok(())
@@ -189,12 +189,12 @@ fn blt3d(
 ) -> PyResult<()> {
     cast_pyany! {
         img,
+
         (u32, {
-            if img as usize >= pyxel::images().len() {
-                return Err(PyValueError::new_err("Invalid image index"));
-            }
+            validate_index!(img, pyxel::images().len(), "image");
             pyxel().draw_image_3d(x, y, w, h, img, pos, rot, fov, colkey);
         }),
+
         (Image, { unsafe { pyxel::screen().draw_image_3d(x, y, w, h, img.inner, pos, rot, fov, colkey) }; })
     }
     Ok(())
@@ -215,16 +215,18 @@ fn bltm3d(
 ) -> PyResult<()> {
     cast_pyany! {
         tm,
+
         (u32, {
-            if tm as usize >= pyxel::tilemaps().len() {
-                return Err(PyValueError::new_err("Invalid tilemap index"));
-            }
+            validate_index!(tm, pyxel::tilemaps().len(), "tilemap");
             pyxel().draw_tilemap_3d(x, y, w, h, tm, pos, rot, fov, colkey);
         }),
+
         (Tilemap, { unsafe { pyxel::screen().draw_tilemap_3d(x, y, w, h, tm.inner, pos, rot, fov, colkey) }; })
     }
     Ok(())
 }
+
+// Text
 
 #[pyfunction]
 #[pyo3(signature = (x, y, s, col, font=None))]
@@ -233,30 +235,32 @@ fn text(x: f32, y: f32, s: &str, col: pyxel::Color, font: Option<Font>) {
     pyxel().draw_text(x, y, s, col, font);
 }
 
+// Deprecated functions
+
 #[pyfunction]
 fn image(img: u32) -> PyResult<Image> {
-    IMAGE_ONCE.call_once(|| {
-        println!("pyxel.image(img) is deprecated. Use pyxel.images[img] instead.");
-    });
-
+    deprecation_warning!(
+        IMAGE_ONCE,
+        "pyxel.image(img) is deprecated. Use pyxel.images[img] instead."
+    );
     pyxel::images()
         .get(img as usize)
         .copied()
         .map(Image::wrap)
-        .ok_or_else(|| PyValueError::new_err("Invalid image index"))
+        .ok_or_else(|| pyo3::exceptions::PyValueError::new_err("Invalid image index"))
 }
 
 #[pyfunction]
 fn tilemap(tm: u32) -> PyResult<Tilemap> {
-    TILEMAP_ONCE.call_once(|| {
-        println!("pyxel.tilemap(tm) is deprecated. Use pyxel.tilemaps[tm] instead.");
-    });
-
+    deprecation_warning!(
+        TILEMAP_ONCE,
+        "pyxel.tilemap(tm) is deprecated. Use pyxel.tilemaps[tm] instead."
+    );
     pyxel::tilemaps()
         .get(tm as usize)
         .copied()
         .map(Tilemap::wrap)
-        .ok_or_else(|| PyValueError::new_err("Invalid tilemap index"))
+        .ok_or_else(|| pyo3::exceptions::PyValueError::new_err("Invalid tilemap index"))
 }
 
 pub fn add_graphics_functions(m: &Bound<'_, PyModule>) -> PyResult<()> {

@@ -345,7 +345,7 @@
       }
 
       async function loadFromGist(input) {
-        const match = input.match(/([a-f0-9]+)\s*$/i);
+        const match = input.match(/([a-f0-9]{20,})\s*$/i);
         if (!match) {
           throw new Error("Invalid Gist URL");
         }
@@ -461,7 +461,7 @@
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
-        URL.revokeObjectURL(a.href);
+        setTimeout(() => URL.revokeObjectURL(a.href), 3000);
       }
 
       async function saveForGist() {
@@ -669,41 +669,21 @@
         });
 
         // Load modal submit buttons
-        document.getElementById("btn-load-gist").addEventListener("click", async () => {
-          const value = document.getElementById("input-load-gist").value.trim();
-          if (value) {
-            closeModal(document.getElementById("btn-load-gist"));
+        function setupModalSubmit(buttonId, inputId, loadFn) {
+          document.getElementById(buttonId).addEventListener("click", async () => {
+            const value = document.getElementById(inputId).value.trim();
+            if (!value) return;
+            closeModal(document.getElementById(buttonId));
             try {
-              await loadFromGist(value);
+              await loadFn(value);
             } catch (e) {
               alert("Load failed: " + e.message);
             }
-          }
-        });
-
-        document.getElementById("btn-load-github").addEventListener("click", async () => {
-          const value = document.getElementById("input-load-github").value.trim();
-          if (value) {
-            closeModal(document.getElementById("btn-load-github"));
-            try {
-              await loadFromGitHub(value);
-            } catch (e) {
-              alert("Load failed: " + e.message);
-            }
-          }
-        });
-
-        document.getElementById("btn-load-url").addEventListener("click", async () => {
-          const value = document.getElementById("input-load-url").value.trim();
-          if (value) {
-            closeModal(document.getElementById("btn-load-url"));
-            try {
-              await loadFromUrl(value);
-            } catch (e) {
-              alert("Load failed: " + e.message);
-            }
-          }
-        });
+          });
+        }
+        setupModalSubmit("btn-load-gist", "input-load-gist", loadFromGist);
+        setupModalSubmit("btn-load-github", "input-load-github", loadFromGitHub);
+        setupModalSubmit("btn-load-url", "input-load-url", loadFromUrl);
 
         // Enter key submits modals
         document.querySelectorAll(".modal-input").forEach((input) => {
@@ -784,6 +764,9 @@
         await Promise.all([screenLoaded, editorLoaded]);
       }
 
+      let _pyxelReadyRetries = 0;
+      const MAX_PYXEL_READY_RETRIES = 300; // 30 seconds
+
       function waitForPyxelReady() {
         if (
           runtimeScreen?.contentWindow?.pyxelContext?.resolveInput &&
@@ -804,8 +787,10 @@
 
           const splitterHandleEl = document.getElementById("splitter-handle");
           splitterHandleEl.style.pointerEvents = "auto";
-        } else {
+        } else if (++_pyxelReadyRetries < MAX_PYXEL_READY_RETRIES) {
           setTimeout(waitForPyxelReady, 100);
+        } else {
+          console.error("Pyxel runtime failed to initialize within timeout");
         }
       }
 
@@ -1128,26 +1113,18 @@
         const gistParam = params.get("gist");
         const githubParam = params.get("github");
         const urlParam = params.get("url");
-        if (gistParam) {
-          try {
+        try {
+          if (gistParam) {
             await loadFromGist(gistParam);
-          } catch (e) {
-            alert("Load failed: " + e.message);
-          }
-        } else if (githubParam) {
-          try {
+          } else if (githubParam) {
             const parts = githubParam.split("/");
             const ghUrl = `https://github.com/${parts[0]}/${parts[1]}/blob/${parts.slice(2).join("/")}.zip`;
             await loadFromGitHub(ghUrl);
-          } catch (e) {
-            alert("Load failed: " + e.message);
-          }
-        } else if (urlParam) {
-          try {
+          } else if (urlParam) {
             await loadFromUrl(urlParam);
-          } catch (e) {
-            alert("Load failed: " + e.message);
           }
+        } catch (e) {
+          alert("Load failed: " + e.message);
         }
         setupFocusIndicator();
         setupShortcuts();

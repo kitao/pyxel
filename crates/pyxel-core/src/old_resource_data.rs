@@ -26,7 +26,7 @@ trait ResourceItem {
 
 impl ResourceItem for Image {
     fn resource_name(item_index: u32) -> String {
-        RESOURCE_ARCHIVE_DIRNAME.to_string() + "image" + &item_index.to_string()
+        format!("{RESOURCE_ARCHIVE_DIRNAME}image{item_index}")
     }
 
     fn clear(&mut self) {
@@ -37,7 +37,7 @@ impl ResourceItem for Image {
         for (i, line) in input.lines().enumerate() {
             string_loop!(j, color, line, 1, {
                 self.canvas
-                    .write_data(j, i, parse_hex_string(&color).unwrap() as Color);
+                    .write_data(j, i, parse_hex_string(color).unwrap() as Color);
             });
         }
     }
@@ -54,7 +54,7 @@ impl fmt::Display for ImageSource {
 
 impl ResourceItem for Tilemap {
     fn resource_name(item_index: u32) -> String {
-        RESOURCE_ARCHIVE_DIRNAME.to_string() + "tilemap" + &item_index.to_string()
+        format!("{RESOURCE_ARCHIVE_DIRNAME}tilemap{item_index}")
     }
 
     fn clear(&mut self) {
@@ -66,7 +66,7 @@ impl ResourceItem for Tilemap {
             if y < TILEMAP_SIZE as usize {
                 if version < 10500 {
                     string_loop!(x, tile, line, 3, {
-                        let tile = parse_hex_string(&tile).unwrap();
+                        let tile = parse_hex_string(tile).unwrap();
                         self.canvas.write_data(
                             x,
                             y,
@@ -93,7 +93,7 @@ impl ResourceItem for Tilemap {
 
 impl ResourceItem for Sound {
     fn resource_name(item_index: u32) -> String {
-        RESOURCE_ARCHIVE_DIRNAME.to_string() + "sound" + &format!("{item_index:02}")
+        format!("{RESOURCE_ARCHIVE_DIRNAME}sound{item_index:02}")
     }
 
     fn clear(&mut self) {
@@ -115,22 +115,22 @@ impl ResourceItem for Sound {
             if i == 0 {
                 string_loop!(j, value, line, 2, {
                     self.notes
-                        .push(parse_hex_string(&value).unwrap() as i8 as SoundNote);
+                        .push(parse_hex_string(value).unwrap() as i8 as SoundNote);
                 });
             } else if i == 1 {
                 string_loop!(j, value, line, 1, {
                     self.tones
-                        .push(parse_hex_string(&value).unwrap() as SoundTone);
+                        .push(parse_hex_string(value).unwrap() as SoundTone);
                 });
             } else if i == 2 {
                 string_loop!(j, value, line, 1, {
                     self.volumes
-                        .push(parse_hex_string(&value).unwrap() as SoundVolume);
+                        .push(parse_hex_string(value).unwrap() as SoundVolume);
                 });
             } else if i == 3 {
                 string_loop!(j, value, line, 1, {
                     self.effects
-                        .push(parse_hex_string(&value).unwrap() as SoundEffect);
+                        .push(parse_hex_string(value).unwrap() as SoundEffect);
                 });
             } else if i == 4 {
                 self.speed = line.parse().unwrap();
@@ -141,7 +141,7 @@ impl ResourceItem for Sound {
 
 impl ResourceItem for Music {
     fn resource_name(item_index: u32) -> String {
-        RESOURCE_ARCHIVE_DIRNAME.to_string() + "music" + &item_index.to_string()
+        format!("{RESOURCE_ARCHIVE_DIRNAME}music{item_index}")
     }
 
     fn clear(&mut self) {
@@ -156,7 +156,7 @@ impl ResourceItem for Music {
                 continue;
             }
             string_loop!(j, value, line, 2, {
-                self.seqs[i].push(parse_hex_string(&value).unwrap());
+                self.seqs[i].push(parse_hex_string(value).unwrap());
             });
         }
     }
@@ -172,7 +172,7 @@ impl Pyxel {
         include_sounds: bool,
         include_musics: bool,
     ) {
-        let version_name = RESOURCE_ARCHIVE_DIRNAME.to_string() + "version";
+        let version_name = format!("{RESOURCE_ARCHIVE_DIRNAME}version");
         let contents = {
             let mut file = archive.by_name(&version_name).unwrap();
             let mut contents = String::new();
@@ -225,15 +225,12 @@ impl Pyxel {
             file.read_to_string(&mut contents).unwrap();
 
             let colors: Vec<Rgb24> = contents
-                .replace("\r\n", "\n")
-                .replace('\r', "\n")
-                .split('\n')
+                .lines()
                 .filter(|s| !s.is_empty())
                 .map(|s| u32::from_str_radix(s.trim(), 16).unwrap() as Rgb24)
                 .collect();
 
-            pyxel::colors().clear();
-            pyxel::colors().extend(colors.iter());
+            *pyxel::colors() = colors;
         }
     }
 }
@@ -243,19 +240,18 @@ fn parse_version_string(string: &str) -> Result<u32, &str> {
 
     for (i, number) in simplify_string(string).split('.').enumerate() {
         let digit = number.len();
-        let number = if i > 0 && digit == 1 {
-            "0".to_string() + number
+        let padded = if i > 0 && digit == 1 {
+            format!("0{number}")
         } else if i == 0 || digit == 2 {
             number.to_string()
         } else {
             return Err("invalid version string");
         };
 
-        if let Ok(number) = number.parse::<u32>() {
-            version = version * 100 + number;
-        } else {
+        let Ok(n) = padded.parse::<u32>() else {
             return Err("invalid version string");
-        }
+        };
+        version = version * 100 + n;
     }
 
     Ok(version)

@@ -1,9 +1,6 @@
-use std::cmp::min;
-
 use blip_buf::BlipBuf;
 
 use crate::audio::Audio;
-use crate::channel::Channel;
 use crate::pyxel;
 use crate::settings::{AUDIO_CLOCK_RATE, AUDIO_SAMPLE_RATE};
 
@@ -39,13 +36,14 @@ impl Music {
             return Ok(());
         }
 
-        let seqs: Vec<_> = (0..self.seqs.len())
-            .map(|i| {
-                let pyxel_sounds = pyxel::sounds();
-                self.seqs[i]
-                    .iter()
-                    .map(|&sound_index| pyxel_sounds[sound_index as usize])
-                    .collect::<Vec<_>>()
+        let pyxel_sounds = pyxel::sounds();
+        let seqs: Vec<Vec<_>> = self
+            .seqs
+            .iter()
+            .map(|seq| {
+                seq.iter()
+                    .map(|&index| pyxel_sounds[index as usize])
+                    .collect()
             })
             .collect();
 
@@ -54,24 +52,17 @@ impl Music {
         blip_buf.set_rates(AUDIO_CLOCK_RATE as f64, AUDIO_SAMPLE_RATE as f64);
 
         let channels = pyxel::channels();
-        for &channel in channels.iter() {
-            unsafe { &mut *channel }.stop();
+        for &ch in channels.iter() {
+            unsafe { &mut *ch }.stop();
         }
-
-        {
-            let mut channels: Vec<&mut Channel> = channels
-                .iter()
-                .map(|&channel| unsafe { &mut *channel })
-                .collect();
-            for i in 0..min(channels.len(), seqs.len()) {
-                channels[i].play(seqs[i].clone(), None, true, false);
-            }
+        for (ch, seq) in channels.iter().zip(seqs.iter()) {
+            unsafe { &mut **ch }.play(seq.clone(), None, true, false);
         }
 
         Audio::render_samples(channels.as_slice(), &mut blip_buf, &mut samples);
         let result = Audio::save_samples(filename, &samples, use_ffmpeg.unwrap_or(false));
-        for &channel in channels.iter() {
-            unsafe { &mut *channel }.stop();
+        for &ch in channels.iter() {
+            unsafe { &mut *ch }.stop();
         }
         result
     }

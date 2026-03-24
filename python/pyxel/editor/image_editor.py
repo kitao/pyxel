@@ -6,6 +6,8 @@ from .image_viewer import ImageViewer
 from .settings import EDITOR_IMAGE, TEXT_LABEL_COLOR, TOOL_PENCIL
 from .widgets import ColorPicker, NumberPicker, RadioButton
 
+_COLOR_BUTTONS = tuple(pyxel.KEY_1 + i for i in range(8))
+
 
 class ImageEditor(EditorBase):
     """
@@ -24,20 +26,8 @@ class ImageEditor(EditorBase):
         drop (filename)
     """
 
-    _COLOR_BUTTONS = (
-        pyxel.KEY_1,
-        pyxel.KEY_2,
-        pyxel.KEY_3,
-        pyxel.KEY_4,
-        pyxel.KEY_5,
-        pyxel.KEY_6,
-        pyxel.KEY_7,
-        pyxel.KEY_8,
-    )
-
     def __init__(self, parent):
         super().__init__(parent)
-        self.copy_var("help_message_var", parent)
 
         # Initialize canvas_var
         self.new_var("canvas_var", None)
@@ -95,6 +85,17 @@ class ImageEditor(EditorBase):
         self.add_event_listener("update", self.__on_update)
         self.add_event_listener("draw", self.__on_draw)
 
+    def _restore_state(self, data, prefix):
+        """Shared undo/redo logic for restoring image state."""
+        self.image_index_var = data["image_index"]
+        if f"{prefix}_data" in data:
+            pyxel.images[self.image_index_var].set_slice(0, 0, data[f"{prefix}_data"])
+        else:
+            self.focus_x_var, self.focus_y_var = data["focus_pos"]
+            self.canvas_var.set_slice(
+                self.focus_x_var * 8, self.focus_y_var * 8, data[f"{prefix}_canvas"]
+            )
+
     def __on_canvas_get(self, value):
         return pyxel.images[self.image_index_var]
 
@@ -105,24 +106,10 @@ class ImageEditor(EditorBase):
         self.help_message_var = "COPY_ALL:CTRL+SHIFT+C/X/V"
 
     def __on_undo(self, data):
-        self.image_index_var = data["image_index"]
-        if "old_data" in data:
-            pyxel.images[self.image_index_var].set_slice(0, 0, data["old_data"])
-        else:
-            self.focus_x_var, self.focus_y_var = data["focus_pos"]
-            self.canvas_var.set_slice(
-                self.focus_x_var * 8, self.focus_y_var * 8, data["old_canvas"]
-            )
+        self._restore_state(data, "old")
 
     def __on_redo(self, data):
-        self.image_index_var = data["image_index"]
-        if "new_data" in data:
-            pyxel.images[self.image_index_var].set_slice(0, 0, data["new_data"])
-        else:
-            self.focus_x_var, self.focus_y_var = data["focus_pos"]
-            self.canvas_var.set_slice(
-                self.focus_x_var * 8, self.focus_y_var * 8, data["new_canvas"]
-            )
+        self._restore_state(data, "new")
 
     def __on_drop(self, filename):
         colors = list(pyxel.colors)
@@ -132,8 +119,8 @@ class ImageEditor(EditorBase):
             pyxel.images[self.image_index_var].load(
                 self.focus_x_var * 8, self.focus_y_var * 8, filename
             )
-        except Exception:
-            pass
+        except Exception as e:
+            print(f"Failed to load image: {e}")
         pyxel.colors[:] = colors
 
     def __on_update(self):
@@ -141,7 +128,7 @@ class ImageEditor(EditorBase):
 
         # Check color shortcuts
         if not pyxel.btn(pyxel.KEY_ALT):
-            for btn in self._COLOR_BUTTONS:
+            for btn in _COLOR_BUTTONS:
                 if pyxel.btnp(btn):
                     col = btn - pyxel.KEY_1
                     if pyxel.btn(pyxel.KEY_SHIFT):

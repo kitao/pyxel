@@ -17,6 +17,18 @@ use crate::{pyxel, utils};
 pub type Rgb24 = u32;
 pub type Color = u8;
 
+/// Return `Some(&palette)` when a color map is active, `None` otherwise.
+/// Uses field-level borrowing so the caller can still mutate `self.canvas`.
+macro_rules! palette_opt {
+    ($self:expr) => {
+        if $self.palette_is_identity {
+            None
+        } else {
+            Some(&$self.palette[..])
+        }
+    };
+}
+
 pub fn rgb_to_rgb8(rgb: Rgb24) -> (u8, u8, u8) {
     ((rgb >> 16) as u8, (rgb >> 8) as u8, rgb as u8)
 }
@@ -230,9 +242,7 @@ impl Image {
     }
 
     pub fn reset_color_map(&mut self) {
-        for i in 0..self.palette.len() {
-            self.palette[i] = i as Color;
-        }
+        self.palette = array::from_fn(|i| i as Color);
         self.palette_is_identity = true;
     }
 
@@ -244,7 +254,7 @@ impl Image {
         self.canvas.clear(self.palette[color as usize]);
     }
 
-    pub fn get_pixel(&mut self, x: f32, y: f32) -> Color {
+    pub fn get_pixel(&self, x: f32, y: f32) -> Color {
         self.canvas.get_value(x, y)
     }
 
@@ -336,128 +346,48 @@ impl Image {
     ) {
         let rotate = rotate.unwrap_or(0.0);
         let scale = scale.unwrap_or(1.0);
-        if rotate != 0.0 || scale != 1.0 {
-            self.draw_image_with_transform(
-                x,
-                y,
-                image,
-                image_x,
-                image_y,
-                width,
-                height,
-                transparent,
-                rotate,
-                scale,
-            );
-            return;
-        }
 
-        let palette: Option<&[Color]> = if self.palette_is_identity {
+        // When source and destination are the same image, copy to a
+        // temporary canvas first to avoid read-write aliasing.
+        let src_canvas = if ptr::eq(image.cast_const(), ptr::from_ref(self)) {
+            Some(self.copy_region(image_x, image_y, width, height))
+        } else {
             None
-        } else {
-            Some(&self.palette)
         };
-        if ptr::eq(image.cast_const(), ptr::from_ref(self)) {
-            let copy_width = utils::f32_to_u32(width.abs());
-            let copy_height = utils::f32_to_u32(height.abs());
-            let mut canvas = Canvas::new(copy_width, copy_height);
+        let (src, sx, sy) = match &src_canvas {
+            Some(tmp) => (tmp, 0.0, 0.0),
+            None => (&unsafe { &*image }.canvas, image_x, image_y),
+        };
 
-            canvas.blit(
-                0.0,
-                0.0,
-                &self.canvas,
-                image_x,
-                image_y,
-                copy_width as f32,
-                copy_height as f32,
-                None,
-                None,
-            );
-
-            self.canvas
-                .blit(x, y, &canvas, 0.0, 0.0, width, height, transparent, palette);
-        } else {
-            let image = unsafe { &*image };
-            self.canvas.blit(
+        let palette = palette_opt!(self);
+        if rotate != 0.0 || scale != 1.0 {
+            self.canvas.blit_with_transform(
                 x,
                 y,
-                &image.canvas,
-                image_x,
-                image_y,
+                src,
+                sx,
+                sy,
                 width,
                 height,
                 transparent,
                 palette,
+                rotate,
+                scale,
+                false,
             );
+        } else {
+            self.canvas
+                .blit(x, y, src, sx, sy, width, height, transparent, palette);
         }
     }
 
-    fn draw_image_with_transform(
-        &mut self,
-        x: f32,
-        y: f32,
-        image: *mut Image,
-        image_x: f32,
-        image_y: f32,
-        width: f32,
-        height: f32,
-        transparent: Option<Color>,
-        rotate: f32,
-        scale: f32,
-    ) {
-        let palette: Option<&[Color]> = if self.palette_is_identity {
-            None
-        } else {
-            Some(&self.palette)
-        };
-        if ptr::eq(image.cast_const(), ptr::from_ref(self)) {
-            let copy_width = utils::f32_to_u32(width.abs());
-            let copy_height = utils::f32_to_u32(height.abs());
-            let mut canvas = Canvas::new(copy_width, copy_height);
-
-            canvas.blit(
-                0.0,
-                0.0,
-                &self.canvas,
-                image_x,
-                image_y,
-                copy_width as f32,
-                copy_height as f32,
-                None,
-                None,
-            );
-
-            self.canvas.blit_with_transform(
-                x,
-                y,
-                &canvas,
-                0.0,
-                0.0,
-                width,
-                height,
-                transparent,
-                palette,
-                rotate,
-                scale,
-                false,
-            );
-        } else {
-            let image = unsafe { &*image };
-            self.canvas.blit_with_transform(
-                x,
-                y,
-                &image.canvas,
-                image_x,
-                image_y,
-                width,
-                height,
-                transparent,
-                palette,
-                rotate,
-                scale,
-                false,
-            );
-        }
+    /// Copy a region of this image's canvas into a temporary canvas.
+    fn copy_region(&self, x: f32, y: f32, width: f32, height: f32) -> Canvas<Color> {
+        let w = utils::f32_to_u32(width.abs());
+        let h = utils::f32_to_u32(height.abs());
+        let mut canvas = Canvas::new(w, h);
+        canvas.blit(0.0, 0.0, &self.canvas, x, y, w as f32, h as f32, None, None);
+        canvas
     }
 
     /// # Safety
@@ -540,13 +470,9 @@ impl Image {
         let img_h = image.height() as usize;
 
         // Fast path: no flip, full alpha
+        let palette = palette_opt!(self);
         if sign_x == 1 && sign_y == 1 && self.canvas.alpha >= 1.0 {
             let dst_w = self.canvas.width() as usize;
-            let palette: Option<&[Color]> = if self.palette_is_identity {
-                None
-            } else {
-                Some(&self.palette)
-            };
 
             for yi in 0..height {
                 let tilemap_y = src_y + yi;
@@ -604,11 +530,6 @@ impl Image {
         }
 
         // General path: flip and/or dithering
-        let palette: Option<&[Color]> = if self.palette_is_identity {
-            None
-        } else {
-            Some(&self.palette)
-        };
         let img_w = img_w as i32;
         let img_h = img_h as i32;
 
@@ -664,58 +585,48 @@ impl Image {
         rotate: f32,
         scale: f32,
     ) {
-        let copy_width = utils::f32_to_u32(width.abs());
-        let copy_height = utils::f32_to_u32(height.abs());
-        let tilemap_width = unsafe { &*tilemap }.width() as f32;
-        let tilemap_height = unsafe { &*tilemap }.height() as f32;
-        let image = Self::new(copy_width, copy_height);
+        let tilemap_ref = unsafe { &*tilemap };
+        let tilemap_pixel_w = tilemap_ref.width() as f32 * TILE_SIZE as f32;
+        let tilemap_pixel_h = tilemap_ref.height() as f32 * TILE_SIZE as f32;
 
-        {
-            let image = unsafe { &mut *image };
-            unsafe {
-                image.draw_tilemap(
-                    0.0,
-                    0.0,
-                    tilemap,
-                    tilemap_x,
-                    tilemap_y,
-                    width.abs(),
-                    height.abs(),
-                    None,
-                    None,
-                    None,
-                );
-            }
-            image.set_clip_rect(
-                -tilemap_x,
-                -tilemap_y,
-                tilemap_width * TILE_SIZE as f32,
-                tilemap_height * TILE_SIZE as f32,
-            );
-            let palette: Option<&[Color]> = if self.palette_is_identity {
-                None
-            } else {
-                Some(&self.palette)
-            };
-            self.canvas.blit_with_transform(
-                x,
-                y,
-                &image.canvas,
-                0.0,
-                0.0,
-                width,
-                height,
-                transparent,
-                palette,
-                rotate,
-                scale,
-                true,
-            );
-        }
-
+        // Render tilemap region into a temporary image
+        let tmp = Self::new(
+            utils::f32_to_u32(width.abs()),
+            utils::f32_to_u32(height.abs()),
+        );
+        let tmp_ref = unsafe { &mut *tmp };
         unsafe {
-            drop(Box::from_raw(image));
+            tmp_ref.draw_tilemap(
+                0.0,
+                0.0,
+                tilemap,
+                tilemap_x,
+                tilemap_y,
+                width.abs(),
+                height.abs(),
+                None,
+                None,
+                None,
+            );
         }
+        tmp_ref.set_clip_rect(-tilemap_x, -tilemap_y, tilemap_pixel_w, tilemap_pixel_h);
+
+        let palette = palette_opt!(self);
+        self.canvas.blit_with_transform(
+            x,
+            y,
+            &tmp_ref.canvas,
+            0.0,
+            0.0,
+            width,
+            height,
+            transparent,
+            palette,
+            rotate,
+            scale,
+            true,
+        );
+        unsafe { drop(Box::from_raw(tmp)) };
     }
 
     /// # Safety
@@ -732,40 +643,28 @@ impl Image {
         fov: Option<f32>,
         transparent: Option<Color>,
     ) {
-        let palette: Option<&[Color]> = if self.palette_is_identity {
+        let src_canvas = if ptr::eq(image.cast_const(), ptr::from_ref(self)) {
+            Some(self.canvas.clone())
+        } else {
             None
-        } else {
-            Some(&self.palette)
         };
-        if ptr::eq(image.cast_const(), ptr::from_ref(self)) {
-            let src = self.clone();
-            self.canvas.blit_perspective(
-                x,
-                y,
-                width,
-                height,
-                &src.canvas,
-                pos,
-                rot,
-                fov,
-                transparent,
-                palette,
-            );
-        } else {
-            let image = unsafe { &*image };
-            self.canvas.blit_perspective(
-                x,
-                y,
-                width,
-                height,
-                &image.canvas,
-                pos,
-                rot,
-                fov,
-                transparent,
-                palette,
-            );
-        }
+        let src = match &src_canvas {
+            Some(tmp) => tmp,
+            None => &unsafe { &*image }.canvas,
+        };
+        let palette = palette_opt!(self);
+        self.canvas.blit_perspective(
+            x,
+            y,
+            width,
+            height,
+            src,
+            pos,
+            rot,
+            fov,
+            transparent,
+            palette,
+        );
     }
 
     /// # Safety
@@ -810,11 +709,7 @@ impl Image {
         let y1 = proj.dst_y.max(self.canvas.clip_rect.top());
         let y2 = (proj.dst_y + proj.h - 1).min(self.canvas.clip_rect.bottom());
 
-        let palette: Option<&[Color]> = if self.palette_is_identity {
-            None
-        } else {
-            Some(&self.palette)
-        };
+        let palette = palette_opt!(self);
         let (wx_step, wy_step, wz_step) = proj.x_steps();
 
         for yi in y1..=y2 {
@@ -927,10 +822,10 @@ impl Image {
     fn color_dist(rgb1: (u8, u8, u8), rgb2: (u8, u8, u8)) -> f32 {
         let (r1, g1, b1) = rgb1;
         let (r2, g2, b2) = rgb2;
-        let dx = (r1 as f32 - r2 as f32) * 0.30;
-        let dy = (g1 as f32 - g2 as f32) * 0.59;
-        let dz = (b1 as f32 - b2 as f32) * 0.11;
-
-        dx * dx + dy * dy + dz * dz
+        // Weighted by perceived luminance contribution
+        let dr = (r1 as f32 - r2 as f32) * 0.30;
+        let dg = (g1 as f32 - g2 as f32) * 0.59;
+        let db = (b1 as f32 - b2 as f32) * 0.11;
+        dr * dr + dg * dg + db * db
     }
 }

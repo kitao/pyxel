@@ -1,4 +1,3 @@
-use std::collections::HashMap;
 use std::mem::size_of;
 
 use glow::{HasContext, PixelUnpackData};
@@ -24,9 +23,28 @@ const SCREEN_FRAGS: [&str; NUM_SCREEN_TYPES as usize] = [
     include_str!("shaders/retro.frag"),
 ];
 
+const NUM_UNIFORMS: usize = 7;
+const U_SCREEN_POS: usize = 0;
+const U_SCREEN_SIZE: usize = 1;
+const U_SCREEN_SCALE: usize = 2;
+const U_NUM_COLORS: usize = 3;
+const U_BACKGROUND_COLOR: usize = 4;
+const U_SCREEN_TEXTURE: usize = 5;
+const U_COLORS_TEXTURE: usize = 6;
+
+const UNIFORM_NAMES: [&str; NUM_UNIFORMS] = [
+    "u_screenPos",
+    "u_screenSize",
+    "u_screenScale",
+    "u_numColors",
+    "u_backgroundColor",
+    "u_screenTexture",
+    "u_colorsTexture",
+];
+
 pub struct ScreenShader {
     shader_program: glow::Program,
-    uniform_locations: HashMap<String, glow::UniformLocation>,
+    uniform_locations: [Option<glow::UniformLocation>; NUM_UNIFORMS],
     vertex_array: glow::VertexArray,
 }
 
@@ -116,21 +134,10 @@ impl Graphics {
             gl.delete_shader(fragment_shader);
 
             // Uniform locations
-            let mut uniform_locations: HashMap<String, glow::UniformLocation> = HashMap::new();
-            let uniform_names = [
-                "u_screenPos",
-                "u_screenSize",
-                "u_screenScale",
-                "u_numColors",
-                "u_backgroundColor",
-                "u_screenTexture",
-                "u_colorsTexture",
-            ];
-
-            for &uniform_name in &uniform_names {
-                if let Some(location) = gl.get_uniform_location(shader_program, uniform_name) {
-                    uniform_locations.insert(uniform_name.to_string(), location);
-                }
+            let mut uniform_locations: [Option<glow::UniformLocation>; NUM_UNIFORMS] =
+                Default::default();
+            for (i, &name) in UNIFORM_NAMES.iter().enumerate() {
+                uniform_locations[i] = gl.get_uniform_location(shader_program, name);
             }
 
             // Vertex array
@@ -455,9 +462,9 @@ impl Pyxel {
         let shader =
             &self.graphics.as_ref().unwrap().screen_shaders[self.system.screen_mode as usize];
         gl.use_program(Some(shader.shader_program));
-        let uniform_locations = &shader.uniform_locations;
+        let ulocs = &shader.uniform_locations;
 
-        if let Some(location) = uniform_locations.get("u_screenPos") {
+        if let Some(location) = &ulocs[U_SCREEN_POS] {
             let (_, window_height) = platform::window_size();
             gl.uniform_2_f32(
                 Some(location),
@@ -469,7 +476,7 @@ impl Pyxel {
             );
         }
 
-        if let Some(location) = uniform_locations.get("u_screenSize") {
+        if let Some(location) = &ulocs[U_SCREEN_SIZE] {
             gl.uniform_2_f32(
                 Some(location),
                 *pyxel::width() as f32 * self.system.screen_scale,
@@ -477,15 +484,15 @@ impl Pyxel {
             );
         }
 
-        if let Some(location) = uniform_locations.get("u_screenScale") {
+        if let Some(location) = &ulocs[U_SCREEN_SCALE] {
             gl.uniform_1_f32(Some(location), self.system.screen_scale);
         }
 
-        if let Some(location) = uniform_locations.get("u_numColors") {
+        if let Some(location) = &ulocs[U_NUM_COLORS] {
             gl.uniform_1_i32(Some(location), pyxel::colors().len() as i32);
         }
 
-        if let Some(location) = uniform_locations.get("u_backgroundColor") {
+        if let Some(location) = &ulocs[U_BACKGROUND_COLOR] {
             let (r, g, b) = rgb_to_rgb8(BACKGROUND_COLOR);
             gl.uniform_3_f32(
                 Some(location),
@@ -495,11 +502,11 @@ impl Pyxel {
             );
         }
 
-        if let Some(location) = uniform_locations.get("u_screenTexture") {
+        if let Some(location) = &ulocs[U_SCREEN_TEXTURE] {
             gl.uniform_1_i32(Some(location), 0);
         }
 
-        if let Some(location) = uniform_locations.get("u_colorsTexture") {
+        if let Some(location) = &ulocs[U_COLORS_TEXTURE] {
             gl.uniform_1_i32(Some(location), 1);
         }
 
@@ -568,13 +575,13 @@ impl Pyxel {
         gl.bind_texture(glow::TEXTURE_2D, Some(graphics.colors_texture));
         gl.pixel_store_i32(glow::UNPACK_ALIGNMENT, 4);
 
-        let mut pixels: Vec<u8> = Vec::with_capacity(colors.len() * 3);
-        for color in colors.iter() {
-            let (r, g, b) = rgb_to_rgb8(*color);
-            pixels.push(r);
-            pixels.push(g);
-            pixels.push(b);
-        }
+        let pixels: Vec<u8> = colors
+            .iter()
+            .flat_map(|&c| {
+                let (r, g, b) = rgb_to_rgb8(c);
+                [r, g, b]
+            })
+            .collect();
 
         if graphics.cached_colors.len() == colors.len() {
             gl.tex_sub_image_2d(

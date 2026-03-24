@@ -1,7 +1,8 @@
 import importlib.util
-import inspect
 import os.path
 import sys
+
+SKIP_MODULES = frozenset(("_hashlib", "_uuid", "ssl"))
 
 
 class ImportHook:
@@ -10,45 +11,38 @@ class ImportHook:
         self.main_dir = None
 
     def find_spec(self, fullname, path, target=None):
-        # Skip imported modules if already processed, built-in, or in sys.modules
+        # Skip already-processed, built-in, loaded, or problematic modules
         if (
             fullname in self.imported_modules
             or fullname in sys.builtin_module_names
             or fullname in sys.modules
-            or fullname in ("_hashlib", "_uuid", "ssl")
+            or fullname in SKIP_MODULES
         ):
             return None
-
         self.imported_modules.add(fullname)
 
-        # Skip imported modules from the standard library or installed packages
+        # Skip standard library or installed packages
         spec = importlib.util.find_spec(fullname)
         if spec:
+            origin = spec.origin
             if (
-                spec.origin
-                in (
-                    None,
-                    "built-in",
-                    "builtin",
-                    "frozen",
-                )
-                or "site-packages" in spec.origin
-                or "dist-packages" in spec.origin
-                or os.path.realpath(spec.origin).startswith(
+                origin in (None, "built-in", "builtin", "frozen")
+                or "site-packages" in origin
+                or "dist-packages" in origin
+                or os.path.realpath(origin).startswith(
                     os.path.realpath(sys.base_prefix)
                 )
             ):
                 return None
 
         # Find the script that triggered the import
-        caller_file = next(
-            (
-                frame.filename
-                for frame in inspect.stack()
-                if not frame.filename.startswith("<")
-            ),
-            None,
-        )
+        caller_file = None
+        frame = sys._getframe(1)
+        while frame:
+            if not frame.f_code.co_filename.startswith("<"):
+                caller_file = frame.f_code.co_filename
+                break
+            frame = frame.f_back
         if not caller_file:
             return None
 

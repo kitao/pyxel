@@ -40,12 +40,7 @@ impl ImageData {
     fn to_image(&self) -> *mut Image {
         let data = expand_vec2(&self.data, self.height as usize, self.width as usize);
         let image = Image::new(self.width, self.height);
-
-        {
-            let image = unsafe { &mut *image };
-            image.canvas.data = data.into_iter().flatten().collect();
-        }
-
+        unsafe { &mut *image }.canvas.data = data.into_iter().flatten().collect();
         image
     }
 }
@@ -91,13 +86,8 @@ impl TilemapData {
     fn to_tilemap(&self) -> *mut Tilemap {
         let data = expand_vec2(&self.data, self.height as usize, (self.width * 2) as usize);
         let tilemap = Tilemap::new(self.width, self.height, ImageSource::Index(self.imgsrc));
-
-        {
-            let tilemap = unsafe { &mut *tilemap };
-            let data: Vec<_> = data.into_iter().flatten().collect();
-            tilemap.canvas.data = data.chunks(2).map(|chunk| (chunk[0], chunk[1])).collect();
-        }
-
+        let flat: Vec<_> = data.into_iter().flatten().collect();
+        unsafe { &mut *tilemap }.canvas.data = flat.chunks(2).map(|c| (c[0], c[1])).collect();
         tilemap
     }
 }
@@ -124,18 +114,14 @@ impl SoundData {
     }
 
     fn to_sound(&self) -> *mut Sound {
-        let sound = Sound::new();
-
-        {
-            let sound = unsafe { &mut *sound };
-            sound.notes.clone_from(&self.notes);
-            sound.tones.clone_from(&self.tones);
-            sound.volumes.clone_from(&self.volumes);
-            sound.effects.clone_from(&self.effects);
-            sound.speed = self.speed;
-        }
-
-        sound
+        let ptr = Sound::new();
+        let sound = unsafe { &mut *ptr };
+        sound.notes.clone_from(&self.notes);
+        sound.tones.clone_from(&self.tones);
+        sound.volumes.clone_from(&self.volumes);
+        sound.effects.clone_from(&self.effects);
+        sound.speed = self.speed;
+        ptr
     }
 }
 
@@ -153,15 +139,9 @@ impl MusicData {
     }
 
     fn to_music(&self) -> *mut Music {
-        let seqs = trim_empty_vecs(&self.seqs);
-        let music = Music::new();
-
-        {
-            let music = unsafe { &mut *music };
-            music.seqs = seqs;
-        }
-
-        music
+        let ptr = Music::new();
+        unsafe { &mut *ptr }.seqs = trim_empty_vecs(&self.seqs);
+        ptr
     }
 }
 
@@ -210,15 +190,35 @@ impl ResourceData {
         exclude_musics: bool,
     ) {
         if !exclude_images && !self.images.is_empty() {
+            for &ptr in pyxel::images().iter() {
+                unsafe {
+                    drop(Box::from_raw(ptr));
+                }
+            }
             *pyxel::images() = self.images.iter().map(ImageData::to_image).collect();
         }
         if !exclude_tilemaps && !self.tilemaps.is_empty() {
+            for &ptr in pyxel::tilemaps().iter() {
+                unsafe {
+                    drop(Box::from_raw(ptr));
+                }
+            }
             *pyxel::tilemaps() = self.tilemaps.iter().map(TilemapData::to_tilemap).collect();
         }
         if !exclude_sounds && !self.sounds.is_empty() {
+            for &ptr in pyxel::sounds().iter() {
+                unsafe {
+                    drop(Box::from_raw(ptr));
+                }
+            }
             *pyxel::sounds() = self.sounds.iter().map(SoundData::to_sound).collect();
         }
         if !exclude_musics && !self.musics.is_empty() {
+            for &ptr in pyxel::musics().iter() {
+                unsafe {
+                    drop(Box::from_raw(ptr));
+                }
+            }
             *pyxel::musics() = self.musics.iter().map(MusicData::to_music).collect();
         }
     }
@@ -230,7 +230,7 @@ impl ResourceData {
         exclude_sounds: bool,
         exclude_musics: bool,
     ) -> String {
-        let mut resource_data = (*self).clone();
+        let mut resource_data = self.clone();
 
         if exclude_images {
             resource_data.images.clear();

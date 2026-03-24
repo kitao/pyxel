@@ -15,12 +15,6 @@
     <script>
       let data, lang = "en";
 
-      function t(o) {
-        if (!o) return "";
-        if (typeof o === "string") return data?.ui[o] ? t(data.ui[o]) : o;
-        return o[lang] || o["en"] || "";
-      }
-
       function icon(src, size = 28) {
         return `<img src="${src}" style="width:${size}px;height:${size}px" class="pix inline-block align-middle" alt="">`;
       }
@@ -406,7 +400,8 @@
           data = json;
           lang = detectLanguage(data.languages);
           build();
-        });
+        })
+        .catch((e) => console.error("Failed to load data:", e));
     </script>
   </body>
 </html>

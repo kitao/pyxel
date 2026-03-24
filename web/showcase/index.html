@@ -20,12 +20,6 @@
       let data = null;
       let lang = "en";
 
-      function t(keyOrObj) {
-        const obj = typeof keyOrObj === "string" ? data?.ui[keyOrObj] : keyOrObj;
-        if (!obj) return typeof keyOrObj === "string" ? keyOrObj : "";
-        return obj[lang] || obj["en"] || "";
-      }
-
       function buildPage() {
         const app = document.getElementById("app");
         app.innerHTML = "";
@@ -202,7 +196,8 @@
           data = json;
           lang = detectLanguage(data.languages);
           buildPage();
-        });
+        })
+        .catch((e) => console.error("Failed to load data:", e));
     </script>
   </body>
 </html>

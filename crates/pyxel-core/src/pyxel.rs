@@ -336,7 +336,7 @@ fn init_tones() -> Vec<*mut Tone> {
                 1 => set_tone!(t, DEFAULT_TONE_1),
                 2 => set_tone!(t, DEFAULT_TONE_2),
                 3 => set_tone!(t, DEFAULT_TONE_3),
-                _ => panic!(),
+                _ => unreachable!(),
             }
             tone
         })

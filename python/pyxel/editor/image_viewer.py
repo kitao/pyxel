@@ -3,6 +3,10 @@ import pyxel
 from .settings import PANEL_FOCUS_BORDER_COLOR, PANEL_FOCUS_COLOR
 from .widgets import ScrollBar, Widget
 
+# Grid size in pixels per tile and max tile index (256 / GRID_SIZE - 1)
+GRID_SIZE = 8
+MAX_TILE_INDEX = 31
+
 
 class ImageViewer(Widget):
     def __init__(self, parent):
@@ -84,12 +88,16 @@ class ImageViewer(Widget):
         self.add_event_listener("draw", self.__on_draw)
 
     def _screen_to_focus(self, x, y):
-        x = min(max(self.viewport_x_var + (x - self.x - 1) // 8, 0), 31)
-        y = min(max(self.viewport_y_var + (y - self.y - 1) // 8, 0), 31)
+        x = min(
+            max(self.viewport_x_var + (x - self.x - 1) // GRID_SIZE, 0), MAX_TILE_INDEX
+        )
+        y = min(
+            max(self.viewport_y_var + (y - self.y - 1) // GRID_SIZE, 0), MAX_TILE_INDEX
+        )
         return x, y
 
     def __on_focus_x_set(self, value):
-        return min(max(value, 0), 32 - self.focus_w_var)
+        return min(max(value, 0), MAX_TILE_INDEX + 1 - self.focus_w_var)
 
     def __on_focus_x_change(self, value):
         fx = self.focus_x_var
@@ -99,7 +107,7 @@ class ImageViewer(Widget):
         self.viewport_x_var += min(fx - vx, 0) + max(fx + fw - vx - vw, 0)
 
     def __on_focus_y_set(self, value):
-        return min(max(value, 0), 32 - self.focus_h_var)
+        return min(max(value, 0), MAX_TILE_INDEX + 1 - self.focus_h_var)
 
     def __on_focus_y_change(self, value):
         fy = self.focus_y_var
@@ -122,31 +130,31 @@ class ImageViewer(Widget):
             if self._is_tilemap_mode:
                 last_focus_x = self.focus_x_var
                 last_focus_y = self.focus_y_var
-                self._focus_x_var, self._focus_y_var = self._screen_to_focus(x, y)
-                self.focus_w_var = min(abs(self._focus_x_var - self._press_x) + 1, 8)
-                self.focus_h_var = min(abs(self._focus_y_var - self._press_y) + 1, 8)
-                self.focus_x_var = min(self._focus_x_var, last_focus_x)
-                self.focus_y_var = min(self._focus_y_var, last_focus_y)
+                new_x, new_y = self._screen_to_focus(x, y)
+                self.focus_w_var = min(abs(new_x - self._press_x) + 1, 8)
+                self.focus_h_var = min(abs(new_y - self._press_y) + 1, 8)
+                self.focus_x_var = min(new_x, last_focus_x)
+                self.focus_y_var = min(new_y, last_focus_y)
             else:
                 self.__on_mouse_down(key, x, y)
         elif key == pyxel.MOUSE_BUTTON_RIGHT:
             self._drag_offset_x -= dx
             self._drag_offset_y -= dy
-            if abs(self._drag_offset_x) >= 8:
-                offset = self._drag_offset_x // 8
+            if abs(self._drag_offset_x) >= GRID_SIZE:
+                offset = self._drag_offset_x // GRID_SIZE
                 self.viewport_x_var += offset
-                self._drag_offset_x -= offset * 8
-            if abs(self._drag_offset_y) >= 8:
-                offset = self._drag_offset_y // 8
+                self._drag_offset_x -= offset * GRID_SIZE
+            if abs(self._drag_offset_y) >= GRID_SIZE:
+                offset = self._drag_offset_y // GRID_SIZE
                 self.viewport_y_var += offset
-                self._drag_offset_y -= offset * 8
+                self._drag_offset_y -= offset * GRID_SIZE
 
     def __on_mouse_hover(self, x, y):
         x, y = self._screen_to_focus(x, y)
         self.help_message_var = (
             f"TILE:SHIFT+CURSOR ({x},{y})"
             if self._is_tilemap_mode
-            else f"TARGET:CURSOR ({x * 8},{y * 8})"
+            else f"TARGET:CURSOR ({x * GRID_SIZE},{y * GRID_SIZE})"
         )
 
     def __on_draw(self):
@@ -158,18 +166,18 @@ class ImageViewer(Widget):
             self.x + 1,
             self.y + 1,
             self.image_index_var,
-            self.viewport_x_var * 8,
-            self.viewport_y_var * 8,
+            self.viewport_x_var * GRID_SIZE,
+            self.viewport_y_var * GRID_SIZE,
             self.width - 2,
             self.height - 2,
         )
         pyxel.pal()
 
         # Draw focus
-        x = self.x + (self.focus_x_var - self.viewport_x_var) * 8 + 1
-        y = self.y + (self.focus_y_var - self.viewport_y_var) * 8 + 1
-        w = self.focus_w_var * 8
-        h = self.focus_h_var * 8
+        x = self.x + (self.focus_x_var - self.viewport_x_var) * GRID_SIZE + 1
+        y = self.y + (self.focus_y_var - self.viewport_y_var) * GRID_SIZE + 1
+        w = self.focus_w_var * GRID_SIZE
+        h = self.focus_h_var * GRID_SIZE
         pyxel.clip(self.x + 1, self.y + 1, self.width - 2, self.height - 2)
         pyxel.rectb(x, y, w, h, PANEL_FOCUS_COLOR)
         pyxel.rectb(x + 1, y + 1, w - 2, h - 2, PANEL_FOCUS_BORDER_COLOR)

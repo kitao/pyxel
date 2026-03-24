@@ -52,9 +52,11 @@ impl RectArea {
 
     pub const fn contains(&self, x: i32, y: i32) -> bool {
         x >= self.left
-            && x < self.left + self.width as i32
+            && x <= self.right
             && y >= self.top
-            && y < self.top + self.height as i32
+            && y <= self.bottom
+            && self.width > 0
+            && self.height > 0
     }
 
     pub fn intersects(&self, rect: Self) -> Self {

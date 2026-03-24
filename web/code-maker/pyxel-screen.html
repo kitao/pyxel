@@ -11,6 +11,8 @@
         import js, base64, pyxel.cli, os
         project_files = js.parent.project.files.to_py()
         for path, b64_content in project_files.items():
+          if '..' in path:
+            continue
           if '/' in path:
             os.makedirs(os.path.dirname(path), exist_ok=True)
           with open(path, 'wb') as f:

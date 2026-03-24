@@ -1,11 +1,7 @@
-use std::sync::Once;
-
 use pyo3::exceptions::{PyException, PyValueError};
 use pyo3::prelude::*;
 
 use crate::sound_wrapper::Sound;
-
-static PLAY_TICK_ONCE: Once = Once::new();
 
 #[pyclass(from_py_object)]
 #[derive(Clone, Copy)]
@@ -20,34 +16,49 @@ impl Channel {
     pub fn wrap(inner: *mut pyxel::Channel) -> Self {
         Self { inner }
     }
+
+    fn inner_ref(&self) -> &pyxel::Channel {
+        unsafe { &*self.inner }
+    }
+
+    #[allow(clippy::mut_from_ref)]
+    fn inner_mut(&self) -> &mut pyxel::Channel {
+        unsafe { &mut *self.inner }
+    }
 }
 
 #[pymethods]
 impl Channel {
+    // Constructor
+
     #[new]
     fn new() -> Self {
         Self::wrap(pyxel::Channel::new())
     }
 
+    // Properties
+
     #[getter]
     fn get_gain(&self) -> pyxel::ChannelGain {
-        unsafe { &*self.inner }.gain
+        self.inner_ref().gain
     }
 
     #[setter]
     fn set_gain(&self, gain: pyxel::ChannelGain) {
-        unsafe { &mut *self.inner }.gain = gain;
+        self.inner_mut().gain = gain;
     }
 
     #[getter]
     fn get_detune(&self) -> pyxel::ChannelDetune {
-        unsafe { &*self.inner }.detune
+        self.inner_ref().detune
     }
 
     #[setter]
     fn set_detune(&self, detune: pyxel::ChannelDetune) {
-        unsafe { &mut *self.inner }.detune = detune;
+        self.inner_mut().detune = detune;
     }
+
+    // Playback
 
     #[pyo3(signature = (snd, sec=None, r#loop=None, resume=None, tick=None))]
     fn play(
@@ -59,42 +70,49 @@ impl Channel {
         tick: Option<u32>,
     ) -> PyResult<()> {
         let sec = if let Some(tick) = tick {
-            PLAY_TICK_ONCE.call_once(|| {
-                println!("tick option of Channel.play is deprecated. Use sec option instead.");
-            });
-
+            deprecation_warning!(
+                PLAY_TICK_ONCE,
+                "tick option of Channel.play is deprecated. Use sec option instead."
+            );
             Some(tick as f32 / 120.0)
         } else {
             sec
         };
-
         let loop_ = r#loop.unwrap_or(false);
+        let resume = resume.unwrap_or(false);
 
         cast_pyany! {
             snd,
+
             (u32, {
                 let sound = pyxel::sounds().get(snd as usize).copied()
                     .ok_or_else(|| PyValueError::new_err("Invalid sound index"))?;
-                unsafe { &mut *self.inner }.play_sound(sound, sec, loop_, resume.unwrap_or(false));
+                self.inner_mut().play_sound(sound, sec, loop_, resume);
             }),
+
             (Vec<u32>, {
                 let all_sounds = pyxel::sounds();
-                for i in &snd {
-                    if *i as usize >= all_sounds.len() {
+                for &i in &snd {
+                    if i as usize >= all_sounds.len() {
                         return Err(PyValueError::new_err("Invalid sound index"));
                     }
                 }
-                let sounds = snd.iter().map(|i| all_sounds[*i as usize]).collect();
-                unsafe { &mut *self.inner }.play(sounds, sec, loop_, resume.unwrap_or(false));
+                let sounds = snd.iter().map(|&i| all_sounds[i as usize]).collect();
+                self.inner_mut().play(sounds, sec, loop_, resume);
             }),
-            (Sound, { unsafe { &mut *self.inner }.play_sound(snd.inner, sec, loop_, resume.unwrap_or(false)); }),
+
+            (Sound, {
+                self.inner_mut().play_sound(snd.inner, sec, loop_, resume);
+            }),
+
             (Vec<Sound>, {
                 let sounds = snd.iter().map(|sound| sound.inner).collect();
-                unsafe { &mut *self.inner }.play(sounds, sec, loop_, resume.unwrap_or(false));
+                self.inner_mut().play(sounds, sec, loop_, resume);
             }),
+
             (String, {
-                unsafe { &mut *self.inner }
-                    .play_mml(&snd, sec, r#loop.unwrap_or(false), resume.unwrap_or(false))
+                self.inner_mut()
+                    .play_mml(&snd, sec, loop_, resume)
                     .map_err(PyException::new_err)?;
             })
         }
@@ -103,11 +121,11 @@ impl Channel {
     }
 
     fn stop(&mut self) {
-        unsafe { &mut *self.inner }.stop();
+        self.inner_mut().stop();
     }
 
     fn play_pos(&self) -> Option<(u32, f32)> {
-        unsafe { &mut *self.inner }.play_position()
+        self.inner_mut().play_position()
     }
 }
 

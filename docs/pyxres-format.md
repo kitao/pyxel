@@ -45,7 +45,7 @@ Pyxel currently writes `format_version = 1` for maximum backward compatibility. 
 
 ## Images
 
-Up to **3 image banks**, each **256×256 pixels**. Each pixel is a palette color index (`u8`, 0–15 for the default palette, up to 254 with extended palettes).
+Up to **3 image banks**, each **256×256 pixels**. Each pixel is a palette color index (`u8`, 0–15 for the default palette, up to 255 with extended palettes).
 
 ```toml
 [[images]]

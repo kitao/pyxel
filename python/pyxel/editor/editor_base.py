@@ -75,11 +75,7 @@ class EditorBase(Widget):
         self.help_message_var = "+10:SHIFT+CLICK"
 
     def check_tool_button_shortcuts(self):
-        if (
-            pyxel.btn(pyxel.KEY_CTRL)
-            or pyxel.btn(pyxel.KEY_ALT)
-            or pyxel.btn(pyxel.KEY_GUI)
-        ):
+        if any(pyxel.btn(k) for k in (pyxel.KEY_CTRL, pyxel.KEY_ALT, pyxel.KEY_GUI)):
             return
 
         if pyxel.btnp(pyxel.KEY_S):
@@ -96,24 +92,16 @@ class EditorBase(Widget):
     def add_tool_button_help(self, tool_button):
         tool_button.add_event_listener("mouse_hover", self.__on_tool_button_mouse_hover)
 
+    _TOOL_HELP = {
+        TOOL_SELECT: "SELECT:S",
+        TOOL_PENCIL: "PENCIL:P",
+        TOOL_RECTB: "RECTANGLE:R",
+        TOOL_RECT: "FILLED-RECT:SHIFT+R",
+        TOOL_CIRCB: "CIRCLE:C",
+        TOOL_CIRC: "FILLED-CIRC:SHIFT+C",
+        TOOL_BUCKET: "BUCKET:B",
+    }
+
     def __on_tool_button_mouse_hover(self, x, y):
         value = self._tool_button.check_value(x, y)
-
-        if value == TOOL_SELECT:
-            s = "SELECT:S"
-        elif value == TOOL_PENCIL:
-            s = "PENCIL:P"
-        elif value == TOOL_RECTB:
-            s = "RECTANGLE:R"
-        elif value == TOOL_RECT:
-            s = "FILLED-RECT:SHIFT+R"
-        elif value == TOOL_CIRCB:
-            s = "CIRCLE:C"
-        elif value == TOOL_CIRC:
-            s = "FILLED-CIRC:SHIFT+C"
-        elif value == TOOL_BUCKET:
-            s = "BUCKET:B"
-        else:
-            s = ""
-
-        self.help_message_var = s
+        self.help_message_var = self._TOOL_HELP.get(value, "")

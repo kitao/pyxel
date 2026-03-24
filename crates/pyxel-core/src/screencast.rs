@@ -84,8 +84,13 @@ impl Screencast {
 
         screen.width = width;
         screen.height = height;
-        screen.colors = colors.to_vec();
-        screen.image = image.to_vec();
+
+        // Reuse existing Vec capacity to avoid repeated allocation
+        screen.image.resize(image.len(), 0);
+        screen.image.copy_from_slice(image);
+        screen.colors.resize(colors.len(), 0);
+        screen.colors.copy_from_slice(colors);
+
         screen.frame_count = frame_count;
 
         self.num_captured_screens += 1;
@@ -367,7 +372,7 @@ impl Screencast {
         }
 
         // Build palette
-        for (&rgb, _) in color_table.iter() {
+        for &rgb in color_table.keys() {
             if rgb == TRANSPARENT {
                 palette.extend_from_slice(&[0, 0, 0]);
             } else {

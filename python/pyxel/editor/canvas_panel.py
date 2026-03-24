@@ -10,9 +10,14 @@ from .settings import (
     TOOL_RECT,
     TOOL_RECTB,
     TOOL_SELECT,
+    _clamp,
+    _is_modifier_pressed,
 )
 from .widgets import ScrollBar, Widget
 from .widgets.settings import WIDGET_HOLD_TIME, WIDGET_PANEL_COLOR, WIDGET_REPEAT_TIME
+
+# Sentinel tile value indicating an empty/unset tile in tilemap mode
+EMPTY_TILE = (255, 255)
 
 
 class CanvasPanel(Widget):
@@ -108,8 +113,8 @@ class CanvasPanel(Widget):
         self.add_event_listener("draw", self.__on_draw)
 
     def _screen_to_focus(self, x, y):
-        x = min(max((x - self.x - 1) // 8, 0), 15)
-        y = min(max((y - self.y - 1) // 8, 0), 15)
+        x = _clamp((x - self.x - 1) // 8, 0, 15)
+        y = _clamp((y - self.y - 1) // 8, 0, 15)
         return x, y
 
     def _selection_rect(self):
@@ -177,12 +182,13 @@ class CanvasPanel(Widget):
             self._edit_canvas.imgsrc = self.canvas_var.imgsrc
 
     def _finish_edit_canvas(self):
+        """Fill empty tiles with the selected tile pattern in tilemap mode."""
         if not self._is_tilemap_mode:
             return
 
         for y in range(16):
             for x in range(16):
-                if self._edit_canvas.pget(x, y) != (255, 255):  # Skip non-empty tiles
+                if self._edit_canvas.pget(x, y) != EMPTY_TILE:
                     continue
                 tile = (
                     self.tile_x_var + (x - self._press_x) % self.tile_w_var,
@@ -203,6 +209,7 @@ class CanvasPanel(Widget):
         self._v_scroll_bar.value_var = value
 
     def __on_mouse_down(self, key, x, y):
+        # Color pick (right click)
         if key == pyxel.MOUSE_BUTTON_RIGHT:
             x = self.focus_x_var * 8 + (x - self.x) // 8
             y = self.focus_y_var * 8 + (y - self.y) // 8
@@ -220,14 +227,19 @@ class CanvasPanel(Widget):
         self._is_dragged = True
         self._is_assist_mode = False
 
+        # SELECT: begin selection
         if self.tool_var == TOOL_SELECT:
             self._reset_edit_canvas()
             self._select_x1 = self._select_x2 = x
             self._select_y1 = self._select_y2 = y
+
+        # PENCIL/RECTB/RECT/CIRCB/CIRC: place initial dot
         elif TOOL_PENCIL <= self.tool_var <= TOOL_CIRC:
             self._reset_edit_canvas()
             self._edit_canvas.pset(x, y, self.color_var)
             self._finish_edit_canvas()
+
+        # BUCKET: flood fill and commit immediately
         elif self.tool_var == TOOL_BUCKET:
             self._add_pre_history()
             self._reset_edit_canvas()
@@ -277,12 +289,14 @@ class CanvasPanel(Widget):
                 else:
                     x2 = x1 + abs(dy) * (1 if dx > 0 else -1)
 
+            # SELECT: update selection rectangle
             if self.tool_var == TOOL_SELECT:
-                x2 = min(max(x2, 0), 15)
-                y2 = min(max(y2, 0), 15)
+                x2 = _clamp(x2, 0, 15)
+                y2 = _clamp(y2, 0, 15)
                 self._select_x1, self._select_x2 = (x1, x2) if x1 < x2 else (x2, x1)
                 self._select_y1, self._select_y2 = (y1, y2) if y1 < y2 else (y2, y1)
 
+            # PENCIL: freehand or assisted straight line
             elif self.tool_var == TOOL_PENCIL:
                 if self._is_assist_mode:
                     self._reset_edit_canvas()
@@ -294,33 +308,25 @@ class CanvasPanel(Widget):
                     )
                     self._finish_edit_canvas()
 
+            # RECTB: outlined rectangle
             elif self.tool_var == TOOL_RECTB:
                 self._reset_edit_canvas()
-                self._edit_canvas.rectb2(
-                    x1,
-                    y1,
-                    x2,
-                    y2,
-                    self.color_var,
-                )
+                self._edit_canvas.rectb2(x1, y1, x2, y2, self.color_var)
                 self._finish_edit_canvas()
 
+            # RECT: filled rectangle
             elif self.tool_var == TOOL_RECT:
                 self._reset_edit_canvas()
-                self._edit_canvas.rect2(
-                    x1,
-                    y1,
-                    x2,
-                    y2,
-                    self.color_var,
-                )
+                self._edit_canvas.rect2(x1, y1, x2, y2, self.color_var)
                 self._finish_edit_canvas()
 
+            # CIRCB: outlined ellipse
             elif self.tool_var == TOOL_CIRCB:
                 self._reset_edit_canvas()
                 self._edit_canvas.ellib2(x1, y1, x2, y2, self.color_var)
                 self._finish_edit_canvas()
 
+            # CIRC: filled ellipse
             elif self.tool_var == TOOL_CIRC:
                 self._reset_edit_canvas()
                 self._edit_canvas.elli2(x1, y1, x2, y2, self.color_var)
@@ -362,10 +368,9 @@ class CanvasPanel(Widget):
                 pyxel.MOUSE_BUTTON_LEFT, pyxel.mouse_x, pyxel.mouse_y, 0, 0
             )
 
-        # Copy/cut/paste bank
-        if pyxel.btn(pyxel.KEY_SHIFT) and (
-            pyxel.btn(pyxel.KEY_CTRL) or pyxel.btn(pyxel.KEY_GUI)
-        ):
+        # Copy/cut/paste bank (Ctrl+Shift or Cmd+Shift)
+        has_cmd_or_ctrl = pyxel.btn(pyxel.KEY_CTRL) or pyxel.btn(pyxel.KEY_GUI)
+        if pyxel.btn(pyxel.KEY_SHIFT) and has_cmd_or_ctrl:
             # Ctrl+Shift+C/Ctrl+Shift+X: Copy bank
             if pyxel.btnp(pyxel.KEY_C) or pyxel.btnp(pyxel.KEY_X):
                 self._bank_buffer = {}
@@ -401,11 +406,11 @@ class CanvasPanel(Widget):
                     )
                 self._add_post_history(bank_copy=True)
 
-        # Copy/cut/paste canvas
+        # Copy/cut/paste canvas (Ctrl/Cmd without Shift)
         if (
             self.tool_var == TOOL_SELECT
             and not pyxel.btn(pyxel.KEY_SHIFT)
-            and (pyxel.btn(pyxel.KEY_CTRL) or pyxel.btn(pyxel.KEY_GUI))
+            and has_cmd_or_ctrl
         ):
             # Ctrl+A: Select all
             if pyxel.btnp(pyxel.KEY_A):
@@ -432,17 +437,16 @@ class CanvasPanel(Widget):
                 height = len(self._canvas_buffer)
                 width -= max(self._select_x1 + width - 16, 0)
                 height -= max(self._select_y1 + height - 16, 0)
+                clipped = [row[:width] for row in self._canvas_buffer[:height]]
                 self.canvas_var.set_slice(
                     self.focus_x_var * 8 + self._select_x1,
                     self.focus_y_var * 8 + self._select_y1,
-                    self._canvas_buffer,
+                    clipped,
                 )
                 self._add_post_history()
 
-        # Selection tool operations
-        if self.tool_var == TOOL_SELECT and not (
-            pyxel.btn(pyxel.KEY_CTRL) or pyxel.btn(pyxel.KEY_GUI)
-        ):
+        # Selection tool operations (no Ctrl/Cmd)
+        if self.tool_var == TOOL_SELECT and not has_cmd_or_ctrl:
             # H: Flip horizontal
             if pyxel.btnp(pyxel.KEY_H):
                 x, y, w, h = self._selection_rect()
@@ -476,13 +480,8 @@ class CanvasPanel(Widget):
             ):
                 self.tile_y_var += 1
 
-        # Move target focus
-        if not (
-            pyxel.btn(pyxel.KEY_SHIFT)
-            or pyxel.btn(pyxel.KEY_CTRL)
-            or pyxel.btn(pyxel.KEY_ALT)
-            or pyxel.btn(pyxel.KEY_GUI)
-        ):
+        # Move target focus (only when no modifiers held)
+        if not _is_modifier_pressed():
             if pyxel.btnp(
                 pyxel.KEY_LEFT, hold=WIDGET_HOLD_TIME, repeat=WIDGET_REPEAT_TIME
             ):

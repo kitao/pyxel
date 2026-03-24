@@ -45,9 +45,16 @@ pub fn is_sigint_received() -> bool {
 pub fn init(headless: bool) {
     HEADLESS.store(headless, Ordering::Relaxed);
 
+    // Drop the previous platform if init() is called again
+    unsafe {
+        if !PLATFORM.is_null() {
+            drop(Box::from_raw(PLATFORM));
+            PLATFORM = null_mut();
+        }
+    }
+
     let mut platform = Platform::new();
     platform.init(headless);
-
     unsafe {
         PLATFORM = Box::into_raw(Box::new(platform));
     }
@@ -89,10 +96,9 @@ pub fn init_window(title: &str, width: u32, height: u32) {
 
 pub fn window_pos() -> (i32, i32) {
     if is_headless() {
-        (0, 0)
-    } else {
-        platform().window_pos()
+        return (0, 0);
     }
+    platform().window_pos()
 }
 
 pub fn set_window_pos(x: i32, y: i32) {
@@ -103,10 +109,9 @@ pub fn set_window_pos(x: i32, y: i32) {
 
 pub fn window_size() -> (u32, u32) {
     if is_headless() {
-        (0, 0)
-    } else {
-        platform().window_size()
+        return (0, 0);
     }
+    platform().window_size()
 }
 
 pub fn set_window_size(width: u32, height: u32) {
@@ -129,10 +134,9 @@ pub fn set_window_icon(width: u32, height: u32, rgba: &[u8]) {
 
 pub fn is_fullscreen() -> bool {
     if is_headless() {
-        false
-    } else {
-        platform().is_fullscreen()
+        return false;
     }
+    platform().is_fullscreen()
 }
 
 pub fn set_fullscreen(enabled: bool) {
@@ -155,10 +159,9 @@ pub fn set_mouse_visible(visible: bool) {
 
 pub fn display_size() -> (u32, u32) {
     if is_headless() {
-        (0, 0)
-    } else {
-        platform().display_size()
+        return (0, 0);
     }
+    platform().display_size()
 }
 
 //
@@ -195,20 +198,18 @@ pub fn step_frame(fps: u32) {
     platform().step_frame(fps);
 }
 
-pub fn poll_events() -> Vec<Event> {
-    if is_headless() {
-        Vec::new()
-    } else {
-        platform().poll_events()
+pub fn poll_events(events: &mut Vec<Event>) {
+    events.clear();
+    if !is_headless() {
+        platform().poll_events(events);
     }
 }
 
 pub fn gl_profile() -> GLProfile {
     if is_headless() {
-        GLProfile::None
-    } else {
-        platform().gl_profile()
+        return GLProfile::None;
     }
+    platform().gl_profile()
 }
 
 pub fn gl_context() -> &'static mut Context {

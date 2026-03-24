@@ -1,16 +1,41 @@
 import ast
 import os
 
+# Keys for the import classification dict
+SYSTEM = "system"
+LOCAL = "local"
+
 
 def _to_module_filename(module_path):
     filename = module_path + ".py"
     if os.path.isfile(filename):
         return filename
-    elif os.path.isdir(module_path):
-        filename = os.path.join(module_path, "__init__.py")
-        if os.path.isfile(filename):
-            return filename
+    init_file = os.path.join(module_path, "__init__.py")
+    if os.path.isdir(module_path) and os.path.isfile(init_file):
+        return init_file
     return None
+
+
+def _resolve_module_path(dir_path, level, name):
+    """Build a filesystem path from an import's directory, level, and name."""
+    parts = [dir_path]
+    if level > 1:
+        parts.extend([".."] * (level - 1))
+    parts.append(name.replace(".", os.sep))
+    return os.path.join(*parts)
+
+
+def _track_module(imports, filename, checked_files, dir_path, level, name):
+    """Classify a single import as local or system and recurse into local ones."""
+    module_path = _resolve_module_path(dir_path, level, name)
+    module_filename = _to_module_filename(module_path)
+
+    if module_filename:
+        imports[LOCAL].add(os.path.abspath(module_filename))
+        _list_imported_modules(imports, module_filename, checked_files)
+    elif level == 0:
+        # Only top-level imports are considered system modules
+        imports[SYSTEM].add(name)
 
 
 def _list_imported_modules(imports, filename, checked_files):
@@ -25,51 +50,37 @@ def _list_imported_modules(imports, filename, checked_files):
     for node in ast.walk(root):
         if isinstance(node, ast.Import):
             for alias in node.names:
-                module_path = os.path.join(dir_path, alias.name.replace(".", os.sep))
-                module_filename = _to_module_filename(module_path)
-
-                if module_filename:
-                    imports["local"].add(os.path.abspath(module_filename))
-                    _list_imported_modules(imports, module_filename, checked_files)
-                else:
-                    imports["system"].add(alias.name)
+                _track_module(imports, filename, checked_files, dir_path, 0, alias.name)
 
         elif isinstance(node, ast.ImportFrom):
             if node.module:
-                module_path = os.path.join(
+                _track_module(
+                    imports,
+                    filename,
+                    checked_files,
                     dir_path,
-                    *([".."] * (node.level - 1)),
-                    node.module.replace(".", os.sep),
+                    node.level,
+                    node.module,
                 )
-                module_filename = _to_module_filename(module_path)
-
-                if module_filename:
-                    imports["local"].add(os.path.abspath(module_filename))
-                    _list_imported_modules(imports, module_filename, checked_files)
-                elif node.level == 0:
-                    imports["system"].add(node.module)
             else:
+                # Relative import without module name (e.g. "from . import foo")
                 for alias in node.names:
-                    module_path = os.path.join(
+                    _track_module(
+                        imports,
+                        filename,
+                        checked_files,
                         dir_path,
-                        *([".."] * (node.level - 1)),
-                        alias.name.replace(".", os.sep),
+                        node.level,
+                        alias.name,
                     )
-                    module_filename = _to_module_filename(module_path)
-
-                    if module_filename:
-                        imports["local"].add(module_filename)
-                        _list_imported_modules(imports, module_filename, checked_files)
-                    else:
-                        imports["system"].add(alias.name)
 
 
 def list_imported_modules(filename):
-    imports = {"system": set(), "local": set()}
+    imports = {SYSTEM: set(), LOCAL: set()}
     checked_files = set()
     _list_imported_modules(imports, filename, checked_files)
 
     return {
-        "system": sorted(imports["system"]),
-        "local": sorted(imports["local"]),
+        SYSTEM: sorted(imports[SYSTEM]),
+        LOCAL: sorted(imports[LOCAL]),
     }

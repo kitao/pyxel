@@ -118,8 +118,8 @@ format:
 	@ruff format $(ROOT_DIR)
 
 lint:
-	@cd $(CRATES_DIR); cargo clippy $(CARGO_OPTS) $(CLIPPY_OPTS) || true
-	@ruff check $(ROOT_DIR) || true
+	@cd $(CRATES_DIR); cargo clippy $(CARGO_OPTS) $(CLIPPY_OPTS)
+	@ruff check $(ROOT_DIR)
 
 build: format
 	@rustup component add rust-src

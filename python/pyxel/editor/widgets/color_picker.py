@@ -35,11 +35,16 @@ class ColorPicker(Widget):
         y -= self.y + 1
         cw = self._color_width
         ch = self._color_height
-        if 0 <= x <= self.width - 2 and 0 <= y <= self.height - 2:
+        if 0 <= x < self.width - 1 and 0 <= y < self.height - 1:
             col = (y // ch) * self._num_cols + x // cw
             return col if col < pyxel.num_user_colors else None
-        else:
-            return None
+        return None
+
+    def __on_value_set(self, value):
+        return min(value, pyxel.num_user_colors - 1)
+
+    def __on_value_change(self, value):
+        self.trigger_event("change", value)
 
     def __on_mouse_down(self, key, x, y):
         if key != pyxel.MOUSE_BUTTON_LEFT:
@@ -55,8 +60,10 @@ class ColorPicker(Widget):
         self.draw_panel(
             self.x, self.y, self.width, self.height, with_shadow=self._with_shadow
         )
+        self._draw_colors()
+        self._draw_cursor()
 
-        # Draw colors
+    def _draw_colors(self):
         cw = self._color_width
         ch = self._color_height
         pyxel.user_pal()
@@ -73,10 +80,12 @@ class ColorPicker(Widget):
                     )
         pyxel.pal()
 
-        # Draw cursor
+    def _draw_cursor(self):
         col = self.value_var
         if col >= pyxel.num_user_colors:
             return
+        cw = self._color_width
+        ch = self._color_height
         x = self.x + cw * (col % self._num_cols) + cw // 2
         y = self.y + ch * (col // self._num_cols) + ch // 2
         rgb = pyxel.colors[pyxel.NUM_COLORS + col]
@@ -93,9 +102,3 @@ class ColorPicker(Widget):
             1 + ch // 8 * 1.5,
             7 if brightness < 140 else 0,
         )
-
-    def __on_value_set(self, value):
-        return min(value, pyxel.num_user_colors - 1)
-
-    def __on_value_change(self, value):
-        self.trigger_event("change", value)

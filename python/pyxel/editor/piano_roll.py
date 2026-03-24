@@ -26,13 +26,11 @@ class PianoRoll(Widget):
         super().__init__(parent, 30, 25, 193, 123)
         self._press_x = 0
         self._press_y = 0
-
         self.field_cursor = parent.field_cursor
         self.get_field = parent.get_field
         self.add_pre_history = parent.add_pre_history
         self.add_post_history = parent.add_post_history
         self.get_field_help_message = parent.get_field_help_message
-
         self.copy_var("speed_var", parent)
         self.copy_var("note_var", parent)
         self.copy_var("is_playing_var", parent)
@@ -67,7 +65,6 @@ class PianoRoll(Widget):
     def __on_mouse_down(self, key, x, y):
         if key != pyxel.MOUSE_BUTTON_LEFT or self.is_playing_var:
             return
-
         x, y = self._screen_to_view(x, y)
         self._press_x = x
         self._press_y = y
@@ -78,19 +75,17 @@ class PianoRoll(Widget):
             return
 
         x, y = self._screen_to_view(x, y)
-        if x > self._press_x:
-            step = 1
-        elif x < self._press_x:
-            step = -1
-        else:
+        if x == self._press_x:
             if y != self._press_y:
                 self._set_note(x, y)
                 self._press_x = x
                 self._press_y = y
             return
 
+        # Interpolate notes between press and current positions
         dx = x - self._press_x
         dy = y - self._press_y
+        step = 1 if dx > 0 else -1
         alpha = dy / dx
         for i in range(0, dx + step, step):
             self._set_note(self._press_x + i, round(self._press_y + alpha * i))
@@ -101,7 +96,6 @@ class PianoRoll(Widget):
     def __on_mouse_click(self, key, x, y):
         if key != pyxel.MOUSE_BUTTON_LEFT or self.is_playing_var:
             return
-
         x, y = self._screen_to_view(x, y)
         self._set_note(x, y)
 
@@ -111,7 +105,6 @@ class PianoRoll(Widget):
     def __on_update(self):
         if self.field_cursor.y > 0 or self.is_playing_var:
             return
-
         if (
             pyxel.btnp(
                 pyxel.KEY_RETURN, hold=WIDGET_HOLD_TIME, repeat=WIDGET_REPEAT_TIME
@@ -126,10 +119,11 @@ class PianoRoll(Widget):
         # Draw frame
         pyxel.rect(self.x, self.y, self.width, self.height, 7)
 
+        # Draw cursor or playback position
         play_pos = pyxel.play_pos(0)
         if play_pos is not None:
             x = round(play_pos[1] * 120 / self.speed_var) * 4 + 31
-            pyxel.rect(x, 25, 3, 123, PIANO_ROLL_CURSOR_PLAY_COLOR)
+            pyxel.rect(x, self.y, 3, self.height, PIANO_ROLL_CURSOR_PLAY_COLOR)
         elif self.field_cursor.y == 0:
             x = self.field_cursor.x * 4 + 31
             w = self.field_cursor.width * 4 - 1
@@ -138,8 +132,9 @@ class PianoRoll(Widget):
                 if self.field_cursor.is_selecting
                 else PIANO_ROLL_CURSOR_EDIT_COLOR
             )
-            pyxel.rect(x, 25, w, 123, col)
+            pyxel.rect(x, self.y, w, self.height, col)
 
+        # Draw piano roll grid
         pyxel.blt(
             self.x,
             self.y,
@@ -162,8 +157,7 @@ class PianoRoll(Widget):
         )
 
         # Draw notes
-        notes = self.get_field(0)
-        for i, note in enumerate(notes):
+        for i, note in enumerate(self.get_field(0)):
             pyxel.rect(
                 i * 4 + 31,
                 143 - note * 2,

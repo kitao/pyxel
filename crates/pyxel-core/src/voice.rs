@@ -74,35 +74,29 @@ impl Oscillator {
     pub fn set(&mut self, waveform: &[f32]) {
         assert!(!waveform.is_empty());
 
-        let quantized_samples: Vec<i16> = waveform
-            .iter()
-            .map(|&sample| Self::quantize_sample(sample))
-            .collect();
+        let quantized: Vec<i16> = waveform.iter().map(|&s| Self::quantize_sample(s)).collect();
 
-        if quantized_samples != self.waveform_samples {
-            self.waveform_samples = quantized_samples;
+        if quantized != self.waveform_samples {
+            self.waveform_samples = quantized;
             self.waveform_index = 0;
         }
 
         self.tap_bit = 0;
-
         self.update();
     }
 
     pub fn set_noise(&mut self, short_period: bool) {
+        // Reinitialize the LFSR when switching noise mode to ensure deterministic output.
+        // Each mode uses a different tap bit (6 for short-period, 1 for long-period), producing
+        // different cycle lengths. The LFSR seed is pre-advanced past leading zeros:
+        // short-period: 15 shifts (half of 32-sample period) -> 0x0201
+        // long-period:  45 shifts (half of 93-sample period) -> 0x7001
         let tap_bit = if short_period { 6 } else { 1 };
         if tap_bit != self.tap_bit {
             self.lfsr = if short_period { 0x0201 } else { 0x7001 };
             self.tap_bit = tap_bit;
         }
-        // The LFSR originally starts with 0x0001, but to avoid leading zeros, it is advanced first.
-        // For short-period noise, it's shifted 15 times (half of the 32-sample period), resulting in 0x0201.
-        // For long-period noise, it's shifted 45 times (half of the 93-sample period), resulting in 0x7001.
-
-        if !self.waveform_samples.is_empty() {
-            self.waveform_samples.clear();
-        }
-
+        self.waveform_samples.clear();
         self.update();
     }
 
@@ -120,15 +114,11 @@ impl Oscillator {
 
     fn advance_sample(&mut self) {
         if self.tap_bit == 0 {
-            self.waveform_index += 1;
-            if self.waveform_index >= self.waveform_samples.len() {
-                self.waveform_index = 0;
-            }
+            self.waveform_index = (self.waveform_index + 1) % self.waveform_samples.len();
         } else {
             let feedback = (self.lfsr ^ (self.lfsr >> self.tap_bit)) & 1;
             self.lfsr = ((self.lfsr >> 1) | (feedback << 14)) & 0x7FFF;
         }
-
         self.update();
     }
 
@@ -525,24 +515,19 @@ impl Voice {
             let mut gain = Self::gain_to_fixed(self.envelope.level() * self.velocity);
 
             if self.remaining_note_clocks < self.note_interp_clocks {
-                if self.interp_end_gain.is_none() {
-                    self.interp_end_gain = Some(self.last_gain);
-                }
-                let interp_end_gain = self.interp_end_gain.unwrap();
-                gain = ((interp_end_gain as i64 * self.remaining_note_clocks as i64
-                    + self.note_interp_clocks as i64 / 2)
-                    / self.note_interp_clocks as i64) as i32;
+                // Note tail: fade out to zero
+                let end_gain = *self.interp_end_gain.get_or_insert(self.last_gain);
+                let interp = self.note_interp_clocks as i64;
+                gain = ((end_gain as i64 * self.remaining_note_clocks as i64 + interp / 2) / interp)
+                    as i32;
             } else if self.elapsed_note_clocks < self.note_interp_clocks {
-                if self.interp_start_gain.is_none() {
-                    self.interp_start_gain = Some(self.last_gain);
-                }
-                let interp_start_gain = self.interp_start_gain.unwrap();
-                let note_interp_clocks = self.note_interp_clocks as i64;
-                let elapsed_note_clocks = self.elapsed_note_clocks as i64;
-                gain = ((interp_start_gain as i64 * (note_interp_clocks - elapsed_note_clocks)
-                    + gain as i64 * elapsed_note_clocks
-                    + note_interp_clocks / 2)
-                    / note_interp_clocks) as i32;
+                // Note head: crossfade from previous gain
+                let start_gain = *self.interp_start_gain.get_or_insert(self.last_gain);
+                let interp = self.note_interp_clocks as i64;
+                let elapsed = self.elapsed_note_clocks as i64;
+                gain =
+                    ((start_gain as i64 * (interp - elapsed) + gain as i64 * elapsed + interp / 2)
+                        / interp) as i32;
             }
 
             let amplitude = Self::apply_gain_fixed(self.oscillator.sample(), gain);

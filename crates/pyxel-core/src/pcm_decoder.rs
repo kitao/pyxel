@@ -84,10 +84,7 @@ pub fn load_pcm(path: &str, target_rate: u32) -> Result<PcmData, String> {
             mono_samples.extend_from_slice(data);
         } else {
             for frame in data.chunks(channels) {
-                let mut sum = 0.0f32;
-                for sample in frame {
-                    sum += *sample;
-                }
+                let sum: f32 = frame.iter().sum();
                 mono_samples.push(sum / channels as f32);
             }
         }

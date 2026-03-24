@@ -1,5 +1,14 @@
 # Change Log
 
+## 2.8.9
+
+- Refined code structure and expressions across all layers
+- Reduced redundancy with shared macros and helpers
+- Improved naming, comments, and cross-file consistency
+- Removed unnecessary allocations in rendering and audio
+- Modernized JavaScript with arrow functions and const
+- Unified editor undo/redo and input handling patterns
+
 ## 2.8.8
 
 - Added GitHub issue and discussion templates

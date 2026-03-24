@@ -10,6 +10,9 @@ const PYXEL_WORKING_DIRECTORY = "/pyxel_working_directory";
 const PYXEL_WATCH_INFO_FILE = ".pyxel_watch_info";
 const IMPORT_HOOK_PATH = "import_hook.py";
 
+const _escapePythonString = (s) =>
+  s.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
+
 window.pyxelContext = {
   resolveInput: null,
   initialized: false,
@@ -100,7 +103,11 @@ document.addEventListener(
   true,
 );
 
-async function launchPyxel(params) {
+// ---------------------------------------------------------------------------
+// Public API
+// ---------------------------------------------------------------------------
+
+const launchPyxel = async (params) => {
   const pyxelVersion = PYXEL_WHEEL_PATH.match(/pyxel-([\d.]+)-/)[1];
   const pyodideVersion = PYODIDE_URL.match(/v([\d.]+)\//)[1];
   console.log(`Launch Pyxel ${pyxelVersion} with Pyodide ${pyodideVersion}`);
@@ -127,9 +134,9 @@ async function launchPyxel(params) {
   } catch (error) {
     _displayFatalErrorOverlay(error);
   }
-}
+};
 
-async function resetPyxel() {
+const resetPyxel = async () => {
   if (!window.pyxelContext.initialized) {
     return;
   }
@@ -206,58 +213,60 @@ async function resetPyxel() {
   } catch (error) {
     _displayFatalErrorOverlay(error);
   }
-}
+};
 
-function dropFileToPyxel(name, data) {
+const dropFileToPyxel = (name, data) => {
   if (!window.pyxelContext.initialized) {
     return;
   }
-  const path = "/tmp/" + name.replace(/[^a-zA-Z0-9._-]/g, "_");
+  const path = `/tmp/${name.replace(/[^a-zA-Z0-9._-]/g, "_")}`;
   const pyodide = window.pyxelContext.pyodide;
   pyodide.FS.writeFile(path, new Uint8Array(data));
   pyodide.runPython(
     `import pyxel; pyxel._dropped_files = getattr(pyxel, '_dropped_files', []) + ['${path}']`
   );
-}
+};
 
-function _initialize() {
+// ---------------------------------------------------------------------------
+// Initialization
+// ---------------------------------------------------------------------------
+
+const _initialize = () => {
   _setIcon();
   _setStyleSheet();
   _registerCustomElements();
   _hookGlobalErrors();
-}
+};
 
-function _scriptDir() {
-  const scripts = document.getElementsByTagName("script");
-  for (const script of scripts) {
+const _scriptDir = (() => {
+  for (const script of document.getElementsByTagName("script")) {
     const match = script.src.match(/(^|.*\/)pyxel\.js$/);
-    if (match) {
-      return match[1];
-    }
+    if (match) return match[1];
   }
-}
+  return "";
+})();
 
-function _setIcon() {
+const _setIcon = () => {
   const iconLink = document.createElement("link");
   iconLink.rel = "icon";
-  iconLink.href = _scriptDir() + "images/pyxel_icon_64x64.ico";
+  iconLink.href = `${_scriptDir}images/pyxel_icon_64x64.ico`;
   document.head.appendChild(iconLink);
-}
+};
 
-function _setStyleSheet() {
+const _setStyleSheet = () => {
   const styleSheetLink = document.createElement("link");
   styleSheetLink.rel = "stylesheet";
-  styleSheetLink.href = _scriptDir() + "pyxel.css";
+  styleSheetLink.href = `${_scriptDir}pyxel.css`;
   document.head.appendChild(styleSheetLink);
-}
+};
 
-function _registerCustomElements() {
+const _registerCustomElements = () => {
   window.customElements.define("pyxel-run", PyxelRunElement);
   window.customElements.define("pyxel-play", PyxelPlayElement);
   window.customElements.define("pyxel-edit", PyxelEditElement);
-}
+};
 
-function _hookGlobalErrors() {
+const _hookGlobalErrors = () => {
   window.addEventListener("error", (event) => {
     _displayFatalErrorOverlay(event.error || event.message || event);
   });
@@ -265,23 +274,23 @@ function _hookGlobalErrors() {
   window.addEventListener("unhandledrejection", (event) => {
     _displayFatalErrorOverlay(event.reason || event);
   });
-}
+};
 
-function _allowGamepadConnection() {
+const _allowGamepadConnection = () => {
   window.addEventListener("gamepadconnected", (event) => {
     console.log(`Connected '${event.gamepad.id}'`);
   });
-}
+};
 
-function _suppressTouchZoomGestures() {
+const _suppressTouchZoomGestures = () => {
   // Ensure viewport disables pinch/double-tap zoom
-  let m = document.querySelector('meta[name="viewport"]');
-  if (!m) {
-    m = document.createElement("meta");
-    m.name = "viewport";
-    document.head.appendChild(m);
+  let meta = document.querySelector('meta[name="viewport"]');
+  if (!meta) {
+    meta = document.createElement("meta");
+    meta.name = "viewport";
+    document.head.appendChild(meta);
   }
-  m.content =
+  meta.content =
     "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no";
 
   // Suppress pinch-to-zoom by preventing multi-touch gestures
@@ -292,9 +301,13 @@ function _suppressTouchZoomGestures() {
   };
   document.addEventListener("touchstart", pinchHandler, { passive: false });
   document.addEventListener("touchmove", pinchHandler, { passive: false });
-}
+};
 
-function _setMinWidthFromRatio(selector, screenSize) {
+// ---------------------------------------------------------------------------
+// Screen elements
+// ---------------------------------------------------------------------------
+
+const _setMinWidthFromRatio = (selector, screenSize) => {
   const elem = document.querySelector(selector);
   if (!elem) {
     return;
@@ -304,9 +317,9 @@ function _setMinWidthFromRatio(selector, screenSize) {
     getComputedStyle(elem).getPropertyValue("--min-width-ratio"),
   );
   elem.style.minWidth = `${screenSize * minWidthRatio}px`;
-}
+};
 
-function _updateScreenElementsSize() {
+const _updateScreenElementsSize = () => {
   const pyxelScreen = document.querySelector("div#pyxel-screen");
   const { width, height } = pyxelScreen.getBoundingClientRect();
   const screenSize = Math.max(width, height);
@@ -316,10 +329,10 @@ function _updateScreenElementsSize() {
   _setMinWidthFromRatio("img#pyxel-gamepad-cross", screenSize);
   _setMinWidthFromRatio("img#pyxel-gamepad-button", screenSize);
   _setMinWidthFromRatio("img#pyxel-gamepad-menu", screenSize);
-}
+};
 
-function _waitForEvent(target, ...events) {
-  return new Promise((resolve) => {
+const _waitForEvent = (target, ...events) =>
+  new Promise((resolve) => {
     const listener = (...args) => {
       for (const ev of events) {
         target.removeEventListener(ev, listener);
@@ -330,9 +343,8 @@ function _waitForEvent(target, ...events) {
       target.addEventListener(ev, listener);
     }
   });
-}
 
-async function _createScreenElements() {
+const _createScreenElements = async () => {
   let pyxelScreen = document.querySelector("div#pyxel-screen");
   if (!pyxelScreen) {
     pyxelScreen = document.createElement("div");
@@ -344,7 +356,11 @@ async function _createScreenElements() {
   }
 
   pyxelScreen.oncontextmenu = (event) => event.preventDefault();
-  window.addEventListener("resize", _updateScreenElementsSize);
+  let resizeTimer;
+  window.addEventListener("resize", () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(_updateScreenElementsSize, 100);
+  });
 
   // Handle file drop
   pyxelScreen.addEventListener("dragover", (e) => {
@@ -362,49 +378,60 @@ async function _createScreenElements() {
   // Add canvas for SDL2
   const sdl2Canvas = document.createElement("canvas");
   sdl2Canvas.id = "canvas";
-  sdl2Canvas.tabindex = -1;
+  sdl2Canvas.tabIndex = -1;
   pyxelScreen.appendChild(sdl2Canvas);
 
   // Add image for logo
   const logoImage = document.createElement("img");
   logoImage.id = "pyxel-logo";
-  logoImage.src = _scriptDir() + PYXEL_LOGO_PATH;
-  logoImage.tabindex = -1;
+  logoImage.src = `${_scriptDir}${PYXEL_LOGO_PATH}`;
+  logoImage.tabIndex = -1;
   await _waitForEvent(logoImage, "load");
   await new Promise((resolve) => setTimeout(resolve, 50));
   pyxelScreen.appendChild(logoImage);
   _updateScreenElementsSize();
 
   return sdl2Canvas;
-}
+};
 
-async function _loadScript(scriptSrc) {
+// ---------------------------------------------------------------------------
+// Pyodide loading
+// ---------------------------------------------------------------------------
+
+const _loadScript = async (scriptSrc) => {
   const script = document.createElement("script");
   script.src = scriptSrc;
   const firstScript = document.getElementsByTagName("script")[0];
   firstScript.parentNode.insertBefore(script, firstScript);
   await _waitForEvent(script, "load");
-}
+};
 
-async function _loadPyodideAndPyxel(canvas) {
+const _loadPyodideAndPyxel = async (canvas) => {
   await _loadScript(PYODIDE_URL);
   const pyodide = await loadPyodide();
   pyodide._api._skip_unwind_fatal_error = true;
   pyodide.canvas.setCanvas2D(canvas);
-  await pyodide.loadPackage(_scriptDir() + PYXEL_WHEEL_PATH);
+  await pyodide.loadPackage(`${_scriptDir}${PYXEL_WHEEL_PATH}`);
 
   const FS = pyodide.FS;
   FS.mkdir(PYXEL_WORKING_DIRECTORY);
   FS.chdir(PYXEL_WORKING_DIRECTORY);
 
-  const response = await fetch(_scriptDir() + IMPORT_HOOK_PATH);
+  const response = await fetch(`${_scriptDir}${IMPORT_HOOK_PATH}`);
+  if (!response.ok) {
+    throw new Error(`Failed to fetch ${IMPORT_HOOK_PATH}: ${response.status}`);
+  }
   const code = await response.text();
   pyodide.runPython(code);
 
   return pyodide;
-}
+};
 
-function _hookPythonError(pyodide) {
+// ---------------------------------------------------------------------------
+// Error handling
+// ---------------------------------------------------------------------------
+
+const _hookPythonError = (pyodide) => {
   pyodide.setStderr({
     batched: (() => {
       let errorText = "";
@@ -416,7 +443,7 @@ function _hookPythonError(pyodide) {
         }
 
         pyodide._module._emscripten_cancel_main_loop();
-        errorText += msg + "\n";
+        errorText += `${msg}\n`;
 
         if (!flushTimer) {
           flushTimer = setTimeout(() => {
@@ -428,10 +455,11 @@ function _hookPythonError(pyodide) {
       };
     })(),
   });
-}
+};
 
-function _displayErrorOverlay(message) {
+const _displayErrorOverlay = (message) => {
   console.error(message);
+  const pyxelScreen = document.getElementById("pyxel-screen");
   let overlay = document.getElementById("pyxel-error-overlay");
   if (!overlay) {
     overlay = document.createElement("pre");
@@ -451,13 +479,13 @@ function _displayErrorOverlay(message) {
       color: "#fff",
       fontSize: "12px",
     });
-    document.getElementById("pyxel-screen").appendChild(overlay);
+    pyxelScreen.appendChild(overlay);
   }
   overlay.textContent = message;
   overlay.scrollTop = overlay.scrollHeight;
-}
+};
 
-function _formatUnknownError(error) {
+const _formatUnknownError = (error) => {
   if (!error) {
     return "Unknown error";
   }
@@ -467,19 +495,21 @@ function _formatUnknownError(error) {
   const name = error.name || "Error";
   const message = error.message || String(error);
   const stack = error.stack || "";
-  return `${name}: ${message}${stack ? "\n" + stack : ""}`;
-}
+  return `${name}: ${message}${stack ? `\n${stack}` : ""}`;
+};
 
-function _displayFatalErrorOverlay(error) {
+const _displayFatalErrorOverlay = (error) => {
   window.pyxelContext.hasFatalError = true;
-  const message = _formatUnknownError(error);
-  _displayErrorOverlay(message);
-}
+  _displayErrorOverlay(_formatUnknownError(error));
+};
 
-function _hookFileOperations(pyodide, root) {
+// ---------------------------------------------------------------------------
+// File operations
+// ---------------------------------------------------------------------------
+
+const _hookFileOperations = (pyodide, root) => {
   const fs = pyodide.FS;
 
-  // Define function to create directories
   const createDirs = (absPath, isFile) => {
     const dirs = absPath.split("/");
     dirs.shift();
@@ -488,21 +518,19 @@ function _hookFileOperations(pyodide, root) {
     }
     let path = "";
     for (const dir of dirs) {
-      path += "/" + dir;
+      path += `/${dir}`;
       if (!fs.analyzePath(path).exists) {
         fs.mkdir(path, 0o777);
       }
     }
   };
 
-  // Define function to copy path
   const copyPath = (path) => {
-    // Check path
     if (path.startsWith("<") || path.endsWith(PYXEL_WATCH_INFO_FILE)) {
       return;
     }
     if (!path.startsWith("/")) {
-      path = fs.cwd() + "/" + path;
+      path = `${fs.cwd()}/${path}`;
     }
     if (!path.startsWith(PYXEL_WORKING_DIRECTORY)) {
       return;
@@ -536,22 +564,21 @@ function _hookFileOperations(pyodide, root) {
       createDirs(dstPath, false);
     } else {
       createDirs(dstPath, true);
-      fs.writeFile(dstPath, fileBinary, {
-        encoding: "binary",
-      });
+      fs.writeFile(dstPath, fileBinary, { encoding: "binary" });
       console.log(`Copied '${srcPath}' to '${dstPath}'`);
     }
   };
 
   // Hook file operations
-  const open = fs.open;
+  const O_RDONLY_STAT = 557056; // SDL2 open flags: O_RDONLY | O_STAT
+  const open = fs.open.bind(fs);
   fs.open = (path, flags, mode) => {
-    if (flags === 557056) { // O_RDONLY for stat-like access
+    if (flags === O_RDONLY_STAT) {
       copyPath(path);
     }
     return open(path, flags, mode);
   };
-  const stat = fs.stat;
+  const stat = fs.stat.bind(fs);
   fs.stat = (path) => {
     copyPath(path);
     return stat(path);
@@ -574,22 +601,23 @@ function _hookFileOperations(pyodide, root) {
       URL.revokeObjectURL(a.href);
     }, 2000);
   };
-}
+};
 
-function _isTouchDevice() {
-  return window.matchMedia("(pointer: coarse)").matches;
-}
+// ---------------------------------------------------------------------------
+// Input and startup
+// ---------------------------------------------------------------------------
 
-async function _waitForInput() {
+const _isTouchDevice = () =>
+  window.matchMedia("(pointer: coarse)").matches;
+
+const _waitForInput = async () => {
   const pyxelScreen = document.querySelector("div#pyxel-screen");
   const logoImage = document.querySelector("img#pyxel-logo");
   logoImage.remove();
 
   const promptImage = document.createElement("img");
   promptImage.id = "pyxel-prompt";
-  promptImage.src =
-    _scriptDir() +
-    (_isTouchDevice() ? TOUCH_TO_START_PATH : CLICK_TO_START_PATH);
+  promptImage.src = `${_scriptDir}${_isTouchDevice() ? TOUCH_TO_START_PATH : CLICK_TO_START_PATH}`;
   await _waitForEvent(promptImage, "load");
   pyxelScreen.appendChild(promptImage);
   _updateScreenElementsSize();
@@ -608,17 +636,70 @@ async function _waitForInput() {
 
   promptImage.remove();
   await new Promise((resolve) => setTimeout(resolve, 1));
-}
+};
 
-async function _installBuiltinPackages(pyodide, packages) {
+const _installBuiltinPackages = async (pyodide, packages) => {
   if (!packages) {
     return;
   }
-
   await pyodide.loadPackage(packages.split(","));
-}
+};
 
-function _addVirtualGamepad(mode) {
+// ---------------------------------------------------------------------------
+// Virtual gamepad
+// ---------------------------------------------------------------------------
+
+const _updateGamepadStateFromTouch = (clientX, clientY, crossRect, buttonRect, menuRect) => {
+  const size = crossRect.width;
+  const crossX = (clientX - crossRect.left) / size - 0.5;
+  const crossY = (clientY - crossRect.bottom) / size + 0.5;
+  const buttonX = (clientX - buttonRect.right) / size + 0.5;
+  const buttonY = (clientY - buttonRect.bottom) / size + 0.5;
+  const menuX = (clientX - menuRect.left) / size;
+  const menuY = (clientY - menuRect.bottom) / size + 0.5;
+
+  if (crossX ** 2 + crossY ** 2 <= 0.5 ** 2) {
+    const angle = (Math.atan2(-crossY, crossX) * 180) / Math.PI;
+    if (angle > 22.5 && angle < 157.5) {
+      _virtualGamepadStates[0] = true; // Up
+    }
+    if (angle > -157.5 && angle < -22.5) {
+      _virtualGamepadStates[1] = true; // Down
+    }
+    if (Math.abs(angle) >= 112.5) {
+      _virtualGamepadStates[2] = true; // Left
+    }
+    if (Math.abs(angle) <= 67.5) {
+      _virtualGamepadStates[3] = true; // Right
+    }
+  }
+
+  if (buttonX ** 2 + buttonY ** 2 <= 0.5 ** 2) {
+    const angle = (Math.atan2(-buttonY, buttonX) * 180) / Math.PI;
+    if (angle > -135 && angle < -45) {
+      _virtualGamepadStates[4] = true; // A
+    }
+    if (Math.abs(angle) <= 45) {
+      _virtualGamepadStates[5] = true; // B
+    }
+    if (Math.abs(angle) >= 135) {
+      _virtualGamepadStates[6] = true; // X
+    }
+    if (angle > 45 && angle < 135) {
+      _virtualGamepadStates[7] = true; // Y
+    }
+  }
+
+  if (menuX >= 0.0 && menuX <= 1.0 && menuY >= 0.2 && menuY <= 0.5) {
+    if (menuX >= 0.5) {
+      _virtualGamepadStates[8] = true; // Start
+    } else {
+      _virtualGamepadStates[9] = true; // Back
+    }
+  }
+};
+
+const _addVirtualGamepad = (mode) => {
   if (mode !== "enabled" || !_isTouchDevice()) {
     return;
   }
@@ -639,8 +720,8 @@ function _addVirtualGamepad(mode) {
   const createGamepadElement = (id, path) => {
     const img = document.createElement("img");
     img.id = id;
-    img.src = _scriptDir() + path;
-    img.tabindex = -1;
+    img.src = `${_scriptDir}${path}`;
+    img.tabIndex = -1;
     img.onload = () => {
       pyxelScreen.appendChild(img);
       _updateScreenElementsSize();
@@ -660,53 +741,7 @@ function _addVirtualGamepad(mode) {
     _virtualGamepadStates.fill(false);
     for (let i = 0; i < event.touches.length; i++) {
       const { clientX, clientY } = event.touches[i];
-      const size = crossRect.width;
-      const crossX = (clientX - crossRect.left) / size - 0.5;
-      const crossY = (clientY - crossRect.bottom) / size + 0.5;
-      const buttonX = (clientX - buttonRect.right) / size + 0.5;
-      const buttonY = (clientY - buttonRect.bottom) / size + 0.5;
-      const menuX = (clientX - menuRect.left) / size;
-      const menuY = (clientY - menuRect.bottom) / size + 0.5;
-
-      if (crossX ** 2 + crossY ** 2 <= 0.5 ** 2) {
-        const angle = (Math.atan2(-crossY, crossX) * 180) / Math.PI;
-        if (angle > 22.5 && angle < 157.5) {
-          _virtualGamepadStates[0] = true; // Up
-        }
-        if (angle > -157.5 && angle < -22.5) {
-          _virtualGamepadStates[1] = true; // Down
-        }
-        if (Math.abs(angle) >= 112.5) {
-          _virtualGamepadStates[2] = true; // Left
-        }
-        if (Math.abs(angle) <= 67.5) {
-          _virtualGamepadStates[3] = true; // Right
-        }
-      }
-
-      if (buttonX ** 2 + buttonY ** 2 <= 0.5 ** 2) {
-        const angle = (Math.atan2(-buttonY, buttonX) * 180) / Math.PI;
-        if (angle > -135 && angle < -45) {
-          _virtualGamepadStates[4] = true; // A
-        }
-        if (Math.abs(angle) <= 45) {
-          _virtualGamepadStates[5] = true; // B
-        }
-        if (Math.abs(angle) >= 135) {
-          _virtualGamepadStates[6] = true; // X
-        }
-        if (angle > 45 && angle < 135) {
-          _virtualGamepadStates[7] = true; // Y
-        }
-      }
-
-      if (menuX >= 0.0 && menuX <= 1.0 && menuY >= 0.2 && menuY <= 0.5) {
-        if (menuX >= 0.5) {
-          _virtualGamepadStates[8] = true; // Start
-        } else {
-          _virtualGamepadStates[9] = true; // Back
-        }
-      }
+      _updateGamepadStateFromTouch(clientX, clientY, crossRect, buttonRect, menuRect);
     }
     event.preventDefault();
   };
@@ -714,19 +749,22 @@ function _addVirtualGamepad(mode) {
   document.addEventListener("touchstart", touchHandler, { passive: false });
   document.addEventListener("touchmove", touchHandler, { passive: false });
   document.addEventListener("touchend", touchHandler, { passive: false });
-}
+};
 
-function _copyFileFromBase64(pyodide, name, base64) {
+// ---------------------------------------------------------------------------
+// Command execution
+// ---------------------------------------------------------------------------
+
+const _copyFileFromBase64 = (pyodide, name, base64) => {
   if (!name || !base64) {
     return;
   }
-
   const filename = `${PYXEL_WORKING_DIRECTORY}/${name}`;
   const binary = Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
   pyodide.FS.writeFile(filename, binary, { encoding: "binary" });
-}
+};
 
-async function _executePyxelCommand(pyodide, params) {
+const _executePyxelCommand = async (pyodide, params) => {
   if (params.command === "run" || params.command === "play") {
     await _installBuiltinPackages(pyodide, params.packages);
     _addVirtualGamepad(params.gamepad);
@@ -740,7 +778,7 @@ async function _executePyxelCommand(pyodide, params) {
       if (params.name) {
         pythonCode = `
           import pyxel.cli
-          pyxel.cli.run_python_script("${params.name}")
+          pyxel.cli.run_python_script("${_escapePythonString(params.name)}")
         `;
       } else if (params.script) {
         pythonCode = params.script;
@@ -750,21 +788,24 @@ async function _executePyxelCommand(pyodide, params) {
     case "play":
       pythonCode = `
         import pyxel.cli
-        pyxel.cli.play_pyxel_app("${params.name}")
+        pyxel.cli.play_pyxel_app("${_escapePythonString(params.name)}")
       `;
       break;
 
     case "edit":
-      document.addEventListener("keydown", (event) => {
-        if ((event.ctrlKey || event.metaKey) && event.key === "s") {
-          event.preventDefault();
-        }
-      });
+      if (!window._pyxelEditKeyHandler) {
+        window._pyxelEditKeyHandler = (event) => {
+          if ((event.ctrlKey || event.metaKey) && event.key === "s") {
+            event.preventDefault();
+          }
+        };
+        document.addEventListener("keydown", window._pyxelEditKeyHandler);
+      }
       params.name ||= "";
       params.editor ||= "";
       pythonCode = `
         import pyxel.cli
-        pyxel.cli.edit_pyxel_resource("${params.name}", "${params.editor}")
+        pyxel.cli.edit_pyxel_resource("${_escapePythonString(params.name)}", "${_escapePythonString(params.editor)}")
       `;
       break;
   }
@@ -778,9 +819,19 @@ async function _executePyxelCommand(pyodide, params) {
       _displayFatalErrorOverlay(error);
     }
   }
+};
+
+// ---------------------------------------------------------------------------
+// Custom elements
+// ---------------------------------------------------------------------------
+
+class PyxelBaseElement extends HTMLElement {
+  attributeChangedCallback(name, _oldValue, newValue) {
+    this[name] = newValue;
+  }
 }
 
-class PyxelRunElement extends HTMLElement {
+class PyxelRunElement extends PyxelBaseElement {
   static get observedAttributes() {
     return ["root", "name", "script", "packages", "gamepad"];
   }
@@ -795,13 +846,9 @@ class PyxelRunElement extends HTMLElement {
       gamepad: this.gamepad,
     });
   }
-
-  attributeChangedCallback(name, _oldValue, newValue) {
-    this[name] = newValue;
-  }
 }
 
-class PyxelPlayElement extends HTMLElement {
+class PyxelPlayElement extends PyxelBaseElement {
   static get observedAttributes() {
     return ["root", "name", "packages", "gamepad"];
   }
@@ -815,13 +862,9 @@ class PyxelPlayElement extends HTMLElement {
       gamepad: this.gamepad,
     });
   }
-
-  attributeChangedCallback(name, _oldValue, newValue) {
-    this[name] = newValue;
-  }
 }
 
-class PyxelEditElement extends HTMLElement {
+class PyxelEditElement extends PyxelBaseElement {
   static get observedAttributes() {
     return ["root", "name", "editor"];
   }
@@ -833,10 +876,6 @@ class PyxelEditElement extends HTMLElement {
       name: this.name,
       editor: this.editor,
     });
-  }
-
-  attributeChangedCallback(name, _oldValue, newValue) {
-    this[name] = newValue;
   }
 }
 
