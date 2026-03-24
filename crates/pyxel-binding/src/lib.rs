@@ -8,6 +8,7 @@
     clippy::needless_pass_by_value,
     clippy::too_many_arguments,
     clippy::too_many_lines,
+    clippy::trivially_copy_pass_by_ref,
     clippy::wrong_self_convention
 )]
 
