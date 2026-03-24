@@ -39,7 +39,7 @@ impl Channel {
     // Properties
 
     #[getter]
-    fn get_gain(&self) -> pyxel::ChannelGain {
+    fn gain(&self) -> pyxel::ChannelGain {
         self.inner_ref().gain
     }
 
@@ -49,7 +49,7 @@ impl Channel {
     }
 
     #[getter]
-    fn get_detune(&self) -> pyxel::ChannelDetune {
+    fn detune(&self) -> pyxel::ChannelDetune {
         self.inner_ref().detune
     }
 
@@ -120,7 +120,7 @@ impl Channel {
         Ok(())
     }
 
-    fn stop(&mut self) {
+    fn stop(&self) {
         self.inner_mut().stop();
     }
 
