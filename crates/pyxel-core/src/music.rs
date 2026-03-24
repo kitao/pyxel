@@ -18,9 +18,7 @@ impl Music {
         self.seqs = seqs.to_vec();
 
         let num_channels = pyxel::channels().len();
-        while self.seqs.len() < num_channels {
-            self.seqs.push(Vec::new());
-        }
+        self.seqs.resize_with(num_channels, Vec::new);
     }
 
     pub fn save(

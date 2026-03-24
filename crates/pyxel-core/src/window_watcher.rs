@@ -51,7 +51,7 @@ impl WindowWatcher {
         if self.window_state != window_state {
             self.window_state = window_state;
 
-            let state_str = Self::format_window_state(window_state);
+            let state_str = format!("{x} {y} {w} {h}");
             unsafe { set_var(WINDOW_STATE_ENV, &state_str) };
             if let Some(watch_state_file) = &self.watch_state_file {
                 write(watch_state_file, &state_str).unwrap();
@@ -66,9 +66,5 @@ impl WindowWatcher {
         let w = fields.next()?.parse().ok()?;
         let h = fields.next()?.parse().ok()?;
         Some((x, y, w, h))
-    }
-
-    fn format_window_state(window_state: Option<(i32, i32, u32, u32)>) -> String {
-        window_state.map_or_else(String::new, |(x, y, w, h)| format!("{x} {y} {w} {h}"))
     }
 }

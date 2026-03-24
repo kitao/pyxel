@@ -111,29 +111,25 @@ impl ResourceItem for Sound {
             if line == "none" {
                 continue;
             }
-
-            if i == 0 {
-                string_loop!(j, value, line, 2, {
+            match i {
+                0 => string_loop!(j, value, line, 2, {
                     self.notes
                         .push(parse_hex_string(value).unwrap() as i8 as SoundNote);
-                });
-            } else if i == 1 {
-                string_loop!(j, value, line, 1, {
+                }),
+                1 => string_loop!(j, value, line, 1, {
                     self.tones
                         .push(parse_hex_string(value).unwrap() as SoundTone);
-                });
-            } else if i == 2 {
-                string_loop!(j, value, line, 1, {
+                }),
+                2 => string_loop!(j, value, line, 1, {
                     self.volumes
                         .push(parse_hex_string(value).unwrap() as SoundVolume);
-                });
-            } else if i == 3 {
-                string_loop!(j, value, line, 1, {
+                }),
+                3 => string_loop!(j, value, line, 1, {
                     self.effects
                         .push(parse_hex_string(value).unwrap() as SoundEffect);
-                });
-            } else if i == 4 {
-                self.speed = line.parse().unwrap();
+                }),
+                4 => self.speed = line.parse().unwrap(),
+                _ => {}
             }
         }
     }
@@ -145,7 +141,7 @@ impl ResourceItem for Music {
     }
 
     fn clear(&mut self) {
-        self.seqs = (0..NUM_CHANNELS).map(|_| Vec::new()).collect();
+        self.seqs = vec![Vec::new(); NUM_CHANNELS as usize];
     }
 
     fn deserialize(&mut self, _version: u32, input: &str) {
@@ -236,24 +232,15 @@ impl Pyxel {
 }
 
 fn parse_version_string(string: &str) -> Result<u32, &str> {
-    let mut version = 0;
-
-    for (i, number) in simplify_string(string).split('.').enumerate() {
-        let digit = number.len();
-        let padded = if i > 0 && digit == 1 {
-            format!("0{number}")
-        } else if i == 0 || digit == 2 {
-            number.to_string()
-        } else {
+    let mut version = 0u32;
+    for (i, part) in simplify_string(string).split('.').enumerate() {
+        let len = part.len();
+        if i > 0 && len != 1 && len != 2 {
             return Err("invalid version string");
-        };
-
-        let Ok(n) = padded.parse::<u32>() else {
-            return Err("invalid version string");
-        };
+        }
+        let n: u32 = part.parse().map_err(|_| "invalid version string")?;
         version = version * 100 + n;
     }
-
     Ok(version)
 }
 

@@ -739,8 +739,8 @@ const _addVirtualGamepad = (mode) => {
     const buttonRect = gamepadButtonImage.getBoundingClientRect();
     const menuRect = gamepadMenuImage.getBoundingClientRect();
     _virtualGamepadStates.fill(false);
-    for (let i = 0; i < event.touches.length; i++) {
-      const { clientX, clientY } = event.touches[i];
+    for (const touch of event.touches) {
+      const { clientX, clientY } = touch;
       _updateGamepadStateFromTouch(clientX, clientY, crossRect, buttonRect, menuRect);
     }
     event.preventDefault();

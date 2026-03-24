@@ -153,13 +153,12 @@ class App(Widget):
     def __on_update(self):
         _dropped_files = getattr(pyxel, "_dropped_files", [])
         pyxel._dropped_files = []
-        dropped_file = (
-            pyxel.dropped_files[-1]
-            if pyxel.dropped_files
-            else _dropped_files[-1]
-            if _dropped_files
-            else None
-        )
+        if pyxel.dropped_files:
+            dropped_file = pyxel.dropped_files[-1]
+        elif _dropped_files:
+            dropped_file = _dropped_files[-1]
+        else:
+            dropped_file = None
         if dropped_file:
             file_ext = os.path.splitext(dropped_file)[1]
             if file_ext == pyxel.RESOURCE_FILE_EXTENSION:

@@ -1,6 +1,11 @@
 import pyxel
 
-from .settings import EDITOR_IMAGE, PIANO_KEYBOARD_PLAY_COLOR, PIANO_KEYBOARD_REST_COLOR
+from .settings import (
+    EDITOR_IMAGE,
+    PIANO_KEYBOARD_PLAY_COLOR,
+    PIANO_KEYBOARD_REST_COLOR,
+    _is_modifier_pressed,
+)
 from .widgets import Widget
 
 _KEY_TABLE = [
@@ -127,14 +132,7 @@ class PianoKeyboard(Widget):
         self.help_message_var = "NOTE:Z/S/X..Q/2/W..A+ENTER TONE:1"
 
     def __on_update(self):
-        if (
-            self.field_cursor.y > 0
-            or self.is_playing_var
-            or pyxel.btn(pyxel.KEY_SHIFT)
-            or pyxel.btn(pyxel.KEY_CTRL)
-            or pyxel.btn(pyxel.KEY_ALT)
-            or pyxel.btn(pyxel.KEY_GUI)
-        ):
+        if self.field_cursor.y > 0 or self.is_playing_var or _is_modifier_pressed():
             return
 
         if pyxel.btnp(pyxel.KEY_1):

@@ -41,8 +41,8 @@ class NumberPicker(Widget):
         return min(max(value, self._min_value), self._max_value)
 
     def __on_value_change(self, value):
-        self.dec_button.is_enabled_var = self.value_var > self._min_value
-        self.inc_button.is_enabled_var = self.value_var < self._max_value
+        self.dec_button.is_enabled_var = value > self._min_value
+        self.inc_button.is_enabled_var = value < self._max_value
         self.trigger_event("change", value)
 
     @staticmethod

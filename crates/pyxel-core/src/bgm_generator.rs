@@ -486,47 +486,57 @@ fn env_def_from_drum_key(key: i32, slot: i32) -> String {
     format!("@ENV{slot}{{{init},{decay},{sustain_level}}}")
 }
 
-fn compress_token_runs(tokens: &[String], group: usize) -> Vec<String> {
+fn compress_repeats(
+    items: &[String],
+    group: usize,
+    skip_octave_shifts: bool,
+) -> Vec<String> {
     if group <= 1 {
+        // Compress single-element runs
         let mut out = Vec::new();
         let mut i = 0usize;
-        while i < tokens.len() {
+        while i < items.len() {
             let mut j = i + 1;
-            while j < tokens.len() && tokens[j] == tokens[i] {
+            while j < items.len() && items[j] == items[i] {
                 j += 1;
             }
             let count = j - i;
-            if count > 1 && tokens[i] != "<" && tokens[i] != ">" {
-                let expanded = tokens[i].repeat(count);
-                let bracketed = format!("[{}]{}", tokens[i], count);
+            if count > 1
+                && !(skip_octave_shifts && (items[i] == "<" || items[i] == ">"))
+            {
+                let expanded = items[i].repeat(count);
+                let bracketed = format!("[{}]{}", items[i], count);
                 out.push(if expanded.len() <= bracketed.len() {
                     expanded
                 } else {
                     bracketed
                 });
             } else {
-                out.push(tokens[i].clone());
+                out.push(items[i].clone());
             }
             i = j;
         }
         return out;
     }
 
+    // Compress multi-element chunk runs
     let mut out = Vec::new();
     let mut i = 0usize;
-    while i < tokens.len() {
-        if i + group <= tokens.len() {
-            let chunk = &tokens[i..i + group];
-            if !chunk.iter().any(|t| t == "<" || t == ">") {
+    while i < items.len() {
+        if i + group <= items.len() {
+            let chunk = &items[i..i + group];
+            let should_skip =
+                skip_octave_shifts && chunk.iter().any(|t| t == "<" || t == ">");
+            if !should_skip {
                 let mut j = i + group;
-                while j + group <= tokens.len() && &tokens[j..j + group] == chunk {
+                while j + group <= items.len() && &items[j..j + group] == chunk {
                     j += group;
                 }
                 let count = (j - i) / group;
                 if count > 1 {
-                    let chunk_joined = chunk.join("");
-                    let expanded = chunk_joined.repeat(count);
-                    let bracketed = format!("[{chunk_joined}]{count}");
+                    let joined = chunk.join("");
+                    let expanded = joined.repeat(count);
+                    let bracketed = format!("[{joined}]{count}");
                     out.push(if expanded.len() <= bracketed.len() {
                         expanded
                     } else {
@@ -537,62 +547,7 @@ fn compress_token_runs(tokens: &[String], group: usize) -> Vec<String> {
                 }
             }
         }
-        out.push(tokens[i].clone());
-        i += 1;
-    }
-    out
-}
-
-fn compress_chunks(lines: &[String], chunk_size: usize) -> Vec<String> {
-    if chunk_size <= 1 {
-        let mut out = Vec::new();
-        let mut i = 0usize;
-        while i < lines.len() {
-            let mut j = i + 1;
-            while j < lines.len() && lines[j] == lines[i] {
-                j += 1;
-            }
-            let count = j - i;
-            if count > 1 {
-                let expanded = lines[i].repeat(count);
-                let bracketed = format!("[{}]{}", lines[i], count);
-                out.push(if expanded.len() <= bracketed.len() {
-                    expanded
-                } else {
-                    bracketed
-                });
-            } else {
-                out.push(lines[i].clone());
-            }
-            i = j;
-        }
-        return out;
-    }
-
-    let mut out = Vec::new();
-    let mut i = 0usize;
-    while i < lines.len() {
-        if i + chunk_size <= lines.len() {
-            let chunk = &lines[i..i + chunk_size];
-            let mut j = i + chunk_size;
-            while j + chunk_size <= lines.len() && &lines[j..j + chunk_size] == chunk {
-                j += chunk_size;
-            }
-            let count = (j - i) / chunk_size;
-            if count > 1 {
-                let joined = chunk.join("");
-                let expanded = joined.repeat(count);
-                let bracketed = format!("[{joined}]{count}");
-                out.push(if expanded.len() <= bracketed.len() {
-                    expanded
-                } else {
-                    bracketed
-                });
-                i = j;
-                continue;
-            }
-        }
-        out.push(lines[i].clone());
+        out.push(items[i].clone());
         i += 1;
     }
     out
@@ -1642,19 +1597,19 @@ fn notes_to_mml(
 
     let mut bar_strings: Vec<String> = Vec::with_capacity(bar_tokens.len());
     for bar in &bar_tokens {
-        let mut compressed = compress_token_runs(bar, 4);
+        let mut compressed = compress_repeats(bar, 4, true);
         if compressed == *bar {
-            compressed = compress_token_runs(bar, 2);
+            compressed = compress_repeats(bar, 2, true);
         }
         if compressed == *bar {
-            compressed = compress_token_runs(bar, 1);
+            compressed = compress_repeats(bar, 1, true);
         }
         bar_strings.push(format_tokens(&compressed));
     }
 
-    let mut compressed = compress_chunks(&bar_strings, 2);
+    let mut compressed = compress_repeats(&bar_strings, 2, false);
     if compressed == bar_strings {
-        compressed = compress_chunks(&bar_strings, 1);
+        compressed = compress_repeats(&bar_strings, 1, false);
     }
 
     tokens.extend(compressed);

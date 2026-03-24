@@ -84,18 +84,18 @@ pub fn parse_tmx(filename: &str, layer_index: u32) -> Result<*mut Tilemap, Strin
     let tilemap = Tilemap::new(layer.width, layer.height, ImageSource::Index(0));
     {
         let tilemap = unsafe { &mut *tilemap };
-        for (i, &id) in tile_ids.iter().enumerate() {
-            let x = i % layer.width as usize;
-            let y = i / layer.width as usize;
-            let id = id.saturating_sub(tileset.firstgid);
-            tilemap.canvas.write_data(
-                x,
-                y,
-                (
-                    (id % columns) as ImageTileCoord,
-                    (id / columns) as ImageTileCoord,
-                ),
-            );
+        for (y, row) in tile_ids.chunks(layer.width as usize).enumerate() {
+            for (x, &id) in row.iter().enumerate() {
+                let id = id.saturating_sub(tileset.firstgid);
+                tilemap.canvas.write_data(
+                    x,
+                    y,
+                    (
+                        (id % columns) as ImageTileCoord,
+                        (id / columns) as ImageTileCoord,
+                    ),
+                );
+            }
         }
     }
 

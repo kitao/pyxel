@@ -47,7 +47,8 @@ const esc = (s) =>
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
 
 const link = (href, text) =>
   `<a href="${esc(href)}" target="_blank" rel="noopener noreferrer" class="link">${esc(text)}</a>`;
@@ -61,5 +62,5 @@ const t = (o) => {
   return o[lang] ?? o["en"] ?? "";
 };
 
-const code = (s, syntax) =>
-  `<pre class="code-block"><code class="language-${syntax || "plaintext"}">${esc(s)}</code></pre>`;
+const code = (s, syntax = "plaintext") =>
+  `<pre class="code-block"><code class="language-${syntax}">${esc(s)}</code></pre>`;

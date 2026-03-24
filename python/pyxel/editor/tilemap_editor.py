@@ -139,7 +139,7 @@ class TilemapEditor(EditorBase):
             pyxel.tilemaps[self.tilemap_index_var].load(
                 self.focus_x_var * 8, self.focus_y_var * 8, filename, 0
             )
-        except Exception as e:
+        except (OSError, ValueError) as e:
             print(f"Failed to load tilemap: {e}")
 
     def __on_update(self):

@@ -1,6 +1,5 @@
 use std::ffi::{c_char, CStr};
 use std::mem::zeroed;
-use std::ptr::addr_of_mut;
 
 use super::super::event::Event;
 use super::super::key::{
@@ -51,7 +50,7 @@ impl PlatformSdl2 {
     pub fn poll_events(&mut self, pyxel_events: &mut Vec<Event>) {
         let mut sdl_event: SDL_Event = unsafe { zeroed() };
 
-        while unsafe { SDL_PollEvent(addr_of_mut!(sdl_event)) } != 0 {
+        while unsafe { SDL_PollEvent(&raw mut sdl_event) } != 0 {
             match unsafe { sdl_event.type_ as SDL_EventType } {
                 //
                 // Window
@@ -83,7 +82,7 @@ impl PlatformSdl2 {
                 //
                 // Keyboard
                 //
-                SDL_KEYDOWN => {
+                SDL_KEYDOWN | SDL_KEYUP => {
                     let key = unsafe { sdl_event.key.keysym.sym } as Key;
 
                     #[cfg(target_os = "emscripten")]
@@ -91,24 +90,10 @@ impl PlatformSdl2 {
                         as u32);
 
                     if unsafe { sdl_event.key.repeat } == 0 {
-                        pyxel_events.push(Event::KeyPressed { key });
+                        let pressed = unsafe { sdl_event.type_ } as SDL_EventType == SDL_KEYDOWN;
+                        push_key_event(pyxel_events, key, pressed);
                         if let Some(unified_key) = key_to_virtual_key(key) {
-                            pyxel_events.push(Event::KeyPressed { key: unified_key });
-                        }
-                    }
-                }
-
-                SDL_KEYUP => {
-                    let key = unsafe { sdl_event.key.keysym.sym } as Key;
-
-                    #[cfg(target_os = "emscripten")]
-                    let key = correct_emscripten_key(key, unsafe { sdl_event.key.keysym.scancode }
-                        as u32);
-
-                    if unsafe { sdl_event.key.repeat } == 0 {
-                        pyxel_events.push(Event::KeyReleased { key });
-                        if let Some(unified_key) = key_to_virtual_key(key) {
-                            pyxel_events.push(Event::KeyReleased { key: unified_key });
+                            push_key_event(pyxel_events, unified_key, pressed);
                         }
                     }
                 }
@@ -191,30 +176,16 @@ impl PlatformSdl2 {
                     }
                 }
 
-                SDL_CONTROLLERBUTTONDOWN => {
+                SDL_CONTROLLERBUTTONDOWN | SDL_CONTROLLERBUTTONUP => {
                     if let Some(key_offset) =
                         self.gamepad_key_offset(unsafe { sdl_event.cbutton.which })
                     {
                         let key =
                             controller_button_to_key(unsafe { sdl_event.cbutton.button } as i32);
                         if key != KEY_UNKNOWN {
-                            pyxel_events.push(Event::KeyPressed {
-                                key: key + key_offset,
-                            });
-                        }
-                    }
-                }
-
-                SDL_CONTROLLERBUTTONUP => {
-                    if let Some(key_offset) =
-                        self.gamepad_key_offset(unsafe { sdl_event.cbutton.which })
-                    {
-                        let key =
-                            controller_button_to_key(unsafe { sdl_event.cbutton.button } as i32);
-                        if key != KEY_UNKNOWN {
-                            pyxel_events.push(Event::KeyReleased {
-                                key: key + key_offset,
-                            });
+                            let pressed =
+                                unsafe { sdl_event.type_ } as SDL_EventType == SDL_CONTROLLERBUTTONDOWN;
+                            push_key_event(pyxel_events, key + key_offset, pressed);
                         }
                     }
                 }
@@ -339,6 +310,14 @@ fn correct_emscripten_key(sdl_key: Key, scancode: u32) -> Key {
     }
 
     js_key
+}
+
+fn push_key_event(events: &mut Vec<Event>, key: Key, pressed: bool) {
+    events.push(if pressed {
+        Event::KeyPressed { key }
+    } else {
+        Event::KeyReleased { key }
+    });
 }
 
 fn key_to_virtual_key(key: Key) -> Option<Key> {

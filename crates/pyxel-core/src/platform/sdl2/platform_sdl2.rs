@@ -186,7 +186,7 @@ impl PlatformSdl2 {
         }
     }
 
-    pub fn window_pos(&mut self) -> (i32, i32) {
+    pub fn window_pos(&self) -> (i32, i32) {
         let (mut x, mut y) = (0, 0);
         unsafe { SDL_GetWindowPosition(self.window, &raw mut x, &raw mut y) };
         (x, y)
@@ -196,7 +196,7 @@ impl PlatformSdl2 {
         unsafe { SDL_SetWindowPosition(self.window, x, y) };
     }
 
-    pub fn window_size(&mut self) -> (u32, u32) {
+    pub fn window_size(&self) -> (u32, u32) {
         let (mut w, mut h) = (0i32, 0i32);
         unsafe { SDL_GetWindowSize(self.window, &raw mut w, &raw mut h) };
         (w as u32, h as u32)
@@ -232,7 +232,7 @@ impl PlatformSdl2 {
         }
     }
 
-    pub fn is_fullscreen(&mut self) -> bool {
+    pub fn is_fullscreen(&self) -> bool {
         let flags = unsafe { SDL_GetWindowFlags(self.window) };
         flags & SDL_WINDOW_FULLSCREEN as Uint32 != 0
     }
@@ -339,8 +339,11 @@ impl PlatformSdl2 {
 
         loop {
             // Busy-wait with short sleeps until the next frame time
-            while next_update_ms - self.ticks() as f32 > 0.0 {
+            loop {
                 let remaining_ms = next_update_ms - self.ticks() as f32;
+                if remaining_ms <= 0.0 {
+                    break;
+                }
                 unsafe { SDL_Delay((remaining_ms as u32 / 2).max(1)) };
             }
 
@@ -376,8 +379,11 @@ impl PlatformSdl2 {
         let mut next_update_ms = self.next_update_ms.unwrap_or(self.ticks() as f32);
 
         // Busy-wait with short sleeps until the next frame time
-        while next_update_ms - self.ticks() as f32 > 0.0 {
+        loop {
             let remaining_ms = next_update_ms - self.ticks() as f32;
+            if remaining_ms <= 0.0 {
+                break;
+            }
             unsafe { SDL_Delay((remaining_ms as u32 / 2).max(1)) };
         }
 

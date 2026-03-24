@@ -372,7 +372,7 @@ impl Sound {
             }
 
             // Note
-            let tone_data = unsafe { &mut *tones[tone as usize] };
+            let tone_data = unsafe { &*tones[tone as usize] };
             let base_note = if tone_data.mode == ToneMode::Wavetable {
                 36
             } else {

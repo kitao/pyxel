@@ -98,7 +98,7 @@ class ColorPicker(Widget):
         pyxel.elli(
             x - cw // 8,
             y - ch // 8,
-            1 + cw // 8 * 1.5,
-            1 + ch // 8 * 1.5,
+            1 + cw // 8 * 3 // 2,
+            1 + ch // 8 * 3 // 2,
             7 if brightness < 140 else 0,
         )

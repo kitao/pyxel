@@ -35,20 +35,16 @@ pub fn simplify_string(string: &str) -> String {
 }
 
 pub fn parse_hex_string(string: &str) -> Result<u32, &str> {
-    let string = string.to_ascii_lowercase();
     let mut result: u32 = 0;
-
-    for c in string.chars() {
+    for c in string.bytes() {
         result *= 0x10;
-        if c.is_ascii_digit() {
-            result += c as u32 - '0' as u32;
-        } else if ('a'..='f').contains(&c) {
-            result += 10 + c as u32 - 'a' as u32;
-        } else {
-            return Err("invalid hex string");
+        match c {
+            b'0'..=b'9' => result += (c - b'0') as u32,
+            b'a'..=b'f' => result += 10 + (c - b'a') as u32,
+            b'A'..=b'F' => result += 10 + (c - b'A') as u32,
+            _ => return Err("invalid hex string"),
         }
     }
-
     Ok(result)
 }
 

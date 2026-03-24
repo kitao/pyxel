@@ -115,6 +115,9 @@ impl Font {
             .skip(1)
             .map(|v| v.parse().map_err(|_| parse_err()))
             .collect::<Result<_, _>>()?;
+        if values.len() < 4 {
+            return Err(parse_err());
+        }
         Ok(BdfBoundingBox {
             width: values[0],
             height: values[1],

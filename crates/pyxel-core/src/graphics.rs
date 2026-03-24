@@ -54,6 +54,7 @@ pub struct Graphics {
     screen_texture_initialized: bool,
     colors_texture: glow::NativeTexture,
     cached_colors: Vec<Rgb24>,
+    color_pixels_buf: Vec<u8>,
 }
 
 impl Graphics {
@@ -76,6 +77,7 @@ impl Graphics {
                 screen_texture_initialized: false,
                 colors_texture,
                 cached_colors: Vec::new(),
+                color_pixels_buf: Vec::new(),
             }
         }
     }
@@ -134,11 +136,8 @@ impl Graphics {
             gl.delete_shader(fragment_shader);
 
             // Uniform locations
-            let mut uniform_locations: [Option<glow::UniformLocation>; NUM_UNIFORMS] =
-                Default::default();
-            for (i, &name) in UNIFORM_NAMES.iter().enumerate() {
-                uniform_locations[i] = gl.get_uniform_location(shader_program, name);
-            }
+            let uniform_locations: [Option<glow::UniformLocation>; NUM_UNIFORMS] =
+                std::array::from_fn(|i| gl.get_uniform_location(shader_program, UNIFORM_NAMES[i]));
 
             // Vertex array
             let vertices: [f32; 8] = [-1.0, 1.0, -1.0, -1.0, 1.0, 1.0, 1.0, -1.0];
@@ -575,13 +574,12 @@ impl Pyxel {
         gl.bind_texture(glow::TEXTURE_2D, Some(graphics.colors_texture));
         gl.pixel_store_i32(glow::UNPACK_ALIGNMENT, 4);
 
-        let pixels: Vec<u8> = colors
-            .iter()
-            .flat_map(|&c| {
-                let (r, g, b) = rgb_to_rgb8(c);
-                [r, g, b]
-            })
-            .collect();
+        let pixels = &mut graphics.color_pixels_buf;
+        pixels.clear();
+        for &c in colors.iter() {
+            let (r, g, b) = rgb_to_rgb8(c);
+            pixels.extend_from_slice(&[r, g, b]);
+        }
 
         if graphics.cached_colors.len() == colors.len() {
             gl.tex_sub_image_2d(
@@ -593,7 +591,7 @@ impl Pyxel {
                 1,
                 glow::RGB,
                 glow::UNSIGNED_BYTE,
-                PixelUnpackData::Slice(Some(pixels.as_slice())),
+                PixelUnpackData::Slice(Some(pixels)),
             );
         } else {
             gl.tex_image_2d(
@@ -605,7 +603,7 @@ impl Pyxel {
                 0,
                 glow::RGB,
                 glow::UNSIGNED_BYTE,
-                PixelUnpackData::Slice(Some(&pixels)),
+                PixelUnpackData::Slice(Some(pixels)),
             );
         }
         graphics.cached_colors.clone_from(colors);

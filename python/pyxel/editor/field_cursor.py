@@ -73,10 +73,7 @@ class FieldCursor:
 
     @property
     def _max_y(self):
-        y = 0
-        while self._get_field(y + 1) is not None:
-            y += 1
-        return y
+        return len(self._max_field_values) - 1
 
     @property
     def _adjusted_cursor_x(self):

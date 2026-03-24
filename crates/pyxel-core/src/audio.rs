@@ -242,10 +242,9 @@ impl Pyxel {
     }
 
     pub fn stop_all_channels(&self) {
-        let num_channels = pyxel::channels().len();
-
-        for i in 0..num_channels {
-            self.stop_channel(i as u32);
+        let _lock = AudioLock::new();
+        for &ch in pyxel::channels().iter() {
+            unsafe { &mut *ch }.stop();
         }
     }
 

@@ -230,6 +230,9 @@ class Widget:
             pyxel.pset(x + w - 1, y + h - 1, WIDGET_SHADOW_COLOR)
 
     def _bind_var_property(self, name, member_name):
+        if isinstance(getattr(self.__class__, name, None), property):
+            return
+
         def getter(self):
             return getattr(self, member_name).get()
 

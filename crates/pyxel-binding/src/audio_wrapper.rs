@@ -29,13 +29,15 @@ fn play(
     };
 
     validate_index!(ch, pyxel::channels().len(), "channel");
+    let loop_ = r#loop.unwrap_or(false);
+    let resume = resume.unwrap_or(false);
 
     cast_pyany! {
         snd,
 
         (u32, {
             validate_index!(snd, pyxel::sounds().len(), "sound");
-            pyxel().play_sound(ch, snd, sec, r#loop.unwrap_or(false), resume.unwrap_or(false));
+            pyxel().play_sound(ch, snd, sec, loop_, resume);
         }),
 
         (Vec<u32>, {
@@ -43,21 +45,23 @@ fn play(
             for &s in &snd {
                 validate_index!(s, num_sounds, "sound");
             }
-            pyxel().play(ch, &snd, sec, r#loop.unwrap_or(false), resume.unwrap_or(false));
+            pyxel().play(ch, &snd, sec, loop_, resume);
         }),
 
         (Sound, {
-            unsafe { &mut *pyxel::channels()[ch as usize] }.play_sound(snd.inner, sec, r#loop.unwrap_or(false), resume.unwrap_or(false));
+            let channel = unsafe { &mut *pyxel::channels()[ch as usize] };
+            channel.play_sound(snd.inner, sec, loop_, resume);
         }),
 
         (Vec<Sound>, {
             let sounds = snd.iter().map(|sound| sound.inner).collect();
-            unsafe { &mut *pyxel::channels()[ch as usize] }.play(sounds, sec, r#loop.unwrap_or(false), resume.unwrap_or(false));
+            let channel = unsafe { &mut *pyxel::channels()[ch as usize] };
+            channel.play(sounds, sec, loop_, resume);
         }),
 
         (String, {
             pyxel()
-                .play_mml(ch, &snd, sec, r#loop.unwrap_or(false), resume.unwrap_or(false))
+                .play_mml(ch, &snd, sec, loop_, resume)
                 .map_err(PyException::new_err)?;
         })
     }

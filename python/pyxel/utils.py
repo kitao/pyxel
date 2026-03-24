@@ -25,7 +25,7 @@ def _resolve_module_path(dir_path, level, name):
     return os.path.join(*parts)
 
 
-def _track_module(imports, filename, checked_files, dir_path, level, name):
+def _track_module(imports, checked_files, dir_path, level, name):
     """Classify a single import as local or system and recurse into local ones."""
     module_path = _resolve_module_path(dir_path, level, name)
     module_filename = _to_module_filename(module_path)
@@ -50,13 +50,12 @@ def _list_imported_modules(imports, filename, checked_files):
     for node in ast.walk(root):
         if isinstance(node, ast.Import):
             for alias in node.names:
-                _track_module(imports, filename, checked_files, dir_path, 0, alias.name)
+                _track_module(imports, checked_files, dir_path, 0, alias.name)
 
         elif isinstance(node, ast.ImportFrom):
             if node.module:
                 _track_module(
                     imports,
-                    filename,
                     checked_files,
                     dir_path,
                     node.level,
@@ -67,7 +66,6 @@ def _list_imported_modules(imports, filename, checked_files):
                 for alias in node.names:
                     _track_module(
                         imports,
-                        filename,
                         checked_files,
                         dir_path,
                         node.level,

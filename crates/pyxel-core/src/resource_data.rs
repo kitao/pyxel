@@ -189,38 +189,20 @@ impl ResourceData {
         exclude_sounds: bool,
         exclude_musics: bool,
     ) {
-        if !exclude_images && !self.images.is_empty() {
-            for &ptr in pyxel::images().iter() {
-                unsafe {
-                    drop(Box::from_raw(ptr));
+        macro_rules! restore {
+            ($exclude:expr, $data:expr, $accessor:expr, $converter:path) => {
+                if !$exclude && !$data.is_empty() {
+                    for &ptr in $accessor().iter() {
+                        unsafe { drop(Box::from_raw(ptr)) };
+                    }
+                    *$accessor() = $data.iter().map($converter).collect();
                 }
-            }
-            *pyxel::images() = self.images.iter().map(ImageData::to_image).collect();
+            };
         }
-        if !exclude_tilemaps && !self.tilemaps.is_empty() {
-            for &ptr in pyxel::tilemaps().iter() {
-                unsafe {
-                    drop(Box::from_raw(ptr));
-                }
-            }
-            *pyxel::tilemaps() = self.tilemaps.iter().map(TilemapData::to_tilemap).collect();
-        }
-        if !exclude_sounds && !self.sounds.is_empty() {
-            for &ptr in pyxel::sounds().iter() {
-                unsafe {
-                    drop(Box::from_raw(ptr));
-                }
-            }
-            *pyxel::sounds() = self.sounds.iter().map(SoundData::to_sound).collect();
-        }
-        if !exclude_musics && !self.musics.is_empty() {
-            for &ptr in pyxel::musics().iter() {
-                unsafe {
-                    drop(Box::from_raw(ptr));
-                }
-            }
-            *pyxel::musics() = self.musics.iter().map(MusicData::to_music).collect();
-        }
+        restore!(exclude_images, self.images, pyxel::images, ImageData::to_image);
+        restore!(exclude_tilemaps, self.tilemaps, pyxel::tilemaps, TilemapData::to_tilemap);
+        restore!(exclude_sounds, self.sounds, pyxel::sounds, SoundData::to_sound);
+        restore!(exclude_musics, self.musics, pyxel::musics, MusicData::to_music);
     }
 
     pub fn to_toml(
@@ -230,24 +212,33 @@ impl ResourceData {
         exclude_sounds: bool,
         exclude_musics: bool,
     ) -> String {
-        let mut resource_data = self.clone();
-
-        if exclude_images {
-            resource_data.images.clear();
-        }
-
-        if exclude_tilemaps {
-            resource_data.tilemaps.clear();
-        }
-
-        if exclude_sounds {
-            resource_data.sounds.clear();
-        }
-
-        if exclude_musics {
-            resource_data.musics.clear();
-        }
-
+        let empty_images = Vec::new();
+        let empty_tilemaps = Vec::new();
+        let empty_sounds = Vec::new();
+        let empty_musics = Vec::new();
+        let resource_data = ResourceData {
+            format_version: self.format_version,
+            images: if exclude_images {
+                empty_images
+            } else {
+                self.images.clone()
+            },
+            tilemaps: if exclude_tilemaps {
+                empty_tilemaps
+            } else {
+                self.tilemaps.clone()
+            },
+            sounds: if exclude_sounds {
+                empty_sounds
+            } else {
+                self.sounds.clone()
+            },
+            musics: if exclude_musics {
+                empty_musics
+            } else {
+                self.musics.clone()
+            },
+        };
         toml::to_string(&resource_data).unwrap()
     }
 }

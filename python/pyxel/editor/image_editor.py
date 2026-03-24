@@ -119,7 +119,7 @@ class ImageEditor(EditorBase):
             pyxel.images[self.image_index_var].load(
                 self.focus_x_var * 8, self.focus_y_var * 8, filename
             )
-        except Exception as e:
+        except (OSError, ValueError) as e:
             print(f"Failed to load image: {e}")
         pyxel.colors[:] = colors
 

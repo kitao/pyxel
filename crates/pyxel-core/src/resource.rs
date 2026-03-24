@@ -293,7 +293,7 @@ impl Pyxel {
         name.to_lowercase()
             .replace(' ', "_")
             .chars()
-            .filter(|c| c.is_alphanumeric() || *c == '_' || *c == '-')
+            .filter(|&c| c.is_alphanumeric() || c == '_' || c == '-')
             .collect()
     }
 }
