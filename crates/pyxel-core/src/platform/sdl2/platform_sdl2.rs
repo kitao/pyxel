@@ -57,8 +57,8 @@ impl PlatformSdl2 {
             window: null_mut(),
             gl_context: null_mut(),
             audio_device_id: 0,
-            mouse_x: i8::MIN as i32,
-            mouse_y: i8::MIN as i32,
+            mouse_x: i32::MIN,
+            mouse_y: i32::MIN,
             is_wayland: false,
             gamepads: Vec::new(),
             #[cfg(target_os = "emscripten")]
