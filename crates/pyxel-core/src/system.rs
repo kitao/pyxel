@@ -56,7 +56,7 @@ impl System {
             },
             screen_x: 0,
             screen_y: 0,
-            screen_scale: 1.0,
+            screen_scale: 0.0,
             screen_mode: 0,
         }
     }
@@ -366,7 +366,7 @@ impl Pyxel {
         }
     }
 
-    fn update_screen_params(&mut self) {
+    pub(crate) fn update_screen_params(&mut self) {
         let (window_width, window_height) = platform::window_size();
         let w = *pyxel::width() as f32;
         let h = *pyxel::height() as f32;

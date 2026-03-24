@@ -194,6 +194,7 @@ pub fn init(
 
     Audio::start();
     if !headless {
+        pyxel().update_screen_params();
         pyxel().set_icon(&ICON_DATA, ICON_SCALE, ICON_COLKEY);
     }
 }
