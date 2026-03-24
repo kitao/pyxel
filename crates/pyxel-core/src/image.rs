@@ -69,7 +69,7 @@ impl Image {
 
         {
             let image = unsafe { &mut *image };
-            let mut color_table = HashMap::<(u8, u8, u8), Color>::new();
+            let mut color_table = HashMap::<(u8, u8, u8), Color>::with_capacity(256);
 
             for y in 0..height {
                 for x in 0..width {

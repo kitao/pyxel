@@ -411,7 +411,7 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
             return;
         }
 
-        let mut visit_stack = Vec::new();
+        let mut visit_stack = Vec::with_capacity(64);
         visit_stack.push((x, y));
         while let Some((x, y)) = visit_stack.pop() {
             if !self.clip_rect.contains(x, y) || self.read_data(x as usize, y as usize) != dst_value

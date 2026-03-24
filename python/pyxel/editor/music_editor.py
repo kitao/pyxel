@@ -86,7 +86,7 @@ class MusicEditor(EditorBase):
 
     def get_field(self, index):
         if index >= pyxel.NUM_CHANNELS:
-            return
+            return None
         music = pyxel.musics[self.music_index_var]
         seqs_len = len(music.seqs)
         if seqs_len < pyxel.NUM_CHANNELS:
@@ -198,8 +198,7 @@ class MusicEditor(EditorBase):
         if self._loop_button.is_enabled_var and pyxel.btnp(pyxel.KEY_L):
             self.should_loop_var = not self.should_loop_var
 
-        if not self.is_playing_var:
-            self.field_cursor.process_input()
+        self.field_cursor.process_input()
 
     def __on_draw(self):
         self.draw_panel(11, 16, 218, 9)

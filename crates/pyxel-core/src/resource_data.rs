@@ -63,15 +63,11 @@ impl TilemapData {
             ImageSource::Image(_) => 0,
         };
 
-        let data: Vec<_> = tilemap
+        let data: Vec<Vec<_>> = tilemap
             .canvas
             .data
-            .iter()
-            .flat_map(|(tx, ty)| [*tx, *ty])
-            .collect();
-        let data: Vec<Vec<_>> = data
-            .chunks((width * 2) as usize)
-            .map(<[ImageTileCoord]>::to_vec)
+            .chunks(width as usize)
+            .map(|row| row.iter().flat_map(|(tx, ty)| [*tx, *ty]).collect())
             .collect();
         let data = compress_vec2(&data);
 
