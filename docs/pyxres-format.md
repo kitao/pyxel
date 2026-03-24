@@ -41,7 +41,7 @@ format_version = 1
 
 The `format_version` field and all four section arrays (`images`, `tilemaps`, `sounds`, `musics`) are **required**. Empty resources are represented as empty arrays (e.g., `notes = []`). Pyxel always writes all entries (3 images, 8 tilemaps, 64 sounds, 8 musics), but files with fewer entries are accepted on load.
 
-Pyxel currently writes `format_version = 1` for maximum backward compatibility. On load, files with format version up to **4** (the current maximum) are accepted. Files with version 1–3 that use the legacy archive layout (`pyxel_resource/version` + separate files) are loaded with automatic conversion.
+Pyxel currently writes `format_version = 1` for maximum backward compatibility. On load, files with format version up to **4** (the current maximum) are accepted. Files that contain the legacy archive layout (`pyxel_resource/version` + separate files) are detected and loaded with automatic conversion.
 
 ## Images
 
