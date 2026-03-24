@@ -16,25 +16,25 @@ const DEFAULT_VOLUME: u32 = 100;
 const DEFAULT_OCTAVE: i32 = 4;
 const DEFAULT_LENGTH: u32 = 4;
 
-struct CharStream {
-    chars: Vec<char>,
+struct CharStream<'a> {
+    bytes: &'a [u8],
     pos: usize,
 }
 
-impl CharStream {
-    fn new(input: &str) -> Self {
+impl<'a> CharStream<'a> {
+    fn new(input: &'a str) -> Self {
         Self {
-            chars: input.chars().collect(),
+            bytes: input.as_bytes(),
             pos: 0,
         }
     }
 
     fn peek(&self) -> Option<char> {
-        self.chars.get(self.pos).copied()
+        self.bytes.get(self.pos).map(|&b| b as char)
     }
 
     fn next(&mut self) -> Option<char> {
-        let c = self.chars.get(self.pos).copied();
+        let c = self.bytes.get(self.pos).map(|&b| b as char);
         if c.is_some() {
             self.pos += 1;
         }

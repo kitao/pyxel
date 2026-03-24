@@ -1,17 +1,53 @@
 {
   "languages": [
-    { "code": "en", "name": "English" },
-    { "code": "cn", "name": "中文" },
-    { "code": "de", "name": "Deutsch" },
-    { "code": "es", "name": "Español" },
-    { "code": "fr", "name": "Français" },
-    { "code": "it", "name": "Italiano" },
-    { "code": "ja", "name": "日本語" },
-    { "code": "ko", "name": "한국어" },
-    { "code": "pt", "name": "Português" },
-    { "code": "ru", "name": "Русский" },
-    { "code": "tr", "name": "Türkçe" },
-    { "code": "uk", "name": "Українська" }
+    {
+      "code": "en",
+      "name": "English"
+    },
+    {
+      "code": "cn",
+      "name": "中文"
+    },
+    {
+      "code": "de",
+      "name": "Deutsch"
+    },
+    {
+      "code": "es",
+      "name": "Español"
+    },
+    {
+      "code": "fr",
+      "name": "Français"
+    },
+    {
+      "code": "it",
+      "name": "Italiano"
+    },
+    {
+      "code": "ja",
+      "name": "日本語"
+    },
+    {
+      "code": "ko",
+      "name": "한국어"
+    },
+    {
+      "code": "pt",
+      "name": "Português"
+    },
+    {
+      "code": "ru",
+      "name": "Русский"
+    },
+    {
+      "code": "tr",
+      "name": "Türkçe"
+    },
+    {
+      "code": "uk",
+      "name": "Українська"
+    }
   ],
   "ui": {
     "title": {
@@ -352,7 +388,7 @@
       "desc": {
         "en": "Plays the specified note. You can specify the length after the note, e.g., `F16`.",
         "cn": "播放指定的音符。可以在音符后指定长度，如 `F16`。",
-        "de": "Spielt die angegebene Note. Die Länge kann nach der Note angegeben werden, z.\u00a0B. `F16`.",
+        "de": "Spielt die angegebene Note. Die Länge kann nach der Note angegeben werden, z. B. `F16`.",
         "es": "Reproduce la nota especificada. Se puede especificar la duración después de la nota, p. ej., `F16`.",
         "fr": "Joue la note spécifiée. La longueur peut être indiquée après la note, par ex. `F16`.",
         "it": "Suona la nota specificata. Si può specificare la lunghezza dopo la nota, es. `F16`.",
@@ -369,7 +405,7 @@
       "desc": {
         "en": "Rest. Range: 1-192. You can specify the length after the rest, e.g., `R8`.",
         "cn": "休止符。范围：1-192。可以在休止符后指定长度，如 `R8`。",
-        "de": "Pause. Bereich: 1-192. Die Länge kann nach der Pause angegeben werden, z.\u00a0B. `R8`.",
+        "de": "Pause. Bereich: 1-192. Die Länge kann nach der Pause angegeben werden, z. B. `R8`.",
         "es": "Silencio. Rango: 1-192. Se puede especificar la duración después del silencio, p. ej., `R8`.",
         "fr": "Silence. Plage : 1-192. La longueur peut être indiquée après le silence, par ex. `R8`.",
         "it": "Pausa. Intervallo: 1-192. Si può specificare la lunghezza dopo la pausa, es. `R8`.",
@@ -454,7 +490,7 @@
       "desc": {
         "en": "Tie/Slur. When connecting the same pitch, it ties the notes into one. When connecting different pitches, it plays them legato (no gap). You can also specify only the length, e.g., `C4&16`.",
         "cn": "连音/圆滑线。连接相同音高时为延音（合并为一个音），连接不同音高时为圆滑奏（无间隔）。也可以只指定长度，如 `C4&16`。",
-        "de": "Haltebogen/Bindebogen. Bei gleicher Tonhöhe werden die Noten gebunden. Bei verschiedenen Tonhöhen werden sie legato gespielt (ohne Lücke). Es kann auch nur die Länge angegeben werden, z.\u00a0B. `C4&16`.",
+        "de": "Haltebogen/Bindebogen. Bei gleicher Tonhöhe werden die Noten gebunden. Bei verschiedenen Tonhöhen werden sie legato gespielt (ohne Lücke). Es kann auch nur die Länge angegeben werden, z. B. `C4&16`.",
         "es": "Ligadura. Al conectar la misma altura, une las notas en una. Al conectar alturas diferentes, las toca legato (sin espacio). También se puede especificar solo la duración, p. ej., `C4&16`.",
         "fr": "Liaison. Quand elle relie la même hauteur, elle lie les notes en une. Quand elle relie des hauteurs différentes, elle les joue legato (sans coupure). On peut aussi ne spécifier que la longueur, par ex. `C4&16`.",
         "it": "Legatura. Collegando la stessa altezza, unisce le note in una. Collegando altezze diverse, le suona legato (senza interruzione). Si può anche specificare solo la lunghezza, es. `C4&16`.",

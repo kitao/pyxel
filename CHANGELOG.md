@@ -5,6 +5,7 @@
 - Refined code quality and consistency across all layers
 - Removed unnecessary allocations in rendering and audio
 - Unified editor undo/redo and input handling patterns
+- Optimized drawing hot paths and audio command processing
 
 ## 2.8.8
 

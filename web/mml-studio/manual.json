@@ -401,13 +401,13 @@
       "uk": "Повний список MML-команд, підтримуваних Pyxel, див. у {0}."
     },
     "mml_ref_link": {
-      "ja": "Pyxel MML Commands",
       "en": "Pyxel MML Commands",
       "cn": "Pyxel MML Commands",
       "de": "Pyxel MML Commands",
       "es": "Pyxel MML Commands",
       "fr": "Pyxel MML Commands",
       "it": "Pyxel MML Commands",
+      "ja": "Pyxel MML Commands",
       "ko": "Pyxel MML Commands",
       "pt": "Pyxel MML Commands",
       "ru": "Pyxel MML Commands",

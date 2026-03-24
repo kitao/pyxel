@@ -150,6 +150,15 @@ pub struct ResourceData {
     musics: Vec<MusicData>,
 }
 
+#[derive(Serialize)]
+struct ResourceDataRef<'a> {
+    format_version: u32,
+    images: &'a [ImageData],
+    tilemaps: &'a [TilemapData],
+    sounds: &'a [SoundData],
+    musics: &'a [MusicData],
+}
+
 impl ResourceData {
     pub fn from_toml(toml_text: &str) -> Result<Self, String> {
         toml::from_str(toml_text).map_err(|_| "Failed to parse resource data".to_string())
@@ -232,29 +241,29 @@ impl ResourceData {
         let empty_tilemaps = Vec::new();
         let empty_sounds = Vec::new();
         let empty_musics = Vec::new();
-        let resource_data = ResourceData {
+        let view = ResourceDataRef {
             format_version: self.format_version,
             images: if exclude_images {
-                empty_images
+                &empty_images
             } else {
-                self.images.clone()
+                &self.images
             },
             tilemaps: if exclude_tilemaps {
-                empty_tilemaps
+                &empty_tilemaps
             } else {
-                self.tilemaps.clone()
+                &self.tilemaps
             },
             sounds: if exclude_sounds {
-                empty_sounds
+                &empty_sounds
             } else {
-                self.sounds.clone()
+                &self.sounds
             },
             musics: if exclude_musics {
-                empty_musics
+                &empty_musics
             } else {
-                self.musics.clone()
+                &self.musics
             },
         };
-        toml::to_string(&resource_data).unwrap()
+        toml::to_string(&view).unwrap()
     }
 }

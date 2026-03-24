@@ -347,37 +347,67 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         };
         let x_inter = f32_to_i32(x1 as f32 + slope13 * (y2 - y1) as f32);
 
-        for y in y1..=y2 {
-            let (x_slider, x_end) = if x_inter < x2 {
-                (
-                    f32_to_i32(x_inter as f32 + slope13 * (y - y2) as f32),
-                    f32_to_i32(x2 as f32 + slope12 * (y - y2) as f32),
-                )
-            } else {
-                (
-                    f32_to_i32(x2 as f32 + slope12 * (y - y2) as f32),
-                    f32_to_i32(x_inter as f32 + slope13 * (y - y2) as f32),
-                )
-            };
-            for x in x_slider..=x_end {
-                self.write_data_with_clipping(x, y, value);
+        if self.alpha >= 1.0 {
+            for y in y1..=y2 {
+                let (x_slider, x_end) = if x_inter < x2 {
+                    (
+                        f32_to_i32(x_inter as f32 + slope13 * (y - y2) as f32),
+                        f32_to_i32(x2 as f32 + slope12 * (y - y2) as f32),
+                    )
+                } else {
+                    (
+                        f32_to_i32(x2 as f32 + slope12 * (y - y2) as f32),
+                        f32_to_i32(x_inter as f32 + slope13 * (y - y2) as f32),
+                    )
+                };
+                self.fill_row_clipped(x_slider, x_end, y, value);
             }
-        }
-
-        for y in (y2 + 1)..=y3 {
-            let (x_slider, x_end) = if x_inter < x2 {
-                (
-                    f32_to_i32(x_inter as f32 + slope13 * (y - y2) as f32),
-                    f32_to_i32(x2 as f32 + slope23 * (y - y2) as f32),
-                )
-            } else {
-                (
-                    f32_to_i32(x2 as f32 + slope23 * (y - y2) as f32),
-                    f32_to_i32(x_inter as f32 + slope13 * (y - y2) as f32),
-                )
-            };
-            for x in x_slider..=x_end {
-                self.write_data_with_clipping(x, y, value);
+            for y in (y2 + 1)..=y3 {
+                let (x_slider, x_end) = if x_inter < x2 {
+                    (
+                        f32_to_i32(x_inter as f32 + slope13 * (y - y2) as f32),
+                        f32_to_i32(x2 as f32 + slope23 * (y - y2) as f32),
+                    )
+                } else {
+                    (
+                        f32_to_i32(x2 as f32 + slope23 * (y - y2) as f32),
+                        f32_to_i32(x_inter as f32 + slope13 * (y - y2) as f32),
+                    )
+                };
+                self.fill_row_clipped(x_slider, x_end, y, value);
+            }
+        } else {
+            for y in y1..=y2 {
+                let (x_slider, x_end) = if x_inter < x2 {
+                    (
+                        f32_to_i32(x_inter as f32 + slope13 * (y - y2) as f32),
+                        f32_to_i32(x2 as f32 + slope12 * (y - y2) as f32),
+                    )
+                } else {
+                    (
+                        f32_to_i32(x2 as f32 + slope12 * (y - y2) as f32),
+                        f32_to_i32(x_inter as f32 + slope13 * (y - y2) as f32),
+                    )
+                };
+                for x in x_slider..=x_end {
+                    self.write_data_with_clipping(x, y, value);
+                }
+            }
+            for y in (y2 + 1)..=y3 {
+                let (x_slider, x_end) = if x_inter < x2 {
+                    (
+                        f32_to_i32(x_inter as f32 + slope13 * (y - y2) as f32),
+                        f32_to_i32(x2 as f32 + slope23 * (y - y2) as f32),
+                    )
+                } else {
+                    (
+                        f32_to_i32(x2 as f32 + slope23 * (y - y2) as f32),
+                        f32_to_i32(x_inter as f32 + slope13 * (y - y2) as f32),
+                    )
+                };
+                for x in x_slider..=x_end {
+                    self.write_data_with_clipping(x, y, value);
+                }
             }
         }
     }
