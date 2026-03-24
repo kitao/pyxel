@@ -330,33 +330,33 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
             swap(&mut x2, &mut x3);
         }
 
-        let alpha12 = if y2 == y1 {
+        let slope12 = if y2 == y1 {
             0.0
         } else {
             (x2 - x1) as f32 / (y2 - y1) as f32
         };
-        let alpha13 = if y3 == y1 {
+        let slope13 = if y3 == y1 {
             0.0
         } else {
             (x3 - x1) as f32 / (y3 - y1) as f32
         };
-        let alpha23 = if y3 == y2 {
+        let slope23 = if y3 == y2 {
             0.0
         } else {
             (x3 - x2) as f32 / (y3 - y2) as f32
         };
-        let x_inter = f32_to_i32(x1 as f32 + alpha13 * (y2 - y1) as f32);
+        let x_inter = f32_to_i32(x1 as f32 + slope13 * (y2 - y1) as f32);
 
         for y in y1..=y2 {
             let (x_slider, x_end) = if x_inter < x2 {
                 (
-                    f32_to_i32(x_inter as f32 + alpha13 * (y - y2) as f32),
-                    f32_to_i32(x2 as f32 + alpha12 * (y - y2) as f32),
+                    f32_to_i32(x_inter as f32 + slope13 * (y - y2) as f32),
+                    f32_to_i32(x2 as f32 + slope12 * (y - y2) as f32),
                 )
             } else {
                 (
-                    f32_to_i32(x2 as f32 + alpha12 * (y - y2) as f32),
-                    f32_to_i32(x_inter as f32 + alpha13 * (y - y2) as f32),
+                    f32_to_i32(x2 as f32 + slope12 * (y - y2) as f32),
+                    f32_to_i32(x_inter as f32 + slope13 * (y - y2) as f32),
                 )
             };
             for x in x_slider..=x_end {
@@ -367,13 +367,13 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         for y in (y2 + 1)..=y3 {
             let (x_slider, x_end) = if x_inter < x2 {
                 (
-                    f32_to_i32(x_inter as f32 + alpha13 * (y - y2) as f32),
-                    f32_to_i32(x2 as f32 + alpha23 * (y - y2) as f32),
+                    f32_to_i32(x_inter as f32 + slope13 * (y - y2) as f32),
+                    f32_to_i32(x2 as f32 + slope23 * (y - y2) as f32),
                 )
             } else {
                 (
-                    f32_to_i32(x2 as f32 + alpha23 * (y - y2) as f32),
-                    f32_to_i32(x_inter as f32 + alpha13 * (y - y2) as f32),
+                    f32_to_i32(x2 as f32 + slope23 * (y - y2) as f32),
+                    f32_to_i32(x_inter as f32 + slope13 * (y - y2) as f32),
                 )
             };
             for x in x_slider..=x_end {
