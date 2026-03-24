@@ -166,21 +166,6 @@ impl PlatformSdl2 {
                     }
                 }
 
-                SDL_MOUSEMOTION => {
-                    let x = unsafe { sdl_event.motion.x };
-                    let y = unsafe { sdl_event.motion.y };
-                    self.mouse_x = x;
-                    self.mouse_y = y;
-                    pyxel_events.push(Event::KeyValueChanged {
-                        key: MOUSE_POS_X,
-                        value: x,
-                    });
-                    pyxel_events.push(Event::KeyValueChanged {
-                        key: MOUSE_POS_Y,
-                        value: y,
-                    });
-                }
-
                 SDL_MOUSEWHEEL => {
                     pyxel_events.push(Event::KeyValueChanged {
                         key: MOUSE_WHEEL_X,
@@ -273,14 +258,10 @@ impl PlatformSdl2 {
         }
 
         //
-        // Mouse Motion (polling fallback)
+        // Mouse Motion (polling)
         //
-        #[cfg(not(target_os = "emscripten"))]
-        if unsafe { SDL_GetWindowFlags(self.window) } & SDL_WINDOW_INPUT_FOCUS as Uint32 != 0 {
+        {
             let (mouse_x, mouse_y) = if self.is_wayland {
-                // Wayland: SDL_GetGlobalMouseState is unsupported, so use
-                // SDL_GetMouseState which returns window-relative coordinates
-                // from SDL's internal event state.
                 let mut x = 0;
                 let mut y = 0;
                 unsafe {
@@ -288,8 +269,6 @@ impl PlatformSdl2 {
                 }
                 (x, y)
             } else {
-                // X11: SDL_GetGlobalMouseState tracks the cursor even outside
-                // the window, which is useful for drag operations.
                 let mut global_x = 0;
                 let mut global_y = 0;
                 unsafe {
