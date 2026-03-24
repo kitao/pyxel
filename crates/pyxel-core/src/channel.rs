@@ -491,10 +491,10 @@ impl Channel {
         }
 
         let gain_fixed = (self.gain * PCM_MIX_GAIN_SCALE as f32) as i32;
-        let mut offset = 0usize;
+        let mut offset = 0;
 
         while offset < out.len() {
-            let mut to_copy = 0usize;
+            let mut to_copy = 0;
             let mut end_reached = false;
             let mut should_advance = false;
 

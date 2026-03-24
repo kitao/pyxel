@@ -290,7 +290,7 @@ impl Font {
         x: i32,
         y: i32,
         ascent: i32,
-        metrics: &fontdue::Metrics,
+        metrics: &Metrics,
         bitmap: &[u8],
         color: Color,
     ) {

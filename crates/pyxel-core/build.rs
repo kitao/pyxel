@@ -18,7 +18,11 @@ struct Sdl2Bindings {
 impl Sdl2Bindings {
     fn new() -> Self {
         let target = var("TARGET").unwrap();
-        let target_os = target.splitn(3, '-').nth(2).unwrap().to_string();
+        let target_os = target
+            .splitn(3, '-')
+            .nth(2)
+            .expect("Invalid TARGET triple")
+            .to_string();
         let out_dir = var("OUT_DIR").unwrap();
         let sdl2_dir = format!("{out_dir}/SDL2-{SDL2_VERSION}");
 
@@ -61,11 +65,11 @@ impl Sdl2Bindings {
         let tar_gz = File::open(&sdl2_archive_path).unwrap();
         let tar = flate2::read::GzDecoder::new(tar_gz);
         let mut archive = Archive::new(tar);
-        if let Err(_err) = archive.unpack(&self.out_dir) {
+        if let Err(err) = archive.unpack(&self.out_dir) {
             if Path::new(&self.sdl2_dir).exists() {
                 std::fs::remove_dir_all(&self.sdl2_dir).expect("Failed to remove SDL2 directory");
             }
-            panic!("Failed to extract SDL2 source code");
+            panic!("Failed to extract SDL2 source code: {err}");
         }
 
         // Patch SDL2 for macOS Sonoma

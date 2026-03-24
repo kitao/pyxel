@@ -29,7 +29,9 @@ impl Music {
         duration_sec: f32,
         use_ffmpeg: Option<bool>,
     ) -> Result<(), String> {
-        assert!(duration_sec > 0.0);
+        if duration_sec <= 0.0 {
+            return Err("duration_sec must be greater than 0".to_string());
+        }
 
         let num_samples = (duration_sec * AUDIO_SAMPLE_RATE as f32).round() as u32;
         if num_samples == 0 {
