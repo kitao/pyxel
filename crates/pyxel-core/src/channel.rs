@@ -238,11 +238,11 @@ impl Channel {
 
                 {
                     let sound = unsafe { &*self.sounds[self.sound_index as usize] };
-                    self.commands = if sound.commands.is_empty() {
-                        sound.to_commands()
+                    if sound.commands.is_empty() {
+                        self.commands = sound.to_commands();
                     } else {
-                        sound.commands.clone()
-                    };
+                        self.commands.clone_from(&sound.commands);
+                    }
                 }
 
                 self.advance_command();

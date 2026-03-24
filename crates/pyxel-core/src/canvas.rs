@@ -939,7 +939,7 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         if self.alpha <= 0.0 {
             return false;
         }
-        self.alpha > DITHERING_MATRIX[y.rem_euclid(4) as usize][x.rem_euclid(4) as usize]
+        self.alpha > DITHERING_MATRIX[(y & 3) as usize][(x & 3) as usize]
     }
 }
 
