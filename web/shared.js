@@ -5,7 +5,7 @@ const PYXEL_LANG_KEY = "pyxel-lang";
 const detectLanguage = (languages) => {
   const stored = localStorage.getItem(PYXEL_LANG_KEY);
   if (stored && languages.some((l) => l.code === stored)) return stored;
-  const nav = (navigator.language || "").toLowerCase();
+  const nav = (navigator.language ?? "").toLowerCase();
   if (nav.startsWith("zh")) return "cn";
   for (const l of languages) {
     if (nav.startsWith(l.code)) return l.code;
