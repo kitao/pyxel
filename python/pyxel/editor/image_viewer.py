@@ -1,6 +1,6 @@
 import pyxel
 
-from .settings import PANEL_FOCUS_BORDER_COLOR, PANEL_FOCUS_COLOR
+from .settings import PANEL_FOCUS_BORDER_COLOR, PANEL_FOCUS_COLOR, _clamp
 from .widgets import ScrollBar, Widget
 
 # Grid size in pixels per tile and max tile index (256 / GRID_SIZE - 1)
@@ -88,16 +88,16 @@ class ImageViewer(Widget):
         self.add_event_listener("draw", self.__on_draw)
 
     def _screen_to_focus(self, x, y):
-        x = min(
-            max(self.viewport_x_var + (x - self.x - 1) // GRID_SIZE, 0), MAX_TILE_INDEX
+        x = _clamp(
+            self.viewport_x_var + (x - self.x - 1) // GRID_SIZE, 0, MAX_TILE_INDEX
         )
-        y = min(
-            max(self.viewport_y_var + (y - self.y - 1) // GRID_SIZE, 0), MAX_TILE_INDEX
+        y = _clamp(
+            self.viewport_y_var + (y - self.y - 1) // GRID_SIZE, 0, MAX_TILE_INDEX
         )
         return x, y
 
     def __on_focus_x_set(self, value):
-        return min(max(value, 0), MAX_TILE_INDEX + 1 - self.focus_w_var)
+        return _clamp(value, 0, MAX_TILE_INDEX + 1 - self.focus_w_var)
 
     def __on_focus_x_change(self, value):
         fx = self.focus_x_var
@@ -107,7 +107,7 @@ class ImageViewer(Widget):
         self.viewport_x_var += min(fx - vx, 0) + max(fx + fw - vx - vw, 0)
 
     def __on_focus_y_set(self, value):
-        return min(max(value, 0), MAX_TILE_INDEX + 1 - self.focus_h_var)
+        return _clamp(value, 0, MAX_TILE_INDEX + 1 - self.focus_h_var)
 
     def __on_focus_y_change(self, value):
         fy = self.focus_y_var

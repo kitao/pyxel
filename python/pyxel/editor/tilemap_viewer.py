@@ -1,6 +1,6 @@
 import pyxel
 
-from .settings import PANEL_FOCUS_BORDER_COLOR, PANEL_FOCUS_COLOR
+from .settings import PANEL_FOCUS_BORDER_COLOR, PANEL_FOCUS_COLOR, _clamp
 from .widgets import Widget
 
 
@@ -35,15 +35,15 @@ class TilemapViewer(Widget):
         self.add_event_listener("draw", self.__on_draw)
 
     def _screen_to_focus(self, x, y):
-        x = min(max((x - self.x - 1) // 2, 0), 31)
-        y = min(max((y - self.y - 1) // 2, 0), 31)
+        x = _clamp((x - self.x - 1) // 2, 0, 31)
+        y = _clamp((y - self.y - 1) // 2, 0, 31)
         return x, y
 
     def __on_focus_x_set(self, value):
-        return min(max(value, 0), 30)
+        return _clamp(value, 0, 30)
 
     def __on_focus_y_set(self, value):
-        return min(max(value, 0), 30)
+        return _clamp(value, 0, 30)
 
     def __on_mouse_down(self, key, x, y):
         if key == pyxel.MOUSE_BUTTON_LEFT:

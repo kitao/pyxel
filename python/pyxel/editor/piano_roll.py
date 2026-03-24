@@ -9,6 +9,7 @@ from .settings import (
     PIANO_ROLL_CURSOR_SELECT_COLOR,
     PIANO_ROLL_NOTE_COLOR,
     PIANO_ROLL_REST_COLOR,
+    _clamp,
 )
 from .widgets import Widget
 from .widgets.settings import WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME
@@ -45,8 +46,8 @@ class PianoRoll(Widget):
         self.add_event_listener("draw", self.__on_draw)
 
     def _screen_to_view(self, x, y):
-        x = min(max((x - self.x - 1) // 4, 0), MAX_SOUND_LENGTH - 1)
-        y = min(max(59 - (y - self.y - 1) // 2, -1), 59)
+        x = _clamp((x - self.x - 1) // 4, 0, MAX_SOUND_LENGTH - 1)
+        y = _clamp(59 - (y - self.y - 1) // 2, -1, 59)
         return x, y
 
     def _set_note(self, x, y):

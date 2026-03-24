@@ -23,26 +23,21 @@ extern "C" {
     fn emscripten_run_script_int(script: *const c_char) -> std::os::raw::c_int;
 }
 
-pub enum Gamepad {
-    Unused,
-    Controller(i32, *mut SDL_GameController),
+pub type Gamepad = Option<(i32, *mut SDL_GameController)>;
+
+pub fn open_gamepad(device_index: i32) -> Option<(i32, *mut SDL_GameController)> {
+    let controller = unsafe { SDL_GameControllerOpen(device_index) };
+    if controller.is_null() {
+        return None;
+    }
+    let instance_id = unsafe { SDL_JoystickGetDeviceInstanceID(device_index) };
+    Some((instance_id, controller))
 }
 
-impl Gamepad {
-    pub fn open(device_index: i32) -> Option<Gamepad> {
-        let controller = unsafe { SDL_GameControllerOpen(device_index) };
-        if controller.is_null() {
-            return None;
-        }
-        let instance_id = unsafe { SDL_JoystickGetDeviceInstanceID(device_index) };
-        Some(Gamepad::Controller(instance_id, controller))
-    }
-
-    pub fn close(&mut self) {
-        if let Gamepad::Controller(_, controller) = self {
-            unsafe { SDL_GameControllerClose(*controller) };
-            *self = Gamepad::Unused;
-        }
+fn close_gamepad(gamepad: &mut Gamepad) {
+    if let Some((_, controller)) = gamepad {
+        unsafe { SDL_GameControllerClose(*controller) };
+        *gamepad = None;
     }
 }
 
@@ -139,26 +134,22 @@ impl PlatformSdl2 {
                 //
                 SDL_CONTROLLERDEVICEADDED => {
                     let device_index = unsafe { sdl_event.cdevice.which };
-                    if let Some(gamepad) = Gamepad::open(device_index) {
-                        match self
-                            .gamepads
-                            .iter_mut()
-                            .find(|g| matches!(g, Gamepad::Unused))
-                        {
-                            Some(slot) => *slot = gamepad,
-                            None => self.gamepads.push(gamepad),
+                    if let Some(gamepad) = open_gamepad(device_index) {
+                        match self.gamepads.iter_mut().find(|g| g.is_none()) {
+                            Some(slot) => *slot = Some(gamepad),
+                            None => self.gamepads.push(Some(gamepad)),
                         }
                     }
                 }
 
                 SDL_CONTROLLERDEVICEREMOVED => {
                     let instance_id = unsafe { sdl_event.cdevice.which };
-                    if let Some(gamepad) = self
+                    if let Some(slot) = self
                         .gamepads
                         .iter_mut()
-                        .find(|g| matches!(g, Gamepad::Controller(id, _) if *id == instance_id))
+                        .find(|g| matches!(g, Some((id, _)) if *id == instance_id))
                     {
-                        gamepad.close();
+                        close_gamepad(slot);
                     }
                 }
 
@@ -274,7 +265,7 @@ impl PlatformSdl2 {
             .iter()
             .enumerate()
             .find_map(|(index, slot)| match slot {
-                Gamepad::Controller(id, _) if *id == instance_id => {
+                Some((id, _)) if *id == instance_id => {
                     Some(GAMEPAD_KEY_INDEX_INTERVAL * index as Key)
                 }
                 _ => None,

@@ -8,6 +8,7 @@ from .settings import (
     SOUND_FIELD_DATA_NORMAL_COLOR,
     SOUND_FIELD_DATA_SELECT_COLOR,
     TEXT_LABEL_COLOR,
+    _clamp,
     _is_modifier_pressed,
 )
 from .widgets import Widget
@@ -54,8 +55,8 @@ class SoundField(Widget):
         self.add_event_listener("draw", self.__on_draw)
 
     def _screen_to_view(self, x, y):
-        x = min(max((x - self.x - 1) // 4, 0), MAX_SOUND_LENGTH - 1)
-        y = min(max((y - self.y) // 8, 0), 2)
+        x = _clamp((x - self.x - 1) // 4, 0, MAX_SOUND_LENGTH - 1)
+        y = _clamp((y - self.y) // 8, 0, 2)
         return x, y
 
     def __on_mouse_down(self, key, x, y):

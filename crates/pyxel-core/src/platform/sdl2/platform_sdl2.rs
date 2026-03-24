@@ -8,7 +8,7 @@ use std::sync::atomic::{AtomicU32, Ordering};
 use glow::Context;
 
 use super::super::facade::GLProfile;
-use super::poll_events::Gamepad;
+use super::poll_events::{open_gamepad, Gamepad};
 #[allow(clippy::wildcard_imports)]
 use super::sdl2_sys::*;
 
@@ -108,8 +108,7 @@ impl PlatformSdl2 {
 
         self.gamepads.clear();
         let num_joysticks = unsafe { SDL_NumJoysticks() };
-        self.gamepads
-            .extend((0..num_joysticks).filter_map(Gamepad::open));
+        self.gamepads.extend((0..num_joysticks).map(open_gamepad));
     }
 
     #[cfg(not(target_os = "emscripten"))]
