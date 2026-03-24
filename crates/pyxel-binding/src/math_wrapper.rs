@@ -111,7 +111,7 @@ fn noise(x: f32, y: Option<f32>, z: Option<f32>) -> f32 {
     Pyxel::noise(x, y.unwrap_or(0.0), z.unwrap_or(0.0))
 }
 
-pub fn add_math_functions(m: &Bound<PyModule>) -> PyResult<()> {
+pub fn add_math_functions(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(ceil, m)?)?;
     m.add_function(wrap_pyfunction!(floor, m)?)?;
     m.add_function(wrap_pyfunction!(clamp, m)?)?;

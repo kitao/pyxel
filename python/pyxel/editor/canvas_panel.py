@@ -10,8 +10,8 @@ from .settings import (
     TOOL_RECT,
     TOOL_RECTB,
     TOOL_SELECT,
-    _clamp,
-    _is_modifier_pressed,
+    clamp,
+    is_modifier_pressed,
 )
 from .widgets import ScrollBar, Widget
 from .widgets.settings import WIDGET_HOLD_TIME, WIDGET_PANEL_COLOR, WIDGET_REPEAT_TIME
@@ -113,8 +113,8 @@ class CanvasPanel(Widget):
         self.add_event_listener("draw", self.__on_draw)
 
     def _screen_to_focus(self, x, y):
-        x = _clamp((x - self.x - 1) // 8, 0, 15)
-        y = _clamp((y - self.y - 1) // 8, 0, 15)
+        x = clamp((x - self.x - 1) // 8, 0, 15)
+        y = clamp((y - self.y - 1) // 8, 0, 15)
         return x, y
 
     def _selection_rect(self):
@@ -291,8 +291,8 @@ class CanvasPanel(Widget):
 
             # SELECT: update selection rectangle
             if self.tool_var == TOOL_SELECT:
-                x2 = _clamp(x2, 0, 15)
-                y2 = _clamp(y2, 0, 15)
+                x2 = clamp(x2, 0, 15)
+                y2 = clamp(y2, 0, 15)
                 self._select_x1, self._select_x2 = (x1, x2) if x1 < x2 else (x2, x1)
                 self._select_y1, self._select_y2 = (y1, y2) if y1 < y2 else (y2, y1)
 
@@ -481,7 +481,7 @@ class CanvasPanel(Widget):
                 self.tile_y_var += 1
 
         # Move target focus (only when no modifiers held)
-        if not _is_modifier_pressed():
+        if not is_modifier_pressed():
             if pyxel.btnp(
                 pyxel.KEY_LEFT, hold=WIDGET_HOLD_TIME, repeat=WIDGET_REPEAT_TIME
             ):

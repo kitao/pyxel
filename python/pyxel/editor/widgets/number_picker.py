@@ -1,6 +1,6 @@
 import pyxel
 
-from ..settings import _clamp
+from ..settings import clamp
 from .settings import INPUT_FIELD_COLOR, INPUT_TEXT_COLOR
 from .text_button import TextButton
 from .widget import Widget
@@ -39,7 +39,7 @@ class NumberPicker(Widget):
         self.add_event_listener("draw", self.__on_draw)
 
     def __on_value_set(self, value):
-        return _clamp(value, self._min_value, self._max_value)
+        return clamp(value, self._min_value, self._max_value)
 
     def __on_value_change(self, value):
         self.dec_button.is_enabled_var = value > self._min_value

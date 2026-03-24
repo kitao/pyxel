@@ -8,8 +8,8 @@ from .settings import (
     SOUND_FIELD_DATA_NORMAL_COLOR,
     SOUND_FIELD_DATA_SELECT_COLOR,
     TEXT_LABEL_COLOR,
-    _clamp,
-    _is_modifier_pressed,
+    clamp,
+    is_modifier_pressed,
 )
 from .widgets import Widget
 from .widgets.settings import WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME
@@ -55,8 +55,8 @@ class SoundField(Widget):
         self.add_event_listener("draw", self.__on_draw)
 
     def _screen_to_view(self, x, y):
-        x = _clamp((x - self.x - 1) // 4, 0, MAX_SOUND_LENGTH - 1)
-        y = _clamp((y - self.y) // 8, 0, 2)
+        x = clamp((x - self.x - 1) // 4, 0, MAX_SOUND_LENGTH - 1)
+        y = clamp((y - self.y) // 8, 0, 2)
         return x, y
 
     def __on_mouse_down(self, key, x, y):
@@ -70,7 +70,7 @@ class SoundField(Widget):
 
     def __on_update(self):
         cursor_y = self.field_cursor.y
-        if cursor_y < 1 or self.is_playing_var or _is_modifier_pressed():
+        if cursor_y < 1 or self.is_playing_var or is_modifier_pressed():
             return
 
         # Table-driven key dispatch

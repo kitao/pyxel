@@ -1,7 +1,7 @@
 import pyxel
 
 from .button import Button
-from ..settings import _clamp
+from ..settings import clamp
 from .settings import WIDGET_BACKGROUND_COLOR, WIDGET_PANEL_COLOR
 from .widget import Widget
 
@@ -83,7 +83,7 @@ class ScrollBar(Widget):
         return round(7 + self._scroll_size * self.value_var / self.scroll_amount)
 
     def __on_value_set(self, value):
-        return _clamp(value, 0, self.scroll_amount)
+        return clamp(value, 0, self.scroll_amount)
 
     def __on_value_change(self, value):
         self.trigger_event("change", value)
@@ -123,7 +123,7 @@ class ScrollBar(Widget):
         value = (
             (drag_pos - self._drag_offset - 6) * self.scroll_amount / self._scroll_size
         )
-        self.value_var = int(_clamp(value, 0, self.scroll_amount - self.slider_amount))
+        self.value_var = int(clamp(value, 0, self.scroll_amount - self.slider_amount))
 
     def __on_mouse_repeat(self, key, x, y):
         if not self._is_dragged:
