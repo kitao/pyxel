@@ -486,11 +486,7 @@ fn env_def_from_drum_key(key: i32, slot: i32) -> String {
     format!("@ENV{slot}{{{init},{decay},{sustain_level}}}")
 }
 
-fn compress_repeats(
-    items: &[String],
-    group: usize,
-    skip_octave_shifts: bool,
-) -> Vec<String> {
+fn compress_repeats(items: &[String], group: usize, skip_octave_shifts: bool) -> Vec<String> {
     if group <= 1 {
         // Compress single-element runs
         let mut out = Vec::new();
@@ -501,9 +497,7 @@ fn compress_repeats(
                 j += 1;
             }
             let count = j - i;
-            if count > 1
-                && !(skip_octave_shifts && (items[i] == "<" || items[i] == ">"))
-            {
+            if count > 1 && !(skip_octave_shifts && (items[i] == "<" || items[i] == ">")) {
                 let expanded = items[i].repeat(count);
                 let bracketed = format!("[{}]{}", items[i], count);
                 out.push(if expanded.len() <= bracketed.len() {
@@ -525,8 +519,7 @@ fn compress_repeats(
     while i < items.len() {
         if i + group <= items.len() {
             let chunk = &items[i..i + group];
-            let should_skip =
-                skip_octave_shifts && chunk.iter().any(|t| t == "<" || t == ">");
+            let should_skip = skip_octave_shifts && chunk.iter().any(|t| t == "<" || t == ">");
             if !should_skip {
                 let mut j = i + group;
                 while j + group <= items.len() && &items[j..j + group] == chunk {

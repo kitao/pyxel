@@ -76,9 +76,8 @@ pub fn load_pcm(path: &str, target_rate: u32) -> Result<PcmData, String> {
 
         let spec = *decoded.spec();
         sample_rate = spec.rate;
-        let buf = sample_buf.get_or_insert_with(|| {
-            SampleBuffer::<f32>::new(decoded.capacity() as u64, spec)
-        });
+        let buf = sample_buf
+            .get_or_insert_with(|| SampleBuffer::<f32>::new(decoded.capacity() as u64, spec));
         buf.copy_interleaved_ref(decoded);
 
         let channels = spec.channels.count();

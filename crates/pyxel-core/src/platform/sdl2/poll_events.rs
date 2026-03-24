@@ -183,8 +183,8 @@ impl PlatformSdl2 {
                         let key =
                             controller_button_to_key(unsafe { sdl_event.cbutton.button } as i32);
                         if key != KEY_UNKNOWN {
-                            let pressed =
-                                unsafe { sdl_event.type_ } as SDL_EventType == SDL_CONTROLLERBUTTONDOWN;
+                            let pressed = unsafe { sdl_event.type_ } as SDL_EventType
+                                == SDL_CONTROLLERBUTTONDOWN;
                             push_key_event(pyxel_events, key + key_offset, pressed);
                         }
                     }

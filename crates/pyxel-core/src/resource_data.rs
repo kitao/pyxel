@@ -199,10 +199,30 @@ impl ResourceData {
                 }
             };
         }
-        restore!(exclude_images, self.images, pyxel::images, ImageData::to_image);
-        restore!(exclude_tilemaps, self.tilemaps, pyxel::tilemaps, TilemapData::to_tilemap);
-        restore!(exclude_sounds, self.sounds, pyxel::sounds, SoundData::to_sound);
-        restore!(exclude_musics, self.musics, pyxel::musics, MusicData::to_music);
+        restore!(
+            exclude_images,
+            self.images,
+            pyxel::images,
+            ImageData::to_image
+        );
+        restore!(
+            exclude_tilemaps,
+            self.tilemaps,
+            pyxel::tilemaps,
+            TilemapData::to_tilemap
+        );
+        restore!(
+            exclude_sounds,
+            self.sounds,
+            pyxel::sounds,
+            SoundData::to_sound
+        );
+        restore!(
+            exclude_musics,
+            self.musics,
+            pyxel::musics,
+            MusicData::to_music
+        );
     }
 
     pub fn to_toml(
