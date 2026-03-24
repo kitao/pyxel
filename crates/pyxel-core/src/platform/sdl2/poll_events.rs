@@ -274,7 +274,10 @@ impl PlatformSdl2 {
                 unsafe {
                     SDL_GetGlobalMouseState(&raw mut global_x, &raw mut global_y);
                 }
+                #[cfg(not(target_os = "emscripten"))]
                 let (window_x, window_y) = self.window_pos();
+                #[cfg(target_os = "emscripten")]
+                let (window_x, window_y) = (0, 0);
                 (global_x - window_x, global_y - window_y)
             };
 
