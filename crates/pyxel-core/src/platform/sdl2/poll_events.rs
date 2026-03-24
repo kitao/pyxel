@@ -261,7 +261,7 @@ impl PlatformSdl2 {
         // Mouse Motion (polling)
         //
         {
-            let (mouse_x, mouse_y) = if self.is_wayland {
+            let (mouse_x, mouse_y) = if self.is_wayland || cfg!(target_os = "emscripten") {
                 let mut x = 0;
                 let mut y = 0;
                 unsafe {
@@ -274,10 +274,7 @@ impl PlatformSdl2 {
                 unsafe {
                     SDL_GetGlobalMouseState(&raw mut global_x, &raw mut global_y);
                 }
-                #[cfg(not(target_os = "emscripten"))]
                 let (window_x, window_y) = self.window_pos();
-                #[cfg(target_os = "emscripten")]
-                let (window_x, window_y) = (0, 0);
                 (global_x - window_x, global_y - window_y)
             };
 
