@@ -122,10 +122,6 @@ impl Pyxel {
             }
         }
 
-        if *pyxel::is_headless() {
-            return;
-        }
-
         let image = Image::new(*pyxel::width(), *pyxel::height());
         unsafe {
             (&mut *image).draw_image(
@@ -146,14 +142,6 @@ impl Pyxel {
     }
 
     pub fn flip_screen(&mut self) {
-        if *pyxel::is_headless() {
-            if platform::is_sigint_received() {
-                platform::quit();
-            }
-            *pyxel::frame_count() += 1;
-            return;
-        }
-
         self.system.update_profiler.end(platform::ticks());
 
         self.draw_frame(None);

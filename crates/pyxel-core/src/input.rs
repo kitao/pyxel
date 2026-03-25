@@ -120,6 +120,8 @@ impl Pyxel {
     pub fn set_mouse_position(&mut self, x: f32, y: f32) {
         let x = f32_to_i32(x);
         let y = f32_to_i32(y);
+        *pyxel::mouse_x() = x;
+        *pyxel::mouse_y() = y;
         self.input.key_values.insert(MOUSE_POS_X, x);
         self.input.key_values.insert(MOUSE_POS_Y, y);
         if !*pyxel::is_headless() {
@@ -127,6 +129,30 @@ impl Pyxel {
                 x * self.system.screen_scale as i32 + self.system.screen_x,
                 y * self.system.screen_scale as i32 + self.system.screen_y,
             );
+        }
+    }
+
+    pub fn set_button_state(&mut self, key: Key, state: bool) {
+        if state {
+            self.press_key(key);
+        } else {
+            self.release_key(key);
+        }
+    }
+
+    pub fn set_button_value(&mut self, key: Key, value: KeyValue) {
+        self.change_key_value(key, value);
+    }
+
+    pub fn set_input_text(&mut self, text: &str) {
+        pyxel::input_text().clear();
+        self.add_input_text(text);
+    }
+
+    pub fn set_dropped_files(&mut self, files: &[&str]) {
+        pyxel::dropped_files().clear();
+        for file in files {
+            self.add_dropped_file(file);
         }
     }
 

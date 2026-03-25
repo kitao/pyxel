@@ -1643,12 +1643,46 @@ def mouse(visible: bool) -> None:
     """
     ...
 
-def warp_mouse(x: float, y: float) -> None:
-    """Move the mouse cursor to the specified position.
+def set_btn(key: int, state: bool) -> None:
+    """Set the press/release state of the specified key. Mainly for headless mode input simulation.
+
+    Args:
+        key: Target key
+        state: True for press, False for release
+    """
+    ...
+
+def set_btnv(key: int, val: int) -> None:
+    """Set the analog value of the specified key. Mainly for headless mode input simulation.
+
+    Args:
+        key: Target key
+        val: Analog value to set
+    """
+    ...
+
+def set_mouse_pos(x: float, y: float) -> None:
+    """Set the mouse cursor position. Mainly for headless mode input simulation.
 
     Args:
         x: X coordinate
         y: Y coordinate
+    """
+    ...
+
+def set_input_text(text: str) -> None:
+    """Set the text input for the current frame. Replaces any existing text. Mainly for headless mode input simulation.
+
+    Args:
+        text: Text input
+    """
+    ...
+
+def set_dropped_files(files: List[str]) -> None:
+    """Set the dropped file list for the current frame. Replaces any existing list. Mainly for headless mode input simulation.
+
+    Args:
+        files: List of file paths
     """
     ...
 

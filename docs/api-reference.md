@@ -290,14 +290,48 @@ Return the analog value of the specified key (e.g., gamepad axis value).
 
 **Returns:** `int` — Analog value of the key
 
-### `warp_mouse(x, y)` — function *(Advanced)*
+### `set_btn(key, state)` — function *(Advanced)*
 
-Move the mouse cursor to the specified position.
+Set the press/release state of the specified key. Mainly for headless mode input simulation.
+
+**Parameters:**
+
+- `key` (*int*) — Target key
+- `state` (*bool*) — True for press, False for release
+
+### `set_btnv(key, val)` — function *(Advanced)*
+
+Set the analog value of the specified key. Mainly for headless mode input simulation.
+
+**Parameters:**
+
+- `key` (*int*) — Target key
+- `val` (*int*) — Analog value to set
+
+### `set_mouse_pos(x, y)` — function *(Advanced)*
+
+Set the mouse cursor position. Mainly for headless mode input simulation.
 
 **Parameters:**
 
 - `x` (*float*) — X coordinate
 - `y` (*float*) — Y coordinate
+
+### `set_input_text(text)` — function *(Advanced)*
+
+Set the text input for the current frame. Replaces any existing text. Mainly for headless mode input simulation.
+
+**Parameters:**
+
+- `text` (*str*) — Text input
+
+### `set_dropped_files(files)` — function *(Advanced)*
+
+Set the dropped file list for the current frame. Replaces any existing list. Mainly for headless mode input simulation.
+
+**Parameters:**
+
+- `files` (*List[str]*) — List of file paths
 
 ### Key Constants
 
