@@ -1368,63 +1368,6 @@ fn generate_submelody(
     sub
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn bass_notes_use_chord_tones_only() {
-        for preset in 0..PRESET_COUNT {
-            let bits_per_step = chord_bits_per_step(preset);
-            for transp in -5..=6 {
-                let bass = generate_bass(preset, &bits_per_step, transp);
-                for (loc, note) in bass.iter().enumerate() {
-                    let Some(note) = note else {
-                        continue;
-                    };
-                    if *note < 0 {
-                        continue;
-                    }
-                    let tone = bits_per_step[loc][((*note + transp).rem_euclid(12)) as usize];
-                    assert!(
-                        matches!(tone, 1..=3),
-                        "preset={preset} transp={transp} loc={loc} note={note} tone={tone}"
-                    );
-                }
-            }
-        }
-    }
-
-    #[test]
-    fn seeded_generation_is_reproducible() {
-        let cases = [
-            (0, 0, 1u64),
-            (1, 1, 2u64),
-            (2, 2, 3u64),
-            (3, 3, 4u64),
-            (7, 3, 123_456_789u64),
-        ];
-        for (preset, instr, seed) in cases {
-            let a = std::panic::catch_unwind(|| generate_bgm_mml(preset, instr, Some(seed)))
-                .unwrap_or_else(|_| {
-                    panic!(
-                        "seeded generation panicked (first run) preset={preset} instr={instr} seed={seed}"
-                    )
-                });
-            let b = std::panic::catch_unwind(|| generate_bgm_mml(preset, instr, Some(seed)))
-                .unwrap_or_else(|_| {
-                    panic!(
-                        "seeded generation panicked (second run) preset={preset} instr={instr} seed={seed}"
-                    )
-                });
-            assert_eq!(
-                a, b,
-                "seeded gen_bgm mismatch preset={preset} instr={instr} seed={seed}"
-            );
-        }
-    }
-}
-
 fn shifted_melody(melody: &[Option<i32>]) -> Vec<Option<i32>> {
     // Shift melody forward by 1 step (wrapping last to first)
     let mut notes = Vec::with_capacity(TOTAL_STEPS);

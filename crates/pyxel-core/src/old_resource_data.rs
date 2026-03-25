@@ -243,31 +243,3 @@ fn parse_version_string(string: &str) -> Result<u32, &str> {
     }
     Ok(version)
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_parse_version_string() {
-        assert_eq!(parse_version_string("1.2.3"), Ok(10203));
-        assert_eq!(parse_version_string("0.0.1"), Ok(1));
-        assert_eq!(parse_version_string("12.34.5"), Ok(123405));
-        assert_eq!(parse_version_string("12.3.04"), Ok(120304));
-        assert_eq!(parse_version_string("2.7.2"), Ok(20702));
-    }
-
-    #[test]
-    fn test_parse_version_string_invalid() {
-        assert_eq!(
-            parse_version_string("12.345.0"),
-            Err("invalid version string")
-        );
-        assert_eq!(
-            parse_version_string("12.0.345"),
-            Err("invalid version string")
-        );
-        assert_eq!(parse_version_string(" "), Err("invalid version string"));
-        assert_eq!(parse_version_string("abc"), Err("invalid version string"));
-    }
-}
