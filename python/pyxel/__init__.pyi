@@ -1298,9 +1298,7 @@ class Sound:
             pyxel.sounds[0].set_effects("nfnf nvvs")
         """
         ...
-    def mml(
-        self, code: Optional[str] = None, old_syntax: Optional[bool] = None
-    ) -> None:
+    def mml(self, code: Optional[str] = None) -> None:
         """Switch to MML mode with the given MML string. In MML mode, normal parameters such as notes and speed are ignored. For available MML commands, see the Pyxel MML Commands page. Call without arguments to exit MML mode and return to normal mode.
 
         Args:
@@ -1642,6 +1640,15 @@ def mouse(visible: bool) -> None:
 
     Args:
         visible: Show or hide the cursor
+    """
+    ...
+
+def warp_mouse(x: float, y: float) -> None:
+    """Move the mouse cursor to the specified position.
+
+    Args:
+        x: X coordinate
+        y: Y coordinate
     """
     ...
 

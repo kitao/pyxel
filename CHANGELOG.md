@@ -6,6 +6,9 @@
 - Removed unnecessary allocations in rendering and audio
 - Unified editor undo/redo and input handling patterns
 - Optimized drawing hot paths and audio command processing
+- Fixed memory leak in MML playback on channels
+- Fixed tilemap editor selection and viewer rendering
+- Added unit and integration tests for core modules
 
 ## 2.8.8
 

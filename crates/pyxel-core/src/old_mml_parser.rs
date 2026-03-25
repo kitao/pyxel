@@ -341,3 +341,195 @@ fn add_note(sound: &mut Sound, note_info: &NoteInfo) {
     repeat_extend!(&mut sound.notes, -1, num_rests);
     repeat_extend!(&mut sound.effects, EFFECT_NONE, num_rests);
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn first_midi_note(commands: &[MmlCommand]) -> Option<u32> {
+        commands.iter().find_map(|c| match c {
+            MmlCommand::Note { midi_note, .. } => Some(*midi_note),
+            _ => None,
+        })
+    }
+
+    fn total_ticks(commands: &[MmlCommand]) -> u32 {
+        commands
+            .iter()
+            .map(|c| match c {
+                MmlCommand::Note { duration_ticks, .. } => *duration_ticks,
+                MmlCommand::Rest { duration_ticks } => *duration_ticks,
+                _ => 0,
+            })
+            .sum()
+    }
+
+    fn note_count(commands: &[MmlCommand]) -> usize {
+        commands
+            .iter()
+            .filter(|c| matches!(c, MmlCommand::Note { .. }))
+            .count()
+    }
+
+    #[test]
+    fn test_parse_errors() {
+        let cases = [
+            ("z", "Invalid command"),
+            ("o5", "Invalid octave"),
+            ("o4>", "Octave exceeded maximum"),
+            ("o0<", "Octave exceeded minimum"),
+            ("@4", "Invalid tone"),
+            ("v8", "Invalid volume"),
+            ("q0", "Invalid quantize"),
+            ("c3", "Invalid note length"),
+            ("tc", "Missing value"),
+            ("x8c", "Invalid envelope"),
+        ];
+        for (input, expected) in cases {
+            let result = parse_old_mml(input);
+            assert!(result.is_err(), "Expected error for '{input}'");
+            let err = result.unwrap_err();
+            assert!(
+                err.contains(expected),
+                "For '{input}': expected '{expected}' in '{err}'"
+            );
+        }
+    }
+
+    #[test]
+    fn test_parse_basic() {
+        // Inputs that should parse successfully and produce notes
+        let inputs = [
+            "c",
+            "cde",
+            "c#",
+            "c-",
+            "r",
+            "t120c",
+            "v3c",
+            "@1c",
+            "x0:7654321c",
+            "c&c",
+        ];
+        for input in inputs {
+            let commands = parse_old_mml(input).unwrap_or_else(|e| panic!("'{input}' failed: {e}"));
+            assert!(total_ticks(&commands) > 0, "'{input}' produced no ticks");
+        }
+    }
+
+    #[test]
+    fn test_empty_string() {
+        let commands = parse_old_mml("").unwrap();
+        assert_eq!(total_ticks(&commands), 0);
+    }
+
+    #[test]
+    fn test_note_midi_values() {
+        // Default octave=2, Wavetable base_note=36: midi = semitone + 24 + 36
+        let cases = [
+            ("c", 60),
+            ("c#", 61),
+            ("c-", 59),
+            ("d", 62),
+            ("e", 64),
+            ("f", 65),
+            ("g", 67),
+            ("a", 69),
+            ("b", 71),
+        ];
+        for (input, expected) in cases {
+            let commands = parse_old_mml(input).unwrap();
+            assert_eq!(
+                first_midi_note(&commands),
+                Some(expected),
+                "midi_note mismatch for '{input}'"
+            );
+        }
+    }
+
+    #[test]
+    fn test_all_note_names() {
+        let commands = parse_old_mml("cdefgab").unwrap();
+        assert!(
+            note_count(&commands) >= 7,
+            "Expected at least 7 Note commands, got {}",
+            note_count(&commands)
+        );
+    }
+
+    #[test]
+    fn test_octave_command() {
+        // Wavetable base=36: o2 C = 0+24+36 = 60, o3 C = 0+36+36 = 72
+        let midi_o2 = first_midi_note(&parse_old_mml("o2c").unwrap()).unwrap();
+        let midi_o3 = first_midi_note(&parse_old_mml("o3c").unwrap()).unwrap();
+        assert_eq!(midi_o2, 60);
+        assert_eq!(midi_o3, 72);
+        assert_eq!(midi_o3 - midi_o2, 12);
+    }
+
+    #[test]
+    fn test_octave_up_down() {
+        // o2> = octave 3 → C = 72, o2>>< = octave 3 → C = 72
+        let midi_up = first_midi_note(&parse_old_mml("o2>c").unwrap()).unwrap();
+        let midi_cancel = first_midi_note(&parse_old_mml("o2>><c").unwrap()).unwrap();
+        assert_eq!(midi_up, 72);
+        assert_eq!(midi_up, midi_cancel);
+    }
+
+    #[test]
+    fn test_length_command() {
+        // L8 = 32/8 = 4 ticks, L4 = 32/4 = 8 ticks
+        let ticks_l8 = total_ticks(&parse_old_mml("l8c").unwrap());
+        let ticks_l4 = total_ticks(&parse_old_mml("l4c").unwrap());
+        assert!(
+            ticks_l4 > ticks_l8,
+            "L4 ({ticks_l4}) should be longer than L8 ({ticks_l8})"
+        );
+    }
+
+    #[test]
+    fn test_dotted_note() {
+        // c4. = quarter + eighth = 12 ticks vs c4 = 8 ticks
+        let ticks_dotted = total_ticks(&parse_old_mml("c4.").unwrap());
+        let ticks_plain = total_ticks(&parse_old_mml("c4").unwrap());
+        assert!(
+            ticks_dotted > ticks_plain,
+            "Dotted ({ticks_dotted}) should be longer than plain ({ticks_plain})"
+        );
+    }
+
+    #[test]
+    fn test_rest_between_notes() {
+        let commands = parse_old_mml("crc").unwrap();
+        let has_note = commands
+            .iter()
+            .any(|c| matches!(c, MmlCommand::Note { .. }));
+        let has_rest = commands
+            .iter()
+            .any(|c| matches!(c, MmlCommand::Rest { .. }));
+        assert!(has_note);
+        assert!(has_rest);
+    }
+
+    #[test]
+    fn test_vibrato_command() {
+        let commands = parse_old_mml("c~d").unwrap();
+        let has_vibrato = commands
+            .iter()
+            .any(|c| matches!(c, MmlCommand::VibratoSet { .. }));
+        assert!(has_vibrato);
+    }
+
+    #[test]
+    fn test_whitespace_and_case() {
+        // Whitespace is ignored, commands are case-insensitive
+        let midi_lower = first_midi_note(&parse_old_mml("o2c").unwrap());
+        let midi_upper = first_midi_note(&parse_old_mml("O2C").unwrap());
+        let midi_spaced = first_midi_note(&parse_old_mml(" o2 c ").unwrap());
+        assert_eq!(midi_lower, midi_upper);
+        assert_eq!(midi_lower, midi_spaced);
+
+        let spaced_count = note_count(&parse_old_mml(" c d e ").unwrap());
+        assert!(spaced_count >= 3);
+    }
+}

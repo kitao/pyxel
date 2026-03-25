@@ -398,3 +398,97 @@ impl Screencast {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_new() {
+        let sc = Screencast::new(30, 2);
+        assert_eq!(sc.fps, 30);
+        assert_eq!(sc.max_screens, 60);
+        assert_eq!(sc.screens.len(), 60);
+        assert_eq!(sc.capture_start_index, 0);
+        assert_eq!(sc.num_captured_screens, 0);
+
+        // Each screen starts empty
+        for s in &sc.screens {
+            assert_eq!(s.width, 0);
+            assert_eq!(s.height, 0);
+            assert!(s.image.is_empty());
+            assert!(s.colors.is_empty());
+            assert_eq!(s.frame_count, 0);
+        }
+    }
+
+    #[test]
+    fn test_reset() {
+        let mut sc = Screencast::new(30, 1);
+        let image = vec![0u8; 4];
+        let colors = vec![0x000000u32; 16];
+        sc.capture(2, 2, &image, &colors, 1);
+        sc.capture(2, 2, &image, &colors, 2);
+        assert_eq!(sc.num_captured_screens, 2);
+
+        sc.reset();
+        assert_eq!(sc.capture_start_index, 0);
+        assert_eq!(sc.num_captured_screens, 0);
+    }
+
+    #[test]
+    fn test_capture() {
+        let mut sc = Screencast::new(30, 1);
+        let image = vec![1u8, 0, 0, 1];
+        let colors: Vec<Rgb24> = vec![0x000000, 0xff0000];
+        sc.capture(2, 2, &image, &colors, 42);
+
+        assert_eq!(sc.num_captured_screens, 1);
+
+        let screen = &sc.screens[0];
+        assert_eq!(screen.width, 2);
+        assert_eq!(screen.height, 2);
+        assert_eq!(screen.image, vec![1, 0, 0, 1]);
+        assert_eq!(screen.colors, vec![0x000000, 0xff0000]);
+        assert_eq!(screen.frame_count, 42);
+    }
+
+    #[test]
+    fn test_capture_ring_buffer_wraparound() {
+        // Ring buffer of size 3 (fps=1, capture_sec=3)
+        let mut sc = Screencast::new(1, 3);
+
+        let image = vec![0u8; 4];
+        let colors = vec![0x000000u32; 16];
+
+        // Fill all 3 slots
+        sc.capture(2, 2, &image, &colors, 10);
+        sc.capture(2, 2, &image, &colors, 20);
+        sc.capture(2, 2, &image, &colors, 30);
+        assert_eq!(sc.num_captured_screens, 3);
+        assert_eq!(sc.capture_start_index, 0);
+
+        // 4th capture wraps: oldest (frame 10) is evicted
+        sc.capture(2, 2, &image, &colors, 40);
+        assert_eq!(sc.num_captured_screens, 3);
+        assert_eq!(sc.capture_start_index, 1);
+
+        // Verify oldest is now frame 20
+        assert_eq!(sc.screen(0).frame_count, 20);
+        assert_eq!(sc.screen(1).frame_count, 30);
+        assert_eq!(sc.screen(2).frame_count, 40);
+    }
+
+    #[test]
+    fn test_capture_zero_capacity() {
+        // fps=0 means max_screens=0 — capture should be a no-op
+        let mut sc = Screencast::new(0, 5);
+        assert_eq!(sc.max_screens, 0);
+        assert!(sc.screens.is_empty());
+
+        let image = vec![0u8; 4];
+        let colors = vec![0x000000u32; 16];
+        sc.capture(2, 2, &image, &colors, 1);
+        assert_eq!(sc.num_captured_screens, 0);
+    }
+}

@@ -70,3 +70,12 @@ pub use crate::sound::{Sound, SoundEffect, SoundNote, SoundSpeed, SoundTone, Sou
 pub use crate::system::PyxelCallback;
 pub use crate::tilemap::{ImageSource, ImageTileCoord, Tile, Tilemap};
 pub use crate::tone::{Tone, ToneGain, ToneMode, ToneSample};
+
+#[cfg(test)]
+pub(crate) fn test_init() {
+    use std::sync::Once;
+    static INIT: Once = Once::new();
+    INIT.call_once(|| {
+        init(64, 64, None, None, None, None, None, None, Some(true));
+    });
+}

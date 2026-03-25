@@ -128,13 +128,11 @@ class ImageViewer(Widget):
     def __on_mouse_drag(self, key, x, y, dx, dy):
         if key == pyxel.MOUSE_BUTTON_LEFT:
             if self._is_tilemap_mode:
-                last_focus_x = self.focus_x_var
-                last_focus_y = self.focus_y_var
                 new_x, new_y = self._screen_to_focus(x, y)
                 self.focus_w_var = min(abs(new_x - self._press_x) + 1, 8)
                 self.focus_h_var = min(abs(new_y - self._press_y) + 1, 8)
-                self.focus_x_var = min(new_x, last_focus_x)
-                self.focus_y_var = min(new_y, last_focus_y)
+                self.focus_x_var = min(new_x, self._press_x)
+                self.focus_y_var = min(new_y, self._press_y)
             else:
                 self.__on_mouse_down(key, x, y)
         elif key == pyxel.MOUSE_BUTTON_RIGHT:

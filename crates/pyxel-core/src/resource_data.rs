@@ -267,3 +267,50 @@ impl ResourceData {
         toml::to_string(&view).unwrap()
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_from_toml_minimal() {
+        // Minimal valid TOML with empty arrays
+        let toml_text = "\
+format_version = 1\n\
+images = []\n\
+tilemaps = []\n\
+sounds = []\n\
+musics = []\n";
+        let data = ResourceData::from_toml(toml_text).expect("should parse minimal TOML");
+        assert_eq!(data.format_version, 1);
+        assert!(data.images.is_empty());
+        assert!(data.tilemaps.is_empty());
+        assert!(data.sounds.is_empty());
+        assert!(data.musics.is_empty());
+    }
+
+    #[test]
+    fn test_from_toml_invalid() {
+        // Completely invalid TOML
+        let result = ResourceData::from_toml("{{not valid toml");
+        assert!(result.is_err());
+
+        // Valid TOML but missing required fields
+        let result = ResourceData::from_toml("format_version = 1\n");
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn test_roundtrip() {
+        crate::test_init();
+        let original = ResourceData::from_runtime(crate::pyxel());
+        assert_eq!(original.format_version, 1);
+        let toml_text = original.to_toml(false, false, false, false);
+        let restored = ResourceData::from_toml(&toml_text).expect("should parse roundtripped TOML");
+        assert_eq!(restored.format_version, original.format_version);
+        assert_eq!(restored.images.len(), original.images.len());
+        assert_eq!(restored.tilemaps.len(), original.tilemaps.len());
+        assert_eq!(restored.sounds.len(), original.sounds.len());
+        assert_eq!(restored.musics.len(), original.musics.len());
+    }
+}

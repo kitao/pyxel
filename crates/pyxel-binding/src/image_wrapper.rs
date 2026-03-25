@@ -104,7 +104,7 @@ impl Image {
     }
 
     fn save(&self, filename: &str, scale: u32) -> PyResult<()> {
-        self.inner_mut()
+        self.inner_ref()
             .save(filename, scale)
             .map_err(PyException::new_err)
     }
@@ -156,7 +156,7 @@ impl Image {
     }
 
     fn pget(&self, x: f32, y: f32) -> pyxel::Color {
-        self.inner_mut().get_pixel(x, y)
+        self.inner_ref().get_pixel(x, y)
     }
 
     fn pset(&self, x: f32, y: f32, col: pyxel::Color) {

@@ -120,10 +120,6 @@ class SoundEditor(EditorBase):
         self.add_event_listener("update", self.__on_update)
         self.add_event_listener("draw", self.__on_draw)
 
-    @property
-    def keyboard_note(self):
-        return self._piano_keyboard.note
-
     def get_field(self, index):
         if 0 <= index < len(_SOUND_FIELDS):
             return getattr(pyxel.sounds[self.sound_index_var], _SOUND_FIELDS[index])

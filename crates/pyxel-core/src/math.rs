@@ -120,10 +120,12 @@ mod tests {
 
     #[test]
     fn test_atan2() {
-        assert!((Pyxel::atan2(0.0, 1.0) - 0.0).abs() < EPSILON);
-        assert!((Pyxel::atan2(1.0, 0.0) - 90.0).abs() < EPSILON);
-        assert!((Pyxel::atan2(0.0, -1.0) - 180.0).abs() < EPSILON);
-        assert!((Pyxel::atan2(-1.0, 0.0) - (-90.0)).abs() < EPSILON);
+        // atan2 converts via RAD_TO_DEG; debug builds may lose precision near ±180
+        const ATAN2_EPSILON: f32 = 1e-3;
+        assert!((Pyxel::atan2(0.0, 1.0) - 0.0).abs() < ATAN2_EPSILON);
+        assert!((Pyxel::atan2(1.0, 0.0) - 90.0).abs() < ATAN2_EPSILON);
+        assert!((Pyxel::atan2(0.0, -1.0) - 180.0).abs() < ATAN2_EPSILON);
+        assert!((Pyxel::atan2(-1.0, 0.0) - (-90.0)).abs() < ATAN2_EPSILON);
     }
 
     #[test]

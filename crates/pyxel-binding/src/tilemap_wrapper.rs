@@ -146,7 +146,7 @@ impl Tilemap {
     }
 
     fn pget(&self, x: f32, y: f32) -> pyxel::Tile {
-        self.inner_mut().get_tile(x, y)
+        self.inner_ref().get_tile(x, y)
     }
 
     fn pset(&self, x: f32, y: f32, tile: pyxel::Tile) {

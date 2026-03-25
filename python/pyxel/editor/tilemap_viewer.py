@@ -15,7 +15,7 @@ class TilemapViewer(Widget):
 
     def __init__(self, parent):
         super().__init__(parent, 157, 16, 66, 65)
-        self._tilemap_image = pyxel.Image(64, 63)
+        self._tilemap_image = pyxel.Image(64, 64)
         self.copy_var("tilemap_index_var", parent)
         self.copy_var("help_message_var", parent)
 
