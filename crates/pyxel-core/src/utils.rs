@@ -109,7 +109,7 @@ pub fn trim_empty_vecs<T: Clone>(vecs: &[Vec<T>]) -> Vec<Vec<T>> {
 mod tests {
     use super::*;
 
-    // f32_to_i32 / f32_to_u32
+    // ── f32_to_i32 / f32_to_u32 ──
 
     #[test]
     fn test_f32_to_i32() {
@@ -133,7 +133,7 @@ mod tests {
         assert_eq!(f32_to_u32(-3.0), 0);
     }
 
-    // String functions
+    // ── String functions ──
 
     #[test]
     fn test_remove_whitespace() {
@@ -162,6 +162,18 @@ mod tests {
     }
 
     #[test]
+    fn test_parse_hex_string_edge_cases() {
+        // Empty string
+        assert_eq!(parse_hex_string(""), Ok(0));
+        // Single digit
+        assert_eq!(parse_hex_string("F"), Ok(15));
+        // u32 max value
+        assert_eq!(parse_hex_string("FFFFFFFF"), Ok(u32::MAX));
+        // Mixed case in same string
+        assert_eq!(parse_hex_string("aB"), Ok(0xAB));
+    }
+
+    #[test]
     fn test_add_file_extension() {
         assert_eq!(add_file_extension("test", ".png"), "test.png");
         assert_eq!(add_file_extension("test.png", ".png"), "test.png");
@@ -169,7 +181,17 @@ mod tests {
         assert_eq!(add_file_extension("test.txt", ".png"), "test.txt.png");
     }
 
-    // Macros
+    #[test]
+    fn test_add_file_extension_edge_cases() {
+        // Empty filename
+        assert_eq!(add_file_extension("", ".png"), ".png");
+        // Partial extension match (should NOT match)
+        assert_eq!(add_file_extension("test.pn", ".png"), "test.pn.png");
+        // Extension only
+        assert_eq!(add_file_extension(".png", ".png"), ".png");
+    }
+
+    // ── Macros ──
 
     #[test]
     fn test_string_loop() {
@@ -181,7 +203,18 @@ mod tests {
         assert_eq!(result, vec!["AB", "CD", "EF"]);
     }
 
-    // Vec compress/expand/trim
+    #[test]
+    fn test_repeat_extend() {
+        let mut v = vec![1, 2];
+        repeat_extend!(v, 0, 3);
+        assert_eq!(v, vec![1, 2, 0, 0, 0]);
+
+        let mut v: Vec<i32> = Vec::new();
+        repeat_extend!(v, 42, 0);
+        assert!(v.is_empty());
+    }
+
+    // ── Vec compress/expand/trim ──
 
     #[test]
     fn test_compress_vec() {
@@ -189,6 +222,11 @@ mod tests {
         assert_eq!(compress_vec(&[4, 4, 4, 4, 4]), vec![4]);
         assert_eq!(compress_vec(&[2]), vec![2]);
         assert_eq!(compress_vec(&[1, 2, 3]), vec![1, 2, 3]);
+    }
+
+    #[test]
+    fn test_compress_vec_two_distinct() {
+        assert_eq!(compress_vec(&[1, 2]), vec![1, 2]);
     }
 
     #[test]
@@ -205,6 +243,11 @@ mod tests {
         assert_eq!(expand_vec(&[1, 2, 3], 5), vec![1, 2, 3, 3, 3]);
         assert_eq!(expand_vec(&[4], 3), vec![4, 4, 4]);
         assert_eq!(expand_vec(&[1, 2, 3], 2), vec![1, 2]);
+    }
+
+    #[test]
+    fn test_expand_vec_same_length() {
+        assert_eq!(expand_vec(&[1, 2, 3], 3), vec![1, 2, 3]);
     }
 
     #[test]
@@ -226,6 +269,12 @@ mod tests {
             ),
             vec![vec![1, 2], vec![4, 5], vec![7, 8]]
         );
+    }
+
+    #[test]
+    fn test_expand_vec2_same_dimensions() {
+        let input = vec![vec![1, 2], vec![3, 4]];
+        assert_eq!(expand_vec2(&input, 2, 2), input);
     }
 
     #[test]
