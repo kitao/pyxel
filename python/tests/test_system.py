@@ -94,7 +94,13 @@ class TestConstants:
 
     def test_color_constants_contiguous(self):
         for i in range(16):
-            assert getattr(pyxel, f"COLOR_{['BLACK','NAVY','PURPLE','GREEN','BROWN','DARK_BLUE','LIGHT_BLUE','WHITE','RED','ORANGE','YELLOW','LIME','CYAN','GRAY','PINK','PEACH'][i]}") == i
+            assert (
+                getattr(
+                    pyxel,
+                    f"COLOR_{['BLACK', 'NAVY', 'PURPLE', 'GREEN', 'BROWN', 'DARK_BLUE', 'LIGHT_BLUE', 'WHITE', 'RED', 'ORANGE', 'YELLOW', 'LIME', 'CYAN', 'GRAY', 'PINK', 'PEACH'][i]}",
+                )
+                == i
+            )
 
     def test_tone_constants(self):
         assert pyxel.TONE_TRIANGLE == 0

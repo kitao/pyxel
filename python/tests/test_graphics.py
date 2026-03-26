@@ -208,9 +208,7 @@ class TestBlt:
         pyxel.blt(80, 60, 0, 0, 0, 8, 8, rotate=45)
         # After rotation, pixels should be drawn somewhere near (80, 60)
         has_drawn = any(
-            pyxel.pget(x, y) == 7
-            for x in range(70, 90)
-            for y in range(50, 70)
+            pyxel.pget(x, y) == 7 for x in range(70, 90) for y in range(50, 70)
         )
         assert has_drawn
 
@@ -320,9 +318,7 @@ class TestText:
         pyxel.cls(0)
         pyxel.text(0, 0, "A\nB", 7)
         has_first = any(pyxel.pget(x, y) == 7 for x in range(4) for y in range(6))
-        has_second = any(
-            pyxel.pget(x, y) == 7 for x in range(4) for y in range(6, 12)
-        )
+        has_second = any(pyxel.pget(x, y) == 7 for x in range(4) for y in range(6, 12))
         assert has_first
         assert has_second
 

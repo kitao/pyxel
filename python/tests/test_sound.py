@@ -75,7 +75,12 @@ class TestSound:
     def test_set_verifies_effects(self):
         snd = pyxel.Sound()
         snd.set("c2e2g2c3", "ssss", "7777", "nsvf", 10)
-        assert list(snd.effects) == [0, 1, 2, 3]  # n=None, s=Slide, v=Vibrato, f=FadeOut
+        assert list(snd.effects) == [
+            0,
+            1,
+            2,
+            3,
+        ]  # n=None, s=Slide, v=Vibrato, f=FadeOut
 
     def test_set_all_effect_types(self):
         snd = pyxel.Sound()
