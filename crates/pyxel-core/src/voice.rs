@@ -881,7 +881,11 @@ mod tests {
         // Re-enable → continues from where it was
         env.enable();
         env.advance_tick(1);
-        assert!(env.level() > 0.5, "re-enabled should continue: {}", env.level());
+        assert!(
+            env.level() > 0.5,
+            "re-enabled should continue: {}",
+            env.level()
+        );
     }
 
     #[test]

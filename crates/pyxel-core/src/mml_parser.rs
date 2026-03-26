@@ -750,7 +750,7 @@ mod tests {
     fn test_octave_boundaries() {
         let cmds = parse("O-1 C O9 B");
         let notes = note_commands(&cmds);
-        assert_eq!(notes[0].0, 0);   // C at O-1: (-1+1)*12+0 = 0
+        assert_eq!(notes[0].0, 0); // C at O-1: (-1+1)*12+0 = 0
         assert_eq!(notes[1].0, 131); // B at O9: (9+1)*12+11 = 131
     }
 
@@ -770,7 +770,7 @@ mod tests {
         let cmds = parse("C1 C192");
         let notes = note_commands(&cmds);
         assert_eq!(notes[0].1, 192); // whole note (longest)
-        assert_eq!(notes[1].1, 1);   // shortest possible
+        assert_eq!(notes[1].1, 1); // shortest possible
     }
 
     #[test]
@@ -914,9 +914,9 @@ mod tests {
     fn test_volume_value() {
         // V127 → level = 1.0
         let cmds = parse("V127 C");
-        assert!(cmds.iter().any(
-            |cmd| matches!(cmd, MmlCommand::Volume { level } if (*level - 1.0).abs() < 1e-4)
-        ));
+        assert!(cmds
+            .iter()
+            .any(|cmd| matches!(cmd, MmlCommand::Volume { level } if (*level - 1.0).abs() < 1e-4)));
 
         // V0 → level = 0.0
         let cmds = parse("V0 C");
@@ -1199,10 +1199,7 @@ mod tests {
         let cmds = parse("T120 C4");
         let sec = calc_commands_sec(&cmds).unwrap();
         // Quarter note at 120 BPM ≈ 0.5 seconds
-        assert!(
-            (sec - 0.5).abs() < 0.001,
-            "expected ~0.5, got {sec}"
-        );
+        assert!((sec - 0.5).abs() < 0.001, "expected ~0.5, got {sec}");
     }
 
     #[test]
@@ -1210,10 +1207,7 @@ mod tests {
         let cmds = parse("T120 C4 T60 C4");
         let sec = calc_commands_sec(&cmds).unwrap();
         // 0.5s (120bpm quarter) + 1.0s (60bpm quarter) ≈ 1.5s
-        assert!(
-            (sec - 1.5).abs() < 0.01,
-            "expected ~1.5, got {sec}"
-        );
+        assert!((sec - 1.5).abs() < 0.01, "expected ~1.5, got {sec}");
     }
 
     #[test]
