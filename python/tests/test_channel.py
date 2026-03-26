@@ -44,6 +44,27 @@ class TestChannel:
         ch = pyxel.Channel()
         ch.play("T120 O4 L4 CDEF")
 
+    def test_play_with_loop(self):
+        snd = pyxel.Sound()
+        snd.set("c2e2g2", "sss", "777", "nnn", 10)
+        ch = pyxel.Channel()
+        ch.play(snd, loop=True)
+        ch.stop()
+
+    def test_play_with_resume(self):
+        snd = pyxel.Sound()
+        snd.set("c2e2g2", "sss", "777", "nnn", 10)
+        ch = pyxel.Channel()
+        ch.play(snd, resume=True)
+        ch.stop()
+
+    def test_play_with_sec(self):
+        snd = pyxel.Sound()
+        snd.set("c2e2g2", "sss", "777", "nnn", 10)
+        ch = pyxel.Channel()
+        ch.play(snd, sec=0.5)
+        ch.stop()
+
     def test_stop(self):
         ch = pyxel.Channel()
         ch.play("T120 O4 L4 CDEF")

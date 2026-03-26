@@ -8,7 +8,7 @@
 - Optimized drawing hot paths and audio command processing
 - Fixed memory leak in MML playback on channels
 - Fixed tilemap editor selection and viewer rendering
-- Added Python API tests and Rust unit tests
+- Added comprehensive Python API and Rust unit tests
 - Improved headless mode with full frame pipeline and input injection APIs
 
 ## 2.8.8

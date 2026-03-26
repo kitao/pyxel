@@ -215,3 +215,126 @@ class TestText:
         pyxel.text(0, 0, "A", 7, font)
         has_text = any(pyxel.pget(x, y) == 7 for x in range(20) for y in range(20))
         assert has_text
+
+
+class TestScreenBuffer:
+    def test_screen_reflects_drawing(self):
+        pyxel.cls(0)
+        pyxel.pset(5, 5, 9)
+        assert pyxel.screen.pget(5, 5) == 9
+
+    def test_screen_writable(self):
+        pyxel.cls(0)
+        pyxel.screen.pset(10, 10, 3)
+        assert pyxel.pget(10, 10) == 3
+
+    def test_screen_dimensions_match(self):
+        assert pyxel.screen.width == pyxel.width
+        assert pyxel.screen.height == pyxel.height
+
+
+class TestDrawingStateEdgeCases:
+    def test_dither_zero_draws_nothing(self):
+        pyxel.cls(0)
+        pyxel.dither(0.0)
+        pyxel.rect(0, 0, 160, 120, 7)
+        pyxel.dither(1.0)
+        drawn = sum(1 for x in range(20) for y in range(20) if pyxel.pget(x, y) == 7)
+        assert drawn == 0
+
+    def test_dither_one_draws_all(self):
+        pyxel.cls(0)
+        pyxel.dither(1.0)
+        pyxel.rect(0, 0, 20, 20, 7)
+        drawn = sum(1 for x in range(20) for y in range(20) if pyxel.pget(x, y) == 7)
+        assert drawn == 400
+
+    def test_pal_chained(self):
+        pyxel.cls(0)
+        pyxel.pal(7, 8)  # 7 -> 8
+        pyxel.pal(5, 9)  # 5 -> 9
+        pyxel.pset(0, 0, 7)
+        pyxel.pset(1, 0, 5)
+        pyxel.pal()
+        assert pyxel.pget(0, 0) == 8
+        assert pyxel.pget(1, 0) == 9
+
+    def test_clip_and_camera_interaction(self):
+        pyxel.cls(0)
+        pyxel.camera(10, 10)
+        pyxel.clip(0, 0, 5, 5)
+        pyxel.rect(10, 10, 20, 20, 7)  # With camera offset -> draws at (0,0)
+        pyxel.clip()
+        pyxel.camera()
+        assert pyxel.pget(2, 2) == 7  # Inside clip
+        assert pyxel.pget(10, 10) == 0  # Outside clip
+
+    def test_text_multiline(self):
+        pyxel.cls(0)
+        pyxel.text(0, 0, "A\nB", 7)
+        # First line
+        has_first = any(pyxel.pget(x, y) == 7 for x in range(4) for y in range(6))
+        # Second line (6px below)
+        has_second = any(
+            pyxel.pget(x, y) == 7 for x in range(4) for y in range(6, 12)
+        )
+        assert has_first
+        assert has_second
+
+
+class TestBlt3dOptionalParams:
+    def test_blt3d_with_fov(self):
+        pyxel.cls(0)
+        pyxel.blt3d(0, 0, 160, 120, 0, (0, 0, 10), (0, 0, 0), fov=60.0)
+
+    def test_blt3d_with_colkey(self):
+        pyxel.cls(0)
+        pyxel.blt3d(0, 0, 160, 120, 0, (0, 0, 10), (0, 0, 0), colkey=0)
+
+    def test_blt3d_with_fov_and_colkey(self):
+        pyxel.cls(0)
+        pyxel.blt3d(0, 0, 160, 120, 0, (0, 0, 10), (0, 0, 0), fov=90.0, colkey=0)
+
+    def test_bltm3d_with_fov_and_colkey(self):
+        pyxel.cls(0)
+        pyxel.bltm3d(0, 0, 160, 120, 0, (0, 0, 10), (0, 0, 0), fov=90.0, colkey=0)
+
+
+class TestBltRotateScale:
+    def test_blt_rotate_only(self):
+        pyxel.cls(0)
+        pyxel.blt(0, 0, 0, 0, 0, 8, 8, rotate=90)
+
+    def test_blt_scale_only(self):
+        pyxel.cls(0)
+        pyxel.blt(0, 0, 0, 0, 0, 8, 8, scale=2)
+
+    def test_bltm_rotate_only(self):
+        pyxel.cls(0)
+        pyxel.bltm(0, 0, 0, 0, 0, 64, 64, rotate=45)
+
+    def test_bltm_scale_only(self):
+        pyxel.cls(0)
+        pyxel.bltm(0, 0, 0, 0, 0, 64, 64, scale=2)
+
+
+class TestBltFlip:
+    def test_blt_negative_w_flips_horizontal(self):
+        pyxel.cls(0)
+        pyxel.images[0].cls(0)
+        pyxel.images[0].pset(0, 0, 7)
+        pyxel.images[0].pset(7, 0, 5)
+        # Negative w flips horizontally
+        pyxel.blt(0, 0, 0, 0, 0, -8, 8)
+        # After horizontal flip, pixel at (7,0) in source -> (0,0) on screen
+        assert pyxel.pget(0, 0) == 5
+
+    def test_blt_negative_h_flips_vertical(self):
+        pyxel.cls(0)
+        pyxel.images[0].cls(0)
+        pyxel.images[0].pset(0, 0, 7)
+        pyxel.images[0].pset(0, 7, 5)
+        # Negative h flips vertically
+        pyxel.blt(0, 0, 0, 0, 0, 8, -8)
+        # After vertical flip, pixel at (0,7) in source -> (0,0) on screen
+        assert pyxel.pget(0, 0) == 5

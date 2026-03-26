@@ -40,6 +40,28 @@ class TestPlaym:
         pyxel.stop()
 
 
+class TestPlayOptions:
+    def test_play_with_loop(self):
+        pyxel.sounds[0].set("c2e2g2", "sss", "777", "nnn", 10)
+        pyxel.play(3, 0, loop=True)
+        pyxel.stop(3)
+
+    def test_play_with_resume(self):
+        pyxel.sounds[0].set("c2e2g2", "sss", "777", "nnn", 10)
+        pyxel.play(3, 0, resume=True)
+        pyxel.stop(3)
+
+    def test_play_with_sec(self):
+        pyxel.sounds[0].set("c2e2g2", "sss", "777", "nnn", 10)
+        pyxel.play(3, 0, sec=0.5)
+        pyxel.stop(3)
+
+    def test_playm_with_sec(self):
+        pyxel.musics[0].set([0])
+        pyxel.playm(0, sec=0.5)
+        pyxel.stop()
+
+
 class TestStop:
     def test_stop_all(self):
         pyxel.stop()
@@ -65,3 +87,19 @@ class TestGenBgm:
         result1 = pyxel.gen_bgm(0, 0, seed=42)
         result2 = pyxel.gen_bgm(0, 0, seed=42)
         assert result1 == result2
+
+    def test_different_presets(self):
+        # Verify all preset indices work (0-7)
+        for preset in range(8):
+            result = pyxel.gen_bgm(preset, 0, seed=1)
+            assert isinstance(result, list)
+
+    def test_gen_bgm_play(self):
+        pyxel.gen_bgm(0, 0, seed=1, play=True)
+        pyxel.stop()
+
+    def test_gen_bgm_different_instr(self):
+        for instr in range(3):
+            result = pyxel.gen_bgm(0, instr, seed=1)
+            assert isinstance(result, list)
+            assert len(result) > 0

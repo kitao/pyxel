@@ -96,6 +96,20 @@ class TestRandom:
             assert 0.0 <= val <= 1.0
             assert isinstance(val, float)
 
+    def test_rseed_reproducible(self):
+        pyxel.rseed(99)
+        seq1 = [pyxel.rndi(0, 1000) for _ in range(10)]
+        pyxel.rseed(99)
+        seq2 = [pyxel.rndi(0, 1000) for _ in range(10)]
+        assert seq1 == seq2
+
+    def test_rseed_different_seeds_differ(self):
+        pyxel.rseed(1)
+        seq1 = [pyxel.rndi(0, 1000) for _ in range(10)]
+        pyxel.rseed(2)
+        seq2 = [pyxel.rndi(0, 1000) for _ in range(10)]
+        assert seq1 != seq2
+
 
 # Noise
 class TestNoise:
@@ -110,3 +124,11 @@ class TestNoise:
         pyxel.nseed(42)
         val2 = pyxel.noise(1.0, 2.0, 3.0)
         assert val1 == val2
+
+    def test_noise_1d(self):
+        val = pyxel.noise(0.5)
+        assert -1.0 <= val <= 1.0
+
+    def test_noise_2d(self):
+        val = pyxel.noise(0.5, 0.3)
+        assert -1.0 <= val <= 1.0

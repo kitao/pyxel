@@ -165,3 +165,43 @@ class TestTilemap:
         tm.pset(2, 0, wall_tile)  # Place a wall
         dx, dy = tm.collide(0, 0, 8, 8, 100.0, 0.0, [wall_tile])
         assert dx < 100.0  # Should be blocked
+
+    def test_collide_vertical(self):
+        tm = pyxel.Tilemap(8, 8, 0)
+        tm.cls((0, 0))
+        wall_tile = (1, 0)
+        tm.pset(0, 2, wall_tile)  # Wall below
+        dx, dy = tm.collide(0, 0, 8, 8, 0.0, 100.0, [wall_tile])
+        assert dy < 100.0  # Should be blocked vertically
+
+    def test_data_ptr(self):
+        tm = pyxel.Tilemap(8, 8, 0)
+        tm.cls((0, 0))
+        tm.pset(0, 0, (1, 2))
+        ptr = tm.data_ptr()
+        # data_ptr returns a ctypes c_uint16 array; tile (1,2) encoded as u16
+        assert ptr[0] != 0  # Should have non-zero value for tile (1,2)
+
+    def test_blt_with_rotate(self):
+        src = pyxel.Tilemap(8, 8, 0)
+        dst = pyxel.Tilemap(8, 8, 0)
+        dst.blt(0, 0, src, 0, 0, 8, 8, rotate=45)
+
+    def test_blt_with_scale(self):
+        src = pyxel.Tilemap(8, 8, 0)
+        dst = pyxel.Tilemap(8, 8, 0)
+        dst.blt(0, 0, src, 0, 0, 8, 8, scale=2)
+
+    def test_collide_multiple_wall_tiles(self):
+        tm = pyxel.Tilemap(8, 8, 0)
+        tm.cls((0, 0))
+        wall1 = (1, 0)
+        wall2 = (2, 0)
+        tm.pset(2, 0, wall1)
+        tm.pset(0, 2, wall2)
+        # Test X-axis block with wall1
+        dx, _ = tm.collide(0, 0, 8, 8, 100.0, 0.0, [wall1, wall2])
+        assert dx < 100.0
+        # Test Y-axis block with wall2
+        _, dy = tm.collide(0, 0, 8, 8, 0.0, 100.0, [wall1, wall2])
+        assert dy < 100.0

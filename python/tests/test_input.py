@@ -23,6 +23,10 @@ class TestInputFunctions:
         result = pyxel.btnv(pyxel.MOUSE_WHEEL_X)
         assert isinstance(result, int)
 
+    def test_mouse_visible(self):
+        pyxel.mouse(True)
+        pyxel.mouse(False)
+
 
 class TestInputAttributes:
     def test_input_text_accessible(self):

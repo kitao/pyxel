@@ -193,3 +193,59 @@ class TestImage:
         img.cls(0)
         tm = pyxel.Tilemap(8, 8, 0)
         img.bltm3d(0, 0, 64, 64, tm, (0, 0, 10), (45, 0, 0))
+
+    def test_data_ptr(self):
+        img = pyxel.Image(8, 8)
+        img.cls(0)
+        img.pset(0, 0, 7)
+        ptr = img.data_ptr()
+        # data_ptr returns a ctypes array; verify it's accessible
+        assert ptr[0] == 7
+        assert ptr[1] == 0
+
+    def test_from_image_with_include_colors(self, assets_dir):
+        original_color0 = pyxel.colors[0]
+        img = pyxel.Image.from_image(
+            os.path.join(assets_dir, "cat_16x16.png"), include_colors=True
+        )
+        assert img.width == 16
+        # Restore palette if changed
+        pyxel.colors[0] = original_color0
+
+    def test_load_with_include_colors(self, assets_dir):
+        original_color0 = pyxel.colors[0]
+        img = pyxel.Image(32, 32)
+        img.load(
+            0, 0, os.path.join(assets_dir, "cat_16x16.png"), include_colors=True
+        )
+        has_nonzero = any(img.pget(x, 0) != 0 for x in range(16))
+        assert has_nonzero
+        pyxel.colors[0] = original_color0
+
+    def test_blt_with_colkey(self):
+        src = pyxel.Image(8, 8)
+        src.cls(0)
+        src.pset(1, 0, 5)
+        dst = pyxel.Image(8, 8)
+        dst.cls(3)
+        dst.blt(0, 0, src, 0, 0, 8, 8, colkey=0)
+        assert dst.pget(0, 0) == 3  # Transparent
+        assert dst.pget(1, 0) == 5  # Copied
+
+    def test_blt_with_rotate(self):
+        img = pyxel.Image(32, 32)
+        img.cls(0)
+        img.blt(0, 0, 0, 0, 0, 8, 8, rotate=90)
+
+    def test_blt_with_scale(self):
+        img = pyxel.Image(32, 32)
+        img.cls(0)
+        img.blt(0, 0, 0, 0, 0, 8, 8, scale=2)
+
+    def test_text_with_font(self, assets_dir):
+        img = pyxel.Image(64, 32)
+        img.cls(0)
+        font = pyxel.Font(os.path.join(assets_dir, "umplus_j10r.bdf"))
+        img.text(0, 0, "A", 7, font)
+        has_text = any(img.pget(x, y) == 7 for x in range(20) for y in range(20))
+        assert has_text
