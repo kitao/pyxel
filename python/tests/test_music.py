@@ -158,6 +158,17 @@ class TestMusic:
         msc.seqs.clear()
         assert not bool(msc.seqs)
 
+    def test_seqs_iadd(self):
+        msc = pyxel.Music()
+        msc.set([0])
+        original_len = len(msc.seqs)
+        # seqs property is read-only, so use local variable for +=
+        seqs = msc.seqs
+        seqs += [[5, 6], [7, 8]]
+        assert len(msc.seqs) == original_len + 2
+        assert list(msc.seqs[-2]) == [5, 6]
+        assert list(msc.seqs[-1]) == [7, 8]
+
     def test_set_overwrites_previous(self):
         msc = pyxel.Music()
         msc.set([0, 1, 2])

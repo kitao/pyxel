@@ -289,6 +289,34 @@ class TestSeqBool:
             pyxel.colors.append(c)
 
 
+class TestSeqIadd:
+    """Test __iadd__ (+=) for sequences."""
+
+    def test_iadd_colors(self):
+        original = list(pyxel.colors)
+        pyxel.colors += [0xAAAAAA, 0xBBBBBB]
+        assert len(pyxel.colors) == len(original) + 2
+        assert pyxel.colors[-2] == 0xAAAAAA
+        assert pyxel.colors[-1] == 0xBBBBBB
+        # Restore
+        pyxel.colors.pop()
+        pyxel.colors.pop()
+        assert len(pyxel.colors) == len(original)
+
+    def test_iadd_sounds(self):
+        original_len = len(pyxel.sounds)
+        pyxel.sounds += [pyxel.Sound(), pyxel.Sound()]
+        assert len(pyxel.sounds) == original_len + 2
+        pyxel.sounds.pop()
+        pyxel.sounds.pop()
+        assert len(pyxel.sounds) == original_len
+
+    def test_iadd_empty_list(self):
+        original_len = len(pyxel.colors)
+        pyxel.colors += []
+        assert len(pyxel.colors) == original_len
+
+
 class TestSeqValueOps:
     """Test __eq__, __add__, __mul__ for value-type sequences (colors)."""
 

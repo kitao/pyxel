@@ -111,6 +111,71 @@ class TestAttributeErrors:
             _ = pyxel.FAKE_CONSTANT
 
 
+class TestPartialArgErrors:
+    def test_clip_partial_args(self):
+        with pytest.raises(TypeError):
+            pyxel.clip(10, 20)
+
+    def test_clip_three_args(self):
+        with pytest.raises(TypeError):
+            pyxel.clip(10, 20, 30)
+
+    def test_camera_one_arg(self):
+        with pytest.raises(TypeError):
+            pyxel.camera(10)
+
+    def test_pal_one_arg(self):
+        with pytest.raises(TypeError):
+            pyxel.pal(1)
+
+
+class TestValueErrors:
+    def test_play_invalid_channel(self):
+        with pytest.raises(ValueError):
+            pyxel.play(999, 0)
+
+    def test_play_invalid_sound_index(self):
+        with pytest.raises(ValueError):
+            pyxel.play(0, 9999)
+
+    def test_playm_invalid_music_index(self):
+        with pytest.raises(ValueError):
+            pyxel.playm(9999)
+
+    def test_stop_invalid_channel(self):
+        with pytest.raises(ValueError):
+            pyxel.stop(999)
+
+    def test_play_pos_invalid_channel(self):
+        with pytest.raises(ValueError):
+            pyxel.play_pos(999)
+
+    def test_play_invalid_sound_list(self):
+        with pytest.raises(ValueError):
+            pyxel.play(0, [0, 9999])
+
+
+class TestMmlErrors:
+    def test_sound_mml_invalid_syntax(self):
+        snd = pyxel.Sound()
+        with pytest.raises(Exception):
+            snd.mml("ZZZZZZ!!!")
+
+    def test_play_mml_invalid_syntax(self):
+        with pytest.raises(Exception):
+            pyxel.play(0, "ZZZZZZ!!!")
+
+    def test_sound_set_notes_invalid(self):
+        snd = pyxel.Sound()
+        with pytest.raises(Exception):
+            snd.set_notes("ZZZZZZ!!!")
+
+    def test_sound_set_tones_invalid(self):
+        snd = pyxel.Sound()
+        with pytest.raises(Exception):
+            snd.set_tones("ZZZZZZ!!!")
+
+
 class TestFileErrors:
     def test_load_nonexistent_pyxres(self):
         with pytest.raises(Exception):
