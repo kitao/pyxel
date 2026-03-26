@@ -28,9 +28,19 @@ EDITOR_PLANS = {
     "tilemap": [
         {"frame": 1},
         # Pick tile via right-click spoit, bucket fill, then capture after rendering
-        {"frame": 2, "mouse": (15, 136), "press": [pyxel.MOUSE_BUTTON_RIGHT], "capture": False},
+        {
+            "frame": 2,
+            "mouse": (15, 136),
+            "press": [pyxel.MOUSE_BUTTON_RIGHT],
+            "capture": False,
+        },
         {"frame": 3, "press": [pyxel.KEY_B], "capture": False},
-        {"frame": 5, "mouse": (67, 40), "press": [pyxel.MOUSE_BUTTON_LEFT], "capture": False},
+        {
+            "frame": 5,
+            "mouse": (67, 40),
+            "press": [pyxel.MOUSE_BUTTON_LEFT],
+            "capture": False,
+        },
         {"frame": 8},
     ],
     "sound": [
@@ -46,9 +56,24 @@ EDITOR_PLANS = {
     "music": [
         {"frame": 1},
         # Insert multiple sounds into CH0
-        {"frame": 2, "mouse": (82, 138), "press": [pyxel.MOUSE_BUTTON_LEFT], "capture": False},
-        {"frame": 3, "mouse": (95, 138), "press": [pyxel.MOUSE_BUTTON_LEFT], "capture": False},
-        {"frame": 4, "mouse": (108, 138), "press": [pyxel.MOUSE_BUTTON_LEFT], "capture": False},
+        {
+            "frame": 2,
+            "mouse": (82, 138),
+            "press": [pyxel.MOUSE_BUTTON_LEFT],
+            "capture": False,
+        },
+        {
+            "frame": 3,
+            "mouse": (95, 138),
+            "press": [pyxel.MOUSE_BUTTON_LEFT],
+            "capture": False,
+        },
+        {
+            "frame": 4,
+            "mouse": (108, 138),
+            "press": [pyxel.MOUSE_BUTTON_LEFT],
+            "capture": False,
+        },
         {"frame": 6},
     ],
 }
@@ -125,17 +150,17 @@ def run_editor_edit(editor, captured, tmp_path):
     results.append((1, p))
 
     if editor == "image":
-        _press(captured, pyxel.KEY_B)          # Bucket tool
-        _press(captured, pyxel.KEY_3)          # Color 3
-        _click(captured, 76, 81)               # Click canvas center
+        _press(captured, pyxel.KEY_B)  # Bucket tool
+        _press(captured, pyxel.KEY_3)  # Color 3
+        _click(captured, 76, 81)  # Click canvas center
         p = tmp_path / "f_edit.png"
         _capture(captured, p)
         results.append(("edit", p))
 
     elif editor == "tilemap":
         _click(captured, 15, 136, pyxel.MOUSE_BUTTON_RIGHT)  # Spoit brick tile
-        _press(captured, pyxel.KEY_B)                          # Bucket tool
-        _click(captured, 67, 40)                               # Fill empty area
+        _press(captured, pyxel.KEY_B)  # Bucket tool
+        _click(captured, 67, 40)  # Fill empty area
         p = tmp_path / "f_edit.png"
         _capture(captured, p)
         results.append(("edit", p))

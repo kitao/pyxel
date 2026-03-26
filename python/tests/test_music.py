@@ -6,17 +6,34 @@ import pyxel
 # Music class
 class TestMusic:
     def test_new(self):
-        pyxel.Music()
+        msc = pyxel.Music()
+        assert len(msc.seqs) == 0
 
-    def test_set(self):
+    def test_set_pads_to_num_channels(self):
         msc = pyxel.Music()
         msc.set([0, 1], [2, 3])
-        assert len(msc.seqs) >= 2
+        # set() pads to NUM_CHANNELS (4)
+        assert len(msc.seqs) == pyxel.NUM_CHANNELS
+
+    def test_set_preserves_data(self):
+        msc = pyxel.Music()
+        msc.set([0, 1], [2, 3])
+        assert list(msc.seqs[0]) == [0, 1]
+        assert list(msc.seqs[1]) == [2, 3]
+        assert list(msc.seqs[2]) == []
+        assert list(msc.seqs[3]) == []
+
+    def test_set_single_channel(self):
+        msc = pyxel.Music()
+        msc.set([0, 1, 2])
+        assert len(msc.seqs) == pyxel.NUM_CHANNELS
+        assert list(msc.seqs[0]) == [0, 1, 2]
 
     def test_seqs_property(self):
         msc = pyxel.Music()
         msc.set([0, 1], [2, 3], [4])
-        assert len(msc.seqs) >= 3
+        assert len(msc.seqs) == pyxel.NUM_CHANNELS
+        assert list(msc.seqs[2]) == [4]
 
     def test_save(self, tmp_path):
         pyxel.sounds[0].set("c2e2g2c3", "ssss", "7654", "nnnn", 10)
@@ -25,6 +42,7 @@ class TestMusic:
         path = str(tmp_path / "test_music.wav")
         msc.save(path, 1.0)
         assert os.path.exists(path)
+        assert os.path.getsize(path) > 0
 
     def test_seqs_inner_seq_access(self):
         msc = pyxel.Music()
@@ -33,12 +51,15 @@ class TestMusic:
         assert len(seq0) == 3
         assert seq0[0] == 0
         assert seq0[1] == 1
+        assert seq0[2] == 2
 
     def test_seqs_inner_seq_setitem(self):
         msc = pyxel.Music()
         msc.set([0, 1], [2, 3])
         msc.seqs[0][0] = 5
         assert msc.seqs[0][0] == 5
+        # Other elements unchanged
+        assert msc.seqs[0][1] == 1
 
     def test_seqs_inner_seq_append(self):
         msc = pyxel.Music()
@@ -48,24 +69,33 @@ class TestMusic:
         assert len(msc.seqs[0]) == original_len + 1
         assert msc.seqs[0][-1] == 10
 
+    def test_seqs_inner_seq_delitem(self):
+        msc = pyxel.Music()
+        msc.set([0, 1, 2])
+        del msc.seqs[0][1]
+        assert len(msc.seqs[0]) == 2
+        assert list(msc.seqs[0]) == [0, 2]
+
     def test_seqs_append_new_channel(self):
         msc = pyxel.Music()
         msc.set([0])
         original_channels = len(msc.seqs)
         msc.seqs.append([5, 6])
         assert len(msc.seqs) == original_channels + 1
+        assert list(msc.seqs[-1]) == [5, 6]
 
     def test_seqs_setitem_channel(self):
         msc = pyxel.Music()
         msc.set([0, 1], [2, 3])
         msc.seqs[0] = [10, 11, 12]
         assert len(msc.seqs[0]) == 3
-        assert msc.seqs[0][0] == 10
+        assert list(msc.seqs[0]) == [10, 11, 12]
+        # Other channel unchanged
+        assert list(msc.seqs[1]) == [2, 3]
 
     def test_seqs_delitem(self):
         msc = pyxel.Music()
         msc.set([0], [1], [2])
-        # set() pads to NUM_CHANNELS (4)
         original_len = len(msc.seqs)
         del msc.seqs[-1]
         assert len(msc.seqs) == original_len - 1
@@ -76,7 +106,7 @@ class TestMusic:
         original_len = len(msc.seqs)
         msc.seqs.insert(1, [5, 6])
         assert len(msc.seqs) == original_len + 1
-        assert msc.seqs[1][0] == 5
+        assert list(msc.seqs[1]) == [5, 6]
 
     def test_seqs_pop(self):
         msc = pyxel.Music()
@@ -108,10 +138,11 @@ class TestMusic:
 
     def test_seqs_reversed(self):
         msc = pyxel.Music()
-        msc.set([0], [1], [2])
-        original_len = len(msc.seqs)
+        msc.set([10], [20], [30])
         rev = list(reversed(msc.seqs))
-        assert len(rev) == original_len
+        assert len(rev) == len(msc.seqs)
+        # Last channel becomes first in reversed
+        assert list(rev[0]) == list(msc.seqs[-1])
 
     def test_seqs_repr(self):
         msc = pyxel.Music()
@@ -126,3 +157,10 @@ class TestMusic:
         assert bool(msc.seqs)
         msc.seqs.clear()
         assert not bool(msc.seqs)
+
+    def test_set_overwrites_previous(self):
+        msc = pyxel.Music()
+        msc.set([0, 1, 2])
+        msc.set([10])
+        assert list(msc.seqs[0]) == [10]
+        assert list(msc.seqs[1]) == []

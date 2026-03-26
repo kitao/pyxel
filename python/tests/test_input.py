@@ -10,7 +10,7 @@ class TestInputFunctions:
         result = pyxel.btnp(pyxel.KEY_SPACE)
         assert isinstance(result, bool)
 
-    def test_btnp_with_hold_repeat(self):
+    def test_btnp_with_hold_repeat_returns_bool(self):
         result = pyxel.btnp(pyxel.KEY_SPACE, hold=10, repeat=5)
         assert isinstance(result, bool)
 
@@ -19,7 +19,6 @@ class TestInputFunctions:
         assert isinstance(result, bool)
 
     def test_btnv_returns_int(self):
-        # btnv requires an analog key (mouse position/wheel or gamepad axis)
         result = pyxel.btnv(pyxel.MOUSE_WHEEL_X)
         assert isinstance(result, int)
 
@@ -29,19 +28,21 @@ class TestInputFunctions:
 
 
 class TestInputAttributes:
-    def test_input_text_accessible(self):
-        _ = pyxel.input_text
+    def test_input_text_is_string(self):
+        assert isinstance(pyxel.input_text, str)
 
-    def test_input_keys_accessible(self):
-        _ = pyxel.input_keys
+    def test_input_keys_is_list(self):
+        keys = pyxel.input_keys
+        assert isinstance(keys, list)
 
-    def test_dropped_files_accessible(self):
-        _ = pyxel.dropped_files
+    def test_dropped_files_is_list(self):
+        files = pyxel.dropped_files
+        assert isinstance(files, list)
 
-    def test_mouse_x_accessible(self):
+    def test_mouse_x_is_int(self):
         assert isinstance(pyxel.mouse_x, int)
 
-    def test_mouse_y_accessible(self):
+    def test_mouse_y_is_int(self):
         assert isinstance(pyxel.mouse_y, int)
 
 
@@ -69,15 +70,34 @@ class TestSetButtonState:
         pyxel.set_btn(pyxel.KEY_E, True)
         assert pyxel.btnp(pyxel.KEY_E) is True
         pyxel.flip()
+        # btnp is false on next frame (no new press)
         assert pyxel.btnp(pyxel.KEY_E) is False
-        # Key still held down
+        # But btn is still true (key held)
         assert pyxel.btn(pyxel.KEY_E) is True
+
+    def test_btnr_false_without_release(self):
+        pyxel.set_btn(pyxel.KEY_F, True)
+        assert pyxel.btnr(pyxel.KEY_F) is False
+
+    def test_multiple_keys_independent(self):
+        pyxel.set_btn(pyxel.KEY_G, True)
+        pyxel.set_btn(pyxel.KEY_H, False)
+        assert pyxel.btn(pyxel.KEY_G) is True
+        assert pyxel.btn(pyxel.KEY_H) is False
 
 
 class TestSetButtonValue:
     def test_set_analog_value(self):
         pyxel.set_btnv(pyxel.MOUSE_WHEEL_Y, 5)
         assert pyxel.btnv(pyxel.MOUSE_WHEEL_Y) == 5
+
+    def test_set_analog_value_negative(self):
+        pyxel.set_btnv(pyxel.MOUSE_WHEEL_Y, -3)
+        assert pyxel.btnv(pyxel.MOUSE_WHEEL_Y) == -3
+
+    def test_set_analog_value_zero(self):
+        pyxel.set_btnv(pyxel.MOUSE_WHEEL_Y, 0)
+        assert pyxel.btnv(pyxel.MOUSE_WHEEL_Y) == 0
 
 
 class TestSetMousePos:
@@ -90,6 +110,11 @@ class TestSetMousePos:
         pyxel.set_mouse_pos(42, 17)
         assert pyxel.btnv(pyxel.MOUSE_POS_X) == 42
         assert pyxel.btnv(pyxel.MOUSE_POS_Y) == 17
+
+    def test_origin(self):
+        pyxel.set_mouse_pos(0, 0)
+        assert pyxel.mouse_x == 0
+        assert pyxel.mouse_y == 0
 
 
 class TestSetInputText:
@@ -107,6 +132,14 @@ class TestSetInputText:
         pyxel.flip()
         assert pyxel.input_text == ""
 
+    def test_empty_string(self):
+        pyxel.set_input_text("")
+        assert pyxel.input_text == ""
+
+    def test_multibyte_text(self):
+        pyxel.set_input_text("日本語")
+        assert pyxel.input_text == "日本語"
+
 
 class TestSetDroppedFiles:
     def test_sets_files(self):
@@ -121,4 +154,8 @@ class TestSetDroppedFiles:
     def test_cleared_after_flip(self):
         pyxel.set_dropped_files(["temp.txt"])
         pyxel.flip()
+        assert list(pyxel.dropped_files) == []
+
+    def test_empty_list(self):
+        pyxel.set_dropped_files([])
         assert list(pyxel.dropped_files) == []

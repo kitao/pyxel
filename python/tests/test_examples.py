@@ -63,6 +63,7 @@ def run_example(script_path):
 
 class _FlipCapture(Exception):
     """Raised to stop a while+flip() loop at the target frame."""
+
     pass
 
 
@@ -191,8 +192,10 @@ CAPTURE_PLANS = {
     "02_jump_game": [{"frame": 10}],
     "10_platformer": [
         {"frame": 1},
-        *[{"frame": i, "press": [pyxel.KEY_RIGHT, pyxel.KEY_SPACE], "capture": False}
-          for i in range(2, 80, 2)],
+        *[
+            {"frame": i, "press": [pyxel.KEY_RIGHT, pyxel.KEY_SPACE], "capture": False}
+            for i in range(2, 80, 2)
+        ],
         {"frame": 80},
     ],
     "11_offscreen": [{"frame": 1}, {"frame": 121}],

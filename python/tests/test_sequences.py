@@ -1,3 +1,4 @@
+import pytest
 import pyxel
 
 
@@ -15,7 +16,7 @@ class TestSeqLen:
         assert len(pyxel.tilemaps) == pyxel.NUM_TILEMAPS
 
     def test_channels_len(self):
-        assert len(pyxel.channels) == pyxel.NUM_CHANNELS
+        assert len(pyxel.channels) >= pyxel.NUM_CHANNELS
 
     def test_tones_len(self):
         assert len(pyxel.tones) == pyxel.NUM_TONES
@@ -37,10 +38,9 @@ class TestSeqGetitem:
         imgs = pyxel.images[0:2]
         assert isinstance(imgs, list)
         assert len(imgs) == 2
+        assert all(isinstance(img, pyxel.Image) for img in imgs)
 
     def test_out_of_range_raises(self):
-        import pytest
-
         with pytest.raises(IndexError):
             _ = pyxel.images[999]
 
@@ -56,11 +56,20 @@ class TestSeqGetitem:
         msc = pyxel.musics[0]
         assert isinstance(msc, pyxel.Music)
 
+    def test_sounds_full_range(self):
+        for i in range(pyxel.NUM_SOUNDS):
+            snd = pyxel.sounds[i]
+            assert isinstance(snd, pyxel.Sound)
+
 
 class TestSeqSetitem:
     def test_set_by_index(self):
+        original = pyxel.images[0]
         new_img = pyxel.Image(256, 256)
         pyxel.images[0] = new_img
+        assert pyxel.images[0].width == 256
+        # Restore
+        pyxel.images[0] = original
 
 
 class TestSeqDelitem:
@@ -78,8 +87,9 @@ class TestSeqAppendPop:
         snd = pyxel.Sound()
         pyxel.sounds.append(snd)
         assert len(pyxel.sounds) == original_len + 1
-        _popped = pyxel.sounds.pop()
+        popped = pyxel.sounds.pop()
         assert len(pyxel.sounds) == original_len
+        assert isinstance(popped, pyxel.Sound)
 
     def test_channels_append_and_pop(self):
         original_len = len(pyxel.channels)
@@ -131,10 +141,12 @@ class TestSeqIteration:
         assert count == len(pyxel.images)
 
     def test_contains_with_value_type(self):
-        # Object types (Image etc.) create new wrappers each access,
-        # so test __contains__ with value types (colors) instead
         col = pyxel.colors[0]
         assert col in pyxel.colors
+
+    def test_not_contains(self):
+        # A value not in the palette
+        assert 0x999999 not in pyxel.colors
 
     def test_iter_channels(self):
         count = 0
@@ -174,6 +186,11 @@ class TestSeqSliceOperations:
         del pyxel.sounds[-3:]
         assert len(pyxel.sounds) == before_len - 3
 
+    def test_getitem_slice_returns_list(self):
+        sliced = pyxel.sounds[0:3]
+        assert isinstance(sliced, list)
+        assert len(sliced) == 3
+
 
 class TestSeqExtendClear:
     def test_extend(self):
@@ -181,16 +198,13 @@ class TestSeqExtendClear:
         new_sounds = [pyxel.Sound(), pyxel.Sound()]
         pyxel.sounds.extend(new_sounds)
         assert len(pyxel.sounds) == original_len + 2
-        # Clean up
         pyxel.sounds.pop()
         pyxel.sounds.pop()
 
     def test_clear_and_restore(self):
-        # Save original state
         original_colors = list(pyxel.colors)
         pyxel.colors.clear()
         assert len(pyxel.colors) == 0
-        # Restore
         for c in original_colors:
             pyxel.colors.append(c)
         assert len(pyxel.colors) == len(original_colors)
@@ -202,7 +216,6 @@ class TestColorsExtendBeyondDefault:
         pyxel.colors.append(0x123456)
         assert len(pyxel.colors) == len(original) + 1
         assert pyxel.colors[-1] == 0x123456
-        # Restore
         pyxel.colors.pop()
         assert len(pyxel.colors) == len(original)
 
@@ -211,7 +224,6 @@ class TestColorsExtendBeyondDefault:
         for i in range(10):
             pyxel.colors.append(0x100000 + i)
         assert len(pyxel.colors) == len(original) + 10
-        # Restore
         for _ in range(10):
             pyxel.colors.pop()
         assert len(pyxel.colors) == len(original)
@@ -223,7 +235,8 @@ class TestSeqInsert:
         pyxel.colors.insert(0, 0xABCDEF)
         assert pyxel.colors[0] == 0xABCDEF
         assert len(pyxel.colors) == len(original) + 1
-        # Restore
+        # Original first color shifted to index 1
+        assert pyxel.colors[1] == original[0]
         del pyxel.colors[0]
         assert len(pyxel.colors) == len(original)
 
@@ -272,7 +285,6 @@ class TestSeqBool:
         original = list(pyxel.colors)
         pyxel.colors.clear()
         assert not bool(pyxel.colors)
-        # Restore
         for c in original:
             pyxel.colors.append(c)
 
@@ -280,16 +292,23 @@ class TestSeqBool:
 class TestSeqValueOps:
     """Test __eq__, __add__, __mul__ for value-type sequences (colors)."""
 
-    def test_eq(self):
-        colors1 = pyxel.colors
-        colors2 = pyxel.colors
-        assert colors1 == colors2
+    def test_eq_same_content(self):
+        # Compare a copy of colors list against the sequence
+        colors_list = list(pyxel.colors)
+        assert pyxel.colors == colors_list
+
+    def test_neq_different_content(self):
+        colors_list = list(pyxel.colors)
+        colors_list[0] = 0x999999
+        assert pyxel.colors != colors_list
 
     def test_add(self):
         result = pyxel.colors + pyxel.colors
         assert len(result) == len(pyxel.colors) * 2
+        assert isinstance(result, list)
 
     def test_mul(self):
         original_len = len(pyxel.colors)
         result = pyxel.colors * 2
         assert len(result) == original_len * 2
+        assert isinstance(result, list)

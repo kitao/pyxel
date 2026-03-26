@@ -45,11 +45,23 @@ class TestTypeErrors:
             img = pyxel.Image(8, 8)
             img.set(0, 0, 12345)
 
+    def test_btnp_wrong_type(self):
+        with pytest.raises(TypeError):
+            pyxel.btnp("not_a_key")
+
+    def test_btnr_wrong_type(self):
+        with pytest.raises(TypeError):
+            pyxel.btnr("not_a_key")
+
 
 class TestIndexErrors:
     def test_images_out_of_range(self):
         with pytest.raises(IndexError):
             _ = pyxel.images[999]
+
+    def test_images_negative_out_of_range(self):
+        with pytest.raises(IndexError):
+            _ = pyxel.images[-999]
 
     def test_sounds_out_of_range(self):
         with pytest.raises(IndexError):
@@ -74,6 +86,19 @@ class TestIndexErrors:
     def test_musics_out_of_range(self):
         with pytest.raises(IndexError):
             _ = pyxel.musics[999]
+
+    def test_images_boundary_valid(self):
+        # Last valid index should not raise
+        _ = pyxel.images[pyxel.NUM_IMAGES - 1]
+        _ = pyxel.images[-1]
+
+    def test_sounds_boundary_valid(self):
+        _ = pyxel.sounds[pyxel.NUM_SOUNDS - 1]
+        _ = pyxel.sounds[-1]
+
+    def test_tilemaps_boundary_valid(self):
+        _ = pyxel.tilemaps[pyxel.NUM_TILEMAPS - 1]
+        _ = pyxel.tilemaps[-1]
 
 
 class TestAttributeErrors:

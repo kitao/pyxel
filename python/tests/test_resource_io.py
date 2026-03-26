@@ -15,8 +15,12 @@ class TestResourceIO:
         img = pyxel.images[0]
         img.cls(0)
         img.pset(0, 0, 7)
+        img.pset(1, 0, 3)
         snd = pyxel.sounds[0]
         snd.set("c2e2g2", "sss", "777", "nnn", 10)
+        pyxel.tilemaps[0].cls((0, 0))
+        pyxel.tilemaps[0].pset(0, 0, (5, 5))
+        pyxel.musics[0].set([0])
 
         # Save
         path = str(tmp_path / "test.pyxres")
@@ -25,11 +29,16 @@ class TestResourceIO:
         # Modify data
         img.cls(0)
         snd.set("a2", "s", "7", "n", 5)
+        pyxel.tilemaps[0].cls((0, 0))
+        pyxel.musics[0].set([1, 2, 3])
 
-        # Load and verify restored
+        # Load and verify all restored
         pyxel.load(path)
         assert pyxel.images[0].pget(0, 0) == 7
+        assert pyxel.images[0].pget(1, 0) == 3
         assert len(pyxel.sounds[0].notes) == 3
+        assert pyxel.tilemaps[0].pget(0, 0) == (5, 5)
+        assert list(pyxel.musics[0].seqs[0]) == [0]
 
     def test_save_exclude_images(self, tmp_path):
         pyxel.images[0].cls(0)
@@ -39,49 +48,7 @@ class TestResourceIO:
 
         pyxel.images[0].cls(0)
         pyxel.load(path)
-        # Image data was excluded, so pixel should still be 0
         assert pyxel.images[0].pget(0, 0) == 0
-
-    def test_load_pal(self, assets_dir):
-        pyxel.load_pal(os.path.join(assets_dir, "audio_bgm.pyxpal"))
-
-    def test_save_load_pal_roundtrip(self, tmp_path):
-        original_color = pyxel.colors[0]
-        path = str(tmp_path / "test.pyxpal")
-        pyxel.save_pal(path)
-
-        pyxel.colors[0] = 0xFFFFFF
-        pyxel.load_pal(path)
-        assert pyxel.colors[0] == original_color
-
-    def test_load_nonexistent_file_raises(self):
-        with pytest.raises(Exception):
-            pyxel.load("/nonexistent/path/file.pyxres")
-
-    def test_screenshot(self, tmp_path):
-        pyxel.cls(7)
-        pyxel.flip()
-        path = str(tmp_path / "test_screenshot.png")
-        pyxel.screenshot(path)
-        assert os.path.exists(path)
-
-    def test_screencast(self, tmp_path):
-        # In headless mode, flip() doesn't capture frames,
-        # so screencast produces no GIF. Verify it doesn't raise.
-        pyxel.reset_screencast()
-        pyxel.cls(5)
-        pyxel.flip()
-        path = str(tmp_path / "test_screencast.gif")
-        pyxel.screencast(path)
-
-    def test_reset_screencast(self):
-        pyxel.reset_screencast()
-        # Should not raise
-
-    def test_user_data_dir(self):
-        result = pyxel.user_data_dir("TestVendor", "TestApp")
-        assert isinstance(result, str)
-        assert len(result) > 0
 
     def test_save_exclude_tilemaps(self, tmp_path):
         pyxel.tilemaps[0].cls((0, 0))
@@ -101,7 +68,6 @@ class TestResourceIO:
         pyxel.sounds[0].set("a2", "s", "7", "n", 5)
         original_notes_len = len(pyxel.sounds[0].notes)
         pyxel.load(path)
-        # Sound data was excluded, so it should remain unchanged
         assert len(pyxel.sounds[0].notes) == original_notes_len
 
     def test_save_exclude_musics(self, tmp_path):
@@ -109,16 +75,85 @@ class TestResourceIO:
         path = str(tmp_path / "test_excl_msc.pyxres")
         pyxel.save(path, exclude_musics=True)
 
-        # Modify music after save
         pyxel.musics[0].set([0, 1, 2])
         modified_seq0 = list(pyxel.musics[0].seqs[0])
         pyxel.load(path)
-        # Music data was excluded, so the modified version should persist
         assert list(pyxel.musics[0].seqs[0]) == modified_seq0
+
+    def test_save_exclude_multiple(self, tmp_path):
+        pyxel.images[0].cls(0)
+        pyxel.images[0].pset(0, 0, 9)
+        pyxel.sounds[0].set("c2e2g2", "sss", "777", "nnn", 10)
+        path = str(tmp_path / "test_excl_multi.pyxres")
+        pyxel.save(path, exclude_images=True, exclude_sounds=True)
+
+        pyxel.images[0].cls(0)
+        pyxel.sounds[0].set("a2", "s", "7", "n", 5)
+        original_notes_len = len(pyxel.sounds[0].notes)
+        pyxel.load(path)
+        # Both excluded, so modifications persist
+        assert pyxel.images[0].pget(0, 0) == 0
+        assert len(pyxel.sounds[0].notes) == original_notes_len
+
+    def test_load_pal(self, assets_dir):
+        pyxel.load_pal(os.path.join(assets_dir, "audio_bgm.pyxpal"))
+
+    def test_save_load_pal_roundtrip(self, tmp_path):
+        original_colors = list(pyxel.colors)
+        path = str(tmp_path / "test.pyxpal")
+        pyxel.save_pal(path)
+
+        pyxel.colors[0] = 0xFFFFFF
+        pyxel.load_pal(path)
+        assert pyxel.colors[0] == original_colors[0]
+        # Verify all colors restored
+        for i in range(min(len(original_colors), 16)):
+            assert pyxel.colors[i] == original_colors[i]
+
+    def test_load_nonexistent_file_raises(self):
+        with pytest.raises(Exception):
+            pyxel.load("/nonexistent/path/file.pyxres")
+
+    def test_screenshot(self, tmp_path):
+        pyxel.cls(7)
+        pyxel.flip()
+        path = str(tmp_path / "test_screenshot.png")
+        pyxel.screenshot(path)
+        assert os.path.exists(path)
+        assert os.path.getsize(path) > 0
 
     def test_screenshot_with_scale(self, tmp_path):
         pyxel.cls(7)
         pyxel.flip()
-        path = str(tmp_path / "test_screenshot_scaled.png")
-        pyxel.screenshot(path, scale=2)
+        path1 = str(tmp_path / "test_s1.png")
+        path2 = str(tmp_path / "test_s2.png")
+        pyxel.screenshot(path1, scale=1)
+        pyxel.screenshot(path2, scale=2)
+        assert os.path.exists(path1)
+        assert os.path.exists(path2)
+        # Scale 2 should produce a larger file
+        assert os.path.getsize(path2) > os.path.getsize(path1)
+
+    def test_screencast(self, tmp_path):
+        # In headless mode, flip() doesn't capture frames,
+        # so screencast produces no GIF. Verify it doesn't raise.
+        pyxel.reset_screencast()
+        pyxel.cls(5)
+        pyxel.flip()
+        path = str(tmp_path / "test_screencast.gif")
+        pyxel.screencast(path)
+
+    def test_reset_screencast(self):
+        pyxel.reset_screencast()
+
+    def test_user_data_dir(self):
+        result = pyxel.user_data_dir("TestVendor", "TestApp")
+        assert isinstance(result, str)
+        assert len(result) > 0
+
+    def test_save_creates_file(self, tmp_path):
+        path = str(tmp_path / "new_file.pyxres")
+        assert not os.path.exists(path)
+        pyxel.save(path)
         assert os.path.exists(path)
+        assert os.path.getsize(path) > 0

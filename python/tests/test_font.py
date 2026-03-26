@@ -43,3 +43,24 @@ class TestFont:
         w_vs = font.text_width("H\ufe0fi")  # Variation selector
         assert w_plain == w_zwj
         assert w_plain == w_vs
+
+    def test_text_width_longer_string(self, assets_dir):
+        font = pyxel.Font(os.path.join(assets_dir, "umplus_j10r.bdf"))
+        w1 = font.text_width("A")
+        w3 = font.text_width("AAA")
+        assert w3 > w1
+
+    def test_text_width_proportional(self, assets_dir):
+        font = pyxel.Font(os.path.join(assets_dir, "umplus_j10r.bdf"))
+        w1 = font.text_width("A")
+        w2 = font.text_width("AA")
+        # Two chars should be roughly double one char
+        assert w2 == w1 * 2
+
+    def test_bdf_renders_text(self, assets_dir):
+        font = pyxel.Font(os.path.join(assets_dir, "umplus_j10r.bdf"))
+        img = pyxel.Image(64, 32)
+        img.cls(0)
+        img.text(0, 0, "A", 7, font)
+        has_text = any(img.pget(x, y) == 7 for x in range(20) for y in range(20))
+        assert has_text

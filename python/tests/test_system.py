@@ -11,7 +11,10 @@ class TestSystemAttributes:
     def test_frame_count_is_int(self):
         assert isinstance(pyxel.frame_count, int)
 
-    def test_mouse_wheel_accessible(self):
+    def test_frame_count_non_negative(self):
+        assert pyxel.frame_count >= 0
+
+    def test_mouse_wheel_is_int(self):
         assert isinstance(pyxel.mouse_wheel, int)
 
     def test_screen_is_image(self):
@@ -21,9 +24,13 @@ class TestSystemAttributes:
 
     def test_cursor_is_image(self):
         assert isinstance(pyxel.cursor, pyxel.Image)
+        assert pyxel.cursor.width > 0
+        assert pyxel.cursor.height > 0
 
     def test_font_image_is_image(self):
         assert isinstance(pyxel.font, pyxel.Image)
+        assert pyxel.font.width > 0
+        assert pyxel.font.height > 0
 
 
 class TestConstants:
@@ -85,6 +92,10 @@ class TestConstants:
         assert pyxel.COLOR_PINK == 14
         assert pyxel.COLOR_PEACH == 15
 
+    def test_color_constants_contiguous(self):
+        for i in range(16):
+            assert getattr(pyxel, f"COLOR_{['BLACK','NAVY','PURPLE','GREEN','BROWN','DARK_BLUE','LIGHT_BLUE','WHITE','RED','ORANGE','YELLOW','LIME','CYAN','GRAY','PINK','PEACH'][i]}") == i
+
     def test_tone_constants(self):
         assert pyxel.TONE_TRIANGLE == 0
         assert pyxel.TONE_SQUARE == 1
@@ -102,6 +113,7 @@ class TestConstants:
     def test_default_colors_is_list(self):
         assert isinstance(pyxel.DEFAULT_COLORS, list)
         assert len(pyxel.DEFAULT_COLORS) == 16
+        assert all(isinstance(c, int) for c in pyxel.DEFAULT_COLORS)
 
     def test_key_constants_are_int(self):
         assert isinstance(pyxel.KEY_SPACE, int)
@@ -121,29 +133,34 @@ class TestConstants:
         assert isinstance(pyxel.APP_FILE_EXTENSION, str)
         assert isinstance(pyxel.RESOURCE_FILE_EXTENSION, str)
         assert isinstance(pyxel.PALETTE_FILE_EXTENSION, str)
+        # Extensions should start with a dot
+        assert pyxel.APP_FILE_EXTENSION.startswith(".")
+        assert pyxel.RESOURCE_FILE_EXTENSION.startswith(".")
+        assert pyxel.PALETTE_FILE_EXTENSION.startswith(".")
 
 
 class TestSystemFunctions:
-    def test_title_no_error(self):
-        pyxel.title("test")
+    def test_title(self):
+        pyxel.title("test_title")
+        # Should not raise
 
-    def test_icon_no_error(self):
+    def test_icon(self):
         pyxel.icon(["0000", "0770", "0770", "0000"], 1)
 
     def test_icon_with_colkey(self):
         pyxel.icon(["0000", "0770", "0770", "0000"], 1, colkey=0)
 
-    def test_perf_monitor_no_error(self):
+    def test_perf_monitor(self):
         pyxel.perf_monitor(True)
         pyxel.perf_monitor(False)
 
-    def test_fullscreen_no_error(self):
+    def test_fullscreen(self):
         pyxel.fullscreen(False)
 
-    def test_screen_mode_no_error(self):
+    def test_screen_mode(self):
         pyxel.screen_mode(0)
 
-    def test_integer_scale_no_error(self):
+    def test_integer_scale(self):
         pyxel.integer_scale(True)
         pyxel.integer_scale(False)
 
@@ -152,3 +169,10 @@ class TestSystemFunctions:
         pyxel.flip()
         after = pyxel.frame_count
         assert after == before + 1
+
+    def test_flip_multiple(self):
+        before = pyxel.frame_count
+        pyxel.flip()
+        pyxel.flip()
+        pyxel.flip()
+        assert pyxel.frame_count == before + 3
