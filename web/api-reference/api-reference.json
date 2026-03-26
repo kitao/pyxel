@@ -2473,7 +2473,6 @@
                 "KEY_RSHIFT",
                 "KEY_RALT",
                 "KEY_RGUI",
-                "KEY_MODE",
                 "KEY_SHIFT",
                 "KEY_CTRL",
                 "KEY_ALT",
@@ -2610,36 +2609,7 @@
                 "KEY_THOUSANDSSEPARATOR",
                 "KEY_DECIMALSEPARATOR",
                 "KEY_CURRENCYUNIT",
-                "KEY_CURRENCYSUBUNIT",
-                "KEY_AUDIONEXT",
-                "KEY_AUDIOPREV",
-                "KEY_AUDIOSTOP",
-                "KEY_AUDIOPLAY",
-                "KEY_AUDIOMUTE",
-                "KEY_MEDIASELECT",
-                "KEY_WWW",
-                "KEY_MAIL",
-                "KEY_CALCULATOR",
-                "KEY_COMPUTER",
-                "KEY_AC_SEARCH",
-                "KEY_AC_HOME",
-                "KEY_AC_BACK",
-                "KEY_AC_FORWARD",
-                "KEY_AC_STOP",
-                "KEY_AC_REFRESH",
-                "KEY_AC_BOOKMARKS",
-                "KEY_BRIGHTNESSDOWN",
-                "KEY_BRIGHTNESSUP",
-                "KEY_DISPLAYSWITCH",
-                "KEY_KBDILLUMTOGGLE",
-                "KEY_KBDILLUMDOWN",
-                "KEY_KBDILLUMUP",
-                "KEY_EJECT",
-                "KEY_SLEEP",
-                "KEY_APP1",
-                "KEY_APP2",
-                "KEY_AUDIOREWIND",
-                "KEY_AUDIOFASTFORWARD"
+                "KEY_CURRENCYSUBUNIT"
               ]
             }
           ]
@@ -2703,8 +2673,7 @@
                 "MOUSE_BUTTON_MIDDLE",
                 "MOUSE_BUTTON_RIGHT",
                 "MOUSE_BUTTON_X1",
-                "MOUSE_BUTTON_X2",
-                "MOUSE_BUTTON_UNKNOWN"
+                "MOUSE_BUTTON_X2"
               ]
             }
           ]
