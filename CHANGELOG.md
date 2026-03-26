@@ -9,6 +9,7 @@
 - Fixed memory leak in MML playback on channels
 - Fixed tilemap editor selection and viewer rendering
 - Added comprehensive Python API and Rust unit tests
+- Removed non-existent key and mouse constants from type stubs
 - Improved headless mode with full frame pipeline and input injection APIs
 
 ## 2.8.8
