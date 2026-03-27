@@ -1948,22 +1948,144 @@
           "advanced": true
         },
         {
-          "name": "warp_mouse",
+          "name": "set_btn",
           "type": "function",
-          "signature": "warp_mouse(x, y)",
+          "signature": "set_btn(key, state)",
           "description": {
-            "en": "Move the mouse cursor to the specified position.",
-            "cn": "将鼠标光标移动到指定位置。",
-            "de": "Bewegt den Mauszeiger an die angegebene Position.",
-            "es": "Mueve el cursor del ratón a la posición especificada.",
-            "fr": "Déplace le curseur de la souris à la position spécifiée.",
-            "it": "Sposta il cursore del mouse alla posizione specificata.",
-            "ja": "マウスカーソルを指定位置に移動する。",
-            "ko": "마우스 커서를 지정 위치로 이동한다.",
-            "pt": "Move o cursor do mouse para a posição especificada.",
-            "ru": "Перемещает курсор мыши в указанную позицию.",
-            "tr": "Fare imlecini belirtilen konuma taşır.",
-            "uk": "Переміщує курсор миші в зазначену позицію."
+            "en": "Set the press/release state of the specified key. Mainly for headless mode input simulation.",
+            "cn": "设置指定键的按下/释放状态。主要用于无头模式的输入模拟。",
+            "de": "Setzt den Druck-/Loslasszustand der angegebenen Taste. Hauptsächlich für die Eingabesimulation im Headless-Modus.",
+            "es": "Establece el estado de presión/liberación de la tecla especificada. Principalmente para simulación de entrada en modo headless.",
+            "fr": "Définit l'état d'appui/relâchement de la touche spécifiée. Principalement pour la simulation d'entrée en mode headless.",
+            "it": "Imposta lo stato di pressione/rilascio del tasto specificato. Principalmente per la simulazione di input in modalità headless.",
+            "ja": "指定キーの押下/解放状態を設定する。主にヘッドレスモードでの入力シミュレーション用。",
+            "ko": "지정 키의 눌림/해제 상태를 설정한다. 주로 헤드리스 모드의 입력 시뮬레이션용.",
+            "pt": "Define o estado de pressão/liberação da tecla especificada. Principalmente para simulação de entrada no modo headless.",
+            "ru": "Устанавливает состояние нажатия/отпускания указанной клавиши. В основном для симуляции ввода в headless-режиме.",
+            "tr": "Belirtilen tuşun basılma/bırakılma durumunu ayarlar. Esas olarak headless modda giriş simülasyonu için.",
+            "uk": "Встановлює стан натискання/відпускання вказаної клавіші. Переважно для симуляції введення в headless-режимі."
+          },
+          "params": [
+            {
+              "name": "key",
+              "type": "int",
+              "desc": {
+                "en": "Target key",
+                "cn": "目标键",
+                "de": "Zieltaste",
+                "es": "Tecla objetivo",
+                "fr": "Touche cible",
+                "it": "Tasto obiettivo",
+                "ja": "対象キー",
+                "ko": "대상 키",
+                "pt": "Tecla alvo",
+                "ru": "Целевая клавиша",
+                "tr": "Hedef tuş",
+                "uk": "Цільова клавіша"
+              }
+            },
+            {
+              "name": "state",
+              "type": "bool",
+              "desc": {
+                "en": "True for press, False for release",
+                "cn": "True为按下，False为释放",
+                "de": "True für Drücken, False für Loslassen",
+                "es": "True para presionar, False para liberar",
+                "fr": "True pour appuyer, False pour relâcher",
+                "it": "True per premere, False per rilasciare",
+                "ja": "Trueで押下、Falseで解放",
+                "ko": "True이면 누름, False이면 해제",
+                "pt": "True para pressionar, False para liberar",
+                "ru": "True для нажатия, False для отпускания",
+                "tr": "True basma, False bırakma için",
+                "uk": "True для натискання, False для відпускання"
+              }
+            }
+          ],
+          "return": {
+            "type": "None"
+          },
+          "advanced": true
+        },
+        {
+          "name": "set_btnv",
+          "type": "function",
+          "signature": "set_btnv(key, val)",
+          "description": {
+            "en": "Set the analog value of the specified key. Mainly for headless mode input simulation.",
+            "cn": "设置指定键的模拟值。主要用于无头模式的输入模拟。",
+            "de": "Setzt den Analogwert der angegebenen Taste. Hauptsächlich für die Eingabesimulation im Headless-Modus.",
+            "es": "Establece el valor analógico de la tecla especificada. Principalmente para simulación de entrada en modo headless.",
+            "fr": "Définit la valeur analogique de la touche spécifiée. Principalement pour la simulation d'entrée en mode headless.",
+            "it": "Imposta il valore analogico del tasto specificato. Principalmente per la simulazione di input in modalità headless.",
+            "ja": "指定キーのアナログ値を設定する。主にヘッドレスモードでの入力シミュレーション用。",
+            "ko": "지정 키의 아날로그 값을 설정한다. 주로 헤드리스 모드의 입력 시뮬레이션용.",
+            "pt": "Define o valor analógico da tecla especificada. Principalmente para simulação de entrada no modo headless.",
+            "ru": "Устанавливает аналоговое значение указанной клавиши. В основном для симуляции ввода в headless-режиме.",
+            "tr": "Belirtilen tuşun analog değerini ayarlar. Esas olarak headless modda giriş simülasyonu için.",
+            "uk": "Встановлює аналогове значення вказаної клавіші. Переважно для симуляції введення в headless-режимі."
+          },
+          "params": [
+            {
+              "name": "key",
+              "type": "int",
+              "desc": {
+                "en": "Target key",
+                "cn": "目标键",
+                "de": "Zieltaste",
+                "es": "Tecla objetivo",
+                "fr": "Touche cible",
+                "it": "Tasto obiettivo",
+                "ja": "対象キー",
+                "ko": "대상 키",
+                "pt": "Tecla alvo",
+                "ru": "Целевая клавиша",
+                "tr": "Hedef tuş",
+                "uk": "Цільова клавіша"
+              }
+            },
+            {
+              "name": "val",
+              "type": "int",
+              "desc": {
+                "en": "Analog value to set",
+                "cn": "要设置的模拟值",
+                "de": "Zu setzender Analogwert",
+                "es": "Valor analógico a establecer",
+                "fr": "Valeur analogique à définir",
+                "it": "Valore analogico da impostare",
+                "ja": "設定するアナログ値",
+                "ko": "설정할 아날로그 값",
+                "pt": "Valor analógico a definir",
+                "ru": "Устанавливаемое аналоговое значение",
+                "tr": "Ayarlanacak analog değer",
+                "uk": "Аналогове значення для встановлення"
+              }
+            }
+          ],
+          "return": {
+            "type": "None"
+          },
+          "advanced": true
+        },
+        {
+          "name": "set_mouse_pos",
+          "type": "function",
+          "signature": "set_mouse_pos(x, y)",
+          "description": {
+            "en": "Set the mouse cursor position. Mainly for headless mode input simulation.",
+            "cn": "设置鼠标光标位置。主要用于无头模式的输入模拟。",
+            "de": "Setzt die Mauszeigerposition. Hauptsächlich für die Eingabesimulation im Headless-Modus.",
+            "es": "Establece la posición del cursor del ratón. Principalmente para simulación de entrada en modo headless.",
+            "fr": "Définit la position du curseur de la souris. Principalement pour la simulation d'entrée en mode headless.",
+            "it": "Imposta la posizione del cursore del mouse. Principalmente per la simulazione di input in modalità headless.",
+            "ja": "マウスカーソルの位置を設定する。主にヘッドレスモードでの入力シミュレーション用。",
+            "ko": "마우스 커서 위치를 설정한다. 주로 헤드리스 모드의 입력 시뮬레이션용.",
+            "pt": "Define a posição do cursor do mouse. Principalmente para simulação de entrada no modo headless.",
+            "ru": "Устанавливает позицию курсора мыши. В основном для симуляции ввода в headless-режиме.",
+            "tr": "Fare imleci konumunu ayarlar. Esas olarak headless modda giriş simülasyonu için.",
+            "uk": "Встановлює позицію курсора миші. Переважно для симуляції введення в headless-режимі."
           },
           "params": [
             {
@@ -2000,6 +2122,92 @@
                 "ru": "Координата Y",
                 "tr": "Y koordinatı",
                 "uk": "Координата Y"
+              }
+            }
+          ],
+          "return": {
+            "type": "None"
+          },
+          "advanced": true
+        },
+        {
+          "name": "set_input_text",
+          "type": "function",
+          "signature": "set_input_text(text)",
+          "description": {
+            "en": "Set the text input for the current frame. Replaces any existing text. Mainly for headless mode input simulation.",
+            "cn": "设置当前帧的文本输入。替换现有文本。主要用于无头模式的输入模拟。",
+            "de": "Setzt die Texteingabe für den aktuellen Frame. Ersetzt vorhandenen Text. Hauptsächlich für die Eingabesimulation im Headless-Modus.",
+            "es": "Establece la entrada de texto del frame actual. Reemplaza el texto existente. Principalmente para simulación de entrada en modo headless.",
+            "fr": "Définit l'entrée de texte pour le frame actuel. Remplace le texte existant. Principalement pour la simulation d'entrée en mode headless.",
+            "it": "Imposta l'input di testo per il frame corrente. Sostituisce il testo esistente. Principalmente per la simulazione di input in modalità headless.",
+            "ja": "現在のフレームのテキスト入力を設定する。既存のテキストは上書きされる。主にヘッドレスモードでの入力シミュレーション用。",
+            "ko": "현재 프레임의 텍스트 입력을 설정한다. 기존 텍스트를 대체한다. 주로 헤드리스 모드의 입력 시뮬레이션용.",
+            "pt": "Define a entrada de texto do frame atual. Substitui o texto existente. Principalmente para simulação de entrada no modo headless.",
+            "ru": "Устанавливает текстовый ввод для текущего кадра. Заменяет существующий текст. В основном для симуляции ввода в headless-режиме.",
+            "tr": "Geçerli kare için metin girişini ayarlar. Mevcut metni değiştirir. Esas olarak headless modda giriş simülasyonu için.",
+            "uk": "Встановлює текстове введення для поточного кадру. Замінює наявний текст. Переважно для симуляції введення в headless-режимі."
+          },
+          "params": [
+            {
+              "name": "text",
+              "type": "str",
+              "desc": {
+                "en": "Text input",
+                "cn": "文本输入",
+                "de": "Texteingabe",
+                "es": "Entrada de texto",
+                "fr": "Entrée de texte",
+                "it": "Input di testo",
+                "ja": "テキスト入力",
+                "ko": "텍스트 입력",
+                "pt": "Entrada de texto",
+                "ru": "Текстовый ввод",
+                "tr": "Metin girişi",
+                "uk": "Текстове введення"
+              }
+            }
+          ],
+          "return": {
+            "type": "None"
+          },
+          "advanced": true
+        },
+        {
+          "name": "set_dropped_files",
+          "type": "function",
+          "signature": "set_dropped_files(files)",
+          "description": {
+            "en": "Set the dropped file list for the current frame. Replaces any existing list. Mainly for headless mode input simulation.",
+            "cn": "设置当前帧的拖放文件列表。替换现有列表。主要用于无头模式的输入模拟。",
+            "de": "Setzt die Liste der abgelegten Dateien für den aktuellen Frame. Ersetzt die vorhandene Liste. Hauptsächlich für die Eingabesimulation im Headless-Modus.",
+            "es": "Establece la lista de archivos soltados del frame actual. Reemplaza la lista existente. Principalmente para simulación de entrada en modo headless.",
+            "fr": "Définit la liste des fichiers déposés pour le frame actuel. Remplace la liste existante. Principalement pour la simulation d'entrée en mode headless.",
+            "it": "Imposta la lista dei file rilasciati per il frame corrente. Sostituisce la lista esistente. Principalmente per la simulazione di input in modalità headless.",
+            "ja": "現在のフレームのドロップファイルリストを設定する。既存のリストは上書きされる。主にヘッドレスモードでの入力シミュレーション用。",
+            "ko": "현재 프레임의 드롭 파일 목록을 설정한다. 기존 목록을 대체한다. 주로 헤드리스 모드의 입력 시뮬레이션용.",
+            "pt": "Define a lista de arquivos soltos do frame atual. Substitui a lista existente. Principalmente para simulação de entrada no modo headless.",
+            "ru": "Устанавливает список перетащенных файлов для текущего кадра. Заменяет существующий список. В основном для симуляции ввода в headless-режиме.",
+            "tr": "Geçerli kare için bırakılan dosya listesini ayarlar. Mevcut listeyi değiştirir. Esas olarak headless modda giriş simülasyonu için.",
+            "uk": "Встановлює список перетягнутих файлів для поточного кадру. Замінює наявний список. Переважно для симуляції введення в headless-режимі."
+          },
+          "params": [
+            {
+              "name": "files",
+              "type": "List[str]",
+              "desc": {
+                "en": "List of file paths",
+                "cn": "文件路径列表",
+                "de": "Liste der Dateipfade",
+                "es": "Lista de rutas de archivo",
+                "fr": "Liste des chemins de fichiers",
+                "it": "Lista dei percorsi dei file",
+                "ja": "ファイルパスのリスト",
+                "ko": "파일 경로 목록",
+                "pt": "Lista de caminhos de arquivo",
+                "ru": "Список путей к файлам",
+                "tr": "Dosya yolları listesi",
+                "uk": "Список шляхів до файлів"
               }
             }
           ],
@@ -2265,7 +2473,6 @@
                 "KEY_RSHIFT",
                 "KEY_RALT",
                 "KEY_RGUI",
-                "KEY_MODE",
                 "KEY_SHIFT",
                 "KEY_CTRL",
                 "KEY_ALT",
@@ -2402,36 +2609,7 @@
                 "KEY_THOUSANDSSEPARATOR",
                 "KEY_DECIMALSEPARATOR",
                 "KEY_CURRENCYUNIT",
-                "KEY_CURRENCYSUBUNIT",
-                "KEY_AUDIONEXT",
-                "KEY_AUDIOPREV",
-                "KEY_AUDIOSTOP",
-                "KEY_AUDIOPLAY",
-                "KEY_AUDIOMUTE",
-                "KEY_MEDIASELECT",
-                "KEY_WWW",
-                "KEY_MAIL",
-                "KEY_CALCULATOR",
-                "KEY_COMPUTER",
-                "KEY_AC_SEARCH",
-                "KEY_AC_HOME",
-                "KEY_AC_BACK",
-                "KEY_AC_FORWARD",
-                "KEY_AC_STOP",
-                "KEY_AC_REFRESH",
-                "KEY_AC_BOOKMARKS",
-                "KEY_BRIGHTNESSDOWN",
-                "KEY_BRIGHTNESSUP",
-                "KEY_DISPLAYSWITCH",
-                "KEY_KBDILLUMTOGGLE",
-                "KEY_KBDILLUMDOWN",
-                "KEY_KBDILLUMUP",
-                "KEY_EJECT",
-                "KEY_SLEEP",
-                "KEY_APP1",
-                "KEY_APP2",
-                "KEY_AUDIOREWIND",
-                "KEY_AUDIOFASTFORWARD"
+                "KEY_CURRENCYSUBUNIT"
               ]
             }
           ]
@@ -2495,8 +2673,7 @@
                 "MOUSE_BUTTON_MIDDLE",
                 "MOUSE_BUTTON_RIGHT",
                 "MOUSE_BUTTON_X1",
-                "MOUSE_BUTTON_X2",
-                "MOUSE_BUTTON_UNKNOWN"
+                "MOUSE_BUTTON_X2"
               ]
             }
           ]
@@ -9091,18 +9268,18 @@
           "type": "function",
           "signature": "Tilemap.data_ptr()",
           "description": {
-            "en": "Return the raw data pointer of the tilemap as a ctypes c_uint8 array (2 bytes per tile: image_tx, image_ty).",
-            "cn": "以ctypes c_uint8数组形式返回瓦片地图的原始数据指针（每个瓦片2字节：image_tx, image_ty）。",
-            "de": "Gibt den Rohdatenzeiger der Tilemap als ctypes c_uint8-Array zurück (2 Bytes pro Kachel: image_tx, image_ty).",
-            "es": "Devuelve el puntero de datos brutos del tilemap como un array ctypes c_uint8 (2 bytes por tile: image_tx, image_ty).",
-            "fr": "Renvoie le pointeur de données brutes de la tilemap sous forme de tableau ctypes c_uint8 (2 octets par tuile : image_tx, image_ty).",
-            "it": "Restituisce il puntatore ai dati grezzi della tilemap come array ctypes c_uint8 (2 byte per tile: image_tx, image_ty).",
-            "ja": "タイルマップの生データポインタをctypes c_uint8配列として返す（タイルあたり2バイト：image_tx, image_ty）。",
-            "ko": "타일맵의 원시 데이터 포인터를 ctypes c_uint8 배열로 반환한다 (타일당 2바이트: image_tx, image_ty).",
-            "pt": "Retorna o ponteiro de dados brutos do tilemap como um array ctypes c_uint8 (2 bytes por tile: image_tx, image_ty).",
-            "ru": "Возвращает указатель на необработанные данные тайлмапа в виде массива ctypes c_uint8 (2 байта на тайл: image_tx, image_ty).",
-            "tr": "Tilemap'in ham veri işaretçisini ctypes c_uint8 dizisi olarak döndürür (karo başına 2 bayt: image_tx, image_ty).",
-            "uk": "Повертає вказівник на необроблені дані тайлмапу у вигляді масиву ctypes c_uint8 (2 байти на тайл: image_tx, image_ty)."
+            "en": "Return the raw data pointer of the tilemap as a ctypes c_uint16 array (4 bytes per tile: image_tx, image_ty).",
+            "cn": "以ctypes c_uint16数组形式返回瓦片地图的原始数据指针（每个瓦片4字节：image_tx, image_ty）。",
+            "de": "Gibt den Rohdatenzeiger der Tilemap als ctypes c_uint16-Array zurück (4 Bytes pro Kachel: image_tx, image_ty).",
+            "es": "Devuelve el puntero de datos brutos del tilemap como un array ctypes c_uint16 (4 bytes por tile: image_tx, image_ty).",
+            "fr": "Renvoie le pointeur de données brutes de la tilemap sous forme de tableau ctypes c_uint16 (4 octets par tuile : image_tx, image_ty).",
+            "it": "Restituisce il puntatore ai dati grezzi della tilemap come array ctypes c_uint16 (4 byte per tile: image_tx, image_ty).",
+            "ja": "タイルマップの生データポインタをctypes c_uint16配列として返す（タイルあたり4バイト：image_tx, image_ty）。",
+            "ko": "타일맵의 원시 데이터 포인터를 ctypes c_uint16 배열로 반환한다 (타일당 4바이트: image_tx, image_ty).",
+            "pt": "Retorna o ponteiro de dados brutos do tilemap como um array ctypes c_uint16 (4 bytes por tile: image_tx, image_ty).",
+            "ru": "Возвращает указатель на необработанные данные тайлмапа в виде массива ctypes c_uint16 (4 байта на тайл: image_tx, image_ty).",
+            "tr": "Tilemap'in ham veri işaretçisini ctypes c_uint16 dizisi olarak döndürür (karo başına 4 bayt: image_tx, image_ty).",
+            "uk": "Повертає вказівник на необроблені дані тайлмапу у вигляді масиву ctypes c_uint16 (4 байти на тайл: image_tx, image_ty)."
           },
           "return": {
             "type": "Any",

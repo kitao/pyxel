@@ -1,17 +1,53 @@
 {
   "languages": [
-    { "code": "en", "name": "English" },
-    { "code": "cn", "name": "中文" },
-    { "code": "de", "name": "Deutsch" },
-    { "code": "es", "name": "Español" },
-    { "code": "fr", "name": "Français" },
-    { "code": "it", "name": "Italiano" },
-    { "code": "ja", "name": "日本語" },
-    { "code": "ko", "name": "한국어" },
-    { "code": "pt", "name": "Português" },
-    { "code": "ru", "name": "Русский" },
-    { "code": "tr", "name": "Türkçe" },
-    { "code": "uk", "name": "Українська" }
+    {
+      "code": "en",
+      "name": "English"
+    },
+    {
+      "code": "cn",
+      "name": "中文"
+    },
+    {
+      "code": "de",
+      "name": "Deutsch"
+    },
+    {
+      "code": "es",
+      "name": "Español"
+    },
+    {
+      "code": "fr",
+      "name": "Français"
+    },
+    {
+      "code": "it",
+      "name": "Italiano"
+    },
+    {
+      "code": "ja",
+      "name": "日本語"
+    },
+    {
+      "code": "ko",
+      "name": "한국어"
+    },
+    {
+      "code": "pt",
+      "name": "Português"
+    },
+    {
+      "code": "ru",
+      "name": "Русский"
+    },
+    {
+      "code": "tr",
+      "name": "Türkçe"
+    },
+    {
+      "code": "uk",
+      "name": "Українська"
+    }
   ],
   "ui": {
     "title": {

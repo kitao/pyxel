@@ -41,11 +41,11 @@ format_version = 1
 
 The `format_version` field and all four section arrays (`images`, `tilemaps`, `sounds`, `musics`) are **required**. Empty resources are represented as empty arrays (e.g., `notes = []`). Pyxel always writes all entries (3 images, 8 tilemaps, 64 sounds, 8 musics), but files with fewer entries are accepted on load.
 
-Pyxel currently writes `format_version = 1` for maximum backward compatibility. On load, files with format version up to **4** (the current maximum) are accepted. Files with version 1–3 that use the legacy archive layout (`pyxel_resource/version` + separate files) are loaded with automatic conversion.
+Pyxel currently writes `format_version = 1` for maximum backward compatibility. On load, files with format version up to **4** (the current maximum) are accepted. Files that contain the legacy archive layout (`pyxel_resource/version` + separate files) are detected and loaded with automatic conversion.
 
 ## Images
 
-Up to **3 image banks**, each **256×256 pixels**. Each pixel is a palette color index (`u8`, 0–15 for the default palette, up to 254 with extended palettes).
+Up to **3 image banks**, each **256×256 pixels**. Each pixel is a palette color index (`u8`, 0–15 for the default palette, up to 255 with extended palettes).
 
 ```toml
 [[images]]
@@ -85,9 +85,9 @@ All fields are required.
 | `width` | u32 | Tilemap width in tiles |
 | `height` | u32 | Tilemap height in tiles |
 | `imgsrc` | u32 | Source image bank index (0–2) |
-| `data` | array of arrays of u8 | 2D tile data in interleaved format (see below) |
+| `data` | array of arrays of u16 | 2D tile data in interleaved format (see below) |
 
-Each tile in the tilemap is a coordinate pair `(tile_x, tile_y)` (`u8`, `u8`) pointing to the position of the 8×8 tile in the source image bank. In the TOML data, these pairs are **interleaved** within each row: `[tx0, ty0, tx1, ty1, ...]`, so each row has `width × 2` elements.
+Each tile in the tilemap is a coordinate pair `(tile_x, tile_y)` (`u16`, `u16`) pointing to the position of the 8×8 tile in the source image bank. In the TOML data, these pairs are **interleaved** within each row: `[tx0, ty0, tx1, ty1, ...]`, so each row has `width × 2` elements.
 
 For example, a tilemap row of 3 tiles referencing image positions (10, 6), (11, 6), and (12, 6) is stored as `[10, 6, 11, 6, 12, 6]`.
 

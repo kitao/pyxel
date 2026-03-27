@@ -194,6 +194,7 @@ pub fn init(
 
     Audio::start();
     if !headless {
+        pyxel().update_screen_params();
         pyxel().set_icon(&ICON_DATA, ICON_SCALE, ICON_COLKEY);
     }
 }
@@ -335,7 +336,7 @@ fn init_tones() -> Vec<*mut Tone> {
                 1 => set_tone!(t, DEFAULT_TONE_1),
                 2 => set_tone!(t, DEFAULT_TONE_2),
                 3 => set_tone!(t, DEFAULT_TONE_3),
-                _ => panic!(),
+                _ => unreachable!(),
             }
             tone
         })

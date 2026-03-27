@@ -40,12 +40,7 @@ impl ImageData {
     fn to_image(&self) -> *mut Image {
         let data = expand_vec2(&self.data, self.height as usize, self.width as usize);
         let image = Image::new(self.width, self.height);
-
-        {
-            let image = unsafe { &mut *image };
-            image.canvas.data = data.into_iter().flatten().collect();
-        }
-
+        unsafe { &mut *image }.canvas.data = data.into_iter().flatten().collect();
         image
     }
 }
@@ -68,15 +63,11 @@ impl TilemapData {
             ImageSource::Image(_) => 0,
         };
 
-        let data: Vec<_> = tilemap
+        let data: Vec<Vec<_>> = tilemap
             .canvas
             .data
-            .iter()
-            .flat_map(|(tx, ty)| [*tx, *ty])
-            .collect();
-        let data: Vec<Vec<_>> = data
-            .chunks((width * 2) as usize)
-            .map(<[ImageTileCoord]>::to_vec)
+            .chunks(width as usize)
+            .map(|row| row.iter().flat_map(|(tx, ty)| [*tx, *ty]).collect())
             .collect();
         let data = compress_vec2(&data);
 
@@ -91,13 +82,8 @@ impl TilemapData {
     fn to_tilemap(&self) -> *mut Tilemap {
         let data = expand_vec2(&self.data, self.height as usize, (self.width * 2) as usize);
         let tilemap = Tilemap::new(self.width, self.height, ImageSource::Index(self.imgsrc));
-
-        {
-            let tilemap = unsafe { &mut *tilemap };
-            let data: Vec<_> = data.into_iter().flatten().collect();
-            tilemap.canvas.data = data.chunks(2).map(|chunk| (chunk[0], chunk[1])).collect();
-        }
-
+        let flat: Vec<_> = data.into_iter().flatten().collect();
+        unsafe { &mut *tilemap }.canvas.data = flat.chunks(2).map(|c| (c[0], c[1])).collect();
         tilemap
     }
 }
@@ -124,18 +110,14 @@ impl SoundData {
     }
 
     fn to_sound(&self) -> *mut Sound {
-        let sound = Sound::new();
-
-        {
-            let sound = unsafe { &mut *sound };
-            sound.notes.clone_from(&self.notes);
-            sound.tones.clone_from(&self.tones);
-            sound.volumes.clone_from(&self.volumes);
-            sound.effects.clone_from(&self.effects);
-            sound.speed = self.speed;
-        }
-
-        sound
+        let ptr = Sound::new();
+        let sound = unsafe { &mut *ptr };
+        sound.notes.clone_from(&self.notes);
+        sound.tones.clone_from(&self.tones);
+        sound.volumes.clone_from(&self.volumes);
+        sound.effects.clone_from(&self.effects);
+        sound.speed = self.speed;
+        ptr
     }
 }
 
@@ -153,15 +135,9 @@ impl MusicData {
     }
 
     fn to_music(&self) -> *mut Music {
-        let seqs = trim_empty_vecs(&self.seqs);
-        let music = Music::new();
-
-        {
-            let music = unsafe { &mut *music };
-            music.seqs = seqs;
-        }
-
-        music
+        let ptr = Music::new();
+        unsafe { &mut *ptr }.seqs = trim_empty_vecs(&self.seqs);
+        ptr
     }
 }
 
@@ -172,6 +148,15 @@ pub struct ResourceData {
     tilemaps: Vec<TilemapData>,
     sounds: Vec<SoundData>,
     musics: Vec<MusicData>,
+}
+
+#[derive(Serialize)]
+struct ResourceDataRef<'a> {
+    format_version: u32,
+    images: &'a [ImageData],
+    tilemaps: &'a [TilemapData],
+    sounds: &'a [SoundData],
+    musics: &'a [MusicData],
 }
 
 impl ResourceData {
@@ -209,18 +194,40 @@ impl ResourceData {
         exclude_sounds: bool,
         exclude_musics: bool,
     ) {
-        if !exclude_images && !self.images.is_empty() {
-            *pyxel::images() = self.images.iter().map(ImageData::to_image).collect();
+        macro_rules! restore {
+            ($exclude:expr, $data:expr, $accessor:expr, $converter:path) => {
+                if !$exclude && !$data.is_empty() {
+                    for &ptr in $accessor().iter() {
+                        unsafe { drop(Box::from_raw(ptr)) };
+                    }
+                    *$accessor() = $data.iter().map($converter).collect();
+                }
+            };
         }
-        if !exclude_tilemaps && !self.tilemaps.is_empty() {
-            *pyxel::tilemaps() = self.tilemaps.iter().map(TilemapData::to_tilemap).collect();
-        }
-        if !exclude_sounds && !self.sounds.is_empty() {
-            *pyxel::sounds() = self.sounds.iter().map(SoundData::to_sound).collect();
-        }
-        if !exclude_musics && !self.musics.is_empty() {
-            *pyxel::musics() = self.musics.iter().map(MusicData::to_music).collect();
-        }
+        restore!(
+            exclude_images,
+            self.images,
+            pyxel::images,
+            ImageData::to_image
+        );
+        restore!(
+            exclude_tilemaps,
+            self.tilemaps,
+            pyxel::tilemaps,
+            TilemapData::to_tilemap
+        );
+        restore!(
+            exclude_sounds,
+            self.sounds,
+            pyxel::sounds,
+            SoundData::to_sound
+        );
+        restore!(
+            exclude_musics,
+            self.musics,
+            pyxel::musics,
+            MusicData::to_music
+        );
     }
 
     pub fn to_toml(
@@ -230,24 +237,33 @@ impl ResourceData {
         exclude_sounds: bool,
         exclude_musics: bool,
     ) -> String {
-        let mut resource_data = (*self).clone();
-
-        if exclude_images {
-            resource_data.images.clear();
-        }
-
-        if exclude_tilemaps {
-            resource_data.tilemaps.clear();
-        }
-
-        if exclude_sounds {
-            resource_data.sounds.clear();
-        }
-
-        if exclude_musics {
-            resource_data.musics.clear();
-        }
-
-        toml::to_string(&resource_data).unwrap()
+        let empty_images = Vec::new();
+        let empty_tilemaps = Vec::new();
+        let empty_sounds = Vec::new();
+        let empty_musics = Vec::new();
+        let view = ResourceDataRef {
+            format_version: self.format_version,
+            images: if exclude_images {
+                &empty_images
+            } else {
+                &self.images
+            },
+            tilemaps: if exclude_tilemaps {
+                &empty_tilemaps
+            } else {
+                &self.tilemaps
+            },
+            sounds: if exclude_sounds {
+                &empty_sounds
+            } else {
+                &self.sounds
+            },
+            musics: if exclude_musics {
+                &empty_musics
+            } else {
+                &self.musics
+            },
+        };
+        toml::to_string(&view).unwrap()
     }
 }

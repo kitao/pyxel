@@ -55,15 +55,17 @@ class Widget:
         self._width = width
         self._height = height
         self._event_listeners = {}
+        self._init_visibility(is_visible)
+        self._init_enablement(is_enabled)
 
-        # Initialize is_visible_var
+    def _init_visibility(self, is_visible):
         self.new_var("is_visible_var", is_visible)
         self.add_var_event_listener("is_visible_var", "get", self.__on_is_visible_get)
         self.add_var_event_listener(
             "is_visible_var", "change", self.__on_is_visible_change
         )
 
-        # Initialize is_enabled_var
+    def _init_enablement(self, is_enabled):
         self.new_var("is_enabled_var", is_enabled)
         self.add_var_event_listener("is_enabled_var", "get", self.__on_is_enabled_get)
         self.add_var_event_listener(
@@ -89,7 +91,7 @@ class Widget:
     def is_hit(self, x, y):
         x -= self.x
         y -= self.y
-        return 0 <= x <= self.width - 1 and 0 <= y <= self.height - 1
+        return 0 <= x < self.width and 0 <= y < self.height
 
     def set_pos(self, x, y):
         self._x = x
@@ -100,16 +102,13 @@ class Widget:
         self._height = height
 
     def add_event_listener(self, event, listener):
-        self._event_listeners.setdefault(event, [])
-        self._event_listeners[event].append(listener)
+        self._event_listeners.setdefault(event, []).append(listener)
 
     def remove_event_listener(self, event, listener):
-        self._event_listeners.setdefault(event, [])
         self._event_listeners[event].remove(listener)
 
     def trigger_event(self, event, *args):
-        self._event_listeners.setdefault(event, [])
-        for listener in self._event_listeners[event]:
+        for listener in self._event_listeners.get(event, ()):
             listener(*args)
 
     def update_all(self):
@@ -132,18 +131,15 @@ class Widget:
         x = pyxel.mouse_x
         y = pyxel.mouse_y
         if self.is_hit(x, y):
-            if pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT):
-                key = pyxel.MOUSE_BUTTON_LEFT
-            elif pyxel.btnp(pyxel.MOUSE_BUTTON_RIGHT):
-                key = pyxel.MOUSE_BUTTON_RIGHT
-            elif pyxel.btnp(pyxel.MOUSE_BUTTON_MIDDLE):
-                key = pyxel.MOUSE_BUTTON_MIDDLE
-            else:
-                key = None
-
-            if key is not None:
-                self._start_capture(key)
-                self.trigger_event("mouse_down", key, x, y)
+            for btn in (
+                pyxel.MOUSE_BUTTON_LEFT,
+                pyxel.MOUSE_BUTTON_RIGHT,
+                pyxel.MOUSE_BUTTON_MIDDLE,
+            ):
+                if pyxel.btnp(btn):
+                    self._start_capture(btn)
+                    self.trigger_event("mouse_down", btn, x, y)
+                    break
 
             self.trigger_event("mouse_hover", x, y)
             return True
@@ -231,6 +227,9 @@ class Widget:
             pyxel.pset(x + w - 1, y + h - 1, WIDGET_SHADOW_COLOR)
 
     def _bind_var_property(self, name, member_name):
+        if isinstance(getattr(self.__class__, name, None), property):
+            return
+
         def getter(self):
             return getattr(self, member_name).get()
 
@@ -262,7 +261,9 @@ class Widget:
 
     @staticmethod
     def _widget_var_name(name):
-        return "_widget_var_" + name
+        return f"_widget_var_{name}"
+
+    # Visibility callbacks
 
     def __on_is_visible_get(self, value):
         return (self._parent.is_visible_var and value) if self._parent else value
@@ -275,6 +276,8 @@ class Widget:
         for child in self._children:
             if child.is_visible_var == is_visible:
                 child._trigger_visible_event(is_visible)
+
+    # Enablement callbacks
 
     def __on_is_enabled_get(self, value):
         return (self._parent.is_enabled_var and value) if self._parent else value

@@ -51,10 +51,7 @@ impl RectArea {
     }
 
     pub const fn contains(&self, x: i32, y: i32) -> bool {
-        x >= self.left
-            && x < self.left + self.width as i32
-            && y >= self.top
-            && y < self.top + self.height as i32
+        x >= self.left && x <= self.right && y >= self.top && y <= self.bottom
     }
 
     pub fn intersects(&self, rect: Self) -> Self {
@@ -76,6 +73,8 @@ impl RectArea {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    // ── Construction ──
 
     #[test]
     fn test_rect_new() {
@@ -105,16 +104,40 @@ mod tests {
     }
 
     #[test]
-    fn test_rect_is_empty() {
-        let rect1 = RectArea::new(1, 2, 3, 4);
-        assert!(!rect1.is_empty());
-
-        let rect2 = RectArea::new(1, 2, 0, 4);
-        assert!(rect2.is_empty());
-
-        let rect3 = RectArea::new(1, 2, 3, 0);
-        assert!(rect3.is_empty());
+    fn test_rect_negative_coordinates() {
+        let rect = RectArea::new(-10, -5, 20, 10);
+        assert_eq!(rect.left(), -10);
+        assert_eq!(rect.top(), -5);
+        assert_eq!(rect.right(), 9);
+        assert_eq!(rect.bottom(), 4);
+        assert_eq!(rect.width(), 20);
+        assert_eq!(rect.height(), 10);
     }
+
+    #[test]
+    fn test_rect_single_pixel() {
+        let rect = RectArea::new(5, 5, 1, 1);
+        assert_eq!(rect.left(), 5);
+        assert_eq!(rect.right(), 5);
+        assert_eq!(rect.top(), 5);
+        assert_eq!(rect.bottom(), 5);
+        assert!(!rect.is_empty());
+        assert!(rect.contains(5, 5));
+        assert!(!rect.contains(4, 5));
+        assert!(!rect.contains(6, 5));
+    }
+
+    // ── is_empty ──
+
+    #[test]
+    fn test_rect_is_empty() {
+        assert!(!RectArea::new(1, 2, 3, 4).is_empty());
+        assert!(RectArea::new(1, 2, 0, 4).is_empty());
+        assert!(RectArea::new(1, 2, 3, 0).is_empty());
+        assert!(RectArea::new(0, 0, 0, 0).is_empty());
+    }
+
+    // ── contains ──
 
     #[test]
     fn test_rect_contains() {
@@ -137,6 +160,18 @@ mod tests {
     }
 
     #[test]
+    fn test_rect_contains_negative_coords() {
+        let rect = RectArea::new(-5, -5, 10, 10);
+        assert!(rect.contains(-5, -5));
+        assert!(rect.contains(0, 0));
+        assert!(rect.contains(4, 4));
+        assert!(!rect.contains(-6, 0));
+        assert!(!rect.contains(5, 0));
+    }
+
+    // ── intersects ──
+
+    #[test]
     fn test_rect_intersects() {
         let rect1 = RectArea::new(10, 20, 30, 40);
         let rect2 = RectArea::new(11, 22, 300, 400);
@@ -148,5 +183,42 @@ mod tests {
         assert_eq!(rect1.intersects(rect3), RectArea::new(10, 20, 5, 6));
         assert!(rect1.intersects(rect4).is_empty());
         assert!(rect1.intersects(rect5).is_empty());
+    }
+
+    #[test]
+    fn test_rect_self_intersects() {
+        let rect = RectArea::new(10, 20, 30, 40);
+        assert_eq!(rect.intersects(rect), rect);
+    }
+
+    #[test]
+    fn test_rect_intersects_commutativity() {
+        let a = RectArea::new(0, 0, 20, 20);
+        let b = RectArea::new(10, 10, 30, 30);
+        assert_eq!(a.intersects(b), b.intersects(a));
+    }
+
+    #[test]
+    fn test_rect_intersects_edge_touching() {
+        // Rects share exactly one column of pixels
+        let a = RectArea::new(0, 0, 10, 10);
+        let b = RectArea::new(9, 0, 10, 10);
+        let result = a.intersects(b);
+        assert_eq!(result.width(), 1);
+        assert_eq!(result.height(), 10);
+
+        // Rects share exactly one row of pixels
+        let c = RectArea::new(0, 9, 10, 10);
+        let result = a.intersects(c);
+        assert_eq!(result.width(), 10);
+        assert_eq!(result.height(), 1);
+    }
+
+    #[test]
+    fn test_rect_intersects_adjacent_no_overlap() {
+        // Adjacent rects with no shared pixels
+        let a = RectArea::new(0, 0, 10, 10);
+        let b = RectArea::new(10, 0, 10, 10); // starts at right+1 of a
+        assert!(a.intersects(b).is_empty());
     }
 }

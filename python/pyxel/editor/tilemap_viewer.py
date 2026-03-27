@@ -1,6 +1,6 @@
 import pyxel
 
-from .settings import PANEL_FOCUS_BORDER_COLOR, PANEL_FOCUS_COLOR
+from .settings import PANEL_FOCUS_BORDER_COLOR, PANEL_FOCUS_COLOR, clamp
 from .widgets import Widget
 
 
@@ -15,7 +15,7 @@ class TilemapViewer(Widget):
 
     def __init__(self, parent):
         super().__init__(parent, 157, 16, 66, 65)
-        self._tilemap_image = pyxel.Image(64, 63)
+        self._tilemap_image = pyxel.Image(64, 64)
         self.copy_var("tilemap_index_var", parent)
         self.copy_var("help_message_var", parent)
 
@@ -35,15 +35,15 @@ class TilemapViewer(Widget):
         self.add_event_listener("draw", self.__on_draw)
 
     def _screen_to_focus(self, x, y):
-        x = min(max((x - self.x - 1) // 2, 0), 31)
-        y = min(max((y - self.y - 1) // 2, 0), 31)
+        x = clamp((x - self.x - 1) // 2, 0, 31)
+        y = clamp((y - self.y - 1) // 2, 0, 31)
         return x, y
 
     def __on_focus_x_set(self, value):
-        return min(max(value, 0), 30)
+        return clamp(value, 0, 30)
 
     def __on_focus_y_set(self, value):
-        return min(max(value, 0), 30)
+        return clamp(value, 0, 30)
 
     def __on_mouse_down(self, key, x, y):
         if key == pyxel.MOUSE_BUTTON_LEFT:

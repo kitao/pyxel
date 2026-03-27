@@ -8,12 +8,12 @@ use crate::key::{
     KEY_RETURN, KEY_SHIFT,
 };
 use crate::platform::key::GAMEPAD1_BUTTON_BACK;
-use crate::platform::Event;
+use crate::platform::{self, Event};
 use crate::profiler::Profiler;
 use crate::pyxel::{self, Pyxel};
 use crate::settings::{MAX_FRAME_DELAY_MS, NUM_MEASURE_FRAMES, NUM_SCREEN_TYPES};
+use crate::utils;
 use crate::window_watcher::WindowWatcher;
-use crate::{platform, utils};
 
 pub trait PyxelCallback {
     fn update(&mut self, pyxel: &mut Pyxel);
@@ -31,6 +31,7 @@ pub struct System {
     perf_monitor_enabled: bool,
     integer_scale_enabled: bool,
     window_watcher: WindowWatcher,
+    event_buf: Vec<Event>,
     pub screen_x: i32,
     pub screen_y: i32,
     pub screen_scale: f32,
@@ -54,6 +55,7 @@ impl System {
             } else {
                 WindowWatcher::new()
             },
+            event_buf: Vec::new(),
             screen_x: 0,
             screen_y: 0,
             screen_scale: 0.0,
@@ -92,6 +94,14 @@ impl Pyxel {
 
         unsafe impl Send for App {}
 
+        impl Drop for App {
+            fn drop(&mut self) {
+                unsafe {
+                    drop(Box::from_raw(self.image));
+                }
+            }
+        }
+
         impl PyxelCallback for App {
             fn update(&mut self, _pyxel: &mut Pyxel) {}
             fn draw(&mut self, _pyxel: &mut Pyxel) {
@@ -110,10 +120,6 @@ impl Pyxel {
                     );
                 }
             }
-        }
-
-        if *pyxel::is_headless() {
-            return;
         }
 
         let image = Image::new(*pyxel::width(), *pyxel::height());
@@ -136,14 +142,6 @@ impl Pyxel {
     }
 
     pub fn flip_screen(&mut self) {
-        if *pyxel::is_headless() {
-            if platform::is_sigint_received() {
-                platform::quit();
-            }
-            *pyxel::frame_count() += 1;
-            return;
-        }
-
         self.system.update_profiler.end(platform::ticks());
 
         self.draw_frame(None);
@@ -200,8 +198,8 @@ impl Pyxel {
         let colors = pyxel::colors();
         let width = utils::simplify_string(data_str[0]).len() as u32;
         let height = data_str.len() as u32;
-        let image = Image::new(width, height);
-        let image = unsafe { &mut *image };
+        let image_ptr = Image::new(width, height);
+        let image = unsafe { &mut *image_ptr };
         image.set(0, 0, data_str);
         let image_data = &image.canvas.data;
         let scaled_width = width * scale;
@@ -224,6 +222,9 @@ impl Pyxel {
             }
         }
 
+        unsafe {
+            drop(Box::from_raw(image_ptr));
+        }
         platform::set_window_icon(scaled_width, scaled_height, &rgba);
     }
 
@@ -254,9 +255,10 @@ impl Pyxel {
 
         self.start_input_frame();
 
-        let events = platform::poll_events();
+        platform::poll_events(&mut self.system.event_buf);
+        let mut events = std::mem::take(&mut self.system.event_buf);
 
-        for event in events {
+        for event in events.drain(..) {
             match event {
                 Event::WindowShown => {
                     self.system.paused = false;
@@ -266,26 +268,17 @@ impl Pyxel {
                     self.system.paused = true;
                     platform::pause_audio(true);
                 }
-                Event::KeyPressed { key } => {
-                    self.press_key(key);
-                }
-                Event::KeyReleased { key } => {
-                    self.release_key(key);
-                }
-                Event::KeyValueChanged { key, value } => {
-                    self.change_key_value(key, value);
-                }
-                Event::TextInput { text } => {
-                    self.add_input_text(&text);
-                }
-                Event::FileDropped { filename } => {
-                    self.add_dropped_file(&filename);
-                }
-                Event::Quit => {
-                    platform::quit();
-                }
+                Event::KeyPressed { key } => self.press_key(key),
+                Event::KeyReleased { key } => self.release_key(key),
+                Event::KeyValueChanged { key, value } => self.change_key_value(key, value),
+                Event::TextInput { text } => self.add_input_text(&text),
+                Event::FileDropped { filename } => self.add_dropped_file(&filename),
+                Event::Quit => platform::quit(),
             }
         }
+
+        // Return the buffer for reuse
+        self.system.event_buf = events;
     }
 
     fn check_special_input(&mut self) {
@@ -328,7 +321,7 @@ impl Pyxel {
                 self.reset_key(KEY_0);
                 self.set_perf_monitor(!self.system.perf_monitor_enabled);
             } else if self.is_button_pressed(KEY_R, None, None) {
-                self.reset_key(KEY_RETURN);
+                self.reset_key(KEY_R);
                 self.restart();
             } else if self.is_button_pressed(KEY_RETURN, None, None) {
                 self.reset_key(KEY_RETURN);
@@ -358,7 +351,7 @@ impl Pyxel {
         }
     }
 
-    fn update_screen_params(&mut self) {
+    pub(crate) fn update_screen_params(&mut self) {
         let (window_width, window_height) = platform::window_size();
         let w = *pyxel::width() as f32;
         let h = *pyxel::height() as f32;

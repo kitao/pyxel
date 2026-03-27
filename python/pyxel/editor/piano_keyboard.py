@@ -1,9 +1,14 @@
 import pyxel
 
-from .settings import EDITOR_IMAGE, PIANO_KEYBOARD_PLAY_COLOR, PIANO_KEYBOARD_REST_COLOR
+from .settings import (
+    EDITOR_IMAGE,
+    PIANO_KEYBOARD_PLAY_COLOR,
+    PIANO_KEYBOARD_REST_COLOR,
+    is_modifier_pressed,
+)
 from .widgets import Widget
 
-KEY_TABLE = [
+_KEY_TABLE = [
     pyxel.KEY_Z,
     pyxel.KEY_S,
     pyxel.KEY_X,
@@ -29,6 +34,30 @@ KEY_TABLE = [
     pyxel.KEY_7,
     pyxel.KEY_U,
 ]
+
+# Table-driven Y-coordinate ranges for black/white key note mapping
+# Within a 24px octave block: (y_start, y_end, note_offset)
+_BLACK_KEY_RANGES = [
+    (2, 4, 10),
+    (6, 8, 8),
+    (10, 12, 6),
+    (16, 18, 3),
+    (20, 22, 1),
+]
+_WHITE_KEY_RANGES = [
+    (0, 2, 11),
+    (2, 6, 9),
+    (6, 10, 7),
+    (10, 13, 5),
+    (13, 16, 4),
+    (16, 20, 2),
+    (20, 24, 0),
+]
+
+# Note key classification for draw highlight shapes
+_BOTTOM_WHITE_KEYS = {0, 5}  # C, F — white key at bottom of pair
+_TOP_WHITE_KEYS = {4, 11}  # E, B — white key at top of pair
+_FULL_WHITE_KEYS = {2, 7, 9}  # D, G, A — white key between two black keys
 
 
 class PianoKeyboard(Widget):
@@ -67,37 +96,24 @@ class PianoKeyboard(Widget):
     def _screen_to_note(self, x, y):
         x -= self.x
         y -= self.y
-        octave = (4 - y // 24) * 12  # Each octave is 24px high
+        octave = (4 - y // 24) * 12
         y %= 24
         if octave > 59:
             return 59
         if octave < 0:
             return -1
+
+        # Check black keys first (narrower region, x <= 6)
         if x <= 6:
-            if 2 <= y <= 4:
-                return octave + 10
-            elif 6 <= y <= 8:
-                return octave + 8
-            elif 10 <= y <= 12:
-                return octave + 6
-            elif 16 <= y <= 18:
-                return octave + 3
-            elif 20 <= y <= 22:
-                return octave + 1
-        if y <= 2:
-            return octave + 11
-        elif y <= 6:
-            return octave + 9
-        elif y <= 10:
-            return octave + 7
-        elif y <= 13:
-            return octave + 5
-        elif y <= 16:
-            return octave + 4
-        elif y <= 20:
-            return octave + 2
-        else:
-            return octave
+            for y_start, y_end, offset in _BLACK_KEY_RANGES:
+                if y_start <= y <= y_end:
+                    return octave + offset
+
+        # Then white keys
+        for y_start, y_end, offset in _WHITE_KEY_RANGES:
+            if y_start <= y < y_end:
+                return octave + offset
+        return octave
 
     def __on_mouse_down(self, key, x, y):
         if key != pyxel.MOUSE_BUTTON_LEFT:
@@ -116,22 +132,14 @@ class PianoKeyboard(Widget):
         self.help_message_var = "NOTE:Z/S/X..Q/2/W..A+ENTER TONE:1"
 
     def __on_update(self):
-        if (
-            self.field_cursor.y > 0
-            or self.is_playing_var
-            or pyxel.btn(pyxel.KEY_SHIFT)
-            or pyxel.btn(pyxel.KEY_CTRL)
-            or pyxel.btn(pyxel.KEY_ALT)
-            or pyxel.btn(pyxel.KEY_GUI)
-        ):
+        if self.field_cursor.y > 0 or self.is_playing_var or is_modifier_pressed():
             return
 
         if pyxel.btnp(pyxel.KEY_1):
             self._preview_tone = (self._preview_tone + 1) % 4
 
         self.note_var = self._mouse_note
-
-        for i, key in enumerate(KEY_TABLE):
+        for i, key in enumerate(_KEY_TABLE):
             if pyxel.btn(key):
                 self.note_var = self.octave_var * 12 + i
                 break
@@ -147,15 +155,7 @@ class PianoKeyboard(Widget):
             pyxel.stop(1)
 
     def __on_draw(self):
-        pyxel.blt(
-            self.x,
-            self.y,
-            EDITOR_IMAGE,
-            208,
-            0,
-            12,
-            123,
-        )
+        pyxel.blt(self.x, self.y, EDITOR_IMAGE, 208, 0, 12, 123)
 
         play_pos = pyxel.play_pos(0)
         notes = self.get_field(0)
@@ -173,13 +173,13 @@ class PianoKeyboard(Widget):
 
         if note == -1:
             pyxel.rect(x, y + 1, 12, 2, PIANO_KEYBOARD_REST_COLOR)
-        elif key == 0 or key == 5:
+        elif key in _BOTTOM_WHITE_KEYS:
             pyxel.rect(x, y + 1, 7, 1, PIANO_KEYBOARD_PLAY_COLOR)
             pyxel.rect(x + 7, y, 5, 2, PIANO_KEYBOARD_PLAY_COLOR)
-        elif key == 4 or key == 11:
+        elif key in _TOP_WHITE_KEYS:
             pyxel.rect(x, y + 1, 7, 1, PIANO_KEYBOARD_PLAY_COLOR)
             pyxel.rect(x + 7, y + 1, 5, 2, PIANO_KEYBOARD_PLAY_COLOR)
-        elif key == 2 or key == 7 or key == 9:
+        elif key in _FULL_WHITE_KEYS:
             pyxel.rect(x, y + 1, 7, 1, PIANO_KEYBOARD_PLAY_COLOR)
             pyxel.rect(x + 7, y, 5, 3, PIANO_KEYBOARD_PLAY_COLOR)
         else:

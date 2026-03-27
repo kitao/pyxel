@@ -8,7 +8,7 @@ use crate::platform;
 use crate::pyxel::{self, Pyxel};
 use crate::utils::f32_to_i32;
 
-#[derive(PartialEq)]
+#[derive(Copy, Clone, PartialEq)]
 enum KeyState {
     Pressed,
     Released,
@@ -33,25 +33,25 @@ impl Input {
 }
 
 impl Pyxel {
-    pub fn is_button_down(&mut self, key: Key) -> bool {
+    pub fn is_button_down(&self, key: Key) -> bool {
         assert!(
             !self.is_analog_key(key),
             "is_button_down is called with an analog key 0x{key:X}"
         );
 
         if let Some((frame_count, key_state)) = self.input.key_states.get(&key) {
-            if matches!(key_state, KeyState::Pressed | KeyState::ReleasedAndPressed)
-                || (*frame_count == *pyxel::frame_count()
-                    && *key_state == KeyState::PressedAndReleased)
-            {
-                return true;
+            match key_state {
+                KeyState::Pressed | KeyState::ReleasedAndPressed => true,
+                KeyState::PressedAndReleased => self.is_current_frame(*frame_count),
+                KeyState::Released => false,
             }
+        } else {
+            false
         }
-        false
     }
 
     pub fn is_button_pressed(
-        &mut self,
+        &self,
         key: Key,
         hold_frame_count: Option<u32>,
         repeat_frame_count: Option<u32>,
@@ -61,53 +61,50 @@ impl Pyxel {
             "is_button_pressed is called with an analog key 0x{key:X}"
         );
 
-        if let Some((frame_count, key_state)) = self.input.key_states.get(&key) {
-            if *key_state == KeyState::Released {
-                return false;
-            }
+        let Some((frame_count, key_state)) = self.input.key_states.get(&key) else {
+            return false;
+        };
 
-            if *frame_count == *pyxel::frame_count() {
-                return true;
-            }
-
-            if *key_state == KeyState::PressedAndReleased {
-                return false;
-            }
-
-            let hold_frame_count = hold_frame_count.unwrap_or(0);
-            let repeat_frame_count = repeat_frame_count.unwrap_or(0);
-            if repeat_frame_count == 0 {
-                return false;
-            }
-
-            let elapsed_frames =
-                *pyxel::frame_count() as i32 - (*frame_count + hold_frame_count) as i32;
-            if elapsed_frames >= 0 && elapsed_frames % repeat_frame_count as i32 == 0 {
-                return true;
-            }
+        if *key_state == KeyState::Released {
+            return false;
         }
-        false
+
+        if self.is_current_frame(*frame_count) {
+            return true;
+        }
+
+        if *key_state == KeyState::PressedAndReleased {
+            return false;
+        }
+
+        // Key repeat logic
+        let repeat = repeat_frame_count.unwrap_or(0);
+        if repeat == 0 {
+            return false;
+        }
+
+        let hold = hold_frame_count.unwrap_or(0);
+        let elapsed = *pyxel::frame_count() as i32 - (*frame_count + hold) as i32;
+        elapsed >= 0 && elapsed % repeat as i32 == 0
     }
 
-    pub fn is_button_released(&mut self, key: Key) -> bool {
+    pub fn is_button_released(&self, key: Key) -> bool {
         assert!(
             !self.is_analog_key(key),
             "is_button_released is called with an analog key 0x{key:X}"
         );
 
         if let Some((frame_count, key_state)) = self.input.key_states.get(&key) {
-            if *key_state == KeyState::Pressed {
-                return false;
+            match key_state {
+                KeyState::Pressed => false,
+                _ => self.is_current_frame(*frame_count),
             }
-
-            if *frame_count == *pyxel::frame_count() {
-                return true;
-            }
+        } else {
+            false
         }
-        false
     }
 
-    pub fn button_value(&mut self, key: Key) -> KeyValue {
+    pub fn button_value(&self, key: Key) -> KeyValue {
         assert!(
             self.is_analog_key(key),
             "button_value is called with a non-analog key 0x{key:X}"
@@ -123,6 +120,8 @@ impl Pyxel {
     pub fn set_mouse_position(&mut self, x: f32, y: f32) {
         let x = f32_to_i32(x);
         let y = f32_to_i32(y);
+        *pyxel::mouse_x() = x;
+        *pyxel::mouse_y() = y;
         self.input.key_values.insert(MOUSE_POS_X, x);
         self.input.key_values.insert(MOUSE_POS_Y, y);
         if !*pyxel::is_headless() {
@@ -130,6 +129,30 @@ impl Pyxel {
                 x * self.system.screen_scale as i32 + self.system.screen_x,
                 y * self.system.screen_scale as i32 + self.system.screen_y,
             );
+        }
+    }
+
+    pub fn set_button_state(&mut self, key: Key, state: bool) {
+        if state {
+            self.press_key(key);
+        } else {
+            self.release_key(key);
+        }
+    }
+
+    pub fn set_button_value(&mut self, key: Key, value: KeyValue) {
+        self.change_key_value(key, value);
+    }
+
+    pub fn set_input_text(&mut self, text: &str) {
+        pyxel::input_text().clear();
+        self.add_input_text(text);
+    }
+
+    pub fn set_dropped_files(&mut self, files: &[&str]) {
+        pyxel::dropped_files().clear();
+        for file in files {
+            self.add_dropped_file(file);
         }
     }
 
@@ -147,12 +170,12 @@ impl Pyxel {
     }
 
     pub(crate) fn press_key(&mut self, key: Key) {
-        let mut key_state = KeyState::Pressed;
-        if let Some((last_frame_count, last_key_state)) = self.input.key_states.get(&key) {
-            if *last_frame_count == *pyxel::frame_count() && *last_key_state != KeyState::Pressed {
-                key_state = KeyState::ReleasedAndPressed;
-            }
-        }
+        // Detect release-then-press within the same frame
+        let key_state = if self.is_same_frame_transition(key, KeyState::Pressed) {
+            KeyState::ReleasedAndPressed
+        } else {
+            KeyState::Pressed
+        };
 
         self.input
             .key_states
@@ -163,12 +186,12 @@ impl Pyxel {
     }
 
     pub(crate) fn release_key(&mut self, key: Key) {
-        let mut key_state = KeyState::Released;
-        if let Some((last_frame_count, last_key_state)) = self.input.key_states.get(&key) {
-            if *last_frame_count == *pyxel::frame_count() && *last_key_state != KeyState::Released {
-                key_state = KeyState::PressedAndReleased;
-            }
-        }
+        // Detect press-then-release within the same frame
+        let key_state = if self.is_same_frame_transition(key, KeyState::Released) {
+            KeyState::PressedAndReleased
+        } else {
+            KeyState::Released
+        };
 
         self.input
             .key_states
@@ -204,6 +227,18 @@ impl Pyxel {
 
     pub(crate) fn is_mouse_visible(&self) -> bool {
         self.input.mouse_visible
+    }
+
+    fn is_current_frame(&self, frame_count: u32) -> bool {
+        frame_count == *pyxel::frame_count()
+    }
+
+    /// Returns true if key was already touched this frame and is not in the given state.
+    fn is_same_frame_transition(&self, key: Key, current_state: KeyState) -> bool {
+        matches!(
+            self.input.key_states.get(&key),
+            Some((fc, state)) if *fc == *pyxel::frame_count() && *state != current_state
+        )
     }
 
     fn is_analog_key(&self, key: Key) -> bool {

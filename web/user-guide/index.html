@@ -17,16 +17,6 @@
     <script>
       let data, lang = "en";
 
-      function t(o) {
-        if (!o) return "";
-        if (typeof o === "string") return data?.ui[o] ? t(data.ui[o]) : o;
-        return o[lang] || o["en"] || "";
-      }
-
-      function code(s, syntax) {
-        return `<pre class="code-block"><code class="language-${syntax || "plaintext"}">${esc(s)}</code></pre>`;
-      }
-
       function shortcutTable(items) {
         let h = `<div class="overflow-x-auto"><table class="w-full border-collapse">
           <thead><tr><th class="th">Key</th><th class="th">Action</th></tr></thead><tbody>`;
@@ -362,7 +352,8 @@ pyxel.show()`, "python")}
           data = json;
           lang = detectLanguage(data.languages);
           build();
-        });
+        })
+        .catch((e) => console.error("Failed to load data:", e));
     </script>
   </body>
 </html>

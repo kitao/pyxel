@@ -1,10 +1,6 @@
-use std::sync::Once;
-
 use pyo3::exceptions::PyException;
 use pyo3::prelude::*;
 use pyo3::types::{PyList, PySlice, PyTuple};
-
-static SNDS_LIST_ONCE: Once = Once::new();
 
 #[derive(Clone, Copy)]
 pub struct SeqRef {
@@ -39,44 +35,70 @@ unsafe impl Send for Seqs {}
 unsafe impl Sync for Seqs {}
 
 impl Seqs {
-    pub fn wrap(inner: *mut pyxel::Music) -> Self {
+    fn wrap(inner: *mut pyxel::Music) -> Self {
         Self { inner }
+    }
+
+    fn inner_ref(&self) -> &pyxel::Music {
+        unsafe { &*self.inner }
+    }
+
+    #[allow(clippy::mut_from_ref)]
+    fn inner_mut(&self) -> &mut pyxel::Music {
+        unsafe { &mut *self.inner }
+    }
+
+    fn seq_ref(&self, index: usize) -> Seq {
+        Seq::wrap(SeqRef {
+            music: self.inner,
+            index,
+        })
     }
 }
 
 #[pymethods]
 impl Seqs {
+    // Read operations
+
     fn __len__(&self) -> usize {
-        unsafe { &*self.inner }.seqs.len()
+        self.inner_ref().seqs.len()
     }
 
     fn __getitem__<'py>(&self, py: Python<'py>, key: &Bound<'py, PyAny>) -> PyResult<Py<PyAny>> {
         if let Ok(slice) = key.cast::<PySlice>() {
-            let len = unsafe { &*self.inner }.seqs.len();
-            let indices = slice.indices(len as isize)?;
+            let indices = slice.indices(self.__len__() as isize)?;
             let idx_list = collect_slice_indices!(indices.start, indices.stop, indices.step);
-            let items: Vec<Seq> = idx_list
-                .iter()
-                .map(|&i| {
-                    Seq::wrap(SeqRef {
-                        music: self.inner,
-                        index: i,
-                    })
-                })
-                .collect();
+            let items: Vec<Seq> = idx_list.iter().map(|&i| self.seq_ref(i)).collect();
             let list = PyList::new(py, items)?;
             Ok(list.into_any().unbind())
         } else {
             let idx: isize = key.extract()?;
-            let len = unsafe { &*self.inner }.seqs.len();
-            let i = resolve_index!(idx, len)?;
-            let seq = Seq::wrap(SeqRef {
-                music: self.inner,
-                index: i,
-            });
-            Ok(seq.into_pyobject(py)?.into_any().unbind())
+            let i = resolve_index!(idx, self.__len__())?;
+            Ok(self.seq_ref(i).into_pyobject(py)?.into_any().unbind())
         }
     }
+
+    fn __iter__(&self, py: Python<'_>) -> PyResult<Py<PyAny>> {
+        let items: Vec<Seq> = (0..self.__len__()).map(|i| self.seq_ref(i)).collect();
+        items_to_pyiter!(py, items)
+    }
+
+    fn __reversed__(&self, py: Python<'_>) -> PyResult<Py<PyAny>> {
+        let items: Vec<Seq> = (0..self.__len__()).rev().map(|i| self.seq_ref(i)).collect();
+        items_to_pyiter!(py, items)
+    }
+
+    fn __repr__(&self, py: Python) -> PyResult<String> {
+        let seqs: Vec<Vec<u32>> = self.inner_ref().seqs.clone();
+        let list = PyList::new(py, seqs)?;
+        Ok(format!("Seqs{}", list.repr()?.to_string_lossy()))
+    }
+
+    fn __bool__(&self) -> bool {
+        !self.inner_ref().seqs.is_empty()
+    }
+
+    // Write operations
 
     fn __setitem__<'py>(
         &self,
@@ -85,9 +107,8 @@ impl Seqs {
         value: &Bound<'py, PyAny>,
     ) -> PyResult<()> {
         if let Ok(slice) = key.cast::<PySlice>() {
-            let music = unsafe { &mut *self.inner };
-            let len = music.seqs.len();
-            let indices = slice.indices(len as isize)?;
+            let music = self.inner_mut();
+            let indices = slice.indices(music.seqs.len() as isize)?;
             let new_values: Vec<Vec<u32>> = value.extract()?;
             if indices.step == 1 {
                 let start = indices.start as usize;
@@ -109,21 +130,19 @@ impl Seqs {
             Ok(())
         } else {
             let idx: isize = key.extract()?;
-            let music = unsafe { &mut *self.inner };
-            let len = music.seqs.len();
-            let i = resolve_index!(idx, len)?;
-            let val: Vec<u32> = value.extract()?;
-            music.seqs[i] = val;
+            let music = self.inner_mut();
+            let i = resolve_index!(idx, music.seqs.len())?;
+            music.seqs[i] = value.extract()?;
             Ok(())
         }
     }
 
     fn __delitem__<'py>(&self, _py: Python<'py>, key: &Bound<'py, PyAny>) -> PyResult<()> {
         if let Ok(slice) = key.cast::<PySlice>() {
-            let music = unsafe { &mut *self.inner };
-            let len = music.seqs.len();
-            let indices = slice.indices(len as isize)?;
+            let music = self.inner_mut();
+            let indices = slice.indices(music.seqs.len() as isize)?;
             let mut idx_list = collect_slice_indices!(indices.start, indices.stop, indices.step);
+            // Remove from end to preserve earlier indices
             idx_list.sort_unstable_by(|a, b| b.cmp(a));
             for i in idx_list {
                 music.seqs.remove(i);
@@ -131,78 +150,28 @@ impl Seqs {
             Ok(())
         } else {
             let idx: isize = key.extract()?;
-            let music = unsafe { &mut *self.inner };
-            let len = music.seqs.len();
-            let i = resolve_index!(idx, len)?;
+            let music = self.inner_mut();
+            let i = resolve_index!(idx, music.seqs.len())?;
             music.seqs.remove(i);
             Ok(())
         }
     }
 
-    fn __iter__(&self, py: Python<'_>) -> PyResult<Py<PyAny>> {
-        let len = unsafe { &*self.inner }.seqs.len();
-        let items: Vec<Seq> = (0..len)
-            .map(|i| {
-                Seq::wrap(SeqRef {
-                    music: self.inner,
-                    index: i,
-                })
-            })
-            .collect();
-        let list = PyList::new(py, items)?;
-        let iter = list.call_method0("__iter__")?;
-        Ok(iter.unbind())
-    }
-
-    fn __reversed__(&self, py: Python<'_>) -> PyResult<Py<PyAny>> {
-        let len = unsafe { &*self.inner }.seqs.len();
-        let items: Vec<Seq> = (0..len)
-            .rev()
-            .map(|i| {
-                Seq::wrap(SeqRef {
-                    music: self.inner,
-                    index: i,
-                })
-            })
-            .collect();
-        let list = PyList::new(py, items)?;
-        let iter = list.call_method0("__iter__")?;
-        Ok(iter.unbind())
-    }
-
-    fn __repr__(&self, py: Python) -> PyResult<String> {
-        let music = unsafe { &*self.inner };
-        let seqs: Vec<Vec<u32>> = music.seqs.clone();
-        let list = PyList::new(py, seqs)?;
-        let repr = list.repr()?;
-        Ok(format!("Seqs{}", repr.to_string_lossy()))
-    }
-
-    fn __bool__(&self) -> bool {
-        !unsafe { &*self.inner }.seqs.is_empty()
-    }
-
     fn __iadd__(&self, values: Vec<Vec<u32>>) {
-        let music = unsafe { &mut *self.inner };
-        for val in values {
-            music.seqs.push(val);
-        }
+        self.inner_mut().seqs.extend(values);
     }
 
-    pub fn append(&self, value: Vec<u32>) {
-        unsafe { &mut *self.inner }.seqs.push(value);
+    fn append(&self, value: Vec<u32>) {
+        self.inner_mut().seqs.push(value);
     }
 
-    pub fn extend(&self, values: Vec<Vec<u32>>) {
-        let music = unsafe { &mut *self.inner };
-        for val in values {
-            music.seqs.push(val);
-        }
+    fn extend(&self, values: Vec<Vec<u32>>) {
+        self.inner_mut().seqs.extend(values);
     }
 
     #[pyo3(signature = (index, value))]
-    pub fn insert(&self, index: isize, value: Vec<u32>) {
-        let music = unsafe { &mut *self.inner };
+    fn insert(&self, index: isize, value: Vec<u32>) {
+        let music = self.inner_mut();
         let len = music.seqs.len();
         let i = if index < 0 {
             let resolved = index + len as isize;
@@ -220,44 +189,39 @@ impl Seqs {
     }
 
     #[pyo3(signature = (index=None))]
-    pub fn pop(&self, index: Option<isize>) -> PyResult<Seq> {
-        let music = unsafe { &mut *self.inner };
+    fn pop(&self, py: Python, index: Option<isize>) -> PyResult<Py<PyAny>> {
+        let music = self.inner_mut();
         let len = music.seqs.len();
         if len == 0 {
             return Err(pyo3::exceptions::PyIndexError::new_err(
                 "pop from empty sequence",
             ));
         }
-        let idx = index.unwrap_or(-1);
-        let i = resolve_index!(idx, len)?;
-        music.seqs.remove(i);
-        let new_len = music.seqs.len();
-        let safe_index = if new_len == 0 { 0 } else { i.min(new_len - 1) };
-        Ok(Seq::wrap(SeqRef {
-            music: self.inner,
-            index: safe_index,
-        }))
+        let i = resolve_index!(index.unwrap_or(-1), len)?;
+        let removed = music.seqs.remove(i);
+        Ok(PyList::new(py, &removed)?.into_any().unbind())
     }
 
-    pub fn clear(&self) {
-        unsafe { &mut *self.inner }.seqs.clear();
+    fn clear(&self) {
+        self.inner_mut().seqs.clear();
     }
 
-    pub fn from_list(&self, list: Vec<Vec<u32>>) {
-        static ONCE: Once = Once::new();
-        ONCE.call_once(|| {
-            println!("Seqs.from_list() is deprecated. Use slice assignment instead.");
-        });
-        unsafe { &mut *self.inner }.set(&list);
+    // Deprecated methods
+
+    fn from_list(&self, list: Vec<Vec<u32>>) {
+        deprecation_warning!(
+            FROM_LIST_ONCE,
+            "Seqs.from_list() is deprecated. Use slice assignment instead."
+        );
+        self.inner_mut().set(&list);
     }
 
-    pub fn to_list(&self, py: Python) -> PyResult<Py<PyAny>> {
-        static ONCE: Once = Once::new();
-        ONCE.call_once(|| {
-            println!("Seqs.to_list() is deprecated. Use list(seq) instead.");
-        });
-        let music = unsafe { &*self.inner };
-        let seqs: Vec<Vec<u32>> = music.seqs.clone();
+    fn to_list(&self, py: Python) -> PyResult<Py<PyAny>> {
+        deprecation_warning!(
+            TO_LIST_ONCE,
+            "Seqs.to_list() is deprecated. Use list(seq) instead."
+        );
+        let seqs: Vec<Vec<u32>> = self.inner_ref().seqs.clone();
         let list = PyList::new(py, seqs)?;
         Ok(list.unbind().into_any())
     }
@@ -276,45 +240,58 @@ impl Music {
     pub fn wrap(inner: *mut pyxel::Music) -> Self {
         Self { inner }
     }
+
+    #[allow(clippy::mut_from_ref)]
+    fn inner_mut(&self) -> &mut pyxel::Music {
+        unsafe { &mut *self.inner }
+    }
 }
 
 #[pymethods]
 impl Music {
+    // Constructor
+
     #[new]
-    pub fn new() -> Self {
+    fn new() -> Self {
         Self::wrap(pyxel::Music::new())
     }
 
+    // Properties
+
     #[getter]
-    pub fn seqs(&self) -> Seqs {
+    fn seqs(&self) -> Seqs {
         Seqs::wrap(self.inner)
     }
 
-    #[pyo3(signature = (*seqs))]
-    pub fn set(&self, seqs: &Bound<'_, PyTuple>) -> PyResult<()> {
-        let mut rust_seqs: Vec<Vec<u32>> = Vec::new();
-        for i in 0..seqs.len() {
-            let rust_seq: Vec<u32> = seqs.get_item(i)?.extract()?;
-            rust_seqs.push(rust_seq);
-        }
+    // Data operations
 
-        unsafe { &mut *self.inner }.set(&rust_seqs);
+    #[pyo3(signature = (*seqs))]
+    fn set(&self, seqs: &Bound<'_, PyTuple>) -> PyResult<()> {
+        let rust_seqs: Vec<Vec<u32>> = seqs
+            .iter()
+            .map(|item| item.extract())
+            .collect::<PyResult<_>>()?;
+        self.inner_mut().set(&rust_seqs);
         Ok(())
     }
 
+    // File operations
+
     #[pyo3(signature = (filename, sec, ffmpeg=None))]
-    pub fn save(&self, filename: &str, sec: f32, ffmpeg: Option<bool>) -> PyResult<()> {
-        unsafe { &mut *self.inner }
+    fn save(&self, filename: &str, sec: f32, ffmpeg: Option<bool>) -> PyResult<()> {
+        self.inner_mut()
             .save(filename, sec, ffmpeg)
             .map_err(PyException::new_err)
     }
 
-    #[getter]
-    pub fn snds_list(&self) -> Seqs {
-        SNDS_LIST_ONCE.call_once(|| {
-            println!("Music.snds_list[ch] is deprecated. Use Music.seqs[ch] instead.");
-        });
+    // Deprecated property
 
+    #[getter]
+    fn snds_list(&self) -> Seqs {
+        deprecation_warning!(
+            SNDS_LIST_ONCE,
+            "Music.snds_list[ch] is deprecated. Use Music.seqs[ch] instead."
+        );
         Seqs::wrap(self.inner)
     }
 }

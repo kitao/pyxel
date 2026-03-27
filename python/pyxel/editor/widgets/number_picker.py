@@ -1,5 +1,6 @@
 import pyxel
 
+from ..settings import clamp
 from .settings import INPUT_FIELD_COLOR, INPUT_TEXT_COLOR
 from .text_button import TextButton
 from .widget import Widget
@@ -38,18 +39,23 @@ class NumberPicker(Widget):
         self.add_event_listener("draw", self.__on_draw)
 
     def __on_value_set(self, value):
-        return min(max(value, self._min_value), self._max_value)
+        return clamp(value, self._min_value, self._max_value)
 
     def __on_value_change(self, value):
-        self.dec_button.is_enabled_var = self.value_var > self._min_value
-        self.inc_button.is_enabled_var = self.value_var < self._max_value
+        self.dec_button.is_enabled_var = value > self._min_value
+        self.inc_button.is_enabled_var = value < self._max_value
         self.trigger_event("change", value)
 
+    @staticmethod
+    def _step_delta():
+        """Return 10 when Shift is held, 1 otherwise."""
+        return 10 if pyxel.btn(pyxel.KEY_SHIFT) else 1
+
     def __on_dec_button_press(self):
-        self.value_var -= 10 if pyxel.btn(pyxel.KEY_SHIFT) else 1
+        self.value_var -= self._step_delta()
 
     def __on_inc_button_press(self):
-        self.value_var += 10 if pyxel.btn(pyxel.KEY_SHIFT) else 1
+        self.value_var += self._step_delta()
 
     def __on_draw(self):
         pyxel.rect(self.x + 9, self.y, self.width - 18, self.height, INPUT_FIELD_COLOR)

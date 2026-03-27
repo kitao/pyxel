@@ -49,22 +49,19 @@ def draw_entities(entities):
 
 
 def cleanup_entities(entities):
-    for i in range(len(entities) - 1, -1, -1):
-        if not entities[i].is_alive:
-            del entities[i]
+    entities[:] = [e for e in entities if e.is_alive]
 
 
 class Background:
     def __init__(self):
-        self.stars = []
-        for i in range(NUM_STARS):
-            self.stars.append(
-                (
-                    pyxel.rndi(0, pyxel.width - 1),
-                    pyxel.rndi(0, pyxel.height - 1),
-                    pyxel.rndf(1, 2.5),
-                )
+        self.stars = [
+            (
+                pyxel.rndi(0, pyxel.width - 1),
+                pyxel.rndi(0, pyxel.height - 1),
+                pyxel.rndf(1, 2.5),
             )
+            for _ in range(NUM_STARS)
+        ]
 
     def update(self):
         for i, (x, y, speed) in enumerate(self.stars):
@@ -96,10 +93,8 @@ class Player:
         if pyxel.btn(pyxel.KEY_DOWN) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_DOWN):
             self.y += PLAYER_SPEED
 
-        self.x = max(self.x, 0)
-        self.x = min(self.x, pyxel.width - self.w)
-        self.y = max(self.y, 0)
-        self.y = min(self.y, pyxel.height - self.h)
+        self.x = pyxel.clamp(self.x, 0, pyxel.width - self.w)
+        self.y = pyxel.clamp(self.y, 0, pyxel.height - self.h)
 
         if pyxel.btnp(pyxel.KEY_SPACE) or pyxel.btnp(pyxel.GAMEPAD1_BUTTON_A):
             Bullet(
@@ -295,9 +290,7 @@ class App:
                 ):
                     enemy.is_alive = False
                     bullet.is_alive = False
-                    blasts.append(
-                        Blast(enemy.x + ENEMY_WIDTH / 2, enemy.y + ENEMY_HEIGHT / 2)
-                    )
+                    Blast(enemy.x + ENEMY_WIDTH / 2, enemy.y + ENEMY_HEIGHT / 2)
                     pyxel.play(2, 1, resume=True)
                     self.score += 10
 
@@ -309,11 +302,9 @@ class App:
                 and enemy.y + enemy.h > self.player.y
             ):
                 enemy.is_alive = False
-                blasts.append(
-                    Blast(
-                        self.player.x + PLAYER_WIDTH / 2,
-                        self.player.y + PLAYER_HEIGHT / 2,
-                    )
+                Blast(
+                    self.player.x + PLAYER_WIDTH / 2,
+                    self.player.y + PLAYER_HEIGHT / 2,
                 )
                 pyxel.stop()
                 pyxel.play(3, 1)

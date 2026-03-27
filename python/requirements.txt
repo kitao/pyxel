@@ -2,5 +2,6 @@ maturin
 mypy
 pillow
 pyinstaller
+pytest
 requests
 ruff

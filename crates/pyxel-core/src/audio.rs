@@ -1,4 +1,3 @@
-use std::cmp::min;
 use std::env::temp_dir;
 use std::fs::{remove_file, write};
 use std::process::Command;
@@ -64,14 +63,10 @@ impl Audio {
     }
 
     pub fn render_samples(channels: &[*mut Channel], blip_buf: &mut BlipBuf, samples: &mut [i16]) {
-        let mut channels: Vec<&mut Channel> = channels
-            .iter()
-            .map(|&channel| unsafe { &mut *channel })
-            .collect();
         let needs_blip = channels
             .iter()
-            .any(|channel| channel.needs_blip_processing());
-        let needs_pcm = channels.iter().any(|channel| channel.is_playing_pcm());
+            .any(|&ch| unsafe { &*ch }.needs_blip_processing());
+        let needs_pcm = channels.iter().any(|&ch| unsafe { &*ch }.is_playing_pcm());
         let mut num_samples = blip_buf.read_samples(samples, false);
 
         if needs_blip {
@@ -83,7 +78,8 @@ impl Audio {
                     clocks => clocks,
                 };
 
-                for channel in &mut *channels {
+                for &ch in channels {
+                    let channel = unsafe { &mut *ch };
                     if channel.needs_blip_processing() {
                         channel.process(Some(blip_buf), clock_count);
                     }
@@ -97,7 +93,8 @@ impl Audio {
         }
 
         if needs_pcm {
-            for channel in &mut *channels {
+            for &ch in channels {
+                let channel = unsafe { &mut *ch };
                 if channel.is_playing_pcm() {
                     channel.mix_pcm(samples);
                 }
@@ -118,8 +115,8 @@ impl Audio {
         let mut writer = WavWriter::create(&filename, spec)
             .map_err(|_| format!("Failed to create file '{filename}'"))?;
 
-        for sample in samples {
-            writer.write_sample(*sample).map_err(|_| save_err())?;
+        for &sample in samples {
+            writer.write_sample(sample).map_err(|_| save_err())?;
         }
         writer.finalize().map_err(|_| save_err())?;
 
@@ -180,9 +177,10 @@ impl Pyxel {
             return;
         }
 
+        let pyxel_sounds = pyxel::sounds();
         let sounds: Vec<*mut Sound> = sequence
             .iter()
-            .map(|sound_index| pyxel::sounds()[*sound_index as usize])
+            .map(|&index| pyxel_sounds[index as usize])
             .collect();
 
         let _lock = AudioLock::new();
@@ -231,11 +229,10 @@ impl Pyxel {
     }
 
     pub fn play_music(&self, music_index: u32, start_sec: Option<f32>, should_loop: bool) {
-        let num_channels = pyxel::channels().len();
         let music = unsafe { &*pyxel::musics()[music_index as usize] };
 
-        for i in 0..min(num_channels, music.seqs.len()) {
-            self.play(i as u32, &music.seqs[i], start_sec, should_loop, false);
+        for (i, seq) in music.seqs.iter().enumerate().take(pyxel::channels().len()) {
+            self.play(i as u32, seq, start_sec, should_loop, false);
         }
     }
 
@@ -245,10 +242,9 @@ impl Pyxel {
     }
 
     pub fn stop_all_channels(&self) {
-        let num_channels = pyxel::channels().len();
-
-        for i in 0..num_channels {
-            self.stop_channel(i as u32);
+        let _lock = AudioLock::new();
+        for &ch in pyxel::channels().iter() {
+            unsafe { &mut *ch }.stop();
         }
     }
 

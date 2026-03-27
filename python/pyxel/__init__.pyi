@@ -280,36 +280,6 @@ KEY_RCTRL: int
 KEY_RSHIFT: int
 KEY_RALT: int
 KEY_RGUI: int
-KEY_MODE: int
-KEY_AUDIONEXT: int
-KEY_AUDIOPREV: int
-KEY_AUDIOSTOP: int
-KEY_AUDIOPLAY: int
-KEY_AUDIOMUTE: int
-KEY_MEDIASELECT: int
-KEY_WWW: int
-KEY_MAIL: int
-KEY_CALCULATOR: int
-KEY_COMPUTER: int
-KEY_AC_SEARCH: int
-KEY_AC_HOME: int
-KEY_AC_BACK: int
-KEY_AC_FORWARD: int
-KEY_AC_STOP: int
-KEY_AC_REFRESH: int
-KEY_AC_BOOKMARKS: int
-KEY_BRIGHTNESSDOWN: int
-KEY_BRIGHTNESSUP: int
-KEY_DISPLAYSWITCH: int
-KEY_KBDILLUMTOGGLE: int
-KEY_KBDILLUMDOWN: int
-KEY_KBDILLUMUP: int
-KEY_EJECT: int
-KEY_SLEEP: int
-KEY_APP1: int
-KEY_APP2: int
-KEY_AUDIOREWIND: int
-KEY_AUDIOFASTFORWARD: int
 KEY_NONE: int
 KEY_SHIFT: int
 KEY_CTRL: int
@@ -325,7 +295,6 @@ MOUSE_BUTTON_MIDDLE: int
 MOUSE_BUTTON_RIGHT: int
 MOUSE_BUTTON_X1: int
 MOUSE_BUTTON_X2: int
-MOUSE_BUTTON_UNKNOWN: int
 
 GAMEPAD1_AXIS_LEFTX: int
 GAMEPAD1_AXIS_LEFTY: int
@@ -884,7 +853,7 @@ class Tilemap:
         """
         ...
     def data_ptr(self) -> Any:
-        """Return the raw data pointer of the tilemap as a ctypes c_uint8 array (2 bytes per tile: image_tx, image_ty).
+        """Return the raw data pointer of the tilemap as a ctypes c_uint16 array (4 bytes per tile: image_tx, image_ty).
 
         Returns:
             Raw data pointer
@@ -1298,9 +1267,7 @@ class Sound:
             pyxel.sounds[0].set_effects("nfnf nvvs")
         """
         ...
-    def mml(
-        self, code: Optional[str] = None, old_syntax: Optional[bool] = None
-    ) -> None:
+    def mml(self, code: Optional[str] = None) -> None:
         """Switch to MML mode with the given MML string. In MML mode, normal parameters such as notes and speed are ignored. For available MML commands, see the Pyxel MML Commands page. Call without arguments to exit MML mode and return to normal mode.
 
         Args:
@@ -1540,7 +1507,7 @@ def save_pal(filename: str) -> None:
     """
     ...
 
-def screenshot(scale: int = 2) -> None:
+def screenshot(filename: Optional[str] = None, scale: int = 2) -> None:
     """Take a screenshot.
 
     Args:
@@ -1549,7 +1516,7 @@ def screenshot(scale: int = 2) -> None:
     """
     ...
 
-def screencast(scale: int = 2) -> None:
+def screencast(filename: Optional[str] = None, scale: int = 2) -> None:
     """Save the screen recording as a GIF file.
 
     Args:
@@ -1645,12 +1612,46 @@ def mouse(visible: bool) -> None:
     """
     ...
 
-def warp_mouse(x: float, y: float) -> None:
-    """Move the mouse cursor to the specified position.
+def set_btn(key: int, state: bool) -> None:
+    """Set the press/release state of the specified key. Mainly for headless mode input simulation.
+
+    Args:
+        key: Target key
+        state: True for press, False for release
+    """
+    ...
+
+def set_btnv(key: int, val: int) -> None:
+    """Set the analog value of the specified key. Mainly for headless mode input simulation.
+
+    Args:
+        key: Target key
+        val: Analog value to set
+    """
+    ...
+
+def set_mouse_pos(x: float, y: float) -> None:
+    """Set the mouse cursor position. Mainly for headless mode input simulation.
 
     Args:
         x: X coordinate
         y: Y coordinate
+    """
+    ...
+
+def set_input_text(text: str) -> None:
+    """Set the text input for the current frame. Replaces any existing text. Mainly for headless mode input simulation.
+
+    Args:
+        text: Text input
+    """
+    ...
+
+def set_dropped_files(files: List[str]) -> None:
+    """Set the dropped file list for the current frame. Replaces any existing list. Mainly for headless mode input simulation.
+
+    Args:
+        files: List of file paths
     """
     ...
 

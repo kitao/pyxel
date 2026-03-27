@@ -6,38 +6,32 @@ def _user_pal():
         pyxel.pal(i, pyxel.NUM_COLORS + i)
 
 
+def _normalize_rect(x1, y1, x2, y2):
+    return min(x1, x2), min(y1, y2), max(x1, x2), max(y1, y2)
+
+
 def _rect2(self, x1, y1, x2, y2, val):
-    x1, x2 = (x1, x2) if x1 < x2 else (x2, x1)
-    y1, y2 = (y1, y2) if y1 < y2 else (y2, y1)
+    x1, y1, x2, y2 = _normalize_rect(x1, y1, x2, y2)
     self.rect(x1, y1, x2 - x1 + 1, y2 - y1 + 1, val)
 
 
 def _rectb2(self, x1, y1, x2, y2, val):
-    x1, x2 = (x1, x2) if x1 < x2 else (x2, x1)
-    y1, y2 = (y1, y2) if y1 < y2 else (y2, y1)
+    x1, y1, x2, y2 = _normalize_rect(x1, y1, x2, y2)
     self.rectb(x1, y1, x2 - x1 + 1, y2 - y1 + 1, val)
 
 
 def _elli2(self, x1, y1, x2, y2, val):
-    x1, x2 = (x1, x2) if x1 < x2 else (x2, x1)
-    y1, y2 = (y1, y2) if y1 < y2 else (y2, y1)
+    x1, y1, x2, y2 = _normalize_rect(x1, y1, x2, y2)
     self.elli(x1, y1, x2 - x1 + 1, y2 - y1 + 1, val)
 
 
 def _ellib2(self, x1, y1, x2, y2, val):
-    x1, x2 = (x1, x2) if x1 < x2 else (x2, x1)
-    y1, y2 = (y1, y2) if y1 < y2 else (y2, y1)
+    x1, y1, x2, y2 = _normalize_rect(x1, y1, x2, y2)
     self.ellib(x1, y1, x2 - x1 + 1, y2 - y1 + 1, val)
 
 
 def _get_slice(self, x, y, width, height):
-    data = [[0] * width for _ in range(height)]
-
-    for yi in range(height):
-        for xi in range(width):
-            data[yi][xi] = self.pget(x + xi, y + yi)
-
-    return data
+    return [[self.pget(x + xi, y + yi) for xi in range(width)] for yi in range(height)]
 
 
 def _set_slice(self, x, y, data):
@@ -51,9 +45,15 @@ def _set_slice(self, x, y, data):
 
 pyxel.user_pal = _user_pal  # type: ignore
 
-pyxel.Image.rect2 = pyxel.Tilemap.rect2 = _rect2  # type: ignore
-pyxel.Image.rectb2 = pyxel.Tilemap.rectb2 = _rectb2  # type: ignore
-pyxel.Image.elli2 = pyxel.Tilemap.elli2 = _elli2  # type: ignore
-pyxel.Image.ellib2 = pyxel.Tilemap.ellib2 = _ellib2  # type: ignore
-pyxel.Image.get_slice = pyxel.Tilemap.get_slice = _get_slice  # type: ignore
-pyxel.Image.set_slice = pyxel.Tilemap.set_slice = _set_slice  # type: ignore
+# Attach editor-only drawing extensions to Image and Tilemap
+_EXTENSIONS = {
+    "rect2": _rect2,
+    "rectb2": _rectb2,
+    "elli2": _elli2,
+    "ellib2": _ellib2,
+    "get_slice": _get_slice,
+    "set_slice": _set_slice,
+}
+for _name, _func in _EXTENSIONS.items():
+    setattr(pyxel.Image, _name, _func)  # type: ignore
+    setattr(pyxel.Tilemap, _name, _func)  # type: ignore

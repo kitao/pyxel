@@ -1,3 +1,21 @@
+macro_rules! deprecation_warning {
+    ($name:ident, $msg:expr) => {
+        static $name: std::sync::Once = std::sync::Once::new();
+        $name.call_once(|| println!($msg));
+    };
+}
+
+macro_rules! validate_index {
+    ($index:expr, $len:expr, $name:expr) => {
+        if ($index as usize) >= $len {
+            return Err(pyo3::exceptions::PyValueError::new_err(format!(
+                "Invalid {} index",
+                $name
+            )));
+        }
+    };
+}
+
 macro_rules! python_type_error {
     ($msg: expr) => {
         return Err(pyo3::exceptions::PyTypeError::new_err($msg))
@@ -67,6 +85,14 @@ macro_rules! collect_slice_indices {
     }};
 }
 
+// Collect items into a PyList and return its iterator
+macro_rules! items_to_pyiter {
+    ($py:expr, $items:expr) => {{
+        let list = pyo3::types::PyList::new($py, $items)?;
+        Ok(list.call_method0("__iter__")?.unbind())
+    }};
+}
+
 // Read-only sequence methods: __len__, __getitem__ (with slicing + negative index),
 // __iter__, __reversed__, __repr__, __bool__
 macro_rules! impl_python_sequence_read {
@@ -79,10 +105,9 @@ macro_rules! impl_python_sequence_read {
 
             fn __getitem__<'py>(
                 &self,
-                py: pyo3::Python<'py>,
-                key: &pyo3::Bound<'py, pyo3::PyAny>,
-            ) -> pyo3::PyResult<pyo3::Py<pyo3::PyAny>> {
-                use pyo3::prelude::*;
+                py: Python<'py>,
+                key: &Bound<'py, PyAny>,
+            ) -> PyResult<Py<PyAny>> {
                 use pyo3::types::PySlice;
                 if let Ok(slice) = key.cast::<PySlice>() {
                     let len = $len(&self.inner);
@@ -98,39 +123,34 @@ macro_rules! impl_python_sequence_read {
                     let i = resolve_index!(idx, $len(&self.inner))?;
                     let value = $get(&self.inner, i);
                     let obj = pyo3::IntoPyObject::into_pyobject(value, py)
-                        .map_err(Into::<pyo3::PyErr>::into)?;
+                        .map_err(Into::<PyErr>::into)?;
                     Ok(obj.into_any().unbind())
                 }
             }
 
-            fn __iter__(&self, py: pyo3::Python<'_>) -> pyo3::PyResult<pyo3::Py<pyo3::PyAny>> {
-                use pyo3::prelude::*;
+            fn __iter__(&self, py: Python<'_>) -> PyResult<Py<PyAny>> {
+                let items: Vec<$get_type> = (0..$len(&self.inner))
+                    .map(|i| $get(&self.inner, i))
+                    .collect();
+                items_to_pyiter!(py, items)
+            }
+
+            fn __reversed__(&self, py: Python<'_>) -> PyResult<Py<PyAny>> {
+                let items: Vec<$get_type> = (0..$len(&self.inner))
+                    .rev()
+                    .map(|i| $get(&self.inner, i))
+                    .collect();
+                items_to_pyiter!(py, items)
+            }
+
+            fn __repr__(&self, py: Python) -> PyResult<String> {
                 let len = $len(&self.inner);
                 let items: Vec<$get_type> = (0..len).map(|i| $get(&self.inner, i)).collect();
                 let list = pyo3::types::PyList::new(py, items)?;
-                let iter = list.call_method0("__iter__")?;
-                Ok(iter.unbind())
-            }
-
-            fn __reversed__(&self, py: pyo3::Python<'_>) -> pyo3::PyResult<pyo3::Py<pyo3::PyAny>> {
-                use pyo3::prelude::*;
-                let len = $len(&self.inner);
-                let items: Vec<$get_type> = (0..len).rev().map(|i| $get(&self.inner, i)).collect();
-                let list = pyo3::types::PyList::new(py, items)?;
-                let iter = list.call_method0("__iter__")?;
-                Ok(iter.unbind())
-            }
-
-            fn __repr__(&self, py: pyo3::Python) -> pyo3::PyResult<String> {
-                use pyo3::prelude::*;
-                let len = $len(&self.inner);
-                let items: Vec<$get_type> = (0..len).map(|i| $get(&self.inner, i)).collect();
-                let list = pyo3::types::PyList::new(py, items)?;
-                let repr = list.repr()?;
                 Ok(format!(
                     "{}{}",
                     stringify!($wrapper_name),
-                    repr.to_string_lossy()
+                    list.repr()?.to_string_lossy()
                 ))
             }
 
@@ -147,16 +167,10 @@ macro_rules! impl_python_sequence_cmp {
         #[pymethods]
         impl $wrapper_name {
             fn __contains__(&self, value: $get_type) -> bool {
-                let len = $len(&self.inner);
-                (0..len).any(|i| $get(&self.inner, i) == value)
+                (0..$len(&self.inner)).any(|i| $get(&self.inner, i) == value)
             }
 
-            fn __eq__<'py>(
-                &self,
-                _py: pyo3::Python<'py>,
-                other: &pyo3::Bound<'py, pyo3::PyAny>,
-            ) -> pyo3::PyResult<bool> {
-                use pyo3::prelude::*;
+            fn __eq__<'py>(&self, _py: Python<'py>, other: &Bound<'py, PyAny>) -> PyResult<bool> {
                 if let Ok(other_list) = other.extract::<Vec<$get_type>>() {
                     let len = $len(&self.inner);
                     if len != other_list.len() {
@@ -176,10 +190,9 @@ macro_rules! impl_python_sequence_cmp {
 
             fn __add__<'py>(
                 &self,
-                py: pyo3::Python<'py>,
-                other: &pyo3::Bound<'py, pyo3::PyAny>,
-            ) -> pyo3::PyResult<pyo3::Py<pyo3::PyAny>> {
-                use pyo3::prelude::*;
+                py: Python<'py>,
+                other: &Bound<'py, PyAny>,
+            ) -> PyResult<Py<PyAny>> {
                 let len = $len(&self.inner);
                 let mut items: Vec<$get_type> = (0..len).map(|i| $get(&self.inner, i)).collect();
                 let other_items: Vec<$get_type> = other.extract()?;
@@ -188,20 +201,11 @@ macro_rules! impl_python_sequence_cmp {
                 Ok(list.into_any().unbind())
             }
 
-            fn __mul__(
-                &self,
-                py: pyo3::Python<'_>,
-                n: isize,
-            ) -> pyo3::PyResult<pyo3::Py<pyo3::PyAny>> {
+            fn __mul__(&self, py: Python<'_>, n: isize) -> PyResult<Py<PyAny>> {
                 let len = $len(&self.inner);
                 let items: Vec<$get_type> = (0..len).map(|i| $get(&self.inner, i)).collect();
-                let repeated: Vec<$get_type> = if n > 0 {
-                    items
-                        .iter()
-                        .cycle()
-                        .take(items.len() * n as usize)
-                        .copied()
-                        .collect()
+                let repeated = if n > 0 {
+                    items.repeat(n as usize)
                 } else {
                     Vec::new()
                 };
@@ -225,11 +229,10 @@ macro_rules! impl_python_sequence_write {
         impl $wrapper_name {
             fn __setitem__<'py>(
                 &self,
-                _py: pyo3::Python<'py>,
-                key: &pyo3::Bound<'py, pyo3::PyAny>,
-                value: &pyo3::Bound<'py, pyo3::PyAny>,
-            ) -> pyo3::PyResult<()> {
-                use pyo3::prelude::*;
+                _py: Python<'py>,
+                key: &Bound<'py, PyAny>,
+                value: &Bound<'py, PyAny>,
+            ) -> PyResult<()> {
                 use pyo3::types::PySlice;
                 if let Ok(slice) = key.cast::<PySlice>() {
                     let len = $len(&self.inner);
@@ -270,10 +273,9 @@ macro_rules! impl_python_sequence_write {
 
             fn __delitem__<'py>(
                 &self,
-                _py: pyo3::Python<'py>,
-                key: &pyo3::Bound<'py, pyo3::PyAny>,
-            ) -> pyo3::PyResult<()> {
-                use pyo3::prelude::*;
+                _py: Python<'py>,
+                key: &Bound<'py, PyAny>,
+            ) -> PyResult<()> {
                 use pyo3::types::PySlice;
                 if let Ok(slice) = key.cast::<PySlice>() {
                     let len = $len(&self.inner);
@@ -283,6 +285,7 @@ macro_rules! impl_python_sequence_write {
                         indices.stop,
                         indices.step
                     );
+                    // Remove from end to preserve earlier indices
                     idx_list.sort_unstable_by(|a, b| b.cmp(a));
                     let mut lst = $to_list(&self.inner);
                     for i in idx_list {
@@ -306,20 +309,20 @@ macro_rules! impl_python_sequence_write {
                 $from_list(&self.inner, lst);
             }
 
-            pub fn append(&self, value: $set_type) {
+            fn append(&self, value: $set_type) {
                 let mut lst = $to_list(&self.inner);
                 lst.push(value);
                 $from_list(&self.inner, lst);
             }
 
-            pub fn extend(&self, values: Vec<$set_type>) {
+            fn extend(&self, values: Vec<$set_type>) {
                 let mut lst = $to_list(&self.inner);
                 lst.extend(values);
                 $from_list(&self.inner, lst);
             }
 
             #[pyo3(signature = (index, value))]
-            pub fn insert(&self, index: isize, value: $set_type) {
+            fn insert(&self, index: isize, value: $set_type) {
                 let mut lst = $to_list(&self.inner);
                 let len = lst.len();
                 let i = if index < 0 {
@@ -335,7 +338,7 @@ macro_rules! impl_python_sequence_write {
             }
 
             #[pyo3(signature = (index=None))]
-            pub fn pop(&self, index: Option<isize>) -> pyo3::PyResult<$get_type> {
+            fn pop(&self, index: Option<isize>) -> PyResult<$get_type> {
                 let mut lst = $to_list(&self.inner);
                 let len = lst.len();
                 if len == 0 {
@@ -350,30 +353,24 @@ macro_rules! impl_python_sequence_write {
                 Ok(value)
             }
 
-            pub fn clear(&self) {
+            fn clear(&self) {
                 $from_list(&self.inner, Vec::new());
             }
 
-            pub fn from_list(&self, lst: $list_type) -> pyo3::PyResult<()> {
-                static ONCE: std::sync::Once = std::sync::Once::new();
-                ONCE.call_once(|| {
-                    println!(
-                        "{}.from_list() is deprecated. Use slice assignment instead.",
-                        stringify!($wrapper_name)
-                    );
-                });
+            fn from_list(&self, lst: $list_type) -> PyResult<()> {
+                deprecation_warning!(
+                    FROM_LIST_ONCE,
+                    concat!(stringify!($wrapper_name), ".from_list() is deprecated. Use slice assignment instead.")
+                );
                 $from_list(&self.inner, lst);
                 Ok(())
             }
 
-            pub fn to_list(&self, py: pyo3::Python) -> pyo3::PyResult<pyo3::Py<pyo3::PyAny>> {
-                static ONCE: std::sync::Once = std::sync::Once::new();
-                ONCE.call_once(|| {
-                    println!(
-                        "{}.to_list() is deprecated. Use list(seq) instead.",
-                        stringify!($wrapper_name)
-                    );
-                });
+            fn to_list(&self, py: Python) -> PyResult<Py<PyAny>> {
+                deprecation_warning!(
+                    TO_LIST_ONCE,
+                    concat!(stringify!($wrapper_name), ".to_list() is deprecated. Use list(seq) instead.")
+                );
                 let vec = $to_list(&self.inner);
                 let list = pyo3::types::PyList::new(py, vec)?;
                 Ok(list.unbind().into_any().into())
@@ -406,9 +403,7 @@ macro_rules! wrap_as_python_sequence {
         }
 
         impl_python_sequence_read!($wrapper_name, $inner_type, $len, $get_type, $get);
-
         impl_python_sequence_cmp!($wrapper_name, $inner_type, $len, $get_type, $get);
-
         impl_python_sequence_write!(
             $wrapper_name,
             $inner_type,
@@ -447,7 +442,6 @@ macro_rules! wrap_as_python_object_sequence {
         }
 
         impl_python_sequence_read!($wrapper_name, $inner_type, $len, $get_type, $get);
-
         impl_python_sequence_write!(
             $wrapper_name,
             $inner_type,

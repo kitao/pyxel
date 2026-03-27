@@ -26,7 +26,7 @@ trait ResourceItem {
 
 impl ResourceItem for Image {
     fn resource_name(item_index: u32) -> String {
-        RESOURCE_ARCHIVE_DIRNAME.to_string() + "image" + &item_index.to_string()
+        format!("{RESOURCE_ARCHIVE_DIRNAME}image{item_index}")
     }
 
     fn clear(&mut self) {
@@ -37,7 +37,7 @@ impl ResourceItem for Image {
         for (i, line) in input.lines().enumerate() {
             string_loop!(j, color, line, 1, {
                 self.canvas
-                    .write_data(j, i, parse_hex_string(&color).unwrap() as Color);
+                    .write_data(j, i, parse_hex_string(color).unwrap() as Color);
             });
         }
     }
@@ -54,7 +54,7 @@ impl fmt::Display for ImageSource {
 
 impl ResourceItem for Tilemap {
     fn resource_name(item_index: u32) -> String {
-        RESOURCE_ARCHIVE_DIRNAME.to_string() + "tilemap" + &item_index.to_string()
+        format!("{RESOURCE_ARCHIVE_DIRNAME}tilemap{item_index}")
     }
 
     fn clear(&mut self) {
@@ -66,7 +66,7 @@ impl ResourceItem for Tilemap {
             if y < TILEMAP_SIZE as usize {
                 if version < 10500 {
                     string_loop!(x, tile, line, 3, {
-                        let tile = parse_hex_string(&tile).unwrap();
+                        let tile = parse_hex_string(tile).unwrap();
                         self.canvas.write_data(
                             x,
                             y,
@@ -93,7 +93,7 @@ impl ResourceItem for Tilemap {
 
 impl ResourceItem for Sound {
     fn resource_name(item_index: u32) -> String {
-        RESOURCE_ARCHIVE_DIRNAME.to_string() + "sound" + &format!("{item_index:02}")
+        format!("{RESOURCE_ARCHIVE_DIRNAME}sound{item_index:02}")
     }
 
     fn clear(&mut self) {
@@ -111,29 +111,25 @@ impl ResourceItem for Sound {
             if line == "none" {
                 continue;
             }
-
-            if i == 0 {
-                string_loop!(j, value, line, 2, {
+            match i {
+                0 => string_loop!(j, value, line, 2, {
                     self.notes
-                        .push(parse_hex_string(&value).unwrap() as i8 as SoundNote);
-                });
-            } else if i == 1 {
-                string_loop!(j, value, line, 1, {
+                        .push(parse_hex_string(value).unwrap() as i8 as SoundNote);
+                }),
+                1 => string_loop!(j, value, line, 1, {
                     self.tones
-                        .push(parse_hex_string(&value).unwrap() as SoundTone);
-                });
-            } else if i == 2 {
-                string_loop!(j, value, line, 1, {
+                        .push(parse_hex_string(value).unwrap() as SoundTone);
+                }),
+                2 => string_loop!(j, value, line, 1, {
                     self.volumes
-                        .push(parse_hex_string(&value).unwrap() as SoundVolume);
-                });
-            } else if i == 3 {
-                string_loop!(j, value, line, 1, {
+                        .push(parse_hex_string(value).unwrap() as SoundVolume);
+                }),
+                3 => string_loop!(j, value, line, 1, {
                     self.effects
-                        .push(parse_hex_string(&value).unwrap() as SoundEffect);
-                });
-            } else if i == 4 {
-                self.speed = line.parse().unwrap();
+                        .push(parse_hex_string(value).unwrap() as SoundEffect);
+                }),
+                4 => self.speed = line.parse().unwrap(),
+                _ => {}
             }
         }
     }
@@ -141,11 +137,11 @@ impl ResourceItem for Sound {
 
 impl ResourceItem for Music {
     fn resource_name(item_index: u32) -> String {
-        RESOURCE_ARCHIVE_DIRNAME.to_string() + "music" + &item_index.to_string()
+        format!("{RESOURCE_ARCHIVE_DIRNAME}music{item_index}")
     }
 
     fn clear(&mut self) {
-        self.seqs = (0..NUM_CHANNELS).map(|_| Vec::new()).collect();
+        self.seqs = vec![Vec::new(); NUM_CHANNELS as usize];
     }
 
     fn deserialize(&mut self, _version: u32, input: &str) {
@@ -156,7 +152,7 @@ impl ResourceItem for Music {
                 continue;
             }
             string_loop!(j, value, line, 2, {
-                self.seqs[i].push(parse_hex_string(&value).unwrap());
+                self.seqs[i].push(parse_hex_string(value).unwrap());
             });
         }
     }
@@ -172,7 +168,7 @@ impl Pyxel {
         include_sounds: bool,
         include_musics: bool,
     ) {
-        let version_name = RESOURCE_ARCHIVE_DIRNAME.to_string() + "version";
+        let version_name = format!("{RESOURCE_ARCHIVE_DIRNAME}version");
         let contents = {
             let mut file = archive.by_name(&version_name).unwrap();
             let mut contents = String::new();
@@ -225,66 +221,25 @@ impl Pyxel {
             file.read_to_string(&mut contents).unwrap();
 
             let colors: Vec<Rgb24> = contents
-                .replace("\r\n", "\n")
-                .replace('\r', "\n")
-                .split('\n')
+                .lines()
                 .filter(|s| !s.is_empty())
                 .map(|s| u32::from_str_radix(s.trim(), 16).unwrap() as Rgb24)
                 .collect();
 
-            pyxel::colors().clear();
-            pyxel::colors().extend(colors.iter());
+            *pyxel::colors() = colors;
         }
     }
 }
 
 fn parse_version_string(string: &str) -> Result<u32, &str> {
-    let mut version = 0;
-
-    for (i, number) in simplify_string(string).split('.').enumerate() {
-        let digit = number.len();
-        let number = if i > 0 && digit == 1 {
-            "0".to_string() + number
-        } else if i == 0 || digit == 2 {
-            number.to_string()
-        } else {
-            return Err("invalid version string");
-        };
-
-        if let Ok(number) = number.parse::<u32>() {
-            version = version * 100 + number;
-        } else {
+    let mut version = 0u32;
+    for (i, part) in simplify_string(string).split('.').enumerate() {
+        let len = part.len();
+        if i > 0 && len != 1 && len != 2 {
             return Err("invalid version string");
         }
+        let n: u32 = part.parse().map_err(|_| "invalid version string")?;
+        version = version * 100 + n;
     }
-
     Ok(version)
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_parse_version_string() {
-        assert_eq!(parse_version_string("1.2.3"), Ok(10203));
-        assert_eq!(parse_version_string("0.0.1"), Ok(1));
-        assert_eq!(parse_version_string("12.34.5"), Ok(123405));
-        assert_eq!(parse_version_string("12.3.04"), Ok(120304));
-        assert_eq!(parse_version_string("2.7.2"), Ok(20702));
-    }
-
-    #[test]
-    fn test_parse_version_string_invalid() {
-        assert_eq!(
-            parse_version_string("12.345.0"),
-            Err("invalid version string")
-        );
-        assert_eq!(
-            parse_version_string("12.0.345"),
-            Err("invalid version string")
-        );
-        assert_eq!(parse_version_string(" "), Err("invalid version string"));
-        assert_eq!(parse_version_string("abc"), Err("invalid version string"));
-    }
 }

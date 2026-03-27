@@ -14,6 +14,7 @@ fn floor(x: f32) -> i32 {
     Pyxel::floor(x)
 }
 
+/// Returns the integer type for int inputs, float type for float inputs.
 #[pyfunction]
 fn clamp(
     x: Bound<'_, PyAny>,
@@ -22,56 +23,46 @@ fn clamp(
 ) -> PyResult<Py<PyAny>> {
     let py = x.py();
 
+    // Try integer path first to preserve Python int type
     if let (Ok(xi), Ok(li), Ok(ui)) = (
         x.extract::<i64>(),
         lower.extract::<i64>(),
         upper.extract::<i64>(),
     ) {
         let (lo, hi) = if li < ui { (li, ui) } else { (ui, li) };
-        let v = if xi < lo {
-            lo
-        } else if xi > hi {
-            hi
-        } else {
-            xi
-        };
-        let obj = PyInt::new(py, v).into_any().unbind();
-        return Ok(obj);
+        let v = xi.clamp(lo, hi);
+        return Ok(PyInt::new(py, v).into_any().unbind());
     }
 
     let xf = x.extract::<f64>()?;
     let lf = lower.extract::<f64>()?;
     let uf = upper.extract::<f64>()?;
     let (lo, hi) = if lf < uf { (lf, uf) } else { (uf, lf) };
-    let v = xf.clamp(lo, hi);
-    let obj = PyFloat::new(py, v).into_any().unbind();
-    Ok(obj)
+    Ok(PyFloat::new(py, xf.clamp(lo, hi)).into_any().unbind())
 }
 
+/// Returns the integer type for int inputs, float type for float inputs.
 #[pyfunction]
 fn sgn(x: Bound<'_, PyAny>) -> PyResult<Py<PyAny>> {
     let py = x.py();
 
+    // Try integer path first to preserve Python int type
     if let Ok(xi) = x.extract::<i64>() {
         let v = match xi.cmp(&0) {
             Ordering::Greater => 1,
             Ordering::Less => -1,
             Ordering::Equal => 0,
         };
-        let obj = PyInt::new(py, v).into_any().unbind();
-        return Ok(obj);
+        return Ok(PyInt::new(py, v).into_any().unbind());
     }
 
     let xf = x.extract::<f64>()?;
-    let v = if xf > 0.0 {
-        1.0
-    } else if xf < 0.0 {
-        -1.0
-    } else {
-        0.0
+    let v = match xf.partial_cmp(&0.0) {
+        Some(Ordering::Greater) => 1.0,
+        Some(Ordering::Less) => -1.0,
+        _ => 0.0,
     };
-    let obj = PyFloat::new(py, v).into_any().unbind();
-    Ok(obj)
+    Ok(PyFloat::new(py, v).into_any().unbind())
 }
 
 #[pyfunction]
@@ -117,12 +108,10 @@ fn nseed(seed: u32) {
 #[pyfunction]
 #[pyo3(signature = (x, y=None, z=None))]
 fn noise(x: f32, y: Option<f32>, z: Option<f32>) -> f32 {
-    let y = y.unwrap_or(0.0);
-    let z = z.unwrap_or(0.0);
-    Pyxel::noise(x, y, z)
+    Pyxel::noise(x, y.unwrap_or(0.0), z.unwrap_or(0.0))
 }
 
-pub fn add_math_functions(m: &Bound<PyModule>) -> PyResult<()> {
+pub fn add_math_functions(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(ceil, m)?)?;
     m.add_function(wrap_pyfunction!(floor, m)?)?;
     m.add_function(wrap_pyfunction!(clamp, m)?)?;

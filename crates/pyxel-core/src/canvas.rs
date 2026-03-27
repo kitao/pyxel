@@ -5,6 +5,7 @@ use std::mem::swap;
 use crate::rect_area::RectArea;
 use crate::utils::{f32_to_i32, f32_to_u32};
 
+const ELLIPSE_ROUNDING_BIAS: f32 = 0.01;
 const DITHERING_MATRIX: [[f32; 4]; 4] = [
     [1.0 / 16.0, 9.0 / 16.0, 3.0 / 16.0, 11.0 / 16.0],
     [13.0 / 16.0, 5.0 / 16.0, 15.0 / 16.0, 7.0 / 16.0],
@@ -82,7 +83,7 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         self.data.fill(value);
     }
 
-    pub fn get_value(&mut self, x: f32, y: f32) -> T {
+    pub fn get_value(&self, x: f32, y: f32) -> T {
         let x = f32_to_i32(x);
         let y = f32_to_i32(y);
         if self.clip_rect.contains(x, y) {
@@ -115,11 +116,11 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
                 (x2, y2, x1, y1)
             };
             let length = end_x - start_x + 1;
-            let alpha = (end_y - start_y) as f32 / (end_x - start_x) as f32;
+            let slope = (end_y - start_y) as f32 / (end_x - start_x) as f32;
             for xi in 0..length {
                 self.write_data_with_clipping(
                     start_x + xi,
-                    start_y + f32_to_i32(alpha * xi as f32),
+                    start_y + f32_to_i32(slope * xi as f32),
                     value,
                 );
             }
@@ -130,10 +131,10 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
                 (x2, y2, x1, y1)
             };
             let length = end_y - start_y + 1;
-            let alpha = (end_x - start_x) as f32 / (end_y - start_y) as f32;
+            let slope = (end_x - start_x) as f32 / (end_y - start_y) as f32;
             for yi in 0..length {
                 self.write_data_with_clipping(
-                    start_x + f32_to_i32(alpha * yi as f32),
+                    start_x + f32_to_i32(slope * yi as f32),
                     start_y + yi,
                     value,
                 );
@@ -227,9 +228,10 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         let x = f32_to_i32(x) - self.draw_offset_x;
         let y = f32_to_i32(y) - self.draw_offset_y;
         let radius = f32_to_u32(radius);
+        let r = radius as f32;
 
         for xi in 0..=radius as i32 {
-            let (x1, y1, x2, y2) = Self::ellipse_area(0.0, 0.0, radius as f32, radius as f32, xi);
+            let (x1, y1, x2, y2) = Self::ellipse_area(0.0, 0.0, r, r, xi);
             self.write_data_with_clipping(x + x1, y + y1, value);
             self.write_data_with_clipping(x + x2, y + y1, value);
             self.write_data_with_clipping(x + x1, y + y2, value);
@@ -328,54 +330,84 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
             swap(&mut x2, &mut x3);
         }
 
-        let alpha12 = if y2 == y1 {
+        let slope12 = if y2 == y1 {
             0.0
         } else {
             (x2 - x1) as f32 / (y2 - y1) as f32
         };
-        let alpha13 = if y3 == y1 {
+        let slope13 = if y3 == y1 {
             0.0
         } else {
             (x3 - x1) as f32 / (y3 - y1) as f32
         };
-        let alpha23 = if y3 == y2 {
+        let slope23 = if y3 == y2 {
             0.0
         } else {
             (x3 - x2) as f32 / (y3 - y2) as f32
         };
-        let x_inter = f32_to_i32(x1 as f32 + alpha13 * (y2 - y1) as f32);
+        let x_inter = f32_to_i32(x1 as f32 + slope13 * (y2 - y1) as f32);
 
-        for y in y1..=y2 {
-            let (x_slider, x_end) = if x_inter < x2 {
-                (
-                    f32_to_i32(x_inter as f32 + alpha13 * (y - y2) as f32),
-                    f32_to_i32(x2 as f32 + alpha12 * (y - y2) as f32),
-                )
-            } else {
-                (
-                    f32_to_i32(x2 as f32 + alpha12 * (y - y2) as f32),
-                    f32_to_i32(x_inter as f32 + alpha13 * (y - y2) as f32),
-                )
-            };
-            for x in x_slider..=x_end {
-                self.write_data_with_clipping(x, y, value);
+        if self.alpha >= 1.0 {
+            for y in y1..=y2 {
+                let (x_slider, x_end) = if x_inter < x2 {
+                    (
+                        f32_to_i32(x_inter as f32 + slope13 * (y - y2) as f32),
+                        f32_to_i32(x2 as f32 + slope12 * (y - y2) as f32),
+                    )
+                } else {
+                    (
+                        f32_to_i32(x2 as f32 + slope12 * (y - y2) as f32),
+                        f32_to_i32(x_inter as f32 + slope13 * (y - y2) as f32),
+                    )
+                };
+                self.fill_row_clipped(x_slider, x_end, y, value);
             }
-        }
-
-        for y in (y2 + 1)..=y3 {
-            let (x_slider, x_end) = if x_inter < x2 {
-                (
-                    f32_to_i32(x_inter as f32 + alpha13 * (y - y2) as f32),
-                    f32_to_i32(x2 as f32 + alpha23 * (y - y2) as f32),
-                )
-            } else {
-                (
-                    f32_to_i32(x2 as f32 + alpha23 * (y - y2) as f32),
-                    f32_to_i32(x_inter as f32 + alpha13 * (y - y2) as f32),
-                )
-            };
-            for x in x_slider..=x_end {
-                self.write_data_with_clipping(x, y, value);
+            for y in (y2 + 1)..=y3 {
+                let (x_slider, x_end) = if x_inter < x2 {
+                    (
+                        f32_to_i32(x_inter as f32 + slope13 * (y - y2) as f32),
+                        f32_to_i32(x2 as f32 + slope23 * (y - y2) as f32),
+                    )
+                } else {
+                    (
+                        f32_to_i32(x2 as f32 + slope23 * (y - y2) as f32),
+                        f32_to_i32(x_inter as f32 + slope13 * (y - y2) as f32),
+                    )
+                };
+                self.fill_row_clipped(x_slider, x_end, y, value);
+            }
+        } else {
+            for y in y1..=y2 {
+                let (x_slider, x_end) = if x_inter < x2 {
+                    (
+                        f32_to_i32(x_inter as f32 + slope13 * (y - y2) as f32),
+                        f32_to_i32(x2 as f32 + slope12 * (y - y2) as f32),
+                    )
+                } else {
+                    (
+                        f32_to_i32(x2 as f32 + slope12 * (y - y2) as f32),
+                        f32_to_i32(x_inter as f32 + slope13 * (y - y2) as f32),
+                    )
+                };
+                for x in x_slider..=x_end {
+                    self.write_data_with_clipping(x, y, value);
+                }
+            }
+            for y in (y2 + 1)..=y3 {
+                let (x_slider, x_end) = if x_inter < x2 {
+                    (
+                        f32_to_i32(x_inter as f32 + slope13 * (y - y2) as f32),
+                        f32_to_i32(x2 as f32 + slope23 * (y - y2) as f32),
+                    )
+                } else {
+                    (
+                        f32_to_i32(x2 as f32 + slope23 * (y - y2) as f32),
+                        f32_to_i32(x_inter as f32 + slope13 * (y - y2) as f32),
+                    )
+                };
+                for x in x_slider..=x_end {
+                    self.write_data_with_clipping(x, y, value);
+                }
             }
         }
     }
@@ -409,7 +441,7 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
             return;
         }
 
-        let mut visit_stack = Vec::new();
+        let mut visit_stack = Vec::with_capacity(64);
         visit_stack.push((x, y));
         while let Some((x, y)) = visit_stack.pop() {
             if !self.clip_rect.contains(x, y) || self.read_data(x as usize, y as usize) != dst_value
@@ -612,10 +644,8 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
                 let value_x = src_x + sign_x * xi + offset_x;
                 let value_y = src_y + sign_y * yi + offset_y;
                 let value = canvas.read_data(value_x as usize, value_y as usize);
-                if let Some(transparent) = transparent {
-                    if value == transparent {
-                        continue;
-                    }
+                if transparent.is_some_and(|tkey| value == tkey) {
+                    continue;
                 }
                 let value = palette.map_or(value, |palette| palette[value.to_index()]);
                 self.write_data((dst_x + xi) as usize, (dst_y + yi) as usize, value);
@@ -750,10 +780,8 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
                     continue;
                 }
                 let value = canvas.read_data(vx as usize, vy as usize);
-                if let Some(tkey) = transparent {
-                    if value == tkey {
-                        continue;
-                    }
+                if transparent.is_some_and(|tkey| value == tkey) {
+                    continue;
                 }
                 let value = palette.map_or(value, |p| p[value.to_index()]);
                 self.write_data(xi as usize, yi as usize, value);
@@ -924,14 +952,16 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
             rb
         };
 
-        let x1 = f32_to_i32(cx - dx - 0.01);
-        let y1 = f32_to_i32(cy - dy - 0.01);
-        let x2 = f32_to_i32(cx + dx + 0.01);
-        let y2 = f32_to_i32(cy + dy + 0.01);
+        let x1 = f32_to_i32(cx - dx - ELLIPSE_ROUNDING_BIAS);
+        let y1 = f32_to_i32(cy - dy - ELLIPSE_ROUNDING_BIAS);
+        let x2 = f32_to_i32(cx + dx + ELLIPSE_ROUNDING_BIAS);
+        let y2 = f32_to_i32(cy + dy + ELLIPSE_ROUNDING_BIAS);
 
         (x1, y1, x2, y2)
     }
 
+    /// Determine whether to write a pixel based on dithering alpha.
+    /// Uses ordered dithering (4x4 Bayer matrix) for semi-transparent drawing.
     fn should_write(&self, x: i32, y: i32) -> bool {
         if self.alpha >= 1.0 {
             return true;
@@ -939,7 +969,7 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         if self.alpha <= 0.0 {
             return false;
         }
-        self.alpha > DITHERING_MATRIX[y.rem_euclid(4) as usize][x.rem_euclid(4) as usize]
+        self.alpha > DITHERING_MATRIX[(y & 3) as usize][(x & 3) as usize]
     }
 }
 
@@ -1128,277 +1158,5 @@ impl PerspectiveProjection {
             self.r10 * vx2 + self.r11 * vy2 - self.r12,
             self.r21 * vy2 - self.r22,
         )
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    // Canvas basics
-
-    #[test]
-    fn test_new() {
-        let canvas = Canvas::<u8>::new(16, 8);
-        assert_eq!(canvas.width(), 16);
-        assert_eq!(canvas.height(), 8);
-        assert_eq!(canvas.data.len(), 16 * 8);
-        assert!(canvas.data.iter().all(|&v| v == 0));
-    }
-
-    #[test]
-    fn test_clear() {
-        let mut canvas = Canvas::<u8>::new(4, 4);
-        canvas.clear(5);
-        assert!(canvas.data.iter().all(|&v| v == 5));
-    }
-
-    #[test]
-    fn test_read_write_data() {
-        let mut canvas = Canvas::<u8>::new(8, 8);
-        canvas.write_data(3, 5, 7);
-        assert_eq!(canvas.read_data(3, 5), 7);
-        assert_eq!(canvas.read_data(0, 0), 0);
-    }
-
-    // Clip rect
-
-    #[test]
-    fn test_clip_rect() {
-        let mut canvas = Canvas::<u8>::new(16, 16);
-        canvas.set_clip_rect(2.0, 3.0, 4.0, 5.0);
-        assert_eq!(canvas.clip_rect, RectArea::new(2, 3, 4, 5));
-    }
-
-    #[test]
-    fn test_clip_rect_clamped_to_self() {
-        let mut canvas = Canvas::<u8>::new(8, 8);
-        canvas.set_clip_rect(-5.0, -5.0, 100.0, 100.0);
-        assert_eq!(canvas.clip_rect, canvas.self_rect);
-    }
-
-    #[test]
-    fn test_reset_clip_rect() {
-        let mut canvas = Canvas::<u8>::new(8, 8);
-        canvas.set_clip_rect(2.0, 2.0, 4.0, 4.0);
-        canvas.reset_clip_rect();
-        assert_eq!(canvas.clip_rect, canvas.self_rect);
-    }
-
-    // get_value / set_value
-
-    #[test]
-    fn test_get_value_outside_clip() {
-        let mut canvas = Canvas::<u8>::new(8, 8);
-        canvas.write_data(0, 0, 5);
-        canvas.set_clip_rect(2.0, 2.0, 4.0, 4.0);
-        assert_eq!(canvas.get_value(0.0, 0.0), 0); // outside clip returns default
-    }
-
-    #[test]
-    fn test_set_value_with_offset() {
-        let mut canvas = Canvas::<u8>::new(8, 8);
-        canvas.set_draw_offset(2.0, 3.0);
-        canvas.set_value(5.0, 7.0, 9);
-        // set_value subtracts offset: x=5-2=3, y=7-3=4
-        assert_eq!(canvas.read_data(3, 4), 9);
-    }
-
-    // Drawing operations
-
-    #[test]
-    fn test_draw_rect() {
-        let mut canvas = Canvas::<u8>::new(8, 8);
-        canvas.draw_rect(1.0, 1.0, 3.0, 2.0, 5);
-        assert_eq!(canvas.read_data(1, 1), 5);
-        assert_eq!(canvas.read_data(3, 2), 5);
-        assert_eq!(canvas.read_data(0, 0), 0);
-        assert_eq!(canvas.read_data(4, 1), 0);
-    }
-
-    #[test]
-    fn test_draw_rect_border() {
-        let mut canvas = Canvas::<u8>::new(8, 8);
-        canvas.draw_rect_border(1.0, 1.0, 4.0, 3.0, 3);
-        assert_eq!(canvas.read_data(1, 1), 3); // top-left
-        assert_eq!(canvas.read_data(4, 3), 3); // bottom-right
-        assert_eq!(canvas.read_data(2, 2), 0); // inside is empty
-    }
-
-    #[test]
-    fn test_draw_line_horizontal() {
-        let mut canvas = Canvas::<u8>::new(8, 8);
-        canvas.draw_line(1.0, 2.0, 5.0, 2.0, 7);
-        for x in 1..=5 {
-            assert_eq!(canvas.read_data(x, 2), 7);
-        }
-        assert_eq!(canvas.read_data(0, 2), 0);
-        assert_eq!(canvas.read_data(6, 2), 0);
-    }
-
-    #[test]
-    fn test_draw_line_vertical() {
-        let mut canvas = Canvas::<u8>::new(8, 8);
-        canvas.draw_line(3.0, 1.0, 3.0, 5.0, 4);
-        for y in 1..=5 {
-            assert_eq!(canvas.read_data(3, y), 4);
-        }
-    }
-
-    #[test]
-    fn test_draw_line_single_point() {
-        let mut canvas = Canvas::<u8>::new(8, 8);
-        canvas.draw_line(3.0, 3.0, 3.0, 3.0, 2);
-        assert_eq!(canvas.read_data(3, 3), 2);
-    }
-
-    // Clipping
-
-    #[test]
-    fn test_draw_rect_clipped() {
-        let mut canvas = Canvas::<u8>::new(8, 8);
-        canvas.set_clip_rect(2.0, 2.0, 4.0, 4.0);
-        canvas.draw_rect(0.0, 0.0, 8.0, 8.0, 3);
-        assert_eq!(canvas.read_data(0, 0), 0);
-        assert_eq!(canvas.read_data(1, 1), 0);
-        assert_eq!(canvas.read_data(2, 2), 3);
-        assert_eq!(canvas.read_data(5, 5), 3);
-        assert_eq!(canvas.read_data(6, 6), 0);
-    }
-
-    // Blit
-
-    #[test]
-    fn test_blit_basic() {
-        let mut src = Canvas::<u8>::new(4, 4);
-        src.clear(3);
-        let mut dst = Canvas::<u8>::new(8, 8);
-        dst.blit(2.0, 2.0, &src, 0.0, 0.0, 4.0, 4.0, None, None);
-        assert_eq!(dst.read_data(0, 0), 0);
-        assert_eq!(dst.read_data(2, 2), 3);
-        assert_eq!(dst.read_data(5, 5), 3);
-        assert_eq!(dst.read_data(6, 6), 0);
-    }
-
-    #[test]
-    fn test_blit_with_transparency() {
-        let mut src = Canvas::<u8>::new(4, 4);
-        src.clear(0);
-        src.write_data(1, 1, 5);
-        let mut dst = Canvas::<u8>::new(8, 8);
-        dst.clear(1);
-        dst.blit(0.0, 0.0, &src, 0.0, 0.0, 4.0, 4.0, Some(0), None);
-        assert_eq!(dst.read_data(0, 0), 1); // transparent pixel kept dst value
-        assert_eq!(dst.read_data(1, 1), 5); // non-transparent pixel overwritten
-    }
-
-    // Flood fill
-
-    #[test]
-    fn test_flood_fill_basic() {
-        let mut canvas = Canvas::<u8>::new(8, 8);
-        canvas.flood_fill(0.0, 0.0, 5);
-        assert!(canvas.data.iter().all(|&v| v == 5));
-    }
-
-    #[test]
-    fn test_flood_fill_bounded() {
-        let mut canvas = Canvas::<u8>::new(8, 8);
-        // Draw a hollow border
-        canvas.draw_rect_border(2.0, 2.0, 4.0, 4.0, 1);
-        // Fill inside (3,3) should only fill the inner area
-        canvas.flood_fill(3.0, 3.0, 9);
-        assert_eq!(canvas.read_data(3, 3), 9); // inside filled
-        assert_eq!(canvas.read_data(2, 2), 1); // border unchanged
-        assert_eq!(canvas.read_data(0, 0), 0); // outside unchanged
-    }
-
-    #[test]
-    fn test_flood_fill_same_color_noop() {
-        let mut canvas = Canvas::<u8>::new(4, 4);
-        canvas.clear(3);
-        canvas.flood_fill(0.0, 0.0, 3);
-        assert!(canvas.data.iter().all(|&v| v == 3));
-    }
-
-    #[test]
-    fn test_flood_fill_no_stack_overflow() {
-        let mut canvas = Canvas::<u8>::new(256, 256);
-        canvas.flood_fill(0.0, 0.0, 8);
-        assert_eq!(canvas.read_data(128, 128), 8);
-    }
-
-    // Dithering
-
-    #[test]
-    fn test_dithering_alpha_zero() {
-        let mut canvas = Canvas::<u8>::new(4, 4);
-        canvas.set_dithering(0.0);
-        canvas.draw_rect(0.0, 0.0, 4.0, 4.0, 5);
-        assert!(canvas.data.iter().all(|&v| v == 0));
-    }
-
-    #[test]
-    fn test_dithering_alpha_one() {
-        let mut canvas = Canvas::<u8>::new(4, 4);
-        canvas.set_dithering(1.0);
-        canvas.draw_rect(0.0, 0.0, 4.0, 4.0, 5);
-        assert!(canvas.data.iter().all(|&v| v == 5));
-    }
-
-    #[test]
-    fn test_dithering_partial() {
-        let mut canvas = Canvas::<u8>::new(4, 4);
-        canvas.set_dithering(0.5);
-        canvas.draw_rect(0.0, 0.0, 4.0, 4.0, 5);
-        let filled = canvas.data.iter().filter(|&&v| v == 5).count();
-        let empty = canvas.data.iter().filter(|&&v| v == 0).count();
-        assert!(filled > 0 && empty > 0);
-    }
-
-    // CopyArea
-
-    #[test]
-    fn test_copy_area_basic() {
-        let dst_rect = RectArea::new(0, 0, 16, 16);
-        let src_rect = RectArea::new(0, 0, 8, 8);
-        let area = CopyArea::new(2, 2, dst_rect, 0, 0, src_rect, 4, 4);
-        assert_eq!(area.dst_x, 2);
-        assert_eq!(area.dst_y, 2);
-        assert_eq!(area.src_x, 0);
-        assert_eq!(area.src_y, 0);
-        assert_eq!(area.width, 4);
-        assert_eq!(area.height, 4);
-        assert_eq!(area.sign_x, 1);
-        assert_eq!(area.sign_y, 1);
-    }
-
-    #[test]
-    fn test_copy_area_clipped() {
-        let dst_rect = RectArea::new(0, 0, 8, 8);
-        let src_rect = RectArea::new(0, 0, 8, 8);
-        let area = CopyArea::new(6, 6, dst_rect, 0, 0, src_rect, 8, 8);
-        assert_eq!(area.width, 2);
-        assert_eq!(area.height, 2);
-    }
-
-    #[test]
-    fn test_copy_area_flipped() {
-        let dst_rect = RectArea::new(0, 0, 16, 16);
-        let src_rect = RectArea::new(0, 0, 8, 8);
-        let area = CopyArea::new(0, 0, dst_rect, 0, 0, src_rect, -4, -4);
-        assert_eq!(area.sign_x, -1);
-        assert_eq!(area.sign_y, -1);
-        assert_eq!(area.width, 4);
-        assert_eq!(area.height, 4);
-    }
-
-    #[test]
-    fn test_copy_area_no_overlap() {
-        let dst_rect = RectArea::new(0, 0, 4, 4);
-        let src_rect = RectArea::new(0, 0, 4, 4);
-        let area = CopyArea::new(10, 10, dst_rect, 0, 0, src_rect, 4, 4);
-        assert_eq!(area.width, 0);
-        assert_eq!(area.height, 0);
     }
 }

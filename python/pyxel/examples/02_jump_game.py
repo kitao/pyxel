@@ -103,7 +103,7 @@ class App:
             kind = pyxel.rndi(0, 2)
             is_alive = True
 
-        return (x, y, kind, is_alive)
+        return x, y, kind, is_alive
 
     def draw(self):
         pyxel.cls(12)

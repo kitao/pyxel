@@ -121,12 +121,6 @@
       let data = null;
       let lang = "en";
 
-      function t(key) {
-        const obj = data?.ui[key];
-        if (!obj) return key;
-        return obj[lang] || obj["en"] || "";
-      }
-
       function updateTexts() {
         // Title and subtitle
         document.title = t("title");
@@ -191,6 +185,7 @@
 
         // https://github.com/USER/REPO/blob/BRANCH/PATH/TO/FILE.ext
         const paths = startupFile.split("/");
+        if (paths.length < 8) return;
         const user = paths[3];
         const repo = paths[4];
         const branch = paths[6];
@@ -233,7 +228,8 @@
           }, document.getElementById("lang-select"));
 
           updateTexts();
-        });
+        })
+        .catch((e) => console.error("Failed to load data:", e));
     </script>
   </body>
 </html>

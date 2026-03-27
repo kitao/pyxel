@@ -13,20 +13,29 @@ impl Font {
     pub fn wrap(inner: *mut pyxel::Font) -> Self {
         Self { inner }
     }
+
+    #[allow(clippy::mut_from_ref)]
+    fn inner_mut(&self) -> &mut pyxel::Font {
+        unsafe { &mut *self.inner }
+    }
 }
 
 #[pymethods]
 impl Font {
+    // Constructor
+
     #[new]
     #[pyo3(signature = (filename, font_size=None))]
-    pub fn new(filename: &str, font_size: Option<f32>) -> PyResult<Self> {
+    fn new(filename: &str, font_size: Option<f32>) -> PyResult<Self> {
         pyxel::Font::new(filename, font_size)
             .map(Self::wrap)
             .map_err(pyo3::exceptions::PyException::new_err)
     }
 
-    pub fn text_width(&self, s: &str) -> i32 {
-        unsafe { &mut *self.inner }.text_width(s)
+    // Text measurement
+
+    fn text_width(&self, s: &str) -> i32 {
+        self.inner_mut().text_width(s)
     }
 }
 

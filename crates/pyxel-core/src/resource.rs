@@ -72,21 +72,21 @@ impl Pyxel {
 
         let format_version = Self::parse_format_version(&toml_text)?;
         if format_version > RESOURCE_FORMAT_VERSION {
-            Err(format!(
+            return Err(format!(
                 "Unsupported resource format version '{format_version}'"
-            ))
-        } else {
-            let resource_data = ResourceData::from_toml(&toml_text)?;
-            resource_data.to_runtime(
-                self,
-                exclude_images.unwrap_or(false),
-                exclude_tilemaps.unwrap_or(false),
-                exclude_sounds.unwrap_or(false),
-                exclude_musics.unwrap_or(false),
-            );
-            self.load_palette(filename)?;
-            Ok(())
+            ));
         }
+
+        let resource_data = ResourceData::from_toml(&toml_text)?;
+        resource_data.to_runtime(
+            self,
+            exclude_images.unwrap_or(false),
+            exclude_tilemaps.unwrap_or(false),
+            exclude_sounds.unwrap_or(false),
+            exclude_musics.unwrap_or(false),
+        );
+        self.load_palette(filename)?;
+        Ok(())
     }
 
     pub fn save_resource(
@@ -122,28 +122,28 @@ impl Pyxel {
     pub fn load_palette(&mut self, filename: &str) -> Result<(), String> {
         let filename = Self::palette_filename(filename);
 
-        if let Ok(mut file) = File::open(Path::new(&filename)) {
-            let mut contents = String::new();
-            file.read_to_string(&mut contents)
-                .map_err(|_| format!("Failed to read file '{filename}'"))?;
+        let Ok(mut file) = File::open(Path::new(&filename)) else {
+            return Ok(());
+        };
 
-            let colors: Vec<Rgb24> = contents
-                .replace("\r\n", "\n")
-                .replace('\r', "\n")
-                .split('\n')
-                .filter(|s| !s.is_empty())
-                .map(|s| {
-                    u32::from_str_radix(s.trim(), 16)
-                        .map(|v| v as Rgb24)
-                        .map_err(|_| format!("Failed to parse file '{filename}'"))
-                })
-                .collect::<Result<_, _>>()?;
-            *pyxel::colors() = if colors.is_empty() {
-                vec![0x00ff_ffff]
-            } else {
-                colors
-            };
-        }
+        let mut contents = String::new();
+        file.read_to_string(&mut contents)
+            .map_err(|_| format!("Failed to read file '{filename}'"))?;
+
+        let colors: Vec<Rgb24> = contents
+            .lines()
+            .filter(|s| !s.is_empty())
+            .map(|s| {
+                u32::from_str_radix(s.trim(), 16)
+                    .map(|v| v as Rgb24)
+                    .map_err(|_| format!("Failed to parse file '{filename}'"))
+            })
+            .collect::<Result<_, _>>()?;
+        *pyxel::colors() = if colors.is_empty() {
+            vec![0x00ff_ffff]
+        } else {
+            colors
+        };
         Ok(())
     }
 
@@ -152,8 +152,7 @@ impl Pyxel {
         let mut file = File::create(Path::new(&filename))
             .map_err(|_| format!("Failed to create file '{filename}'"))?;
 
-        let colors = pyxel::colors();
-        for &color in colors.iter() {
+        for &color in pyxel::colors().iter() {
             writeln!(file, "{color:06x}")
                 .map_err(|_| format!("Failed to save file '{filename}'"))?;
         }
@@ -246,20 +245,20 @@ impl Pyxel {
     pub(crate) fn dump_palette(&self) {
         let filename = Self::prepend_desktop_path("pyxel-palette");
         let num_colors = pyxel::colors().len();
-        let image = Image::new(num_colors as u32, 1);
-
-        {
-            let image = unsafe { &mut *image };
-            for i in 0..num_colors {
-                image.set_pixel(i as f32, 0.0, i as Color);
-            }
-
-            if let Err(e) = image.save(&filename, 16) {
-                println!("{e}");
-                return;
-            }
-            crate::platform::export_browser_file(&(filename + ".png"));
+        let image_ptr = Image::new(num_colors as u32, 1);
+        let image = unsafe { &mut *image_ptr };
+        for i in 0..num_colors {
+            image.set_pixel(i as f32, 0.0, i as Color);
         }
+        let result = image.save(&filename, 16);
+        unsafe {
+            drop(Box::from_raw(image_ptr));
+        }
+        if let Err(e) = result {
+            println!("{e}");
+            return;
+        }
+        crate::platform::export_browser_file(&(filename + ".png"));
     }
 
     fn palette_filename(filename: &str) -> String {
@@ -296,7 +295,7 @@ impl Pyxel {
         name.to_lowercase()
             .replace(' ', "_")
             .chars()
-            .filter(|c| c.is_alphanumeric() || *c == '_' || *c == '-')
+            .filter(|&c| c.is_alphanumeric() || c == '_' || c == '-')
             .collect()
     }
 }

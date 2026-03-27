@@ -17,16 +17,6 @@
     <script>
       let data, lang = "en";
 
-      function t(o) {
-        if (!o) return "";
-        if (typeof o === "string") return data?.ui[o] ? t(data.ui[o]) : o;
-        return o[lang] || o["en"] || "";
-      }
-
-      function code(s, syntax) {
-        return `<pre class="code-block"><code class="language-${syntax || "plaintext"}">${esc(s)}</code></pre>`;
-      }
-
       function table(headers, rows) {
         let h = `<div class="overflow-x-auto"><table class="w-full border-collapse"><thead><tr>`;
         for (const th of headers) h += `<th class="th">${esc(th)}</th>`;
@@ -78,7 +68,6 @@
         const $ = (id) => document.getElementById(id);
         const pyxelLink = link("https://github.com/kitao/pyxel", "Pyxel");
         const launcherLink = link("../launcher/", "Pyxel Web Launcher");
-
 
         // Header
         document.title = t("title");
@@ -184,7 +173,7 @@
           <p class="body">${esc(t("custom_tags_setup_body"))}</p>
           ${code('<script src="https://cdn.jsdelivr.net/gh/kitao/pyxel/wasm/pyxel.js"><\/script>', "html")}
           <p class="body">${t("custom_tags_setup_version").replace("{0}", chip("@"))}</p>
-          ${code('<script src="https://cdn.jsdelivr.net/gh/kitao/pyxel@v2.7.2/wasm/pyxel.js"><\/script>', "html")}
+          ${code('<script src="https://cdn.jsdelivr.net/gh/kitao/pyxel@v2.8.7/wasm/pyxel.js"><\/script>', "html")}
 
           <p class="body mt-3">${t("custom_tags_overview")
             .replace("{0}", chip("run"))
@@ -254,7 +243,6 @@ pyxel.show()
             : "python -m http.server\n# Use python3 on macOS and Linux", "sh")}
           <p class="body">${t("custom_tags_local_access").replace("{0}", chip("http://localhost:8000/test.html"))}</p>`;
 
-
         setDocLang(lang);
         hljs.highlightAll();
       }
@@ -266,7 +254,8 @@ pyxel.show()
           data = json;
           lang = detectLanguage(data.languages);
           build();
-        });
+        })
+        .catch((e) => console.error("Failed to load data:", e));
     </script>
   </body>
 </html>

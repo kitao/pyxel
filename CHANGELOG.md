@@ -1,8 +1,26 @@
 # Change Log
 
+## 2.8.9
+
+- Refined code quality and consistency across all layers
+- Removed unnecessary allocations in rendering and audio
+- Unified editor undo/redo and input handling patterns
+- Optimized drawing hot paths and audio command processing
+- Fixed memory leak in MML playback on channels
+- Fixed tilemap editor selection and viewer rendering
+- Added comprehensive Python API and Rust unit tests
+- Removed undefined constants from type stubs and API reference
+- Improved headless mode with frame pipeline and input injection
+
 ## 2.8.8
 
 - Added GitHub issue and discussion templates
+- Fixed MML audio engine edge cases
+- Fixed editor input and copy/paste issues
+- Fixed temporary image, tilemap, and sound memory leaks
+- Fixed doc generator stripping HTML tags inside inline code
+- Changed tilemap tile coordinate type from u8 to u16
+- Fixed mouse coordinate handling on startup
 
 ## 2.8.7
 

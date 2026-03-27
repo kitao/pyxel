@@ -5,7 +5,7 @@ use crate::sound::{SoundEffect, SoundSpeed, SoundTone, SoundVolume};
 use crate::tone::{ToneMode, ToneSample};
 
 // System
-pub const VERSION: &str = "2.8.7";
+pub const VERSION: &str = "2.8.9";
 pub const BASE_DIR: &str = ".pyxel";
 pub const WINDOW_STATE_ENV: &str = "PYXEL_WINDOW_STATE";
 pub const WATCH_STATE_FILE_ENV: &str = "PYXEL_WATCH_STATE_FILE";
@@ -86,8 +86,8 @@ pub const CURSOR_HEIGHT: u32 = 8;
 pub const CURSOR_DATA: [&str; CURSOR_HEIGHT as usize] = [
     "11111100", "17776100", "17761000", "17676100", "16167610", "11016761", "00001610", "00000100",
 ];
-pub const MIN_FONT_CODE: char = 32 as char;
-pub const MAX_FONT_CODE: char = 127 as char;
+pub const MIN_FONT_CODE: char = ' ';
+pub const MAX_FONT_CODE: char = '\x7F';
 pub const NUM_FONT_ROWS: u32 = 16;
 pub const FONT_WIDTH: u32 = 4;
 pub const FONT_HEIGHT: u32 = 6;

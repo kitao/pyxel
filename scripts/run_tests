@@ -55,6 +55,10 @@ run_bg() {
 cd "$CRATES_DIR"
 run cargo test -p pyxel-core $CARGO_OPTS
 
+# Python API tests
+cd "$ROOT_DIR"
+run python -m pytest python/tests/ -v
+
 # Example scripts
 for f in "$EXAMPLES_DIR"/*.py; do
     run_bg pyxel run "$f"

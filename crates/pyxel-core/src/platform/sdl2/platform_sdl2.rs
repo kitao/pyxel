@@ -1,14 +1,14 @@
 use std::ffi::{CStr, CString};
 use std::mem::MaybeUninit;
 use std::os::raw::{c_int, c_void};
-use std::ptr::{addr_of_mut, copy_nonoverlapping, null_mut};
+use std::ptr::{copy_nonoverlapping, null_mut};
 use std::slice::from_raw_parts_mut;
 use std::sync::atomic::{AtomicU32, Ordering};
 
 use glow::Context;
 
 use super::super::facade::GLProfile;
-use super::poll_events::Gamepad;
+use super::poll_events::{open_gamepad, Gamepad};
 #[allow(clippy::wildcard_imports)]
 use super::sdl2_sys::*;
 
@@ -33,7 +33,7 @@ unsafe extern "C" fn main_loop_callback<F: FnMut(f32)>(arg: *mut c_void) {
 
 extern "C" fn audio_callback(userdata: *mut c_void, stream: *mut u8, len: c_int) {
     let callback = unsafe { &mut *userdata.cast::<Box<dyn FnMut(&mut [i16])>>() };
-    let stream: &mut [i16] = unsafe { from_raw_parts_mut(stream.cast::<i16>(), len as usize / 2) };
+    let stream = unsafe { from_raw_parts_mut(stream.cast::<i16>(), len as usize / 2) };
     (*callback)(stream);
 }
 
@@ -108,24 +108,18 @@ impl PlatformSdl2 {
 
         self.gamepads.clear();
         let num_joysticks = unsafe { SDL_NumJoysticks() };
-        self.gamepads
-            .extend((0..num_joysticks).filter_map(Gamepad::open));
+        self.gamepads.extend((0..num_joysticks).map(open_gamepad));
     }
 
     #[cfg(not(target_os = "emscripten"))]
     pub fn quit(&mut self) {
-        unsafe {
-            SDL_Quit();
-        }
+        unsafe { SDL_Quit() };
         std::process::exit(0);
     }
 
     #[cfg(target_os = "emscripten")]
     pub fn quit(&mut self) {
-        unsafe {
-            emscripten_cancel_main_loop();
-        }
-
+        unsafe { emscripten_cancel_main_loop() };
         self.pause_audio(true);
     }
 
@@ -134,16 +128,12 @@ impl PlatformSdl2 {
     }
 
     #[cfg(not(target_os = "emscripten"))]
-    pub fn export_browser_file(&self, _filename: &str) {
-        // Do nothing
-    }
+    pub fn export_browser_file(&self, _filename: &str) {}
 
     #[cfg(target_os = "emscripten")]
     pub fn export_browser_file(&self, filename: &str) {
-        unsafe {
-            let script = CString::new(format!("_savePyxelFile('{filename}');")).unwrap();
-            emscripten_run_script(script.as_ptr());
-        }
+        let script = CString::new(format!("_savePyxelFile('{filename}');")).unwrap();
+        unsafe { emscripten_run_script(script.as_ptr()) };
     }
 
     //
@@ -162,12 +152,13 @@ impl PlatformSdl2 {
             );
             assert!(!self.window.is_null(), "Failed to create window");
 
+            let hint_value = CString::new("1").unwrap();
             SDL_SetHint(
                 SDL_HINT_MOUSE_FOCUS_CLICKTHROUGH.as_ptr().cast(),
-                CString::new("1").unwrap().as_ptr(),
+                hint_value.as_ptr(),
             );
 
-            // Try to initialize OpenGL 2.1
+            // Try OpenGL 2.1, fall back to OpenGL ES 2.0
             SDL_GL_SetAttribute(
                 SDL_GL_CONTEXT_PROFILE_MASK,
                 SDL_GL_CONTEXT_PROFILE_CORE as i32,
@@ -176,7 +167,6 @@ impl PlatformSdl2 {
             SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
 
             if SDL_GL_CreateContext(self.window).is_null() {
-                // Try to initialize OpenGL ES 2.0
                 SDL_GL_SetAttribute(
                     SDL_GL_CONTEXT_PROFILE_MASK,
                     SDL_GL_CONTEXT_PROFILE_ES as i32,
@@ -195,41 +185,29 @@ impl PlatformSdl2 {
         }
     }
 
-    pub fn window_pos(&mut self) -> (i32, i32) {
-        let mut x: i32 = 0;
-        let mut y: i32 = 0;
-        unsafe {
-            SDL_GetWindowPosition(self.window, addr_of_mut!(x), addr_of_mut!(y));
-        }
+    pub fn window_pos(&self) -> (i32, i32) {
+        let (mut x, mut y) = (0, 0);
+        unsafe { SDL_GetWindowPosition(self.window, &raw mut x, &raw mut y) };
         (x, y)
     }
 
     pub fn set_window_pos(&mut self, x: i32, y: i32) {
-        unsafe {
-            SDL_SetWindowPosition(self.window, x, y);
-        }
+        unsafe { SDL_SetWindowPosition(self.window, x, y) };
     }
 
-    pub fn window_size(&mut self) -> (u32, u32) {
-        let mut width: i32 = 0;
-        let mut height: i32 = 0;
-        unsafe {
-            SDL_GetWindowSize(self.window, addr_of_mut!(width), addr_of_mut!(height));
-        }
-        (width as u32, height as u32)
+    pub fn window_size(&self) -> (u32, u32) {
+        let (mut w, mut h) = (0i32, 0i32);
+        unsafe { SDL_GetWindowSize(self.window, &raw mut w, &raw mut h) };
+        (w as u32, h as u32)
     }
 
     pub fn set_window_size(&mut self, width: u32, height: u32) {
-        unsafe {
-            SDL_SetWindowSize(self.window, width as i32, height as i32);
-        }
+        unsafe { SDL_SetWindowSize(self.window, width as i32, height as i32) };
     }
 
     pub fn set_window_title(&mut self, title: &str) {
         let title = CString::new(title).unwrap();
-        unsafe {
-            SDL_SetWindowTitle(self.window, title.as_ptr());
-        }
+        unsafe { SDL_SetWindowTitle(self.window, title.as_ptr()) };
     }
 
     pub fn set_window_icon(&mut self, width: u32, height: u32, rgba: &[u8]) {
@@ -241,9 +219,11 @@ impl PlatformSdl2 {
                 32,
                 SDL_PIXELFORMAT_RGBA32 as Uint32,
             );
+            assert!(!surface.is_null(), "Failed to create icon surface");
 
             let pixels = (*surface).pixels.cast::<u8>();
             let size = (height * (*surface).pitch as u32) as usize;
+            assert!(rgba.len() >= size, "RGBA buffer too small for icon");
             copy_nonoverlapping(rgba.as_ptr(), pixels, size);
 
             SDL_SetWindowIcon(self.window, surface);
@@ -251,53 +231,37 @@ impl PlatformSdl2 {
         }
     }
 
-    pub fn is_fullscreen(&mut self) -> bool {
-        let window_flags = unsafe { SDL_GetWindowFlags(self.window) };
-        (window_flags & SDL_WINDOW_FULLSCREEN as Uint32) != 0
+    pub fn is_fullscreen(&self) -> bool {
+        let flags = unsafe { SDL_GetWindowFlags(self.window) };
+        flags & SDL_WINDOW_FULLSCREEN as Uint32 != 0
     }
 
     pub fn set_fullscreen(&mut self, enabled: bool) {
-        let enabled = if enabled {
+        let flag = if enabled {
             SDL_WINDOW_FULLSCREEN_DESKTOP as Uint32
         } else {
             0
         };
-        unsafe {
-            SDL_SetWindowFullscreen(self.window, enabled);
-        }
+        unsafe { SDL_SetWindowFullscreen(self.window, flag) };
     }
 
     pub fn set_mouse_pos(&mut self, x: i32, y: i32) {
-        unsafe {
-            SDL_WarpMouseInWindow(self.window, x, y);
-        }
+        unsafe { SDL_WarpMouseInWindow(self.window, x, y) };
     }
 
     pub fn set_mouse_visible(&self, visible: bool) {
-        let visible = if visible {
-            SDL_ENABLE as i32
-        } else {
-            SDL_DISABLE as i32
-        };
-        unsafe {
-            SDL_ShowCursor(visible);
-        }
+        let toggle = if visible { SDL_ENABLE } else { SDL_DISABLE } as i32;
+        unsafe { SDL_ShowCursor(toggle) };
     }
 
     pub fn display_size(&self) -> (u32, u32) {
-        let mut display_mode = SDL_DisplayMode {
-            format: 0,
-            w: 0,
-            h: 0,
-            refresh_rate: 0,
-            driverdata: null_mut(),
-        };
+        let mut mode = MaybeUninit::<SDL_DisplayMode>::uninit();
         assert!(
-            unsafe { SDL_GetCurrentDisplayMode(0, addr_of_mut!(display_mode)) } == 0,
+            unsafe { SDL_GetCurrentDisplayMode(0, mode.as_mut_ptr()) } == 0,
             "Failed to get display size"
         );
-
-        (display_mode.w as u32, display_mode.h as u32)
+        let mode = unsafe { mode.assume_init() };
+        (mode.w as u32, mode.h as u32)
     }
 
     //
@@ -309,10 +273,9 @@ impl PlatformSdl2 {
         buffer_size: u32,
         callback: F,
     ) {
-        unsafe {
-            SDL_InitSubSystem(SDL_INIT_AUDIO);
-        }
+        unsafe { SDL_InitSubSystem(SDL_INIT_AUDIO) };
 
+        // Reuse the audio device across re-initialization
         let saved_id = AUDIO_DEVICE_ID.load(Ordering::Relaxed);
         if saved_id != 0 {
             self.audio_device_id = saved_id;
@@ -338,37 +301,29 @@ impl PlatformSdl2 {
         self.audio_device_id = unsafe {
             SDL_OpenAudioDevice(null_mut(), 0, &raw const desired, obtained.as_mut_ptr(), 0)
         };
-
         if self.audio_device_id == 0 {
             println!("Failed to initialize audio device");
         }
 
         AUDIO_DEVICE_ID.store(self.audio_device_id, Ordering::Relaxed);
-
         self.pause_audio(false);
     }
 
     pub fn pause_audio(&mut self, paused: bool) {
         if self.audio_device_id != 0 {
-            unsafe {
-                SDL_PauseAudioDevice(self.audio_device_id, paused as i32);
-            }
+            unsafe { SDL_PauseAudioDevice(self.audio_device_id, paused as i32) };
         }
     }
 
     pub fn lock_audio(&self) {
         if self.audio_device_id != 0 {
-            unsafe {
-                SDL_LockAudioDevice(self.audio_device_id);
-            }
+            unsafe { SDL_LockAudioDevice(self.audio_device_id) };
         }
     }
 
     pub fn unlock_audio(&self) {
         if self.audio_device_id != 0 {
-            unsafe {
-                SDL_UnlockAudioDevice(self.audio_device_id);
-            }
+            unsafe { SDL_UnlockAudioDevice(self.audio_device_id) };
         }
     }
 
@@ -382,27 +337,24 @@ impl PlatformSdl2 {
         let mut last_update_ms = next_update_ms;
 
         loop {
+            // Busy-wait with short sleeps until the next frame time
             loop {
                 let remaining_ms = next_update_ms - self.ticks() as f32;
-                if remaining_ms > 0.0 {
-                    unsafe {
-                        SDL_Delay((remaining_ms as u32 / 2).max(1));
-                    }
-                } else {
+                if remaining_ms <= 0.0 {
                     break;
                 }
+                unsafe { SDL_Delay((remaining_ms as u32 / 2).max(1)) };
             }
 
             callback(next_update_ms - last_update_ms);
             if !self.window.is_null() {
-                unsafe {
-                    SDL_GL_SwapWindow(self.window);
-                }
+                unsafe { SDL_GL_SwapWindow(self.window) };
             }
             last_update_ms = next_update_ms;
 
-            let ticks = self.ticks();
-            while next_update_ms <= ticks as f32 {
+            // Catch up if frames were missed
+            let ticks = self.ticks() as f32;
+            while next_update_ms <= ticks {
                 next_update_ms += frame_ms;
             }
         }
@@ -425,28 +377,24 @@ impl PlatformSdl2 {
         let frame_ms = 1000.0 / fps as f32;
         let mut next_update_ms = self.next_update_ms.unwrap_or(self.ticks() as f32);
 
+        // Busy-wait with short sleeps until the next frame time
         loop {
             let remaining_ms = next_update_ms - self.ticks() as f32;
-            if remaining_ms > 0.0 {
-                unsafe {
-                    SDL_Delay((remaining_ms as u32 / 2).max(1));
-                }
-            } else {
+            if remaining_ms <= 0.0 {
                 break;
             }
+            unsafe { SDL_Delay((remaining_ms as u32 / 2).max(1)) };
         }
 
         if !self.window.is_null() {
-            unsafe {
-                SDL_GL_SwapWindow(self.window);
-            }
+            unsafe { SDL_GL_SwapWindow(self.window) };
         }
 
-        let ticks = self.ticks();
-        while next_update_ms <= ticks as f32 {
+        // Catch up if frames were missed
+        let ticks = self.ticks() as f32;
+        while next_update_ms <= ticks {
             next_update_ms += frame_ms;
         }
-
         self.next_update_ms = Some(next_update_ms);
     }
 
@@ -458,14 +406,12 @@ impl PlatformSdl2 {
     // poll_events is implemented in poll_events.rs
 
     pub fn gl_profile(&self) -> GLProfile {
-        let mut value: i32 = 0;
-        unsafe {
-            SDL_GL_GetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, addr_of_mut!(value));
-        }
+        let mut value = 0i32;
+        unsafe { SDL_GL_GetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, &raw mut value) };
 
-        if value & (SDL_GL_CONTEXT_PROFILE_CORE as i32) != 0 {
+        if value & SDL_GL_CONTEXT_PROFILE_CORE as i32 != 0 {
             GLProfile::Gl
-        } else if value & (SDL_GL_CONTEXT_PROFILE_ES as i32) != 0 {
+        } else if value & SDL_GL_CONTEXT_PROFILE_ES as i32 != 0 {
             GLProfile::Gles
         } else {
             GLProfile::None

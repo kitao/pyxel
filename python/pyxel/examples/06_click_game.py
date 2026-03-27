@@ -89,11 +89,11 @@ class App:
                     break
 
         # Update and merge bubbles
-        for i in range(num_bubbles - 1, -1, -1):
+        for i in reversed(range(num_bubbles)):
             bi = self.bubbles[i]
             bi.update()
 
-            for j in range(i - 1, -1, -1):
+            for j in reversed(range(i)):
                 bj = self.bubbles[j]
                 dx = bi.x - bj.x
                 dy = bi.y - bj.y

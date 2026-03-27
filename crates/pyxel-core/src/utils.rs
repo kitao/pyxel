@@ -2,7 +2,7 @@ macro_rules! string_loop {
     ($index: ident, $piece: ident, $string: ident, $step: expr, $block: block) => {
         for $index in 0..($string.len() / $step) {
             let __index = $index * $step;
-            let $piece = $string[__index..__index + $step].to_string();
+            let $piece = &$string[__index..__index + $step];
             $block
         }
     };
@@ -27,24 +27,24 @@ pub fn remove_whitespace(string: &str) -> String {
 }
 
 pub fn simplify_string(string: &str) -> String {
-    remove_whitespace(string).to_ascii_lowercase()
+    string
+        .chars()
+        .filter(|c| !c.is_ascii_whitespace())
+        .map(|c| c.to_ascii_lowercase())
+        .collect()
 }
 
 pub fn parse_hex_string(string: &str) -> Result<u32, &str> {
-    let string = string.to_ascii_lowercase();
     let mut result: u32 = 0;
-
-    for c in string.chars() {
+    for c in string.bytes() {
         result *= 0x10;
-        if c.is_ascii_digit() {
-            result += c as u32 - '0' as u32;
-        } else if ('a'..='f').contains(&c) {
-            result += 10 + c as u32 - 'a' as u32;
-        } else {
-            return Err("invalid hex string");
+        match c {
+            b'0'..=b'9' => result += (c - b'0') as u32,
+            b'a'..=b'f' => result += 10 + (c - b'a') as u32,
+            b'A'..=b'F' => result += 10 + (c - b'A') as u32,
+            _ => return Err("invalid hex string"),
         }
     }
-
     Ok(result)
 }
 
@@ -52,25 +52,15 @@ pub fn add_file_extension(filename: &str, ext: &str) -> String {
     if filename.to_lowercase().ends_with(ext) {
         filename.to_string()
     } else {
-        filename.to_string() + ext
+        format!("{filename}{ext}")
     }
 }
 
 pub fn compress_vec<T: PartialEq + Clone>(vec: &[T]) -> Vec<T> {
     assert!(!vec.is_empty());
-    let mut new_vec = vec.to_vec();
-    let mut new_len = new_vec.len();
-
-    for i in (1..new_vec.len()).rev() {
-        if new_vec[i] == new_vec[i - 1] {
-            new_len = i;
-        } else {
-            break;
-        }
-    }
-
-    new_vec.truncate(new_len);
-    new_vec
+    let last = vec.last().unwrap();
+    let new_len = vec.iter().rposition(|v| v != last).map_or(1, |i| i + 2);
+    vec[..new_len].to_vec()
 }
 
 pub fn compress_vec2<T: PartialEq + Clone>(vec: &[Vec<T>]) -> Vec<Vec<T>> {
@@ -81,18 +71,15 @@ pub fn compress_vec2<T: PartialEq + Clone>(vec: &[Vec<T>]) -> Vec<Vec<T>> {
         .collect::<Vec<_>>()
 }
 
-pub fn expand_vec<T: Clone + Default>(vec: &[T], new_len: usize) -> Vec<T> {
+pub fn expand_vec<T: Clone>(vec: &[T], new_len: usize) -> Vec<T> {
     assert!(!vec.is_empty());
     let mut new_vec = vec.to_vec();
-
-    if let Some(last) = new_vec.last().cloned() {
-        new_vec.resize_with(new_len, move || last.clone());
-    }
-
+    let last = new_vec.last().cloned().unwrap();
+    new_vec.resize(new_len, last);
     new_vec
 }
 
-pub fn expand_vec2<T: Clone + Default>(
+pub fn expand_vec2<T: Clone>(
     vec: &[Vec<T>],
     new_outer_len: usize,
     new_inner_len: usize,
@@ -122,7 +109,7 @@ pub fn trim_empty_vecs<T: Clone>(vecs: &[Vec<T>]) -> Vec<Vec<T>> {
 mod tests {
     use super::*;
 
-    // f32_to_i32 / f32_to_u32
+    // ── f32_to_i32 / f32_to_u32 ──
 
     #[test]
     fn test_f32_to_i32() {
@@ -146,7 +133,7 @@ mod tests {
         assert_eq!(f32_to_u32(-3.0), 0);
     }
 
-    // String functions
+    // ── String functions ──
 
     #[test]
     fn test_remove_whitespace() {
@@ -175,6 +162,18 @@ mod tests {
     }
 
     #[test]
+    fn test_parse_hex_string_edge_cases() {
+        // Empty string
+        assert_eq!(parse_hex_string(""), Ok(0));
+        // Single digit
+        assert_eq!(parse_hex_string("F"), Ok(15));
+        // u32 max value
+        assert_eq!(parse_hex_string("FFFFFFFF"), Ok(u32::MAX));
+        // Mixed case in same string
+        assert_eq!(parse_hex_string("aB"), Ok(0xAB));
+    }
+
+    #[test]
     fn test_add_file_extension() {
         assert_eq!(add_file_extension("test", ".png"), "test.png");
         assert_eq!(add_file_extension("test.png", ".png"), "test.png");
@@ -182,7 +181,17 @@ mod tests {
         assert_eq!(add_file_extension("test.txt", ".png"), "test.txt.png");
     }
 
-    // Macros
+    #[test]
+    fn test_add_file_extension_edge_cases() {
+        // Empty filename
+        assert_eq!(add_file_extension("", ".png"), ".png");
+        // Partial extension match (should NOT match)
+        assert_eq!(add_file_extension("test.pn", ".png"), "test.pn.png");
+        // Extension only
+        assert_eq!(add_file_extension(".png", ".png"), ".png");
+    }
+
+    // ── Macros ──
 
     #[test]
     fn test_string_loop() {
@@ -194,7 +203,18 @@ mod tests {
         assert_eq!(result, vec!["AB", "CD", "EF"]);
     }
 
-    // Vec compress/expand/trim
+    #[test]
+    fn test_repeat_extend() {
+        let mut v = vec![1, 2];
+        repeat_extend!(v, 0, 3);
+        assert_eq!(v, vec![1, 2, 0, 0, 0]);
+
+        let mut v: Vec<i32> = Vec::new();
+        repeat_extend!(v, 42, 0);
+        assert!(v.is_empty());
+    }
+
+    // ── Vec compress/expand/trim ──
 
     #[test]
     fn test_compress_vec() {
@@ -202,6 +222,11 @@ mod tests {
         assert_eq!(compress_vec(&[4, 4, 4, 4, 4]), vec![4]);
         assert_eq!(compress_vec(&[2]), vec![2]);
         assert_eq!(compress_vec(&[1, 2, 3]), vec![1, 2, 3]);
+    }
+
+    #[test]
+    fn test_compress_vec_two_distinct() {
+        assert_eq!(compress_vec(&[1, 2]), vec![1, 2]);
     }
 
     #[test]
@@ -218,6 +243,11 @@ mod tests {
         assert_eq!(expand_vec(&[1, 2, 3], 5), vec![1, 2, 3, 3, 3]);
         assert_eq!(expand_vec(&[4], 3), vec![4, 4, 4]);
         assert_eq!(expand_vec(&[1, 2, 3], 2), vec![1, 2]);
+    }
+
+    #[test]
+    fn test_expand_vec_same_length() {
+        assert_eq!(expand_vec(&[1, 2, 3], 3), vec![1, 2, 3]);
     }
 
     #[test]
@@ -239,6 +269,12 @@ mod tests {
             ),
             vec![vec![1, 2], vec![4, 5], vec![7, 8]]
         );
+    }
+
+    #[test]
+    fn test_expand_vec2_same_dimensions() {
+        let input = vec![vec![1, 2], vec![3, 4]];
+        assert_eq!(expand_vec2(&input, 2, 2), input);
     }
 
     #[test]

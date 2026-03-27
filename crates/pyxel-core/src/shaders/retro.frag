@@ -24,7 +24,7 @@ vec3 getBleedingColor(vec2 screenTexCoord) {
     return color;
 }
 
-vec3 getVignettFactor(vec2 screenTexCoord) {
+vec3 getVignetteFactor(vec2 screenTexCoord) {
     float vignette = (0.0 + 1.0 * 16.0 * screenTexCoord.x * screenTexCoord.y * (1.0 - screenTexCoord.x) * (1.0 - screenTexCoord.y));
 
     vec3 color = vec3(pow(vignette, 0.3));
@@ -48,7 +48,7 @@ void main() {
 
     if (isInScreen(screenTexCoord)) {
         vec3 color = getBleedingColor(screenTexCoord);
-        color *= getVignettFactor(screenTexCoord);
+        color *= getVignetteFactor(screenTexCoord);
         color *= getScanlineFactor(screenFragCoord, screenTexCoord);
 
         gl_FragColor = vec4(color, 1.0);

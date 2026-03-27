@@ -1,5 +1,6 @@
 import pyxel
 
+from ..settings import clamp
 from .settings import BUTTON_ENABLED_COLOR, BUTTON_PRESSED_COLOR
 from .widget import Widget
 
@@ -32,14 +33,9 @@ class RadioButton(Widget):
     def check_value(self, x, y):
         x -= self.x
         y -= self.y
-
-        index = min(max(x // 9, 0), self._num_buttons - 1)
+        index = clamp(x // 9, 0, self._num_buttons - 1)
         x1 = index * 9
-        y1 = 0
-        x2 = x1 + 6
-        y2 = y1 + 6
-
-        return index if x1 <= x <= x2 and y1 <= y <= y2 else None
+        return index if x1 <= x < x1 + 7 and 0 <= y < 7 else None
 
     def __on_value_change(self, value):
         self.trigger_event("change", value)

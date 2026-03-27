@@ -1,6 +1,8 @@
 <!doctype html>
-<html>
+<html lang="en">
   <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" href="../../wasm/images/pyxel_icon_64x64.ico" />
     <title>Pyxel Web Launcher</title>
     <script src="https://cdn.jsdelivr.net/gh/kitao/pyxel/wasm/pyxel.js"></script>
@@ -31,6 +33,9 @@
         if (value.includes("/")) {
           // New format: user/repo/branch/path/to/file
           const parts = value.split("/");
+          if (parts.length < 4) {
+            location.replace("url-builder.html");
+          }
           root = `https://cdn.jsdelivr.net/gh/${parts[0]}/${parts[1]}@${parts[2]}`;
           name = parts.slice(3).join("/") + ext;
         } else {

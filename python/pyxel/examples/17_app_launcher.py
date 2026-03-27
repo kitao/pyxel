@@ -128,7 +128,7 @@ class App:
         # Draw metadata
         metadata = self.apps[self.cursor_index]
         for i, key in enumerate(
-            [key for key in metadata.keys() if key not in ["name", "filepath"]]
+            key for key in metadata if key not in ("name", "filepath")
         ):
             pyxel.text(
                 13,

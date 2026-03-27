@@ -1,5 +1,6 @@
 import pyxel
 
+from .settings import clamp
 from .widgets.settings import WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME
 
 
@@ -64,18 +65,15 @@ class FieldCursor:
 
     @property
     def _max_cursor_x(self):
-        return max(min(len(self.field), self._max_field_length - 1), 0)
+        return clamp(len(self.field), 0, self._max_field_length - 1)
 
     @property
     def _max_select_x(self):
-        return max(min(len(self.field) - 1, self._max_field_length - 1), 0)
+        return clamp(len(self.field) - 1, 0, self._max_field_length - 1)
 
     @property
     def _max_y(self):
-        y = 0
-        while self._get_field(y + 1) is not None:
-            y += 1
-        return y
+        return len(self._max_field_values) - 1
 
     @property
     def _adjusted_cursor_x(self):
@@ -86,21 +84,19 @@ class FieldCursor:
         return min(self._select_x, self._max_select_x)
 
     def move_to(self, x, y, with_select_key):
-        y = max(min(y, self._max_y), 0)
+        y = clamp(y, 0, self._max_y)
         if self._cursor_y != y:
-            self._cursor_x = max(min(x, self._max_cursor_x), 0)
+            self._cursor_x = clamp(x, 0, self._max_cursor_x)
             self._cursor_y = y
             self._select_x = None
         elif with_select_key:
             if self.is_selecting:
-                self._cursor_x = max(min(x, self._max_select_x), 0)
+                self._cursor_x = clamp(x, 0, self._max_select_x)
             else:
-                self._select_x = max(
-                    min(self._adjusted_cursor_x, self._max_select_x), 0
-                )
-                self._cursor_x = max(min(x, self._max_select_x), 0)
+                self._select_x = clamp(self._adjusted_cursor_x, 0, self._max_select_x)
+                self._cursor_x = clamp(x, 0, self._max_select_x)
         else:
-            self._cursor_x = max(min(x, self._max_cursor_x), 0)
+            self._cursor_x = clamp(x, 0, self._max_cursor_x)
             self._select_x = None
 
     def move_left(self, with_select_key):
@@ -222,8 +218,8 @@ class FieldCursor:
             if i < len(self.field):
                 value = self.field[i]
                 if value >= 0:
-                    self.field[i] = min(
-                        max(value + offset, 0), self._max_field_values[self.y]
+                    self.field[i] = clamp(
+                        value + offset, 0, self._max_field_values[self.y]
                     )
             else:
                 self.field.append(0)

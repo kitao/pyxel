@@ -102,6 +102,20 @@ class TilemapEditor(EditorBase):
         self.add_event_listener("update", self.__on_update)
         self.add_event_listener("draw", self.__on_draw)
 
+    def _restore_state(self, data, prefix):
+        """Shared undo/redo logic for restoring tilemap state."""
+        self.tilemap_index_var = data["tilemap_index"]
+        if f"{prefix}_data" in data:
+            pyxel.tilemaps[self.tilemap_index_var].set_slice(
+                0, 0, data[f"{prefix}_data"]
+            )
+            self.image_index_var = data[f"{prefix}_imgsrc"]
+        else:
+            self.focus_x_var, self.focus_y_var = data["focus_pos"]
+            self.canvas_var.set_slice(
+                self.focus_x_var * 8, self.focus_y_var * 8, data[f"{prefix}_canvas"]
+            )
+
     def __on_canvas_get(self, value):
         return pyxel.tilemaps[self.tilemap_index_var]
 
@@ -115,34 +129,18 @@ class TilemapEditor(EditorBase):
         pyxel.tilemaps[self.tilemap_index_var].imgsrc = value
 
     def __on_undo(self, data):
-        self.tilemap_index_var = data["tilemap_index"]
-        if "old_data" in data:
-            pyxel.tilemaps[self.tilemap_index_var].set_slice(0, 0, data["old_data"])
-            self.image_index_var = data["old_imgsrc"]
-        else:
-            self.focus_x_var, self.focus_y_var = data["focus_pos"]
-            self.canvas_var.set_slice(
-                self.focus_x_var * 8, self.focus_y_var * 8, data["old_canvas"]
-            )
+        self._restore_state(data, "old")
 
     def __on_redo(self, data):
-        self.tilemap_index_var = data["tilemap_index"]
-        if "new_data" in data:
-            pyxel.tilemaps[self.tilemap_index_var].set_slice(0, 0, data["new_data"])
-            self.image_index_var = data["new_imgsrc"]
-        else:
-            self.focus_x_var, self.focus_y_var = data["focus_pos"]
-            self.canvas_var.set_slice(
-                self.focus_x_var * 8, self.focus_y_var * 8, data["new_canvas"]
-            )
+        self._restore_state(data, "new")
 
     def __on_drop(self, filename):
         try:
             pyxel.tilemaps[self.tilemap_index_var].load(
                 self.focus_x_var * 8, self.focus_y_var * 8, filename, 0
             )
-        except Exception:
-            pass
+        except (OSError, ValueError) as e:
+            print(f"Failed to load tilemap: {e}")
 
     def __on_update(self):
         self.check_tool_button_shortcuts()
@@ -150,6 +148,5 @@ class TilemapEditor(EditorBase):
     def __on_draw(self):
         self.draw_panel(11, 156, 136, 17)
         self.draw_panel(157, 156, 72, 17)
-
         pyxel.text(18, 162, "TILEMAP", TEXT_LABEL_COLOR)
         pyxel.text(170, 162, "IMAGE", TEXT_LABEL_COLOR)

@@ -1,7 +1,6 @@
 use blip_buf::BlipBuf;
 
 use crate::audio::Audio;
-use crate::channel::Channel;
 use crate::mml_command::MmlCommand;
 use crate::mml_parser::{calc_commands_sec, parse_mml};
 use crate::old_mml_parser::parse_old_mml;
@@ -199,25 +198,20 @@ impl Sound {
         blip_buf.set_rates(AUDIO_CLOCK_RATE as f64, AUDIO_SAMPLE_RATE as f64);
 
         let channels = pyxel::channels();
-        for &channel in channels.iter() {
-            unsafe { &mut *channel }.stop();
+        for &ch in channels.iter() {
+            unsafe { &mut *ch }.stop();
         }
 
-        {
-            let mut channels: Vec<&mut Channel> = channels
-                .iter()
-                .map(|&channel| unsafe { &mut *channel })
-                .collect();
-            let sounds = vec![Box::into_raw(Box::new(self.clone()))];
-            channels[0].play(sounds, None, true, false);
-        }
-
+        let temp_sound = Box::into_raw(Box::new(self.clone()));
+        unsafe { &mut *channels[0] }.play(vec![temp_sound], None, true, false);
         Audio::render_samples(channels.as_slice(), &mut blip_buf, &mut samples);
-        let result = Audio::save_samples(filename, &samples, use_ffmpeg.unwrap_or(false));
-        for &channel in channels.iter() {
-            unsafe { &mut *channel }.stop();
+        for &ch in channels.iter() {
+            unsafe { &mut *ch }.stop();
         }
-        result
+        unsafe {
+            drop(Box::from_raw(temp_sound));
+        }
+        Audio::save_samples(filename, &samples, use_ffmpeg.unwrap_or(false))
     }
 
     pub fn total_seconds(&self) -> Option<f32> {
@@ -232,9 +226,22 @@ impl Sound {
 
     pub(crate) fn to_commands(&self) -> Vec<MmlCommand> {
         let mut commands = Vec::new();
-        let tones = pyxel::tones();
 
-        // Set fixed commands
+        // Fixed parameters
+        self.emit_fixed_params(&mut commands);
+
+        // Envelope, vibrato, glide slot definitions
+        self.emit_envelope_slots(&mut commands);
+        self.emit_vibrato_slot(&mut commands);
+        self.emit_glide_slot(&mut commands);
+
+        // Note sequence with per-note state changes
+        self.emit_notes(&mut commands);
+
+        commands
+    }
+
+    fn emit_fixed_params(&self, commands: &mut Vec<MmlCommand>) {
         commands.push(MmlCommand::Tempo {
             clocks_per_tick: AUDIO_CLOCK_RATE / SOUND_TICKS_PER_SECOND,
         });
@@ -245,8 +252,9 @@ impl Sound {
         commands.push(MmlCommand::Detune {
             semitone_offset: 0.0,
         });
+    }
 
-        // Set fade-out slots if needed
+    fn emit_envelope_slots(&self, commands: &mut Vec<MmlCommand>) {
         if self.effects.contains(&EFFECT_FADEOUT) {
             commands.push(MmlCommand::EnvelopeSet {
                 slot: 1,
@@ -256,26 +264,27 @@ impl Sound {
         }
 
         if self.effects.contains(&EFFECT_HALF_FADEOUT) {
-            let ticks2 = (self.speed as f32 / 2.0).round() as u32;
-            let ticks1 = self.speed as u32 - ticks2;
+            let fade_ticks = (self.speed as f32 / 2.0).round() as u32;
+            let hold_ticks = self.speed as u32 - fade_ticks;
             commands.push(MmlCommand::EnvelopeSet {
                 slot: 2,
                 initial_level: 1.0,
-                segments: vec![(ticks1, 1.0), (ticks2, 0.0)],
+                segments: vec![(hold_ticks, 1.0), (fade_ticks, 0.0)],
             });
         }
 
         if self.effects.contains(&EFFECT_QUARTER_FADEOUT) {
-            let ticks2 = (self.speed as f32 / 4.0).round() as u32;
-            let ticks1 = self.speed as u32 - ticks2;
+            let fade_ticks = (self.speed as f32 / 4.0).round() as u32;
+            let hold_ticks = self.speed as u32 - fade_ticks;
             commands.push(MmlCommand::EnvelopeSet {
                 slot: 3,
                 initial_level: 1.0,
-                segments: vec![(ticks1, 1.0), (ticks2, 0.0)],
+                segments: vec![(hold_ticks, 1.0), (fade_ticks, 0.0)],
             });
         }
+    }
 
-        // Set vibrato slot if needed
+    fn emit_vibrato_slot(&self, commands: &mut Vec<MmlCommand>) {
         if self.effects.contains(&EFFECT_VIBRATO) {
             commands.push(MmlCommand::VibratoSet {
                 slot: 1,
@@ -286,8 +295,9 @@ impl Sound {
         } else {
             commands.push(MmlCommand::Vibrato { slot: 0 });
         }
+    }
 
-        // Set glide slot if needed
+    fn emit_glide_slot(&self, commands: &mut Vec<MmlCommand>) {
         if self.effects.contains(&EFFECT_SLIDE) {
             commands.push(MmlCommand::GlideSet {
                 slot: 1,
@@ -297,253 +307,89 @@ impl Sound {
         } else {
             commands.push(MmlCommand::Glide { slot: 0 });
         }
+    }
 
-        // Parse notes
+    fn emit_notes(&self, commands: &mut Vec<MmlCommand>) {
+        let tones = pyxel::tones();
+        let duration_ticks = self.speed as u32;
+
         let mut last_tone: Option<SoundTone> = None;
         let mut last_volume: Option<SoundVolume> = None;
         let mut last_fadeout: Option<SoundEffect> = None;
         let mut last_vibrato: Option<SoundEffect> = None;
         let mut last_slide: Option<SoundEffect> = None;
 
-        for (i, note) in self.notes.iter().enumerate() {
-            // Rest
-            if *note < 0 {
-                commands.push(MmlCommand::Rest {
-                    duration_ticks: self.speed as u32,
-                });
+        for (i, &note) in self.notes.iter().enumerate() {
+            if note < 0 {
+                commands.push(MmlCommand::Rest { duration_ticks });
                 continue;
             }
 
-            let tone = if self.tones.is_empty() {
-                TONE_TRIANGLE
-            } else {
-                self.tones[i % self.tones.len()]
-            };
+            let tone = self.cycled_or(i, &self.tones, TONE_TRIANGLE);
+            let volume = self.cycled_or(i, &self.volumes, MAX_VOLUME);
+            let effect = self.cycled_or(i, &self.effects, EFFECT_NONE);
 
-            let volume = if self.volumes.is_empty() {
-                MAX_VOLUME
-            } else {
-                self.volumes[i % self.volumes.len()]
-            };
-
-            let effect = if self.effects.is_empty() {
-                EFFECT_NONE
-            } else {
-                self.effects[i % self.effects.len()]
-            };
-
-            // Tone
-            if last_tone.is_none() || tone != last_tone.unwrap() {
+            // Tone change
+            if last_tone != Some(tone) {
                 last_tone = Some(tone);
                 commands.push(MmlCommand::Tone { tone });
             }
 
-            // Volume
-            if last_volume.is_none() || volume != last_volume.unwrap() {
+            // Volume change
+            if last_volume != Some(volume) {
                 last_volume = Some(volume);
                 commands.push(MmlCommand::Volume {
                     level: volume as f32 / MAX_VOLUME as f32,
                 });
             }
 
-            // Fade out
-            let slot = match effect {
-                EFFECT_FADEOUT => 1,
-                EFFECT_HALF_FADEOUT => 2,
-                EFFECT_QUARTER_FADEOUT => 3,
-                _ => 0,
-            };
-            if last_fadeout.is_none() || effect != last_fadeout.unwrap() {
+            // Envelope change
+            if last_fadeout != Some(effect) {
                 last_fadeout = Some(effect);
+                let slot = match effect {
+                    EFFECT_FADEOUT => 1,
+                    EFFECT_HALF_FADEOUT => 2,
+                    EFFECT_QUARTER_FADEOUT => 3,
+                    _ => 0,
+                };
                 commands.push(MmlCommand::Envelope { slot });
             }
 
-            // Vibrato
-            let slot = u32::from(effect == EFFECT_VIBRATO);
-            if last_vibrato.is_none() || effect != last_vibrato.unwrap() {
+            // Vibrato change
+            if last_vibrato != Some(effect) {
                 last_vibrato = Some(effect);
-                commands.push(MmlCommand::Vibrato { slot });
+                commands.push(MmlCommand::Vibrato {
+                    slot: u32::from(effect == EFFECT_VIBRATO),
+                });
             }
 
-            // Slide
-            let slot = u32::from(effect == EFFECT_SLIDE);
-            if last_slide.is_none() || effect != last_slide.unwrap() {
+            // Glide change
+            if last_slide != Some(effect) {
                 last_slide = Some(effect);
-                commands.push(MmlCommand::Glide { slot });
+                commands.push(MmlCommand::Glide {
+                    slot: u32::from(effect == EFFECT_SLIDE),
+                });
             }
 
             // Note
-            let tone = unsafe { &mut *tones[tone as usize] };
-            let midi_note = (*note
-                + if tone.mode == ToneMode::Wavetable {
-                    36
-                } else {
-                    60
-                }) as u32;
+            let tone_data = unsafe { &*tones[tone as usize] };
+            let base_note = if tone_data.mode == ToneMode::Wavetable {
+                36
+            } else {
+                60
+            };
             commands.push(MmlCommand::Note {
-                midi_note,
-                duration_ticks: self.speed as u32,
+                midi_note: (note + base_note) as u32,
+                duration_ticks,
             });
         }
-
-        commands
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    fn new_sound() -> &'static mut Sound {
-        unsafe { &mut *Sound::new() }
     }
 
-    #[test]
-    fn test_new() {
-        let sound = new_sound();
-        assert!(sound.notes.is_empty());
-        assert!(sound.tones.is_empty());
-        assert!(sound.volumes.is_empty());
-        assert!(sound.effects.is_empty());
-        assert_eq!(sound.speed, DEFAULT_SOUND_SPEED);
-    }
-
-    #[test]
-    fn test_set() {
-        let sound = new_sound();
-        sound
-            .set("c0d-0d0d#0", "tspn", "012345", "nsvfhq", 123)
-            .unwrap();
-        assert_eq!(sound.notes, [0, 1, 2, 3]);
-        assert_eq!(
-            sound.tones,
-            [TONE_TRIANGLE, TONE_SQUARE, TONE_PULSE, TONE_NOISE]
-        );
-        assert_eq!(sound.volumes, [0, 1, 2, 3, 4, 5]);
-        assert_eq!(
-            sound.effects,
-            [
-                EFFECT_NONE,
-                EFFECT_SLIDE,
-                EFFECT_VIBRATO,
-                EFFECT_FADEOUT,
-                EFFECT_HALF_FADEOUT,
-                EFFECT_QUARTER_FADEOUT
-            ]
-        );
-        assert_eq!(sound.speed, 123);
-    }
-
-    #[test]
-    fn test_set_notes() {
-        let sound = new_sound();
-        sound
-            .set_notes(" c 0 d # 1 r e 2 f 3 g 4 r a - 0 b 1 ")
-            .unwrap();
-        assert_eq!(sound.notes, [0, 15, -1, 28, 41, 55, -1, 8, 23]);
-    }
-
-    #[test]
-    fn test_set_notes_all_octaves() {
-        let sound = new_sound();
-        sound.set_notes("c0c1c2c3c4").unwrap();
-        assert_eq!(sound.notes, [0, 12, 24, 36, 48]);
-    }
-
-    #[test]
-    fn test_set_notes_invalid() {
-        let sound = new_sound();
-        assert!(sound.set_notes("x0").is_err());
-        assert!(sound.set_notes("c5").is_err());
-    }
-
-    #[test]
-    fn test_set_notes_empty() {
-        let sound = new_sound();
-        sound.set_notes("").unwrap();
-        assert!(sound.notes.is_empty());
-    }
-
-    #[test]
-    fn test_set_tones() {
-        let sound = new_sound();
-        sound.set_tones(" t s p n ").unwrap();
-        assert_eq!(
-            sound.tones,
-            [TONE_TRIANGLE, TONE_SQUARE, TONE_PULSE, TONE_NOISE]
-        );
-    }
-
-    #[test]
-    fn test_set_tones_numeric() {
-        let sound = new_sound();
-        sound.set_tones("0123").unwrap();
-        assert_eq!(sound.tones, [0, 1, 2, 3]);
-    }
-
-    #[test]
-    fn test_set_tones_invalid() {
-        let sound = new_sound();
-        assert!(sound.set_tones("x").is_err());
-    }
-
-    #[test]
-    fn test_set_volumes() {
-        let sound = new_sound();
-        sound.set_volumes(" 0 1 2 3 4 5 6 7 ").unwrap();
-        assert_eq!(sound.volumes, [0, 1, 2, 3, 4, 5, 6, 7]);
-    }
-
-    #[test]
-    fn test_set_volumes_invalid() {
-        let sound = new_sound();
-        assert!(sound.set_volumes("8").is_err());
-        assert!(sound.set_volumes("a").is_err());
-    }
-
-    #[test]
-    fn test_set_effects() {
-        let sound = new_sound();
-        sound.set_effects(" n s v f h q").unwrap();
-        assert_eq!(
-            sound.effects,
-            [
-                EFFECT_NONE,
-                EFFECT_SLIDE,
-                EFFECT_VIBRATO,
-                EFFECT_FADEOUT,
-                EFFECT_HALF_FADEOUT,
-                EFFECT_QUARTER_FADEOUT
-            ]
-        );
-    }
-
-    #[test]
-    fn test_set_effects_invalid() {
-        let sound = new_sound();
-        assert!(sound.set_effects("x").is_err());
-    }
-
-    #[test]
-    fn test_set_clears_previous() {
-        let sound = new_sound();
-        sound.set_notes("c0d0e0").unwrap();
-        assert_eq!(sound.notes.len(), 3);
-        sound.set_notes("c0").unwrap();
-        assert_eq!(sound.notes.len(), 1);
-    }
-
-    #[test]
-    fn test_total_seconds_empty() {
-        let sound = new_sound();
-        assert_eq!(sound.total_seconds(), Some(0.0));
-    }
-
-    #[test]
-    fn test_total_seconds_with_notes() {
-        let sound = new_sound();
-        sound.set_notes("c0d0e0f0").unwrap();
-        let expected = 4.0 * DEFAULT_SOUND_SPEED as f32 / SOUND_TICKS_PER_SECOND as f32;
-        assert_eq!(sound.total_seconds(), Some(expected));
+    fn cycled_or<T: Copy>(&self, index: usize, values: &[T], default: T) -> T {
+        if values.is_empty() {
+            default
+        } else {
+            values[index % values.len()]
+        }
     }
 }

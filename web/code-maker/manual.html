@@ -20,14 +20,6 @@
       let data = null;
       let lang = "en";
 
-      function t(keyOrObj) {
-        const obj =
-          typeof keyOrObj === "string" ? data?.ui[keyOrObj] : keyOrObj;
-        if (!obj) return typeof keyOrObj === "string" ? keyOrObj : "";
-        if (typeof obj === "string") return obj;
-        return obj[lang] || obj["en"] || "";
-      }
-
       function btnChip(text) {
         return `<span class="btn-chip">${esc(text)}</span>`;
       }
@@ -364,7 +356,8 @@
           data = json;
           lang = detectLanguage(data.languages);
           buildPage();
-        });
+        })
+        .catch((e) => console.error("Failed to load data:", e));
     </script>
   </body>
 </html>

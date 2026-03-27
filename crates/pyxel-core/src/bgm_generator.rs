@@ -308,21 +308,13 @@ fn note_name(note: i32) -> (&'static str, i32) {
 }
 
 fn push_octave(tokens: &mut Vec<String>, current_oct: &mut Option<i32>, target: i32) {
-    match current_oct {
-        Some(cur) if *cur == target => {}
-        Some(cur) if (target - *cur).abs() == 1 => {
-            if target > *cur {
-                tokens.push(">".to_string());
-            } else {
-                tokens.push("<".to_string());
-            }
-            *current_oct = Some(target);
-        }
-        None | Some(_) => {
-            tokens.push(format!("O{target}"));
-            *current_oct = Some(target);
-        }
+    match *current_oct {
+        Some(cur) if cur == target => return,
+        Some(cur) if target - cur == 1 => tokens.push(">".to_string()),
+        Some(cur) if target - cur == -1 => tokens.push("<".to_string()),
+        _ => tokens.push(format!("O{target}")),
     }
+    *current_oct = Some(target);
 }
 
 fn length_units_to_tokens(units: usize) -> Vec<&'static str> {
@@ -451,7 +443,7 @@ fn vib_def_from_tone(tone_idx: usize, slot: i32) -> Option<String> {
 }
 
 fn drum_key_to_idx(key: i32) -> Option<usize> {
-    DRUM_KEYS.iter().position(|k| *k == key)
+    DRUM_KEYS.iter().position(|&k| k == key)
 }
 
 fn drum_notes_for_key(key: i32) -> &'static [i32] {
@@ -466,14 +458,10 @@ fn drum_notes_for_key(key: i32) -> &'static [i32] {
 }
 
 fn used_drum_keys(notes: &[Option<i32>]) -> Vec<i32> {
-    let mut used_keys: Vec<i32> = Vec::new();
-    for n in notes.iter().flatten() {
-        if *n > 0 && !used_keys.contains(n) {
-            used_keys.push(*n);
-        }
-    }
-    used_keys.sort_unstable();
-    used_keys
+    let mut keys: Vec<i32> = notes.iter().filter_map(|n| n.filter(|&v| v > 0)).collect();
+    keys.sort_unstable();
+    keys.dedup();
+    keys
 }
 
 fn drum_env_slots(used_keys: &[i32]) -> [i32; 10] {
@@ -498,47 +486,50 @@ fn env_def_from_drum_key(key: i32, slot: i32) -> String {
     format!("@ENV{slot}{{{init},{decay},{sustain_level}}}")
 }
 
-fn compress_token_runs(tokens: &[String], group: usize) -> Vec<String> {
+fn compress_repeats(items: &[String], group: usize, skip_octave_shifts: bool) -> Vec<String> {
     if group <= 1 {
+        // Compress single-element runs
         let mut out = Vec::new();
         let mut i = 0usize;
-        while i < tokens.len() {
+        while i < items.len() {
             let mut j = i + 1;
-            while j < tokens.len() && tokens[j] == tokens[i] {
+            while j < items.len() && items[j] == items[i] {
                 j += 1;
             }
             let count = j - i;
-            if count > 1 && tokens[i] != "<" && tokens[i] != ">" {
-                let expanded = tokens[i].repeat(count);
-                let bracketed = format!("[{}]{}", tokens[i], count);
+            if count > 1 && !(skip_octave_shifts && (items[i] == "<" || items[i] == ">")) {
+                let expanded = items[i].repeat(count);
+                let bracketed = format!("[{}]{}", items[i], count);
                 out.push(if expanded.len() <= bracketed.len() {
                     expanded
                 } else {
                     bracketed
                 });
             } else {
-                out.push(tokens[i].clone());
+                out.push(items[i].clone());
             }
             i = j;
         }
         return out;
     }
 
+    // Compress multi-element chunk runs
     let mut out = Vec::new();
     let mut i = 0usize;
-    while i < tokens.len() {
-        if i + group <= tokens.len() {
-            let chunk = &tokens[i..i + group];
-            if !chunk.iter().any(|t| t == "<" || t == ">") {
+    while i < items.len() {
+        if i + group <= items.len() {
+            let chunk = &items[i..i + group];
+            let should_skip = skip_octave_shifts && chunk.iter().any(|t| t == "<" || t == ">");
+            if !should_skip {
                 let mut j = i + group;
-                while j + group <= tokens.len() && &tokens[j..j + group] == chunk {
+                while j + group <= items.len() && &items[j..j + group] == chunk {
                     j += group;
                 }
                 let count = (j - i) / group;
                 if count > 1 {
-                    let chunk_joined = chunk.join("");
-                    let expanded = chunk_joined.repeat(count);
-                    let bracketed = format!("[{chunk_joined}]{count}");
+                    let joined = chunk.join("");
+                    let expanded = joined.repeat(count);
+                    let bracketed = format!("[{joined}]{count}");
                     out.push(if expanded.len() <= bracketed.len() {
                         expanded
                     } else {
@@ -549,62 +540,7 @@ fn compress_token_runs(tokens: &[String], group: usize) -> Vec<String> {
                 }
             }
         }
-        out.push(tokens[i].clone());
-        i += 1;
-    }
-    out
-}
-
-fn compress_chunks(lines: &[String], chunk_size: usize) -> Vec<String> {
-    if chunk_size <= 1 {
-        let mut out = Vec::new();
-        let mut i = 0usize;
-        while i < lines.len() {
-            let mut j = i + 1;
-            while j < lines.len() && lines[j] == lines[i] {
-                j += 1;
-            }
-            let count = j - i;
-            if count > 1 {
-                let expanded = lines[i].repeat(count);
-                let bracketed = format!("[{}]{}", lines[i], count);
-                out.push(if expanded.len() <= bracketed.len() {
-                    expanded
-                } else {
-                    bracketed
-                });
-            } else {
-                out.push(lines[i].clone());
-            }
-            i = j;
-        }
-        return out;
-    }
-
-    let mut out = Vec::new();
-    let mut i = 0usize;
-    while i < lines.len() {
-        if i + chunk_size <= lines.len() {
-            let chunk = &lines[i..i + chunk_size];
-            let mut j = i + chunk_size;
-            while j + chunk_size <= lines.len() && &lines[j..j + chunk_size] == chunk {
-                j += chunk_size;
-            }
-            let count = (j - i) / chunk_size;
-            if count > 1 {
-                let joined = chunk.join("");
-                let expanded = joined.repeat(count);
-                let bracketed = format!("[{joined}]{count}");
-                out.push(if expanded.len() <= bracketed.len() {
-                    expanded
-                } else {
-                    bracketed
-                });
-                i = j;
-                continue;
-            }
-        }
-        out.push(lines[i].clone());
+        out.push(items[i].clone());
         i += 1;
     }
     out
@@ -612,21 +548,18 @@ fn compress_chunks(lines: &[String], chunk_size: usize) -> Vec<String> {
 
 fn format_tokens(tokens: &[String]) -> String {
     let mut out = String::new();
-    let mut last = String::new();
+    let mut last = "";
     for tok in tokens {
         let is_cmd = tok.starts_with('@') || tok.starts_with('O');
-        if is_cmd && !out.is_empty() && !out.ends_with(' ') {
-            out.push(' ');
-        }
-        if (tok == "<" || tok == ">")
-            && !last.is_empty()
-            && (last.starts_with('@') || last.starts_with('O'))
+        let last_is_cmd = last.starts_with('@') || last.starts_with('O');
+        if (is_cmd || ((tok == "<" || tok == ">") && last_is_cmd))
+            && !out.is_empty()
             && !out.ends_with(' ')
         {
             out.push(' ');
         }
         out.push_str(tok);
-        last.clone_from(tok);
+        last = tok;
     }
     out.trim().to_string()
 }
@@ -644,22 +577,16 @@ fn parse_notes_bits(s: &str) -> [i32; 12] {
 }
 
 fn root_from_bits(bits: &[i32; 12]) -> i32 {
-    for (i, v) in bits.iter().enumerate() {
-        if *v == 2 {
-            return i as i32;
-        }
-    }
-    0
+    bits.iter().position(|v| *v == 2).unwrap_or(0) as i32
 }
 
 fn resolve_entry_notes(progressions: &[ChordEntry], idx: usize) -> Option<&'static str> {
-    if let Some(notes) = progressions[idx].notes {
-        return Some(notes);
-    }
-    progressions[idx]
-        .repeat
-        .and_then(|r| progressions.get(r))
-        .and_then(|e| e.notes)
+    progressions[idx].notes.or_else(|| {
+        progressions[idx]
+            .repeat
+            .and_then(|r| progressions.get(r))
+            .and_then(|e| e.notes)
+    })
 }
 
 fn chord_bits_per_step(preset: usize) -> Vec<[i32; 12]> {
@@ -682,13 +609,7 @@ fn chord_bits_per_step(preset: usize) -> Vec<[i32; 12]> {
 }
 
 fn rhythm_has_16th(line: &str) -> bool {
-    let bytes = line.as_bytes();
-    for i in 1..bytes.len() {
-        if bytes[i - 1] == b'0' && bytes[i] == b'0' {
-            return true;
-        }
-    }
-    false
+    line.as_bytes().windows(2).any(|w| w == b"00")
 }
 
 fn build_chord_note_pool(bits: &[i32; 12], key_shift: i32, lowest: i32) -> Vec<(i32, i32)> {
@@ -698,8 +619,7 @@ fn build_chord_note_pool(bits: &[i32; 12], key_shift: i32, lowest: i32) -> Vec<(
     loop {
         let note_type = bits[idx.rem_euclid(12) as usize];
         let note = 12 + idx + key_shift;
-        if note >= lowest && (note_type == 1 || note_type == 2 || note_type == 3 || note_type == 9)
-        {
+        if note >= lowest && matches!(note_type, 1 | 2 | 3 | 9) {
             results.push((note, note_type));
             if note_highest.is_none() {
                 // Limit range to ~1 octave above the first valid note
@@ -736,16 +656,17 @@ struct MelodyState {
 
 const NOTE_UNSET: i32 = -2;
 const NOTE_CONT: i32 = -3;
-// Match original behavior: retry until a valid melody is produced.
 
-fn default_melody_state() -> MelodyState {
-    MelodyState {
-        cur_chord_idx: -1,
-        cur_chord_loc: 0,
-        is_repeat: false,
-        chord_idx: 0,
-        prev_note: -1,
-        first_in_chord: true,
+impl MelodyState {
+    fn new() -> Self {
+        Self {
+            cur_chord_idx: -1,
+            cur_chord_loc: 0,
+            is_repeat: false,
+            chord_idx: 0,
+            prev_note: -1,
+            first_in_chord: true,
+        }
     }
 }
 
@@ -769,7 +690,7 @@ fn build_melody_chord_plan(preset: usize, key_shift: i32, lowest: i32) -> Vec<Me
                 if *v == 2 {
                     base = i as i32;
                 }
-                if *v == 1 || *v == 2 || *v == 3 {
+                if matches!(*v, 1..=3) {
                     note_chord_count += 1;
                 }
             }
@@ -790,16 +711,13 @@ fn build_melody_chord_plan(preset: usize, key_shift: i32, lowest: i32) -> Vec<Me
 
 fn chord_at(plan: &[MelodyChord], loc: usize) -> (usize, usize) {
     let mut next_chord_loc = TOTAL_STEPS;
-    let mut idx = 0;
-    for rev_idx in 0..plan.len() {
-        let i = plan.len() - rev_idx - 1;
+    for i in (0..plan.len()).rev() {
         if loc >= plan[i].loc {
-            idx = i;
-            break;
+            return (i, next_chord_loc);
         }
         next_chord_loc = plan[i].loc;
     }
-    (idx, next_chord_loc)
+    (0, next_chord_loc)
 }
 
 fn pick_rhythm_events(
@@ -1084,7 +1002,7 @@ fn pick_target_note(
 }
 
 fn find_chord_note_index(chord_notes: &[(i32, i32)], note: i32) -> Option<usize> {
-    chord_notes.iter().position(|(n, _)| *n == note)
+    chord_notes.iter().position(|&(n, _)| n == note)
 }
 
 fn pick_target_note_idx(
@@ -1122,7 +1040,7 @@ fn generate_melody(
         rhythm_main_list.sort_by_key(Vec::len);
         let rhythm_main = &rhythm_main_list[density.min(rhythm_main_list.len() - 1)];
 
-        let mut state = default_melody_state();
+        let mut state = MelodyState::new();
 
         for loc in 0..TOTAL_STEPS {
             if note_line[loc] != NOTE_UNSET {
@@ -1289,14 +1207,14 @@ fn harmony_note_pool_at(
     let mut idx = 0i32;
     loop {
         let note_type = chord_bits[idx.rem_euclid(12) as usize];
-        if note_type == 1 || note_type == 2 || note_type == 3 || note_type == 9 {
+        if matches!(note_type, 1 | 2 | 3 | 9) {
             let note = 12 + idx + key_shift;
             if note > master - 3 && has_important_tone {
                 break;
             }
             if note >= base_min {
                 results.push((note, note_type));
-                if note_type == 1 || note_type == 3 {
+                if matches!(note_type, 1 | 3) {
                     has_important_tone = true;
                 }
             }
@@ -1323,7 +1241,7 @@ fn find_lower_harmony_at(
     let mut cur = master_note - 3;
     while cur >= lowest {
         for (note, note_type) in &notes {
-            if *note == cur && (*note_type == 1 || *note_type == 2 || *note_type == 3) {
+            if *note == cur && matches!(*note_type, 1..=3) {
                 return cur;
             }
         }
@@ -1404,7 +1322,7 @@ fn generate_submelody(
 ) -> Vec<Option<i32>> {
     let chord_plan = build_melody_chord_plan(preset, key_shift, lowest);
     let rhythm_sub = pick_rhythm_events(rng, true, true);
-    let mut state = default_melody_state();
+    let mut state = MelodyState::new();
 
     let mut sub = sub_seed.to_vec();
     let mut prev_note_loc: i32 = -1;
@@ -1450,91 +1368,29 @@ fn generate_submelody(
     sub
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn bass_notes_use_chord_tones_only() {
-        for preset in 0..PRESET_COUNT {
-            let bits_per_step = chord_bits_per_step(preset);
-            for transp in -5..=6 {
-                let bass = generate_bass(preset, &bits_per_step, transp);
-                for (loc, note) in bass.iter().enumerate() {
-                    let Some(note) = note else {
-                        continue;
-                    };
-                    if *note < 0 {
-                        continue;
-                    }
-                    let tone = bits_per_step[loc][((*note + transp).rem_euclid(12)) as usize];
-                    assert!(
-                        matches!(tone, 1..=3),
-                        "preset={preset} transp={transp} loc={loc} note={note} tone={tone}"
-                    );
-                }
-            }
-        }
-    }
-
-    #[test]
-    fn seeded_generation_is_reproducible() {
-        let cases = [
-            (0, 0, 1u64),
-            (1, 1, 2u64),
-            (2, 2, 3u64),
-            (3, 3, 4u64),
-            (7, 3, 123_456_789u64),
-        ];
-        for (preset, instr, seed) in cases {
-            let a = std::panic::catch_unwind(|| generate_bgm_mml(preset, instr, Some(seed)))
-                .unwrap_or_else(|_| {
-                    panic!(
-                        "seeded generation panicked (first run) preset={preset} instr={instr} seed={seed}"
-                    )
-                });
-            let b = std::panic::catch_unwind(|| generate_bgm_mml(preset, instr, Some(seed)))
-                .unwrap_or_else(|_| {
-                    panic!(
-                        "seeded generation panicked (second run) preset={preset} instr={instr} seed={seed}"
-                    )
-                });
-            assert_eq!(
-                a, b,
-                "seeded gen_bgm mismatch preset={preset} instr={instr} seed={seed}"
-            );
-        }
-    }
-}
-
 fn shifted_melody(melody: &[Option<i32>]) -> Vec<Option<i32>> {
-    let mut notes = vec![Some(-1); TOTAL_STEPS];
-    for (i, out) in notes.iter_mut().enumerate().take(TOTAL_STEPS) {
-        let prev = (i + TOTAL_STEPS - 1) % TOTAL_STEPS;
-        *out = melody[prev];
-    }
+    // Shift melody forward by 1 step (wrapping last to first)
+    let mut notes = Vec::with_capacity(TOTAL_STEPS);
+    notes.push(melody[TOTAL_STEPS - 1]);
+    notes.extend_from_slice(&melody[..TOTAL_STEPS - 1]);
     notes
 }
 
 fn generate_drums(preset: usize) -> Vec<Option<i32>> {
-    let mut notes = vec![None; TOTAL_STEPS];
     let drum_idx = PRESET_SETS[preset][PRESET_DRUMS] as usize;
     let (basic, final_pat) = DRUM_PATTERNS[drum_idx];
-    for i in 0..TOTAL_STEPS {
-        let bar = i / STEPS_PER_BAR;
-        let pat = if bar % 4 < 3 {
-            basic.as_bytes()
-        } else {
-            final_pat.as_bytes()
-        };
-        let step_symbol = pat[i % STEPS_PER_BAR];
-        if step_symbol == b'0' {
-            notes[i] = None;
-        } else {
-            notes[i] = Some(i32::from(step_symbol - b'0'));
-        }
-    }
-    notes
+    (0..TOTAL_STEPS)
+        .map(|i| {
+            let bar = i / STEPS_PER_BAR;
+            let pat = if bar % 4 < 3 { basic } else { final_pat };
+            let step_symbol = pat.as_bytes()[i % STEPS_PER_BAR];
+            if step_symbol == b'0' {
+                None
+            } else {
+                Some(i32::from(step_symbol - b'0'))
+            }
+        })
+        .collect()
 }
 
 fn current_bar_mut(bar_tokens: &mut [Vec<String>]) -> &mut Vec<String> {
@@ -1677,19 +1533,19 @@ fn notes_to_mml(
 
     let mut bar_strings: Vec<String> = Vec::with_capacity(bar_tokens.len());
     for bar in &bar_tokens {
-        let mut compressed = compress_token_runs(bar, 4);
+        let mut compressed = compress_repeats(bar, 4, true);
         if compressed == *bar {
-            compressed = compress_token_runs(bar, 2);
+            compressed = compress_repeats(bar, 2, true);
         }
         if compressed == *bar {
-            compressed = compress_token_runs(bar, 1);
+            compressed = compress_repeats(bar, 1, true);
         }
         bar_strings.push(format_tokens(&compressed));
     }
 
-    let mut compressed = compress_chunks(&bar_strings, 2);
+    let mut compressed = compress_repeats(&bar_strings, 2, false);
     if compressed == bar_strings {
-        compressed = compress_chunks(&bar_strings, 1);
+        compressed = compress_repeats(&bar_strings, 1, false);
     }
 
     tokens.extend(compressed);

@@ -373,18 +373,18 @@
       "uk": "Після встановлення {0} (версія 3.8 або вища) виконайте наступну команду."
     },
     "install_desktop_note": {
-      "en": "On Windows, make sure to check {0} when installing Python to enable the {1} command.",
-      "cn": "在 Windows 上，安装 Python 时请确保勾选 {0}，以启用 {1} 命令。",
-      "de": "Unter Windows müssen Sie bei der Installation von Python die Option {0} aktivieren, damit der Befehl {1} verfügbar ist.",
-      "es": "En Windows, asegúrate de marcar {0} al instalar Python para habilitar el comando {1}.",
-      "fr": "Sous Windows, assurez-vous de cocher {0} lors de l'installation de Python pour activer la commande {1}.",
-      "it": "Su Windows, assicurati di selezionare {0} durante l'installazione di Python per abilitare il comando {1}.",
-      "ja": "Windows の場合は、{1} コマンドを使えるようにするために、Python のインストール時に {0} にチェックを入れてください。",
-      "ko": "Windows에서는 Python을 설치할 때 {0}를 체크하여 {1} 명령을 활성화하세요.",
-      "pt": "No Windows, certifique-se de marcar {0} ao instalar o Python para habilitar o comando {1}.",
-      "ru": "В Windows при установке Python убедитесь, что вы отметили {0}, чтобы активировать команду {1}.",
-      "tr": "Windows'ta Python kurulumu sırasında {1} komutunu etkinleştirmek için {0} seçeneğini işaretlediğinizden emin olun.",
-      "uk": "У Windows при встановленні Python обов'язково позначте {0}, щоб активувати команду {1}."
+      "en": "On Windows, if installing Python using the installer from python.org, make sure to check {0} to enable the {1} command.",
+      "cn": "在 Windows 上，如果使用 python.org 的安装程序安装 Python，请确保勾选 {0}，以启用 {1} 命令。",
+      "de": "Wenn Sie Python unter Windows mit dem Installer von python.org installieren, aktivieren Sie die Option {0}, damit der Befehl {1} verfügbar ist.",
+      "es": "En Windows, si instalas Python usando el instalador de python.org, asegúrate de marcar {0} para habilitar el comando {1}.",
+      "fr": "Sous Windows, si vous installez Python avec l'installateur de python.org, assurez-vous de cocher {0} pour activer la commande {1}.",
+      "it": "Su Windows, se installi Python usando l'installer di python.org, assicurati di selezionare {0} per abilitare il comando {1}.",
+      "ja": "Windows で python.org のインストーラーを使って Python をインストールする場合は、{1} コマンドを使えるようにするために {0} にチェックを入れてください。",
+      "ko": "Windows에서 python.org의 설치 프로그램을 사용하여 Python을 설치하는 경우, {0}를 체크하여 {1} 명령을 활성화하세요.",
+      "pt": "No Windows, se estiver instalando o Python usando o instalador do python.org, certifique-se de marcar {0} para habilitar o comando {1}.",
+      "ru": "В Windows при установке Python с помощью установщика с python.org убедитесь, что вы отметили {0}, чтобы активировать команду {1}.",
+      "tr": "Windows'ta python.org'dan indirilen yükleyici ile Python kuruyorsanız, {1} komutunu etkinleştirmek için {0} seçeneğini işaretlediğinizden emin olun.",
+      "uk": "У Windows, якщо ви встановлюєте Python за допомогою інсталятора з python.org, обов'язково позначте {0}, щоб активувати команду {1}."
     },
     "install_web_title": {
       "en": "Web",

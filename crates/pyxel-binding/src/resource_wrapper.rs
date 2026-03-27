@@ -1,11 +1,21 @@
-use std::sync::Once;
-
 use pyo3::exceptions::PyException;
 use pyo3::prelude::*;
 
 use crate::pyxel_singleton::pyxel;
 
-static EXCL_OPTION_ONCE: Once = Once::new();
+fn resolve_excl(new: Option<bool>, deprecated: Option<bool>) -> Option<bool> {
+    if deprecated.is_some() {
+        deprecation_warning!(
+            EXCL_OPTION_ONCE,
+            "excl_* options are deprecated. Use exclude_* instead."
+        );
+        deprecated
+    } else {
+        new
+    }
+}
+
+// Load/Save
 
 #[pyfunction]
 #[pyo3(signature = (filename, exclude_images=None, exclude_tilemaps=None, exclude_sounds=None, exclude_musics=None, excl_images=None, excl_tilemaps=None, excl_sounds=None, excl_musics=None))]
@@ -15,52 +25,18 @@ fn load(
     exclude_tilemaps: Option<bool>,
     exclude_sounds: Option<bool>,
     exclude_musics: Option<bool>,
-
     excl_images: Option<bool>,
     excl_tilemaps: Option<bool>,
     excl_sounds: Option<bool>,
     excl_musics: Option<bool>,
 ) -> PyResult<()> {
-    let exclude_images = if excl_images.is_some() {
-        EXCL_OPTION_ONCE.call_once(|| {
-            println!("excl_* options are deprecated. Use exclude_* instead.");
-        });
-        excl_images
-    } else {
-        exclude_images
-    };
-    let exclude_tilemaps = if excl_tilemaps.is_some() {
-        EXCL_OPTION_ONCE.call_once(|| {
-            println!("excl_* options are deprecated. Use exclude_* instead.");
-        });
-        excl_tilemaps
-    } else {
-        exclude_tilemaps
-    };
-    let exclude_sounds = if excl_sounds.is_some() {
-        EXCL_OPTION_ONCE.call_once(|| {
-            println!("excl_* options are deprecated. Use exclude_* instead.");
-        });
-        excl_sounds
-    } else {
-        exclude_sounds
-    };
-    let exclude_musics = if excl_musics.is_some() {
-        EXCL_OPTION_ONCE.call_once(|| {
-            println!("excl_* options are deprecated. Use exclude_* instead.");
-        });
-        excl_musics
-    } else {
-        exclude_musics
-    };
-
     pyxel()
         .load_resource(
             filename,
-            exclude_images,
-            exclude_tilemaps,
-            exclude_sounds,
-            exclude_musics,
+            resolve_excl(exclude_images, excl_images),
+            resolve_excl(exclude_tilemaps, excl_tilemaps),
+            resolve_excl(exclude_sounds, excl_sounds),
+            resolve_excl(exclude_musics, excl_musics),
         )
         .map_err(PyException::new_err)
 }
@@ -73,55 +49,23 @@ fn save(
     exclude_tilemaps: Option<bool>,
     exclude_sounds: Option<bool>,
     exclude_musics: Option<bool>,
-
     excl_images: Option<bool>,
     excl_tilemaps: Option<bool>,
     excl_sounds: Option<bool>,
     excl_musics: Option<bool>,
 ) -> PyResult<()> {
-    let exclude_images = if excl_images.is_some() {
-        EXCL_OPTION_ONCE.call_once(|| {
-            println!("excl_* options are deprecated. Use exclude_* instead.");
-        });
-        excl_images
-    } else {
-        exclude_images
-    };
-    let exclude_tilemaps = if excl_tilemaps.is_some() {
-        EXCL_OPTION_ONCE.call_once(|| {
-            println!("excl_* options are deprecated. Use exclude_* instead.");
-        });
-        excl_tilemaps
-    } else {
-        exclude_tilemaps
-    };
-    let exclude_sounds = if excl_sounds.is_some() {
-        EXCL_OPTION_ONCE.call_once(|| {
-            println!("excl_* options are deprecated. Use exclude_* instead.");
-        });
-        excl_sounds
-    } else {
-        exclude_sounds
-    };
-    let exclude_musics = if excl_musics.is_some() {
-        EXCL_OPTION_ONCE.call_once(|| {
-            println!("excl_* options are deprecated. Use exclude_* instead.");
-        });
-        excl_musics
-    } else {
-        exclude_musics
-    };
-
     pyxel()
         .save_resource(
             filename,
-            exclude_images,
-            exclude_tilemaps,
-            exclude_sounds,
-            exclude_musics,
+            resolve_excl(exclude_images, excl_images),
+            resolve_excl(exclude_tilemaps, excl_tilemaps),
+            resolve_excl(exclude_sounds, excl_sounds),
+            resolve_excl(exclude_musics, excl_musics),
         )
         .map_err(PyException::new_err)
 }
+
+// Palette
 
 #[pyfunction]
 fn load_pal(filename: &str) -> PyResult<()> {
@@ -132,6 +76,8 @@ fn load_pal(filename: &str) -> PyResult<()> {
 fn save_pal(filename: &str) -> PyResult<()> {
     pyxel().save_palette(filename).map_err(PyException::new_err)
 }
+
+// Screenshot/Screencast
 
 #[pyfunction]
 #[pyo3(signature = (filename=None, scale=None))]
@@ -153,6 +99,8 @@ fn screencast(filename: Option<&str>, scale: Option<u32>) -> PyResult<()> {
 fn reset_screencast() {
     pyxel().reset_screencast();
 }
+
+// User data
 
 #[pyfunction]
 fn user_data_dir(vendor_name: &str, app_name: &str) -> PyResult<String> {

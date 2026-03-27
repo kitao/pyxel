@@ -40,12 +40,10 @@ class MusicField(Widget):
     def __on_mouse_down(self, key, x, y):
         if key != pyxel.MOUSE_BUTTON_LEFT or self.is_playing_var:
             return
-
         x -= self.x + 21
         y -= self.y + 2
         if x < 0 or y < 0 or x > 188 or y > 16 or x % 12 > 8 or y % 10 > 6:
             return
-
         self.field_cursor.move_to(
             x // 12 + (y // 10) * 16, self._ch, pyxel.btn(pyxel.KEY_SHIFT)
         )
@@ -72,7 +70,7 @@ class MusicField(Widget):
             MUSIC_FIELD_BACKGROUND_COLOR,
         )
 
-        # Draw cursor
+        # Determine cursor state
         if self.is_playing_var:
             play_pos = pyxel.play_pos(self._ch)
             if play_pos is None:
@@ -93,6 +91,7 @@ class MusicField(Widget):
                 else MUSIC_FIELD_CURSOR_EDIT_COLOR
             )
 
+        # Draw cursor highlight
         if cursor_y == self._ch:
             for i in range(len(self.data) + 1):
                 if cursor_x <= i < cursor_x + cursor_width:
@@ -100,13 +99,16 @@ class MusicField(Widget):
                     y = self.y + (cursor_y - self._ch + i // 16) * 10 + 2
                     pyxel.rect(x, y, 9, 7, cursor_col)
 
-        # Draw sounds
-        for i in range(len(self.data)):
+        # Draw sound indices
+        for i, snd in enumerate(self.data):
             x = self.x + 22 + (i % 16) * 12
             y = self.y + (i // 16) * 10 + 3
+            is_selected = (
+                cursor_y == self._ch and cursor_x <= i < cursor_x + cursor_width
+            )
             col = (
                 MUSIC_FIELD_SOUND_SELECT_COLOR
-                if cursor_y == self._ch and cursor_x <= i < cursor_x + cursor_width
+                if is_selected
                 else MUSIC_FIELD_SOUND_NORMAL_COLOR
             )
-            pyxel.text(x, y, f"{self.data[i]:0>2}", col)
+            pyxel.text(x, y, f"{snd:0>2}", col)

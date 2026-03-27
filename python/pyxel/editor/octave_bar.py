@@ -1,6 +1,6 @@
 import pyxel
 
-from .settings import OCTAVE_BAR_BACKGROUND_COLOR, OCTAVE_BAR_COLOR
+from .settings import OCTAVE_BAR_BACKGROUND_COLOR, OCTAVE_BAR_COLOR, clamp
 from .widgets import Widget
 
 
@@ -30,7 +30,7 @@ class OctaveBar(Widget):
         if self.field_cursor.y > 0:
             self.field_cursor.move_to(self.field_cursor.x, 0, False)
 
-        self.octave_var = min(max(3 - ((y - self.y - 12) // 24), 0), 3)
+        self.octave_var = clamp(3 - ((y - self.y - 12) // 24), 0, 3)
 
     def __on_mouse_drag(self, key, x, y, dx, dy):
         self.__on_mouse_down(key, x, y)

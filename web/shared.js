@@ -2,27 +2,27 @@
 
 const PYXEL_LANG_KEY = "pyxel-lang";
 
-function detectLanguage(languages) {
+const detectLanguage = (languages) => {
   const stored = localStorage.getItem(PYXEL_LANG_KEY);
   if (stored && languages.some((l) => l.code === stored)) return stored;
-  const nav = (navigator.language || "").toLowerCase();
+  const nav = (navigator.language ?? "").toLowerCase();
   if (nav.startsWith("zh")) return "cn";
   for (const l of languages) {
     if (nav.startsWith(l.code)) return l.code;
   }
   return "en";
-}
+};
 
-function saveLang(lang) {
+const saveLang = (lang) => {
   localStorage.setItem(PYXEL_LANG_KEY, lang);
   setDocLang(lang);
-}
+};
 
-function setDocLang(lang) {
+const setDocLang = (lang) => {
   document.documentElement.lang = lang === "cn" ? "zh" : lang;
-}
+};
 
-function buildLangSelector(languages, currentLang, onChange, existingSelect) {
+const buildLangSelector = (languages, currentLang, onChange, existingSelect) => {
   const sel = existingSelect || document.createElement("select");
   if (!existingSelect) sel.className = "lang-select mt-1";
   for (const l of languages) {
@@ -38,20 +38,29 @@ function buildLangSelector(languages, currentLang, onChange, existingSelect) {
   });
   if (existingSelect) sel.style.display = "";
   return sel;
-}
+};
 
 // HTML helpers
 
-function esc(s) {
-  const d = document.createElement("span");
-  d.textContent = s;
-  return d.innerHTML;
-}
+const esc = (s) =>
+  String(s)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
 
-function link(href, text) {
-  return `<a href="${href}" target="_blank" rel="noopener noreferrer" class="link">${text}</a>`;
-}
+const link = (href, text) =>
+  `<a href="${esc(href)}" target="_blank" rel="noopener noreferrer" class="link">${esc(text)}</a>`;
 
-function chip(s) {
-  return `<code class="chip">${esc(s)}</code>`;
-}
+const chip = (s) =>
+  `<code class="chip">${esc(s)}</code>`;
+
+const t = (o) => {
+  if (!o) return "";
+  if (typeof o === "string") return data?.ui[o] ? t(data.ui[o]) : o;
+  return o[lang] ?? o["en"] ?? "";
+};
+
+const code = (s, syntax = "plaintext") =>
+  `<pre class="code-block"><code class="language-${syntax}">${esc(s)}</code></pre>`;

@@ -71,13 +71,17 @@ def cli():
     sys.exit(1)
 
 
+def _exit_with_error(message):
+    print(message)
+    sys.exit(1)
+
+
 def _complete_extension(filename, command, valid_ext):
     file_ext = os.path.splitext(filename)[1].lower()
     if not file_ext:
         filename += valid_ext
     elif file_ext != valid_ext:
-        print(f"'{command}' command only accepts {valid_ext} files")
-        sys.exit(1)
+        _exit_with_error(f"'{command}' command only accepts {valid_ext} files")
     return filename
 
 
@@ -88,32 +92,32 @@ def _files_in_dir(dirname):
 
 def _check_file_exists(filename):
     if not os.path.isfile(filename):
-        print(f"no such file: '{filename}'")
-        sys.exit(1)
+        _exit_with_error(f"no such file: '{filename}'")
 
 
 def _check_dir_exists(dirname):
     if not os.path.isdir(dirname):
-        print(f"no such directory: '{dirname}'")
-        sys.exit(1)
+        _exit_with_error(f"no such directory: '{dirname}'")
 
 
 def _check_file_under_dir(filename, dirname):
-    if os.path.relpath(filename, dirname).startswith(".."):
-        print("specified file is not under the directory")
-        sys.exit(1)
+    if os.path.relpath(
+        os.path.realpath(filename), os.path.realpath(dirname)
+    ).startswith(".."):
+        _exit_with_error("specified file is not under the directory")
 
 
 def _create_app_dir():
     play_dir = os.path.join(tempfile.gettempdir(), pyxel.BASE_DIR, "play")
     pathlib.Path(play_dir).mkdir(parents=True, exist_ok=True)
 
+    # Clean up stale app dirs from dead processes
     for path in glob.glob(os.path.join(play_dir, "*")):
         try:
             pid = int(os.path.basename(path).split("_")[0])
             if pyxel._pid_exists(pid):
                 continue
-            if time.time() - os.path.getmtime(path) > 300:  # 5 minutes
+            if time.time() - os.path.getmtime(path) > 300:
                 shutil.rmtree(path)
         except ValueError:
             shutil.rmtree(path)
@@ -129,24 +133,23 @@ def _create_watch_state_file():
     watch_dir = os.path.join(tempfile.gettempdir(), pyxel.BASE_DIR, "watch")
     pathlib.Path(watch_dir).mkdir(parents=True, exist_ok=True)
 
+    # Clean up state files from dead watcher processes
     for path in glob.glob(os.path.join(watch_dir, "*")):
-        pid = int(os.path.basename(path))
+        try:
+            pid = int(os.path.basename(path))
+        except ValueError:
+            continue
         if not pyxel._pid_exists(pid):
             os.remove(path)
 
     watch_state_file = os.path.join(watch_dir, str(os.getpid()))
-    with open(watch_state_file, "w") as f:
-        f.write("")
+    pathlib.Path(watch_state_file).touch()
     return watch_state_file
 
 
 def _timestamps_in_dir(dirname):
-    paths = glob.glob(os.path.join(dirname, "*"))
-    paths += glob.glob(os.path.join(dirname, "*/*"))
-    paths += glob.glob(os.path.join(dirname, "*/*/*"))
-    files = filter(os.path.isfile, paths)
-
-    return {file: os.path.getmtime(file) for file in files}
+    paths = glob.glob(os.path.join(dirname, "**/*"), recursive=True)
+    return {p: os.path.getmtime(p) for p in paths if os.path.isfile(p)}
 
 
 def _run_python_script_in_separate_process(python_script_file):
@@ -163,8 +166,8 @@ def _extract_pyxel_app(pyxel_app_file):
     _check_file_exists(pyxel_app_file)
     app_dir = _create_app_dir()
 
-    zf = zipfile.ZipFile(pyxel_app_file)
-    zf.extractall(app_dir)
+    with zipfile.ZipFile(pyxel_app_file) as zf:
+        zf.extractall(app_dir)
 
     pattern = os.path.join(app_dir, "*", pyxel.APP_STARTUP_SCRIPT_FILE)
     for setting_file in glob.glob(pattern):
@@ -174,7 +177,7 @@ def _extract_pyxel_app(pyxel_app_file):
 
 
 def _make_metadata_comment(startup_script_file):
-    METADATA_FIELDS = ["title", "author", "desc", "site", "license", "version"]
+    _METADATA_FIELDS = ["title", "author", "desc", "site", "license", "version"]
     metadata = {}
     metadata_pattern = re.compile(r"#\s*(.+?)\s*:\s*(.+)")
 
@@ -184,18 +187,18 @@ def _make_metadata_comment(startup_script_file):
             if match:
                 key, value = match.groups()
                 key = key.strip().lower()
-                if key in METADATA_FIELDS:
+                if key in _METADATA_FIELDS:
                     metadata[key] = value.strip()
 
     if not metadata:
         return ""
 
     max_key_len = max(len(key) for key in metadata)
-    max_value_len = max(len(value) for _, value in metadata.items())
+    max_value_len = max(len(value) for value in metadata.values())
     border = "-" * min((max_key_len + max_value_len + 3), 80)
 
     metadata_comment = border + "\n"
-    for key in METADATA_FIELDS:
+    for key in _METADATA_FIELDS:
         if key in metadata:
             value = metadata[key]
             metadata_comment += f"{key.ljust(max_key_len)} : {value}\n"
@@ -254,11 +257,10 @@ def get_pyxel_app_metadata(pyxel_app_file):
     _check_file_exists(pyxel_app_file)
     metadata = {}
 
-    zf = zipfile.ZipFile(pyxel_app_file)
-    if zf.comment:
+    with zipfile.ZipFile(pyxel_app_file) as zf:
+        if not zf.comment:
+            return metadata
         comment = zf.comment.decode(encoding="utf-8")
-    else:
-        return metadata
 
     for line in comment.splitlines():
         if line.startswith("-"):
@@ -272,9 +274,9 @@ def get_pyxel_app_metadata(pyxel_app_file):
 
 def print_pyxel_app_metadata(pyxel_app_file):
     _check_file_exists(pyxel_app_file)
-    zf = zipfile.ZipFile(pyxel_app_file)
-    if zf.comment:
-        print(zf.comment.decode(encoding="utf-8"))
+    with zipfile.ZipFile(pyxel_app_file) as zf:
+        if zf.comment:
+            print(zf.comment.decode(encoding="utf-8"))
 
 
 def play_pyxel_app(pyxel_app_file):
@@ -288,13 +290,11 @@ def play_pyxel_app(pyxel_app_file):
     print_pyxel_app_metadata(pyxel_app_file)
     startup_script_file = _extract_pyxel_app(pyxel_app_file)
 
-    if startup_script_file:
-        sys.path.insert(0, os.path.abspath(os.path.dirname(startup_script_file)))
-        runpy.run_path(startup_script_file, run_name="__main__")
-        return
+    if not startup_script_file:
+        _exit_with_error(f"file not found: '{pyxel.APP_STARTUP_SCRIPT_FILE}'")
 
-    print(f"file not found: '{pyxel.APP_STARTUP_SCRIPT_FILE}'")
-    sys.exit(1)
+    sys.path.insert(0, os.path.abspath(os.path.dirname(startup_script_file)))
+    runpy.run_path(startup_script_file, run_name="__main__")
 
 
 def edit_pyxel_resource(pyxel_resource_file=None, starting_editor="image"):
@@ -333,12 +333,13 @@ def package_pyxel_app(app_dir, startup_script_file):
         compression=zipfile.ZIP_DEFLATED,
     ) as zf:
         zf.comment = metadata_comment.encode(encoding="utf-8")
+        _SKIP_EXTENSIONS = (".gif", ".zip")
         files = [setting_file] + _files_in_dir(app_dir)
         for file in files:
             if (
                 os.path.basename(file) == pyxel_app_file
                 or "__pycache__" in file
-                or file.lower().endswith((".gif", ".zip"))
+                or file.lower().endswith(_SKIP_EXTENSIONS)
             ):
                 continue
             arcname = os.path.relpath(file, app_parent_dir)
@@ -362,34 +363,46 @@ def create_executable_from_pyxel_app(pyxel_app_file):
     pyxel_app_name = os.path.splitext(os.path.basename(pyxel_app_file))[0]
     startup_script_file = os.path.join(app2exe_dir, pyxel_app_name + ".py")
     with open(startup_script_file, "w") as f:
+        app_filename = f"{pyxel_app_name}{pyxel.APP_FILE_EXTENSION}"
         f.write(
             "import os, pyxel.cli; pyxel.cli.play_pyxel_app("
-            f"os.path.join(os.path.dirname(__file__), '{pyxel_app_name}{pyxel.APP_FILE_EXTENSION}'))"
+            f"os.path.join(os.path.dirname(__file__), {repr(app_filename)}))"
         )
 
-    cp = subprocess.run("pyinstaller -h", capture_output=True, shell=True)
+    cp = subprocess.run(
+        [sys.executable, "-m", "PyInstaller", "-h"], capture_output=True
+    )
     if cp.returncode != 0:
-        print("Pyinstaller is not found. Please install it.")
-        sys.exit(1)
+        _exit_with_error("Pyinstaller is not found. Please install it.")
 
-    command = f'"{sys.executable}" -m PyInstaller --windowed --onedir --distpath . '
-    command += f'--add-data "{pyxel_app_file}"{os.pathsep}. '
-    modules = pyxel.utils.list_imported_modules(_extract_pyxel_app(pyxel_app_file))[
-        "system"
+    startup_script = _extract_pyxel_app(pyxel_app_file)
+    if startup_script is None:
+        _exit_with_error("Failed to extract startup script from pyxel app.")
+
+    modules = pyxel.utils.list_imported_modules(startup_script)["system"]
+    hidden_imports = [arg for m in modules for arg in ("--hidden-import", m)]
+    command = [
+        sys.executable,
+        "-m",
+        "PyInstaller",
+        "--windowed",
+        "--onedir",
+        "--distpath",
+        ".",
+        "--add-data",
+        f"{pyxel_app_file}{os.pathsep}.",
+        *hidden_imports,
+        startup_script_file,
     ]
-    command += "".join([f"--hidden-import {module} " for module in modules])
-    command += f'"{startup_script_file}"'
-    print(command)
-    subprocess.run(command, shell=True)
+    print(" ".join(command))
+    subprocess.run(command)
 
-    if os.path.isdir(app2exe_dir):
-        shutil.rmtree(app2exe_dir)
+    # Clean up temporary build artifacts
+    shutil.rmtree(app2exe_dir, ignore_errors=True)
     spec_file = os.path.splitext(pyxel_app_file)[0] + ".spec"
     if os.path.isfile(spec_file):
         os.remove(spec_file)
-    build_dir = os.path.join(os.getcwd(), "build")
-    if os.path.isdir(build_dir):
-        shutil.rmtree(build_dir)
+    shutil.rmtree(os.path.join(os.getcwd(), "build"), ignore_errors=True)
 
 
 def create_html_from_pyxel_app(pyxel_app_file):
@@ -398,7 +411,6 @@ def create_html_from_pyxel_app(pyxel_app_file):
     )
     _check_file_exists(pyxel_app_file)
 
-    base64_string = ""
     with open(pyxel_app_file, "rb") as f:
         base64_string = base64.b64encode(f.read()).decode()
 

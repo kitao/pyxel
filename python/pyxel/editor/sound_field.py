@@ -8,19 +8,29 @@ from .settings import (
     SOUND_FIELD_DATA_NORMAL_COLOR,
     SOUND_FIELD_DATA_SELECT_COLOR,
     TEXT_LABEL_COLOR,
+    clamp,
+    is_modifier_pressed,
 )
 from .widgets import Widget
 from .widgets.settings import WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME
 
-TONE_KEY_TABLE = [pyxel.KEY_T, pyxel.KEY_S, pyxel.KEY_P, pyxel.KEY_N]
-EFFECT_KEY_TABLE = [
-    pyxel.KEY_N,
-    pyxel.KEY_S,
-    pyxel.KEY_V,
-    pyxel.KEY_F,
-    pyxel.KEY_H,
-    pyxel.KEY_Q,
-]
+# Table-driven key dispatch for each field row
+_FIELD_KEY_TABLES = {
+    1: [pyxel.KEY_T, pyxel.KEY_S, pyxel.KEY_P, pyxel.KEY_N],
+    2: [
+        pyxel.KEY_0,
+        pyxel.KEY_1,
+        pyxel.KEY_2,
+        pyxel.KEY_3,
+        pyxel.KEY_4,
+        pyxel.KEY_5,
+        pyxel.KEY_6,
+        pyxel.KEY_7,
+    ],
+    3: [pyxel.KEY_N, pyxel.KEY_S, pyxel.KEY_V, pyxel.KEY_F, pyxel.KEY_H, pyxel.KEY_Q],
+}
+
+_FIELD_CHARS = ("TSPN", "01234567", "NSVFHQ")
 
 
 class SoundField(Widget):
@@ -45,14 +55,13 @@ class SoundField(Widget):
         self.add_event_listener("draw", self.__on_draw)
 
     def _screen_to_view(self, x, y):
-        x = min(max((x - self.x - 1) // 4, 0), MAX_SOUND_LENGTH - 1)
-        y = min(max((y - self.y) // 8, 0), 2)
+        x = clamp((x - self.x - 1) // 4, 0, MAX_SOUND_LENGTH - 1)
+        y = clamp((y - self.y) // 8, 0, 2)
         return x, y
 
     def __on_mouse_down(self, key, x, y):
         if key != pyxel.MOUSE_BUTTON_LEFT or self.is_playing_var:
             return
-
         x, y = self._screen_to_view(x, y)
         self.field_cursor.move_to(x, y + 1, pyxel.btn(pyxel.KEY_SHIFT))
 
@@ -61,67 +70,29 @@ class SoundField(Widget):
 
     def __on_update(self):
         cursor_y = self.field_cursor.y
-        if (
-            cursor_y < 1
-            or self.is_playing_var
-            or pyxel.btn(pyxel.KEY_SHIFT)
-            or pyxel.btn(pyxel.KEY_CTRL)
-            or pyxel.btn(pyxel.KEY_ALT)
-            or pyxel.btn(pyxel.KEY_GUI)
-        ):
+        if cursor_y < 1 or self.is_playing_var or is_modifier_pressed():
             return
 
-        value = None
-        if cursor_y == 1:
-            for i in range(4):
-                if pyxel.btnp(
-                    TONE_KEY_TABLE[i], hold=WIDGET_HOLD_TIME, repeat=WIDGET_REPEAT_TIME
-                ):
-                    value = i
-                    break
-
-        elif cursor_y == 2:
-            for i in range(8):
-                key = pyxel.KEY_0 if i == 0 else pyxel.KEY_1 + i - 1
-                if pyxel.btnp(key, hold=WIDGET_HOLD_TIME, repeat=WIDGET_REPEAT_TIME):
-                    value = i
-                    break
-
-        elif cursor_y == 3:
-            for i in range(6):
-                if pyxel.btnp(
-                    EFFECT_KEY_TABLE[i],
-                    hold=WIDGET_HOLD_TIME,
-                    repeat=WIDGET_REPEAT_TIME,
-                ):
-                    value = i
-                    break
-
-        if value is None:
+        # Table-driven key dispatch
+        key_table = _FIELD_KEY_TABLES.get(cursor_y)
+        if key_table is None:
             return
-
-        self.field_cursor.insert(value)
+        for i, key in enumerate(key_table):
+            if pyxel.btnp(key, hold=WIDGET_HOLD_TIME, repeat=WIDGET_REPEAT_TIME):
+                self.field_cursor.insert(i)
+                return
 
     def __on_draw(self):
-        # Draw field frame
+        # Draw field labels
         pyxel.text(self.x - 13, self.y + 1, "TON", TEXT_LABEL_COLOR)
         pyxel.text(self.x - 13, self.y + 9, "VOL", TEXT_LABEL_COLOR)
         pyxel.text(self.x - 13, self.y + 17, "EFX", TEXT_LABEL_COLOR)
-        pyxel.blt(
-            self.x,
-            self.y,
-            EDITOR_IMAGE,
-            0,
-            79,
-            193,
-            23,
-        )
+        pyxel.blt(self.x, self.y, EDITOR_IMAGE, 0, 79, 193, 23)
 
         # Draw field data
-        data_str = []
-        data_str.append("".join(["TSPN"[v] for v in self.get_field(1)]))
-        data_str.append("".join([str(v) for v in self.get_field(2)]))
-        data_str.append("".join(["NSVFHQ"[v] for v in self.get_field(3)]))
+        data_str = [
+            "".join(_FIELD_CHARS[i][v] for v in self.get_field(i + 1)) for i in range(3)
+        ]
         for i in range(3):
             pyxel.text(31, 150 + i * 8, data_str[i], SOUND_FIELD_DATA_NORMAL_COLOR)
 

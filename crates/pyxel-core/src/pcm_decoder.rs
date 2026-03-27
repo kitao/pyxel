@@ -50,6 +50,7 @@ pub fn load_pcm(path: &str, target_rate: u32) -> Result<PcmData, String> {
         .sample_rate
         .ok_or_else(|| format!("Unknown sample rate in file '{path}'"))?;
     let mut mono_samples: Vec<f32> = Vec::new();
+    let mut sample_buf: Option<SampleBuffer<f32>> = None;
 
     loop {
         let packet = match format.next_packet() {
@@ -75,19 +76,17 @@ pub fn load_pcm(path: &str, target_rate: u32) -> Result<PcmData, String> {
 
         let spec = *decoded.spec();
         sample_rate = spec.rate;
-        let mut sample_buf = SampleBuffer::<f32>::new(decoded.capacity() as u64, spec);
-        sample_buf.copy_interleaved_ref(decoded);
+        let buf = sample_buf
+            .get_or_insert_with(|| SampleBuffer::<f32>::new(decoded.capacity() as u64, spec));
+        buf.copy_interleaved_ref(decoded);
 
         let channels = spec.channels.count();
-        let data = sample_buf.samples();
+        let data = buf.samples();
         if channels == 1 {
             mono_samples.extend_from_slice(data);
         } else {
             for frame in data.chunks(channels) {
-                let mut sum = 0.0f32;
-                for sample in frame {
-                    sum += *sample;
-                }
+                let sum: f32 = frame.iter().sum();
                 mono_samples.push(sum / channels as f32);
             }
         }

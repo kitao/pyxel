@@ -42,7 +42,7 @@ After installing [Python 3](https://www.python.org/) (version 3.8 or higher), ru
 pip install -U pyxel
 ```
 
-**Note:** On Windows, make sure to check `Add python.exe to PATH` when installing Python to enable the `pyxel` command.
+**Note:** On Windows, if installing Python using the installer from python.org, make sure to check `Add python.exe to PATH` to enable the `pyxel` command.
 
 ### Web
 

@@ -206,9 +206,6 @@ void main() {
             direction.y += haveShallowLine ? 1.0 : 0.0;
             direction.x += haveSteepLine ? 1.0 : 0.0;
         }
-        origin = origin;
-        direction = direction;
-
         vec3 blendPix = mix(H, D, step(DistYCbCr(E, D), DistYCbCr(E, H)));
         res = mix(res, blendPix, get_left_ratio(pos, origin, direction, scale));
     }

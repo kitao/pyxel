@@ -1,0 +1,161 @@
+import pyxel
+
+
+class TestInputFunctions:
+    def test_btn_returns_bool(self):
+        result = pyxel.btn(pyxel.KEY_SPACE)
+        assert isinstance(result, bool)
+
+    def test_btnp_returns_bool(self):
+        result = pyxel.btnp(pyxel.KEY_SPACE)
+        assert isinstance(result, bool)
+
+    def test_btnp_with_hold_repeat_returns_bool(self):
+        result = pyxel.btnp(pyxel.KEY_SPACE, hold=10, repeat=5)
+        assert isinstance(result, bool)
+
+    def test_btnr_returns_bool(self):
+        result = pyxel.btnr(pyxel.KEY_SPACE)
+        assert isinstance(result, bool)
+
+    def test_btnv_returns_int(self):
+        result = pyxel.btnv(pyxel.MOUSE_WHEEL_X)
+        assert isinstance(result, int)
+
+    def test_mouse_visible(self):
+        pyxel.mouse(True)
+        pyxel.mouse(False)
+
+
+class TestInputAttributes:
+    def test_input_text_is_string(self):
+        assert isinstance(pyxel.input_text, str)
+
+    def test_input_keys_is_list(self):
+        keys = pyxel.input_keys
+        assert isinstance(keys, list)
+
+    def test_dropped_files_is_list(self):
+        files = pyxel.dropped_files
+        assert isinstance(files, list)
+
+    def test_mouse_x_is_int(self):
+        assert isinstance(pyxel.mouse_x, int)
+
+    def test_mouse_y_is_int(self):
+        assert isinstance(pyxel.mouse_y, int)
+
+
+class TestSetButtonState:
+    def test_press_makes_btn_true(self):
+        pyxel.set_btn(pyxel.KEY_A, True)
+        assert pyxel.btn(pyxel.KEY_A) is True
+
+    def test_press_makes_btnp_true(self):
+        pyxel.set_btn(pyxel.KEY_B, True)
+        assert pyxel.btnp(pyxel.KEY_B) is True
+
+    def test_release_after_flip_makes_btn_false(self):
+        pyxel.set_btn(pyxel.KEY_C, True)
+        pyxel.flip()
+        pyxel.set_btn(pyxel.KEY_C, False)
+        assert pyxel.btn(pyxel.KEY_C) is False
+
+    def test_release_makes_btnr_true(self):
+        pyxel.set_btn(pyxel.KEY_D, True)
+        pyxel.set_btn(pyxel.KEY_D, False)
+        assert pyxel.btnr(pyxel.KEY_D) is True
+
+    def test_btnp_false_after_flip(self):
+        pyxel.set_btn(pyxel.KEY_E, True)
+        assert pyxel.btnp(pyxel.KEY_E) is True
+        pyxel.flip()
+        # btnp is false on next frame (no new press)
+        assert pyxel.btnp(pyxel.KEY_E) is False
+        # But btn is still true (key held)
+        assert pyxel.btn(pyxel.KEY_E) is True
+
+    def test_btnr_false_without_release(self):
+        pyxel.set_btn(pyxel.KEY_F, True)
+        assert pyxel.btnr(pyxel.KEY_F) is False
+
+    def test_multiple_keys_independent(self):
+        pyxel.set_btn(pyxel.KEY_G, True)
+        pyxel.set_btn(pyxel.KEY_H, False)
+        assert pyxel.btn(pyxel.KEY_G) is True
+        assert pyxel.btn(pyxel.KEY_H) is False
+
+
+class TestSetButtonValue:
+    def test_set_analog_value(self):
+        pyxel.set_btnv(pyxel.MOUSE_WHEEL_Y, 5)
+        assert pyxel.btnv(pyxel.MOUSE_WHEEL_Y) == 5
+
+    def test_set_analog_value_negative(self):
+        pyxel.set_btnv(pyxel.MOUSE_WHEEL_Y, -3)
+        assert pyxel.btnv(pyxel.MOUSE_WHEEL_Y) == -3
+
+    def test_set_analog_value_zero(self):
+        pyxel.set_btnv(pyxel.MOUSE_WHEEL_Y, 0)
+        assert pyxel.btnv(pyxel.MOUSE_WHEEL_Y) == 0
+
+
+class TestSetMousePos:
+    def test_updates_mouse_coordinates(self):
+        pyxel.set_mouse_pos(80, 60)
+        assert pyxel.mouse_x == 80
+        assert pyxel.mouse_y == 60
+
+    def test_updates_btnv_values(self):
+        pyxel.set_mouse_pos(42, 17)
+        assert pyxel.btnv(pyxel.MOUSE_POS_X) == 42
+        assert pyxel.btnv(pyxel.MOUSE_POS_Y) == 17
+
+    def test_origin(self):
+        pyxel.set_mouse_pos(0, 0)
+        assert pyxel.mouse_x == 0
+        assert pyxel.mouse_y == 0
+
+
+class TestSetInputText:
+    def test_sets_text(self):
+        pyxel.set_input_text("hello")
+        assert pyxel.input_text == "hello"
+
+    def test_replaces_existing_text(self):
+        pyxel.set_input_text("first")
+        pyxel.set_input_text("second")
+        assert pyxel.input_text == "second"
+
+    def test_cleared_after_flip(self):
+        pyxel.set_input_text("temp")
+        pyxel.flip()
+        assert pyxel.input_text == ""
+
+    def test_empty_string(self):
+        pyxel.set_input_text("")
+        assert pyxel.input_text == ""
+
+    def test_multibyte_text(self):
+        pyxel.set_input_text("日本語")
+        assert pyxel.input_text == "日本語"
+
+
+class TestSetDroppedFiles:
+    def test_sets_files(self):
+        pyxel.set_dropped_files(["a.txt", "b.txt"])
+        assert list(pyxel.dropped_files) == ["a.txt", "b.txt"]
+
+    def test_replaces_existing_files(self):
+        pyxel.set_dropped_files(["old.txt"])
+        pyxel.set_dropped_files(["new.txt"])
+        assert list(pyxel.dropped_files) == ["new.txt"]
+
+    def test_cleared_after_flip(self):
+        pyxel.set_dropped_files(["temp.txt"])
+        pyxel.flip()
+        assert list(pyxel.dropped_files) == []
+
+    def test_empty_list(self):
+        pyxel.set_dropped_files([])
+        assert list(pyxel.dropped_files) == []

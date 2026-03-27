@@ -32,7 +32,7 @@
               class="toggle"
               data-action="play"
               data-state="false"
-              onclick="handleButtonPress(this)"
+              data-click="handleButtonPress"
               title="Ctrl(Cmd)+Enter: Play"
               disabled
             >
@@ -43,7 +43,7 @@
               class="toggle"
               data-action="stop"
               data-state="false"
-              onclick="handleButtonPress(this)"
+              data-click="handleButtonPress"
               title="Esc: Stop"
               disabled
             >
@@ -54,7 +54,7 @@
               class="toggle active"
               data-action="loop"
               data-state="true"
-              onclick="handleButtonPress(this)"
+              data-click="handleButtonPress"
               title="Ctrl(Cmd)+L: Toggle Loop"
               disabled
             >
@@ -115,7 +115,7 @@
               class="toggle"
               data-action="solo1"
               data-state="false"
-              onclick="handleButtonPress(this)"
+              data-click="handleButtonPress"
             >
               SOLO
             </button>
@@ -124,7 +124,7 @@
               class="toggle"
               data-action="mute1"
               data-state="false"
-              onclick="handleButtonPress(this)"
+              data-click="handleButtonPress"
             >
               MUTE
             </button>
@@ -134,7 +134,7 @@
           id="ch1"
           rows="4"
           class="font-mono input"
-          oninput="handleMmlInput(this)"
+          data-input="handleMmlInput"
         ></textarea>
       </div>
 
@@ -148,7 +148,7 @@
               class="toggle"
               data-action="solo2"
               data-state="false"
-              onclick="handleButtonPress(this)"
+              data-click="handleButtonPress"
             >
               SOLO
             </button>
@@ -157,7 +157,7 @@
               class="toggle"
               data-action="mute2"
               data-state="false"
-              onclick="handleButtonPress(this)"
+              data-click="handleButtonPress"
             >
               MUTE
             </button>
@@ -167,7 +167,7 @@
           id="ch2"
           rows="4"
           class="font-mono input"
-          oninput="handleMmlInput(this)"
+          data-input="handleMmlInput"
         ></textarea>
       </div>
 
@@ -181,7 +181,7 @@
               class="toggle"
               data-action="solo3"
               data-state="false"
-              onclick="handleButtonPress(this)"
+              data-click="handleButtonPress"
             >
               SOLO
             </button>
@@ -190,7 +190,7 @@
               class="toggle"
               data-action="mute3"
               data-state="false"
-              onclick="handleButtonPress(this)"
+              data-click="handleButtonPress"
             >
               MUTE
             </button>
@@ -200,7 +200,7 @@
           id="ch3"
           rows="4"
           class="font-mono input"
-          oninput="handleMmlInput(this)"
+          data-input="handleMmlInput"
         ></textarea>
       </div>
 
@@ -214,7 +214,7 @@
               class="toggle"
               data-action="solo4"
               data-state="false"
-              onclick="handleButtonPress(this)"
+              data-click="handleButtonPress"
             >
               SOLO
             </button>
@@ -223,7 +223,7 @@
               class="toggle"
               data-action="mute4"
               data-state="false"
-              onclick="handleButtonPress(this)"
+              data-click="handleButtonPress"
             >
               MUTE
             </button>
@@ -233,7 +233,7 @@
           id="ch4"
           rows="4"
           class="font-mono input"
-          oninput="handleMmlInput(this)"
+          data-input="handleMmlInput"
         ></textarea>
       </div>
 
@@ -321,6 +321,14 @@
       }
 
       window.addEventListener("DOMContentLoaded", () => {
+        // Bind inline-style handlers via data attributes
+        document.querySelectorAll("[data-click]").forEach((el) => {
+          el.addEventListener("click", () => handleButtonPress(el));
+        });
+        document.querySelectorAll("[data-input]").forEach((el) => {
+          el.addEventListener("input", () => handleMmlInput(el));
+        });
+
         // Forward input to runtime
         ["click", "touchstart"].forEach((ev) => {
           window.addEventListener(ev, resolvePyxelInput);
@@ -359,9 +367,8 @@
         // Load MML from URL
         const mmlParam = new URL(document.location).searchParams.get("mml");
         if (mmlParam) {
-          const mmlList = LZString.decompressFromEncodedURIComponent(
-            mmlParam,
-          ).split(";", 4);
+          const raw = LZString.decompressFromEncodedURIComponent(mmlParam);
+          const mmlList = raw ? raw.split(";", 4) : [];
           for (let i = 1; i <= 4; i++) {
             const t = document.getElementById(`ch${i}`);
             t.value = mmlList[i - 1] || "";
@@ -381,6 +388,7 @@
         });
 
         // Enable buttons when ready
+        let _watchRetries = 0;
         (function watch() {
           if (runtimeScreen.contentWindow?.pyxelContext?.resolveInput) {
             document
@@ -390,7 +398,7 @@
               .forEach((button) => {
                 button.disabled = false;
               });
-          } else {
+          } else if (++_watchRetries < 300) {
             setTimeout(watch, 100);
           }
         })();

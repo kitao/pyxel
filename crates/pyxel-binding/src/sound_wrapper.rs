@@ -1,9 +1,5 @@
-use std::sync::Once;
-
 use pyo3::exceptions::PyException;
 use pyo3::prelude::*;
-
-static OLD_MML_ONCE: Once = Once::new();
 
 macro_rules! wrap_sound_as_python_list {
     ($wrapper_name:ident, $value_type:ty, $field_name:ident) => {
@@ -45,46 +41,59 @@ impl Sound {
     pub fn wrap(inner: *mut pyxel::Sound) -> Self {
         Self { inner }
     }
+
+    fn inner_ref(&self) -> &pyxel::Sound {
+        unsafe { &*self.inner }
+    }
+
+    #[allow(clippy::mut_from_ref)]
+    fn inner_mut(&self) -> &mut pyxel::Sound {
+        unsafe { &mut *self.inner }
+    }
 }
 
 #[pymethods]
 impl Sound {
     #[new]
-    pub fn new() -> Self {
+    fn new() -> Self {
         Self::wrap(pyxel::Sound::new())
     }
 
+    // Sequence properties
+
     #[getter]
-    pub fn notes(&self) -> Notes {
+    fn notes(&self) -> Notes {
         Notes::wrap(self.inner)
     }
 
     #[getter]
-    pub fn tones(&self) -> Tones {
+    fn tones(&self) -> Tones {
         Tones::wrap(self.inner)
     }
 
     #[getter]
-    pub fn volumes(&self) -> Volumes {
+    fn volumes(&self) -> Volumes {
         Volumes::wrap(self.inner)
     }
 
     #[getter]
-    pub fn effects(&self) -> Effects {
+    fn effects(&self) -> Effects {
         Effects::wrap(self.inner)
     }
 
     #[getter]
-    pub fn speed(&self) -> pyxel::SoundSpeed {
-        unsafe { &*self.inner }.speed
+    fn speed(&self) -> pyxel::SoundSpeed {
+        self.inner_ref().speed
     }
 
     #[setter]
-    pub fn set_speed(&self, speed: pyxel::SoundSpeed) {
-        unsafe { &mut *self.inner }.speed = speed;
+    fn set_speed(&self, speed: pyxel::SoundSpeed) {
+        self.inner_mut().speed = speed;
     }
 
-    pub fn set(
+    // Data operations
+
+    fn set(
         &self,
         notes: &str,
         tones: &str,
@@ -92,94 +101,94 @@ impl Sound {
         effects: &str,
         speed: pyxel::SoundSpeed,
     ) -> PyResult<()> {
-        unsafe { &mut *self.inner }
+        self.inner_mut()
             .set(notes, tones, volumes, effects, speed)
             .map_err(PyException::new_err)
     }
 
-    pub fn set_notes(&self, notes: &str) -> PyResult<()> {
-        unsafe { &mut *self.inner }
+    fn set_notes(&self, notes: &str) -> PyResult<()> {
+        self.inner_mut()
             .set_notes(notes)
             .map_err(PyException::new_err)
     }
 
-    pub fn set_tones(&self, tones: &str) -> PyResult<()> {
-        unsafe { &mut *self.inner }
+    fn set_tones(&self, tones: &str) -> PyResult<()> {
+        self.inner_mut()
             .set_tones(tones)
             .map_err(PyException::new_err)
     }
 
-    pub fn set_volumes(&self, volumes: &str) -> PyResult<()> {
-        unsafe { &mut *self.inner }
+    fn set_volumes(&self, volumes: &str) -> PyResult<()> {
+        self.inner_mut()
             .set_volumes(volumes)
             .map_err(PyException::new_err)
     }
 
-    pub fn set_effects(&self, effects: &str) -> PyResult<()> {
-        unsafe { &mut *self.inner }
+    fn set_effects(&self, effects: &str) -> PyResult<()> {
+        self.inner_mut()
             .set_effects(effects)
             .map_err(PyException::new_err)
     }
 
+    // MML
+
     #[pyo3(signature = (code=None))]
-    pub fn mml(&self, code: Option<&str>) -> PyResult<()> {
-        if let Some(code) = code {
-            if code.contains('x') || code.contains('X') || code.contains('~') {
-                OLD_MML_ONCE.call_once(|| {
-                    println!("Old MML syntax is deprecated. Use new syntax instead.");
-                });
+    fn mml(&self, code: Option<&str>) -> PyResult<()> {
+        let Some(code) = code else {
+            self.inner_mut().clear_mml();
+            return Ok(());
+        };
 
-                return unsafe { &mut *self.inner }
-                    .old_mml(code)
-                    .map_err(PyException::new_err);
-            }
-
-            unsafe { &mut *self.inner }
-                .set_mml(code)
-                .map_err(PyException::new_err)
-        } else {
-            unsafe { &mut *self.inner }.clear_mml();
-            Ok(())
+        // Detect old MML syntax by presence of 'x'/'X' or '~'
+        if code.contains('x') || code.contains('X') || code.contains('~') {
+            deprecation_warning!(
+                OLD_MML_ONCE,
+                "Old MML syntax is deprecated. Use new syntax instead."
+            );
+            return self.inner_mut().old_mml(code).map_err(PyException::new_err);
         }
+
+        self.inner_mut().set_mml(code).map_err(PyException::new_err)
     }
 
     #[pyo3(signature = (code=None))]
-    pub fn old_mml(&self, code: Option<&str>) -> PyResult<()> {
-        OLD_MML_ONCE.call_once(|| {
-            println!("Sound.old_mml(code) is deprecated. Use Sound.mml(code) instead.");
-        });
+    fn old_mml(&self, code: Option<&str>) -> PyResult<()> {
+        deprecation_warning!(
+            OLD_MML_FUNC_ONCE,
+            "Sound.old_mml(code) is deprecated. Use Sound.mml(code) instead."
+        );
 
-        if let Some(code) = code {
-            unsafe { &mut *self.inner }
-                .old_mml(code)
-                .map_err(PyException::new_err)
-        } else {
-            unsafe { &mut *self.inner }.clear_mml();
-            Ok(())
-        }
+        let Some(code) = code else {
+            self.inner_mut().clear_mml();
+            return Ok(());
+        };
+
+        self.inner_mut().old_mml(code).map_err(PyException::new_err)
     }
+
+    // File operations
 
     #[pyo3(signature = (filename, sec, ffmpeg=None))]
-    pub fn save(&self, filename: &str, sec: f32, ffmpeg: Option<bool>) -> PyResult<()> {
-        unsafe { &mut *self.inner }
+    fn save(&self, filename: &str, sec: f32, ffmpeg: Option<bool>) -> PyResult<()> {
+        self.inner_mut()
             .save(filename, sec, ffmpeg)
             .map_err(PyException::new_err)
     }
 
     #[pyo3(signature = (filename=None))]
-    pub fn pcm(&self, filename: Option<&str>) -> PyResult<()> {
-        if let Some(filename) = filename {
-            unsafe { &mut *self.inner }
-                .load_pcm(filename)
-                .map_err(PyException::new_err)
-        } else {
-            unsafe { &mut *self.inner }.clear_pcm();
-            Ok(())
-        }
+    fn pcm(&self, filename: Option<&str>) -> PyResult<()> {
+        let Some(filename) = filename else {
+            self.inner_mut().clear_pcm();
+            return Ok(());
+        };
+
+        self.inner_mut()
+            .load_pcm(filename)
+            .map_err(PyException::new_err)
     }
 
-    pub fn total_sec(&self) -> Option<f32> {
-        unsafe { &*self.inner }.total_seconds()
+    fn total_sec(&self) -> Option<f32> {
+        self.inner_ref().total_seconds()
     }
 }
 

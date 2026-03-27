@@ -290,14 +290,48 @@ Return the analog value of the specified key (e.g., gamepad axis value).
 
 **Returns:** `int` — Analog value of the key
 
-### `warp_mouse(x, y)` — function *(Advanced)*
+### `set_btn(key, state)` — function *(Advanced)*
 
-Move the mouse cursor to the specified position.
+Set the press/release state of the specified key. Mainly for headless mode input simulation.
+
+**Parameters:**
+
+- `key` (*int*) — Target key
+- `state` (*bool*) — True for press, False for release
+
+### `set_btnv(key, val)` — function *(Advanced)*
+
+Set the analog value of the specified key. Mainly for headless mode input simulation.
+
+**Parameters:**
+
+- `key` (*int*) — Target key
+- `val` (*int*) — Analog value to set
+
+### `set_mouse_pos(x, y)` — function *(Advanced)*
+
+Set the mouse cursor position. Mainly for headless mode input simulation.
 
 **Parameters:**
 
 - `x` (*float*) — X coordinate
 - `y` (*float*) — Y coordinate
+
+### `set_input_text(text)` — function *(Advanced)*
+
+Set the text input for the current frame. Replaces any existing text. Mainly for headless mode input simulation.
+
+**Parameters:**
+
+- `text` (*str*) — Text input
+
+### `set_dropped_files(files)` — function *(Advanced)*
+
+Set the dropped file list for the current frame. Replaces any existing list. Mainly for headless mode input simulation.
+
+**Parameters:**
+
+- `files` (*List[str]*) — List of file paths
 
 ### Key Constants
 
@@ -327,7 +361,7 @@ Move the mouse cursor to the specified position.
 
 **Modifiers:**
 
-`KEY_CAPSLOCK` `KEY_LCTRL` `KEY_LSHIFT` `KEY_LALT` `KEY_LGUI` `KEY_RCTRL` `KEY_RSHIFT` `KEY_RALT` `KEY_RGUI` `KEY_MODE` `KEY_SHIFT` `KEY_CTRL` `KEY_ALT` `KEY_GUI`
+`KEY_CAPSLOCK` `KEY_LCTRL` `KEY_LSHIFT` `KEY_LALT` `KEY_LGUI` `KEY_RCTRL` `KEY_RSHIFT` `KEY_RALT` `KEY_RGUI` `KEY_SHIFT` `KEY_CTRL` `KEY_ALT` `KEY_GUI`
 
 **Numpad:**
 
@@ -335,7 +369,7 @@ Move the mouse cursor to the specified position.
 
 **System & Media:**
 
-`KEY_PRINTSCREEN` `KEY_SCROLLLOCK` `KEY_PAUSE` `KEY_APPLICATION` `KEY_POWER` `KEY_EXECUTE` `KEY_HELP` `KEY_MENU` `KEY_SELECT` `KEY_STOP` `KEY_AGAIN` `KEY_UNDO` `KEY_CUT` `KEY_COPY` `KEY_PASTE` `KEY_FIND` `KEY_MUTE` `KEY_VOLUMEUP` `KEY_VOLUMEDOWN` `KEY_ALTERASE` `KEY_SYSREQ` `KEY_CANCEL` `KEY_CLEAR` `KEY_PRIOR` `KEY_RETURN2` `KEY_SEPARATOR` `KEY_OUT` `KEY_OPER` `KEY_CLEARAGAIN` `KEY_CRSEL` `KEY_EXSEL` `KEY_THOUSANDSSEPARATOR` `KEY_DECIMALSEPARATOR` `KEY_CURRENCYUNIT` `KEY_CURRENCYSUBUNIT` `KEY_AUDIONEXT` `KEY_AUDIOPREV` `KEY_AUDIOSTOP` `KEY_AUDIOPLAY` `KEY_AUDIOMUTE` `KEY_MEDIASELECT` `KEY_WWW` `KEY_MAIL` `KEY_CALCULATOR` `KEY_COMPUTER` `KEY_AC_SEARCH` `KEY_AC_HOME` `KEY_AC_BACK` `KEY_AC_FORWARD` `KEY_AC_STOP` `KEY_AC_REFRESH` `KEY_AC_BOOKMARKS` `KEY_BRIGHTNESSDOWN` `KEY_BRIGHTNESSUP` `KEY_DISPLAYSWITCH` `KEY_KBDILLUMTOGGLE` `KEY_KBDILLUMDOWN` `KEY_KBDILLUMUP` `KEY_EJECT` `KEY_SLEEP` `KEY_APP1` `KEY_APP2` `KEY_AUDIOREWIND` `KEY_AUDIOFASTFORWARD`
+`KEY_PRINTSCREEN` `KEY_SCROLLLOCK` `KEY_PAUSE` `KEY_APPLICATION` `KEY_POWER` `KEY_EXECUTE` `KEY_HELP` `KEY_MENU` `KEY_SELECT` `KEY_STOP` `KEY_AGAIN` `KEY_UNDO` `KEY_CUT` `KEY_COPY` `KEY_PASTE` `KEY_FIND` `KEY_MUTE` `KEY_VOLUMEUP` `KEY_VOLUMEDOWN` `KEY_ALTERASE` `KEY_SYSREQ` `KEY_CANCEL` `KEY_CLEAR` `KEY_PRIOR` `KEY_RETURN2` `KEY_SEPARATOR` `KEY_OUT` `KEY_OPER` `KEY_CLEARAGAIN` `KEY_CRSEL` `KEY_EXSEL` `KEY_THOUSANDSSEPARATOR` `KEY_DECIMALSEPARATOR` `KEY_CURRENCYUNIT` `KEY_CURRENCYSUBUNIT`
 
 ### Mouse Constants
 
@@ -345,7 +379,7 @@ Move the mouse cursor to the specified position.
 
 **Buttons:**
 
-`MOUSE_BUTTON_LEFT` `MOUSE_BUTTON_MIDDLE` `MOUSE_BUTTON_RIGHT` `MOUSE_BUTTON_X1` `MOUSE_BUTTON_X2` `MOUSE_BUTTON_UNKNOWN`
+`MOUSE_BUTTON_LEFT` `MOUSE_BUTTON_MIDDLE` `MOUSE_BUTTON_RIGHT` `MOUSE_BUTTON_X1` `MOUSE_BUTTON_X2`
 
 ### Gamepad Constants
 
@@ -1210,7 +1244,7 @@ Resolve collisions after applying pixel movement (dx, dy) to the pixel rectangle
 
 ### `Tilemap.data_ptr()` — function *(Advanced)*
 
-Return the raw data pointer of the tilemap as a ctypes c_uint8 array (2 bytes per tile: image_tx, image_ty).
+Return the raw data pointer of the tilemap as a ctypes c_uint16 array (4 bytes per tile: image_tx, image_ty).
 
 **Returns:** `Any` — Raw data pointer
 

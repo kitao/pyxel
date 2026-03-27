@@ -4,7 +4,7 @@ use std::io::Read;
 use serde::Deserialize;
 
 use crate::settings::TILE_SIZE;
-use crate::tilemap::{ImageSource, Tilemap};
+use crate::tilemap::{ImageSource, ImageTileCoord, Tilemap};
 use crate::utils::remove_whitespace;
 
 #[derive(Debug, Deserialize)]
@@ -46,64 +46,55 @@ struct TiledMapFile {
 }
 
 pub fn parse_tmx(filename: &str, layer_index: u32) -> Result<*mut Tilemap, String> {
-    let mut file = File::open(filename).map_err(|_| format!("Failed to open file '{filename}'"))?;
+    let err = |msg| format!("{msg} '{filename}'");
 
+    let mut file = File::open(filename).map_err(|_| err("Failed to open file"))?;
     let mut tmx_text = String::new();
     file.read_to_string(&mut tmx_text)
-        .map_err(|_| format!("Failed to read file '{filename}'"))?;
+        .map_err(|_| err("Failed to read file"))?;
 
-    let tmx: TiledMapFile = serde_xml_rs::from_str(&tmx_text)
-        .map_err(|_| format!("Failed to parse file '{filename}'"))?;
+    let tmx: TiledMapFile =
+        serde_xml_rs::from_str(&tmx_text).map_err(|_| err("Failed to parse file"))?;
 
     if tmx.tilewidth != TILE_SIZE || tmx.tileheight != TILE_SIZE {
-        return Err(format!("Invalid tile size in file '{filename}'"));
+        return Err(err("Invalid tile size in file"));
     }
 
-    if tmx.tilesets.is_empty() {
-        return Err(format!("No tileset found in file '{filename}'"));
-    }
-
-    let tileset = &tmx.tilesets[0];
-    let tileset_columns = tileset
+    let tileset = tmx
+        .tilesets
+        .first()
+        .ok_or_else(|| err("No tileset found in file"))?;
+    let columns = tileset
         .columns
-        .ok_or_else(|| format!("No embedded tileset in file '{filename}'"))?;
+        .ok_or_else(|| err("No embedded tileset in file"))?;
 
-    if layer_index >= tmx.layers.len() as u32 {
-        return Err(format!(
-            "Layer {layer_index} not found in file '{filename}'"
-        ));
-    }
-
-    let layer = &tmx.layers[layer_index as usize];
+    let layer = tmx
+        .layers
+        .get(layer_index as usize)
+        .ok_or_else(|| format!("Layer {layer_index} not found in file '{filename}'"))?;
     if layer.data.encoding != "csv" {
-        return Err(format!("Unsupported encoding in file '{filename}'"));
+        return Err(err("Unsupported encoding in file"));
     }
 
-    let layer_data: Vec<u32> = remove_whitespace(&layer.data.tiles)
+    let tile_ids: Vec<u32> = remove_whitespace(&layer.data.tiles)
         .split(',')
-        .map(|s| {
-            s.parse::<u32>()
-                .map_err(|_| format!("Failed to parse file '{filename}'"))
-        })
+        .map(|s| s.parse::<u32>().map_err(|_| err("Failed to parse file")))
         .collect::<Result<_, _>>()?;
 
     let tilemap = Tilemap::new(layer.width, layer.height, ImageSource::Index(0));
-    {
-        let tilemap = unsafe { &mut *tilemap };
-        for (i, tile_id) in layer_data.iter().enumerate() {
-            let x = i % layer.width as usize;
-            let y = i / layer.width as usize;
-
-            let tile_id = if *tile_id > tileset.firstgid {
-                tile_id - tileset.firstgid
-            } else {
-                0
-            };
-            let tile_x = (tile_id % tileset_columns) as u8;
-            let tile_y = (tile_id / tileset_columns) as u8;
-            tilemap.canvas.write_data(x, y, (tile_x, tile_y));
+    let tilemap_ref = unsafe { &mut *tilemap };
+    for (y, row) in tile_ids.chunks(layer.width as usize).enumerate() {
+        for (x, &id) in row.iter().enumerate() {
+            let id = id.saturating_sub(tileset.firstgid);
+            tilemap_ref.canvas.write_data(
+                x,
+                y,
+                (
+                    (id % columns) as ImageTileCoord,
+                    (id / columns) as ImageTileCoord,
+                ),
+            );
         }
     }
-
     Ok(tilemap)
 }

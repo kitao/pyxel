@@ -108,7 +108,7 @@ Add the following script tag to your HTML. If no version is specified, the lates
 You can pin the Pyxel version by specifying a version number after `@`.
 
 ```html
-<script src="https://cdn.jsdelivr.net/gh/kitao/pyxel@v2.7.2/wasm/pyxel.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/kitao/pyxel@v2.8.7/wasm/pyxel.js"></script>
 ```
 
 Loading this script makes three custom tags available, corresponding to Pyxel's `run`, `play`, and `edit` commands: `pyxel-run`, `pyxel-play`, and `pyxel-edit`.
@@ -172,7 +172,7 @@ The following common attributes are available for `pyxel-run` and `pyxel-play`.
 
 ### Customizing Screen Display
 
-By default, the Pyxel screen is displayed across the entire page. Place a `` tag with `id="pyxel-screen"` in the HTML to render the screen inside that element, allowing you to adjust its position and size.
+By default, the Pyxel screen is displayed across the entire page. Place a `<div>` tag with `id="pyxel-screen"` in the HTML to render the screen inside that element, allowing you to adjust its position and size.
 
 ### Running in a Local Environment
 

@@ -74,35 +74,29 @@ impl Oscillator {
     pub fn set(&mut self, waveform: &[f32]) {
         assert!(!waveform.is_empty());
 
-        let quantized_samples: Vec<i16> = waveform
-            .iter()
-            .map(|&sample| Self::quantize_sample(sample))
-            .collect();
+        let quantized: Vec<i16> = waveform.iter().map(|&s| Self::quantize_sample(s)).collect();
 
-        if quantized_samples != self.waveform_samples {
-            self.waveform_samples = quantized_samples;
+        if quantized != self.waveform_samples {
+            self.waveform_samples = quantized;
             self.waveform_index = 0;
         }
 
         self.tap_bit = 0;
-
         self.update();
     }
 
     pub fn set_noise(&mut self, short_period: bool) {
+        // Reinitialize the LFSR when switching noise mode to ensure deterministic output.
+        // Each mode uses a different tap bit (6 for short-period, 1 for long-period), producing
+        // different cycle lengths. The LFSR seed is pre-advanced past leading zeros:
+        // short-period: 15 shifts (half of 32-sample period) -> 0x0201
+        // long-period:  45 shifts (half of 93-sample period) -> 0x7001
         let tap_bit = if short_period { 6 } else { 1 };
         if tap_bit != self.tap_bit {
             self.lfsr = if short_period { 0x0201 } else { 0x7001 };
             self.tap_bit = tap_bit;
         }
-        // The LFSR originally starts with 0x0001, but to avoid leading zeros, it is advanced first.
-        // For short-period noise, it's shifted 15 times (half of the 32-sample period), resulting in 0x0201.
-        // For long-period noise, it's shifted 45 times (half of the 93-sample period), resulting in 0x7001.
-
-        if !self.waveform_samples.is_empty() {
-            self.waveform_samples.clear();
-        }
-
+        self.waveform_samples.clear();
         self.update();
     }
 
@@ -120,15 +114,11 @@ impl Oscillator {
 
     fn advance_sample(&mut self) {
         if self.tap_bit == 0 {
-            self.waveform_index += 1;
-            if self.waveform_index >= self.waveform_samples.len() {
-                self.waveform_index = 0;
-            }
+            self.waveform_index = (self.waveform_index + 1) % self.waveform_samples.len();
         } else {
             let feedback = (self.lfsr ^ (self.lfsr >> self.tap_bit)) & 1;
             self.lfsr = ((self.lfsr >> 1) | (feedback << 14)) & 0x7FFF;
         }
-
         self.update();
     }
 
@@ -227,10 +217,7 @@ impl Envelope {
 
     pub fn reset_tick(&mut self) {
         self.elapsed_ticks = 0;
-        if self.segments.is_empty() {
-            return;
-        }
-        self.segment_index = self.segments.len() - 1;
+        self.segment_index = self.segments.len().saturating_sub(1);
         self.update();
     }
 
@@ -243,7 +230,7 @@ impl Envelope {
     }
 
     fn update(&mut self) {
-        if !self.enabled || self.segments.is_empty() {
+        if !self.enabled {
             self.level = 1.0;
             return;
         }
@@ -528,24 +515,19 @@ impl Voice {
             let mut gain = Self::gain_to_fixed(self.envelope.level() * self.velocity);
 
             if self.remaining_note_clocks < self.note_interp_clocks {
-                if self.interp_end_gain.is_none() {
-                    self.interp_end_gain = Some(self.last_gain);
-                }
-                let interp_end_gain = self.interp_end_gain.unwrap();
-                gain = ((interp_end_gain as i64 * self.remaining_note_clocks as i64
-                    + self.note_interp_clocks as i64 / 2)
-                    / self.note_interp_clocks as i64) as i32;
+                // Note tail: fade out to zero
+                let end_gain = *self.interp_end_gain.get_or_insert(self.last_gain);
+                let interp = self.note_interp_clocks as i64;
+                gain = ((end_gain as i64 * self.remaining_note_clocks as i64 + interp / 2) / interp)
+                    as i32;
             } else if self.elapsed_note_clocks < self.note_interp_clocks {
-                if self.interp_start_gain.is_none() {
-                    self.interp_start_gain = Some(self.last_gain);
-                }
-                let interp_start_gain = self.interp_start_gain.unwrap();
-                let note_interp_clocks = self.note_interp_clocks as i64;
-                let elapsed_note_clocks = self.elapsed_note_clocks as i64;
-                gain = ((interp_start_gain as i64 * (note_interp_clocks - elapsed_note_clocks)
-                    + gain as i64 * elapsed_note_clocks
-                    + note_interp_clocks / 2)
-                    / note_interp_clocks) as i32;
+                // Note head: crossfade from previous gain
+                let start_gain = *self.interp_start_gain.get_or_insert(self.last_gain);
+                let interp = self.note_interp_clocks as i64;
+                let elapsed = self.elapsed_note_clocks as i64;
+                gain =
+                    ((start_gain as i64 * (interp - elapsed) + gain as i64 * elapsed + interp / 2)
+                        / interp) as i32;
             }
 
             let amplitude = Self::apply_gain_fixed(self.oscillator.sample(), gain);
@@ -629,5 +611,598 @@ impl Voice {
                 self.last_amplitude = amplitude;
             }
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    const FLOAT_EPSILON: f32 = 1e-4;
+
+    fn approx_eq(a: f32, b: f32) -> bool {
+        (a - b).abs() < FLOAT_EPSILON
+    }
+
+    // ── semitone_to_pitch_multiplier ──
+
+    #[test]
+    fn test_pitch_multiplier_known_values() {
+        let cases: &[(f32, f32)] = &[
+            (0.0, 1.0),
+            (12.0, 2.0),
+            (-12.0, 0.5),
+            (24.0, 4.0),
+            (0.5, 2.0_f32.powf(0.5 / 12.0)),
+        ];
+        for &(semitone, expected) in cases {
+            let result = semitone_to_pitch_multiplier(semitone);
+            assert!(
+                approx_eq(result, expected),
+                "semitone={semitone}: expected {expected}, got {result}"
+            );
+        }
+    }
+
+    #[test]
+    fn test_pitch_multiplier_out_of_range() {
+        for semitone in [100.0, -100.0] {
+            let result = semitone_to_pitch_multiplier(semitone);
+            let expected = 2.0_f32.powf(semitone / 12.0);
+            assert!(
+                approx_eq(result, expected),
+                "semitone={semitone}: expected {expected}, got {result}"
+            );
+        }
+    }
+
+    #[test]
+    fn test_pitch_multiplier_lut_boundary() {
+        // Exactly at LUT boundaries: -96.0 and 96.0
+        for semitone in [PITCH_LUT_MIN_SEMITONE, PITCH_LUT_MAX_SEMITONE] {
+            let result = semitone_to_pitch_multiplier(semitone);
+            let expected = 2.0_f32.powf(semitone / 12.0);
+            assert!(
+                approx_eq(result, expected),
+                "boundary semitone={semitone}: expected {expected}, got {result}"
+            );
+        }
+    }
+
+    // ── Oscillator ──
+
+    #[test]
+    fn test_oscillator_waveform_cycle() {
+        let mut osc = Oscillator::new();
+        osc.set(&[1.0, -1.0]);
+        assert_eq!(osc.cycle_resolution(), 2);
+        assert_eq!(osc.sample(), i16::MAX as i32);
+
+        osc.advance_sample();
+        assert_eq!(osc.sample(), -(i16::MAX as i32));
+
+        osc.advance_sample();
+        assert_eq!(osc.sample(), i16::MAX as i32);
+    }
+
+    #[test]
+    fn test_oscillator_four_sample_waveform() {
+        let mut osc = Oscillator::new();
+        osc.set(&[1.0, 0.5, 0.0, -1.0]);
+        assert_eq!(osc.cycle_resolution(), 4);
+
+        let expected = [
+            Oscillator::quantize_sample(1.0) as i32,
+            Oscillator::quantize_sample(0.5) as i32,
+            Oscillator::quantize_sample(0.0) as i32,
+            Oscillator::quantize_sample(-1.0) as i32,
+            Oscillator::quantize_sample(1.0) as i32, // wraps
+        ];
+        for (i, &exp) in expected.iter().enumerate() {
+            assert_eq!(osc.sample(), exp, "sample {i}");
+            osc.advance_sample();
+        }
+    }
+
+    #[test]
+    fn test_oscillator_noise() {
+        let mut osc = Oscillator::new();
+        osc.set_noise(false);
+        assert_eq!(osc.cycle_resolution(), 1);
+
+        osc.set_noise(true);
+        let s = osc.sample();
+        assert!(
+            s == i16::MAX as i32 || s == -(i16::MAX as i32),
+            "noise sample should be +/-MAX, got {s}"
+        );
+    }
+
+    #[test]
+    fn test_oscillator_noise_mode_switch() {
+        let mut osc = Oscillator::new();
+
+        // Short period
+        osc.set_noise(true);
+        let short_samples: Vec<i32> = (0..10)
+            .map(|_| {
+                let s = osc.sample();
+                osc.advance_sample();
+                s
+            })
+            .collect();
+
+        // Long period (different LFSR seed)
+        osc.set_noise(false);
+        let long_samples: Vec<i32> = (0..10)
+            .map(|_| {
+                let s = osc.sample();
+                osc.advance_sample();
+                s
+            })
+            .collect();
+
+        // Different mode should produce different patterns
+        assert_ne!(short_samples, long_samples);
+    }
+
+    #[test]
+    fn test_oscillator_noise_deterministic() {
+        let mut osc1 = Oscillator::new();
+        let mut osc2 = Oscillator::new();
+        osc1.set_noise(true);
+        osc2.set_noise(true);
+
+        for i in 0..20 {
+            assert_eq!(
+                osc1.sample(),
+                osc2.sample(),
+                "noise should be deterministic at step {i}"
+            );
+            osc1.advance_sample();
+            osc2.advance_sample();
+        }
+    }
+
+    #[test]
+    #[should_panic(expected = "is_empty")]
+    fn test_oscillator_empty_waveform_panics() {
+        let mut osc = Oscillator::new();
+        osc.set(&[]);
+    }
+
+    #[test]
+    fn test_oscillator_quantize_clamps() {
+        assert_eq!(Oscillator::quantize_sample(2.0), i16::MAX);
+        assert_eq!(Oscillator::quantize_sample(-2.0), i16::MIN);
+        assert_eq!(Oscillator::quantize_sample(0.0), 0);
+    }
+
+    #[test]
+    fn test_oscillator_waveform_index_preservation() {
+        let mut osc = Oscillator::new();
+        osc.set(&[1.0, 0.0, -1.0]);
+        osc.advance_sample();
+        assert_eq!(osc.waveform_index, 1);
+
+        // Identical waveform preserves index
+        osc.set(&[1.0, 0.0, -1.0]);
+        assert_eq!(osc.waveform_index, 1);
+
+        // Different waveform resets index
+        osc.set(&[0.5, -0.5]);
+        assert_eq!(osc.waveform_index, 0);
+    }
+
+    // ── Envelope ──
+
+    #[test]
+    fn test_envelope_lifecycle() {
+        let mut env = Envelope::new();
+        env.set(0.0, &[(10, 1.0)]);
+
+        // Disabled returns 1.0
+        env.reset_tick();
+        assert!(approx_eq(env.level(), 1.0), "disabled: {}", env.level());
+
+        // Enable and verify attack ramp
+        env.enable();
+        env.reset_tick();
+        assert!(approx_eq(env.level(), 0.0), "start: {}", env.level());
+
+        env.advance_tick(5);
+        assert!(approx_eq(env.level(), 0.5), "midpoint: {}", env.level());
+
+        env.advance_tick(5);
+        assert!(approx_eq(env.level(), 1.0), "end: {}", env.level());
+
+        // Reset restarts from beginning
+        env.reset_tick();
+        assert!(approx_eq(env.level(), 0.0), "after reset: {}", env.level());
+    }
+
+    #[test]
+    fn test_envelope_attack_decay_sustain() {
+        let mut env = Envelope::new();
+        env.set(0.0, &[(10, 1.0), (10, 0.5)]);
+        env.enable();
+        env.reset_tick();
+
+        env.advance_tick(10);
+        assert!(approx_eq(env.level(), 1.0), "after attack: {}", env.level());
+
+        env.advance_tick(5);
+        assert!(approx_eq(env.level(), 0.75), "mid decay: {}", env.level());
+
+        env.advance_tick(5);
+        assert!(approx_eq(env.level(), 0.5), "sustain: {}", env.level());
+
+        env.advance_tick(100);
+        assert!(
+            approx_eq(env.level(), 0.5),
+            "sustained hold: {}",
+            env.level()
+        );
+    }
+
+    #[test]
+    fn test_envelope_zero_duration_segment() {
+        // Zero-duration segment = instant jump
+        let mut env = Envelope::new();
+        env.set(0.0, &[(0, 1.0), (10, 0.5)]);
+        env.enable();
+        env.reset_tick();
+
+        // Should jump to 1.0 immediately then decay
+        assert!(
+            approx_eq(env.level(), 0.0) || approx_eq(env.level(), 1.0),
+            "at tick 0: {}",
+            env.level()
+        );
+
+        env.advance_tick(10);
+        assert!(approx_eq(env.level(), 0.5), "after decay: {}", env.level());
+    }
+
+    #[test]
+    fn test_envelope_disable_reenable() {
+        let mut env = Envelope::new();
+        env.set(0.0, &[(10, 1.0)]);
+        env.enable();
+        env.reset_tick();
+        env.advance_tick(5);
+        assert!(approx_eq(env.level(), 0.5), "mid: {}", env.level());
+
+        // Disable → level returns to 1.0
+        env.disable();
+        env.advance_tick(1);
+        assert!(approx_eq(env.level(), 1.0), "disabled: {}", env.level());
+
+        // Re-enable → continues from where it was
+        env.enable();
+        env.advance_tick(1);
+        assert!(
+            env.level() > 0.5,
+            "re-enabled should continue: {}",
+            env.level()
+        );
+    }
+
+    #[test]
+    fn test_envelope_initial_level_only() {
+        // No segments beyond initial level
+        let mut env = Envelope::new();
+        env.set(0.8, &[]);
+        env.enable();
+        env.reset_tick();
+        assert!(approx_eq(env.level(), 0.8), "initial: {}", env.level());
+
+        env.advance_tick(100);
+        assert!(approx_eq(env.level(), 0.8), "sustained: {}", env.level());
+    }
+
+    // ── Vibrato ──
+
+    #[test]
+    fn test_vibrato_behavior() {
+        let mut vib = Vibrato::new();
+        vib.set(0, 10, 1.0);
+
+        // Disabled returns 1.0
+        assert!(
+            approx_eq(vib.pitch_multiplier(), 1.0),
+            "disabled: {}",
+            vib.pitch_multiplier()
+        );
+
+        // Within delay returns 1.0
+        vib.set(10, 20, 2.0);
+        vib.enable();
+        vib.reset_tick();
+        vib.advance_tick(5);
+        assert!(
+            approx_eq(vib.pitch_multiplier(), 1.0),
+            "within delay: {}",
+            vib.pitch_multiplier()
+        );
+
+        // Modulates after delay
+        let mut vib = Vibrato::new();
+        vib.set(0, 40, 2.0);
+        vib.enable();
+        vib.reset_tick();
+        assert!(
+            approx_eq(vib.pitch_multiplier(), 1.0),
+            "at start: {}",
+            vib.pitch_multiplier()
+        );
+
+        vib.advance_tick(10);
+        assert!(
+            vib.pitch_multiplier() > 1.0,
+            "at quarter period should be > 1.0: {}",
+            vib.pitch_multiplier()
+        );
+    }
+
+    #[test]
+    fn test_vibrato_triangle_wave_shape() {
+        // Verify the triangle wave has correct symmetry over a full period
+        let mut vib = Vibrato::new();
+        let period = 100;
+        vib.set(0, period, 2.0);
+        vib.enable();
+        vib.reset_tick();
+
+        // At start: multiplier = 1.0 (zero crossing)
+        assert!(
+            approx_eq(vib.pitch_multiplier(), 1.0),
+            "start: {}",
+            vib.pitch_multiplier()
+        );
+
+        // At half period: should return to ~1.0 (zero crossing)
+        vib.advance_tick(period / 2);
+        assert!(
+            approx_eq(vib.pitch_multiplier(), 1.0),
+            "half period: {}",
+            vib.pitch_multiplier()
+        );
+    }
+
+    #[test]
+    fn test_vibrato_zero_period() {
+        // period=0 → inv_period_ticks=0, modulation calculation should not panic
+        let mut vib = Vibrato::new();
+        vib.set(0, 0, 2.0);
+        vib.enable();
+        vib.reset_tick();
+        vib.advance_tick(10);
+        // Should not panic; exact multiplier depends on 0*0 float behavior
+        let _ = vib.pitch_multiplier();
+    }
+
+    #[test]
+    fn test_vibrato_zero_depth() {
+        let mut vib = Vibrato::new();
+        vib.set(0, 20, 0.0); // zero depth = no modulation
+        vib.enable();
+        vib.reset_tick();
+        vib.advance_tick(10);
+        assert!(
+            approx_eq(vib.pitch_multiplier(), 1.0),
+            "zero depth: {}",
+            vib.pitch_multiplier()
+        );
+    }
+
+    // ── Glide ──
+
+    #[test]
+    fn test_glide_behavior() {
+        let mut glide = Glide::new();
+        glide.set(12.0, 100);
+
+        // Disabled returns 1.0
+        assert!(
+            approx_eq(glide.pitch_multiplier(), 1.0),
+            "disabled: {}",
+            glide.pitch_multiplier()
+        );
+
+        // Starts at offset and converges to 1.0
+        glide.enable();
+        glide.reset_tick();
+        assert!(
+            approx_eq(glide.pitch_multiplier(), 2.0),
+            "start: {}",
+            glide.pitch_multiplier()
+        );
+
+        glide.advance_tick(50);
+        let expected = 2.0_f32.powf(6.0 / 12.0);
+        assert!(
+            (glide.pitch_multiplier() - expected).abs() < 0.01,
+            "midpoint: expected ~{expected}, got {}",
+            glide.pitch_multiplier()
+        );
+
+        glide.advance_tick(50);
+        assert!(
+            approx_eq(glide.pitch_multiplier(), 1.0),
+            "end: {}",
+            glide.pitch_multiplier()
+        );
+    }
+
+    #[test]
+    fn test_glide_zero_duration() {
+        // Zero duration: slope is 0, stays at 1.0 (elapsed >= duration immediately)
+        let mut glide = Glide::new();
+        glide.set(12.0, 0);
+        glide.enable();
+        glide.reset_tick();
+        assert!(
+            approx_eq(glide.pitch_multiplier(), 1.0),
+            "zero duration: {}",
+            glide.pitch_multiplier()
+        );
+    }
+
+    #[test]
+    fn test_glide_negative_offset() {
+        // Negative offset = starts below target pitch
+        let mut glide = Glide::new();
+        glide.set(-12.0, 100);
+        glide.enable();
+        glide.reset_tick();
+        assert!(
+            approx_eq(glide.pitch_multiplier(), 0.5),
+            "start at -12 semitones: {}",
+            glide.pitch_multiplier()
+        );
+
+        glide.advance_tick(100);
+        assert!(
+            approx_eq(glide.pitch_multiplier(), 1.0),
+            "converged: {}",
+            glide.pitch_multiplier()
+        );
+    }
+
+    #[test]
+    fn test_glide_past_duration() {
+        let mut glide = Glide::new();
+        glide.set(12.0, 50);
+        glide.enable();
+        glide.reset_tick();
+
+        glide.advance_tick(100); // well past duration
+        assert!(
+            approx_eq(glide.pitch_multiplier(), 1.0),
+            "past duration: {}",
+            glide.pitch_multiplier()
+        );
+    }
+
+    // ── Voice ──
+
+    #[test]
+    fn test_voice_new_initial_state() {
+        let voice = Voice::new(44100, 60, 512);
+        assert_eq!(voice.clock_rate, 44100);
+        assert_eq!(voice.clocks_per_tick, 1);
+        assert_eq!(voice.base_frequency, 0.0);
+        assert_eq!(voice.velocity, 0.0);
+        assert_eq!(voice.remaining_note_clocks, 0);
+        assert_eq!(voice.last_amplitude, 0);
+        assert_eq!(voice.control_interval_clocks, 44100 / 60);
+        assert!(!voice.needs_processing());
+    }
+
+    #[test]
+    fn test_voice_play_note_sets_state() {
+        let mut voice = Voice::new(44100, 60, 512);
+        voice.oscillator.set(&[1.0, -1.0]);
+        voice.play_note(69.0, 1.0, 1000);
+
+        assert!(
+            approx_eq(voice.base_frequency, 440.0),
+            "A4 should be 440Hz, got {}",
+            voice.base_frequency
+        );
+        assert!(voice.needs_processing());
+        assert_eq!(voice.velocity, 1.0);
+    }
+
+    #[test]
+    fn test_voice_play_note_frequencies() {
+        let mut voice = Voice::new(44100, 60, 512);
+        voice.oscillator.set(&[1.0, -1.0]);
+
+        // C4 = MIDI 60, ~261.63 Hz
+        voice.play_note(60.0, 1.0, 1000);
+        assert!(
+            (voice.base_frequency - 261.63).abs() < 0.1,
+            "C4: {}",
+            voice.base_frequency
+        );
+
+        // C5 = MIDI 72, ~523.25 Hz
+        voice.play_note(72.0, 1.0, 1000);
+        assert!(
+            (voice.base_frequency - 523.25).abs() < 0.1,
+            "C5: {}",
+            voice.base_frequency
+        );
+    }
+
+    #[test]
+    fn test_voice_set_clocks_per_tick() {
+        let mut voice = Voice::new(44100, 60, 512);
+        assert_eq!(voice.clocks_per_tick, 1);
+
+        voice.set_clocks_per_tick(100);
+        assert_eq!(voice.clocks_per_tick, 100);
+    }
+
+    #[test]
+    fn test_voice_gain_to_fixed_and_apply() {
+        let gain = Voice::gain_to_fixed(1.0);
+        let result = Voice::apply_gain_fixed(1000, gain);
+        assert_eq!(result, 1000);
+
+        let gain = Voice::gain_to_fixed(0.5);
+        let result = Voice::apply_gain_fixed(1000, gain);
+        assert_eq!(result, 500);
+
+        let gain = Voice::gain_to_fixed(0.0);
+        let result = Voice::apply_gain_fixed(1000, gain);
+        assert_eq!(result, 0);
+
+        let gain = Voice::gain_to_fixed(1.0);
+        let result = Voice::apply_gain_fixed(-1000, gain);
+        assert!((result + 1000).abs() <= 1, "expected ~-1000, got {result}");
+    }
+
+    #[test]
+    fn test_voice_process_without_note_is_noop() {
+        let mut voice = Voice::new(44100, 60, 512);
+        voice.oscillator.set(&[1.0, -1.0]);
+        voice.process(None, 0, 1000);
+        assert_eq!(voice.last_amplitude, 0);
+    }
+
+    #[test]
+    fn test_voice_cancel_note_limits_remaining() {
+        let mut voice = Voice::new(44100, 60, 512);
+        voice.oscillator.set(&[1.0, -1.0]);
+        voice.play_note(69.0, 1.0, 10000);
+
+        let before = voice.remaining_note_clocks;
+        voice.cancel_note();
+        assert!(
+            voice.remaining_note_clocks <= voice.note_interp_clocks,
+            "after cancel: {} should be <= {}",
+            voice.remaining_note_clocks,
+            voice.note_interp_clocks
+        );
+        assert!(voice.remaining_note_clocks < before);
+    }
+
+    #[test]
+    fn test_voice_needs_processing_transitions() {
+        let mut voice = Voice::new(44100, 60, 512);
+        voice.oscillator.set(&[1.0, -1.0]);
+        assert!(!voice.needs_processing(), "initially idle");
+
+        voice.play_note(69.0, 1.0, 100);
+        assert!(voice.needs_processing(), "after play_note");
+
+        // Process enough clocks to finish the note
+        voice.process(None, 0, 100 + voice.note_interp_clocks + 1);
+        // After processing, remaining_note_clocks should be 0
+        // and if last_amplitude is also 0, needs_processing is false
+        assert_eq!(voice.remaining_note_clocks, 0);
     }
 }

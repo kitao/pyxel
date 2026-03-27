@@ -26,8 +26,11 @@ def pep440_to_semver(version: str) -> str:
 
 
 def replace_file(path: pathlib.Path, pattern: str, repl: str) -> None:
-    code = path.read_text(encoding="utf-8")
-    path.write_text(re.sub(pattern, repl, code, count=1), encoding="utf-8")
+    text = path.read_text(encoding="utf-8")
+    new_text, count = re.subn(pattern, repl, text, count=1)
+    if count == 0:
+        print(f"WARNING: pattern not found in {path}")
+    path.write_text(new_text, encoding="utf-8")
 
 
 def update_version() -> None:
