@@ -48,7 +48,7 @@ void main() {
 
     if (isInScreen(screenTexCoord)) {
         vec3 color = getBleedingColor(screenTexCoord);
-        color *= getVignettFactor(screenTexCoord);
+        color *= getVignetteFactor(screenTexCoord);
         color *= getScanlineFactor(screenFragCoord, screenTexCoord);
 
         gl_FragColor = vec4(color, 1.0);
