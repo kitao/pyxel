@@ -101,7 +101,6 @@ def run_pyxapp(startup_path):
     pyxel.init = patched_init
     pyxel.run = patched_run
     pyxel.show = lambda: None
-    original_dir = os.getcwd()
     app_dir = str(Path(startup_path).parent)
     saved_modules = set(sys.modules.keys())
     sys.path.insert(0, app_dir)

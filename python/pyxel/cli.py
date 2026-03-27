@@ -258,10 +258,9 @@ def get_pyxel_app_metadata(pyxel_app_file):
     metadata = {}
 
     with zipfile.ZipFile(pyxel_app_file) as zf:
-        if zf.comment:
-            comment = zf.comment.decode(encoding="utf-8")
-        else:
+        if not zf.comment:
             return metadata
+        comment = zf.comment.decode(encoding="utf-8")
 
     for line in comment.splitlines():
         if line.startswith("-"):

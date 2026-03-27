@@ -72,21 +72,21 @@ impl Pyxel {
 
         let format_version = Self::parse_format_version(&toml_text)?;
         if format_version > RESOURCE_FORMAT_VERSION {
-            Err(format!(
+            return Err(format!(
                 "Unsupported resource format version '{format_version}'"
-            ))
-        } else {
-            let resource_data = ResourceData::from_toml(&toml_text)?;
-            resource_data.to_runtime(
-                self,
-                exclude_images.unwrap_or(false),
-                exclude_tilemaps.unwrap_or(false),
-                exclude_sounds.unwrap_or(false),
-                exclude_musics.unwrap_or(false),
-            );
-            self.load_palette(filename)?;
-            Ok(())
+            ));
         }
+
+        let resource_data = ResourceData::from_toml(&toml_text)?;
+        resource_data.to_runtime(
+            self,
+            exclude_images.unwrap_or(false),
+            exclude_tilemaps.unwrap_or(false),
+            exclude_sounds.unwrap_or(false),
+            exclude_musics.unwrap_or(false),
+        );
+        self.load_palette(filename)?;
+        Ok(())
     }
 
     pub fn save_resource(
@@ -122,26 +122,28 @@ impl Pyxel {
     pub fn load_palette(&mut self, filename: &str) -> Result<(), String> {
         let filename = Self::palette_filename(filename);
 
-        if let Ok(mut file) = File::open(Path::new(&filename)) {
-            let mut contents = String::new();
-            file.read_to_string(&mut contents)
-                .map_err(|_| format!("Failed to read file '{filename}'"))?;
+        let Ok(mut file) = File::open(Path::new(&filename)) else {
+            return Ok(());
+        };
 
-            let colors: Vec<Rgb24> = contents
-                .lines()
-                .filter(|s| !s.is_empty())
-                .map(|s| {
-                    u32::from_str_radix(s.trim(), 16)
-                        .map(|v| v as Rgb24)
-                        .map_err(|_| format!("Failed to parse file '{filename}'"))
-                })
-                .collect::<Result<_, _>>()?;
-            *pyxel::colors() = if colors.is_empty() {
-                vec![0x00ff_ffff]
-            } else {
-                colors
-            };
-        }
+        let mut contents = String::new();
+        file.read_to_string(&mut contents)
+            .map_err(|_| format!("Failed to read file '{filename}'"))?;
+
+        let colors: Vec<Rgb24> = contents
+            .lines()
+            .filter(|s| !s.is_empty())
+            .map(|s| {
+                u32::from_str_radix(s.trim(), 16)
+                    .map(|v| v as Rgb24)
+                    .map_err(|_| format!("Failed to parse file '{filename}'"))
+            })
+            .collect::<Result<_, _>>()?;
+        *pyxel::colors() = if colors.is_empty() {
+            vec![0x00ff_ffff]
+        } else {
+            colors
+        };
         Ok(())
     }
 

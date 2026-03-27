@@ -131,18 +131,15 @@ class Widget:
         x = pyxel.mouse_x
         y = pyxel.mouse_y
         if self.is_hit(x, y):
-            if pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT):
-                key = pyxel.MOUSE_BUTTON_LEFT
-            elif pyxel.btnp(pyxel.MOUSE_BUTTON_RIGHT):
-                key = pyxel.MOUSE_BUTTON_RIGHT
-            elif pyxel.btnp(pyxel.MOUSE_BUTTON_MIDDLE):
-                key = pyxel.MOUSE_BUTTON_MIDDLE
-            else:
-                key = None
-
-            if key is not None:
-                self._start_capture(key)
-                self.trigger_event("mouse_down", key, x, y)
+            for btn in (
+                pyxel.MOUSE_BUTTON_LEFT,
+                pyxel.MOUSE_BUTTON_RIGHT,
+                pyxel.MOUSE_BUTTON_MIDDLE,
+            ):
+                if pyxel.btnp(btn):
+                    self._start_capture(btn)
+                    self.trigger_event("mouse_down", btn, x, y)
+                    break
 
             self.trigger_event("mouse_hover", x, y)
             return True

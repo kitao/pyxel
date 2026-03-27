@@ -205,7 +205,7 @@ impl Sdl2Bindings {
         if let Ok(bindgen_flags) = var("BINDGENFLAGS") {
             bindgen_flags
                 .split_whitespace()
-                .map(|s| s.to_string())
+                .map(str::to_string)
                 .collect()
         } else {
             Vec::new()
@@ -229,8 +229,8 @@ impl Sdl2Bindings {
                 .nth(1)
                 .unwrap();
 
-            include_flags.push("-I".to_string() + sdl2_include_flag + "/..");
-            include_flags.push("-I".to_string() + sdl2_include_flag);
+            include_flags.push(format!("-I{sdl2_include_flag}/.."));
+            include_flags.push(format!("-I{sdl2_include_flag}"));
         } else {
             for path in [
                 "/usr/local/include/SDL2",
