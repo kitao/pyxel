@@ -1,0 +1,85 @@
+// Replace FStringSpecExpr with a version that supports dynamic format specs.
+// When dyn_count > 0, the spec is built at runtime from interleaved string
+// constants (dyn_specs[]) and expressions (dyn_parts[]).
+// When dyn_count == 0, falls back to the original static behavior.
+
+@@@ FIND
+typedef struct FStringSpecExpr {
+    EXPR_COMMON_HEADER
+    Expr* child;
+    c11_sv spec;
+} FStringSpecExpr;
+
+void FStringSpecExpr__emit_(Expr* self_, Ctx* ctx) {
+    FStringSpecExpr* self = (FStringSpecExpr*)self_;
+    vtemit_(self->child, ctx);
+    int index = Ctx__add_const_string(ctx, self->spec);
+    Ctx__emit_(ctx, OP_FORMAT_STRING, index, self->line);
+}
+
+FStringSpecExpr* FStringSpecExpr__new(int line, Expr* child, c11_sv spec) {
+    const static ExprVt Vt = {.emit_ = FStringSpecExpr__emit_, .dtor = UnaryExpr__dtor};
+    FStringSpecExpr* self = PK_MALLOC(sizeof(FStringSpecExpr));
+    self->vt = &Vt;
+    self->line = line;
+    self->child = child;
+    self->spec = spec;
+    return self;
+}
+@@@ REPLACE
+typedef struct FStringSpecExpr {
+    EXPR_COMMON_HEADER
+    Expr* child;
+    c11_sv spec;
+    /* [pyxel-pocket] dynamic spec support */
+    int dyn_count;        /* number of dynamic expression parts (0 = static) */
+    Expr** dyn_parts;     /* dynamic expressions */
+    c11_sv* dyn_specs;    /* string constants: [prefix, between1, ..., suffix] = dyn_count+1 */
+} FStringSpecExpr;
+
+static void FStringSpecExpr__dtor(Expr* self_) {
+    FStringSpecExpr* self = (FStringSpecExpr*)self_;
+    vtdelete(self->child);
+    for(int i = 0; i < self->dyn_count; i++) vtdelete(self->dyn_parts[i]);
+    PK_FREE(self->dyn_parts);
+    PK_FREE(self->dyn_specs);
+}
+
+void FStringSpecExpr__emit_(Expr* self_, Ctx* ctx) {
+    FStringSpecExpr* self = (FStringSpecExpr*)self_;
+    vtemit_(self->child, ctx);
+    if(self->dyn_count == 0) {
+        /* Static spec (original behavior) */
+        int index = Ctx__add_const_string(ctx, self->spec);
+        Ctx__emit_(ctx, OP_FORMAT_STRING, index, self->line);
+    } else {
+        /* Dynamic spec: build spec string from parts, then FORMAT_STRING_DYN */
+        int parts = 0;
+        for(int i = 0; i <= self->dyn_count; i++) {
+            if(self->dyn_specs[i].size > 0) {
+                int idx = Ctx__add_const_string(ctx, self->dyn_specs[i]);
+                Ctx__emit_(ctx, OP_LOAD_CONST, idx, self->line);
+                parts++;
+            }
+            if(i < self->dyn_count) {
+                vtemit_(self->dyn_parts[i], ctx);
+                parts++;
+            }
+        }
+        Ctx__emit_(ctx, OP_BUILD_STRING, parts, self->line);
+        Ctx__emit_(ctx, OP_FORMAT_STRING_DYN, 0, self->line);
+    }
+}
+
+FStringSpecExpr* FStringSpecExpr__new(int line, Expr* child, c11_sv spec) {
+    const static ExprVt Vt = {.emit_ = FStringSpecExpr__emit_, .dtor = FStringSpecExpr__dtor};
+    FStringSpecExpr* self = PK_MALLOC(sizeof(FStringSpecExpr));
+    self->vt = &Vt;
+    self->line = line;
+    self->child = child;
+    self->spec = spec;
+    self->dyn_count = 0;
+    self->dyn_parts = NULL;
+    self->dyn_specs = NULL;
+    return self;
+}

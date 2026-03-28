@@ -1,0 +1,17 @@
+// Allow relative imports (from .foo import bar)
+// builtins.__import__ rejects paths starting with '.' but py_import()
+// already handles relative import resolution. Remove the guard.
+
+@@@ FIND
+static bool builtins__import__(int argc, py_Ref argv) {
+    PY_CHECK_ARGC(1);
+    PY_CHECK_ARG_TYPE(0, tp_str);
+    const char* path = py_tostr(py_arg(0));
+    if(path[0] == '.') return ValueError("relative import not allowed here");
+    int res = py_import(path);
+@@@ REPLACE
+static bool builtins__import__(int argc, py_Ref argv) {
+    PY_CHECK_ARGC(1);
+    PY_CHECK_ARG_TYPE(0, tp_str);
+    const char* path = py_tostr(py_arg(0));
+    int res = py_import(path);

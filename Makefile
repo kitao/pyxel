@@ -84,7 +84,7 @@ endif
 WASM_DIST_DIR = $(DIST_DIR)/wasm
 
 .PHONY: \
-	all clean distclean update format lint build install test \
+	all clean distclean update format lint build install test test-pocket \
 	clean-wasm lint-wasm build-wasm test-wasm \
 	pages
 
@@ -130,6 +130,9 @@ install: build
 
 test: install
 	@CARGO_OPTS="$(CARGO_OPTS)" $(SCRIPTS_DIR)/run_tests
+
+test-pocket:
+	@CARGO_OPTS="$(CARGO_OPTS)" $(SCRIPTS_DIR)/run_pocket_tests
 
 clean-wasm:
 	@cd $(CRATES_DIR); cargo clean -p pyxel-pocket --target $(WASM_TARGET)

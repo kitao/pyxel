@@ -1,0 +1,83 @@
+#!/bin/bash
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+CRATES_DIR="$ROOT_DIR/crates"
+EXAMPLES_DIR="$ROOT_DIR/python/pyxel/examples"
+
+: "${CARGO_OPTS:?CARGO_OPTS must be set}"
+
+BG_PID=0
+
+cleanup() {
+    if [[ $BG_PID -ne 0 ]]; then
+        kill $BG_PID 2>/dev/null || true
+        wait $BG_PID 2>/dev/null || true
+    fi
+}
+trap cleanup EXIT
+
+# Display command with basenames for readability
+echo_cmd() {
+    local display=()
+    for arg in "$@"; do
+        display+=("${arg##*/}")
+    done
+    echo "${display[*]}"
+}
+
+# Echo and run
+run() {
+    echo_cmd "$@"
+    "$@"
+}
+
+# Echo and run a GUI command in background; Ctrl+C to stop
+run_bg() {
+    echo_cmd "$@"
+    "$@" &
+    BG_PID=$!
+    trap 'kill $BG_PID 2>/dev/null; exit 130' INT
+    wait $BG_PID || true
+    trap - INT
+    BG_PID=0
+}
+
+# Build pyxel-pocket native binary
+echo "=== Building pyxel-pocket ==="
+cd "$CRATES_DIR"
+run cargo build -p pyxel-pocket --bin pyxel-pocket $CARGO_OPTS
+
+POCKET_BIN="$CRATES_DIR/target/${TARGET:-$(rustc -vV | awk '/^host:/ {print $2}')}/release/pyxel-pocket"
+if [[ ! -x "$POCKET_BIN" ]]; then
+    echo "Error: pyxel-pocket binary not found at $POCKET_BIN"
+    exit 1
+fi
+echo "Binary: $POCKET_BIN"
+echo
+
+# Rust unit tests (pyxel-core, shared with pyxel-pocket)
+echo "=== Rust unit tests ==="
+cd "$CRATES_DIR"
+run cargo test -p pyxel-core $CARGO_OPTS
+echo
+
+# Example scripts (.py)
+echo "=== Example scripts ==="
+for f in "$EXAMPLES_DIR"/*.py; do
+    run_bg "$POCKET_BIN" "$f"
+done
+echo
+
+# Example apps (.pyxapp)
+echo "=== Example apps ==="
+for f in "$EXAMPLES_DIR"/apps/*.pyxapp; do
+    run_bg "$POCKET_BIN" "$f"
+done
+echo
+
+# Editor
+echo "=== Editor ==="
+run_bg "$POCKET_BIN" "$EXAMPLES_DIR/assets/sample.pyxres"

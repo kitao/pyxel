@@ -1,0 +1,33 @@
+// VM handler for OP_FORMAT_STRING_DYN.
+// Stack: [..., value, spec_string] -> [..., formatted_string]
+// Pops spec string, formats value below it, replaces value with result.
+
+@@@ FIND
+        case OP_FORMAT_STRING: {
+            py_Ref spec = c11__at(py_TValue, &frame->co->consts, byte.arg);
+            bool ok = pk_format_object(self, TOP(), py_tosv(spec));
+            if(!ok) goto __ERROR;
+            py_assign(TOP(), py_retval());
+            DISPATCH();
+        }
+        default: c11__unreachable();
+@@@ REPLACE
+        case OP_FORMAT_STRING: {
+            py_Ref spec = c11__at(py_TValue, &frame->co->consts, byte.arg);
+            bool ok = pk_format_object(self, TOP(), py_tosv(spec));
+            if(!ok) goto __ERROR;
+            py_assign(TOP(), py_retval());
+            DISPATCH();
+        }
+        /* [pyxel-pocket] dynamic format spec from stack */
+        case OP_FORMAT_STRING_DYN: {
+            py_Ref spec_ref = TOP();
+            POP();
+            if(!py_str(spec_ref)) goto __ERROR;
+            c11_sv spec_sv = py_tosv(py_retval());
+            bool ok = pk_format_object(self, TOP(), spec_sv);
+            if(!ok) goto __ERROR;
+            py_assign(TOP(), py_retval());
+            DISPATCH();
+        }
+        default: c11__unreachable();

@@ -1,0 +1,7 @@
+// Export pk_newmodule so that __init__.py modules can be registered
+// with is_init=true (which sets package correctly for relative imports).
+
+@@@ FIND
+static py_Ref pk_newmodule(const char* path, bool is_init) {
+@@@ REPLACE
+py_Ref pk_newmodule(const char* path, bool is_init) {

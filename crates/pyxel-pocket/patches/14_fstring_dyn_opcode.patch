@@ -1,0 +1,12 @@
+// Add OP_FORMAT_STRING_DYN opcode for dynamic f-string format specs.
+// Stack: [value, spec_string] -> [formatted_string]
+
+@@@ FIND
+OPCODE(FORMAT_STRING)
+/**************************/
+#endif
+@@@ REPLACE
+OPCODE(FORMAT_STRING)
+OPCODE(FORMAT_STRING_DYN) /* [pyxel-pocket] dynamic format spec from stack */
+/**************************/
+#endif

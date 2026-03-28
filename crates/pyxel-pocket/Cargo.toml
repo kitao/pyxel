@@ -15,6 +15,7 @@ path = "src/main.rs"
 [dependencies]
 paste = "1.0"
 pyxel-core = { path = "../pyxel-core" }
+zip = { version = "2", default-features = false, features = ["deflate"] }
 
 [build-dependencies]
 bindgen = "0.72"

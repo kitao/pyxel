@@ -1,0 +1,61 @@
+// Support keyword-only arguments (PEP 3102): def f(a, *, key=val)
+// When TK_MUL is not followed by TK_ID, treat it as keyword-only separator
+// instead of *args. Skip name capture and go to kwarg state.
+// Allow bare * after default args (state 2) as well as positional args (state 0).
+
+@@@ FIND
+        if(match(TK_MUL)) {
+            if(state < 1)
+                state = 1;
+            else
+                return SyntaxError(self, "*args should be placed before **kwargs");
+        } else if(match(TK_POW)) {
+            state = 3;
+        }
+        consume(TK_ID);
+        py_Name name = py_namev(Token__sv(prev()));
+
+        // check duplicate argument name
+        if(FuncDecl__is_duplicated_arg(decl, name)) {
+            return SyntaxError(self, "duplicate argument name");
+        }
+
+        // eat type hints
+        if(!is_lambda && match(TK_COLON)) check(consume_type_hints(self));
+        if(state == 0 && curr()->type == TK_ASSIGN) state = 2;
+        switch(state) {
+            case 0: FuncDecl__add_arg(decl, name); break;
+            case 1:
+                FuncDecl__add_starred_arg(decl, name);
+                state += 1;
+                break;
+@@@ REPLACE
+        if(match(TK_MUL)) {
+            if(state >= 3)
+                return SyntaxError(self, "*args should be placed before **kwargs");
+            /* [pyxel-pocket] PEP 3102: bare * as keyword-only separator */
+            if(curr()->type == TK_COMMA || curr()->type == TK_RPAREN) {
+                state = 2;  /* skip *args, go to kwarg state */
+                continue;
+            }
+            if(state < 1) state = 1;
+        } else if(match(TK_POW)) {
+            state = 3;
+        }
+        consume(TK_ID);
+        py_Name name = py_namev(Token__sv(prev()));
+
+        // check duplicate argument name
+        if(FuncDecl__is_duplicated_arg(decl, name)) {
+            return SyntaxError(self, "duplicate argument name");
+        }
+
+        // eat type hints
+        if(!is_lambda && match(TK_COLON)) check(consume_type_hints(self));
+        if(state == 0 && curr()->type == TK_ASSIGN) state = 2;
+        switch(state) {
+            case 0: FuncDecl__add_arg(decl, name); break;
+            case 1:
+                FuncDecl__add_starred_arg(decl, name);
+                state += 1;
+                break;

@@ -1,0 +1,16 @@
+// Allow trailing comma in parenthesized from-import statements.
+// e.g. from os.path import (join, dirname,)
+// After matching a comma, check if ')' follows before consuming TK_ID.
+
+@@@ FIND
+    bool has_bracket = match(TK_LPAREN);
+    do {
+        Ctx__emit_(ctx(), OP_DUP_TOP, BC_NOARG, BC_KEEPLINE);
+        consume(TK_ID);
+@@@ REPLACE
+    bool has_bracket = match(TK_LPAREN);
+    do {
+        /* [pyxel-pocket] allow trailing comma: from x import (a, b,) */
+        if(has_bracket && curr()->type == TK_RPAREN) break;
+        Ctx__emit_(ctx(), OP_DUP_TOP, BC_NOARG, BC_KEEPLINE);
+        consume(TK_ID);

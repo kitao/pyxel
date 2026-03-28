@@ -1,0 +1,55 @@
+// Support nested expressions in f-string format specs: f"{x:>{y}}"
+//
+// Lexer: When eat_fstring_spec encounters '{', it emits the static
+// prefix as TK_FSTR_SPEC, lexes the inner expression via lex_one_token
+// loop (ended by '}'), then continues reading the spec suffix.
+//
+// Compiler: When a second TK_FSTR_SPEC follows inner expression tokens,
+// generate code that builds the spec string at runtime via str.format()
+// then calls pk_format_object with the dynamic spec.
+
+@@@ FIND
+static Error* eat_fstring_spec(Lexer* self, bool* eof) {
+    while(true) {
+        char c = eatchar_include_newline(self);
+        if(c == '\n' || c == '\0') {
+            return LexerError(self, "EOL while scanning f-string format spec");
+        }
+        if(c == '}') {
+            add_token(self, TK_FSTR_SPEC);
+            *eof = true;
+            break;
+        }
+    }
+    return NULL;
+}
+@@@ REPLACE
+static Error* eat_fstring_spec(Lexer* self, bool* eof) {
+    /* [pyxel-pocket] split spec tokens at nested {expr} boundaries */
+    while(true) {
+        char c = eatchar_include_newline(self);
+        if(c == '\n' || c == '\0') {
+            return LexerError(self, "EOL while scanning f-string format spec");
+        }
+        if(c == '{') {
+            /* Emit the static prefix (e.g. ":>") as TK_FSTR_SPEC */
+            self->curr_char--;  /* back up past '{' */
+            add_token(self, TK_FSTR_SPEC);
+            self->curr_char++;  /* skip '{' */
+            /* Lex inner expression tokens until '}' */
+            self->token_start = self->curr_char;
+            bool inner_eof = false;
+            while(!inner_eof) {
+                Error* err = lex_one_token(self, &inner_eof, true);
+                if(err) return err;
+            }
+            /* Continue reading the rest of the spec */
+            self->token_start = self->curr_char;
+        } else if(c == '}') {
+            add_token(self, TK_FSTR_SPEC);
+            *eof = true;
+            break;
+        }
+    }
+    return NULL;
+}

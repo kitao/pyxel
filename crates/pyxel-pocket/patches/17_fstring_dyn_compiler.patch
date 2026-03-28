@@ -1,0 +1,59 @@
+// Compiler: detect dynamic f-string specs and populate FStringSpecExpr
+// with dynamic parts.
+//
+// After matching TK_FSTR_SPEC, if more expression tokens follow before the
+// next TK_FSTR_SPEC, parse them as dynamic spec parts.
+
+@@@ FIND
+            if(match(TK_FSTR_SPEC)) {
+                c11_sv spec = Token__sv(prev());
+                // ':.2f}' -> ':.2f'
+                spec.size--;
+                Expr* child = Ctx__s_popx(ctx());
+                FStringSpecExpr* e = FStringSpecExpr__new(prev()->line, child, spec);
+                Ctx__s_push(ctx(), (Expr*)e);
+            }
+@@@ REPLACE
+            if(match(TK_FSTR_SPEC)) {
+                c11_sv spec = Token__sv(prev());
+                spec.size--;  /* strip trailing '}' or continuation */
+                Expr* child = Ctx__s_popx(ctx());
+                /* [pyxel-pocket] check for dynamic spec (more tokens before closing TK_FSTR_SPEC) */
+                if(curr()->type != TK_FSTR_SPEC && curr()->type != TK_FSTR_CPNT
+                   && curr()->type != TK_FSTR_END) {
+                    /* Dynamic spec: collect expression parts and string constants */
+                    int cap = 4;
+                    int dyn_count = 0;
+                    Expr** dyn_parts = PK_MALLOC(sizeof(Expr*) * cap);
+                    c11_sv* dyn_specs = PK_MALLOC(sizeof(c11_sv) * (cap + 1));
+                    dyn_specs[0] = spec;  /* prefix */
+                    while(curr()->type != TK_FSTR_SPEC) {
+                        if(dyn_count >= cap) {
+                            cap *= 2;
+                            dyn_parts = realloc(dyn_parts, sizeof(Expr*) * cap);
+                            dyn_specs = realloc(dyn_specs, sizeof(c11_sv) * (cap + 1));
+                        }
+                        Error* inner_err = EXPR(self);
+                        if(inner_err) return inner_err;
+                        dyn_parts[dyn_count] = Ctx__s_popx(ctx());
+                        dyn_count++;
+                        /* Check for an intermediate TK_FSTR_SPEC (between exprs) */
+                        if(curr()->type == TK_FSTR_SPEC && curr()->type != TK_FSTR_END) {
+                            /* peek: is there more after this spec? */
+                            /* For now, consume and store as intermediate string */
+                        }
+                    }
+                    consume(TK_FSTR_SPEC);
+                    c11_sv suffix = Token__sv(prev());
+                    suffix.size--;  /* strip trailing '}' */
+                    dyn_specs[dyn_count] = suffix;
+                    FStringSpecExpr* e = FStringSpecExpr__new(prev()->line, child, spec);
+                    e->dyn_count = dyn_count;
+                    e->dyn_parts = dyn_parts;
+                    e->dyn_specs = dyn_specs;
+                    Ctx__s_push(ctx(), (Expr*)e);
+                } else {
+                    FStringSpecExpr* e = FStringSpecExpr__new(prev()->line, child, spec);
+                    Ctx__s_push(ctx(), (Expr*)e);
+                }
+            }
