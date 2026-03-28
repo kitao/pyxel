@@ -39,6 +39,13 @@ mod math_wrapper;
 mod resource_wrapper;
 mod system_wrapper;
 
+// 3D wrappers
+mod p3d_camera_wrapper;
+mod p3d_light_wrapper;
+mod p3d_math_wrapper;
+mod p3d_model_wrapper;
+mod p3d_scene_wrapper;
+
 use pyo3::prelude::*;
 
 #[pymodule]
@@ -63,6 +70,11 @@ fn pyxel_binding(_py: Python, m: Bound<'_, PyModule>) -> PyResult<()> {
     graphics_wrapper::add_graphics_functions(&m)?;
     audio_wrapper::add_audio_functions(&m)?;
     math_wrapper::add_math_functions(&m)?;
+    p3d_math_wrapper::add_p3d_math_classes(&m)?;
+    p3d_camera_wrapper::add_p3d_camera_class(&m)?;
+    p3d_light_wrapper::add_p3d_light_class(&m)?;
+    p3d_model_wrapper::add_p3d_model_class(&m)?;
+    p3d_scene_wrapper::add_p3d_scene_class(&m)?;
 
     Ok(())
 }

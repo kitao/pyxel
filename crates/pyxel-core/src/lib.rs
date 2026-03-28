@@ -36,6 +36,7 @@ mod mml_parser;
 mod music;
 mod old_mml_parser;
 mod old_resource_data;
+pub mod p3d;
 mod pcm_decoder;
 pub(crate) mod platform;
 mod profiler;
@@ -60,6 +61,7 @@ pub use crate::font::Font;
 pub use crate::image::{Color, Image, Rgb24};
 pub use crate::key::*;
 pub use crate::music::Music;
+pub use crate::p3d::{Mat4, Vec3};
 pub use crate::pyxel::{
     channels, colors, cursor_image, dropped_files, font_image, frame_count, height, images, init,
     input_keys, input_text, mouse_wheel, mouse_x, mouse_y, musics, pyxel, quit_callback,
