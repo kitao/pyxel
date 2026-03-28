@@ -85,23 +85,61 @@ unsafe extern "C" fn channel_play_pos(_argc: i32, argv: ffi::py_StackRef) -> boo
 unsafe extern "C" fn channel_new(_argc: i32, argv: ffi::py_StackRef) -> bool {
     let cls = ffi::py_totype(arg(argv, 0));
     let ptr = pyxel::Channel::new();
-    let ud = ffi::py_newobject(ffi::py_retval(), cls, 0, size_of::<*mut pyxel::Channel>() as i32);
+    let ud = ffi::py_newobject(
+        ffi::py_retval(),
+        cls,
+        0,
+        size_of::<*mut pyxel::Channel>() as i32,
+    );
     *(ud as *mut *mut pyxel::Channel) = ptr;
     true
 }
 
 pub unsafe fn add_channel_class(m: ffi::py_GlobalRef) {
     TP_CHANNEL = new_type(c"Channel", m);
-    ffi::py_bindproperty(TP_CHANNEL, c"gain".as_ptr(), Some(channel_gain_getter), Some(channel_gain_setter));
-    ffi::py_bindproperty(TP_CHANNEL, c"detune".as_ptr(), Some(channel_detune_getter), Some(channel_detune_setter));
+    ffi::py_bindproperty(
+        TP_CHANNEL,
+        c"gain".as_ptr(),
+        Some(channel_gain_getter),
+        Some(channel_gain_setter),
+    );
+    ffi::py_bindproperty(
+        TP_CHANNEL,
+        c"detune".as_ptr(),
+        Some(channel_detune_getter),
+        Some(channel_detune_setter),
+    );
     bindfunc(ffi::py_tpobject(TP_CHANNEL), c"stop", Some(channel_stop));
-    bindfunc(ffi::py_tpobject(TP_CHANNEL), c"play_pos", Some(channel_play_pos));
+    bindfunc(
+        ffi::py_tpobject(TP_CHANNEL),
+        c"play_pos",
+        Some(channel_play_pos),
+    );
 
     let tp_obj = ffi::py_tpobject(TP_CHANNEL);
-    bind(tp_obj, c"play(self, snd, sec=None, loop=None, resume=None)", Some(channel_play));
+    bind(
+        tp_obj,
+        c"play(self, snd, sec=None, loop=None, resume=None)",
+        Some(channel_play),
+    );
     bind(tp_obj, c"__new__(cls)", Some(channel_new));
 
     // Channels collection
-    impl_object_collection!(pyxel::channels, new_channel_obj, channels_getitem, channels_setitem, channels_len, channels_iter);
-    register_collection!(TP_CHANNELS, c"Channels", m, channels_getitem, channels_setitem, channels_len, channels_iter);
+    impl_object_collection!(
+        pyxel::channels,
+        new_channel_obj,
+        channels_getitem,
+        channels_setitem,
+        channels_len,
+        channels_iter
+    );
+    register_collection!(
+        TP_CHANNELS,
+        c"Channels",
+        m,
+        channels_getitem,
+        channels_setitem,
+        channels_len,
+        channels_iter
+    );
 }

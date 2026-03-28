@@ -95,10 +95,14 @@ unsafe extern "C" fn seqs_delitem(_argc: i32, argv: ffi::py_StackRef) -> bool {
         let (start, stop, step) = slice_indices(key, seqs.len());
         let mut indices = collect_indices(start, stop, step);
         indices.sort_unstable_by(|a, b| b.cmp(a));
-        for i in indices { seqs.remove(i); }
+        for i in indices {
+            seqs.remove(i);
+        }
     } else {
         match resolve_index(ffi::py_toint(key), seqs.len()) {
-            Some(i) => { seqs.remove(i); }
+            Some(i) => {
+                seqs.remove(i);
+            }
             None => return raise_index(),
         }
     }
@@ -128,7 +132,12 @@ unsafe extern "C" fn seqs_bool(_argc: i32, argv: ffi::py_StackRef) -> bool {
 
 unsafe extern "C" fn seqs_getter(_argc: i32, argv: ffi::py_StackRef) -> bool {
     let music_ptr = *(ffi::py_touserdata(arg(argv, 0)) as *mut *mut pyxel::Music);
-    let ud = ffi::py_newobject(ffi::py_retval(), TP_SEQS, 0, size_of::<*mut pyxel::Music>() as i32);
+    let ud = ffi::py_newobject(
+        ffi::py_retval(),
+        TP_SEQS,
+        0,
+        size_of::<*mut pyxel::Music>() as i32,
+    );
     *(ud as *mut *mut pyxel::Music) = music_ptr;
     true
 }
@@ -162,7 +171,12 @@ unsafe extern "C" fn music_save(_argc: i32, argv: ffi::py_StackRef) -> bool {
 unsafe extern "C" fn music_new(_argc: i32, argv: ffi::py_StackRef) -> bool {
     let cls = ffi::py_totype(arg(argv, 0));
     let ptr = pyxel::Music::new();
-    let ud = ffi::py_newobject(ffi::py_retval(), cls, 0, size_of::<*mut pyxel::Music>() as i32);
+    let ud = ffi::py_newobject(
+        ffi::py_retval(),
+        cls,
+        0,
+        size_of::<*mut pyxel::Music>() as i32,
+    );
     *(ud as *mut *mut pyxel::Music) = ptr;
     true
 }
@@ -170,15 +184,35 @@ unsafe extern "C" fn music_new(_argc: i32, argv: ffi::py_StackRef) -> bool {
 pub unsafe fn add_music_class(m: ffi::py_GlobalRef) {
     // Seq type (single sequence)
     TP_SEQ = new_type(c"Seq", m);
-    ffi::py_bindmagic(TP_SEQ, ffi::py_name(c"__getitem__".as_ptr()), Some(seq_getitem));
-    ffi::py_bindmagic(TP_SEQ, ffi::py_name(c"__setitem__".as_ptr()), Some(seq_setitem));
+    ffi::py_bindmagic(
+        TP_SEQ,
+        ffi::py_name(c"__getitem__".as_ptr()),
+        Some(seq_getitem),
+    );
+    ffi::py_bindmagic(
+        TP_SEQ,
+        ffi::py_name(c"__setitem__".as_ptr()),
+        Some(seq_setitem),
+    );
     ffi::py_bindmagic(TP_SEQ, ffi::py_name(c"__len__".as_ptr()), Some(seq_len));
 
     // Seqs type (list of sequences)
     TP_SEQS = new_type(c"Seqs", m);
-    ffi::py_bindmagic(TP_SEQS, ffi::py_name(c"__getitem__".as_ptr()), Some(seqs_getitem));
-    ffi::py_bindmagic(TP_SEQS, ffi::py_name(c"__setitem__".as_ptr()), Some(seqs_setitem));
-    ffi::py_bindmagic(TP_SEQS, ffi::py_name(c"__delitem__".as_ptr()), Some(seqs_delitem));
+    ffi::py_bindmagic(
+        TP_SEQS,
+        ffi::py_name(c"__getitem__".as_ptr()),
+        Some(seqs_getitem),
+    );
+    ffi::py_bindmagic(
+        TP_SEQS,
+        ffi::py_name(c"__setitem__".as_ptr()),
+        Some(seqs_setitem),
+    );
+    ffi::py_bindmagic(
+        TP_SEQS,
+        ffi::py_name(c"__delitem__".as_ptr()),
+        Some(seqs_delitem),
+    );
     ffi::py_bindmagic(TP_SEQS, ffi::py_name(c"__len__".as_ptr()), Some(seqs_len));
     ffi::py_bindmagic(TP_SEQS, ffi::py_name(c"__bool__".as_ptr()), Some(seqs_bool));
     ffi::py_bindmethod(TP_SEQS, c"append".as_ptr(), Some(seqs_append));
@@ -190,10 +224,29 @@ pub unsafe fn add_music_class(m: ffi::py_GlobalRef) {
     ffi::py_bindproperty(TP_MUSIC, c"snds_list".as_ptr(), Some(seqs_getter), None);
     ffi::py_bindmethod(TP_MUSIC, c"set".as_ptr(), Some(music_set));
     let tp_obj = ffi::py_tpobject(TP_MUSIC);
-    bind(tp_obj, c"save(self, filename, sec, ffmpeg=None)", Some(music_save));
+    bind(
+        tp_obj,
+        c"save(self, filename, sec, ffmpeg=None)",
+        Some(music_save),
+    );
     bind(tp_obj, c"__new__(cls)", Some(music_new));
 
     // Musics collection
-    impl_object_collection!(pyxel::musics, new_music_obj, musics_getitem, musics_setitem, musics_len, musics_iter);
-    register_collection!(TP_MUSICS, c"Musics", m, musics_getitem, musics_setitem, musics_len, musics_iter);
+    impl_object_collection!(
+        pyxel::musics,
+        new_music_obj,
+        musics_getitem,
+        musics_setitem,
+        musics_len,
+        musics_iter
+    );
+    register_collection!(
+        TP_MUSICS,
+        c"Musics",
+        m,
+        musics_getitem,
+        musics_setitem,
+        musics_len,
+        musics_iter
+    );
 }

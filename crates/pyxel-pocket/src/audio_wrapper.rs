@@ -21,7 +21,10 @@ unsafe extern "C" fn pyxel_play(_argc: i32, argv: ffi::py_StackRef) -> bool {
         let first = ffi::py_list_getitem(snd_ref, 0);
         if ffi::py_isinstance(first, TP_SOUND) {
             let sounds: Vec<*mut pyxel::Sound> = (0..len)
-                .map(|i| *(ffi::py_touserdata(ffi::py_list_getitem(snd_ref, i)) as *mut *mut pyxel::Sound))
+                .map(|i| {
+                    *(ffi::py_touserdata(ffi::py_list_getitem(snd_ref, i))
+                        as *mut *mut pyxel::Sound)
+                })
                 .collect();
             (&mut *pyxel::channels()[ch as usize]).play(sounds, sec, r#loop, resume);
         } else {
@@ -88,11 +91,19 @@ unsafe extern "C" fn pyxel_gen_bgm(_argc: i32, argv: ffi::py_StackRef) -> bool {
 }
 
 pub unsafe fn add_audio_functions(m: ffi::py_GlobalRef) {
-    bind(m, c"play(ch, snd, sec=None, loop=None, resume=None)", Some(pyxel_play));
+    bind(
+        m,
+        c"play(ch, snd, sec=None, loop=None, resume=None)",
+        Some(pyxel_play),
+    );
     bind(m, c"playm(msc, sec=None, loop=None)", Some(pyxel_playm));
     bind(m, c"stop(ch=None)", Some(pyxel_stop));
     bind(m, c"play_pos(ch)", Some(pyxel_play_pos));
-    bind(m, c"gen_bgm(preset, instr, seed=None, play=None)", Some(pyxel_gen_bgm));
+    bind(
+        m,
+        c"gen_bgm(preset, instr, seed=None, play=None)",
+        Some(pyxel_gen_bgm),
+    );
 
     // Deprecated functions
     bind(m, c"channel(ch)", Some(pyxel_channel_deprecated));

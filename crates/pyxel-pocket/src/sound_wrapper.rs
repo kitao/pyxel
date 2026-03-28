@@ -19,7 +19,10 @@ pub unsafe fn new_sound_obj(out: ffi::py_OutRef, ptr: *mut pyxel::Sound) {
 
 unsafe extern "C" fn sound_set(_argc: i32, argv: ffi::py_StackRef) -> bool {
     if let Err(e) = snd(argv).set(
-        arg_str(argv, 1), arg_str(argv, 2), arg_str(argv, 3), arg_str(argv, 4),
+        arg_str(argv, 1),
+        arg_str(argv, 2),
+        arg_str(argv, 3),
+        arg_str(argv, 4),
         arg_float(argv, 5) as u16,
     ) {
         return raise_exc(&e);
@@ -310,7 +313,12 @@ unsafe extern "C" fn sound_total_sec(_argc: i32, argv: ffi::py_StackRef) -> bool
 unsafe extern "C" fn sound_new(_argc: i32, argv: ffi::py_StackRef) -> bool {
     let cls = ffi::py_totype(arg(argv, 0));
     let ptr = pyxel::Sound::new();
-    let ud = ffi::py_newobject(ffi::py_retval(), cls, 0, size_of::<*mut pyxel::Sound>() as i32);
+    let ud = ffi::py_newobject(
+        ffi::py_retval(),
+        cls,
+        0,
+        size_of::<*mut pyxel::Sound>() as i32,
+    );
     *(ud as *mut *mut pyxel::Sound) = ptr;
     true
 }
@@ -349,9 +357,18 @@ pub unsafe fn add_sound_class(m: ffi::py_GlobalRef) {
     ffi::py_bindproperty(TP_SOUND, c"tones".as_ptr(), Some(stones_getter), None);
     ffi::py_bindproperty(TP_SOUND, c"volumes".as_ptr(), Some(volumes_getter), None);
     ffi::py_bindproperty(TP_SOUND, c"effects".as_ptr(), Some(effects_getter), None);
-    ffi::py_bindproperty(TP_SOUND, c"speed".as_ptr(), Some(sound_speed_getter), Some(sound_speed_setter));
+    ffi::py_bindproperty(
+        TP_SOUND,
+        c"speed".as_ptr(),
+        Some(sound_speed_getter),
+        Some(sound_speed_setter),
+    );
     // Use default=None to force FuncType_NORMAL so kwargs work
-    bind(ffi::py_tpobject(TP_SOUND), c"set(self, notes=None, tones=None, volumes=None, effects=None, speed=None)", Some(sound_set));
+    bind(
+        ffi::py_tpobject(TP_SOUND),
+        c"set(self, notes=None, tones=None, volumes=None, effects=None, speed=None)",
+        Some(sound_set),
+    );
     ffi::py_bindmethod(TP_SOUND, c"set_notes".as_ptr(), Some(sound_set_notes));
     ffi::py_bindmethod(TP_SOUND, c"set_tones".as_ptr(), Some(sound_set_tones));
     ffi::py_bindmethod(TP_SOUND, c"set_volumes".as_ptr(), Some(sound_set_volumes));
@@ -360,12 +377,31 @@ pub unsafe fn add_sound_class(m: ffi::py_GlobalRef) {
     let tp_obj = ffi::py_tpobject(TP_SOUND);
     bind(tp_obj, c"mml(self, code=None)", Some(sound_mml));
     bind(tp_obj, c"old_mml(self, code=None)", Some(sound_mml));
-    bind(tp_obj, c"save(self, filename, sec, ffmpeg=None)", Some(sound_save_file));
+    bind(
+        tp_obj,
+        c"save(self, filename, sec, ffmpeg=None)",
+        Some(sound_save_file),
+    );
     bind(tp_obj, c"pcm(self, filename=None)", Some(sound_pcm));
     bind(tp_obj, c"total_sec(self)", Some(sound_total_sec));
     bind(tp_obj, c"__new__(cls)", Some(sound_new));
 
     // Sounds collection
-    impl_object_collection!(pyxel::sounds, new_sound_obj, sounds_getitem, sounds_setitem, sounds_len, sounds_iter);
-    register_collection!(TP_SOUNDS, c"Sounds", m, sounds_getitem, sounds_setitem, sounds_len, sounds_iter);
+    impl_object_collection!(
+        pyxel::sounds,
+        new_sound_obj,
+        sounds_getitem,
+        sounds_setitem,
+        sounds_len,
+        sounds_iter
+    );
+    register_collection!(
+        TP_SOUNDS,
+        c"Sounds",
+        m,
+        sounds_getitem,
+        sounds_setitem,
+        sounds_len,
+        sounds_iter
+    );
 }

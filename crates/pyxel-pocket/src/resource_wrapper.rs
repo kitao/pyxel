@@ -8,7 +8,11 @@ unsafe extern "C" fn pyxel_load(_argc: i32, argv: ffi::py_StackRef) -> bool {
     let exclude_sounds = arg_opt_bool(argv, 3);
     let exclude_musics = arg_opt_bool(argv, 4);
     if let Err(e) = pyxel::pyxel().load_resource(
-        filename, exclude_images, exclude_tilemaps, exclude_sounds, exclude_musics,
+        filename,
+        exclude_images,
+        exclude_tilemaps,
+        exclude_sounds,
+        exclude_musics,
     ) {
         return raise_exc(&e);
     }
@@ -23,7 +27,11 @@ unsafe extern "C" fn pyxel_save(_argc: i32, argv: ffi::py_StackRef) -> bool {
     let exclude_sounds = arg_opt_bool(argv, 3);
     let exclude_musics = arg_opt_bool(argv, 4);
     if let Err(e) = pyxel::pyxel().save_resource(
-        filename, exclude_images, exclude_tilemaps, exclude_sounds, exclude_musics,
+        filename,
+        exclude_images,
+        exclude_tilemaps,
+        exclude_sounds,
+        exclude_musics,
     ) {
         return raise_exc(&e);
     }
@@ -99,9 +107,25 @@ pub unsafe fn add_resource_functions(m: ffi::py_GlobalRef) {
     bind(m, c"save(filename, exclude_images=None, exclude_tilemaps=None, exclude_sounds=None, exclude_musics=None)", Some(pyxel_save));
     bind(m, c"load_pal(filename)", Some(pyxel_load_pal));
     bind(m, c"save_pal(filename)", Some(pyxel_save_pal));
-    bind(m, c"screenshot(filename=None, scale=None)", Some(pyxel_screenshot));
-    bind(m, c"screencast(filename=None, scale=None)", Some(pyxel_screencast));
+    bind(
+        m,
+        c"screenshot(filename=None, scale=None)",
+        Some(pyxel_screenshot),
+    );
+    bind(
+        m,
+        c"screencast(filename=None, scale=None)",
+        Some(pyxel_screencast),
+    );
     bindfunc(m, c"reset_screencast", Some(pyxel_reset_screencast));
-    bind(m, c"user_data_dir(vendor_name, app_name)", Some(pyxel_user_data_dir));
-    bind(m, c"_save_screen(filename, scale=None)", Some(pyxel_save_screen));
+    bind(
+        m,
+        c"user_data_dir(vendor_name, app_name)",
+        Some(pyxel_user_data_dir),
+    );
+    bind(
+        m,
+        c"_save_screen(filename, scale=None)",
+        Some(pyxel_save_screen),
+    );
 }

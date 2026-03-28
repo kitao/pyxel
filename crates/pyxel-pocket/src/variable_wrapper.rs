@@ -68,7 +68,9 @@ unsafe extern "C" fn colors_delitem(_argc: i32, argv: ffi::py_StackRef) -> bool 
     } else {
         let idx = ffi::py_toint(key);
         match resolve_index(idx, colors.len()) {
-            Some(i) => { colors.remove(i); }
+            Some(i) => {
+                colors.remove(i);
+            }
             None => return raise_index(),
         }
     }
@@ -131,7 +133,8 @@ unsafe extern "C" fn colors_eq(_argc: i32, argv: ffi::py_StackRef) -> bool {
         if colors.len() != len {
             ret_bool(false);
         } else {
-            let eq = (0..len).all(|i| colors[i] as i64 == ffi::py_toint(ffi::py_list_getitem(other, i as i32)));
+            let eq = (0..len)
+                .all(|i| colors[i] as i64 == ffi::py_toint(ffi::py_list_getitem(other, i as i32)));
             ret_bool(eq);
         }
     } else {
@@ -162,8 +165,16 @@ unsafe extern "C" fn colors_insert(_argc: i32, argv: ffi::py_StackRef) -> bool {
     let len = colors.len();
     let i = if index < 0 {
         let r = index + len as isize;
-        if r < 0 { 0 } else { r as usize }
-    } else if index as usize > len { len } else { index as usize };
+        if r < 0 {
+            0
+        } else {
+            r as usize
+        }
+    } else if index as usize > len {
+        len
+    } else {
+        index as usize
+    };
     colors.insert(i, value);
     ret_none();
     true
@@ -174,7 +185,11 @@ unsafe extern "C" fn colors_pop(_argc: i32, argv: ffi::py_StackRef) -> bool {
     if colors.is_empty() {
         return raise_index();
     }
-    let idx = if arg_is_none(argv, 1) { -1i64 } else { arg_int(argv, 1) };
+    let idx = if arg_is_none(argv, 1) {
+        -1i64
+    } else {
+        arg_int(argv, 1)
+    };
     match resolve_index(idx, colors.len()) {
         Some(i) => {
             let val = colors.remove(i);
@@ -193,16 +208,52 @@ unsafe extern "C" fn colors_clear(_argc: i32, _argv: ffi::py_StackRef) -> bool {
 
 pub unsafe fn add_module_variables(m: ffi::py_GlobalRef) {
     TP_COLORS = new_type(c"Colors", m);
-    ffi::py_bindmagic(TP_COLORS, ffi::py_name(c"__getitem__".as_ptr()), Some(colors_getitem));
-    ffi::py_bindmagic(TP_COLORS, ffi::py_name(c"__setitem__".as_ptr()), Some(colors_setitem));
-    ffi::py_bindmagic(TP_COLORS, ffi::py_name(c"__delitem__".as_ptr()), Some(colors_delitem));
-    ffi::py_bindmagic(TP_COLORS, ffi::py_name(c"__len__".as_ptr()), Some(colors_len));
-    ffi::py_bindmagic(TP_COLORS, ffi::py_name(c"__contains__".as_ptr()), Some(colors_contains));
-    ffi::py_bindmagic(TP_COLORS, ffi::py_name(c"__bool__".as_ptr()), Some(colors_bool));
-    ffi::py_bindmagic(TP_COLORS, ffi::py_name(c"__iter__".as_ptr()), Some(colors_iter));
-    ffi::py_bindmagic(TP_COLORS, ffi::py_name(c"__reversed__".as_ptr()), Some(colors_reversed));
+    ffi::py_bindmagic(
+        TP_COLORS,
+        ffi::py_name(c"__getitem__".as_ptr()),
+        Some(colors_getitem),
+    );
+    ffi::py_bindmagic(
+        TP_COLORS,
+        ffi::py_name(c"__setitem__".as_ptr()),
+        Some(colors_setitem),
+    );
+    ffi::py_bindmagic(
+        TP_COLORS,
+        ffi::py_name(c"__delitem__".as_ptr()),
+        Some(colors_delitem),
+    );
+    ffi::py_bindmagic(
+        TP_COLORS,
+        ffi::py_name(c"__len__".as_ptr()),
+        Some(colors_len),
+    );
+    ffi::py_bindmagic(
+        TP_COLORS,
+        ffi::py_name(c"__contains__".as_ptr()),
+        Some(colors_contains),
+    );
+    ffi::py_bindmagic(
+        TP_COLORS,
+        ffi::py_name(c"__bool__".as_ptr()),
+        Some(colors_bool),
+    );
+    ffi::py_bindmagic(
+        TP_COLORS,
+        ffi::py_name(c"__iter__".as_ptr()),
+        Some(colors_iter),
+    );
+    ffi::py_bindmagic(
+        TP_COLORS,
+        ffi::py_name(c"__reversed__".as_ptr()),
+        Some(colors_reversed),
+    );
     ffi::py_bindmagic(TP_COLORS, ffi::py_name(c"__eq__".as_ptr()), Some(colors_eq));
-    ffi::py_bindmagic(TP_COLORS, ffi::py_name(c"__repr__".as_ptr()), Some(colors_repr));
+    ffi::py_bindmagic(
+        TP_COLORS,
+        ffi::py_name(c"__repr__".as_ptr()),
+        Some(colors_repr),
+    );
     ffi::py_bindmethod(TP_COLORS, c"append".as_ptr(), Some(colors_append));
     ffi::py_bindmethod(TP_COLORS, c"extend".as_ptr(), Some(colors_extend));
     ffi::py_bindmethod(TP_COLORS, c"insert".as_ptr(), Some(colors_insert));

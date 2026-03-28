@@ -22,10 +22,7 @@ unsafe extern "C" fn pyxel_camera(_argc: i32, argv: ffi::py_StackRef) -> bool {
     if arg_is_none(argv, 0) {
         pyxel::pyxel().reset_draw_offset();
     } else {
-        pyxel::pyxel().set_draw_offset(
-            arg_float(argv, 0) as f32,
-            arg_float(argv, 1) as f32,
-        );
+        pyxel::pyxel().set_draw_offset(arg_float(argv, 0) as f32, arg_float(argv, 1) as f32);
     }
     ret_none();
     true
@@ -54,9 +51,7 @@ unsafe extern "C" fn pyxel_cls(_argc: i32, argv: ffi::py_StackRef) -> bool {
 }
 
 unsafe extern "C" fn pyxel_pget(_argc: i32, argv: ffi::py_StackRef) -> bool {
-    ret_int(
-        pyxel::pyxel().get_pixel(arg_float(argv, 0) as f32, arg_float(argv, 1) as f32) as i64,
-    );
+    ret_int(pyxel::pyxel().get_pixel(arg_float(argv, 0) as f32, arg_float(argv, 1) as f32) as i64);
     true
 }
 
@@ -72,8 +67,10 @@ unsafe extern "C" fn pyxel_pset(_argc: i32, argv: ffi::py_StackRef) -> bool {
 
 unsafe extern "C" fn pyxel_line(_argc: i32, argv: ffi::py_StackRef) -> bool {
     pyxel::pyxel().draw_line(
-        arg_float(argv, 0) as f32, arg_float(argv, 1) as f32,
-        arg_float(argv, 2) as f32, arg_float(argv, 3) as f32,
+        arg_float(argv, 0) as f32,
+        arg_float(argv, 1) as f32,
+        arg_float(argv, 2) as f32,
+        arg_float(argv, 3) as f32,
         arg_int(argv, 4) as u8,
     );
     ret_none();
@@ -82,8 +79,10 @@ unsafe extern "C" fn pyxel_line(_argc: i32, argv: ffi::py_StackRef) -> bool {
 
 unsafe extern "C" fn pyxel_rect(_argc: i32, argv: ffi::py_StackRef) -> bool {
     pyxel::pyxel().draw_rect(
-        arg_float(argv, 0) as f32, arg_float(argv, 1) as f32,
-        arg_float(argv, 2) as f32, arg_float(argv, 3) as f32,
+        arg_float(argv, 0) as f32,
+        arg_float(argv, 1) as f32,
+        arg_float(argv, 2) as f32,
+        arg_float(argv, 3) as f32,
         arg_int(argv, 4) as u8,
     );
     ret_none();
@@ -92,8 +91,10 @@ unsafe extern "C" fn pyxel_rect(_argc: i32, argv: ffi::py_StackRef) -> bool {
 
 unsafe extern "C" fn pyxel_rectb(_argc: i32, argv: ffi::py_StackRef) -> bool {
     pyxel::pyxel().draw_rect_border(
-        arg_float(argv, 0) as f32, arg_float(argv, 1) as f32,
-        arg_float(argv, 2) as f32, arg_float(argv, 3) as f32,
+        arg_float(argv, 0) as f32,
+        arg_float(argv, 1) as f32,
+        arg_float(argv, 2) as f32,
+        arg_float(argv, 3) as f32,
         arg_int(argv, 4) as u8,
     );
     ret_none();
@@ -102,8 +103,10 @@ unsafe extern "C" fn pyxel_rectb(_argc: i32, argv: ffi::py_StackRef) -> bool {
 
 unsafe extern "C" fn pyxel_circ(_argc: i32, argv: ffi::py_StackRef) -> bool {
     pyxel::pyxel().draw_circle(
-        arg_float(argv, 0) as f32, arg_float(argv, 1) as f32,
-        arg_float(argv, 2) as f32, arg_int(argv, 3) as u8,
+        arg_float(argv, 0) as f32,
+        arg_float(argv, 1) as f32,
+        arg_float(argv, 2) as f32,
+        arg_int(argv, 3) as u8,
     );
     ret_none();
     true
@@ -111,8 +114,10 @@ unsafe extern "C" fn pyxel_circ(_argc: i32, argv: ffi::py_StackRef) -> bool {
 
 unsafe extern "C" fn pyxel_circb(_argc: i32, argv: ffi::py_StackRef) -> bool {
     pyxel::pyxel().draw_circle_border(
-        arg_float(argv, 0) as f32, arg_float(argv, 1) as f32,
-        arg_float(argv, 2) as f32, arg_int(argv, 3) as u8,
+        arg_float(argv, 0) as f32,
+        arg_float(argv, 1) as f32,
+        arg_float(argv, 2) as f32,
+        arg_int(argv, 3) as u8,
     );
     ret_none();
     true
@@ -120,8 +125,10 @@ unsafe extern "C" fn pyxel_circb(_argc: i32, argv: ffi::py_StackRef) -> bool {
 
 unsafe extern "C" fn pyxel_elli(_argc: i32, argv: ffi::py_StackRef) -> bool {
     pyxel::pyxel().draw_ellipse(
-        arg_float(argv, 0) as f32, arg_float(argv, 1) as f32,
-        arg_float(argv, 2) as f32, arg_float(argv, 3) as f32,
+        arg_float(argv, 0) as f32,
+        arg_float(argv, 1) as f32,
+        arg_float(argv, 2) as f32,
+        arg_float(argv, 3) as f32,
         arg_int(argv, 4) as u8,
     );
     ret_none();
@@ -130,8 +137,10 @@ unsafe extern "C" fn pyxel_elli(_argc: i32, argv: ffi::py_StackRef) -> bool {
 
 unsafe extern "C" fn pyxel_ellib(_argc: i32, argv: ffi::py_StackRef) -> bool {
     pyxel::pyxel().draw_ellipse_border(
-        arg_float(argv, 0) as f32, arg_float(argv, 1) as f32,
-        arg_float(argv, 2) as f32, arg_float(argv, 3) as f32,
+        arg_float(argv, 0) as f32,
+        arg_float(argv, 1) as f32,
+        arg_float(argv, 2) as f32,
+        arg_float(argv, 3) as f32,
         arg_int(argv, 4) as u8,
     );
     ret_none();
@@ -140,9 +149,12 @@ unsafe extern "C" fn pyxel_ellib(_argc: i32, argv: ffi::py_StackRef) -> bool {
 
 unsafe extern "C" fn pyxel_tri(_argc: i32, argv: ffi::py_StackRef) -> bool {
     pyxel::pyxel().draw_triangle(
-        arg_float(argv, 0) as f32, arg_float(argv, 1) as f32,
-        arg_float(argv, 2) as f32, arg_float(argv, 3) as f32,
-        arg_float(argv, 4) as f32, arg_float(argv, 5) as f32,
+        arg_float(argv, 0) as f32,
+        arg_float(argv, 1) as f32,
+        arg_float(argv, 2) as f32,
+        arg_float(argv, 3) as f32,
+        arg_float(argv, 4) as f32,
+        arg_float(argv, 5) as f32,
         arg_int(argv, 6) as u8,
     );
     ret_none();
@@ -151,9 +163,12 @@ unsafe extern "C" fn pyxel_tri(_argc: i32, argv: ffi::py_StackRef) -> bool {
 
 unsafe extern "C" fn pyxel_trib(_argc: i32, argv: ffi::py_StackRef) -> bool {
     pyxel::pyxel().draw_triangle_border(
-        arg_float(argv, 0) as f32, arg_float(argv, 1) as f32,
-        arg_float(argv, 2) as f32, arg_float(argv, 3) as f32,
-        arg_float(argv, 4) as f32, arg_float(argv, 5) as f32,
+        arg_float(argv, 0) as f32,
+        arg_float(argv, 1) as f32,
+        arg_float(argv, 2) as f32,
+        arg_float(argv, 3) as f32,
+        arg_float(argv, 4) as f32,
+        arg_float(argv, 5) as f32,
         arg_int(argv, 6) as u8,
     );
     ret_none();
@@ -162,7 +177,8 @@ unsafe extern "C" fn pyxel_trib(_argc: i32, argv: ffi::py_StackRef) -> bool {
 
 unsafe extern "C" fn pyxel_fill(_argc: i32, argv: ffi::py_StackRef) -> bool {
     pyxel::pyxel().flood_fill(
-        arg_float(argv, 0) as f32, arg_float(argv, 1) as f32,
+        arg_float(argv, 0) as f32,
+        arg_float(argv, 1) as f32,
         arg_int(argv, 2) as u8,
     );
     ret_none();
@@ -184,7 +200,18 @@ unsafe extern "C" fn pyxel_blt(_argc: i32, argv: ffi::py_StackRef) -> bool {
         let img_ptr = image_ptr(img_ref);
         pyxel::screen().draw_image(x, y, img_ptr, u, v, w, h, colkey, rotate, scale);
     } else {
-        pyxel::pyxel().draw_image(x, y, arg_int(argv, 2) as u32, u, v, w, h, colkey, rotate, scale);
+        pyxel::pyxel().draw_image(
+            x,
+            y,
+            arg_int(argv, 2) as u32,
+            u,
+            v,
+            w,
+            h,
+            colkey,
+            rotate,
+            scale,
+        );
     }
     ret_none();
     true
@@ -205,7 +232,18 @@ unsafe extern "C" fn pyxel_bltm(_argc: i32, argv: ffi::py_StackRef) -> bool {
         let tm_ptr = *(ffi::py_touserdata(tm_ref) as *mut *mut pyxel::Tilemap);
         pyxel::screen().draw_tilemap(x, y, tm_ptr, u, v, w, h, colkey, rotate, scale);
     } else {
-        pyxel::pyxel().draw_tilemap(x, y, arg_int(argv, 2) as u32, u, v, w, h, colkey, rotate, scale);
+        pyxel::pyxel().draw_tilemap(
+            x,
+            y,
+            arg_int(argv, 2) as u32,
+            u,
+            v,
+            w,
+            h,
+            colkey,
+            rotate,
+            scale,
+        );
     }
     ret_none();
     true
@@ -229,15 +267,27 @@ unsafe extern "C" fn pyxel_blt3d(_argc: i32, argv: ffi::py_StackRef) -> bool {
     let colkey = arg_opt_int(argv, 8).map(|v| v as u8);
     if ffi::py_isinstance(img_ref, TP_IMAGE) {
         pyxel::screen().draw_image_3d(
-            arg_float(argv, 0) as f32, arg_float(argv, 1) as f32,
-            arg_float(argv, 2) as f32, arg_float(argv, 3) as f32,
-            image_ptr(img_ref), pos, rot, fov, colkey,
+            arg_float(argv, 0) as f32,
+            arg_float(argv, 1) as f32,
+            arg_float(argv, 2) as f32,
+            arg_float(argv, 3) as f32,
+            image_ptr(img_ref),
+            pos,
+            rot,
+            fov,
+            colkey,
         );
     } else {
         pyxel::pyxel().draw_image_3d(
-            arg_float(argv, 0) as f32, arg_float(argv, 1) as f32,
-            arg_float(argv, 2) as f32, arg_float(argv, 3) as f32,
-            ffi::py_toint(img_ref) as u32, pos, rot, fov, colkey,
+            arg_float(argv, 0) as f32,
+            arg_float(argv, 1) as f32,
+            arg_float(argv, 2) as f32,
+            arg_float(argv, 3) as f32,
+            ffi::py_toint(img_ref) as u32,
+            pos,
+            rot,
+            fov,
+            colkey,
         );
     }
     ret_none();
@@ -253,15 +303,27 @@ unsafe extern "C" fn pyxel_bltm3d(_argc: i32, argv: ffi::py_StackRef) -> bool {
     if ffi::py_isinstance(tm_ref, TP_TILEMAP) {
         let tm_ptr = *(ffi::py_touserdata(tm_ref) as *mut *mut pyxel::Tilemap);
         pyxel::screen().draw_tilemap_3d(
-            arg_float(argv, 0) as f32, arg_float(argv, 1) as f32,
-            arg_float(argv, 2) as f32, arg_float(argv, 3) as f32,
-            tm_ptr, pos, rot, fov, colkey,
+            arg_float(argv, 0) as f32,
+            arg_float(argv, 1) as f32,
+            arg_float(argv, 2) as f32,
+            arg_float(argv, 3) as f32,
+            tm_ptr,
+            pos,
+            rot,
+            fov,
+            colkey,
         );
     } else {
         pyxel::pyxel().draw_tilemap_3d(
-            arg_float(argv, 0) as f32, arg_float(argv, 1) as f32,
-            arg_float(argv, 2) as f32, arg_float(argv, 3) as f32,
-            ffi::py_toint(tm_ref) as u32, pos, rot, fov, colkey,
+            arg_float(argv, 0) as f32,
+            arg_float(argv, 1) as f32,
+            arg_float(argv, 2) as f32,
+            arg_float(argv, 3) as f32,
+            ffi::py_toint(tm_ref) as u32,
+            pos,
+            rot,
+            fov,
+            colkey,
         );
     }
     ret_none();
@@ -275,8 +337,11 @@ unsafe extern "C" fn pyxel_text(_argc: i32, argv: ffi::py_StackRef) -> bool {
         Some(*(ffi::py_touserdata(arg(argv, 4)) as *mut *mut pyxel::Font))
     };
     pyxel::pyxel().draw_text(
-        arg_float(argv, 0) as f32, arg_float(argv, 1) as f32,
-        arg_str(argv, 2), arg_int(argv, 3) as u8, font,
+        arg_float(argv, 0) as f32,
+        arg_float(argv, 1) as f32,
+        arg_str(argv, 2),
+        arg_int(argv, 3) as u8,
+        font,
     );
     ret_none();
     true
@@ -300,10 +365,26 @@ pub unsafe fn add_graphics_functions(m: ffi::py_GlobalRef) {
     bind(m, c"tri(x1, y1, x2, y2, x3, y3, col)", Some(pyxel_tri));
     bind(m, c"trib(x1, y1, x2, y2, x3, y3, col)", Some(pyxel_trib));
     bind(m, c"fill(x, y, col)", Some(pyxel_fill));
-    bind(m, c"blt(x, y, img, u, v, w, h, colkey=None, rotate=None, scale=None)", Some(pyxel_blt));
-    bind(m, c"bltm(x, y, tm, u, v, w, h, colkey=None, rotate=None, scale=None)", Some(pyxel_bltm));
-    bind(m, c"blt3d(x, y, w, h, img, pos, rot, fov=None, colkey=None)", Some(pyxel_blt3d));
-    bind(m, c"bltm3d(x, y, w, h, tm, pos, rot, fov=None, colkey=None)", Some(pyxel_bltm3d));
+    bind(
+        m,
+        c"blt(x, y, img, u, v, w, h, colkey=None, rotate=None, scale=None)",
+        Some(pyxel_blt),
+    );
+    bind(
+        m,
+        c"bltm(x, y, tm, u, v, w, h, colkey=None, rotate=None, scale=None)",
+        Some(pyxel_bltm),
+    );
+    bind(
+        m,
+        c"blt3d(x, y, w, h, img, pos, rot, fov=None, colkey=None)",
+        Some(pyxel_blt3d),
+    );
+    bind(
+        m,
+        c"bltm3d(x, y, w, h, tm, pos, rot, fov=None, colkey=None)",
+        Some(pyxel_bltm3d),
+    );
     bind(m, c"text(x, y, s, col, font=None)", Some(pyxel_text));
 
     // Deprecated functions

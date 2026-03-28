@@ -1,8 +1,8 @@
 use std::process;
 
+use crate::channel_wrapper::TP_CHANNELS;
 use crate::ffi;
 use crate::helpers::*;
-use crate::channel_wrapper::TP_CHANNELS;
 use crate::image_wrapper::TP_IMAGES;
 use crate::music_wrapper::TP_MUSICS;
 use crate::sound_wrapper::TP_SOUNDS;
@@ -24,7 +24,15 @@ unsafe extern "C" fn pyxel_init(_argc: i32, argv: ffi::py_StackRef) -> bool {
     let capture_sec = arg_opt_int(argv, 7).map(|v| v as u32);
     let headless = arg_opt_bool(argv, 8);
     pyxel::init(
-        w, h, title, fps, quit_key, display_scale, capture_scale, capture_sec, headless,
+        w,
+        h,
+        title,
+        fps,
+        quit_key,
+        display_scale,
+        capture_scale,
+        capture_sec,
+        headless,
     );
 
     // Set static module attributes and collection singletons
@@ -33,31 +41,45 @@ unsafe extern "C" fn pyxel_init(_argc: i32, argv: ffi::py_StackRef) -> bool {
     set_module_int(m, c"height", h as i64);
     ffi::py_newobject(
         ffi::py_emplacedict(m, ffi::py_name(c"images".as_ptr())),
-        TP_IMAGES, 0, 0,
+        TP_IMAGES,
+        0,
+        0,
     );
     ffi::py_newobject(
         ffi::py_emplacedict(m, ffi::py_name(c"sounds".as_ptr())),
-        TP_SOUNDS, 0, 0,
+        TP_SOUNDS,
+        0,
+        0,
     );
     ffi::py_newobject(
         ffi::py_emplacedict(m, ffi::py_name(c"tilemaps".as_ptr())),
-        TP_TILEMAPS, 0, 0,
+        TP_TILEMAPS,
+        0,
+        0,
     );
     ffi::py_newobject(
         ffi::py_emplacedict(m, ffi::py_name(c"musics".as_ptr())),
-        TP_MUSICS, 0, 0,
+        TP_MUSICS,
+        0,
+        0,
     );
     ffi::py_newobject(
         ffi::py_emplacedict(m, ffi::py_name(c"channels".as_ptr())),
-        TP_CHANNELS, 0, 0,
+        TP_CHANNELS,
+        0,
+        0,
     );
     ffi::py_newobject(
         ffi::py_emplacedict(m, ffi::py_name(c"tones".as_ptr())),
-        TP_TONES, 0, 0,
+        TP_TONES,
+        0,
+        0,
     );
     ffi::py_newobject(
         ffi::py_emplacedict(m, ffi::py_name(c"colors".as_ptr())),
-        TP_COLORS, 0, 0,
+        TP_COLORS,
+        0,
+        0,
     );
     set_screen_objects(m);
     sync_module_vars();

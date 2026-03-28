@@ -201,23 +201,47 @@ pub unsafe fn slice_indices(key: ffi::py_Ref, length: usize) -> (isize, isize, i
     let stop_ref = ffi::py_getslot(key, 1);
     let step_ref = ffi::py_getslot(key, 2);
 
-    let step = if is_none(step_ref) { 1 } else { ffi::py_toint(step_ref) as isize };
+    let step = if is_none(step_ref) {
+        1
+    } else {
+        ffi::py_toint(step_ref) as isize
+    };
     let len = length as isize;
 
     let start = if is_none(start_ref) {
-        if step > 0 { 0 } else { len - 1 }
+        if step > 0 {
+            0
+        } else {
+            len - 1
+        }
     } else {
         let mut s = ffi::py_toint(start_ref) as isize;
-        if s < 0 { s += len; }
-        if step > 0 { s.clamp(0, len) } else { s.clamp(-1, len - 1) }
+        if s < 0 {
+            s += len;
+        }
+        if step > 0 {
+            s.clamp(0, len)
+        } else {
+            s.clamp(-1, len - 1)
+        }
     };
 
     let stop = if is_none(stop_ref) {
-        if step > 0 { len } else { -1 }
+        if step > 0 {
+            len
+        } else {
+            -1
+        }
     } else {
         let mut s = ffi::py_toint(stop_ref) as isize;
-        if s < 0 { s += len; }
-        if step > 0 { s.clamp(0, len) } else { s.clamp(-1, len - 1) }
+        if s < 0 {
+            s += len;
+        }
+        if step > 0 {
+            s.clamp(0, len)
+        } else {
+            s.clamp(-1, len - 1)
+        }
     };
 
     (start, stop, step)
@@ -241,8 +265,16 @@ pub fn collect_indices(start: isize, stop: isize, step: isize) -> Vec<usize> {
 }
 
 pub unsafe fn resolve_index(index: i64, length: usize) -> Option<usize> {
-    let i = if index < 0 { index + length as i64 } else { index };
-    if i < 0 || i as usize >= length { None } else { Some(i as usize) }
+    let i = if index < 0 {
+        index + length as i64
+    } else {
+        index
+    };
+    if i < 0 || i as usize >= length {
+        None
+    } else {
+        Some(i as usize)
+    }
 }
 
 // Return a Python list from iterator items using a closure to create each element

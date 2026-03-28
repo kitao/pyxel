@@ -2,14 +2,16 @@ use crate::ffi;
 use crate::helpers::*;
 
 pub unsafe fn add_module_constants(m: ffi::py_GlobalRef) {
-
-
     // Settings
     set_const_str(m, "VERSION", pyxel::VERSION);
     set_const_str(m, "BASE_DIR", pyxel::BASE_DIR);
     set_const_str(m, "WINDOW_STATE_ENV", pyxel::WINDOW_STATE_ENV);
     set_const_str(m, "WATCH_STATE_FILE_ENV", pyxel::WATCH_STATE_FILE_ENV);
-    set_const_int(m, "WATCH_RESET_EXIT_CODE", pyxel::WATCH_RESET_EXIT_CODE as i64);
+    set_const_int(
+        m,
+        "WATCH_RESET_EXIT_CODE",
+        pyxel::WATCH_RESET_EXIT_CODE as i64,
+    );
 
     set_const_str(m, "APP_FILE_EXTENSION", pyxel::APP_FILE_EXTENSION);
     set_const_str(m, "APP_STARTUP_SCRIPT_FILE", pyxel::APP_STARTUP_SCRIPT_FILE);
@@ -63,7 +65,11 @@ pub unsafe fn add_module_constants(m: ffi::py_GlobalRef) {
     set_const_int(m, "EFFECT_VIBRATO", pyxel::EFFECT_VIBRATO as i64);
     set_const_int(m, "EFFECT_FADEOUT", pyxel::EFFECT_FADEOUT as i64);
     set_const_int(m, "EFFECT_HALF_FADEOUT", pyxel::EFFECT_HALF_FADEOUT as i64);
-    set_const_int(m, "EFFECT_QUARTER_FADEOUT", pyxel::EFFECT_QUARTER_FADEOUT as i64);
+    set_const_int(
+        m,
+        "EFFECT_QUARTER_FADEOUT",
+        pyxel::EFFECT_QUARTER_FADEOUT as i64,
+    );
 
     // Key
     set_const_int(m, "KEY_UNKNOWN", pyxel::KEY_UNKNOWN as i64);
@@ -224,8 +230,16 @@ pub unsafe fn add_module_constants(m: ffi::py_GlobalRef) {
     set_const_int(m, "KEY_EXSEL", pyxel::KEY_EXSEL as i64);
     set_const_int(m, "KEY_KP_00", pyxel::KEY_KP_00 as i64);
     set_const_int(m, "KEY_KP_000", pyxel::KEY_KP_000 as i64);
-    set_const_int(m, "KEY_THOUSANDSSEPARATOR", pyxel::KEY_THOUSANDSSEPARATOR as i64);
-    set_const_int(m, "KEY_DECIMALSEPARATOR", pyxel::KEY_DECIMALSEPARATOR as i64);
+    set_const_int(
+        m,
+        "KEY_THOUSANDSSEPARATOR",
+        pyxel::KEY_THOUSANDSSEPARATOR as i64,
+    );
+    set_const_int(
+        m,
+        "KEY_DECIMALSEPARATOR",
+        pyxel::KEY_DECIMALSEPARATOR as i64,
+    );
     set_const_int(m, "KEY_CURRENCYUNIT", pyxel::KEY_CURRENCYUNIT as i64);
     set_const_int(m, "KEY_CURRENCYSUBUNIT", pyxel::KEY_CURRENCYSUBUNIT as i64);
     set_const_int(m, "KEY_KP_LEFTPAREN", pyxel::KEY_KP_LEFTPAREN as i64);
@@ -248,7 +262,11 @@ pub unsafe fn add_module_constants(m: ffi::py_GlobalRef) {
     set_const_int(m, "KEY_KP_AMPERSAND", pyxel::KEY_KP_AMPERSAND as i64);
     set_const_int(m, "KEY_KP_DBLAMPERSAND", pyxel::KEY_KP_DBLAMPERSAND as i64);
     set_const_int(m, "KEY_KP_VERTICALBAR", pyxel::KEY_KP_VERTICALBAR as i64);
-    set_const_int(m, "KEY_KP_DBLVERTICALBAR", pyxel::KEY_KP_DBLVERTICALBAR as i64);
+    set_const_int(
+        m,
+        "KEY_KP_DBLVERTICALBAR",
+        pyxel::KEY_KP_DBLVERTICALBAR as i64,
+    );
     set_const_int(m, "KEY_KP_COLON", pyxel::KEY_KP_COLON as i64);
     set_const_int(m, "KEY_KP_HASH", pyxel::KEY_KP_HASH as i64);
     set_const_int(m, "KEY_KP_SPACE", pyxel::KEY_KP_SPACE as i64);
@@ -295,91 +313,329 @@ pub unsafe fn add_module_constants(m: ffi::py_GlobalRef) {
 
     set_const_int(m, "GAMEPAD1_AXIS_LEFTX", pyxel::GAMEPAD1_AXIS_LEFTX as i64);
     set_const_int(m, "GAMEPAD1_AXIS_LEFTY", pyxel::GAMEPAD1_AXIS_LEFTY as i64);
-    set_const_int(m, "GAMEPAD1_AXIS_RIGHTX", pyxel::GAMEPAD1_AXIS_RIGHTX as i64);
-    set_const_int(m, "GAMEPAD1_AXIS_RIGHTY", pyxel::GAMEPAD1_AXIS_RIGHTY as i64);
-    set_const_int(m, "GAMEPAD1_AXIS_TRIGGERLEFT", pyxel::GAMEPAD1_AXIS_TRIGGERLEFT as i64);
-    set_const_int(m, "GAMEPAD1_AXIS_TRIGGERRIGHT", pyxel::GAMEPAD1_AXIS_TRIGGERRIGHT as i64);
+    set_const_int(
+        m,
+        "GAMEPAD1_AXIS_RIGHTX",
+        pyxel::GAMEPAD1_AXIS_RIGHTX as i64,
+    );
+    set_const_int(
+        m,
+        "GAMEPAD1_AXIS_RIGHTY",
+        pyxel::GAMEPAD1_AXIS_RIGHTY as i64,
+    );
+    set_const_int(
+        m,
+        "GAMEPAD1_AXIS_TRIGGERLEFT",
+        pyxel::GAMEPAD1_AXIS_TRIGGERLEFT as i64,
+    );
+    set_const_int(
+        m,
+        "GAMEPAD1_AXIS_TRIGGERRIGHT",
+        pyxel::GAMEPAD1_AXIS_TRIGGERRIGHT as i64,
+    );
     set_const_int(m, "GAMEPAD1_BUTTON_A", pyxel::GAMEPAD1_BUTTON_A as i64);
     set_const_int(m, "GAMEPAD1_BUTTON_B", pyxel::GAMEPAD1_BUTTON_B as i64);
     set_const_int(m, "GAMEPAD1_BUTTON_X", pyxel::GAMEPAD1_BUTTON_X as i64);
     set_const_int(m, "GAMEPAD1_BUTTON_Y", pyxel::GAMEPAD1_BUTTON_Y as i64);
-    set_const_int(m, "GAMEPAD1_BUTTON_BACK", pyxel::GAMEPAD1_BUTTON_BACK as i64);
-    set_const_int(m, "GAMEPAD1_BUTTON_GUIDE", pyxel::GAMEPAD1_BUTTON_GUIDE as i64);
-    set_const_int(m, "GAMEPAD1_BUTTON_START", pyxel::GAMEPAD1_BUTTON_START as i64);
-    set_const_int(m, "GAMEPAD1_BUTTON_LEFTSTICK", pyxel::GAMEPAD1_BUTTON_LEFTSTICK as i64);
-    set_const_int(m, "GAMEPAD1_BUTTON_RIGHTSTICK", pyxel::GAMEPAD1_BUTTON_RIGHTSTICK as i64);
-    set_const_int(m, "GAMEPAD1_BUTTON_LEFTSHOULDER", pyxel::GAMEPAD1_BUTTON_LEFTSHOULDER as i64);
-    set_const_int(m, "GAMEPAD1_BUTTON_RIGHTSHOULDER", pyxel::GAMEPAD1_BUTTON_RIGHTSHOULDER as i64);
-    set_const_int(m, "GAMEPAD1_BUTTON_DPAD_UP", pyxel::GAMEPAD1_BUTTON_DPAD_UP as i64);
-    set_const_int(m, "GAMEPAD1_BUTTON_DPAD_DOWN", pyxel::GAMEPAD1_BUTTON_DPAD_DOWN as i64);
-    set_const_int(m, "GAMEPAD1_BUTTON_DPAD_LEFT", pyxel::GAMEPAD1_BUTTON_DPAD_LEFT as i64);
-    set_const_int(m, "GAMEPAD1_BUTTON_DPAD_RIGHT", pyxel::GAMEPAD1_BUTTON_DPAD_RIGHT as i64);
+    set_const_int(
+        m,
+        "GAMEPAD1_BUTTON_BACK",
+        pyxel::GAMEPAD1_BUTTON_BACK as i64,
+    );
+    set_const_int(
+        m,
+        "GAMEPAD1_BUTTON_GUIDE",
+        pyxel::GAMEPAD1_BUTTON_GUIDE as i64,
+    );
+    set_const_int(
+        m,
+        "GAMEPAD1_BUTTON_START",
+        pyxel::GAMEPAD1_BUTTON_START as i64,
+    );
+    set_const_int(
+        m,
+        "GAMEPAD1_BUTTON_LEFTSTICK",
+        pyxel::GAMEPAD1_BUTTON_LEFTSTICK as i64,
+    );
+    set_const_int(
+        m,
+        "GAMEPAD1_BUTTON_RIGHTSTICK",
+        pyxel::GAMEPAD1_BUTTON_RIGHTSTICK as i64,
+    );
+    set_const_int(
+        m,
+        "GAMEPAD1_BUTTON_LEFTSHOULDER",
+        pyxel::GAMEPAD1_BUTTON_LEFTSHOULDER as i64,
+    );
+    set_const_int(
+        m,
+        "GAMEPAD1_BUTTON_RIGHTSHOULDER",
+        pyxel::GAMEPAD1_BUTTON_RIGHTSHOULDER as i64,
+    );
+    set_const_int(
+        m,
+        "GAMEPAD1_BUTTON_DPAD_UP",
+        pyxel::GAMEPAD1_BUTTON_DPAD_UP as i64,
+    );
+    set_const_int(
+        m,
+        "GAMEPAD1_BUTTON_DPAD_DOWN",
+        pyxel::GAMEPAD1_BUTTON_DPAD_DOWN as i64,
+    );
+    set_const_int(
+        m,
+        "GAMEPAD1_BUTTON_DPAD_LEFT",
+        pyxel::GAMEPAD1_BUTTON_DPAD_LEFT as i64,
+    );
+    set_const_int(
+        m,
+        "GAMEPAD1_BUTTON_DPAD_RIGHT",
+        pyxel::GAMEPAD1_BUTTON_DPAD_RIGHT as i64,
+    );
 
     set_const_int(m, "GAMEPAD2_AXIS_LEFTX", pyxel::GAMEPAD2_AXIS_LEFTX as i64);
     set_const_int(m, "GAMEPAD2_AXIS_LEFTY", pyxel::GAMEPAD2_AXIS_LEFTY as i64);
-    set_const_int(m, "GAMEPAD2_AXIS_RIGHTX", pyxel::GAMEPAD2_AXIS_RIGHTX as i64);
-    set_const_int(m, "GAMEPAD2_AXIS_RIGHTY", pyxel::GAMEPAD2_AXIS_RIGHTY as i64);
-    set_const_int(m, "GAMEPAD2_AXIS_TRIGGERLEFT", pyxel::GAMEPAD2_AXIS_TRIGGERLEFT as i64);
-    set_const_int(m, "GAMEPAD2_AXIS_TRIGGERRIGHT", pyxel::GAMEPAD2_AXIS_TRIGGERRIGHT as i64);
+    set_const_int(
+        m,
+        "GAMEPAD2_AXIS_RIGHTX",
+        pyxel::GAMEPAD2_AXIS_RIGHTX as i64,
+    );
+    set_const_int(
+        m,
+        "GAMEPAD2_AXIS_RIGHTY",
+        pyxel::GAMEPAD2_AXIS_RIGHTY as i64,
+    );
+    set_const_int(
+        m,
+        "GAMEPAD2_AXIS_TRIGGERLEFT",
+        pyxel::GAMEPAD2_AXIS_TRIGGERLEFT as i64,
+    );
+    set_const_int(
+        m,
+        "GAMEPAD2_AXIS_TRIGGERRIGHT",
+        pyxel::GAMEPAD2_AXIS_TRIGGERRIGHT as i64,
+    );
     set_const_int(m, "GAMEPAD2_BUTTON_A", pyxel::GAMEPAD2_BUTTON_A as i64);
     set_const_int(m, "GAMEPAD2_BUTTON_B", pyxel::GAMEPAD2_BUTTON_B as i64);
     set_const_int(m, "GAMEPAD2_BUTTON_X", pyxel::GAMEPAD2_BUTTON_X as i64);
     set_const_int(m, "GAMEPAD2_BUTTON_Y", pyxel::GAMEPAD2_BUTTON_Y as i64);
-    set_const_int(m, "GAMEPAD2_BUTTON_BACK", pyxel::GAMEPAD2_BUTTON_BACK as i64);
-    set_const_int(m, "GAMEPAD2_BUTTON_GUIDE", pyxel::GAMEPAD2_BUTTON_GUIDE as i64);
-    set_const_int(m, "GAMEPAD2_BUTTON_START", pyxel::GAMEPAD2_BUTTON_START as i64);
-    set_const_int(m, "GAMEPAD2_BUTTON_LEFTSTICK", pyxel::GAMEPAD2_BUTTON_LEFTSTICK as i64);
-    set_const_int(m, "GAMEPAD2_BUTTON_RIGHTSTICK", pyxel::GAMEPAD2_BUTTON_RIGHTSTICK as i64);
-    set_const_int(m, "GAMEPAD2_BUTTON_LEFTSHOULDER", pyxel::GAMEPAD2_BUTTON_LEFTSHOULDER as i64);
-    set_const_int(m, "GAMEPAD2_BUTTON_RIGHTSHOULDER", pyxel::GAMEPAD2_BUTTON_RIGHTSHOULDER as i64);
-    set_const_int(m, "GAMEPAD2_BUTTON_DPAD_UP", pyxel::GAMEPAD2_BUTTON_DPAD_UP as i64);
-    set_const_int(m, "GAMEPAD2_BUTTON_DPAD_DOWN", pyxel::GAMEPAD2_BUTTON_DPAD_DOWN as i64);
-    set_const_int(m, "GAMEPAD2_BUTTON_DPAD_LEFT", pyxel::GAMEPAD2_BUTTON_DPAD_LEFT as i64);
-    set_const_int(m, "GAMEPAD2_BUTTON_DPAD_RIGHT", pyxel::GAMEPAD2_BUTTON_DPAD_RIGHT as i64);
+    set_const_int(
+        m,
+        "GAMEPAD2_BUTTON_BACK",
+        pyxel::GAMEPAD2_BUTTON_BACK as i64,
+    );
+    set_const_int(
+        m,
+        "GAMEPAD2_BUTTON_GUIDE",
+        pyxel::GAMEPAD2_BUTTON_GUIDE as i64,
+    );
+    set_const_int(
+        m,
+        "GAMEPAD2_BUTTON_START",
+        pyxel::GAMEPAD2_BUTTON_START as i64,
+    );
+    set_const_int(
+        m,
+        "GAMEPAD2_BUTTON_LEFTSTICK",
+        pyxel::GAMEPAD2_BUTTON_LEFTSTICK as i64,
+    );
+    set_const_int(
+        m,
+        "GAMEPAD2_BUTTON_RIGHTSTICK",
+        pyxel::GAMEPAD2_BUTTON_RIGHTSTICK as i64,
+    );
+    set_const_int(
+        m,
+        "GAMEPAD2_BUTTON_LEFTSHOULDER",
+        pyxel::GAMEPAD2_BUTTON_LEFTSHOULDER as i64,
+    );
+    set_const_int(
+        m,
+        "GAMEPAD2_BUTTON_RIGHTSHOULDER",
+        pyxel::GAMEPAD2_BUTTON_RIGHTSHOULDER as i64,
+    );
+    set_const_int(
+        m,
+        "GAMEPAD2_BUTTON_DPAD_UP",
+        pyxel::GAMEPAD2_BUTTON_DPAD_UP as i64,
+    );
+    set_const_int(
+        m,
+        "GAMEPAD2_BUTTON_DPAD_DOWN",
+        pyxel::GAMEPAD2_BUTTON_DPAD_DOWN as i64,
+    );
+    set_const_int(
+        m,
+        "GAMEPAD2_BUTTON_DPAD_LEFT",
+        pyxel::GAMEPAD2_BUTTON_DPAD_LEFT as i64,
+    );
+    set_const_int(
+        m,
+        "GAMEPAD2_BUTTON_DPAD_RIGHT",
+        pyxel::GAMEPAD2_BUTTON_DPAD_RIGHT as i64,
+    );
 
     set_const_int(m, "GAMEPAD3_AXIS_LEFTX", pyxel::GAMEPAD3_AXIS_LEFTX as i64);
     set_const_int(m, "GAMEPAD3_AXIS_LEFTY", pyxel::GAMEPAD3_AXIS_LEFTY as i64);
-    set_const_int(m, "GAMEPAD3_AXIS_RIGHTX", pyxel::GAMEPAD3_AXIS_RIGHTX as i64);
-    set_const_int(m, "GAMEPAD3_AXIS_RIGHTY", pyxel::GAMEPAD3_AXIS_RIGHTY as i64);
-    set_const_int(m, "GAMEPAD3_AXIS_TRIGGERLEFT", pyxel::GAMEPAD3_AXIS_TRIGGERLEFT as i64);
-    set_const_int(m, "GAMEPAD3_AXIS_TRIGGERRIGHT", pyxel::GAMEPAD3_AXIS_TRIGGERRIGHT as i64);
+    set_const_int(
+        m,
+        "GAMEPAD3_AXIS_RIGHTX",
+        pyxel::GAMEPAD3_AXIS_RIGHTX as i64,
+    );
+    set_const_int(
+        m,
+        "GAMEPAD3_AXIS_RIGHTY",
+        pyxel::GAMEPAD3_AXIS_RIGHTY as i64,
+    );
+    set_const_int(
+        m,
+        "GAMEPAD3_AXIS_TRIGGERLEFT",
+        pyxel::GAMEPAD3_AXIS_TRIGGERLEFT as i64,
+    );
+    set_const_int(
+        m,
+        "GAMEPAD3_AXIS_TRIGGERRIGHT",
+        pyxel::GAMEPAD3_AXIS_TRIGGERRIGHT as i64,
+    );
     set_const_int(m, "GAMEPAD3_BUTTON_A", pyxel::GAMEPAD3_BUTTON_A as i64);
     set_const_int(m, "GAMEPAD3_BUTTON_B", pyxel::GAMEPAD3_BUTTON_B as i64);
     set_const_int(m, "GAMEPAD3_BUTTON_X", pyxel::GAMEPAD3_BUTTON_X as i64);
     set_const_int(m, "GAMEPAD3_BUTTON_Y", pyxel::GAMEPAD3_BUTTON_Y as i64);
-    set_const_int(m, "GAMEPAD3_BUTTON_BACK", pyxel::GAMEPAD3_BUTTON_BACK as i64);
-    set_const_int(m, "GAMEPAD3_BUTTON_GUIDE", pyxel::GAMEPAD3_BUTTON_GUIDE as i64);
-    set_const_int(m, "GAMEPAD3_BUTTON_START", pyxel::GAMEPAD3_BUTTON_START as i64);
-    set_const_int(m, "GAMEPAD3_BUTTON_LEFTSTICK", pyxel::GAMEPAD3_BUTTON_LEFTSTICK as i64);
-    set_const_int(m, "GAMEPAD3_BUTTON_RIGHTSTICK", pyxel::GAMEPAD3_BUTTON_RIGHTSTICK as i64);
-    set_const_int(m, "GAMEPAD3_BUTTON_LEFTSHOULDER", pyxel::GAMEPAD3_BUTTON_LEFTSHOULDER as i64);
-    set_const_int(m, "GAMEPAD3_BUTTON_RIGHTSHOULDER", pyxel::GAMEPAD3_BUTTON_RIGHTSHOULDER as i64);
-    set_const_int(m, "GAMEPAD3_BUTTON_DPAD_UP", pyxel::GAMEPAD3_BUTTON_DPAD_UP as i64);
-    set_const_int(m, "GAMEPAD3_BUTTON_DPAD_DOWN", pyxel::GAMEPAD3_BUTTON_DPAD_DOWN as i64);
-    set_const_int(m, "GAMEPAD3_BUTTON_DPAD_LEFT", pyxel::GAMEPAD3_BUTTON_DPAD_LEFT as i64);
-    set_const_int(m, "GAMEPAD3_BUTTON_DPAD_RIGHT", pyxel::GAMEPAD3_BUTTON_DPAD_RIGHT as i64);
+    set_const_int(
+        m,
+        "GAMEPAD3_BUTTON_BACK",
+        pyxel::GAMEPAD3_BUTTON_BACK as i64,
+    );
+    set_const_int(
+        m,
+        "GAMEPAD3_BUTTON_GUIDE",
+        pyxel::GAMEPAD3_BUTTON_GUIDE as i64,
+    );
+    set_const_int(
+        m,
+        "GAMEPAD3_BUTTON_START",
+        pyxel::GAMEPAD3_BUTTON_START as i64,
+    );
+    set_const_int(
+        m,
+        "GAMEPAD3_BUTTON_LEFTSTICK",
+        pyxel::GAMEPAD3_BUTTON_LEFTSTICK as i64,
+    );
+    set_const_int(
+        m,
+        "GAMEPAD3_BUTTON_RIGHTSTICK",
+        pyxel::GAMEPAD3_BUTTON_RIGHTSTICK as i64,
+    );
+    set_const_int(
+        m,
+        "GAMEPAD3_BUTTON_LEFTSHOULDER",
+        pyxel::GAMEPAD3_BUTTON_LEFTSHOULDER as i64,
+    );
+    set_const_int(
+        m,
+        "GAMEPAD3_BUTTON_RIGHTSHOULDER",
+        pyxel::GAMEPAD3_BUTTON_RIGHTSHOULDER as i64,
+    );
+    set_const_int(
+        m,
+        "GAMEPAD3_BUTTON_DPAD_UP",
+        pyxel::GAMEPAD3_BUTTON_DPAD_UP as i64,
+    );
+    set_const_int(
+        m,
+        "GAMEPAD3_BUTTON_DPAD_DOWN",
+        pyxel::GAMEPAD3_BUTTON_DPAD_DOWN as i64,
+    );
+    set_const_int(
+        m,
+        "GAMEPAD3_BUTTON_DPAD_LEFT",
+        pyxel::GAMEPAD3_BUTTON_DPAD_LEFT as i64,
+    );
+    set_const_int(
+        m,
+        "GAMEPAD3_BUTTON_DPAD_RIGHT",
+        pyxel::GAMEPAD3_BUTTON_DPAD_RIGHT as i64,
+    );
 
     set_const_int(m, "GAMEPAD4_AXIS_LEFTX", pyxel::GAMEPAD4_AXIS_LEFTX as i64);
     set_const_int(m, "GAMEPAD4_AXIS_LEFTY", pyxel::GAMEPAD4_AXIS_LEFTY as i64);
-    set_const_int(m, "GAMEPAD4_AXIS_RIGHTX", pyxel::GAMEPAD4_AXIS_RIGHTX as i64);
-    set_const_int(m, "GAMEPAD4_AXIS_RIGHTY", pyxel::GAMEPAD4_AXIS_RIGHTY as i64);
-    set_const_int(m, "GAMEPAD4_AXIS_TRIGGERLEFT", pyxel::GAMEPAD4_AXIS_TRIGGERLEFT as i64);
-    set_const_int(m, "GAMEPAD4_AXIS_TRIGGERRIGHT", pyxel::GAMEPAD4_AXIS_TRIGGERRIGHT as i64);
+    set_const_int(
+        m,
+        "GAMEPAD4_AXIS_RIGHTX",
+        pyxel::GAMEPAD4_AXIS_RIGHTX as i64,
+    );
+    set_const_int(
+        m,
+        "GAMEPAD4_AXIS_RIGHTY",
+        pyxel::GAMEPAD4_AXIS_RIGHTY as i64,
+    );
+    set_const_int(
+        m,
+        "GAMEPAD4_AXIS_TRIGGERLEFT",
+        pyxel::GAMEPAD4_AXIS_TRIGGERLEFT as i64,
+    );
+    set_const_int(
+        m,
+        "GAMEPAD4_AXIS_TRIGGERRIGHT",
+        pyxel::GAMEPAD4_AXIS_TRIGGERRIGHT as i64,
+    );
     set_const_int(m, "GAMEPAD4_BUTTON_A", pyxel::GAMEPAD4_BUTTON_A as i64);
     set_const_int(m, "GAMEPAD4_BUTTON_B", pyxel::GAMEPAD4_BUTTON_B as i64);
     set_const_int(m, "GAMEPAD4_BUTTON_X", pyxel::GAMEPAD4_BUTTON_X as i64);
     set_const_int(m, "GAMEPAD4_BUTTON_Y", pyxel::GAMEPAD4_BUTTON_Y as i64);
-    set_const_int(m, "GAMEPAD4_BUTTON_BACK", pyxel::GAMEPAD4_BUTTON_BACK as i64);
-    set_const_int(m, "GAMEPAD4_BUTTON_GUIDE", pyxel::GAMEPAD4_BUTTON_GUIDE as i64);
-    set_const_int(m, "GAMEPAD4_BUTTON_START", pyxel::GAMEPAD4_BUTTON_START as i64);
-    set_const_int(m, "GAMEPAD4_BUTTON_LEFTSTICK", pyxel::GAMEPAD4_BUTTON_LEFTSTICK as i64);
-    set_const_int(m, "GAMEPAD4_BUTTON_RIGHTSTICK", pyxel::GAMEPAD4_BUTTON_RIGHTSTICK as i64);
-    set_const_int(m, "GAMEPAD4_BUTTON_LEFTSHOULDER", pyxel::GAMEPAD4_BUTTON_LEFTSHOULDER as i64);
-    set_const_int(m, "GAMEPAD4_BUTTON_RIGHTSHOULDER", pyxel::GAMEPAD4_BUTTON_RIGHTSHOULDER as i64);
-    set_const_int(m, "GAMEPAD4_BUTTON_DPAD_UP", pyxel::GAMEPAD4_BUTTON_DPAD_UP as i64);
-    set_const_int(m, "GAMEPAD4_BUTTON_DPAD_DOWN", pyxel::GAMEPAD4_BUTTON_DPAD_DOWN as i64);
-    set_const_int(m, "GAMEPAD4_BUTTON_DPAD_LEFT", pyxel::GAMEPAD4_BUTTON_DPAD_LEFT as i64);
-    set_const_int(m, "GAMEPAD4_BUTTON_DPAD_RIGHT", pyxel::GAMEPAD4_BUTTON_DPAD_RIGHT as i64);
-
-
+    set_const_int(
+        m,
+        "GAMEPAD4_BUTTON_BACK",
+        pyxel::GAMEPAD4_BUTTON_BACK as i64,
+    );
+    set_const_int(
+        m,
+        "GAMEPAD4_BUTTON_GUIDE",
+        pyxel::GAMEPAD4_BUTTON_GUIDE as i64,
+    );
+    set_const_int(
+        m,
+        "GAMEPAD4_BUTTON_START",
+        pyxel::GAMEPAD4_BUTTON_START as i64,
+    );
+    set_const_int(
+        m,
+        "GAMEPAD4_BUTTON_LEFTSTICK",
+        pyxel::GAMEPAD4_BUTTON_LEFTSTICK as i64,
+    );
+    set_const_int(
+        m,
+        "GAMEPAD4_BUTTON_RIGHTSTICK",
+        pyxel::GAMEPAD4_BUTTON_RIGHTSTICK as i64,
+    );
+    set_const_int(
+        m,
+        "GAMEPAD4_BUTTON_LEFTSHOULDER",
+        pyxel::GAMEPAD4_BUTTON_LEFTSHOULDER as i64,
+    );
+    set_const_int(
+        m,
+        "GAMEPAD4_BUTTON_RIGHTSHOULDER",
+        pyxel::GAMEPAD4_BUTTON_RIGHTSHOULDER as i64,
+    );
+    set_const_int(
+        m,
+        "GAMEPAD4_BUTTON_DPAD_UP",
+        pyxel::GAMEPAD4_BUTTON_DPAD_UP as i64,
+    );
+    set_const_int(
+        m,
+        "GAMEPAD4_BUTTON_DPAD_DOWN",
+        pyxel::GAMEPAD4_BUTTON_DPAD_DOWN as i64,
+    );
+    set_const_int(
+        m,
+        "GAMEPAD4_BUTTON_DPAD_LEFT",
+        pyxel::GAMEPAD4_BUTTON_DPAD_LEFT as i64,
+    );
+    set_const_int(
+        m,
+        "GAMEPAD4_BUTTON_DPAD_RIGHT",
+        pyxel::GAMEPAD4_BUTTON_DPAD_RIGHT as i64,
+    );
 }

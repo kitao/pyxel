@@ -1,7 +1,6 @@
-use std::env;
-use std::fs;
 use std::path::Path;
 use std::process::Command;
+use std::{env, fs};
 
 const POCKETPY_VERSION: &str = "2.1.8";
 
@@ -115,9 +114,7 @@ fn main() {
     if target != host {
         builder = builder.clang_arg(format!("--target={host}"));
     }
-    let bindings = builder
-        .generate()
-        .expect("Failed to generate bindings");
+    let bindings = builder.generate().expect("Failed to generate bindings");
 
     bindings
         .write_to_file(Path::new(&out_dir).join("bindings.rs"))

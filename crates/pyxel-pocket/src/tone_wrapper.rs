@@ -83,7 +83,8 @@ unsafe extern "C" fn wavetable_setitem(_argc: i32, argv: ffi::py_StackRef) -> bo
         } else {
             let indices = collect_indices(start, stop, step);
             for (pos, &idx) in indices.iter().enumerate() {
-                wt[idx] = ffi::py_toint(ffi::py_list_getitem(val_list, pos as i32)) as pyxel::ToneSample;
+                wt[idx] =
+                    ffi::py_toint(ffi::py_list_getitem(val_list, pos as i32)) as pyxel::ToneSample;
             }
         }
     } else {
@@ -148,10 +149,14 @@ unsafe extern "C" fn wavetable_delitem(_argc: i32, argv: ffi::py_StackRef) -> bo
         let (start, stop, step) = slice_indices(key, wt.len());
         let mut indices = collect_indices(start, stop, step);
         indices.sort_unstable_by(|a, b| b.cmp(a));
-        for i in indices { wt.remove(i); }
+        for i in indices {
+            wt.remove(i);
+        }
     } else {
         match resolve_index(ffi::py_toint(key), wt.len()) {
-            Some(i) => { wt.remove(i); }
+            Some(i) => {
+                wt.remove(i);
+            }
             None => return raise_index(),
         }
     }
@@ -161,7 +166,9 @@ unsafe extern "C" fn wavetable_delitem(_argc: i32, argv: ffi::py_StackRef) -> bo
 
 unsafe extern "C" fn wavetable_append(_argc: i32, argv: ffi::py_StackRef) -> bool {
     let tone_ptr = *(ffi::py_touserdata(arg(argv, 0)) as *mut *mut pyxel::Tone);
-    (*tone_ptr).wavetable.push(arg_int(argv, 1) as pyxel::ToneSample);
+    (*tone_ptr)
+        .wavetable
+        .push(arg_int(argv, 1) as pyxel::ToneSample);
     ret_none();
     true
 }
@@ -175,7 +182,12 @@ unsafe extern "C" fn wavetable_clear(_argc: i32, argv: ffi::py_StackRef) -> bool
 
 unsafe extern "C" fn wavetable_getter(_argc: i32, argv: ffi::py_StackRef) -> bool {
     let tone_ptr = *(ffi::py_touserdata(arg(argv, 0)) as *mut *mut pyxel::Tone);
-    let ud = ffi::py_newobject(ffi::py_retval(), TP_WAVETABLE, 0, size_of::<*mut pyxel::Tone>() as i32);
+    let ud = ffi::py_newobject(
+        ffi::py_retval(),
+        TP_WAVETABLE,
+        0,
+        size_of::<*mut pyxel::Tone>() as i32,
+    );
     *(ud as *mut *mut pyxel::Tone) = tone_ptr;
     true
 }
@@ -183,7 +195,12 @@ unsafe extern "C" fn wavetable_getter(_argc: i32, argv: ffi::py_StackRef) -> boo
 unsafe extern "C" fn tone_new(_argc: i32, argv: ffi::py_StackRef) -> bool {
     let cls = ffi::py_totype(arg(argv, 0));
     let ptr = pyxel::Tone::new();
-    let ud = ffi::py_newobject(ffi::py_retval(), cls, 0, size_of::<*mut pyxel::Tone>() as i32);
+    let ud = ffi::py_newobject(
+        ffi::py_retval(),
+        cls,
+        0,
+        size_of::<*mut pyxel::Tone>() as i32,
+    );
     *(ud as *mut *mut pyxel::Tone) = ptr;
     true
 }
@@ -191,31 +208,98 @@ unsafe extern "C" fn tone_new(_argc: i32, argv: ffi::py_StackRef) -> bool {
 pub unsafe fn add_tone_class(m: ffi::py_GlobalRef) {
     // Wavetable type
     TP_WAVETABLE = new_type(c"Wavetable", m);
-    ffi::py_bindmagic(TP_WAVETABLE, ffi::py_name(c"__getitem__".as_ptr()), Some(wavetable_getitem));
-    ffi::py_bindmagic(TP_WAVETABLE, ffi::py_name(c"__setitem__".as_ptr()), Some(wavetable_setitem));
-    ffi::py_bindmagic(TP_WAVETABLE, ffi::py_name(c"__delitem__".as_ptr()), Some(wavetable_delitem));
-    ffi::py_bindmagic(TP_WAVETABLE, ffi::py_name(c"__len__".as_ptr()), Some(wavetable_len));
-    ffi::py_bindmagic(TP_WAVETABLE, ffi::py_name(c"__iter__".as_ptr()), Some(wavetable_iter));
-    ffi::py_bindmagic(TP_WAVETABLE, ffi::py_name(c"__reversed__".as_ptr()), Some(wavetable_reversed));
-    ffi::py_bindmagic(TP_WAVETABLE, ffi::py_name(c"__contains__".as_ptr()), Some(wavetable_contains));
-    ffi::py_bindmagic(TP_WAVETABLE, ffi::py_name(c"__bool__".as_ptr()), Some(wavetable_bool));
+    ffi::py_bindmagic(
+        TP_WAVETABLE,
+        ffi::py_name(c"__getitem__".as_ptr()),
+        Some(wavetable_getitem),
+    );
+    ffi::py_bindmagic(
+        TP_WAVETABLE,
+        ffi::py_name(c"__setitem__".as_ptr()),
+        Some(wavetable_setitem),
+    );
+    ffi::py_bindmagic(
+        TP_WAVETABLE,
+        ffi::py_name(c"__delitem__".as_ptr()),
+        Some(wavetable_delitem),
+    );
+    ffi::py_bindmagic(
+        TP_WAVETABLE,
+        ffi::py_name(c"__len__".as_ptr()),
+        Some(wavetable_len),
+    );
+    ffi::py_bindmagic(
+        TP_WAVETABLE,
+        ffi::py_name(c"__iter__".as_ptr()),
+        Some(wavetable_iter),
+    );
+    ffi::py_bindmagic(
+        TP_WAVETABLE,
+        ffi::py_name(c"__reversed__".as_ptr()),
+        Some(wavetable_reversed),
+    );
+    ffi::py_bindmagic(
+        TP_WAVETABLE,
+        ffi::py_name(c"__contains__".as_ptr()),
+        Some(wavetable_contains),
+    );
+    ffi::py_bindmagic(
+        TP_WAVETABLE,
+        ffi::py_name(c"__bool__".as_ptr()),
+        Some(wavetable_bool),
+    );
     ffi::py_bindmethod(TP_WAVETABLE, c"append".as_ptr(), Some(wavetable_append));
     ffi::py_bindmethod(TP_WAVETABLE, c"clear".as_ptr(), Some(wavetable_clear));
 
     TP_TONE = new_type(c"Tone", m);
-    ffi::py_bindproperty(TP_TONE, c"mode".as_ptr(), Some(tone_mode_getter), Some(tone_mode_setter));
-    ffi::py_bindproperty(TP_TONE, c"sample_bits".as_ptr(), Some(tone_sample_bits_getter), Some(tone_sample_bits_setter));
+    ffi::py_bindproperty(
+        TP_TONE,
+        c"mode".as_ptr(),
+        Some(tone_mode_getter),
+        Some(tone_mode_setter),
+    );
+    ffi::py_bindproperty(
+        TP_TONE,
+        c"sample_bits".as_ptr(),
+        Some(tone_sample_bits_getter),
+        Some(tone_sample_bits_setter),
+    );
     ffi::py_bindproperty(TP_TONE, c"wavetable".as_ptr(), Some(wavetable_getter), None);
-    ffi::py_bindproperty(TP_TONE, c"gain".as_ptr(), Some(tone_gain_getter), Some(tone_gain_setter));
+    ffi::py_bindproperty(
+        TP_TONE,
+        c"gain".as_ptr(),
+        Some(tone_gain_getter),
+        Some(tone_gain_setter),
+    );
 
     // Deprecated aliases
-    ffi::py_bindproperty(TP_TONE, c"noise".as_ptr(), Some(tone_mode_getter), Some(tone_mode_setter));
+    ffi::py_bindproperty(
+        TP_TONE,
+        c"noise".as_ptr(),
+        Some(tone_mode_getter),
+        Some(tone_mode_setter),
+    );
     ffi::py_bindproperty(TP_TONE, c"waveform".as_ptr(), Some(wavetable_getter), None);
 
     let tp_obj = ffi::py_tpobject(TP_TONE);
     bind(tp_obj, c"__new__(cls)", Some(tone_new));
 
     // Tones collection
-    impl_object_collection!(pyxel::tones, new_tone_obj, tones_getitem, tones_setitem, tones_len, tones_iter);
-    register_collection!(TP_TONES, c"Tones", m, tones_getitem, tones_setitem, tones_len, tones_iter);
+    impl_object_collection!(
+        pyxel::tones,
+        new_tone_obj,
+        tones_getitem,
+        tones_setitem,
+        tones_len,
+        tones_iter
+    );
+    register_collection!(
+        TP_TONES,
+        c"Tones",
+        m,
+        tones_getitem,
+        tones_setitem,
+        tones_len,
+        tones_iter
+    );
 }

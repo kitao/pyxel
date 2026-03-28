@@ -33,7 +33,13 @@ unsafe extern "C" fn pyxel_sgn(_argc: i32, argv: ffi::py_StackRef) -> bool {
     let a = arg(argv, 0);
     if is_int(a) {
         let v = ffi::py_toint(a);
-        ret_int(if v > 0 { 1 } else if v < 0 { -1 } else { 0 });
+        ret_int(if v > 0 {
+            1
+        } else if v < 0 {
+            -1
+        } else {
+            0
+        });
     } else {
         let v = ffi::py_tofloat(a);
         ret_float(if v > 0.0 {
@@ -63,9 +69,7 @@ unsafe extern "C" fn pyxel_cos(_argc: i32, argv: ffi::py_StackRef) -> bool {
 }
 
 unsafe extern "C" fn pyxel_atan2(_argc: i32, argv: ffi::py_StackRef) -> bool {
-    ret_float(
-        pyxel::Pyxel::atan2(arg_float(argv, 0) as f32, arg_float(argv, 1) as f32) as f64,
-    );
+    ret_float(pyxel::Pyxel::atan2(arg_float(argv, 0) as f32, arg_float(argv, 1) as f32) as f64);
     true
 }
 

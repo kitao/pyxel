@@ -2,17 +2,17 @@ use crate::ffi;
 use crate::helpers::*;
 use crate::image_wrapper::{image_ptr, new_image_obj};
 
-// Tile = (u8, u8) — stored as a single int (u8 << 8 | u8) in Python
+// Tile = (u16, u16) — stored as a single int (u16 << 16 | u16) in Python
 unsafe fn arg_tile(argv: ffi::py_StackRef, i: usize) -> pyxel::Tile {
     // In Python, tiles are passed as tuples (u, v) or integers
     let r = arg(argv, i);
     if ffi::py_istype(r, ffi::py_PredefinedType_tp_tuple as ffi::py_Type) {
-        let u = ffi::py_toint(ffi::py_tuple_getitem(r, 0)) as u8;
-        let v = ffi::py_toint(ffi::py_tuple_getitem(r, 1)) as u8;
+        let u = ffi::py_toint(ffi::py_tuple_getitem(r, 0)) as u16;
+        let v = ffi::py_toint(ffi::py_tuple_getitem(r, 1)) as u16;
         (u, v)
     } else {
         let val = ffi::py_toint(r);
-        ((val >> 8) as u8, (val & 0xFF) as u8)
+        ((val >> 16) as u16, (val & 0xFFFF) as u16)
     }
 }
 
@@ -66,15 +66,21 @@ unsafe extern "C" fn tilemap_imgsrc_setter(_argc: i32, argv: ffi::py_StackRef) -
 unsafe extern "C" fn tilemap_set(_argc: i32, argv: ffi::py_StackRef) -> bool {
     let data = arg_str_list(argv, 3);
     let data_refs: Vec<&str> = data.iter().map(String::as_str).collect();
-    tm(argv).set(arg_float(argv, 1) as i32, arg_float(argv, 2) as i32, &data_refs);
+    tm(argv).set(
+        arg_float(argv, 1) as i32,
+        arg_float(argv, 2) as i32,
+        &data_refs,
+    );
     ret_none();
     true
 }
 
 unsafe extern "C" fn tilemap_load(_argc: i32, argv: ffi::py_StackRef) -> bool {
     if let Err(e) = tm(argv).load(
-        arg_float(argv, 1) as i32, arg_float(argv, 2) as i32,
-        arg_str(argv, 3), arg_int(argv, 4) as u32,
+        arg_float(argv, 1) as i32,
+        arg_float(argv, 2) as i32,
+        arg_str(argv, 3),
+        arg_int(argv, 4) as u32,
     ) {
         return raise_exc(&e);
     }
@@ -87,8 +93,10 @@ unsafe extern "C" fn tilemap_clip(_argc: i32, argv: ffi::py_StackRef) -> bool {
         tm(argv).reset_clip_rect();
     } else {
         tm(argv).set_clip_rect(
-            arg_float(argv, 1) as f32, arg_float(argv, 2) as f32,
-            arg_float(argv, 3) as f32, arg_float(argv, 4) as f32,
+            arg_float(argv, 1) as f32,
+            arg_float(argv, 2) as f32,
+            arg_float(argv, 3) as f32,
+            arg_float(argv, 4) as f32,
         );
     }
     ret_none();
@@ -118,7 +126,8 @@ unsafe extern "C" fn tilemap_pget(_argc: i32, argv: ffi::py_StackRef) -> bool {
 
 unsafe extern "C" fn tilemap_pset(_argc: i32, argv: ffi::py_StackRef) -> bool {
     tm(argv).set_tile(
-        arg_float(argv, 1) as f32, arg_float(argv, 2) as f32,
+        arg_float(argv, 1) as f32,
+        arg_float(argv, 2) as f32,
         arg_tile(argv, 3),
     );
     ret_none();
@@ -127,8 +136,10 @@ unsafe extern "C" fn tilemap_pset(_argc: i32, argv: ffi::py_StackRef) -> bool {
 
 unsafe extern "C" fn tilemap_line(_argc: i32, argv: ffi::py_StackRef) -> bool {
     tm(argv).draw_line(
-        arg_float(argv, 1) as f32, arg_float(argv, 2) as f32,
-        arg_float(argv, 3) as f32, arg_float(argv, 4) as f32,
+        arg_float(argv, 1) as f32,
+        arg_float(argv, 2) as f32,
+        arg_float(argv, 3) as f32,
+        arg_float(argv, 4) as f32,
         arg_tile(argv, 5),
     );
     ret_none();
@@ -137,8 +148,10 @@ unsafe extern "C" fn tilemap_line(_argc: i32, argv: ffi::py_StackRef) -> bool {
 
 unsafe extern "C" fn tilemap_rect(_argc: i32, argv: ffi::py_StackRef) -> bool {
     tm(argv).draw_rect(
-        arg_float(argv, 1) as f32, arg_float(argv, 2) as f32,
-        arg_float(argv, 3) as f32, arg_float(argv, 4) as f32,
+        arg_float(argv, 1) as f32,
+        arg_float(argv, 2) as f32,
+        arg_float(argv, 3) as f32,
+        arg_float(argv, 4) as f32,
         arg_tile(argv, 5),
     );
     ret_none();
@@ -147,8 +160,10 @@ unsafe extern "C" fn tilemap_rect(_argc: i32, argv: ffi::py_StackRef) -> bool {
 
 unsafe extern "C" fn tilemap_rectb(_argc: i32, argv: ffi::py_StackRef) -> bool {
     tm(argv).draw_rect_border(
-        arg_float(argv, 1) as f32, arg_float(argv, 2) as f32,
-        arg_float(argv, 3) as f32, arg_float(argv, 4) as f32,
+        arg_float(argv, 1) as f32,
+        arg_float(argv, 2) as f32,
+        arg_float(argv, 3) as f32,
+        arg_float(argv, 4) as f32,
         arg_tile(argv, 5),
     );
     ret_none();
@@ -157,8 +172,10 @@ unsafe extern "C" fn tilemap_rectb(_argc: i32, argv: ffi::py_StackRef) -> bool {
 
 unsafe extern "C" fn tilemap_circ(_argc: i32, argv: ffi::py_StackRef) -> bool {
     tm(argv).draw_circle(
-        arg_float(argv, 1) as f32, arg_float(argv, 2) as f32,
-        arg_float(argv, 3) as f32, arg_tile(argv, 4),
+        arg_float(argv, 1) as f32,
+        arg_float(argv, 2) as f32,
+        arg_float(argv, 3) as f32,
+        arg_tile(argv, 4),
     );
     ret_none();
     true
@@ -166,8 +183,10 @@ unsafe extern "C" fn tilemap_circ(_argc: i32, argv: ffi::py_StackRef) -> bool {
 
 unsafe extern "C" fn tilemap_circb(_argc: i32, argv: ffi::py_StackRef) -> bool {
     tm(argv).draw_circle_border(
-        arg_float(argv, 1) as f32, arg_float(argv, 2) as f32,
-        arg_float(argv, 3) as f32, arg_tile(argv, 4),
+        arg_float(argv, 1) as f32,
+        arg_float(argv, 2) as f32,
+        arg_float(argv, 3) as f32,
+        arg_tile(argv, 4),
     );
     ret_none();
     true
@@ -175,8 +194,10 @@ unsafe extern "C" fn tilemap_circb(_argc: i32, argv: ffi::py_StackRef) -> bool {
 
 unsafe extern "C" fn tilemap_elli(_argc: i32, argv: ffi::py_StackRef) -> bool {
     tm(argv).draw_ellipse(
-        arg_float(argv, 1) as f32, arg_float(argv, 2) as f32,
-        arg_float(argv, 3) as f32, arg_float(argv, 4) as f32,
+        arg_float(argv, 1) as f32,
+        arg_float(argv, 2) as f32,
+        arg_float(argv, 3) as f32,
+        arg_float(argv, 4) as f32,
         arg_tile(argv, 5),
     );
     ret_none();
@@ -185,8 +206,10 @@ unsafe extern "C" fn tilemap_elli(_argc: i32, argv: ffi::py_StackRef) -> bool {
 
 unsafe extern "C" fn tilemap_ellib(_argc: i32, argv: ffi::py_StackRef) -> bool {
     tm(argv).draw_ellipse_border(
-        arg_float(argv, 1) as f32, arg_float(argv, 2) as f32,
-        arg_float(argv, 3) as f32, arg_float(argv, 4) as f32,
+        arg_float(argv, 1) as f32,
+        arg_float(argv, 2) as f32,
+        arg_float(argv, 3) as f32,
+        arg_float(argv, 4) as f32,
         arg_tile(argv, 5),
     );
     ret_none();
@@ -195,9 +218,12 @@ unsafe extern "C" fn tilemap_ellib(_argc: i32, argv: ffi::py_StackRef) -> bool {
 
 unsafe extern "C" fn tilemap_tri(_argc: i32, argv: ffi::py_StackRef) -> bool {
     tm(argv).draw_triangle(
-        arg_float(argv, 1) as f32, arg_float(argv, 2) as f32,
-        arg_float(argv, 3) as f32, arg_float(argv, 4) as f32,
-        arg_float(argv, 5) as f32, arg_float(argv, 6) as f32,
+        arg_float(argv, 1) as f32,
+        arg_float(argv, 2) as f32,
+        arg_float(argv, 3) as f32,
+        arg_float(argv, 4) as f32,
+        arg_float(argv, 5) as f32,
+        arg_float(argv, 6) as f32,
         arg_tile(argv, 7),
     );
     ret_none();
@@ -206,9 +232,12 @@ unsafe extern "C" fn tilemap_tri(_argc: i32, argv: ffi::py_StackRef) -> bool {
 
 unsafe extern "C" fn tilemap_trib(_argc: i32, argv: ffi::py_StackRef) -> bool {
     tm(argv).draw_triangle_border(
-        arg_float(argv, 1) as f32, arg_float(argv, 2) as f32,
-        arg_float(argv, 3) as f32, arg_float(argv, 4) as f32,
-        arg_float(argv, 5) as f32, arg_float(argv, 6) as f32,
+        arg_float(argv, 1) as f32,
+        arg_float(argv, 2) as f32,
+        arg_float(argv, 3) as f32,
+        arg_float(argv, 4) as f32,
+        arg_float(argv, 5) as f32,
+        arg_float(argv, 6) as f32,
         arg_tile(argv, 7),
     );
     ret_none();
@@ -217,7 +246,8 @@ unsafe extern "C" fn tilemap_trib(_argc: i32, argv: ffi::py_StackRef) -> bool {
 
 unsafe extern "C" fn tilemap_fill(_argc: i32, argv: ffi::py_StackRef) -> bool {
     tm(argv).flood_fill(
-        arg_float(argv, 1) as f32, arg_float(argv, 2) as f32,
+        arg_float(argv, 1) as f32,
+        arg_float(argv, 2) as f32,
         arg_tile(argv, 3),
     );
     ret_none();
@@ -230,15 +260,18 @@ unsafe extern "C" fn tilemap_collide(_argc: i32, argv: ffi::py_StackRef) -> bool
     let walls: Vec<pyxel::Tile> = (0..len)
         .map(|i| {
             let item = ffi::py_list_getitem(list_ref, i);
-            let u = ffi::py_toint(ffi::py_tuple_getitem(item, 0)) as u8;
-            let v = ffi::py_toint(ffi::py_tuple_getitem(item, 1)) as u8;
+            let u = ffi::py_toint(ffi::py_tuple_getitem(item, 0)) as u16;
+            let v = ffi::py_toint(ffi::py_tuple_getitem(item, 1)) as u16;
             (u, v)
         })
         .collect();
     let (dx, dy) = tm(argv).collide(
-        arg_float(argv, 1) as f32, arg_float(argv, 2) as f32,
-        arg_float(argv, 3) as f32, arg_float(argv, 4) as f32,
-        arg_float(argv, 5) as f32, arg_float(argv, 6) as f32,
+        arg_float(argv, 1) as f32,
+        arg_float(argv, 2) as f32,
+        arg_float(argv, 3) as f32,
+        arg_float(argv, 4) as f32,
+        arg_float(argv, 5) as f32,
+        arg_float(argv, 6) as f32,
         &walls,
     );
     let out = ffi::py_newtuple(ffi::py_retval(), 2);
@@ -264,11 +297,26 @@ pub unsafe fn add_tilemap_class(m: ffi::py_GlobalRef) {
 
     ffi::py_bindproperty(TP_TILEMAP, c"width".as_ptr(), Some(tilemap_width), None);
     ffi::py_bindproperty(TP_TILEMAP, c"height".as_ptr(), Some(tilemap_height), None);
-    ffi::py_bindproperty(TP_TILEMAP, c"imgsrc".as_ptr(), Some(tilemap_imgsrc_getter), Some(tilemap_imgsrc_setter));
+    ffi::py_bindproperty(
+        TP_TILEMAP,
+        c"imgsrc".as_ptr(),
+        Some(tilemap_imgsrc_getter),
+        Some(tilemap_imgsrc_setter),
+    );
 
     // Deprecated aliases
-    ffi::py_bindproperty(TP_TILEMAP, c"image".as_ptr(), Some(tilemap_imgsrc_getter), Some(tilemap_imgsrc_setter));
-    ffi::py_bindproperty(TP_TILEMAP, c"refimg".as_ptr(), Some(tilemap_imgsrc_getter), Some(tilemap_imgsrc_setter));
+    ffi::py_bindproperty(
+        TP_TILEMAP,
+        c"image".as_ptr(),
+        Some(tilemap_imgsrc_getter),
+        Some(tilemap_imgsrc_setter),
+    );
+    ffi::py_bindproperty(
+        TP_TILEMAP,
+        c"refimg".as_ptr(),
+        Some(tilemap_imgsrc_getter),
+        Some(tilemap_imgsrc_setter),
+    );
 
     ffi::py_bindmethod(TP_TILEMAP, c"set".as_ptr(), Some(tilemap_set));
     ffi::py_bindmethod(TP_TILEMAP, c"load".as_ptr(), Some(tilemap_load));
@@ -288,11 +336,34 @@ pub unsafe fn add_tilemap_class(m: ffi::py_GlobalRef) {
     ffi::py_bindmethod(TP_TILEMAP, c"collide".as_ptr(), Some(tilemap_collide));
 
     let tp_obj = ffi::py_tpobject(TP_TILEMAP);
-    bind(tp_obj, c"clip(self, x=None, y=None, w=None, h=None)", Some(tilemap_clip));
-    bind(tp_obj, c"camera(self, x=None, y=None)", Some(tilemap_camera));
+    bind(
+        tp_obj,
+        c"clip(self, x=None, y=None, w=None, h=None)",
+        Some(tilemap_clip),
+    );
+    bind(
+        tp_obj,
+        c"camera(self, x=None, y=None)",
+        Some(tilemap_camera),
+    );
     bind(tp_obj, c"from_tmx(filename, layer)", Some(tilemap_from_tmx));
 
     // Tilemaps collection
-    impl_object_collection!(pyxel::tilemaps, new_tilemap_obj, tilemaps_getitem, tilemaps_setitem, tilemaps_len, tilemaps_iter);
-    register_collection!(TP_TILEMAPS, c"Tilemaps", m, tilemaps_getitem, tilemaps_setitem, tilemaps_len, tilemaps_iter);
+    impl_object_collection!(
+        pyxel::tilemaps,
+        new_tilemap_obj,
+        tilemaps_getitem,
+        tilemaps_setitem,
+        tilemaps_len,
+        tilemaps_iter
+    );
+    register_collection!(
+        TP_TILEMAPS,
+        c"Tilemaps",
+        m,
+        tilemaps_getitem,
+        tilemaps_setitem,
+        tilemaps_len,
+        tilemaps_iter
+    );
 }

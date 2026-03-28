@@ -33,7 +33,11 @@ unsafe extern "C" fn image_height(_argc: i32, argv: ffi::py_StackRef) -> bool {
 unsafe extern "C" fn image_set(_argc: i32, argv: ffi::py_StackRef) -> bool {
     let data = arg_str_list(argv, 3);
     let data_refs: Vec<&str> = data.iter().map(String::as_str).collect();
-    img!(argv).set(arg_float(argv, 1) as i32, arg_float(argv, 2) as i32, &data_refs);
+    img!(argv).set(
+        arg_float(argv, 1) as i32,
+        arg_float(argv, 2) as i32,
+        &data_refs,
+    );
     ret_none();
     true
 }
@@ -64,8 +68,10 @@ unsafe extern "C" fn image_clip(_argc: i32, argv: ffi::py_StackRef) -> bool {
         img!(argv).reset_clip_rect();
     } else {
         img!(argv).set_clip_rect(
-            arg_float(argv, 1) as f32, arg_float(argv, 2) as f32,
-            arg_float(argv, 3) as f32, arg_float(argv, 4) as f32,
+            arg_float(argv, 1) as f32,
+            arg_float(argv, 2) as f32,
+            arg_float(argv, 3) as f32,
+            arg_float(argv, 4) as f32,
         );
     }
     ret_none();
@@ -111,7 +117,9 @@ unsafe extern "C" fn image_pget(_argc: i32, argv: ffi::py_StackRef) -> bool {
 
 unsafe extern "C" fn image_pset(_argc: i32, argv: ffi::py_StackRef) -> bool {
     img!(argv).set_pixel(
-        arg_float(argv, 1) as f32, arg_float(argv, 2) as f32, arg_int(argv, 3) as u8,
+        arg_float(argv, 1) as f32,
+        arg_float(argv, 2) as f32,
+        arg_int(argv, 3) as u8,
     );
     ret_none();
     true
@@ -119,8 +127,10 @@ unsafe extern "C" fn image_pset(_argc: i32, argv: ffi::py_StackRef) -> bool {
 
 unsafe extern "C" fn image_line(_argc: i32, argv: ffi::py_StackRef) -> bool {
     img!(argv).draw_line(
-        arg_float(argv, 1) as f32, arg_float(argv, 2) as f32,
-        arg_float(argv, 3) as f32, arg_float(argv, 4) as f32,
+        arg_float(argv, 1) as f32,
+        arg_float(argv, 2) as f32,
+        arg_float(argv, 3) as f32,
+        arg_float(argv, 4) as f32,
         arg_int(argv, 5) as u8,
     );
     ret_none();
@@ -129,8 +139,10 @@ unsafe extern "C" fn image_line(_argc: i32, argv: ffi::py_StackRef) -> bool {
 
 unsafe extern "C" fn image_rect(_argc: i32, argv: ffi::py_StackRef) -> bool {
     img!(argv).draw_rect(
-        arg_float(argv, 1) as f32, arg_float(argv, 2) as f32,
-        arg_float(argv, 3) as f32, arg_float(argv, 4) as f32,
+        arg_float(argv, 1) as f32,
+        arg_float(argv, 2) as f32,
+        arg_float(argv, 3) as f32,
+        arg_float(argv, 4) as f32,
         arg_int(argv, 5) as u8,
     );
     ret_none();
@@ -139,8 +151,10 @@ unsafe extern "C" fn image_rect(_argc: i32, argv: ffi::py_StackRef) -> bool {
 
 unsafe extern "C" fn image_rectb(_argc: i32, argv: ffi::py_StackRef) -> bool {
     img!(argv).draw_rect_border(
-        arg_float(argv, 1) as f32, arg_float(argv, 2) as f32,
-        arg_float(argv, 3) as f32, arg_float(argv, 4) as f32,
+        arg_float(argv, 1) as f32,
+        arg_float(argv, 2) as f32,
+        arg_float(argv, 3) as f32,
+        arg_float(argv, 4) as f32,
         arg_int(argv, 5) as u8,
     );
     ret_none();
@@ -149,8 +163,10 @@ unsafe extern "C" fn image_rectb(_argc: i32, argv: ffi::py_StackRef) -> bool {
 
 unsafe extern "C" fn image_circ(_argc: i32, argv: ffi::py_StackRef) -> bool {
     img!(argv).draw_circle(
-        arg_float(argv, 1) as f32, arg_float(argv, 2) as f32,
-        arg_float(argv, 3) as f32, arg_int(argv, 4) as u8,
+        arg_float(argv, 1) as f32,
+        arg_float(argv, 2) as f32,
+        arg_float(argv, 3) as f32,
+        arg_int(argv, 4) as u8,
     );
     ret_none();
     true
@@ -158,8 +174,10 @@ unsafe extern "C" fn image_circ(_argc: i32, argv: ffi::py_StackRef) -> bool {
 
 unsafe extern "C" fn image_circb(_argc: i32, argv: ffi::py_StackRef) -> bool {
     img!(argv).draw_circle_border(
-        arg_float(argv, 1) as f32, arg_float(argv, 2) as f32,
-        arg_float(argv, 3) as f32, arg_int(argv, 4) as u8,
+        arg_float(argv, 1) as f32,
+        arg_float(argv, 2) as f32,
+        arg_float(argv, 3) as f32,
+        arg_int(argv, 4) as u8,
     );
     ret_none();
     true
@@ -167,8 +185,10 @@ unsafe extern "C" fn image_circb(_argc: i32, argv: ffi::py_StackRef) -> bool {
 
 unsafe extern "C" fn image_elli(_argc: i32, argv: ffi::py_StackRef) -> bool {
     img!(argv).draw_ellipse(
-        arg_float(argv, 1) as f32, arg_float(argv, 2) as f32,
-        arg_float(argv, 3) as f32, arg_float(argv, 4) as f32,
+        arg_float(argv, 1) as f32,
+        arg_float(argv, 2) as f32,
+        arg_float(argv, 3) as f32,
+        arg_float(argv, 4) as f32,
         arg_int(argv, 5) as u8,
     );
     ret_none();
@@ -177,8 +197,10 @@ unsafe extern "C" fn image_elli(_argc: i32, argv: ffi::py_StackRef) -> bool {
 
 unsafe extern "C" fn image_ellib(_argc: i32, argv: ffi::py_StackRef) -> bool {
     img!(argv).draw_ellipse_border(
-        arg_float(argv, 1) as f32, arg_float(argv, 2) as f32,
-        arg_float(argv, 3) as f32, arg_float(argv, 4) as f32,
+        arg_float(argv, 1) as f32,
+        arg_float(argv, 2) as f32,
+        arg_float(argv, 3) as f32,
+        arg_float(argv, 4) as f32,
         arg_int(argv, 5) as u8,
     );
     ret_none();
@@ -187,9 +209,12 @@ unsafe extern "C" fn image_ellib(_argc: i32, argv: ffi::py_StackRef) -> bool {
 
 unsafe extern "C" fn image_tri(_argc: i32, argv: ffi::py_StackRef) -> bool {
     img!(argv).draw_triangle(
-        arg_float(argv, 1) as f32, arg_float(argv, 2) as f32,
-        arg_float(argv, 3) as f32, arg_float(argv, 4) as f32,
-        arg_float(argv, 5) as f32, arg_float(argv, 6) as f32,
+        arg_float(argv, 1) as f32,
+        arg_float(argv, 2) as f32,
+        arg_float(argv, 3) as f32,
+        arg_float(argv, 4) as f32,
+        arg_float(argv, 5) as f32,
+        arg_float(argv, 6) as f32,
         arg_int(argv, 7) as u8,
     );
     ret_none();
@@ -198,9 +223,12 @@ unsafe extern "C" fn image_tri(_argc: i32, argv: ffi::py_StackRef) -> bool {
 
 unsafe extern "C" fn image_trib(_argc: i32, argv: ffi::py_StackRef) -> bool {
     img!(argv).draw_triangle_border(
-        arg_float(argv, 1) as f32, arg_float(argv, 2) as f32,
-        arg_float(argv, 3) as f32, arg_float(argv, 4) as f32,
-        arg_float(argv, 5) as f32, arg_float(argv, 6) as f32,
+        arg_float(argv, 1) as f32,
+        arg_float(argv, 2) as f32,
+        arg_float(argv, 3) as f32,
+        arg_float(argv, 4) as f32,
+        arg_float(argv, 5) as f32,
+        arg_float(argv, 6) as f32,
         arg_int(argv, 7) as u8,
     );
     ret_none();
@@ -209,7 +237,9 @@ unsafe extern "C" fn image_trib(_argc: i32, argv: ffi::py_StackRef) -> bool {
 
 unsafe extern "C" fn image_fill(_argc: i32, argv: ffi::py_StackRef) -> bool {
     img!(argv).flood_fill(
-        arg_float(argv, 1) as f32, arg_float(argv, 2) as f32, arg_int(argv, 3) as u8,
+        arg_float(argv, 1) as f32,
+        arg_float(argv, 2) as f32,
+        arg_int(argv, 3) as u8,
     );
     ret_none();
     true
@@ -223,10 +253,13 @@ unsafe extern "C" fn image_blt(_argc: i32, argv: ffi::py_StackRef) -> bool {
         pyxel::images()[ffi::py_toint(img_ref) as usize]
     };
     img!(argv).draw_image(
-        arg_float(argv, 1) as f32, arg_float(argv, 2) as f32,
+        arg_float(argv, 1) as f32,
+        arg_float(argv, 2) as f32,
         src_img,
-        arg_float(argv, 4) as f32, arg_float(argv, 5) as f32,
-        arg_float(argv, 6) as f32, arg_float(argv, 7) as f32,
+        arg_float(argv, 4) as f32,
+        arg_float(argv, 5) as f32,
+        arg_float(argv, 6) as f32,
+        arg_float(argv, 7) as f32,
         arg_opt_int(argv, 8).map(|v| v as u8),
         arg_opt_float(argv, 9).map(|v| v as f32),
         arg_opt_float(argv, 10).map(|v| v as f32),
@@ -242,8 +275,11 @@ unsafe extern "C" fn image_text(_argc: i32, argv: ffi::py_StackRef) -> bool {
         Some(*(ffi::py_touserdata(arg(argv, 5)) as *mut *mut pyxel::Font))
     };
     img!(argv).draw_text(
-        arg_float(argv, 1) as f32, arg_float(argv, 2) as f32,
-        arg_str(argv, 3), arg_int(argv, 4) as u8, font,
+        arg_float(argv, 1) as f32,
+        arg_float(argv, 2) as f32,
+        arg_str(argv, 3),
+        arg_int(argv, 4) as u8,
+        font,
     );
     ret_none();
     true
@@ -257,10 +293,13 @@ unsafe extern "C" fn image_bltm(_argc: i32, argv: ffi::py_StackRef) -> bool {
         *(ffi::py_touserdata(tm_ref) as *mut *mut pyxel::Tilemap)
     };
     img!(argv).draw_tilemap(
-        arg_float(argv, 1) as f32, arg_float(argv, 2) as f32,
+        arg_float(argv, 1) as f32,
+        arg_float(argv, 2) as f32,
         tm_ptr,
-        arg_float(argv, 4) as f32, arg_float(argv, 5) as f32,
-        arg_float(argv, 6) as f32, arg_float(argv, 7) as f32,
+        arg_float(argv, 4) as f32,
+        arg_float(argv, 5) as f32,
+        arg_float(argv, 6) as f32,
+        arg_float(argv, 7) as f32,
         arg_opt_int(argv, 8).map(|v| v as u8),
         arg_opt_float(argv, 9).map(|v| v as f32),
         arg_opt_float(argv, 10).map(|v| v as f32),
@@ -274,7 +313,12 @@ unsafe extern "C" fn image_new(_argc: i32, argv: ffi::py_StackRef) -> bool {
     let w = arg_int(argv, 1) as u32;
     let h = arg_int(argv, 2) as u32;
     let ptr = pyxel::Image::new(w, h);
-    let ud = ffi::py_newobject(ffi::py_retval(), cls, 0, size_of::<*mut pyxel::Image>() as i32);
+    let ud = ffi::py_newobject(
+        ffi::py_retval(),
+        cls,
+        0,
+        size_of::<*mut pyxel::Image>() as i32,
+    );
     *(ud as *mut *mut pyxel::Image) = ptr;
     true
 }
@@ -315,18 +359,57 @@ pub unsafe fn add_image_class(m: ffi::py_GlobalRef) {
     // text uses py_bind for optional font parameter
 
     let tp_obj = ffi::py_tpobject(TP_IMAGE);
-    bind(tp_obj, c"load(self, x, y, filename, include_colors=None)", Some(image_load));
-    bind(tp_obj, c"clip(self, x=None, y=None, w=None, h=None)", Some(image_clip));
+    bind(
+        tp_obj,
+        c"load(self, x, y, filename, include_colors=None)",
+        Some(image_load),
+    );
+    bind(
+        tp_obj,
+        c"clip(self, x=None, y=None, w=None, h=None)",
+        Some(image_clip),
+    );
     bind(tp_obj, c"camera(self, x=None, y=None)", Some(image_camera));
     bind(tp_obj, c"pal(self, col1=None, col2=None)", Some(image_pal));
     bind(tp_obj, c"dither(self, alpha)", Some(image_dither));
-    bind(tp_obj, c"blt(self, x, y, img, u, v, w, h, colkey=None, rotate=None, scale=None)", Some(image_blt));
-    bind(tp_obj, c"bltm(self, x, y, tm, u, v, w, h, colkey=None, rotate=None, scale=None)", Some(image_bltm));
-    bind(tp_obj, c"text(self, x, y, s, col, font=None)", Some(image_text));
+    bind(
+        tp_obj,
+        c"blt(self, x, y, img, u, v, w, h, colkey=None, rotate=None, scale=None)",
+        Some(image_blt),
+    );
+    bind(
+        tp_obj,
+        c"bltm(self, x, y, tm, u, v, w, h, colkey=None, rotate=None, scale=None)",
+        Some(image_bltm),
+    );
+    bind(
+        tp_obj,
+        c"text(self, x, y, s, col, font=None)",
+        Some(image_text),
+    );
     bind(tp_obj, c"__new__(cls, width, height)", Some(image_new));
-    bind(tp_obj, c"from_image(filename, include_colors=None)", Some(image_from_image));
+    bind(
+        tp_obj,
+        c"from_image(filename, include_colors=None)",
+        Some(image_from_image),
+    );
 
     // Images collection
-    impl_object_collection!(pyxel::images, new_image_obj, images_getitem, images_setitem, images_len, images_iter);
-    register_collection!(TP_IMAGES, c"Images", m, images_getitem, images_setitem, images_len, images_iter);
+    impl_object_collection!(
+        pyxel::images,
+        new_image_obj,
+        images_getitem,
+        images_setitem,
+        images_len,
+        images_iter
+    );
+    register_collection!(
+        TP_IMAGES,
+        c"Images",
+        m,
+        images_getitem,
+        images_setitem,
+        images_len,
+        images_iter
+    );
 }
