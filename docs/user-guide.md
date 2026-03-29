@@ -272,7 +272,7 @@ If you're confident in your skills, try using the Advanced API to create truly a
 - [Pyxel Resource File Format](https://github.com/kitao/pyxel/blob/main/docs/pyxres-format.md)
 - [FAQ](https://github.com/kitao/pyxel/blob/main/docs/faq.md)
 
-### Tools
+### Examples & Tools
 
 - [Pyxel Showcase](https://kitao.github.io/pyxel/web/showcase/)
 - [Pyxel Web Launcher](https://kitao.github.io/pyxel/web/launcher/)

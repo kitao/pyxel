@@ -1269,18 +1269,18 @@
       "uk": "Документація"
     },
     "tools_title": {
-      "en": "Tools",
-      "cn": "工具",
-      "de": "Tools",
-      "es": "Herramientas",
-      "fr": "Outils",
-      "it": "Strumenti",
-      "ja": "ツール",
-      "ko": "도구",
-      "pt": "Ferramentas",
-      "ru": "Инструменты",
-      "tr": "Araçlar",
-      "uk": "Інструменти"
+      "en": "Examples & Tools",
+      "cn": "示例与工具",
+      "de": "Beispiele & Tools",
+      "es": "Ejemplos y Herramientas",
+      "fr": "Exemples et Outils",
+      "it": "Esempi e Strumenti",
+      "ja": "サンプル＆ツール",
+      "ko": "예제 및 도구",
+      "pt": "Exemplos e Ferramentas",
+      "ru": "Примеры и инструменты",
+      "tr": "Örnekler ve Araçlar",
+      "uk": "Приклади та інструменти"
     },
     "tool_api_reference": {
       "en": "Pyxel API Reference",
