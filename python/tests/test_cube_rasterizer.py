@@ -1,5 +1,5 @@
 import pyxel
-from pyxel.p3d import Camera, Model, Scene, Vec3
+from pyxel.cube import Camera, Model, Scene, Vec3
 
 
 class TestSceneDraw:

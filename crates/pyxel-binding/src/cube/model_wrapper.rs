@@ -1,11 +1,11 @@
 use pyo3::prelude::*;
-use pyxel::p3d;
+use pyxel::cube;
 
-use crate::p3d_math_wrapper::Vec3;
+use crate::cube::math_wrapper::Vec3;
 
 #[pyclass(name = "Model")]
 pub struct Model {
-    pub inner: *mut p3d::Model,
+    pub inner: *mut cube::Model,
 }
 
 unsafe impl Send for Model {}
@@ -13,7 +13,7 @@ unsafe impl Sync for Model {}
 
 impl Model {
     #[allow(clippy::mut_from_ref)]
-    fn inner_mut(&self) -> &mut p3d::Model {
+    fn inner_mut(&self) -> &mut cube::Model {
         unsafe { &mut *self.inner }
     }
 }
@@ -23,56 +23,56 @@ impl Model {
     #[new]
     fn new() -> Self {
         Self {
-            inner: Box::into_raw(Box::new(p3d::Model::new())),
+            inner: Box::into_raw(Box::new(cube::Model::new())),
         }
     }
 
     #[staticmethod]
     fn cube(col: u8) -> Self {
         Self {
-            inner: Box::into_raw(Box::new(p3d::Model::cube(col))),
+            inner: Box::into_raw(Box::new(cube::Model::cube(col))),
         }
     }
 
     #[staticmethod]
     fn plane(col: u8) -> Self {
         Self {
-            inner: Box::into_raw(Box::new(p3d::Model::plane(col))),
+            inner: Box::into_raw(Box::new(cube::Model::plane(col))),
         }
     }
 
     #[staticmethod]
     fn pyramid(col: u8) -> Self {
         Self {
-            inner: Box::into_raw(Box::new(p3d::Model::pyramid(col))),
+            inner: Box::into_raw(Box::new(cube::Model::pyramid(col))),
         }
     }
 
     #[staticmethod]
     fn sphere(col: u8) -> Self {
         Self {
-            inner: Box::into_raw(Box::new(p3d::Model::sphere(col))),
+            inner: Box::into_raw(Box::new(cube::Model::sphere(col))),
         }
     }
 
     #[staticmethod]
     fn tex_cube(img: u32, u: f32, v: f32, w: f32, h: f32) -> Self {
         Self {
-            inner: Box::into_raw(Box::new(p3d::Model::tex_cube(img, u, v, w, h))),
+            inner: Box::into_raw(Box::new(cube::Model::tex_cube(img, u, v, w, h))),
         }
     }
 
     #[staticmethod]
     fn tex_pyramid(img: u32, u: f32, v: f32, w: f32, h: f32) -> Self {
         Self {
-            inner: Box::into_raw(Box::new(p3d::Model::tex_pyramid(img, u, v, w, h))),
+            inner: Box::into_raw(Box::new(cube::Model::tex_pyramid(img, u, v, w, h))),
         }
     }
 
     #[staticmethod]
     fn tex_sphere(img: u32, u: f32, v: f32, w: f32, h: f32) -> Self {
         Self {
-            inner: Box::into_raw(Box::new(p3d::Model::tex_sphere(img, u, v, w, h))),
+            inner: Box::into_raw(Box::new(cube::Model::tex_sphere(img, u, v, w, h))),
         }
     }
 
@@ -96,9 +96,9 @@ impl Model {
             v1.inner,
             v2.inner,
             img,
-            p3d::Uv::new(uv0.0, uv0.1),
-            p3d::Uv::new(uv1.0, uv1.1),
-            p3d::Uv::new(uv2.0, uv2.1),
+            cube::Uv::new(uv0.0, uv0.1),
+            cube::Uv::new(uv1.0, uv1.1),
+            cube::Uv::new(uv2.0, uv2.1),
         );
     }
 
@@ -114,7 +114,7 @@ impl Model {
     }
 }
 
-pub fn add_p3d_model_class(m: &Bound<'_, PyModule>) -> PyResult<()> {
+pub fn add_cube_model_class(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<Model>()?;
     Ok(())
 }

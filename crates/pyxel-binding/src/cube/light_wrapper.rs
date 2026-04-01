@@ -1,11 +1,11 @@
 use pyo3::prelude::*;
-use pyxel::p3d;
+use pyxel::cube;
 
-use crate::p3d_math_wrapper::Vec3;
+use crate::cube::math_wrapper::Vec3;
 
 #[pyclass(name = "Light")]
 pub struct Light {
-    pub inner: p3d::Light,
+    pub inner: cube::Light,
 }
 
 #[pymethods]
@@ -13,7 +13,7 @@ impl Light {
     #[new]
     fn new(dir: &Vec3) -> Self {
         Self {
-            inner: p3d::Light::new(dir.inner),
+            inner: cube::Light::new(dir.inner),
         }
     }
 
@@ -30,7 +30,7 @@ impl Light {
     }
 }
 
-pub fn add_p3d_light_class(m: &Bound<'_, PyModule>) -> PyResult<()> {
+pub fn add_cube_light_class(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<Light>()?;
     Ok(())
 }

@@ -1,4 +1,4 @@
-from pyxel.p3d import Mat4, Vec3
+from pyxel.cube import Mat4, Vec3
 
 
 class TestVec3:

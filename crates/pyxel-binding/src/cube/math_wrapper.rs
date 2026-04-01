@@ -1,10 +1,10 @@
 use pyo3::prelude::*;
-use pyxel::p3d;
+use pyxel::cube;
 
 #[pyclass(name = "Vec3", from_py_object)]
 #[derive(Clone, Copy)]
 pub struct Vec3 {
-    pub inner: p3d::Vec3,
+    pub inner: cube::Vec3,
 }
 
 #[pymethods]
@@ -12,7 +12,7 @@ impl Vec3 {
     #[new]
     fn new(x: f32, y: f32, z: f32) -> Self {
         Self {
-            inner: p3d::Vec3::new(x, y, z),
+            inner: cube::Vec3::new(x, y, z),
         }
     }
 
@@ -81,7 +81,7 @@ impl Vec3 {
 #[pyclass(name = "Mat4", from_py_object)]
 #[derive(Clone, Copy)]
 pub struct Mat4 {
-    pub inner: p3d::Mat4,
+    pub inner: cube::Mat4,
 }
 
 #[pymethods]
@@ -89,56 +89,56 @@ impl Mat4 {
     #[staticmethod]
     fn identity() -> Mat4 {
         Mat4 {
-            inner: p3d::Mat4::identity(),
+            inner: cube::Mat4::identity(),
         }
     }
 
     #[staticmethod]
     fn translation(x: f32, y: f32, z: f32) -> Mat4 {
         Mat4 {
-            inner: p3d::Mat4::translation(x, y, z),
+            inner: cube::Mat4::translation(x, y, z),
         }
     }
 
     #[staticmethod]
     fn rotation_x(deg: f32) -> Mat4 {
         Mat4 {
-            inner: p3d::Mat4::rotation_x(deg),
+            inner: cube::Mat4::rotation_x(deg),
         }
     }
 
     #[staticmethod]
     fn rotation_y(deg: f32) -> Mat4 {
         Mat4 {
-            inner: p3d::Mat4::rotation_y(deg),
+            inner: cube::Mat4::rotation_y(deg),
         }
     }
 
     #[staticmethod]
     fn rotation_z(deg: f32) -> Mat4 {
         Mat4 {
-            inner: p3d::Mat4::rotation_z(deg),
+            inner: cube::Mat4::rotation_z(deg),
         }
     }
 
     #[staticmethod]
     fn scale(sx: f32, sy: f32, sz: f32) -> Mat4 {
         Mat4 {
-            inner: p3d::Mat4::scale(sx, sy, sz),
+            inner: cube::Mat4::scale(sx, sy, sz),
         }
     }
 
     #[staticmethod]
     fn look_at(eye: &Vec3, target: &Vec3, up: &Vec3) -> Mat4 {
         Mat4 {
-            inner: p3d::Mat4::look_at(eye.inner, target.inner, up.inner),
+            inner: cube::Mat4::look_at(eye.inner, target.inner, up.inner),
         }
     }
 
     #[staticmethod]
     fn perspective(fov: f32, aspect: f32, near: f32, far: f32) -> Mat4 {
         Mat4 {
-            inner: p3d::Mat4::perspective(fov, aspect, near, far),
+            inner: cube::Mat4::perspective(fov, aspect, near, far),
         }
     }
 
@@ -178,7 +178,7 @@ impl Mat4 {
     }
 }
 
-pub fn add_p3d_math_classes(m: &Bound<'_, PyModule>) -> PyResult<()> {
+pub fn add_cube_math_classes(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<Vec3>()?;
     m.add_class::<Mat4>()?;
     Ok(())

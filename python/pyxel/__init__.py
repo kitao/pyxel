@@ -15,4 +15,4 @@ if sys.platform == "linux":
 
 from .pyxel_binding import *  # type: ignore  # noqa: F403
 
-from . import p3d  # noqa: F401
+from . import cube  # noqa: F401

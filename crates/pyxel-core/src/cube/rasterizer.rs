@@ -1,6 +1,6 @@
 use crate::canvas::Canvas;
+use crate::cube::model::{FaceMaterial, Uv};
 use crate::image::Color;
-use crate::p3d::model::{FaceMaterial, Uv};
 
 /// Screen-space vertex after projection.
 #[derive(Clone, Copy)]

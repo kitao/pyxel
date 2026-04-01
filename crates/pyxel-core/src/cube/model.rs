@@ -1,5 +1,5 @@
+use crate::cube::math::Vec3;
 use crate::image::Color;
-use crate::p3d::math::Vec3;
 
 /// UV texture coordinate.
 #[derive(Clone, Copy, Debug)]

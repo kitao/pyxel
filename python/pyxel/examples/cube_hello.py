@@ -2,36 +2,36 @@ import math
 import os
 
 import pyxel
-from pyxel import p3d
+from pyxel import cube
 
 pyxel.init(256, 200, title="Pyxel3D Hello", fps=30)
 
 assets = os.path.join(os.path.dirname(__file__), "assets", "sample.pyxres")
 pyxel.load(assets)
 
-scene = p3d.Scene()
-scene.set_light(0, p3d.Light(p3d.Vec3(-1.0, -0.5, -1.0)))
+scene = cube.Scene()
+scene.set_light(0, cube.Light(cube.Vec3(-1.0, -0.5, -1.0)))
 
 S = 0.0625
 
 shapes = [
-    p3d.Model.tex_cube(0, 0, 0, S, S),
-    p3d.Model.tex_pyramid(0, S, 0, S, S),
-    p3d.Model.tex_sphere(0, S * 2, 0, S, S),
-    p3d.Model.tex_cube(0, S * 3, 0, S, S),
-    p3d.Model.tex_pyramid(0, 0, S, S, S),
-    p3d.Model.tex_sphere(0, S, S, S, S),
-    p3d.Model.cube(8),
-    p3d.Model.tex_cube(0, S * 2, S, S, S),
-    p3d.Model.pyramid(10),
-    p3d.Model.tex_sphere(0, S * 3, S, S, S),
-    p3d.Model.sphere(11),
-    p3d.Model.tex_pyramid(0, 0, S * 2, S, S),
+    cube.Model.tex_cube(0, 0, 0, S, S),
+    cube.Model.tex_pyramid(0, S, 0, S, S),
+    cube.Model.tex_sphere(0, S * 2, 0, S, S),
+    cube.Model.tex_cube(0, S * 3, 0, S, S),
+    cube.Model.tex_pyramid(0, 0, S, S, S),
+    cube.Model.tex_sphere(0, S, S, S, S),
+    cube.Model.cube(8),
+    cube.Model.tex_cube(0, S * 2, S, S, S),
+    cube.Model.pyramid(10),
+    cube.Model.tex_sphere(0, S * 3, S, S, S),
+    cube.Model.sphere(11),
+    cube.Model.tex_pyramid(0, 0, S * 2, S, S),
 ]
 
-cam = p3d.Camera(
-    p3d.Vec3(0.0, -10.0, 7.0),
-    p3d.Vec3(0.0, 0.0, -1.0),
+cam = cube.Camera(
+    cube.Vec3(0.0, -10.0, 7.0),
+    cube.Vec3(0.0, 0.0, -1.0),
     fov=50.0,
 )
 t = 0.0
@@ -53,9 +53,9 @@ def update():
         spin = t * 120.0 + i * 30.0
         scene.add(
             shape,
-            pos=p3d.Vec3(x, y, z),
-            rot=p3d.Vec3(spin * 0.7, spin * 0.5, spin),
-            scale=p3d.Vec3(1.5, 1.5, 1.5),
+            pos=cube.Vec3(x, y, z),
+            rot=cube.Vec3(spin * 0.7, spin * 0.5, spin),
+            scale=cube.Vec3(1.5, 1.5, 1.5),
         )
     if frame == LOOP_FRAMES:
         pyxel.screencast()
