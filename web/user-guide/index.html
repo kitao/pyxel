@@ -123,7 +123,7 @@
           <h3 class="sub-title">${esc(t("install_desktop_title"))}</h3>
           <p class="body">${t("install_desktop_body").replace("{0}", link("https://www.python.org/", "Python 3"))}</p>
           ${code("pip install -U pyxel", "sh")}
-          <p class="body"><strong>Note:</strong> ${t("install_desktop_note")
+          <p class="body">${t("install_desktop_note")
             .replace("{0}", chip("Add python.exe to PATH"))
             .replace("{1}", chip("pyxel"))}</p>
           <h3 class="sub-title">${esc(t("install_web_title"))}</h3>

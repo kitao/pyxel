@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.8.10
+
+- Fixed WASM public API functions lost by const refactor
+
 ## 2.8.9
 
 - Refined code quality and consistency across all layers

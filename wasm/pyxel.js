@@ -1,5 +1,5 @@
 const PYODIDE_URL = "https://cdn.jsdelivr.net/pyodide/v0.29.3/full/pyodide.js";
-const PYXEL_WHEEL_PATH = "pyxel-2.8.9-cp38-abi3-emscripten_4_0_9_wasm32.whl";
+const PYXEL_WHEEL_PATH = "pyxel-2.8.10-cp38-abi3-emscripten_4_0_9_wasm32.whl";
 const PYXEL_LOGO_PATH = "images/pyxel_logo_76x32.png";
 const TOUCH_TO_START_PATH = "images/touch_to_start_114x14.png";
 const CLICK_TO_START_PATH = "images/click_to_start_114x14.png";
@@ -107,7 +107,7 @@ document.addEventListener(
 // Public API
 // ---------------------------------------------------------------------------
 
-const launchPyxel = async (params) => {
+async function launchPyxel(params) {
   const pyxelVersion = PYXEL_WHEEL_PATH.match(/pyxel-([\d.]+)-/)[1];
   const pyodideVersion = PYODIDE_URL.match(/v([\d.]+)\//)[1];
   console.log(`Launch Pyxel ${pyxelVersion} with Pyodide ${pyodideVersion}`);
@@ -134,9 +134,9 @@ const launchPyxel = async (params) => {
   } catch (error) {
     _displayFatalErrorOverlay(error);
   }
-};
+}
 
-const resetPyxel = async () => {
+async function resetPyxel() {
   if (!window.pyxelContext.initialized) {
     return;
   }
@@ -213,9 +213,9 @@ const resetPyxel = async () => {
   } catch (error) {
     _displayFatalErrorOverlay(error);
   }
-};
+}
 
-const dropFileToPyxel = (name, data) => {
+function dropFileToPyxel(name, data) {
   if (!window.pyxelContext.initialized) {
     return;
   }
@@ -225,7 +225,7 @@ const dropFileToPyxel = (name, data) => {
   pyodide.runPython(
     `import pyxel; pyxel._dropped_files = getattr(pyxel, '_dropped_files', []) + ['${path}']`
   );
-};
+}
 
 // ---------------------------------------------------------------------------
 // Initialization
