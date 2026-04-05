@@ -1161,7 +1161,7 @@ fn generate_bass(preset: usize, bits_per_step: &[[i32; 12]], key_shift: i32) -> 
             let mut chosen = base_root + base_add;
             for a in adjust_list {
                 let n = base_root + base_add + a;
-                if matches!(bits[((n + key_shift).rem_euclid(12)) as usize], 1..=3) {
+                if matches!(bits[((n - key_shift).rem_euclid(12)) as usize], 1..=3) {
                     chosen = n;
                     break;
                 }
