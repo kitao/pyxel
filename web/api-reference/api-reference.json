@@ -795,6 +795,67 @@
           "advanced": true
         },
         {
+          "name": "resize",
+          "type": "function",
+          "signature": "resize(width, height)",
+          "description": {
+            "en": "Change the screen size at runtime.",
+            "cn": "在运行时更改屏幕大小。",
+            "de": "Ändert die Bildschirmgröße zur Laufzeit.",
+            "es": "Cambia el tamaño de la pantalla en tiempo de ejecución.",
+            "fr": "Change la taille de l'écran à l'exécution.",
+            "it": "Cambia la dimensione dello schermo a runtime.",
+            "ja": "実行時にスクリーンサイズを変更する。",
+            "ko": "런타임에 스크린 크기를 변경한다.",
+            "pt": "Altera o tamanho da tela em tempo de execução.",
+            "ru": "Изменяет размер экрана во время выполнения.",
+            "tr": "Ekran boyutunu çalışma zamanında değiştirir.",
+            "uk": "Змінює розмір екрана під час виконання."
+          },
+          "params": [
+            {
+              "name": "width",
+              "type": "int",
+              "desc": {
+                "en": "New screen width in pixels",
+                "cn": "新的屏幕宽度（像素）",
+                "de": "Neue Bildschirmbreite in Pixeln",
+                "es": "Nuevo ancho de pantalla en píxeles",
+                "fr": "Nouvelle largeur d'écran en pixels",
+                "it": "Nuova larghezza schermo in pixel",
+                "ja": "新しいスクリーンの幅（ピクセル）",
+                "ko": "새 스크린 너비 (픽셀)",
+                "pt": "Nova largura da tela em pixels",
+                "ru": "Новая ширина экрана в пикселях",
+                "tr": "Piksel cinsinden yeni ekran genişliği",
+                "uk": "Нова ширина екрана в пікселях"
+              }
+            },
+            {
+              "name": "height",
+              "type": "int",
+              "desc": {
+                "en": "New screen height in pixels",
+                "cn": "新的屏幕高度（像素）",
+                "de": "Neue Bildschirmhöhe in Pixeln",
+                "es": "Nuevo alto de pantalla en píxeles",
+                "fr": "Nouvelle hauteur d'écran en pixels",
+                "it": "Nuova altezza schermo in pixel",
+                "ja": "新しいスクリーンの高さ（ピクセル）",
+                "ko": "새 스크린 높이 (픽셀)",
+                "pt": "Nova altura da tela em pixels",
+                "ru": "Новая высота экрана в пикселях",
+                "tr": "Piksel cinsinden yeni ekran yüksekliği",
+                "uk": "Нова висота екрана в пікселях"
+              }
+            }
+          ],
+          "return": {
+            "type": "None"
+          },
+          "advanced": true
+        },
+        {
           "name": "screen_mode",
           "type": "function",
           "signature": "screen_mode(scr)",
@@ -6420,7 +6481,7 @@
         {
           "name": "gen_bgm",
           "type": "function",
-          "signature": "gen_bgm(preset, instr, seed=None, play=False)",
+          "signature": "gen_bgm(preset, transp, instr, seed, play=False)",
           "description": {
             "en": "Generate a BGM MML list using an algorithm. preset (0-7) selects the preset, instr (0-3) selects the instrumentation.",
             "cn": "使用算法生成BGM的MML列表。preset (0-7) 选择预设，instr (0-3) 选择编曲。",
@@ -6455,10 +6516,28 @@
               }
             },
             {
+              "name": "transp",
+              "type": "int",
+              "desc": {
+                "en": "Transpose in semitones (-5 to +5).",
+                "cn": "移调半音数 (-5 到 +5)。",
+                "de": "Transposition in Halbtönen (-5 bis +5).",
+                "es": "Transposición en semitonos (-5 a +5).",
+                "fr": "Transposition en demi-tons (-5 à +5).",
+                "it": "Trasposizione in semitoni (da -5 a +5).",
+                "ja": "移調の半音数 (-5〜+5)。",
+                "ko": "반음 단위의 이조 (-5~+5).",
+                "pt": "Transposição em semitons (-5 a +5).",
+                "ru": "Транспонирование в полутонах (от -5 до +5).",
+                "tr": "Yarım ton cinsinden transpozisyon (-5 ile +5).",
+                "uk": "Транспонування в півтонах (від -5 до +5)."
+              }
+            },
+            {
               "name": "instr",
               "type": "int",
               "desc": {
-                "en": "Instrumentation (0-3). 0: melody+reverb+bass (3ch), 1: melody+bass+drums (3ch), 2: melody+sub+bass (3ch), 3: melody+sub+bass+drums (4ch)",
+                "en": "Instrumentation (0-3). 0: melody+reverb+bass (3ch), 1: melody+bass+drums (3ch), 2: melody+sub+bass (3ch), 3: melody+sub+bass+drums (4ch).",
                 "cn": "编制 (0-3). 0: 旋律+混响+贝斯 (3ch), 1: 旋律+贝斯+鼓 (3ch), 2: 旋律+副旋律+贝斯 (3ch), 3: 旋律+副旋律+贝斯+鼓 (4ch)",
                 "de": "Besetzung (0-3). 0: Melodie+Reverb+Bass (3ch), 1: Melodie+Bass+Drums (3ch), 2: Melodie+Sub+Bass (3ch), 3: Melodie+Sub+Bass+Drums (4ch)",
                 "es": "Instrumentación (0-3). 0: melodía+reverb+bajo (3ch), 1: melodía+bajo+batería (3ch), 2: melodía+sub+bajo (3ch), 3: melodía+sub+bajo+batería (4ch)",
@@ -6476,18 +6555,18 @@
               "name": "seed",
               "type": "int",
               "desc": {
-                "en": "Random seed (omit for random)",
-                "cn": "随机种子（省略则随机）",
-                "de": "Zufallsstartwert (weglassen für zufällig)",
-                "es": "Semilla aleatoria (omitir para aleatorio)",
-                "fr": "Graine aléatoire (omettre pour aléatoire)",
-                "it": "Seme casuale (omettere per casuale)",
-                "ja": "乱数シード（省略でランダム）",
-                "ko": "난수 시드 (생략 시 랜덤)",
-                "pt": "Semente aleatória (omitir para aleatório)",
-                "ru": "Случайное начальное значение (пропустить для случайного)",
-                "tr": "Rastgele tohum (rastgele için atlayın)",
-                "uk": "Випадкове початкове значення (пропустити для випадкового)"
+                "en": "Random seed",
+                "cn": "随机种子",
+                "de": "Zufallsstartwert",
+                "es": "Semilla aleatoria",
+                "fr": "Graine aléatoire",
+                "it": "Seme casuale",
+                "ja": "乱数シード",
+                "ko": "난수 시드",
+                "pt": "Semente aleatória",
+                "ru": "Случайное начальное значение",
+                "tr": "Rastgele tohum",
+                "uk": "Випадкове початкове значення"
               }
             },
             {

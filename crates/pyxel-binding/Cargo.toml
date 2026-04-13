@@ -1,6 +1,6 @@
 [package]
 name = "pyxel-binding"
-version = "2.8.10"
+version = "2.9.0"
 authors = ["Takashi Kitao <takashi.kitao@gmail.com>"]
 edition = "2021"
 license = "MIT"
@@ -10,7 +10,7 @@ name = "pyxel_binding"
 crate-type = ["cdylib"]
 
 [dependencies]
-pyo3 = { version = "0.28", features = ["abi3-py38", "extension-module", "multiple-pymethods"] }
+pyo3 = { version = "0.28", features = ["abi3-py310", "extension-module", "multiple-pymethods"] }
 pyxel-core = { path = "../pyxel-core" }
 
 [target.'cfg(not(target_os = "emscripten"))'.dependencies]

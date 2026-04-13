@@ -89,8 +89,8 @@ impl Oscillator {
         // Reinitialize the LFSR when switching noise mode to ensure deterministic output.
         // Each mode uses a different tap bit (6 for short-period, 1 for long-period), producing
         // different cycle lengths. The LFSR seed is pre-advanced past leading zeros:
-        // short-period: 15 shifts (half of 32-sample period) -> 0x0201
-        // long-period:  45 shifts (half of 93-sample period) -> 0x7001
+        // short-period (tap 6): 15 shifts (pre-advanced, 93-sample period)    -> 0x0201
+        // long-period  (tap 1): 45 shifts (pre-advanced, 32767-sample period) -> 0x7001
         let tap_bit = if short_period { 6 } else { 1 };
         if tap_bit != self.tap_bit {
             self.lfsr = if short_period { 0x0201 } else { 0x7001 };

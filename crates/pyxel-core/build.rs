@@ -255,6 +255,8 @@ fn static_sdl2() -> bool {
 }
 
 fn main() {
+    println!("cargo::rustc-check-cfg=cfg(pyxel_core)");
+    println!("cargo:rustc-cfg=pyxel_core");
     if use_sdl2() {
         Sdl2Bindings::new().build();
     }

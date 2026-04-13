@@ -6,9 +6,29 @@ use std::fmt::Write as _;
 
 use rand::{RngExt, SeedableRng};
 use rand_xoshiro::Xoshiro256StarStar;
+use serde::{Deserialize, Serialize};
 
+#[cfg(pyxel_core)]
 use crate::pyxel::{self, Pyxel};
+#[cfg(pyxel_core)]
 use crate::sound::Sound;
+
+// Generation parameters — field names match the original TS bgm-generator.ts
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct GeneratorParams {
+    pub transpose: i32,        // -5..+5
+    pub instrumentation: i32,  // 0-3
+    pub speed: i32,            // internal speed unit (BPM = 28800 / speed)
+    pub chord: i32,            // 0-7
+    pub base: i32,             // 0-7
+    pub base_quantize: i32,    // 12-15
+    pub drums: i32,            // 0-7
+    pub melo_tone: i32,        // 0-5
+    pub sub_tone: i32,         // 0-5
+    pub melo_lowest_note: i32, // 28-33
+    pub melo_density: i32,     // 0|2|4
+    pub melo_use16: bool,
+}
 
 const BARS: usize = 8;
 const STEPS_PER_BAR: usize = 16;
@@ -16,16 +36,174 @@ const TOTAL_STEPS: usize = BARS * STEPS_PER_BAR;
 const PRESET_COUNT: usize = 8;
 const TONE_CANDIDATES: [usize; 6] = [11, 8, 2, 10, 6, 4];
 
-const PRESET_SPEED: usize = 0;
-const PRESET_CHORD: usize = 1;
-const PRESET_BASE: usize = 2;
-const PRESET_BASE_QUANTIZE: usize = 3;
-const PRESET_DRUMS: usize = 4;
-const PRESET_MELO_TONE: usize = 5;
-const PRESET_SUB_TONE: usize = 6;
-const PRESET_MELO_LOWEST_NOTE: usize = 7;
-const PRESET_MELO_DENSITY: usize = 8;
-const PRESET_MELO_USE16: usize = 9;
+const PRESETS: [GeneratorParams; PRESET_COUNT] = [
+    GeneratorParams {
+        transpose: 0,
+        instrumentation: 3,
+        speed: 216,
+        chord: 0,
+        base: 4,
+        base_quantize: 14,
+        drums: 4,
+        melo_tone: 0,
+        sub_tone: 0,
+        melo_lowest_note: 28,
+        melo_density: 2,
+        melo_use16: true,
+    },
+    GeneratorParams {
+        transpose: 0,
+        instrumentation: 3,
+        speed: 216,
+        chord: 1,
+        base: 6,
+        base_quantize: 12,
+        drums: 5,
+        melo_tone: 3,
+        sub_tone: 3,
+        melo_lowest_note: 28,
+        melo_density: 4,
+        melo_use16: true,
+    },
+    GeneratorParams {
+        transpose: 0,
+        instrumentation: 0,
+        speed: 312,
+        chord: 2,
+        base: 1,
+        base_quantize: 15,
+        drums: 0,
+        melo_tone: 5,
+        sub_tone: 5,
+        melo_lowest_note: 30,
+        melo_density: 2,
+        melo_use16: false,
+    },
+    GeneratorParams {
+        transpose: 0,
+        instrumentation: 3,
+        speed: 276,
+        chord: 3,
+        base: 2,
+        base_quantize: 15,
+        drums: 3,
+        melo_tone: 4,
+        sub_tone: 4,
+        melo_lowest_note: 28,
+        melo_density: 0,
+        melo_use16: false,
+    },
+    GeneratorParams {
+        transpose: 0,
+        instrumentation: 3,
+        speed: 240,
+        chord: 4,
+        base: 0,
+        base_quantize: 14,
+        drums: 2,
+        melo_tone: 0,
+        sub_tone: 1,
+        melo_lowest_note: 29,
+        melo_density: 2,
+        melo_use16: false,
+    },
+    GeneratorParams {
+        transpose: 0,
+        instrumentation: 2,
+        speed: 216,
+        chord: 5,
+        base: 3,
+        base_quantize: 14,
+        drums: 4,
+        melo_tone: 1,
+        sub_tone: 1,
+        melo_lowest_note: 30,
+        melo_density: 2,
+        melo_use16: true,
+    },
+    GeneratorParams {
+        transpose: 0,
+        instrumentation: 1,
+        speed: 192,
+        chord: 6,
+        base: 5,
+        base_quantize: 13,
+        drums: 6,
+        melo_tone: 0,
+        sub_tone: 0,
+        melo_lowest_note: 28,
+        melo_density: 4,
+        melo_use16: true,
+    },
+    GeneratorParams {
+        transpose: 0,
+        instrumentation: 3,
+        speed: 168,
+        chord: 7,
+        base: 7,
+        base_quantize: 15,
+        drums: 7,
+        melo_tone: 3,
+        sub_tone: 3,
+        melo_lowest_note: 28,
+        melo_density: 4,
+        melo_use16: true,
+    },
+];
+
+fn preset_params(preset: i32) -> GeneratorParams {
+    let idx = preset.clamp(0, (PRESET_COUNT - 1) as i32) as usize;
+    PRESETS[idx].clone()
+}
+
+// Instrument definition (maps to MML @, @ENV, @VIB, @GLI)
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct Tone {
+    pub wave: i32,            // 0=triangle, 1=square, 2=pulse, 3=noise
+    pub attack: i32,          // ticks
+    pub decay: i32,           // ticks
+    pub sustain: i32,         // 0-100 (%)
+    pub release: i32,         // ticks
+    pub vibrato: i32,         // delay ticks (0=disabled)
+    pub drum_notes: Vec<i32>, // pitch sweep sequence for drums (empty=normal tone)
+}
+
+// Per-channel note and control data (all sparse: None=continue previous)
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct Channel {
+    pub notes: Vec<Option<i32>>,   // None=sustain, -1=rest, 0+=pitch/drum key
+    pub tones: Vec<Option<i32>>,   // tone index
+    pub volumes: Vec<Option<i32>>, // 0-127
+    pub quantizes: Vec<Option<i32>>, // 0-100 (gate percent)
+}
+
+// Complete BGM data — output of `generate_bgm()`, input for `compile_to_mml()`
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct BgmData {
+    pub tempo: i32,             // BPM (MML T command value)
+    pub tones: Vec<Tone>,       // up to 16 tone definitions
+    pub channels: Vec<Channel>, // up to 4 channels
+}
+
+#[cfg(not(pyxel_core))]
+impl GeneratorParams {
+    pub fn to_json(&self) -> String {
+        serde_json::to_string(self).expect("GeneratorParams serialization failed")
+    }
+    pub fn from_json(json: &str) -> Self {
+        serde_json::from_str(json).expect("GeneratorParams deserialization failed")
+    }
+}
+
+#[cfg(not(pyxel_core))]
+impl BgmData {
+    pub fn to_json(&self) -> String {
+        serde_json::to_string(self).expect("BgmData serialization failed")
+    }
+    pub fn from_json(json: &str) -> Self {
+        serde_json::from_str(json).expect("BgmData deserialization failed")
+    }
+}
 
 // Wave, attack, decay, sustain, release, vibrato
 const TONE_LIBRARY: [[i32; 6]; 16] = [
@@ -60,20 +238,6 @@ const DRUM_NOTES_5: [i32; 9] = [21, 19, 18, 17, 16, 15, 14, 13, 12];
 const DRUM_NOTES_6: [i32; 9] = [27, 25, 24, 23, 22, 21, 20, 19, 18];
 const DRUM_NOTES_7: [i32; 9] = [33, 31, 30, 29, 28, 27, 26, 25, 24];
 
-// Preset fields:
-// Speed, chord, base, base_quantize, drums
-// Melo_tone, sub_tone, melo_lowest_note, melo_density, melo_use16
-const PRESET_SETS: [[i32; 10]; PRESET_COUNT] = [
-    [216, 0, 4, 14, 4, 0, 0, 28, 2, 1],
-    [216, 1, 6, 12, 5, 3, 3, 28, 4, 1],
-    [312, 2, 1, 15, 0, 5, 5, 30, 2, 0],
-    [276, 3, 2, 15, 3, 4, 4, 28, 0, 0],
-    [240, 4, 0, 14, 2, 0, 1, 29, 2, 0],
-    [216, 5, 3, 14, 4, 1, 1, 30, 2, 1],
-    [192, 6, 5, 13, 6, 0, 0, 28, 4, 1],
-    [168, 7, 7, 15, 7, 3, 3, 28, 4, 1],
-];
-
 // 16-step bass patterns:
 // '.' = Hold previous note, '0' = Rest/stop, '1'..'4' = Degree selector
 const BASS_PATTERNS: [(&str, &str); 8] = [
@@ -84,7 +248,7 @@ const BASS_PATTERNS: [(&str, &str); 8] = [
     ("2.402.402.402.40", "2.402.402.40242."),
     ("2034203420342034", "2034203420444440"),
     ("2044204420442044", "2044204420442.4."),
-    ("4.444.444.444.44", "4.444.444.442.22"),
+    ("4.444.444.444.44", "4.444.442.442.22"),
 ];
 
 // 16-step drum trigger patterns:
@@ -564,10 +728,6 @@ fn format_tokens(tokens: &[String]) -> String {
     out.trim().to_string()
 }
 
-fn random_seed() -> u64 {
-    rand::rng().random()
-}
-
 fn parse_notes_bits(s: &str) -> [i32; 12] {
     let mut out = [0; 12];
     for (i, ch) in s.bytes().take(12).enumerate() {
@@ -589,8 +749,8 @@ fn resolve_entry_notes(progressions: &[ChordEntry], idx: usize) -> Option<&'stat
     })
 }
 
-fn chord_bits_per_step(preset: usize) -> Vec<[i32; 12]> {
-    let chord_idx = PRESET_SETS[preset][PRESET_CHORD] as usize;
+fn chord_bits_per_step(chord: i32) -> Vec<[i32; 12]> {
+    let chord_idx = chord as usize;
     let progression = CHORD_PROGRESSIONS[chord_idx];
     let mut out = vec![[0; 12]; TOTAL_STEPS];
 
@@ -670,8 +830,8 @@ impl MelodyState {
     }
 }
 
-fn build_melody_chord_plan(preset: usize, key_shift: i32, lowest: i32) -> Vec<MelodyChord> {
-    let chord_idx = PRESET_SETS[preset][PRESET_CHORD] as usize;
+fn build_melody_chord_plan(chord: i32, key_shift: i32, lowest: i32) -> Vec<MelodyChord> {
+    let chord_idx = chord as usize;
     let progression = CHORD_PROGRESSIONS[chord_idx];
     let mut out: Vec<MelodyChord> = Vec::with_capacity(progression.len());
     for p in progression {
@@ -1017,17 +1177,17 @@ fn pick_target_note_idx(
 }
 
 fn generate_melody(
-    preset: usize,
+    chord: i32,
+    density: i32,
+    use_16th: bool,
+    lowest: i32,
     key_shift: i32,
     base: &[Option<i32>],
     rng: &mut Xoshiro256StarStar,
     require_tones: bool,
 ) -> (Vec<Option<i32>>, Vec<Option<i32>>) {
-    let preset_def = PRESET_SETS[preset];
-    let density = preset_def[PRESET_MELO_DENSITY].clamp(0, 4) as usize;
-    let use_16th = preset_def[PRESET_MELO_USE16] != 0;
-    let lowest = preset_def[PRESET_MELO_LOWEST_NOTE];
-    let chord_plan = build_melody_chord_plan(preset, key_shift, lowest);
+    let density = density as usize;
+    let chord_plan = build_melody_chord_plan(chord, key_shift, lowest);
     loop {
         let mut note_line = vec![NOTE_UNSET; TOTAL_STEPS];
         let mut melody_view = vec![None; TOTAL_STEPS];
@@ -1123,9 +1283,9 @@ fn generate_melody(
     }
 }
 
-fn generate_bass(preset: usize, bits_per_step: &[[i32; 12]], key_shift: i32) -> Vec<Option<i32>> {
+fn generate_bass(base: i32, bits_per_step: &[[i32; 12]], key_shift: i32) -> Vec<Option<i32>> {
     let mut notes = vec![Some(-1); TOTAL_STEPS];
-    let bass_idx = PRESET_SETS[preset][PRESET_BASE] as usize;
+    let bass_idx = base as usize;
     let (basic, final_pat) = BASS_PATTERNS[bass_idx];
     let adjust_list = [0, -1, 1, -2, 2, -3, 3];
     let base_highest_note = 26i32;
@@ -1161,7 +1321,7 @@ fn generate_bass(preset: usize, bits_per_step: &[[i32; 12]], key_shift: i32) -> 
             let mut chosen = base_root + base_add;
             for a in adjust_list {
                 let n = base_root + base_add + a;
-                if matches!(bits[((n + key_shift).rem_euclid(12)) as usize], 1..=3) {
+                if matches!(bits[((n - key_shift).rem_euclid(12)) as usize], 1..=3) {
                     chosen = n;
                     break;
                 }
@@ -1312,7 +1472,7 @@ fn place_harmony(
 }
 
 fn generate_submelody(
-    preset: usize,
+    chord: i32,
     melody: &[Option<i32>],
     sub_seed: &[Option<i32>],
     base: &[Option<i32>],
@@ -1320,7 +1480,7 @@ fn generate_submelody(
     lowest: i32,
     rng: &mut Xoshiro256StarStar,
 ) -> Vec<Option<i32>> {
-    let chord_plan = build_melody_chord_plan(preset, key_shift, lowest);
+    let chord_plan = build_melody_chord_plan(chord, key_shift, lowest);
     let rhythm_sub = pick_rhythm_events(rng, true, true);
     let mut state = MelodyState::new();
 
@@ -1376,8 +1536,8 @@ fn shifted_melody(melody: &[Option<i32>]) -> Vec<Option<i32>> {
     notes
 }
 
-fn generate_drums(preset: usize) -> Vec<Option<i32>> {
-    let drum_idx = PRESET_SETS[preset][PRESET_DRUMS] as usize;
+fn generate_drums(drums: i32) -> Vec<Option<i32>> {
+    let drum_idx = drums as usize;
     let (basic, final_pat) = DRUM_PATTERNS[drum_idx];
     (0..TOTAL_STEPS)
         .map(|i| {
@@ -1556,45 +1716,168 @@ fn silent_channel_mml(tempo: i32) -> String {
     format!("T{tempo} L16 @ENV1{{127}} Q100 V112 @0 @ENV1 @VIB0")
 }
 
-fn generate_bgm_mml(preset: i32, instr: i32, seed: Option<u64>) -> Vec<String> {
-    let preset = preset.clamp(0, (PRESET_COUNT - 1) as i32) as usize;
-    let instr = instr.clamp(0, 3) as usize;
-    let key_shift = 0;
+// Generate BGM as MML strings (one-shot: preset → MML)
+pub fn generate_bgm_mml(
+    preset: i32,
+    transpose: i32,
+    instrumentation: i32,
+    seed: u64,
+) -> Vec<String> {
+    let mut params = preset_params(preset);
+    params.transpose = transpose;
+    params.instrumentation = instrumentation;
+    let data = generate_bgm(&params, seed);
+    compile_to_mml(&data)
+}
 
-    let actual_seed = seed.unwrap_or_else(random_seed);
-    let mut rng = Xoshiro256StarStar::seed_from_u64(actual_seed);
-    let base_speed = PRESET_SETS[preset][PRESET_SPEED].max(1);
-    let tempo = (28800 / base_speed).max(1);
-    let bits_per_step = chord_bits_per_step(preset);
-    let preset_def = PRESET_SETS[preset];
-    let bass = generate_bass(preset, &bits_per_step, key_shift);
-    let mut melody_and_seed = generate_melody(preset, key_shift, &bass, &mut rng, instr < 2);
+// JSON interface for composer WASM
+#[cfg(not(pyxel_core))]
+pub fn preset_params_json(preset: i32) -> String {
+    preset_params(preset).to_json()
+}
+
+#[cfg(not(pyxel_core))]
+pub fn generate_bgm_json(params_json: &str, seed: u64) -> String {
+    let params = GeneratorParams::from_json(params_json);
+    generate_bgm(&params, seed).to_json()
+}
+
+#[cfg(not(pyxel_core))]
+pub fn compile_to_mml_json(bgm_json: &str) -> String {
+    let data = BgmData::from_json(bgm_json);
+    serde_json::to_string(&compile_to_mml(&data)).expect("MML serialization failed")
+}
+
+// --- New structured generation pipeline ---
+
+const BASS_TONE_IDX: usize = 7;
+const DRUM_TONE_IDX: usize = 15;
+
+fn make_channel(notes: Vec<Option<i32>>, tone_idx: i32, volume: i32, quantize: i32) -> Channel {
+    let len = notes.len();
+    let mut tones = vec![None; len];
+    let mut volumes = vec![None; len];
+    let mut quantizes = vec![None; len];
+    tones[0] = Some(tone_idx);
+    volumes[0] = Some(volume);
+    quantizes[0] = Some(quantize);
+    Channel {
+        notes,
+        tones,
+        volumes,
+        quantizes,
+    }
+}
+
+fn silent_channel() -> Channel {
+    Channel {
+        notes: vec![],
+        tones: vec![],
+        volumes: vec![],
+        quantizes: vec![],
+    }
+}
+
+fn build_tone(idx: usize) -> Tone {
+    let t = TONE_LIBRARY[idx];
+    Tone {
+        wave: t[0],
+        attack: t[1],
+        decay: t[2],
+        sustain: t[3],
+        release: t[4],
+        vibrato: t[5],
+        drum_notes: if idx == DRUM_TONE_IDX {
+            // Collect all drum note sequences
+            let mut dn = Vec::new();
+            dn.extend_from_slice(&DRUM_NOTES_1);
+            dn.extend_from_slice(&DRUM_NOTES_2);
+            dn.extend_from_slice(&DRUM_NOTES_3);
+            dn.extend_from_slice(&DRUM_NOTES_5);
+            dn.extend_from_slice(&DRUM_NOTES_6);
+            dn.extend_from_slice(&DRUM_NOTES_7);
+            dn
+        } else {
+            vec![]
+        },
+    }
+}
+
+fn generate_bgm(params: &GeneratorParams, seed: u64) -> BgmData {
+    assert!((-5..=5).contains(&params.transpose), "invalid transpose");
+    assert!(
+        (0..=3).contains(&params.instrumentation),
+        "invalid instrumentation"
+    );
+    assert!(params.speed >= 1, "invalid speed");
+    assert!((0..8).contains(&params.chord), "invalid chord");
+    assert!((0..8).contains(&params.base), "invalid base");
+    assert!(
+        (12..=15).contains(&params.base_quantize),
+        "invalid base_quantize"
+    );
+    assert!((0..8).contains(&params.drums), "invalid drums");
+    assert!((0..6).contains(&params.melo_tone), "invalid melo_tone");
+    assert!((0..6).contains(&params.sub_tone), "invalid sub_tone");
+    assert!(
+        (28..=33).contains(&params.melo_lowest_note),
+        "invalid melo_lowest_note"
+    );
+    assert!(
+        (0..=4).contains(&params.melo_density),
+        "invalid melo_density"
+    );
+
+    let instr = params.instrumentation as usize;
+    let key_shift = params.transpose;
+    let speed = params.speed.max(1);
+    let tempo = (28800 / speed).max(1);
+    let chord = params.chord;
+    let density = params.melo_density;
+    let use_16th = params.melo_use16;
+    let lowest = params.melo_lowest_note;
+
+    let mut rng = Xoshiro256StarStar::seed_from_u64(seed);
+
+    let bits_per_step = chord_bits_per_step(chord);
+    let bass = generate_bass(params.base, &bits_per_step, key_shift);
+    let mut melody_and_seed = generate_melody(
+        chord,
+        density,
+        use_16th,
+        lowest,
+        key_shift,
+        &bass,
+        &mut rng,
+        instr < 2,
+    );
     let mut submelody = None;
 
     if instr >= 2 {
-        let chord_plan =
-            build_melody_chord_plan(preset, key_shift, preset_def[PRESET_MELO_LOWEST_NOTE]);
+        let chord_plan = build_melody_chord_plan(chord, key_shift, lowest);
         let mut candidate = generate_submelody(
-            preset,
+            chord,
             &melody_and_seed.0,
             &melody_and_seed.1,
             &bass,
             key_shift,
-            preset_def[PRESET_MELO_LOWEST_NOTE],
+            lowest,
             &mut rng,
         );
         loop {
             if melody_has_required_tones(&melody_and_seed.0, Some(&candidate), &chord_plan) {
                 break;
             }
-            melody_and_seed = generate_melody(preset, key_shift, &bass, &mut rng, false);
+            melody_and_seed = generate_melody(
+                chord, density, use_16th, lowest, key_shift, &bass, &mut rng, false,
+            );
             candidate = generate_submelody(
-                preset,
+                chord,
                 &melody_and_seed.0,
                 &melody_and_seed.1,
                 &bass,
                 key_shift,
-                preset_def[PRESET_MELO_LOWEST_NOTE],
+                lowest,
                 &mut rng,
             );
         }
@@ -1602,52 +1885,98 @@ fn generate_bgm_mml(preset: i32, instr: i32, seed: Option<u64>) -> Vec<String> {
     }
 
     let (melody, _) = melody_and_seed;
-    let melo_tone_idx = TONE_CANDIDATES[preset_def[PRESET_MELO_TONE] as usize];
-    let sub_tone_idx = TONE_CANDIDATES[preset_def[PRESET_SUB_TONE] as usize];
-    let base_quantize = ((preset_def[PRESET_BASE_QUANTIZE].clamp(0, 16) * 100) + 8) / 16;
+    let melo_tone_idx = TONE_CANDIDATES[params.melo_tone as usize] as i32;
+    let sub_tone_idx = TONE_CANDIDATES[params.sub_tone as usize] as i32;
+    let base_quantize = ((params.base_quantize * 100) + 8) / 16;
 
-    let mut mml_list = vec![
-        notes_to_mml(&melody, tempo, melo_tone_idx, 96, 88, false),
-        notes_to_mml(&bass, tempo, 7, 112, base_quantize, false),
-        silent_channel_mml(tempo),
-        silent_channel_mml(tempo),
-    ];
+    // Build 4 channels based on instrumentation
+    let ch0 = make_channel(melody.clone(), melo_tone_idx, 96, 88);
+    let ch1 = make_channel(bass, BASS_TONE_IDX as i32, 112, base_quantize);
 
-    if instr == 0 {
-        // No submelody, no drum: ch2 is shifted melody with melody tone settings
+    let (ch2, ch3) = if instr == 0 {
         let shifted = shifted_melody(&melody);
-        mml_list[2] = notes_to_mml(&shifted, tempo, melo_tone_idx, 32, 88, false);
+        (
+            make_channel(shifted, melo_tone_idx, 32, 88),
+            silent_channel(),
+        )
     } else {
+        let mut c2 = silent_channel();
+        let mut c3 = silent_channel();
         if instr == 1 || instr == 3 {
-            let drum = generate_drums(preset);
+            let drum = generate_drums(params.drums);
             if instr == 1 {
-                // Drum only: ch2 is drum track, ch3 silent
-                mml_list[2] = notes_to_mml(&drum, tempo, 15, 80, 94, true);
+                c2 = make_channel(drum, DRUM_TONE_IDX as i32, 80, 94);
             } else {
-                // Submelody + drum
-                mml_list[3] = notes_to_mml(&drum, tempo, 15, 80, 94, true);
+                c3 = make_channel(drum, DRUM_TONE_IDX as i32, 80, 94);
             }
         }
-
         if instr == 2 || instr == 3 {
-            // Submelody only: ch2 is submelody, ch3 silent
             let sub = submelody.unwrap_or_else(|| vec![Some(-1); TOTAL_STEPS]);
-            mml_list[2] = notes_to_mml(&sub, tempo, sub_tone_idx, 64, 94, false);
+            c2 = make_channel(sub, sub_tone_idx, 64, 94);
+        }
+        (c2, c3)
+    };
+
+    // Collect unique tone indices used
+    let mut tone_indices: Vec<usize> = Vec::new();
+    for ch in [&ch0, &ch1, &ch2, &ch3] {
+        for idx in ch.tones.iter().flatten() {
+            let idx = *idx as usize;
+            if !tone_indices.contains(&idx) {
+                tone_indices.push(idx);
+            }
         }
     }
+    tone_indices.sort_unstable();
 
-    mml_list
+    // Build full 16-slot tone table (sparse — only used slots populated)
+    let mut tones = Vec::with_capacity(tone_indices.len().max(1));
+    for &idx in &tone_indices {
+        // Pad with default tones up to this index
+        while tones.len() < idx {
+            tones.push(build_tone(0));
+        }
+        tones.push(build_tone(idx));
+    }
+    // Ensure at least one tone
+    if tones.is_empty() {
+        tones.push(build_tone(0));
+    }
+
+    BgmData {
+        tempo,
+        tones,
+        channels: vec![ch0, ch1, ch2, ch3],
+    }
 }
 
+fn compile_to_mml(data: &BgmData) -> Vec<String> {
+    data.channels
+        .iter()
+        .map(|ch| {
+            if ch.notes.is_empty() {
+                return silent_channel_mml(data.tempo);
+            }
+            let tone_idx = ch.tones.iter().find_map(|t| *t).unwrap_or(0) as usize;
+            let volume = ch.volumes.iter().find_map(|v| *v).unwrap_or(96);
+            let quantize = ch.quantizes.iter().find_map(|q| *q).unwrap_or(88);
+            let is_drum = tone_idx == DRUM_TONE_IDX;
+            notes_to_mml(&ch.notes, data.tempo, tone_idx, volume, quantize, is_drum)
+        })
+        .collect()
+}
+
+#[cfg(pyxel_core)]
 impl Pyxel {
     pub fn gen_bgm(
         &mut self,
         preset: i32,
-        instr: i32,
-        seed: Option<u64>,
+        transpose: i32,
+        instrumentation: i32,
+        seed: u64,
         play: Option<bool>,
     ) -> Vec<String> {
-        let mml_list = generate_bgm_mml(preset, instr, seed);
+        let mml_list = generate_bgm_mml(preset, transpose, instrumentation, seed);
 
         if play.unwrap_or(false) {
             for (ch, mml) in mml_list.iter().enumerate() {
@@ -1661,5 +1990,131 @@ impl Pyxel {
         }
 
         mml_list
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_preset_params_returns_valid_params() {
+        let p = preset_params(0);
+        assert_eq!(p.speed, 216);
+        assert_eq!(p.chord, 0);
+        assert_eq!(p.base, 4);
+        assert_eq!(p.transpose, 0);
+        assert_eq!(p.instrumentation, 3);
+    }
+
+    #[test]
+    fn test_preset_params_clamps_out_of_range() {
+        let p = preset_params(-1);
+        assert_eq!(p.speed, 216); // preset 0
+        let p = preset_params(99);
+        assert_eq!(p.speed, 168); // preset 7
+    }
+
+    #[test]
+    fn test_compile_generate_bgm_produces_valid_mml() {
+        let params = preset_params(0);
+        let data = generate_bgm(&params, 42);
+        let mml = compile_to_mml(&data);
+        assert_eq!(mml.len(), 4);
+        for (i, s) in mml.iter().enumerate() {
+            assert!(s.starts_with('T'), "channel {i} MML should start with T");
+            assert!(s.len() > 10, "channel {i} MML should have content");
+        }
+    }
+
+    #[test]
+    fn test_generate_bgm_mml_all_presets() {
+        // Verify generate_bgm_mml() produces valid MML for all presets
+        for preset_idx in 0..PRESET_COUNT as i32 {
+            let mml = generate_bgm_mml(preset_idx, 0, 0, 12345);
+            assert_eq!(
+                mml.len(),
+                4,
+                "preset {preset_idx} should produce 4 channels"
+            );
+            for (ch, s) in mml.iter().enumerate() {
+                assert!(
+                    s.starts_with('T'),
+                    "preset {preset_idx} ch{ch} should start with T"
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn test_generate_bgm_mml_with_overrides() {
+        let mml_default = generate_bgm_mml(0, 0, 3, 42);
+        let mml_transposed = generate_bgm_mml(0, 3, 3, 42);
+        assert_ne!(mml_default, mml_transposed, "transpose should change MML");
+
+        let mml_instr = generate_bgm_mml(0, 0, 0, 42);
+        assert_ne!(
+            mml_default, mml_instr,
+            "instrumentation override should change MML"
+        );
+    }
+
+    #[test]
+    fn test_generate_bgm_mml_matches_pipeline() {
+        // One-shot and pipeline should produce identical MML
+        for preset_idx in 0..PRESET_COUNT as i32 {
+            let params = preset_params(preset_idx);
+            let one_shot =
+                generate_bgm_mml(preset_idx, params.transpose, params.instrumentation, 12345);
+            let data = generate_bgm(&params, 12345);
+            let pipeline = compile_to_mml(&data);
+            assert_eq!(one_shot, pipeline, "mismatch for preset {preset_idx}");
+        }
+    }
+
+    #[cfg(not(pyxel_core))]
+    #[test]
+    fn test_bgm_data_json_roundtrip() {
+        let data = BgmData {
+            tempo: 133,
+            tones: vec![Tone {
+                wave: 0,
+                attack: 0,
+                decay: 0,
+                sustain: 100,
+                release: 0,
+                vibrato: 0,
+                drum_notes: vec![],
+            }],
+            channels: vec![Channel {
+                notes: vec![Some(24), None, Some(-1), Some(36)],
+                tones: vec![Some(0), None, None, None],
+                volumes: vec![Some(96), None, None, None],
+                quantizes: vec![Some(88), None, None, None],
+            }],
+        };
+        let json = data.to_json();
+        let restored = BgmData::from_json(&json);
+        assert_eq!(data, restored);
+    }
+
+    #[cfg(not(pyxel_core))]
+    #[test]
+    fn test_generator_params_json_roundtrip() {
+        let params = preset_params(0);
+        let json = params.to_json();
+        let restored = GeneratorParams::from_json(&json);
+        assert_eq!(params, restored);
+    }
+
+    #[cfg(not(pyxel_core))]
+    #[test]
+    fn test_json_pipeline_matches_direct() {
+        let params_json = preset_params_json(0);
+        let bgm_json = generate_bgm_json(&params_json, 42);
+        let mml_json = compile_to_mml_json(&bgm_json);
+        let mml_from_json: Vec<String> = serde_json::from_str(&mml_json).unwrap();
+        let mml_direct = generate_bgm_mml(0, 0, 3, 42);
+        assert_eq!(mml_from_json, mml_direct);
     }
 }

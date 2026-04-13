@@ -1,5 +1,6 @@
 {
   "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python",
+  "rust-analyzer.cargo.cfgs": { "pyxel_core": "" },
   "rust-analyzer.cargo.features": [],
   "rust-analyzer.cargo.target": "wasm32-unknown-emscripten",
   "rust-analyzer.linkedProjects": ["crates/Cargo.toml"]

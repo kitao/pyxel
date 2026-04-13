@@ -102,43 +102,45 @@ class TestPlayPos:
 
 
 class TestGenBgm:
-    def test_returns_list_of_4_strings(self):
-        result = pyxel.gen_bgm(0, 0)
+    def test_basic(self):
+        result = pyxel.gen_bgm(0, 0, 3, 42)
         assert isinstance(result, list)
         assert len(result) == 4
         assert all(isinstance(s, str) for s in result)
+        assert len(result[0]) > 0
 
     def test_seed_reproducible(self):
-        result1 = pyxel.gen_bgm(0, 0, seed=42)
-        result2 = pyxel.gen_bgm(0, 0, seed=42)
+        result1 = pyxel.gen_bgm(0, 0, 3, 42)
+        result2 = pyxel.gen_bgm(0, 0, 3, 42)
         assert result1 == result2
 
     def test_different_seeds_differ(self):
-        result1 = pyxel.gen_bgm(0, 0, seed=1)
-        result2 = pyxel.gen_bgm(0, 0, seed=2)
+        result1 = pyxel.gen_bgm(0, 0, 3, 1)
+        result2 = pyxel.gen_bgm(0, 0, 3, 2)
         assert result1 != result2
 
     def test_all_presets(self):
         for preset in range(8):
-            result = pyxel.gen_bgm(preset, 0, seed=1)
+            result = pyxel.gen_bgm(preset, 0, 0, 1)
             assert isinstance(result, list)
             assert len(result) == 4
 
-    def test_all_instruments(self):
+    def test_all_instrumentations(self):
         for instr in range(4):
-            result = pyxel.gen_bgm(0, instr, seed=1)
+            result = pyxel.gen_bgm(0, 0, instr, 1)
             assert isinstance(result, list)
             assert len(result) == 4
-            # All channels should have content (may be empty string for unused)
-            assert all(isinstance(s, str) for s in result)
 
-    def test_gen_bgm_play_and_stop(self):
-        pyxel.gen_bgm(0, 0, seed=1, play=True)
+    def test_transpose_changes_output(self):
+        result_default = pyxel.gen_bgm(0, 0, 3, 42)
+        result_transposed = pyxel.gen_bgm(0, 3, 3, 42)
+        assert result_default != result_transposed
+
+    def test_transp_and_instr_combined(self):
+        result_default = pyxel.gen_bgm(0, 0, 3, 42)
+        result_combined = pyxel.gen_bgm(0, 3, 0, 42)
+        assert result_default != result_combined
+
+    def test_play_and_stop(self):
+        pyxel.gen_bgm(0, 0, 3, 1, play=True)
         pyxel.stop()
-
-    def test_mml_strings_contain_commands(self):
-        result = pyxel.gen_bgm(0, 0, seed=42)
-        # At least the first channel should contain MML commands
-        assert len(result[0]) > 0
-        # MML should contain tempo and note commands
-        assert "T" in result[0]

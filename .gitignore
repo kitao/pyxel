@@ -8,7 +8,6 @@ __pycache__/
 .ruff_cache/
 
 # Rust
-Cargo.lock
 *.pdb
 
 # Node

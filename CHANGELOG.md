@@ -1,5 +1,14 @@
 # Change Log
 
+## 2.9.0
+
+- Redesigned gen_bgm for Pyxel Composer integration
+- Changed transp, instr, and seed of the gen_bgm function to required
+- Added Cargo.lock to version control for reproducible builds
+- Added the resize function to change the screen size at runtime
+- Fixed the screencast function using wrong last-frame delay on frame drops
+- Raised minimum Python version to 3.10
+
 ## 2.8.10
 
 - Fixed WASM public API functions lost by const refactor
@@ -94,8 +103,8 @@
 
 ## 2.7.12
 
-- Added channel count info to gen_bgm instr descriptions
-- Added preset mood descriptions to gen_bgm API reference
+- Added channel count info to the gen_bgm function instr descriptions
+- Added preset mood descriptions to the gen_bgm function API reference
 - Fixed quit causing fatal error on web
 
 ## 2.7.11
@@ -104,7 +113,7 @@
 
 ## 2.7.10
 
-- Added headless parameter to init() for windowless operation
+- Added the headless parameter to the init function for windowless operation
 - Added padding to default window icon for better OS integration
 
 ## 2.7.9
@@ -119,7 +128,7 @@
 - Fixed inconsistent naming and return types in Rust and Python
 - Added console.error output for WASM runtime errors
 - Added Example 19 for perspective rendering
-- Added blt3d and bltm3d for pseudo-3D perspective rendering
+- Added the blt3d and bltm3d functions for pseudo-3D perspective rendering
 - Updated glow crate to version 0.17
 
 ## 2.7.7
@@ -156,7 +165,7 @@
 
 - Added manual page for Pyxel Code Maker
 - Added manual page for Pyxel MML Studio
-- Removed version number from pyxel command example in READMEs
+- Removed version number from the pyxel command example in READMEs
 - Revamped Pyxel Web documentation for clarity and accuracy
 - Revamped FAQ with updated content and improved clarity
 
@@ -205,8 +214,8 @@
 
 - Reduced synth load with fixed-point amplitude mixing
 - Reduced PCM load with fixed-point mixing
-- Fixed gen_bgm parity and seed determinism
-- Removed the transp argument from gen_bgm
+- Fixed the gen_bgm function parity and seed determinism
+- Removed the transp argument from the gen_bgm function
 - Added BGM generation feature to Example 15
 - Updated toml crate to version 1.0
 - Updated zip crate to version 8.1
@@ -214,11 +223,11 @@
 ## 2.6.5
 
 - Removed unnecessary files to reduce the wheel size
-- Added gen_bgm for automatic BGM generation and playback
-- Added clamp function
-- Added collide method to Tilemap
+- Added the gen_bgm function for automatic BGM generation and playback
+- Added the clamp function
+- Added the collide method to Tilemap
 - Updated Examples 10 and 15 to use collide
-- Updated sgn to preserve input types in Python
+- Updated the sgn function to preserve input types in Python
 - Updated rand crate to version 0.10
 - Updated rand_xoshiro crate to version 0.8
 
@@ -231,7 +240,7 @@
 - Adjusted initialization order for the web version
 - Normalized HTML doctypes to lowercase
 - Enabled local Pyxel for the test web server
-- Added pcm method to Sound for audio playback
+- Added the pcm method to Sound for audio playback
 - Added Example 18 for audio playback
 - Renamed incl_colors to include_colors in Image
 
@@ -275,7 +284,7 @@
 - Improved error handling for the web version
 - Updated gif crate to version 0.14
 - Updated zip crate to version 7.0
-- Updated quit function behavior in the web version
+- Updated the quit function behavior in the web version
 - Downgraded the image crate to version 0.24
 
 ## 2.5.10
@@ -287,7 +296,7 @@
 
 ## 2.5.9
 
-- Added load_pal and save_pal functions
+- Added the load_pal and save_pal functions
 - Enabled palette file download for new files in Pyxel Editor
 - Enabled automatic color picker size adjustment in Pyxel Editor
 - Updated Pyodide to version 0.28.3
@@ -320,7 +329,7 @@
 
 - Updated exe packaging for the reset function with PyInstaller
 - Fixed touch device detection for Firefox in the web version
-- Reworked reset function and play command behavior
+- Reworked the reset function and the play command behavior
 - Removed extra directories after the app2exe command
 - Improved automatic file download for the web version
 - Adjusted error output display size in the web version
@@ -331,7 +340,7 @@
 
 - Added two Pyxel apps by Adam for the app launcher
 - Fixed Example 17 Python command execution issue
-- Fixed reset function issue when called inside pyxapp
+- Fixed the reset function issue when called inside pyxapp
 - Updated design of the web pages
 - Updated zip crate to version 5.0
 
@@ -353,7 +362,7 @@
 
 ## 2.5.1
 
-- Updated reset to preserve environment variables
+- Updated the reset function to preserve environment variables
 - Fixed cargo publish error by adding features sdl2
 - Added line break support for custom font rendering
 - Fixed app2exe issue with white spaces
@@ -362,7 +371,7 @@
 
 - Refactored the platform abstraction layer
 - Reduced error output in the web version
-- Added reset function
+- Added the reset function
 - Added automatic use of old_mml when '~' is used
 - Fixed delayed sound playback on Android browsers
 
@@ -386,7 +395,7 @@
 
 ## 2.4.6
 
-- Added mml command to Pyxel Web Launcher
+- Added the mml command to Pyxel Web Launcher
 - Set note interpolation time to 1 ms
 - Pinned the Pyxel version used by the app2html command
 - Updated web usage instructions
@@ -399,7 +408,7 @@
 ## 2.4.4
 
 - Fixed a cargo login warning
-- Restored tick option of the play and playm functions
+- Restored the tick option of the play and playm functions
 - Added documentation on pinning the Pyxel version for the web version
 - Cleaned up and improved usability of Example 14
 - Updated toml crate to version 0.9
@@ -408,7 +417,7 @@
 ## 2.4.3
 
 - Added note interpolation processing to suppress click noise
-- Restored excl options in the load and save functions
+- Restored the excl options in the load and save functions
 
 ## 2.4.2
 
@@ -416,10 +425,10 @@
 
 ## 2.4.1
 
-- Renamed noise field of Tone to mode
-- Added sample_bits field to Tone
+- Renamed the noise field of Tone to mode
+- Added the sample_bits field to Tone
 - Made the wavetable field of Tone support arbitrary length
-- Renamed tone_index parameter of the Tone command in MML to tone
+- Renamed the tone_index parameter of the Tone command in MML to tone
 - Updated Sound member types
 - Switched to the blip_buf crate
 - Added asterisk parameter support to the @GLI command in MML
@@ -438,17 +447,17 @@
 - Updated bindgen crate to version 0.72
 - Fixed GitHub Actions to use Rust nightly-2025-02-01
 - Renewed the sound engine and MML syntax
-- Renamed waveform field of Tone to wavetable
-- Updated play and playm to use sec instead of tick
-- Updated play_pos to return sec instead of note_no
-- Updated Sound and Music save methods to use sec instead of count
-- Added total_sec method to Sound
-- Updated mml method of Sound to use the new MML syntax
-- Added old_mml method to Sound for the old MML syntax
+- Renamed the waveform field of Tone to wavetable
+- Updated the play and playm functions to use sec instead of tick
+- Updated the play_pos function to return sec instead of note_no
+- Updated the save methods of Sound and Music to use sec instead of count
+- Added the total_sec method to Sound
+- Updated the mml method of Sound to use the new MML syntax
+- Added the old_mml method to Sound for the old MML syntax
 - Added MML string support to the play function
 - Added MML string support to the play method of Channel
-- Renamed excl options to exclude in the load and save functions
-- Removed incl options from the load and save functions
+- Renamed the excl options to exclude in the load and save functions
+- Removed the incl options from the load and save functions
 - Updated Example 9 to use new MML syntax
 - Updated default floating-point type to f32
 
@@ -460,13 +469,13 @@
 - Added a screen size specification to the README files
 - Added blank lines to format code
 - Updated sysinfo crate to version 0.34
-- Updated math functions to be static
-- Added DEFAULT_COLORS constant
+- Updated the math functions to be static
+- Added the DEFAULT_COLORS constant
 - Updated Pyxel thanks image
 
 ## 2.3.17
 
-- Updated btn-related functions to use assert
+- Updated the btn-related functions to use assert
 - Removed autoplay code from the web version
 
 ## 2.3.16
@@ -480,7 +489,7 @@
 
 ## 2.3.14
 
-- Added warnings for invalid keys in btn-related functions
+- Added warnings for invalid keys in the btn-related functions
 - Added version number output on startup in the web version
 - Updated image crate to version 0.25
 
@@ -535,9 +544,9 @@
 - Updated rand_xoshiro crate to version 0.7
 - Updated 8bit BGM generator to version 1.30
 - Fixed multi-gamepad support
-- Fixed text function ignoring camera when font set
+- Fixed the text function ignoring camera when font set
 - Aligned Emscripten version with Pyodide
-- Fixed input_text variable
+- Fixed the input_text variable
 - Stopped using the once_cell crate
 
 ## 2.3.4
@@ -554,23 +563,23 @@
 ## 2.3.2
 
 - Added hound crate
-- Added save method to the Sound and Music classes
+- Added the save method to the Sound and Music classes
 
 ## 2.3.1
 
 - Fixed a bug in loading old resource files
-- Added `X` command to MML
-- Renamed `!` command in MML to `~`
+- Added the X command to MML
+- Renamed the ! command in MML to ~
 - Added support for adding multiple dots to a note in MML
-- Restored input_keys variable
+- Restored the input_keys variable
 - Updated Example 9 to use MML for music setup
 - Updated 8bit BGM generator to version 1.22
 
 ## 2.3.0
 
-- Added ToneIndex type
+- Added the ToneIndex type
 - Adjusted size of sound-related types
-- Added mml method to Sound
+- Added the mml method to Sound
 - Updated directories crate to version 6.0
 - Updated sample rate to 22.05 kHz
 - Reduced click noise
@@ -614,8 +623,8 @@
 ## 2.2.7
 
 - Updated Pyodide to version 0.26.3
-- Added perf_monitor function
-- Added integer_scale function
+- Added the perf_monitor function
+- Added the integer_scale function
 - Renamed argument of the fullscreen function
 - Added integer-scale toggle feature with Alt(Option)+8
 - Added gamepad shortcuts using A+B+X+Y+DL/DR/DU/DD
@@ -624,7 +633,7 @@
 ## 2.2.6
 
 - Renamed WORKING_DIR to BASE_DIR
-- Added user_data_dir function
+- Added the user_data_dir function
 - Switched from the platform-dir crate to the directories crate
 - Updated glow crate to version 0.15
 - Fully revised the translations of all README files
@@ -646,8 +655,8 @@
 
 - Updated description of Pyxel's features in the README files
 - Ensured that the metadata is in UTF-8 format
-- Added pyxel.cli.get_pyxel_app_metadata function
-- Added pyxel.cli.print_pyxel_app_metadata function
+- Added the pyxel.cli.get_pyxel_app_metadata function
+- Added the pyxel.cli.print_pyxel_app_metadata function
 - Fixed a warning on macOS Sonoma
 - Fixed new clippy warnings
 
@@ -661,9 +670,9 @@
 
 ## 2.2.1
 
-- Added watch command description to the README files
+- Added the watch command description to the README files
 - Removed an unnecessary line in Example 14
-- Added Font class
+- Added the Font class
 - Added a font option to the text function
 - Updated Example 14 to use native font rendering
 
@@ -697,7 +706,7 @@
 ## 2.1.7
 
 - Modified help messages in Pyxel Editor
-- Updated sgn to return integer
+- Updated the sgn function to return integer
 - Fixed push back process in Example 10 and 15
 - Prevented editing during playback in Pyxel Editor
 - Fixed incorrect array references during playback in Pyxel Editor
@@ -732,11 +741,11 @@
 
 - Updated descriptions of the pget and pset functions
 - Added Half-FadeOut and Quarter-FadeOut effects to Sound
-- Fixed warp_mouse function
+- Fixed the warp_mouse function
 
 ## 2.1.1
 
-- Fixed resume option of the play function
+- Fixed the resume option of the play function
 - Removed non-functional CTRL+Drop feature from Pyxel Editor
 - Updated zip crate to a newer version
 
@@ -744,7 +753,7 @@
 
 - Fixed a help message in Pyxel Editor
 - Added a resume option to the play function
-- Updated function notation in Example 4
+- Updated the function notation in Example 4
 - Updated Example 9 to use the resume option for SFX playback
 - Added descriptions of the resume option to the README files
 - Updated Pyodide to version 0.26.1
@@ -755,7 +764,7 @@
 
 ## 2.0.13
 
-- Updated make update command
+- Updated the make update command
 - Fixed app2exe and app2html commands
 
 ## 2.0.12
@@ -773,7 +782,7 @@
 ## 2.0.10
 
 - Moved pyproject.toml and requirements.txt
-- Fixed sqrt function
+- Fixed the sqrt function
 - Fixed a non pixel perfect bug for OpenGL ES
 - Added support for encodings other than UTF-8 in the app2exe command
 
@@ -793,7 +802,7 @@
 
 - Turned off the high DPI mode for performance perspective
 - Added a shortcut to output the current color palette
-- Added load_tmx and load method to Tilemap
+- Added the load_tmx and load methods to Tilemap
 - Enabled importing a TMX file via drag and drop in the tilemap editor
 - Updated destination for image drag-and-drop in the image editor
 - Refined the code for Example 9
@@ -848,27 +857,27 @@
 - Updated Pyodide to version 0.24.1
 - Updated Emscripten to version 3.1.45
 - Updated SDL2 to version 2.24.2
-- Added screen_mode function to change screen rendering type
+- Added the screen_mode function to change the screen rendering type
 - Added a shortcut to change the screen mode with Alt(Option)+9
 - Added support for the third and fourth gamepads
-- Added dither function to set dithering type
+- Added the dither function to set the dithering type
 - Added images, tilemaps as system lists
 - Marked the image and tilemap functions as deprecated functions
 - Added channels, sounds, and musics as system lists
 - Marked the channel, sounds, and music functions as deprecated functions
-- Renamed reset_capture function to reset_screencast
-- Renamed set_mouse_pos function to warp_mouse
-- Renamed drop_files variable to dropped_files
-- Removed is_fullscreen variable
-- Removed input_keys variable
-- Removed set_btn and set_btnv functions
+- Renamed the reset_capture function to reset_screencast
+- Renamed the set_mouse_pos function to warp_mouse
+- Renamed the drop_files variable to dropped_files
+- Removed the is_fullscreen variable
+- Removed the input_keys variable
+- Removed the set_btn and set_btnv functions
 - Integrated the image and refimg of Tilemap into imgsrc
 - Marked the image and refimg of Tilemap as deprecated fields
 - Renamed snds_list of Music to seqs
 - Marked the snds_list of Music as a deprecated field
 - Switched to a new resource format based on TOML
 - Updated arguments for the load and save functions
-- Added Waveform class for waveform editing
+- Added the Waveform class for waveform editing
 - Added waveforms as a system list
 - Added a detune field to Channel
 - Updated 8bit BGM generator to the latest version

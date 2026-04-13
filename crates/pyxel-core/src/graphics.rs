@@ -201,6 +201,10 @@ impl Graphics {
         );
     }
 
+    pub(crate) fn invalidate_screen_texture(&mut self) {
+        self.screen_texture_initialized = false;
+    }
+
     unsafe fn create_screen_texture(gl: &mut glow::Context) -> glow::NativeTexture {
         let screen_texture = gl
             .create_texture()

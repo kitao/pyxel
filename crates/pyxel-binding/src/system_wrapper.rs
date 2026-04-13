@@ -178,6 +178,17 @@ fn fullscreen(enabled: bool) {
 }
 
 #[pyfunction]
+fn resize(width: u32, height: u32) -> PyResult<()> {
+    if width == 0 || height == 0 {
+        return Err(pyo3::exceptions::PyValueError::new_err(
+            "width and height must be greater than 0",
+        ));
+    }
+    pyxel().set_screen_size(width, height);
+    Ok(())
+}
+
+#[pyfunction]
 fn _reset_statics() {
     pyxel::reset_statics();
 }
@@ -208,6 +219,7 @@ pub fn add_system_functions(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(integer_scale, m)?)?;
     m.add_function(wrap_pyfunction!(screen_mode, m)?)?;
     m.add_function(wrap_pyfunction!(fullscreen, m)?)?;
+    m.add_function(wrap_pyfunction!(resize, m)?)?;
     m.add_function(wrap_pyfunction!(_reset_statics, m)?)?;
     m.add_function(wrap_pyfunction!(_pid_exists, m)?)?;
     Ok(())

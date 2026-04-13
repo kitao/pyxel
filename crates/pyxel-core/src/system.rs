@@ -1,5 +1,6 @@
 use std::ptr;
 
+use crate::canvas::Canvas;
 use crate::image::{rgb_to_rgb8, Color, Image};
 use crate::key::{
     Key, GAMEPAD1_BUTTON_A, GAMEPAD1_BUTTON_B, GAMEPAD1_BUTTON_DPAD_DOWN,
@@ -11,6 +12,8 @@ use crate::platform::key::GAMEPAD1_BUTTON_BACK;
 use crate::platform::{self, Event};
 use crate::profiler::Profiler;
 use crate::pyxel::{self, Pyxel};
+#[cfg(not(target_os = "emscripten"))]
+use crate::settings::DISPLAY_RATIO;
 use crate::settings::{MAX_FRAME_DELAY_MS, NUM_MEASURE_FRAMES, NUM_SCREEN_TYPES};
 use crate::utils;
 use crate::window_watcher::WindowWatcher;
@@ -246,6 +249,44 @@ impl Pyxel {
         }
 
         platform::set_fullscreen(enabled);
+    }
+
+    pub fn set_screen_size(&mut self, width: u32, height: u32) {
+        assert!(
+            width > 0 && height > 0,
+            "width and height must be greater than 0"
+        );
+
+        *pyxel::width() = width;
+        *pyxel::height() = height;
+
+        pyxel::screen().canvas = Canvas::new(width, height);
+
+        if let Some(graphics) = &mut self.graphics {
+            graphics.invalidate_screen_texture();
+        }
+
+        self.reset_screencast();
+
+        if !*pyxel::is_headless() {
+            // Keep the current effective scale when possible, so the window
+            // follows a resize naturally in windowed mode on native platforms.
+            // Cap the scale so the new window fits within the display.
+            #[cfg(not(target_os = "emscripten"))]
+            if !platform::is_fullscreen() {
+                let (display_w, display_h) = platform::display_size();
+                let max_scale = f32::min(
+                    display_w as f32 * DISPLAY_RATIO / width as f32,
+                    display_h as f32 * DISPLAY_RATIO / height as f32,
+                )
+                .max(1.0);
+                let scale = self.system.screen_scale.max(1.0).min(max_scale);
+                let new_win_w = (width as f32 * scale).round() as u32;
+                let new_win_h = (height as f32 * scale).round() as u32;
+                platform::set_window_size(new_win_w, new_win_h);
+            }
+            self.update_screen_params();
+        }
     }
 
     fn process_events(&mut self) {
