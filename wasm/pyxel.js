@@ -120,8 +120,7 @@ async function launchPyxel(params) {
   const pyodide = await _loadPyodideAndPyxel(canvas);
 
   _hookPythonError(pyodide);
-  params.root = await Promise.resolve(params.root || ".");
-  _hookFileOperations(pyodide, params.root);
+  _hookFileOperations(pyodide, params.root || ".");
   await _waitForInput();
 
   window.pyxelContext.initialized = true;

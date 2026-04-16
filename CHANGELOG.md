@@ -1,9 +1,5 @@
 # Change Log
 
-## 2.9.1
-
-- Reduced Pyxel Web Launcher cache delay for app updates
-
 ## 2.9.0
 
 - Redesigned gen_bgm for Pyxel Composer integration
