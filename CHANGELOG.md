@@ -3,6 +3,7 @@
 ## 2.9.1
 
 - Reduced Pyxel Web Launcher cache delay for app updates
+- Reduced Pyxel MML Studio share URL length
 
 ## 2.9.0
 
