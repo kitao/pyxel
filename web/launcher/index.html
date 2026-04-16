@@ -9,6 +9,20 @@
   </head>
   <body class="pyxel-scheme">
     <script>
+      // Resolve a branch name to the current commit SHA via GitHub API,
+      // so subsequent jsDelivr fetches use an immutable @<SHA> URL.
+      // Falls back to the ref name on any failure (network, 403, 404, etc.).
+      async function resolveRef(user, repo, ref) {
+        try {
+          const res = await fetch(
+            `https://api.github.com/repos/${user}/${repo}/commits/${ref}`,
+            { headers: { Accept: "application/vnd.github.sha" }, cache: "no-cache" },
+          );
+          if (res.ok) return (await res.text()).trim();
+        } catch (_) { /* ignore */ }
+        return ref;
+      }
+
       const queries = new URL(document.location).searchParams;
       let command, value, ext;
 
@@ -36,7 +50,10 @@
           if (parts.length < 4) {
             location.replace("url-builder.html");
           }
-          root = `https://cdn.jsdelivr.net/gh/${parts[0]}/${parts[1]}@${parts[2]}`;
+          const [user, repo, branch] = parts;
+          root = resolveRef(user, repo, branch).then(
+            (ref) => `https://cdn.jsdelivr.net/gh/${user}/${repo}@${ref}`,
+          );
           name = parts.slice(3).join("/") + ext;
         } else {
           // Legacy format: user.repo.path.to.file
@@ -44,14 +61,16 @@
           root = `https://cdn.jsdelivr.net/gh/${parts[0]}/${parts[1]}`;
           name = parts.slice(2).join("/") + ext;
         }
-        launchPyxel({
-          root,
-          command,
-          name,
-          packages: queries.get("packages"),
-          gamepad: queries.get("gamepad"),
-          editor: queries.get("editor"),
-        });
+        Promise.resolve(root).then((r) =>
+          launchPyxel({
+            root: r,
+            command,
+            name,
+            packages: queries.get("packages"),
+            gamepad: queries.get("gamepad"),
+            editor: queries.get("editor"),
+          }),
+        );
       }
     </script>
   </body>
