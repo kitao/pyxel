@@ -410,6 +410,8 @@ class JsEval:
             rest = _skip_comma(rest)
             repl_s, rest = _parse_arg(rest)
             rest = rest.strip()
+            if rest.startswith(","):
+                rest = rest[1:].strip()
             if rest.startswith(")"):
                 rest = rest[1:]
             repl = self.eval(repl_s)
@@ -526,8 +528,11 @@ class JsEval:
         rest = _skip_comma(rest)
         rows_s, _ = _parse_arg(rest)
         headers = self._parse_array(headers_s)
-        # Parse 2d array for rows
-        rows_inner = rows_s.strip().strip("[]")
+        # Parse 2d array for rows (remove only the outermost brackets)
+        rows_stripped = rows_s.strip()
+        if rows_stripped.startswith("[") and rows_stripped.endswith("]"):
+            rows_stripped = rows_stripped[1:-1]
+        rows_inner = rows_stripped
         rows = []
         while rows_inner.strip():
             rows_inner = rows_inner.strip()
@@ -549,7 +554,7 @@ class JsEval:
         # Destructured: ([u,n]) => `...`
         m = re.search(
             r'\.map\(\(\[(\w+),\s*(\w+)\]\)\s*=>\s*`(.*?)`\)'
-            r'\.join\(["\'].*?["\']\)', expr, re.DOTALL,
+            r'\s*\.join\(["\'].*?["\']\)', expr, re.DOTALL,
         )
         if m:
             pairs_inner = arr_str.strip().strip("[]")
@@ -569,9 +574,10 @@ class JsEval:
                 else:
                     break
             return "".join(items)
-        # Simple: k => `...`
+        # Simple: k => `...` or (k) => `...`
         m = re.search(
-            r'\.map\((\w+)\s*=>\s*`(.*?)`\)\.join\(["\'].*?["\']\)',
+            r'\.map\(\(?(\w+)\)?\s*=>\s*`(.*?)`\)'
+            r'\s*\.join\(["\'].*?["\']\)',
             expr, re.DOTALL,
         )
         if m:

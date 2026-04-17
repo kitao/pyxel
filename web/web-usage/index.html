@@ -5,17 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Pyxel Web Usage</title>
     <link rel="icon" href="../../wasm/images/pyxel_icon_64x64.ico" />
-    <link rel="stylesheet" href="../styles.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/github-dark.min.css" />
+    <link rel="stylesheet" href="../styles.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/github-dark.min.css"
+    />
     <script src="../shared.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/highlight.min.js"></script>
   </head>
   <body class="page min-h-full">
     <main class="page-container" id="app">
-      <div class="flex justify-center items-center py-12 text-gray-500 text-sm">Loading...</div>
+      <div class="flex justify-center items-center py-12 text-gray-500 text-sm">
+        Loading...
+      </div>
     </main>
     <script>
-      let data, lang = "en";
+      let data,
+        lang = "en";
 
       function table(headers, rows) {
         let h = `<div class="overflow-x-auto"><table class="w-full border-collapse"><thead><tr>`;
@@ -23,7 +29,8 @@
         h += `</tr></thead><tbody>`;
         for (const row of rows) {
           h += "<tr>";
-          for (const cell of row) h += `<td class="td text-gray-300">${cell}</td>`;
+          for (const cell of row)
+            h += `<td class="td text-gray-300">${cell}</td>`;
           h += "</tr>";
         }
         return h + "</tbody></table></div>";
@@ -85,16 +92,33 @@
           ${table(
             [t("th_method"), t("th_description")],
             [
-              [`<a href="#s-code-maker" class="link-strong">Pyxel Code Maker</a>`, esc(t("method_code_maker"))],
-              [`<a href="#s-launcher" class="link-strong">Pyxel Web Launcher</a>`, esc(t("method_launcher"))],
-              [`<a href="#s-app2html" class="link-strong">app2html ${esc(t("th_command"))}</a>`, esc(t("method_app2html"))],
-              [`<a href="#s-custom-tags" class="link-strong">${esc(t("custom_tags_title"))}</a>`, esc(t("method_custom_tags"))],
-            ]
+              [
+                `<a href="#s-code-maker" class="link-strong">Pyxel Code Maker</a>`,
+                esc(t("method_code_maker")),
+              ],
+              [
+                `<a href="#s-launcher" class="link-strong">Pyxel Web Launcher</a>`,
+                esc(t("method_launcher")),
+              ],
+              [
+                `<a href="#s-app2html" class="link-strong">app2html ${esc(t("th_command"))}</a>`,
+                esc(t("method_app2html")),
+              ],
+              [
+                `<a href="#s-custom-tags" class="link-strong">${esc(t("custom_tags_title"))}</a>`,
+                esc(t("method_custom_tags")),
+              ],
+            ],
           )}`;
 
         // Code Maker
         const codeMakerLink = link("../code-maker/", "Pyxel Code Maker");
-        const codeMakerManualLink = link("../code-maker/manual.html", lang === "ja" ? "Pyxel Code Maker マニュアル" : "Pyxel Code Maker Manual");
+        const codeMakerManualLink = link(
+          "../code-maker/manual.html",
+          lang === "ja"
+            ? "Pyxel Code Maker マニュアル"
+            : "Pyxel Code Maker Manual",
+        );
         $("s-code-maker").innerHTML = `
           <h2 class="section-title">${esc(t("code_maker_title"))}</h2>
           <p class="body">${t("code_maker_body").replace("{0}", codeMakerLink)}</p>
@@ -107,9 +131,11 @@
           <p class="body mt-2">${t("launcher_body2").replace("{0}", launcherLink)}</p>
 
           <h3 class="sub-title">${esc(t("launcher_url_title"))}</h3>
-          ${code(lang === "ja"
-            ? "https://kitao.github.io/pyxel/web/launcher/?<コマンド>=<ユーザー名>/<リポジトリ名>/<ブランチ名>/<パス>/<ファイル名（拡張子なし）>"
-            : "https://kitao.github.io/pyxel/web/launcher/?<command>=<username>/<repository>/<branch>/<path>/<filename without extension>")}
+          ${code(
+            lang === "ja"
+              ? "https://kitao.github.io/pyxel/web/launcher/?<コマンド>=<ユーザー名>/<リポジトリ名>/<ブランチ名>/<パス>/<ファイル名（拡張子なし）>"
+              : "https://kitao.github.io/pyxel/web/launcher/?<command>=<username>/<repository>/<branch>/<path>/<filename without extension>",
+          )}
 
           <h3 class="sub-title">${esc(t("launcher_commands_title"))}</h3>
           ${table(
@@ -118,7 +144,7 @@
               [chip("run"), esc(t("cmd_run"))],
               [chip("play"), esc(t("cmd_play"))],
               [chip("edit"), esc(t("cmd_edit"))],
-            ]
+            ],
           )}
 
           <h3 class="sub-title">${esc(t("launcher_url_example_title"))}</h3>
@@ -135,9 +161,7 @@
           <p class="body mb-3">${t("launcher_attrs_body").replace("{0}", chip("run")).replace("{1}", chip("play"))}</p>
           ${table(
             [t("th_attribute"), t("th_description")],
-            [
-              [chip("gamepad=enabled"), esc(t("attr_gamepad"))],
-            ]
+            [[chip("gamepad=enabled"), esc(t("attr_gamepad"))]],
           )}
           <p class="body mt-3">${t("launcher_attrs_run_example").replace("{0}", chip("run"))}</p>
           ${code("https://kitao.github.io/pyxel/web/launcher/?run=taro/my_repo/main/src/scenes/title&gamepad=enabled")}
@@ -186,7 +210,8 @@
           <h3 class="sub-title">${esc(t("custom_tags_run_title"))}</h3>
           <p class="body">${esc(t("custom_tags_run_desc"))}</p>
           <p class="body mt-2">${t("custom_tags_run_script").replace("{0}", chip("script"))}</p>
-          ${code(`<pyxel-run
+          ${code(
+            `<pyxel-run
   script="
 import pyxel
 pyxel.init(200, 150)
@@ -194,7 +219,9 @@ pyxel.cls(8)
 pyxel.line(20, 20, 180, 130, 7)
 pyxel.show()
 "
-></pyxel-run>`, "html")}
+></pyxel-run>`,
+            "html",
+          )}
           <p class="body">${t("custom_tags_run_file")
             .replace("{0}", chip("root"))
             .replace("{1}", chip("name"))
@@ -209,10 +236,13 @@ pyxel.show()
           <h3 class="sub-title">${esc(t("custom_tags_play_title"))}</h3>
           <p class="body">${esc(t("custom_tags_play_desc"))}</p>
           <p class="body mt-2">${t("custom_tags_play_body").replace("{0}", chip("root"))}</p>
-          ${code(`<pyxel-play
+          ${code(
+            `<pyxel-play
   root="https://cdn.jsdelivr.net/gh/kitao/pyxel/python/pyxel/examples/apps"
   name="megaball.pyxapp"
-></pyxel-play>`, "html")}
+></pyxel-play>`,
+            "html",
+          )}
 
           <h3 class="sub-title">${esc(t("custom_tags_edit_title"))}</h3>
           <p class="body">${esc(t("custom_tags_edit_desc"))}</p>
@@ -225,9 +255,7 @@ pyxel.show()
             .replace("{1}", chip("pyxel-play"))}</p>
           ${table(
             [lang === "ja" ? "属性" : "Attribute", t("th_description")],
-            [
-              [chip('gamepad="enabled"'), esc(t("custom_tags_attr_gamepad"))],
-            ]
+            [[chip('gamepad="enabled"'), esc(t("custom_tags_attr_gamepad"))]],
           )}
 
           <h3 class="sub-title" id="s-custom-tags-screen">${esc(t("custom_tags_screen_title"))}</h3>
@@ -238,9 +266,12 @@ pyxel.show()
           <h3 class="sub-title">${esc(t("custom_tags_local_title"))}</h3>
           <p class="body">${esc(t("custom_tags_local_body"))}</p>
           <p class="body mt-2">${esc(t("custom_tags_local_body2"))}</p>
-          ${code(lang === "ja"
-            ? "python -m http.server\n# Mac や Linux の場合は python3 を使用"
-            : "python -m http.server\n# Use python3 on macOS and Linux", "sh")}
+          ${code(
+            lang === "ja"
+              ? "python -m http.server\n# Mac や Linux の場合は python3 を使用"
+              : "python -m http.server\n# Use python3 on macOS and Linux",
+            "sh",
+          )}
           <p class="body">${t("custom_tags_local_access").replace("{0}", chip("http://localhost:8000/test.html"))}</p>`;
 
         setDocLang(lang);

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Pyxel MML Studio Manual</title>
     <link rel="icon" href="../../wasm/images/pyxel_icon_64x64.ico" />
-    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../styles.css" />
     <script src="../shared.js"></script>
   </head>
 
@@ -195,11 +195,9 @@
         // Title & subtitle
         document.title = t("title");
         document.getElementById("page-title").textContent = t("title");
-        document.getElementById("page-subtitle").innerHTML = t("subtitle")
-          .replace(
-            "{0}",
-            link("https://github.com/kitao/pyxel", "Pyxel"),
-          );
+        document.getElementById("page-subtitle").innerHTML = t(
+          "subtitle",
+        ).replace("{0}", link("https://github.com/kitao/pyxel", "Pyxel"));
 
         // Overview
         document.getElementById("sec-overview-title").textContent =
@@ -299,10 +297,7 @@
           t("mml_ref_title");
         document.getElementById("sec-mml-ref-body").innerHTML = esc(
           t("mml_ref_body"),
-        ).replace(
-          "{0}",
-          link("mml-commands.html", t("mml_ref_link")),
-        );
+        ).replace("{0}", link("mml-commands.html", t("mml_ref_link")));
 
         setDocLang(lang);
       }

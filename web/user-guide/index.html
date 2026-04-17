@@ -5,22 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Pyxel User Guide</title>
     <link rel="icon" href="../../wasm/images/pyxel_icon_64x64.ico" />
-    <link rel="stylesheet" href="../styles.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/github-dark.min.css" />
+    <link rel="stylesheet" href="../styles.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/github-dark.min.css"
+    />
     <script src="../shared.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/highlight.min.js"></script>
   </head>
   <body class="page min-h-full">
     <main class="page-container" id="app">
-      <div class="flex justify-center items-center py-12 text-gray-500 text-sm">Loading...</div>
+      <div class="flex justify-center items-center py-12 text-gray-500 text-sm">
+        Loading...
+      </div>
     </main>
     <script>
-      let data, lang = "en";
+      let data,
+        lang = "en";
 
       function shortcutTable(items) {
         let h = `<div class="overflow-x-auto"><table class="w-full border-collapse">
           <thead><tr><th class="th">Key</th><th class="th">Action</th></tr></thead><tbody>`;
-        const inlineCode = (s) => esc(s).replace(/`([^`]+)`/g, (_, m) => chip(m));
+        const inlineCode = (s) =>
+          esc(s).replace(/`([^`]+)`/g, (_, m) => chip(m));
         for (const i of items)
           h += `<tr><td class="td"><span class="key">${esc(t(i.key))}</span></td><td class="td text-gray-300">${inlineCode(t(i.action))}</td></tr>`;
         return h + "</tbody></table></div>";
@@ -84,9 +91,17 @@
           <p class="body">${t("overview_body").replace("{0}", "<strong>Pyxel</strong>")}</p>
           <p class="body mt-2">${t("overview_license")
             .replace(/\{0\}/g, "Pyxel")
-            .replace("{1}", link("https://github.com/kitao/pyxel/blob/main/LICENSE", "MIT License"))}</p>
-          <p class="body mt-2">${t("overview_star")
-            .replace("{0}", link("https://github.com/kitao/pyxel", "GitHub"))}</p>
+            .replace(
+              "{1}",
+              link(
+                "https://github.com/kitao/pyxel/blob/main/LICENSE",
+                "MIT License",
+              ),
+            )}</p>
+          <p class="body mt-2">${t("overview_star").replace(
+            "{0}",
+            link("https://github.com/kitao/pyxel", "GitHub"),
+          )}</p>
           <div class="flex items-end gap-2 mt-3">
             <a href="https://kitao.github.io/pyxel-user-examples/" target="_blank" rel="noopener noreferrer" style="flex:553"><img src="../../docs/images/pyxel_thanks.png" class="w-full"></a>
             <a href="https://gihyo.jp/book/2025/978-4-297-14657-3" target="_blank" rel="noopener noreferrer" style="flex:190"><img src="../../docs/images/pyxel_book.png" class="w-full"></a>
@@ -103,9 +118,21 @@
           </div>`;
 
         // Specifications
-        const specs = ["specs_platform","specs_language","specs_screen","specs_colors","specs_images",
-          "specs_tilemaps","specs_sounds","specs_music","specs_input","specs_tools","specs_extensible"]
-          .map(k => `<li>${esc(t(k))}</li>`).join("");
+        const specs = [
+          "specs_platform",
+          "specs_language",
+          "specs_screen",
+          "specs_colors",
+          "specs_images",
+          "specs_tilemaps",
+          "specs_sounds",
+          "specs_music",
+          "specs_input",
+          "specs_tools",
+          "specs_extensible",
+        ]
+          .map((k) => `<li>${esc(t(k))}</li>`)
+          .join("");
         $("s-specs").innerHTML = `
           <h2 class="section-title">${esc(t("specs_title"))}</h2>
           <ul class="list">${specs}</ul>
@@ -114,7 +141,10 @@
           <img src="../../docs/images/pyxel_palette.png" alt="Palette" class="my-2 rounded border border-gray-700">
           <p class="body mt-3">${t("overview_inspired")
             .replace("{0}", "Pyxel")
-            .replace("{1}", link("https://www.lexaloffle.com/pico-8.php", "PICO-8"))
+            .replace(
+              "{1}",
+              link("https://www.lexaloffle.com/pico-8.php", "PICO-8"),
+            )
             .replace("{2}", link("https://tic80.com/", "TIC-80"))}</p>`;
 
         // Install
@@ -128,15 +158,26 @@
             .replace("{1}", chip("pyxel"))}</p>
           <h3 class="sub-title">${esc(t("install_web_title"))}</h3>
           <p class="body">${esc(t("install_web_body"))}</p>
-          <p class="body mt-2">${t("install_web_codemaker")
-            .replace("{0}", link("../code-maker/", "Pyxel Code Maker"))}</p>
-          <p class="body mt-2">${t("install_web_other")
-            .replace("{0}", link("../web-usage/", esc(t("other_web_usage"))))}</p>
+          <p class="body mt-2">${t("install_web_codemaker").replace(
+            "{0}",
+            link("../code-maker/", "Pyxel Code Maker"),
+          )}</p>
+          <p class="body mt-2">${t("install_web_other").replace(
+            "{0}",
+            link("../web-usage/", esc(t("other_web_usage"))),
+          )}</p>
           <h3 class="sub-title">${esc(t("install_vscode_title"))}</h3>
-          <p class="body">${t("install_vscode_body")
-            .replace("{0}", link("https://code.visualstudio.com/", "Visual Studio Code"))}</p>
-          <p class="body mt-2">${t("install_vscode_howto")
-            .replace("{0}", link("https://marketplace.visualstudio.com/items?itemName=kitao.pyxel-vscode", "Pyxel"))}</p>`;
+          <p class="body">${t("install_vscode_body").replace(
+            "{0}",
+            link("https://code.visualstudio.com/", "Visual Studio Code"),
+          )}</p>
+          <p class="body mt-2">${t("install_vscode_howto").replace(
+            "{0}",
+            link(
+              "https://marketplace.visualstudio.com/items?itemName=kitao.pyxel-vscode",
+              "Pyxel",
+            ),
+          )}</p>`;
 
         // Basic Usage
         $("s-usage").innerHTML = `
@@ -159,15 +200,20 @@ usage:
           <p class="body">${esc(t("usage_examples_copy"))}</p>
           ${code("pyxel copy_examples", "sh")}
           <p class="body">${esc(t("usage_examples_run"))}</p>
-          ${code(`# ${t("usage_examples_run_comment1")}
+          ${code(
+            `# ${t("usage_examples_run_comment1")}
 cd pyxel_examples
 pyxel run 01_hello_pyxel.py
 
 # ${t("usage_examples_run_comment2")}
 cd apps
-pyxel play 30sec_of_daylight.pyxapp`, "sh")}
-          <p class="body">${t("usage_examples_showcase")
-            .replace("{0}", link("../showcase/", "Pyxel Showcase"))}</p>`;
+pyxel play 30sec_of_daylight.pyxapp`,
+            "sh",
+          )}
+          <p class="body">${t("usage_examples_showcase").replace(
+            "{0}",
+            link("../showcase/", "Pyxel Showcase"),
+          )}</p>`;
 
         // Creating Applications
         $("s-creating").innerHTML = `
@@ -176,7 +222,8 @@ pyxel play 30sec_of_daylight.pyxapp`, "sh")}
           <p class="body">${t("creating_program_body")
             .replace("{0}", chip("init"))
             .replace("{1}", chip("run"))}</p>
-          ${code(`import pyxel
+          ${code(
+            `import pyxel
 
 pyxel.init(160, 120)
 
@@ -188,13 +235,16 @@ def draw():
     pyxel.cls(0)
     pyxel.rect(10, 10, 20, 20, 11)
 
-pyxel.run(update, draw)`, "python")}
+pyxel.run(update, draw)`,
+            "python",
+          )}
           <p class="body">${t("creating_program_run_desc")
             .replace("{0}", chip("run"))
             .replace("{1}", chip("update"))
             .replace("{2}", chip("draw"))}</p>
           <p class="body mt-2">${esc(t("creating_program_class"))}</p>
-          ${code(`import pyxel
+          ${code(
+            `import pyxel
 
 class App:
     def __init__(self):
@@ -209,14 +259,19 @@ class App:
         pyxel.cls(0)
         pyxel.rect(self.x, 0, 8, 8, 9)
 
-App()`, "python")}
+App()`,
+            "python",
+          )}
           <p class="body">${t("creating_program_show").replace("{0}", chip("show"))}</p>
-          ${code(`import pyxel
+          ${code(
+            `import pyxel
 
 pyxel.init(120, 120)
 pyxel.cls(1)
 pyxel.circb(60, 60, 40, 7)
-pyxel.show()`, "python")}
+pyxel.show()`,
+            "python",
+          )}
           <h3 class="sub-title">${esc(t("creating_run_title"))}</h3>
           <p class="body">${t("creating_run_python").replace("{0}", chip("python"))}</p>
           ${code("python PYTHON_SCRIPT_FILE", "sh")}
@@ -235,8 +290,10 @@ pyxel.show()`, "python")}
           <h3 class="sub-title">${esc(t("resources_editor_title"))}</h3>
           <p class="body">${esc(t("resources_editor_body"))}
             ${esc(t("resources_editor_save"))}</p>
-          <p class="body mt-2">${t("resources_editor_link")
-            .replace("{0}", link("../editor-manual/", esc(t("tool_editor_manual"))))}</p>
+          <p class="body mt-2">${t("resources_editor_link").replace(
+            "{0}",
+            link("../editor-manual/", esc(t("tool_editor_manual"))),
+          )}</p>
           <h3 class="sub-title">${esc(t("resources_other_title"))}</h3>
           <p class="body">${esc(t("resources_other_images"))}</p>
           <ul class="list mt-1">
@@ -259,12 +316,15 @@ pyxel.show()`, "python")}
           <p class="body mt-2">${t("dist_metadata")
             .replace("{0}", chip("title"))
             .replace("{1}", chip("author"))}</p>
-          ${code(`# title: Pyxel Platformer
+          ${code(
+            `# title: Pyxel Platformer
 # author: Takashi Kitao
 # desc: A Pyxel platformer example
 # site: https://github.com/kitao/pyxel
 # license: MIT
-# version: 1.0`, "python")}
+# version: 1.0`,
+            "python",
+          )}
           <p class="body">${t("dist_play").replace("{0}", chip("pyxel play"))}</p>
           ${code("pyxel play PYXEL_APP_FILE", "sh")}
           <p class="body">${t("dist_convert")
@@ -274,38 +334,54 @@ pyxel.show()`, "python")}
         // API Reference
         $("s-apiref").innerHTML = `
           <h2 class="section-title">${esc(t("apiref_title"))}</h2>
-          <p class="body">${t("apiref_body")
-            .replace("{0}", link("../api-reference/", esc(t("tool_api_reference"))))}</p>
+          <p class="body">${t("apiref_body").replace(
+            "{0}",
+            link("../api-reference/", esc(t("tool_api_reference"))),
+          )}</p>
           <p class="body mt-2">${esc(t("apiref_advanced"))}</p>
           <p class="body mt-2">${esc(t("apiref_challenge"))}</p>`;
 
         // Links
-        const faqUrl = lang === "ja" ? "https://github.com/kitao/pyxel/blob/main/docs/faq-ja.md"
-          : "https://github.com/kitao/pyxel/blob/main/docs/faq.md";
+        const faqUrl =
+          lang === "ja"
+            ? "https://github.com/kitao/pyxel/blob/main/docs/faq-ja.md"
+            : "https://github.com/kitao/pyxel/blob/main/docs/faq.md";
         const docs = [
           ["../api-reference/", t("tool_api_reference")],
           ["../mml-studio/mml-commands.html", t("tool_mml_commands")],
           ["../editor-manual/", t("tool_editor_manual")],
           ["../web-usage/", t("other_web_usage")],
-          ["https://github.com/kitao/pyxel/blob/main/docs/pyxres-format.md", t("other_pyxres_format")],
+          [
+            "https://github.com/kitao/pyxel/blob/main/docs/pyxres-format.md",
+            t("other_pyxres_format"),
+          ],
           [faqUrl, t("other_faq")],
-        ].map(([u, n]) => `<li>${link(u, esc(n))}</li>`).join("");
+        ]
+          .map(([u, n]) => `<li>${link(u, esc(n))}</li>`)
+          .join("");
         const tools = [
           ["../showcase/", "Pyxel Showcase"],
           ["../launcher/", "Pyxel Web Launcher"],
           ["../code-maker/", "Pyxel Code Maker"],
           ["../mml-studio/", "Pyxel MML Studio"],
-          ["https://marketplace.visualstudio.com/items?itemName=kitao.pyxel-vscode", t("tool_vscode")],
+          [
+            "https://marketplace.visualstudio.com/items?itemName=kitao.pyxel-vscode",
+            t("tool_vscode"),
+          ],
           ["https://github.com/kitao/pyxel-mcp", t("tool_mcp")],
           ["https://github.com/kitao/pyxel-skill", t("tool_skill")],
-        ].map(([u, n]) => `<li>${link(u, esc(n))}</li>`).join("");
+        ]
+          .map(([u, n]) => `<li>${link(u, esc(n))}</li>`)
+          .join("");
         const others = [
           ["https://kitao.github.io/pyxel-user-examples/", t("other_examples")],
           ["https://x.com/kitao", t("other_x")],
           ["https://discord.gg/Z87eYHN", t("other_discord_en")],
           ["https://discord.gg/qHA5BCS", t("other_discord_ja")],
           ["https://gihyo.jp/book/2025/978-4-297-14657-3", t("other_book")],
-        ].map(([u, n]) => `<li>${link(u, esc(n))}</li>`).join("");
+        ]
+          .map(([u, n]) => `<li>${link(u, esc(n))}</li>`)
+          .join("");
         $("s-links").innerHTML = `
           <h2 class="section-title">${esc(t("links_title"))}</h2>
           <h3 class="sub-title">${esc(t("docs_title"))}</h3>
@@ -319,27 +395,43 @@ pyxel.show()`, "python")}
         $("s-contrib").innerHTML = `
           <h2 class="section-title">${esc(t("contrib_title"))}</h2>
           <h3 class="sub-title">${esc(t("contrib_issues_title"))}</h3>
-          <p class="body">${t("contrib_issues_body")
-            .replace("{0}", link("https://github.com/kitao/pyxel/issues", "Issue Tracker"))}</p>
+          <p class="body">${t("contrib_issues_body").replace(
+            "{0}",
+            link("https://github.com/kitao/pyxel/issues", "Issue Tracker"),
+          )}</p>
           <h3 class="sub-title">${esc(t("contrib_testing_title"))}</h3>
-          <p class="body">${t("contrib_testing_body")
-            .replace("{0}", link("https://github.com/kitao/pyxel/issues", "Issue Tracker"))}</p>
+          <p class="body">${t("contrib_testing_body").replace(
+            "{0}",
+            link("https://github.com/kitao/pyxel/issues", "Issue Tracker"),
+          )}</p>
           <h3 class="sub-title">${esc(t("contrib_pr_title"))}</h3>
           <p class="body">${esc(t("contrib_pr_body"))}</p>
-          <p class="body mt-2">${t("contrib_pr_license")
-            .replace("{0}", link("https://github.com/kitao/pyxel/blob/main/LICENSE", "MIT License"))}</p>`;
+          <p class="body mt-2">${t("contrib_pr_license").replace(
+            "{0}",
+            link(
+              "https://github.com/kitao/pyxel/blob/main/LICENSE",
+              "MIT License",
+            ),
+          )}</p>`;
 
         // License
         $("s-license").innerHTML = `
           <h2 class="section-title">${esc(t("license_title"))}</h2>
-          <p class="body">${t("license_body")
-            .replace("{0}", link("https://github.com/kitao/pyxel/blob/main/LICENSE", "MIT License"))}</p>`;
+          <p class="body">${t("license_body").replace(
+            "{0}",
+            link(
+              "https://github.com/kitao/pyxel/blob/main/LICENSE",
+              "MIT License",
+            ),
+          )}</p>`;
 
         // Sponsors
         $("s-sponsors").innerHTML = `
           <h2 class="section-title">${esc(t("sponsors_title"))}</h2>
-          <p class="body">${t("sponsors_body")
-            .replace("{0}", link("https://github.com/sponsors/kitao", esc(t("sponsors_link"))))}</p>`;
+          <p class="body">${t("sponsors_body").replace(
+            "{0}",
+            link("https://github.com/sponsors/kitao", esc(t("sponsors_link"))),
+          )}</p>`;
 
         setDocLang(lang);
         hljs.highlightAll();

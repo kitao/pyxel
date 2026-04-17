@@ -16,10 +16,15 @@
         try {
           const res = await fetch(
             `https://api.github.com/repos/${user}/${repo}/commits/${ref}`,
-            { headers: { Accept: "application/vnd.github.sha" }, cache: "no-cache" },
+            {
+              headers: { Accept: "application/vnd.github.sha" },
+              cache: "no-cache",
+            },
           );
           if (res.ok) return (await res.text()).trim();
-        } catch (_) { /* ignore */ }
+        } catch (_) {
+          /* ignore */
+        }
         return ref;
       }
 

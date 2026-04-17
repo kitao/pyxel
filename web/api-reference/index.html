@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Pyxel API Reference</title>
     <link rel="icon" href="../../wasm/images/pyxel_icon_64x64.ico" />
-    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../styles.css" />
     <script src="../shared.js"></script>
   </head>
 
@@ -79,8 +79,7 @@
         // Parameters
         if (item.params && item.params.length > 0) {
           const sec = document.createElement("div");
-          let html =
-            `<div class="text-gray-500 text-xs font-medium uppercase tracking-wide mb-1">${esc(t("parameters"))}</div>`;
+          let html = `<div class="text-gray-500 text-xs font-medium uppercase tracking-wide mb-1">${esc(t("parameters"))}</div>`;
           html += '<div class="space-y-1">';
           for (const p of item.params) {
             html += '<div class="text-xs leading-relaxed">';
@@ -99,8 +98,7 @@
         // Return (skip None)
         if (item.return && item.return.type !== "None") {
           const sec = document.createElement("div");
-          let html =
-            `<div class="text-gray-500 text-xs font-medium uppercase tracking-wide mb-1">${esc(t("returns"))}</div>`;
+          let html = `<div class="text-gray-500 text-xs font-medium uppercase tracking-wide mb-1">${esc(t("returns"))}</div>`;
           html += `<div class="text-xs leading-relaxed"><code class="text-indigo-300 font-mono">${esc(item.return.type)}</code>`;
           if (item.return.desc) {
             html += ` <span class="text-gray-400">\u2014 ${esc(t(item.return.desc))}</span>`;
@@ -195,7 +193,7 @@
           showAdvanced = toggleCheck.checked;
           localStorage.setItem(
             "pyxel-api-ref-advanced",
-            showAdvanced ? "1" : "0"
+            showAdvanced ? "1" : "0",
           );
           updateVisibility();
         });
@@ -211,8 +209,7 @@
         // No results message
         const noResults = document.createElement("div");
         noResults.id = "no-results";
-        noResults.className =
-          "hidden py-8 text-center text-gray-500 text-sm";
+        noResults.className = "hidden py-8 text-center text-gray-500 text-sm";
         app.appendChild(noResults);
 
         // Categories
@@ -256,8 +253,7 @@
               sigLine.className = "flex items-baseline gap-2";
 
               const badge = document.createElement("span");
-              badge.className =
-                "type-badge shrink-0 " + badgeColor(item.type);
+              badge.className = "type-badge shrink-0 " + badgeColor(item.type);
               badge.textContent = item.type;
               sigLine.appendChild(badge);
 
@@ -407,11 +403,9 @@
 
       function updateTexts() {
         document.title = t("title");
-        document.getElementById("page-subtitle").innerHTML = t("subtitle")
-          .replace(
-            "{0}",
-            link("https://github.com/kitao/pyxel", "Pyxel")
-          );
+        document.getElementById("page-subtitle").innerHTML = t(
+          "subtitle",
+        ).replace("{0}", link("https://github.com/kitao/pyxel", "Pyxel"));
 
         document.getElementById("search-input").placeholder =
           t("search_placeholder");
@@ -426,13 +420,9 @@
 
         // Category titles
         for (const cat of data.categories) {
-          const el = document.querySelector(
-            `[data-cat-title="${cat.id}"]`
-          );
+          const el = document.querySelector(`[data-cat-title="${cat.id}"]`);
           if (el) el.textContent = t(cat.title);
-          const el2 = document.querySelector(
-            `[data-cat-title2="${cat.id}"]`
-          );
+          const el2 = document.querySelector(`[data-cat-title2="${cat.id}"]`);
           if (el2) el2.textContent = t(cat.title);
         }
 
@@ -441,12 +431,10 @@
           if (cat.items) {
             for (let i = 0; i < cat.items.length; i++) {
               const key = cat.id + "-" + i;
-              const descEl = document.querySelector(
-                `[data-desc-key="${key}"]`
-              );
+              const descEl = document.querySelector(`[data-desc-key="${key}"]`);
               if (descEl) descEl.textContent = t(cat.items[i].description);
               const detailEl = document.querySelector(
-                `[data-detail-key="${key}"]`
+                `[data-detail-key="${key}"]`,
               );
               if (detailEl) buildDetailContent(detailEl, cat.items[i]);
             }
@@ -456,7 +444,7 @@
               const group = cat.constant_groups[g];
               const gid = cat.id + "-cg-" + g;
               const labelEl = document.querySelector(
-                `[data-cg-label="${gid}"]`
+                `[data-cg-label="${gid}"]`,
               );
               if (labelEl) labelEl.textContent = t(group.label);
               // Section labels and details
@@ -466,13 +454,13 @@
                   const sid = gid + "-s-" + s;
                   if (sec.label) {
                     const sl = document.querySelector(
-                      `[data-sec-label="${sid}"]`
+                      `[data-sec-label="${sid}"]`,
                     );
                     if (sl) sl.textContent = t(sec.label);
                   }
                   if (sec.details) {
                     const listEl = document.querySelector(
-                      `[data-sec-details="${sid}"]`
+                      `[data-sec-details="${sid}"]`,
                     );
                     if (listEl) {
                       let html = "";
@@ -517,7 +505,7 @@
               if (visible) itemsVisible++;
             }
             const itemsCard = document.querySelector(
-              `[data-items-card="${cat.id}"]`
+              `[data-items-card="${cat.id}"]`,
             );
             if (itemsCard)
               itemsCard.style.display = itemsVisible > 0 ? "" : "none";
@@ -529,7 +517,7 @@
             const q = searchQuery.toLowerCase();
             for (let i = 0; i < cat.constants.length; i++) {
               const el = document.querySelector(
-                `[data-const-key="${cat.id}-${i}"]`
+                `[data-const-key="${cat.id}-${i}"]`,
               );
               if (!el) continue;
               const visible =
@@ -538,7 +526,7 @@
               if (visible) catVisible++;
             }
             const grid = document.querySelector(
-              `[data-const-grid="${cat.id}"]`
+              `[data-const-grid="${cat.id}"]`,
             );
             if (grid) grid.style.display = catVisible > 0 ? "" : "none";
           }
@@ -557,7 +545,7 @@
                   const sid = gid + "-s-" + s;
                   for (let i = 0; i < sec.constants.length; i++) {
                     const el = document.querySelector(
-                      `[data-const-key="${sid}-${i}"]`
+                      `[data-const-key="${sid}-${i}"]`,
                     );
                     if (!el) continue;
                     const visible =
@@ -568,14 +556,12 @@
                   }
                 }
                 const grid = document.querySelector(
-                  `[data-const-grid="${gid}"]`
+                  `[data-const-grid="${gid}"]`,
                 );
                 if (grid) grid.style.display = groupVisible > 0 ? "" : "none";
               }
 
-              const groupEl = document.querySelector(
-                `[data-cg-id="${gid}"]`
-              );
+              const groupEl = document.querySelector(`[data-cg-id="${gid}"]`);
               if (groupEl)
                 groupEl.style.display = groupVisible > 0 ? "" : "none";
               catVisible += groupVisible;
@@ -585,15 +571,14 @@
           totalVisible += catVisible;
 
           const section = document.querySelector(
-            `details[data-cat-id="${cat.id}"]`
+            `details[data-cat-id="${cat.id}"]`,
           );
           if (section) section.style.display = catVisible > 0 ? "" : "none";
         }
 
-        document.getElementById("no-results").classList.toggle(
-          "hidden",
-          totalVisible > 0
-        );
+        document
+          .getElementById("no-results")
+          .classList.toggle("hidden", totalVisible > 0);
       }
 
       // Init

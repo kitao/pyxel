@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Pyxel Code Maker Manual</title>
     <link rel="icon" href="../../wasm/images/pyxel_icon_64x64.ico" />
-    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../styles.css" />
     <script src="../shared.js"></script>
   </head>
 
@@ -209,11 +209,9 @@
         // Title & subtitle
         document.title = t("title");
         document.getElementById("page-title").textContent = t("title");
-        document.getElementById("page-subtitle").innerHTML = t("subtitle")
-          .replace(
-            "{0}",
-            link("https://github.com/kitao/pyxel", "Pyxel"),
-          );
+        document.getElementById("page-subtitle").innerHTML = t(
+          "subtitle",
+        ).replace("{0}", link("https://github.com/kitao/pyxel", "Pyxel"));
 
         // Overview
         document.getElementById("sec-overview-title").textContent =
@@ -228,8 +226,9 @@
           t("layout_body");
 
         // Diagram labels
-        document.getElementById("diagram-editing-label").textContent =
-          t("layout_editing_area");
+        document.getElementById("diagram-editing-label").textContent = t(
+          "layout_editing_area",
+        );
         document.getElementById("diagram-editing-sublabel").textContent =
           "(Code / Resource)";
         document.getElementById("diagram-runtime-label").textContent =
@@ -283,8 +282,7 @@
           .join("");
 
         // Code Editor
-        document.getElementById("sec-code-title").textContent =
-          t("code_title");
+        document.getElementById("sec-code-title").textContent = t("code_title");
         document.getElementById("sec-code-body").innerHTML = esc(
           t("code_body"),
         ).replace("{0}", chip("main.py"));
@@ -301,10 +299,7 @@
           t("runtime_title");
         document.getElementById("sec-runtime-body").innerHTML = esc(
           t("runtime_body"),
-        ).replace(
-          "{0}",
-          `<span class="key">Ctrl(Cmd)+Enter</span>`,
-        );
+        ).replace("{0}", `<span class="key">Ctrl(Cmd)+Enter</span>`);
 
         // Project Files
         document.getElementById("sec-project-title").textContent =
@@ -319,7 +314,9 @@
           t("dragdrop_title");
         document.getElementById("sec-dragdrop-body").innerHTML = esc(
           t("dragdrop_body"),
-        ).replace("{0}", chip(".py")).replace("{1}", chip(".pyxres"));
+        )
+          .replace("{0}", chip(".py"))
+          .replace("{1}", chip(".pyxres"));
 
         // Sharing via URL
         document.getElementById("sec-sharing-title").textContent =

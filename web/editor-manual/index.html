@@ -5,15 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Pyxel Editor Manual</title>
     <link rel="icon" href="../../wasm/images/pyxel_icon_64x64.ico" />
-    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../styles.css" />
     <script src="../shared.js"></script>
   </head>
   <body class="page min-h-full">
     <main class="page-container" id="app">
-      <div class="flex justify-center items-center py-12 text-gray-500 text-sm">Loading...</div>
+      <div class="flex justify-center items-center py-12 text-gray-500 text-sm">
+        Loading...
+      </div>
     </main>
     <script>
-      let data, lang = "en";
+      let data,
+        lang = "en";
 
       function icon(src, size = 28) {
         return `<img src="${src}" style="width:${size}px;height:${size}px" class="pix inline-block align-middle" alt="">`;
@@ -21,7 +24,8 @@
 
       /* --- Render helpers --- */
       function shortcutTable(items) {
-        const ths = t("th_shortcut"), tha = t("th_action");
+        const ths = t("th_shortcut"),
+          tha = t("th_action");
         let h = `<div class="overflow-x-auto"><table class="w-full border-collapse">
           <thead><tr><th class="th">${esc(ths)}</th><th class="th">${esc(tha)}</th></tr></thead><tbody>`;
         for (const i of items)
@@ -49,7 +53,8 @@
       }
 
       function iconTable(rows) {
-        const ths = t("th_shortcut"), tha = t("th_action");
+        const ths = t("th_shortcut"),
+          tha = t("th_action");
         let h = `<div class="overflow-x-auto"><table class="w-full border-collapse">
           <thead><tr><th class="th" style="width:50px"></th><th class="th">${esc(ths)}</th><th class="th">${esc(tha)}</th></tr></thead><tbody>`;
         for (const r of rows)
@@ -59,7 +64,15 @@
         return h + "</tbody></table></div>";
       }
 
-      const ANNO_COLORS = ["#f87171","#60a5fa","#34d399","#fbbf24","#c084fc","#fb923c","#f472b6"];
+      const ANNO_COLORS = [
+        "#f87171",
+        "#60a5fa",
+        "#34d399",
+        "#fbbf24",
+        "#c084fc",
+        "#fb923c",
+        "#f472b6",
+      ];
 
       function areaTitle(label, annoIndex) {
         const c = ANNO_COLORS[annoIndex % ANNO_COLORS.length];
@@ -70,7 +83,7 @@
         // Display at same scale as full screenshot (which is w-full on 480px native)
         // crop width / 480 * 100 = percentage of container
         const a = data.annotations[editor][index];
-        const pct = (a.w / 480 * 100).toFixed(1);
+        const pct = ((a.w / 480) * 100).toFixed(1);
         return `<img src="images/${editor}_${a.id}.png" alt="" class="pix rounded border border-gray-700 my-2" style="width:${pct}%">`;
       }
 
@@ -78,14 +91,34 @@
         let svg = "";
         const colors = ANNO_COLORS;
         for (let i = 0; i < annotations.length; i++) {
-          const a = annotations[i], c = colors[i % colors.length], label = esc(t(a.label));
+          const a = annotations[i],
+            c = colors[i % colors.length],
+            label = esc(t(a.label));
           svg += `<rect x="${a.x}" y="${a.y}" width="${a.w}" height="${a.h}" fill="${c}" fill-opacity="0.1" stroke="${c}" stroke-width="1.5" rx="1"/>`;
-          let tx, ty, anc = "middle", bl = "middle";
-          if (a.anchor === "top") { tx = a.x+a.w/2; ty = a.y-4; bl = "auto"; }
-          else if (a.anchor === "bottom") { tx = a.x+a.w/2; ty = a.y+a.h+9; bl = "auto"; }
-          else if (a.anchor === "left") { tx = a.x-3; ty = a.y+a.h/2; anc = "end"; }
-          else if (a.anchor === "right") { tx = a.x+a.w+3; ty = a.y+a.h/2; anc = "start"; }
-          else { tx = a.x+a.w/2; ty = a.y+a.h/2; }
+          let tx,
+            ty,
+            anc = "middle",
+            bl = "middle";
+          if (a.anchor === "top") {
+            tx = a.x + a.w / 2;
+            ty = a.y - 4;
+            bl = "auto";
+          } else if (a.anchor === "bottom") {
+            tx = a.x + a.w / 2;
+            ty = a.y + a.h + 9;
+            bl = "auto";
+          } else if (a.anchor === "left") {
+            tx = a.x - 3;
+            ty = a.y + a.h / 2;
+            anc = "end";
+          } else if (a.anchor === "right") {
+            tx = a.x + a.w + 3;
+            ty = a.y + a.h / 2;
+            anc = "start";
+          } else {
+            tx = a.x + a.w / 2;
+            ty = a.y + a.h / 2;
+          }
           svg += `<text x="${tx}" y="${ty}" text-anchor="${anc}" dominant-baseline="${bl}" fill="${c}" font-size="10" font-weight="700" paint-order="stroke" stroke="#1f2937" stroke-width="3.5" stroke-linejoin="round">${label}</text>`;
         }
         return `<div class="relative my-3"><img src="${src}" alt="" class="w-full rounded-lg border border-gray-700 block pix"><svg class="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 480 360" preserveAspectRatio="xMidYMid meet">${svg}</svg></div>`;
@@ -102,19 +135,22 @@
             const isBlack = blacks.includes(i);
             const key = keys[i];
             const note = notes[i];
-            const bg = isBlack ? "bg-gray-600 border-gray-700 text-gray-200" : "bg-gray-200 border-gray-400 text-gray-700";
+            const bg = isBlack
+              ? "bg-gray-600 border-gray-700 text-gray-200"
+              : "bg-gray-200 border-gray-400 text-gray-700";
             const noteCl = isBlack ? "text-gray-400" : "text-gray-500";
             h += `<div class="flex flex-col items-center" style="width:32px">
               <span class="text-[10px] ${noteCl}">${esc(note)}</span>
-              <div class="${bg} border rounded-sm flex items-center justify-center" style="width:30px;height:${isBlack ? '28' : '36'}px;${isBlack ? 'margin-bottom:8px' : ''}">
+              <div class="${bg} border rounded-sm flex items-center justify-center" style="width:30px;height:${isBlack ? "28" : "36"}px;${isBlack ? "margin-bottom:8px" : ""}">
                 <span class="text-xs font-mono font-bold">${key}</span>
               </div>
             </div>`;
           }
-          h += '</div></div>';
+          h += "</div></div>";
           return h;
         }
-        let h = '<div class="my-3 overflow-x-auto"><div style="min-width:420px">';
+        let h =
+          '<div class="my-3 overflow-x-auto"><div style="min-width:420px">';
         h += renderOctave(kl.upper, t(kl.upper_label));
         h += renderOctave(kl.lower, t(kl.lower_label));
         // Rest key (shared)
@@ -126,19 +162,47 @@
             </div>
           </div>
         </div></div>`;
-        h += '</div></div>';
+        h += "</div></div>";
         return h;
       }
 
       function toolIcons() {
         return iconTable([
-          { icon: "images/tool_select.png", key: "S", desc: data.image_tools[0].desc },
-          { icon: "images/tool_pencil.png", key: "P", desc: data.image_tools[1].desc },
-          { icon: "images/tool_rectb.png", key: "R", desc: data.image_tools[2].desc },
-          { icon: "images/tool_rect.png", key: "Shift+R", desc: data.image_tools[3].desc },
-          { icon: "images/tool_circb.png", key: "C", desc: data.image_tools[4].desc },
-          { icon: "images/tool_circ.png", key: "Shift+C", desc: data.image_tools[5].desc },
-          { icon: "images/tool_bucket.png", key: "B", desc: data.image_tools[6].desc },
+          {
+            icon: "images/tool_select.png",
+            key: "S",
+            desc: data.image_tools[0].desc,
+          },
+          {
+            icon: "images/tool_pencil.png",
+            key: "P",
+            desc: data.image_tools[1].desc,
+          },
+          {
+            icon: "images/tool_rectb.png",
+            key: "R",
+            desc: data.image_tools[2].desc,
+          },
+          {
+            icon: "images/tool_rect.png",
+            key: "Shift+R",
+            desc: data.image_tools[3].desc,
+          },
+          {
+            icon: "images/tool_circb.png",
+            key: "C",
+            desc: data.image_tools[4].desc,
+          },
+          {
+            icon: "images/tool_circ.png",
+            key: "Shift+C",
+            desc: data.image_tools[5].desc,
+          },
+          {
+            icon: "images/tool_bucket.png",
+            key: "B",
+            desc: data.image_tools[6].desc,
+          },
         ]);
       }
 
@@ -218,7 +282,10 @@
         // Header
         document.title = t("title");
         $("p-title").textContent = t("title");
-        $("p-sub").innerHTML = t("subtitle").replace("{0}", link("https://github.com/kitao/pyxel", "Pyxel"));
+        $("p-sub").innerHTML = t("subtitle").replace(
+          "{0}",
+          link("https://github.com/kitao/pyxel", "Pyxel"),
+        );
 
         // Overview
         let editorCards = "";
@@ -231,21 +298,24 @@
             </div>
           </div>`;
         }
-        $("s-overview").innerHTML = `<h2 class="section-title">${esc(t("overview_title"))}</h2>
+        $("s-overview").innerHTML =
+          `<h2 class="section-title">${esc(t("overview_title"))}</h2>
           <p class="body mb-3">${esc(t("overview_body"))}</p>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">${editorCards}</div>`;
 
         // Launch
-        $("s-starting").innerHTML = `<h2 class="section-title">${esc(t("starting_title"))}</h2>
+        $("s-starting").innerHTML =
+          `<h2 class="section-title">${esc(t("starting_title"))}</h2>
           <p class="body">${esc(t("starting_body")).replace("{0}", '</p><pre class="bg-gray-900 rounded-lg px-4 py-2.5 my-3 font-mono text-sm text-indigo-300 overflow-x-auto">pyxel edit [PYXEL_RESOURCE_FILE]</pre><p class="body">').replace("{1}", chip("my_resource.pyxres"))}</p>`;
 
         // Common
-        $("s-common").innerHTML = `<h2 class="section-title">${esc(t("common_title"))}</h2>
+        $("s-common").innerHTML =
+          `<h2 class="section-title">${esc(t("common_title"))}</h2>
           <p class="body">${esc(t("common_body"))}</p>
           <h3 class="sub-title">${esc(t("menubar_title"))}</h3>
           <p class="body">${esc(t("menubar_body"))}</p>
           <img src="images/ui_menubar.png" alt="Menu Bar" class="pix rounded-lg border border-gray-700 my-3 w-full">
-          ${iconTable(data.menubar_buttons.map(b => ({icon: b.icon, key: b.key || "—", desc: b.desc})))}
+          ${iconTable(data.menubar_buttons.map((b) => ({ icon: b.icon, key: b.key || "—", desc: b.desc })))}
           <h3 class="sub-title">${esc(t("other_shortcuts_title"))}</h3>
           ${shortcutTable(data.common_extra_shortcuts)}
           <h3 class="sub-title">${esc(t("starting_usage_title"))}</h3>
@@ -340,7 +410,7 @@
           <p class="body">${esc(t("sound_speed_body"))}</p>
           ${areaTitle(data.annotations.sound[2].label, 2)}
           ${areaCrop("sound", 2)}
-          ${iconTable(data.playback_buttons.map(b => ({icon: b.icon, key: b.key || "—", desc: b.desc})))}
+          ${iconTable(data.playback_buttons.map((b) => ({ icon: b.icon, key: b.key || "—", desc: b.desc })))}
           ${areaTitle(data.annotations.sound[4].label, 4)}
           ${areaCrop("sound", 4)}
           <p class="body mb-2">${esc(t("sound_piano_body"))}</p>
@@ -381,7 +451,7 @@
           <p class="body">${esc(t("music_mscnum_body"))}</p>
           ${areaTitle(data.annotations.music[1].label, 1)}
           ${areaCrop("music", 1)}
-          ${iconTable(data.playback_buttons.map(b => ({icon: b.icon, key: b.key || "—", desc: b.desc})))}
+          ${iconTable(data.playback_buttons.map((b) => ({ icon: b.icon, key: b.key || "—", desc: b.desc })))}
           ${areaTitle(data.annotations.music[2].label, 2)}
           ${areaCrop("music", 2)}
           <p class="body mb-2">${esc(t("music_sequence_body"))}</p>

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Pyxel Showcase</title>
     <link rel="icon" href="../../wasm/images/pyxel_icon_64x64.ico" />
-    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../styles.css" />
     <script src="../shared.js"></script>
   </head>
 
@@ -78,8 +78,7 @@
 
             // Single line: filename + description + buttons
             const topLine = document.createElement("div");
-            topLine.className =
-              "flex flex-wrap items-center gap-x-3 gap-y-1";
+            topLine.className = "flex flex-wrap items-center gap-x-3 gap-y-1";
 
             const fileName = document.createElement("span");
             fileName.className = "font-mono font-semibold text-sm shrink-0";
@@ -92,7 +91,8 @@
             topLine.appendChild(desc);
 
             const buttons = document.createElement("span");
-            buttons.className = "flex items-center justify-end gap-2 ml-auto shrink-0 min-w-[9.5rem]";
+            buttons.className =
+              "flex items-center justify-end gap-2 ml-auto shrink-0 min-w-[9.5rem]";
 
             const demoBtn = document.createElement("a");
             demoBtn.href = item.demo;
@@ -121,7 +121,8 @@
               details.className = "mt-1";
 
               const summary = document.createElement("summary");
-              summary.className = "tri text-gray-400 text-xs hover:text-gray-300";
+              summary.className =
+                "tri text-gray-400 text-xs hover:text-gray-300";
               summary.dataset.uiKey = "details";
               details.appendChild(summary);
 
@@ -158,8 +159,9 @@
       function updateTexts() {
         document.title = t("title");
         document.getElementById("page-title").textContent = t("title");
-        document.getElementById("page-subtitle").innerHTML = t("subtitle")
-          .replace("{0}", link("https://github.com/kitao/pyxel", "Pyxel"));
+        document.getElementById("page-subtitle").innerHTML = t(
+          "subtitle",
+        ).replace("{0}", link("https://github.com/kitao/pyxel", "Pyxel"));
 
         // Categories, descriptions, and details
         for (const cat of data.categories) {
@@ -170,8 +172,11 @@
             const key = `${cat.id}-${i}`;
             const descEl = document.querySelector(`[data-desc-key="${key}"]`);
             if (descEl) descEl.textContent = t(item.description);
-            const detailEl = document.querySelector(`[data-detail-key="${key}"]`);
-            if (detailEl) detailEl.textContent = t(item.details) || t(item.description);
+            const detailEl = document.querySelector(
+              `[data-detail-key="${key}"]`,
+            );
+            if (detailEl)
+              detailEl.textContent = t(item.details) || t(item.description);
           }
         }
 
@@ -183,7 +188,13 @@
         // Footer
         const linkText = t("footer_link");
         document.getElementById("footer-text").innerHTML = t("footer")
-          .replace("{0}", link("https://github.com/kitao/pyxel/tree/main/web/showcase", linkText))
+          .replace(
+            "{0}",
+            link(
+              "https://github.com/kitao/pyxel/tree/main/web/showcase",
+              linkText,
+            ),
+          )
           .replace("{1}", link("../web-usage/", linkText));
 
         setDocLang(lang);

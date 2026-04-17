@@ -5,10 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Pyxel MML Commands</title>
     <link rel="icon" href="../../wasm/images/pyxel_icon_64x64.ico" />
-    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../styles.css" />
     <script src="../shared.js"></script>
     <style>
-      .td { border-color: #1f2937; vertical-align: top; }
+      .td {
+        border-color: #1f2937;
+        vertical-align: top;
+      }
     </style>
   </head>
   <body class="page h-full">
@@ -17,11 +20,21 @@
         class="flex sm:flex-row flex-col justify-between items-start sm:items-center gap-2 mb-2"
       >
         <h1 id="page-title" class="heading">Pyxel MML Commands</h1>
-        <select id="lang-select" class="lang-select self-start sm:self-auto mt-2 sm:mt-0" style="display: none"></select>
+        <select
+          id="lang-select"
+          class="lang-select self-start sm:self-auto mt-2 sm:mt-0"
+          style="display: none"
+        ></select>
       </div>
       <p id="subtitle" class="mb-4 subheading">
         MML command list for
-        <a href="https://github.com/kitao/pyxel" target="_blank" rel="noopener noreferrer" class="link">Pyxel</a>, a retro game engine for Python.
+        <a
+          href="https://github.com/kitao/pyxel"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="link"
+          >Pyxel</a
+        >, a retro game engine for Python.
       </p>
 
       <div class="overflow-x-auto card-compact">
@@ -45,12 +58,15 @@
         // Title and subtitle
         document.title = t("title");
         document.getElementById("page-title").textContent = t("title");
-        document.getElementById("subtitle").innerHTML = t("subtitle")
-          .replace("{0}", link("https://github.com/kitao/pyxel", "Pyxel"));
+        document.getElementById("subtitle").innerHTML = t("subtitle").replace(
+          "{0}",
+          link("https://github.com/kitao/pyxel", "Pyxel"),
+        );
 
         // Table headers
         document.getElementById("th-command").textContent = t("th_command");
-        document.getElementById("th-description").textContent = t("th_description");
+        document.getElementById("th-description").textContent =
+          t("th_description");
 
         // Commands
         const commandTable = document.getElementById("command-table");
@@ -93,10 +109,15 @@
         .then((json) => {
           data = json;
           lang = detectLanguage(data.languages);
-          buildLangSelector(data.languages, lang, (v) => {
-            lang = v;
-            render();
-          }, document.getElementById("lang-select"));
+          buildLangSelector(
+            data.languages,
+            lang,
+            (v) => {
+              lang = v;
+              render();
+            },
+            document.getElementById("lang-select"),
+          );
 
           render();
         })

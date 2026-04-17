@@ -116,6 +116,7 @@ update:
 format:
 	@cd $(CRATES_DIR); cargo fmt -- --emit=files
 	@ruff format $(ROOT_DIR)
+	@npx prettier --write --log-level warn "$(ROOT_DIR)/**/*.{js,css,html}"
 
 lint:
 	@cd $(CRATES_DIR); cargo clippy $(CARGO_OPTS) $(CLIPPY_OPTS)

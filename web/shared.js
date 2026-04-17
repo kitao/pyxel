@@ -22,7 +22,12 @@ const setDocLang = (lang) => {
   document.documentElement.lang = lang === "cn" ? "zh" : lang;
 };
 
-const buildLangSelector = (languages, currentLang, onChange, existingSelect) => {
+const buildLangSelector = (
+  languages,
+  currentLang,
+  onChange,
+  existingSelect,
+) => {
   const sel = existingSelect || document.createElement("select");
   if (!existingSelect) sel.className = "lang-select mt-1";
   for (const l of languages) {
@@ -53,8 +58,7 @@ const esc = (s) =>
 const link = (href, text) =>
   `<a href="${esc(href)}" target="_blank" rel="noopener noreferrer" class="link">${esc(text)}</a>`;
 
-const chip = (s) =>
-  `<code class="chip">${esc(s)}</code>`;
+const chip = (s) => `<code class="chip">${esc(s)}</code>`;
 
 const t = (o) => {
   if (!o) return "";

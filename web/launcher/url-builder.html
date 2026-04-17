@@ -5,22 +5,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Pyxel Web Launcher</title>
     <link rel="icon" href="../../wasm/images/pyxel_icon_64x64.ico" />
-    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../styles.css" />
     <script src="../shared.js"></script>
   </head>
 
   <body class="page h-full">
     <main class="page-container">
       <header class="flex items-start gap-4 mb-4">
-        <select id="lang-select" class="lang-select mt-1" style="display: none"></select>
+        <select
+          id="lang-select"
+          class="lang-select mt-1"
+          style="display: none"
+        ></select>
         <div class="flex-1 min-w-0 order-first">
           <h1 id="page-title" class="font-semibold text-2xl tracking-tight">
             Pyxel Web Launcher
           </h1>
           <p id="page-subtitle" class="mt-2 text-gray-300 text-sm">
             Launcher tool for the WebAssembly version of
-            <a class="link" href="https://github.com/kitao/pyxel" target="_blank" rel="noopener noreferrer">Pyxel</a>, a
-            retro game engine for Python.
+            <a
+              class="link"
+              href="https://github.com/kitao/pyxel"
+              target="_blank"
+              rel="noopener noreferrer"
+              >Pyxel</a
+            >, a retro game engine for Python.
           </p>
         </div>
       </header>
@@ -29,7 +38,10 @@
         <div class="gap-5 grid grid-cols-1">
           <!-- Startup File -->
           <div class="gap-2 grid">
-            <label for="startup-file" class="label" data-i18n="label_startup_file"
+            <label
+              for="startup-file"
+              class="label"
+              data-i18n="label_startup_file"
               >Startup File URL on GitHub</label
             >
             <input
@@ -46,8 +58,16 @@
                 <code class="chip">.pyxapp</code>, or
                 <code class="chip">.pyxres</code>.
               </li>
-              <li><span id="help-examples"></span>
-                <div style="margin-top: 4px; padding-left: 8px; display: grid; gap: 4px">
+              <li>
+                <span id="help-examples"></span>
+                <div
+                  style="
+                    margin-top: 4px;
+                    padding-left: 8px;
+                    display: grid;
+                    gap: 4px;
+                  "
+                >
                   <div id="help-example-py"></div>
                   <div id="help-example-pyxapp"></div>
                   <div id="help-example-pyxres"></div>
@@ -60,7 +80,10 @@
           <div id="run-play-options">
             <!-- Virtual Gamepad -->
             <div class="flex items-center gap-2">
-              <label for="virtual-gamepad" class="label" data-i18n="label_virtual_gamepad"
+              <label
+                for="virtual-gamepad"
+                class="label"
+                data-i18n="label_virtual_gamepad"
                 >Enable Virtual Gamepad</label
               >
               <input
@@ -70,13 +93,15 @@
                 class="checkbox"
               />
             </div>
-
           </div>
 
           <!-- Options for edit -->
           <div id="edit-options" style="display: none">
             <div class="gap-2 grid">
-              <label for="editor-screen" class="label" data-i18n="label_editor_screen"
+              <label
+                for="editor-screen"
+                class="label"
+                data-i18n="label_editor_screen"
                 >Editor Startup Screen</label
               >
               <select id="editor-screen" class="input">
@@ -90,7 +115,9 @@
 
           <!-- Launch URL -->
           <div class="gap-2 grid pt-2">
-            <span class="label" data-i18n="label_launch_url">Application Launch URL</span>
+            <span class="label" data-i18n="label_launch_url"
+              >Application Launch URL</span
+            >
             <a
               id="launch-url"
               tabindex="0"
@@ -125,8 +152,9 @@
         // Title and subtitle
         document.title = t("title");
         document.getElementById("page-title").textContent = t("title");
-        document.getElementById("page-subtitle").innerHTML = t("subtitle")
-          .replace("{0}", link("https://github.com/kitao/pyxel", "Pyxel"));
+        document.getElementById("page-subtitle").innerHTML = t(
+          "subtitle",
+        ).replace("{0}", link("https://github.com/kitao/pyxel", "Pyxel"));
 
         // Labels
         document.querySelectorAll("[data-i18n]").forEach((el) => {
@@ -134,21 +162,35 @@
         });
 
         // Help: file type + examples
-        document.getElementById("help-file-type").innerHTML =
-          t("help_file_type").replace("{0}", chip(".py")).replace("{1}", chip(".pyxapp")).replace("{2}", chip(".pyxres"));
-        const pyUrl = "https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/01_hello_pyxel.py";
-        const pyxappUrl = "https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/apps/megaball.pyxapp";
-        const pyxresUrl = "https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/assets/sample.pyxres";
-        document.getElementById("help-examples").textContent = t("help_examples");
-        const cmdChip = (name) => `<span style="display:inline-block;width:46px">${chip(name)}</span>`;
-        document.getElementById("help-example-py").innerHTML = cmdChip("run") + link(pyUrl, pyUrl);
-        document.getElementById("help-example-pyxapp").innerHTML = cmdChip("play") + link(pyxappUrl, pyxappUrl);
-        document.getElementById("help-example-pyxres").innerHTML = cmdChip("edit") + link(pyxresUrl, pyxresUrl);
+        document.getElementById("help-file-type").innerHTML = t(
+          "help_file_type",
+        )
+          .replace("{0}", chip(".py"))
+          .replace("{1}", chip(".pyxapp"))
+          .replace("{2}", chip(".pyxres"));
+        const pyUrl =
+          "https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/01_hello_pyxel.py";
+        const pyxappUrl =
+          "https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/apps/megaball.pyxapp";
+        const pyxresUrl =
+          "https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/assets/sample.pyxres";
+        document.getElementById("help-examples").textContent =
+          t("help_examples");
+        const cmdChip = (name) =>
+          `<span style="display:inline-block;width:46px">${chip(name)}</span>`;
+        document.getElementById("help-example-py").innerHTML =
+          cmdChip("run") + link(pyUrl, pyUrl);
+        document.getElementById("help-example-pyxapp").innerHTML =
+          cmdChip("play") + link(pyxappUrl, pyxappUrl);
+        document.getElementById("help-example-pyxres").innerHTML =
+          cmdChip("edit") + link(pyxresUrl, pyxresUrl);
 
         // Footer
         const docUrl = "../web-usage/";
-        document.getElementById("footer-text").innerHTML =
-          t("footer").replace("{0}", link(docUrl, t("footer_link")));
+        document.getElementById("footer-text").innerHTML = t("footer").replace(
+          "{0}",
+          link(docUrl, t("footer_link")),
+        );
 
         setDocLang(lang);
       }
@@ -161,8 +203,12 @@
       function updateOptions() {
         const ext = getFileExt(document.getElementById("startup-file").value);
         const isEdit = ext === "pyxres";
-        document.getElementById("run-play-options").style.display = isEdit ? "none" : "";
-        document.getElementById("edit-options").style.display = isEdit ? "" : "none";
+        document.getElementById("run-play-options").style.display = isEdit
+          ? "none"
+          : "";
+        document.getElementById("edit-options").style.display = isEdit
+          ? ""
+          : "none";
       }
 
       function buildLaunchUrl() {
@@ -222,10 +268,15 @@
         .then((json) => {
           data = json;
           lang = detectLanguage(data.languages);
-          buildLangSelector(data.languages, lang, (v) => {
-            lang = v;
-            updateTexts();
-          }, document.getElementById("lang-select"));
+          buildLangSelector(
+            data.languages,
+            lang,
+            (v) => {
+              lang = v;
+              updateTexts();
+            },
+            document.getElementById("lang-select"),
+          );
 
           updateTexts();
         })
