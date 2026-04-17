@@ -28,29 +28,7 @@ wrap_sound_as_python_list!(Tones, pyxel::SoundTone, tones);
 wrap_sound_as_python_list!(Volumes, pyxel::SoundVolume, volumes);
 wrap_sound_as_python_list!(Effects, pyxel::SoundEffect, effects);
 
-#[pyclass(from_py_object)]
-#[derive(Clone, Copy)]
-pub struct Sound {
-    pub(crate) inner: *mut pyxel::Sound,
-}
-
-unsafe impl Send for Sound {}
-unsafe impl Sync for Sound {}
-
-impl Sound {
-    pub fn wrap(inner: *mut pyxel::Sound) -> Self {
-        Self { inner }
-    }
-
-    fn inner_ref(&self) -> &pyxel::Sound {
-        unsafe { &*self.inner }
-    }
-
-    #[allow(clippy::mut_from_ref)]
-    fn inner_mut(&self) -> &mut pyxel::Sound {
-        unsafe { &mut *self.inner }
-    }
-}
+define_wrapper!(Sound, pyxel::Sound);
 
 #[pymethods]
 impl Sound {

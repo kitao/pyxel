@@ -4,6 +4,8 @@
 
 - Reduced Pyxel Web Launcher cache delay for app updates
 - Reduced Pyxel MML Studio share URL length
+- Optimized rendering, audio, and parsing hot paths
+- Reduced code duplication across core and binding layers
 
 ## 2.9.0
 

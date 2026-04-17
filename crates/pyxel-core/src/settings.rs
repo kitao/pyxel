@@ -116,6 +116,8 @@ pub const AUDIO_BUFFER_SAMPLES: u32 = 1024; // 1024 / 22050 * 1000 = 46.4ms
 #[cfg(not(target_os = "emscripten"))]
 pub const AUDIO_BUFFER_SAMPLES: u32 = 512; // 512 / 22050 * 1000 = 23.2ms
 pub const AUDIO_RENDER_STEP_SAMPLES: u32 = 64;
+pub const AUDIO_GAIN_SHIFT: u32 = 14;
+pub const AUDIO_GAIN_SCALE: i64 = 1_i64 << AUDIO_GAIN_SHIFT;
 
 pub const VOICE_CONTROL_RATE: u32 = 60;
 pub const NOTE_INTERP_CLOCKS: u32 = AUDIO_CLOCK_RATE / 1000; // 1 / 1000 = 1ms

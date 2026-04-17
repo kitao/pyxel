@@ -357,6 +357,52 @@ impl Tilemap {
         }
     }
 
+    fn collide_resolve_axis(
+        &self,
+        pos: f32,
+        size: f32,
+        delta: f32,
+        cross_start: i32,
+        cross_end: i32,
+        walls: &[Tile],
+        make_tile_coords: impl Fn(i32, i32) -> (i32, i32),
+    ) -> f32 {
+        if delta == 0.0 {
+            return delta;
+        }
+
+        let tile_size = TILE_SIZE as f32;
+
+        if delta > 0.0 {
+            let cur_edge = pos + size - 1.0;
+            let new_edge = cur_edge + delta;
+            let start = (cur_edge / tile_size).floor() as i32 + 1;
+            let end = (new_edge / tile_size).floor() as i32;
+            for primary in start..=end {
+                for cross in cross_start..=cross_end {
+                    let (tx, ty) = make_tile_coords(primary, cross);
+                    if self.is_wall(tx, ty, walls) {
+                        return primary as f32 * tile_size - size - pos;
+                    }
+                }
+            }
+        } else {
+            let new_edge = pos + delta;
+            let start = (pos / tile_size).floor() as i32 - 1;
+            let end = (new_edge / tile_size).floor() as i32;
+            for primary in (end..=start).rev() {
+                for cross in cross_start..=cross_end {
+                    let (tx, ty) = make_tile_coords(primary, cross);
+                    if self.is_wall(tx, ty, walls) {
+                        return (primary + 1) as f32 * tile_size - pos;
+                    }
+                }
+            }
+        }
+
+        delta
+    }
+
     fn collide_resolve_x(
         &self,
         x: f32,
@@ -366,40 +412,12 @@ impl Tilemap {
         dx: f32,
         walls: &[Tile],
     ) -> f32 {
-        if dx == 0.0 {
-            return dx;
-        }
-
         let tile_size = TILE_SIZE as f32;
         let ty0 = (y / tile_size).floor() as i32;
         let ty1 = ((y + height - 1.0) / tile_size).floor() as i32;
-
-        if dx > 0.0 {
-            let cur_edge = x + width - 1.0;
-            let new_edge = cur_edge + dx;
-            let start = (cur_edge / tile_size).floor() as i32 + 1;
-            let end = (new_edge / tile_size).floor() as i32;
-            for tx in start..=end {
-                for ty in ty0..=ty1 {
-                    if self.is_wall(tx, ty, walls) {
-                        return tx as f32 * tile_size - width - x;
-                    }
-                }
-            }
-        } else {
-            let new_edge = x + dx;
-            let start = (x / tile_size).floor() as i32 - 1;
-            let end = (new_edge / tile_size).floor() as i32;
-            for tx in (end..=start).rev() {
-                for ty in ty0..=ty1 {
-                    if self.is_wall(tx, ty, walls) {
-                        return (tx + 1) as f32 * tile_size - x;
-                    }
-                }
-            }
-        }
-
-        dx
+        self.collide_resolve_axis(x, width, dx, ty0, ty1, walls, |primary, cross| {
+            (primary, cross)
+        })
     }
 
     fn collide_resolve_y(
@@ -411,40 +429,12 @@ impl Tilemap {
         dy: f32,
         walls: &[Tile],
     ) -> f32 {
-        if dy == 0.0 {
-            return dy;
-        }
-
         let tile_size = TILE_SIZE as f32;
         let tx0 = (x / tile_size).floor() as i32;
         let tx1 = ((x + width - 1.0) / tile_size).floor() as i32;
-
-        if dy > 0.0 {
-            let cur_edge = y + height - 1.0;
-            let new_edge = cur_edge + dy;
-            let start = (cur_edge / tile_size).floor() as i32 + 1;
-            let end = (new_edge / tile_size).floor() as i32;
-            for ty in start..=end {
-                for tx in tx0..=tx1 {
-                    if self.is_wall(tx, ty, walls) {
-                        return ty as f32 * tile_size - height - y;
-                    }
-                }
-            }
-        } else {
-            let new_edge = y + dy;
-            let start = (y / tile_size).floor() as i32 - 1;
-            let end = (new_edge / tile_size).floor() as i32;
-            for ty in (end..=start).rev() {
-                for tx in tx0..=tx1 {
-                    if self.is_wall(tx, ty, walls) {
-                        return (ty + 1) as f32 * tile_size - y;
-                    }
-                }
-            }
-        }
-
-        dy
+        self.collide_resolve_axis(y, height, dy, tx0, tx1, walls, |primary, cross| {
+            (cross, primary)
+        })
     }
 
     fn is_wall(&self, tx: i32, ty: i32, walls: &[Tile]) -> bool {

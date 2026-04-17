@@ -3,29 +3,7 @@ use pyo3::prelude::*;
 
 use crate::sound_wrapper::Sound;
 
-#[pyclass(from_py_object)]
-#[derive(Clone, Copy)]
-pub struct Channel {
-    pub(crate) inner: *mut pyxel::Channel,
-}
-
-unsafe impl Send for Channel {}
-unsafe impl Sync for Channel {}
-
-impl Channel {
-    pub fn wrap(inner: *mut pyxel::Channel) -> Self {
-        Self { inner }
-    }
-
-    fn inner_ref(&self) -> &pyxel::Channel {
-        unsafe { &*self.inner }
-    }
-
-    #[allow(clippy::mut_from_ref)]
-    fn inner_mut(&self) -> &mut pyxel::Channel {
-        unsafe { &mut *self.inner }
-    }
-}
+define_wrapper!(Channel, pyxel::Channel);
 
 #[pymethods]
 impl Channel {

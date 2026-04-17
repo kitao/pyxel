@@ -7,29 +7,7 @@ use pyo3::types::PyDict;
 use crate::font_wrapper::Font;
 use crate::tilemap_wrapper::Tilemap;
 
-#[pyclass(from_py_object)]
-#[derive(Clone, Copy)]
-pub struct Image {
-    pub(crate) inner: *mut pyxel::Image,
-}
-
-unsafe impl Send for Image {}
-unsafe impl Sync for Image {}
-
-impl Image {
-    pub fn wrap(inner: *mut pyxel::Image) -> Self {
-        Self { inner }
-    }
-
-    fn inner_ref(&self) -> &pyxel::Image {
-        unsafe { &*self.inner }
-    }
-
-    #[allow(clippy::mut_from_ref)]
-    fn inner_mut(&self) -> &mut pyxel::Image {
-        unsafe { &mut *self.inner }
-    }
-}
+define_wrapper!(Image, pyxel::Image);
 
 #[pymethods]
 impl Image {

@@ -201,26 +201,14 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         let radius = f32_to_u32(radius);
         let r = radius as f32;
 
-        if self.alpha >= 1.0 {
-            for xi in 0..=radius as i32 {
-                let (x1, y1, x2, y2) = Self::ellipse_area(0.0, 0.0, r, r, xi);
-                for yi in y1..=y2 {
-                    self.write_data_with_clipping(x + x1, y + yi, value);
-                    self.write_data_with_clipping(x + x2, y + yi, value);
-                }
-                self.fill_row_clipped(x + y1, x + y2, y + x1, value);
-                self.fill_row_clipped(x + y1, x + y2, y + x2, value);
+        for xi in 0..=radius as i32 {
+            let (x1, y1, x2, y2) = Self::ellipse_area(0.0, 0.0, r, r, xi);
+            for yi in y1..=y2 {
+                self.write_data_with_clipping(x + x1, y + yi, value);
+                self.write_data_with_clipping(x + x2, y + yi, value);
             }
-        } else {
-            for xi in 0..=radius as i32 {
-                let (x1, y1, x2, y2) = Self::ellipse_area(0.0, 0.0, r, r, xi);
-                for yi in y1..=y2 {
-                    self.write_data_with_clipping(x + x1, y + yi, value);
-                    self.write_data_with_clipping(x + x2, y + yi, value);
-                    self.write_data_with_clipping(x + yi, y + x1, value);
-                    self.write_data_with_clipping(x + yi, y + x2, value);
-                }
-            }
+            self.fill_row_or_pixels(x + y1, x + y2, y + x1, value);
+            self.fill_row_or_pixels(x + y1, x + y2, y + x2, value);
         }
     }
 
@@ -259,20 +247,10 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
             }
         }
 
-        if self.alpha >= 1.0 {
-            for yi in y..=(y + height as i32 / 2) {
-                let (y1, x1, y2, x2) = Self::ellipse_area(cy, cx, rb, ra, yi);
-                self.fill_row_clipped(x1, x2, y1, value);
-                self.fill_row_clipped(x1, x2, y2, value);
-            }
-        } else {
-            for yi in y..=(y + height as i32 / 2) {
-                let (y1, x1, y2, x2) = Self::ellipse_area(cy, cx, rb, ra, yi);
-                for xi in x1..=x2 {
-                    self.write_data_with_clipping(xi, y1, value);
-                    self.write_data_with_clipping(xi, y2, value);
-                }
-            }
+        for yi in y..=(y + height as i32 / 2) {
+            let (y1, x1, y2, x2) = Self::ellipse_area(cy, cx, rb, ra, yi);
+            self.fill_row_or_pixels(x1, x2, y1, value);
+            self.fill_row_or_pixels(x1, x2, y2, value);
         }
     }
 
@@ -347,68 +325,33 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         };
         let x_inter = f32_to_i32(x1 as f32 + slope13 * (y2 - y1) as f32);
 
-        if self.alpha >= 1.0 {
-            for y in y1..=y2 {
-                let (x_slider, x_end) = if x_inter < x2 {
-                    (
-                        f32_to_i32(x_inter as f32 + slope13 * (y - y2) as f32),
-                        f32_to_i32(x2 as f32 + slope12 * (y - y2) as f32),
-                    )
-                } else {
-                    (
-                        f32_to_i32(x2 as f32 + slope12 * (y - y2) as f32),
-                        f32_to_i32(x_inter as f32 + slope13 * (y - y2) as f32),
-                    )
-                };
-                self.fill_row_clipped(x_slider, x_end, y, value);
-            }
-            for y in (y2 + 1)..=y3 {
-                let (x_slider, x_end) = if x_inter < x2 {
-                    (
-                        f32_to_i32(x_inter as f32 + slope13 * (y - y2) as f32),
-                        f32_to_i32(x2 as f32 + slope23 * (y - y2) as f32),
-                    )
-                } else {
-                    (
-                        f32_to_i32(x2 as f32 + slope23 * (y - y2) as f32),
-                        f32_to_i32(x_inter as f32 + slope13 * (y - y2) as f32),
-                    )
-                };
-                self.fill_row_clipped(x_slider, x_end, y, value);
-            }
-        } else {
-            for y in y1..=y2 {
-                let (x_slider, x_end) = if x_inter < x2 {
-                    (
-                        f32_to_i32(x_inter as f32 + slope13 * (y - y2) as f32),
-                        f32_to_i32(x2 as f32 + slope12 * (y - y2) as f32),
-                    )
-                } else {
-                    (
-                        f32_to_i32(x2 as f32 + slope12 * (y - y2) as f32),
-                        f32_to_i32(x_inter as f32 + slope13 * (y - y2) as f32),
-                    )
-                };
-                for x in x_slider..=x_end {
-                    self.write_data_with_clipping(x, y, value);
-                }
-            }
-            for y in (y2 + 1)..=y3 {
-                let (x_slider, x_end) = if x_inter < x2 {
-                    (
-                        f32_to_i32(x_inter as f32 + slope13 * (y - y2) as f32),
-                        f32_to_i32(x2 as f32 + slope23 * (y - y2) as f32),
-                    )
-                } else {
-                    (
-                        f32_to_i32(x2 as f32 + slope23 * (y - y2) as f32),
-                        f32_to_i32(x_inter as f32 + slope13 * (y - y2) as f32),
-                    )
-                };
-                for x in x_slider..=x_end {
-                    self.write_data_with_clipping(x, y, value);
-                }
-            }
+        for y in y1..=y2 {
+            let (x_slider, x_end) = if x_inter < x2 {
+                (
+                    f32_to_i32(x_inter as f32 + slope13 * (y - y2) as f32),
+                    f32_to_i32(x2 as f32 + slope12 * (y - y2) as f32),
+                )
+            } else {
+                (
+                    f32_to_i32(x2 as f32 + slope12 * (y - y2) as f32),
+                    f32_to_i32(x_inter as f32 + slope13 * (y - y2) as f32),
+                )
+            };
+            self.fill_row_or_pixels(x_slider, x_end, y, value);
+        }
+        for y in (y2 + 1)..=y3 {
+            let (x_slider, x_end) = if x_inter < x2 {
+                (
+                    f32_to_i32(x_inter as f32 + slope13 * (y - y2) as f32),
+                    f32_to_i32(x2 as f32 + slope23 * (y - y2) as f32),
+                )
+            } else {
+                (
+                    f32_to_i32(x2 as f32 + slope23 * (y - y2) as f32),
+                    f32_to_i32(x_inter as f32 + slope13 * (y - y2) as f32),
+                )
+            };
+            self.fill_row_or_pixels(x_slider, x_end, y, value);
         }
     }
 
@@ -540,57 +483,27 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
 
         macro_rules! copy_row {
             (slice: $dst:expr, $src:expr) => {
-                match (transparent, palette) {
-                    (None, None) => $dst.copy_from_slice($src),
-                    (Some(tkey), None) => {
-                        for i in 0..$dst.len() {
-                            let val = $src[i];
-                            if val != tkey {
-                                $dst[i] = val;
-                            }
-                        }
-                    }
-                    (None, Some(pal)) => {
-                        for i in 0..$dst.len() {
-                            $dst[i] = pal[$src[i].to_index()];
-                        }
-                    }
-                    (Some(tkey), Some(pal)) => {
-                        for i in 0..$dst.len() {
-                            let val = $src[i];
-                            if val != tkey {
-                                $dst[i] = pal[val.to_index()];
-                            }
+                if transparent.is_none() && palette.is_none() {
+                    $dst.copy_from_slice($src);
+                } else {
+                    for i in 0..$dst.len() {
+                        if let Some(val) = Self::apply_pixel($src[i], transparent, palette) {
+                            $dst[i] = val;
                         }
                     }
                 }
             };
             (rev: $dst:expr, $src_row:expr, $start:expr) => {
-                match (transparent, palette) {
-                    (None, None) => {
-                        for i in 0..$dst.len() {
-                            $dst[i] = $src_row[$start - i];
-                        }
+                if transparent.is_none() && palette.is_none() {
+                    for i in 0..$dst.len() {
+                        $dst[i] = $src_row[$start - i];
                     }
-                    (Some(tkey), None) => {
-                        for i in 0..$dst.len() {
-                            let val = $src_row[$start - i];
-                            if val != tkey {
-                                $dst[i] = val;
-                            }
-                        }
-                    }
-                    (None, Some(pal)) => {
-                        for i in 0..$dst.len() {
-                            $dst[i] = pal[$src_row[$start - i].to_index()];
-                        }
-                    }
-                    (Some(tkey), Some(pal)) => {
-                        for i in 0..$dst.len() {
-                            let val = $src_row[$start - i];
-                            if val != tkey {
-                                $dst[i] = pal[val.to_index()];
-                            }
+                } else {
+                    for i in 0..$dst.len() {
+                        if let Some(val) =
+                            Self::apply_pixel($src_row[$start - i], transparent, palette)
+                        {
+                            $dst[i] = val;
                         }
                     }
                 }
@@ -748,17 +661,9 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
                 (None, None) => scan!(|val, di| {
                     self.data[di] = val;
                 }),
-                (Some(tkey), None) => scan!(|val, di| {
-                    if val != tkey {
-                        self.data[di] = val;
-                    }
-                }),
-                (None, Some(pal)) => scan!(|val, di| {
-                    self.data[di] = pal[val.to_index()];
-                }),
-                (Some(tkey), Some(pal)) => scan!(|val, di| {
-                    if val != tkey {
-                        self.data[di] = pal[val.to_index()];
+                _ => scan!(|val, di| {
+                    if let Some(v) = Self::apply_pixel(val, transparent, palette) {
+                        self.data[di] = v;
                     }
                 }),
             }
@@ -859,17 +764,9 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
                 (None, None) => scan!(|val, di| {
                     self.data[di] = val;
                 }),
-                (Some(tkey), None) => scan!(|val, di| {
-                    if val != tkey {
-                        self.data[di] = val;
-                    }
-                }),
-                (None, Some(pal)) => scan!(|val, di| {
-                    self.data[di] = pal[val.to_index()];
-                }),
-                (Some(tkey), Some(pal)) => scan!(|val, di| {
-                    if val != tkey {
-                        self.data[di] = pal[val.to_index()];
+                _ => scan!(|val, di| {
+                    if let Some(v) = Self::apply_pixel(val, transparent, palette) {
+                        self.data[di] = v;
                     }
                 }),
             }
@@ -903,6 +800,14 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
 
     // Internal helpers
 
+    #[inline]
+    fn apply_pixel(src: T, transparent: Option<T>, palette: Option<&[T]>) -> Option<T> {
+        if transparent.is_some_and(|tkey| src == tkey) {
+            return None;
+        }
+        Some(palette.map_or(src, |pal| pal[src.to_index()]))
+    }
+
     pub fn read_data(&self, x: usize, y: usize) -> T {
         let width = self.width() as usize;
         self.data[width * y + x]
@@ -934,6 +839,16 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         let w = self.width() as usize;
         let y = y as usize;
         self.data[w * y + left as usize..=w * y + right as usize].fill(value);
+    }
+
+    fn fill_row_or_pixels(&mut self, x1: i32, x2: i32, y: i32, value: T) {
+        if self.alpha >= 1.0 {
+            self.fill_row_clipped(x1, x2, y, value);
+        } else {
+            for x in x1..=x2 {
+                self.write_data_with_clipping(x, y, value);
+            }
+        }
     }
 
     fn ellipse_params(x: i32, y: i32, width: u32, height: u32) -> (f32, f32, f32, f32) {

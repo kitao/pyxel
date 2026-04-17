@@ -6,29 +6,7 @@ use pyo3::types::PyDict;
 
 use crate::image_wrapper::Image;
 
-#[pyclass(from_py_object)]
-#[derive(Clone, Copy)]
-pub struct Tilemap {
-    pub(crate) inner: *mut pyxel::Tilemap,
-}
-
-unsafe impl Send for Tilemap {}
-unsafe impl Sync for Tilemap {}
-
-impl Tilemap {
-    pub fn wrap(inner: *mut pyxel::Tilemap) -> Self {
-        Self { inner }
-    }
-
-    fn inner_ref(&self) -> &pyxel::Tilemap {
-        unsafe { &*self.inner }
-    }
-
-    #[allow(clippy::mut_from_ref)]
-    fn inner_mut(&self) -> &mut pyxel::Tilemap {
-        unsafe { &mut *self.inner }
-    }
-}
+define_wrapper!(Tilemap, pyxel::Tilemap);
 
 #[pymethods]
 impl Tilemap {

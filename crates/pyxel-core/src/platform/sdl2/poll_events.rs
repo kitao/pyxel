@@ -1,5 +1,7 @@
 use std::ffi::{c_char, CStr};
 use std::mem::zeroed;
+#[cfg(target_os = "emscripten")]
+use std::sync::OnceLock;
 
 use super::super::event::Event;
 use super::super::key::{
@@ -21,6 +23,18 @@ use super::sdl2_sys::*;
 #[cfg(target_os = "emscripten")]
 extern "C" {
     fn emscripten_run_script_int(script: *const c_char) -> std::os::raw::c_int;
+}
+
+#[cfg(target_os = "emscripten")]
+static GAMEPAD_SCRIPTS: OnceLock<[std::ffi::CString; 10]> = OnceLock::new();
+
+#[cfg(target_os = "emscripten")]
+fn gamepad_scripts() -> &'static [std::ffi::CString; 10] {
+    GAMEPAD_SCRIPTS.get_or_init(|| {
+        std::array::from_fn(|i| {
+            std::ffi::CString::new(format!("_virtualGamepadStates[{i}];")).unwrap()
+        })
+    })
 }
 
 pub type Gamepad = Option<(i32, *mut SDL_GameController)>;
@@ -231,11 +245,8 @@ impl PlatformSdl2 {
             ];
 
             for (i, &button) in INDEX_TO_BUTTON.iter().enumerate() {
-                let pressed = unsafe {
-                    let script =
-                        std::ffi::CString::new(format!("_virtualGamepadStates[{i}];")).unwrap();
-                    emscripten_run_script_int(script.as_ptr()) != 0
-                };
+                let pressed =
+                    unsafe { emscripten_run_script_int(gamepad_scripts()[i].as_ptr()) != 0 };
                 if pressed != self.virtual_gamepad_states[i] {
                     self.virtual_gamepad_states[i] = pressed;
                     let event = if pressed {

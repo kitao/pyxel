@@ -372,31 +372,33 @@ fn parse_number<T: TryFrom<i32>>(
 ) -> Result<T, String> {
     skip_whitespace(stream);
     let pos = stream.pos;
-    let mut parsed_str = String::new();
-
-    if stream.peek() == Some('-') {
-        parsed_str.push(stream.next().unwrap());
+    let negative = stream.peek() == Some('-');
+    if negative {
+        stream.next();
     }
+
+    let mut value: i32 = 0;
+    let mut has_digit = false;
     while let Some(c) = stream.peek() {
-        if c.is_ascii_digit() {
-            parsed_str.push(stream.next().unwrap());
+        if let Some(digit) = c.to_digit(10) {
+            value = value.saturating_mul(10).saturating_add(digit as i32);
+            has_digit = true;
+            stream.next();
         } else {
             break;
         }
     }
 
-    if parsed_str.is_empty() {
-        if let Some(c) = stream.peek() {
-            parsed_str.push(c);
-        }
+    if !has_digit {
+        let err_char = stream.peek().map_or(String::new(), |c| c.to_string());
         stream.pos = pos;
-        return Err(parsed_str);
+        return Err(err_char);
     }
 
-    let Ok(value) = parsed_str.parse::<i32>() else {
-        stream.pos = pos;
-        return Err(parsed_str);
-    };
+    if negative {
+        value = -value;
+    }
+
     if value < range.0 {
         parse_error!(stream, "'{name}' is below minimum {}", range.0);
     }

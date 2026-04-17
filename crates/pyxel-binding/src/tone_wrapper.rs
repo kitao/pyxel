@@ -13,29 +13,7 @@ wrap_as_python_sequence!(
     (|inner: &*mut pyxel::Tone| unsafe { &**inner }.wavetable.clone())
 );
 
-#[pyclass(from_py_object)]
-#[derive(Clone, Copy)]
-pub struct Tone {
-    pub(crate) inner: *mut pyxel::Tone,
-}
-
-unsafe impl Send for Tone {}
-unsafe impl Sync for Tone {}
-
-impl Tone {
-    pub fn wrap(inner: *mut pyxel::Tone) -> Self {
-        Self { inner }
-    }
-
-    fn inner_ref(&self) -> &pyxel::Tone {
-        unsafe { &*self.inner }
-    }
-
-    #[allow(clippy::mut_from_ref)]
-    fn inner_mut(&self) -> &mut pyxel::Tone {
-        unsafe { &mut *self.inner }
-    }
-}
+define_wrapper!(Tone, pyxel::Tone);
 
 #[pymethods]
 impl Tone {

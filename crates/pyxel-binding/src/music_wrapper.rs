@@ -227,25 +227,7 @@ impl Seqs {
     }
 }
 
-#[pyclass(from_py_object)]
-#[derive(Clone, Copy)]
-pub struct Music {
-    pub(crate) inner: *mut pyxel::Music,
-}
-
-unsafe impl Send for Music {}
-unsafe impl Sync for Music {}
-
-impl Music {
-    pub fn wrap(inner: *mut pyxel::Music) -> Self {
-        Self { inner }
-    }
-
-    #[allow(clippy::mut_from_ref)]
-    fn inner_mut(&self) -> &mut pyxel::Music {
-        unsafe { &mut *self.inner }
-    }
-}
+define_wrapper!(Music, pyxel::Music);
 
 #[pymethods]
 impl Music {

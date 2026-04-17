@@ -150,7 +150,11 @@ impl PlatformSdl2 {
                 height as i32,
                 (SDL_WINDOW_OPENGL as Uint32) | (SDL_WINDOW_RESIZABLE as Uint32),
             );
-            assert!(!self.window.is_null(), "Failed to create window");
+            assert!(
+                !self.window.is_null(),
+                "Failed to create window: {}",
+                CStr::from_ptr(SDL_GetError()).to_string_lossy()
+            );
 
             let hint_value = CString::new("1").unwrap();
             SDL_SetHint(
@@ -175,7 +179,8 @@ impl PlatformSdl2 {
                 SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
                 assert!(
                     !SDL_GL_CreateContext(self.window).is_null(),
-                    "Failed to create OpenGL context"
+                    "Failed to create OpenGL context: {}",
+                    CStr::from_ptr(SDL_GetError()).to_string_lossy()
                 );
             }
 

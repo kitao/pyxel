@@ -49,6 +49,7 @@ pub struct ScreenShader {
 }
 
 pub struct Graphics {
+    is_gles: bool,
     screen_shaders: Vec<ScreenShader>,
     screen_texture: glow::NativeTexture,
     screen_texture_initialized: bool,
@@ -72,6 +73,7 @@ impl Graphics {
             let colors_texture = Self::create_colors_texture(gl);
 
             Self {
+                is_gles: platform::gl_profile() == GLProfile::Gles,
                 screen_shaders,
                 screen_texture,
                 screen_texture_initialized: false,
@@ -522,7 +524,7 @@ impl Pyxel {
         gl.bind_texture(glow::TEXTURE_2D, Some(graphics.screen_texture));
         gl.pixel_store_i32(glow::UNPACK_ALIGNMENT, 1);
 
-        let (internal_format, format) = if platform::gl_profile() == GLProfile::Gles {
+        let (internal_format, format) = if graphics.is_gles {
             (glow::LUMINANCE as i32, glow::LUMINANCE)
         } else {
             (glow::R8 as i32, glow::RED)
@@ -568,21 +570,22 @@ impl Pyxel {
         );
 
         let graphics = self.graphics.as_mut().unwrap();
+        gl.active_texture(glow::TEXTURE1);
+        gl.bind_texture(glow::TEXTURE_2D, Some(graphics.colors_texture));
+
         if graphics.cached_colors == *colors {
-            gl.active_texture(glow::TEXTURE1);
-            gl.bind_texture(glow::TEXTURE_2D, Some(graphics.colors_texture));
             return;
         }
 
-        gl.active_texture(glow::TEXTURE1);
-        gl.bind_texture(glow::TEXTURE_2D, Some(graphics.colors_texture));
         gl.pixel_store_i32(glow::UNPACK_ALIGNMENT, 4);
 
         let pixels = &mut graphics.color_pixels_buf;
         pixels.clear();
         for &c in colors.iter() {
             let (r, g, b) = rgb_to_rgb8(c);
-            pixels.extend_from_slice(&[r, g, b]);
+            pixels.push(r);
+            pixels.push(g);
+            pixels.push(b);
         }
 
         if graphics.cached_colors.len() == colors.len() {

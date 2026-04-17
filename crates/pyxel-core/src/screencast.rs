@@ -85,10 +85,13 @@ impl Screencast {
         screen.width = width;
         screen.height = height;
 
-        // Reuse existing Vec capacity to avoid repeated allocation
-        screen.image.resize(image.len(), 0);
+        if screen.image.len() != image.len() {
+            screen.image.resize(image.len(), 0);
+        }
         screen.image.copy_from_slice(image);
-        screen.colors.resize(colors.len(), 0);
+        if screen.colors.len() != colors.len() {
+            screen.colors.resize(colors.len(), 0);
+        }
         screen.colors.copy_from_slice(colors);
 
         screen.frame_count = frame_count;

@@ -467,3 +467,32 @@ macro_rules! class_to_pyobj {
         $instance.into_pyobject($py).unwrap().into_any().unbind()
     }};
 }
+
+macro_rules! define_wrapper {
+    ($name:ident, $inner:ty) => {
+        #[pyclass(from_py_object)]
+        #[derive(Clone, Copy)]
+        pub struct $name {
+            pub(crate) inner: *mut $inner,
+        }
+
+        unsafe impl Send for $name {}
+        unsafe impl Sync for $name {}
+
+        impl $name {
+            pub fn wrap(inner: *mut $inner) -> Self {
+                Self { inner }
+            }
+
+            #[allow(dead_code)]
+            fn inner_ref(&self) -> &$inner {
+                unsafe { &*self.inner }
+            }
+
+            #[allow(clippy::mut_from_ref)]
+            fn inner_mut(&self) -> &mut $inner {
+                unsafe { &mut *self.inner }
+            }
+        }
+    };
+}

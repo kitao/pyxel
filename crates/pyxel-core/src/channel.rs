@@ -3,8 +3,8 @@ use blip_buf::BlipBuf;
 use crate::mml_command::MmlCommand;
 use crate::pyxel;
 use crate::settings::{
-    AUDIO_CLOCKS_PER_SAMPLE, AUDIO_CLOCK_RATE, AUDIO_SAMPLE_RATE, DEFAULT_CHANNEL_GAIN,
-    NOTE_INTERP_CLOCKS, VOICE_CONTROL_RATE,
+    AUDIO_CLOCKS_PER_SAMPLE, AUDIO_CLOCK_RATE, AUDIO_GAIN_SCALE, AUDIO_GAIN_SHIFT,
+    AUDIO_SAMPLE_RATE, DEFAULT_CHANNEL_GAIN, NOTE_INTERP_CLOCKS, VOICE_CONTROL_RATE,
 };
 use crate::sound::Sound;
 use crate::tone::ToneMode;
@@ -14,9 +14,7 @@ pub type ChannelGain = f32;
 pub type ChannelDetune = i32;
 
 // Fixed-point Q14 scaling for PCM gain multiplication
-const PCM_MIX_GAIN_SHIFT: u32 = 14;
-const PCM_MIX_GAIN_SCALE: i64 = 1_i64 << PCM_MIX_GAIN_SHIFT;
-const PCM_MIX_TRUNC_BIAS: i64 = PCM_MIX_GAIN_SCALE - 1;
+const PCM_MIX_TRUNC_BIAS: i64 = AUDIO_GAIN_SCALE - 1;
 
 pub struct Channel {
     pub sounds: Vec<*mut Sound>,
@@ -310,6 +308,17 @@ impl Channel {
     fn advance_command(&mut self) {
         let tones = pyxel::tones();
 
+        macro_rules! store_slot {
+            ($slots:expr, $slot:expr, $command:expr, $name:literal) => {{
+                assert!($slot > 0, concat!($name, " slot 0 is reserved for disable"));
+                let slot = $slot as usize;
+                if slot >= $slots.len() {
+                    $slots.resize(slot + 1, None);
+                }
+                $slots[slot] = Some($command.clone());
+            }};
+        }
+
         while self.command_index < self.commands.len() as u32 {
             let command = &self.commands[self.command_index as usize];
             self.command_index += 1;
@@ -362,12 +371,7 @@ impl Channel {
                     initial_level,
                     segments,
                 } => {
-                    assert!(*slot > 0, "Envelope slot 0 is reserved for disable");
-                    let slot = *slot as usize;
-                    if slot >= self.envelope_slots.len() {
-                        self.envelope_slots.resize(slot + 1, None);
-                    }
-                    self.envelope_slots[slot] = Some(command.clone());
+                    store_slot!(self.envelope_slots, *slot, command, "Envelope");
                     self.voice.envelope.set(*initial_level, segments);
                     self.voice.envelope.enable();
                 }
@@ -394,12 +398,7 @@ impl Channel {
                     period_ticks,
                     semitone_depth,
                 } => {
-                    assert!(*slot > 0, "Vibrato slot 0 is reserved for disable");
-                    let slot = *slot as usize;
-                    if slot >= self.vibrato_slots.len() {
-                        self.vibrato_slots.resize(slot + 1, None);
-                    }
-                    self.vibrato_slots[slot] = Some(command.clone());
+                    store_slot!(self.vibrato_slots, *slot, command, "Vibrato");
                     self.voice
                         .vibrato
                         .set(*delay_ticks, *period_ticks, *semitone_depth);
@@ -432,12 +431,7 @@ impl Channel {
                     semitone_offset,
                     duration_ticks,
                 } => {
-                    assert!(*slot > 0, "Glide slot 0 is reserved for disable");
-                    let slot = *slot as usize;
-                    if slot >= self.glide_slots.len() {
-                        self.glide_slots.resize(slot + 1, None);
-                    }
-                    self.glide_slots[slot] = Some(command.clone());
+                    store_slot!(self.glide_slots, *slot, command, "Glide");
 
                     if let (Some(semitone_offset), Some(duration_ticks)) =
                         (semitone_offset, duration_ticks)
@@ -504,7 +498,7 @@ impl Channel {
             return;
         }
 
-        let gain_fixed = (self.gain * PCM_MIX_GAIN_SCALE as f32) as i32;
+        let gain_fixed = (self.gain * AUDIO_GAIN_SCALE as f32) as i32;
         let mut offset = 0;
 
         while offset < out.len() {
@@ -529,7 +523,7 @@ impl Channel {
                         for i in 0..to_copy {
                             let scaled = samples[self.pcm_position + i] as i64 * gain_fixed as i64;
                             let src = (scaled + ((scaled >> 63) & PCM_MIX_TRUNC_BIAS))
-                                >> PCM_MIX_GAIN_SHIFT;
+                                >> AUDIO_GAIN_SHIFT;
                             let mixed = out[offset + i] as i64 + src;
                             out[offset + i] = mixed.clamp(i16::MIN as i64, i16::MAX as i64) as i16;
                         }

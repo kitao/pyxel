@@ -2,12 +2,12 @@ use std::sync::OnceLock;
 
 use blip_buf::BlipBuf;
 
+use crate::settings::{AUDIO_GAIN_SCALE, AUDIO_GAIN_SHIFT};
+
 const A4_MIDI_NOTE: f32 = 69.0;
 const A4_FREQUENCY: f32 = 440.0;
 // Fixed-point Q14 scaling for voice gain multiplication
-const VOICE_GAIN_SHIFT: u32 = 14;
-const VOICE_GAIN_SCALE: i64 = 1_i64 << VOICE_GAIN_SHIFT;
-const VOICE_GAIN_ROUNDING: i64 = 1_i64 << (VOICE_GAIN_SHIFT - 1); // Half-unit bias for rounding
+const VOICE_GAIN_ROUNDING: i64 = 1_i64 << (AUDIO_GAIN_SHIFT - 1); // Half-unit bias for rounding
 const PITCH_LUT_MIN_SEMITONE: f32 = -96.0;
 const PITCH_LUT_MAX_SEMITONE: f32 = 96.0;
 const PITCH_LUT_STEPS_PER_SEMITONE: usize = 64;
@@ -510,31 +510,54 @@ impl Voice {
             self.advance_control_clock(self.sample_clocks);
         }
 
-        while self.remaining_note_clocks > 0 && clock_count > 0 {
-            // Calculate amplitude and write sample
-            let mut gain = Self::gain_to_fixed(self.envelope.level() * self.velocity);
+        // Phase 1: Head crossfade (elapsed < interp, but yield to tail when remaining < interp)
+        if self.remaining_note_clocks > 0
+            && clock_count > 0
+            && self.elapsed_note_clocks < self.note_interp_clocks
+            && self.remaining_note_clocks >= self.note_interp_clocks
+        {
+            let start_gain = *self.interp_start_gain.get_or_insert(self.last_gain);
+            let interp = self.note_interp_clocks as i64;
 
-            if self.remaining_note_clocks < self.note_interp_clocks {
-                // Note tail: fade out to zero
-                let end_gain = *self.interp_end_gain.get_or_insert(self.last_gain);
-                let interp = self.note_interp_clocks as i64;
-                gain = ((end_gain as i64 * self.remaining_note_clocks as i64 + interp / 2) / interp)
-                    as i32;
-            } else if self.elapsed_note_clocks < self.note_interp_clocks {
-                // Note head: crossfade from previous gain
-                let start_gain = *self.interp_start_gain.get_or_insert(self.last_gain);
-                let interp = self.note_interp_clocks as i64;
+            while self.remaining_note_clocks > 0
+                && clock_count > 0
+                && self.elapsed_note_clocks < self.note_interp_clocks
+                && self.remaining_note_clocks >= self.note_interp_clocks
+            {
+                let mut gain = Self::gain_to_fixed(self.envelope.level() * self.velocity);
                 let elapsed = self.elapsed_note_clocks as i64;
                 gain =
                     ((start_gain as i64 * (interp - elapsed) + gain as i64 * elapsed + interp / 2)
                         / interp) as i32;
-            }
 
+                let amplitude = Self::apply_gain_fixed(self.oscillator.sample(), gain);
+                self.write_sample(blip_buf.as_deref_mut(), clock_offset, amplitude);
+                self.last_gain = gain;
+
+                let process_clocks = self.sample_clocks.min(clock_count);
+                self.remaining_note_clocks =
+                    self.remaining_note_clocks.saturating_sub(process_clocks);
+                self.elapsed_note_clocks += process_clocks;
+                clock_offset += process_clocks;
+                clock_count -= process_clocks;
+
+                if process_clocks < self.sample_clocks {
+                    self.carryover_sample_clocks = self.sample_clocks - process_clocks;
+                    return;
+                }
+
+                self.oscillator.advance_sample();
+                self.advance_control_clock(self.sample_clocks);
+            }
+        }
+
+        // Phase 2: Bulk (no interpolation)
+        while self.remaining_note_clocks > self.note_interp_clocks && clock_count > 0 {
+            let gain = Self::gain_to_fixed(self.envelope.level() * self.velocity);
             let amplitude = Self::apply_gain_fixed(self.oscillator.sample(), gain);
             self.write_sample(blip_buf.as_deref_mut(), clock_offset, amplitude);
             self.last_gain = gain;
 
-            // Advance oscillator and control clock
             let process_clocks = self.sample_clocks.min(clock_count);
             self.remaining_note_clocks = self.remaining_note_clocks.saturating_sub(process_clocks);
             self.elapsed_note_clocks += process_clocks;
@@ -550,6 +573,36 @@ impl Voice {
             self.advance_control_clock(self.sample_clocks);
         }
 
+        // Phase 3: Tail fade-out (remaining_note_clocks <= note_interp_clocks)
+        if self.remaining_note_clocks > 0 && clock_count > 0 {
+            let end_gain = *self.interp_end_gain.get_or_insert(self.last_gain);
+            let interp = self.note_interp_clocks as i64;
+
+            while self.remaining_note_clocks > 0 && clock_count > 0 {
+                let gain = ((end_gain as i64 * self.remaining_note_clocks as i64 + interp / 2)
+                    / interp) as i32;
+
+                let amplitude = Self::apply_gain_fixed(self.oscillator.sample(), gain);
+                self.write_sample(blip_buf.as_deref_mut(), clock_offset, amplitude);
+                self.last_gain = gain;
+
+                let process_clocks = self.sample_clocks.min(clock_count);
+                self.remaining_note_clocks =
+                    self.remaining_note_clocks.saturating_sub(process_clocks);
+                self.elapsed_note_clocks += process_clocks;
+                clock_offset += process_clocks;
+                clock_count -= process_clocks;
+
+                if process_clocks < self.sample_clocks {
+                    self.carryover_sample_clocks = self.sample_clocks - process_clocks;
+                    return;
+                }
+
+                self.oscillator.advance_sample();
+                self.advance_control_clock(self.sample_clocks);
+            }
+        }
+
         if self.remaining_note_clocks == 0 && clock_count > 0 {
             self.write_sample(blip_buf, clock_offset, 0);
             self.last_gain = 0;
@@ -557,15 +610,15 @@ impl Voice {
     }
 
     fn gain_to_fixed(gain: f32) -> i32 {
-        (gain * VOICE_GAIN_SCALE as f32).round() as i32
+        (gain * AUDIO_GAIN_SCALE as f32).round() as i32
     }
 
     fn apply_gain_fixed(sample: i32, gain: i32) -> i32 {
         let product = sample as i64 * gain as i64;
         if product >= 0 {
-            ((product + VOICE_GAIN_ROUNDING) >> VOICE_GAIN_SHIFT) as i32
+            ((product + VOICE_GAIN_ROUNDING) >> AUDIO_GAIN_SHIFT) as i32
         } else {
-            ((product - VOICE_GAIN_ROUNDING) >> VOICE_GAIN_SHIFT) as i32
+            ((product - VOICE_GAIN_ROUNDING) >> AUDIO_GAIN_SHIFT) as i32
         }
     }
 
