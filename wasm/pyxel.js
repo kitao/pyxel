@@ -37,9 +37,16 @@ const _virtualGamepadStates = [
 
 // Safari emits Arrow key events with location=3 (numpad), which Emscripten
 // does not recognize. Re-dispatch them with location=0 (standard).
-if (/safari/i.test(navigator.userAgent) && !/chrome/i.test(navigator.userAgent)) {
+if (
+  /safari/i.test(navigator.userAgent) &&
+  !/chrome/i.test(navigator.userAgent)
+) {
   const fixArrowEvent = (event) => {
-    if (event.isTrusted && event.location === 3 && event.key.startsWith("Arrow")) {
+    if (
+      event.isTrusted &&
+      event.location === 3 &&
+      event.key.startsWith("Arrow")
+    ) {
       event.stopImmediatePropagation();
       event.preventDefault();
       document.dispatchEvent(
@@ -76,23 +83,64 @@ const _scanCorrection = {}; // Maps SDL scancode to unshifted char code
 
 // SDL scancodes for printable ASCII keys (USB HID usage codes)
 const _CODE_TO_SCANCODE = {
-  KeyA: 4, KeyB: 5, KeyC: 6, KeyD: 7, KeyE: 8, KeyF: 9,
-  KeyG: 10, KeyH: 11, KeyI: 12, KeyJ: 13, KeyK: 14, KeyL: 15,
-  KeyM: 16, KeyN: 17, KeyO: 18, KeyP: 19, KeyQ: 20, KeyR: 21,
-  KeyS: 22, KeyT: 23, KeyU: 24, KeyV: 25, KeyW: 26, KeyX: 27,
-  KeyY: 28, KeyZ: 29,
-  Digit1: 30, Digit2: 31, Digit3: 32, Digit4: 33, Digit5: 34,
-  Digit6: 35, Digit7: 36, Digit8: 37, Digit9: 38, Digit0: 39,
-  Space: 44, Minus: 45, Equal: 46, BracketLeft: 47, BracketRight: 48,
-  Backslash: 49, Semicolon: 51, Quote: 52, Backquote: 53,
-  Comma: 54, Period: 55, Slash: 56,
+  KeyA: 4,
+  KeyB: 5,
+  KeyC: 6,
+  KeyD: 7,
+  KeyE: 8,
+  KeyF: 9,
+  KeyG: 10,
+  KeyH: 11,
+  KeyI: 12,
+  KeyJ: 13,
+  KeyK: 14,
+  KeyL: 15,
+  KeyM: 16,
+  KeyN: 17,
+  KeyO: 18,
+  KeyP: 19,
+  KeyQ: 20,
+  KeyR: 21,
+  KeyS: 22,
+  KeyT: 23,
+  KeyU: 24,
+  KeyV: 25,
+  KeyW: 26,
+  KeyX: 27,
+  KeyY: 28,
+  KeyZ: 29,
+  Digit1: 30,
+  Digit2: 31,
+  Digit3: 32,
+  Digit4: 33,
+  Digit5: 34,
+  Digit6: 35,
+  Digit7: 36,
+  Digit8: 37,
+  Digit9: 38,
+  Digit0: 39,
+  Space: 44,
+  Minus: 45,
+  Equal: 46,
+  BracketLeft: 47,
+  BracketRight: 48,
+  Backslash: 49,
+  Semicolon: 51,
+  Quote: 52,
+  Backquote: 53,
+  Comma: 54,
+  Period: 55,
+  Slash: 56,
 };
 document.addEventListener(
   "keydown",
   (event) => {
     if (
       event.key.length === 1 &&
-      !event.shiftKey && !event.ctrlKey && !event.altKey && !event.metaKey
+      !event.shiftKey &&
+      !event.ctrlKey &&
+      !event.altKey &&
+      !event.metaKey
     ) {
       const scancode = _CODE_TO_SCANCODE[event.code];
       if (scancode !== undefined) {
@@ -154,7 +202,8 @@ async function resetPyxel() {
       pyxel.quit()
     `);
 
-    const audioContext = window.pyxelContext.pyodide?._module?.SDL2?.audioContext;
+    const audioContext =
+      window.pyxelContext.pyodide?._module?.SDL2?.audioContext;
     if (audioContext && audioContext.state === "running") {
       await new Promise((resolve) => setTimeout(resolve, 50));
       await audioContext.suspend();
@@ -223,7 +272,7 @@ function dropFileToPyxel(name, data) {
   const pyodide = window.pyxelContext.pyodide;
   pyodide.FS.writeFile(path, new Uint8Array(data));
   pyodide.runPython(
-    `import pyxel; pyxel._dropped_files = getattr(pyxel, '_dropped_files', []) + ['${path}']`
+    `import pyxel; pyxel._dropped_files = getattr(pyxel, '_dropped_files', []) + ['${path}']`,
   );
 }
 
@@ -356,11 +405,14 @@ const _createScreenElements = async () => {
   }
 
   pyxelScreen.oncontextmenu = (event) => event.preventDefault();
-  let resizeTimer;
-  window.addEventListener("resize", () => {
-    clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(_updateScreenElementsSize, 100);
-  });
+  if (!window._pyxelResizeListenerAttached) {
+    let resizeTimer;
+    window.addEventListener("resize", () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(_updateScreenElementsSize, 100);
+    });
+    window._pyxelResizeListenerAttached = true;
+  }
 
   // Handle file drop
   pyxelScreen.addEventListener("dragover", (e) => {
@@ -555,7 +607,9 @@ const _hookFileOperations = (pyodide, root) => {
     if (request.status !== 200) {
       return;
     }
-    const fileBinary = Uint8Array.from(request.response, (c) => c.charCodeAt(0));
+    const fileBinary = Uint8Array.from(request.response, (c) =>
+      c.charCodeAt(0),
+    );
 
     // Write path
     const contentType = request.getResponseHeader("Content-Type") || "";
@@ -607,8 +661,7 @@ const _hookFileOperations = (pyodide, root) => {
 // Input and startup
 // ---------------------------------------------------------------------------
 
-const _isTouchDevice = () =>
-  window.matchMedia("(pointer: coarse)").matches;
+const _isTouchDevice = () => window.matchMedia("(pointer: coarse)").matches;
 
 const _waitForInput = async () => {
   const pyxelScreen = document.querySelector("div#pyxel-screen");
@@ -649,7 +702,13 @@ const _installBuiltinPackages = async (pyodide, packages) => {
 // Virtual gamepad
 // ---------------------------------------------------------------------------
 
-const _updateGamepadStateFromTouch = (clientX, clientY, crossRect, buttonRect, menuRect) => {
+const _updateGamepadStateFromTouch = (
+  clientX,
+  clientY,
+  crossRect,
+  buttonRect,
+  menuRect,
+) => {
   const size = crossRect.width;
   const crossX = (clientX - crossRect.left) / size - 0.5;
   const crossY = (clientY - crossRect.bottom) / size + 0.5;
@@ -729,22 +788,62 @@ const _addVirtualGamepad = (mode) => {
     return img;
   };
 
-  const gamepadCrossImage = createGamepadElement("pyxel-gamepad-cross", GAMEPAD_CROSS_PATH);
-  const gamepadButtonImage = createGamepadElement("pyxel-gamepad-button", GAMEPAD_BUTTON_PATH);
-  const gamepadMenuImage = createGamepadElement("pyxel-gamepad-menu", GAMEPAD_MENU_PATH);
+  const gamepadCrossImage = createGamepadElement(
+    "pyxel-gamepad-cross",
+    GAMEPAD_CROSS_PATH,
+  );
+  const gamepadButtonImage = createGamepadElement(
+    "pyxel-gamepad-button",
+    GAMEPAD_BUTTON_PATH,
+  );
+  const gamepadMenuImage = createGamepadElement(
+    "pyxel-gamepad-menu",
+    GAMEPAD_MENU_PATH,
+  );
+
+  // Remove previous handlers if any (prevents accumulation on reset)
+  if (_addVirtualGamepad._handler) {
+    const prev = _addVirtualGamepad._handler;
+    document.removeEventListener("touchstart", prev);
+    document.removeEventListener("touchmove", prev);
+    document.removeEventListener("touchend", prev);
+  }
+  if (_addVirtualGamepad._invalidateRects) {
+    window.removeEventListener("resize", _addVirtualGamepad._invalidateRects);
+  }
+
+  // Cache bounding rects; invalidate on resize
+  let cachedRects = null;
+  const invalidateRects = () => {
+    cachedRects = null;
+  };
+  _addVirtualGamepad._invalidateRects = invalidateRects;
+  window.addEventListener("resize", invalidateRects);
 
   // Set touch event handler
   const touchHandler = (event) => {
-    const crossRect = gamepadCrossImage.getBoundingClientRect();
-    const buttonRect = gamepadButtonImage.getBoundingClientRect();
-    const menuRect = gamepadMenuImage.getBoundingClientRect();
+    if (!cachedRects) {
+      const cross = gamepadCrossImage.getBoundingClientRect();
+      const button = gamepadButtonImage.getBoundingClientRect();
+      const menu = gamepadMenuImage.getBoundingClientRect();
+      // Don't cache zero rects (elements not yet in DOM)
+      if (cross.width > 0 && button.width > 0 && menu.width > 0) {
+        cachedRects = { cross, button, menu };
+      }
+    }
+    const cross =
+      cachedRects?.cross ?? gamepadCrossImage.getBoundingClientRect();
+    const button =
+      cachedRects?.button ?? gamepadButtonImage.getBoundingClientRect();
+    const menu = cachedRects?.menu ?? gamepadMenuImage.getBoundingClientRect();
     _virtualGamepadStates.fill(false);
     for (const touch of event.touches) {
       const { clientX, clientY } = touch;
-      _updateGamepadStateFromTouch(clientX, clientY, crossRect, buttonRect, menuRect);
+      _updateGamepadStateFromTouch(clientX, clientY, cross, button, menu);
     }
     event.preventDefault();
   };
+  _addVirtualGamepad._handler = touchHandler;
 
   document.addEventListener("touchstart", touchHandler, { passive: false });
   document.addEventListener("touchmove", touchHandler, { passive: false });

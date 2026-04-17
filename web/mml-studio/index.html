@@ -5,20 +5,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Pyxel MML Studio</title>
     <link rel="icon" href="../../wasm/images/pyxel_icon_64x64.ico" />
-    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../styles.css" />
     <script src="https://cdn.jsdelivr.net/gh/kitao/pyxel/wasm/pyxel.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/lz-string@1.4.4/libs/lz-string.min.js"></script>
   </head>
-  <body class="page h-full">
+  <body class="h-full page">
     <main class="mx-auto p-6 max-w-4xl">
       <h1 class="mb-2 font-semibold text-2xl tracking-tight">
         Pyxel MML Studio
       </h1>
       <p class="mt-2 mb-4 text-gray-300 text-sm">
         Music Macro Language (MML) editor for
-        <a class="link" href="https://github.com/kitao/pyxel" target="_blank" rel="noopener noreferrer">Pyxel</a>, a retro
-        game engine for Python.
-        (<a class="link" href="manual.html" target="_blank" rel="noopener noreferrer">Manual</a>)
+        <a
+          class="link"
+          href="https://github.com/kitao/pyxel"
+          target="_blank"
+          rel="noopener noreferrer"
+          >Pyxel</a
+        >, a retro game engine for Python. (<a
+          class="link"
+          href="manual.html"
+          target="_blank"
+          rel="noopener noreferrer"
+          >Manual</a
+        >)
       </p>
 
       <div
@@ -94,7 +104,7 @@
 
         <!-- Screen -->
         <div
-          class="flex flex-grow items-center mt-2 sm:mt-0 p-0 w-full sm:w-auto h-24 bg-gray-800 shadow-sm border border-gray-700"
+          class="flex flex-grow items-center bg-gray-800 shadow-sm mt-2 sm:mt-0 p-0 border border-gray-700 w-full sm:w-auto h-24"
         >
           <iframe
             id="runtime-screen"
@@ -244,7 +254,7 @@
           id="share-url"
           target="_blank"
           rel="noopener noreferrer"
-          class="mt-2 flex items-center outline-none min-h-[2.25rem] font-mono text-indigo-400 hover:text-indigo-300 break-all select-all input"
+          class="flex items-center mt-2 outline-none min-h-[2.25rem] font-mono text-indigo-400 hover:text-indigo-300 break-all select-all input"
           style="display: block"
         ></a>
 
@@ -258,7 +268,10 @@
       function b64urlEncode(bytes) {
         let s = "";
         for (const b of bytes) s += String.fromCharCode(b);
-        return btoa(s).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+        return btoa(s)
+          .replace(/\+/g, "-")
+          .replace(/\//g, "_")
+          .replace(/=+$/, "");
       }
 
       function b64urlDecode(s) {
@@ -269,17 +282,17 @@
       }
 
       async function compressDeflateRaw(text) {
-        const stream = new Blob([text]).stream().pipeThrough(
-          new CompressionStream("deflate-raw"),
-        );
+        const stream = new Blob([text])
+          .stream()
+          .pipeThrough(new CompressionStream("deflate-raw"));
         const buf = await new Response(stream).arrayBuffer();
         return new Uint8Array(buf);
       }
 
       async function decompressDeflateRaw(bytes) {
-        const stream = new Blob([bytes]).stream().pipeThrough(
-          new DecompressionStream("deflate-raw"),
-        );
+        const stream = new Blob([bytes])
+          .stream()
+          .pipeThrough(new DecompressionStream("deflate-raw"));
         return await new Response(stream).text();
       }
 
@@ -434,8 +447,9 @@
         });
 
         // Enable buttons when ready
-        let _watchRetries = 0;
-        (function watch() {
+        const MAX_PYXEL_READY_RETRIES = 300; // 30 seconds
+        let _pyxelReadyRetries = 0;
+        (function waitForPyxelReady() {
           if (runtimeScreen.contentWindow?.pyxelContext?.resolveInput) {
             document
               .querySelectorAll(
@@ -444,8 +458,10 @@
               .forEach((button) => {
                 button.disabled = false;
               });
-          } else if (++_watchRetries < 300) {
-            setTimeout(watch, 100);
+          } else if (++_pyxelReadyRetries < MAX_PYXEL_READY_RETRIES) {
+            setTimeout(waitForPyxelReady, 100);
+          } else {
+            console.error("Pyxel runtime failed to initialize within timeout");
           }
         })();
       });

@@ -7,6 +7,7 @@
 - Optimized rendering, audio, and parsing hot paths
 - Reduced code duplication across core and binding layers
 - Improved CLI robustness and directory scanning efficiency
+- Improved virtual gamepad touch handling and event cleanup
 
 ## 2.9.0
 

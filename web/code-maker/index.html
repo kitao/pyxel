@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Pyxel Code Maker</title>
     <link rel="icon" href="../../wasm/images/pyxel_icon_64x64.ico" />
-    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../styles.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.6/ace.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.6/ext-language_tools.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/kitao/pyxel/wasm/pyxel.js"></script>
@@ -17,24 +17,41 @@
     </style>
   </head>
 
-  <body class="page h-full">
+  <body class="h-full page">
     <div id="app-root" class="flex flex-col h-full min-h-0">
       <!-- Toolbar -->
-      <div class="toolbar flex-wrap">
-        <div class="flex flex-wrap items-baseline gap-x-2 min-w-0 basis-full sm:basis-auto">
-          <div class="tool-title whitespace-nowrap shrink-0">Pyxel Code Maker</div>
-          <div class="tool-tagline !whitespace-normal">
+      <div class="flex-wrap toolbar">
+        <div
+          class="flex flex-wrap items-baseline gap-x-2 min-w-0 basis-full sm:basis-auto"
+        >
+          <div class="whitespace-nowrap tool-title shrink-0">
+            Pyxel Code Maker
+          </div>
+          <div class="!whitespace-normal tool-tagline">
             Playground for
-            <a class="link" href="https://github.com/kitao/pyxel" target="_blank" rel="noopener noreferrer" tabindex="-1"
+            <a
+              class="link"
+              href="https://github.com/kitao/pyxel"
+              target="_blank"
+              rel="noopener noreferrer"
+              tabindex="-1"
               >Pyxel</a
-            >, a retro game engine for Python.
-            (<a class="link" href="manual.html" target="_blank" rel="noopener noreferrer" tabindex="-1">Manual</a>)
+            >, a retro game engine for Python. (<a
+              class="link"
+              href="manual.html"
+              target="_blank"
+              rel="noopener noreferrer"
+              tabindex="-1"
+              >Manual</a
+            >)
           </div>
         </div>
         <!-- Controls -->
-        <div class="flex flex-wrap shrink-0 max-w-full items-center gap-2 mt-0.5">
+        <div
+          class="flex flex-wrap items-center gap-2 mt-0.5 max-w-full shrink-0"
+        >
           <!-- Load dropdown -->
-          <div class="flex shrink-0 items-center gap-2">
+          <div class="flex items-center gap-2 shrink-0">
             <div class="relative">
               <button
                 id="load-button"
@@ -44,11 +61,35 @@
               >
                 Load ▼
               </button>
-              <div id="load-menu" class="dropdown-menu hidden">
-                <button class="dropdown-item" tabindex="-1" data-action="load-local">File</button>
-                <button class="dropdown-item" tabindex="-1" data-action="load-gist">Gist</button>
-                <button class="dropdown-item" tabindex="-1" data-action="load-github">GitHub</button>
-                <button class="dropdown-item" tabindex="-1" data-action="load-url">URL</button>
+              <div id="load-menu" class="hidden dropdown-menu">
+                <button
+                  class="dropdown-item"
+                  tabindex="-1"
+                  data-action="load-local"
+                >
+                  File
+                </button>
+                <button
+                  class="dropdown-item"
+                  tabindex="-1"
+                  data-action="load-gist"
+                >
+                  Gist
+                </button>
+                <button
+                  class="dropdown-item"
+                  tabindex="-1"
+                  data-action="load-github"
+                >
+                  GitHub
+                </button>
+                <button
+                  class="dropdown-item"
+                  tabindex="-1"
+                  data-action="load-url"
+                >
+                  URL
+                </button>
               </div>
             </div>
             <!-- Save dropdown -->
@@ -61,14 +102,26 @@
               >
                 Save ▼
               </button>
-              <div id="save-menu" class="dropdown-menu hidden">
-                <button class="dropdown-item" tabindex="-1" data-action="save-local">File</button>
-                <button class="dropdown-item" tabindex="-1" data-action="save-gist">Gist</button>
+              <div id="save-menu" class="hidden dropdown-menu">
+                <button
+                  class="dropdown-item"
+                  tabindex="-1"
+                  data-action="save-local"
+                >
+                  File
+                </button>
+                <button
+                  class="dropdown-item"
+                  tabindex="-1"
+                  data-action="save-gist"
+                >
+                  Gist
+                </button>
               </div>
             </div>
           </div>
           <!-- Code / Res toggle -->
-          <div class="flex shrink-0 items-center">
+          <div class="flex items-center shrink-0">
             <div class="seg" role="group">
               <button
                 id="code-tab-button"
@@ -93,7 +146,7 @@
             </div>
           </div>
           <!-- Run -->
-          <div class="flex shrink-0 items-center gap-2">
+          <div class="flex items-center gap-2 shrink-0">
             <button
               id="run-button"
               class="btn"
@@ -172,52 +225,100 @@
     />
 
     <!-- Load from Gist modal -->
-    <div id="modal-load-gist" class="modal-overlay hidden">
+    <div id="modal-load-gist" class="hidden modal-overlay">
       <div class="modal">
         <div class="modal-title">Load from Gist</div>
-        <input id="input-load-gist" type="text" placeholder="https://gist.github.com/USER/GIST_ID" class="modal-input" />
+        <input
+          id="input-load-gist"
+          type="text"
+          placeholder="https://gist.github.com/USER/GIST_ID"
+          class="modal-input"
+        />
         <div class="flex justify-end gap-2 mt-3">
-          <button class="modal-btn modal-btn-secondary" data-modal-close>Cancel</button>
-          <button id="btn-load-gist" class="modal-btn modal-btn-primary">Load</button>
+          <button class="modal-btn modal-btn-secondary" data-modal-close>
+            Cancel
+          </button>
+          <button id="btn-load-gist" class="modal-btn modal-btn-primary">
+            Load
+          </button>
         </div>
       </div>
     </div>
 
     <!-- Load from GitHub modal -->
-    <div id="modal-load-github" class="modal-overlay hidden">
+    <div id="modal-load-github" class="hidden modal-overlay">
       <div class="modal">
         <div class="modal-title">Load from GitHub</div>
-        <input id="input-load-github" type="text" placeholder="https://github.com/USER/REPO/blob/BRANCH/PATH/TO/PROJECT.zip" class="modal-input" />
+        <input
+          id="input-load-github"
+          type="text"
+          placeholder="https://github.com/USER/REPO/blob/BRANCH/PATH/TO/PROJECT.zip"
+          class="modal-input"
+        />
         <div class="flex justify-end gap-2 mt-3">
-          <button class="modal-btn modal-btn-secondary" data-modal-close>Cancel</button>
-          <button id="btn-load-github" class="modal-btn modal-btn-primary">Load</button>
+          <button class="modal-btn modal-btn-secondary" data-modal-close>
+            Cancel
+          </button>
+          <button id="btn-load-github" class="modal-btn modal-btn-primary">
+            Load
+          </button>
         </div>
       </div>
     </div>
 
     <!-- Load from URL modal -->
-    <div id="modal-load-url" class="modal-overlay hidden">
+    <div id="modal-load-url" class="hidden modal-overlay">
       <div class="modal">
         <div class="modal-title">Load from URL</div>
-        <input id="input-load-url" type="text" placeholder="https://example.com/PROJECT.zip" class="modal-input" />
+        <input
+          id="input-load-url"
+          type="text"
+          placeholder="https://example.com/PROJECT.zip"
+          class="modal-input"
+        />
         <div class="flex justify-end gap-2 mt-3">
-          <button class="modal-btn modal-btn-secondary" data-modal-close>Cancel</button>
-          <button id="btn-load-url" class="modal-btn modal-btn-primary">Load</button>
+          <button class="modal-btn modal-btn-secondary" data-modal-close>
+            Cancel
+          </button>
+          <button id="btn-load-url" class="modal-btn modal-btn-primary">
+            Load
+          </button>
         </div>
       </div>
     </div>
 
     <!-- Save to Gist modal -->
-    <div id="modal-save-gist" class="modal-overlay hidden">
+    <div id="modal-save-gist" class="hidden modal-overlay">
       <div class="modal">
         <div class="modal-title">Save to Gist</div>
-        <p class="text-green-400 text-xs flex items-center gap-1 mb-3">
-          <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+        <p class="flex items-center gap-1 mb-3 text-green-400 text-xs">
+          <svg
+            class="w-3.5 h-3.5 shrink-0"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M5 13l4 4L19 7"
+            ></path>
+          </svg>
           Copied project data. Please paste it into a Gist.
         </p>
         <div class="flex justify-end gap-2">
-          <a href="https://gist.github.com/" target="_blank" rel="noopener noreferrer" class="modal-btn modal-btn-secondary inline-block" style="text-decoration:none;">Open Gist</a>
-          <button class="modal-btn modal-btn-primary" data-modal-close>OK</button>
+          <a
+            href="https://gist.github.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-block modal-btn modal-btn-secondary"
+            style="text-decoration: none"
+            >Open Gist</a
+          >
+          <button class="modal-btn modal-btn-primary" data-modal-close>
+            OK
+          </button>
         </div>
       </div>
     </div>
@@ -239,18 +340,14 @@
 
       function uint8ToBase64(u8) {
         let bin = "";
-        for (let i = 0; i < u8.length; i++) {
-          bin += String.fromCharCode(u8[i]);
-        }
+        for (const b of u8) bin += String.fromCharCode(b);
         return btoa(bin);
       }
 
       function base64ToUint8(b64) {
         const bin = atob((b64 || "").replace(/\s/g, ""));
         const bytes = new Uint8Array(bin.length);
-        for (let i = 0; i < bin.length; i++) {
-          bytes[i] = bin.charCodeAt(i);
-        }
+        for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
         return bytes;
       }
 
@@ -383,14 +480,21 @@
         }
         const [, user, repo, branch, path] = match;
         const url = `https://raw.githubusercontent.com/${user}/${repo}/${branch}/${path}`;
-        const name = path.split("/").pop().replace(/\.zip$/i, "") || "untitled";
+        const name =
+          path
+            .split("/")
+            .pop()
+            .replace(/\.zip$/i, "") || "untitled";
 
         const res = await fetch(url);
         if (!res.ok) {
           throw new Error("File not found");
         }
         await loadProjectFromZip(await res.arrayBuffer(), name);
-        updateShareUrl("github", `${user}/${repo}/${branch}/${path.replace(/\.zip$/i, "")}`);
+        updateShareUrl(
+          "github",
+          `${user}/${repo}/${branch}/${path.replace(/\.zip$/i, "")}`,
+        );
       }
 
       async function loadFromUrl(input) {
@@ -398,7 +502,11 @@
         if (!/^https?:\/\/.+/i.test(url)) {
           throw new Error("Invalid URL");
         }
-        const name = url.split("/").pop().replace(/\.zip$/i, "") || "untitled";
+        const name =
+          url
+            .split("/")
+            .pop()
+            .replace(/\.zip$/i, "") || "untitled";
         const res = await fetch(url);
         if (!res.ok) {
           throw new Error("File not found");
@@ -525,7 +633,9 @@
       function updateShareUrl(param, value) {
         const base = location.href.split("?")[0];
         if (param && value) {
-          const encoded = encodeURIComponent(value).replace(/%3A/g, ":").replace(/%2F/g, "/");
+          const encoded = encodeURIComponent(value)
+            .replace(/%3A/g, ":")
+            .replace(/%2F/g, "/");
           history.replaceState(null, "", `${base}?${param}=${encoded}`);
         } else {
           history.replaceState(null, "", base);
@@ -544,7 +654,9 @@
         closeAllDropdowns();
         if (wasHidden) {
           menu.classList.remove("hidden");
-          menu.parentElement.querySelector(".btn-dropdown").classList.add("active");
+          menu.parentElement
+            .querySelector(".btn-dropdown")
+            .classList.add("active");
           document.activeElement?.blur();
         }
       }
@@ -552,7 +664,9 @@
       function closeAllDropdowns() {
         document.querySelectorAll(".dropdown-menu").forEach((m) => {
           m.classList.add("hidden");
-          m.parentElement.querySelector(".btn-dropdown").classList.remove("active");
+          m.parentElement
+            .querySelector(".btn-dropdown")
+            .classList.remove("active");
         });
       }
 
@@ -661,28 +775,36 @@
         // Close modal on Escape
         document.addEventListener("keydown", (e) => {
           if (e.key === "Escape") {
-            document.querySelectorAll(".modal-overlay:not(.hidden)").forEach((m) => {
-              m.classList.add("hidden");
-            });
+            document
+              .querySelectorAll(".modal-overlay:not(.hidden)")
+              .forEach((m) => {
+                m.classList.add("hidden");
+              });
             closeAllDropdowns();
           }
         });
 
         // Load modal submit buttons
         function setupModalSubmit(buttonId, inputId, loadFn) {
-          document.getElementById(buttonId).addEventListener("click", async () => {
-            const value = document.getElementById(inputId).value.trim();
-            if (!value) return;
-            closeModal(document.getElementById(buttonId));
-            try {
-              await loadFn(value);
-            } catch (e) {
-              alert("Load failed: " + e.message);
-            }
-          });
+          document
+            .getElementById(buttonId)
+            .addEventListener("click", async () => {
+              const value = document.getElementById(inputId).value.trim();
+              if (!value) return;
+              closeModal(document.getElementById(buttonId));
+              try {
+                await loadFn(value);
+              } catch (e) {
+                alert("Load failed: " + e.message);
+              }
+            });
         }
         setupModalSubmit("btn-load-gist", "input-load-gist", loadFromGist);
-        setupModalSubmit("btn-load-github", "input-load-github", loadFromGitHub);
+        setupModalSubmit(
+          "btn-load-github",
+          "input-load-github",
+          loadFromGitHub,
+        );
         setupModalSubmit("btn-load-url", "input-load-url", loadFromUrl);
 
         // Enter key submits modals
@@ -1066,7 +1188,7 @@
             file.text().then((text) => {
               text = text.replace(
                 /((?:\w+\.)?\bload\()(["'])[^"']*\.pyxres\2/g,
-                '$1$2my_resource.pyxres$2',
+                "$1$2my_resource.pyxres$2",
               );
               window.codeEditor.setValue(text, -1);
               window.project.code = text;
