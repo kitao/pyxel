@@ -13,9 +13,9 @@
 | `@ENV <slot>` | Switches the envelope (volume curve) slot. Range: 0-. 0 turns it off. |
 | `@ENV <slot> { init_vol, dur_ticks1, vol1, dur_ticks2, vol2, ... }` | Slot range: 1-. Sets and switches to the specified envelope slot. Slot 0 cannot be specified. Inside `{ }`, specify "initial volume (once)", then repeat "duration (tick), volume (vol)". 1 tick is 1/48 of a quarter note. Example: `@ENV1 { 30, 20, 100, 50, 0 }` |
 | `@VIB <slot>` | Switches the vibrato (pitch modulation) slot. Range: 0-. 0 turns it off. |
-| `@VIB <slot> { delay_ticks, period_ticks, depth_cents }` | Sets and switches to the specified vibrato slot. Slot 0 cannot be specified. Inside `{ }`, specify "delay (tick), period (tick), depth (cent)". 1 tick is 1/48 of a quarter note. Example: `@VIB1 {24, 12, 100}` |
+| `@VIB <slot> { delay_ticks, period_ticks, depth_cents }` | Slot range: 1-. Sets and switches to the specified vibrato slot. Slot 0 cannot be specified. Inside `{ }`, specify "delay (tick), period (tick), depth (cent)". 1 tick is 1/48 of a quarter note. Example: `@VIB1 {24, 12, 100}` |
 | `@GLI <slot>` | Switches the glide (pitch slide) slot. Range: 0-. 0 turns it off. |
-| `@GLI <slot> { offset_cents, dur_ticks }` | Inside `{ }`, specify "initial pitch offset (cent), time to return to 0 (tick)". 1 tick is 1/48 of a quarter note. Specifying `*` for each parameter automatically applies the pitch offset as the difference from the previous note and the return time as the playback duration of each note, respectively. Example: `@GLI1 { -100, 24 }` |
+| `@GLI <slot> { offset_cents, dur_ticks }` | Slot range: 1-. Sets and switches to the specified glide (pitch slide) slot. Slot 0 cannot be specified. Inside `{ }`, specify "initial pitch offset (cent), time to return to 0 (tick)". 1 tick is 1/48 of a quarter note. Specifying `*` for each parameter automatically applies the pitch offset as the difference from the previous note and the return time as the playback duration of each note, respectively. Example: `@GLI1 { -100, 24 }` |
 | `O <oct>` | Sets the octave. Range: -1-9. `O4`'s A is 440 Hz. Default is 4. |
 | `>` | Raises the octave by 1 (max 9). |
 | `<` | Lowers the octave by 1 (min -1). |

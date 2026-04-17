@@ -38,7 +38,7 @@ The `update` function is called every frame, but the `draw` function may be skip
 
 MML (Music Macro Language) is a language for defining sounds by describing notes, tempo, and other parameters as a string.
 
-Passing an MML string to the `mml` function of the Sound class causes that Sound to be played according to the MML content. Calling `mml()` with no arguments clears the MML setting.
+Passing an MML string to the `mml` function of the Sound class defines that Sound according to the MML content. Calling `mml()` with no arguments clears the MML setting.
 
 ```python
 pyxel.sounds[0].mml("CDEFGAB>C")
@@ -69,7 +69,7 @@ When Pyxel's `init` function is called, the current directory is changed to the 
 <details>
 <summary>How can I save application-specific data like high scores or game progress?</summary>
 
-Pass the developer name (`vendor_name`) and application name (`app_name`) to the `user_data_dir(vendor_name, app_name)` function. It will return the path to a directory suitable for data storage on the current platform. Use this directory to save and load your application's files.
+Pass the developer name (`vendor_name`) and application name (`app_name`) to the `user_data_dir(vendor_name, app_name)` function. It will create a directory suitable for data storage on the current platform and return its path. Use this directory to save and load your application's files.
 
 </details>
 
@@ -111,8 +111,7 @@ To make your code compatible with version 2.4, please make the following changes
 - Update code to handle the return value of the `play_pos` function, which is now `(sound_no, sec)`
 - Change the `count` argument of the `save` function in the Sound and Music classes to `sec`
 - If you need the playback duration of a sound, use the `total_sec` function of the Sound class
-- For the Sound class's `mml` function, use code that follows the new MML syntax
-- To use the old MML syntax, use the Sound class's `old_mml` function
+- For the Sound class's `mml` function, use code that follows the new MML syntax (old syntax is auto-detected; the `old_mml` function is deprecated)
 - Change the `excl_*` option in the `save` and `load` functions to `exclude_*`
 - Remove the `incl_*` option from the `save` and `load` functions
 

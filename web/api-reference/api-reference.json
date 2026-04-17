@@ -684,7 +684,7 @@
             "fr": "Définit l'icône de l'application. Spécifie l'image de l'icône sous forme de liste de chaînes.",
             "it": "Imposta l'icona dell'applicazione. Specifica l'immagine dell'icona come lista di stringhe.",
             "ja": "アプリケーションアイコンを設定する。文字列のリストでアイコン画像を指定する。",
-            "ko": "애플리케이션 아이콘을 설정한다.문자열 리스트로 아이콘 이미지를 지정한다.",
+            "ko": "애플리케이션 아이콘을 설정한다. 문자열 리스트로 아이콘 이미지를 지정한다.",
             "pt": "Define o ícone da aplicação. Especifica a imagem do ícone como uma lista de strings.",
             "ru": "Устанавливает иконку приложения. Изображение иконки задаётся списком строк.",
             "tr": "Uygulama simgesini ayarlar. Simge görüntüsünü dize listesi olarak belirtir.",
@@ -1198,7 +1198,7 @@
               "fr": "Chemin du répertoire de données utilisateur",
               "it": "Percorso della directory dati utente",
               "ja": "ユーザーデータディレクトリのパス",
-              "ko": "사용자 데이터 디렉토리 경로",
+              "ko": "사용자 데이터 디렉터리 경로",
               "pt": "Caminho do diretório de dados do usuário",
               "ru": "Путь к каталогу данных пользователя",
               "tr": "Kullanıcı verileri dizininin yolu",
@@ -1222,7 +1222,7 @@
             "fr": "Enregistre le fichier de ressources (.pyxres). Si une option est définie sur True, la ressource correspondante sera exclue de la sauvegarde.",
             "it": "Salva il file delle risorse (.pyxres). Se un'opzione è impostata su True, la risorsa corrispondente verrà esclusa dal salvataggio.",
             "ja": "リソースファイル (.pyxres) を保存する。オプションにTrueを指定すると、そのリソースは保存されない。",
-            "ko": "리소스 파일 (.pyxres)을 저장한다.옵션을 True로 설정하면 해당 리소스는 저장에서 제외된다.",
+            "ko": "리소스 파일 (.pyxres)을 저장한다. 옵션을 True로 설정하면 해당 리소스는 저장에서 제외된다.",
             "pt": "Salva o arquivo de recursos (.pyxres). Se uma opção for definida como True, o recurso correspondente será excluído do salvamento.",
             "ru": "Сохраняет файл ресурсов (.pyxres). Если параметр установлен в True, соответствующий ресурс будет исключён из сохранения.",
             "tr": "Kaynak dosyasını (.pyxres) kaydeder. Bir seçenek True olarak ayarlanırsa, ilgili kaynak kaydetme işleminden hariç tutulur.",
@@ -2945,7 +2945,7 @@
             "fr": "Liste des couleurs d'affichage de la palette. Spécifiées par une valeur numérique de 24 bits. Prend en charge les opérations de liste Python.",
             "it": "Lista dei colori di visualizzazione della palette. Specificati con un valore numerico a 24 bit. Supporta le operazioni delle liste Python.",
             "ja": "パレットの表示色リスト。24ビット数値で指定する。Pythonリストと同様の操作が可能。",
-            "ko": "팔레트의 표시색 리스트.24비트 수치로 지정한다.Python 리스트와 동일한 조작이 가능.",
+            "ko": "팔레트의 표시색 리스트. 24비트 수치로 지정한다. Python 리스트와 동일한 조작이 가능.",
             "pt": "Lista das cores de exibição da paleta. Especificadas por valor numérico de 24 bits. Suporta operações de lista Python.",
             "ru": "Список цветов отображения палитры. Задаётся 24-битным числовым значением. Поддерживает операции списков Python.",
             "tr": "Palet görüntüleme renklerinin listesi. 24 bit sayısal değerle belirtilir. Python liste işlemlerini destekler.",
@@ -2977,9 +2977,7 @@
             "uk": "Список банків зображень (екземпляри класу Image) (0-2)."
           },
           "value_type": "list[Image]",
-          "examples": [
-            "pyxel.images[0].load(0, 0, \"title.png\")"
-          ],
+          "examples": ["pyxel.images[0].load(0, 0, \"title.png\")"],
           "advanced": false
         },
         {
@@ -3078,7 +3076,7 @@
             "fr": "Définit la zone de dessin de l'écran à partir de (x, y) avec une largeur w et une hauteur h. Appeler clip() pour réinitialiser en plein écran.",
             "it": "Imposta l'area di disegno dello schermo da (x, y) con larghezza w e altezza h. Chiamare clip() per reimpostare a schermo intero.",
             "ja": "画面の描画領域を (x, y) から幅w、高さhに設定する。clip()で全画面にリセットする。",
-            "ko": "화면의 그리기 영역을 (x, y)부터 폭w, 높이h로 설정한다.clip()으로 전체 화면으로 리셋한다.",
+            "ko": "화면의 그리기 영역을 (x, y)부터 폭w, 높이h로 설정한다. clip()으로 전체 화면으로 리셋한다.",
             "pt": "Define a área de desenho da tela a partir de (x, y) com largura w e altura h. Chame clip() para redefinir para tela cheia.",
             "ru": "Устанавливает область рисования экрана от (x, y) шириной w и высотой h. Вызов clip() сбрасывает на полный экран.",
             "tr": "Ekranın çizim alanını (x, y) noktasından w genişliğinde ve h yüksekliğinde ayarlar. Tam ekrana sıfırlamak için clip() çağrılır.",
@@ -3366,7 +3364,7 @@
             "fr": "Applique le tramage (pseudo-transparence) lors du dessin. Définit alpha dans la plage 0.0-1.0.",
             "it": "Applica il dithering (pseudo-trasparenza) durante il disegno. Imposta alpha nell'intervallo 0.0-1.0.",
             "ja": "描画時にディザリング (擬似半透明) を適用する。alphaは0.0-1.0の範囲で設定する。",
-            "ko": "그리기 시 디더링 (의사 반투명) 을 적용한다.alpha는 0.0-1.0 범위로 설정한다.",
+            "ko": "그리기 시 디더링 (의사 반투명) 을 적용한다. alpha는 0.0-1.0 범위로 설정한다.",
             "pt": "Aplica dithering (pseudo-transparência) ao desenhar. Define alpha no intervalo 0.0-1.0.",
             "ru": "Применяет дизеринг (псевдопрозрачность) при рисовании. Значение alpha задаётся в диапазоне 0.0-1.0.",
             "tr": "Çizim sırasında renk karıştırma (sözde saydamlık) uygular. alpha değerini 0.0-1.0 aralığında ayarlar.",
@@ -3839,7 +3837,7 @@
             "ko": "폭w, 높이h, 색col의 사각형 윤곽선을 (x, y)에 그린다.",
             "pt": "Desenha o contorno de um retângulo de largura w, altura h e cor col em (x, y).",
             "ru": "Рисует контур прямоугольника шириной w, высотой h и цветом col в точке (x, y).",
-            "tr": "(x, y) konumuna w genişliğinde, h yüksekliğinde ve col renginde bir dikdörtgen çizer.",
+            "tr": "(x, y) konumuna w genişliğinde, h yüksekliğinde ve col renginde bir dikdörtgenin dış hatlarını çizer.",
             "uk": "Малює контур прямокутника шириною w, висотою h та кольором col у точці (x, y)."
           },
           "return": {
@@ -4051,7 +4049,7 @@
             "ko": "반지름r, 색col의 원의 윤곽선을 (x, y)에 그린다.",
             "pt": "Desenha o contorno de um círculo de raio r e cor col em (x, y).",
             "ru": "Рисует контур круга радиусом r и цветом col в точке (x, y).",
-            "tr": "(x, y) konumuna r yarıçapında ve col renginde bir daire çizer.",
+            "tr": "(x, y) konumuna r yarıçapında ve col renginde bir dairenin dış hatlarını çizer.",
             "uk": "Малює контур кола радіусом r та кольором col у точці (x, y)."
           },
           "return": {
@@ -4263,7 +4261,7 @@
             "ko": "폭w, 높이h, 색col의 타원 윤곽선을 (x, y)에 그린다.",
             "pt": "Desenha o contorno de uma elipse de largura w, altura h e cor col em (x, y).",
             "ru": "Рисует контур эллипса шириной w, высотой h и цветом col в точке (x, y).",
-            "tr": "(x, y) konumuna w genişliğinde, h yüksekliğinde ve col renginde bir elips çizer.",
+            "tr": "(x, y) konumuna w genişliğinde, h yüksekliğinde ve col renginde bir elipsin dış hatlarını çizer.",
             "uk": "Малює контур еліпса шириною w, висотою h та кольором col у точці (x, y)."
           },
           "return": {
@@ -4529,7 +4527,7 @@
             "ko": "꼭짓점이 (x1, y1), (x2, y2), (x3, y3)이고 색col인 삼각형 윤곽선을 그린다.",
             "pt": "Desenha o contorno de um triângulo com vértices (x1, y1), (x2, y2), (x3, y3) e cor col.",
             "ru": "Рисует контур треугольника с вершинами (x1, y1), (x2, y2), (x3, y3) и цветом col.",
-            "tr": "Köşeleri (x1, y1), (x2, y2), (x3, y3) olan ve col renginde bir üçgen çizer.",
+            "tr": "Köşeleri (x1, y1), (x2, y2), (x3, y3) olan ve col renginde bir üçgenin dış hatlarını çizer.",
             "uk": "Малює контур трикутника з вершинами (x1, y1), (x2, y2), (x3, y3) та кольором col."
           },
           "return": {
@@ -4756,7 +4754,7 @@
             "fr": "Copie la région de taille (w, h) depuis (u, v) de la banque d'images img (0-2 ou instance Image) vers (x, y). Des valeurs négatives de w/h retournent l'image. colkey définit la couleur transparente. rotate et scale appliquent des transformations.",
             "it": "Copia la regione di dimensione (w, h) da (u, v) del banco immagini img (0-2 o istanza Image) in (x, y). Valori negativi di w/h capovolgono l'immagine. colkey imposta il colore trasparente. rotate e scale applicano trasformazioni.",
             "ja": "イメージバンクimg (0-2またはImageインスタンス) の (u, v) からサイズ (w, h) の領域を (x, y) にコピーする。w、hに負の値を指定すると反転する。colkeyで透明色を指定。rotateとscaleで変換を適用する。",
-            "ko": "이미지 뱅크img (0-2 또는 Image 인스턴스) 의 (u, v)부터 크기 (w, h) 의 영역을 (x, y)에 복사한다.w, h에 음수를 지정하면 반전한다.colkey로 투명색을 지정.rotate와 scale로 변환을 적용한다.",
+            "ko": "이미지 뱅크img (0-2 또는 Image 인스턴스) 의 (u, v)부터 크기 (w, h) 의 영역을 (x, y)에 복사한다. w, h에 음수를 지정하면 반전한다. colkey로 투명색을 지정. rotate와 scale로 변환을 적용한다.",
             "pt": "Copia a região de tamanho (w, h) de (u, v) do banco de imagens img (0-2 ou instância Image) para (x, y). Valores negativos de w/h espelham a imagem. colkey define a cor transparente. rotate e scale aplicam transformações.",
             "ru": "Копирует область размером (w, h) из (u, v) банка изображений img (0-2 или экземпляр Image) в (x, y). Отрицательные w/h отражают изображение. colkey задаёт прозрачный цвет. rotate и scale применяют трансформации.",
             "tr": "img görüntü bankasının (0-2 veya Image örneği) (u, v) konumundan (w, h) boyutundaki bölgeyi (x, y) konumuna kopyalar. Negatif w/h görüntüyü çevirir. colkey saydam rengi belirler. rotate ve scale dönüşümleri uygular.",
@@ -4961,7 +4959,7 @@
             "fr": "Copie la région de taille (w, h) depuis (u, v) de la tilemap tm (0-7 ou instance Tilemap) vers (x, y). Chaque tuile fait 8x8 pixels, stockée en (image_tx, image_ty). Des valeurs négatives de w/h retournent l'image. colkey définit la couleur transparente. rotate et scale appliquent des transformations.",
             "it": "Copia la regione di dimensione (w, h) da (u, v) della tilemap tm (0-7 o istanza Tilemap) in (x, y). Ogni tile è di 8x8 pixel memorizzato come (image_tx, image_ty). Valori negativi di w/h capovolgono l'immagine. colkey imposta il colore trasparente. rotate e scale applicano trasformazioni.",
             "ja": "タイルマップtm (0-7またはTilemapインスタンス) の (u, v) からサイズ (w, h) の領域を (x, y) にコピーする。各タイルは8x8ピクセルで (image_tx, image_ty) として格納される。w、hに負の値を指定すると反転する。colkeyで透明色を指定。rotateとscaleで変換を適用する。",
-            "ko": "타일맵tm (0-7 또는 Tilemap 인스턴스) 의 (u, v)부터 크기 (w, h) 의 영역을 (x, y)에 복사한다.각 타일은 8x8 픽셀로 (image_tx, image_ty)로 저장된다.w, h에 음수를 지정하면 반전한다.colkey로 투명색을 지정.rotate와 scale로 변환을 적용한다.",
+            "ko": "타일맵tm (0-7 또는 Tilemap 인스턴스) 의 (u, v)부터 크기 (w, h) 의 영역을 (x, y)에 복사한다. 각 타일은 8x8 픽셀로 (image_tx, image_ty)로 저장된다. w, h에 음수를 지정하면 반전한다. colkey로 투명색을 지정. rotate와 scale로 변환을 적용한다.",
             "pt": "Copia a região de tamanho (w, h) de (u, v) do tilemap tm (0-7 ou instância Tilemap) para (x, y). Cada tile tem 8x8 pixels armazenado como (image_tx, image_ty). Valores negativos de w/h espelham a imagem. colkey define a cor transparente. rotate e scale aplicam transformações.",
             "ru": "Копирует область размером (w, h) из (u, v) тайлмапа tm (0-7 или экземпляр Tilemap) в (x, y). Каждый тайл — 8x8 пикселей, хранится как (image_tx, image_ty). Отрицательные w/h отражают изображение. colkey задаёт прозрачный цвет. rotate и scale применяют трансформации.",
             "tr": "tm tilemap'inin (0-7 veya Tilemap örneği) (u, v) konumundan (w, h) boyutundaki bölgeyi (x, y) konumuna kopyalar. Her karo 8x8 pikseldir ve (image_tx, image_ty) olarak saklanır. Negatif w/h görüntüyü çevirir. colkey saydam rengi belirler. rotate ve scale dönüşümleri uygular.",
@@ -5706,9 +5704,9 @@
                   "ja": "1 — 紺 (#2b335f)",
                   "ko": "1 — 남색 (#2b335f)",
                   "pt": "1 — Azul-marinho (#2b335f)",
-                  "ru": "1 — Тёмно-синий (#2b335f)",
+                  "ru": "1 — Нейви (#2b335f)",
                   "tr": "1 — Lacivert (#2b335f)",
-                  "uk": "1 — Темно-синій (#2b335f)"
+                  "uk": "1 — Нейві (#2b335f)"
                 },
                 {
                   "en": "2 — Purple (#7e2072)",
@@ -6093,9 +6091,7 @@
             "uk": "Список звуків (екземпляри класу Sound) (0-63)."
           },
           "value_type": "list[Sound]",
-          "examples": [
-            "pyxel.sounds[0].speed = 60"
-          ],
+          "examples": ["pyxel.sounds[0].speed = 60"],
           "advanced": false
         },
         {
@@ -6173,7 +6169,7 @@
             "fr": "Joue le son snd sur le canal ch (0-3). snd peut être un numéro de son (0-63), une liste de numéros, une instance de Sound, une liste de Sounds ou une chaîne MML.",
             "it": "Riproduce il suono snd sul canale ch (0-3). snd può essere un numero di suono (0-63), una lista di numeri, un'istanza di Sound, una lista di Sound o una stringa MML.",
             "ja": "チャンネルch (0-3) でサウンドsndを再生する。sndにはサウンド番号 (0-63)、番号のリスト、Soundインスタンス、Soundのリスト、またはMML文字列を指定できる。",
-            "ko": "채널 ch(0-3)에서 사운드 snd를 재생한다.snd에는 사운드 번호(0-63), 번호 목록, Sound 인스턴스, Sound 목록 또는 MML 문자열을 지정할 수 있다.",
+            "ko": "채널 ch(0-3)에서 사운드 snd를 재생한다. snd에는 사운드 번호(0-63), 번호 목록, Sound 인스턴스, Sound 목록 또는 MML 문자열을 지정할 수 있다.",
             "pt": "Reproduz o som snd no canal ch (0-3). snd pode ser um número de som (0-63), uma lista de números, uma instância de Sound, uma lista de Sounds ou uma string MML.",
             "ru": "Воспроизводит звук snd на канале ch (0-3). snd может быть номером звука (0-63), списком номеров, экземпляром Sound, списком Sound или строкой MML.",
             "tr": "Kanal ch (0-3) üzerinde snd sesini çalar. snd bir ses numarası (0-63), numara listesi, Sound örneği, Sound listesi veya MML dizesi olabilir.",
@@ -6426,18 +6422,18 @@
           "type": "function",
           "signature": "play_pos(ch)",
           "description": {
-            "en": "Get the sound playback position of channel ch (0-3) as a tuple of (sound_no, sec). Return None when playback has stopped.",
-            "cn": "获取通道ch（0-3）的声音播放位置，以(sound_no, sec)元组返回。播放停止时返回None。",
-            "de": "Gibt die Sound-Wiedergabeposition von Kanal ch (0-3) als Tupel (sound_no, sec) zurück. Gibt None zurück, wenn die Wiedergabe gestoppt ist.",
-            "es": "Obtiene la posición de reproducción de sonido del canal ch (0-3) como una tupla (sound_no, sec). Devuelve None cuando la reproducción se ha detenido.",
-            "fr": "Obtient la position de lecture du son du canal ch (0-3) sous forme de tuple (sound_no, sec). Renvoie None lorsque la lecture est arrêtée.",
-            "it": "Ottiene la posizione di riproduzione del suono del canale ch (0-3) come tupla (sound_no, sec). Restituisce None quando la riproduzione è interrotta.",
-            "ja": "チャンネルch (0-3) のサウンド再生位置を (sound_no, sec) のタプルとして取得する。再生停止時はNoneを返す。",
-            "ko": "채널 ch(0-3)의 사운드 재생 위치를 (sound_no, sec) 튜플로 가져온다.재생 정지 시 None을 반환한다.",
-            "pt": "Obtém a posição de reprodução de som do canal ch (0-3) como uma tupla (sound_no, sec). Retorna None quando a reprodução está parada.",
-            "ru": "Возвращает позицию воспроизведения звука канала ch (0-3) в виде кортежа (sound_no, sec). Возвращает None, когда воспроизведение остановлено.",
-            "tr": "Kanal ch (0-3) ses çalma konumunu (sound_no, sec) demeti olarak döndürür. Çalma durduğunda None döndürür.",
-            "uk": "Повертає позицію відтворення звуку каналу ch (0-3) як кортеж (sound_no, sec). Повертає None, коли відтворення зупинено."
+            "en": "Get the sound playback position of channel ch (0-3) as a tuple of (sound_index, sec). Return None when playback has stopped.",
+            "cn": "获取通道ch（0-3）的声音播放位置，以(sound_index, sec)元组返回。播放停止时返回None。",
+            "de": "Gibt die Sound-Wiedergabeposition von Kanal ch (0-3) als Tupel (sound_index, sec) zurück. Gibt None zurück, wenn die Wiedergabe gestoppt ist.",
+            "es": "Obtiene la posición de reproducción de sonido del canal ch (0-3) como una tupla (sound_index, sec). Devuelve None cuando la reproducción se ha detenido.",
+            "fr": "Obtient la position de lecture du son du canal ch (0-3) sous forme de tuple (sound_index, sec). Renvoie None lorsque la lecture est arrêtée.",
+            "it": "Ottiene la posizione di riproduzione del suono del canale ch (0-3) come tupla (sound_index, sec). Restituisce None quando la riproduzione è interrotta.",
+            "ja": "チャンネルch (0-3) のサウンド再生位置を (sound_index, sec) のタプルとして取得する。再生停止時はNoneを返す。",
+            "ko": "채널 ch(0-3)의 사운드 재생 위치를 (sound_index, sec) 튜플로 가져온다. 재생 정지 시 None을 반환한다.",
+            "pt": "Obtém a posição de reprodução de som do canal ch (0-3) como uma tupla (sound_index, sec). Retorna None quando a reprodução está parada.",
+            "ru": "Возвращает позицию воспроизведения звука канала ch (0-3) в виде кортежа (sound_index, sec). Возвращает None, когда воспроизведение остановлено.",
+            "tr": "Kanal ch (0-3) ses çalma konumunu (sound_index, sec) demeti olarak döndürür. Çalma durduğunda None döndürür.",
+            "uk": "Повертає позицію відтворення звуку каналу ch (0-3) як кортеж (sound_index, sec). Повертає None, коли відтворення зупинено."
           },
           "params": [
             {
@@ -6490,7 +6486,7 @@
             "fr": "Génère une liste MML de BGM à l'aide d'un algorithme. preset (0-7) sélectionne le preset, instr (0-3) sélectionne l'instrumentation.",
             "it": "Genera una lista MML di BGM tramite un algoritmo. preset (0-7) seleziona il preset, instr (0-3) seleziona la strumentazione.",
             "ja": "アルゴリズムでBGMのMMLリストを生成する。preset (0-7) でプリセット、instr (0-3) で編成を指定する。",
-            "ko": "알고리즘으로 BGM의 MML 리스트를 생성한다.preset (0-7)으로 프리셋, instr (0-3)으로 편성을 선택한다.",
+            "ko": "알고리즘으로 BGM의 MML 리스트를 생성한다. preset (0-7)으로 프리셋, instr (0-3)으로 편성을 선택한다.",
             "pt": "Gera uma lista MML de BGM usando um algoritmo. preset (0-7) seleciona o preset, instr (0-3) seleciona a instrumentação.",
             "ru": "Генерирует список MML для BGM с помощью алгоритма. preset (0-7) выбирает пресет, instr (0-3) выбирает инструментовку.",
             "tr": "Bir algoritma kullanarak BGM MML listesi oluşturur. preset (0-7) ön ayarı, instr (0-3) enstrümantasyonu seçer.",
@@ -7562,7 +7558,7 @@
             "fr": "Renvoie un nombre à virgule flottante aléatoire de a à b (inclus).",
             "it": "Restituisce un numero in virgola mobile casuale da a a b (inclusi).",
             "ja": "a以上b以下のランダムな小数を返す。",
-            "ko": "a 이상 b 이하의 랜덤 소수를 반환한다.",
+            "ko": "a 이상 b 이하의 랜덤 부동소수점 수를 반환한다.",
             "pt": "Retorna um número de ponto flutuante aleatório de a a b (inclusive).",
             "ru": "Возвращает случайное число с плавающей запятой от a до b (включительно).",
             "tr": "a ile b arasında (dahil) rastgele bir ondalıklı sayı döndürür.",
@@ -7578,7 +7574,7 @@
               "fr": "Nombre décimal aléatoire de a à b",
               "it": "Numero decimale casuale da a a b",
               "ja": "a以上b以下のランダムな小数",
-              "ko": "a에서 b 사이의 랜덤 소수",
+              "ko": "a에서 b 사이의 랜덤 부동소수점 수",
               "pt": "Número decimal aleatório de a a b",
               "ru": "Случайное дробное число от a до b",
               "tr": "a ile b arasında rastgele ondalık sayı",
@@ -8087,7 +8083,7 @@
           "signature": "Image.width",
           "description": {
             "en": "The width of the image.",
-            "cn": "图像的宽度",
+            "cn": "图像的宽度。",
             "de": "Die Breite des Bildes.",
             "es": "El ancho de la imagen.",
             "fr": "La largeur de l'image.",
@@ -8108,7 +8104,7 @@
           "signature": "Image.height",
           "description": {
             "en": "The height of the image.",
-            "cn": "图像的高度",
+            "cn": "图像的高度。",
             "de": "Die Höhe des Bildes.",
             "es": "El alto de la imagen.",
             "fr": "La hauteur de l'image.",
@@ -8468,7 +8464,7 @@
             "fr": "Les instances d'Image prennent en charge toutes les fonctions de dessin de la section Graphiques. Elles fonctionnent de la même manière mais dessinent sur l'image au lieu de l'écran.",
             "it": "Le istanze di Image supportano tutte le funzioni di disegno della sezione Grafica. Funzionano allo stesso modo ma disegnano sull'immagine anziché sullo schermo.",
             "ja": "Imageインスタンスはグラフィックスセクションの全描画関数をサポート。画面ではなくイメージに描画する。",
-            "ko": "Image 인스턴스는 그래픽 섹션의 모든 그리기 함수를 지원한다.화면이 아닌 이미지에 그린다.",
+            "ko": "Image 인스턴스는 그래픽 섹션의 모든 그리기 함수를 지원한다. 화면이 아닌 이미지에 그린다.",
             "pt": "As instâncias de Image suportam todas as funções de desenho da seção de Gráficos. Funcionam da mesma forma, mas desenham na imagem em vez da tela.",
             "ru": "Экземпляры Image поддерживают все функции рисования из раздела «Графика». Они работают так же, но рисуют на изображении вместо экрана.",
             "tr": "Image örnekleri, Grafikler bölümündeki tüm çizim işlevlerini destekler. Aynı şekilde çalışır ancak ekran yerine görüntü üzerine çizer.",
@@ -9015,7 +9011,7 @@
             "fr": "Obtient le tile en (x, y). Un tile est un tuple de (image_tx, image_ty).",
             "it": "Ottiene il tile in (x, y). Un tile è una tupla di (image_tx, image_ty).",
             "ja": "(x, y) のタイルを取得する。タイルは (image_tx, image_ty) のタプル。",
-            "ko": "(x, y)의 타일을 가져온다.타일은 (image_tx, image_ty) 튜플이다.",
+            "ko": "(x, y)의 타일을 가져온다. 타일은 (image_tx, image_ty) 튜플이다.",
             "pt": "Obtém o tile em (x, y). Um tile é uma tupla de (image_tx, image_ty).",
             "ru": "Возвращает тайл в (x, y). Тайл — это кортеж (image_tx, image_ty).",
             "tr": "(x, y) konumundaki tile'ı döndürür. Tile, (image_tx, image_ty) demetidir.",
@@ -9090,7 +9086,7 @@
             "fr": "Définit un tile en (x, y). Un tile est un tuple de (image_tx, image_ty).",
             "it": "Imposta un tile in (x, y). Un tile è una tupla di (image_tx, image_ty).",
             "ja": "(x, y) にタイルを設定する。タイルは (image_tx, image_ty) のタプル。",
-            "ko": "(x, y)에 타일을 설정한다.타일은 (image_tx, image_ty) 튜플이다.",
+            "ko": "(x, y)에 타일을 설정한다. 타일은 (image_tx, image_ty) 튜플이다.",
             "pt": "Define um tile em (x, y). Um tile é uma tupla de (image_tx, image_ty).",
             "ru": "Устанавливает тайл в (x, y). Тайл — это кортеж (image_tx, image_ty).",
             "tr": "(x, y) konumunda bir tile ayarlar. Tile, (image_tx, image_ty) demetidir.",
@@ -9169,7 +9165,7 @@
             "fr": "Les instances de Tilemap prennent en charge les fonctions de dessin de la section Graphiques. Elles fonctionnent de la même manière mais dessinent des tiles sur la tilemap au lieu de pixels sur l'écran. Utilisez un tuple de tile (image_tx, image_ty) au lieu d'une valeur de couleur.",
             "it": "Le istanze di Tilemap supportano le funzioni di disegno della sezione Grafica. Funzionano allo stesso modo ma disegnano tile sulla tilemap anziché pixel sullo schermo. Usare una tupla tile (image_tx, image_ty) al posto di un valore di colore.",
             "ja": "Tilemapインスタンスはグラフィックスセクションの描画関数をサポート。画面へのピクセル描画の代わりにタイルマップへタイルを描画する。色の代わりにタイルのタプル (image_tx, image_ty) を指定する。",
-            "ko": "Tilemap 인스턴스는 그래픽 섹션의 그리기 함수를 지원한다.화면에 픽셀을 그리는 대신 타일맵에 타일을 그린다.색상 값 대신 타일 튜플 (image_tx, image_ty)을 사용한다.",
+            "ko": "Tilemap 인스턴스는 그래픽 섹션의 그리기 함수를 지원한다. 화면에 픽셀을 그리는 대신 타일맵에 타일을 그린다. 색상 값 대신 타일 튜플 (image_tx, image_ty)을 사용한다.",
             "pt": "As instâncias de Tilemap suportam funções de desenho da seção de Gráficos. Funcionam da mesma forma, mas desenham tiles no tilemap em vez de píxeis na tela. Use uma tupla de tile (image_tx, image_ty) em vez de um valor de cor.",
             "ru": "Экземпляры Tilemap поддерживают функции рисования из раздела «Графика». Они работают так же, но рисуют тайлы на тайловой карте вместо пикселей на экране. Используйте кортеж тайла (image_tx, image_ty) вместо значения цвета.",
             "tr": "Tilemap örnekleri, Grafikler bölümündeki çizim işlevlerini destekler. Aynı şekilde çalışır ancak ekrana piksel yerine tilemap'e tile çizer. Renk değeri yerine tile demeti (image_tx, image_ty) kullanın.",
@@ -9447,7 +9443,7 @@
             "fr": "Liste des notes (0-59). Les valeurs plus élevées produisent des sons plus aigus. 33 = 'A2' (440 Hz). Les silences sont -1.",
             "it": "Lista delle note (0-59). Valori più alti producono tonalità più alte. 33 = 'A2' (440 Hz). Le pause sono -1.",
             "ja": "音程 (0-59) のリスト。数値が大きいほど音程は高く、33で'A2' (440Hz)。休符は-1。",
-            "ko": "음정(0-59) 목록.값이 클수록 음이 높아지며, 33은 'A2'(440Hz).쉼표는 -1.",
+            "ko": "음정(0-59) 목록. 값이 클수록 음이 높아지며, 33은 'A2'(440Hz). 쉼표는 -1.",
             "pt": "Lista de notas (0-59). Valores mais altos produzem tons mais altos. 33 = 'A2' (440 Hz). Pausas são -1.",
             "ru": "Список нот (0-59). Более высокие значения дают более высокий тон. 33 = 'A2' (440 Гц). Паузы обозначаются -1.",
             "tr": "Nota listesi (0-59). Değer büyüdükçe perde yükselir. 33 = 'A2' (440 Hz). Suslar -1'dir.",
@@ -9531,7 +9527,7 @@
             "fr": "Vitesse de lecture. 1 est le plus rapide, et plus le nombre est grand, plus la lecture est lente. À 120, une note équivaut à 1 seconde.",
             "it": "Velocità di riproduzione. 1 è la più veloce, e più grande è il numero, più lenta è la riproduzione. A 120, una nota equivale a 1 secondo.",
             "ja": "再生速度。1が最も速く、数値が大きいほど遅くなる。120で1音の長さが1秒になる。",
-            "ko": "재생 속도.1이 가장 빠르며 숫자가 클수록 느려진다.120이면 1음의 길이가 1초가 된다.",
+            "ko": "재생 속도. 1이 가장 빠르며 숫자가 클수록 느려진다. 120이면 1음의 길이가 1초가 된다.",
             "pt": "Velocidade de reprodução. 1 é a mais rápida, e quanto maior o número, mais lenta a reprodução. Em 120, uma nota equivale a 1 segundo.",
             "ru": "Скорость воспроизведения. 1 — самая быстрая, чем больше число, тем медленнее воспроизведение. При 120 одна нота равна 1 секунде.",
             "tr": "Çalma hızı. 1 en hızlıdır, sayı büyüdükçe çalma yavaşlar. 120'de bir nota 1 saniyeye eşittir.",
@@ -9552,7 +9548,7 @@
             "fr": "Définit les notes, les timbres, les volumes et les effets à l'aide de chaînes. Si la chaîne des timbres, des volumes ou des effets est plus courte que les notes, elle se répète depuis le début.",
             "it": "Imposta note, toni, volumi ed effetti usando stringhe. Se la stringa dei toni, dei volumi o degli effetti è più corta delle note, si ripete dall'inizio.",
             "ja": "文字列で音程、音色、音量、エフェクトを設定する。音色、音量、エフェクトの長さが音程より短い場合は先頭から繰り返される。",
-            "ko": "문자열로 음정, 음색, 음량, 효과를 설정한다.음색, 음량, 효과 문자열이 음정보다 짧으면 처음부터 반복된다.",
+            "ko": "문자열로 음정, 음색, 음량, 효과를 설정한다. 음색, 음량, 효과 문자열이 음정보다 짧으면 처음부터 반복된다.",
             "pt": "Define notas, timbres, volumes e efeitos usando strings. Se a string de timbres, volumes ou efeitos for mais curta que as notas, ela se repete desde o início.",
             "ru": "Устанавливает ноты, тембры, громкость и эффекты с помощью строк. Если строка тембров, громкости или эффектов короче строки нот, она повторяется сначала.",
             "tr": "Dizeler kullanarak notaları, tonları, ses seviyelerini ve efektleri ayarlar. Ton, ses seviyesi veya efekt dizesi notalardan kısaysa, baştan tekrarlanır.",
@@ -9673,9 +9669,7 @@
             "tr": "Nota adları (CDEFGAB), isteğe bağlı diyez (#) veya bemol (-), oktav (0-4) ve suslar (R) dizesiyle notaları ayarlar. Büyük/küçük harf duyarsız, boşluklar yok sayılır.",
             "uk": "Встановлює ноти за допомогою рядка з назв нот (CDEFGAB), необов'язкових дієз (#) або бемоль (-), октави (0-4) та пауз (R). Регістр не враховується, пробіли ігноруються."
           },
-          "examples": [
-            "pyxel.sounds[0].set_notes(\"g2b-2d3r rf3f3f3\")"
-          ],
+          "examples": ["pyxel.sounds[0].set_notes(\"g2b-2d3r rf3f3f3\")"],
           "return": {
             "type": "None"
           },
@@ -9719,9 +9713,7 @@
             "tr": "TSPN (veya özel ton numaraları için 0-9) dizesiyle tonları ayarlar. Büyük/küçük harf duyarsız, boşluklar yok sayılır.",
             "uk": "Встановлює тембри за допомогою рядка з TSPN (або 0-9 для власних номерів тембрів). Регістр не враховується, пробіли ігноруються."
           },
-          "examples": [
-            "pyxel.sounds[0].set_tones(\"ttss pppn\")"
-          ],
+          "examples": ["pyxel.sounds[0].set_tones(\"ttss pppn\")"],
           "return": {
             "type": "None"
           },
@@ -9759,15 +9751,13 @@
             "fr": "Définit les volumes avec une chaîne de 01234567. Les espaces sont ignorés.",
             "it": "Imposta i volumi con una stringa di 01234567. Gli spazi sono ignorati.",
             "ja": "01234567の文字列で音量を設定する。空白は無視される。",
-            "ko": "01234567 문자열로 음량을 설정한다.공백은 무시된다.",
+            "ko": "01234567 문자열로 음량을 설정한다. 공백은 무시된다.",
             "pt": "Define os volumes com uma string de 01234567. Espaços são ignorados.",
             "ru": "Устанавливает громкость строкой из 01234567. Пробелы игнорируются.",
             "tr": "01234567 dizesiyle ses seviyelerini ayarlar. Boşluklar yok sayılır.",
             "uk": "Встановлює гучність рядком з 01234567. Пробіли ігноруються."
           },
-          "examples": [
-            "pyxel.sounds[0].set_volumes(\"7777 7531\")"
-          ],
+          "examples": ["pyxel.sounds[0].set_volumes(\"7777 7531\")"],
           "return": {
             "type": "None"
           },
@@ -9805,15 +9795,13 @@
             "fr": "Définit les effets avec une chaîne de NSVFHQ. Insensible à la casse, les espaces sont ignorés.",
             "it": "Imposta gli effetti con una stringa di NSVFHQ. Non sensibile alle maiuscole, gli spazi sono ignorati.",
             "ja": "NSVFHQの文字列でエフェクトを設定する。大文字小文字不問、空白は無視される。",
-            "ko": "NSVFHQ 문자열로 효과를 설정한다.대소문자 불문, 공백은 무시된다.",
+            "ko": "NSVFHQ 문자열로 효과를 설정한다. 대소문자 불문, 공백은 무시된다.",
             "pt": "Define os efeitos com uma string de NSVFHQ. Não diferencia maiúsculas de minúsculas, espaços são ignorados.",
             "ru": "Устанавливает эффекты строкой из NSVFHQ. Регистр не учитывается, пробелы игнорируются.",
             "tr": "NSVFHQ dizesiyle efektleri ayarlar. Büyük/küçük harf duyarsız, boşluklar yok sayılır.",
             "uk": "Встановлює ефекти рядком з NSVFHQ. Регістр не враховується, пробіли ігноруються."
           },
-          "examples": [
-            "pyxel.sounds[0].set_effects(\"nfnf nvvs\")"
-          ],
+          "examples": ["pyxel.sounds[0].set_effects(\"nfnf nvvs\")"],
           "return": {
             "type": "None"
           },
@@ -9920,16 +9908,14 @@
             "es": "Carga un archivo de audio (WAV/OGG) para reproducción.",
             "fr": "Charge un fichier audio (WAV/OGG) pour la lecture.",
             "it": "Carica un file audio (WAV/OGG) per la riproduzione.",
-            "ja": "オーディオファイル (WAV/OGG) を読み込んで再生する。",
+            "ja": "再生用のオーディオファイル (WAV/OGG) を読み込む。",
             "ko": "오디오 파일 (WAV/OGG)을 로드하여 재생한다.",
             "pt": "Carrega um arquivo de áudio (WAV/OGG) para reprodução.",
             "ru": "Загружает аудиофайл (WAV/OGG) для воспроизведения.",
             "tr": "Çalma için ses dosyası (WAV/OGG) yükler.",
             "uk": "Завантажує аудіофайл (WAV/OGG) для відтворення."
           },
-          "examples": [
-            "pyxel.sounds[0].pcm(\"sounds/bgm.ogg\")"
-          ],
+          "examples": ["pyxel.sounds[0].pcm(\"sounds/bgm.ogg\")"],
           "return": {
             "type": "None"
           },
@@ -10070,7 +10056,7 @@
             "fr": "Renvoie la durée de lecture en secondes. Renvoie None pour les boucles infinies.",
             "it": "Restituisce il tempo di riproduzione in secondi. Restituisce None per i loop infiniti.",
             "ja": "サウンドの再生時間を秒で返す。無限ループ時はNoneを返す。",
-            "ko": "재생 시간을 초 단위로 반환한다.무한 루프 시 None을 반환한다.",
+            "ko": "재생 시간을 초 단위로 반환한다. 무한 루프 시 None을 반환한다.",
             "pt": "Retorna o tempo de reprodução em segundos. Retorna None para loops infinitos.",
             "ru": "Возвращает время воспроизведения в секундах. Возвращает None для бесконечных циклов.",
             "tr": "Oynatma süresini saniye cinsinden döndürür. Sonsuz döngüler için None döndürür.",
@@ -10184,15 +10170,13 @@
             "fr": "Définit les listes de sons (0-63) pour chaque canal. Une liste vide signifie que le canal n'est pas utilisé.",
             "it": "Imposta le liste dei suoni (0-63) per ogni canale. Una lista vuota indica che il canale non è utilizzato.",
             "ja": "チャンネルのサウンド (0-63) のリストを設定する。空リストを指定するとそのチャンネルは再生に使用されない。",
-            "ko": "각 채널의 사운드(0-63) 목록을 설정한다.빈 목록은 해당 채널이 사용되지 않음을 의미한다.",
+            "ko": "각 채널의 사운드(0-63) 목록을 설정한다. 빈 목록은 해당 채널이 사용되지 않음을 의미한다.",
             "pt": "Define as listas de sons (0-63) para cada canal. Uma lista vazia significa que o canal não é usado.",
             "ru": "Устанавливает списки звуков (0-63) для каждого канала. Пустой список означает, что канал не используется.",
             "tr": "Her kanal için ses listelerini (0-63) ayarlar. Boş liste kanalın kullanılmadığı anlamına gelir.",
             "uk": "Встановлює списки звуків (0-63) для кожного каналу. Порожній список означає, що канал не використовується."
           },
-          "examples": [
-            "pyxel.musics[0].set([0, 1], [], [3])"
-          ],
+          "examples": ["pyxel.musics[0].set([0, 1], [], [3])"],
           "return": {
             "type": "None"
           },
@@ -10407,7 +10391,7 @@
             "fr": "Joue le son snd sur ce canal. snd peut être un numéro de son, une liste, une instance Sound, une liste de Sounds ou une chaîne MML.",
             "it": "Riproduce il suono snd su questo canale. snd può essere un numero di suono, una lista, un'istanza Sound, una lista di Sound o una stringa MML.",
             "ja": "このチャンネルでサウンドsndを再生する。sndにはサウンド番号、リスト、Soundインスタンス、Soundのリスト、またはMML文字列を指定できる。",
-            "ko": "이 채널에서 사운드 snd를 재생한다.snd에는 사운드 번호, 리스트, Sound 인스턴스, Sound 리스트 또는 MML 문자열을 지정할 수 있다.",
+            "ko": "이 채널에서 사운드 snd를 재생한다. snd에는 사운드 번호, 리스트, Sound 인스턴스, Sound 리스트 또는 MML 문자열을 지정할 수 있다.",
             "pt": "Reproduz o som snd neste canal. snd pode ser um número de som, uma lista, uma instância Sound, uma lista de Sounds ou uma string MML.",
             "ru": "Воспроизводит звук snd на этом канале. snd может быть номером звука, списком, экземпляром Sound, списком Sound или строкой MML.",
             "tr": "Bu kanalda snd sesini çalar. snd bir ses numarası, liste, Sound örneği, Sound listesi veya MML dizesi olabilir.",
@@ -10520,14 +10504,14 @@
           "type": "function",
           "signature": "Channel.play_pos()",
           "description": {
-            "en": "Get the playback position as a tuple of (sound_no, sec). Return None when playback has stopped.",
+            "en": "Get the playback position as a tuple of (sound_index, sec). Return None when playback has stopped.",
             "cn": "以 (sound_index, sec) 元组形式获取播放位置。播放停止时返回None。",
             "de": "Gibt die Wiedergabeposition als Tupel (sound_index, sec) zurück. Gibt None zurück, wenn die Wiedergabe gestoppt wurde.",
             "es": "Obtiene la posición de reproducción como una tupla (sound_index, sec). Devuelve None cuando la reproducción se ha detenido.",
             "fr": "Récupère la position de lecture sous forme de tuple (sound_index, sec). Renvoie None lorsque la lecture est arrêtée.",
             "it": "Restituisce la posizione di riproduzione come tupla (sound_index, sec). Restituisce None quando la riproduzione è terminata.",
             "ja": "再生位置を (sound_index, sec) のタプルとして取得する。再生停止時はNoneを返す。",
-            "ko": "재생 위치를 (sound_index, sec) 튜플로 가져온다.재생이 정지하면 None을 반환한다.",
+            "ko": "재생 위치를 (sound_index, sec) 튜플로 가져온다. 재생이 정지하면 None을 반환한다.",
             "pt": "Obtém a posição de reprodução como uma tupla (sound_index, sec). Retorna None quando a reprodução parou.",
             "ru": "Возвращает позицию воспроизведения в виде кортежа (sound_index, sec). Возвращает None, когда воспроизведение остановлено.",
             "tr": "Oynatma konumunu (sound_index, sec) demeti olarak döndürür. Oynatma durduğunda None döndürür.",

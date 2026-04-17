@@ -1162,7 +1162,7 @@ class Channel:
         """Stop playback on this channel."""
         ...
     def play_pos(self) -> Optional[Tuple[int, float]]:
-        """Get the playback position as a tuple of (sound_no, sec). Return None when playback has stopped.
+        """Get the playback position as a tuple of (sound_index, sec). Return None when playback has stopped.
 
         Returns:
             (sound_index, sec) or None
@@ -2060,7 +2060,7 @@ def stop(ch: Optional[int] = None) -> None:
     ...
 
 def play_pos(ch: int) -> Optional[Tuple[int, float]]:
-    """Get the sound playback position of channel ch (0-3) as a tuple of (sound_no, sec). Return None when playback has stopped.
+    """Get the sound playback position of channel ch (0-3) as a tuple of (sound_index, sec). Return None when playback has stopped.
 
     Args:
         ch: Channel number (0-3)

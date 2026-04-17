@@ -833,7 +833,7 @@ Stop playback of all channels.
 
 ### `play_pos(ch)` — function
 
-Get the sound playback position of channel ch (0-3) as a tuple of (sound_no, sec). Return None when playback has stopped.
+Get the sound playback position of channel ch (0-3) as a tuple of (sound_index, sec). Return None when playback has stopped.
 
 **Parameters:**
 
@@ -1491,7 +1491,7 @@ Stop playback on this channel.
 
 ### `Channel.play_pos()` — function *(Advanced)*
 
-Get the playback position as a tuple of (sound_no, sec). Return None when playback has stopped.
+Get the playback position as a tuple of (sound_index, sec). Return None when playback has stopped.
 
 **Returns:** `tuple[int, float]/None` — (sound_index, sec) or None
 

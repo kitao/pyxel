@@ -116,7 +116,7 @@
       "es": "El tipo de archivo de inicio debe ser {0}, {1} o {2}.",
       "fr": "Le type du fichier de démarrage doit être {0}, {1} ou {2}.",
       "it": "Il tipo di file di avvio deve essere {0}, {1} o {2}.",
-      "ja": "起動ファイルの形式は {0}、{1}、または {2}",
+      "ja": "起動ファイルの形式は {0}、{1}、または {2}。",
       "ko": "시작 파일 형식은 {0}, {1} 또는 {2}이어야 합니다.",
       "pt": "O tipo do arquivo de inicialização deve ser {0}, {1} ou {2}.",
       "ru": "Тип файла запуска должен быть {0}, {1} или {2}.",

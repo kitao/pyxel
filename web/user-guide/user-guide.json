@@ -76,7 +76,7 @@
       "pt": "Guia do usuário para {0}, um motor de jogos retrô para Python.",
       "ru": "Руководство пользователя {0}, ретро-игрового движка для Python.",
       "tr": "Python için bir retro oyun motoru olan {0} kullanım kılavuzu.",
-      "uk": "Посібник користувача {0}, ретро-ігрового движка для Python."
+      "uk": "Посібник користувача {0}, ретро-ігрового рушія для Python."
     },
     "overview_title": {
       "en": "Overview",
@@ -104,7 +104,7 @@
       "pt": "{0} (/ˈpɪksəl/) é um motor de jogos retrô para Python. As especificações são inspiradas em consoles de jogos retrô, como o suporte para apenas 16 cores e 4 canais de som, permitindo que você desfrute facilmente da criação de jogos em estilo pixel art.",
       "ru": "{0} (/ˈpɪksəl/) — это ретро-игровой движок для Python. Спецификации вдохновлены ретро-игровыми консолями, такими как поддержка только 16 цветов и 4 звуковых канала, что позволяет легко наслаждаться созданием игр в стиле пиксельной графики.",
       "tr": "{0} (/ˈpɪksəl/), Python için bir retro oyun motorudur. Özellikler, yalnızca 16 renk desteği ve 4 ses kanalıyla retro oyun konsollarından ilham alınarak tasarlanmıştır, böylece piksel sanat tarzı oyunlar yapmayı kolayca keyifle yaşayabilirsiniz.",
-      "uk": "{0} (/ˈpɪksəl/) — це ретро-ігровий движок для Python. Специфікації натхнені ретро-ігровими консолями, зокрема обмеженням до 16 кольорів і 4 звукових каналів, що дозволяє легко насолоджуватися створенням ігор у стилі піксельної графіки."
+      "uk": "{0} (/ˈpɪksəl/) — це ретро-ігровий рушій для Python. Специфікації натхнені ретро-ігровими консолями, зокрема обмеженням до 16 кольорів і 4 звукових каналів, що дозволяє легко насолоджуватися створенням ігор у стилі піксельної графіки."
     },
     "overview_inspired": {
       "en": "{0}'s specifications and APIs are inspired by {1} and {2}.",
@@ -805,6 +805,34 @@
       "ru": "Во время выполнения приложения Pyxel можно выполнить следующие специальные действия с клавишами.",
       "tr": "Bir Pyxel uygulaması çalışırken, aşağıdaki özel tuş işlemleri gerçekleştirilebilir.",
       "uk": "Під час виконання програми Pyxel можна виконати наступні спеціальні дії з клавішами."
+    },
+    "th_key": {
+      "en": "Key",
+      "cn": "键",
+      "de": "Taste",
+      "es": "Tecla",
+      "fr": "Touche",
+      "it": "Tasto",
+      "ja": "キー",
+      "ko": "키",
+      "pt": "Tecla",
+      "ru": "Клавиша",
+      "tr": "Tuş",
+      "uk": "Клавіша"
+    },
+    "th_action": {
+      "en": "Action",
+      "cn": "操作",
+      "de": "Aktion",
+      "es": "Acción",
+      "fr": "Action",
+      "it": "Azione",
+      "ja": "動作",
+      "ko": "동작",
+      "pt": "Ação",
+      "ru": "Действие",
+      "tr": "İşlem",
+      "uk": "Дія"
     },
     "resources_title": {
       "en": "Creating Resources",

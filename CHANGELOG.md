@@ -10,7 +10,7 @@
 ## 2.9.0
 
 - Redesigned gen_bgm for Pyxel Composer integration
-- Changed transp, instr, and seed of the gen_bgm function to required
+- Changed the transp, instr, and seed of the gen_bgm function to required
 - Added Cargo.lock to version control for reproducible builds
 - Added the resize function to change the screen size at runtime
 - Fixed the screencast function using wrong last-frame delay on frame drops
@@ -850,7 +850,7 @@
 ## 2.0.1
 
 - Removed publish of the crate to the release script
-- Tile coordinate type is back to u8
+- Reverted tile coordinate type to u8
 - Removed source code path from the binary
 - Renamed Waveform and waveforms to Tone and tones
 - Updated resource file format for the tones
