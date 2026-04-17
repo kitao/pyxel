@@ -68,3 +68,54 @@ const t = (o) => {
 
 const code = (s, syntax = "plaintext") =>
   `<pre class="code-block"><code class="language-${syntax}">${esc(s)}</code></pre>`;
+
+const btnChip = (s) => `<span class="btn-chip">${esc(s)}</span>`;
+
+const linkChip = (s) => `<span class="link-chip">${esc(s)}</span>`;
+
+// Base64 <-> Uint8Array conversion
+
+const uint8ToBase64 = (u8) => {
+  let bin = "";
+  for (const b of u8) bin += String.fromCharCode(b);
+  return btoa(bin);
+};
+
+const base64ToUint8 = (b64) => {
+  const bin = atob((b64 || "").replace(/\s/g, ""));
+  const bytes = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+  return bytes;
+};
+
+// Pyxel iframe readiness polling
+
+const waitForPyxelReady = (
+  checkFn,
+  onReady,
+  { maxRetries = 300, interval = 100 } = {},
+) => {
+  let retries = 0;
+  (function poll() {
+    if (checkFn()) {
+      onReady();
+    } else if (++retries < maxRetries) {
+      setTimeout(poll, interval);
+    } else {
+      console.error("Pyxel runtime failed to initialize within timeout");
+    }
+  })();
+};
+
+// Page initialization
+
+const initPage = (jsonFile, buildFn) => {
+  fetch(jsonFile)
+    .then((r) => r.json())
+    .then((json) => {
+      data = json;
+      lang = detectLanguage(data.languages);
+      buildFn();
+    })
+    .catch((e) => console.error("Failed to load data:", e));
+};

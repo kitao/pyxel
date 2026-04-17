@@ -201,14 +201,7 @@
       }
 
       // Init
-      fetch("showcase.json")
-        .then((r) => r.json())
-        .then((json) => {
-          data = json;
-          lang = detectLanguage(data.languages);
-          buildPage();
-        })
-        .catch((e) => console.error("Failed to load data:", e));
+      initPage("showcase.json", buildPage);
     </script>
   </body>
 </html>

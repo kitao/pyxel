@@ -279,14 +279,7 @@ pyxel.show()
       }
 
       // Init
-      fetch("web-usage.json")
-        .then((r) => r.json())
-        .then((json) => {
-          data = json;
-          lang = detectLanguage(data.languages);
-          build();
-        })
-        .catch((e) => console.error("Failed to load data:", e));
+      initPage("web-usage.json", build);
     </script>
   </body>
 </html>

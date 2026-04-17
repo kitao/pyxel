@@ -20,9 +20,7 @@
       let data = null;
       let lang = "en";
 
-      function btnChip(text) {
-        return `<span class="btn-chip">${esc(text)}</span>`;
-      }
+      // btnChip provided by shared.js
 
       function buildPage() {
         const app = document.getElementById("app");
@@ -347,14 +345,7 @@
       }
 
       // Init
-      fetch("manual.json")
-        .then((r) => r.json())
-        .then((json) => {
-          data = json;
-          lang = detectLanguage(data.languages);
-          buildPage();
-        })
-        .catch((e) => console.error("Failed to load data:", e));
+      initPage("manual.json", buildPage);
     </script>
   </body>
 </html>

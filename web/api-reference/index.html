@@ -584,14 +584,7 @@
       // Init
       showAdvanced = localStorage.getItem("pyxel-api-ref-advanced") === "1";
 
-      fetch("api-reference.json")
-        .then((r) => r.json())
-        .then((json) => {
-          data = json;
-          lang = detectLanguage(data.languages);
-          buildPage();
-        })
-        .catch((e) => console.error("Failed to load data:", e));
+      initPage("api-reference.json", buildPage);
     </script>
   </body>
 </html>

@@ -464,14 +464,7 @@
       }
 
       // Init
-      fetch("editor-manual.json")
-        .then((r) => r.json())
-        .then((json) => {
-          data = json;
-          lang = detectLanguage(data.languages);
-          build();
-        })
-        .catch((e) => console.error("Failed to load data:", e));
+      initPage("editor-manual.json", build);
     </script>
   </body>
 </html>

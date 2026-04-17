@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="../styles.css" />
     <script src="https://cdn.jsdelivr.net/gh/kitao/pyxel/wasm/pyxel.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/lz-string@1.4.4/libs/lz-string.min.js"></script>
+    <script src="../shared.js"></script>
   </head>
   <body class="h-full page">
     <main class="mx-auto p-6 max-w-4xl">
@@ -265,20 +266,16 @@
 
     <script>
       // --- URL compression helpers ---
+      // Base conversion (uint8ToBase64, base64ToUint8) provided by shared.js
       function b64urlEncode(bytes) {
-        let s = "";
-        for (const b of bytes) s += String.fromCharCode(b);
-        return btoa(s)
+        return uint8ToBase64(bytes)
           .replace(/\+/g, "-")
           .replace(/\//g, "_")
           .replace(/=+$/, "");
       }
 
       function b64urlDecode(s) {
-        const b = atob(s.replace(/-/g, "+").replace(/_/g, "/"));
-        const bytes = new Uint8Array(b.length);
-        for (let i = 0; i < b.length; i++) bytes[i] = b.charCodeAt(i);
-        return bytes;
+        return base64ToUint8(s.replace(/-/g, "+").replace(/_/g, "/"));
       }
 
       async function compressDeflateRaw(text) {
@@ -447,10 +444,9 @@
         });
 
         // Enable buttons when ready
-        const MAX_PYXEL_READY_RETRIES = 300; // 30 seconds
-        let _pyxelReadyRetries = 0;
-        (function waitForPyxelReady() {
-          if (runtimeScreen.contentWindow?.pyxelContext?.resolveInput) {
+        waitForPyxelReady(
+          () => runtimeScreen.contentWindow?.pyxelContext?.resolveInput,
+          () => {
             document
               .querySelectorAll(
                 'button[data-action="play"],button[data-action="stop"],button[data-action="loop"]',
@@ -458,12 +454,8 @@
               .forEach((button) => {
                 button.disabled = false;
               });
-          } else if (++_pyxelReadyRetries < MAX_PYXEL_READY_RETRIES) {
-            setTimeout(waitForPyxelReady, 100);
-          } else {
-            console.error("Pyxel runtime failed to initialize within timeout");
-          }
-        })();
+          },
+        );
       });
     </script>
   </body>
