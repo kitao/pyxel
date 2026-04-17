@@ -4,10 +4,8 @@
 
 - Reduced Pyxel Web Launcher cache delay for app updates
 - Reduced Pyxel MML Studio share URL length
-- Optimized rendering, audio, and parsing hot paths
-- Reduced code duplication across core and binding layers
-- Improved CLI robustness and directory scanning efficiency
-- Improved virtual gamepad touch handling and event cleanup
+- Improved virtual gamepad touch handling on mobile devices
+- Refined code quality across Rust, Python, and web layers
 
 ## 2.9.0
 
