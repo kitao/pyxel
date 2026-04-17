@@ -6,6 +6,7 @@
 - Reduced Pyxel MML Studio share URL length
 - Improved virtual gamepad touch handling on mobile devices
 - Refined code quality across Rust, Python, and web layers
+- Revised multilingual documentation and added JSON to format target
 
 ## 2.9.0
 
