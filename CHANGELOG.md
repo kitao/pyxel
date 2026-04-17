@@ -6,6 +6,7 @@
 - Reduced Pyxel MML Studio share URL length
 - Optimized rendering, audio, and parsing hot paths
 - Reduced code duplication across core and binding layers
+- Improved CLI robustness and directory scanning efficiency
 
 ## 2.9.0
 

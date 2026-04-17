@@ -44,8 +44,11 @@ def _list_imported_modules(imports, filename, checked_files):
     checked_files.add(filename)
 
     dir_path = os.path.dirname(filename)
-    with open(filename, encoding="utf8") as file:
-        root = ast.parse(file.read())
+    try:
+        with open(filename, encoding="utf8") as file:
+            root = ast.parse(file.read())
+    except (SyntaxError, UnicodeDecodeError):
+        return
 
     for node in ast.walk(root):
         if isinstance(node, ast.Import):

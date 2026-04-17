@@ -16,6 +16,9 @@ import zipfile
 import pyxel
 import pyxel.utils
 
+_METADATA_FIELDS = ("title", "author", "desc", "site", "license", "version")
+_METADATA_PATTERN = re.compile(r"#\s*(.+?)\s*:\s*(.+)")
+
 
 def cli():
     commands = [
@@ -58,13 +61,12 @@ def cli():
             continue
         max_args = len(command[0]) + 1
         min_args = max_args - sum(1 for s in command[0] if s.startswith("["))
-        if min_args <= num_args <= max_args:
-            command[1](*sys.argv[2:])
-            return
-        else:
+        if not (min_args <= num_args <= max_args):
             print("invalid number of parameters")
             print_usage(command[0])
             sys.exit(1)
+        command[1](*sys.argv[2:])
+        return
 
     print(f"invalid command: '{sys.argv[1]}'")
     print_usage()
@@ -86,8 +88,11 @@ def _complete_extension(filename, command, valid_ext):
 
 
 def _files_in_dir(dirname):
-    paths = glob.glob(os.path.join(dirname, "**/*"), recursive=True)
-    return sorted(p for p in paths if os.path.isfile(p))
+    return sorted(
+        os.path.join(root, name)
+        for root, _, files in os.walk(dirname)
+        for name in files
+    )
 
 
 def _check_file_exists(filename):
@@ -148,8 +153,11 @@ def _create_watch_state_file():
 
 
 def _timestamps_in_dir(dirname):
-    paths = glob.glob(os.path.join(dirname, "**/*"), recursive=True)
-    return {p: os.path.getmtime(p) for p in paths if os.path.isfile(p)}
+    return {
+        os.path.join(root, name): os.path.getmtime(os.path.join(root, name))
+        for root, _, files in os.walk(dirname)
+        for name in files
+    }
 
 
 def _run_python_script_in_separate_process(python_script_file):
@@ -177,13 +185,11 @@ def _extract_pyxel_app(pyxel_app_file):
 
 
 def _make_metadata_comment(startup_script_file):
-    _METADATA_FIELDS = ["title", "author", "desc", "site", "license", "version"]
     metadata = {}
-    metadata_pattern = re.compile(r"#\s*(.+?)\s*:\s*(.+)")
 
     with open(startup_script_file, "r", encoding="utf8") as f:
         for line in f:
-            match = metadata_pattern.match(line)
+            match = _METADATA_PATTERN.match(line)
             if match:
                 key, value = match.groups()
                 key = key.strip().lower()
@@ -395,7 +401,9 @@ def create_executable_from_pyxel_app(pyxel_app_file):
         startup_script_file,
     ]
     print(" ".join(command))
-    subprocess.run(command)
+    result = subprocess.run(command)
+    if result.returncode != 0:
+        _exit_with_error(f"PyInstaller build failed with exit code {result.returncode}")
 
     # Clean up temporary build artifacts
     shutil.rmtree(app2exe_dir, ignore_errors=True)
