@@ -5,7 +5,7 @@ NUM_CHANNELS = 4
 
 
 def js_var(name, default):
-    return getattr(window, name) if hasattr(window, name) else default
+    return getattr(window, name, default)
 
 
 class App:

@@ -120,6 +120,8 @@ The `tones`, `volumes`, and `effects` arrays may be shorter than `notes` due to 
 
 **Note mapping:** Notes are encoded as `base + octave × 12`, where C=0, D=2, E=4, F=5, G=7, A=9, B=11, and octave ranges from 0 to 4. For example, C0=0, A4=57, B4=59.
 
+**MML-defined sounds:** Sounds defined with `Sound.mml()` cannot be saved to `.pyxres`; only the `notes`, `tones`, `volumes`, `effects`, and `speed` fields are persisted. To preserve MML-based sounds, keep the MML strings in your source code and call `sound.mml()` at runtime.
+
 ## Music
 
 Up to **8 music tracks**. Each track arranges sounds across up to **4 channels** for sequential playback.

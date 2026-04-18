@@ -1,3 +1,9 @@
 [workspace]
 members = ["pyxel-core", "pyxel-binding"]
 resolver = "2"
+
+[workspace.package]
+version = "2.9.0"
+authors = ["Takashi Kitao <takashi.kitao@gmail.com>"]
+edition = "2021"
+license = "MIT"

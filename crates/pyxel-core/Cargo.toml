@@ -1,9 +1,9 @@
 [package]
 name = "pyxel-core"
-version = "2.9.0"
-authors = ["Takashi Kitao <takashi.kitao@gmail.com>"]
-edition = "2021"
-license = "MIT"
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+license.workspace = true
 
 [lib]
 name = "pyxel"

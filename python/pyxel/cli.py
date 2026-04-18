@@ -332,7 +332,7 @@ def package_pyxel_app(app_dir, startup_script_file):
 
     app_dir = os.path.abspath(app_dir)
     setting_file = os.path.join(app_dir, pyxel.APP_STARTUP_SCRIPT_FILE)
-    with open(setting_file, "w") as f:
+    with open(setting_file, "w", encoding="utf-8") as f:
         f.write(os.path.relpath(startup_script_file, app_dir))
 
     pyxel_app_file = os.path.basename(app_dir) + pyxel.APP_FILE_EXTENSION
@@ -373,7 +373,7 @@ def create_executable_from_pyxel_app(pyxel_app_file):
 
     pyxel_app_name = os.path.splitext(os.path.basename(pyxel_app_file))[0]
     startup_script_file = os.path.join(app2exe_dir, pyxel_app_name + ".py")
-    with open(startup_script_file, "w") as f:
+    with open(startup_script_file, "w", encoding="utf-8") as f:
         app_filename = f"{pyxel_app_name}{pyxel.APP_FILE_EXTENSION}"
         f.write(
             "import os, pyxel.cli; pyxel.cli.play_pyxel_app("
@@ -428,7 +428,7 @@ def create_html_from_pyxel_app(pyxel_app_file):
         base64_string = base64.b64encode(f.read()).decode()
 
     pyxel_app_name = os.path.splitext(os.path.basename(pyxel_app_file))[0]
-    with open(pyxel_app_name + ".html", "w") as f:
+    with open(pyxel_app_name + ".html", "w", encoding="utf-8") as f:
         f.write(
             "<!doctype html>\n"
             f'<script src="https://cdn.jsdelivr.net/gh/kitao/pyxel@{pyxel.VERSION}/wasm/pyxel.js">'

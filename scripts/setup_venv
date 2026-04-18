@@ -7,6 +7,11 @@ cd "$(dirname "$0")"
 VENV_DIR="../.venv"
 REQUIREMENTS="../python/requirements.txt"
 
+python3 -c 'import sys; sys.exit(0 if sys.version_info >= (3, 10) else 1)' || {
+    echo "Python 3.10+ is required" >&2
+    exit 1
+}
+
 rm -rf "$VENV_DIR"
 python3 -m venv --upgrade-deps "$VENV_DIR"
 

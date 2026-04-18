@@ -2255,7 +2255,7 @@
           "params": [
             {
               "name": "files",
-              "type": "List[str]",
+              "type": "list[str]",
               "desc": {
                 "en": "List of file paths",
                 "cn": "文件路径列表",

@@ -2358,7 +2358,7 @@
   ],
   "image_colors": [
     {
-      "key": "1〜8",
+      "key": "1–8",
       "action": {
         "en": "Select colors 0–7",
         "cn": "选择颜色编号 0~7",
@@ -2375,7 +2375,7 @@
       }
     },
     {
-      "key": "Shift+1〜8",
+      "key": "Shift+1–8",
       "action": {
         "en": "Select colors 8–15",
         "cn": "选择颜色编号 8~15",
@@ -2738,7 +2738,7 @@
         "tr": "Ses aralığı",
         "uk": "Діапазон"
       },
-      "value": "C0〜B4"
+      "value": "C0–B4"
     },
     {
       "label": {
