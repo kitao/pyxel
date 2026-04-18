@@ -13,6 +13,7 @@ crate-type = ["cdylib"]
 pyo3 = { version = "0.28", features = ["abi3-py310", "extension-module", "multiple-pymethods"] }
 pyxel-core = { path = "../pyxel-core" }
 
+# sysinfo has no Emscripten target; exclude from wasm builds
 [target.'cfg(not(target_os = "emscripten"))'.dependencies]
 sysinfo = "0.38"
 

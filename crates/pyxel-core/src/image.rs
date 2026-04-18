@@ -29,7 +29,7 @@ macro_rules! palette_opt {
     };
 }
 
-pub fn rgb_to_rgb8(rgb: Rgb24) -> (u8, u8, u8) {
+pub fn rgb24_to_rgb8(rgb: Rgb24) -> (u8, u8, u8) {
     ((rgb >> 16) as u8, (rgb >> 8) as u8, rgb as u8)
 }
 
@@ -202,7 +202,7 @@ impl Image {
         for y in 0..height {
             for x in 0..width {
                 let rgb = colors[self.canvas.read_data(x as usize, y as usize) as usize];
-                let (r, g, b) = rgb_to_rgb8(rgb);
+                let (r, g, b) = rgb24_to_rgb8(rgb);
                 image.put_pixel(x, y, image::Rgb([r, g, b]));
             }
         }

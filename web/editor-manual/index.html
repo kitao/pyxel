@@ -24,8 +24,8 @@
 
       /* --- Render helpers --- */
       function shortcutTable(items) {
-        const ths = t("th_shortcut"),
-          tha = t("th_action");
+        const ths = t("th_shortcut");
+        const tha = t("th_action");
         let h = `<div class="overflow-x-auto"><table class="w-full border-collapse">
           <thead><tr><th class="th">${esc(ths)}</th><th class="th">${esc(tha)}</th></tr></thead><tbody>`;
         for (const i of items)
@@ -53,8 +53,8 @@
       }
 
       function iconTable(rows) {
-        const ths = t("th_shortcut"),
-          tha = t("th_action");
+        const ths = t("th_shortcut");
+        const tha = t("th_action");
         let h = `<div class="overflow-x-auto"><table class="w-full border-collapse">
           <thead><tr><th class="th" style="width:50px"></th><th class="th">${esc(ths)}</th><th class="th">${esc(tha)}</th></tr></thead><tbody>`;
         for (const r of rows)
@@ -75,8 +75,8 @@
       ];
 
       function areaTitle(label, annoIndex) {
-        const c = ANNO_COLORS[annoIndex % ANNO_COLORS.length];
-        return `<h3 class="area-title" style="color:${c}; border-color:${c}">${esc(t(label))}</h3>`;
+        const color = ANNO_COLORS[annoIndex % ANNO_COLORS.length];
+        return `<h3 class="area-title" style="color:${color}; border-color:${color}">${esc(t(label))}</h3>`;
       }
 
       function areaCrop(editor, index) {
@@ -91,14 +91,14 @@
         let svg = "";
         const colors = ANNO_COLORS;
         for (let i = 0; i < annotations.length; i++) {
-          const a = annotations[i],
-            c = colors[i % colors.length],
-            label = esc(t(a.label));
-          svg += `<rect x="${a.x}" y="${a.y}" width="${a.w}" height="${a.h}" fill="${c}" fill-opacity="0.1" stroke="${c}" stroke-width="1.5" rx="1"/>`;
-          let tx,
-            ty,
-            anc = "middle",
-            bl = "middle";
+          const a = annotations[i];
+          const color = colors[i % colors.length];
+          const label = esc(t(a.label));
+          svg += `<rect x="${a.x}" y="${a.y}" width="${a.w}" height="${a.h}" fill="${color}" fill-opacity="0.1" stroke="${color}" stroke-width="1.5" rx="1"/>`;
+          let tx;
+          let ty;
+          let anc = "middle";
+          let bl = "middle";
           if (a.anchor === "top") {
             tx = a.x + a.w / 2;
             ty = a.y - 4;
@@ -119,7 +119,7 @@
             tx = a.x + a.w / 2;
             ty = a.y + a.h / 2;
           }
-          svg += `<text x="${tx}" y="${ty}" text-anchor="${anc}" dominant-baseline="${bl}" fill="${c}" font-size="10" font-weight="700" paint-order="stroke" stroke="#1f2937" stroke-width="3.5" stroke-linejoin="round">${label}</text>`;
+          svg += `<text x="${tx}" y="${ty}" text-anchor="${anc}" dominant-baseline="${bl}" fill="${color}" font-size="10" font-weight="700" paint-order="stroke" stroke="#1f2937" stroke-width="3.5" stroke-linejoin="round">${label}</text>`;
         }
         return `<div class="relative my-3"><img src="${src}" alt="" class="w-full rounded-lg border border-gray-700 block pix"><svg class="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 480 360" preserveAspectRatio="xMidYMid meet">${svg}</svg></div>`;
       }
@@ -277,12 +277,10 @@
       }
 
       function update() {
-        const $ = (id) => document.getElementById(id);
-
         // Header
         document.title = t("title");
-        $("p-title").textContent = t("title");
-        $("p-sub").innerHTML = t("subtitle").replace(
+        document.getElementById("p-title").textContent = t("title");
+        document.getElementById("p-sub").innerHTML = t("subtitle").replace(
           "{0}",
           link("https://github.com/kitao/pyxel", "Pyxel"),
         );
@@ -298,18 +296,18 @@
             </div>
           </div>`;
         }
-        $("s-overview").innerHTML =
+        document.getElementById("s-overview").innerHTML =
           `<h2 class="section-title">${esc(t("overview_title"))}</h2>
           <p class="body mb-3">${esc(t("overview_body"))}</p>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">${editorCards}</div>`;
 
         // Launch
-        $("s-starting").innerHTML =
+        document.getElementById("s-starting").innerHTML =
           `<h2 class="section-title">${esc(t("starting_title"))}</h2>
           <p class="body">${esc(t("starting_body")).replace("{0}", '</p><pre class="bg-gray-900 rounded-lg px-4 py-2.5 my-3 font-mono text-sm text-indigo-300 overflow-x-auto">pyxel edit [PYXEL_RESOURCE_FILE]</pre><p class="body">').replace("{1}", chip("my_resource.pyxres"))}</p>`;
 
         // Common
-        $("s-common").innerHTML =
+        document.getElementById("s-common").innerHTML =
           `<h2 class="section-title">${esc(t("common_title"))}</h2>
           <p class="body">${esc(t("common_body"))}</p>
           <h3 class="sub-title">${esc(t("menubar_title"))}</h3>
@@ -324,8 +322,8 @@
           <p class="body">${esc(t("starting_load_body"))}</p>`;
 
         // Image Editor
-        $("s-image-title").textContent = t("image_title");
-        $("s-image-body").innerHTML = `
+        document.getElementById("s-image-title").textContent = t("image_title");
+        document.getElementById("s-image-body").innerHTML = `
           <h2 class="section-title">${esc(t("image_title"))}</h2>
           <p class="body">${esc(t("image_body"))}</p>
           <h3 class="sub-title">${esc(t("image_specs_title"))}</h3>
@@ -358,8 +356,9 @@
           <p class="body">${esc(t("image_file_body"))}</p>`;
 
         // Tilemap Editor
-        $("s-tilemap-title").textContent = t("tilemap_title");
-        $("s-tilemap-body").innerHTML = `
+        document.getElementById("s-tilemap-title").textContent =
+          t("tilemap_title");
+        document.getElementById("s-tilemap-body").innerHTML = `
           <h2 class="section-title">${esc(t("tilemap_title"))}</h2>
           <p class="body">${esc(t("tilemap_body"))}</p>
           <h3 class="sub-title">${esc(t("tilemap_specs_title"))}</h3>
@@ -394,8 +393,8 @@
           <p class="body">${esc(t("tilemap_tmx_body")).replace("{0}", link("https://www.mapeditor.org/", "Tiled"))}</p>`;
 
         // Sound Editor
-        $("s-sound-title").textContent = t("sound_title");
-        $("s-sound-body").innerHTML = `
+        document.getElementById("s-sound-title").textContent = t("sound_title");
+        document.getElementById("s-sound-body").innerHTML = `
           <h2 class="section-title">${esc(t("sound_title"))}</h2>
           <p class="body">${esc(t("sound_body"))}</p>
           <h3 class="sub-title">${esc(t("sound_specs_title"))}</h3>
@@ -438,8 +437,8 @@
           ${propTable(data.sound_effects)}`;
 
         // Music Editor
-        $("s-music-title").textContent = t("music_title");
-        $("s-music-body").innerHTML = `
+        document.getElementById("s-music-title").textContent = t("music_title");
+        document.getElementById("s-music-body").innerHTML = `
           <h2 class="section-title">${esc(t("music_title"))}</h2>
           <p class="body">${esc(t("music_body"))}</p>
           <h3 class="sub-title">${esc(t("music_specs_title"))}</h3>

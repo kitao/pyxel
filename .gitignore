@@ -2,9 +2,9 @@
 *.egg-info/
 *.py[cod]
 *.so
-__pycache__/
 .mypy_cache/
 .ruff_cache/
+__pycache__/
 
 # Rust
 *.pdb
@@ -18,8 +18,8 @@ dist-*/
 target/
 
 # Environment
-.venv/
 .env
+.venv/
 
 # Tools
 .claude/

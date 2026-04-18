@@ -21,7 +21,7 @@ _METADATA_PATTERN = re.compile(r"#\s*(.+?)\s*:\s*(.+)")
 _PACKAGE_SKIP_EXTENSIONS = (".gif", ".zip")
 
 
-def cli():
+def cli() -> None:
     commands = [
         (["run", "PYTHON_SCRIPT_FILE(.py)"], run_python_script),
         (
@@ -115,11 +115,12 @@ def _create_app_dir():
     for path in play_dir.glob("*"):
         try:
             pid = int(path.name.split("_")[0])
-            if pyxel._pid_exists(pid):
-                continue
-            if time.time() - path.stat().st_mtime > 300:
-                shutil.rmtree(path)
         except ValueError:
+            shutil.rmtree(path)
+            continue
+        if pyxel._pid_exists(pid):
+            continue
+        if time.time() - path.stat().st_mtime > 300:
             shutil.rmtree(path)
 
     app_dir = play_dir / f"{os.getpid()}_{uuid.uuid4()}"
@@ -207,7 +208,7 @@ def _make_metadata_comment(startup_script_file):
     return metadata_comment
 
 
-def run_python_script(python_script_file):
+def run_python_script(python_script_file: str) -> None:
     python_script_file = _complete_extension(python_script_file, "run", ".py")
     _check_file_exists(python_script_file)
 
@@ -215,7 +216,7 @@ def run_python_script(python_script_file):
     runpy.run_path(python_script_file, run_name="__main__")
 
 
-def watch_and_run_python_script(watch_dir, python_script_file):
+def watch_and_run_python_script(watch_dir: str, python_script_file: str) -> None:
     python_script_file = _complete_extension(python_script_file, "watch", ".py")
     _check_dir_exists(watch_dir)
     _check_file_exists(python_script_file)
@@ -253,7 +254,7 @@ def watch_and_run_python_script(watch_dir, python_script_file):
         print("stopped watching")
 
 
-def get_pyxel_app_metadata(pyxel_app_file):
+def get_pyxel_app_metadata(pyxel_app_file: str) -> dict[str, str]:
     _check_file_exists(pyxel_app_file)
     metadata = {}
 
@@ -272,14 +273,14 @@ def get_pyxel_app_metadata(pyxel_app_file):
     return metadata
 
 
-def print_pyxel_app_metadata(pyxel_app_file):
+def print_pyxel_app_metadata(pyxel_app_file: str) -> None:
     _check_file_exists(pyxel_app_file)
     with zipfile.ZipFile(pyxel_app_file) as zf:
         if zf.comment:
             print(zf.comment.decode(encoding="utf-8"))
 
 
-def play_pyxel_app(pyxel_app_file):
+def play_pyxel_app(pyxel_app_file: str) -> None:
     file_ext = Path(pyxel_app_file).suffix.lower()
     if file_ext != ".zip":
         pyxel_app_file = _complete_extension(
@@ -297,7 +298,9 @@ def play_pyxel_app(pyxel_app_file):
     runpy.run_path(startup_script_file, run_name="__main__")
 
 
-def edit_pyxel_resource(pyxel_resource_file=None, starting_editor="image"):
+def edit_pyxel_resource(
+    pyxel_resource_file: str | None = None, starting_editor: str = "image"
+) -> None:
     import pyxel.editor
 
     if not pyxel_resource_file:
@@ -309,7 +312,7 @@ def edit_pyxel_resource(pyxel_resource_file=None, starting_editor="image"):
     pyxel.editor.App(pyxel_resource_file, starting_editor)
 
 
-def package_pyxel_app(app_dir, startup_script_file):
+def package_pyxel_app(app_dir: str, startup_script_file: str) -> None:
     startup_script_file = _complete_extension(startup_script_file, "package", ".py")
     _check_dir_exists(app_dir)
     _check_file_exists(startup_script_file)
@@ -348,7 +351,7 @@ def package_pyxel_app(app_dir, startup_script_file):
     setting_file.unlink()
 
 
-def create_executable_from_pyxel_app(pyxel_app_file):
+def create_executable_from_pyxel_app(pyxel_app_file: str) -> None:
     pyxel_app_file = _complete_extension(
         pyxel_app_file, "app2exe", pyxel.APP_FILE_EXTENSION
     )
@@ -403,7 +406,7 @@ def create_executable_from_pyxel_app(pyxel_app_file):
     shutil.rmtree(Path.cwd() / "build", ignore_errors=True)
 
 
-def create_html_from_pyxel_app(pyxel_app_file):
+def create_html_from_pyxel_app(pyxel_app_file: str) -> None:
     pyxel_app_file = _complete_extension(
         pyxel_app_file, "app2html", pyxel.APP_FILE_EXTENSION
     )
@@ -425,7 +428,7 @@ def create_html_from_pyxel_app(pyxel_app_file):
         )
 
 
-def copy_pyxel_examples():
+def copy_pyxel_examples() -> None:
     src_dir = Path(__file__).parent / "examples"
     dst_dir = Path("pyxel_examples")
     shutil.rmtree(dst_dir, ignore_errors=True)

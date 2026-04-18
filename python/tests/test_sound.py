@@ -50,7 +50,7 @@ class TestSound:
 
     def test_pcm(self, assets_dir):
         snd = pyxel.Sound()
-        snd.pcm(str(Path(assets_dir) / "audio_bgm1.ogg"))
+        snd.pcm(str(assets_dir / "audio_bgm1.ogg"))
         assert snd.total_sec() > 0
 
     def test_pcm_none_exits_pcm_mode(self):

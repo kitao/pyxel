@@ -297,7 +297,7 @@ impl Tilemap {
     // Private methods
 
     fn is_self_blit(&self, tilemap: *mut Tilemap) -> bool {
-        ptr::eq(tilemap, ptr::from_ref(self).cast_mut())
+        ptr::eq(tilemap.cast_const(), ptr::from_ref(self))
     }
 
     /// Copies a region of this tilemap's canvas for safe self-blit.

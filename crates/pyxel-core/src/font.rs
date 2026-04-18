@@ -190,13 +190,16 @@ impl Font {
         match self {
             Font::Bdf { bounding_box, .. } => (bounding_box.height, 0),
             Font::Fontdue { font, size, .. } => {
-                let m = font.horizontal_line_metrics(*size).unwrap_or(LineMetrics {
+                let metrics = font.horizontal_line_metrics(*size).unwrap_or(LineMetrics {
                     ascent: *size,
                     descent: 0.0,
                     line_gap: 0.0,
                     new_line_size: *size,
                 });
-                (m.new_line_size.ceil() as i32, m.ascent.round() as i32)
+                (
+                    metrics.new_line_size.ceil() as i32,
+                    metrics.ascent.round() as i32,
+                )
             }
         }
     }

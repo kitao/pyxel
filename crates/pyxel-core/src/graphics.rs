@@ -3,7 +3,7 @@ use std::mem::size_of;
 use glow::{HasContext, PixelUnpackData};
 
 use crate::font::Font;
-use crate::image::{rgb_to_rgb8, Color, Rgb24};
+use crate::image::{rgb24_to_rgb8, Color, Rgb24};
 use crate::platform;
 use crate::platform::GLProfile;
 use crate::pyxel::{self, Pyxel};
@@ -467,9 +467,9 @@ impl Pyxel {
         let shader =
             &self.graphics.as_ref().unwrap().screen_shaders[self.system.screen_mode as usize];
         gl.use_program(Some(shader.shader_program));
-        let ulocs = &shader.uniform_locations;
+        let uniforms = &shader.uniform_locations;
 
-        if let Some(location) = &ulocs[U_SCREEN_POS] {
+        if let Some(location) = &uniforms[U_SCREEN_POS] {
             let (_, window_height) = platform::window_size();
             gl.uniform_2_f32(
                 Some(location),
@@ -481,7 +481,7 @@ impl Pyxel {
             );
         }
 
-        if let Some(location) = &ulocs[U_SCREEN_SIZE] {
+        if let Some(location) = &uniforms[U_SCREEN_SIZE] {
             gl.uniform_2_f32(
                 Some(location),
                 *pyxel::width() as f32 * self.system.screen_scale,
@@ -489,16 +489,16 @@ impl Pyxel {
             );
         }
 
-        if let Some(location) = &ulocs[U_SCREEN_SCALE] {
+        if let Some(location) = &uniforms[U_SCREEN_SCALE] {
             gl.uniform_1_f32(Some(location), self.system.screen_scale);
         }
 
-        if let Some(location) = &ulocs[U_NUM_COLORS] {
+        if let Some(location) = &uniforms[U_NUM_COLORS] {
             gl.uniform_1_i32(Some(location), pyxel::colors().len() as i32);
         }
 
-        if let Some(location) = &ulocs[U_BACKGROUND_COLOR] {
-            let (r, g, b) = rgb_to_rgb8(BACKGROUND_COLOR);
+        if let Some(location) = &uniforms[U_BACKGROUND_COLOR] {
+            let (r, g, b) = rgb24_to_rgb8(BACKGROUND_COLOR);
             gl.uniform_3_f32(
                 Some(location),
                 r as f32 / 255.0,
@@ -507,11 +507,11 @@ impl Pyxel {
             );
         }
 
-        if let Some(location) = &ulocs[U_SCREEN_TEXTURE] {
+        if let Some(location) = &uniforms[U_SCREEN_TEXTURE] {
             gl.uniform_1_i32(Some(location), 0);
         }
 
-        if let Some(location) = &ulocs[U_COLORS_TEXTURE] {
+        if let Some(location) = &uniforms[U_COLORS_TEXTURE] {
             gl.uniform_1_i32(Some(location), 1);
         }
 
@@ -582,7 +582,7 @@ impl Pyxel {
         let pixels = &mut graphics.color_pixels_buf;
         pixels.clear();
         for &c in colors.iter() {
-            let (r, g, b) = rgb_to_rgb8(c);
+            let (r, g, b) = rgb24_to_rgb8(c);
             pixels.push(r);
             pixels.push(g);
             pixels.push(b);

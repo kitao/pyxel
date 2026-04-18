@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 set -euo pipefail
+shopt -s failglob
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
@@ -34,7 +35,6 @@ echo_cmd() {
     echo "${display[*]}"
 }
 
-# Echo and run
 run() {
     echo_cmd "$@"
     "$@"
@@ -88,7 +88,7 @@ run_bg pyxel play "$PACKAGE_EXAMPLE.pyxapp"
 
 # app2html
 run pyxel app2html "$PACKAGE_EXAMPLE.pyxapp"
-[[ -f "$PACKAGE_EXAMPLE.html" ]] || { echo "app2html: $PACKAGE_EXAMPLE.html not created"; exit 1; }
+[[ -f "$PACKAGE_EXAMPLE.html" ]] || { echo "app2html: $PACKAGE_EXAMPLE.html not created" >&2; exit 1; }
 rm -f "$PACKAGE_EXAMPLE.html"
 rm -f "$PACKAGE_EXAMPLE.pyxapp"
 

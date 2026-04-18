@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pytest
 
-ASSETS_DIR = str(Path(__file__).parent.parent / "pyxel" / "examples" / "assets")
+ASSETS_DIR = Path(__file__).parent.parent / "pyxel" / "examples" / "assets"
 REFERENCES_DIR = Path(__file__).parent / "references"
 
 

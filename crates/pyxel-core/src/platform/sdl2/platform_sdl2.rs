@@ -8,7 +8,7 @@ use std::sync::atomic::{AtomicU32, Ordering};
 use glow::Context;
 
 use super::super::facade::GLProfile;
-use super::poll_events::{open_gamepad, Gamepad};
+use super::poll_events::{open_gamepad, GamepadSlot};
 #[allow(clippy::wildcard_imports)]
 use super::sdl2_sys::*;
 
@@ -44,7 +44,7 @@ pub struct PlatformSdl2 {
     pub mouse_x: i32,
     pub mouse_y: i32,
     pub is_wayland: bool,
-    pub gamepads: Vec<Gamepad>,
+    pub gamepads: Vec<GamepadSlot>,
     #[cfg(target_os = "emscripten")]
     pub virtual_gamepad_states: [bool; 10],
     #[cfg(not(target_os = "emscripten"))]

@@ -130,25 +130,25 @@ class App(Widget):
         for i, editor in enumerate(self._editors):
             editor.is_visible_var = i == value
 
-    def __on_editor_button_mouse_hover(self, x, y):
+    def __on_editor_button_mouse_hover(self, _x, _y):
         self.help_message_var = "EDITOR:ALT+LEFT/RIGHT"
 
     def __on_undo_button_press(self):
         self._editor.undo()
 
-    def __on_undo_button_mouse_hover(self, x, y):
+    def __on_undo_button_mouse_hover(self, _x, _y):
         self.help_message_var = "UNDO:CTRL+Z"
 
     def __on_redo_button_press(self):
         self._editor.redo()
 
-    def __on_redo_button_mouse_hover(self, x, y):
+    def __on_redo_button_mouse_hover(self, _x, _y):
         self.help_message_var = "REDO:CTRL+Y"
 
     def __on_save_button_press(self):
         pyxel.save(self._resource_file)
 
-    def __on_save_button_mouse_hover(self, x, y):
+    def __on_save_button_mouse_hover(self, _x, _y):
         self.help_message_var = "SAVE:CTRL+S"
 
     def __on_update(self):

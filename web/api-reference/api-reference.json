@@ -3610,10 +3610,6 @@
             "tr": "(x1, y1) noktasından (x2, y2) noktasına col renginde bir çizgi çizer.",
             "uk": "Малює лінію кольору col від (x1, y1) до (x2, y2)."
           },
-          "return": {
-            "type": "None"
-          },
-          "advanced": false,
           "params": [
             {
               "name": "x1",
@@ -3705,7 +3701,11 @@
                 "uk": "Колір"
               }
             }
-          ]
+          ],
+          "return": {
+            "type": "None"
+          },
+          "advanced": false
         },
         {
           "name": "rect",
@@ -3725,10 +3725,6 @@
             "tr": "(x, y) konumuna w genişliğinde, h yüksekliğinde ve col renginde dolu bir dikdörtgen çizer.",
             "uk": "Малює зафарбований прямокутник шириною w, висотою h та кольором col у точці (x, y)."
           },
-          "return": {
-            "type": "None"
-          },
-          "advanced": false,
           "params": [
             {
               "name": "x",
@@ -3820,7 +3816,11 @@
                 "uk": "Колір"
               }
             }
-          ]
+          ],
+          "return": {
+            "type": "None"
+          },
+          "advanced": false
         },
         {
           "name": "rectb",
@@ -3840,10 +3840,6 @@
             "tr": "(x, y) konumuna w genişliğinde, h yüksekliğinde ve col renginde bir dikdörtgenin dış hatlarını çizer.",
             "uk": "Малює контур прямокутника шириною w, висотою h та кольором col у точці (x, y)."
           },
-          "return": {
-            "type": "None"
-          },
-          "advanced": false,
           "params": [
             {
               "name": "x",
@@ -3935,7 +3931,11 @@
                 "uk": "Колір"
               }
             }
-          ]
+          ],
+          "return": {
+            "type": "None"
+          },
+          "advanced": false
         },
         {
           "name": "circ",
@@ -3955,10 +3955,6 @@
             "tr": "(x, y) konumuna r yarıçapında ve col renginde dolu bir daire çizer.",
             "uk": "Малює зафарбоване коло радіусом r та кольором col у точці (x, y)."
           },
-          "return": {
-            "type": "None"
-          },
-          "advanced": false,
           "params": [
             {
               "name": "x",
@@ -4032,7 +4028,11 @@
                 "uk": "Колір"
               }
             }
-          ]
+          ],
+          "return": {
+            "type": "None"
+          },
+          "advanced": false
         },
         {
           "name": "circb",
@@ -4052,10 +4052,6 @@
             "tr": "(x, y) konumuna r yarıçapında ve col renginde bir dairenin dış hatlarını çizer.",
             "uk": "Малює контур кола радіусом r та кольором col у точці (x, y)."
           },
-          "return": {
-            "type": "None"
-          },
-          "advanced": false,
           "params": [
             {
               "name": "x",
@@ -4129,7 +4125,11 @@
                 "uk": "Колір"
               }
             }
-          ]
+          ],
+          "return": {
+            "type": "None"
+          },
+          "advanced": false
         },
         {
           "name": "elli",
@@ -4149,10 +4149,6 @@
             "tr": "(x, y) konumuna w genişliğinde, h yüksekliğinde ve col renginde dolu bir elips çizer.",
             "uk": "Малює зафарбований еліпс шириною w, висотою h та кольором col у точці (x, y)."
           },
-          "return": {
-            "type": "None"
-          },
-          "advanced": false,
           "params": [
             {
               "name": "x",
@@ -4244,7 +4240,11 @@
                 "uk": "Колір"
               }
             }
-          ]
+          ],
+          "return": {
+            "type": "None"
+          },
+          "advanced": false
         },
         {
           "name": "ellib",
@@ -4264,10 +4264,6 @@
             "tr": "(x, y) konumuna w genişliğinde, h yüksekliğinde ve col renginde bir elipsin dış hatlarını çizer.",
             "uk": "Малює контур еліпса шириною w, висотою h та кольором col у точці (x, y)."
           },
-          "return": {
-            "type": "None"
-          },
-          "advanced": false,
           "params": [
             {
               "name": "x",
@@ -4359,7 +4355,11 @@
                 "uk": "Колір"
               }
             }
-          ]
+          ],
+          "return": {
+            "type": "None"
+          },
+          "advanced": false
         },
         {
           "name": "tri",
@@ -4379,10 +4379,6 @@
             "tr": "Köşeleri (x1, y1), (x2, y2), (x3, y3) olan ve col renginde dolu bir üçgen çizer.",
             "uk": "Малює зафарбований трикутник з вершинами (x1, y1), (x2, y2), (x3, y3) та кольором col."
           },
-          "return": {
-            "type": "None"
-          },
-          "advanced": false,
           "params": [
             {
               "name": "x1",
@@ -4510,7 +4506,11 @@
                 "uk": "Колір"
               }
             }
-          ]
+          ],
+          "return": {
+            "type": "None"
+          },
+          "advanced": false
         },
         {
           "name": "trib",
@@ -4530,10 +4530,6 @@
             "tr": "Köşeleri (x1, y1), (x2, y2), (x3, y3) olan ve col renginde bir üçgenin dış hatlarını çizer.",
             "uk": "Малює контур трикутника з вершинами (x1, y1), (x2, y2), (x3, y3) та кольором col."
           },
-          "return": {
-            "type": "None"
-          },
-          "advanced": false,
           "params": [
             {
               "name": "x1",
@@ -4661,7 +4657,11 @@
                 "uk": "Колір"
               }
             }
-          ]
+          ],
+          "return": {
+            "type": "None"
+          },
+          "advanced": false
         },
         {
           "name": "fill",
@@ -4681,10 +4681,6 @@
             "tr": "(x, y) ile aynı renkte bağlı olan alanı col rengiyle doldurur.",
             "uk": "Заповнює область, з'єднану тим самим кольором, що й (x, y), кольором col."
           },
-          "return": {
-            "type": "None"
-          },
-          "advanced": false,
           "params": [
             {
               "name": "x",
@@ -4740,7 +4736,11 @@
                 "uk": "Колір заливки"
               }
             }
-          ]
+          ],
+          "return": {
+            "type": "None"
+          },
+          "advanced": false
         },
         {
           "name": "blt",
@@ -4760,10 +4760,6 @@
             "tr": "img görüntü bankasının (0-2 veya Image örneği) (u, v) konumundan (w, h) boyutundaki bölgeyi (x, y) konumuna kopyalar. Negatif w/h görüntüyü çevirir. colkey saydam rengi belirler. rotate ve scale dönüşümleri uygular.",
             "uk": "Копіює область розміром (w, h) з (u, v) банку зображень img (0-2 або екземпляр Image) у (x, y). Від'ємні w/h дзеркально відображають. colkey задає прозорий колір. rotate та scale застосовують трансформації."
           },
-          "return": {
-            "type": "None"
-          },
-          "advanced": false,
           "params": [
             {
               "name": "x",
@@ -4945,7 +4941,11 @@
                 "uk": "Масштаб (відносно центру області копіювання). За замовчуванням 1."
               }
             }
-          ]
+          ],
+          "return": {
+            "type": "None"
+          },
+          "advanced": false
         },
         {
           "name": "bltm",
@@ -4965,10 +4965,6 @@
             "tr": "tm tilemap'inin (0-7 veya Tilemap örneği) (u, v) konumundan (w, h) boyutundaki bölgeyi (x, y) konumuna kopyalar. Her karo 8x8 pikseldir ve (image_tx, image_ty) olarak saklanır. Negatif w/h görüntüyü çevirir. colkey saydam rengi belirler. rotate ve scale dönüşümleri uygular.",
             "uk": "Копіює область розміром (w, h) з (u, v) тайлмапу tm (0-7 або екземпляр Tilemap) у (x, y). Кожен тайл — 8x8 пікселів, зберігається як (image_tx, image_ty). Від'ємні w/h дзеркально відображають. colkey задає прозорий колір. rotate та scale застосовують трансформації."
           },
-          "return": {
-            "type": "None"
-          },
-          "advanced": false,
           "params": [
             {
               "name": "x",
@@ -5150,7 +5146,11 @@
                 "uk": "Масштаб (відносно центру області копіювання). За замовчуванням 1."
               }
             }
-          ]
+          ],
+          "return": {
+            "type": "None"
+          },
+          "advanced": false
         },
         {
           "name": "blt3d",
@@ -5170,10 +5170,6 @@
             "tr": "img görüntü bankasını (0-2 veya Image örneği) perspektif projeksiyonla ekran dikdörtgenine (x, y, w, h) çizer. pos kamera konumudur; x, y 2D koordinatlarla eşleşir, z yüksekliktir. rot derece cinsinden döndürme. fov görüş alanını belirler. colkey saydam rengi belirler.",
             "uk": "Малює банк зображень img (0-2 або екземпляр Image) з перспективною проєкцією у екранний прямокутник (x, y, w, h). pos — позиція камери, де x, y відповідають 2D-координатам, а z — висота. rot — кути обертання в градусах. fov задає кут огляду. colkey задає прозорий колір."
           },
-          "return": {
-            "type": "None"
-          },
-          "advanced": true,
           "params": [
             {
               "name": "x",
@@ -5337,7 +5333,11 @@
                 "uk": "Прозорий колір. Якщо не вказано, без прозорості."
               }
             }
-          ]
+          ],
+          "return": {
+            "type": "None"
+          },
+          "advanced": true
         },
         {
           "name": "bltm3d",
@@ -5357,10 +5357,6 @@
             "tr": "tm tilemap'ini (0-7 veya Tilemap örneği) perspektif projeksiyonla ekran dikdörtgenine (x, y, w, h) çizer. pos kamera konumudur; x, y 2D koordinatlarla eşleşir, z yüksekliktir. rot derece cinsinden döndürme. fov görüş alanını belirler. colkey saydam rengi belirler.",
             "uk": "Малює тайлмап tm (0-7 або екземпляр Tilemap) з перспективною проєкцією у екранний прямокутник (x, y, w, h). pos — позиція камери, де x, y відповідають 2D-координатам, а z — висота. rot — кути обертання в градусах. fov задає кут огляду. colkey задає прозорий колір."
           },
-          "return": {
-            "type": "None"
-          },
-          "advanced": true,
           "params": [
             {
               "name": "x",
@@ -5524,7 +5520,11 @@
                 "uk": "Прозорий колір. Якщо не вказано, без прозорості."
               }
             }
-          ]
+          ],
+          "return": {
+            "type": "None"
+          },
+          "advanced": true
         },
         {
           "name": "text",
@@ -5544,10 +5544,6 @@
             "tr": "(x, y) konumuna col renginde s dizesini çizer.",
             "uk": "Малює рядок s кольором col у точці (x, y)."
           },
-          "return": {
-            "type": "None"
-          },
-          "advanced": false,
           "params": [
             {
               "name": "x",
@@ -5639,7 +5635,11 @@
                 "uk": "Користувацький шрифт. Якщо не вказано, використовується стандартний шрифт."
               }
             }
-          ]
+          ],
+          "return": {
+            "type": "None"
+          },
+          "advanced": false
         }
       ],
       "constant_groups": [
@@ -7050,24 +7050,6 @@
             "tr": "x değerini lower ve upper arasına sınırlandırarak döndürür.",
             "uk": "Повертає x, обмежене діапазоном від lower до upper."
           },
-          "return": {
-            "type": "int/float",
-            "desc": {
-              "en": "Clamped value",
-              "cn": "限制后的值",
-              "de": "Begrenzter Wert",
-              "es": "Valor limitado",
-              "fr": "Valeur bornée",
-              "it": "Valore limitato",
-              "ja": "範囲内に収めた値",
-              "ko": "클램프된 값",
-              "pt": "Valor limitado",
-              "ru": "Ограниченное значение",
-              "tr": "Sınırlanmış değer",
-              "uk": "Обмежене значення"
-            }
-          },
-          "advanced": false,
           "params": [
             {
               "name": "x",
@@ -7123,7 +7105,25 @@
                 "uk": "Максимальне значення"
               }
             }
-          ]
+          ],
+          "return": {
+            "type": "int/float",
+            "desc": {
+              "en": "Clamped value",
+              "cn": "限制后的值",
+              "de": "Begrenzter Wert",
+              "es": "Valor limitado",
+              "fr": "Valeur bornée",
+              "it": "Valore limitato",
+              "ja": "範囲内に収めた値",
+              "ko": "클램프된 값",
+              "pt": "Valor limitado",
+              "ru": "Ограниченное значение",
+              "tr": "Sınırlanmış değer",
+              "uk": "Обмежене значення"
+            }
+          },
+          "advanced": false
         },
         {
           "name": "sgn",
@@ -7143,24 +7143,6 @@
             "tr": "x pozitif olduğunda 1, 0 olduğunda 0, negatif olduğunda -1 döndürür.",
             "uk": "Повертає 1, коли x додатне, 0, коли дорівнює 0, і -1, коли від'ємне."
           },
-          "return": {
-            "type": "int/float",
-            "desc": {
-              "en": "Sign of the value (1, 0, or -1)",
-              "cn": "值的符号 (1, 0, -1)",
-              "de": "Vorzeichen des Werts (1, 0 oder -1)",
-              "es": "Signo del valor (1, 0 o -1)",
-              "fr": "Signe de la valeur (1, 0 ou -1)",
-              "it": "Segno del valore (1, 0 o -1)",
-              "ja": "値の符号 (1, 0, -1)",
-              "ko": "값의 부호 (1, 0 또는 -1)",
-              "pt": "Sinal do valor (1, 0 ou -1)",
-              "ru": "Знак значения (1, 0 или -1)",
-              "tr": "Değerin işareti (1, 0 veya -1)",
-              "uk": "Знак значення (1, 0 або -1)"
-            }
-          },
-          "advanced": false,
           "params": [
             {
               "name": "x",
@@ -7180,7 +7162,25 @@
                 "uk": "Значення"
               }
             }
-          ]
+          ],
+          "return": {
+            "type": "int/float",
+            "desc": {
+              "en": "Sign of the value (1, 0, or -1)",
+              "cn": "值的符号 (1, 0, -1)",
+              "de": "Vorzeichen des Werts (1, 0 oder -1)",
+              "es": "Signo del valor (1, 0 o -1)",
+              "fr": "Signe de la valeur (1, 0 ou -1)",
+              "it": "Segno del valore (1, 0 o -1)",
+              "ja": "値の符号 (1, 0, -1)",
+              "ko": "값의 부호 (1, 0 또는 -1)",
+              "pt": "Sinal do valor (1, 0 ou -1)",
+              "ru": "Знак значения (1, 0 или -1)",
+              "tr": "Değerin işareti (1, 0 veya -1)",
+              "uk": "Знак значення (1, 0 або -1)"
+            }
+          },
+          "advanced": false
         },
         {
           "name": "sqrt",
@@ -7371,24 +7371,6 @@
             "tr": "y/x değerinin ark tanjantını derece cinsinden döndürür.",
             "uk": "Повертає арктангенс y/x у градусах."
           },
-          "return": {
-            "type": "float",
-            "desc": {
-              "en": "Angle in degrees",
-              "cn": "角度（度）",
-              "de": "Winkel in Grad",
-              "es": "Ángulo en grados",
-              "fr": "Angle en degrés",
-              "it": "Angolo in gradi",
-              "ja": "角度（度数法）",
-              "ko": "각도 (도)",
-              "pt": "Ângulo em graus",
-              "ru": "Угол в градусах",
-              "tr": "Derece cinsinden açı",
-              "uk": "Кут у градусах"
-            }
-          },
-          "advanced": false,
           "params": [
             {
               "name": "y",
@@ -7426,7 +7408,25 @@
                 "uk": "Значення X"
               }
             }
-          ]
+          ],
+          "return": {
+            "type": "float",
+            "desc": {
+              "en": "Angle in degrees",
+              "cn": "角度（度）",
+              "de": "Winkel in Grad",
+              "es": "Ángulo en grados",
+              "fr": "Angle en degrés",
+              "it": "Angolo in gradi",
+              "ja": "角度（度数法）",
+              "ko": "각도 (도)",
+              "pt": "Ângulo em graus",
+              "ru": "Угол в градусах",
+              "tr": "Derece cinsinden açı",
+              "uk": "Кут у градусах"
+            }
+          },
+          "advanced": false
         },
         {
           "name": "rseed",
@@ -7489,24 +7489,6 @@
             "tr": "a ile b arasında (dahil) rastgele bir tamsayı döndürür.",
             "uk": "Повертає випадкове ціле число від a до b (включно)."
           },
-          "return": {
-            "type": "int",
-            "desc": {
-              "en": "Random integer from a to b",
-              "cn": "a到b的随机整数",
-              "de": "Zufällige Ganzzahl von a bis b",
-              "es": "Número entero aleatorio de a a b",
-              "fr": "Nombre entier aléatoire de a à b",
-              "it": "Numero intero casuale da a a b",
-              "ja": "a以上b以下のランダムな整数",
-              "ko": "a에서 b 사이의 랜덤 정수",
-              "pt": "Número inteiro aleatório de a a b",
-              "ru": "Случайное целое число от a до b",
-              "tr": "a ile b arasında rastgele tamsayı",
-              "uk": "Випадкове ціле число від a до b"
-            }
-          },
-          "advanced": false,
           "params": [
             {
               "name": "a",
@@ -7544,7 +7526,25 @@
                 "uk": "Максимальне значення (включно)"
               }
             }
-          ]
+          ],
+          "return": {
+            "type": "int",
+            "desc": {
+              "en": "Random integer from a to b",
+              "cn": "a到b的随机整数",
+              "de": "Zufällige Ganzzahl von a bis b",
+              "es": "Número entero aleatorio de a a b",
+              "fr": "Nombre entier aléatoire de a à b",
+              "it": "Numero intero casuale da a a b",
+              "ja": "a以上b以下のランダムな整数",
+              "ko": "a에서 b 사이의 랜덤 정수",
+              "pt": "Número inteiro aleatório de a a b",
+              "ru": "Случайное целое число от a до b",
+              "tr": "a ile b arasında rastgele tamsayı",
+              "uk": "Випадкове ціле число від a до b"
+            }
+          },
+          "advanced": false
         },
         {
           "name": "rndf",
@@ -7564,24 +7564,6 @@
             "tr": "a ile b arasında (dahil) rastgele bir ondalıklı sayı döndürür.",
             "uk": "Повертає випадкове число з плаваючою комою від a до b (включно)."
           },
-          "return": {
-            "type": "float",
-            "desc": {
-              "en": "Random float from a to b",
-              "cn": "a到b的随机小数",
-              "de": "Zufällige Gleitkommazahl von a bis b",
-              "es": "Número decimal aleatorio de a a b",
-              "fr": "Nombre décimal aléatoire de a à b",
-              "it": "Numero decimale casuale da a a b",
-              "ja": "a以上b以下のランダムな小数",
-              "ko": "a에서 b 사이의 랜덤 부동소수점 수",
-              "pt": "Número decimal aleatório de a a b",
-              "ru": "Случайное дробное число от a до b",
-              "tr": "a ile b arasında rastgele ondalık sayı",
-              "uk": "Випадкове дробове число від a до b"
-            }
-          },
-          "advanced": false,
           "params": [
             {
               "name": "a",
@@ -7619,7 +7601,25 @@
                 "uk": "Максимальне значення (включно)"
               }
             }
-          ]
+          ],
+          "return": {
+            "type": "float",
+            "desc": {
+              "en": "Random float from a to b",
+              "cn": "a到b的随机小数",
+              "de": "Zufällige Gleitkommazahl von a bis b",
+              "es": "Número decimal aleatorio de a a b",
+              "fr": "Nombre décimal aléatoire de a à b",
+              "it": "Numero decimale casuale da a a b",
+              "ja": "a以上b以下のランダムな小数",
+              "ko": "a에서 b 사이의 랜덤 부동소수점 수",
+              "pt": "Número decimal aleatório de a a b",
+              "ru": "Случайное дробное число от a до b",
+              "tr": "a ile b arasında rastgele ondalık sayı",
+              "uk": "Випадкове дробове число від a до b"
+            }
+          },
+          "advanced": false
         },
         {
           "name": "nseed",
@@ -7682,24 +7682,6 @@
             "tr": "Belirtilen koordinatlar için Perlin gürültü değerini döndürür.",
             "uk": "Повертає значення шуму Перліна для вказаних координат."
           },
-          "return": {
-            "type": "float",
-            "desc": {
-              "en": "Perlin noise value",
-              "cn": "Perlin噪声值",
-              "de": "Perlin-Noise-Wert",
-              "es": "Valor de ruido Perlin",
-              "fr": "Valeur de bruit Perlin",
-              "it": "Valore rumore Perlin",
-              "ja": "Perlinノイズ値",
-              "ko": "Perlin 노이즈 값",
-              "pt": "Valor de ruído Perlin",
-              "ru": "Значение шума Perlin",
-              "tr": "Perlin gürültü değeri",
-              "uk": "Значення шуму Perlin"
-            }
-          },
-          "advanced": false,
           "params": [
             {
               "name": "x",
@@ -7755,7 +7737,25 @@
                 "uk": "Координата Z. За замовчуванням 0."
               }
             }
-          ]
+          ],
+          "return": {
+            "type": "float",
+            "desc": {
+              "en": "Perlin noise value",
+              "cn": "Perlin噪声值",
+              "de": "Perlin-Noise-Wert",
+              "es": "Valor de ruido Perlin",
+              "fr": "Valeur de bruit Perlin",
+              "it": "Valore rumore Perlin",
+              "ja": "Perlinノイズ値",
+              "ko": "Perlin 노이즈 값",
+              "pt": "Valor de ruído Perlin",
+              "ru": "Значение шума Perlin",
+              "tr": "Perlin gürültü değeri",
+              "uk": "Значення шуму Perlin"
+            }
+          },
+          "advanced": false
         }
       ]
     },
@@ -7945,24 +7945,6 @@
             "tr": "Belirtilen boyutta yeni bir Image örneği oluşturur.",
             "uk": "Створює новий екземпляр Image із зазначеним розміром."
           },
-          "return": {
-            "type": "Image",
-            "desc": {
-              "en": "New Image instance",
-              "cn": "新Image实例",
-              "de": "Neue Image-Instanz",
-              "es": "Nueva instancia Image",
-              "fr": "Nouvelle instance Image",
-              "it": "Nuova istanza Image",
-              "ja": "新しいImageインスタンス",
-              "ko": "새 Image 인스턴스",
-              "pt": "Nova instância Image",
-              "ru": "Новый экземпляр Image",
-              "tr": "Yeni Image örneği",
-              "uk": "Новий екземпляр Image"
-            }
-          },
-          "advanced": true,
           "params": [
             {
               "name": "width",
@@ -8000,7 +7982,25 @@
                 "uk": "Висота зображення"
               }
             }
-          ]
+          ],
+          "return": {
+            "type": "Image",
+            "desc": {
+              "en": "New Image instance",
+              "cn": "新Image实例",
+              "de": "Neue Image-Instanz",
+              "es": "Nueva instancia Image",
+              "fr": "Nouvelle instance Image",
+              "it": "Nuova istanza Image",
+              "ja": "新しいImageインスタンス",
+              "ko": "새 Image 인스턴스",
+              "pt": "Nova instância Image",
+              "ru": "Новый экземпляр Image",
+              "tr": "Yeni Image örneği",
+              "uk": "Новий екземпляр Image"
+            }
+          },
+          "advanced": true
         },
         {
           "name": "Image.from_image",
@@ -8020,24 +8020,6 @@
             "tr": "Bir görüntü dosyasından Image örneği oluşturur.",
             "uk": "Створює екземпляр Image із файлу зображення."
           },
-          "return": {
-            "type": "Image",
-            "desc": {
-              "en": "Image instance from file",
-              "cn": "从文件创建的Image实例",
-              "de": "Image-Instanz aus Datei",
-              "es": "Instancia Image desde archivo",
-              "fr": "Instance Image depuis un fichier",
-              "it": "Istanza Image da file",
-              "ja": "ファイルから作成したImageインスタンス",
-              "ko": "파일로부터 생성된 Image 인스턴스",
-              "pt": "Instância Image a partir de arquivo",
-              "ru": "Экземпляр Image из файла",
-              "tr": "Dosyadan oluşturulan Image örneği",
-              "uk": "Екземпляр Image з файлу"
-            }
-          },
-          "advanced": true,
           "params": [
             {
               "name": "filename",
@@ -8075,7 +8057,25 @@
                 "uk": "Включити кольори палітри з файлу. За замовчуванням False."
               }
             }
-          ]
+          ],
+          "return": {
+            "type": "Image",
+            "desc": {
+              "en": "Image instance from file",
+              "cn": "从文件创建的Image实例",
+              "de": "Image-Instanz aus Datei",
+              "es": "Instancia Image desde archivo",
+              "fr": "Instance Image depuis un fichier",
+              "it": "Istanza Image da file",
+              "ja": "ファイルから作成したImageインスタンス",
+              "ko": "파일로부터 생성된 Image 인스턴스",
+              "pt": "Instância Image a partir de arquivo",
+              "ru": "Экземпляр Image из файла",
+              "tr": "Dosyadan oluşturulan Image örneği",
+              "uk": "Екземпляр Image з файлу"
+            }
+          },
+          "advanced": true
         },
         {
           "name": "Image.width",
@@ -8137,13 +8137,6 @@
             "tr": "(x, y) konumunda onaltılık rakam dizelerinin listesiyle görüntü ayarlar. Her karakter bir renk indeksini (0-f) temsil eder.",
             "uk": "Встановлює зображення в (x, y) за допомогою списку шістнадцяткових рядків. Кожен символ представляє індекс кольору (0-f)."
           },
-          "examples": [
-            "pyxel.images[0].set(10, 10, [\"0123\", \"4567\", \"89ab\", \"cdef\"])"
-          ],
-          "return": {
-            "type": "None"
-          },
-          "advanced": false,
           "params": [
             {
               "name": "x",
@@ -8199,7 +8192,14 @@
                 "uk": "Дані зображення у вигляді списку рядків"
               }
             }
-          ]
+          ],
+          "return": {
+            "type": "None"
+          },
+          "examples": [
+            "pyxel.images[0].set(10, 10, [\"0123\", \"4567\", \"89ab\", \"cdef\"])"
+          ],
+          "advanced": false
         },
         {
           "name": "Image.load",
@@ -8219,10 +8219,6 @@
             "tr": "(x, y) konumunda bir görüntü dosyası (PNG/GIF/JPEG) yükler.",
             "uk": "Завантажує файл зображення (PNG/GIF/JPEG) в (x, y)."
           },
-          "return": {
-            "type": "None"
-          },
-          "advanced": false,
           "params": [
             {
               "name": "x",
@@ -8296,7 +8292,11 @@
                 "uk": "Включити кольори палітри з файлу. За замовчуванням False."
               }
             }
-          ]
+          ],
+          "return": {
+            "type": "None"
+          },
+          "advanced": false
         },
         {
           "name": "Image.pget",
@@ -8316,24 +8316,6 @@
             "tr": "(x, y) konumundaki pikselin rengini alır.",
             "uk": "Отримує колір пікселя в точці (x, y)."
           },
-          "return": {
-            "type": "int",
-            "desc": {
-              "en": "Color of the pixel",
-              "cn": "像素的颜色",
-              "de": "Farbe des Pixels",
-              "es": "Color del píxel",
-              "fr": "Couleur du pixel",
-              "it": "Colore del pixel",
-              "ja": "ピクセルの色",
-              "ko": "픽셀의 색상",
-              "pt": "Cor do pixel",
-              "ru": "Цвет пикселя",
-              "tr": "Pikselin rengi",
-              "uk": "Колір пікселя"
-            }
-          },
-          "advanced": false,
           "params": [
             {
               "name": "x",
@@ -8371,7 +8353,25 @@
                 "uk": "Координата Y"
               }
             }
-          ]
+          ],
+          "return": {
+            "type": "int",
+            "desc": {
+              "en": "Color of the pixel",
+              "cn": "像素的颜色",
+              "de": "Farbe des Pixels",
+              "es": "Color del píxel",
+              "fr": "Couleur du pixel",
+              "it": "Colore del pixel",
+              "ja": "ピクセルの色",
+              "ko": "픽셀의 색상",
+              "pt": "Cor do pixel",
+              "ru": "Цвет пикселя",
+              "tr": "Pikselin rengi",
+              "uk": "Колір пікселя"
+            }
+          },
+          "advanced": false
         },
         {
           "name": "Image.pset",
@@ -8391,10 +8391,6 @@
             "tr": "(x, y) konumunda col rengiyle bir piksel çizer.",
             "uk": "Малює піксель кольору col у (x, y)."
           },
-          "return": {
-            "type": "None"
-          },
-          "advanced": false,
           "params": [
             {
               "name": "x",
@@ -8450,7 +8446,11 @@
                 "uk": "Колір"
               }
             }
-          ]
+          ],
+          "return": {
+            "type": "None"
+          },
+          "advanced": false
         },
         {
           "name": "Image Drawing",
@@ -8607,24 +8607,6 @@
             "tr": "Yeni bir Tilemap örneği oluşturur.",
             "uk": "Створює новий екземпляр Tilemap."
           },
-          "return": {
-            "type": "Tilemap",
-            "desc": {
-              "en": "New Tilemap instance",
-              "cn": "新Tilemap实例",
-              "de": "Neue Tilemap-Instanz",
-              "es": "Nueva instancia Tilemap",
-              "fr": "Nouvelle instance Tilemap",
-              "it": "Nuova istanza Tilemap",
-              "ja": "新しいTilemapインスタンス",
-              "ko": "새 Tilemap 인스턴스",
-              "pt": "Nova instância Tilemap",
-              "ru": "Новый экземпляр Tilemap",
-              "tr": "Yeni Tilemap örneği",
-              "uk": "Новий екземпляр Tilemap"
-            }
-          },
-          "advanced": true,
           "params": [
             {
               "name": "width",
@@ -8680,7 +8662,25 @@
                 "uk": "Номер банку зображень (0-2) або екземпляр Image"
               }
             }
-          ]
+          ],
+          "return": {
+            "type": "Tilemap",
+            "desc": {
+              "en": "New Tilemap instance",
+              "cn": "新Tilemap实例",
+              "de": "Neue Tilemap-Instanz",
+              "es": "Nueva instancia Tilemap",
+              "fr": "Nouvelle instance Tilemap",
+              "it": "Nuova istanza Tilemap",
+              "ja": "新しいTilemapインスタンス",
+              "ko": "새 Tilemap 인스턴스",
+              "pt": "Nova instância Tilemap",
+              "ru": "Новый экземпляр Tilemap",
+              "tr": "Yeni Tilemap örneği",
+              "uk": "Новий екземпляр Tilemap"
+            }
+          },
+          "advanced": true
         },
         {
           "name": "Tilemap.from_tmx",
@@ -8700,24 +8700,6 @@
             "tr": "Bir TMX dosyasından Tilemap örneği oluşturur.",
             "uk": "Створює екземпляр Tilemap із файлу TMX."
           },
-          "return": {
-            "type": "Tilemap",
-            "desc": {
-              "en": "Tilemap instance from TMX file",
-              "cn": "从TMX文件创建的Tilemap实例",
-              "de": "Tilemap-Instanz aus TMX-Datei",
-              "es": "Instancia Tilemap desde archivo TMX",
-              "fr": "Instance Tilemap depuis un fichier TMX",
-              "it": "Istanza Tilemap da file TMX",
-              "ja": "TMXファイルから作成したTilemapインスタンス",
-              "ko": "TMX 파일로부터 생성된 Tilemap 인스턴스",
-              "pt": "Instância Tilemap a partir de arquivo TMX",
-              "ru": "Экземпляр Tilemap из TMX-файла",
-              "tr": "TMX dosyasından oluşturulan Tilemap örneği",
-              "uk": "Екземпляр Tilemap з TMX-файлу"
-            }
-          },
-          "advanced": true,
           "params": [
             {
               "name": "filename",
@@ -8755,7 +8737,25 @@
                 "uk": "Номер шару (0-)"
               }
             }
-          ]
+          ],
+          "return": {
+            "type": "Tilemap",
+            "desc": {
+              "en": "Tilemap instance from TMX file",
+              "cn": "从TMX文件创建的Tilemap实例",
+              "de": "Tilemap-Instanz aus TMX-Datei",
+              "es": "Instancia Tilemap desde archivo TMX",
+              "fr": "Instance Tilemap depuis un fichier TMX",
+              "it": "Istanza Tilemap da file TMX",
+              "ja": "TMXファイルから作成したTilemapインスタンス",
+              "ko": "TMX 파일로부터 생성된 Tilemap 인스턴스",
+              "pt": "Instância Tilemap a partir de arquivo TMX",
+              "ru": "Экземпляр Tilemap из TMX-файла",
+              "tr": "TMX dosyasından oluşturulan Tilemap örneği",
+              "uk": "Екземпляр Tilemap з TMX-файлу"
+            }
+          },
+          "advanced": true
         },
         {
           "name": "Tilemap.width",
@@ -8838,13 +8838,6 @@
             "tr": "(x, y) konumunda dize listesiyle tilemap ayarlar. Her karo, boşluklarla ayrılmış 4 haneli onaltılık değerle (image_tx, image_ty) temsil edilir.",
             "uk": "Встановлює тайлмап в (x, y) за допомогою списку рядків. Кожен тайл — 4-значне шістнадцяткове значення (image_tx, image_ty), розділені пробілами."
           },
-          "examples": [
-            "pyxel.tilemaps[0].set(0, 0, [\"0000 0100 a0b0\", \"0001 0101 a1b1\"])"
-          ],
-          "return": {
-            "type": "None"
-          },
-          "advanced": false,
           "params": [
             {
               "name": "x",
@@ -8900,7 +8893,14 @@
                 "uk": "Дані тайлової карти у вигляді списку рядків"
               }
             }
-          ]
+          ],
+          "return": {
+            "type": "None"
+          },
+          "examples": [
+            "pyxel.tilemaps[0].set(0, 0, [\"0000 0100 a0b0\", \"0001 0101 a1b1\"])"
+          ],
+          "advanced": false
         },
         {
           "name": "Tilemap.load",
@@ -8920,10 +8920,6 @@
             "tr": "(x, y) konumunda TMX dosyasından layer (0-) katmanını yükler.",
             "uk": "Завантажує шар layer (0-) з файлу TMX у (x, y)."
           },
-          "return": {
-            "type": "None"
-          },
-          "advanced": false,
           "params": [
             {
               "name": "x",
@@ -8997,7 +8993,11 @@
                 "uk": "Номер шару (0-)"
               }
             }
-          ]
+          ],
+          "return": {
+            "type": "None"
+          },
+          "advanced": false
         },
         {
           "name": "Tilemap.pget",
@@ -9017,24 +9017,6 @@
             "tr": "(x, y) konumundaki tile'ı döndürür. Tile, (image_tx, image_ty) demetidir.",
             "uk": "Повертає тайл у (x, y). Тайл — це кортеж (image_tx, image_ty)."
           },
-          "return": {
-            "type": "tuple[int, int]",
-            "desc": {
-              "en": "(image_tx, image_ty)",
-              "cn": "(image_tx, image_ty)",
-              "de": "(image_tx, image_ty)",
-              "es": "(image_tx, image_ty)",
-              "fr": "(image_tx, image_ty)",
-              "it": "(image_tx, image_ty)",
-              "ja": "(image_tx, image_ty)",
-              "ko": "(image_tx, image_ty)",
-              "pt": "(image_tx, image_ty)",
-              "ru": "(image_tx, image_ty)",
-              "tr": "(image_tx, image_ty)",
-              "uk": "(image_tx, image_ty)"
-            }
-          },
-          "advanced": false,
           "params": [
             {
               "name": "x",
@@ -9072,7 +9054,25 @@
                 "uk": "Координата Y"
               }
             }
-          ]
+          ],
+          "return": {
+            "type": "tuple[int, int]",
+            "desc": {
+              "en": "(image_tx, image_ty)",
+              "cn": "(image_tx, image_ty)",
+              "de": "(image_tx, image_ty)",
+              "es": "(image_tx, image_ty)",
+              "fr": "(image_tx, image_ty)",
+              "it": "(image_tx, image_ty)",
+              "ja": "(image_tx, image_ty)",
+              "ko": "(image_tx, image_ty)",
+              "pt": "(image_tx, image_ty)",
+              "ru": "(image_tx, image_ty)",
+              "tr": "(image_tx, image_ty)",
+              "uk": "(image_tx, image_ty)"
+            }
+          },
+          "advanced": false
         },
         {
           "name": "Tilemap.pset",
@@ -9092,10 +9092,6 @@
             "tr": "(x, y) konumunda bir tile ayarlar. Tile, (image_tx, image_ty) demetidir.",
             "uk": "Встановлює тайл у (x, y). Тайл — це кортеж (image_tx, image_ty)."
           },
-          "return": {
-            "type": "None"
-          },
-          "advanced": false,
           "params": [
             {
               "name": "x",
@@ -9151,7 +9147,11 @@
                 "uk": "Тайл у форматі (image_tx, image_ty)"
               }
             }
-          ]
+          ],
+          "return": {
+            "type": "None"
+          },
+          "advanced": false
         },
         {
           "name": "Tilemap Drawing",
@@ -9554,10 +9554,6 @@
             "tr": "Dizeler kullanarak notaları, tonları, ses seviyelerini ve efektleri ayarlar. Ton, ses seviyesi veya efekt dizesi notalardan kısaysa, baştan tekrarlanır.",
             "uk": "Встановлює ноти, тембри, гучність та ефекти за допомогою рядків. Якщо рядок тембрів, гучності або ефектів коротший за ноти, він повторюється спочатку."
           },
-          "return": {
-            "type": "None"
-          },
-          "advanced": false,
           "params": [
             {
               "name": "notes",
@@ -9649,7 +9645,11 @@
                 "uk": "Швидкість відтворення"
               }
             }
-          ]
+          ],
+          "return": {
+            "type": "None"
+          },
+          "advanced": false
         },
         {
           "name": "Sound.set_notes",
@@ -9669,11 +9669,6 @@
             "tr": "Nota adları (CDEFGAB), isteğe bağlı diyez (#) veya bemol (-), oktav (0-4) ve suslar (R) dizesiyle notaları ayarlar. Büyük/küçük harf duyarsız, boşluklar yok sayılır.",
             "uk": "Встановлює ноти за допомогою рядка з назв нот (CDEFGAB), необов'язкових дієз (#) або бемоль (-), октави (0-4) та пауз (R). Регістр не враховується, пробіли ігноруються."
           },
-          "examples": ["pyxel.sounds[0].set_notes(\"g2b-2d3r rf3f3f3\")"],
-          "return": {
-            "type": "None"
-          },
-          "advanced": false,
           "params": [
             {
               "name": "notes",
@@ -9693,7 +9688,12 @@
                 "uk": "Рядок notes"
               }
             }
-          ]
+          ],
+          "return": {
+            "type": "None"
+          },
+          "examples": ["pyxel.sounds[0].set_notes(\"g2b-2d3r rf3f3f3\")"],
+          "advanced": false
         },
         {
           "name": "Sound.set_tones",
@@ -9713,11 +9713,6 @@
             "tr": "TSPN (veya özel ton numaraları için 0-9) dizesiyle tonları ayarlar. Büyük/küçük harf duyarsız, boşluklar yok sayılır.",
             "uk": "Встановлює тембри за допомогою рядка з TSPN (або 0-9 для власних номерів тембрів). Регістр не враховується, пробіли ігноруються."
           },
-          "examples": ["pyxel.sounds[0].set_tones(\"ttss pppn\")"],
-          "return": {
-            "type": "None"
-          },
-          "advanced": false,
           "params": [
             {
               "name": "tones",
@@ -9737,7 +9732,12 @@
                 "uk": "Рядок tones"
               }
             }
-          ]
+          ],
+          "return": {
+            "type": "None"
+          },
+          "examples": ["pyxel.sounds[0].set_tones(\"ttss pppn\")"],
+          "advanced": false
         },
         {
           "name": "Sound.set_volumes",
@@ -9757,11 +9757,6 @@
             "tr": "01234567 dizesiyle ses seviyelerini ayarlar. Boşluklar yok sayılır.",
             "uk": "Встановлює гучність рядком з 01234567. Пробіли ігноруються."
           },
-          "examples": ["pyxel.sounds[0].set_volumes(\"7777 7531\")"],
-          "return": {
-            "type": "None"
-          },
-          "advanced": false,
           "params": [
             {
               "name": "volumes",
@@ -9781,7 +9776,12 @@
                 "uk": "Рядок volumes"
               }
             }
-          ]
+          ],
+          "return": {
+            "type": "None"
+          },
+          "examples": ["pyxel.sounds[0].set_volumes(\"7777 7531\")"],
+          "advanced": false
         },
         {
           "name": "Sound.set_effects",
@@ -9801,11 +9801,6 @@
             "tr": "NSVFHQ dizesiyle efektleri ayarlar. Büyük/küçük harf duyarsız, boşluklar yok sayılır.",
             "uk": "Встановлює ефекти рядком з NSVFHQ. Регістр не враховується, пробіли ігноруються."
           },
-          "examples": ["pyxel.sounds[0].set_effects(\"nfnf nvvs\")"],
-          "return": {
-            "type": "None"
-          },
-          "advanced": false,
           "params": [
             {
               "name": "effects",
@@ -9825,7 +9820,12 @@
                 "uk": "Рядок effects"
               }
             }
-          ]
+          ],
+          "return": {
+            "type": "None"
+          },
+          "examples": ["pyxel.sounds[0].set_effects(\"nfnf nvvs\")"],
+          "advanced": false
         },
         {
           "name": "Sound.mml",
@@ -9845,13 +9845,6 @@
             "tr": "Verilen MML dizesiyle MML moduna geçer. MML modunda nota ve hız gibi normal parametreler yok sayılır. Kullanılabilir MML komutları için Pyxel MML Komutları sayfasına bakın.",
             "uk": "Перемикає в режим MML із заданим рядком MML. У режимі MML звичайні параметри, такі як ноти та швидкість, ігноруються. Доступні MML-команди див. на сторінці MML-команди Pyxel."
           },
-          "examples": [
-            "pyxel.sounds[0].mml(\"T120 Q90 @1 V100 O5 L8 C4&C<G16R16>C.\")"
-          ],
-          "return": {
-            "type": "None"
-          },
-          "advanced": false,
           "params": [
             {
               "name": "code",
@@ -9871,7 +9864,14 @@
                 "uk": "Рядок MML"
               }
             }
-          ]
+          ],
+          "return": {
+            "type": "None"
+          },
+          "examples": [
+            "pyxel.sounds[0].mml(\"T120 Q90 @1 V100 O5 L8 C4&C<G16R16>C.\")"
+          ],
+          "advanced": false
         },
         {
           "name": "Sound.mml",
@@ -9891,11 +9891,11 @@
             "tr": "MML modundan çıkar ve normal moda döner.",
             "uk": "Виходить з режиму MML і повертається до звичайного режиму."
           },
+          "params": [],
           "return": {
             "type": "None"
           },
-          "advanced": false,
-          "params": []
+          "advanced": false
         },
         {
           "name": "Sound.pcm",
@@ -9915,11 +9915,6 @@
             "tr": "Çalma için ses dosyası (WAV/OGG) yükler.",
             "uk": "Завантажує аудіофайл (WAV/OGG) для відтворення."
           },
-          "examples": ["pyxel.sounds[0].pcm(\"sounds/bgm.ogg\")"],
-          "return": {
-            "type": "None"
-          },
-          "advanced": false,
           "params": [
             {
               "name": "filename",
@@ -9939,7 +9934,12 @@
                 "uk": "Ім'я аудіофайлу (WAV/OGG)"
               }
             }
-          ]
+          ],
+          "return": {
+            "type": "None"
+          },
+          "examples": ["pyxel.sounds[0].pcm(\"sounds/bgm.ogg\")"],
+          "advanced": false
         },
         {
           "name": "Sound.pcm",
@@ -9959,11 +9959,11 @@
             "tr": "PCM modundan çıkar ve normal moda döner.",
             "uk": "Виходить з режиму PCM і повертається до звичайного режиму."
           },
+          "params": [],
           "return": {
             "type": "None"
           },
-          "advanced": false,
-          "params": []
+          "advanced": false
         },
         {
           "name": "Sound.save",
@@ -9983,10 +9983,6 @@
             "tr": "Belirtilen süre (saniye) boyunca sesin WAV dosyasını oluşturur.",
             "uk": "Створює WAV-файл звуку зазначеної тривалості у секундах."
           },
-          "return": {
-            "type": "None"
-          },
-          "advanced": true,
           "params": [
             {
               "name": "filename",
@@ -10042,7 +10038,11 @@
                 "uk": "Також створити файл MP4 (потрібен FFmpeg). За замовчуванням False."
               }
             }
-          ]
+          ],
+          "return": {
+            "type": "None"
+          },
+          "advanced": true
         },
         {
           "name": "Sound.total_sec",
@@ -10176,11 +10176,6 @@
             "tr": "Her kanal için ses listelerini (0-63) ayarlar. Boş liste kanalın kullanılmadığı anlamına gelir.",
             "uk": "Встановлює списки звуків (0-63) для кожного каналу. Порожній список означає, що канал не використовується."
           },
-          "examples": ["pyxel.musics[0].set([0, 1], [], [3])"],
-          "return": {
-            "type": "None"
-          },
-          "advanced": false,
           "params": [
             {
               "name": "seq0, seq1, ...",
@@ -10200,7 +10195,12 @@
                 "uk": "Списки звуків для кожного каналу. Порожній список = не використовується."
               }
             }
-          ]
+          ],
+          "return": {
+            "type": "None"
+          },
+          "examples": ["pyxel.musics[0].set([0, 1], [], [3])"],
+          "advanced": false
         },
         {
           "name": "Music.save",
@@ -10220,10 +10220,6 @@
             "tr": "Belirtilen süre (saniye) boyunca müziğin WAV dosyasını oluşturur.",
             "uk": "Створює WAV-файл музики зазначеної тривалості у секундах."
           },
-          "return": {
-            "type": "None"
-          },
-          "advanced": true,
           "params": [
             {
               "name": "filename",
@@ -10279,7 +10275,11 @@
                 "uk": "Також створити файл MP4 (потрібен FFmpeg). За замовчуванням False."
               }
             }
-          ]
+          ],
+          "return": {
+            "type": "None"
+          },
+          "advanced": true
         }
       ]
     },

@@ -29,7 +29,9 @@
       }
 
       const queries = new URL(document.location).searchParams;
-      let command, value, ext;
+      let command;
+      let value;
+      let ext;
 
       if (queries.get("run")) {
         command = "run";

@@ -2,10 +2,10 @@
 
 import html
 import json
-import pathlib
+from pathlib import Path
 import re
 
-ROOT_DIR = pathlib.Path(__file__).resolve().parent.parent
+ROOT_DIR = Path(__file__).resolve().parent.parent
 WEB_DIR = ROOT_DIR / "web"
 API_REF_JSON = WEB_DIR / "api-reference" / "api-reference.json"
 MML_COMMANDS_JSON = WEB_DIR / "mml-studio" / "mml-commands.json"
@@ -19,7 +19,7 @@ DOCS_DIR = ROOT_DIR / "docs"
 PYXEL_WEB = "https://kitao.github.io/pyxel/web"
 
 
-def t(obj):
+def localize(obj):
     if not obj:
         return ""
     if isinstance(obj, str):
@@ -176,9 +176,9 @@ class JsEval:
         self._doc_name = doc_name
         self._vars = {}
 
-    def _t(self, key):
+    def _localize(self, key):
         val = self._ui.get(key)
-        return t(val) if val is not None else key
+        return localize(val) if val is not None else key
 
     def eval_template(self, template):
         result = []
@@ -225,30 +225,30 @@ class JsEval:
         # Variable or property access (e.g. e.label)
         if re.match(r'^\w+$', expr) and expr in self._vars:
             val = self._vars[expr]
-            return t(val) if isinstance(val, dict) else val
+            return localize(val) if isinstance(val, dict) else val
         m = re.match(r'^(\w+)\.(\w+)$', expr)
         if m and m.group(1) in self._vars:
             obj = self._vars[m.group(1)]
             if isinstance(obj, dict):
                 val = obj.get(m.group(2), "")
-                return t(val) if isinstance(val, dict) else val
+                return localize(val) if isinstance(val, dict) else val
 
-        # t("key") / t(var) / t(var.prop)
+        # localize("key") / localize(var) / localize(var.prop)
         m = re.match(r't\("([^"]+)"\)$', expr)
         if m:
-            return self._t(m.group(1))
+            return self._localize(m.group(1))
         m = re.match(r't\((\w+)\.(\w+)\)$', expr)
         if m:
             obj = self._vars.get(m.group(1))
             if isinstance(obj, dict):
-                return t(obj.get(m.group(2), ""))
+                return localize(obj.get(m.group(2), ""))
             return ""
         m = re.match(r't\((\w+)\)$', expr)
         if m:
-            return self._t(self._vars.get(m.group(1), m.group(1)))
+            return self._localize(self._vars.get(m.group(1), m.group(1)))
 
-        # esc(t("key")).replace(...) chain (must come before bare esc)
-        if expr.startswith("esc(t(") and ".replace(" in expr:
+        # esc(localize("key")).replace(...) chain (must come before bare esc)
+        if expr.startswith("esc(localize(") and ".replace(" in expr:
             return self._replace_chain(expr)
 
         # esc(inner) -> just evaluate inner
@@ -349,23 +349,23 @@ class JsEval:
                         f"images/{icon}.png", self._doc_name
                     )
                     img = f"![{icon}]({url}) "
-                rows.append(f"- {img}{tool['key']} — {t(tool['desc'])}")
+                rows.append(f"- {img}{tool['key']} — {localize(tool['desc'])}")
             return "\n" + "\n".join(rows) + "\n"
 
         # keyboardDiagram() -> keyboard-note mapping table
         if expr.startswith("keyboardDiagram("):
             kl = self._data.get("sound_keyboard_layout", {})
-            notes = t(kl.get("notes", {}))
-            rows = [f"\n**{t(kl.get('upper_label', {}))}**\n",
+            notes = localize(kl.get("notes", {}))
+            rows = [f"\n**{localize(kl.get('upper_label', {}))}**\n",
                     "| Note | Key |", "| --- | --- |"]
             for i, key in enumerate(kl.get("upper", [])):
                 rows.append(f"| {notes[i]} | {key} |")
-            rows += [f"\n**{t(kl.get('lower_label', {}))}**\n",
+            rows += [f"\n**{localize(kl.get('lower_label', {}))}**\n",
                      "| Note | Key |", "| --- | --- |"]
             for i, key in enumerate(kl.get("lower", [])):
                 rows.append(f"| {notes[i]} | {key} |")
             rows.append(
-                f"\n| {t(kl.get('rest_label', {}))} | {kl.get('rest_key', '')} |"
+                f"\n| {localize(kl.get('rest_label', {}))} | {kl.get('rest_key', '')} |"
             )
             return "\n".join(rows) + "\n"
 
@@ -382,7 +382,7 @@ class JsEval:
             inner = expr[6:_find_matching(expr, 6, "(", ")") - 1]
             return self._table(inner)
 
-        # t("key").replace(...) or esc(t("key")).replace(...) chain
+        # localize("key").replace(...) or esc(localize("key")).replace(...) chain
         if re.match(r'(?:esc\()?t\("', expr) and ".replace(" in expr:
             return self._replace_chain(expr)
 
@@ -398,11 +398,11 @@ class JsEval:
         return expr
 
     def _replace_chain(self, expr):
-        # Handle both t("key").replace(...) and esc(t("key")).replace(...)
+        # Handle both localize("key").replace(...) and esc(localize("key")).replace(...)
         m = re.match(r'(?:esc\()?t\("([^"]+)"\)\)?', expr)
         if not m:
             return expr
-        text = self._t(m.group(1))
+        text = self._localize(m.group(1))
         rest = expr[m.end():]
         while rest.strip().startswith(".replace("):
             rest = rest.strip()[9:]
@@ -446,7 +446,7 @@ class JsEval:
             if field:
                 val = val.get(field, "")
         if isinstance(val, dict):
-            return t(val)
+            return localize(val)
         if isinstance(val, str):
             return val
         return val
@@ -457,9 +457,9 @@ class JsEval:
             return ""
         rows = []
         for item in items:
-            key = t(item["key"]) if isinstance(item["key"], dict) \
+            key = localize(item["key"]) if isinstance(item["key"], dict) \
                 else item["key"]
-            action = t(item["action"])
+            action = localize(item["action"])
             action = re.sub(r'`([^`]+)`', r'`\1`', action)
             rows.append(f"| {key} | {action} |")
         return "\n| Shortcut | Action |\n| --- | --- |\n" \
@@ -471,9 +471,9 @@ class JsEval:
             return ""
         rows = []
         for item in items:
-            label = t(item["label"])
+            label = localize(item["label"])
             val = item["value"]
-            val = t(val) if isinstance(val, dict) else str(val)
+            val = localize(val) if isinstance(val, dict) else str(val)
             rows.append(f"- **{label}:** {val}")
         return "\n" + "\n".join(rows) + "\n"
 
@@ -484,7 +484,7 @@ class JsEval:
         rows = []
         for item in items:
             rows.append(
-                f"| `{item['key']}` | {t(item['label'])} | {t(item['desc'])} |"
+                f"| `{item['key']}` | {localize(item['label'])} | {localize(item['desc'])} |"
             )
         return "\n| Key | Name | Description |\n| --- | --- | --- |\n" \
             + "\n".join(rows) + "\n"
@@ -498,8 +498,8 @@ class JsEval:
             icon = item.get("icon", "")
             key = item.get("key", "")
             if isinstance(key, dict):
-                key = t(key)
-            desc = t(item.get("desc", ""))
+                key = localize(key)
+            desc = localize(item.get("desc", ""))
             img = f"![{icon}]({_transform_url(icon, self._doc_name)}) " \
                 if icon else ""
             if key and key != "—":
@@ -633,7 +633,7 @@ class JsEval:
                 if isinstance(item, dict) and "label" in item \
                         and "desc" in item:
                     result.append(
-                        f"- **{t(item['label'])}:** {t(item['desc'])}\n"
+                        f"- **{localize(item['label'])}:** {localize(item['desc'])}\n"
                     )
                 else:
                     saved = dict(self._vars)
@@ -721,7 +721,7 @@ def generate_from_html(html_path, json_path, doc_name):
         lines.append(evaluated)
 
     # Assemble
-    title = t(data["ui"].get("title", ""))
+    title = localize(data["ui"].get("title", ""))
     url = f"{PYXEL_WEB}/{doc_name}/"
     header = (
         f"# {title}\n\n"
@@ -774,7 +774,7 @@ def generate_api_reference():
         api_data = json.load(f)
     lines = []
 
-    title = t(api_data["ui"]["title"])
+    title = localize(api_data["ui"]["title"])
     url = f"{PYXEL_WEB}/api-reference/"
     lines.append(f"# {title}")
     lines.append("")
@@ -786,12 +786,12 @@ def generate_api_reference():
     lines.append("")
 
     for cat in api_data["categories"]:
-        lines.append(f"## {t(cat['title'])}")
+        lines.append(f"## {localize(cat['title'])}")
         lines.append("")
 
         for item in cat.get("items", []):
             sig = item["signature"]
-            desc = t(item.get("description"))
+            desc = localize(item.get("description"))
             advanced = " *(Advanced)*" if item.get("advanced") else ""
             lines.append(f"### `{sig}` — {item['type']}{advanced}")
             lines.append("")
@@ -805,13 +805,13 @@ def generate_api_reference():
                 lines.append("**Parameters:**")
                 lines.append("")
                 for p in item["params"]:
-                    p_desc = t(p.get("desc"))
+                    p_desc = localize(p.get("desc"))
                     suffix = f" — {p_desc}" if p_desc else ""
                     lines.append(f"- `{p['name']}` (*{p['type']}*){suffix}")
                 lines.append("")
             ret = item.get("return")
             if ret and ret.get("type") and ret["type"] != "None":
-                ret_desc = t(ret.get("desc"))
+                ret_desc = localize(ret.get("desc"))
                 suffix = f" — {ret_desc}" if ret_desc else ""
                 lines.append(f"**Returns:** `{ret['type']}`{suffix}")
                 lines.append("")
@@ -824,14 +824,14 @@ def generate_api_reference():
                 lines.append("```")
                 lines.append("")
             if item.get("notes"):
-                lines.append(f"**Note:** {t(item['notes'])}")
+                lines.append(f"**Note:** {localize(item['notes'])}")
                 lines.append("")
 
         for group in cat.get("constant_groups", []):
-            lines.append(f"### {t(group['label'])}")
+            lines.append(f"### {localize(group['label'])}")
             lines.append("")
             for sec in group.get("sections", []):
-                sec_label = t(sec.get("label"))
+                sec_label = localize(sec.get("label"))
                 if sec_label:
                     lines.append(f"**{sec_label}:**")
                     lines.append("")
@@ -839,7 +839,7 @@ def generate_api_reference():
                 details = sec.get("details", [])
                 if details:
                     for i, const in enumerate(constants):
-                        detail = t(details[i]) if i < len(details) else ""
+                        detail = localize(details[i]) if i < len(details) else ""
                         suffix = f" — {detail}" if detail else ""
                         lines.append(f"- `{const}`{suffix}")
                 else:
@@ -861,7 +861,7 @@ def generate_mml_commands():
         mml_data = json.load(f)
     lines = []
 
-    title = t(mml_data["ui"]["title"])
+    title = localize(mml_data["ui"]["title"])
     url = f"{PYXEL_WEB}/mml-studio/"
     lines.append(f"# {title}")
     lines.append("")
@@ -872,14 +872,14 @@ def generate_mml_commands():
     )
     lines.append("")
 
-    th_cmd = t(mml_data["ui"]["th_command"])
-    th_desc = t(mml_data["ui"]["th_description"])
+    th_cmd = localize(mml_data["ui"]["th_command"])
+    th_desc = localize(mml_data["ui"]["th_description"])
     lines.append(f"| {th_cmd} | {th_desc} |")
     lines.append("| --- | --- |")
 
     for cmd in mml_data["commands"]:
         command = cmd["cmd"].replace("|", "\\|")
-        desc = t(cmd["desc"])
+        desc = localize(cmd["desc"])
         example = cmd.get("example")
         cell_desc = desc.replace("\\n", " ").replace("\n", " ").replace("|", "\\|")
         if example:

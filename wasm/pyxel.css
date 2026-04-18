@@ -1,12 +1,12 @@
 :root {
-  --pyxel-black: #000000;
+  --pyxel-black: #000;
   --pyxel-navy: #2b335f;
   --pyxel-purple: #7e2072;
   --pyxel-green: #19959c;
   --pyxel-brown: #8b4852;
   --pyxel-dark-blue: #395c98;
   --pyxel-light-blue: #a9c1ff;
-  --pyxel-white: #eeeeee;
+  --pyxel-white: #eee;
   --pyxel-red: #d4186c;
   --pyxel-orange: #d38441;
   --pyxel-yellow: #e9c35b;
@@ -19,7 +19,7 @@
 }
 
 .pyxel-scheme {
-  color: #ffffff;
+  color: #fff;
   background-color: var(--pyxel-background-color);
 }
 
@@ -60,11 +60,11 @@ canvas#canvas {
 }
 
 img#pyxel-logo {
+  --min-width-ratio: 0.2;
   position: absolute;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  --min-width-ratio: 0.2;
   image-rendering: pixelated;
   pointer-events: none;
 }

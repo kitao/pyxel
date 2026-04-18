@@ -15,7 +15,7 @@
 - Changed the transp, instr, and seed of the gen_bgm function to required
 - Added Cargo.lock to version control for reproducible builds
 - Added the resize function to change the screen size at runtime
-- Fixed the screencast function using wrong last-frame delay on frame drops
+- Fixed the screencast function emitting wrong last-frame delay on frame drops
 - Raised minimum Python version to 3.10
 
 ## 2.8.10
@@ -68,7 +68,8 @@
 
 ## 2.8.4
 
-- Added multilingual user guide and simplified README
+- Added the multilingual user guide
+- Simplified the README
 - Added shared CSS for WASM document pages
 - Fixed translation inconsistencies across WASM pages
 - Fixed crash in sound editor when playback reaches end of notes
@@ -112,8 +113,8 @@
 
 ## 2.7.12
 
-- Added channel count info to the gen_bgm function instr descriptions
-- Added preset mood descriptions to the gen_bgm function API reference
+- Added channel count info to the instr descriptions of the gen_bgm function
+- Added preset mood descriptions to the API reference of the gen_bgm function
 - Fixed quit causing fatal error on web
 
 ## 2.7.11
@@ -127,7 +128,7 @@
 
 ## 2.7.9
 
-- Aligned 3D coordinate system so rot=(0,0,0) matches 2D screen axes
+- Aligned the 3D coordinate system so rot=(0,0,0) matches 2D screen axes
 
 ## 2.7.8
 
@@ -176,7 +177,7 @@
 - Added manual page for Pyxel MML Studio
 - Removed version number from the pyxel command example in the README files
 - Revamped Pyxel Web documentation for clarity and accuracy
-- Revamped FAQ with updated content and improved clarity
+- Revamped the FAQ with updated content and improved clarity
 
 ## 2.7.1
 
@@ -716,7 +717,7 @@
 
 - Modified help messages in Pyxel Editor
 - Updated the sgn function to return integer
-- Fixed push back process in Example 10 and 15
+- Fixed push back process in Examples 10 and 15
 - Prevented editing during playback in Pyxel Editor
 - Fixed incorrect array references during playback in Pyxel Editor
 - Updated sysinfo crate to version 0.31

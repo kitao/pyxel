@@ -6,7 +6,7 @@ _SYSTEM = "system"
 _LOCAL = "local"
 
 
-def _to_module_filename(module_path):
+def _to_module_filename(module_path: str) -> str | None:
     filename = Path(f"{module_path}.py")
     if filename.is_file():
         return str(filename)
@@ -17,7 +17,7 @@ def _to_module_filename(module_path):
     return None
 
 
-def _resolve_module_path(dir_path, level, name):
+def _resolve_module_path(dir_path: str, level: int, name: str) -> str:
     """Build a filesystem path from an import's directory, level, and name."""
     path = Path(dir_path)
     for _ in range(level - 1):
@@ -27,7 +27,13 @@ def _resolve_module_path(dir_path, level, name):
     return str(path)
 
 
-def _track_module(imports, checked_files, dir_path, level, name):
+def _track_module(
+    imports: dict[str, set[str]],
+    checked_files: set[str],
+    dir_path: str,
+    level: int,
+    name: str,
+) -> None:
     """Classify a single import as local or system and recurse into local ones."""
     module_path = _resolve_module_path(dir_path, level, name)
     module_filename = _to_module_filename(module_path)
@@ -40,7 +46,9 @@ def _track_module(imports, checked_files, dir_path, level, name):
         imports[_SYSTEM].add(name)
 
 
-def _list_imported_modules(imports, filename, checked_files):
+def _list_imported_modules(
+    imports: dict[str, set[str]], filename: str, checked_files: set[str]
+) -> None:
     if filename in checked_files:
         return
     checked_files.add(filename)
@@ -78,9 +86,9 @@ def _list_imported_modules(imports, filename, checked_files):
                     )
 
 
-def list_imported_modules(filename):
-    imports = {_SYSTEM: set(), _LOCAL: set()}
-    checked_files = set()
+def list_imported_modules(filename: str) -> dict[str, list[str]]:
+    imports: dict[str, set[str]] = {_SYSTEM: set(), _LOCAL: set()}
+    checked_files: set[str] = set()
     _list_imported_modules(imports, filename, checked_files)
 
     return {

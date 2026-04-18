@@ -14,10 +14,10 @@ use crate::platform;
 use crate::resource::Resource;
 use crate::settings::{
     CURSOR_DATA, CURSOR_HEIGHT, CURSOR_WIDTH, DEFAULT_COLORS, DEFAULT_FPS, DEFAULT_QUIT_KEY,
-    DEFAULT_TITLE, DEFAULT_TONE_0, DEFAULT_TONE_1, DEFAULT_TONE_2, DEFAULT_TONE_3, DISPLAY_RATIO,
-    FONT_DATA, FONT_HEIGHT, FONT_WIDTH, ICON_COLKEY, ICON_DATA, ICON_SCALE, IMAGE_SIZE,
-    NUM_CHANNELS, NUM_FONT_ROWS, NUM_IMAGES, NUM_MUSICS, NUM_SOUNDS, NUM_TILEMAPS, NUM_TONES,
-    TILEMAP_SIZE,
+    DEFAULT_TITLE, DEFAULT_TONE_NOISE, DEFAULT_TONE_PULSE, DEFAULT_TONE_SQUARE,
+    DEFAULT_TONE_TRIANGLE, DISPLAY_RATIO, FONT_DATA, FONT_HEIGHT, FONT_WIDTH, ICON_COLKEY,
+    ICON_DATA, ICON_SCALE, IMAGE_SIZE, NUM_CHANNELS, NUM_FONT_ROWS, NUM_IMAGES, NUM_MUSICS,
+    NUM_SOUNDS, NUM_TILEMAPS, NUM_TONES, TILEMAP_SIZE,
 };
 use crate::sound::Sound;
 use crate::system::System;
@@ -332,10 +332,10 @@ fn init_tones() -> Vec<*mut Tone> {
             let tone = Tone::new();
             let t = unsafe { &mut *tone };
             match index {
-                0 => set_tone!(t, DEFAULT_TONE_0),
-                1 => set_tone!(t, DEFAULT_TONE_1),
-                2 => set_tone!(t, DEFAULT_TONE_2),
-                3 => set_tone!(t, DEFAULT_TONE_3),
+                0 => set_tone!(t, DEFAULT_TONE_TRIANGLE),
+                1 => set_tone!(t, DEFAULT_TONE_SQUARE),
+                2 => set_tone!(t, DEFAULT_TONE_PULSE),
+                3 => set_tone!(t, DEFAULT_TONE_NOISE),
                 _ => unreachable!(),
             }
             tone

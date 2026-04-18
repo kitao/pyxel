@@ -135,27 +135,29 @@ impl Audio {
 
         write(&image_path, image_data).map_err(|_| "Failed to save temporary file".to_string())?;
         Command::new("ffmpeg")
-            .arg("-loop")
-            .arg("1")
-            .arg("-i")
-            .arg(png_file)
-            .arg("-f")
-            .arg("lavfi")
-            .arg("-i")
-            .arg("color=c=black:s=480x360")
-            .arg("-i")
-            .arg(wav_file)
-            .arg("-filter_complex")
-            .arg("[1][0]overlay=(W-w)/2:(H-h)/2")
-            .arg("-c:v")
-            .arg("libx264")
-            .arg("-c:a")
-            .arg("aac")
-            .arg("-b:a")
-            .arg("192k")
-            .arg("-shortest")
-            .arg(mp4_file)
-            .arg("-y")
+            .args([
+                "-loop",
+                "1",
+                "-i",
+                png_file,
+                "-f",
+                "lavfi",
+                "-i",
+                "color=c=black:s=480x360",
+                "-i",
+                wav_file,
+                "-filter_complex",
+                "[1][0]overlay=(W-w)/2:(H-h)/2",
+                "-c:v",
+                "libx264",
+                "-c:a",
+                "aac",
+                "-b:a",
+                "192k",
+                "-shortest",
+                &mp4_file,
+                "-y",
+            ])
             .output()
             .map_err(|_| "Failed to execute FFmpeg".to_string())?;
 

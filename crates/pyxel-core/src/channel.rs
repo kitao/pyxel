@@ -93,7 +93,7 @@ impl Channel {
         }))
     }
 
-    fn sec_to_clock(sec: Option<f32>) -> u32 {
+    fn sec_to_clocks(sec: Option<f32>) -> u32 {
         (sec.unwrap_or(0.0) * AUDIO_CLOCK_RATE as f32).round() as u32
     }
 
@@ -106,7 +106,7 @@ impl Channel {
     ) {
         self.play_from_clock(
             sounds,
-            Self::sec_to_clock(start_sec),
+            Self::sec_to_clocks(start_sec),
             should_loop,
             should_resume,
         );
@@ -121,7 +121,7 @@ impl Channel {
     ) {
         self.play_from_clock(
             vec![sound],
-            Self::sec_to_clock(start_sec),
+            Self::sec_to_clocks(start_sec),
             should_loop,
             should_resume,
         );
@@ -140,7 +140,7 @@ impl Channel {
         self.owned_sounds.push(sound);
         self.play_from_clock(
             vec![sound],
-            Self::sec_to_clock(start_sec),
+            Self::sec_to_clocks(start_sec),
             should_loop,
             should_resume,
         );

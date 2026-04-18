@@ -18,7 +18,7 @@
     </style>
   </head>
 
-  <body class="h-full page">
+  <body class="page h-full">
     <div id="app-root" class="flex flex-col h-full min-h-0">
       <!-- Toolbar -->
       <div class="flex-wrap toolbar">
@@ -530,7 +530,7 @@
         if (window.showSaveFilePicker) {
           try {
             const handle = await window.showSaveFilePicker({
-              suggestedName: window.project.name + ".zip",
+              suggestedName: `${window.project.name}.zip`,
               types: [
                 {
                   description: "ZIP",
@@ -555,7 +555,7 @@
         const blob = await buildArchiveBlob();
         const a = document.createElement("a");
         a.href = URL.createObjectURL(blob);
-        a.download = window.project.name + ".zip";
+        a.download = `${window.project.name}.zip`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
@@ -1186,7 +1186,7 @@
       }
 
       function setupPyxelInput() {
-        const handlers = ["click", "touchstart", "keydown"];
+        const eventNames = ["click", "touchstart", "keydown"];
         function resolvePyxelInput() {
           if (runtimeScreen?.contentWindow?.pyxelContext?.resolveInput) {
             runtimeScreen.contentWindow.pyxelContext.resolveInput();
@@ -1197,7 +1197,7 @@
           }
         }
 
-        handlers.forEach((eventName) => {
+        eventNames.forEach((eventName) => {
           window.addEventListener(eventName, resolvePyxelInput);
         });
       }

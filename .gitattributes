@@ -1,13 +1,13 @@
 * text=auto
 
-# Binary wheels
+# Archives
 *.whl binary diff=zip
+*.zip binary diff=zip
 
 # Images
 *.gif binary
 *.ico binary
 *.jpeg binary
-*.jpg binary
 *.png binary
 
 # Audio
@@ -15,8 +15,6 @@
 
 # Fonts
 *.bdf binary
-*.otf binary
-*.ttc binary
 *.ttf binary
 
 # Pyxel assets

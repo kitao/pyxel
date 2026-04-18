@@ -2,10 +2,10 @@
 
 import copy
 import json
-import pathlib
+from pathlib import Path
 import re
 
-ROOT_DIR = pathlib.Path(__file__).resolve().parent.parent
+ROOT_DIR = Path(__file__).resolve().parent.parent
 API_REF_JSON = ROOT_DIR / "web" / "api-reference" / "api-reference.json"
 PYI_PATH = ROOT_DIR / "python" / "pyxel" / "__init__.pyi"
 
@@ -20,7 +20,7 @@ CLASS_CATEGORIES = {
 }
 
 
-def t(obj):
+def localize(obj):
     if not obj:
         return ""
     if isinstance(obj, str):
@@ -33,8 +33,8 @@ def _lowercase_first(s):
 
 
 def _merge_items(existing, new):
-    existing_desc = t(existing.get("description"))
-    new_desc = t(new.get("description"))
+    existing_desc = localize(existing.get("description"))
+    new_desc = localize(new.get("description"))
 
     if new.get("params") and not existing.get("params"):
         merged = f"{new_desc} Call without arguments to {_lowercase_first(existing_desc)}"
@@ -48,7 +48,7 @@ def _merge_items(existing, new):
 
 
 def _adapt_for_tilemap(item):
-    desc = t(item.get("description"))
+    desc = localize(item.get("description"))
 
     # blt-specific
     desc = desc.replace(
@@ -127,19 +127,19 @@ def _fallback_item(class_name, func_name, doc_map):
 
 
 def _make_docstring(item, indent):
-    desc = t(item.get("description"))
+    desc = localize(item.get("description"))
     if not desc:
         return None
 
     params = item.get("params", [])
     param_lines = []
     for p in params:
-        p_desc = t(p.get("desc"))
+        p_desc = localize(p.get("desc"))
         if p_desc:
             param_lines.append(f"{indent}    {p['name']}: {p_desc}")
 
-    ret_desc = t(item.get("return", {}).get("desc"))
-    notes = t(item.get("notes"))
+    ret_desc = localize(item.get("return", {}).get("desc"))
+    notes = localize(item.get("notes"))
     examples = item.get("examples", [])
 
     if not param_lines and not ret_desc and not notes and not examples:
@@ -238,7 +238,7 @@ def _add_docstrings(content, doc_map):
             var_name = vm.group(2)
             item = doc_map.get((current_class, var_name))
             if item:
-                desc = t(item.get("description"))
+                desc = localize(item.get("description"))
                 if desc:
                     result.append(line)
                     result.append(f'{var_indent}"""{desc}"""\n')
@@ -301,10 +301,10 @@ def generate_pyi_docstrings():
     with open(API_REF_JSON, encoding="utf-8") as f:
         api_data = json.load(f)
     doc_map = _build_doc_map(api_data)
-    content = PYI_PATH.read_text()
+    content = PYI_PATH.read_text(encoding="utf-8")
     content = _strip_docstrings(content)
     content = _add_docstrings(content, doc_map)
-    PYI_PATH.write_text(content)
+    PYI_PATH.write_text(content, encoding="utf-8")
     print(f"Generated {PYI_PATH.relative_to(ROOT_DIR)}")
 
 

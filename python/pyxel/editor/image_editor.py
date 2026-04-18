@@ -99,10 +99,10 @@ class ImageEditor(EditorBase):
     def __on_canvas_get(self, value):
         return pyxel.images[self.image_index_var]
 
-    def __on_color_picker_mouse_hover(self, x, y):
+    def __on_color_picker_mouse_hover(self, _x, _y):
         self.help_message_var = "COLOR:1-8/SHIFT+1-8"
 
-    def __on_image_picker_mouse_hover(self, x, y):
+    def __on_image_picker_mouse_hover(self, _x, _y):
         self.help_message_var = "COPY_ALL:CTRL+SHIFT+C/X/V"
 
     def __on_undo(self, data):

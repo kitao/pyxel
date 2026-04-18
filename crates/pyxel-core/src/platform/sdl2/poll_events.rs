@@ -37,7 +37,7 @@ fn gamepad_scripts() -> &'static [std::ffi::CString; 10] {
     })
 }
 
-pub type Gamepad = Option<(i32, *mut SDL_GameController)>;
+pub type GamepadSlot = Option<(i32, *mut SDL_GameController)>;
 
 pub fn open_gamepad(device_index: i32) -> Option<(i32, *mut SDL_GameController)> {
     let controller = unsafe { SDL_GameControllerOpen(device_index) };
@@ -48,7 +48,7 @@ pub fn open_gamepad(device_index: i32) -> Option<(i32, *mut SDL_GameController)>
     Some((instance_id, controller))
 }
 
-fn close_gamepad(gamepad: &mut Gamepad) {
+fn close_gamepad(gamepad: &mut GamepadSlot) {
     if let Some((_, controller)) = gamepad {
         unsafe { SDL_GameControllerClose(*controller) };
         *gamepad = None;

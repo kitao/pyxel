@@ -72,21 +72,23 @@
       }
 
       function update() {
-        const $ = (id) => document.getElementById(id);
         const pyxelLink = link("https://github.com/kitao/pyxel", "Pyxel");
         const launcherLink = link("../launcher/", "Pyxel Web Launcher");
 
         // Header
         document.title = t("title");
-        $("p-title").textContent = t("title");
-        $("p-sub").innerHTML = t("subtitle").replace("{0}", pyxelLink);
+        document.getElementById("p-title").textContent = t("title");
+        document.getElementById("p-sub").innerHTML = t("subtitle").replace(
+          "{0}",
+          pyxelLink,
+        );
 
         // Intro
-        $("s-intro").innerHTML = `
+        document.getElementById("s-intro").innerHTML = `
           <p class="body">${esc(t("intro_body"))}</p>`;
 
         // Publishing overview
-        $("s-publishing").innerHTML = `
+        document.getElementById("s-publishing").innerHTML = `
           <h2 class="section-title">${esc(t("publishing_title"))}</h2>
           <p class="body mb-3">${esc(t("publishing_body"))}</p>
           ${table(
@@ -119,13 +121,13 @@
             ? "Pyxel Code Maker マニュアル"
             : "Pyxel Code Maker Manual",
         );
-        $("s-code-maker").innerHTML = `
+        document.getElementById("s-code-maker").innerHTML = `
           <h2 class="section-title">${esc(t("code_maker_title"))}</h2>
           <p class="body">${t("code_maker_body").replace("{0}", codeMakerLink)}</p>
           <p class="body mt-2">${t("code_maker_manual").replace("{0}", codeMakerManualLink)}</p>`;
 
         // Web Launcher
-        $("s-launcher").innerHTML = `
+        document.getElementById("s-launcher").innerHTML = `
           <h2 class="section-title">${esc(t("launcher_title"))}</h2>
           <p class="body">${t("launcher_body").replace("{0}", launcherLink)}</p>
           <p class="body mt-2">${t("launcher_body2").replace("{0}", launcherLink)}</p>
@@ -180,7 +182,7 @@
             .replace("{2}", chip("play"))}</p>`;
 
         // app2html
-        $("s-app2html").innerHTML = `
+        document.getElementById("s-app2html").innerHTML = `
           <h2 class="section-title">${esc(t("app2html_title"))}</h2>
           <p class="body">${t("app2html_body").replace("{0}", chip("pyxel app2html"))}</p>
           ${code("pyxel app2html your_app.pyxapp", "sh")}
@@ -189,7 +191,7 @@
           <p class="body mt-2">${t("app2html_gamepad").replace("{0}", chip('gamepad: "enabled"'))}</p>`;
 
         // Custom Tags
-        $("s-custom-tags").innerHTML = `
+        document.getElementById("s-custom-tags").innerHTML = `
           <h2 class="section-title">${esc(t("custom_tags_title"))}</h2>
           <p class="body">${esc(t("custom_tags_body"))}</p>
 

@@ -8,7 +8,7 @@ import pyxel
 # Resource I/O
 class TestResourceIO:
     def test_load_pyxres(self, assets_dir):
-        pyxel.load(str(Path(assets_dir) / "sample.pyxres"))
+        pyxel.load(str(assets_dir / "sample.pyxres"))
 
     def test_save_load_roundtrip(self, tmp_path):
         # Set up known data
@@ -96,7 +96,7 @@ class TestResourceIO:
         assert len(pyxel.sounds[0].notes) == original_notes_len
 
     def test_load_pal(self, assets_dir):
-        pyxel.load_pal(str(Path(assets_dir) / "audio_bgm.pyxpal"))
+        pyxel.load_pal(str(assets_dir / "audio_bgm.pyxpal"))
 
     def test_save_load_pal_roundtrip(self, tmp_path):
         original_colors = list(pyxel.colors)

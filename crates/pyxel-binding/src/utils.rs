@@ -456,13 +456,13 @@ macro_rules! wrap_as_python_object_sequence {
     };
 }
 
-macro_rules! value_to_pyobj {
+macro_rules! value_to_py_any {
     ($py:expr, $value:expr) => {
         $value.into_pyobject($py).unwrap().into()
     };
 }
 
-macro_rules! class_to_pyobj {
+macro_rules! class_to_py_any {
     ($py:expr, $instance:expr) => {{
         $instance.into_pyobject($py).unwrap().into_any().unbind()
     }};

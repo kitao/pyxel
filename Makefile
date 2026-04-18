@@ -32,22 +32,22 @@
 #
 
 # Project directories
-ROOT_DIR = .
-DIST_DIR = $(ROOT_DIR)/dist
-CRATES_DIR = $(ROOT_DIR)/crates
-PYTHON_DIR = $(ROOT_DIR)/python
-EXAMPLES_DIR = $(PYTHON_DIR)/pyxel/examples
-SCRIPTS_DIR = $(ROOT_DIR)/scripts
+ROOT_DIR := .
+DIST_DIR := $(ROOT_DIR)/dist
+CRATES_DIR := $(ROOT_DIR)/crates
+PYTHON_DIR := $(ROOT_DIR)/python
+EXAMPLES_DIR := $(PYTHON_DIR)/pyxel/examples
+SCRIPTS_DIR := $(ROOT_DIR)/scripts
 
 # Build targets
 TARGET ?= $(shell rustc -vV | awk '/^host:/ {print $$2}')
-WASM_TARGET = wasm32-unknown-emscripten
+WASM_TARGET := wasm32-unknown-emscripten
 
 # WASM path remap flags
-REMAP_SRC_PATH = $(abspath $(ROOT_DIR))
+REMAP_SRC_PATH := $(abspath $(ROOT_DIR))
 REMAP_USER_HOME ?= /user
-RUST_REMAP_FLAGS = --remap-path-prefix=$(REMAP_SRC_PATH)=/src/pyxel
-WASM_PREFIX_MAP_FLAGS = -ffile-prefix-map=$(REMAP_SRC_PATH)=/src/pyxel
+RUST_REMAP_FLAGS := --remap-path-prefix=$(REMAP_SRC_PATH)=/src/pyxel
+WASM_PREFIX_MAP_FLAGS := -ffile-prefix-map=$(REMAP_SRC_PATH)=/src/pyxel
 ifneq ($(HOME),)
 RUST_REMAP_FLAGS += --remap-path-prefix=$(HOME)=$(REMAP_USER_HOME)
 WASM_PREFIX_MAP_FLAGS += -ffile-prefix-map=$(HOME)=$(REMAP_USER_HOME)
@@ -66,7 +66,7 @@ CFLAGS += $(WASM_PREFIX_MAP_FLAGS)
 CXXFLAGS += $(WASM_PREFIX_MAP_FLAGS)
 endif
 
-CARGO_OPTS = --release --target $(TARGET) -Zbuild-std=std,panic_abort
+CARGO_OPTS := --release --target $(TARGET) -Zbuild-std=std,panic_abort
 
 ifneq (,$(or $(findstring windows,$(TARGET)),$(findstring darwin,$(TARGET))))
 CARGO_OPTS += --features sdl2_static
@@ -75,8 +75,8 @@ CARGO_OPTS += --features sdl2_dynamic
 endif
 
 # Tool options
-CLIPPY_OPTS = -q -- --no-deps
-MATURIN_OPTS = --manylinux off
+CLIPPY_OPTS := -q -- --no-deps
+MATURIN_OPTS := --manylinux off
 
 # PyO3 environment
 ifneq ($(TARGET),$(WASM_TARGET))
@@ -122,7 +122,7 @@ lint:
 	@cd $(CRATES_DIR); cargo clippy $(CARGO_OPTS) $(CLIPPY_OPTS)
 	@ruff check $(ROOT_DIR)
 
-build: format
+build:
 	@rustup component add rust-src
 	@rustup target add $(TARGET)
 	@$(SCRIPTS_DIR)/generate_pyi_docstrings

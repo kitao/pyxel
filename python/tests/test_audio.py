@@ -2,7 +2,7 @@ import pyxel
 
 
 class TestPlay:
-    """Test play() with all Union[int, Seq[int], Sound, Seq[Sound], str] variants."""
+    """Test play() with all int | Seq[int] | Sound | Seq[Sound] | str variants."""
 
     def test_play_with_int(self):
         pyxel.sounds[0].set("c2e2g2", "sss", "777", "nnn", 10)

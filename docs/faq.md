@@ -59,9 +59,10 @@ You can also create and share MML in your browser using [Pyxel MML Studio](https
 ## File Operations and Data Management
 
 <details>
-<summary>File cannot be loaded. It may fail when the environment changes.</summary>
+<summary>Why does file loading fail when the environment changes?</summary>
 
-Make sure that the current directory is set as intended when loading files.<br>
+Make sure that the current directory is set as intended when loading files.
+
 When Pyxel's `init` function is called, the current directory is changed to the same location as the script file. After that, files can be specified using relative paths. However, loading may fail if you try to open a file before calling `init` or if the current directory is changed after calling `init`.
 
 </details>
@@ -94,7 +95,7 @@ There are three methods: Web Launcher, app2html, and Custom Tags. For details, s
 <details>
 <summary>Can I change the palette colors in Pyxel Editor?</summary>
 
-By placing a file with the same name but with the .pyxpal extension in the same directory as the Pyxel resource file (.pyxres), the palette display colors in Pyxel Editor will be updated. Palette files can be created with the `save_pal` function, or manually as a text file with one hex color code per line.
+By placing a file with the same name but with the .pyxpal extension in the same directory as the Pyxel resource file (.pyxres), the palette display colors in Pyxel Editor will be updated. Palette files can be created with the `save_pal` function, or manually as a text file with one RRGGBB hex color per line.
 
 </details>
 
@@ -103,7 +104,8 @@ By placing a file with the same name but with the .pyxpal extension in the same 
 <details>
 <summary>How to migrate code to version 2.4</summary>
 
-In Pyxel 2.4, the sound engine and MML syntax have been revamped.<br>
+In Pyxel 2.4, the sound engine and MML syntax have been revamped.
+
 To make your code compatible with version 2.4, please make the following changes:
 
 - Rename the `waveform` field of the Tone class to `wavetable`

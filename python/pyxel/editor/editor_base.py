@@ -78,10 +78,10 @@ class EditorBase(Widget):
             "mouse_hover", self.__on_number_picker_inc_mouse_hover
         )
 
-    def __on_number_picker_dec_mouse_hover(self, x, y):
+    def __on_number_picker_dec_mouse_hover(self, _x, _y):
         self.help_message_var = "-10:SHIFT+CLICK"
 
-    def __on_number_picker_inc_mouse_hover(self, x, y):
+    def __on_number_picker_inc_mouse_hover(self, _x, _y):
         self.help_message_var = "+10:SHIFT+CLICK"
 
     def check_tool_button_shortcuts(self):

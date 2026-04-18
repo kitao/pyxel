@@ -21,7 +21,7 @@ wrap_as_python_sequence!(
     (|_| pyxel::colors().clone())
 );
 
-macro_rules! wrap_ptr_vec_as_python_object_list {
+macro_rules! wrap_ptr_vec_as_python_object_sequence {
     ($wrapper_name:ident, $value_type:ident, $global_fn:path) => {
         wrap_as_python_object_sequence!(
             $wrapper_name,
@@ -42,42 +42,42 @@ macro_rules! wrap_ptr_vec_as_python_object_list {
     };
 }
 
-wrap_ptr_vec_as_python_object_list!(Images, Image, pyxel::images);
-wrap_ptr_vec_as_python_object_list!(Tilemaps, Tilemap, pyxel::tilemaps);
-wrap_ptr_vec_as_python_object_list!(Channels, Channel, pyxel::channels);
-wrap_ptr_vec_as_python_object_list!(Tones, Tone, pyxel::tones);
-wrap_ptr_vec_as_python_object_list!(Sounds, Sound, pyxel::sounds);
-wrap_ptr_vec_as_python_object_list!(Musics, Music, pyxel::musics);
+wrap_ptr_vec_as_python_object_sequence!(Images, Image, pyxel::images);
+wrap_ptr_vec_as_python_object_sequence!(Tilemaps, Tilemap, pyxel::tilemaps);
+wrap_ptr_vec_as_python_object_sequence!(Channels, Channel, pyxel::channels);
+wrap_ptr_vec_as_python_object_sequence!(Tones, Tone, pyxel::tones);
+wrap_ptr_vec_as_python_object_sequence!(Sounds, Sound, pyxel::sounds);
+wrap_ptr_vec_as_python_object_sequence!(Musics, Music, pyxel::musics);
 
 #[pyfunction]
 fn __getattr__(py: Python, name: &str) -> PyResult<Py<PyAny>> {
     let value = match name {
         // System
-        "width" => value_to_pyobj!(py, *pyxel::width()),
-        "height" => value_to_pyobj!(py, *pyxel::height()),
-        "frame_count" => value_to_pyobj!(py, *pyxel::frame_count()),
+        "width" => value_to_py_any!(py, *pyxel::width()),
+        "height" => value_to_py_any!(py, *pyxel::height()),
+        "frame_count" => value_to_py_any!(py, *pyxel::frame_count()),
 
         // Input
-        "mouse_x" => value_to_pyobj!(py, *pyxel::mouse_x()),
-        "mouse_y" => value_to_pyobj!(py, *pyxel::mouse_y()),
-        "mouse_wheel" => value_to_pyobj!(py, *pyxel::mouse_wheel()),
-        "input_keys" => value_to_pyobj!(py, pyxel::input_keys().clone()),
-        "input_text" => value_to_pyobj!(py, pyxel::input_text().clone()),
-        "dropped_files" => value_to_pyobj!(py, pyxel::dropped_files().clone()),
+        "mouse_x" => value_to_py_any!(py, *pyxel::mouse_x()),
+        "mouse_y" => value_to_py_any!(py, *pyxel::mouse_y()),
+        "mouse_wheel" => value_to_py_any!(py, *pyxel::mouse_wheel()),
+        "input_keys" => value_to_py_any!(py, pyxel::input_keys().clone()),
+        "input_text" => value_to_py_any!(py, pyxel::input_text().clone()),
+        "dropped_files" => value_to_py_any!(py, pyxel::dropped_files().clone()),
 
         // Graphics
-        "colors" => class_to_pyobj!(py, Colors::wrap(0)),
-        "images" => class_to_pyobj!(py, Images::wrap(0)),
-        "tilemaps" => class_to_pyobj!(py, Tilemaps::wrap(0)),
-        "screen" => class_to_pyobj!(py, Image::wrap(std::ptr::from_mut(pyxel::screen()))),
-        "cursor" => class_to_pyobj!(py, Image::wrap(std::ptr::from_mut(pyxel::cursor_image()))),
-        "font" => class_to_pyobj!(py, Image::wrap(std::ptr::from_mut(pyxel::font_image()))),
+        "colors" => class_to_py_any!(py, Colors::wrap(0)),
+        "images" => class_to_py_any!(py, Images::wrap(0)),
+        "tilemaps" => class_to_py_any!(py, Tilemaps::wrap(0)),
+        "screen" => class_to_py_any!(py, Image::wrap(std::ptr::from_mut(pyxel::screen()))),
+        "cursor" => class_to_py_any!(py, Image::wrap(std::ptr::from_mut(pyxel::cursor_image()))),
+        "font" => class_to_py_any!(py, Image::wrap(std::ptr::from_mut(pyxel::font_image()))),
 
         // Audio
-        "channels" => class_to_pyobj!(py, Channels::wrap(0)),
-        "tones" => class_to_pyobj!(py, Tones::wrap(0)),
-        "sounds" => class_to_pyobj!(py, Sounds::wrap(0)),
-        "musics" => class_to_pyobj!(py, Musics::wrap(0)),
+        "channels" => class_to_py_any!(py, Channels::wrap(0)),
+        "tones" => class_to_py_any!(py, Tones::wrap(0)),
+        "sounds" => class_to_py_any!(py, Sounds::wrap(0)),
+        "musics" => class_to_py_any!(py, Musics::wrap(0)),
 
         // Others
         _ => {

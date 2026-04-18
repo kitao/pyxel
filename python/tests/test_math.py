@@ -2,7 +2,7 @@ import pytest
 import pyxel
 
 
-# clamp -- Union[int, float] type preservation
+# clamp -- int | float type preservation
 class TestClamp:
     def test_int_returns_int(self):
         result = pyxel.clamp(5, 0, 10)
@@ -36,7 +36,7 @@ class TestClamp:
         assert pyxel.clamp(-20, -10, -1) == -10
 
 
-# sgn -- Union[int, float] type preservation
+# sgn -- int | float type preservation
 class TestSgn:
     def test_positive_int(self):
         result = pyxel.sgn(3)

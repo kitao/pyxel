@@ -127,7 +127,8 @@ class SoundEditor(EditorBase):
         return None
 
     def add_pre_history(self, x=None, y=None, *, bank_copy=False):
-        self._history_data = data = {}
+        data = {}
+        self._history_data = data
         data["sound_index"] = self.sound_index_var
         if bank_copy:
             data["old_speed"] = self.speed_var
@@ -199,7 +200,7 @@ class SoundEditor(EditorBase):
     def __on_sound_picker_change(self, value):
         self._speed_picker.value = pyxel.sounds[value].speed
 
-    def __on_sound_picker_mouse_hover(self, x, y):
+    def __on_sound_picker_mouse_hover(self, _x, _y):
         self.help_message_var = "COPY_ALL:CTRL+SHIFT+C/X/V"
 
     def __on_speed_picker_change(self, value):
@@ -208,16 +209,16 @@ class SoundEditor(EditorBase):
     def __on_play_button_press(self):
         self._play(pyxel.btn(pyxel.KEY_SHIFT))
 
-    def __on_play_button_mouse_hover(self, x, y):
+    def __on_play_button_mouse_hover(self, _x, _y):
         self.help_message_var = "PLAY:SPACE PART-PLAY:SHIFT+SPACE"
 
     def __on_stop_button_press(self):
         self._stop()
 
-    def __on_stop_button_mouse_hover(self, x, y):
+    def __on_stop_button_mouse_hover(self, _x, _y):
         self.help_message_var = "STOP:SPACE"
 
-    def __on_loop_button_mouse_hover(self, x, y):
+    def __on_loop_button_mouse_hover(self, _x, _y):
         self.help_message_var = "LOOP:L"
 
     def __on_undo(self, data):

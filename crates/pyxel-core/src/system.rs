@@ -1,7 +1,7 @@
 use std::ptr;
 
 use crate::canvas::Canvas;
-use crate::image::{rgb_to_rgb8, Color, Image};
+use crate::image::{rgb24_to_rgb8, Color, Image};
 use crate::key::{
     Key, GAMEPAD1_BUTTON_A, GAMEPAD1_BUTTON_B, GAMEPAD1_BUTTON_DPAD_DOWN,
     GAMEPAD1_BUTTON_DPAD_LEFT, GAMEPAD1_BUTTON_DPAD_RIGHT, GAMEPAD1_BUTTON_DPAD_UP,
@@ -213,7 +213,7 @@ impl Pyxel {
             for _sy in 0..scale {
                 for x in 0..width {
                     let color = image_data[(width * y + x) as usize];
-                    let (r, g, b) = rgb_to_rgb8(colors[color as usize]);
+                    let (r, g, b) = rgb24_to_rgb8(colors[color as usize]);
                     let a = if Some(color) == transparent { 0 } else { 0xff };
                     for _sx in 0..scale {
                         rgba.push(r);

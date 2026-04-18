@@ -6,17 +6,23 @@ body:
     id: description
     attributes:
       label: "What would you like? / 何がしたいですか？"
+      description: "Describe the feature you want / 欲しい機能を記入してください"
+      placeholder: "e.g. Add a built-in particle system. / 例: 組み込みのパーティクルシステムを追加してほしい"
     validations:
       required: true
   - type: textarea
     id: reason
     attributes:
       label: "Why? / なぜ必要ですか？"
+      description: "Explain the motivation or use case / 動機や用途を記入してください"
+      placeholder: "e.g. Shooter-style games often need many small sprites with short lifetimes. / 例: シューティングで小さな表示を多数扱いたい"
     validations:
       required: true
   - type: textarea
     id: alternatives
     attributes:
       label: "Alternatives considered / 検討した代替案"
+      description: "Optional: what else did you try? / 任意: 他に試したこと"
+      placeholder: "e.g. Implemented manually with lists of dicts, but performance was limiting. / 例: リストで自作したが性能面で難しかった"
     validations:
       required: false

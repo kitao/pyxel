@@ -62,8 +62,8 @@ const chip = (s) => `<code class="chip">${esc(s)}</code>`;
 
 const t = (o) => {
   if (!o) return "";
-  if (typeof o === "string") return data?.ui[o] ? t(data.ui[o]) : o;
-  return o[lang] ?? o["en"] ?? "";
+  if (typeof o === "string") return data?.ui?.[o] ? t(data.ui[o]) : o;
+  return o[lang] ?? o.en ?? "";
 };
 
 const code = (s, syntax = "plaintext") =>
@@ -83,9 +83,7 @@ const uint8ToBase64 = (u8) => {
 
 const base64ToUint8 = (b64) => {
   const bin = atob((b64 || "").replace(/\s/g, ""));
-  const bytes = new Uint8Array(bin.length);
-  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
-  return bytes;
+  return Uint8Array.from(bin, (c) => c.charCodeAt(0));
 };
 
 // Pyxel iframe readiness polling

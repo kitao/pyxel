@@ -1,3 +1,4 @@
+# Development tools (build, lint, test, packaging). Runtime has no pip deps.
 maturin
 mypy
 pillow

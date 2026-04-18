@@ -111,10 +111,10 @@
         // Examples
         if (item.examples && item.examples.length > 0) {
           const sec = document.createElement("div");
-          const code = item.examples.join("\n");
+          const exampleCode = item.examples.join("\n");
           sec.innerHTML =
             `<div class="text-gray-500 text-xs font-medium uppercase tracking-wide mb-1">${esc(t("example"))}</div>` +
-            `<pre class="bg-gray-900/80 rounded-lg px-3 py-2 font-mono text-xs text-gray-300 leading-relaxed overflow-x-auto">${esc(code)}</pre>`;
+            `<pre class="bg-gray-900/80 rounded-lg px-3 py-2 font-mono text-xs text-gray-300 leading-relaxed overflow-x-auto">${esc(exampleCode)}</pre>`;
           wrap.appendChild(sec);
         }
 

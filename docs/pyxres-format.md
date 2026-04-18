@@ -10,12 +10,12 @@ An optional **palette file** (`.pyxpal`) can accompany the resource file to defi
 
 ## File Structure
 
-```
+```text
 example.pyxres (ZIP archive)
 └── pyxel_resource.toml
 ```
 
-```
+```text
 example.pyxpal (optional, same directory)
 ```
 
@@ -45,7 +45,7 @@ Pyxel currently writes `format_version = 1` for maximum backward compatibility. 
 
 ## Images
 
-Up to **3 image banks**, each **256×256 pixels**. Each pixel is a palette color index (`u8`, 0–15 for the default palette, up to 255 with extended palettes).
+Up to **3 image banks**, each **256×256 pixels**. Each pixel is a palette color index (`u8`, 0–15 for the default palette; 0–255 for the extended palette of up to 256 colors).
 
 ```toml
 [[images]]
@@ -143,7 +143,7 @@ Trailing empty channels are omitted when saving.
 
 An optional text file with one RGB color per line in 6-digit hexadecimal format. The file uses the same base name as the `.pyxres` file (e.g., `sample.pyxres` → `sample.pyxpal`).
 
-```
+```text
 000000
 2b335f
 7e2072

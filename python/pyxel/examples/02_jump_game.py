@@ -36,11 +36,11 @@ class App:
 
         self.update_player()
 
-        for i, v in enumerate(self.floor):
-            self.floor[i] = self.update_floor(*v)
+        for i, floor in enumerate(self.floor):
+            self.floor[i] = self.update_floor(*floor)
 
-        for i, v in enumerate(self.fruit):
-            self.fruit[i] = self.update_fruit(*v)
+        for i, fruit in enumerate(self.fruit):
+            self.fruit[i] = self.update_fruit(*fruit)
 
     def update_player(self):
         if pyxel.btn(pyxel.KEY_LEFT) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_LEFT):

@@ -33,7 +33,7 @@ impl<'a> CharStream<'a> {
         self.bytes.get(self.pos).map(|&b| b as char)
     }
 
-    fn next(&mut self) -> Option<char> {
+    fn advance(&mut self) -> Option<char> {
         let c = self.bytes.get(self.pos).map(|&b| b as char);
         if c.is_some() {
             self.pos += 1;
@@ -361,7 +361,7 @@ pub fn calc_commands_sec(commands: &[MmlCommand]) -> Option<f32> {
 
 fn skip_whitespace(stream: &mut CharStream) {
     while stream.peek().is_some_and(char::is_whitespace) {
-        stream.next();
+        stream.advance();
     }
 }
 
@@ -374,7 +374,7 @@ fn parse_number<T: TryFrom<i32>>(
     let pos = stream.pos;
     let negative = stream.peek() == Some('-');
     if negative {
-        stream.next();
+        stream.advance();
     }
 
     let mut value: i32 = 0;
@@ -383,7 +383,7 @@ fn parse_number<T: TryFrom<i32>>(
         if let Some(digit) = c.to_digit(10) {
             value = value.saturating_mul(10).saturating_add(digit as i32);
             has_digit = true;
-            stream.next();
+            stream.advance();
         } else {
             break;
         }
@@ -428,7 +428,7 @@ fn parse_string(stream: &mut CharStream, literal: &str) -> Result<String, String
     for expected in literal.chars() {
         match stream.peek() {
             Some(c) if c.eq_ignore_ascii_case(&expected) => {
-                parsed_str.push(stream.next().unwrap());
+                parsed_str.push(stream.advance().unwrap());
             }
             Some(c) => {
                 parsed_str.push(c);
@@ -506,7 +506,7 @@ fn parse_note(
         },
         None => return Ok(None),
     };
-    stream.next();
+    stream.advance();
 
     let midi_note = ((octave + 1) * 12 + semitone) as u32;
     let midi_note = if parse_string(stream, "#").is_ok() || parse_string(stream, "+").is_ok() {

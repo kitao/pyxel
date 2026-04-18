@@ -35,7 +35,8 @@ jobs:
 
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v4
+      - name: Check out repository
+        uses: actions/checkout@v4
 
       - &resolve-rust-version
         name: Resolve Rust version
@@ -93,7 +94,8 @@ jobs:
     container: ${{ matrix.image }}
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Check out repository
+        uses: actions/checkout@v4
 
       - *resolve-rust-version
 
@@ -282,7 +284,7 @@ jobs:
 
       - *upload-wheel
 
-  verify:
+  verify-wheels:
     needs: [build-winmac, build-linux]
     strategy:
       fail-fast: false

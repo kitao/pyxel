@@ -350,8 +350,11 @@
       async function updateUrl() {
         let mmlStr = "";
         for (let i = 1; i <= 4; i++) {
-          const t = document.getElementById(`ch${i}`);
-          const ch = t.value.trim().replace(/ +/g, " ").replace(/\n+/g, "\n");
+          const textarea = document.getElementById(`ch${i}`);
+          const ch = textarea.value
+            .trim()
+            .replace(/ +/g, " ")
+            .replace(/\n+/g, "\n");
           mmlStr += (i > 1 ? ";" : "") + ch;
         }
 
@@ -425,9 +428,9 @@
           const raw = await decodeMmlFromUrl(mmlParam);
           const mmlList = raw ? raw.split(";", 4) : [];
           for (let i = 1; i <= 4; i++) {
-            const t = document.getElementById(`ch${i}`);
-            t.value = mmlList[i - 1] || "";
-            handleMmlInput(t);
+            const textarea = document.getElementById(`ch${i}`);
+            textarea.value = mmlList[i - 1] || "";
+            handleMmlInput(textarea);
           }
         }
 

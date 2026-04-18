@@ -3,7 +3,7 @@ use pyo3::prelude::*;
 
 use crate::pyxel_singleton::pyxel;
 
-fn resolve_excl(new: Option<bool>, deprecated: Option<bool>) -> Option<bool> {
+fn resolve_exclude(new: Option<bool>, deprecated: Option<bool>) -> Option<bool> {
     if deprecated.is_some() {
         deprecation_warning!(
             EXCL_OPTION_ONCE,
@@ -33,10 +33,10 @@ fn load(
     pyxel()
         .load_resource(
             filename,
-            resolve_excl(exclude_images, excl_images),
-            resolve_excl(exclude_tilemaps, excl_tilemaps),
-            resolve_excl(exclude_sounds, excl_sounds),
-            resolve_excl(exclude_musics, excl_musics),
+            resolve_exclude(exclude_images, excl_images),
+            resolve_exclude(exclude_tilemaps, excl_tilemaps),
+            resolve_exclude(exclude_sounds, excl_sounds),
+            resolve_exclude(exclude_musics, excl_musics),
         )
         .map_err(PyException::new_err)
 }
@@ -57,10 +57,10 @@ fn save(
     pyxel()
         .save_resource(
             filename,
-            resolve_excl(exclude_images, excl_images),
-            resolve_excl(exclude_tilemaps, excl_tilemaps),
-            resolve_excl(exclude_sounds, excl_sounds),
-            resolve_excl(exclude_musics, excl_musics),
+            resolve_exclude(exclude_images, excl_images),
+            resolve_exclude(exclude_tilemaps, excl_tilemaps),
+            resolve_exclude(exclude_sounds, excl_sounds),
+            resolve_exclude(exclude_musics, excl_musics),
         )
         .map_err(PyException::new_err)
 }

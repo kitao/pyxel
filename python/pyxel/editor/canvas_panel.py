@@ -125,7 +125,8 @@ class CanvasPanel(Widget):
         return x, y, w, h
 
     def _add_pre_history(self, *, bank_copy=False):
-        self._history_data = data = {}
+        data = {}
+        self._history_data = data
 
         if bank_copy:
             if self._is_tilemap_mode:

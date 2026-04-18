@@ -242,10 +242,8 @@
 
         if (isEdit) {
           launchUrl += `&editor=${editorScreen}`;
-        } else {
-          if (virtualGamepad) {
-            launchUrl += "&gamepad=enabled";
-          }
+        } else if (virtualGamepad) {
+          launchUrl += "&gamepad=enabled";
         }
 
         launchLink.textContent = launchLink.href = launchUrl;

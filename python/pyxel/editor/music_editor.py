@@ -108,7 +108,8 @@ class MusicEditor(EditorBase):
         return pyxel.musics[self.music_index_var].seqs[index]
 
     def add_pre_history(self, x=None, y=None, *, bank_copy=False):
-        self._history_data = data = {}
+        data = {}
+        self._history_data = data
         data["music_index"] = self.music_index_var
         if bank_copy:
             data["old_data"] = [list(self.get_field(i)) for i in range(4)]
@@ -162,7 +163,7 @@ class MusicEditor(EditorBase):
             self.field_cursor.move_to(*data[f"{prefix}_cursor_pos"], False)
             self.field_cursor.field[:] = data[f"{prefix}_field"]
 
-    def __on_music_picker_mouse_hover(self, x, y):
+    def __on_music_picker_mouse_hover(self, _x, _y):
         self.help_message_var = "COPY_ALL:CTRL+SHIFT+C/X/V"
 
     def __on_play_button_press(self):
@@ -171,13 +172,13 @@ class MusicEditor(EditorBase):
     def __on_stop_button_press(self):
         self._stop()
 
-    def __on_play_button_mouse_hover(self, x, y):
+    def __on_play_button_mouse_hover(self, _x, _y):
         self.help_message_var = "PLAY:SPACE PART-PLAY:SHIFT+SPACE"
 
-    def __on_stop_button_mouse_hover(self, x, y):
+    def __on_stop_button_mouse_hover(self, _x, _y):
         self.help_message_var = "STOP:SPACE"
 
-    def __on_loop_button_mouse_hover(self, x, y):
+    def __on_loop_button_mouse_hover(self, _x, _y):
         self.help_message_var = "LOOP:L"
 
     def __on_undo(self, data):

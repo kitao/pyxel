@@ -19,7 +19,8 @@ jobs:
     needs: build
     runs-on: macos-15
     steps:
-      - uses: actions/checkout@v4
+      - name: Check out repository
+        uses: actions/checkout@v4
 
       - name: Download wheels
         uses: actions/download-artifact@v4
@@ -36,7 +37,7 @@ jobs:
           PYXEL_VERSION=$(echo $GITHUB_REF | sed 's/refs\/tags\/v//')
           echo "PYXEL_VERSION=${PYXEL_VERSION}" >> $GITHUB_ENV
 
-      - name: Check if pre-release
+      - name: Detect pre-release
         run: |
           if echo "$PYXEL_VERSION" | grep -qE '(a|b|rc)[0-9]+$'; then
             echo "IS_PRERELEASE=true" >> $GITHUB_ENV
@@ -64,4 +65,3 @@ jobs:
         env:
           TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
           TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
-

@@ -1,8 +1,8 @@
 macro_rules! string_loop {
     ($index: ident, $piece: ident, $string: ident, $step: expr, $block: block) => {
         for $index in 0..($string.len() / $step) {
-            let __index = $index * $step;
-            let $piece = &$string[__index..__index + $step];
+            let _macro_index = $index * $step;
+            let $piece = &$string[_macro_index.._macro_index + $step];
             $block
         }
     };

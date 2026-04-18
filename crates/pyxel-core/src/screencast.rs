@@ -304,8 +304,8 @@ impl Screencast {
         }
     }
 
-    // Encode a region of a flat RGB image into GIF index buffer + palette.
-    // Returns true if color overflow occurred (> 256 entries needed).
+    /// Encodes a region of a flat RGB image into a GIF index buffer and palette.
+    /// Returns true if color overflow occurred (> 256 entries needed).
     #[allow(clippy::too_many_arguments)]
     fn encode_region(
         src: &[Rgb24],

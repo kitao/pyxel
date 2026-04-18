@@ -1,2 +1,3 @@
+# Nightly is required for unstable rustfmt options (imports_granularity, group_imports).
 [toolchain]
 channel = "nightly-2025-12-10"

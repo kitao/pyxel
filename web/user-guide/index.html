@@ -75,22 +75,24 @@
       }
 
       function update() {
-        const $ = (id) => document.getElementById(id);
         const pyxelLink = link("https://github.com/kitao/pyxel", "Pyxel");
 
         // Header
         document.title = t("title");
-        $("p-title").textContent = t("title");
-        $("p-sub").innerHTML = t("subtitle").replace("{0}", pyxelLink);
+        document.getElementById("p-title").textContent = t("title");
+        document.getElementById("p-sub").innerHTML = t("subtitle").replace(
+          "{0}",
+          pyxelLink,
+        );
 
         // Overview
-        $("s-overview").innerHTML = `
+        document.getElementById("s-overview").innerHTML = `
           <div class="pb-2 mb-3 border-b border-gray-600">
             <img src="../../docs/images/pyxel_logo_152x64.png" alt="Pyxel" class="pix" style="height:64px">
           </div>
           <p class="body">${t("overview_body").replace("{0}", "<strong>Pyxel</strong>")}</p>
           <p class="body mt-2">${t("overview_license")
-            .replace(/\{0\}/g, "Pyxel")
+            .replaceAll("{0}", "Pyxel")
             .replace(
               "{1}",
               link(
@@ -133,11 +135,11 @@
         ]
           .map((k) => `<li>${esc(t(k))}</li>`)
           .join("");
-        $("s-specs").innerHTML = `
+        document.getElementById("s-specs").innerHTML = `
           <h2 class="section-title">${esc(t("specs_title"))}</h2>
           <ul class="list">${specs}</ul>
           <h3 class="sub-title">${esc(t("palette_title"))}</h3>
-          <img src="../../docs/images/05_color_palette.png" alt="Color Palette" class="my-2 rounded border border-gray-700" style="image-rendering:pixelated">
+          <img src="../../docs/images/05_color_palette.png" alt="Color Palette" class="pix my-2 rounded border border-gray-700">
           <img src="../../docs/images/pyxel_palette.png" alt="Palette" class="my-2 rounded border border-gray-700">
           <p class="body mt-3">${t("overview_inspired")
             .replace("{0}", "Pyxel")
@@ -148,7 +150,7 @@
             .replace("{2}", link("https://tic80.com/", "TIC-80"))}</p>`;
 
         // Install
-        $("s-install").innerHTML = `
+        document.getElementById("s-install").innerHTML = `
           <h2 class="section-title">${esc(t("install_title"))}</h2>
           <h3 class="sub-title">${esc(t("install_desktop_title"))}</h3>
           <p class="body">${t("install_desktop_body").replace("{0}", link("https://www.python.org/", "Python 3"))}</p>
@@ -180,10 +182,10 @@
           )}</p>`;
 
         // Basic Usage
-        $("s-usage").innerHTML = `
+        document.getElementById("s-usage").innerHTML = `
           <h2 class="section-title">${esc(t("usage_title"))}</h2>
           <h3 class="sub-title">${esc(t("usage_command_title"))}</h3>
-          <p class="body">${t("usage_command_body").replace(/\{0\}/g, chip("pyxel"))}</p>
+          <p class="body">${t("usage_command_body").replaceAll("{0}", chip("pyxel"))}</p>
           <p class="body mt-2">${esc(t("usage_command_noargs"))}</p>
           ${code("pyxel", "sh")}
           ${code(`Pyxel, a retro game engine for Python
@@ -216,7 +218,7 @@ pyxel play 30sec_of_daylight.pyxapp`,
           )}</p>`;
 
         // Creating Applications
-        $("s-creating").innerHTML = `
+        document.getElementById("s-creating").innerHTML = `
           <h2 class="section-title">${esc(t("creating_title"))}</h2>
           <h3 class="sub-title">${esc(t("creating_program_title"))}</h3>
           <p class="body">${t("creating_program_body")
@@ -285,7 +287,7 @@ pyxel.show()`,
           ${shortcutTable(data.special_keys)}`;
 
         // Resources
-        $("s-resources").innerHTML = `
+        document.getElementById("s-resources").innerHTML = `
           <h2 class="section-title">${esc(t("resources_title"))}</h2>
           <h3 class="sub-title">${esc(t("resources_editor_title"))}</h3>
           <p class="body">${esc(t("resources_editor_body"))}
@@ -307,7 +309,7 @@ pyxel.show()`,
           <p class="body mt-3">${esc(t("resources_other_refer"))}</p>`;
 
         // Distributing
-        $("s-dist").innerHTML = `
+        document.getElementById("s-dist").innerHTML = `
           <h2 class="section-title">${esc(t("dist_title"))}</h2>
           <p class="body">${esc(t("dist_body"))}</p>
           <p class="body mt-2">${t("dist_create").replace("{0}", chip("pyxel package"))}</p>
@@ -332,7 +334,7 @@ pyxel.show()`,
             .replace("{1}", chip("pyxel app2html"))}</p>`;
 
         // API Reference
-        $("s-apiref").innerHTML = `
+        document.getElementById("s-apiref").innerHTML = `
           <h2 class="section-title">${esc(t("apiref_title"))}</h2>
           <p class="body">${t("apiref_body").replace(
             "{0}",
@@ -382,7 +384,7 @@ pyxel.show()`,
         ]
           .map(([u, n]) => `<li>${link(u, esc(n))}</li>`)
           .join("");
-        $("s-links").innerHTML = `
+        document.getElementById("s-links").innerHTML = `
           <h2 class="section-title">${esc(t("links_title"))}</h2>
           <h3 class="sub-title">${esc(t("docs_title"))}</h3>
           <ul class="link-list">${docs}</ul>
@@ -392,7 +394,7 @@ pyxel.show()`,
           <ul class="link-list">${others}</ul>`;
 
         // Contribute
-        $("s-contrib").innerHTML = `
+        document.getElementById("s-contrib").innerHTML = `
           <h2 class="section-title">${esc(t("contrib_title"))}</h2>
           <h3 class="sub-title">${esc(t("contrib_issues_title"))}</h3>
           <p class="body">${t("contrib_issues_body").replace(
@@ -415,7 +417,7 @@ pyxel.show()`,
           )}</p>`;
 
         // License
-        $("s-license").innerHTML = `
+        document.getElementById("s-license").innerHTML = `
           <h2 class="section-title">${esc(t("license_title"))}</h2>
           <p class="body">${t("license_body").replace(
             "{0}",
@@ -426,7 +428,7 @@ pyxel.show()`,
           )}</p>`;
 
         // Sponsors
-        $("s-sponsors").innerHTML = `
+        document.getElementById("s-sponsors").innerHTML = `
           <h2 class="section-title">${esc(t("sponsors_title"))}</h2>
           <p class="body">${t("sponsors_body").replace(
             "{0}",

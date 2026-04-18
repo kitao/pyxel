@@ -1,4 +1,3 @@
-# flake8: noqa
 from typing import (
     Any,
     Callable,
@@ -401,7 +400,7 @@ class Seq(Generic[T]):
     def __eq__(self, other: Any) -> bool: ...
     def __add__(self, other: list[T]) -> list[T]: ...
     def __mul__(self, n: int) -> list[T]: ...
-    def __iadd__(self, other: list[T]) -> "Seq[T]": ...
+    def __iadd__(self, other: list[T]) -> Seq[T]: ...
     def __bool__(self) -> bool: ...
     def __repr__(self) -> str: ...
     def append(self, value: T) -> None: ...
@@ -412,7 +411,7 @@ class Seq(Generic[T]):
 
 # Font class
 class Font:
-    def __init__(self, filename: str, font_size: float = 10) -> None:
+    def __init__(self, filename: str, font_size: float = 10.0) -> None:
         """Create a Font instance from a font file (BDF/OTF/TTF/TTC).
 
         Args:
@@ -704,8 +703,8 @@ class Image:
         w: float,
         h: float,
         colkey: int | None = None,
-        rotate: float = 0,
-        scale: float = 1,
+        rotate: float = 0.0,
+        scale: float = 1.0,
     ) -> None:
         """Copy the region of size (w, h) from (u, v) of image bank img (0-2 or Image instance) to (x, y). Negative w/h flips the image. colkey sets the transparent color. rotate and scale apply transformations.
 
@@ -732,8 +731,8 @@ class Image:
         w: float,
         h: float,
         colkey: int | None = None,
-        rotate: float = 0,
-        scale: float = 1,
+        rotate: float = 0.0,
+        scale: float = 1.0,
     ) -> None:
         """Copy the region of size (w, h) from (u, v) of tilemap tm (0-7 or Tilemap instance) to (x, y). Each tile is 8x8 pixels stored as (image_tx, image_ty). Negative w/h flips the image. colkey sets the transparent color. rotate and scale apply transformations.
 
@@ -759,7 +758,7 @@ class Image:
         img: int | Image,
         pos: tuple[float, float, float],
         rot: tuple[float, float, float],
-        fov: float = 60,
+        fov: float = 60.0,
         colkey: int | None = None,
     ) -> None:
         """Draw the image bank img (0-2 or Image instance) with perspective projection onto the screen rectangle (x, y, w, h). pos is the camera position where x, y match 2D coordinates and z is height. rot is the rotation in degrees. fov sets the field of view in degrees. colkey sets the transparent color.
@@ -785,7 +784,7 @@ class Image:
         tm: int | Tilemap,
         pos: tuple[float, float, float],
         rot: tuple[float, float, float],
-        fov: float = 60,
+        fov: float = 60.0,
         colkey: int | None = None,
     ) -> None:
         """Draw the tilemap tm (0-7 or Tilemap instance) with perspective projection onto the screen rectangle (x, y, w, h). pos is the camera position where x, y match 2D coordinates and z is height. rot is the rotation in degrees. fov sets the field of view in degrees. colkey sets the transparent color.
@@ -1106,8 +1105,8 @@ class Tilemap:
         w: float,
         h: float,
         tilekey: tuple[int, int] | None = None,
-        rotate: float = 0,
-        scale: float = 1,
+        rotate: float = 0.0,
+        scale: float = 1.0,
     ) -> None:
         """Copy the region of size (w, h) from (u, v) of tilemap tm (0-7 or Tilemap instance) to (x, y). Negative w/h flips the tilemap. tilekey sets the transparent tile. rotate and scale apply transformations.
 
@@ -1895,8 +1894,8 @@ def blt(
     w: float,
     h: float,
     colkey: int | None = None,
-    rotate: float = 0,
-    scale: float = 1,
+    rotate: float = 0.0,
+    scale: float = 1.0,
 ) -> None:
     """Copy the region of size (w, h) from (u, v) of image bank img (0-2 or Image instance) to (x, y). Negative w/h flips the image. colkey sets the transparent color. rotate and scale apply transformations.
 
@@ -1923,8 +1922,8 @@ def bltm(
     w: float,
     h: float,
     colkey: int | None = None,
-    rotate: float = 0,
-    scale: float = 1,
+    rotate: float = 0.0,
+    scale: float = 1.0,
 ) -> None:
     """Copy the region of size (w, h) from (u, v) of tilemap tm (0-7 or Tilemap instance) to (x, y). Each tile is 8x8 pixels stored as (image_tx, image_ty). Negative w/h flips the image. colkey sets the transparent color. rotate and scale apply transformations.
 
@@ -1950,7 +1949,7 @@ def blt3d(
     img: int | Image,
     pos: tuple[float, float, float],
     rot: tuple[float, float, float],
-    fov: float = 60,
+    fov: float = 60.0,
     colkey: int | None = None,
 ) -> None:
     """Draw the image bank img (0-2 or Image instance) with perspective projection onto the screen rectangle (x, y, w, h). pos is the camera position where x, y match 2D coordinates and z is height. rot is the rotation in degrees. fov sets the field of view in degrees. colkey sets the transparent color.
@@ -1976,7 +1975,7 @@ def bltm3d(
     tm: int | Tilemap,
     pos: tuple[float, float, float],
     rot: tuple[float, float, float],
-    fov: float = 60,
+    fov: float = 60.0,
     colkey: int | None = None,
 ) -> None:
     """Draw the tilemap tm (0-7 or Tilemap instance) with perspective projection onto the screen rectangle (x, y, w, h). pos is the camera position where x, y match 2D coordinates and z is height. rot is the rotation in degrees. fov sets the field of view in degrees. colkey sets the transparent color.
@@ -2111,7 +2110,7 @@ def floor(x: float) -> int:
     """
     ...
 
-def clamp(x: int | float, lower: int | float, upper: int | float) -> int | float:
+def clamp(x: float, lower: float, upper: float) -> float:
     """Return x clamped between lower and upper.
 
     Args:

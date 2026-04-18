@@ -20,12 +20,12 @@ vec3 getBleedingColor(vec2 screenTexCoord) {
     color.g += 0.05 * getScreenColor(0.75 * vec2(-0.022, -0.02) + vec2(screenTexCoord.x + 0.000, screenTexCoord.y - 0.002)).y;
     color.b += 0.08 * getScreenColor(0.75 * vec2(-0.02, -0.018) + vec2(screenTexCoord.x - 0.002, screenTexCoord.y + 0.000)).z;
 
-    color = clamp(color * 0.6 + 0.4 * color * color * 1.0, 0.0, 1.0);
+    color = clamp(color * 0.6 + 0.4 * color * color, 0.0, 1.0);
     return color;
 }
 
 vec3 getVignetteFactor(vec2 screenTexCoord) {
-    float vignette = (0.0 + 1.0 * 16.0 * screenTexCoord.x * screenTexCoord.y * (1.0 - screenTexCoord.x) * (1.0 - screenTexCoord.y));
+    float vignette = 16.0 * screenTexCoord.x * screenTexCoord.y * (1.0 - screenTexCoord.x) * (1.0 - screenTexCoord.y);
 
     vec3 color = vec3(pow(vignette, 0.3));
     color *= vec3(0.95, 1.05, 0.95);

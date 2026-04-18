@@ -1,4 +1,4 @@
-# <img src="https://raw.githubusercontent.com/kitao/pyxel/main/docs/images/pyxel_logo_152x64.png">
+# <img src="https://raw.githubusercontent.com/kitao/pyxel/main/docs/images/pyxel_logo_152x64.png" alt="Pyxel">
 
 [![Downloads](https://static.pepy.tech/personalized-badge/pyxel?period=total&units=international_system&left_color=grey&right_color=blue&left_text=PyPI%20downloads)](https://pypi.org/project/pyxel/)
 [![GitHub Repo stars](https://img.shields.io/github/stars/kitao/pyxel?style=social)](https://github.com/kitao/pyxel)
@@ -17,25 +17,25 @@ Also, if you like Pyxel, please give it a star on GitHub.
 
 **[▸ Pyxel User Guide / ユーザーガイド](https://kitao.github.io/pyxel/web/user-guide/)**
 
-[<img src="https://raw.githubusercontent.com/kitao/pyxel/main/docs/images/pyxel_thanks.png" width="553">](https://kitao.github.io/pyxel-user-examples/) [<img src="https://raw.githubusercontent.com/kitao/pyxel/main/docs/images/pyxel_book.png" width="190">](https://gihyo.jp/book/2025/978-4-297-14657-3)
+[<img src="https://raw.githubusercontent.com/kitao/pyxel/main/docs/images/pyxel_thanks.png" alt="Pyxel user examples" width="553">](https://kitao.github.io/pyxel-user-examples/) [<img src="https://raw.githubusercontent.com/kitao/pyxel/main/docs/images/pyxel_book.png" alt="Pyxel book" width="190">](https://gihyo.jp/book/2025/978-4-297-14657-3)
 
 <p>
 <a href="https://kitao.github.io/pyxel/web/showcase/examples/02-jump-game.html">
-<img src="https://raw.githubusercontent.com/kitao/pyxel/main/docs/images/02_jump_game.gif" width="253">
+<img src="https://raw.githubusercontent.com/kitao/pyxel/main/docs/images/02_jump_game.gif" alt="Jump game" width="253">
 </a>
 <a href="https://kitao.github.io/pyxel/web/showcase/examples/10-platformer.html">
-<img src="https://raw.githubusercontent.com/kitao/pyxel/main/docs/images/10_platformer.gif" width="222">
+<img src="https://raw.githubusercontent.com/kitao/pyxel/main/docs/images/10_platformer.gif" alt="Platformer" width="222">
 </a>
 <a href="https://kitao.github.io/pyxel/web/showcase/apps/30sec-of-daylight.html">
-<img src="https://raw.githubusercontent.com/kitao/pyxel/main/docs/images/30sec_of_daylight.gif" width="268">
+<img src="https://raw.githubusercontent.com/kitao/pyxel/main/docs/images/30sec_of_daylight.gif" alt="30sec of daylight" width="268">
 </a>
 <a href="https://kitao.github.io/pyxel/web/showcase/apps/megaball.html">
-<img src="https://raw.githubusercontent.com/kitao/pyxel/main/docs/images/megaball.gif" width="231">
+<img src="https://raw.githubusercontent.com/kitao/pyxel/main/docs/images/megaball.gif" alt="Megaball" width="231">
 </a>
 <a href="https://kitao.github.io/pyxel/web/showcase/tools/image-editor.html">
-<img src="https://raw.githubusercontent.com/kitao/pyxel/main/docs/images/image_tilemap_editor.gif" width="256">
+<img src="https://raw.githubusercontent.com/kitao/pyxel/main/docs/images/image_tilemap_editor.gif" alt="Image and tilemap editor" width="256">
 </a>
 <a href="https://kitao.github.io/pyxel/web/showcase/tools/sound-editor.html">
-<img src="https://raw.githubusercontent.com/kitao/pyxel/main/docs/images/sound_music_editor.gif" width="256">
+<img src="https://raw.githubusercontent.com/kitao/pyxel/main/docs/images/sound_music_editor.gif" alt="Sound and music editor" width="256">
 </a>
 </p>

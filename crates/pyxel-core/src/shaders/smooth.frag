@@ -36,7 +36,7 @@
 #define BLEND_NORMAL 1
 #define BLEND_DOMINANT 2
 #define LUMINANCE_WEIGHT 1.0
-#define EQUAL_COLOR_TOLERANCE 30.0/255.0
+#define EQUAL_COLOR_TOLERANCE (30.0 / 255.0)
 #define STEEP_DIRECTION_THRESHOLD 2.2
 #define DOMINANT_DIRECTION_THRESHOLD 3.6
 
@@ -64,12 +64,11 @@ float get_left_ratio(vec2 center, vec2 origin, vec2 direction, vec2 scale) {
     float side = sign(dot(P0, orth));
     float v = side * length(distv * scale);
 
-//  return step(0, v);
     return smoothstep(-sqrt(2.0) / 2.0, sqrt(2.0) / 2.0, v);
 }
 
-#define eq(a,b)  (a == b)
-#define neq(a,b) (a != b)
+#define eq(a, b) (a == b)
+#define neq(a, b) (a != b)
 
 // Modified for Pyxel
 #define P(x,y) getScreenColor(coord + SourceSize.zw * vec2(x, y))
@@ -224,7 +223,6 @@ void main() {
 
         vec2 origin = vec2(1.0 / sqrt(2.0), 0.0);
         vec2 direction = vec2(-1.0, -1.0);
-
         if (doLineBlend) {
             bool haveShallowLine = (STEEP_DIRECTION_THRESHOLD * dist_B_I <= dist_F_A) && neq(E, I) && neq(H, I);
             bool haveSteepLine = (STEEP_DIRECTION_THRESHOLD * dist_F_A <= dist_B_I) && neq(E, A) && neq(D, A);

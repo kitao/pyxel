@@ -32,6 +32,8 @@ define_wrapper!(Sound, pyxel::Sound);
 
 #[pymethods]
 impl Sound {
+    // Constructor
+
     #[new]
     fn new() -> Self {
         Self::wrap(pyxel::Sound::new())

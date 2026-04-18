@@ -46,8 +46,8 @@ impl Tilemap {
     #[getter]
     fn imgsrc(&self, py: Python) -> Py<PyAny> {
         match &self.inner_ref().imgsrc {
-            pyxel::ImageSource::Index(index) => value_to_pyobj!(py, index),
-            pyxel::ImageSource::Image(image) => class_to_pyobj!(py, Image::wrap(*image)),
+            pyxel::ImageSource::Index(index) => value_to_py_any!(py, index),
+            pyxel::ImageSource::Image(image) => class_to_py_any!(py, Image::wrap(*image)),
         }
     }
 

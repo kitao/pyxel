@@ -75,12 +75,12 @@
         const thDesc = t("th_description");
 
         for (const c of data.commands) {
-          let cmdHTML = esc(c.cmd);
+          let cmdHtml = esc(c.cmd);
           if (c.cmd.startsWith("C/D/E/F/G/A/B")) {
-            cmdHTML = cmdHTML.replaceAll("/", "/<wbr>");
+            cmdHtml = cmdHtml.replaceAll("/", "/<wbr>");
           }
 
-          const descText = esc(c.desc[lang] || c.desc["en"] || "")
+          const descText = esc(c.desc[lang] || c.desc.en || "")
             .replace(/`([^`]+)`/g, (_, m) => `<code>${m}</code>`)
             .replaceAll("\\n", "<br>");
 
@@ -89,7 +89,7 @@
           tr.innerHTML = `
             <td class="w-full sm:w-40 max-w-none break-words whitespace-normal td mono shrink-0">
               <span class="sm:hidden font-medium text-gray-500 text-xs">${thCmd}</span>
-              <div>${cmdHTML}</div>
+              <div>${cmdHtml}</div>
             </td>
             <td class="td">
               <span class="sm:hidden font-medium text-gray-500 text-xs">${thDesc}</span>

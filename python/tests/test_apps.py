@@ -70,7 +70,7 @@ def extract_pyxapp(pyxapp_path, extract_dir):
         zf.extractall(extract_dir)
 
     for setting_file in Path(extract_dir).glob(f"*/{pyxel.APP_STARTUP_SCRIPT_FILE}"):
-        with open(setting_file) as f:
+        with open(setting_file, encoding="utf-8") as f:
             return str(setting_file.parent / f.read().strip())
     pytest.fail(f"No startup script found in {pyxapp_path}")
 
