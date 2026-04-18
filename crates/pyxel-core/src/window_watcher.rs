@@ -54,7 +54,8 @@ impl WindowWatcher {
             let state_str = format!("{x} {y} {w} {h}");
             unsafe { set_var(WINDOW_STATE_ENV, &state_str) };
             if let Some(watch_state_file) = &self.watch_state_file {
-                write(watch_state_file, &state_str).unwrap();
+                // Best-effort write; watcher continues even if the state file is unavailable.
+                write(watch_state_file, &state_str).ok();
             }
         }
     }

@@ -16,9 +16,9 @@ BG_PID=0
 CLEANUP_PATHS=()
 
 cleanup() {
-    if [[ $BG_PID -ne 0 ]]; then
-        kill $BG_PID 2>/dev/null || true
-        wait $BG_PID 2>/dev/null || true
+    if [[ "$BG_PID" -ne 0 ]]; then
+        kill "$BG_PID" 2>/dev/null || true
+        wait "$BG_PID" 2>/dev/null || true
     fi
     for path in ${CLEANUP_PATHS[@]+"${CLEANUP_PATHS[@]}"}; do
         rm -rf "$path" 2>/dev/null || true
@@ -45,8 +45,8 @@ run_bg() {
     echo_cmd "$@"
     "$@" &
     BG_PID=$!
-    trap 'kill $BG_PID 2>/dev/null; exit 130' INT
-    wait $BG_PID || true
+    trap 'kill "$BG_PID" 2>/dev/null; exit 130' INT
+    wait "$BG_PID" || true
     trap - INT
     BG_PID=0
 }
@@ -103,5 +103,5 @@ EOF
 sleep 1
 
 sed 's/Hello, Pyxel!/Watch Passed!/' "$EXAMPLES_DIR/$WATCH_EXAMPLE.py" > "$WATCH_EXAMPLE.py"
-trap 'kill $BG_PID 2>/dev/null; exit 0' INT
-wait $BG_PID || true
+trap 'kill "$BG_PID" 2>/dev/null; exit 0' INT
+wait "$BG_PID" || true

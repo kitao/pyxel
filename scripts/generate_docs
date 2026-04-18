@@ -247,8 +247,8 @@ class JsEval:
         if m:
             return self._localize(self._vars.get(m.group(1), m.group(1)))
 
-        # esc(localize("key")).replace(...) chain (must come before bare esc)
-        if expr.startswith("esc(localize(") and ".replace(" in expr:
+        # esc(t("key")).replace(...) chain (must come before bare esc)
+        if expr.startswith("esc(t(") and re.search(r"\.replace(All)?\(", expr):
             return self._replace_chain(expr)
 
         # esc(inner) -> just evaluate inner
@@ -383,7 +383,7 @@ class JsEval:
             return self._table(inner)
 
         # localize("key").replace(...) or esc(localize("key")).replace(...) chain
-        if re.match(r'(?:esc\()?t\("', expr) and ".replace(" in expr:
+        if re.match(r'(?:esc\()?t\("', expr) and re.search(r"\.replace(All)?\(", expr):
             return self._replace_chain(expr)
 
         # [].map(([u,n]) => `...`).join("") / [].map(k => `...`).join("")
@@ -398,14 +398,18 @@ class JsEval:
         return expr
 
     def _replace_chain(self, expr):
-        # Handle both localize("key").replace(...) and esc(localize("key")).replace(...)
+        # Handle localize("key").replace/replaceAll(...) and esc(localize("key")).replace/replaceAll(...)
         m = re.match(r'(?:esc\()?t\("([^"]+)"\)\)?', expr)
         if not m:
             return expr
         text = self._localize(m.group(1))
         rest = expr[m.end():]
-        while rest.strip().startswith(".replace("):
-            rest = rest.strip()[9:]
+        while True:
+            head = re.match(r"\s*\.replace(All)?\(", rest)
+            if not head:
+                break
+            replace_all = head.group(1) == "All"
+            rest = rest[head.end():]
             pat_s, rest = _parse_arg(rest)
             rest = _skip_comma(rest)
             repl_s, rest = _parse_arg(rest)
@@ -415,12 +419,17 @@ class JsEval:
             if rest.startswith(")"):
                 rest = rest[1:]
             repl = self.eval(repl_s)
-            rm = re.match(r'/(.+?)/g?', pat_s)
+            rm = re.match(r"/(.+?)/(g)?", pat_s)
             if rm:
                 pat = rm.group(1).replace("\\{", "{").replace("\\}", "}")
-                text = text.replace(pat, repl)
+                # Regex with /g always replaces all; without /g, first only.
+                if rm.group(2) == "g":
+                    text = text.replace(pat, repl)
+                else:
+                    text = text.replace(pat, repl, 1)
             else:
-                text = text.replace(self.eval(pat_s), repl, 1)
+                pat = self.eval(pat_s)
+                text = text.replace(pat, repl) if replace_all else text.replace(pat, repl, 1)
         return text
 
     def _parse_array(self, arr_str):
@@ -672,7 +681,10 @@ def generate_from_html(html_path, json_path, doc_name):
 
     # Extract innerHTML sections
     lines = []
-    for sm in re.finditer(r'\$\("([^"]+)"\)\.innerHTML\s*=\s*`', body):
+    innerhtml_pattern = (
+        r'(?:\$|document\.getElementById)\("([^"]+)"\)\.innerHTML\s*=\s*`'
+    )
+    for sm in re.finditer(innerhtml_pattern, body):
         sec_id = sm.group(1)
         if sec_id in ("p-title", "p-sub"):
             continue

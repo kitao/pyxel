@@ -509,6 +509,10 @@ class Image:
             scale: Scale factor
         """
         ...
+    @overload
+    def clip(self) -> None: ...
+    @overload
+    def clip(self, x: float, y: float, w: float, h: float) -> None: ...
     def clip(
         self,
         x: float | None = None,
@@ -525,6 +529,10 @@ class Image:
             h: Height of the clipping area
         """
         ...
+    @overload
+    def camera(self) -> None: ...
+    @overload
+    def camera(self, x: float, y: float) -> None: ...
     def camera(
         self,
         x: float | None = None,
@@ -537,6 +545,10 @@ class Image:
             y: Y coordinate
         """
         ...
+    @overload
+    def pal(self) -> None: ...
+    @overload
+    def pal(self, col1: int, col2: int) -> None: ...
     def pal(self, col1: int | None = None, col2: int | None = None) -> None:
         """Replace color col1 with col2 when drawing. Call without arguments to reset the palette to the initial state.
 
@@ -877,6 +889,10 @@ class Tilemap:
             layer: Layer number (0-)
         """
         ...
+    @overload
+    def clip(self) -> None: ...
+    @overload
+    def clip(self, x: float, y: float, w: float, h: float) -> None: ...
     def clip(
         self,
         x: float | None = None,
@@ -893,6 +909,10 @@ class Tilemap:
             h: Height of the clipping area
         """
         ...
+    @overload
+    def camera(self) -> None: ...
+    @overload
+    def camera(self, x: float, y: float) -> None: ...
     def camera(
         self,
         x: float | None = None,
@@ -1674,6 +1694,10 @@ cursor: Image
 font: Image
 """The font image (Image class instance)."""
 
+@overload
+def clip() -> None: ...
+@overload
+def clip(x: float, y: float, w: float, h: float) -> None: ...
 def clip(
     x: float | None = None,
     y: float | None = None,
@@ -1690,6 +1714,10 @@ def clip(
     """
     ...
 
+@overload
+def camera() -> None: ...
+@overload
+def camera(x: float, y: float) -> None: ...
 def camera(
     x: float | None = None,
     y: float | None = None,
@@ -1702,6 +1730,10 @@ def camera(
     """
     ...
 
+@overload
+def pal() -> None: ...
+@overload
+def pal(col1: int, col2: int) -> None: ...
 def pal(col1: int | None = None, col2: int | None = None) -> None:
     """Replace color col1 with col2 when drawing. Call without arguments to reset the palette to the initial state.
 
