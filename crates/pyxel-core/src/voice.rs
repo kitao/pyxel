@@ -24,8 +24,7 @@ fn pitch_ratio_lut() -> &'static [f32] {
                         PITCH_LUT_MIN_SEMITONE + index as f32 / PITCH_LUT_STEPS_PER_SEMITONE as f32;
                     2.0_f32.powf(semitone_offset / 12.0)
                 })
-                .collect::<Vec<_>>()
-                .into_boxed_slice()
+                .collect()
         })
         .as_ref()
 }

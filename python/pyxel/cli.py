@@ -1,8 +1,7 @@
 import base64
-import glob
+import importlib.util
 import multiprocessing
 import os
-import pathlib
 import re
 import runpy
 import shutil
@@ -12,12 +11,14 @@ import tempfile
 import time
 import uuid
 import zipfile
+from pathlib import Path
 
 import pyxel
 import pyxel.utils
 
 _METADATA_FIELDS = ("title", "author", "desc", "site", "license", "version")
 _METADATA_PATTERN = re.compile(r"#\s*(.+?)\s*:\s*(.+)")
+_PACKAGE_SKIP_EXTENSIONS = (".gif", ".zip")
 
 
 def cli():
@@ -79,7 +80,7 @@ def _exit_with_error(message):
 
 
 def _complete_extension(filename, command, valid_ext):
-    file_ext = os.path.splitext(filename)[1].lower()
+    file_ext = Path(filename).suffix.lower()
     if not file_ext:
         filename += valid_ext
     elif file_ext != valid_ext:
@@ -88,111 +89,99 @@ def _complete_extension(filename, command, valid_ext):
 
 
 def _files_in_dir(dirname):
-    return sorted(
-        os.path.join(root, name)
-        for root, _, files in os.walk(dirname)
-        for name in files
-    )
+    return sorted(str(p) for p in Path(dirname).rglob("*") if p.is_file())
 
 
 def _check_file_exists(filename):
-    if not os.path.isfile(filename):
+    if not Path(filename).is_file():
         _exit_with_error(f"no such file: '{filename}'")
 
 
 def _check_dir_exists(dirname):
-    if not os.path.isdir(dirname):
+    if not Path(dirname).is_dir():
         _exit_with_error(f"no such directory: '{dirname}'")
 
 
 def _check_file_under_dir(filename, dirname):
-    if os.path.relpath(
-        os.path.realpath(filename), os.path.realpath(dirname)
-    ).startswith(".."):
+    if not Path(filename).resolve().is_relative_to(Path(dirname).resolve()):
         _exit_with_error("specified file is not under the directory")
 
 
 def _create_app_dir():
-    play_dir = os.path.join(tempfile.gettempdir(), pyxel.BASE_DIR, "play")
-    pathlib.Path(play_dir).mkdir(parents=True, exist_ok=True)
+    play_dir = Path(tempfile.gettempdir()) / pyxel.BASE_DIR / "play"
+    play_dir.mkdir(parents=True, exist_ok=True)
 
     # Clean up stale app dirs from dead processes
-    for path in glob.glob(os.path.join(play_dir, "*")):
+    for path in play_dir.glob("*"):
         try:
-            pid = int(os.path.basename(path).split("_")[0])
+            pid = int(path.name.split("_")[0])
             if pyxel._pid_exists(pid):
                 continue
-            if time.time() - os.path.getmtime(path) > 300:
+            if time.time() - path.stat().st_mtime > 300:
                 shutil.rmtree(path)
         except ValueError:
             shutil.rmtree(path)
 
-    app_dir = os.path.join(play_dir, f"{os.getpid()}_{uuid.uuid4()}")
-    if os.path.exists(app_dir):
+    app_dir = play_dir / f"{os.getpid()}_{uuid.uuid4()}"
+    if app_dir.exists():
         shutil.rmtree(app_dir)
-    os.mkdir(app_dir)
-    return app_dir
+    app_dir.mkdir()
+    return str(app_dir)
 
 
 def _create_watch_state_file():
-    watch_dir = os.path.join(tempfile.gettempdir(), pyxel.BASE_DIR, "watch")
-    pathlib.Path(watch_dir).mkdir(parents=True, exist_ok=True)
+    watch_dir = Path(tempfile.gettempdir()) / pyxel.BASE_DIR / "watch"
+    watch_dir.mkdir(parents=True, exist_ok=True)
 
     # Clean up state files from dead watcher processes
-    for path in glob.glob(os.path.join(watch_dir, "*")):
+    for path in watch_dir.glob("*"):
         try:
-            pid = int(os.path.basename(path))
+            pid = int(path.name)
         except ValueError:
             continue
         if not pyxel._pid_exists(pid):
-            os.remove(path)
+            path.unlink()
 
-    watch_state_file = os.path.join(watch_dir, str(os.getpid()))
-    pathlib.Path(watch_state_file).touch()
-    return watch_state_file
+    watch_state_file = watch_dir / str(os.getpid())
+    watch_state_file.touch()
+    return str(watch_state_file)
 
 
 def _timestamps_in_dir(dirname):
-    return {
-        os.path.join(root, name): os.path.getmtime(os.path.join(root, name))
-        for root, _, files in os.walk(dirname)
-        for name in files
-    }
+    return {str(p): p.stat().st_mtime for p in Path(dirname).rglob("*") if p.is_file()}
 
 
 def _run_python_script_in_separate_process(python_script_file):
-    python_script_file = os.path.abspath(python_script_file)
+    python_script_file = str(Path(python_script_file).absolute())
     worker = multiprocessing.Process(
-        target=run_python_script, args=(python_script_file,)
+        target=run_python_script, args=(python_script_file,), daemon=True
     )
-    worker.daemon = True
     worker.start()
     return worker
 
 
 def _extract_pyxel_app(pyxel_app_file):
     _check_file_exists(pyxel_app_file)
-    app_dir = _create_app_dir()
+    app_dir = Path(_create_app_dir())
 
     with zipfile.ZipFile(pyxel_app_file) as zf:
-        app_dir_abs = os.path.abspath(app_dir)
+        app_dir_abs = app_dir.resolve()
         for name in zf.namelist():
-            target = os.path.abspath(os.path.join(app_dir, name))
-            if target != app_dir_abs and not target.startswith(app_dir_abs + os.sep):
+            target = (app_dir / name).resolve()
+            if target != app_dir_abs and not target.is_relative_to(app_dir_abs):
                 _exit_with_error(f"unsafe path in pyxel app: '{name}'")
         zf.extractall(app_dir)
 
-    pattern = os.path.join(app_dir, "*", pyxel.APP_STARTUP_SCRIPT_FILE)
-    for setting_file in glob.glob(pattern):
-        with open(setting_file, "r", encoding="utf-8") as f:
-            return os.path.join(os.path.dirname(setting_file), f.read().strip())
+    for setting_file in app_dir.glob(f"*/{pyxel.APP_STARTUP_SCRIPT_FILE}"):
+        with open(setting_file, encoding="utf-8") as f:
+            return str(setting_file.parent / f.read().strip())
     return None
 
 
 def _make_metadata_comment(startup_script_file):
     metadata = {}
 
-    with open(startup_script_file, "r", encoding="utf8") as f:
+    with open(startup_script_file, encoding="utf-8") as f:
         for line in f:
             match = _METADATA_PATTERN.match(line)
             if match:
@@ -222,7 +211,7 @@ def run_python_script(python_script_file):
     python_script_file = _complete_extension(python_script_file, "run", ".py")
     _check_file_exists(python_script_file)
 
-    sys.path.insert(0, os.path.abspath(os.path.dirname(python_script_file)))
+    sys.path.insert(0, str(Path(python_script_file).absolute().parent))
     runpy.run_path(python_script_file, run_name="__main__")
 
 
@@ -291,7 +280,7 @@ def print_pyxel_app_metadata(pyxel_app_file):
 
 
 def play_pyxel_app(pyxel_app_file):
-    file_ext = os.path.splitext(pyxel_app_file)[1].lower()
+    file_ext = Path(pyxel_app_file).suffix.lower()
     if file_ext != ".zip":
         pyxel_app_file = _complete_extension(
             pyxel_app_file, "play", pyxel.APP_FILE_EXTENSION
@@ -304,7 +293,7 @@ def play_pyxel_app(pyxel_app_file):
     if not startup_script_file:
         _exit_with_error(f"file not found: '{pyxel.APP_STARTUP_SCRIPT_FILE}'")
 
-    sys.path.insert(0, os.path.abspath(os.path.dirname(startup_script_file)))
+    sys.path.insert(0, str(Path(startup_script_file).absolute().parent))
     runpy.run_path(startup_script_file, run_name="__main__")
 
 
@@ -330,13 +319,13 @@ def package_pyxel_app(app_dir, startup_script_file):
     if metadata_comment:
         print(metadata_comment)
 
-    app_dir = os.path.abspath(app_dir)
-    setting_file = os.path.join(app_dir, pyxel.APP_STARTUP_SCRIPT_FILE)
+    app_dir = Path(app_dir).absolute()
+    setting_file = app_dir / pyxel.APP_STARTUP_SCRIPT_FILE
     with open(setting_file, "w", encoding="utf-8") as f:
-        f.write(os.path.relpath(startup_script_file, app_dir))
+        f.write(str(Path(startup_script_file).relative_to(app_dir)))
 
-    pyxel_app_file = os.path.basename(app_dir) + pyxel.APP_FILE_EXTENSION
-    app_parent_dir = os.path.dirname(app_dir)
+    pyxel_app_file = app_dir.name + pyxel.APP_FILE_EXTENSION
+    app_parent_dir = app_dir.parent
 
     with zipfile.ZipFile(
         pyxel_app_file,
@@ -344,20 +333,19 @@ def package_pyxel_app(app_dir, startup_script_file):
         compression=zipfile.ZIP_DEFLATED,
     ) as zf:
         zf.comment = metadata_comment.encode(encoding="utf-8")
-        _SKIP_EXTENSIONS = (".gif", ".zip")
-        files = [setting_file] + _files_in_dir(app_dir)
+        files = [str(setting_file)] + _files_in_dir(app_dir)
         for file in files:
             if (
-                os.path.basename(file) == pyxel_app_file
+                Path(file).name == pyxel_app_file
                 or "__pycache__" in file
-                or file.lower().endswith(_SKIP_EXTENSIONS)
+                or file.lower().endswith(_PACKAGE_SKIP_EXTENSIONS)
             ):
                 continue
-            arcname = os.path.relpath(file, app_parent_dir)
+            arcname = str(Path(file).relative_to(app_parent_dir))
             zf.write(file, arcname)
             print(f"added '{arcname}'")
 
-    os.remove(setting_file)
+    setting_file.unlink()
 
 
 def create_executable_from_pyxel_app(pyxel_app_file):
@@ -366,25 +354,22 @@ def create_executable_from_pyxel_app(pyxel_app_file):
     )
     _check_file_exists(pyxel_app_file)
 
-    app2exe_dir = os.path.join(tempfile.gettempdir(), pyxel.BASE_DIR, "app2exe")
-    if os.path.isdir(app2exe_dir):
+    app2exe_dir = Path(tempfile.gettempdir()) / pyxel.BASE_DIR / "app2exe"
+    if app2exe_dir.is_dir():
         shutil.rmtree(app2exe_dir)
-    pathlib.Path(app2exe_dir).mkdir(parents=True, exist_ok=True)
+    app2exe_dir.mkdir(parents=True, exist_ok=True)
 
-    pyxel_app_name = os.path.splitext(os.path.basename(pyxel_app_file))[0]
-    startup_script_file = os.path.join(app2exe_dir, pyxel_app_name + ".py")
+    pyxel_app_name = Path(pyxel_app_file).stem
+    startup_script_file = str(app2exe_dir / f"{pyxel_app_name}.py")
     with open(startup_script_file, "w", encoding="utf-8") as f:
         app_filename = f"{pyxel_app_name}{pyxel.APP_FILE_EXTENSION}"
         f.write(
-            "import os, pyxel.cli; pyxel.cli.play_pyxel_app("
-            f"os.path.join(os.path.dirname(__file__), {repr(app_filename)}))"
+            "import pyxel.cli; from pathlib import Path; pyxel.cli.play_pyxel_app("
+            f"str(Path(__file__).parent / {repr(app_filename)}))"
         )
 
-    cp = subprocess.run(
-        [sys.executable, "-m", "PyInstaller", "-h"], capture_output=True
-    )
-    if cp.returncode != 0:
-        _exit_with_error("Pyinstaller is not found. Please install it.")
+    if importlib.util.find_spec("PyInstaller") is None:
+        _exit_with_error("PyInstaller is not found. Please install it.")
 
     startup_script = _extract_pyxel_app(pyxel_app_file)
     if startup_script is None:
@@ -412,10 +397,10 @@ def create_executable_from_pyxel_app(pyxel_app_file):
 
     # Clean up temporary build artifacts
     shutil.rmtree(app2exe_dir, ignore_errors=True)
-    spec_file = os.path.splitext(pyxel_app_file)[0] + ".spec"
-    if os.path.isfile(spec_file):
-        os.remove(spec_file)
-    shutil.rmtree(os.path.join(os.getcwd(), "build"), ignore_errors=True)
+    spec_file = Path(pyxel_app_file).with_suffix(".spec")
+    if spec_file.is_file():
+        spec_file.unlink()
+    shutil.rmtree(Path.cwd() / "build", ignore_errors=True)
 
 
 def create_html_from_pyxel_app(pyxel_app_file):
@@ -427,8 +412,8 @@ def create_html_from_pyxel_app(pyxel_app_file):
     with open(pyxel_app_file, "rb") as f:
         base64_string = base64.b64encode(f.read()).decode()
 
-    pyxel_app_name = os.path.splitext(os.path.basename(pyxel_app_file))[0]
-    with open(pyxel_app_name + ".html", "w", encoding="utf-8") as f:
+    pyxel_app_name = Path(pyxel_app_file).stem
+    with open(f"{pyxel_app_name}.html", "w", encoding="utf-8") as f:
         f.write(
             "<!doctype html>\n"
             f'<script src="https://cdn.jsdelivr.net/gh/kitao/pyxel@{pyxel.VERSION}/wasm/pyxel.js">'
@@ -441,14 +426,14 @@ def create_html_from_pyxel_app(pyxel_app_file):
 
 
 def copy_pyxel_examples():
-    src_dir = os.path.join(os.path.dirname(__file__), "examples")
-    dst_dir = "pyxel_examples"
+    src_dir = Path(__file__).parent / "examples"
+    dst_dir = Path("pyxel_examples")
     shutil.rmtree(dst_dir, ignore_errors=True)
 
     for src_file in _files_in_dir(src_dir):
         if "__pycache__" in src_file:
             continue
-        dst_file = os.path.join(dst_dir, os.path.relpath(src_file, src_dir))
-        os.makedirs(os.path.dirname(dst_file), exist_ok=True)
+        dst_file = dst_dir / Path(src_file).relative_to(src_dir)
+        dst_file.parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(src_file, dst_file)
         print(f"copied '{dst_file}'")

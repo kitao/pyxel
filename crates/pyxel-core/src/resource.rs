@@ -137,9 +137,7 @@ impl Pyxel {
             .map(|(i, s)| {
                 u32::from_str_radix(s.trim(), 16)
                     .map(|v| v as Rgb24)
-                    .map_err(|_| {
-                        format!("Failed to parse line {} in '{filename}': '{s}'", i + 1)
-                    })
+                    .map_err(|_| format!("Failed to parse line {} in '{filename}': '{s}'", i + 1))
             })
             .collect::<Result<_, _>>()?;
         *pyxel::colors() = if colors.is_empty() {

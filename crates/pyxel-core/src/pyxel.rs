@@ -258,14 +258,6 @@ pub fn reset_statics() {
 
 // Init functions for define_global!
 
-fn init_screen() -> Image {
-    Image {
-        canvas: Canvas::new(0, 0),
-        palette: array::from_fn(|i| i as Color),
-        palette_is_identity: true,
-    }
-}
-
 fn init_images() -> Vec<*mut Image> {
     (0..NUM_IMAGES)
         .map(|_| Image::new(IMAGE_SIZE, IMAGE_SIZE))
@@ -276,6 +268,14 @@ fn init_tilemaps() -> Vec<*mut Tilemap> {
     (0..NUM_TILEMAPS)
         .map(|_| Tilemap::new(TILEMAP_SIZE, TILEMAP_SIZE, ImageSource::Index(0)))
         .collect()
+}
+
+fn init_screen() -> Image {
+    Image {
+        canvas: Canvas::new(0, 0),
+        palette: array::from_fn(|i| i as Color),
+        palette_is_identity: true,
+    }
 }
 
 fn init_cursor_image() -> Image {

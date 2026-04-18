@@ -1,4 +1,4 @@
-import os
+from pathlib import Path
 
 import pyxel
 
@@ -41,8 +41,8 @@ class TestMusic:
         msc.set([0])
         path = str(tmp_path / "test_music.wav")
         msc.save(path, 1.0)
-        assert os.path.exists(path)
-        assert os.path.getsize(path) > 0
+        assert Path(path).exists()
+        assert Path(path).stat().st_size > 0
 
     def test_seqs_inner_seq_access(self):
         msc = pyxel.Music()

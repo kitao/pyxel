@@ -4,13 +4,11 @@ from typing import (
     Callable,
     Generic,
     Iterator,
-    List,
-    Optional,
-    Tuple,
     TypeVar,
-    Union,
     overload,
 )
+
+T = TypeVar("T")
 
 # Constants
 VERSION: str
@@ -31,7 +29,7 @@ NUM_TILEMAPS: int
 TILEMAP_SIZE: int
 TILE_SIZE: int
 
-DEFAULT_COLORS: List[int]
+DEFAULT_COLORS: list[int]
 COLOR_BLACK: int
 COLOR_NAVY: int
 COLOR_PURPLE: int
@@ -385,32 +383,31 @@ GAMEPAD4_BUTTON_DPAD_LEFT: int
 GAMEPAD4_BUTTON_DPAD_RIGHT: int
 
 # Sequence class
-T = TypeVar("T")
 
 class Seq(Generic[T]):
     def __len__(self) -> int: ...
     @overload
     def __getitem__(self, idx: int) -> T: ...
     @overload
-    def __getitem__(self, idx: slice) -> List[T]: ...
+    def __getitem__(self, idx: slice) -> list[T]: ...
     @overload
     def __setitem__(self, idx: int, value: T) -> None: ...
     @overload
-    def __setitem__(self, idx: slice, value: List[T]) -> None: ...
-    def __delitem__(self, idx: Union[int, slice]) -> None: ...
+    def __setitem__(self, idx: slice, value: list[T]) -> None: ...
+    def __delitem__(self, idx: int | slice) -> None: ...
     def __iter__(self) -> Iterator[T]: ...
     def __reversed__(self) -> Iterator[T]: ...
     def __contains__(self, value: T) -> bool: ...
     def __eq__(self, other: Any) -> bool: ...
-    def __add__(self, other: List[T]) -> List[T]: ...
-    def __mul__(self, n: int) -> List[T]: ...
-    def __iadd__(self, other: List[T]) -> "Seq[T]": ...
+    def __add__(self, other: list[T]) -> list[T]: ...
+    def __mul__(self, n: int) -> list[T]: ...
+    def __iadd__(self, other: list[T]) -> "Seq[T]": ...
     def __bool__(self) -> bool: ...
     def __repr__(self) -> str: ...
     def append(self, value: T) -> None: ...
-    def extend(self, values: List[T]) -> None: ...
+    def extend(self, values: list[T]) -> None: ...
     def insert(self, index: int, value: T) -> None: ...
-    def pop(self, index: Optional[int] = None) -> T: ...
+    def pop(self, index: int | None = None) -> T: ...
     def clear(self) -> None: ...
 
 # Font class
@@ -477,7 +474,7 @@ class Image:
             Raw data pointer
         """
         ...
-    def set(self, x: int, y: int, data: List[str]) -> None:
+    def set(self, x: int, y: int, data: list[str]) -> None:
         """Set the image at (x, y) using a list of hex-digit strings. Each character represents a color index (0-f).
 
         Args:
@@ -515,10 +512,10 @@ class Image:
         ...
     def clip(
         self,
-        x: Optional[float] = None,
-        y: Optional[float] = None,
-        w: Optional[float] = None,
-        h: Optional[float] = None,
+        x: float | None = None,
+        y: float | None = None,
+        w: float | None = None,
+        h: float | None = None,
     ) -> None:
         """Set the drawing area of the screen from (x, y) with a width of w and a height of h. Call clip() to reset to full screen. Call without arguments to reset the drawing area to full screen.
 
@@ -531,8 +528,8 @@ class Image:
         ...
     def camera(
         self,
-        x: Optional[float] = None,
-        y: Optional[float] = None,
+        x: float | None = None,
+        y: float | None = None,
     ) -> None:
         """Set the drawing offset to (x, y). All subsequent drawing operations will be shifted by (-x, -y). Call without arguments to reset the drawing offset to (0, 0).
 
@@ -541,7 +538,7 @@ class Image:
             y: Y coordinate
         """
         ...
-    def pal(self, col1: Optional[int] = None, col2: Optional[int] = None) -> None:
+    def pal(self, col1: int | None = None, col2: int | None = None) -> None:
         """Replace color col1 with col2 when drawing. Call without arguments to reset the palette to the initial state.
 
         Args:
@@ -701,12 +698,12 @@ class Image:
         self,
         x: float,
         y: float,
-        img: Union[int, Image],
+        img: int | Image,
         u: float,
         v: float,
         w: float,
         h: float,
-        colkey: Optional[int] = None,
+        colkey: int | None = None,
         rotate: float = 0,
         scale: float = 1,
     ) -> None:
@@ -729,12 +726,12 @@ class Image:
         self,
         x: float,
         y: float,
-        tm: Union[int, Tilemap],
+        tm: int | Tilemap,
         u: float,
         v: float,
         w: float,
         h: float,
-        colkey: Optional[int] = None,
+        colkey: int | None = None,
         rotate: float = 0,
         scale: float = 1,
     ) -> None:
@@ -759,11 +756,11 @@ class Image:
         y: float,
         w: float,
         h: float,
-        img: Union[int, Image],
-        pos: Tuple[float, float, float],
-        rot: Tuple[float, float, float],
+        img: int | Image,
+        pos: tuple[float, float, float],
+        rot: tuple[float, float, float],
         fov: float = 60,
-        colkey: Optional[int] = None,
+        colkey: int | None = None,
     ) -> None:
         """Draw the image bank img (0-2 or Image instance) with perspective projection onto the screen rectangle (x, y, w, h). pos is the camera position where x, y match 2D coordinates and z is height. rot is the rotation in degrees. fov sets the field of view in degrees. colkey sets the transparent color.
 
@@ -785,11 +782,11 @@ class Image:
         y: float,
         w: float,
         h: float,
-        tm: Union[int, Tilemap],
-        pos: Tuple[float, float, float],
-        rot: Tuple[float, float, float],
+        tm: int | Tilemap,
+        pos: tuple[float, float, float],
+        rot: tuple[float, float, float],
         fov: float = 60,
-        colkey: Optional[int] = None,
+        colkey: int | None = None,
     ) -> None:
         """Draw the tilemap tm (0-7 or Tilemap instance) with perspective projection onto the screen rectangle (x, y, w, h). pos is the camera position where x, y match 2D coordinates and z is height. rot is the rotation in degrees. fov sets the field of view in degrees. colkey sets the transparent color.
 
@@ -806,7 +803,7 @@ class Image:
         """
         ...
     def text(
-        self, x: float, y: float, s: str, col: int, font: Optional[Font] = None
+        self, x: float, y: float, s: str, col: int, font: Font | None = None
     ) -> None:
         """Draw a string s in color col at (x, y).
 
@@ -825,10 +822,10 @@ class Tilemap:
     """The width of the tilemap."""
     height: int
     """The height of the tilemap."""
-    imgsrc: Union[int, Image]
+    imgsrc: int | Image
     """The image bank (0-2) or Image instance referenced by the tilemap."""
 
-    def __init__(self, width: int, height: int, img: Union[int, Image]) -> None:
+    def __init__(self, width: int, height: int, img: int | Image) -> None:
         """Create a new Tilemap instance.
 
         Args:
@@ -859,7 +856,7 @@ class Tilemap:
             Raw data pointer
         """
         ...
-    def set(self, x: int, y: int, data: List[str]) -> None:
+    def set(self, x: int, y: int, data: list[str]) -> None:
         """Set the tilemap at (x, y) using a list of strings. Each tile is a 4-digit hex value representing (image_tx, image_ty), separated by spaces.
 
         Args:
@@ -883,10 +880,10 @@ class Tilemap:
         ...
     def clip(
         self,
-        x: Optional[float] = None,
-        y: Optional[float] = None,
-        w: Optional[float] = None,
-        h: Optional[float] = None,
+        x: float | None = None,
+        y: float | None = None,
+        w: float | None = None,
+        h: float | None = None,
     ) -> None:
         """Set the drawing area of the tilemap from (x, y) with a width of w and a height of h. Call clip() to reset to the full tilemap. Call without arguments to reset the drawing area to the full tilemap.
 
@@ -899,8 +896,8 @@ class Tilemap:
         ...
     def camera(
         self,
-        x: Optional[float] = None,
-        y: Optional[float] = None,
+        x: float | None = None,
+        y: float | None = None,
     ) -> None:
         """Set the drawing offset to (x, y). All subsequent drawing operations will be shifted by (-x, -y). Call without arguments to reset the drawing offset to (0, 0).
 
@@ -909,14 +906,14 @@ class Tilemap:
             y: Y coordinate
         """
         ...
-    def cls(self, tile: Tuple[int, int]) -> None:
+    def cls(self, tile: tuple[int, int]) -> None:
         """Clear the tilemap with tile.
 
         Args:
             tile: Tile (image_x, image_y)
         """
         ...
-    def pget(self, x: float, y: float) -> Tuple[int, int]:
+    def pget(self, x: float, y: float) -> tuple[int, int]:
         """Get the tile at (x, y). A tile is a tuple of (image_tx, image_ty).
 
         Args:
@@ -927,7 +924,7 @@ class Tilemap:
             (image_tx, image_ty)
         """
         ...
-    def pset(self, x: float, y: float, tile: Tuple[int, int]) -> None:
+    def pset(self, x: float, y: float, tile: tuple[int, int]) -> None:
         """Set a tile at (x, y). A tile is a tuple of (image_tx, image_ty).
 
         Args:
@@ -937,7 +934,7 @@ class Tilemap:
         """
         ...
     def line(
-        self, x1: float, y1: float, x2: float, y2: float, tile: Tuple[int, int]
+        self, x1: float, y1: float, x2: float, y2: float, tile: tuple[int, int]
     ) -> None:
         """Draw a line of tile from (x1, y1) to (x2, y2).
 
@@ -950,7 +947,7 @@ class Tilemap:
         """
         ...
     def rect(
-        self, x: float, y: float, w: float, h: float, tile: Tuple[int, int]
+        self, x: float, y: float, w: float, h: float, tile: tuple[int, int]
     ) -> None:
         """Draw a filled rectangle of width w, height h, and tile at (x, y).
 
@@ -963,7 +960,7 @@ class Tilemap:
         """
         ...
     def rectb(
-        self, x: float, y: float, w: float, h: float, tile: Tuple[int, int]
+        self, x: float, y: float, w: float, h: float, tile: tuple[int, int]
     ) -> None:
         """Draw the outline of a rectangle of width w, height h, and tile at (x, y).
 
@@ -975,7 +972,7 @@ class Tilemap:
             tile: Tile (image_x, image_y)
         """
         ...
-    def circ(self, x: float, y: float, r: float, tile: Tuple[int, int]) -> None:
+    def circ(self, x: float, y: float, r: float, tile: tuple[int, int]) -> None:
         """Draw a filled circle of radius r and tile at (x, y).
 
         Args:
@@ -985,7 +982,7 @@ class Tilemap:
             tile: Tile (image_x, image_y)
         """
         ...
-    def circb(self, x: float, y: float, r: float, tile: Tuple[int, int]) -> None:
+    def circb(self, x: float, y: float, r: float, tile: tuple[int, int]) -> None:
         """Draw the outline of a circle of radius r and tile at (x, y).
 
         Args:
@@ -996,7 +993,7 @@ class Tilemap:
         """
         ...
     def elli(
-        self, x: float, y: float, w: float, h: float, tile: Tuple[int, int]
+        self, x: float, y: float, w: float, h: float, tile: tuple[int, int]
     ) -> None:
         """Draw a filled ellipse of width w, height h, and tile at (x, y).
 
@@ -1009,7 +1006,7 @@ class Tilemap:
         """
         ...
     def ellib(
-        self, x: float, y: float, w: float, h: float, tile: Tuple[int, int]
+        self, x: float, y: float, w: float, h: float, tile: tuple[int, int]
     ) -> None:
         """Draw the outline of an ellipse of width w, height h, and tile at (x, y).
 
@@ -1029,7 +1026,7 @@ class Tilemap:
         y2: float,
         x3: float,
         y3: float,
-        tile: Tuple[int, int],
+        tile: tuple[int, int],
     ) -> None:
         """Draw a filled triangle with vertices (x1, y1), (x2, y2), (x3, y3) and tile.
 
@@ -1051,7 +1048,7 @@ class Tilemap:
         y2: float,
         x3: float,
         y3: float,
-        tile: Tuple[int, int],
+        tile: tuple[int, int],
     ) -> None:
         """Draw the outline of a triangle with vertices (x1, y1), (x2, y2), (x3, y3) and tile.
 
@@ -1065,7 +1062,7 @@ class Tilemap:
             tile: Tile (image_x, image_y)
         """
         ...
-    def fill(self, x: float, y: float, tile: Tuple[int, int]) -> None:
+    def fill(self, x: float, y: float, tile: tuple[int, int]) -> None:
         """Fill the area connected with the same tile as (x, y) with tile.
 
         Args:
@@ -1082,8 +1079,8 @@ class Tilemap:
         h: float,
         dx: float,
         dy: float,
-        walls: List[Tuple[int, int]],
-    ) -> Tuple[float, float]:
+        walls: list[tuple[int, int]],
+    ) -> tuple[float, float]:
         """Resolve collisions after applying pixel movement (dx, dy) to the pixel rectangle at (x, y) with pixel size (w, h), and return the adjusted (dx, dy). walls is a list of tile coordinates that act as obstacles.
 
         Args:
@@ -1103,12 +1100,12 @@ class Tilemap:
         self,
         x: float,
         y: float,
-        tm: Union[int, Tilemap],
+        tm: int | Tilemap,
         u: float,
         v: float,
         w: float,
         h: float,
-        tilekey: Optional[Tuple[int, int]] = None,
+        tilekey: tuple[int, int] | None = None,
         rotate: float = 0,
         scale: float = 1,
     ) -> None:
@@ -1144,7 +1141,7 @@ class Channel:
         ...
     def play(
         self,
-        snd: Union[int, Seq[int], Sound, Seq[Sound], str],
+        snd: int | Seq[int] | Sound | Seq[Sound] | str,
         sec: float = 0,
         loop: bool = False,
         resume: bool = False,
@@ -1161,7 +1158,7 @@ class Channel:
     def stop(self) -> None:
         """Stop playback on this channel."""
         ...
-    def play_pos(self) -> Optional[Tuple[int, float]]:
+    def play_pos(self) -> tuple[int, float] | None:
         """Get the playback position as a tuple of (sound_index, sec). Return None when playback has stopped.
 
         Returns:
@@ -1267,7 +1264,7 @@ class Sound:
             pyxel.sounds[0].set_effects("nfnf nvvs")
         """
         ...
-    def mml(self, code: Optional[str] = None) -> None:
+    def mml(self, code: str | None = None) -> None:
         """Switch to MML mode with the given MML string. In MML mode, normal parameters such as notes and speed are ignored. For available MML commands, see the Pyxel MML Commands page. Call without arguments to exit MML mode and return to normal mode.
 
         Args:
@@ -1277,7 +1274,7 @@ class Sound:
             pyxel.sounds[0].mml("T120 Q90 @1 V100 O5 L8 C4&C<G16R16>C.")
         """
         ...
-    def pcm(self, filename: Optional[str] = None) -> None:
+    def pcm(self, filename: str | None = None) -> None:
         """Load an audio file (WAV/OGG) for playback. Call without arguments to exit PCM mode and return to normal mode.
 
         Args:
@@ -1296,7 +1293,7 @@ class Sound:
             ffmpeg: Also create MP4 file (requires FFmpeg). Defaults to False.
         """
         ...
-    def total_sec(self) -> Optional[float]:
+    def total_sec(self) -> float | None:
         """Return the playback time in seconds. Return None for infinite loops.
 
         Returns:
@@ -1318,7 +1315,7 @@ class Music:
         ...
     def set(
         self,
-        *seqs: List[int],
+        *seqs: list[int],
     ) -> None:
         """Set the lists of sounds (0-63) for each channel. An empty list means the channel is not used.
 
@@ -1353,7 +1350,7 @@ def init(
     title: str = "Pyxel",
     fps: int = 30,
     quit_key: int = KEY_ESCAPE,
-    display_scale: Optional[int] = None,
+    display_scale: int | None = None,
     capture_scale: int = 2,
     capture_sec: int = 10,
     headless: bool = False,
@@ -1409,7 +1406,7 @@ def title(title: str) -> None:
     """
     ...
 
-def icon(data: List[str], scale: int, colkey: Optional[int] = None) -> None:
+def icon(data: list[str], scale: int, colkey: int | None = None) -> None:
     """Set the application icon. Specify the icon image as a list of strings.
 
     Args:
@@ -1516,7 +1513,7 @@ def save_pal(filename: str) -> None:
     """
     ...
 
-def screenshot(filename: Optional[str] = None, scale: int = 2) -> None:
+def screenshot(filename: str | None = None, scale: int = 2) -> None:
     """Take a screenshot.
 
     Args:
@@ -1525,7 +1522,7 @@ def screenshot(filename: Optional[str] = None, scale: int = 2) -> None:
     """
     ...
 
-def screencast(filename: Optional[str] = None, scale: int = 2) -> None:
+def screencast(filename: str | None = None, scale: int = 2) -> None:
     """Save the screen recording as a GIF file.
 
     Args:
@@ -1560,11 +1557,11 @@ mouse_y: int
 """The current y position of the mouse cursor."""
 mouse_wheel: int
 """The current value of the mouse wheel."""
-input_keys: List[int]
+input_keys: list[int]
 """List of keys input in the current frame."""
 input_text: str
 """Text input in the current frame."""
-dropped_files: List[str]
+dropped_files: list[str]
 """List of files dropped in the current frame."""
 
 def btn(key: int) -> bool:
@@ -1656,7 +1653,7 @@ def set_input_text(text: str) -> None:
     """
     ...
 
-def set_dropped_files(files: List[str]) -> None:
+def set_dropped_files(files: list[str]) -> None:
     """Set the dropped file list for the current frame. Replaces any existing list. Mainly for headless mode input simulation.
 
     Args:
@@ -1679,10 +1676,10 @@ font: Image
 """The font image (Image class instance)."""
 
 def clip(
-    x: Optional[float] = None,
-    y: Optional[float] = None,
-    w: Optional[float] = None,
-    h: Optional[float] = None,
+    x: float | None = None,
+    y: float | None = None,
+    w: float | None = None,
+    h: float | None = None,
 ) -> None:
     """Set the drawing area of the screen from (x, y) with a width of w and a height of h. Call clip() to reset to full screen. Call without arguments to reset the drawing area to full screen.
 
@@ -1695,8 +1692,8 @@ def clip(
     ...
 
 def camera(
-    x: Optional[float] = None,
-    y: Optional[float] = None,
+    x: float | None = None,
+    y: float | None = None,
 ) -> None:
     """Set the drawing offset to (x, y). All subsequent drawing operations will be shifted by (-x, -y). Call without arguments to reset the drawing offset to (0, 0).
 
@@ -1706,7 +1703,7 @@ def camera(
     """
     ...
 
-def pal(col1: Optional[int] = None, col2: Optional[int] = None) -> None:
+def pal(col1: int | None = None, col2: int | None = None) -> None:
     """Replace color col1 with col2 when drawing. Call without arguments to reset the palette to the initial state.
 
     Args:
@@ -1892,12 +1889,12 @@ def fill(x: float, y: float, col: int) -> None:
 def blt(
     x: float,
     y: float,
-    img: Union[int, Image],
+    img: int | Image,
     u: float,
     v: float,
     w: float,
     h: float,
-    colkey: Optional[int] = None,
+    colkey: int | None = None,
     rotate: float = 0,
     scale: float = 1,
 ) -> None:
@@ -1920,12 +1917,12 @@ def blt(
 def bltm(
     x: float,
     y: float,
-    tm: Union[int, Tilemap],
+    tm: int | Tilemap,
     u: float,
     v: float,
     w: float,
     h: float,
-    colkey: Optional[int] = None,
+    colkey: int | None = None,
     rotate: float = 0,
     scale: float = 1,
 ) -> None:
@@ -1950,11 +1947,11 @@ def blt3d(
     y: float,
     w: float,
     h: float,
-    img: Union[int, Image],
-    pos: Tuple[float, float, float],
-    rot: Tuple[float, float, float],
+    img: int | Image,
+    pos: tuple[float, float, float],
+    rot: tuple[float, float, float],
     fov: float = 60,
-    colkey: Optional[int] = None,
+    colkey: int | None = None,
 ) -> None:
     """Draw the image bank img (0-2 or Image instance) with perspective projection onto the screen rectangle (x, y, w, h). pos is the camera position where x, y match 2D coordinates and z is height. rot is the rotation in degrees. fov sets the field of view in degrees. colkey sets the transparent color.
 
@@ -1976,11 +1973,11 @@ def bltm3d(
     y: float,
     w: float,
     h: float,
-    tm: Union[int, Tilemap],
-    pos: Tuple[float, float, float],
-    rot: Tuple[float, float, float],
+    tm: int | Tilemap,
+    pos: tuple[float, float, float],
+    rot: tuple[float, float, float],
     fov: float = 60,
-    colkey: Optional[int] = None,
+    colkey: int | None = None,
 ) -> None:
     """Draw the tilemap tm (0-7 or Tilemap instance) with perspective projection onto the screen rectangle (x, y, w, h). pos is the camera position where x, y match 2D coordinates and z is height. rot is the rotation in degrees. fov sets the field of view in degrees. colkey sets the transparent color.
 
@@ -1997,7 +1994,7 @@ def bltm3d(
     """
     ...
 
-def text(x: float, y: float, s: str, col: int, font: Optional[Font] = None) -> None:
+def text(x: float, y: float, s: str, col: int, font: Font | None = None) -> None:
     """Draw a string s in color col at (x, y).
 
     Args:
@@ -2021,7 +2018,7 @@ musics: Seq[Music]
 
 def play(
     ch: int,
-    snd: Union[int, Seq[int], Sound, Seq[Sound], str],
+    snd: int | Seq[int] | Sound | Seq[Sound] | str,
     sec: float = 0,
     loop: bool = False,
     resume: bool = False,
@@ -2051,7 +2048,7 @@ def playm(
     """
     ...
 
-def stop(ch: Optional[int] = None) -> None:
+def stop(ch: int | None = None) -> None:
     """Stop playback of the specified channel ch (0-3). Call without arguments to stop playback of all channels.
 
     Args:
@@ -2059,7 +2056,7 @@ def stop(ch: Optional[int] = None) -> None:
     """
     ...
 
-def play_pos(ch: int) -> Optional[Tuple[int, float]]:
+def play_pos(ch: int) -> tuple[int, float] | None:
     """Get the sound playback position of channel ch (0-3) as a tuple of (sound_index, sec). Return None when playback has stopped.
 
     Args:
@@ -2076,7 +2073,7 @@ def gen_bgm(
     instr: int,
     seed: int,
     play: bool = False,
-) -> List[str]:
+) -> list[str]:
     """Generate a BGM MML list using an algorithm. preset (0-7) selects the preset, instr (0-3) selects the instrumentation.
 
     Args:
@@ -2114,9 +2111,7 @@ def floor(x: float) -> int:
     """
     ...
 
-def clamp(
-    x: Union[int, float], lower: Union[int, float], upper: Union[int, float]
-) -> Union[int, float]:
+def clamp(x: int | float, lower: int | float, upper: int | float) -> int | float:
     """Return x clamped between lower and upper.
 
     Args:
@@ -2129,7 +2124,7 @@ def clamp(
     """
     ...
 
-def sgn(x: Union[int, float]) -> Union[int, float]:
+def sgn(x: int | float) -> int | float:
     """Return 1 when x is positive, 0 when it is 0, and -1 when it is negative.
 
     Args:

@@ -21,13 +21,13 @@ impl Tilemap {
 
             (Image, { pyxel::ImageSource::Image(img.inner) })
         };
-        Ok(Tilemap::wrap(pyxel::Tilemap::new(width, height, imgsrc)))
+        Ok(Self::wrap(pyxel::Tilemap::new(width, height, imgsrc)))
     }
 
     #[staticmethod]
     fn from_tmx(filename: &str, layer: u32) -> PyResult<Self> {
         pyxel::Tilemap::from_tmx(filename, layer)
-            .map(Tilemap::wrap)
+            .map(Self::wrap)
             .map_err(PyException::new_err)
     }
 

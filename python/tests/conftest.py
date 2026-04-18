@@ -1,10 +1,8 @@
-import os
 from pathlib import Path
+
 import pytest
 
-ASSETS_DIR = os.path.join(
-    os.path.dirname(__file__), os.pardir, "pyxel", "examples", "assets"
-)
+ASSETS_DIR = str(Path(__file__).parent.parent / "pyxel" / "examples" / "assets")
 REFERENCES_DIR = Path(__file__).parent / "references"
 
 

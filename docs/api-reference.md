@@ -340,7 +340,7 @@ Set the dropped file list for the current frame. Replaces any existing list. Mai
 
 **Parameters:**
 
-- `files` (*List[str]*) — List of file paths
+- `files` (*list[str]*) — List of file paths
 
 ### Key Constants
 

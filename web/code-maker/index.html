@@ -427,7 +427,7 @@
           await loadProjectFromZip(buf, name);
           updateShareUrl();
         } catch (e) {
-          alert("Load failed: " + e.message);
+          alert(`Load failed: ${e.message}`);
         }
       }
 
@@ -547,7 +547,7 @@
             if (e.name === "AbortError") {
               return;
             }
-            alert("Save failed: " + e.message);
+            alert(`Save failed: ${e.message}`);
           }
         }
 
@@ -785,7 +785,7 @@
               try {
                 await loadFn(value);
               } catch (e) {
-                alert("Load failed: " + e.message);
+                alert(`Load failed: ${e.message}`);
               }
             });
         }
@@ -992,9 +992,9 @@
           focusLineCenter.style.flex = "0 0 auto";
           focusLineRight.style.flex = "0 0 auto";
 
-          focusLineLeft.style.width = leftWidth + "px";
-          focusLineCenter.style.width = centerWidth + "px";
-          focusLineRight.style.width = rightWidth + "px";
+          focusLineLeft.style.width = `${leftWidth}px`;
+          focusLineCenter.style.width = `${centerWidth}px`;
+          focusLineRight.style.width = `${rightWidth}px`;
         }
 
         let dragging = false;
@@ -1011,7 +1011,7 @@
           const minW = Math.min(200, containerW / 2);
           const maxW = containerW - minW;
           newW = Math.max(minW, Math.min(maxW, newW));
-          leftPaneEl.style.width = newW + "px";
+          leftPaneEl.style.width = `${newW}px`;
           window.codeEditor.resize();
           updateFocusLineLayout();
         }
@@ -1231,7 +1231,7 @@
             await loadFromUrl(urlParam);
           }
         } catch (e) {
-          alert("Load failed: " + e.message);
+          alert(`Load failed: ${e.message}`);
         }
         setupFocusIndicator();
         setupShortcuts();

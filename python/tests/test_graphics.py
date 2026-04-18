@@ -1,4 +1,4 @@
-import os
+from pathlib import Path
 
 import pyxel
 
@@ -295,10 +295,8 @@ class TestText:
 
     def test_text_with_font(self):
         pyxel.cls(0)
-        assets_dir = os.path.join(
-            os.path.dirname(__file__), os.pardir, "pyxel", "examples", "assets"
-        )
-        font = pyxel.Font(os.path.join(assets_dir, "umplus_j10r.bdf"))
+        assets_dir = Path(__file__).parent.parent / "pyxel" / "examples" / "assets"
+        font = pyxel.Font(str(assets_dir / "umplus_j10r.bdf"))
         pyxel.text(0, 0, "A", 7, font)
         has_text = any(pyxel.pget(x, y) == 7 for x in range(20) for y in range(20))
         assert has_text

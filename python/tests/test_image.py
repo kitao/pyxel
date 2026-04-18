@@ -1,4 +1,4 @@
-import os
+from pathlib import Path
 
 import pyxel
 
@@ -81,13 +81,13 @@ class TestImage:
         img.bltm(0, 0, tm, 0, 0, 64, 64)
 
     def test_from_image(self, assets_dir):
-        img = pyxel.Image.from_image(os.path.join(assets_dir, "cat_16x16.png"))
+        img = pyxel.Image.from_image(str(Path(assets_dir) / "cat_16x16.png"))
         assert img.width == 16
         assert img.height == 16
 
     def test_load_image_file(self, assets_dir):
         img = pyxel.Image(32, 32)
-        img.load(0, 0, os.path.join(assets_dir, "cat_16x16.png"))
+        img.load(0, 0, str(Path(assets_dir) / "cat_16x16.png"))
         has_nonzero = any(img.pget(x, 0) != 0 for x in range(16))
         assert has_nonzero
 
@@ -97,8 +97,8 @@ class TestImage:
         img.pset(0, 0, 7)
         path = str(tmp_path / "test_img.png")
         img.save(path, 1)
-        assert os.path.exists(path)
-        assert os.path.getsize(path) > 0
+        assert Path(path).exists()
+        assert Path(path).stat().st_size > 0
 
     def test_line(self):
         img = pyxel.Image(16, 16)
@@ -246,7 +246,7 @@ class TestImage:
     def test_from_image_with_include_colors(self, assets_dir):
         original_color0 = pyxel.colors[0]
         img = pyxel.Image.from_image(
-            os.path.join(assets_dir, "cat_16x16.png"), include_colors=True
+            str(Path(assets_dir) / "cat_16x16.png"), include_colors=True
         )
         assert img.width == 16
         pyxel.colors[0] = original_color0
@@ -254,7 +254,7 @@ class TestImage:
     def test_load_with_include_colors(self, assets_dir):
         original_color0 = pyxel.colors[0]
         img = pyxel.Image(32, 32)
-        img.load(0, 0, os.path.join(assets_dir, "cat_16x16.png"), include_colors=True)
+        img.load(0, 0, str(Path(assets_dir) / "cat_16x16.png"), include_colors=True)
         has_nonzero = any(img.pget(x, 0) != 0 for x in range(16))
         assert has_nonzero
         pyxel.colors[0] = original_color0
@@ -282,7 +282,7 @@ class TestImage:
     def test_text_with_font(self, assets_dir):
         img = pyxel.Image(64, 32)
         img.cls(0)
-        font = pyxel.Font(os.path.join(assets_dir, "umplus_j10r.bdf"))
+        font = pyxel.Font(str(Path(assets_dir) / "umplus_j10r.bdf"))
         img.text(0, 0, "A", 7, font)
         has_text = any(img.pget(x, y) == 7 for x in range(20) for y in range(20))
         assert has_text

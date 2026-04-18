@@ -246,7 +246,7 @@
               const item = cat.items[i];
               const row = document.createElement("div");
               row.className = "py-3";
-              row.dataset.itemKey = cat.id + "-" + i;
+              row.dataset.itemKey = `${cat.id}-${i}`;
 
               // Signature line
               const sigLine = document.createElement("div");
@@ -277,7 +277,7 @@
               // Description
               const desc = document.createElement("p");
               desc.className = "mt-1 text-gray-400 text-sm pl-0.5";
-              desc.dataset.descKey = cat.id + "-" + i;
+              desc.dataset.descKey = `${cat.id}-${i}`;
               row.appendChild(desc);
 
               // Details (collapsible)
@@ -292,7 +292,7 @@
                 details.appendChild(summary);
 
                 const content = document.createElement("div");
-                content.dataset.detailKey = cat.id + "-" + i;
+                content.dataset.detailKey = `${cat.id}-${i}`;
                 details.appendChild(content);
 
                 row.appendChild(details);
@@ -322,7 +322,7 @@
           if (cat.constant_groups) {
             for (let g = 0; g < cat.constant_groups.length; g++) {
               const group = cat.constant_groups[g];
-              const gid = cat.id + "-cg-" + g;
+              const gid = `${cat.id}-cg-${g}`;
 
               const groupWrap = group.collapsed
                 ? document.createElement("details")
@@ -349,7 +349,7 @@
 
                 for (let s = 0; s < group.sections.length; s++) {
                   const sec = group.sections[s];
-                  const sid = gid + "-s-" + s;
+                  const sid = `${gid}-s-${s}`;
                   const secWrap = document.createElement("div");
 
                   if (sec.label) {
@@ -430,7 +430,7 @@
         for (const cat of data.categories) {
           if (cat.items) {
             for (let i = 0; i < cat.items.length; i++) {
-              const key = cat.id + "-" + i;
+              const key = `${cat.id}-${i}`;
               const descEl = document.querySelector(`[data-desc-key="${key}"]`);
               if (descEl) descEl.textContent = t(cat.items[i].description);
               const detailEl = document.querySelector(
@@ -442,7 +442,7 @@
           if (cat.constant_groups) {
             for (let g = 0; g < cat.constant_groups.length; g++) {
               const group = cat.constant_groups[g];
-              const gid = cat.id + "-cg-" + g;
+              const gid = `${cat.id}-cg-${g}`;
               const labelEl = document.querySelector(
                 `[data-cg-label="${gid}"]`,
               );
@@ -451,7 +451,7 @@
               if (group.sections) {
                 for (let s = 0; s < group.sections.length; s++) {
                   const sec = group.sections[s];
-                  const sid = gid + "-s-" + s;
+                  const sid = `${gid}-s-${s}`;
                   if (sec.label) {
                     const sl = document.querySelector(
                       `[data-sec-label="${sid}"]`,
@@ -497,7 +497,7 @@
           let itemsVisible = 0;
           if (cat.items) {
             for (let i = 0; i < cat.items.length; i++) {
-              const key = cat.id + "-" + i;
+              const key = `${cat.id}-${i}`;
               const row = document.querySelector(`[data-item-key="${key}"]`);
               if (!row) continue;
               const visible = isVisible(cat.items[i]);
@@ -535,14 +535,14 @@
           if (cat.constant_groups) {
             for (let g = 0; g < cat.constant_groups.length; g++) {
               const group = cat.constant_groups[g];
-              const gid = cat.id + "-cg-" + g;
+              const gid = `${cat.id}-cg-${g}`;
               let groupVisible = 0;
 
               if (group.sections) {
                 const q = searchQuery.toLowerCase();
                 for (let s = 0; s < group.sections.length; s++) {
                   const sec = group.sections[s];
-                  const sid = gid + "-s-" + s;
+                  const sid = `${gid}-s-${s}`;
                   for (let i = 0; i < sec.constants.length; i++) {
                     const el = document.querySelector(
                       `[data-const-key="${sid}-${i}"]`,

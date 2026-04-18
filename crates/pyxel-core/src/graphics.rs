@@ -84,6 +84,10 @@ impl Graphics {
         }
     }
 
+    pub(crate) fn invalidate_screen_texture(&mut self) {
+        self.screen_texture_initialized = false;
+    }
+
     unsafe fn create_screen_shaders(gl: &mut glow::Context) -> Vec<ScreenShader> {
         let glsl_version = if platform::gl_profile() == GLProfile::Gles {
             GLES_VERSION
@@ -201,10 +205,6 @@ impl Graphics {
             glow::TEXTURE_WRAP_T,
             glow::CLAMP_TO_EDGE as i32,
         );
-    }
-
-    pub(crate) fn invalidate_screen_texture(&mut self) {
-        self.screen_texture_initialized = false;
     }
 
     unsafe fn create_screen_texture(gl: &mut glow::Context) -> glow::NativeTexture {

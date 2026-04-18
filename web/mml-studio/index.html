@@ -320,7 +320,7 @@
 
       function handleButtonPress(button) {
         const action = button.dataset.action;
-        const varName = "js_" + action;
+        const varName = `js_${action}`;
         let isActive;
 
         if (action === "play" || action === "stop") {
@@ -343,8 +343,7 @@
       }
 
       function handleMmlInput(textarea) {
-        runtimeScreen.contentWindow["js_" + textarea.id + "_mml"] =
-          textarea.value;
+        runtimeScreen.contentWindow[`js_${textarea.id}_mml`] = textarea.value;
         updateUrl();
       }
 
@@ -437,7 +436,7 @@
         // Set initial button states
         runtimeScreen.addEventListener("load", () => {
           document.querySelectorAll("button[data-action]").forEach((button) => {
-            const varName = "js_" + button.dataset.action;
+            const varName = `js_${button.dataset.action}`;
             runtimeScreen.contentWindow[varName] =
               button.dataset.state === "true";
           });

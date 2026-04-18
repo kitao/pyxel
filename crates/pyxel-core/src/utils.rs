@@ -68,7 +68,7 @@ pub fn compress_vec2<T: PartialEq + Clone>(vec: &[Vec<T>]) -> Vec<Vec<T>> {
     compress_vec(vec)
         .iter()
         .map(|inner_vec| compress_vec(inner_vec))
-        .collect::<Vec<_>>()
+        .collect()
 }
 
 pub fn expand_vec<T: Clone>(vec: &[T], new_len: usize) -> Vec<T> {
@@ -85,10 +85,10 @@ pub fn expand_vec2<T: Clone>(
     new_inner_len: usize,
 ) -> Vec<Vec<T>> {
     assert!(!vec.is_empty());
-    let new_vec = vec
+    let new_vec: Vec<_> = vec
         .iter()
         .map(|inner_vec| expand_vec(inner_vec, new_inner_len))
-        .collect::<Vec<_>>();
+        .collect();
 
     expand_vec(&new_vec, new_outer_len)
 }

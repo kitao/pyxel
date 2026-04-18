@@ -158,7 +158,7 @@
 ## 2.7.4
 
 - Fixed module import failure after directory change
-- Added VS Code extension info to READMEs
+- Added VS Code extension info to the README files
 - Fixed mouse not working on Wayland and in virtual machines
 
 ## 2.7.3
@@ -174,7 +174,7 @@
 
 - Added manual page for Pyxel Code Maker
 - Added manual page for Pyxel MML Studio
-- Removed version number from the pyxel command example in READMEs
+- Removed version number from the pyxel command example in the README files
 - Revamped Pyxel Web documentation for clarity and accuracy
 - Revamped FAQ with updated content and improved clarity
 
@@ -412,7 +412,7 @@
 
 ## 2.4.5
 
-- Added call to old_mml method when the old syntax is detected
+- Added a call to the old_mml method when the old syntax is detected
 
 ## 2.4.4
 
@@ -634,7 +634,7 @@
 - Updated Pyodide to version 0.26.3
 - Added the perf_monitor function
 - Added the integer_scale function
-- Renamed argument of the fullscreen function
+- Renamed the argument of the fullscreen function
 - Added integer-scale toggle feature with Alt(Option)+8
 - Added gamepad shortcuts using A+B+X+Y+DL/DR/DU/DD
 - Updated default scaling to maximum
@@ -645,7 +645,7 @@
 - Added the user_data_dir function
 - Switched from the platform-dir crate to the directories crate
 - Updated glow crate to version 0.15
-- Fully revised the translations of all README files
+- Revised the translations of all README files
 
 ## 2.2.5
 

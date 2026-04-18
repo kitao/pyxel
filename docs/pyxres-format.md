@@ -122,7 +122,7 @@ The `tones`, `volumes`, and `effects` arrays may be shorter than `notes` due to 
 
 **MML-defined sounds:** Sounds defined with `Sound.mml()` cannot be saved to `.pyxres`; only the `notes`, `tones`, `volumes`, `effects`, and `speed` fields are persisted. To preserve MML-based sounds, keep the MML strings in your source code and call `sound.mml()` at runtime.
 
-## Music
+## Musics
 
 Up to **8 music tracks**. Each track arranges sounds across up to **4 channels** for sequential playback.
 

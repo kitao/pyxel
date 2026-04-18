@@ -1,4 +1,4 @@
-import os
+from pathlib import Path
 
 import pyxel
 
@@ -50,7 +50,7 @@ class TestSound:
 
     def test_pcm(self, assets_dir):
         snd = pyxel.Sound()
-        snd.pcm(os.path.join(assets_dir, "audio_bgm1.ogg"))
+        snd.pcm(str(Path(assets_dir) / "audio_bgm1.ogg"))
         assert snd.total_sec() > 0
 
     def test_pcm_none_exits_pcm_mode(self):
@@ -113,8 +113,8 @@ class TestSound:
         snd.set("c2e2g2c3", "ssss", "7654", "nnnn", 10)
         path = str(tmp_path / "test_snd.wav")
         snd.save(path, 1.0)
-        assert os.path.exists(path)
-        assert os.path.getsize(path) > 0
+        assert Path(path).exists()
+        assert Path(path).stat().st_size > 0
 
     def test_total_sec(self):
         snd = pyxel.Sound()

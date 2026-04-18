@@ -41,7 +41,7 @@ impl Sdl2Bindings {
         }
 
         self.link_sdl2();
-        self.generate_bindings()
+        self.generate_bindings();
     }
 
     fn download_sdl2(&self) {

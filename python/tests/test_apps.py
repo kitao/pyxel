@@ -1,4 +1,3 @@
-import glob
 import os
 import random
 import runpy
@@ -70,10 +69,9 @@ def extract_pyxapp(pyxapp_path, extract_dir):
     with zipfile.ZipFile(pyxapp_path) as zf:
         zf.extractall(extract_dir)
 
-    pattern = os.path.join(extract_dir, "*", pyxel.APP_STARTUP_SCRIPT_FILE)
-    for setting_file in glob.glob(pattern):
+    for setting_file in Path(extract_dir).glob(f"*/{pyxel.APP_STARTUP_SCRIPT_FILE}"):
         with open(setting_file) as f:
-            return os.path.join(os.path.dirname(setting_file), f.read().strip())
+            return str(setting_file.parent / f.read().strip())
     pytest.fail(f"No startup script found in {pyxapp_path}")
 
 

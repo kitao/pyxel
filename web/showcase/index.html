@@ -87,7 +87,7 @@
 
             const desc = document.createElement("span");
             desc.className = "text-gray-400 text-sm";
-            desc.dataset.descKey = cat.id + "-" + i;
+            desc.dataset.descKey = `${cat.id}-${i}`;
             topLine.appendChild(desc);
 
             const buttons = document.createElement("span");
@@ -129,7 +129,7 @@
               const content = document.createElement("div");
               content.className =
                 "mt-1 pl-3 border-l-2 border-gray-700 text-gray-300 text-sm leading-relaxed";
-              content.dataset.detailKey = cat.id + "-" + i;
+              content.dataset.detailKey = `${cat.id}-${i}`;
               details.appendChild(content);
 
               row.appendChild(details);

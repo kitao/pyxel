@@ -440,7 +440,7 @@ impl Tilemap {
     fn is_wall(&self, tx: i32, ty: i32, walls: &[Tile]) -> bool {
         let width = self.canvas.width() as i32;
         let height = self.canvas.height() as i32;
-        if tx < 0 || ty < 0 || tx >= width || ty >= height {
+        if !(0..width).contains(&tx) || !(0..height).contains(&ty) {
             return false;
         }
         walls.contains(&self.canvas.read_data(tx as usize, ty as usize))

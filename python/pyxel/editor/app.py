@@ -1,5 +1,5 @@
-import os
 import sys
+from pathlib import Path
 
 import pyxel
 
@@ -30,13 +30,13 @@ class App(Widget):
     def __init__(self, resource_file, starting_editor):
         # Get absolute path of resource file before initializing Pyxel
         original_resource_file = resource_file
-        resource_file = os.path.abspath(resource_file)
+        resource_path = Path(resource_file).absolute()
 
         # Validate resource file path
-        if os.path.isdir(resource_file):
+        if resource_path.is_dir():
             print(f"A directory named '{original_resource_file}' exists")
             sys.exit(1)
-        if not os.path.isdir(os.path.dirname(resource_file)):
+        if not resource_path.parent.is_dir():
             print(f"Directory for '{original_resource_file}' does not exist")
             sys.exit(1)
 
@@ -46,7 +46,8 @@ class App(Widget):
         colors = list(pyxel.colors)
         self._set_title(original_resource_file)
 
-        if os.path.exists(resource_file):
+        resource_file = str(resource_path)
+        if resource_path.exists():
             pyxel.load(resource_file)
         else:
             pyxel.load_pal(resource_file)
@@ -160,7 +161,7 @@ class App(Widget):
         else:
             dropped_file = None
         if dropped_file:
-            file_ext = os.path.splitext(dropped_file)[1]
+            file_ext = Path(dropped_file).suffix
             if file_ext == pyxel.RESOURCE_FILE_EXTENSION:
                 pyxel.stop()
                 for editor in self._editors:

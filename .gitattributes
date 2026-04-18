@@ -4,11 +4,11 @@
 *.whl binary diff=zip
 
 # Images
-*.png binary
 *.gif binary
-*.jpg binary
-*.jpeg binary
 *.ico binary
+*.jpeg binary
+*.jpg binary
+*.png binary
 
 # Audio
 *.ogg binary

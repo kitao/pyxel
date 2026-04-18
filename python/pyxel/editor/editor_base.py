@@ -23,6 +23,16 @@ class EditorBase(Widget):
         drop (filename)
     """
 
+    _TOOL_HELP = {
+        TOOL_SELECT: "SELECT:S",
+        TOOL_PENCIL: "PENCIL:P",
+        TOOL_RECTB: "RECTANGLE:R",
+        TOOL_RECT: "FILLED-RECT:SHIFT+R",
+        TOOL_CIRCB: "CIRCLE:C",
+        TOOL_CIRC: "FILLED-CIRC:SHIFT+C",
+        TOOL_BUCKET: "BUCKET:B",
+    }
+
     def __init__(self, parent):
         super().__init__(parent, 0, 0, 0, 0, is_visible=False)
         self._history_list = []
@@ -91,16 +101,6 @@ class EditorBase(Widget):
 
     def add_tool_button_help(self, tool_button):
         tool_button.add_event_listener("mouse_hover", self.__on_tool_button_mouse_hover)
-
-    _TOOL_HELP = {
-        TOOL_SELECT: "SELECT:S",
-        TOOL_PENCIL: "PENCIL:P",
-        TOOL_RECTB: "RECTANGLE:R",
-        TOOL_RECT: "FILLED-RECT:SHIFT+R",
-        TOOL_CIRCB: "CIRCLE:C",
-        TOOL_CIRC: "FILLED-CIRC:SHIFT+C",
-        TOOL_BUCKET: "BUCKET:B",
-    }
 
     def __on_tool_button_mouse_hover(self, x, y):
         value = self._tool_button.check_value(x, y)

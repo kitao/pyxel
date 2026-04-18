@@ -245,7 +245,7 @@ impl Screencast {
     fn screen_delay(&self, index: u32) -> u16 {
         // Last frame has no next frame to compare against
         if index + 1 >= self.num_captured_screens {
-            return (100.0 / self.fps as f32 + 0.5) as u16;
+            return (100.0 / self.fps as f32).round() as u16;
         }
 
         let frame_count = self.screen(index).frame_count;
@@ -258,7 +258,7 @@ impl Screencast {
             next_frame_count - frame_count
         };
 
-        (100.0 / self.fps as f32 * num_elapsed_frames as f32 + 0.5) as u16
+        (100.0 / self.fps as f32 * num_elapsed_frames as f32).round() as u16
     }
 
     fn compute_diff(

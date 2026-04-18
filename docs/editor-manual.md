@@ -127,8 +127,8 @@ Select a drawing color from the 16-color palette.
 
 | Shortcut | Action |
 | --- | --- |
-| 1〜8 | Select colors 0–7 |
-| Shift+1〜8 | Select colors 8–15 |
+| 1–8 | Select colors 0–7 |
+| Shift+1–8 | Select colors 8–15 |
 
 #### Bank Number
 
@@ -230,7 +230,7 @@ A mode for editing sounds used for melodies and sound effects.
 ### Specifications
 
 - **Sounds:** 0–63 (64 sounds)
-- **Pitch Range:** C0〜B4
+- **Pitch Range:** C0–B4
 - **Max Length:** 48 notes
 - **Polyphony:** 1 note (or rest)
 - **Per-Note Settings:** Tone, volume, effect

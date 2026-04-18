@@ -1,8 +1,8 @@
 use std::collections::HashMap;
 
 use crate::key::{
-    Key, KeyValue, GAMEPAD_KEY_INDEX_INTERVAL, GAMEPAD_KEY_START_INDEX, MOUSE_KEY_START_INDEX,
-    MOUSE_POS_X, MOUSE_POS_Y, MOUSE_WHEEL_X, MOUSE_WHEEL_Y,
+    Key, KeyValue, GAMEPAD_AXIS_COUNT, GAMEPAD_KEY_INDEX_INTERVAL, GAMEPAD_KEY_START_INDEX,
+    MOUSE_KEY_START_INDEX, MOUSE_POS_X, MOUSE_POS_Y, MOUSE_WHEEL_X, MOUSE_WHEEL_Y,
 };
 use crate::platform;
 use crate::pyxel::{self, Pyxel};
@@ -245,6 +245,7 @@ impl Pyxel {
         matches!(
             key,
             MOUSE_POS_X | MOUSE_POS_Y | MOUSE_WHEEL_X | MOUSE_WHEEL_Y
-        ) || (key >= GAMEPAD_KEY_START_INDEX && (key % GAMEPAD_KEY_INDEX_INTERVAL) < 6)
+        ) || (key >= GAMEPAD_KEY_START_INDEX
+            && (key % GAMEPAD_KEY_INDEX_INTERVAL) < GAMEPAD_AXIS_COUNT)
     }
 }

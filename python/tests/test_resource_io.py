@@ -1,4 +1,4 @@
-import os
+from pathlib import Path
 
 import pytest
 
@@ -8,7 +8,7 @@ import pyxel
 # Resource I/O
 class TestResourceIO:
     def test_load_pyxres(self, assets_dir):
-        pyxel.load(os.path.join(assets_dir, "sample.pyxres"))
+        pyxel.load(str(Path(assets_dir) / "sample.pyxres"))
 
     def test_save_load_roundtrip(self, tmp_path):
         # Set up known data
@@ -96,7 +96,7 @@ class TestResourceIO:
         assert len(pyxel.sounds[0].notes) == original_notes_len
 
     def test_load_pal(self, assets_dir):
-        pyxel.load_pal(os.path.join(assets_dir, "audio_bgm.pyxpal"))
+        pyxel.load_pal(str(Path(assets_dir) / "audio_bgm.pyxpal"))
 
     def test_save_load_pal_roundtrip(self, tmp_path):
         original_colors = list(pyxel.colors)
@@ -119,8 +119,8 @@ class TestResourceIO:
         pyxel.flip()
         path = str(tmp_path / "test_screenshot.png")
         pyxel.screenshot(path)
-        assert os.path.exists(path)
-        assert os.path.getsize(path) > 0
+        assert Path(path).exists()
+        assert Path(path).stat().st_size > 0
 
     def test_screenshot_with_scale(self, tmp_path):
         pyxel.cls(7)
@@ -129,10 +129,10 @@ class TestResourceIO:
         path2 = str(tmp_path / "test_s2.png")
         pyxel.screenshot(path1, scale=1)
         pyxel.screenshot(path2, scale=2)
-        assert os.path.exists(path1)
-        assert os.path.exists(path2)
+        assert Path(path1).exists()
+        assert Path(path2).exists()
         # Scale 2 should produce a larger file
-        assert os.path.getsize(path2) > os.path.getsize(path1)
+        assert Path(path2).stat().st_size > Path(path1).stat().st_size
 
     def test_screencast(self, tmp_path):
         # In headless mode, flip() doesn't capture frames,
@@ -153,7 +153,7 @@ class TestResourceIO:
 
     def test_save_creates_file(self, tmp_path):
         path = str(tmp_path / "new_file.pyxres")
-        assert not os.path.exists(path)
+        assert not Path(path).exists()
         pyxel.save(path)
-        assert os.path.exists(path)
-        assert os.path.getsize(path) > 0
+        assert Path(path).exists()
+        assert Path(path).stat().st_size > 0

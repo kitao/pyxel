@@ -561,10 +561,8 @@ impl Image {
                 }
                 let value = image.canvas.read_data(value_x as usize, value_y as usize);
 
-                if let Some(transparent) = transparent {
-                    if value == transparent {
-                        continue;
-                    }
+                if transparent.is_some_and(|t| value == t) {
+                    continue;
                 }
                 let value = palette.map_or(value, |pal| pal[value.to_index()]);
                 self.canvas.write_data((dst_x + xi) as usize, dst_yi, value);
@@ -776,7 +774,7 @@ impl Image {
                 y += FONT_HEIGHT as i32;
                 continue;
             }
-            if c < MIN_FONT_CODE || c > MAX_FONT_CODE {
+            if !(MIN_FONT_CODE..=MAX_FONT_CODE).contains(&c) {
                 continue;
             }
 

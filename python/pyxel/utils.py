@@ -1,28 +1,30 @@
 import ast
-import os
+from pathlib import Path
 
 # Keys for the import classification dict
-SYSTEM = "system"
-LOCAL = "local"
+_SYSTEM = "system"
+_LOCAL = "local"
 
 
 def _to_module_filename(module_path):
-    filename = module_path + ".py"
-    if os.path.isfile(filename):
-        return filename
-    init_file = os.path.join(module_path, "__init__.py")
-    if os.path.isdir(module_path) and os.path.isfile(init_file):
-        return init_file
+    filename = Path(f"{module_path}.py")
+    if filename.is_file():
+        return str(filename)
+    module_dir = Path(module_path)
+    init_file = module_dir / "__init__.py"
+    if module_dir.is_dir() and init_file.is_file():
+        return str(init_file)
     return None
 
 
 def _resolve_module_path(dir_path, level, name):
     """Build a filesystem path from an import's directory, level, and name."""
-    parts = [dir_path]
-    if level > 1:
-        parts.extend([".."] * (level - 1))
-    parts.append(name.replace(".", os.sep))
-    return os.path.join(*parts)
+    path = Path(dir_path)
+    for _ in range(level - 1):
+        path = path / ".."
+    for part in name.split("."):
+        path = path / part
+    return str(path)
 
 
 def _track_module(imports, checked_files, dir_path, level, name):
@@ -31,11 +33,11 @@ def _track_module(imports, checked_files, dir_path, level, name):
     module_filename = _to_module_filename(module_path)
 
     if module_filename:
-        imports[LOCAL].add(os.path.abspath(module_filename))
+        imports[_LOCAL].add(str(Path(module_filename).absolute()))
         _list_imported_modules(imports, module_filename, checked_files)
     elif level == 0:
         # Only top-level imports are considered system modules
-        imports[SYSTEM].add(name)
+        imports[_SYSTEM].add(name)
 
 
 def _list_imported_modules(imports, filename, checked_files):
@@ -43,9 +45,9 @@ def _list_imported_modules(imports, filename, checked_files):
         return
     checked_files.add(filename)
 
-    dir_path = os.path.dirname(filename)
+    dir_path = str(Path(filename).parent)
     try:
-        with open(filename, encoding="utf8") as file:
+        with open(filename, encoding="utf-8") as file:
             root = ast.parse(file.read())
     except (SyntaxError, UnicodeDecodeError):
         return
@@ -77,11 +79,11 @@ def _list_imported_modules(imports, filename, checked_files):
 
 
 def list_imported_modules(filename):
-    imports = {SYSTEM: set(), LOCAL: set()}
+    imports = {_SYSTEM: set(), _LOCAL: set()}
     checked_files = set()
     _list_imported_modules(imports, filename, checked_files)
 
     return {
-        SYSTEM: sorted(imports[SYSTEM]),
-        LOCAL: sorted(imports[LOCAL]),
+        _SYSTEM: sorted(imports[_SYSTEM]),
+        _LOCAL: sorted(imports[_LOCAL]),
     }

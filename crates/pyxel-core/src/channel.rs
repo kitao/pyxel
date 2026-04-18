@@ -333,7 +333,8 @@ impl Channel {
                 }
 
                 MmlCommand::Tone { tone } => {
-                    let tone = unsafe { &mut **tones.get(*tone as usize).unwrap_or(&tones[0]) };
+                    let tone_ptr = *tones.get(*tone as usize).unwrap_or(&tones[0]);
+                    let tone = unsafe { &mut *tone_ptr };
                     match tone.mode {
                         ToneMode::Wavetable => self.voice.oscillator.set(tone.waveform()),
                         ToneMode::ShortPeriodNoise => self.voice.oscillator.set_noise(true),

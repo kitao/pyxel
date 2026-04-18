@@ -10,6 +10,22 @@ Pyxel is open source under the [MIT License](https://github.com/kitao/pyxel/blob
 
 Also, if you like Pyxel, please give it a star on [GitHub](https://github.com/kitao/pyxel).
 
+![](images/pyxel_thanks.png)
+
+![](images/pyxel_book.png)
+
+![](images/02_jump_game.gif)
+
+![](images/10_platformer.gif)
+
+![](images/30sec_of_daylight.gif)
+
+![](images/megaball.gif)
+
+![](images/image_tilemap_editor.gif)
+
+![](images/sound_music_editor.gif)
+
 ## Specifications
 
 - Runs on Windows, Mac, Linux, and Web

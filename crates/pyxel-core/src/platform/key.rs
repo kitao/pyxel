@@ -238,6 +238,7 @@ pub const MOUSE_BUTTON_X2: Key = MOUSE_KEY_START_INDEX + 8;
 // Gamepad
 pub const GAMEPAD_KEY_START_INDEX: Key = 0x5000_0200;
 pub const GAMEPAD_KEY_INDEX_INTERVAL: Key = 0x100;
+pub const GAMEPAD_AXIS_COUNT: Key = 6;
 
 macro_rules! define_gamepad_keys {
     ($gamepad_name:ident, $start_index:expr) => {
