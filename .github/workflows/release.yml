@@ -13,7 +13,7 @@ env:
 
 jobs:
   build:
-    uses: kitao/pyxel/.github/workflows/build.yml@main
+    uses: ./.github/workflows/build.yml
 
   release:
     needs: build

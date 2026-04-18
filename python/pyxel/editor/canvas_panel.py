@@ -543,10 +543,10 @@ class CanvasPanel(Widget):
 
         # Draw selection area
         if self.tool_var == TOOL_SELECT and self._select_x1 >= 0:
-            x = self._select_x1 * 8 + 12
-            y = self._select_y1 * 8 + 17
-            w = self._select_x2 * 8 - x + 20
-            h = self._select_y2 * 8 - y + 25
+            x = self.x + 1 + self._select_x1 * 8
+            y = self.y + 1 + self._select_y1 * 8
+            w = (self._select_x2 - self._select_x1 + 1) * 8
+            h = (self._select_y2 - self._select_y1 + 1) * 8
             pyxel.clip(self.x + 1, self.y + 1, 128, 128)
             pyxel.rectb(x, y, w, h, PANEL_SELECT_FRAME_COLOR)
             pyxel.rectb(x + 1, y + 1, w - 2, h - 2, PANEL_SELECT_BORDER_COLOR)

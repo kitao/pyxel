@@ -132,11 +132,14 @@ impl Pyxel {
 
         let colors: Vec<Rgb24> = contents
             .lines()
-            .filter(|s| !s.is_empty())
-            .map(|s| {
+            .enumerate()
+            .filter(|(_, s)| !s.is_empty())
+            .map(|(i, s)| {
                 u32::from_str_radix(s.trim(), 16)
                     .map(|v| v as Rgb24)
-                    .map_err(|_| format!("Failed to parse file '{filename}'"))
+                    .map_err(|_| {
+                        format!("Failed to parse line {} in '{filename}': '{s}'", i + 1)
+                    })
             })
             .collect::<Result<_, _>>()?;
         *pyxel::colors() = if colors.is_empty() {

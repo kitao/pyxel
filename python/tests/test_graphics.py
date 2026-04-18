@@ -1,17 +1,6 @@
 import os
 
-import pytest
-
 import pyxel
-
-
-@pytest.fixture(autouse=True)
-def reset_drawing_state():
-    yield
-    pyxel.clip()
-    pyxel.camera()
-    pyxel.pal()
-    pyxel.dither(1.0)
 
 
 class TestPsetPget:

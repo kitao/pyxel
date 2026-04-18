@@ -54,12 +54,13 @@
           const parts = value.split("/");
           if (parts.length < 4) {
             location.replace("url-builder.html");
+          } else {
+            const [user, repo, branch] = parts;
+            root = resolveRef(user, repo, branch).then(
+              (ref) => `https://cdn.jsdelivr.net/gh/${user}/${repo}@${ref}`,
+            );
+            name = parts.slice(3).join("/") + ext;
           }
-          const [user, repo, branch] = parts;
-          root = resolveRef(user, repo, branch).then(
-            (ref) => `https://cdn.jsdelivr.net/gh/${user}/${repo}@${ref}`,
-          );
-          name = parts.slice(3).join("/") + ext;
         } else {
           // Legacy format: user.repo.path.to.file
           const parts = value.split(".");

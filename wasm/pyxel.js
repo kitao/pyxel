@@ -10,8 +10,7 @@ const PYXEL_WORKING_DIRECTORY = "/pyxel_working_directory";
 const PYXEL_WATCH_INFO_FILE = ".pyxel_watch_info";
 const IMPORT_HOOK_PATH = "import_hook.py";
 
-const _escapePythonString = (s) =>
-  s.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
+const _escapePythonString = (s) => JSON.stringify(s).slice(1, -1);
 
 window.pyxelContext = {
   resolveInput: null,

@@ -7,10 +7,11 @@
 - Improved virtual gamepad touch handling on mobile devices
 - Refined code quality across Rust, Python, and web layers
 - Revised multilingual documentation and added JSON to format target
+- Added custom chord progression support to the gen_bgm function
 
 ## 2.9.0
 
-- Redesigned gen_bgm for Pyxel Composer integration
+- Redesigned the gen_bgm function for Pyxel Composer integration
 - Changed the transp, instr, and seed of the gen_bgm function to required
 - Added Cargo.lock to version control for reproducible builds
 - Added the resize function to change the screen size at runtime

@@ -121,7 +121,8 @@ class ImageEditor(EditorBase):
             )
         except (OSError, ValueError) as e:
             print(f"Failed to load image: {e}")
-        pyxel.colors[:] = colors
+        finally:
+            pyxel.colors[:] = colors
 
     def __on_update(self):
         self.check_tool_button_shortcuts()

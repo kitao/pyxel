@@ -175,12 +175,17 @@ def _extract_pyxel_app(pyxel_app_file):
     app_dir = _create_app_dir()
 
     with zipfile.ZipFile(pyxel_app_file) as zf:
+        app_dir_abs = os.path.abspath(app_dir)
+        for name in zf.namelist():
+            target = os.path.abspath(os.path.join(app_dir, name))
+            if target != app_dir_abs and not target.startswith(app_dir_abs + os.sep):
+                _exit_with_error(f"unsafe path in pyxel app: '{name}'")
         zf.extractall(app_dir)
 
     pattern = os.path.join(app_dir, "*", pyxel.APP_STARTUP_SCRIPT_FILE)
     for setting_file in glob.glob(pattern):
-        with open(setting_file, "r") as f:
-            return os.path.join(os.path.dirname(setting_file), f.read())
+        with open(setting_file, "r", encoding="utf-8") as f:
+            return os.path.join(os.path.dirname(setting_file), f.read().strip())
     return None
 
 

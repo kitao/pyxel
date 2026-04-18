@@ -40,6 +40,19 @@ def init_pyxel():
     pyxel.init(160, 120, headless=True)
 
 
+@pytest.fixture(autouse=True)
+def reset_pyxel_state():
+    import pyxel
+
+    pyxel.clip()
+    pyxel.camera()
+    pyxel.pal()
+    pyxel.dither(1.0)
+    pyxel.rseed(0)
+    pyxel.nseed(0)
+    yield
+
+
 @pytest.fixture
 def assets_dir():
     return ASSETS_DIR
