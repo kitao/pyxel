@@ -19,7 +19,7 @@ pub struct GeneratorParams {
     pub transpose: i32,        // -5..+5
     pub instrumentation: i32,  // 0-3
     pub speed: i32,            // internal speed unit (BPM = 28800 / speed)
-    pub chord: i32,            // 0-7
+    pub chord: i32,            // 0-7 preset, 8-9 custom
     pub base: i32,             // 0-7
     pub base_quantize: i32,    // 12-15
     pub drums: i32,            // 0-7
@@ -28,6 +28,19 @@ pub struct GeneratorParams {
     pub melo_lowest_note: i32, // 28-33
     pub melo_density: i32,     // 0|2|4
     pub melo_use16: bool,
+    #[serde(default)]
+    pub custom_progression: Option<Vec<CustomChordEntryDef>>,
+}
+
+// Custom chord progression entry — sent from TS when chord >= PRESET_COUNT.
+// Either `notes` (a 12-digit bits string) or `repeat` (a prior entry index) must be provided.
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct CustomChordEntryDef {
+    pub loc: usize,
+    #[serde(default)]
+    pub notes: Option<String>,
+    #[serde(default)]
+    pub repeat: Option<usize>,
 }
 
 const BARS: usize = 8;
@@ -50,6 +63,7 @@ const PRESETS: [GeneratorParams; PRESET_COUNT] = [
         melo_lowest_note: 28,
         melo_density: 2,
         melo_use16: true,
+        custom_progression: None,
     },
     GeneratorParams {
         transpose: 0,
@@ -64,6 +78,7 @@ const PRESETS: [GeneratorParams; PRESET_COUNT] = [
         melo_lowest_note: 28,
         melo_density: 4,
         melo_use16: true,
+        custom_progression: None,
     },
     GeneratorParams {
         transpose: 0,
@@ -78,6 +93,7 @@ const PRESETS: [GeneratorParams; PRESET_COUNT] = [
         melo_lowest_note: 30,
         melo_density: 2,
         melo_use16: false,
+        custom_progression: None,
     },
     GeneratorParams {
         transpose: 0,
@@ -92,6 +108,7 @@ const PRESETS: [GeneratorParams; PRESET_COUNT] = [
         melo_lowest_note: 28,
         melo_density: 0,
         melo_use16: false,
+        custom_progression: None,
     },
     GeneratorParams {
         transpose: 0,
@@ -106,6 +123,7 @@ const PRESETS: [GeneratorParams; PRESET_COUNT] = [
         melo_lowest_note: 29,
         melo_density: 2,
         melo_use16: false,
+        custom_progression: None,
     },
     GeneratorParams {
         transpose: 0,
@@ -120,6 +138,7 @@ const PRESETS: [GeneratorParams; PRESET_COUNT] = [
         melo_lowest_note: 30,
         melo_density: 2,
         melo_use16: true,
+        custom_progression: None,
     },
     GeneratorParams {
         transpose: 0,
@@ -134,6 +153,7 @@ const PRESETS: [GeneratorParams; PRESET_COUNT] = [
         melo_lowest_note: 28,
         melo_density: 4,
         melo_use16: true,
+        custom_progression: None,
     },
     GeneratorParams {
         transpose: 0,
@@ -148,6 +168,7 @@ const PRESETS: [GeneratorParams; PRESET_COUNT] = [
         melo_lowest_note: 28,
         melo_density: 4,
         melo_use16: true,
+        custom_progression: None,
     },
 ];
 
@@ -740,18 +761,84 @@ fn root_from_bits(bits: &[i32; 12]) -> i32 {
     bits.iter().position(|v| *v == 2).unwrap_or(0) as i32
 }
 
-fn resolve_entry_notes(progressions: &[ChordEntry], idx: usize) -> Option<&'static str> {
-    progressions[idx].notes.or_else(|| {
+// Owned counterpart of ChordEntry — allows mixing static presets and runtime custom entries.
+#[derive(Clone, Debug)]
+struct OwnedChordEntry {
+    loc: usize,
+    notes: Option<String>,
+    repeat: Option<usize>,
+}
+
+impl OwnedChordEntry {
+    fn from_static(e: ChordEntry) -> Self {
+        Self {
+            loc: e.loc,
+            notes: e.notes.map(String::from),
+            repeat: e.repeat,
+        }
+    }
+}
+
+/// Resolve a chord selector (0..PRESET_COUNT = preset, >=PRESET_COUNT = custom slot) into
+/// an owned progression that the downstream generators can consume uniformly.
+fn resolve_progression(chord: i32, custom: Option<&[CustomChordEntryDef]>) -> Vec<OwnedChordEntry> {
+    let chord_idx = chord as usize;
+    if chord_idx >= PRESET_COUNT {
+        if let Some(entries) = custom.filter(|e| !e.is_empty()) {
+            let mut out: Vec<OwnedChordEntry> = entries
+                .iter()
+                .map(|e| OwnedChordEntry {
+                    loc: e.loc.min(TOTAL_STEPS.saturating_sub(1)),
+                    notes: e.notes.clone(),
+                    repeat: e.repeat,
+                })
+                .collect();
+            // `repeat` indices reference positions in the pre-sort TS-side array; after sorting
+            // by loc we need to preserve those references. Since the TS encoder emits entries
+            // in loc order, we skip sorting to keep `repeat` indices stable.
+            // Guarantee there is an entry at loc 0 so every step has a defined chord.
+            if out.first().is_none_or(|e| e.loc != 0) {
+                out.insert(
+                    0,
+                    OwnedChordEntry {
+                        loc: 0,
+                        notes: Some("209019030909".to_string()),
+                        repeat: None,
+                    },
+                );
+                // Shift every repeat index up by 1 to account for the prepended entry.
+                for entry in out.iter_mut().skip(1) {
+                    if let Some(r) = entry.repeat.as_mut() {
+                        *r += 1;
+                    }
+                }
+            }
+            return out;
+        }
+        // Fallback: hold I major for the full 8 bars.
+        return vec![OwnedChordEntry {
+            loc: 0,
+            notes: Some("209019030909".to_string()),
+            repeat: None,
+        }];
+    }
+    CHORD_PROGRESSIONS[chord_idx.min(PRESET_COUNT - 1)]
+        .iter()
+        .copied()
+        .map(OwnedChordEntry::from_static)
+        .collect()
+}
+
+fn resolve_entry_notes(progressions: &[OwnedChordEntry], idx: usize) -> Option<&str> {
+    progressions[idx].notes.as_deref().or_else(|| {
         progressions[idx]
             .repeat
             .and_then(|r| progressions.get(r))
-            .and_then(|e| e.notes)
+            .and_then(|e| e.notes.as_deref())
     })
 }
 
-fn chord_bits_per_step(chord: i32) -> Vec<[i32; 12]> {
-    let chord_idx = chord as usize;
-    let progression = CHORD_PROGRESSIONS[chord_idx];
+fn chord_bits_per_step(progression: &[OwnedChordEntry]) -> Vec<[i32; 12]> {
     let mut out = vec![[0; 12]; TOTAL_STEPS];
 
     for (loc, slot) in out.iter_mut().enumerate().take(TOTAL_STEPS) {
@@ -830,9 +917,11 @@ impl MelodyState {
     }
 }
 
-fn build_melody_chord_plan(chord: i32, key_shift: i32, lowest: i32) -> Vec<MelodyChord> {
-    let chord_idx = chord as usize;
-    let progression = CHORD_PROGRESSIONS[chord_idx];
+fn build_melody_chord_plan(
+    progression: &[OwnedChordEntry],
+    key_shift: i32,
+    lowest: i32,
+) -> Vec<MelodyChord> {
     let mut out: Vec<MelodyChord> = Vec::with_capacity(progression.len());
     for p in progression {
         let mut base = 0;
@@ -842,7 +931,7 @@ fn build_melody_chord_plan(chord: i32, key_shift: i32, lowest: i32) -> Vec<Melod
         let mut notes = Vec::new();
         let mut notes_bits = [0; 12];
         let mut no_root = false;
-        if let Some(note_str) = p.notes {
+        if let Some(note_str) = p.notes.as_deref() {
             let notes_origin = parse_notes_bits(note_str);
             notes_bits = notes_origin;
             let mut note_chord_count = 0;
@@ -1177,7 +1266,7 @@ fn pick_target_note_idx(
 }
 
 fn generate_melody(
-    chord: i32,
+    progression: &[OwnedChordEntry],
     density: i32,
     use_16th: bool,
     lowest: i32,
@@ -1187,7 +1276,7 @@ fn generate_melody(
     require_tones: bool,
 ) -> (Vec<Option<i32>>, Vec<Option<i32>>) {
     let density = density as usize;
-    let chord_plan = build_melody_chord_plan(chord, key_shift, lowest);
+    let chord_plan = build_melody_chord_plan(progression, key_shift, lowest);
     loop {
         let mut note_line = vec![NOTE_UNSET; TOTAL_STEPS];
         let mut melody_view = vec![None; TOTAL_STEPS];
@@ -1472,7 +1561,7 @@ fn place_harmony(
 }
 
 fn generate_submelody(
-    chord: i32,
+    progression: &[OwnedChordEntry],
     melody: &[Option<i32>],
     sub_seed: &[Option<i32>],
     base: &[Option<i32>],
@@ -1480,7 +1569,7 @@ fn generate_submelody(
     lowest: i32,
     rng: &mut Xoshiro256StarStar,
 ) -> Vec<Option<i32>> {
-    let chord_plan = build_melody_chord_plan(chord, key_shift, lowest);
+    let chord_plan = build_melody_chord_plan(progression, key_shift, lowest);
     let rhythm_sub = pick_rhythm_events(rng, true, true);
     let mut state = MelodyState::new();
 
@@ -1748,6 +1837,24 @@ pub fn compile_to_mml_json(bgm_json: &str) -> String {
     serde_json::to_string(&compile_to_mml(&data)).expect("MML serialization failed")
 }
 
+/// Return the resolved progression for a chord slot as JSON. Presets (0..=7) return their
+/// static `CHORD_PROGRESSIONS` entry. Custom slots (>= PRESET_COUNT) fall through to the
+/// resolver's default (I major held for 8 bars) — the UI should not call this for custom
+/// slots, those are stored client-side.
+#[cfg(not(pyxel_core))]
+pub fn preset_progression_json(preset: i32) -> String {
+    let entries = resolve_progression(preset, None);
+    let defs: Vec<CustomChordEntryDef> = entries
+        .into_iter()
+        .map(|e| CustomChordEntryDef {
+            loc: e.loc,
+            notes: e.notes,
+            repeat: e.repeat,
+        })
+        .collect();
+    serde_json::to_string(&defs).expect("preset progression serialization failed")
+}
+
 // --- New structured generation pipeline ---
 
 const BASS_TONE_IDX: usize = 7;
@@ -1810,7 +1917,7 @@ fn generate_bgm(params: &GeneratorParams, seed: u64) -> BgmData {
         "invalid instrumentation"
     );
     assert!(params.speed >= 1, "invalid speed");
-    assert!((0..8).contains(&params.chord), "invalid chord");
+    assert!((0..10).contains(&params.chord), "invalid chord");
     assert!((0..8).contains(&params.base), "invalid base");
     assert!(
         (12..=15).contains(&params.base_quantize),
@@ -1839,10 +1946,11 @@ fn generate_bgm(params: &GeneratorParams, seed: u64) -> BgmData {
 
     let mut rng = Xoshiro256StarStar::seed_from_u64(seed);
 
-    let bits_per_step = chord_bits_per_step(chord);
+    let progression = resolve_progression(chord, params.custom_progression.as_deref());
+    let bits_per_step = chord_bits_per_step(&progression);
     let bass = generate_bass(params.base, &bits_per_step, key_shift);
     let mut melody_and_seed = generate_melody(
-        chord,
+        &progression,
         density,
         use_16th,
         lowest,
@@ -1854,9 +1962,9 @@ fn generate_bgm(params: &GeneratorParams, seed: u64) -> BgmData {
     let mut submelody = None;
 
     if instr >= 2 {
-        let chord_plan = build_melody_chord_plan(chord, key_shift, lowest);
+        let chord_plan = build_melody_chord_plan(&progression, key_shift, lowest);
         let mut candidate = generate_submelody(
-            chord,
+            &progression,
             &melody_and_seed.0,
             &melody_and_seed.1,
             &bass,
@@ -1869,10 +1977,17 @@ fn generate_bgm(params: &GeneratorParams, seed: u64) -> BgmData {
                 break;
             }
             melody_and_seed = generate_melody(
-                chord, density, use_16th, lowest, key_shift, &bass, &mut rng, false,
+                &progression,
+                density,
+                use_16th,
+                lowest,
+                key_shift,
+                &bass,
+                &mut rng,
+                false,
             );
             candidate = generate_submelody(
-                chord,
+                &progression,
                 &melody_and_seed.0,
                 &melody_and_seed.1,
                 &bass,
