@@ -55,7 +55,7 @@
       function hasDetails(item) {
         return (
           (item.params && item.params.length > 0) ||
-          (item.return && item.return.type !== "None") ||
+          (item.returns && item.returns.type !== "None") ||
           (item.examples && item.examples.length > 0) ||
           item.notes ||
           item.value_type
@@ -85,8 +85,8 @@
             html += '<div class="text-xs leading-relaxed">';
             html += `<code class="text-indigo-300 font-mono">${esc(p.name)}</code>`;
             html += ` <span class="text-gray-500">(${esc(p.type)})</span>`;
-            if (p.desc) {
-              html += ` <span class="text-gray-400">\u2014 ${esc(t(p.desc))}</span>`;
+            if (p.description) {
+              html += ` <span class="text-gray-400">\u2014 ${esc(t(p.description))}</span>`;
             }
             html += "</div>";
           }
@@ -96,12 +96,12 @@
         }
 
         // Return (skip None)
-        if (item.return && item.return.type !== "None") {
+        if (item.returns && item.returns.type !== "None") {
           const sec = document.createElement("div");
           let html = `<div class="text-gray-500 text-xs font-medium uppercase tracking-wide mb-1">${esc(t("returns"))}</div>`;
-          html += `<div class="text-xs leading-relaxed"><code class="text-indigo-300 font-mono">${esc(item.return.type)}</code>`;
-          if (item.return.desc) {
-            html += ` <span class="text-gray-400">\u2014 ${esc(t(item.return.desc))}</span>`;
+          html += `<div class="text-xs leading-relaxed"><code class="text-indigo-300 font-mono">${esc(item.returns.type)}</code>`;
+          if (item.returns.description) {
+            html += ` <span class="text-gray-400">\u2014 ${esc(t(item.returns.description))}</span>`;
           }
           html += "</div>";
           sec.innerHTML = html;

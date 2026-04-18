@@ -134,7 +134,7 @@ impl Image {
     }
 
     fn pget(&self, x: f32, y: f32) -> pyxel::Color {
-        self.inner_ref().get_pixel(x, y)
+        self.inner_ref().pixel(x, y)
     }
 
     fn pset(&self, x: f32, y: f32, col: pyxel::Color) {

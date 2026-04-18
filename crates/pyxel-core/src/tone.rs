@@ -3,7 +3,7 @@ use crate::settings::DEFAULT_TONE_SAMPLE_BITS;
 pub type ToneSample = u32;
 pub type ToneGain = f32;
 
-#[derive(Debug, PartialEq, Copy, Clone)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub enum ToneMode {
     Wavetable,
     ShortPeriodNoise,

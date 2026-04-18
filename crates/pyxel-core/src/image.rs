@@ -254,8 +254,8 @@ impl Image {
         self.canvas.clear(self.palette[color as usize]);
     }
 
-    pub fn get_pixel(&self, x: f32, y: f32) -> Color {
-        self.canvas.get_value(x, y)
+    pub fn pixel(&self, x: f32, y: f32) -> Color {
+        self.canvas.value(x, y)
     }
 
     pub fn set_pixel(&mut self, x: f32, y: f32, color: Color) {

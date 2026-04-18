@@ -70,39 +70,39 @@ img#pyxel-logo {
 }
 
 img#pyxel-prompt {
+  --min-width-ratio: 0.25;
   position: absolute;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  --min-width-ratio: 0.25;
   image-rendering: pixelated;
   pointer-events: none;
 }
 
 img#pyxel-gamepad-cross {
+  --min-width-ratio: 0.2;
   position: absolute;
   left: 1%;
   bottom: 5%;
-  --min-width-ratio: 0.2;
   image-rendering: pixelated;
   pointer-events: none;
 }
 
 img#pyxel-gamepad-button {
+  --min-width-ratio: 0.2;
   position: absolute;
   right: 1%;
   bottom: 5%;
-  --min-width-ratio: 0.2;
   image-rendering: pixelated;
   pointer-events: none;
 }
 
 img#pyxel-gamepad-menu {
+  --min-width-ratio: 0.2;
   position: absolute;
   left: 50%;
   bottom: 1%;
   transform: translateX(-50%);
-  --min-width-ratio: 0.2;
   image-rendering: pixelated;
   pointer-events: none;
 }

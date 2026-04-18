@@ -817,13 +817,13 @@ def generate_api_reference():
                 lines.append("**Parameters:**")
                 lines.append("")
                 for p in item["params"]:
-                    p_desc = localize(p.get("desc"))
+                    p_desc = localize(p.get("description"))
                     suffix = f" — {p_desc}" if p_desc else ""
                     lines.append(f"- `{p['name']}` (*{p['type']}*){suffix}")
                 lines.append("")
-            ret = item.get("return")
+            ret = item.get("returns")
             if ret and ret.get("type") and ret["type"] != "None":
-                ret_desc = localize(ret.get("desc"))
+                ret_desc = localize(ret.get("description"))
                 suffix = f" — {ret_desc}" if ret_desc else ""
                 lines.append(f"**Returns:** `{ret['type']}`{suffix}")
                 lines.append("")

@@ -7,7 +7,6 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 CRATES_DIR="$ROOT_DIR/crates"
 EXAMPLES_DIR="$ROOT_DIR/python/pyxel/examples"
-example_name() { basename "$EXAMPLES_DIR"/$1_*.py .py; }
 
 : "${CARGO_OPTS:?CARGO_OPTS must be set}"
 export PYTHONUNBUFFERED=1
@@ -20,6 +19,7 @@ cleanup() {
         kill "$BG_PID" 2>/dev/null || true
         wait "$BG_PID" 2>/dev/null || true
     fi
+    # Guard against unset/empty array under 'set -u' (bash 4.4+ idiom).
     for path in ${CLEANUP_PATHS[@]+"${CLEANUP_PATHS[@]}"}; do
         rm -rf "$path" 2>/dev/null || true
     done
@@ -33,6 +33,10 @@ echo_cmd() {
         display+=("${arg##*/}")
     done
     echo "${display[*]}"
+}
+
+example_name() {
+    basename "$EXAMPLES_DIR"/$1_*.py .py
 }
 
 run() {
@@ -53,6 +57,7 @@ run_bg() {
 
 # Rust unit tests
 cd "$CRATES_DIR"
+# Unquoted on purpose: CARGO_OPTS must word-split into multiple cargo flags.
 run cargo test -p pyxel-core $CARGO_OPTS
 
 # Python API tests
@@ -92,7 +97,8 @@ run pyxel app2html "$PACKAGE_EXAMPLE.pyxapp"
 rm -f "$PACKAGE_EXAMPLE.html"
 rm -f "$PACKAGE_EXAMPLE.pyxapp"
 
-# Watch (inject error, restore, Ctrl+C to stop)
+# Watch (inject error, restore, Ctrl+C to stop).
+# Inline background instead of run_bg: Ctrl+C exits 0 here, while run_bg exits 130.
 pyxel watch . "$WATCH_EXAMPLE.py" &
 BG_PID=$!
 sleep 2

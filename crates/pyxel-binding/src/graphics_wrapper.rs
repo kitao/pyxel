@@ -60,7 +60,7 @@ fn cls(col: pyxel::Color) {
 
 #[pyfunction]
 fn pget(x: f32, y: f32) -> pyxel::Color {
-    pyxel().get_pixel(x, y)
+    pyxel().pixel(x, y)
 }
 
 #[pyfunction]

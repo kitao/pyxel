@@ -10,6 +10,8 @@ name = "pyxel_binding"
 crate-type = ["cdylib"]
 
 [dependencies]
+# abi3-py310 ships a single wheel for Python 3.10+; multiple-pymethods
+# lets binding modules split #[pymethods] across files
 pyo3 = { version = "0.28", features = ["abi3-py310", "extension-module", "multiple-pymethods"] }
 pyxel-core = { path = "../pyxel-core" }
 

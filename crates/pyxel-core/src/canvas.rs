@@ -83,7 +83,7 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         self.data.fill(value);
     }
 
-    pub fn get_value(&self, x: f32, y: f32) -> T {
+    pub fn value(&self, x: f32, y: f32) -> T {
         let x = f32_to_i32(x);
         let y = f32_to_i32(y);
         if self.clip_rect.contains(x, y) {

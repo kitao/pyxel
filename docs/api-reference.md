@@ -1521,6 +1521,12 @@ Wavetable data as a list of sample values. Each value must be in range 0 to (2^s
 
 - **Type:** `list[int]`
 
+### `Tone.waveform` — variable *(Advanced)*
+
+Deprecated alias of wavetable.
+
+- **Type:** `list[int]`
+
 ### `Tone.gain` — variable *(Advanced)*
 
 Tone gain. Defaults to 1.0.

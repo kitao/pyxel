@@ -8,7 +8,7 @@ use super::event::Event;
 use super::sdl2::platform_sdl2::PlatformSdl2 as Platform;
 
 #[derive(PartialEq)]
-pub enum GLProfile {
+pub enum GlProfile {
     None,
     Gl,
     Gles,
@@ -205,9 +205,9 @@ pub fn poll_events(events: &mut Vec<Event>) {
     }
 }
 
-pub fn gl_profile() -> GLProfile {
+pub fn gl_profile() -> GlProfile {
     if is_headless() {
-        return GLProfile::None;
+        return GlProfile::None;
     }
     platform().gl_profile()
 }

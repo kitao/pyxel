@@ -11,5 +11,5 @@ pub use facade::{
     is_sigint_received, lock_audio, pause_audio, poll_events, quit, run_frame_loop, set_fullscreen,
     set_mouse_pos, set_mouse_visible, set_window_icon, set_window_pos, set_window_size,
     set_window_title, start_audio, step_frame, ticks, unlock_audio, window_pos, window_size,
-    GLProfile,
+    GlProfile,
 };

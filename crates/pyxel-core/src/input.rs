@@ -8,7 +8,7 @@ use crate::platform;
 use crate::pyxel::{self, Pyxel};
 use crate::utils::f32_to_i32;
 
-#[derive(Copy, Clone, PartialEq)]
+#[derive(Clone, Copy, PartialEq)]
 enum KeyState {
     Pressed,
     Released,

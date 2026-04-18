@@ -18,5 +18,6 @@ WHEEL_PATHS=("$WASM_DIR"/*-emscripten_*.whl)
 WHEEL_NAME="$(basename "${WHEEL_PATHS[0]}")"
 
 # Use temp file instead of sed -i for cross-platform compatibility
+trap 'rm -f "$WASM_DIR/$SCRIPT_NAME.tmp"' EXIT
 sed "s#\\(PYXEL_WHEEL_PATH =\\).*;#\\1 \\\"$WHEEL_NAME\\\";#" "$WASM_DIR/$SCRIPT_NAME" > "$WASM_DIR/$SCRIPT_NAME.tmp"
 mv "$WASM_DIR/$SCRIPT_NAME.tmp" "$WASM_DIR/$SCRIPT_NAME"

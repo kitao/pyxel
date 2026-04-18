@@ -7,7 +7,7 @@ use std::sync::atomic::{AtomicU32, Ordering};
 
 use glow::Context;
 
-use super::super::facade::GLProfile;
+use super::super::facade::GlProfile;
 use super::poll_events::{open_gamepad, GamepadSlot};
 #[allow(clippy::wildcard_imports)]
 use super::sdl2_sys::*;
@@ -410,16 +410,16 @@ impl PlatformSdl2 {
 
     // poll_events is implemented in poll_events.rs
 
-    pub fn gl_profile(&self) -> GLProfile {
+    pub fn gl_profile(&self) -> GlProfile {
         let mut value = 0i32;
         unsafe { SDL_GL_GetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, &raw mut value) };
 
         if value & SDL_GL_CONTEXT_PROFILE_CORE as i32 != 0 {
-            GLProfile::Gl
+            GlProfile::Gl
         } else if value & SDL_GL_CONTEXT_PROFILE_ES as i32 != 0 {
-            GLProfile::Gles
+            GlProfile::Gles
         } else {
-            GLProfile::None
+            GlProfile::None
         }
     }
 

@@ -176,8 +176,8 @@ impl Sdl2Bindings {
             .generate_comments(false)
             .prepend_enum_name(false)
             .clang_arg(format!("--target={}", self.target))
-            .clang_args(self.get_bindgen_flags())
-            .clang_args(self.get_include_flags());
+            .clang_args(self.bindgen_flags())
+            .clang_args(self.include_flags());
 
         if self.target_os == "windows-msvc" {
             builder = builder
@@ -201,7 +201,7 @@ impl Sdl2Bindings {
             .unwrap();
     }
 
-    fn get_bindgen_flags(&self) -> Vec<String> {
+    fn bindgen_flags(&self) -> Vec<String> {
         if let Ok(bindgen_flags) = var("BINDGENFLAGS") {
             bindgen_flags
                 .split_whitespace()
@@ -212,7 +212,7 @@ impl Sdl2Bindings {
         }
     }
 
-    fn get_include_flags(&self) -> Vec<String> {
+    fn include_flags(&self) -> Vec<String> {
         let mut include_flags = Vec::new();
 
         if is_sdl2_static() {

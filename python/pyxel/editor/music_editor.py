@@ -75,7 +75,7 @@ class MusicEditor(EditorBase):
         self.copy_var("should_loop_var", self._loop_button, "is_checked_var")
 
         # Initialize music field
-        self._music_field = [MusicField(self, 11, 29 + i * 25, i) for i in range(4)]
+        self._music_fields = [MusicField(self, 11, 29 + i * 25, i) for i in range(4)]
 
         # Initialize sound selector
         self._sound_selector = SoundSelector(self)
@@ -88,10 +88,10 @@ class MusicEditor(EditorBase):
         self.add_event_listener("draw", self.__on_draw)
 
         # Normalize the initial music's seqs length
-        self.__normalize_music_seqs(self.music_index_var)
+        self._normalize_music_seqs(self.music_index_var)
 
     @staticmethod
-    def __normalize_music_seqs(music_index):
+    def _normalize_music_seqs(music_index):
         music = pyxel.musics[music_index]
         seqs_len = len(music.seqs)
         if seqs_len < pyxel.NUM_CHANNELS:
@@ -100,7 +100,7 @@ class MusicEditor(EditorBase):
             del music.seqs[pyxel.NUM_CHANNELS :]
 
     def __on_music_index_change(self, value):
-        self.__normalize_music_seqs(value)
+        self._normalize_music_seqs(value)
 
     def get_field(self, index):
         if index >= pyxel.NUM_CHANNELS:

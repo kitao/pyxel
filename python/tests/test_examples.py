@@ -11,12 +11,12 @@ EXAMPLES_DIR = Path(__file__).parent.parent / "pyxel" / "examples"
 EXAMPLE_REFS_DIR = REFERENCES_DIR / "examples"
 
 
-def _reinit_pyxel():
+def reinit_pyxel():
     """Reset Pyxel state so init() can be called again."""
     pyxel._reset_statics()
 
 
-def _restore_pyxel():
+def restore_pyxel():
     """Restore Pyxel to conftest's default session state."""
     pyxel._reset_statics()
     pyxel.init(160, 120, headless=True)
@@ -233,7 +233,7 @@ class TestExamples:
         script = EXAMPLES_DIR / f"{name}.py"
         assert script.exists(), f"Example not found: {script}"
 
-        _reinit_pyxel()
+        reinit_pyxel()
         try:
             if name in FLIP_EXAMPLES:
                 plan = CAPTURE_PLANS[name]
@@ -248,4 +248,4 @@ class TestExamples:
             results = capture_frames(captured, plan, tmp_path)
             compare_or_update_all(name, results, EXAMPLE_REFS_DIR, update_references)
         finally:
-            _restore_pyxel()
+            restore_pyxel()

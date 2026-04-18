@@ -5,7 +5,7 @@ use glow::{HasContext, PixelUnpackData};
 use crate::font::Font;
 use crate::image::{rgb24_to_rgb8, Color, Rgb24};
 use crate::platform;
-use crate::platform::GLProfile;
+use crate::platform::GlProfile;
 use crate::pyxel::{self, Pyxel};
 use crate::settings::{BACKGROUND_COLOR, MAX_COLORS, NUM_SCREEN_TYPES};
 
@@ -63,7 +63,7 @@ impl Graphics {
         unsafe {
             let gl = platform::gl_context();
 
-            if platform::gl_profile() != GLProfile::Gles {
+            if platform::gl_profile() != GlProfile::Gles {
                 gl.disable(glow::FRAMEBUFFER_SRGB);
             }
             gl.disable(glow::BLEND);
@@ -73,7 +73,7 @@ impl Graphics {
             let colors_texture = Self::create_colors_texture(gl);
 
             Self {
-                is_gles: platform::gl_profile() == GLProfile::Gles,
+                is_gles: platform::gl_profile() == GlProfile::Gles,
                 screen_shaders,
                 screen_texture,
                 screen_texture_initialized: false,
@@ -89,7 +89,7 @@ impl Graphics {
     }
 
     unsafe fn create_screen_shaders(gl: &mut glow::Context) -> Vec<ScreenShader> {
-        let glsl_version = if platform::gl_profile() == GLProfile::Gles {
+        let glsl_version = if platform::gl_profile() == GlProfile::Gles {
             GLES_VERSION
         } else {
             GL_VERSION
@@ -261,8 +261,8 @@ impl Pyxel {
         pyxel::screen().clear(color);
     }
 
-    pub fn get_pixel(&self, x: f32, y: f32) -> Color {
-        pyxel::screen().get_pixel(x, y)
+    pub fn pixel(&self, x: f32, y: f32) -> Color {
+        pyxel::screen().pixel(x, y)
     }
 
     pub fn set_pixel(&self, x: f32, y: f32, color: Color) {

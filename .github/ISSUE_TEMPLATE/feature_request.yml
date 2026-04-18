@@ -3,7 +3,7 @@ description: "Suggest an idea / アイデアを提案する"
 labels: ["enhancement"]
 body:
   - type: textarea
-    id: description
+    id: proposal
     attributes:
       label: "What would you like? / 何がしたいですか？"
       description: "Describe the feature you want / 欲しい機能を記入してください"

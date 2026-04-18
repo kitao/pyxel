@@ -14,7 +14,7 @@ use crate::pyxel::{self, Pyxel};
 use crate::sound::Sound;
 
 // Generation parameters — field names match the original TS bgm-generator.ts
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GeneratorParams {
     pub transpose: i32,        // -5..+5
     pub instrumentation: i32,  // 0-3
@@ -34,7 +34,7 @@ pub struct GeneratorParams {
 
 // Custom chord progression entry — sent from TS when chord >= PRESET_COUNT.
 // Either `notes` (a 12-digit bits string) or `repeat` (a prior entry index) must be provided.
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CustomChordEntryDef {
     pub loc: usize,
     #[serde(default)]
@@ -178,7 +178,7 @@ fn preset_params(preset: i32) -> GeneratorParams {
 }
 
 // Instrument definition (maps to MML @, @ENV, @VIB, @GLI)
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Tone {
     pub wave: i32,            // 0=triangle, 1=square, 2=pulse, 3=noise
     pub attack: i32,          // ticks
@@ -190,7 +190,7 @@ pub struct Tone {
 }
 
 // Per-channel note and control data (all sparse: None=continue previous)
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Channel {
     pub notes: Vec<Option<i32>>,   // None=sustain, -1=rest, 0+=pitch/drum key
     pub tones: Vec<Option<i32>>,   // tone index
@@ -199,7 +199,7 @@ pub struct Channel {
 }
 
 // Complete BGM data — output of `generate_bgm()`, input for `compile_to_mml()`
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct BgmData {
     pub tempo: i32,             // BPM (MML T command value)
     pub tones: Vec<Tone>,       // up to 16 tone definitions
@@ -873,7 +873,7 @@ fn build_chord_note_pool(bits: &[i32; 12], key_shift: i32, lowest: i32) -> Vec<(
                 note_highest = Some(note + 15);
             }
         }
-        if note_highest.is_some() && note >= note_highest.unwrap_or(note) {
+        if note_highest.is_some_and(|h| note >= h) {
             break;
         }
         idx += 1;
@@ -1115,14 +1115,14 @@ fn next_note_events(
     }
 
     let (first_loc, first_len) = following[0];
-    let mut cur_idx = None;
-    if !lookahead {
-        cur_idx = find_chord_note_index(note_pool, state.prev_note);
-    }
-    if state.prev_note < 0 || cur_idx.is_none() {
+    let cur_idx = if lookahead {
+        None
+    } else {
+        find_chord_note_index(note_pool, state.prev_note)
+    };
+    let Some(mut cur_idx) = cur_idx.filter(|_| state.prev_note >= 0) else {
         return Some(vec![(first_loc, note_pool[next_idx].0, first_len)]);
-    }
-    let mut cur_idx = cur_idx.unwrap_or(0);
+    };
     let diff = (next_idx as i32 - cur_idx as i32).unsigned_abs() as usize;
     let direction = if next_idx > cur_idx { 1isize } else { -1isize };
 

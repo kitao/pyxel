@@ -63,7 +63,7 @@ jobs:
         name: Install build dependencies
         run: pip install -r python/requirements.txt
 
-      - name: Build wheel
+      - name: Build wheel (macOS/Windows)
         shell: bash
         run: |
           export MACOSX_DEPLOYMENT_TARGET=${{ matrix.min_macos }}
@@ -270,7 +270,7 @@ jobs:
 
           rm -rf SDL2-${{ env.SDL2_VERSION }} sdl2-build
 
-      - name: Build wheel
+      - name: Build wheel (Linux)
         run: |
           export BINDGENFLAGS="-I$PREFIX/include/SDL2 -I$SYSROOT/usr/include"
           export RUSTFLAGS="-L$PREFIX/lib"

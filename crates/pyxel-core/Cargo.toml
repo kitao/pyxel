@@ -10,6 +10,7 @@ name = "pyxel"
 
 [dependencies]
 blip_buf = "0.1"
+# wasmbind routes time queries through js-sys for Emscripten/WASM builds
 chrono = { version = "0.4", features = ["wasmbind"] }
 directories = "6.0"
 fontdue = "0.9"
@@ -29,6 +30,7 @@ serde-xml-rs = "0.8"
 # all-codecs enables every format the Sound.pcm() loader can accept
 symphonia = { version = "0.5", features = ["all-codecs"] }
 toml = "1.0"
+# deflate is the only codec needed for .pyxapp / .pyxres
 zip = { version = "8.1", default-features = false, features = ["deflate"] }
 
 [build-dependencies]

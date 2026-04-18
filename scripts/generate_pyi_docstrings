@@ -78,13 +78,13 @@ def _adapt_for_tilemap(item):
     for p in item.get("params", []):
         if p["name"] == "col":
             p["name"] = "tile"
-            p["desc"] = {"en": "Tile (image_x, image_y)"}
+            p["description"] = {"en": "Tile (image_x, image_y)"}
         elif p["name"] == "colkey":
             p["name"] = "tilekey"
-            p["desc"] = {"en": "Transparent tile"}
+            p["description"] = {"en": "Transparent tile"}
         elif p["name"] == "img":
             p["name"] = "tm"
-            p["desc"] = {"en": "Tilemap number (0-7) or Tilemap instance"}
+            p["description"] = {"en": "Tilemap number (0-7) or Tilemap instance"}
 
 
 def _build_doc_map(api_data):
@@ -134,11 +134,11 @@ def _make_docstring(item, indent):
     params = item.get("params", [])
     param_lines = []
     for p in params:
-        p_desc = localize(p.get("desc"))
+        p_desc = localize(p.get("description"))
         if p_desc:
             param_lines.append(f"{indent}    {p['name']}: {p_desc}")
 
-    ret_desc = localize(item.get("return", {}).get("desc"))
+    ret_desc = localize(item.get("returns", {}).get("description"))
     notes = localize(item.get("notes"))
     examples = item.get("examples", [])
 

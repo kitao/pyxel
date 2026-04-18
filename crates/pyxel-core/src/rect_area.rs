@@ -1,6 +1,6 @@
 use std::cmp::{max, min};
 
-#[derive(Copy, Clone, Eq, PartialEq, Debug)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct RectArea {
     left: i32,
     top: i32,

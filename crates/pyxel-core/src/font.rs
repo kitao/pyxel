@@ -10,7 +10,7 @@ use crate::image::Color;
 const DEFAULT_FONT_SIZE: f32 = 10.0;
 const FONT_ALPHA_THRESHOLD: u8 = 128;
 
-#[derive(Copy, Clone, Default)]
+#[derive(Clone, Copy, Default)]
 pub struct BdfBoundingBox {
     width: i32,
     height: i32,

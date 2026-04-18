@@ -130,7 +130,7 @@ class Enemy:
         self.y = y
         self.w = ENEMY_WIDTH
         self.h = ENEMY_HEIGHT
-        self.dir = 1
+        self.direction = 1
         self.timer_offset = pyxel.rndi(0, 59)
         self.is_alive = True
         enemies.append(self)
@@ -138,10 +138,10 @@ class Enemy:
     def update(self):
         if (pyxel.frame_count + self.timer_offset) % 60 < 30:
             self.x += ENEMY_SPEED
-            self.dir = 1
+            self.direction = 1
         else:
             self.x -= ENEMY_SPEED
-            self.dir = -1
+            self.direction = -1
 
         self.y += ENEMY_SPEED
 
@@ -149,7 +149,7 @@ class Enemy:
             self.is_alive = False
 
     def draw(self):
-        pyxel.blt(self.x, self.y, 0, 8, 0, self.w * self.dir, self.h, 0)
+        pyxel.blt(self.x, self.y, 0, 8, 0, self.w * self.direction, self.h, 0)
 
 
 class Blast:

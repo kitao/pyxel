@@ -41,7 +41,7 @@
 - Fixed editor input and copy/paste issues
 - Fixed temporary image, tilemap, and sound memory leaks
 - Fixed doc generator stripping HTML tags inside inline code
-- Changed tilemap tile coordinate type from u8 to u16
+- Changed the tilemap tile coordinate type from u8 to u16
 - Fixed mouse coordinate handling on startup
 
 ## 2.8.7
@@ -60,7 +60,7 @@
 - Optimized blt and bltm rendering with fast paths
 - Optimized tilemap, text, and perspective rendering
 - Optimized screen and palette texture uploads
-- Increased maximum color palette size from 255 to 256
+- Increased the maximum color palette size from 255 to 256
 - Optimized GIF screencast saving with buffer reuse
 - Enabled Python atexit handlers on program termination
 - Enabled audio playback in headless mode
@@ -175,7 +175,7 @@
 
 - Added manual page for Pyxel Code Maker
 - Added manual page for Pyxel MML Studio
-- Removed version number from the pyxel command example in the README files
+- Removed the version number from the pyxel command example in the README files
 - Revamped Pyxel Web documentation for clarity and accuracy
 - Revamped the FAQ with updated content and improved clarity
 
@@ -192,7 +192,7 @@
 - Removed mutexes for resource types to improve performance
 - Renamed internal Python module to pyxel_binding
 - Optimized drawing performance with bulk fills and reduced overhead
-- Renamed pyxel-core public API to idiomatic Rust names
+- Renamed the pyxel-core public API to idiomatic Rust names
 - Improved test script with cleanup and app2exe/app2html
 - Refactored imports and cleanup across Rust, Python, and JS
 
@@ -207,7 +207,7 @@
 ## 2.6.8
 
 - Bundled SDL2 in Linux wheels for easier installation
-- Renamed SDL2 feature flags to sdl2_system and sdl2_bundle
+- Renamed the SDL2 feature flags to sdl2_system and sdl2_bundle
 - Updated Linux CI SDL2 version to 2.32.0
 
 ## 2.6.7
@@ -218,7 +218,7 @@
 - Updated CI Python version to 3.14
 - Updated Pyxel thanks image
 - Fixed keyboard input for non-US layouts on the web version
-- Removed version update check from the pyxel command
+- Removed the version update check from the pyxel command
 
 ## 2.6.6
 
@@ -317,7 +317,7 @@
 
 ## 2.5.8
 
-- Set desktop OpenGL internal format to GL_R8
+- Set the desktop OpenGL internal format to GL_R8
 - Fixed Tilemap.data_ptr to expose full map data
 - Updated build environment version for Mac to macOS 15
 

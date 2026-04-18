@@ -143,8 +143,8 @@ impl Tilemap {
         self.canvas.clear(tile);
     }
 
-    pub fn get_tile(&self, x: f32, y: f32) -> Tile {
-        self.canvas.get_value(x, y)
+    pub fn tile(&self, x: f32, y: f32) -> Tile {
+        self.canvas.value(x, y)
     }
 
     pub fn set_tile(&mut self, x: f32, y: f32, tile: Tile) {

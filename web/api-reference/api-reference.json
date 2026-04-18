@@ -308,7 +308,7 @@
             {
               "name": "width",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Screen width",
                 "cn": "画面宽度",
                 "de": "Bildschirmbreite",
@@ -326,7 +326,7 @@
             {
               "name": "height",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Screen height",
                 "cn": "画面高度",
                 "de": "Bildschirmhöhe",
@@ -344,7 +344,7 @@
             {
               "name": "title",
               "type": "str",
-              "desc": {
+              "description": {
                 "en": "Window title. Defaults to \"Pyxel\".",
                 "cn": "窗口标题。默认为 \"Pyxel\"。",
                 "de": "Fenstertitel. Standard ist \"Pyxel\".",
@@ -362,7 +362,7 @@
             {
               "name": "fps",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Frame rate. Defaults to 30.",
                 "cn": "帧率。默认为 30。",
                 "de": "Bildrate. Standard ist 30.",
@@ -380,7 +380,7 @@
             {
               "name": "quit_key",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Key to quit the application. Defaults to KEY_ESCAPE.",
                 "cn": "退出应用程序的按键。默认为 KEY_ESCAPE。",
                 "de": "Taste zum Beenden. Standard ist KEY_ESCAPE.",
@@ -398,7 +398,7 @@
             {
               "name": "display_scale",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Display scale factor. If omitted, automatically determined.",
                 "cn": "显示缩放倍率。省略时自动决定。",
                 "de": "Anzeige-Skalierungsfaktor. Wenn weggelassen, automatisch bestimmt.",
@@ -416,7 +416,7 @@
             {
               "name": "capture_scale",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Screen capture scale factor. Defaults to 2.",
                 "cn": "屏幕截图缩放倍率。默认为 2。",
                 "de": "Bildschirmaufnahme-Skalierungsfaktor. Standard ist 2.",
@@ -434,7 +434,7 @@
             {
               "name": "capture_sec",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Maximum recording time for screen capture video. Defaults to 10.",
                 "cn": "屏幕截图视频的最大录制时间。默认为 10。",
                 "de": "Maximale Aufnahmezeit für Bildschirmvideo. Standard ist 10.",
@@ -452,7 +452,7 @@
             {
               "name": "headless",
               "type": "bool",
-              "desc": {
+              "description": {
                 "en": "Run without a window. Defaults to False.",
                 "cn": "无窗口运行。默认为 False。",
                 "de": "Ohne Fenster ausführen. Standard ist False.",
@@ -468,7 +468,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "examples": [
@@ -498,7 +498,7 @@
             {
               "name": "update",
               "type": "callable",
-              "desc": {
+              "description": {
                 "en": "Function to update game logic each frame",
                 "cn": "每帧更新游戏逻辑的函数",
                 "de": "Funktion zur Aktualisierung der Spiellogik pro Frame",
@@ -516,7 +516,7 @@
             {
               "name": "draw",
               "type": "callable",
-              "desc": {
+              "description": {
                 "en": "Function to draw the screen each frame",
                 "cn": "每帧绘制画面的函数",
                 "de": "Funktion zum Zeichnen des Bildschirms pro Frame",
@@ -532,7 +532,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": false
@@ -555,7 +555,7 @@
             "tr": "Ekranı gösterir ve çıkış tuşuna basılana kadar bekler.",
             "uk": "Показує екран і чекає, поки не буде натиснуто клавішу виходу."
           },
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": false
@@ -578,7 +578,7 @@
             "tr": "Ekranı bir kare günceller. Çıkış tuşuna basıldığında uygulama kapanır. Bu fonksiyon web sürümünde kullanılamaz.",
             "uk": "Оновлює екран на один кадр. Застосунок завершується при натисканні клавіші виходу. Ця функція недоступна у веб-версії."
           },
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": false
@@ -601,7 +601,7 @@
             "tr": "Pyxel uygulamasını kapatır.",
             "uk": "Завершує застосунок Pyxel."
           },
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": false
@@ -624,7 +624,7 @@
             "tr": "Pyxel uygulamasını baştan yeniden başlatır.",
             "uk": "Перезапускає застосунок Pyxel з початку."
           },
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": false
@@ -651,7 +651,7 @@
             {
               "name": "title",
               "type": "str",
-              "desc": {
+              "description": {
                 "en": "Window title",
                 "cn": "窗口标题",
                 "de": "Fenstertitel",
@@ -667,7 +667,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": true
@@ -694,7 +694,7 @@
             {
               "name": "data",
               "type": "list[str]",
-              "desc": {
+              "description": {
                 "en": "Icon image as a list of strings",
                 "cn": "字符串列表形式的图标图像",
                 "de": "Symbolbild als Liste von Zeichenketten",
@@ -712,7 +712,7 @@
             {
               "name": "scale",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Scale factor",
                 "cn": "缩放倍率",
                 "de": "Skalierungsfaktor",
@@ -730,7 +730,7 @@
             {
               "name": "colkey",
               "type": "int/None",
-              "desc": {
+              "description": {
                 "en": "Transparent color. If omitted, no transparency.",
                 "cn": "透明色。省略时不透明处理。",
                 "de": "Transparenzfarbe. Wenn weggelassen, keine Transparenz.",
@@ -746,7 +746,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": true
@@ -773,7 +773,7 @@
             {
               "name": "enabled",
               "type": "bool",
-              "desc": {
+              "description": {
                 "en": "Enable fullscreen",
                 "cn": "启用全屏",
                 "de": "Vollbild aktivieren",
@@ -789,7 +789,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": true
@@ -816,7 +816,7 @@
             {
               "name": "width",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "New screen width in pixels",
                 "cn": "新的屏幕宽度（像素）",
                 "de": "Neue Bildschirmbreite in Pixeln",
@@ -834,7 +834,7 @@
             {
               "name": "height",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "New screen height in pixels",
                 "cn": "新的屏幕高度（像素）",
                 "de": "Neue Bildschirmhöhe in Pixeln",
@@ -850,7 +850,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": true
@@ -877,7 +877,7 @@
             {
               "name": "scr",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Screen mode number (0: crisp, 1: smooth, 2: retro)",
                 "cn": "屏幕模式编号 (0: crisp, 1: smooth, 2: retro)",
                 "de": "Bildschirmmodus-Nummer (0: crisp, 1: smooth, 2: retro)",
@@ -893,7 +893,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": true
@@ -920,7 +920,7 @@
             {
               "name": "enabled",
               "type": "bool",
-              "desc": {
+              "description": {
                 "en": "Enable the performance monitor",
                 "cn": "启用性能监视器",
                 "de": "Leistungsmonitor aktivieren",
@@ -936,7 +936,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": true
@@ -963,7 +963,7 @@
             {
               "name": "enabled",
               "type": "bool",
-              "desc": {
+              "description": {
                 "en": "Enable integer scaling",
                 "cn": "启用整数倍缩放",
                 "de": "Ganzzahlige Skalierung aktivieren",
@@ -979,7 +979,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": true
@@ -1025,7 +1025,7 @@
             {
               "name": "filename",
               "type": "str",
-              "desc": {
+              "description": {
                 "en": "Resource file name",
                 "cn": "资源文件名",
                 "de": "Ressourcendateiname",
@@ -1043,7 +1043,7 @@
             {
               "name": "exclude_images",
               "type": "bool",
-              "desc": {
+              "description": {
                 "en": "Exclude image banks. Defaults to False.",
                 "cn": "排除图像库。默认为 False。",
                 "de": "Bildbanken ausschließen. Standard ist False.",
@@ -1061,7 +1061,7 @@
             {
               "name": "exclude_tilemaps",
               "type": "bool",
-              "desc": {
+              "description": {
                 "en": "Exclude tilemaps. Defaults to False.",
                 "cn": "排除瓦片地图。默认为 False。",
                 "de": "Tilemaps ausschließen. Standard ist False.",
@@ -1079,7 +1079,7 @@
             {
               "name": "exclude_sounds",
               "type": "bool",
-              "desc": {
+              "description": {
                 "en": "Exclude sounds. Defaults to False.",
                 "cn": "排除声音。默认为 False。",
                 "de": "Klänge ausschließen. Standard ist False.",
@@ -1097,7 +1097,7 @@
             {
               "name": "exclude_musics",
               "type": "bool",
-              "desc": {
+              "description": {
                 "en": "Exclude music tracks. Defaults to False.",
                 "cn": "排除音乐轨道。默认为 False。",
                 "de": "Musikstücke ausschließen. Standard ist False.",
@@ -1113,7 +1113,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "notes": {
@@ -1154,7 +1154,7 @@
             {
               "name": "vendor_name",
               "type": "str",
-              "desc": {
+              "description": {
                 "en": "Vendor name",
                 "cn": "供应商名称",
                 "de": "Anbietername",
@@ -1172,7 +1172,7 @@
             {
               "name": "app_name",
               "type": "str",
-              "desc": {
+              "description": {
                 "en": "Application name",
                 "cn": "应用程序名称",
                 "de": "Anwendungsname",
@@ -1188,9 +1188,9 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "str",
-            "desc": {
+            "description": {
               "en": "Path to the user data directory",
               "cn": "用户数据目录的路径",
               "de": "Pfad zum Benutzerdatenverzeichnis",
@@ -1232,7 +1232,7 @@
             {
               "name": "filename",
               "type": "str",
-              "desc": {
+              "description": {
                 "en": "Resource file name",
                 "cn": "资源文件名",
                 "de": "Ressourcendateiname",
@@ -1250,7 +1250,7 @@
             {
               "name": "exclude_images",
               "type": "bool",
-              "desc": {
+              "description": {
                 "en": "Exclude image banks. Defaults to False.",
                 "cn": "排除图像库。默认为 False。",
                 "de": "Bildbanken ausschließen. Standard ist False.",
@@ -1268,7 +1268,7 @@
             {
               "name": "exclude_tilemaps",
               "type": "bool",
-              "desc": {
+              "description": {
                 "en": "Exclude tilemaps. Defaults to False.",
                 "cn": "排除瓦片地图。默认为 False。",
                 "de": "Tilemaps ausschließen. Standard ist False.",
@@ -1286,7 +1286,7 @@
             {
               "name": "exclude_sounds",
               "type": "bool",
-              "desc": {
+              "description": {
                 "en": "Exclude sounds. Defaults to False.",
                 "cn": "排除声音。默认为 False。",
                 "de": "Klänge ausschließen. Standard ist False.",
@@ -1304,7 +1304,7 @@
             {
               "name": "exclude_musics",
               "type": "bool",
-              "desc": {
+              "description": {
                 "en": "Exclude music tracks. Defaults to False.",
                 "cn": "排除音乐轨道。默认为 False。",
                 "de": "Musikstücke ausschließen. Standard ist False.",
@@ -1320,7 +1320,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": true
@@ -1347,7 +1347,7 @@
             {
               "name": "filename",
               "type": "str/None",
-              "desc": {
+              "description": {
                 "en": "File name. If omitted, saved to desktop.",
                 "cn": "文件名。省略时保存到桌面。",
                 "de": "Dateiname. Wird auf dem Desktop gespeichert, wenn weggelassen.",
@@ -1365,7 +1365,7 @@
             {
               "name": "scale",
               "type": "int/None",
-              "desc": {
+              "description": {
                 "en": "Scale factor. Defaults to capture_scale.",
                 "cn": "缩放倍率。默认为 capture_scale。",
                 "de": "Skalierungsfaktor. Standard ist capture_scale.",
@@ -1381,7 +1381,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": true
@@ -1408,7 +1408,7 @@
             {
               "name": "filename",
               "type": "str/None",
-              "desc": {
+              "description": {
                 "en": "File name. If omitted, saved to desktop.",
                 "cn": "文件名。省略时保存到桌面。",
                 "de": "Dateiname. Wird auf dem Desktop gespeichert, wenn weggelassen.",
@@ -1426,7 +1426,7 @@
             {
               "name": "scale",
               "type": "int/None",
-              "desc": {
+              "description": {
                 "en": "Scale factor. Defaults to capture_scale.",
                 "cn": "缩放倍率。默认为 capture_scale。",
                 "de": "Skalierungsfaktor. Standard ist capture_scale.",
@@ -1442,7 +1442,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": true
@@ -1465,7 +1465,7 @@
             "tr": "Ekran kaydı arabelleğini sıfırlar.",
             "uk": "Скидає буфер запису екрана."
           },
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": true
@@ -1492,7 +1492,7 @@
             {
               "name": "filename",
               "type": "str",
-              "desc": {
+              "description": {
                 "en": "Palette file name",
                 "cn": "调色板文件名",
                 "de": "Palettendateiname",
@@ -1508,7 +1508,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": true
@@ -1535,7 +1535,7 @@
             {
               "name": "filename",
               "type": "str",
-              "desc": {
+              "description": {
                 "en": "Palette file name",
                 "cn": "调色板文件名",
                 "de": "Palettendateiname",
@@ -1551,7 +1551,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": true
@@ -1723,7 +1723,7 @@
             {
               "name": "key",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Key code",
                 "cn": "键码",
                 "de": "Tastencode",
@@ -1739,9 +1739,9 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "bool",
-            "desc": {
+            "description": {
               "en": "True if pressed",
               "cn": "按下时为True",
               "de": "True, wenn gedrückt",
@@ -1780,7 +1780,7 @@
             {
               "name": "key",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Key code",
                 "cn": "键码",
                 "de": "Tastencode",
@@ -1798,7 +1798,7 @@
             {
               "name": "hold",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Frames to hold before repeat starts. Defaults to 0.",
                 "cn": "重复开始前的按住帧数。默认为 0。",
                 "de": "Halteframes vor Wiederholungsbeginn. Standard ist 0.",
@@ -1816,7 +1816,7 @@
             {
               "name": "repeat",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Repeat interval in frames. If 0, no repeat.",
                 "cn": "重复间隔（帧数）。为 0 时不重复。",
                 "de": "Wiederholungsintervall in Frames. Bei 0 keine Wiederholung.",
@@ -1832,9 +1832,9 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "bool",
-            "desc": {
+            "description": {
               "en": "True if pressed in that frame",
               "cn": "该帧按下时为True",
               "de": "True, wenn in dem Frame gedrückt",
@@ -1873,7 +1873,7 @@
             {
               "name": "key",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Key code",
                 "cn": "键码",
                 "de": "Tastencode",
@@ -1889,9 +1889,9 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "bool",
-            "desc": {
+            "description": {
               "en": "True if released in that frame",
               "cn": "该帧释放时为True",
               "de": "True, wenn in dem Frame losgelassen",
@@ -1930,7 +1930,7 @@
             {
               "name": "visible",
               "type": "bool",
-              "desc": {
+              "description": {
                 "en": "Show or hide the cursor",
                 "cn": "显示或隐藏光标",
                 "de": "Cursor anzeigen oder ausblenden",
@@ -1946,7 +1946,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": false
@@ -1973,7 +1973,7 @@
             {
               "name": "key",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Key code",
                 "cn": "键码",
                 "de": "Tastencode",
@@ -1989,9 +1989,9 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "int",
-            "desc": {
+            "description": {
               "en": "Analog value of the key",
               "cn": "按键的模拟值",
               "de": "Analogwert der Taste",
@@ -2030,7 +2030,7 @@
             {
               "name": "key",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Target key",
                 "cn": "目标键",
                 "de": "Zieltaste",
@@ -2048,7 +2048,7 @@
             {
               "name": "state",
               "type": "bool",
-              "desc": {
+              "description": {
                 "en": "True for press, False for release",
                 "cn": "True为按下，False为释放",
                 "de": "True für Drücken, False für Loslassen",
@@ -2064,7 +2064,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": true
@@ -2091,7 +2091,7 @@
             {
               "name": "key",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Target key",
                 "cn": "目标键",
                 "de": "Zieltaste",
@@ -2109,7 +2109,7 @@
             {
               "name": "val",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Analog value to set",
                 "cn": "要设置的模拟值",
                 "de": "Zu setzender Analogwert",
@@ -2125,7 +2125,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": true
@@ -2152,7 +2152,7 @@
             {
               "name": "x",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "X coordinate",
                 "cn": "X坐标",
                 "de": "X-Koordinate",
@@ -2170,7 +2170,7 @@
             {
               "name": "y",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Y coordinate",
                 "cn": "Y坐标",
                 "de": "Y-Koordinate",
@@ -2186,7 +2186,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": true
@@ -2213,7 +2213,7 @@
             {
               "name": "text",
               "type": "str",
-              "desc": {
+              "description": {
                 "en": "Text input",
                 "cn": "文本输入",
                 "de": "Texteingabe",
@@ -2229,7 +2229,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": true
@@ -2256,7 +2256,7 @@
             {
               "name": "files",
               "type": "list[str]",
-              "desc": {
+              "description": {
                 "en": "List of file paths",
                 "cn": "文件路径列表",
                 "de": "Liste der Dateipfade",
@@ -2272,7 +2272,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": true
@@ -3086,7 +3086,7 @@
             {
               "name": "x",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "X coordinate of the upper-left corner",
                 "cn": "左上角的X坐标",
                 "de": "X-Koordinate der oberen linken Ecke",
@@ -3104,7 +3104,7 @@
             {
               "name": "y",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Y coordinate of the upper-left corner",
                 "cn": "左上角的Y坐标",
                 "de": "Y-Koordinate der oberen linken Ecke",
@@ -3122,7 +3122,7 @@
             {
               "name": "w",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Width of the clipping area",
                 "cn": "裁剪区域的宽度",
                 "de": "Breite des Clipping-Bereichs",
@@ -3140,7 +3140,7 @@
             {
               "name": "h",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Height of the clipping area",
                 "cn": "裁剪区域的高度",
                 "de": "Höhe des Clipping-Bereichs",
@@ -3156,7 +3156,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": false
@@ -3179,7 +3179,7 @@
             "tr": "Çizim alanını tam ekrana sıfırlar.",
             "uk": "Скидає область малювання на повний екран."
           },
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": false
@@ -3206,7 +3206,7 @@
             {
               "name": "x",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "X coordinate",
                 "cn": "X坐标",
                 "de": "X-Koordinate",
@@ -3224,7 +3224,7 @@
             {
               "name": "y",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Y coordinate",
                 "cn": "Y坐标",
                 "de": "Y-Koordinate",
@@ -3240,7 +3240,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": false
@@ -3263,7 +3263,7 @@
             "tr": "Çizim ofsetini (0, 0) konumuna sıfırlar.",
             "uk": "Скидає зміщення малювання на (0, 0)."
           },
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": false
@@ -3290,7 +3290,7 @@
             {
               "name": "col1",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Color to replace",
                 "cn": "要替换的颜色",
                 "de": "Zu ersetzende Farbe",
@@ -3308,7 +3308,7 @@
             {
               "name": "col2",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Replacement color",
                 "cn": "替换后的颜色",
                 "de": "Ersatzfarbe",
@@ -3324,7 +3324,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": false
@@ -3347,7 +3347,7 @@
             "tr": "Paleti başlangıç durumuna sıfırlar.",
             "uk": "Скидає палітру до початкового стану."
           },
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": false
@@ -3374,7 +3374,7 @@
             {
               "name": "alpha",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Opacity (0.0: transparent, 1.0: opaque)",
                 "cn": "不透明度（0.0: 透明, 1.0: 不透明）",
                 "de": "Deckkraft (0.0: transparent, 1.0: deckend)",
@@ -3390,7 +3390,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": false
@@ -3417,7 +3417,7 @@
             {
               "name": "col",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Color",
                 "cn": "颜色",
                 "de": "Farbe",
@@ -3433,7 +3433,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": false
@@ -3460,7 +3460,7 @@
             {
               "name": "x",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "X coordinate",
                 "cn": "X坐标",
                 "de": "X-Koordinate",
@@ -3478,7 +3478,7 @@
             {
               "name": "y",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Y coordinate",
                 "cn": "Y坐标",
                 "de": "Y-Koordinate",
@@ -3494,9 +3494,9 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "int",
-            "desc": {
+            "description": {
               "en": "Color of the pixel",
               "cn": "像素的颜色",
               "de": "Farbe des Pixels",
@@ -3535,7 +3535,7 @@
             {
               "name": "x",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "X coordinate",
                 "cn": "X坐标",
                 "de": "X-Koordinate",
@@ -3553,7 +3553,7 @@
             {
               "name": "y",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Y coordinate",
                 "cn": "Y坐标",
                 "de": "Y-Koordinate",
@@ -3571,7 +3571,7 @@
             {
               "name": "col",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Color",
                 "cn": "颜色",
                 "de": "Farbe",
@@ -3587,7 +3587,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": false
@@ -3614,7 +3614,7 @@
             {
               "name": "x1",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Start X coordinate",
                 "cn": "起点X坐标",
                 "de": "X-Koordinate des Startpunkts",
@@ -3632,7 +3632,7 @@
             {
               "name": "y1",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Start Y coordinate",
                 "cn": "起点Y坐标",
                 "de": "Y-Koordinate des Startpunkts",
@@ -3650,7 +3650,7 @@
             {
               "name": "x2",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "End X coordinate",
                 "cn": "终点X坐标",
                 "de": "X-Koordinate des Endpunkts",
@@ -3668,7 +3668,7 @@
             {
               "name": "y2",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "End Y coordinate",
                 "cn": "终点Y坐标",
                 "de": "Y-Koordinate des Endpunkts",
@@ -3686,7 +3686,7 @@
             {
               "name": "col",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Color",
                 "cn": "颜色",
                 "de": "Farbe",
@@ -3702,7 +3702,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": false
@@ -3729,7 +3729,7 @@
             {
               "name": "x",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "X coordinate",
                 "cn": "X坐标",
                 "de": "X-Koordinate",
@@ -3747,7 +3747,7 @@
             {
               "name": "y",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Y coordinate",
                 "cn": "Y坐标",
                 "de": "Y-Koordinate",
@@ -3765,7 +3765,7 @@
             {
               "name": "w",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Width",
                 "cn": "宽度",
                 "de": "Breite",
@@ -3783,7 +3783,7 @@
             {
               "name": "h",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Height",
                 "cn": "高度",
                 "de": "Höhe",
@@ -3801,7 +3801,7 @@
             {
               "name": "col",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Color",
                 "cn": "颜色",
                 "de": "Farbe",
@@ -3817,7 +3817,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": false
@@ -3844,7 +3844,7 @@
             {
               "name": "x",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "X coordinate",
                 "cn": "X坐标",
                 "de": "X-Koordinate",
@@ -3862,7 +3862,7 @@
             {
               "name": "y",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Y coordinate",
                 "cn": "Y坐标",
                 "de": "Y-Koordinate",
@@ -3880,7 +3880,7 @@
             {
               "name": "w",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Width",
                 "cn": "宽度",
                 "de": "Breite",
@@ -3898,7 +3898,7 @@
             {
               "name": "h",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Height",
                 "cn": "高度",
                 "de": "Höhe",
@@ -3916,7 +3916,7 @@
             {
               "name": "col",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Color",
                 "cn": "颜色",
                 "de": "Farbe",
@@ -3932,7 +3932,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": false
@@ -3959,7 +3959,7 @@
             {
               "name": "x",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Center X coordinate",
                 "cn": "中心X坐标",
                 "de": "X-Koordinate des Mittelpunkts",
@@ -3977,7 +3977,7 @@
             {
               "name": "y",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Center Y coordinate",
                 "cn": "中心Y坐标",
                 "de": "Y-Koordinate des Mittelpunkts",
@@ -3995,7 +3995,7 @@
             {
               "name": "r",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Radius",
                 "cn": "半径",
                 "de": "Radius",
@@ -4013,7 +4013,7 @@
             {
               "name": "col",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Color",
                 "cn": "颜色",
                 "de": "Farbe",
@@ -4029,7 +4029,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": false
@@ -4056,7 +4056,7 @@
             {
               "name": "x",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Center X coordinate",
                 "cn": "中心X坐标",
                 "de": "X-Koordinate des Mittelpunkts",
@@ -4074,7 +4074,7 @@
             {
               "name": "y",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Center Y coordinate",
                 "cn": "中心Y坐标",
                 "de": "Y-Koordinate des Mittelpunkts",
@@ -4092,7 +4092,7 @@
             {
               "name": "r",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Radius",
                 "cn": "半径",
                 "de": "Radius",
@@ -4110,7 +4110,7 @@
             {
               "name": "col",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Color",
                 "cn": "颜色",
                 "de": "Farbe",
@@ -4126,7 +4126,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": false
@@ -4153,7 +4153,7 @@
             {
               "name": "x",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "X coordinate",
                 "cn": "X坐标",
                 "de": "X-Koordinate",
@@ -4171,7 +4171,7 @@
             {
               "name": "y",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Y coordinate",
                 "cn": "Y坐标",
                 "de": "Y-Koordinate",
@@ -4189,7 +4189,7 @@
             {
               "name": "w",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Width",
                 "cn": "宽度",
                 "de": "Breite",
@@ -4207,7 +4207,7 @@
             {
               "name": "h",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Height",
                 "cn": "高度",
                 "de": "Höhe",
@@ -4225,7 +4225,7 @@
             {
               "name": "col",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Color",
                 "cn": "颜色",
                 "de": "Farbe",
@@ -4241,7 +4241,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": false
@@ -4268,7 +4268,7 @@
             {
               "name": "x",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "X coordinate",
                 "cn": "X坐标",
                 "de": "X-Koordinate",
@@ -4286,7 +4286,7 @@
             {
               "name": "y",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Y coordinate",
                 "cn": "Y坐标",
                 "de": "Y-Koordinate",
@@ -4304,7 +4304,7 @@
             {
               "name": "w",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Width",
                 "cn": "宽度",
                 "de": "Breite",
@@ -4322,7 +4322,7 @@
             {
               "name": "h",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Height",
                 "cn": "高度",
                 "de": "Höhe",
@@ -4340,7 +4340,7 @@
             {
               "name": "col",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Color",
                 "cn": "颜色",
                 "de": "Farbe",
@@ -4356,7 +4356,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": false
@@ -4383,7 +4383,7 @@
             {
               "name": "x1",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Vertex 1 X",
                 "cn": "顶点1的X坐标",
                 "de": "X-Koordinate von Eckpunkt 1",
@@ -4401,7 +4401,7 @@
             {
               "name": "y1",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Vertex 1 Y",
                 "cn": "顶点1的Y坐标",
                 "de": "Y-Koordinate von Eckpunkt 1",
@@ -4419,7 +4419,7 @@
             {
               "name": "x2",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Vertex 2 X",
                 "cn": "顶点2的X坐标",
                 "de": "X-Koordinate von Eckpunkt 2",
@@ -4437,7 +4437,7 @@
             {
               "name": "y2",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Vertex 2 Y",
                 "cn": "顶点2的Y坐标",
                 "de": "Y-Koordinate von Eckpunkt 2",
@@ -4455,7 +4455,7 @@
             {
               "name": "x3",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Vertex 3 X",
                 "cn": "顶点3的X坐标",
                 "de": "X-Koordinate von Eckpunkt 3",
@@ -4473,7 +4473,7 @@
             {
               "name": "y3",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Vertex 3 Y",
                 "cn": "顶点3的Y坐标",
                 "de": "Y-Koordinate von Eckpunkt 3",
@@ -4491,7 +4491,7 @@
             {
               "name": "col",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Color",
                 "cn": "颜色",
                 "de": "Farbe",
@@ -4507,7 +4507,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": false
@@ -4534,7 +4534,7 @@
             {
               "name": "x1",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Vertex 1 X",
                 "cn": "顶点1的X坐标",
                 "de": "X-Koordinate von Eckpunkt 1",
@@ -4552,7 +4552,7 @@
             {
               "name": "y1",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Vertex 1 Y",
                 "cn": "顶点1的Y坐标",
                 "de": "Y-Koordinate von Eckpunkt 1",
@@ -4570,7 +4570,7 @@
             {
               "name": "x2",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Vertex 2 X",
                 "cn": "顶点2的X坐标",
                 "de": "X-Koordinate von Eckpunkt 2",
@@ -4588,7 +4588,7 @@
             {
               "name": "y2",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Vertex 2 Y",
                 "cn": "顶点2的Y坐标",
                 "de": "Y-Koordinate von Eckpunkt 2",
@@ -4606,7 +4606,7 @@
             {
               "name": "x3",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Vertex 3 X",
                 "cn": "顶点3的X坐标",
                 "de": "X-Koordinate von Eckpunkt 3",
@@ -4624,7 +4624,7 @@
             {
               "name": "y3",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Vertex 3 Y",
                 "cn": "顶点3的Y坐标",
                 "de": "Y-Koordinate von Eckpunkt 3",
@@ -4642,7 +4642,7 @@
             {
               "name": "col",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Color",
                 "cn": "颜色",
                 "de": "Farbe",
@@ -4658,7 +4658,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": false
@@ -4685,7 +4685,7 @@
             {
               "name": "x",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "X coordinate",
                 "cn": "X坐标",
                 "de": "X-Koordinate",
@@ -4703,7 +4703,7 @@
             {
               "name": "y",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Y coordinate",
                 "cn": "Y坐标",
                 "de": "Y-Koordinate",
@@ -4721,7 +4721,7 @@
             {
               "name": "col",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Fill color",
                 "cn": "填充颜色",
                 "de": "Füllfarbe",
@@ -4737,7 +4737,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": false
@@ -4764,7 +4764,7 @@
             {
               "name": "x",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Destination X",
                 "cn": "目标X坐标",
                 "de": "Ziel-X-Koordinate",
@@ -4782,7 +4782,7 @@
             {
               "name": "y",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Destination Y",
                 "cn": "目标Y坐标",
                 "de": "Ziel-Y-Koordinate",
@@ -4800,7 +4800,7 @@
             {
               "name": "img",
               "type": "int/Image",
-              "desc": {
+              "description": {
                 "en": "Image bank number (0-2) or Image instance",
                 "cn": "图像库编号 (0-2) 或Image实例",
                 "de": "Bildbank-Nummer (0-2) oder Image-Instanz",
@@ -4818,7 +4818,7 @@
             {
               "name": "u",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Source X in the image bank",
                 "cn": "图像库中的源X",
                 "de": "Quell-X in der Bildbank",
@@ -4836,7 +4836,7 @@
             {
               "name": "v",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Source Y in the image bank",
                 "cn": "图像库中的源Y",
                 "de": "Quell-Y in der Bildbank",
@@ -4854,7 +4854,7 @@
             {
               "name": "w",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Width (negative to flip)",
                 "cn": "宽度（负值则翻转）",
                 "de": "Breite (negativ zum Spiegeln)",
@@ -4872,7 +4872,7 @@
             {
               "name": "h",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Height (negative to flip)",
                 "cn": "高度（负值则翻转）",
                 "de": "Höhe (negativ zum Spiegeln)",
@@ -4890,7 +4890,7 @@
             {
               "name": "colkey",
               "type": "int/None",
-              "desc": {
+              "description": {
                 "en": "Transparent color. If omitted, no transparency.",
                 "cn": "透明色。省略时不透明处理。",
                 "de": "Transparenzfarbe. Wenn weggelassen, keine Transparenz.",
@@ -4908,7 +4908,7 @@
             {
               "name": "rotate",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Rotation angle in degrees (centered on the copy region). Defaults to 0.",
                 "cn": "旋转角度（度）（以复制区域为中心）。默认为 0。",
                 "de": "Rotationswinkel in Grad (zentriert auf den Kopierbereich). Standard ist 0.",
@@ -4926,7 +4926,7 @@
             {
               "name": "scale",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Scale factor (centered on the copy region). Defaults to 1.",
                 "cn": "缩放倍率（以复制区域为中心）。默认为 1。",
                 "de": "Skalierungsfaktor (zentriert auf den Kopierbereich). Standard ist 1.",
@@ -4942,7 +4942,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": false
@@ -4969,7 +4969,7 @@
             {
               "name": "x",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Destination X",
                 "cn": "目标X坐标",
                 "de": "Ziel-X-Koordinate",
@@ -4987,7 +4987,7 @@
             {
               "name": "y",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Destination Y",
                 "cn": "目标Y坐标",
                 "de": "Ziel-Y-Koordinate",
@@ -5005,7 +5005,7 @@
             {
               "name": "tm",
               "type": "int/Tilemap",
-              "desc": {
+              "description": {
                 "en": "Tilemap number (0-7) or Tilemap instance",
                 "cn": "瓦片地图编号 (0-7) 或Tilemap实例",
                 "de": "Tilemap-Nummer (0-7) oder Tilemap-Instanz",
@@ -5023,7 +5023,7 @@
             {
               "name": "u",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Source X in the tilemap",
                 "cn": "瓦片地图中的源X",
                 "de": "Quell-X in der Tilemap",
@@ -5041,7 +5041,7 @@
             {
               "name": "v",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Source Y in the tilemap",
                 "cn": "瓦片地图中的源Y",
                 "de": "Quell-Y in der Tilemap",
@@ -5059,7 +5059,7 @@
             {
               "name": "w",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Width (negative to flip)",
                 "cn": "宽度（负值则翻转）",
                 "de": "Breite (negativ zum Spiegeln)",
@@ -5077,7 +5077,7 @@
             {
               "name": "h",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Height (negative to flip)",
                 "cn": "高度（负值则翻转）",
                 "de": "Höhe (negativ zum Spiegeln)",
@@ -5095,7 +5095,7 @@
             {
               "name": "colkey",
               "type": "int/None",
-              "desc": {
+              "description": {
                 "en": "Transparent color. If omitted, no transparency.",
                 "cn": "透明色。省略时不透明处理。",
                 "de": "Transparenzfarbe. Wenn weggelassen, keine Transparenz.",
@@ -5113,7 +5113,7 @@
             {
               "name": "rotate",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Rotation angle in degrees (centered on the copy region). Defaults to 0.",
                 "cn": "旋转角度（度）（以复制区域为中心）。默认为 0。",
                 "de": "Rotationswinkel in Grad (zentriert auf den Kopierbereich). Standard ist 0.",
@@ -5131,7 +5131,7 @@
             {
               "name": "scale",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Scale factor (centered on the copy region). Defaults to 1.",
                 "cn": "缩放倍率（以复制区域为中心）。默认为 1。",
                 "de": "Skalierungsfaktor (zentriert auf den Kopierbereich). Standard ist 1.",
@@ -5147,7 +5147,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": false
@@ -5174,7 +5174,7 @@
             {
               "name": "x",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Destination X",
                 "cn": "目标X坐标",
                 "de": "Ziel-X-Koordinate",
@@ -5192,7 +5192,7 @@
             {
               "name": "y",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Destination Y",
                 "cn": "目标Y坐标",
                 "de": "Ziel-Y-Koordinate",
@@ -5210,7 +5210,7 @@
             {
               "name": "w",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Display width",
                 "cn": "显示宽度",
                 "de": "Anzeigebreite",
@@ -5228,7 +5228,7 @@
             {
               "name": "h",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Display height",
                 "cn": "显示高度",
                 "de": "Anzeigehöhe",
@@ -5246,7 +5246,7 @@
             {
               "name": "img",
               "type": "int/Image",
-              "desc": {
+              "description": {
                 "en": "Image bank number (0-2) or Image instance",
                 "cn": "图像库编号 (0-2) 或Image实例",
                 "de": "Bildbank-Nummer (0-2) oder Image-Instanz",
@@ -5264,7 +5264,7 @@
             {
               "name": "pos",
               "type": "(float, float, float)",
-              "desc": {
+              "description": {
                 "en": "Camera position (x, y, z). x, y match 2D coordinates, z is height",
                 "cn": "相机位置(x, y, z)。x, y与2D坐标一致，z为高度",
                 "de": "Kameraposition (x, y, z). x, y entsprechen 2D-Koordinaten, z ist die Höhe",
@@ -5282,7 +5282,7 @@
             {
               "name": "rot",
               "type": "(float, float, float)",
-              "desc": {
+              "description": {
                 "en": "Rotation in degrees. rot_x is vertical, rot_y is horizontal, rot_z is tilt",
                 "cn": "旋转角度（度）。rot_x为上下，rot_y为水平方向，rot_z为倾斜",
                 "de": "Rotation in Grad. rot_x ist vertikal, rot_y horizontal, rot_z ist Neigung",
@@ -5300,7 +5300,7 @@
             {
               "name": "fov",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Field of view in degrees. Defaults to 60.",
                 "cn": "视野角度。默认为 60。",
                 "de": "Sichtfeld in Grad. Standard ist 60.",
@@ -5318,7 +5318,7 @@
             {
               "name": "colkey",
               "type": "int/None",
-              "desc": {
+              "description": {
                 "en": "Transparent color. If omitted, no transparency.",
                 "cn": "透明色。省略时不透明处理。",
                 "de": "Transparenzfarbe. Wenn weggelassen, keine Transparenz.",
@@ -5334,7 +5334,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": true
@@ -5361,7 +5361,7 @@
             {
               "name": "x",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Destination X",
                 "cn": "目标X坐标",
                 "de": "Ziel-X-Koordinate",
@@ -5379,7 +5379,7 @@
             {
               "name": "y",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Destination Y",
                 "cn": "目标Y坐标",
                 "de": "Ziel-Y-Koordinate",
@@ -5397,7 +5397,7 @@
             {
               "name": "w",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Display width",
                 "cn": "显示宽度",
                 "de": "Anzeigebreite",
@@ -5415,7 +5415,7 @@
             {
               "name": "h",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Display height",
                 "cn": "显示高度",
                 "de": "Anzeigehöhe",
@@ -5433,7 +5433,7 @@
             {
               "name": "tm",
               "type": "int/Tilemap",
-              "desc": {
+              "description": {
                 "en": "Tilemap number (0-7) or Tilemap instance",
                 "cn": "瓦片地图编号 (0-7) 或Tilemap实例",
                 "de": "Tilemap-Nummer (0-7) oder Tilemap-Instanz",
@@ -5451,7 +5451,7 @@
             {
               "name": "pos",
               "type": "(float, float, float)",
-              "desc": {
+              "description": {
                 "en": "Camera position (x, y, z). x, y match 2D coordinates, z is height",
                 "cn": "相机位置(x, y, z)。x, y与2D坐标一致，z为高度",
                 "de": "Kameraposition (x, y, z). x, y entsprechen 2D-Koordinaten, z ist die Höhe",
@@ -5469,7 +5469,7 @@
             {
               "name": "rot",
               "type": "(float, float, float)",
-              "desc": {
+              "description": {
                 "en": "Rotation in degrees. rot_x is vertical, rot_y is horizontal, rot_z is tilt",
                 "cn": "旋转角度（度）。rot_x为上下，rot_y为水平方向，rot_z为倾斜",
                 "de": "Rotation in Grad. rot_x ist vertikal, rot_y horizontal, rot_z ist Neigung",
@@ -5487,7 +5487,7 @@
             {
               "name": "fov",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Field of view in degrees. Defaults to 60.",
                 "cn": "视野角度。默认为 60。",
                 "de": "Sichtfeld in Grad. Standard ist 60.",
@@ -5505,7 +5505,7 @@
             {
               "name": "colkey",
               "type": "int/None",
-              "desc": {
+              "description": {
                 "en": "Transparent color. If omitted, no transparency.",
                 "cn": "透明色。省略时不透明处理。",
                 "de": "Transparenzfarbe. Wenn weggelassen, keine Transparenz.",
@@ -5521,7 +5521,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": true
@@ -5548,7 +5548,7 @@
             {
               "name": "x",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "X coordinate",
                 "cn": "X坐标",
                 "de": "X-Koordinate",
@@ -5566,7 +5566,7 @@
             {
               "name": "y",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Y coordinate",
                 "cn": "Y坐标",
                 "de": "Y-Koordinate",
@@ -5584,7 +5584,7 @@
             {
               "name": "s",
               "type": "str",
-              "desc": {
+              "description": {
                 "en": "String to draw",
                 "cn": "要绘制的字符串",
                 "de": "Zu zeichnende Zeichenkette",
@@ -5602,7 +5602,7 @@
             {
               "name": "col",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Color",
                 "cn": "颜色",
                 "de": "Farbe",
@@ -5620,7 +5620,7 @@
             {
               "name": "font",
               "type": "Font",
-              "desc": {
+              "description": {
                 "en": "Custom font. If omitted, the standard font is used.",
                 "cn": "自定义字体。省略时使用标准字体。",
                 "de": "Benutzerdefinierte Schriftart. Wenn weggelassen, wird die Standardschriftart verwendet.",
@@ -5636,7 +5636,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": false
@@ -6179,7 +6179,7 @@
             {
               "name": "ch",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Channel number (0-3)",
                 "cn": "通道编号 (0-3)",
                 "de": "Kanalnummer (0-3)",
@@ -6197,7 +6197,7 @@
             {
               "name": "snd",
               "type": "int/list/Sound/str",
-              "desc": {
+              "description": {
                 "en": "Sound number (0-63), list of numbers, Sound instance, list of Sounds, or MML string",
                 "cn": "音效编号 (0-63)、编号列表、Sound实例、Sound列表或MML字符串",
                 "de": "Soundnummer (0-63), Nummernliste, Sound-Instanz, Sound-Liste oder MML-String",
@@ -6215,7 +6215,7 @@
             {
               "name": "sec",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Playback start position in seconds. Defaults to 0.",
                 "cn": "播放起始位置（秒）。默认为 0。",
                 "de": "Wiedergabe-Startposition in Sekunden. Standard ist 0.",
@@ -6233,7 +6233,7 @@
             {
               "name": "loop",
               "type": "bool",
-              "desc": {
+              "description": {
                 "en": "Loop playback. Defaults to False.",
                 "cn": "循环播放。默认为 False。",
                 "de": "Schleifenwiedergabe. Standard ist False.",
@@ -6251,7 +6251,7 @@
             {
               "name": "resume",
               "type": "bool",
-              "desc": {
+              "description": {
                 "en": "Resume previous sound after playback ends. Defaults to False.",
                 "cn": "播放结束后恢复之前的音效。默认为 False。",
                 "de": "Vorherigen Sound nach Wiedergabeende fortsetzen. Standard ist False.",
@@ -6267,7 +6267,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": false
@@ -6294,7 +6294,7 @@
             {
               "name": "msc",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Music number (0-7)",
                 "cn": "音乐编号 (0-7)",
                 "de": "Musiknummer (0-7)",
@@ -6312,7 +6312,7 @@
             {
               "name": "sec",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Playback start position in seconds. Defaults to 0.",
                 "cn": "播放起始位置（秒）。默认为 0。",
                 "de": "Wiedergabe-Startposition in Sekunden. Standard ist 0.",
@@ -6330,7 +6330,7 @@
             {
               "name": "loop",
               "type": "bool",
-              "desc": {
+              "description": {
                 "en": "Loop playback. Defaults to False.",
                 "cn": "循环播放。默认为 False。",
                 "de": "Schleifenwiedergabe. Standard ist False.",
@@ -6346,7 +6346,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": false
@@ -6373,7 +6373,7 @@
             {
               "name": "ch",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Channel number (0-3)",
                 "cn": "通道编号 (0-3)",
                 "de": "Kanalnummer (0-3)",
@@ -6389,7 +6389,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": false
@@ -6412,7 +6412,7 @@
             "tr": "Tüm kanalların çalmasını durdurur.",
             "uk": "Зупиняє відтворення всіх каналів."
           },
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": false
@@ -6439,7 +6439,7 @@
             {
               "name": "ch",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Channel number (0-3)",
                 "cn": "通道编号 (0-3)",
                 "de": "Kanalnummer (0-3)",
@@ -6455,9 +6455,9 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "tuple[int, float]/None",
-            "desc": {
+            "description": {
               "en": "(sound_index, sec) or None",
               "cn": "(sound_index, sec) 或 None",
               "de": "(sound_index, sec) oder None",
@@ -6496,7 +6496,7 @@
             {
               "name": "preset",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Preset number (0-7). 0-1: title, departure (medium tempo), 2-3: town, peaceful (slow tempo), 4-5: field, adventure (medium tempo), 6-7: battle, crisis (fast tempo)",
                 "cn": "预设编号 (0-7). 0-1: 标题、出发（中速）, 2-3: 城镇、和平（慢速）, 4-5: 原野、冒险（中速）, 6-7: 战斗、危机（快速）",
                 "de": "Presetnummer (0-7). 0-1: Titel, Aufbruch (mittleres Tempo), 2-3: Stadt, friedlich (langsames Tempo), 4-5: Feld, Abenteuer (mittleres Tempo), 6-7: Kampf, Krise (schnelles Tempo)",
@@ -6514,7 +6514,7 @@
             {
               "name": "transp",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Transpose in semitones (-5 to +5).",
                 "cn": "移调半音数 (-5 到 +5)。",
                 "de": "Transposition in Halbtönen (-5 bis +5).",
@@ -6532,7 +6532,7 @@
             {
               "name": "instr",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Instrumentation (0-3). 0: melody+reverb+bass (3ch), 1: melody+bass+drums (3ch), 2: melody+sub+bass (3ch), 3: melody+sub+bass+drums (4ch).",
                 "cn": "编制 (0-3). 0: 旋律+混响+贝斯 (3ch), 1: 旋律+贝斯+鼓 (3ch), 2: 旋律+副旋律+贝斯 (3ch), 3: 旋律+副旋律+贝斯+鼓 (4ch)",
                 "de": "Besetzung (0-3). 0: Melodie+Reverb+Bass (3ch), 1: Melodie+Bass+Drums (3ch), 2: Melodie+Sub+Bass (3ch), 3: Melodie+Sub+Bass+Drums (4ch)",
@@ -6550,7 +6550,7 @@
             {
               "name": "seed",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Random seed",
                 "cn": "随机种子",
                 "de": "Zufallsstartwert",
@@ -6568,7 +6568,7 @@
             {
               "name": "play",
               "type": "bool",
-              "desc": {
+              "description": {
                 "en": "Play the generated MML. Defaults to False.",
                 "cn": "播放生成的MML。默认为 False。",
                 "de": "Generiertes MML abspielen. Standard ist False.",
@@ -6584,9 +6584,9 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "list[str]",
-            "desc": {
+            "description": {
               "en": "List of MML strings",
               "cn": "MML字符串列表",
               "de": "Liste von MML-Strings",
@@ -6940,7 +6940,7 @@
             {
               "name": "x",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Value",
                 "cn": "值",
                 "de": "Wert",
@@ -6956,9 +6956,9 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "int",
-            "desc": {
+            "description": {
               "en": "Smallest integer >= x",
               "cn": "不小于x的最小整数",
               "de": "Kleinste Ganzzahl >= x",
@@ -6997,7 +6997,7 @@
             {
               "name": "x",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Value",
                 "cn": "值",
                 "de": "Wert",
@@ -7013,9 +7013,9 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "int",
-            "desc": {
+            "description": {
               "en": "Largest integer <= x",
               "cn": "不超过x的最大整数",
               "de": "Größte Ganzzahl <= x",
@@ -7054,7 +7054,7 @@
             {
               "name": "x",
               "type": "int/float",
-              "desc": {
+              "description": {
                 "en": "Value to clamp",
                 "cn": "要限制的值",
                 "de": "Zu begrenzender Wert",
@@ -7072,7 +7072,7 @@
             {
               "name": "lower",
               "type": "int/float",
-              "desc": {
+              "description": {
                 "en": "Minimum value",
                 "cn": "最小值",
                 "de": "Minimalwert",
@@ -7090,7 +7090,7 @@
             {
               "name": "upper",
               "type": "int/float",
-              "desc": {
+              "description": {
                 "en": "Maximum value",
                 "cn": "最大值",
                 "de": "Maximalwert",
@@ -7106,9 +7106,9 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "int/float",
-            "desc": {
+            "description": {
               "en": "Clamped value",
               "cn": "限制后的值",
               "de": "Begrenzter Wert",
@@ -7147,7 +7147,7 @@
             {
               "name": "x",
               "type": "int/float",
-              "desc": {
+              "description": {
                 "en": "Value",
                 "cn": "值",
                 "de": "Wert",
@@ -7163,9 +7163,9 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "int/float",
-            "desc": {
+            "description": {
               "en": "Sign of the value (1, 0, or -1)",
               "cn": "值的符号 (1, 0, -1)",
               "de": "Vorzeichen des Werts (1, 0 oder -1)",
@@ -7204,7 +7204,7 @@
             {
               "name": "x",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Value",
                 "cn": "值",
                 "de": "Wert",
@@ -7220,9 +7220,9 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "float",
-            "desc": {
+            "description": {
               "en": "Square root of x",
               "cn": "x的平方根",
               "de": "Quadratwurzel von x",
@@ -7261,7 +7261,7 @@
             {
               "name": "deg",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Angle in degrees",
                 "cn": "角度（度）",
                 "de": "Winkel in Grad",
@@ -7277,9 +7277,9 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "float",
-            "desc": {
+            "description": {
               "en": "Sine value",
               "cn": "正弦值",
               "de": "Sinuswert",
@@ -7318,7 +7318,7 @@
             {
               "name": "deg",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Angle in degrees",
                 "cn": "角度（度）",
                 "de": "Winkel in Grad",
@@ -7334,9 +7334,9 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "float",
-            "desc": {
+            "description": {
               "en": "Cosine value",
               "cn": "余弦值",
               "de": "Kosinuswert",
@@ -7375,7 +7375,7 @@
             {
               "name": "y",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Y value",
                 "cn": "Y值",
                 "de": "Y-Wert",
@@ -7393,7 +7393,7 @@
             {
               "name": "x",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "X value",
                 "cn": "X值",
                 "de": "X-Wert",
@@ -7409,9 +7409,9 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "float",
-            "desc": {
+            "description": {
               "en": "Angle in degrees",
               "cn": "角度（度）",
               "de": "Winkel in Grad",
@@ -7450,7 +7450,7 @@
             {
               "name": "seed",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Seed value (non-negative integer)",
                 "cn": "种子值（非负整数）",
                 "de": "Seed-Wert (nicht-negative Ganzzahl)",
@@ -7466,7 +7466,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": false
@@ -7493,7 +7493,7 @@
             {
               "name": "a",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Minimum value (inclusive)",
                 "cn": "最小值（含）",
                 "de": "Minimalwert (einschließlich)",
@@ -7511,7 +7511,7 @@
             {
               "name": "b",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Maximum value (inclusive)",
                 "cn": "最大值（含）",
                 "de": "Maximalwert (einschließlich)",
@@ -7527,9 +7527,9 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "int",
-            "desc": {
+            "description": {
               "en": "Random integer from a to b",
               "cn": "a到b的随机整数",
               "de": "Zufällige Ganzzahl von a bis b",
@@ -7568,7 +7568,7 @@
             {
               "name": "a",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Minimum value (inclusive)",
                 "cn": "最小值（含）",
                 "de": "Minimalwert (einschließlich)",
@@ -7586,7 +7586,7 @@
             {
               "name": "b",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Maximum value (inclusive)",
                 "cn": "最大值（含）",
                 "de": "Maximalwert (einschließlich)",
@@ -7602,9 +7602,9 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "float",
-            "desc": {
+            "description": {
               "en": "Random float from a to b",
               "cn": "a到b的随机小数",
               "de": "Zufällige Gleitkommazahl von a bis b",
@@ -7643,7 +7643,7 @@
             {
               "name": "seed",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Seed value (non-negative integer)",
                 "cn": "种子值（非负整数）",
                 "de": "Seed-Wert (nicht-negative Ganzzahl)",
@@ -7659,7 +7659,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": false
@@ -7686,7 +7686,7 @@
             {
               "name": "x",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "X coordinate",
                 "cn": "X坐标",
                 "de": "X-Koordinate",
@@ -7704,7 +7704,7 @@
             {
               "name": "y",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Y coordinate. Defaults to 0.",
                 "cn": "Y坐标。默认为 0。",
                 "de": "Y-Koordinate. Standard ist 0.",
@@ -7722,7 +7722,7 @@
             {
               "name": "z",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Z coordinate. Defaults to 0.",
                 "cn": "Z坐标。默认为 0。",
                 "de": "Z-Koordinate. Standard ist 0.",
@@ -7738,9 +7738,9 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "float",
-            "desc": {
+            "description": {
               "en": "Perlin noise value",
               "cn": "Perlin噪声值",
               "de": "Perlin-Noise-Wert",
@@ -7798,7 +7798,7 @@
             {
               "name": "filename",
               "type": "str",
-              "desc": {
+              "description": {
                 "en": "Font file name (BDF/OTF/TTF/TTC)",
                 "cn": "字体文件名 (BDF/OTF/TTF/TTC)",
                 "de": "Schriftdateiname (BDF/OTF/TTF/TTC)",
@@ -7816,7 +7816,7 @@
             {
               "name": "font_size",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Font size. Defaults to 10.0. Not used for BDF.",
                 "cn": "字体大小。默认为 10.0。BDF 不使用。",
                 "de": "Schriftgröße. Standard ist 10.0. Nicht für BDF verwendet.",
@@ -7832,9 +7832,9 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "Font",
-            "desc": {
+            "description": {
               "en": "New Font instance",
               "cn": "新Font实例",
               "de": "Neue Font-Instanz",
@@ -7873,7 +7873,7 @@
             {
               "name": "s",
               "type": "str",
-              "desc": {
+              "description": {
                 "en": "String to measure",
                 "cn": "要测量的字符串",
                 "de": "Zu messende Zeichenkette",
@@ -7889,9 +7889,9 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "int",
-            "desc": {
+            "description": {
               "en": "Width in pixels",
               "cn": "像素宽度",
               "de": "Breite in Pixeln",
@@ -7949,7 +7949,7 @@
             {
               "name": "width",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Image width",
                 "cn": "图像宽度",
                 "de": "Bildbreite",
@@ -7967,7 +7967,7 @@
             {
               "name": "height",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Image height",
                 "cn": "图像高度",
                 "de": "Bildhöhe",
@@ -7983,9 +7983,9 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "Image",
-            "desc": {
+            "description": {
               "en": "New Image instance",
               "cn": "新Image实例",
               "de": "Neue Image-Instanz",
@@ -8024,7 +8024,7 @@
             {
               "name": "filename",
               "type": "str",
-              "desc": {
+              "description": {
                 "en": "Image file name",
                 "cn": "图像文件名",
                 "de": "Bilddateiname",
@@ -8042,7 +8042,7 @@
             {
               "name": "include_colors",
               "type": "bool",
-              "desc": {
+              "description": {
                 "en": "Include palette colors from file. Defaults to False.",
                 "cn": "从文件导入调色板颜色。默认为 False。",
                 "de": "Palettenfarben aus Datei einbeziehen. Standard ist False.",
@@ -8058,9 +8058,9 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "Image",
-            "desc": {
+            "description": {
               "en": "Image instance from file",
               "cn": "从文件创建的Image实例",
               "de": "Image-Instanz aus Datei",
@@ -8141,7 +8141,7 @@
             {
               "name": "x",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "X coordinate",
                 "cn": "X坐标",
                 "de": "X-Koordinate",
@@ -8159,7 +8159,7 @@
             {
               "name": "y",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Y coordinate",
                 "cn": "Y坐标",
                 "de": "Y-Koordinate",
@@ -8177,7 +8177,7 @@
             {
               "name": "data",
               "type": "list[str]",
-              "desc": {
+              "description": {
                 "en": "Image data as a list of strings",
                 "cn": "字符串列表形式的图像数据",
                 "de": "Bilddaten als Liste von Zeichenketten",
@@ -8193,7 +8193,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "examples": [
@@ -8223,7 +8223,7 @@
             {
               "name": "x",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "X coordinate",
                 "cn": "X坐标",
                 "de": "X-Koordinate",
@@ -8241,7 +8241,7 @@
             {
               "name": "y",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Y coordinate",
                 "cn": "Y坐标",
                 "de": "Y-Koordinate",
@@ -8259,7 +8259,7 @@
             {
               "name": "filename",
               "type": "str",
-              "desc": {
+              "description": {
                 "en": "Image file name (PNG/GIF/JPEG)",
                 "cn": "图像文件名 (PNG/GIF/JPEG)",
                 "de": "Bilddateiname (PNG/GIF/JPEG)",
@@ -8277,7 +8277,7 @@
             {
               "name": "include_colors",
               "type": "bool",
-              "desc": {
+              "description": {
                 "en": "Include palette colors from file. Defaults to False.",
                 "cn": "从文件导入调色板颜色。默认为 False。",
                 "de": "Palettenfarben aus Datei einbeziehen. Standard ist False.",
@@ -8293,7 +8293,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": false
@@ -8320,7 +8320,7 @@
             {
               "name": "x",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "X coordinate",
                 "cn": "X坐标",
                 "de": "X-Koordinate",
@@ -8338,7 +8338,7 @@
             {
               "name": "y",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Y coordinate",
                 "cn": "Y坐标",
                 "de": "Y-Koordinate",
@@ -8354,9 +8354,9 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "int",
-            "desc": {
+            "description": {
               "en": "Color of the pixel",
               "cn": "像素的颜色",
               "de": "Farbe des Pixels",
@@ -8395,7 +8395,7 @@
             {
               "name": "x",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "X coordinate",
                 "cn": "X坐标",
                 "de": "X-Koordinate",
@@ -8413,7 +8413,7 @@
             {
               "name": "y",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Y coordinate",
                 "cn": "Y坐标",
                 "de": "Y-Koordinate",
@@ -8431,7 +8431,7 @@
             {
               "name": "col",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Color",
                 "cn": "颜色",
                 "de": "Farbe",
@@ -8447,7 +8447,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": false
@@ -8490,9 +8490,9 @@
             "tr": "Görüntünün ham veri işaretçisini ctypes c_uint8 dizisi olarak döndürür.",
             "uk": "Повертає вказівник на необроблені дані зображення у вигляді масиву ctypes c_uint8."
           },
-          "return": {
+          "returns": {
             "type": "Any",
-            "desc": {
+            "description": {
               "en": "Raw data pointer",
               "cn": "原始数据指针",
               "de": "Rohdatenzeiger",
@@ -8531,7 +8531,7 @@
             {
               "name": "filename",
               "type": "str",
-              "desc": {
+              "description": {
                 "en": "Output file name",
                 "cn": "输出文件名",
                 "de": "Ausgabedateiname",
@@ -8549,7 +8549,7 @@
             {
               "name": "scale",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Scale factor",
                 "cn": "缩放倍率",
                 "de": "Skalierungsfaktor",
@@ -8565,7 +8565,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": true
@@ -8611,7 +8611,7 @@
             {
               "name": "width",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Tilemap width",
                 "cn": "瓦片地图宽度",
                 "de": "Tilemap-Breite",
@@ -8629,7 +8629,7 @@
             {
               "name": "height",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Tilemap height",
                 "cn": "瓦片地图高度",
                 "de": "Tilemap-Höhe",
@@ -8647,7 +8647,7 @@
             {
               "name": "img",
               "type": "int/Image",
-              "desc": {
+              "description": {
                 "en": "Image bank number (0-2) or Image instance",
                 "cn": "图像库编号 (0-2) 或Image实例",
                 "de": "Bildbank-Nummer (0-2) oder Image-Instanz",
@@ -8663,9 +8663,9 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "Tilemap",
-            "desc": {
+            "description": {
               "en": "New Tilemap instance",
               "cn": "新Tilemap实例",
               "de": "Neue Tilemap-Instanz",
@@ -8704,7 +8704,7 @@
             {
               "name": "filename",
               "type": "str",
-              "desc": {
+              "description": {
                 "en": "TMX file name",
                 "cn": "TMX文件名",
                 "de": "TMX-Dateiname",
@@ -8722,7 +8722,7 @@
             {
               "name": "layer",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Layer number (0-)",
                 "cn": "图层编号 (0-)",
                 "de": "Ebenennummer (0-)",
@@ -8738,9 +8738,9 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "Tilemap",
-            "desc": {
+            "description": {
               "en": "Tilemap instance from TMX file",
               "cn": "从TMX文件创建的Tilemap实例",
               "de": "Tilemap-Instanz aus TMX-Datei",
@@ -8842,7 +8842,7 @@
             {
               "name": "x",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "X coordinate",
                 "cn": "X坐标",
                 "de": "X-Koordinate",
@@ -8860,7 +8860,7 @@
             {
               "name": "y",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Y coordinate",
                 "cn": "Y坐标",
                 "de": "Y-Koordinate",
@@ -8878,7 +8878,7 @@
             {
               "name": "data",
               "type": "list[str]",
-              "desc": {
+              "description": {
                 "en": "Tilemap data as a list of strings",
                 "cn": "字符串列表形式的瓦片地图数据",
                 "de": "Tilemap-Daten als Liste von Zeichenketten",
@@ -8894,7 +8894,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "examples": [
@@ -8924,7 +8924,7 @@
             {
               "name": "x",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "X coordinate",
                 "cn": "X坐标",
                 "de": "X-Koordinate",
@@ -8942,7 +8942,7 @@
             {
               "name": "y",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Y coordinate",
                 "cn": "Y坐标",
                 "de": "Y-Koordinate",
@@ -8960,7 +8960,7 @@
             {
               "name": "filename",
               "type": "str",
-              "desc": {
+              "description": {
                 "en": "TMX file name",
                 "cn": "TMX文件名",
                 "de": "TMX-Dateiname",
@@ -8978,7 +8978,7 @@
             {
               "name": "layer",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Layer number (0-)",
                 "cn": "图层编号 (0-)",
                 "de": "Ebenennummer (0-)",
@@ -8994,7 +8994,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": false
@@ -9021,7 +9021,7 @@
             {
               "name": "x",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "X coordinate",
                 "cn": "X坐标",
                 "de": "X-Koordinate",
@@ -9039,7 +9039,7 @@
             {
               "name": "y",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Y coordinate",
                 "cn": "Y坐标",
                 "de": "Y-Koordinate",
@@ -9055,9 +9055,9 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "tuple[int, int]",
-            "desc": {
+            "description": {
               "en": "(image_tx, image_ty)",
               "cn": "(image_tx, image_ty)",
               "de": "(image_tx, image_ty)",
@@ -9096,7 +9096,7 @@
             {
               "name": "x",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "X coordinate",
                 "cn": "X坐标",
                 "de": "X-Koordinate",
@@ -9114,7 +9114,7 @@
             {
               "name": "y",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Y coordinate",
                 "cn": "Y坐标",
                 "de": "Y-Koordinate",
@@ -9132,7 +9132,7 @@
             {
               "name": "tile",
               "type": "tuple[int, int]",
-              "desc": {
+              "description": {
                 "en": "Tile as (image_tx, image_ty)",
                 "cn": "瓦片 (image_tx, image_ty)",
                 "de": "Kachel als (image_tx, image_ty)",
@@ -9148,7 +9148,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": false
@@ -9195,7 +9195,7 @@
             {
               "name": "x",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Rectangle X position",
                 "cn": "矩形的X位置",
                 "de": "X-Position des Rechtecks",
@@ -9213,7 +9213,7 @@
             {
               "name": "y",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Rectangle Y position",
                 "cn": "矩形的Y位置",
                 "de": "Y-Position des Rechtecks",
@@ -9231,7 +9231,7 @@
             {
               "name": "w",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Rectangle width",
                 "cn": "矩形的宽度",
                 "de": "Breite des Rechtecks",
@@ -9249,7 +9249,7 @@
             {
               "name": "h",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Rectangle height",
                 "cn": "矩形的高度",
                 "de": "Höhe des Rechtecks",
@@ -9267,7 +9267,7 @@
             {
               "name": "dx",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Movement in X",
                 "cn": "X方向的移动量",
                 "de": "Verschiebung in X",
@@ -9285,7 +9285,7 @@
             {
               "name": "dy",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Movement in Y",
                 "cn": "Y方向的移动量",
                 "de": "Verschiebung in Y",
@@ -9303,7 +9303,7 @@
             {
               "name": "walls",
               "type": "list[tuple[int, int]]",
-              "desc": {
+              "description": {
                 "en": "List of wall tiles (image_tx, image_ty)",
                 "cn": "墙壁瓦片 (image_tx, image_ty) 的列表",
                 "de": "Liste der Wandkacheln (image_tx, image_ty)",
@@ -9319,9 +9319,9 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "tuple[float, float]",
-            "desc": {
+            "description": {
               "en": "Adjusted (dx, dy)",
               "cn": "校正后的 (dx, dy)",
               "de": "Angepasstes (dx, dy)",
@@ -9356,9 +9356,9 @@
             "tr": "Tilemap'in ham veri işaretçisini ctypes c_uint16 dizisi olarak döndürür (karo başına 4 bayt: image_tx, image_ty).",
             "uk": "Повертає вказівник на необроблені дані тайлмапу у вигляді масиву ctypes c_uint16 (4 байти на тайл: image_tx, image_ty)."
           },
-          "return": {
+          "returns": {
             "type": "Any",
-            "desc": {
+            "description": {
               "en": "Raw data pointer",
               "cn": "原始数据指针",
               "de": "Rohdatenzeiger",
@@ -9412,9 +9412,9 @@
             "tr": "Yeni bir Sound örneği oluşturur.",
             "uk": "Створює новий екземпляр Sound."
           },
-          "return": {
+          "returns": {
             "type": "Sound",
-            "desc": {
+            "description": {
               "en": "New Sound instance",
               "cn": "新Sound实例",
               "de": "Neue Sound-Instanz",
@@ -9558,7 +9558,7 @@
             {
               "name": "notes",
               "type": "str",
-              "desc": {
+              "description": {
                 "en": "Note string",
                 "cn": "音程字符串",
                 "de": "Notenzeichenkette",
@@ -9576,7 +9576,7 @@
             {
               "name": "tones",
               "type": "str",
-              "desc": {
+              "description": {
                 "en": "Tone string",
                 "cn": "音色字符串",
                 "de": "Klangzeichenkette",
@@ -9594,7 +9594,7 @@
             {
               "name": "volumes",
               "type": "str",
-              "desc": {
+              "description": {
                 "en": "Volume string",
                 "cn": "音量字符串",
                 "de": "Lautstärkezeichenkette",
@@ -9612,7 +9612,7 @@
             {
               "name": "effects",
               "type": "str",
-              "desc": {
+              "description": {
                 "en": "Effect string",
                 "cn": "效果字符串",
                 "de": "Effektzeichenkette",
@@ -9630,7 +9630,7 @@
             {
               "name": "speed",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Playback speed",
                 "cn": "播放速度",
                 "de": "Wiedergabegeschwindigkeit",
@@ -9646,7 +9646,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": false
@@ -9673,7 +9673,7 @@
             {
               "name": "notes",
               "type": "str",
-              "desc": {
+              "description": {
                 "en": "Notes string",
                 "cn": "notes字符串",
                 "de": "notes-Zeichenkette",
@@ -9689,7 +9689,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "examples": ["pyxel.sounds[0].set_notes(\"g2b-2d3r rf3f3f3\")"],
@@ -9717,7 +9717,7 @@
             {
               "name": "tones",
               "type": "str",
-              "desc": {
+              "description": {
                 "en": "Tones string",
                 "cn": "tones字符串",
                 "de": "tones-Zeichenkette",
@@ -9733,7 +9733,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "examples": ["pyxel.sounds[0].set_tones(\"ttss pppn\")"],
@@ -9761,7 +9761,7 @@
             {
               "name": "volumes",
               "type": "str",
-              "desc": {
+              "description": {
                 "en": "Volumes string",
                 "cn": "volumes字符串",
                 "de": "volumes-Zeichenkette",
@@ -9777,7 +9777,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "examples": ["pyxel.sounds[0].set_volumes(\"7777 7531\")"],
@@ -9805,7 +9805,7 @@
             {
               "name": "effects",
               "type": "str",
-              "desc": {
+              "description": {
                 "en": "Effects string",
                 "cn": "effects字符串",
                 "de": "effects-Zeichenkette",
@@ -9821,7 +9821,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "examples": ["pyxel.sounds[0].set_effects(\"nfnf nvvs\")"],
@@ -9849,7 +9849,7 @@
             {
               "name": "code",
               "type": "str",
-              "desc": {
+              "description": {
                 "en": "MML string",
                 "cn": "MML字符串",
                 "de": "MML-String",
@@ -9865,7 +9865,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "examples": [
@@ -9892,7 +9892,7 @@
             "uk": "Виходить з режиму MML і повертається до звичайного режиму."
           },
           "params": [],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": false
@@ -9919,7 +9919,7 @@
             {
               "name": "filename",
               "type": "str",
-              "desc": {
+              "description": {
                 "en": "Audio file name (WAV/OGG)",
                 "cn": "音频文件名 (WAV/OGG)",
                 "de": "Audiodateiname (WAV/OGG)",
@@ -9935,7 +9935,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "examples": ["pyxel.sounds[0].pcm(\"sounds/bgm.ogg\")"],
@@ -9960,7 +9960,7 @@
             "uk": "Виходить з режиму PCM і повертається до звичайного режиму."
           },
           "params": [],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": false
@@ -9987,7 +9987,7 @@
             {
               "name": "filename",
               "type": "str",
-              "desc": {
+              "description": {
                 "en": "Output WAV file name",
                 "cn": "输出WAV文件名",
                 "de": "Ausgabe-WAV-Dateiname",
@@ -10005,7 +10005,7 @@
             {
               "name": "sec",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Duration in seconds",
                 "cn": "持续时间（秒）",
                 "de": "Dauer in Sekunden",
@@ -10023,7 +10023,7 @@
             {
               "name": "ffmpeg",
               "type": "bool",
-              "desc": {
+              "description": {
                 "en": "Also create MP4 file (requires FFmpeg). Defaults to False.",
                 "cn": "同时创建MP4文件（需要FFmpeg）。默认为 False。",
                 "de": "Auch MP4-Datei erstellen (erfordert FFmpeg). Standard ist False.",
@@ -10039,7 +10039,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": true
@@ -10062,9 +10062,9 @@
             "tr": "Oynatma süresini saniye cinsinden döndürür. Sonsuz döngüler için None döndürür.",
             "uk": "Повертає час відтворення у секундах. Повертає None для нескінченних циклів."
           },
-          "return": {
+          "returns": {
             "type": "float/None",
-            "desc": {
+            "description": {
               "en": "Playback time in seconds, or None for infinite loops",
               "cn": "播放时间（秒），无限循环时为None",
               "de": "Wiedergabezeit in Sekunden, oder None bei Endlosschleifen",
@@ -10118,9 +10118,9 @@
             "tr": "Yeni bir Music örneği oluşturur.",
             "uk": "Створює новий екземпляр Music."
           },
-          "return": {
+          "returns": {
             "type": "Music",
-            "desc": {
+            "description": {
               "en": "New Music instance",
               "cn": "新Music实例",
               "de": "Neue Music-Instanz",
@@ -10180,7 +10180,7 @@
             {
               "name": "seq0, seq1, ...",
               "type": "list[int]",
-              "desc": {
+              "description": {
                 "en": "Sound lists for each channel. Empty list = unused.",
                 "cn": "各通道的音效列表。空列表=未使用。",
                 "de": "Soundlisten pro Kanal. Leere Liste = nicht verwendet.",
@@ -10196,7 +10196,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "examples": ["pyxel.musics[0].set([0, 1], [], [3])"],
@@ -10224,7 +10224,7 @@
             {
               "name": "filename",
               "type": "str",
-              "desc": {
+              "description": {
                 "en": "Output WAV file name",
                 "cn": "输出WAV文件名",
                 "de": "Ausgabe-WAV-Dateiname",
@@ -10242,7 +10242,7 @@
             {
               "name": "sec",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Duration in seconds",
                 "cn": "持续时间（秒）",
                 "de": "Dauer in Sekunden",
@@ -10260,7 +10260,7 @@
             {
               "name": "ffmpeg",
               "type": "bool",
-              "desc": {
+              "description": {
                 "en": "Also create MP4 file (requires FFmpeg). Defaults to False.",
                 "cn": "同时创建MP4文件（需要FFmpeg）。默认为 False。",
                 "de": "Auch MP4-Datei erstellen (erfordert FFmpeg). Standard ist False.",
@@ -10276,7 +10276,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": true
@@ -10318,9 +10318,9 @@
             "tr": "Yeni bir Channel örneği oluşturur.",
             "uk": "Створює новий екземпляр Channel."
           },
-          "return": {
+          "returns": {
             "type": "Channel",
-            "desc": {
+            "description": {
               "en": "New Channel instance",
               "cn": "新Channel实例",
               "de": "Neue Channel-Instanz",
@@ -10401,7 +10401,7 @@
             {
               "name": "snd",
               "type": "int/list/Sound/str",
-              "desc": {
+              "description": {
                 "en": "Sound number (0-63), list of numbers, Sound instance, list of Sounds, or MML string",
                 "cn": "音效编号 (0-63)、编号列表、Sound实例、Sound列表或MML字符串",
                 "de": "Soundnummer (0-63), Nummernliste, Sound-Instanz, Sound-Liste oder MML-String",
@@ -10419,7 +10419,7 @@
             {
               "name": "sec",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Playback start position in seconds. Defaults to 0.",
                 "cn": "播放起始位置（秒）。默认为 0。",
                 "de": "Wiedergabe-Startposition in Sekunden. Standard ist 0.",
@@ -10437,7 +10437,7 @@
             {
               "name": "loop",
               "type": "bool",
-              "desc": {
+              "description": {
                 "en": "Loop playback. Defaults to False.",
                 "cn": "循环播放。默认为 False。",
                 "de": "Schleifenwiedergabe. Standard ist False.",
@@ -10455,7 +10455,7 @@
             {
               "name": "resume",
               "type": "bool",
-              "desc": {
+              "description": {
                 "en": "Resume previous sound after playback ends. Defaults to False.",
                 "cn": "播放结束后恢复之前的音效。默认为 False。",
                 "de": "Vorherigen Sound nach Wiedergabeende fortsetzen. Standard ist False.",
@@ -10471,7 +10471,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": true
@@ -10494,7 +10494,7 @@
             "tr": "Bu kanaldaki oynatmayı durdurur.",
             "uk": "Зупиняє відтворення на цьому каналі."
           },
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": true
@@ -10517,9 +10517,9 @@
             "tr": "Oynatma konumunu (sound_index, sec) demeti olarak döndürür. Oynatma durduğunda None döndürür.",
             "uk": "Повертає позицію відтворення як кортеж (sound_index, sec). Повертає None, коли відтворення зупинено."
           },
-          "return": {
+          "returns": {
             "type": "tuple[int, float]/None",
-            "desc": {
+            "description": {
               "en": "(sound_index, sec) or None",
               "cn": "(sound_index, sec) 或 None",
               "de": "(sound_index, sec) oder None",
@@ -10573,9 +10573,9 @@
             "tr": "Yeni bir Tone örneği oluşturur.",
             "uk": "Створює новий екземпляр Tone."
           },
-          "return": {
+          "returns": {
             "type": "Tone",
-            "desc": {
+            "description": {
               "en": "New Tone instance",
               "cn": "新Tone实例",
               "de": "Neue Tone-Instanz",
@@ -10653,6 +10653,28 @@
             "uk": "Дані хвильової таблиці у вигляді списку значень семплів. Кожне значення має бути в діапазоні від 0 до (2^sample_bits - 1)."
           },
           "value_type": "list[int]",
+          "advanced": true
+        },
+        {
+          "name": "Tone.waveform",
+          "type": "variable",
+          "signature": "Tone.waveform",
+          "description": {
+            "en": "Deprecated alias of wavetable.",
+            "cn": "已弃用的 wavetable 别名。",
+            "de": "Veralteter Alias für wavetable.",
+            "es": "Alias obsoleto de wavetable.",
+            "fr": "Alias obsolète de wavetable.",
+            "it": "Alias deprecato di wavetable.",
+            "ja": "wavetableの非推奨エイリアス。",
+            "ko": "wavetable의 사용 중단된 별칭.",
+            "pt": "Alias obsoleto de wavetable.",
+            "ru": "Устаревший псевдоним wavetable.",
+            "tr": "wavetable için kullanımdan kaldırılmış takma ad.",
+            "uk": "Застарілий псевдонім wavetable."
+          },
+          "value_type": "list[int]",
+          "deprecated": true,
           "advanced": true
         },
         {
