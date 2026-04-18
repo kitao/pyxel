@@ -779,7 +779,7 @@ impl OwnedChordEntry {
     }
 }
 
-/// Resolve a chord selector (0..PRESET_COUNT = preset, >=PRESET_COUNT = custom slot) into
+/// Resolve a chord selector (`0..PRESET_COUNT` = preset, `>=PRESET_COUNT` = custom slot) into
 /// an owned progression that the downstream generators can consume uniformly.
 fn resolve_progression(chord: i32, custom: Option<&[CustomChordEntryDef]>) -> Vec<OwnedChordEntry> {
     let chord_idx = chord as usize;
