@@ -165,8 +165,8 @@ impl ResourceData {
     }
 
     pub fn from_runtime(_pyxel: &Pyxel) -> Self {
-        ResourceData {
-            format_version: 1, // compatible with version 1
+        Self {
+            format_version: 1, // Compatible with format version 1
             images: pyxel::images()
                 .iter()
                 .map(|&img| ImageData::from_image(img))

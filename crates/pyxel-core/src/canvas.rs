@@ -1033,6 +1033,8 @@ impl PerspectiveProjection {
             r12: cy * sx,
             r21: sx,
             r22: cx,
+            sz,
+            cz,
             tan_hfov,
             aspect: w as f32 / h as f32,
             half_w: w as f32 / 2.0,
@@ -1041,8 +1043,6 @@ impl PerspectiveProjection {
             dst_y: f32_to_i32(y) - offset_y,
             w,
             h,
-            sz,
-            cz,
         })
     }
 

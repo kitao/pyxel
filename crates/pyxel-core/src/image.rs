@@ -43,6 +43,8 @@ impl ToIndex for Color {
 }
 
 impl Image {
+    // Constructors
+
     pub fn new(width: u32, height: u32) -> *mut Image {
         Box::into_raw(Box::new(Self {
             canvas: Canvas::new(width, height),
@@ -112,6 +114,8 @@ impl Image {
         Ok(image)
     }
 
+    // Public accessors
+
     pub const fn width(&self) -> u32 {
         self.canvas.width()
     }
@@ -123,6 +127,8 @@ impl Image {
     pub fn data_ptr(&mut self) -> *mut Color {
         self.canvas.data_ptr()
     }
+
+    // Public data operations
 
     pub fn set(&mut self, x: i32, y: i32, data_str: &[&str]) {
         let width = utils::compact_ascii_lower(data_str[0]).len() as u32;
@@ -216,6 +222,8 @@ impl Image {
         Ok(())
     }
 
+    // Clip and offset
+
     pub fn set_clip_rect(&mut self, x: f32, y: f32, width: f32, height: f32) {
         self.canvas.set_clip_rect(x, y, width, height);
     }
@@ -232,6 +240,8 @@ impl Image {
         self.canvas.reset_draw_offset();
     }
 
+    // Palette and dithering
+
     pub fn map_color(&mut self, src_color: Color, dst_color: Color) {
         self.palette[src_color as usize] = dst_color;
         self.palette_is_identity = false;
@@ -245,6 +255,8 @@ impl Image {
     pub fn set_dithering(&mut self, alpha: f32) {
         self.canvas.set_dithering(alpha);
     }
+
+    // Drawing primitives
 
     pub fn clear(&mut self, color: Color) {
         self.canvas.clear(self.palette[color as usize]);
@@ -324,6 +336,8 @@ impl Image {
     pub fn flood_fill(&mut self, x: f32, y: f32, color: Color) {
         self.canvas.flood_fill(x, y, self.palette[color as usize]);
     }
+
+    // Blit operations
 
     /// # Safety
     /// `image` must be a valid, non-null pointer to an `Image`.
@@ -738,6 +752,8 @@ impl Image {
         }
     }
 
+    // Text rendering
+
     pub fn draw_text(
         &mut self,
         x: f32,
@@ -811,6 +827,8 @@ impl Image {
             x += FONT_WIDTH as i32;
         }
     }
+
+    // Internal helpers
 
     fn color_dist(rgb1: (u8, u8, u8), rgb2: (u8, u8, u8)) -> f32 {
         let (r1, g1, b1) = rgb1;

@@ -16,7 +16,7 @@
 mod utils;
 mod pyxel_singleton;
 
-// Wrapper modules
+// Module-level wrappers
 mod constant_wrapper;
 mod variable_wrapper;
 

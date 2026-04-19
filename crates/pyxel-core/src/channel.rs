@@ -251,7 +251,7 @@ impl Channel {
                 {
                     let sound = unsafe { &*self.sounds[self.sound_index as usize] };
                     if sound.commands.is_empty() {
-                        self.commands = sound.to_commands();
+                        sound.emit_commands(&mut self.commands);
                     } else {
                         self.commands.clone_from(&sound.commands);
                     }
@@ -288,8 +288,9 @@ impl Channel {
                     self.sound_index = 0;
                     self.update_playing_pcm();
                 } else if self.should_resume {
+                    let resume_sounds = std::mem::take(&mut self.resume_sounds);
                     self.play_from_clock(
-                        self.resume_sounds.clone(),
+                        resume_sounds,
                         self.total_elapsed_clocks,
                         self.resume_should_loop,
                         false,
@@ -517,13 +518,16 @@ impl Channel {
                     let remaining = len - self.pcm_position;
                     to_copy = (out.len() - offset).min(remaining);
                     if gain_fixed != 0 {
-                        let samples = &pcm.samples;
-                        for i in 0..to_copy {
-                            let scaled = samples[self.pcm_position + i] as i64 * gain_fixed as i64;
+                        // Slice-based iteration lets the optimizer elide per-element bounds checks
+                        let src_samples =
+                            &pcm.samples[self.pcm_position..self.pcm_position + to_copy];
+                        let dst = &mut out[offset..offset + to_copy];
+                        for (d, &sample) in dst.iter_mut().zip(src_samples) {
+                            let scaled = sample as i64 * gain_fixed as i64;
                             let src = (scaled + ((scaled >> 63) & PCM_MIX_TRUNC_BIAS))
                                 >> AUDIO_GAIN_SHIFT;
-                            let mixed = out[offset + i] as i64 + src;
-                            out[offset + i] = mixed.clamp(i16::MIN as i64, i16::MAX as i64) as i16;
+                            let mixed = *d as i64 + src;
+                            *d = mixed.clamp(i16::MIN as i64, i16::MAX as i64) as i16;
                         }
                     }
                     end_reached = self.pcm_position + to_copy >= len;
@@ -559,8 +563,9 @@ impl Channel {
                 self.sound_index = 0;
                 self.pcm_position = 0;
             } else if self.should_resume {
+                let resume_sounds = std::mem::take(&mut self.resume_sounds);
                 self.play_from_clock(
-                    self.resume_sounds.clone(),
+                    resume_sounds,
                     self.total_elapsed_clocks,
                     self.resume_should_loop,
                     false,

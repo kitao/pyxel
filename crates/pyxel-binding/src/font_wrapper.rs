@@ -4,8 +4,6 @@ define_wrapper!(Font, pyxel::Font);
 
 #[pymethods]
 impl Font {
-    // Constructor
-
     #[new]
     #[pyo3(signature = (filename, font_size=None))]
     fn new(filename: &str, font_size: Option<f32>) -> PyResult<Self> {
@@ -13,8 +11,6 @@ impl Font {
             .map(Self::wrap)
             .map_err(pyo3::exceptions::PyException::new_err)
     }
-
-    // Text measurement
 
     fn text_width(&self, s: &str) -> i32 {
         self.inner_mut().text_width(s)

@@ -226,19 +226,23 @@ impl Sound {
 
     pub(crate) fn to_commands(&self) -> Vec<MmlCommand> {
         let mut commands = Vec::new();
+        self.emit_commands(&mut commands);
+        commands
+    }
+
+    pub(crate) fn emit_commands(&self, commands: &mut Vec<MmlCommand>) {
+        commands.clear();
 
         // Fixed parameters
-        self.emit_fixed_params(&mut commands);
+        self.emit_fixed_params(commands);
 
         // Envelope, vibrato, glide slot definitions
-        self.emit_envelope_slots(&mut commands);
-        self.emit_vibrato_slot(&mut commands);
-        self.emit_glide_slot(&mut commands);
+        self.emit_envelope_slots(commands);
+        self.emit_vibrato_slot(commands);
+        self.emit_glide_slot(commands);
 
         // Note sequence with per-note state changes
-        self.emit_notes(&mut commands);
-
-        commands
+        self.emit_notes(commands);
     }
 
     fn emit_fixed_params(&self, commands: &mut Vec<MmlCommand>) {
