@@ -65,12 +65,10 @@ MUSIC_FIELD_CURSOR_SELECT_COLOR = 2
 
 
 def clamp(value, low, high):
-    """Clamp value to [low, high] range."""
     return max(min(value, high), low)
 
 
 def is_modifier_pressed():
-    """Check if any modifier key (Shift/Ctrl/Alt/Gui) is held."""
     return (
         pyxel.btn(pyxel.KEY_SHIFT)
         or pyxel.btn(pyxel.KEY_CTRL)

@@ -183,7 +183,6 @@ class SoundEditor(EditorBase):
         pyxel.stop(0)
 
     def _restore_state(self, data, prefix):
-        """Shared undo/redo logic for restoring sound state."""
         self._stop()
         self.sound_index_var = data["sound_index"]
         if f"{prefix}_data" in data:

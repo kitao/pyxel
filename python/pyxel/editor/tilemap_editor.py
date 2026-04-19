@@ -103,7 +103,6 @@ class TilemapEditor(EditorBase):
         self.add_event_listener("draw", self.__on_draw)
 
     def _restore_state(self, data, prefix):
-        """Shared undo/redo logic for restoring tilemap state."""
         self.tilemap_index_var = data["tilemap_index"]
         if f"{prefix}_data" in data:
             pyxel.tilemaps[self.tilemap_index_var].set_slice(

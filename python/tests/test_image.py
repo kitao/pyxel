@@ -3,7 +3,6 @@ from pathlib import Path
 import pyxel
 
 
-# Image class
 class TestImage:
     def test_new_dimensions(self):
         img = pyxel.Image(64, 48)

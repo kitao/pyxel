@@ -4,6 +4,7 @@ import shutil
 from pathlib import Path
 
 import pytest
+
 import pyxel
 
 REFERENCES_DIR = Path(__file__).parent / "references"
@@ -12,18 +13,15 @@ EXAMPLE_REFS_DIR = REFERENCES_DIR / "examples"
 
 
 def reinit_pyxel():
-    """Reset Pyxel state so init() can be called again."""
     pyxel._reset_statics()
 
 
 def restore_pyxel():
-    """Restore Pyxel to conftest's default session state."""
     pyxel._reset_statics()
     pyxel.init(160, 120, headless=True)
 
 
 def run_example(script_path):
-    """Execute example script, capturing update/draw callbacks."""
     captured = {}
     original_init = pyxel.init
     original_run = pyxel.run
@@ -68,7 +66,6 @@ class _FlipCapture(Exception):
 
 
 def run_flip_example(script_path, plan, tmp_dir):
-    """Handle while+flip() examples by patching flip() to capture at plan frames."""
     original_init = pyxel.init
     original_flip = pyxel.flip
     frame_count = [0]
@@ -111,7 +108,6 @@ def run_flip_example(script_path, plan, tmp_dir):
 
 
 def capture_frames(captured, plan, tmp_dir):
-    """Execute capture plan, returning list of (frame, png_path) pairs."""
     results = []
     current_frame = 0
     for step in plan:
@@ -139,7 +135,6 @@ def capture_frames(captured, plan, tmp_dir):
 
 
 def compare_or_update_all(name, results, refs_dir, update_references):
-    """Compare all captured frames to references, or update them."""
     updated = []
     failures = []
     for frame, actual_path in results:

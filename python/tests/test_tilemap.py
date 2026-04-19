@@ -1,7 +1,6 @@
 import pyxel
 
 
-# Tilemap class
 class TestTilemap:
     def test_new_with_int(self):
         tm = pyxel.Tilemap(32, 32, 0)

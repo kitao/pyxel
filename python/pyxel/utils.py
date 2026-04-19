@@ -18,7 +18,6 @@ def _to_module_filename(module_path: str) -> str | None:
 
 
 def _resolve_module_path(dir_path: str, level: int, name: str) -> str:
-    """Build a filesystem path from an import's directory, level, and name."""
     path = Path(dir_path)
     for _ in range(level - 1):
         path = path / ".."
@@ -34,7 +33,6 @@ def _track_module(
     level: int,
     name: str,
 ) -> None:
-    """Classify a single import as local or system and recurse into local ones."""
     module_path = _resolve_module_path(dir_path, level, name)
     module_filename = _to_module_filename(module_path)
 
@@ -55,8 +53,7 @@ def _list_imported_modules(
 
     dir_path = str(Path(filename).parent)
     try:
-        with open(filename, encoding="utf-8") as file:
-            root = ast.parse(file.read())
+        root = ast.parse(Path(filename).read_text(encoding="utf-8"))
     except (SyntaxError, UnicodeDecodeError):
         return
 

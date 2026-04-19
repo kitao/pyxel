@@ -3,7 +3,6 @@ from pathlib import Path
 import pyxel
 
 
-# Music class
 class TestMusic:
     def test_new(self):
         msc = pyxel.Music()

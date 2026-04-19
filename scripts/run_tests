@@ -101,11 +101,13 @@ rm -f "$PACKAGE_EXAMPLE.pyxapp"
 # Inline background instead of run_bg: Ctrl+C exits 0 here, while run_bg exits 130.
 pyxel watch . "$WATCH_EXAMPLE.py" &
 BG_PID=$!
+# Let pyxel watch finish startup before injecting the syntax error.
 sleep 2
 
 cat > "$WATCH_EXAMPLE.py" << 'EOF'
 syntax error!!!
 EOF
+# Give the watcher time to pick up the error before restoring valid source.
 sleep 1
 
 sed 's/Hello, Pyxel!/Watch Passed!/' "$EXAMPLES_DIR/$WATCH_EXAMPLE.py" > "$WATCH_EXAMPLE.py"

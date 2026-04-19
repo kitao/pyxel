@@ -1,4 +1,5 @@
 import pytest
+
 import pyxel
 
 
@@ -290,8 +291,6 @@ class TestSeqBool:
 
 
 class TestSeqIadd:
-    """Test __iadd__ (+=) for sequences."""
-
     def test_iadd_colors(self):
         original = list(pyxel.colors)
         pyxel.colors += [0xAAAAAA, 0xBBBBBB]
@@ -318,8 +317,6 @@ class TestSeqIadd:
 
 
 class TestSeqValueOps:
-    """Test __eq__, __add__, __mul__ for value-type sequences (colors)."""
-
     def test_eq_same_content(self):
         # Compare a copy of colors list against the sequence
         colors_list = list(pyxel.colors)

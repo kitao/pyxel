@@ -1,5 +1,24 @@
 import pyxel
 
+_COLOR_NAMES = [
+    "BLACK",
+    "NAVY",
+    "PURPLE",
+    "GREEN",
+    "BROWN",
+    "DARK_BLUE",
+    "LIGHT_BLUE",
+    "WHITE",
+    "RED",
+    "ORANGE",
+    "YELLOW",
+    "LIME",
+    "CYAN",
+    "GRAY",
+    "PINK",
+    "PEACH",
+]
+
 
 class TestSystemAttributes:
     def test_width(self):
@@ -93,14 +112,8 @@ class TestConstants:
         assert pyxel.COLOR_PEACH == 15
 
     def test_color_constants_contiguous(self):
-        for i in range(16):
-            assert (
-                getattr(
-                    pyxel,
-                    f"COLOR_{['BLACK', 'NAVY', 'PURPLE', 'GREEN', 'BROWN', 'DARK_BLUE', 'LIGHT_BLUE', 'WHITE', 'RED', 'ORANGE', 'YELLOW', 'LIME', 'CYAN', 'GRAY', 'PINK', 'PEACH'][i]}",
-                )
-                == i
-            )
+        for i, name in enumerate(_COLOR_NAMES):
+            assert getattr(pyxel, f"COLOR_{name}") == i
 
     def test_tone_constants(self):
         assert pyxel.TONE_TRIANGLE == 0

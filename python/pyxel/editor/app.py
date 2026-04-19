@@ -123,8 +123,8 @@ class App(Widget):
         return self._editors[self.editor_type_var]
 
     @staticmethod
-    def _set_title(filename):
-        pyxel.title(f"Pyxel Editor - {filename}")
+    def _set_title(resource_file):
+        pyxel.title(f"Pyxel Editor - {resource_file}")
 
     def __on_editor_button_change(self, value):
         for i, editor in enumerate(self._editors):
@@ -152,12 +152,12 @@ class App(Widget):
         self.help_message_var = "SAVE:CTRL+S"
 
     def __on_update(self):
-        _dropped_files = getattr(pyxel, "_dropped_files", [])
+        legacy_dropped_files = getattr(pyxel, "_dropped_files", [])
         pyxel._dropped_files = []
         if pyxel.dropped_files:
             dropped_file = pyxel.dropped_files[-1]
-        elif _dropped_files:
-            dropped_file = _dropped_files[-1]
+        elif legacy_dropped_files:
+            dropped_file = legacy_dropped_files[-1]
         else:
             dropped_file = None
         if dropped_file:

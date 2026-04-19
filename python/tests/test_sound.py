@@ -3,7 +3,6 @@ from pathlib import Path
 import pyxel
 
 
-# Sound class
 class TestSound:
     def test_new_defaults(self):
         snd = pyxel.Sound()

@@ -1,7 +1,6 @@
 import pyxel
 
 
-# Font class
 class TestFont:
     def test_bdf(self, assets_dir):
         font = pyxel.Font(str(assets_dir / "umplus_j10r.bdf"))

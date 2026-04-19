@@ -90,18 +90,6 @@ class MusicEditor(EditorBase):
         # Normalize the initial music's seqs length
         self._normalize_music_seqs(self.music_index_var)
 
-    @staticmethod
-    def _normalize_music_seqs(music_index):
-        music = pyxel.musics[music_index]
-        seqs_len = len(music.seqs)
-        if seqs_len < pyxel.NUM_CHANNELS:
-            music.seqs.extend([[] for _ in range(pyxel.NUM_CHANNELS - seqs_len)])
-        elif seqs_len > pyxel.NUM_CHANNELS:
-            del music.seqs[pyxel.NUM_CHANNELS :]
-
-    def __on_music_index_change(self, value):
-        self._normalize_music_seqs(value)
-
     def get_field(self, index):
         if index >= pyxel.NUM_CHANNELS:
             return None
@@ -129,6 +117,15 @@ class MusicEditor(EditorBase):
             if data["new_field"] != data["old_field"]:
                 self.add_history(data)
 
+    @staticmethod
+    def _normalize_music_seqs(music_index):
+        music = pyxel.musics[music_index]
+        seqs_len = len(music.seqs)
+        if seqs_len < pyxel.NUM_CHANNELS:
+            music.seqs.extend([[] for _ in range(pyxel.NUM_CHANNELS - seqs_len)])
+        elif seqs_len > pyxel.NUM_CHANNELS:
+            del music.seqs[pyxel.NUM_CHANNELS :]
+
     def _play(self, is_partial):
         self.is_playing_var = True
         self._music_picker.is_enabled_var = False
@@ -153,7 +150,6 @@ class MusicEditor(EditorBase):
         pyxel.stop()
 
     def _restore_state(self, data, prefix):
-        """Shared undo/redo logic for restoring music state."""
         self._stop()
         self.music_index_var = data["music_index"]
         if f"{prefix}_data" in data:
@@ -162,6 +158,9 @@ class MusicEditor(EditorBase):
         else:
             self.field_cursor.move_to(*data[f"{prefix}_cursor_pos"], False)
             self.field_cursor.field[:] = data[f"{prefix}_field"]
+
+    def __on_music_index_change(self, value):
+        self._normalize_music_seqs(value)
 
     def __on_music_picker_mouse_hover(self, _x, _y):
         self.help_message_var = "COPY_ALL:CTRL+SHIFT+C/X/V"

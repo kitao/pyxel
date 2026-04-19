@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 
 import pytest
+
 import pyxel
 import pyxel.editor
 
@@ -80,7 +81,6 @@ EDITOR_PLANS = {
 
 
 def run_editor(starting_editor):
-    """Launch Pyxel Editor, capturing update/draw callbacks."""
     captured = {}
     original_init = pyxel.init
     original_run = pyxel.run
@@ -140,7 +140,6 @@ def _capture(captured, path):
 
 
 def run_editor_edit(editor, captured, tmp_path):
-    """Perform edit operations and return (frame_label, path) pairs."""
     results = []
 
     # Capture initial state

@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 
+from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 import io
 from pathlib import Path
 import socket
 import sys
-from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import urlparse
 
 ROOT_DIR = Path(__file__).resolve().parent.parent

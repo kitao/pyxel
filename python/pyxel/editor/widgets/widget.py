@@ -265,28 +265,28 @@ class Widget:
 
     # Visibility callbacks
 
-    def __on_is_visible_get(self, value):
-        return (self._parent.is_visible_var and value) if self._parent else value
-
-    def __on_is_visible_change(self, value):
-        self._trigger_visible_event(value)
-
     def _trigger_visible_event(self, is_visible):
         self.trigger_event("show" if is_visible else "hide")
         for child in self._children:
             if child.is_visible_var == is_visible:
                 child._trigger_visible_event(is_visible)
 
+    def __on_is_visible_get(self, value):
+        return (self._parent.is_visible_var and value) if self._parent else value
+
+    def __on_is_visible_change(self, value):
+        self._trigger_visible_event(value)
+
     # Enablement callbacks
-
-    def __on_is_enabled_get(self, value):
-        return (self._parent.is_enabled_var and value) if self._parent else value
-
-    def __on_is_enabled_change(self, value):
-        self._trigger_enabled_event(value)
 
     def _trigger_enabled_event(self, is_enabled):
         self.trigger_event("enabled" if is_enabled else "disabled")
         for child in self._children:
             if child.is_enabled_var == is_enabled:
                 child._trigger_enabled_event(is_enabled)
+
+    def __on_is_enabled_get(self, value):
+        return (self._parent.is_enabled_var and value) if self._parent else value
+
+    def __on_is_enabled_change(self, value):
+        self._trigger_enabled_event(value)

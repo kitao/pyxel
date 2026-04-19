@@ -183,7 +183,6 @@ class CanvasPanel(Widget):
             self._edit_canvas.imgsrc = self.canvas_var.imgsrc
 
     def _finish_edit_canvas(self):
-        """Fill empty tiles with the selected tile pattern in tilemap mode."""
         if not self._is_tilemap_mode:
             return
 

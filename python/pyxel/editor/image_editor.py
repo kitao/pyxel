@@ -86,7 +86,6 @@ class ImageEditor(EditorBase):
         self.add_event_listener("draw", self.__on_draw)
 
     def _restore_state(self, data, prefix):
-        """Shared undo/redo logic for restoring image state."""
         self.image_index_var = data["image_index"]
         if f"{prefix}_data" in data:
             pyxel.images[self.image_index_var].set_slice(0, 0, data[f"{prefix}_data"])

@@ -72,17 +72,6 @@ class SoundSelector(Widget):
 
         self._last_preview_sound = self._preview_sound
 
-    def __on_draw(self):
-        self.draw_panel(self.x, self.y, self.width, self.height)
-        pyxel.blt(self.x + 6, self.y + 5, EDITOR_IMAGE, 0, 121, 206, 34)
-
-        for i in range(pyxel.NUM_SOUNDS):
-            if pyxel.sounds[i].notes:
-                self._draw_sound_button(i, BUTTON_ENABLED_COLOR)
-
-        if self._pressed_sound is not None:
-            self._draw_sound_button(self._pressed_sound, BUTTON_PRESSED_COLOR)
-
     def _draw_sound_button(self, snd, col):
         pyxel.pal(13, col)
         x = (snd % 16) * 13
@@ -97,3 +86,14 @@ class SoundSelector(Widget):
             7,
         )
         pyxel.pal()
+
+    def __on_draw(self):
+        self.draw_panel(self.x, self.y, self.width, self.height)
+        pyxel.blt(self.x + 6, self.y + 5, EDITOR_IMAGE, 0, 121, 206, 34)
+
+        for i in range(pyxel.NUM_SOUNDS):
+            if pyxel.sounds[i].notes:
+                self._draw_sound_button(i, BUTTON_ENABLED_COLOR)
+
+        if self._pressed_sound is not None:
+            self._draw_sound_button(self._pressed_sound, BUTTON_PRESSED_COLOR)

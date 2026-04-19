@@ -27,9 +27,6 @@ def localize(obj):
     return obj.get("en", "")
 
 
-# ---------------------------------------------------------------------------
-# JS expression evaluator (produces Markdown directly)
-# ---------------------------------------------------------------------------
 
 
 def _find_matching(text, start, open_ch, close_ch):
@@ -652,11 +649,6 @@ class JsEval:
             self._vars[target_var] = "".join(result)
 
 
-# ---------------------------------------------------------------------------
-# HTML template -> Markdown
-# ---------------------------------------------------------------------------
-
-
 def _strip_html(text):
     text = re.sub(r'<strong>(.*?)</strong>', r'**\1**', text)
     text = re.sub(r'</?(?:div|section|span|p|ul|li|a|img|td|th|tr|thead'
@@ -666,8 +658,7 @@ def _strip_html(text):
 
 def generate_from_html(html_path, json_path, doc_name):
     html_text = html_path.read_text(encoding="utf-8")
-    with open(json_path, encoding="utf-8") as f:
-        data = json.load(f)
+    data = json.loads(json_path.read_text(encoding="utf-8"))
     ev = JsEval(data["ui"], data, doc_name)
 
     # Extract update() body
@@ -776,14 +767,8 @@ def generate_from_html(html_path, json_path, doc_name):
     print(f"Generated {path.relative_to(ROOT_DIR)}")
 
 
-# ---------------------------------------------------------------------------
-# API Reference (from JSON)
-# ---------------------------------------------------------------------------
-
-
 def generate_api_reference():
-    with open(API_REF_JSON, encoding="utf-8") as f:
-        api_data = json.load(f)
+    api_data = json.loads(API_REF_JSON.read_text(encoding="utf-8"))
     lines = []
 
     title = localize(api_data["ui"]["title"])
@@ -863,14 +848,8 @@ def generate_api_reference():
     print(f"Generated {path.relative_to(ROOT_DIR)}")
 
 
-# ---------------------------------------------------------------------------
-# MML Commands (from JSON)
-# ---------------------------------------------------------------------------
-
-
 def generate_mml_commands():
-    with open(MML_COMMANDS_JSON, encoding="utf-8") as f:
-        mml_data = json.load(f)
+    mml_data = json.loads(MML_COMMANDS_JSON.read_text(encoding="utf-8"))
     lines = []
 
     title = localize(mml_data["ui"]["title"])
@@ -903,11 +882,6 @@ def generate_mml_commands():
     path = DOCS_DIR / "mml-commands.md"
     path.write_text("\n".join(lines), encoding="utf-8")
     print(f"Generated {path.relative_to(ROOT_DIR)}")
-
-
-# ---------------------------------------------------------------------------
-# Main
-# ---------------------------------------------------------------------------
 
 
 if __name__ == "__main__":

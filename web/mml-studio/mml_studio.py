@@ -13,6 +13,7 @@ class App:
         pyxel.init(100, 20, title="Pyxel MML Studio", quit_key=pyxel.KEY_NONE)
 
         self.default_gain = pyxel.channels[0].gain
+        self.loop_enabled = False
 
         for i in range(NUM_CHANNELS):
             pyxel.sounds[i].mml(get_js_var(f"js_ch{i + 1}_mml", ""))

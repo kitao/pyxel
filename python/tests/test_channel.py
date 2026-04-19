@@ -1,8 +1,8 @@
 import pytest
+
 import pyxel
 
 
-# Channel class
 class TestChannel:
     def test_new_defaults(self):
         ch = pyxel.Channel()

@@ -298,8 +298,7 @@ def _add_docstrings(content, doc_map):
 
 
 def generate_pyi_docstrings():
-    with open(API_REF_JSON, encoding="utf-8") as f:
-        api_data = json.load(f)
+    api_data = json.loads(API_REF_JSON.read_text(encoding="utf-8"))
     doc_map = _build_doc_map(api_data)
     content = PYI_PATH.read_text(encoding="utf-8")
     content = _strip_docstrings(content)

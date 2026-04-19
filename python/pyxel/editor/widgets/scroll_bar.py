@@ -1,7 +1,7 @@
 import pyxel
 
-from .button import Button
 from ..settings import clamp
+from .button import Button
 from .settings import WIDGET_BACKGROUND_COLOR, WIDGET_PANEL_COLOR
 from .widget import Widget
 
@@ -129,17 +129,6 @@ class ScrollBar(Widget):
         if not self._is_dragged:
             self.__on_mouse_down(key, x, y)
 
-    def __on_draw(self):
-        x = self.x
-        y = self.y
-        w = self.width
-        h = self.height
-        self.draw_panel(x, y, w, h, with_shadow=self._with_shadow)
-        if self._is_vertical:
-            self._draw_vertical(x, y, w, h)
-        else:
-            self._draw_horizontal(x, y, w, h)
-
     def _draw_vertical(self, x, y, w, h):
         dec_col = 6 if self.dec_button.is_pressed_var else WIDGET_BACKGROUND_COLOR
         inc_col = 6 if self.inc_button.is_pressed_var else WIDGET_BACKGROUND_COLOR
@@ -183,3 +172,14 @@ class ScrollBar(Widget):
         pyxel.rect(
             x + self._slider_pos, y + 2, self._slider_size, 3, WIDGET_PANEL_COLOR
         )
+
+    def __on_draw(self):
+        x = self.x
+        y = self.y
+        w = self.width
+        h = self.height
+        self.draw_panel(x, y, w, h, with_shadow=self._with_shadow)
+        if self._is_vertical:
+            self._draw_vertical(x, y, w, h)
+        else:
+            self._draw_horizontal(x, y, w, h)

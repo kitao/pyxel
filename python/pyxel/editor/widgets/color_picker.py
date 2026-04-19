@@ -56,13 +56,6 @@ class ColorPicker(Widget):
     def __on_mouse_drag(self, key, x, y, dx, dy):
         self.__on_mouse_down(key, x, y)
 
-    def __on_draw(self):
-        self.draw_panel(
-            self.x, self.y, self.width, self.height, with_shadow=self._with_shadow
-        )
-        self._draw_colors()
-        self._draw_cursor()
-
     def _draw_colors(self):
         cw = self._color_width
         ch = self._color_height
@@ -102,3 +95,10 @@ class ColorPicker(Widget):
             1 + ch // 8 * 3 // 2,
             7 if brightness < 140 else 0,
         )
+
+    def __on_draw(self):
+        self.draw_panel(
+            self.x, self.y, self.width, self.height, with_shadow=self._with_shadow
+        )
+        self._draw_colors()
+        self._draw_cursor()

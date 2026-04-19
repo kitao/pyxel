@@ -174,15 +174,14 @@ def _extract_pyxel_app(pyxel_app_file):
         zf.extractall(app_dir)
 
     for setting_file in app_dir.glob(f"*/{pyxel.APP_STARTUP_SCRIPT_FILE}"):
-        with open(setting_file, encoding="utf-8") as f:
-            return str(setting_file.parent / f.read().strip())
+        return str(setting_file.parent / setting_file.read_text(encoding="utf-8").strip())
     return None
 
 
 def _make_metadata_comment(startup_script_file):
     metadata = {}
 
-    with open(startup_script_file, encoding="utf-8") as f:
+    with Path(startup_script_file).open(encoding="utf-8") as f:
         for line in f:
             match = _METADATA_PATTERN.match(line)
             if match:
@@ -324,8 +323,9 @@ def package_pyxel_app(app_dir: str, startup_script_file: str) -> None:
 
     app_dir = Path(app_dir).absolute()
     setting_file = app_dir / pyxel.APP_STARTUP_SCRIPT_FILE
-    with open(setting_file, "w", encoding="utf-8") as f:
-        f.write(str(Path(startup_script_file).relative_to(app_dir)))
+    setting_file.write_text(
+        str(Path(startup_script_file).relative_to(app_dir)), encoding="utf-8"
+    )
 
     pyxel_app_file = app_dir.name + pyxel.APP_FILE_EXTENSION
     app_parent_dir = app_dir.parent
@@ -364,12 +364,12 @@ def create_executable_from_pyxel_app(pyxel_app_file: str) -> None:
 
     pyxel_app_name = Path(pyxel_app_file).stem
     startup_script_file = str(app2exe_dir / f"{pyxel_app_name}.py")
-    with open(startup_script_file, "w", encoding="utf-8") as f:
-        app_filename = f"{pyxel_app_name}{pyxel.APP_FILE_EXTENSION}"
-        f.write(
-            "import pyxel.cli; from pathlib import Path; pyxel.cli.play_pyxel_app("
-            f"str(Path(__file__).parent / {repr(app_filename)}))"
-        )
+    app_filename = f"{pyxel_app_name}{pyxel.APP_FILE_EXTENSION}"
+    Path(startup_script_file).write_text(
+        "import pyxel.cli; from pathlib import Path; pyxel.cli.play_pyxel_app("
+        f"str(Path(__file__).parent / {repr(app_filename)}))",
+        encoding="utf-8",
+    )
 
     if importlib.util.find_spec("PyInstaller") is None:
         _exit_with_error("PyInstaller is not found. Please install it.")
@@ -412,20 +412,19 @@ def create_html_from_pyxel_app(pyxel_app_file: str) -> None:
     )
     _check_file_exists(pyxel_app_file)
 
-    with open(pyxel_app_file, "rb") as f:
-        base64_string = base64.b64encode(f.read()).decode()
+    base64_string = base64.b64encode(Path(pyxel_app_file).read_bytes()).decode()
 
     pyxel_app_name = Path(pyxel_app_file).stem
-    with open(f"{pyxel_app_name}.html", "w", encoding="utf-8") as f:
-        f.write(
-            "<!doctype html>\n"
-            f'<script src="https://cdn.jsdelivr.net/gh/kitao/pyxel@{pyxel.VERSION}/wasm/pyxel.js">'
-            "</script>\n"
-            "<script>\n"
-            f'launchPyxel({{ command: "play", name: "{pyxel_app_name}{pyxel.APP_FILE_EXTENSION}", '
-            f'gamepad: "enabled", base64: "{base64_string}" }});\n'
-            "</script>\n"
-        )
+    Path(f"{pyxel_app_name}.html").write_text(
+        "<!doctype html>\n"
+        f'<script src="https://cdn.jsdelivr.net/gh/kitao/pyxel@{pyxel.VERSION}/wasm/pyxel.js">'
+        "</script>\n"
+        "<script>\n"
+        f'launchPyxel({{ command: "play", name: "{pyxel_app_name}{pyxel.APP_FILE_EXTENSION}", '
+        f'gamepad: "enabled", base64: "{base64_string}" }});\n'
+        "</script>\n",
+        encoding="utf-8",
+    )
 
 
 def copy_pyxel_examples() -> None:

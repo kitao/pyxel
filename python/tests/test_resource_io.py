@@ -5,7 +5,6 @@ import pytest
 import pyxel
 
 
-# Resource I/O
 class TestResourceIO:
     def test_load_pyxres(self, assets_dir):
         pyxel.load(str(assets_dir / "sample.pyxres"))

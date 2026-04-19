@@ -38,6 +38,10 @@ class NumberPicker(Widget):
         # Set event listeners
         self.add_event_listener("draw", self.__on_draw)
 
+    @staticmethod
+    def _step_delta():
+        return 10 if pyxel.btn(pyxel.KEY_SHIFT) else 1
+
     def __on_value_set(self, value):
         return clamp(value, self._min_value, self._max_value)
 
@@ -45,11 +49,6 @@ class NumberPicker(Widget):
         self.dec_button.is_enabled_var = value > self._min_value
         self.inc_button.is_enabled_var = value < self._max_value
         self.trigger_event("change", value)
-
-    @staticmethod
-    def _step_delta():
-        """Return 10 when Shift is held, 1 otherwise."""
-        return 10 if pyxel.btn(pyxel.KEY_SHIFT) else 1
 
     def __on_dec_button_press(self):
         self.value_var -= self._step_delta()

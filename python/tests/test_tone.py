@@ -1,7 +1,6 @@
 import pyxel
 
 
-# Tone class
 class TestTone:
     def test_new_defaults(self):
         tone = pyxel.Tone()
