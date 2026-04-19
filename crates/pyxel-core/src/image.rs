@@ -29,21 +29,17 @@ macro_rules! palette_opt {
     };
 }
 
-pub fn rgb24_to_rgb8(rgb: Rgb24) -> (u8, u8, u8) {
-    ((rgb >> 16) as u8, (rgb >> 8) as u8, rgb as u8)
+#[derive(Clone)]
+pub struct Image {
+    pub(crate) canvas: Canvas<Color>,
+    pub(crate) palette: [Color; MAX_COLORS as usize],
+    pub(crate) palette_is_identity: bool,
 }
 
 impl ToIndex for Color {
     fn to_index(&self) -> usize {
         *self as usize
     }
-}
-
-#[derive(Clone)]
-pub struct Image {
-    pub(crate) canvas: Canvas<Color>,
-    pub(crate) palette: [Color; MAX_COLORS as usize],
-    pub(crate) palette_is_identity: bool,
 }
 
 impl Image {
@@ -129,14 +125,14 @@ impl Image {
     }
 
     pub fn set(&mut self, x: i32, y: i32, data_str: &[&str]) {
-        let width = utils::simplify_string(data_str[0]).len() as u32;
+        let width = utils::compact_ascii_lower(data_str[0]).len() as u32;
         let height = data_str.len() as u32;
         let image = Self::new(width, height);
 
         {
             let image = unsafe { &mut *image };
             for y in 0..height {
-                let src_data = utils::simplify_string(data_str[y as usize]);
+                let src_data = utils::compact_ascii_lower(data_str[y as usize]);
                 for x in 0..width {
                     let color =
                         utils::parse_hex_string(&src_data[x as usize..=x as usize]).unwrap();
@@ -381,7 +377,6 @@ impl Image {
         }
     }
 
-    /// Copy a region of this image's canvas into a temporary canvas.
     fn copy_region(&self, x: f32, y: f32, width: f32, height: f32) -> Canvas<Color> {
         let w = utils::f32_to_u32(width.abs());
         let h = utils::f32_to_u32(height.abs());
@@ -826,4 +821,8 @@ impl Image {
         let db = (b1 as f32 - b2 as f32) * 0.11;
         dr * dr + dg * dg + db * db
     }
+}
+
+pub fn rgb24_to_rgb8(rgb: Rgb24) -> (u8, u8, u8) {
+    ((rgb >> 16) as u8, (rgb >> 8) as u8, rgb as u8)
 }

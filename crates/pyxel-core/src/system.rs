@@ -96,6 +96,7 @@ impl Pyxel {
         }
 
         unsafe impl Send for App {}
+        unsafe impl Sync for App {}
 
         impl Drop for App {
             fn drop(&mut self) {
@@ -199,7 +200,7 @@ impl Pyxel {
         }
 
         let colors = pyxel::colors();
-        let width = utils::simplify_string(data_str[0]).len() as u32;
+        let width = utils::compact_ascii_lower(data_str[0]).len() as u32;
         let height = data_str.len() as u32;
         let image_ptr = Image::new(width, height);
         let image = unsafe { &mut *image_ptr };

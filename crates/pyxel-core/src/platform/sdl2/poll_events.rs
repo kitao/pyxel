@@ -20,6 +20,8 @@ use super::platform_sdl2::PlatformSdl2;
 #[allow(clippy::wildcard_imports)]
 use super::sdl2_sys::*;
 
+pub type GamepadSlot = Option<(i32, *mut SDL_GameController)>;
+
 #[cfg(target_os = "emscripten")]
 extern "C" {
     fn emscripten_run_script_int(script: *const c_char) -> std::os::raw::c_int;
@@ -36,8 +38,6 @@ fn gamepad_scripts() -> &'static [std::ffi::CString; 10] {
         })
     })
 }
-
-pub type GamepadSlot = Option<(i32, *mut SDL_GameController)>;
 
 pub fn open_gamepad(device_index: i32) -> Option<(i32, *mut SDL_GameController)> {
     let controller = unsafe { SDL_GameControllerOpen(device_index) };

@@ -3,7 +3,7 @@ use pyo3::prelude::*;
 
 use crate::pyxel_singleton::pyxel;
 
-fn resolve_exclude(new: Option<bool>, deprecated: Option<bool>) -> Option<bool> {
+fn resolve_exclude(preferred: Option<bool>, deprecated: Option<bool>) -> Option<bool> {
     if deprecated.is_some() {
         deprecation_warning!(
             EXCL_OPTION_ONCE,
@@ -11,7 +11,7 @@ fn resolve_exclude(new: Option<bool>, deprecated: Option<bool>) -> Option<bool> 
         );
         deprecated
     } else {
-        new
+        preferred
     }
 }
 

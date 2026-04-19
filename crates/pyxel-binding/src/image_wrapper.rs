@@ -7,6 +7,21 @@ use pyo3::types::PyDict;
 use crate::font_wrapper::Font;
 use crate::tilemap_wrapper::Tilemap;
 
+fn resolve_include_colors(
+    preferred: Option<bool>,
+    deprecated: Option<bool>,
+) -> Option<bool> {
+    if deprecated.is_some() {
+        deprecation_warning!(
+            INCL_COLORS_OPTION_ONCE,
+            "incl_colors option is deprecated. Use include_colors instead."
+        );
+        deprecated
+    } else {
+        preferred
+    }
+}
+
 define_wrapper!(Image, pyxel::Image);
 
 #[pymethods]
@@ -25,7 +40,7 @@ impl Image {
         include_colors: Option<bool>,
         incl_colors: Option<bool>,
     ) -> PyResult<Self> {
-        let include_colors = include_colors.or(incl_colors);
+        let include_colors = resolve_include_colors(include_colors, incl_colors);
         pyxel::Image::from_image(filename, include_colors)
             .map(Self::wrap)
             .map_err(PyException::new_err)
@@ -75,7 +90,7 @@ impl Image {
         include_colors: Option<bool>,
         incl_colors: Option<bool>,
     ) -> PyResult<()> {
-        let include_colors = include_colors.or(incl_colors);
+        let include_colors = resolve_include_colors(include_colors, incl_colors);
         self.inner_mut()
             .load(x, y, filename, include_colors)
             .map_err(PyException::new_err)

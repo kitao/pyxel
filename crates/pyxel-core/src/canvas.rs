@@ -58,7 +58,7 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         let height = f32_to_u32(height);
         self.clip_rect = self
             .self_rect
-            .intersects(RectArea::new(x, y, width, height));
+            .intersection(RectArea::new(x, y, width, height));
     }
 
     pub fn reset_clip_rect(&mut self) {
@@ -147,7 +147,7 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         let y = f32_to_i32(y) - self.draw_offset_y;
         let width = f32_to_u32(width);
         let height = f32_to_u32(height);
-        let rect = RectArea::new(x, y, width, height).intersects(self.clip_rect);
+        let rect = RectArea::new(x, y, width, height).intersection(self.clip_rect);
         if rect.is_empty() {
             return;
         }
@@ -177,7 +177,7 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         let width = f32_to_u32(width);
         let height = f32_to_u32(height);
         let rect = RectArea::new(x, y, width, height);
-        if rect.intersects(self.clip_rect).is_empty() {
+        if rect.intersection(self.clip_rect).is_empty() {
             return;
         }
 
@@ -595,7 +595,7 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         let height = f32_to_i32(height).abs();
 
         let canvas_area = RectArea::new(canvas_x, canvas_y, width as u32, height as u32)
-            .intersects(if use_canvas_clip {
+            .intersection(if use_canvas_clip {
                 canvas.clip_rect
             } else {
                 canvas.self_rect
@@ -875,8 +875,6 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         (x1, y1, x2, y2)
     }
 
-    /// Determine whether to write a pixel based on dithering alpha.
-    /// Uses ordered dithering (4x4 Bayer matrix) for semi-transparent drawing.
     fn should_write(&self, x: i32, y: i32) -> bool {
         if self.alpha >= 1.0 {
             return true;

@@ -93,10 +93,6 @@ impl Channel {
         }))
     }
 
-    fn sec_to_clocks(sec: Option<f32>) -> u32 {
-        (sec.unwrap_or(0.0) * AUDIO_CLOCK_RATE as f32).round() as u32
-    }
-
     pub fn play(
         &mut self,
         sounds: Vec<*mut Sound>,
@@ -154,6 +150,10 @@ impl Channel {
             unsafe { drop(Box::from_raw(sound)) };
         }
         self.owned_sounds.clear();
+    }
+
+    fn sec_to_clocks(sec: Option<f32>) -> u32 {
+        (sec.unwrap_or(0.0) * AUDIO_CLOCK_RATE as f32).round() as u32
     }
 
     fn play_from_clock(
@@ -282,24 +282,21 @@ impl Channel {
                 self.sound_index += 1;
                 self.sound_elapsed_clocks = 0;
 
-                // End of sound list
-                if self.sound_index >= self.sounds.len() as u32 {
-                    if self.should_loop && clock_count < start_clock_count {
-                        self.sound_index = 0;
-                        self.update_playing_pcm();
-                    } else if self.should_resume {
-                        self.play_from_clock(
-                            self.resume_sounds.clone(),
-                            self.total_elapsed_clocks,
-                            self.resume_should_loop,
-                            false,
-                        );
-                    } else {
-                        self.is_playing = false;
-                        self.playing_pcm = false;
-                    }
-                } else {
+                if self.sound_index < self.sounds.len() as u32 {
                     self.update_playing_pcm();
+                } else if self.should_loop && clock_count < start_clock_count {
+                    self.sound_index = 0;
+                    self.update_playing_pcm();
+                } else if self.should_resume {
+                    self.play_from_clock(
+                        self.resume_sounds.clone(),
+                        self.total_elapsed_clocks,
+                        self.resume_should_loop,
+                        false,
+                    );
+                } else {
+                    self.is_playing = false;
+                    self.playing_pcm = false;
                 }
             }
         }

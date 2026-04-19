@@ -13,25 +13,6 @@ const RAD_TO_DEG: f32 = 180.0 / PI;
 static mut RNG: *mut Xoshiro256StarStar = null_mut();
 static mut PERLIN: *mut Perlin = null_mut();
 
-fn rng() -> &'static mut Xoshiro256StarStar {
-    unsafe {
-        if RNG.is_null() {
-            let mut os_rng = rand::rng();
-            RNG = Box::into_raw(Box::new(Xoshiro256StarStar::from_rng(&mut os_rng)));
-        }
-        &mut *RNG
-    }
-}
-
-fn perlin() -> &'static mut Perlin {
-    unsafe {
-        if PERLIN.is_null() {
-            PERLIN = Box::into_raw(Box::new(Perlin::new(rand::rng().random())));
-        }
-        &mut *PERLIN
-    }
-}
-
 impl Pyxel {
     pub fn ceil(x: f32) -> i32 {
         x.ceil() as i32
@@ -77,5 +58,24 @@ impl Pyxel {
 
     pub fn noise(x: f32, y: f32, z: f32) -> f32 {
         perlin().get([x as f64, y as f64, z as f64]) as f32
+    }
+}
+
+fn rng() -> &'static mut Xoshiro256StarStar {
+    unsafe {
+        if RNG.is_null() {
+            let mut os_rng = rand::rng();
+            RNG = Box::into_raw(Box::new(Xoshiro256StarStar::from_rng(&mut os_rng)));
+        }
+        &mut *RNG
+    }
+}
+
+fn perlin() -> &'static mut Perlin {
+    unsafe {
+        if PERLIN.is_null() {
+            PERLIN = Box::into_raw(Box::new(Perlin::new(rand::rng().random())));
+        }
+        &mut *PERLIN
     }
 }

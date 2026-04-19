@@ -37,12 +37,12 @@ impl Tone {
     }
 
     #[getter]
-    fn sample_bits(&self) -> pyxel::ToneSample {
+    fn sample_bits(&self) -> u32 {
         self.inner_ref().sample_bits
     }
 
     #[setter]
-    fn set_sample_bits(&self, sample_bits: pyxel::ToneSample) {
+    fn set_sample_bits(&self, sample_bits: u32) {
         self.inner_mut().sample_bits = sample_bits;
     }
 

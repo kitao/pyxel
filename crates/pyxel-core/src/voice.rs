@@ -15,38 +15,6 @@ const PITCH_LUT_SIZE: usize =
     ((PITCH_LUT_MAX_SEMITONE - PITCH_LUT_MIN_SEMITONE) as usize * PITCH_LUT_STEPS_PER_SEMITONE) + 1;
 static PITCH_RATIO_LUT: OnceLock<Box<[f32]>> = OnceLock::new();
 
-fn pitch_ratio_lut() -> &'static [f32] {
-    PITCH_RATIO_LUT
-        .get_or_init(|| {
-            (0..PITCH_LUT_SIZE)
-                .map(|index| {
-                    let semitone_offset =
-                        PITCH_LUT_MIN_SEMITONE + index as f32 / PITCH_LUT_STEPS_PER_SEMITONE as f32;
-                    2.0_f32.powf(semitone_offset / 12.0)
-                })
-                .collect()
-        })
-        .as_ref()
-}
-
-fn semitone_to_pitch_multiplier(semitone_offset: f32) -> f32 {
-    if !(PITCH_LUT_MIN_SEMITONE..=PITCH_LUT_MAX_SEMITONE).contains(&semitone_offset) {
-        return 2.0_f32.powf(semitone_offset / 12.0);
-    }
-
-    let index = (semitone_offset - PITCH_LUT_MIN_SEMITONE) * PITCH_LUT_STEPS_PER_SEMITONE as f32;
-    let left_index = index as usize;
-    let frac = index - left_index as f32;
-    let lut = pitch_ratio_lut();
-    let left = lut[left_index];
-
-    if frac <= 0.0 || left_index + 1 >= lut.len() {
-        left
-    } else {
-        left + (lut[left_index + 1] - left) * frac
-    }
-}
-
 pub struct Oscillator {
     waveform_samples: Vec<i16>,
     waveform_index: usize,
@@ -663,6 +631,38 @@ impl Voice {
                 self.last_amplitude = amplitude;
             }
         }
+    }
+}
+
+fn pitch_ratio_lut() -> &'static [f32] {
+    PITCH_RATIO_LUT
+        .get_or_init(|| {
+            (0..PITCH_LUT_SIZE)
+                .map(|index| {
+                    let semitone_offset =
+                        PITCH_LUT_MIN_SEMITONE + index as f32 / PITCH_LUT_STEPS_PER_SEMITONE as f32;
+                    2.0_f32.powf(semitone_offset / 12.0)
+                })
+                .collect()
+        })
+        .as_ref()
+}
+
+fn semitone_to_pitch_multiplier(semitone_offset: f32) -> f32 {
+    if !(PITCH_LUT_MIN_SEMITONE..=PITCH_LUT_MAX_SEMITONE).contains(&semitone_offset) {
+        return 2.0_f32.powf(semitone_offset / 12.0);
+    }
+
+    let index = (semitone_offset - PITCH_LUT_MIN_SEMITONE) * PITCH_LUT_STEPS_PER_SEMITONE as f32;
+    let left_index = index as usize;
+    let frac = index - left_index as f32;
+    let lut = pitch_ratio_lut();
+    let left = lut[left_index];
+
+    if frac <= 0.0 || left_index + 1 >= lut.len() {
+        left
+    } else {
+        left + (lut[left_index + 1] - left) * frac
     }
 }
 

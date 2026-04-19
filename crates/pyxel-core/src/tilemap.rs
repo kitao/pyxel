@@ -4,7 +4,7 @@ use crate::canvas::{Canvas, ToIndex};
 use crate::image::Image;
 use crate::settings::TILE_SIZE;
 use crate::tmx_parser::parse_tmx;
-use crate::utils::{f32_to_u32, parse_hex_string, simplify_string};
+use crate::utils::{compact_ascii_lower, f32_to_u32, parse_hex_string};
 
 pub type ImageTileCoord = u16;
 pub type Tile = (ImageTileCoord, ImageTileCoord);
@@ -68,13 +68,13 @@ impl Tilemap {
     // Public data operations
 
     pub fn set(&mut self, x: i32, y: i32, data_str: &[&str]) {
-        let width = simplify_string(data_str[0]).len() as u32 / 4;
+        let width = compact_ascii_lower(data_str[0]).len() as u32 / 4;
         let height = data_str.len() as u32;
         let tilemap = Self::new(width, height, self.imgsrc.clone());
         {
             let tilemap = unsafe { &mut *tilemap };
             for y in 0..height {
-                let src_data = simplify_string(data_str[y as usize]);
+                let src_data = compact_ascii_lower(data_str[y as usize]);
                 for x in 0..width {
                     let index = x as usize * 4;
                     let tile = parse_hex_string(&src_data[index..index + 4]).unwrap();

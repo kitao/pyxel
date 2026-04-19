@@ -18,6 +18,10 @@ pub struct Audio;
 
 struct AudioLock;
 
+struct AudioStreamRenderer {
+    blip_buf: BlipBuf,
+}
+
 impl AudioLock {
     fn new() -> Self {
         platform::lock_audio();
@@ -29,10 +33,6 @@ impl Drop for AudioLock {
     fn drop(&mut self) {
         platform::unlock_audio();
     }
-}
-
-struct AudioStreamRenderer {
-    blip_buf: BlipBuf,
 }
 
 impl AudioStreamRenderer {

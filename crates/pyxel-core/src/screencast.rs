@@ -263,7 +263,7 @@ impl Screencast {
 
     fn compute_diff(
         base: &mut [Rgb24],
-        new: &[Rgb24],
+        next: &[Rgb24],
         width: u32,
         height: u32,
         diff: &mut [Rgb24],
@@ -278,7 +278,7 @@ impl Screencast {
         for y in 0..h {
             for x in 0..w {
                 let i = y * w + x;
-                let rgb = new[i];
+                let rgb = next[i];
                 if rgb == base[i] {
                     diff[i] = TRANSPARENT;
                 } else {
@@ -304,7 +304,6 @@ impl Screencast {
         }
     }
 
-    /// Encodes a region of a flat RGB image into a GIF index buffer and palette.
     /// Returns true if color overflow occurred (> 256 entries needed).
     #[allow(clippy::too_many_arguments)]
     fn encode_region(

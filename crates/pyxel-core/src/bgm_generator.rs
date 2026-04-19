@@ -209,20 +209,20 @@ pub struct BgmData {
 #[cfg(not(pyxel_core))]
 impl GeneratorParams {
     pub fn to_json(&self) -> String {
-        serde_json::to_string(self).expect("GeneratorParams serialization failed")
+        serde_json::to_string(self).expect("Failed to serialize GeneratorParams")
     }
     pub fn from_json(json: &str) -> Self {
-        serde_json::from_str(json).expect("GeneratorParams deserialization failed")
+        serde_json::from_str(json).expect("Failed to deserialize GeneratorParams")
     }
 }
 
 #[cfg(not(pyxel_core))]
 impl BgmData {
     pub fn to_json(&self) -> String {
-        serde_json::to_string(self).expect("BgmData serialization failed")
+        serde_json::to_string(self).expect("Failed to serialize BgmData")
     }
     pub fn from_json(json: &str) -> Self {
-        serde_json::from_str(json).expect("BgmData deserialization failed")
+        serde_json::from_str(json).expect("Failed to deserialize BgmData")
     }
 }
 
@@ -762,7 +762,7 @@ fn root_from_bits(bits: &[i32; 12]) -> i32 {
 }
 
 // Owned counterpart of ChordEntry — allows mixing static presets and runtime custom entries.
-#[derive(Clone, Debug)]
+#[derive(Debug, Clone)]
 struct OwnedChordEntry {
     loc: usize,
     notes: Option<String>,
@@ -1643,7 +1643,7 @@ fn generate_drums(drums: i32) -> Vec<Option<i32>> {
 }
 
 fn current_bar_mut(bar_tokens: &mut [Vec<String>]) -> &mut Vec<String> {
-    bar_tokens.last_mut().expect("bar tokens")
+    bar_tokens.last_mut().expect("Failed to get the last bar tokens")
 }
 
 fn notes_to_mml(
@@ -1834,7 +1834,7 @@ pub fn generate_bgm_json(params_json: &str, seed: u64) -> String {
 #[cfg(not(pyxel_core))]
 pub fn compile_to_mml_json(bgm_json: &str) -> String {
     let data = BgmData::from_json(bgm_json);
-    serde_json::to_string(&compile_to_mml(&data)).expect("MML serialization failed")
+    serde_json::to_string(&compile_to_mml(&data)).expect("Failed to serialize MML")
 }
 
 /// Return the resolved progression for a chord slot as JSON. Presets (0..=7) return their
@@ -1852,7 +1852,7 @@ pub fn preset_progression_json(preset: i32) -> String {
             repeat: e.repeat,
         })
         .collect();
-    serde_json::to_string(&defs).expect("preset progression serialization failed")
+    serde_json::to_string(&defs).expect("Failed to serialize preset progressions")
 }
 
 // --- New structured generation pipeline ---

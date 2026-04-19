@@ -54,7 +54,7 @@ impl RectArea {
         x >= self.left && x <= self.right && y >= self.top && y <= self.bottom
     }
 
-    pub fn intersects(&self, rect: Self) -> Self {
+    pub fn intersection(&self, rect: Self) -> Self {
         let left = max(self.left, rect.left);
         let top = max(self.top, rect.top);
         let right = min(self.right, rect.right);
@@ -169,56 +169,56 @@ mod tests {
         assert!(!rect.contains(5, 0));
     }
 
-    // ── intersects ──
+    // ── intersection ──
 
     #[test]
-    fn test_rect_intersects() {
+    fn test_rect_intersection() {
         let rect1 = RectArea::new(10, 20, 30, 40);
         let rect2 = RectArea::new(11, 22, 300, 400);
         let rect3 = RectArea::new(5, 6, 10, 20);
         let rect4 = RectArea::new(1, 2, 3, 4);
         let rect5 = RectArea::new(0, 0, 0, 0);
 
-        assert_eq!(rect1.intersects(rect2), RectArea::new(11, 22, 29, 38));
-        assert_eq!(rect1.intersects(rect3), RectArea::new(10, 20, 5, 6));
-        assert!(rect1.intersects(rect4).is_empty());
-        assert!(rect1.intersects(rect5).is_empty());
+        assert_eq!(rect1.intersection(rect2), RectArea::new(11, 22, 29, 38));
+        assert_eq!(rect1.intersection(rect3), RectArea::new(10, 20, 5, 6));
+        assert!(rect1.intersection(rect4).is_empty());
+        assert!(rect1.intersection(rect5).is_empty());
     }
 
     #[test]
-    fn test_rect_self_intersects() {
+    fn test_rect_self_intersection() {
         let rect = RectArea::new(10, 20, 30, 40);
-        assert_eq!(rect.intersects(rect), rect);
+        assert_eq!(rect.intersection(rect), rect);
     }
 
     #[test]
-    fn test_rect_intersects_commutativity() {
+    fn test_rect_intersection_commutativity() {
         let a = RectArea::new(0, 0, 20, 20);
         let b = RectArea::new(10, 10, 30, 30);
-        assert_eq!(a.intersects(b), b.intersects(a));
+        assert_eq!(a.intersection(b), b.intersection(a));
     }
 
     #[test]
-    fn test_rect_intersects_edge_touching() {
+    fn test_rect_intersection_edge_touching() {
         // Rects share exactly one column of pixels
         let a = RectArea::new(0, 0, 10, 10);
         let b = RectArea::new(9, 0, 10, 10);
-        let result = a.intersects(b);
+        let result = a.intersection(b);
         assert_eq!(result.width(), 1);
         assert_eq!(result.height(), 10);
 
         // Rects share exactly one row of pixels
         let c = RectArea::new(0, 9, 10, 10);
-        let result = a.intersects(c);
+        let result = a.intersection(c);
         assert_eq!(result.width(), 10);
         assert_eq!(result.height(), 1);
     }
 
     #[test]
-    fn test_rect_intersects_adjacent_no_overlap() {
+    fn test_rect_intersection_adjacent_no_overlap() {
         // Adjacent rects with no shared pixels
         let a = RectArea::new(0, 0, 10, 10);
         let b = RectArea::new(10, 0, 10, 10); // starts at right+1 of a
-        assert!(a.intersects(b).is_empty());
+        assert!(a.intersection(b).is_empty());
     }
 }

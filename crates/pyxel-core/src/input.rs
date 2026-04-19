@@ -233,7 +233,6 @@ impl Pyxel {
         frame_count == *pyxel::frame_count()
     }
 
-    /// Returns true if key was already touched this frame and is not in the given state.
     fn is_same_frame_transition(&self, key: Key, current_state: KeyState) -> bool {
         matches!(
             self.input.key_states.get(&key),

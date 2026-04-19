@@ -26,7 +26,7 @@ pub fn remove_whitespace(string: &str) -> String {
     string.replace(&[' ', '\n', '\r', '\t'][..], "")
 }
 
-pub fn simplify_string(string: &str) -> String {
+pub fn compact_ascii_lower(string: &str) -> String {
     string
         .chars()
         .filter(|c| !c.is_ascii_whitespace())
@@ -143,10 +143,10 @@ mod tests {
     }
 
     #[test]
-    fn test_simplify_string() {
-        assert_eq!(simplify_string(" 0\n 1\r 2\t 3 A\n b\r c\t d "), "0123abcd");
-        assert_eq!(simplify_string("ABC"), "abc");
-        assert_eq!(simplify_string(""), "");
+    fn test_compact_ascii_lower() {
+        assert_eq!(compact_ascii_lower(" 0\n 1\r 2\t 3 A\n b\r c\t d "), "0123abcd");
+        assert_eq!(compact_ascii_lower("ABC"), "abc");
+        assert_eq!(compact_ascii_lower(""), "");
     }
 
     #[test]

@@ -336,7 +336,7 @@ impl Pyxel {
         image_y: f32,
         width: f32,
         height: f32,
-        color_key: Option<Color>,
+        transparent: Option<Color>,
         rotate: Option<f32>,
         scale: Option<f32>,
     ) {
@@ -349,7 +349,7 @@ impl Pyxel {
                 image_y,
                 width,
                 height,
-                color_key,
+                transparent,
                 rotate,
                 scale,
             );
@@ -365,7 +365,7 @@ impl Pyxel {
         tilemap_y: f32,
         width: f32,
         height: f32,
-        color_key: Option<Color>,
+        transparent: Option<Color>,
         rotate: Option<f32>,
         scale: Option<f32>,
     ) {
@@ -378,7 +378,7 @@ impl Pyxel {
                 tilemap_y,
                 width,
                 height,
-                color_key,
+                transparent,
                 rotate,
                 scale,
             );
@@ -395,7 +395,7 @@ impl Pyxel {
         pos: (f32, f32, f32),
         rot: (f32, f32, f32),
         fov: Option<f32>,
-        color_key: Option<Color>,
+        transparent: Option<Color>,
     ) {
         unsafe {
             pyxel::screen().draw_image_3d(
@@ -407,7 +407,7 @@ impl Pyxel {
                 pos,
                 rot,
                 fov,
-                color_key,
+                transparent,
             );
         }
     }
@@ -422,7 +422,7 @@ impl Pyxel {
         pos: (f32, f32, f32),
         rot: (f32, f32, f32),
         fov: Option<f32>,
-        color_key: Option<Color>,
+        transparent: Option<Color>,
     ) {
         unsafe {
             pyxel::screen().draw_tilemap_3d(
@@ -434,7 +434,7 @@ impl Pyxel {
                 pos,
                 rot,
                 fov,
-                color_key,
+                transparent,
             );
         }
     }

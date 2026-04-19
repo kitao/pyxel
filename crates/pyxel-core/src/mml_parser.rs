@@ -84,7 +84,7 @@ pub fn parse_mml(mml: &str) -> Result<Vec<MmlCommand>, String> {
 
             is_tempo_set = true;
             commands.push(MmlCommand::Tempo {
-                clocks_per_tick: bpm_to_cpt(bpm),
+                clocks_per_tick: bpm_to_clocks_per_tick(bpm),
             });
         } else if let Some(gate_time) = parse_command(&mut stream, "Q", RANGE_QUANTIZE)? {
             //
@@ -230,7 +230,7 @@ pub fn parse_mml(mml: &str) -> Result<Vec<MmlCommand>, String> {
             ensure_set!(
                 is_tempo_set,
                 MmlCommand::Tempo {
-                    clocks_per_tick: bpm_to_cpt(DEFAULT_TEMPO)
+                    clocks_per_tick: bpm_to_clocks_per_tick(DEFAULT_TEMPO)
                 }
             );
             ensure_set!(
@@ -287,7 +287,7 @@ pub fn parse_mml(mml: &str) -> Result<Vec<MmlCommand>, String> {
             if !is_tempo_set {
                 is_tempo_set = true;
                 commands.push(MmlCommand::Tempo {
-                    clocks_per_tick: bpm_to_cpt(DEFAULT_TEMPO),
+                    clocks_per_tick: bpm_to_clocks_per_tick(DEFAULT_TEMPO),
                 });
             }
 
@@ -325,7 +325,7 @@ pub fn calc_commands_sec(commands: &[MmlCommand]) -> Option<f32> {
     let mut total_clocks = 0;
     let mut command_index: u32 = 0;
     let mut repeat_points: Vec<(u32, u32)> = Vec::new();
-    let mut clocks_per_tick = bpm_to_cpt(DEFAULT_TEMPO);
+    let mut clocks_per_tick = bpm_to_clocks_per_tick(DEFAULT_TEMPO);
 
     while command_index < commands.len() as u32 {
         let command = &commands[command_index as usize];
@@ -643,7 +643,7 @@ fn parse_glide(stream: &mut CharStream) -> Result<Option<MmlCommand>, String> {
     }))
 }
 
-fn bpm_to_cpt(bpm: u32) -> u32 {
+fn bpm_to_clocks_per_tick(bpm: u32) -> u32 {
     (AUDIO_CLOCK_RATE as f32 * 60.0 / (bpm as f32 * TICKS_PER_QUARTER_NOTE as f32)).round() as u32
 }
 
@@ -898,7 +898,7 @@ mod tests {
             MmlCommand::Tempo { clocks_per_tick } => Some(*clocks_per_tick),
             _ => None,
         });
-        // bpm_to_cpt(120) = (1_789_773.0 * 60.0 / (120.0 * 48.0)).round() = 18643
+        // bpm_to_clocks_per_tick(120) = (1_789_773.0 * 60.0 / (120.0 * 48.0)).round() = 18643
         assert_eq!(cpt, Some(18643));
     }
 

@@ -21,7 +21,7 @@ impl Sdl2Bindings {
         let target_os = target
             .splitn(3, '-')
             .nth(2)
-            .expect("Invalid TARGET triple")
+            .expect("Failed to parse TARGET triple")
             .to_string();
         let out_dir = var("OUT_DIR").unwrap();
         let sdl2_dir = format!("{out_dir}/SDL2-{SDL2_VERSION}");
@@ -246,7 +246,7 @@ impl Sdl2Bindings {
     }
 }
 
-fn uses_sdl2() -> bool {
+fn has_sdl2_feature() -> bool {
     var("CARGO_FEATURE_SDL2_DYNAMIC").is_ok() || var("CARGO_FEATURE_SDL2_STATIC").is_ok()
 }
 
@@ -257,7 +257,7 @@ fn is_sdl2_static() -> bool {
 fn main() {
     println!("cargo::rustc-check-cfg=cfg(pyxel_core)");
     println!("cargo:rustc-cfg=pyxel_core");
-    if uses_sdl2() {
+    if has_sdl2_feature() {
         Sdl2Bindings::new().build();
     }
 }
