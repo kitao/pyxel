@@ -123,7 +123,7 @@
 
 ## 2.7.10
 
-- Added the headless parameter to the init function for windowless operation
+- Added the headless argument to the init function for windowless operation
 - Added padding to default window icon for better OS integration
 
 ## 2.7.9
@@ -469,7 +469,7 @@
 - Renamed the excl options to exclude in the load and save functions
 - Removed the incl options from the load and save functions
 - Updated Example 9 to use new MML syntax
-- Updated default floating-point type to f32
+- Updated the default floating-point type to f32
 
 ## 2.3.18
 
@@ -683,7 +683,7 @@
 - Added the watch command description to the README files
 - Removed an unnecessary line in Example 14
 - Added the Font class
-- Added a font option to the text function
+- Added the font option to the text function
 - Updated Example 14 to use native font rendering
 
 ## 2.2.0
@@ -762,7 +762,7 @@
 ## 2.1.0
 
 - Fixed a help message in Pyxel Editor
-- Added a resume option to the play function
+- Added the resume option to the play function
 - Updated the function notation in Example 4
 - Updated Example 9 to use the resume option for SFX playback
 - Added descriptions of the resume option to the README files
@@ -816,8 +816,8 @@
 - Enabled importing a TMX file via drag and drop in the tilemap editor
 - Updated destination for image drag-and-drop in the image editor
 - Refined the code for Example 9
-- Added an incl_colors option to the from_image method of Image
-- Added an incl_colors option to the load method of Image
+- Added the incl_colors option to the from_image method of Image
+- Added the incl_colors option to the load method of Image
 - Added Example 15
 - Refined Example 10
 - Fixed a color count change bug on OpenGL ES
@@ -853,7 +853,7 @@
 ## 2.0.1
 
 - Removed publish of the crate to the release script
-- Reverted tile coordinate type to u8
+- Reverted the tile coordinate type to u8
 - Removed source code path from the binary
 - Renamed Waveform and waveforms to Tone and tones
 - Updated resource file format for the tones
@@ -883,7 +883,7 @@
 - Removed the set_btn and set_btnv functions
 - Integrated the image and refimg of Tilemap into imgsrc
 - Marked the image and refimg of Tilemap as deprecated fields
-- Renamed snds_list of Music to seqs
+- Renamed the snds_list of Music to seqs
 - Marked the snds_list of Music as a deprecated field
 - Switched to a new resource format based on TOML
 - Updated arguments for the load and save functions
