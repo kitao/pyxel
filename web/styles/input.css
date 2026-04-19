@@ -106,8 +106,7 @@
     @apply font-medium text-sm;
   }
   .input-link {
-    @apply flex items-center min-h-[2.25rem] font-mono break-all select-all
-      bg-gray-900 px-3 py-2 border border-gray-600 focus-visible:border-indigo-300 rounded-lg outline-none w-full placeholder:text-gray-400 text-sm
+    @apply input flex items-center min-h-[2.25rem] font-mono break-all select-all
       focus-visible:ring-1 focus-visible:ring-indigo-300 text-indigo-400 hover:text-indigo-300 visited:text-indigo-400 underline underline-offset-2;
   }
   .help {

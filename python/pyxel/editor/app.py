@@ -172,8 +172,10 @@ class App(Widget):
                 self._editor.trigger_event("drop", dropped_file)
 
         if pyxel.btn(pyxel.KEY_ALT):
+            # Alt+Left: Switch editor
             if pyxel.btnp(pyxel.KEY_LEFT):
                 self.editor_type_var = (self.editor_type_var - 1) % len(self._editors)
+            # Alt+Right: Switch editor
             elif pyxel.btnp(pyxel.KEY_RIGHT):
                 self.editor_type_var = (self.editor_type_var + 1) % len(self._editors)
 
@@ -181,12 +183,15 @@ class App(Widget):
         self._redo_button.is_enabled_var = self._editor.can_redo
 
         if pyxel.btn(pyxel.KEY_CTRL) or pyxel.btn(pyxel.KEY_GUI):
+            # Ctrl+S: Save
             if pyxel.btnp(pyxel.KEY_S):
                 self._save_button.is_pressed_var = True
+            # Ctrl+Z: Undo
             if self._editor.can_undo and pyxel.btnp(
                 pyxel.KEY_Z, hold=WIDGET_HOLD_TIME, repeat=WIDGET_REPEAT_TIME
             ):
                 self._undo_button.is_pressed_var = True
+            # Ctrl+Y: Redo
             elif self._editor.can_redo and pyxel.btnp(
                 pyxel.KEY_Y, hold=WIDGET_HOLD_TIME, repeat=WIDGET_REPEAT_TIME
             ):

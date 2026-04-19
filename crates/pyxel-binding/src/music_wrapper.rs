@@ -19,6 +19,9 @@ wrap_as_python_sequence!(
     (|inner: &SeqRef, index| unsafe { &*inner.music }.seqs[inner.index][index]),
     u32,
     (|inner: &SeqRef, index, value| unsafe { &mut *inner.music }.seqs[inner.index][index] = value),
+    (|inner: &SeqRef| -> &mut Vec<u32> {
+        &mut unsafe { &mut *inner.music }.seqs[inner.index]
+    }),
     Vec<u32>,
     (|inner: &SeqRef, list| unsafe { &mut *inner.music }.seqs[inner.index] = list),
     (|inner: &SeqRef| unsafe { &*inner.music }.seqs[inner.index].clone())

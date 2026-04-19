@@ -12,6 +12,9 @@ macro_rules! wrap_sound_as_python_list {
             $value_type,
             (|inner: &*mut pyxel::Sound, index, value| unsafe { &mut **inner }.$field_name
                 [index] = value),
+            (|inner: &*mut pyxel::Sound| -> &mut Vec<$value_type> {
+                &mut unsafe { &mut **inner }.$field_name
+            }),
             Vec<$value_type>,
             (|inner: &*mut pyxel::Sound, list| unsafe { &mut **inner }.$field_name = list),
             (|inner: &*mut pyxel::Sound| unsafe { &**inner }

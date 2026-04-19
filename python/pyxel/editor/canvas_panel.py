@@ -17,7 +17,7 @@ from .widgets import ScrollBar, Widget
 from .widgets.settings import WIDGET_HOLD_TIME, WIDGET_PANEL_COLOR, WIDGET_REPEAT_TIME
 
 # Sentinel tile value indicating an empty/unset tile in tilemap mode
-EMPTY_TILE = (255, 255)
+_EMPTY_TILE = (255, 255)
 
 
 class CanvasPanel(Widget):
@@ -104,7 +104,7 @@ class CanvasPanel(Widget):
         self._v_scroll_bar.add_event_listener("change", self.__on_v_scroll_bar_change)
         self.add_var_event_listener("focus_y_var", "change", self.__on_focus_y_change)
 
-        # Initialize event listeners
+        # Set event listeners
         self.add_event_listener("mouse_down", self.__on_mouse_down)
         self.add_event_listener("mouse_up", self.__on_mouse_up)
         self.add_event_listener("mouse_drag", self.__on_mouse_drag)
@@ -188,7 +188,7 @@ class CanvasPanel(Widget):
 
         for y in range(16):
             for x in range(16):
-                if self._edit_canvas.pget(x, y) != EMPTY_TILE:
+                if self._edit_canvas.pget(x, y) != _EMPTY_TILE:
                     continue
                 tile = (
                     self.tile_x_var + (x - self._press_x) % self.tile_w_var,
@@ -523,15 +523,19 @@ class CanvasPanel(Widget):
             pyxel.pal()
         else:
             pyxel.user_pal()
-            for yi in range(16):
-                for xi in range(16):
-                    pyxel.rect(
-                        self.x + xi * 8 + 1,
-                        self.y + yi * 8 + 1,
-                        8,
-                        8,
-                        canvas.pget(offset_x + xi, offset_y + yi),
-                    )
+            # blt scales centered on (x + (w-1)/2, y + (h-1)/2); shift dest by
+            # (w * (scale - 1) + 1) / 2 = 56.5 so the 128x128 output aligns to
+            # (self.x + 1, self.y + 1). Integer 57 rounds the center identically.
+            pyxel.blt(
+                self.x + 57,
+                self.y + 57,
+                canvas,
+                offset_x,
+                offset_y,
+                16,
+                16,
+                scale=8,
+            )
             pyxel.pal()
 
         pyxel.line(

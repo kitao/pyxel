@@ -16,6 +16,7 @@ wrap_as_python_sequence!(
     (|_, index| pyxel::colors()[index]),
     pyxel::Rgb24,
     (|_, index, value| pyxel::colors()[index] = value),
+    (|_: &u32| -> &mut Vec<pyxel::Rgb24> { pyxel::colors() }),
     Vec<pyxel::Rgb24>,
     (|_, list| *pyxel::colors() = list),
     (|_| pyxel::colors().clone())
@@ -31,6 +32,10 @@ macro_rules! wrap_ptr_vec_as_python_object_sequence {
             (|_, index: usize| $value_type::wrap($global_fn()[index])),
             $value_type,
             (|_, index, value: $value_type| $global_fn()[index] = value.inner),
+            *mut _,
+            (|_: &u32| -> &mut Vec<*mut _> { $global_fn() }),
+            (|v: $value_type| v.inner),
+            (|p| $value_type::wrap(p)),
             Vec<$value_type>,
             (|_, list: Vec<$value_type>| *$global_fn() =
                 list.iter().map(|value| value.inner).collect()),

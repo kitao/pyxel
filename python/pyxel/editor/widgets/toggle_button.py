@@ -23,7 +23,7 @@ class ToggleButton(Widget):
             "is_checked_var", "change", self.__on_is_checked_change
         )
 
-        # Initialize event listeners
+        # Set event listeners
         self.add_event_listener("mouse_down", self.__on_mouse_down)
 
     @property

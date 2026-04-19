@@ -8,6 +8,9 @@ wrap_as_python_sequence!(
     (|inner: &*mut pyxel::Tone, index| unsafe { &**inner }.wavetable[index]),
     pyxel::ToneSample,
     (|inner: &*mut pyxel::Tone, index, value| unsafe { &mut **inner }.wavetable[index] = value),
+    (|inner: &*mut pyxel::Tone| -> &mut Vec<pyxel::ToneSample> {
+        &mut unsafe { &mut **inner }.wavetable
+    }),
     Vec<pyxel::ToneSample>,
     (|inner: &*mut pyxel::Tone, list| unsafe { &mut **inner }.wavetable = list),
     (|inner: &*mut pyxel::Tone| unsafe { &**inner }.wavetable.clone())

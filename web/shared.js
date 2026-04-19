@@ -1,4 +1,6 @@
-// Shared utilities for Pyxel WASM pages
+// Shared utilities for Pyxel web pages
+
+// Language detection and i18n
 
 const PYXEL_LANG_KEY = "pyxel-lang";
 
