@@ -94,22 +94,22 @@
             buttons.className =
               "flex items-center justify-end gap-2 ml-auto shrink-0 min-w-[9.5rem]";
 
-            const demoBtn = document.createElement("a");
-            demoBtn.href = item.demo;
-            demoBtn.target = "_blank";
-            demoBtn.rel = "noopener noreferrer";
-            demoBtn.className = "btn-demo";
-            demoBtn.dataset.uiKey = "demo";
-            buttons.appendChild(demoBtn);
+            const demoButton = document.createElement("a");
+            demoButton.href = item.demo;
+            demoButton.target = "_blank";
+            demoButton.rel = "noopener noreferrer";
+            demoButton.className = "btn-demo";
+            demoButton.dataset.uiKey = "demo";
+            buttons.appendChild(demoButton);
 
             if (item.code) {
-              const codeBtn = document.createElement("a");
-              codeBtn.href = item.code;
-              codeBtn.target = "_blank";
-              codeBtn.rel = "noopener noreferrer";
-              codeBtn.className = "btn-code";
-              codeBtn.dataset.uiKey = "code";
-              buttons.appendChild(codeBtn);
+              const codeButton = document.createElement("a");
+              codeButton.href = item.code;
+              codeButton.target = "_blank";
+              codeButton.rel = "noopener noreferrer";
+              codeButton.className = "btn-code";
+              codeButton.dataset.uiKey = "code";
+              buttons.appendChild(codeButton);
             }
 
             topLine.appendChild(buttons);

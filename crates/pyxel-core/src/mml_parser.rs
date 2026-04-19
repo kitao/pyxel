@@ -70,127 +70,84 @@ pub fn parse_mml(mml: &str) -> Result<Vec<MmlCommand>, String> {
     let mut is_vibrato_set = false;
     let mut is_glide_set = false;
 
-    let mut is_connected;
     let mut connected_note: Option<u32> = None;
     let mut last_note_index: Option<usize> = None;
 
     // Parse MML commands
     while stream.peek().is_some() {
-        is_connected = false;
+        let mut is_connected = false;
         if let Some(bpm) = parse_command(&mut stream, "T", RANGE_GE1)? {
-            //
             // T<bpm> - Set tempo (bpm >= 1)
-            //
-
             is_tempo_set = true;
             commands.push(MmlCommand::Tempo {
                 clocks_per_tick: bpm_to_clocks_per_tick(bpm),
             });
         } else if let Some(gate_time) = parse_command(&mut stream, "Q", RANGE_QUANTIZE)? {
-            //
             // Q<gate_percent> - Set quantize gate time (0 <= gate_percent <= 100)
-            //
-
             is_quantize_set = true;
             quantize = gate_time;
             commands.push(MmlCommand::Quantize {
                 gate_ratio: gate_time_to_gate_ratio(gate_time),
             });
         } else if let Some(vol) = parse_command(&mut stream, "V", RANGE_VOLUME)? {
-            //
             // V<vol> - Set volume level (0 <= vol <= 127)
-            //
-
             is_volume_set = true;
             commands.push(MmlCommand::Volume {
                 level: volume_to_level(vol),
             });
         } else if let Some(key_offset) = parse_command::<i32>(&mut stream, "K", RANGE_ALL)? {
-            //
             // K<key_offset> - Transpose key in semitones
-            //
-
             is_transpose_set = true;
             commands.push(MmlCommand::Transpose {
                 semitone_offset: key_offset as f32,
             });
         } else if let Some(offset_cents) = parse_command(&mut stream, "Y", RANGE_ALL)? {
-            //
             // Y<offset_cents> - Set detune in cents
-            //
-
             is_detune_set = true;
             commands.push(MmlCommand::Detune {
                 semitone_offset: cents_to_semitones(offset_cents),
             });
         } else if let Some(command) = parse_envelope(&mut stream)? {
-            //
             // @ENV<slot> - Switch to envelope slot (slot >= 0, 0 = off)
             // @ENV<slot> { init_vol, dur_ticks1, vol1, ... } - Define envelope and switch to slot
-            //
-
             is_envelope_set = true;
             commands.push(command);
         } else if let Some(command) = parse_vibrato(&mut stream)? {
-            //
             // @VIB<slot> - Switch to vibrato slot (slot >= 0, 0 = off)
             // @VIB<slot> { delay_ticks, period_ticks, depth_cents } - Define vibrato and switch to slot
-            //
-
             is_vibrato_set = true;
             commands.push(command);
         } else if let Some(command) = parse_glide(&mut stream)? {
-            //
             // @GLI<slot> - Switch to glide slot (slot >= 0, 0 = off)
             // @GLI<slot> { offset_cents, dur_ticks } - Define glide and switch to slot
-            //
-
             is_glide_set = true;
             commands.push(command);
         } else if let Some(tone) = parse_command(&mut stream, "@", RANGE_GE0)? {
-            //
             // @<tone> - Set tone (tone >= 0)
-            //
-
             is_tone_set = true;
             commands.push(MmlCommand::Tone { tone });
         } else if let Some(oct) = parse_command(&mut stream, "O", RANGE_OCTAVE)? {
-            //
             // O<oct> - Set octave (-1 <= oct <= 9)
-            //
-
             octave = oct;
         } else if parse_string(&mut stream, ">").is_ok() {
-            //
             // > - Octave up
-            //
-
             if octave < RANGE_OCTAVE.1 {
                 octave += 1;
             } else {
                 parse_error!(stream, "Octave exceeds maximum {}", octave);
             }
         } else if parse_string(&mut stream, "<").is_ok() {
-            //
             // < - Octave down
-            //
-
             if octave > RANGE_OCTAVE.0 {
                 octave -= 1;
             } else {
                 parse_error!(stream, "Octave is below minimum {}", octave);
             }
         } else if parse_string(&mut stream, "L").is_ok() {
-            //
             // L<len> - Set default note length (1 <= len <= 192)
-            //
-
             note_ticks = parse_length_as_ticks(&mut stream, note_ticks)?;
         } else if let Some((command, connected)) = parse_note(&mut stream, octave, note_ticks)? {
-            //
             // C/D/E/F/G/A/B[#+-][<len>][.][&] - Play note (1 <= len <= 192)
-            //
-
             is_connected = connected;
 
             // Combine durations if this note is tied to the previous one.
@@ -280,10 +237,7 @@ pub fn parse_mml(mml: &str) -> Result<Vec<MmlCommand>, String> {
             last_note_index = Some(commands.len());
             commands.push(command);
         } else if let Some(command) = parse_rest(&mut stream, note_ticks)? {
-            //
             // R[<len>][.] - Rest (1 <= len <= 192)
-            //
-
             if !is_tempo_set {
                 is_tempo_set = true;
                 commands.push(MmlCommand::Tempo {
@@ -301,16 +255,10 @@ pub fn parse_mml(mml: &str) -> Result<Vec<MmlCommand>, String> {
             commands.push(command);
             last_note_index = None;
         } else if parse_string(&mut stream, "[").is_ok() {
-            //
             // [ - Repeat start marker
-            //
-
             commands.push(MmlCommand::RepeatStart);
         } else if parse_string(&mut stream, "]").is_ok() {
-            //
             // ]<count> - Repeat end (count >= 1, 0 = infinite)
-            //
-
             let count = parse_number(&mut stream, "count", RANGE_GE1).unwrap_or(0);
             commands.push(MmlCommand::RepeatEnd { play_count: count });
         } else {
@@ -662,8 +610,6 @@ fn cents_to_semitones(cents: i32) -> f32 {
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    // Helpers
 
     fn parse(mml: &str) -> Vec<MmlCommand> {
         parse_mml(mml).unwrap()

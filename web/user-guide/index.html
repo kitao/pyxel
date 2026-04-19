@@ -24,13 +24,13 @@
       let lang = "en";
 
       function shortcutTable(items) {
-        let h = `<div class="overflow-x-auto"><table class="w-full border-collapse">
+        let html = `<div class="overflow-x-auto"><table class="w-full border-collapse">
           <thead><tr><th class="th">${t("th_key")}</th><th class="th">${t("th_action")}</th></tr></thead><tbody>`;
         const inlineCode = (s) =>
           esc(s).replace(/`([^`]+)`/g, (_, m) => chip(m));
         for (const i of items)
-          h += `<tr><td class="td"><span class="key">${esc(t(i.key))}</span></td><td class="td text-gray-300">${inlineCode(t(i.action))}</td></tr>`;
-        return h + "</tbody></table></div>";
+          html += `<tr><td class="td"><span class="key">${esc(t(i.key))}</span></td><td class="td text-gray-300">${inlineCode(t(i.action))}</td></tr>`;
+        return html + "</tbody></table></div>";
       }
 
       function build() {

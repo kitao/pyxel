@@ -24,16 +24,16 @@
       let lang = "en";
 
       function table(headers, rows) {
-        let h = `<div class="overflow-x-auto"><table class="w-full border-collapse"><thead><tr>`;
-        for (const th of headers) h += `<th class="th">${esc(th)}</th>`;
-        h += `</tr></thead><tbody>`;
+        let html = `<div class="overflow-x-auto"><table class="w-full border-collapse"><thead><tr>`;
+        for (const th of headers) html += `<th class="th">${esc(th)}</th>`;
+        html += `</tr></thead><tbody>`;
         for (const row of rows) {
-          h += "<tr>";
+          html += "<tr>";
           for (const cell of row)
-            h += `<td class="td text-gray-300">${cell}</td>`;
-          h += "</tr>";
+            html += `<td class="td text-gray-300">${cell}</td>`;
+          html += "</tr>";
         }
-        return h + "</tbody></table></div>";
+        return html + "</tbody></table></div>";
       }
 
       function build() {

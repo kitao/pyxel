@@ -17,13 +17,13 @@ macro_rules! validate_index {
 }
 
 macro_rules! python_type_error {
-    ($msg: expr) => {
+    ($msg:expr) => {
         return Err(pyo3::exceptions::PyTypeError::new_err($msg))
     };
 }
 
 macro_rules! cast_pyany {
-    ($pyany: ident, $(($type: ty, $block: block)),*) => {
+    ($pyany:ident, $(($type:ty, $block:block)),*) => {
         {
             let mut types = String::new();
             loop {
@@ -218,11 +218,15 @@ macro_rules! impl_python_sequence_cmp {
 
 // Mutable sequence methods: __setitem__, __delitem__, __iadd__,
 // append, extend, insert, pop, clear
-// All mutations go through $to_list/$from_list for bulk operations.
+// Single-element mutations operate directly on the internal Vec via $list_mut
+// (O(1) amortized) instead of copying the whole Vec through $to_list/$from_list.
+// $to_raw / $from_raw adapt between the PyO3-facing type ($set_type / $get_type)
+// and the storage type ($raw_item), e.g. Image wrapper <-> *mut pyxel::Image.
 macro_rules! impl_python_sequence_write {
     (
         $wrapper_name:ident, $inner_type:ty, $len:expr,
         $get_type:ty, $set_type:ty, $set:expr,
+        $raw_item:ty, $list_mut:expr, $to_raw:expr, $from_raw:expr,
         $list_type:ty, $from_list:expr, $to_list:expr
     ) => {
         #[pymethods]
@@ -241,9 +245,8 @@ macro_rules! impl_python_sequence_write {
                     if indices.step == 1 {
                         let start = indices.start as usize;
                         let end = indices.stop as usize;
-                        let mut lst = $to_list(&self.inner);
-                        lst.splice(start..end, new_values);
-                        $from_list(&self.inner, lst);
+                        let lst = $list_mut(&self.inner);
+                        lst.splice(start..end, new_values.into_iter().map($to_raw));
                     } else {
                         let idx_list = collect_slice_indices!(
                             indices.start,
@@ -287,43 +290,34 @@ macro_rules! impl_python_sequence_write {
                     );
                     // Remove from end to preserve earlier indices
                     idx_list.sort_unstable_by(|a, b| b.cmp(a));
-                    let mut lst = $to_list(&self.inner);
+                    let lst = $list_mut(&self.inner);
                     for i in idx_list {
                         lst.remove(i);
                     }
-                    $from_list(&self.inner, lst);
                     Ok(())
                 } else {
                     let idx: isize = key.extract()?;
                     let i = resolve_index!(idx, $len(&self.inner))?;
-                    let mut lst = $to_list(&self.inner);
-                    lst.remove(i);
-                    $from_list(&self.inner, lst);
+                    $list_mut(&self.inner).remove(i);
                     Ok(())
                 }
             }
 
             fn __iadd__(&self, values: Vec<$set_type>) {
-                let mut lst = $to_list(&self.inner);
-                lst.extend(values);
-                $from_list(&self.inner, lst);
+                $list_mut(&self.inner).extend(values.into_iter().map($to_raw));
             }
 
             fn append(&self, value: $set_type) {
-                let mut lst = $to_list(&self.inner);
-                lst.push(value);
-                $from_list(&self.inner, lst);
+                $list_mut(&self.inner).push($to_raw(value));
             }
 
             fn extend(&self, values: Vec<$set_type>) {
-                let mut lst = $to_list(&self.inner);
-                lst.extend(values);
-                $from_list(&self.inner, lst);
+                $list_mut(&self.inner).extend(values.into_iter().map($to_raw));
             }
 
             #[pyo3(signature = (index, value))]
             fn insert(&self, index: isize, value: $set_type) {
-                let mut lst = $to_list(&self.inner);
+                let lst = $list_mut(&self.inner);
                 let len = lst.len();
                 let i = if index < 0 {
                     let resolved = index + len as isize;
@@ -333,13 +327,12 @@ macro_rules! impl_python_sequence_write {
                 } else {
                     index as usize
                 };
-                lst.insert(i, value);
-                $from_list(&self.inner, lst);
+                lst.insert(i, $to_raw(value));
             }
 
             #[pyo3(signature = (index=None))]
             fn pop(&self, index: Option<isize>) -> PyResult<$get_type> {
-                let mut lst = $to_list(&self.inner);
+                let lst = $list_mut(&self.inner);
                 let len = lst.len();
                 if len == 0 {
                     return Err(pyo3::exceptions::PyIndexError::new_err(
@@ -348,13 +341,12 @@ macro_rules! impl_python_sequence_write {
                 }
                 let idx = index.unwrap_or(-1);
                 let i = resolve_index!(idx, len)?;
-                let value = lst.remove(i);
-                $from_list(&self.inner, lst);
-                Ok(value)
+                let raw: $raw_item = lst.remove(i);
+                Ok($from_raw(raw))
             }
 
             fn clear(&self) {
-                $from_list(&self.inner, Vec::new());
+                $list_mut(&self.inner).clear();
             }
 
             fn from_list(&self, lst: $list_type) -> PyResult<()> {
@@ -380,11 +372,13 @@ macro_rules! impl_python_sequence_write {
 }
 
 // Wrapper for primitive-type sequences with comparison ops.
+// Primitive case: internal Vec holds $set_type directly, so raw conversions are identities.
 macro_rules! wrap_as_python_sequence {
     (
         $wrapper_name:ident, $inner_type:ty, $len:expr,
         $get_type:ty, $get:expr,
         $set_type:ty, $set:expr,
+        $list_mut:expr,
         $list_type:ty, $from_list:expr, $to_list:expr
     ) => {
         #[pyclass(sequence, from_py_object)]
@@ -411,6 +405,10 @@ macro_rules! wrap_as_python_sequence {
             $get_type,
             $set_type,
             $set,
+            $set_type,
+            $list_mut,
+            (|v: $set_type| v),
+            (|v: $set_type| v),
             $list_type,
             $from_list,
             $to_list
@@ -419,11 +417,14 @@ macro_rules! wrap_as_python_sequence {
 }
 
 // Wrapper for object/wrapper-type sequences (no Copy/PartialEq).
+// Object case: internal Vec holds raw $raw_item (e.g. *mut T) while PyO3 sees
+// wrapper $set_type. $to_raw / $from_raw bridge the two.
 macro_rules! wrap_as_python_object_sequence {
     (
         $wrapper_name:ident, $inner_type:ty, $len:expr,
         $get_type:ty, $get:expr,
         $set_type:ty, $set:expr,
+        $raw_item:ty, $list_mut:expr, $to_raw:expr, $from_raw:expr,
         $list_type:ty, $from_list:expr, $to_list:expr
     ) => {
         #[pyclass(sequence, skip_from_py_object)]
@@ -449,6 +450,10 @@ macro_rules! wrap_as_python_object_sequence {
             $get_type,
             $set_type,
             $set,
+            $raw_item,
+            $list_mut,
+            $to_raw,
+            $from_raw,
             $list_type,
             $from_list,
             $to_list

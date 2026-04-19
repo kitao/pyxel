@@ -464,9 +464,9 @@ const _loadPyodideAndPyxel = async (canvas) => {
   pyodide.canvas.setCanvas2D(canvas);
   await pyodide.loadPackage(`${_scriptDir}${PYXEL_WHEEL_PATH}`);
 
-  const FS = pyodide.FS;
-  FS.mkdir(PYXEL_WORKING_DIRECTORY);
-  FS.chdir(PYXEL_WORKING_DIRECTORY);
+  const fs = pyodide.FS;
+  fs.mkdir(PYXEL_WORKING_DIRECTORY);
+  fs.chdir(PYXEL_WORKING_DIRECTORY);
 
   const response = await fetch(`${_scriptDir}${IMPORT_HOOK_PATH}`);
   if (!response.ok) {

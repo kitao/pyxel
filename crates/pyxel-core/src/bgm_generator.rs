@@ -903,6 +903,7 @@ struct MelodyState {
 
 const NOTE_UNSET: i32 = -2;
 const NOTE_CONT: i32 = -3;
+// Match original behavior: retry until a valid melody is produced.
 
 impl MelodyState {
     fn new() -> Self {
@@ -2009,6 +2010,7 @@ fn generate_bgm(params: &GeneratorParams, seed: u64) -> BgmData {
     let ch1 = make_channel(bass, BASS_TONE_IDX as i32, 112, base_quantize);
 
     let (ch2, ch3) = if instr == 0 {
+        // No submelody, no drum: ch2 is shifted melody with melody tone settings
         let shifted = shifted_melody(&melody);
         (
             make_channel(shifted, melo_tone_idx, 32, 88),
@@ -2020,12 +2022,15 @@ fn generate_bgm(params: &GeneratorParams, seed: u64) -> BgmData {
         if instr == 1 || instr == 3 {
             let drum = generate_drums(params.drums);
             if instr == 1 {
+                // Drum only: ch2 is drum track, ch3 silent
                 c2 = make_channel(drum, DRUM_TONE_IDX as i32, 80, 94);
             } else {
+                // Submelody + drum
                 c3 = make_channel(drum, DRUM_TONE_IDX as i32, 80, 94);
             }
         }
         if instr == 2 || instr == 3 {
+            // Submelody to c2 (used by instr 2 and 3)
             let sub = submelody.unwrap_or_else(|| vec![Some(-1); TOTAL_STEPS]);
             c2 = make_channel(sub, sub_tone_idx, 64, 94);
         }

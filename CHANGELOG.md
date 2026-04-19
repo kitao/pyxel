@@ -83,8 +83,8 @@
 
 ## 2.8.3
 
-- Added URL loading support to Code Maker
-- Changed Code Maker to load default project from zip file
+- Added URL loading support to Pyxel Code Maker
+- Changed Pyxel Code Maker to load default project from zip file
 - Added script to generate type stub docstrings
 - Added docstrings to type stubs from API reference
 - Moved WASM-only images from docs/images to wasm/images
@@ -100,15 +100,15 @@
 
 ## 2.8.1
 
-- Removed URL loading from Code Maker
+- Removed URL loading from Pyxel Code Maker
 - Added system SDL2 fallback for non-X11/Wayland Linux environments
 
 ## 2.8.0
 
 - Reverted default window icon padding
-- Added project sharing via Gist, GitHub, and URL to Code Maker
-- Changed Web Launcher URL format from dot to slash separators
-- Added drag-and-drop support for .py and .pyxres files in Code Maker
+- Added project sharing via Gist, GitHub, and URL to Pyxel Code Maker
+- Changed Pyxel Web Launcher URL format from dot to slash separators
+- Added drag-and-drop support for .py and .pyxres files in Pyxel Code Maker
 - Fixed deprecated warning in voxatron.pyxapp
 
 ## 2.7.12

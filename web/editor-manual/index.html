@@ -26,42 +26,42 @@
       function shortcutTable(items) {
         const ths = t("th_shortcut");
         const tha = t("th_action");
-        let h = `<div class="overflow-x-auto"><table class="w-full border-collapse">
+        let html = `<div class="overflow-x-auto"><table class="w-full border-collapse">
           <thead><tr><th class="th">${esc(ths)}</th><th class="th">${esc(tha)}</th></tr></thead><tbody>`;
         for (const i of items)
-          h += `<tr><td class="td"><span class="key">${esc(t(i.key))}</span></td><td class="td text-gray-300">${esc(t(i.action))}</td></tr>`;
-        return h + "</tbody></table></div>";
+          html += `<tr><td class="td"><span class="key">${esc(t(i.key))}</span></td><td class="td text-gray-300">${esc(t(i.action))}</td></tr>`;
+        return html + "</tbody></table></div>";
       }
 
       function specsGrid(items) {
-        let h = '<div class="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1">';
+        let html = '<div class="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1">';
         for (const i of items)
-          h += `<span class="text-xs font-medium text-gray-400 uppercase tracking-wide">${esc(t(i.label))}</span>
+          html += `<span class="text-xs font-medium text-gray-400 uppercase tracking-wide">${esc(t(i.label))}</span>
                 <span class="text-sm text-gray-300">${esc(typeof i.value === "string" ? i.value : t(i.value))}</span>`;
-        return h + "</div>";
+        return html + "</div>";
       }
 
       function propTable(items) {
-        let h = '<div class="space-y-1.5">';
+        let html = '<div class="space-y-1.5">';
         for (const i of items)
-          h += `<div class="flex items-baseline gap-3">
+          html += `<div class="flex items-baseline gap-3">
             <code class="font-mono text-xs text-pink-300 bg-pink-500/10 px-1.5 py-0.5 rounded shrink-0">${esc(i.key)}</code>
             <span class="text-sm text-gray-200 font-medium shrink-0">${esc(t(i.label))}</span>
             <span class="text-sm text-gray-400">${esc(t(i.desc))}</span>
           </div>`;
-        return h + "</div>";
+        return html + "</div>";
       }
 
       function iconTable(rows) {
         const ths = t("th_shortcut");
         const tha = t("th_action");
-        let h = `<div class="overflow-x-auto"><table class="w-full border-collapse">
+        let html = `<div class="overflow-x-auto"><table class="w-full border-collapse">
           <thead><tr><th class="th" style="width:50px"></th><th class="th">${esc(ths)}</th><th class="th">${esc(tha)}</th></tr></thead><tbody>`;
         for (const r of rows)
-          h += `<tr><td class="td">${icon(r.icon)}</td>
+          html += `<tr><td class="td">${icon(r.icon)}</td>
                 <td class="td"><span class="key">${esc(t(r.key))}</span></td>
                 <td class="td text-gray-300">${esc(t(r.desc))}</td></tr>`;
-        return h + "</tbody></table></div>";
+        return html + "</tbody></table></div>";
       }
 
       const ANNO_COLORS = [
@@ -129,8 +129,8 @@
         const notes = t(kl.notes);
         const blacks = [1, 3, 6, 8, 10]; // indices of sharp notes
         function renderOctave(keys, label) {
-          let h = `<div class="mb-1"><span class="text-[10px] text-gray-500 mb-0.5 block">${esc(label)}</span>`;
-          h += '<div class="flex items-end gap-0.5">';
+          let html = `<div class="mb-1"><span class="text-[10px] text-gray-500 mb-0.5 block">${esc(label)}</span>`;
+          html += '<div class="flex items-end gap-0.5">';
           for (let i = 0; i < 12; i++) {
             const isBlack = blacks.includes(i);
             const key = keys[i];
@@ -139,22 +139,22 @@
               ? "bg-gray-600 border-gray-700 text-gray-200"
               : "bg-gray-200 border-gray-400 text-gray-700";
             const noteCl = isBlack ? "text-gray-400" : "text-gray-500";
-            h += `<div class="flex flex-col items-center" style="width:32px">
+            html += `<div class="flex flex-col items-center" style="width:32px">
               <span class="text-[10px] ${noteCl}">${esc(note)}</span>
               <div class="${bg} border rounded-sm flex items-center justify-center" style="width:30px;height:${isBlack ? "28" : "36"}px;${isBlack ? "margin-bottom:8px" : ""}">
                 <span class="text-xs font-mono font-bold">${key}</span>
               </div>
             </div>`;
           }
-          h += "</div></div>";
-          return h;
+          html += "</div></div>";
+          return html;
         }
-        let h =
+        let html =
           '<div class="my-3 overflow-x-auto"><div style="min-width:420px">';
-        h += renderOctave(kl.upper, t(kl.upper_label));
-        h += renderOctave(kl.lower, t(kl.lower_label));
+        html += renderOctave(kl.upper, t(kl.upper_label));
+        html += renderOctave(kl.lower, t(kl.lower_label));
         // Rest key (shared)
-        h += `<div class="mt-1"><div class="flex items-end gap-2">
+        html += `<div class="mt-1"><div class="flex items-end gap-2">
           <div class="flex flex-col items-center" style="width:32px">
             <span class="text-[10px] text-gray-400">${esc(t(kl.rest_label))}</span>
             <div class="bg-gray-200 border border-gray-400 rounded-sm flex items-center justify-center" style="width:30px;height:36px">
@@ -162,8 +162,8 @@
             </div>
           </div>
         </div></div>`;
-        h += "</div></div>";
-        return h;
+        html += "</div></div>";
+        return html;
       }
 
       function toolIcons() {
