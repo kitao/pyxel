@@ -6,7 +6,7 @@ from .image_viewer import ImageViewer
 from .settings import EDITOR_IMAGE, TEXT_LABEL_COLOR, TOOL_PENCIL
 from .widgets import ColorPicker, NumberPicker, RadioButton
 
-_COLOR_BUTTONS = tuple(pyxel.KEY_1 + i for i in range(8))
+_COLOR_SHORTCUT_KEYS = tuple(pyxel.KEY_1 + i for i in range(8))
 
 
 class ImageEditor(EditorBase):
@@ -128,9 +128,9 @@ class ImageEditor(EditorBase):
 
         # Check color shortcuts
         if not pyxel.btn(pyxel.KEY_ALT):
-            for btn in _COLOR_BUTTONS:
-                if pyxel.btnp(btn):
-                    col = btn - pyxel.KEY_1
+            for key in _COLOR_SHORTCUT_KEYS:
+                if pyxel.btnp(key):
+                    col = key - pyxel.KEY_1
                     if pyxel.btn(pyxel.KEY_SHIFT):
                         col += 8
                     self.color_var = col
