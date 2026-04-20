@@ -11,10 +11,10 @@ use super::super::key::{
     GAMEPAD1_BUTTON_DPAD_RIGHT, GAMEPAD1_BUTTON_DPAD_UP, GAMEPAD1_BUTTON_GUIDE,
     GAMEPAD1_BUTTON_LEFTSHOULDER, GAMEPAD1_BUTTON_LEFTSTICK, GAMEPAD1_BUTTON_RIGHTSHOULDER,
     GAMEPAD1_BUTTON_RIGHTSTICK, GAMEPAD1_BUTTON_START, GAMEPAD1_BUTTON_X, GAMEPAD1_BUTTON_Y,
-    GAMEPAD_KEY_STRIDE, KEY_ALT, KEY_CTRL, KEY_GUI, KEY_LALT, KEY_LCTRL, KEY_LGUI,
-    KEY_LSHIFT, KEY_RALT, KEY_RCTRL, KEY_RGUI, KEY_RSHIFT, KEY_SHIFT, KEY_UNKNOWN,
-    MOUSE_BUTTON_LEFT, MOUSE_BUTTON_MIDDLE, MOUSE_BUTTON_RIGHT, MOUSE_BUTTON_X1, MOUSE_BUTTON_X2,
-    MOUSE_POS_X, MOUSE_POS_Y, MOUSE_WHEEL_X, MOUSE_WHEEL_Y,
+    GAMEPAD_KEY_STRIDE, KEY_ALT, KEY_CTRL, KEY_GUI, KEY_LALT, KEY_LCTRL, KEY_LGUI, KEY_LSHIFT,
+    KEY_RALT, KEY_RCTRL, KEY_RGUI, KEY_RSHIFT, KEY_SHIFT, KEY_UNKNOWN, MOUSE_BUTTON_LEFT,
+    MOUSE_BUTTON_MIDDLE, MOUSE_BUTTON_RIGHT, MOUSE_BUTTON_X1, MOUSE_BUTTON_X2, MOUSE_POS_X,
+    MOUSE_POS_Y, MOUSE_WHEEL_X, MOUSE_WHEEL_Y,
 };
 use super::platform_sdl2::PlatformSdl2;
 #[allow(clippy::wildcard_imports)]
@@ -62,7 +62,6 @@ impl PlatformSdl2 {
         while unsafe { SDL_PollEvent(&raw mut sdl_event) } != 0 {
             match unsafe { sdl_event.type_ as SDL_EventType } {
                 // Window
-
                 SDL_WINDOWEVENT => match unsafe { sdl_event.window.event } as SDL_WindowEventID {
                     SDL_WINDOWEVENT_SHOWN
                     | SDL_WINDOWEVENT_MAXIMIZED
@@ -88,7 +87,6 @@ impl PlatformSdl2 {
                 }
 
                 // Keyboard
-
                 SDL_KEYDOWN | SDL_KEYUP => {
                     let key = unsafe { sdl_event.key.keysym.sym } as Key;
 
@@ -114,7 +112,6 @@ impl PlatformSdl2 {
                 },
 
                 // Mouse Button
-
                 SDL_MOUSEBUTTONDOWN => {
                     let key = mouse_button_to_key(unsafe { sdl_event.button.button } as u32);
                     if key != KEY_UNKNOWN {
@@ -141,7 +138,6 @@ impl PlatformSdl2 {
                 }
 
                 // Gamepad
-
                 SDL_CONTROLLERDEVICEADDED => {
                     let device_index = unsafe { sdl_event.cdevice.which };
                     if let Some(gamepad) = open_gamepad(device_index) {
@@ -241,8 +237,9 @@ impl PlatformSdl2 {
             ];
 
             for (i, &button) in VIRTUAL_GAMEPAD_BUTTONS.iter().enumerate() {
-                let pressed =
-                    unsafe { emscripten_run_script_int(virtual_gamepad_scripts()[i].as_ptr()) != 0 };
+                let pressed = unsafe {
+                    emscripten_run_script_int(virtual_gamepad_scripts()[i].as_ptr()) != 0
+                };
                 if pressed != self.virtual_gamepad_states[i] {
                     self.virtual_gamepad_states[i] = pressed;
                     let event = if pressed {
@@ -261,9 +258,7 @@ impl PlatformSdl2 {
             .iter()
             .enumerate()
             .find_map(|(index, slot)| match slot {
-                Some((id, _)) if *id == instance_id => {
-                    Some(GAMEPAD_KEY_STRIDE * index as Key)
-                }
+                Some((id, _)) if *id == instance_id => Some(GAMEPAD_KEY_STRIDE * index as Key),
                 _ => None,
             })
     }

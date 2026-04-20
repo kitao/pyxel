@@ -414,13 +414,13 @@ const _createScreenElements = async () => {
   }
 
   // Handle file drop
-  pyxelScreen.addEventListener("dragover", (e) => {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = "copy";
+  pyxelScreen.addEventListener("dragover", (event) => {
+    event.preventDefault();
+    event.dataTransfer.dropEffect = "copy";
   });
-  pyxelScreen.addEventListener("drop", (e) => {
-    e.preventDefault();
-    const file = e.dataTransfer.files?.[0];
+  pyxelScreen.addEventListener("drop", (event) => {
+    event.preventDefault();
+    const file = event.dataTransfer.files?.[0];
     if (file) {
       file.arrayBuffer().then((buf) => dropFileToPyxel(file.name, buf));
     }

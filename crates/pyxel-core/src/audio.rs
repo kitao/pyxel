@@ -71,8 +71,7 @@ impl Audio {
 
         if needs_blip {
             while written < out.len() {
-                let target_samples =
-                    ((out.len() - written) as u32).min(AUDIO_RENDER_STEP_SAMPLES);
+                let target_samples = ((out.len() - written) as u32).min(AUDIO_RENDER_STEP_SAMPLES);
                 let clocks = match blip_buf.clocks_needed(target_samples) {
                     0 => AUDIO_CLOCKS_PER_SAMPLE,
                     clocks => clocks,

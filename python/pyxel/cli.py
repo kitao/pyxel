@@ -174,7 +174,9 @@ def _extract_pyxel_app(pyxel_app_file):
         zf.extractall(app_dir)
 
     for setting_file in app_dir.glob(f"*/{pyxel.APP_STARTUP_SCRIPT_FILE}"):
-        return str(setting_file.parent / setting_file.read_text(encoding="utf-8").strip())
+        return str(
+            setting_file.parent / setting_file.read_text(encoding="utf-8").strip()
+        )
     return None
 
 

@@ -19,9 +19,7 @@ wrap_as_python_primitive_sequence!(
     (|inner: &SeqRef, index| unsafe { &*inner.inner }.seqs[inner.index][index]),
     u32,
     (|inner: &SeqRef, index, value| unsafe { &mut *inner.inner }.seqs[inner.index][index] = value),
-    (|inner: &SeqRef| -> &mut Vec<u32> {
-        &mut unsafe { &mut *inner.inner }.seqs[inner.index]
-    }),
+    (|inner: &SeqRef| -> &mut Vec<u32> { &mut unsafe { &mut *inner.inner }.seqs[inner.index] }),
     Vec<u32>,
     (|inner: &SeqRef, list| unsafe { &mut *inner.inner }.seqs[inner.index] = list),
     (|inner: &SeqRef| unsafe { &*inner.inner }.seqs[inner.index].clone())
@@ -87,7 +85,10 @@ impl Seqs {
     }
 
     fn __reversed__(&self, py: Python<'_>) -> PyResult<Py<PyAny>> {
-        let items: Vec<Seq> = (0..self.__len__()).rev().map(|i| self.wrap_seq(i)).collect();
+        let items: Vec<Seq> = (0..self.__len__())
+            .rev()
+            .map(|i| self.wrap_seq(i))
+            .collect();
         items_to_pyiter!(py, items)
     }
 
@@ -176,8 +177,12 @@ impl Seqs {
     fn insert(&self, index: isize, value: Vec<u32>) {
         let music = self.inner_mut();
         let len = music.seqs.len();
-        let i = (if index < 0 { index + len as isize } else { index }).clamp(0, len as isize)
-            as usize;
+        let i = (if index < 0 {
+            index + len as isize
+        } else {
+            index
+        })
+        .clamp(0, len as isize) as usize;
         music.seqs.insert(i, value);
     }
 

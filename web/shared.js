@@ -4,7 +4,7 @@
 
 const PYXEL_LANG_KEY = "pyxel-lang";
 
-const detectLanguage = (languages) => {
+const detectLang = (languages) => {
   const stored = localStorage.getItem(PYXEL_LANG_KEY);
   if (stored && languages.some((l) => l.code === stored)) return stored;
   const nav = (navigator.language ?? "").toLowerCase();
@@ -30,22 +30,22 @@ const buildLangSelector = (
   onChange,
   existingSelect,
 ) => {
-  const sel = existingSelect || document.createElement("select");
-  if (!existingSelect) sel.className = "lang-select mt-1";
-  sel.setAttribute("aria-label", "Language");
+  const select = existingSelect || document.createElement("select");
+  if (!existingSelect) select.className = "lang-select mt-1";
+  select.setAttribute("aria-label", "Language");
   for (const l of languages) {
     const o = document.createElement("option");
     o.value = l.code;
     o.textContent = l.name;
-    sel.appendChild(o);
+    select.appendChild(o);
   }
-  sel.value = currentLang;
-  sel.addEventListener("change", () => {
-    saveLang(sel.value);
-    onChange(sel.value);
+  select.value = currentLang;
+  select.addEventListener("change", () => {
+    saveLang(select.value);
+    onChange(select.value);
   });
-  if (existingSelect) sel.style.display = "";
-  return sel;
+  if (existingSelect) select.style.display = "";
+  return select;
 };
 
 // HTML helpers
@@ -115,7 +115,7 @@ const initPage = (jsonFile, buildFn) => {
     .then((r) => r.json())
     .then((json) => {
       data = json;
-      lang = detectLanguage(data.languages);
+      lang = detectLang(data.languages);
       buildFn();
     })
     .catch((e) => console.error("Failed to load data:", e));

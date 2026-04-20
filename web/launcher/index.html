@@ -26,22 +26,22 @@
         return ref;
       }
 
-      const queries = new URL(document.location).searchParams;
+      const params = new URL(document.location).searchParams;
       let command;
       let value;
       let ext;
 
-      if (queries.get("run")) {
+      if (params.get("run")) {
         command = "run";
-        value = queries.get("run");
+        value = params.get("run");
         ext = ".py";
-      } else if (queries.get("play")) {
+      } else if (params.get("play")) {
         command = "play";
-        value = queries.get("play");
+        value = params.get("play");
         ext = ".pyxapp";
-      } else if (queries.get("edit")) {
+      } else if (params.get("edit")) {
         command = "edit";
-        value = queries.get("edit");
+        value = params.get("edit");
         ext = ".pyxres";
       } else {
         location.replace("url-builder.html");
@@ -72,9 +72,9 @@
             root: r,
             command,
             name,
-            packages: queries.get("packages"),
-            gamepad: queries.get("gamepad"),
-            editor: queries.get("editor"),
+            packages: params.get("packages"),
+            gamepad: params.get("gamepad"),
+            editor: params.get("editor"),
           }),
         );
       }

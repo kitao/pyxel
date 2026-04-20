@@ -917,9 +917,7 @@ impl CopyArea {
         let left_cut = (src_rect.left() - src_x)
             .max(dst_rect.left() - dst_x)
             .max(0);
-        let top_cut = (src_rect.top() - src_y)
-            .max(dst_rect.top() - dst_y)
-            .max(0);
+        let top_cut = (src_rect.top() - src_y).max(dst_rect.top() - dst_y).max(0);
         let right_cut = (src_x + width - 1 - src_rect.right())
             .max(dst_x + width - 1 - dst_rect.right())
             .max(0);

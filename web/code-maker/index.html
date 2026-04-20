@@ -331,18 +331,18 @@
       const focusLineCenter = document.getElementById("focus-line-center");
       const focusLineRight = document.getElementById("focus-line-right");
 
-      window.project = {
+      window._project = {
         name: "pyxel-project",
         code: "",
         resource: "",
         files: {},
       };
-      window.isCopyingResource = false;
+      window._isCopyingResource = false;
 
       // uint8ToBase64 and base64ToUint8 provided by shared.js
 
       function copyCodeToProject() {
-        window.project.code = window.codeEditor.getValue();
+        window._project.code = window._codeEditor.getValue();
       }
 
       async function copyResourceToProject() {
@@ -350,7 +350,7 @@
           return;
         }
 
-        window.isCopyingResource = true;
+        window._isCopyingResource = true;
 
         try {
           const doc = resourceEditor.contentWindow.document;
@@ -371,13 +371,13 @@
 
           await new Promise((resolve) => setTimeout(resolve, 100));
 
-          window.project.resource = uint8ToBase64(
+          window._project.resource = uint8ToBase64(
             resourceEditor.contentWindow.pyxelContext.pyodide.FS.readFile(
               PYXEL_WORKING_DIRECTORY + "/my_resource.pyxres",
             ),
           );
         } finally {
-          window.isCopyingResource = false;
+          window._isCopyingResource = false;
         }
       }
 
@@ -408,14 +408,14 @@
           throw new Error("Missing my_resource.pyxres");
         }
 
-        window.project.name = name;
-        window.project.files = files;
-        window.project.code = new TextDecoder().decode(
+        window._project.name = name;
+        window._project.files = files;
+        window._project.code = new TextDecoder().decode(
           base64ToUint8(files["main.py"]),
         );
-        window.project.resource = files["my_resource.pyxres"];
+        window._project.resource = files["my_resource.pyxres"];
 
-        window.codeEditor.setValue(window.project.code, -1);
+        window._codeEditor.setValue(window._project.code, -1);
         resetRuntimeScreen();
         resetResourceEditor();
       }
@@ -507,20 +507,20 @@
 
       async function buildArchiveBlob() {
         const archive = new JSZip();
-        const prefix = window.project.name;
-        for (const [path, b64] of Object.entries(window.project.files)) {
+        const prefix = window._project.name;
+        for (const [path, b64] of Object.entries(window._project.files)) {
           archive.file(`${prefix}/${path}`, base64ToUint8(b64));
         }
-        archive.file(`${prefix}/main.py`, window.project.code);
+        archive.file(`${prefix}/main.py`, window._project.code);
         archive.file(
           `${prefix}/my_resource.pyxres`,
-          base64ToUint8(window.project.resource),
+          base64ToUint8(window._project.resource),
         );
         return archive.generateAsync({ type: "blob" });
       }
 
       async function saveProject() {
-        if (window.isCopyingResource) {
+        if (window._isCopyingResource) {
           return;
         }
 
@@ -530,7 +530,7 @@
         if (window.showSaveFilePicker) {
           try {
             const handle = await window.showSaveFilePicker({
-              suggestedName: `${window.project.name}.zip`,
+              suggestedName: `${window._project.name}.zip`,
               types: [
                 {
                   description: "ZIP",
@@ -538,7 +538,7 @@
                 },
               ],
             });
-            window.project.name = handle.name.replace(/\.zip$/i, "");
+            window._project.name = handle.name.replace(/\.zip$/i, "");
             const writable = await handle.createWritable();
             await writable.write(await buildArchiveBlob());
             await writable.close();
@@ -555,7 +555,7 @@
         const blob = await buildArchiveBlob();
         const a = document.createElement("a");
         a.href = URL.createObjectURL(blob);
-        a.download = `${window.project.name}.zip`;
+        a.download = `${window._project.name}.zip`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
@@ -563,7 +563,7 @@
       }
 
       async function saveForGist() {
-        if (window.isCopyingResource) {
+        if (window._isCopyingResource) {
           return;
         }
         copyCodeToProject();
@@ -617,7 +617,7 @@
         `;
         document.head.appendChild(aceThemeStyle);
 
-        window.codeEditor = codeEditor;
+        window._codeEditor = codeEditor;
       }
 
       function updateShareUrl(param, value) {
@@ -661,8 +661,8 @@
       }
 
       // Modal helpers
-      function showModal(id) {
-        const modal = document.getElementById(id);
+      function showModal(modalId) {
+        const modal = document.getElementById(modalId);
         modal.classList.remove("hidden");
         const input = modal.querySelector(".modal-input");
         if (input) {
@@ -687,19 +687,19 @@
           "resource-tab-button",
         );
         const codePane = document.getElementById("code-pane");
-        const resPane = document.getElementById("resource-pane");
+        const resourcePane = document.getElementById("resource-pane");
         const leftPane = document.getElementById("left-pane");
         const runButton = document.getElementById("run-button");
 
         // Load dropdown
-        loadButton.addEventListener("click", (e) => {
-          e.stopPropagation();
+        loadButton.addEventListener("click", (event) => {
+          event.stopPropagation();
           toggleDropdown("load-menu");
         });
 
         // Save dropdown
-        saveButton.addEventListener("click", (e) => {
-          e.stopPropagation();
+        saveButton.addEventListener("click", (event) => {
+          event.stopPropagation();
           toggleDropdown("save-menu");
         });
 
@@ -713,8 +713,8 @@
 
         // Dropdown actions
         document.querySelectorAll(".dropdown-item").forEach((item) => {
-          item.addEventListener("click", (e) => {
-            e.stopPropagation();
+          item.addEventListener("click", (event) => {
+            event.stopPropagation();
             closeAllDropdowns();
             const action = item.dataset.action;
             switch (action) {
@@ -741,8 +741,8 @@
           });
         });
 
-        loadFileInput.addEventListener("change", async (e) => {
-          const file = e.target.files?.[0];
+        loadFileInput.addEventListener("change", async (event) => {
+          const file = event.target.files?.[0];
           if (file) {
             loadProject(file);
           }
@@ -755,16 +755,16 @@
 
         // Close modal on overlay click
         document.querySelectorAll(".modal-overlay").forEach((overlay) => {
-          overlay.addEventListener("click", (e) => {
-            if (e.target === overlay) {
+          overlay.addEventListener("click", (event) => {
+            if (event.target === overlay) {
               overlay.classList.add("hidden");
             }
           });
         });
 
         // Close modal on Escape
-        document.addEventListener("keydown", (e) => {
-          if (e.key === "Escape") {
+        document.addEventListener("keydown", (event) => {
+          if (event.key === "Escape") {
             document
               .querySelectorAll(".modal-overlay:not(.hidden)")
               .forEach((m) => {
@@ -799,12 +799,12 @@
 
         // Enter key submits modals
         document.querySelectorAll(".modal-input").forEach((input) => {
-          input.addEventListener("keydown", (e) => {
-            if (e.key === "Enter") {
+          input.addEventListener("keydown", (event) => {
+            if (event.key === "Enter") {
               const modal = input.closest(".modal");
-              const primary = modal.querySelector(".modal-btn-primary");
-              if (primary) {
-                primary.click();
+              const primaryButton = modal.querySelector(".modal-btn-primary");
+              if (primaryButton) {
+                primaryButton.click();
               }
             }
           });
@@ -812,22 +812,22 @@
 
         codeTabButton.addEventListener("click", () => {
           codePane.classList.remove("hidden");
-          resPane.classList.add("hidden");
+          resourcePane.classList.add("hidden");
           codeTabButton.classList.add("seg-active");
           resourceTabButton.classList.remove("seg-active");
           codeTabButton.setAttribute("aria-pressed", "true");
           resourceTabButton.setAttribute("aria-pressed", "false");
           leftPane.classList.remove("res-mode");
           setTimeout(() => {
-            window.codeEditor.resize();
-            window.codeEditor.focus();
+            window._codeEditor.resize();
+            window._codeEditor.focus();
             updateFocusLine("left");
           }, 0);
         });
 
         resourceTabButton.addEventListener("click", () => {
           codePane.classList.add("hidden");
-          resPane.classList.remove("hidden");
+          resourcePane.classList.remove("hidden");
           codeTabButton.classList.remove("seg-active");
           resourceTabButton.classList.add("seg-active");
           codeTabButton.setAttribute("aria-pressed", "false");
@@ -852,7 +852,7 @@
       async function loadInitialFiles() {
         const res = await fetch("pyxel-project.zip");
         await loadProjectFromZip(await res.arrayBuffer(), "pyxel-project");
-        window.codeEditor.focus();
+        window._codeEditor.focus();
       }
 
       async function setupIframes() {
@@ -895,8 +895,8 @@
             resourceTabButton.disabled = false;
             resourceTabButton.classList.remove("disabled");
 
-            const splitterHandleEl = document.getElementById("splitter-handle");
-            splitterHandleEl.style.pointerEvents = "auto";
+            const splitterHandle = document.getElementById("splitter-handle");
+            splitterHandle.style.pointerEvents = "auto";
           },
         );
       }
@@ -921,8 +921,8 @@
 
         document.addEventListener(
           "pointerdown",
-          (e) => {
-            const target = e.target;
+          (event) => {
+            const target = event.target;
 
             if (toolbar && toolbar.contains(target)) {
               return;
@@ -965,21 +965,21 @@
       }
 
       function setupSplitter() {
-        const mainSplit = document.getElementById("main-splitter");
-        const leftPaneEl = document.getElementById("left-pane");
-        const dividerHitEl = document.getElementById("splitter-handle");
+        const mainSplitter = document.getElementById("main-splitter");
+        const leftPane = document.getElementById("left-pane");
+        const splitterHandle = document.getElementById("splitter-handle");
 
-        dividerHitEl.addEventListener("pointerenter", () => {
-          dividerHitEl.style.backgroundColor = "#3a4a5f";
+        splitterHandle.addEventListener("pointerenter", () => {
+          splitterHandle.style.backgroundColor = "#3a4a5f";
         });
-        dividerHitEl.addEventListener("pointerleave", () => {
-          dividerHitEl.style.backgroundColor = "#232d3b";
+        splitterHandle.addEventListener("pointerleave", () => {
+          splitterHandle.style.backgroundColor = "#232d3b";
         });
 
         function updateFocusLineLayout() {
-          const containerRect = mainSplit.getBoundingClientRect();
-          const leftRect = leftPaneEl.getBoundingClientRect();
-          const handleRect = dividerHitEl.getBoundingClientRect();
+          const containerRect = mainSplitter.getBoundingClientRect();
+          const leftRect = leftPane.getBoundingClientRect();
+          const handleRect = splitterHandle.getBoundingClientRect();
 
           const leftWidth = leftRect.width;
           const centerWidth = handleRect.width;
@@ -1001,18 +1001,18 @@
         let startX = 0;
         let startWidth = 0;
 
-        function onMove(e) {
+        function onMove(event) {
           if (!dragging) {
             return;
           }
-          const dx = e.clientX - startX;
+          const dx = event.clientX - startX;
           let newW = startWidth + dx;
-          const containerW = mainSplit.getBoundingClientRect().width;
+          const containerW = mainSplitter.getBoundingClientRect().width;
           const minW = Math.min(200, containerW / 2);
           const maxW = containerW - minW;
           newW = Math.max(minW, Math.min(maxW, newW));
-          leftPaneEl.style.width = `${newW}px`;
-          window.codeEditor.resize();
+          leftPane.style.width = `${newW}px`;
+          window._codeEditor.resize();
           updateFocusLineLayout();
         }
 
@@ -1030,10 +1030,10 @@
           resourceEditor.style.display = "";
         }
 
-        function onDown(e) {
+        function onDown(event) {
           dragging = true;
-          startX = e.clientX;
-          startWidth = leftPaneEl.getBoundingClientRect().width;
+          startX = event.clientX;
+          startWidth = leftPane.getBoundingClientRect().width;
           document.body.style.cursor = "col-resize";
           document.body.style.userSelect = "none";
           runtimeScreen.style.display = "none";
@@ -1041,20 +1041,20 @@
           window.addEventListener("pointermove", onMove);
           window.addEventListener("pointerup", onUp);
           window.addEventListener("pointercancel", onUp);
-          e.preventDefault();
+          event.preventDefault();
         }
 
-        dividerHitEl.addEventListener("pointerdown", onDown);
+        splitterHandle.addEventListener("pointerdown", onDown);
         updateFocusLineLayout();
         window.addEventListener("resize", updateFocusLineLayout);
       }
 
       function setupShortcuts() {
-        function handleShortcutKeydown(e) {
+        function handleShortcutKeydown(event) {
           // Ctrl(Cmd)+L: Load file
-          if ((e.ctrlKey || e.metaKey) && e.key === "l") {
-            e.preventDefault();
-            e.stopPropagation();
+          if ((event.ctrlKey || event.metaKey) && event.key === "l") {
+            event.preventDefault();
+            event.stopPropagation();
             const loadFileInput = document.getElementById("load-file");
             loadFileInput.value = "";
             loadFileInput.click();
@@ -1062,17 +1062,17 @@
           }
 
           // Ctrl(Cmd)+S: Save file
-          if ((e.ctrlKey || e.metaKey) && e.key === "s") {
-            e.preventDefault();
-            e.stopPropagation();
+          if ((event.ctrlKey || event.metaKey) && event.key === "s") {
+            event.preventDefault();
+            event.stopPropagation();
             saveProject();
             return;
           }
 
           // Ctrl(Cmd)+,: Toggle Code/Res
-          if ((e.ctrlKey || e.metaKey) && e.key === ",") {
-            e.preventDefault();
-            e.stopPropagation();
+          if ((event.ctrlKey || event.metaKey) && event.key === ",") {
+            event.preventDefault();
+            event.stopPropagation();
             const codeTabButton = document.getElementById("code-tab-button");
             const resourceTabButton = document.getElementById(
               "resource-tab-button",
@@ -1083,15 +1083,15 @@
             const onCode = codeTabButton.classList.contains("seg-active");
             (onCode ? resourceTabButton : codeTabButton).click();
             if (!onCode) {
-              setTimeout(() => window.codeEditor.focus(), 0);
+              setTimeout(() => window._codeEditor.focus(), 0);
             }
             return;
           }
 
           // Ctrl(Cmd)+.: Toggle focus between left and right panes
-          if ((e.ctrlKey || e.metaKey) && e.key === ".") {
-            e.preventDefault();
-            e.stopPropagation();
+          if ((event.ctrlKey || event.metaKey) && event.key === ".") {
+            event.preventDefault();
+            event.stopPropagation();
 
             const codeTabButton = document.getElementById("code-tab-button");
             const resourceTabButton = document.getElementById(
@@ -1110,8 +1110,8 @@
 
             if (moveToLeft) {
               if (codeTabButton?.classList.contains("seg-active")) {
-                if (window.codeEditor) {
-                  window.codeEditor.focus();
+                if (window._codeEditor) {
+                  window._codeEditor.focus();
                 }
               } else if (resourceTabButton?.classList.contains("seg-active")) {
                 if (resourceEditor.contentWindow) {
@@ -1130,9 +1130,9 @@
           }
 
           // Ctrl(Cmd)+Enter: Run
-          if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
-            e.preventDefault();
-            e.stopPropagation();
+          if ((event.ctrlKey || event.metaKey) && event.key === "Enter") {
+            event.preventDefault();
+            event.stopPropagation();
             const runButton = document.getElementById("run-button");
             if (!runButton?.disabled) {
               runButton.click();
@@ -1141,12 +1141,12 @@
           }
         }
 
-        function bindTarget(tgt) {
-          tgt.addEventListener("keydown", handleShortcutKeydown, {
+        function bindTarget(target) {
+          target.addEventListener("keydown", handleShortcutKeydown, {
             capture: true,
           });
-          if (tgt.document) {
-            tgt.document.addEventListener("keydown", handleShortcutKeydown, {
+          if (target.document) {
+            target.document.addEventListener("keydown", handleShortcutKeydown, {
               capture: true,
             });
           }
@@ -1158,26 +1158,28 @@
       }
 
       function setupFileDrop() {
-        document.addEventListener("dragover", (e) => e.preventDefault());
-        document.addEventListener("drop", (e) => e.preventDefault());
+        document.addEventListener("dragover", (event) =>
+          event.preventDefault(),
+        );
+        document.addEventListener("drop", (event) => event.preventDefault());
 
         const codeEditorEl = document.getElementById("code-editor");
-        codeEditorEl.addEventListener("dragover", (e) => {
-          e.preventDefault();
-          e.dataTransfer.dropEffect = "copy";
+        codeEditorEl.addEventListener("dragover", (event) => {
+          event.preventDefault();
+          event.dataTransfer.dropEffect = "copy";
         });
-        codeEditorEl.addEventListener("drop", (e) => {
-          e.preventDefault();
-          const file = e.dataTransfer.files?.[0];
+        codeEditorEl.addEventListener("drop", (event) => {
+          event.preventDefault();
+          const file = event.dataTransfer.files?.[0];
           if (file && file.name.endsWith(".py")) {
             file.text().then((text) => {
               text = text.replace(
                 /((?:\w+\.)?\bload\()(["'])[^"']*\.pyxres\2/g,
                 "$1$2my_resource.pyxres$2",
               );
-              window.codeEditor.setValue(text, -1);
-              window.project.code = text;
-              window.project.files["main.py"] = uint8ToBase64(
+              window._codeEditor.setValue(text, -1);
+              window._project.code = text;
+              window._project.files["main.py"] = uint8ToBase64(
                 new TextEncoder().encode(text),
               );
             });

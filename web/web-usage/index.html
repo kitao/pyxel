@@ -36,24 +36,24 @@
         return html + "</tbody></table></div>";
       }
 
-      function build() {
+      function buildPage() {
         const app = document.getElementById("app");
         app.innerHTML = "";
 
         // Header
-        const hdr = document.createElement("header");
-        hdr.className = "flex items-start gap-4 mb-6";
+        const header = document.createElement("header");
+        header.className = "flex items-start gap-4 mb-6";
         const titleDiv = document.createElement("div");
         titleDiv.className = "flex-1 min-w-0 order-first";
-        titleDiv.innerHTML = `<h1 class="font-semibold text-2xl tracking-tight" id="p-title"></h1>
-          <p class="mt-2 text-gray-300 text-sm" id="p-sub"></p>`;
-        const sel = buildLangSelector(data.languages, lang, (v) => {
+        titleDiv.innerHTML = `<h1 class="font-semibold text-2xl tracking-tight" id="page-title"></h1>
+          <p class="mt-2 text-gray-300 text-sm" id="page-subtitle"></p>`;
+        const langSelect = buildLangSelector(data.languages, lang, (v) => {
           lang = v;
-          update();
+          updateTexts();
         });
-        hdr.appendChild(sel);
-        hdr.appendChild(titleDiv);
-        app.appendChild(hdr);
+        header.appendChild(langSelect);
+        header.appendChild(titleDiv);
+        app.appendChild(header);
 
         // Content
         const wrap = document.createElement("div");
@@ -68,20 +68,19 @@
           <section class="card" id="s-custom-tags"></section>
         `;
         app.appendChild(wrap);
-        update();
+        updateTexts();
       }
 
-      function update() {
+      function updateTexts() {
         const pyxelLink = link("https://github.com/kitao/pyxel", "Pyxel");
         const launcherLink = link("../launcher/", "Pyxel Web Launcher");
 
         // Header
         document.title = t("title");
-        document.getElementById("p-title").textContent = t("title");
-        document.getElementById("p-sub").innerHTML = t("subtitle").replace(
-          "{0}",
-          pyxelLink,
-        );
+        document.getElementById("page-title").textContent = t("title");
+        document.getElementById("page-subtitle").innerHTML = t(
+          "subtitle",
+        ).replace("{0}", pyxelLink);
 
         // Intro
         document.getElementById("s-intro").innerHTML = `
@@ -281,7 +280,7 @@ pyxel.show()
       }
 
       // Init
-      initPage("web-usage.json", build);
+      initPage("web-usage.json", buildPage);
     </script>
   </body>
 </html>

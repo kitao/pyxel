@@ -53,8 +53,7 @@ pub fn parse_tmx(path: &str, layer_index: u32) -> Result<*mut Tilemap, String> {
     file.read_to_string(&mut tmx_text)
         .map_err(|_| err("Failed to read file"))?;
 
-    let tmx: TmxMap =
-        serde_xml_rs::from_str(&tmx_text).map_err(|_| err("Failed to parse file"))?;
+    let tmx: TmxMap = serde_xml_rs::from_str(&tmx_text).map_err(|_| err("Failed to parse file"))?;
 
     if tmx.tilewidth != TILE_SIZE || tmx.tileheight != TILE_SIZE {
         return Err(err("Invalid tile size in file"));

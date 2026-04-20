@@ -618,10 +618,9 @@ impl Voice {
     fn update_sample_clocks(&mut self) {
         let frequency =
             self.base_frequency * self.vibrato.pitch_multiplier() * self.glide.pitch_multiplier();
-        self.sample_clocks = (self.clock_rate as f32
-            / frequency
-            / self.oscillator.samples_per_cycle() as f32)
-            .round() as u32;
+        self.sample_clocks =
+            (self.clock_rate as f32 / frequency / self.oscillator.samples_per_cycle() as f32)
+                .round() as u32;
     }
 
     fn write_sample(&mut self, blip_buf: Option<&mut BlipBuf>, clock_offset: u32, amplitude: i32) {

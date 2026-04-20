@@ -213,7 +213,7 @@
         .then((r) => r.json())
         .then((json) => {
           data = json;
-          lang = detectLanguage(data.languages);
+          lang = detectLang(data.languages);
           buildLangSelector(
             data.languages,
             lang,

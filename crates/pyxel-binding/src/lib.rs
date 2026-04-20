@@ -23,21 +23,21 @@ mod tilemap_wrapper;
 
 // Audio wrappers
 mod channel_wrapper;
-mod tone_wrapper;
-mod sound_wrapper;
 mod music_wrapper;
+mod sound_wrapper;
+mod tone_wrapper;
 
 // Module wrappers
 mod constant_wrapper;
 mod variable_wrapper;
 
 // Function wrappers
-mod system_wrapper;
-mod resource_wrapper;
-mod input_wrapper;
-mod graphics_wrapper;
 mod audio_wrapper;
+mod graphics_wrapper;
+mod input_wrapper;
 mod math_wrapper;
+mod resource_wrapper;
+mod system_wrapper;
 
 use pyo3::prelude::*;
 

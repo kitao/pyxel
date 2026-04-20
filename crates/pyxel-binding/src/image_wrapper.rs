@@ -7,10 +7,7 @@ use pyo3::types::PyDict;
 use crate::font_wrapper::Font;
 use crate::tilemap_wrapper::Tilemap;
 
-fn resolve_include_colors(
-    preferred: Option<bool>,
-    deprecated: Option<bool>,
-) -> Option<bool> {
+fn resolve_include_colors(preferred: Option<bool>, deprecated: Option<bool>) -> Option<bool> {
     if deprecated.is_some() {
         deprecation_warning!(
             INCL_COLORS_OPTION_ONCE,

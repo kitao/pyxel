@@ -144,7 +144,10 @@ mod tests {
 
     #[test]
     fn test_compact_ascii_lower() {
-        assert_eq!(compact_ascii_lower(" 0\n 1\r 2\t 3 A\n b\r c\t d "), "0123abcd");
+        assert_eq!(
+            compact_ascii_lower(" 0\n 1\r 2\t 3 A\n b\r c\t d "),
+            "0123abcd"
+        );
         assert_eq!(compact_ascii_lower("ABC"), "abc");
         assert_eq!(compact_ascii_lower(""), "");
     }

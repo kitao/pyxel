@@ -393,26 +393,26 @@
         });
 
         // Keyboard shortcuts
-        window.addEventListener("keydown", (e) => {
+        window.addEventListener("keydown", (event) => {
           resolvePyxelInput();
-          if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+          if ((event.ctrlKey || event.metaKey) && event.key === "Enter") {
             const playButton = document.querySelector(
               'button[data-action="play"]',
             );
             if (playButton && !playButton.disabled) {
-              e.preventDefault();
+              event.preventDefault();
               handleButtonPress(playButton);
             }
-          } else if (e.key === "Escape") {
+          } else if (event.key === "Escape") {
             const stopButton = document.querySelector(
               'button[data-action="stop"]',
             );
             if (stopButton && !stopButton.disabled) {
-              e.preventDefault();
+              event.preventDefault();
               handleButtonPress(stopButton);
             }
-          } else if ((e.ctrlKey || e.metaKey) && e.key === "l") {
-            e.preventDefault();
+          } else if ((event.ctrlKey || event.metaKey) && event.key === "l") {
+            event.preventDefault();
             const loopButton = document.querySelector(
               'button[data-action="loop"]',
             );

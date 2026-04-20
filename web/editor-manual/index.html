@@ -64,7 +64,7 @@
         return html + "</tbody></table></div>";
       }
 
-      const ANNO_COLORS = [
+      const ANNOTATION_COLORS = [
         "#f87171",
         "#60a5fa",
         "#34d399",
@@ -74,8 +74,9 @@
         "#f472b6",
       ];
 
-      function areaTitle(label, annoIndex) {
-        const color = ANNO_COLORS[annoIndex % ANNO_COLORS.length];
+      function areaTitle(label, annotationIndex) {
+        const color =
+          ANNOTATION_COLORS[annotationIndex % ANNOTATION_COLORS.length];
         return `<h3 class="area-title" style="color:${color}; border-color:${color}">${esc(t(label))}</h3>`;
       }
 
@@ -89,7 +90,7 @@
 
       function annotatedImg(src, annotations) {
         let svg = "";
-        const colors = ANNO_COLORS;
+        const colors = ANNOTATION_COLORS;
         for (let i = 0; i < annotations.length; i++) {
           const a = annotations[i];
           const color = colors[i % colors.length];
@@ -207,24 +208,24 @@
       }
 
       // Build page
-      function build() {
+      function buildPage() {
         const app = document.getElementById("app");
         app.innerHTML = "";
 
         // Header
-        const hdr = document.createElement("header");
-        hdr.className = "flex items-start gap-4 mb-6";
+        const header = document.createElement("header");
+        header.className = "flex items-start gap-4 mb-6";
         const titleDiv = document.createElement("div");
         titleDiv.className = "flex-1 min-w-0 order-first";
-        titleDiv.innerHTML = `<h1 class="font-semibold text-2xl tracking-tight" id="p-title"></h1>
-          <p class="mt-2 text-gray-300 text-sm" id="p-sub"></p>`;
-        const sel = buildLangSelector(data.languages, lang, (v) => {
+        titleDiv.innerHTML = `<h1 class="font-semibold text-2xl tracking-tight" id="page-title"></h1>
+          <p class="mt-2 text-gray-300 text-sm" id="page-subtitle"></p>`;
+        const langSelect = buildLangSelector(data.languages, lang, (v) => {
           lang = v;
-          update();
+          updateTexts();
         });
-        hdr.appendChild(sel);
-        hdr.appendChild(titleDiv);
-        app.appendChild(hdr);
+        header.appendChild(langSelect);
+        header.appendChild(titleDiv);
+        app.appendChild(header);
 
         // Content
         const wrap = document.createElement("div");
@@ -273,17 +274,16 @@
           </details>
         `;
         app.appendChild(wrap);
-        update();
+        updateTexts();
       }
 
-      function update() {
+      function updateTexts() {
         // Header
         document.title = t("title");
-        document.getElementById("p-title").textContent = t("title");
-        document.getElementById("p-sub").innerHTML = t("subtitle").replace(
-          "{0}",
-          link("https://github.com/kitao/pyxel", "Pyxel"),
-        );
+        document.getElementById("page-title").textContent = t("title");
+        document.getElementById("page-subtitle").innerHTML = t(
+          "subtitle",
+        ).replace("{0}", link("https://github.com/kitao/pyxel", "Pyxel"));
 
         // Overview
         let editorCards = "";
@@ -463,7 +463,7 @@
       }
 
       // Init
-      initPage("editor-manual.json", build);
+      initPage("editor-manual.json", buildPage);
     </script>
   </body>
 </html>

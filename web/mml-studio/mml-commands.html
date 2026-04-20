@@ -27,7 +27,7 @@
           style="display: none"
         ></select>
       </div>
-      <p id="subtitle" class="mb-4 subheading">
+      <p id="page-subtitle" class="mb-4 subheading">
         MML command list for
         <a
           href="https://github.com/kitao/pyxel"
@@ -55,14 +55,13 @@
       let data = null;
       let lang = "en";
 
-      function render() {
+      function updateTexts() {
         // Title and subtitle
         document.title = t("title");
         document.getElementById("page-title").textContent = t("title");
-        document.getElementById("subtitle").innerHTML = t("subtitle").replace(
-          "{0}",
-          link("https://github.com/kitao/pyxel", "Pyxel"),
-        );
+        document.getElementById("page-subtitle").innerHTML = t(
+          "subtitle",
+        ).replace("{0}", link("https://github.com/kitao/pyxel", "Pyxel"));
 
         // Table headers
         document.getElementById("th-command").textContent = t("th_command");
@@ -109,18 +108,18 @@
         .then((r) => r.json())
         .then((json) => {
           data = json;
-          lang = detectLanguage(data.languages);
+          lang = detectLang(data.languages);
           buildLangSelector(
             data.languages,
             lang,
             (v) => {
               lang = v;
-              render();
+              updateTexts();
             },
             document.getElementById("lang-select"),
           );
 
-          render();
+          updateTexts();
         })
         .catch((e) => console.error("Failed to load data:", e));
     </script>

@@ -1644,7 +1644,9 @@ fn generate_drums(drums: i32) -> Vec<Option<i32>> {
 }
 
 fn current_bar_mut(bar_tokens: &mut [Vec<String>]) -> &mut Vec<String> {
-    bar_tokens.last_mut().expect("Failed to get the last bar tokens")
+    bar_tokens
+        .last_mut()
+        .expect("Failed to get the last bar tokens")
 }
 
 fn notes_to_mml(

@@ -244,7 +244,6 @@ impl Pyxel {
         matches!(
             key,
             MOUSE_POS_X | MOUSE_POS_Y | MOUSE_WHEEL_X | MOUSE_WHEEL_Y
-        ) || (key >= GAMEPAD_KEY_START_INDEX
-            && (key % GAMEPAD_KEY_STRIDE) < GAMEPAD_AXIS_COUNT)
+        ) || (key >= GAMEPAD_KEY_START_INDEX && (key % GAMEPAD_KEY_STRIDE) < GAMEPAD_AXIS_COUNT)
     }
 }

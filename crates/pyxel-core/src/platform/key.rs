@@ -270,17 +270,8 @@ macro_rules! define_gamepad_keys {
 
 define_gamepad_keys!(GAMEPAD1, GAMEPAD_KEY_START_INDEX);
 
-define_gamepad_keys!(
-    GAMEPAD2,
-    GAMEPAD_KEY_START_INDEX + GAMEPAD_KEY_STRIDE
-);
+define_gamepad_keys!(GAMEPAD2, GAMEPAD_KEY_START_INDEX + GAMEPAD_KEY_STRIDE);
 
-define_gamepad_keys!(
-    GAMEPAD3,
-    GAMEPAD_KEY_START_INDEX + GAMEPAD_KEY_STRIDE * 2
-);
+define_gamepad_keys!(GAMEPAD3, GAMEPAD_KEY_START_INDEX + GAMEPAD_KEY_STRIDE * 2);
 
-define_gamepad_keys!(
-    GAMEPAD4,
-    GAMEPAD_KEY_START_INDEX + GAMEPAD_KEY_STRIDE * 3
-);
+define_gamepad_keys!(GAMEPAD4, GAMEPAD_KEY_START_INDEX + GAMEPAD_KEY_STRIDE * 3);
