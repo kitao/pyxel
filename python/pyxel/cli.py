@@ -326,7 +326,8 @@ def package_pyxel_app(app_dir: str, startup_script_file: str) -> None:
     app_dir = Path(app_dir).absolute()
     setting_file = app_dir / pyxel.APP_STARTUP_SCRIPT_FILE
     setting_file.write_text(
-        str(Path(startup_script_file).relative_to(app_dir)), encoding="utf-8"
+        str(Path(startup_script_file).absolute().relative_to(app_dir)),
+        encoding="utf-8",
     )
 
     pyxel_app_file = app_dir.name + pyxel.APP_FILE_EXTENSION

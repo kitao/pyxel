@@ -173,7 +173,7 @@ Save the resource file (.pyxres). If an option is set to True, the corresponding
 - `exclude_sounds` (*bool*) — Exclude sounds. Defaults to False.
 - `exclude_musics` (*bool*) — Exclude music tracks. Defaults to False.
 
-### `screenshot(filename=None, scale=None)` — function *(Advanced)*
+### `screenshot(filename=None, scale=2)` — function *(Advanced)*
 
 Take a screenshot.
 
@@ -182,7 +182,7 @@ Take a screenshot.
 - `filename` (*str/None*) — File name. If omitted, saved to desktop.
 - `scale` (*int/None*) — Scale factor. Defaults to capture_scale.
 
-### `screencast(filename=None, scale=None)` — function *(Advanced)*
+### `screencast(filename=None, scale=2)` — function *(Advanced)*
 
 Save the screen recording as a GIF file.
 
@@ -767,6 +767,18 @@ Draw a string s in color col at (x, y).
 
 ## Audio
 
+### `channels` — variable *(Advanced)*
+
+List of the channels (instances of the Channel class) (0-3).
+
+- **Type:** `list[Channel]`
+
+### `tones` — variable *(Advanced)*
+
+List of the tone definitions (instances of the Tone class) (0-3).
+
+- **Type:** `list[Tone]`
+
 ### `sounds` — variable
 
 List of the sounds (instances of the Sound class) (0-63).
@@ -784,18 +796,6 @@ pyxel.sounds[0].speed = 60
 List of music tracks (instances of the Music class) (0-7).
 
 - **Type:** `list[Music]`
-
-### `tones` — variable *(Advanced)*
-
-List of the tone definitions (instances of the Tone class) (0-3).
-
-- **Type:** `list[Tone]`
-
-### `channels` — variable *(Advanced)*
-
-List of the channels (instances of the Channel class) (0-3).
-
-- **Type:** `list[Channel]`
 
 ### `play(ch, snd, sec=0, loop=False, resume=False)` — function
 
@@ -908,11 +908,11 @@ Return x clamped between lower and upper.
 
 **Parameters:**
 
-- `x` (*int/float*) — Value to clamp
-- `lower` (*int/float*) — Minimum value
-- `upper` (*int/float*) — Maximum value
+- `x` (*float*) — Value to clamp
+- `lower` (*float*) — Minimum value
+- `upper` (*float*) — Maximum value
 
-**Returns:** `int/float` — Clamped value
+**Returns:** `float` — Clamped value
 
 ### `sgn(x)` — function
 
@@ -1017,7 +1017,7 @@ Return the Perlin noise value for the specified coordinates.
 
 ## Font Class
 
-### `Font(filename, font_size=10)` — class *(Advanced)*
+### `Font(filename, font_size=10.0)` — class *(Advanced)*
 
 Create a Font instance from a font file (BDF/OTF/TTF/TTC).
 

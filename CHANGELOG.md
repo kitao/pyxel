@@ -8,6 +8,8 @@
 - Refined code quality across Rust, Python, and web layers
 - Revised multilingual documentation and added JSON to format target
 - Added custom chord progression support to the gen_bgm function
+- Fixed the package command failing with relative paths
+- Added unit tests for the pyxel CLI commands
 
 ## 2.9.0
 
