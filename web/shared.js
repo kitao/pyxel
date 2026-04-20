@@ -15,13 +15,13 @@ const detectLang = (languages) => {
   return "en";
 };
 
+const setDocLang = (lang) => {
+  document.documentElement.lang = lang === "cn" ? "zh" : lang;
+};
+
 const saveLang = (lang) => {
   localStorage.setItem(PYXEL_LANG_KEY, lang);
   setDocLang(lang);
-};
-
-const setDocLang = (lang) => {
-  document.documentElement.lang = lang === "cn" ? "zh" : lang;
 };
 
 const buildLangSelector = (

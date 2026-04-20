@@ -9,6 +9,11 @@
   </head>
   <body class="pyxel-scheme">
     <script>
+      const params = new URL(document.location).searchParams;
+      let command;
+      let value;
+      let ext;
+
       // Resolve a branch name to the current commit SHA via GitHub API,
       // so subsequent jsDelivr fetches use an immutable @<SHA> URL.
       // Falls back to the ref name on any failure (network, 403, 404, etc.).
@@ -25,11 +30,6 @@
         } catch (_) {}
         return ref;
       }
-
-      const params = new URL(document.location).searchParams;
-      let command;
-      let value;
-      let ext;
 
       if (params.get("run")) {
         command = "run";

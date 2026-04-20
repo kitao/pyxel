@@ -12,6 +12,8 @@
     clippy::wrong_self_convention
 )]
 
+use pyo3::prelude::*;
+
 #[macro_use]
 mod utils;
 mod pyxel_singleton;
@@ -38,8 +40,6 @@ mod input_wrapper;
 mod math_wrapper;
 mod resource_wrapper;
 mod system_wrapper;
-
-use pyo3::prelude::*;
 
 #[pymodule]
 fn pyxel_binding(_py: Python, m: Bound<'_, PyModule>) -> PyResult<()> {

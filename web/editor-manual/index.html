@@ -15,6 +15,16 @@
       </div>
     </main>
     <script>
+      const ANNOTATION_COLORS = [
+        "#f87171",
+        "#60a5fa",
+        "#34d399",
+        "#fbbf24",
+        "#c084fc",
+        "#fb923c",
+        "#f472b6",
+      ];
+
       let data = null;
       let lang = "en";
 
@@ -63,16 +73,6 @@
                 <td class="td text-gray-300">${esc(t(r.desc))}</td></tr>`;
         return html + "</tbody></table></div>";
       }
-
-      const ANNOTATION_COLORS = [
-        "#f87171",
-        "#60a5fa",
-        "#34d399",
-        "#fbbf24",
-        "#c084fc",
-        "#fb923c",
-        "#f472b6",
-      ];
 
       function areaTitle(label, annotationIndex) {
         const color =

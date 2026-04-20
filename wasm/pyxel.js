@@ -690,13 +690,6 @@ const _waitForInput = async () => {
   await new Promise((resolve) => setTimeout(resolve, 1));
 };
 
-const _installBuiltinPackages = async (pyodide, packages) => {
-  if (!packages) {
-    return;
-  }
-  await pyodide.loadPackage(packages.split(","));
-};
-
 // ---------------------------------------------------------------------------
 // Virtual gamepad
 // ---------------------------------------------------------------------------
@@ -852,6 +845,13 @@ const _addVirtualGamepad = (mode) => {
 // ---------------------------------------------------------------------------
 // Command execution
 // ---------------------------------------------------------------------------
+
+const _installBuiltinPackages = async (pyodide, packages) => {
+  if (!packages) {
+    return;
+  }
+  await pyodide.loadPackage(packages.split(","));
+};
 
 const _copyFileFromBase64 = (pyodide, name, base64) => {
   if (!name || !base64) {

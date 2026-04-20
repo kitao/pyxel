@@ -265,6 +265,11 @@
     </main>
 
     <script>
+      // Cache elements
+      const runtimeScreen = document.getElementById("runtime-screen");
+      const shareUrl = document.getElementById("share-url");
+      const qrCodeImage = document.getElementById("qr-code-image");
+
       // --- URL compression helpers ---
       // Base conversion (uint8ToBase64, base64ToUint8) provided by shared.js
       function b64urlEncode(bytes) {
@@ -308,11 +313,6 @@
         }
         return await decompressDeflateRaw(b64urlDecode(value));
       }
-
-      // Cache elements
-      const runtimeScreen = document.getElementById("runtime-screen");
-      const shareUrl = document.getElementById("share-url");
-      const qrCodeImage = document.getElementById("qr-code-image");
 
       function setButtonStyle(button, isActive) {
         button.classList.toggle("active", isActive);
