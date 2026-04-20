@@ -19,7 +19,6 @@ class ImageButton(Button):
         self._u = u
         self._v = v
 
-        # Set event listeners
         self.add_event_listener("draw", self.__on_draw)
 
     def __on_draw(self):

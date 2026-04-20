@@ -20,7 +20,6 @@ class ColorPicker(Widget):
         self._num_cols = 64 // self._color_width
         self._num_rows = 16 // self._color_height
 
-        # Initialize value_var
         self.new_var("value_var", value)
         self.add_var_event_listener("value_var", "set", self.__on_value_set)
         self.add_var_event_listener("value_var", "change", self.__on_value_change)

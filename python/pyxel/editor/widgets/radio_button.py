@@ -21,7 +21,6 @@ class RadioButton(Widget):
         self._v = v
         self._num_buttons = num_buttons
 
-        # Initialize value_var
         self.new_var("value_var", value)
         self.add_var_event_listener("value_var", "change", self.__on_value_change)
 

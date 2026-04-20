@@ -141,7 +141,6 @@ class TestBasicMath:
         assert pyxel.sqrt(1.0) == pytest.approx(1.0)
 
 
-# Random number generation
 class TestRandom:
     def test_rndi_in_range(self):
         for _ in range(100):
@@ -188,7 +187,6 @@ class TestRandom:
         assert seq1 == seq2
 
 
-# Noise
 class TestNoise:
     def test_noise_range(self):
         for x in [0.0, 0.5, 1.0, 10.0]:

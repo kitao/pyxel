@@ -82,7 +82,6 @@ class PianoKeyboard(Widget):
         self.copy_var("is_playing_var", parent)
         self.copy_var("help_message_var", parent)
 
-        # Initialize note_var
         self.new_var("note_var", None)
 
         # Set event listeners

@@ -19,11 +19,9 @@ class TilemapViewer(Widget):
         self.copy_var("tilemap_index_var", parent)
         self.copy_var("help_message_var", parent)
 
-        # Initialize focus_x_var
         self.new_var("focus_x_var", 0)
         self.add_var_event_listener("focus_x_var", "set", self.__on_focus_x_set)
 
-        # Initialize focus_y_var
         self.new_var("focus_y_var", 0)
         self.add_var_event_listener("focus_y_var", "set", self.__on_focus_y_set)
 

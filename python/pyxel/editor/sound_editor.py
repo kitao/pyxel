@@ -46,7 +46,6 @@ class SoundEditor(EditorBase):
             enable_cross_field_copy=False,
         )
 
-        # Initialize octave_var
         self.new_var("octave_var", 2)
 
         # Initialize is_playing_var (cached once per frame in __on_update)

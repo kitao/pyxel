@@ -21,7 +21,6 @@ class MusicEditor(EditorBase):
         super().__init__(parent)
         self.copy_var("help_message_var", parent)
 
-        # Initialize is_playing_var
         self.new_var("is_playing_var", False)
 
         # Initialize field cursor

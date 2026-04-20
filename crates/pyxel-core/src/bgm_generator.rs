@@ -903,7 +903,6 @@ struct MelodyState {
 
 const NOTE_UNSET: i32 = -2;
 const NOTE_CONT: i32 = -3;
-// Match original behavior: retry until a valid melody is produced.
 
 impl MelodyState {
     fn new() -> Self {
@@ -1858,7 +1857,7 @@ pub fn preset_progression_json(preset: i32) -> String {
     serde_json::to_string(&defs).expect("Failed to serialize preset progressions")
 }
 
-// --- New structured generation pipeline ---
+// New structured generation pipeline
 
 const BASS_TONE_IDX: usize = 7;
 const DRUM_TONE_IDX: usize = 15;

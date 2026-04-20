@@ -46,7 +46,6 @@ class ScrollBar(Widget):
         self._drag_offset = 0
         self._is_dragged = False
 
-        # Initialize value_var
         self.new_var("value_var", value)
         self.add_var_event_listener("value_var", "set", self.__on_value_set)
         self.add_var_event_listener("value_var", "change", self.__on_value_change)

@@ -61,7 +61,6 @@ class App(Widget):
         super().__init__(None, 0, 0, pyxel.width, pyxel.height)
         self._resource_file = resource_file
 
-        # Initialize help_message_var
         self.new_var("help_message_var", "")
 
         # Initialize editor button

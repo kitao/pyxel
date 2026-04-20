@@ -33,11 +33,9 @@ class TilemapEditor(EditorBase):
     def __init__(self, parent):
         super().__init__(parent)
 
-        # Initialize canvas_var
         self.new_var("canvas_var", None)
         self.add_var_event_listener("canvas_var", "get", self.__on_canvas_get)
 
-        # Initialize color_var
         self.new_var("color_var", (255, 255))
 
         # Initialize tool button

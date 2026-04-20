@@ -22,7 +22,6 @@ class NumberPicker(Widget):
         self._min_value = min_value
         self._max_value = max_value
 
-        # Initialize value_var
         self.new_var("value_var", value)
         self.add_var_event_listener("value_var", "set", self.__on_value_set)
         self.add_var_event_listener("value_var", "change", self.__on_value_change)
@@ -35,7 +34,6 @@ class NumberPicker(Widget):
         self.inc_button = TextButton(self, self.width - 7, 0, text="+")
         self.inc_button.add_event_listener("press", self.__on_inc_button_press)
 
-        # Set event listeners
         self.add_event_listener("draw", self.__on_draw)
 
     @staticmethod

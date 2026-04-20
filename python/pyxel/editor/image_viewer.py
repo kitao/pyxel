@@ -41,20 +41,16 @@ class ImageViewer(Widget):
         self.copy_var("image_index_var", parent)
         self.copy_var("help_message_var", parent)
 
-        # Initialize focus_x_var
         self.new_var("focus_x_var", 0)
         self.add_var_event_listener("focus_x_var", "set", self.__on_focus_x_set)
         self.add_var_event_listener("focus_x_var", "change", self.__on_focus_x_change)
 
-        # Initialize focus_y_var
         self.new_var("focus_y_var", 0)
         self.add_var_event_listener("focus_y_var", "set", self.__on_focus_y_set)
         self.add_var_event_listener("focus_y_var", "change", self.__on_focus_y_change)
 
-        # Initialize focus_w_var
         self.new_var("focus_w_var", 1 if self._is_tilemap_mode else 2)
 
-        # Initialize focus_h_var
         self.new_var("focus_h_var", 1 if self._is_tilemap_mode else 2)
 
         # Initialize horizontal scroll bar

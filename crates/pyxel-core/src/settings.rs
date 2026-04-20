@@ -154,7 +154,6 @@ pub const MAX_VOLUME: SoundVolume = 7;
 pub const MAX_EFFECT: SoundEffect = 5;
 
 pub const DEFAULT_TONE_SAMPLE_BITS: u32 = 4;
-// Triangle
 pub const DEFAULT_TONE_TRIANGLE: (ToneMode, u32, [ToneSample; 32], ChannelGain) = (
     ToneMode::Wavetable,
     4,
@@ -164,12 +163,9 @@ pub const DEFAULT_TONE_TRIANGLE: (ToneMode, u32, [ToneSample; 32], ChannelGain) 
     ],
     1.0,
 );
-// Square
 pub const DEFAULT_TONE_SQUARE: (ToneMode, u32, [ToneSample; 2], ChannelGain) =
     (ToneMode::Wavetable, 1, [1, 0], 0.3);
-// Pulse
 pub const DEFAULT_TONE_PULSE: (ToneMode, u32, [ToneSample; 4], ChannelGain) =
     (ToneMode::Wavetable, 1, [1, 0, 0, 0], 0.3);
-// Noise
 pub const DEFAULT_TONE_NOISE: (ToneMode, u32, [ToneSample; 0], ChannelGain) =
     (ToneMode::LongPeriodNoise, 0, [], 0.6);
