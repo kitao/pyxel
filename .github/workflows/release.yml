@@ -16,8 +16,8 @@ jobs:
     uses: ./.github/workflows/build.yml
 
   release:
-    needs: build
     runs-on: macos-15
+    needs: build
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
