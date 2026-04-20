@@ -2,17 +2,18 @@ use blip_buf::BlipBuf;
 
 use crate::audio::Audio;
 use crate::mml_command::MmlCommand;
-use crate::mml_parser::{calc_commands_sec, parse_mml};
+use crate::mml_parser::{parse_mml, total_duration_sec};
 use crate::old_mml_parser::parse_old_mml;
 use crate::pcm_decoder::{load_pcm, PcmData};
+use crate::pyxel;
 use crate::settings::{
     AUDIO_CLOCK_RATE, AUDIO_SAMPLE_RATE, DEFAULT_SOUND_SPEED, EFFECT_FADEOUT, EFFECT_HALF_FADEOUT,
-    EFFECT_NONE, EFFECT_QUARTER_FADEOUT, EFFECT_SLIDE, EFFECT_VIBRATO, MAX_VOLUME, TONE_NOISE,
-    TONE_PULSE, TONE_SQUARE, TONE_TRIANGLE, VIBRATO_DEPTH_CENTS, VIBRATO_PERIOD_TICKS,
+    EFFECT_NONE, EFFECT_QUARTER_FADEOUT, EFFECT_SLIDE, EFFECT_VIBRATO, MAX_VOLUME,
+    SOUND_TICKS_PER_SECOND, TONE_NOISE, TONE_PULSE, TONE_SQUARE, TONE_TRIANGLE,
+    VIBRATO_DEPTH_CENTS, VIBRATO_PERIOD_TICKS,
 };
 use crate::tone::ToneMode;
 use crate::utils::compact_ascii_lower;
-use crate::{pyxel, SOUND_TICKS_PER_SECOND};
 
 pub type SoundNote = i8;
 pub type SoundTone = u8;
@@ -220,7 +221,7 @@ impl Sound {
         } else if self.commands.is_empty() {
             Some(self.notes.len() as f32 * self.speed as f32 / SOUND_TICKS_PER_SECOND as f32)
         } else {
-            calc_commands_sec(&self.commands)
+            total_duration_sec(&self.commands)
         }
     }
 

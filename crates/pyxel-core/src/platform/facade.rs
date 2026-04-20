@@ -25,9 +25,8 @@ fn is_headless() -> bool {
     HEADLESS.load(Ordering::Relaxed)
 }
 
-//
 // SIGINT
-//
+
 static SIGINT_RECEIVED: AtomicBool = AtomicBool::new(false);
 
 #[cfg(not(target_os = "emscripten"))]
@@ -39,9 +38,8 @@ pub fn is_sigint_received() -> bool {
     SIGINT_RECEIVED.swap(false, Ordering::Relaxed)
 }
 
-//
-// Core
-//
+// Lifecycle
+
 pub fn init(headless: bool) {
     HEADLESS.store(headless, Ordering::Relaxed);
 
@@ -85,9 +83,8 @@ pub fn export_browser_file(filename: &str) {
     }
 }
 
-//
 // Window
-//
+
 pub fn init_window(title: &str, width: u32, height: u32) {
     if !is_headless() {
         platform().init_window(title, width, height);
@@ -164,9 +161,8 @@ pub fn display_size() -> (u32, u32) {
     platform().display_size()
 }
 
-//
 // Audio
-//
+
 pub fn start_audio<F: FnMut(&mut [i16]) + 'static>(
     sample_rate: u32,
     buffer_size: u32,
@@ -187,9 +183,8 @@ pub fn unlock_audio() {
     platform().unlock_audio();
 }
 
-//
 // Frame
-//
+
 pub fn run_frame_loop<F: FnMut(f32)>(fps: u32, callback: F) {
     platform().run_frame_loop(fps, callback);
 }
@@ -204,6 +199,8 @@ pub fn poll_events(events: &mut Vec<Event>) {
         platform().poll_events(events);
     }
 }
+
+// OpenGL
 
 pub fn gl_profile() -> GlProfile {
     if is_headless() {

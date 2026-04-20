@@ -18,7 +18,7 @@ bool isInScreen(vec2 screenTexCoord) {
 }
 
 vec3 getScreenColor(vec2 screenTexCoord) {
-    float indexColor = texture2D(u_screenTexture, screenTexCoord).r * 255.0;
-    vec2 colorsTexCoord = vec2((indexColor + 0.5) / float(u_numColors), 0.5);
+    float colorIndex = texture2D(u_screenTexture, screenTexCoord).r * 255.0;
+    vec2 colorsTexCoord = vec2((colorIndex + 0.5) / float(u_numColors), 0.5);
     return texture2D(u_colorsTexture, colorsTexCoord).rgb;
 }

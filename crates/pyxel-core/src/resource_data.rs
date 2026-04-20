@@ -7,7 +7,7 @@ use crate::music::Music;
 use crate::pyxel::{self, Pyxel};
 use crate::sound::{Sound, SoundEffect, SoundNote, SoundSpeed, SoundTone, SoundVolume};
 use crate::tilemap::{ImageSource, ImageTileCoord, Tilemap};
-use crate::utils::{compress_vec2, expand_vec2, trim_empty_vecs};
+use crate::utils::{compress_vec2, expand_vec2, trim_empty_vec};
 
 #[derive(Clone, Serialize, Deserialize)]
 struct ImageData {
@@ -129,14 +129,14 @@ struct MusicData {
 impl MusicData {
     fn from_music(music: *mut Music) -> Self {
         let music = unsafe { &*music };
-        let seqs = trim_empty_vecs(&music.seqs);
+        let seqs = trim_empty_vec(&music.seqs);
 
         Self { seqs }
     }
 
     fn to_music(&self) -> *mut Music {
         let ptr = Music::new();
-        unsafe { &mut *ptr }.seqs = trim_empty_vecs(&self.seqs);
+        unsafe { &mut *ptr }.seqs = trim_empty_vec(&self.seqs);
         ptr
     }
 }
@@ -151,7 +151,7 @@ pub struct ResourceData {
 }
 
 #[derive(Serialize)]
-struct ResourceDataRef<'a> {
+struct ResourceDataView<'a> {
     format_version: u32,
     images: &'a [ImageData],
     tilemaps: &'a [TilemapData],
@@ -169,19 +169,19 @@ impl ResourceData {
             format_version: 1, // Compatible with format version 1
             images: pyxel::images()
                 .iter()
-                .map(|&img| ImageData::from_image(img))
+                .map(|&image| ImageData::from_image(image))
                 .collect(),
             tilemaps: pyxel::tilemaps()
                 .iter()
-                .map(|&tm| TilemapData::from_tilemap(tm))
+                .map(|&tilemap| TilemapData::from_tilemap(tilemap))
                 .collect(),
             sounds: pyxel::sounds()
                 .iter()
-                .map(|&snd| SoundData::from_sound(snd))
+                .map(|&sound| SoundData::from_sound(sound))
                 .collect(),
             musics: pyxel::musics()
                 .iter()
-                .map(|&mus| MusicData::from_music(mus))
+                .map(|&music| MusicData::from_music(music))
                 .collect(),
         }
     }
@@ -241,7 +241,7 @@ impl ResourceData {
         let empty_tilemaps = Vec::new();
         let empty_sounds = Vec::new();
         let empty_musics = Vec::new();
-        let view = ResourceDataRef {
+        let view = ResourceDataView {
             format_version: self.format_version,
             images: if exclude_images {
                 &empty_images

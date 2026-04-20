@@ -3,7 +3,7 @@ use pyo3::prelude::*;
 
 macro_rules! wrap_sound_as_python_list {
     ($wrapper_name:ident, $value_type:ty, $field_name:ident) => {
-        wrap_as_python_sequence!(
+        wrap_as_python_primitive_sequence!(
             $wrapper_name,
             *mut pyxel::Sound,
             (|inner: &*mut pyxel::Sound| unsafe { &**inner }.$field_name.len()),
@@ -151,13 +151,6 @@ impl Sound {
 
     // File operations
 
-    #[pyo3(signature = (filename, sec, ffmpeg=None))]
-    fn save(&self, filename: &str, sec: f32, ffmpeg: Option<bool>) -> PyResult<()> {
-        self.inner_mut()
-            .save(filename, sec, ffmpeg)
-            .map_err(PyException::new_err)
-    }
-
     #[pyo3(signature = (filename=None))]
     fn pcm(&self, filename: Option<&str>) -> PyResult<()> {
         let Some(filename) = filename else {
@@ -167,6 +160,13 @@ impl Sound {
 
         self.inner_mut()
             .load_pcm(filename)
+            .map_err(PyException::new_err)
+    }
+
+    #[pyo3(signature = (filename, sec, ffmpeg=None))]
+    fn save(&self, filename: &str, sec: f32, ffmpeg: Option<bool>) -> PyResult<()> {
+        self.inner_mut()
+            .save(filename, sec, ffmpeg)
             .map_err(PyException::new_err)
     }
 

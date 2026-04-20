@@ -145,7 +145,7 @@ pub fn parse_mml(mml: &str) -> Result<Vec<MmlCommand>, String> {
             }
         } else if parse_string(&mut stream, "L").is_ok() {
             // L<len> - Set default note length (1 <= len <= 192)
-            note_ticks = parse_length_as_ticks(&mut stream, note_ticks)?;
+            note_ticks = parse_length_ticks(&mut stream, note_ticks)?;
         } else if let Some((command, connected)) = parse_note(&mut stream, octave, note_ticks)? {
             // C/D/E/F/G/A/B[#+-][<len>][.][&] - Play note (1 <= len <= 192)
             is_connected = connected;
@@ -269,7 +269,7 @@ pub fn parse_mml(mml: &str) -> Result<Vec<MmlCommand>, String> {
     Ok(commands)
 }
 
-pub fn calc_commands_sec(commands: &[MmlCommand]) -> Option<f32> {
+pub fn total_duration_sec(commands: &[MmlCommand]) -> Option<f32> {
     let mut total_clocks = 0;
     let mut command_index: u32 = 0;
     let mut repeat_points: Vec<(u32, u32)> = Vec::new();
@@ -280,9 +280,9 @@ pub fn calc_commands_sec(commands: &[MmlCommand]) -> Option<f32> {
         command_index += 1;
         match command {
             MmlCommand::Tempo {
-                clocks_per_tick: cpt,
+                clocks_per_tick: new_clocks_per_tick,
             } => {
-                clocks_per_tick = *cpt;
+                clocks_per_tick = *new_clocks_per_tick;
             }
             MmlCommand::Note { duration_ticks, .. } | MmlCommand::Rest { duration_ticks } => {
                 total_clocks += clocks_per_tick * *duration_ticks;
@@ -294,10 +294,10 @@ pub fn calc_commands_sec(commands: &[MmlCommand]) -> Option<f32> {
                 if *play_count == 0 {
                     return None;
                 }
-                if let Some((index, count)) = repeat_points.pop() {
+                if let Some((start_index, count)) = repeat_points.pop() {
                     if count + 1 < *play_count {
-                        repeat_points.push((index, count + 1));
-                        command_index = index;
+                        repeat_points.push((start_index, count + 1));
+                        command_index = start_index;
                     }
                 }
             }
@@ -410,7 +410,7 @@ fn parse_command<T: TryFrom<i32>>(
     Ok(None)
 }
 
-fn parse_length_as_ticks(stream: &mut CharStream, note_ticks: u32) -> Result<u32, String> {
+fn parse_length_ticks(stream: &mut CharStream, note_ticks: u32) -> Result<u32, String> {
     const WHOLE_NOTE_TICKS: u32 = TICKS_PER_QUARTER_NOTE * 4;
     let mut note_ticks = note_ticks;
 
@@ -465,14 +465,14 @@ fn parse_note(
         midi_note
     };
 
-    let mut duration_ticks = parse_length_as_ticks(stream, note_ticks)?;
+    let mut duration_ticks = parse_length_ticks(stream, note_ticks)?;
 
     // Extend duration with '&<len>'
     let mut is_connected = false;
     while parse_string(stream, "&").is_ok() {
         skip_whitespace(stream);
         if stream.peek().is_some_and(|c| c.is_ascii_digit()) {
-            duration_ticks += parse_length_as_ticks(stream, note_ticks)?;
+            duration_ticks += parse_length_ticks(stream, note_ticks)?;
         } else {
             // Set connection flag if '&' followed by non-digit
             is_connected = true;
@@ -494,9 +494,9 @@ fn parse_rest(stream: &mut CharStream, note_ticks: u32) -> Result<Option<MmlComm
         return Ok(None);
     }
 
-    let mut duration_ticks = parse_length_as_ticks(stream, note_ticks)?;
+    let mut duration_ticks = parse_length_ticks(stream, note_ticks)?;
     while parse_string(stream, "&").is_ok() {
-        duration_ticks += parse_length_as_ticks(stream, note_ticks)?;
+        duration_ticks += parse_length_ticks(stream, note_ticks)?;
     }
 
     Ok(Some(MmlCommand::Rest { duration_ticks }))
@@ -638,7 +638,7 @@ mod tests {
             .collect()
     }
 
-    fn quantize_values(commands: &[MmlCommand]) -> Vec<f32> {
+    fn quantize_commands(commands: &[MmlCommand]) -> Vec<f32> {
         commands
             .iter()
             .filter_map(|cmd| match cmd {
@@ -878,7 +878,7 @@ mod tests {
     #[test]
     fn test_quantize() {
         let cmds = parse("Q50 C");
-        let qvals = quantize_values(&cmds);
+        let qvals = quantize_commands(&cmds);
         // Q50 → gate_ratio = 0.5
         assert!(
             qvals.iter().any(|&r| (r - 0.5).abs() < 1e-4),
@@ -890,7 +890,7 @@ mod tests {
     fn test_quantize_full_gate() {
         // Q100 means no per-note quantize command is emitted
         let cmds = parse("Q100 C D");
-        let qvals = quantize_values(&cmds);
+        let qvals = quantize_commands(&cmds);
         // Only the Q100 command itself (gate_ratio=1.0), no per-note quantize
         assert!(qvals.iter().all(|&r| (r - 1.0).abs() < 1e-4));
     }
@@ -899,7 +899,7 @@ mod tests {
     fn test_connected_note_quantize_full_gate() {
         // Connected note (C&) should get gate_ratio=1.0, normal note (D) gets 0.5
         let cmds = parse("Q50 C& D");
-        let qvals = quantize_values(&cmds);
+        let qvals = quantize_commands(&cmds);
         assert_eq!(qvals.len(), 3);
         assert!((qvals[0] - 0.5).abs() < 1e-4, "Q50: {}", qvals[0]);
         assert!((qvals[1] - 1.0).abs() < 1e-4, "connected: {}", qvals[1]);
@@ -1140,35 +1140,35 @@ mod tests {
         assert!(parse_mml("C192.").is_err());
     }
 
-    // ── calc_commands_sec ──
+    // ── total_duration_sec ──
 
     #[test]
-    fn test_calc_commands_sec_quarter_note_at_120bpm() {
+    fn test_total_duration_sec_quarter_note_at_120bpm() {
         let cmds = parse("T120 C4");
-        let sec = calc_commands_sec(&cmds).unwrap();
+        let sec = total_duration_sec(&cmds).unwrap();
         // Quarter note at 120 BPM ≈ 0.5 seconds
         assert!((sec - 0.5).abs() < 0.001, "expected ~0.5, got {sec}");
     }
 
     #[test]
-    fn test_calc_commands_sec_tempo_change() {
+    fn test_total_duration_sec_tempo_change() {
         let cmds = parse("T120 C4 T60 C4");
-        let sec = calc_commands_sec(&cmds).unwrap();
+        let sec = total_duration_sec(&cmds).unwrap();
         // 0.5s (120bpm quarter) + 1.0s (60bpm quarter) ≈ 1.5s
         assert!((sec - 1.5).abs() < 0.01, "expected ~1.5, got {sec}");
     }
 
     #[test]
-    fn test_calc_commands_sec_infinite_loop() {
+    fn test_total_duration_sec_infinite_loop() {
         let cmds = parse("[C]0"); // 0 = infinite repeat
-        assert!(calc_commands_sec(&cmds).is_none());
+        assert!(total_duration_sec(&cmds).is_none());
     }
 
     #[test]
-    fn test_calc_commands_sec_finite_repeat() {
+    fn test_total_duration_sec_finite_repeat() {
         let cmds = parse("T120 [C4]2");
-        let sec = calc_commands_sec(&cmds).unwrap();
-        let single = calc_commands_sec(&parse("T120 C4")).unwrap();
+        let sec = total_duration_sec(&cmds).unwrap();
+        let single = total_duration_sec(&parse("T120 C4")).unwrap();
         assert!(
             (sec - single * 2.0).abs() < 0.01,
             "expected ~{}, got {sec}",
@@ -1177,10 +1177,10 @@ mod tests {
     }
 
     #[test]
-    fn test_calc_commands_sec_nested_repeat() {
+    fn test_total_duration_sec_nested_repeat() {
         let cmds = parse("T120 [[C4]2]3");
-        let sec = calc_commands_sec(&cmds).unwrap();
-        let single = calc_commands_sec(&parse("T120 C4")).unwrap();
+        let sec = total_duration_sec(&cmds).unwrap();
+        let single = total_duration_sec(&parse("T120 C4")).unwrap();
         // Inner loop plays 2 times, outer loop plays 3 times → 6 total notes
         assert!(
             (sec - single * 6.0).abs() < 0.01,
@@ -1190,8 +1190,8 @@ mod tests {
     }
 
     #[test]
-    fn test_calc_commands_sec_empty() {
+    fn test_total_duration_sec_empty() {
         let cmds = parse("");
-        assert_eq!(calc_commands_sec(&cmds), Some(0.0));
+        assert_eq!(total_duration_sec(&cmds), Some(0.0));
     }
 }

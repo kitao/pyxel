@@ -67,14 +67,14 @@ impl Tilemap {
 
     // Public data operations
 
-    pub fn set(&mut self, x: i32, y: i32, data_str: &[&str]) {
-        let width = compact_ascii_lower(data_str[0]).len() as u32 / 4;
-        let height = data_str.len() as u32;
+    pub fn set(&mut self, x: i32, y: i32, data: &[&str]) {
+        let width = compact_ascii_lower(data[0]).len() as u32 / 4;
+        let height = data.len() as u32;
         let tilemap = Self::new(width, height, self.imgsrc.clone());
         {
             let tilemap = unsafe { &mut *tilemap };
             for y in 0..height {
-                let src_data = compact_ascii_lower(data_str[y as usize]);
+                let src_data = compact_ascii_lower(data[y as usize]);
                 for x in 0..width {
                     let index = x as usize * 4;
                     let tile = parse_hex_string(&src_data[index..index + 4]).unwrap();
@@ -210,7 +210,7 @@ impl Tilemap {
         self.canvas.flood_fill(x, y, tile);
     }
 
-    // Tilemap blit
+    // Blit operations
 
     /// # Safety
     /// `tilemap` must be a valid, non-null pointer to a `Tilemap`.
@@ -294,7 +294,7 @@ impl Tilemap {
         (ndx, ndy)
     }
 
-    // Private methods
+    // Internal helpers
 
     fn is_self_blit(&self, tilemap: *mut Tilemap) -> bool {
         ptr::eq(tilemap.cast_const(), ptr::from_ref(self))

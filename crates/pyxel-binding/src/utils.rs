@@ -1,3 +1,5 @@
+// Error helpers
+
 macro_rules! deprecation_warning {
     ($name:ident, $msg:expr) => {
         static $name: std::sync::Once = std::sync::Once::new();
@@ -6,11 +8,11 @@ macro_rules! deprecation_warning {
 }
 
 macro_rules! validate_index {
-    ($index:expr, $len:expr, $name:expr) => {
+    ($index:expr, $len:expr, $label:expr) => {
         if ($index as usize) >= $len {
             return Err(pyo3::exceptions::PyValueError::new_err(format!(
                 "Invalid {} index",
-                $name
+                $label
             )));
         }
     };
@@ -22,8 +24,10 @@ macro_rules! python_type_error {
     };
 }
 
+// Type conversion
+
 macro_rules! cast_pyany {
-    ($pyany:ident, $(($type:ty, $block:block)),*) => {
+    ($value:ident, $(($type:ty, $block:block)),*) => {
         {
             let mut types = String::new();
             loop {
@@ -31,9 +35,9 @@ macro_rules! cast_pyany {
                     if !types.is_empty() {
                         types += ", "
                     }
-                    let any_ref: &pyo3::Bound<'_, pyo3::PyAny> = $pyany.as_any();
+                    let any_ref: &pyo3::Bound<'_, pyo3::PyAny> = $value.as_any();
                     let borrowed: pyo3::Borrowed<'_, '_, pyo3::PyAny> = any_ref.into();
-                    if let Ok($pyany) = <$type>::extract(borrowed) {
+                    if let Ok($value) = <$type>::extract(borrowed) {
                         break $block;
                     }
                     types += stringify!($type);
@@ -43,6 +47,20 @@ macro_rules! cast_pyany {
         }
     };
 }
+
+macro_rules! value_to_py_any {
+    ($py:expr, $value:expr) => {
+        $value.into_pyobject($py).unwrap().into()
+    };
+}
+
+macro_rules! instance_to_py_any {
+    ($py:expr, $instance:expr) => {{
+        $instance.into_pyobject($py).unwrap().into_any().unbind()
+    }};
+}
+
+// Index / slice helpers
 
 macro_rules! resolve_index {
     ($index:expr, $len:expr) => {{
@@ -92,6 +110,8 @@ macro_rules! items_to_pyiter {
         Ok(list.call_method0("__iter__")?.unbind())
     }};
 }
+
+// Sequence impl blocks
 
 // Read-only sequence methods: __len__, __getitem__ (with slicing + negative index),
 // __iter__, __reversed__, __repr__, __bool__
@@ -245,8 +265,8 @@ macro_rules! impl_python_sequence_write {
                     if indices.step == 1 {
                         let start = indices.start as usize;
                         let end = indices.stop as usize;
-                        let lst = $list_mut(&self.inner);
-                        lst.splice(start..end, new_values.into_iter().map($to_raw));
+                        let vec = $list_mut(&self.inner);
+                        vec.splice(start..end, new_values.into_iter().map($to_raw));
                     } else {
                         let idx_list = collect_slice_indices!(
                             indices.start,
@@ -290,9 +310,9 @@ macro_rules! impl_python_sequence_write {
                     );
                     // Remove from end to preserve earlier indices
                     idx_list.sort_unstable_by(|a, b| b.cmp(a));
-                    let lst = $list_mut(&self.inner);
+                    let vec = $list_mut(&self.inner);
                     for i in idx_list {
-                        lst.remove(i);
+                        vec.remove(i);
                     }
                     Ok(())
                 } else {
@@ -317,8 +337,8 @@ macro_rules! impl_python_sequence_write {
 
             #[pyo3(signature = (index, value))]
             fn insert(&self, index: isize, value: $set_type) {
-                let lst = $list_mut(&self.inner);
-                let len = lst.len();
+                let vec = $list_mut(&self.inner);
+                let len = vec.len();
                 let i = if index < 0 {
                     let resolved = index + len as isize;
                     if resolved < 0 { 0 } else { resolved as usize }
@@ -327,13 +347,13 @@ macro_rules! impl_python_sequence_write {
                 } else {
                     index as usize
                 };
-                lst.insert(i, $to_raw(value));
+                vec.insert(i, $to_raw(value));
             }
 
             #[pyo3(signature = (index=None))]
             fn pop(&self, index: Option<isize>) -> PyResult<$get_type> {
-                let lst = $list_mut(&self.inner);
-                let len = lst.len();
+                let vec = $list_mut(&self.inner);
+                let len = vec.len();
                 if len == 0 {
                     return Err(pyo3::exceptions::PyIndexError::new_err(
                         "pop from empty sequence",
@@ -341,7 +361,7 @@ macro_rules! impl_python_sequence_write {
                 }
                 let idx = index.unwrap_or(-1);
                 let i = resolve_index!(idx, len)?;
-                let raw: $raw_item = lst.remove(i);
+                let raw: $raw_item = vec.remove(i);
                 Ok($from_raw(raw))
             }
 
@@ -349,12 +369,12 @@ macro_rules! impl_python_sequence_write {
                 $list_mut(&self.inner).clear();
             }
 
-            fn from_list(&self, lst: $list_type) -> PyResult<()> {
+            fn from_list(&self, vec: $list_type) -> PyResult<()> {
                 deprecation_warning!(
                     FROM_LIST_ONCE,
                     concat!(stringify!($wrapper_name), ".from_list() is deprecated. Use slice assignment instead.")
                 );
-                $from_list(&self.inner, lst);
+                $from_list(&self.inner, vec);
                 Ok(())
             }
 
@@ -371,9 +391,11 @@ macro_rules! impl_python_sequence_write {
     };
 }
 
+// Sequence wrappers
+
 // Wrapper for primitive-type sequences with comparison ops.
 // Primitive case: internal Vec holds $set_type directly, so raw conversions are identities.
-macro_rules! wrap_as_python_sequence {
+macro_rules! wrap_as_python_primitive_sequence {
     (
         $wrapper_name:ident, $inner_type:ty, $len:expr,
         $get_type:ty, $get:expr,
@@ -461,41 +483,31 @@ macro_rules! wrap_as_python_object_sequence {
     };
 }
 
-macro_rules! value_to_py_any {
-    ($py:expr, $value:expr) => {
-        $value.into_pyobject($py).unwrap().into()
-    };
-}
-
-macro_rules! class_to_py_any {
-    ($py:expr, $instance:expr) => {{
-        $instance.into_pyobject($py).unwrap().into_any().unbind()
-    }};
-}
+// Class wrapper
 
 macro_rules! define_wrapper {
-    ($name:ident, $inner:ty) => {
+    ($wrapper_name:ident, $inner_type:ty) => {
         #[pyclass(from_py_object)]
         #[derive(Clone, Copy)]
-        pub struct $name {
-            pub(crate) inner: *mut $inner,
+        pub struct $wrapper_name {
+            pub(crate) inner: *mut $inner_type,
         }
 
-        unsafe impl Send for $name {}
-        unsafe impl Sync for $name {}
+        unsafe impl Send for $wrapper_name {}
+        unsafe impl Sync for $wrapper_name {}
 
-        impl $name {
-            pub fn wrap(inner: *mut $inner) -> Self {
+        impl $wrapper_name {
+            pub fn wrap(inner: *mut $inner_type) -> Self {
                 Self { inner }
             }
 
             #[allow(dead_code)]
-            fn inner_ref(&self) -> &$inner {
+            fn inner_ref(&self) -> &$inner_type {
                 unsafe { &*self.inner }
             }
 
             #[allow(clippy::mut_from_ref)]
-            fn inner_mut(&self) -> &mut $inner {
+            fn inner_mut(&self) -> &mut $inner_type {
                 unsafe { &mut *self.inner }
             }
         }

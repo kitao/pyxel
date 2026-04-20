@@ -8,7 +8,7 @@ use crate::sound_wrapper::Sound;
 use crate::tilemap_wrapper::Tilemap;
 use crate::tone_wrapper::Tone;
 
-wrap_as_python_sequence!(
+wrap_as_python_primitive_sequence!(
     Colors,
     u32, // Dummy
     (|_| pyxel::colors().len()),
@@ -71,18 +71,18 @@ fn __getattr__(py: Python, name: &str) -> PyResult<Py<PyAny>> {
         "dropped_files" => value_to_py_any!(py, pyxel::dropped_files().clone()),
 
         // Graphics
-        "colors" => class_to_py_any!(py, Colors::wrap(0)),
-        "images" => class_to_py_any!(py, Images::wrap(0)),
-        "tilemaps" => class_to_py_any!(py, Tilemaps::wrap(0)),
-        "screen" => class_to_py_any!(py, Image::wrap(std::ptr::from_mut(pyxel::screen()))),
-        "cursor" => class_to_py_any!(py, Image::wrap(std::ptr::from_mut(pyxel::cursor_image()))),
-        "font" => class_to_py_any!(py, Image::wrap(std::ptr::from_mut(pyxel::font_image()))),
+        "colors" => instance_to_py_any!(py, Colors::wrap(0)),
+        "images" => instance_to_py_any!(py, Images::wrap(0)),
+        "tilemaps" => instance_to_py_any!(py, Tilemaps::wrap(0)),
+        "screen" => instance_to_py_any!(py, Image::wrap(std::ptr::from_mut(pyxel::screen()))),
+        "cursor" => instance_to_py_any!(py, Image::wrap(std::ptr::from_mut(pyxel::cursor_image()))),
+        "font" => instance_to_py_any!(py, Image::wrap(std::ptr::from_mut(pyxel::font_image()))),
 
         // Audio
-        "channels" => class_to_py_any!(py, Channels::wrap(0)),
-        "tones" => class_to_py_any!(py, Tones::wrap(0)),
-        "sounds" => class_to_py_any!(py, Sounds::wrap(0)),
-        "musics" => class_to_py_any!(py, Musics::wrap(0)),
+        "channels" => instance_to_py_any!(py, Channels::wrap(0)),
+        "tones" => instance_to_py_any!(py, Tones::wrap(0)),
+        "sounds" => instance_to_py_any!(py, Sounds::wrap(0)),
+        "musics" => instance_to_py_any!(py, Musics::wrap(0)),
 
         // Others
         _ => {

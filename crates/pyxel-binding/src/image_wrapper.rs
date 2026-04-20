@@ -58,6 +58,8 @@ impl Image {
         self.inner_ref().height()
     }
 
+    // Data operations
+
     fn data_ptr(&self, py: Python) -> PyResult<Py<PyAny>> {
         let inner = self.inner_mut();
         let python_code = CString::new(format!(
@@ -73,8 +75,6 @@ impl Image {
             .ok_or_else(|| PyException::new_err("Failed to create data pointer"))?;
         Ok(array.unbind())
     }
-
-    // Data operations
 
     fn set(&self, x: i32, y: i32, data: Vec<String>) {
         let data_refs: Vec<_> = data.iter().map(String::as_str).collect();

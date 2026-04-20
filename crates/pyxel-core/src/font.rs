@@ -7,8 +7,8 @@ use fontdue::{Font as FontdueFont, FontSettings, LineMetrics, Metrics};
 use crate::canvas::Canvas;
 use crate::image::Color;
 
-const DEFAULT_FONT_SIZE: f32 = 10.0;
-const FONT_ALPHA_THRESHOLD: u8 = 128;
+const DEFAULT_SIZE: f32 = 10.0;
+const ALPHA_THRESHOLD: u8 = 128;
 
 #[derive(Default, Clone, Copy)]
 pub struct BdfBoundingBox {
@@ -134,7 +134,7 @@ impl Font {
             .map_err(|_| format!("Failed to read file '{filename}'"))?;
         let font = FontdueFont::from_bytes(buffer, FontSettings::default())
             .map_err(|_| format!("Failed to parse file '{filename}'"))?;
-        let size = font_size.unwrap_or(DEFAULT_FONT_SIZE);
+        let size = font_size.unwrap_or(DEFAULT_SIZE);
         Ok(Font::Fontdue {
             font,
             cache: HashMap::new(),
@@ -144,10 +144,10 @@ impl Font {
 
     // Public methods
 
-    pub fn text_width(&mut self, s: &str) -> i32 {
+    pub fn text_width(&mut self, text: &str) -> i32 {
         let mut max_width = 0;
         let mut width = 0;
-        for c in s.chars() {
+        for c in text.chars() {
             if c == '\n' {
                 max_width = max_width.max(width);
                 width = 0;
@@ -169,7 +169,7 @@ impl Font {
         text: &str,
         color: Color,
     ) {
-        let (line_height, ascent) = self.line_params();
+        let (line_height, ascent) = self.line_metrics();
         let start_x = x;
         let mut x = x;
         let mut y = y;
@@ -183,24 +183,6 @@ impl Font {
                 continue;
             }
             x += self.draw_glyph(canvas, c, x, y, ascent, color);
-        }
-    }
-
-    fn line_params(&self) -> (i32, i32) {
-        match self {
-            Font::Bdf { bounding_box, .. } => (bounding_box.height, 0),
-            Font::Fontdue { font, size, .. } => {
-                let metrics = font.horizontal_line_metrics(*size).unwrap_or(LineMetrics {
-                    ascent: *size,
-                    descent: 0.0,
-                    line_gap: 0.0,
-                    new_line_size: *size,
-                });
-                (
-                    metrics.new_line_size.ceil() as i32,
-                    metrics.ascent.round() as i32,
-                )
-            }
         }
     }
 
@@ -270,6 +252,24 @@ impl Font {
         }
     }
 
+    fn line_metrics(&self) -> (i32, i32) {
+        match self {
+            Font::Bdf { bounding_box, .. } => (bounding_box.height, 0),
+            Font::Fontdue { font, size, .. } => {
+                let metrics = font.horizontal_line_metrics(*size).unwrap_or(LineMetrics {
+                    ascent: *size,
+                    descent: 0.0,
+                    line_gap: 0.0,
+                    new_line_size: *size,
+                });
+                (
+                    metrics.new_line_size.ceil() as i32,
+                    metrics.ascent.round() as i32,
+                )
+            }
+        }
+    }
+
     fn draw_bdf_glyph(
         canvas: &mut Canvas<Color>,
         x: i32,
@@ -301,7 +301,7 @@ impl Font {
         color: Color,
     ) {
         for (i, &alpha) in bitmap.iter().enumerate() {
-            if alpha >= FONT_ALPHA_THRESHOLD {
+            if alpha >= ALPHA_THRESHOLD {
                 let px = x + metrics.xmin + (i % metrics.width) as i32;
                 let py = (y + ascent) - (metrics.ymin + metrics.height as i32)
                     + (i / metrics.width) as i32;

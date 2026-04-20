@@ -1,6 +1,6 @@
 use pyo3::prelude::*;
 
-wrap_as_python_sequence!(
+wrap_as_python_primitive_sequence!(
     Wavetable,
     *mut pyxel::Tone,
     (|inner: &*mut pyxel::Tone| unsafe { &**inner }.wavetable.len()),
@@ -95,6 +95,7 @@ impl Tone {
 }
 
 pub fn add_tone_class(m: &Bound<'_, PyModule>) -> PyResult<()> {
+    m.add_class::<Wavetable>()?;
     m.add_class::<Tone>()?;
     Ok(())
 }

@@ -11,19 +11,19 @@ pub struct WindowWatcher {
 
 impl WindowWatcher {
     pub fn new() -> Self {
-        let (watch_state_file, state_str) = if let Ok(path) = var(WATCH_STATE_FILE_ENV) {
+        let (watch_state_file, raw_state) = if let Ok(path) = var(WATCH_STATE_FILE_ENV) {
             let content = read_to_string(&path).unwrap_or_default();
             (Some(path), content)
         } else {
             (None, var(WINDOW_STATE_ENV).unwrap_or_default())
         };
 
-        let window_state = Self::parse_window_state(&state_str);
+        let window_state = Self::parse_window_state(&raw_state);
 
         if let Some((x, y, w, h)) = window_state {
             platform::set_window_pos(x, y);
             platform::set_window_size(w, h);
-            unsafe { set_var(WINDOW_STATE_ENV, &state_str) };
+            unsafe { set_var(WINDOW_STATE_ENV, &raw_state) };
         }
 
         Self {
@@ -51,17 +51,17 @@ impl WindowWatcher {
         if self.window_state != window_state {
             self.window_state = window_state;
 
-            let state_str = format!("{x} {y} {w} {h}");
-            unsafe { set_var(WINDOW_STATE_ENV, &state_str) };
-            if let Some(watch_state_file) = &self.watch_state_file {
+            let raw_state = format!("{x} {y} {w} {h}");
+            unsafe { set_var(WINDOW_STATE_ENV, &raw_state) };
+            if let Some(path) = &self.watch_state_file {
                 // Best-effort write; watcher continues even if the state file is unavailable.
-                write(watch_state_file, &state_str).ok();
+                write(path, &raw_state).ok();
             }
         }
     }
 
-    fn parse_window_state(state_str: &str) -> Option<(i32, i32, u32, u32)> {
-        let mut fields = state_str.split_whitespace();
+    fn parse_window_state(raw_state: &str) -> Option<(i32, i32, u32, u32)> {
+        let mut fields = raw_state.split_whitespace();
         let x = fields.next()?.parse().ok()?;
         let y = fields.next()?.parse().ok()?;
         let w = fields.next()?.parse().ok()?;

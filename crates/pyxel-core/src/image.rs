@@ -8,7 +8,7 @@ use crate::canvas::{Canvas, CopyArea, PerspectiveProjection, ToIndex};
 use crate::font::Font;
 use crate::rect_area::RectArea;
 use crate::settings::{
-    FONT_HEIGHT, FONT_WIDTH, MAX_COLORS, MAX_FONT_CODE, MIN_FONT_CODE, NUM_FONT_ROWS, TILE_MASK,
+    FONT_HEIGHT, FONT_WIDTH, MAX_COLORS, MAX_FONT_CODE, MIN_FONT_CODE, NUM_FONT_COLS, TILE_MASK,
     TILE_SHIFT, TILE_SIZE,
 };
 use crate::tilemap::{Tile, Tilemap};
@@ -94,7 +94,7 @@ impl Image {
                                     (pal_color >> 8) as u8,
                                     *pal_color as u8,
                                 );
-                                let dist = Self::color_dist(src_rgb, pal_rgb);
+                                let dist = Self::color_distance_sq(src_rgb, pal_rgb);
                                 if dist < closest_dist {
                                     closest_color = i as Color;
                                     closest_dist = dist;
@@ -130,15 +130,15 @@ impl Image {
 
     // Public data operations
 
-    pub fn set(&mut self, x: i32, y: i32, data_str: &[&str]) {
-        let width = utils::compact_ascii_lower(data_str[0]).len() as u32;
-        let height = data_str.len() as u32;
+    pub fn set(&mut self, x: i32, y: i32, data: &[&str]) {
+        let width = utils::compact_ascii_lower(data[0]).len() as u32;
+        let height = data.len() as u32;
         let image = Self::new(width, height);
 
         {
             let image = unsafe { &mut *image };
             for y in 0..height {
-                let src_data = utils::compact_ascii_lower(data_str[y as usize]);
+                let src_data = utils::compact_ascii_lower(data[y as usize]);
                 for x in 0..width {
                     let color =
                         utils::parse_hex_string(&src_data[x as usize..=x as usize]).unwrap();
@@ -560,21 +560,21 @@ impl Image {
                     cached_tile_x = tile_x;
                 }
 
-                let value_x = tile.0 as i32 * tile_size + (tilemap_x & TILE_MASK);
-                if value_x < 0 || value_x >= img_w {
+                let img_x = tile.0 as i32 * tile_size + (tilemap_x & TILE_MASK);
+                if img_x < 0 || img_x >= img_w {
                     continue;
                 }
-                let value_y = tile.1 as i32 * tile_size + pixel_y;
-                if value_y < 0 || value_y >= img_h {
+                let img_y = tile.1 as i32 * tile_size + pixel_y;
+                if img_y < 0 || img_y >= img_h {
                     continue;
                 }
-                let value = image.canvas.read_data(value_x as usize, value_y as usize);
+                let pixel = image.canvas.read_data(img_x as usize, img_y as usize);
 
-                if transparent.is_some_and(|t| value == t) {
+                if transparent.is_some_and(|t| pixel == t) {
                     continue;
                 }
-                let value = palette.map_or(value, |pal| pal[value.to_index()]);
-                self.canvas.write_data((dst_x + xi) as usize, dst_yi, value);
+                let pixel = palette.map_or(pixel, |pal| pal[pixel.to_index()]);
+                self.canvas.write_data((dst_x + xi) as usize, dst_yi, pixel);
             }
         }
     }
@@ -717,7 +717,7 @@ impl Image {
         let y2 = (proj.dst_y + proj.h - 1).min(self.canvas.clip_rect.bottom());
 
         let palette = palette_opt!(self);
-        let (wx_step, wy_step, wz_step) = proj.x_steps();
+        let (wx_step, wy_step, wz_step) = proj.world_step_per_x();
 
         for yi in y1..=y2 {
             let (mut wx, mut wy, mut wz) = proj.world_base(x1, yi);
@@ -726,15 +726,15 @@ impl Image {
                 if wz.abs() >= f32::EPSILON {
                     let t = -proj.cam_z / wz;
                     if t > 0.0 {
-                        let src_xi = utils::f32_to_i32(proj.cam_x + t * wx);
-                        let src_yi = utils::f32_to_i32(proj.cam_y + t * wy);
+                        let src_x = utils::f32_to_i32(proj.cam_x + t * wx);
+                        let src_y = utils::f32_to_i32(proj.cam_y + t * wy);
 
-                        let tile_x = src_xi >> TILE_SHIFT;
-                        let tile_y = src_yi >> TILE_SHIFT;
+                        let tile_x = src_x >> TILE_SHIFT;
+                        let tile_y = src_y >> TILE_SHIFT;
                         if tile_x >= 0 && tile_x < tm_w && tile_y >= 0 && tile_y < tm_h {
                             let tile = tilemap.canvas.read_data(tile_x as usize, tile_y as usize);
-                            let px = tile.0 as i32 * tile_size + (src_xi & TILE_MASK);
-                            let py = tile.1 as i32 * tile_size + (src_yi & TILE_MASK);
+                            let px = tile.0 as i32 * tile_size + (src_x & TILE_MASK);
+                            let py = tile.1 as i32 * tile_size + (src_y & TILE_MASK);
                             if px >= 0 && px < img_w && py >= 0 && py < img_h {
                                 let value = image.canvas.read_data(px as usize, py as usize);
                                 if transparent.is_none_or(|tkey| value != tkey) {
@@ -790,8 +790,8 @@ impl Image {
             }
 
             let code = c as i32 - MIN_FONT_CODE as i32;
-            let src_x = (code % NUM_FONT_ROWS as i32) as usize;
-            let src_y = (code / NUM_FONT_ROWS as i32) as usize;
+            let src_x = (code % NUM_FONT_COLS as i32) as usize;
+            let src_y = (code / NUM_FONT_COLS as i32) as usize;
             let font_row = font_w * src_y * FONT_HEIGHT as usize + src_x * FONT_WIDTH as usize;
 
             // Fast path: character fully inside clip rect and no dithering
@@ -830,7 +830,7 @@ impl Image {
 
     // Internal helpers
 
-    fn color_dist(rgb1: (u8, u8, u8), rgb2: (u8, u8, u8)) -> f32 {
+    fn color_distance_sq(rgb1: (u8, u8, u8), rgb2: (u8, u8, u8)) -> f32 {
         let (r1, g1, b1) = rgb1;
         let (r2, g2, b2) = rgb2;
         // Weighted by perceived luminance contribution

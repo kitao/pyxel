@@ -15,11 +15,12 @@ pub const DEFAULT_FPS: u32 = 30;
 pub const DEFAULT_QUIT_KEY: Key = KEY_ESCAPE;
 pub const DEFAULT_CAPTURE_SCALE: u32 = 2;
 pub const DEFAULT_CAPTURE_SEC: u32 = 10;
-pub const DISPLAY_RATIO: f32 = 0.75;
+pub const WINDOW_TO_DISPLAY_RATIO: f32 = 0.75;
 #[allow(clippy::unreadable_literal)]
 pub const BACKGROUND_COLOR: Rgb24 = 0x202224;
 pub const MAX_FRAME_DELAY_MS: u32 = 100;
 pub const NUM_MEASURE_FRAMES: u32 = 10;
+pub const NUM_SCREEN_TYPES: u32 = 3;
 pub const ICON_SIZE: u32 = 16;
 pub const ICON_SCALE: u32 = 4;
 pub const ICON_COLKEY: Option<Color> = Some(0);
@@ -88,7 +89,7 @@ pub const CURSOR_DATA: [&str; CURSOR_HEIGHT as usize] = [
 ];
 pub const MIN_FONT_CODE: char = ' ';
 pub const MAX_FONT_CODE: char = '\x7F';
-pub const NUM_FONT_ROWS: u32 = 16;
+pub const NUM_FONT_COLS: u32 = 16;
 pub const FONT_WIDTH: u32 = 4;
 pub const FONT_HEIGHT: u32 = 6;
 #[allow(clippy::unreadable_literal)]
@@ -105,7 +106,6 @@ pub const FONT_DATA: [u32; MAX_FONT_CODE as usize - MIN_FONT_CODE as usize + 1] 
     0x06aa62, 0x068880, 0x06c6c0, 0x4e4460, 0x0aaa60, 0x0aaa40, 0x0aaee0, 0x0a44a0, 0x0aa624,
     0x0e24e0, 0x64c460, 0x444440, 0xc464c0, 0x6c0000, 0xeeeee0,
 ];
-pub const NUM_SCREEN_TYPES: u32 = 3;
 
 // Audio
 pub const AUDIO_CLOCK_RATE: u32 = 1_789_773; // NTSC NES APU clock rate

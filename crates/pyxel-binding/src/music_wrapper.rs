@@ -4,27 +4,27 @@ use pyo3::types::{PyList, PySlice, PyTuple};
 
 #[derive(Clone, Copy)]
 pub struct SeqRef {
-    music: *mut pyxel::Music,
+    inner: *mut pyxel::Music,
     index: usize,
 }
 
 unsafe impl Send for SeqRef {}
 unsafe impl Sync for SeqRef {}
 
-wrap_as_python_sequence!(
+wrap_as_python_primitive_sequence!(
     Seq,
     SeqRef,
-    (|inner: &SeqRef| unsafe { &*inner.music }.seqs[inner.index].len()),
+    (|inner: &SeqRef| unsafe { &*inner.inner }.seqs[inner.index].len()),
     u32,
-    (|inner: &SeqRef, index| unsafe { &*inner.music }.seqs[inner.index][index]),
+    (|inner: &SeqRef, index| unsafe { &*inner.inner }.seqs[inner.index][index]),
     u32,
-    (|inner: &SeqRef, index, value| unsafe { &mut *inner.music }.seqs[inner.index][index] = value),
+    (|inner: &SeqRef, index, value| unsafe { &mut *inner.inner }.seqs[inner.index][index] = value),
     (|inner: &SeqRef| -> &mut Vec<u32> {
-        &mut unsafe { &mut *inner.music }.seqs[inner.index]
+        &mut unsafe { &mut *inner.inner }.seqs[inner.index]
     }),
     Vec<u32>,
-    (|inner: &SeqRef, list| unsafe { &mut *inner.music }.seqs[inner.index] = list),
-    (|inner: &SeqRef| unsafe { &*inner.music }.seqs[inner.index].clone())
+    (|inner: &SeqRef, list| unsafe { &mut *inner.inner }.seqs[inner.index] = list),
+    (|inner: &SeqRef| unsafe { &*inner.inner }.seqs[inner.index].clone())
 );
 
 // Seqs is hand-written because it returns Seq wrapper objects (asymmetric get/set types)
@@ -51,9 +51,9 @@ impl Seqs {
         unsafe { &mut *self.inner }
     }
 
-    fn seq_ref(&self, index: usize) -> Seq {
+    fn wrap_seq(&self, index: usize) -> Seq {
         Seq::wrap(SeqRef {
-            music: self.inner,
+            inner: self.inner,
             index,
         })
     }
@@ -61,7 +61,7 @@ impl Seqs {
 
 #[pymethods]
 impl Seqs {
-    // Read operations
+    // Sequence dunders
 
     fn __len__(&self) -> usize {
         self.inner_ref().seqs.len()
@@ -71,23 +71,23 @@ impl Seqs {
         if let Ok(slice) = key.cast::<PySlice>() {
             let indices = slice.indices(self.__len__() as isize)?;
             let idx_list = collect_slice_indices!(indices.start, indices.stop, indices.step);
-            let items: Vec<Seq> = idx_list.iter().map(|&i| self.seq_ref(i)).collect();
+            let items: Vec<Seq> = idx_list.iter().map(|&i| self.wrap_seq(i)).collect();
             let list = PyList::new(py, items)?;
             Ok(list.into_any().unbind())
         } else {
             let idx: isize = key.extract()?;
             let i = resolve_index!(idx, self.__len__())?;
-            Ok(self.seq_ref(i).into_pyobject(py)?.into_any().unbind())
+            Ok(self.wrap_seq(i).into_pyobject(py)?.into_any().unbind())
         }
     }
 
     fn __iter__(&self, py: Python<'_>) -> PyResult<Py<PyAny>> {
-        let items: Vec<Seq> = (0..self.__len__()).map(|i| self.seq_ref(i)).collect();
+        let items: Vec<Seq> = (0..self.__len__()).map(|i| self.wrap_seq(i)).collect();
         items_to_pyiter!(py, items)
     }
 
     fn __reversed__(&self, py: Python<'_>) -> PyResult<Py<PyAny>> {
-        let items: Vec<Seq> = (0..self.__len__()).rev().map(|i| self.seq_ref(i)).collect();
+        let items: Vec<Seq> = (0..self.__len__()).rev().map(|i| self.wrap_seq(i)).collect();
         items_to_pyiter!(py, items)
     }
 
@@ -100,8 +100,6 @@ impl Seqs {
     fn __bool__(&self) -> bool {
         !self.inner_ref().seqs.is_empty()
     }
-
-    // Write operations
 
     fn __setitem__<'py>(
         &self,
@@ -164,6 +162,8 @@ impl Seqs {
         self.inner_mut().seqs.extend(values);
     }
 
+    // List operations
+
     fn append(&self, value: Vec<u32>) {
         self.inner_mut().seqs.push(value);
     }
@@ -176,18 +176,8 @@ impl Seqs {
     fn insert(&self, index: isize, value: Vec<u32>) {
         let music = self.inner_mut();
         let len = music.seqs.len();
-        let i = if index < 0 {
-            let resolved = index + len as isize;
-            if resolved < 0 {
-                0
-            } else {
-                resolved as usize
-            }
-        } else if index as usize > len {
-            len
-        } else {
-            index as usize
-        };
+        let i = (if index < 0 { index + len as isize } else { index }).clamp(0, len as isize)
+            as usize;
         music.seqs.insert(i, value);
     }
 
@@ -202,7 +192,7 @@ impl Seqs {
         }
         let i = resolve_index!(index.unwrap_or(-1), len)?;
         let removed = music.seqs.remove(i);
-        Ok(PyList::new(py, &removed)?.into_any().unbind())
+        Ok(PyList::new(py, &removed)?.unbind().into_any())
     }
 
     fn clear(&self) {

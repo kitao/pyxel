@@ -15,9 +15,9 @@ use crate::resource::Resource;
 use crate::settings::{
     CURSOR_DATA, CURSOR_HEIGHT, CURSOR_WIDTH, DEFAULT_COLORS, DEFAULT_FPS, DEFAULT_QUIT_KEY,
     DEFAULT_TITLE, DEFAULT_TONE_NOISE, DEFAULT_TONE_PULSE, DEFAULT_TONE_SQUARE,
-    DEFAULT_TONE_TRIANGLE, DISPLAY_RATIO, FONT_DATA, FONT_HEIGHT, FONT_WIDTH, ICON_COLKEY,
-    ICON_DATA, ICON_SCALE, IMAGE_SIZE, NUM_CHANNELS, NUM_FONT_ROWS, NUM_IMAGES, NUM_MUSICS,
-    NUM_SOUNDS, NUM_TILEMAPS, NUM_TONES, TILEMAP_SIZE,
+    DEFAULT_TONE_TRIANGLE, FONT_DATA, FONT_HEIGHT, FONT_WIDTH, ICON_COLKEY, ICON_DATA, ICON_SCALE,
+    IMAGE_SIZE, NUM_CHANNELS, NUM_FONT_COLS, NUM_IMAGES, NUM_MUSICS, NUM_SOUNDS, NUM_TILEMAPS,
+    NUM_TONES, TILEMAP_SIZE, WINDOW_TO_DISPLAY_RATIO,
 };
 use crate::sound::Sound;
 use crate::system::System;
@@ -36,20 +36,18 @@ pub fn pyxel() -> &'static mut Pyxel {
     }
 }
 
-fn set_pyxel_instance(instance: Pyxel) {
+fn set_pyxel(instance: Pyxel) {
     unsafe {
         PYXEL = Box::into_raw(Box::new(instance));
     }
 }
 
-// RESET_CALLBACK
 static mut RESET_CALLBACK: Option<Box<dyn FnMut() + Send>> = None;
 
 pub fn reset_callback() -> &'static mut Option<Box<dyn FnMut() + Send>> {
     unsafe { &mut RESET_CALLBACK }
 }
 
-// QUIT_CALLBACK
 static mut QUIT_CALLBACK: Option<Box<dyn FnMut() + Send>> = None;
 
 pub fn quit_callback() -> &'static mut Option<Box<dyn FnMut() + Send>> {
@@ -154,7 +152,7 @@ pub fn init(
                 (f32::min(
                     display_width as f32 / w as f32,
                     display_height as f32 / h as f32,
-                ) * DISPLAY_RATIO) as u32,
+                ) * WINDOW_TO_DISPLAY_RATIO) as u32,
             )
             .max(1);
         let window_width = w * display_scale;
@@ -185,7 +183,7 @@ pub fn init(
         Some(Graphics::new())
     };
 
-    set_pyxel_instance(Pyxel {
+    set_pyxel(Pyxel {
         system,
         resource,
         input,
@@ -289,16 +287,16 @@ fn init_cursor_image() -> Image {
 }
 
 fn init_font_image() -> Image {
-    let w = FONT_WIDTH * NUM_FONT_ROWS;
-    let h = FONT_HEIGHT * (FONT_DATA.len() as u32).div_ceil(NUM_FONT_ROWS);
+    let w = FONT_WIDTH * NUM_FONT_COLS;
+    let h = FONT_HEIGHT * (FONT_DATA.len() as u32).div_ceil(NUM_FONT_COLS);
     let mut image = Image {
         canvas: Canvas::new(w, h),
         palette: array::from_fn(|i| i as Color),
         palette_is_identity: true,
     };
-    for (fi, data) in FONT_DATA.iter().enumerate() {
-        let row = fi as u32 / NUM_FONT_ROWS;
-        let col = fi as u32 % NUM_FONT_ROWS;
+    for (i, data) in FONT_DATA.iter().enumerate() {
+        let row = i as u32 / NUM_FONT_COLS;
+        let col = i as u32 % NUM_FONT_COLS;
         let mut data = *data;
         for yi in 0..FONT_HEIGHT {
             for xi in 0..FONT_WIDTH {

@@ -1,8 +1,8 @@
 macro_rules! string_loop {
-    ($index: ident, $piece: ident, $string: ident, $step: expr, $block: block) => {
-        for $index in 0..($string.len() / $step) {
-            let _macro_index = $index * $step;
-            let $piece = &$string[_macro_index.._macro_index + $step];
+    ($i: ident, $piece: ident, $s: ident, $step: expr, $block: block) => {
+        for $i in 0..($s.len() / $step) {
+            let _macro_index = $i * $step;
+            let $piece = &$s[_macro_index.._macro_index + $step];
             $block
         }
     };
@@ -93,7 +93,7 @@ pub fn expand_vec2<T: Clone>(
     expand_vec(&new_vec, new_outer_len)
 }
 
-pub fn trim_empty_vecs<T: Clone>(vecs: &[Vec<T>]) -> Vec<Vec<T>> {
+pub fn trim_empty_vec<T: Clone>(vecs: &[Vec<T>]) -> Vec<Vec<T>> {
     let mut vecs = vecs.to_vec();
     let new_len = vecs
         .iter()
@@ -278,15 +278,15 @@ mod tests {
     }
 
     #[test]
-    fn test_trim_empty_vecs() {
+    fn test_trim_empty_vec() {
         assert_eq!(
-            trim_empty_vecs(&[vec![1, 2], vec![], vec![], vec![3, 4], vec![], vec![]]),
+            trim_empty_vec(&[vec![1, 2], vec![], vec![], vec![3, 4], vec![], vec![]]),
             vec![vec![1, 2], vec![], vec![], vec![3, 4]]
         );
         let empty: Vec<Vec<i32>> = vec![];
-        assert_eq!(trim_empty_vecs::<i32>(&[vec![], vec![]]), empty);
-        assert_eq!(trim_empty_vecs(&[vec![1], vec![2]]), vec![vec![1], vec![2]]);
-        assert_eq!(trim_empty_vecs::<i32>(&[vec![]]), empty);
-        assert_eq!(trim_empty_vecs(&[vec![1, 2]]), vec![vec![1, 2]]);
+        assert_eq!(trim_empty_vec::<i32>(&[vec![], vec![]]), empty);
+        assert_eq!(trim_empty_vec(&[vec![1], vec![2]]), vec![vec![1], vec![2]]);
+        assert_eq!(trim_empty_vec::<i32>(&[vec![]]), empty);
+        assert_eq!(trim_empty_vec(&[vec![1, 2]]), vec![vec![1, 2]]);
     }
 }

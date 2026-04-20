@@ -1,6 +1,6 @@
 pub struct Profiler {
-    num_measure_frames: u32,
-    num_measured_frames: u32,
+    measure_frame_count: u32,
+    measured_frame_count: u32,
     start_time: u32,
     total_time: u32,
     average_time: f32,
@@ -8,11 +8,11 @@ pub struct Profiler {
 }
 
 impl Profiler {
-    pub fn new(num_measure_frames: u32) -> Self {
-        assert!(num_measure_frames >= 1, "invalid measure frame count");
+    pub fn new(measure_frame_count: u32) -> Self {
+        assert!(measure_frame_count >= 1, "invalid measure frame count");
         Self {
-            num_measure_frames,
-            num_measured_frames: 0,
+            measure_frame_count,
+            measured_frame_count: 0,
             start_time: 0,
             total_time: 0,
             average_time: 0.0,
@@ -34,12 +34,12 @@ impl Profiler {
 
     pub fn end(&mut self, tick_count: u32) {
         self.total_time += tick_count - self.start_time;
-        self.num_measured_frames += 1;
+        self.measured_frame_count += 1;
 
-        if self.num_measured_frames >= self.num_measure_frames {
-            self.average_time = self.total_time as f32 / self.num_measured_frames as f32;
+        if self.measured_frame_count >= self.measure_frame_count {
+            self.average_time = self.total_time as f32 / self.measured_frame_count as f32;
             self.average_fps = 1000.0 / self.average_time;
-            self.num_measured_frames = 0;
+            self.measured_frame_count = 0;
             self.total_time = 0;
         }
     }

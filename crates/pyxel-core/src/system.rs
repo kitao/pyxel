@@ -3,17 +3,16 @@ use std::ptr;
 use crate::canvas::Canvas;
 use crate::image::{rgb24_to_rgb8, Color, Image};
 use crate::key::{
-    Key, GAMEPAD1_BUTTON_A, GAMEPAD1_BUTTON_B, GAMEPAD1_BUTTON_DPAD_DOWN,
+    Key, GAMEPAD1_BUTTON_A, GAMEPAD1_BUTTON_B, GAMEPAD1_BUTTON_BACK, GAMEPAD1_BUTTON_DPAD_DOWN,
     GAMEPAD1_BUTTON_DPAD_LEFT, GAMEPAD1_BUTTON_DPAD_RIGHT, GAMEPAD1_BUTTON_DPAD_UP,
     GAMEPAD1_BUTTON_X, GAMEPAD1_BUTTON_Y, KEY_0, KEY_1, KEY_2, KEY_3, KEY_8, KEY_9, KEY_ALT, KEY_R,
     KEY_RETURN, KEY_SHIFT,
 };
-use crate::platform::key::GAMEPAD1_BUTTON_BACK;
 use crate::platform::{self, Event};
 use crate::profiler::Profiler;
 use crate::pyxel::{self, Pyxel};
 #[cfg(not(target_os = "emscripten"))]
-use crate::settings::DISPLAY_RATIO;
+use crate::settings::WINDOW_TO_DISPLAY_RATIO;
 use crate::settings::{MAX_FRAME_DELAY_MS, NUM_MEASURE_FRAMES, NUM_SCREEN_TYPES};
 use crate::utils;
 use crate::window_watcher::WindowWatcher;
@@ -194,17 +193,17 @@ impl Pyxel {
         platform::set_window_title(title);
     }
 
-    pub fn set_icon(&self, data_str: &[&str], scale: u32, transparent: Option<Color>) {
+    pub fn set_icon(&self, data: &[&str], scale: u32, transparent: Option<Color>) {
         if *pyxel::is_headless() {
             return;
         }
 
         let colors = pyxel::colors();
-        let width = utils::compact_ascii_lower(data_str[0]).len() as u32;
-        let height = data_str.len() as u32;
+        let width = utils::compact_ascii_lower(data[0]).len() as u32;
+        let height = data.len() as u32;
         let image_ptr = Image::new(width, height);
         let image = unsafe { &mut *image_ptr };
-        image.set(0, 0, data_str);
+        image.set(0, 0, data);
         let image_data = &image.canvas.data;
         let scaled_width = width * scale;
         let scaled_height = height * scale;
@@ -277,14 +276,14 @@ impl Pyxel {
             if !platform::is_fullscreen() {
                 let (display_w, display_h) = platform::display_size();
                 let max_scale = f32::min(
-                    display_w as f32 * DISPLAY_RATIO / width as f32,
-                    display_h as f32 * DISPLAY_RATIO / height as f32,
+                    display_w as f32 * WINDOW_TO_DISPLAY_RATIO / width as f32,
+                    display_h as f32 * WINDOW_TO_DISPLAY_RATIO / height as f32,
                 )
                 .max(1.0);
                 let scale = self.system.screen_scale.max(1.0).min(max_scale);
-                let new_win_w = (width as f32 * scale).round() as u32;
-                let new_win_h = (height as f32 * scale).round() as u32;
-                platform::set_window_size(new_win_w, new_win_h);
+                let new_window_w = (width as f32 * scale).round() as u32;
+                let new_window_h = (height as f32 * scale).round() as u32;
+                platform::set_window_size(new_window_w, new_window_h);
             }
             self.update_screen_params();
         }
@@ -312,7 +311,7 @@ impl Pyxel {
                 }
                 Event::KeyPressed { key } => self.press_key(key),
                 Event::KeyReleased { key } => self.release_key(key),
-                Event::KeyValueChanged { key, value } => self.change_key_value(key, value),
+                Event::KeyValueChanged { key, value } => self.set_key_value(key, value),
                 Event::TextInput { text } => self.add_input_text(&text),
                 Event::FileDropped { filename } => self.add_dropped_file(&filename),
                 Event::Quit => platform::quit(),

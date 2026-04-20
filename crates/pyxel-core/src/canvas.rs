@@ -1,4 +1,3 @@
-use std::cmp::max;
 use std::f32::consts::PI;
 use std::mem::swap;
 
@@ -207,8 +206,8 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
                 self.write_data_with_clipping(x + x1, y + yi, value);
                 self.write_data_with_clipping(x + x2, y + yi, value);
             }
-            self.fill_row_or_pixels(x + y1, x + y2, y + x1, value);
-            self.fill_row_or_pixels(x + y1, x + y2, y + x2, value);
+            self.fill_row_with_dither(x + y1, x + y2, y + x1, value);
+            self.fill_row_with_dither(x + y1, x + y2, y + x2, value);
         }
     }
 
@@ -249,8 +248,8 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
 
         for yi in y..=(y + height as i32 / 2) {
             let (y1, x1, y2, x2) = Self::ellipse_area(cy, cx, rb, ra, yi);
-            self.fill_row_or_pixels(x1, x2, y1, value);
-            self.fill_row_or_pixels(x1, x2, y2, value);
+            self.fill_row_with_dither(x1, x2, y1, value);
+            self.fill_row_with_dither(x1, x2, y2, value);
         }
     }
 
@@ -323,35 +322,35 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         } else {
             (x3 - x2) as f32 / (y3 - y2) as f32
         };
-        let x_inter = f32_to_i32(x1 as f32 + slope13 * (y2 - y1) as f32);
+        let x_split = f32_to_i32(x1 as f32 + slope13 * (y2 - y1) as f32);
 
         for y in y1..=y2 {
-            let (x_slider, x_end) = if x_inter < x2 {
+            let (x_start, x_end) = if x_split < x2 {
                 (
-                    f32_to_i32(x_inter as f32 + slope13 * (y - y2) as f32),
+                    f32_to_i32(x_split as f32 + slope13 * (y - y2) as f32),
                     f32_to_i32(x2 as f32 + slope12 * (y - y2) as f32),
                 )
             } else {
                 (
                     f32_to_i32(x2 as f32 + slope12 * (y - y2) as f32),
-                    f32_to_i32(x_inter as f32 + slope13 * (y - y2) as f32),
+                    f32_to_i32(x_split as f32 + slope13 * (y - y2) as f32),
                 )
             };
-            self.fill_row_or_pixels(x_slider, x_end, y, value);
+            self.fill_row_with_dither(x_start, x_end, y, value);
         }
         for y in (y2 + 1)..=y3 {
-            let (x_slider, x_end) = if x_inter < x2 {
+            let (x_start, x_end) = if x_split < x2 {
                 (
-                    f32_to_i32(x_inter as f32 + slope13 * (y - y2) as f32),
+                    f32_to_i32(x_split as f32 + slope13 * (y - y2) as f32),
                     f32_to_i32(x2 as f32 + slope23 * (y - y2) as f32),
                 )
             } else {
                 (
                     f32_to_i32(x2 as f32 + slope23 * (y - y2) as f32),
-                    f32_to_i32(x_inter as f32 + slope13 * (y - y2) as f32),
+                    f32_to_i32(x_split as f32 + slope13 * (y - y2) as f32),
                 )
             };
-            self.fill_row_or_pixels(x_slider, x_end, y, value);
+            self.fill_row_with_dither(x_start, x_end, y, value);
         }
     }
 
@@ -614,12 +613,12 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         let rotate = rotate * PI / 180.0;
         let sin = -f32::sin(rotate); // Clockwise
         let cos = f32::cos(rotate);
-        let offset_x = (half_width * cos.abs() + half_height * sin.abs() + 1.0) * scale;
-        let offset_y = (half_width * sin.abs() + half_height * cos.abs() + 1.0) * scale;
-        let x1 = f32_to_i32(dst_cx - offset_x).max(self.clip_rect.left());
-        let x2 = f32_to_i32(dst_cx + offset_x).min(self.clip_rect.right());
-        let y1 = f32_to_i32(dst_cy - offset_y).max(self.clip_rect.top());
-        let y2 = f32_to_i32(dst_cy + offset_y).min(self.clip_rect.bottom());
+        let bound_x = (half_width * cos.abs() + half_height * sin.abs() + 1.0) * scale;
+        let bound_y = (half_width * sin.abs() + half_height * cos.abs() + 1.0) * scale;
+        let x1 = f32_to_i32(dst_cx - bound_x).max(self.clip_rect.left());
+        let x2 = f32_to_i32(dst_cx + bound_x).min(self.clip_rect.right());
+        let y1 = f32_to_i32(dst_cy - bound_y).max(self.clip_rect.top());
+        let y2 = f32_to_i32(dst_cy + bound_y).min(self.clip_rect.bottom());
 
         // Pre-compute per-pixel stepping
         let cos_s = cos / scale;
@@ -728,7 +727,7 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         let y1 = proj.dst_y.max(self.clip_rect.top());
         let y2 = (proj.dst_y + proj.h - 1).min(self.clip_rect.bottom());
 
-        let (wx_step, wy_step, wz_step) = proj.x_steps();
+        let (wx_step, wy_step, wz_step) = proj.world_step_per_x();
 
         // Fast path: no dithering
         if self.alpha >= 1.0 {
@@ -827,7 +826,7 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         }
     }
 
-    fn fill_row_clipped(&mut self, x1: i32, x2: i32, y: i32, value: T) {
+    fn fill_row(&mut self, x1: i32, x2: i32, y: i32, value: T) {
         if y < self.clip_rect.top() || y > self.clip_rect.bottom() {
             return;
         }
@@ -841,9 +840,9 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         self.data[w * y + left as usize..=w * y + right as usize].fill(value);
     }
 
-    fn fill_row_or_pixels(&mut self, x1: i32, x2: i32, y: i32, value: T) {
+    fn fill_row_with_dither(&mut self, x1: i32, x2: i32, y: i32, value: T) {
         if self.alpha >= 1.0 {
-            self.fill_row_clipped(x1, x2, y, value);
+            self.fill_row(x1, x2, y, value);
         } else {
             for x in x1..=x2 {
                 self.write_data_with_clipping(x, y, value);
@@ -886,21 +885,21 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
     }
 }
 
-pub struct CopyArea {
-    pub dst_x: i32,
-    pub dst_y: i32,
-    pub src_x: i32,
-    pub src_y: i32,
-    pub sign_x: i32,
-    pub sign_y: i32,
-    pub offset_x: i32,
-    pub offset_y: i32,
-    pub width: i32,
-    pub height: i32,
+pub(crate) struct CopyArea {
+    pub(crate) dst_x: i32,
+    pub(crate) dst_y: i32,
+    pub(crate) src_x: i32,
+    pub(crate) src_y: i32,
+    pub(crate) sign_x: i32,
+    pub(crate) sign_y: i32,
+    pub(crate) offset_x: i32,
+    pub(crate) offset_y: i32,
+    pub(crate) width: i32,
+    pub(crate) height: i32,
 }
 
 impl CopyArea {
-    pub fn new(
+    pub(crate) fn new(
         dst_x: i32,
         dst_y: i32,
         dst_rect: RectArea,
@@ -915,25 +914,21 @@ impl CopyArea {
         let width = width.abs();
         let height = height.abs();
 
-        let left_cut = max(max(src_rect.left() - src_x, dst_rect.left() - dst_x), 0);
-        let top_cut = max(max(src_rect.top() - src_y, dst_rect.top() - dst_y), 0);
-        let right_cut = max(
-            max(
-                src_x + width - 1 - src_rect.right(),
-                dst_x + width - 1 - dst_rect.right(),
-            ),
-            0,
-        );
-        let bottom_cut = max(
-            max(
-                src_y + height - 1 - src_rect.bottom(),
-                dst_y + height - 1 - dst_rect.bottom(),
-            ),
-            0,
-        );
+        let left_cut = (src_rect.left() - src_x)
+            .max(dst_rect.left() - dst_x)
+            .max(0);
+        let top_cut = (src_rect.top() - src_y)
+            .max(dst_rect.top() - dst_y)
+            .max(0);
+        let right_cut = (src_x + width - 1 - src_rect.right())
+            .max(dst_x + width - 1 - dst_rect.right())
+            .max(0);
+        let bottom_cut = (src_y + height - 1 - src_rect.bottom())
+            .max(dst_y + height - 1 - dst_rect.bottom())
+            .max(0);
 
-        let width = max(width - left_cut - right_cut, 0);
-        let height = max(height - top_cut - bottom_cut, 0);
+        let width = (width - left_cut - right_cut).max(0);
+        let height = (height - top_cut - bottom_cut).max(0);
         let (sign_x, offset_x) = if flip_x { (-1, width - 1) } else { (1, 0) };
         let (sign_y, offset_y) = if flip_y { (-1, height - 1) } else { (1, 0) };
 
@@ -964,12 +959,12 @@ pub(crate) struct PerspectiveProjection {
     r12: f32,
     r21: f32,
     r22: f32,
-    sz: f32,
-    cz: f32,
+    sin_z: f32,
+    cos_z: f32,
     tan_hfov: f32,
     aspect: f32,
-    half_w: f32,
-    half_h: f32,
+    half_width: f32,
+    half_height: f32,
     pub(crate) dst_x: i32,
     pub(crate) dst_y: i32,
     pub(crate) w: i32,
@@ -1033,12 +1028,12 @@ impl PerspectiveProjection {
             r12: cy * sx,
             r21: sx,
             r22: cx,
-            sz,
-            cz,
+            sin_z: sz,
+            cos_z: cz,
             tan_hfov,
             aspect: w as f32 / h as f32,
-            half_w: w as f32 / 2.0,
-            half_h: h as f32 / 2.0,
+            half_width: w as f32 / 2.0,
+            half_height: h as f32 / 2.0,
             dst_x: f32_to_i32(x) - offset_x,
             dst_y: f32_to_i32(y) - offset_y,
             w,
@@ -1047,10 +1042,10 @@ impl PerspectiveProjection {
     }
 
     // Per-pixel step values (constant for all xi, yi)
-    pub(crate) fn x_steps(&self) -> (f32, f32, f32) {
-        let vx_step = self.tan_hfov * self.aspect / self.half_w;
-        let vx2_step = vx_step * self.cz;
-        let vy2_step = -vx_step * self.sz;
+    pub(crate) fn world_step_per_x(&self) -> (f32, f32, f32) {
+        let vx_step = self.tan_hfov * self.aspect / self.half_width;
+        let vx2_step = vx_step * self.cos_z;
+        let vy2_step = -vx_step * self.sin_z;
         (
             self.r00 * vx2_step + self.r01 * vy2_step, // wx_step
             self.r10 * vx2_step + self.r11 * vy2_step, // wy_step
@@ -1060,12 +1055,12 @@ impl PerspectiveProjection {
 
     // Base world-space values for a given (xi, yi)
     pub(crate) fn world_base(&self, xi: i32, yi: i32) -> (f32, f32, f32) {
-        let ndc_x = ((xi - self.dst_x) as f32 + 0.5 - self.half_w) / self.half_w;
-        let ndc_y = ((yi - self.dst_y) as f32 + 0.5 - self.half_h) / self.half_h;
+        let ndc_x = ((xi - self.dst_x) as f32 + 0.5 - self.half_width) / self.half_width;
+        let ndc_y = ((yi - self.dst_y) as f32 + 0.5 - self.half_height) / self.half_height;
         let vx = ndc_x * self.tan_hfov * self.aspect;
         let vy = -ndc_y * self.tan_hfov;
-        let vx2 = vx * self.cz + vy * self.sz;
-        let vy2 = -vx * self.sz + vy * self.cz;
+        let vx2 = vx * self.cos_z + vy * self.sin_z;
+        let vy2 = -vx * self.sin_z + vy * self.cos_z;
         (
             self.r00 * vx2 + self.r01 * vy2 - self.r02,
             self.r10 * vx2 + self.r11 * vy2 - self.r12,

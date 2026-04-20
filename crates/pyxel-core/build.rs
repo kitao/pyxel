@@ -112,14 +112,14 @@ impl Sdl2Bindings {
             cfg.define("VIDEO_OPENGLES", "OFF");
         }
 
-        let cmake_out_dir = cfg.build();
+        let cmake_install_dir = cfg.build();
         println!(
             "cargo:rustc-link-search={}",
-            cmake_out_dir.join("lib64").display()
+            cmake_install_dir.join("lib64").display()
         );
         println!(
             "cargo:rustc-link-search={}",
-            cmake_out_dir.join("lib").display()
+            cmake_install_dir.join("lib").display()
         );
     }
 

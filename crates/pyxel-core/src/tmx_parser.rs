@@ -34,7 +34,7 @@ struct Layer {
 
 #[derive(Debug, Deserialize)]
 #[serde(rename = "map")]
-struct TiledMapFile {
+struct TmxMap {
     #[serde(rename = "@tilewidth")]
     tilewidth: u32,
     #[serde(rename = "@tileheight")]
@@ -45,15 +45,15 @@ struct TiledMapFile {
     layers: Vec<Layer>,
 }
 
-pub fn parse_tmx(filename: &str, layer_index: u32) -> Result<*mut Tilemap, String> {
-    let err = |msg| format!("{msg} '{filename}'");
+pub fn parse_tmx(path: &str, layer_index: u32) -> Result<*mut Tilemap, String> {
+    let err = |msg| format!("{msg} '{path}'");
 
-    let mut file = File::open(filename).map_err(|_| err("Failed to open file"))?;
+    let mut file = File::open(path).map_err(|_| err("Failed to open file"))?;
     let mut tmx_text = String::new();
     file.read_to_string(&mut tmx_text)
         .map_err(|_| err("Failed to read file"))?;
 
-    let tmx: TiledMapFile =
+    let tmx: TmxMap =
         serde_xml_rs::from_str(&tmx_text).map_err(|_| err("Failed to parse file"))?;
 
     if tmx.tilewidth != TILE_SIZE || tmx.tileheight != TILE_SIZE {
@@ -71,7 +71,7 @@ pub fn parse_tmx(filename: &str, layer_index: u32) -> Result<*mut Tilemap, Strin
     let layer = tmx
         .layers
         .get(layer_index as usize)
-        .ok_or_else(|| format!("Layer {layer_index} not found in file '{filename}'"))?;
+        .ok_or_else(|| format!("Layer {layer_index} not found in file '{path}'"))?;
     if layer.data.encoding != "csv" {
         return Err(err("Unsupported encoding in file"));
     }

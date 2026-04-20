@@ -47,7 +47,7 @@ impl Tilemap {
     fn imgsrc(&self, py: Python) -> Py<PyAny> {
         match &self.inner_ref().imgsrc {
             pyxel::ImageSource::Index(index) => value_to_py_any!(py, index),
-            pyxel::ImageSource::Image(image) => class_to_py_any!(py, Image::wrap(*image)),
+            pyxel::ImageSource::Image(image) => instance_to_py_any!(py, Image::wrap(*image)),
         }
     }
 
@@ -64,6 +64,8 @@ impl Tilemap {
         Ok(())
     }
 
+    // Data operations
+
     fn data_ptr(&self, py: Python) -> PyResult<Py<PyAny>> {
         let inner = self.inner_mut();
         let python_code = CString::new(format!(
@@ -79,8 +81,6 @@ impl Tilemap {
             .ok_or_else(|| PyException::new_err("Failed to create data pointer"))?;
         Ok(array.unbind())
     }
-
-    // Data operations
 
     fn set(&self, x: i32, y: i32, data: Vec<String>) {
         let data_refs: Vec<_> = data.iter().map(String::as_str).collect();

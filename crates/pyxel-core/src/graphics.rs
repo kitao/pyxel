@@ -4,8 +4,7 @@ use glow::{HasContext, PixelUnpackData};
 
 use crate::font::Font;
 use crate::image::{rgb24_to_rgb8, Color, Rgb24};
-use crate::platform;
-use crate::platform::GlProfile;
+use crate::platform::{self, GlProfile};
 use crate::pyxel::{self, Pyxel};
 use crate::settings::{BACKGROUND_COLOR, MAX_COLORS, NUM_SCREEN_TYPES};
 
@@ -42,8 +41,10 @@ const UNIFORM_NAMES: [&str; NUM_UNIFORMS] = [
     "u_colorsTexture",
 ];
 
+const QUAD_VERTICES: [f32; 8] = [-1.0, 1.0, -1.0, -1.0, 1.0, 1.0, 1.0, -1.0];
+
 pub struct ScreenShader {
-    shader_program: glow::Program,
+    program: glow::Program,
     uniform_locations: [Option<glow::UniformLocation>; NUM_UNIFORMS],
     vertex_array: glow::VertexArray,
 }
@@ -55,7 +56,7 @@ pub struct Graphics {
     screen_texture_initialized: bool,
     colors_texture: glow::NativeTexture,
     cached_colors: Vec<Rgb24>,
-    color_pixels_buf: Vec<u8>,
+    color_pixels: Vec<u8>,
 }
 
 impl Graphics {
@@ -79,7 +80,7 @@ impl Graphics {
                 screen_texture_initialized: false,
                 colors_texture,
                 cached_colors: Vec::new(),
-                color_pixels_buf: Vec::new(),
+                color_pixels: Vec::new(),
             }
         }
     }
@@ -125,28 +126,27 @@ impl Graphics {
             );
 
             // Shader program
-            let shader_program = gl
+            let program = gl
                 .create_program()
                 .expect("Failed to create OpenGL shader program");
-            gl.attach_shader(shader_program, vertex_shader);
-            gl.attach_shader(shader_program, fragment_shader);
-            gl.link_program(shader_program);
+            gl.attach_shader(program, vertex_shader);
+            gl.attach_shader(program, fragment_shader);
+            gl.link_program(program);
             assert!(
-                gl.get_program_link_status(shader_program),
+                gl.get_program_link_status(program),
                 "{}",
-                gl.get_program_info_log(shader_program)
+                gl.get_program_info_log(program)
             );
-            gl.detach_shader(shader_program, vertex_shader);
+            gl.detach_shader(program, vertex_shader);
             gl.delete_shader(vertex_shader);
-            gl.detach_shader(shader_program, fragment_shader);
+            gl.detach_shader(program, fragment_shader);
             gl.delete_shader(fragment_shader);
 
             // Uniform locations
             let uniform_locations: [Option<glow::UniformLocation>; NUM_UNIFORMS] =
-                std::array::from_fn(|i| gl.get_uniform_location(shader_program, UNIFORM_NAMES[i]));
+                std::array::from_fn(|i| gl.get_uniform_location(program, UNIFORM_NAMES[i]));
 
             // Vertex array
-            let vertices: [f32; 8] = [-1.0, 1.0, -1.0, -1.0, 1.0, 1.0, 1.0, -1.0];
             let vertex_array = gl
                 .create_vertex_array()
                 .expect("Failed to create OpenGL vertex array");
@@ -156,12 +156,12 @@ impl Graphics {
             gl.bind_buffer(glow::ARRAY_BUFFER, Some(vertex_buffer));
             gl.buffer_data_u8_slice(
                 glow::ARRAY_BUFFER,
-                vertices.align_to::<u8>().1,
+                QUAD_VERTICES.align_to::<u8>().1,
                 glow::STATIC_DRAW,
             );
 
             let position = gl
-                .get_attrib_location(shader_program, "position")
+                .get_attrib_location(program, "position")
                 .expect("Failed to find OpenGL attribute 'position'");
             gl.vertex_attrib_pointer_f32(
                 position,
@@ -175,7 +175,7 @@ impl Graphics {
 
             // Add screen shader
             screen_shaders.push(ScreenShader {
-                shader_program,
+                program,
                 uniform_locations,
                 vertex_array,
             });
@@ -439,8 +439,8 @@ impl Pyxel {
         }
     }
 
-    pub fn draw_text(&self, x: f32, y: f32, string: &str, color: Color, font: Option<*mut Font>) {
-        pyxel::screen().draw_text(x, y, string, color, font);
+    pub fn draw_text(&self, x: f32, y: f32, text: &str, color: Color, font: Option<*mut Font>) {
+        pyxel::screen().draw_text(x, y, text, color, font);
     }
 
     pub(crate) fn render_screen(&mut self) {
@@ -466,7 +466,7 @@ impl Pyxel {
     unsafe fn use_screen_shader(&self, gl: &mut glow::Context) {
         let shader =
             &self.graphics.as_ref().unwrap().screen_shaders[self.system.screen_mode as usize];
-        gl.use_program(Some(shader.shader_program));
+        gl.use_program(Some(shader.program));
         let uniforms = &shader.uniform_locations;
 
         if let Some(location) = &uniforms[U_SCREEN_POS] {
@@ -530,8 +530,8 @@ impl Pyxel {
             (glow::R8 as i32, glow::RED)
         };
 
-        let w = *pyxel::width() as i32;
-        let h = *pyxel::height() as i32;
+        let screen_width = *pyxel::width() as i32;
+        let screen_height = *pyxel::height() as i32;
         let data = &pyxel::screen().canvas.data;
 
         if graphics.screen_texture_initialized {
@@ -540,8 +540,8 @@ impl Pyxel {
                 0,
                 0,
                 0,
-                w,
-                h,
+                screen_width,
+                screen_height,
                 format,
                 glow::UNSIGNED_BYTE,
                 PixelUnpackData::Slice(Some(data)),
@@ -551,8 +551,8 @@ impl Pyxel {
                 glow::TEXTURE_2D,
                 0,
                 internal_format,
-                w,
-                h,
+                screen_width,
+                screen_height,
                 0,
                 format,
                 glow::UNSIGNED_BYTE,
@@ -579,7 +579,7 @@ impl Pyxel {
 
         gl.pixel_store_i32(glow::UNPACK_ALIGNMENT, 4);
 
-        let pixels = &mut graphics.color_pixels_buf;
+        let pixels = &mut graphics.color_pixels;
         pixels.clear();
         for &c in colors.iter() {
             let (r, g, b) = rgb24_to_rgb8(c);

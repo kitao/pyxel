@@ -34,9 +34,9 @@ pub fn load_pcm(filename: &str, target_rate: u32) -> Result<PcmData, String> {
             &MetadataOptions::default(),
         )
         .map_err(|_| format!("Failed to probe file '{filename}'"))?;
-    let mut format = probed.format;
+    let mut format_reader = probed.format;
 
-    let track = format
+    let track = format_reader
         .default_track()
         .ok_or_else(|| format!("No audio track found in file '{filename}'"))?;
     let track_id = track.id;
@@ -53,7 +53,7 @@ pub fn load_pcm(filename: &str, target_rate: u32) -> Result<PcmData, String> {
     let mut sample_buf: Option<SampleBuffer<f32>> = None;
 
     loop {
-        let packet = match format.next_packet() {
+        let packet = match format_reader.next_packet() {
             Ok(packet) => packet,
             Err(SymphoniaError::IoError(e)) if e.kind() == ErrorKind::UnexpectedEof => break,
             Err(SymphoniaError::ResetRequired) => {
@@ -76,12 +76,12 @@ pub fn load_pcm(filename: &str, target_rate: u32) -> Result<PcmData, String> {
 
         let spec = *decoded.spec();
         sample_rate = spec.rate;
-        let buf = sample_buf
+        let sample_buf = sample_buf
             .get_or_insert_with(|| SampleBuffer::<f32>::new(decoded.capacity() as u64, spec));
-        buf.copy_interleaved_ref(decoded);
+        sample_buf.copy_interleaved_ref(decoded);
 
         let channels = spec.channels.count();
-        let data = buf.samples();
+        let data = sample_buf.samples();
         if channels == 1 {
             mono_samples.extend_from_slice(data);
         } else {

@@ -7,7 +7,7 @@ use crate::settings::{AUDIO_GAIN_SCALE, AUDIO_GAIN_SHIFT};
 const A4_MIDI_NOTE: f32 = 69.0;
 const A4_FREQUENCY: f32 = 440.0;
 // Fixed-point Q14 scaling for voice gain multiplication
-const VOICE_GAIN_ROUNDING: i64 = 1_i64 << (AUDIO_GAIN_SHIFT - 1); // Half-unit bias for rounding
+const VOICE_GAIN_ROUND_BIAS: i64 = 1_i64 << (AUDIO_GAIN_SHIFT - 1); // Half-unit bias for rounding
 const PITCH_LUT_MIN_SEMITONE: f32 = -96.0;
 const PITCH_LUT_MAX_SEMITONE: f32 = 96.0;
 const PITCH_LUT_STEPS_PER_SEMITONE: usize = 64;
@@ -71,7 +71,7 @@ impl Oscillator {
         self.sample
     }
 
-    fn cycle_resolution(&self) -> u32 {
+    fn samples_per_cycle(&self) -> u32 {
         if self.tap_bit == 0 {
             self.waveform_samples.len() as u32
         } else {
@@ -388,15 +388,15 @@ pub struct Voice {
     control_elapsed_clocks: u32,
     last_amplitude: i32,
 
-    note_interp_clocks: u32,
+    interp_clocks: u32,
     interp_start_gain: Option<i32>,
     interp_end_gain: Option<i32>,
     last_gain: i32,
 }
 
 impl Voice {
-    pub fn new(clock_rate: u32, control_rate: u32, note_interp_clocks: u32) -> Self {
-        assert!(clock_rate > 0 && control_rate > 0 && note_interp_clocks > 0);
+    pub fn new(clock_rate: u32, control_rate: u32, interp_clocks: u32) -> Self {
+        assert!(clock_rate > 0 && control_rate > 0 && interp_clocks > 0);
         let _ = pitch_ratio_lut();
 
         let control_interval_clocks = clock_rate / control_rate;
@@ -419,7 +419,7 @@ impl Voice {
             control_elapsed_clocks: 0,
             last_amplitude: 0,
 
-            note_interp_clocks,
+            interp_clocks,
             interp_start_gain: None,
             interp_end_gain: None,
             last_gain: 0,
@@ -435,7 +435,7 @@ impl Voice {
     pub fn play_note(&mut self, midi_note: f32, velocity: f32, duration_clocks: u32) {
         self.base_frequency = A4_FREQUENCY * ((midi_note - A4_MIDI_NOTE) / 12.0).exp2();
         self.velocity = velocity;
-        self.remaining_note_clocks = duration_clocks + self.note_interp_clocks;
+        self.remaining_note_clocks = duration_clocks + self.interp_clocks;
         self.elapsed_note_clocks = 0;
         self.interp_start_gain = None;
         self.interp_end_gain = None;
@@ -444,7 +444,7 @@ impl Voice {
     }
 
     pub fn cancel_note(&mut self) {
-        self.remaining_note_clocks = self.remaining_note_clocks.min(self.note_interp_clocks);
+        self.remaining_note_clocks = self.remaining_note_clocks.min(self.interp_clocks);
     }
 
     pub(crate) fn needs_processing(&self) -> bool {
@@ -480,16 +480,16 @@ impl Voice {
         // Phase 1: Head crossfade (elapsed < interp, but yield to tail when remaining < interp)
         if self.remaining_note_clocks > 0
             && clock_count > 0
-            && self.elapsed_note_clocks < self.note_interp_clocks
-            && self.remaining_note_clocks >= self.note_interp_clocks
+            && self.elapsed_note_clocks < self.interp_clocks
+            && self.remaining_note_clocks >= self.interp_clocks
         {
             let start_gain = *self.interp_start_gain.get_or_insert(self.last_gain);
-            let interp = self.note_interp_clocks as i64;
+            let interp = self.interp_clocks as i64;
 
             while self.remaining_note_clocks > 0
                 && clock_count > 0
-                && self.elapsed_note_clocks < self.note_interp_clocks
-                && self.remaining_note_clocks >= self.note_interp_clocks
+                && self.elapsed_note_clocks < self.interp_clocks
+                && self.remaining_note_clocks >= self.interp_clocks
             {
                 let mut gain = Self::gain_to_fixed(self.envelope.level() * self.velocity);
                 let elapsed = self.elapsed_note_clocks as i64;
@@ -519,7 +519,7 @@ impl Voice {
         }
 
         // Phase 2: Bulk (no interpolation)
-        while self.remaining_note_clocks > self.note_interp_clocks && clock_count > 0 {
+        while self.remaining_note_clocks > self.interp_clocks && clock_count > 0 {
             let gain = Self::gain_to_fixed(self.envelope.level() * self.velocity);
             let amplitude = Self::apply_gain_fixed(self.oscillator.sample(), gain);
             self.write_sample(blip_buf.as_deref_mut(), clock_offset, amplitude);
@@ -540,10 +540,10 @@ impl Voice {
             self.advance_control_clock(self.sample_clocks);
         }
 
-        // Phase 3: Tail fade-out (remaining_note_clocks <= note_interp_clocks)
+        // Phase 3: Tail fade-out (remaining_note_clocks <= interp_clocks)
         if self.remaining_note_clocks > 0 && clock_count > 0 {
             let end_gain = *self.interp_end_gain.get_or_insert(self.last_gain);
-            let interp = self.note_interp_clocks as i64;
+            let interp = self.interp_clocks as i64;
 
             while self.remaining_note_clocks > 0 && clock_count > 0 {
                 let gain = ((end_gain as i64 * self.remaining_note_clocks as i64 + interp / 2)
@@ -583,9 +583,9 @@ impl Voice {
     fn apply_gain_fixed(sample: i32, gain: i32) -> i32 {
         let product = sample as i64 * gain as i64;
         if product >= 0 {
-            ((product + VOICE_GAIN_ROUNDING) >> AUDIO_GAIN_SHIFT) as i32
+            ((product + VOICE_GAIN_ROUND_BIAS) >> AUDIO_GAIN_SHIFT) as i32
         } else {
-            ((product - VOICE_GAIN_ROUNDING) >> AUDIO_GAIN_SHIFT) as i32
+            ((product - VOICE_GAIN_ROUND_BIAS) >> AUDIO_GAIN_SHIFT) as i32
         }
     }
 
@@ -620,7 +620,7 @@ impl Voice {
             self.base_frequency * self.vibrato.pitch_multiplier() * self.glide.pitch_multiplier();
         self.sample_clocks = (self.clock_rate as f32
             / frequency
-            / self.oscillator.cycle_resolution() as f32)
+            / self.oscillator.samples_per_cycle() as f32)
             .round() as u32;
     }
 
@@ -670,10 +670,10 @@ fn semitone_to_pitch_multiplier(semitone_offset: f32) -> f32 {
 mod tests {
     use super::*;
 
-    const FLOAT_EPSILON: f32 = 1e-4;
+    const APPROX_EPSILON: f32 = 1e-4;
 
     fn approx_eq(a: f32, b: f32) -> bool {
-        (a - b).abs() < FLOAT_EPSILON
+        (a - b).abs() < APPROX_EPSILON
     }
 
     // ── semitone_to_pitch_multiplier ──
@@ -727,7 +727,7 @@ mod tests {
     fn test_oscillator_waveform_cycle() {
         let mut osc = Oscillator::new();
         osc.set(&[1.0, -1.0]);
-        assert_eq!(osc.cycle_resolution(), 2);
+        assert_eq!(osc.samples_per_cycle(), 2);
         assert_eq!(osc.sample(), i16::MAX as i32);
 
         osc.advance_sample();
@@ -741,7 +741,7 @@ mod tests {
     fn test_oscillator_four_sample_waveform() {
         let mut osc = Oscillator::new();
         osc.set(&[1.0, 0.5, 0.0, -1.0]);
-        assert_eq!(osc.cycle_resolution(), 4);
+        assert_eq!(osc.samples_per_cycle(), 4);
 
         let expected = [
             Oscillator::quantize_sample(1.0) as i32,
@@ -760,7 +760,7 @@ mod tests {
     fn test_oscillator_noise() {
         let mut osc = Oscillator::new();
         osc.set_noise(false);
-        assert_eq!(osc.cycle_resolution(), 1);
+        assert_eq!(osc.samples_per_cycle(), 1);
 
         osc.set_noise(true);
         let s = osc.sample();
@@ -1234,10 +1234,10 @@ mod tests {
         let before = voice.remaining_note_clocks;
         voice.cancel_note();
         assert!(
-            voice.remaining_note_clocks <= voice.note_interp_clocks,
+            voice.remaining_note_clocks <= voice.interp_clocks,
             "after cancel: {} should be <= {}",
             voice.remaining_note_clocks,
-            voice.note_interp_clocks
+            voice.interp_clocks
         );
         assert!(voice.remaining_note_clocks < before);
     }
@@ -1252,7 +1252,7 @@ mod tests {
         assert!(voice.needs_processing(), "after play_note");
 
         // Process enough clocks to finish the note
-        voice.process(None, 0, 100 + voice.note_interp_clocks + 1);
+        voice.process(None, 0, 100 + voice.interp_clocks + 1);
         // After processing, remaining_note_clocks should be 0
         // and if last_amplitude is also 0, needs_processing is false
         assert_eq!(voice.remaining_note_clocks, 0);

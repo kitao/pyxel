@@ -2,6 +2,8 @@ use pyo3::prelude::*;
 
 use crate::pyxel_singleton::pyxel;
 
+// Button state
+
 #[pyfunction]
 fn btn(key: pyxel::Key) -> bool {
     pyxel().is_button_down(key)
@@ -22,6 +24,8 @@ fn btnr(key: pyxel::Key) -> bool {
 fn btnv(key: pyxel::Key) -> pyxel::KeyValue {
     pyxel().button_value(key)
 }
+
+// Input overrides
 
 #[pyfunction]
 fn mouse(visible: bool) {
