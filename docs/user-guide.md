@@ -85,7 +85,7 @@ Run it without arguments to see the list of available commands:
 ```sh
 pyxel
 ```
-```
+```text
 Pyxel, a retro game engine for Python
 usage:
     pyxel run PYTHON_SCRIPT_FILE(.py)

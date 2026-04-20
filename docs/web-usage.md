@@ -29,7 +29,7 @@ Launch URLs can be created on the [Pyxel Web Launcher](https://kitao.github.io/p
 
 ### URL Format
 
-```
+```text
 https://kitao.github.io/pyxel/web/launcher/?<command>=<username>/<repository>/<branch>/<path>/<filename without extension>
 ```
 
@@ -45,13 +45,13 @@ https://kitao.github.io/pyxel/web/launcher/?<command>=<username>/<repository>/<b
 
 To run `src/scenes/title.py` in user `taro`'s repository `my_repo`, branch `main`:
 
-```
+```text
 https://kitao.github.io/pyxel/web/launcher/?run=taro/my_repo/main/src/scenes/title
 ```
 
 To run `dist/games/shooter.pyxapp` in the same repository:
 
-```
+```text
 https://kitao.github.io/pyxel/web/launcher/?play=taro/my_repo/main/dist/games/shooter
 ```
 
@@ -65,7 +65,7 @@ The following additional parameters can be specified for the `run` and `play` co
 
 Example URL with additional parameters for the `run` command:
 
-```
+```text
 https://kitao.github.io/pyxel/web/launcher/?run=taro/my_repo/main/src/scenes/title&gamepad=enabled
 ```
 
@@ -73,7 +73,7 @@ The `edit` command has the `editor` parameter to specify which editor to launch:
 
 Example URL for the `edit` command:
 
-```
+```text
 https://kitao.github.io/pyxel/web/launcher/?edit=taro/my_repo/main/assets/shooter&editor=tilemap
 ```
 

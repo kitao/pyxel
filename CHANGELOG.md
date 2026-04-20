@@ -175,7 +175,7 @@
 
 - Added manual page for Pyxel Code Maker
 - Added manual page for Pyxel MML Studio
-- Removed the version number from the pyxel command example in the README files
+- Removed the version number from the pyxel command in the README files
 - Revamped Pyxel Web documentation for clarity and accuracy
 - Revamped the FAQ with updated content and improved clarity
 

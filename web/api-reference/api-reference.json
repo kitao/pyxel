@@ -1328,7 +1328,7 @@
         {
           "name": "screenshot",
           "type": "function",
-          "signature": "screenshot(filename=None, scale=None)",
+          "signature": "screenshot(filename=None, scale=2)",
           "description": {
             "en": "Take a screenshot.",
             "cn": "截取屏幕截图。",
@@ -1389,7 +1389,7 @@
         {
           "name": "screencast",
           "type": "function",
-          "signature": "screencast(filename=None, scale=None)",
+          "signature": "screencast(filename=None, scale=2)",
           "description": {
             "en": "Save the screen recording as a GIF file.",
             "cn": "保存屏幕录制为GIF文件。",
@@ -6073,6 +6073,48 @@
       },
       "items": [
         {
+          "name": "channels",
+          "type": "variable",
+          "signature": "channels",
+          "description": {
+            "en": "List of the channels (instances of the Channel class) (0-3).",
+            "cn": "通道（Channel类的实例）的列表（0-3）。",
+            "de": "Liste der Kanäle (Instanzen der Channel-Klasse) (0-3).",
+            "es": "Lista de los canales (instancias de la clase Channel) (0-3).",
+            "fr": "Liste des canaux (instances de la classe Channel) (0-3).",
+            "it": "Lista dei canali (istanze della classe Channel) (0-3).",
+            "ja": "チャンネル (Channelクラスのインスタンス) のリスト (0-3)",
+            "ko": "채널(Channel 클래스의 인스턴스) 목록(0-3).",
+            "pt": "Lista dos canais (instâncias da classe Channel) (0-3).",
+            "ru": "Список каналов (экземпляры класса Channel) (0-3).",
+            "tr": "Kanal listesi (Channel sınıfının örnekleri) (0-3).",
+            "uk": "Список каналів (екземпляри класу Channel) (0-3)."
+          },
+          "value_type": "list[Channel]",
+          "advanced": true
+        },
+        {
+          "name": "tones",
+          "type": "variable",
+          "signature": "tones",
+          "description": {
+            "en": "List of the tone definitions (instances of the Tone class) (0-3).",
+            "cn": "音色定义（Tone类的实例）的列表（0-3）。",
+            "de": "Liste der Tondefinitionen (Instanzen der Tone-Klasse) (0-3).",
+            "es": "Lista de las definiciones de tono (instancias de la clase Tone) (0-3).",
+            "fr": "Liste des définitions de ton (instances de la classe Tone) (0-3).",
+            "it": "Lista delle definizioni di tono (istanze della classe Tone) (0-3).",
+            "ja": "トーン定義 (Toneクラスのインスタンス) のリスト (0-3)",
+            "ko": "톤 정의(Tone 클래스의 인스턴스) 목록(0-3).",
+            "pt": "Lista das definições de tom (instâncias da classe Tone) (0-3).",
+            "ru": "Список определений тонов (экземпляры класса Tone) (0-3).",
+            "tr": "Ton tanımlarının listesi (Tone sınıfının örnekleri) (0-3).",
+            "uk": "Список визначень тонів (екземпляри класу Tone) (0-3)."
+          },
+          "value_type": "list[Tone]",
+          "advanced": true
+        },
+        {
           "name": "sounds",
           "type": "variable",
           "signature": "sounds",
@@ -6114,48 +6156,6 @@
           },
           "value_type": "list[Music]",
           "advanced": false
-        },
-        {
-          "name": "tones",
-          "type": "variable",
-          "signature": "tones",
-          "description": {
-            "en": "List of the tone definitions (instances of the Tone class) (0-3).",
-            "cn": "音色定义（Tone类的实例）的列表（0-3）。",
-            "de": "Liste der Tondefinitionen (Instanzen der Tone-Klasse) (0-3).",
-            "es": "Lista de las definiciones de tono (instancias de la clase Tone) (0-3).",
-            "fr": "Liste des définitions de ton (instances de la classe Tone) (0-3).",
-            "it": "Lista delle definizioni di tono (istanze della classe Tone) (0-3).",
-            "ja": "トーン定義 (Toneクラスのインスタンス) のリスト (0-3)",
-            "ko": "톤 정의(Tone 클래스의 인스턴스) 목록(0-3).",
-            "pt": "Lista das definições de tom (instâncias da classe Tone) (0-3).",
-            "ru": "Список определений тонов (экземпляры класса Tone) (0-3).",
-            "tr": "Ton tanımlarının listesi (Tone sınıfının örnekleri) (0-3).",
-            "uk": "Список визначень тонів (екземпляри класу Tone) (0-3)."
-          },
-          "value_type": "list[Tone]",
-          "advanced": true
-        },
-        {
-          "name": "channels",
-          "type": "variable",
-          "signature": "channels",
-          "description": {
-            "en": "List of the channels (instances of the Channel class) (0-3).",
-            "cn": "通道（Channel类的实例）的列表（0-3）。",
-            "de": "Liste der Kanäle (Instanzen der Channel-Klasse) (0-3).",
-            "es": "Lista de los canales (instancias de la clase Channel) (0-3).",
-            "fr": "Liste des canaux (instances de la classe Channel) (0-3).",
-            "it": "Lista dei canali (istanze della classe Channel) (0-3).",
-            "ja": "チャンネル (Channelクラスのインスタンス) のリスト (0-3)",
-            "ko": "채널(Channel 클래스의 인스턴스) 목록(0-3).",
-            "pt": "Lista dos canais (instâncias da classe Channel) (0-3).",
-            "ru": "Список каналов (экземпляры класса Channel) (0-3).",
-            "tr": "Kanal listesi (Channel sınıfının örnekleri) (0-3).",
-            "uk": "Список каналів (екземпляри класу Channel) (0-3)."
-          },
-          "value_type": "list[Channel]",
-          "advanced": true
         },
         {
           "name": "play",
@@ -7053,7 +7053,7 @@
           "params": [
             {
               "name": "x",
-              "type": "int/float",
+              "type": "float",
               "description": {
                 "en": "Value to clamp",
                 "cn": "要限制的值",
@@ -7071,7 +7071,7 @@
             },
             {
               "name": "lower",
-              "type": "int/float",
+              "type": "float",
               "description": {
                 "en": "Minimum value",
                 "cn": "最小值",
@@ -7089,7 +7089,7 @@
             },
             {
               "name": "upper",
-              "type": "int/float",
+              "type": "float",
               "description": {
                 "en": "Maximum value",
                 "cn": "最大值",
@@ -7107,7 +7107,7 @@
             }
           ],
           "returns": {
-            "type": "int/float",
+            "type": "float",
             "description": {
               "en": "Clamped value",
               "cn": "限制后的值",
@@ -7779,7 +7779,7 @@
         {
           "name": "Font",
           "type": "class",
-          "signature": "Font(filename, font_size=10)",
+          "signature": "Font(filename, font_size=10.0)",
           "description": {
             "en": "Create a Font instance from a font file (BDF/OTF/TTF/TTC).",
             "cn": "从字体文件 (BDF/OTF/TTF/TTC) 创建Font实例。",
