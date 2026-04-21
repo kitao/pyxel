@@ -142,6 +142,8 @@ class TestSeqIteration:
         assert count == len(pyxel.images)
 
     def test_contains_with_value_type(self):
+        # Object types (Image etc.) create new wrappers each access,
+        # so test __contains__ with value types (colors) instead
         col = pyxel.colors[0]
         assert col in pyxel.colors
 

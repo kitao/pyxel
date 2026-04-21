@@ -199,7 +199,7 @@ impl Pyxel {
         }
 
         let colors = pyxel::colors();
-        let width = utils::compact_ascii_lower(data[0]).len() as u32;
+        let width = utils::simplify_string(data[0]).len() as u32;
         let height = data.len() as u32;
         let image_ptr = Image::new(width, height);
         let image = unsafe { &mut *image_ptr };
@@ -431,14 +431,14 @@ impl Pyxel {
 
         let screen = pyxel::screen();
         let clip_rect = screen.canvas.clip_rect;
-        let draw_offset_x = screen.canvas.draw_offset_x;
-        let draw_offset_y = screen.canvas.draw_offset_y;
+        let camera_x = screen.canvas.camera_x;
+        let camera_y = screen.canvas.camera_y;
         let palette1 = screen.palette[1];
         let palette2 = screen.palette[2];
         let alpha = screen.canvas.alpha;
 
         screen.reset_clip_rect();
-        screen.reset_draw_offset();
+        screen.reset_camera();
         screen.map_color(1, 1);
         screen.map_color(2, 9);
         screen.set_dithering(1.0);
@@ -456,8 +456,8 @@ impl Pyxel {
         screen.draw_text(0.0, 12.0, &draw_time, 2, None);
 
         screen.canvas.clip_rect = clip_rect;
-        screen.canvas.draw_offset_x = draw_offset_x;
-        screen.canvas.draw_offset_y = draw_offset_y;
+        screen.canvas.camera_x = camera_x;
+        screen.canvas.camera_y = camera_y;
         screen.map_color(1, palette1);
         screen.map_color(2, palette2);
         screen.set_dithering(alpha);
@@ -488,12 +488,12 @@ impl Pyxel {
 
         let screen = pyxel::screen();
         let clip_rect = screen.canvas.clip_rect;
-        let draw_offset_x = screen.canvas.draw_offset_x;
-        let draw_offset_y = screen.canvas.draw_offset_y;
+        let camera_x = screen.canvas.camera_x;
+        let camera_y = screen.canvas.camera_y;
         let palette = screen.palette;
 
         screen.reset_clip_rect();
-        screen.reset_draw_offset();
+        screen.reset_camera();
         unsafe {
             screen.draw_image(
                 x as f32,
@@ -510,8 +510,8 @@ impl Pyxel {
         }
 
         screen.canvas.clip_rect = clip_rect;
-        screen.canvas.draw_offset_x = draw_offset_x;
-        screen.canvas.draw_offset_y = draw_offset_y;
+        screen.canvas.camera_x = camera_x;
+        screen.canvas.camera_y = camera_y;
         screen.palette = palette;
     }
 

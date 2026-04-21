@@ -53,18 +53,14 @@ class TestPackage:
         monkeypatch.chdir(tmp_path)
         pyxel.cli.package_pyxel_app("my_app", "my_app/main.py")
         with zipfile.ZipFile(tmp_path / "my_app.pyxapp") as zf:
-            pointer = zf.read(
-                f"my_app/{pyxel.APP_STARTUP_SCRIPT_FILE}"
-            ).decode("utf-8")
+            pointer = zf.read(f"my_app/{pyxel.APP_STARTUP_SCRIPT_FILE}").decode("utf-8")
         assert pointer == "main.py"
 
     def test_metadata_embedded_in_pyxapp(self, tmp_path, monkeypatch):
         _make_app(tmp_path)
         monkeypatch.chdir(tmp_path)
         pyxel.cli.package_pyxel_app("my_app", "my_app/main.py")
-        metadata = pyxel.cli.get_pyxel_app_metadata(
-            str(tmp_path / "my_app.pyxapp")
-        )
+        metadata = pyxel.cli.get_pyxel_app_metadata(str(tmp_path / "my_app.pyxapp"))
         assert metadata["title"] == "My App"
         assert metadata["author"] == "Me"
 

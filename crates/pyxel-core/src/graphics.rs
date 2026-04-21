@@ -237,12 +237,12 @@ impl Pyxel {
         pyxel::screen().reset_clip_rect();
     }
 
-    pub fn set_draw_offset(&self, x: f32, y: f32) {
-        pyxel::screen().set_draw_offset(x, y);
+    pub fn set_camera(&self, x: f32, y: f32) {
+        pyxel::screen().set_camera(x, y);
     }
 
-    pub fn reset_draw_offset(&self) {
-        pyxel::screen().reset_draw_offset();
+    pub fn reset_camera(&self) {
+        pyxel::screen().reset_camera();
     }
 
     pub fn map_color(&self, src_color: Color, dst_color: Color) {

@@ -20,8 +20,8 @@ pub trait ToIndex {
 pub struct Canvas<T: Copy + PartialEq + Default + ToIndex> {
     pub self_rect: RectArea,
     pub clip_rect: RectArea,
-    pub draw_offset_x: i32,
-    pub draw_offset_y: i32,
+    pub camera_x: i32,
+    pub camera_y: i32,
     pub alpha: f32,
     pub data: Vec<T>,
 }
@@ -31,8 +31,8 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         Self {
             self_rect: RectArea::new(0, 0, width, height),
             clip_rect: RectArea::new(0, 0, width, height),
-            draw_offset_x: 0,
-            draw_offset_y: 0,
+            camera_x: 0,
+            camera_y: 0,
             alpha: 1.0,
             data: vec![T::default(); (width * height) as usize],
         }
@@ -64,14 +64,14 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         self.clip_rect = self.self_rect;
     }
 
-    pub fn set_draw_offset(&mut self, x: f32, y: f32) {
-        self.draw_offset_x = f32_to_i32(x);
-        self.draw_offset_y = f32_to_i32(y);
+    pub fn set_camera(&mut self, x: f32, y: f32) {
+        self.camera_x = f32_to_i32(x);
+        self.camera_y = f32_to_i32(y);
     }
 
-    pub fn reset_draw_offset(&mut self) {
-        self.draw_offset_x = 0;
-        self.draw_offset_y = 0;
+    pub fn reset_camera(&mut self) {
+        self.camera_x = 0;
+        self.camera_y = 0;
     }
 
     pub fn set_dithering(&mut self, alpha: f32) {
@@ -93,18 +93,18 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
     }
 
     pub fn set_value(&mut self, x: f32, y: f32, value: T) {
-        let x = f32_to_i32(x) - self.draw_offset_x;
-        let y = f32_to_i32(y) - self.draw_offset_y;
+        let x = f32_to_i32(x) - self.camera_x;
+        let y = f32_to_i32(y) - self.camera_y;
         self.write_data_with_clipping(x, y, value);
     }
 
     // Drawing primitives
 
     pub fn draw_line(&mut self, x1: f32, y1: f32, x2: f32, y2: f32, value: T) {
-        let x1 = f32_to_i32(x1) - self.draw_offset_x;
-        let y1 = f32_to_i32(y1) - self.draw_offset_y;
-        let x2 = f32_to_i32(x2) - self.draw_offset_x;
-        let y2 = f32_to_i32(y2) - self.draw_offset_y;
+        let x1 = f32_to_i32(x1) - self.camera_x;
+        let y1 = f32_to_i32(y1) - self.camera_y;
+        let x2 = f32_to_i32(x2) - self.camera_x;
+        let y2 = f32_to_i32(y2) - self.camera_y;
 
         if x1 == x2 && y1 == y2 {
             self.write_data_with_clipping(x1, y1, value);
@@ -142,8 +142,8 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
     }
 
     pub fn draw_rect(&mut self, x: f32, y: f32, width: f32, height: f32, value: T) {
-        let x = f32_to_i32(x) - self.draw_offset_x;
-        let y = f32_to_i32(y) - self.draw_offset_y;
+        let x = f32_to_i32(x) - self.camera_x;
+        let y = f32_to_i32(y) - self.camera_y;
         let width = f32_to_u32(width);
         let height = f32_to_u32(height);
         let rect = RectArea::new(x, y, width, height).intersection(self.clip_rect);
@@ -171,8 +171,8 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
     }
 
     pub fn draw_rect_border(&mut self, x: f32, y: f32, width: f32, height: f32, value: T) {
-        let x = f32_to_i32(x) - self.draw_offset_x;
-        let y = f32_to_i32(y) - self.draw_offset_y;
+        let x = f32_to_i32(x) - self.camera_x;
+        let y = f32_to_i32(y) - self.camera_y;
         let width = f32_to_u32(width);
         let height = f32_to_u32(height);
         let rect = RectArea::new(x, y, width, height);
@@ -195,8 +195,8 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
     }
 
     pub fn draw_circle(&mut self, x: f32, y: f32, radius: f32, value: T) {
-        let x = f32_to_i32(x) - self.draw_offset_x;
-        let y = f32_to_i32(y) - self.draw_offset_y;
+        let x = f32_to_i32(x) - self.camera_x;
+        let y = f32_to_i32(y) - self.camera_y;
         let radius = f32_to_u32(radius);
         let r = radius as f32;
 
@@ -212,8 +212,8 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
     }
 
     pub fn draw_circle_border(&mut self, x: f32, y: f32, radius: f32, value: T) {
-        let x = f32_to_i32(x) - self.draw_offset_x;
-        let y = f32_to_i32(y) - self.draw_offset_y;
+        let x = f32_to_i32(x) - self.camera_x;
+        let y = f32_to_i32(y) - self.camera_y;
         let radius = f32_to_u32(radius);
         let r = radius as f32;
 
@@ -232,8 +232,8 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
     }
 
     pub fn draw_ellipse(&mut self, x: f32, y: f32, width: f32, height: f32, value: T) {
-        let x = f32_to_i32(x) - self.draw_offset_x;
-        let y = f32_to_i32(y) - self.draw_offset_y;
+        let x = f32_to_i32(x) - self.camera_x;
+        let y = f32_to_i32(y) - self.camera_y;
         let width = f32_to_u32(width);
         let height = f32_to_u32(height);
         let (ra, rb, cx, cy) = Self::ellipse_params(x, y, width, height);
@@ -254,8 +254,8 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
     }
 
     pub fn draw_ellipse_border(&mut self, x: f32, y: f32, width: f32, height: f32, value: T) {
-        let x = f32_to_i32(x) - self.draw_offset_x;
-        let y = f32_to_i32(y) - self.draw_offset_y;
+        let x = f32_to_i32(x) - self.camera_x;
+        let y = f32_to_i32(y) - self.camera_y;
         let width = f32_to_u32(width);
         let height = f32_to_u32(height);
         let (ra, rb, cx, cy) = Self::ellipse_params(x, y, width, height);
@@ -287,12 +287,12 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         y3: f32,
         value: T,
     ) {
-        let mut x1 = f32_to_i32(x1) - self.draw_offset_x;
-        let mut y1 = f32_to_i32(y1) - self.draw_offset_y;
-        let mut x2 = f32_to_i32(x2) - self.draw_offset_x;
-        let mut y2 = f32_to_i32(y2) - self.draw_offset_y;
-        let mut x3 = f32_to_i32(x3) - self.draw_offset_x;
-        let mut y3 = f32_to_i32(y3) - self.draw_offset_y;
+        let mut x1 = f32_to_i32(x1) - self.camera_x;
+        let mut y1 = f32_to_i32(y1) - self.camera_y;
+        let mut x2 = f32_to_i32(x2) - self.camera_x;
+        let mut y2 = f32_to_i32(y2) - self.camera_y;
+        let mut x3 = f32_to_i32(x3) - self.camera_x;
+        let mut y3 = f32_to_i32(y3) - self.camera_y;
 
         if y1 > y2 {
             swap(&mut y1, &mut y2);
@@ -372,8 +372,8 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
     // Flood fill
 
     pub fn flood_fill(&mut self, x: f32, y: f32, value: T) {
-        let x = f32_to_i32(x) - self.draw_offset_x;
-        let y = f32_to_i32(y) - self.draw_offset_y;
+        let x = f32_to_i32(x) - self.camera_x;
+        let y = f32_to_i32(y) - self.camera_y;
         if !self.clip_rect.contains(x, y) {
             return;
         }
@@ -448,8 +448,8 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         transparent: Option<T>,
         palette: Option<&[T]>,
     ) {
-        let x = f32_to_i32(x) - self.draw_offset_x;
-        let y = f32_to_i32(y) - self.draw_offset_y;
+        let x = f32_to_i32(x) - self.camera_x;
+        let y = f32_to_i32(y) - self.camera_y;
         let canvas_x = f32_to_i32(canvas_x);
         let canvas_y = f32_to_i32(canvas_y);
         let width = f32_to_i32(width);
@@ -584,8 +584,8 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
             return;
         }
 
-        let x = f32_to_i32(x) - self.draw_offset_x;
-        let y = f32_to_i32(y) - self.draw_offset_y;
+        let x = f32_to_i32(x) - self.camera_x;
+        let y = f32_to_i32(y) - self.camera_y;
         let canvas_x = f32_to_i32(canvas_x);
         let canvas_y = f32_to_i32(canvas_y);
         let sign_x = if width < 0.0 { -1.0 } else { 1.0 };
@@ -711,8 +711,8 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
             y,
             width,
             height,
-            self.draw_offset_x,
-            self.draw_offset_y,
+            self.camera_x,
+            self.camera_y,
             pos,
             rot,
             fov,

@@ -859,13 +859,13 @@ fn rhythm_has_16th(line: &str) -> bool {
     line.as_bytes().windows(2).any(|w| w == b"00")
 }
 
-fn build_chord_note_pool(bits: &[i32; 12], key_shift: i32, lowest: i32) -> Vec<(i32, i32)> {
+fn build_chord_note_pool(bits: &[i32; 12], transpose: i32, lowest: i32) -> Vec<(i32, i32)> {
     let mut note_highest = None;
     let mut idx = 0i32;
     let mut results = Vec::new();
     loop {
         let note_type = bits[idx.rem_euclid(12) as usize];
-        let note = 12 + idx + key_shift;
+        let note = 12 + idx + transpose;
         if note >= lowest && matches!(note_type, 1 | 2 | 3 | 9) {
             results.push((note, note_type));
             if note_highest.is_none() {

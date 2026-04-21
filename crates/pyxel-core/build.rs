@@ -8,14 +8,14 @@ use tar::Archive;
 
 const SDL2_VERSION: &str = "2.32.0"; // Emscripten 4.0.9 uses SDL 2.32.0
 
-struct Sdl2Bindings {
+struct SDL2BindingsBuilder {
     target: String,
     target_os: String,
     sdl2_dir: String,
     out_dir: String,
 }
 
-impl Sdl2Bindings {
+impl SDL2BindingsBuilder {
     fn new() -> Self {
         let target = var("TARGET").unwrap();
         let target_os = target
@@ -258,6 +258,6 @@ fn main() {
     println!("cargo::rustc-check-cfg=cfg(pyxel_core)");
     println!("cargo:rustc-cfg=pyxel_core");
     if has_sdl2_feature() {
-        Sdl2Bindings::new().build();
+        SDL2BindingsBuilder::new().build();
     }
 }

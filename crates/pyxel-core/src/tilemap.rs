@@ -4,7 +4,7 @@ use crate::canvas::{Canvas, ToIndex};
 use crate::image::Image;
 use crate::settings::TILE_SIZE;
 use crate::tmx_parser::parse_tmx;
-use crate::utils::{compact_ascii_lower, f32_to_u32, parse_hex_string};
+use crate::utils::{f32_to_u32, parse_hex_string, simplify_string};
 
 pub type ImageTileCoord = u16;
 pub type Tile = (ImageTileCoord, ImageTileCoord);
@@ -68,13 +68,13 @@ impl Tilemap {
     // Public data operations
 
     pub fn set(&mut self, x: i32, y: i32, data: &[&str]) {
-        let width = compact_ascii_lower(data[0]).len() as u32 / 4;
+        let width = simplify_string(data[0]).len() as u32 / 4;
         let height = data.len() as u32;
         let tilemap = Self::new(width, height, self.imgsrc.clone());
         {
             let tilemap = unsafe { &mut *tilemap };
             for y in 0..height {
-                let src_data = compact_ascii_lower(data[y as usize]);
+                let src_data = simplify_string(data[y as usize]);
                 for x in 0..width {
                     let index = x as usize * 4;
                     let tile = parse_hex_string(&src_data[index..index + 4]).unwrap();
@@ -129,12 +129,12 @@ impl Tilemap {
         self.canvas.reset_clip_rect();
     }
 
-    pub fn set_draw_offset(&mut self, x: f32, y: f32) {
-        self.canvas.set_draw_offset(x, y);
+    pub fn set_camera(&mut self, x: f32, y: f32) {
+        self.canvas.set_camera(x, y);
     }
 
-    pub fn reset_draw_offset(&mut self) {
-        self.canvas.reset_draw_offset();
+    pub fn reset_camera(&mut self) {
+        self.canvas.reset_camera();
     }
 
     // Drawing primitives

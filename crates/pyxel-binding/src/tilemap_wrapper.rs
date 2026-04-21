@@ -110,9 +110,9 @@ impl Tilemap {
     #[pyo3(signature = (x=None, y=None))]
     fn camera(&self, x: Option<f32>, y: Option<f32>) -> PyResult<()> {
         if let (Some(x), Some(y)) = (x, y) {
-            self.inner_mut().set_draw_offset(x, y);
+            self.inner_mut().set_camera(x, y);
         } else if (x, y) == (None, None) {
-            self.inner_mut().reset_draw_offset();
+            self.inner_mut().reset_camera();
         } else {
             python_type_error!("camera() takes 0 or 2 arguments");
         }

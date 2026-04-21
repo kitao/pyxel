@@ -13,7 +13,7 @@ use crate::settings::{
     VIBRATO_DEPTH_CENTS, VIBRATO_PERIOD_TICKS,
 };
 use crate::tone::ToneMode;
-use crate::utils::compact_ascii_lower;
+use crate::utils::simplify_string;
 
 pub type SoundNote = i8;
 pub type SoundTone = u8;
@@ -64,7 +64,7 @@ impl Sound {
     }
 
     pub fn set_notes(&mut self, note_str: &str) -> Result<(), String> {
-        let note_str = compact_ascii_lower(note_str);
+        let note_str = simplify_string(note_str);
         let mut chars = note_str.chars();
         self.notes.clear();
 
@@ -108,7 +108,7 @@ impl Sound {
 
     pub fn set_tones(&mut self, tone_str: &str) -> Result<(), String> {
         self.tones.clear();
-        for c in compact_ascii_lower(tone_str).chars() {
+        for c in simplify_string(tone_str).chars() {
             let tone = match c {
                 't' => TONE_TRIANGLE,
                 's' => TONE_SQUARE,
@@ -124,7 +124,7 @@ impl Sound {
 
     pub fn set_volumes(&mut self, volume_str: &str) -> Result<(), String> {
         self.volumes.clear();
-        for c in compact_ascii_lower(volume_str).chars() {
+        for c in simplify_string(volume_str).chars() {
             if ('0'..='7').contains(&c) {
                 self.volumes.push(c.to_digit(10).unwrap() as SoundVolume);
             } else {
@@ -136,7 +136,7 @@ impl Sound {
 
     pub fn set_effects(&mut self, effect_str: &str) -> Result<(), String> {
         self.effects.clear();
-        for c in compact_ascii_lower(effect_str).chars() {
+        for c in simplify_string(effect_str).chars() {
             let effect = match c {
                 'n' => EFFECT_NONE,
                 's' => EFFECT_SLIDE,

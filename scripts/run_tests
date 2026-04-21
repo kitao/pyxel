@@ -44,7 +44,7 @@ run() {
     "$@"
 }
 
-# Echo and run a GUI command in background; Ctrl+C to stop
+# Echo and run a GUI command in background; Ctrl+C sends SIGTERM
 run_bg() {
     echo_cmd "$@"
     "$@" &

@@ -131,14 +131,14 @@ impl Image {
     // Public data operations
 
     pub fn set(&mut self, x: i32, y: i32, data: &[&str]) {
-        let width = utils::compact_ascii_lower(data[0]).len() as u32;
+        let width = utils::simplify_string(data[0]).len() as u32;
         let height = data.len() as u32;
         let image = Self::new(width, height);
 
         {
             let image = unsafe { &mut *image };
             for y in 0..height {
-                let src_data = utils::compact_ascii_lower(data[y as usize]);
+                let src_data = utils::simplify_string(data[y as usize]);
                 for x in 0..width {
                     let color =
                         utils::parse_hex_string(&src_data[x as usize..=x as usize]).unwrap();
@@ -232,12 +232,12 @@ impl Image {
         self.canvas.reset_clip_rect();
     }
 
-    pub fn set_draw_offset(&mut self, x: f32, y: f32) {
-        self.canvas.set_draw_offset(x, y);
+    pub fn set_camera(&mut self, x: f32, y: f32) {
+        self.canvas.set_camera(x, y);
     }
 
-    pub fn reset_draw_offset(&mut self) {
-        self.canvas.reset_draw_offset();
+    pub fn reset_camera(&mut self) {
+        self.canvas.reset_camera();
     }
 
     // Palette and dithering
@@ -432,8 +432,8 @@ impl Image {
             return;
         }
 
-        let x = utils::f32_to_i32(x) - self.canvas.draw_offset_x;
-        let y = utils::f32_to_i32(y) - self.canvas.draw_offset_y;
+        let x = utils::f32_to_i32(x) - self.canvas.camera_x;
+        let y = utils::f32_to_i32(y) - self.canvas.camera_y;
         let tilemap_x = utils::f32_to_i32(tilemap_x);
         let tilemap_y = utils::f32_to_i32(tilemap_y);
         let width = utils::f32_to_i32(width);
@@ -693,8 +693,8 @@ impl Image {
             y,
             width,
             height,
-            self.canvas.draw_offset_x,
-            self.canvas.draw_offset_y,
+            self.canvas.camera_x,
+            self.canvas.camera_y,
             pos,
             rot,
             fov,
@@ -763,16 +763,16 @@ impl Image {
         font: Option<*mut Font>,
     ) {
         if let Some(font) = font {
-            let x = utils::f32_to_i32(x) - self.canvas.draw_offset_x;
-            let y = utils::f32_to_i32(y) - self.canvas.draw_offset_y;
+            let x = utils::f32_to_i32(x) - self.canvas.camera_x;
+            let y = utils::f32_to_i32(y) - self.canvas.camera_y;
             let color = self.palette[color as usize];
             let font = unsafe { &mut *font };
             font.draw(&mut self.canvas, x, y, string, color);
             return;
         }
 
-        let mut x = utils::f32_to_i32(x) - self.canvas.draw_offset_x;
-        let mut y = utils::f32_to_i32(y) - self.canvas.draw_offset_y;
+        let mut x = utils::f32_to_i32(x) - self.canvas.camera_x;
+        let mut y = utils::f32_to_i32(y) - self.canvas.camera_y;
         let color = self.palette[color as usize];
         let font_image: *const Image = pyxel::font_image();
         let font_data = unsafe { &(*font_image).canvas.data };

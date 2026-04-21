@@ -15,7 +15,7 @@ fn resolve_exclude(preferred: Option<bool>, deprecated: Option<bool>) -> Option<
     }
 }
 
-// Resource I/O
+// Load/Save
 
 #[pyfunction]
 #[pyo3(signature = (filename, exclude_images=None, exclude_tilemaps=None, exclude_sounds=None, exclude_musics=None, excl_images=None, excl_tilemaps=None, excl_sounds=None, excl_musics=None))]

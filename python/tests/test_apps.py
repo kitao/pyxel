@@ -10,8 +10,8 @@ import pytest
 import pyxel
 
 from test_examples import (
-    reinit_pyxel,
-    restore_pyxel,
+    _reinit_pyxel,
+    _restore_pyxel,
     capture_frames,
     compare_or_update_all,
 )
@@ -131,7 +131,7 @@ class TestApps:
         extract_dir.mkdir()
         startup = extract_pyxapp(pyxapp, extract_dir)
 
-        reinit_pyxel()
+        _reinit_pyxel()
         original_dir = os.getcwd()
         try:
             captured, app_dir = run_pyxapp(startup)
@@ -141,4 +141,4 @@ class TestApps:
             compare_or_update_all(name, results, APP_REFS_DIR, update_references)
         finally:
             os.chdir(original_dir)
-            restore_pyxel()
+            _restore_pyxel()

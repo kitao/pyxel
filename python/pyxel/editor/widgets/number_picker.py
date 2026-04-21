@@ -34,6 +34,7 @@ class NumberPicker(Widget):
         self.inc_button = TextButton(self, self.width - 7, 0, text="+")
         self.inc_button.add_event_listener("press", self.__on_inc_button_press)
 
+        # Set event listeners
         self.add_event_listener("draw", self.__on_draw)
 
     @staticmethod

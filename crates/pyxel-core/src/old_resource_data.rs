@@ -14,7 +14,7 @@ use crate::settings::{
 };
 use crate::sound::{Sound, SoundEffect, SoundNote, SoundTone, SoundVolume};
 use crate::tilemap::{ImageSource, ImageTileCoord, Tilemap};
-use crate::utils::{compact_ascii_lower, parse_hex_string};
+use crate::utils::{parse_hex_string, simplify_string};
 
 pub const RESOURCE_ARCHIVE_DIRNAME: &str = "pyxel_resource/";
 
@@ -233,7 +233,7 @@ impl Pyxel {
 
 fn parse_version_string(string: &str) -> Result<u32, &str> {
     let mut version = 0u32;
-    for (i, part) in compact_ascii_lower(string).split('.').enumerate() {
+    for (i, part) in simplify_string(string).split('.').enumerate() {
         let len = part.len();
         if i > 0 && len != 1 && len != 2 {
             return Err("invalid version string");
