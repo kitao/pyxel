@@ -5,14 +5,12 @@ from .widget import Widget
 
 
 class ToggleButton(Widget):
-    """
-    Variables:
-        is_checked_var
-
-    Events:
-        checked
-        unchecked
-    """
+    # Variables:
+    #   is_checked_var
+    #
+    # Events:
+    #   checked
+    #   unchecked
 
     def __init__(self, parent, x, y, width, height, *, is_checked, **kwargs):
         super().__init__(parent, x, y, width, height, **kwargs)

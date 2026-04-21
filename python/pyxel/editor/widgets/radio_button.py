@@ -6,13 +6,11 @@ from .widget import Widget
 
 
 class RadioButton(Widget):
-    """
-    Variables:
-        value_var
-
-    Events:
-        change (value)
-    """
+    # Variables:
+    #   value_var
+    #
+    # Events:
+    #   change (value)
 
     def __init__(self, parent, x, y, *, img, u, v, num_buttons, value, **kwargs):
         super().__init__(parent, x, y, num_buttons * 9 - 2, 7, **kwargs)

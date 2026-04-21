@@ -10,13 +10,11 @@ from .widget import Widget
 
 
 class Button(Widget):
-    """
-    Variables:
-        is_pressed_var
-
-    Events:
-        press
-    """
+    # Variables:
+    #   is_pressed_var
+    #
+    # Events:
+    #   press
 
     def __init__(self, parent, x, y, width, height, **kwargs):
         super().__init__(parent, x, y, width, height, **kwargs)

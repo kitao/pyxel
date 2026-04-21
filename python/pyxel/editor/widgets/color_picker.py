@@ -4,13 +4,11 @@ from .widget import Widget
 
 
 class ColorPicker(Widget):
-    """
-    Variables:
-        value_var
-
-    Events:
-        change (value)
-    """
+    # Variables:
+    #   value_var
+    #
+    # Events:
+    #   change (value)
 
     def __init__(self, parent, x, y, value, *, with_shadow=False, **kwargs):
         super().__init__(parent, x, y, 65, 17, **kwargs)

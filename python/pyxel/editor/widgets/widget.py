@@ -20,25 +20,23 @@ class MouseCaptureInfo:
 
 
 class Widget:
-    """
-    Variables:
-        is_visible_var
-        is_enabled_var
-
-    Events:
-        show
-        hide
-        enabled
-        disabled
-        mouse_down (key, x, y)
-        mouse_up (key, x, y)
-        mouse_drag (key, x, y, dx, dy)
-        mouse_repeat (key, x, y)
-        mouse_click (key, x, y)
-        mouse_hover (x, y)
-        update
-        draw
-    """
+    # Variables:
+    #   is_visible_var
+    #   is_enabled_var
+    #
+    # Events:
+    #   show
+    #   hide
+    #   enabled
+    #   disabled
+    #   mouse_down (key, x, y)
+    #   mouse_up (key, x, y)
+    #   mouse_drag (key, x, y, dx, dy)
+    #   mouse_repeat (key, x, y)
+    #   mouse_click (key, x, y)
+    #   mouse_hover (x, y)
+    #   update
+    #   draw
 
     _mouse_capture_info = MouseCaptureInfo()
 

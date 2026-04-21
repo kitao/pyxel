@@ -7,13 +7,11 @@ from .widget import Widget
 
 
 class ScrollBar(Widget):
-    """
-    Variables:
-        value_var
-
-    Events:
-        change (value)
-    """
+    # Variables:
+    #   value_var
+    #
+    # Events:
+    #   change (value)
 
     def __init__(
         self,
