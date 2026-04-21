@@ -55,7 +55,7 @@ This file is the complete coding policy for Pyxel. Apply every rule.
 
 - Write comments in English.
 - Keep comments to the minimum necessary. Do not add comments that state what the code obviously does.
-- Add explanations where the intent is hard to grasp, to aid understanding.
+- Add comments where the intent is hard to grasp.
 - For large or hard-to-follow code blocks, put a comment at the top describing the block's role.
 - When a file contains consecutive groups of functions or methods, separate them with a standalone comment line so each group is easy to locate.
 - Do not add documentation comments (Rust `///`, Python docstrings). API documentation is maintained separately.
