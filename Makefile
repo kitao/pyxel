@@ -87,8 +87,8 @@ PYO3_ENVIRONMENT_SIGNATURE ?= $(shell $(PYTHON) -c \
 	a=platform.architecture()[0]; \
 	print(f'{sys.implementation.name}-{v.major}.{v.minor}-{a}')")
 
-lint build test test-unit: export PYO3_PYTHON := $(PYO3_PYTHON)
-lint build test test-unit: export PYO3_ENVIRONMENT_SIGNATURE := $(PYO3_ENVIRONMENT_SIGNATURE)
+lint build test-unit test: export PYO3_PYTHON := $(PYO3_PYTHON)
+lint build test-unit test: export PYO3_ENVIRONMENT_SIGNATURE := $(PYO3_ENVIRONMENT_SIGNATURE)
 endif
 
 .PHONY: \
