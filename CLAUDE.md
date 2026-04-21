@@ -9,7 +9,7 @@ This document is the complete, project-wide coding policy and audit checklist. A
 - Excluded: non-hand-authored content.
   - e.g., build artifacts (`target/`, `dist/`), generated Markdown from `scripts/generate_docs`, external dependencies (`node_modules/`)
 
-File categories (referenced in every section below):
+File categories (referenced by sections below where a narrow file scope is needed):
 
 - **Source code**: `*.rs`, `*.py`, `*.pyi`, `*.js`, `*.html`, `*.css`, `*.frag`, `*.vert`, `*.glsl`, `scripts/*`
 - **Configuration**: `*.toml`, `*.yml`, `*.yaml`, `package.json`, `.vscode/*.json`, `.gitignore`, `.gitattributes`, `Makefile`, `requirements.txt`
