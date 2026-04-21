@@ -238,6 +238,8 @@ impl Screencast {
         Ok(())
     }
 
+    // Helpers
+
     fn screen_at(&self, index: u32) -> &Screen {
         &self.screens[((self.capture_start_index + index) % self.max_screens) as usize]
     }

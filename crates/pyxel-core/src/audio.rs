@@ -166,6 +166,8 @@ impl Audio {
 }
 
 impl Pyxel {
+    // Playback
+
     pub fn play(
         &self,
         channel_index: u32,
@@ -237,6 +239,8 @@ impl Pyxel {
         }
     }
 
+    // Stop
+
     pub fn stop_channel(&self, channel_index: u32) {
         let _lock = AudioLock::new();
         unsafe { &mut *pyxel::channels()[channel_index as usize] }.stop();
@@ -248,6 +252,8 @@ impl Pyxel {
             unsafe { &mut *ch }.stop();
         }
     }
+
+    // Position
 
     pub fn play_position(&self, channel_index: u32) -> Option<(u32, f32)> {
         let _lock = AudioLock::new();

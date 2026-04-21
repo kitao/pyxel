@@ -44,6 +44,8 @@ impl SDL2BindingsBuilder {
         self.generate_bindings();
     }
 
+    // Pipeline steps
+
     fn download_sdl2(&self) {
         if Path::new(&self.sdl2_dir).exists() {
             return;
@@ -200,6 +202,8 @@ impl SDL2BindingsBuilder {
             .write_to_file(Path::new(&self.out_dir).join("bindings.rs"))
             .unwrap();
     }
+
+    // Helpers
 
     fn bindgen_flags(&self) -> Vec<String> {
         if let Ok(bindgen_flags) = var("BINDGENFLAGS") {

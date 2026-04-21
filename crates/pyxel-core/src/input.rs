@@ -33,6 +33,8 @@ impl Input {
 }
 
 impl Pyxel {
+    // Query API
+
     pub fn is_button_down(&self, key: Key) -> bool {
         assert!(
             !self.is_analog_key(key),
@@ -113,6 +115,8 @@ impl Pyxel {
         self.input.key_values.get(&key).copied().unwrap_or(0)
     }
 
+    // Setter API
+
     pub fn set_mouse_visible(&mut self, visible: bool) {
         self.input.mouse_visible = visible;
     }
@@ -155,6 +159,8 @@ impl Pyxel {
             self.add_dropped_file(file);
         }
     }
+
+    // Internal API
 
     pub(crate) fn start_input_frame(&mut self) {
         self.input.key_values.insert(MOUSE_WHEEL_X, 0);
@@ -228,6 +234,8 @@ impl Pyxel {
     pub(crate) fn is_mouse_visible(&self) -> bool {
         self.input.mouse_visible
     }
+
+    // Helpers
 
     fn is_current_frame(&self, frame_count: u32) -> bool {
         frame_count == *pyxel::frame_count()
