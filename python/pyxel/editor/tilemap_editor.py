@@ -98,6 +98,8 @@ class TilemapEditor(EditorBase):
         self.add_event_listener("update", self.__on_update)
         self.add_event_listener("draw", self.__on_draw)
 
+    # Helpers
+
     def _restore_state(self, data, prefix):
         self.tilemap_index_var = data["tilemap_index"]
         if f"{prefix}_data" in data:
@@ -110,6 +112,8 @@ class TilemapEditor(EditorBase):
             self.canvas_var.set_slice(
                 self.focus_x_var * 8, self.focus_y_var * 8, data[f"{prefix}_canvas"]
             )
+
+    # Event handlers
 
     def __on_canvas_get(self, value):
         return pyxel.tilemaps[self.tilemap_index_var]

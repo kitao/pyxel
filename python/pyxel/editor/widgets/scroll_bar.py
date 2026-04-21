@@ -67,6 +67,8 @@ class ScrollBar(Widget):
         self.add_event_listener("mouse_repeat", self.__on_mouse_repeat)
         self.add_event_listener("draw", self.__on_draw)
 
+    # Helpers
+
     @property
     def _scroll_size(self):
         return (self.height if self._is_vertical else self.width) - 14
@@ -78,6 +80,8 @@ class ScrollBar(Widget):
     @property
     def _slider_pos(self):
         return round(7 + self._scroll_size * self.value_var / self.scroll_amount)
+
+    # Event handlers
 
     def __on_value_set(self, value):
         return clamp(value, 0, self.scroll_amount)
@@ -125,6 +129,8 @@ class ScrollBar(Widget):
     def __on_mouse_repeat(self, key, x, y):
         if not self._is_dragged:
             self.__on_mouse_down(key, x, y)
+
+    # Drawing
 
     def _draw_vertical(self, x, y, w, h):
         dec_col = 6 if self.dec_button.is_pressed_var else WIDGET_BACKGROUND_COLOR

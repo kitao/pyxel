@@ -27,12 +27,16 @@ class SoundSelector(Widget):
         self.add_event_listener("update", self.__on_update)
         self.add_event_listener("draw", self.__on_draw)
 
+    # Helpers
+
     def _hit_sound_button(self, x, y):
         x -= self.x + 6
         y -= self.y + 5
         if x < 0 or y < 0 or x > 205 or y > 33 or x % 13 > 10 or y % 9 > 6:
             return None
         return (y // 9) * 16 + x // 13
+
+    # Event handlers
 
     def __on_mouse_down(self, key, x, y):
         if key != pyxel.MOUSE_BUTTON_LEFT or self.is_playing_var:
@@ -69,6 +73,8 @@ class SoundSelector(Widget):
             pyxel.stop(0)
 
         self._last_preview_sound = self._preview_sound
+
+    # Drawing
 
     def _draw_sound_button(self, snd, col):
         pyxel.pal(13, col)

@@ -22,6 +22,8 @@ class ToggleButton(Widget):
 
         self.add_event_listener("mouse_down", self.__on_mouse_down)
 
+    # Helpers
+
     @property
     def button_color(self):
         if not self.is_enabled_var:
@@ -30,6 +32,8 @@ class ToggleButton(Widget):
             return BUTTON_PRESSED_COLOR
         else:
             return BUTTON_ENABLED_COLOR
+
+    # Event handlers
 
     def __on_is_checked_change(self, value):
         self.trigger_event("checked" if value else "unchecked")

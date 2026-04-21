@@ -115,6 +115,8 @@ class App(Widget):
         # Start application
         pyxel.run(self.update_all, self.draw_all)
 
+    # Helpers
+
     @property
     def _editor(self):
         return self._editors[self.editor_type_var]
@@ -122,6 +124,8 @@ class App(Widget):
     @staticmethod
     def _set_title(resource_file):
         pyxel.title(f"Pyxel Editor - {resource_file}")
+
+    # Event handlers
 
     def __on_editor_button_change(self, value):
         for i, editor in enumerate(self._editors):

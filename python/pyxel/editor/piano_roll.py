@@ -43,6 +43,8 @@ class PianoRoll(Widget):
         self.add_event_listener("update", self.__on_update)
         self.add_event_listener("draw", self.__on_draw)
 
+    # Helpers
+
     def _screen_to_view(self, x, y):
         x = clamp((x - self.x - 1) // 4, 0, MAX_SOUND_LENGTH - 1)
         y = clamp(59 - (y - self.y - 1) // 2, -1, 59)
@@ -60,6 +62,8 @@ class PianoRoll(Widget):
             field.extend([-1] * (x - field_len) + [y])
 
         self.add_post_history(x, 0)
+
+    # Event handlers
 
     def __on_mouse_down(self, key, x, y):
         if key != pyxel.MOUSE_BUTTON_LEFT or self.is_playing_var:

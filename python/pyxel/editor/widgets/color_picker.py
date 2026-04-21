@@ -27,6 +27,8 @@ class ColorPicker(Widget):
         self.add_event_listener("mouse_drag", self.__on_mouse_drag)
         self.add_event_listener("draw", self.__on_draw)
 
+    # Helpers
+
     def check_value(self, x, y):
         x -= self.x + 1
         y -= self.y + 1
@@ -36,6 +38,8 @@ class ColorPicker(Widget):
             col = (y // ch) * self._num_cols + x // cw
             return col if col < pyxel.num_user_colors else None
         return None
+
+    # Event handlers
 
     def __on_value_set(self, value):
         return min(value, pyxel.num_user_colors - 1)
@@ -52,6 +56,8 @@ class ColorPicker(Widget):
 
     def __on_mouse_drag(self, key, x, y, dx, dy):
         self.__on_mouse_down(key, x, y)
+
+    # Drawing
 
     def _draw_colors(self):
         cw = self._color_width

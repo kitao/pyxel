@@ -90,6 +90,8 @@ class PianoKeyboard(Widget):
         self.add_event_listener("update", self.__on_update)
         self.add_event_listener("draw", self.__on_draw)
 
+    # Helpers
+
     def _screen_to_note(self, x, y):
         x -= self.x
         y -= self.y
@@ -111,6 +113,8 @@ class PianoKeyboard(Widget):
             if y_start <= y < y_end:
                 return octave + offset
         return octave
+
+    # Event handlers
 
     def __on_mouse_down(self, key, x, y):
         if key != pyxel.MOUSE_BUTTON_LEFT:

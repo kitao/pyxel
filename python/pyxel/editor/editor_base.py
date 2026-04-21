@@ -94,6 +94,8 @@ class EditorBase(Widget):
     def add_tool_button_help(self, tool_button):
         tool_button.add_event_listener("mouse_hover", self.__on_tool_button_mouse_hover)
 
+    # Event handlers
+
     def __on_number_picker_dec_mouse_hover(self, _x, _y):
         self.help_message_var = "-10:SHIFT+CLICK"
 

@@ -29,7 +29,7 @@ The official [book](https://gihyo.jp/book/2025/978-4-297-14657-3) is available i
 <details>
 <summary>What is the difference between the <code>update</code> and <code>draw</code> functions?</summary>
 
-The `update` function is called every frame, but the `draw` function may be skipped if the processing time exceeds the allowable limit. This design in Pyxel reduces the impact of rendering load and OS interruptions, enabling smooth animation.
+The `update` function is called every frame, but the `draw` function may be skipped if the processing time exceeds the allowable limit. Pyxel uses this design to reduce the impact of rendering load and OS interruptions, enabling smooth animation.
 
 </details>
 
@@ -38,7 +38,7 @@ The `update` function is called every frame, but the `draw` function may be skip
 
 MML (Music Macro Language) is a language for defining sounds by describing notes, tempo, and other parameters as a string.
 
-Passing an MML string to the `mml` function of the Sound class defines that Sound according to the MML content. Calling `mml()` with no arguments clears the MML setting.
+Pass an MML string to the `mml` function of the Sound class, and the Sound will play according to that MML. Calling `mml()` with no arguments clears the MML setting.
 
 ```python
 pyxel.sounds[0].mml("CDEFGAB>C")
@@ -95,7 +95,7 @@ There are three methods: Pyxel Web Launcher, app2html, and HTML Custom Tags. For
 <details>
 <summary>Can I change the palette colors in Pyxel Editor?</summary>
 
-By placing a file with the same name but with the .pyxpal extension in the same directory as the Pyxel resource file (.pyxres), the palette display colors in Pyxel Editor will be updated. Palette files can be created with the `save_pal` function, or manually as a text file with one RRGGBB hex color per line.
+If you place a file with the same name but the .pyxpal extension in the same directory as the Pyxel resource file (.pyxres), Pyxel Editor will display the palette using those colors. Palette files can be created with the `save_pal` function, or manually as a text file with one RRGGBB hex color per line.
 
 </details>
 
@@ -126,6 +126,6 @@ For details on the new MML syntax, see "[How do I use Pyxel's MML?](#api-specifi
 <details>
 <summary>Can I use Pyxel for commercial purposes without the author's permission?</summary>
 
-As long as you comply with the MIT License and clearly display the full text of the copyright and license in the source code or license file, you are free to sell or distribute it without the author's permission. However, since Pyxel is developed by a single individual, it would be appreciated if you could contact the author or consider sponsoring their work if possible.
+As long as you comply with the MIT License and clearly display the full text of the copyright and license in the source code or license file, you are free to sell or distribute your work without the author's permission. However, since Pyxel is developed by a single individual, contact with the author or sponsorship would be greatly appreciated.
 
 </details>

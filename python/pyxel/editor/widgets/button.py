@@ -30,6 +30,8 @@ class Button(Widget):
         self.add_event_listener("mouse_up", self.__on_mouse_up)
         self.add_event_listener("update", self.__on_update)
 
+    # Helpers
+
     @property
     def button_color(self):
         if not self.is_enabled_var:
@@ -38,6 +40,8 @@ class Button(Widget):
             return BUTTON_PRESSED_COLOR
         else:
             return BUTTON_ENABLED_COLOR
+
+    # Event handlers
 
     def __on_is_pressed_get(self, value):
         return self._pressing_time > 0

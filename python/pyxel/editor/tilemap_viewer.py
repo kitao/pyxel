@@ -30,10 +30,14 @@ class TilemapViewer(Widget):
         self.add_event_listener("update", self.__on_update)
         self.add_event_listener("draw", self.__on_draw)
 
+    # Helpers
+
     def _screen_to_focus(self, x, y):
         x = clamp((x - self.x - 1) // 2, 0, 31)
         y = clamp((y - self.y - 1) // 2, 0, 31)
         return x, y
+
+    # Event handlers
 
     def __on_focus_x_set(self, value):
         return clamp(value, 0, 30)

@@ -27,12 +27,16 @@ class RadioButton(Widget):
         self.add_event_listener("mouse_drag", self.__on_mouse_drag)
         self.add_event_listener("draw", self.__on_draw)
 
+    # Helpers
+
     def check_value(self, x, y):
         x -= self.x
         y -= self.y
         index = clamp(x // 9, 0, self._num_buttons - 1)
         x1 = index * 9
         return index if x1 <= x < x1 + 7 and 0 <= y < 7 else None
+
+    # Event handlers
 
     def __on_value_change(self, value):
         self.trigger_event("change", value)

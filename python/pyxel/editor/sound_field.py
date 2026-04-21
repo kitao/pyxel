@@ -52,10 +52,14 @@ class SoundField(Widget):
         self.add_event_listener("update", self.__on_update)
         self.add_event_listener("draw", self.__on_draw)
 
+    # Helpers
+
     def _screen_to_view(self, x, y):
         x = clamp((x - self.x - 1) // 4, 0, MAX_SOUND_LENGTH - 1)
         y = clamp((y - self.y) // 8, 0, 2)
         return x, y
+
+    # Event handlers
 
     def __on_mouse_down(self, key, x, y):
         if key != pyxel.MOUSE_BUTTON_LEFT or self.is_playing_var:

@@ -70,6 +70,8 @@ class Widget:
             "is_enabled_var", "change", self.__on_is_enabled_change
         )
 
+    # Geometry
+
     @property
     def x(self):
         return (self._parent.x + self._x) if self._parent else self._x
@@ -99,6 +101,8 @@ class Widget:
         self._width = width
         self._height = height
 
+    # Event listeners
+
     def add_event_listener(self, event, listener):
         self._event_listeners.setdefault(event, []).append(listener)
 
@@ -108,6 +112,8 @@ class Widget:
     def trigger_event(self, event, *args):
         for listener in self._event_listeners.get(event, ()):
             listener(*args)
+
+    # Update pipeline
 
     def update_all(self):
         capture_widget = Widget._mouse_capture_info.widget
@@ -204,6 +210,8 @@ class Widget:
         for child in self._children:
             child._update()
 
+    # Drawing
+
     def draw_all(self):
         if not self.is_visible_var:
             return
@@ -223,6 +231,8 @@ class Widget:
             pyxel.line(x + 2, y + h, x + w - 1, y + h, WIDGET_SHADOW_COLOR)
             pyxel.line(x + w, y + 2, x + w, y + h - 1, WIDGET_SHADOW_COLOR)
             pyxel.pset(x + w - 1, y + h - 1, WIDGET_SHADOW_COLOR)
+
+    # Var binding
 
     def _bind_var_property(self, name, member_name):
         if isinstance(getattr(self.__class__, name, None), property):

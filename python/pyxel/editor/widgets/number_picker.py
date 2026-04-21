@@ -35,9 +35,13 @@ class NumberPicker(Widget):
         # Set event listeners
         self.add_event_listener("draw", self.__on_draw)
 
+    # Helpers
+
     @staticmethod
     def _step_delta():
         return 10 if pyxel.btn(pyxel.KEY_SHIFT) else 1
+
+    # Event handlers
 
     def __on_value_set(self, value):
         return clamp(value, self._min_value, self._max_value)

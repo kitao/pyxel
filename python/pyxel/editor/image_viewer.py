@@ -81,6 +81,8 @@ class ImageViewer(Widget):
         self.add_event_listener("mouse_hover", self.__on_mouse_hover)
         self.add_event_listener("draw", self.__on_draw)
 
+    # Helpers
+
     def _screen_to_focus(self, x, y):
         x = clamp(
             self.viewport_x_var + (x - self.x - 1) // GRID_SIZE, 0, MAX_TILE_INDEX
@@ -89,6 +91,8 @@ class ImageViewer(Widget):
             self.viewport_y_var + (y - self.y - 1) // GRID_SIZE, 0, MAX_TILE_INDEX
         )
         return x, y
+
+    # Event handlers
 
     def __on_focus_x_set(self, value):
         return clamp(value, 0, MAX_TILE_INDEX + 1 - self.focus_w_var)
