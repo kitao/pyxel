@@ -4,6 +4,8 @@ use pyo3::prelude::*;
 use pyo3::types::{PyFloat, PyInt};
 use pyxel::Pyxel;
 
+// Basic math
+
 #[pyfunction]
 fn ceil(x: f32) -> i32 {
     Pyxel::ceil(x)
@@ -85,6 +87,8 @@ fn atan2(y: f32, x: f32) -> f32 {
     Pyxel::atan2(y, x)
 }
 
+// Random
+
 #[pyfunction]
 fn rseed(seed: u32) {
     Pyxel::random_seed(seed);
@@ -99,6 +103,8 @@ fn rndi(a: i32, b: i32) -> i32 {
 fn rndf(a: f32, b: f32) -> f32 {
     Pyxel::random_float(a, b)
 }
+
+// Noise
 
 #[pyfunction]
 fn nseed(seed: u32) {

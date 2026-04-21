@@ -1,5 +1,5 @@
 [workspace]
-members = ["pyxel-core", "pyxel-binding"]
+members = ["pyxel-binding", "pyxel-core"]
 resolver = "2"
 
 [workspace.package]

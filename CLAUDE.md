@@ -21,9 +21,23 @@ This file is the complete coding policy for Pyxel. Apply every rule.
 ## Principles
 
 - Performance takes top priority. When performance requires deviating from a language's conventions, choose performance.
-  - Hot paths: rendering loops (per-pixel blit, line/circle/rect primitives), audio generation (per-sample voice synthesis, per-frame voice update, MML, BGM), PyO3 FFI boundary, parallelization (SIMD, multi-threading).
 - In each language, write code that feels natural and concise to a professional in that language.
 - Avoid duplication and redundancy. Keep each intent in a single place.
+
+## Performance
+
+- Hot paths where performance governs code shape:
+  - Rendering loops (per-pixel blit, line/circle/rect primitives)
+  - Audio generation (per-sample voice synthesis, per-frame voice update, MML, BGM)
+  - PyO3 FFI boundary (argument marshaling, return paths)
+  - Parallelization (SIMD, multi-threading)
+- On hot paths, probe for hidden costs that idiomatic patterns incur. Treat unusual constructs as intentional — investigate before changing.
+  - e.g.,
+    - Per-frame or per-sample heap allocations (`Vec::new`, `format!`, `Box::new` inside inner loops)
+    - Avoidable copies, clones, or type conversions
+    - Unnecessary bounds checks in tight loops
+    - Missed SIMD, loop-unrolling, or inlining opportunities
+- Outside hot paths, prefer idiomatic and readable code over micro-optimization.
 
 ## Naming and Ordering
 

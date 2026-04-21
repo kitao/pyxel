@@ -1133,8 +1133,8 @@ fn next_note_events(
         let mut results = Vec::new();
         for i in 0..cnt {
             while next_idx == cur_idx {
-                // Keep Python behavior: retry uses default pick_target_note()
-                // Semantics (is_sub = false) even when current path is sub.
+                // Match the original Python behavior: on retry, always use the main-path
+                // semantics (is_sub = false) even when the current path is sub.
                 next_idx = pick_target_note_idx(&chord.notes, state.prev_note, no_root, false, rng);
             }
             let dir = if next_idx > cur_idx { 1isize } else { -1isize };
@@ -1855,7 +1855,7 @@ pub fn preset_progression_json(preset: i32) -> String {
     serde_json::to_string(&defs).expect("Failed to serialize preset progressions")
 }
 
-// New structured generation pipeline
+// Structured generation pipeline (params -> BgmData -> MML)
 
 const BASS_TONE_IDX: usize = 7;
 const DRUM_TONE_IDX: usize = 15;
