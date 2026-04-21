@@ -37,13 +37,7 @@ This file is the complete coding policy for Pyxel. Apply every rule.
 ## Product Names
 
 - Treat the following product and website names as proper nouns; do not translate them or alter their casing.
-  - Pyxel
-  - Pyxel Editor
-  - Pyxel Showcase
-  - Pyxel Code Maker
-  - Pyxel Web Launcher
-  - Pyxel User Examples
-  - Pyxel Composer
+  - Pyxel, Pyxel Editor, Pyxel Showcase, Pyxel Code Maker, Pyxel Web Launcher, Pyxel User Examples, Pyxel Composer
 - The following abbreviations may be used where helpful.
   - Pyxel Web — Pyxel's web version
   - Pyxel MML — Pyxel's MML variant

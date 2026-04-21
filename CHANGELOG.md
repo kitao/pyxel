@@ -2,14 +2,11 @@
 
 ## 2.9.1
 
-- Reduced Pyxel Web Launcher cache delay for app updates
-- Reduced Pyxel MML Studio share URL length
-- Improved virtual gamepad touch handling on mobile devices
-- Refined code quality across Rust, Python, and web layers
-- Revised multilingual documentation and added JSON to format target
-- Added custom chord progression support to the gen_bgm function
-- Fixed the package command failing with relative paths
-- Added unit tests for the pyxel CLI commands
+- Added line numbers to palette file parsing errors
+- Updated Pyxel MML Studio to use shorter share URLs
+- Updated Pyxel Web Launcher to use the latest commit of each app
+- Prevented zip path traversal in the play and app2exe commands
+- Fixed relative path handling in the package command
 
 ## 2.9.0
 
