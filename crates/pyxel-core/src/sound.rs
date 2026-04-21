@@ -47,6 +47,8 @@ impl Sound {
         }))
     }
 
+    // Configuration
+
     pub fn set(
         &mut self,
         note_str: &str,
@@ -151,6 +153,8 @@ impl Sound {
         Ok(())
     }
 
+    // MML & PCM
+
     pub fn set_mml(&mut self, code: &str) -> Result<(), String> {
         self.clear_pcm();
         self.commands = parse_mml(code)?;
@@ -178,6 +182,8 @@ impl Sound {
     pub fn clear_pcm(&mut self) {
         self.pcm = None;
     }
+
+    // Serialization
 
     pub fn save(
         &self,
@@ -224,6 +230,8 @@ impl Sound {
             total_duration_sec(&self.commands)
         }
     }
+
+    // Command Emission
 
     pub(crate) fn to_commands(&self) -> Vec<MmlCommand> {
         let mut commands = Vec::new();

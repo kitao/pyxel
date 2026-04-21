@@ -67,6 +67,8 @@ impl System {
 }
 
 impl Pyxel {
+    // Main Loop
+
     pub fn run<T: PyxelCallback>(&mut self, mut callback: T) {
         platform::run_frame_loop(self.system.fps, move |delta_ms| {
             let ticks = platform::ticks();
@@ -143,6 +145,8 @@ impl Pyxel {
 
         self.run(App { image });
     }
+
+    // Window & Screen
 
     pub fn flip_screen(&mut self) {
         self.system.update_profiler.end(platform::ticks());
@@ -231,6 +235,8 @@ impl Pyxel {
         platform::set_window_icon(scaled_width, scaled_height, &rgba);
     }
 
+    // Screen Configuration
+
     pub fn set_perf_monitor(&mut self, enabled: bool) {
         self.system.perf_monitor_enabled = enabled;
     }
@@ -288,6 +294,8 @@ impl Pyxel {
             self.update_screen_params();
         }
     }
+
+    // Event & Input Processing
 
     fn process_events(&mut self) {
         if platform::is_sigint_received() {
@@ -392,6 +400,8 @@ impl Pyxel {
         }
     }
 
+    // Frame Lifecycle
+
     pub(crate) fn update_screen_params(&mut self) {
         let (window_width, window_height) = platform::window_size();
         let w = *pyxel::width() as f32;
@@ -423,6 +433,8 @@ impl Pyxel {
             self.system.update_profiler.end(platform::ticks());
         }
     }
+
+    // Rendering & UI
 
     fn draw_perf_monitor(&self) {
         if !self.system.perf_monitor_enabled {

@@ -14,7 +14,7 @@ fn floor(x: f32) -> i32 {
     Pyxel::floor(x)
 }
 
-/// Returns the integer type for int inputs, float type for float inputs.
+// Returns int for int inputs, float for float inputs.
 #[pyfunction]
 fn clamp(
     x: Bound<'_, PyAny>,
@@ -41,7 +41,7 @@ fn clamp(
     Ok(PyFloat::new(py, xf.clamp(lo, hi)).into_any().unbind())
 }
 
-/// Returns the integer type for int inputs, float type for float inputs.
+// Returns int for int inputs, float for float inputs.
 #[pyfunction]
 fn sgn(x: Bound<'_, PyAny>) -> PyResult<Py<PyAny>> {
     let py = x.py();

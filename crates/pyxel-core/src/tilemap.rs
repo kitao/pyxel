@@ -22,8 +22,6 @@ pub enum ImageSource {
 }
 
 impl ImageSource {
-    /// # Safety
-    /// The Image pointer (for `ImageSource::Image`) must be valid.
     pub(crate) unsafe fn resolve(&self) -> &Image {
         match self {
             ImageSource::Index(index) => &*crate::pyxel::images()[*index as usize],
@@ -212,8 +210,6 @@ impl Tilemap {
 
     // Blit operations
 
-    /// # Safety
-    /// `tilemap` must be a valid, non-null pointer to a `Tilemap`.
     pub unsafe fn draw_tilemap(
         &mut self,
         x: f32,
@@ -300,7 +296,7 @@ impl Tilemap {
         ptr::eq(tilemap.cast_const(), ptr::from_ref(self))
     }
 
-    /// Copies a region of this tilemap's canvas for safe self-blit.
+    // Copy first to avoid aliasing on self-blit.
     fn copy_region(&self, x: f32, y: f32, width: f32, height: f32) -> Canvas<Tile> {
         let w = f32_to_u32(width.abs());
         let h = f32_to_u32(height.abs());

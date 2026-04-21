@@ -229,6 +229,8 @@ impl Graphics {
 }
 
 impl Pyxel {
+    // View Transformation
+
     pub fn set_clip_rect(&self, x: f32, y: f32, width: f32, height: f32) {
         pyxel::screen().set_clip_rect(x, y, width, height);
     }
@@ -260,6 +262,8 @@ impl Pyxel {
     pub fn clear(&self, color: Color) {
         pyxel::screen().clear(color);
     }
+
+    // Drawing Primitives
 
     pub fn pixel(&self, x: f32, y: f32) -> Color {
         pyxel::screen().pixel(x, y)
@@ -327,6 +331,8 @@ impl Pyxel {
         pyxel::screen().flood_fill(x, y, color);
     }
 
+    // Image & Tilemap
+
     pub fn draw_image(
         &self,
         x: f32,
@@ -385,6 +391,8 @@ impl Pyxel {
         }
     }
 
+    // 3D Graphics
+
     pub fn draw_image_3d(
         &self,
         x: f32,
@@ -438,6 +446,8 @@ impl Pyxel {
             );
         }
     }
+
+    // Text & Rendering
 
     pub fn draw_text(&self, x: f32, y: f32, text: &str, color: Color, font: Option<*mut Font>) {
         pyxel::screen().draw_text(x, y, text, color, font);

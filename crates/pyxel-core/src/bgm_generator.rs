@@ -779,8 +779,7 @@ impl OwnedChordEntry {
     }
 }
 
-/// Resolve a chord selector (`0..PRESET_COUNT` = preset, `>=PRESET_COUNT` = custom slot) into
-/// an owned progression that the downstream generators can consume uniformly.
+// `chord` selector: `0..PRESET_COUNT` = preset, `>=PRESET_COUNT` = custom slot.
 fn resolve_progression(chord: i32, custom: Option<&[CustomChordEntryDef]>) -> Vec<OwnedChordEntry> {
     let chord_idx = chord as usize;
     if chord_idx >= PRESET_COUNT {
@@ -1839,10 +1838,9 @@ pub fn compile_to_mml_json(bgm_json: &str) -> String {
     serde_json::to_string(&compile_to_mml(&data)).expect("Failed to serialize MML")
 }
 
-/// Return the resolved progression for a chord slot as JSON. Presets (0..=7) return their
-/// static `CHORD_PROGRESSIONS` entry. Custom slots (>= PRESET_COUNT) fall through to the
-/// resolver's default (I major held for 8 bars) — the UI should not call this for custom
-/// slots, those are stored client-side.
+// Presets (0..=7) return their `CHORD_PROGRESSIONS` entry. For custom slots the resolver
+// falls back to the default (I major × 8 bars), so callers should not use this path for
+// custom slots — those are stored client-side.
 #[cfg(not(pyxel_core))]
 pub fn preset_progression_json(preset: i32) -> String {
     let entries = resolve_progression(preset, None);

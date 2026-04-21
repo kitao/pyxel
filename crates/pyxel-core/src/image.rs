@@ -17,8 +17,7 @@ use crate::{pyxel, utils};
 pub type Rgb24 = u32;
 pub type Color = u8;
 
-/// Return `Some(&palette)` when a color map is active, `None` otherwise.
-/// Uses field-level borrowing so the caller can still mutate `self.canvas`.
+// Uses a macro for field-level borrowing so the caller can still mutate `self.canvas`.
 macro_rules! palette_opt {
     ($self:expr) => {
         if $self.palette_is_identity {
@@ -339,8 +338,6 @@ impl Image {
 
     // Blit operations
 
-    /// # Safety
-    /// `image` must be a valid, non-null pointer to an `Image`.
     pub unsafe fn draw_image(
         &mut self,
         x: f32,
@@ -399,8 +396,6 @@ impl Image {
         canvas
     }
 
-    /// # Safety
-    /// `tilemap` must be a valid, non-null pointer to a `Tilemap`.
     pub unsafe fn draw_tilemap(
         &mut self,
         x: f32,
@@ -636,8 +631,6 @@ impl Image {
         unsafe { drop(Box::from_raw(tmp)) };
     }
 
-    /// # Safety
-    /// `image` must be a valid, non-null pointer to an `Image`.
     pub unsafe fn draw_image_3d(
         &mut self,
         x: f32,
@@ -674,8 +667,6 @@ impl Image {
         );
     }
 
-    /// # Safety
-    /// `tilemap` must be a valid, non-null pointer to a `Tilemap`.
     pub unsafe fn draw_tilemap_3d(
         &mut self,
         x: f32,

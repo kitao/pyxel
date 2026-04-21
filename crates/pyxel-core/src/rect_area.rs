@@ -72,7 +72,7 @@ impl RectArea {
 mod tests {
     use super::*;
 
-    // ── Construction ──
+    // Construction
 
     #[test]
     fn test_new() {
@@ -125,7 +125,7 @@ mod tests {
         assert!(!rect.contains(6, 5));
     }
 
-    // ── is_empty ──
+    // is_empty
 
     #[test]
     fn test_is_empty() {
@@ -135,7 +135,7 @@ mod tests {
         assert!(RectArea::new(0, 0, 0, 0).is_empty());
     }
 
-    // ── contains ──
+    // contains
 
     #[test]
     fn test_contains() {
@@ -167,7 +167,7 @@ mod tests {
         assert!(!rect.contains(5, 0));
     }
 
-    // ── intersection ──
+    // intersection
 
     #[test]
     fn test_intersection() {

@@ -34,6 +34,8 @@ impl Resource {
 }
 
 impl Pyxel {
+    // Resource I/O
+
     pub fn load_resource(
         &mut self,
         filename: &str,
@@ -119,6 +121,8 @@ impl Pyxel {
         Ok(())
     }
 
+    // Palette I/O
+
     pub fn load_palette(&mut self, filename: &str) -> Result<(), String> {
         let filename = Self::palette_filename(filename);
 
@@ -161,6 +165,8 @@ impl Pyxel {
         platform::export_browser_file(&filename);
         Ok(())
     }
+
+    // Capture Operations
 
     pub fn take_screenshot(
         &mut self,
@@ -208,6 +214,8 @@ impl Pyxel {
         );
     }
 
+    // User Data
+
     pub fn user_data_dir(&self, vendor_name: &str, app_name: &str) -> Result<String, String> {
         let home_dir = UserDirs::new()
             .map_or_else(PathBuf::new, |user_dirs| user_dirs.home_dir().to_path_buf());
@@ -230,6 +238,8 @@ impl Pyxel {
 
         Ok(app_data_dir)
     }
+
+    // Debug Dumps
 
     pub(crate) fn dump_image_bank(&self, image_index: u32) {
         let filename = Self::join_desktop_path(&format!("pyxel-image{image_index}"));
@@ -261,6 +271,8 @@ impl Pyxel {
         }
         platform::export_browser_file(&(filename + ".png"));
     }
+
+    // Helpers
 
     fn palette_filename(filename: &str) -> String {
         if filename.to_lowercase().ends_with(RESOURCE_FILE_EXTENSION) {

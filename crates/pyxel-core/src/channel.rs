@@ -206,6 +206,8 @@ impl Channel {
         }
     }
 
+    // Playback Control
+
     pub fn stop(&mut self) {
         self.is_playing = false;
         self.playing_pcm = false;
@@ -221,6 +223,8 @@ impl Channel {
             None
         }
     }
+
+    // Core Processing
 
     pub(crate) fn process(&mut self, blip_buf: Option<&mut BlipBuf>, clock_count: u32) {
         if self.playing_pcm {
@@ -492,6 +496,8 @@ impl Channel {
         }
     }
 
+    // PCM Mixing
+
     pub(crate) fn mix_pcm(&mut self, out: &mut [i16]) {
         if !self.is_playing || !self.playing_pcm {
             return;
@@ -552,6 +558,8 @@ impl Channel {
             }
         }
     }
+
+    // Internal Utilities
 
     fn advance_pcm_sound(&mut self) -> bool {
         self.sound_index += 1;

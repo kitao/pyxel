@@ -109,7 +109,7 @@ pub fn trim_empty_vec<T: Clone>(vecs: &[Vec<T>]) -> Vec<Vec<T>> {
 mod tests {
     use super::*;
 
-    // ── f32_to_i32 / f32_to_u32 ──
+    // f32_to_i32 / f32_to_u32
 
     #[test]
     fn test_f32_to_i32() {
@@ -133,7 +133,7 @@ mod tests {
         assert_eq!(f32_to_u32(-3.0), 0);
     }
 
-    // ── String functions ──
+    // String functions
 
     #[test]
     fn test_remove_whitespace() {
@@ -191,7 +191,7 @@ mod tests {
         assert_eq!(add_file_extension(".png", ".png"), ".png");
     }
 
-    // ── Macros ──
+    // Macros
 
     #[test]
     fn test_string_loop() {
@@ -214,7 +214,7 @@ mod tests {
         assert!(v.is_empty());
     }
 
-    // ── Vec compress/expand/trim ──
+    // Vec compress/expand/trim
 
     #[test]
     fn test_compress_vec() {

@@ -12,7 +12,8 @@
 # Native:
 #   - Lint: make lint
 #   - Build: make clean build
-#   - Test: make clean test (includes watch)
+#   - Test (unit): make test-unit
+#   - Test (full): make clean test (includes watch)
 #
 # WASM:
 #   - Setup once:
@@ -86,12 +87,12 @@ PYO3_ENVIRONMENT_SIGNATURE ?= $(shell $(PYTHON) -c \
 	a=platform.architecture()[0]; \
 	print(f'{sys.implementation.name}-{v.major}.{v.minor}-{a}')")
 
-lint build test: export PYO3_PYTHON := $(PYO3_PYTHON)
-lint build test: export PYO3_ENVIRONMENT_SIGNATURE := $(PYO3_ENVIRONMENT_SIGNATURE)
+lint build test test-unit: export PYO3_PYTHON := $(PYO3_PYTHON)
+lint build test test-unit: export PYO3_ENVIRONMENT_SIGNATURE := $(PYO3_ENVIRONMENT_SIGNATURE)
 endif
 
 .PHONY: \
-	all clean distclean update format lint build install test \
+	all clean distclean update format lint build install test-unit test \
 	clean-wasm lint-wasm build-wasm start-test-server test-wasm \
 	pages
 
@@ -136,7 +137,10 @@ build:
 install: build
 	@pip3 install --force-reinstall "$$(ls -rt $(DIST_DIR)/*.whl | tail -n 1)"
 
-test: install
+test-unit: install
+	@cd $(ROOT_DIR); python -m pytest python/tests/ -v
+
+test: test-unit
 	@CARGO_OPTS="$(CARGO_OPTS)" $(SCRIPTS_DIR)/run_tests
 
 clean-wasm:

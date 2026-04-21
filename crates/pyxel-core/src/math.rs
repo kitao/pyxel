@@ -14,6 +14,8 @@ static mut RNG: *mut Xoshiro256StarStar = null_mut();
 static mut PERLIN: *mut Perlin = null_mut();
 
 impl Pyxel {
+    // Basic math
+
     pub fn ceil(x: f32) -> i32 {
         x.ceil() as i32
     }
@@ -38,6 +40,8 @@ impl Pyxel {
         f32::atan2(y, x) * RAD_TO_DEG
     }
 
+    // Random
+
     pub fn random_seed(seed: u32) {
         *rng() = Xoshiro256StarStar::seed_from_u64(seed as u64);
     }
@@ -51,6 +55,8 @@ impl Pyxel {
         let (min, max) = if min < max { (min, max) } else { (max, min) };
         rng().random_range(min..=max)
     }
+
+    // Noise
 
     pub fn noise_seed(seed: u32) {
         *perlin() = Perlin::new(seed);

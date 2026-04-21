@@ -648,7 +648,7 @@ mod tests {
             .collect()
     }
 
-    // ── Basic notes ──
+    // Basic notes
 
     #[test]
     fn test_single_note() {
@@ -675,7 +675,7 @@ mod tests {
         assert_eq!(notes[2].0, 59); // Cb = B3
     }
 
-    // ── Octave ──
+    // Octave
 
     #[test]
     fn test_octave() {
@@ -702,7 +702,7 @@ mod tests {
         assert_eq!(notes[1].0, 131); // B at O9: (9+1)*12+11 = 131
     }
 
-    // ── Note length ──
+    // Note length
 
     #[test]
     fn test_note_length() {
@@ -746,7 +746,7 @@ mod tests {
         }
     }
 
-    // ── Rest ──
+    // Rest
 
     #[test]
     fn test_rest() {
@@ -777,7 +777,7 @@ mod tests {
         assert!(note_commands(&cmds).is_empty());
     }
 
-    // ── Tie & connection ──
+    // Tie & connection
 
     #[test]
     fn test_tie_extends_duration() {
@@ -804,7 +804,7 @@ mod tests {
         assert_eq!(notes[1], (62, 48)); // D4
     }
 
-    // ── Repeat ──
+    // Repeat
 
     #[test]
     fn test_repeat() {
@@ -827,7 +827,7 @@ mod tests {
             .any(|cmd| matches!(cmd, MmlCommand::RepeatEnd { play_count: 0 })));
     }
 
-    // ── Parameter commands: Tempo ──
+    // Parameter commands: Tempo
 
     #[test]
     fn test_tempo() {
@@ -848,7 +848,7 @@ mod tests {
         assert_eq!(cpt, Some(18643));
     }
 
-    // ── Parameter commands: Volume ──
+    // Parameter commands: Volume
 
     #[test]
     fn test_volume() {
@@ -873,7 +873,7 @@ mod tests {
             .any(|cmd| matches!(cmd, MmlCommand::Volume { level } if *level == 0.0)));
     }
 
-    // ── Parameter commands: Quantize ──
+    // Parameter commands: Quantize
 
     #[test]
     fn test_quantize() {
@@ -906,7 +906,7 @@ mod tests {
         assert!((qvals[2] - 0.5).abs() < 1e-4, "normal: {}", qvals[2]);
     }
 
-    // ── Parameter commands: Tone, Transpose, Detune ──
+    // Parameter commands: Tone, Transpose, Detune
 
     #[test]
     fn test_tone_command() {
@@ -944,7 +944,7 @@ mod tests {
         )));
     }
 
-    // ── Effect definitions: Envelope ──
+    // Effect definitions: Envelope
 
     #[test]
     fn test_envelope_definition() {
@@ -971,7 +971,7 @@ mod tests {
             .any(|cmd| matches!(cmd, MmlCommand::Envelope { slot: 2 })));
     }
 
-    // ── Effect definitions: Vibrato ──
+    // Effect definitions: Vibrato
 
     #[test]
     fn test_vibrato_definition() {
@@ -981,7 +981,7 @@ mod tests {
             .any(|cmd| matches!(cmd, MmlCommand::VibratoSet { slot: 1, .. })));
     }
 
-    // ── Effect definitions: Glide ──
+    // Effect definitions: Glide
 
     #[test]
     fn test_glide_definition() {
@@ -1027,7 +1027,7 @@ mod tests {
         )));
     }
 
-    // ── Default insertion ──
+    // Default insertion
 
     #[test]
     fn test_default_commands_inserted_on_first_note() {
@@ -1053,7 +1053,7 @@ mod tests {
         ));
     }
 
-    // ── Case / whitespace / empty ──
+    // Case / whitespace / empty
 
     #[test]
     fn test_case_insensitive() {
@@ -1075,7 +1075,7 @@ mod tests {
         assert!(cmds.is_empty());
     }
 
-    // ── Error cases ──
+    // Error cases
 
     #[test]
     fn test_err_invalid_character() {
@@ -1140,7 +1140,7 @@ mod tests {
         assert!(parse_mml("C192.").is_err());
     }
 
-    // ── total_duration_sec ──
+    // total_duration_sec
 
     #[test]
     fn test_total_duration_sec_quarter_note_at_120bpm() {

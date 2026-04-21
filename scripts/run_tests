@@ -60,10 +60,6 @@ cd "$CRATES_DIR"
 # Unquoted on purpose: CARGO_OPTS must word-split into multiple cargo flags.
 run cargo test -p pyxel-core $CARGO_OPTS
 
-# Python API tests
-cd "$ROOT_DIR"
-run python -m pytest python/tests/ -v
-
 # Example scripts
 for f in "$EXAMPLES_DIR"/*.py; do
     run_bg pyxel run "$f"

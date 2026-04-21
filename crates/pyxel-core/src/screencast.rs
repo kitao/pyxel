@@ -304,7 +304,7 @@ impl Screencast {
         }
     }
 
-    /// Returns true if color overflow occurred (> 256 entries needed).
+    // Returns true if color overflow occurred (> 256 entries needed).
     #[allow(clippy::too_many_arguments)]
     fn encode_region(
         src: &[Rgb24],

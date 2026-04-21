@@ -675,7 +675,7 @@ mod tests {
         (a - b).abs() < APPROX_EPSILON
     }
 
-    // ── semitone_to_pitch_multiplier ──
+    // semitone_to_pitch_multiplier
 
     #[test]
     fn test_pitch_multiplier_known_values() {
@@ -720,7 +720,7 @@ mod tests {
         }
     }
 
-    // ── Oscillator ──
+    // Oscillator
 
     #[test]
     fn test_oscillator_waveform_cycle() {
@@ -845,7 +845,7 @@ mod tests {
         assert_eq!(osc.waveform_index, 0);
     }
 
-    // ── Envelope ──
+    // Envelope
 
     #[test]
     fn test_envelope_lifecycle() {
@@ -952,7 +952,7 @@ mod tests {
         assert!(approx_eq(env.level(), 0.8), "sustained: {}", env.level());
     }
 
-    // ── Vibrato ──
+    // Vibrato
 
     #[test]
     fn test_vibrato_behavior() {
@@ -1047,7 +1047,7 @@ mod tests {
         );
     }
 
-    // ── Glide ──
+    // Glide
 
     #[test]
     fn test_glide_behavior() {
@@ -1136,7 +1136,7 @@ mod tests {
         );
     }
 
-    // ── Voice ──
+    // Voice
 
     #[test]
     fn test_voice_new_initial_state() {
