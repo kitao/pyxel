@@ -21,11 +21,11 @@ This file is the complete coding policy for Pyxel. Apply every rule.
 ## Principles
 
 - Performance takes top priority. When performance requires deviating from a language's conventions, choose performance.
-  - Hot paths: rendering loops (per-pixel blit, line/circle/rect primitives), audio generation (per-sample / per-frame voice, MML, BGM), PyO3 FFI boundary, parallelization (SIMD, multi-threading).
+  - Hot paths: rendering loops (per-pixel blit, line/circle/rect primitives), audio generation (per-sample voice synthesis, per-frame voice update, MML, BGM), PyO3 FFI boundary, parallelization (SIMD, multi-threading).
 - In each language, write code that feels natural and concise to a professional in that language.
-- Avoid duplication and redundancy. Keep the same intent in a single place.
+- Avoid duplication and redundancy. Keep each intent in a single place.
 
-## Naming
+## Naming and Ordering
 
 - Function names, argument names, variable names, and definition order should follow the language's conventions and be natural and intuitive.
   - e.g., within a type: constructors → public API → private helpers
@@ -66,7 +66,7 @@ This file is the complete coding policy for Pyxel. Apply every rule.
 
 ## Configuration Files
 
-- Avoid arbitrary or incidental ordering. Follow conventional grouping and ordering.
+- Avoid unmotivated ordering. Follow conventional grouping and ordering.
 - Within each group, sort entries by a fixed rule such as alphabetical order.
 
 ## Multi-language Documentation
@@ -79,7 +79,7 @@ This file is the complete coding policy for Pyxel. Apply every rule.
 
 ## Tools
 
-- When performing rewrites, use the relevant superpowers skills properly.
+- Use the relevant superpowers skills whenever they apply.
   - e.g., `superpowers:verification-before-completion` before claiming any change or check is complete
 - Delegate surface formatting (indentation, line wrapping, quoting, etc.) to `make format`. Do not format by hand.
 - Keep `make lint` and `make lint-wasm` warning-free.
