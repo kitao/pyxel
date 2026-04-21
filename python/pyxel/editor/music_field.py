@@ -14,11 +14,9 @@ from .widgets import Widget
 
 
 class MusicField(Widget):
-    """
-    Variables:
-        is_playing_var
-        help_message_var
-    """
+    # Variables:
+    #   is_playing_var
+    #   help_message_var
 
     def __init__(self, parent, x, y, ch):
         super().__init__(parent, x, y, 218, 21)

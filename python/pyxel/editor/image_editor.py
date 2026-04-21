@@ -10,21 +10,19 @@ _COLOR_SHORTCUT_KEYS = tuple(pyxel.KEY_1 + i for i in range(8))
 
 
 class ImageEditor(EditorBase):
-    """
-    Variables:
-        color_var
-        tool_var
-        image_index_var
-        canvas_var
-        focus_x_var
-        focus_y_var
-        help_message_var
-
-    Events:
-        undo (data)
-        redo (data)
-        drop (filename)
-    """
+    # Variables:
+    #   color_var
+    #   tool_var
+    #   image_index_var
+    #   canvas_var
+    #   focus_x_var
+    #   focus_y_var
+    #   help_message_var
+    #
+    # Events:
+    #   undo (data)
+    #   redo (data)
+    #   drop (filename)
 
     def __init__(self, parent):
         super().__init__(parent)

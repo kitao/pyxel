@@ -20,14 +20,12 @@ _FIELD_HELP = (
 
 
 class SoundEditor(EditorBase):
-    """
-    Variables:
-        sound_index_var
-        speed_var
-        octave_var
-        note_var
-        is_playing_var
-    """
+    # Variables:
+    #   sound_index_var
+    #   speed_var
+    #   octave_var
+    #   note_var
+    #   is_playing_var
 
     def __init__(self, parent):
         super().__init__(parent)
@@ -120,6 +118,8 @@ class SoundEditor(EditorBase):
         self.add_event_listener("update", self.__on_update)
         self.add_event_listener("draw", self.__on_draw)
 
+    # Public methods
+
     def get_field(self, index):
         if 0 <= index < len(_SOUND_FIELDS):
             return getattr(pyxel.sounds[self.sound_index_var], _SOUND_FIELDS[index])
@@ -158,6 +158,8 @@ class SoundEditor(EditorBase):
         cursor_y = self.field_cursor.y
         return _FIELD_HELP[cursor_y] if cursor_y < len(_FIELD_HELP) else ""
 
+    # Helpers
+
     def _play(self, is_partial):
         self._sound_picker.is_enabled_var = False
         self._speed_picker.is_enabled_var = False
@@ -191,6 +193,8 @@ class SoundEditor(EditorBase):
         else:
             self.field_cursor.move_to(*data[f"{prefix}_cursor_pos"], False)
             self.field_cursor.field[:] = data[f"{prefix}_field"]
+
+    # Event handlers
 
     def __on_is_playing_var_get(self, value):
         return self._is_playing_cache

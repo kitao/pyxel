@@ -5,13 +5,11 @@ from .widgets import Widget
 
 
 class TilemapViewer(Widget):
-    """
-    Variables:
-        tilemap_index_var
-        focus_x_var
-        focus_y_var
-        help_message_var
-    """
+    # Variables:
+    #   tilemap_index_var
+    #   focus_x_var
+    #   focus_y_var
+    #   help_message_var
 
     def __init__(self, parent):
         super().__init__(parent, 157, 16, 66, 65)

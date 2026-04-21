@@ -16,12 +16,10 @@ from .widgets.settings import WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME
 
 
 class PianoRoll(Widget):
-    """
-    Variables:
-        note_var
-        is_playing_var
-        help_message_var
-    """
+    # Variables:
+    #   note_var
+    #   is_playing_var
+    #   help_message_var
 
     def __init__(self, parent):
         super().__init__(parent, 30, 25, 193, 123)

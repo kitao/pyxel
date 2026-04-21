@@ -9,13 +9,11 @@ from .widgets import ImageButton, ImageToggleButton, NumberPicker
 
 
 class MusicEditor(EditorBase):
-    """
-    Variables:
-        music_index_var
-        should_loop_var
-        is_playing_var
-        help_message_var
-    """
+    # Variables:
+    #   music_index_var
+    #   should_loop_var
+    #   is_playing_var
+    #   help_message_var
 
     def __init__(self, parent):
         super().__init__(parent)
@@ -89,6 +87,8 @@ class MusicEditor(EditorBase):
         # Normalize the initial music's seqs length
         self._normalize_music_seqs(self.music_index_var)
 
+    # Public methods
+
     def get_field(self, index):
         if index >= pyxel.NUM_CHANNELS:
             return None
@@ -117,6 +117,8 @@ class MusicEditor(EditorBase):
                 self.add_history(data)
 
     @staticmethod
+    # Helpers
+
     def _normalize_music_seqs(music_index):
         music = pyxel.musics[music_index]
         seqs_len = len(music.seqs)
@@ -157,6 +159,8 @@ class MusicEditor(EditorBase):
         else:
             self.field_cursor.move_to(*data[f"{prefix}_cursor_pos"], False)
             self.field_cursor.field[:] = data[f"{prefix}_field"]
+
+    # Event handlers
 
     def __on_music_index_change(self, value):
         self._normalize_music_seqs(value)

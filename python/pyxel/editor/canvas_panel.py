@@ -21,22 +21,20 @@ _EMPTY_TILE = (255, 255)
 
 
 class CanvasPanel(Widget):
-    """
-    Variables:
-        color_var
-        tool_var
-        image_index_var
-        canvas_var
-        focus_x_var
-        focus_y_var
-        help_message_var
-
-        tilemap_index_var
-        tile_x_var
-        tile_y_var
-        tile_w_var
-        tile_h_var
-    """
+    # Variables:
+    #   color_var
+    #   tool_var
+    #   image_index_var
+    #   canvas_var
+    #   focus_x_var
+    #   focus_y_var
+    #   help_message_var
+    #
+    #   tilemap_index_var
+    #   tile_x_var
+    #   tile_y_var
+    #   tile_w_var
+    #   tile_h_var
 
     def __init__(self, parent):
         super().__init__(parent, 11, 16, 130, 130)
@@ -111,6 +109,8 @@ class CanvasPanel(Widget):
         self.add_event_listener("mouse_hover", self.__on_mouse_hover)
         self.add_event_listener("update", self.__on_update)
         self.add_event_listener("draw", self.__on_draw)
+
+    # Helpers
 
     def _screen_to_focus(self, x, y):
         x = clamp((x - self.x - 1) // 8, 0, 15)
@@ -195,6 +195,8 @@ class CanvasPanel(Widget):
                     self.tile_y_var + (y - self._press_y) % self.tile_h_var,
                 )
                 self._edit_canvas.pset(x, y, tile)
+
+    # Event handlers
 
     def __on_h_scroll_bar_change(self, value):
         self.focus_x_var = value

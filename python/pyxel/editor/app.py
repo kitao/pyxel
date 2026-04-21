@@ -21,11 +21,9 @@ _EDITOR_TYPES = {"image": 0, "tilemap": 1, "sound": 2, "music": 3}
 
 
 class App(Widget):
-    """
-    Variables:
-        editor_type_var
-        help_message_var
-    """
+    # Variables:
+    #   editor_type_var
+    #   help_message_var
 
     def __init__(self, resource_file, starting_editor):
         # Get absolute path of resource file before initializing Pyxel

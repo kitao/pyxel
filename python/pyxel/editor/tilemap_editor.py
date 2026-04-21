@@ -9,26 +9,24 @@ from .widgets import NumberPicker, RadioButton
 
 
 class TilemapEditor(EditorBase):
-    """
-    Variables:
-        color_var
-        tool_var
-        image_index_var
-        canvas_var
-        focus_x_var
-        focus_y_var
-
-        tilemap_index_var
-        tile_x_var
-        tile_y_var
-        tile_w_var
-        tile_h_var
-
-    Events:
-        undo (data)
-        redo (data)
-        drop (filename)
-    """
+    # Variables:
+    #   color_var
+    #   tool_var
+    #   image_index_var
+    #   canvas_var
+    #   focus_x_var
+    #   focus_y_var
+    #
+    #   tilemap_index_var
+    #   tile_x_var
+    #   tile_y_var
+    #   tile_w_var
+    #   tile_h_var
+    #
+    # Events:
+    #   undo (data)
+    #   redo (data)
+    #   drop (filename)
 
     def __init__(self, parent):
         super().__init__(parent)

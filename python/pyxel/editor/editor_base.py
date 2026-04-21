@@ -13,15 +13,13 @@ from .widgets import Widget
 
 
 class EditorBase(Widget):
-    """
-    Variables:
-        help_message_var
-
-    Events:
-        undo (data)
-        redo (data)
-        drop (filename)
-    """
+    # Variables:
+    #   help_message_var
+    #
+    # Events:
+    #   undo (data)
+    #   redo (data)
+    #   drop (filename)
 
     _TOOL_HELP = {
         TOOL_SELECT: "SELECT:S",

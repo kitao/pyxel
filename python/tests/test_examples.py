@@ -60,8 +60,7 @@ def run_example(script_path):
 
 
 class _FlipCapture(Exception):
-    """Raised to stop a while+flip() loop at the target frame."""
-
+    # Raised to stop a while+flip() loop at the target frame.
     pass
 
 

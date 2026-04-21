@@ -6,11 +6,9 @@ from .widgets.settings import BUTTON_ENABLED_COLOR, BUTTON_PRESSED_COLOR
 
 
 class SoundSelector(Widget):
-    """
-    Variables:
-        is_playing_var
-        help_message_var
-    """
+    # Variables:
+    #   is_playing_var
+    #   help_message_var
 
     def __init__(self, parent):
         super().__init__(parent, 11, 129, 218, 44)

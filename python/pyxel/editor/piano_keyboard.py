@@ -61,13 +61,11 @@ _FULL_WHITE_KEYS = {2, 7, 9}  # D, G, A — white key between two black keys
 
 
 class PianoKeyboard(Widget):
-    """
-    Variables:
-        note_var
-        octave_var
-        is_playing_var
-        help_message_var
-    """
+    # Variables:
+    #   note_var
+    #   octave_var
+    #   is_playing_var
+    #   help_message_var
 
     def __init__(self, parent):
         super().__init__(parent, 17, 25, 12, 123)

@@ -9,16 +9,14 @@ MAX_TILE_INDEX = 31
 
 
 class ImageViewer(Widget):
-    """
-    Variables:
-        image_index_var
-        tilemap_index_var
-        focus_x_var
-        focus_y_var
-        viewport_x_var
-        viewport_y_var
-        help_message_var
-    """
+    # Variables:
+    #   image_index_var
+    #   tilemap_index_var
+    #   focus_x_var
+    #   focus_y_var
+    #   viewport_x_var
+    #   viewport_y_var
+    #   help_message_var
 
     def __init__(self, parent):
         if hasattr(parent, "tilemap_index_var"):
