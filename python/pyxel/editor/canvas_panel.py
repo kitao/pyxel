@@ -16,7 +16,7 @@ from .settings import (
 from .widgets import ScrollBar, Widget
 from .widgets.settings import WIDGET_HOLD_TIME, WIDGET_PANEL_COLOR, WIDGET_REPEAT_TIME
 
-# Sentinel tile value indicating an empty/unset tile in tilemap mode
+# Sentinel tile for cells that tilemap-mode drawing primitives leave untouched
 _EMPTY_TILE = (255, 255)
 
 
@@ -76,7 +76,6 @@ class CanvasPanel(Widget):
         self.copy_var("focus_y_var", parent)
         self.copy_var("help_message_var", parent)
 
-        # Initialize horizontal scroll bar
         self._h_scroll_bar = ScrollBar(
             self,
             0,
@@ -89,7 +88,6 @@ class CanvasPanel(Widget):
         self._h_scroll_bar.add_event_listener("change", self.__on_h_scroll_bar_change)
         self.add_var_event_listener("focus_x_var", "change", self.__on_focus_x_change)
 
-        # Initialize vertical scroll bar
         self._v_scroll_bar = ScrollBar(
             self,
             129,
@@ -102,7 +100,6 @@ class CanvasPanel(Widget):
         self._v_scroll_bar.add_event_listener("change", self.__on_v_scroll_bar_change)
         self.add_var_event_listener("focus_y_var", "change", self.__on_focus_y_change)
 
-        # Set event listeners
         self.add_event_listener("mouse_down", self.__on_mouse_down)
         self.add_event_listener("mouse_up", self.__on_mouse_up)
         self.add_event_listener("mouse_drag", self.__on_mouse_drag)

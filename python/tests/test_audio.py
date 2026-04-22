@@ -78,11 +78,11 @@ class TestStop:
 
     def test_stop_idempotent(self):
         pyxel.stop()
-        pyxel.stop()  # Double stop should not raise
+        pyxel.stop()
 
 
 class TestPlayPos:
-    def test_play_pos_none_when_not_playing(self):
+    def test_play_pos_when_not_playing(self):
         pyxel.stop(3)
         result = pyxel.play_pos(3)
         assert result is None
@@ -134,7 +134,7 @@ class TestGenBgm:
         result_transposed = pyxel.gen_bgm(0, 3, 3, 42)
         assert result_default != result_transposed
 
-    def test_transp_and_instr_combined(self):
+    def test_transpose_and_instr_combined(self):
         result_default = pyxel.gen_bgm(0, 0, 3, 42)
         result_combined = pyxel.gen_bgm(0, 3, 0, 42)
         assert result_default != result_combined

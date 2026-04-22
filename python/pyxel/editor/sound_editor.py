@@ -46,7 +46,8 @@ class SoundEditor(EditorBase):
 
         self.new_var("octave_var", 2)
 
-        # Initialize is_playing_var (cached once per frame in __on_update)
+        # is_playing_var reads from a per-frame cache filled in __on_update,
+        # so multiple reads per frame avoid repeated pyxel.play_pos calls
         self._is_playing_cache = False
         self.new_var("is_playing_var", None)
         self.add_var_event_listener(

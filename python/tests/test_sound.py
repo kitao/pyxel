@@ -39,7 +39,6 @@ class TestSound:
     def test_mml(self):
         snd = pyxel.Sound()
         snd.mml("T120 O4 L4 CDEF")
-        # MML mode generates audio; total_sec should be positive
         assert snd.total_sec() > 0
 
     def test_mml_none_exits_mml_mode(self):

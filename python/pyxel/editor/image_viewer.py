@@ -3,9 +3,8 @@ import pyxel
 from .settings import PANEL_FOCUS_BORDER_COLOR, PANEL_FOCUS_COLOR, clamp
 from .widgets import ScrollBar, Widget
 
-# Grid size in pixels per tile and max tile index (256 / GRID_SIZE - 1)
 GRID_SIZE = 8
-MAX_TILE_INDEX = 31
+MAX_TILE_INDEX = 31  # 256 / GRID_SIZE - 1
 
 
 class ImageViewer(Widget):

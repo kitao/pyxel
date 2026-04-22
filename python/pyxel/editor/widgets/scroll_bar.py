@@ -48,7 +48,6 @@ class ScrollBar(Widget):
         self.add_var_event_listener("value_var", "set", self.__on_value_set)
         self.add_var_event_listener("value_var", "change", self.__on_value_change)
 
-        # Initialize dec/inc buttons
         if self._is_vertical:
             btn_w, btn_h = 7, 6
             inc_x, inc_y = 0, height - 6
@@ -60,7 +59,6 @@ class ScrollBar(Widget):
         self.inc_button = Button(self, inc_x, inc_y, btn_w, btn_h)
         self.inc_button.add_event_listener("press", self.__on_inc_button_press)
 
-        # Set event listeners
         self.add_event_listener("mouse_down", self.__on_mouse_down)
         self.add_event_listener("mouse_up", self.__on_mouse_up)
         self.add_event_listener("mouse_drag", self.__on_mouse_drag)

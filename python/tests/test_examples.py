@@ -12,7 +12,7 @@ EXAMPLES_DIR = Path(__file__).parent.parent / "pyxel" / "examples"
 EXAMPLE_REFS_DIR = REFERENCES_DIR / "examples"
 
 
-def _reinit_pyxel():
+def _reset_pyxel():
     pyxel._reset_statics()
 
 
@@ -227,7 +227,7 @@ class TestExamples:
         script = EXAMPLES_DIR / f"{name}.py"
         assert script.exists(), f"Example not found: {script}"
 
-        _reinit_pyxel()
+        _reset_pyxel()
         try:
             if name in FLIP_EXAMPLES:
                 plan = CAPTURE_PLANS[name]

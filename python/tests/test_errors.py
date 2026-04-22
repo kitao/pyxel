@@ -4,15 +4,15 @@ import pyxel
 
 
 class TestTypeErrors:
-    def test_sin_with_string(self):
+    def test_sin_wrong_deg_type(self):
         with pytest.raises(TypeError):
             pyxel.sin("abc")
 
-    def test_pset_with_string_x(self):
+    def test_pset_wrong_x_type(self):
         with pytest.raises(TypeError):
             pyxel.pset("a", 0, 0)
 
-    def test_clamp_with_string(self):
+    def test_clamp_wrong_x_type(self):
         with pytest.raises(TypeError):
             pyxel.clamp("a", 0, 10)
 
@@ -186,6 +186,6 @@ class TestFileErrors:
         with pytest.raises(Exception):
             pyxel.Image.from_image("/nonexistent/path/image.png")
 
-    def test_font_nonexistent(self):
+    def test_load_nonexistent_font(self):
         with pytest.raises(Exception):
             pyxel.Font("/nonexistent/path/font.bdf")

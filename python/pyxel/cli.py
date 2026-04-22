@@ -170,7 +170,7 @@ def _extract_pyxel_app(pyxel_app_file):
         for name in zf.namelist():
             target = (app_dir / name).resolve()
             if target != app_dir_abs and not target.is_relative_to(app_dir_abs):
-                _exit_with_error(f"unsafe path in pyxel app: '{name}'")
+                _exit_with_error(f"unsafe path in Pyxel app: '{name}'")
         zf.extractall(app_dir)
 
     for setting_file in app_dir.glob(f"*/{pyxel.APP_STARTUP_SCRIPT_FILE}"):
@@ -379,7 +379,7 @@ def create_executable_from_pyxel_app(pyxel_app_file: str) -> None:
 
     startup_script = _extract_pyxel_app(pyxel_app_file)
     if startup_script is None:
-        _exit_with_error("Failed to extract startup script from pyxel app.")
+        _exit_with_error("Failed to extract startup script from Pyxel app.")
 
     modules = pyxel.utils.list_imported_modules(startup_script)["system"]
     hidden_imports = [arg for m in modules for arg in ("--hidden-import", m)]

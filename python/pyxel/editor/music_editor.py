@@ -84,7 +84,6 @@ class MusicEditor(EditorBase):
         self.add_event_listener("update", self.__on_update)
         self.add_event_listener("draw", self.__on_draw)
 
-        # Normalize the initial music's seqs length
         self._normalize_music_seqs(self.music_index_var)
 
     # Public methods
@@ -116,9 +115,9 @@ class MusicEditor(EditorBase):
             if data["new_field"] != data["old_field"]:
                 self.add_history(data)
 
-    @staticmethod
     # Helpers
 
+    @staticmethod
     def _normalize_music_seqs(music_index):
         music = pyxel.musics[music_index]
         seqs_len = len(music.seqs)

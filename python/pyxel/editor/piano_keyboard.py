@@ -35,8 +35,7 @@ _KEY_TABLE = [
     pyxel.KEY_U,
 ]
 
-# Table-driven Y-coordinate ranges for black/white key note mapping
-# Within a 24px octave block: (y_start, y_end, note_offset)
+# (y_start, y_end, note_offset) within each 24px octave block
 _BLACK_KEY_RANGES = [
     (2, 4, 10),
     (6, 8, 8),
@@ -54,10 +53,10 @@ _WHITE_KEY_RANGES = [
     (20, 24, 0),
 ]
 
-# Note key classification for draw highlight shapes
-_BOTTOM_WHITE_KEYS = {0, 5}  # C, F — white key at bottom of pair
-_TOP_WHITE_KEYS = {4, 11}  # E, B — white key at top of pair
-_FULL_WHITE_KEYS = {2, 7, 9}  # D, G, A — white key between two black keys
+# Classification of white keys for the playback highlight shape
+_BOTTOM_WHITE_KEYS = {0, 5}  # C, F — below a black key
+_TOP_WHITE_KEYS = {4, 11}  # E, B — above a black key
+_FULL_WHITE_KEYS = {2, 7, 9}  # D, G, A — between two black keys
 
 
 class PianoKeyboard(Widget):

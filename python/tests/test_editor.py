@@ -7,7 +7,7 @@ import pyxel
 import pyxel.editor
 
 from test_examples import (
-    _reinit_pyxel,
+    _reset_pyxel,
     _restore_pyxel,
     compare_or_update_all,
 )
@@ -186,7 +186,7 @@ class TestEditor:
         "editor", list(EDITOR_PLANS.keys()), ids=list(EDITOR_PLANS.keys())
     )
     def test_editor(self, editor, tmp_path, update_references):
-        _reinit_pyxel()
+        _reset_pyxel()
         try:
             captured = run_editor(editor)
             results = run_editor_edit(editor, captured, tmp_path)

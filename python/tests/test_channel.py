@@ -82,7 +82,7 @@ class TestChannel:
 
     def test_stop_when_not_playing(self):
         ch = pyxel.Channel()
-        ch.stop()  # Should not raise
+        ch.stop()
 
     def test_play_pos_when_not_playing(self):
         ch = pyxel.Channel()
@@ -90,7 +90,7 @@ class TestChannel:
         result = ch.play_pos()
         assert result is None
 
-    def test_play_pos_returns_tuple_with_two_ints(self):
+    def test_play_pos_returns_tuple_when_playing(self):
         snd = pyxel.Sound()
         snd.set("c2e2g2c3e3g3c4e4", "ssssssss", "77777777", "nnnnnnnn", 10)
         ch = pyxel.Channel()

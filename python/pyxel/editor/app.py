@@ -26,11 +26,10 @@ class App(Widget):
     #   help_message_var
 
     def __init__(self, resource_file, starting_editor):
-        # Get absolute path of resource file before initializing Pyxel
+        # Resolve the absolute path before pyxel.init changes the working directory
         original_resource_file = resource_file
         resource_path = Path(resource_file).absolute()
 
-        # Validate resource file path
         if resource_path.is_dir():
             print(f"A directory named '{original_resource_file}' exists")
             sys.exit(1)
@@ -38,7 +37,6 @@ class App(Widget):
             print(f"Directory for '{original_resource_file}' does not exist")
             sys.exit(1)
 
-        # Initialize Pyxel and load resources
         pyxel.init(APP_WIDTH, APP_HEIGHT, quit_key=pyxel.KEY_NONE)
         pyxel.mouse(True)
         colors = list(pyxel.colors)
@@ -50,12 +48,12 @@ class App(Widget):
         else:
             pyxel.load_pal(resource_file)
 
-        # Set up extended color palette (system + user colors)
+        # Concatenate system and user palettes so colors[:NUM_COLORS] are the
+        # system set and colors[NUM_COLORS:] are the user set
         pyxel.num_user_colors = len(pyxel.colors)
         colors += list(pyxel.colors)
         pyxel.colors[:] = colors
 
-        # Start initializing application
         super().__init__(None, 0, 0, pyxel.width, pyxel.height)
         self._resource_file = resource_file
 
@@ -108,11 +106,9 @@ class App(Widget):
         ]
         self.__on_editor_button_change(self.editor_type_var)
 
-        # Set event listeners
         self.add_event_listener("update", self.__on_update)
         self.add_event_listener("draw", self.__on_draw)
 
-        # Start application
         pyxel.run(self.update_all, self.draw_all)
 
     # Helpers

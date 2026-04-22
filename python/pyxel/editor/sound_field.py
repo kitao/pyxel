@@ -14,7 +14,7 @@ from .settings import (
 from .widgets import Widget
 from .widgets.settings import WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME
 
-# Table-driven key dispatch for each field row
+# Shortcut keys that insert a value into each field row (indexed by cursor_y)
 _FIELD_KEY_TABLES = {
     1: [pyxel.KEY_T, pyxel.KEY_S, pyxel.KEY_P, pyxel.KEY_N],
     2: [
@@ -75,7 +75,6 @@ class SoundField(Widget):
         if cursor_y < 1 or self.is_playing_var or is_modifier_pressed():
             return
 
-        # Table-driven key dispatch
         key_table = _FIELD_KEY_TABLES.get(cursor_y)
         if key_table is None:
             return
