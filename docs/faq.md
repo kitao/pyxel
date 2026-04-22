@@ -5,7 +5,7 @@
 <details>
 <summary>Where do I start to learn Pyxel?</summary>
 
-It is recommended to try Pyxel's example code in the following order.
+We recommend trying Pyxel's example code in the following order.
 
 1. 01_hello_pyxel — Pyxel basics
 2. 05_color_palette — Color palette
@@ -38,7 +38,7 @@ The `update` function is called every frame, but the `draw` function may be skip
 
 MML (Music Macro Language) is a language for defining sounds by describing notes, tempo, and other parameters as a string.
 
-Pass an MML string to the `mml` function of the Sound class, and the Sound will play according to that MML. Calling `mml()` with no arguments clears the MML setting.
+Pass an MML string to the Sound class's `mml` function, and that Sound will play back following the MML. Calling `mml()` with no arguments clears the MML setting.
 
 ```python
 pyxel.sounds[0].mml("CDEFGAB>C")
@@ -126,6 +126,6 @@ For details on the new MML syntax, see "[How do I use Pyxel's MML?](#api-specifi
 <details>
 <summary>Can I use Pyxel for commercial purposes without the author's permission?</summary>
 
-As long as you comply with the MIT License and clearly display the full text of the copyright and license in the source code or license file, you are free to sell or distribute your work without the author's permission. However, since Pyxel is developed by a single individual, contact with the author or sponsorship would be greatly appreciated.
+As long as you comply with the MIT License and clearly display the full text of the copyright and license in the source code or license file, you are free to sell or distribute your work without the author's permission. That said, Pyxel is developed by a single individual, so reaching out to the author or becoming a sponsor would be greatly appreciated.
 
 </details>

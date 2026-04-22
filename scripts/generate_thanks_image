@@ -229,12 +229,11 @@ def draw_message_image(thanks_image):
 
     message_image.putdata(pixels)
 
-    # Enlarge the message image
     message_image = message_image.resize(
         (MESSAGE_WIDTH, MESSAGE_HEIGHT), resample=PIL.Image.NEAREST
     )
 
-    # Draw a message padding
+    # Draw a black frame around the message as padding
     message_pad_image = PIL.Image.new(
         "RGB",
         (
@@ -244,8 +243,6 @@ def draw_message_image(thanks_image):
         (0, 0, 0),
     )
     thanks_image.paste(message_pad_image, (MESSAGE_PAD_X, MESSAGE_PAD_Y))
-
-    # Draw the message on the padding
     thanks_image.paste(message_image, (MESSAGE_X, MESSAGE_Y))
 
 

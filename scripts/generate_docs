@@ -27,8 +27,6 @@ def localize(obj):
     return obj.get("en", "")
 
 
-
-
 def _find_matching(text, start, open_ch, close_ch):
     depth = 1
     i = start

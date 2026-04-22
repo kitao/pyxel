@@ -375,7 +375,7 @@
           "details": {
             "en": "A classic snake game with background music composed in Pyxel MML. A useful reference for game logic such as grid-based movement and managing the snake body with a list.",
             "cn": "使用 Pyxel MML 作曲 BGM 的经典贪吃蛇游戏。网格移动处理和列表管理蛇身等游戏逻辑的实用参考。",
-            "de": "Klassisches Schlangenspiel mit in Pyxel-MML komponierter Hintergrundmusik. Nützliche Referenz für Spiellogik wie rasterbasierte Bewegung und Verwaltung des Schlangenkörpers mit einer Liste.",
+            "de": "Klassisches Schlangenspiel mit in Pyxel MML komponierter Hintergrundmusik. Nützliche Referenz für Spiellogik wie rasterbasierte Bewegung und Verwaltung des Schlangenkörpers mit einer Liste.",
             "es": "Juego clásico de la serpiente con música de fondo compuesta en Pyxel MML. Referencia útil para lógica de juego como movimiento basado en cuadrícula y gestión del cuerpo de la serpiente con una lista.",
             "fr": "Jeu de serpent classique avec musique de fond composée en Pyxel MML. Référence utile pour la logique de jeu comme le déplacement sur grille et la gestion du corps du serpent avec une liste.",
             "it": "Gioco del serpente classico con musica di sottofondo composta in Pyxel MML. Riferimento utile per la logica di gioco come il movimento su griglia e la gestione del corpo del serpente con una lista.",
@@ -1304,7 +1304,7 @@
           "details": {
             "en": "A browser-based editor for composing chiptune music using Pyxel MML. Supports 4-channel editing, real-time preview, and song sharing via URL or QR code.",
             "cn": "在浏览器中使用 Pyxel MML 制作芯片音乐的编辑器。支持 4 通道编辑、实时预览以及通过 URL 或二维码分享乐曲。",
-            "de": "Ein browserbasierter Editor zum Komponieren von Chiptune-Musik mit Pyxel-MML. Unterstützt 4-Kanal-Bearbeitung, Echtzeitvorschau und Songfreigabe per URL oder QR-Code.",
+            "de": "Ein browserbasierter Editor zum Komponieren von Chiptune-Musik mit Pyxel MML. Unterstützt 4-Kanal-Bearbeitung, Echtzeitvorschau und Songfreigabe per URL oder QR-Code.",
             "es": "Editor en el navegador para componer música chiptune con Pyxel MML. Soporta edición de 4 canales, vista previa en tiempo real y compartir canciones por URL o código QR.",
             "fr": "Éditeur dans le navigateur pour composer de la musique chiptune avec Pyxel MML. Prend en charge l'édition 4 canaux, l'aperçu en temps réel et le partage de morceaux par URL ou QR code.",
             "it": "Editor nel browser per comporre musica chiptune con Pyxel MML. Supporta editing a 4 canali, anteprima in tempo reale e condivisione brani tramite URL o codice QR.",

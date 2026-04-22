@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# Idempotent: produces the same output regardless of how many times it runs.
 
 import copy
 import json
@@ -115,7 +114,8 @@ def _build_doc_map(api_data):
 
 
 def _fallback_item(class_name, func_name, doc_map):
-    """Fall back to module-level graphics function for class drawing methods. For Image: reuse as-is. For Tilemap: adapt descriptions."""
+    # Fall back to module-level graphics function for class drawing methods.
+    # Image reuses the source as-is; Tilemap adapts descriptions.
     source = doc_map.get((None, func_name))
     if not source:
         return None

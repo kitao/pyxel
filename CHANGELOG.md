@@ -619,7 +619,7 @@
 - Modified a shortcut description in the README files
 - Renamed (tile_x, tile_y) to (image_tx, image_ty) in the README files
 - Replaced the usage of a deprecated API
-- Updated Tilemap editor to load Layer 0 when a TMX file is dropped onto it
+- Updated tilemap editor to load Layer 0 when a TMX file is dropped onto it
 - Updated Maturin to the latest version
 - Updated Pyodide to version 0.26.4
 - Updated indexmap crate to version 2.7
