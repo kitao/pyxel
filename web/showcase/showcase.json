@@ -1251,6 +1251,39 @@
           }
         },
         {
+          "file": "Pyxel Web Launcher",
+          "demo": "../launcher/index.html",
+          "code": "https://github.com/kitao/pyxel/tree/main/web/launcher",
+          "description": {
+            "en": "URL-driven launcher for running Pyxel apps hosted on GitHub",
+            "cn": "通过 URL 参数启动 GitHub 上托管的 Pyxel 应用的启动器",
+            "de": "URL-gesteuerter Launcher für auf GitHub gehostete Pyxel-Apps",
+            "es": "Lanzador de aplicaciones Pyxel alojadas en GitHub mediante parámetros URL",
+            "fr": "Lanceur d'applications Pyxel hébergées sur GitHub via paramètres URL",
+            "it": "Launcher URL per applicazioni Pyxel ospitate su GitHub",
+            "ja": "URL パラメータで GitHub 上の Pyxel アプリを起動するランチャー",
+            "ko": "URL 파라미터로 GitHub에 호스팅된 Pyxel 앱을 실행하는 런처",
+            "pt": "Lançador de aplicativos Pyxel hospedados no GitHub via parâmetros URL",
+            "ru": "Запуск Pyxel-приложений, размещённых на GitHub, через URL-параметры",
+            "tr": "URL parametreleriyle GitHub'daki Pyxel uygulamalarını başlatan başlatıcı",
+            "uk": "Лаунчер застосунків Pyxel, розміщених на GitHub, через URL-параметри"
+          },
+          "details": {
+            "en": "Launches Pyxel apps hosted on GitHub from URL parameters. Supports running .py scripts, playing .pyxapp files, and opening .pyxres resources in the editor, with a URL Builder for constructing launch URLs interactively.",
+            "cn": "通过 URL 参数启动托管在 GitHub 上的 Pyxel 应用。支持运行 .py 脚本、播放 .pyxapp 文件以及在编辑器中打开 .pyxres 资源，并附带 URL Builder 用于交互式构建启动链接。",
+            "de": "Startet auf GitHub gehostete Pyxel-Apps über URL-Parameter. Unterstützt das Ausführen von .py-Skripten, das Abspielen von .pyxapp-Dateien und das Öffnen von .pyxres-Ressourcen im Editor, inklusive URL Builder zum interaktiven Erstellen von Start-URLs.",
+            "es": "Lanza aplicaciones Pyxel alojadas en GitHub desde parámetros URL. Soporta ejecutar scripts .py, reproducir archivos .pyxapp y abrir recursos .pyxres en el editor, con un URL Builder para construir URLs de lanzamiento de forma interactiva.",
+            "fr": "Lance des applications Pyxel hébergées sur GitHub à partir de paramètres URL. Prend en charge l'exécution de scripts .py, la lecture de fichiers .pyxapp et l'ouverture de ressources .pyxres dans l'éditeur, avec un URL Builder pour construire les URLs de lancement de manière interactive.",
+            "it": "Avvia applicazioni Pyxel ospitate su GitHub tramite parametri URL. Supporta l'esecuzione di script .py, la riproduzione di file .pyxapp e l'apertura di risorse .pyxres nell'editor, con un URL Builder per costruire URL di avvio in modo interattivo.",
+            "ja": "URL パラメータで指定された GitHub 上の Pyxel アプリを起動できます。.py ファイルの実行、.pyxapp ファイルの再生、.pyxres ファイルの編集に対応し、URL Builder で起動 URL を対話的に作成できます。",
+            "ko": "URL 파라미터로 GitHub에 호스팅된 Pyxel 앱을 실행합니다. .py 스크립트 실행, .pyxapp 파일 재생, .pyxres 리소스를 에디터에서 열기를 지원하며, URL Builder로 실행 URL을 대화형으로 구성할 수 있습니다.",
+            "pt": "Lança aplicativos Pyxel hospedados no GitHub a partir de parâmetros URL. Suporta execução de scripts .py, reprodução de arquivos .pyxapp e abertura de recursos .pyxres no editor, com um URL Builder para construir URLs de lançamento de forma interativa.",
+            "ru": "Запускает Pyxel-приложения, размещённые на GitHub, через URL-параметры. Поддерживает выполнение .py-скриптов, воспроизведение .pyxapp-файлов и открытие .pyxres-ресурсов в редакторе, а также URL Builder для интерактивного построения URL запуска.",
+            "tr": "GitHub'da barındırılan Pyxel uygulamalarını URL parametreleri ile başlatır. .py betiklerini çalıştırmayı, .pyxapp dosyalarını oynatmayı ve .pyxres kaynaklarını editörde açmayı destekler; başlatma URL'lerini etkileşimli olarak oluşturmak için URL Builder içerir.",
+            "uk": "Запускає застосунки Pyxel, розміщені на GitHub, через URL-параметри. Підтримує виконання .py-скриптів, відтворення .pyxapp-файлів та відкриття .pyxres-ресурсів у редакторі, а також URL Builder для інтерактивного створення URL запуску."
+          }
+        },
+        {
           "file": "Pyxel Code Maker",
           "demo": "../code-maker/index.html",
           "code": "https://github.com/kitao/pyxel/tree/main/web/code-maker",
