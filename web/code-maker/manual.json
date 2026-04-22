@@ -207,6 +207,20 @@
       "tr": "Code/Res düğmesiyle kod düzenleyici ve kaynak düzenleyici arasında geçiş yapar.",
       "uk": "Перемикається між редактором коду та редактором ресурсів за допомогою перемикача Code/Res."
     },
+    "layout_editing_area_hint": {
+      "en": "(Code / Resource)",
+      "cn": "（代码 / 资源）",
+      "de": "(Code / Ressource)",
+      "es": "(Código / Recurso)",
+      "fr": "(Code / Ressource)",
+      "it": "(Codice / Risorsa)",
+      "ja": "（コード / リソース）",
+      "ko": "(코드 / 리소스)",
+      "pt": "(Código / Recurso)",
+      "ru": "(Код / Ресурс)",
+      "tr": "(Kod / Kaynak)",
+      "uk": "(Код / Ресурс)"
+    },
     "layout_splitter": {
       "en": "Splitter",
       "cn": "分隔条",
@@ -431,7 +445,7 @@
       "tr": "İşlem",
       "uk": "Дія"
     },
-    "dragdrop_title": {
+    "drag_drop_title": {
       "en": "Drag & Drop",
       "cn": "拖放",
       "de": "Drag & Drop",
@@ -445,7 +459,7 @@
       "tr": "Sürükle ve Bırak",
       "uk": "Перетягування"
     },
-    "dragdrop_body": {
+    "drag_drop_body": {
       "en": "You can import files by dragging and dropping them onto the page. Drop a {0} file to replace the code, or a {1} file to replace the resource. The file type is detected automatically by extension.",
       "cn": "可以将文件拖放到页面上来导入。拖放 {0} 文件可替换代码，拖放 {1} 文件可替换资源。文件类型根据扩展名自动识别。",
       "de": "Sie können Dateien importieren, indem Sie sie auf die Seite ziehen und ablegen. Eine {0}-Datei ersetzt den Code, eine {1}-Datei ersetzt die Ressource. Der Dateityp wird automatisch anhand der Erweiterung erkannt.",

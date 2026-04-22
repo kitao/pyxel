@@ -62,7 +62,7 @@
           "resource",
           "runtime",
           "project",
-          "dragdrop",
+          "drag-drop",
           "sharing",
           "shortcuts",
         ]) {
@@ -137,7 +137,7 @@
               <div class="flex-1 bg-[#111827] flex items-center justify-center">
                 <div class="text-center text-gray-500 text-xs sm:text-sm">
                   <div>${esc(t("layout_editing_area"))}</div>
-                  <div class="text-[10px] sm:text-xs mt-0.5 text-gray-600">(Code / Resource)</div>
+                  <div class="text-[10px] sm:text-xs mt-0.5 text-gray-600">${esc(t("layout_editing_area_hint"))}</div>
                 </div>
               </div>
               <div class="w-3 bg-[#232d3b] shrink-0"></div>
@@ -201,9 +201,9 @@
           </div>`;
 
         // Drag & Drop
-        document.getElementById("s-dragdrop").innerHTML = `
-          <h2 class="section-title">${esc(t("dragdrop_title"))}</h2>
-          <p class="body">${esc(t("dragdrop_body")).replace("{0}", chip(".py")).replace("{1}", chip(".pyxres"))}</p>`;
+        document.getElementById("s-drag-drop").innerHTML = `
+          <h2 class="section-title">${esc(t("drag_drop_title"))}</h2>
+          <p class="body">${esc(t("drag_drop_body")).replace("{0}", chip(".py")).replace("{1}", chip(".pyxres"))}</p>`;
 
         // Sharing via URL
         document.getElementById("s-sharing").innerHTML = `
