@@ -17,6 +17,8 @@
     </main>
 
     <script>
+      const PYXEL_API_REF_ADVANCED_KEY = "pyxel-api-ref-advanced";
+
       let data = null;
       let lang = "en";
       let showAdvanced = false;
@@ -192,7 +194,7 @@
         toggleCheck.addEventListener("change", () => {
           showAdvanced = toggleCheck.checked;
           localStorage.setItem(
-            "pyxel-api-ref-advanced",
+            PYXEL_API_REF_ADVANCED_KEY,
             showAdvanced ? "1" : "0",
           );
           updateVisibility();
@@ -582,7 +584,7 @@
       }
 
       // Init
-      showAdvanced = localStorage.getItem("pyxel-api-ref-advanced") === "1";
+      showAdvanced = localStorage.getItem(PYXEL_API_REF_ADVANCED_KEY) === "1";
 
       initPage("api-reference.json", buildPage);
     </script>

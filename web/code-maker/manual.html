@@ -54,21 +54,61 @@
         const sections = document.createElement("div");
         sections.className = "space-y-6";
 
-        // --- Overview ---
-        const overviewCard = document.createElement("section");
-        overviewCard.className = "card";
-        overviewCard.innerHTML = `
-          <h2 id="sec-overview-title" class="section-title"></h2>
-          <p id="sec-overview-body" class="body"></p>
-        `;
-        sections.appendChild(overviewCard);
+        for (const name of [
+          "overview",
+          "layout",
+          "toolbar",
+          "code",
+          "resource",
+          "runtime",
+          "project",
+          "dragdrop",
+          "sharing",
+          "shortcuts",
+        ]) {
+          const card = document.createElement("section");
+          card.className = "card";
+          card.id = `s-${name}`;
+          sections.appendChild(card);
+        }
 
-        // --- Screen Layout ---
-        const layoutCard = document.createElement("section");
-        layoutCard.className = "card";
-        layoutCard.innerHTML = `
-          <h2 id="sec-layout-title" class="section-title"></h2>
-          <p id="sec-layout-body" class="body mb-4"></p>
+        app.appendChild(sections);
+
+        updateTexts();
+      }
+
+      function updateTexts() {
+        // Title & subtitle
+        document.title = t("title");
+        document.getElementById("page-title").textContent = t("title");
+        document.getElementById("page-subtitle").innerHTML = t(
+          "subtitle",
+        ).replace("{0}", link("https://github.com/kitao/pyxel", "Pyxel"));
+
+        // Overview
+        document.getElementById("s-overview").innerHTML = `
+          <h2 class="section-title">${esc(t("overview_title"))}</h2>
+          <p class="body">${esc(t("overview_body"))}</p>`;
+
+        // Screen Layout
+        const layoutLegend = [
+          { key: "layout_toolbar", descKey: "layout_toolbar_desc" },
+          { key: "layout_focus_line", descKey: "layout_focus_line_desc" },
+          { key: "layout_editing_area", descKey: "layout_editing_area_desc" },
+          { key: "layout_splitter", descKey: "layout_splitter_desc" },
+          { key: "layout_runtime", descKey: "layout_runtime_desc" },
+        ]
+          .map(
+            (item) =>
+              `<div class="flex items-baseline gap-2">
+                <span class="legend-label shrink-0 w-28">${esc(t(item.key))}</span>
+                <span class="legend-desc">${esc(t(item.descKey))}</span>
+              </div>`,
+          )
+          .join("");
+        document.getElementById("s-layout").innerHTML = `
+          <h2 class="section-title">${esc(t("layout_title"))}</h2>
+          <p class="body mb-4">${esc(t("layout_body"))}</p>
 
           <!-- Layout diagram -->
           <div class="border border-gray-600 rounded-lg overflow-hidden select-none mb-4">
@@ -96,167 +136,22 @@
             <div class="flex" style="height: 140px">
               <div class="flex-1 bg-[#111827] flex items-center justify-center">
                 <div class="text-center text-gray-500 text-xs sm:text-sm">
-                  <div id="diagram-editing-label"></div>
-                  <div id="diagram-editing-sublabel" class="text-[10px] sm:text-xs mt-0.5 text-gray-600"></div>
+                  <div>${esc(t("layout_editing_area"))}</div>
+                  <div class="text-[10px] sm:text-xs mt-0.5 text-gray-600">(Code / Resource)</div>
                 </div>
               </div>
               <div class="w-3 bg-[#232d3b] shrink-0"></div>
               <div class="flex-1 bg-[#202224] flex items-center justify-center">
-                <span id="diagram-runtime-label" class="text-gray-500 text-xs sm:text-sm"></span>
+                <span class="text-gray-500 text-xs sm:text-sm">${esc(t("layout_runtime"))}</span>
               </div>
             </div>
           </div>
 
           <!-- Legend -->
-          <div class="space-y-2" id="layout-legend"></div>
-        `;
-        sections.appendChild(layoutCard);
-
-        // --- Toolbar ---
-        const toolbarCard = document.createElement("section");
-        toolbarCard.className = "card";
-        toolbarCard.innerHTML = `
-          <h2 id="sec-toolbar-title" class="section-title"></h2>
-          <p id="sec-toolbar-body" class="body mb-3"></p>
-          <div id="toolbar-items" class="space-y-2.5"></div>
-        `;
-        sections.appendChild(toolbarCard);
-
-        // --- Code Editor ---
-        const codeCard = document.createElement("section");
-        codeCard.className = "card";
-        codeCard.innerHTML = `
-          <h2 id="sec-code-title" class="section-title"></h2>
-          <p id="sec-code-body" class="body"></p>
-        `;
-        sections.appendChild(codeCard);
-
-        // --- Resource Editor ---
-        const resourceCard = document.createElement("section");
-        resourceCard.className = "card";
-        resourceCard.innerHTML = `
-          <h2 id="sec-resource-title" class="section-title"></h2>
-          <p id="sec-resource-body" class="body"></p>
-        `;
-        sections.appendChild(resourceCard);
-
-        // --- Runtime Screen ---
-        const runtimeCard = document.createElement("section");
-        runtimeCard.className = "card";
-        runtimeCard.innerHTML = `
-          <h2 id="sec-runtime-title" class="section-title"></h2>
-          <p id="sec-runtime-body" class="body"></p>
-        `;
-        sections.appendChild(runtimeCard);
-
-        // --- Project Files ---
-        const projectCard = document.createElement("section");
-        projectCard.className = "card";
-        projectCard.innerHTML = `
-          <h2 id="sec-project-title" class="section-title"></h2>
-          <div id="sec-project-body" class="body space-y-2"></div>
-        `;
-        sections.appendChild(projectCard);
-
-        // --- Drag & Drop ---
-        const dragdropCard = document.createElement("section");
-        dragdropCard.className = "card";
-        dragdropCard.innerHTML = `
-          <h2 id="sec-dragdrop-title" class="section-title"></h2>
-          <p id="sec-dragdrop-body" class="body"></p>
-        `;
-        sections.appendChild(dragdropCard);
-
-        // --- Sharing via URL ---
-        const sharingCard = document.createElement("section");
-        sharingCard.className = "card";
-        sharingCard.innerHTML = `
-          <h2 id="sec-sharing-title" class="section-title"></h2>
-          <p id="sec-sharing-body" class="body"></p>
-        `;
-        sections.appendChild(sharingCard);
-
-        // --- Keyboard Shortcuts ---
-        const shortcutsCard = document.createElement("section");
-        shortcutsCard.className = "card";
-        shortcutsCard.innerHTML = `
-          <h2 id="sec-shortcuts-title" class="section-title"></h2>
-          <p id="sec-shortcuts-body" class="body mb-3"></p>
-          <div class="overflow-x-auto">
-            <table class="w-full border-collapse">
-              <thead>
-                <tr>
-                  <th id="th-shortcut" class="th"></th>
-                  <th id="th-action" class="th"></th>
-                </tr>
-              </thead>
-              <tbody id="shortcuts-table"></tbody>
-            </table>
-          </div>
-        `;
-        sections.appendChild(shortcutsCard);
-
-        app.appendChild(sections);
-
-        updateTexts();
-      }
-
-      function updateTexts() {
-        // Title & subtitle
-        document.title = t("title");
-        document.getElementById("page-title").textContent = t("title");
-        document.getElementById("page-subtitle").innerHTML = t(
-          "subtitle",
-        ).replace("{0}", link("https://github.com/kitao/pyxel", "Pyxel"));
-
-        // Overview
-        document.getElementById("sec-overview-title").textContent =
-          t("overview_title");
-        document.getElementById("sec-overview-body").textContent =
-          t("overview_body");
-
-        // Screen Layout
-        document.getElementById("sec-layout-title").textContent =
-          t("layout_title");
-        document.getElementById("sec-layout-body").textContent =
-          t("layout_body");
-
-        // Diagram labels
-        document.getElementById("diagram-editing-label").textContent = t(
-          "layout_editing_area",
-        );
-        document.getElementById("diagram-editing-sublabel").textContent =
-          "(Code / Resource)";
-        document.getElementById("diagram-runtime-label").textContent =
-          t("layout_runtime");
-
-        // Layout legend
-        const legendEl = document.getElementById("layout-legend");
-        const legendItems = [
-          { key: "layout_toolbar", descKey: "layout_toolbar_desc" },
-          { key: "layout_focus_line", descKey: "layout_focus_line_desc" },
-          { key: "layout_editing_area", descKey: "layout_editing_area_desc" },
-          { key: "layout_splitter", descKey: "layout_splitter_desc" },
-          { key: "layout_runtime", descKey: "layout_runtime_desc" },
-        ];
-        legendEl.innerHTML = legendItems
-          .map(
-            (item) =>
-              `<div class="flex items-baseline gap-2">
-                <span class="legend-label shrink-0 w-28">${esc(t(item.key))}</span>
-                <span class="legend-desc">${esc(t(item.descKey))}</span>
-              </div>`,
-          )
-          .join("");
+          <div class="space-y-2">${layoutLegend}</div>`;
 
         // Toolbar
-        document.getElementById("sec-toolbar-title").textContent =
-          t("toolbar_title");
-        document.getElementById("sec-toolbar-body").textContent =
-          t("toolbar_body");
-
-        const toolbarItemsEl = document.getElementById("toolbar-items");
-        toolbarItemsEl.innerHTML = data.toolbar_items
+        const toolbarItems = data.toolbar_items
           .map((item) => {
             let html = `<div class="flex items-baseline gap-3">
                 ${btnChip(item.label)}
@@ -276,60 +171,47 @@
             return html;
           })
           .join("");
+        document.getElementById("s-toolbar").innerHTML = `
+          <h2 class="section-title">${esc(t("toolbar_title"))}</h2>
+          <p class="body mb-3">${esc(t("toolbar_body"))}</p>
+          <div class="space-y-2.5">${toolbarItems}</div>`;
 
         // Code Editor
-        document.getElementById("sec-code-title").textContent = t("code_title");
-        document.getElementById("sec-code-body").innerHTML = esc(
-          t("code_body"),
-        ).replace("{0}", chip("main.py"));
+        document.getElementById("s-code").innerHTML = `
+          <h2 class="section-title">${esc(t("code_title"))}</h2>
+          <p class="body">${esc(t("code_body")).replace("{0}", chip("main.py"))}</p>`;
 
         // Resource Editor
-        document.getElementById("sec-resource-title").textContent =
-          t("resource_title");
-        document.getElementById("sec-resource-body").innerHTML = esc(
-          t("resource_body"),
-        ).replace("{0}", chip("my_resource.pyxres"));
+        document.getElementById("s-resource").innerHTML = `
+          <h2 class="section-title">${esc(t("resource_title"))}</h2>
+          <p class="body">${esc(t("resource_body")).replace("{0}", chip("my_resource.pyxres"))}</p>`;
 
         // Runtime Screen
-        document.getElementById("sec-runtime-title").textContent =
-          t("runtime_title");
-        document.getElementById("sec-runtime-body").innerHTML = esc(
-          t("runtime_body"),
-        ).replace("{0}", `<span class="key">Ctrl(Cmd)+Enter</span>`);
+        document.getElementById("s-runtime").innerHTML = `
+          <h2 class="section-title">${esc(t("runtime_title"))}</h2>
+          <p class="body">${esc(t("runtime_body")).replace("{0}", `<span class="key">Ctrl(Cmd)+Enter</span>`)}</p>`;
 
         // Project Files
-        document.getElementById("sec-project-title").textContent =
-          t("project_title");
-        document.getElementById("sec-project-body").innerHTML =
-          `<p>${esc(t("project_body_1")).replace("{0}", chip("main.py")).replace("{1}", chip("my_resource.pyxres"))}</p>` +
-          `<p>${esc(t("project_body_2")).replace("{0}", chip(".pyxapp"))}</p>` +
-          `<pre class="bg-gray-900/80 rounded-lg px-3 py-2 font-mono text-xs text-gray-300 mt-2">pyxel play project_name.zip</pre>`;
+        document.getElementById("s-project").innerHTML = `
+          <h2 class="section-title">${esc(t("project_title"))}</h2>
+          <div class="body space-y-2">
+            <p>${esc(t("project_body_1")).replace("{0}", chip("main.py")).replace("{1}", chip("my_resource.pyxres"))}</p>
+            <p>${esc(t("project_body_2")).replace("{0}", chip(".pyxapp"))}</p>
+            <pre class="bg-gray-900/80 rounded-lg px-3 py-2 font-mono text-xs text-gray-300 mt-2">pyxel play project_name.zip</pre>
+          </div>`;
 
         // Drag & Drop
-        document.getElementById("sec-dragdrop-title").textContent =
-          t("dragdrop_title");
-        document.getElementById("sec-dragdrop-body").innerHTML = esc(
-          t("dragdrop_body"),
-        )
-          .replace("{0}", chip(".py"))
-          .replace("{1}", chip(".pyxres"));
+        document.getElementById("s-dragdrop").innerHTML = `
+          <h2 class="section-title">${esc(t("dragdrop_title"))}</h2>
+          <p class="body">${esc(t("dragdrop_body")).replace("{0}", chip(".py")).replace("{1}", chip(".pyxres"))}</p>`;
 
         // Sharing via URL
-        document.getElementById("sec-sharing-title").textContent =
-          t("sharing_title");
-        document.getElementById("sec-sharing-body").textContent =
-          t("sharing_body");
+        document.getElementById("s-sharing").innerHTML = `
+          <h2 class="section-title">${esc(t("sharing_title"))}</h2>
+          <p class="body">${esc(t("sharing_body"))}</p>`;
 
         // Keyboard Shortcuts
-        document.getElementById("sec-shortcuts-title").textContent =
-          t("shortcuts_title");
-        document.getElementById("sec-shortcuts-body").textContent =
-          t("shortcuts_body");
-        document.getElementById("th-shortcut").textContent = t("th_shortcut");
-        document.getElementById("th-action").textContent = t("th_action");
-
-        const shortcutsTable = document.getElementById("shortcuts-table");
-        shortcutsTable.innerHTML = data.shortcuts
+        const shortcutRows = data.shortcuts
           .map(
             (s) =>
               `<tr>
@@ -338,6 +220,20 @@
               </tr>`,
           )
           .join("");
+        document.getElementById("s-shortcuts").innerHTML = `
+          <h2 class="section-title">${esc(t("shortcuts_title"))}</h2>
+          <p class="body mb-3">${esc(t("shortcuts_body"))}</p>
+          <div class="overflow-x-auto">
+            <table class="w-full border-collapse">
+              <thead>
+                <tr>
+                  <th class="th">${esc(t("th_shortcut"))}</th>
+                  <th class="th">${esc(t("th_action"))}</th>
+                </tr>
+              </thead>
+              <tbody>${shortcutRows}</tbody>
+            </table>
+          </div>`;
 
         setDocLang(lang);
       }

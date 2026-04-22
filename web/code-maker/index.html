@@ -13,13 +13,13 @@
     <script src="../shared.js"></script>
     <style>
       #left-pane.res-mode {
-        background-color: var(--pyxel-background-color);
+        background-color: var(--pyxel-bg);
       }
     </style>
   </head>
 
   <body class="page h-full">
-    <div id="app-root" class="flex flex-col h-full min-h-0">
+    <div id="app" class="flex flex-col h-full min-h-0">
       <!-- Toolbar -->
       <div class="flex-wrap toolbar">
         <div
@@ -184,7 +184,7 @@
             <iframe
               id="resource-editor"
               class="border-0 w-full h-full"
-              style="background-color: var(--pyxel-background-color)"
+              style="background-color: var(--pyxel-bg)"
               title="Pyxel Resource Editor"
             ></iframe>
           </div>
@@ -205,12 +205,12 @@
         <!-- Right pane -->
         <div
           class="flex flex-col flex-1 min-h-0"
-          style="background-color: var(--pyxel-background-color)"
+          style="background-color: var(--pyxel-bg)"
         >
           <iframe
             id="runtime-screen"
             class="flex-1 border-0 w-full h-full min-h-0"
-            style="background-color: var(--pyxel-background-color)"
+            style="background-color: var(--pyxel-bg)"
             title="Pyxel Runtime"
           ></iframe>
         </div>
@@ -519,7 +519,7 @@
         return archive.generateAsync({ type: "blob" });
       }
 
-      async function saveProject() {
+      async function saveToFile() {
         if (window._isCopyingResource) {
           return;
         }
@@ -562,7 +562,7 @@
         setTimeout(() => URL.revokeObjectURL(a.href), 3000);
       }
 
-      async function saveForGist() {
+      async function saveToGist() {
         if (window._isCopyingResource) {
           return;
         }
@@ -732,10 +732,10 @@
                 showModal("modal-load-url");
                 break;
               case "save-local":
-                saveProject();
+                saveToFile();
                 break;
               case "save-gist":
-                saveForGist();
+                saveToGist();
                 break;
             }
           });
@@ -883,7 +883,7 @@
             resourceEditor?.contentWindow?.pyxelContext?.resolveInput,
           () => {
             resourceEditor.contentWindow._savePyxelFile = () => {
-              saveProject();
+              saveToFile();
             };
 
             const runButton = document.getElementById("run-button");
@@ -1065,7 +1065,7 @@
           if ((event.ctrlKey || event.metaKey) && event.key === "s") {
             event.preventDefault();
             event.stopPropagation();
-            saveProject();
+            saveToFile();
             return;
           }
 

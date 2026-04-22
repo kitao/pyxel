@@ -15,12 +15,12 @@
   --pyxel-gray: #a3a3a3;
   --pyxel-pink: #ff9798;
   --pyxel-peach: #edc7b0;
-  --pyxel-background-color: #202224;
+  --pyxel-bg: #202224;
 }
 
 .pyxel-scheme {
   color: #fff;
-  background-color: var(--pyxel-background-color);
+  background-color: var(--pyxel-bg);
 }
 
 .pyxel-scheme a:link {
@@ -47,7 +47,7 @@ div#pyxel-screen {
   top: 0;
   width: 100%;
   height: 100%;
-  background-color: var(--pyxel-background-color);
+  background-color: var(--pyxel-bg);
 }
 
 canvas#canvas {

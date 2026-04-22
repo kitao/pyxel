@@ -54,21 +54,56 @@
         const sections = document.createElement("div");
         sections.className = "space-y-6";
 
-        // --- Overview ---
-        const overviewCard = document.createElement("section");
-        overviewCard.className = "card";
-        overviewCard.innerHTML = `
-          <h2 id="sec-overview-title" class="section-title"></h2>
-          <p id="sec-overview-body" class="body"></p>
-        `;
-        sections.appendChild(overviewCard);
+        for (const name of [
+          "overview",
+          "layout",
+          "controls",
+          "channels",
+          "sharing",
+          "shortcuts",
+          "mml-ref",
+        ]) {
+          const card = document.createElement("section");
+          card.className = "card";
+          card.id = `s-${name}`;
+          sections.appendChild(card);
+        }
 
-        // --- Screen Layout ---
-        const layoutCard = document.createElement("section");
-        layoutCard.className = "card";
-        layoutCard.innerHTML = `
-          <h2 id="sec-layout-title" class="section-title"></h2>
-          <p id="sec-layout-body" class="body mb-4"></p>
+        app.appendChild(sections);
+
+        updateTexts();
+      }
+
+      function updateTexts() {
+        // Title & subtitle
+        document.title = t("title");
+        document.getElementById("page-title").textContent = t("title");
+        document.getElementById("page-subtitle").innerHTML = t(
+          "subtitle",
+        ).replace("{0}", link("https://github.com/kitao/pyxel", "Pyxel"));
+
+        // Overview
+        document.getElementById("s-overview").innerHTML = `
+          <h2 class="section-title">${esc(t("overview_title"))}</h2>
+          <p class="body">${esc(t("overview_body"))}</p>`;
+
+        // Screen Layout
+        const layoutLegend = [
+          { key: "layout_controls", descKey: "layout_controls_desc" },
+          { key: "layout_channels", descKey: "layout_channels_desc" },
+          { key: "layout_output", descKey: "layout_output_desc" },
+        ]
+          .map(
+            (item) =>
+              `<div class="flex items-baseline gap-2">
+                <span class="legend-label shrink-0 w-28">${esc(t(item.key))}</span>
+                <span class="legend-desc">${esc(t(item.descKey))}</span>
+              </div>`,
+          )
+          .join("");
+        document.getElementById("s-layout").innerHTML = `
+          <h2 class="section-title">${esc(t("layout_title"))}</h2>
+          <p class="body mb-4">${esc(t("layout_body"))}</p>
 
           <!-- Layout diagram -->
           <div class="border border-gray-600 rounded-lg overflow-hidden select-none mb-4">
@@ -84,7 +119,7 @@
                 <span class="text-gray-400 text-xs">Sample Tune <span class="text-indigo-400">A</span> / <span class="text-indigo-400">B</span></span>
               </div>
               <div class="flex-1 bg-[#202224] rounded border border-gray-700 h-16 w-full sm:w-auto flex items-center justify-center">
-                <span id="diagram-runtime-label" class="text-gray-500 text-xs"></span>
+                <span class="text-gray-500 text-xs">${esc(t("layout_runtime"))}</span>
               </div>
             </div>
             <!-- Channels -->
@@ -116,122 +151,10 @@
           </div>
 
           <!-- Legend -->
-          <div class="space-y-2" id="layout-legend"></div>
-        `;
-        sections.appendChild(layoutCard);
-
-        // --- Controls ---
-        const controlsCard = document.createElement("section");
-        controlsCard.className = "card";
-        controlsCard.innerHTML = `
-          <h2 id="sec-controls-title" class="section-title"></h2>
-          <p id="sec-controls-body" class="body mb-3"></p>
-          <div id="control-items" class="space-y-2.5"></div>
-        `;
-        sections.appendChild(controlsCard);
-
-        // --- Channel Input ---
-        const channelsCard = document.createElement("section");
-        channelsCard.className = "card";
-        channelsCard.innerHTML = `
-          <h2 id="sec-channels-title" class="section-title"></h2>
-          <p id="sec-channels-body" class="body mb-3"></p>
-          <div id="channel-items" class="space-y-2.5"></div>
-        `;
-        sections.appendChild(channelsCard);
-
-        // --- Sharing ---
-        const sharingCard = document.createElement("section");
-        sharingCard.className = "card";
-        sharingCard.innerHTML = `
-          <h2 id="sec-sharing-title" class="section-title"></h2>
-          <p id="sec-sharing-body" class="body"></p>
-        `;
-        sections.appendChild(sharingCard);
-
-        // --- Keyboard Shortcuts ---
-        const shortcutsCard = document.createElement("section");
-        shortcutsCard.className = "card";
-        shortcutsCard.innerHTML = `
-          <h2 id="sec-shortcuts-title" class="section-title"></h2>
-          <p id="sec-shortcuts-body" class="body mb-3"></p>
-          <div class="overflow-x-auto">
-            <table class="w-full border-collapse">
-              <thead>
-                <tr>
-                  <th id="th-shortcut" class="th"></th>
-                  <th id="th-action" class="th"></th>
-                </tr>
-              </thead>
-              <tbody id="shortcuts-table"></tbody>
-            </table>
-          </div>
-        `;
-        sections.appendChild(shortcutsCard);
-
-        // --- MML Command Reference ---
-        const mmlRefCard = document.createElement("section");
-        mmlRefCard.className = "card";
-        mmlRefCard.innerHTML = `
-          <h2 id="sec-mml-ref-title" class="section-title"></h2>
-          <p id="sec-mml-ref-body" class="body"></p>
-        `;
-        sections.appendChild(mmlRefCard);
-
-        app.appendChild(sections);
-
-        updateTexts();
-      }
-
-      function updateTexts() {
-        // Title & subtitle
-        document.title = t("title");
-        document.getElementById("page-title").textContent = t("title");
-        document.getElementById("page-subtitle").innerHTML = t(
-          "subtitle",
-        ).replace("{0}", link("https://github.com/kitao/pyxel", "Pyxel"));
-
-        // Overview
-        document.getElementById("sec-overview-title").textContent =
-          t("overview_title");
-        document.getElementById("sec-overview-body").textContent =
-          t("overview_body");
-
-        // Screen Layout
-        document.getElementById("sec-layout-title").textContent =
-          t("layout_title");
-        document.getElementById("sec-layout-body").textContent =
-          t("layout_body");
-
-        // Diagram label
-        document.getElementById("diagram-runtime-label").textContent =
-          t("layout_runtime");
-
-        // Layout legend
-        const legendEl = document.getElementById("layout-legend");
-        const legendItems = [
-          { key: "layout_controls", descKey: "layout_controls_desc" },
-          { key: "layout_channels", descKey: "layout_channels_desc" },
-          { key: "layout_output", descKey: "layout_output_desc" },
-        ];
-        legendEl.innerHTML = legendItems
-          .map(
-            (item) =>
-              `<div class="flex items-baseline gap-2">
-                <span class="legend-label shrink-0 w-28">${esc(t(item.key))}</span>
-                <span class="legend-desc">${esc(t(item.descKey))}</span>
-              </div>`,
-          )
-          .join("");
+          <div class="space-y-2">${layoutLegend}</div>`;
 
         // Controls
-        document.getElementById("sec-controls-title").textContent =
-          t("controls_title");
-        document.getElementById("sec-controls-body").textContent =
-          t("controls_body");
-
-        const controlItemsEl = document.getElementById("control-items");
-        controlItemsEl.innerHTML = data.control_items
+        const controlItems = data.control_items
           .map(
             (item) =>
               `<div class="flex items-baseline gap-3">
@@ -240,16 +163,13 @@
               </div>`,
           )
           .join("");
+        document.getElementById("s-controls").innerHTML = `
+          <h2 class="section-title">${esc(t("controls_title"))}</h2>
+          <p class="body mb-3">${esc(t("controls_body"))}</p>
+          <div class="space-y-2.5">${controlItems}</div>`;
 
         // Channel Input
-        document.getElementById("sec-channels-title").textContent =
-          t("channels_title");
-        document.getElementById("sec-channels-body").innerHTML = esc(
-          t("channels_body"),
-        ).replace("{0}", chip("CDE"));
-
-        const channelItemsEl = document.getElementById("channel-items");
-        channelItemsEl.innerHTML = data.channel_items
+        const channelItems = data.channel_items
           .map(
             (item) =>
               `<div class="flex items-baseline gap-3">
@@ -258,23 +178,18 @@
               </div>`,
           )
           .join("");
+        document.getElementById("s-channels").innerHTML = `
+          <h2 class="section-title">${esc(t("channels_title"))}</h2>
+          <p class="body mb-3">${esc(t("channels_body")).replace("{0}", chip("CDE"))}</p>
+          <div class="space-y-2.5">${channelItems}</div>`;
 
         // Sharing
-        document.getElementById("sec-sharing-title").textContent =
-          t("sharing_title");
-        document.getElementById("sec-sharing-body").textContent =
-          t("sharing_body");
+        document.getElementById("s-sharing").innerHTML = `
+          <h2 class="section-title">${esc(t("sharing_title"))}</h2>
+          <p class="body">${esc(t("sharing_body"))}</p>`;
 
         // Keyboard Shortcuts
-        document.getElementById("sec-shortcuts-title").textContent =
-          t("shortcuts_title");
-        document.getElementById("sec-shortcuts-body").textContent =
-          t("shortcuts_body");
-        document.getElementById("th-shortcut").textContent = t("th_shortcut");
-        document.getElementById("th-action").textContent = t("th_action");
-
-        const shortcutsTable = document.getElementById("shortcuts-table");
-        shortcutsTable.innerHTML = data.shortcuts
+        const shortcutRows = data.shortcuts
           .map(
             (s) =>
               `<tr>
@@ -283,13 +198,25 @@
               </tr>`,
           )
           .join("");
+        document.getElementById("s-shortcuts").innerHTML = `
+          <h2 class="section-title">${esc(t("shortcuts_title"))}</h2>
+          <p class="body mb-3">${esc(t("shortcuts_body"))}</p>
+          <div class="overflow-x-auto">
+            <table class="w-full border-collapse">
+              <thead>
+                <tr>
+                  <th class="th">${esc(t("th_shortcut"))}</th>
+                  <th class="th">${esc(t("th_action"))}</th>
+                </tr>
+              </thead>
+              <tbody>${shortcutRows}</tbody>
+            </table>
+          </div>`;
 
         // MML Command Reference
-        document.getElementById("sec-mml-ref-title").textContent =
-          t("mml_ref_title");
-        document.getElementById("sec-mml-ref-body").innerHTML = esc(
-          t("mml_ref_body"),
-        ).replace("{0}", link("mml-commands.html", t("mml_ref_link")));
+        document.getElementById("s-mml-ref").innerHTML = `
+          <h2 class="section-title">${esc(t("mml_ref_title"))}</h2>
+          <p class="body">${esc(t("mml_ref_body")).replace("{0}", link("mml-commands.html", t("mml_ref_link")))}</p>`;
 
         setDocLang(lang);
       }

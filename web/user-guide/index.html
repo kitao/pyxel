@@ -40,16 +40,16 @@
         // Header
         const header = document.createElement("header");
         header.className = "flex items-start gap-4 mb-6";
-        const titleDiv = document.createElement("div");
-        titleDiv.className = "flex-1 min-w-0 order-first";
-        titleDiv.innerHTML = `<h1 class="font-semibold text-2xl tracking-tight" id="page-title"></h1>
+        const titleBlock = document.createElement("div");
+        titleBlock.className = "flex-1 min-w-0 order-first";
+        titleBlock.innerHTML = `<h1 class="font-semibold text-2xl tracking-tight" id="page-title"></h1>
           <p class="mt-2 text-gray-300 text-sm" id="page-subtitle"></p>`;
         const langSelect = buildLangSelector(data.languages, lang, (v) => {
           lang = v;
           updateTexts();
         });
         header.appendChild(langSelect);
-        header.appendChild(titleDiv);
+        header.appendChild(titleBlock);
         app.appendChild(header);
 
         // Content
