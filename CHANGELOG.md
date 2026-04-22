@@ -8,6 +8,7 @@
 - Enabled thin LTO and inlining hints in release builds
 - Prevented zip path traversal in the play and app2exe commands
 - Fixed relative path handling in the package command
+- Refined documentation terminology and translations
 
 ## 2.9.0
 
