@@ -192,7 +192,8 @@
         const filePath = paths.slice(7).join("/");
         const filePathNoExt = filePath.replace(/\.[^.]+$/, "");
         const command = ext === "py" ? "run" : "play";
-        let launchUrl = `https://kitao.github.io/pyxel/web/launcher/?${command}=${user}/${repo}/${branch}/${filePathNoExt}`;
+        const base = new URL("./", location.href).href;
+        let launchUrl = `${base}?${command}=${user}/${repo}/${branch}/${filePathNoExt}`;
 
         if (virtualGamepad) {
           launchUrl += "&gamepad=enabled";
