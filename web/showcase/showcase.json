@@ -1275,7 +1275,7 @@
             "es": "Lanza aplicaciones Pyxel alojadas en GitHub desde parámetros URL. Incluye un URL Builder para construir URLs de lanzamiento de forma interactiva.",
             "fr": "Lance des applications Pyxel hébergées sur GitHub via des paramètres URL. Inclut un URL Builder pour construire les URLs de lancement de manière interactive.",
             "it": "Avvia applicazioni Pyxel ospitate su GitHub tramite parametri URL. Include un URL Builder per costruire URL di avvio in modo interattivo.",
-            "ja": "GitHub 上の Pyxel アプリを URL パラメータで起動できます。URL Builder で起動 URL を対話的に作成できます。",
+            "ja": "GitHub 上の Pyxel アプリを URL パラメータで起動します。URL Builder で起動 URL を対話的に作成できます。",
             "ko": "GitHub에 호스팅된 Pyxel 앱을 URL 파라미터로 실행합니다. 실행 URL을 대화형으로 구성하는 URL Builder를 포함합니다.",
             "pt": "Lança aplicativos Pyxel hospedados no GitHub via parâmetros URL. Inclui um URL Builder para construir URLs de lançamento de forma interativa.",
             "ru": "Запускает Pyxel-приложения, размещённые на GitHub, через URL-параметры. Включает URL Builder для интерактивного построения URL запуска.",
