@@ -138,18 +138,18 @@
       "uk": "Приклади:"
     },
     "label_editor_screen": {
-      "en": "Editor Startup Screen",
-      "cn": "编辑器启动画面",
-      "de": "Editor-Startbildschirm",
-      "es": "Pantalla de inicio del editor",
-      "fr": "Écran de démarrage de l'éditeur",
-      "it": "Schermata di avvio dell'editor",
-      "ja": "エディタの起動画面",
-      "ko": "에디터 시작 화면",
-      "pt": "Tela inicial do editor",
-      "ru": "Стартовый экран редактора",
-      "tr": "Editör başlangıç ekranı",
-      "uk": "Стартовий екран редактора"
+      "en": "Startup Screen",
+      "cn": "启动画面",
+      "de": "Startbildschirm",
+      "es": "Pantalla de inicio",
+      "fr": "Écran de démarrage",
+      "it": "Schermata di avvio",
+      "ja": "起動画面",
+      "ko": "시작 화면",
+      "pt": "Tela inicial",
+      "ru": "Стартовый экран",
+      "tr": "Başlangıç ekranı",
+      "uk": "Стартовий екран"
     },
     "editor_screen_image": {
       "en": "Image",
