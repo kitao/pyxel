@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.9.2
+
+- Updated the bundled Pyxel wheel to match the latest release
+
 ## 2.9.1
 
 - Added line numbers to palette file parsing errors
