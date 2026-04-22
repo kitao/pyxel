@@ -687,8 +687,8 @@ def generate_from_html(html_path, json_path, doc_name):
     data = json.loads(json_path.read_text(encoding="utf-8"))
     ev = JsEval(data["ui"], data, doc_name)
 
-    # Extract update() body
-    m = re.search(r"function update\(\)\s*\{", html_text)
+    # Extract updateTexts() body
+    m = re.search(r"function updateTexts\(\)\s*\{", html_text)
     if not m:
         return
     body = html_text[m.end() : _find_matching(html_text, m.end(), "{", "}") - 1]
@@ -703,7 +703,7 @@ def generate_from_html(html_path, json_path, doc_name):
     )
     for sm in re.finditer(innerhtml_pattern, body):
         sec_id = sm.group(1)
-        if sec_id in ("p-title", "p-sub"):
+        if sec_id in ("page-title", "page-subtitle"):
             continue
         start = sm.end()
         i = start

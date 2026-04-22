@@ -89,7 +89,19 @@ def _complete_extension(filename, command, valid_ext):
 
 
 def _files_in_dir(dirname):
-    return sorted(str(p) for p in Path(dirname).rglob("*") if p.is_file())
+    # Exclude dotfiles and dot-directories under dirname to avoid picking up
+    # OS/tool artifacts (e.g. .DS_Store, .git, .vscode), but keep the pyxapp
+    # startup-script file which intentionally starts with '.'
+    base = Path(dirname)
+    return sorted(
+        str(p)
+        for p in base.rglob("*")
+        if p.is_file()
+        and not any(
+            part.startswith(".") and part != pyxel.APP_STARTUP_SCRIPT_FILE
+            for part in p.relative_to(base).parts
+        )
+    )
 
 
 def _check_file_exists(filename):

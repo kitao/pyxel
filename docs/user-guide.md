@@ -35,7 +35,7 @@ Also, if you like Pyxel, please give it a star on [GitHub](https://github.com/ki
 - 3 256x256 image banks
 - 8 256x256 tilemaps
 - 4 channels with 64 definable sounds
-- 8 music tracks composed of sounds
+- 8 music tracks that can combine any sounds
 - Keyboard, mouse, and gamepad inputs
 - Image and sound editing tools
 - User-extensible colors, sound channels, and banks
@@ -85,7 +85,7 @@ Run it without arguments to see the list of available commands:
 ```sh
 pyxel
 ```
-```text
+```
 Pyxel, a retro game engine for Python
 usage:
     pyxel run PYTHON_SCRIPT_FILE(.py)

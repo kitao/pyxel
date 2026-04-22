@@ -18,7 +18,8 @@
 ## 2.9.0
 
 - Redesigned the gen_bgm function to share code with Pyxel Composer
-- Changed the transp, the instr, and the seed of the gen_bgm function to required
+- Added the transp argument back to the gen_bgm function
+- Made the transp, the instr, and the seed of the gen_bgm function required
 - Added Cargo.lock to version control for reproducible builds
 - Added the resize function to change the screen size at runtime
 - Fixed the screencast function emitting wrong last-frame delay on frame drops

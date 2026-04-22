@@ -149,12 +149,14 @@ class App(Widget):
         self.help_message_var = "SAVE:CTRL+S"
 
     def __on_update(self):
-        legacy_dropped_files = getattr(pyxel, "_dropped_files", [])
+        # pyxel._dropped_files is the legacy path for drop events injected by
+        # the WASM runtime; drain it each frame and prefer native dropped_files
+        wasm_dropped_files = getattr(pyxel, "_dropped_files", [])
         pyxel._dropped_files = []
         if pyxel.dropped_files:
             dropped_file = pyxel.dropped_files[-1]
-        elif legacy_dropped_files:
-            dropped_file = legacy_dropped_files[-1]
+        elif wasm_dropped_files:
+            dropped_file = wasm_dropped_files[-1]
         else:
             dropped_file = None
         if dropped_file:
@@ -169,10 +171,8 @@ class App(Widget):
                 self._editor.trigger_event("drop", dropped_file)
 
         if pyxel.btn(pyxel.KEY_ALT):
-            # Alt+Left: Switch editor
             if pyxel.btnp(pyxel.KEY_LEFT):
                 self.editor_type_var = (self.editor_type_var - 1) % len(self._editors)
-            # Alt+Right: Switch editor
             elif pyxel.btnp(pyxel.KEY_RIGHT):
                 self.editor_type_var = (self.editor_type_var + 1) % len(self._editors)
 
@@ -180,15 +180,12 @@ class App(Widget):
         self._redo_button.is_enabled_var = self._editor.can_redo
 
         if pyxel.btn(pyxel.KEY_CTRL) or pyxel.btn(pyxel.KEY_GUI):
-            # Ctrl+S: Save
             if pyxel.btnp(pyxel.KEY_S):
                 self._save_button.is_pressed_var = True
-            # Ctrl+Z: Undo
             if self._editor.can_undo and pyxel.btnp(
                 pyxel.KEY_Z, hold=WIDGET_HOLD_TIME, repeat=WIDGET_REPEAT_TIME
             ):
                 self._undo_button.is_pressed_var = True
-            # Ctrl+Y: Redo
             elif self._editor.can_redo and pyxel.btnp(
                 pyxel.KEY_Y, hold=WIDGET_HOLD_TIME, repeat=WIDGET_REPEAT_TIME
             ):

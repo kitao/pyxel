@@ -46,9 +46,6 @@ class SoundEditor(EditorBase):
 
         self.new_var("octave_var", 2)
 
-        # is_playing_var reads from a per-frame cache filled in __on_update,
-        # so multiple reads per frame avoid repeated pyxel.play_pos calls
-        self._is_playing_cache = False
         self.new_var("is_playing_var", None)
         self.add_var_event_listener(
             "is_playing_var", "get", self.__on_is_playing_var_get
@@ -198,7 +195,7 @@ class SoundEditor(EditorBase):
     # Event handlers
 
     def __on_is_playing_var_get(self, value):
-        return self._is_playing_cache
+        return pyxel.play_pos(0) is not None
 
     def __on_sound_picker_change(self, value):
         self._speed_picker.value = pyxel.sounds[value].speed
@@ -234,8 +231,6 @@ class SoundEditor(EditorBase):
         self._stop()
 
     def __on_update(self):
-        self._is_playing_cache = pyxel.play_pos(0) is not None
-
         sound = pyxel.sounds[self.sound_index_var]
         if self.speed_var != sound.speed:
             self.speed_var = sound.speed

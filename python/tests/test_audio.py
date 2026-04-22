@@ -132,10 +132,10 @@ class TestGenBgm:
         result_transposed = pyxel.gen_bgm(0, 3, 3, 42)
         assert result_default != result_transposed
 
-    def test_transpose_and_instr_combined(self):
+    def test_instr_changes_output(self):
         result_default = pyxel.gen_bgm(0, 0, 3, 42)
-        result_combined = pyxel.gen_bgm(0, 3, 0, 42)
-        assert result_default != result_combined
+        result_other_instr = pyxel.gen_bgm(0, 0, 0, 42)
+        assert result_default != result_other_instr
 
     def test_play_and_stop(self):
         pyxel.gen_bgm(0, 0, 3, 1, play=True)

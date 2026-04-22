@@ -42,9 +42,6 @@ class MusicEditor(EditorBase):
         )
         self.add_number_picker_help(self._music_picker)
         self.copy_var("music_index_var", self._music_picker, "value_var")
-        self.add_var_event_listener(
-            "music_index_var", "change", self.__on_music_index_change
-        )
 
         # Initialize play button
         self._play_button = ImageButton(self, 185, 17, img=EDITOR_IMAGE, u=126, v=0)
@@ -84,14 +81,20 @@ class MusicEditor(EditorBase):
         self.add_event_listener("update", self.__on_update)
         self.add_event_listener("draw", self.__on_draw)
 
-        self._normalize_music_seqs(self.music_index_var)
-
     # Public methods
 
     def get_field(self, index):
         if index >= pyxel.NUM_CHANNELS:
             return None
-        return pyxel.musics[self.music_index_var].seqs[index]
+        # Resource load may leave music.seqs shorter than NUM_CHANNELS,
+        # so normalize on every access
+        music = pyxel.musics[self.music_index_var]
+        seqs_len = len(music.seqs)
+        if seqs_len < pyxel.NUM_CHANNELS:
+            music.seqs.extend([[] for _ in range(pyxel.NUM_CHANNELS - seqs_len)])
+        elif seqs_len > pyxel.NUM_CHANNELS:
+            del music.seqs[pyxel.NUM_CHANNELS :]
+        return music.seqs[index]
 
     def add_pre_history(self, x=None, y=None, *, bank_copy=False):
         data = {}
@@ -116,15 +119,6 @@ class MusicEditor(EditorBase):
                 self.add_history(data)
 
     # Helpers
-
-    @staticmethod
-    def _normalize_music_seqs(music_index):
-        music = pyxel.musics[music_index]
-        seqs_len = len(music.seqs)
-        if seqs_len < pyxel.NUM_CHANNELS:
-            music.seqs.extend([[] for _ in range(pyxel.NUM_CHANNELS - seqs_len)])
-        elif seqs_len > pyxel.NUM_CHANNELS:
-            del music.seqs[pyxel.NUM_CHANNELS :]
 
     def _play(self, is_partial):
         self.is_playing_var = True
@@ -160,9 +154,6 @@ class MusicEditor(EditorBase):
             self.field_cursor.field[:] = data[f"{prefix}_field"]
 
     # Event handlers
-
-    def __on_music_index_change(self, value):
-        self._normalize_music_seqs(value)
 
     def __on_music_picker_mouse_hover(self, _x, _y):
         self.help_message_var = "COPY_ALL:CTRL+SHIFT+C/X/V"

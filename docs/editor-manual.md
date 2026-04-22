@@ -49,7 +49,7 @@ The menu bar at the top of the screen contains four editor switching buttons, Un
 
 ### Using from Programs
 
-The created resource file can be loaded and used from a Pyxel application with the `pyxel.load()` function.
+The created resource file can be loaded and used in a Pyxel application with the `pyxel.load()` function.
 
 ### Switching Resource Files
 

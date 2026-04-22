@@ -13,7 +13,7 @@ ROOT_DIR = Path(__file__).resolve().parent.parent
 PORT = 8000
 
 SW_PATH = "/pyxel-sw.js"
-SW_JS = r"""// Pyxel test server service worker
+SW_JS = r"""// Pyxel Showcase service worker
 self.addEventListener('install', (event) => {
   self.skipWaiting();
 });

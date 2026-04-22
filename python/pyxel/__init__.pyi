@@ -2143,7 +2143,7 @@ def floor(x: float) -> int:
     """
     ...
 
-def clamp(x: float, lower: float, upper: float) -> float:
+def clamp(x: int | float, lower: int | float, upper: int | float) -> int | float:
     """Return x clamped between lower and upper.
 
     Args:
