@@ -55,33 +55,56 @@
             <ul class="help">
               <li id="help-file-type">
                 Startup file type should be
-                <code class="chip">.py</code> or
-                <code class="chip">.pyxapp</code>.
+                <code class="chip">.py</code>,
+                <code class="chip">.pyxapp</code>, or
+                <code class="chip">.pyxres</code>.
               </li>
               <li>
                 <span id="help-examples"></span>
                 <div class="mt-1 pl-2 grid gap-1">
                   <div id="help-example-py"></div>
                   <div id="help-example-pyxapp"></div>
+                  <div id="help-example-pyxres"></div>
                 </div>
               </li>
             </ul>
           </div>
 
-          <!-- Virtual Gamepad -->
-          <div class="flex items-center gap-2">
-            <label
-              for="virtual-gamepad"
-              class="label"
-              data-i18n="label_virtual_gamepad"
-              >Enable Virtual Gamepad</label
-            >
-            <input
-              id="virtual-gamepad"
-              type="checkbox"
-              checked
-              class="checkbox"
-            />
+          <!-- Options for run/play -->
+          <div id="run-play-options">
+            <!-- Virtual Gamepad -->
+            <div class="flex items-center gap-2">
+              <label
+                for="virtual-gamepad"
+                class="label"
+                data-i18n="label_virtual_gamepad"
+                >Enable Virtual Gamepad</label
+              >
+              <input
+                id="virtual-gamepad"
+                type="checkbox"
+                checked
+                class="checkbox"
+              />
+            </div>
+          </div>
+
+          <!-- Options for edit -->
+          <div id="edit-options" style="display: none">
+            <div class="gap-2 grid">
+              <label
+                for="editor-screen"
+                class="label"
+                data-i18n="label_editor_screen"
+                >Editor Startup Screen</label
+              >
+              <select id="editor-screen" class="input">
+                <option value="image">Image</option>
+                <option value="tilemap">Tilemap</option>
+                <option value="sound">Sound</option>
+                <option value="music">Music</option>
+              </select>
+            </div>
           </div>
 
           <!-- Launch URL -->
@@ -145,17 +168,22 @@
           "help_file_type",
         )
           .replace("{0}", chip(".py"))
-          .replace("{1}", chip(".pyxapp"));
+          .replace("{1}", chip(".pyxapp"))
+          .replace("{2}", chip(".pyxres"));
         const pyUrl =
           "https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/01_hello_pyxel.py";
         const pyxappUrl =
           "https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/apps/megaball.pyxapp";
+        const pyxresUrl =
+          "https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/assets/sample.pyxres";
         document.getElementById("help-examples").textContent =
           t("help_examples");
         document.getElementById("help-example-py").innerHTML =
           cmdChip("run") + link(pyUrl, pyUrl);
         document.getElementById("help-example-pyxapp").innerHTML =
           cmdChip("play") + link(pyxappUrl, pyxappUrl);
+        document.getElementById("help-example-pyxres").innerHTML =
+          cmdChip("edit") + link(pyxresUrl, pyxresUrl);
 
         // Footer
         const docUrl = "../web-usage/";
@@ -167,18 +195,31 @@
         setDocLang(lang);
       }
 
+      function updateOptions() {
+        const ext = getFileExt(document.getElementById("startup-file").value);
+        const isEdit = ext === "pyxres";
+        document.getElementById("run-play-options").style.display = isEdit
+          ? "none"
+          : "";
+        document.getElementById("edit-options").style.display = isEdit
+          ? ""
+          : "none";
+      }
+
       function buildLaunchUrl() {
         const startupFile = document.getElementById("startup-file").value;
         const virtualGamepad =
           document.getElementById("virtual-gamepad").checked;
+        const editorScreen = document.getElementById("editor-screen").value;
         const launchLink = document.getElementById("launch-url");
         launchLink.textContent = launchLink.href = "";
 
         const ext = getFileExt(startupFile);
+        const isEdit = ext === "pyxres";
 
         if (
           !startupFile.startsWith("https://github.com/") ||
-          !(ext === "py" || ext === "pyxapp")
+          !(ext === "py" || ext === "pyxapp" || ext === "pyxres")
         ) {
           return;
         }
@@ -191,22 +232,28 @@
         const branch = paths[6];
         const filePath = paths.slice(7).join("/");
         const filePathNoExt = filePath.replace(/\.[^.]+$/, "");
-        const command = ext === "py" ? "run" : "play";
+        const command = isEdit ? "edit" : ext === "py" ? "run" : "play";
         const base = new URL("./", location.href).href;
         let launchUrl = `${base}?${command}=${user}/${repo}/${branch}/${filePathNoExt}`;
 
-        if (virtualGamepad) {
+        if (isEdit) {
+          launchUrl += `&editor=${editorScreen}`;
+        } else if (virtualGamepad) {
           launchUrl += "&gamepad=enabled";
         }
 
         launchLink.textContent = launchLink.href = launchUrl;
       }
 
-      document
-        .getElementById("startup-file")
-        .addEventListener("input", buildLaunchUrl);
+      document.getElementById("startup-file").addEventListener("input", () => {
+        updateOptions();
+        buildLaunchUrl();
+      });
       document
         .getElementById("virtual-gamepad")
+        .addEventListener("change", buildLaunchUrl);
+      document
+        .getElementById("editor-screen")
         .addEventListener("change", buildLaunchUrl);
 
       // Init i18n
