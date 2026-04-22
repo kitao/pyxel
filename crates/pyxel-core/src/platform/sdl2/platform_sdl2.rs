@@ -7,8 +7,8 @@ use std::sync::atomic::{AtomicU32, Ordering};
 
 use glow::Context;
 
-use super::super::facade::GLProfile;
-use super::poll_events::{open_gamepad, Gamepad};
+use super::super::facade::GlProfile;
+use super::poll_events::{open_gamepad, GamepadSlot};
 #[allow(clippy::wildcard_imports)]
 use super::sdl2_sys::*;
 
@@ -44,7 +44,7 @@ pub struct PlatformSdl2 {
     pub mouse_x: i32,
     pub mouse_y: i32,
     pub is_wayland: bool,
-    pub gamepads: Vec<Gamepad>,
+    pub gamepads: Vec<GamepadSlot>,
     #[cfg(target_os = "emscripten")]
     pub virtual_gamepad_states: [bool; 10],
     #[cfg(not(target_os = "emscripten"))]
@@ -68,9 +68,8 @@ impl PlatformSdl2 {
         }
     }
 
-    //
-    // Core
-    //
+    // Lifecycle
+
     pub fn init(&mut self, headless: bool) {
         if headless {
             unsafe { SDL_Init(0) };
@@ -136,9 +135,8 @@ impl PlatformSdl2 {
         unsafe { emscripten_run_script(script.as_ptr()) };
     }
 
-    //
     // Window
-    //
+
     pub fn init_window(&mut self, title: &str, width: u32, height: u32) {
         let title = CString::new(title).unwrap();
         unsafe {
@@ -150,7 +148,11 @@ impl PlatformSdl2 {
                 height as i32,
                 (SDL_WINDOW_OPENGL as Uint32) | (SDL_WINDOW_RESIZABLE as Uint32),
             );
-            assert!(!self.window.is_null(), "Failed to create window");
+            assert!(
+                !self.window.is_null(),
+                "Failed to create window: {}",
+                CStr::from_ptr(SDL_GetError()).to_string_lossy()
+            );
 
             let hint_value = CString::new("1").unwrap();
             SDL_SetHint(
@@ -175,7 +177,8 @@ impl PlatformSdl2 {
                 SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
                 assert!(
                     !SDL_GL_CreateContext(self.window).is_null(),
-                    "Failed to create OpenGL context"
+                    "Failed to create OpenGL context: {}",
+                    CStr::from_ptr(SDL_GetError()).to_string_lossy()
                 );
             }
 
@@ -249,7 +252,7 @@ impl PlatformSdl2 {
         unsafe { SDL_WarpMouseInWindow(self.window, x, y) };
     }
 
-    pub fn set_mouse_visible(&self, visible: bool) {
+    pub fn set_mouse_visible(&mut self, visible: bool) {
         let toggle = if visible { SDL_ENABLE } else { SDL_DISABLE } as i32;
         unsafe { SDL_ShowCursor(toggle) };
     }
@@ -264,9 +267,8 @@ impl PlatformSdl2 {
         (mode.w as u32, mode.h as u32)
     }
 
-    //
     // Audio
-    //
+
     pub fn start_audio<F: FnMut(&mut [i16]) + 'static>(
         &mut self,
         sample_rate: u32,
@@ -327,35 +329,34 @@ impl PlatformSdl2 {
         }
     }
 
-    //
     // Frame
-    //
+
     #[cfg(not(target_os = "emscripten"))]
     pub fn run_frame_loop<F: FnMut(f32)>(&mut self, fps: u32, mut callback: F) {
         let frame_ms = 1000.0 / fps as f32;
-        let mut next_update_ms = self.ticks() as f32;
-        let mut last_update_ms = next_update_ms;
+        let mut next_frame_ms = self.ticks() as f32;
+        let mut last_frame_ms = next_frame_ms;
 
         loop {
             // Busy-wait with short sleeps until the next frame time
             loop {
-                let remaining_ms = next_update_ms - self.ticks() as f32;
+                let remaining_ms = next_frame_ms - self.ticks() as f32;
                 if remaining_ms <= 0.0 {
                     break;
                 }
                 unsafe { SDL_Delay((remaining_ms as u32 / 2).max(1)) };
             }
 
-            callback(next_update_ms - last_update_ms);
+            callback(next_frame_ms - last_frame_ms);
             if !self.window.is_null() {
                 unsafe { SDL_GL_SwapWindow(self.window) };
             }
-            last_update_ms = next_update_ms;
+            last_frame_ms = next_frame_ms;
 
             // Catch up if frames were missed
             let ticks = self.ticks() as f32;
-            while next_update_ms <= ticks {
-                next_update_ms += frame_ms;
+            while next_frame_ms <= ticks {
+                next_frame_ms += frame_ms;
             }
         }
     }
@@ -375,11 +376,11 @@ impl PlatformSdl2 {
     #[cfg(not(target_os = "emscripten"))]
     pub fn step_frame(&mut self, fps: u32) {
         let frame_ms = 1000.0 / fps as f32;
-        let mut next_update_ms = self.next_update_ms.unwrap_or(self.ticks() as f32);
+        let mut next_frame_ms = self.next_update_ms.unwrap_or(self.ticks() as f32);
 
         // Busy-wait with short sleeps until the next frame time
         loop {
-            let remaining_ms = next_update_ms - self.ticks() as f32;
+            let remaining_ms = next_frame_ms - self.ticks() as f32;
             if remaining_ms <= 0.0 {
                 break;
             }
@@ -392,29 +393,29 @@ impl PlatformSdl2 {
 
         // Catch up if frames were missed
         let ticks = self.ticks() as f32;
-        while next_update_ms <= ticks {
-            next_update_ms += frame_ms;
+        while next_frame_ms <= ticks {
+            next_frame_ms += frame_ms;
         }
-        self.next_update_ms = Some(next_update_ms);
+        self.next_update_ms = Some(next_frame_ms);
     }
 
     #[cfg(target_os = "emscripten")]
     pub fn step_frame(&mut self, _fps: u32) {
-        panic!("flip is not supported for Web");
+        panic!("pyxel.flip is not supported on Pyxel Web");
     }
 
-    // poll_events is implemented in poll_events.rs
+    // OpenGL
 
-    pub fn gl_profile(&self) -> GLProfile {
+    pub fn gl_profile(&self) -> GlProfile {
         let mut value = 0i32;
         unsafe { SDL_GL_GetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, &raw mut value) };
 
         if value & SDL_GL_CONTEXT_PROFILE_CORE as i32 != 0 {
-            GLProfile::Gl
+            GlProfile::Gl
         } else if value & SDL_GL_CONTEXT_PROFILE_ES as i32 != 0 {
-            GLProfile::Gles
+            GlProfile::Gles
         } else {
-            GLProfile::None
+            GlProfile::None
         }
     }
 

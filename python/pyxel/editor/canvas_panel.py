@@ -16,27 +16,25 @@ from .settings import (
 from .widgets import ScrollBar, Widget
 from .widgets.settings import WIDGET_HOLD_TIME, WIDGET_PANEL_COLOR, WIDGET_REPEAT_TIME
 
-# Sentinel tile value indicating an empty/unset tile in tilemap mode
-EMPTY_TILE = (255, 255)
+# Sentinel tile for cells that tilemap-mode drawing primitives leave untouched
+_EMPTY_TILE = (255, 255)
 
 
 class CanvasPanel(Widget):
-    """
-    Variables:
-        color_var
-        tool_var
-        image_index_var
-        canvas_var
-        focus_x_var
-        focus_y_var
-        help_message_var
-
-        tilemap_index_var
-        tile_x_var
-        tile_y_var
-        tile_w_var
-        tile_h_var
-    """
+    # Variables:
+    #   color_var
+    #   tool_var
+    #   image_index_var
+    #   canvas_var
+    #   focus_x_var
+    #   focus_y_var
+    #   help_message_var
+    #
+    #   tilemap_index_var
+    #   tile_x_var
+    #   tile_y_var
+    #   tile_w_var
+    #   tile_h_var
 
     def __init__(self, parent):
         super().__init__(parent, 11, 16, 130, 130)
@@ -78,7 +76,6 @@ class CanvasPanel(Widget):
         self.copy_var("focus_y_var", parent)
         self.copy_var("help_message_var", parent)
 
-        # Initialize horizontal scroll bar
         self._h_scroll_bar = ScrollBar(
             self,
             0,
@@ -91,7 +88,6 @@ class CanvasPanel(Widget):
         self._h_scroll_bar.add_event_listener("change", self.__on_h_scroll_bar_change)
         self.add_var_event_listener("focus_x_var", "change", self.__on_focus_x_change)
 
-        # Initialize vertical scroll bar
         self._v_scroll_bar = ScrollBar(
             self,
             129,
@@ -104,13 +100,14 @@ class CanvasPanel(Widget):
         self._v_scroll_bar.add_event_listener("change", self.__on_v_scroll_bar_change)
         self.add_var_event_listener("focus_y_var", "change", self.__on_focus_y_change)
 
-        # Initialize event listeners
         self.add_event_listener("mouse_down", self.__on_mouse_down)
         self.add_event_listener("mouse_up", self.__on_mouse_up)
         self.add_event_listener("mouse_drag", self.__on_mouse_drag)
         self.add_event_listener("mouse_hover", self.__on_mouse_hover)
         self.add_event_listener("update", self.__on_update)
         self.add_event_listener("draw", self.__on_draw)
+
+    # Helpers
 
     def _screen_to_focus(self, x, y):
         x = clamp((x - self.x - 1) // 8, 0, 15)
@@ -125,7 +122,8 @@ class CanvasPanel(Widget):
         return x, y, w, h
 
     def _add_pre_history(self, *, bank_copy=False):
-        self._history_data = data = {}
+        data = {}
+        self._history_data = data
 
         if bank_copy:
             if self._is_tilemap_mode:
@@ -182,19 +180,20 @@ class CanvasPanel(Widget):
             self._edit_canvas.imgsrc = self.canvas_var.imgsrc
 
     def _finish_edit_canvas(self):
-        """Fill empty tiles with the selected tile pattern in tilemap mode."""
         if not self._is_tilemap_mode:
             return
 
         for y in range(16):
             for x in range(16):
-                if self._edit_canvas.pget(x, y) != EMPTY_TILE:
+                if self._edit_canvas.pget(x, y) != _EMPTY_TILE:
                     continue
                 tile = (
                     self.tile_x_var + (x - self._press_x) % self.tile_w_var,
                     self.tile_y_var + (y - self._press_y) % self.tile_h_var,
                 )
                 self._edit_canvas.pset(x, y, tile)
+
+    # Event handlers
 
     def __on_h_scroll_bar_change(self, value):
         self.focus_x_var = value
@@ -523,15 +522,19 @@ class CanvasPanel(Widget):
             pyxel.pal()
         else:
             pyxel.user_pal()
-            for yi in range(16):
-                for xi in range(16):
-                    pyxel.rect(
-                        self.x + xi * 8 + 1,
-                        self.y + yi * 8 + 1,
-                        8,
-                        8,
-                        canvas.pget(offset_x + xi, offset_y + yi),
-                    )
+            # blt scales centered on (x + (w-1)/2, y + (h-1)/2); shift dest by
+            # (w * (scale - 1) + 1) / 2 = 56.5 so the 128x128 output aligns to
+            # (self.x + 1, self.y + 1). Integer 57 rounds the center identically.
+            pyxel.blt(
+                self.x + 57,
+                self.y + 57,
+                canvas,
+                offset_x,
+                offset_y,
+                16,
+                16,
+                scale=8,
+            )
             pyxel.pal()
 
         pyxel.line(
@@ -543,10 +546,10 @@ class CanvasPanel(Widget):
 
         # Draw selection area
         if self.tool_var == TOOL_SELECT and self._select_x1 >= 0:
-            x = self._select_x1 * 8 + 12
-            y = self._select_y1 * 8 + 17
-            w = self._select_x2 * 8 - x + 20
-            h = self._select_y2 * 8 - y + 25
+            x = self.x + 1 + self._select_x1 * 8
+            y = self.y + 1 + self._select_y1 * 8
+            w = (self._select_x2 - self._select_x1 + 1) * 8
+            h = (self._select_y2 - self._select_y1 + 1) * 8
             pyxel.clip(self.x + 1, self.y + 1, 128, 128)
             pyxel.rectb(x, y, w, h, PANEL_SELECT_FRAME_COLOR)
             pyxel.rectb(x + 1, y + 1, w - 2, h - 2, PANEL_SELECT_BORDER_COLOR)

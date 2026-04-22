@@ -210,7 +210,7 @@ class App:
         pyxel.init(128, 128, title="Pyxel Platformer")
         pyxel.load("assets/platformer.pyxres")
 
-        # Change enemy spawn tiles invisible
+        # Make enemy spawn tiles invisible
         pyxel.images[0].rect(0, 8, 24, 8, TRANSPARENT_COLOR)
 
         global player
@@ -221,7 +221,7 @@ class App:
         pyxel.run(self.update, self.draw)
 
     def update(self):
-        if pyxel.btn(pyxel.KEY_Q):
+        if pyxel.btnp(pyxel.KEY_Q):
             pyxel.quit()
 
         player.update()

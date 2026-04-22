@@ -5,7 +5,7 @@ use crate::sound::{SoundEffect, SoundSpeed, SoundTone, SoundVolume};
 use crate::tone::{ToneMode, ToneSample};
 
 // System
-pub const VERSION: &str = "2.9.0";
+pub const VERSION: &str = "2.9.1";
 pub const BASE_DIR: &str = ".pyxel";
 pub const WINDOW_STATE_ENV: &str = "PYXEL_WINDOW_STATE";
 pub const WATCH_STATE_FILE_ENV: &str = "PYXEL_WATCH_STATE_FILE";
@@ -15,11 +15,12 @@ pub const DEFAULT_FPS: u32 = 30;
 pub const DEFAULT_QUIT_KEY: Key = KEY_ESCAPE;
 pub const DEFAULT_CAPTURE_SCALE: u32 = 2;
 pub const DEFAULT_CAPTURE_SEC: u32 = 10;
-pub const DISPLAY_RATIO: f32 = 0.75;
+pub const WINDOW_TO_DISPLAY_RATIO: f32 = 0.75;
 #[allow(clippy::unreadable_literal)]
 pub const BACKGROUND_COLOR: Rgb24 = 0x202224;
 pub const MAX_FRAME_DELAY_MS: u32 = 100;
 pub const NUM_MEASURE_FRAMES: u32 = 10;
+pub const NUM_SCREEN_TYPES: u32 = 3;
 pub const ICON_SIZE: u32 = 16;
 pub const ICON_SCALE: u32 = 4;
 pub const ICON_COLKEY: Option<Color> = Some(0);
@@ -88,7 +89,7 @@ pub const CURSOR_DATA: [&str; CURSOR_HEIGHT as usize] = [
 ];
 pub const MIN_FONT_CODE: char = ' ';
 pub const MAX_FONT_CODE: char = '\x7F';
-pub const NUM_FONT_ROWS: u32 = 16;
+pub const NUM_FONT_COLS: u32 = 16;
 pub const FONT_WIDTH: u32 = 4;
 pub const FONT_HEIGHT: u32 = 6;
 #[allow(clippy::unreadable_literal)]
@@ -105,7 +106,6 @@ pub const FONT_DATA: [u32; MAX_FONT_CODE as usize - MIN_FONT_CODE as usize + 1] 
     0x06aa62, 0x068880, 0x06c6c0, 0x4e4460, 0x0aaa60, 0x0aaa40, 0x0aaee0, 0x0a44a0, 0x0aa624,
     0x0e24e0, 0x64c460, 0x444440, 0xc464c0, 0x6c0000, 0xeeeee0,
 ];
-pub const NUM_SCREEN_TYPES: u32 = 3;
 
 // Audio
 pub const AUDIO_CLOCK_RATE: u32 = 1_789_773; // NTSC NES APU clock rate
@@ -116,6 +116,8 @@ pub const AUDIO_BUFFER_SAMPLES: u32 = 1024; // 1024 / 22050 * 1000 = 46.4ms
 #[cfg(not(target_os = "emscripten"))]
 pub const AUDIO_BUFFER_SAMPLES: u32 = 512; // 512 / 22050 * 1000 = 23.2ms
 pub const AUDIO_RENDER_STEP_SAMPLES: u32 = 64;
+pub const AUDIO_GAIN_SHIFT: u32 = 14;
+pub const AUDIO_GAIN_SCALE: i64 = 1_i64 << AUDIO_GAIN_SHIFT;
 
 pub const VOICE_CONTROL_RATE: u32 = 60;
 pub const NOTE_INTERP_CLOCKS: u32 = AUDIO_CLOCK_RATE / 1000; // 1 / 1000 = 1ms
@@ -152,8 +154,7 @@ pub const MAX_VOLUME: SoundVolume = 7;
 pub const MAX_EFFECT: SoundEffect = 5;
 
 pub const DEFAULT_TONE_SAMPLE_BITS: u32 = 4;
-// Triangle
-pub const DEFAULT_TONE_0: (ToneMode, u32, [ToneSample; 32], ChannelGain) = (
+pub const DEFAULT_TONE_TRIANGLE: (ToneMode, u32, [ToneSample; 32], ChannelGain) = (
     ToneMode::Wavetable,
     4,
     [
@@ -162,12 +163,9 @@ pub const DEFAULT_TONE_0: (ToneMode, u32, [ToneSample; 32], ChannelGain) = (
     ],
     1.0,
 );
-// Square
-pub const DEFAULT_TONE_1: (ToneMode, u32, [ToneSample; 2], ChannelGain) =
+pub const DEFAULT_TONE_SQUARE: (ToneMode, u32, [ToneSample; 2], ChannelGain) =
     (ToneMode::Wavetable, 1, [1, 0], 0.3);
-// Pulse
-pub const DEFAULT_TONE_2: (ToneMode, u32, [ToneSample; 4], ChannelGain) =
+pub const DEFAULT_TONE_PULSE: (ToneMode, u32, [ToneSample; 4], ChannelGain) =
     (ToneMode::Wavetable, 1, [1, 0, 0, 0], 0.3);
-// Noise
-pub const DEFAULT_TONE_3: (ToneMode, u32, [ToneSample; 0], ChannelGain) =
+pub const DEFAULT_TONE_NOISE: (ToneMode, u32, [ToneSample; 0], ChannelGain) =
     (ToneMode::LongPeriodNoise, 0, [], 0.6);

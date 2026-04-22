@@ -14,11 +14,9 @@ from .widgets import Widget
 
 
 class MusicField(Widget):
-    """
-    Variables:
-        is_playing_var
-        help_message_var
-    """
+    # Variables:
+    #   is_playing_var
+    #   help_message_var
 
     def __init__(self, parent, x, y, ch):
         super().__init__(parent, x, y, 218, 21)
@@ -33,9 +31,13 @@ class MusicField(Widget):
         self.add_event_listener("mouse_hover", self.__on_mouse_hover)
         self.add_event_listener("draw", self.__on_draw)
 
+    # Helpers
+
     @property
     def data(self):
         return self.get_field(self._ch)
+
+    # Event handlers
 
     def __on_mouse_down(self, key, x, y):
         if key != pyxel.MOUSE_BUTTON_LEFT or self.is_playing_var:
@@ -93,7 +95,8 @@ class MusicField(Widget):
 
         # Draw cursor highlight
         if cursor_y == self._ch:
-            for i in range(len(self.data) + 1):
+            data_len = len(self.data)
+            for i in range(data_len + 1):
                 if cursor_x <= i < cursor_x + cursor_width:
                     x = self.x + (i % 16) * 12 + 21
                     y = self.y + (cursor_y - self._ch + i // 16) * 10 + 2

@@ -24,6 +24,15 @@ trait ResourceItem {
     fn deserialize(&mut self, version: u32, input: &str);
 }
 
+impl fmt::Display for ImageSource {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            ImageSource::Index(index) => write!(f, "{index}"),
+            ImageSource::Image(_) => write!(f, "0"),
+        }
+    }
+}
+
 impl ResourceItem for Image {
     fn resource_name(item_index: u32) -> String {
         format!("{RESOURCE_ARCHIVE_DIRNAME}image{item_index}")
@@ -39,15 +48,6 @@ impl ResourceItem for Image {
                 self.canvas
                     .write_data(j, i, parse_hex_string(color).unwrap() as Color);
             });
-        }
-    }
-}
-
-impl fmt::Display for ImageSource {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            ImageSource::Index(index) => write!(f, "{index}"),
-            ImageSource::Image(_) => write!(f, "0"),
         }
     }
 }

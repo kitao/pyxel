@@ -1,19 +1,15 @@
 #!/usr/bin/env python3
 
-import pathlib
+from pathlib import Path
 import re
 import sys
 
-ROOT_DIR = pathlib.Path(__file__).resolve().parent.parent
+ROOT_DIR = Path(__file__).resolve().parent.parent
 PYTHON_VERSION_REPLACEMENTS = (
     ("crates/pyxel-core/src/settings.rs", '(VERSION.*)".*"'),
     ("python/pyproject.toml", '(version.*)".*"'),
 )
-CARGO_VERSION_REPLACEMENTS = (
-    ("crates/pyxel-core/Cargo.toml", '(version.*)".*"'),
-    ("crates/pyxel-binding/Cargo.toml", '(version.*)".*"'),
-    ("crates/pyxel-binding/Cargo.toml", '(pyxel-core", version.*)".*"'),
-)
+CARGO_VERSION_REPLACEMENTS = (("crates/Cargo.toml", '(version.*)".*"'),)
 PRE_RELEASE_MAP = {"a": "alpha", "b": "beta", "rc": "rc"}
 
 
@@ -25,11 +21,12 @@ def pep440_to_semver(version: str) -> str:
     return version
 
 
-def replace_file(path: pathlib.Path, pattern: str, repl: str) -> None:
+def replace_file(path: Path, pattern: str, repl: str) -> None:
     text = path.read_text(encoding="utf-8")
     new_text, count = re.subn(pattern, repl, text, count=1)
     if count == 0:
-        print(f"WARNING: pattern not found in {path}")
+        print(f"ERROR: pattern not found in {path}", file=sys.stderr)
+        sys.exit(1)
     path.write_text(new_text, encoding="utf-8")
 
 

@@ -1,11 +1,10 @@
 # Python
-*.pyc
+*.egg-info/
 *.py[cod]
 *.so
-*.egg-info/
-__pycache__/
 .mypy_cache/
 .ruff_cache/
+__pycache__/
 
 # Rust
 *.pdb
@@ -19,12 +18,13 @@ dist-*/
 target/
 
 # Environment
-.venv/
 .env
+.venv/
 
-# Tools
+# Workspaces
 .claude/
 /examples
+docs/superpowers/
 
 # OS
 .DS_Store

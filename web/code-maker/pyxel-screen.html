@@ -9,7 +9,7 @@
     <pyxel-run
       script="
         import js, base64, pyxel.cli, os
-        project_files = js.parent.project.files.to_py()
+        project_files = js.parent._project.files.to_py()
         for path, b64_content in project_files.items():
           if '..' in path:
             continue
@@ -18,9 +18,9 @@
           with open(path, 'wb') as f:
             f.write(base64.b64decode(b64_content))
         with open('main.py', 'w', encoding='utf-8') as f:
-          f.write(js.parent.project.code)
+          f.write(js.parent._project.code)
         with open('my_resource.pyxres', 'wb') as f:
-          f.write(base64.b64decode(js.parent.project.resource))
+          f.write(base64.b64decode(js.parent._project.resource))
         pyxel.cli.run_python_script('main.py')
       "
     ></pyxel-run>

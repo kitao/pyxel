@@ -5,13 +5,11 @@ from .settings import BUTTON_ENABLED_COLOR
 
 
 class ImageButton(Button):
-    """
-    Variables:
-        is_pressed_var
-
-    Events:
-        press
-    """
+    # Variables:
+    #   is_pressed_var
+    #
+    # Events:
+    #   press
 
     def __init__(self, parent, x, y, *, img, u, v, **kwargs):
         super().__init__(parent, x, y, 7, 7, **kwargs)
@@ -19,7 +17,6 @@ class ImageButton(Button):
         self._u = u
         self._v = v
 
-        # Set event listeners
         self.add_event_listener("draw", self.__on_draw)
 
     def __on_draw(self):

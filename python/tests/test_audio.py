@@ -2,8 +2,6 @@ import pyxel
 
 
 class TestPlay:
-    """Test play() with all Union[int, Seq[int], Sound, Seq[Sound], str] variants."""
-
     def test_play_with_int(self):
         pyxel.sounds[0].set("c2e2g2", "sss", "777", "nnn", 10)
         pyxel.play(3, 0)
@@ -33,22 +31,6 @@ class TestPlay:
         pyxel.play(3, "T120 O4 L4 CDEF")
         pyxel.stop(3)
 
-
-class TestPlaym:
-    def test_playm_basic(self):
-        pyxel.sounds[0].set("c2e2g2", "sss", "777", "nnn", 10)
-        pyxel.musics[0].set([0], [0])
-        pyxel.playm(0)
-        pyxel.stop()
-
-    def test_playm_with_loop(self):
-        pyxel.sounds[0].set("c2e2g2", "sss", "777", "nnn", 10)
-        pyxel.musics[0].set([0])
-        pyxel.playm(0, loop=True)
-        pyxel.stop()
-
-
-class TestPlayOptions:
     def test_play_with_loop(self):
         pyxel.sounds[0].set("c2e2g2", "sss", "777", "nnn", 10)
         pyxel.play(3, 0, loop=True)
@@ -63,6 +45,20 @@ class TestPlayOptions:
         pyxel.sounds[0].set("c2e2g2", "sss", "777", "nnn", 10)
         pyxel.play(3, 0, sec=0.5)
         pyxel.stop(3)
+
+
+class TestPlaym:
+    def test_playm_basic(self):
+        pyxel.sounds[0].set("c2e2g2", "sss", "777", "nnn", 10)
+        pyxel.musics[0].set([0], [0])
+        pyxel.playm(0)
+        pyxel.stop()
+
+    def test_playm_with_loop(self):
+        pyxel.sounds[0].set("c2e2g2", "sss", "777", "nnn", 10)
+        pyxel.musics[0].set([0])
+        pyxel.playm(0, loop=True)
+        pyxel.stop()
 
     def test_playm_with_sec(self):
         pyxel.sounds[0].set("c2e2g2", "sss", "777", "nnn", 10)
@@ -80,11 +76,11 @@ class TestStop:
 
     def test_stop_idempotent(self):
         pyxel.stop()
-        pyxel.stop()  # Double stop should not raise
+        pyxel.stop()
 
 
 class TestPlayPos:
-    def test_play_pos_none_when_not_playing(self):
+    def test_play_pos_when_not_playing(self):
         pyxel.stop(3)
         result = pyxel.play_pos(3)
         assert result is None
@@ -136,10 +132,10 @@ class TestGenBgm:
         result_transposed = pyxel.gen_bgm(0, 3, 3, 42)
         assert result_default != result_transposed
 
-    def test_transp_and_instr_combined(self):
+    def test_instr_changes_output(self):
         result_default = pyxel.gen_bgm(0, 0, 3, 42)
-        result_combined = pyxel.gen_bgm(0, 3, 0, 42)
-        assert result_default != result_combined
+        result_other_instr = pyxel.gen_bgm(0, 0, 0, 42)
+        assert result_default != result_other_instr
 
     def test_play_and_stop(self):
         pyxel.gen_bgm(0, 0, 3, 1, play=True)

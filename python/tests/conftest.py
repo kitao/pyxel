@@ -1,11 +1,8 @@
-import os
 from pathlib import Path
+
 import pytest
 
-ASSETS_DIR = os.path.join(
-    os.path.dirname(__file__), os.pardir, "pyxel", "examples", "assets"
-)
-REFERENCES_DIR = Path(__file__).parent / "references"
+ASSETS_DIR = Path(__file__).parent.parent / "pyxel" / "examples" / "assets"
 
 
 def pytest_addoption(parser):
@@ -22,7 +19,7 @@ def update_references(request):
 
 
 def pytest_collection_modifyitems(items):
-    # Ensure regression tests (test_examples, test_apps) run last
+    # Run app/example regression tests last so cheap failures surface early
     regression = []
     others = []
     for item in items:
@@ -38,6 +35,19 @@ def init_pyxel():
     import pyxel
 
     pyxel.init(160, 120, headless=True)
+
+
+@pytest.fixture(autouse=True)
+def reset_pyxel_state():
+    import pyxel
+
+    pyxel.clip()
+    pyxel.camera()
+    pyxel.pal()
+    pyxel.dither(1.0)
+    pyxel.rseed(0)
+    pyxel.nseed(0)
+    yield
 
 
 @pytest.fixture

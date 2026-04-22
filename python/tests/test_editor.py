@@ -2,11 +2,12 @@ import os
 from pathlib import Path
 
 import pytest
+
 import pyxel
 import pyxel.editor
 
 from test_examples import (
-    _reinit_pyxel,
+    _reset_pyxel,
     _restore_pyxel,
     compare_or_update_all,
 )
@@ -17,70 +18,10 @@ RESOURCE_FILE = str(
     Path(__file__).parent.parent / "pyxel" / "examples" / "assets" / "sample.pyxres"
 )
 
-EDITOR_PLANS = {
-    "image": [
-        {"frame": 1},
-        # Bucket fill (B) on canvas — fills large area, dramatic change
-        {"frame": 2, "press": [pyxel.KEY_B], "capture": False},
-        {"frame": 3, "press": [pyxel.KEY_3], "capture": False},  # Select color 3
-        {"frame": 5, "mouse": (76, 81), "press": [pyxel.MOUSE_BUTTON_LEFT]},
-    ],
-    "tilemap": [
-        {"frame": 1},
-        # Pick tile via right-click spoit, bucket fill, then capture after rendering
-        {
-            "frame": 2,
-            "mouse": (15, 136),
-            "press": [pyxel.MOUSE_BUTTON_RIGHT],
-            "capture": False,
-        },
-        {"frame": 3, "press": [pyxel.KEY_B], "capture": False},
-        {
-            "frame": 5,
-            "mouse": (67, 40),
-            "press": [pyxel.MOUSE_BUTTON_LEFT],
-            "capture": False,
-        },
-        {"frame": 8},
-    ],
-    "sound": [
-        {"frame": 1},
-        # Insert multiple notes: Z+ENTER, X+ENTER, C+ENTER (C, D, E)
-        {"frame": 2, "press": [pyxel.KEY_Z, pyxel.KEY_RETURN], "capture": False},
-        {"frame": 3, "press": [pyxel.KEY_X, pyxel.KEY_RETURN], "capture": False},
-        {"frame": 4, "press": [pyxel.KEY_C, pyxel.KEY_RETURN], "capture": False},
-        {"frame": 5, "press": [pyxel.KEY_V, pyxel.KEY_RETURN], "capture": False},
-        {"frame": 6, "press": [pyxel.KEY_B, pyxel.KEY_RETURN], "capture": False},
-        {"frame": 8},
-    ],
-    "music": [
-        {"frame": 1},
-        # Insert multiple sounds into CH0
-        {
-            "frame": 2,
-            "mouse": (82, 138),
-            "press": [pyxel.MOUSE_BUTTON_LEFT],
-            "capture": False,
-        },
-        {
-            "frame": 3,
-            "mouse": (95, 138),
-            "press": [pyxel.MOUSE_BUTTON_LEFT],
-            "capture": False,
-        },
-        {
-            "frame": 4,
-            "mouse": (108, 138),
-            "press": [pyxel.MOUSE_BUTTON_LEFT],
-            "capture": False,
-        },
-        {"frame": 6},
-    ],
-}
+EDITORS = ["image", "tilemap", "sound", "music"]
 
 
 def run_editor(starting_editor):
-    """Launch Pyxel Editor, capturing update/draw callbacks."""
     captured = {}
     original_init = pyxel.init
     original_run = pyxel.run
@@ -140,7 +81,6 @@ def _capture(captured, path):
 
 
 def run_editor_edit(editor, captured, tmp_path):
-    """Perform edit operations and return (frame_label, path) pairs."""
     results = []
 
     # Capture initial state
@@ -183,11 +123,9 @@ def run_editor_edit(editor, captured, tmp_path):
 
 
 class TestEditor:
-    @pytest.mark.parametrize(
-        "editor", list(EDITOR_PLANS.keys()), ids=list(EDITOR_PLANS.keys())
-    )
+    @pytest.mark.parametrize("editor", EDITORS, ids=EDITORS)
     def test_editor(self, editor, tmp_path, update_references):
-        _reinit_pyxel()
+        _reset_pyxel()
         try:
             captured = run_editor(editor)
             results = run_editor_edit(editor, captured, tmp_path)

@@ -7,29 +7,19 @@ use pyo3::types::PyDict;
 use crate::font_wrapper::Font;
 use crate::tilemap_wrapper::Tilemap;
 
-#[pyclass(from_py_object)]
-#[derive(Clone, Copy)]
-pub struct Image {
-    pub(crate) inner: *mut pyxel::Image,
-}
-
-unsafe impl Send for Image {}
-unsafe impl Sync for Image {}
-
-impl Image {
-    pub fn wrap(inner: *mut pyxel::Image) -> Self {
-        Self { inner }
-    }
-
-    fn inner_ref(&self) -> &pyxel::Image {
-        unsafe { &*self.inner }
-    }
-
-    #[allow(clippy::mut_from_ref)]
-    fn inner_mut(&self) -> &mut pyxel::Image {
-        unsafe { &mut *self.inner }
+fn resolve_include_colors(preferred: Option<bool>, deprecated: Option<bool>) -> Option<bool> {
+    if deprecated.is_some() {
+        deprecation_warning!(
+            INCL_COLORS_OPTION_ONCE,
+            "incl_colors option is deprecated. Use include_colors instead."
+        );
+        deprecated
+    } else {
+        preferred
     }
 }
+
+define_wrapper!(Image, pyxel::Image);
 
 #[pymethods]
 impl Image {
@@ -47,7 +37,7 @@ impl Image {
         include_colors: Option<bool>,
         incl_colors: Option<bool>,
     ) -> PyResult<Self> {
-        let include_colors = include_colors.or(incl_colors);
+        let include_colors = resolve_include_colors(include_colors, incl_colors);
         pyxel::Image::from_image(filename, include_colors)
             .map(Self::wrap)
             .map_err(PyException::new_err)
@@ -65,6 +55,8 @@ impl Image {
         self.inner_ref().height()
     }
 
+    // Data operations
+
     fn data_ptr(&self, py: Python) -> PyResult<Py<PyAny>> {
         let inner = self.inner_mut();
         let python_code = CString::new(format!(
@@ -81,8 +73,6 @@ impl Image {
         Ok(array.unbind())
     }
 
-    // Data operations
-
     fn set(&self, x: i32, y: i32, data: Vec<String>) {
         let data_refs: Vec<_> = data.iter().map(String::as_str).collect();
         self.inner_mut().set(x, y, &data_refs);
@@ -97,7 +87,7 @@ impl Image {
         include_colors: Option<bool>,
         incl_colors: Option<bool>,
     ) -> PyResult<()> {
-        let include_colors = include_colors.or(incl_colors);
+        let include_colors = resolve_include_colors(include_colors, incl_colors);
         self.inner_mut()
             .load(x, y, filename, include_colors)
             .map_err(PyException::new_err)
@@ -126,9 +116,9 @@ impl Image {
     #[pyo3(signature = (x=None, y=None))]
     fn camera(&self, x: Option<f32>, y: Option<f32>) -> PyResult<()> {
         if let (Some(x), Some(y)) = (x, y) {
-            self.inner_mut().set_draw_offset(x, y);
+            self.inner_mut().set_camera(x, y);
         } else if (x, y) == (None, None) {
-            self.inner_mut().reset_draw_offset();
+            self.inner_mut().reset_camera();
         } else {
             python_type_error!("camera() takes 0 or 2 arguments");
         }
@@ -156,7 +146,7 @@ impl Image {
     }
 
     fn pget(&self, x: f32, y: f32) -> pyxel::Color {
-        self.inner_ref().get_pixel(x, y)
+        self.inner_ref().pixel(x, y)
     }
 
     fn pset(&self, x: f32, y: f32, col: pyxel::Color) {

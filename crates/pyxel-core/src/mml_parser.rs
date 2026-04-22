@@ -33,7 +33,7 @@ impl<'a> CharStream<'a> {
         self.bytes.get(self.pos).map(|&b| b as char)
     }
 
-    fn next(&mut self) -> Option<char> {
+    fn advance(&mut self) -> Option<char> {
         let c = self.bytes.get(self.pos).map(|&b| b as char);
         if c.is_some() {
             self.pos += 1;
@@ -70,127 +70,84 @@ pub fn parse_mml(mml: &str) -> Result<Vec<MmlCommand>, String> {
     let mut is_vibrato_set = false;
     let mut is_glide_set = false;
 
-    let mut is_connected;
     let mut connected_note: Option<u32> = None;
     let mut last_note_index: Option<usize> = None;
 
     // Parse MML commands
     while stream.peek().is_some() {
-        is_connected = false;
+        let mut is_connected = false;
         if let Some(bpm) = parse_command(&mut stream, "T", RANGE_GE1)? {
-            //
             // T<bpm> - Set tempo (bpm >= 1)
-            //
-
             is_tempo_set = true;
             commands.push(MmlCommand::Tempo {
-                clocks_per_tick: bpm_to_cpt(bpm),
+                clocks_per_tick: bpm_to_clocks_per_tick(bpm),
             });
         } else if let Some(gate_time) = parse_command(&mut stream, "Q", RANGE_QUANTIZE)? {
-            //
             // Q<gate_percent> - Set quantize gate time (0 <= gate_percent <= 100)
-            //
-
             is_quantize_set = true;
             quantize = gate_time;
             commands.push(MmlCommand::Quantize {
                 gate_ratio: gate_time_to_gate_ratio(gate_time),
             });
         } else if let Some(vol) = parse_command(&mut stream, "V", RANGE_VOLUME)? {
-            //
             // V<vol> - Set volume level (0 <= vol <= 127)
-            //
-
             is_volume_set = true;
             commands.push(MmlCommand::Volume {
                 level: volume_to_level(vol),
             });
         } else if let Some(key_offset) = parse_command::<i32>(&mut stream, "K", RANGE_ALL)? {
-            //
             // K<key_offset> - Transpose key in semitones
-            //
-
             is_transpose_set = true;
             commands.push(MmlCommand::Transpose {
                 semitone_offset: key_offset as f32,
             });
         } else if let Some(offset_cents) = parse_command(&mut stream, "Y", RANGE_ALL)? {
-            //
             // Y<offset_cents> - Set detune in cents
-            //
-
             is_detune_set = true;
             commands.push(MmlCommand::Detune {
                 semitone_offset: cents_to_semitones(offset_cents),
             });
         } else if let Some(command) = parse_envelope(&mut stream)? {
-            //
             // @ENV<slot> - Switch to envelope slot (slot >= 0, 0 = off)
             // @ENV<slot> { init_vol, dur_ticks1, vol1, ... } - Define envelope and switch to slot
-            //
-
             is_envelope_set = true;
             commands.push(command);
         } else if let Some(command) = parse_vibrato(&mut stream)? {
-            //
             // @VIB<slot> - Switch to vibrato slot (slot >= 0, 0 = off)
             // @VIB<slot> { delay_ticks, period_ticks, depth_cents } - Define vibrato and switch to slot
-            //
-
             is_vibrato_set = true;
             commands.push(command);
         } else if let Some(command) = parse_glide(&mut stream)? {
-            //
             // @GLI<slot> - Switch to glide slot (slot >= 0, 0 = off)
             // @GLI<slot> { offset_cents, dur_ticks } - Define glide and switch to slot
-            //
-
             is_glide_set = true;
             commands.push(command);
         } else if let Some(tone) = parse_command(&mut stream, "@", RANGE_GE0)? {
-            //
             // @<tone> - Set tone (tone >= 0)
-            //
-
             is_tone_set = true;
             commands.push(MmlCommand::Tone { tone });
         } else if let Some(oct) = parse_command(&mut stream, "O", RANGE_OCTAVE)? {
-            //
             // O<oct> - Set octave (-1 <= oct <= 9)
-            //
-
             octave = oct;
         } else if parse_string(&mut stream, ">").is_ok() {
-            //
             // > - Octave up
-            //
-
             if octave < RANGE_OCTAVE.1 {
                 octave += 1;
             } else {
                 parse_error!(stream, "Octave exceeds maximum {}", octave);
             }
         } else if parse_string(&mut stream, "<").is_ok() {
-            //
             // < - Octave down
-            //
-
             if octave > RANGE_OCTAVE.0 {
                 octave -= 1;
             } else {
                 parse_error!(stream, "Octave is below minimum {}", octave);
             }
         } else if parse_string(&mut stream, "L").is_ok() {
-            //
             // L<len> - Set default note length (1 <= len <= 192)
-            //
-
-            note_ticks = parse_length_as_ticks(&mut stream, note_ticks)?;
+            note_ticks = parse_length_ticks(&mut stream, note_ticks)?;
         } else if let Some((command, connected)) = parse_note(&mut stream, octave, note_ticks)? {
-            //
             // C/D/E/F/G/A/B[#+-][<len>][.][&] - Play note (1 <= len <= 192)
-            //
-
             is_connected = connected;
 
             // Combine durations if this note is tied to the previous one.
@@ -230,7 +187,7 @@ pub fn parse_mml(mml: &str) -> Result<Vec<MmlCommand>, String> {
             ensure_set!(
                 is_tempo_set,
                 MmlCommand::Tempo {
-                    clocks_per_tick: bpm_to_cpt(DEFAULT_TEMPO)
+                    clocks_per_tick: bpm_to_clocks_per_tick(DEFAULT_TEMPO)
                 }
             );
             ensure_set!(
@@ -280,14 +237,11 @@ pub fn parse_mml(mml: &str) -> Result<Vec<MmlCommand>, String> {
             last_note_index = Some(commands.len());
             commands.push(command);
         } else if let Some(command) = parse_rest(&mut stream, note_ticks)? {
-            //
             // R[<len>][.] - Rest (1 <= len <= 192)
-            //
-
             if !is_tempo_set {
                 is_tempo_set = true;
                 commands.push(MmlCommand::Tempo {
-                    clocks_per_tick: bpm_to_cpt(DEFAULT_TEMPO),
+                    clocks_per_tick: bpm_to_clocks_per_tick(DEFAULT_TEMPO),
                 });
             }
 
@@ -301,16 +255,10 @@ pub fn parse_mml(mml: &str) -> Result<Vec<MmlCommand>, String> {
             commands.push(command);
             last_note_index = None;
         } else if parse_string(&mut stream, "[").is_ok() {
-            //
             // [ - Repeat start marker
-            //
-
             commands.push(MmlCommand::RepeatStart);
         } else if parse_string(&mut stream, "]").is_ok() {
-            //
             // ]<count> - Repeat end (count >= 1, 0 = infinite)
-            //
-
             let count = parse_number(&mut stream, "count", RANGE_GE1).unwrap_or(0);
             commands.push(MmlCommand::RepeatEnd { play_count: count });
         } else {
@@ -321,20 +269,20 @@ pub fn parse_mml(mml: &str) -> Result<Vec<MmlCommand>, String> {
     Ok(commands)
 }
 
-pub fn calc_commands_sec(commands: &[MmlCommand]) -> Option<f32> {
+pub fn total_duration_sec(commands: &[MmlCommand]) -> Option<f32> {
     let mut total_clocks = 0;
     let mut command_index: u32 = 0;
     let mut repeat_points: Vec<(u32, u32)> = Vec::new();
-    let mut clocks_per_tick = bpm_to_cpt(DEFAULT_TEMPO);
+    let mut clocks_per_tick = bpm_to_clocks_per_tick(DEFAULT_TEMPO);
 
     while command_index < commands.len() as u32 {
         let command = &commands[command_index as usize];
         command_index += 1;
         match command {
             MmlCommand::Tempo {
-                clocks_per_tick: cpt,
+                clocks_per_tick: new_clocks_per_tick,
             } => {
-                clocks_per_tick = *cpt;
+                clocks_per_tick = *new_clocks_per_tick;
             }
             MmlCommand::Note { duration_ticks, .. } | MmlCommand::Rest { duration_ticks } => {
                 total_clocks += clocks_per_tick * *duration_ticks;
@@ -346,10 +294,10 @@ pub fn calc_commands_sec(commands: &[MmlCommand]) -> Option<f32> {
                 if *play_count == 0 {
                     return None;
                 }
-                if let Some((index, count)) = repeat_points.pop() {
+                if let Some((start_index, count)) = repeat_points.pop() {
                     if count + 1 < *play_count {
-                        repeat_points.push((index, count + 1));
-                        command_index = index;
+                        repeat_points.push((start_index, count + 1));
+                        command_index = start_index;
                     }
                 }
             }
@@ -361,7 +309,7 @@ pub fn calc_commands_sec(commands: &[MmlCommand]) -> Option<f32> {
 
 fn skip_whitespace(stream: &mut CharStream) {
     while stream.peek().is_some_and(char::is_whitespace) {
-        stream.next();
+        stream.advance();
     }
 }
 
@@ -372,31 +320,33 @@ fn parse_number<T: TryFrom<i32>>(
 ) -> Result<T, String> {
     skip_whitespace(stream);
     let pos = stream.pos;
-    let mut parsed_str = String::new();
-
-    if stream.peek() == Some('-') {
-        parsed_str.push(stream.next().unwrap());
+    let negative = stream.peek() == Some('-');
+    if negative {
+        stream.advance();
     }
+
+    let mut value: i32 = 0;
+    let mut has_digit = false;
     while let Some(c) = stream.peek() {
-        if c.is_ascii_digit() {
-            parsed_str.push(stream.next().unwrap());
+        if let Some(digit) = c.to_digit(10) {
+            value = value.saturating_mul(10).saturating_add(digit as i32);
+            has_digit = true;
+            stream.advance();
         } else {
             break;
         }
     }
 
-    if parsed_str.is_empty() {
-        if let Some(c) = stream.peek() {
-            parsed_str.push(c);
-        }
+    if !has_digit {
+        let err_char = stream.peek().map_or(String::new(), |c| c.to_string());
         stream.pos = pos;
-        return Err(parsed_str);
+        return Err(err_char);
     }
 
-    let Ok(value) = parsed_str.parse::<i32>() else {
-        stream.pos = pos;
-        return Err(parsed_str);
-    };
+    if negative {
+        value = -value;
+    }
+
     if value < range.0 {
         parse_error!(stream, "'{name}' is below minimum {}", range.0);
     }
@@ -426,7 +376,7 @@ fn parse_string(stream: &mut CharStream, literal: &str) -> Result<String, String
     for expected in literal.chars() {
         match stream.peek() {
             Some(c) if c.eq_ignore_ascii_case(&expected) => {
-                parsed_str.push(stream.next().unwrap());
+                parsed_str.push(stream.advance().unwrap());
             }
             Some(c) => {
                 parsed_str.push(c);
@@ -460,7 +410,7 @@ fn parse_command<T: TryFrom<i32>>(
     Ok(None)
 }
 
-fn parse_length_as_ticks(stream: &mut CharStream, note_ticks: u32) -> Result<u32, String> {
+fn parse_length_ticks(stream: &mut CharStream, note_ticks: u32) -> Result<u32, String> {
     const WHOLE_NOTE_TICKS: u32 = TICKS_PER_QUARTER_NOTE * 4;
     let mut note_ticks = note_ticks;
 
@@ -504,7 +454,7 @@ fn parse_note(
         },
         None => return Ok(None),
     };
-    stream.next();
+    stream.advance();
 
     let midi_note = ((octave + 1) * 12 + semitone) as u32;
     let midi_note = if parse_string(stream, "#").is_ok() || parse_string(stream, "+").is_ok() {
@@ -515,14 +465,14 @@ fn parse_note(
         midi_note
     };
 
-    let mut duration_ticks = parse_length_as_ticks(stream, note_ticks)?;
+    let mut duration_ticks = parse_length_ticks(stream, note_ticks)?;
 
     // Extend duration with '&<len>'
     let mut is_connected = false;
     while parse_string(stream, "&").is_ok() {
         skip_whitespace(stream);
         if stream.peek().is_some_and(|c| c.is_ascii_digit()) {
-            duration_ticks += parse_length_as_ticks(stream, note_ticks)?;
+            duration_ticks += parse_length_ticks(stream, note_ticks)?;
         } else {
             // Set connection flag if '&' followed by non-digit
             is_connected = true;
@@ -544,9 +494,9 @@ fn parse_rest(stream: &mut CharStream, note_ticks: u32) -> Result<Option<MmlComm
         return Ok(None);
     }
 
-    let mut duration_ticks = parse_length_as_ticks(stream, note_ticks)?;
+    let mut duration_ticks = parse_length_ticks(stream, note_ticks)?;
     while parse_string(stream, "&").is_ok() {
-        duration_ticks += parse_length_as_ticks(stream, note_ticks)?;
+        duration_ticks += parse_length_ticks(stream, note_ticks)?;
     }
 
     Ok(Some(MmlCommand::Rest { duration_ticks }))
@@ -641,7 +591,7 @@ fn parse_glide(stream: &mut CharStream) -> Result<Option<MmlCommand>, String> {
     }))
 }
 
-fn bpm_to_cpt(bpm: u32) -> u32 {
+fn bpm_to_clocks_per_tick(bpm: u32) -> u32 {
     (AUDIO_CLOCK_RATE as f32 * 60.0 / (bpm as f32 * TICKS_PER_QUARTER_NOTE as f32)).round() as u32
 }
 
@@ -660,8 +610,6 @@ fn cents_to_semitones(cents: i32) -> f32 {
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    // Helpers
 
     fn parse(mml: &str) -> Vec<MmlCommand> {
         parse_mml(mml).unwrap()
@@ -690,7 +638,7 @@ mod tests {
             .collect()
     }
 
-    fn quantize_values(commands: &[MmlCommand]) -> Vec<f32> {
+    fn quantize_commands(commands: &[MmlCommand]) -> Vec<f32> {
         commands
             .iter()
             .filter_map(|cmd| match cmd {
@@ -700,7 +648,7 @@ mod tests {
             .collect()
     }
 
-    // ── Basic notes ──
+    // Basic notes
 
     #[test]
     fn test_single_note() {
@@ -727,7 +675,7 @@ mod tests {
         assert_eq!(notes[2].0, 59); // Cb = B3
     }
 
-    // ── Octave ──
+    // Octave
 
     #[test]
     fn test_octave() {
@@ -754,7 +702,7 @@ mod tests {
         assert_eq!(notes[1].0, 131); // B at O9: (9+1)*12+11 = 131
     }
 
-    // ── Note length ──
+    // Note length
 
     #[test]
     fn test_note_length() {
@@ -798,7 +746,7 @@ mod tests {
         }
     }
 
-    // ── Rest ──
+    // Rest
 
     #[test]
     fn test_rest() {
@@ -829,7 +777,7 @@ mod tests {
         assert!(note_commands(&cmds).is_empty());
     }
 
-    // ── Tie & connection ──
+    // Tie & connection
 
     #[test]
     fn test_tie_extends_duration() {
@@ -856,7 +804,7 @@ mod tests {
         assert_eq!(notes[1], (62, 48)); // D4
     }
 
-    // ── Repeat ──
+    // Repeat
 
     #[test]
     fn test_repeat() {
@@ -879,7 +827,7 @@ mod tests {
             .any(|cmd| matches!(cmd, MmlCommand::RepeatEnd { play_count: 0 })));
     }
 
-    // ── Parameter commands: Tempo ──
+    // Parameter commands: Tempo
 
     #[test]
     fn test_tempo() {
@@ -896,11 +844,11 @@ mod tests {
             MmlCommand::Tempo { clocks_per_tick } => Some(*clocks_per_tick),
             _ => None,
         });
-        // bpm_to_cpt(120) = (1_789_773.0 * 60.0 / (120.0 * 48.0)).round() = 18643
+        // bpm_to_clocks_per_tick(120) = (1_789_773.0 * 60.0 / (120.0 * 48.0)).round() = 18643
         assert_eq!(cpt, Some(18643));
     }
 
-    // ── Parameter commands: Volume ──
+    // Parameter commands: Volume
 
     #[test]
     fn test_volume() {
@@ -925,12 +873,12 @@ mod tests {
             .any(|cmd| matches!(cmd, MmlCommand::Volume { level } if *level == 0.0)));
     }
 
-    // ── Parameter commands: Quantize ──
+    // Parameter commands: Quantize
 
     #[test]
     fn test_quantize() {
         let cmds = parse("Q50 C");
-        let qvals = quantize_values(&cmds);
+        let qvals = quantize_commands(&cmds);
         // Q50 → gate_ratio = 0.5
         assert!(
             qvals.iter().any(|&r| (r - 0.5).abs() < 1e-4),
@@ -942,7 +890,7 @@ mod tests {
     fn test_quantize_full_gate() {
         // Q100 means no per-note quantize command is emitted
         let cmds = parse("Q100 C D");
-        let qvals = quantize_values(&cmds);
+        let qvals = quantize_commands(&cmds);
         // Only the Q100 command itself (gate_ratio=1.0), no per-note quantize
         assert!(qvals.iter().all(|&r| (r - 1.0).abs() < 1e-4));
     }
@@ -951,14 +899,14 @@ mod tests {
     fn test_connected_note_quantize_full_gate() {
         // Connected note (C&) should get gate_ratio=1.0, normal note (D) gets 0.5
         let cmds = parse("Q50 C& D");
-        let qvals = quantize_values(&cmds);
+        let qvals = quantize_commands(&cmds);
         assert_eq!(qvals.len(), 3);
         assert!((qvals[0] - 0.5).abs() < 1e-4, "Q50: {}", qvals[0]);
         assert!((qvals[1] - 1.0).abs() < 1e-4, "connected: {}", qvals[1]);
         assert!((qvals[2] - 0.5).abs() < 1e-4, "normal: {}", qvals[2]);
     }
 
-    // ── Parameter commands: Tone, Transpose, Detune ──
+    // Parameter commands: Tone, Transpose, Detune
 
     #[test]
     fn test_tone_command() {
@@ -996,7 +944,7 @@ mod tests {
         )));
     }
 
-    // ── Effect definitions: Envelope ──
+    // Effect definitions: Envelope
 
     #[test]
     fn test_envelope_definition() {
@@ -1023,7 +971,7 @@ mod tests {
             .any(|cmd| matches!(cmd, MmlCommand::Envelope { slot: 2 })));
     }
 
-    // ── Effect definitions: Vibrato ──
+    // Effect definitions: Vibrato
 
     #[test]
     fn test_vibrato_definition() {
@@ -1033,7 +981,7 @@ mod tests {
             .any(|cmd| matches!(cmd, MmlCommand::VibratoSet { slot: 1, .. })));
     }
 
-    // ── Effect definitions: Glide ──
+    // Effect definitions: Glide
 
     #[test]
     fn test_glide_definition() {
@@ -1079,7 +1027,7 @@ mod tests {
         )));
     }
 
-    // ── Default insertion ──
+    // Default insertion
 
     #[test]
     fn test_default_commands_inserted_on_first_note() {
@@ -1105,7 +1053,7 @@ mod tests {
         ));
     }
 
-    // ── Case / whitespace / empty ──
+    // Case / whitespace / empty
 
     #[test]
     fn test_case_insensitive() {
@@ -1127,7 +1075,7 @@ mod tests {
         assert!(cmds.is_empty());
     }
 
-    // ── Error cases ──
+    // Error cases
 
     #[test]
     fn test_err_invalid_character() {
@@ -1192,35 +1140,35 @@ mod tests {
         assert!(parse_mml("C192.").is_err());
     }
 
-    // ── calc_commands_sec ──
+    // total_duration_sec
 
     #[test]
-    fn test_calc_commands_sec_quarter_note_at_120bpm() {
+    fn test_total_duration_sec_quarter_note_at_120bpm() {
         let cmds = parse("T120 C4");
-        let sec = calc_commands_sec(&cmds).unwrap();
+        let sec = total_duration_sec(&cmds).unwrap();
         // Quarter note at 120 BPM ≈ 0.5 seconds
         assert!((sec - 0.5).abs() < 0.001, "expected ~0.5, got {sec}");
     }
 
     #[test]
-    fn test_calc_commands_sec_tempo_change() {
+    fn test_total_duration_sec_tempo_change() {
         let cmds = parse("T120 C4 T60 C4");
-        let sec = calc_commands_sec(&cmds).unwrap();
+        let sec = total_duration_sec(&cmds).unwrap();
         // 0.5s (120bpm quarter) + 1.0s (60bpm quarter) ≈ 1.5s
         assert!((sec - 1.5).abs() < 0.01, "expected ~1.5, got {sec}");
     }
 
     #[test]
-    fn test_calc_commands_sec_infinite_loop() {
+    fn test_total_duration_sec_infinite_loop() {
         let cmds = parse("[C]0"); // 0 = infinite repeat
-        assert!(calc_commands_sec(&cmds).is_none());
+        assert!(total_duration_sec(&cmds).is_none());
     }
 
     #[test]
-    fn test_calc_commands_sec_finite_repeat() {
+    fn test_total_duration_sec_finite_repeat() {
         let cmds = parse("T120 [C4]2");
-        let sec = calc_commands_sec(&cmds).unwrap();
-        let single = calc_commands_sec(&parse("T120 C4")).unwrap();
+        let sec = total_duration_sec(&cmds).unwrap();
+        let single = total_duration_sec(&parse("T120 C4")).unwrap();
         assert!(
             (sec - single * 2.0).abs() < 0.01,
             "expected ~{}, got {sec}",
@@ -1229,10 +1177,10 @@ mod tests {
     }
 
     #[test]
-    fn test_calc_commands_sec_nested_repeat() {
+    fn test_total_duration_sec_nested_repeat() {
         let cmds = parse("T120 [[C4]2]3");
-        let sec = calc_commands_sec(&cmds).unwrap();
-        let single = calc_commands_sec(&parse("T120 C4")).unwrap();
+        let sec = total_duration_sec(&cmds).unwrap();
+        let single = total_duration_sec(&parse("T120 C4")).unwrap();
         // Inner loop plays 2 times, outer loop plays 3 times → 6 total notes
         assert!(
             (sec - single * 6.0).abs() < 0.01,
@@ -1242,8 +1190,8 @@ mod tests {
     }
 
     #[test]
-    fn test_calc_commands_sec_empty() {
+    fn test_total_duration_sec_empty() {
         let cmds = parse("");
-        assert_eq!(calc_commands_sec(&cmds), Some(0.0));
+        assert_eq!(total_duration_sec(&cmds), Some(0.0));
     }
 }

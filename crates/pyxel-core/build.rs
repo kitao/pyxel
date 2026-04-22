@@ -8,20 +8,20 @@ use tar::Archive;
 
 const SDL2_VERSION: &str = "2.32.0"; // Emscripten 4.0.9 uses SDL 2.32.0
 
-struct Sdl2Bindings {
+struct SDL2BindingsBuilder {
     target: String,
     target_os: String,
     sdl2_dir: String,
     out_dir: String,
 }
 
-impl Sdl2Bindings {
+impl SDL2BindingsBuilder {
     fn new() -> Self {
         let target = var("TARGET").unwrap();
         let target_os = target
             .splitn(3, '-')
             .nth(2)
-            .expect("Invalid TARGET triple")
+            .expect("Failed to parse TARGET triple")
             .to_string();
         let out_dir = var("OUT_DIR").unwrap();
         let sdl2_dir = format!("{out_dir}/SDL2-{SDL2_VERSION}");
@@ -35,14 +35,16 @@ impl Sdl2Bindings {
     }
 
     fn build(&self) {
-        if static_sdl2() {
+        if is_sdl2_static() {
             self.download_sdl2();
             self.build_sdl2();
         }
 
         self.link_sdl2();
-        self.generate_bindings()
+        self.generate_bindings();
     }
+
+    // Pipeline steps
 
     fn download_sdl2(&self) {
         if Path::new(&self.sdl2_dir).exists() {
@@ -112,19 +114,19 @@ impl Sdl2Bindings {
             cfg.define("VIDEO_OPENGLES", "OFF");
         }
 
-        let cmake_out_dir = cfg.build();
+        let cmake_install_dir = cfg.build();
         println!(
             "cargo:rustc-link-search={}",
-            cmake_out_dir.join("lib64").display()
+            cmake_install_dir.join("lib64").display()
         );
         println!(
             "cargo:rustc-link-search={}",
-            cmake_out_dir.join("lib").display()
+            cmake_install_dir.join("lib").display()
         );
     }
 
     fn link_sdl2(&self) {
-        if static_sdl2() {
+        if is_sdl2_static() {
             println!("cargo:rustc-link-lib=static=SDL2main");
             if self.target_os.contains("windows") {
                 println!("cargo:rustc-link-lib=static=SDL2-static");
@@ -176,8 +178,8 @@ impl Sdl2Bindings {
             .generate_comments(false)
             .prepend_enum_name(false)
             .clang_arg(format!("--target={}", self.target))
-            .clang_args(self.get_bindgen_flags())
-            .clang_args(self.get_include_flags());
+            .clang_args(self.bindgen_flags())
+            .clang_args(self.include_flags());
 
         if self.target_os == "windows-msvc" {
             builder = builder
@@ -201,7 +203,9 @@ impl Sdl2Bindings {
             .unwrap();
     }
 
-    fn get_bindgen_flags(&self) -> Vec<String> {
+    // Helpers
+
+    fn bindgen_flags(&self) -> Vec<String> {
         if let Ok(bindgen_flags) = var("BINDGENFLAGS") {
             bindgen_flags
                 .split_whitespace()
@@ -212,10 +216,10 @@ impl Sdl2Bindings {
         }
     }
 
-    fn get_include_flags(&self) -> Vec<String> {
+    fn include_flags(&self) -> Vec<String> {
         let mut include_flags = Vec::new();
 
-        if static_sdl2() {
+        if is_sdl2_static() {
             include_flags.push(format!("-I{}/include", self.sdl2_dir));
         } else if self.target_os == "emscripten" {
             let output = Command::new("emcc")
@@ -246,18 +250,18 @@ impl Sdl2Bindings {
     }
 }
 
-fn use_sdl2() -> bool {
+fn has_sdl2_feature() -> bool {
     var("CARGO_FEATURE_SDL2_DYNAMIC").is_ok() || var("CARGO_FEATURE_SDL2_STATIC").is_ok()
 }
 
-fn static_sdl2() -> bool {
+fn is_sdl2_static() -> bool {
     var("CARGO_FEATURE_SDL2_STATIC").is_ok()
 }
 
 fn main() {
     println!("cargo::rustc-check-cfg=cfg(pyxel_core)");
     println!("cargo:rustc-cfg=pyxel_core");
-    if use_sdl2() {
-        Sdl2Bindings::new().build();
+    if has_sdl2_feature() {
+        SDL2BindingsBuilder::new().build();
     }
 }

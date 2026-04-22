@@ -1,9 +1,8 @@
-import os
+from pathlib import Path
 
 import pyxel
 
 
-# Sound class
 class TestSound:
     def test_new_defaults(self):
         snd = pyxel.Sound()
@@ -40,7 +39,6 @@ class TestSound:
     def test_mml(self):
         snd = pyxel.Sound()
         snd.mml("T120 O4 L4 CDEF")
-        # MML mode generates audio; total_sec should be positive
         assert snd.total_sec() > 0
 
     def test_mml_none_exits_mml_mode(self):
@@ -50,7 +48,7 @@ class TestSound:
 
     def test_pcm(self, assets_dir):
         snd = pyxel.Sound()
-        snd.pcm(os.path.join(assets_dir, "audio_bgm1.ogg"))
+        snd.pcm(str(assets_dir / "audio_bgm1.ogg"))
         assert snd.total_sec() > 0
 
     def test_pcm_none_exits_pcm_mode(self):
@@ -113,8 +111,8 @@ class TestSound:
         snd.set("c2e2g2c3", "ssss", "7654", "nnnn", 10)
         path = str(tmp_path / "test_snd.wav")
         snd.save(path, 1.0)
-        assert os.path.exists(path)
-        assert os.path.getsize(path) > 0
+        assert Path(path).exists()
+        assert Path(path).stat().st_size > 0
 
     def test_total_sec(self):
         snd = pyxel.Sound()

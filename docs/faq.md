@@ -5,7 +5,7 @@
 <details>
 <summary>Where do I start to learn Pyxel?</summary>
 
-It is recommended to try Pyxel's example code in the following order.
+We recommend trying Pyxel's example code in the following order.
 
 1. 01_hello_pyxel — Pyxel basics
 2. 05_color_palette — Color palette
@@ -29,7 +29,7 @@ The official [book](https://gihyo.jp/book/2025/978-4-297-14657-3) is available i
 <details>
 <summary>What is the difference between the <code>update</code> and <code>draw</code> functions?</summary>
 
-The `update` function is called every frame, but the `draw` function may be skipped if the processing time exceeds the allowable limit. This design in Pyxel reduces the impact of rendering load and OS interruptions, enabling smooth animation.
+The `update` function is called every frame, but the `draw` function may be skipped if the processing time exceeds the allowable limit. Pyxel uses this design to reduce the impact of rendering load and OS interrupts, enabling smooth animation.
 
 </details>
 
@@ -38,7 +38,7 @@ The `update` function is called every frame, but the `draw` function may be skip
 
 MML (Music Macro Language) is a language for defining sounds by describing notes, tempo, and other parameters as a string.
 
-Passing an MML string to the `mml` function of the Sound class causes that Sound to be played according to the MML content. Calling `mml()` with no arguments clears the MML setting.
+Pass an MML string to the Sound class's `mml` function, and that Sound will play back following the MML. Calling `mml()` with no arguments clears the MML setting.
 
 ```python
 pyxel.sounds[0].mml("CDEFGAB>C")
@@ -59,9 +59,10 @@ You can also create and share MML in your browser using [Pyxel MML Studio](https
 ## File Operations and Data Management
 
 <details>
-<summary>File cannot be loaded. It may fail when the environment changes.</summary>
+<summary>Why does file loading fail when the environment changes?</summary>
 
-Make sure that the current directory is set as intended when loading files.<br>
+Make sure that the current directory is set as intended when loading files.
+
 When Pyxel's `init` function is called, the current directory is changed to the same location as the script file. After that, files can be specified using relative paths. However, loading may fail if you try to open a file before calling `init` or if the current directory is changed after calling `init`.
 
 </details>
@@ -69,7 +70,7 @@ When Pyxel's `init` function is called, the current directory is changed to the 
 <details>
 <summary>How can I save application-specific data like high scores or game progress?</summary>
 
-Pass the developer name (`vendor_name`) and application name (`app_name`) to the `user_data_dir(vendor_name, app_name)` function. It will return the path to a directory suitable for data storage on the current platform. Use this directory to save and load your application's files.
+Pass the developer name (`vendor_name`) and application name (`app_name`) to the `user_data_dir(vendor_name, app_name)` function. It will create a directory suitable for data storage on the current platform and return its path. Use this directory to save and load your application's files.
 
 </details>
 
@@ -87,14 +88,14 @@ With [Pyxel Code Maker](https://kitao.github.io/pyxel/web/code-maker/), you can 
 <details>
 <summary>How do I publish my Pyxel app on the web?</summary>
 
-There are three methods: Web Launcher, app2html, and Custom Tags. For details, see [How to Use Pyxel for Web](https://kitao.github.io/pyxel/web/web-usage/).
+There are three methods: Pyxel Web Launcher, app2html, and HTML Custom Elements. For details, see [How to Use Pyxel for Web](https://kitao.github.io/pyxel/web/web-usage/).
 
 </details>
 
 <details>
 <summary>Can I change the palette colors in Pyxel Editor?</summary>
 
-By placing a file with the same name but with the .pyxpal extension in the same directory as the Pyxel resource file (.pyxres), the palette display colors in Pyxel Editor will be updated. Palette files can be created with the `save_pal` function, or manually as a text file with one hex color code per line.
+If you place a file with the same name but the .pyxpal extension in the same directory as the Pyxel resource file (.pyxres), Pyxel Editor will display the palette using those colors. Palette files can be created with the `save_pal` function, or manually as a text file with one RRGGBB hex color per line.
 
 </details>
 
@@ -103,7 +104,8 @@ By placing a file with the same name but with the .pyxpal extension in the same 
 <details>
 <summary>How to migrate code to version 2.4</summary>
 
-In Pyxel 2.4, the sound engine and MML syntax have been revamped.<br>
+In Pyxel 2.4, the sound engine and MML syntax have been revamped.
+
 To make your code compatible with version 2.4, please make the following changes:
 
 - Rename the `waveform` field of the Tone class to `wavetable`
@@ -111,8 +113,7 @@ To make your code compatible with version 2.4, please make the following changes
 - Update code to handle the return value of the `play_pos` function, which is now `(sound_no, sec)`
 - Change the `count` argument of the `save` function in the Sound and Music classes to `sec`
 - If you need the playback duration of a sound, use the `total_sec` function of the Sound class
-- For the Sound class's `mml` function, use code that follows the new MML syntax
-- To use the old MML syntax, use the Sound class's `old_mml` function
+- For the Sound class's `mml` function, use code that follows the new MML syntax (old syntax is auto-detected; the `old_mml` function is deprecated)
 - Change the `excl_*` option in the `save` and `load` functions to `exclude_*`
 - Remove the `incl_*` option from the `save` and `load` functions
 
@@ -125,6 +126,6 @@ For details on the new MML syntax, see "[How do I use Pyxel's MML?](#api-specifi
 <details>
 <summary>Can I use Pyxel for commercial purposes without the author's permission?</summary>
 
-As long as you comply with the MIT License and clearly display the full text of the copyright and license in the source code or license file, you are free to sell or distribute it without the author's permission. However, since Pyxel is developed by a single individual, it would be appreciated if you could contact the author or consider sponsoring their work if possible.
+As long as you comply with the MIT License and clearly display the full text of the copyright and license in the source code or license file, you are free to sell or distribute your work without the author's permission. That said, Pyxel is developed by a single individual, so reaching out to the author or becoming a sponsor would be greatly appreciated.
 
 </details>

@@ -3,9 +3,8 @@ use std::mem::size_of;
 use glow::{HasContext, PixelUnpackData};
 
 use crate::font::Font;
-use crate::image::{rgb_to_rgb8, Color, Rgb24};
-use crate::platform;
-use crate::platform::GLProfile;
+use crate::image::{rgb24_to_rgb8, Color, Rgb24};
+use crate::platform::{self, GlProfile};
 use crate::pyxel::{self, Pyxel};
 use crate::settings::{BACKGROUND_COLOR, MAX_COLORS, NUM_SCREEN_TYPES};
 
@@ -42,19 +41,22 @@ const UNIFORM_NAMES: [&str; NUM_UNIFORMS] = [
     "u_colorsTexture",
 ];
 
+const QUAD_VERTICES: [f32; 8] = [-1.0, 1.0, -1.0, -1.0, 1.0, 1.0, 1.0, -1.0];
+
 pub struct ScreenShader {
-    shader_program: glow::Program,
+    program: glow::Program,
     uniform_locations: [Option<glow::UniformLocation>; NUM_UNIFORMS],
     vertex_array: glow::VertexArray,
 }
 
 pub struct Graphics {
+    is_gles: bool,
     screen_shaders: Vec<ScreenShader>,
     screen_texture: glow::NativeTexture,
     screen_texture_initialized: bool,
     colors_texture: glow::NativeTexture,
     cached_colors: Vec<Rgb24>,
-    color_pixels_buf: Vec<u8>,
+    color_pixels: Vec<u8>,
 }
 
 impl Graphics {
@@ -62,7 +64,7 @@ impl Graphics {
         unsafe {
             let gl = platform::gl_context();
 
-            if platform::gl_profile() != GLProfile::Gles {
+            if platform::gl_profile() != GlProfile::Gles {
                 gl.disable(glow::FRAMEBUFFER_SRGB);
             }
             gl.disable(glow::BLEND);
@@ -72,18 +74,23 @@ impl Graphics {
             let colors_texture = Self::create_colors_texture(gl);
 
             Self {
+                is_gles: platform::gl_profile() == GlProfile::Gles,
                 screen_shaders,
                 screen_texture,
                 screen_texture_initialized: false,
                 colors_texture,
                 cached_colors: Vec::new(),
-                color_pixels_buf: Vec::new(),
+                color_pixels: Vec::new(),
             }
         }
     }
 
+    pub(crate) fn invalidate_screen_texture(&mut self) {
+        self.screen_texture_initialized = false;
+    }
+
     unsafe fn create_screen_shaders(gl: &mut glow::Context) -> Vec<ScreenShader> {
-        let glsl_version = if platform::gl_profile() == GLProfile::Gles {
+        let glsl_version = if platform::gl_profile() == GlProfile::Gles {
             GLES_VERSION
         } else {
             GL_VERSION
@@ -119,28 +126,27 @@ impl Graphics {
             );
 
             // Shader program
-            let shader_program = gl
+            let program = gl
                 .create_program()
                 .expect("Failed to create OpenGL shader program");
-            gl.attach_shader(shader_program, vertex_shader);
-            gl.attach_shader(shader_program, fragment_shader);
-            gl.link_program(shader_program);
+            gl.attach_shader(program, vertex_shader);
+            gl.attach_shader(program, fragment_shader);
+            gl.link_program(program);
             assert!(
-                gl.get_program_link_status(shader_program),
+                gl.get_program_link_status(program),
                 "{}",
-                gl.get_program_info_log(shader_program)
+                gl.get_program_info_log(program)
             );
-            gl.detach_shader(shader_program, vertex_shader);
+            gl.detach_shader(program, vertex_shader);
             gl.delete_shader(vertex_shader);
-            gl.detach_shader(shader_program, fragment_shader);
+            gl.detach_shader(program, fragment_shader);
             gl.delete_shader(fragment_shader);
 
             // Uniform locations
             let uniform_locations: [Option<glow::UniformLocation>; NUM_UNIFORMS] =
-                std::array::from_fn(|i| gl.get_uniform_location(shader_program, UNIFORM_NAMES[i]));
+                std::array::from_fn(|i| gl.get_uniform_location(program, UNIFORM_NAMES[i]));
 
             // Vertex array
-            let vertices: [f32; 8] = [-1.0, 1.0, -1.0, -1.0, 1.0, 1.0, 1.0, -1.0];
             let vertex_array = gl
                 .create_vertex_array()
                 .expect("Failed to create OpenGL vertex array");
@@ -150,12 +156,12 @@ impl Graphics {
             gl.bind_buffer(glow::ARRAY_BUFFER, Some(vertex_buffer));
             gl.buffer_data_u8_slice(
                 glow::ARRAY_BUFFER,
-                vertices.align_to::<u8>().1,
+                QUAD_VERTICES.align_to::<u8>().1,
                 glow::STATIC_DRAW,
             );
 
             let position = gl
-                .get_attrib_location(shader_program, "position")
+                .get_attrib_location(program, "position")
                 .expect("Failed to find OpenGL attribute 'position'");
             gl.vertex_attrib_pointer_f32(
                 position,
@@ -169,7 +175,7 @@ impl Graphics {
 
             // Add screen shader
             screen_shaders.push(ScreenShader {
-                shader_program,
+                program,
                 uniform_locations,
                 vertex_array,
             });
@@ -201,10 +207,6 @@ impl Graphics {
         );
     }
 
-    pub(crate) fn invalidate_screen_texture(&mut self) {
-        self.screen_texture_initialized = false;
-    }
-
     unsafe fn create_screen_texture(gl: &mut glow::Context) -> glow::NativeTexture {
         let screen_texture = gl
             .create_texture()
@@ -227,6 +229,8 @@ impl Graphics {
 }
 
 impl Pyxel {
+    // View transformation
+
     pub fn set_clip_rect(&self, x: f32, y: f32, width: f32, height: f32) {
         pyxel::screen().set_clip_rect(x, y, width, height);
     }
@@ -235,12 +239,12 @@ impl Pyxel {
         pyxel::screen().reset_clip_rect();
     }
 
-    pub fn set_draw_offset(&self, x: f32, y: f32) {
-        pyxel::screen().set_draw_offset(x, y);
+    pub fn set_camera(&self, x: f32, y: f32) {
+        pyxel::screen().set_camera(x, y);
     }
 
-    pub fn reset_draw_offset(&self) {
-        pyxel::screen().reset_draw_offset();
+    pub fn reset_camera(&self) {
+        pyxel::screen().reset_camera();
     }
 
     pub fn map_color(&self, src_color: Color, dst_color: Color) {
@@ -259,8 +263,10 @@ impl Pyxel {
         pyxel::screen().clear(color);
     }
 
-    pub fn get_pixel(&self, x: f32, y: f32) -> Color {
-        pyxel::screen().get_pixel(x, y)
+    // Drawing primitives
+
+    pub fn pixel(&self, x: f32, y: f32) -> Color {
+        pyxel::screen().pixel(x, y)
     }
 
     pub fn set_pixel(&self, x: f32, y: f32, color: Color) {
@@ -325,6 +331,8 @@ impl Pyxel {
         pyxel::screen().flood_fill(x, y, color);
     }
 
+    // Image & tilemap
+
     pub fn draw_image(
         &self,
         x: f32,
@@ -334,7 +342,7 @@ impl Pyxel {
         image_y: f32,
         width: f32,
         height: f32,
-        color_key: Option<Color>,
+        transparent: Option<Color>,
         rotate: Option<f32>,
         scale: Option<f32>,
     ) {
@@ -347,7 +355,7 @@ impl Pyxel {
                 image_y,
                 width,
                 height,
-                color_key,
+                transparent,
                 rotate,
                 scale,
             );
@@ -363,7 +371,7 @@ impl Pyxel {
         tilemap_y: f32,
         width: f32,
         height: f32,
-        color_key: Option<Color>,
+        transparent: Option<Color>,
         rotate: Option<f32>,
         scale: Option<f32>,
     ) {
@@ -376,12 +384,14 @@ impl Pyxel {
                 tilemap_y,
                 width,
                 height,
-                color_key,
+                transparent,
                 rotate,
                 scale,
             );
         }
     }
+
+    // 3D graphics
 
     pub fn draw_image_3d(
         &self,
@@ -393,7 +403,7 @@ impl Pyxel {
         pos: (f32, f32, f32),
         rot: (f32, f32, f32),
         fov: Option<f32>,
-        color_key: Option<Color>,
+        transparent: Option<Color>,
     ) {
         unsafe {
             pyxel::screen().draw_image_3d(
@@ -405,7 +415,7 @@ impl Pyxel {
                 pos,
                 rot,
                 fov,
-                color_key,
+                transparent,
             );
         }
     }
@@ -420,7 +430,7 @@ impl Pyxel {
         pos: (f32, f32, f32),
         rot: (f32, f32, f32),
         fov: Option<f32>,
-        color_key: Option<Color>,
+        transparent: Option<Color>,
     ) {
         unsafe {
             pyxel::screen().draw_tilemap_3d(
@@ -432,13 +442,15 @@ impl Pyxel {
                 pos,
                 rot,
                 fov,
-                color_key,
+                transparent,
             );
         }
     }
 
-    pub fn draw_text(&self, x: f32, y: f32, string: &str, color: Color, font: Option<*mut Font>) {
-        pyxel::screen().draw_text(x, y, string, color, font);
+    // Text & rendering
+
+    pub fn draw_text(&self, x: f32, y: f32, text: &str, color: Color, font: Option<*mut Font>) {
+        pyxel::screen().draw_text(x, y, text, color, font);
     }
 
     pub(crate) fn render_screen(&mut self) {
@@ -464,10 +476,10 @@ impl Pyxel {
     unsafe fn use_screen_shader(&self, gl: &mut glow::Context) {
         let shader =
             &self.graphics.as_ref().unwrap().screen_shaders[self.system.screen_mode as usize];
-        gl.use_program(Some(shader.shader_program));
-        let ulocs = &shader.uniform_locations;
+        gl.use_program(Some(shader.program));
+        let uniforms = &shader.uniform_locations;
 
-        if let Some(location) = &ulocs[U_SCREEN_POS] {
+        if let Some(location) = &uniforms[U_SCREEN_POS] {
             let (_, window_height) = platform::window_size();
             gl.uniform_2_f32(
                 Some(location),
@@ -479,7 +491,7 @@ impl Pyxel {
             );
         }
 
-        if let Some(location) = &ulocs[U_SCREEN_SIZE] {
+        if let Some(location) = &uniforms[U_SCREEN_SIZE] {
             gl.uniform_2_f32(
                 Some(location),
                 *pyxel::width() as f32 * self.system.screen_scale,
@@ -487,16 +499,16 @@ impl Pyxel {
             );
         }
 
-        if let Some(location) = &ulocs[U_SCREEN_SCALE] {
+        if let Some(location) = &uniforms[U_SCREEN_SCALE] {
             gl.uniform_1_f32(Some(location), self.system.screen_scale);
         }
 
-        if let Some(location) = &ulocs[U_NUM_COLORS] {
+        if let Some(location) = &uniforms[U_NUM_COLORS] {
             gl.uniform_1_i32(Some(location), pyxel::colors().len() as i32);
         }
 
-        if let Some(location) = &ulocs[U_BACKGROUND_COLOR] {
-            let (r, g, b) = rgb_to_rgb8(BACKGROUND_COLOR);
+        if let Some(location) = &uniforms[U_BACKGROUND_COLOR] {
+            let (r, g, b) = rgb24_to_rgb8(BACKGROUND_COLOR);
             gl.uniform_3_f32(
                 Some(location),
                 r as f32 / 255.0,
@@ -505,11 +517,11 @@ impl Pyxel {
             );
         }
 
-        if let Some(location) = &ulocs[U_SCREEN_TEXTURE] {
+        if let Some(location) = &uniforms[U_SCREEN_TEXTURE] {
             gl.uniform_1_i32(Some(location), 0);
         }
 
-        if let Some(location) = &ulocs[U_COLORS_TEXTURE] {
+        if let Some(location) = &uniforms[U_COLORS_TEXTURE] {
             gl.uniform_1_i32(Some(location), 1);
         }
 
@@ -522,14 +534,14 @@ impl Pyxel {
         gl.bind_texture(glow::TEXTURE_2D, Some(graphics.screen_texture));
         gl.pixel_store_i32(glow::UNPACK_ALIGNMENT, 1);
 
-        let (internal_format, format) = if platform::gl_profile() == GLProfile::Gles {
+        let (internal_format, format) = if graphics.is_gles {
             (glow::LUMINANCE as i32, glow::LUMINANCE)
         } else {
             (glow::R8 as i32, glow::RED)
         };
 
-        let w = *pyxel::width() as i32;
-        let h = *pyxel::height() as i32;
+        let screen_width = *pyxel::width() as i32;
+        let screen_height = *pyxel::height() as i32;
         let data = &pyxel::screen().canvas.data;
 
         if graphics.screen_texture_initialized {
@@ -538,8 +550,8 @@ impl Pyxel {
                 0,
                 0,
                 0,
-                w,
-                h,
+                screen_width,
+                screen_height,
                 format,
                 glow::UNSIGNED_BYTE,
                 PixelUnpackData::Slice(Some(data)),
@@ -549,8 +561,8 @@ impl Pyxel {
                 glow::TEXTURE_2D,
                 0,
                 internal_format,
-                w,
-                h,
+                screen_width,
+                screen_height,
                 0,
                 format,
                 glow::UNSIGNED_BYTE,
@@ -568,21 +580,22 @@ impl Pyxel {
         );
 
         let graphics = self.graphics.as_mut().unwrap();
+        gl.active_texture(glow::TEXTURE1);
+        gl.bind_texture(glow::TEXTURE_2D, Some(graphics.colors_texture));
+
         if graphics.cached_colors == *colors {
-            gl.active_texture(glow::TEXTURE1);
-            gl.bind_texture(glow::TEXTURE_2D, Some(graphics.colors_texture));
             return;
         }
 
-        gl.active_texture(glow::TEXTURE1);
-        gl.bind_texture(glow::TEXTURE_2D, Some(graphics.colors_texture));
         gl.pixel_store_i32(glow::UNPACK_ALIGNMENT, 4);
 
-        let pixels = &mut graphics.color_pixels_buf;
+        let pixels = &mut graphics.color_pixels;
         pixels.clear();
         for &c in colors.iter() {
-            let (r, g, b) = rgb_to_rgb8(c);
-            pixels.extend_from_slice(&[r, g, b]);
+            let (r, g, b) = rgb24_to_rgb8(c);
+            pixels.push(r);
+            pixels.push(g);
+            pixels.push(b);
         }
 
         if graphics.cached_colors.len() == colors.len() {

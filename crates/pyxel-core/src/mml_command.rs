@@ -1,6 +1,6 @@
 use crate::sound::SoundTone;
 
-#[derive(Clone, Debug)]
+#[derive(Debug, Clone)]
 pub enum MmlCommand {
     Tempo {
         clocks_per_tick: u32,

@@ -9,35 +9,31 @@ from .widgets import NumberPicker, RadioButton
 
 
 class TilemapEditor(EditorBase):
-    """
-    Variables:
-        color_var
-        tool_var
-        image_index_var
-        canvas_var
-        focus_x_var
-        focus_y_var
-
-        tilemap_index_var
-        tile_x_var
-        tile_y_var
-        tile_w_var
-        tile_h_var
-
-    Events:
-        undo (data)
-        redo (data)
-        drop (filename)
-    """
+    # Variables:
+    #   color_var
+    #   tool_var
+    #   image_index_var
+    #   canvas_var
+    #   focus_x_var
+    #   focus_y_var
+    #
+    #   tilemap_index_var
+    #   tile_x_var
+    #   tile_y_var
+    #   tile_w_var
+    #   tile_h_var
+    #
+    # Events:
+    #   undo (data)
+    #   redo (data)
+    #   drop (filename)
 
     def __init__(self, parent):
         super().__init__(parent)
 
-        # Initialize canvas_var
         self.new_var("canvas_var", None)
         self.add_var_event_listener("canvas_var", "get", self.__on_canvas_get)
 
-        # Initialize color_var
         self.new_var("color_var", (255, 255))
 
         # Initialize tool button
@@ -102,8 +98,9 @@ class TilemapEditor(EditorBase):
         self.add_event_listener("update", self.__on_update)
         self.add_event_listener("draw", self.__on_draw)
 
+    # Helpers
+
     def _restore_state(self, data, prefix):
-        """Shared undo/redo logic for restoring tilemap state."""
         self.tilemap_index_var = data["tilemap_index"]
         if f"{prefix}_data" in data:
             pyxel.tilemaps[self.tilemap_index_var].set_slice(
@@ -115,6 +112,8 @@ class TilemapEditor(EditorBase):
             self.canvas_var.set_slice(
                 self.focus_x_var * 8, self.focus_y_var * 8, data[f"{prefix}_canvas"]
             )
+
+    # Event handlers
 
     def __on_canvas_get(self, value):
         return pyxel.tilemaps[self.tilemap_index_var]

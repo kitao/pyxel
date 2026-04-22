@@ -3,8 +3,8 @@ use blip_buf::BlipBuf;
 use crate::mml_command::MmlCommand;
 use crate::pyxel;
 use crate::settings::{
-    AUDIO_CLOCKS_PER_SAMPLE, AUDIO_CLOCK_RATE, AUDIO_SAMPLE_RATE, DEFAULT_CHANNEL_GAIN,
-    NOTE_INTERP_CLOCKS, VOICE_CONTROL_RATE,
+    AUDIO_CLOCKS_PER_SAMPLE, AUDIO_CLOCK_RATE, AUDIO_GAIN_SCALE, AUDIO_GAIN_SHIFT,
+    AUDIO_SAMPLE_RATE, DEFAULT_CHANNEL_GAIN, NOTE_INTERP_CLOCKS, VOICE_CONTROL_RATE,
 };
 use crate::sound::Sound;
 use crate::tone::ToneMode;
@@ -14,9 +14,7 @@ pub type ChannelGain = f32;
 pub type ChannelDetune = i32;
 
 // Fixed-point Q14 scaling for PCM gain multiplication
-const PCM_MIX_GAIN_SHIFT: u32 = 14;
-const PCM_MIX_GAIN_SCALE: i64 = 1_i64 << PCM_MIX_GAIN_SHIFT;
-const PCM_MIX_TRUNC_BIAS: i64 = PCM_MIX_GAIN_SCALE - 1;
+const PCM_MIX_TRUNC_BIAS: i64 = AUDIO_GAIN_SCALE - 1;
 
 pub struct Channel {
     pub sounds: Vec<*mut Sound>,
@@ -95,10 +93,6 @@ impl Channel {
         }))
     }
 
-    fn sec_to_clock(sec: Option<f32>) -> u32 {
-        (sec.unwrap_or(0.0) * AUDIO_CLOCK_RATE as f32).round() as u32
-    }
-
     pub fn play(
         &mut self,
         sounds: Vec<*mut Sound>,
@@ -108,7 +102,7 @@ impl Channel {
     ) {
         self.play_from_clock(
             sounds,
-            Self::sec_to_clock(start_sec),
+            Self::sec_to_clocks(start_sec),
             should_loop,
             should_resume,
         );
@@ -123,7 +117,7 @@ impl Channel {
     ) {
         self.play_from_clock(
             vec![sound],
-            Self::sec_to_clock(start_sec),
+            Self::sec_to_clocks(start_sec),
             should_loop,
             should_resume,
         );
@@ -142,7 +136,7 @@ impl Channel {
         self.owned_sounds.push(sound);
         self.play_from_clock(
             vec![sound],
-            Self::sec_to_clock(start_sec),
+            Self::sec_to_clocks(start_sec),
             should_loop,
             should_resume,
         );
@@ -156,6 +150,10 @@ impl Channel {
             unsafe { drop(Box::from_raw(sound)) };
         }
         self.owned_sounds.clear();
+    }
+
+    fn sec_to_clocks(sec: Option<f32>) -> u32 {
+        (sec.unwrap_or(0.0) * AUDIO_CLOCK_RATE as f32).round() as u32
     }
 
     fn play_from_clock(
@@ -208,6 +206,8 @@ impl Channel {
         }
     }
 
+    // Playback Control
+
     pub fn stop(&mut self) {
         self.is_playing = false;
         self.playing_pcm = false;
@@ -223,6 +223,8 @@ impl Channel {
             None
         }
     }
+
+    // Core Processing
 
     pub(crate) fn process(&mut self, blip_buf: Option<&mut BlipBuf>, clock_count: u32) {
         if self.playing_pcm {
@@ -253,7 +255,7 @@ impl Channel {
                 {
                     let sound = unsafe { &*self.sounds[self.sound_index as usize] };
                     if sound.commands.is_empty() {
-                        self.commands = sound.to_commands();
+                        sound.emit_commands(&mut self.commands);
                     } else {
                         self.commands.clone_from(&sound.commands);
                     }
@@ -284,24 +286,22 @@ impl Channel {
                 self.sound_index += 1;
                 self.sound_elapsed_clocks = 0;
 
-                // End of sound list
-                if self.sound_index >= self.sounds.len() as u32 {
-                    if self.should_loop && clock_count < start_clock_count {
-                        self.sound_index = 0;
-                        self.update_playing_pcm();
-                    } else if self.should_resume {
-                        self.play_from_clock(
-                            self.resume_sounds.clone(),
-                            self.total_elapsed_clocks,
-                            self.resume_should_loop,
-                            false,
-                        );
-                    } else {
-                        self.is_playing = false;
-                        self.playing_pcm = false;
-                    }
-                } else {
+                if self.sound_index < self.sounds.len() as u32 {
                     self.update_playing_pcm();
+                } else if self.should_loop && clock_count < start_clock_count {
+                    self.sound_index = 0;
+                    self.update_playing_pcm();
+                } else if self.should_resume {
+                    let resume_sounds = std::mem::take(&mut self.resume_sounds);
+                    self.play_from_clock(
+                        resume_sounds,
+                        self.total_elapsed_clocks,
+                        self.resume_should_loop,
+                        false,
+                    );
+                } else {
+                    self.is_playing = false;
+                    self.playing_pcm = false;
                 }
             }
         }
@@ -309,6 +309,17 @@ impl Channel {
 
     fn advance_command(&mut self) {
         let tones = pyxel::tones();
+
+        macro_rules! store_slot {
+            ($slots:expr, $slot:expr, $command:expr, $name:literal) => {{
+                assert!($slot > 0, concat!($name, " slot 0 is reserved for disable"));
+                let slot = $slot as usize;
+                if slot >= $slots.len() {
+                    $slots.resize(slot + 1, None);
+                }
+                $slots[slot] = Some($command.clone());
+            }};
+        }
 
         while self.command_index < self.commands.len() as u32 {
             let command = &self.commands[self.command_index as usize];
@@ -324,7 +335,8 @@ impl Channel {
                 }
 
                 MmlCommand::Tone { tone } => {
-                    let tone = unsafe { &mut **tones.get(*tone as usize).unwrap_or(&tones[0]) };
+                    let tone_ptr = *tones.get(*tone as usize).unwrap_or(&tones[0]);
+                    let tone = unsafe { &mut *tone_ptr };
                     match tone.mode {
                         ToneMode::Wavetable => self.voice.oscillator.set(tone.waveform()),
                         ToneMode::ShortPeriodNoise => self.voice.oscillator.set_noise(true),
@@ -362,12 +374,7 @@ impl Channel {
                     initial_level,
                     segments,
                 } => {
-                    assert!(*slot > 0, "Envelope slot 0 is reserved for disable");
-                    let slot = *slot as usize;
-                    if slot >= self.envelope_slots.len() {
-                        self.envelope_slots.resize(slot + 1, None);
-                    }
-                    self.envelope_slots[slot] = Some(command.clone());
+                    store_slot!(self.envelope_slots, *slot, command, "Envelope");
                     self.voice.envelope.set(*initial_level, segments);
                     self.voice.envelope.enable();
                 }
@@ -394,12 +401,7 @@ impl Channel {
                     period_ticks,
                     semitone_depth,
                 } => {
-                    assert!(*slot > 0, "Vibrato slot 0 is reserved for disable");
-                    let slot = *slot as usize;
-                    if slot >= self.vibrato_slots.len() {
-                        self.vibrato_slots.resize(slot + 1, None);
-                    }
-                    self.vibrato_slots[slot] = Some(command.clone());
+                    store_slot!(self.vibrato_slots, *slot, command, "Vibrato");
                     self.voice
                         .vibrato
                         .set(*delay_ticks, *period_ticks, *semitone_depth);
@@ -432,12 +434,7 @@ impl Channel {
                     semitone_offset,
                     duration_ticks,
                 } => {
-                    assert!(*slot > 0, "Glide slot 0 is reserved for disable");
-                    let slot = *slot as usize;
-                    if slot >= self.glide_slots.len() {
-                        self.glide_slots.resize(slot + 1, None);
-                    }
-                    self.glide_slots[slot] = Some(command.clone());
+                    store_slot!(self.glide_slots, *slot, command, "Glide");
 
                     if let (Some(semitone_offset), Some(duration_ticks)) =
                         (semitone_offset, duration_ticks)
@@ -499,12 +496,14 @@ impl Channel {
         }
     }
 
+    // PCM Mixing
+
     pub(crate) fn mix_pcm(&mut self, out: &mut [i16]) {
         if !self.is_playing || !self.playing_pcm {
             return;
         }
 
-        let gain_fixed = (self.gain * PCM_MIX_GAIN_SCALE as f32) as i32;
+        let gain_fixed = (self.gain * AUDIO_GAIN_SCALE as f32) as i32;
         let mut offset = 0;
 
         while offset < out.len() {
@@ -525,13 +524,16 @@ impl Channel {
                     let remaining = len - self.pcm_position;
                     to_copy = (out.len() - offset).min(remaining);
                     if gain_fixed != 0 {
-                        let samples = &pcm.samples;
-                        for i in 0..to_copy {
-                            let scaled = samples[self.pcm_position + i] as i64 * gain_fixed as i64;
+                        // Slice-based iteration lets the optimizer elide per-element bounds checks
+                        let src_samples =
+                            &pcm.samples[self.pcm_position..self.pcm_position + to_copy];
+                        let dst = &mut out[offset..offset + to_copy];
+                        for (d, &sample) in dst.iter_mut().zip(src_samples) {
+                            let scaled = sample as i64 * gain_fixed as i64;
                             let src = (scaled + ((scaled >> 63) & PCM_MIX_TRUNC_BIAS))
-                                >> PCM_MIX_GAIN_SHIFT;
-                            let mixed = out[offset + i] as i64 + src;
-                            out[offset + i] = mixed.clamp(i16::MIN as i64, i16::MAX as i64) as i16;
+                                >> AUDIO_GAIN_SHIFT;
+                            let mixed = *d as i64 + src;
+                            *d = mixed.clamp(i16::MIN as i64, i16::MAX as i64) as i16;
                         }
                     }
                     end_reached = self.pcm_position + to_copy >= len;
@@ -557,6 +559,8 @@ impl Channel {
         }
     }
 
+    // Internal Utilities
+
     fn advance_pcm_sound(&mut self) -> bool {
         self.sound_index += 1;
         self.sound_elapsed_clocks = 0;
@@ -567,8 +571,9 @@ impl Channel {
                 self.sound_index = 0;
                 self.pcm_position = 0;
             } else if self.should_resume {
+                let resume_sounds = std::mem::take(&mut self.resume_sounds);
                 self.play_from_clock(
-                    self.resume_sounds.clone(),
+                    resume_sounds,
                     self.total_elapsed_clocks,
                     self.resume_should_loop,
                     false,

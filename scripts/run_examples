@@ -1,0 +1,94 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+shopt -s failglob
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+EXAMPLES_DIR="$ROOT_DIR/python/pyxel/examples"
+
+export PYTHONUNBUFFERED=1
+
+BG_PID=0
+CLEANUP_PATHS=()
+
+cleanup() {
+    if [[ "$BG_PID" -ne 0 ]]; then
+        kill "$BG_PID" 2>/dev/null || true
+        wait "$BG_PID" 2>/dev/null || true
+    fi
+    # Guard against unset/empty array under 'set -u' (bash 4.4+ idiom).
+    for path in ${CLEANUP_PATHS[@]+"${CLEANUP_PATHS[@]}"}; do
+        rm -rf "$path" 2>/dev/null || true
+    done
+}
+trap cleanup EXIT
+
+# Display command with basenames for readability
+echo_cmd() {
+    local display=()
+    for arg in "$@"; do
+        display+=("${arg##*/}")
+    done
+    echo "${display[*]}"
+}
+
+example_name() {
+    basename "$EXAMPLES_DIR"/$1_*.py .py
+}
+
+# Echo and run a GUI command in background; Ctrl+C sends SIGTERM
+run_bg() {
+    echo_cmd "$@"
+    "$@" &
+    BG_PID=$!
+    trap 'kill "$BG_PID" 2>/dev/null; exit 130' INT
+    wait "$BG_PID" || true
+    trap - INT
+    BG_PID=0
+}
+
+# Example scripts
+for f in "$EXAMPLES_DIR"/*.py; do
+    run_bg pyxel run "$f"
+done
+
+# Example apps
+for f in "$EXAMPLES_DIR"/apps/*.pyxapp; do
+    run_bg pyxel play "$f"
+done
+
+# Editor
+run_bg pyxel edit "$EXAMPLES_DIR/assets/sample.pyxres"
+
+# Watch (inject error, restore, auto-exit after showing 'Watch Passed!')
+# Inline background instead of run_bg: auto-exit here, not driven by Ctrl+C.
+WATCH_EXAMPLE=$(example_name 01)
+WORK_DIR="$(mktemp -d)"
+CLEANUP_PATHS+=("$WORK_DIR")
+cp "$EXAMPLES_DIR/$WATCH_EXAMPLE.py" "$WORK_DIR/"
+cp -R "$EXAMPLES_DIR/assets" "$WORK_DIR/"
+cd "$WORK_DIR"
+pyxel watch . "$WATCH_EXAMPLE.py" &
+BG_PID=$!
+# Let pyxel watch finish startup before injecting the syntax error.
+sleep 2
+
+cat > "$WATCH_EXAMPLE.py" << 'EOF'
+syntax error!!!
+EOF
+# Give the watcher time to pick up the error before restoring valid source.
+sleep 1
+
+sed 's/Hello, Pyxel!/Watch Passed!/' "$EXAMPLES_DIR/$WATCH_EXAMPLE.py" > "$WATCH_EXAMPLE.py"
+# Kill the watcher's children first; the worker holding the pyxel window runs
+# as a separate multiprocessing child and is not cleaned up when the parent
+# receives SIGTERM in a backgrounded shell job.
+kill_watch() {
+    pkill -P "$BG_PID" 2>/dev/null || true
+    kill "$BG_PID" 2>/dev/null || true
+}
+trap 'kill_watch; exit 0' INT
+sleep 3
+kill_watch
+wait "$BG_PID" 2>/dev/null || true

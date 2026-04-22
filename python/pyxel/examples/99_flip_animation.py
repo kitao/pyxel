@@ -21,4 +21,4 @@ while True:
     phase += 360 / 30
 
     pyxel.flip()
-    # Please note that flip function only works on non-Web platforms
+    # Note: flip only works on non-web platforms

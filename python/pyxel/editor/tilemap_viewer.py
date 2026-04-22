@@ -5,13 +5,11 @@ from .widgets import Widget
 
 
 class TilemapViewer(Widget):
-    """
-    Variables:
-        tilemap_index_var
-        focus_x_var
-        focus_y_var
-        help_message_var
-    """
+    # Variables:
+    #   tilemap_index_var
+    #   focus_x_var
+    #   focus_y_var
+    #   help_message_var
 
     def __init__(self, parent):
         super().__init__(parent, 157, 16, 66, 65)
@@ -19,11 +17,9 @@ class TilemapViewer(Widget):
         self.copy_var("tilemap_index_var", parent)
         self.copy_var("help_message_var", parent)
 
-        # Initialize focus_x_var
         self.new_var("focus_x_var", 0)
         self.add_var_event_listener("focus_x_var", "set", self.__on_focus_x_set)
 
-        # Initialize focus_y_var
         self.new_var("focus_y_var", 0)
         self.add_var_event_listener("focus_y_var", "set", self.__on_focus_y_set)
 
@@ -34,10 +30,14 @@ class TilemapViewer(Widget):
         self.add_event_listener("update", self.__on_update)
         self.add_event_listener("draw", self.__on_draw)
 
+    # Helpers
+
     def _screen_to_focus(self, x, y):
         x = clamp((x - self.x - 1) // 2, 0, 31)
         y = clamp((y - self.y - 1) // 2, 0, 31)
         return x, y
+
+    # Event handlers
 
     def __on_focus_x_set(self, value):
         return clamp(value, 0, 30)

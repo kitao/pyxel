@@ -18,6 +18,10 @@ pub struct Audio;
 
 struct AudioLock;
 
+struct AudioStreamRenderer {
+    blip_buf: BlipBuf,
+}
+
 impl AudioLock {
     fn new() -> Self {
         platform::lock_audio();
@@ -29,10 +33,6 @@ impl Drop for AudioLock {
     fn drop(&mut self) {
         platform::unlock_audio();
     }
-}
-
-struct AudioStreamRenderer {
-    blip_buf: BlipBuf,
 }
 
 impl AudioStreamRenderer {
@@ -62,18 +62,17 @@ impl Audio {
         );
     }
 
-    pub fn render_samples(channels: &[*mut Channel], blip_buf: &mut BlipBuf, samples: &mut [i16]) {
+    pub fn render_samples(channels: &[*mut Channel], blip_buf: &mut BlipBuf, out: &mut [i16]) {
         let needs_blip = channels
             .iter()
             .any(|&ch| unsafe { &*ch }.needs_blip_processing());
         let needs_pcm = channels.iter().any(|&ch| unsafe { &*ch }.is_playing_pcm());
-        let mut num_samples = blip_buf.read_samples(samples, false);
+        let mut written = blip_buf.read_samples(out, false);
 
         if needs_blip {
-            while num_samples < samples.len() {
-                let target_samples =
-                    ((samples.len() - num_samples) as u32).min(AUDIO_RENDER_STEP_SAMPLES);
-                let clock_count = match blip_buf.clocks_needed(target_samples) {
+            while written < out.len() {
+                let target_samples = ((out.len() - written) as u32).min(AUDIO_RENDER_STEP_SAMPLES);
+                let clocks = match blip_buf.clocks_needed(target_samples) {
                     0 => AUDIO_CLOCKS_PER_SAMPLE,
                     clocks => clocks,
                 };
@@ -81,22 +80,22 @@ impl Audio {
                 for &ch in channels {
                     let channel = unsafe { &mut *ch };
                     if channel.needs_blip_processing() {
-                        channel.process(Some(blip_buf), clock_count);
+                        channel.process(Some(blip_buf), clocks);
                     }
                 }
 
-                blip_buf.end_frame(clock_count);
-                num_samples += blip_buf.read_samples(&mut samples[num_samples..], false);
+                blip_buf.end_frame(clocks);
+                written += blip_buf.read_samples(&mut out[written..], false);
             }
-        } else if num_samples < samples.len() {
-            samples[num_samples..].fill(0);
+        } else if written < out.len() {
+            out[written..].fill(0);
         }
 
         if needs_pcm {
             for &ch in channels {
                 let channel = unsafe { &mut *ch };
                 if channel.is_playing_pcm() {
-                    channel.mix_pcm(samples);
+                    channel.mix_pcm(out);
                 }
             }
         }
@@ -135,27 +134,29 @@ impl Audio {
 
         write(&image_path, image_data).map_err(|_| "Failed to save temporary file".to_string())?;
         Command::new("ffmpeg")
-            .arg("-loop")
-            .arg("1")
-            .arg("-i")
-            .arg(png_file)
-            .arg("-f")
-            .arg("lavfi")
-            .arg("-i")
-            .arg("color=c=black:s=480x360")
-            .arg("-i")
-            .arg(wav_file)
-            .arg("-filter_complex")
-            .arg("[1][0]overlay=(W-w)/2:(H-h)/2")
-            .arg("-c:v")
-            .arg("libx264")
-            .arg("-c:a")
-            .arg("aac")
-            .arg("-b:a")
-            .arg("192k")
-            .arg("-shortest")
-            .arg(mp4_file)
-            .arg("-y")
+            .args([
+                "-loop",
+                "1",
+                "-i",
+                png_file,
+                "-f",
+                "lavfi",
+                "-i",
+                "color=c=black:s=480x360",
+                "-i",
+                wav_file,
+                "-filter_complex",
+                "[1][0]overlay=(W-w)/2:(H-h)/2",
+                "-c:v",
+                "libx264",
+                "-c:a",
+                "aac",
+                "-b:a",
+                "192k",
+                "-shortest",
+                &mp4_file,
+                "-y",
+            ])
             .output()
             .map_err(|_| "Failed to execute FFmpeg".to_string())?;
 
@@ -165,6 +166,8 @@ impl Audio {
 }
 
 impl Pyxel {
+    // Playback
+
     pub fn play(
         &self,
         channel_index: u32,
@@ -236,6 +239,8 @@ impl Pyxel {
         }
     }
 
+    // Stop
+
     pub fn stop_channel(&self, channel_index: u32) {
         let _lock = AudioLock::new();
         unsafe { &mut *pyxel::channels()[channel_index as usize] }.stop();
@@ -247,6 +252,8 @@ impl Pyxel {
             unsafe { &mut *ch }.stop();
         }
     }
+
+    // Position
 
     pub fn play_position(&self, channel_index: u32) -> Option<(u32, f32)> {
         let _lock = AudioLock::new();

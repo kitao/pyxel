@@ -1,8 +1,8 @@
 macro_rules! string_loop {
-    ($index: ident, $piece: ident, $string: ident, $step: expr, $block: block) => {
-        for $index in 0..($string.len() / $step) {
-            let __index = $index * $step;
-            let $piece = &$string[__index..__index + $step];
+    ($i: ident, $piece: ident, $s: ident, $step: expr, $block: block) => {
+        for $i in 0..($s.len() / $step) {
+            let _macro_index = $i * $step;
+            let $piece = &$s[_macro_index.._macro_index + $step];
             $block
         }
     };
@@ -68,7 +68,7 @@ pub fn compress_vec2<T: PartialEq + Clone>(vec: &[Vec<T>]) -> Vec<Vec<T>> {
     compress_vec(vec)
         .iter()
         .map(|inner_vec| compress_vec(inner_vec))
-        .collect::<Vec<_>>()
+        .collect()
 }
 
 pub fn expand_vec<T: Clone>(vec: &[T], new_len: usize) -> Vec<T> {
@@ -85,15 +85,15 @@ pub fn expand_vec2<T: Clone>(
     new_inner_len: usize,
 ) -> Vec<Vec<T>> {
     assert!(!vec.is_empty());
-    let new_vec = vec
+    let new_vec: Vec<_> = vec
         .iter()
         .map(|inner_vec| expand_vec(inner_vec, new_inner_len))
-        .collect::<Vec<_>>();
+        .collect();
 
     expand_vec(&new_vec, new_outer_len)
 }
 
-pub fn trim_empty_vecs<T: Clone>(vecs: &[Vec<T>]) -> Vec<Vec<T>> {
+pub fn trim_empty_vec<T: Clone>(vecs: &[Vec<T>]) -> Vec<Vec<T>> {
     let mut vecs = vecs.to_vec();
     let new_len = vecs
         .iter()
@@ -109,7 +109,7 @@ pub fn trim_empty_vecs<T: Clone>(vecs: &[Vec<T>]) -> Vec<Vec<T>> {
 mod tests {
     use super::*;
 
-    // ── f32_to_i32 / f32_to_u32 ──
+    // f32_to_i32 / f32_to_u32
 
     #[test]
     fn test_f32_to_i32() {
@@ -133,7 +133,7 @@ mod tests {
         assert_eq!(f32_to_u32(-3.0), 0);
     }
 
-    // ── String functions ──
+    // String functions
 
     #[test]
     fn test_remove_whitespace() {
@@ -191,7 +191,7 @@ mod tests {
         assert_eq!(add_file_extension(".png", ".png"), ".png");
     }
 
-    // ── Macros ──
+    // Macros
 
     #[test]
     fn test_string_loop() {
@@ -214,7 +214,7 @@ mod tests {
         assert!(v.is_empty());
     }
 
-    // ── Vec compress/expand/trim ──
+    // Vec compress/expand/trim
 
     #[test]
     fn test_compress_vec() {
@@ -278,15 +278,15 @@ mod tests {
     }
 
     #[test]
-    fn test_trim_empty_vecs() {
+    fn test_trim_empty_vec() {
         assert_eq!(
-            trim_empty_vecs(&[vec![1, 2], vec![], vec![], vec![3, 4], vec![], vec![]]),
+            trim_empty_vec(&[vec![1, 2], vec![], vec![], vec![3, 4], vec![], vec![]]),
             vec![vec![1, 2], vec![], vec![], vec![3, 4]]
         );
         let empty: Vec<Vec<i32>> = vec![];
-        assert_eq!(trim_empty_vecs::<i32>(&[vec![], vec![]]), empty);
-        assert_eq!(trim_empty_vecs(&[vec![1], vec![2]]), vec![vec![1], vec![2]]);
-        assert_eq!(trim_empty_vecs::<i32>(&[vec![]]), empty);
-        assert_eq!(trim_empty_vecs(&[vec![1, 2]]), vec![vec![1, 2]]);
+        assert_eq!(trim_empty_vec::<i32>(&[vec![], vec![]]), empty);
+        assert_eq!(trim_empty_vec(&[vec![1], vec![2]]), vec![vec![1], vec![2]]);
+        assert_eq!(trim_empty_vec::<i32>(&[vec![]]), empty);
+        assert_eq!(trim_empty_vec(&[vec![1, 2]]), vec![vec![1, 2]]);
     }
 }

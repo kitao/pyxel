@@ -1,15 +1,16 @@
 [package]
 name = "pyxel-core"
-version = "2.9.0"
-authors = ["Takashi Kitao <takashi.kitao@gmail.com>"]
-edition = "2021"
-license = "MIT"
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+license.workspace = true
 
 [lib]
 name = "pyxel"
 
 [dependencies]
 blip_buf = "0.1"
+# wasmbind routes time queries through js-sys for Emscripten/WASM builds
 chrono = { version = "0.4", features = ["wasmbind"] }
 directories = "6.0"
 fontdue = "0.9"
@@ -26,8 +27,10 @@ rand_xoshiro = "0.8"
 semver = "1.0"
 serde = { version = "1.0", features = ["derive"] }
 serde-xml-rs = "0.8"
+# all-codecs enables every format the Sound.pcm() loader can accept
 symphonia = { version = "0.5", features = ["all-codecs"] }
 toml = "1.0"
+# deflate is the only codec needed for .pyxapp / .pyxres
 zip = { version = "8.1", default-features = false, features = ["deflate"] }
 
 [build-dependencies]

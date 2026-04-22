@@ -136,13 +136,13 @@ fn flip() {
 }
 
 #[pyfunction]
-fn reset() {
-    pyxel().restart();
+fn quit() {
+    pyxel().quit();
 }
 
 #[pyfunction]
-fn quit() {
-    pyxel().quit();
+fn reset() {
+    pyxel().restart();
 }
 
 #[pyfunction]
@@ -188,6 +188,8 @@ fn resize(width: u32, height: u32) -> PyResult<()> {
     Ok(())
 }
 
+// Internal helpers
+
 #[pyfunction]
 fn _reset_statics() {
     pyxel::reset_statics();
@@ -211,8 +213,8 @@ pub fn add_system_functions(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(run, m)?)?;
     m.add_function(wrap_pyfunction!(show, m)?)?;
     m.add_function(wrap_pyfunction!(flip, m)?)?;
-    m.add_function(wrap_pyfunction!(reset, m)?)?;
     m.add_function(wrap_pyfunction!(quit, m)?)?;
+    m.add_function(wrap_pyfunction!(reset, m)?)?;
     m.add_function(wrap_pyfunction!(title, m)?)?;
     m.add_function(wrap_pyfunction!(icon, m)?)?;
     m.add_function(wrap_pyfunction!(perf_monitor, m)?)?;

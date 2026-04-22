@@ -11,6 +11,7 @@
     clippy::fn_params_excessive_bools,
     clippy::missing_errors_doc,
     clippy::missing_panics_doc,
+    clippy::missing_safety_doc,
     clippy::must_use_candidate,
     clippy::similar_names,
     clippy::struct_excessive_bools,

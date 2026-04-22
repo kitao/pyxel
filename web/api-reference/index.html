@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Pyxel API Reference</title>
     <link rel="icon" href="../../wasm/images/pyxel_icon_64x64.ico" />
-    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../styles.css" />
     <script src="../shared.js"></script>
   </head>
 
@@ -17,6 +17,8 @@
     </main>
 
     <script>
+      const PYXEL_API_REF_ADVANCED_KEY = "pyxel-api-ref-advanced";
+
       let data = null;
       let lang = "en";
       let showAdvanced = false;
@@ -55,7 +57,7 @@
       function hasDetails(item) {
         return (
           (item.params && item.params.length > 0) ||
-          (item.return && item.return.type !== "None") ||
+          (item.returns && item.returns.type !== "None") ||
           (item.examples && item.examples.length > 0) ||
           item.notes ||
           item.value_type
@@ -79,15 +81,14 @@
         // Parameters
         if (item.params && item.params.length > 0) {
           const sec = document.createElement("div");
-          let html =
-            `<div class="text-gray-500 text-xs font-medium uppercase tracking-wide mb-1">${esc(t("parameters"))}</div>`;
+          let html = `<div class="text-gray-500 text-xs font-medium uppercase tracking-wide mb-1">${esc(t("parameters"))}</div>`;
           html += '<div class="space-y-1">';
           for (const p of item.params) {
             html += '<div class="text-xs leading-relaxed">';
             html += `<code class="text-indigo-300 font-mono">${esc(p.name)}</code>`;
             html += ` <span class="text-gray-500">(${esc(p.type)})</span>`;
-            if (p.desc) {
-              html += ` <span class="text-gray-400">\u2014 ${esc(t(p.desc))}</span>`;
+            if (p.description) {
+              html += ` <span class="text-gray-400">\u2014 ${esc(t(p.description))}</span>`;
             }
             html += "</div>";
           }
@@ -97,13 +98,12 @@
         }
 
         // Return (skip None)
-        if (item.return && item.return.type !== "None") {
+        if (item.returns && item.returns.type !== "None") {
           const sec = document.createElement("div");
-          let html =
-            `<div class="text-gray-500 text-xs font-medium uppercase tracking-wide mb-1">${esc(t("returns"))}</div>`;
-          html += `<div class="text-xs leading-relaxed"><code class="text-indigo-300 font-mono">${esc(item.return.type)}</code>`;
-          if (item.return.desc) {
-            html += ` <span class="text-gray-400">\u2014 ${esc(t(item.return.desc))}</span>`;
+          let html = `<div class="text-gray-500 text-xs font-medium uppercase tracking-wide mb-1">${esc(t("returns"))}</div>`;
+          html += `<div class="text-xs leading-relaxed"><code class="text-indigo-300 font-mono">${esc(item.returns.type)}</code>`;
+          if (item.returns.description) {
+            html += ` <span class="text-gray-400">\u2014 ${esc(t(item.returns.description))}</span>`;
           }
           html += "</div>";
           sec.innerHTML = html;
@@ -113,10 +113,10 @@
         // Examples
         if (item.examples && item.examples.length > 0) {
           const sec = document.createElement("div");
-          const code = item.examples.join("\n");
+          const exampleCode = item.examples.join("\n");
           sec.innerHTML =
             `<div class="text-gray-500 text-xs font-medium uppercase tracking-wide mb-1">${esc(t("example"))}</div>` +
-            `<pre class="bg-gray-900/80 rounded-lg px-3 py-2 font-mono text-xs text-gray-300 leading-relaxed overflow-x-auto">${esc(code)}</pre>`;
+            `<pre class="bg-gray-900/80 rounded-lg px-3 py-2 font-mono text-xs text-gray-300 leading-relaxed overflow-x-auto">${esc(exampleCode)}</pre>`;
           wrap.appendChild(sec);
         }
 
@@ -194,8 +194,8 @@
         toggleCheck.addEventListener("change", () => {
           showAdvanced = toggleCheck.checked;
           localStorage.setItem(
-            "pyxel-api-ref-advanced",
-            showAdvanced ? "1" : "0"
+            PYXEL_API_REF_ADVANCED_KEY,
+            showAdvanced ? "1" : "0",
           );
           updateVisibility();
         });
@@ -211,8 +211,7 @@
         // No results message
         const noResults = document.createElement("div");
         noResults.id = "no-results";
-        noResults.className =
-          "hidden py-8 text-center text-gray-500 text-sm";
+        noResults.className = "hidden py-8 text-center text-gray-500 text-sm";
         app.appendChild(noResults);
 
         // Categories
@@ -249,15 +248,14 @@
               const item = cat.items[i];
               const row = document.createElement("div");
               row.className = "py-3";
-              row.dataset.itemKey = cat.id + "-" + i;
+              row.dataset.itemKey = `${cat.id}-${i}`;
 
               // Signature line
               const sigLine = document.createElement("div");
               sigLine.className = "flex items-baseline gap-2";
 
               const badge = document.createElement("span");
-              badge.className =
-                "type-badge shrink-0 " + badgeColor(item.type);
+              badge.className = "type-badge shrink-0 " + badgeColor(item.type);
               badge.textContent = item.type;
               sigLine.appendChild(badge);
 
@@ -281,7 +279,7 @@
               // Description
               const desc = document.createElement("p");
               desc.className = "mt-1 text-gray-400 text-sm pl-0.5";
-              desc.dataset.descKey = cat.id + "-" + i;
+              desc.dataset.descKey = `${cat.id}-${i}`;
               row.appendChild(desc);
 
               // Details (collapsible)
@@ -296,7 +294,7 @@
                 details.appendChild(summary);
 
                 const content = document.createElement("div");
-                content.dataset.detailKey = cat.id + "-" + i;
+                content.dataset.detailKey = `${cat.id}-${i}`;
                 details.appendChild(content);
 
                 row.appendChild(details);
@@ -326,7 +324,7 @@
           if (cat.constant_groups) {
             for (let g = 0; g < cat.constant_groups.length; g++) {
               const group = cat.constant_groups[g];
-              const gid = cat.id + "-cg-" + g;
+              const gid = `${cat.id}-cg-${g}`;
 
               const groupWrap = group.collapsed
                 ? document.createElement("details")
@@ -353,7 +351,7 @@
 
                 for (let s = 0; s < group.sections.length; s++) {
                   const sec = group.sections[s];
-                  const sid = gid + "-s-" + s;
+                  const sid = `${gid}-s-${s}`;
                   const secWrap = document.createElement("div");
 
                   if (sec.label) {
@@ -407,11 +405,9 @@
 
       function updateTexts() {
         document.title = t("title");
-        document.getElementById("page-subtitle").innerHTML = t("subtitle")
-          .replace(
-            "{0}",
-            link("https://github.com/kitao/pyxel", "Pyxel")
-          );
+        document.getElementById("page-subtitle").innerHTML = t(
+          "subtitle",
+        ).replace("{0}", link("https://github.com/kitao/pyxel", "Pyxel"));
 
         document.getElementById("search-input").placeholder =
           t("search_placeholder");
@@ -426,13 +422,9 @@
 
         // Category titles
         for (const cat of data.categories) {
-          const el = document.querySelector(
-            `[data-cat-title="${cat.id}"]`
-          );
+          const el = document.querySelector(`[data-cat-title="${cat.id}"]`);
           if (el) el.textContent = t(cat.title);
-          const el2 = document.querySelector(
-            `[data-cat-title2="${cat.id}"]`
-          );
+          const el2 = document.querySelector(`[data-cat-title2="${cat.id}"]`);
           if (el2) el2.textContent = t(cat.title);
         }
 
@@ -440,13 +432,11 @@
         for (const cat of data.categories) {
           if (cat.items) {
             for (let i = 0; i < cat.items.length; i++) {
-              const key = cat.id + "-" + i;
-              const descEl = document.querySelector(
-                `[data-desc-key="${key}"]`
-              );
+              const key = `${cat.id}-${i}`;
+              const descEl = document.querySelector(`[data-desc-key="${key}"]`);
               if (descEl) descEl.textContent = t(cat.items[i].description);
               const detailEl = document.querySelector(
-                `[data-detail-key="${key}"]`
+                `[data-detail-key="${key}"]`,
               );
               if (detailEl) buildDetailContent(detailEl, cat.items[i]);
             }
@@ -454,25 +444,25 @@
           if (cat.constant_groups) {
             for (let g = 0; g < cat.constant_groups.length; g++) {
               const group = cat.constant_groups[g];
-              const gid = cat.id + "-cg-" + g;
+              const gid = `${cat.id}-cg-${g}`;
               const labelEl = document.querySelector(
-                `[data-cg-label="${gid}"]`
+                `[data-cg-label="${gid}"]`,
               );
               if (labelEl) labelEl.textContent = t(group.label);
               // Section labels and details
               if (group.sections) {
                 for (let s = 0; s < group.sections.length; s++) {
                   const sec = group.sections[s];
-                  const sid = gid + "-s-" + s;
+                  const sid = `${gid}-s-${s}`;
                   if (sec.label) {
                     const sl = document.querySelector(
-                      `[data-sec-label="${sid}"]`
+                      `[data-sec-label="${sid}"]`,
                     );
                     if (sl) sl.textContent = t(sec.label);
                   }
                   if (sec.details) {
                     const listEl = document.querySelector(
-                      `[data-sec-details="${sid}"]`
+                      `[data-sec-details="${sid}"]`,
                     );
                     if (listEl) {
                       let html = "";
@@ -509,7 +499,7 @@
           let itemsVisible = 0;
           if (cat.items) {
             for (let i = 0; i < cat.items.length; i++) {
-              const key = cat.id + "-" + i;
+              const key = `${cat.id}-${i}`;
               const row = document.querySelector(`[data-item-key="${key}"]`);
               if (!row) continue;
               const visible = isVisible(cat.items[i]);
@@ -517,7 +507,7 @@
               if (visible) itemsVisible++;
             }
             const itemsCard = document.querySelector(
-              `[data-items-card="${cat.id}"]`
+              `[data-items-card="${cat.id}"]`,
             );
             if (itemsCard)
               itemsCard.style.display = itemsVisible > 0 ? "" : "none";
@@ -529,7 +519,7 @@
             const q = searchQuery.toLowerCase();
             for (let i = 0; i < cat.constants.length; i++) {
               const el = document.querySelector(
-                `[data-const-key="${cat.id}-${i}"]`
+                `[data-const-key="${cat.id}-${i}"]`,
               );
               if (!el) continue;
               const visible =
@@ -538,7 +528,7 @@
               if (visible) catVisible++;
             }
             const grid = document.querySelector(
-              `[data-const-grid="${cat.id}"]`
+              `[data-const-grid="${cat.id}"]`,
             );
             if (grid) grid.style.display = catVisible > 0 ? "" : "none";
           }
@@ -547,17 +537,17 @@
           if (cat.constant_groups) {
             for (let g = 0; g < cat.constant_groups.length; g++) {
               const group = cat.constant_groups[g];
-              const gid = cat.id + "-cg-" + g;
+              const gid = `${cat.id}-cg-${g}`;
               let groupVisible = 0;
 
               if (group.sections) {
                 const q = searchQuery.toLowerCase();
                 for (let s = 0; s < group.sections.length; s++) {
                   const sec = group.sections[s];
-                  const sid = gid + "-s-" + s;
+                  const sid = `${gid}-s-${s}`;
                   for (let i = 0; i < sec.constants.length; i++) {
                     const el = document.querySelector(
-                      `[data-const-key="${sid}-${i}"]`
+                      `[data-const-key="${sid}-${i}"]`,
                     );
                     if (!el) continue;
                     const visible =
@@ -568,14 +558,12 @@
                   }
                 }
                 const grid = document.querySelector(
-                  `[data-const-grid="${gid}"]`
+                  `[data-const-grid="${gid}"]`,
                 );
                 if (grid) grid.style.display = groupVisible > 0 ? "" : "none";
               }
 
-              const groupEl = document.querySelector(
-                `[data-cg-id="${gid}"]`
-              );
+              const groupEl = document.querySelector(`[data-cg-id="${gid}"]`);
               if (groupEl)
                 groupEl.style.display = groupVisible > 0 ? "" : "none";
               catVisible += groupVisible;
@@ -585,28 +573,20 @@
           totalVisible += catVisible;
 
           const section = document.querySelector(
-            `details[data-cat-id="${cat.id}"]`
+            `details[data-cat-id="${cat.id}"]`,
           );
           if (section) section.style.display = catVisible > 0 ? "" : "none";
         }
 
-        document.getElementById("no-results").classList.toggle(
-          "hidden",
-          totalVisible > 0
-        );
+        document
+          .getElementById("no-results")
+          .classList.toggle("hidden", totalVisible > 0);
       }
 
       // Init
-      showAdvanced = localStorage.getItem("pyxel-api-ref-advanced") === "1";
+      showAdvanced = localStorage.getItem(PYXEL_API_REF_ADVANCED_KEY) === "1";
 
-      fetch("api-reference.json")
-        .then((r) => r.json())
-        .then((json) => {
-          data = json;
-          lang = detectLanguage(data.languages);
-          buildPage();
-        })
-        .catch((e) => console.error("Failed to load data:", e));
+      initPage("api-reference.json", buildPage);
     </script>
   </body>
 </html>

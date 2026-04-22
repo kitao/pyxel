@@ -3,29 +3,7 @@ use pyo3::prelude::*;
 
 use crate::sound_wrapper::Sound;
 
-#[pyclass(from_py_object)]
-#[derive(Clone, Copy)]
-pub struct Channel {
-    pub(crate) inner: *mut pyxel::Channel,
-}
-
-unsafe impl Send for Channel {}
-unsafe impl Sync for Channel {}
-
-impl Channel {
-    pub fn wrap(inner: *mut pyxel::Channel) -> Self {
-        Self { inner }
-    }
-
-    fn inner_ref(&self) -> &pyxel::Channel {
-        unsafe { &*self.inner }
-    }
-
-    #[allow(clippy::mut_from_ref)]
-    fn inner_mut(&self) -> &mut pyxel::Channel {
-        unsafe { &mut *self.inner }
-    }
-}
+define_wrapper!(Channel, pyxel::Channel);
 
 #[pymethods]
 impl Channel {
@@ -78,7 +56,7 @@ impl Channel {
         } else {
             sec
         };
-        let loop_ = r#loop.unwrap_or(false);
+        let should_loop = r#loop.unwrap_or(false);
         let resume = resume.unwrap_or(false);
 
         cast_pyany! {
@@ -87,7 +65,7 @@ impl Channel {
             (u32, {
                 let sound = pyxel::sounds().get(snd as usize).copied()
                     .ok_or_else(|| PyValueError::new_err("Invalid sound index"))?;
-                self.inner_mut().play_sound(sound, sec, loop_, resume);
+                self.inner_mut().play_sound(sound, sec, should_loop, resume);
             }),
 
             (Vec<u32>, {
@@ -98,21 +76,21 @@ impl Channel {
                     }
                 }
                 let sounds = snd.iter().map(|&i| all_sounds[i as usize]).collect();
-                self.inner_mut().play(sounds, sec, loop_, resume);
+                self.inner_mut().play(sounds, sec, should_loop, resume);
             }),
 
             (Sound, {
-                self.inner_mut().play_sound(snd.inner, sec, loop_, resume);
+                self.inner_mut().play_sound(snd.inner, sec, should_loop, resume);
             }),
 
             (Vec<Sound>, {
                 let sounds = snd.iter().map(|sound| sound.inner).collect();
-                self.inner_mut().play(sounds, sec, loop_, resume);
+                self.inner_mut().play(sounds, sec, should_loop, resume);
             }),
 
             (String, {
                 self.inner_mut()
-                    .play_mml(&snd, sec, loop_, resume)
+                    .play_mml(&snd, sec, should_loop, resume)
                     .map_err(PyException::new_err)?;
             })
         }

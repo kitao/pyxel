@@ -1,25 +1,25 @@
 * text=auto
 
-# Binary wheels
-*.whl binary diff=zip
-
-# Images
-*.png binary
-*.gif binary
-*.jpg binary
-*.jpeg binary
-*.ico binary
+# Archives
+*.whl binary
+*.zip binary
 
 # Audio
 *.ogg binary
 
 # Fonts
-*.bdf binary
-*.otf binary
-*.ttc binary
+# BDF is a plain-text X11 font definition; keep LF so diffs stay readable across platforms.
+*.bdf text eol=lf
 *.ttf binary
+
+# Images
+*.gif binary
+*.ico binary
+*.jpeg binary
+*.png binary
 
 # Pyxel assets
 *.pyxapp binary
-*.pyxres binary
+# Pyxel palette is a plain-text INI-style file.
 *.pyxpal text
+*.pyxres binary

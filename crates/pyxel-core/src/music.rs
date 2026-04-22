@@ -55,8 +55,8 @@ impl Music {
         for &ch in channels.iter() {
             unsafe { &mut *ch }.stop();
         }
-        for (ch, seq) in channels.iter().zip(seqs.iter()) {
-            unsafe { &mut **ch }.play(seq.clone(), None, true, false);
+        for (&ch, seq) in channels.iter().zip(seqs.iter()) {
+            unsafe { &mut *ch }.play(seq.clone(), None, true, false);
         }
 
         Audio::render_samples(channels.as_slice(), &mut blip_buf, &mut samples);

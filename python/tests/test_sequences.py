@@ -1,4 +1,5 @@
 import pytest
+
 import pyxel
 
 
@@ -26,21 +27,21 @@ class TestSeqLen:
 
 
 class TestSeqGetitem:
-    def test_index_access(self):
+    def test_images_index_access(self):
         img = pyxel.images[0]
         assert isinstance(img, pyxel.Image)
 
-    def test_negative_index(self):
+    def test_images_negative_index(self):
         img = pyxel.images[-1]
         assert isinstance(img, pyxel.Image)
 
-    def test_slice_access(self):
+    def test_images_slice_access(self):
         imgs = pyxel.images[0:2]
         assert isinstance(imgs, list)
         assert len(imgs) == 2
         assert all(isinstance(img, pyxel.Image) for img in imgs)
 
-    def test_out_of_range_raises(self):
+    def test_images_out_of_range_raises(self):
         with pytest.raises(IndexError):
             _ = pyxel.images[999]
 
@@ -63,7 +64,7 @@ class TestSeqGetitem:
 
 
 class TestSeqSetitem:
-    def test_set_by_index(self):
+    def test_images_set_by_index(self):
         original = pyxel.images[0]
         new_img = pyxel.Image(256, 256)
         pyxel.images[0] = new_img
@@ -73,7 +74,7 @@ class TestSeqSetitem:
 
 
 class TestSeqDelitem:
-    def test_delete_appended_item(self):
+    def test_sounds_delete_appended_item(self):
         original_len = len(pyxel.sounds)
         pyxel.sounds.append(pyxel.Sound())
         assert len(pyxel.sounds) == original_len + 1
@@ -82,7 +83,7 @@ class TestSeqDelitem:
 
 
 class TestSeqAppendPop:
-    def test_append_and_pop(self):
+    def test_sounds_append_and_pop(self):
         original_len = len(pyxel.sounds)
         snd = pyxel.Sound()
         pyxel.sounds.append(snd)
@@ -141,6 +142,8 @@ class TestSeqIteration:
         assert count == len(pyxel.images)
 
     def test_contains_with_value_type(self):
+        # Object types (Image etc.) create new wrappers each access,
+        # so test __contains__ with value types (colors) instead
         col = pyxel.colors[0]
         assert col in pyxel.colors
 
@@ -193,7 +196,7 @@ class TestSeqSliceOperations:
 
 
 class TestSeqExtendClear:
-    def test_extend(self):
+    def test_sounds_extend(self):
         original_len = len(pyxel.sounds)
         new_sounds = [pyxel.Sound(), pyxel.Sound()]
         pyxel.sounds.extend(new_sounds)
@@ -201,7 +204,7 @@ class TestSeqExtendClear:
         pyxel.sounds.pop()
         pyxel.sounds.pop()
 
-    def test_clear_and_restore(self):
+    def test_colors_clear_and_restore(self):
         original_colors = list(pyxel.colors)
         pyxel.colors.clear()
         assert len(pyxel.colors) == 0
@@ -290,8 +293,6 @@ class TestSeqBool:
 
 
 class TestSeqIadd:
-    """Test __iadd__ (+=) for sequences."""
-
     def test_iadd_colors(self):
         original = list(pyxel.colors)
         pyxel.colors += [0xAAAAAA, 0xBBBBBB]
@@ -318,8 +319,6 @@ class TestSeqIadd:
 
 
 class TestSeqValueOps:
-    """Test __eq__, __add__, __mul__ for value-type sequences (colors)."""
-
     def test_eq_same_content(self):
         # Compare a copy of colors list against the sequence
         colors_list = list(pyxel.colors)

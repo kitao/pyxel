@@ -35,6 +35,8 @@ class FieldCursor:
         self._field_buffer = None
         self._bank_buffer = None
 
+    # Properties
+
     @property
     def x(self):
         return (
@@ -82,6 +84,8 @@ class FieldCursor:
     @property
     def _adjusted_select_x(self):
         return min(self._select_x, self._max_select_x)
+
+    # Movement
 
     def move_to(self, x, y, with_select_key):
         y = clamp(y, 0, self._max_y)
@@ -152,6 +156,8 @@ class FieldCursor:
             self._cursor_y += 1
             self._cursor_x %= self._field_wrap_length
             self._select_x = None
+
+    # Editing
 
     def insert(self, value):
         self._add_pre_history(self.x, self.y)
@@ -224,6 +230,8 @@ class FieldCursor:
             else:
                 self.field.append(0)
         self._add_post_history(self.x, self.y)
+
+    # Input processing
 
     def process_input(self):
         if pyxel.btn(pyxel.KEY_ALT):

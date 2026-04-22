@@ -4,13 +4,11 @@ from .widget import Widget
 
 
 class ColorPicker(Widget):
-    """
-    Variables:
-        value_var
-
-    Events:
-        change (value)
-    """
+    # Variables:
+    #   value_var
+    #
+    # Events:
+    #   change (value)
 
     def __init__(self, parent, x, y, value, *, with_shadow=False, **kwargs):
         super().__init__(parent, x, y, 65, 17, **kwargs)
@@ -20,15 +18,15 @@ class ColorPicker(Widget):
         self._num_cols = 64 // self._color_width
         self._num_rows = 16 // self._color_height
 
-        # Initialize value_var
         self.new_var("value_var", value)
         self.add_var_event_listener("value_var", "set", self.__on_value_set)
         self.add_var_event_listener("value_var", "change", self.__on_value_change)
 
-        # Set event listeners
         self.add_event_listener("mouse_down", self.__on_mouse_down)
         self.add_event_listener("mouse_drag", self.__on_mouse_drag)
         self.add_event_listener("draw", self.__on_draw)
+
+    # Helpers
 
     def check_value(self, x, y):
         x -= self.x + 1
@@ -39,6 +37,8 @@ class ColorPicker(Widget):
             col = (y // ch) * self._num_cols + x // cw
             return col if col < pyxel.num_user_colors else None
         return None
+
+    # Event handlers
 
     def __on_value_set(self, value):
         return min(value, pyxel.num_user_colors - 1)
@@ -56,12 +56,7 @@ class ColorPicker(Widget):
     def __on_mouse_drag(self, key, x, y, dx, dy):
         self.__on_mouse_down(key, x, y)
 
-    def __on_draw(self):
-        self.draw_panel(
-            self.x, self.y, self.width, self.height, with_shadow=self._with_shadow
-        )
-        self._draw_colors()
-        self._draw_cursor()
+    # Drawing
 
     def _draw_colors(self):
         cw = self._color_width
@@ -102,3 +97,10 @@ class ColorPicker(Widget):
             1 + ch // 8 * 3 // 2,
             7 if brightness < 140 else 0,
         )
+
+    def __on_draw(self):
+        self.draw_panel(
+            self.x, self.y, self.width, self.height, with_shadow=self._with_shadow
+        )
+        self._draw_colors()
+        self._draw_cursor()

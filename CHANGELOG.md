@@ -1,12 +1,28 @@
 # Change Log
 
+## 2.9.1
+
+- Added line numbers to palette file parsing errors
+- Fixed palette loader failing on whitespace-only lines
+- Updated Pyxel MML Studio to use shorter share URLs
+- Fixed Pyxel Web Launcher to load the latest version of each user app
+- Enabled thin LTO and inlining hints in release builds
+- Prevented zip path traversal in the play and app2exe commands
+- Fixed relative path handling in the package command
+- Fixed duplicate startup script entry in packaged Pyxel apps
+- Fixed app2exe output colliding with the Pyxel app source directory
+- Added CLI unit tests covering dispatcher, error handling, and all commands
+- Reorganized make targets into make test / run / run-wasm
+- Refined documentation terminology and translations
+
 ## 2.9.0
 
-- Redesigned gen_bgm for Pyxel Composer integration
-- Changed transp, instr, and seed of the gen_bgm function to required
+- Redesigned the gen_bgm function to share code with Pyxel Composer
+- Added the transp argument back to the gen_bgm function
+- Made the transp, the instr, and the seed of the gen_bgm function required
 - Added Cargo.lock to version control for reproducible builds
 - Added the resize function to change the screen size at runtime
-- Fixed the screencast function using wrong last-frame delay on frame drops
+- Fixed the screencast function emitting wrong last-frame delay on frame drops
 - Raised minimum Python version to 3.10
 
 ## 2.8.10
@@ -18,12 +34,14 @@
 - Refined code quality and consistency across all layers
 - Removed unnecessary allocations in rendering and audio
 - Unified editor undo/redo and input handling patterns
-- Optimized drawing hot paths and audio command processing
+- Optimized drawing hot paths
+- Optimized audio command processing
 - Fixed memory leak in MML playback on channels
-- Fixed tilemap editor selection and viewer rendering
-- Added comprehensive Python API and Rust unit tests
+- Fixed tilemap editor selection
+- Fixed tilemap viewer rendering
+- Added Python API and Rust unit tests
 - Removed undefined constants from type stubs and API reference
-- Improved headless mode with frame pipeline and input injection
+- Added frame pipeline and input injection to headless mode
 
 ## 2.8.8
 
@@ -32,7 +50,7 @@
 - Fixed editor input and copy/paste issues
 - Fixed temporary image, tilemap, and sound memory leaks
 - Fixed doc generator stripping HTML tags inside inline code
-- Changed tilemap tile coordinate type from u8 to u16
+- Changed the tilemap tile coordinate type from u8 to u16
 - Fixed mouse coordinate handling on startup
 
 ## 2.8.7
@@ -51,7 +69,7 @@
 - Optimized blt and bltm rendering with fast paths
 - Optimized tilemap, text, and perspective rendering
 - Optimized screen and palette texture uploads
-- Increased maximum color palette size from 255 to 256
+- Increased the maximum color palette size from 255 to 256
 - Optimized GIF screencast saving with buffer reuse
 - Enabled Python atexit handlers on program termination
 - Enabled audio playback in headless mode
@@ -59,7 +77,8 @@
 
 ## 2.8.4
 
-- Added multilingual user guide and simplified README
+- Added the multilingual user guide
+- Simplified the README
 - Added shared CSS for WASM document pages
 - Fixed translation inconsistencies across WASM pages
 - Fixed crash in sound editor when playback reaches end of notes
@@ -73,8 +92,8 @@
 
 ## 2.8.3
 
-- Added URL loading support to Code Maker
-- Changed Code Maker to load default project from zip file
+- Added URL loading support to Pyxel Code Maker
+- Changed Pyxel Code Maker to load default project from zip file
 - Added script to generate type stub docstrings
 - Added docstrings to type stubs from API reference
 - Moved WASM-only images from docs/images to wasm/images
@@ -90,21 +109,21 @@
 
 ## 2.8.1
 
-- Removed URL loading from Code Maker
+- Removed URL loading from Pyxel Code Maker
 - Added system SDL2 fallback for non-X11/Wayland Linux environments
 
 ## 2.8.0
 
 - Reverted default window icon padding
-- Added project sharing via Gist, GitHub, and URL to Code Maker
-- Changed Web Launcher URL format from dot to slash separators
-- Added drag-and-drop support for .py and .pyxres files in Code Maker
+- Added project sharing via Gist, GitHub, and URL to Pyxel Code Maker
+- Changed Pyxel Web Launcher URL format from dot to slash separators
+- Added drag-and-drop support for .py and .pyxres files in Pyxel Code Maker
 - Fixed deprecated warning in voxatron.pyxapp
 
 ## 2.7.12
 
-- Added channel count info to the gen_bgm function instr descriptions
-- Added preset mood descriptions to the gen_bgm function API reference
+- Added channel count info to the instr descriptions of the gen_bgm function
+- Added preset mood descriptions to the API reference of the gen_bgm function
 - Fixed quit causing fatal error on web
 
 ## 2.7.11
@@ -113,12 +132,12 @@
 
 ## 2.7.10
 
-- Added the headless parameter to the init function for windowless operation
+- Added the headless argument to the init function for windowless operation
 - Added padding to default window icon for better OS integration
 
 ## 2.7.9
 
-- Aligned 3D coordinate system so rot=(0,0,0) matches 2D screen axes
+- Aligned the 3D coordinate system so rot=(0,0,0) matches 2D screen axes
 
 ## 2.7.8
 
@@ -149,7 +168,7 @@
 ## 2.7.4
 
 - Fixed module import failure after directory change
-- Added VS Code extension info to READMEs
+- Added VS Code extension info to the README files
 - Fixed mouse not working on Wayland and in virtual machines
 
 ## 2.7.3
@@ -165,9 +184,9 @@
 
 - Added manual page for Pyxel Code Maker
 - Added manual page for Pyxel MML Studio
-- Removed version number from the pyxel command example in READMEs
+- Removed the version number from the pyxel command in the README files
 - Revamped Pyxel Web documentation for clarity and accuracy
-- Revamped FAQ with updated content and improved clarity
+- Revamped the FAQ with updated content and improved clarity
 
 ## 2.7.1
 
@@ -182,7 +201,7 @@
 - Removed mutexes for resource types to improve performance
 - Renamed internal Python module to pyxel_binding
 - Optimized drawing performance with bulk fills and reduced overhead
-- Renamed pyxel-core public API to idiomatic Rust names
+- Renamed the pyxel-core public API to idiomatic Rust names
 - Improved test script with cleanup and app2exe/app2html
 - Refactored imports and cleanup across Rust, Python, and JS
 
@@ -197,7 +216,7 @@
 ## 2.6.8
 
 - Bundled SDL2 in Linux wheels for easier installation
-- Renamed SDL2 feature flags to sdl2_system and sdl2_bundle
+- Renamed the SDL2 feature flags to sdl2_system and sdl2_bundle
 - Updated Linux CI SDL2 version to 2.32.0
 
 ## 2.6.7
@@ -208,7 +227,7 @@
 - Updated CI Python version to 3.14
 - Updated Pyxel thanks image
 - Fixed keyboard input for non-US layouts on the web version
-- Removed version update check from the pyxel command
+- Removed the version update check from the pyxel command
 
 ## 2.6.6
 
@@ -307,7 +326,7 @@
 
 ## 2.5.8
 
-- Set desktop OpenGL internal format to GL_R8
+- Set the desktop OpenGL internal format to GL_R8
 - Fixed Tilemap.data_ptr to expose full map data
 - Updated build environment version for Mac to macOS 15
 
@@ -403,7 +422,7 @@
 
 ## 2.4.5
 
-- Added call to old_mml method when the old syntax is detected
+- Added a call to the old_mml method when the old syntax is detected
 
 ## 2.4.4
 
@@ -459,7 +478,7 @@
 - Renamed the excl options to exclude in the load and save functions
 - Removed the incl options from the load and save functions
 - Updated Example 9 to use new MML syntax
-- Updated default floating-point type to f32
+- Updated the default floating-point type to f32
 
 ## 2.3.18
 
@@ -609,7 +628,7 @@
 - Modified a shortcut description in the README files
 - Renamed (tile_x, tile_y) to (image_tx, image_ty) in the README files
 - Replaced the usage of a deprecated API
-- Updated Tilemap editor to load Layer 0 when a TMX file is dropped onto it
+- Updated tilemap editor to load Layer 0 when a TMX file is dropped onto it
 - Updated Maturin to the latest version
 - Updated Pyodide to version 0.26.4
 - Updated indexmap crate to version 2.7
@@ -625,7 +644,7 @@
 - Updated Pyodide to version 0.26.3
 - Added the perf_monitor function
 - Added the integer_scale function
-- Renamed argument of the fullscreen function
+- Renamed the argument of the fullscreen function
 - Added integer-scale toggle feature with Alt(Option)+8
 - Added gamepad shortcuts using A+B+X+Y+DL/DR/DU/DD
 - Updated default scaling to maximum
@@ -636,7 +655,7 @@
 - Added the user_data_dir function
 - Switched from the platform-dir crate to the directories crate
 - Updated glow crate to version 0.15
-- Fully revised the translations of all README files
+- Revised the translations of all README files
 
 ## 2.2.5
 
@@ -673,7 +692,7 @@
 - Added the watch command description to the README files
 - Removed an unnecessary line in Example 14
 - Added the Font class
-- Added a font option to the text function
+- Added the font option to the text function
 - Updated Example 14 to use native font rendering
 
 ## 2.2.0
@@ -707,7 +726,7 @@
 
 - Modified help messages in Pyxel Editor
 - Updated the sgn function to return integer
-- Fixed push back process in Example 10 and 15
+- Fixed push back process in Examples 10 and 15
 - Prevented editing during playback in Pyxel Editor
 - Fixed incorrect array references during playback in Pyxel Editor
 - Updated sysinfo crate to version 0.31
@@ -752,7 +771,7 @@
 ## 2.1.0
 
 - Fixed a help message in Pyxel Editor
-- Added a resume option to the play function
+- Added the resume option to the play function
 - Updated the function notation in Example 4
 - Updated Example 9 to use the resume option for SFX playback
 - Added descriptions of the resume option to the README files
@@ -806,8 +825,8 @@
 - Enabled importing a TMX file via drag and drop in the tilemap editor
 - Updated destination for image drag-and-drop in the image editor
 - Refined the code for Example 9
-- Added an incl_colors option to the from_image method of Image
-- Added an incl_colors option to the load method of Image
+- Added the incl_colors option to the from_image method of Image
+- Added the incl_colors option to the load method of Image
 - Added Example 15
 - Refined Example 10
 - Fixed a color count change bug on OpenGL ES
@@ -843,7 +862,7 @@
 ## 2.0.1
 
 - Removed publish of the crate to the release script
-- Tile coordinate type is back to u8
+- Reverted the tile coordinate type to u8
 - Removed source code path from the binary
 - Renamed Waveform and waveforms to Tone and tones
 - Updated resource file format for the tones
@@ -873,7 +892,7 @@
 - Removed the set_btn and set_btnv functions
 - Integrated the image and refimg of Tilemap into imgsrc
 - Marked the image and refimg of Tilemap as deprecated fields
-- Renamed snds_list of Music to seqs
+- Renamed the snds_list of Music to seqs
 - Marked the snds_list of Music as a deprecated field
 - Switched to a new resource format based on TOML
 - Updated arguments for the load and save functions

@@ -20,14 +20,12 @@ _FIELD_HELP = (
 
 
 class SoundEditor(EditorBase):
-    """
-    Variables:
-        sound_index_var
-        speed_var
-        octave_var
-        note_var
-        is_playing_var
-    """
+    # Variables:
+    #   sound_index_var
+    #   speed_var
+    #   octave_var
+    #   note_var
+    #   is_playing_var
 
     def __init__(self, parent):
         super().__init__(parent)
@@ -46,10 +44,8 @@ class SoundEditor(EditorBase):
             enable_cross_field_copy=False,
         )
 
-        # Initialize octave_var
         self.new_var("octave_var", 2)
 
-        # Initialize is_playing_var
         self.new_var("is_playing_var", None)
         self.add_var_event_listener(
             "is_playing_var", "get", self.__on_is_playing_var_get
@@ -120,13 +116,16 @@ class SoundEditor(EditorBase):
         self.add_event_listener("update", self.__on_update)
         self.add_event_listener("draw", self.__on_draw)
 
+    # Public methods
+
     def get_field(self, index):
         if 0 <= index < len(_SOUND_FIELDS):
             return getattr(pyxel.sounds[self.sound_index_var], _SOUND_FIELDS[index])
         return None
 
     def add_pre_history(self, x=None, y=None, *, bank_copy=False):
-        self._history_data = data = {}
+        data = {}
+        self._history_data = data
         data["sound_index"] = self.sound_index_var
         if bank_copy:
             data["old_speed"] = self.speed_var
@@ -157,6 +156,8 @@ class SoundEditor(EditorBase):
         cursor_y = self.field_cursor.y
         return _FIELD_HELP[cursor_y] if cursor_y < len(_FIELD_HELP) else ""
 
+    # Helpers
+
     def _play(self, is_partial):
         self._sound_picker.is_enabled_var = False
         self._speed_picker.is_enabled_var = False
@@ -181,7 +182,6 @@ class SoundEditor(EditorBase):
         pyxel.stop(0)
 
     def _restore_state(self, data, prefix):
-        """Shared undo/redo logic for restoring sound state."""
         self._stop()
         self.sound_index_var = data["sound_index"]
         if f"{prefix}_data" in data:
@@ -192,13 +192,15 @@ class SoundEditor(EditorBase):
             self.field_cursor.move_to(*data[f"{prefix}_cursor_pos"], False)
             self.field_cursor.field[:] = data[f"{prefix}_field"]
 
+    # Event handlers
+
     def __on_is_playing_var_get(self, value):
         return pyxel.play_pos(0) is not None
 
     def __on_sound_picker_change(self, value):
         self._speed_picker.value = pyxel.sounds[value].speed
 
-    def __on_sound_picker_mouse_hover(self, x, y):
+    def __on_sound_picker_mouse_hover(self, _x, _y):
         self.help_message_var = "COPY_ALL:CTRL+SHIFT+C/X/V"
 
     def __on_speed_picker_change(self, value):
@@ -207,16 +209,16 @@ class SoundEditor(EditorBase):
     def __on_play_button_press(self):
         self._play(pyxel.btn(pyxel.KEY_SHIFT))
 
-    def __on_play_button_mouse_hover(self, x, y):
+    def __on_play_button_mouse_hover(self, _x, _y):
         self.help_message_var = "PLAY:SPACE PART-PLAY:SHIFT+SPACE"
 
     def __on_stop_button_press(self):
         self._stop()
 
-    def __on_stop_button_mouse_hover(self, x, y):
+    def __on_stop_button_mouse_hover(self, _x, _y):
         self.help_message_var = "STOP:SPACE"
 
-    def __on_loop_button_mouse_hover(self, x, y):
+    def __on_loop_button_mouse_hover(self, _x, _y):
         self.help_message_var = "LOOP:L"
 
     def __on_undo(self, data):

@@ -198,14 +198,14 @@ class WavetableEditor:
         for i in range(int(pyxel.tones[self.tone].gain * 16)):
             self.draw_rect(self.x + 169, self.y + 54 - i * 3)
 
-    @classmethod
-    def draw_panel(cls, x, y, w, h):
+    @staticmethod
+    def draw_panel(x, y, w, h):
         pyxel.rectb(x, y, w + 1, h + 1, 5)
         pyxel.rectb(x, y, w, h, 4)
         pyxel.rect(x + 1, y + 1, w - 1, h - 1, 9)
 
-    @classmethod
-    def draw_rect(cls, x, y):
+    @staticmethod
+    def draw_rect(x, y):
         pyxel.rect(x, y, 4, 2, 1)
 
 

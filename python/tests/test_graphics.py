@@ -1,17 +1,4 @@
-import os
-
-import pytest
-
 import pyxel
-
-
-@pytest.fixture(autouse=True)
-def reset_drawing_state():
-    yield
-    pyxel.clip()
-    pyxel.camera()
-    pyxel.pal()
-    pyxel.dither(1.0)
 
 
 class TestPsetPget:
@@ -304,12 +291,9 @@ class TestText:
         has_text = any(pyxel.pget(x, y) == 7 for x in range(4) for y in range(6))
         assert has_text
 
-    def test_text_with_font(self):
+    def test_text_with_font(self, assets_dir):
         pyxel.cls(0)
-        assets_dir = os.path.join(
-            os.path.dirname(__file__), os.pardir, "pyxel", "examples", "assets"
-        )
-        font = pyxel.Font(os.path.join(assets_dir, "umplus_j10r.bdf"))
+        font = pyxel.Font(str(assets_dir / "umplus_j10r.bdf"))
         pyxel.text(0, 0, "A", 7, font)
         has_text = any(pyxel.pget(x, y) == 7 for x in range(20) for y in range(20))
         assert has_text

@@ -3,26 +3,45 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" href="../../wasm/images/pyxel_icon_64x64.ico" />
     <title>Pyxel Web Launcher</title>
+    <link rel="icon" href="../../wasm/images/pyxel_icon_64x64.ico" />
     <script src="https://cdn.jsdelivr.net/gh/kitao/pyxel/wasm/pyxel.js"></script>
   </head>
   <body class="pyxel-scheme">
     <script>
-      const queries = new URL(document.location).searchParams;
-      let command, value, ext;
+      const params = new URL(document.location).searchParams;
+      let command;
+      let value;
+      let ext;
 
-      if (queries.get("run")) {
+      // Resolve a branch name to the current commit SHA via GitHub API,
+      // so subsequent jsDelivr fetches use an immutable @<SHA> URL.
+      // Falls back to the ref name on any failure (network, 403, 404, etc.).
+      async function resolveRef(user, repo, ref) {
+        try {
+          const res = await fetch(
+            `https://api.github.com/repos/${user}/${repo}/commits/${ref}`,
+            {
+              headers: { Accept: "application/vnd.github.sha" },
+              cache: "no-cache",
+            },
+          );
+          if (res.ok) return (await res.text()).trim();
+        } catch (e) {}
+        return ref;
+      }
+
+      if (params.get("run")) {
         command = "run";
-        value = queries.get("run");
+        value = params.get("run");
         ext = ".py";
-      } else if (queries.get("play")) {
+      } else if (params.get("play")) {
         command = "play";
-        value = queries.get("play");
+        value = params.get("play");
         ext = ".pyxapp";
-      } else if (queries.get("edit")) {
+      } else if (params.get("edit")) {
         command = "edit";
-        value = queries.get("edit");
+        value = params.get("edit");
         ext = ".pyxres";
       } else {
         location.replace("url-builder.html");
@@ -35,23 +54,29 @@
           const parts = value.split("/");
           if (parts.length < 4) {
             location.replace("url-builder.html");
+          } else {
+            const [user, repo, branch] = parts;
+            root = resolveRef(user, repo, branch).then(
+              (ref) => `https://cdn.jsdelivr.net/gh/${user}/${repo}@${ref}`,
+            );
+            name = parts.slice(3).join("/") + ext;
           }
-          root = `https://cdn.jsdelivr.net/gh/${parts[0]}/${parts[1]}@${parts[2]}`;
-          name = parts.slice(3).join("/") + ext;
         } else {
           // Legacy format: user.repo.path.to.file
           const parts = value.split(".");
           root = `https://cdn.jsdelivr.net/gh/${parts[0]}/${parts[1]}`;
           name = parts.slice(2).join("/") + ext;
         }
-        launchPyxel({
-          root,
-          command,
-          name,
-          packages: queries.get("packages"),
-          gamepad: queries.get("gamepad"),
-          editor: queries.get("editor"),
-        });
+        Promise.resolve(root).then((r) =>
+          launchPyxel({
+            root: r,
+            command,
+            name,
+            packages: params.get("packages"),
+            gamepad: params.get("gamepad"),
+            editor: params.get("editor"),
+          }),
+        );
       }
     </script>
   </body>

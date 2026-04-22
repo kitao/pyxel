@@ -1,14 +1,14 @@
 use std::collections::HashMap;
 
 use crate::key::{
-    Key, KeyValue, GAMEPAD_KEY_INDEX_INTERVAL, GAMEPAD_KEY_START_INDEX, MOUSE_KEY_START_INDEX,
-    MOUSE_POS_X, MOUSE_POS_Y, MOUSE_WHEEL_X, MOUSE_WHEEL_Y,
+    Key, KeyValue, GAMEPAD_AXIS_COUNT, GAMEPAD_KEY_START_INDEX, GAMEPAD_KEY_STRIDE,
+    MOUSE_KEY_START_INDEX, MOUSE_POS_X, MOUSE_POS_Y, MOUSE_WHEEL_X, MOUSE_WHEEL_Y,
 };
 use crate::platform;
 use crate::pyxel::{self, Pyxel};
 use crate::utils::f32_to_i32;
 
-#[derive(Copy, Clone, PartialEq)]
+#[derive(Clone, Copy, PartialEq)]
 enum KeyState {
     Pressed,
     Released,
@@ -33,6 +33,8 @@ impl Input {
 }
 
 impl Pyxel {
+    // Query API
+
     pub fn is_button_down(&self, key: Key) -> bool {
         assert!(
             !self.is_analog_key(key),
@@ -53,8 +55,8 @@ impl Pyxel {
     pub fn is_button_pressed(
         &self,
         key: Key,
-        hold_frame_count: Option<u32>,
-        repeat_frame_count: Option<u32>,
+        hold_frames: Option<u32>,
+        repeat_frames: Option<u32>,
     ) -> bool {
         assert!(
             !self.is_analog_key(key),
@@ -78,12 +80,12 @@ impl Pyxel {
         }
 
         // Key repeat logic
-        let repeat = repeat_frame_count.unwrap_or(0);
+        let repeat = repeat_frames.unwrap_or(0);
         if repeat == 0 {
             return false;
         }
 
-        let hold = hold_frame_count.unwrap_or(0);
+        let hold = hold_frames.unwrap_or(0);
         let elapsed = *pyxel::frame_count() as i32 - (*frame_count + hold) as i32;
         elapsed >= 0 && elapsed % repeat as i32 == 0
     }
@@ -113,6 +115,8 @@ impl Pyxel {
         self.input.key_values.get(&key).copied().unwrap_or(0)
     }
 
+    // Setter API
+
     pub fn set_mouse_visible(&mut self, visible: bool) {
         self.input.mouse_visible = visible;
     }
@@ -141,7 +145,7 @@ impl Pyxel {
     }
 
     pub fn set_button_value(&mut self, key: Key, value: KeyValue) {
-        self.change_key_value(key, value);
+        self.set_key_value(key, value);
     }
 
     pub fn set_input_text(&mut self, text: &str) {
@@ -155,6 +159,8 @@ impl Pyxel {
             self.add_dropped_file(file);
         }
     }
+
+    // Internal API
 
     pub(crate) fn start_input_frame(&mut self) {
         self.input.key_values.insert(MOUSE_WHEEL_X, 0);
@@ -198,7 +204,7 @@ impl Pyxel {
             .insert(key, (*pyxel::frame_count(), key_state));
     }
 
-    pub(crate) fn change_key_value(&mut self, key: Key, mut value: KeyValue) {
+    pub(crate) fn set_key_value(&mut self, key: Key, mut value: KeyValue) {
         match key {
             MOUSE_POS_X => {
                 value = ((value - self.system.screen_x) as f32 / self.system.screen_scale) as i32;
@@ -229,11 +235,12 @@ impl Pyxel {
         self.input.mouse_visible
     }
 
+    // Helpers
+
     fn is_current_frame(&self, frame_count: u32) -> bool {
         frame_count == *pyxel::frame_count()
     }
 
-    /// Returns true if key was already touched this frame and is not in the given state.
     fn is_same_frame_transition(&self, key: Key, current_state: KeyState) -> bool {
         matches!(
             self.input.key_states.get(&key),
@@ -245,6 +252,6 @@ impl Pyxel {
         matches!(
             key,
             MOUSE_POS_X | MOUSE_POS_Y | MOUSE_WHEEL_X | MOUSE_WHEEL_Y
-        ) || (key >= GAMEPAD_KEY_START_INDEX && (key % GAMEPAD_KEY_INDEX_INTERVAL) < 6)
+        ) || (key >= GAMEPAD_KEY_START_INDEX && (key % GAMEPAD_KEY_STRIDE) < GAMEPAD_AXIS_COUNT)
     }
 }

@@ -8,7 +8,7 @@ use crate::canvas::{Canvas, CopyArea, PerspectiveProjection, ToIndex};
 use crate::font::Font;
 use crate::rect_area::RectArea;
 use crate::settings::{
-    FONT_HEIGHT, FONT_WIDTH, MAX_COLORS, MAX_FONT_CODE, MIN_FONT_CODE, NUM_FONT_ROWS, TILE_MASK,
+    FONT_HEIGHT, FONT_WIDTH, MAX_COLORS, MAX_FONT_CODE, MIN_FONT_CODE, NUM_FONT_COLS, TILE_MASK,
     TILE_SHIFT, TILE_SIZE,
 };
 use crate::tilemap::{Tile, Tilemap};
@@ -17,8 +17,7 @@ use crate::{pyxel, utils};
 pub type Rgb24 = u32;
 pub type Color = u8;
 
-/// Return `Some(&palette)` when a color map is active, `None` otherwise.
-/// Uses field-level borrowing so the caller can still mutate `self.canvas`.
+// Uses a macro for field-level borrowing so the caller can still mutate `self.canvas`.
 macro_rules! palette_opt {
     ($self:expr) => {
         if $self.palette_is_identity {
@@ -29,8 +28,11 @@ macro_rules! palette_opt {
     };
 }
 
-pub fn rgb_to_rgb8(rgb: Rgb24) -> (u8, u8, u8) {
-    ((rgb >> 16) as u8, (rgb >> 8) as u8, rgb as u8)
+#[derive(Clone)]
+pub struct Image {
+    pub(crate) canvas: Canvas<Color>,
+    pub(crate) palette: [Color; MAX_COLORS as usize],
+    pub(crate) palette_is_identity: bool,
 }
 
 impl ToIndex for Color {
@@ -39,14 +41,9 @@ impl ToIndex for Color {
     }
 }
 
-#[derive(Clone)]
-pub struct Image {
-    pub(crate) canvas: Canvas<Color>,
-    pub(crate) palette: [Color; MAX_COLORS as usize],
-    pub(crate) palette_is_identity: bool,
-}
-
 impl Image {
+    // Constructors
+
     pub fn new(width: u32, height: u32) -> *mut Image {
         Box::into_raw(Box::new(Self {
             canvas: Canvas::new(width, height),
@@ -96,7 +93,7 @@ impl Image {
                                     (pal_color >> 8) as u8,
                                     *pal_color as u8,
                                 );
-                                let dist = Self::color_dist(src_rgb, pal_rgb);
+                                let dist = Self::color_distance_sq(src_rgb, pal_rgb);
                                 if dist < closest_dist {
                                     closest_color = i as Color;
                                     closest_dist = dist;
@@ -116,6 +113,8 @@ impl Image {
         Ok(image)
     }
 
+    // Public accessors
+
     pub const fn width(&self) -> u32 {
         self.canvas.width()
     }
@@ -128,15 +127,17 @@ impl Image {
         self.canvas.data_ptr()
     }
 
-    pub fn set(&mut self, x: i32, y: i32, data_str: &[&str]) {
-        let width = utils::simplify_string(data_str[0]).len() as u32;
-        let height = data_str.len() as u32;
+    // Public data operations
+
+    pub fn set(&mut self, x: i32, y: i32, data: &[&str]) {
+        let width = utils::simplify_string(data[0]).len() as u32;
+        let height = data.len() as u32;
         let image = Self::new(width, height);
 
         {
             let image = unsafe { &mut *image };
             for y in 0..height {
-                let src_data = utils::simplify_string(data_str[y as usize]);
+                let src_data = utils::simplify_string(data[y as usize]);
                 for x in 0..width {
                     let color =
                         utils::parse_hex_string(&src_data[x as usize..=x as usize]).unwrap();
@@ -202,7 +203,7 @@ impl Image {
         for y in 0..height {
             for x in 0..width {
                 let rgb = colors[self.canvas.read_data(x as usize, y as usize) as usize];
-                let (r, g, b) = rgb_to_rgb8(rgb);
+                let (r, g, b) = rgb24_to_rgb8(rgb);
                 image.put_pixel(x, y, image::Rgb([r, g, b]));
             }
         }
@@ -220,6 +221,8 @@ impl Image {
         Ok(())
     }
 
+    // Clip and offset
+
     pub fn set_clip_rect(&mut self, x: f32, y: f32, width: f32, height: f32) {
         self.canvas.set_clip_rect(x, y, width, height);
     }
@@ -228,13 +231,15 @@ impl Image {
         self.canvas.reset_clip_rect();
     }
 
-    pub fn set_draw_offset(&mut self, x: f32, y: f32) {
-        self.canvas.set_draw_offset(x, y);
+    pub fn set_camera(&mut self, x: f32, y: f32) {
+        self.canvas.set_camera(x, y);
     }
 
-    pub fn reset_draw_offset(&mut self) {
-        self.canvas.reset_draw_offset();
+    pub fn reset_camera(&mut self) {
+        self.canvas.reset_camera();
     }
+
+    // Palette and dithering
 
     pub fn map_color(&mut self, src_color: Color, dst_color: Color) {
         self.palette[src_color as usize] = dst_color;
@@ -250,12 +255,14 @@ impl Image {
         self.canvas.set_dithering(alpha);
     }
 
+    // Drawing primitives
+
     pub fn clear(&mut self, color: Color) {
         self.canvas.clear(self.palette[color as usize]);
     }
 
-    pub fn get_pixel(&self, x: f32, y: f32) -> Color {
-        self.canvas.get_value(x, y)
+    pub fn pixel(&self, x: f32, y: f32) -> Color {
+        self.canvas.value(x, y)
     }
 
     pub fn set_pixel(&mut self, x: f32, y: f32, color: Color) {
@@ -329,8 +336,8 @@ impl Image {
         self.canvas.flood_fill(x, y, self.palette[color as usize]);
     }
 
-    /// # Safety
-    /// `image` must be a valid, non-null pointer to an `Image`.
+    // Blit operations
+
     pub unsafe fn draw_image(
         &mut self,
         x: f32,
@@ -381,7 +388,6 @@ impl Image {
         }
     }
 
-    /// Copy a region of this image's canvas into a temporary canvas.
     fn copy_region(&self, x: f32, y: f32, width: f32, height: f32) -> Canvas<Color> {
         let w = utils::f32_to_u32(width.abs());
         let h = utils::f32_to_u32(height.abs());
@@ -390,8 +396,6 @@ impl Image {
         canvas
     }
 
-    /// # Safety
-    /// `tilemap` must be a valid, non-null pointer to a `Tilemap`.
     pub unsafe fn draw_tilemap(
         &mut self,
         x: f32,
@@ -423,8 +427,8 @@ impl Image {
             return;
         }
 
-        let x = utils::f32_to_i32(x) - self.canvas.draw_offset_x;
-        let y = utils::f32_to_i32(y) - self.canvas.draw_offset_y;
+        let x = utils::f32_to_i32(x) - self.canvas.camera_x;
+        let y = utils::f32_to_i32(y) - self.canvas.camera_y;
         let tilemap_x = utils::f32_to_i32(tilemap_x);
         let tilemap_y = utils::f32_to_i32(tilemap_y);
         let width = utils::f32_to_i32(width);
@@ -551,23 +555,21 @@ impl Image {
                     cached_tile_x = tile_x;
                 }
 
-                let value_x = tile.0 as i32 * tile_size + (tilemap_x & TILE_MASK);
-                if value_x < 0 || value_x >= img_w {
+                let img_x = tile.0 as i32 * tile_size + (tilemap_x & TILE_MASK);
+                if img_x < 0 || img_x >= img_w {
                     continue;
                 }
-                let value_y = tile.1 as i32 * tile_size + pixel_y;
-                if value_y < 0 || value_y >= img_h {
+                let img_y = tile.1 as i32 * tile_size + pixel_y;
+                if img_y < 0 || img_y >= img_h {
                     continue;
                 }
-                let value = image.canvas.read_data(value_x as usize, value_y as usize);
+                let pixel = image.canvas.read_data(img_x as usize, img_y as usize);
 
-                if let Some(transparent) = transparent {
-                    if value == transparent {
-                        continue;
-                    }
+                if transparent.is_some_and(|t| pixel == t) {
+                    continue;
                 }
-                let value = palette.map_or(value, |pal| pal[value.to_index()]);
-                self.canvas.write_data((dst_x + xi) as usize, dst_yi, value);
+                let pixel = palette.map_or(pixel, |pal| pal[pixel.to_index()]);
+                self.canvas.write_data((dst_x + xi) as usize, dst_yi, pixel);
             }
         }
     }
@@ -629,8 +631,6 @@ impl Image {
         unsafe { drop(Box::from_raw(tmp)) };
     }
 
-    /// # Safety
-    /// `image` must be a valid, non-null pointer to an `Image`.
     pub unsafe fn draw_image_3d(
         &mut self,
         x: f32,
@@ -667,8 +667,6 @@ impl Image {
         );
     }
 
-    /// # Safety
-    /// `tilemap` must be a valid, non-null pointer to a `Tilemap`.
     pub unsafe fn draw_tilemap_3d(
         &mut self,
         x: f32,
@@ -686,8 +684,8 @@ impl Image {
             y,
             width,
             height,
-            self.canvas.draw_offset_x,
-            self.canvas.draw_offset_y,
+            self.canvas.camera_x,
+            self.canvas.camera_y,
             pos,
             rot,
             fov,
@@ -710,7 +708,7 @@ impl Image {
         let y2 = (proj.dst_y + proj.h - 1).min(self.canvas.clip_rect.bottom());
 
         let palette = palette_opt!(self);
-        let (wx_step, wy_step, wz_step) = proj.x_steps();
+        let (wx_step, wy_step, wz_step) = proj.world_step_per_x();
 
         for yi in y1..=y2 {
             let (mut wx, mut wy, mut wz) = proj.world_base(x1, yi);
@@ -719,15 +717,15 @@ impl Image {
                 if wz.abs() >= f32::EPSILON {
                     let t = -proj.cam_z / wz;
                     if t > 0.0 {
-                        let src_xi = utils::f32_to_i32(proj.cam_x + t * wx);
-                        let src_yi = utils::f32_to_i32(proj.cam_y + t * wy);
+                        let src_x = utils::f32_to_i32(proj.cam_x + t * wx);
+                        let src_y = utils::f32_to_i32(proj.cam_y + t * wy);
 
-                        let tile_x = src_xi >> TILE_SHIFT;
-                        let tile_y = src_yi >> TILE_SHIFT;
+                        let tile_x = src_x >> TILE_SHIFT;
+                        let tile_y = src_y >> TILE_SHIFT;
                         if tile_x >= 0 && tile_x < tm_w && tile_y >= 0 && tile_y < tm_h {
                             let tile = tilemap.canvas.read_data(tile_x as usize, tile_y as usize);
-                            let px = tile.0 as i32 * tile_size + (src_xi & TILE_MASK);
-                            let py = tile.1 as i32 * tile_size + (src_yi & TILE_MASK);
+                            let px = tile.0 as i32 * tile_size + (src_x & TILE_MASK);
+                            let py = tile.1 as i32 * tile_size + (src_y & TILE_MASK);
                             if px >= 0 && px < img_w && py >= 0 && py < img_h {
                                 let value = image.canvas.read_data(px as usize, py as usize);
                                 if transparent.is_none_or(|tkey| value != tkey) {
@@ -745,6 +743,8 @@ impl Image {
         }
     }
 
+    // Text rendering
+
     pub fn draw_text(
         &mut self,
         x: f32,
@@ -754,16 +754,16 @@ impl Image {
         font: Option<*mut Font>,
     ) {
         if let Some(font) = font {
-            let x = utils::f32_to_i32(x) - self.canvas.draw_offset_x;
-            let y = utils::f32_to_i32(y) - self.canvas.draw_offset_y;
+            let x = utils::f32_to_i32(x) - self.canvas.camera_x;
+            let y = utils::f32_to_i32(y) - self.canvas.camera_y;
             let color = self.palette[color as usize];
             let font = unsafe { &mut *font };
             font.draw(&mut self.canvas, x, y, string, color);
             return;
         }
 
-        let mut x = utils::f32_to_i32(x) - self.canvas.draw_offset_x;
-        let mut y = utils::f32_to_i32(y) - self.canvas.draw_offset_y;
+        let mut x = utils::f32_to_i32(x) - self.canvas.camera_x;
+        let mut y = utils::f32_to_i32(y) - self.canvas.camera_y;
         let color = self.palette[color as usize];
         let font_image: *const Image = pyxel::font_image();
         let font_data = unsafe { &(*font_image).canvas.data };
@@ -776,13 +776,13 @@ impl Image {
                 y += FONT_HEIGHT as i32;
                 continue;
             }
-            if c < MIN_FONT_CODE || c > MAX_FONT_CODE {
+            if !(MIN_FONT_CODE..=MAX_FONT_CODE).contains(&c) {
                 continue;
             }
 
             let code = c as i32 - MIN_FONT_CODE as i32;
-            let src_x = (code % NUM_FONT_ROWS as i32) as usize;
-            let src_y = (code / NUM_FONT_ROWS as i32) as usize;
+            let src_x = (code % NUM_FONT_COLS as i32) as usize;
+            let src_y = (code / NUM_FONT_COLS as i32) as usize;
             let font_row = font_w * src_y * FONT_HEIGHT as usize + src_x * FONT_WIDTH as usize;
 
             // Fast path: character fully inside clip rect and no dithering
@@ -819,7 +819,9 @@ impl Image {
         }
     }
 
-    fn color_dist(rgb1: (u8, u8, u8), rgb2: (u8, u8, u8)) -> f32 {
+    // Internal helpers
+
+    fn color_distance_sq(rgb1: (u8, u8, u8), rgb2: (u8, u8, u8)) -> f32 {
         let (r1, g1, b1) = rgb1;
         let (r2, g2, b2) = rgb2;
         // Weighted by perceived luminance contribution
@@ -828,4 +830,8 @@ impl Image {
         let db = (b1 as f32 - b2 as f32) * 0.11;
         dr * dr + dg * dg + db * db
     }
+}
+
+pub fn rgb24_to_rgb8(rgb: Rgb24) -> (u8, u8, u8) {
+    ((rgb >> 16) as u8, (rgb >> 8) as u8, rgb as u8)
 }

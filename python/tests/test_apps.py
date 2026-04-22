@@ -1,4 +1,3 @@
-import glob
 import os
 import random
 import runpy
@@ -7,10 +6,11 @@ import zipfile
 from pathlib import Path
 
 import pytest
+
 import pyxel
 
 from test_examples import (
-    _reinit_pyxel,
+    _reset_pyxel,
     _restore_pyxel,
     capture_frames,
     compare_or_update_all,
@@ -66,19 +66,17 @@ CAPTURE_PLANS = {
 
 
 def extract_pyxapp(pyxapp_path, extract_dir):
-    """Extract .pyxapp ZIP and return path to startup script."""
     with zipfile.ZipFile(pyxapp_path) as zf:
         zf.extractall(extract_dir)
 
-    pattern = os.path.join(extract_dir, "*", pyxel.APP_STARTUP_SCRIPT_FILE)
-    for setting_file in glob.glob(pattern):
-        with open(setting_file) as f:
-            return os.path.join(os.path.dirname(setting_file), f.read().strip())
+    for setting_file in Path(extract_dir).glob(f"*/{pyxel.APP_STARTUP_SCRIPT_FILE}"):
+        return str(
+            setting_file.parent / setting_file.read_text(encoding="utf-8").strip()
+        )
     pytest.fail(f"No startup script found in {pyxapp_path}")
 
 
 def run_pyxapp(startup_path):
-    """Execute .pyxapp startup script, capturing update/draw callbacks."""
     captured = {}
     original_init = pyxel.init
     original_run = pyxel.run
@@ -133,7 +131,7 @@ class TestApps:
         extract_dir.mkdir()
         startup = extract_pyxapp(pyxapp, extract_dir)
 
-        _reinit_pyxel()
+        _reset_pyxel()
         original_dir = os.getcwd()
         try:
             captured, app_dir = run_pyxapp(startup)

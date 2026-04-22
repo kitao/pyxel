@@ -1,4 +1,3 @@
-use std::cmp::max;
 use std::f32::consts::PI;
 use std::mem::swap;
 
@@ -21,8 +20,8 @@ pub trait ToIndex {
 pub struct Canvas<T: Copy + PartialEq + Default + ToIndex> {
     pub self_rect: RectArea,
     pub clip_rect: RectArea,
-    pub draw_offset_x: i32,
-    pub draw_offset_y: i32,
+    pub camera_x: i32,
+    pub camera_y: i32,
     pub alpha: f32,
     pub data: Vec<T>,
 }
@@ -32,8 +31,8 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         Self {
             self_rect: RectArea::new(0, 0, width, height),
             clip_rect: RectArea::new(0, 0, width, height),
-            draw_offset_x: 0,
-            draw_offset_y: 0,
+            camera_x: 0,
+            camera_y: 0,
             alpha: 1.0,
             data: vec![T::default(); (width * height) as usize],
         }
@@ -58,21 +57,21 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         let height = f32_to_u32(height);
         self.clip_rect = self
             .self_rect
-            .intersects(RectArea::new(x, y, width, height));
+            .intersection(RectArea::new(x, y, width, height));
     }
 
     pub fn reset_clip_rect(&mut self) {
         self.clip_rect = self.self_rect;
     }
 
-    pub fn set_draw_offset(&mut self, x: f32, y: f32) {
-        self.draw_offset_x = f32_to_i32(x);
-        self.draw_offset_y = f32_to_i32(y);
+    pub fn set_camera(&mut self, x: f32, y: f32) {
+        self.camera_x = f32_to_i32(x);
+        self.camera_y = f32_to_i32(y);
     }
 
-    pub fn reset_draw_offset(&mut self) {
-        self.draw_offset_x = 0;
-        self.draw_offset_y = 0;
+    pub fn reset_camera(&mut self) {
+        self.camera_x = 0;
+        self.camera_y = 0;
     }
 
     pub fn set_dithering(&mut self, alpha: f32) {
@@ -83,7 +82,7 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         self.data.fill(value);
     }
 
-    pub fn get_value(&self, x: f32, y: f32) -> T {
+    pub fn value(&self, x: f32, y: f32) -> T {
         let x = f32_to_i32(x);
         let y = f32_to_i32(y);
         if self.clip_rect.contains(x, y) {
@@ -94,18 +93,18 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
     }
 
     pub fn set_value(&mut self, x: f32, y: f32, value: T) {
-        let x = f32_to_i32(x) - self.draw_offset_x;
-        let y = f32_to_i32(y) - self.draw_offset_y;
+        let x = f32_to_i32(x) - self.camera_x;
+        let y = f32_to_i32(y) - self.camera_y;
         self.write_data_with_clipping(x, y, value);
     }
 
     // Drawing primitives
 
     pub fn draw_line(&mut self, x1: f32, y1: f32, x2: f32, y2: f32, value: T) {
-        let x1 = f32_to_i32(x1) - self.draw_offset_x;
-        let y1 = f32_to_i32(y1) - self.draw_offset_y;
-        let x2 = f32_to_i32(x2) - self.draw_offset_x;
-        let y2 = f32_to_i32(y2) - self.draw_offset_y;
+        let x1 = f32_to_i32(x1) - self.camera_x;
+        let y1 = f32_to_i32(y1) - self.camera_y;
+        let x2 = f32_to_i32(x2) - self.camera_x;
+        let y2 = f32_to_i32(y2) - self.camera_y;
 
         if x1 == x2 && y1 == y2 {
             self.write_data_with_clipping(x1, y1, value);
@@ -143,11 +142,11 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
     }
 
     pub fn draw_rect(&mut self, x: f32, y: f32, width: f32, height: f32, value: T) {
-        let x = f32_to_i32(x) - self.draw_offset_x;
-        let y = f32_to_i32(y) - self.draw_offset_y;
+        let x = f32_to_i32(x) - self.camera_x;
+        let y = f32_to_i32(y) - self.camera_y;
         let width = f32_to_u32(width);
         let height = f32_to_u32(height);
-        let rect = RectArea::new(x, y, width, height).intersects(self.clip_rect);
+        let rect = RectArea::new(x, y, width, height).intersection(self.clip_rect);
         if rect.is_empty() {
             return;
         }
@@ -172,12 +171,12 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
     }
 
     pub fn draw_rect_border(&mut self, x: f32, y: f32, width: f32, height: f32, value: T) {
-        let x = f32_to_i32(x) - self.draw_offset_x;
-        let y = f32_to_i32(y) - self.draw_offset_y;
+        let x = f32_to_i32(x) - self.camera_x;
+        let y = f32_to_i32(y) - self.camera_y;
         let width = f32_to_u32(width);
         let height = f32_to_u32(height);
         let rect = RectArea::new(x, y, width, height);
-        if rect.intersects(self.clip_rect).is_empty() {
+        if rect.intersection(self.clip_rect).is_empty() {
             return;
         }
 
@@ -196,37 +195,25 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
     }
 
     pub fn draw_circle(&mut self, x: f32, y: f32, radius: f32, value: T) {
-        let x = f32_to_i32(x) - self.draw_offset_x;
-        let y = f32_to_i32(y) - self.draw_offset_y;
+        let x = f32_to_i32(x) - self.camera_x;
+        let y = f32_to_i32(y) - self.camera_y;
         let radius = f32_to_u32(radius);
         let r = radius as f32;
 
-        if self.alpha >= 1.0 {
-            for xi in 0..=radius as i32 {
-                let (x1, y1, x2, y2) = Self::ellipse_area(0.0, 0.0, r, r, xi);
-                for yi in y1..=y2 {
-                    self.write_data_with_clipping(x + x1, y + yi, value);
-                    self.write_data_with_clipping(x + x2, y + yi, value);
-                }
-                self.fill_row_clipped(x + y1, x + y2, y + x1, value);
-                self.fill_row_clipped(x + y1, x + y2, y + x2, value);
+        for xi in 0..=radius as i32 {
+            let (x1, y1, x2, y2) = Self::ellipse_area(0.0, 0.0, r, r, xi);
+            for yi in y1..=y2 {
+                self.write_data_with_clipping(x + x1, y + yi, value);
+                self.write_data_with_clipping(x + x2, y + yi, value);
             }
-        } else {
-            for xi in 0..=radius as i32 {
-                let (x1, y1, x2, y2) = Self::ellipse_area(0.0, 0.0, r, r, xi);
-                for yi in y1..=y2 {
-                    self.write_data_with_clipping(x + x1, y + yi, value);
-                    self.write_data_with_clipping(x + x2, y + yi, value);
-                    self.write_data_with_clipping(x + yi, y + x1, value);
-                    self.write_data_with_clipping(x + yi, y + x2, value);
-                }
-            }
+            self.fill_row_with_dither(x + y1, x + y2, y + x1, value);
+            self.fill_row_with_dither(x + y1, x + y2, y + x2, value);
         }
     }
 
     pub fn draw_circle_border(&mut self, x: f32, y: f32, radius: f32, value: T) {
-        let x = f32_to_i32(x) - self.draw_offset_x;
-        let y = f32_to_i32(y) - self.draw_offset_y;
+        let x = f32_to_i32(x) - self.camera_x;
+        let y = f32_to_i32(y) - self.camera_y;
         let radius = f32_to_u32(radius);
         let r = radius as f32;
 
@@ -245,8 +232,8 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
     }
 
     pub fn draw_ellipse(&mut self, x: f32, y: f32, width: f32, height: f32, value: T) {
-        let x = f32_to_i32(x) - self.draw_offset_x;
-        let y = f32_to_i32(y) - self.draw_offset_y;
+        let x = f32_to_i32(x) - self.camera_x;
+        let y = f32_to_i32(y) - self.camera_y;
         let width = f32_to_u32(width);
         let height = f32_to_u32(height);
         let (ra, rb, cx, cy) = Self::ellipse_params(x, y, width, height);
@@ -259,26 +246,16 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
             }
         }
 
-        if self.alpha >= 1.0 {
-            for yi in y..=(y + height as i32 / 2) {
-                let (y1, x1, y2, x2) = Self::ellipse_area(cy, cx, rb, ra, yi);
-                self.fill_row_clipped(x1, x2, y1, value);
-                self.fill_row_clipped(x1, x2, y2, value);
-            }
-        } else {
-            for yi in y..=(y + height as i32 / 2) {
-                let (y1, x1, y2, x2) = Self::ellipse_area(cy, cx, rb, ra, yi);
-                for xi in x1..=x2 {
-                    self.write_data_with_clipping(xi, y1, value);
-                    self.write_data_with_clipping(xi, y2, value);
-                }
-            }
+        for yi in y..=(y + height as i32 / 2) {
+            let (y1, x1, y2, x2) = Self::ellipse_area(cy, cx, rb, ra, yi);
+            self.fill_row_with_dither(x1, x2, y1, value);
+            self.fill_row_with_dither(x1, x2, y2, value);
         }
     }
 
     pub fn draw_ellipse_border(&mut self, x: f32, y: f32, width: f32, height: f32, value: T) {
-        let x = f32_to_i32(x) - self.draw_offset_x;
-        let y = f32_to_i32(y) - self.draw_offset_y;
+        let x = f32_to_i32(x) - self.camera_x;
+        let y = f32_to_i32(y) - self.camera_y;
         let width = f32_to_u32(width);
         let height = f32_to_u32(height);
         let (ra, rb, cx, cy) = Self::ellipse_params(x, y, width, height);
@@ -310,12 +287,12 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         y3: f32,
         value: T,
     ) {
-        let mut x1 = f32_to_i32(x1) - self.draw_offset_x;
-        let mut y1 = f32_to_i32(y1) - self.draw_offset_y;
-        let mut x2 = f32_to_i32(x2) - self.draw_offset_x;
-        let mut y2 = f32_to_i32(y2) - self.draw_offset_y;
-        let mut x3 = f32_to_i32(x3) - self.draw_offset_x;
-        let mut y3 = f32_to_i32(y3) - self.draw_offset_y;
+        let mut x1 = f32_to_i32(x1) - self.camera_x;
+        let mut y1 = f32_to_i32(y1) - self.camera_y;
+        let mut x2 = f32_to_i32(x2) - self.camera_x;
+        let mut y2 = f32_to_i32(y2) - self.camera_y;
+        let mut x3 = f32_to_i32(x3) - self.camera_x;
+        let mut y3 = f32_to_i32(y3) - self.camera_y;
 
         if y1 > y2 {
             swap(&mut y1, &mut y2);
@@ -345,70 +322,35 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         } else {
             (x3 - x2) as f32 / (y3 - y2) as f32
         };
-        let x_inter = f32_to_i32(x1 as f32 + slope13 * (y2 - y1) as f32);
+        let x_split = f32_to_i32(x1 as f32 + slope13 * (y2 - y1) as f32);
 
-        if self.alpha >= 1.0 {
-            for y in y1..=y2 {
-                let (x_slider, x_end) = if x_inter < x2 {
-                    (
-                        f32_to_i32(x_inter as f32 + slope13 * (y - y2) as f32),
-                        f32_to_i32(x2 as f32 + slope12 * (y - y2) as f32),
-                    )
-                } else {
-                    (
-                        f32_to_i32(x2 as f32 + slope12 * (y - y2) as f32),
-                        f32_to_i32(x_inter as f32 + slope13 * (y - y2) as f32),
-                    )
-                };
-                self.fill_row_clipped(x_slider, x_end, y, value);
-            }
-            for y in (y2 + 1)..=y3 {
-                let (x_slider, x_end) = if x_inter < x2 {
-                    (
-                        f32_to_i32(x_inter as f32 + slope13 * (y - y2) as f32),
-                        f32_to_i32(x2 as f32 + slope23 * (y - y2) as f32),
-                    )
-                } else {
-                    (
-                        f32_to_i32(x2 as f32 + slope23 * (y - y2) as f32),
-                        f32_to_i32(x_inter as f32 + slope13 * (y - y2) as f32),
-                    )
-                };
-                self.fill_row_clipped(x_slider, x_end, y, value);
-            }
-        } else {
-            for y in y1..=y2 {
-                let (x_slider, x_end) = if x_inter < x2 {
-                    (
-                        f32_to_i32(x_inter as f32 + slope13 * (y - y2) as f32),
-                        f32_to_i32(x2 as f32 + slope12 * (y - y2) as f32),
-                    )
-                } else {
-                    (
-                        f32_to_i32(x2 as f32 + slope12 * (y - y2) as f32),
-                        f32_to_i32(x_inter as f32 + slope13 * (y - y2) as f32),
-                    )
-                };
-                for x in x_slider..=x_end {
-                    self.write_data_with_clipping(x, y, value);
-                }
-            }
-            for y in (y2 + 1)..=y3 {
-                let (x_slider, x_end) = if x_inter < x2 {
-                    (
-                        f32_to_i32(x_inter as f32 + slope13 * (y - y2) as f32),
-                        f32_to_i32(x2 as f32 + slope23 * (y - y2) as f32),
-                    )
-                } else {
-                    (
-                        f32_to_i32(x2 as f32 + slope23 * (y - y2) as f32),
-                        f32_to_i32(x_inter as f32 + slope13 * (y - y2) as f32),
-                    )
-                };
-                for x in x_slider..=x_end {
-                    self.write_data_with_clipping(x, y, value);
-                }
-            }
+        for y in y1..=y2 {
+            let (x_start, x_end) = if x_split < x2 {
+                (
+                    f32_to_i32(x_split as f32 + slope13 * (y - y2) as f32),
+                    f32_to_i32(x2 as f32 + slope12 * (y - y2) as f32),
+                )
+            } else {
+                (
+                    f32_to_i32(x2 as f32 + slope12 * (y - y2) as f32),
+                    f32_to_i32(x_split as f32 + slope13 * (y - y2) as f32),
+                )
+            };
+            self.fill_row_with_dither(x_start, x_end, y, value);
+        }
+        for y in (y2 + 1)..=y3 {
+            let (x_start, x_end) = if x_split < x2 {
+                (
+                    f32_to_i32(x_split as f32 + slope13 * (y - y2) as f32),
+                    f32_to_i32(x2 as f32 + slope23 * (y - y2) as f32),
+                )
+            } else {
+                (
+                    f32_to_i32(x2 as f32 + slope23 * (y - y2) as f32),
+                    f32_to_i32(x_split as f32 + slope13 * (y - y2) as f32),
+                )
+            };
+            self.fill_row_with_dither(x_start, x_end, y, value);
         }
     }
 
@@ -430,8 +372,8 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
     // Flood fill
 
     pub fn flood_fill(&mut self, x: f32, y: f32, value: T) {
-        let x = f32_to_i32(x) - self.draw_offset_x;
-        let y = f32_to_i32(y) - self.draw_offset_y;
+        let x = f32_to_i32(x) - self.camera_x;
+        let y = f32_to_i32(y) - self.camera_y;
         if !self.clip_rect.contains(x, y) {
             return;
         }
@@ -506,8 +448,8 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         transparent: Option<T>,
         palette: Option<&[T]>,
     ) {
-        let x = f32_to_i32(x) - self.draw_offset_x;
-        let y = f32_to_i32(y) - self.draw_offset_y;
+        let x = f32_to_i32(x) - self.camera_x;
+        let y = f32_to_i32(y) - self.camera_y;
         let canvas_x = f32_to_i32(canvas_x);
         let canvas_y = f32_to_i32(canvas_y);
         let width = f32_to_i32(width);
@@ -540,57 +482,27 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
 
         macro_rules! copy_row {
             (slice: $dst:expr, $src:expr) => {
-                match (transparent, palette) {
-                    (None, None) => $dst.copy_from_slice($src),
-                    (Some(tkey), None) => {
-                        for i in 0..$dst.len() {
-                            let val = $src[i];
-                            if val != tkey {
-                                $dst[i] = val;
-                            }
-                        }
-                    }
-                    (None, Some(pal)) => {
-                        for i in 0..$dst.len() {
-                            $dst[i] = pal[$src[i].to_index()];
-                        }
-                    }
-                    (Some(tkey), Some(pal)) => {
-                        for i in 0..$dst.len() {
-                            let val = $src[i];
-                            if val != tkey {
-                                $dst[i] = pal[val.to_index()];
-                            }
+                if transparent.is_none() && palette.is_none() {
+                    $dst.copy_from_slice($src);
+                } else {
+                    for i in 0..$dst.len() {
+                        if let Some(val) = Self::apply_pixel($src[i], transparent, palette) {
+                            $dst[i] = val;
                         }
                     }
                 }
             };
             (rev: $dst:expr, $src_row:expr, $start:expr) => {
-                match (transparent, palette) {
-                    (None, None) => {
-                        for i in 0..$dst.len() {
-                            $dst[i] = $src_row[$start - i];
-                        }
+                if transparent.is_none() && palette.is_none() {
+                    for i in 0..$dst.len() {
+                        $dst[i] = $src_row[$start - i];
                     }
-                    (Some(tkey), None) => {
-                        for i in 0..$dst.len() {
-                            let val = $src_row[$start - i];
-                            if val != tkey {
-                                $dst[i] = val;
-                            }
-                        }
-                    }
-                    (None, Some(pal)) => {
-                        for i in 0..$dst.len() {
-                            $dst[i] = pal[$src_row[$start - i].to_index()];
-                        }
-                    }
-                    (Some(tkey), Some(pal)) => {
-                        for i in 0..$dst.len() {
-                            let val = $src_row[$start - i];
-                            if val != tkey {
-                                $dst[i] = pal[val.to_index()];
-                            }
+                } else {
+                    for i in 0..$dst.len() {
+                        if let Some(val) =
+                            Self::apply_pixel($src_row[$start - i], transparent, palette)
+                        {
+                            $dst[i] = val;
                         }
                     }
                 }
@@ -672,8 +584,8 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
             return;
         }
 
-        let x = f32_to_i32(x) - self.draw_offset_x;
-        let y = f32_to_i32(y) - self.draw_offset_y;
+        let x = f32_to_i32(x) - self.camera_x;
+        let y = f32_to_i32(y) - self.camera_y;
         let canvas_x = f32_to_i32(canvas_x);
         let canvas_y = f32_to_i32(canvas_y);
         let sign_x = if width < 0.0 { -1.0 } else { 1.0 };
@@ -682,7 +594,7 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         let height = f32_to_i32(height).abs();
 
         let canvas_area = RectArea::new(canvas_x, canvas_y, width as u32, height as u32)
-            .intersects(if use_canvas_clip {
+            .intersection(if use_canvas_clip {
                 canvas.clip_rect
             } else {
                 canvas.self_rect
@@ -701,12 +613,12 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         let rotate = rotate * PI / 180.0;
         let sin = -f32::sin(rotate); // Clockwise
         let cos = f32::cos(rotate);
-        let offset_x = (half_width * cos.abs() + half_height * sin.abs() + 1.0) * scale;
-        let offset_y = (half_width * sin.abs() + half_height * cos.abs() + 1.0) * scale;
-        let x1 = f32_to_i32(dst_cx - offset_x).max(self.clip_rect.left());
-        let x2 = f32_to_i32(dst_cx + offset_x).min(self.clip_rect.right());
-        let y1 = f32_to_i32(dst_cy - offset_y).max(self.clip_rect.top());
-        let y2 = f32_to_i32(dst_cy + offset_y).min(self.clip_rect.bottom());
+        let bound_x = (half_width * cos.abs() + half_height * sin.abs() + 1.0) * scale;
+        let bound_y = (half_width * sin.abs() + half_height * cos.abs() + 1.0) * scale;
+        let x1 = f32_to_i32(dst_cx - bound_x).max(self.clip_rect.left());
+        let x2 = f32_to_i32(dst_cx + bound_x).min(self.clip_rect.right());
+        let y1 = f32_to_i32(dst_cy - bound_y).max(self.clip_rect.top());
+        let y2 = f32_to_i32(dst_cy + bound_y).min(self.clip_rect.bottom());
 
         // Pre-compute per-pixel stepping
         let cos_s = cos / scale;
@@ -748,17 +660,9 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
                 (None, None) => scan!(|val, di| {
                     self.data[di] = val;
                 }),
-                (Some(tkey), None) => scan!(|val, di| {
-                    if val != tkey {
-                        self.data[di] = val;
-                    }
-                }),
-                (None, Some(pal)) => scan!(|val, di| {
-                    self.data[di] = pal[val.to_index()];
-                }),
-                (Some(tkey), Some(pal)) => scan!(|val, di| {
-                    if val != tkey {
-                        self.data[di] = pal[val.to_index()];
+                _ => scan!(|val, di| {
+                    if let Some(v) = Self::apply_pixel(val, transparent, palette) {
+                        self.data[di] = v;
                     }
                 }),
             }
@@ -807,8 +711,8 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
             y,
             width,
             height,
-            self.draw_offset_x,
-            self.draw_offset_y,
+            self.camera_x,
+            self.camera_y,
             pos,
             rot,
             fov,
@@ -823,7 +727,7 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         let y1 = proj.dst_y.max(self.clip_rect.top());
         let y2 = (proj.dst_y + proj.h - 1).min(self.clip_rect.bottom());
 
-        let (wx_step, wy_step, wz_step) = proj.x_steps();
+        let (wx_step, wy_step, wz_step) = proj.world_step_per_x();
 
         // Fast path: no dithering
         if self.alpha >= 1.0 {
@@ -859,17 +763,9 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
                 (None, None) => scan!(|val, di| {
                     self.data[di] = val;
                 }),
-                (Some(tkey), None) => scan!(|val, di| {
-                    if val != tkey {
-                        self.data[di] = val;
-                    }
-                }),
-                (None, Some(pal)) => scan!(|val, di| {
-                    self.data[di] = pal[val.to_index()];
-                }),
-                (Some(tkey), Some(pal)) => scan!(|val, di| {
-                    if val != tkey {
-                        self.data[di] = pal[val.to_index()];
+                _ => scan!(|val, di| {
+                    if let Some(v) = Self::apply_pixel(val, transparent, palette) {
+                        self.data[di] = v;
                     }
                 }),
             }
@@ -903,11 +799,21 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
 
     // Internal helpers
 
+    #[inline]
+    fn apply_pixel(src: T, transparent: Option<T>, palette: Option<&[T]>) -> Option<T> {
+        if transparent.is_some_and(|tkey| src == tkey) {
+            return None;
+        }
+        Some(palette.map_or(src, |pal| pal[src.to_index()]))
+    }
+
+    #[inline]
     pub fn read_data(&self, x: usize, y: usize) -> T {
         let width = self.width() as usize;
         self.data[width * y + x]
     }
 
+    #[inline]
     pub fn write_data(&mut self, x: usize, y: usize, value: T) {
         if self.should_write(x as i32, y as i32) {
             let width = self.width() as usize;
@@ -915,6 +821,7 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         }
     }
 
+    #[inline]
     pub(crate) fn write_data_with_clipping(&mut self, x: i32, y: i32, value: T) {
         if self.clip_rect.contains(x, y) && self.should_write(x, y) {
             let width = self.width() as usize;
@@ -922,7 +829,7 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         }
     }
 
-    fn fill_row_clipped(&mut self, x1: i32, x2: i32, y: i32, value: T) {
+    fn fill_row(&mut self, x1: i32, x2: i32, y: i32, value: T) {
         if y < self.clip_rect.top() || y > self.clip_rect.bottom() {
             return;
         }
@@ -934,6 +841,16 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         let w = self.width() as usize;
         let y = y as usize;
         self.data[w * y + left as usize..=w * y + right as usize].fill(value);
+    }
+
+    fn fill_row_with_dither(&mut self, x1: i32, x2: i32, y: i32, value: T) {
+        if self.alpha >= 1.0 {
+            self.fill_row(x1, x2, y, value);
+        } else {
+            for x in x1..=x2 {
+                self.write_data_with_clipping(x, y, value);
+            }
+        }
     }
 
     fn ellipse_params(x: i32, y: i32, width: u32, height: u32) -> (f32, f32, f32, f32) {
@@ -960,8 +877,6 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         (x1, y1, x2, y2)
     }
 
-    /// Determine whether to write a pixel based on dithering alpha.
-    /// Uses ordered dithering (4x4 Bayer matrix) for semi-transparent drawing.
     fn should_write(&self, x: i32, y: i32) -> bool {
         if self.alpha >= 1.0 {
             return true;
@@ -973,21 +888,21 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
     }
 }
 
-pub struct CopyArea {
-    pub dst_x: i32,
-    pub dst_y: i32,
-    pub src_x: i32,
-    pub src_y: i32,
-    pub sign_x: i32,
-    pub sign_y: i32,
-    pub offset_x: i32,
-    pub offset_y: i32,
-    pub width: i32,
-    pub height: i32,
+pub(crate) struct CopyArea {
+    pub(crate) dst_x: i32,
+    pub(crate) dst_y: i32,
+    pub(crate) src_x: i32,
+    pub(crate) src_y: i32,
+    pub(crate) sign_x: i32,
+    pub(crate) sign_y: i32,
+    pub(crate) offset_x: i32,
+    pub(crate) offset_y: i32,
+    pub(crate) width: i32,
+    pub(crate) height: i32,
 }
 
 impl CopyArea {
-    pub fn new(
+    pub(crate) fn new(
         dst_x: i32,
         dst_y: i32,
         dst_rect: RectArea,
@@ -1002,25 +917,19 @@ impl CopyArea {
         let width = width.abs();
         let height = height.abs();
 
-        let left_cut = max(max(src_rect.left() - src_x, dst_rect.left() - dst_x), 0);
-        let top_cut = max(max(src_rect.top() - src_y, dst_rect.top() - dst_y), 0);
-        let right_cut = max(
-            max(
-                src_x + width - 1 - src_rect.right(),
-                dst_x + width - 1 - dst_rect.right(),
-            ),
-            0,
-        );
-        let bottom_cut = max(
-            max(
-                src_y + height - 1 - src_rect.bottom(),
-                dst_y + height - 1 - dst_rect.bottom(),
-            ),
-            0,
-        );
+        let left_cut = (src_rect.left() - src_x)
+            .max(dst_rect.left() - dst_x)
+            .max(0);
+        let top_cut = (src_rect.top() - src_y).max(dst_rect.top() - dst_y).max(0);
+        let right_cut = (src_x + width - 1 - src_rect.right())
+            .max(dst_x + width - 1 - dst_rect.right())
+            .max(0);
+        let bottom_cut = (src_y + height - 1 - src_rect.bottom())
+            .max(dst_y + height - 1 - dst_rect.bottom())
+            .max(0);
 
-        let width = max(width - left_cut - right_cut, 0);
-        let height = max(height - top_cut - bottom_cut, 0);
+        let width = (width - left_cut - right_cut).max(0);
+        let height = (height - top_cut - bottom_cut).max(0);
         let (sign_x, offset_x) = if flip_x { (-1, width - 1) } else { (1, 0) };
         let (sign_y, offset_y) = if flip_y { (-1, height - 1) } else { (1, 0) };
 
@@ -1051,12 +960,12 @@ pub(crate) struct PerspectiveProjection {
     r12: f32,
     r21: f32,
     r22: f32,
-    sz: f32,
-    cz: f32,
+    sin_z: f32,
+    cos_z: f32,
     tan_hfov: f32,
     aspect: f32,
-    half_w: f32,
-    half_h: f32,
+    half_width: f32,
+    half_height: f32,
     pub(crate) dst_x: i32,
     pub(crate) dst_y: i32,
     pub(crate) w: i32,
@@ -1120,24 +1029,24 @@ impl PerspectiveProjection {
             r12: cy * sx,
             r21: sx,
             r22: cx,
+            sin_z: sz,
+            cos_z: cz,
             tan_hfov,
             aspect: w as f32 / h as f32,
-            half_w: w as f32 / 2.0,
-            half_h: h as f32 / 2.0,
+            half_width: w as f32 / 2.0,
+            half_height: h as f32 / 2.0,
             dst_x: f32_to_i32(x) - offset_x,
             dst_y: f32_to_i32(y) - offset_y,
             w,
             h,
-            sz,
-            cz,
         })
     }
 
     // Per-pixel step values (constant for all xi, yi)
-    pub(crate) fn x_steps(&self) -> (f32, f32, f32) {
-        let vx_step = self.tan_hfov * self.aspect / self.half_w;
-        let vx2_step = vx_step * self.cz;
-        let vy2_step = -vx_step * self.sz;
+    pub(crate) fn world_step_per_x(&self) -> (f32, f32, f32) {
+        let vx_step = self.tan_hfov * self.aspect / self.half_width;
+        let vx2_step = vx_step * self.cos_z;
+        let vy2_step = -vx_step * self.sin_z;
         (
             self.r00 * vx2_step + self.r01 * vy2_step, // wx_step
             self.r10 * vx2_step + self.r11 * vy2_step, // wy_step
@@ -1147,12 +1056,12 @@ impl PerspectiveProjection {
 
     // Base world-space values for a given (xi, yi)
     pub(crate) fn world_base(&self, xi: i32, yi: i32) -> (f32, f32, f32) {
-        let ndc_x = ((xi - self.dst_x) as f32 + 0.5 - self.half_w) / self.half_w;
-        let ndc_y = ((yi - self.dst_y) as f32 + 0.5 - self.half_h) / self.half_h;
+        let ndc_x = ((xi - self.dst_x) as f32 + 0.5 - self.half_width) / self.half_width;
+        let ndc_y = ((yi - self.dst_y) as f32 + 0.5 - self.half_height) / self.half_height;
         let vx = ndc_x * self.tan_hfov * self.aspect;
         let vy = -ndc_y * self.tan_hfov;
-        let vx2 = vx * self.cz + vy * self.sz;
-        let vy2 = -vx * self.sz + vy * self.cz;
+        let vx2 = vx * self.cos_z + vy * self.sin_z;
+        let vy2 = -vx * self.sin_z + vy * self.cos_z;
         (
             self.r00 * vx2 + self.r01 * vy2 - self.r02,
             self.r10 * vx2 + self.r11 * vy2 - self.r12,

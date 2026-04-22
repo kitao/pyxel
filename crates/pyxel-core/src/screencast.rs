@@ -85,10 +85,13 @@ impl Screencast {
         screen.width = width;
         screen.height = height;
 
-        // Reuse existing Vec capacity to avoid repeated allocation
-        screen.image.resize(image.len(), 0);
+        if screen.image.len() != image.len() {
+            screen.image.resize(image.len(), 0);
+        }
         screen.image.copy_from_slice(image);
-        screen.colors.resize(colors.len(), 0);
+        if screen.colors.len() != colors.len() {
+            screen.colors.resize(colors.len(), 0);
+        }
         screen.colors.copy_from_slice(colors);
 
         screen.frame_count = frame_count;
@@ -106,7 +109,7 @@ impl Screencast {
         let mut file =
             File::create(&filename).map_err(|_| format!("Failed to create file '{filename}'"))?;
 
-        let screen = self.screen(0);
+        let screen = self.screen_at(0);
         let width = screen.width;
         let height = screen.height;
         let pixel_count = (width * height) as usize;
@@ -125,7 +128,7 @@ impl Screencast {
 
         // Preallocate buffers
         let mut base_rgb = vec![0u32; pixel_count];
-        let mut new_rgb = vec![0u32; pixel_count];
+        let mut curr_rgb = vec![0u32; pixel_count];
         let mut diff_rgb = vec![0u32; pixel_count];
         let mut color_table = IndexMap::<Rgb24, u8>::with_capacity(256);
         let mut index_buf = Vec::<u8>::with_capacity(pixel_count);
@@ -133,7 +136,7 @@ impl Screencast {
         let mut palette = Vec::<u8>::with_capacity(256 * 3);
 
         // Write first frame
-        self.screen(0).write_rgb(&mut base_rgb);
+        self.screen_at(0).write_rgb(&mut base_rgb);
         let full_rect = RectArea::new(0, 0, width, height);
         Self::encode_region(
             &base_rgb,
@@ -165,9 +168,9 @@ impl Screencast {
 
         // Write subsequent frames
         for i in 1..self.num_captured_screens {
-            self.screen(i).write_rgb(&mut new_rgb);
+            self.screen_at(i).write_rgb(&mut curr_rgb);
             let diff_rect =
-                Self::compute_diff(&mut base_rgb, &new_rgb, width, height, &mut diff_rgb);
+                Self::compute_diff(&mut base_rgb, &curr_rgb, width, height, &mut diff_rgb);
 
             let overflow = Self::encode_region(
                 &diff_rgb,
@@ -184,7 +187,7 @@ impl Screencast {
             if overflow {
                 // Too many colors for diff; write as full frame
                 Self::encode_region(
-                    &new_rgb,
+                    &curr_rgb,
                     width,
                     full_rect,
                     scale,
@@ -211,7 +214,7 @@ impl Screencast {
                     })
                     .map_err(|_| save_err())?;
             } else {
-                let sr = Self::scale_rect(diff_rect, scale);
+                let scaled_rect = Self::scale_rect(diff_rect, scale);
 
                 encoder
                     .write_frame(&Frame {
@@ -219,10 +222,10 @@ impl Screencast {
                         dispose: DisposalMethod::Keep,
                         transparent: Some(0),
                         needs_user_input: false,
-                        top: sr.top() as u16,
-                        left: sr.left() as u16,
-                        width: sr.width() as u16,
-                        height: sr.height() as u16,
+                        top: scaled_rect.top() as u16,
+                        left: scaled_rect.left() as u16,
+                        width: scaled_rect.width() as u16,
+                        height: scaled_rect.height() as u16,
                         interlaced: false,
                         palette: Some(palette.clone()),
                         buffer: Cow::Borrowed(&scaled_buf),
@@ -235,18 +238,20 @@ impl Screencast {
         Ok(())
     }
 
-    fn screen(&self, index: u32) -> &Screen {
+    // Helpers
+
+    fn screen_at(&self, index: u32) -> &Screen {
         &self.screens[((self.capture_start_index + index) % self.max_screens) as usize]
     }
 
     fn screen_delay(&self, index: u32) -> u16 {
         // Last frame has no next frame to compare against
         if index + 1 >= self.num_captured_screens {
-            return (100.0 / self.fps as f32 + 0.5) as u16;
+            return (100.0 / self.fps as f32).round() as u16;
         }
 
-        let frame_count = self.screen(index).frame_count;
-        let next_frame_count = self.screen(index + 1).frame_count;
+        let frame_count = self.screen_at(index).frame_count;
+        let next_frame_count = self.screen_at(index + 1).frame_count;
 
         // Ring buffer wraparound: next screen was captured before current
         let num_elapsed_frames = if frame_count > next_frame_count {
@@ -255,12 +260,12 @@ impl Screencast {
             next_frame_count - frame_count
         };
 
-        (100.0 / self.fps as f32 * num_elapsed_frames as f32 + 0.5) as u16
+        (100.0 / self.fps as f32 * num_elapsed_frames as f32).round() as u16
     }
 
     fn compute_diff(
         base: &mut [Rgb24],
-        new: &[Rgb24],
+        next: &[Rgb24],
         width: u32,
         height: u32,
         diff: &mut [Rgb24],
@@ -275,7 +280,7 @@ impl Screencast {
         for y in 0..h {
             for x in 0..w {
                 let i = y * w + x;
-                let rgb = new[i];
+                let rgb = next[i];
                 if rgb == base[i] {
                     diff[i] = TRANSPARENT;
                 } else {
@@ -301,7 +306,6 @@ impl Screencast {
         }
     }
 
-    // Encode a region of a flat RGB image into GIF index buffer + palette.
     // Returns true if color overflow occurred (> 256 entries needed).
     #[allow(clippy::too_many_arguments)]
     fn encode_region(
@@ -326,25 +330,25 @@ impl Screencast {
             next_index = 1;
         }
 
-        let rw = rect.width() as usize;
-        let rh = rect.height() as usize;
+        let rect_w = rect.width() as usize;
+        let rect_h = rect.height() as usize;
 
         // Empty region: emit a minimal 1x1 frame
-        if rw == 0 || rh == 0 {
-            let s = scale as usize;
-            scaled_buf.resize(s * s, 0);
+        if rect_w == 0 || rect_h == 0 {
+            let scale_usize = scale as usize;
+            scaled_buf.resize(scale_usize * scale_usize, 0);
             palette.extend_from_slice(&[0, 0, 0]);
             return false;
         }
 
         // Build index buffer from the rect region
-        let src_w = src_width as usize;
+        let src_stride = src_width as usize;
         let rx = rect.left() as usize;
         let ry = rect.top() as usize;
 
-        for y in 0..rh {
-            let row = (ry + y) * src_w + rx;
-            for x in 0..rw {
+        for y in 0..rect_h {
+            let row = (ry + y) * src_stride + rx;
+            for x in 0..rect_w {
                 let rgb = src[row + x];
                 if let Some(&index) = color_table.get(&rgb) {
                     index_buf.push(index);
@@ -364,14 +368,14 @@ impl Screencast {
         if scale == 1 {
             std::mem::swap(index_buf, scaled_buf);
         } else {
-            let sw = rw * scale as usize;
-            let sh = rh * scale as usize;
-            let s = scale as usize;
-            scaled_buf.reserve(sw * sh);
-            for y in 0..sh {
-                let src_row = (y / s) * rw;
-                for x in 0..sw {
-                    scaled_buf.push(index_buf[src_row + x / s]);
+            let scale_usize = scale as usize;
+            let scaled_w = rect_w * scale_usize;
+            let scaled_h = rect_h * scale_usize;
+            scaled_buf.reserve(scaled_w * scaled_h);
+            for y in 0..scaled_h {
+                let src_row = (y / scale_usize) * rect_w;
+                for x in 0..scaled_w {
+                    scaled_buf.push(index_buf[src_row + x / scale_usize]);
                 }
             }
         }

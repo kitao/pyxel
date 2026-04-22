@@ -64,8 +64,7 @@ class App:
 
         # Explode clicked bubble
         if pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT):
-            for i in range(num_bubbles):
-                b = self.bubbles[i]
+            for i, b in enumerate(self.bubbles[:num_bubbles]):
                 dx = b.x - pyxel.mouse_x
                 dy = b.y - pyxel.mouse_y
 

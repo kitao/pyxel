@@ -5,26 +5,24 @@ from .widget import Widget
 
 
 class ToggleButton(Widget):
-    """
-    Variables:
-        is_checked_var
-
-    Events:
-        checked
-        unchecked
-    """
+    # Variables:
+    #   is_checked_var
+    #
+    # Events:
+    #   checked
+    #   unchecked
 
     def __init__(self, parent, x, y, width, height, *, is_checked, **kwargs):
         super().__init__(parent, x, y, width, height, **kwargs)
 
-        # Initialize is_checked_var
         self.new_var("is_checked_var", is_checked)
         self.add_var_event_listener(
             "is_checked_var", "change", self.__on_is_checked_change
         )
 
-        # Initialize event listeners
         self.add_event_listener("mouse_down", self.__on_mouse_down)
+
+    # Helpers
 
     @property
     def button_color(self):
@@ -34,6 +32,8 @@ class ToggleButton(Widget):
             return BUTTON_PRESSED_COLOR
         else:
             return BUTTON_ENABLED_COLOR
+
+    # Event handlers
 
     def __on_is_checked_change(self, value):
         self.trigger_event("checked" if value else "unchecked")

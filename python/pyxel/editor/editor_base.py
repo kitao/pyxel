@@ -13,21 +13,31 @@ from .widgets import Widget
 
 
 class EditorBase(Widget):
-    """
-    Variables:
-        help_message_var
+    # Variables:
+    #   help_message_var
+    #
+    # Events:
+    #   undo (data)
+    #   redo (data)
+    #   drop (filename)
 
-    Events:
-        undo (data)
-        redo (data)
-        drop (filename)
-    """
+    _TOOL_HELP = {
+        TOOL_SELECT: "SELECT:S",
+        TOOL_PENCIL: "PENCIL:P",
+        TOOL_RECTB: "RECTANGLE:R",
+        TOOL_RECT: "FILLED-RECT:SHIFT+R",
+        TOOL_CIRCB: "CIRCLE:C",
+        TOOL_CIRC: "FILLED-CIRC:SHIFT+C",
+        TOOL_BUCKET: "BUCKET:B",
+    }
 
     def __init__(self, parent):
         super().__init__(parent, 0, 0, 0, 0, is_visible=False)
         self._history_list = []
         self._history_index = 0
         self.copy_var("help_message_var", parent)
+
+    # Public methods
 
     @property
     def can_undo(self):
@@ -68,12 +78,6 @@ class EditorBase(Widget):
             "mouse_hover", self.__on_number_picker_inc_mouse_hover
         )
 
-    def __on_number_picker_dec_mouse_hover(self, x, y):
-        self.help_message_var = "-10:SHIFT+CLICK"
-
-    def __on_number_picker_inc_mouse_hover(self, x, y):
-        self.help_message_var = "+10:SHIFT+CLICK"
-
     def check_tool_button_shortcuts(self):
         if any(pyxel.btn(k) for k in (pyxel.KEY_CTRL, pyxel.KEY_ALT, pyxel.KEY_GUI)):
             return
@@ -92,15 +96,13 @@ class EditorBase(Widget):
     def add_tool_button_help(self, tool_button):
         tool_button.add_event_listener("mouse_hover", self.__on_tool_button_mouse_hover)
 
-    _TOOL_HELP = {
-        TOOL_SELECT: "SELECT:S",
-        TOOL_PENCIL: "PENCIL:P",
-        TOOL_RECTB: "RECTANGLE:R",
-        TOOL_RECT: "FILLED-RECT:SHIFT+R",
-        TOOL_CIRCB: "CIRCLE:C",
-        TOOL_CIRC: "FILLED-CIRC:SHIFT+C",
-        TOOL_BUCKET: "BUCKET:B",
-    }
+    # Event handlers
+
+    def __on_number_picker_dec_mouse_hover(self, _x, _y):
+        self.help_message_var = "-10:SHIFT+CLICK"
+
+    def __on_number_picker_inc_mouse_hover(self, _x, _y):
+        self.help_message_var = "+10:SHIFT+CLICK"
 
     def __on_tool_button_mouse_hover(self, x, y):
         value = self._tool_button.check_value(x, y)

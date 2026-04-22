@@ -1,10 +1,8 @@
 class WidgetVar:
-    """
-    Events:
-        get (value) -> value
-        set (value) -> value
-        change (value)
-    """
+    # Events:
+    #   get (value) -> value
+    #   set (value) -> value
+    #   change (value)
 
     def __init__(self, value):
         self._value = value

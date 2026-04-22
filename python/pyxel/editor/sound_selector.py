@@ -6,11 +6,9 @@ from .widgets.settings import BUTTON_ENABLED_COLOR, BUTTON_PRESSED_COLOR
 
 
 class SoundSelector(Widget):
-    """
-    Variables:
-        is_playing_var
-        help_message_var
-    """
+    # Variables:
+    #   is_playing_var
+    #   help_message_var
 
     def __init__(self, parent):
         super().__init__(parent, 11, 129, 218, 44)
@@ -29,12 +27,16 @@ class SoundSelector(Widget):
         self.add_event_listener("update", self.__on_update)
         self.add_event_listener("draw", self.__on_draw)
 
+    # Helpers
+
     def _hit_sound_button(self, x, y):
         x -= self.x + 6
         y -= self.y + 5
         if x < 0 or y < 0 or x > 205 or y > 33 or x % 13 > 10 or y % 9 > 6:
             return None
         return (y // 9) * 16 + x // 13
+
+    # Event handlers
 
     def __on_mouse_down(self, key, x, y):
         if key != pyxel.MOUSE_BUTTON_LEFT or self.is_playing_var:
@@ -72,16 +74,7 @@ class SoundSelector(Widget):
 
         self._last_preview_sound = self._preview_sound
 
-    def __on_draw(self):
-        self.draw_panel(self.x, self.y, self.width, self.height)
-        pyxel.blt(self.x + 6, self.y + 5, EDITOR_IMAGE, 0, 121, 206, 34)
-
-        for i in range(pyxel.NUM_SOUNDS):
-            if pyxel.sounds[i].notes:
-                self._draw_sound_button(i, BUTTON_ENABLED_COLOR)
-
-        if self._pressed_sound is not None:
-            self._draw_sound_button(self._pressed_sound, BUTTON_PRESSED_COLOR)
+    # Drawing
 
     def _draw_sound_button(self, snd, col):
         pyxel.pal(13, col)
@@ -97,3 +90,14 @@ class SoundSelector(Widget):
             7,
         )
         pyxel.pal()
+
+    def __on_draw(self):
+        self.draw_panel(self.x, self.y, self.width, self.height)
+        pyxel.blt(self.x + 6, self.y + 5, EDITOR_IMAGE, 0, 121, 206, 34)
+
+        for i in range(pyxel.NUM_SOUNDS):
+            if pyxel.sounds[i].notes:
+                self._draw_sound_button(i, BUTTON_ENABLED_COLOR)
+
+        if self._pressed_sound is not None:
+            self._draw_sound_button(self._pressed_sound, BUTTON_PRESSED_COLOR)

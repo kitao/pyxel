@@ -1,12 +1,10 @@
-import os
+from pathlib import Path
 
 import pyxel
 
 # Editor image
 EDITOR_IMAGE_FILE = "assets/editor_220x160.png"
-EDITOR_IMAGE = pyxel.Image.from_image(
-    os.path.join(os.path.dirname(__file__), EDITOR_IMAGE_FILE)
-)
+EDITOR_IMAGE = pyxel.Image.from_image(str(Path(__file__).parent / EDITOR_IMAGE_FILE))
 
 # App dimensions
 APP_WIDTH = 240
@@ -67,12 +65,10 @@ MUSIC_FIELD_CURSOR_SELECT_COLOR = 2
 
 
 def clamp(value, low, high):
-    """Clamp value to [low, high] range."""
     return max(min(value, high), low)
 
 
 def is_modifier_pressed():
-    """Check if any modifier key (Shift/Ctrl/Alt/Gui) is held."""
     return (
         pyxel.btn(pyxel.KEY_SHIFT)
         or pyxel.btn(pyxel.KEY_CTRL)

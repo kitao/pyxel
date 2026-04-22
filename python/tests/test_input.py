@@ -19,6 +19,7 @@ class TestInputFunctions:
         assert isinstance(result, bool)
 
     def test_btnv_returns_int(self):
+        # btnv requires an analog key (mouse position/wheel or gamepad axis)
         result = pyxel.btnv(pyxel.MOUSE_WHEEL_X)
         assert isinstance(result, int)
 

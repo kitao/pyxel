@@ -12,24 +12,26 @@
     clippy::wrong_self_convention
 )]
 
+use pyo3::prelude::*;
+
 #[macro_use]
 mod utils;
 mod pyxel_singleton;
 
-// Wrapper modules
-mod constant_wrapper;
-mod variable_wrapper;
-
-// Resource wrappers
+// Drawable wrappers
 mod font_wrapper;
 mod image_wrapper;
 mod tilemap_wrapper;
-mod tone_wrapper;
 
 // Audio wrappers
 mod channel_wrapper;
 mod music_wrapper;
 mod sound_wrapper;
+mod tone_wrapper;
+
+// Module wrappers
+mod constant_wrapper;
+mod variable_wrapper;
 
 // Function wrappers
 mod audio_wrapper;
@@ -42,20 +44,20 @@ mod system_wrapper;
 // 3D wrappers
 mod cube;
 
-use pyo3::prelude::*;
-
 #[pymodule]
 fn pyxel_binding(_py: Python, m: Bound<'_, PyModule>) -> PyResult<()> {
-    // Resource classes
+    // Drawable classes
     font_wrapper::add_font_class(&m)?;
     image_wrapper::add_image_class(&m)?;
     tilemap_wrapper::add_tilemap_class(&m)?;
+
+    // Audio classes
     channel_wrapper::add_channel_class(&m)?;
     tone_wrapper::add_tone_class(&m)?;
     sound_wrapper::add_sound_class(&m)?;
     music_wrapper::add_music_class(&m)?;
 
-    // Module-level constants and variables
+    // Module constants and variables
     constant_wrapper::add_module_constants(&m)?;
     variable_wrapper::add_module_variables(&m)?;
 

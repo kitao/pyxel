@@ -1,17 +1,13 @@
 #!/usr/bin/env python3
 
-import io
-import json
-import pathlib
+from pathlib import Path
 import random
 
 import PIL.Image
 import pyxel
-import requests
 
-ROOT_DIR = pathlib.Path(__file__).resolve().parent.parent
-CACHE_DIR = pathlib.Path("/tmp/pyxel_user_example_images")
-USER_EXAMPLES_JSON = ROOT_DIR / "scripts/user-examples.json"
+ROOT_DIR = Path(__file__).resolve().parent.parent
+USER_EXAMPLES_IMAGES_DIR = ROOT_DIR.parent / "pyxel-user-examples/images"
 LOGO_IMAGE_FILE = ROOT_DIR / "examples/assets/pyxel_logo_38x16.png"
 
 THANKS_IMAGE_FILE = ROOT_DIR / "docs/images/pyxel_thanks.png"
@@ -102,44 +98,22 @@ MESSAGE_PAD_WIDTH = MESSAGE_WIDTH + MESSAGE_PAD * 2
 MESSAGE_PAD_HEIGHT = MESSAGE_HEIGHT + MESSAGE_PAD * 2
 MESSAGE_PAD_X = MESSAGE_X - MESSAGE_PAD
 MESSAGE_PAD_Y = MESSAGE_Y - MESSAGE_PAD
+
 DRAW_LAYOUT_GUIDES = False
 
 
-def download_example_image(url, example_id, frame):
-    CACHE_DIR.mkdir(parents=True, exist_ok=True)
-
-    cache_name = f"{example_id}_{frame}.png"
-    cache_file = CACHE_DIR / cache_name
-
-    if cache_file.exists():
-        return PIL.Image.open(cache_file)
-
-    print(f"download {url} ({cache_name})")
-
-    response = requests.get(url, timeout=30)
-    if response.status_code != 200:
-        raise RuntimeError(f"HTTP error: {response.status_code}")
-
-    gif = PIL.Image.open(io.BytesIO(response.content))
+def load_example_image(example_id, frame):
+    gif_file = USER_EXAMPLES_IMAGES_DIR / f"{example_id}.gif"
+    gif = PIL.Image.open(gif_file)
     gif.seek(frame - 1)
-    image = gif.copy()
-
-    image.save(cache_file)
-
-    return image
+    return gif.copy()
 
 
 def draw_example_images(thanks_image):
-    # Load the user examples json
-    with USER_EXAMPLES_JSON.open("r", encoding="utf-8") as f:
-        user_examples = json.load(f)
-    entries_by_id = {entry["id"]: entry for entry in user_examples["entries"]}
-
-    # Download and resize example images
+    # Load and resize example images
     example_images = []
     for example_id, frame in EXAMPLE_IMAGES:
-        url = entries_by_id[example_id]["image"]
-        image = download_example_image(url, example_id, frame)
+        image = load_example_image(example_id, frame)
         image = image.resize(
             (EXAMPLE_WIDTH, int(EXAMPLE_WIDTH * image.height / image.width))
         )
@@ -229,12 +203,11 @@ def draw_message_image(thanks_image):
 
     message_image.putdata(pixels)
 
-    # Enlarge the message image
     message_image = message_image.resize(
         (MESSAGE_WIDTH, MESSAGE_HEIGHT), resample=PIL.Image.NEAREST
     )
 
-    # Draw a message padding
+    # Draw a black frame around the message as padding
     message_pad_image = PIL.Image.new(
         "RGB",
         (
@@ -244,8 +217,6 @@ def draw_message_image(thanks_image):
         (0, 0, 0),
     )
     thanks_image.paste(message_pad_image, (MESSAGE_PAD_X, MESSAGE_PAD_Y))
-
-    # Draw the message on the padding
     thanks_image.paste(message_image, (MESSAGE_X, MESSAGE_Y))
 
 

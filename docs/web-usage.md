@@ -13,7 +13,7 @@ There are four ways to use Pyxel for Web.
 | Pyxel Code Maker | An online development environment for writing and running code in the browser |
 | Pyxel Web Launcher | Run a GitHub repository in the browser by specifying its URL |
 | app2html Command | Convert a Pyxel application file (.pyxapp) to an HTML file |
-| HTML Custom Tags | Add custom HTML tags to run Pyxel apps on any HTML page |
+| HTML Custom Elements | Add HTML custom elements to run Pyxel apps on any HTML page |
 
 ## Pyxel Code Maker
 
@@ -93,9 +93,9 @@ The Pyxel version is pinned to the one used at conversion time, so future update
 
 The virtual gamepad is enabled by default and automatically displayed on touch devices. To disable it, remove `gamepad: "enabled"` from the generated HTML.
 
-## HTML Custom Tags
+## HTML Custom Elements
 
-By adding custom tags (HTML custom elements) provided by Pyxel to an HTML file, you can run Pyxel apps on any HTML page.
+By adding HTML custom elements provided by Pyxel to an HTML file, you can run Pyxel apps on any HTML page.
 
 ### Setup
 
@@ -111,7 +111,7 @@ You can pin the Pyxel version by specifying a version number after `@`.
 <script src="https://cdn.jsdelivr.net/gh/kitao/pyxel@v2.8.7/wasm/pyxel.js"></script>
 ```
 
-Loading this script makes three custom tags available, corresponding to Pyxel's `run`, `play`, and `edit` commands: `pyxel-run`, `pyxel-play`, and `pyxel-edit`.
+Loading this script makes three HTML custom elements available, corresponding to Pyxel's `run`, `play`, and `edit` commands: `pyxel-run`, `pyxel-play`, and `pyxel-edit`.
 
 ### pyxel-run
 
@@ -176,7 +176,7 @@ By default, the Pyxel screen is displayed across the entire page. Place a `<div>
 
 ### Running in a Local Environment
 
-When using custom tags that load external files, a server is required because browser security restrictions prevent opening local files directly.
+When using HTML custom elements that load external files, a server is required because browser security restrictions prevent opening local files directly.
 
 If you have a Python environment, you can start a simple server with the following command.
 

@@ -10,12 +10,12 @@ An optional **palette file** (`.pyxpal`) can accompany the resource file to defi
 
 ## File Structure
 
-```
+```text
 example.pyxres (ZIP archive)
 └── pyxel_resource.toml
 ```
 
-```
+```text
 example.pyxpal (optional, same directory)
 ```
 
@@ -45,7 +45,7 @@ Pyxel currently writes `format_version = 1` for maximum backward compatibility. 
 
 ## Images
 
-Up to **3 image banks**, each **256×256 pixels**. Each pixel is a palette color index (`u8`, 0–15 for the default palette, up to 255 with extended palettes).
+Up to **3 image banks**, each **256×256 pixels**. Each pixel is a palette color index (`u8`, 0–15 for the default palette; 0–255 for the extended palette of up to 256 colors).
 
 ```toml
 [[images]]
@@ -120,7 +120,9 @@ The `tones`, `volumes`, and `effects` arrays may be shorter than `notes` due to 
 
 **Note mapping:** Notes are encoded as `base + octave × 12`, where C=0, D=2, E=4, F=5, G=7, A=9, B=11, and octave ranges from 0 to 4. For example, C0=0, A4=57, B4=59.
 
-## Music
+**MML-defined sounds:** Sounds defined with `Sound.mml()` cannot be saved to `.pyxres`; only the `notes`, `tones`, `volumes`, `effects`, and `speed` fields are persisted. To preserve MML-based sounds, keep the MML strings in your source code and call `sound.mml()` at runtime.
+
+## Musics
 
 Up to **8 music tracks**. Each track arranges sounds across up to **4 channels** for sequential playback.
 
@@ -141,7 +143,7 @@ Trailing empty channels are omitted when saving.
 
 An optional text file with one RGB color per line in 6-digit hexadecimal format. The file uses the same base name as the `.pyxres` file (e.g., `sample.pyxres` → `sample.pyxpal`).
 
-```
+```text
 000000
 2b335f
 7e2072

@@ -4,6 +4,7 @@ import shutil
 from pathlib import Path
 
 import pytest
+
 import pyxel
 
 REFERENCES_DIR = Path(__file__).parent / "references"
@@ -11,19 +12,16 @@ EXAMPLES_DIR = Path(__file__).parent.parent / "pyxel" / "examples"
 EXAMPLE_REFS_DIR = REFERENCES_DIR / "examples"
 
 
-def _reinit_pyxel():
-    """Reset Pyxel state so init() can be called again."""
+def _reset_pyxel():
     pyxel._reset_statics()
 
 
 def _restore_pyxel():
-    """Restore Pyxel to conftest's default session state."""
     pyxel._reset_statics()
     pyxel.init(160, 120, headless=True)
 
 
 def run_example(script_path):
-    """Execute example script, capturing update/draw callbacks."""
     captured = {}
     original_init = pyxel.init
     original_run = pyxel.run
@@ -62,13 +60,11 @@ def run_example(script_path):
 
 
 class _FlipCapture(Exception):
-    """Raised to stop a while+flip() loop at the target frame."""
-
+    # Raised to stop a while+flip() loop at the target frame.
     pass
 
 
 def run_flip_example(script_path, plan, tmp_dir):
-    """Handle while+flip() examples by patching flip() to capture at plan frames."""
     original_init = pyxel.init
     original_flip = pyxel.flip
     frame_count = [0]
@@ -111,7 +107,6 @@ def run_flip_example(script_path, plan, tmp_dir):
 
 
 def capture_frames(captured, plan, tmp_dir):
-    """Execute capture plan, returning list of (frame, png_path) pairs."""
     results = []
     current_frame = 0
     for step in plan:
@@ -139,7 +134,6 @@ def capture_frames(captured, plan, tmp_dir):
 
 
 def compare_or_update_all(name, results, refs_dir, update_references):
-    """Compare all captured frames to references, or update them."""
     updated = []
     failures = []
     for frame, actual_path in results:
@@ -172,8 +166,12 @@ def compare_or_update_all(name, results, refs_dir, update_references):
         pytest.fail("\n".join(failures))
 
 
-# Capture plans — frame numbers and optional input injection
+# Capture plans — frame numbers and optional input injection.
+# Examples are grouped by execution mode: pyxel.run() without assets,
+# pyxel.run() with asset loading, pyxel.show()-based (no update/draw loop),
+# and while+flip() loop.
 CAPTURE_PLANS = {
+    # pyxel.run() without asset loading
     "01_hello_pyxel": [{"frame": 8}],
     "04_sound_api": [{"frame": 1}],
     "06_click_game": [
@@ -188,7 +186,7 @@ CAPTURE_PLANS = {
     ],
     "12_perlin_noise": [{"frame": 1}, {"frame": 40}],
     "14_synthesizer": [{"frame": 1}],
-    # Group 2: pyxel.run() with asset loading
+    # pyxel.run() with asset loading
     "02_jump_game": [{"frame": 10}],
     "10_platformer": [
         {"frame": 1},
@@ -209,16 +207,16 @@ CAPTURE_PLANS = {
         {"frame": 1},
         {"frame": 20, "press": [pyxel.KEY_RIGHT, pyxel.KEY_W]},
     ],
-    # Group 3: pyxel.show()-based (no update/draw loop)
+    # pyxel.show()-based (no update/draw loop)
     "05_color_palette": [{"frame": 0}],
     "13_custom_font": [{"frame": 0}],
     "17_app_launcher": [{"frame": 1}],
-    # Group 5: draw API with clipping test (SPACE toggles clip)
+    # pyxel.run() with SPACE toggling clip
     "03_draw_api": [
         {"frame": 1},
         {"frame": 155, "press": [pyxel.KEY_SPACE]},
     ],
-    # Group 4: while+flip loop
+    # while+flip() loop
     "99_flip_animation": [{"frame": 1}, {"frame": 30}],
 }
 
@@ -233,7 +231,7 @@ class TestExamples:
         script = EXAMPLES_DIR / f"{name}.py"
         assert script.exists(), f"Example not found: {script}"
 
-        _reinit_pyxel()
+        _reset_pyxel()
         try:
             if name in FLIP_EXAMPLES:
                 plan = CAPTURE_PLANS[name]

@@ -14,7 +14,7 @@ from .settings import (
 from .widgets import Widget
 from .widgets.settings import WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME
 
-# Table-driven key dispatch for each field row
+# Shortcut keys that insert a value into each field row (indexed by cursor_y)
 _FIELD_KEY_TABLES = {
     1: [pyxel.KEY_T, pyxel.KEY_S, pyxel.KEY_P, pyxel.KEY_N],
     2: [
@@ -34,11 +34,9 @@ _FIELD_CHARS = ("TSPN", "01234567", "NSVFHQ")
 
 
 class SoundField(Widget):
-    """
-    Variables:
-        is_playing_var
-        help_message_var
-    """
+    # Variables:
+    #   is_playing_var
+    #   help_message_var
 
     def __init__(self, parent):
         super().__init__(parent, 30, 149, 193, 23)
@@ -54,10 +52,14 @@ class SoundField(Widget):
         self.add_event_listener("update", self.__on_update)
         self.add_event_listener("draw", self.__on_draw)
 
+    # Helpers
+
     def _screen_to_view(self, x, y):
         x = clamp((x - self.x - 1) // 4, 0, MAX_SOUND_LENGTH - 1)
         y = clamp((y - self.y) // 8, 0, 2)
         return x, y
+
+    # Event handlers
 
     def __on_mouse_down(self, key, x, y):
         if key != pyxel.MOUSE_BUTTON_LEFT or self.is_playing_var:
@@ -73,7 +75,6 @@ class SoundField(Widget):
         if cursor_y < 1 or self.is_playing_var or is_modifier_pressed():
             return
 
-        # Table-driven key dispatch
         key_table = _FIELD_KEY_TABLES.get(cursor_y)
         if key_table is None:
             return

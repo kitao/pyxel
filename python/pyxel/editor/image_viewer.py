@@ -3,24 +3,21 @@ import pyxel
 from .settings import PANEL_FOCUS_BORDER_COLOR, PANEL_FOCUS_COLOR, clamp
 from .widgets import ScrollBar, Widget
 
-# Grid size in pixels per tile and max tile index (256 / GRID_SIZE - 1)
 GRID_SIZE = 8
-MAX_TILE_INDEX = 31
+MAX_TILE_INDEX = 31  # 256 / GRID_SIZE - 1
 
 
 class ImageViewer(Widget):
-    def __init__(self, parent):
-        """
-        Variables:
-            image_index_var
-            tilemap_index_var
-            focus_x_var
-            focus_y_var
-            viewport_x_var
-            viewport_y_var
-            help_message_var
-        """
+    # Variables:
+    #   image_index_var
+    #   tilemap_index_var
+    #   focus_x_var
+    #   focus_y_var
+    #   viewport_x_var
+    #   viewport_y_var
+    #   help_message_var
 
+    def __init__(self, parent):
         if hasattr(parent, "tilemap_index_var"):
             y = 80
             height = 66
@@ -41,20 +38,16 @@ class ImageViewer(Widget):
         self.copy_var("image_index_var", parent)
         self.copy_var("help_message_var", parent)
 
-        # Initialize focus_x_var
         self.new_var("focus_x_var", 0)
         self.add_var_event_listener("focus_x_var", "set", self.__on_focus_x_set)
         self.add_var_event_listener("focus_x_var", "change", self.__on_focus_x_change)
 
-        # Initialize focus_y_var
         self.new_var("focus_y_var", 0)
         self.add_var_event_listener("focus_y_var", "set", self.__on_focus_y_set)
         self.add_var_event_listener("focus_y_var", "change", self.__on_focus_y_change)
 
-        # Initialize focus_w_var
         self.new_var("focus_w_var", 1 if self._is_tilemap_mode else 2)
 
-        # Initialize focus_h_var
         self.new_var("focus_h_var", 1 if self._is_tilemap_mode else 2)
 
         # Initialize horizontal scroll bar
@@ -87,6 +80,8 @@ class ImageViewer(Widget):
         self.add_event_listener("mouse_hover", self.__on_mouse_hover)
         self.add_event_listener("draw", self.__on_draw)
 
+    # Helpers
+
     def _screen_to_focus(self, x, y):
         x = clamp(
             self.viewport_x_var + (x - self.x - 1) // GRID_SIZE, 0, MAX_TILE_INDEX
@@ -95,6 +90,8 @@ class ImageViewer(Widget):
             self.viewport_y_var + (y - self.y - 1) // GRID_SIZE, 0, MAX_TILE_INDEX
         )
         return x, y
+
+    # Event handlers
 
     def __on_focus_x_set(self, value):
         return clamp(value, 0, MAX_TILE_INDEX + 1 - self.focus_w_var)

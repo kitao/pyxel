@@ -6,30 +6,27 @@ from .image_viewer import ImageViewer
 from .settings import EDITOR_IMAGE, TEXT_LABEL_COLOR, TOOL_PENCIL
 from .widgets import ColorPicker, NumberPicker, RadioButton
 
-_COLOR_BUTTONS = tuple(pyxel.KEY_1 + i for i in range(8))
+_COLOR_SHORTCUT_KEYS = tuple(pyxel.KEY_1 + i for i in range(8))
 
 
 class ImageEditor(EditorBase):
-    """
-    Variables:
-        color_var
-        tool_var
-        image_index_var
-        canvas_var
-        focus_x_var
-        focus_y_var
-        help_message_var
-
-    Events:
-        undo (data)
-        redo (data)
-        drop (filename)
-    """
+    # Variables:
+    #   color_var
+    #   tool_var
+    #   image_index_var
+    #   canvas_var
+    #   focus_x_var
+    #   focus_y_var
+    #   help_message_var
+    #
+    # Events:
+    #   undo (data)
+    #   redo (data)
+    #   drop (filename)
 
     def __init__(self, parent):
         super().__init__(parent)
 
-        # Initialize canvas_var
         self.new_var("canvas_var", None)
         self.add_var_event_listener("canvas_var", "get", self.__on_canvas_get)
 
@@ -85,8 +82,9 @@ class ImageEditor(EditorBase):
         self.add_event_listener("update", self.__on_update)
         self.add_event_listener("draw", self.__on_draw)
 
+    # Helpers
+
     def _restore_state(self, data, prefix):
-        """Shared undo/redo logic for restoring image state."""
         self.image_index_var = data["image_index"]
         if f"{prefix}_data" in data:
             pyxel.images[self.image_index_var].set_slice(0, 0, data[f"{prefix}_data"])
@@ -96,13 +94,15 @@ class ImageEditor(EditorBase):
                 self.focus_x_var * 8, self.focus_y_var * 8, data[f"{prefix}_canvas"]
             )
 
+    # Event handlers
+
     def __on_canvas_get(self, value):
         return pyxel.images[self.image_index_var]
 
-    def __on_color_picker_mouse_hover(self, x, y):
+    def __on_color_picker_mouse_hover(self, _x, _y):
         self.help_message_var = "COLOR:1-8/SHIFT+1-8"
 
-    def __on_image_picker_mouse_hover(self, x, y):
+    def __on_image_picker_mouse_hover(self, _x, _y):
         self.help_message_var = "COPY_ALL:CTRL+SHIFT+C/X/V"
 
     def __on_undo(self, data):
@@ -121,16 +121,17 @@ class ImageEditor(EditorBase):
             )
         except (OSError, ValueError) as e:
             print(f"Failed to load image: {e}")
-        pyxel.colors[:] = colors
+        finally:
+            pyxel.colors[:] = colors
 
     def __on_update(self):
         self.check_tool_button_shortcuts()
 
         # Check color shortcuts
         if not pyxel.btn(pyxel.KEY_ALT):
-            for btn in _COLOR_BUTTONS:
-                if pyxel.btnp(btn):
-                    col = btn - pyxel.KEY_1
+            for key in _COLOR_SHORTCUT_KEYS:
+                if pyxel.btnp(key):
+                    col = key - pyxel.KEY_1
                     if pyxel.btn(pyxel.KEY_SHIFT):
                         col += 8
                     self.color_var = col

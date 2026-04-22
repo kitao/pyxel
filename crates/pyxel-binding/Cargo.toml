@@ -1,18 +1,21 @@
 [package]
 name = "pyxel-binding"
-version = "2.9.0"
-authors = ["Takashi Kitao <takashi.kitao@gmail.com>"]
-edition = "2021"
-license = "MIT"
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+license.workspace = true
 
 [lib]
 name = "pyxel_binding"
 crate-type = ["cdylib"]
 
 [dependencies]
+# abi3-py310 ships a single wheel for Python 3.10+; multiple-pymethods
+# lets binding modules split #[pymethods] across files
 pyo3 = { version = "0.28", features = ["abi3-py310", "extension-module", "multiple-pymethods"] }
 pyxel-core = { path = "../pyxel-core" }
 
+# sysinfo has no Emscripten target; exclude from WASM builds
 [target.'cfg(not(target_os = "emscripten"))'.dependencies]
 sysinfo = "0.38"
 

@@ -5,20 +5,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Pyxel MML Studio</title>
     <link rel="icon" href="../../wasm/images/pyxel_icon_64x64.ico" />
-    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../styles.css" />
     <script src="https://cdn.jsdelivr.net/gh/kitao/pyxel/wasm/pyxel.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/lz-string@1.4.4/libs/lz-string.min.js"></script>
+    <script src="../shared.js"></script>
   </head>
-  <body class="page h-full">
+  <body class="h-full page">
     <main class="mx-auto p-6 max-w-4xl">
       <h1 class="mb-2 font-semibold text-2xl tracking-tight">
         Pyxel MML Studio
       </h1>
       <p class="mt-2 mb-4 text-gray-300 text-sm">
         Music Macro Language (MML) editor for
-        <a class="link" href="https://github.com/kitao/pyxel" target="_blank" rel="noopener noreferrer">Pyxel</a>, a retro
-        game engine for Python.
-        (<a class="link" href="manual.html" target="_blank" rel="noopener noreferrer">Manual</a>)
+        <a
+          class="link"
+          href="https://github.com/kitao/pyxel"
+          target="_blank"
+          rel="noopener noreferrer"
+          >Pyxel</a
+        >, a retro game engine for Python. (<a
+          class="link"
+          href="manual.html"
+          target="_blank"
+          rel="noopener noreferrer"
+          >Manual</a
+        >)
       </p>
 
       <div
@@ -76,7 +87,7 @@
             <a
               target="_blank"
               rel="noopener noreferrer"
-              href="https://kitao.github.io/pyxel/web/mml-studio/?mml=C4RgDGAEACKQ9gFkgR3FANiAbJAbiAExQAmiAZgBwmUCml5A5lQHS2oCcpiaEJtTAIaVGggHwBjahIA8kKgCMAtJUGFJAagGNIw5vSbzaNKscgyFlTSQkb+t-uUHLVlSIwYjELGR9NuULkgSQgBuUAgYOHgAZlR0SAw3AkjyREEhQWQ05XTEMUZEOVyxWkQyQshlEgslSRlxEgz3O1oGsXEJcnYbC0ZjW19OKHIwiKhoKFj4yKT8SlJCCSLcgDIqpURCtNLkMlsVzaz3fOWZHOQywX0Seo3rxFXGZSyxYeCwoA"
+              href="https://kitao.github.io/pyxel/web/mml-studio/?mml=VY9LagNBDESvopU3TZuZSREU0oio9dsEgsH4_kcJbWcWWZUQpaqn-75t9LXTD-i2xu_9nR77sZEj2Tk4K_kadPtYq2XxyFIuFWO3Qcmzsx5iLbJIuXLdUIZzcjiNyWLNrXnEY09dbqbi5MJ1LA1-pR-f9xPm7Q-G6bE0oVmqoMTsUEhh0OyQgKNAs_uYXWyouCZV8xgqKpZBbmNWuLVRz5o8a7Z_NbwADGN2XFZ0IVc8Oaw9twoqiGEkJiigleFii0MLl5pdIecjvw"
               class="mx-0.5 link"
               >A</a
             >
@@ -84,7 +95,7 @@
             <a
               target="_blank"
               rel="noopener noreferrer"
-              href="https://kitao.github.io/pyxel/web/mml-studio/?mml=CoJgjAbAAmUKIDkBqYDeYQHYA0HuZAF8B5AVgBkMACARwgAYAzAFgHNnGIAyAEy4B469AEYBaZgD4qAY2Y9m07vwCGXIe1oBOCIzBdmVVt1VjuE6b24BTUV1oMW7Try6KBYrlKGy3fN-w92OxptMTAqACdJIRZYgxi2Dm4+QQYxSRk5BSVVdXjtXX1DYy5TTwsea1t7JkTnPyUPLwYfZNdG2yCtCHSghKi+h2YBrkYAai5WTyoAbSF5finxya4AXRBuiXkrBTGNqPlXMZzRseY7YRAAOijIyWkz924pq2eL863zh-OdgSplMBXO6MLhWUbTOYtZj8EFgkHrTayBaXKRRWRPFa-f7XW5RCQSbzQozgwlURxmaQYAR5ZwWMlvITmZghHQKaE1OJxADcoEgUBA8GQaAgzGwIFFAGYiFRBUgQOh6PQxaLmPRCDLEEgJQqleLsAwSMxyAZZeEWTNlCBWCAxFaQKsJZFGLKrWoHP9bDFcu7Td1yAAOZRsbgsgE28QadLqHriFlhEDKEPaVjUZwslMJ0QhhhBqgE7Q8UQYRSpESx7SGDCJ9LxxNu+gaFkBsPEoRhuMRgxRhhGGtFhNJiAZqjpF02c7zYYGcf1+RRW6yiXEZgAG3iaR4wh4I+EXFUUzJeyuam0Ki8YEVET4y13hmuJ4gAVRu-3dmWYPmESoH4YPAiX8XZc11mNsWWkBFlFfEFv3vFl+FNVhUSmVQJDBbobGuUt0m6W0riEbDQ3DDY22Ga4eXAaB6GICVyGI7QZgCUQJEYaRGAdKhGLALZRGkboGLEZjWPYrDxAiEAWBHUSOGYdJmnoYCrGEJ9hHQpTlAkZRZh4cYz3GBErFYJ9WG-QzIKoHh8RmB5qTSQRtGUdYIi8bRgJ4ZQz00tyz2MqyrEWVCESs65wI2RhxNEEB+jI3loCXTBjVNVACFwEAUvVF1UAYFK0tmU0ZhmCI2JAQroE1cSMAiU02OYBE8v4fhpHxNiwFIJ0dGoOqGqa1Z-VmRh-yKslCq-RhOBdXRiqqoA"
+              href="https://kitao.github.io/pyxel/web/mml-studio/?mml=vVQ9bxsxDP0rnLicZZxoRolRQcjSzaiXoMvhBkl31JLltAb57wWls-uke2HAEmm-x68nv5F1r_b156_f9sPS88HS4Zk-r08XS7C5UbiwOFzQb25MhgNkXjg79BE3NxaG7ezEIkNxGDEZhyHj4nA1-AWvkGQwqDMrwd1VGJUkGQuVQ8Po539n58LYIPXxhjJgwQDT5saF_W7PpJiw8Mp5IKi8MOahlSUDIyQ6VtZu8sDok8OCq35BYgwtlnFl9BDtESoLrih7ksy-m3sObdgnClA537kYId5ShA4qDgXbFYSLzsFSG1ubQEYQRW5uDJl1aJzZw33Ywj_eVAjUheD4QHw40SeoTR92HNXBY3ecbg43fl75ws1ptdwpUqFkqNB8gioN3bIKRNPO2K074vIStdzt7KKltgVIhrVu3UnXBcUWUCxpF_0WjVOmyBC2s1uMpex2lWxnBxqhBDf0TSyXl2ipdKil2-IfU37Nlwy3JlbTNLFwZXi419776crvTbBpSQukhFGXLQMdlcfHAJsdx7qoehJC2f0pQL3H4tpIK-xnfWBWYcTt7PJMEDVeENadpE2yBKgFI4a1qXk1dNyH0cVNx79W1AVBm12lY9_7eD1dmt4mn0yQLPMJfDI2LCZ_d3emStLGVlm4vczNje8Ma_IppFZD8jFEmBYZfAwyzARr8SkUPWKEJYQpD_1ley1rphoU-M6wxIZtR4Epr76EdSaYMh11BkJiqD_RWwen6_OFu3qfSf_F7F29brzZUwuYpiozVXHtZ7FUm1tmnqkLc_I-hyCzfYIqTuw39wtMUpUDpEoF-YfpDw"
               class="mx-0.5 link"
             >
               B
@@ -94,7 +105,7 @@
 
         <!-- Screen -->
         <div
-          class="flex flex-grow items-center mt-2 sm:mt-0 p-0 w-full sm:w-auto h-24 bg-gray-800 shadow-sm border border-gray-700"
+          class="flex flex-grow items-center bg-gray-800 shadow-sm mt-2 sm:mt-0 p-0 border border-gray-700 w-full sm:w-auto h-24"
         >
           <iframe
             id="runtime-screen"
@@ -238,13 +249,13 @@
       </div>
 
       <div class="flex-grow mt-2">
-        <label for="url" class="block text-xl">URL</label>
+        <span class="block text-xl">URL</span>
         <!-- Share URL -->
         <a
           id="share-url"
           target="_blank"
           rel="noopener noreferrer"
-          class="mt-2 flex items-center outline-none min-h-[2.25rem] font-mono text-indigo-400 hover:text-indigo-300 break-all select-all input"
+          class="flex items-center mt-2 outline-none min-h-[2.25rem] font-mono text-indigo-400 hover:text-indigo-300 break-all select-all input"
           style="display: block"
         ></a>
 
@@ -259,13 +270,57 @@
       const shareUrl = document.getElementById("share-url");
       const qrCodeImage = document.getElementById("qr-code-image");
 
+      // --- URL compression helpers ---
+      // Base conversion (uint8ToBase64, base64ToUint8) provided by shared.js
+      function b64urlEncode(bytes) {
+        return uint8ToBase64(bytes)
+          .replace(/\+/g, "-")
+          .replace(/\//g, "_")
+          .replace(/=+$/, "");
+      }
+
+      function b64urlDecode(s) {
+        return base64ToUint8(s.replace(/-/g, "+").replace(/_/g, "/"));
+      }
+
+      async function compressDeflateRaw(text) {
+        const stream = new Blob([text])
+          .stream()
+          .pipeThrough(new CompressionStream("deflate-raw"));
+        const buf = await new Response(stream).arrayBuffer();
+        return new Uint8Array(buf);
+      }
+
+      async function decompressDeflateRaw(bytes) {
+        const stream = new Blob([bytes])
+          .stream()
+          .pipeThrough(new DecompressionStream("deflate-raw"));
+        return await new Response(stream).text();
+      }
+
+      // Encoder: always produces new format (deflate-raw + base64url).
+      async function encodeMmlToUrl(mml) {
+        const compressed = await compressDeflateRaw(mml);
+        return b64urlEncode(compressed);
+      }
+
+      // Decoder: detect legacy lz-string by presence of characters it uses
+      // that base64url does not: `+`, `$`, and ` ` (the `+` in a URL query
+      // becomes a space after URLSearchParams decoding).
+      async function decodeMmlFromUrl(value) {
+        if (value.includes("+") || value.includes("$") || value.includes(" ")) {
+          return LZString.decompressFromEncodedURIComponent(value);
+        }
+        return await decompressDeflateRaw(b64urlDecode(value));
+      }
+
       function setButtonStyle(button, isActive) {
         button.classList.toggle("active", isActive);
       }
 
       function handleButtonPress(button) {
         const action = button.dataset.action;
-        const varName = "js_" + action;
+        const varName = `js_${action}`;
         let isActive;
 
         if (action === "play" || action === "stop") {
@@ -288,21 +343,24 @@
       }
 
       function handleMmlInput(textarea) {
-        runtimeScreen.contentWindow["js_" + textarea.id + "_mml"] =
-          textarea.value;
+        runtimeScreen.contentWindow[`js_${textarea.id}_mml`] = textarea.value;
         updateUrl();
       }
 
-      function updateUrl() {
+      async function updateUrl() {
         let mmlStr = "";
         for (let i = 1; i <= 4; i++) {
-          const t = document.getElementById(`ch${i}`);
-          mmlStr += (i > 1 ? ";" : "") + t.value;
+          const textarea = document.getElementById(`ch${i}`);
+          const ch = textarea.value
+            .trim()
+            .replace(/ +/g, " ")
+            .replace(/\n+/g, "\n");
+          mmlStr += (i > 1 ? ";" : "") + ch;
         }
 
         let url = location.origin + location.pathname;
         if (!/^[\s;]*$/.test(mmlStr)) {
-          url += "?mml=" + LZString.compressToEncodedURIComponent(mmlStr);
+          url += "?mml=" + (await encodeMmlToUrl(mmlStr));
         }
 
         shareUrl.textContent = shareUrl.href = url;
@@ -320,7 +378,7 @@
         runtimeScreen.contentWindow?.pyxelContext?.resolveInput?.();
       }
 
-      window.addEventListener("DOMContentLoaded", () => {
+      window.addEventListener("DOMContentLoaded", async () => {
         // Bind inline-style handlers via data attributes
         document.querySelectorAll("[data-click]").forEach((el) => {
           el.addEventListener("click", () => handleButtonPress(el));
@@ -335,26 +393,26 @@
         });
 
         // Keyboard shortcuts
-        window.addEventListener("keydown", (e) => {
+        window.addEventListener("keydown", (event) => {
           resolvePyxelInput();
-          if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+          if ((event.ctrlKey || event.metaKey) && event.key === "Enter") {
             const playButton = document.querySelector(
               'button[data-action="play"]',
             );
             if (playButton && !playButton.disabled) {
-              e.preventDefault();
+              event.preventDefault();
               handleButtonPress(playButton);
             }
-          } else if (e.key === "Escape") {
+          } else if (event.key === "Escape") {
             const stopButton = document.querySelector(
               'button[data-action="stop"]',
             );
             if (stopButton && !stopButton.disabled) {
-              e.preventDefault();
+              event.preventDefault();
               handleButtonPress(stopButton);
             }
-          } else if ((e.ctrlKey || e.metaKey) && e.key === "l") {
-            e.preventDefault();
+          } else if ((event.ctrlKey || event.metaKey) && event.key === "l") {
+            event.preventDefault();
             const loopButton = document.querySelector(
               'button[data-action="loop"]',
             );
@@ -367,12 +425,12 @@
         // Load MML from URL
         const mmlParam = new URL(document.location).searchParams.get("mml");
         if (mmlParam) {
-          const raw = LZString.decompressFromEncodedURIComponent(mmlParam);
+          const raw = await decodeMmlFromUrl(mmlParam);
           const mmlList = raw ? raw.split(";", 4) : [];
           for (let i = 1; i <= 4; i++) {
-            const t = document.getElementById(`ch${i}`);
-            t.value = mmlList[i - 1] || "";
-            handleMmlInput(t);
+            const textarea = document.getElementById(`ch${i}`);
+            textarea.value = mmlList[i - 1] || "";
+            handleMmlInput(textarea);
           }
         }
 
@@ -381,16 +439,16 @@
         // Set initial button states
         runtimeScreen.addEventListener("load", () => {
           document.querySelectorAll("button[data-action]").forEach((button) => {
-            const varName = "js_" + button.dataset.action;
+            const varName = `js_${button.dataset.action}`;
             runtimeScreen.contentWindow[varName] =
               button.dataset.state === "true";
           });
         });
 
         // Enable buttons when ready
-        let _watchRetries = 0;
-        (function watch() {
-          if (runtimeScreen.contentWindow?.pyxelContext?.resolveInput) {
+        waitForPyxelReady(
+          () => runtimeScreen.contentWindow?.pyxelContext?.resolveInput,
+          () => {
             document
               .querySelectorAll(
                 'button[data-action="play"],button[data-action="stop"],button[data-action="loop"]',
@@ -398,10 +456,8 @@
               .forEach((button) => {
                 button.disabled = false;
               });
-          } else if (++_watchRetries < 300) {
-            setTimeout(watch, 100);
-          }
-        })();
+          },
+        );
       });
     </script>
   </body>

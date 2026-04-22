@@ -1,11 +1,11 @@
 import os
-import pathlib
+from pathlib import Path
 
 import pyxel
 import pyxel.cli
 
 APP_LAUNCHER_ENV = "PYXEL_APP_LAUNCHER"
-APPS_DIR = (pathlib.Path(__file__).parent / "apps").resolve()
+APPS_DIR = (Path(__file__).parent / "apps").resolve()
 APP_NAMES = [
     "30sec_of_daylight",
     "megaball",

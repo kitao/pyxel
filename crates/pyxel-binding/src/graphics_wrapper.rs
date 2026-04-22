@@ -24,9 +24,9 @@ fn clip(x: Option<f32>, y: Option<f32>, w: Option<f32>, h: Option<f32>) -> PyRes
 #[pyo3(signature = (x=None, y=None))]
 fn camera(x: Option<f32>, y: Option<f32>) -> PyResult<()> {
     if let (Some(x), Some(y)) = (x, y) {
-        pyxel().set_draw_offset(x, y);
+        pyxel().set_camera(x, y);
     } else if (x, y) == (None, None) {
-        pyxel().reset_draw_offset();
+        pyxel().reset_camera();
     } else {
         python_type_error!("camera() takes 0 or 2 arguments");
     }
@@ -60,7 +60,7 @@ fn cls(col: pyxel::Color) {
 
 #[pyfunction]
 fn pget(x: f32, y: f32) -> pyxel::Color {
-    pyxel().get_pixel(x, y)
+    pyxel().pixel(x, y)
 }
 
 #[pyfunction]

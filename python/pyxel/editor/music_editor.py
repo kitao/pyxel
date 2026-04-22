@@ -9,19 +9,16 @@ from .widgets import ImageButton, ImageToggleButton, NumberPicker
 
 
 class MusicEditor(EditorBase):
-    """
-    Variables:
-        music_index_var
-        should_loop_var
-        is_playing_var
-        help_message_var
-    """
+    # Variables:
+    #   music_index_var
+    #   should_loop_var
+    #   is_playing_var
+    #   help_message_var
 
     def __init__(self, parent):
         super().__init__(parent)
         self.copy_var("help_message_var", parent)
 
-        # Initialize is_playing_var
         self.new_var("is_playing_var", False)
 
         # Initialize field cursor
@@ -72,7 +69,7 @@ class MusicEditor(EditorBase):
         self.copy_var("should_loop_var", self._loop_button, "is_checked_var")
 
         # Initialize music field
-        self._music_field = [MusicField(self, 11, 29 + i * 25, i) for i in range(4)]
+        self._music_fields = [MusicField(self, 11, 29 + i * 25, i) for i in range(4)]
 
         # Initialize sound selector
         self._sound_selector = SoundSelector(self)
@@ -84,9 +81,13 @@ class MusicEditor(EditorBase):
         self.add_event_listener("update", self.__on_update)
         self.add_event_listener("draw", self.__on_draw)
 
+    # Public methods
+
     def get_field(self, index):
         if index >= pyxel.NUM_CHANNELS:
             return None
+        # Resource load may leave music.seqs shorter than NUM_CHANNELS,
+        # so normalize on every access
         music = pyxel.musics[self.music_index_var]
         seqs_len = len(music.seqs)
         if seqs_len < pyxel.NUM_CHANNELS:
@@ -96,7 +97,8 @@ class MusicEditor(EditorBase):
         return music.seqs[index]
 
     def add_pre_history(self, x=None, y=None, *, bank_copy=False):
-        self._history_data = data = {}
+        data = {}
+        self._history_data = data
         data["music_index"] = self.music_index_var
         if bank_copy:
             data["old_data"] = [list(self.get_field(i)) for i in range(4)]
@@ -115,6 +117,8 @@ class MusicEditor(EditorBase):
             data["new_field"] = list(self.field_cursor.field)
             if data["new_field"] != data["old_field"]:
                 self.add_history(data)
+
+    # Helpers
 
     def _play(self, is_partial):
         self.is_playing_var = True
@@ -140,7 +144,6 @@ class MusicEditor(EditorBase):
         pyxel.stop()
 
     def _restore_state(self, data, prefix):
-        """Shared undo/redo logic for restoring music state."""
         self._stop()
         self.music_index_var = data["music_index"]
         if f"{prefix}_data" in data:
@@ -150,7 +153,9 @@ class MusicEditor(EditorBase):
             self.field_cursor.move_to(*data[f"{prefix}_cursor_pos"], False)
             self.field_cursor.field[:] = data[f"{prefix}_field"]
 
-    def __on_music_picker_mouse_hover(self, x, y):
+    # Event handlers
+
+    def __on_music_picker_mouse_hover(self, _x, _y):
         self.help_message_var = "COPY_ALL:CTRL+SHIFT+C/X/V"
 
     def __on_play_button_press(self):
@@ -159,13 +164,13 @@ class MusicEditor(EditorBase):
     def __on_stop_button_press(self):
         self._stop()
 
-    def __on_play_button_mouse_hover(self, x, y):
+    def __on_play_button_mouse_hover(self, _x, _y):
         self.help_message_var = "PLAY:SPACE PART-PLAY:SHIFT+SPACE"
 
-    def __on_stop_button_mouse_hover(self, x, y):
+    def __on_stop_button_mouse_hover(self, _x, _y):
         self.help_message_var = "STOP:SPACE"
 
-    def __on_loop_button_mouse_hover(self, x, y):
+    def __on_loop_button_mouse_hover(self, _x, _y):
         self.help_message_var = "LOOP:L"
 
     def __on_undo(self, data):

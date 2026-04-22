@@ -51,18 +51,7 @@
   ],
   "ui": {
     "title": {
-      "en": "Pyxel API Reference",
-      "cn": "Pyxel API 参考",
-      "de": "Pyxel API-Referenz",
-      "es": "Referencia de API de Pyxel",
-      "fr": "Référence API de Pyxel",
-      "it": "Riferimento API di Pyxel",
-      "ja": "Pyxel API リファレンス",
-      "ko": "Pyxel API 레퍼런스",
-      "pt": "Referência de API do Pyxel",
-      "ru": "Справочник API Pyxel",
-      "tr": "Pyxel API Referansı",
-      "uk": "Довідник API Pyxel"
+      "en": "Pyxel API Reference"
     },
     "subtitle": {
       "en": "API reference for {0}, a retro game engine for Python.",
@@ -308,7 +297,7 @@
             {
               "name": "width",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Screen width",
                 "cn": "画面宽度",
                 "de": "Bildschirmbreite",
@@ -326,7 +315,7 @@
             {
               "name": "height",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Screen height",
                 "cn": "画面高度",
                 "de": "Bildschirmhöhe",
@@ -344,7 +333,7 @@
             {
               "name": "title",
               "type": "str",
-              "desc": {
+              "description": {
                 "en": "Window title. Defaults to \"Pyxel\".",
                 "cn": "窗口标题。默认为 \"Pyxel\"。",
                 "de": "Fenstertitel. Standard ist \"Pyxel\".",
@@ -362,7 +351,7 @@
             {
               "name": "fps",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Frame rate. Defaults to 30.",
                 "cn": "帧率。默认为 30。",
                 "de": "Bildrate. Standard ist 30.",
@@ -380,7 +369,7 @@
             {
               "name": "quit_key",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Key to quit the application. Defaults to KEY_ESCAPE.",
                 "cn": "退出应用程序的按键。默认为 KEY_ESCAPE。",
                 "de": "Taste zum Beenden. Standard ist KEY_ESCAPE.",
@@ -398,7 +387,7 @@
             {
               "name": "display_scale",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Display scale factor. If omitted, automatically determined.",
                 "cn": "显示缩放倍率。省略时自动决定。",
                 "de": "Anzeige-Skalierungsfaktor. Wenn weggelassen, automatisch bestimmt.",
@@ -416,7 +405,7 @@
             {
               "name": "capture_scale",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Screen capture scale factor. Defaults to 2.",
                 "cn": "屏幕截图缩放倍率。默认为 2。",
                 "de": "Bildschirmaufnahme-Skalierungsfaktor. Standard ist 2.",
@@ -434,7 +423,7 @@
             {
               "name": "capture_sec",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Maximum recording time for screen capture video. Defaults to 10.",
                 "cn": "屏幕截图视频的最大录制时间。默认为 10。",
                 "de": "Maximale Aufnahmezeit für Bildschirmvideo. Standard ist 10.",
@@ -452,7 +441,7 @@
             {
               "name": "headless",
               "type": "bool",
-              "desc": {
+              "description": {
                 "en": "Run without a window. Defaults to False.",
                 "cn": "无窗口运行。默认为 False。",
                 "de": "Ohne Fenster ausführen. Standard ist False.",
@@ -468,7 +457,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "examples": [
@@ -498,7 +487,7 @@
             {
               "name": "update",
               "type": "callable",
-              "desc": {
+              "description": {
                 "en": "Function to update game logic each frame",
                 "cn": "每帧更新游戏逻辑的函数",
                 "de": "Funktion zur Aktualisierung der Spiellogik pro Frame",
@@ -516,7 +505,7 @@
             {
               "name": "draw",
               "type": "callable",
-              "desc": {
+              "description": {
                 "en": "Function to draw the screen each frame",
                 "cn": "每帧绘制画面的函数",
                 "de": "Funktion zum Zeichnen des Bildschirms pro Frame",
@@ -532,7 +521,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": false
@@ -555,7 +544,7 @@
             "tr": "Ekranı gösterir ve çıkış tuşuna basılana kadar bekler.",
             "uk": "Показує екран і чекає, поки не буде натиснуто клавішу виходу."
           },
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": false
@@ -578,7 +567,7 @@
             "tr": "Ekranı bir kare günceller. Çıkış tuşuna basıldığında uygulama kapanır. Bu fonksiyon web sürümünde kullanılamaz.",
             "uk": "Оновлює екран на один кадр. Застосунок завершується при натисканні клавіші виходу. Ця функція недоступна у веб-версії."
           },
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": false
@@ -601,7 +590,7 @@
             "tr": "Pyxel uygulamasını kapatır.",
             "uk": "Завершує застосунок Pyxel."
           },
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": false
@@ -624,7 +613,7 @@
             "tr": "Pyxel uygulamasını baştan yeniden başlatır.",
             "uk": "Перезапускає застосунок Pyxel з початку."
           },
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": false
@@ -651,7 +640,7 @@
             {
               "name": "title",
               "type": "str",
-              "desc": {
+              "description": {
                 "en": "Window title",
                 "cn": "窗口标题",
                 "de": "Fenstertitel",
@@ -667,7 +656,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": true
@@ -684,7 +673,7 @@
             "fr": "Définit l'icône de l'application. Spécifie l'image de l'icône sous forme de liste de chaînes.",
             "it": "Imposta l'icona dell'applicazione. Specifica l'immagine dell'icona come lista di stringhe.",
             "ja": "アプリケーションアイコンを設定する。文字列のリストでアイコン画像を指定する。",
-            "ko": "애플리케이션 아이콘을 설정한다.문자열 리스트로 아이콘 이미지를 지정한다.",
+            "ko": "애플리케이션 아이콘을 설정한다. 문자열 리스트로 아이콘 이미지를 지정한다.",
             "pt": "Define o ícone da aplicação. Especifica a imagem do ícone como uma lista de strings.",
             "ru": "Устанавливает иконку приложения. Изображение иконки задаётся списком строк.",
             "tr": "Uygulama simgesini ayarlar. Simge görüntüsünü dize listesi olarak belirtir.",
@@ -694,7 +683,7 @@
             {
               "name": "data",
               "type": "list[str]",
-              "desc": {
+              "description": {
                 "en": "Icon image as a list of strings",
                 "cn": "字符串列表形式的图标图像",
                 "de": "Symbolbild als Liste von Zeichenketten",
@@ -712,7 +701,7 @@
             {
               "name": "scale",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Scale factor",
                 "cn": "缩放倍率",
                 "de": "Skalierungsfaktor",
@@ -730,7 +719,7 @@
             {
               "name": "colkey",
               "type": "int/None",
-              "desc": {
+              "description": {
                 "en": "Transparent color. If omitted, no transparency.",
                 "cn": "透明色。省略时不透明处理。",
                 "de": "Transparenzfarbe. Wenn weggelassen, keine Transparenz.",
@@ -746,7 +735,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": true
@@ -773,7 +762,7 @@
             {
               "name": "enabled",
               "type": "bool",
-              "desc": {
+              "description": {
                 "en": "Enable fullscreen",
                 "cn": "启用全屏",
                 "de": "Vollbild aktivieren",
@@ -789,7 +778,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": true
@@ -816,7 +805,7 @@
             {
               "name": "width",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "New screen width in pixels",
                 "cn": "新的屏幕宽度（像素）",
                 "de": "Neue Bildschirmbreite in Pixeln",
@@ -834,7 +823,7 @@
             {
               "name": "height",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "New screen height in pixels",
                 "cn": "新的屏幕高度（像素）",
                 "de": "Neue Bildschirmhöhe in Pixeln",
@@ -850,7 +839,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": true
@@ -877,7 +866,7 @@
             {
               "name": "scr",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Screen mode number (0: crisp, 1: smooth, 2: retro)",
                 "cn": "屏幕模式编号 (0: crisp, 1: smooth, 2: retro)",
                 "de": "Bildschirmmodus-Nummer (0: crisp, 1: smooth, 2: retro)",
@@ -893,7 +882,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": true
@@ -920,7 +909,7 @@
             {
               "name": "enabled",
               "type": "bool",
-              "desc": {
+              "description": {
                 "en": "Enable the performance monitor",
                 "cn": "启用性能监视器",
                 "de": "Leistungsmonitor aktivieren",
@@ -936,7 +925,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": true
@@ -963,7 +952,7 @@
             {
               "name": "enabled",
               "type": "bool",
-              "desc": {
+              "description": {
                 "en": "Enable integer scaling",
                 "cn": "启用整数倍缩放",
                 "de": "Ganzzahlige Skalierung aktivieren",
@@ -979,7 +968,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": true
@@ -1025,7 +1014,7 @@
             {
               "name": "filename",
               "type": "str",
-              "desc": {
+              "description": {
                 "en": "Resource file name",
                 "cn": "资源文件名",
                 "de": "Ressourcendateiname",
@@ -1043,7 +1032,7 @@
             {
               "name": "exclude_images",
               "type": "bool",
-              "desc": {
+              "description": {
                 "en": "Exclude image banks. Defaults to False.",
                 "cn": "排除图像库。默认为 False。",
                 "de": "Bildbanken ausschließen. Standard ist False.",
@@ -1061,7 +1050,7 @@
             {
               "name": "exclude_tilemaps",
               "type": "bool",
-              "desc": {
+              "description": {
                 "en": "Exclude tilemaps. Defaults to False.",
                 "cn": "排除瓦片地图。默认为 False。",
                 "de": "Tilemaps ausschließen. Standard ist False.",
@@ -1079,7 +1068,7 @@
             {
               "name": "exclude_sounds",
               "type": "bool",
-              "desc": {
+              "description": {
                 "en": "Exclude sounds. Defaults to False.",
                 "cn": "排除声音。默认为 False。",
                 "de": "Klänge ausschließen. Standard ist False.",
@@ -1097,7 +1086,7 @@
             {
               "name": "exclude_musics",
               "type": "bool",
-              "desc": {
+              "description": {
                 "en": "Exclude music tracks. Defaults to False.",
                 "cn": "排除音乐轨道。默认为 False。",
                 "de": "Musikstücke ausschließen. Standard ist False.",
@@ -1113,7 +1102,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "notes": {
@@ -1154,7 +1143,7 @@
             {
               "name": "vendor_name",
               "type": "str",
-              "desc": {
+              "description": {
                 "en": "Vendor name",
                 "cn": "供应商名称",
                 "de": "Anbietername",
@@ -1172,7 +1161,7 @@
             {
               "name": "app_name",
               "type": "str",
-              "desc": {
+              "description": {
                 "en": "Application name",
                 "cn": "应用程序名称",
                 "de": "Anwendungsname",
@@ -1188,9 +1177,9 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "str",
-            "desc": {
+            "description": {
               "en": "Path to the user data directory",
               "cn": "用户数据目录的路径",
               "de": "Pfad zum Benutzerdatenverzeichnis",
@@ -1198,7 +1187,7 @@
               "fr": "Chemin du répertoire de données utilisateur",
               "it": "Percorso della directory dati utente",
               "ja": "ユーザーデータディレクトリのパス",
-              "ko": "사용자 데이터 디렉토리 경로",
+              "ko": "사용자 데이터 디렉터리 경로",
               "pt": "Caminho do diretório de dados do usuário",
               "ru": "Путь к каталогу данных пользователя",
               "tr": "Kullanıcı verileri dizininin yolu",
@@ -1222,7 +1211,7 @@
             "fr": "Enregistre le fichier de ressources (.pyxres). Si une option est définie sur True, la ressource correspondante sera exclue de la sauvegarde.",
             "it": "Salva il file delle risorse (.pyxres). Se un'opzione è impostata su True, la risorsa corrispondente verrà esclusa dal salvataggio.",
             "ja": "リソースファイル (.pyxres) を保存する。オプションにTrueを指定すると、そのリソースは保存されない。",
-            "ko": "리소스 파일 (.pyxres)을 저장한다.옵션을 True로 설정하면 해당 리소스는 저장에서 제외된다.",
+            "ko": "리소스 파일 (.pyxres)을 저장한다. 옵션을 True로 설정하면 해당 리소스는 저장에서 제외된다.",
             "pt": "Salva o arquivo de recursos (.pyxres). Se uma opção for definida como True, o recurso correspondente será excluído do salvamento.",
             "ru": "Сохраняет файл ресурсов (.pyxres). Если параметр установлен в True, соответствующий ресурс будет исключён из сохранения.",
             "tr": "Kaynak dosyasını (.pyxres) kaydeder. Bir seçenek True olarak ayarlanırsa, ilgili kaynak kaydetme işleminden hariç tutulur.",
@@ -1232,7 +1221,7 @@
             {
               "name": "filename",
               "type": "str",
-              "desc": {
+              "description": {
                 "en": "Resource file name",
                 "cn": "资源文件名",
                 "de": "Ressourcendateiname",
@@ -1250,7 +1239,7 @@
             {
               "name": "exclude_images",
               "type": "bool",
-              "desc": {
+              "description": {
                 "en": "Exclude image banks. Defaults to False.",
                 "cn": "排除图像库。默认为 False。",
                 "de": "Bildbanken ausschließen. Standard ist False.",
@@ -1268,7 +1257,7 @@
             {
               "name": "exclude_tilemaps",
               "type": "bool",
-              "desc": {
+              "description": {
                 "en": "Exclude tilemaps. Defaults to False.",
                 "cn": "排除瓦片地图。默认为 False。",
                 "de": "Tilemaps ausschließen. Standard ist False.",
@@ -1286,7 +1275,7 @@
             {
               "name": "exclude_sounds",
               "type": "bool",
-              "desc": {
+              "description": {
                 "en": "Exclude sounds. Defaults to False.",
                 "cn": "排除声音。默认为 False。",
                 "de": "Klänge ausschließen. Standard ist False.",
@@ -1304,7 +1293,7 @@
             {
               "name": "exclude_musics",
               "type": "bool",
-              "desc": {
+              "description": {
                 "en": "Exclude music tracks. Defaults to False.",
                 "cn": "排除音乐轨道。默认为 False。",
                 "de": "Musikstücke ausschließen. Standard ist False.",
@@ -1320,7 +1309,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": true
@@ -1328,7 +1317,7 @@
         {
           "name": "screenshot",
           "type": "function",
-          "signature": "screenshot(filename=None, scale=None)",
+          "signature": "screenshot(filename=None, scale=2)",
           "description": {
             "en": "Take a screenshot.",
             "cn": "截取屏幕截图。",
@@ -1347,7 +1336,7 @@
             {
               "name": "filename",
               "type": "str/None",
-              "desc": {
+              "description": {
                 "en": "File name. If omitted, saved to desktop.",
                 "cn": "文件名。省略时保存到桌面。",
                 "de": "Dateiname. Wird auf dem Desktop gespeichert, wenn weggelassen.",
@@ -1365,7 +1354,7 @@
             {
               "name": "scale",
               "type": "int/None",
-              "desc": {
+              "description": {
                 "en": "Scale factor. Defaults to capture_scale.",
                 "cn": "缩放倍率。默认为 capture_scale。",
                 "de": "Skalierungsfaktor. Standard ist capture_scale.",
@@ -1381,7 +1370,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": true
@@ -1389,7 +1378,7 @@
         {
           "name": "screencast",
           "type": "function",
-          "signature": "screencast(filename=None, scale=None)",
+          "signature": "screencast(filename=None, scale=2)",
           "description": {
             "en": "Save the screen recording as a GIF file.",
             "cn": "保存屏幕录制为GIF文件。",
@@ -1408,7 +1397,7 @@
             {
               "name": "filename",
               "type": "str/None",
-              "desc": {
+              "description": {
                 "en": "File name. If omitted, saved to desktop.",
                 "cn": "文件名。省略时保存到桌面。",
                 "de": "Dateiname. Wird auf dem Desktop gespeichert, wenn weggelassen.",
@@ -1426,7 +1415,7 @@
             {
               "name": "scale",
               "type": "int/None",
-              "desc": {
+              "description": {
                 "en": "Scale factor. Defaults to capture_scale.",
                 "cn": "缩放倍率。默认为 capture_scale。",
                 "de": "Skalierungsfaktor. Standard ist capture_scale.",
@@ -1442,7 +1431,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": true
@@ -1465,7 +1454,7 @@
             "tr": "Ekran kaydı arabelleğini sıfırlar.",
             "uk": "Скидає буфер запису екрана."
           },
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": true
@@ -1492,7 +1481,7 @@
             {
               "name": "filename",
               "type": "str",
-              "desc": {
+              "description": {
                 "en": "Palette file name",
                 "cn": "调色板文件名",
                 "de": "Palettendateiname",
@@ -1508,7 +1497,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": true
@@ -1535,7 +1524,7 @@
             {
               "name": "filename",
               "type": "str",
-              "desc": {
+              "description": {
                 "en": "Palette file name",
                 "cn": "调色板文件名",
                 "de": "Palettendateiname",
@@ -1551,7 +1540,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": true
@@ -1723,7 +1712,7 @@
             {
               "name": "key",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Key code",
                 "cn": "键码",
                 "de": "Tastencode",
@@ -1739,9 +1728,9 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "bool",
-            "desc": {
+            "description": {
               "en": "True if pressed",
               "cn": "按下时为True",
               "de": "True, wenn gedrückt",
@@ -1780,7 +1769,7 @@
             {
               "name": "key",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Key code",
                 "cn": "键码",
                 "de": "Tastencode",
@@ -1798,7 +1787,7 @@
             {
               "name": "hold",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Frames to hold before repeat starts. Defaults to 0.",
                 "cn": "重复开始前的按住帧数。默认为 0。",
                 "de": "Halteframes vor Wiederholungsbeginn. Standard ist 0.",
@@ -1816,7 +1805,7 @@
             {
               "name": "repeat",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Repeat interval in frames. If 0, no repeat.",
                 "cn": "重复间隔（帧数）。为 0 时不重复。",
                 "de": "Wiederholungsintervall in Frames. Bei 0 keine Wiederholung.",
@@ -1832,9 +1821,9 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "bool",
-            "desc": {
+            "description": {
               "en": "True if pressed in that frame",
               "cn": "该帧按下时为True",
               "de": "True, wenn in dem Frame gedrückt",
@@ -1873,7 +1862,7 @@
             {
               "name": "key",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Key code",
                 "cn": "键码",
                 "de": "Tastencode",
@@ -1889,9 +1878,9 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "bool",
-            "desc": {
+            "description": {
               "en": "True if released in that frame",
               "cn": "该帧释放时为True",
               "de": "True, wenn in dem Frame losgelassen",
@@ -1930,7 +1919,7 @@
             {
               "name": "visible",
               "type": "bool",
-              "desc": {
+              "description": {
                 "en": "Show or hide the cursor",
                 "cn": "显示或隐藏光标",
                 "de": "Cursor anzeigen oder ausblenden",
@@ -1946,7 +1935,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": false
@@ -1973,7 +1962,7 @@
             {
               "name": "key",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Key code",
                 "cn": "键码",
                 "de": "Tastencode",
@@ -1989,9 +1978,9 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "int",
-            "desc": {
+            "description": {
               "en": "Analog value of the key",
               "cn": "按键的模拟值",
               "de": "Analogwert der Taste",
@@ -2030,7 +2019,7 @@
             {
               "name": "key",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Target key",
                 "cn": "目标键",
                 "de": "Zieltaste",
@@ -2048,7 +2037,7 @@
             {
               "name": "state",
               "type": "bool",
-              "desc": {
+              "description": {
                 "en": "True for press, False for release",
                 "cn": "True为按下，False为释放",
                 "de": "True für Drücken, False für Loslassen",
@@ -2064,7 +2053,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": true
@@ -2091,7 +2080,7 @@
             {
               "name": "key",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Target key",
                 "cn": "目标键",
                 "de": "Zieltaste",
@@ -2109,7 +2098,7 @@
             {
               "name": "val",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Analog value to set",
                 "cn": "要设置的模拟值",
                 "de": "Zu setzender Analogwert",
@@ -2125,7 +2114,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": true
@@ -2152,7 +2141,7 @@
             {
               "name": "x",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "X coordinate",
                 "cn": "X坐标",
                 "de": "X-Koordinate",
@@ -2170,7 +2159,7 @@
             {
               "name": "y",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Y coordinate",
                 "cn": "Y坐标",
                 "de": "Y-Koordinate",
@@ -2186,7 +2175,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": true
@@ -2213,7 +2202,7 @@
             {
               "name": "text",
               "type": "str",
-              "desc": {
+              "description": {
                 "en": "Text input",
                 "cn": "文本输入",
                 "de": "Texteingabe",
@@ -2229,7 +2218,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": true
@@ -2255,8 +2244,8 @@
           "params": [
             {
               "name": "files",
-              "type": "List[str]",
-              "desc": {
+              "type": "list[str]",
+              "description": {
                 "en": "List of file paths",
                 "cn": "文件路径列表",
                 "de": "Liste der Dateipfade",
@@ -2272,7 +2261,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": true
@@ -2945,7 +2934,7 @@
             "fr": "Liste des couleurs d'affichage de la palette. Spécifiées par une valeur numérique de 24 bits. Prend en charge les opérations de liste Python.",
             "it": "Lista dei colori di visualizzazione della palette. Specificati con un valore numerico a 24 bit. Supporta le operazioni delle liste Python.",
             "ja": "パレットの表示色リスト。24ビット数値で指定する。Pythonリストと同様の操作が可能。",
-            "ko": "팔레트의 표시색 리스트.24비트 수치로 지정한다.Python 리스트와 동일한 조작이 가능.",
+            "ko": "팔레트의 표시색 리스트. 24비트 수치로 지정한다. Python 리스트와 동일한 조작이 가능.",
             "pt": "Lista das cores de exibição da paleta. Especificadas por valor numérico de 24 bits. Suporta operações de lista Python.",
             "ru": "Список цветов отображения палитры. Задаётся 24-битным числовым значением. Поддерживает операции списков Python.",
             "tr": "Palet görüntüleme renklerinin listesi. 24 bit sayısal değerle belirtilir. Python liste işlemlerini destekler.",
@@ -2977,9 +2966,7 @@
             "uk": "Список банків зображень (екземпляри класу Image) (0-2)."
           },
           "value_type": "list[Image]",
-          "examples": [
-            "pyxel.images[0].load(0, 0, \"title.png\")"
-          ],
+          "examples": ["pyxel.images[0].load(0, 0, \"title.png\")"],
           "advanced": false
         },
         {
@@ -3078,7 +3065,7 @@
             "fr": "Définit la zone de dessin de l'écran à partir de (x, y) avec une largeur w et une hauteur h. Appeler clip() pour réinitialiser en plein écran.",
             "it": "Imposta l'area di disegno dello schermo da (x, y) con larghezza w e altezza h. Chiamare clip() per reimpostare a schermo intero.",
             "ja": "画面の描画領域を (x, y) から幅w、高さhに設定する。clip()で全画面にリセットする。",
-            "ko": "화면의 그리기 영역을 (x, y)부터 폭w, 높이h로 설정한다.clip()으로 전체 화면으로 리셋한다.",
+            "ko": "화면의 그리기 영역을 (x, y)부터 폭w, 높이h로 설정한다. clip()으로 전체 화면으로 리셋한다.",
             "pt": "Define a área de desenho da tela a partir de (x, y) com largura w e altura h. Chame clip() para redefinir para tela cheia.",
             "ru": "Устанавливает область рисования экрана от (x, y) шириной w и высотой h. Вызов clip() сбрасывает на полный экран.",
             "tr": "Ekranın çizim alanını (x, y) noktasından w genişliğinde ve h yüksekliğinde ayarlar. Tam ekrana sıfırlamak için clip() çağrılır.",
@@ -3088,7 +3075,7 @@
             {
               "name": "x",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "X coordinate of the upper-left corner",
                 "cn": "左上角的X坐标",
                 "de": "X-Koordinate der oberen linken Ecke",
@@ -3106,7 +3093,7 @@
             {
               "name": "y",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Y coordinate of the upper-left corner",
                 "cn": "左上角的Y坐标",
                 "de": "Y-Koordinate der oberen linken Ecke",
@@ -3124,7 +3111,7 @@
             {
               "name": "w",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Width of the clipping area",
                 "cn": "裁剪区域的宽度",
                 "de": "Breite des Clipping-Bereichs",
@@ -3142,7 +3129,7 @@
             {
               "name": "h",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Height of the clipping area",
                 "cn": "裁剪区域的高度",
                 "de": "Höhe des Clipping-Bereichs",
@@ -3158,7 +3145,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": false
@@ -3181,7 +3168,7 @@
             "tr": "Çizim alanını tam ekrana sıfırlar.",
             "uk": "Скидає область малювання на повний екран."
           },
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": false
@@ -3208,7 +3195,7 @@
             {
               "name": "x",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "X coordinate",
                 "cn": "X坐标",
                 "de": "X-Koordinate",
@@ -3226,7 +3213,7 @@
             {
               "name": "y",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Y coordinate",
                 "cn": "Y坐标",
                 "de": "Y-Koordinate",
@@ -3242,7 +3229,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": false
@@ -3265,7 +3252,7 @@
             "tr": "Çizim ofsetini (0, 0) konumuna sıfırlar.",
             "uk": "Скидає зміщення малювання на (0, 0)."
           },
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": false
@@ -3292,7 +3279,7 @@
             {
               "name": "col1",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Color to replace",
                 "cn": "要替换的颜色",
                 "de": "Zu ersetzende Farbe",
@@ -3310,7 +3297,7 @@
             {
               "name": "col2",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Replacement color",
                 "cn": "替换后的颜色",
                 "de": "Ersatzfarbe",
@@ -3326,7 +3313,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": false
@@ -3349,7 +3336,7 @@
             "tr": "Paleti başlangıç durumuna sıfırlar.",
             "uk": "Скидає палітру до початкового стану."
           },
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": false
@@ -3366,7 +3353,7 @@
             "fr": "Applique le tramage (pseudo-transparence) lors du dessin. Définit alpha dans la plage 0.0-1.0.",
             "it": "Applica il dithering (pseudo-trasparenza) durante il disegno. Imposta alpha nell'intervallo 0.0-1.0.",
             "ja": "描画時にディザリング (擬似半透明) を適用する。alphaは0.0-1.0の範囲で設定する。",
-            "ko": "그리기 시 디더링 (의사 반투명) 을 적용한다.alpha는 0.0-1.0 범위로 설정한다.",
+            "ko": "그리기 시 디더링 (의사 반투명) 을 적용한다. alpha는 0.0-1.0 범위로 설정한다.",
             "pt": "Aplica dithering (pseudo-transparência) ao desenhar. Define alpha no intervalo 0.0-1.0.",
             "ru": "Применяет дизеринг (псевдопрозрачность) при рисовании. Значение alpha задаётся в диапазоне 0.0-1.0.",
             "tr": "Çizim sırasında renk karıştırma (sözde saydamlık) uygular. alpha değerini 0.0-1.0 aralığında ayarlar.",
@@ -3376,7 +3363,7 @@
             {
               "name": "alpha",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Opacity (0.0: transparent, 1.0: opaque)",
                 "cn": "不透明度（0.0: 透明, 1.0: 不透明）",
                 "de": "Deckkraft (0.0: transparent, 1.0: deckend)",
@@ -3392,7 +3379,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": false
@@ -3419,7 +3406,7 @@
             {
               "name": "col",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Color",
                 "cn": "颜色",
                 "de": "Farbe",
@@ -3435,7 +3422,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": false
@@ -3462,7 +3449,7 @@
             {
               "name": "x",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "X coordinate",
                 "cn": "X坐标",
                 "de": "X-Koordinate",
@@ -3480,7 +3467,7 @@
             {
               "name": "y",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Y coordinate",
                 "cn": "Y坐标",
                 "de": "Y-Koordinate",
@@ -3496,9 +3483,9 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "int",
-            "desc": {
+            "description": {
               "en": "Color of the pixel",
               "cn": "像素的颜色",
               "de": "Farbe des Pixels",
@@ -3537,7 +3524,7 @@
             {
               "name": "x",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "X coordinate",
                 "cn": "X坐标",
                 "de": "X-Koordinate",
@@ -3555,7 +3542,7 @@
             {
               "name": "y",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Y coordinate",
                 "cn": "Y坐标",
                 "de": "Y-Koordinate",
@@ -3573,7 +3560,7 @@
             {
               "name": "col",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Color",
                 "cn": "颜色",
                 "de": "Farbe",
@@ -3589,7 +3576,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": false
@@ -3612,15 +3599,11 @@
             "tr": "(x1, y1) noktasından (x2, y2) noktasına col renginde bir çizgi çizer.",
             "uk": "Малює лінію кольору col від (x1, y1) до (x2, y2)."
           },
-          "return": {
-            "type": "None"
-          },
-          "advanced": false,
           "params": [
             {
               "name": "x1",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Start X coordinate",
                 "cn": "起点X坐标",
                 "de": "X-Koordinate des Startpunkts",
@@ -3638,7 +3621,7 @@
             {
               "name": "y1",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Start Y coordinate",
                 "cn": "起点Y坐标",
                 "de": "Y-Koordinate des Startpunkts",
@@ -3656,7 +3639,7 @@
             {
               "name": "x2",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "End X coordinate",
                 "cn": "终点X坐标",
                 "de": "X-Koordinate des Endpunkts",
@@ -3674,7 +3657,7 @@
             {
               "name": "y2",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "End Y coordinate",
                 "cn": "终点Y坐标",
                 "de": "Y-Koordinate des Endpunkts",
@@ -3692,7 +3675,7 @@
             {
               "name": "col",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Color",
                 "cn": "颜色",
                 "de": "Farbe",
@@ -3707,7 +3690,11 @@
                 "uk": "Колір"
               }
             }
-          ]
+          ],
+          "returns": {
+            "type": "None"
+          },
+          "advanced": false
         },
         {
           "name": "rect",
@@ -3727,15 +3714,11 @@
             "tr": "(x, y) konumuna w genişliğinde, h yüksekliğinde ve col renginde dolu bir dikdörtgen çizer.",
             "uk": "Малює зафарбований прямокутник шириною w, висотою h та кольором col у точці (x, y)."
           },
-          "return": {
-            "type": "None"
-          },
-          "advanced": false,
           "params": [
             {
               "name": "x",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "X coordinate",
                 "cn": "X坐标",
                 "de": "X-Koordinate",
@@ -3753,7 +3736,7 @@
             {
               "name": "y",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Y coordinate",
                 "cn": "Y坐标",
                 "de": "Y-Koordinate",
@@ -3771,7 +3754,7 @@
             {
               "name": "w",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Width",
                 "cn": "宽度",
                 "de": "Breite",
@@ -3789,7 +3772,7 @@
             {
               "name": "h",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Height",
                 "cn": "高度",
                 "de": "Höhe",
@@ -3807,7 +3790,7 @@
             {
               "name": "col",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Color",
                 "cn": "颜色",
                 "de": "Farbe",
@@ -3822,7 +3805,11 @@
                 "uk": "Колір"
               }
             }
-          ]
+          ],
+          "returns": {
+            "type": "None"
+          },
+          "advanced": false
         },
         {
           "name": "rectb",
@@ -3839,18 +3826,14 @@
             "ko": "폭w, 높이h, 색col의 사각형 윤곽선을 (x, y)에 그린다.",
             "pt": "Desenha o contorno de um retângulo de largura w, altura h e cor col em (x, y).",
             "ru": "Рисует контур прямоугольника шириной w, высотой h и цветом col в точке (x, y).",
-            "tr": "(x, y) konumuna w genişliğinde, h yüksekliğinde ve col renginde bir dikdörtgen çizer.",
+            "tr": "(x, y) konumuna w genişliğinde, h yüksekliğinde ve col renginde bir dikdörtgenin dış hatlarını çizer.",
             "uk": "Малює контур прямокутника шириною w, висотою h та кольором col у точці (x, y)."
           },
-          "return": {
-            "type": "None"
-          },
-          "advanced": false,
           "params": [
             {
               "name": "x",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "X coordinate",
                 "cn": "X坐标",
                 "de": "X-Koordinate",
@@ -3868,7 +3851,7 @@
             {
               "name": "y",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Y coordinate",
                 "cn": "Y坐标",
                 "de": "Y-Koordinate",
@@ -3886,7 +3869,7 @@
             {
               "name": "w",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Width",
                 "cn": "宽度",
                 "de": "Breite",
@@ -3904,7 +3887,7 @@
             {
               "name": "h",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Height",
                 "cn": "高度",
                 "de": "Höhe",
@@ -3922,7 +3905,7 @@
             {
               "name": "col",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Color",
                 "cn": "颜色",
                 "de": "Farbe",
@@ -3937,7 +3920,11 @@
                 "uk": "Колір"
               }
             }
-          ]
+          ],
+          "returns": {
+            "type": "None"
+          },
+          "advanced": false
         },
         {
           "name": "circ",
@@ -3957,15 +3944,11 @@
             "tr": "(x, y) konumuna r yarıçapında ve col renginde dolu bir daire çizer.",
             "uk": "Малює зафарбоване коло радіусом r та кольором col у точці (x, y)."
           },
-          "return": {
-            "type": "None"
-          },
-          "advanced": false,
           "params": [
             {
               "name": "x",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Center X coordinate",
                 "cn": "中心X坐标",
                 "de": "X-Koordinate des Mittelpunkts",
@@ -3983,7 +3966,7 @@
             {
               "name": "y",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Center Y coordinate",
                 "cn": "中心Y坐标",
                 "de": "Y-Koordinate des Mittelpunkts",
@@ -4001,7 +3984,7 @@
             {
               "name": "r",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Radius",
                 "cn": "半径",
                 "de": "Radius",
@@ -4019,7 +4002,7 @@
             {
               "name": "col",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Color",
                 "cn": "颜色",
                 "de": "Farbe",
@@ -4034,7 +4017,11 @@
                 "uk": "Колір"
               }
             }
-          ]
+          ],
+          "returns": {
+            "type": "None"
+          },
+          "advanced": false
         },
         {
           "name": "circb",
@@ -4051,18 +4038,14 @@
             "ko": "반지름r, 색col의 원의 윤곽선을 (x, y)에 그린다.",
             "pt": "Desenha o contorno de um círculo de raio r e cor col em (x, y).",
             "ru": "Рисует контур круга радиусом r и цветом col в точке (x, y).",
-            "tr": "(x, y) konumuna r yarıçapında ve col renginde bir daire çizer.",
+            "tr": "(x, y) konumuna r yarıçapında ve col renginde bir dairenin dış hatlarını çizer.",
             "uk": "Малює контур кола радіусом r та кольором col у точці (x, y)."
           },
-          "return": {
-            "type": "None"
-          },
-          "advanced": false,
           "params": [
             {
               "name": "x",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Center X coordinate",
                 "cn": "中心X坐标",
                 "de": "X-Koordinate des Mittelpunkts",
@@ -4080,7 +4063,7 @@
             {
               "name": "y",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Center Y coordinate",
                 "cn": "中心Y坐标",
                 "de": "Y-Koordinate des Mittelpunkts",
@@ -4098,7 +4081,7 @@
             {
               "name": "r",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Radius",
                 "cn": "半径",
                 "de": "Radius",
@@ -4116,7 +4099,7 @@
             {
               "name": "col",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Color",
                 "cn": "颜色",
                 "de": "Farbe",
@@ -4131,7 +4114,11 @@
                 "uk": "Колір"
               }
             }
-          ]
+          ],
+          "returns": {
+            "type": "None"
+          },
+          "advanced": false
         },
         {
           "name": "elli",
@@ -4151,15 +4138,11 @@
             "tr": "(x, y) konumuna w genişliğinde, h yüksekliğinde ve col renginde dolu bir elips çizer.",
             "uk": "Малює зафарбований еліпс шириною w, висотою h та кольором col у точці (x, y)."
           },
-          "return": {
-            "type": "None"
-          },
-          "advanced": false,
           "params": [
             {
               "name": "x",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "X coordinate",
                 "cn": "X坐标",
                 "de": "X-Koordinate",
@@ -4177,7 +4160,7 @@
             {
               "name": "y",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Y coordinate",
                 "cn": "Y坐标",
                 "de": "Y-Koordinate",
@@ -4195,7 +4178,7 @@
             {
               "name": "w",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Width",
                 "cn": "宽度",
                 "de": "Breite",
@@ -4213,7 +4196,7 @@
             {
               "name": "h",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Height",
                 "cn": "高度",
                 "de": "Höhe",
@@ -4231,7 +4214,7 @@
             {
               "name": "col",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Color",
                 "cn": "颜色",
                 "de": "Farbe",
@@ -4246,7 +4229,11 @@
                 "uk": "Колір"
               }
             }
-          ]
+          ],
+          "returns": {
+            "type": "None"
+          },
+          "advanced": false
         },
         {
           "name": "ellib",
@@ -4263,18 +4250,14 @@
             "ko": "폭w, 높이h, 색col의 타원 윤곽선을 (x, y)에 그린다.",
             "pt": "Desenha o contorno de uma elipse de largura w, altura h e cor col em (x, y).",
             "ru": "Рисует контур эллипса шириной w, высотой h и цветом col в точке (x, y).",
-            "tr": "(x, y) konumuna w genişliğinde, h yüksekliğinde ve col renginde bir elips çizer.",
+            "tr": "(x, y) konumuna w genişliğinde, h yüksekliğinde ve col renginde bir elipsin dış hatlarını çizer.",
             "uk": "Малює контур еліпса шириною w, висотою h та кольором col у точці (x, y)."
           },
-          "return": {
-            "type": "None"
-          },
-          "advanced": false,
           "params": [
             {
               "name": "x",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "X coordinate",
                 "cn": "X坐标",
                 "de": "X-Koordinate",
@@ -4292,7 +4275,7 @@
             {
               "name": "y",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Y coordinate",
                 "cn": "Y坐标",
                 "de": "Y-Koordinate",
@@ -4310,7 +4293,7 @@
             {
               "name": "w",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Width",
                 "cn": "宽度",
                 "de": "Breite",
@@ -4328,7 +4311,7 @@
             {
               "name": "h",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Height",
                 "cn": "高度",
                 "de": "Höhe",
@@ -4346,7 +4329,7 @@
             {
               "name": "col",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Color",
                 "cn": "颜色",
                 "de": "Farbe",
@@ -4361,7 +4344,11 @@
                 "uk": "Колір"
               }
             }
-          ]
+          ],
+          "returns": {
+            "type": "None"
+          },
+          "advanced": false
         },
         {
           "name": "tri",
@@ -4381,15 +4368,11 @@
             "tr": "Köşeleri (x1, y1), (x2, y2), (x3, y3) olan ve col renginde dolu bir üçgen çizer.",
             "uk": "Малює зафарбований трикутник з вершинами (x1, y1), (x2, y2), (x3, y3) та кольором col."
           },
-          "return": {
-            "type": "None"
-          },
-          "advanced": false,
           "params": [
             {
               "name": "x1",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Vertex 1 X",
                 "cn": "顶点1的X坐标",
                 "de": "X-Koordinate von Eckpunkt 1",
@@ -4407,7 +4390,7 @@
             {
               "name": "y1",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Vertex 1 Y",
                 "cn": "顶点1的Y坐标",
                 "de": "Y-Koordinate von Eckpunkt 1",
@@ -4425,7 +4408,7 @@
             {
               "name": "x2",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Vertex 2 X",
                 "cn": "顶点2的X坐标",
                 "de": "X-Koordinate von Eckpunkt 2",
@@ -4443,7 +4426,7 @@
             {
               "name": "y2",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Vertex 2 Y",
                 "cn": "顶点2的Y坐标",
                 "de": "Y-Koordinate von Eckpunkt 2",
@@ -4461,7 +4444,7 @@
             {
               "name": "x3",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Vertex 3 X",
                 "cn": "顶点3的X坐标",
                 "de": "X-Koordinate von Eckpunkt 3",
@@ -4479,7 +4462,7 @@
             {
               "name": "y3",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Vertex 3 Y",
                 "cn": "顶点3的Y坐标",
                 "de": "Y-Koordinate von Eckpunkt 3",
@@ -4497,7 +4480,7 @@
             {
               "name": "col",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Color",
                 "cn": "颜色",
                 "de": "Farbe",
@@ -4512,7 +4495,11 @@
                 "uk": "Колір"
               }
             }
-          ]
+          ],
+          "returns": {
+            "type": "None"
+          },
+          "advanced": false
         },
         {
           "name": "trib",
@@ -4529,18 +4516,14 @@
             "ko": "꼭짓점이 (x1, y1), (x2, y2), (x3, y3)이고 색col인 삼각형 윤곽선을 그린다.",
             "pt": "Desenha o contorno de um triângulo com vértices (x1, y1), (x2, y2), (x3, y3) e cor col.",
             "ru": "Рисует контур треугольника с вершинами (x1, y1), (x2, y2), (x3, y3) и цветом col.",
-            "tr": "Köşeleri (x1, y1), (x2, y2), (x3, y3) olan ve col renginde bir üçgen çizer.",
+            "tr": "Köşeleri (x1, y1), (x2, y2), (x3, y3) olan ve col renginde bir üçgenin dış hatlarını çizer.",
             "uk": "Малює контур трикутника з вершинами (x1, y1), (x2, y2), (x3, y3) та кольором col."
           },
-          "return": {
-            "type": "None"
-          },
-          "advanced": false,
           "params": [
             {
               "name": "x1",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Vertex 1 X",
                 "cn": "顶点1的X坐标",
                 "de": "X-Koordinate von Eckpunkt 1",
@@ -4558,7 +4541,7 @@
             {
               "name": "y1",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Vertex 1 Y",
                 "cn": "顶点1的Y坐标",
                 "de": "Y-Koordinate von Eckpunkt 1",
@@ -4576,7 +4559,7 @@
             {
               "name": "x2",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Vertex 2 X",
                 "cn": "顶点2的X坐标",
                 "de": "X-Koordinate von Eckpunkt 2",
@@ -4594,7 +4577,7 @@
             {
               "name": "y2",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Vertex 2 Y",
                 "cn": "顶点2的Y坐标",
                 "de": "Y-Koordinate von Eckpunkt 2",
@@ -4612,7 +4595,7 @@
             {
               "name": "x3",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Vertex 3 X",
                 "cn": "顶点3的X坐标",
                 "de": "X-Koordinate von Eckpunkt 3",
@@ -4630,7 +4613,7 @@
             {
               "name": "y3",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Vertex 3 Y",
                 "cn": "顶点3的Y坐标",
                 "de": "Y-Koordinate von Eckpunkt 3",
@@ -4648,7 +4631,7 @@
             {
               "name": "col",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Color",
                 "cn": "颜色",
                 "de": "Farbe",
@@ -4663,7 +4646,11 @@
                 "uk": "Колір"
               }
             }
-          ]
+          ],
+          "returns": {
+            "type": "None"
+          },
+          "advanced": false
         },
         {
           "name": "fill",
@@ -4683,15 +4670,11 @@
             "tr": "(x, y) ile aynı renkte bağlı olan alanı col rengiyle doldurur.",
             "uk": "Заповнює область, з'єднану тим самим кольором, що й (x, y), кольором col."
           },
-          "return": {
-            "type": "None"
-          },
-          "advanced": false,
           "params": [
             {
               "name": "x",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "X coordinate",
                 "cn": "X坐标",
                 "de": "X-Koordinate",
@@ -4709,7 +4692,7 @@
             {
               "name": "y",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Y coordinate",
                 "cn": "Y坐标",
                 "de": "Y-Koordinate",
@@ -4727,7 +4710,7 @@
             {
               "name": "col",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Fill color",
                 "cn": "填充颜色",
                 "de": "Füllfarbe",
@@ -4742,7 +4725,11 @@
                 "uk": "Колір заливки"
               }
             }
-          ]
+          ],
+          "returns": {
+            "type": "None"
+          },
+          "advanced": false
         },
         {
           "name": "blt",
@@ -4756,21 +4743,17 @@
             "fr": "Copie la région de taille (w, h) depuis (u, v) de la banque d'images img (0-2 ou instance Image) vers (x, y). Des valeurs négatives de w/h retournent l'image. colkey définit la couleur transparente. rotate et scale appliquent des transformations.",
             "it": "Copia la regione di dimensione (w, h) da (u, v) del banco immagini img (0-2 o istanza Image) in (x, y). Valori negativi di w/h capovolgono l'immagine. colkey imposta il colore trasparente. rotate e scale applicano trasformazioni.",
             "ja": "イメージバンクimg (0-2またはImageインスタンス) の (u, v) からサイズ (w, h) の領域を (x, y) にコピーする。w、hに負の値を指定すると反転する。colkeyで透明色を指定。rotateとscaleで変換を適用する。",
-            "ko": "이미지 뱅크img (0-2 또는 Image 인스턴스) 의 (u, v)부터 크기 (w, h) 의 영역을 (x, y)에 복사한다.w, h에 음수를 지정하면 반전한다.colkey로 투명색을 지정.rotate와 scale로 변환을 적용한다.",
+            "ko": "이미지 뱅크img (0-2 또는 Image 인스턴스) 의 (u, v)부터 크기 (w, h) 의 영역을 (x, y)에 복사한다. w, h에 음수를 지정하면 반전한다. colkey로 투명색을 지정. rotate와 scale로 변환을 적용한다.",
             "pt": "Copia a região de tamanho (w, h) de (u, v) do banco de imagens img (0-2 ou instância Image) para (x, y). Valores negativos de w/h espelham a imagem. colkey define a cor transparente. rotate e scale aplicam transformações.",
             "ru": "Копирует область размером (w, h) из (u, v) банка изображений img (0-2 или экземпляр Image) в (x, y). Отрицательные w/h отражают изображение. colkey задаёт прозрачный цвет. rotate и scale применяют трансформации.",
             "tr": "img görüntü bankasının (0-2 veya Image örneği) (u, v) konumundan (w, h) boyutundaki bölgeyi (x, y) konumuna kopyalar. Negatif w/h görüntüyü çevirir. colkey saydam rengi belirler. rotate ve scale dönüşümleri uygular.",
             "uk": "Копіює область розміром (w, h) з (u, v) банку зображень img (0-2 або екземпляр Image) у (x, y). Від'ємні w/h дзеркально відображають. colkey задає прозорий колір. rotate та scale застосовують трансформації."
           },
-          "return": {
-            "type": "None"
-          },
-          "advanced": false,
           "params": [
             {
               "name": "x",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Destination X",
                 "cn": "目标X坐标",
                 "de": "Ziel-X-Koordinate",
@@ -4788,7 +4771,7 @@
             {
               "name": "y",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Destination Y",
                 "cn": "目标Y坐标",
                 "de": "Ziel-Y-Koordinate",
@@ -4806,7 +4789,7 @@
             {
               "name": "img",
               "type": "int/Image",
-              "desc": {
+              "description": {
                 "en": "Image bank number (0-2) or Image instance",
                 "cn": "图像库编号 (0-2) 或Image实例",
                 "de": "Bildbank-Nummer (0-2) oder Image-Instanz",
@@ -4824,7 +4807,7 @@
             {
               "name": "u",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Source X in the image bank",
                 "cn": "图像库中的源X",
                 "de": "Quell-X in der Bildbank",
@@ -4842,7 +4825,7 @@
             {
               "name": "v",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Source Y in the image bank",
                 "cn": "图像库中的源Y",
                 "de": "Quell-Y in der Bildbank",
@@ -4860,7 +4843,7 @@
             {
               "name": "w",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Width (negative to flip)",
                 "cn": "宽度（负值则翻转）",
                 "de": "Breite (negativ zum Spiegeln)",
@@ -4878,7 +4861,7 @@
             {
               "name": "h",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Height (negative to flip)",
                 "cn": "高度（负值则翻转）",
                 "de": "Höhe (negativ zum Spiegeln)",
@@ -4896,7 +4879,7 @@
             {
               "name": "colkey",
               "type": "int/None",
-              "desc": {
+              "description": {
                 "en": "Transparent color. If omitted, no transparency.",
                 "cn": "透明色。省略时不透明处理。",
                 "de": "Transparenzfarbe. Wenn weggelassen, keine Transparenz.",
@@ -4914,7 +4897,7 @@
             {
               "name": "rotate",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Rotation angle in degrees (centered on the copy region). Defaults to 0.",
                 "cn": "旋转角度（度）（以复制区域为中心）。默认为 0。",
                 "de": "Rotationswinkel in Grad (zentriert auf den Kopierbereich). Standard ist 0.",
@@ -4932,7 +4915,7 @@
             {
               "name": "scale",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Scale factor (centered on the copy region). Defaults to 1.",
                 "cn": "缩放倍率（以复制区域为中心）。默认为 1。",
                 "de": "Skalierungsfaktor (zentriert auf den Kopierbereich). Standard ist 1.",
@@ -4947,7 +4930,11 @@
                 "uk": "Масштаб (відносно центру області копіювання). За замовчуванням 1."
               }
             }
-          ]
+          ],
+          "returns": {
+            "type": "None"
+          },
+          "advanced": false
         },
         {
           "name": "bltm",
@@ -4961,21 +4948,17 @@
             "fr": "Copie la région de taille (w, h) depuis (u, v) de la tilemap tm (0-7 ou instance Tilemap) vers (x, y). Chaque tuile fait 8x8 pixels, stockée en (image_tx, image_ty). Des valeurs négatives de w/h retournent l'image. colkey définit la couleur transparente. rotate et scale appliquent des transformations.",
             "it": "Copia la regione di dimensione (w, h) da (u, v) della tilemap tm (0-7 o istanza Tilemap) in (x, y). Ogni tile è di 8x8 pixel memorizzato come (image_tx, image_ty). Valori negativi di w/h capovolgono l'immagine. colkey imposta il colore trasparente. rotate e scale applicano trasformazioni.",
             "ja": "タイルマップtm (0-7またはTilemapインスタンス) の (u, v) からサイズ (w, h) の領域を (x, y) にコピーする。各タイルは8x8ピクセルで (image_tx, image_ty) として格納される。w、hに負の値を指定すると反転する。colkeyで透明色を指定。rotateとscaleで変換を適用する。",
-            "ko": "타일맵tm (0-7 또는 Tilemap 인스턴스) 의 (u, v)부터 크기 (w, h) 의 영역을 (x, y)에 복사한다.각 타일은 8x8 픽셀로 (image_tx, image_ty)로 저장된다.w, h에 음수를 지정하면 반전한다.colkey로 투명색을 지정.rotate와 scale로 변환을 적용한다.",
+            "ko": "타일맵tm (0-7 또는 Tilemap 인스턴스) 의 (u, v)부터 크기 (w, h) 의 영역을 (x, y)에 복사한다. 각 타일은 8x8 픽셀로 (image_tx, image_ty)로 저장된다. w, h에 음수를 지정하면 반전한다. colkey로 투명색을 지정. rotate와 scale로 변환을 적용한다.",
             "pt": "Copia a região de tamanho (w, h) de (u, v) do tilemap tm (0-7 ou instância Tilemap) para (x, y). Cada tile tem 8x8 pixels armazenado como (image_tx, image_ty). Valores negativos de w/h espelham a imagem. colkey define a cor transparente. rotate e scale aplicam transformações.",
             "ru": "Копирует область размером (w, h) из (u, v) тайлмапа tm (0-7 или экземпляр Tilemap) в (x, y). Каждый тайл — 8x8 пикселей, хранится как (image_tx, image_ty). Отрицательные w/h отражают изображение. colkey задаёт прозрачный цвет. rotate и scale применяют трансформации.",
             "tr": "tm tilemap'inin (0-7 veya Tilemap örneği) (u, v) konumundan (w, h) boyutundaki bölgeyi (x, y) konumuna kopyalar. Her karo 8x8 pikseldir ve (image_tx, image_ty) olarak saklanır. Negatif w/h görüntüyü çevirir. colkey saydam rengi belirler. rotate ve scale dönüşümleri uygular.",
             "uk": "Копіює область розміром (w, h) з (u, v) тайлмапу tm (0-7 або екземпляр Tilemap) у (x, y). Кожен тайл — 8x8 пікселів, зберігається як (image_tx, image_ty). Від'ємні w/h дзеркально відображають. colkey задає прозорий колір. rotate та scale застосовують трансформації."
           },
-          "return": {
-            "type": "None"
-          },
-          "advanced": false,
           "params": [
             {
               "name": "x",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Destination X",
                 "cn": "目标X坐标",
                 "de": "Ziel-X-Koordinate",
@@ -4993,7 +4976,7 @@
             {
               "name": "y",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Destination Y",
                 "cn": "目标Y坐标",
                 "de": "Ziel-Y-Koordinate",
@@ -5011,7 +4994,7 @@
             {
               "name": "tm",
               "type": "int/Tilemap",
-              "desc": {
+              "description": {
                 "en": "Tilemap number (0-7) or Tilemap instance",
                 "cn": "瓦片地图编号 (0-7) 或Tilemap实例",
                 "de": "Tilemap-Nummer (0-7) oder Tilemap-Instanz",
@@ -5029,7 +5012,7 @@
             {
               "name": "u",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Source X in the tilemap",
                 "cn": "瓦片地图中的源X",
                 "de": "Quell-X in der Tilemap",
@@ -5047,7 +5030,7 @@
             {
               "name": "v",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Source Y in the tilemap",
                 "cn": "瓦片地图中的源Y",
                 "de": "Quell-Y in der Tilemap",
@@ -5065,7 +5048,7 @@
             {
               "name": "w",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Width (negative to flip)",
                 "cn": "宽度（负值则翻转）",
                 "de": "Breite (negativ zum Spiegeln)",
@@ -5083,7 +5066,7 @@
             {
               "name": "h",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Height (negative to flip)",
                 "cn": "高度（负值则翻转）",
                 "de": "Höhe (negativ zum Spiegeln)",
@@ -5101,7 +5084,7 @@
             {
               "name": "colkey",
               "type": "int/None",
-              "desc": {
+              "description": {
                 "en": "Transparent color. If omitted, no transparency.",
                 "cn": "透明色。省略时不透明处理。",
                 "de": "Transparenzfarbe. Wenn weggelassen, keine Transparenz.",
@@ -5119,7 +5102,7 @@
             {
               "name": "rotate",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Rotation angle in degrees (centered on the copy region). Defaults to 0.",
                 "cn": "旋转角度（度）（以复制区域为中心）。默认为 0。",
                 "de": "Rotationswinkel in Grad (zentriert auf den Kopierbereich). Standard ist 0.",
@@ -5137,7 +5120,7 @@
             {
               "name": "scale",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Scale factor (centered on the copy region). Defaults to 1.",
                 "cn": "缩放倍率（以复制区域为中心）。默认为 1。",
                 "de": "Skalierungsfaktor (zentriert auf den Kopierbereich). Standard ist 1.",
@@ -5152,7 +5135,11 @@
                 "uk": "Масштаб (відносно центру області копіювання). За замовчуванням 1."
               }
             }
-          ]
+          ],
+          "returns": {
+            "type": "None"
+          },
+          "advanced": false
         },
         {
           "name": "blt3d",
@@ -5172,15 +5159,11 @@
             "tr": "img görüntü bankasını (0-2 veya Image örneği) perspektif projeksiyonla ekran dikdörtgenine (x, y, w, h) çizer. pos kamera konumudur; x, y 2D koordinatlarla eşleşir, z yüksekliktir. rot derece cinsinden döndürme. fov görüş alanını belirler. colkey saydam rengi belirler.",
             "uk": "Малює банк зображень img (0-2 або екземпляр Image) з перспективною проєкцією у екранний прямокутник (x, y, w, h). pos — позиція камери, де x, y відповідають 2D-координатам, а z — висота. rot — кути обертання в градусах. fov задає кут огляду. colkey задає прозорий колір."
           },
-          "return": {
-            "type": "None"
-          },
-          "advanced": true,
           "params": [
             {
               "name": "x",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Destination X",
                 "cn": "目标X坐标",
                 "de": "Ziel-X-Koordinate",
@@ -5198,7 +5181,7 @@
             {
               "name": "y",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Destination Y",
                 "cn": "目标Y坐标",
                 "de": "Ziel-Y-Koordinate",
@@ -5216,7 +5199,7 @@
             {
               "name": "w",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Display width",
                 "cn": "显示宽度",
                 "de": "Anzeigebreite",
@@ -5234,7 +5217,7 @@
             {
               "name": "h",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Display height",
                 "cn": "显示高度",
                 "de": "Anzeigehöhe",
@@ -5252,7 +5235,7 @@
             {
               "name": "img",
               "type": "int/Image",
-              "desc": {
+              "description": {
                 "en": "Image bank number (0-2) or Image instance",
                 "cn": "图像库编号 (0-2) 或Image实例",
                 "de": "Bildbank-Nummer (0-2) oder Image-Instanz",
@@ -5270,7 +5253,7 @@
             {
               "name": "pos",
               "type": "(float, float, float)",
-              "desc": {
+              "description": {
                 "en": "Camera position (x, y, z). x, y match 2D coordinates, z is height",
                 "cn": "相机位置(x, y, z)。x, y与2D坐标一致，z为高度",
                 "de": "Kameraposition (x, y, z). x, y entsprechen 2D-Koordinaten, z ist die Höhe",
@@ -5288,7 +5271,7 @@
             {
               "name": "rot",
               "type": "(float, float, float)",
-              "desc": {
+              "description": {
                 "en": "Rotation in degrees. rot_x is vertical, rot_y is horizontal, rot_z is tilt",
                 "cn": "旋转角度（度）。rot_x为上下，rot_y为水平方向，rot_z为倾斜",
                 "de": "Rotation in Grad. rot_x ist vertikal, rot_y horizontal, rot_z ist Neigung",
@@ -5306,7 +5289,7 @@
             {
               "name": "fov",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Field of view in degrees. Defaults to 60.",
                 "cn": "视野角度。默认为 60。",
                 "de": "Sichtfeld in Grad. Standard ist 60.",
@@ -5324,7 +5307,7 @@
             {
               "name": "colkey",
               "type": "int/None",
-              "desc": {
+              "description": {
                 "en": "Transparent color. If omitted, no transparency.",
                 "cn": "透明色。省略时不透明处理。",
                 "de": "Transparenzfarbe. Wenn weggelassen, keine Transparenz.",
@@ -5339,7 +5322,11 @@
                 "uk": "Прозорий колір. Якщо не вказано, без прозорості."
               }
             }
-          ]
+          ],
+          "returns": {
+            "type": "None"
+          },
+          "advanced": true
         },
         {
           "name": "bltm3d",
@@ -5359,15 +5346,11 @@
             "tr": "tm tilemap'ini (0-7 veya Tilemap örneği) perspektif projeksiyonla ekran dikdörtgenine (x, y, w, h) çizer. pos kamera konumudur; x, y 2D koordinatlarla eşleşir, z yüksekliktir. rot derece cinsinden döndürme. fov görüş alanını belirler. colkey saydam rengi belirler.",
             "uk": "Малює тайлмап tm (0-7 або екземпляр Tilemap) з перспективною проєкцією у екранний прямокутник (x, y, w, h). pos — позиція камери, де x, y відповідають 2D-координатам, а z — висота. rot — кути обертання в градусах. fov задає кут огляду. colkey задає прозорий колір."
           },
-          "return": {
-            "type": "None"
-          },
-          "advanced": true,
           "params": [
             {
               "name": "x",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Destination X",
                 "cn": "目标X坐标",
                 "de": "Ziel-X-Koordinate",
@@ -5385,7 +5368,7 @@
             {
               "name": "y",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Destination Y",
                 "cn": "目标Y坐标",
                 "de": "Ziel-Y-Koordinate",
@@ -5403,7 +5386,7 @@
             {
               "name": "w",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Display width",
                 "cn": "显示宽度",
                 "de": "Anzeigebreite",
@@ -5421,7 +5404,7 @@
             {
               "name": "h",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Display height",
                 "cn": "显示高度",
                 "de": "Anzeigehöhe",
@@ -5439,7 +5422,7 @@
             {
               "name": "tm",
               "type": "int/Tilemap",
-              "desc": {
+              "description": {
                 "en": "Tilemap number (0-7) or Tilemap instance",
                 "cn": "瓦片地图编号 (0-7) 或Tilemap实例",
                 "de": "Tilemap-Nummer (0-7) oder Tilemap-Instanz",
@@ -5457,7 +5440,7 @@
             {
               "name": "pos",
               "type": "(float, float, float)",
-              "desc": {
+              "description": {
                 "en": "Camera position (x, y, z). x, y match 2D coordinates, z is height",
                 "cn": "相机位置(x, y, z)。x, y与2D坐标一致，z为高度",
                 "de": "Kameraposition (x, y, z). x, y entsprechen 2D-Koordinaten, z ist die Höhe",
@@ -5475,7 +5458,7 @@
             {
               "name": "rot",
               "type": "(float, float, float)",
-              "desc": {
+              "description": {
                 "en": "Rotation in degrees. rot_x is vertical, rot_y is horizontal, rot_z is tilt",
                 "cn": "旋转角度（度）。rot_x为上下，rot_y为水平方向，rot_z为倾斜",
                 "de": "Rotation in Grad. rot_x ist vertikal, rot_y horizontal, rot_z ist Neigung",
@@ -5493,7 +5476,7 @@
             {
               "name": "fov",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Field of view in degrees. Defaults to 60.",
                 "cn": "视野角度。默认为 60。",
                 "de": "Sichtfeld in Grad. Standard ist 60.",
@@ -5511,7 +5494,7 @@
             {
               "name": "colkey",
               "type": "int/None",
-              "desc": {
+              "description": {
                 "en": "Transparent color. If omitted, no transparency.",
                 "cn": "透明色。省略时不透明处理。",
                 "de": "Transparenzfarbe. Wenn weggelassen, keine Transparenz.",
@@ -5526,7 +5509,11 @@
                 "uk": "Прозорий колір. Якщо не вказано, без прозорості."
               }
             }
-          ]
+          ],
+          "returns": {
+            "type": "None"
+          },
+          "advanced": true
         },
         {
           "name": "text",
@@ -5546,15 +5533,11 @@
             "tr": "(x, y) konumuna col renginde s dizesini çizer.",
             "uk": "Малює рядок s кольором col у точці (x, y)."
           },
-          "return": {
-            "type": "None"
-          },
-          "advanced": false,
           "params": [
             {
               "name": "x",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "X coordinate",
                 "cn": "X坐标",
                 "de": "X-Koordinate",
@@ -5572,7 +5555,7 @@
             {
               "name": "y",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Y coordinate",
                 "cn": "Y坐标",
                 "de": "Y-Koordinate",
@@ -5590,7 +5573,7 @@
             {
               "name": "s",
               "type": "str",
-              "desc": {
+              "description": {
                 "en": "String to draw",
                 "cn": "要绘制的字符串",
                 "de": "Zu zeichnende Zeichenkette",
@@ -5608,7 +5591,7 @@
             {
               "name": "col",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Color",
                 "cn": "颜色",
                 "de": "Farbe",
@@ -5626,7 +5609,7 @@
             {
               "name": "font",
               "type": "Font",
-              "desc": {
+              "description": {
                 "en": "Custom font. If omitted, the standard font is used.",
                 "cn": "自定义字体。省略时使用标准字体。",
                 "de": "Benutzerdefinierte Schriftart. Wenn weggelassen, wird die Standardschriftart verwendet.",
@@ -5641,7 +5624,11 @@
                 "uk": "Користувацький шрифт. Якщо не вказано, використовується стандартний шрифт."
               }
             }
-          ]
+          ],
+          "returns": {
+            "type": "None"
+          },
+          "advanced": false
         }
       ],
       "constant_groups": [
@@ -5706,9 +5693,9 @@
                   "ja": "1 — 紺 (#2b335f)",
                   "ko": "1 — 남색 (#2b335f)",
                   "pt": "1 — Azul-marinho (#2b335f)",
-                  "ru": "1 — Тёмно-синий (#2b335f)",
+                  "ru": "1 — Нейви (#2b335f)",
                   "tr": "1 — Lacivert (#2b335f)",
-                  "uk": "1 — Темно-синій (#2b335f)"
+                  "uk": "1 — Нейві (#2b335f)"
                 },
                 {
                   "en": "2 — Purple (#7e2072)",
@@ -6075,6 +6062,48 @@
       },
       "items": [
         {
+          "name": "channels",
+          "type": "variable",
+          "signature": "channels",
+          "description": {
+            "en": "List of the channels (instances of the Channel class) (0-3).",
+            "cn": "通道（Channel类的实例）的列表（0-3）。",
+            "de": "Liste der Kanäle (Instanzen der Channel-Klasse) (0-3).",
+            "es": "Lista de los canales (instancias de la clase Channel) (0-3).",
+            "fr": "Liste des canaux (instances de la classe Channel) (0-3).",
+            "it": "Lista dei canali (istanze della classe Channel) (0-3).",
+            "ja": "チャンネル (Channelクラスのインスタンス) のリスト (0-3)",
+            "ko": "채널(Channel 클래스의 인스턴스) 목록(0-3).",
+            "pt": "Lista dos canais (instâncias da classe Channel) (0-3).",
+            "ru": "Список каналов (экземпляры класса Channel) (0-3).",
+            "tr": "Kanal listesi (Channel sınıfının örnekleri) (0-3).",
+            "uk": "Список каналів (екземпляри класу Channel) (0-3)."
+          },
+          "value_type": "list[Channel]",
+          "advanced": true
+        },
+        {
+          "name": "tones",
+          "type": "variable",
+          "signature": "tones",
+          "description": {
+            "en": "List of the tone definitions (instances of the Tone class) (0-3).",
+            "cn": "音色定义（Tone类的实例）的列表（0-3）。",
+            "de": "Liste der Tondefinitionen (Instanzen der Tone-Klasse) (0-3).",
+            "es": "Lista de las definiciones de tono (instancias de la clase Tone) (0-3).",
+            "fr": "Liste des définitions de ton (instances de la classe Tone) (0-3).",
+            "it": "Lista delle definizioni di tono (istanze della classe Tone) (0-3).",
+            "ja": "トーン定義 (Toneクラスのインスタンス) のリスト (0-3)",
+            "ko": "톤 정의(Tone 클래스의 인스턴스) 목록(0-3).",
+            "pt": "Lista das definições de tom (instâncias da classe Tone) (0-3).",
+            "ru": "Список определений тонов (экземпляры класса Tone) (0-3).",
+            "tr": "Ton tanımlarının listesi (Tone sınıfının örnekleri) (0-3).",
+            "uk": "Список визначень тонів (екземпляри класу Tone) (0-3)."
+          },
+          "value_type": "list[Tone]",
+          "advanced": true
+        },
+        {
           "name": "sounds",
           "type": "variable",
           "signature": "sounds",
@@ -6093,9 +6122,7 @@
             "uk": "Список звуків (екземпляри класу Sound) (0-63)."
           },
           "value_type": "list[Sound]",
-          "examples": [
-            "pyxel.sounds[0].speed = 60"
-          ],
+          "examples": ["pyxel.sounds[0].speed = 60"],
           "advanced": false
         },
         {
@@ -6120,48 +6147,6 @@
           "advanced": false
         },
         {
-          "name": "tones",
-          "type": "variable",
-          "signature": "tones",
-          "description": {
-            "en": "List of the tone definitions (instances of the Tone class) (0-3).",
-            "cn": "音色定义（Tone类的实例）的列表（0-3）。",
-            "de": "Liste der Tondefinitionen (Instanzen der Tone-Klasse) (0-3).",
-            "es": "Lista de las definiciones de tono (instancias de la clase Tone) (0-3).",
-            "fr": "Liste des définitions de ton (instances de la classe Tone) (0-3).",
-            "it": "Lista delle definizioni di tono (istanze della classe Tone) (0-3).",
-            "ja": "トーン定義 (Toneクラスのインスタンス) のリスト (0-3)",
-            "ko": "톤 정의(Tone 클래스의 인스턴스) 목록(0-3).",
-            "pt": "Lista das definições de tom (instâncias da classe Tone) (0-3).",
-            "ru": "Список определений тонов (экземпляры класса Tone) (0-3).",
-            "tr": "Ton tanımlarının listesi (Tone sınıfının örnekleri) (0-3).",
-            "uk": "Список визначень тонів (екземпляри класу Tone) (0-3)."
-          },
-          "value_type": "list[Tone]",
-          "advanced": true
-        },
-        {
-          "name": "channels",
-          "type": "variable",
-          "signature": "channels",
-          "description": {
-            "en": "List of the channels (instances of the Channel class) (0-3).",
-            "cn": "通道（Channel类的实例）的列表（0-3）。",
-            "de": "Liste der Kanäle (Instanzen der Channel-Klasse) (0-3).",
-            "es": "Lista de los canales (instancias de la clase Channel) (0-3).",
-            "fr": "Liste des canaux (instances de la classe Channel) (0-3).",
-            "it": "Lista dei canali (istanze della classe Channel) (0-3).",
-            "ja": "チャンネル (Channelクラスのインスタンス) のリスト (0-3)",
-            "ko": "채널(Channel 클래스의 인스턴스) 목록(0-3).",
-            "pt": "Lista dos canais (instâncias da classe Channel) (0-3).",
-            "ru": "Список каналов (экземпляры класса Channel) (0-3).",
-            "tr": "Kanal listesi (Channel sınıfının örnekleri) (0-3).",
-            "uk": "Список каналів (екземпляри класу Channel) (0-3)."
-          },
-          "value_type": "list[Channel]",
-          "advanced": true
-        },
-        {
           "name": "play",
           "type": "function",
           "signature": "play(ch, snd, sec=0, loop=False, resume=False)",
@@ -6173,7 +6158,7 @@
             "fr": "Joue le son snd sur le canal ch (0-3). snd peut être un numéro de son (0-63), une liste de numéros, une instance de Sound, une liste de Sounds ou une chaîne MML.",
             "it": "Riproduce il suono snd sul canale ch (0-3). snd può essere un numero di suono (0-63), una lista di numeri, un'istanza di Sound, una lista di Sound o una stringa MML.",
             "ja": "チャンネルch (0-3) でサウンドsndを再生する。sndにはサウンド番号 (0-63)、番号のリスト、Soundインスタンス、Soundのリスト、またはMML文字列を指定できる。",
-            "ko": "채널 ch(0-3)에서 사운드 snd를 재생한다.snd에는 사운드 번호(0-63), 번호 목록, Sound 인스턴스, Sound 목록 또는 MML 문자열을 지정할 수 있다.",
+            "ko": "채널 ch(0-3)에서 사운드 snd를 재생한다. snd에는 사운드 번호(0-63), 번호 목록, Sound 인스턴스, Sound 목록 또는 MML 문자열을 지정할 수 있다.",
             "pt": "Reproduz o som snd no canal ch (0-3). snd pode ser um número de som (0-63), uma lista de números, uma instância de Sound, uma lista de Sounds ou uma string MML.",
             "ru": "Воспроизводит звук snd на канале ch (0-3). snd может быть номером звука (0-63), списком номеров, экземпляром Sound, списком Sound или строкой MML.",
             "tr": "Kanal ch (0-3) üzerinde snd sesini çalar. snd bir ses numarası (0-63), numara listesi, Sound örneği, Sound listesi veya MML dizesi olabilir.",
@@ -6183,7 +6168,7 @@
             {
               "name": "ch",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Channel number (0-3)",
                 "cn": "通道编号 (0-3)",
                 "de": "Kanalnummer (0-3)",
@@ -6201,7 +6186,7 @@
             {
               "name": "snd",
               "type": "int/list/Sound/str",
-              "desc": {
+              "description": {
                 "en": "Sound number (0-63), list of numbers, Sound instance, list of Sounds, or MML string",
                 "cn": "音效编号 (0-63)、编号列表、Sound实例、Sound列表或MML字符串",
                 "de": "Soundnummer (0-63), Nummernliste, Sound-Instanz, Sound-Liste oder MML-String",
@@ -6219,7 +6204,7 @@
             {
               "name": "sec",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Playback start position in seconds. Defaults to 0.",
                 "cn": "播放起始位置（秒）。默认为 0。",
                 "de": "Wiedergabe-Startposition in Sekunden. Standard ist 0.",
@@ -6237,7 +6222,7 @@
             {
               "name": "loop",
               "type": "bool",
-              "desc": {
+              "description": {
                 "en": "Loop playback. Defaults to False.",
                 "cn": "循环播放。默认为 False。",
                 "de": "Schleifenwiedergabe. Standard ist False.",
@@ -6255,7 +6240,7 @@
             {
               "name": "resume",
               "type": "bool",
-              "desc": {
+              "description": {
                 "en": "Resume previous sound after playback ends. Defaults to False.",
                 "cn": "播放结束后恢复之前的音效。默认为 False。",
                 "de": "Vorherigen Sound nach Wiedergabeende fortsetzen. Standard ist False.",
@@ -6271,7 +6256,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": false
@@ -6298,7 +6283,7 @@
             {
               "name": "msc",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Music number (0-7)",
                 "cn": "音乐编号 (0-7)",
                 "de": "Musiknummer (0-7)",
@@ -6316,7 +6301,7 @@
             {
               "name": "sec",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Playback start position in seconds. Defaults to 0.",
                 "cn": "播放起始位置（秒）。默认为 0。",
                 "de": "Wiedergabe-Startposition in Sekunden. Standard ist 0.",
@@ -6334,7 +6319,7 @@
             {
               "name": "loop",
               "type": "bool",
-              "desc": {
+              "description": {
                 "en": "Loop playback. Defaults to False.",
                 "cn": "循环播放。默认为 False。",
                 "de": "Schleifenwiedergabe. Standard ist False.",
@@ -6350,7 +6335,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": false
@@ -6377,7 +6362,7 @@
             {
               "name": "ch",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Channel number (0-3)",
                 "cn": "通道编号 (0-3)",
                 "de": "Kanalnummer (0-3)",
@@ -6393,7 +6378,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": false
@@ -6416,7 +6401,7 @@
             "tr": "Tüm kanalların çalmasını durdurur.",
             "uk": "Зупиняє відтворення всіх каналів."
           },
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": false
@@ -6426,24 +6411,24 @@
           "type": "function",
           "signature": "play_pos(ch)",
           "description": {
-            "en": "Get the sound playback position of channel ch (0-3) as a tuple of (sound_no, sec). Return None when playback has stopped.",
-            "cn": "获取通道ch（0-3）的声音播放位置，以(sound_no, sec)元组返回。播放停止时返回None。",
-            "de": "Gibt die Sound-Wiedergabeposition von Kanal ch (0-3) als Tupel (sound_no, sec) zurück. Gibt None zurück, wenn die Wiedergabe gestoppt ist.",
-            "es": "Obtiene la posición de reproducción de sonido del canal ch (0-3) como una tupla (sound_no, sec). Devuelve None cuando la reproducción se ha detenido.",
-            "fr": "Obtient la position de lecture du son du canal ch (0-3) sous forme de tuple (sound_no, sec). Renvoie None lorsque la lecture est arrêtée.",
-            "it": "Ottiene la posizione di riproduzione del suono del canale ch (0-3) come tupla (sound_no, sec). Restituisce None quando la riproduzione è interrotta.",
-            "ja": "チャンネルch (0-3) のサウンド再生位置を (sound_no, sec) のタプルとして取得する。再生停止時はNoneを返す。",
-            "ko": "채널 ch(0-3)의 사운드 재생 위치를 (sound_no, sec) 튜플로 가져온다.재생 정지 시 None을 반환한다.",
-            "pt": "Obtém a posição de reprodução de som do canal ch (0-3) como uma tupla (sound_no, sec). Retorna None quando a reprodução está parada.",
-            "ru": "Возвращает позицию воспроизведения звука канала ch (0-3) в виде кортежа (sound_no, sec). Возвращает None, когда воспроизведение остановлено.",
-            "tr": "Kanal ch (0-3) ses çalma konumunu (sound_no, sec) demeti olarak döndürür. Çalma durduğunda None döndürür.",
-            "uk": "Повертає позицію відтворення звуку каналу ch (0-3) як кортеж (sound_no, sec). Повертає None, коли відтворення зупинено."
+            "en": "Get the sound playback position of channel ch (0-3) as a tuple of (sound_index, sec). Return None when playback has stopped.",
+            "cn": "获取通道ch（0-3）的声音播放位置，以(sound_index, sec)元组返回。播放停止时返回None。",
+            "de": "Gibt die Sound-Wiedergabeposition von Kanal ch (0-3) als Tupel (sound_index, sec) zurück. Gibt None zurück, wenn die Wiedergabe gestoppt ist.",
+            "es": "Obtiene la posición de reproducción de sonido del canal ch (0-3) como una tupla (sound_index, sec). Devuelve None cuando la reproducción se ha detenido.",
+            "fr": "Obtient la position de lecture du son du canal ch (0-3) sous forme de tuple (sound_index, sec). Renvoie None lorsque la lecture est arrêtée.",
+            "it": "Ottiene la posizione di riproduzione del suono del canale ch (0-3) come tupla (sound_index, sec). Restituisce None quando la riproduzione è interrotta.",
+            "ja": "チャンネルch (0-3) のサウンド再生位置を (sound_index, sec) のタプルとして取得する。再生停止時はNoneを返す。",
+            "ko": "채널 ch(0-3)의 사운드 재생 위치를 (sound_index, sec) 튜플로 가져온다. 재생 정지 시 None을 반환한다.",
+            "pt": "Obtém a posição de reprodução de som do canal ch (0-3) como uma tupla (sound_index, sec). Retorna None quando a reprodução está parada.",
+            "ru": "Возвращает позицию воспроизведения звука канала ch (0-3) в виде кортежа (sound_index, sec). Возвращает None, когда воспроизведение остановлено.",
+            "tr": "Kanal ch (0-3) ses çalma konumunu (sound_index, sec) demeti olarak döndürür. Çalma durduğunda None döndürür.",
+            "uk": "Повертає позицію відтворення звуку каналу ch (0-3) як кортеж (sound_index, sec). Повертає None, коли відтворення зупинено."
           },
           "params": [
             {
               "name": "ch",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Channel number (0-3)",
                 "cn": "通道编号 (0-3)",
                 "de": "Kanalnummer (0-3)",
@@ -6459,9 +6444,9 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "tuple[int, float]/None",
-            "desc": {
+            "description": {
               "en": "(sound_index, sec) or None",
               "cn": "(sound_index, sec) 或 None",
               "de": "(sound_index, sec) oder None",
@@ -6490,7 +6475,7 @@
             "fr": "Génère une liste MML de BGM à l'aide d'un algorithme. preset (0-7) sélectionne le preset, instr (0-3) sélectionne l'instrumentation.",
             "it": "Genera una lista MML di BGM tramite un algoritmo. preset (0-7) seleziona il preset, instr (0-3) seleziona la strumentazione.",
             "ja": "アルゴリズムでBGMのMMLリストを生成する。preset (0-7) でプリセット、instr (0-3) で編成を指定する。",
-            "ko": "알고리즘으로 BGM의 MML 리스트를 생성한다.preset (0-7)으로 프리셋, instr (0-3)으로 편성을 선택한다.",
+            "ko": "알고리즘으로 BGM의 MML 리스트를 생성한다. preset (0-7)으로 프리셋, instr (0-3)으로 편성을 선택한다.",
             "pt": "Gera uma lista MML de BGM usando um algoritmo. preset (0-7) seleciona o preset, instr (0-3) seleciona a instrumentação.",
             "ru": "Генерирует список MML для BGM с помощью алгоритма. preset (0-7) выбирает пресет, instr (0-3) выбирает инструментовку.",
             "tr": "Bir algoritma kullanarak BGM MML listesi oluşturur. preset (0-7) ön ayarı, instr (0-3) enstrümantasyonu seçer.",
@@ -6500,7 +6485,7 @@
             {
               "name": "preset",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Preset number (0-7). 0-1: title, departure (medium tempo), 2-3: town, peaceful (slow tempo), 4-5: field, adventure (medium tempo), 6-7: battle, crisis (fast tempo)",
                 "cn": "预设编号 (0-7). 0-1: 标题、出发（中速）, 2-3: 城镇、和平（慢速）, 4-5: 原野、冒险（中速）, 6-7: 战斗、危机（快速）",
                 "de": "Presetnummer (0-7). 0-1: Titel, Aufbruch (mittleres Tempo), 2-3: Stadt, friedlich (langsames Tempo), 4-5: Feld, Abenteuer (mittleres Tempo), 6-7: Kampf, Krise (schnelles Tempo)",
@@ -6518,7 +6503,7 @@
             {
               "name": "transp",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Transpose in semitones (-5 to +5).",
                 "cn": "移调半音数 (-5 到 +5)。",
                 "de": "Transposition in Halbtönen (-5 bis +5).",
@@ -6536,7 +6521,7 @@
             {
               "name": "instr",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Instrumentation (0-3). 0: melody+reverb+bass (3ch), 1: melody+bass+drums (3ch), 2: melody+sub+bass (3ch), 3: melody+sub+bass+drums (4ch).",
                 "cn": "编制 (0-3). 0: 旋律+混响+贝斯 (3ch), 1: 旋律+贝斯+鼓 (3ch), 2: 旋律+副旋律+贝斯 (3ch), 3: 旋律+副旋律+贝斯+鼓 (4ch)",
                 "de": "Besetzung (0-3). 0: Melodie+Reverb+Bass (3ch), 1: Melodie+Bass+Drums (3ch), 2: Melodie+Sub+Bass (3ch), 3: Melodie+Sub+Bass+Drums (4ch)",
@@ -6554,7 +6539,7 @@
             {
               "name": "seed",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Random seed",
                 "cn": "随机种子",
                 "de": "Zufallsstartwert",
@@ -6572,7 +6557,7 @@
             {
               "name": "play",
               "type": "bool",
-              "desc": {
+              "description": {
                 "en": "Play the generated MML. Defaults to False.",
                 "cn": "播放生成的MML。默认为 False。",
                 "de": "Generiertes MML abspielen. Standard ist False.",
@@ -6588,9 +6573,9 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "list[str]",
-            "desc": {
+            "description": {
               "en": "List of MML strings",
               "cn": "MML字符串列表",
               "de": "Liste von MML-Strings",
@@ -6944,7 +6929,7 @@
             {
               "name": "x",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Value",
                 "cn": "值",
                 "de": "Wert",
@@ -6960,9 +6945,9 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "int",
-            "desc": {
+            "description": {
               "en": "Smallest integer >= x",
               "cn": "不小于x的最小整数",
               "de": "Kleinste Ganzzahl >= x",
@@ -7001,7 +6986,7 @@
             {
               "name": "x",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Value",
                 "cn": "值",
                 "de": "Wert",
@@ -7017,9 +7002,9 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "int",
-            "desc": {
+            "description": {
               "en": "Largest integer <= x",
               "cn": "不超过x的最大整数",
               "de": "Größte Ganzzahl <= x",
@@ -7054,29 +7039,11 @@
             "tr": "x değerini lower ve upper arasına sınırlandırarak döndürür.",
             "uk": "Повертає x, обмежене діапазоном від lower до upper."
           },
-          "return": {
-            "type": "int/float",
-            "desc": {
-              "en": "Clamped value",
-              "cn": "限制后的值",
-              "de": "Begrenzter Wert",
-              "es": "Valor limitado",
-              "fr": "Valeur bornée",
-              "it": "Valore limitato",
-              "ja": "範囲内に収めた値",
-              "ko": "클램프된 값",
-              "pt": "Valor limitado",
-              "ru": "Ограниченное значение",
-              "tr": "Sınırlanmış değer",
-              "uk": "Обмежене значення"
-            }
-          },
-          "advanced": false,
           "params": [
             {
               "name": "x",
-              "type": "int/float",
-              "desc": {
+              "type": "float",
+              "description": {
                 "en": "Value to clamp",
                 "cn": "要限制的值",
                 "de": "Zu begrenzender Wert",
@@ -7093,8 +7060,8 @@
             },
             {
               "name": "lower",
-              "type": "int/float",
-              "desc": {
+              "type": "float",
+              "description": {
                 "en": "Minimum value",
                 "cn": "最小值",
                 "de": "Minimalwert",
@@ -7111,8 +7078,8 @@
             },
             {
               "name": "upper",
-              "type": "int/float",
-              "desc": {
+              "type": "float",
+              "description": {
                 "en": "Maximum value",
                 "cn": "最大值",
                 "de": "Maximalwert",
@@ -7127,7 +7094,25 @@
                 "uk": "Максимальне значення"
               }
             }
-          ]
+          ],
+          "returns": {
+            "type": "float",
+            "description": {
+              "en": "Clamped value",
+              "cn": "限制后的值",
+              "de": "Begrenzter Wert",
+              "es": "Valor limitado",
+              "fr": "Valeur bornée",
+              "it": "Valore limitato",
+              "ja": "範囲内に収めた値",
+              "ko": "클램프된 값",
+              "pt": "Valor limitado",
+              "ru": "Ограниченное значение",
+              "tr": "Sınırlanmış değer",
+              "uk": "Обмежене значення"
+            }
+          },
+          "advanced": false
         },
         {
           "name": "sgn",
@@ -7147,29 +7132,11 @@
             "tr": "x pozitif olduğunda 1, 0 olduğunda 0, negatif olduğunda -1 döndürür.",
             "uk": "Повертає 1, коли x додатне, 0, коли дорівнює 0, і -1, коли від'ємне."
           },
-          "return": {
-            "type": "int/float",
-            "desc": {
-              "en": "Sign of the value (1, 0, or -1)",
-              "cn": "值的符号 (1, 0, -1)",
-              "de": "Vorzeichen des Werts (1, 0 oder -1)",
-              "es": "Signo del valor (1, 0 o -1)",
-              "fr": "Signe de la valeur (1, 0 ou -1)",
-              "it": "Segno del valore (1, 0 o -1)",
-              "ja": "値の符号 (1, 0, -1)",
-              "ko": "값의 부호 (1, 0 또는 -1)",
-              "pt": "Sinal do valor (1, 0 ou -1)",
-              "ru": "Знак значения (1, 0 или -1)",
-              "tr": "Değerin işareti (1, 0 veya -1)",
-              "uk": "Знак значення (1, 0 або -1)"
-            }
-          },
-          "advanced": false,
           "params": [
             {
               "name": "x",
               "type": "int/float",
-              "desc": {
+              "description": {
                 "en": "Value",
                 "cn": "值",
                 "de": "Wert",
@@ -7184,7 +7151,25 @@
                 "uk": "Значення"
               }
             }
-          ]
+          ],
+          "returns": {
+            "type": "int/float",
+            "description": {
+              "en": "Sign of the value (1, 0, or -1)",
+              "cn": "值的符号 (1, 0, -1)",
+              "de": "Vorzeichen des Werts (1, 0 oder -1)",
+              "es": "Signo del valor (1, 0 o -1)",
+              "fr": "Signe de la valeur (1, 0 ou -1)",
+              "it": "Segno del valore (1, 0 o -1)",
+              "ja": "値の符号 (1, 0, -1)",
+              "ko": "값의 부호 (1, 0 또는 -1)",
+              "pt": "Sinal do valor (1, 0 ou -1)",
+              "ru": "Знак значения (1, 0 или -1)",
+              "tr": "Değerin işareti (1, 0 veya -1)",
+              "uk": "Знак значення (1, 0 або -1)"
+            }
+          },
+          "advanced": false
         },
         {
           "name": "sqrt",
@@ -7208,7 +7193,7 @@
             {
               "name": "x",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Value",
                 "cn": "值",
                 "de": "Wert",
@@ -7224,9 +7209,9 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "float",
-            "desc": {
+            "description": {
               "en": "Square root of x",
               "cn": "x的平方根",
               "de": "Quadratwurzel von x",
@@ -7265,7 +7250,7 @@
             {
               "name": "deg",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Angle in degrees",
                 "cn": "角度（度）",
                 "de": "Winkel in Grad",
@@ -7281,9 +7266,9 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "float",
-            "desc": {
+            "description": {
               "en": "Sine value",
               "cn": "正弦值",
               "de": "Sinuswert",
@@ -7322,7 +7307,7 @@
             {
               "name": "deg",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Angle in degrees",
                 "cn": "角度（度）",
                 "de": "Winkel in Grad",
@@ -7338,9 +7323,9 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "float",
-            "desc": {
+            "description": {
               "en": "Cosine value",
               "cn": "余弦值",
               "de": "Kosinuswert",
@@ -7375,29 +7360,11 @@
             "tr": "y/x değerinin ark tanjantını derece cinsinden döndürür.",
             "uk": "Повертає арктангенс y/x у градусах."
           },
-          "return": {
-            "type": "float",
-            "desc": {
-              "en": "Angle in degrees",
-              "cn": "角度（度）",
-              "de": "Winkel in Grad",
-              "es": "Ángulo en grados",
-              "fr": "Angle en degrés",
-              "it": "Angolo in gradi",
-              "ja": "角度（度数法）",
-              "ko": "각도 (도)",
-              "pt": "Ângulo em graus",
-              "ru": "Угол в градусах",
-              "tr": "Derece cinsinden açı",
-              "uk": "Кут у градусах"
-            }
-          },
-          "advanced": false,
           "params": [
             {
               "name": "y",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Y value",
                 "cn": "Y值",
                 "de": "Y-Wert",
@@ -7415,7 +7382,7 @@
             {
               "name": "x",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "X value",
                 "cn": "X值",
                 "de": "X-Wert",
@@ -7430,7 +7397,25 @@
                 "uk": "Значення X"
               }
             }
-          ]
+          ],
+          "returns": {
+            "type": "float",
+            "description": {
+              "en": "Angle in degrees",
+              "cn": "角度（度）",
+              "de": "Winkel in Grad",
+              "es": "Ángulo en grados",
+              "fr": "Angle en degrés",
+              "it": "Angolo in gradi",
+              "ja": "角度（度数法）",
+              "ko": "각도 (도)",
+              "pt": "Ângulo em graus",
+              "ru": "Угол в градусах",
+              "tr": "Derece cinsinden açı",
+              "uk": "Кут у градусах"
+            }
+          },
+          "advanced": false
         },
         {
           "name": "rseed",
@@ -7454,7 +7439,7 @@
             {
               "name": "seed",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Seed value (non-negative integer)",
                 "cn": "种子值（非负整数）",
                 "de": "Seed-Wert (nicht-negative Ganzzahl)",
@@ -7470,7 +7455,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": false
@@ -7493,9 +7478,47 @@
             "tr": "a ile b arasında (dahil) rastgele bir tamsayı döndürür.",
             "uk": "Повертає випадкове ціле число від a до b (включно)."
           },
-          "return": {
+          "params": [
+            {
+              "name": "a",
+              "type": "int",
+              "description": {
+                "en": "Minimum value (inclusive)",
+                "cn": "最小值（含）",
+                "de": "Minimalwert (einschließlich)",
+                "es": "Valor mínimo (inclusive)",
+                "fr": "Valeur minimale (incluse)",
+                "it": "Valore minimo (incluso)",
+                "ja": "最小値（含む）",
+                "ko": "최솟값 (포함)",
+                "pt": "Valor mínimo (inclusivo)",
+                "ru": "Минимальное значение (включительно)",
+                "tr": "Minimum değer (dahil)",
+                "uk": "Мінімальне значення (включно)"
+              }
+            },
+            {
+              "name": "b",
+              "type": "int",
+              "description": {
+                "en": "Maximum value (inclusive)",
+                "cn": "最大值（含）",
+                "de": "Maximalwert (einschließlich)",
+                "es": "Valor máximo (inclusive)",
+                "fr": "Valeur maximale (incluse)",
+                "it": "Valore massimo (incluso)",
+                "ja": "最大値（含む）",
+                "ko": "최댓값 (포함)",
+                "pt": "Valor máximo (inclusivo)",
+                "ru": "Максимальное значение (включительно)",
+                "tr": "Maksimum değer (dahil)",
+                "uk": "Максимальне значення (включно)"
+              }
+            }
+          ],
+          "returns": {
             "type": "int",
-            "desc": {
+            "description": {
               "en": "Random integer from a to b",
               "cn": "a到b的随机整数",
               "de": "Zufällige Ganzzahl von a bis b",
@@ -7510,45 +7533,7 @@
               "uk": "Випадкове ціле число від a до b"
             }
           },
-          "advanced": false,
-          "params": [
-            {
-              "name": "a",
-              "type": "int",
-              "desc": {
-                "en": "Minimum value (inclusive)",
-                "cn": "最小值（含）",
-                "de": "Minimalwert (einschließlich)",
-                "es": "Valor mínimo (inclusive)",
-                "fr": "Valeur minimale (incluse)",
-                "it": "Valore minimo (incluso)",
-                "ja": "最小値（含む）",
-                "ko": "최솟값 (포함)",
-                "pt": "Valor mínimo (inclusivo)",
-                "ru": "Минимальное значение (включительно)",
-                "tr": "Minimum değer (dahil)",
-                "uk": "Мінімальне значення (включно)"
-              }
-            },
-            {
-              "name": "b",
-              "type": "int",
-              "desc": {
-                "en": "Maximum value (inclusive)",
-                "cn": "最大值（含）",
-                "de": "Maximalwert (einschließlich)",
-                "es": "Valor máximo (inclusive)",
-                "fr": "Valeur maximale (incluse)",
-                "it": "Valore massimo (incluso)",
-                "ja": "最大値（含む）",
-                "ko": "최댓값 (포함)",
-                "pt": "Valor máximo (inclusivo)",
-                "ru": "Максимальное значение (включительно)",
-                "tr": "Maksimum değer (dahil)",
-                "uk": "Максимальне значення (включно)"
-              }
-            }
-          ]
+          "advanced": false
         },
         {
           "name": "rndf",
@@ -7562,35 +7547,17 @@
             "fr": "Renvoie un nombre à virgule flottante aléatoire de a à b (inclus).",
             "it": "Restituisce un numero in virgola mobile casuale da a a b (inclusi).",
             "ja": "a以上b以下のランダムな小数を返す。",
-            "ko": "a 이상 b 이하의 랜덤 소수를 반환한다.",
+            "ko": "a 이상 b 이하의 랜덤 부동소수점 수를 반환한다.",
             "pt": "Retorna um número de ponto flutuante aleatório de a a b (inclusive).",
             "ru": "Возвращает случайное число с плавающей запятой от a до b (включительно).",
             "tr": "a ile b arasında (dahil) rastgele bir ondalıklı sayı döndürür.",
             "uk": "Повертає випадкове число з плаваючою комою від a до b (включно)."
           },
-          "return": {
-            "type": "float",
-            "desc": {
-              "en": "Random float from a to b",
-              "cn": "a到b的随机小数",
-              "de": "Zufällige Gleitkommazahl von a bis b",
-              "es": "Número decimal aleatorio de a a b",
-              "fr": "Nombre décimal aléatoire de a à b",
-              "it": "Numero decimale casuale da a a b",
-              "ja": "a以上b以下のランダムな小数",
-              "ko": "a에서 b 사이의 랜덤 소수",
-              "pt": "Número decimal aleatório de a a b",
-              "ru": "Случайное дробное число от a до b",
-              "tr": "a ile b arasında rastgele ondalık sayı",
-              "uk": "Випадкове дробове число від a до b"
-            }
-          },
-          "advanced": false,
           "params": [
             {
               "name": "a",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Minimum value (inclusive)",
                 "cn": "最小值（含）",
                 "de": "Minimalwert (einschließlich)",
@@ -7608,7 +7575,7 @@
             {
               "name": "b",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Maximum value (inclusive)",
                 "cn": "最大值（含）",
                 "de": "Maximalwert (einschließlich)",
@@ -7623,7 +7590,25 @@
                 "uk": "Максимальне значення (включно)"
               }
             }
-          ]
+          ],
+          "returns": {
+            "type": "float",
+            "description": {
+              "en": "Random float from a to b",
+              "cn": "a到b的随机小数",
+              "de": "Zufällige Gleitkommazahl von a bis b",
+              "es": "Número decimal aleatorio de a a b",
+              "fr": "Nombre décimal aléatoire de a à b",
+              "it": "Numero decimale casuale da a a b",
+              "ja": "a以上b以下のランダムな小数",
+              "ko": "a에서 b 사이의 랜덤 부동소수점 수",
+              "pt": "Número decimal aleatório de a a b",
+              "ru": "Случайное дробное число от a до b",
+              "tr": "a ile b arasında rastgele ondalık sayı",
+              "uk": "Випадкове дробове число від a до b"
+            }
+          },
+          "advanced": false
         },
         {
           "name": "nseed",
@@ -7647,7 +7632,7 @@
             {
               "name": "seed",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Seed value (non-negative integer)",
                 "cn": "种子值（非负整数）",
                 "de": "Seed-Wert (nicht-negative Ganzzahl)",
@@ -7663,7 +7648,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": false
@@ -7686,29 +7671,11 @@
             "tr": "Belirtilen koordinatlar için Perlin gürültü değerini döndürür.",
             "uk": "Повертає значення шуму Перліна для вказаних координат."
           },
-          "return": {
-            "type": "float",
-            "desc": {
-              "en": "Perlin noise value",
-              "cn": "Perlin噪声值",
-              "de": "Perlin-Noise-Wert",
-              "es": "Valor de ruido Perlin",
-              "fr": "Valeur de bruit Perlin",
-              "it": "Valore rumore Perlin",
-              "ja": "Perlinノイズ値",
-              "ko": "Perlin 노이즈 값",
-              "pt": "Valor de ruído Perlin",
-              "ru": "Значение шума Perlin",
-              "tr": "Perlin gürültü değeri",
-              "uk": "Значення шуму Perlin"
-            }
-          },
-          "advanced": false,
           "params": [
             {
               "name": "x",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "X coordinate",
                 "cn": "X坐标",
                 "de": "X-Koordinate",
@@ -7726,7 +7693,7 @@
             {
               "name": "y",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Y coordinate. Defaults to 0.",
                 "cn": "Y坐标。默认为 0。",
                 "de": "Y-Koordinate. Standard ist 0.",
@@ -7744,7 +7711,7 @@
             {
               "name": "z",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Z coordinate. Defaults to 0.",
                 "cn": "Z坐标。默认为 0。",
                 "de": "Z-Koordinate. Standard ist 0.",
@@ -7759,7 +7726,25 @@
                 "uk": "Координата Z. За замовчуванням 0."
               }
             }
-          ]
+          ],
+          "returns": {
+            "type": "float",
+            "description": {
+              "en": "Perlin noise value",
+              "cn": "Perlin噪声值",
+              "de": "Perlin-Noise-Wert",
+              "es": "Valor de ruido Perlin",
+              "fr": "Valeur de bruit Perlin",
+              "it": "Valore rumore Perlin",
+              "ja": "Perlinノイズ値",
+              "ko": "Perlin 노이즈 값",
+              "pt": "Valor de ruído Perlin",
+              "ru": "Значение шума Perlin",
+              "tr": "Perlin gürültü değeri",
+              "uk": "Значення шуму Perlin"
+            }
+          },
+          "advanced": false
         }
       ]
     },
@@ -7783,7 +7768,7 @@
         {
           "name": "Font",
           "type": "class",
-          "signature": "Font(filename, font_size=10)",
+          "signature": "Font(filename, font_size=10.0)",
           "description": {
             "en": "Create a Font instance from a font file (BDF/OTF/TTF/TTC).",
             "cn": "从字体文件 (BDF/OTF/TTF/TTC) 创建Font实例。",
@@ -7802,7 +7787,7 @@
             {
               "name": "filename",
               "type": "str",
-              "desc": {
+              "description": {
                 "en": "Font file name (BDF/OTF/TTF/TTC)",
                 "cn": "字体文件名 (BDF/OTF/TTF/TTC)",
                 "de": "Schriftdateiname (BDF/OTF/TTF/TTC)",
@@ -7820,7 +7805,7 @@
             {
               "name": "font_size",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Font size. Defaults to 10.0. Not used for BDF.",
                 "cn": "字体大小。默认为 10.0。BDF 不使用。",
                 "de": "Schriftgröße. Standard ist 10.0. Nicht für BDF verwendet.",
@@ -7836,9 +7821,9 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "Font",
-            "desc": {
+            "description": {
               "en": "New Font instance",
               "cn": "新Font实例",
               "de": "Neue Font-Instanz",
@@ -7877,7 +7862,7 @@
             {
               "name": "s",
               "type": "str",
-              "desc": {
+              "description": {
                 "en": "String to measure",
                 "cn": "要测量的字符串",
                 "de": "Zu messende Zeichenkette",
@@ -7893,9 +7878,9 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "int",
-            "desc": {
+            "description": {
               "en": "Width in pixels",
               "cn": "像素宽度",
               "de": "Breite in Pixeln",
@@ -7949,29 +7934,11 @@
             "tr": "Belirtilen boyutta yeni bir Image örneği oluşturur.",
             "uk": "Створює новий екземпляр Image із зазначеним розміром."
           },
-          "return": {
-            "type": "Image",
-            "desc": {
-              "en": "New Image instance",
-              "cn": "新Image实例",
-              "de": "Neue Image-Instanz",
-              "es": "Nueva instancia Image",
-              "fr": "Nouvelle instance Image",
-              "it": "Nuova istanza Image",
-              "ja": "新しいImageインスタンス",
-              "ko": "새 Image 인스턴스",
-              "pt": "Nova instância Image",
-              "ru": "Новый экземпляр Image",
-              "tr": "Yeni Image örneği",
-              "uk": "Новий екземпляр Image"
-            }
-          },
-          "advanced": true,
           "params": [
             {
               "name": "width",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Image width",
                 "cn": "图像宽度",
                 "de": "Bildbreite",
@@ -7989,7 +7956,7 @@
             {
               "name": "height",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Image height",
                 "cn": "图像高度",
                 "de": "Bildhöhe",
@@ -8004,7 +7971,25 @@
                 "uk": "Висота зображення"
               }
             }
-          ]
+          ],
+          "returns": {
+            "type": "Image",
+            "description": {
+              "en": "New Image instance",
+              "cn": "新Image实例",
+              "de": "Neue Image-Instanz",
+              "es": "Nueva instancia Image",
+              "fr": "Nouvelle instance Image",
+              "it": "Nuova istanza Image",
+              "ja": "新しいImageインスタンス",
+              "ko": "새 Image 인스턴스",
+              "pt": "Nova instância Image",
+              "ru": "Новый экземпляр Image",
+              "tr": "Yeni Image örneği",
+              "uk": "Новий екземпляр Image"
+            }
+          },
+          "advanced": true
         },
         {
           "name": "Image.from_image",
@@ -8024,29 +8009,11 @@
             "tr": "Bir görüntü dosyasından Image örneği oluşturur.",
             "uk": "Створює екземпляр Image із файлу зображення."
           },
-          "return": {
-            "type": "Image",
-            "desc": {
-              "en": "Image instance from file",
-              "cn": "从文件创建的Image实例",
-              "de": "Image-Instanz aus Datei",
-              "es": "Instancia Image desde archivo",
-              "fr": "Instance Image depuis un fichier",
-              "it": "Istanza Image da file",
-              "ja": "ファイルから作成したImageインスタンス",
-              "ko": "파일로부터 생성된 Image 인스턴스",
-              "pt": "Instância Image a partir de arquivo",
-              "ru": "Экземпляр Image из файла",
-              "tr": "Dosyadan oluşturulan Image örneği",
-              "uk": "Екземпляр Image з файлу"
-            }
-          },
-          "advanced": true,
           "params": [
             {
               "name": "filename",
               "type": "str",
-              "desc": {
+              "description": {
                 "en": "Image file name",
                 "cn": "图像文件名",
                 "de": "Bilddateiname",
@@ -8064,7 +8031,7 @@
             {
               "name": "include_colors",
               "type": "bool",
-              "desc": {
+              "description": {
                 "en": "Include palette colors from file. Defaults to False.",
                 "cn": "从文件导入调色板颜色。默认为 False。",
                 "de": "Palettenfarben aus Datei einbeziehen. Standard ist False.",
@@ -8079,7 +8046,25 @@
                 "uk": "Включити кольори палітри з файлу. За замовчуванням False."
               }
             }
-          ]
+          ],
+          "returns": {
+            "type": "Image",
+            "description": {
+              "en": "Image instance from file",
+              "cn": "从文件创建的Image实例",
+              "de": "Image-Instanz aus Datei",
+              "es": "Instancia Image desde archivo",
+              "fr": "Instance Image depuis un fichier",
+              "it": "Istanza Image da file",
+              "ja": "ファイルから作成したImageインスタンス",
+              "ko": "파일로부터 생성된 Image 인스턴스",
+              "pt": "Instância Image a partir de arquivo",
+              "ru": "Экземпляр Image из файла",
+              "tr": "Dosyadan oluşturulan Image örneği",
+              "uk": "Екземпляр Image з файлу"
+            }
+          },
+          "advanced": true
         },
         {
           "name": "Image.width",
@@ -8087,7 +8072,7 @@
           "signature": "Image.width",
           "description": {
             "en": "The width of the image.",
-            "cn": "图像的宽度",
+            "cn": "图像的宽度。",
             "de": "Die Breite des Bildes.",
             "es": "El ancho de la imagen.",
             "fr": "La largeur de l'image.",
@@ -8108,7 +8093,7 @@
           "signature": "Image.height",
           "description": {
             "en": "The height of the image.",
-            "cn": "图像的高度",
+            "cn": "图像的高度。",
             "de": "Die Höhe des Bildes.",
             "es": "El alto de la imagen.",
             "fr": "La hauteur de l'image.",
@@ -8141,18 +8126,11 @@
             "tr": "(x, y) konumunda onaltılık rakam dizelerinin listesiyle görüntü ayarlar. Her karakter bir renk indeksini (0-f) temsil eder.",
             "uk": "Встановлює зображення в (x, y) за допомогою списку шістнадцяткових рядків. Кожен символ представляє індекс кольору (0-f)."
           },
-          "examples": [
-            "pyxel.images[0].set(10, 10, [\"0123\", \"4567\", \"89ab\", \"cdef\"])"
-          ],
-          "return": {
-            "type": "None"
-          },
-          "advanced": false,
           "params": [
             {
               "name": "x",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "X coordinate",
                 "cn": "X坐标",
                 "de": "X-Koordinate",
@@ -8170,7 +8148,7 @@
             {
               "name": "y",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Y coordinate",
                 "cn": "Y坐标",
                 "de": "Y-Koordinate",
@@ -8188,7 +8166,7 @@
             {
               "name": "data",
               "type": "list[str]",
-              "desc": {
+              "description": {
                 "en": "Image data as a list of strings",
                 "cn": "字符串列表形式的图像数据",
                 "de": "Bilddaten als Liste von Zeichenketten",
@@ -8203,7 +8181,14 @@
                 "uk": "Дані зображення у вигляді списку рядків"
               }
             }
-          ]
+          ],
+          "returns": {
+            "type": "None"
+          },
+          "examples": [
+            "pyxel.images[0].set(10, 10, [\"0123\", \"4567\", \"89ab\", \"cdef\"])"
+          ],
+          "advanced": false
         },
         {
           "name": "Image.load",
@@ -8223,15 +8208,11 @@
             "tr": "(x, y) konumunda bir görüntü dosyası (PNG/GIF/JPEG) yükler.",
             "uk": "Завантажує файл зображення (PNG/GIF/JPEG) в (x, y)."
           },
-          "return": {
-            "type": "None"
-          },
-          "advanced": false,
           "params": [
             {
               "name": "x",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "X coordinate",
                 "cn": "X坐标",
                 "de": "X-Koordinate",
@@ -8249,7 +8230,7 @@
             {
               "name": "y",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Y coordinate",
                 "cn": "Y坐标",
                 "de": "Y-Koordinate",
@@ -8267,7 +8248,7 @@
             {
               "name": "filename",
               "type": "str",
-              "desc": {
+              "description": {
                 "en": "Image file name (PNG/GIF/JPEG)",
                 "cn": "图像文件名 (PNG/GIF/JPEG)",
                 "de": "Bilddateiname (PNG/GIF/JPEG)",
@@ -8285,7 +8266,7 @@
             {
               "name": "include_colors",
               "type": "bool",
-              "desc": {
+              "description": {
                 "en": "Include palette colors from file. Defaults to False.",
                 "cn": "从文件导入调色板颜色。默认为 False。",
                 "de": "Palettenfarben aus Datei einbeziehen. Standard ist False.",
@@ -8300,7 +8281,11 @@
                 "uk": "Включити кольори палітри з файлу. За замовчуванням False."
               }
             }
-          ]
+          ],
+          "returns": {
+            "type": "None"
+          },
+          "advanced": false
         },
         {
           "name": "Image.pget",
@@ -8320,29 +8305,11 @@
             "tr": "(x, y) konumundaki pikselin rengini alır.",
             "uk": "Отримує колір пікселя в точці (x, y)."
           },
-          "return": {
-            "type": "int",
-            "desc": {
-              "en": "Color of the pixel",
-              "cn": "像素的颜色",
-              "de": "Farbe des Pixels",
-              "es": "Color del píxel",
-              "fr": "Couleur du pixel",
-              "it": "Colore del pixel",
-              "ja": "ピクセルの色",
-              "ko": "픽셀의 색상",
-              "pt": "Cor do pixel",
-              "ru": "Цвет пикселя",
-              "tr": "Pikselin rengi",
-              "uk": "Колір пікселя"
-            }
-          },
-          "advanced": false,
           "params": [
             {
               "name": "x",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "X coordinate",
                 "cn": "X坐标",
                 "de": "X-Koordinate",
@@ -8360,7 +8327,7 @@
             {
               "name": "y",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Y coordinate",
                 "cn": "Y坐标",
                 "de": "Y-Koordinate",
@@ -8375,7 +8342,25 @@
                 "uk": "Координата Y"
               }
             }
-          ]
+          ],
+          "returns": {
+            "type": "int",
+            "description": {
+              "en": "Color of the pixel",
+              "cn": "像素的颜色",
+              "de": "Farbe des Pixels",
+              "es": "Color del píxel",
+              "fr": "Couleur du pixel",
+              "it": "Colore del pixel",
+              "ja": "ピクセルの色",
+              "ko": "픽셀의 색상",
+              "pt": "Cor do pixel",
+              "ru": "Цвет пикселя",
+              "tr": "Pikselin rengi",
+              "uk": "Колір пікселя"
+            }
+          },
+          "advanced": false
         },
         {
           "name": "Image.pset",
@@ -8395,15 +8380,11 @@
             "tr": "(x, y) konumunda col rengiyle bir piksel çizer.",
             "uk": "Малює піксель кольору col у (x, y)."
           },
-          "return": {
-            "type": "None"
-          },
-          "advanced": false,
           "params": [
             {
               "name": "x",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "X coordinate",
                 "cn": "X坐标",
                 "de": "X-Koordinate",
@@ -8421,7 +8402,7 @@
             {
               "name": "y",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Y coordinate",
                 "cn": "Y坐标",
                 "de": "Y-Koordinate",
@@ -8439,7 +8420,7 @@
             {
               "name": "col",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Color",
                 "cn": "颜色",
                 "de": "Farbe",
@@ -8454,7 +8435,11 @@
                 "uk": "Колір"
               }
             }
-          ]
+          ],
+          "returns": {
+            "type": "None"
+          },
+          "advanced": false
         },
         {
           "name": "Image Drawing",
@@ -8468,7 +8453,7 @@
             "fr": "Les instances d'Image prennent en charge toutes les fonctions de dessin de la section Graphiques. Elles fonctionnent de la même manière mais dessinent sur l'image au lieu de l'écran.",
             "it": "Le istanze di Image supportano tutte le funzioni di disegno della sezione Grafica. Funzionano allo stesso modo ma disegnano sull'immagine anziché sullo schermo.",
             "ja": "Imageインスタンスはグラフィックスセクションの全描画関数をサポート。画面ではなくイメージに描画する。",
-            "ko": "Image 인스턴스는 그래픽 섹션의 모든 그리기 함수를 지원한다.화면이 아닌 이미지에 그린다.",
+            "ko": "Image 인스턴스는 그래픽 섹션의 모든 그리기 함수를 지원한다. 화면이 아닌 이미지에 그린다.",
             "pt": "As instâncias de Image suportam todas as funções de desenho da seção de Gráficos. Funcionam da mesma forma, mas desenham na imagem em vez da tela.",
             "ru": "Экземпляры Image поддерживают все функции рисования из раздела «Графика». Они работают так же, но рисуют на изображении вместо экрана.",
             "tr": "Image örnekleri, Grafikler bölümündeki tüm çizim işlevlerini destekler. Aynı şekilde çalışır ancak ekran yerine görüntü üzerine çizer.",
@@ -8494,9 +8479,9 @@
             "tr": "Görüntünün ham veri işaretçisini ctypes c_uint8 dizisi olarak döndürür.",
             "uk": "Повертає вказівник на необроблені дані зображення у вигляді масиву ctypes c_uint8."
           },
-          "return": {
+          "returns": {
             "type": "Any",
-            "desc": {
+            "description": {
               "en": "Raw data pointer",
               "cn": "原始数据指针",
               "de": "Rohdatenzeiger",
@@ -8535,7 +8520,7 @@
             {
               "name": "filename",
               "type": "str",
-              "desc": {
+              "description": {
                 "en": "Output file name",
                 "cn": "输出文件名",
                 "de": "Ausgabedateiname",
@@ -8553,7 +8538,7 @@
             {
               "name": "scale",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Scale factor",
                 "cn": "缩放倍率",
                 "de": "Skalierungsfaktor",
@@ -8569,7 +8554,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": true
@@ -8611,29 +8596,11 @@
             "tr": "Yeni bir Tilemap örneği oluşturur.",
             "uk": "Створює новий екземпляр Tilemap."
           },
-          "return": {
-            "type": "Tilemap",
-            "desc": {
-              "en": "New Tilemap instance",
-              "cn": "新Tilemap实例",
-              "de": "Neue Tilemap-Instanz",
-              "es": "Nueva instancia Tilemap",
-              "fr": "Nouvelle instance Tilemap",
-              "it": "Nuova istanza Tilemap",
-              "ja": "新しいTilemapインスタンス",
-              "ko": "새 Tilemap 인스턴스",
-              "pt": "Nova instância Tilemap",
-              "ru": "Новый экземпляр Tilemap",
-              "tr": "Yeni Tilemap örneği",
-              "uk": "Новий екземпляр Tilemap"
-            }
-          },
-          "advanced": true,
           "params": [
             {
               "name": "width",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Tilemap width",
                 "cn": "瓦片地图宽度",
                 "de": "Tilemap-Breite",
@@ -8651,7 +8618,7 @@
             {
               "name": "height",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Tilemap height",
                 "cn": "瓦片地图高度",
                 "de": "Tilemap-Höhe",
@@ -8669,7 +8636,7 @@
             {
               "name": "img",
               "type": "int/Image",
-              "desc": {
+              "description": {
                 "en": "Image bank number (0-2) or Image instance",
                 "cn": "图像库编号 (0-2) 或Image实例",
                 "de": "Bildbank-Nummer (0-2) oder Image-Instanz",
@@ -8684,7 +8651,25 @@
                 "uk": "Номер банку зображень (0-2) або екземпляр Image"
               }
             }
-          ]
+          ],
+          "returns": {
+            "type": "Tilemap",
+            "description": {
+              "en": "New Tilemap instance",
+              "cn": "新Tilemap实例",
+              "de": "Neue Tilemap-Instanz",
+              "es": "Nueva instancia Tilemap",
+              "fr": "Nouvelle instance Tilemap",
+              "it": "Nuova istanza Tilemap",
+              "ja": "新しいTilemapインスタンス",
+              "ko": "새 Tilemap 인스턴스",
+              "pt": "Nova instância Tilemap",
+              "ru": "Новый экземпляр Tilemap",
+              "tr": "Yeni Tilemap örneği",
+              "uk": "Новий екземпляр Tilemap"
+            }
+          },
+          "advanced": true
         },
         {
           "name": "Tilemap.from_tmx",
@@ -8704,29 +8689,11 @@
             "tr": "Bir TMX dosyasından Tilemap örneği oluşturur.",
             "uk": "Створює екземпляр Tilemap із файлу TMX."
           },
-          "return": {
-            "type": "Tilemap",
-            "desc": {
-              "en": "Tilemap instance from TMX file",
-              "cn": "从TMX文件创建的Tilemap实例",
-              "de": "Tilemap-Instanz aus TMX-Datei",
-              "es": "Instancia Tilemap desde archivo TMX",
-              "fr": "Instance Tilemap depuis un fichier TMX",
-              "it": "Istanza Tilemap da file TMX",
-              "ja": "TMXファイルから作成したTilemapインスタンス",
-              "ko": "TMX 파일로부터 생성된 Tilemap 인스턴스",
-              "pt": "Instância Tilemap a partir de arquivo TMX",
-              "ru": "Экземпляр Tilemap из TMX-файла",
-              "tr": "TMX dosyasından oluşturulan Tilemap örneği",
-              "uk": "Екземпляр Tilemap з TMX-файлу"
-            }
-          },
-          "advanced": true,
           "params": [
             {
               "name": "filename",
               "type": "str",
-              "desc": {
+              "description": {
                 "en": "TMX file name",
                 "cn": "TMX文件名",
                 "de": "TMX-Dateiname",
@@ -8744,7 +8711,7 @@
             {
               "name": "layer",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Layer number (0-)",
                 "cn": "图层编号 (0-)",
                 "de": "Ebenennummer (0-)",
@@ -8759,7 +8726,25 @@
                 "uk": "Номер шару (0-)"
               }
             }
-          ]
+          ],
+          "returns": {
+            "type": "Tilemap",
+            "description": {
+              "en": "Tilemap instance from TMX file",
+              "cn": "从TMX文件创建的Tilemap实例",
+              "de": "Tilemap-Instanz aus TMX-Datei",
+              "es": "Instancia Tilemap desde archivo TMX",
+              "fr": "Instance Tilemap depuis un fichier TMX",
+              "it": "Istanza Tilemap da file TMX",
+              "ja": "TMXファイルから作成したTilemapインスタンス",
+              "ko": "TMX 파일로부터 생성된 Tilemap 인스턴스",
+              "pt": "Instância Tilemap a partir de arquivo TMX",
+              "ru": "Экземпляр Tilemap из TMX-файла",
+              "tr": "TMX dosyasından oluşturulan Tilemap örneği",
+              "uk": "Екземпляр Tilemap з TMX-файлу"
+            }
+          },
+          "advanced": true
         },
         {
           "name": "Tilemap.width",
@@ -8842,18 +8827,11 @@
             "tr": "(x, y) konumunda dize listesiyle tilemap ayarlar. Her karo, boşluklarla ayrılmış 4 haneli onaltılık değerle (image_tx, image_ty) temsil edilir.",
             "uk": "Встановлює тайлмап в (x, y) за допомогою списку рядків. Кожен тайл — 4-значне шістнадцяткове значення (image_tx, image_ty), розділені пробілами."
           },
-          "examples": [
-            "pyxel.tilemaps[0].set(0, 0, [\"0000 0100 a0b0\", \"0001 0101 a1b1\"])"
-          ],
-          "return": {
-            "type": "None"
-          },
-          "advanced": false,
           "params": [
             {
               "name": "x",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "X coordinate",
                 "cn": "X坐标",
                 "de": "X-Koordinate",
@@ -8871,7 +8849,7 @@
             {
               "name": "y",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Y coordinate",
                 "cn": "Y坐标",
                 "de": "Y-Koordinate",
@@ -8889,7 +8867,7 @@
             {
               "name": "data",
               "type": "list[str]",
-              "desc": {
+              "description": {
                 "en": "Tilemap data as a list of strings",
                 "cn": "字符串列表形式的瓦片地图数据",
                 "de": "Tilemap-Daten als Liste von Zeichenketten",
@@ -8904,7 +8882,14 @@
                 "uk": "Дані тайлової карти у вигляді списку рядків"
               }
             }
-          ]
+          ],
+          "returns": {
+            "type": "None"
+          },
+          "examples": [
+            "pyxel.tilemaps[0].set(0, 0, [\"0000 0100 a0b0\", \"0001 0101 a1b1\"])"
+          ],
+          "advanced": false
         },
         {
           "name": "Tilemap.load",
@@ -8924,15 +8909,11 @@
             "tr": "(x, y) konumunda TMX dosyasından layer (0-) katmanını yükler.",
             "uk": "Завантажує шар layer (0-) з файлу TMX у (x, y)."
           },
-          "return": {
-            "type": "None"
-          },
-          "advanced": false,
           "params": [
             {
               "name": "x",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "X coordinate",
                 "cn": "X坐标",
                 "de": "X-Koordinate",
@@ -8950,7 +8931,7 @@
             {
               "name": "y",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Y coordinate",
                 "cn": "Y坐标",
                 "de": "Y-Koordinate",
@@ -8968,7 +8949,7 @@
             {
               "name": "filename",
               "type": "str",
-              "desc": {
+              "description": {
                 "en": "TMX file name",
                 "cn": "TMX文件名",
                 "de": "TMX-Dateiname",
@@ -8986,7 +8967,7 @@
             {
               "name": "layer",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Layer number (0-)",
                 "cn": "图层编号 (0-)",
                 "de": "Ebenennummer (0-)",
@@ -9001,7 +8982,11 @@
                 "uk": "Номер шару (0-)"
               }
             }
-          ]
+          ],
+          "returns": {
+            "type": "None"
+          },
+          "advanced": false
         },
         {
           "name": "Tilemap.pget",
@@ -9015,35 +9000,17 @@
             "fr": "Obtient le tile en (x, y). Un tile est un tuple de (image_tx, image_ty).",
             "it": "Ottiene il tile in (x, y). Un tile è una tupla di (image_tx, image_ty).",
             "ja": "(x, y) のタイルを取得する。タイルは (image_tx, image_ty) のタプル。",
-            "ko": "(x, y)의 타일을 가져온다.타일은 (image_tx, image_ty) 튜플이다.",
+            "ko": "(x, y)의 타일을 가져온다. 타일은 (image_tx, image_ty) 튜플이다.",
             "pt": "Obtém o tile em (x, y). Um tile é uma tupla de (image_tx, image_ty).",
             "ru": "Возвращает тайл в (x, y). Тайл — это кортеж (image_tx, image_ty).",
             "tr": "(x, y) konumundaki tile'ı döndürür. Tile, (image_tx, image_ty) demetidir.",
             "uk": "Повертає тайл у (x, y). Тайл — це кортеж (image_tx, image_ty)."
           },
-          "return": {
-            "type": "tuple[int, int]",
-            "desc": {
-              "en": "(image_tx, image_ty)",
-              "cn": "(image_tx, image_ty)",
-              "de": "(image_tx, image_ty)",
-              "es": "(image_tx, image_ty)",
-              "fr": "(image_tx, image_ty)",
-              "it": "(image_tx, image_ty)",
-              "ja": "(image_tx, image_ty)",
-              "ko": "(image_tx, image_ty)",
-              "pt": "(image_tx, image_ty)",
-              "ru": "(image_tx, image_ty)",
-              "tr": "(image_tx, image_ty)",
-              "uk": "(image_tx, image_ty)"
-            }
-          },
-          "advanced": false,
           "params": [
             {
               "name": "x",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "X coordinate",
                 "cn": "X坐标",
                 "de": "X-Koordinate",
@@ -9061,7 +9028,7 @@
             {
               "name": "y",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Y coordinate",
                 "cn": "Y坐标",
                 "de": "Y-Koordinate",
@@ -9076,7 +9043,25 @@
                 "uk": "Координата Y"
               }
             }
-          ]
+          ],
+          "returns": {
+            "type": "tuple[int, int]",
+            "description": {
+              "en": "(image_tx, image_ty)",
+              "cn": "(image_tx, image_ty)",
+              "de": "(image_tx, image_ty)",
+              "es": "(image_tx, image_ty)",
+              "fr": "(image_tx, image_ty)",
+              "it": "(image_tx, image_ty)",
+              "ja": "(image_tx, image_ty)",
+              "ko": "(image_tx, image_ty)",
+              "pt": "(image_tx, image_ty)",
+              "ru": "(image_tx, image_ty)",
+              "tr": "(image_tx, image_ty)",
+              "uk": "(image_tx, image_ty)"
+            }
+          },
+          "advanced": false
         },
         {
           "name": "Tilemap.pset",
@@ -9090,21 +9075,17 @@
             "fr": "Définit un tile en (x, y). Un tile est un tuple de (image_tx, image_ty).",
             "it": "Imposta un tile in (x, y). Un tile è una tupla di (image_tx, image_ty).",
             "ja": "(x, y) にタイルを設定する。タイルは (image_tx, image_ty) のタプル。",
-            "ko": "(x, y)에 타일을 설정한다.타일은 (image_tx, image_ty) 튜플이다.",
+            "ko": "(x, y)에 타일을 설정한다. 타일은 (image_tx, image_ty) 튜플이다.",
             "pt": "Define um tile em (x, y). Um tile é uma tupla de (image_tx, image_ty).",
             "ru": "Устанавливает тайл в (x, y). Тайл — это кортеж (image_tx, image_ty).",
             "tr": "(x, y) konumunda bir tile ayarlar. Tile, (image_tx, image_ty) demetidir.",
             "uk": "Встановлює тайл у (x, y). Тайл — це кортеж (image_tx, image_ty)."
           },
-          "return": {
-            "type": "None"
-          },
-          "advanced": false,
           "params": [
             {
               "name": "x",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "X coordinate",
                 "cn": "X坐标",
                 "de": "X-Koordinate",
@@ -9122,7 +9103,7 @@
             {
               "name": "y",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Y coordinate",
                 "cn": "Y坐标",
                 "de": "Y-Koordinate",
@@ -9140,7 +9121,7 @@
             {
               "name": "tile",
               "type": "tuple[int, int]",
-              "desc": {
+              "description": {
                 "en": "Tile as (image_tx, image_ty)",
                 "cn": "瓦片 (image_tx, image_ty)",
                 "de": "Kachel als (image_tx, image_ty)",
@@ -9155,7 +9136,11 @@
                 "uk": "Тайл у форматі (image_tx, image_ty)"
               }
             }
-          ]
+          ],
+          "returns": {
+            "type": "None"
+          },
+          "advanced": false
         },
         {
           "name": "Tilemap Drawing",
@@ -9169,7 +9154,7 @@
             "fr": "Les instances de Tilemap prennent en charge les fonctions de dessin de la section Graphiques. Elles fonctionnent de la même manière mais dessinent des tiles sur la tilemap au lieu de pixels sur l'écran. Utilisez un tuple de tile (image_tx, image_ty) au lieu d'une valeur de couleur.",
             "it": "Le istanze di Tilemap supportano le funzioni di disegno della sezione Grafica. Funzionano allo stesso modo ma disegnano tile sulla tilemap anziché pixel sullo schermo. Usare una tupla tile (image_tx, image_ty) al posto di un valore di colore.",
             "ja": "Tilemapインスタンスはグラフィックスセクションの描画関数をサポート。画面へのピクセル描画の代わりにタイルマップへタイルを描画する。色の代わりにタイルのタプル (image_tx, image_ty) を指定する。",
-            "ko": "Tilemap 인스턴스는 그래픽 섹션의 그리기 함수를 지원한다.화면에 픽셀을 그리는 대신 타일맵에 타일을 그린다.색상 값 대신 타일 튜플 (image_tx, image_ty)을 사용한다.",
+            "ko": "Tilemap 인스턴스는 그래픽 섹션의 그리기 함수를 지원한다. 화면에 픽셀을 그리는 대신 타일맵에 타일을 그린다. 색상 값 대신 타일 튜플 (image_tx, image_ty)을 사용한다.",
             "pt": "As instâncias de Tilemap suportam funções de desenho da seção de Gráficos. Funcionam da mesma forma, mas desenham tiles no tilemap em vez de píxeis na tela. Use uma tupla de tile (image_tx, image_ty) em vez de um valor de cor.",
             "ru": "Экземпляры Tilemap поддерживают функции рисования из раздела «Графика». Они работают так же, но рисуют тайлы на тайловой карте вместо пикселей на экране. Используйте кортеж тайла (image_tx, image_ty) вместо значения цвета.",
             "tr": "Tilemap örnekleri, Grafikler bölümündeki çizim işlevlerini destekler. Aynı şekilde çalışır ancak ekrana piksel yerine tilemap'e tile çizer. Renk değeri yerine tile demeti (image_tx, image_ty) kullanın.",
@@ -9199,7 +9184,7 @@
             {
               "name": "x",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Rectangle X position",
                 "cn": "矩形的X位置",
                 "de": "X-Position des Rechtecks",
@@ -9217,7 +9202,7 @@
             {
               "name": "y",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Rectangle Y position",
                 "cn": "矩形的Y位置",
                 "de": "Y-Position des Rechtecks",
@@ -9235,7 +9220,7 @@
             {
               "name": "w",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Rectangle width",
                 "cn": "矩形的宽度",
                 "de": "Breite des Rechtecks",
@@ -9253,7 +9238,7 @@
             {
               "name": "h",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Rectangle height",
                 "cn": "矩形的高度",
                 "de": "Höhe des Rechtecks",
@@ -9271,7 +9256,7 @@
             {
               "name": "dx",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Movement in X",
                 "cn": "X方向的移动量",
                 "de": "Verschiebung in X",
@@ -9289,7 +9274,7 @@
             {
               "name": "dy",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Movement in Y",
                 "cn": "Y方向的移动量",
                 "de": "Verschiebung in Y",
@@ -9307,7 +9292,7 @@
             {
               "name": "walls",
               "type": "list[tuple[int, int]]",
-              "desc": {
+              "description": {
                 "en": "List of wall tiles (image_tx, image_ty)",
                 "cn": "墙壁瓦片 (image_tx, image_ty) 的列表",
                 "de": "Liste der Wandkacheln (image_tx, image_ty)",
@@ -9323,9 +9308,9 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "tuple[float, float]",
-            "desc": {
+            "description": {
               "en": "Adjusted (dx, dy)",
               "cn": "校正后的 (dx, dy)",
               "de": "Angepasstes (dx, dy)",
@@ -9360,9 +9345,9 @@
             "tr": "Tilemap'in ham veri işaretçisini ctypes c_uint16 dizisi olarak döndürür (karo başına 4 bayt: image_tx, image_ty).",
             "uk": "Повертає вказівник на необроблені дані тайлмапу у вигляді масиву ctypes c_uint16 (4 байти на тайл: image_tx, image_ty)."
           },
-          "return": {
+          "returns": {
             "type": "Any",
-            "desc": {
+            "description": {
               "en": "Raw data pointer",
               "cn": "原始数据指针",
               "de": "Rohdatenzeiger",
@@ -9416,9 +9401,9 @@
             "tr": "Yeni bir Sound örneği oluşturur.",
             "uk": "Створює новий екземпляр Sound."
           },
-          "return": {
+          "returns": {
             "type": "Sound",
-            "desc": {
+            "description": {
               "en": "New Sound instance",
               "cn": "新Sound实例",
               "de": "Neue Sound-Instanz",
@@ -9447,7 +9432,7 @@
             "fr": "Liste des notes (0-59). Les valeurs plus élevées produisent des sons plus aigus. 33 = 'A2' (440 Hz). Les silences sont -1.",
             "it": "Lista delle note (0-59). Valori più alti producono tonalità più alte. 33 = 'A2' (440 Hz). Le pause sono -1.",
             "ja": "音程 (0-59) のリスト。数値が大きいほど音程は高く、33で'A2' (440Hz)。休符は-1。",
-            "ko": "음정(0-59) 목록.값이 클수록 음이 높아지며, 33은 'A2'(440Hz).쉼표는 -1.",
+            "ko": "음정(0-59) 목록. 값이 클수록 음이 높아지며, 33은 'A2'(440Hz). 쉼표는 -1.",
             "pt": "Lista de notas (0-59). Valores mais altos produzem tons mais altos. 33 = 'A2' (440 Hz). Pausas são -1.",
             "ru": "Список нот (0-59). Более высокие значения дают более высокий тон. 33 = 'A2' (440 Гц). Паузы обозначаются -1.",
             "tr": "Nota listesi (0-59). Değer büyüdükçe perde yükselir. 33 = 'A2' (440 Hz). Suslar -1'dir.",
@@ -9531,7 +9516,7 @@
             "fr": "Vitesse de lecture. 1 est le plus rapide, et plus le nombre est grand, plus la lecture est lente. À 120, une note équivaut à 1 seconde.",
             "it": "Velocità di riproduzione. 1 è la più veloce, e più grande è il numero, più lenta è la riproduzione. A 120, una nota equivale a 1 secondo.",
             "ja": "再生速度。1が最も速く、数値が大きいほど遅くなる。120で1音の長さが1秒になる。",
-            "ko": "재생 속도.1이 가장 빠르며 숫자가 클수록 느려진다.120이면 1음의 길이가 1초가 된다.",
+            "ko": "재생 속도. 1이 가장 빠르며 숫자가 클수록 느려진다. 120이면 1음의 길이가 1초가 된다.",
             "pt": "Velocidade de reprodução. 1 é a mais rápida, e quanto maior o número, mais lenta a reprodução. Em 120, uma nota equivale a 1 segundo.",
             "ru": "Скорость воспроизведения. 1 — самая быстрая, чем больше число, тем медленнее воспроизведение. При 120 одна нота равна 1 секунде.",
             "tr": "Çalma hızı. 1 en hızlıdır, sayı büyüdükçe çalma yavaşlar. 120'de bir nota 1 saniyeye eşittir.",
@@ -9552,21 +9537,17 @@
             "fr": "Définit les notes, les timbres, les volumes et les effets à l'aide de chaînes. Si la chaîne des timbres, des volumes ou des effets est plus courte que les notes, elle se répète depuis le début.",
             "it": "Imposta note, toni, volumi ed effetti usando stringhe. Se la stringa dei toni, dei volumi o degli effetti è più corta delle note, si ripete dall'inizio.",
             "ja": "文字列で音程、音色、音量、エフェクトを設定する。音色、音量、エフェクトの長さが音程より短い場合は先頭から繰り返される。",
-            "ko": "문자열로 음정, 음색, 음량, 효과를 설정한다.음색, 음량, 효과 문자열이 음정보다 짧으면 처음부터 반복된다.",
+            "ko": "문자열로 음정, 음색, 음량, 효과를 설정한다. 음색, 음량, 효과 문자열이 음정보다 짧으면 처음부터 반복된다.",
             "pt": "Define notas, timbres, volumes e efeitos usando strings. Se a string de timbres, volumes ou efeitos for mais curta que as notas, ela se repete desde o início.",
             "ru": "Устанавливает ноты, тембры, громкость и эффекты с помощью строк. Если строка тембров, громкости или эффектов короче строки нот, она повторяется сначала.",
             "tr": "Dizeler kullanarak notaları, tonları, ses seviyelerini ve efektleri ayarlar. Ton, ses seviyesi veya efekt dizesi notalardan kısaysa, baştan tekrarlanır.",
             "uk": "Встановлює ноти, тембри, гучність та ефекти за допомогою рядків. Якщо рядок тембрів, гучності або ефектів коротший за ноти, він повторюється спочатку."
           },
-          "return": {
-            "type": "None"
-          },
-          "advanced": false,
           "params": [
             {
               "name": "notes",
               "type": "str",
-              "desc": {
+              "description": {
                 "en": "Note string",
                 "cn": "音程字符串",
                 "de": "Notenzeichenkette",
@@ -9584,7 +9565,7 @@
             {
               "name": "tones",
               "type": "str",
-              "desc": {
+              "description": {
                 "en": "Tone string",
                 "cn": "音色字符串",
                 "de": "Klangzeichenkette",
@@ -9602,7 +9583,7 @@
             {
               "name": "volumes",
               "type": "str",
-              "desc": {
+              "description": {
                 "en": "Volume string",
                 "cn": "音量字符串",
                 "de": "Lautstärkezeichenkette",
@@ -9620,7 +9601,7 @@
             {
               "name": "effects",
               "type": "str",
-              "desc": {
+              "description": {
                 "en": "Effect string",
                 "cn": "效果字符串",
                 "de": "Effektzeichenkette",
@@ -9638,7 +9619,7 @@
             {
               "name": "speed",
               "type": "int",
-              "desc": {
+              "description": {
                 "en": "Playback speed",
                 "cn": "播放速度",
                 "de": "Wiedergabegeschwindigkeit",
@@ -9653,7 +9634,11 @@
                 "uk": "Швидкість відтворення"
               }
             }
-          ]
+          ],
+          "returns": {
+            "type": "None"
+          },
+          "advanced": false
         },
         {
           "name": "Sound.set_notes",
@@ -9673,18 +9658,11 @@
             "tr": "Nota adları (CDEFGAB), isteğe bağlı diyez (#) veya bemol (-), oktav (0-4) ve suslar (R) dizesiyle notaları ayarlar. Büyük/küçük harf duyarsız, boşluklar yok sayılır.",
             "uk": "Встановлює ноти за допомогою рядка з назв нот (CDEFGAB), необов'язкових дієз (#) або бемоль (-), октави (0-4) та пауз (R). Регістр не враховується, пробіли ігноруються."
           },
-          "examples": [
-            "pyxel.sounds[0].set_notes(\"g2b-2d3r rf3f3f3\")"
-          ],
-          "return": {
-            "type": "None"
-          },
-          "advanced": false,
           "params": [
             {
               "name": "notes",
               "type": "str",
-              "desc": {
+              "description": {
                 "en": "Notes string",
                 "cn": "notes字符串",
                 "de": "notes-Zeichenkette",
@@ -9699,7 +9677,12 @@
                 "uk": "Рядок notes"
               }
             }
-          ]
+          ],
+          "returns": {
+            "type": "None"
+          },
+          "examples": ["pyxel.sounds[0].set_notes(\"g2b-2d3r rf3f3f3\")"],
+          "advanced": false
         },
         {
           "name": "Sound.set_tones",
@@ -9719,18 +9702,11 @@
             "tr": "TSPN (veya özel ton numaraları için 0-9) dizesiyle tonları ayarlar. Büyük/küçük harf duyarsız, boşluklar yok sayılır.",
             "uk": "Встановлює тембри за допомогою рядка з TSPN (або 0-9 для власних номерів тембрів). Регістр не враховується, пробіли ігноруються."
           },
-          "examples": [
-            "pyxel.sounds[0].set_tones(\"ttss pppn\")"
-          ],
-          "return": {
-            "type": "None"
-          },
-          "advanced": false,
           "params": [
             {
               "name": "tones",
               "type": "str",
-              "desc": {
+              "description": {
                 "en": "Tones string",
                 "cn": "tones字符串",
                 "de": "tones-Zeichenkette",
@@ -9745,7 +9721,12 @@
                 "uk": "Рядок tones"
               }
             }
-          ]
+          ],
+          "returns": {
+            "type": "None"
+          },
+          "examples": ["pyxel.sounds[0].set_tones(\"ttss pppn\")"],
+          "advanced": false
         },
         {
           "name": "Sound.set_volumes",
@@ -9759,24 +9740,17 @@
             "fr": "Définit les volumes avec une chaîne de 01234567. Les espaces sont ignorés.",
             "it": "Imposta i volumi con una stringa di 01234567. Gli spazi sono ignorati.",
             "ja": "01234567の文字列で音量を設定する。空白は無視される。",
-            "ko": "01234567 문자열로 음량을 설정한다.공백은 무시된다.",
+            "ko": "01234567 문자열로 음량을 설정한다. 공백은 무시된다.",
             "pt": "Define os volumes com uma string de 01234567. Espaços são ignorados.",
             "ru": "Устанавливает громкость строкой из 01234567. Пробелы игнорируются.",
             "tr": "01234567 dizesiyle ses seviyelerini ayarlar. Boşluklar yok sayılır.",
             "uk": "Встановлює гучність рядком з 01234567. Пробіли ігноруються."
           },
-          "examples": [
-            "pyxel.sounds[0].set_volumes(\"7777 7531\")"
-          ],
-          "return": {
-            "type": "None"
-          },
-          "advanced": false,
           "params": [
             {
               "name": "volumes",
               "type": "str",
-              "desc": {
+              "description": {
                 "en": "Volumes string",
                 "cn": "volumes字符串",
                 "de": "volumes-Zeichenkette",
@@ -9791,7 +9765,12 @@
                 "uk": "Рядок volumes"
               }
             }
-          ]
+          ],
+          "returns": {
+            "type": "None"
+          },
+          "examples": ["pyxel.sounds[0].set_volumes(\"7777 7531\")"],
+          "advanced": false
         },
         {
           "name": "Sound.set_effects",
@@ -9805,24 +9784,17 @@
             "fr": "Définit les effets avec une chaîne de NSVFHQ. Insensible à la casse, les espaces sont ignorés.",
             "it": "Imposta gli effetti con una stringa di NSVFHQ. Non sensibile alle maiuscole, gli spazi sono ignorati.",
             "ja": "NSVFHQの文字列でエフェクトを設定する。大文字小文字不問、空白は無視される。",
-            "ko": "NSVFHQ 문자열로 효과를 설정한다.대소문자 불문, 공백은 무시된다.",
+            "ko": "NSVFHQ 문자열로 효과를 설정한다. 대소문자 불문, 공백은 무시된다.",
             "pt": "Define os efeitos com uma string de NSVFHQ. Não diferencia maiúsculas de minúsculas, espaços são ignorados.",
             "ru": "Устанавливает эффекты строкой из NSVFHQ. Регистр не учитывается, пробелы игнорируются.",
             "tr": "NSVFHQ dizesiyle efektleri ayarlar. Büyük/küçük harf duyarsız, boşluklar yok sayılır.",
             "uk": "Встановлює ефекти рядком з NSVFHQ. Регістр не враховується, пробіли ігноруються."
           },
-          "examples": [
-            "pyxel.sounds[0].set_effects(\"nfnf nvvs\")"
-          ],
-          "return": {
-            "type": "None"
-          },
-          "advanced": false,
           "params": [
             {
               "name": "effects",
               "type": "str",
-              "desc": {
+              "description": {
                 "en": "Effects string",
                 "cn": "effects字符串",
                 "de": "effects-Zeichenkette",
@@ -9837,7 +9809,12 @@
                 "uk": "Рядок effects"
               }
             }
-          ]
+          ],
+          "returns": {
+            "type": "None"
+          },
+          "examples": ["pyxel.sounds[0].set_effects(\"nfnf nvvs\")"],
+          "advanced": false
         },
         {
           "name": "Sound.mml",
@@ -9857,18 +9834,11 @@
             "tr": "Verilen MML dizesiyle MML moduna geçer. MML modunda nota ve hız gibi normal parametreler yok sayılır. Kullanılabilir MML komutları için Pyxel MML Komutları sayfasına bakın.",
             "uk": "Перемикає в режим MML із заданим рядком MML. У режимі MML звичайні параметри, такі як ноти та швидкість, ігноруються. Доступні MML-команди див. на сторінці MML-команди Pyxel."
           },
-          "examples": [
-            "pyxel.sounds[0].mml(\"T120 Q90 @1 V100 O5 L8 C4&C<G16R16>C.\")"
-          ],
-          "return": {
-            "type": "None"
-          },
-          "advanced": false,
           "params": [
             {
               "name": "code",
               "type": "str",
-              "desc": {
+              "description": {
                 "en": "MML string",
                 "cn": "MML字符串",
                 "de": "MML-String",
@@ -9883,7 +9853,14 @@
                 "uk": "Рядок MML"
               }
             }
-          ]
+          ],
+          "returns": {
+            "type": "None"
+          },
+          "examples": [
+            "pyxel.sounds[0].mml(\"T120 Q90 @1 V100 O5 L8 C4&C<G16R16>C.\")"
+          ],
+          "advanced": false
         },
         {
           "name": "Sound.mml",
@@ -9903,11 +9880,11 @@
             "tr": "MML modundan çıkar ve normal moda döner.",
             "uk": "Виходить з режиму MML і повертається до звичайного режиму."
           },
-          "return": {
+          "params": [],
+          "returns": {
             "type": "None"
           },
-          "advanced": false,
-          "params": []
+          "advanced": false
         },
         {
           "name": "Sound.pcm",
@@ -9920,25 +9897,18 @@
             "es": "Carga un archivo de audio (WAV/OGG) para reproducción.",
             "fr": "Charge un fichier audio (WAV/OGG) pour la lecture.",
             "it": "Carica un file audio (WAV/OGG) per la riproduzione.",
-            "ja": "オーディオファイル (WAV/OGG) を読み込んで再生する。",
+            "ja": "再生用のオーディオファイル (WAV/OGG) を読み込む。",
             "ko": "오디오 파일 (WAV/OGG)을 로드하여 재생한다.",
             "pt": "Carrega um arquivo de áudio (WAV/OGG) para reprodução.",
             "ru": "Загружает аудиофайл (WAV/OGG) для воспроизведения.",
             "tr": "Çalma için ses dosyası (WAV/OGG) yükler.",
             "uk": "Завантажує аудіофайл (WAV/OGG) для відтворення."
           },
-          "examples": [
-            "pyxel.sounds[0].pcm(\"sounds/bgm.ogg\")"
-          ],
-          "return": {
-            "type": "None"
-          },
-          "advanced": false,
           "params": [
             {
               "name": "filename",
               "type": "str",
-              "desc": {
+              "description": {
                 "en": "Audio file name (WAV/OGG)",
                 "cn": "音频文件名 (WAV/OGG)",
                 "de": "Audiodateiname (WAV/OGG)",
@@ -9953,7 +9923,12 @@
                 "uk": "Ім'я аудіофайлу (WAV/OGG)"
               }
             }
-          ]
+          ],
+          "returns": {
+            "type": "None"
+          },
+          "examples": ["pyxel.sounds[0].pcm(\"sounds/bgm.ogg\")"],
+          "advanced": false
         },
         {
           "name": "Sound.pcm",
@@ -9973,11 +9948,11 @@
             "tr": "PCM modundan çıkar ve normal moda döner.",
             "uk": "Виходить з режиму PCM і повертається до звичайного режиму."
           },
-          "return": {
+          "params": [],
+          "returns": {
             "type": "None"
           },
-          "advanced": false,
-          "params": []
+          "advanced": false
         },
         {
           "name": "Sound.save",
@@ -9997,15 +9972,11 @@
             "tr": "Belirtilen süre (saniye) boyunca sesin WAV dosyasını oluşturur.",
             "uk": "Створює WAV-файл звуку зазначеної тривалості у секундах."
           },
-          "return": {
-            "type": "None"
-          },
-          "advanced": true,
           "params": [
             {
               "name": "filename",
               "type": "str",
-              "desc": {
+              "description": {
                 "en": "Output WAV file name",
                 "cn": "输出WAV文件名",
                 "de": "Ausgabe-WAV-Dateiname",
@@ -10023,7 +9994,7 @@
             {
               "name": "sec",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Duration in seconds",
                 "cn": "持续时间（秒）",
                 "de": "Dauer in Sekunden",
@@ -10041,7 +10012,7 @@
             {
               "name": "ffmpeg",
               "type": "bool",
-              "desc": {
+              "description": {
                 "en": "Also create MP4 file (requires FFmpeg). Defaults to False.",
                 "cn": "同时创建MP4文件（需要FFmpeg）。默认为 False。",
                 "de": "Auch MP4-Datei erstellen (erfordert FFmpeg). Standard ist False.",
@@ -10056,7 +10027,11 @@
                 "uk": "Також створити файл MP4 (потрібен FFmpeg). За замовчуванням False."
               }
             }
-          ]
+          ],
+          "returns": {
+            "type": "None"
+          },
+          "advanced": true
         },
         {
           "name": "Sound.total_sec",
@@ -10070,15 +10045,15 @@
             "fr": "Renvoie la durée de lecture en secondes. Renvoie None pour les boucles infinies.",
             "it": "Restituisce il tempo di riproduzione in secondi. Restituisce None per i loop infiniti.",
             "ja": "サウンドの再生時間を秒で返す。無限ループ時はNoneを返す。",
-            "ko": "재생 시간을 초 단위로 반환한다.무한 루프 시 None을 반환한다.",
+            "ko": "재생 시간을 초 단위로 반환한다. 무한 루프 시 None을 반환한다.",
             "pt": "Retorna o tempo de reprodução em segundos. Retorna None para loops infinitos.",
             "ru": "Возвращает время воспроизведения в секундах. Возвращает None для бесконечных циклов.",
             "tr": "Oynatma süresini saniye cinsinden döndürür. Sonsuz döngüler için None döndürür.",
             "uk": "Повертає час відтворення у секундах. Повертає None для нескінченних циклів."
           },
-          "return": {
+          "returns": {
             "type": "float/None",
-            "desc": {
+            "description": {
               "en": "Playback time in seconds, or None for infinite loops",
               "cn": "播放时间（秒），无限循环时为None",
               "de": "Wiedergabezeit in Sekunden, oder None bei Endlosschleifen",
@@ -10132,9 +10107,9 @@
             "tr": "Yeni bir Music örneği oluşturur.",
             "uk": "Створює новий екземпляр Music."
           },
-          "return": {
+          "returns": {
             "type": "Music",
-            "desc": {
+            "description": {
               "en": "New Music instance",
               "cn": "新Music实例",
               "de": "Neue Music-Instanz",
@@ -10184,24 +10159,17 @@
             "fr": "Définit les listes de sons (0-63) pour chaque canal. Une liste vide signifie que le canal n'est pas utilisé.",
             "it": "Imposta le liste dei suoni (0-63) per ogni canale. Una lista vuota indica che il canale non è utilizzato.",
             "ja": "チャンネルのサウンド (0-63) のリストを設定する。空リストを指定するとそのチャンネルは再生に使用されない。",
-            "ko": "각 채널의 사운드(0-63) 목록을 설정한다.빈 목록은 해당 채널이 사용되지 않음을 의미한다.",
+            "ko": "각 채널의 사운드(0-63) 목록을 설정한다. 빈 목록은 해당 채널이 사용되지 않음을 의미한다.",
             "pt": "Define as listas de sons (0-63) para cada canal. Uma lista vazia significa que o canal não é usado.",
             "ru": "Устанавливает списки звуков (0-63) для каждого канала. Пустой список означает, что канал не используется.",
             "tr": "Her kanal için ses listelerini (0-63) ayarlar. Boş liste kanalın kullanılmadığı anlamına gelir.",
             "uk": "Встановлює списки звуків (0-63) для кожного каналу. Порожній список означає, що канал не використовується."
           },
-          "examples": [
-            "pyxel.musics[0].set([0, 1], [], [3])"
-          ],
-          "return": {
-            "type": "None"
-          },
-          "advanced": false,
           "params": [
             {
               "name": "seq0, seq1, ...",
               "type": "list[int]",
-              "desc": {
+              "description": {
                 "en": "Sound lists for each channel. Empty list = unused.",
                 "cn": "各通道的音效列表。空列表=未使用。",
                 "de": "Soundlisten pro Kanal. Leere Liste = nicht verwendet.",
@@ -10216,7 +10184,12 @@
                 "uk": "Списки звуків для кожного каналу. Порожній список = не використовується."
               }
             }
-          ]
+          ],
+          "returns": {
+            "type": "None"
+          },
+          "examples": ["pyxel.musics[0].set([0, 1], [], [3])"],
+          "advanced": false
         },
         {
           "name": "Music.save",
@@ -10236,15 +10209,11 @@
             "tr": "Belirtilen süre (saniye) boyunca müziğin WAV dosyasını oluşturur.",
             "uk": "Створює WAV-файл музики зазначеної тривалості у секундах."
           },
-          "return": {
-            "type": "None"
-          },
-          "advanced": true,
           "params": [
             {
               "name": "filename",
               "type": "str",
-              "desc": {
+              "description": {
                 "en": "Output WAV file name",
                 "cn": "输出WAV文件名",
                 "de": "Ausgabe-WAV-Dateiname",
@@ -10262,7 +10231,7 @@
             {
               "name": "sec",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Duration in seconds",
                 "cn": "持续时间（秒）",
                 "de": "Dauer in Sekunden",
@@ -10280,7 +10249,7 @@
             {
               "name": "ffmpeg",
               "type": "bool",
-              "desc": {
+              "description": {
                 "en": "Also create MP4 file (requires FFmpeg). Defaults to False.",
                 "cn": "同时创建MP4文件（需要FFmpeg）。默认为 False。",
                 "de": "Auch MP4-Datei erstellen (erfordert FFmpeg). Standard ist False.",
@@ -10295,7 +10264,11 @@
                 "uk": "Також створити файл MP4 (потрібен FFmpeg). За замовчуванням False."
               }
             }
-          ]
+          ],
+          "returns": {
+            "type": "None"
+          },
+          "advanced": true
         }
       ]
     },
@@ -10334,9 +10307,9 @@
             "tr": "Yeni bir Channel örneği oluşturur.",
             "uk": "Створює новий екземпляр Channel."
           },
-          "return": {
+          "returns": {
             "type": "Channel",
-            "desc": {
+            "description": {
               "en": "New Channel instance",
               "cn": "新Channel实例",
               "de": "Neue Channel-Instanz",
@@ -10407,7 +10380,7 @@
             "fr": "Joue le son snd sur ce canal. snd peut être un numéro de son, une liste, une instance Sound, une liste de Sounds ou une chaîne MML.",
             "it": "Riproduce il suono snd su questo canale. snd può essere un numero di suono, una lista, un'istanza Sound, una lista di Sound o una stringa MML.",
             "ja": "このチャンネルでサウンドsndを再生する。sndにはサウンド番号、リスト、Soundインスタンス、Soundのリスト、またはMML文字列を指定できる。",
-            "ko": "이 채널에서 사운드 snd를 재생한다.snd에는 사운드 번호, 리스트, Sound 인스턴스, Sound 리스트 또는 MML 문자열을 지정할 수 있다.",
+            "ko": "이 채널에서 사운드 snd를 재생한다. snd에는 사운드 번호, 리스트, Sound 인스턴스, Sound 리스트 또는 MML 문자열을 지정할 수 있다.",
             "pt": "Reproduz o som snd neste canal. snd pode ser um número de som, uma lista, uma instância Sound, uma lista de Sounds ou uma string MML.",
             "ru": "Воспроизводит звук snd на этом канале. snd может быть номером звука, списком, экземпляром Sound, списком Sound или строкой MML.",
             "tr": "Bu kanalda snd sesini çalar. snd bir ses numarası, liste, Sound örneği, Sound listesi veya MML dizesi olabilir.",
@@ -10417,7 +10390,7 @@
             {
               "name": "snd",
               "type": "int/list/Sound/str",
-              "desc": {
+              "description": {
                 "en": "Sound number (0-63), list of numbers, Sound instance, list of Sounds, or MML string",
                 "cn": "音效编号 (0-63)、编号列表、Sound实例、Sound列表或MML字符串",
                 "de": "Soundnummer (0-63), Nummernliste, Sound-Instanz, Sound-Liste oder MML-String",
@@ -10435,7 +10408,7 @@
             {
               "name": "sec",
               "type": "float",
-              "desc": {
+              "description": {
                 "en": "Playback start position in seconds. Defaults to 0.",
                 "cn": "播放起始位置（秒）。默认为 0。",
                 "de": "Wiedergabe-Startposition in Sekunden. Standard ist 0.",
@@ -10453,7 +10426,7 @@
             {
               "name": "loop",
               "type": "bool",
-              "desc": {
+              "description": {
                 "en": "Loop playback. Defaults to False.",
                 "cn": "循环播放。默认为 False。",
                 "de": "Schleifenwiedergabe. Standard ist False.",
@@ -10471,7 +10444,7 @@
             {
               "name": "resume",
               "type": "bool",
-              "desc": {
+              "description": {
                 "en": "Resume previous sound after playback ends. Defaults to False.",
                 "cn": "播放结束后恢复之前的音效。默认为 False。",
                 "de": "Vorherigen Sound nach Wiedergabeende fortsetzen. Standard ist False.",
@@ -10487,7 +10460,7 @@
               }
             }
           ],
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": true
@@ -10510,7 +10483,7 @@
             "tr": "Bu kanaldaki oynatmayı durdurur.",
             "uk": "Зупиняє відтворення на цьому каналі."
           },
-          "return": {
+          "returns": {
             "type": "None"
           },
           "advanced": true
@@ -10520,22 +10493,22 @@
           "type": "function",
           "signature": "Channel.play_pos()",
           "description": {
-            "en": "Get the playback position as a tuple of (sound_no, sec). Return None when playback has stopped.",
+            "en": "Get the playback position as a tuple of (sound_index, sec). Return None when playback has stopped.",
             "cn": "以 (sound_index, sec) 元组形式获取播放位置。播放停止时返回None。",
             "de": "Gibt die Wiedergabeposition als Tupel (sound_index, sec) zurück. Gibt None zurück, wenn die Wiedergabe gestoppt wurde.",
             "es": "Obtiene la posición de reproducción como una tupla (sound_index, sec). Devuelve None cuando la reproducción se ha detenido.",
             "fr": "Récupère la position de lecture sous forme de tuple (sound_index, sec). Renvoie None lorsque la lecture est arrêtée.",
             "it": "Restituisce la posizione di riproduzione come tupla (sound_index, sec). Restituisce None quando la riproduzione è terminata.",
             "ja": "再生位置を (sound_index, sec) のタプルとして取得する。再生停止時はNoneを返す。",
-            "ko": "재생 위치를 (sound_index, sec) 튜플로 가져온다.재생이 정지하면 None을 반환한다.",
+            "ko": "재생 위치를 (sound_index, sec) 튜플로 가져온다. 재생이 정지하면 None을 반환한다.",
             "pt": "Obtém a posição de reprodução como uma tupla (sound_index, sec). Retorna None quando a reprodução parou.",
             "ru": "Возвращает позицию воспроизведения в виде кортежа (sound_index, sec). Возвращает None, когда воспроизведение остановлено.",
             "tr": "Oynatma konumunu (sound_index, sec) demeti olarak döndürür. Oynatma durduğunda None döndürür.",
             "uk": "Повертає позицію відтворення як кортеж (sound_index, sec). Повертає None, коли відтворення зупинено."
           },
-          "return": {
+          "returns": {
             "type": "tuple[int, float]/None",
-            "desc": {
+            "description": {
               "en": "(sound_index, sec) or None",
               "cn": "(sound_index, sec) 或 None",
               "de": "(sound_index, sec) oder None",
@@ -10589,9 +10562,9 @@
             "tr": "Yeni bir Tone örneği oluşturur.",
             "uk": "Створює новий екземпляр Tone."
           },
-          "return": {
+          "returns": {
             "type": "Tone",
-            "desc": {
+            "description": {
               "en": "New Tone instance",
               "cn": "新Tone实例",
               "de": "Neue Tone-Instanz",
@@ -10669,6 +10642,28 @@
             "uk": "Дані хвильової таблиці у вигляді списку значень семплів. Кожне значення має бути в діапазоні від 0 до (2^sample_bits - 1)."
           },
           "value_type": "list[int]",
+          "advanced": true
+        },
+        {
+          "name": "Tone.waveform",
+          "type": "variable",
+          "signature": "Tone.waveform",
+          "description": {
+            "en": "Deprecated alias of wavetable.",
+            "cn": "已弃用的 wavetable 别名。",
+            "de": "Veralteter Alias für wavetable.",
+            "es": "Alias obsoleto de wavetable.",
+            "fr": "Alias obsolète de wavetable.",
+            "it": "Alias deprecato di wavetable.",
+            "ja": "wavetableの非推奨エイリアス。",
+            "ko": "wavetable의 사용 중단된 별칭.",
+            "pt": "Alias obsoleto de wavetable.",
+            "ru": "Устаревший псевдоним wavetable.",
+            "tr": "wavetable için kullanımdan kaldırılmış takma ad.",
+            "uk": "Застарілий псевдонім wavetable."
+          },
+          "value_type": "list[int]",
+          "deprecated": true,
           "advanced": true
         },
         {

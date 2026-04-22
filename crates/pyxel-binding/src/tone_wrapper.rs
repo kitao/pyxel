@@ -1,6 +1,6 @@
 use pyo3::prelude::*;
 
-wrap_as_python_sequence!(
+wrap_as_python_primitive_sequence!(
     Wavetable,
     *mut pyxel::Tone,
     (|inner: &*mut pyxel::Tone| unsafe { &**inner }.wavetable.len()),
@@ -8,34 +8,15 @@ wrap_as_python_sequence!(
     (|inner: &*mut pyxel::Tone, index| unsafe { &**inner }.wavetable[index]),
     pyxel::ToneSample,
     (|inner: &*mut pyxel::Tone, index, value| unsafe { &mut **inner }.wavetable[index] = value),
+    (|inner: &*mut pyxel::Tone| -> &mut Vec<pyxel::ToneSample> {
+        &mut unsafe { &mut **inner }.wavetable
+    }),
     Vec<pyxel::ToneSample>,
     (|inner: &*mut pyxel::Tone, list| unsafe { &mut **inner }.wavetable = list),
     (|inner: &*mut pyxel::Tone| unsafe { &**inner }.wavetable.clone())
 );
 
-#[pyclass(from_py_object)]
-#[derive(Clone, Copy)]
-pub struct Tone {
-    pub(crate) inner: *mut pyxel::Tone,
-}
-
-unsafe impl Send for Tone {}
-unsafe impl Sync for Tone {}
-
-impl Tone {
-    pub fn wrap(inner: *mut pyxel::Tone) -> Self {
-        Self { inner }
-    }
-
-    fn inner_ref(&self) -> &pyxel::Tone {
-        unsafe { &*self.inner }
-    }
-
-    #[allow(clippy::mut_from_ref)]
-    fn inner_mut(&self) -> &mut pyxel::Tone {
-        unsafe { &mut *self.inner }
-    }
-}
+define_wrapper!(Tone, pyxel::Tone);
 
 #[pymethods]
 impl Tone {
@@ -59,12 +40,12 @@ impl Tone {
     }
 
     #[getter]
-    fn sample_bits(&self) -> pyxel::ToneSample {
+    fn sample_bits(&self) -> u32 {
         self.inner_ref().sample_bits
     }
 
     #[setter]
-    fn set_sample_bits(&self, sample_bits: pyxel::ToneSample) {
+    fn set_sample_bits(&self, sample_bits: u32) {
         self.inner_mut().sample_bits = sample_bits;
     }
 
@@ -114,6 +95,7 @@ impl Tone {
 }
 
 pub fn add_tone_class(m: &Bound<'_, PyModule>) -> PyResult<()> {
+    m.add_class::<Wavetable>()?;
     m.add_class::<Tone>()?;
     Ok(())
 }

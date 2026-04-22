@@ -5,13 +5,11 @@ from .settings import BUTTON_TEXT_COLOR
 
 
 class TextButton(Button):
-    """
-    Variables:
-        is_pressed_var
-
-    Events:
-        press
-    """
+    # Variables:
+    #   is_pressed_var
+    #
+    # Events:
+    #   press
 
     def __init__(self, parent, x, y, *, text, **kwargs):
         super().__init__(
@@ -24,7 +22,6 @@ class TextButton(Button):
         )
         self._text = text
 
-        # Set event listeners
         self.add_event_listener("draw", self.__on_draw)
 
     def __on_draw(self):

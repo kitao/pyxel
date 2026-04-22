@@ -1,5 +1,4 @@
-use std::fs;
-use std::fs::File;
+use std::fs::{self, File};
 use std::io::{Read, Write};
 use std::path::{Path, PathBuf, MAIN_SEPARATOR};
 
@@ -8,6 +7,7 @@ use zip::write::SimpleFileOptions;
 use zip::{ZipArchive, ZipWriter};
 
 use crate::image::{Color, Image, Rgb24};
+use crate::platform;
 use crate::pyxel::{self, Pyxel};
 use crate::resource_data::ResourceData;
 use crate::screencast::Screencast;
@@ -34,6 +34,8 @@ impl Resource {
 }
 
 impl Pyxel {
+    // Resource I/O
+
     pub fn load_resource(
         &mut self,
         filename: &str,
@@ -115,9 +117,11 @@ impl Pyxel {
         zip.finish()
             .map_err(|_| format!("Failed to save file '{filename}'"))?;
 
-        crate::platform::export_browser_file(filename);
+        platform::export_browser_file(filename);
         Ok(())
     }
+
+    // Palette I/O
 
     pub fn load_palette(&mut self, filename: &str) -> Result<(), String> {
         let filename = Self::palette_filename(filename);
@@ -132,11 +136,12 @@ impl Pyxel {
 
         let colors: Vec<Rgb24> = contents
             .lines()
-            .filter(|s| !s.is_empty())
-            .map(|s| {
+            .enumerate()
+            .filter(|(_, s)| !s.trim().is_empty())
+            .map(|(i, s)| {
                 u32::from_str_radix(s.trim(), 16)
                     .map(|v| v as Rgb24)
-                    .map_err(|_| format!("Failed to parse file '{filename}'"))
+                    .map_err(|_| format!("Failed to parse line {} in '{filename}': '{s}'", i + 1))
             })
             .collect::<Result<_, _>>()?;
         *pyxel::colors() = if colors.is_empty() {
@@ -157,9 +162,11 @@ impl Pyxel {
                 .map_err(|_| format!("Failed to save file '{filename}'"))?;
         }
 
-        crate::platform::export_browser_file(&filename);
+        platform::export_browser_file(&filename);
         Ok(())
     }
+
+    // Capture Operations
 
     pub fn take_screenshot(
         &mut self,
@@ -167,13 +174,13 @@ impl Pyxel {
         scale: Option<u32>,
     ) -> Result<(), String> {
         let filename = filename.map_or_else(
-            || Self::prepend_desktop_path(&format!("pyxel-{}", Self::datetime_string())),
+            || Self::join_desktop_path(&format!("pyxel-{}", Self::datetime_string())),
             str::to_string,
         );
         let scale = scale.unwrap_or(self.resource.capture_scale).max(1);
         pyxel::screen().save(&filename, scale)?;
 
-        crate::platform::export_browser_file(&(filename + ".png"));
+        platform::export_browser_file(&(filename + ".png"));
         Ok(())
     }
 
@@ -183,13 +190,13 @@ impl Pyxel {
         scale: Option<u32>,
     ) -> Result<(), String> {
         let filename = filename.map_or_else(
-            || Self::prepend_desktop_path(&format!("pyxel-{}", Self::datetime_string())),
+            || Self::join_desktop_path(&format!("pyxel-{}", Self::datetime_string())),
             str::to_string,
         );
         let scale = scale.unwrap_or(self.resource.capture_scale).max(1);
         self.resource.screencast.save(&filename, scale)?;
 
-        crate::platform::export_browser_file(&(filename + ".gif"));
+        platform::export_browser_file(&(filename + ".gif"));
         Ok(())
     }
 
@@ -197,13 +204,25 @@ impl Pyxel {
         self.resource.screencast.reset();
     }
 
+    pub(crate) fn capture_screen(&mut self) {
+        self.resource.screencast.capture(
+            *pyxel::width(),
+            *pyxel::height(),
+            &pyxel::screen().canvas.data,
+            pyxel::colors(),
+            *pyxel::frame_count(),
+        );
+    }
+
+    // User Data
+
     pub fn user_data_dir(&self, vendor_name: &str, app_name: &str) -> Result<String, String> {
         let home_dir = UserDirs::new()
             .map_or_else(PathBuf::new, |user_dirs| user_dirs.home_dir().to_path_buf());
         let app_data_dir = home_dir
             .join(BASE_DIR)
-            .join(Self::make_dir_name(vendor_name))
-            .join(Self::make_dir_name(app_name));
+            .join(Self::sanitize_dir_name(vendor_name))
+            .join(Self::sanitize_dir_name(app_name));
 
         if !app_data_dir.exists() {
             let dir = app_data_dir.to_string_lossy();
@@ -220,30 +239,22 @@ impl Pyxel {
         Ok(app_data_dir)
     }
 
-    pub(crate) fn capture_screen(&mut self) {
-        self.resource.screencast.capture(
-            *pyxel::width(),
-            *pyxel::height(),
-            &pyxel::screen().canvas.data,
-            pyxel::colors(),
-            *pyxel::frame_count(),
-        );
-    }
+    // Debug Dumps
 
     pub(crate) fn dump_image_bank(&self, image_index: u32) {
-        let filename = Self::prepend_desktop_path(&format!("pyxel-image{image_index}"));
+        let filename = Self::join_desktop_path(&format!("pyxel-image{image_index}"));
 
         if let Some(&image) = pyxel::images().get(image_index as usize) {
             if let Err(e) = unsafe { &*image }.save(&filename, 1) {
                 println!("{e}");
                 return;
             }
-            crate::platform::export_browser_file(&(filename + ".png"));
+            platform::export_browser_file(&(filename + ".png"));
         }
     }
 
     pub(crate) fn dump_palette(&self) {
-        let filename = Self::prepend_desktop_path("pyxel-palette");
+        let filename = Self::join_desktop_path("pyxel-palette");
         let num_colors = pyxel::colors().len();
         let image_ptr = Image::new(num_colors as u32, 1);
         let image = unsafe { &mut *image_ptr };
@@ -258,8 +269,10 @@ impl Pyxel {
             println!("{e}");
             return;
         }
-        crate::platform::export_browser_file(&(filename + ".png"));
+        platform::export_browser_file(&(filename + ".png"));
     }
+
+    // Helpers
 
     fn palette_filename(filename: &str) -> String {
         if filename.to_lowercase().ends_with(RESOURCE_FILE_EXTENSION) {
@@ -268,18 +281,6 @@ impl Pyxel {
         } else {
             filename.to_string()
         }
-    }
-
-    fn datetime_string() -> String {
-        chrono::Local::now().format("%Y%m%d-%H%M%S").to_string()
-    }
-
-    fn prepend_desktop_path(basename: &str) -> String {
-        let desktop_dir = UserDirs::new()
-            .and_then(|user_dirs| user_dirs.desktop_dir().map(Path::to_path_buf))
-            .unwrap_or_default();
-
-        desktop_dir.join(basename).to_string_lossy().to_string()
     }
 
     fn parse_format_version(toml_text: &str) -> Result<u32, String> {
@@ -291,7 +292,19 @@ impl Pyxel {
             .ok_or_else(|| "Failed to parse resource format version".to_string())
     }
 
-    fn make_dir_name(name: &str) -> String {
+    fn datetime_string() -> String {
+        chrono::Local::now().format("%Y%m%d-%H%M%S").to_string()
+    }
+
+    fn join_desktop_path(basename: &str) -> String {
+        let desktop_dir = UserDirs::new()
+            .and_then(|user_dirs| user_dirs.desktop_dir().map(Path::to_path_buf))
+            .unwrap_or_default();
+
+        desktop_dir.join(basename).to_string_lossy().to_string()
+    }
+
+    fn sanitize_dir_name(name: &str) -> String {
         name.to_lowercase()
             .replace(' ', "_")
             .chars()

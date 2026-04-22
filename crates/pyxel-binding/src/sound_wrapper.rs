@@ -3,7 +3,7 @@ use pyo3::prelude::*;
 
 macro_rules! wrap_sound_as_python_list {
     ($wrapper_name:ident, $value_type:ty, $field_name:ident) => {
-        wrap_as_python_sequence!(
+        wrap_as_python_primitive_sequence!(
             $wrapper_name,
             *mut pyxel::Sound,
             (|inner: &*mut pyxel::Sound| unsafe { &**inner }.$field_name.len()),
@@ -12,6 +12,9 @@ macro_rules! wrap_sound_as_python_list {
             $value_type,
             (|inner: &*mut pyxel::Sound, index, value| unsafe { &mut **inner }.$field_name
                 [index] = value),
+            (|inner: &*mut pyxel::Sound| -> &mut Vec<$value_type> {
+                &mut unsafe { &mut **inner }.$field_name
+            }),
             Vec<$value_type>,
             (|inner: &*mut pyxel::Sound, list| unsafe { &mut **inner }.$field_name = list),
             (|inner: &*mut pyxel::Sound| unsafe { &**inner }
@@ -28,32 +31,12 @@ wrap_sound_as_python_list!(Tones, pyxel::SoundTone, tones);
 wrap_sound_as_python_list!(Volumes, pyxel::SoundVolume, volumes);
 wrap_sound_as_python_list!(Effects, pyxel::SoundEffect, effects);
 
-#[pyclass(from_py_object)]
-#[derive(Clone, Copy)]
-pub struct Sound {
-    pub(crate) inner: *mut pyxel::Sound,
-}
-
-unsafe impl Send for Sound {}
-unsafe impl Sync for Sound {}
-
-impl Sound {
-    pub fn wrap(inner: *mut pyxel::Sound) -> Self {
-        Self { inner }
-    }
-
-    fn inner_ref(&self) -> &pyxel::Sound {
-        unsafe { &*self.inner }
-    }
-
-    #[allow(clippy::mut_from_ref)]
-    fn inner_mut(&self) -> &mut pyxel::Sound {
-        unsafe { &mut *self.inner }
-    }
-}
+define_wrapper!(Sound, pyxel::Sound);
 
 #[pymethods]
 impl Sound {
+    // Constructor
+
     #[new]
     fn new() -> Self {
         Self::wrap(pyxel::Sound::new())
@@ -168,13 +151,6 @@ impl Sound {
 
     // File operations
 
-    #[pyo3(signature = (filename, sec, ffmpeg=None))]
-    fn save(&self, filename: &str, sec: f32, ffmpeg: Option<bool>) -> PyResult<()> {
-        self.inner_mut()
-            .save(filename, sec, ffmpeg)
-            .map_err(PyException::new_err)
-    }
-
     #[pyo3(signature = (filename=None))]
     fn pcm(&self, filename: Option<&str>) -> PyResult<()> {
         let Some(filename) = filename else {
@@ -184,6 +160,13 @@ impl Sound {
 
         self.inner_mut()
             .load_pcm(filename)
+            .map_err(PyException::new_err)
+    }
+
+    #[pyo3(signature = (filename, sec, ffmpeg=None))]
+    fn save(&self, filename: &str, sec: f32, ffmpeg: Option<bool>) -> PyResult<()> {
+        self.inner_mut()
+            .save(filename, sec, ffmpeg)
             .map_err(PyException::new_err)
     }
 

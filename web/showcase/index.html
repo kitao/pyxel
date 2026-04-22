@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Pyxel Showcase</title>
     <link rel="icon" href="../../wasm/images/pyxel_icon_64x64.ico" />
-    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../styles.css" />
     <script src="../shared.js"></script>
   </head>
 
@@ -78,8 +78,7 @@
 
             // Single line: filename + description + buttons
             const topLine = document.createElement("div");
-            topLine.className =
-              "flex flex-wrap items-center gap-x-3 gap-y-1";
+            topLine.className = "flex flex-wrap items-center gap-x-3 gap-y-1";
 
             const fileName = document.createElement("span");
             fileName.className = "font-mono font-semibold text-sm shrink-0";
@@ -88,28 +87,29 @@
 
             const desc = document.createElement("span");
             desc.className = "text-gray-400 text-sm";
-            desc.dataset.descKey = cat.id + "-" + i;
+            desc.dataset.descKey = `${cat.id}-${i}`;
             topLine.appendChild(desc);
 
             const buttons = document.createElement("span");
-            buttons.className = "flex items-center justify-end gap-2 ml-auto shrink-0 min-w-[9.5rem]";
+            buttons.className =
+              "flex items-center justify-end gap-2 ml-auto shrink-0 min-w-[9.5rem]";
 
-            const demoBtn = document.createElement("a");
-            demoBtn.href = item.demo;
-            demoBtn.target = "_blank";
-            demoBtn.rel = "noopener noreferrer";
-            demoBtn.className = "btn-demo";
-            demoBtn.dataset.uiKey = "demo";
-            buttons.appendChild(demoBtn);
+            const demoButton = document.createElement("a");
+            demoButton.href = item.demo;
+            demoButton.target = "_blank";
+            demoButton.rel = "noopener noreferrer";
+            demoButton.className = "btn-demo";
+            demoButton.dataset.uiKey = "demo";
+            buttons.appendChild(demoButton);
 
             if (item.code) {
-              const codeBtn = document.createElement("a");
-              codeBtn.href = item.code;
-              codeBtn.target = "_blank";
-              codeBtn.rel = "noopener noreferrer";
-              codeBtn.className = "btn-code";
-              codeBtn.dataset.uiKey = "code";
-              buttons.appendChild(codeBtn);
+              const codeButton = document.createElement("a");
+              codeButton.href = item.code;
+              codeButton.target = "_blank";
+              codeButton.rel = "noopener noreferrer";
+              codeButton.className = "btn-code";
+              codeButton.dataset.uiKey = "code";
+              buttons.appendChild(codeButton);
             }
 
             topLine.appendChild(buttons);
@@ -121,14 +121,15 @@
               details.className = "mt-1";
 
               const summary = document.createElement("summary");
-              summary.className = "tri text-gray-400 text-xs hover:text-gray-300";
+              summary.className =
+                "tri text-gray-400 text-xs hover:text-gray-300";
               summary.dataset.uiKey = "details";
               details.appendChild(summary);
 
               const content = document.createElement("div");
               content.className =
                 "mt-1 pl-3 border-l-2 border-gray-700 text-gray-300 text-sm leading-relaxed";
-              content.dataset.detailKey = cat.id + "-" + i;
+              content.dataset.detailKey = `${cat.id}-${i}`;
               details.appendChild(content);
 
               row.appendChild(details);
@@ -158,8 +159,9 @@
       function updateTexts() {
         document.title = t("title");
         document.getElementById("page-title").textContent = t("title");
-        document.getElementById("page-subtitle").innerHTML = t("subtitle")
-          .replace("{0}", link("https://github.com/kitao/pyxel", "Pyxel"));
+        document.getElementById("page-subtitle").innerHTML = t(
+          "subtitle",
+        ).replace("{0}", link("https://github.com/kitao/pyxel", "Pyxel"));
 
         // Categories, descriptions, and details
         for (const cat of data.categories) {
@@ -170,12 +172,15 @@
             const key = `${cat.id}-${i}`;
             const descEl = document.querySelector(`[data-desc-key="${key}"]`);
             if (descEl) descEl.textContent = t(item.description);
-            const detailEl = document.querySelector(`[data-detail-key="${key}"]`);
-            if (detailEl) detailEl.textContent = t(item.details) || t(item.description);
+            const detailEl = document.querySelector(
+              `[data-detail-key="${key}"]`,
+            );
+            if (detailEl)
+              detailEl.textContent = t(item.details) || t(item.description);
           }
         }
 
-        // UI labels (Run, Code, Details buttons)
+        // UI labels (demo, code, details)
         document.querySelectorAll("[data-ui-key]").forEach((el) => {
           el.textContent = t(el.dataset.uiKey);
         });
@@ -183,21 +188,20 @@
         // Footer
         const linkText = t("footer_link");
         document.getElementById("footer-text").innerHTML = t("footer")
-          .replace("{0}", link("https://github.com/kitao/pyxel/tree/main/web/showcase", linkText))
+          .replace(
+            "{0}",
+            link(
+              "https://github.com/kitao/pyxel/tree/main/web/showcase",
+              linkText,
+            ),
+          )
           .replace("{1}", link("../web-usage/", linkText));
 
         setDocLang(lang);
       }
 
       // Init
-      fetch("showcase.json")
-        .then((r) => r.json())
-        .then((json) => {
-          data = json;
-          lang = detectLanguage(data.languages);
-          buildPage();
-        })
-        .catch((e) => console.error("Failed to load data:", e));
+      initPage("showcase.json", buildPage);
     </script>
   </body>
 </html>

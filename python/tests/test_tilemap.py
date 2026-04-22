@@ -1,9 +1,6 @@
-import os
-
 import pyxel
 
 
-# Tilemap class
 class TestTilemap:
     def test_new_with_int(self):
         tm = pyxel.Tilemap(32, 32, 0)
@@ -78,7 +75,7 @@ class TestTilemap:
         assert dst.pget(1, 0) == (3, 3)
 
     def test_from_tmx(self, assets_dir):
-        tm = pyxel.Tilemap.from_tmx(os.path.join(assets_dir, "urban_rpg.tmx"), 0)
+        tm = pyxel.Tilemap.from_tmx(str(assets_dir / "urban_rpg.tmx"), 0)
         assert tm.width > 0
         assert tm.height > 0
         # Verify the tilemap has some non-zero content
@@ -95,7 +92,7 @@ class TestTilemap:
 
     def test_load_tmx(self, assets_dir):
         tm = pyxel.Tilemap(32, 32, 0)
-        tm.load(0, 0, os.path.join(assets_dir, "urban_rpg.tmx"), 0)
+        tm.load(0, 0, str(assets_dir / "urban_rpg.tmx"), 0)
         has_nonzero = any(tm.pget(x, 0) != (0, 0) for x in range(32))
         assert has_nonzero
 

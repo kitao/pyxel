@@ -6,29 +6,7 @@ use pyo3::types::PyDict;
 
 use crate::image_wrapper::Image;
 
-#[pyclass(from_py_object)]
-#[derive(Clone, Copy)]
-pub struct Tilemap {
-    pub(crate) inner: *mut pyxel::Tilemap,
-}
-
-unsafe impl Send for Tilemap {}
-unsafe impl Sync for Tilemap {}
-
-impl Tilemap {
-    pub fn wrap(inner: *mut pyxel::Tilemap) -> Self {
-        Self { inner }
-    }
-
-    fn inner_ref(&self) -> &pyxel::Tilemap {
-        unsafe { &*self.inner }
-    }
-
-    #[allow(clippy::mut_from_ref)]
-    fn inner_mut(&self) -> &mut pyxel::Tilemap {
-        unsafe { &mut *self.inner }
-    }
-}
+define_wrapper!(Tilemap, pyxel::Tilemap);
 
 #[pymethods]
 impl Tilemap {
@@ -43,13 +21,13 @@ impl Tilemap {
 
             (Image, { pyxel::ImageSource::Image(img.inner) })
         };
-        Ok(Tilemap::wrap(pyxel::Tilemap::new(width, height, imgsrc)))
+        Ok(Self::wrap(pyxel::Tilemap::new(width, height, imgsrc)))
     }
 
     #[staticmethod]
     fn from_tmx(filename: &str, layer: u32) -> PyResult<Self> {
         pyxel::Tilemap::from_tmx(filename, layer)
-            .map(Tilemap::wrap)
+            .map(Self::wrap)
             .map_err(PyException::new_err)
     }
 
@@ -68,8 +46,8 @@ impl Tilemap {
     #[getter]
     fn imgsrc(&self, py: Python) -> Py<PyAny> {
         match &self.inner_ref().imgsrc {
-            pyxel::ImageSource::Index(index) => value_to_pyobj!(py, index),
-            pyxel::ImageSource::Image(image) => class_to_pyobj!(py, Image::wrap(*image)),
+            pyxel::ImageSource::Index(index) => value_to_py_any!(py, index),
+            pyxel::ImageSource::Image(image) => instance_to_py_any!(py, Image::wrap(*image)),
         }
     }
 
@@ -86,6 +64,8 @@ impl Tilemap {
         Ok(())
     }
 
+    // Data operations
+
     fn data_ptr(&self, py: Python) -> PyResult<Py<PyAny>> {
         let inner = self.inner_mut();
         let python_code = CString::new(format!(
@@ -101,8 +81,6 @@ impl Tilemap {
             .ok_or_else(|| PyException::new_err("Failed to create data pointer"))?;
         Ok(array.unbind())
     }
-
-    // Data operations
 
     fn set(&self, x: i32, y: i32, data: Vec<String>) {
         let data_refs: Vec<_> = data.iter().map(String::as_str).collect();
@@ -132,9 +110,9 @@ impl Tilemap {
     #[pyo3(signature = (x=None, y=None))]
     fn camera(&self, x: Option<f32>, y: Option<f32>) -> PyResult<()> {
         if let (Some(x), Some(y)) = (x, y) {
-            self.inner_mut().set_draw_offset(x, y);
+            self.inner_mut().set_camera(x, y);
         } else if (x, y) == (None, None) {
-            self.inner_mut().reset_draw_offset();
+            self.inner_mut().reset_camera();
         } else {
             python_type_error!("camera() takes 0 or 2 arguments");
         }
@@ -146,7 +124,7 @@ impl Tilemap {
     }
 
     fn pget(&self, x: f32, y: f32) -> pyxel::Tile {
-        self.inner_ref().get_tile(x, y)
+        self.inner_ref().tile(x, y)
     }
 
     fn pset(&self, x: f32, y: f32, tile: pyxel::Tile) {

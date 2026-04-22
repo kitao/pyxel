@@ -7,13 +7,11 @@ from .widget import Widget
 
 
 class NumberPicker(Widget):
-    """
-    Variables:
-        value_var
-
-    Events:
-        change (value)
-    """
+    # Variables:
+    #   value_var
+    #
+    # Events:
+    #   change (value)
 
     def __init__(self, parent, x, y, *, min_value, max_value, value, **kwargs):
         self._number_len = max(len(str(min_value)), len(str(max_value)))
@@ -22,21 +20,24 @@ class NumberPicker(Widget):
         self._min_value = min_value
         self._max_value = max_value
 
-        # Initialize value_var
         self.new_var("value_var", value)
         self.add_var_event_listener("value_var", "set", self.__on_value_set)
         self.add_var_event_listener("value_var", "change", self.__on_value_change)
 
-        # Initialize dec button
         self.dec_button = TextButton(self, 0, 0, text="-")
         self.dec_button.add_event_listener("press", self.__on_dec_button_press)
-
-        # Initialize inc button
         self.inc_button = TextButton(self, self.width - 7, 0, text="+")
         self.inc_button.add_event_listener("press", self.__on_inc_button_press)
 
-        # Set event listeners
         self.add_event_listener("draw", self.__on_draw)
+
+    # Helpers
+
+    @staticmethod
+    def _step_delta():
+        return 10 if pyxel.btn(pyxel.KEY_SHIFT) else 1
+
+    # Event handlers
 
     def __on_value_set(self, value):
         return clamp(value, self._min_value, self._max_value)
@@ -45,11 +46,6 @@ class NumberPicker(Widget):
         self.dec_button.is_enabled_var = value > self._min_value
         self.inc_button.is_enabled_var = value < self._max_value
         self.trigger_event("change", value)
-
-    @staticmethod
-    def _step_delta():
-        """Return 10 when Shift is held, 1 otherwise."""
-        return 10 if pyxel.btn(pyxel.KEY_SHIFT) else 1
 
     def __on_dec_button_press(self):
         self.value_var -= self._step_delta()

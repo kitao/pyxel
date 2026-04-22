@@ -2,17 +2,18 @@ use blip_buf::BlipBuf;
 
 use crate::audio::Audio;
 use crate::mml_command::MmlCommand;
-use crate::mml_parser::{calc_commands_sec, parse_mml};
+use crate::mml_parser::{parse_mml, total_duration_sec};
 use crate::old_mml_parser::parse_old_mml;
 use crate::pcm_decoder::{load_pcm, PcmData};
+use crate::pyxel;
 use crate::settings::{
     AUDIO_CLOCK_RATE, AUDIO_SAMPLE_RATE, DEFAULT_SOUND_SPEED, EFFECT_FADEOUT, EFFECT_HALF_FADEOUT,
-    EFFECT_NONE, EFFECT_QUARTER_FADEOUT, EFFECT_SLIDE, EFFECT_VIBRATO, MAX_VOLUME, TONE_NOISE,
-    TONE_PULSE, TONE_SQUARE, TONE_TRIANGLE, VIBRATO_DEPTH_CENTS, VIBRATO_PERIOD_TICKS,
+    EFFECT_NONE, EFFECT_QUARTER_FADEOUT, EFFECT_SLIDE, EFFECT_VIBRATO, MAX_VOLUME,
+    SOUND_TICKS_PER_SECOND, TONE_NOISE, TONE_PULSE, TONE_SQUARE, TONE_TRIANGLE,
+    VIBRATO_DEPTH_CENTS, VIBRATO_PERIOD_TICKS,
 };
 use crate::tone::ToneMode;
 use crate::utils::simplify_string;
-use crate::{pyxel, SOUND_TICKS_PER_SECOND};
 
 pub type SoundNote = i8;
 pub type SoundTone = u8;
@@ -45,6 +46,8 @@ impl Sound {
             pcm: None,
         }))
     }
+
+    // Configuration
 
     pub fn set(
         &mut self,
@@ -150,6 +153,8 @@ impl Sound {
         Ok(())
     }
 
+    // MML & PCM
+
     pub fn set_mml(&mut self, code: &str) -> Result<(), String> {
         self.clear_pcm();
         self.commands = parse_mml(code)?;
@@ -177,6 +182,8 @@ impl Sound {
     pub fn clear_pcm(&mut self) {
         self.pcm = None;
     }
+
+    // Serialization
 
     pub fn save(
         &self,
@@ -220,25 +227,31 @@ impl Sound {
         } else if self.commands.is_empty() {
             Some(self.notes.len() as f32 * self.speed as f32 / SOUND_TICKS_PER_SECOND as f32)
         } else {
-            calc_commands_sec(&self.commands)
+            total_duration_sec(&self.commands)
         }
     }
 
+    // Command Emission
+
     pub(crate) fn to_commands(&self) -> Vec<MmlCommand> {
         let mut commands = Vec::new();
+        self.emit_commands(&mut commands);
+        commands
+    }
+
+    pub(crate) fn emit_commands(&self, commands: &mut Vec<MmlCommand>) {
+        commands.clear();
 
         // Fixed parameters
-        self.emit_fixed_params(&mut commands);
+        self.emit_fixed_params(commands);
 
         // Envelope, vibrato, glide slot definitions
-        self.emit_envelope_slots(&mut commands);
-        self.emit_vibrato_slot(&mut commands);
-        self.emit_glide_slot(&mut commands);
+        self.emit_envelope_slots(commands);
+        self.emit_vibrato_slot(commands);
+        self.emit_glide_slot(commands);
 
         // Note sequence with per-note state changes
-        self.emit_notes(&mut commands);
-
-        commands
+        self.emit_notes(commands);
     }
 
     fn emit_fixed_params(&self, commands: &mut Vec<MmlCommand>) {

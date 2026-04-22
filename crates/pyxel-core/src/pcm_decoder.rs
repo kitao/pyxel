@@ -16,50 +16,50 @@ pub struct PcmData {
     pub samples: Vec<i16>,
 }
 
-pub fn load_pcm(path: &str, target_rate: u32) -> Result<PcmData, String> {
+pub fn load_pcm(filename: &str, target_rate: u32) -> Result<PcmData, String> {
     // Open and probe audio file
-    let file = File::open(path).map_err(|_| format!("Failed to open file '{path}'"))?;
-    let mss = MediaSourceStream::new(Box::new(file), MediaSourceStreamOptions::default());
+    let file = File::open(filename).map_err(|_| format!("Failed to open file '{filename}'"))?;
+    let media_stream = MediaSourceStream::new(Box::new(file), MediaSourceStreamOptions::default());
 
     let mut hint = Hint::new();
-    if let Some(ext) = Path::new(path).extension().and_then(|s| s.to_str()) {
+    if let Some(ext) = Path::new(filename).extension().and_then(|s| s.to_str()) {
         hint.with_extension(ext);
     }
 
     let probed = get_probe()
         .format(
             &hint,
-            mss,
+            media_stream,
             &FormatOptions::default(),
             &MetadataOptions::default(),
         )
-        .map_err(|_| format!("Failed to probe file '{path}'"))?;
-    let mut format = probed.format;
+        .map_err(|_| format!("Failed to probe file '{filename}'"))?;
+    let mut format_reader = probed.format;
 
-    let track = format
+    let track = format_reader
         .default_track()
-        .ok_or_else(|| format!("No audio track found in file '{path}'"))?;
+        .ok_or_else(|| format!("No audio track found in file '{filename}'"))?;
     let track_id = track.id;
     let codec_params = track.codec_params.clone();
     let mut decoder = get_codecs()
         .make(&codec_params, &DecoderOptions::default())
-        .map_err(|_| format!("Failed to decode file '{path}'"))?;
+        .map_err(|_| format!("Failed to decode file '{filename}'"))?;
 
     // Decode audio packets into mono samples
     let mut sample_rate = codec_params
         .sample_rate
-        .ok_or_else(|| format!("Unknown sample rate in file '{path}'"))?;
+        .ok_or_else(|| format!("Unknown sample rate in file '{filename}'"))?;
     let mut mono_samples: Vec<f32> = Vec::new();
     let mut sample_buf: Option<SampleBuffer<f32>> = None;
 
     loop {
-        let packet = match format.next_packet() {
+        let packet = match format_reader.next_packet() {
             Ok(packet) => packet,
             Err(SymphoniaError::IoError(e)) if e.kind() == ErrorKind::UnexpectedEof => break,
             Err(SymphoniaError::ResetRequired) => {
-                return Err(format!("Failed to read file '{path}'"));
+                return Err(format!("Failed to read file '{filename}'"));
             }
-            Err(_) => return Err(format!("Failed to read file '{path}'")),
+            Err(_) => return Err(format!("Failed to read file '{filename}'")),
         };
 
         if packet.track_id() != track_id {
@@ -70,18 +70,18 @@ pub fn load_pcm(path: &str, target_rate: u32) -> Result<PcmData, String> {
             Ok(decoded) => decoded,
             Err(SymphoniaError::DecodeError(_)) => continue,
             Err(_) => {
-                return Err(format!("Failed to decode file '{path}'"));
+                return Err(format!("Failed to decode file '{filename}'"));
             }
         };
 
         let spec = *decoded.spec();
         sample_rate = spec.rate;
-        let buf = sample_buf
+        let sample_buf = sample_buf
             .get_or_insert_with(|| SampleBuffer::<f32>::new(decoded.capacity() as u64, spec));
-        buf.copy_interleaved_ref(decoded);
+        sample_buf.copy_interleaved_ref(decoded);
 
         let channels = spec.channels.count();
-        let data = buf.samples();
+        let data = sample_buf.samples();
         if channels == 1 {
             mono_samples.extend_from_slice(data);
         } else {
@@ -94,7 +94,7 @@ pub fn load_pcm(path: &str, target_rate: u32) -> Result<PcmData, String> {
 
     // Resample and convert to i16
     if mono_samples.is_empty() {
-        return Err(format!("No audio data found in file '{path}'"));
+        return Err(format!("No audio data found in file '{filename}'"));
     }
 
     let mono_samples = if sample_rate == target_rate {

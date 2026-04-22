@@ -11,7 +11,7 @@ body:
     validations:
       required: true
   - type: input
-    id: environment
+    id: os
     attributes:
       label: "OS"
       description: "Include your browser if using the web version / Web版の場合はブラウザも記入してください"

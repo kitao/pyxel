@@ -1,19 +1,18 @@
 use std::ptr;
 
 use crate::canvas::Canvas;
-use crate::image::{rgb_to_rgb8, Color, Image};
+use crate::image::{rgb24_to_rgb8, Color, Image};
 use crate::key::{
-    Key, GAMEPAD1_BUTTON_A, GAMEPAD1_BUTTON_B, GAMEPAD1_BUTTON_DPAD_DOWN,
+    Key, GAMEPAD1_BUTTON_A, GAMEPAD1_BUTTON_B, GAMEPAD1_BUTTON_BACK, GAMEPAD1_BUTTON_DPAD_DOWN,
     GAMEPAD1_BUTTON_DPAD_LEFT, GAMEPAD1_BUTTON_DPAD_RIGHT, GAMEPAD1_BUTTON_DPAD_UP,
     GAMEPAD1_BUTTON_X, GAMEPAD1_BUTTON_Y, KEY_0, KEY_1, KEY_2, KEY_3, KEY_8, KEY_9, KEY_ALT, KEY_R,
     KEY_RETURN, KEY_SHIFT,
 };
-use crate::platform::key::GAMEPAD1_BUTTON_BACK;
 use crate::platform::{self, Event};
 use crate::profiler::Profiler;
 use crate::pyxel::{self, Pyxel};
 #[cfg(not(target_os = "emscripten"))]
-use crate::settings::DISPLAY_RATIO;
+use crate::settings::WINDOW_TO_DISPLAY_RATIO;
 use crate::settings::{MAX_FRAME_DELAY_MS, NUM_MEASURE_FRAMES, NUM_SCREEN_TYPES};
 use crate::utils;
 use crate::window_watcher::WindowWatcher;
@@ -68,6 +67,8 @@ impl System {
 }
 
 impl Pyxel {
+    // Main Loop
+
     pub fn run<T: PyxelCallback>(&mut self, mut callback: T) {
         platform::run_frame_loop(self.system.fps, move |delta_ms| {
             let ticks = platform::ticks();
@@ -96,6 +97,7 @@ impl Pyxel {
         }
 
         unsafe impl Send for App {}
+        unsafe impl Sync for App {}
 
         impl Drop for App {
             fn drop(&mut self) {
@@ -143,6 +145,8 @@ impl Pyxel {
 
         self.run(App { image });
     }
+
+    // Window & Screen
 
     pub fn flip_screen(&mut self) {
         self.system.update_profiler.end(platform::ticks());
@@ -193,17 +197,17 @@ impl Pyxel {
         platform::set_window_title(title);
     }
 
-    pub fn set_icon(&self, data_str: &[&str], scale: u32, transparent: Option<Color>) {
+    pub fn set_icon(&self, data: &[&str], scale: u32, transparent: Option<Color>) {
         if *pyxel::is_headless() {
             return;
         }
 
         let colors = pyxel::colors();
-        let width = utils::simplify_string(data_str[0]).len() as u32;
-        let height = data_str.len() as u32;
+        let width = utils::simplify_string(data[0]).len() as u32;
+        let height = data.len() as u32;
         let image_ptr = Image::new(width, height);
         let image = unsafe { &mut *image_ptr };
-        image.set(0, 0, data_str);
+        image.set(0, 0, data);
         let image_data = &image.canvas.data;
         let scaled_width = width * scale;
         let scaled_height = height * scale;
@@ -213,7 +217,7 @@ impl Pyxel {
             for _sy in 0..scale {
                 for x in 0..width {
                     let color = image_data[(width * y + x) as usize];
-                    let (r, g, b) = rgb_to_rgb8(colors[color as usize]);
+                    let (r, g, b) = rgb24_to_rgb8(colors[color as usize]);
                     let a = if Some(color) == transparent { 0 } else { 0xff };
                     for _sx in 0..scale {
                         rgba.push(r);
@@ -230,6 +234,8 @@ impl Pyxel {
         }
         platform::set_window_icon(scaled_width, scaled_height, &rgba);
     }
+
+    // Screen Configuration
 
     pub fn set_perf_monitor(&mut self, enabled: bool) {
         self.system.perf_monitor_enabled = enabled;
@@ -276,18 +282,20 @@ impl Pyxel {
             if !platform::is_fullscreen() {
                 let (display_w, display_h) = platform::display_size();
                 let max_scale = f32::min(
-                    display_w as f32 * DISPLAY_RATIO / width as f32,
-                    display_h as f32 * DISPLAY_RATIO / height as f32,
+                    display_w as f32 * WINDOW_TO_DISPLAY_RATIO / width as f32,
+                    display_h as f32 * WINDOW_TO_DISPLAY_RATIO / height as f32,
                 )
                 .max(1.0);
                 let scale = self.system.screen_scale.max(1.0).min(max_scale);
-                let new_win_w = (width as f32 * scale).round() as u32;
-                let new_win_h = (height as f32 * scale).round() as u32;
-                platform::set_window_size(new_win_w, new_win_h);
+                let new_window_w = (width as f32 * scale).round() as u32;
+                let new_window_h = (height as f32 * scale).round() as u32;
+                platform::set_window_size(new_window_w, new_window_h);
             }
             self.update_screen_params();
         }
     }
+
+    // Event & Input Processing
 
     fn process_events(&mut self) {
         if platform::is_sigint_received() {
@@ -311,7 +319,7 @@ impl Pyxel {
                 }
                 Event::KeyPressed { key } => self.press_key(key),
                 Event::KeyReleased { key } => self.release_key(key),
-                Event::KeyValueChanged { key, value } => self.change_key_value(key, value),
+                Event::KeyValueChanged { key, value } => self.set_key_value(key, value),
                 Event::TextInput { text } => self.add_input_text(&text),
                 Event::FileDropped { filename } => self.add_dropped_file(&filename),
                 Event::Quit => platform::quit(),
@@ -392,6 +400,8 @@ impl Pyxel {
         }
     }
 
+    // Frame Lifecycle
+
     pub(crate) fn update_screen_params(&mut self) {
         let (window_width, window_height) = platform::window_size();
         let w = *pyxel::width() as f32;
@@ -424,6 +434,8 @@ impl Pyxel {
         }
     }
 
+    // Rendering & UI
+
     fn draw_perf_monitor(&self) {
         if !self.system.perf_monitor_enabled {
             return;
@@ -431,14 +443,14 @@ impl Pyxel {
 
         let screen = pyxel::screen();
         let clip_rect = screen.canvas.clip_rect;
-        let draw_offset_x = screen.canvas.draw_offset_x;
-        let draw_offset_y = screen.canvas.draw_offset_y;
+        let camera_x = screen.canvas.camera_x;
+        let camera_y = screen.canvas.camera_y;
         let palette1 = screen.palette[1];
         let palette2 = screen.palette[2];
         let alpha = screen.canvas.alpha;
 
         screen.reset_clip_rect();
-        screen.reset_draw_offset();
+        screen.reset_camera();
         screen.map_color(1, 1);
         screen.map_color(2, 9);
         screen.set_dithering(1.0);
@@ -456,8 +468,8 @@ impl Pyxel {
         screen.draw_text(0.0, 12.0, &draw_time, 2, None);
 
         screen.canvas.clip_rect = clip_rect;
-        screen.canvas.draw_offset_x = draw_offset_x;
-        screen.canvas.draw_offset_y = draw_offset_y;
+        screen.canvas.camera_x = camera_x;
+        screen.canvas.camera_y = camera_y;
         screen.map_color(1, palette1);
         screen.map_color(2, palette2);
         screen.set_dithering(alpha);
@@ -488,12 +500,12 @@ impl Pyxel {
 
         let screen = pyxel::screen();
         let clip_rect = screen.canvas.clip_rect;
-        let draw_offset_x = screen.canvas.draw_offset_x;
-        let draw_offset_y = screen.canvas.draw_offset_y;
+        let camera_x = screen.canvas.camera_x;
+        let camera_y = screen.canvas.camera_y;
         let palette = screen.palette;
 
         screen.reset_clip_rect();
-        screen.reset_draw_offset();
+        screen.reset_camera();
         unsafe {
             screen.draw_image(
                 x as f32,
@@ -510,8 +522,8 @@ impl Pyxel {
         }
 
         screen.canvas.clip_rect = clip_rect;
-        screen.canvas.draw_offset_x = draw_offset_x;
-        screen.canvas.draw_offset_y = draw_offset_y;
+        screen.canvas.camera_x = camera_x;
+        screen.canvas.camera_y = camera_y;
         screen.palette = palette;
     }
 

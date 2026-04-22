@@ -1,5 +1,5 @@
-import os
 import sys
+from pathlib import Path
 
 import pyxel
 
@@ -21,46 +21,42 @@ _EDITOR_TYPES = {"image": 0, "tilemap": 1, "sound": 2, "music": 3}
 
 
 class App(Widget):
-    """
-    Variables:
-        editor_type_var
-        help_message_var
-    """
+    # Variables:
+    #   editor_type_var
+    #   help_message_var
 
     def __init__(self, resource_file, starting_editor):
-        # Get absolute path of resource file before initializing Pyxel
+        # Resolve the absolute path before pyxel.init changes the working directory
         original_resource_file = resource_file
-        resource_file = os.path.abspath(resource_file)
+        resource_path = Path(resource_file).absolute()
 
-        # Validate resource file path
-        if os.path.isdir(resource_file):
+        if resource_path.is_dir():
             print(f"A directory named '{original_resource_file}' exists")
             sys.exit(1)
-        if not os.path.isdir(os.path.dirname(resource_file)):
+        if not resource_path.parent.is_dir():
             print(f"Directory for '{original_resource_file}' does not exist")
             sys.exit(1)
 
-        # Initialize Pyxel and load resources
         pyxel.init(APP_WIDTH, APP_HEIGHT, quit_key=pyxel.KEY_NONE)
         pyxel.mouse(True)
         colors = list(pyxel.colors)
         self._set_title(original_resource_file)
 
-        if os.path.exists(resource_file):
+        resource_file = str(resource_path)
+        if resource_path.exists():
             pyxel.load(resource_file)
         else:
             pyxel.load_pal(resource_file)
 
-        # Set up extended color palette (system + user colors)
+        # Concatenate system and user palettes so colors[:NUM_COLORS] are the
+        # system set and colors[NUM_COLORS:] are the user set
         pyxel.num_user_colors = len(pyxel.colors)
         colors += list(pyxel.colors)
         pyxel.colors[:] = colors
 
-        # Start initializing application
         super().__init__(None, 0, 0, pyxel.width, pyxel.height)
         self._resource_file = resource_file
 
-        # Initialize help_message_var
         self.new_var("help_message_var", "")
 
         # Initialize editor button
@@ -110,57 +106,61 @@ class App(Widget):
         ]
         self.__on_editor_button_change(self.editor_type_var)
 
-        # Set event listeners
         self.add_event_listener("update", self.__on_update)
         self.add_event_listener("draw", self.__on_draw)
 
-        # Start application
         pyxel.run(self.update_all, self.draw_all)
+
+    # Helpers
 
     @property
     def _editor(self):
         return self._editors[self.editor_type_var]
 
     @staticmethod
-    def _set_title(filename):
-        pyxel.title(f"Pyxel Editor - {filename}")
+    def _set_title(resource_file):
+        pyxel.title(f"Pyxel Editor - {resource_file}")
+
+    # Event handlers
 
     def __on_editor_button_change(self, value):
         for i, editor in enumerate(self._editors):
             editor.is_visible_var = i == value
 
-    def __on_editor_button_mouse_hover(self, x, y):
+    def __on_editor_button_mouse_hover(self, _x, _y):
         self.help_message_var = "EDITOR:ALT+LEFT/RIGHT"
 
     def __on_undo_button_press(self):
         self._editor.undo()
 
-    def __on_undo_button_mouse_hover(self, x, y):
+    def __on_undo_button_mouse_hover(self, _x, _y):
         self.help_message_var = "UNDO:CTRL+Z"
 
     def __on_redo_button_press(self):
         self._editor.redo()
 
-    def __on_redo_button_mouse_hover(self, x, y):
+    def __on_redo_button_mouse_hover(self, _x, _y):
         self.help_message_var = "REDO:CTRL+Y"
 
     def __on_save_button_press(self):
         pyxel.save(self._resource_file)
 
-    def __on_save_button_mouse_hover(self, x, y):
+    def __on_save_button_mouse_hover(self, _x, _y):
         self.help_message_var = "SAVE:CTRL+S"
 
     def __on_update(self):
-        _dropped_files = getattr(pyxel, "_dropped_files", [])
+        # pyxel._dropped_files is the legacy path for drop events injected by
+        # the WASM runtime; drain it each frame and prefer native dropped_files
+        wasm_dropped_files = getattr(pyxel, "_dropped_files", [])
         pyxel._dropped_files = []
         if pyxel.dropped_files:
             dropped_file = pyxel.dropped_files[-1]
-        elif _dropped_files:
-            dropped_file = _dropped_files[-1]
+        elif wasm_dropped_files:
+            dropped_file = wasm_dropped_files[-1]
         else:
             dropped_file = None
         if dropped_file:
-            file_ext = os.path.splitext(dropped_file)[1]
+            file_ext = Path(dropped_file).suffix
             if file_ext == pyxel.RESOURCE_FILE_EXTENSION:
                 pyxel.stop()
                 for editor in self._editors:
