@@ -99,10 +99,18 @@
                 >Editor Startup Screen</label
               >
               <select id="editor-screen" class="input">
-                <option value="image">Image</option>
-                <option value="tilemap">Tilemap</option>
-                <option value="sound">Sound</option>
-                <option value="music">Music</option>
+                <option value="image" data-i18n="editor_screen_image">
+                  Image
+                </option>
+                <option value="tilemap" data-i18n="editor_screen_tilemap">
+                  Tilemap
+                </option>
+                <option value="sound" data-i18n="editor_screen_sound">
+                  Sound
+                </option>
+                <option value="music" data-i18n="editor_screen_music">
+                  Music
+                </option>
               </select>
             </div>
           </div>
@@ -147,7 +155,7 @@
       }
 
       function cmdChip(name) {
-        return `<span class="inline-block w-[46px]">${chip(name)}</span>`;
+        return `<span class="inline-block" style="width:46px;margin-right:8px">${chip(name)}</span>`;
       }
 
       function updateTexts() {
