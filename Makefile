@@ -12,8 +12,8 @@
 # Native:
 #   - Lint: make lint
 #   - Build: make clean build
-#   - Test (unit): make test-unit
-#   - Test (full): make clean test (includes watch)
+#   - Test: make test
+#   - Run: make run
 #
 # WASM:
 #   - Setup once:
@@ -23,9 +23,8 @@
 #   - Each new shell before WASM commands:
 #       source pyodide/emsdk/emsdk_env.sh
 #   - Lint: make lint-wasm
-#   - Build/Test:
-#       make clean-wasm build-wasm
-#       make clean-wasm test-wasm
+#   - Build: make clean-wasm build-wasm
+#   - Run: make run-wasm
 #
 # Web pages:
 #   - Setup once: cd web && npm install
@@ -87,13 +86,13 @@ PYO3_ENVIRONMENT_SIGNATURE ?= $(shell $(PYTHON) -c \
 	a=platform.architecture()[0]; \
 	print(f'{sys.implementation.name}-{v.major}.{v.minor}-{a}')")
 
-lint build test-unit test: export PYO3_PYTHON := $(PYO3_PYTHON)
-lint build test-unit test: export PYO3_ENVIRONMENT_SIGNATURE := $(PYO3_ENVIRONMENT_SIGNATURE)
+lint build test run: export PYO3_PYTHON := $(PYO3_PYTHON)
+lint build test run: export PYO3_ENVIRONMENT_SIGNATURE := $(PYO3_ENVIRONMENT_SIGNATURE)
 endif
 
 .PHONY: \
-	all clean distclean update format lint build install test-unit test \
-	clean-wasm lint-wasm build-wasm start-test-server test-wasm \
+	all clean distclean update format lint build install test run \
+	clean-wasm lint-wasm build-wasm run-wasm \
 	pages
 
 all: build
@@ -137,11 +136,12 @@ build:
 install: build
 	@pip3 install --force-reinstall "$$(ls -rt $(DIST_DIR)/*.whl | tail -n 1)"
 
-test-unit: install
+test: install
 	@cd $(ROOT_DIR); python -m pytest python/tests/ -v
+	@cd $(CRATES_DIR); cargo test -p pyxel-core $(CARGO_OPTS)
 
-test: test-unit
-	@CARGO_OPTS="$(CARGO_OPTS)" $(SCRIPTS_DIR)/run_tests
+run: install
+	@$(SCRIPTS_DIR)/run_examples
 
 clean-wasm:
 	@$(MAKE) clean TARGET=$(WASM_TARGET)
@@ -156,10 +156,8 @@ build-wasm:
 	@$(SCRIPTS_DIR)/check_wasm_wheel
 	@$(SCRIPTS_DIR)/install_wasm_wheel
 
-start-test-server:
-	@$(SCRIPTS_DIR)/start_test_server
-
-test-wasm: build-wasm start-test-server
+run-wasm: build-wasm
+	@$(SCRIPTS_DIR)/start_showcase
 
 pages:
 	@cd $(ROOT_DIR)/web && npx @tailwindcss/cli -i styles/input.css -o styles.css --minify

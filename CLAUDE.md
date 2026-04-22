@@ -117,7 +117,7 @@ This file is the coding policy for Pyxel. Apply every rule.
   - e.g., `superpowers:verification-before-completion` before claiming any change or check is complete
 - Delegate surface formatting (indentation, line wrapping, quoting, etc.) to `make format`. Do not format by hand.
 - Keep `make lint` and `make lint-wasm` warning-free.
-- After modifying code, `make test-unit` must pass.
+- After modifying code, `make test` must pass.
 
 ## Maintaining this file
 

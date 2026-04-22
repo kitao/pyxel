@@ -388,8 +388,6 @@ def create_executable_from_pyxel_app(pyxel_app_file: str) -> None:
         "PyInstaller",
         "--windowed",
         "--onedir",
-        "--distpath",
-        ".",
         "--add-data",
         f"{pyxel_app_file}{os.pathsep}.",
         *hidden_imports,

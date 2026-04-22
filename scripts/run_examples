@@ -5,10 +5,8 @@ shopt -s failglob
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
-CRATES_DIR="$ROOT_DIR/crates"
 EXAMPLES_DIR="$ROOT_DIR/python/pyxel/examples"
 
-: "${CARGO_OPTS:?CARGO_OPTS must be set}"
 export PYTHONUNBUFFERED=1
 
 BG_PID=0
@@ -39,11 +37,6 @@ example_name() {
     basename "$EXAMPLES_DIR"/$1_*.py .py
 }
 
-run() {
-    echo_cmd "$@"
-    "$@"
-}
-
 # Echo and run a GUI command in background; Ctrl+C sends SIGTERM
 run_bg() {
     echo_cmd "$@"
@@ -54,11 +47,6 @@ run_bg() {
     trap - INT
     BG_PID=0
 }
-
-# Rust unit tests
-cd "$CRATES_DIR"
-# Unquoted on purpose: CARGO_OPTS must word-split into multiple cargo flags.
-run cargo test -p pyxel-core $CARGO_OPTS
 
 # Example scripts
 for f in "$EXAMPLES_DIR"/*.py; do
@@ -73,28 +61,13 @@ done
 # Editor
 run_bg pyxel edit "$EXAMPLES_DIR/assets/sample.pyxres"
 
-# Copy examples to work directory
-PACKAGE_EXAMPLE=$(example_name 10)
+# Watch (inject error, restore, auto-exit after showing 'Watch Passed!')
+# Inline background instead of run_bg: auto-exit here, not driven by Ctrl+C.
 WATCH_EXAMPLE=$(example_name 01)
-WORK_DIR="$(mktemp -d)/$PACKAGE_EXAMPLE"
+WORK_DIR="$(mktemp -d)"
 CLEANUP_PATHS+=("$WORK_DIR")
-
-rm -rf "$WORK_DIR"
-cp -r "$EXAMPLES_DIR" "$WORK_DIR"
+cp "$EXAMPLES_DIR/$WATCH_EXAMPLE.py" "$WORK_DIR/"
 cd "$WORK_DIR"
-
-# Package and play
-run pyxel package . "$PACKAGE_EXAMPLE.py"
-run_bg pyxel play "$PACKAGE_EXAMPLE.pyxapp"
-
-# app2html
-run pyxel app2html "$PACKAGE_EXAMPLE.pyxapp"
-[[ -f "$PACKAGE_EXAMPLE.html" ]] || { echo "app2html: $PACKAGE_EXAMPLE.html not created" >&2; exit 1; }
-rm -f "$PACKAGE_EXAMPLE.html"
-rm -f "$PACKAGE_EXAMPLE.pyxapp"
-
-# Watch (inject error, restore, Ctrl+C to stop).
-# Inline background instead of run_bg: Ctrl+C exits 0 here, while run_bg exits 130.
 pyxel watch . "$WATCH_EXAMPLE.py" &
 BG_PID=$!
 # Let pyxel watch finish startup before injecting the syntax error.
@@ -108,4 +81,6 @@ sleep 1
 
 sed 's/Hello, Pyxel!/Watch Passed!/' "$EXAMPLES_DIR/$WATCH_EXAMPLE.py" > "$WATCH_EXAMPLE.py"
 trap 'kill "$BG_PID" 2>/dev/null; exit 0' INT
-wait "$BG_PID" || true
+sleep 5
+kill "$BG_PID" 2>/dev/null || true
+wait "$BG_PID" 2>/dev/null || true

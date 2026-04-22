@@ -19,7 +19,7 @@ def update_references(request):
 
 
 def pytest_collection_modifyitems(items):
-    # Ensure regression tests (test_examples, test_apps) run last
+    # Run app/example regression tests last so cheap failures surface early
     regression = []
     others = []
     for item in items:

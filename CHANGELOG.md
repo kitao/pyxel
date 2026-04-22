@@ -10,6 +10,9 @@
 - Prevented zip path traversal in the play and app2exe commands
 - Fixed relative path handling in the package command
 - Fixed duplicate startup script entry in packaged Pyxel apps
+- Fixed app2exe output colliding with the Pyxel app source directory
+- Added CLI unit tests covering dispatcher, error handling, and all commands
+- Reorganized make targets into make test / run / run-wasm
 - Refined documentation terminology and translations
 
 ## 2.9.0

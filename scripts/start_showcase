@@ -5,6 +5,8 @@ import io
 from pathlib import Path
 import socket
 import sys
+import threading
+import webbrowser
 from urllib.parse import urlparse
 
 ROOT_DIR = Path(__file__).resolve().parent.parent
@@ -114,6 +116,9 @@ def main() -> int:
     ip = _get_ip()
     print(f"Serving HTTP on {ip} port {PORT} (http://{ip}:{PORT}/) ...")
     server = ThreadingHTTPServer(("", PORT), Handler)
+    threading.Timer(
+        0.5, lambda: webbrowser.open(f"http://localhost:{PORT}/web/showcase/")
+    ).start()
     try:
         server.serve_forever()
     except KeyboardInterrupt:
