@@ -67,6 +67,7 @@ WATCH_EXAMPLE=$(example_name 01)
 WORK_DIR="$(mktemp -d)"
 CLEANUP_PATHS+=("$WORK_DIR")
 cp "$EXAMPLES_DIR/$WATCH_EXAMPLE.py" "$WORK_DIR/"
+cp -R "$EXAMPLES_DIR/assets" "$WORK_DIR/"
 cd "$WORK_DIR"
 pyxel watch . "$WATCH_EXAMPLE.py" &
 BG_PID=$!
@@ -80,7 +81,14 @@ EOF
 sleep 1
 
 sed 's/Hello, Pyxel!/Watch Passed!/' "$EXAMPLES_DIR/$WATCH_EXAMPLE.py" > "$WATCH_EXAMPLE.py"
-trap 'kill "$BG_PID" 2>/dev/null; exit 0' INT
-sleep 5
-kill "$BG_PID" 2>/dev/null || true
+# Kill the watcher's children first; the worker holding the pyxel window runs
+# as a separate multiprocessing child and is not cleaned up when the parent
+# receives SIGTERM in a backgrounded shell job.
+kill_watch() {
+    pkill -P "$BG_PID" 2>/dev/null || true
+    kill "$BG_PID" 2>/dev/null || true
+}
+trap 'kill_watch; exit 0' INT
+sleep 3
+kill_watch
 wait "$BG_PID" 2>/dev/null || true
