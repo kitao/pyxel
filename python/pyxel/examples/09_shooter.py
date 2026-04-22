@@ -259,7 +259,7 @@ class App:
         pyxel.musics[1].set([5], [6], [7])
 
     def update(self):
-        if pyxel.btn(pyxel.KEY_Q):
+        if pyxel.btnp(pyxel.KEY_Q):
             pyxel.quit()
 
         self.background.update()

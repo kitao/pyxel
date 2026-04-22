@@ -166,8 +166,12 @@ def compare_or_update_all(name, results, refs_dir, update_references):
         pytest.fail("\n".join(failures))
 
 
-# Capture plans — frame numbers and optional input injection
+# Capture plans — frame numbers and optional input injection.
+# Examples are grouped by execution mode: pyxel.run() without assets,
+# pyxel.run() with asset loading, pyxel.show()-based (no update/draw loop),
+# and while+flip() loop.
 CAPTURE_PLANS = {
+    # pyxel.run() without asset loading
     "01_hello_pyxel": [{"frame": 8}],
     "04_sound_api": [{"frame": 1}],
     "06_click_game": [
@@ -182,7 +186,7 @@ CAPTURE_PLANS = {
     ],
     "12_perlin_noise": [{"frame": 1}, {"frame": 40}],
     "14_synthesizer": [{"frame": 1}],
-    # Group 2: pyxel.run() with asset loading
+    # pyxel.run() with asset loading
     "02_jump_game": [{"frame": 10}],
     "10_platformer": [
         {"frame": 1},
@@ -203,16 +207,16 @@ CAPTURE_PLANS = {
         {"frame": 1},
         {"frame": 20, "press": [pyxel.KEY_RIGHT, pyxel.KEY_W]},
     ],
-    # Group 3: pyxel.show()-based (no update/draw loop)
+    # pyxel.show()-based (no update/draw loop)
     "05_color_palette": [{"frame": 0}],
     "13_custom_font": [{"frame": 0}],
     "17_app_launcher": [{"frame": 1}],
-    # Group 5: draw API with clipping test (SPACE toggles clip)
+    # pyxel.run() with SPACE toggling clip
     "03_draw_api": [
         {"frame": 1},
         {"frame": 155, "press": [pyxel.KEY_SPACE]},
     ],
-    # Group 4: while+flip loop
+    # while+flip() loop
     "99_flip_animation": [{"frame": 1}, {"frame": 30}],
 }
 

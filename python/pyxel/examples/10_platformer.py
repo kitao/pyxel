@@ -221,7 +221,7 @@ class App:
         pyxel.run(self.update, self.draw)
 
     def update(self):
-        if pyxel.btn(pyxel.KEY_Q):
+        if pyxel.btnp(pyxel.KEY_Q):
             pyxel.quit()
 
         player.update()

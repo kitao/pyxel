@@ -94,24 +94,6 @@ class TestConstants:
         assert len(pyxel.VERSION) > 0
 
     def test_color_constants(self):
-        assert pyxel.COLOR_BLACK == 0
-        assert pyxel.COLOR_NAVY == 1
-        assert pyxel.COLOR_PURPLE == 2
-        assert pyxel.COLOR_GREEN == 3
-        assert pyxel.COLOR_BROWN == 4
-        assert pyxel.COLOR_DARK_BLUE == 5
-        assert pyxel.COLOR_LIGHT_BLUE == 6
-        assert pyxel.COLOR_WHITE == 7
-        assert pyxel.COLOR_RED == 8
-        assert pyxel.COLOR_ORANGE == 9
-        assert pyxel.COLOR_YELLOW == 10
-        assert pyxel.COLOR_LIME == 11
-        assert pyxel.COLOR_CYAN == 12
-        assert pyxel.COLOR_GRAY == 13
-        assert pyxel.COLOR_PINK == 14
-        assert pyxel.COLOR_PEACH == 15
-
-    def test_color_constants_contiguous(self):
         for i, name in enumerate(_COLOR_NAMES):
             assert getattr(pyxel, f"COLOR_{name}") == i
 
@@ -152,7 +134,6 @@ class TestConstants:
         assert isinstance(pyxel.APP_FILE_EXTENSION, str)
         assert isinstance(pyxel.RESOURCE_FILE_EXTENSION, str)
         assert isinstance(pyxel.PALETTE_FILE_EXTENSION, str)
-        # Extensions should start with a dot
         assert pyxel.APP_FILE_EXTENSION.startswith(".")
         assert pyxel.RESOURCE_FILE_EXTENSION.startswith(".")
         assert pyxel.PALETTE_FILE_EXTENSION.startswith(".")
@@ -161,7 +142,6 @@ class TestConstants:
 class TestSystemFunctions:
     def test_title(self):
         pyxel.title("test_title")
-        # Should not raise
 
     def test_icon(self):
         pyxel.icon(["0000", "0770", "0770", "0000"], 1)

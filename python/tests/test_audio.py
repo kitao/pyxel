@@ -31,22 +31,6 @@ class TestPlay:
         pyxel.play(3, "T120 O4 L4 CDEF")
         pyxel.stop(3)
 
-
-class TestPlaym:
-    def test_playm_basic(self):
-        pyxel.sounds[0].set("c2e2g2", "sss", "777", "nnn", 10)
-        pyxel.musics[0].set([0], [0])
-        pyxel.playm(0)
-        pyxel.stop()
-
-    def test_playm_with_loop(self):
-        pyxel.sounds[0].set("c2e2g2", "sss", "777", "nnn", 10)
-        pyxel.musics[0].set([0])
-        pyxel.playm(0, loop=True)
-        pyxel.stop()
-
-
-class TestPlayOptions:
     def test_play_with_loop(self):
         pyxel.sounds[0].set("c2e2g2", "sss", "777", "nnn", 10)
         pyxel.play(3, 0, loop=True)
@@ -61,6 +45,20 @@ class TestPlayOptions:
         pyxel.sounds[0].set("c2e2g2", "sss", "777", "nnn", 10)
         pyxel.play(3, 0, sec=0.5)
         pyxel.stop(3)
+
+
+class TestPlaym:
+    def test_playm_basic(self):
+        pyxel.sounds[0].set("c2e2g2", "sss", "777", "nnn", 10)
+        pyxel.musics[0].set([0], [0])
+        pyxel.playm(0)
+        pyxel.stop()
+
+    def test_playm_with_loop(self):
+        pyxel.sounds[0].set("c2e2g2", "sss", "777", "nnn", 10)
+        pyxel.musics[0].set([0])
+        pyxel.playm(0, loop=True)
+        pyxel.stop()
 
     def test_playm_with_sec(self):
         pyxel.sounds[0].set("c2e2g2", "sss", "777", "nnn", 10)

@@ -21,6 +21,8 @@ class OctaveBar(Widget):
         self.add_event_listener("mouse_hover", self.__on_mouse_hover)
         self.add_event_listener("draw", self.__on_draw)
 
+    # Event handlers
+
     def __on_mouse_down(self, key, x, y):
         if key != pyxel.MOUSE_BUTTON_LEFT:
             return

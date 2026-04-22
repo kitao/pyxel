@@ -27,6 +27,9 @@ def _make_app(root: Path) -> Path:
     return app_dir
 
 
+# Public commands
+
+
 class TestCliDispatcher:
     def test_no_args_prints_version_and_usage(self, capsys, monkeypatch):
         monkeypatch.setattr(sys, "argv", ["pyxel"])
@@ -64,47 +67,6 @@ class TestCliDispatcher:
         assert "invalid number of parameters" in out
 
 
-class TestErrorHelpers:
-    def test_exit_with_error_prints_message_and_exits(self, capsys):
-        with pytest.raises(SystemExit) as exc_info:
-            pyxel.cli._exit_with_error("boom")
-        assert exc_info.value.code == 1
-        assert "boom" in capsys.readouterr().out
-
-    def test_check_file_exists_missing(self, capsys, tmp_path):
-        missing = tmp_path / "nope.py"
-        with pytest.raises(SystemExit) as exc_info:
-            pyxel.cli._check_file_exists(str(missing))
-        assert exc_info.value.code == 1
-        assert f"no such file: '{missing}'" in capsys.readouterr().out
-
-    def test_check_dir_exists_missing(self, capsys, tmp_path):
-        missing = tmp_path / "nodir"
-        with pytest.raises(SystemExit) as exc_info:
-            pyxel.cli._check_dir_exists(str(missing))
-        assert exc_info.value.code == 1
-        assert f"no such directory: '{missing}'" in capsys.readouterr().out
-
-    def test_check_file_under_dir_outside(self, capsys, tmp_path):
-        inside_dir = tmp_path / "dir"
-        inside_dir.mkdir()
-        outside = tmp_path / "outside.py"
-        outside.write_text("", encoding="utf-8")
-        with pytest.raises(SystemExit) as exc_info:
-            pyxel.cli._check_file_under_dir(str(outside), str(inside_dir))
-        assert exc_info.value.code == 1
-        assert "specified file is not under the directory" in capsys.readouterr().out
-
-    def test_complete_extension_rejects_wrong_ext(self, capsys):
-        with pytest.raises(SystemExit) as exc_info:
-            pyxel.cli._complete_extension("foo.txt", "run", ".py")
-        assert exc_info.value.code == 1
-        assert "'run' command only accepts .py files" in capsys.readouterr().out
-
-    def test_complete_extension_appends_missing_ext(self):
-        assert pyxel.cli._complete_extension("foo", "run", ".py") == "foo.py"
-
-
 class TestRunCommand:
     def test_missing_file_exits_with_error(self, capsys, tmp_path):
         missing = tmp_path / "nope.py"
@@ -116,22 +78,6 @@ class TestRunCommand:
         with pytest.raises(SystemExit):
             pyxel.cli.run_python_script("foo.txt")
         assert "'run' command only accepts .py files" in capsys.readouterr().out
-
-
-class TestPlayCommand:
-    def test_missing_file_exits_with_error(self, capsys, tmp_path):
-        missing = tmp_path / "nope.pyxapp"
-        with pytest.raises(SystemExit):
-            pyxel.cli.play_pyxel_app(str(missing))
-        assert "no such file:" in capsys.readouterr().out
-
-    def test_non_pyxapp_extension_rejected(self, capsys):
-        with pytest.raises(SystemExit):
-            pyxel.cli.play_pyxel_app("foo.txt")
-        assert (
-            f"'play' command only accepts {pyxel.APP_FILE_EXTENSION} files"
-            in capsys.readouterr().out
-        )
 
 
 class TestWatchCommand:
@@ -168,29 +114,6 @@ class TestWatchCommand:
         assert "'watch' command only accepts .py files" in capsys.readouterr().out
 
 
-class TestExtractPyxelAppSafety:
-    @staticmethod
-    def _build_zip_with_entry(zip_path, entry_name):
-        with zipfile.ZipFile(zip_path, "w") as zf:
-            zf.writestr(entry_name, b"malicious content")
-
-    def test_rejects_path_traversal_entry(self, capsys, tmp_path, monkeypatch):
-        monkeypatch.setattr(tempfile, "gettempdir", lambda: str(tmp_path))
-        zip_path = tmp_path / "evil.pyxapp"
-        self._build_zip_with_entry(zip_path, "../evil.txt")
-        with pytest.raises(SystemExit):
-            pyxel.cli._extract_pyxel_app(str(zip_path))
-        assert "unsafe path in Pyxel app:" in capsys.readouterr().out
-
-    def test_rejects_absolute_path_entry(self, capsys, tmp_path, monkeypatch):
-        monkeypatch.setattr(tempfile, "gettempdir", lambda: str(tmp_path))
-        zip_path = tmp_path / "evil.pyxapp"
-        self._build_zip_with_entry(zip_path, "/etc/passwd")
-        with pytest.raises(SystemExit):
-            pyxel.cli._extract_pyxel_app(str(zip_path))
-        assert "unsafe path in Pyxel app:" in capsys.readouterr().out
-
-
 class TestPyxelAppMetadata:
     def test_get_metadata_returns_expected_fields(self, tmp_path, monkeypatch):
         _make_app(tmp_path)
@@ -210,36 +133,20 @@ class TestPyxelAppMetadata:
         assert "Me" in out
 
 
-class TestCopyExamples:
-    def test_creates_examples_dir(self, tmp_path, monkeypatch):
-        monkeypatch.chdir(tmp_path)
-        pyxel.cli.copy_pyxel_examples()
-        dst = tmp_path / "pyxel_examples"
-        assert dst.is_dir()
-        assert (dst / "01_hello_pyxel.py").is_file()
-        assert (dst / "assets").is_dir()
+class TestPlayCommand:
+    def test_missing_file_exits_with_error(self, capsys, tmp_path):
+        missing = tmp_path / "nope.pyxapp"
+        with pytest.raises(SystemExit):
+            pyxel.cli.play_pyxel_app(str(missing))
+        assert "no such file:" in capsys.readouterr().out
 
-    def test_excludes_pycache(self, tmp_path, monkeypatch):
-        monkeypatch.chdir(tmp_path)
-        pyxel.cli.copy_pyxel_examples()
-        dst = tmp_path / "pyxel_examples"
-        assert list(dst.rglob("__pycache__")) == []
-
-    def test_prints_copied_paths(self, capsys, tmp_path, monkeypatch):
-        monkeypatch.chdir(tmp_path)
-        pyxel.cli.copy_pyxel_examples()
-        out = capsys.readouterr().out
-        assert "copied 'pyxel_examples/01_hello_pyxel.py'" in out
-
-    def test_overwrites_existing_dir(self, tmp_path, monkeypatch):
-        monkeypatch.chdir(tmp_path)
-        dst = tmp_path / "pyxel_examples"
-        dst.mkdir()
-        stale = dst / "stale.txt"
-        stale.write_text("old", encoding="utf-8")
-        pyxel.cli.copy_pyxel_examples()
-        assert not stale.exists()
-        assert (dst / "01_hello_pyxel.py").is_file()
+    def test_non_pyxapp_extension_rejected(self, capsys):
+        with pytest.raises(SystemExit):
+            pyxel.cli.play_pyxel_app("foo.txt")
+        assert (
+            f"'play' command only accepts {pyxel.APP_FILE_EXTENSION} files"
+            in capsys.readouterr().out
+        )
 
 
 class TestPackage:
@@ -321,6 +228,55 @@ class TestPackage:
         assert f"added 'my_app/{pyxel.APP_STARTUP_SCRIPT_FILE}'" in out
 
 
+class TestApp2exe:
+    def test_exe_runs_with_resource(self, tmp_path, monkeypatch):
+        pytest.importorskip("PyInstaller")
+        app_dir = tmp_path / "my_app"
+        (app_dir / "assets").mkdir(parents=True)
+        shutil.copy(
+            Path(pyxel.__file__).parent / "examples" / "assets" / "sample.pyxres",
+            app_dir / "assets" / "sample.pyxres",
+        )
+        (app_dir / "main.py").write_text(
+            "import pyxel\n"
+            "pyxel.init(64, 64, headless=True)\n"
+            'pyxel.load("assets/sample.pyxres")\n'
+            "def update():\n"
+            "    pyxel.quit()\n"
+            "def draw():\n"
+            "    pyxel.cls(0)\n"
+            "    pyxel.blt(0, 0, 0, 0, 0, 16, 16)\n"
+            "pyxel.run(update, draw)\n",
+            encoding="utf-8",
+        )
+        monkeypatch.chdir(tmp_path)
+        pyxel.cli.package_pyxel_app("my_app", "my_app/main.py")
+        pyxel.cli.create_executable_from_pyxel_app("my_app.pyxapp")
+
+        exe_name = "my_app.exe" if sys.platform == "win32" else "my_app"
+        exe = tmp_path / "dist" / "my_app" / exe_name
+        assert exe.is_file()
+        result = subprocess.run([str(exe)], capture_output=True, timeout=60)
+        assert result.returncode == 0, (
+            f"exe failed rc={result.returncode}\n"
+            f"stdout={result.stdout.decode(errors='replace')}\n"
+            f"stderr={result.stderr.decode(errors='replace')}"
+        )
+
+    def test_missing_pyxapp_exits_with_error(self, capsys, tmp_path):
+        with pytest.raises(SystemExit):
+            pyxel.cli.create_executable_from_pyxel_app(str(tmp_path / "nope.pyxapp"))
+        assert "no such file:" in capsys.readouterr().out
+
+    def test_non_pyxapp_extension_rejected(self, capsys):
+        with pytest.raises(SystemExit):
+            pyxel.cli.create_executable_from_pyxel_app("foo.txt")
+        assert (
+            f"'app2exe' command only accepts {pyxel.APP_FILE_EXTENSION} files"
+            in capsys.readouterr().out
+        )
+
+
 class TestApp2html:
     def test_creates_html(self, tmp_path, monkeypatch):
         _make_app(tmp_path)
@@ -369,6 +325,82 @@ class TestApp2html:
         )
 
 
+class TestCopyExamples:
+    def test_creates_examples_dir(self, tmp_path, monkeypatch):
+        monkeypatch.chdir(tmp_path)
+        pyxel.cli.copy_pyxel_examples()
+        dst = tmp_path / "pyxel_examples"
+        assert dst.is_dir()
+        assert (dst / "01_hello_pyxel.py").is_file()
+        assert (dst / "assets").is_dir()
+
+    def test_excludes_pycache(self, tmp_path, monkeypatch):
+        monkeypatch.chdir(tmp_path)
+        pyxel.cli.copy_pyxel_examples()
+        dst = tmp_path / "pyxel_examples"
+        assert list(dst.rglob("__pycache__")) == []
+
+    def test_prints_copied_paths(self, capsys, tmp_path, monkeypatch):
+        monkeypatch.chdir(tmp_path)
+        pyxel.cli.copy_pyxel_examples()
+        out = capsys.readouterr().out
+        assert "copied 'pyxel_examples/01_hello_pyxel.py'" in out
+
+    def test_overwrites_existing_dir(self, tmp_path, monkeypatch):
+        monkeypatch.chdir(tmp_path)
+        dst = tmp_path / "pyxel_examples"
+        dst.mkdir()
+        stale = dst / "stale.txt"
+        stale.write_text("old", encoding="utf-8")
+        pyxel.cli.copy_pyxel_examples()
+        assert not stale.exists()
+        assert (dst / "01_hello_pyxel.py").is_file()
+
+
+# Private helpers
+
+
+class TestErrorHelpers:
+    def test_exit_with_error_prints_message_and_exits(self, capsys):
+        with pytest.raises(SystemExit) as exc_info:
+            pyxel.cli._exit_with_error("boom")
+        assert exc_info.value.code == 1
+        assert "boom" in capsys.readouterr().out
+
+    def test_check_file_exists_missing(self, capsys, tmp_path):
+        missing = tmp_path / "nope.py"
+        with pytest.raises(SystemExit) as exc_info:
+            pyxel.cli._check_file_exists(str(missing))
+        assert exc_info.value.code == 1
+        assert f"no such file: '{missing}'" in capsys.readouterr().out
+
+    def test_check_dir_exists_missing(self, capsys, tmp_path):
+        missing = tmp_path / "nodir"
+        with pytest.raises(SystemExit) as exc_info:
+            pyxel.cli._check_dir_exists(str(missing))
+        assert exc_info.value.code == 1
+        assert f"no such directory: '{missing}'" in capsys.readouterr().out
+
+    def test_check_file_under_dir_outside(self, capsys, tmp_path):
+        inside_dir = tmp_path / "dir"
+        inside_dir.mkdir()
+        outside = tmp_path / "outside.py"
+        outside.write_text("", encoding="utf-8")
+        with pytest.raises(SystemExit) as exc_info:
+            pyxel.cli._check_file_under_dir(str(outside), str(inside_dir))
+        assert exc_info.value.code == 1
+        assert "specified file is not under the directory" in capsys.readouterr().out
+
+    def test_complete_extension_rejects_wrong_ext(self, capsys):
+        with pytest.raises(SystemExit) as exc_info:
+            pyxel.cli._complete_extension("foo.txt", "run", ".py")
+        assert exc_info.value.code == 1
+        assert "'run' command only accepts .py files" in capsys.readouterr().out
+
+    def test_complete_extension_appends_missing_ext(self):
+        assert pyxel.cli._complete_extension("foo", "run", ".py") == "foo.py"
+
+
 class TestWatchHelpers:
     def test_timestamps_in_dir_lists_nested_files(self, tmp_path):
         (tmp_path / "a.py").write_text("a", encoding="utf-8")
@@ -409,50 +441,24 @@ class TestWatchHelpers:
         assert not dead_file.exists()
 
 
-class TestApp2exe:
-    def test_exe_runs_with_resource(self, tmp_path, monkeypatch):
-        pytest.importorskip("PyInstaller")
-        app_dir = tmp_path / "my_app"
-        (app_dir / "assets").mkdir(parents=True)
-        shutil.copy(
-            Path(pyxel.__file__).parent / "examples" / "assets" / "sample.pyxres",
-            app_dir / "assets" / "sample.pyxres",
-        )
-        (app_dir / "main.py").write_text(
-            "import pyxel\n"
-            "pyxel.init(64, 64, headless=True)\n"
-            'pyxel.load("assets/sample.pyxres")\n'
-            "def update():\n"
-            "    pyxel.quit()\n"
-            "def draw():\n"
-            "    pyxel.cls(0)\n"
-            "    pyxel.blt(0, 0, 0, 0, 0, 16, 16)\n"
-            "pyxel.run(update, draw)\n",
-            encoding="utf-8",
-        )
-        monkeypatch.chdir(tmp_path)
-        pyxel.cli.package_pyxel_app("my_app", "my_app/main.py")
-        pyxel.cli.create_executable_from_pyxel_app("my_app.pyxapp")
+class TestExtractPyxelAppSafety:
+    @staticmethod
+    def _build_zip_with_entry(zip_path, entry_name):
+        with zipfile.ZipFile(zip_path, "w") as zf:
+            zf.writestr(entry_name, b"malicious content")
 
-        exe_name = "my_app.exe" if sys.platform == "win32" else "my_app"
-        exe = tmp_path / "dist" / "my_app" / exe_name
-        assert exe.is_file()
-        result = subprocess.run([str(exe)], capture_output=True, timeout=60)
-        assert result.returncode == 0, (
-            f"exe failed rc={result.returncode}\n"
-            f"stdout={result.stdout.decode(errors='replace')}\n"
-            f"stderr={result.stderr.decode(errors='replace')}"
-        )
-
-    def test_missing_pyxapp_exits_with_error(self, capsys, tmp_path):
+    def test_rejects_path_traversal_entry(self, capsys, tmp_path, monkeypatch):
+        monkeypatch.setattr(tempfile, "gettempdir", lambda: str(tmp_path))
+        zip_path = tmp_path / "evil.pyxapp"
+        self._build_zip_with_entry(zip_path, "../evil.txt")
         with pytest.raises(SystemExit):
-            pyxel.cli.create_executable_from_pyxel_app(str(tmp_path / "nope.pyxapp"))
-        assert "no such file:" in capsys.readouterr().out
+            pyxel.cli._extract_pyxel_app(str(zip_path))
+        assert "unsafe path in Pyxel app:" in capsys.readouterr().out
 
-    def test_non_pyxapp_extension_rejected(self, capsys):
+    def test_rejects_absolute_path_entry(self, capsys, tmp_path, monkeypatch):
+        monkeypatch.setattr(tempfile, "gettempdir", lambda: str(tmp_path))
+        zip_path = tmp_path / "evil.pyxapp"
+        self._build_zip_with_entry(zip_path, "/etc/passwd")
         with pytest.raises(SystemExit):
-            pyxel.cli.create_executable_from_pyxel_app("foo.txt")
-        assert (
-            f"'app2exe' command only accepts {pyxel.APP_FILE_EXTENSION} files"
-            in capsys.readouterr().out
-        )
+            pyxel.cli._extract_pyxel_app(str(zip_path))
+        assert "unsafe path in Pyxel app:" in capsys.readouterr().out

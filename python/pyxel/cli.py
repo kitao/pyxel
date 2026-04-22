@@ -365,9 +365,9 @@ def create_executable_from_pyxel_app(pyxel_app_file: str) -> None:
     app2exe_dir.mkdir(parents=True, exist_ok=True)
 
     pyxel_app_name = Path(pyxel_app_file).stem
-    startup_script_file = str(app2exe_dir / f"{pyxel_app_name}.py")
+    bootstrap_script_file = str(app2exe_dir / f"{pyxel_app_name}.py")
     app_filename = f"{pyxel_app_name}{pyxel.APP_FILE_EXTENSION}"
-    Path(startup_script_file).write_text(
+    Path(bootstrap_script_file).write_text(
         "import pyxel.cli; from pathlib import Path; pyxel.cli.play_pyxel_app("
         f"str(Path(__file__).parent / {repr(app_filename)}))",
         encoding="utf-8",
@@ -376,11 +376,11 @@ def create_executable_from_pyxel_app(pyxel_app_file: str) -> None:
     if importlib.util.find_spec("PyInstaller") is None:
         _exit_with_error("PyInstaller is not found. Please install it.")
 
-    startup_script = _extract_pyxel_app(pyxel_app_file)
-    if startup_script is None:
+    startup_script_file = _extract_pyxel_app(pyxel_app_file)
+    if startup_script_file is None:
         _exit_with_error("Failed to extract startup script from Pyxel app.")
 
-    modules = pyxel.utils.list_imported_modules(startup_script)["system"]
+    modules = pyxel.utils.list_imported_modules(startup_script_file)["system"]
     hidden_imports = [arg for m in modules for arg in ("--hidden-import", m)]
     command = [
         sys.executable,
@@ -391,7 +391,7 @@ def create_executable_from_pyxel_app(pyxel_app_file: str) -> None:
         "--add-data",
         f"{pyxel_app_file}{os.pathsep}.",
         *hidden_imports,
-        startup_script_file,
+        bootstrap_script_file,
     ]
     print(" ".join(command))
     result = subprocess.run(command)

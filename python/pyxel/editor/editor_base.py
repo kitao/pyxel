@@ -37,6 +37,8 @@ class EditorBase(Widget):
         self._history_index = 0
         self.copy_var("help_message_var", parent)
 
+    # Public methods
+
     @property
     def can_undo(self):
         return self._history_index > 0

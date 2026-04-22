@@ -27,7 +27,7 @@
             },
           );
           if (res.ok) return (await res.text()).trim();
-        } catch (_) {}
+        } catch (e) {}
         return ref;
       }
 

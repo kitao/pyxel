@@ -3,7 +3,6 @@ import pytest
 import pyxel
 
 
-# clamp -- int | float type preservation
 class TestClamp:
     def test_int_returns_int(self):
         result = pyxel.clamp(5, 0, 10)
@@ -37,7 +36,6 @@ class TestClamp:
         assert pyxel.clamp(-20, -10, -1) == -10
 
 
-# sgn -- int | float type preservation
 class TestSgn:
     def test_positive_int(self):
         result = pyxel.sgn(3)
@@ -66,7 +64,6 @@ class TestSgn:
         assert pyxel.sgn(-999999) == -1
 
 
-# Trigonometric functions -- degrees, not radians
 class TestTrig:
     def test_sin_0(self):
         assert pyxel.sin(0) == pytest.approx(0.0, abs=1e-6)
@@ -111,7 +108,6 @@ class TestTrig:
             assert s * s + c * c == pytest.approx(1.0, abs=1e-5)
 
 
-# ceil / floor / sqrt
 class TestBasicMath:
     def test_ceil(self):
         assert pyxel.ceil(1.2) == 2
@@ -141,7 +137,6 @@ class TestBasicMath:
         assert pyxel.sqrt(1.0) == pytest.approx(1.0)
 
 
-# Random number generation
 class TestRandom:
     def test_rndi_in_range(self):
         for _ in range(100):
@@ -188,7 +183,6 @@ class TestRandom:
         assert seq1 == seq2
 
 
-# Noise
 class TestNoise:
     def test_noise_range(self):
         for x in [0.0, 0.5, 1.0, 10.0]:
