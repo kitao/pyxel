@@ -14,8 +14,8 @@ This file is the coding policy for Pyxel. Apply every rule.
 ## Auditing
 
 - Apply every rule in this document to every in-scope file. Never narrow the ruleset or file set ad hoc.
-- Do not sample or extrapolate. Inspect every item; label any skipped or unverified item `pending` explicitly.
-- When delegating to a sub-agent, instruct it to read this file and apply every rule itself. Never pre-curate a narrowed checklist.
+- Inspect every item; no sampling, no spot-check, no skipped fields. Label any genuinely unverified item `pending` explicitly.
+- When delegating to a sub-agent, hand over every rule and the full item set. Split large scopes across more agents, never via sampling or narrowed checklists.
 - Produce per-item evidence (one line per file, or per field × language for translations). Summaries like "all OK" or "no issues" are not acceptable.
 - When deferring documentation prose to a separate session, still audit the file's code-side aspects (HTML structure, inline scripts, attributes, product-name casing) — the deferral applies to content, not to the file.
 
