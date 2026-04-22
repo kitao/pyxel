@@ -807,11 +807,13 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         Some(palette.map_or(src, |pal| pal[src.to_index()]))
     }
 
+    #[inline]
     pub fn read_data(&self, x: usize, y: usize) -> T {
         let width = self.width() as usize;
         self.data[width * y + x]
     }
 
+    #[inline]
     pub fn write_data(&mut self, x: usize, y: usize, value: T) {
         if self.should_write(x as i32, y as i32) {
             let width = self.width() as usize;
@@ -819,6 +821,7 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         }
     }
 
+    #[inline]
     pub(crate) fn write_data_with_clipping(&mut self, x: i32, y: i32, value: T) {
         if self.clip_rect.contains(x, y) && self.should_write(x, y) {
             let width = self.width() as usize;

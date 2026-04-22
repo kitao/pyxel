@@ -7,3 +7,7 @@ version = "2.9.0"
 authors = ["Takashi Kitao <takashi.kitao@gmail.com>"]
 edition = "2021"
 license = "MIT"
+
+[profile.release]
+lto = "thin"
+codegen-units = 1

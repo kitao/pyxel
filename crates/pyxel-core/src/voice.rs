@@ -576,10 +576,12 @@ impl Voice {
         }
     }
 
+    #[inline]
     fn gain_to_fixed(gain: f32) -> i32 {
         (gain * AUDIO_GAIN_SCALE as f32).round() as i32
     }
 
+    #[inline]
     fn apply_gain_fixed(sample: i32, gain: i32) -> i32 {
         let product = sample as i64 * gain as i64;
         if product >= 0 {

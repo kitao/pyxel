@@ -5,6 +5,7 @@
 - Added line numbers to palette file parsing errors
 - Updated Pyxel MML Studio to use shorter share URLs
 - Updated Pyxel Web Launcher to use the latest commit of each app
+- Enabled thin LTO and inlining hints in release builds
 - Prevented zip path traversal in the play and app2exe commands
 - Fixed relative path handling in the package command
 

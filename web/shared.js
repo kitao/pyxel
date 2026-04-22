@@ -1,4 +1,4 @@
-// Shared utilities for Pyxel web pages
+// Shared utilities for Pyxel Web pages
 
 // Language detection and i18n
 

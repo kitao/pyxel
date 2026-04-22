@@ -74,10 +74,6 @@ if (
 // incorrect keycodes for non-US keyboards. This builds a persistent per-key
 // correction map from SDL scancode to the actual character, using the browser's
 // KeyboardEvent.key (which reflects the true layout).
-//
-// Unlike the previous queue-based approach, this map is keyed by physical key
-// (SDL scancode) so it never goes out of sync between keydown and keyup events.
-// The same correction is used for both press and release of a given key.
 const _scanCorrection = {}; // Maps SDL scancode to unshifted char code
 
 // SDL scancodes for printable ASCII keys (USB HID usage codes)
@@ -637,7 +633,7 @@ const _hookFileOperations = (pyodide, root) => {
     return stat(path);
   };
 
-  // Define function to save file
+  // Save file helper
   window._savePyxelFile = (filename) => {
     const a = document.createElement("a");
     a.download = filename.split(/[\\/]/).pop();
