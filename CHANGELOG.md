@@ -3,11 +3,13 @@
 ## 2.9.1
 
 - Added line numbers to palette file parsing errors
+- Fixed palette loader failing on whitespace-only lines
 - Updated Pyxel MML Studio to use shorter share URLs
 - Fixed Pyxel Web Launcher to load the latest version of each user app
 - Enabled thin LTO and inlining hints in release builds
 - Prevented zip path traversal in the play and app2exe commands
 - Fixed relative path handling in the package command
+- Fixed duplicate startup script entry in packaged Pyxel apps
 - Refined documentation terminology and translations
 
 ## 2.9.0

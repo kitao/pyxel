@@ -323,10 +323,10 @@ def package_pyxel_app(app_dir: str, startup_script_file: str) -> None:
     if metadata_comment:
         print(metadata_comment)
 
-    app_dir = Path(app_dir).absolute()
+    app_dir = Path(app_dir).resolve()
     setting_file = app_dir / pyxel.APP_STARTUP_SCRIPT_FILE
     setting_file.write_text(
-        str(Path(startup_script_file).absolute().relative_to(app_dir)),
+        str(Path(startup_script_file).resolve().relative_to(app_dir)),
         encoding="utf-8",
     )
 
@@ -339,8 +339,7 @@ def package_pyxel_app(app_dir: str, startup_script_file: str) -> None:
         compression=zipfile.ZIP_DEFLATED,
     ) as zf:
         zf.comment = metadata_comment.encode(encoding="utf-8")
-        files = [str(setting_file)] + _files_in_dir(app_dir)
-        for file in files:
+        for file in _files_in_dir(app_dir):
             if (
                 Path(file).name == pyxel_app_file
                 or "__pycache__" in file

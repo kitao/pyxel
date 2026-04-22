@@ -137,7 +137,7 @@ impl Pyxel {
         let colors: Vec<Rgb24> = contents
             .lines()
             .enumerate()
-            .filter(|(_, s)| !s.is_empty())
+            .filter(|(_, s)| !s.trim().is_empty())
             .map(|(i, s)| {
                 u32::from_str_radix(s.trim(), 16)
                     .map(|v| v as Rgb24)

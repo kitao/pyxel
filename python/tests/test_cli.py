@@ -48,6 +48,14 @@ class TestPackage:
         assert "my_app/main.py" in names
         assert "my_app/assets/data.txt" in names
 
+    def test_pyxapp_has_no_duplicate_entries(self, tmp_path, monkeypatch):
+        _make_app(tmp_path)
+        monkeypatch.chdir(tmp_path)
+        pyxel.cli.package_pyxel_app("my_app", "my_app/main.py")
+        with zipfile.ZipFile(tmp_path / "my_app.pyxapp") as zf:
+            names = zf.namelist()
+        assert len(names) == len(set(names)), f"duplicate entries in pyxapp: {names}"
+
     def test_startup_script_pointer_is_relative(self, tmp_path, monkeypatch):
         _make_app(tmp_path)
         monkeypatch.chdir(tmp_path)

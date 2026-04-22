@@ -97,6 +97,18 @@ class TestResourceIO:
     def test_load_pal(self, assets_dir):
         pyxel.load_pal(str(assets_dir / "audio_bgm.pyxpal"))
 
+    def test_load_pal_skips_whitespace_only_lines(self, tmp_path):
+        backup_path = str(tmp_path / "backup.pyxpal")
+        pyxel.save_pal(backup_path)
+        try:
+            pal_file = tmp_path / "test.pyxpal"
+            pal_file.write_text("ff0000\n   \n00ff00\n")
+            pyxel.load_pal(str(pal_file))
+            assert pyxel.colors[0] == 0xFF0000
+            assert pyxel.colors[1] == 0x00FF00
+        finally:
+            pyxel.load_pal(backup_path)
+
     def test_save_load_pal_roundtrip(self, tmp_path):
         original_colors = list(pyxel.colors)
         path = str(tmp_path / "test.pyxpal")
