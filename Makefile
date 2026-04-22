@@ -34,8 +34,8 @@
 
 # Project directories
 ROOT_DIR := .
-DIST_DIR := $(ROOT_DIR)/dist
 CRATES_DIR := $(ROOT_DIR)/crates
+DIST_DIR := $(ROOT_DIR)/dist
 PYTHON_DIR := $(ROOT_DIR)/python
 SCRIPTS_DIR := $(ROOT_DIR)/scripts
 

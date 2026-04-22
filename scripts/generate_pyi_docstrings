@@ -37,10 +37,14 @@ def _merge_items(existing, new):
     new_desc = localize(new.get("description"))
 
     if new.get("params") and not existing.get("params"):
-        merged = f"{new_desc} Call without arguments to {_lowercase_first(existing_desc)}"
+        merged = (
+            f"{new_desc} Call without arguments to {_lowercase_first(existing_desc)}"
+        )
         existing["params"] = new["params"]
     elif existing.get("params") and not new.get("params"):
-        merged = f"{existing_desc} Call without arguments to {_lowercase_first(new_desc)}"
+        merged = (
+            f"{existing_desc} Call without arguments to {_lowercase_first(new_desc)}"
+        )
     else:
         merged = f"{existing_desc} {new_desc}"
 

@@ -65,7 +65,7 @@
           <section class="card" id="s-code-maker"></section>
           <section class="card" id="s-launcher"></section>
           <section class="card" id="s-app2html"></section>
-          <section class="card" id="s-custom-tags"></section>
+          <section class="card" id="s-custom-elements"></section>
         `;
         app.appendChild(wrap);
         updateTexts();
@@ -106,8 +106,8 @@
                 esc(t("method_app2html")),
               ],
               [
-                `<a href="#s-custom-tags" class="link-strong">${esc(t("custom_tags_title"))}</a>`,
-                esc(t("method_custom_tags")),
+                `<a href="#s-custom-elements" class="link-strong">${esc(t("custom_elements_title"))}</a>`,
+                esc(t("method_custom_elements")),
               ],
             ],
           )}`;
@@ -189,18 +189,18 @@
           <p class="body mt-2">${esc(t("app2html_body3"))}</p>
           <p class="body mt-2">${t("app2html_gamepad").replace("{0}", chip('gamepad: "enabled"'))}</p>`;
 
-        // Custom Tags
-        document.getElementById("s-custom-tags").innerHTML = `
-          <h2 class="section-title">${esc(t("custom_tags_title"))}</h2>
-          <p class="body">${esc(t("custom_tags_body"))}</p>
+        // Custom Elements
+        document.getElementById("s-custom-elements").innerHTML = `
+          <h2 class="section-title">${esc(t("custom_elements_title"))}</h2>
+          <p class="body">${esc(t("custom_elements_body"))}</p>
 
-          <h3 class="sub-title">${esc(t("custom_tags_setup_title"))}</h3>
-          <p class="body">${esc(t("custom_tags_setup_body"))}</p>
+          <h3 class="sub-title">${esc(t("custom_elements_setup_title"))}</h3>
+          <p class="body">${esc(t("custom_elements_setup_body"))}</p>
           ${code('<script src="https://cdn.jsdelivr.net/gh/kitao/pyxel/wasm/pyxel.js"><\/script>', "html")}
-          <p class="body">${t("custom_tags_setup_version").replace("{0}", chip("@"))}</p>
+          <p class="body">${t("custom_elements_setup_version").replace("{0}", chip("@"))}</p>
           ${code('<script src="https://cdn.jsdelivr.net/gh/kitao/pyxel@v2.8.7/wasm/pyxel.js"><\/script>', "html")}
 
-          <p class="body mt-3">${t("custom_tags_overview")
+          <p class="body mt-3">${t("custom_elements_overview")
             .replace("{0}", chip("run"))
             .replace("{1}", chip("play"))
             .replace("{2}", chip("edit"))
@@ -208,9 +208,9 @@
             .replace("{4}", chip("pyxel-play"))
             .replace("{5}", chip("pyxel-edit"))}</p>
 
-          <h3 class="sub-title">${esc(t("custom_tags_run_title"))}</h3>
-          <p class="body">${esc(t("custom_tags_run_desc"))}</p>
-          <p class="body mt-2">${t("custom_tags_run_script").replace("{0}", chip("script"))}</p>
+          <h3 class="sub-title">${esc(t("custom_elements_run_title"))}</h3>
+          <p class="body">${esc(t("custom_elements_run_desc"))}</p>
+          <p class="body mt-2">${t("custom_elements_run_script").replace("{0}", chip("script"))}</p>
           ${code(
             `<pyxel-run
   script="
@@ -223,20 +223,20 @@ pyxel.show()
 ></pyxel-run>`,
             "html",
           )}
-          <p class="body">${t("custom_tags_run_file")
+          <p class="body">${t("custom_elements_run_file")
             .replace("{0}", chip("root"))
             .replace("{1}", chip("name"))
             .replace("{2}", chip("root"))
             .replace("{3}", chip("name"))}</p>
           ${code('<pyxel-run root="." name="test.py"></pyxel-run>', "html")}
-          <p class="body">${t("custom_tags_run_root_omit")
+          <p class="body">${t("custom_elements_run_root_omit")
             .replace("{0}", chip("root"))
             .replace("{1}", chip('root="."'))
             .replace("{2}", chip("root"))}</p>
 
-          <h3 class="sub-title">${esc(t("custom_tags_play_title"))}</h3>
-          <p class="body">${esc(t("custom_tags_play_desc"))}</p>
-          <p class="body mt-2">${t("custom_tags_play_body").replace("{0}", chip("root"))}</p>
+          <h3 class="sub-title">${esc(t("custom_elements_play_title"))}</h3>
+          <p class="body">${esc(t("custom_elements_play_desc"))}</p>
+          <p class="body mt-2">${t("custom_elements_play_body").replace("{0}", chip("root"))}</p>
           ${code(
             `<pyxel-play
   root="https://cdn.jsdelivr.net/gh/kitao/pyxel/python/pyxel/examples/apps"
@@ -245,35 +245,40 @@ pyxel.show()
             "html",
           )}
 
-          <h3 class="sub-title">${esc(t("custom_tags_edit_title"))}</h3>
-          <p class="body">${esc(t("custom_tags_edit_desc"))}</p>
-          <p class="body mt-2">${t("custom_tags_edit_body").replace("{0}", chip("editor"))}</p>
+          <h3 class="sub-title">${esc(t("custom_elements_edit_title"))}</h3>
+          <p class="body">${esc(t("custom_elements_edit_desc"))}</p>
+          <p class="body mt-2">${t("custom_elements_edit_body").replace("{0}", chip("editor"))}</p>
           ${code('<pyxel-edit root="assets" name="shooter.pyxres" editor="image"></pyxel-edit>', "html")}
 
-          <h3 class="sub-title">${esc(t("custom_tags_common_title"))}</h3>
-          <p class="body mb-3">${t("custom_tags_common_body")
+          <h3 class="sub-title">${esc(t("custom_elements_common_title"))}</h3>
+          <p class="body mb-3">${t("custom_elements_common_body")
             .replace("{0}", chip("pyxel-run"))
             .replace("{1}", chip("pyxel-play"))}</p>
           ${table(
             [lang === "ja" ? "属性" : "Attribute", t("th_description")],
-            [[chip('gamepad="enabled"'), esc(t("custom_tags_attr_gamepad"))]],
+            [
+              [
+                chip('gamepad="enabled"'),
+                esc(t("custom_elements_attr_gamepad")),
+              ],
+            ],
           )}
 
-          <h3 class="sub-title" id="s-custom-tags-screen">${esc(t("custom_tags_screen_title"))}</h3>
-          <p class="body">${t("custom_tags_screen_body")
+          <h3 class="sub-title" id="s-custom-elements-screen">${esc(t("custom_elements_screen_title"))}</h3>
+          <p class="body">${t("custom_elements_screen_body")
             .replace("{0}", chip('id="pyxel-screen"'))
             .replace("{1}", chip("<div>"))}</p>
 
-          <h3 class="sub-title">${esc(t("custom_tags_local_title"))}</h3>
-          <p class="body">${esc(t("custom_tags_local_body"))}</p>
-          <p class="body mt-2">${esc(t("custom_tags_local_body2"))}</p>
+          <h3 class="sub-title">${esc(t("custom_elements_local_title"))}</h3>
+          <p class="body">${esc(t("custom_elements_local_body"))}</p>
+          <p class="body mt-2">${esc(t("custom_elements_local_body2"))}</p>
           ${code(
             lang === "ja"
               ? "python -m http.server\n# Mac や Linux の場合は python3 を使用"
               : "python -m http.server\n# Use python3 on macOS and Linux",
             "sh",
           )}
-          <p class="body">${t("custom_tags_local_access").replace("{0}", chip("http://localhost:8000/test.html"))}</p>`;
+          <p class="body">${t("custom_elements_local_access").replace("{0}", chip("http://localhost:8000/test.html"))}</p>`;
 
         setDocLang(lang);
         hljs.highlightAll();

@@ -103,6 +103,7 @@ MESSAGE_PAD_WIDTH = MESSAGE_WIDTH + MESSAGE_PAD * 2
 MESSAGE_PAD_HEIGHT = MESSAGE_HEIGHT + MESSAGE_PAD * 2
 MESSAGE_PAD_X = MESSAGE_X - MESSAGE_PAD
 MESSAGE_PAD_Y = MESSAGE_Y - MESSAGE_PAD
+
 DRAW_LAYOUT_GUIDES = False
 
 
@@ -131,7 +132,7 @@ def download_example_image(url, example_id, frame):
 
 
 def draw_example_images(thanks_image):
-    # Load the user examples json
+    # Index user examples by id
     user_examples = json.loads(USER_EXAMPLES_JSON.read_text(encoding="utf-8"))
     entries_by_id = {entry["id"]: entry for entry in user_examples["entries"]}
 

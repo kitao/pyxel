@@ -21,7 +21,7 @@ target/
 .env
 .venv/
 
-# Tools
+# Workspaces
 .claude/
 /examples
 docs/superpowers/

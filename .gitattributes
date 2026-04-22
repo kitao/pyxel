@@ -4,12 +4,6 @@
 *.whl binary
 *.zip binary
 
-# Images
-*.gif binary
-*.ico binary
-*.jpeg binary
-*.png binary
-
 # Audio
 *.ogg binary
 
@@ -17,6 +11,12 @@
 # BDF is a plain-text X11 font definition; keep LF so diffs stay readable across platforms.
 *.bdf text eol=lf
 *.ttf binary
+
+# Images
+*.gif binary
+*.ico binary
+*.jpeg binary
+*.png binary
 
 # Pyxel assets
 *.pyxapp binary

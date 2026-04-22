@@ -17,6 +17,7 @@ EDITOR_MANUAL_HTML = WEB_DIR / "editor-manual" / "index.html"
 EDITOR_MANUAL_JSON = WEB_DIR / "editor-manual" / "editor-manual.json"
 DOCS_DIR = ROOT_DIR / "docs"
 PYXEL_WEB = "https://kitao.github.io/pyxel/web"
+BLOCK_MARKER = "\x00BLK{idx}\x00"
 
 
 def localize(obj):
@@ -64,7 +65,7 @@ def _parse_arg(text):
                 i += 2
                 continue
             if text[i] == q:
-                return text[:i + 1], text[i + 1:].lstrip()
+                return text[: i + 1], text[i + 1 :].lstrip()
             i += 1
     elif text[0] == "`":
         i = 1
@@ -76,7 +77,7 @@ def _parse_arg(text):
                 i = _find_matching(text, i + 2, "{", "}")
                 continue
             if text[i] == "`":
-                return text[:i + 1], text[i + 1:].lstrip()
+                return text[: i + 1], text[i + 1 :].lstrip()
             i += 1
     elif text[0] == "/":
         i = 1
@@ -183,9 +184,9 @@ class JsEval:
                 c = template[i + 1]
                 result.append("\n" if c == "n" else "/" if c == "/" else c)
                 i += 2
-            elif template[i:i + 2] == "${":
+            elif template[i : i + 2] == "${":
                 end = _find_matching(template, i + 2, "{", "}")
-                result.append(self.eval(template[i + 2:end - 1]))
+                result.append(self.eval(template[i + 2 : end - 1]))
                 i = end
             else:
                 result.append(template[i])
@@ -200,7 +201,7 @@ class JsEval:
         # Ternary: lang === "ja" ? ja_expr : en_expr -> English branch
         m = re.match(r'lang\s*===\s*"ja"\s*\?\s*', expr)
         if m:
-            _, rest = _parse_arg(expr[m.end():])
+            _, rest = _parse_arg(expr[m.end() :])
             rest = rest.strip()
             if rest.startswith(":"):
                 rest = rest[1:].strip()
@@ -209,19 +210,24 @@ class JsEval:
 
         # String literals
         if len(expr) >= 2:
-            if (expr[0] == '"' and expr[-1] == '"') or \
-               (expr[0] == "'" and expr[-1] == "'"):
+            if (expr[0] == '"' and expr[-1] == '"') or (
+                expr[0] == "'" and expr[-1] == "'"
+            ):
                 s = expr[1:-1]
-                return s.replace("\\n", "\n").replace("\\/", "/") \
-                        .replace('\\"', '"').replace("\\'", "'")
+                return (
+                    s.replace("\\n", "\n")
+                    .replace("\\/", "/")
+                    .replace('\\"', '"')
+                    .replace("\\'", "'")
+                )
             if expr[0] == "`" and expr[-1] == "`":
                 return self.eval_template(expr[1:-1])
 
         # Variable or property access (e.g. e.label)
-        if re.match(r'^\w+$', expr) and expr in self._vars:
+        if re.match(r"^\w+$", expr) and expr in self._vars:
             val = self._vars[expr]
             return localize(val) if isinstance(val, dict) else val
-        m = re.match(r'^(\w+)\.(\w+)$', expr)
+        m = re.match(r"^(\w+)\.(\w+)$", expr)
         if m and m.group(1) in self._vars:
             obj = self._vars[m.group(1)]
             if isinstance(obj, dict):
@@ -232,13 +238,13 @@ class JsEval:
         m = re.match(r't\("([^"]+)"\)$', expr)
         if m:
             return self._localize(m.group(1))
-        m = re.match(r't\((\w+)\.(\w+)\)$', expr)
+        m = re.match(r"t\((\w+)\.(\w+)\)$", expr)
         if m:
             obj = self._vars.get(m.group(1))
             if isinstance(obj, dict):
                 return localize(obj.get(m.group(2), ""))
             return ""
-        m = re.match(r't\((\w+)\)$', expr)
+        m = re.match(r"t\((\w+)\)$", expr)
         if m:
             return self._localize(self._vars.get(m.group(1), m.group(1)))
 
@@ -248,16 +254,16 @@ class JsEval:
 
         # esc(inner) -> just evaluate inner
         if expr.startswith("esc("):
-            return self.eval(expr[4:_find_matching(expr, 4, "(", ")") - 1])
+            return self.eval(expr[4 : _find_matching(expr, 4, "(", ")") - 1])
 
         # chip("text") -> `text`
         if expr.startswith("chip("):
-            inner = expr[5:_find_matching(expr, 5, "(", ")") - 1]
+            inner = expr[5 : _find_matching(expr, 5, "(", ")") - 1]
             return f"`{html.escape(self.eval(inner))}`"
 
         # link("url", "text") -> [text](url)
         if expr.startswith("link("):
-            inner = expr[5:_find_matching(expr, 5, "(", ")") - 1]
+            inner = expr[5 : _find_matching(expr, 5, "(", ")") - 1]
             url_s, rest = _parse_arg(inner)
             rest = _skip_comma(rest)
             text_s, _ = _parse_arg(rest)
@@ -265,7 +271,7 @@ class JsEval:
 
         # code(content, lang) -> code block
         if expr.startswith("code("):
-            inner = expr[5:_find_matching(expr, 5, "(", ")") - 1]
+            inner = expr[5 : _find_matching(expr, 5, "(", ")") - 1]
             content_s, rest = _parse_arg(inner.strip())
             rest = _skip_comma(rest)
             lang = ""
@@ -275,46 +281,46 @@ class JsEval:
             return f"\n```{lang}\n{self.eval(content_s)}\n```\n"
 
         # data.prop, data.prop[N].field, data.prop.sub[N].field access
-        m = re.match(r'data\.([\w.]+?)(?:\[(\d+)\](?:\.(\w+))?)?$', expr)
+        m = re.match(r"data\.([\w.]+?)(?:\[(\d+)\](?:\.(\w+))?)?$", expr)
         if m:
             return self._data_access(m.group(1), m.group(2), m.group(3))
 
         # shortcutTable(expr) -> Markdown table from [{key, action}]
         if expr.startswith("shortcutTable("):
-            inner = expr[14:_find_matching(expr, 14, "(", ")") - 1]
+            inner = expr[14 : _find_matching(expr, 14, "(", ")") - 1]
             return self._shortcut_table(inner)
 
         # specsGrid(expr) -> label: value list
         if expr.startswith("specsGrid("):
-            inner = expr[10:_find_matching(expr, 10, "(", ")") - 1]
+            inner = expr[10 : _find_matching(expr, 10, "(", ")") - 1]
             return self._specs_grid(inner)
 
         # propTable(expr) -> key/label/desc table
         if expr.startswith("propTable("):
-            inner = expr[10:_find_matching(expr, 10, "(", ")") - 1]
+            inner = expr[10 : _find_matching(expr, 10, "(", ")") - 1]
             return self._prop_table(inner)
 
         # iconTable(expr) -> icon list with shortcut and description
         if expr.startswith("iconTable("):
-            inner = expr[10:_find_matching(expr, 10, "(", ")") - 1]
+            inner = expr[10 : _find_matching(expr, 10, "(", ")") - 1]
             return self._icon_table(inner)
 
         # areaTitle(label, index) -> ### heading
         if expr.startswith("areaTitle("):
-            inner = expr[10:_find_matching(expr, 10, "(", ")") - 1]
+            inner = expr[10 : _find_matching(expr, 10, "(", ")") - 1]
             label_s, _ = _parse_arg(inner)
             return f"\n#### {self.eval(label_s)}\n"
 
         # annotatedImg(src, annotations) -> image link (skip annotations)
         if expr.startswith("annotatedImg("):
-            inner = expr[13:_find_matching(expr, 13, "(", ")") - 1]
+            inner = expr[13 : _find_matching(expr, 13, "(", ")") - 1]
             src_s, _ = _parse_arg(inner)
             url = _transform_url(self.eval(src_s), self._doc_name)
             return f"\n![{url}]({url})\n"
 
         # areaCrop(editor, index) -> image from annotations
         if expr.startswith("areaCrop("):
-            inner = expr[9:_find_matching(expr, 9, "(", ")") - 1]
+            inner = expr[9 : _find_matching(expr, 9, "(", ")") - 1]
             editor_s, rest = _parse_arg(inner)
             rest = _skip_comma(rest)
             index_s, _ = _parse_arg(rest)
@@ -323,26 +329,28 @@ class JsEval:
             annotations = self._data.get("annotations", {}).get(editor, [])
             if index < len(annotations):
                 aid = annotations[index].get("id", "")
-                url = _transform_url(
-                    f"images/{editor}_{aid}.png", self._doc_name
-                )
+                url = _transform_url(f"images/{editor}_{aid}.png", self._doc_name)
                 return f"\n![{url}]({url})\n"
             return ""
 
         # toolIcons() -> tool list with icons from D.image_tools
         if expr.startswith("toolIcons("):
-            tool_icons = ["tool_select", "tool_pencil", "tool_rectb",
-                          "tool_rect", "tool_circb", "tool_circ",
-                          "tool_bucket"]
+            tool_icons = [
+                "tool_select",
+                "tool_pencil",
+                "tool_rectb",
+                "tool_rect",
+                "tool_circb",
+                "tool_circ",
+                "tool_bucket",
+            ]
             tools = self._data.get("image_tools", [])
             rows = []
             for i, tool in enumerate(tools):
                 icon = tool_icons[i] if i < len(tool_icons) else ""
                 img = ""
                 if icon:
-                    url = _transform_url(
-                        f"images/{icon}.png", self._doc_name
-                    )
+                    url = _transform_url(f"images/{icon}.png", self._doc_name)
                     img = f"![{icon}]({url}) "
                 rows.append(f"- {img}{tool['key']} — {localize(tool['desc'])}")
             return "\n" + "\n".join(rows) + "\n"
@@ -351,12 +359,18 @@ class JsEval:
         if expr.startswith("keyboardDiagram("):
             kl = self._data.get("sound_keyboard_layout", {})
             notes = localize(kl.get("notes", {}))
-            rows = [f"\n**{localize(kl.get('upper_label', {}))}**\n",
-                    "| Note | Key |", "| --- | --- |"]
+            rows = [
+                f"\n**{localize(kl.get('upper_label', {}))}**\n",
+                "| Note | Key |",
+                "| --- | --- |",
+            ]
             for i, key in enumerate(kl.get("upper", [])):
                 rows.append(f"| {notes[i]} | {key} |")
-            rows += [f"\n**{localize(kl.get('lower_label', {}))}**\n",
-                     "| Note | Key |", "| --- | --- |"]
+            rows += [
+                f"\n**{localize(kl.get('lower_label', {}))}**\n",
+                "| Note | Key |",
+                "| --- | --- |",
+            ]
             for i, key in enumerate(kl.get("lower", [])):
                 rows.append(f"| {notes[i]} | {key} |")
             rows.append(
@@ -366,7 +380,7 @@ class JsEval:
 
         # icon(src) -> inline image
         if expr.startswith("icon("):
-            inner = expr[5:_find_matching(expr, 5, "(", ")") - 1]
+            inner = expr[5 : _find_matching(expr, 5, "(", ")") - 1]
             src_s, _ = _parse_arg(inner)
             src = self.eval(src_s)
             url = _transform_url(src, self._doc_name)
@@ -374,7 +388,7 @@ class JsEval:
 
         # table(headers, rows)
         if expr.startswith("table("):
-            inner = expr[6:_find_matching(expr, 6, "(", ")") - 1]
+            inner = expr[6 : _find_matching(expr, 6, "(", ")") - 1]
             return self._table(inner)
 
         # localize("key").replace(...) or esc(localize("key")).replace(...) chain
@@ -398,13 +412,13 @@ class JsEval:
         if not m:
             return expr
         text = self._localize(m.group(1))
-        rest = expr[m.end():]
+        rest = expr[m.end() :]
         while True:
             head = re.match(r"\s*\.replace(All)?\(", rest)
             if not head:
                 break
             replace_all = head.group(1) == "All"
-            rest = rest[head.end():]
+            rest = rest[head.end() :]
             pat_s, rest = _parse_arg(rest)
             rest = _skip_comma(rest)
             repl_s, rest = _parse_arg(rest)
@@ -424,7 +438,11 @@ class JsEval:
                     text = text.replace(pat, repl, 1)
             else:
                 pat = self.eval(pat_s)
-                text = text.replace(pat, repl) if replace_all else text.replace(pat, repl, 1)
+                text = (
+                    text.replace(pat, repl)
+                    if replace_all
+                    else text.replace(pat, repl, 1)
+                )
         return text
 
     def _parse_array(self, arr_str):
@@ -461,13 +479,13 @@ class JsEval:
             return ""
         rows = []
         for item in items:
-            key = localize(item["key"]) if isinstance(item["key"], dict) \
-                else item["key"]
+            key = (
+                localize(item["key"]) if isinstance(item["key"], dict) else item["key"]
+            )
             action = localize(item["action"])
-            action = re.sub(r'`([^`]+)`', r'`\1`', action)
+            action = re.sub(r"`([^`]+)`", r"`\1`", action)
             rows.append(f"| {key} | {action} |")
-        return "\n| Shortcut | Action |\n| --- | --- |\n" \
-            + "\n".join(rows) + "\n"
+        return "\n| Shortcut | Action |\n| --- | --- |\n" + "\n".join(rows) + "\n"
 
     def _specs_grid(self, inner):
         items = self._resolve_data_ref(inner)
@@ -490,8 +508,11 @@ class JsEval:
             rows.append(
                 f"| `{item['key']}` | {localize(item['label'])} | {localize(item['desc'])} |"
             )
-        return "\n| Key | Name | Description |\n| --- | --- | --- |\n" \
-            + "\n".join(rows) + "\n"
+        return (
+            "\n| Key | Name | Description |\n| --- | --- | --- |\n"
+            + "\n".join(rows)
+            + "\n"
+        )
 
     def _icon_table(self, inner):
         items = self._resolve_icon_table_arg(inner)
@@ -504,8 +525,7 @@ class JsEval:
             if isinstance(key, dict):
                 key = localize(key)
             desc = localize(item.get("desc", ""))
-            img = f"![{icon}]({_transform_url(icon, self._doc_name)}) " \
-                if icon else ""
+            img = f"![{icon}]({_transform_url(icon, self._doc_name)}) " if icon else ""
             if key and key != "—":
                 rows.append(f"- {img}{key} — {desc}")
             else:
@@ -514,7 +534,7 @@ class JsEval:
 
     def _resolve_data_ref(self, inner):
         inner = inner.strip()
-        m = re.match(r'data\.(\w+)$', inner)
+        m = re.match(r"data\.(\w+)$", inner)
         if m:
             return self._data.get(m.group(1), [])
         return self.eval(inner)
@@ -522,7 +542,7 @@ class JsEval:
     def _resolve_icon_table_arg(self, inner):
         inner = inner.strip()
         # data.xxx.map(b => ({icon: b.icon, key: b.key || "—", desc: b.desc}))
-        m = re.match(r'data\.(\w+)\.map\(', inner)
+        m = re.match(r"data\.(\w+)\.map\(", inner)
         if m:
             return self._data.get(m.group(1), [])
         return self._resolve_data_ref(inner)
@@ -557,8 +577,10 @@ class JsEval:
         arr_str = expr[:arr_end].strip()
         # Destructured: ([u,n]) => `...`
         m = re.search(
-            r'\.map\(\(\[(\w+),\s*(\w+)\]\)\s*=>\s*`(.*?)`\)'
-            r'\s*\.join\(["\'].*?["\']\)', expr, re.DOTALL,
+            r"\.map\(\(\[(\w+),\s*(\w+)\]\)\s*=>\s*`(.*?)`\)"
+            r'\s*\.join\(["\'].*?["\']\)',
+            expr,
+            re.DOTALL,
         )
         if m:
             pairs_inner = arr_str.strip().strip("[]")
@@ -580,9 +602,10 @@ class JsEval:
             return "".join(items)
         # Simple: k => `...` or (k) => `...`
         m = re.search(
-            r'\.map\(\(?(\w+)\)?\s*=>\s*`(.*?)`\)'
+            r"\.map\(\(?(\w+)\)?\s*=>\s*`(.*?)`\)"
             r'\s*\.join\(["\'].*?["\']\)',
-            expr, re.DOTALL,
+            expr,
+            re.DOTALL,
         )
         if m:
             keys = self._parse_array(arr_str)
@@ -597,7 +620,7 @@ class JsEval:
 
     def extract_variables(self, body):
         # const/let x = expr;
-        for m in re.finditer(r'(?:const|let)\s+(\w+)\s*=\s*', body):
+        for m in re.finditer(r"(?:const|let)\s+(\w+)\s*=\s*", body):
             expr_start = m.end()
             j = expr_start
             depth = 0
@@ -627,15 +650,16 @@ class JsEval:
 
         # for (const x of data.yyy) { varName += `...`; } -> list
         for m in re.finditer(
-            r'for\s*\(\s*const\s+(\w+)\s+of\s+data\.(\w+)\s*\)\s*\{[^}]*?'
-            r'(\w+)\s*\+=\s*`(.*?)`', body, re.DOTALL,
+            r"for\s*\(\s*const\s+(\w+)\s+of\s+data\.(\w+)\s*\)\s*\{[^}]*?"
+            r"(\w+)\s*\+=\s*`(.*?)`",
+            body,
+            re.DOTALL,
         ):
             item_var, data_key, target_var, tmpl = m.groups()
             items = self._data.get(data_key, [])
             result = []
             for item in items:
-                if isinstance(item, dict) and "label" in item \
-                        and "desc" in item:
+                if isinstance(item, dict) and "label" in item and "desc" in item:
                     result.append(
                         f"- **{localize(item['label'])}:** {localize(item['desc'])}\n"
                     )
@@ -648,9 +672,13 @@ class JsEval:
 
 
 def _strip_html(text):
-    text = re.sub(r'<strong>(.*?)</strong>', r'**\1**', text)
-    text = re.sub(r'</?(?:div|section|span|p|ul|li|a|img|td|th|tr|thead'
-                  r'|tbody|table|pre|code|h[1-6])[^>]*>', '', text)
+    text = re.sub(r"<strong>(.*?)</strong>", r"**\1**", text)
+    text = re.sub(
+        r"</?(?:div|section|span|p|ul|li|a|img|td|th|tr|thead"
+        r"|tbody|table|pre|code|h[1-6])[^>]*>",
+        "",
+        text,
+    )
     return html.unescape(text).strip()
 
 
@@ -663,7 +691,7 @@ def generate_from_html(html_path, json_path, doc_name):
     m = re.search(r"function update\(\)\s*\{", html_text)
     if not m:
         return
-    body = html_text[m.end():_find_matching(html_text, m.end(), "{", "}") - 1]
+    body = html_text[m.end() : _find_matching(html_text, m.end(), "{", "}") - 1]
 
     # Extract variables
     ev.extract_variables(body)
@@ -700,25 +728,39 @@ def generate_from_html(html_path, json_path, doc_name):
         evaluated = ev.eval_template(body[start:i])
 
         # Convert HTML structure to Markdown
-        evaluated = re.sub(r'<h2[^>]*>(.*?)</h2>',
-                           lambda m: f"\n## {_strip_html(m.group(1))}\n", evaluated)
-        evaluated = re.sub(r'<h3[^>]*>(.*?)</h3>',
-                           lambda m: f"\n### {_strip_html(m.group(1))}\n", evaluated)
-        evaluated = re.sub(r'<h4[^>]*>(.*?)</h4>',
-                           lambda m: f"\n#### {_strip_html(m.group(1))}\n", evaluated)
+        evaluated = re.sub(
+            r"<h2[^>]*>(.*?)</h2>",
+            lambda m: f"\n## {_strip_html(m.group(1))}\n",
+            evaluated,
+        )
+        evaluated = re.sub(
+            r"<h3[^>]*>(.*?)</h3>",
+            lambda m: f"\n### {_strip_html(m.group(1))}\n",
+            evaluated,
+        )
+        evaluated = re.sub(
+            r"<h4[^>]*>(.*?)</h4>",
+            lambda m: f"\n#### {_strip_html(m.group(1))}\n",
+            evaluated,
+        )
         evaluated = re.sub(
             r'<img\s[^>]*src="([^"]*)"[^>]*alt="([^"]*)"[^>]*/?>',
             lambda m: f"\n![{m.group(2)}]({_transform_url(m.group(1), doc_name)})\n",
             evaluated,
         )
         evaluated = re.sub(
-            r'<ul[^>]*>(.*?)</ul>',
-            lambda m: "\n" + "".join(
-                f"- {_strip_html(li)}\n"
-                for li in re.findall(r'<li>(.*?)</li>', m.group(1), re.DOTALL)
-            ), evaluated, flags=re.DOTALL,
+            r"<ul[^>]*>(.*?)</ul>",
+            lambda m: (
+                "\n"
+                + "".join(
+                    f"- {_strip_html(li)}\n"
+                    for li in re.findall(r"<li>(.*?)</li>", m.group(1), re.DOTALL)
+                )
+            ),
+            evaluated,
+            flags=re.DOTALL,
         )
-        evaluated = re.sub(r'<strong>(.*?)</strong>', r'**\1**', evaluated)
+        evaluated = re.sub(r"<strong>(.*?)</strong>", r"**\1**", evaluated)
         lines.append(evaluated)
 
     # Assemble
@@ -738,16 +780,15 @@ def generate_from_html(html_path, json_path, doc_name):
     def save_block(m):
         idx = len(saved_blocks)
         saved_blocks.append(m.group(0))
-        return f"\x00BLK{idx}\x00"
+        return BLOCK_MARKER.format(idx=idx)
 
-    raw = re.sub(r'\n```[^\n]*\n.*?\n```\n', save_block,
-                 raw, flags=re.DOTALL)
+    raw = re.sub(r"\n```[^\n]*\n.*?\n```\n", save_block, raw, flags=re.DOTALL)
 
     # Convert paragraphs to separated text, then strip remaining tags
-    raw = re.sub(r'<code[^>]*>(.*?)</code>', r'`\1`', raw)
-    raw = re.sub(r'<p[^>]*>', '\n', raw)
-    raw = re.sub(r'</p>', '\n', raw)
-    raw = re.sub(r'</?[^>]+>', '', raw)
+    raw = re.sub(r"<code[^>]*>(.*?)</code>", r"`\1`", raw)
+    raw = re.sub(r"<p[^>]*>", "\n", raw)
+    raw = re.sub(r"</p>", "\n", raw)
+    raw = re.sub(r"</?[^>]+>", "", raw)
     raw = html.unescape(raw)
 
     # Clean up whitespace (code blocks are protected)
@@ -758,7 +799,7 @@ def generate_from_html(html_path, json_path, doc_name):
 
     # Restore code blocks
     for i, block in enumerate(saved_blocks):
-        result = result.replace(f"\x00BLK{i}\x00", block.strip())
+        result = result.replace(BLOCK_MARKER.format(idx=i), block.strip())
 
     path = DOCS_DIR / f"{doc_name}.md"
     path.write_text(result, encoding="utf-8")

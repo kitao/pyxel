@@ -81,8 +81,7 @@ class Handler(SimpleHTTPRequestHandler):
             if not full_path.is_file():
                 return super().send_head()
             try:
-                data = full_path.read_bytes()
-                text = data.decode("utf-8")
+                text = full_path.read_text(encoding="utf-8")
             except (OSError, UnicodeDecodeError):
                 return super().send_head()
 

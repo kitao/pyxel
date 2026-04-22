@@ -162,19 +162,19 @@
       "tr": "Bir Pyxel uygulama dosyasını (.pyxapp) HTML dosyasına dönüştürme",
       "uk": "Конвертувати файл застосунку Pyxel (.pyxapp) у файл HTML"
     },
-    "method_custom_tags": {
-      "en": "Add custom HTML tags to run Pyxel apps on any HTML page",
-      "cn": "添加自定义 HTML 标签，在任意 HTML 页面上运行 Pyxel 应用",
-      "de": "Benutzerdefinierte HTML-Tags hinzufügen, um Pyxel-Apps auf jeder HTML-Seite auszuführen",
-      "es": "Añadir etiquetas HTML personalizadas para ejecutar aplicaciones Pyxel en cualquier página HTML",
-      "fr": "Ajouter des balises HTML personnalisées pour exécuter des applications Pyxel sur n'importe quelle page HTML",
-      "it": "Aggiungere tag HTML personalizzati per eseguire app Pyxel su qualsiasi pagina HTML",
-      "ja": "HTML ページに独自の HTML タグを追加して Pyxel アプリを実行",
-      "ko": "커스텀 HTML 태그를 추가하여 모든 HTML 페이지에서 Pyxel 앱 실행",
-      "pt": "Adicionar tags HTML personalizadas para executar aplicativos Pyxel em qualquer página HTML",
-      "ru": "Добавить пользовательские HTML-теги для запуска приложений Pyxel на любой HTML-странице",
-      "tr": "Herhangi bir HTML sayfasında Pyxel uygulamalarını çalıştırmak için özel HTML etiketleri ekleme",
-      "uk": "Додати власні HTML-теги для запуску застосунків Pyxel на будь-якій HTML-сторінці"
+    "method_custom_elements": {
+      "en": "Add HTML custom elements to run Pyxel apps on any HTML page",
+      "cn": "添加 HTML 自定义元素，在任意 HTML 页面上运行 Pyxel 应用",
+      "de": "HTML Custom Elements hinzufügen, um Pyxel-Apps auf jeder HTML-Seite auszuführen",
+      "es": "Añadir elementos HTML personalizados para ejecutar aplicaciones Pyxel en cualquier página HTML",
+      "fr": "Ajouter des éléments HTML personnalisés pour exécuter des applications Pyxel sur n'importe quelle page HTML",
+      "it": "Aggiungere elementi HTML personalizzati per eseguire app Pyxel su qualsiasi pagina HTML",
+      "ja": "HTML ページに HTML カスタム要素を追加して Pyxel アプリを実行",
+      "ko": "HTML 커스텀 요소를 추가하여 모든 HTML 페이지에서 Pyxel 앱 실행",
+      "pt": "Adicionar elementos HTML personalizados para executar aplicativos Pyxel em qualquer página HTML",
+      "ru": "Добавить пользовательские HTML-элементы для запуска приложений Pyxel на любой HTML-странице",
+      "tr": "Herhangi bir HTML sayfasında Pyxel uygulamalarını çalıştırmak için HTML özel öğeleri ekleme",
+      "uk": "Додати власні HTML-елементи для запуску застосунків Pyxel на будь-якій HTML-сторінці"
     },
     "code_maker_title": {
       "en": "Pyxel Code Maker",
@@ -610,49 +610,49 @@
       "tr": "Sanal oyun kumandası varsayılan olarak etkindir ve dokunmatik cihazlarda otomatik olarak görüntülenir. Devre dışı bırakmak için oluşturulan HTML'den {0} öğesini kaldırın.",
       "uk": "Віртуальний геймпад увімкнений за замовчуванням і автоматично відображається на сенсорних пристроях. Щоб вимкнути його, видаліть {0} зі згенерованого HTML."
     },
-    "custom_tags_title": {
-      "en": "HTML Custom Tags",
-      "cn": "HTML 自定义标签",
-      "de": "HTML-Benutzerdefinierte Tags",
-      "es": "Etiquetas HTML personalizadas",
-      "fr": "Balises HTML personnalisées",
-      "it": "Tag HTML personalizzati",
-      "ja": "HTML カスタムタグ",
-      "ko": "HTML 커스텀 태그",
-      "pt": "Tags HTML personalizadas",
-      "ru": "Пользовательские HTML-теги",
-      "tr": "HTML Özel Etiketleri",
-      "uk": "Власні HTML-теги"
+    "custom_elements_title": {
+      "en": "HTML Custom Elements",
+      "cn": "HTML 自定义元素",
+      "de": "HTML Custom Elements",
+      "es": "Elementos HTML personalizados",
+      "fr": "Éléments HTML personnalisés",
+      "it": "Elementi HTML personalizzati",
+      "ja": "HTML カスタム要素",
+      "ko": "HTML 커스텀 요소",
+      "pt": "Elementos HTML personalizados",
+      "ru": "Пользовательские HTML-элементы",
+      "tr": "HTML Özel Öğeleri",
+      "uk": "Власні HTML-елементи"
     },
-    "custom_tags_body": {
-      "en": "By adding custom tags (HTML custom elements) provided by Pyxel to an HTML file, you can run Pyxel apps on any HTML page.",
-      "cn": "通过在 HTML 文件中添加 Pyxel 提供的自定义标签（HTML 自定义元素），可以在任意 HTML 页面上运行 Pyxel 应用。",
-      "de": "Durch Hinzufügen von benutzerdefinierten Tags (HTML-Custom-Elements), die von Pyxel bereitgestellt werden, zu einer HTML-Datei können Sie Pyxel-Apps auf jeder HTML-Seite ausführen.",
-      "es": "Al añadir etiquetas personalizadas (elementos HTML personalizados) proporcionadas por Pyxel a un archivo HTML, se pueden ejecutar aplicaciones Pyxel en cualquier página HTML.",
-      "fr": "En ajoutant des balises personnalisées (éléments HTML personnalisés) fournies par Pyxel à un fichier HTML, vous pouvez exécuter des applications Pyxel sur n'importe quelle page HTML.",
-      "it": "Aggiungendo tag personalizzati (elementi HTML personalizzati) forniti da Pyxel a un file HTML, è possibile eseguire app Pyxel su qualsiasi pagina HTML.",
-      "ja": "HTML ファイルに Pyxel が提供するカスタムタグ（HTML カスタム要素）を追加することで、任意の HTML ページ上で Pyxel アプリを実行できます。",
-      "ko": "HTML 파일에 Pyxel이 제공하는 커스텀 태그(HTML 커스텀 요소)를 추가하면, 모든 HTML 페이지에서 Pyxel 앱을 실행할 수 있습니다.",
-      "pt": "Ao adicionar tags personalizadas (elementos HTML personalizados) fornecidas pelo Pyxel a um arquivo HTML, você pode executar aplicativos Pyxel em qualquer página HTML.",
-      "ru": "Добавив пользовательские теги (пользовательские HTML-элементы), предоставляемые Pyxel, в HTML-файл, вы можете запускать приложения Pyxel на любой HTML-странице.",
-      "tr": "Pyxel tarafından sağlanan özel etiketleri (HTML özel öğeleri) bir HTML dosyasına ekleyerek, herhangi bir HTML sayfasında Pyxel uygulamalarını çalıştırabilirsiniz.",
-      "uk": "Додавши власні теги (власні HTML-елементи), надані Pyxel, до HTML-файлу, ви можете запускати застосунки Pyxel на будь-якій HTML-сторінці."
+    "custom_elements_body": {
+      "en": "By adding HTML custom elements provided by Pyxel to an HTML file, you can run Pyxel apps on any HTML page.",
+      "cn": "通过在 HTML 文件中添加 Pyxel 提供的 HTML 自定义元素，可以在任意 HTML 页面上运行 Pyxel 应用。",
+      "de": "Durch Hinzufügen von HTML Custom Elements, die von Pyxel bereitgestellt werden, zu einer HTML-Datei können Sie Pyxel-Apps auf jeder HTML-Seite ausführen.",
+      "es": "Al añadir elementos HTML personalizados proporcionados por Pyxel a un archivo HTML, se pueden ejecutar aplicaciones Pyxel en cualquier página HTML.",
+      "fr": "En ajoutant des éléments HTML personnalisés fournis par Pyxel à un fichier HTML, vous pouvez exécuter des applications Pyxel sur n'importe quelle page HTML.",
+      "it": "Aggiungendo elementi HTML personalizzati forniti da Pyxel a un file HTML, è possibile eseguire app Pyxel su qualsiasi pagina HTML.",
+      "ja": "HTML ファイルに Pyxel が提供する HTML カスタム要素を追加することで、任意の HTML ページ上で Pyxel アプリを実行できます。",
+      "ko": "HTML 파일에 Pyxel이 제공하는 HTML 커스텀 요소를 추가하면, 모든 HTML 페이지에서 Pyxel 앱을 실행할 수 있습니다.",
+      "pt": "Ao adicionar elementos HTML personalizados fornecidos pelo Pyxel a um arquivo HTML, você pode executar aplicativos Pyxel em qualquer página HTML.",
+      "ru": "Добавив пользовательские HTML-элементы, предоставляемые Pyxel, в HTML-файл, вы можете запускать приложения Pyxel на любой HTML-странице.",
+      "tr": "Pyxel tarafından sağlanan HTML özel öğelerini bir HTML dosyasına ekleyerek, herhangi bir HTML sayfasında Pyxel uygulamalarını çalıştırabilirsiniz.",
+      "uk": "Додавши власні HTML-елементи, надані Pyxel, до HTML-файлу, ви можете запускати застосунки Pyxel на будь-якій HTML-сторінці."
     },
-    "custom_tags_overview": {
-      "en": "Loading this script makes three custom tags available, corresponding to Pyxel's {0}, {1}, and {2} commands: {3}, {4}, and {5}.",
-      "cn": "加载此脚本后，可以使用与 Pyxel 的 {0}、{1}、{2} 命令对应的三个自定义标签：{3}、{4}、{5}。",
-      "de": "Durch das Laden dieses Skripts werden drei benutzerdefinierte Tags verfügbar, die den Pyxel-Befehlen {0}, {1} und {2} entsprechen: {3}, {4} und {5}.",
-      "es": "Cargar este script hace disponibles tres etiquetas personalizadas, correspondientes a los comandos {0}, {1} y {2} de Pyxel: {3}, {4} y {5}.",
-      "fr": "Le chargement de ce script rend disponibles trois balises personnalisées, correspondant aux commandes {0}, {1} et {2} de Pyxel : {3}, {4} et {5}.",
-      "it": "Il caricamento di questo script rende disponibili tre tag personalizzati, corrispondenti ai comandi {0}, {1} e {2} di Pyxel: {3}, {4} e {5}.",
-      "ja": "このスクリプトを読み込むと、Pyxel の {0}、{1}、{2} コマンドに対応する {3}、{4}、{5} の 3 つのカスタムタグが使えるようになります。",
-      "ko": "이 스크립트를 로드하면 Pyxel의 {0}, {1}, {2} 명령어에 대응하는 {3}, {4}, {5} 세 가지 커스텀 태그를 사용할 수 있습니다.",
-      "pt": "Carregar este script disponibiliza três tags personalizadas, correspondentes aos comandos {0}, {1} e {2} do Pyxel: {3}, {4} e {5}.",
-      "ru": "Загрузка этого скрипта делает доступными три пользовательских тега, соответствующих командам Pyxel {0}, {1} и {2}: {3}, {4} и {5}.",
-      "tr": "Bu betiği yüklemek, Pyxel'in {0}, {1} ve {2} komutlarına karşılık gelen üç özel etiketi kullanılabilir hale getirir: {3}, {4} ve {5}.",
-      "uk": "Завантаження цього скрипту робить доступними три власні теги, що відповідають командам Pyxel {0}, {1} та {2}: {3}, {4} та {5}."
+    "custom_elements_overview": {
+      "en": "Loading this script makes three HTML custom elements available, corresponding to Pyxel's {0}, {1}, and {2} commands: {3}, {4}, and {5}.",
+      "cn": "加载此脚本后，可以使用与 Pyxel 的 {0}、{1}、{2} 命令对应的三个 HTML 自定义元素：{3}、{4}、{5}。",
+      "de": "Durch das Laden dieses Skripts werden drei HTML Custom Elements verfügbar, die den Pyxel-Befehlen {0}, {1} und {2} entsprechen: {3}, {4} und {5}.",
+      "es": "Cargar este script hace disponibles tres elementos HTML personalizados, correspondientes a los comandos {0}, {1} y {2} de Pyxel: {3}, {4} y {5}.",
+      "fr": "Le chargement de ce script rend disponibles trois éléments HTML personnalisés, correspondant aux commandes {0}, {1} et {2} de Pyxel : {3}, {4} et {5}.",
+      "it": "Il caricamento di questo script rende disponibili tre elementi HTML personalizzati, corrispondenti ai comandi {0}, {1} e {2} di Pyxel: {3}, {4} e {5}.",
+      "ja": "このスクリプトを読み込むと、Pyxel の {0}、{1}、{2} コマンドに対応する {3}、{4}、{5} の 3 つの HTML カスタム要素が使えるようになります。",
+      "ko": "이 스크립트를 로드하면 Pyxel의 {0}, {1}, {2} 명령어에 대응하는 {3}, {4}, {5} 세 가지 HTML 커스텀 요소를 사용할 수 있습니다.",
+      "pt": "Carregar este script disponibiliza três elementos HTML personalizados, correspondentes aos comandos {0}, {1} e {2} do Pyxel: {3}, {4} e {5}.",
+      "ru": "Загрузка этого скрипта делает доступными три пользовательских HTML-элемента, соответствующих командам Pyxel {0}, {1} и {2}: {3}, {4} и {5}.",
+      "tr": "Bu betiği yüklemek, Pyxel'in {0}, {1} ve {2} komutlarına karşılık gelen üç HTML özel öğesini kullanılabilir hale getirir: {3}, {4} ve {5}.",
+      "uk": "Завантаження цього скрипту робить доступними три власні HTML-елементи, що відповідають командам Pyxel {0}, {1} та {2}: {3}, {4} та {5}."
     },
-    "custom_tags_setup_title": {
+    "custom_elements_setup_title": {
       "en": "Setup",
       "cn": "设置",
       "de": "Einrichtung",
@@ -666,7 +666,7 @@
       "tr": "Kurulum",
       "uk": "Налаштування"
     },
-    "custom_tags_setup_body": {
+    "custom_elements_setup_body": {
       "en": "Add the following script tag to your HTML. If no version is specified, the latest version of Pyxel is always used.",
       "cn": "将以下 script 标签添加到 HTML 中。如果未指定版本，则始终使用最新版本的 Pyxel。",
       "de": "Fügen Sie Ihrem HTML den folgenden Script-Tag hinzu. Wenn keine Version angegeben wird, wird immer die neueste Version von Pyxel verwendet.",
@@ -680,7 +680,7 @@
       "tr": "Aşağıdaki script etiketini HTML'nize ekleyin. Sürüm belirtilmezse her zaman Pyxel'in en son sürümü kullanılır.",
       "uk": "Додайте наступний тег script до вашого HTML. Якщо версію не вказано, завжди використовується остання версія Pyxel."
     },
-    "custom_tags_setup_version": {
+    "custom_elements_setup_version": {
       "en": "You can pin the Pyxel version by specifying a version number after {0}.",
       "cn": "可以在 {0} 后指定版本号来固定 Pyxel 版本。",
       "de": "Sie können die Pyxel-Version festlegen, indem Sie eine Versionsnummer nach {0} angeben.",
@@ -694,7 +694,7 @@
       "tr": "{0} ifadesinden sonra bir sürüm numarası belirterek Pyxel sürümünü sabitleyebilirsiniz.",
       "uk": "Ви можете зафіксувати версію Pyxel, вказавши номер версії після {0}."
     },
-    "custom_tags_run_title": {
+    "custom_elements_run_title": {
       "en": "pyxel-run",
       "cn": "pyxel-run",
       "de": "pyxel-run",
@@ -708,7 +708,7 @@
       "tr": "pyxel-run",
       "uk": "pyxel-run"
     },
-    "custom_tags_run_desc": {
+    "custom_elements_run_desc": {
       "en": "A tag for running Python scripts.",
       "cn": "用于运行 Python 脚本的标签。",
       "de": "Ein Tag zum Ausführen von Python-Skripten.",
@@ -722,7 +722,7 @@
       "tr": "Python betiklerini çalıştırmak için bir etiket.",
       "uk": "Тег для запуску Python-скриптів."
     },
-    "custom_tags_run_script": {
+    "custom_elements_run_script": {
       "en": "To run Python code directly, write the code in the {0} attribute.",
       "cn": "要直接运行 Python 代码，在 {0} 属性中编写代码。",
       "de": "Um Python-Code direkt auszuführen, schreiben Sie den Code in das Attribut {0}.",
@@ -736,7 +736,7 @@
       "tr": "Python kodunu doğrudan çalıştırmak için kodu {0} özniteliğine yazın.",
       "uk": "Для безпосереднього виконання Python-коду запишіть код в атрибут {0}."
     },
-    "custom_tags_run_file": {
+    "custom_elements_run_file": {
       "en": "To load an external file, specify {0} and {1}. {2} is the base directory for file lookup, and {3} is the file path.",
       "cn": "要加载外部文件，请指定 {0} 和 {1}。{2} 是文件查找的基准目录，{3} 是文件路径。",
       "de": "Um eine externe Datei zu laden, geben Sie {0} und {1} an. {2} ist das Basisverzeichnis für die Dateisuche und {3} ist der Dateipfad.",
@@ -750,7 +750,7 @@
       "tr": "Harici bir dosya yüklemek için {0} ve {1} belirtin. {2} dosya arama için temel dizindir ve {3} dosya yoludur.",
       "uk": "Для завантаження зовнішнього файлу вкажіть {0} та {1}. {2} — базовий каталог для пошуку файлів, {3} — шлях до файлу."
     },
-    "custom_tags_run_root_omit": {
+    "custom_elements_run_root_omit": {
       "en": "If {0} is the current directory ({1}), the {2} attribute can be omitted.",
       "cn": "如果 {0} 为当前目录（{1}），则可以省略 {2} 属性。",
       "de": "Wenn {0} das aktuelle Verzeichnis ({1}) ist, kann das Attribut {2} weggelassen werden.",
@@ -764,7 +764,7 @@
       "tr": "{0} geçerli dizinse ({1}), {2} özniteliği atlanabilir.",
       "uk": "Якщо {0} — поточний каталог ({1}), атрибут {2} можна опустити."
     },
-    "custom_tags_play_title": {
+    "custom_elements_play_title": {
       "en": "pyxel-play",
       "cn": "pyxel-play",
       "de": "pyxel-play",
@@ -778,7 +778,7 @@
       "tr": "pyxel-play",
       "uk": "pyxel-play"
     },
-    "custom_tags_play_desc": {
+    "custom_elements_play_desc": {
       "en": "A tag for running Pyxel applications (.pyxapp).",
       "cn": "用于运行 Pyxel 应用 (.pyxapp) 的标签。",
       "de": "Ein Tag zum Ausführen von Pyxel-Anwendungen (.pyxapp).",
@@ -792,7 +792,7 @@
       "tr": "Pyxel uygulamalarını (.pyxapp) çalıştırmak için bir etiket.",
       "uk": "Тег для запуску застосунків Pyxel (.pyxapp)."
     },
-    "custom_tags_play_body": {
+    "custom_elements_play_body": {
       "en": "A URL can also be specified for {0}.",
       "cn": "{0} 也可以指定 URL。",
       "de": "Für {0} kann auch eine URL angegeben werden.",
@@ -806,7 +806,7 @@
       "tr": "{0} için bir URL de belirtilebilir.",
       "uk": "Для {0} також можна вказати URL."
     },
-    "custom_tags_edit_title": {
+    "custom_elements_edit_title": {
       "en": "pyxel-edit",
       "cn": "pyxel-edit",
       "de": "pyxel-edit",
@@ -820,7 +820,7 @@
       "tr": "pyxel-edit",
       "uk": "pyxel-edit"
     },
-    "custom_tags_edit_desc": {
+    "custom_elements_edit_desc": {
       "en": "A tag for editing resource files (.pyxres) in Pyxel Editor.",
       "cn": "用于在 Pyxel Editor 中编辑资源文件 (.pyxres) 的标签。",
       "de": "Ein Tag zum Bearbeiten von Ressourcendateien (.pyxres) im Pyxel Editor.",
@@ -834,7 +834,7 @@
       "tr": "Pyxel Editor'da kaynak dosyalarını (.pyxres) düzenlemek için bir etiket.",
       "uk": "Тег для редагування файлів ресурсів (.pyxres) у Pyxel Editor."
     },
-    "custom_tags_edit_body": {
+    "custom_elements_edit_body": {
       "en": "Use the {0} attribute to specify which editor to launch.",
       "cn": "使用 {0} 属性指定要启动的编辑器。",
       "de": "Verwenden Sie das Attribut {0}, um den zu startenden Editor anzugeben.",
@@ -848,7 +848,7 @@
       "tr": "Hangi düzenleyicinin başlatılacağını belirtmek için {0} özniteliğini kullanın.",
       "uk": "Використовуйте атрибут {0}, щоб вказати, який редактор запустити."
     },
-    "custom_tags_common_title": {
+    "custom_elements_common_title": {
       "en": "Common Attributes",
       "cn": "通用属性",
       "de": "Gemeinsame Attribute",
@@ -862,7 +862,7 @@
       "tr": "Ortak Öznitelikler",
       "uk": "Спільні атрибути"
     },
-    "custom_tags_common_body": {
+    "custom_elements_common_body": {
       "en": "The following common attributes are available for {0} and {1}.",
       "cn": "{0} 和 {1} 可使用以下通用属性。",
       "de": "Die folgenden gemeinsamen Attribute sind für {0} und {1} verfügbar.",
@@ -876,7 +876,7 @@
       "tr": "{0} ve {1} için aşağıdaki ortak öznitelikler kullanılabilir.",
       "uk": "Наступні спільні атрибути доступні для {0} та {1}."
     },
-    "custom_tags_attr_gamepad": {
+    "custom_elements_attr_gamepad": {
       "en": "Enable the virtual gamepad (automatically displayed on touch devices)",
       "cn": "启用虚拟游戏手柄（在触控设备上自动显示）",
       "de": "Das virtuelle Gamepad aktivieren (wird auf Touch-Geräten automatisch angezeigt)",
@@ -890,7 +890,7 @@
       "tr": "Sanal oyun kumandasını etkinleştir (dokunmatik cihazlarda otomatik olarak görüntülenir)",
       "uk": "Увімкнути віртуальний геймпад (автоматично відображається на сенсорних пристроях)"
     },
-    "custom_tags_screen_title": {
+    "custom_elements_screen_title": {
       "en": "Customizing Screen Display",
       "cn": "自定义画面显示",
       "de": "Bildschirmanzeige anpassen",
@@ -904,7 +904,7 @@
       "tr": "Ekran Görüntüsünü Özelleştirme",
       "uk": "Налаштування відображення екрану"
     },
-    "custom_tags_screen_body": {
+    "custom_elements_screen_body": {
       "en": "By default, the Pyxel screen is displayed across the entire page. Place a {1} tag with {0} in the HTML to render the screen inside that element, allowing you to adjust its position and size.",
       "cn": "默认情况下，Pyxel 画面会显示在整个页面上。在 HTML 中放置带有 {0} 的 {1} 标签，即可在该元素内渲染画面，从而调整其位置和大小。",
       "de": "Standardmäßig wird der Pyxel-Bildschirm über die gesamte Seite angezeigt. Platzieren Sie ein {1}-Tag mit {0} im HTML, um den Bildschirm in diesem Element zu rendern und Position und Größe anzupassen.",
@@ -918,7 +918,7 @@
       "tr": "Varsayılan olarak Pyxel ekranı tüm sayfada görüntülenir. Ekranı bir öğe içinde işlemek ve konumunu ve boyutunu ayarlamak için HTML'ye {0} içeren bir {1} etiketi yerleştirin.",
       "uk": "За замовчуванням екран Pyxel відображається на всій сторінці. Розмістіть тег {1} з {0} в HTML, щоб відрисувати екран всередині цього елемента, що дозволить налаштувати його положення та розмір."
     },
-    "custom_tags_local_title": {
+    "custom_elements_local_title": {
       "en": "Running in a Local Environment",
       "cn": "在本地环境中运行",
       "de": "Ausführung in einer lokalen Umgebung",
@@ -932,21 +932,21 @@
       "tr": "Yerel Ortamda Çalıştırma",
       "uk": "Запуск у локальному середовищі"
     },
-    "custom_tags_local_body": {
-      "en": "When using custom tags that load external files, a server is required because browser security restrictions prevent opening local files directly.",
-      "cn": "使用加载外部文件的自定义标签时，由于浏览器安全限制无法直接打开本地文件，因此需要服务器。",
-      "de": "Bei Verwendung von benutzerdefinierten Tags, die externe Dateien laden, ist ein Server erforderlich, da Browsersicherheitsbeschränkungen das direkte Öffnen lokaler Dateien verhindern.",
-      "es": "Al usar etiquetas personalizadas que cargan archivos externos, se requiere un servidor porque las restricciones de seguridad del navegador impiden abrir archivos locales directamente.",
-      "fr": "Lors de l'utilisation de balises personnalisées qui chargent des fichiers externes, un serveur est nécessaire car les restrictions de sécurité du navigateur empêchent l'ouverture directe de fichiers locaux.",
-      "it": "Quando si utilizzano tag personalizzati che caricano file esterni, è necessario un server perché le restrizioni di sicurezza del browser impediscono l'apertura diretta di file locali.",
-      "ja": "外部ファイルを読み込むカスタムタグを使用する場合、ブラウザのセキュリティ制約によりローカルファイルを直接開くことができないため、サーバーでのホスティングが必要です。",
-      "ko": "외부 파일을 로드하는 커스텀 태그를 사용할 경우, 브라우저 보안 제한으로 인해 로컬 파일을 직접 열 수 없으므로 서버가 필요합니다.",
-      "pt": "Ao usar tags personalizadas que carregam arquivos externos, é necessário um servidor porque as restrições de segurança do navegador impedem a abertura direta de arquivos locais.",
-      "ru": "При использовании пользовательских тегов, загружающих внешние файлы, необходим сервер, поскольку ограничения безопасности браузера не позволяют открывать локальные файлы напрямую.",
-      "tr": "Harici dosya yükleyen özel etiketler kullanılırken, tarayıcı güvenlik kısıtlamaları yerel dosyaların doğrudan açılmasını engellediğinden bir sunucu gereklidir.",
-      "uk": "При використанні власних тегів, що завантажують зовнішні файли, потрібен сервер, оскільки обмеження безпеки браузера не дозволяють відкривати локальні файли напряму."
+    "custom_elements_local_body": {
+      "en": "When using HTML custom elements that load external files, a server is required because browser security restrictions prevent opening local files directly.",
+      "cn": "使用加载外部文件的 HTML 自定义元素时，由于浏览器安全限制无法直接打开本地文件，因此需要服务器。",
+      "de": "Bei Verwendung von HTML Custom Elements, die externe Dateien laden, ist ein Server erforderlich, da Browsersicherheitsbeschränkungen das direkte Öffnen lokaler Dateien verhindern.",
+      "es": "Al usar elementos HTML personalizados que cargan archivos externos, se requiere un servidor porque las restricciones de seguridad del navegador impiden abrir archivos locales directamente.",
+      "fr": "Lors de l'utilisation d'éléments HTML personnalisés qui chargent des fichiers externes, un serveur est nécessaire car les restrictions de sécurité du navigateur empêchent l'ouverture directe de fichiers locaux.",
+      "it": "Quando si utilizzano elementi HTML personalizzati che caricano file esterni, è necessario un server perché le restrizioni di sicurezza del browser impediscono l'apertura diretta di file locali.",
+      "ja": "外部ファイルを読み込む HTML カスタム要素を使用する場合、ブラウザのセキュリティ制約によりローカルファイルを直接開くことができないため、サーバーでのホスティングが必要です。",
+      "ko": "외부 파일을 로드하는 HTML 커스텀 요소를 사용할 경우, 브라우저 보안 제한으로 인해 로컬 파일을 직접 열 수 없으므로 서버가 필요합니다.",
+      "pt": "Ao usar elementos HTML personalizados que carregam arquivos externos, é necessário um servidor porque as restrições de segurança do navegador impedem a abertura direta de arquivos locais.",
+      "ru": "При использовании пользовательских HTML-элементов, загружающих внешние файлы, необходим сервер, поскольку ограничения безопасности браузера не позволяют открывать локальные файлы напрямую.",
+      "tr": "Harici dosya yükleyen HTML özel öğeleri kullanılırken, tarayıcı güvenlik kısıtlamaları yerel dosyaların doğrudan açılmasını engellediğinden bir sunucu gereklidir.",
+      "uk": "При використанні власних HTML-елементів, що завантажують зовнішні файли, потрібен сервер, оскільки обмеження безпеки браузера не дозволяють відкривати локальні файли напряму."
     },
-    "custom_tags_local_body2": {
+    "custom_elements_local_body2": {
       "en": "If you have a Python environment, you can start a simple server with the following command.",
       "cn": "如果有 Python 环境，可以使用以下命令启动一个简易服务器。",
       "de": "Wenn Sie eine Python-Umgebung haben, können Sie mit dem folgenden Befehl einen einfachen Server starten.",
@@ -960,7 +960,7 @@
       "tr": "Python ortamınız varsa, aşağıdaki komutla basit bir sunucu başlatabilirsiniz.",
       "uk": "Якщо у вас є середовище Python, ви можете запустити простий сервер наступною командою."
     },
-    "custom_tags_local_access": {
+    "custom_elements_local_access": {
       "en": "After starting the server, access {0} in your browser.",
       "cn": "启动服务器后，在浏览器中访问 {0}。",
       "de": "Rufen Sie nach dem Start des Servers {0} in Ihrem Browser auf.",

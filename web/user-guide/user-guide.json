@@ -51,18 +51,7 @@
   ],
   "ui": {
     "title": {
-      "en": "Pyxel User Guide",
-      "cn": "Pyxel 用户指南",
-      "de": "Pyxel Benutzerhandbuch",
-      "es": "Guía de Usuario de Pyxel",
-      "fr": "Guide Utilisateur de Pyxel",
-      "it": "Guida Utente di Pyxel",
-      "ja": "Pyxel ユーザーガイド",
-      "ko": "Pyxel 사용자 가이드",
-      "pt": "Guia do Usuário Pyxel",
-      "ru": "Руководство пользователя Pyxel",
-      "tr": "Pyxel Kullanım Kılavuzu",
-      "uk": "Посібник користувача Pyxel"
+      "en": "Pyxel User Guide"
     },
     "subtitle": {
       "en": "User guide for {0}, a retro game engine for Python.",
@@ -103,7 +92,7 @@
       "ko": "{0} (/ˈpɪksəl/)은 Python을 위한 복고풍 게임 엔진입니다. 사양은 복고풍 게임 콘솔에서 영감을 받아 16색만 지원하고 4개의 사운드 채널을 사용할 수 있어 픽셀 아트 스타일의 게임 제작을 쉽게 즐길 수 있습니다.",
       "pt": "{0} (/ˈpɪksəl/) é um motor de jogos retrô para Python. As especificações são inspiradas em consoles de jogos retrô, como o suporte para apenas 16 cores e 4 canais de som, permitindo que você desfrute facilmente da criação de jogos em estilo pixel art.",
       "ru": "{0} (/ˈpɪksəl/) — это ретро-игровой движок для Python. Спецификации вдохновлены ретро-игровыми консолями, такими как поддержка только 16 цветов и 4 звуковых канала, что позволяет легко наслаждаться созданием игр в стиле пиксельной графики.",
-      "tr": "{0} (/ˈpɪksəl/), Python için bir retro oyun motorudur. Özellikler, yalnızca 16 renk desteği ve 4 ses kanalıyla retro oyun konsollarından ilham alınarak tasarlanmıştır, böylece piksel sanat tarzı oyunlar yapmayı kolayca keyifle yaşayabilirsiniz.",
+      "tr": "{0} (/ˈpɪksəl/), Python için bir retro oyun motorudur. Yalnızca 16 renk desteği ve 4 ses kanalı gibi retro oyun konsollarından ilham alınan sade özellikleriyle piksel sanat tarzı oyunlar yapmanın keyfini kolayca çıkarabilirsiniz.",
       "uk": "{0} (/ˈpɪksəl/) — це ретро-ігровий рушій для Python. Специфікації натхнені ретро-ігровими консолями, зокрема обмеженням до 16 кольорів і 4 звукових каналів, що дозволяє легко насолоджуватися створенням ігор у стилі піксельної графіки."
     },
     "overview_inspired": {
@@ -117,7 +106,7 @@
       "ko": "{0}의 사양 및 API는 {1}와 {2}에서 영감을 받았습니다.",
       "pt": "As especificações e APIs do {0} são inspiradas no {1} e no {2}.",
       "ru": "Спецификации и API {0} вдохновлены {1} и {2}.",
-      "tr": "{0}'in spesifikasyonları ve API'leri, {1} ve {2} tarafından ilham alınarak hazırlanmıştır.",
+      "tr": "{0}'in spesifikasyonları ve API'leri, {1} ve {2}'den ilham alınarak hazırlanmıştır.",
       "uk": "Специфікації та API {0} були натхненні {1} та {2}."
     },
     "overview_license": {
@@ -137,7 +126,7 @@
     "overview_star": {
       "en": "Also, if you like Pyxel, please give it a star on {0}.",
       "cn": "另外，如果您喜欢 Pyxel，请在 {0} 上给它一个 Star。",
-      "de": "Wenn Ihnen Pyxel gefällt, geben Sie ihm bitte einen Stern auf {0}.",
+      "de": "Wenn Ihnen Pyxel außerdem gefällt, geben Sie ihm bitte einen Stern auf {0}.",
       "es": "Además, si te gusta Pyxel, por favor dale una estrella en {0}.",
       "fr": "De plus, si vous aimez Pyxel, n'hésitez pas à lui donner une étoile sur {0}.",
       "it": "Inoltre, se ti piace Pyxel, dagli una stella su {0}.",
@@ -261,14 +250,14 @@
       "uk": "4 канали з 64 налаштовуваними звуками"
     },
     "specs_music": {
-      "en": "8 music tracks composed of sounds",
+      "en": "8 music tracks that can combine any sounds",
       "cn": "8 个音乐轨道可组合任意声音",
       "de": "8 Musiktracks, die beliebige Klänge kombinieren können",
       "es": "8 pistas de música que pueden combinar cualquier sonido",
       "fr": "8 pistes de musique capables de combiner n'importe quel son",
       "it": "8 tracce musicali in grado di combinare qualsiasi suono",
       "ja": "任意のサウンドを組み合わせ可能な 8 ミュージック",
-      "ko": "결합 가능한 8개의 음악 트랙",
+      "ko": "임의의 사운드를 결합 가능한 8개의 음악 트랙",
       "pt": "8 faixas de música capazes de combinar quaisquer sons",
       "ru": "8 музыкальных треков, способных сочетать любые звуки",
       "tr": "Herhangi bir sesi birleştirebilen 8 müzik parçası",
@@ -789,7 +778,7 @@
       "ko": "특수 키 조작",
       "pt": "Controles de teclas especiais",
       "ru": "Специальные клавиши",
-      "tr": "Özel Tuş Operasyonları",
+      "tr": "Özel Tuş İşlemleri",
       "uk": "Спеціальні клавіші"
     },
     "creating_keys_body": {
@@ -1274,7 +1263,7 @@
       "de": "Links",
       "es": "Enlaces",
       "fr": "Liens",
-      "it": "Link",
+      "it": "Collegamenti",
       "ja": "リンク集",
       "ko": "링크",
       "pt": "Links",

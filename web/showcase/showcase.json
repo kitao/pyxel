@@ -432,7 +432,7 @@
             "fr": "Shoot'em up avec transitions d'écran et MML",
             "it": "Shoot'em up con transizioni di schermo e MML",
             "ja": "画面遷移と MML を使ったシューティングゲーム",
-            "ko": "Shoot'em up 게임과 화면 전환 및 MML",
+            "ko": "화면 전환과 MML이 있는 슈팅 게임",
             "pt": "Shoot'em up com transições de tela e MML",
             "ru": "Shoot'em up с переходами между экранами и MML",
             "tr": "Shoot'em up oyunu ile ekran geçişleri ve MML",
@@ -1007,16 +1007,16 @@
           "description": {
             "en": "One-key astronaut rescue game (Pyxel Official Book sample)",
             "cn": "单键宇航员救援游戏 (Pyxel 官方书籍示例)",
-            "de": "Einzel-Tasten-Astronautenrettungsspiel (Pyxel-Buch-Beispiel)",
+            "de": "Einzel-Tasten-Astronautenrettungsspiel (Beispiel aus dem offiziellen Pyxel-Buch)",
             "es": "Juego de rescate de astronautas con una tecla (ejemplo del Libro Oficial de Pyxel)",
             "fr": "Jeu de sauvetage d'astronautes à une touche (exemple du Livre Officiel Pyxel)",
             "it": "Gioco di salvataggio astronauti a un tasto (esempio del Libro Ufficiale Pyxel)",
             "ja": "ワンキー宇宙飛行士救出ゲーム (Pyxel 公式書籍サンプル)",
             "ko": "원키 우주비행사 구출 게임 (Pyxel 공식 서적 샘플)",
             "pt": "Jogo de resgate de astronautas com uma tecla (exemplo do Livro Oficial Pyxel)",
-            "ru": "Игра спасения астронавтов на одной клавише (пример из Книги Pyxel)",
+            "ru": "Игра спасения астронавтов на одной клавише (пример из официальной Книги Pyxel)",
             "tr": "Tek tuşla astronot kurtarma oyunu (Pyxel Resmi Kitabı örneği)",
-            "uk": "Гра порятунку астронавтів на одній клавіші (приклад з Книги Pyxel)"
+            "uk": "Гра порятунку астронавтів на одній клавіші (приклад з офіційної Книги Pyxel)"
           },
           "details": {
             "en": "A sample game from the Pyxel Official Book (Gijutsu-Hyoron Publishing). A simple yet deep one-button game where you rescue astronauts, covering the basics of game development.",
@@ -1040,16 +1040,16 @@
           "description": {
             "en": "Bullet-heavy shoot'em up (Pyxel Official Book sample)",
             "cn": "弹幕射击游戏 (Pyxel 官方书籍示例)",
-            "de": "Schussreiches Shoot'em up (Pyxel-Buch-Beispiel)",
+            "de": "Schussreiches Shoot'em up (Beispiel aus dem offiziellen Pyxel-Buch)",
             "es": "Shoot'em up con lluvia de balas (ejemplo del Libro Oficial de Pyxel)",
             "fr": "Shoot'em up à pluie de balles (exemple du Livre Officiel Pyxel)",
             "it": "Shoot'em up ricco di proiettili (esempio del Libro Ufficiale Pyxel)",
             "ja": "弾幕シューティングゲーム (Pyxel 公式書籍サンプル)",
             "ko": "탄막 슈팅 게임 (Pyxel 공식 서적 샘플)",
             "pt": "Shoot'em up com muitos projéteis (exemplo do Livro Oficial Pyxel)",
-            "ru": "Shoot'em up с множеством пуль (пример из Книги Pyxel)",
+            "ru": "Shoot'em up с множеством пуль (пример из официальной Книги Pyxel)",
             "tr": "Yoğun mermili shoot'em up (Pyxel Resmi Kitabı örneği)",
-            "uk": "Shoot'em up із безліччю куль (приклад з Книги Pyxel)"
+            "uk": "Shoot'em up із безліччю куль (приклад з офіційної Книги Pyxel)"
           },
           "details": {
             "en": "A sample game from the Pyxel Official Book (Gijutsu-Hyoron Publishing). A full-fledged bullet-heavy shooter for learning enemy pattern and score system implementation.",
@@ -1073,16 +1073,16 @@
           "description": {
             "en": "Trap-dodging gem-collecting platformer (Pyxel Official Book sample)",
             "cn": "躲避陷阱收集宝石的平台游戏 (Pyxel 官方书籍示例)",
-            "de": "Fallen-ausweichendes Edelstein-Plattformspiel (Pyxel-Buch-Beispiel)",
+            "de": "Fallen-ausweichendes Edelstein-Plattformspiel (Beispiel aus dem offiziellen Pyxel-Buch)",
             "es": "Plataformas de esquivar trampas y recoger gemas (ejemplo del Libro Oficial de Pyxel)",
             "fr": "Platformer d'esquive de pièges et collecte de gemmes (exemple du Livre Officiel Pyxel)",
             "it": "Platformer con trappole e raccolta di gemme (esempio del Libro Ufficiale Pyxel)",
             "ja": "罠を避けて宝石を集めるプラットフォーマー (Pyxel 公式書籍サンプル)",
             "ko": "함정을 피하고 보석을 모으는 플랫포머 (Pyxel 공식 서적 샘플)",
             "pt": "Platformer de desviar armadilhas e coletar gemas (exemplo do Livro Oficial Pyxel)",
-            "ru": "Платформер: избегай ловушек, собирай самоцветы (пример из Книги Pyxel)",
+            "ru": "Платформер: избегай ловушек, собирай самоцветы (пример из официальной Книги Pyxel)",
             "tr": "Tuzaklardan kaçıp mücevher toplama platformer (Pyxel Resmi Kitabı örneği)",
-            "uk": "Платформер: уникай пасток, збирай самоцвіти (приклад з Книги Pyxel)"
+            "uk": "Платформер: уникай пасток, збирай самоцвіти (приклад з офіційної Книги Pyxel)"
           },
           "details": {
             "en": "A sample game from the Pyxel Official Book (Gijutsu-Hyoron Publishing). A platformer where you collect gems in caves while dodging traps, covering map design and collision detection.",

@@ -144,23 +144,47 @@ class App:
                 0, 0, pyxel.screen, CROSS_AREA_X, 0, CROSS_AREA_WIDTH, CROSS_AREA_WIDTH
             )
             cross_image.save(
-                str(OUTPUT_DIR / f"gamepad_cross_{CROSS_AREA_WIDTH}x{CROSS_AREA_WIDTH}.png"), 1
+                str(
+                    OUTPUT_DIR
+                    / f"gamepad_cross_{CROSS_AREA_WIDTH}x{CROSS_AREA_WIDTH}.png"
+                ),
+                1,
             )
 
             menu_image = pyxel.Image(MENU_AREA_WIDTH, MENU_AREA_HEIGHT)
             menu_image.blt(
-                0, 0, pyxel.screen, MENU_AREA_X, MENU_AREA_Y, MENU_AREA_WIDTH, MENU_AREA_HEIGHT
+                0,
+                0,
+                pyxel.screen,
+                MENU_AREA_X,
+                MENU_AREA_Y,
+                MENU_AREA_WIDTH,
+                MENU_AREA_HEIGHT,
             )
             menu_image.save(
-                str(OUTPUT_DIR / f"gamepad_menu_{MENU_AREA_WIDTH}x{MENU_AREA_HEIGHT}.png"), 1
+                str(
+                    OUTPUT_DIR
+                    / f"gamepad_menu_{MENU_AREA_WIDTH}x{MENU_AREA_HEIGHT}.png"
+                ),
+                1,
             )
 
             button_image = pyxel.Image(ACTION_AREA_WIDTH, ACTION_AREA_WIDTH)
             button_image.blt(
-                0, 0, pyxel.screen, ACTION_AREA_X, 0, ACTION_AREA_WIDTH, ACTION_AREA_WIDTH
+                0,
+                0,
+                pyxel.screen,
+                ACTION_AREA_X,
+                0,
+                ACTION_AREA_WIDTH,
+                ACTION_AREA_WIDTH,
             )
             button_image.save(
-                str(OUTPUT_DIR / f"gamepad_button_{ACTION_AREA_WIDTH}x{ACTION_AREA_WIDTH}.png"), 1
+                str(
+                    OUTPUT_DIR
+                    / f"gamepad_button_{ACTION_AREA_WIDTH}x{ACTION_AREA_WIDTH}.png"
+                ),
+                1,
             )
 
     def draw(self):
@@ -193,7 +217,9 @@ class App:
         if self.show_guide:
             pyxel.camera(-CROSS_AREA_X, 0)
 
-            pyxel.rectb(0, CROSS_MARGIN + CROSS_ARM_LENGTH, CROSS_MARGIN, CROSS_ARM_WIDTH, 8)
+            pyxel.rectb(
+                0, CROSS_MARGIN + CROSS_ARM_LENGTH, CROSS_MARGIN, CROSS_ARM_WIDTH, 8
+            )
             pyxel.rectb(
                 CROSS_MARGIN + CROSS_ARM_LENGTH * 2 + CROSS_ARM_WIDTH,
                 CROSS_MARGIN + CROSS_ARM_LENGTH,
@@ -201,7 +227,9 @@ class App:
                 CROSS_ARM_WIDTH,
                 8,
             )
-            pyxel.rectb(CROSS_MARGIN + CROSS_ARM_LENGTH, 0, CROSS_ARM_WIDTH, CROSS_MARGIN, 8)
+            pyxel.rectb(
+                CROSS_MARGIN + CROSS_ARM_LENGTH, 0, CROSS_ARM_WIDTH, CROSS_MARGIN, 8
+            )
             pyxel.rectb(
                 CROSS_MARGIN + CROSS_ARM_LENGTH,
                 CROSS_MARGIN + CROSS_ARM_LENGTH * 2 + CROSS_ARM_WIDTH,
@@ -210,7 +238,13 @@ class App:
                 8,
             )
 
-            pyxel.rectb(0, 0, CROSS_MARGIN + CROSS_ARM_LENGTH, CROSS_MARGIN + CROSS_ARM_LENGTH, 9)
+            pyxel.rectb(
+                0,
+                0,
+                CROSS_MARGIN + CROSS_ARM_LENGTH,
+                CROSS_MARGIN + CROSS_ARM_LENGTH,
+                9,
+            )
             pyxel.rectb(
                 CROSS_MARGIN + CROSS_ARM_LENGTH + CROSS_ARM_WIDTH,
                 0,
@@ -236,19 +270,31 @@ class App:
             pyxel.camera(-MENU_AREA_X, -MENU_AREA_Y)
 
             pyxel.rectb(0, MENU_MARGIN, MENU_MARGIN, MENU_HEIGHT, 8)
-            pyxel.rectb(MENU_MARGIN + MENU_WIDTH, MENU_MARGIN, MENU_MARGIN, MENU_HEIGHT, 8)
+            pyxel.rectb(
+                MENU_MARGIN + MENU_WIDTH, MENU_MARGIN, MENU_MARGIN, MENU_HEIGHT, 8
+            )
             pyxel.rectb(MENU_MARGIN, 0, MENU_WIDTH, MENU_MARGIN, 8)
-            pyxel.rectb(MENU_MARGIN, MENU_MARGIN + MENU_HEIGHT, MENU_WIDTH, MENU_MARGIN, 8)
+            pyxel.rectb(
+                MENU_MARGIN, MENU_MARGIN + MENU_HEIGHT, MENU_WIDTH, MENU_MARGIN, 8
+            )
 
             pyxel.rectb(
                 MENU_MARGIN * 2 + MENU_WIDTH, MENU_MARGIN, MENU_MARGIN, MENU_HEIGHT, 8
             )
             pyxel.rectb(
-                MENU_MARGIN * 3 + MENU_WIDTH * 2, MENU_MARGIN, MENU_MARGIN, MENU_HEIGHT, 8
+                MENU_MARGIN * 3 + MENU_WIDTH * 2,
+                MENU_MARGIN,
+                MENU_MARGIN,
+                MENU_HEIGHT,
+                8,
             )
             pyxel.rectb(MENU_MARGIN * 3 + MENU_WIDTH, 0, MENU_WIDTH, MENU_MARGIN, 8)
             pyxel.rectb(
-                MENU_MARGIN * 3 + MENU_WIDTH, MENU_MARGIN + MENU_HEIGHT, MENU_WIDTH, MENU_MARGIN, 8
+                MENU_MARGIN * 3 + MENU_WIDTH,
+                MENU_MARGIN + MENU_HEIGHT,
+                MENU_WIDTH,
+                MENU_MARGIN,
+                8,
             )
 
             pyxel.camera(-ACTION_AREA_X, 0)
@@ -273,7 +319,9 @@ class App:
             pyxel.rectb(0, 0, ACTION_X, ACTION_X, 9)
             pyxel.rectb(ACTION_X + ACTION_WIDTH, 0, ACTION_X, ACTION_X, 9)
             pyxel.rectb(0, ACTION_X + ACTION_WIDTH, ACTION_X, ACTION_X, 9)
-            pyxel.rectb(ACTION_X + ACTION_WIDTH, ACTION_X + ACTION_WIDTH, ACTION_X, ACTION_X, 9)
+            pyxel.rectb(
+                ACTION_X + ACTION_WIDTH, ACTION_X + ACTION_WIDTH, ACTION_X, ACTION_X, 9
+            )
 
             pyxel.camera()
 

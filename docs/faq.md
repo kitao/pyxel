@@ -29,7 +29,7 @@ The official [book](https://gihyo.jp/book/2025/978-4-297-14657-3) is available i
 <details>
 <summary>What is the difference between the <code>update</code> and <code>draw</code> functions?</summary>
 
-The `update` function is called every frame, but the `draw` function may be skipped if the processing time exceeds the allowable limit. Pyxel uses this design to reduce the impact of rendering load and OS interruptions, enabling smooth animation.
+The `update` function is called every frame, but the `draw` function may be skipped if the processing time exceeds the allowable limit. Pyxel uses this design to reduce the impact of rendering load and OS interrupts, enabling smooth animation.
 
 </details>
 

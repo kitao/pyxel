@@ -4,14 +4,14 @@
 
 - Added line numbers to palette file parsing errors
 - Updated Pyxel MML Studio to use shorter share URLs
-- Updated Pyxel Web Launcher to use the latest commit of each app
+- Fixed Pyxel Web Launcher to load the latest version of each user app
 - Enabled thin LTO and inlining hints in release builds
 - Prevented zip path traversal in the play and app2exe commands
 - Fixed relative path handling in the package command
 
 ## 2.9.0
 
-- Redesigned the gen_bgm function for Pyxel Composer integration
+- Redesigned the gen_bgm function to share code with Pyxel Composer
 - Changed the transp, the instr, and the seed of the gen_bgm function to required
 - Added Cargo.lock to version control for reproducible builds
 - Added the resize function to change the screen size at runtime
@@ -27,12 +27,14 @@
 - Refined code quality and consistency across all layers
 - Removed unnecessary allocations in rendering and audio
 - Unified editor undo/redo and input handling patterns
-- Optimized drawing hot paths and audio command processing
+- Optimized drawing hot paths
+- Optimized audio command processing
 - Fixed memory leak in MML playback on channels
-- Fixed tilemap editor selection and viewer rendering
-- Added comprehensive Python API and Rust unit tests
+- Fixed tilemap editor selection
+- Fixed tilemap viewer rendering
+- Added Python API and Rust unit tests
 - Removed undefined constants from type stubs and API reference
-- Improved headless mode with frame pipeline and input injection
+- Added frame pipeline and input injection to headless mode
 
 ## 2.8.8
 
