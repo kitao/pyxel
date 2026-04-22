@@ -104,7 +104,7 @@ This file is the coding policy for Pyxel. Apply every rule.
 
 ## Release Notes
 
-- Each `CHANGELOG.md` entry must pass one of two tests: concrete user benefit (feature, fix, visible change) or breadcrumb for future debugging (build-config knob, internal runtime change).
+- Each `CHANGELOG.md` entry must pass one of two tests: concrete user benefit (feature, fix, visible change) or breadcrumb for future debugging (build-config knob, internal runtime change, scoped refactor or cleanup — anything a user chasing a regression can use as a pointer).
 - Match past-entry style: verb choice, grammar form, object specificity. Grep past entries before drafting a new one.
 - Verify each entry against the actual code diff, not the commit message.
 - Default to dropping when in doubt. Fewer lines beat padding.
