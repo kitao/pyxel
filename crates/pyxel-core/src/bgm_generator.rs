@@ -1,6 +1,6 @@
 /*
-    Based on 8bit BGM generator by frenchbread
-    https://github.com/shiromofufactory/8bit-bgm-generator
+    Based on Pyxel Composer by frenchbread
+    https://pyxel-composer.pages.dev/
 */
 use std::fmt::Write as _;
 
