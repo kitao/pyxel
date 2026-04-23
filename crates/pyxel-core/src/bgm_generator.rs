@@ -1820,7 +1820,7 @@ pub fn generate_bgm_mml(
     compile_to_mml(&data)
 }
 
-// JSON interface for composer WASM
+// JSON interface for Pyxel Composer
 #[cfg(not(pyxel_core))]
 pub fn preset_params_json(preset: i32) -> String {
     preset_params(preset).to_json()

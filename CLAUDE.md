@@ -51,7 +51,7 @@ This file is the coding policy for Pyxel. Apply every rule.
     - Stuttering or type prefix (`Canvas.drawCanvas()`, `strFoo`)
     - Overly long multi-clause names
     - Names that signal missing abstraction — single-use custom CSS classes, identifiers shadowing imports, or magic strings repeated at multiple sites
-- Definition order: top-down, declarations before their use. Within a type: constructors → public API → private helpers.
+- Definition order: top-down, declarations before their use.
 - Adopt idiomatic abbreviations as-is.
   - e.g.,
     - Python / Rust: `i` (loop counter), `e` (exception/error variable)

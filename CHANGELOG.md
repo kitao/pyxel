@@ -23,7 +23,7 @@
 
 - Redesigned the gen_bgm function to share code with Pyxel Composer
 - Added the transp argument back to the gen_bgm function
-- Made the transp, the instr, and the seed of the gen_bgm function required
+- Made the transp, instr, and seed of the gen_bgm function required
 - Added Cargo.lock to version control for reproducible builds
 - Added the resize function to change the screen size at runtime
 - Fixed the screencast function emitting wrong last-frame delay on frame drops
@@ -336,7 +336,7 @@
 
 ## 2.5.7
 
-- Specified Tailwind CSS version 3.4.17 for Pyxel web pages
+- Specified Tailwind CSS version 3.4.17 for Pyxel Web pages
 - Added links to web tools and examples for Pyxel in the README files
 - Updated URL on reload in Pyxel MML Studio
 - Improved usability of Pyxel MML Studio
@@ -346,7 +346,7 @@
 
 - Updated Pyxel MML Studio to use compressed URLs
 - Improved Pyxel MML Studio usability
-- Updated design of the Pyxel web pages
+- Updated design of the Pyxel Web pages
 
 ## 2.5.5
 

@@ -145,7 +145,7 @@
 
         const h1 = document.createElement("h1");
         h1.className = "font-semibold text-2xl tracking-tight";
-        h1.textContent = t("title");
+        h1.id = "page-title";
         titleBlock.appendChild(h1);
 
         const subtitle = document.createElement("p");
@@ -405,6 +405,7 @@
 
       function updateTexts() {
         document.title = t("title");
+        document.getElementById("page-title").textContent = t("title");
         document.getElementById("page-subtitle").innerHTML = t(
           "subtitle",
         ).replace("{0}", link("https://github.com/kitao/pyxel", "Pyxel"));
