@@ -43,8 +43,8 @@ manifest-path = "../crates/pyxel-binding/Cargo.toml"
 module-name = "pyxel.pyxel_binding"
 
 # aarch64 requires macOS 11 (Big Sur); x86_64 still supports 10.13 (High Sierra).
-[tool.maturin.target."x86_64-apple-darwin"]
-macos-deployment-target = "10.13"
-
 [tool.maturin.target."aarch64-apple-darwin"]
 macos-deployment-target = "11.0"
+
+[tool.maturin.target."x86_64-apple-darwin"]
+macos-deployment-target = "10.13"

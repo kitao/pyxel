@@ -95,7 +95,11 @@ impl Seqs {
     fn __repr__(&self, py: Python) -> PyResult<String> {
         let seqs: Vec<Vec<u32>> = self.inner_ref().seqs.clone();
         let list = PyList::new(py, seqs)?;
-        Ok(format!("Seqs{}", list.repr()?.to_string_lossy()))
+        Ok(format!(
+            "{}{}",
+            stringify!(Seqs),
+            list.repr()?.to_string_lossy()
+        ))
     }
 
     fn __bool__(&self) -> bool {

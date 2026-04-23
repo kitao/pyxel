@@ -17,6 +17,7 @@ from .widgets.settings import WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME
 
 class PianoRoll(Widget):
     # Variables:
+    #   speed_var
     #   note_var
     #   is_playing_var
     #   help_message_var

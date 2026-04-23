@@ -1,7 +1,7 @@
-/*
-    Based on Pyxel Composer by frenchbread
-    https://pyxel-composer.pages.dev/
-*/
+// BGM generator. Shared with Pyxel Composer (the JS frontend that consumes
+// the `*_json` entry points via WASM).
+// Originally derived from Pyxel Composer by frenchbread (https://pyxel-composer.pages.dev/).
+
 use std::fmt::Write as _;
 
 use rand::{RngExt, SeedableRng};
@@ -13,11 +13,11 @@ use crate::pyxel::{self, Pyxel};
 #[cfg(pyxel_core)]
 use crate::sound::Sound;
 
-// Generation parameters — field names match the original TS bgm-generator.ts
+// Generation parameters. Field names form the Composer JSON contract.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GeneratorParams {
     pub transpose: i32,        // -5..+5
-    pub instrumentation: i32,  // 0-3
+    pub instrumentation: i32,  // 0=melody, 1=+bass, 2=+drums, 3=+submelody
     pub speed: i32,            // internal speed unit (BPM = 28800 / speed)
     pub chord: i32,            // 0-7 preset, 8-9 custom
     pub base: i32,             // 0-7
@@ -29,13 +29,13 @@ pub struct GeneratorParams {
     pub melo_density: i32,     // 0|2|4
     pub melo_use16: bool,
     #[serde(default)]
-    pub custom_progression: Option<Vec<CustomChordEntryDef>>,
+    pub custom_progression: Option<Vec<CustomChordEntry>>,
 }
 
-// Custom chord progression entry — sent from TS when chord >= PRESET_COUNT.
+// Custom chord progression entry sent from Pyxel Composer for custom slots (chord >= PRESET_COUNT).
 // Either `notes` (a 12-digit bits string) or `repeat` (a prior entry index) must be provided.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct CustomChordEntryDef {
+pub struct CustomChordEntry {
     pub loc: usize,
     #[serde(default)]
     pub notes: Option<String>,
@@ -43,11 +43,63 @@ pub struct CustomChordEntryDef {
     pub repeat: Option<usize>,
 }
 
+// Instrument definition (maps to MML @, @ENV, @VIB; @GLI reserved for future)
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct BgmTone {
+    pub wave: i32,            // 0=triangle, 1=square, 2=pulse, 3=noise
+    pub attack: i32,          // ticks
+    pub decay: i32,           // ticks
+    pub sustain: i32,         // 0-100 (%)
+    pub release: i32,         // ticks
+    pub vibrato: i32,         // delay ticks (0=disabled)
+    pub drum_notes: Vec<i32>, // pitch sweep sequence for drums (empty=normal tone)
+}
+
+// Per-channel note and control data. Field names form the Composer JSON contract.
+// All vectors are sparse: None=continue previous.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct BgmChannel {
+    pub notes: Vec<Option<i32>>,   // None=sustain, -1=rest, 0+=pitch/drum key
+    pub tones: Vec<Option<i32>>,   // tone index
+    pub volumes: Vec<Option<i32>>, // 0-127
+    pub quantizes: Vec<Option<i32>>, // 0-100 (gate percent)
+}
+
+// Complete BGM data - output of `generate_bgm()`, input for `compile_to_mml()`
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct BgmData {
+    pub tempo: i32,                // BPM (MML T command value)
+    pub tones: Vec<BgmTone>,       // up to 16 tone definitions
+    pub channels: Vec<BgmChannel>, // up to 4 channels
+}
+
+#[cfg(not(pyxel_core))]
+impl GeneratorParams {
+    pub fn to_json(&self) -> String {
+        serde_json::to_string(self).expect("Failed to serialize GeneratorParams")
+    }
+    pub fn from_json(json: &str) -> Self {
+        serde_json::from_str(json).expect("Failed to deserialize GeneratorParams")
+    }
+}
+
+#[cfg(not(pyxel_core))]
+impl BgmData {
+    pub fn to_json(&self) -> String {
+        serde_json::to_string(self).expect("Failed to serialize BgmData")
+    }
+    pub fn from_json(json: &str) -> Self {
+        serde_json::from_str(json).expect("Failed to deserialize BgmData")
+    }
+}
+
 const BARS: usize = 8;
 const STEPS_PER_BAR: usize = 16;
 const TOTAL_STEPS: usize = BARS * STEPS_PER_BAR;
 const PRESET_COUNT: usize = 8;
 const TONE_CANDIDATES: [usize; 6] = [11, 8, 2, 10, 6, 4];
+const BASS_TONE_IDX: usize = 7;
+const DRUM_TONE_IDX: usize = 15;
 
 const PRESETS: [GeneratorParams; PRESET_COUNT] = [
     GeneratorParams {
@@ -171,60 +223,6 @@ const PRESETS: [GeneratorParams; PRESET_COUNT] = [
         custom_progression: None,
     },
 ];
-
-fn preset_params(preset: i32) -> GeneratorParams {
-    let idx = preset.clamp(0, (PRESET_COUNT - 1) as i32) as usize;
-    PRESETS[idx].clone()
-}
-
-// Instrument definition (maps to MML @, @ENV, @VIB, @GLI)
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct Tone {
-    pub wave: i32,            // 0=triangle, 1=square, 2=pulse, 3=noise
-    pub attack: i32,          // ticks
-    pub decay: i32,           // ticks
-    pub sustain: i32,         // 0-100 (%)
-    pub release: i32,         // ticks
-    pub vibrato: i32,         // delay ticks (0=disabled)
-    pub drum_notes: Vec<i32>, // pitch sweep sequence for drums (empty=normal tone)
-}
-
-// Per-channel note and control data (all sparse: None=continue previous)
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct Channel {
-    pub notes: Vec<Option<i32>>,   // None=sustain, -1=rest, 0+=pitch/drum key
-    pub tones: Vec<Option<i32>>,   // tone index
-    pub volumes: Vec<Option<i32>>, // 0-127
-    pub quantizes: Vec<Option<i32>>, // 0-100 (gate percent)
-}
-
-// Complete BGM data — output of `generate_bgm()`, input for `compile_to_mml()`
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct BgmData {
-    pub tempo: i32,             // BPM (MML T command value)
-    pub tones: Vec<Tone>,       // up to 16 tone definitions
-    pub channels: Vec<Channel>, // up to 4 channels
-}
-
-#[cfg(not(pyxel_core))]
-impl GeneratorParams {
-    pub fn to_json(&self) -> String {
-        serde_json::to_string(self).expect("Failed to serialize GeneratorParams")
-    }
-    pub fn from_json(json: &str) -> Self {
-        serde_json::from_str(json).expect("Failed to deserialize GeneratorParams")
-    }
-}
-
-#[cfg(not(pyxel_core))]
-impl BgmData {
-    pub fn to_json(&self) -> String {
-        serde_json::to_string(self).expect("Failed to serialize BgmData")
-    }
-    pub fn from_json(json: &str) -> Self {
-        serde_json::from_str(json).expect("Failed to deserialize BgmData")
-    }
-}
 
 // Wave, attack, decay, sustain, release, vibrato
 const TONE_LIBRARY: [[i32; 6]; 16] = [
@@ -471,6 +469,13 @@ const CP7: [ChordEntry; 8] = [
 
 const CHORD_PROGRESSIONS: [&[ChordEntry]; PRESET_COUNT] =
     [&CP0, &CP1, &CP2, &CP3, &CP4, &CP5, &CP6, &CP7];
+
+fn preset_params(preset: i32) -> GeneratorParams {
+    let idx = preset.clamp(0, (PRESET_COUNT - 1) as i32) as usize;
+    PRESETS[idx].clone()
+}
+
+// === MML token / format helpers ===
 
 fn note_name(note: i32) -> (&'static str, i32) {
     let semitone = note.rem_euclid(12);
@@ -749,6 +754,8 @@ fn format_tokens(tokens: &[String]) -> String {
     out.trim().to_string()
 }
 
+// === Chord progression resolution ===
+
 fn parse_notes_bits(s: &str) -> [i32; 12] {
     let mut out = [0; 12];
     for (i, ch) in s.bytes().take(12).enumerate() {
@@ -761,7 +768,7 @@ fn root_from_bits(bits: &[i32; 12]) -> i32 {
     bits.iter().position(|v| *v == 2).unwrap_or(0) as i32
 }
 
-// Owned counterpart of ChordEntry — allows mixing static presets and runtime custom entries.
+// Owned counterpart of ChordEntry - allows mixing static presets and runtime custom entries.
 #[derive(Debug, Clone)]
 struct OwnedChordEntry {
     loc: usize,
@@ -780,7 +787,7 @@ impl OwnedChordEntry {
 }
 
 // `chord` selector: `0..PRESET_COUNT` = preset, `>=PRESET_COUNT` = custom slot.
-fn resolve_progression(chord: i32, custom: Option<&[CustomChordEntryDef]>) -> Vec<OwnedChordEntry> {
+fn resolve_progression(chord: i32, custom: Option<&[CustomChordEntry]>) -> Vec<OwnedChordEntry> {
     let chord_idx = chord as usize;
     if chord_idx >= PRESET_COUNT {
         if let Some(entries) = custom.filter(|e| !e.is_empty()) {
@@ -792,9 +799,8 @@ fn resolve_progression(chord: i32, custom: Option<&[CustomChordEntryDef]>) -> Ve
                     repeat: e.repeat,
                 })
                 .collect();
-            // `repeat` indices reference positions in the pre-sort TS-side array; after sorting
-            // by loc we need to preserve those references. Since the TS encoder emits entries
-            // in loc order, we skip sorting to keep `repeat` indices stable.
+            // `repeat` indices are 0-based positions in the input slice; do not reorder.
+            // Pyxel Composer is expected to emit entries in `loc` order.
             // Guarantee there is an entry at loc 0 so every step has a defined chord.
             if out.first().is_none_or(|e| e.loc != 0) {
                 out.insert(
@@ -857,6 +863,8 @@ fn chord_bits_per_step(progression: &[OwnedChordEntry]) -> Vec<[i32; 12]> {
 fn rhythm_has_16th(line: &str) -> bool {
     line.as_bytes().windows(2).any(|w| w == b"00")
 }
+
+// === Melody / harmony generation ===
 
 fn build_chord_note_pool(bits: &[i32; 12], transpose: i32, lowest: i32) -> Vec<(i32, i32)> {
     let mut note_highest = None;
@@ -931,10 +939,9 @@ fn build_melody_chord_plan(
         let mut notes_bits = [0; 12];
         let mut no_root = false;
         if let Some(note_str) = p.notes.as_deref() {
-            let notes_origin = parse_notes_bits(note_str);
-            notes_bits = notes_origin;
+            notes_bits = parse_notes_bits(note_str);
             let mut note_chord_count = 0;
-            for (i, v) in notes_origin.iter().enumerate() {
+            for (i, v) in notes_bits.iter().enumerate() {
                 if *v == 2 {
                     base = i as i32;
                 }
@@ -943,7 +950,7 @@ fn build_melody_chord_plan(
                 }
             }
             no_root = note_chord_count > 3;
-            notes = build_chord_note_pool(&notes_origin, key_shift, lowest);
+            notes = build_chord_note_pool(&notes_bits, key_shift, lowest);
         }
         out.push(MelodyChord {
             loc: p.loc,
@@ -1022,6 +1029,8 @@ fn place_melody(note_line: &mut [i32], loc: usize, note: i32, note_len: usize) {
     }
 }
 
+// Resolve the next batch of note events from a rhythm position: look up the active chord,
+// pick target notes from its harmony pool, and walk the diff into placed (loc, note, length) tuples.
 fn next_note_events(
     rhythm_set: &[(usize, i32)],
     loc: usize,
@@ -1133,8 +1142,7 @@ fn next_note_events(
         let mut results = Vec::new();
         for i in 0..cnt {
             while next_idx == cur_idx {
-                // Match the original Python behavior: on retry, always use the main-path
-                // semantics (is_sub = false) even when the current path is sub.
+                // On retry, always use main-path semantics (is_sub = false) even when the current path is sub.
                 next_idx = pick_target_note_idx(&chord.notes, state.prev_note, no_root, false, rng);
             }
             let dir = if next_idx > cur_idx { 1isize } else { -1isize };
@@ -1209,6 +1217,8 @@ fn melody_has_required_tones(
     need.is_empty()
 }
 
+// Probabilistically pick the next melody note from the chord pool, biased to discourage
+// large jumps from `prev_note` (octave jumps cost a fixed amount; sub-melody mode skips bias).
 fn pick_target_note(
     chord_notes: &[(i32, i32)],
     prev_note: i32,
@@ -1264,6 +1274,10 @@ fn pick_target_note_idx(
     find_chord_note_index(chord_notes, target_note).unwrap_or(0)
 }
 
+// Generate the main melody line. Maintains three buffers in parallel:
+//   `note_line` (Vec<i32>): per-step encoding using NOTE_UNSET / NOTE_CONT / actual pitch.
+//   `melody_view` (Vec<Option<i32>>): public view returned to the caller.
+//   `sub_seed` (Vec<Option<i32>>): pre-shifted seed handed to `generate_submelody`.
 fn generate_melody(
     progression: &[OwnedChordEntry],
     density: i32,
@@ -1370,6 +1384,8 @@ fn generate_melody(
         }
     }
 }
+
+// === Bass / submelody / drums ===
 
 fn generate_bass(base: i32, bits_per_step: &[[i32; 12]], key_shift: i32) -> Vec<Option<i32>> {
     let mut notes = vec![Some(-1); TOTAL_STEPS];
@@ -1498,6 +1514,8 @@ fn find_lower_harmony_at(
     -1
 }
 
+// Lay down a harmony note in `sub`: scan backward from `loc` to find the active master note,
+// then forward to fill the harmony slot without crossing the next master onset.
 fn place_harmony(
     sub: &mut [Option<i32>],
     chord_bits: &[i32; 12],
@@ -1641,12 +1659,17 @@ fn generate_drums(drums: i32) -> Vec<Option<i32>> {
         .collect()
 }
 
+// === MML compilation ===
+
 fn current_bar_mut(bar_tokens: &mut [Vec<String>]) -> &mut Vec<String> {
     bar_tokens
         .last_mut()
         .expect("Failed to get the last bar tokens")
 }
 
+// Compile a single channel's per-step note sequence into an MML string. Emits the header
+// (T/L/Q/V/@/@ENV/@VIB), iterates per-bar collecting note tokens, then runs `compress_repeats`
+// in three passes (group=4, 2, 1) to fold repeated patterns into MML repeat brackets.
 fn notes_to_mml(
     notes: &[Option<i32>],
     tempo: i32,
@@ -1806,61 +1829,9 @@ fn silent_channel_mml(tempo: i32) -> String {
     format!("T{tempo} L16 @ENV1{{127}} Q100 V112 @0 @ENV1 @VIB0")
 }
 
-// Generate BGM as MML strings (one-shot: preset → MML)
-pub fn generate_bgm_mml(
-    preset: i32,
-    transpose: i32,
-    instrumentation: i32,
-    seed: u64,
-) -> Vec<String> {
-    let mut params = preset_params(preset);
-    params.transpose = transpose;
-    params.instrumentation = instrumentation;
-    let data = generate_bgm(&params, seed);
-    compile_to_mml(&data)
-}
+// === Structured generation pipeline (params -> BgmData -> MML) ===
 
-// JSON interface for Pyxel Composer
-#[cfg(not(pyxel_core))]
-pub fn preset_params_json(preset: i32) -> String {
-    preset_params(preset).to_json()
-}
-
-#[cfg(not(pyxel_core))]
-pub fn generate_bgm_json(params_json: &str, seed: u64) -> String {
-    let params = GeneratorParams::from_json(params_json);
-    generate_bgm(&params, seed).to_json()
-}
-
-#[cfg(not(pyxel_core))]
-pub fn compile_to_mml_json(bgm_json: &str) -> String {
-    let data = BgmData::from_json(bgm_json);
-    serde_json::to_string(&compile_to_mml(&data)).expect("Failed to serialize MML")
-}
-
-// Presets (0..=7) return their `CHORD_PROGRESSIONS` entry. For custom slots the resolver
-// falls back to the default (I major × 8 bars), so callers should not use this path for
-// custom slots — those are stored client-side.
-#[cfg(not(pyxel_core))]
-pub fn preset_progression_json(preset: i32) -> String {
-    let entries = resolve_progression(preset, None);
-    let defs: Vec<CustomChordEntryDef> = entries
-        .into_iter()
-        .map(|e| CustomChordEntryDef {
-            loc: e.loc,
-            notes: e.notes,
-            repeat: e.repeat,
-        })
-        .collect();
-    serde_json::to_string(&defs).expect("Failed to serialize preset progressions")
-}
-
-// Structured generation pipeline (params -> BgmData -> MML)
-
-const BASS_TONE_IDX: usize = 7;
-const DRUM_TONE_IDX: usize = 15;
-
-fn make_channel(notes: Vec<Option<i32>>, tone_idx: i32, volume: i32, quantize: i32) -> Channel {
+fn make_channel(notes: Vec<Option<i32>>, tone_idx: i32, volume: i32, quantize: i32) -> BgmChannel {
     let len = notes.len();
     let mut tones = vec![None; len];
     let mut volumes = vec![None; len];
@@ -1868,7 +1839,7 @@ fn make_channel(notes: Vec<Option<i32>>, tone_idx: i32, volume: i32, quantize: i
     tones[0] = Some(tone_idx);
     volumes[0] = Some(volume);
     quantizes[0] = Some(quantize);
-    Channel {
+    BgmChannel {
         notes,
         tones,
         volumes,
@@ -1876,8 +1847,8 @@ fn make_channel(notes: Vec<Option<i32>>, tone_idx: i32, volume: i32, quantize: i
     }
 }
 
-fn silent_channel() -> Channel {
-    Channel {
+fn silent_channel() -> BgmChannel {
+    BgmChannel {
         notes: vec![],
         tones: vec![],
         volumes: vec![],
@@ -1885,9 +1856,9 @@ fn silent_channel() -> Channel {
     }
 }
 
-fn build_tone(idx: usize) -> Tone {
+fn build_tone(idx: usize) -> BgmTone {
     let t = TONE_LIBRARY[idx];
-    Tone {
+    BgmTone {
         wave: t[0],
         attack: t[1],
         decay: t[2],
@@ -2048,7 +2019,7 @@ fn generate_bgm(params: &GeneratorParams, seed: u64) -> BgmData {
     }
     tone_indices.sort_unstable();
 
-    // Build full 16-slot tone table (sparse — only used slots populated)
+    // Build full 16-slot tone table (sparse - only used slots populated)
     let mut tones = Vec::with_capacity(tone_indices.len().max(1));
     for &idx in &tone_indices {
         // Pad with default tones up to this index
@@ -2084,6 +2055,62 @@ fn compile_to_mml(data: &BgmData) -> Vec<String> {
         })
         .collect()
 }
+
+// === Public API (one-shot + Composer JSON) ===
+
+// One-shot entry: pick a preset, override transpose/instrumentation, return MML strings.
+// Backend for `pyxel.gen_bgm()`; also reachable from Composer via the `*_json` wrappers below.
+pub fn generate_bgm_mml(
+    preset: i32,
+    transpose: i32,
+    instrumentation: i32,
+    seed: u64,
+) -> Vec<String> {
+    let mut params = preset_params(preset);
+    params.transpose = transpose;
+    params.instrumentation = instrumentation;
+    let data = generate_bgm(&params, seed);
+    compile_to_mml(&data)
+}
+
+// JSON interface for Pyxel Composer
+
+// Returns the preset's GeneratorParams as JSON for Composer to populate its UI.
+#[cfg(not(pyxel_core))]
+pub fn preset_params_json(preset: i32) -> String {
+    preset_params(preset).to_json()
+}
+
+// Generates BgmData from Composer-supplied GeneratorParams JSON, returning BgmData JSON.
+#[cfg(not(pyxel_core))]
+pub fn generate_bgm_json(params_json: &str, seed: u64) -> String {
+    let params = GeneratorParams::from_json(params_json);
+    generate_bgm(&params, seed).to_json()
+}
+
+// Compiles Composer-supplied BgmData JSON into MML strings (one per channel).
+#[cfg(not(pyxel_core))]
+pub fn compile_to_mml_json(bgm_json: &str) -> String {
+    let data = BgmData::from_json(bgm_json);
+    serde_json::to_string(&compile_to_mml(&data)).expect("Failed to serialize MML")
+}
+
+// Returns the preset progression as JSON. Custom slots are managed by Composer, not this path.
+#[cfg(not(pyxel_core))]
+pub fn preset_progression_json(preset: i32) -> String {
+    let entries = resolve_progression(preset, None);
+    let defs: Vec<CustomChordEntry> = entries
+        .into_iter()
+        .map(|e| CustomChordEntry {
+            loc: e.loc,
+            notes: e.notes,
+            repeat: e.repeat,
+        })
+        .collect();
+    serde_json::to_string(&defs).expect("Failed to serialize preset progressions")
+}
+
+// === Pyxel integration ===
 
 #[cfg(pyxel_core)]
 impl Pyxel {
@@ -2196,7 +2223,7 @@ mod tests {
     fn test_bgm_data_json_roundtrip() {
         let data = BgmData {
             tempo: 133,
-            tones: vec![Tone {
+            tones: vec![BgmTone {
                 wave: 0,
                 attack: 0,
                 decay: 0,
@@ -2205,7 +2232,7 @@ mod tests {
                 vibrato: 0,
                 drum_notes: vec![],
             }],
-            channels: vec![Channel {
+            channels: vec![BgmChannel {
                 notes: vec![Some(24), None, Some(-1), Some(36)],
                 tones: vec![Some(0), None, None, None],
                 volumes: vec![Some(96), None, None, None],

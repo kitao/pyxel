@@ -51,7 +51,18 @@
   ],
   "ui": {
     "title": {
-      "en": "Pyxel Code Maker Manual"
+      "en": "Pyxel Code Maker Manual",
+      "cn": "Pyxel Code Maker 手册",
+      "de": "Pyxel Code Maker Handbuch",
+      "es": "Manual de Pyxel Code Maker",
+      "fr": "Manuel de Pyxel Code Maker",
+      "it": "Manuale di Pyxel Code Maker",
+      "ja": "Pyxel Code Maker マニュアル",
+      "ko": "Pyxel Code Maker 매뉴얼",
+      "pt": "Manual do Pyxel Code Maker",
+      "ru": "Руководство Pyxel Code Maker",
+      "tr": "Pyxel Code Maker Kılavuzu",
+      "uk": "Посібник Pyxel Code Maker"
     },
     "subtitle": {
       "en": "Manual for the {0} online development environment.",

@@ -926,12 +926,12 @@ mod tests {
         env.advance_tick(5);
         assert!(approx_eq(env.level(), 0.5), "mid: {}", env.level());
 
-        // Disable → level returns to 1.0
+        // Disable -> level returns to 1.0
         env.disable();
         env.advance_tick(1);
         assert!(approx_eq(env.level(), 1.0), "disabled: {}", env.level());
 
-        // Re-enable → continues from where it was
+        // Re-enable -> continues from where it was
         env.enable();
         env.advance_tick(1);
         assert!(
@@ -1025,7 +1025,7 @@ mod tests {
 
     #[test]
     fn test_vibrato_zero_period() {
-        // period=0 → inv_period_ticks=0, modulation calculation should not panic
+        // period=0 -> inv_period_ticks=0, modulation calculation should not panic
         let mut vib = Vibrato::new();
         vib.set(0, 0, 2.0);
         vib.enable();

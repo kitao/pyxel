@@ -51,7 +51,18 @@
   ],
   "ui": {
     "title": {
-      "en": "Pyxel User Guide"
+      "en": "Pyxel User Guide",
+      "cn": "Pyxel 用户指南",
+      "de": "Pyxel Benutzerhandbuch",
+      "es": "Guía de Usuario de Pyxel",
+      "fr": "Guide Utilisateur de Pyxel",
+      "it": "Guida Utente di Pyxel",
+      "ja": "Pyxel ユーザーガイド",
+      "ko": "Pyxel 사용자 가이드",
+      "pt": "Guia do Usuário Pyxel",
+      "ru": "Руководство пользователя Pyxel",
+      "tr": "Pyxel Kullanım Kılavuzu",
+      "uk": "Посібник користувача Pyxel"
     },
     "subtitle": {
       "en": "User guide for {0}, a retro game engine for Python.",
@@ -66,20 +77,6 @@
       "ru": "Руководство пользователя {0}, ретро-игрового движка для Python.",
       "tr": "Python için bir retro oyun motoru olan {0} kullanım kılavuzu.",
       "uk": "Посібник користувача {0}, ретро-ігрового рушія для Python."
-    },
-    "overview_title": {
-      "en": "Overview",
-      "cn": "概述",
-      "de": "Überblick",
-      "es": "Descripción general",
-      "fr": "Aperçu",
-      "it": "Panoramica",
-      "ja": "概要",
-      "ko": "개요",
-      "pt": "Visão Geral",
-      "ru": "Обзор",
-      "tr": "Genel Bakış",
-      "uk": "Огляд"
     },
     "overview_body": {
       "en": "{0} (/ˈpɪksəl/) is a retro game engine for Python. With simple specifications inspired by retro gaming consoles, such as displaying only 16 colors and supporting 4 sound channels, you can easily enjoy making pixel-art-style games.",

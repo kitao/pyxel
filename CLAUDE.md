@@ -8,7 +8,7 @@ This file is the coding policy for Pyxel. Apply every rule.
   - e.g., source code, configuration files (`Cargo.toml`, `Makefile`, `.gitignore`, etc.), scripts (`scripts/`)
 - Exclusions:
   - Build artifacts (`target/`, `dist/`)
-  - Generated files (Markdown from `scripts/generate_docs`, `web/styles.css` from `make pages`)
+  - Generated files (anything machine-produced — e.g., Markdown from `scripts/generate_docs`, `web/styles.css` from `make pages`, lock files, tool-exported assets)
   - External dependencies (`node_modules/`)
 
 ## Auditing

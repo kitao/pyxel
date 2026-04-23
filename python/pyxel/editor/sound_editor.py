@@ -25,6 +25,7 @@ class SoundEditor(EditorBase):
     #   speed_var
     #   octave_var
     #   note_var
+    #   should_loop_var
     #   is_playing_var
 
     def __init__(self, parent):

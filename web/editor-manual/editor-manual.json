@@ -51,7 +51,18 @@
   ],
   "ui": {
     "title": {
-      "en": "Pyxel Editor Manual"
+      "en": "Pyxel Editor Manual",
+      "cn": "Pyxel Editor 手册",
+      "de": "Pyxel Editor Handbuch",
+      "es": "Manual de Pyxel Editor",
+      "fr": "Manuel de Pyxel Editor",
+      "it": "Manuale di Pyxel Editor",
+      "ja": "Pyxel Editor マニュアル",
+      "ko": "Pyxel Editor 매뉴얼",
+      "pt": "Manual do Pyxel Editor",
+      "ru": "Руководство Pyxel Editor",
+      "tr": "Pyxel Editor Kılavuzu",
+      "uk": "Посібник Pyxel Editor"
     },
     "subtitle": {
       "en": "Manual for the {0} resource editor.",
@@ -116,7 +127,7 @@
       "es": "Pyxel Editor es la herramienta de edición de recursos integrada en Pyxel. Consta de los siguientes 4 editores, que se pueden alternar mediante los botones de editor en la parte superior de la pantalla.",
       "fr": "Pyxel Editor est l'outil d'édition de ressources intégré à Pyxel. Il se compose de 4 éditeurs, accessibles via les boutons d'éditeur en haut de l'écran.",
       "it": "Pyxel Editor è lo strumento di modifica delle risorse integrato in Pyxel. È composto da 4 editor, selezionabili tramite i pulsanti nella parte superiore dello schermo.",
-      "ja": "Pyxel Editorは、Pyxelに内蔵されたリソース編集ツールです。以下の4つのエディタで構成されており、画面上部のエディタボタンで切り替えて使用します。",
+      "ja": "Pyxel Editor は、Pyxel に内蔵されたリソース編集ツールです。以下の 4 つのエディタで構成されており、画面上部のエディタボタンで切り替えて使用します。",
       "ko": "Pyxel Editor는 Pyxel에 내장된 리소스 편집 도구입니다. 아래 4개의 에디터로 구성되어 있으며, 화면 상단의 에디터 버튼으로 전환하여 사용합니다.",
       "pt": "O Pyxel Editor é a ferramenta de edição de recursos integrada ao Pyxel. É composto por 4 editores, alternados pelos botões na parte superior da tela.",
       "ru": "Pyxel Editor — встроенный инструмент для редактирования ресурсов Pyxel. Он состоит из 4 редакторов, переключение между которыми осуществляется кнопками в верхней части экрана.",
@@ -144,7 +155,7 @@
       "es": "Pyxel Editor se inicia con el siguiente comando:\n{0}\nSi el archivo de recursos Pyxel (.pyxres) especificado existe, se cargará; si no existe, se creará uno nuevo con el nombre indicado. Si se omite el nombre del archivo, se creará {1}.",
       "fr": "Pyxel Editor se lance avec la commande suivante :\n{0}\nSi le fichier de ressources Pyxel (.pyxres) spécifié existe, il sera chargé. Sinon, un nouveau fichier sera créé avec le nom indiqué. Si aucun nom de fichier n'est spécifié, {1} sera créé.",
       "it": "Pyxel Editor si avvia con il seguente comando:\n{0}\nSe il file di risorse Pyxel (.pyxres) specificato esiste, verrà caricato; in caso contrario, verrà creato un nuovo file con il nome indicato. Se il nome del file viene omesso, verrà creato {1}.",
-      "ja": "Pyxel Editorは次のコマンドで起動します：\n{0}\n指定したPyxelリソースファイル（.pyxres）が存在する場合はそのファイルが読み込まれ、存在しない場合は指定した名前で新規作成されます。ファイル名を省略した場合は {1} が作成されます。",
+      "ja": "Pyxel Editor は次のコマンドで起動します：\n{0}\n指定した Pyxel リソースファイル（.pyxres）が存在する場合はそのファイルが読み込まれ、存在しない場合は指定した名前で新規作成されます。ファイル名を省略した場合は {1} が作成されます。",
       "ko": "Pyxel Editor는 다음 명령으로 실행합니다:\n{0}\n지정한 Pyxel 리소스 파일(.pyxres)이 존재하면 해당 파일을 불러오고, 존재하지 않으면 지정한 이름으로 새로 생성됩니다. 파일명을 생략하면 {1}이 생성됩니다.",
       "pt": "O Pyxel Editor é iniciado com o seguinte comando:\n{0}\nSe o arquivo de recursos Pyxel (.pyxres) especificado existir, ele será carregado; caso contrário, um novo arquivo será criado com o nome especificado. Se o nome do arquivo for omitido, {1} será criado.",
       "ru": "Pyxel Editor запускается командой:\n{0}\nЕсли указанный файл ресурсов Pyxel (.pyxres) существует, он будет загружен. В противном случае будет создан новый файл с указанным именем. Если имя файла не указано, будет создан файл {1}.",
@@ -200,7 +211,7 @@
       "es": "El archivo de recursos creado se carga desde una aplicación Pyxel mediante la función {0}.",
       "fr": "Le fichier de ressources créé peut être chargé dans une application Pyxel avec la fonction {0}.",
       "it": "Il file di risorse creato può essere caricato dall'applicazione Pyxel tramite la funzione {0}.",
-      "ja": "作成したリソースファイルは、Pyxelアプリケーションから {0} 関数で読み込んで使用します。",
+      "ja": "作成したリソースファイルは、Pyxel アプリケーションから {0} 関数で読み込んで使用します。",
       "ko": "작성한 리소스 파일은 Pyxel 애플리케이션에서 {0} 함수로 불러와 사용합니다.",
       "pt": "O arquivo de recursos criado pode ser carregado e utilizado em uma aplicação Pyxel com a função {0}.",
       "ru": "Созданный файл ресурсов загружается в приложении Pyxel с помощью функции {0}.",
@@ -340,7 +351,7 @@
       "es": "Al arrastrar y soltar archivos de imagen como PNG o JPG en el editor de imágenes, la imagen se carga en la posición del área de edición. Los colores se convierten automáticamente a la paleta de colores de Pyxel y las partes que excedan el banco de imágenes se recortan.",
       "fr": "Glissez-déposez un fichier image (PNG, JPG, etc.) dans l'éditeur d'images pour charger l'image à la position de la zone d'édition. Les couleurs sont automatiquement converties vers la palette Pyxel, et les parties dépassant la banque d'images sont tronquées.",
       "it": "Trascinando un file immagine (PNG, JPG, ecc.) nell'editor immagini, l'immagine viene caricata nella posizione dell'area di modifica. I colori dell'immagine originale vengono convertiti automaticamente nella palette colori di Pyxel e le parti che eccedono il banco immagini vengono tagliate.",
-      "ja": "PNG、JPGなどの画像ファイルをイメージエディタにドラッグ＆ドロップすると、編集エリアの位置に画像が読み込まれます。元画像の色はPyxelのカラーパレットに自動変換され、イメージバンクの範囲を超える部分は切り捨てられます。",
+      "ja": "PNG、JPG などの画像ファイルをイメージエディタにドラッグ＆ドロップすると、編集エリアの位置に画像が読み込まれます。元画像の色は Pyxel のカラーパレットに自動変換され、イメージバンクの範囲を超える部分は切り捨てられます。",
       "ko": "PNG, JPG 등의 이미지 파일을 이미지 에디터에 드래그 앤 드롭하면 편집 영역 위치에 이미지가 불러와집니다. 원본 이미지의 색상은 Pyxel 컬러 팔레트로 자동 변환되며, 이미지 뱅크 범위를 초과하는 부분은 잘립니다.",
       "pt": "Ao arrastar e soltar arquivos de imagem como PNG ou JPG no editor de imagem, a imagem será carregada na posição da área de edição. As cores da imagem original são convertidas automaticamente para a paleta de cores do Pyxel, e as partes que excedem o banco de imagens são cortadas.",
       "ru": "Перетащите файл изображения (PNG, JPG и др.) в редактор изображений, чтобы загрузить его в область редактирования. Цвета исходного изображения автоматически преобразуются в палитру Pyxel, а части, выходящие за границы банка, обрезаются.",
@@ -556,20 +567,6 @@
       "ru": "Ноты можно вводить с клавиатуры ПК. Верхний ряд (QWE + цифры) и нижний ряд (ZXC + ASD) соответствуют одной октаве фортепианной клавиатуры каждый, покрывая 2 октавы одновременно. Белые клавиши — ноты До-Ре-Ми-Фа-Соль-Ля-Си, серые — диезы. Начальная октава (0–3) выбирается на панели октав.",
       "tr": "PC klavyesiyle nota girebilirsiniz. Üst sıra (QWE satırı + rakam satırı) ve alt sıra (ZXC satırı + ASD satırı) birer oktavlık piyano tuşlarına karşılık gelir ve aynı anda 2 oktavı kapsar. Beyaz tuşlar Do-Re-Mi-Fa-Sol-La-Si, gri tuşlar diyez notalarına atanmıştır. Oktav çubuğundan başlangıç oktavı (0–3) seçilir.",
       "uk": "Ноти можна вводити з клавіатури ПК. Верхній ряд (QWE + цифри) та нижній ряд (ZXC + ASD) відповідають одній октаві фортепіанної клавіатури кожен, покриваючи 2 октави одночасно. Білі клавіші — ноти До-Ре-Мі-Фа-Соль-Ля-Сі, сірі — дієзи. Початкова октава (0–3) обирається на панелі октав."
-    },
-    "sound_speed_title": {
-      "en": "Speed",
-      "cn": "Speed（速度）",
-      "de": "Speed (Geschwindigkeit)",
-      "es": "Speed (velocidad)",
-      "fr": "Speed (vitesse)",
-      "it": "Speed (velocità)",
-      "ja": "Speed（スピード）",
-      "ko": "Speed(스피드)",
-      "pt": "Speed (velocidade)",
-      "ru": "Speed (скорость)",
-      "tr": "Speed (hız)",
-      "uk": "Speed (швидкість)"
     },
     "sound_speed_body": {
       "en": "Sets the playback duration per note. This is a common setting for all notes, specified in the range 1–99. Smaller values result in faster playback (1 speed unit = 1/120 second; e.g., speed 60 = 0.5 seconds per note). For sound effects, 1–9 is typical; for melodies, 10 or higher is recommended.",

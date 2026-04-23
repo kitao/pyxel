@@ -40,6 +40,7 @@ def draw_gamepad_cross(x, y, color):
     x3 = x2 + CROSS_ARM_WIDTH - 1
     x4 = x3 + CROSS_ARM_LENGTH
 
+    # Cross is symmetric, reuse x coordinates as y
     y1 = x1
     y2 = x2
     y3 = x3

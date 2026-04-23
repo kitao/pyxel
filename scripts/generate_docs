@@ -541,7 +541,7 @@ class JsEval:
 
     def _resolve_icon_table_arg(self, inner):
         inner = inner.strip()
-        # data.xxx.map(b => ({icon: b.icon, key: b.key || "—", desc: b.desc}))
+        # data.xxx.map(b => ({icon: b.icon, key: b.key || <fallback>, desc: b.desc}))
         m = re.match(r"data\.(\w+)\.map\(", inner)
         if m:
             return self._data.get(m.group(1), [])

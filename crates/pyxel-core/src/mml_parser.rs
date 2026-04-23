@@ -860,13 +860,13 @@ mod tests {
 
     #[test]
     fn test_volume_value() {
-        // V127 → level = 1.0
+        // V127 -> level = 1.0
         let cmds = parse("V127 C");
         assert!(cmds
             .iter()
             .any(|cmd| matches!(cmd, MmlCommand::Volume { level } if (*level - 1.0).abs() < 1e-4)));
 
-        // V0 → level = 0.0
+        // V0 -> level = 0.0
         let cmds = parse("V0 C");
         assert!(cmds
             .iter()
@@ -879,7 +879,7 @@ mod tests {
     fn test_quantize() {
         let cmds = parse("Q50 C");
         let qvals = quantize_commands(&cmds);
-        // Q50 → gate_ratio = 0.5
+        // Q50 -> gate_ratio = 0.5
         assert!(
             qvals.iter().any(|&r| (r - 0.5).abs() < 1e-4),
             "expected gate_ratio 0.5, got {qvals:?}"
@@ -1119,7 +1119,7 @@ mod tests {
 
     #[test]
     fn test_err_note_length_out_of_range_falls_back() {
-        // L0 and L193 are out of range — parser silently uses default length
+        // L0 and L193 are out of range - parser silently uses default length
         let cmds_l0 = parse("L0 C");
         let cmds_default = parse("C");
         assert_eq!(note_commands(&cmds_l0), note_commands(&cmds_default));
@@ -1146,7 +1146,7 @@ mod tests {
     fn test_total_duration_sec_quarter_note_at_120bpm() {
         let cmds = parse("T120 C4");
         let sec = total_duration_sec(&cmds).unwrap();
-        // Quarter note at 120 BPM ≈ 0.5 seconds
+        // Quarter note at 120 BPM ~= 0.5 seconds
         assert!((sec - 0.5).abs() < 0.001, "expected ~0.5, got {sec}");
     }
 
@@ -1154,7 +1154,7 @@ mod tests {
     fn test_total_duration_sec_tempo_change() {
         let cmds = parse("T120 C4 T60 C4");
         let sec = total_duration_sec(&cmds).unwrap();
-        // 0.5s (120bpm quarter) + 1.0s (60bpm quarter) ≈ 1.5s
+        // 0.5s (120bpm quarter) + 1.0s (60bpm quarter) ~= 1.5s
         assert!((sec - 1.5).abs() < 0.01, "expected ~1.5, got {sec}");
     }
 
@@ -1181,7 +1181,7 @@ mod tests {
         let cmds = parse("T120 [[C4]2]3");
         let sec = total_duration_sec(&cmds).unwrap();
         let single = total_duration_sec(&parse("T120 C4")).unwrap();
-        // Inner loop plays 2 times, outer loop plays 3 times → 6 total notes
+        // Inner loop plays 2 times, outer loop plays 3 times -> 6 total notes
         assert!(
             (sec - single * 6.0).abs() < 0.01,
             "expected ~{}, got {sec}",

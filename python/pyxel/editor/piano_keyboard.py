@@ -54,14 +54,15 @@ _WHITE_KEY_RANGES = [
 ]
 
 # Classification of white keys for the playback highlight shape
-_BOTTOM_WHITE_KEYS = {0, 5}  # C, F — below a black key
-_TOP_WHITE_KEYS = {4, 11}  # E, B — above a black key
-_FULL_WHITE_KEYS = {2, 7, 9}  # D, G, A — between two black keys
+_BOTTOM_WHITE_KEYS = {0, 5}  # C, F - below a black key
+_TOP_WHITE_KEYS = {4, 11}  # E, B - above a black key
+_FULL_WHITE_KEYS = {2, 7, 9}  # D, G, A - between two black keys
 
 
 class PianoKeyboard(Widget):
     # Variables:
     #   note_var
+    #   speed_var
     #   octave_var
     #   is_playing_var
     #   help_message_var

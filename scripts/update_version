@@ -32,7 +32,7 @@ def replace_file(path: Path, pattern: str, repl: str) -> None:
 
 def update_version() -> None:
     if len(sys.argv) != 2:
-        print("update_version version")
+        print("Usage: update_version <version>")
         sys.exit(1)
 
     version = sys.argv[1]

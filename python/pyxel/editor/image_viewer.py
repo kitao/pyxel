@@ -13,6 +13,8 @@ class ImageViewer(Widget):
     #   tilemap_index_var
     #   focus_x_var
     #   focus_y_var
+    #   focus_w_var
+    #   focus_h_var
     #   viewport_x_var
     #   viewport_y_var
     #   help_message_var
