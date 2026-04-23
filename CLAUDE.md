@@ -124,7 +124,7 @@ The authoritative Pyxel product names are: Pyxel, Pyxel Editor, Pyxel Showcase, 
 
 - Do not translate any listed product name or alter its casing.
   - e.g., render `Pyxel Editor` as `Pyxel Editor` in every language; never as `pyxel editor` or `ピクセルエディタ`
-- Retain the author-chosen representation of every other proper noun — author handles, work titles, sample filenames — including hyphens, spacing, and casing. Do not mechanically unify them for style consistency.
+- Retain the author-chosen representation of every other proper noun — author handles, work titles, sample filenames — including hyphens, spacing, and casing; do not mechanically unify them for style consistency.
   - e.g., keep `laser-jetman.html` hyphenated; do not rename author-titled examples to force a `Pyxel`-prefixed schema
 
 #### Release Notes

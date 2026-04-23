@@ -1,3 +1,4 @@
+use pyo3::exceptions::PyValueError;
 use pyo3::prelude::*;
 
 use crate::font_wrapper::Font;
@@ -247,7 +248,7 @@ fn image(img: u32) -> PyResult<Image> {
         .get(img as usize)
         .copied()
         .map(Image::wrap)
-        .ok_or_else(|| pyo3::exceptions::PyValueError::new_err("Invalid image index"))
+        .ok_or_else(|| PyValueError::new_err("Invalid image index"))
 }
 
 #[pyfunction]
@@ -260,7 +261,7 @@ fn tilemap(tm: u32) -> PyResult<Tilemap> {
         .get(tm as usize)
         .copied()
         .map(Tilemap::wrap)
-        .ok_or_else(|| pyo3::exceptions::PyValueError::new_err("Invalid tilemap index"))
+        .ok_or_else(|| PyValueError::new_err("Invalid tilemap index"))
 }
 
 pub fn add_graphics_functions(m: &Bound<'_, PyModule>) -> PyResult<()> {
