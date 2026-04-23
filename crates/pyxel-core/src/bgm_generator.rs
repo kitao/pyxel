@@ -1,6 +1,5 @@
-// BGM generator. Shared with Pyxel Composer (the JS frontend that consumes
-// the `*_json` entry points via WASM).
-// Originally derived from Pyxel Composer by frenchbread (https://pyxel-composer.pages.dev/).
+// Shared between Pyxel (https://github.com/kitao/pyxel) and
+// Pyxel Composer (https://pyxel-composer.pages.dev/).
 
 use std::fmt::Write as _;
 
@@ -475,8 +474,6 @@ fn preset_params(preset: i32) -> GeneratorParams {
     PRESETS[idx].clone()
 }
 
-// === MML token / format helpers ===
-
 fn note_name(note: i32) -> (&'static str, i32) {
     let semitone = note.rem_euclid(12);
     let octave = note.div_euclid(12) + 2;
@@ -754,8 +751,6 @@ fn format_tokens(tokens: &[String]) -> String {
     out.trim().to_string()
 }
 
-// === Chord progression resolution ===
-
 fn parse_notes_bits(s: &str) -> [i32; 12] {
     let mut out = [0; 12];
     for (i, ch) in s.bytes().take(12).enumerate() {
@@ -863,8 +858,6 @@ fn chord_bits_per_step(progression: &[OwnedChordEntry]) -> Vec<[i32; 12]> {
 fn rhythm_has_16th(line: &str) -> bool {
     line.as_bytes().windows(2).any(|w| w == b"00")
 }
-
-// === Melody / harmony generation ===
 
 fn build_chord_note_pool(bits: &[i32; 12], transpose: i32, lowest: i32) -> Vec<(i32, i32)> {
     let mut note_highest = None;
@@ -1385,8 +1378,6 @@ fn generate_melody(
     }
 }
 
-// === Bass / submelody / drums ===
-
 fn generate_bass(base: i32, bits_per_step: &[[i32; 12]], key_shift: i32) -> Vec<Option<i32>> {
     let mut notes = vec![Some(-1); TOTAL_STEPS];
     let bass_idx = base as usize;
@@ -1659,8 +1650,6 @@ fn generate_drums(drums: i32) -> Vec<Option<i32>> {
         .collect()
 }
 
-// === MML compilation ===
-
 fn current_bar_mut(bar_tokens: &mut [Vec<String>]) -> &mut Vec<String> {
     bar_tokens
         .last_mut()
@@ -1828,8 +1817,6 @@ fn notes_to_mml(
 fn silent_channel_mml(tempo: i32) -> String {
     format!("T{tempo} L16 @ENV1{{127}} Q100 V112 @0 @ENV1 @VIB0")
 }
-
-// === Structured generation pipeline (params -> BgmData -> MML) ===
 
 fn make_channel(notes: Vec<Option<i32>>, tone_idx: i32, volume: i32, quantize: i32) -> BgmChannel {
     let len = notes.len();
@@ -2056,8 +2043,6 @@ fn compile_to_mml(data: &BgmData) -> Vec<String> {
         .collect()
 }
 
-// === Public API (one-shot + Composer JSON) ===
-
 // One-shot entry: pick a preset, override transpose/instrumentation, return MML strings.
 // Backend for `pyxel.gen_bgm()`; also reachable from Composer via the `*_json` wrappers below.
 pub fn generate_bgm_mml(
@@ -2109,8 +2094,6 @@ pub fn preset_progression_json(preset: i32) -> String {
         .collect();
     serde_json::to_string(&defs).expect("Failed to serialize preset progressions")
 }
-
-// === Pyxel integration ===
 
 #[cfg(pyxel_core)]
 impl Pyxel {

@@ -13,12 +13,14 @@
     <script src="../shared.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/highlight.min.js"></script>
   </head>
+
   <body class="page min-h-full">
     <main class="page-container" id="app">
       <div class="flex justify-center items-center py-12 text-gray-500 text-sm">
         Loading...
       </div>
     </main>
+
     <script>
       let data = null;
       let lang = "en";
@@ -43,14 +45,25 @@
         // Header
         const header = document.createElement("header");
         header.className = "flex items-start gap-4 mb-6";
+
         const titleBlock = document.createElement("div");
         titleBlock.className = "flex-1 min-w-0 order-first";
-        titleBlock.innerHTML = `<h1 class="font-semibold text-2xl tracking-tight" id="page-title"></h1>
-          <p class="mt-2 text-gray-300 text-sm" id="page-subtitle"></p>`;
+
+        const h1 = document.createElement("h1");
+        h1.className = "font-semibold text-2xl tracking-tight";
+        h1.id = "page-title";
+        titleBlock.appendChild(h1);
+
+        const subtitle = document.createElement("p");
+        subtitle.className = "mt-2 text-gray-300 text-sm";
+        subtitle.id = "page-subtitle";
+        titleBlock.appendChild(subtitle);
+
         const langSelect = buildLangSelector(data.languages, lang, (v) => {
           lang = v;
           updateTexts();
         });
+
         header.appendChild(langSelect);
         header.appendChild(titleBlock);
         app.appendChild(header);
