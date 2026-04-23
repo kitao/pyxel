@@ -27,11 +27,11 @@ class SoundEditor(EditorBase):
     #   note_var
     #   should_loop_var
     #   is_playing_var
+    #   help_message_var
 
     def __init__(self, parent):
         super().__init__(parent)
         self._history_data = None
-        self.copy_var("help_message_var", parent)
 
         # Initialize field cursor
         self.field_cursor = FieldCursor(

@@ -166,7 +166,7 @@ def compare_or_update_all(name, results, refs_dir, update_references):
         pytest.fail("\n".join(failures))
 
 
-# Capture plans — frame numbers and optional input injection.
+# Capture plans: frame numbers and optional input injection.
 # Examples are grouped by execution mode: pyxel.run() without assets,
 # pyxel.run() with asset loading, pyxel.show()-based (no update/draw loop),
 # and while+flip() loop.

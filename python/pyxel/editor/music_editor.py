@@ -17,7 +17,6 @@ class MusicEditor(EditorBase):
 
     def __init__(self, parent):
         super().__init__(parent)
-        self.copy_var("help_message_var", parent)
 
         self.new_var("is_playing_var", False)
 
