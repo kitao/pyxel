@@ -30,7 +30,7 @@ Execute the following phases in order. A later phase cannot start until the earl
 4. When delegating to sub-agents, hand over the full rule text verbatim, the full file list, and the cross-file dependencies each group must cover; shortening any of these causes silent sampling.
    - e.g., the HTML ↔ i18n JSON pairing, the Rust core ↔ binding ↔ pyi pairing, or the translation JSON keys across languages, each as an explicit pair list with file paths
 5. **Run the cross-file consistency phase before claiming verification.** Verify every file pair or group sharing a concern as an explicit matrix row with evidence; a pair left out counts as a skipped check.
-   - e.g., sibling files (`*_wrapper.rs`, `editor/*.py`), HTML ↔ i18n JSON key sets, Rust core ↔ binding signatures, the `languages` array across `web/**/*.json`
+   - e.g., sibling files (`*_wrapper.rs`, `editor/*.py`), HTML ↔ i18n JSON key sets, Rust core ↔ binding ↔ `python/pyxel/__init__.pyi` signatures, widget `# Variables:` block ↔ `copy_var` / `new_var` usage, the `languages` array across `web/**/*.json`
 6. Run a design-intent self-check before surfacing any finding as a fix; any hit marks it false positive, not a proposal.
    - e.g., proper-noun casing, parallel-mirror designs, environment-diff absorption, independent-distribution artifacts, defensive code
 7. Gate completion with `superpowers:verification-before-completion`; author the matrix and plan with `superpowers:writing-plans`.
@@ -89,7 +89,7 @@ Execute the following phases in order. A later phase cannot start until the earl
 ### Blank Lines
 
 - Use exactly one blank line to separate meaningful chunks; avoid runs of blank lines or blank lines within a chunk.
-  - e.g., one blank line between functions; no double-blank between imports; no blank line between a function signature and its first statement
+  - e.g., one blank line between class methods; no double-blank between imports; no blank line between a function signature and its first statement; language formatter output (`make format`) takes precedence for language-specific conventions
 
 ### Consistency
 
@@ -99,6 +99,8 @@ Execute the following phases in order. A later phase cannot start until the earl
   - e.g., function and argument names in Rust bindings that mirror the Python API rather than Rust conventions; call sites for SDL2 C functions that use the C-style names
 - Audit each file in an exception group against the other files in the same group, not against the rest of the codebase, and flag intra-group style, structure, or naming inconsistencies.
   - e.g., compare every `crates/pyxel-binding/src/*_wrapper.rs` against the others in that directory, not against `pyxel-core` sources
+- Parallel mirror is not duplication; a deliberate shape repeated across sibling files to preserve API symmetry or parallel data structures is intentional, not a DRY target.
+  - e.g., binding `*_wrapper.rs` API mirror of Python API, image ↔ tilemap 13 drawing-primitive correspondence, `languages` array independently loaded by each i18n JSON
 
 ### Documentation
 
