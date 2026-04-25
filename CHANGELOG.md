@@ -1,8 +1,10 @@
 # Change Log
 
+## 2.9.3
+
 ## 2.9.2
 
-- Updated the bundled Pyxel wheel to match the latest release
+- Updated the bundled Pyxel wheel to 2.9.2
 
 ## 2.9.1
 
@@ -74,8 +76,10 @@
 
 ## 2.8.6
 
-- Cleaned up code style across the codebase
-- Fixed WASM key sticking on rapid input
+- Refactored Canvas blit paths and palette handling
+- Constrained the chord note range in the BGM generator
+- Renamed web i18n variables for clarity
+- Fixed WASM key sticking by switching to a scancode correction map
 
 ## 2.8.5
 

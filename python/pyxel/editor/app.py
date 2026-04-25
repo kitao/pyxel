@@ -106,6 +106,7 @@ class App(Widget):
         ]
         self.__on_editor_button_change(self.editor_type_var)
 
+        # Set event listeners
         self.add_event_listener("update", self.__on_update)
         self.add_event_listener("draw", self.__on_draw)
 

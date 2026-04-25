@@ -28,6 +28,10 @@ class SoundEditor(EditorBase):
     #   should_loop_var
     #   is_playing_var
     #   help_message_var
+    #
+    # Events:
+    #   undo (data)
+    #   redo (data)
 
     def __init__(self, parent):
         super().__init__(parent)
