@@ -22,9 +22,9 @@ use crate::{
     sound::Sound,
 };
 
-// Public types
+// Public types (struct field names form the Composer JSON wire contract)
 
-// Generation parameters. Field names form the Composer JSON contract.
+// Generation parameters.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GeneratorParams {
     pub transpose: i32,        // -5..+5
@@ -66,8 +66,7 @@ pub struct BgmTone {
     pub drum_notes: Vec<i32>, // pitch sweep sequence for drums (empty=normal tone)
 }
 
-// Per-channel note and control data. Field names form the Composer JSON contract.
-// All vectors are sparse: None=continue previous.
+// Per-channel note and control data. All vectors are sparse: None=continue previous.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct BgmChannel {
     pub notes: Vec<Option<i32>>,   // None=sustain, -1=rest, 0+=pitch/drum key
@@ -1937,9 +1936,9 @@ fn build_tone(idx: usize) -> BgmTone {
 
 // BGM assembly
 
-// Determinism-sensitive: the RNG call sequence inside this function (and
-// everything it transitively calls on `rng`) is part of the public
-// behavioral contract. See the file header.
+// Assemble BgmData from GeneratorParams + seed: bass, melody, optional
+// submelody and drum per `instrumentation`, plus the tone metadata that
+// `compile_to_mml` consumes.
 fn generate_bgm(params: &GeneratorParams, seed: u64) -> BgmData {
     assert!((-5..=5).contains(&params.transpose), "invalid transpose");
     assert!(
@@ -1974,9 +1973,6 @@ fn generate_bgm(params: &GeneratorParams, seed: u64) -> BgmData {
     let use_16th = params.melo_use16;
     let lowest = params.melo_lowest_note;
 
-    // From this point, every `rng` call (count, order, and range arguments)
-    // feeds the deterministic output contract — do not reorder or add/remove
-    // calls without regenerating `test_determinism_snapshot` intentionally.
     let mut rng = Xoshiro256StarStar::seed_from_u64(seed);
 
     let progression = resolve_progression(chord, params.custom_progression.as_deref());

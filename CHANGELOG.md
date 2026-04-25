@@ -2,6 +2,12 @@
 
 ## 2.9.3
 
+- Reorganized BGM generator internals and added determinism snapshot test
+- Refactored editor widgets and cleaned up state handling
+- Simplified Rust binding error handling
+- Refined web pages and translation terminology
+- Refined CLAUDE.md coding policy structure and wording
+
 ## 2.9.2
 
 - Updated the bundled Pyxel wheel to 2.9.2
