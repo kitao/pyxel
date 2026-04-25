@@ -360,8 +360,8 @@
     },
     "tilemap_title": {
       "en": "Tilemap Editor",
-      "cn": "图块地图编辑器",
-      "de": "Kachelkarten-Editor",
+      "cn": "瓦片地图编辑器",
+      "de": "Tilemap-Editor",
       "es": "Editor de tilemaps",
       "fr": "Éditeur de tilemap",
       "it": "Editor tilemap",
@@ -374,8 +374,8 @@
     },
     "tilemap_body": {
       "en": "A mode for arranging image bank images as tile patterns and editing tilemaps.",
-      "cn": "将图像库的图像作为图块图案排列，编辑图块地图。",
-      "de": "Modus zur Bearbeitung von Kachelkarten durch Platzierung von Bildbankgrafiken als Kachelmuster.",
+      "cn": "将图像库的图像作为图块图案排列，编辑瓦片地图。",
+      "de": "Modus zur Bearbeitung von Tilemaps durch Platzierung von Bildbankgrafiken als Kachelmuster.",
       "es": "Modo para editar tilemaps colocando imágenes del banco de imágenes como patrones de tiles.",
       "fr": "Mode d'édition des tilemaps en plaçant les images de la banque d'images comme motifs de tuiles.",
       "it": "Modalità per disporre le immagini del banco immagini come pattern di tile e modificare la tilemap.",
@@ -458,8 +458,8 @@
     },
     "tilemap_tmx_body": {
       "en": "Drag and drop a TMX file created with Tiled Map Editor ({0}) onto the Tilemap Editor to load the contents of layer 0 at the editing area position.",
-      "cn": "将 Tiled Map Editor（{0}）创建的 TMX 文件拖放到图块地图编辑器，即可在编辑区域的位置加载图层 0 的内容。",
-      "de": "Durch Drag & Drop einer mit Tiled Map Editor ({0}) erstellten TMX-Datei in den Kachelkarten-Editor wird der Inhalt von Layer 0 an der Position des Bearbeitungsbereichs geladen.",
+      "cn": "将 Tiled Map Editor（{0}）创建的 TMX 文件拖放到瓦片地图编辑器，即可在编辑区域的位置加载图层 0 的内容。",
+      "de": "Durch Drag & Drop einer mit Tiled Map Editor ({0}) erstellten TMX-Datei in den Tilemap-Editor wird der Inhalt von Layer 0 an der Position des Bearbeitungsbereichs geladen.",
       "es": "Al arrastrar y soltar un archivo TMX creado con Tiled Map Editor ({0}) en el editor de tilemaps, el contenido de la capa 0 se carga en la posición del área de edición.",
       "fr": "Glissez-déposez un fichier TMX créé avec Tiled Map Editor ({0}) dans l'éditeur de tilemap pour charger le contenu du calque 0 à la position de la zone d'édition.",
       "it": "Trascinando un file TMX creato con Tiled Map Editor ({0}) nell'editor tilemap, il contenuto del livello 0 viene caricato nella posizione dell'area di modifica.",
@@ -794,8 +794,8 @@
     },
     "tilemap_canvas_body": {
       "en": "The editing area selected in the tilemap view is displayed magnified. Place tile images selected in the tile image view. Drawing tools and selection shortcuts are shared with the Image Editor. Note that all cells default to tile (0,0), so it is recommended to keep image bank position (0,0) empty.",
-      "cn": "在图块地图视图中选择的编辑区域以放大形式显示。放置在图块图像视图中选择的图块图像。绘制工具和范围选择的快捷键与图像编辑器通用。注意：所有单元格的初始值为图块(0,0)，建议将图像库的(0,0)留空。",
-      "de": "Der in der Kachelkartenansicht ausgewählte Bearbeitungsbereich wird vergrößert dargestellt. Platzieren Sie das in der Kachelbild-Ansicht gewählte Kachelbild. Zeichenwerkzeuge und Bereichsauswahl-Kürzel sind mit dem Bildeditor identisch. Hinweis: Da alle Zellen initial Kachel (0,0) sind, wird empfohlen, Position (0,0) der Bildbank leer zu lassen.",
+      "cn": "在瓦片地图视图中选择的编辑区域以放大形式显示。放置在图块图像视图中选择的图块图像。绘制工具和范围选择的快捷键与图像编辑器通用。注意：所有单元格的初始值为图块(0,0)，建议将图像库的(0,0)留空。",
+      "de": "Der in der Tilemap-Ansicht ausgewählte Bearbeitungsbereich wird vergrößert dargestellt. Platzieren Sie das in der Kachelbild-Ansicht gewählte Kachelbild. Zeichenwerkzeuge und Bereichsauswahl-Kürzel sind mit dem Bildeditor identisch. Hinweis: Da alle Zellen initial Kachel (0,0) sind, wird empfohlen, Position (0,0) der Bildbank leer zu lassen.",
       "es": "El área de edición seleccionada en la vista del tilemap se muestra ampliada. Coloque la imagen de tile seleccionada en la vista de imagen de tiles. Los atajos de herramientas de dibujo y selección de rango son los mismos que en el editor de imágenes. El valor inicial de todas las celdas es el tile (0,0), por lo que se recomienda dejar vacía la posición (0,0) del banco de imágenes.",
       "fr": "La zone d'édition sélectionnée dans la vue de la tilemap est affichée en zoom. Placez les tuiles sélectionnées dans la vue des tuiles. Les raccourcis des outils de dessin et de sélection sont les mêmes que dans l'éditeur d'images. La valeur initiale de toutes les cellules étant la tuile (0,0), il est recommandé de laisser la position (0,0) de la banque d'images vide.",
       "it": "L'area di modifica selezionata nella vista tilemap viene mostrata ingrandita. Posiziona le immagini tile selezionate nella vista immagini tile. Le scorciatoie per gli strumenti di disegno e la selezione intervallo sono le stesse dell'editor immagini. Si consiglia di lasciare vuota la posizione (0,0) del banco immagini, poiché il valore iniziale di tutte le celle è il tile (0,0).",
@@ -808,8 +808,8 @@
     },
     "tilemap_mapview_body": {
       "en": "A thumbnail view of the entire tilemap. The white frame indicates the current editing area.",
-      "cn": "图块地图整体的缩小显示。白色边框表示当前编辑区域。",
-      "de": "Verkleinerte Ansicht der gesamten Kachelkarte. Der weiße Rahmen zeigt den aktuellen Bearbeitungsbereich.",
+      "cn": "瓦片地图整体的缩小显示。白色边框表示当前编辑区域。",
+      "de": "Verkleinerte Ansicht der gesamten Tilemap. Der weiße Rahmen zeigt den aktuellen Bearbeitungsbereich.",
       "es": "Vista reducida del tilemap completo. El marco blanco indica el área de edición actual.",
       "fr": "Vue réduite de la tilemap complète. Le cadre blanc indique la zone d'édition actuelle.",
       "it": "Vista ridotta dell'intera tilemap. La cornice bianca indica l'area di modifica corrente.",
@@ -836,8 +836,8 @@
     },
     "tilemap_tmnum_body": {
       "en": "Switch the target tilemap (0–7).",
-      "cn": "切换编辑对象的图块地图（0~7）。",
-      "de": "Wechselt die zu bearbeitende Kachelkarte (0~7).",
+      "cn": "切换编辑对象的瓦片地图（0~7）。",
+      "de": "Wechselt die zu bearbeitende Tilemap (0~7).",
       "es": "Cambie el tilemap a editar (0~7).",
       "fr": "Change la tilemap à éditer (0~7).",
       "it": "Cambia la tilemap in modifica (0~7).",
@@ -1276,8 +1276,8 @@
       {
         "label": {
           "en": "Tilemap Canvas",
-          "cn": "图块地图画布",
-          "de": "Kachelkarten-Canvas",
+          "cn": "瓦片地图画布",
+          "de": "Tilemap-Canvas",
           "es": "Lienzo de tilemap",
           "fr": "Canevas de tilemap",
           "it": "Canvas tilemap",
@@ -1312,8 +1312,8 @@
       {
         "label": {
           "en": "Tilemap View",
-          "cn": "图块地图视图",
-          "de": "Kachelkartenansicht",
+          "cn": "瓦片地图视图",
+          "de": "Tilemap-Ansicht",
           "es": "Vista del tilemap",
           "fr": "Vue de la tilemap",
           "it": "Vista tilemap",
@@ -1331,8 +1331,8 @@
         "anchor": "center",
         "desc": {
           "en": "Thumbnail of the entire tilemap. The white frame shows the current editing area, movable with arrow keys",
-          "cn": "图块地图整体的缩小显示。白色边框表示当前编辑区域，可用方向键移动",
-          "de": "Verkleinerte Ansicht der gesamten Kachelkarte. Der weiße Rahmen zeigt den Bearbeitungsbereich und kann mit den Pfeiltasten verschoben werden",
+          "cn": "瓦片地图整体的缩小显示。白色边框表示当前编辑区域，可用方向键移动",
+          "de": "Verkleinerte Ansicht der gesamten Tilemap. Der weiße Rahmen zeigt den Bearbeitungsbereich und kann mit den Pfeiltasten verschoben werden",
           "es": "Vista reducida del tilemap completo. El marco blanco indica el área de edición actual, que se puede mover con las teclas de dirección",
           "fr": "Vue réduite de la tilemap complète. Le cadre blanc indique la zone d'édition, déplaçable avec les touches fléchées",
           "it": "Vista ridotta dell'intera tilemap. La cornice bianca indica l'area di modifica corrente, spostabile con i tasti freccia",
@@ -1384,8 +1384,8 @@
       {
         "label": {
           "en": "Tilemap Number",
-          "cn": "图块地图编号",
-          "de": "Kachelkartennummer",
+          "cn": "瓦片地图编号",
+          "de": "Tilemap-Nummer",
           "es": "Número de tilemap",
           "fr": "Numéro de tilemap",
           "it": "Numero tilemap",
@@ -1403,8 +1403,8 @@
         "anchor": "bottom",
         "desc": {
           "en": "Switch the target tilemap (0–7)",
-          "cn": "切换编辑对象的图块地图（0~7）",
-          "de": "Wechselt die zu bearbeitende Kachelkarte (0~7)",
+          "cn": "切换编辑对象的瓦片地图（0~7）",
+          "de": "Wechselt die zu bearbeitende Tilemap (0~7)",
           "es": "Cambie el tilemap a editar (0~7)",
           "fr": "Change la tilemap à éditer (0~7)",
           "it": "Cambia la tilemap in modifica (0~7)",
@@ -2435,8 +2435,8 @@
     {
       "label": {
         "en": "Tilemaps",
-        "cn": "图块地图数量",
-        "de": "Anzahl Kachelkarten",
+        "cn": "瓦片地图数量",
+        "de": "Anzahl Tilemaps",
         "es": "Número de tilemaps",
         "fr": "Nombre de tilemaps",
         "it": "Numero tilemap",
@@ -2539,8 +2539,8 @@
       },
       "value": {
         "en": "One per tilemap",
-        "cn": "每个图块地图对应 1 个",
-        "de": "Eine pro Kachelkarte",
+        "cn": "每个瓦片地图对应 1 个",
+        "de": "Eine pro Tilemap",
         "es": "Uno por tilemap",
         "fr": "Une par tilemap",
         "it": "Uno per tilemap",
@@ -3460,8 +3460,8 @@
       "icon": "images/btn_tilemap.png",
       "label": {
         "en": "Tilemap Editor",
-        "cn": "图块地图编辑器",
-        "de": "Kachelkarten-Editor",
+        "cn": "瓦片地图编辑器",
+        "de": "Tilemap-Editor",
         "es": "Editor de tilemaps",
         "fr": "Éditeur de tilemap",
         "it": "Editor tilemap",
@@ -3574,8 +3574,8 @@
       "key": "",
       "desc": {
         "en": "Switch to Tilemap Editor",
-        "cn": "切换到图块地图编辑器",
-        "de": "Zum Kachelkarten-Editor wechseln",
+        "cn": "切换到瓦片地图编辑器",
+        "de": "Zum Tilemap-Editor wechseln",
         "es": "Cambiar al editor de tilemaps",
         "fr": "Basculer vers l'éditeur de tilemap",
         "it": "Passa all'editor tilemap",

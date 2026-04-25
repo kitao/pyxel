@@ -1071,7 +1071,7 @@
                 "ja": "タイルマップを除外。デフォルトは False。",
                 "ko": "타일맵 제외. 기본값은 False.",
                 "pt": "Excluir tilemaps. O padrão é False.",
-                "ru": "Исключить тайловые карты. По умолчанию False.",
+                "ru": "Исключить тайлмапы. По умолчанию False.",
                 "tr": "Tilemap'leri hariç tut. Varsayılan False.",
                 "uk": "Виключити тайлові карти. За замовчуванням False."
               }
@@ -1278,7 +1278,7 @@
                 "ja": "タイルマップを除外。デフォルトは False。",
                 "ko": "타일맵 제외. 기본값은 False.",
                 "pt": "Excluir tilemaps. O padrão é False.",
-                "ru": "Исключить тайловые карты. По умолчанию False.",
+                "ru": "Исключить тайлмапы. По умолчанию False.",
                 "tr": "Tilemap'leri hariç tut. Varsayılan False.",
                 "uk": "Виключити тайлові карти. За замовчуванням False."
               }
@@ -6534,17 +6534,17 @@
               "type": "int",
               "description": {
                 "en": "Instrumentation (0-3). 0: melody+reverb+bass (3ch), 1: melody+bass+drums (3ch), 2: melody+sub+bass (3ch), 3: melody+sub+bass+drums (4ch).",
-                "cn": "编制 (0-3). 0: 旋律+混响+贝斯 (3ch), 1: 旋律+贝斯+鼓 (3ch), 2: 旋律+副旋律+贝斯 (3ch), 3: 旋律+副旋律+贝斯+鼓 (4ch)",
-                "de": "Besetzung (0-3). 0: Melodie+Reverb+Bass (3ch), 1: Melodie+Bass+Drums (3ch), 2: Melodie+Sub+Bass (3ch), 3: Melodie+Sub+Bass+Drums (4ch)",
-                "es": "Instrumentación (0-3). 0: melodía+reverb+bajo (3ch), 1: melodía+bajo+batería (3ch), 2: melodía+sub+bajo (3ch), 3: melodía+sub+bajo+batería (4ch)",
-                "fr": "Instrumentation (0-3). 0: mélodie+reverb+basse (3ch), 1: mélodie+basse+batterie (3ch), 2: mélodie+sub+basse (3ch), 3: mélodie+sub+basse+batterie (4ch)",
-                "it": "Strumentazione (0-3). 0: melodia+reverb+basso (3ch), 1: melodia+basso+batteria (3ch), 2: melodia+sub+basso (3ch), 3: melodia+sub+basso+batteria (4ch)",
-                "ja": "編成 (0-3). 0: メロディ+リバーブ+ベース (3ch), 1: メロディ+ベース+ドラム (3ch), 2: メロディ+サブ+ベース (3ch), 3: メロディ+サブ+ベース+ドラム (4ch)",
-                "ko": "편성 (0-3). 0: 멜로디+리버브+베이스 (3ch), 1: 멜로디+베이스+드럼 (3ch), 2: 멜로디+서브+베이스 (3ch), 3: 멜로디+서브+베이스+드럼 (4ch)",
-                "pt": "Instrumentação (0-3). 0: melodia+reverb+baixo (3ch), 1: melodia+baixo+bateria (3ch), 2: melodia+sub+baixo (3ch), 3: melodia+sub+baixo+bateria (4ch)",
-                "ru": "Инструментовка (0-3). 0: мелодия+реверб+бас (3ch), 1: мелодия+бас+ударные (3ch), 2: мелодия+суб+бас (3ch), 3: мелодия+суб+бас+ударные (4ch)",
-                "tr": "Enstrümantasyon (0-3). 0: melodi+reverb+bas (3ch), 1: melodi+bas+davul (3ch), 2: melodi+sub+bas (3ch), 3: melodi+sub+bas+davul (4ch)",
-                "uk": "Інструментування (0-3). 0: мелодія+реверб+бас (3ch), 1: мелодія+бас+ударні (3ch), 2: мелодія+суб+бас (3ch), 3: мелодія+суб+бас+ударні (4ch)"
+                "cn": "编制 (0-3). 0: 旋律+混响+贝斯 (3ch), 1: 旋律+贝斯+鼓 (3ch), 2: 旋律+副旋律+贝斯 (3ch), 3: 旋律+副旋律+贝斯+鼓 (4ch)。",
+                "de": "Besetzung (0-3). 0: Melodie+Reverb+Bass (3ch), 1: Melodie+Bass+Drums (3ch), 2: Melodie+Sub+Bass (3ch), 3: Melodie+Sub+Bass+Drums (4ch).",
+                "es": "Instrumentación (0-3). 0: melodía+reverb+bajo (3ch), 1: melodía+bajo+batería (3ch), 2: melodía+sub+bajo (3ch), 3: melodía+sub+bajo+batería (4ch).",
+                "fr": "Instrumentation (0-3). 0: mélodie+reverb+basse (3ch), 1: mélodie+basse+batterie (3ch), 2: mélodie+sub+basse (3ch), 3: mélodie+sub+basse+batterie (4ch).",
+                "it": "Strumentazione (0-3). 0: melodia+reverb+basso (3ch), 1: melodia+basso+batteria (3ch), 2: melodia+sub+basso (3ch), 3: melodia+sub+basso+batteria (4ch).",
+                "ja": "編成 (0-3). 0: メロディ+リバーブ+ベース (3ch), 1: メロディ+ベース+ドラム (3ch), 2: メロディ+サブ+ベース (3ch), 3: メロディ+サブ+ベース+ドラム (4ch)。",
+                "ko": "편성 (0-3). 0: 멜로디+리버브+베이스 (3ch), 1: 멜로디+베이스+드럼 (3ch), 2: 멜로디+서브+베이스 (3ch), 3: 멜로디+서브+베이스+드럼 (4ch).",
+                "pt": "Instrumentação (0-3). 0: melodia+reverb+baixo (3ch), 1: melodia+baixo+bateria (3ch), 2: melodia+sub+baixo (3ch), 3: melodia+sub+baixo+bateria (4ch).",
+                "ru": "Инструментовка (0-3). 0: мелодия+реверб+бас (3ch), 1: мелодия+бас+ударные (3ch), 2: мелодия+суб+бас (3ch), 3: мелодия+суб+бас+ударные (4ch).",
+                "tr": "Enstrümantasyon (0-3). 0: melodi+reverb+bas (3ch), 1: melodi+bas+davul (3ch), 2: melodi+sub+bas (3ch), 3: melodi+sub+bas+davul (4ch).",
+                "uk": "Інструментування (0-3). 0: мелодія+реверб+бас (3ch), 1: мелодія+бас+ударні (3ch), 2: мелодія+суб+бас (3ch), 3: мелодія+суб+бас+ударні (4ch)."
               }
             },
             {

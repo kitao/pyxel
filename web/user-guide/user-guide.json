@@ -67,7 +67,7 @@
     "subtitle": {
       "en": "User guide for {0}, a retro game engine for Python.",
       "cn": "{0} 的用户指南，一个针对 Python 的复古游戏引擎。",
-      "de": "Benutzerhandbuch für {0}, eine Retro-Spiel-Engine für Python.",
+      "de": "Benutzerhandbuch für {0}, eine Retro-Spielengine für Python.",
       "es": "Guía de usuario de {0}, un motor de juegos retro para Python.",
       "fr": "Guide utilisateur de {0}, un moteur de jeu rétro pour Python.",
       "it": "Guida utente di {0}, un motore di gioco retrò per Python.",
@@ -81,7 +81,7 @@
     "overview_body": {
       "en": "{0} (/ˈpɪksəl/) is a retro game engine for Python. With simple specifications inspired by retro gaming consoles, such as displaying only 16 colors and supporting 4 sound channels, you can easily enjoy making pixel-art-style games.",
       "cn": "{0}（/ˈpɪksəl/）是一个针对 Python 的复古游戏引擎。其规格受到复古游戏机的启发，例如仅支持 16 种颜色和 4 个声道，同时可以轻松享受制作像素艺术风格游戏的乐趣。",
-      "de": "{0} (/ˈpɪksəl/) ist eine Retro-Spiel-Engine für Python. Die Spezifikationen sind von Retro-Spielkonsolen inspiriert, wie z. B. der Unterstützung von nur 16 Farben und 4 Klangkanälen, sodass Sie ganz einfach pixelartige Spiele erstellen können.",
+      "de": "{0} (/ˈpɪksəl/) ist eine Retro-Spielengine für Python. Die Spezifikationen sind von Retro-Spielkonsolen inspiriert, wie z. B. der Unterstützung von nur 16 Farben und 4 Sound-Kanälen, sodass Sie ganz einfach pixelartige Spiele erstellen können.",
       "es": "{0} (/ˈpɪksəl/) es un motor de juegos retro para Python. Las especificaciones están inspiradas en las consolas de juegos retro, como el soporte para solo 16 colores y 4 canales de sonido, lo que te permite disfrutar fácilmente de la creación de juegos con estilo de arte en píxeles.",
       "fr": "{0} (/ˈpɪksəl/) est un moteur de jeu rétro pour Python. Les spécifications sont inspirées des consoles de jeux rétro, comme le fait de n'afficher que 16 couleurs et de prendre en charge 4 canaux audio, vous permettant ainsi de profiter facilement de la création de jeux au style pixel art.",
       "it": "{0} (/ˈpɪksəl/) è un motore di gioco retrò per Python. Le specifiche sono ispirate alle console di gioco retro, come il supporto di solo 16 colori e 4 canali audio, permettendoti di divertirti facilmente a creare giochi in stile pixel art.",
@@ -221,7 +221,7 @@
     "specs_tilemaps": {
       "en": "8 256x256 tilemaps",
       "cn": "8 个 256x256 瓦片地图",
-      "de": "8 256x256 Kachelkarten",
+      "de": "8 256x256 Tilemaps",
       "es": "8 mapas de teselas de 256x256",
       "fr": "8 cartes de tuiles 256x256",
       "it": "8 mappe a tessere 256x256",
@@ -229,7 +229,7 @@
       "ko": "256x256 타일맵 8개",
       "pt": "8 mapas de ladrilhos 256x256",
       "ru": "8 тайловых карт 256x256",
-      "tr": "8 adet 256x256 döşeme haritası",
+      "tr": "8 adet 256x256 Karo Haritası",
       "uk": "8 тайлмапів 256x256"
     },
     "specs_sounds": {
@@ -907,7 +907,7 @@
     "resources_other_images": {
       "en": "Pyxel images and tilemaps can also be created using the following methods:",
       "cn": "Pyxel 图像和瓦片地图还可以通过以下方法创建：",
-      "de": "Pyxel-Bilder und Kachelkarten können auch mit folgenden Methoden erstellt werden:",
+      "de": "Pyxel-Bilder und Tilemaps können auch mit folgenden Methoden erstellt werden:",
       "es": "Las imágenes y los mapas de teselas de Pyxel también se pueden crear utilizando los siguientes métodos:",
       "fr": "Les images et les cartes de tuiles Pyxel peuvent également être créées en utilisant les méthodes suivantes :",
       "it": "Le immagini e le mappe a tessere di Pyxel possono anche essere create utilizzando i seguenti metodi:",
@@ -921,7 +921,7 @@
     "resources_other_image_set": {
       "en": "Create images or tilemaps from lists of strings with the {0} or {1} functions",
       "cn": "使用 {0} 或 {1} 函数，从字符串列表创建图像或瓦片地图",
-      "de": "Erstellen Sie Bilder oder Kachelkarten aus Listen von Zeichenfolgen mit den Funktionen {0} oder {1}",
+      "de": "Erstellen Sie Bilder oder Tilemaps aus Listen von Zeichenfolgen mit den Funktionen {0} oder {1}",
       "es": "Crear imágenes o mapas de teselas a partir de listas de cadenas con las funciones {0} o {1}",
       "fr": "Créer des images ou des cartes de tuiles à partir de listes de chaînes avec les fonctions {0} ou {1}",
       "it": "Crea immagini o mappe a tessere da elenchi di stringhe con le funzioni {0} o {1}",
@@ -929,7 +929,7 @@
       "ko": "{0} 함수 또는 {1} 함수를 사용해 문자열 목록에서 이미지나 타일맵을 만듭니다",
       "pt": "Crie imagens ou mapas de ladrilhos a partir de listas de strings com as funções {0} ou {1}",
       "ru": "Создавайте изображения или тайловые карты из списков строк с помощью функций {0} или {1}",
-      "tr": "{0} veya {1} fonksiyonlarıyla dize listelerinden resim veya döşeme haritası oluşturun",
+      "tr": "{0} veya {1} fonksiyonlarıyla dize listelerinden resim veya Karo Haritası oluşturun",
       "uk": "Створюйте зображення або тайлмапи зі списків рядків за допомогою функцій {0} або {1}"
     },
     "resources_other_image_load": {
@@ -1439,7 +1439,7 @@
     "other_examples": {
       "en": "User Examples",
       "cn": "用户示例",
-      "de": "Benutzersamples",
+      "de": "Benutzerbeispiele",
       "es": "Ejemplos de Usuarios",
       "fr": "Exemples d'Utilisateurs",
       "it": "Esempi degli Utenti",
