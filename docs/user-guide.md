@@ -1,3 +1,5 @@
+<!-- This file is generated from web/user-guide/index.html and web/user-guide/user-guide.json. -->
+
 # Pyxel User Guide
 
 *This document was auto-generated from the [Pyxel User Guide](https://kitao.github.io/pyxel/web/user-guide/) web page, which also offers multilingual support.*

@@ -1,3 +1,5 @@
+<!-- This file is generated from web/web-usage/index.html and web/web-usage/web-usage.json. -->
+
 # How to Use Pyxel for Web
 
 *This document was auto-generated from the [How to Use Pyxel for Web](https://kitao.github.io/pyxel/web/web-usage/) web page, which also offers multilingual support.*

@@ -1,3 +1,5 @@
+<!-- This file is generated from web/editor-manual/index.html and web/editor-manual/editor-manual.json. -->
+
 # Pyxel Editor Manual
 
 *This document was auto-generated from the [Pyxel Editor Manual](https://kitao.github.io/pyxel/web/editor-manual/) web page, which also offers multilingual support.*

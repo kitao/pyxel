@@ -1,3 +1,5 @@
+<!-- This file is generated from web/api-reference/api-reference.json. -->
+
 # Pyxel API Reference
 
 *This document was auto-generated from the [Pyxel API Reference](https://kitao.github.io/pyxel/web/api-reference/) web page, which also offers multilingual support.*

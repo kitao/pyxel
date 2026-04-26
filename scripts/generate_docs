@@ -20,6 +20,11 @@ PYXEL_WEB = "https://kitao.github.io/pyxel/web"
 BLOCK_MARKER = "\x00BLK{idx}\x00"
 
 
+def generated_header(*source_paths):
+    sources = " and ".join(str(p.relative_to(ROOT_DIR)) for p in source_paths)
+    return f"<!-- This file is generated from {sources}. -->\n\n"
+
+
 def localize(obj):
     if not obj:
         return ""
@@ -802,7 +807,7 @@ def generate_from_html(html_path, json_path, doc_name):
         result = result.replace(BLOCK_MARKER.format(idx=i), block.strip())
 
     path = DOCS_DIR / f"{doc_name}.md"
-    path.write_text(result, encoding="utf-8")
+    path.write_text(generated_header(html_path, json_path) + result, encoding="utf-8")
     print(f"Generated {path.relative_to(ROOT_DIR)}")
 
 
@@ -883,7 +888,7 @@ def generate_api_reference():
                 lines.append("")
 
     path = DOCS_DIR / "api-reference.md"
-    path.write_text("\n".join(lines), encoding="utf-8")
+    path.write_text(generated_header(API_REF_JSON) + "\n".join(lines), encoding="utf-8")
     print(f"Generated {path.relative_to(ROOT_DIR)}")
 
 
@@ -919,7 +924,7 @@ def generate_mml_commands():
     lines.append("")
 
     path = DOCS_DIR / "mml-commands.md"
-    path.write_text("\n".join(lines), encoding="utf-8")
+    path.write_text(generated_header(MML_COMMANDS_JSON) + "\n".join(lines), encoding="utf-8")
     print(f"Generated {path.relative_to(ROOT_DIR)}")
 
 
