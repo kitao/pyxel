@@ -141,7 +141,6 @@ The audit runs as ordered phases, each gating the next; the meta-rules apply thr
   - e.g., if the rule is "Comments in English," check every `.rs` and `.py` file — not "a representative sample"; the same applies when verifying a subagent's per-cell verdicts — read every cell, not a chosen subset
 - When findings concentrate in one category while structurally comparable categories return zero, treat the imbalance itself as a non-execution signal and re-run the audit on the zero-finding categories with stricter probing before proceeding.
   - e.g., if a documentation pass surfaces every fix candidate while every code-side group returns zero, the imbalance is the signal — re-inspect the zero groups, do not accept the distribution as-is
-- Treat `- e.g.,` examples in this document as starting points, not exhaustive lists; extend from the rule.
 - When delegating to sub-agents, hand over the full rule text verbatim, the full file list, and the cross-file dependencies each group must cover; shortening any of these causes silent sampling.
   - e.g., the HTML ↔ i18n JSON pairing, the Rust core ↔ binding ↔ pyi pairing, or the translation JSON keys across languages, each as an explicit pair list with file paths
 
