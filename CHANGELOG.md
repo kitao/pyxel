@@ -32,7 +32,7 @@
 - Added CLI unit tests covering dispatcher, error handling, and all commands
 - Reorganized make targets into make test / run / run-wasm
 - Renamed get_pixel/tile/value accessor methods to pixel/tile/value
-- Added custom chord progression support to bgm_generator (#684)
+- Added custom chord progression support to bgm_generator
 - Added Pyxel Web Launcher to the showcase
 - Added shortcut keys for editors
 - Optimized rendering, audio, and parsing performance
@@ -375,7 +375,7 @@
 ## 2.5.6
 
 - Updated Pyxel MML Studio to use compressed URLs
-- Improved Pyxel MML Studio usability
+- Improved usability of Pyxel MML Studio
 - Updated design of the web pages
 
 ## 2.5.5
