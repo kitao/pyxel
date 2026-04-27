@@ -167,8 +167,8 @@
     },
     "editor_screen_tilemap": {
       "en": "Tilemap Editor",
-      "cn": "图块地图编辑器",
-      "de": "Kachelkarten-Editor",
+      "cn": "瓦片地图编辑器",
+      "de": "Tilemap-Editor",
       "es": "Editor de tilemaps",
       "fr": "Éditeur de tilemap",
       "it": "Editor tilemap",

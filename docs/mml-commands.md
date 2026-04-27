@@ -1,3 +1,5 @@
+<!-- This file is generated from web/mml-studio/mml-commands.json. -->
+
 # Pyxel MML Commands
 
 *This document was auto-generated from the [Pyxel MML Commands](https://kitao.github.io/pyxel/web/mml-studio/) web page, which also offers multilingual support.*

@@ -623,7 +623,7 @@
           "demo": "examples/15-tiled-map-file.html",
           "code": "https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/15_tiled_map_file.py",
           "description": {
-            "en": "Drawing a Tile Map File (.tmx) and auto-generating BGM",
+            "en": "Drawing a Tiled Map File (.tmx) and auto-generating BGM",
             "cn": "绘制 Tiled Map File (.tmx) 并自动生成 BGM",
             "de": "Zeichnen einer Tiled Map File (.tmx) und automatische BGM-Erzeugung",
             "es": "Dibujo de Tiled Map File (.tmx) y generación automática de BGM",

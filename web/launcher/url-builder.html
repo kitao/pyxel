@@ -11,7 +11,7 @@
 
   <body class="page h-full">
     <main class="page-container" id="app">
-      <header class="flex items-start gap-4 mb-4">
+      <header class="flex items-start gap-4 mb-6">
         <select
           id="lang-select"
           class="lang-select mt-1"
@@ -264,25 +264,20 @@
         .getElementById("editor-screen")
         .addEventListener("change", buildLaunchUrl);
 
-      // Init i18n
-      fetch("launcher.json")
-        .then((r) => r.json())
-        .then((json) => {
-          data = json;
-          lang = detectLang(data.languages);
-          buildLangSelector(
-            data.languages,
-            lang,
-            (v) => {
-              lang = v;
-              updateTexts();
-            },
-            document.getElementById("lang-select"),
-          );
+      // Init
+      initPage("launcher.json", () => {
+        buildLangSelector(
+          data.languages,
+          lang,
+          (v) => {
+            lang = v;
+            updateTexts();
+          },
+          document.getElementById("lang-select"),
+        );
 
-          updateTexts();
-        })
-        .catch((e) => console.error("Failed to load data:", e));
+        updateTexts();
+      });
     </script>
   </body>
 </html>

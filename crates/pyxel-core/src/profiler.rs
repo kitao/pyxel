@@ -64,7 +64,7 @@ mod tests {
 
     #[test]
     fn test_single_measurement_cycle() {
-        // 1-frame profiler: delta = 110 - 100 = 10ms → fps = 1000/10 = 100
+        // 1-frame profiler: delta = 110 - 100 = 10ms -> fps = 1000/10 = 100
         let mut p = Profiler::new(1);
         p.start(100);
         p.end(110);
@@ -98,14 +98,14 @@ mod tests {
     fn test_consecutive_cycles() {
         let mut p = Profiler::new(2);
 
-        // Cycle 1: deltas 10, 20 → average = 15
+        // Cycle 1: deltas 10, 20 -> average = 15
         p.start(0);
         p.end(10);
         p.start(100);
         p.end(120);
         assert_eq!(p.average_time(), 15.0);
 
-        // Cycle 2: deltas 5, 5 → average = 5 (previous cycle fully replaced)
+        // Cycle 2: deltas 5, 5 -> average = 5 (previous cycle fully replaced)
         p.start(200);
         p.end(205);
         assert_eq!(p.average_time(), 15.0, "mid-cycle retains previous average");
@@ -118,7 +118,7 @@ mod tests {
 
     #[test]
     fn test_zero_time_frame() {
-        // start and end at the same tick → 0ms frame time
+        // start and end at the same tick -> 0ms frame time
         let mut p = Profiler::new(1);
         p.start(100);
         p.end(100);

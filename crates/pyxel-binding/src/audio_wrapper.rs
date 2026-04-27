@@ -1,4 +1,4 @@
-use pyo3::exceptions::PyException;
+use pyo3::exceptions::{PyException, PyValueError};
 use pyo3::prelude::*;
 
 use crate::channel_wrapper::Channel;
@@ -124,7 +124,7 @@ fn channel(ch: u32) -> PyResult<Channel> {
         .get(ch as usize)
         .copied()
         .map(Channel::wrap)
-        .ok_or_else(|| pyo3::exceptions::PyValueError::new_err("Invalid channel index"))
+        .ok_or_else(|| PyValueError::new_err("Invalid channel index"))
 }
 
 #[pyfunction]
@@ -137,7 +137,7 @@ fn sound(snd: u32) -> PyResult<Sound> {
         .get(snd as usize)
         .copied()
         .map(Sound::wrap)
-        .ok_or_else(|| pyo3::exceptions::PyValueError::new_err("Invalid sound index"))
+        .ok_or_else(|| PyValueError::new_err("Invalid sound index"))
 }
 
 #[pyfunction]
@@ -150,7 +150,7 @@ fn music(msc: u32) -> PyResult<Music> {
         .get(msc as usize)
         .copied()
         .map(Music::wrap)
-        .ok_or_else(|| pyo3::exceptions::PyValueError::new_err("Invalid music index"))
+        .ok_or_else(|| PyValueError::new_err("Invalid music index"))
 }
 
 pub fn add_audio_functions(m: &Bound<'_, PyModule>) -> PyResult<()> {

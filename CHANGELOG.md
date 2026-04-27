@@ -1,5 +1,17 @@
 # Change Log
 
+## 2.9.3
+
+- Reorganized BGM generator internals and added determinism snapshot test
+- Refactored editor widgets and cleaned up state handling
+- Simplified Rust binding error handling
+- Refined web pages and translation terminology
+- Refined CLAUDE.md coding policy structure and wording
+
+## 2.9.2
+
+- Updated the bundled Pyxel wheel to 2.9.2
+
 ## 2.9.1
 
 - Added line numbers to palette file parsing errors
@@ -13,13 +25,19 @@
 - Fixed app2exe output colliding with the Pyxel app source directory
 - Added CLI unit tests covering dispatcher, error handling, and all commands
 - Reorganized make targets into make test / run / run-wasm
+- Renamed get_pixel/tile/value accessor methods to pixel/tile/value
+- Added custom chord progression support to bgm_generator (#684)
+- Added Pyxel Web Launcher to the showcase
+- Added shortcut keys for editors
+- Optimized rendering, audio, and parsing performance
+- Preserved MML input case and whitespace
 - Refined documentation terminology and translations
 
 ## 2.9.0
 
 - Redesigned the gen_bgm function to share code with Pyxel Composer
 - Added the transp argument back to the gen_bgm function
-- Made the transp, the instr, and the seed of the gen_bgm function required
+- Made the transp, instr, and seed of the gen_bgm function required
 - Added Cargo.lock to version control for reproducible builds
 - Added the resize function to change the screen size at runtime
 - Fixed the screencast function emitting wrong last-frame delay on frame drops
@@ -28,10 +46,11 @@
 ## 2.8.10
 
 - Fixed WASM public API functions lost by const refactor
+- Renamed user guide 'Tools' section to 'Examples & Tools'
+- Pinned WASM CDN imports to @main branch
 
 ## 2.8.9
 
-- Refined code quality and consistency across all layers
 - Removed unnecessary allocations in rendering and audio
 - Unified editor undo/redo and input handling patterns
 - Optimized drawing hot paths
@@ -58,11 +77,15 @@
 - Updated script-test.html showcase example
 - Fixed headless mode to run the same frame loop as normal mode
 - Added SIGINT handling to allow Ctrl+C during event loop
+- Added filename option to screenshot and screencast
+- Removed the 'packages' option from Pyxel Web Launcher
 
 ## 2.8.6
 
-- Cleaned up code style across the codebase
-- Fixed WASM key sticking on rapid input
+- Refactored Canvas blit paths and palette handling
+- Constrained the chord note range in the BGM generator
+- Renamed web i18n variables for clarity
+- Fixed WASM key sticking by switching to a scancode correction map
 
 ## 2.8.5
 
@@ -74,6 +97,7 @@
 - Enabled Python atexit handlers on program termination
 - Enabled audio playback in headless mode
 - Fixed WASM keyboard keys sticking on rapid input
+- Migrated User Examples from GitHub wiki to a dedicated gh-pages site
 
 ## 2.8.4
 
@@ -88,7 +112,9 @@
 - Added web usage guide page with multilingual support
 - Fixed arrow keys not working in Safari on web
 - Added auto-generated markdown docs from web pages
+- Added auto-generated MML Commands documentation page
 - Added resource file format documentation
+- Opened showcase links in new tabs
 
 ## 2.8.3
 
@@ -138,6 +164,8 @@
 ## 2.7.9
 
 - Aligned the 3D coordinate system so rot=(0,0,0) matches 2D screen axes
+- Renamed the cam parameter to pos in 3D drawing functions
+- Fixed reversed FOV controls (T/G keys) in the perspective example
 
 ## 2.7.8
 
@@ -332,7 +360,7 @@
 
 ## 2.5.7
 
-- Specified Tailwind CSS version 3.4.17 for Pyxel web pages
+- Specified Tailwind CSS version 3.4.17 for Pyxel Web pages
 - Added links to web tools and examples for Pyxel in the README files
 - Updated URL on reload in Pyxel MML Studio
 - Improved usability of Pyxel MML Studio
@@ -342,7 +370,7 @@
 
 - Updated Pyxel MML Studio to use compressed URLs
 - Improved Pyxel MML Studio usability
-- Updated design of the Pyxel web pages
+- Updated design of the Pyxel Web pages
 
 ## 2.5.5
 
@@ -357,7 +385,7 @@
 
 ## 2.5.4
 
-- Added two Pyxel apps by Adam for the app launcher
+- Added two Pyxel apps by Adam for Pyxel Web Launcher
 - Fixed Example 17 Python command execution issue
 - Fixed the reset function issue when called inside pyxapp
 - Updated design of the web pages
@@ -375,7 +403,7 @@
 - Fixed cargo publish error by adding features sdl2_bundle
 - Added an environment variable for the reset function's window state
 - Added three sample games from the Pyxel book
-- Added Example 17 for the app launcher and the reset function
+- Added Example 17 for Pyxel Web Launcher and the reset function
 - Updated pyo3 crate to version 0.26
 - Added gamepad support to Example 15
 

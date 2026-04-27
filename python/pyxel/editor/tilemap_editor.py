@@ -16,6 +16,7 @@ class TilemapEditor(EditorBase):
     #   canvas_var
     #   focus_x_var
     #   focus_y_var
+    #   help_message_var
     #
     #   tilemap_index_var
     #   tile_x_var

@@ -103,25 +103,20 @@
         setDocLang(lang);
       }
 
-      // Init i18n
-      fetch("mml-commands.json")
-        .then((r) => r.json())
-        .then((json) => {
-          data = json;
-          lang = detectLang(data.languages);
-          buildLangSelector(
-            data.languages,
-            lang,
-            (v) => {
-              lang = v;
-              updateTexts();
-            },
-            document.getElementById("lang-select"),
-          );
+      // Init
+      initPage("mml-commands.json", () => {
+        buildLangSelector(
+          data.languages,
+          lang,
+          (v) => {
+            lang = v;
+            updateTexts();
+          },
+          document.getElementById("lang-select"),
+        );
 
-          updateTexts();
-        })
-        .catch((e) => console.error("Failed to load data:", e));
+        updateTexts();
+      });
     </script>
   </body>
 </html>

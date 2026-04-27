@@ -51,7 +51,18 @@
   ],
   "ui": {
     "title": {
-      "en": "Pyxel MML Studio Manual"
+      "en": "Pyxel MML Studio Manual",
+      "cn": "Pyxel MML Studio 手册",
+      "de": "Pyxel MML Studio Handbuch",
+      "es": "Manual de Pyxel MML Studio",
+      "fr": "Manuel de Pyxel MML Studio",
+      "it": "Manuale di Pyxel MML Studio",
+      "ja": "Pyxel MML Studio マニュアル",
+      "ko": "Pyxel MML Studio 매뉴얼",
+      "pt": "Manual do Pyxel MML Studio",
+      "ru": "Руководство Pyxel MML Studio",
+      "tr": "Pyxel MML Studio Kılavuzu",
+      "uk": "Посібник Pyxel MML Studio"
     },
     "subtitle": {
       "en": "Manual for the {0} online MML creation tool.",
@@ -391,17 +402,17 @@
     },
     "mml_ref_link": {
       "en": "Pyxel MML Commands",
-      "cn": "Pyxel MML Commands",
-      "de": "Pyxel MML Commands",
-      "es": "Pyxel MML Commands",
-      "fr": "Pyxel MML Commands",
-      "it": "Pyxel MML Commands",
-      "ja": "Pyxel MML Commands",
-      "ko": "Pyxel MML Commands",
-      "pt": "Pyxel MML Commands",
-      "ru": "Pyxel MML Commands",
-      "tr": "Pyxel MML Commands",
-      "uk": "Pyxel MML Commands"
+      "cn": "Pyxel MML 命令",
+      "de": "Pyxel MML-Befehle",
+      "es": "Comandos MML de Pyxel",
+      "fr": "Commandes MML de Pyxel",
+      "it": "Comandi MML di Pyxel",
+      "ja": "Pyxel MML コマンド",
+      "ko": "Pyxel MML 명령어",
+      "pt": "Comandos MML do Pyxel",
+      "ru": "MML-команды Pyxel",
+      "tr": "Pyxel MML Komutları",
+      "uk": "MML-команди Pyxel"
     }
   },
   "control_items": [

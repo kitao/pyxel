@@ -71,9 +71,7 @@ impl Channel {
             (Vec<u32>, {
                 let all_sounds = pyxel::sounds();
                 for &i in &snd {
-                    if i as usize >= all_sounds.len() {
-                        return Err(PyValueError::new_err("Invalid sound index"));
-                    }
+                    validate_index!(i, all_sounds.len(), "sound");
                 }
                 let sounds = snd.iter().map(|&i| all_sounds[i as usize]).collect();
                 self.inner_mut().play(sounds, sec, should_loop, resume);
