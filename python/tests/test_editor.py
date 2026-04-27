@@ -134,3 +134,25 @@ class TestEditor:
             )
         finally:
             _restore_pyxel()
+
+
+class TestUserPal:
+    def test_user_pal_maps_all_user_colors(self):
+        _reset_pyxel()
+        try:
+            pyxel.init(16, 16, headless=True)
+            system_colors = list(pyxel.colors)
+            user_colors = [0x100000 + i for i in range(64)]
+            pyxel.colors[:] = system_colors + user_colors
+            pyxel.num_user_colors = len(user_colors)
+
+            pyxel.user_pal()
+            try:
+                for i in range(pyxel.num_user_colors):
+                    pyxel.cls(0)
+                    pyxel.rect(0, 0, 1, 1, i)
+                    assert pyxel.pget(0, 0) == pyxel.NUM_COLORS + i
+            finally:
+                pyxel.pal()
+        finally:
+            _restore_pyxel()
