@@ -2,10 +2,11 @@
 
 ## 2.9.3
 
+- Added a JSON API to the BGM generator for Pyxel Composer integration
 - Reorganized BGM generator internals and added determinism snapshot test
 - Refactored editor widgets and cleaned up state handling
 - Simplified Rust binding error handling
-- Refined web pages and translation terminology
+- Refined web pages, share links, and translation terminology
 - Refined CLAUDE.md coding policy structure and wording
 
 ## 2.9.2
