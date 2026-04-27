@@ -582,6 +582,7 @@
 
       function initAceEditor() {
         const codeEditor = ace.edit("code-editor");
+        codeEditor.textInput.getElement().id = "code-editor-input";
 
         codeEditor.setTheme("ace/theme/monokai");
         codeEditor.session.setMode("ace/mode/python");

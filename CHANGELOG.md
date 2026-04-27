@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.9.4
+
+- Fixed missing id attributes on web pages
+
 ## 2.9.3
 
 - Added a JSON API to the BGM generator for Pyxel Composer integration
@@ -361,7 +365,7 @@
 
 ## 2.5.7
 
-- Specified Tailwind CSS version 3.4.17 for Pyxel Web pages
+- Specified Tailwind CSS version 3.4.17 for web pages
 - Added links to web tools and examples for Pyxel in the README files
 - Updated URL on reload in Pyxel MML Studio
 - Improved usability of Pyxel MML Studio
@@ -371,7 +375,7 @@
 
 - Updated Pyxel MML Studio to use compressed URLs
 - Improved Pyxel MML Studio usability
-- Updated design of the Pyxel Web pages
+- Updated design of the web pages
 
 ## 2.5.5
 
