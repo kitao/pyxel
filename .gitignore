@@ -24,7 +24,6 @@ target/
 # Workspaces
 .claude/
 /examples
-docs/superpowers/
 
 # OS
 .DS_Store
