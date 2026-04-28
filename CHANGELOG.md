@@ -6,6 +6,7 @@
 - Fixed Pyxel Editor color picker cursor shape across palette sizes
 - Fixed missing id attributes on web pages
 - Reorganized Python test suite for broader pyxel-binding API coverage
+- Reorganized CLAUDE.md sections and added determinism principle
 - Added cfg(pyxel_core) gates to audio save APIs
 
 ## 2.9.3
