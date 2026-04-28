@@ -185,6 +185,7 @@ impl Sound {
 
     // Serialization
 
+    #[cfg(pyxel_core)]
     pub fn save(
         &self,
         filename: &str,

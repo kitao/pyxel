@@ -1,8 +1,12 @@
+#[cfg(pyxel_core)]
 use std::env::temp_dir;
+#[cfg(pyxel_core)]
 use std::fs::{remove_file, write};
+#[cfg(pyxel_core)]
 use std::process::Command;
 
 use blip_buf::BlipBuf;
+#[cfg(pyxel_core)]
 use hound::{SampleFormat, WavSpec, WavWriter};
 
 use crate::channel::Channel;
@@ -101,6 +105,7 @@ impl Audio {
         }
     }
 
+    #[cfg(pyxel_core)]
     pub fn save_samples(filename: &str, samples: &[i16], use_ffmpeg: bool) -> Result<(), String> {
         // Save WAV file
         let spec = WavSpec {

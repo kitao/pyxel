@@ -4,6 +4,7 @@
 
 - Fixed Pyxel Editor mismapping user palettes with more than 16 colors
 - Fixed missing id attributes on web pages
+- Added cfg(pyxel_core) gates to audio save APIs
 
 ## 2.9.3
 
