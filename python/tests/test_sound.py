@@ -36,25 +36,6 @@ class TestSound:
         assert len(snd.notes) == 3
         assert snd.notes[1] == -1  # Rest note
 
-    def test_mml(self):
-        snd = pyxel.Sound()
-        snd.mml("T120 O4 L4 CDEF")
-        assert snd.total_sec() > 0
-
-    def test_mml_none_exits_mml_mode(self):
-        snd = pyxel.Sound()
-        snd.mml("T120 O4 CDEF")
-        snd.mml(None)
-
-    def test_pcm(self, assets_dir):
-        snd = pyxel.Sound()
-        snd.pcm(str(assets_dir / "audio_bgm1.ogg"))
-        assert snd.total_sec() > 0
-
-    def test_pcm_none_exits_pcm_mode(self):
-        snd = pyxel.Sound()
-        snd.pcm(None)
-
     def test_set_verifies_tones(self):
         snd = pyxel.Sound()
         snd.set("c2e2", "sp", "77", "nn", 10)
@@ -127,6 +108,71 @@ class TestSound:
         snd.speed = 20
         assert snd.speed == 20
 
+    def test_set_overwrites_previous(self):
+        snd = pyxel.Sound()
+        snd.set("c2e2g2c3", "ssss", "7654", "nnnn", 10)
+        assert len(snd.notes) == 4
+        snd.set("c2e2", "ss", "77", "nn", 20)
+        assert len(snd.notes) == 2
+        assert snd.speed == 20
+
+
+class TestSoundMml:
+    def test_mml(self):
+        snd = pyxel.Sound()
+        snd.mml("T120 O4 L4 CDEF")
+        result = snd.total_sec()
+        assert isinstance(result, float)
+        assert result > 0
+
+    def test_mml_none_exits_mml_mode(self):
+        snd = pyxel.Sound()
+        snd.mml("T120 O4 CDEF")
+        snd.mml(None)
+
+    def test_mml_after_set(self):
+        snd = pyxel.Sound()
+        snd.set("c2e2g2", "sss", "777", "nnn", 10)
+        snd.mml("T120 O4 L4 CDEF")
+        # MML mode takes over; total_sec should reflect MML content
+        result = snd.total_sec()
+        assert isinstance(result, float)
+        assert result > 0
+
+    def test_mml_old_syntax_emits_deprecation(self, capfd):
+        snd = pyxel.Sound()
+        # 'x' character triggers old MML syntax detection
+        snd.mml("T120 X1 O4 CDEF")
+        out = capfd.readouterr().out
+        assert "deprecated" in out.lower()
+        result = snd.total_sec()
+        assert isinstance(result, float)
+        assert result > 0
+
+    def test_old_mml_emits_deprecation(self, capfd):
+        snd = pyxel.Sound()
+        snd.old_mml("T120 O4 L4 CDEF")  # type: ignore[attr-defined]
+        out = capfd.readouterr().out
+        assert "deprecated" in out.lower()
+        result = snd.total_sec()
+        assert isinstance(result, float)
+        assert result > 0
+
+
+class TestSoundPcm:
+    def test_pcm(self, assets_dir):
+        snd = pyxel.Sound()
+        snd.pcm(str(assets_dir / "audio_bgm1.ogg"))
+        result = snd.total_sec()
+        assert isinstance(result, float)
+        assert result > 0
+
+    def test_pcm_none_exits_pcm_mode(self):
+        snd = pyxel.Sound()
+        snd.pcm(None)
+
+
+class TestSoundProperties:
     def test_notes_append(self):
         snd = pyxel.Sound()
         snd.set("c2e2", "ss", "77", "nn", 10)
@@ -170,18 +216,3 @@ class TestSound:
         snd.effects[0] = 2  # Vibrato
         assert snd.effects[0] == 2
         assert snd.effects[1] == 0  # Unchanged
-
-    def test_set_overwrites_previous(self):
-        snd = pyxel.Sound()
-        snd.set("c2e2g2c3", "ssss", "7654", "nnnn", 10)
-        assert len(snd.notes) == 4
-        snd.set("c2e2", "ss", "77", "nn", 20)
-        assert len(snd.notes) == 2
-        assert snd.speed == 20
-
-    def test_mml_after_set(self):
-        snd = pyxel.Sound()
-        snd.set("c2e2g2", "sss", "777", "nnn", 10)
-        snd.mml("T120 O4 L4 CDEF")
-        # MML mode takes over; total_sec should reflect MML content
-        assert snd.total_sec() > 0

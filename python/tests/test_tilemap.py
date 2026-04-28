@@ -1,7 +1,7 @@
 import pyxel
 
 
-class TestTilemap:
+class TestTilemapCreation:
     def test_new_with_int(self):
         tm = pyxel.Tilemap(32, 32, 0)
         assert tm.width == 32
@@ -49,39 +49,6 @@ class TestTilemap:
         tm.cls((0, 0))
         assert tm.pget(0, 0) == (0, 0)
 
-    def test_blt_with_int(self):
-        tm = pyxel.Tilemap(8, 8, 0)
-        tm.blt(0, 0, 0, 0, 0, 8, 8)
-
-    def test_blt_with_tilemap_instance(self):
-        src = pyxel.Tilemap(8, 8, 0)
-        src.cls((0, 0))
-        src.pset(0, 0, (3, 3))
-        dst = pyxel.Tilemap(8, 8, 0)
-        dst.cls((0, 0))
-        dst.blt(0, 0, src, 0, 0, 8, 8)
-        assert dst.pget(0, 0) == (3, 3)
-
-    def test_blt_with_tilekey(self):
-        src = pyxel.Tilemap(8, 8, 0)
-        src.cls((0, 0))
-        src.pset(1, 0, (3, 3))
-        dst = pyxel.Tilemap(8, 8, 0)
-        dst.cls((1, 1))
-        dst.blt(0, 0, src, 0, 0, 8, 8, tilekey=(0, 0))
-        # (0,0) tiles in src are transparent, dst retains original
-        assert dst.pget(0, 0) == (1, 1)
-        # Non-tilekey tiles are copied
-        assert dst.pget(1, 0) == (3, 3)
-
-    def test_from_tmx(self, assets_dir):
-        tm = pyxel.Tilemap.from_tmx(str(assets_dir / "urban_rpg.tmx"), 0)
-        assert tm.width > 0
-        assert tm.height > 0
-        # Verify the tilemap has some non-zero content
-        has_content = any(tm.pget(x, 0) != (0, 0) for x in range(tm.width))
-        assert has_content
-
     def test_set_data(self):
         tm = pyxel.Tilemap(8, 8, 0)
         tm.set(0, 0, ["0001 0002", "0003 0004"])
@@ -90,12 +57,8 @@ class TestTilemap:
         assert tm.pget(0, 1) == (0, 3)
         assert tm.pget(1, 1) == (0, 4)
 
-    def test_load_tmx(self, assets_dir):
-        tm = pyxel.Tilemap(32, 32, 0)
-        tm.load(0, 0, str(assets_dir / "urban_rpg.tmx"), 0)
-        has_nonzero = any(tm.pget(x, 0) != (0, 0) for x in range(32))
-        assert has_nonzero
 
+class TestTilemapDrawing:
     def test_line(self):
         tm = pyxel.Tilemap(16, 16, 0)
         tm.cls((0, 0))
@@ -162,6 +125,45 @@ class TestTilemap:
         tm.fill(4, 4, (9, 9))
         assert tm.pget(4, 4) == (9, 9)
 
+
+class TestTilemapBlt:
+    def test_blt_with_int(self):
+        tm = pyxel.Tilemap(8, 8, 0)
+        tm.blt(0, 0, 0, 0, 0, 8, 8)
+
+    def test_blt_with_tilemap_instance(self):
+        src = pyxel.Tilemap(8, 8, 0)
+        src.cls((0, 0))
+        src.pset(0, 0, (3, 3))
+        dst = pyxel.Tilemap(8, 8, 0)
+        dst.cls((0, 0))
+        dst.blt(0, 0, src, 0, 0, 8, 8)
+        assert dst.pget(0, 0) == (3, 3)
+
+    def test_blt_with_tilekey(self):
+        src = pyxel.Tilemap(8, 8, 0)
+        src.cls((0, 0))
+        src.pset(1, 0, (3, 3))
+        dst = pyxel.Tilemap(8, 8, 0)
+        dst.cls((1, 1))
+        dst.blt(0, 0, src, 0, 0, 8, 8, tilekey=(0, 0))
+        # (0,0) tiles in src are transparent, dst retains original
+        assert dst.pget(0, 0) == (1, 1)
+        # Non-tilekey tiles are copied
+        assert dst.pget(1, 0) == (3, 3)
+
+    def test_blt_with_rotate(self):
+        src = pyxel.Tilemap(8, 8, 0)
+        dst = pyxel.Tilemap(8, 8, 0)
+        dst.blt(0, 0, src, 0, 0, 8, 8, rotate=45)
+
+    def test_blt_with_scale(self):
+        src = pyxel.Tilemap(8, 8, 0)
+        dst = pyxel.Tilemap(8, 8, 0)
+        dst.blt(0, 0, src, 0, 0, 8, 8, scale=2)
+
+
+class TestTilemapState:
     def test_clip_restricts_drawing(self):
         tm = pyxel.Tilemap(16, 16, 0)
         tm.cls((0, 0))
@@ -179,6 +181,23 @@ class TestTilemap:
         tm.camera()
         assert tm.pget(0, 0) == (3, 3)
 
+
+class TestTilemapIO:
+    def test_from_tmx(self, assets_dir):
+        tm = pyxel.Tilemap.from_tmx(str(assets_dir / "urban_rpg.tmx"), 0)
+        assert tm.width > 0
+        assert tm.height > 0
+        has_content = any(tm.pget(x, 0) != (0, 0) for x in range(tm.width))
+        assert has_content
+
+    def test_load_tmx(self, assets_dir):
+        tm = pyxel.Tilemap(32, 32, 0)
+        tm.load(0, 0, str(assets_dir / "urban_rpg.tmx"), 0)
+        has_nonzero = any(tm.pget(x, 0) != (0, 0) for x in range(32))
+        assert has_nonzero
+
+
+class TestTilemapDataPtr:
     def test_data_ptr_read(self):
         tm = pyxel.Tilemap(8, 8, 0)
         tm.cls((0, 0))
@@ -204,16 +223,6 @@ class TestTilemap:
         offset = 4 * 2  # width=4, each tile=2 entries
         assert ptr[offset] == 7
         assert ptr[offset + 1] == 8
-
-    def test_blt_with_rotate(self):
-        src = pyxel.Tilemap(8, 8, 0)
-        dst = pyxel.Tilemap(8, 8, 0)
-        dst.blt(0, 0, src, 0, 0, 8, 8, rotate=45)
-
-    def test_blt_with_scale(self):
-        src = pyxel.Tilemap(8, 8, 0)
-        dst = pyxel.Tilemap(8, 8, 0)
-        dst.blt(0, 0, src, 0, 0, 8, 8, scale=2)
 
 
 class TestTilemapCollide:
@@ -243,6 +252,7 @@ class TestTilemapCollide:
         assert 0 < dx < 100.0
         # Precise: entity width=8, wall at x=16, so dx should be 8.0
         assert dx == 8.0
+        assert dy == 0.0  # No vertical movement
 
     def test_collide_vertical_wall(self):
         tm = pyxel.Tilemap(8, 8, 0)
@@ -252,6 +262,7 @@ class TestTilemapCollide:
         dx, dy = tm.collide(0, 0, 8, 8, 0.0, 100.0, [wall_tile])
         assert 0 < dy < 100.0
         assert dy == 8.0
+        assert dx == 0.0  # No horizontal movement
 
     def test_collide_no_movement(self):
         tm = pyxel.Tilemap(8, 8, 0)
@@ -288,3 +299,35 @@ class TestTilemapCollide:
         tm.pset(1, 0, (1, 0))  # Tile exists but not in walls list
         dx, dy = tm.collide(0, 0, 8, 8, 100.0, 0.0, [])
         assert dx == 100.0  # No collision
+        assert dy == 0.0  # No vertical movement
+
+
+class TestTilemapDeprecatedProperties:
+    def test_image_property_aliases_imgsrc(self, capfd):
+        tm = pyxel.Tilemap(8, 8, 0)
+        result = tm.image  # type: ignore[attr-defined]
+        assert isinstance(result, pyxel.Image)
+        out = capfd.readouterr().out
+        assert "deprecated" in out.lower()
+
+    def test_image_setter_deprecated(self, capfd):
+        tm = pyxel.Tilemap(8, 8, 0)
+        new_img = pyxel.Image(256, 256)
+        tm.image = new_img  # type: ignore[attr-defined]
+        assert isinstance(tm.imgsrc, pyxel.Image)
+        out = capfd.readouterr().out
+        assert "deprecated" in out.lower()
+
+    def test_refimg_property_aliases_imgsrc(self, capfd):
+        tm = pyxel.Tilemap(8, 8, 0)
+        result = tm.refimg  # type: ignore[attr-defined]
+        assert result == 0
+        out = capfd.readouterr().out
+        assert "deprecated" in out.lower()
+
+    def test_refimg_setter_deprecated(self, capfd):
+        tm = pyxel.Tilemap(8, 8, 0)
+        tm.refimg = 1  # type: ignore[attr-defined]
+        assert tm.imgsrc == 1
+        out = capfd.readouterr().out
+        assert "deprecated" in out.lower()

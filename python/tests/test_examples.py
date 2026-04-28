@@ -1,170 +1,14 @@
-import os
-import runpy
-import shutil
-from pathlib import Path
-
 import pytest
 
 import pyxel
 
-REFERENCES_DIR = Path(__file__).parent / "references"
-EXAMPLES_DIR = Path(__file__).parent.parent / "pyxel" / "examples"
-EXAMPLE_REFS_DIR = REFERENCES_DIR / "examples"
-
-
-def _reset_pyxel():
-    pyxel._reset_statics()
-
-
-def _restore_pyxel():
-    pyxel._reset_statics()
-    pyxel.init(160, 120, headless=True)
-
-
-def run_example(script_path):
-    captured = {}
-    original_init = pyxel.init
-    original_run = pyxel.run
-    original_show = pyxel.show
-
-    def patched_init(*args, **kwargs):
-        kwargs["headless"] = True
-        kwargs["fps"] = 1_000_000  # Bypass SDL_Delay throttle
-        cwd = os.getcwd()
-        original_init(*args, **kwargs)
-        os.chdir(cwd)
-        # Fix random seeds for deterministic screenshots
-        pyxel.rseed(0)
-        pyxel.nseed(0)
-
-    def patched_run(update, draw):
-        captured["update"] = update
-        captured["draw"] = draw
-
-    def patched_show():
-        pass
-
-    pyxel.init = patched_init
-    pyxel.run = patched_run
-    pyxel.show = patched_show
-    original_dir = os.getcwd()
-    try:
-        os.chdir(Path(script_path).parent)
-        runpy.run_path(str(script_path), run_name="__main__")
-    finally:
-        os.chdir(original_dir)
-        pyxel.init = original_init
-        pyxel.run = original_run
-        pyxel.show = original_show
-    return captured
-
-
-class _FlipCapture(Exception):
-    # Raised to stop a while+flip() loop at the target frame.
-    pass
-
-
-def run_flip_example(script_path, plan, tmp_dir):
-    original_init = pyxel.init
-    original_flip = pyxel.flip
-    frame_count = [0]
-    capture_at = {step["frame"] for step in plan}
-    max_frame = max(capture_at)
-    results = []
-
-    def patched_init(*args, **kwargs):
-        kwargs["headless"] = True
-        kwargs["fps"] = 1_000_000
-        cwd = os.getcwd()
-        original_init(*args, **kwargs)
-        os.chdir(cwd)
-        pyxel.rseed(0)
-        pyxel.nseed(0)
-
-    def patched_flip():
-        original_flip()
-        frame_count[0] += 1
-        if frame_count[0] in capture_at:
-            path = tmp_dir / f"frame_{frame_count[0]}.png"
-            pyxel.screenshot(str(path))
-            results.append((frame_count[0], path))
-        if frame_count[0] >= max_frame:
-            raise _FlipCapture()
-
-    pyxel.init = patched_init
-    pyxel.flip = patched_flip
-    original_dir = os.getcwd()
-    try:
-        os.chdir(Path(script_path).parent)
-        runpy.run_path(str(script_path), run_name="__main__")
-    except _FlipCapture:
-        pass
-    finally:
-        os.chdir(original_dir)
-        pyxel.init = original_init
-        pyxel.flip = original_flip
-    return results
-
-
-def capture_frames(captured, plan, tmp_dir):
-    results = []
-    current_frame = 0
-    for step in plan:
-        target = step["frame"]
-        if "mouse" in step:
-            x, y = step["mouse"]
-            pyxel.set_mouse_pos(x, y)
-        if "press" in step:
-            for key in step["press"]:
-                pyxel.set_btn(key, True)
-        if "update" in captured:
-            while current_frame < target:
-                captured["update"]()
-                captured["draw"]()
-                pyxel.flip()
-                current_frame += 1
-        if step.get("capture", True):
-            path = tmp_dir / f"frame_{target}.png"
-            pyxel.screenshot(str(path))
-            results.append((target, path))
-        if "press" in step:
-            for key in step["press"]:
-                pyxel.set_btn(key, False)
-    return results
-
-
-def compare_or_update_all(name, results, refs_dir, update_references):
-    updated = []
-    failures = []
-    for frame, actual_path in results:
-        ref_path = refs_dir / f"{name}_f{frame}.png"
-        if update_references:
-            refs_dir.mkdir(parents=True, exist_ok=True)
-            shutil.copy(actual_path, ref_path)
-            updated.append(ref_path.name)
-            continue
-
-        if not ref_path.exists():
-            failures.append(
-                f"Reference missing: {ref_path.name}. Run with --update-references"
-            )
-            continue
-
-        actual_bytes = Path(actual_path).read_bytes()
-        ref_bytes = ref_path.read_bytes()
-        if actual_bytes != ref_bytes:
-            diff_path = ref_path.with_name(f"{name}_f{frame}_actual.png")
-            shutil.copy(actual_path, diff_path)
-            failures.append(
-                f"Screenshot mismatch: {ref_path.name}. "
-                f"Actual saved to {diff_path.name}"
-            )
-
-    if updated:
-        pytest.skip(f"References updated: {', '.join(updated)}")
-    if failures:
-        pytest.fail("\n".join(failures))
-
+from _capture import (  # type: ignore[reportMissingImports]
+    EXAMPLES_DIR,
+    EXAMPLE_REFS_DIR,
+    collect_plan_results,
+    run_example_subprocess,
+    run_flip_example_subprocess,
+)
 
 # Capture plans: frame numbers and optional input injection.
 # Examples are grouped by execution mode: pyxel.run() without assets,
@@ -227,23 +71,15 @@ class TestExamples:
     @pytest.mark.parametrize(
         "name", list(CAPTURE_PLANS.keys()), ids=list(CAPTURE_PLANS.keys())
     )
-    def test_example(self, name, tmp_path, update_references):
+    def test_example(self, name, tmp_path, compare_screenshots):
         script = EXAMPLES_DIR / f"{name}.py"
         assert script.exists(), f"Example not found: {script}"
 
-        _reset_pyxel()
-        try:
-            if name in FLIP_EXAMPLES:
-                plan = CAPTURE_PLANS[name]
-                results = run_flip_example(script, plan, tmp_path)
-                compare_or_update_all(
-                    name, results, EXAMPLE_REFS_DIR, update_references
-                )
-                return
+        plan = CAPTURE_PLANS[name]
+        if name in FLIP_EXAMPLES:
+            run_flip_example_subprocess(script, plan, tmp_path)
+        else:
+            run_example_subprocess(script, plan, tmp_path)
 
-            captured = run_example(script)
-            plan = CAPTURE_PLANS[name]
-            results = capture_frames(captured, plan, tmp_path)
-            compare_or_update_all(name, results, EXAMPLE_REFS_DIR, update_references)
-        finally:
-            _restore_pyxel()
+        results = collect_plan_results(plan, tmp_path)
+        compare_screenshots(name, results, EXAMPLE_REFS_DIR)

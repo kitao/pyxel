@@ -3,7 +3,7 @@ from pathlib import Path
 import pyxel
 
 
-class TestImage:
+class TestImageCreation:
     def test_new_dimensions(self):
         img = pyxel.Image(64, 48)
         assert img.width == 64
@@ -45,60 +45,8 @@ class TestImage:
             assert img.pget(0, 0) == col
             assert img.pget(4, 4) == col
 
-    def test_blt_with_int(self):
-        img = pyxel.Image(16, 16)
-        img.cls(0)
-        img.blt(0, 0, 0, 0, 0, 8, 8)
 
-    def test_blt_with_image_instance(self):
-        src = pyxel.Image(16, 16)
-        src.cls(0)
-        src.pset(0, 0, 5)
-        dst = pyxel.Image(16, 16)
-        dst.cls(0)
-        dst.blt(0, 0, src, 0, 0, 8, 8)
-        assert dst.pget(0, 0) == 5
-
-    def test_blt_preserves_uncopied_area(self):
-        src = pyxel.Image(8, 8)
-        src.cls(5)
-        dst = pyxel.Image(16, 16)
-        dst.cls(3)
-        dst.blt(0, 0, src, 0, 0, 8, 8)
-        assert dst.pget(0, 0) == 5  # Copied area
-        assert dst.pget(10, 10) == 3  # Uncovered area
-
-    def test_bltm_with_int(self):
-        img = pyxel.Image(64, 64)
-        img.cls(0)
-        img.bltm(0, 0, 0, 0, 0, 64, 64)
-
-    def test_bltm_with_tilemap_instance(self):
-        img = pyxel.Image(64, 64)
-        img.cls(0)
-        tm = pyxel.Tilemap(8, 8, 0)
-        img.bltm(0, 0, tm, 0, 0, 64, 64)
-
-    def test_from_image(self, assets_dir):
-        img = pyxel.Image.from_image(str(assets_dir / "cat_16x16.png"))
-        assert img.width == 16
-        assert img.height == 16
-
-    def test_load_image_file(self, assets_dir):
-        img = pyxel.Image(32, 32)
-        img.load(0, 0, str(assets_dir / "cat_16x16.png"))
-        has_nonzero = any(img.pget(x, 0) != 0 for x in range(16))
-        assert has_nonzero
-
-    def test_save(self, tmp_path):
-        img = pyxel.Image(8, 8)
-        img.cls(0)
-        img.pset(0, 0, 7)
-        path = str(tmp_path / "test_img.png")
-        img.save(path, 1)
-        assert Path(path).exists()
-        assert Path(path).stat().st_size > 0
-
+class TestImageDrawing:
     def test_line(self):
         img = pyxel.Image(16, 16)
         img.cls(0)
@@ -172,6 +120,83 @@ class TestImage:
         has_text = any(img.pget(x, y) == 7 for x in range(4) for y in range(6))
         assert has_text
 
+    def test_text_with_font(self, assets_dir):
+        img = pyxel.Image(64, 32)
+        img.cls(0)
+        font = pyxel.Font(str(assets_dir / "umplus_j10r.bdf"))
+        img.text(0, 0, "A", 7, font)
+        has_text = any(img.pget(x, y) == 7 for x in range(20) for y in range(20))
+        assert has_text
+
+
+class TestImageBlt:
+    def test_blt_with_int(self):
+        img = pyxel.Image(16, 16)
+        img.cls(0)
+        img.blt(0, 0, 0, 0, 0, 8, 8)
+
+    def test_blt_with_image_instance(self):
+        src = pyxel.Image(16, 16)
+        src.cls(0)
+        src.pset(0, 0, 5)
+        dst = pyxel.Image(16, 16)
+        dst.cls(0)
+        dst.blt(0, 0, src, 0, 0, 8, 8)
+        assert dst.pget(0, 0) == 5
+
+    def test_blt_preserves_uncopied_area(self):
+        src = pyxel.Image(8, 8)
+        src.cls(5)
+        dst = pyxel.Image(16, 16)
+        dst.cls(3)
+        dst.blt(0, 0, src, 0, 0, 8, 8)
+        assert dst.pget(0, 0) == 5  # Copied area
+        assert dst.pget(10, 10) == 3  # Uncovered area
+
+    def test_blt_with_colkey(self):
+        src = pyxel.Image(8, 8)
+        src.cls(0)
+        src.pset(1, 0, 5)
+        dst = pyxel.Image(8, 8)
+        dst.cls(3)
+        dst.blt(0, 0, src, 0, 0, 8, 8, colkey=0)
+        assert dst.pget(0, 0) == 3  # Transparent
+        assert dst.pget(1, 0) == 5  # Copied
+
+    def test_blt_with_rotate(self):
+        img = pyxel.Image(32, 32)
+        img.cls(0)
+        img.blt(0, 0, 0, 0, 0, 8, 8, rotate=90)
+
+    def test_blt_with_scale(self):
+        img = pyxel.Image(32, 32)
+        img.cls(0)
+        img.blt(0, 0, 0, 0, 0, 8, 8, scale=2)
+
+    def test_bltm_with_int(self):
+        img = pyxel.Image(64, 64)
+        img.cls(0)
+        img.bltm(0, 0, 0, 0, 0, 64, 64)
+
+    def test_bltm_with_tilemap_instance(self):
+        img = pyxel.Image(64, 64)
+        img.cls(0)
+        tm = pyxel.Tilemap(8, 8, 0)
+        img.bltm(0, 0, tm, 0, 0, 64, 64)
+
+    def test_blt3d(self):
+        img = pyxel.Image(64, 64)
+        img.cls(0)
+        img.blt3d(0, 0, 64, 64, 0, (0, 0, 10), (0, 0, 0))
+
+    def test_bltm3d(self):
+        img = pyxel.Image(64, 64)
+        img.cls(0)
+        tm = pyxel.Tilemap(8, 8, 0)
+        img.bltm3d(0, 0, 64, 64, tm, (0, 0, 10), (0, 0, 0))
+
+
+class TestImageState:
     def test_clip_restricts_drawing(self):
         img = pyxel.Image(16, 16)
         img.cls(0)
@@ -206,17 +231,68 @@ class TestImage:
         drawn = sum(1 for x in range(16) for y in range(16) if img.pget(x, y) == 7)
         assert 0 < drawn < 256
 
-    def test_blt3d(self):
-        img = pyxel.Image(64, 64)
-        img.cls(0)
-        img.blt3d(0, 0, 64, 64, 0, (0, 0, 10), (45, 0, 0))
 
-    def test_bltm3d(self):
-        img = pyxel.Image(64, 64)
-        img.cls(0)
-        tm = pyxel.Tilemap(8, 8, 0)
-        img.bltm3d(0, 0, 64, 64, tm, (0, 0, 10), (45, 0, 0))
+class TestImageIO:
+    def test_from_image(self, assets_dir):
+        img = pyxel.Image.from_image(str(assets_dir / "cat_16x16.png"))
+        assert img.width == 16
+        assert img.height == 16
 
+    def test_load_image_file(self, assets_dir):
+        img = pyxel.Image(32, 32)
+        img.load(0, 0, str(assets_dir / "cat_16x16.png"))
+        has_nonzero = any(img.pget(x, 0) != 0 for x in range(16))
+        assert has_nonzero
+
+    def test_save(self, tmp_path):
+        img = pyxel.Image(8, 8)
+        img.cls(0)
+        img.pset(0, 0, 7)
+        path = str(tmp_path / "test_img.png")
+        img.save(path, 1)
+        assert Path(path).exists()
+        assert Path(path).stat().st_size > 0
+
+    def test_from_image_with_include_colors(self, assets_dir):
+        original_color0 = pyxel.colors[0]
+        img = pyxel.Image.from_image(
+            str(assets_dir / "cat_16x16.png"), include_colors=True
+        )
+        assert img.width == 16
+        pyxel.colors[0] = original_color0
+
+    def test_load_with_include_colors(self, assets_dir):
+        original_color0 = pyxel.colors[0]
+        img = pyxel.Image(32, 32)
+        img.load(0, 0, str(assets_dir / "cat_16x16.png"), include_colors=True)
+        has_nonzero = any(img.pget(x, 0) != 0 for x in range(16))
+        assert has_nonzero
+        pyxel.colors[0] = original_color0
+
+    def test_incl_colors_deprecated(self, capfd, assets_dir):
+        # incl_colors is the deprecated alias for include_colors, shared via the
+        # resolve_include_colors helper in image_wrapper.rs. The Rust deprecation
+        # macro uses a single Once instance for both from_image and load, so the
+        # warning fires once per session. Verify both APIs accept incl_colors and
+        # function as include_colors aliases; verify the warning is emitted once.
+        original_color0 = pyxel.colors[0]
+        img1 = pyxel.Image.from_image(
+            str(assets_dir / "cat_16x16.png"),
+            incl_colors=True,  # type: ignore[call-arg]
+        )
+        assert img1.width == 16
+        out = capfd.readouterr().out
+        assert "deprecated" in out.lower()
+        pyxel.colors[0] = original_color0
+
+        img2 = pyxel.Image(32, 32)
+        img2.load(0, 0, str(assets_dir / "cat_16x16.png"), incl_colors=True)  # type: ignore[call-arg]
+        has_nonzero = any(img2.pget(x, 0) != 0 for x in range(16))
+        assert has_nonzero
+        pyxel.colors[0] = original_color0
+
+
+class TestImageDataPtr:
     def test_data_ptr_read(self):
         img = pyxel.Image(8, 8)
         img.cls(0)
@@ -241,47 +317,3 @@ class TestImage:
         ptr = img.data_ptr()
         # Second row starts at offset = width
         assert ptr[8] == 9
-
-    def test_from_image_with_include_colors(self, assets_dir):
-        original_color0 = pyxel.colors[0]
-        img = pyxel.Image.from_image(
-            str(assets_dir / "cat_16x16.png"), include_colors=True
-        )
-        assert img.width == 16
-        pyxel.colors[0] = original_color0
-
-    def test_load_with_include_colors(self, assets_dir):
-        original_color0 = pyxel.colors[0]
-        img = pyxel.Image(32, 32)
-        img.load(0, 0, str(assets_dir / "cat_16x16.png"), include_colors=True)
-        has_nonzero = any(img.pget(x, 0) != 0 for x in range(16))
-        assert has_nonzero
-        pyxel.colors[0] = original_color0
-
-    def test_blt_with_colkey(self):
-        src = pyxel.Image(8, 8)
-        src.cls(0)
-        src.pset(1, 0, 5)
-        dst = pyxel.Image(8, 8)
-        dst.cls(3)
-        dst.blt(0, 0, src, 0, 0, 8, 8, colkey=0)
-        assert dst.pget(0, 0) == 3  # Transparent
-        assert dst.pget(1, 0) == 5  # Copied
-
-    def test_blt_with_rotate(self):
-        img = pyxel.Image(32, 32)
-        img.cls(0)
-        img.blt(0, 0, 0, 0, 0, 8, 8, rotate=90)
-
-    def test_blt_with_scale(self):
-        img = pyxel.Image(32, 32)
-        img.cls(0)
-        img.blt(0, 0, 0, 0, 0, 8, 8, scale=2)
-
-    def test_text_with_font(self, assets_dir):
-        img = pyxel.Image(64, 32)
-        img.cls(0)
-        font = pyxel.Font(str(assets_dir / "umplus_j10r.bdf"))
-        img.text(0, 0, "A", 7, font)
-        has_text = any(img.pget(x, y) == 7 for x in range(20) for y in range(20))
-        assert has_text

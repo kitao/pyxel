@@ -56,3 +56,29 @@ class TestTone:
         finally:
             pyxel.tones.pop()
         assert len(pyxel.tones) == original_len
+
+    def test_waveform_aliases_wavetable(self, capfd):
+        tone = pyxel.Tone()
+        tone.wavetable.append(64)
+        tone.wavetable.append(128)
+        wf = tone.waveform
+        assert len(wf) == 2
+        assert wf[0] == 64
+        assert wf[1] == 128
+        out = capfd.readouterr().out
+        assert "deprecated" in out.lower()
+
+    def test_noise_aliases_mode_deprecated(self, capfd):
+        tone = pyxel.Tone()
+        tone.mode = 1
+        result = tone.noise  # type: ignore[attr-defined]
+        assert result == 1
+        out = capfd.readouterr().out
+        assert "deprecated" in out.lower()
+
+    def test_noise_setter_deprecated(self, capfd):
+        tone = pyxel.Tone()
+        tone.noise = 2  # type: ignore[attr-defined]
+        assert tone.mode == 2
+        out = capfd.readouterr().out
+        assert "deprecated" in out.lower()

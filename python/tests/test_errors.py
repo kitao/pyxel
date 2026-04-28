@@ -6,53 +6,53 @@ import pyxel
 class TestTypeErrors:
     def test_sin_wrong_deg_type(self):
         with pytest.raises(TypeError):
-            pyxel.sin("abc")
+            pyxel.sin("abc")  # type: ignore[arg-type]
 
     def test_pset_wrong_x_type(self):
         with pytest.raises(TypeError):
-            pyxel.pset("a", 0, 0)
+            pyxel.pset("a", 0, 0)  # type: ignore[arg-type]
 
     def test_clamp_wrong_x_type(self):
         with pytest.raises(TypeError):
-            pyxel.clamp("a", 0, 10)
+            pyxel.clamp("a", 0, 10)  # type: ignore[arg-type]
 
     def test_rect_wrong_types(self):
         with pytest.raises(TypeError):
-            pyxel.rect("a", "b", "c", "d", "e")
+            pyxel.rect("a", "b", "c", "d", "e")  # type: ignore[arg-type]
 
     def test_blt_wrong_img_type(self):
         with pytest.raises(TypeError):
-            pyxel.blt(0, 0, "not_an_image", 0, 0, 8, 8)
+            pyxel.blt(0, 0, "not_an_image", 0, 0, 8, 8)  # type: ignore[arg-type]
 
     def test_play_wrong_snd_type(self):
         with pytest.raises(TypeError):
-            pyxel.play(0, 3.14)
+            pyxel.play(0, 3.14)  # type: ignore[arg-type]
 
     def test_btn_wrong_type(self):
         with pytest.raises(TypeError):
-            pyxel.btn("not_a_key")
+            pyxel.btn("not_a_key")  # type: ignore[arg-type]
 
     def test_tilemap_wrong_imgsrc_type(self):
         with pytest.raises(TypeError):
-            pyxel.Tilemap(8, 8, "bad")
+            pyxel.Tilemap(8, 8, "bad")  # type: ignore[arg-type]
 
     def test_sound_set_wrong_speed_type(self):
         with pytest.raises(TypeError):
             snd = pyxel.Sound()
-            snd.set("c2", "s", "7", "n", "fast")
+            snd.set("c2", "s", "7", "n", "fast")  # type: ignore[arg-type]
 
     def test_image_set_wrong_data_type(self):
         with pytest.raises(TypeError):
             img = pyxel.Image(8, 8)
-            img.set(0, 0, 12345)
+            img.set(0, 0, 12345)  # type: ignore[arg-type]
 
     def test_btnp_wrong_type(self):
         with pytest.raises(TypeError):
-            pyxel.btnp("not_a_key")
+            pyxel.btnp("not_a_key")  # type: ignore[arg-type]
 
     def test_btnr_wrong_type(self):
         with pytest.raises(TypeError):
-            pyxel.btnr("not_a_key")
+            pyxel.btnr("not_a_key")  # type: ignore[arg-type]
 
 
 class TestIndexErrors:
@@ -105,29 +105,29 @@ class TestIndexErrors:
 class TestAttributeErrors:
     def test_nonexistent_attribute(self):
         with pytest.raises(AttributeError):
-            _ = pyxel.nonexistent_attribute
+            _ = pyxel.nonexistent_attribute  # type: ignore[attr-defined]
 
     def test_nonexistent_constant(self):
         with pytest.raises(AttributeError):
-            _ = pyxel.FAKE_CONSTANT
+            _ = pyxel.FAKE_CONSTANT  # type: ignore[attr-defined]
 
 
 class TestPartialArgErrors:
     def test_clip_partial_args(self):
         with pytest.raises(TypeError):
-            pyxel.clip(10, 20)
+            pyxel.clip(10, 20)  # type: ignore[call-overload]
 
     def test_clip_three_args(self):
         with pytest.raises(TypeError):
-            pyxel.clip(10, 20, 30)
+            pyxel.clip(10, 20, 30)  # type: ignore[call-overload]
 
     def test_camera_one_arg(self):
         with pytest.raises(TypeError):
-            pyxel.camera(10)
+            pyxel.camera(10)  # type: ignore[call-overload]
 
     def test_pal_one_arg(self):
         with pytest.raises(TypeError):
-            pyxel.pal(1)
+            pyxel.pal(1)  # type: ignore[call-overload]
 
 
 class TestValueErrors:
@@ -153,39 +153,41 @@ class TestValueErrors:
 
     def test_play_invalid_sound_list(self):
         with pytest.raises(ValueError):
-            pyxel.play(0, [0, 9999])
+            pyxel.play(0, [0, 9999])  # type: ignore[arg-type]
 
 
 class TestMmlErrors:
+    # Pyxel binding raises base Exception via PyException::new_err. Constrain via
+    # message to verify error specificity rather than relying on a narrow type.
     def test_sound_mml_invalid_syntax(self):
         snd = pyxel.Sound()
-        with pytest.raises(Exception):
+        with pytest.raises(Exception, match="MML:.*Unexpected character"):
             snd.mml("ZZZZZZ!!!")
 
     def test_play_mml_invalid_syntax(self):
-        with pytest.raises(Exception):
+        with pytest.raises(Exception, match="MML:.*Unexpected character"):
             pyxel.play(0, "ZZZZZZ!!!")
 
     def test_sound_set_notes_invalid(self):
         snd = pyxel.Sound()
-        with pytest.raises(Exception):
+        with pytest.raises(Exception, match="Invalid sound note"):
             snd.set_notes("ZZZZZZ!!!")
 
     def test_sound_set_tones_invalid(self):
         snd = pyxel.Sound()
-        with pytest.raises(Exception):
+        with pytest.raises(Exception, match="Invalid sound tone"):
             snd.set_tones("ZZZZZZ!!!")
 
 
 class TestFileErrors:
     def test_load_nonexistent_pyxres(self):
-        with pytest.raises(Exception):
+        with pytest.raises(Exception, match="Failed to open file"):
             pyxel.load("/nonexistent/path/file.pyxres")
 
     def test_load_nonexistent_image(self):
-        with pytest.raises(Exception):
+        with pytest.raises(Exception, match="Failed to open file"):
             pyxel.Image.from_image("/nonexistent/path/image.png")
 
     def test_load_nonexistent_font(self):
-        with pytest.raises(Exception):
+        with pytest.raises(Exception, match="Failed to open file"):
             pyxel.Font("/nonexistent/path/font.bdf")

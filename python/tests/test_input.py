@@ -86,6 +86,12 @@ class TestSetButtonState:
         assert pyxel.btn(pyxel.KEY_G) is True
         assert pyxel.btn(pyxel.KEY_H) is False
 
+    def test_input_keys_reflects_pressed(self):
+        pyxel.set_btn(pyxel.KEY_I, True)
+        assert pyxel.KEY_I in pyxel.input_keys
+        pyxel.set_btn(pyxel.KEY_I, False)
+        pyxel.flip()
+
 
 class TestSetButtonValue:
     def test_set_analog_value(self):
@@ -99,6 +105,13 @@ class TestSetButtonValue:
     def test_set_analog_value_zero(self):
         pyxel.set_btnv(pyxel.MOUSE_WHEEL_Y, 0)
         assert pyxel.btnv(pyxel.MOUSE_WHEEL_Y) == 0
+
+    def test_mouse_wheel_reflects_btnv(self):
+        pyxel.set_btnv(pyxel.MOUSE_WHEEL_Y, 5)
+        assert pyxel.mouse_wheel == 5
+        pyxel.set_btnv(pyxel.MOUSE_WHEEL_Y, -3)
+        assert pyxel.mouse_wheel == -3
+        pyxel.set_btnv(pyxel.MOUSE_WHEEL_Y, 0)
 
 
 class TestSetMousePos:

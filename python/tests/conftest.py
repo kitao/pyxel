@@ -2,6 +2,10 @@ from pathlib import Path
 
 import pytest
 
+import pyxel
+
+from _capture import compare_or_update_all  # type: ignore[reportMissingImports]
+
 ASSETS_DIR = Path(__file__).parent.parent / "pyxel" / "examples" / "assets"
 
 
@@ -11,11 +15,6 @@ def pytest_addoption(parser):
         action="store_true",
         help="Update reference files instead of comparing",
     )
-
-
-@pytest.fixture(scope="session")
-def update_references(request):
-    return request.config.getoption("--update-references")
 
 
 def pytest_collection_modifyitems(items):
@@ -30,17 +29,18 @@ def pytest_collection_modifyitems(items):
     items[:] = others + regression
 
 
+@pytest.fixture(scope="session")
+def update_references(request):
+    return request.config.getoption("--update-references")
+
+
 @pytest.fixture(scope="session", autouse=True)
 def init_pyxel():
-    import pyxel
-
     pyxel.init(160, 120, headless=True)
 
 
 @pytest.fixture(autouse=True)
 def reset_pyxel_state():
-    import pyxel
-
     pyxel.clip()
     pyxel.camera()
     pyxel.pal()
@@ -53,3 +53,11 @@ def reset_pyxel_state():
 @pytest.fixture
 def assets_dir():
     return ASSETS_DIR
+
+
+@pytest.fixture
+def compare_screenshots(update_references):
+    def _compare(name, results, refs_dir):
+        compare_or_update_all(name, results, refs_dir, update_references)
+
+    return _compare

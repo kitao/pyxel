@@ -250,38 +250,67 @@ class TestBltm:
 class TestBlt3d:
     def test_blt3d_with_int_img(self):
         pyxel.cls(0)
-        pyxel.blt3d(0, 0, 160, 120, 0, (0, 0, 10), (45, 0, 0))
+        pyxel.images[0].cls(0)
+        pyxel.images[0].rect(0, 0, 16, 16, 7)
+        pyxel.blt3d(0, 0, 160, 120, 0, (0, 0, 10), (0, 30, 0))
+        assert any(pyxel.pget(x, y) == 7 for x in range(160) for y in range(120))
 
     def test_blt3d_with_image_instance(self):
         pyxel.cls(0)
         img = pyxel.Image(16, 16)
         img.cls(0)
-        pyxel.blt3d(0, 0, 160, 120, img, (0, 0, 10), (45, 0, 0))
+        img.rect(0, 0, 16, 16, 5)
+        pyxel.blt3d(0, 0, 160, 120, img, (0, 0, 10), (0, 30, 0))
+        assert any(pyxel.pget(x, y) == 5 for x in range(160) for y in range(120))
 
     def test_bltm3d_with_int_tm(self):
         pyxel.cls(0)
-        pyxel.bltm3d(0, 0, 160, 120, 0, (0, 0, 10), (45, 0, 0))
+        pyxel.images[0].cls(0)
+        pyxel.images[0].rect(0, 0, 8, 8, 12)
+        pyxel.tilemaps[0].cls((0, 0))
+        pyxel.tilemaps[0].rect(0, 0, 8, 8, (0, 0))
+        pyxel.bltm3d(0, 0, 160, 120, 0, (0, 0, 10), (0, 30, 0))
+        assert any(pyxel.pget(x, y) == 12 for x in range(160) for y in range(120))
 
     def test_bltm3d_with_tilemap_instance(self):
         pyxel.cls(0)
+        pyxel.images[0].cls(0)
+        pyxel.images[0].rect(0, 0, 8, 8, 14)
         tm = pyxel.Tilemap(32, 32, 0)
-        pyxel.bltm3d(0, 0, 160, 120, tm, (0, 0, 10), (45, 0, 0))
+        tm.cls((0, 0))
+        tm.rect(0, 0, 8, 8, (0, 0))
+        pyxel.bltm3d(0, 0, 160, 120, tm, (0, 0, 10), (0, 30, 0))
+        assert any(pyxel.pget(x, y) == 14 for x in range(160) for y in range(120))
 
     def test_blt3d_with_fov(self):
         pyxel.cls(0)
-        pyxel.blt3d(0, 0, 160, 120, 0, (0, 0, 10), (0, 0, 0), fov=60.0)
+        pyxel.images[0].cls(0)
+        pyxel.images[0].rect(0, 0, 16, 16, 9)
+        pyxel.blt3d(0, 0, 160, 120, 0, (0, 0, 10), (0, 30, 0), fov=60.0)
+        assert any(pyxel.pget(x, y) == 9 for x in range(160) for y in range(120))
 
     def test_blt3d_with_colkey(self):
-        pyxel.cls(0)
-        pyxel.blt3d(0, 0, 160, 120, 0, (0, 0, 10), (0, 0, 0), colkey=0)
+        pyxel.cls(3)
+        pyxel.images[0].cls(0)
+        pyxel.images[0].rect(0, 0, 8, 8, 7)
+        pyxel.blt3d(0, 0, 160, 120, 0, (0, 0, 10), (0, 30, 0), colkey=0)
+        assert any(pyxel.pget(x, y) == 7 for x in range(160) for y in range(120))
 
     def test_blt3d_with_fov_and_colkey(self):
-        pyxel.cls(0)
-        pyxel.blt3d(0, 0, 160, 120, 0, (0, 0, 10), (0, 0, 0), fov=90.0, colkey=0)
+        pyxel.cls(3)
+        pyxel.images[0].cls(0)
+        pyxel.images[0].rect(0, 0, 8, 8, 11)
+        pyxel.blt3d(0, 0, 160, 120, 0, (0, 0, 10), (0, 30, 0), fov=90.0, colkey=0)
+        assert any(pyxel.pget(x, y) == 11 for x in range(160) for y in range(120))
 
     def test_bltm3d_with_fov_and_colkey(self):
-        pyxel.cls(0)
-        pyxel.bltm3d(0, 0, 160, 120, 0, (0, 0, 10), (0, 0, 0), fov=90.0, colkey=0)
+        pyxel.cls(3)
+        pyxel.images[0].cls(0)
+        pyxel.images[0].rect(0, 0, 8, 8, 6)
+        pyxel.tilemaps[0].cls((0, 0))
+        pyxel.tilemaps[0].rect(0, 0, 8, 8, (0, 0))
+        pyxel.bltm3d(0, 0, 160, 120, 0, (0, 0, 10), (0, 30, 0), fov=90.0, colkey=0)
+        assert any(pyxel.pget(x, y) == 6 for x in range(160) for y in range(120))
 
 
 class TestText:
@@ -406,3 +435,17 @@ class TestBltFlip:
         pyxel.blt(0, 0, 0, 0, 0, -8, -8)
         # After both flips, (7,7) -> (0,0)
         assert pyxel.pget(0, 0) == 5
+
+
+class TestDeprecatedAccessors:
+    def test_image_function_returns_image_instance(self, capfd):
+        result = pyxel.image(0)  # type: ignore[attr-defined]
+        assert isinstance(result, pyxel.Image)
+        out = capfd.readouterr().out
+        assert "deprecated" in out.lower()
+
+    def test_tilemap_function_returns_tilemap_instance(self, capfd):
+        result = pyxel.tilemap(0)  # type: ignore[attr-defined]
+        assert isinstance(result, pyxel.Tilemap)
+        out = capfd.readouterr().out
+        assert "deprecated" in out.lower()

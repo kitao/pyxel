@@ -3,7 +3,9 @@
 ## 2.9.4
 
 - Fixed Pyxel Editor mismapping user palettes with more than 16 colors
+- Fixed Pyxel Editor color picker cursor shape across palette sizes
 - Fixed missing id attributes on web pages
+- Reorganized Python test suite for broader pyxel-binding API coverage
 - Added cfg(pyxel_core) gates to audio save APIs
 
 ## 2.9.3

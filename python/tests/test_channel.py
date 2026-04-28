@@ -35,7 +35,7 @@ class TestChannel:
     def test_play_with_seq_int(self):
         pyxel.sounds[0].set("c2e2g2", "sss", "777", "nnn", 10)
         ch = pyxel.Channel()
-        ch.play([0, 0])
+        ch.play([0, 0])  # type: ignore[arg-type]
         ch.stop()
 
     def test_play_with_sound_instance(self):
@@ -51,7 +51,7 @@ class TestChannel:
         snd2 = pyxel.Sound()
         snd2.set("a2b2", "ss", "77", "nn", 10)
         ch = pyxel.Channel()
-        ch.play([snd1, snd2])
+        ch.play([snd1, snd2])  # type: ignore[arg-type]
         ch.stop()
 
     def test_play_with_mml_string(self):
@@ -78,6 +78,15 @@ class TestChannel:
         snd.set("c2e2g2", "sss", "777", "nnn", 10)
         ch = pyxel.Channel()
         ch.play(snd, sec=0.5)
+        ch.stop()
+
+    def test_play_with_tick_deprecated(self, capfd):
+        snd = pyxel.Sound()
+        snd.set("c2e2g2", "sss", "777", "nnn", 10)
+        ch = pyxel.Channel()
+        ch.play(snd, tick=60)  # type: ignore[call-arg]
+        out = capfd.readouterr().out
+        assert "deprecated" in out.lower()
         ch.stop()
 
     def test_stop_when_not_playing(self):
