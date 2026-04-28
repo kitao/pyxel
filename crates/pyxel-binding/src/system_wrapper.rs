@@ -190,6 +190,7 @@ fn resize(width: u32, height: u32) -> PyResult<()> {
 
 // Internal helpers
 
+#[cfg(target_os = "emscripten")]
 #[pyfunction]
 fn _reset_statics() {
     pyxel::reset_statics();
@@ -200,12 +201,6 @@ fn _reset_statics() {
 fn _pid_exists(pid: u32) -> bool {
     let system = sysinfo::System::new_all();
     system.process(sysinfo::Pid::from_u32(pid)).is_some()
-}
-
-#[cfg(target_os = "emscripten")]
-#[pyfunction]
-fn _pid_exists(_pid: u32) -> bool {
-    false
 }
 
 pub fn add_system_functions(m: &Bound<'_, PyModule>) -> PyResult<()> {
@@ -222,7 +217,9 @@ pub fn add_system_functions(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(screen_mode, m)?)?;
     m.add_function(wrap_pyfunction!(fullscreen, m)?)?;
     m.add_function(wrap_pyfunction!(resize, m)?)?;
+    #[cfg(target_os = "emscripten")]
     m.add_function(wrap_pyfunction!(_reset_statics, m)?)?;
+    #[cfg(not(target_os = "emscripten"))]
     m.add_function(wrap_pyfunction!(_pid_exists, m)?)?;
     Ok(())
 }

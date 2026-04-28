@@ -197,6 +197,7 @@ pub fn init(
     }
 }
 
+#[cfg(target_os = "emscripten")]
 pub fn reset_statics() {
     IS_INITIALIZED.store(false, Ordering::Relaxed);
 

@@ -61,10 +61,12 @@ pub use crate::font::Font;
 pub use crate::image::{Color, Image, Rgb24};
 pub use crate::key::*;
 pub use crate::music::Music;
+#[cfg(target_os = "emscripten")]
+pub use crate::pyxel::reset_statics;
 pub use crate::pyxel::{
     channels, colors, cursor_image, dropped_files, font_image, frame_count, height, images, init,
     input_keys, input_text, mouse_wheel, mouse_x, mouse_y, musics, pyxel, quit_callback,
-    reset_callback, reset_statics, screen, sounds, tilemaps, tones, width, Pyxel,
+    reset_callback, screen, sounds, tilemaps, tones, width, Pyxel,
 };
 pub use crate::settings::*;
 pub use crate::sound::{Sound, SoundEffect, SoundNote, SoundSpeed, SoundTone, SoundVolume};
