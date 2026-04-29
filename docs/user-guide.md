@@ -238,7 +238,7 @@ Pyxel sounds and music can also be created using the following method:
 
 - Create them from strings with the `Sound.set` or `Music.set` functions
 
-Refer to the API reference for the usage of these functions.
+Refer to the API reference for the use of these functions.
 
 ## Distributing Applications
 

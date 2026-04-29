@@ -8,6 +8,7 @@
 - Reorganized Python test suite for broader pyxel-binding API coverage
 - Reorganized CLAUDE.md sections and added determinism principle
 - Added cfg(pyxel_core) gates to audio save APIs
+- Refined CLAUDE.md self-conformance and a user-guide wording
 
 ## 2.9.3
 

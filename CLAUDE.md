@@ -83,7 +83,7 @@ This file is the Pyxel coding policy. The audit procedure runs at the triggers l
 - Surface formatting (indentation, line wrapping, quoting) is delegated to `make format`. No hand-formatting.
   - e.g., a Rust match arm is not hand-aligned; a `Cargo.toml` table is not hand-reformatted.
 
-- Exactly one blank line separates meaningful chunks. Runs of blank lines and blank lines inside a chunk are not used.
+- Exactly one blank line separates meaningful chunks unless `make format` prescribes otherwise. Runs of blank lines and blank lines inside a chunk are not used.
   - e.g., one blank line between class methods; no double blank between imports; no blank line between a function signature and its first statement.
 
 #### Consistency
@@ -91,8 +91,8 @@ This file is the Pyxel coding policy. The audit procedure runs at the triggers l
 - Each file belongs to a sibling group: same directory, same naming pattern, or shared role. Consistency is judged within the group, not against the rest of the codebase.
   - Sibling groups in this repo include: `crates/pyxel-binding/src/*_wrapper.rs`; `python/pyxel/editor/widgets/*.py`; `python/pyxel/editor/*_editor.py`; HTML pages under `web/*/index.html`; language JSON files under `web/**/*.json`.
 
-- A sibling group may be an *exception group*: a deliberate deviation from the language's default conventions for an interface or other self-contained reason. Within an exception group, the group's internal style governs.
-  - e.g., the `*_wrapper.rs` group mirrors the Python API (snake_case names, Python-style argument ordering) rather than Rust conventions; SDL2 call sites use C-style names; samples in `python/pyxel/examples/` may simplify production patterns for educational clarity.
+- A sibling group may be an *exception group*: a deliberate deviation from the language's default conventions for an interface or other self-contained reason. Within an exception group, the group's internal style, its cross-file naming choices toward the mirrored interface, and the framework-level binding conventions it relies on govern.
+  - e.g., the `*_wrapper.rs` group mirrors the Python API (snake_case names, Python-style argument ordering, and Pyxel-historical short names like `blt`/`cls`/`pset` rather than the Rust-idiomatic counterparts in `pyxel-core`) rather than Rust conventions, and adopts the PyO3 binding conventions (`#[new]` for `__init__`, `#[getter]`/`#[setter]` for Python attributes); SDL2 call sites use C-style names; samples in `python/pyxel/examples/` may simplify production patterns for educational clarity.
 
 - Parallel mirrors — shapes deliberately repeated across sibling files for API symmetry or data-structure parallelism — are preserved as-is.
   - e.g., binding wrappers mirror the Python API one-to-one; image and tilemap drawing primitives mirror each other; the `languages` array is independently loaded by each i18n JSON.
@@ -138,6 +138,9 @@ The authoritative Pyxel product names are: Pyxel, Pyxel Editor, Pyxel Showcase, 
 
 - Each entry's verb, grammar form, and object specificity match prior entries of the same change category.
   - e.g., for an audio fix, the entry mirrors prior `Fixed` entries' tense and object specificity.
+
+- Each entry fits a single line of at most 80 characters; entries typically run around 60. Longer descriptions are split into sub-changes per the rule above.
+  - e.g., `Fixed Pyxel Editor color picker cursor shape across palette sizes` (66 chars) fits the typical band; entries needing more detail become two short entries instead of one long line.
 
 - Each entry is verified against the actual code diff, not the commit message. Commit messages may understate or misstate the diff.
 
@@ -229,11 +232,11 @@ A *false positive* in this procedure is a fix candidate that, on closer inspecti
 - Individual past incidents are not recorded. The lesson folds into the nearest existing rule or its example.
   - e.g., a one-off false-positive audit finding belongs in a commit message or the contributor's working notes, not as a named bullet here.
 
-- A section that carries an authoritative enumeration uses an intro-prose + rule-bullets shape: the prose states the enumeration; the bullets state the rules.
-  - e.g., `Standards > Documentation > Proper Nouns` lists product names and abbreviations in its intro; bullets carry only the casing and representation rules.
+- A section that carries an authoritative enumeration separates the enumeration from the rules: either as intro-prose stating the enumeration followed by rule-bullets, or as a rule with sub-bullets or a numbered list enumerating the items when each needs detail.
+  - e.g., `Standards > Documentation > Proper Nouns` lists product names and abbreviations in its intro and uses bullets for casing rules; `Standards > Source Code > Performance` enumerates hot paths as sub-bullets under the rule that introduces them.
 
 - Each rule may be followed by an `e.g.,` sub-bullet that lists typical examples and, when useful, boundary cases or hypothetical anti-patterns.
   - Hypothetical anti-patterns read clearly as anti-patterns and are not asserted to exist in the code.
-  - A cross-language rule cites at least two of {Rust, Python, JavaScript, configuration formats} in its e.g. line; a language-specific rule names the language in its rule statement.
+  - An `e.g.` line cites one or more illustrative examples; a language-specific rule names the language in its rule statement.
 
-- After revising any section, the whole file is re-read and balance confirmed. A section that grew because it was called out does not leave structurally comparable peers static. Proportionality is checked by section length and bullet count.
+- After revising any section, the whole file is re-read and balance confirmed. Substantial growth in one part triggers a review of its structurally comparable peers for parallel gaps; minor edits do not. Proportionality is checked by section length and bullet count.
