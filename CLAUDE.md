@@ -191,7 +191,7 @@ A *false positive* in this procedure is a fix candidate that, on closer inspecti
 1. Build a (file × criterion) matrix using `superpowers:writing-plans` (or, in environments without superpowers skills, an equivalent plan structure that lists every cell). Resolve every cell to `pass`, `fix`, or `pending` with one line of evidence (one line per field × language for translations). Aggregate summaries are not evidence; no cell is dropped silently. Each cell's evidence verifies both (a) the rule body's broader intent and (b) the `e.g.` line's specific patterns; a cell addressing only (b) is marked `pending`, not `pass`.
    - e.g., one row per file, one column per criterion; each cell carries evidence such as `(a) the file's comments contain no unstated intent; (b) grep '^\s*///' returns no match` (pass), or the concrete problem (fix).
 
-2. Run the cross-file consistency check. Every file pair or group sharing a concern appears as an explicit matrix row with evidence; an unrepresented pair counts as a skipped check. Each row's evidence verifies both (a) the cross-file dependency's broader intent and (b) the specific items compared; a row addressing only (b) is marked `pending`. The auditor expands each category below into the concrete file pairs in the repo and identifies any pair not listed.
+2. Run the cross-file consistency check. Every file pair or group sharing a concern appears as an explicit matrix row with evidence; an unrepresented pair counts as a skipped check. Each row's evidence verifies both (a) the cross-file dependency's broader intent and (b) the specific items compared; a row addressing only (b) is marked `pending`, not `pass`. The auditor expands each category below into the concrete file pairs in the repo and identifies any pair not listed.
    - Cross-file pairs in this repo include:
      - sibling files (`*_wrapper.rs`, editor widgets, `web/*/index.html`);
      - HTML ↔ i18n JSON key sets;
@@ -212,8 +212,8 @@ A *false positive* in this procedure is a fix candidate that, on closer inspecti
    - defensive code at system boundaries.
 
 5. Gate completion in two stages.
-   - (a) The auditor (Phases 1-4) runs `superpowers:verification-before-completion` (or, without superpowers skills, re-runs the affected phases) within its own session.
-   - (b) An independent reviewer (a fresh agent or session, of any agent type, separate from the auditor) re-runs the full audit using a code-review skill (`superpowers:code-reviewer` or equivalent). If the reviewer reports zero findings, completion is gated. Otherwise the auditor incorporates the findings and a new fresh reviewer cycle is run; the loop repeats until a cycle reports zero findings.
+   - (a) The auditor (Phases 1-4) runs `superpowers:verification-before-completion` (or, without superpowers skills, re-runs the same phases) within its own session.
+   - (b) An independent reviewer (a fresh agent or session, of any agent type, separate from the auditor) re-runs the full audit from the in-scope files rather than from the auditor's matrix, using a code-review skill (`superpowers:code-reviewer` or equivalent). If the reviewer reports zero findings, completion is gated. Otherwise the auditor incorporates the findings and a new fresh reviewer cycle is run; the loop repeats until a cycle reports zero findings.
 
 #### Meta-rules
 
