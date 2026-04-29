@@ -499,8 +499,8 @@ const CHORD_PROGRESSIONS: [&[ChordEntry]; PRESET_COUNT] =
 // Preset lookup
 
 fn preset_params(preset: i32) -> GeneratorParams {
-    let idx = preset.clamp(0, (PRESET_COUNT - 1) as i32) as usize;
-    PRESETS[idx].clone()
+    assert!((0..PRESET_COUNT as i32).contains(&preset), "invalid preset");
+    PRESETS[preset as usize].clone()
 }
 
 // MML token helpers
@@ -2214,11 +2214,15 @@ mod tests {
     }
 
     #[test]
-    fn test_preset_params_clamp() {
-        let p = preset_params(-1);
-        assert_eq!(p.speed, 216); // preset 0
-        let p = preset_params(99);
-        assert_eq!(p.speed, 168); // preset 7
+    #[should_panic(expected = "invalid preset")]
+    fn test_preset_params_negative_panics() {
+        let _ = preset_params(-1);
+    }
+
+    #[test]
+    #[should_panic(expected = "invalid preset")]
+    fn test_preset_params_above_range_panics() {
+        let _ = preset_params(PRESET_COUNT as i32);
     }
 
     #[test]

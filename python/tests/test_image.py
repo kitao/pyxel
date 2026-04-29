@@ -131,9 +131,12 @@ class TestImageDrawing:
 
 class TestImageBlt:
     def test_blt_with_int(self):
+        pyxel.images[0].cls(0)
+        pyxel.images[0].pset(0, 0, 7)
         img = pyxel.Image(16, 16)
         img.cls(0)
         img.blt(0, 0, 0, 0, 0, 8, 8)
+        assert img.pget(0, 0) == 7
 
     def test_blt_with_image_instance(self):
         src = pyxel.Image(16, 16)
@@ -164,36 +167,65 @@ class TestImageBlt:
         assert dst.pget(1, 0) == 5  # Copied
 
     def test_blt_with_rotate(self):
-        img = pyxel.Image(32, 32)
-        img.cls(0)
-        img.blt(0, 0, 0, 0, 0, 8, 8, rotate=90)
+        src = pyxel.Image(8, 8)
+        src.cls(0)
+        src.rect(0, 0, 8, 8, 7)
+        dst = pyxel.Image(32, 32)
+        dst.cls(0)
+        dst.blt(8, 8, src, 0, 0, 8, 8, rotate=90)
+        has_drawn = any(dst.pget(x, y) == 7 for x in range(32) for y in range(32))
+        assert has_drawn
 
     def test_blt_with_scale(self):
-        img = pyxel.Image(32, 32)
-        img.cls(0)
-        img.blt(0, 0, 0, 0, 0, 8, 8, scale=2)
+        src = pyxel.Image(8, 8)
+        src.cls(0)
+        src.pset(0, 0, 7)
+        dst = pyxel.Image(32, 32)
+        dst.cls(0)
+        dst.blt(0, 0, src, 0, 0, 1, 1, scale=4)
+        # 1x1 source scaled 4x must produce at least one painted pixel near origin
+        drawn = sum(1 for x in range(8) for y in range(8) if dst.pget(x, y) == 7)
+        assert drawn > 0
 
     def test_bltm_with_int(self):
+        pyxel.tilemaps[0].cls((0, 0))
+        pyxel.tilemaps[0].pset(0, 0, (0, 0))
+        pyxel.images[0].cls(0)
+        pyxel.images[0].rect(0, 0, 8, 8, 7)
         img = pyxel.Image(64, 64)
         img.cls(0)
         img.bltm(0, 0, 0, 0, 0, 64, 64)
+        assert img.pget(0, 0) == 7
 
     def test_bltm_with_tilemap_instance(self):
+        pyxel.images[0].cls(0)
+        pyxel.images[0].rect(0, 0, 8, 8, 5)
+        tm = pyxel.Tilemap(8, 8, 0)
+        tm.cls((0, 0))
+        tm.pset(0, 0, (0, 0))
         img = pyxel.Image(64, 64)
         img.cls(0)
-        tm = pyxel.Tilemap(8, 8, 0)
         img.bltm(0, 0, tm, 0, 0, 64, 64)
+        assert img.pget(0, 0) == 5
 
     def test_blt3d(self):
+        pyxel.images[0].cls(0)
+        pyxel.images[0].rect(0, 0, 16, 16, 7)
         img = pyxel.Image(64, 64)
         img.cls(0)
-        img.blt3d(0, 0, 64, 64, 0, (0, 0, 10), (0, 0, 0))
+        img.blt3d(0, 0, 64, 64, 0, (0, 0, 10), (0, 30, 0))
+        assert any(img.pget(x, y) == 7 for x in range(64) for y in range(64))
 
     def test_bltm3d(self):
+        pyxel.images[0].cls(0)
+        pyxel.images[0].rect(0, 0, 8, 8, 12)
+        tm = pyxel.Tilemap(8, 8, 0)
+        tm.cls((0, 0))
+        tm.rect(0, 0, 8, 8, (0, 0))
         img = pyxel.Image(64, 64)
         img.cls(0)
-        tm = pyxel.Tilemap(8, 8, 0)
-        img.bltm3d(0, 0, 64, 64, tm, (0, 0, 10), (0, 0, 0))
+        img.bltm3d(0, 0, 64, 64, tm, (0, 0, 10), (0, 30, 0))
+        assert any(img.pget(x, y) == 12 for x in range(64) for y in range(64))
 
 
 class TestImageState:
@@ -253,6 +285,17 @@ class TestImageIO:
         assert Path(path).exists()
         assert Path(path).stat().st_size > 0
 
+    def test_save_with_scale(self, tmp_path):
+        img = pyxel.Image(8, 8)
+        img.cls(0)
+        img.rect(0, 0, 8, 8, 7)
+        path1 = str(tmp_path / "scale1.png")
+        path2 = str(tmp_path / "scale4.png")
+        img.save(path1, 1)
+        img.save(path2, 4)
+        # Scale 4 produces a 4x larger image, so its file size must exceed scale 1
+        assert Path(path2).stat().st_size > Path(path1).stat().st_size
+
     def test_from_image_with_include_colors(self, assets_dir):
         original_color0 = pyxel.colors[0]
         img = pyxel.Image.from_image(
@@ -270,11 +313,8 @@ class TestImageIO:
         pyxel.colors[0] = original_color0
 
     def test_incl_colors_deprecated(self, capfd, assets_dir):
-        # incl_colors is the deprecated alias for include_colors, shared via the
-        # resolve_include_colors helper in image_wrapper.rs. The Rust deprecation
-        # macro uses a single Once instance for both from_image and load, so the
-        # warning fires once per session. Verify both APIs accept incl_colors and
-        # function as include_colors aliases; verify the warning is emitted once.
+        # incl_colors is the deprecated alias; warning fires only once per session,
+        # so test both APIs in order.
         original_color0 = pyxel.colors[0]
         img1 = pyxel.Image.from_image(
             str(assets_dir / "cat_16x16.png"),

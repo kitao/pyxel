@@ -5,7 +5,7 @@ from pathlib import Path
 import pytest
 
 import pyxel
-from pyxel import editor as _editor  # noqa: F401  # extension load attaches pyxel.user_pal
+from pyxel import editor as _editor  # noqa: F401
 
 from _capture import (  # type: ignore[reportMissingImports]
     EDITOR_REFS_DIR,
@@ -13,16 +13,13 @@ from _capture import (  # type: ignore[reportMissingImports]
     run_editor_subprocess,
 )
 
-_ = _editor  # mark as used (extension side-effect)
+# Side-effect import: registers pyxel.user_pal. Local rebind silences pyright.
+_ = _editor
 
 RESOURCE_FILE = str(
     Path(__file__).parent.parent / "pyxel" / "examples" / "assets" / "sample.pyxres"
 )
 
-# (editor, palette_count_or_None)
-# palette_count=None: use the resource file's default palette (no extra .pyxpal)
-# palette_count=N: write an HSV-spread .pyxpal alongside the .pyxres so that
-# pyxel.load() auto-loads it and the user palette becomes N colors
 _EDITOR_PALETTE_PARAMS = [
     ("image", None),
     ("tilemap", None),

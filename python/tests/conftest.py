@@ -18,11 +18,12 @@ def pytest_addoption(parser):
 
 
 def pytest_collection_modifyitems(items):
-    # Run app/example regression tests last so cheap failures surface early
+    # Run subprocess-based regression tests last so cheap failures surface early
     regression = []
     others = []
     for item in items:
-        if "test_examples" in str(item.fspath) or "test_apps" in str(item.fspath):
+        path = str(item.fspath)
+        if any(name in path for name in ("test_apps", "test_examples", "test_editor")):
             regression.append(item)
         else:
             others.append(item)
@@ -53,6 +54,17 @@ def reset_pyxel_state():
 @pytest.fixture
 def assets_dir():
     return ASSETS_DIR
+
+
+@pytest.fixture(scope="session")
+def panic_exception():
+    # pyo3_runtime.PanicException is not directly importable; capture the type
+    # from a known panic path.
+    try:
+        pyxel.btnv(pyxel.KEY_A)
+    except BaseException as e:
+        return type(e)
+    raise RuntimeError("expected a Rust panic but pyxel.btnv(KEY_A) returned normally")
 
 
 @pytest.fixture

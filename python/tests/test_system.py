@@ -393,12 +393,14 @@ class TestSystemSetters:
 
     def test_fullscreen_preserves_state(self):
         before = self._capture_state()
+        pyxel.fullscreen(True)
         pyxel.fullscreen(False)
         self._assert_state_unchanged(before)
 
     def test_screen_mode_preserves_state(self):
         before = self._capture_state()
-        pyxel.screen_mode(0)
+        for mode in (0, 1, 2):
+            pyxel.screen_mode(mode)
         self._assert_state_unchanged(before)
 
     def test_integer_scale_preserves_state(self):
@@ -423,17 +425,13 @@ class TestSystemFlow:
         assert pyxel.frame_count == before + 3
 
     @pytest.mark.skip(
-        reason="quit() runs Python atexit handlers, which may block or "
-        "terminate the test process. Mechanism is exercised when an app "
-        "running inside pyxel.run()/show() exits the event loop."
+        reason="quit() runs atexit handlers and exits the process; not in-process testable."
     )
     def test_quit(self):
         pyxel.quit()
 
     @pytest.mark.skip(
-        reason="reset() spawns a new process via subprocess.Popen + sys.exit(0); "
-        "cannot be tested in-process. Mechanism is exercised indirectly when "
-        "running pyxel apps."
+        reason="reset() spawns a subprocess and calls sys.exit(); not in-process testable."
     )
     def test_reset(self):
         pyxel.reset()

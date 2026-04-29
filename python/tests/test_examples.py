@@ -10,10 +10,6 @@ from _capture import (  # type: ignore[reportMissingImports]
     run_flip_example_subprocess,
 )
 
-# Capture plans: frame numbers and optional input injection.
-# Examples are grouped by execution mode: pyxel.run() without assets,
-# pyxel.run() with asset loading, pyxel.show()-based (no update/draw loop),
-# and while+flip() loop.
 CAPTURE_PLANS = {
     # pyxel.run() without asset loading
     "01_hello_pyxel": [{"frame": 8}],

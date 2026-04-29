@@ -128,8 +128,12 @@ class TestTilemapDrawing:
 
 class TestTilemapBlt:
     def test_blt_with_int(self):
+        pyxel.tilemaps[0].cls((0, 0))
+        pyxel.tilemaps[0].pset(0, 0, (3, 3))
         tm = pyxel.Tilemap(8, 8, 0)
+        tm.cls((0, 0))
         tm.blt(0, 0, 0, 0, 0, 8, 8)
+        assert tm.pget(0, 0) == (3, 3)
 
     def test_blt_with_tilemap_instance(self):
         src = pyxel.Tilemap(8, 8, 0)
@@ -154,13 +158,23 @@ class TestTilemapBlt:
 
     def test_blt_with_rotate(self):
         src = pyxel.Tilemap(8, 8, 0)
-        dst = pyxel.Tilemap(8, 8, 0)
-        dst.blt(0, 0, src, 0, 0, 8, 8, rotate=45)
+        src.cls((0, 0))
+        src.rect(0, 0, 8, 8, (1, 1))
+        dst = pyxel.Tilemap(16, 16, 0)
+        dst.cls((0, 0))
+        dst.blt(4, 4, src, 0, 0, 8, 8, rotate=45)
+        has_tile = any(dst.pget(x, y) == (1, 1) for x in range(16) for y in range(16))
+        assert has_tile
 
     def test_blt_with_scale(self):
         src = pyxel.Tilemap(8, 8, 0)
-        dst = pyxel.Tilemap(8, 8, 0)
-        dst.blt(0, 0, src, 0, 0, 8, 8, scale=2)
+        src.cls((0, 0))
+        src.pset(0, 0, (5, 5))
+        dst = pyxel.Tilemap(16, 16, 0)
+        dst.cls((0, 0))
+        dst.blt(0, 0, src, 0, 0, 1, 1, scale=4)
+        has_tile = any(dst.pget(x, y) == (5, 5) for x in range(8) for y in range(8))
+        assert has_tile
 
 
 class TestTilemapState:

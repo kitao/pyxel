@@ -101,11 +101,8 @@ class TestSaveLoad:
         assert Path(path).stat().st_size > 0
 
     def test_excl_aliases_deprecated(self, capfd, tmp_path):
-        # excl_* are the deprecated aliases for exclude_*, shared via the
-        # resolve_exclude helper in resource_wrapper.rs. The Rust deprecation
-        # macro uses a single Once instance for both load and save, so the
-        # warning fires once per session. Verify both APIs accept excl_images
-        # and that the alias functions like exclude_images.
+        # excl_* are the deprecated aliases; warning fires only once per session,
+        # so test save and load in order.
         pyxel.images[0].cls(0)
         pyxel.images[0].pset(0, 0, 7)
         path = str(tmp_path / "test_excl_dep.pyxres")

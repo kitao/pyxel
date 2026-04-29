@@ -157,8 +157,7 @@ class TestValueErrors:
 
 
 class TestMmlErrors:
-    # Pyxel binding raises base Exception via PyException::new_err. Constrain via
-    # message to verify error specificity rather than relying on a narrow type.
+    # Binding raises plain Exception; pin via message to verify error specificity.
     def test_sound_mml_invalid_syntax(self):
         snd = pyxel.Sound()
         with pytest.raises(Exception, match="MML:.*Unexpected character"):
@@ -191,3 +190,23 @@ class TestFileErrors:
     def test_load_nonexistent_font(self):
         with pytest.raises(Exception, match="Failed to open file"):
             pyxel.Font("/nonexistent/path/font.bdf")
+
+
+class TestPanicErrors:
+    # Pin the exact type so a future migration to ValueError shows up as a test diff.
+
+    def test_btnv_non_analog_key_panics(self, panic_exception):
+        with pytest.raises(panic_exception, match="non-analog key"):
+            pyxel.btnv(pyxel.KEY_A)
+
+    def test_gen_bgm_invalid_preset_panics(self, panic_exception):
+        with pytest.raises(panic_exception, match="invalid preset"):
+            pyxel.gen_bgm(99, 0, 0, 1)
+
+    def test_gen_bgm_invalid_transpose_panics(self, panic_exception):
+        with pytest.raises(panic_exception, match="invalid transpose"):
+            pyxel.gen_bgm(0, 99, 0, 1)
+
+    def test_gen_bgm_invalid_instrumentation_panics(self, panic_exception):
+        with pytest.raises(panic_exception, match="invalid instrumentation"):
+            pyxel.gen_bgm(0, 0, 99, 1)

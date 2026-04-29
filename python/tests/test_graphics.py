@@ -240,11 +240,25 @@ class TestBltm:
 
     def test_bltm_rotate(self):
         pyxel.cls(0)
-        pyxel.bltm(0, 0, 0, 0, 0, 64, 64, rotate=45)
+        pyxel.images[0].cls(0)
+        pyxel.images[0].rect(0, 0, 8, 8, 7)
+        pyxel.tilemaps[0].cls((0, 0))
+        pyxel.tilemaps[0].pset(0, 0, (0, 0))
+        pyxel.bltm(80, 60, 0, 0, 0, 8, 8, rotate=45)
+        has_drawn = any(
+            pyxel.pget(x, y) == 7 for x in range(70, 90) for y in range(50, 70)
+        )
+        assert has_drawn
 
     def test_bltm_scale(self):
         pyxel.cls(0)
-        pyxel.bltm(0, 0, 0, 0, 0, 64, 64, scale=2)
+        pyxel.images[0].cls(0)
+        pyxel.images[0].pset(0, 0, 7)
+        pyxel.tilemaps[0].cls((0, 0))
+        pyxel.tilemaps[0].pset(0, 0, (0, 0))
+        pyxel.bltm(0, 0, 0, 0, 0, 1, 1, scale=4)
+        drawn = sum(1 for x in range(8) for y in range(8) if pyxel.pget(x, y) == 7)
+        assert drawn > 0
 
 
 class TestBlt3d:
@@ -371,6 +385,25 @@ class TestDrawingStateEdgeCases:
     def test_dither_one_draws_all(self):
         pyxel.cls(0)
         pyxel.dither(1.0)
+        pyxel.rect(0, 0, 20, 20, 7)
+        drawn = sum(1 for x in range(20) for y in range(20) if pyxel.pget(x, y) == 7)
+        assert drawn == 400
+
+    def test_dither_negative_alpha_behaves_as_zero(self):
+        # The draw path treats alpha < pattern threshold as "skip", so any
+        # negative alpha effectively behaves like alpha=0 (full transparent).
+        pyxel.cls(0)
+        pyxel.dither(-0.5)
+        pyxel.rect(0, 0, 20, 20, 7)
+        pyxel.dither(1.0)
+        drawn = sum(1 for x in range(20) for y in range(20) if pyxel.pget(x, y) == 7)
+        assert drawn == 0
+
+    def test_dither_above_one_behaves_as_one(self):
+        # The draw path takes the alpha >= 1.0 fast path, so any alpha > 1
+        # effectively behaves like alpha=1 (full opaque).
+        pyxel.cls(0)
+        pyxel.dither(1.5)
         pyxel.rect(0, 0, 20, 20, 7)
         drawn = sum(1 for x in range(20) for y in range(20) if pyxel.pget(x, y) == 7)
         assert drawn == 400

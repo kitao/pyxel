@@ -8,15 +8,7 @@ from pathlib import Path
 
 import pyxel
 
-# Subprocess entry for example/app/editor regression tests.
-# Spawned by test_examples.py / test_apps.py / test_editor.py to give each test
-# a fresh Python process (pyxel singleton can be initialized only once per process).
-#
-# Usage:
-#     python _runner.py example      <script_path>  <plan_json> <out_dir>
-#     python _runner.py flip_example <script_path>  <plan_json> <out_dir>
-#     python _runner.py app          <pyxapp_path>  <plan_json> <out_dir>
-#     python _runner.py editor       <editor_name>  <resource_file> <out_dir>
+# pyxel.init() can run only once per process; spawn a fresh interpreter per test.
 
 
 def _patch_init(*, extra=None):

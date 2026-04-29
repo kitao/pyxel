@@ -10,6 +10,7 @@
 - Added cfg(pyxel_core) gates to audio save APIs
 - Gated reset_statics and pid_exists by target OS
 - Refined CLAUDE.md self-conformance and user-guide wording
+- Replaced gen_bgm preset clamp with a bounds assertion
 
 ## 2.9.3
 
