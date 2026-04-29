@@ -158,7 +158,7 @@ The authoritative Pyxel product names are: Pyxel, Pyxel Editor, Pyxel Showcase, 
 - `make lint` (native build) and `make lint-wasm` (WebAssembly build) must be warning-free at all times. The two builds use different feature sets and target environments; both must pass.
   - Clippy warnings count as failures. Suppression with `#[allow(...)]` requires that the suppression itself be justified.
 
-- After a code change, `make test` must pass before completion is claimed. A flaky failure does not waive the rule; reproduce the failure and fix the underlying race.
+- After a code change, `make test` must pass before completion is claimed. A flaky failure does not waive the rule; reproduce the failure and fix the underlying cause.
 
 ### Audit
 
@@ -188,10 +188,10 @@ The audit runs as ordered phases. Each phase gates the next; the meta-rules appl
 
 A *false positive* in this procedure is a fix candidate that, on closer inspection, follows the policy's intent and is therefore not modified.
 
-1. Build a (file × criterion) matrix using `superpowers:writing-plans` (or, in environments without superpowers skills, an equivalent plan structure that lists every cell). Resolve every cell to `pass`, `fix`, or `pending` with one line of evidence (one line per field × language for translations). Aggregate summaries are not evidence; no cell is dropped silently.
-   - e.g., one row per file, one column per criterion; each cell carries evidence such as `line 12: no non-ASCII` (pass) or the concrete problem (fix).
+1. Build a (file × criterion) matrix using `superpowers:writing-plans` (or, in environments without superpowers skills, an equivalent plan structure that lists every cell). Resolve every cell to `pass`, `fix`, or `pending` with one line of evidence (one line per field × language for translations). Aggregate summaries are not evidence; no cell is dropped silently. Each cell's evidence verifies both (a) the rule body's broader intent and (b) the `e.g.` line's specific patterns; a cell addressing only (b) is marked `pending`, not `pass`.
+   - e.g., one row per file, one column per criterion; each cell carries evidence such as `(a) the file's comments contain no unstated intent; (b) grep '^\s*///' returns no match` (pass), or the concrete problem (fix).
 
-2. Run the cross-file consistency check. Every file pair or group sharing a concern appears as an explicit matrix row with evidence; an unrepresented pair counts as a skipped check.
+2. Run the cross-file consistency check. Every file pair or group sharing a concern appears as an explicit matrix row with evidence; an unrepresented pair counts as a skipped check. Each row's evidence verifies both (a) the cross-file dependency's broader intent and (b) the specific items compared; a row addressing only (b) is marked `pending`. The auditor expands each category below into the concrete file pairs in the repo and identifies any pair not listed.
    - Cross-file pairs in this repo include:
      - sibling files (`*_wrapper.rs`, editor widgets, `web/*/index.html`);
      - HTML ↔ i18n JSON key sets;
@@ -211,7 +211,9 @@ A *false positive* in this procedure is a fix candidate that, on closer inspecti
    - code duplicated for self-contained distribution (e.g., samples);
    - defensive code at system boundaries.
 
-5. Gate completion with `superpowers:verification-before-completion` (or, without superpowers skills, re-run the affected phases and confirm every cell passes).
+5. Gate completion in two stages.
+   - (a) The auditor (Phases 1-4) runs `superpowers:verification-before-completion` (or, without superpowers skills, re-runs the affected phases) within its own session.
+   - (b) An independent reviewer (a fresh agent or session, of any agent type, separate from the auditor) re-runs the full audit using a code-review skill (`superpowers:code-reviewer` or equivalent). If the reviewer reports zero findings, completion is gated. Otherwise the auditor incorporates the findings and a new fresh reviewer cycle is run; the loop repeats until a cycle reports zero findings.
 
 #### Meta-rules
 
