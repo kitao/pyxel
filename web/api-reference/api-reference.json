@@ -3443,18 +3443,18 @@
           "type": "function",
           "signature": "pget(x, y)",
           "description": {
-            "en": "Get the color of the pixel at (x, y).",
-            "cn": "获取 (x, y) 处像素的颜色。",
-            "de": "Gibt die Farbe des Pixels bei (x, y) zurück.",
-            "es": "Obtiene el color del píxel en (x, y).",
-            "fr": "Obtient la couleur du pixel en (x, y).",
-            "it": "Ottiene il colore del pixel in (x, y).",
-            "ja": "(x, y) のピクセルの色を取得する。",
-            "ko": "(x, y) 의 픽셀 색을 취득한다.",
-            "pt": "Obtém a cor do pixel em (x, y).",
-            "ru": "Получает цвет пикселя в точке (x, y).",
-            "tr": "(x, y) konumundaki pikselin rengini alır.",
-            "uk": "Отримує колір пікселя в точці (x, y)."
+            "en": "Get the color of the pixel at (x, y). The coordinates are absolute and not affected by the camera offset.",
+            "cn": "获取 (x, y) 处像素的颜色。该坐标为绝对坐标，不受相机偏移的影响。",
+            "de": "Gibt die Farbe des Pixels bei (x, y) zurück. Die Koordinaten sind absolut und werden nicht vom Kamera-Offset beeinflusst.",
+            "es": "Obtiene el color del píxel en (x, y). Las coordenadas son absolutas y no se ven afectadas por el desplazamiento de la cámara.",
+            "fr": "Obtient la couleur du pixel en (x, y). Les coordonnées sont absolues et ne sont pas affectées par le décalage de la caméra.",
+            "it": "Ottiene il colore del pixel in (x, y). Le coordinate sono assolute e non sono influenzate dall'offset della camera.",
+            "ja": "(x, y) のピクセルの色を取得する。座標は絶対座標で、カメラオフセットの影響を受けない。",
+            "ko": "(x, y) 의 픽셀 색을 취득한다. 좌표는 절대 좌표이며 카메라 오프셋의 영향을 받지 않는다.",
+            "pt": "Obtém a cor do pixel em (x, y). As coordenadas são absolutas e não são afetadas pelo deslocamento da câmera.",
+            "ru": "Получает цвет пикселя в точке (x, y). Координаты являются абсолютными и не зависят от смещения камеры.",
+            "tr": "(x, y) konumundaki pikselin rengini alır. Koordinatlar mutlak olup kamera ofsetinden etkilenmez.",
+            "uk": "Отримує колір пікселя в точці (x, y). Координати є абсолютними і не залежать від зміщення камери."
           },
           "params": [
             {
@@ -8303,18 +8303,18 @@
           "type": "function",
           "signature": "Image.pget(x, y)",
           "description": {
-            "en": "Get the color of the pixel at (x, y).",
-            "cn": "获取 (x, y) 处像素的颜色。",
-            "de": "Gibt die Farbe des Pixels bei (x, y) zurück.",
-            "es": "Obtiene el color del píxel en (x, y).",
-            "fr": "Obtient la couleur du pixel en (x, y).",
-            "it": "Ottiene il colore del pixel in (x, y).",
-            "ja": "(x, y) のピクセルの色を取得する。",
-            "ko": "(x, y) 의 픽셀 색을 취득한다.",
-            "pt": "Obtém a cor do pixel em (x, y).",
-            "ru": "Получает цвет пикселя в точке (x, y).",
-            "tr": "(x, y) konumundaki pikselin rengini alır.",
-            "uk": "Отримує колір пікселя в точці (x, y)."
+            "en": "Get the color of the pixel at (x, y). The coordinates are absolute and not affected by the camera offset.",
+            "cn": "获取 (x, y) 处像素的颜色。该坐标为绝对坐标，不受相机偏移的影响。",
+            "de": "Gibt die Farbe des Pixels bei (x, y) zurück. Die Koordinaten sind absolut und werden nicht vom Kamera-Offset beeinflusst.",
+            "es": "Obtiene el color del píxel en (x, y). Las coordenadas son absolutas y no se ven afectadas por el desplazamiento de la cámara.",
+            "fr": "Obtient la couleur du pixel en (x, y). Les coordonnées sont absolues et ne sont pas affectées par le décalage de la caméra.",
+            "it": "Ottiene il colore del pixel in (x, y). Le coordinate sono assolute e non sono influenzate dall'offset della camera.",
+            "ja": "(x, y) のピクセルの色を取得する。座標は絶対座標で、カメラオフセットの影響を受けない。",
+            "ko": "(x, y) 의 픽셀 색을 취득한다. 좌표는 절대 좌표이며 카메라 오프셋의 영향을 받지 않는다.",
+            "pt": "Obtém a cor do pixel em (x, y). As coordenadas são absolutas e não são afetadas pelo deslocamento da câmera.",
+            "ru": "Получает цвет пикселя в точке (x, y). Координаты являются абсолютными и не зависят от смещения камеры.",
+            "tr": "(x, y) konumundaki pikselin rengini alır. Koordinatlar mutlak olup kamera ofsetinden etkilenmez.",
+            "uk": "Отримує колір пікселя в точці (x, y). Координати є абсолютними і не залежать від зміщення камери."
           },
           "params": [
             {
@@ -9004,18 +9004,18 @@
           "type": "function",
           "signature": "Tilemap.pget(x, y)",
           "description": {
-            "en": "Get the tile at (x, y). A tile is a tuple of (image_tx, image_ty).",
-            "cn": "获取(x, y)处的瓦片。瓦片是(image_tx, image_ty)的元组。",
-            "de": "Gibt die Kachel an (x, y) zurück. Eine Kachel ist ein Tupel aus (image_tx, image_ty).",
-            "es": "Obtiene el tile en (x, y). Un tile es una tupla de (image_tx, image_ty).",
-            "fr": "Obtient le tile en (x, y). Un tile est un tuple de (image_tx, image_ty).",
-            "it": "Ottiene il tile in (x, y). Un tile è una tupla di (image_tx, image_ty).",
-            "ja": "(x, y) のタイルを取得する。タイルは (image_tx, image_ty) のタプル。",
-            "ko": "(x, y)의 타일을 가져온다. 타일은 (image_tx, image_ty) 튜플이다.",
-            "pt": "Obtém o tile em (x, y). Um tile é uma tupla de (image_tx, image_ty).",
-            "ru": "Возвращает тайл в (x, y). Тайл — это кортеж (image_tx, image_ty).",
-            "tr": "(x, y) konumundaki tile'ı döndürür. Tile, (image_tx, image_ty) demetidir.",
-            "uk": "Повертає тайл у (x, y). Тайл — це кортеж (image_tx, image_ty)."
+            "en": "Get the tile at (x, y). The coordinates are absolute and not affected by the camera offset. A tile is a tuple of (image_tx, image_ty).",
+            "cn": "获取(x, y)处的瓦片。该坐标为绝对坐标，不受相机偏移的影响。瓦片是(image_tx, image_ty)的元组。",
+            "de": "Gibt die Kachel an (x, y) zurück. Die Koordinaten sind absolut und werden nicht vom Kamera-Offset beeinflusst. Eine Kachel ist ein Tupel aus (image_tx, image_ty).",
+            "es": "Obtiene el tile en (x, y). Las coordenadas son absolutas y no se ven afectadas por el desplazamiento de la cámara. Un tile es una tupla de (image_tx, image_ty).",
+            "fr": "Obtient le tile en (x, y). Les coordonnées sont absolues et ne sont pas affectées par le décalage de la caméra. Un tile est un tuple de (image_tx, image_ty).",
+            "it": "Ottiene il tile in (x, y). Le coordinate sono assolute e non sono influenzate dall'offset della camera. Un tile è una tupla di (image_tx, image_ty).",
+            "ja": "(x, y) のタイルを取得する。座標は絶対座標で、カメラオフセットの影響を受けない。タイルは (image_tx, image_ty) のタプル。",
+            "ko": "(x, y)의 타일을 가져온다. 좌표는 절대 좌표이며 카메라 오프셋의 영향을 받지 않는다. 타일은 (image_tx, image_ty) 튜플이다.",
+            "pt": "Obtém o tile em (x, y). As coordenadas são absolutas e não são afetadas pelo deslocamento da câmera. Um tile é uma tupla de (image_tx, image_ty).",
+            "ru": "Возвращает тайл в (x, y). Координаты являются абсолютными и не зависят от смещения камеры. Тайл — это кортеж (image_tx, image_ty).",
+            "tr": "(x, y) konumundaki tile'ı döndürür. Koordinatlar mutlak olup kamera ofsetinden etkilenmez. Tile, (image_tx, image_ty) demetidir.",
+            "uk": "Повертає тайл у (x, y). Координати є абсолютними і не залежать від зміщення камери. Тайл — це кортеж (image_tx, image_ty)."
           },
           "params": [
             {

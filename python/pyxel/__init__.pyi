@@ -572,7 +572,7 @@ class Image:
         """
         ...
     def pget(self, x: float, y: float) -> int:
-        """Get the color of the pixel at (x, y).
+        """Get the color of the pixel at (x, y). The coordinates are absolute and not affected by the camera offset.
 
         Args:
             x: X coordinate
@@ -933,7 +933,7 @@ class Tilemap:
         """
         ...
     def pget(self, x: float, y: float) -> tuple[int, int]:
-        """Get the tile at (x, y). A tile is a tuple of (image_tx, image_ty).
+        """Get the tile at (x, y). The coordinates are absolute and not affected by the camera offset. A tile is a tuple of (image_tx, image_ty).
 
         Args:
             x: X coordinate
@@ -1761,7 +1761,7 @@ def cls(col: int) -> None:
     ...
 
 def pget(x: float, y: float) -> int:
-    """Get the color of the pixel at (x, y).
+    """Get the color of the pixel at (x, y). The coordinates are absolute and not affected by the camera offset.
 
     Args:
         x: X coordinate
