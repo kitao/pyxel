@@ -55,16 +55,16 @@ impl Tone {
         if self.wavetable != self.cached_wavetable {
             assert!(self.sample_bits <= 32);
 
-            let max_sample = (1 << self.sample_bits) - 1;
-            self.waveform = self
-                .wavetable
-                .iter()
-                .map(|&sample| {
-                    assert!(sample <= max_sample);
-                    (sample as f32 / max_sample as f32) * 2.0 - 1.0
-                })
-                .collect();
             self.cached_wavetable.clone_from(&self.wavetable);
+            self.waveform.clear();
+            self.waveform.reserve(self.wavetable.len());
+            let max_sample = (1 << self.sample_bits) - 1;
+
+            for &sample in &self.wavetable {
+                assert!(sample <= max_sample);
+                self.waveform
+                    .push((sample as f32 / max_sample as f32) * 2.0 - 1.0);
+            }
         }
 
         &self.waveform
