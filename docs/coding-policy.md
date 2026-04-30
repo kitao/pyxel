@@ -171,7 +171,7 @@ The audit runs:
 
 #### Scope
 
-- The audit covers every git-tracked file that `.gitattributes` does not mark as `binary`. CLAUDE.md is in scope.
+- The audit covers every git-tracked file that `.gitattributes` does not mark as `binary`. This file is in scope.
 
 - Excluded by tool-chain origin:
   - `*.tmx` (Tiled tilemap editor output)
@@ -188,7 +188,7 @@ The audit runs as ordered phases. Each phase gates the next; the meta-rules appl
 
 A *false positive* in this procedure is a fix candidate that, on closer inspection, follows the policy's intent and is therefore not modified.
 
-1. Build a (file × criterion) matrix using `superpowers:writing-plans` (or, in environments without superpowers skills, an equivalent plan structure that lists every cell). Resolve every cell to `pass`, `fix`, or `pending` with one line of evidence (one line per field × language for translations). Aggregate summaries are not evidence; no cell is dropped silently. Each cell's evidence verifies both (a) the rule body's broader intent and (b) the `e.g.` line's specific patterns; a cell addressing only (b) is marked `pending`, not `pass`.
+1. Build a (file × criterion) matrix as a structured plan that lists every cell (AI agents on Claude Code use the `superpowers:writing-plans` skill). Resolve every cell to `pass`, `fix`, or `pending` with one line of evidence (one line per field × language for translations). Aggregate summaries are not evidence; no cell is dropped silently. Each cell's evidence verifies both (a) the rule body's broader intent and (b) the `e.g.` line's specific patterns; a cell addressing only (b) is marked `pending`, not `pass`.
    - e.g., one row per file, one column per criterion; each cell carries evidence such as `(a) the file's comments contain no unstated intent; (b) grep '^\s*///' returns no match` (pass), or the concrete problem (fix).
 
 2. Run the cross-file consistency check. Every file pair or group sharing a concern appears as an explicit matrix row with evidence; an unrepresented pair counts as a skipped check. Each row's evidence verifies both (a) the cross-file dependency's broader intent and (b) the specific items compared; a row addressing only (b) is marked `pending`, not `pass`. The auditor expands each category below into the concrete file pairs in the repo and identifies any pair not listed.
@@ -199,7 +199,7 @@ A *false positive* in this procedure is a fix candidate that, on closer inspecti
      - widget convention markers (`# Variables:` / `# Events:`) ↔ `copy_var` / `new_var` usage in `python/pyxel/editor/widgets/widget.py`;
      - the `languages` array across `web/**/*.json`.
 
-3. Verify every matrix cell by reading its evidence and assessing the verdict. Format checks (row count, regex, banned-word grep) cannot substitute. Reading a subagent's output means reading its per-cell evidence, not its overall self-verification summary.
+3. Verify every matrix cell by reading its evidence and assessing the verdict. Format checks (row count, regex, banned-word grep) cannot substitute. When a phase has been delegated, read the delegated work's per-cell evidence, not its overall self-verification summary.
    - e.g., an evidence line `line 12: no issue` passes a regex but fails substance unless it names what was examined and why it is clean.
 
 4. Run the design-intent self-check on every fix candidate. A candidate that hits any of the following intents is a false positive. Standards-derived intents come first; design-derived intents follow.
@@ -212,18 +212,18 @@ A *false positive* in this procedure is a fix candidate that, on closer inspecti
    - defensive code at system boundaries.
 
 5. Gate completion in two stages.
-   - (a) The auditor (Phases 1-4) runs `superpowers:verification-before-completion` (or, without superpowers skills, re-runs the same phases) within its own session.
-   - (b) An independent reviewer (a fresh agent or session, of any agent type, separate from the auditor) re-runs the full audit from the in-scope files rather than from the auditor's matrix, using a code-review skill (`superpowers:code-reviewer` or equivalent). If the reviewer reports zero findings, completion is gated. Otherwise the auditor incorporates the findings and a new fresh reviewer cycle is run; the loop repeats until a cycle reports zero findings.
+   - (a) The original auditor re-runs Phases 1-4 against its own matrix to confirm consistency (AI agents on Claude Code invoke the `superpowers:verification-before-completion` skill).
+   - (b) An independent second reviewer — separate from the original auditor — re-runs the full audit from the in-scope files rather than from the auditor's matrix (AI agents on Claude Code use a fresh agent or session, optionally invoking the `superpowers:code-reviewer` skill). If the reviewer reports zero findings, completion is gated. Otherwise the auditor incorporates the findings and a new second-reviewer cycle is run; the loop repeats until a cycle reports zero findings.
 
 #### Meta-rules
 
-- Every criterion applies to every in-scope file. Sampling, spot-check, and ad-hoc scope narrowing are not permitted, whether during the audit or during verification of a subagent's output.
-  - e.g., for "Comments in English", every `.rs` and `.py` file is checked — not "a representative sample". The same applies to verifying a subagent's per-cell verdicts: every cell is read, not a chosen subset.
+- Every criterion applies to every in-scope file. Sampling, spot-check, and ad-hoc scope narrowing are not permitted, whether during the audit itself or during verification of delegated work.
+  - e.g., for "Comments in English", every `.rs` and `.py` file is checked — not "a representative sample". The same applies to verifying delegated per-cell verdicts: every cell is read, not a chosen subset.
 
 - Finding imbalance is a non-execution signal. When findings concentrate in one category while structurally comparable categories return zero, the imbalance triggers a re-run on the zero-finding categories with stricter probing before proceeding.
   - e.g., if a documentation pass surfaces every fix candidate while every code-side group returns zero, the imbalance is the signal — the zero groups are re-inspected; the distribution is not accepted as-is.
 
-- When work is delegated to a subagent, the rule text is passed verbatim, the file list is passed in full, and every cross-file dependency the group must cover is named explicitly. Shortening any of these causes silent sampling.
+- When a phase or pair-check is delegated, the rule text is passed verbatim, the file list is passed in full, and every cross-file dependency the group must cover is named explicitly. Shortening any of these causes silent sampling.
   - e.g., the HTML ↔ i18n JSON pairing, the Rust core ↔ binding ↔ pyi pairing, and the translation JSON keys across languages each pass as explicit pair lists with file paths.
 
 ## Conventions of This File
