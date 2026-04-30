@@ -11,6 +11,8 @@
 - Gated reset_statics and pid_exists by target OS
 - Refined CLAUDE.md self-conformance and user-guide wording
 - Replaced gen_bgm preset clamp with a bounds assertion
+- Added explicit error for BDF fonts wider than 32 pixels
+- Added Python 3.14 to PyPI classifiers
 
 ## 2.9.3
 

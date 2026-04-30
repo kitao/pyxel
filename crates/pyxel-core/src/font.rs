@@ -118,6 +118,13 @@ impl Font {
         if values.len() < 4 {
             return Err(parse_err());
         }
+        // Bitmap rows are stored as u32; reject glyphs wider than 32 pixels
+        if values[0] > 32 {
+            return Err(format!(
+                "BDF glyph width {} exceeds 32 pixel limit",
+                values[0]
+            ));
+        }
         Ok(BdfBoundingBox {
             width: values[0],
             height: values[1],
