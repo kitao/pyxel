@@ -260,7 +260,7 @@ fn is_sdl2_static() -> bool {
 
 fn main() {
     println!("cargo::rustc-check-cfg=cfg(pyxel_core)");
-    println!("cargo:rustc-cfg=pyxel_core");
+    println!("cargo::rustc-cfg=pyxel_core");
     if has_sdl2_feature() {
         SDL2BindingsBuilder::new().build();
     }
