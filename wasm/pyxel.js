@@ -146,9 +146,7 @@ document.addEventListener(
   true,
 );
 
-// ---------------------------------------------------------------------------
 // Public API
-// ---------------------------------------------------------------------------
 
 async function launchPyxel(params) {
   const pyxelVersion = PYXEL_WHEEL_PATH.match(/pyxel-([\d.]+)-/)[1];
@@ -271,9 +269,7 @@ function dropFileToPyxel(name, data) {
   );
 }
 
-// ---------------------------------------------------------------------------
 // Initialization
-// ---------------------------------------------------------------------------
 
 const _initialize = () => {
   _setIcon();
@@ -347,9 +343,7 @@ const _suppressTouchZoomGestures = () => {
   document.addEventListener("touchmove", pinchHandler, { passive: false });
 };
 
-// ---------------------------------------------------------------------------
 // Screen elements
-// ---------------------------------------------------------------------------
 
 const _setMinWidthFromRatio = (selector, screenSize) => {
   const elem = document.querySelector(selector);
@@ -441,9 +435,7 @@ const _createScreenElements = async () => {
   return sdl2Canvas;
 };
 
-// ---------------------------------------------------------------------------
 // Pyodide loading
-// ---------------------------------------------------------------------------
 
 const _loadScript = async (scriptSrc) => {
   const script = document.createElement("script");
@@ -474,9 +466,7 @@ const _loadPyodideAndPyxel = async (canvas) => {
   return pyodide;
 };
 
-// ---------------------------------------------------------------------------
 // Error handling
-// ---------------------------------------------------------------------------
 
 const _hookPythonError = (pyodide) => {
   pyodide.setStderr({
@@ -550,9 +540,7 @@ const _displayFatalErrorOverlay = (error) => {
   _displayErrorOverlay(_formatUnknownError(error));
 };
 
-// ---------------------------------------------------------------------------
 // File operations
-// ---------------------------------------------------------------------------
 
 const _hookFileOperations = (pyodide, root) => {
   const fs = pyodide.FS;
@@ -652,9 +640,7 @@ const _hookFileOperations = (pyodide, root) => {
   };
 };
 
-// ---------------------------------------------------------------------------
 // Input and startup
-// ---------------------------------------------------------------------------
 
 const _isTouchDevice = () => window.matchMedia("(pointer: coarse)").matches;
 
@@ -686,9 +672,7 @@ const _waitForInput = async () => {
   await new Promise((resolve) => setTimeout(resolve, 1));
 };
 
-// ---------------------------------------------------------------------------
 // Virtual gamepad
-// ---------------------------------------------------------------------------
 
 const _updateGamepadStateFromTouch = (
   clientX,
@@ -838,9 +822,7 @@ const _addVirtualGamepad = (mode) => {
   document.addEventListener("touchend", touchHandler, { passive: false });
 };
 
-// ---------------------------------------------------------------------------
 // Command execution
-// ---------------------------------------------------------------------------
 
 const _installBuiltinPackages = async (pyodide, packages) => {
   if (!packages) {
@@ -915,9 +897,7 @@ const _executePyxelCommand = async (pyodide, params) => {
   }
 };
 
-// ---------------------------------------------------------------------------
 // Custom elements
-// ---------------------------------------------------------------------------
 
 class PyxelBaseElement extends HTMLElement {
   attributeChangedCallback(name, _oldValue, newValue) {

@@ -582,6 +582,8 @@
 
       function initAceEditor() {
         const codeEditor = ace.edit("code-editor");
+        // ACE's hidden textarea has no id by default; set one so browser
+        // autofill heuristics can identify the form field.
         codeEditor.textInput.getElement().id = "code-editor-input";
 
         codeEditor.setTheme("ace/theme/monokai");

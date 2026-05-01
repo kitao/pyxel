@@ -116,52 +116,52 @@ impl SDL2BindingsBuilder {
 
         let cmake_install_dir = cfg.build();
         println!(
-            "cargo:rustc-link-search={}",
+            "cargo::rustc-link-search={}",
             cmake_install_dir.join("lib64").display()
         );
         println!(
-            "cargo:rustc-link-search={}",
+            "cargo::rustc-link-search={}",
             cmake_install_dir.join("lib").display()
         );
     }
 
     fn link_sdl2(&self) {
         if is_sdl2_static() {
-            println!("cargo:rustc-link-lib=static=SDL2main");
+            println!("cargo::rustc-link-lib=static=SDL2main");
             if self.target_os.contains("windows") {
-                println!("cargo:rustc-link-lib=static=SDL2-static");
+                println!("cargo::rustc-link-lib=static=SDL2-static");
             } else {
-                println!("cargo:rustc-link-lib=static=SDL2");
+                println!("cargo::rustc-link-lib=static=SDL2");
             }
 
             if self.target_os.contains("windows") {
-                println!("cargo:rustc-link-lib=shell32");
-                println!("cargo:rustc-link-lib=user32");
-                println!("cargo:rustc-link-lib=gdi32");
-                println!("cargo:rustc-link-lib=winmm");
-                println!("cargo:rustc-link-lib=imm32");
-                println!("cargo:rustc-link-lib=ole32");
-                println!("cargo:rustc-link-lib=oleaut32");
-                println!("cargo:rustc-link-lib=version");
-                println!("cargo:rustc-link-lib=uuid");
-                println!("cargo:rustc-link-lib=dinput8");
-                println!("cargo:rustc-link-lib=dxguid");
-                println!("cargo:rustc-link-lib=setupapi");
+                println!("cargo::rustc-link-lib=shell32");
+                println!("cargo::rustc-link-lib=user32");
+                println!("cargo::rustc-link-lib=gdi32");
+                println!("cargo::rustc-link-lib=winmm");
+                println!("cargo::rustc-link-lib=imm32");
+                println!("cargo::rustc-link-lib=ole32");
+                println!("cargo::rustc-link-lib=oleaut32");
+                println!("cargo::rustc-link-lib=version");
+                println!("cargo::rustc-link-lib=uuid");
+                println!("cargo::rustc-link-lib=dinput8");
+                println!("cargo::rustc-link-lib=dxguid");
+                println!("cargo::rustc-link-lib=setupapi");
             } else if self.target_os == "darwin" {
-                println!("cargo:rustc-link-lib=framework=Cocoa");
-                println!("cargo:rustc-link-lib=framework=IOKit");
-                println!("cargo:rustc-link-lib=framework=Carbon");
-                println!("cargo:rustc-link-lib=framework=ForceFeedback");
-                println!("cargo:rustc-link-lib=framework=GameController");
-                println!("cargo:rustc-link-lib=framework=CoreHaptics");
-                println!("cargo:rustc-link-lib=framework=CoreVideo");
-                println!("cargo:rustc-link-lib=framework=CoreAudio");
-                println!("cargo:rustc-link-lib=framework=AudioToolbox");
-                println!("cargo:rustc-link-lib=framework=Metal");
-                println!("cargo:rustc-link-lib=iconv");
+                println!("cargo::rustc-link-lib=framework=Cocoa");
+                println!("cargo::rustc-link-lib=framework=IOKit");
+                println!("cargo::rustc-link-lib=framework=Carbon");
+                println!("cargo::rustc-link-lib=framework=ForceFeedback");
+                println!("cargo::rustc-link-lib=framework=GameController");
+                println!("cargo::rustc-link-lib=framework=CoreHaptics");
+                println!("cargo::rustc-link-lib=framework=CoreVideo");
+                println!("cargo::rustc-link-lib=framework=CoreAudio");
+                println!("cargo::rustc-link-lib=framework=AudioToolbox");
+                println!("cargo::rustc-link-lib=framework=Metal");
+                println!("cargo::rustc-link-lib=iconv");
             }
         } else if self.target_os != "emscripten" {
-            println!("cargo:rustc-link-lib=SDL2");
+            println!("cargo::rustc-link-lib=SDL2");
         }
     }
 

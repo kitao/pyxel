@@ -160,7 +160,7 @@ The authoritative Pyxel product names are: Pyxel, Pyxel Editor, Pyxel Showcase, 
   - `*.bdf` (font tooling output)
   - `Cargo.lock` and `*-lock.json` (package-manager lockfiles)
   - `web/styles.css` (a Tailwind CSS build artifact)
-  - `.md` files whose first line contains `<!-- This file is generated -->` (output of `scripts/generate_docs`)
+  - `.md` files whose first line begins with `<!-- This file is generated` (output of `scripts/generate_docs`)
 
 - A file's code-side aspects (structure, syntax, identifiers, non-prose elements) remain in scope even when its prose content has been handed off for separate work; the handoff covers content, not the file.
 
@@ -217,8 +217,8 @@ A *false positive* in this procedure is a fix candidate that, on closer inspecti
    - defensive code at system boundaries.
 
 5. Gate completion in two stages.
-   - (a) The original auditor runs `superpowers:verification-before-completion` to re-run Phases 1-4 against its own matrix and confirm consistency.
-   - (b) An independent second reviewer — separate from the original auditor, in a fresh agent or session — re-runs the full audit from the in-scope files using `superpowers:code-reviewer`, rather than from the auditor's matrix. If the reviewer reports zero findings — or only a small number of judgment-call findings whose fix is not clearly net-positive — completion is gated. Otherwise the auditor incorporates the findings and a new second-reviewer cycle is run; the loop repeats until the gating condition is met.
+   - (a) The auditor runs `superpowers:verification-before-completion` to re-run Phases 1-4 against its own matrix and confirm consistency.
+   - (b) The auditor delegates to `superpowers:code-reviewer` to re-audit the in-scope files against the policy, independently of the matrix. If the reviewer reports zero findings — or only a small number of judgment-call findings whose fix is not clearly net-positive — completion is gated. Otherwise the auditor incorporates the findings and a new code-reviewer cycle is run; the loop repeats until the gating condition is met.
 
 #### Meta-rules
 

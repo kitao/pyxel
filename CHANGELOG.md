@@ -6,8 +6,10 @@
 - Fixed Pyxel Editor color picker cursor shape across palette sizes
 - Fixed missing id attributes on web pages
 - Reorganized Python test suite for broader pyxel-binding API coverage
-- Reorganized CLAUDE.md sections and added determinism principle
+- Reorganized CLAUDE.md as compact behavioral guidelines
+- Added Pyxel coding policy with determinism principle and audit procedure
 - Added cfg(pyxel_core) gates to audio save APIs
+- Reused waveform buffer when updating tone wavetable
 - Gated reset_statics and pid_exists by target OS
 - Refined CLAUDE.md self-conformance and user-guide wording
 - Replaced gen_bgm preset clamp with a bounds assertion
