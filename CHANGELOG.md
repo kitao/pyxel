@@ -15,7 +15,7 @@
 - Made Tone wavetable, sample_bits, and gain take effect mid-note
 - Removed deprecated Tone.waveform from API reference and type hints
 - Replaced Seq[T] with list[T] in type hints
-- Documented Tone.sample_bits range and Channel.detune unit
+- Added Tone.sample_bits range and Channel.detune unit to docs
 - Refined API reference and user-guide translations
 
 ## 2.9.4
