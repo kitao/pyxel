@@ -1,13 +1,8 @@
 from typing import (
     Any,
     Callable,
-    Generic,
-    Iterator,
-    TypeVar,
     overload,
 )
-
-T = TypeVar("T")
 
 # Constants
 VERSION: str
@@ -380,34 +375,6 @@ GAMEPAD4_BUTTON_DPAD_UP: int
 GAMEPAD4_BUTTON_DPAD_DOWN: int
 GAMEPAD4_BUTTON_DPAD_LEFT: int
 GAMEPAD4_BUTTON_DPAD_RIGHT: int
-
-# Sequence class
-
-class Seq(Generic[T]):
-    def __len__(self) -> int: ...
-    @overload
-    def __getitem__(self, idx: int) -> T: ...
-    @overload
-    def __getitem__(self, idx: slice) -> list[T]: ...
-    @overload
-    def __setitem__(self, idx: int, value: T) -> None: ...
-    @overload
-    def __setitem__(self, idx: slice, value: list[T]) -> None: ...
-    def __delitem__(self, idx: int | slice) -> None: ...
-    def __iter__(self) -> Iterator[T]: ...
-    def __reversed__(self) -> Iterator[T]: ...
-    def __contains__(self, value: T) -> bool: ...
-    def __eq__(self, other: Any) -> bool: ...
-    def __add__(self, other: list[T]) -> list[T]: ...
-    def __mul__(self, n: int) -> list[T]: ...
-    def __iadd__(self, other: list[T]) -> Seq[T]: ...
-    def __bool__(self) -> bool: ...
-    def __repr__(self) -> str: ...
-    def append(self, value: T) -> None: ...
-    def extend(self, values: list[T]) -> None: ...
-    def insert(self, index: int, value: T) -> None: ...
-    def pop(self, index: int | None = None) -> T: ...
-    def clear(self) -> None: ...
 
 # Font class
 class Font:
@@ -1160,7 +1127,7 @@ class Channel:
         ...
     def play(
         self,
-        snd: int | Seq[int] | Sound | Seq[Sound] | str,
+        snd: int | list[int] | Sound | list[Sound] | str,
         sec: float = 0,
         loop: bool = False,
         resume: bool = False,
@@ -1191,7 +1158,7 @@ class Tone:
     """Tone mode (0: Wavetable, 1: ShortPeriodNoise, 2: LongPeriodNoise)."""
     sample_bits: int
     """Sample bits for the wavetable. Defaults to 4."""
-    wavetable: Seq[int]
+    wavetable: list[int]
     """Wavetable data as a list of sample values. Each value must be in range 0 to (2^sample_bits - 1)."""
     gain: float
     """Tone gain. Defaults to 1.0."""
@@ -1206,13 +1173,13 @@ class Tone:
 
 # Sound class
 class Sound:
-    notes: Seq[int]
+    notes: list[int]
     """List of notes (0-59). Higher values produce higher pitches. 33 = 'A2' (440 Hz). Rests are -1."""
-    tones: Seq[int]
+    tones: list[int]
     """List of tones (0: Triangle, 1: Square, 2: Pulse, 3: Noise)."""
-    volumes: Seq[int]
+    volumes: list[int]
     """List of volumes (0-7)."""
-    effects: Seq[int]
+    effects: list[int]
     """List of effects (0: None, 1: Slide, 2: Vibrato, 3: FadeOut, 4: Half-FadeOut, 5: Quarter-FadeOut)."""
     speed: int
     """Playback speed. 1 is the fastest, and the larger the number, the slower the playback speed. At 120, one note equals 1 second."""
@@ -1321,7 +1288,7 @@ class Sound:
 
 # Music class
 class Music:
-    seqs: Seq[Seq[int]]
+    seqs: list[list[int]]
     """A two-dimensional list of sounds (0-63) across multiple channels."""
 
     def __init__(self) -> None:
@@ -1680,11 +1647,11 @@ def set_dropped_files(files: list[str]) -> None:
     ...
 
 # Graphics
-colors: Seq[int]
+colors: list[int]
 """List of the palette display colors. Specified by 24-bit numerical value. Supports Python list operations."""
-images: Seq[Image]
+images: list[Image]
 """List of the image banks (instances of the Image class) (0-2)."""
-tilemaps: Seq[Tilemap]
+tilemaps: list[Tilemap]
 """List of the tilemaps (instances of the Tilemap class) (0-7)."""
 screen: Image
 """The screen image (Image class instance)."""
@@ -2037,18 +2004,18 @@ def text(x: float, y: float, s: str, col: int, font: Font | None = None) -> None
     ...
 
 # Audio
-channels: Seq[Channel]
+channels: list[Channel]
 """List of the channels (instances of the Channel class) (0-3)."""
-tones: Seq[Tone]
+tones: list[Tone]
 """List of the tone definitions (instances of the Tone class) (0-3)."""
-sounds: Seq[Sound]
+sounds: list[Sound]
 """List of the sounds (instances of the Sound class) (0-63)."""
-musics: Seq[Music]
+musics: list[Music]
 """List of music tracks (instances of the Music class) (0-7)."""
 
 def play(
     ch: int,
-    snd: int | Seq[int] | Sound | Seq[Sound] | str,
+    snd: int | list[int] | Sound | list[Sound] | str,
     sec: float = 0,
     loop: bool = False,
     resume: bool = False,

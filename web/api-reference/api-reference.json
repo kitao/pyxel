@@ -10656,28 +10656,6 @@
           "advanced": true
         },
         {
-          "name": "Tone.waveform",
-          "type": "variable",
-          "signature": "Tone.waveform",
-          "description": {
-            "en": "Deprecated alias of wavetable.",
-            "cn": "已弃用的 wavetable 别名。",
-            "de": "Veralteter Alias für wavetable.",
-            "es": "Alias obsoleto de wavetable.",
-            "fr": "Alias obsolète de wavetable.",
-            "it": "Alias deprecato di wavetable.",
-            "ja": "wavetableの非推奨エイリアス。",
-            "ko": "wavetable의 사용 중단된 별칭.",
-            "pt": "Alias obsoleto de wavetable.",
-            "ru": "Устаревший псевдоним wavetable.",
-            "tr": "wavetable için kullanımdan kaldırılmış takma ad.",
-            "uk": "Застарілий псевдонім wavetable."
-          },
-          "value_type": "list[int]",
-          "deprecated": true,
-          "advanced": true
-        },
-        {
           "name": "Tone.gain",
           "type": "variable",
           "signature": "Tone.gain",
