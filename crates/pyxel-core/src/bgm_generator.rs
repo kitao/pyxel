@@ -2058,7 +2058,7 @@ fn generate_bgm(params: &GeneratorParams, seed: u64) -> BgmData {
             }
         }
         if instr == 2 || instr == 3 {
-            // Submelody to c2 (used by instr 2 and 3)
+            // Submelody to c2
             let sub = submelody.unwrap_or_else(|| vec![Some(-1); TOTAL_STEPS]);
             c2 = make_channel(sub, sub_tone_idx, 64, 94);
         }
