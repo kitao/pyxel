@@ -240,48 +240,91 @@ class TestBltm:
 
     def test_bltm_rotate(self):
         pyxel.cls(0)
-        pyxel.bltm(0, 0, 0, 0, 0, 64, 64, rotate=45)
+        pyxel.images[0].cls(0)
+        pyxel.images[0].rect(0, 0, 8, 8, 7)
+        pyxel.tilemaps[0].cls((0, 0))
+        pyxel.tilemaps[0].pset(0, 0, (0, 0))
+        pyxel.bltm(80, 60, 0, 0, 0, 8, 8, rotate=45)
+        has_drawn = any(
+            pyxel.pget(x, y) == 7 for x in range(70, 90) for y in range(50, 70)
+        )
+        assert has_drawn
 
     def test_bltm_scale(self):
         pyxel.cls(0)
-        pyxel.bltm(0, 0, 0, 0, 0, 64, 64, scale=2)
+        pyxel.images[0].cls(0)
+        pyxel.images[0].pset(0, 0, 7)
+        pyxel.tilemaps[0].cls((0, 0))
+        pyxel.tilemaps[0].pset(0, 0, (0, 0))
+        pyxel.bltm(0, 0, 0, 0, 0, 1, 1, scale=4)
+        drawn = sum(1 for x in range(8) for y in range(8) if pyxel.pget(x, y) == 7)
+        assert drawn > 0
 
 
 class TestBlt3d:
     def test_blt3d_with_int_img(self):
         pyxel.cls(0)
-        pyxel.blt3d(0, 0, 160, 120, 0, (0, 0, 10), (45, 0, 0))
+        pyxel.images[0].cls(0)
+        pyxel.images[0].rect(0, 0, 16, 16, 7)
+        pyxel.blt3d(0, 0, 160, 120, 0, (0, 0, 10), (0, 30, 0))
+        assert any(pyxel.pget(x, y) == 7 for x in range(160) for y in range(120))
 
     def test_blt3d_with_image_instance(self):
         pyxel.cls(0)
         img = pyxel.Image(16, 16)
         img.cls(0)
-        pyxel.blt3d(0, 0, 160, 120, img, (0, 0, 10), (45, 0, 0))
+        img.rect(0, 0, 16, 16, 5)
+        pyxel.blt3d(0, 0, 160, 120, img, (0, 0, 10), (0, 30, 0))
+        assert any(pyxel.pget(x, y) == 5 for x in range(160) for y in range(120))
 
     def test_bltm3d_with_int_tm(self):
         pyxel.cls(0)
-        pyxel.bltm3d(0, 0, 160, 120, 0, (0, 0, 10), (45, 0, 0))
+        pyxel.images[0].cls(0)
+        pyxel.images[0].rect(0, 0, 8, 8, 12)
+        pyxel.tilemaps[0].cls((0, 0))
+        pyxel.tilemaps[0].rect(0, 0, 8, 8, (0, 0))
+        pyxel.bltm3d(0, 0, 160, 120, 0, (0, 0, 10), (0, 30, 0))
+        assert any(pyxel.pget(x, y) == 12 for x in range(160) for y in range(120))
 
     def test_bltm3d_with_tilemap_instance(self):
         pyxel.cls(0)
+        pyxel.images[0].cls(0)
+        pyxel.images[0].rect(0, 0, 8, 8, 14)
         tm = pyxel.Tilemap(32, 32, 0)
-        pyxel.bltm3d(0, 0, 160, 120, tm, (0, 0, 10), (45, 0, 0))
+        tm.cls((0, 0))
+        tm.rect(0, 0, 8, 8, (0, 0))
+        pyxel.bltm3d(0, 0, 160, 120, tm, (0, 0, 10), (0, 30, 0))
+        assert any(pyxel.pget(x, y) == 14 for x in range(160) for y in range(120))
 
     def test_blt3d_with_fov(self):
         pyxel.cls(0)
-        pyxel.blt3d(0, 0, 160, 120, 0, (0, 0, 10), (0, 0, 0), fov=60.0)
+        pyxel.images[0].cls(0)
+        pyxel.images[0].rect(0, 0, 16, 16, 9)
+        pyxel.blt3d(0, 0, 160, 120, 0, (0, 0, 10), (0, 30, 0), fov=60.0)
+        assert any(pyxel.pget(x, y) == 9 for x in range(160) for y in range(120))
 
     def test_blt3d_with_colkey(self):
-        pyxel.cls(0)
-        pyxel.blt3d(0, 0, 160, 120, 0, (0, 0, 10), (0, 0, 0), colkey=0)
+        pyxel.cls(3)
+        pyxel.images[0].cls(0)
+        pyxel.images[0].rect(0, 0, 8, 8, 7)
+        pyxel.blt3d(0, 0, 160, 120, 0, (0, 0, 10), (0, 30, 0), colkey=0)
+        assert any(pyxel.pget(x, y) == 7 for x in range(160) for y in range(120))
 
     def test_blt3d_with_fov_and_colkey(self):
-        pyxel.cls(0)
-        pyxel.blt3d(0, 0, 160, 120, 0, (0, 0, 10), (0, 0, 0), fov=90.0, colkey=0)
+        pyxel.cls(3)
+        pyxel.images[0].cls(0)
+        pyxel.images[0].rect(0, 0, 8, 8, 11)
+        pyxel.blt3d(0, 0, 160, 120, 0, (0, 0, 10), (0, 30, 0), fov=90.0, colkey=0)
+        assert any(pyxel.pget(x, y) == 11 for x in range(160) for y in range(120))
 
     def test_bltm3d_with_fov_and_colkey(self):
-        pyxel.cls(0)
-        pyxel.bltm3d(0, 0, 160, 120, 0, (0, 0, 10), (0, 0, 0), fov=90.0, colkey=0)
+        pyxel.cls(3)
+        pyxel.images[0].cls(0)
+        pyxel.images[0].rect(0, 0, 8, 8, 6)
+        pyxel.tilemaps[0].cls((0, 0))
+        pyxel.tilemaps[0].rect(0, 0, 8, 8, (0, 0))
+        pyxel.bltm3d(0, 0, 160, 120, 0, (0, 0, 10), (0, 30, 0), fov=90.0, colkey=0)
+        assert any(pyxel.pget(x, y) == 6 for x in range(160) for y in range(120))
 
 
 class TestText:
@@ -346,6 +389,25 @@ class TestDrawingStateEdgeCases:
         drawn = sum(1 for x in range(20) for y in range(20) if pyxel.pget(x, y) == 7)
         assert drawn == 400
 
+    def test_dither_negative_alpha_behaves_as_zero(self):
+        # The draw path treats alpha < pattern threshold as "skip", so any
+        # negative alpha effectively behaves like alpha=0 (full transparent).
+        pyxel.cls(0)
+        pyxel.dither(-0.5)
+        pyxel.rect(0, 0, 20, 20, 7)
+        pyxel.dither(1.0)
+        drawn = sum(1 for x in range(20) for y in range(20) if pyxel.pget(x, y) == 7)
+        assert drawn == 0
+
+    def test_dither_above_one_behaves_as_one(self):
+        # The draw path takes the alpha >= 1.0 fast path, so any alpha > 1
+        # effectively behaves like alpha=1 (full opaque).
+        pyxel.cls(0)
+        pyxel.dither(1.5)
+        pyxel.rect(0, 0, 20, 20, 7)
+        drawn = sum(1 for x in range(20) for y in range(20) if pyxel.pget(x, y) == 7)
+        assert drawn == 400
+
     def test_pal_chained(self):
         pyxel.cls(0)
         pyxel.pal(7, 8)
@@ -406,3 +468,17 @@ class TestBltFlip:
         pyxel.blt(0, 0, 0, 0, 0, -8, -8)
         # After both flips, (7,7) -> (0,0)
         assert pyxel.pget(0, 0) == 5
+
+
+class TestDeprecatedAccessors:
+    def test_image_function_returns_image_instance(self, capfd):
+        result = pyxel.image(0)  # type: ignore[attr-defined]
+        assert isinstance(result, pyxel.Image)
+        out = capfd.readouterr().out
+        assert "deprecated" in out.lower()
+
+    def test_tilemap_function_returns_tilemap_instance(self, capfd):
+        result = pyxel.tilemap(0)  # type: ignore[attr-defined]
+        assert isinstance(result, pyxel.Tilemap)
+        out = capfd.readouterr().out
+        assert "deprecated" in out.lower()

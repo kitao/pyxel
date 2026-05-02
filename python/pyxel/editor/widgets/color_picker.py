@@ -90,11 +90,15 @@ class ColorPicker(Widget):
             + ((rgb >> 8) & 0xFF) * 0.587
             + (rgb & 0xFF) * 0.114
         )
+        # Cursor scales with cell size:
+        #   cell 8x8 -> 3x3 cross, cell 4x8 -> 1x3 vertical, cell 4x4 -> 1x1 dot
+        cursor_w = cw // 2 - 1
+        cursor_h = ch // 2 - 1
         pyxel.elli(
-            x - cw // 8,
-            y - ch // 8,
-            1 + cw // 8 * 3 // 2,
-            1 + ch // 8 * 3 // 2,
+            x - cursor_w // 2,
+            y - cursor_h // 2,
+            cursor_w,
+            cursor_h,
             7 if brightness < 140 else 0,
         )
 

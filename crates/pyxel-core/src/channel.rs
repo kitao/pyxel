@@ -6,8 +6,7 @@ use crate::settings::{
     AUDIO_CLOCKS_PER_SAMPLE, AUDIO_CLOCK_RATE, AUDIO_GAIN_SCALE, AUDIO_GAIN_SHIFT,
     AUDIO_SAMPLE_RATE, DEFAULT_CHANNEL_GAIN, NOTE_INTERP_CLOCKS, VOICE_CONTROL_RATE,
 };
-use crate::sound::Sound;
-use crate::tone::ToneMode;
+use crate::sound::{RcSound, Sound};
 use crate::voice::Voice;
 
 pub type ChannelGain = f32;
@@ -17,7 +16,7 @@ pub type ChannelDetune = i32;
 const PCM_MIX_TRUNC_BIAS: i64 = AUDIO_GAIN_SCALE - 1;
 
 pub struct Channel {
-    pub sounds: Vec<*mut Sound>,
+    pub sounds: Vec<RcSound>,
     pub gain: ChannelGain,
     pub detune: ChannelDetune,
 
@@ -35,7 +34,6 @@ pub struct Channel {
     repeat_points: Vec<(u32, u32)>,
     clocks_per_tick: u32,
     gate_ratio: f32,
-    tone_gain: f32,
     volume_level: f32,
     transpose_semitones: f32,
     detune_semitones: f32,
@@ -45,17 +43,19 @@ pub struct Channel {
     vibrato_slots: Vec<Option<MmlCommand>>,
     glide_slots: Vec<Option<MmlCommand>>,
 
-    resume_sounds: Vec<*mut Sound>,
+    resume_sounds: Vec<RcSound>,
     resume_should_loop: bool,
-    owned_sounds: Vec<*mut Sound>,
+    owned_sounds: Vec<RcSound>,
 
     playing_pcm: bool,
     pcm_position: usize,
 }
 
+define_rc_type!(RcChannel, Channel);
+
 impl Channel {
-    pub fn new() -> *mut Channel {
-        Box::into_raw(Box::new(Self {
+    pub fn new() -> RcChannel {
+        new_rc_type!(Self {
             sounds: Vec::new(),
             gain: DEFAULT_CHANNEL_GAIN,
             detune: 0,
@@ -74,7 +74,6 @@ impl Channel {
             repeat_points: Vec::new(),
             clocks_per_tick: 0,
             gate_ratio: 1.0,
-            tone_gain: 1.0,
             volume_level: 1.0,
             transpose_semitones: 0.0,
             detune_semitones: 0.0,
@@ -90,12 +89,12 @@ impl Channel {
 
             playing_pcm: false,
             pcm_position: 0,
-        }))
+        })
     }
 
     pub fn play(
         &mut self,
-        sounds: Vec<*mut Sound>,
+        sounds: Vec<RcSound>,
         start_sec: Option<f32>,
         should_loop: bool,
         should_resume: bool,
@@ -110,7 +109,7 @@ impl Channel {
 
     pub fn play_sound(
         &mut self,
-        sound: *mut Sound,
+        sound: RcSound,
         start_sec: Option<f32>,
         should_loop: bool,
         should_resume: bool,
@@ -131,9 +130,9 @@ impl Channel {
         should_resume: bool,
     ) -> Result<(), String> {
         let sound = Sound::new();
-        unsafe { &mut *sound }.set_mml(code)?;
+        rc_mut!(sound).set_mml(code)?;
         self.release_owned_sounds();
-        self.owned_sounds.push(sound);
+        self.owned_sounds.push(sound.clone());
         self.play_from_clock(
             vec![sound],
             Self::sec_to_clocks(start_sec),
@@ -144,10 +143,10 @@ impl Channel {
     }
 
     fn release_owned_sounds(&mut self) {
-        for &sound in &self.owned_sounds {
-            self.sounds.retain(|&s| s != sound);
-            self.resume_sounds.retain(|&s| s != sound);
-            unsafe { drop(Box::from_raw(sound)) };
+        for sound in &self.owned_sounds {
+            self.sounds.retain(|s| !std::rc::Rc::ptr_eq(s, sound));
+            self.resume_sounds
+                .retain(|s| !std::rc::Rc::ptr_eq(s, sound));
         }
         self.owned_sounds.clear();
     }
@@ -158,14 +157,14 @@ impl Channel {
 
     fn play_from_clock(
         &mut self,
-        sounds: Vec<*mut Sound>,
+        sounds: Vec<RcSound>,
         start_clock: u32,
         should_loop: bool,
         should_resume: bool,
     ) {
         if sounds.is_empty()
-            || sounds.iter().all(|&sound| {
-                let sound = unsafe { &*sound };
+            || sounds.iter().all(|sound| {
+                let sound = rc_ref!(sound);
                 sound.notes.is_empty() && sound.commands.is_empty() && sound.pcm.is_none()
             })
         {
@@ -253,7 +252,7 @@ impl Channel {
                 self.repeat_points.clear();
 
                 {
-                    let sound = unsafe { &*self.sounds[self.sound_index as usize] };
+                    let sound = rc_ref!(self.sounds[self.sound_index as usize]);
                     if sound.commands.is_empty() {
                         sound.emit_commands(&mut self.commands);
                     } else {
@@ -335,15 +334,8 @@ impl Channel {
                 }
 
                 MmlCommand::Tone { tone } => {
-                    let tone_ptr = *tones.get(*tone as usize).unwrap_or(&tones[0]);
-                    let tone = unsafe { &mut *tone_ptr };
-                    match tone.mode {
-                        ToneMode::Wavetable => self.voice.oscillator.set(tone.waveform()),
-                        ToneMode::ShortPeriodNoise => self.voice.oscillator.set_noise(true),
-                        ToneMode::LongPeriodNoise => self.voice.oscillator.set_noise(false),
-                    }
-
-                    self.tone_gain = tone.gain;
+                    let tone = tones.get(*tone as usize).unwrap_or(&tones[0]);
+                    self.voice.set_tone(tone.clone());
                 }
                 MmlCommand::Volume { level } => {
                     self.volume_level = *level;
@@ -457,7 +449,7 @@ impl Channel {
                         + self.detune_semitones
                         + self.detune as f32 / 100.0;
 
-                    let velocity = self.tone_gain * self.gain * self.volume_level;
+                    let velocity = self.gain * self.volume_level;
 
                     self.note_duration_clocks = self.clocks_per_tick * *duration_ticks;
                     let playback_clocks =
@@ -512,7 +504,7 @@ impl Channel {
             let mut should_advance = false;
 
             {
-                let sound = unsafe { &*self.sounds[self.sound_index as usize] };
+                let sound = rc_ref!(self.sounds[self.sound_index as usize]);
                 let Some(pcm) = &sound.pcm else {
                     return;
                 };
@@ -597,7 +589,7 @@ impl Channel {
 
         while remaining > 0 && (self.sound_index as usize) < self.sounds.len() {
             let len = {
-                let sound = unsafe { &*self.sounds[self.sound_index as usize] };
+                let sound = rc_ref!(self.sounds[self.sound_index as usize]);
                 match &sound.pcm {
                     Some(pcm) => pcm.samples.len(),
                     None => break,
@@ -630,7 +622,7 @@ impl Channel {
         self.playing_pcm = self
             .sounds
             .get(self.sound_index as usize)
-            .is_some_and(|&sound| unsafe { &*sound }.pcm.is_some());
+            .is_some_and(|sound| rc_ref!(sound).pcm.is_some());
     }
 
     pub(crate) fn needs_blip_processing(&self) -> bool {

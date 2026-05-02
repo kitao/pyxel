@@ -1,7 +1,7 @@
 use std::ptr;
 
 use crate::canvas::{Canvas, ToIndex};
-use crate::image::Image;
+use crate::image::RcImage;
 use crate::settings::TILE_SIZE;
 use crate::tmx_parser::parse_tmx;
 use crate::utils::{f32_to_u32, parse_hex_string, simplify_string};
@@ -18,14 +18,14 @@ impl ToIndex for Tile {
 #[derive(Clone)]
 pub enum ImageSource {
     Index(u32),
-    Image(*mut Image),
+    Image(RcImage),
 }
 
 impl ImageSource {
-    pub(crate) unsafe fn resolve(&self) -> &Image {
+    pub(crate) fn resolve(&self) -> &RcImage {
         match self {
-            ImageSource::Index(index) => &*crate::pyxel::images()[*index as usize],
-            ImageSource::Image(image) => &**image,
+            ImageSource::Index(index) => &crate::pyxel::images()[*index as usize],
+            ImageSource::Image(image) => image,
         }
     }
 }
@@ -35,17 +35,19 @@ pub struct Tilemap {
     pub(crate) canvas: Canvas<Tile>,
 }
 
+define_rc_type!(RcTilemap, Tilemap);
+
 impl Tilemap {
     // Constructors
 
-    pub fn new(width: u32, height: u32, imgsrc: ImageSource) -> *mut Tilemap {
-        Box::into_raw(Box::new(Self {
+    pub fn new(width: u32, height: u32, imgsrc: ImageSource) -> RcTilemap {
+        new_rc_type!(Self {
             imgsrc,
             canvas: Canvas::new(width, height),
-        }))
+        })
     }
 
-    pub fn from_tmx(filename: &str, layer_index: u32) -> Result<*mut Tilemap, String> {
+    pub fn from_tmx(filename: &str, layer_index: u32) -> Result<RcTilemap, String> {
         parse_tmx(filename, layer_index)
     }
 
@@ -68,9 +70,9 @@ impl Tilemap {
     pub fn set(&mut self, x: i32, y: i32, data: &[&str]) {
         let width = simplify_string(data[0]).len() as u32 / 4;
         let height = data.len() as u32;
-        let tilemap = Self::new(width, height, self.imgsrc.clone());
+        let rc = Self::new(width, height, self.imgsrc.clone());
         {
-            let tilemap = unsafe { &mut *tilemap };
+            let tilemap = rc_mut!(rc);
             for y in 0..height {
                 let src_data = simplify_string(data[y as usize]);
                 for x in 0..width {
@@ -87,33 +89,27 @@ impl Tilemap {
                 }
             }
         }
-        unsafe {
-            self.draw_tilemap(
-                x as f32,
-                y as f32,
-                tilemap,
-                0.0,
-                0.0,
-                width as f32,
-                height as f32,
-                None,
-                None,
-                None,
-            );
-            drop(Box::from_raw(tilemap));
-        }
+        self.draw_tilemap(
+            x as f32,
+            y as f32,
+            &rc,
+            0.0,
+            0.0,
+            width as f32,
+            height as f32,
+            None,
+            None,
+            None,
+        );
     }
 
     pub fn load(&mut self, x: i32, y: i32, filename: &str, layer_index: u32) -> Result<(), String> {
-        let tilemap = Self::from_tmx(filename, layer_index)?;
-        let w = unsafe { &*tilemap }.width();
-        let h = unsafe { &*tilemap }.height();
-        unsafe {
-            self.draw_tilemap(
-                x as f32, y as f32, tilemap, 0.0, 0.0, w as f32, h as f32, None, None, None,
-            );
-            drop(Box::from_raw(tilemap));
-        }
+        let rc = Self::from_tmx(filename, layer_index)?;
+        let w = rc_ref!(rc).width();
+        let h = rc_ref!(rc).height();
+        self.draw_tilemap(
+            x as f32, y as f32, &rc, 0.0, 0.0, w as f32, h as f32, None, None, None,
+        );
         Ok(())
     }
 
@@ -210,11 +206,11 @@ impl Tilemap {
 
     // Blit operations
 
-    pub unsafe fn draw_tilemap(
+    pub fn draw_tilemap(
         &mut self,
         x: f32,
         y: f32,
-        tilemap: *mut Tilemap,
+        tilemap: &RcTilemap,
         tilemap_x: f32,
         tilemap_y: f32,
         width: f32,
@@ -241,12 +237,12 @@ impl Tilemap {
             return;
         }
 
+        let tilemap = rc_ref!(tilemap);
         if self.is_self_blit(tilemap) {
             let canvas = self.copy_region(tilemap_x, tilemap_y, width, height);
             self.canvas
                 .blit(x, y, &canvas, 0.0, 0.0, width, height, transparent, None);
         } else {
-            let tilemap = unsafe { &*tilemap };
             self.canvas.blit(
                 x,
                 y,
@@ -292,8 +288,8 @@ impl Tilemap {
 
     // Internal helpers
 
-    fn is_self_blit(&self, tilemap: *mut Tilemap) -> bool {
-        ptr::eq(tilemap.cast_const(), ptr::from_ref(self))
+    fn is_self_blit(&self, tilemap: &Tilemap) -> bool {
+        ptr::eq(tilemap, self)
     }
 
     // Copy first to avoid aliasing on self-blit.
@@ -309,7 +305,7 @@ impl Tilemap {
         &mut self,
         x: f32,
         y: f32,
-        tilemap: *mut Tilemap,
+        tilemap: &RcTilemap,
         tilemap_x: f32,
         tilemap_y: f32,
         width: f32,
@@ -318,6 +314,7 @@ impl Tilemap {
         rotate: f32,
         scale: f32,
     ) {
+        let tilemap = rc_ref!(tilemap);
         if self.is_self_blit(tilemap) {
             let canvas = self.copy_region(tilemap_x, tilemap_y, width, height);
             self.canvas.blit_with_transform(
@@ -335,7 +332,6 @@ impl Tilemap {
                 false,
             );
         } else {
-            let tilemap = unsafe { &*tilemap };
             self.canvas.blit_with_transform(
                 x,
                 y,

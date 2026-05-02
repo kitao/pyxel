@@ -520,7 +520,7 @@ Clear the screen with color col.
 
 ### `pget(x, y)` — function
 
-Get the color of the pixel at (x, y).
+Get the color of the pixel at (x, y). The coordinates are absolute and not affected by the camera offset.
 
 **Parameters:**
 
@@ -1105,7 +1105,7 @@ Load an image file (PNG/GIF/JPEG) at (x, y).
 
 ### `Image.pget(x, y)` — function
 
-Get the color of the pixel at (x, y).
+Get the color of the pixel at (x, y). The coordinates are absolute and not affected by the camera offset.
 
 **Parameters:**
 
@@ -1215,7 +1215,7 @@ Load the layer (0-) from the TMX file at (x, y).
 
 ### `Tilemap.pget(x, y)` — function
 
-Get the tile at (x, y). A tile is a tuple of (image_tx, image_ty).
+Get the tile at (x, y). The coordinates are absolute and not affected by the camera offset. A tile is a tuple of (image_tx, image_ty).
 
 **Parameters:**
 
@@ -1520,12 +1520,6 @@ Sample bits for the wavetable. Defaults to 4.
 ### `Tone.wavetable` — variable *(Advanced)*
 
 Wavetable data as a list of sample values. Each value must be in range 0 to (2^sample_bits - 1).
-
-- **Type:** `list[int]`
-
-### `Tone.waveform` — variable *(Advanced)*
-
-Deprecated alias of wavetable.
 
 - **Type:** `list[int]`
 

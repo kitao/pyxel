@@ -69,7 +69,6 @@ class TestSeqSetitem:
         new_img = pyxel.Image(256, 256)
         pyxel.images[0] = new_img
         assert pyxel.images[0].width == 256
-        # Restore
         pyxel.images[0] = original
 
 
@@ -179,7 +178,6 @@ class TestSeqSliceOperations:
         pyxel.colors[0:2] = [0x000000, 0xFFFFFF]
         assert pyxel.colors[0] == 0x000000
         assert pyxel.colors[1] == 0xFFFFFF
-        # Restore
         pyxel.colors[0:2] = original[0:2]
 
     def test_delitem_slice(self):
@@ -299,7 +297,6 @@ class TestSeqIadd:
         assert len(pyxel.colors) == len(original) + 2
         assert pyxel.colors[-2] == 0xAAAAAA
         assert pyxel.colors[-1] == 0xBBBBBB
-        # Restore
         pyxel.colors.pop()
         pyxel.colors.pop()
         assert len(pyxel.colors) == len(original)
@@ -330,7 +327,7 @@ class TestSeqValueOps:
         assert pyxel.colors != colors_list
 
     def test_add(self):
-        result = pyxel.colors + pyxel.colors
+        result = pyxel.colors + list(pyxel.colors)
         assert len(result) == len(pyxel.colors) * 2
         assert isinstance(result, list)
 

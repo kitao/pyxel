@@ -31,7 +31,10 @@ const buildLangSelector = (
   existingSelect,
 ) => {
   const select = existingSelect || document.createElement("select");
-  if (!existingSelect) select.className = "lang-select mt-1";
+  if (!existingSelect) {
+    select.id = "lang-select";
+    select.className = "lang-select mt-1";
+  }
   select.setAttribute("aria-label", "Language");
   for (const l of languages) {
     const o = document.createElement("option");

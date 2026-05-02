@@ -36,16 +36,18 @@ pub enum Font {
     },
 }
 
+define_rc_type!(RcFont, Font);
+
 impl Font {
     // Constructors
 
-    pub fn new(filename: &str, font_size: Option<f32>) -> Result<*mut Font, String> {
+    pub fn new(filename: &str, font_size: Option<f32>) -> Result<RcFont, String> {
         let font = if filename.to_lowercase().ends_with(".bdf") {
             Self::parse_bdf(filename)?
         } else {
             Self::parse_fontdue(filename, font_size)?
         };
-        Ok(Box::into_raw(Box::new(font)))
+        Ok(new_rc_type!(font))
     }
 
     fn parse_bdf(filename: &str) -> Result<Font, String> {
@@ -117,6 +119,13 @@ impl Font {
             .collect::<Result<_, _>>()?;
         if values.len() < 4 {
             return Err(parse_err());
+        }
+        // Bitmap rows are stored as u32; reject glyphs wider than 32 pixels
+        if values[0] > 32 {
+            return Err(format!(
+                "BDF glyph width {} exceeds 32 pixel limit",
+                values[0]
+            ));
         }
         Ok(BdfBoundingBox {
             width: values[0],

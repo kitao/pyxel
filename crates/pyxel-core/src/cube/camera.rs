@@ -9,16 +9,18 @@ pub struct Camera {
     pub far: f32,
 }
 
+define_rc_type!(RcCamera, Camera);
+
 impl Camera {
-    pub fn new(pos: Vec3, target: Vec3) -> Self {
-        Self {
+    pub fn new(pos: Vec3, target: Vec3) -> RcCamera {
+        new_rc_type!(Self {
             pos,
             target,
             up: Vec3::UP,
             fov: 60.0,
             near: 0.1,
             far: 100.0,
-        }
+        })
     }
 
     #[must_use]
@@ -29,11 +31,5 @@ impl Camera {
     #[must_use]
     pub fn projection_matrix(&self, aspect: f32) -> Mat4 {
         Mat4::perspective(self.fov, aspect, self.near, self.far)
-    }
-}
-
-impl Default for Camera {
-    fn default() -> Self {
-        Self::new(Vec3::new(0.0, -10.0, 5.0), Vec3::ZERO)
     }
 }

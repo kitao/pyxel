@@ -57,19 +57,24 @@ mod window_watcher;
 
 use platform::key;
 
-pub use crate::channel::{Channel, ChannelDetune, ChannelGain};
+pub use crate::audio::AudioLock;
+pub use crate::channel::{Channel, ChannelDetune, ChannelGain, RcChannel};
 pub use crate::cube::{Mat4, Vec3};
-pub use crate::font::Font;
-pub use crate::image::{Color, Image, Rgb24};
+pub use crate::font::{Font, RcFont};
+pub use crate::image::{Color, Image, RcImage, Rgb24};
 pub use crate::key::*;
-pub use crate::music::Music;
+pub use crate::music::{Music, RcMusic};
+#[cfg(target_os = "emscripten")]
+pub use crate::pyxel::reset_statics;
 pub use crate::pyxel::{
     channels, colors, cursor_image, dropped_files, font_image, frame_count, height, images, init,
     input_keys, input_text, mouse_wheel, mouse_x, mouse_y, musics, pyxel, quit_callback,
-    reset_callback, reset_statics, screen, sounds, tilemaps, tones, width, Pyxel,
+    reset_callback, screen, sounds, tilemaps, tones, width, Pyxel,
 };
 pub use crate::settings::*;
-pub use crate::sound::{Sound, SoundEffect, SoundNote, SoundSpeed, SoundTone, SoundVolume};
+pub use crate::sound::{
+    RcSound, Sound, SoundEffect, SoundNote, SoundSpeed, SoundTone, SoundVolume,
+};
 pub use crate::system::PyxelCallback;
-pub use crate::tilemap::{ImageSource, ImageTileCoord, Tile, Tilemap};
-pub use crate::tone::{Tone, ToneGain, ToneMode, ToneSample};
+pub use crate::tilemap::{ImageSource, ImageTileCoord, RcTilemap, Tile, Tilemap};
+pub use crate::tone::{RcTone, Tone, ToneGain, ToneMode, ToneSample};

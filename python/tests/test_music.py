@@ -28,12 +28,6 @@ class TestMusic:
         assert len(msc.seqs) == pyxel.NUM_CHANNELS
         assert list(msc.seqs[0]) == [0, 1, 2]
 
-    def test_seqs_property(self):
-        msc = pyxel.Music()
-        msc.set([0, 1], [2, 3], [4])
-        assert len(msc.seqs) == pyxel.NUM_CHANNELS
-        assert list(msc.seqs[2]) == [4]
-
     def test_save(self, tmp_path):
         pyxel.sounds[0].set("c2e2g2c3", "ssss", "7654", "nnnn", 10)
         msc = pyxel.Music()
@@ -42,6 +36,30 @@ class TestMusic:
         msc.save(path, 1.0)
         assert Path(path).exists()
         assert Path(path).stat().st_size > 0
+
+    def test_set_overwrites_previous(self):
+        msc = pyxel.Music()
+        msc.set([0, 1, 2])
+        msc.set([10])
+        assert list(msc.seqs[0]) == [10]
+        assert list(msc.seqs[1]) == []
+
+    def test_snds_list_aliases_seqs_deprecated(self, capfd):
+        msc = pyxel.Music()
+        msc.set([0, 1])
+        result = msc.snds_list  # type: ignore[attr-defined]
+        # snds_list returns Seqs (same as seqs)
+        assert len(result) == len(msc.seqs)
+        out = capfd.readouterr().out
+        assert "deprecated" in out.lower()
+
+
+class TestMusicSeqs:
+    def test_seqs_property(self):
+        msc = pyxel.Music()
+        msc.set([0, 1], [2, 3], [4])
+        assert len(msc.seqs) == pyxel.NUM_CHANNELS
+        assert list(msc.seqs[2]) == [4]
 
     def test_seqs_inner_seq_access(self):
         msc = pyxel.Music()
@@ -79,14 +97,14 @@ class TestMusic:
         msc = pyxel.Music()
         msc.set([0])
         original_channels = len(msc.seqs)
-        msc.seqs.append([5, 6])
+        msc.seqs.append([5, 6])  # type: ignore[arg-type]
         assert len(msc.seqs) == original_channels + 1
         assert list(msc.seqs[-1]) == [5, 6]
 
     def test_seqs_setitem_channel(self):
         msc = pyxel.Music()
         msc.set([0, 1], [2, 3])
-        msc.seqs[0] = [10, 11, 12]
+        msc.seqs[0] = [10, 11, 12]  # type: ignore[call-overload]
         assert len(msc.seqs[0]) == 3
         assert list(msc.seqs[0]) == [10, 11, 12]
         # Other channel unchanged
@@ -103,7 +121,7 @@ class TestMusic:
         msc = pyxel.Music()
         msc.set([0], [1])
         original_len = len(msc.seqs)
-        msc.seqs.insert(1, [5, 6])
+        msc.seqs.insert(1, [5, 6])  # type: ignore[arg-type]
         assert len(msc.seqs) == original_len + 1
         assert list(msc.seqs[1]) == [5, 6]
 
@@ -125,7 +143,7 @@ class TestMusic:
         msc = pyxel.Music()
         msc.set([0])
         original_len = len(msc.seqs)
-        msc.seqs.extend([[1, 2], [3, 4]])
+        msc.seqs.extend([[1, 2], [3, 4]])  # type: ignore[arg-type]
         assert len(msc.seqs) == original_len + 2
 
     def test_seqs_slice_access(self):
@@ -163,14 +181,23 @@ class TestMusic:
         original_len = len(msc.seqs)
         # seqs property is read-only, so use local variable for +=
         seqs = msc.seqs
-        seqs += [[5, 6], [7, 8]]
+        seqs += [[5, 6], [7, 8]]  # type: ignore[operator]
         assert len(msc.seqs) == original_len + 2
         assert list(msc.seqs[-2]) == [5, 6]
         assert list(msc.seqs[-1]) == [7, 8]
 
-    def test_set_overwrites_previous(self):
+    def test_seqs_from_list_deprecated(self, capfd):
         msc = pyxel.Music()
-        msc.set([0, 1, 2])
-        msc.set([10])
-        assert list(msc.seqs[0]) == [10]
-        assert list(msc.seqs[1]) == []
+        msc.seqs.from_list([[10, 20], [30, 40]])  # type: ignore[attr-defined]
+        assert list(msc.seqs[0]) == [10, 20]
+        out = capfd.readouterr().out
+        assert "deprecated" in out.lower()
+
+    def test_seqs_to_list_deprecated(self, capfd):
+        msc = pyxel.Music()
+        msc.set([5, 6])
+        result = msc.seqs.to_list()  # type: ignore[attr-defined]
+        assert isinstance(result, list)
+        assert result[0] == [5, 6]
+        out = capfd.readouterr().out
+        assert "deprecated" in out.lower()

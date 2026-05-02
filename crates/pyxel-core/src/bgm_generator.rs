@@ -499,8 +499,8 @@ const CHORD_PROGRESSIONS: [&[ChordEntry]; PRESET_COUNT] =
 // Preset lookup
 
 fn preset_params(preset: i32) -> GeneratorParams {
-    let idx = preset.clamp(0, (PRESET_COUNT - 1) as i32) as usize;
-    PRESETS[idx].clone()
+    assert!((0..PRESET_COUNT as i32).contains(&preset), "invalid preset");
+    PRESETS[preset as usize].clone()
 }
 
 // MML token helpers
@@ -2187,10 +2187,9 @@ impl Pyxel {
         if play.unwrap_or(false) {
             for (ch, mml) in mml_list.iter().enumerate() {
                 let sound = Sound::new();
-                if unsafe { &mut *sound }.set_mml(mml).is_ok() {
-                    crate::platform::lock_audio();
-                    unsafe { &mut *pyxel::channels()[ch] }.play_sound(sound, None, true, false);
-                    crate::platform::unlock_audio();
+                if rc_mut!(sound).set_mml(mml).is_ok() {
+                    let _lock = crate::audio::AudioLock::lock();
+                    rc_mut!(pyxel::channels()[ch]).play_sound(sound, None, true, false);
                 }
             }
         }
@@ -2214,11 +2213,15 @@ mod tests {
     }
 
     #[test]
-    fn test_preset_params_clamp() {
-        let p = preset_params(-1);
-        assert_eq!(p.speed, 216); // preset 0
-        let p = preset_params(99);
-        assert_eq!(p.speed, 168); // preset 7
+    #[should_panic(expected = "invalid preset")]
+    fn test_preset_params_negative_panics() {
+        let _ = preset_params(-1);
+    }
+
+    #[test]
+    #[should_panic(expected = "invalid preset")]
+    fn test_preset_params_above_range_panics() {
+        let _ = preset_params(PRESET_COUNT as i32);
     }
 
     #[test]

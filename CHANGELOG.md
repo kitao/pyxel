@@ -1,11 +1,44 @@
 # Change Log
 
+## 2.9.5
+
+- Fixed aliasing UB when tilemap imgsrc points to the target image
+- Switched image color matching to plain RGB Euclidean distance
+- Removed unused string allocation in PyO3 type cast macro
+- Hoisted clip checks out of dithered row fill loop
+- Switched shared types to Rc-based ownership and resolved sound leaks
+- Fixed missing audio lock in several audio API call paths
+- Fixed audio_bgm2 sample using off-palette colors
+- Fixed Image.from_image accepting over 256 colors with include_colors
+- Fixed Tone.sample_bits range allowing zero or shift-overflow values
+- Fixed vibrato modulation skipped when MML period equals initial value
+- Made Tone wavetable, sample_bits, and gain take effect mid-note
+- Removed deprecated Tone.waveform from API reference and type hints
+- Replaced Seq[T] with list[T] in type hints
+
+## 2.9.4
+
+- Fixed Pyxel Editor mismapping user palettes with more than 16 colors
+- Fixed Pyxel Editor color picker cursor shape across palette sizes
+- Fixed missing id attributes on web pages
+- Reorganized Python test suite for broader pyxel-binding API coverage
+- Reorganized CLAUDE.md as compact behavioral guidelines
+- Added Pyxel coding policy with determinism principle and audit procedure
+- Added cfg(pyxel_core) gates to audio save APIs
+- Reused waveform buffer when updating tone wavetable
+- Gated reset_statics and pid_exists by target OS
+- Refined CLAUDE.md self-conformance and user-guide wording
+- Replaced gen_bgm preset clamp with a bounds assertion
+- Added explicit error for BDF fonts wider than 32 pixels
+- Added Python 3.14 to PyPI classifiers
+
 ## 2.9.3
 
+- Added a JSON API to the BGM generator for Pyxel Composer integration
 - Reorganized BGM generator internals and added determinism snapshot test
 - Refactored editor widgets and cleaned up state handling
 - Simplified Rust binding error handling
-- Refined web pages and translation terminology
+- Refined web pages, share links, and translation terminology
 - Refined CLAUDE.md coding policy structure and wording
 
 ## 2.9.2
@@ -26,7 +59,7 @@
 - Added CLI unit tests covering dispatcher, error handling, and all commands
 - Reorganized make targets into make test / run / run-wasm
 - Renamed get_pixel/tile/value accessor methods to pixel/tile/value
-- Added custom chord progression support to bgm_generator (#684)
+- Added custom chord progression support to bgm_generator
 - Added Pyxel Web Launcher to the showcase
 - Added shortcut keys for editors
 - Optimized rendering, audio, and parsing performance
@@ -59,7 +92,7 @@
 - Fixed tilemap editor selection
 - Fixed tilemap viewer rendering
 - Added Python API and Rust unit tests
-- Removed undefined constants from type stubs and API reference
+- Removed undefined constants from type hints and API reference
 - Added frame pipeline and input injection to headless mode
 
 ## 2.8.8
@@ -120,8 +153,8 @@
 
 - Added URL loading support to Pyxel Code Maker
 - Changed Pyxel Code Maker to load default project from zip file
-- Added script to generate type stub docstrings
-- Added docstrings to type stubs from API reference
+- Added script to generate type hint docstrings
+- Added docstrings to type hints from API reference
 - Moved WASM-only images from docs/images to wasm/images
 - Added multilingual editor manual with 12 language support
 - Unified default width of WASM tool pages
@@ -360,7 +393,7 @@
 
 ## 2.5.7
 
-- Specified Tailwind CSS version 3.4.17 for Pyxel Web pages
+- Specified Tailwind CSS version 3.4.17 for web pages
 - Added links to web tools and examples for Pyxel in the README files
 - Updated URL on reload in Pyxel MML Studio
 - Improved usability of Pyxel MML Studio
@@ -369,8 +402,8 @@
 ## 2.5.6
 
 - Updated Pyxel MML Studio to use compressed URLs
-- Improved Pyxel MML Studio usability
-- Updated design of the Pyxel Web pages
+- Improved usability of Pyxel MML Studio
+- Updated design of the web pages
 
 ## 2.5.5
 

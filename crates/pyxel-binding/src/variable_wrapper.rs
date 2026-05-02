@@ -23,36 +23,36 @@ wrap_as_python_primitive_sequence!(
 );
 
 macro_rules! wrap_ptr_vec_as_python_object_sequence {
-    ($wrapper_name:ident, $value_type:ident, $global_fn:path) => {
+    ($wrapper_name:ident, $value_type:ident, $rc_type:path, $global_fn:path) => {
         wrap_as_python_object_sequence!(
             $wrapper_name,
             u32, // Dummy
             (|_| $global_fn().len()),
             $value_type,
-            (|_, index: usize| $value_type::wrap($global_fn()[index])),
+            (|_, index: usize| $value_type::wrap($global_fn()[index].clone())),
             $value_type,
             (|_, index, value: $value_type| $global_fn()[index] = value.inner),
-            *mut _,
-            (|_: &u32| -> &mut Vec<*mut _> { $global_fn() }),
+            $rc_type,
+            (|_: &u32| -> &mut Vec<$rc_type> { $global_fn() }),
             (|v: $value_type| v.inner),
             (|p| $value_type::wrap(p)),
             Vec<$value_type>,
             (|_, list: Vec<$value_type>| *$global_fn() =
-                list.iter().map(|value| value.inner).collect()),
+                list.into_iter().map(|value| value.inner).collect()),
             (|_| $global_fn()
                 .iter()
-                .map(|&ptr| $value_type::wrap(ptr))
+                .map(|rc| $value_type::wrap(rc.clone()))
                 .collect::<Vec<$value_type>>())
         );
     };
 }
 
-wrap_ptr_vec_as_python_object_sequence!(Images, Image, pyxel::images);
-wrap_ptr_vec_as_python_object_sequence!(Tilemaps, Tilemap, pyxel::tilemaps);
-wrap_ptr_vec_as_python_object_sequence!(Channels, Channel, pyxel::channels);
-wrap_ptr_vec_as_python_object_sequence!(Tones, Tone, pyxel::tones);
-wrap_ptr_vec_as_python_object_sequence!(Sounds, Sound, pyxel::sounds);
-wrap_ptr_vec_as_python_object_sequence!(Musics, Music, pyxel::musics);
+wrap_ptr_vec_as_python_object_sequence!(Images, Image, pyxel::RcImage, pyxel::images);
+wrap_ptr_vec_as_python_object_sequence!(Tilemaps, Tilemap, pyxel::RcTilemap, pyxel::tilemaps);
+wrap_ptr_vec_as_python_object_sequence!(Channels, Channel, pyxel::RcChannel, pyxel::channels);
+wrap_ptr_vec_as_python_object_sequence!(Tones, Tone, pyxel::RcTone, pyxel::tones);
+wrap_ptr_vec_as_python_object_sequence!(Sounds, Sound, pyxel::RcSound, pyxel::sounds);
+wrap_ptr_vec_as_python_object_sequence!(Musics, Music, pyxel::RcMusic, pyxel::musics);
 
 #[pyfunction]
 fn __getattr__(py: Python, name: &str) -> PyResult<Py<PyAny>> {
@@ -74,9 +74,9 @@ fn __getattr__(py: Python, name: &str) -> PyResult<Py<PyAny>> {
         "colors" => instance_to_py_any!(py, Colors::wrap(0)),
         "images" => instance_to_py_any!(py, Images::wrap(0)),
         "tilemaps" => instance_to_py_any!(py, Tilemaps::wrap(0)),
-        "screen" => instance_to_py_any!(py, Image::wrap(std::ptr::from_mut(pyxel::screen()))),
-        "cursor" => instance_to_py_any!(py, Image::wrap(std::ptr::from_mut(pyxel::cursor_image()))),
-        "font" => instance_to_py_any!(py, Image::wrap(std::ptr::from_mut(pyxel::font_image()))),
+        "screen" => instance_to_py_any!(py, Image::wrap(pyxel::screen().clone())),
+        "cursor" => instance_to_py_any!(py, Image::wrap(pyxel::cursor_image().clone())),
+        "font" => instance_to_py_any!(py, Image::wrap(pyxel::font_image().clone())),
 
         // Audio
         "channels" => instance_to_py_any!(py, Channels::wrap(0)),

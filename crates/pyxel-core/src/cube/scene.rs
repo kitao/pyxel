@@ -1,7 +1,7 @@
 use super::camera::Camera;
 use super::light::Light;
 use super::math::{Mat4, Vec3};
-use super::model::{Model, ModelNode};
+use super::model::{ModelNode, RcModel};
 use super::rasterizer::{
     self, RasterTri, ScreenVertex, ShadePalette, ZBuffer, DEFAULT_SHADE_PALETTE,
 };
@@ -10,7 +10,7 @@ use crate::image::Color;
 use crate::pyxel;
 
 struct SceneNode {
-    model: *mut Model,
+    model: RcModel,
     pos: Vec3,
     rot: Vec3,
     scale: Vec3,
@@ -23,18 +23,19 @@ pub struct Scene {
     pub shade_palette: ShadePalette,
 }
 
+define_rc_type!(RcScene, Scene);
+
 impl Scene {
-    #[must_use]
-    pub fn new() -> Self {
-        Self {
+    pub fn new() -> RcScene {
+        new_rc_type!(Self {
             nodes: Vec::new(),
             lights: vec![Light::default()],
             zbuf: ZBuffer::new(1, 1),
             shade_palette: DEFAULT_SHADE_PALETTE,
-        }
+        })
     }
 
-    pub fn add(&mut self, model: *mut Model, pos: Vec3, rot: Vec3, scale: Vec3) {
+    pub fn add(&mut self, model: RcModel, pos: Vec3, rot: Vec3, scale: Vec3) {
         self.nodes.push(SceneNode {
             model,
             pos,
@@ -47,7 +48,8 @@ impl Scene {
         self.nodes.clear();
     }
 
-    pub fn set_light(&mut self, index: usize, light: Light) {
+    pub fn set_light(&mut self, index: usize, light: &Light) {
+        let light = Light { dir: light.dir };
         if index < self.lights.len() {
             self.lights[index] = light;
         } else {
@@ -76,16 +78,16 @@ impl Scene {
         let vp = proj * view;
 
         // Screen canvas (singleton)
-        let canvas = &mut pyxel::screen().canvas;
+        let canvas = &mut rc_mut!(pyxel::screen()).canvas;
 
         // Gather image data for texturing
         let images_vec = pyxel::images();
         let mut img_data: Vec<&[Color]> = Vec::new();
         let mut img_widths: Vec<u32> = Vec::new();
-        for &img_ptr in images_vec.iter() {
-            let img = unsafe { &*img_ptr };
-            img_data.push(&img.canvas.data);
-            img_widths.push(img.canvas.width());
+        for img in images_vec.iter() {
+            let img_ref = rc_ref!(img);
+            img_data.push(&img_ref.canvas.data);
+            img_widths.push(img_ref.canvas.width());
         }
 
         let hw = w as f32 * 0.5;
@@ -93,7 +95,7 @@ impl Scene {
         let cam_pos = camera.pos;
 
         for scene_node in &self.nodes {
-            let model = unsafe { &*scene_node.model };
+            let model = rc_ref!(scene_node.model);
 
             // Build model matrix: translation * rotation_z * rotation_y * rotation_x * scale
             let model_mat = Mat4::translation(scene_node.pos.x, scene_node.pos.y, scene_node.pos.z)
@@ -119,12 +121,6 @@ impl Scene {
                 &self.shade_palette,
             );
         }
-    }
-}
-
-impl Default for Scene {
-    fn default() -> Self {
-        Self::new()
     }
 }
 

@@ -5,19 +5,16 @@ macro_rules! wrap_sound_as_python_list {
     ($wrapper_name:ident, $value_type:ty, $field_name:ident) => {
         wrap_as_python_primitive_sequence!(
             $wrapper_name,
-            *mut pyxel::Sound,
-            (|inner: &*mut pyxel::Sound| unsafe { &**inner }.$field_name.len()),
+            pyxel::RcSound,
+            (|inner: &pyxel::RcSound| rc_ref!(inner).$field_name.len()),
             $value_type,
-            (|inner: &*mut pyxel::Sound, index| unsafe { &**inner }.$field_name[index]),
+            (|inner: &pyxel::RcSound, index| rc_ref!(inner).$field_name[index]),
             $value_type,
-            (|inner: &*mut pyxel::Sound, index, value| unsafe { &mut **inner }.$field_name
-                [index] = value),
-            (|inner: &*mut pyxel::Sound| -> &mut Vec<$value_type> {
-                &mut unsafe { &mut **inner }.$field_name
-            }),
+            (|inner: &pyxel::RcSound, index, value| rc_mut!(inner).$field_name[index] = value),
+            (|inner: &pyxel::RcSound| -> &mut Vec<$value_type> { &mut rc_mut!(inner).$field_name }),
             Vec<$value_type>,
-            (|inner: &*mut pyxel::Sound, list| unsafe { &mut **inner }.$field_name = list),
-            (|inner: &*mut pyxel::Sound| unsafe { &**inner }
+            (|inner: &pyxel::RcSound, list| rc_mut!(inner).$field_name = list),
+            (|inner: &pyxel::RcSound| rc_ref!(inner)
                 .$field_name
                 .iter()
                 .copied()
@@ -46,22 +43,22 @@ impl Sound {
 
     #[getter]
     fn notes(&self) -> Notes {
-        Notes::wrap(self.inner)
+        Notes::wrap(self.inner.clone())
     }
 
     #[getter]
     fn tones(&self) -> Tones {
-        Tones::wrap(self.inner)
+        Tones::wrap(self.inner.clone())
     }
 
     #[getter]
     fn volumes(&self) -> Volumes {
-        Volumes::wrap(self.inner)
+        Volumes::wrap(self.inner.clone())
     }
 
     #[getter]
     fn effects(&self) -> Effects {
-        Effects::wrap(self.inner)
+        Effects::wrap(self.inner.clone())
     }
 
     #[getter]

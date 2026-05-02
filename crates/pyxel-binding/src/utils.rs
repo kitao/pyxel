@@ -1,3 +1,17 @@
+// Rc helpers
+
+macro_rules! rc_ref {
+    ($rc:expr) => {
+        unsafe { &*($rc).get() }
+    };
+}
+
+macro_rules! rc_mut {
+    ($rc:expr) => {
+        unsafe { &mut *($rc).get() }
+    };
+}
+
 // Error helpers
 
 macro_rules! deprecation_warning {
@@ -29,20 +43,15 @@ macro_rules! python_type_error {
 macro_rules! cast_pyany {
     ($value:ident, $(($type:ty, $block:block)),*) => {
         {
-            let mut types = String::new();
             loop {
                 $(
-                    if !types.is_empty() {
-                        types += ", "
-                    }
                     let any_ref: &pyo3::Bound<'_, pyo3::PyAny> = $value.as_any();
                     let borrowed: pyo3::Borrowed<'_, '_, pyo3::PyAny> = any_ref.into();
                     if let Ok($value) = <$type>::extract(borrowed) {
                         break $block;
                     }
-                    types += stringify!($type);
                 )*
-                python_type_error!(format!("must be {}", types));
+                python_type_error!(format!("must be {}", [$(stringify!($type)),*].join(", ")));
             }
         }
     };
@@ -241,7 +250,7 @@ macro_rules! impl_python_sequence_cmp {
 // Single-element mutations operate directly on the internal Vec via $list_mut
 // (O(1) amortized) instead of copying the whole Vec through $to_list/$from_list.
 // $to_raw / $from_raw adapt between the PyO3-facing type ($set_type / $get_type)
-// and the storage type ($raw_item), e.g. Image wrapper <-> *mut pyxel::Image.
+// and the storage type ($raw_item), e.g. Image wrapper <-> pyxel::RcImage.
 macro_rules! impl_python_sequence_write {
     (
         $wrapper_name:ident, $inner_type:ty, $len:expr,
@@ -403,14 +412,11 @@ macro_rules! wrap_as_python_primitive_sequence {
         $list_mut:expr,
         $list_type:ty, $from_list:expr, $to_list:expr
     ) => {
-        #[pyclass(sequence, from_py_object)]
+        #[pyclass(sequence, unsendable, from_py_object)]
         #[derive(Clone)]
         pub struct $wrapper_name {
             inner: $inner_type,
         }
-
-        unsafe impl Send for $wrapper_name {}
-        unsafe impl Sync for $wrapper_name {}
 
         impl $wrapper_name {
             pub const fn wrap(inner: $inner_type) -> Self {
@@ -439,8 +445,8 @@ macro_rules! wrap_as_python_primitive_sequence {
 }
 
 // Wrapper for object/wrapper-type sequences (no Copy/PartialEq).
-// Object case: internal Vec holds raw $raw_item (e.g. *mut T) while PyO3 sees
-// wrapper $set_type. $to_raw / $from_raw bridge the two.
+// Object case: internal Vec holds $raw_item (e.g. pyxel::RcImage) while PyO3
+// sees wrapper $set_type. $to_raw / $from_raw bridge the two.
 macro_rules! wrap_as_python_object_sequence {
     (
         $wrapper_name:ident, $inner_type:ty, $len:expr,
@@ -449,14 +455,11 @@ macro_rules! wrap_as_python_object_sequence {
         $raw_item:ty, $list_mut:expr, $to_raw:expr, $from_raw:expr,
         $list_type:ty, $from_list:expr, $to_list:expr
     ) => {
-        #[pyclass(sequence, skip_from_py_object)]
+        #[pyclass(sequence, unsendable, skip_from_py_object)]
         #[derive(Clone)]
         pub struct $wrapper_name {
             inner: $inner_type,
         }
-
-        unsafe impl Send for $wrapper_name {}
-        unsafe impl Sync for $wrapper_name {}
 
         impl $wrapper_name {
             pub const fn wrap(inner: $inner_type) -> Self {
@@ -487,28 +490,25 @@ macro_rules! wrap_as_python_object_sequence {
 
 macro_rules! define_wrapper {
     ($wrapper_name:ident, $inner_type:ty) => {
-        #[pyclass(from_py_object)]
-        #[derive(Clone, Copy)]
+        #[pyclass(unsendable, from_py_object)]
+        #[derive(Clone)]
         pub struct $wrapper_name {
-            pub(crate) inner: *mut $inner_type,
+            pub(crate) inner: std::rc::Rc<std::cell::UnsafeCell<$inner_type>>,
         }
 
-        unsafe impl Send for $wrapper_name {}
-        unsafe impl Sync for $wrapper_name {}
-
         impl $wrapper_name {
-            pub fn wrap(inner: *mut $inner_type) -> Self {
+            pub fn wrap(inner: std::rc::Rc<std::cell::UnsafeCell<$inner_type>>) -> Self {
                 Self { inner }
             }
 
             #[allow(dead_code)]
             fn inner_ref(&self) -> &$inner_type {
-                unsafe { &*self.inner }
+                rc_ref!(self.inner)
             }
 
             #[allow(clippy::mut_from_ref)]
             fn inner_mut(&self) -> &mut $inner_type {
-                unsafe { &mut *self.inner }
+                rc_mut!(self.inner)
             }
         }
     };

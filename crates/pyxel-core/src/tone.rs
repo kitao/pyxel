@@ -35,38 +35,17 @@ pub struct Tone {
     pub sample_bits: u32,
     pub wavetable: Vec<ToneSample>,
     pub gain: ToneGain,
-    cached_wavetable: Vec<ToneSample>,
-    waveform: Vec<f32>,
 }
 
+define_rc_type!(RcTone, Tone);
+
 impl Tone {
-    pub fn new() -> *mut Tone {
-        Box::into_raw(Box::new(Self {
+    pub fn new() -> RcTone {
+        new_rc_type!(Self {
             mode: ToneMode::Wavetable,
             sample_bits: DEFAULT_TONE_SAMPLE_BITS,
             wavetable: Vec::new(),
             gain: 1.0,
-            cached_wavetable: Vec::new(),
-            waveform: Vec::new(),
-        }))
-    }
-
-    pub(crate) fn waveform(&mut self) -> &[f32] {
-        if self.wavetable != self.cached_wavetable {
-            assert!(self.sample_bits <= 32);
-
-            let max_sample = (1 << self.sample_bits) - 1;
-            self.waveform = self
-                .wavetable
-                .iter()
-                .map(|&sample| {
-                    assert!(sample <= max_sample);
-                    (sample as f32 / max_sample as f32) * 2.0 - 1.0
-                })
-                .collect();
-            self.cached_wavetable.clone_from(&self.wavetable);
-        }
-
-        &self.waveform
+        })
     }
 }

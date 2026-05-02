@@ -9,9 +9,11 @@ pub struct Music {
     pub seqs: Vec<Vec<u32>>,
 }
 
+define_rc_type!(RcMusic, Music);
+
 impl Music {
-    pub fn new() -> *mut Music {
-        Box::into_raw(Box::new(Self { seqs: Vec::new() }))
+    pub fn new() -> RcMusic {
+        new_rc_type!(Self { seqs: Vec::new() })
     }
 
     pub fn set(&mut self, seqs: &[Vec<u32>]) {
@@ -42,7 +44,7 @@ impl Music {
             .iter()
             .map(|seq| {
                 seq.iter()
-                    .map(|&index| pyxel_sounds[index as usize])
+                    .map(|&index| pyxel_sounds[index as usize].clone())
                     .collect()
             })
             .collect();
@@ -51,19 +53,21 @@ impl Music {
         let mut blip_buf = BlipBuf::new(num_samples);
         blip_buf.set_rates(AUDIO_CLOCK_RATE as f64, AUDIO_SAMPLE_RATE as f64);
 
-        let channels = pyxel::channels();
-        for &ch in channels.iter() {
-            unsafe { &mut *ch }.stop();
-        }
-        for (&ch, seq) in channels.iter().zip(seqs.iter()) {
-            unsafe { &mut *ch }.play(seq.clone(), None, true, false);
-        }
+        {
+            let _lock = crate::audio::AudioLock::lock();
+            let channels = pyxel::channels();
+            for ch in channels.iter() {
+                rc_mut!(ch).stop();
+            }
+            for (ch, seq) in channels.iter().zip(seqs.iter()) {
+                rc_mut!(ch).play(seq.clone(), None, true, false);
+            }
 
-        Audio::render_samples(channels.as_slice(), &mut blip_buf, &mut samples);
-        let result = Audio::save_samples(filename, &samples, use_ffmpeg.unwrap_or(false));
-        for &ch in channels.iter() {
-            unsafe { &mut *ch }.stop();
+            Audio::render_samples(channels.as_slice(), &mut blip_buf, &mut samples);
+            for ch in channels.iter() {
+                rc_mut!(ch).stop();
+            }
         }
-        result
+        Audio::save_samples(filename, &samples, use_ffmpeg.unwrap_or(false))
     }
 }

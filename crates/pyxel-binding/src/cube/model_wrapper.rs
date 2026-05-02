@@ -3,77 +3,48 @@ use pyxel::cube;
 
 use crate::cube::math_wrapper::Vec3;
 
-#[pyclass(name = "Model")]
-pub struct Model {
-    pub inner: *mut cube::Model,
-}
-
-unsafe impl Send for Model {}
-unsafe impl Sync for Model {}
-
-impl Model {
-    #[allow(clippy::mut_from_ref)]
-    fn inner_mut(&self) -> &mut cube::Model {
-        unsafe { &mut *self.inner }
-    }
-}
+define_wrapper!(Model, pyxel::cube::Model);
 
 #[pymethods]
 impl Model {
     #[new]
     fn new() -> Self {
-        Self {
-            inner: Box::into_raw(Box::new(cube::Model::new())),
-        }
+        Self::wrap(pyxel::cube::Model::new())
     }
 
     #[staticmethod]
     fn cube(col: u8) -> Self {
-        Self {
-            inner: Box::into_raw(Box::new(cube::Model::cube(col))),
-        }
+        Self::wrap(pyxel::cube::Model::cube(col))
     }
 
     #[staticmethod]
     fn plane(col: u8) -> Self {
-        Self {
-            inner: Box::into_raw(Box::new(cube::Model::plane(col))),
-        }
+        Self::wrap(pyxel::cube::Model::plane(col))
     }
 
     #[staticmethod]
     fn pyramid(col: u8) -> Self {
-        Self {
-            inner: Box::into_raw(Box::new(cube::Model::pyramid(col))),
-        }
+        Self::wrap(pyxel::cube::Model::pyramid(col))
     }
 
     #[staticmethod]
     fn sphere(col: u8) -> Self {
-        Self {
-            inner: Box::into_raw(Box::new(cube::Model::sphere(col))),
-        }
+        Self::wrap(pyxel::cube::Model::sphere(col))
     }
 
     #[staticmethod]
     fn tex_cube(img: u32, u: f32, v: f32, w: f32, h: f32) -> Self {
-        Self {
-            inner: Box::into_raw(Box::new(cube::Model::tex_cube(img, u, v, w, h))),
-        }
+        Self::wrap(pyxel::cube::Model::tex_cube(img, u, v, w, h))
     }
 
     #[staticmethod]
     fn tex_pyramid(img: u32, u: f32, v: f32, w: f32, h: f32) -> Self {
-        Self {
-            inner: Box::into_raw(Box::new(cube::Model::tex_pyramid(img, u, v, w, h))),
-        }
+        Self::wrap(pyxel::cube::Model::tex_pyramid(img, u, v, w, h))
     }
 
     #[staticmethod]
     fn tex_sphere(img: u32, u: f32, v: f32, w: f32, h: f32) -> Self {
-        Self {
-            inner: Box::into_raw(Box::new(cube::Model::tex_sphere(img, u, v, w, h))),
-        }
+        Self::wrap(pyxel::cube::Model::tex_sphere(img, u, v, w, h))
     }
 
     fn tri(&self, v0: &Vec3, v1: &Vec3, v2: &Vec3, col: u8) {
@@ -103,8 +74,7 @@ impl Model {
     }
 
     fn node_pos(&self, name: &str) -> Option<Vec3> {
-        let model = unsafe { &*self.inner };
-        model.node(name).map(|n| Vec3 { inner: n.pos })
+        self.inner_ref().node(name).map(|n| Vec3 { inner: n.pos })
     }
 
     fn set_node_rot(&self, name: &str, rot: &Vec3) {

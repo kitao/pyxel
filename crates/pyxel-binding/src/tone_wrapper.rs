@@ -2,18 +2,16 @@ use pyo3::prelude::*;
 
 wrap_as_python_primitive_sequence!(
     Wavetable,
-    *mut pyxel::Tone,
-    (|inner: &*mut pyxel::Tone| unsafe { &**inner }.wavetable.len()),
+    pyxel::RcTone,
+    (|inner: &pyxel::RcTone| rc_ref!(inner).wavetable.len()),
     pyxel::ToneSample,
-    (|inner: &*mut pyxel::Tone, index| unsafe { &**inner }.wavetable[index]),
+    (|inner: &pyxel::RcTone, index| rc_ref!(inner).wavetable[index]),
     pyxel::ToneSample,
-    (|inner: &*mut pyxel::Tone, index, value| unsafe { &mut **inner }.wavetable[index] = value),
-    (|inner: &*mut pyxel::Tone| -> &mut Vec<pyxel::ToneSample> {
-        &mut unsafe { &mut **inner }.wavetable
-    }),
+    (|inner: &pyxel::RcTone, index, value| rc_mut!(inner).wavetable[index] = value),
+    (|inner: &pyxel::RcTone| -> &mut Vec<pyxel::ToneSample> { &mut rc_mut!(inner).wavetable }),
     Vec<pyxel::ToneSample>,
-    (|inner: &*mut pyxel::Tone, list| unsafe { &mut **inner }.wavetable = list),
-    (|inner: &*mut pyxel::Tone| unsafe { &**inner }.wavetable.clone())
+    (|inner: &pyxel::RcTone, list| rc_mut!(inner).wavetable = list),
+    (|inner: &pyxel::RcTone| rc_ref!(inner).wavetable.clone())
 );
 
 define_wrapper!(Tone, pyxel::Tone);
@@ -51,7 +49,7 @@ impl Tone {
 
     #[getter]
     fn wavetable(&self) -> Wavetable {
-        Wavetable::wrap(self.inner)
+        Wavetable::wrap(self.inner.clone())
     }
 
     #[getter]
@@ -90,7 +88,7 @@ impl Tone {
             WAVEFORM_ONCE,
             "Tone.waveform is deprecated. Use Tone.wavetable instead."
         );
-        Wavetable::wrap(self.inner)
+        Wavetable::wrap(self.inner.clone())
     }
 }
 

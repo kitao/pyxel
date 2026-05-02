@@ -214,13 +214,13 @@ impl Image {
             img,
 
             (u32, {
-                let image = pyxel::images().get(img as usize).copied()
+                let image = pyxel::images().get(img as usize).cloned()
                     .ok_or_else(|| PyValueError::new_err("Invalid image index"))?;
-                unsafe { self.inner_mut().draw_image(x, y, image, u, v, w, h, colkey, rotate, scale) };
+                self.inner_mut().draw_image(x, y, &image, u, v, w, h, colkey, rotate, scale);
             }),
 
             (Image, {
-                unsafe { self.inner_mut().draw_image(x, y, img.inner, u, v, w, h, colkey, rotate, scale) };
+                self.inner_mut().draw_image(x, y, &img.inner, u, v, w, h, colkey, rotate, scale);
             })
         }
         Ok(())
@@ -244,13 +244,13 @@ impl Image {
             tm,
 
             (u32, {
-                let tilemap = pyxel::tilemaps().get(tm as usize).copied()
+                let tilemap = pyxel::tilemaps().get(tm as usize).cloned()
                     .ok_or_else(|| PyValueError::new_err("Invalid tilemap index"))?;
-                unsafe { self.inner_mut().draw_tilemap(x, y, tilemap, u, v, w, h, colkey, rotate, scale) };
+                self.inner_mut().draw_tilemap(x, y, &tilemap, u, v, w, h, colkey, rotate, scale);
             }),
 
             (Tilemap, {
-                unsafe { self.inner_mut().draw_tilemap(x, y, tm.inner, u, v, w, h, colkey, rotate, scale) };
+                self.inner_mut().draw_tilemap(x, y, &tm.inner, u, v, w, h, colkey, rotate, scale);
             })
         }
         Ok(())
@@ -273,13 +273,13 @@ impl Image {
             img,
 
             (u32, {
-                let image = pyxel::images().get(img as usize).copied()
+                let image = pyxel::images().get(img as usize).cloned()
                     .ok_or_else(|| PyValueError::new_err("Invalid image index"))?;
-                unsafe { self.inner_mut().draw_image_3d(x, y, w, h, image, pos, rot, fov, colkey) };
+                self.inner_mut().draw_image_3d(x, y, w, h, &image, pos, rot, fov, colkey);
             }),
 
             (Image, {
-                unsafe { self.inner_mut().draw_image_3d(x, y, w, h, img.inner, pos, rot, fov, colkey) };
+                self.inner_mut().draw_image_3d(x, y, w, h, &img.inner, pos, rot, fov, colkey);
             })
         }
         Ok(())
@@ -302,13 +302,13 @@ impl Image {
             tm,
 
             (u32, {
-                let tilemap = pyxel::tilemaps().get(tm as usize).copied()
+                let tilemap = pyxel::tilemaps().get(tm as usize).cloned()
                     .ok_or_else(|| PyValueError::new_err("Invalid tilemap index"))?;
-                unsafe { self.inner_mut().draw_tilemap_3d(x, y, w, h, tilemap, pos, rot, fov, colkey) };
+                self.inner_mut().draw_tilemap_3d(x, y, w, h, &tilemap, pos, rot, fov, colkey);
             }),
 
             (Tilemap, {
-                unsafe { self.inner_mut().draw_tilemap_3d(x, y, w, h, tm.inner, pos, rot, fov, colkey) };
+                self.inner_mut().draw_tilemap_3d(x, y, w, h, &tm.inner, pos, rot, fov, colkey);
             })
         }
         Ok(())
@@ -318,8 +318,8 @@ impl Image {
 
     #[pyo3(signature = (x, y, s, col, font=None))]
     fn text(&self, x: f32, y: f32, s: &str, col: pyxel::Color, font: Option<Font>) {
-        let font = font.map(|f| f.inner);
-        self.inner_mut().draw_text(x, y, s, col, font);
+        let font_ref = font.as_ref().map(|f| &f.inner);
+        self.inner_mut().draw_text(x, y, s, col, font_ref);
     }
 }
 

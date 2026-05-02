@@ -133,6 +133,52 @@ class TestPyxelAppMetadata:
         assert "Me" in out
 
 
+class TestEditCommand:
+    def test_invokes_editor_app(self, monkeypatch, tmp_path):
+        invocations = []
+
+        class FakeApp:
+            def __init__(self, resource_file, starting_editor):
+                invocations.append((resource_file, starting_editor))
+
+        monkeypatch.setattr("pyxel.editor.App", FakeApp)
+
+        resource_file = str(tmp_path / "my_resource.pyxres")
+        pyxel.cli.edit_pyxel_resource(resource_file)
+
+        assert len(invocations) == 1
+        assert invocations[0][0] == resource_file
+        assert invocations[0][1] == "image"
+
+    def test_uses_default_resource_when_omitted(self, monkeypatch):
+        invocations = []
+
+        class FakeApp:
+            def __init__(self, resource_file, starting_editor):
+                invocations.append((resource_file, starting_editor))
+
+        monkeypatch.setattr("pyxel.editor.App", FakeApp)
+
+        pyxel.cli.edit_pyxel_resource()
+
+        assert len(invocations) == 1
+        assert invocations[0][0].endswith(pyxel.RESOURCE_FILE_EXTENSION)
+
+    def test_with_custom_starting_editor(self, monkeypatch, tmp_path):
+        invocations = []
+
+        class FakeApp:
+            def __init__(self, resource_file, starting_editor):
+                invocations.append((resource_file, starting_editor))
+
+        monkeypatch.setattr("pyxel.editor.App", FakeApp)
+
+        resource_file = str(tmp_path / "my_resource.pyxres")
+        pyxel.cli.edit_pyxel_resource(resource_file, "music")
+
+        assert invocations[0][1] == "music"
+
+
 class TestPlayCommand:
     def test_missing_file_exits_with_error(self, capsys, tmp_path):
         missing = tmp_path / "nope.pyxapp"

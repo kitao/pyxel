@@ -2,6 +2,10 @@ from pathlib import Path
 
 import pytest
 
+import pyxel
+
+from _capture import compare_or_update_all  # type: ignore[reportMissingImports]
+
 ASSETS_DIR = Path(__file__).parent.parent / "pyxel" / "examples" / "assets"
 
 
@@ -13,34 +17,31 @@ def pytest_addoption(parser):
     )
 
 
-@pytest.fixture(scope="session")
-def update_references(request):
-    return request.config.getoption("--update-references")
-
-
 def pytest_collection_modifyitems(items):
-    # Run app/example regression tests last so cheap failures surface early
+    # Run subprocess-based regression tests last so cheap failures surface early
     regression = []
     others = []
     for item in items:
-        if "test_examples" in str(item.fspath) or "test_apps" in str(item.fspath):
+        path = str(item.fspath)
+        if any(name in path for name in ("test_apps", "test_examples", "test_editor")):
             regression.append(item)
         else:
             others.append(item)
     items[:] = others + regression
 
 
+@pytest.fixture(scope="session")
+def update_references(request):
+    return request.config.getoption("--update-references")
+
+
 @pytest.fixture(scope="session", autouse=True)
 def init_pyxel():
-    import pyxel
-
     pyxel.init(160, 120, headless=True)
 
 
 @pytest.fixture(autouse=True)
 def reset_pyxel_state():
-    import pyxel
-
     pyxel.clip()
     pyxel.camera()
     pyxel.pal()
@@ -53,3 +54,22 @@ def reset_pyxel_state():
 @pytest.fixture
 def assets_dir():
     return ASSETS_DIR
+
+
+@pytest.fixture(scope="session")
+def panic_exception():
+    # pyo3_runtime.PanicException is not directly importable; capture the type
+    # from a known panic path.
+    try:
+        pyxel.btnv(pyxel.KEY_A)
+    except BaseException as e:
+        return type(e)
+    raise RuntimeError("expected a Rust panic but pyxel.btnv(KEY_A) returned normally")
+
+
+@pytest.fixture
+def compare_screenshots(update_references):
+    def _compare(name, results, refs_dir):
+        compare_or_update_all(name, results, refs_dir, update_references)
+
+    return _compare

@@ -178,7 +178,7 @@ impl Pyxel {
             str::to_string,
         );
         let scale = scale.unwrap_or(self.resource.capture_scale).max(1);
-        pyxel::screen().save(&filename, scale)?;
+        rc_ref!(pyxel::screen()).save(&filename, scale)?;
 
         platform::export_browser_file(&(filename + ".png"));
         Ok(())
@@ -208,7 +208,7 @@ impl Pyxel {
         self.resource.screencast.capture(
             *pyxel::width(),
             *pyxel::height(),
-            &pyxel::screen().canvas.data,
+            &rc_ref!(pyxel::screen()).canvas.data,
             pyxel::colors(),
             *pyxel::frame_count(),
         );
@@ -244,8 +244,8 @@ impl Pyxel {
     pub(crate) fn dump_image_bank(&self, image_index: u32) {
         let filename = Self::join_desktop_path(&format!("pyxel-image{image_index}"));
 
-        if let Some(&image) = pyxel::images().get(image_index as usize) {
-            if let Err(e) = unsafe { &*image }.save(&filename, 1) {
+        if let Some(image) = pyxel::images().get(image_index as usize) {
+            if let Err(e) = rc_ref!(image).save(&filename, 1) {
                 println!("{e}");
                 return;
             }
@@ -256,15 +256,12 @@ impl Pyxel {
     pub(crate) fn dump_palette(&self) {
         let filename = Self::join_desktop_path("pyxel-palette");
         let num_colors = pyxel::colors().len();
-        let image_ptr = Image::new(num_colors as u32, 1);
-        let image = unsafe { &mut *image_ptr };
+        let rc = Image::new(num_colors as u32, 1);
+        let image = rc_mut!(rc);
         for i in 0..num_colors {
             image.set_pixel(i as f32, 0.0, i as Color);
         }
         let result = image.save(&filename, 16);
-        unsafe {
-            drop(Box::from_raw(image_ptr));
-        }
         if let Err(e) = result {
             println!("{e}");
             return;

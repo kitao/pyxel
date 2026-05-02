@@ -143,7 +143,7 @@ fn blt(
             pyxel().draw_image(x, y, img, u, v, w, h, colkey, rotate, scale);
         }),
 
-        (Image, { unsafe { pyxel::screen().draw_image(x, y, img.inner, u, v, w, h, colkey, rotate, scale) }; })
+        (Image, { rc_mut!(pyxel::screen()).draw_image(x, y, &img.inner, u, v, w, h, colkey, rotate, scale); })
     }
     Ok(())
 }
@@ -170,7 +170,7 @@ fn bltm(
             pyxel().draw_tilemap(x, y, tm, u, v, w, h, colkey, rotate, scale);
         }),
 
-        (Tilemap, { unsafe { pyxel::screen().draw_tilemap(x, y, tm.inner, u, v, w, h, colkey, rotate, scale) }; })
+        (Tilemap, { rc_mut!(pyxel::screen()).draw_tilemap(x, y, &tm.inner, u, v, w, h, colkey, rotate, scale); })
     }
     Ok(())
 }
@@ -196,7 +196,7 @@ fn blt3d(
             pyxel().draw_image_3d(x, y, w, h, img, pos, rot, fov, colkey);
         }),
 
-        (Image, { unsafe { pyxel::screen().draw_image_3d(x, y, w, h, img.inner, pos, rot, fov, colkey) }; })
+        (Image, { rc_mut!(pyxel::screen()).draw_image_3d(x, y, w, h, &img.inner, pos, rot, fov, colkey); })
     }
     Ok(())
 }
@@ -222,7 +222,7 @@ fn bltm3d(
             pyxel().draw_tilemap_3d(x, y, w, h, tm, pos, rot, fov, colkey);
         }),
 
-        (Tilemap, { unsafe { pyxel::screen().draw_tilemap_3d(x, y, w, h, tm.inner, pos, rot, fov, colkey) }; })
+        (Tilemap, { rc_mut!(pyxel::screen()).draw_tilemap_3d(x, y, w, h, &tm.inner, pos, rot, fov, colkey); })
     }
     Ok(())
 }
@@ -232,8 +232,8 @@ fn bltm3d(
 #[pyfunction]
 #[pyo3(signature = (x, y, s, col, font=None))]
 fn text(x: f32, y: f32, s: &str, col: pyxel::Color, font: Option<Font>) {
-    let font = font.map(|f| f.inner);
-    pyxel().draw_text(x, y, s, col, font);
+    let font_ref = font.as_ref().map(|f| &f.inner);
+    pyxel().draw_text(x, y, s, col, font_ref);
 }
 
 // Deprecated functions
@@ -246,7 +246,7 @@ fn image(img: u32) -> PyResult<Image> {
     );
     pyxel::images()
         .get(img as usize)
-        .copied()
+        .cloned()
         .map(Image::wrap)
         .ok_or_else(|| PyValueError::new_err("Invalid image index"))
 }
@@ -259,7 +259,7 @@ fn tilemap(tm: u32) -> PyResult<Tilemap> {
     );
     pyxel::tilemaps()
         .get(tm as usize)
-        .copied()
+        .cloned()
         .map(Tilemap::wrap)
         .ok_or_else(|| PyValueError::new_err("Invalid tilemap index"))
 }
