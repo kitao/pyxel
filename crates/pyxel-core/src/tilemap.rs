@@ -107,7 +107,9 @@ impl Tilemap {
         let rc = Self::from_tmx(filename, layer_index)?;
         let w = rc_ref!(rc).width();
         let h = rc_ref!(rc).height();
-        self.draw_tilemap(x as f32, y as f32, &rc, 0.0, 0.0, w as f32, h as f32, None, None, None);
+        self.draw_tilemap(
+            x as f32, y as f32, &rc, 0.0, 0.0, w as f32, h as f32, None, None, None,
+        );
         Ok(())
     }
 

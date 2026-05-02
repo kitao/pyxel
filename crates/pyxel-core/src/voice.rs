@@ -233,7 +233,7 @@ impl Vibrato {
         Self {
             delay_ticks: 0,
             period_ticks: 1,
-            inv_period_ticks: 0.0,
+            inv_period_ticks: 1.0,
             semitone_depth: 0.0,
 
             enabled: false,

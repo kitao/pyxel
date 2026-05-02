@@ -13,7 +13,7 @@ use crate::channel::RcChannel;
 use crate::pyxel::{self, Pyxel};
 use crate::settings::{
     AUDIO_BUFFER_SAMPLES, AUDIO_CLOCKS_PER_SAMPLE, AUDIO_CLOCK_RATE, AUDIO_RENDER_STEP_SAMPLES,
-    AUDIO_SAMPLE_RATE,
+    AUDIO_SAMPLE_BITS, AUDIO_SAMPLE_RATE,
 };
 use crate::sound::RcSound;
 use crate::{platform, utils};
@@ -111,7 +111,7 @@ impl Audio {
         let spec = WavSpec {
             channels: 1,
             sample_rate: AUDIO_SAMPLE_RATE,
-            bits_per_sample: 16,
+            bits_per_sample: AUDIO_SAMPLE_BITS as u16,
             sample_format: SampleFormat::Int,
         };
         let filename = utils::add_file_extension(filename, ".wav");

@@ -110,6 +110,7 @@ pub const FONT_DATA: [u32; MAX_FONT_CODE as usize - MIN_FONT_CODE as usize + 1] 
 // Audio
 pub const AUDIO_CLOCK_RATE: u32 = 1_789_773; // NTSC NES APU clock rate
 pub const AUDIO_SAMPLE_RATE: u32 = 22_050; // 22.05kHz
+pub const AUDIO_SAMPLE_BITS: u32 = 16;
 pub const AUDIO_CLOCKS_PER_SAMPLE: u32 = AUDIO_CLOCK_RATE / AUDIO_SAMPLE_RATE;
 #[cfg(target_os = "emscripten")]
 pub const AUDIO_BUFFER_SAMPLES: u32 = 1024; // 1024 / 22050 * 1000 = 46.4ms
