@@ -2,56 +2,50 @@ use pyo3::exceptions::PyException;
 use pyo3::prelude::*;
 use pyo3::types::{PyList, PySlice, PyTuple};
 
-#[derive(Clone, Copy)]
+#[derive(Clone)]
 pub struct SeqRef {
-    inner: *mut pyxel::Music,
+    inner: pyxel::RcMusic,
     index: usize,
 }
-
-unsafe impl Send for SeqRef {}
-unsafe impl Sync for SeqRef {}
 
 wrap_as_python_primitive_sequence!(
     Seq,
     SeqRef,
-    (|inner: &SeqRef| unsafe { &*inner.inner }.seqs[inner.index].len()),
+    (|inner: &SeqRef| rc_ref!(inner.inner).seqs[inner.index].len()),
     u32,
-    (|inner: &SeqRef, index| unsafe { &*inner.inner }.seqs[inner.index][index]),
+    (|inner: &SeqRef, index| rc_ref!(inner.inner).seqs[inner.index][index]),
     u32,
-    (|inner: &SeqRef, index, value| unsafe { &mut *inner.inner }.seqs[inner.index][index] = value),
-    (|inner: &SeqRef| -> &mut Vec<u32> { &mut unsafe { &mut *inner.inner }.seqs[inner.index] }),
+    (|inner: &SeqRef, index, value| rc_mut!(inner.inner).seqs[inner.index][index] = value),
+    (|inner: &SeqRef| -> &mut Vec<u32> { &mut rc_mut!(inner.inner).seqs[inner.index] }),
     Vec<u32>,
-    (|inner: &SeqRef, list| unsafe { &mut *inner.inner }.seqs[inner.index] = list),
-    (|inner: &SeqRef| unsafe { &*inner.inner }.seqs[inner.index].clone())
+    (|inner: &SeqRef, list| rc_mut!(inner.inner).seqs[inner.index] = list),
+    (|inner: &SeqRef| rc_ref!(inner.inner).seqs[inner.index].clone())
 );
 
 // Seqs is hand-written because it returns Seq wrapper objects (asymmetric get/set types)
-#[pyclass(sequence, skip_from_py_object)]
-#[derive(Clone, Copy)]
+#[pyclass(sequence, unsendable, skip_from_py_object)]
+#[derive(Clone)]
 pub struct Seqs {
-    inner: *mut pyxel::Music,
+    inner: pyxel::RcMusic,
 }
 
-unsafe impl Send for Seqs {}
-unsafe impl Sync for Seqs {}
-
 impl Seqs {
-    fn wrap(inner: *mut pyxel::Music) -> Self {
+    fn wrap(inner: pyxel::RcMusic) -> Self {
         Self { inner }
     }
 
     fn inner_ref(&self) -> &pyxel::Music {
-        unsafe { &*self.inner }
+        rc_ref!(self.inner)
     }
 
     #[allow(clippy::mut_from_ref)]
     fn inner_mut(&self) -> &mut pyxel::Music {
-        unsafe { &mut *self.inner }
+        rc_mut!(self.inner)
     }
 
     fn wrap_seq(&self, index: usize) -> Seq {
         Seq::wrap(SeqRef {
-            inner: self.inner,
+            inner: self.inner.clone(),
             index,
         })
     }
@@ -244,7 +238,7 @@ impl Music {
 
     #[getter]
     fn seqs(&self) -> Seqs {
-        Seqs::wrap(self.inner)
+        Seqs::wrap(self.inner.clone())
     }
 
     // Data operations
@@ -276,7 +270,7 @@ impl Music {
             SNDS_LIST_ONCE,
             "Music.snds_list[ch] is deprecated. Use Music.seqs[ch] instead."
         );
-        Seqs::wrap(self.inner)
+        Seqs::wrap(self.inner.clone())
     }
 }
 

@@ -6,6 +6,9 @@
 - Switched image color matching to plain RGB Euclidean distance
 - Removed unused string allocation in PyO3 type cast macro
 - Hoisted clip checks out of dithered row fill loop
+- Switched shared types to Rc-based ownership and resolved sound leaks
+- Fixed missing audio lock in several audio API call paths
+- Fixed audio_bgm2 sample using off-palette colors
 
 ## 2.9.4
 

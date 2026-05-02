@@ -5,13 +5,13 @@ use std::{array, ptr};
 use image::imageops;
 
 use crate::canvas::{Canvas, CopyArea, PerspectiveProjection, ToIndex};
-use crate::font::Font;
+use crate::font::RcFont;
 use crate::rect_area::RectArea;
 use crate::settings::{
     FONT_HEIGHT, FONT_WIDTH, MAX_COLORS, MAX_FONT_CODE, MIN_FONT_CODE, NUM_FONT_COLS, TILE_MASK,
     TILE_SHIFT, TILE_SIZE,
 };
-use crate::tilemap::{Tile, Tilemap};
+use crate::tilemap::{RcTilemap, Tile};
 use crate::{pyxel, utils};
 
 pub type Rgb24 = u32;
@@ -41,18 +41,20 @@ impl ToIndex for Color {
     }
 }
 
+define_rc_type!(RcImage, Image);
+
 impl Image {
     // Constructors
 
-    pub fn new(width: u32, height: u32) -> *mut Image {
-        Box::into_raw(Box::new(Self {
+    pub fn new(width: u32, height: u32) -> RcImage {
+        new_rc_type!(Self {
             canvas: Canvas::new(width, height),
             palette: array::from_fn(|i| i as Color),
             palette_is_identity: true,
-        }))
+        })
     }
 
-    pub fn from_image(filename: &str, include_colors: Option<bool>) -> Result<*mut Image, String> {
+    pub fn from_image(filename: &str, include_colors: Option<bool>) -> Result<RcImage, String> {
         let include_colors = include_colors.unwrap_or(false);
         let colors = pyxel::colors();
         if include_colors {
@@ -62,10 +64,10 @@ impl Image {
             .map_err(|_| format!("Failed to open file '{filename}'"))?
             .to_rgb8();
         let (width, height) = file_image.dimensions();
-        let image = Self::new(width, height);
+        let rc = Self::new(width, height);
 
         {
-            let image = unsafe { &mut *image };
+            let image = rc_mut!(rc);
             let mut color_table = HashMap::<(u8, u8, u8), Color>::with_capacity(256);
 
             for y in 0..height {
@@ -110,7 +112,7 @@ impl Image {
             }
         }
 
-        Ok(image)
+        Ok(rc)
     }
 
     // Public accessors
@@ -132,10 +134,10 @@ impl Image {
     pub fn set(&mut self, x: i32, y: i32, data: &[&str]) {
         let width = utils::simplify_string(data[0]).len() as u32;
         let height = data.len() as u32;
-        let image = Self::new(width, height);
+        let rc = Self::new(width, height);
 
         {
-            let image = unsafe { &mut *image };
+            let image = rc_mut!(rc);
             for y in 0..height {
                 let src_data = utils::simplify_string(data[y as usize]);
                 for x in 0..width {
@@ -148,21 +150,18 @@ impl Image {
             }
         }
 
-        unsafe {
-            self.draw_image(
-                x as f32,
-                y as f32,
-                image,
-                0.0,
-                0.0,
-                width as f32,
-                height as f32,
-                None,
-                None,
-                None,
-            );
-            drop(Box::from_raw(image));
-        }
+        self.draw_image(
+            x as f32,
+            y as f32,
+            &rc,
+            0.0,
+            0.0,
+            width as f32,
+            height as f32,
+            None,
+            None,
+            None,
+        );
     }
 
     pub fn load(
@@ -172,25 +171,22 @@ impl Image {
         filename: &str,
         include_colors: Option<bool>,
     ) -> Result<(), String> {
-        let image = Self::from_image(filename, include_colors)?;
-        let width = unsafe { &*image }.width();
-        let height = unsafe { &*image }.height();
+        let rc = Self::from_image(filename, include_colors)?;
+        let width = rc_ref!(rc).width();
+        let height = rc_ref!(rc).height();
 
-        unsafe {
-            self.draw_image(
-                x as f32,
-                y as f32,
-                image,
-                0.0,
-                0.0,
-                width as f32,
-                height as f32,
-                None,
-                None,
-                None,
-            );
-            drop(Box::from_raw(image));
-        }
+        self.draw_image(
+            x as f32,
+            y as f32,
+            &rc,
+            0.0,
+            0.0,
+            width as f32,
+            height as f32,
+            None,
+            None,
+            None,
+        );
         Ok(())
     }
 
@@ -338,11 +334,11 @@ impl Image {
 
     // Blit operations
 
-    pub unsafe fn draw_image(
+    pub fn draw_image(
         &mut self,
         x: f32,
         y: f32,
-        image: *mut Image,
+        image: &RcImage,
         image_x: f32,
         image_y: f32,
         width: f32,
@@ -353,17 +349,18 @@ impl Image {
     ) {
         let rotate = rotate.unwrap_or(0.0);
         let scale = scale.unwrap_or(1.0);
+        let image = rc_ref!(image);
 
         // When source and destination are the same image, copy to a
         // temporary canvas first to avoid read-write aliasing.
-        let src_canvas = if ptr::eq(image.cast_const(), ptr::from_ref(self)) {
+        let src_canvas = if ptr::eq(image, self) {
             Some(self.copy_region(image_x, image_y, width, height))
         } else {
             None
         };
         let (src, sx, sy) = match &src_canvas {
             Some(tmp) => (tmp, 0.0, 0.0),
-            None => (&unsafe { &*image }.canvas, image_x, image_y),
+            None => (&image.canvas, image_x, image_y),
         };
 
         let palette = palette_opt!(self);
@@ -396,11 +393,11 @@ impl Image {
         canvas
     }
 
-    pub unsafe fn draw_tilemap(
+    pub fn draw_tilemap(
         &mut self,
         x: f32,
         y: f32,
-        tilemap: *mut Tilemap,
+        tilemap: &RcTilemap,
         tilemap_x: f32,
         tilemap_y: f32,
         width: f32,
@@ -434,7 +431,7 @@ impl Image {
         let width = utils::f32_to_i32(width);
         let height = utils::f32_to_i32(height);
 
-        let tilemap = unsafe { &*tilemap };
+        let tilemap = rc_ref!(tilemap);
         let tilemap_rect = RectArea::new(
             tilemap.canvas.self_rect.left() * TILE_SIZE as i32,
             tilemap.canvas.self_rect.top() * TILE_SIZE as i32,
@@ -469,8 +466,8 @@ impl Image {
 
         // When the tilemap's image source aliases self, render through a
         // clone of self's canvas to avoid read-write aliasing.
-        let resolved: &Image = unsafe { tilemap.imgsrc.resolve() };
-        let src_canvas = if ptr::eq(ptr::from_ref(resolved), ptr::from_ref(self)) {
+        let resolved: &Image = rc_ref!(tilemap.imgsrc.resolve());
+        let src_canvas = if ptr::eq(resolved, self) {
             Some(self.canvas.clone())
         } else {
             None
@@ -589,7 +586,7 @@ impl Image {
         &mut self,
         x: f32,
         y: f32,
-        tilemap: *mut Tilemap,
+        tilemap: &RcTilemap,
         tilemap_x: f32,
         tilemap_y: f32,
         width: f32,
@@ -598,30 +595,28 @@ impl Image {
         rotate: f32,
         scale: f32,
     ) {
-        let tilemap_ref = unsafe { &*tilemap };
-        let tilemap_pixel_w = tilemap_ref.width() as f32 * TILE_SIZE as f32;
-        let tilemap_pixel_h = tilemap_ref.height() as f32 * TILE_SIZE as f32;
+        let tilemap_inner = rc_ref!(tilemap);
+        let tilemap_pixel_w = tilemap_inner.width() as f32 * TILE_SIZE as f32;
+        let tilemap_pixel_h = tilemap_inner.height() as f32 * TILE_SIZE as f32;
 
         // Render tilemap region into a temporary image
         let tmp = Self::new(
             utils::f32_to_u32(width.abs()),
             utils::f32_to_u32(height.abs()),
         );
-        let tmp_ref = unsafe { &mut *tmp };
-        unsafe {
-            tmp_ref.draw_tilemap(
-                0.0,
-                0.0,
-                tilemap,
-                tilemap_x,
-                tilemap_y,
-                width.abs(),
-                height.abs(),
-                None,
-                None,
-                None,
-            );
-        }
+        let tmp_ref = rc_mut!(tmp);
+        tmp_ref.draw_tilemap(
+            0.0,
+            0.0,
+            tilemap,
+            tilemap_x,
+            tilemap_y,
+            width.abs(),
+            height.abs(),
+            None,
+            None,
+            None,
+        );
         tmp_ref.set_clip_rect(-tilemap_x, -tilemap_y, tilemap_pixel_w, tilemap_pixel_h);
 
         let palette = palette_opt!(self);
@@ -639,29 +634,29 @@ impl Image {
             scale,
             true,
         );
-        unsafe { drop(Box::from_raw(tmp)) };
     }
 
-    pub unsafe fn draw_image_3d(
+    pub fn draw_image_3d(
         &mut self,
         x: f32,
         y: f32,
         width: f32,
         height: f32,
-        image: *mut Image,
+        image: &RcImage,
         pos: (f32, f32, f32),
         rot: (f32, f32, f32),
         fov: Option<f32>,
         transparent: Option<Color>,
     ) {
-        let src_canvas = if ptr::eq(image.cast_const(), ptr::from_ref(self)) {
+        let image = rc_ref!(image);
+        let src_canvas = if ptr::eq(image, self) {
             Some(self.canvas.clone())
         } else {
             None
         };
         let src = match &src_canvas {
             Some(tmp) => tmp,
-            None => &unsafe { &*image }.canvas,
+            None => &image.canvas,
         };
         let palette = palette_opt!(self);
         self.canvas.blit_perspective(
@@ -678,13 +673,13 @@ impl Image {
         );
     }
 
-    pub unsafe fn draw_tilemap_3d(
+    pub fn draw_tilemap_3d(
         &mut self,
         x: f32,
         y: f32,
         width: f32,
         height: f32,
-        tilemap: *mut Tilemap,
+        tilemap: &RcTilemap,
         pos: (f32, f32, f32),
         rot: (f32, f32, f32),
         fov: Option<f32>,
@@ -704,15 +699,15 @@ impl Image {
             return;
         };
 
-        let tilemap = unsafe { &*tilemap };
         let tile_size = TILE_SIZE as i32;
+        let tilemap = rc_ref!(tilemap);
         let tm_w = tilemap.canvas.width() as i32;
         let tm_h = tilemap.canvas.height() as i32;
 
         // When the tilemap's image source aliases self, render through a
         // clone of self's canvas to avoid read-write aliasing.
-        let resolved: &Image = unsafe { tilemap.imgsrc.resolve() };
-        let src_canvas = if ptr::eq(ptr::from_ref(resolved), ptr::from_ref(self)) {
+        let resolved: &Image = rc_ref!(tilemap.imgsrc.resolve());
+        let src_canvas = if ptr::eq(resolved, self) {
             Some(self.canvas.clone())
         } else {
             None
@@ -773,23 +768,22 @@ impl Image {
         y: f32,
         string: &str,
         color: Color,
-        font: Option<*mut Font>,
+        font: Option<&RcFont>,
     ) {
         if let Some(font) = font {
             let x = utils::f32_to_i32(x) - self.canvas.camera_x;
             let y = utils::f32_to_i32(y) - self.canvas.camera_y;
             let color = self.palette[color as usize];
-            let font = unsafe { &mut *font };
-            font.draw(&mut self.canvas, x, y, string, color);
+            rc_mut!(font).draw(&mut self.canvas, x, y, string, color);
             return;
         }
 
         let mut x = utils::f32_to_i32(x) - self.canvas.camera_x;
         let mut y = utils::f32_to_i32(y) - self.canvas.camera_y;
         let color = self.palette[color as usize];
-        let font_image: *const Image = pyxel::font_image();
-        let font_data = unsafe { &(*font_image).canvas.data };
-        let font_w = unsafe { (*font_image).canvas.width() } as usize;
+        let font_image = rc_ref!(pyxel::font_image());
+        let font_data = &font_image.canvas.data;
+        let font_w = font_image.canvas.width() as usize;
 
         let start_x = x;
         for c in string.chars() {

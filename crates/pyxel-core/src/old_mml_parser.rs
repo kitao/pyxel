@@ -28,8 +28,8 @@ struct NoteInfo {
 }
 
 pub fn parse_old_mml(mml: &str) -> Result<Vec<MmlCommand>, String> {
-    let sound_ptr = Sound::new();
-    let sound = unsafe { &mut *sound_ptr };
+    let rc = Sound::new();
+    let sound = rc_mut!(rc);
     let mut chars = mml.chars().peekable();
     let mut length = 4;
     let mut quantize = 7;
@@ -137,9 +137,6 @@ pub fn parse_old_mml(mml: &str) -> Result<Vec<MmlCommand>, String> {
     add_note(sound, &note_info);
 
     let commands = sound.to_commands();
-    unsafe {
-        drop(Box::from_raw(sound_ptr));
-    }
     Ok(commands)
 }
 

@@ -58,12 +58,13 @@ impl Channel {
         };
         let should_loop = r#loop.unwrap_or(false);
         let resume = resume.unwrap_or(false);
+        let _lock = pyxel::AudioLock::lock();
 
         cast_pyany! {
             snd,
 
             (u32, {
-                let sound = pyxel::sounds().get(snd as usize).copied()
+                let sound = pyxel::sounds().get(snd as usize).cloned()
                     .ok_or_else(|| PyValueError::new_err("Invalid sound index"))?;
                 self.inner_mut().play_sound(sound, sec, should_loop, resume);
             }),
@@ -73,7 +74,7 @@ impl Channel {
                 for &i in &snd {
                     validate_index!(i, all_sounds.len(), "sound");
                 }
-                let sounds = snd.iter().map(|&i| all_sounds[i as usize]).collect();
+                let sounds = snd.iter().map(|&i| all_sounds[i as usize].clone()).collect();
                 self.inner_mut().play(sounds, sec, should_loop, resume);
             }),
 
@@ -82,7 +83,7 @@ impl Channel {
             }),
 
             (Vec<Sound>, {
-                let sounds = snd.iter().map(|sound| sound.inner).collect();
+                let sounds = snd.iter().map(|sound| sound.inner.clone()).collect();
                 self.inner_mut().play(sounds, sec, should_loop, resume);
             }),
 
@@ -97,10 +98,12 @@ impl Channel {
     }
 
     fn stop(&self) {
+        let _lock = pyxel::AudioLock::lock();
         self.inner_mut().stop();
     }
 
     fn play_pos(&self) -> Option<(u32, f32)> {
+        let _lock = pyxel::AudioLock::lock();
         self.inner_mut().play_position()
     }
 }

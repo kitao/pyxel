@@ -4,7 +4,7 @@ use std::io::Read;
 use serde::Deserialize;
 
 use crate::settings::TILE_SIZE;
-use crate::tilemap::{ImageSource, ImageTileCoord, Tilemap};
+use crate::tilemap::{ImageSource, ImageTileCoord, RcTilemap, Tilemap};
 use crate::utils::remove_whitespace;
 
 #[derive(Debug, Deserialize)]
@@ -45,7 +45,7 @@ struct TmxMap {
     layers: Vec<Layer>,
 }
 
-pub fn parse_tmx(path: &str, layer_index: u32) -> Result<*mut Tilemap, String> {
+pub fn parse_tmx(path: &str, layer_index: u32) -> Result<RcTilemap, String> {
     let err = |msg| format!("{msg} '{path}'");
 
     let mut file = File::open(path).map_err(|_| err("Failed to open file"))?;
@@ -81,7 +81,7 @@ pub fn parse_tmx(path: &str, layer_index: u32) -> Result<*mut Tilemap, String> {
         .collect::<Result<_, _>>()?;
 
     let tilemap = Tilemap::new(layer.width, layer.height, ImageSource::Index(0));
-    let tilemap_ref = unsafe { &mut *tilemap };
+    let tilemap_ref = rc_mut!(tilemap);
     for (y, row) in tile_ids.chunks(layer.width as usize).enumerate() {
         for (x, &id) in row.iter().enumerate() {
             let id = id.saturating_sub(tileset.firstgid);
