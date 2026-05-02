@@ -64,7 +64,7 @@ def _run_example(script_path, plan, out_dir):
     _capture_frames(captured, plan, out_dir)
 
 
-# Flip-example mode (while+flip() loop)
+# Flip-example mode
 
 
 class _FlipCapture(Exception):
@@ -124,7 +124,7 @@ def _run_app(pyxapp_path, plan, out_dir):
     _capture_frames(captured, plan, out_dir)
 
 
-# Editor mode (manual frame stepping, no pyxel.run loop)
+# Editor mode
 
 
 def _editor_frame(captured):
