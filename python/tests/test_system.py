@@ -1,4 +1,5 @@
-import pytest
+import subprocess
+import sys
 
 import pyxel
 
@@ -424,14 +425,35 @@ class TestSystemFlow:
         pyxel.flip()
         assert pyxel.frame_count == before + 3
 
-    @pytest.mark.skip(
-        reason="quit() runs atexit handlers and exits the process; not in-process testable."
-    )
     def test_quit(self):
-        pyxel.quit()
+        # quit() exits the process, so run in a subprocess
+        result = subprocess.run(
+            [
+                sys.executable,
+                "-c",
+                "import pyxel; pyxel.init(64, 64, headless=True); pyxel.quit()",
+            ],
+            capture_output=True,
+            timeout=10,
+        )
+        assert result.returncode == 0, result.stderr.decode()
 
-    @pytest.mark.skip(
-        reason="reset() spawns a subprocess and calls sys.exit(); not in-process testable."
-    )
     def test_reset(self):
-        pyxel.reset()
+        # reset() spawns a subprocess re-running the same script and exits.
+        # Use an env flag to make the re-spawned grandchild exit immediately,
+        # otherwise it would loop forever calling reset().
+        code = (
+            "import os, sys\n"
+            "if os.environ.get('PYXEL_RESET_TEST_DONE'):\n"
+            "    sys.exit(0)\n"
+            "os.environ['PYXEL_RESET_TEST_DONE'] = '1'\n"
+            "import pyxel\n"
+            "pyxel.init(64, 64, headless=True)\n"
+            "pyxel.reset()"
+        )
+        result = subprocess.run(
+            [sys.executable, "-c", code],
+            capture_output=True,
+            timeout=10,
+        )
+        assert result.returncode == 0, result.stderr.decode()

@@ -33,9 +33,11 @@ pub struct Sound {
     pub(crate) pcm: Option<PcmData>,
 }
 
+define_rc_type!(RcSound, Sound);
+
 impl Sound {
-    pub fn new() -> *mut Sound {
-        Box::into_raw(Box::new(Self {
+    pub fn new() -> RcSound {
+        new_rc_type!(Self {
             notes: Vec::new(),
             tones: Vec::new(),
             volumes: Vec::new(),
@@ -44,7 +46,7 @@ impl Sound {
 
             commands: Vec::new(),
             pcm: None,
-        }))
+        })
     }
 
     // Configuration
@@ -205,19 +207,19 @@ impl Sound {
         let mut blip_buf = BlipBuf::new(num_samples);
         blip_buf.set_rates(AUDIO_CLOCK_RATE as f64, AUDIO_SAMPLE_RATE as f64);
 
-        let channels = pyxel::channels();
-        for &ch in channels.iter() {
-            unsafe { &mut *ch }.stop();
-        }
+        {
+            let _lock = crate::audio::AudioLock::lock();
+            let channels = pyxel::channels();
+            for ch in channels.iter() {
+                rc_mut!(ch).stop();
+            }
 
-        let temp_sound = Box::into_raw(Box::new(self.clone()));
-        unsafe { &mut *channels[0] }.play(vec![temp_sound], None, true, false);
-        Audio::render_samples(channels.as_slice(), &mut blip_buf, &mut samples);
-        for &ch in channels.iter() {
-            unsafe { &mut *ch }.stop();
-        }
-        unsafe {
-            drop(Box::from_raw(temp_sound));
+            let temp_sound = new_rc_type!(self.clone());
+            rc_mut!(channels[0]).play(vec![temp_sound], None, true, false);
+            Audio::render_samples(channels.as_slice(), &mut blip_buf, &mut samples);
+            for ch in channels.iter() {
+                rc_mut!(ch).stop();
+            }
         }
         Audio::save_samples(filename, &samples, use_ffmpeg.unwrap_or(false))
     }
@@ -386,7 +388,7 @@ impl Sound {
             }
 
             // Note
-            let tone_data = unsafe { &*tones[tone as usize] };
+            let tone_data = rc_ref!(tones[tone as usize]);
             let base_note = if tone_data.mode == ToneMode::Wavetable {
                 36
             } else {

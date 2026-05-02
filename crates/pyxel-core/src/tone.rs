@@ -39,16 +39,18 @@ pub struct Tone {
     waveform: Vec<f32>,
 }
 
+define_rc_type!(RcTone, Tone);
+
 impl Tone {
-    pub fn new() -> *mut Tone {
-        Box::into_raw(Box::new(Self {
+    pub fn new() -> RcTone {
+        new_rc_type!(Self {
             mode: ToneMode::Wavetable,
             sample_bits: DEFAULT_TONE_SAMPLE_BITS,
             wavetable: Vec::new(),
             gain: 1.0,
             cached_wavetable: Vec::new(),
             waveform: Vec::new(),
-        }))
+        })
     }
 
     pub(crate) fn waveform(&mut self) -> &[f32] {

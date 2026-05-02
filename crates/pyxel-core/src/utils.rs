@@ -14,6 +14,30 @@ macro_rules! repeat_extend {
     };
 }
 
+macro_rules! define_rc_type {
+    ($alias:ident, $inner:ty) => {
+        pub type $alias = std::rc::Rc<std::cell::UnsafeCell<$inner>>;
+    };
+}
+
+macro_rules! new_rc_type {
+    ($e:expr) => {
+        std::rc::Rc::new(std::cell::UnsafeCell::new($e))
+    };
+}
+
+macro_rules! rc_ref {
+    ($rc:expr) => {
+        unsafe { &*($rc).get() }
+    };
+}
+
+macro_rules! rc_mut {
+    ($rc:expr) => {
+        unsafe { &mut *($rc).get() }
+    };
+}
+
 pub fn f32_to_i32(x: f32) -> i32 {
     x.round() as i32
 }

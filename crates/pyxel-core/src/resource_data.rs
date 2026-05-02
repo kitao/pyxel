@@ -2,11 +2,11 @@
 
 use serde::{Deserialize, Serialize};
 
-use crate::image::{Color, Image};
-use crate::music::Music;
+use crate::image::{Color, Image, RcImage};
+use crate::music::{Music, RcMusic};
 use crate::pyxel::{self, Pyxel};
-use crate::sound::{Sound, SoundEffect, SoundNote, SoundSpeed, SoundTone, SoundVolume};
-use crate::tilemap::{ImageSource, ImageTileCoord, Tilemap};
+use crate::sound::{RcSound, Sound, SoundEffect, SoundNote, SoundSpeed, SoundTone, SoundVolume};
+use crate::tilemap::{ImageSource, ImageTileCoord, RcTilemap, Tilemap};
 use crate::utils::{compress_vec2, expand_vec2, trim_empty_vec};
 
 #[derive(Clone, Serialize, Deserialize)]
@@ -17,8 +17,8 @@ struct ImageData {
 }
 
 impl ImageData {
-    fn from_image(image: *mut Image) -> Self {
-        let image = unsafe { &*image };
+    fn from_image(image: &RcImage) -> Self {
+        let image = rc_ref!(image);
         let width = image.width();
         let height = image.height();
 
@@ -37,10 +37,10 @@ impl ImageData {
         }
     }
 
-    fn to_image(&self) -> *mut Image {
+    fn to_image(&self) -> RcImage {
         let data = expand_vec2(&self.data, self.height as usize, self.width as usize);
         let image = Image::new(self.width, self.height);
-        unsafe { &mut *image }.canvas.data = data.into_iter().flatten().collect();
+        rc_mut!(image).canvas.data = data.into_iter().flatten().collect();
         image
     }
 }
@@ -54,12 +54,12 @@ struct TilemapData {
 }
 
 impl TilemapData {
-    fn from_tilemap(tilemap: *mut Tilemap) -> Self {
-        let tilemap = unsafe { &*tilemap };
+    fn from_tilemap(tilemap: &RcTilemap) -> Self {
+        let tilemap = rc_ref!(tilemap);
         let width = tilemap.width();
         let height = tilemap.height();
-        let imgsrc = match tilemap.imgsrc {
-            ImageSource::Index(value) => value,
+        let imgsrc = match &tilemap.imgsrc {
+            ImageSource::Index(value) => *value,
             ImageSource::Image(_) => 0,
         };
 
@@ -79,11 +79,11 @@ impl TilemapData {
         }
     }
 
-    fn to_tilemap(&self) -> *mut Tilemap {
+    fn to_tilemap(&self) -> RcTilemap {
         let data = expand_vec2(&self.data, self.height as usize, (self.width * 2) as usize);
         let tilemap = Tilemap::new(self.width, self.height, ImageSource::Index(self.imgsrc));
         let flat: Vec<_> = data.into_iter().flatten().collect();
-        unsafe { &mut *tilemap }.canvas.data = flat.chunks(2).map(|c| (c[0], c[1])).collect();
+        rc_mut!(tilemap).canvas.data = flat.chunks(2).map(|c| (c[0], c[1])).collect();
         tilemap
     }
 }
@@ -98,8 +98,8 @@ struct SoundData {
 }
 
 impl SoundData {
-    fn from_sound(sound: *mut Sound) -> Self {
-        let sound = unsafe { &*sound };
+    fn from_sound(sound: &RcSound) -> Self {
+        let sound = rc_ref!(sound);
         Self {
             notes: sound.notes.clone(),
             tones: sound.tones.clone(),
@@ -109,15 +109,15 @@ impl SoundData {
         }
     }
 
-    fn to_sound(&self) -> *mut Sound {
-        let ptr = Sound::new();
-        let sound = unsafe { &mut *ptr };
+    fn to_sound(&self) -> RcSound {
+        let rc = Sound::new();
+        let sound = rc_mut!(rc);
         sound.notes.clone_from(&self.notes);
         sound.tones.clone_from(&self.tones);
         sound.volumes.clone_from(&self.volumes);
         sound.effects.clone_from(&self.effects);
         sound.speed = self.speed;
-        ptr
+        rc
     }
 }
 
@@ -127,17 +127,17 @@ struct MusicData {
 }
 
 impl MusicData {
-    fn from_music(music: *mut Music) -> Self {
-        let music = unsafe { &*music };
+    fn from_music(music: &RcMusic) -> Self {
+        let music = rc_ref!(music);
         let seqs = trim_empty_vec(&music.seqs);
 
         Self { seqs }
     }
 
-    fn to_music(&self) -> *mut Music {
-        let ptr = Music::new();
-        unsafe { &mut *ptr }.seqs = trim_empty_vec(&self.seqs);
-        ptr
+    fn to_music(&self) -> RcMusic {
+        let rc = Music::new();
+        rc_mut!(rc).seqs = trim_empty_vec(&self.seqs);
+        rc
     }
 }
 
@@ -167,22 +167,13 @@ impl ResourceData {
     pub fn from_runtime(_pyxel: &Pyxel) -> Self {
         Self {
             format_version: 1, // Write as the oldest format version for backward compatibility
-            images: pyxel::images()
-                .iter()
-                .map(|&image| ImageData::from_image(image))
-                .collect(),
+            images: pyxel::images().iter().map(ImageData::from_image).collect(),
             tilemaps: pyxel::tilemaps()
                 .iter()
-                .map(|&tilemap| TilemapData::from_tilemap(tilemap))
+                .map(TilemapData::from_tilemap)
                 .collect(),
-            sounds: pyxel::sounds()
-                .iter()
-                .map(|&sound| SoundData::from_sound(sound))
-                .collect(),
-            musics: pyxel::musics()
-                .iter()
-                .map(|&music| MusicData::from_music(music))
-                .collect(),
+            sounds: pyxel::sounds().iter().map(SoundData::from_sound).collect(),
+            musics: pyxel::musics().iter().map(MusicData::from_music).collect(),
         }
     }
 
@@ -197,9 +188,6 @@ impl ResourceData {
         macro_rules! restore {
             ($exclude:expr, $data:expr, $accessor:expr, $converter:path) => {
                 if !$exclude && !$data.is_empty() {
-                    for &ptr in $accessor().iter() {
-                        unsafe { drop(Box::from_raw(ptr)) };
-                    }
                     *$accessor() = $data.iter().map($converter).collect();
                 }
             };

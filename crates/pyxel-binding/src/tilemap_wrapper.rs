@@ -47,7 +47,7 @@ impl Tilemap {
     fn imgsrc(&self, py: Python) -> Py<PyAny> {
         match &self.inner_ref().imgsrc {
             pyxel::ImageSource::Index(index) => value_to_py_any!(py, index),
-            pyxel::ImageSource::Image(image) => instance_to_py_any!(py, Image::wrap(*image)),
+            pyxel::ImageSource::Image(image) => instance_to_py_any!(py, Image::wrap(image.clone())),
         }
     }
 
@@ -182,7 +182,7 @@ impl Tilemap {
         dy: f32,
         walls: Vec<pyxel::Tile>,
     ) -> (f32, f32) {
-        self.inner_mut().collide(x, y, w, h, dx, dy, &walls)
+        self.inner_ref().collide(x, y, w, h, dx, dy, &walls)
     }
 
     // Blit operations
@@ -205,13 +205,13 @@ impl Tilemap {
             tm,
 
             (u32, {
-                let tilemap = pyxel::tilemaps().get(tm as usize).copied()
+                let tilemap = pyxel::tilemaps().get(tm as usize).cloned()
                     .ok_or_else(|| PyValueError::new_err("Invalid tilemap index"))?;
-                unsafe { self.inner_mut().draw_tilemap(x, y, tilemap, u, v, w, h, tilekey, rotate, scale) };
+                self.inner_mut().draw_tilemap(x, y, &tilemap, u, v, w, h, tilekey, rotate, scale);
             }),
 
             (Tilemap, {
-                unsafe { self.inner_mut().draw_tilemap(x, y, tm.inner, u, v, w, h, tilekey, rotate, scale) };
+                self.inner_mut().draw_tilemap(x, y, &tm.inner, u, v, w, h, tilekey, rotate, scale);
             })
         }
         Ok(())
@@ -228,10 +228,10 @@ impl Tilemap {
         match &self.inner_ref().imgsrc {
             pyxel::ImageSource::Index(index) => pyxel::images()
                 .get(*index as usize)
-                .copied()
+                .cloned()
                 .map(Image::wrap)
                 .ok_or_else(|| PyValueError::new_err("Invalid image index")),
-            pyxel::ImageSource::Image(image) => Ok(Image::wrap(*image)),
+            pyxel::ImageSource::Image(image) => Ok(Image::wrap(image.clone())),
         }
     }
 

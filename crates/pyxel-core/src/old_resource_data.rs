@@ -184,7 +184,7 @@ impl Pyxel {
         macro_rules! deserialize {
             ($type: ty, $accessor: expr, $count: expr) => {
                 for i in 0..$count {
-                    let item = unsafe { &mut *$accessor[i as usize] };
+                    let item = rc_mut!($accessor[i as usize]);
                     if let Ok(mut file) = archive.by_name(&<$type>::resource_name(i)) {
                         let mut input = String::new();
                         file.read_to_string(&mut input).unwrap();

@@ -1,7 +1,5 @@
-use std::ptr;
-
 use crate::canvas::Canvas;
-use crate::image::{rgb24_to_rgb8, Color, Image};
+use crate::image::{rgb24_to_rgb8, Color, Image, RcImage};
 use crate::key::{
     Key, GAMEPAD1_BUTTON_A, GAMEPAD1_BUTTON_B, GAMEPAD1_BUTTON_BACK, GAMEPAD1_BUTTON_DPAD_DOWN,
     GAMEPAD1_BUTTON_DPAD_LEFT, GAMEPAD1_BUTTON_DPAD_RIGHT, GAMEPAD1_BUTTON_DPAD_UP,
@@ -93,55 +91,40 @@ impl Pyxel {
 
     pub fn show_screen(&mut self) {
         struct App {
-            image: *mut Image,
-        }
-
-        unsafe impl Send for App {}
-        unsafe impl Sync for App {}
-
-        impl Drop for App {
-            fn drop(&mut self) {
-                unsafe {
-                    drop(Box::from_raw(self.image));
-                }
-            }
+            image: RcImage,
         }
 
         impl PyxelCallback for App {
             fn update(&mut self, _pyxel: &mut Pyxel) {}
             fn draw(&mut self, _pyxel: &mut Pyxel) {
-                unsafe {
-                    pyxel::screen().draw_image(
-                        0.0,
-                        0.0,
-                        self.image,
-                        0.0,
-                        0.0,
-                        *pyxel::width() as f32,
-                        *pyxel::height() as f32,
-                        None,
-                        None,
-                        None,
-                    );
-                }
+                rc_mut!(pyxel::screen()).draw_image(
+                    0.0,
+                    0.0,
+                    &self.image,
+                    0.0,
+                    0.0,
+                    *pyxel::width() as f32,
+                    *pyxel::height() as f32,
+                    None,
+                    None,
+                    None,
+                );
             }
         }
 
         let image = Image::new(*pyxel::width(), *pyxel::height());
-        unsafe {
-            (&mut *image).draw_image(
-                0.0,
-                0.0,
-                ptr::from_mut(pyxel::screen()),
-                0.0,
-                0.0,
-                *pyxel::width() as f32,
-                *pyxel::height() as f32,
-                None,
-                None,
-                None,
-            );
-        }
+        rc_mut!(image).draw_image(
+            0.0,
+            0.0,
+            pyxel::screen(),
+            0.0,
+            0.0,
+            *pyxel::width() as f32,
+            *pyxel::height() as f32,
+            None,
+            None,
+            None,
+        );
 
         self.run(App { image });
     }
@@ -205,8 +188,8 @@ impl Pyxel {
         let colors = pyxel::colors();
         let width = utils::simplify_string(data[0]).len() as u32;
         let height = data.len() as u32;
-        let image_ptr = Image::new(width, height);
-        let image = unsafe { &mut *image_ptr };
+        let rc = Image::new(width, height);
+        let image = rc_mut!(rc);
         image.set(0, 0, data);
         let image_data = &image.canvas.data;
         let scaled_width = width * scale;
@@ -229,9 +212,6 @@ impl Pyxel {
             }
         }
 
-        unsafe {
-            drop(Box::from_raw(image_ptr));
-        }
         platform::set_window_icon(scaled_width, scaled_height, &rgba);
     }
 
@@ -266,7 +246,7 @@ impl Pyxel {
         *pyxel::width() = width;
         *pyxel::height() = height;
 
-        pyxel::screen().canvas = Canvas::new(width, height);
+        rc_mut!(pyxel::screen()).canvas = Canvas::new(width, height);
 
         if let Some(graphics) = &mut self.graphics {
             graphics.invalidate_screen_texture();
@@ -441,7 +421,7 @@ impl Pyxel {
             return;
         }
 
-        let screen = pyxel::screen();
+        let screen = rc_mut!(pyxel::screen());
         let clip_rect = screen.canvas.clip_rect;
         let camera_x = screen.canvas.camera_x;
         let camera_y = screen.canvas.camera_y;
@@ -487,8 +467,8 @@ impl Pyxel {
             return;
         }
 
-        let width = pyxel::cursor_image().width() as i32;
-        let height = pyxel::cursor_image().height() as i32;
+        let width = rc_ref!(pyxel::cursor_image()).width() as i32;
+        let height = rc_ref!(pyxel::cursor_image()).height() as i32;
 
         if x <= -width
             || x >= *pyxel::width() as i32
@@ -498,7 +478,7 @@ impl Pyxel {
             return;
         }
 
-        let screen = pyxel::screen();
+        let screen = rc_mut!(pyxel::screen());
         let clip_rect = screen.canvas.clip_rect;
         let camera_x = screen.canvas.camera_x;
         let camera_y = screen.canvas.camera_y;
@@ -506,20 +486,18 @@ impl Pyxel {
 
         screen.reset_clip_rect();
         screen.reset_camera();
-        unsafe {
-            screen.draw_image(
-                x as f32,
-                y as f32,
-                ptr::from_mut(pyxel::cursor_image()),
-                0.0,
-                0.0,
-                width as f32,
-                height as f32,
-                Some(0),
-                None,
-                None,
-            );
-        }
+        screen.draw_image(
+            x as f32,
+            y as f32,
+            pyxel::cursor_image(),
+            0.0,
+            0.0,
+            width as f32,
+            height as f32,
+            Some(0),
+            None,
+            None,
+        );
 
         screen.canvas.clip_rect = clip_rect;
         screen.canvas.camera_x = camera_x;

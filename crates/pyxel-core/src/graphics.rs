@@ -2,7 +2,7 @@ use std::mem::size_of;
 
 use glow::{HasContext, PixelUnpackData};
 
-use crate::font::Font;
+use crate::font::RcFont;
 use crate::image::{rgb24_to_rgb8, Color, Rgb24};
 use crate::platform::{self, GlProfile};
 use crate::pyxel::{self, Pyxel};
@@ -232,73 +232,73 @@ impl Pyxel {
     // View transformation
 
     pub fn set_clip_rect(&self, x: f32, y: f32, width: f32, height: f32) {
-        pyxel::screen().set_clip_rect(x, y, width, height);
+        rc_mut!(pyxel::screen()).set_clip_rect(x, y, width, height);
     }
 
     pub fn reset_clip_rect(&self) {
-        pyxel::screen().reset_clip_rect();
+        rc_mut!(pyxel::screen()).reset_clip_rect();
     }
 
     pub fn set_camera(&self, x: f32, y: f32) {
-        pyxel::screen().set_camera(x, y);
+        rc_mut!(pyxel::screen()).set_camera(x, y);
     }
 
     pub fn reset_camera(&self) {
-        pyxel::screen().reset_camera();
+        rc_mut!(pyxel::screen()).reset_camera();
     }
 
     pub fn map_color(&self, src_color: Color, dst_color: Color) {
-        pyxel::screen().map_color(src_color, dst_color);
+        rc_mut!(pyxel::screen()).map_color(src_color, dst_color);
     }
 
     pub fn reset_color_map(&self) {
-        pyxel::screen().reset_color_map();
+        rc_mut!(pyxel::screen()).reset_color_map();
     }
 
     pub fn set_dithering(&self, alpha: f32) {
-        pyxel::screen().set_dithering(alpha);
+        rc_mut!(pyxel::screen()).set_dithering(alpha);
     }
 
     pub fn clear(&self, color: Color) {
-        pyxel::screen().clear(color);
+        rc_mut!(pyxel::screen()).clear(color);
     }
 
     // Drawing primitives
 
     pub fn pixel(&self, x: f32, y: f32) -> Color {
-        pyxel::screen().pixel(x, y)
+        rc_ref!(pyxel::screen()).pixel(x, y)
     }
 
     pub fn set_pixel(&self, x: f32, y: f32, color: Color) {
-        pyxel::screen().set_pixel(x, y, color);
+        rc_mut!(pyxel::screen()).set_pixel(x, y, color);
     }
 
     pub fn draw_line(&self, x1: f32, y1: f32, x2: f32, y2: f32, color: Color) {
-        pyxel::screen().draw_line(x1, y1, x2, y2, color);
+        rc_mut!(pyxel::screen()).draw_line(x1, y1, x2, y2, color);
     }
 
     pub fn draw_rect(&self, x: f32, y: f32, width: f32, height: f32, color: Color) {
-        pyxel::screen().draw_rect(x, y, width, height, color);
+        rc_mut!(pyxel::screen()).draw_rect(x, y, width, height, color);
     }
 
     pub fn draw_rect_border(&self, x: f32, y: f32, width: f32, height: f32, color: Color) {
-        pyxel::screen().draw_rect_border(x, y, width, height, color);
+        rc_mut!(pyxel::screen()).draw_rect_border(x, y, width, height, color);
     }
 
     pub fn draw_circle(&self, x: f32, y: f32, radius: f32, color: Color) {
-        pyxel::screen().draw_circle(x, y, radius, color);
+        rc_mut!(pyxel::screen()).draw_circle(x, y, radius, color);
     }
 
     pub fn draw_circle_border(&self, x: f32, y: f32, radius: f32, color: Color) {
-        pyxel::screen().draw_circle_border(x, y, radius, color);
+        rc_mut!(pyxel::screen()).draw_circle_border(x, y, radius, color);
     }
 
     pub fn draw_ellipse(&self, x: f32, y: f32, width: f32, height: f32, color: Color) {
-        pyxel::screen().draw_ellipse(x, y, width, height, color);
+        rc_mut!(pyxel::screen()).draw_ellipse(x, y, width, height, color);
     }
 
     pub fn draw_ellipse_border(&self, x: f32, y: f32, width: f32, height: f32, color: Color) {
-        pyxel::screen().draw_ellipse_border(x, y, width, height, color);
+        rc_mut!(pyxel::screen()).draw_ellipse_border(x, y, width, height, color);
     }
 
     pub fn draw_triangle(
@@ -311,7 +311,7 @@ impl Pyxel {
         y3: f32,
         color: Color,
     ) {
-        pyxel::screen().draw_triangle(x1, y1, x2, y2, x3, y3, color);
+        rc_mut!(pyxel::screen()).draw_triangle(x1, y1, x2, y2, x3, y3, color);
     }
 
     pub fn draw_triangle_border(
@@ -324,11 +324,11 @@ impl Pyxel {
         y3: f32,
         color: Color,
     ) {
-        pyxel::screen().draw_triangle_border(x1, y1, x2, y2, x3, y3, color);
+        rc_mut!(pyxel::screen()).draw_triangle_border(x1, y1, x2, y2, x3, y3, color);
     }
 
     pub fn flood_fill(&self, x: f32, y: f32, color: Color) {
-        pyxel::screen().flood_fill(x, y, color);
+        rc_mut!(pyxel::screen()).flood_fill(x, y, color);
     }
 
     // Image & tilemap
@@ -346,20 +346,18 @@ impl Pyxel {
         rotate: Option<f32>,
         scale: Option<f32>,
     ) {
-        unsafe {
-            pyxel::screen().draw_image(
-                x,
-                y,
-                pyxel::images()[image_index as usize],
-                image_x,
-                image_y,
-                width,
-                height,
-                transparent,
-                rotate,
-                scale,
-            );
-        }
+        rc_mut!(pyxel::screen()).draw_image(
+            x,
+            y,
+            &pyxel::images()[image_index as usize],
+            image_x,
+            image_y,
+            width,
+            height,
+            transparent,
+            rotate,
+            scale,
+        );
     }
 
     pub fn draw_tilemap(
@@ -375,20 +373,18 @@ impl Pyxel {
         rotate: Option<f32>,
         scale: Option<f32>,
     ) {
-        unsafe {
-            pyxel::screen().draw_tilemap(
-                x,
-                y,
-                pyxel::tilemaps()[tilemap_index as usize],
-                tilemap_x,
-                tilemap_y,
-                width,
-                height,
-                transparent,
-                rotate,
-                scale,
-            );
-        }
+        rc_mut!(pyxel::screen()).draw_tilemap(
+            x,
+            y,
+            &pyxel::tilemaps()[tilemap_index as usize],
+            tilemap_x,
+            tilemap_y,
+            width,
+            height,
+            transparent,
+            rotate,
+            scale,
+        );
     }
 
     // 3D graphics
@@ -405,19 +401,17 @@ impl Pyxel {
         fov: Option<f32>,
         transparent: Option<Color>,
     ) {
-        unsafe {
-            pyxel::screen().draw_image_3d(
-                x,
-                y,
-                width,
-                height,
-                pyxel::images()[image_index as usize],
-                pos,
-                rot,
-                fov,
-                transparent,
-            );
-        }
+        rc_mut!(pyxel::screen()).draw_image_3d(
+            x,
+            y,
+            width,
+            height,
+            &pyxel::images()[image_index as usize],
+            pos,
+            rot,
+            fov,
+            transparent,
+        );
     }
 
     pub fn draw_tilemap_3d(
@@ -432,25 +426,23 @@ impl Pyxel {
         fov: Option<f32>,
         transparent: Option<Color>,
     ) {
-        unsafe {
-            pyxel::screen().draw_tilemap_3d(
-                x,
-                y,
-                width,
-                height,
-                pyxel::tilemaps()[tilemap_index as usize],
-                pos,
-                rot,
-                fov,
-                transparent,
-            );
-        }
+        rc_mut!(pyxel::screen()).draw_tilemap_3d(
+            x,
+            y,
+            width,
+            height,
+            &pyxel::tilemaps()[tilemap_index as usize],
+            pos,
+            rot,
+            fov,
+            transparent,
+        );
     }
 
     // Text & rendering
 
-    pub fn draw_text(&self, x: f32, y: f32, text: &str, color: Color, font: Option<*mut Font>) {
-        pyxel::screen().draw_text(x, y, text, color, font);
+    pub fn draw_text(&self, x: f32, y: f32, text: &str, color: Color, font: Option<&RcFont>) {
+        rc_mut!(pyxel::screen()).draw_text(x, y, text, color, font);
     }
 
     pub(crate) fn render_screen(&mut self) {
@@ -542,7 +534,7 @@ impl Pyxel {
 
         let screen_width = *pyxel::width() as i32;
         let screen_height = *pyxel::height() as i32;
-        let data = &pyxel::screen().canvas.data;
+        let data = &rc_ref!(pyxel::screen()).canvas.data;
 
         if graphics.screen_texture_initialized {
             gl.tex_sub_image_2d(

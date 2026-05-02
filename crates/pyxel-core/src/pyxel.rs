@@ -4,12 +4,12 @@ use std::sync::atomic::{AtomicBool, Ordering};
 
 use crate::audio::Audio;
 use crate::canvas::Canvas;
-use crate::channel::Channel;
+use crate::channel::{Channel, RcChannel};
 use crate::graphics::Graphics;
-use crate::image::{Color, Image, Rgb24};
+use crate::image::{Color, Image, RcImage, Rgb24};
 use crate::input::Input;
 use crate::key::Key;
-use crate::music::Music;
+use crate::music::{Music, RcMusic};
 use crate::platform;
 use crate::resource::Resource;
 use crate::settings::{
@@ -19,10 +19,10 @@ use crate::settings::{
     IMAGE_SIZE, NUM_CHANNELS, NUM_FONT_COLS, NUM_IMAGES, NUM_MUSICS, NUM_SOUNDS, NUM_TILEMAPS,
     NUM_TONES, TILEMAP_SIZE, WINDOW_TO_DISPLAY_RATIO,
 };
-use crate::sound::Sound;
+use crate::sound::{RcSound, Sound};
 use crate::system::System;
-use crate::tilemap::{ImageSource, Tilemap};
-use crate::tone::Tone;
+use crate::tilemap::{ImageSource, RcTilemap, Tilemap};
+use crate::tone::{RcTone, Tone};
 
 static IS_INITIALIZED: AtomicBool = AtomicBool::new(false);
 
@@ -94,17 +94,17 @@ define_static!(dropped_files, DROPPED_FILES, Vec<String>, Vec::new());
 
 // Graphics
 define_global!(colors, COLORS, Vec<Rgb24>, DEFAULT_COLORS.to_vec());
-define_global!(images, IMAGES, Vec<*mut Image>, init_images());
-define_global!(tilemaps, TILEMAPS, Vec<*mut Tilemap>, init_tilemaps());
-define_global!(screen, SCREEN, Image, init_screen());
-define_global!(cursor_image, CURSOR_IMAGE, Image, init_cursor_image());
-define_global!(font_image, FONT_IMAGE, Image, init_font_image());
+define_global!(images, IMAGES, Vec<RcImage>, init_images());
+define_global!(tilemaps, TILEMAPS, Vec<RcTilemap>, init_tilemaps());
+define_global!(screen, SCREEN, RcImage, init_screen());
+define_global!(cursor_image, CURSOR_IMAGE, RcImage, init_cursor_image());
+define_global!(font_image, FONT_IMAGE, RcImage, init_font_image());
 
 // Audio
-define_global!(channels, CHANNELS, Vec<*mut Channel>, init_channels());
-define_global!(tones, TONES, Vec<*mut Tone>, init_tones());
-define_global!(sounds, SOUNDS, Vec<*mut Sound>, init_sounds());
-define_global!(musics, MUSICS, Vec<*mut Music>, init_musics());
+define_global!(channels, CHANNELS, Vec<RcChannel>, init_channels());
+define_global!(tones, TONES, Vec<RcTone>, init_tones());
+define_global!(sounds, SOUNDS, Vec<RcSound>, init_sounds());
+define_global!(musics, MUSICS, Vec<RcMusic>, init_musics());
 
 pub struct Pyxel {
     pub(crate) system: System,
@@ -162,8 +162,8 @@ pub fn init(
     }
 
     // Resize screen
-    screen().canvas = Canvas::new(w, h);
-    screen().palette = array::from_fn(|i| i as Color);
+    rc_mut!(screen()).canvas = Canvas::new(w, h);
+    rc_mut!(screen()).palette = array::from_fn(|i| i as Color);
 
     // Reset input
     *mouse_x() = 0;
@@ -223,31 +223,18 @@ pub fn reset_statics() {
                 }
             }
         };
-        (vec: $static:ident) => {
-            unsafe {
-                if !$static.is_null() {
-                    for &item in &*$static {
-                        if !item.is_null() {
-                            drop(Box::from_raw(item));
-                        }
-                    }
-                    drop(Box::from_raw($static));
-                    $static = null_mut();
-                }
-            }
-        };
     }
 
     drop_global!(COLORS);
-    drop_global!(vec: IMAGES);
-    drop_global!(vec: TILEMAPS);
+    drop_global!(IMAGES);
+    drop_global!(TILEMAPS);
     drop_global!(SCREEN);
     drop_global!(CURSOR_IMAGE);
     drop_global!(FONT_IMAGE);
-    drop_global!(vec: CHANNELS);
-    drop_global!(vec: TONES);
-    drop_global!(vec: SOUNDS);
-    drop_global!(vec: MUSICS);
+    drop_global!(CHANNELS);
+    drop_global!(TONES);
+    drop_global!(SOUNDS);
+    drop_global!(MUSICS);
 
     unsafe {
         RESET_CALLBACK = None;
@@ -257,44 +244,45 @@ pub fn reset_statics() {
 
 // Init functions for define_global!
 
-fn init_images() -> Vec<*mut Image> {
+fn init_images() -> Vec<RcImage> {
     (0..NUM_IMAGES)
         .map(|_| Image::new(IMAGE_SIZE, IMAGE_SIZE))
         .collect()
 }
 
-fn init_tilemaps() -> Vec<*mut Tilemap> {
+fn init_tilemaps() -> Vec<RcTilemap> {
     (0..NUM_TILEMAPS)
         .map(|_| Tilemap::new(TILEMAP_SIZE, TILEMAP_SIZE, ImageSource::Index(0)))
         .collect()
 }
 
-fn init_screen() -> Image {
-    Image {
+fn init_screen() -> RcImage {
+    new_rc_type!(Image {
         canvas: Canvas::new(0, 0),
         palette: array::from_fn(|i| i as Color),
         palette_is_identity: true,
-    }
+    })
 }
 
-fn init_cursor_image() -> Image {
-    let mut image = Image {
+fn init_cursor_image() -> RcImage {
+    let rc = new_rc_type!(Image {
         canvas: Canvas::new(CURSOR_WIDTH, CURSOR_HEIGHT),
         palette: array::from_fn(|i| i as Color),
         palette_is_identity: true,
-    };
-    image.set(0, 0, &CURSOR_DATA);
-    image
+    });
+    rc_mut!(rc).set(0, 0, &CURSOR_DATA);
+    rc
 }
 
-fn init_font_image() -> Image {
+fn init_font_image() -> RcImage {
     let w = FONT_WIDTH * NUM_FONT_COLS;
     let h = FONT_HEIGHT * (FONT_DATA.len() as u32).div_ceil(NUM_FONT_COLS);
-    let mut image = Image {
+    let rc = new_rc_type!(Image {
         canvas: Canvas::new(w, h),
         palette: array::from_fn(|i| i as Color),
         palette_is_identity: true,
-    };
+    });
+    let image = rc_mut!(rc);
     for (i, data) in FONT_DATA.iter().enumerate() {
         let row = i as u32 / NUM_FONT_COLS;
         let col = i as u32 % NUM_FONT_COLS;
@@ -309,14 +297,14 @@ fn init_font_image() -> Image {
             }
         }
     }
-    image
+    rc
 }
 
-fn init_channels() -> Vec<*mut Channel> {
+fn init_channels() -> Vec<RcChannel> {
     (0..NUM_CHANNELS).map(|_| Channel::new()).collect()
 }
 
-fn init_tones() -> Vec<*mut Tone> {
+fn init_tones() -> Vec<RcTone> {
     macro_rules! set_tone {
         ($tone:expr, $default:ident) => {{
             $tone.mode = $default.0;
@@ -329,7 +317,7 @@ fn init_tones() -> Vec<*mut Tone> {
     (0..NUM_TONES)
         .map(|index| {
             let tone = Tone::new();
-            let t = unsafe { &mut *tone };
+            let t = rc_mut!(tone);
             match index {
                 0 => set_tone!(t, DEFAULT_TONE_TRIANGLE),
                 1 => set_tone!(t, DEFAULT_TONE_SQUARE),
@@ -342,10 +330,10 @@ fn init_tones() -> Vec<*mut Tone> {
         .collect()
 }
 
-fn init_sounds() -> Vec<*mut Sound> {
+fn init_sounds() -> Vec<RcSound> {
     (0..NUM_SOUNDS).map(|_| Sound::new()).collect()
 }
 
-fn init_musics() -> Vec<*mut Music> {
+fn init_musics() -> Vec<RcMusic> {
     (0..NUM_MUSICS).map(|_| Music::new()).collect()
 }

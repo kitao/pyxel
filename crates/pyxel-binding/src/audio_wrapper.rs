@@ -49,14 +49,14 @@ fn play(
         }),
 
         (Sound, {
-            let channel = unsafe { &mut *pyxel::channels()[ch as usize] };
-            channel.play_sound(snd.inner, sec, should_loop, resume);
+            let _lock = pyxel::AudioLock::lock();
+            rc_mut!(pyxel::channels()[ch as usize]).play_sound(snd.inner, sec, should_loop, resume);
         }),
 
         (Vec<Sound>, {
-            let sounds = snd.iter().map(|sound| sound.inner).collect();
-            let channel = unsafe { &mut *pyxel::channels()[ch as usize] };
-            channel.play(sounds, sec, should_loop, resume);
+            let sounds = snd.iter().map(|sound| sound.inner.clone()).collect();
+            let _lock = pyxel::AudioLock::lock();
+            rc_mut!(pyxel::channels()[ch as usize]).play(sounds, sec, should_loop, resume);
         }),
 
         (String, {
@@ -122,7 +122,7 @@ fn channel(ch: u32) -> PyResult<Channel> {
     );
     pyxel::channels()
         .get(ch as usize)
-        .copied()
+        .cloned()
         .map(Channel::wrap)
         .ok_or_else(|| PyValueError::new_err("Invalid channel index"))
 }
@@ -135,7 +135,7 @@ fn sound(snd: u32) -> PyResult<Sound> {
     );
     pyxel::sounds()
         .get(snd as usize)
-        .copied()
+        .cloned()
         .map(Sound::wrap)
         .ok_or_else(|| PyValueError::new_err("Invalid sound index"))
 }
@@ -148,7 +148,7 @@ fn music(msc: u32) -> PyResult<Music> {
     );
     pyxel::musics()
         .get(msc as usize)
-        .copied()
+        .cloned()
         .map(Music::wrap)
         .ok_or_else(|| PyValueError::new_err("Invalid music index"))
 }
