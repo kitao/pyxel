@@ -846,9 +846,19 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
     fn fill_row_with_dither(&mut self, x1: i32, x2: i32, y: i32, value: T) {
         if self.alpha >= 1.0 {
             self.fill_row(x1, x2, y, value);
-        } else {
-            for x in x1..=x2 {
-                self.write_data_with_clipping(x, y, value);
+            return;
+        }
+        if y < self.clip_rect.top() || y > self.clip_rect.bottom() {
+            return;
+        }
+        let left = x1.max(self.clip_rect.left());
+        let right = x2.min(self.clip_rect.right());
+        if left > right {
+            return;
+        }
+        for x in left..=right {
+            if self.should_write(x, y) {
+                self.write_data(x as usize, y as usize, value);
             }
         }
     }

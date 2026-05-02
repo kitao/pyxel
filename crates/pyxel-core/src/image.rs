@@ -467,11 +467,22 @@ impl Image {
             return;
         }
 
-        let image: &Image = unsafe { tilemap.imgsrc.resolve() };
+        // When the tilemap's image source aliases self, render through a
+        // clone of self's canvas to avoid read-write aliasing.
+        let resolved: &Image = unsafe { tilemap.imgsrc.resolve() };
+        let src_canvas = if ptr::eq(ptr::from_ref(resolved), ptr::from_ref(self)) {
+            Some(self.canvas.clone())
+        } else {
+            None
+        };
+        let image_canvas = match &src_canvas {
+            Some(tmp) => tmp,
+            None => &resolved.canvas,
+        };
 
         let tile_size = TILE_SIZE as i32;
-        let img_w = image.width() as usize;
-        let img_h = image.height() as usize;
+        let img_w = image_canvas.width() as usize;
+        let img_h = image_canvas.height() as usize;
 
         // Fast path: no flip, full alpha
         let palette = palette_opt!(self);
@@ -500,7 +511,7 @@ impl Image {
                         let valid = chunk.min(img_w - img_x);
                         let si = img_w * img_y + img_x;
                         let di = dst_row + xi as usize;
-                        let src = &image.canvas.data[si..si + valid];
+                        let src = &image_canvas.data[si..si + valid];
                         let dst = &mut self.canvas.data[di..di + valid];
                         match (transparent, palette) {
                             (None, None) => dst.copy_from_slice(src),
@@ -563,7 +574,7 @@ impl Image {
                 if img_y < 0 || img_y >= img_h {
                     continue;
                 }
-                let pixel = image.canvas.read_data(img_x as usize, img_y as usize);
+                let pixel = image_canvas.read_data(img_x as usize, img_y as usize);
 
                 if transparent.is_some_and(|t| pixel == t) {
                     continue;
@@ -698,9 +709,20 @@ impl Image {
         let tm_w = tilemap.canvas.width() as i32;
         let tm_h = tilemap.canvas.height() as i32;
 
-        let image: &Image = unsafe { tilemap.imgsrc.resolve() };
-        let img_w = image.width() as i32;
-        let img_h = image.height() as i32;
+        // When the tilemap's image source aliases self, render through a
+        // clone of self's canvas to avoid read-write aliasing.
+        let resolved: &Image = unsafe { tilemap.imgsrc.resolve() };
+        let src_canvas = if ptr::eq(ptr::from_ref(resolved), ptr::from_ref(self)) {
+            Some(self.canvas.clone())
+        } else {
+            None
+        };
+        let image_canvas = match &src_canvas {
+            Some(tmp) => tmp,
+            None => &resolved.canvas,
+        };
+        let img_w = image_canvas.width() as i32;
+        let img_h = image_canvas.height() as i32;
 
         let x1 = proj.dst_x.max(self.canvas.clip_rect.left());
         let x2 = (proj.dst_x + proj.w - 1).min(self.canvas.clip_rect.right());
@@ -727,7 +749,7 @@ impl Image {
                             let px = tile.0 as i32 * tile_size + (src_x & TILE_MASK);
                             let py = tile.1 as i32 * tile_size + (src_y & TILE_MASK);
                             if px >= 0 && px < img_w && py >= 0 && py < img_h {
-                                let value = image.canvas.read_data(px as usize, py as usize);
+                                let value = image_canvas.read_data(px as usize, py as usize);
                                 if transparent.is_none_or(|tkey| value != tkey) {
                                     let value = palette.map_or(value, |pal| pal[value.to_index()]);
                                     self.canvas.write_data(xi as usize, yi as usize, value);
@@ -824,10 +846,9 @@ impl Image {
     fn color_distance_sq(rgb1: (u8, u8, u8), rgb2: (u8, u8, u8)) -> f32 {
         let (r1, g1, b1) = rgb1;
         let (r2, g2, b2) = rgb2;
-        // Weighted by perceived luminance contribution
-        let dr = (r1 as f32 - r2 as f32) * 0.30;
-        let dg = (g1 as f32 - g2 as f32) * 0.59;
-        let db = (b1 as f32 - b2 as f32) * 0.11;
+        let dr = r1 as f32 - r2 as f32;
+        let dg = g1 as f32 - g2 as f32;
+        let db = b1 as f32 - b2 as f32;
         dr * dr + dg * dg + db * db
     }
 }

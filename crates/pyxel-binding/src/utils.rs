@@ -29,20 +29,15 @@ macro_rules! python_type_error {
 macro_rules! cast_pyany {
     ($value:ident, $(($type:ty, $block:block)),*) => {
         {
-            let mut types = String::new();
             loop {
                 $(
-                    if !types.is_empty() {
-                        types += ", "
-                    }
                     let any_ref: &pyo3::Bound<'_, pyo3::PyAny> = $value.as_any();
                     let borrowed: pyo3::Borrowed<'_, '_, pyo3::PyAny> = any_ref.into();
                     if let Ok($value) = <$type>::extract(borrowed) {
                         break $block;
                     }
-                    types += stringify!($type);
                 )*
-                python_type_error!(format!("must be {}", types));
+                python_type_error!(format!("must be {}", [$(stringify!($type)),*].join(", ")));
             }
         }
     };
