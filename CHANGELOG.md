@@ -13,7 +13,8 @@
 - Fixed Tone.sample_bits range allowing zero or shift-overflow values
 - Fixed vibrato modulation skipped when MML period equals initial value
 - Made Tone wavetable, sample_bits, and gain take effect mid-note
-- Removed deprecated Tone.waveform from type stubs
+- Removed deprecated Tone.waveform from API reference and type hints
+- Replaced Seq[T] with list[T] in type hints
 
 ## 2.9.4
 
@@ -91,7 +92,7 @@
 - Fixed tilemap editor selection
 - Fixed tilemap viewer rendering
 - Added Python API and Rust unit tests
-- Removed undefined constants from type stubs and API reference
+- Removed undefined constants from type hints and API reference
 - Added frame pipeline and input injection to headless mode
 
 ## 2.8.8
@@ -152,8 +153,8 @@
 
 - Added URL loading support to Pyxel Code Maker
 - Changed Pyxel Code Maker to load default project from zip file
-- Added script to generate type stub docstrings
-- Added docstrings to type stubs from API reference
+- Added script to generate type hint docstrings
+- Added docstrings to type hints from API reference
 - Moved WASM-only images from docs/images to wasm/images
 - Added multilingual editor manual with 12 language support
 - Unified default width of WASM tool pages
