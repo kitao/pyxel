@@ -24,12 +24,10 @@
 - Fixed Pyxel Editor color picker cursor shape across palette sizes
 - Fixed missing id attributes on web pages
 - Reorganized Python test suite for broader pyxel-binding API coverage
-- Reorganized CLAUDE.md as compact behavioral guidelines
 - Added Pyxel coding policy with determinism principle and audit procedure
 - Added cfg(pyxel_core) gates to audio save APIs
 - Reused waveform buffer when updating tone wavetable
 - Gated reset_statics and pid_exists by target OS
-- Refined CLAUDE.md self-conformance and user-guide wording
 - Replaced gen_bgm preset clamp with a bounds assertion
 - Added explicit error for BDF fonts wider than 32 pixels
 - Added Python 3.14 to PyPI classifiers
@@ -41,7 +39,6 @@
 - Refactored editor widgets and cleaned up state handling
 - Simplified Rust binding error handling
 - Refined web pages, share links, and translation terminology
-- Refined CLAUDE.md coding policy structure and wording
 
 ## 2.9.2
 
