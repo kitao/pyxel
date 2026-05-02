@@ -8,9 +8,7 @@ wrap_as_python_primitive_sequence!(
     (|inner: &pyxel::RcTone, index| rc_ref!(inner).wavetable[index]),
     pyxel::ToneSample,
     (|inner: &pyxel::RcTone, index, value| rc_mut!(inner).wavetable[index] = value),
-    (|inner: &pyxel::RcTone| -> &mut Vec<pyxel::ToneSample> {
-        &mut rc_mut!(inner).wavetable
-    }),
+    (|inner: &pyxel::RcTone| -> &mut Vec<pyxel::ToneSample> { &mut rc_mut!(inner).wavetable }),
     Vec<pyxel::ToneSample>,
     (|inner: &pyxel::RcTone, list| rc_mut!(inner).wavetable = list),
     (|inner: &pyxel::RcTone| rc_ref!(inner).wavetable.clone())

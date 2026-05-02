@@ -70,7 +70,9 @@ pub use crate::pyxel::{
     reset_callback, screen, sounds, tilemaps, tones, width, Pyxel,
 };
 pub use crate::settings::*;
-pub use crate::sound::{RcSound, Sound, SoundEffect, SoundNote, SoundSpeed, SoundTone, SoundVolume};
+pub use crate::sound::{
+    RcSound, Sound, SoundEffect, SoundNote, SoundSpeed, SoundTone, SoundVolume,
+};
 pub use crate::system::PyxelCallback;
 pub use crate::tilemap::{ImageSource, ImageTileCoord, RcTilemap, Tile, Tilemap};
 pub use crate::tone::{RcTone, Tone, ToneGain, ToneMode, ToneSample};

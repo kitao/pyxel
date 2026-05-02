@@ -9,6 +9,9 @@
 - Switched shared types to Rc-based ownership and resolved sound leaks
 - Fixed missing audio lock in several audio API call paths
 - Fixed audio_bgm2 sample using off-palette colors
+- Fixed Image.from_image accepting over 256 colors with include_colors
+- Fixed Tone.sample_bits range allowing zero or shift-overflow values
+- Fixed vibrato modulation skipped when MML period equals initial value
 
 ## 2.9.4
 

@@ -10,11 +10,8 @@ macro_rules! wrap_sound_as_python_list {
             $value_type,
             (|inner: &pyxel::RcSound, index| rc_ref!(inner).$field_name[index]),
             $value_type,
-            (|inner: &pyxel::RcSound, index, value| rc_mut!(inner).$field_name
-                [index] = value),
-            (|inner: &pyxel::RcSound| -> &mut Vec<$value_type> {
-                &mut rc_mut!(inner).$field_name
-            }),
+            (|inner: &pyxel::RcSound, index, value| rc_mut!(inner).$field_name[index] = value),
+            (|inner: &pyxel::RcSound| -> &mut Vec<$value_type> { &mut rc_mut!(inner).$field_name }),
             Vec<$value_type>,
             (|inner: &pyxel::RcSound, list| rc_mut!(inner).$field_name = list),
             (|inner: &pyxel::RcSound| rc_ref!(inner)

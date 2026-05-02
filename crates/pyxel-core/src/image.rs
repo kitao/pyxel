@@ -81,12 +81,16 @@ impl Image {
                         let mut closest_color: Color = 0;
 
                         if include_colors {
+                            assert!(
+                                colors.len() < MAX_COLORS as usize,
+                                "Number of colors must be between 1 to {MAX_COLORS}"
+                            );
+                            closest_color = colors.len() as Color;
                             colors.push(
                                 ((src_rgb.0 as Rgb24) << 16)
                                     | ((src_rgb.1 as Rgb24) << 8)
                                     | src_rgb.2 as Rgb24,
                             );
-                            closest_color = colors.len() as Color - 1;
                         } else {
                             let mut closest_dist: f32 = f32::MAX;
                             for (i, pal_color) in colors.iter().enumerate() {
@@ -762,14 +766,7 @@ impl Image {
 
     // Text rendering
 
-    pub fn draw_text(
-        &mut self,
-        x: f32,
-        y: f32,
-        string: &str,
-        color: Color,
-        font: Option<&RcFont>,
-    ) {
+    pub fn draw_text(&mut self, x: f32, y: f32, string: &str, color: Color, font: Option<&RcFont>) {
         if let Some(font) = font {
             let x = utils::f32_to_i32(x) - self.canvas.camera_x;
             let y = utils::f32_to_i32(y) - self.canvas.camera_y;

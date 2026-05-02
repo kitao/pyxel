@@ -1,4 +1,4 @@
-use crate::settings::DEFAULT_TONE_SAMPLE_BITS;
+use crate::settings::{AUDIO_SAMPLE_BITS, DEFAULT_TONE_SAMPLE_BITS};
 
 pub type ToneSample = u32;
 pub type ToneGain = f32;
@@ -55,7 +55,7 @@ impl Tone {
 
     pub(crate) fn waveform(&mut self) -> &[f32] {
         if self.wavetable != self.cached_wavetable {
-            assert!(self.sample_bits <= 32);
+            assert!((1..=AUDIO_SAMPLE_BITS).contains(&self.sample_bits));
 
             self.cached_wavetable.clone_from(&self.wavetable);
             self.waveform.clear();
