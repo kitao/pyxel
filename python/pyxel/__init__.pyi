@@ -1193,8 +1193,6 @@ class Tone:
     """Sample bits for the wavetable. Defaults to 4."""
     wavetable: Seq[int]
     """Wavetable data as a list of sample values. Each value must be in range 0 to (2^sample_bits - 1)."""
-    waveform: Seq[int]  # Deprecated: use wavetable
-    """Deprecated alias of wavetable."""
     gain: float
     """Tone gain. Defaults to 1.0."""
 

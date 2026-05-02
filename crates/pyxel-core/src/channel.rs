@@ -7,7 +7,6 @@ use crate::settings::{
     AUDIO_SAMPLE_RATE, DEFAULT_CHANNEL_GAIN, NOTE_INTERP_CLOCKS, VOICE_CONTROL_RATE,
 };
 use crate::sound::{RcSound, Sound};
-use crate::tone::ToneMode;
 use crate::voice::Voice;
 
 pub type ChannelGain = f32;
@@ -35,7 +34,6 @@ pub struct Channel {
     repeat_points: Vec<(u32, u32)>,
     clocks_per_tick: u32,
     gate_ratio: f32,
-    tone_gain: f32,
     volume_level: f32,
     transpose_semitones: f32,
     detune_semitones: f32,
@@ -76,7 +74,6 @@ impl Channel {
             repeat_points: Vec::new(),
             clocks_per_tick: 0,
             gate_ratio: 1.0,
-            tone_gain: 1.0,
             volume_level: 1.0,
             transpose_semitones: 0.0,
             detune_semitones: 0.0,
@@ -338,14 +335,7 @@ impl Channel {
 
                 MmlCommand::Tone { tone } => {
                     let tone = tones.get(*tone as usize).unwrap_or(&tones[0]);
-                    let tone = rc_mut!(tone);
-                    match tone.mode {
-                        ToneMode::Wavetable => self.voice.oscillator.set(tone.waveform()),
-                        ToneMode::ShortPeriodNoise => self.voice.oscillator.set_noise(true),
-                        ToneMode::LongPeriodNoise => self.voice.oscillator.set_noise(false),
-                    }
-
-                    self.tone_gain = tone.gain;
+                    self.voice.set_tone(tone.clone());
                 }
                 MmlCommand::Volume { level } => {
                     self.volume_level = *level;
@@ -459,7 +449,7 @@ impl Channel {
                         + self.detune_semitones
                         + self.detune as f32 / 100.0;
 
-                    let velocity = self.tone_gain * self.gain * self.volume_level;
+                    let velocity = self.gain * self.volume_level;
 
                     self.note_duration_clocks = self.clocks_per_tick * *duration_ticks;
                     let playback_clocks =
