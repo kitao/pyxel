@@ -1,5 +1,12 @@
 # Change Log
 
+## 2.9.5
+
+- Fixed aliasing UB when tilemap imgsrc points to the target image
+- Switched image color matching to plain RGB Euclidean distance
+- Removed unused string allocation in PyO3 type cast macro
+- Hoisted clip checks out of dithered row fill loop
+
 ## 2.9.4
 
 - Fixed Pyxel Editor mismapping user palettes with more than 16 colors

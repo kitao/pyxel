@@ -80,12 +80,7 @@ def compare_or_update_all(name, results, refs_dir, update_references):
         actual_bytes = Path(actual_path).read_bytes()
         ref_bytes = ref_path.read_bytes()
         if actual_bytes != ref_bytes:
-            diff_path = ref_path.with_name(f"{name}_f{frame}_actual.png")
-            shutil.copy(actual_path, diff_path)
-            failures.append(
-                f"Screenshot mismatch: {ref_path.name}. "
-                f"Actual saved to {diff_path.name}"
-            )
+            failures.append(f"Screenshot mismatch: {ref_path.name}")
     if updated:
         pytest.skip(f"References updated: {', '.join(updated)}")
     if failures:
