@@ -1,4 +1,4 @@
-// Rc-based shared type access (mirrors pyxel-core/src/utils.rs)
+// Rc helpers
 
 macro_rules! rc_ref {
     ($rc:expr) => {
