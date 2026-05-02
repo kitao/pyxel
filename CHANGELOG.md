@@ -12,6 +12,8 @@
 - Fixed Image.from_image accepting over 256 colors with include_colors
 - Fixed Tone.sample_bits range allowing zero or shift-overflow values
 - Fixed vibrato modulation skipped when MML period equals initial value
+- Made Tone wavetable, sample_bits, and gain take effect mid-note
+- Removed deprecated Tone.waveform from type stubs
 
 ## 2.9.4
 

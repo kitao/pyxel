@@ -2,7 +2,8 @@ use std::sync::OnceLock;
 
 use blip_buf::BlipBuf;
 
-use crate::settings::{AUDIO_GAIN_SCALE, AUDIO_GAIN_SHIFT};
+use crate::settings::{AUDIO_GAIN_SCALE, AUDIO_GAIN_SHIFT, AUDIO_SAMPLE_BITS};
+use crate::tone::RcTone;
 
 const A4_MIDI_NOTE: f32 = 69.0;
 const A4_FREQUENCY: f32 = 440.0;
@@ -16,7 +17,7 @@ const PITCH_LUT_SIZE: usize =
 static PITCH_RATIO_LUT: OnceLock<Box<[f32]>> = OnceLock::new();
 
 pub struct Oscillator {
-    waveform_samples: Vec<i16>,
+    current_tone: Option<RcTone>,
     waveform_index: usize,
 
     lfsr: u16,
@@ -28,7 +29,7 @@ pub struct Oscillator {
 impl Oscillator {
     fn new() -> Self {
         Self {
-            waveform_samples: Vec::new(),
+            current_tone: None,
             waveform_index: 0,
 
             lfsr: 0,
@@ -38,16 +39,15 @@ impl Oscillator {
         }
     }
 
-    pub fn set(&mut self, waveform: &[f32]) {
-        assert!(!waveform.is_empty());
-
-        let quantized: Vec<i16> = waveform.iter().map(|&s| Self::quantize_sample(s)).collect();
-
-        if quantized != self.waveform_samples {
-            self.waveform_samples = quantized;
+    pub fn set_tone(&mut self, tone: RcTone) {
+        let same = self
+            .current_tone
+            .as_ref()
+            .is_some_and(|cur| std::rc::Rc::ptr_eq(cur, &tone));
+        if !same {
             self.waveform_index = 0;
         }
-
+        self.current_tone = Some(tone);
         self.tap_bit = 0;
         self.update();
     }
@@ -63,7 +63,6 @@ impl Oscillator {
             self.lfsr = if short_period { 0x0201 } else { 0x7001 };
             self.tap_bit = tap_bit;
         }
-        self.waveform_samples.clear();
         self.update();
     }
 
@@ -73,7 +72,11 @@ impl Oscillator {
 
     fn samples_per_cycle(&self) -> u32 {
         if self.tap_bit == 0 {
-            self.waveform_samples.len() as u32
+            let len = self
+                .current_tone
+                .as_ref()
+                .map_or(0, |t| rc_ref!(t).wavetable.len()) as u32;
+            len.max(1)
         } else {
             1
         }
@@ -81,7 +84,13 @@ impl Oscillator {
 
     fn advance_sample(&mut self) {
         if self.tap_bit == 0 {
-            self.waveform_index = (self.waveform_index + 1) % self.waveform_samples.len();
+            let len = self
+                .current_tone
+                .as_ref()
+                .map_or(0, |t| rc_ref!(t).wavetable.len());
+            if len > 0 {
+                self.waveform_index = (self.waveform_index + 1) % len;
+            }
         } else {
             let feedback = (self.lfsr ^ (self.lfsr >> self.tap_bit)) & 1;
             self.lfsr = ((self.lfsr >> 1) | (feedback << 14)) & 0x7FFF;
@@ -91,7 +100,18 @@ impl Oscillator {
 
     fn update(&mut self) {
         self.sample = if self.tap_bit == 0 {
-            self.waveform_samples[self.waveform_index] as i32
+            self.current_tone.as_ref().map_or(0, |t| {
+                let tone = rc_ref!(t);
+                if !(1..=AUDIO_SAMPLE_BITS).contains(&tone.sample_bits) || tone.wavetable.is_empty()
+                {
+                    return 0;
+                }
+                let idx = self.waveform_index % tone.wavetable.len();
+                let max = (1u32 << tone.sample_bits) - 1;
+                let raw = tone.wavetable[idx].min(max);
+                let normalized = (raw as f32 / max as f32) * 2.0 - 1.0;
+                Self::quantize_sample(normalized) as i32
+            })
         } else if (self.lfsr & 1) == 0 {
             i16::MAX as i32
         } else {
@@ -379,7 +399,8 @@ pub struct Voice {
     clock_rate: u32,
     clocks_per_tick: u32,
     base_frequency: f32,
-    velocity: f32,
+    velocity_base: f32,
+    current_tone: Option<RcTone>,
     remaining_note_clocks: u32,
     elapsed_note_clocks: u32,
     sample_clocks: u32,
@@ -410,7 +431,8 @@ impl Voice {
             clock_rate,
             clocks_per_tick: 1,
             base_frequency: 0.0,
-            velocity: 0.0,
+            velocity_base: 0.0,
+            current_tone: None,
             remaining_note_clocks: 0,
             elapsed_note_clocks: 0,
             sample_clocks: 0,
@@ -426,21 +448,36 @@ impl Voice {
         }
     }
 
+    pub fn set_tone(&mut self, tone: RcTone) {
+        let mode = rc_ref!(&tone).mode;
+        match mode {
+            crate::tone::ToneMode::Wavetable => self.oscillator.set_tone(tone.clone()),
+            crate::tone::ToneMode::ShortPeriodNoise => self.oscillator.set_noise(true),
+            crate::tone::ToneMode::LongPeriodNoise => self.oscillator.set_noise(false),
+        }
+        self.current_tone = Some(tone);
+    }
+
     pub fn set_clocks_per_tick(&mut self, clocks_per_tick: u32) {
         assert!(clocks_per_tick > 0);
 
         self.clocks_per_tick = clocks_per_tick;
     }
 
-    pub fn play_note(&mut self, midi_note: f32, velocity: f32, duration_clocks: u32) {
+    pub fn play_note(&mut self, midi_note: f32, velocity_base: f32, duration_clocks: u32) {
         self.base_frequency = A4_FREQUENCY * ((midi_note - A4_MIDI_NOTE) / 12.0).exp2();
-        self.velocity = velocity;
+        self.velocity_base = velocity_base;
         self.remaining_note_clocks = duration_clocks + self.interp_clocks;
         self.elapsed_note_clocks = 0;
         self.interp_start_gain = None;
         self.interp_end_gain = None;
 
         self.reset_control_clock();
+    }
+
+    fn current_velocity(&self) -> f32 {
+        let tone_gain = self.current_tone.as_ref().map_or(1.0, |t| rc_ref!(t).gain);
+        self.velocity_base * tone_gain
     }
 
     pub fn cancel_note(&mut self) {
@@ -491,7 +528,7 @@ impl Voice {
                 && self.elapsed_note_clocks < self.interp_clocks
                 && self.remaining_note_clocks >= self.interp_clocks
             {
-                let mut gain = Self::gain_to_fixed(self.envelope.level() * self.velocity);
+                let mut gain = Self::gain_to_fixed(self.envelope.level() * self.current_velocity());
                 let elapsed = self.elapsed_note_clocks as i64;
                 gain =
                     ((start_gain as i64 * (interp - elapsed) + gain as i64 * elapsed + interp / 2)
@@ -520,7 +557,7 @@ impl Voice {
 
         // Phase 2: Bulk (no interpolation)
         while self.remaining_note_clocks > self.interp_clocks && clock_count > 0 {
-            let gain = Self::gain_to_fixed(self.envelope.level() * self.velocity);
+            let gain = Self::gain_to_fixed(self.envelope.level() * self.current_velocity());
             let amplitude = Self::apply_gain_fixed(self.oscillator.sample(), gain);
             self.write_sample(blip_buf.as_deref_mut(), clock_offset, amplitude);
             self.last_gain = gain;
@@ -724,10 +761,27 @@ mod tests {
 
     // Oscillator
 
+    use crate::tone::{Tone, ToneSample};
+
+    fn make_tone(sample_bits: u32, wavetable: Vec<ToneSample>) -> RcTone {
+        let tone = Tone::new();
+        {
+            let t = rc_mut!(&tone);
+            t.sample_bits = sample_bits;
+            t.wavetable = wavetable;
+        }
+        tone
+    }
+
+    fn expected_sample(raw: ToneSample, sample_bits: u32) -> i32 {
+        let max = ((1u32 << sample_bits) - 1) as f32;
+        Oscillator::quantize_sample((raw as f32 / max) * 2.0 - 1.0) as i32
+    }
+
     #[test]
     fn test_oscillator_waveform_cycle() {
         let mut osc = Oscillator::new();
-        osc.set(&[1.0, -1.0]);
+        osc.set_tone(make_tone(1, vec![1, 0]));
         assert_eq!(osc.samples_per_cycle(), 2);
         assert_eq!(osc.sample(), i16::MAX as i32);
 
@@ -741,20 +795,27 @@ mod tests {
     #[test]
     fn test_oscillator_four_sample_waveform() {
         let mut osc = Oscillator::new();
-        osc.set(&[1.0, 0.5, 0.0, -1.0]);
+        let raw = [15, 11, 7, 0];
+        osc.set_tone(make_tone(4, raw.to_vec()));
         assert_eq!(osc.samples_per_cycle(), 4);
 
-        let expected = [
-            Oscillator::quantize_sample(1.0) as i32,
-            Oscillator::quantize_sample(0.5) as i32,
-            Oscillator::quantize_sample(0.0) as i32,
-            Oscillator::quantize_sample(-1.0) as i32,
-            Oscillator::quantize_sample(1.0) as i32, // wraps
-        ];
-        for (i, &exp) in expected.iter().enumerate() {
+        for i in 0..raw.len() + 1 {
+            let exp = expected_sample(raw[i % raw.len()], 4);
             assert_eq!(osc.sample(), exp, "sample {i}");
             osc.advance_sample();
         }
+    }
+
+    #[test]
+    fn test_oscillator_live_wavetable_change() {
+        let mut osc = Oscillator::new();
+        let tone = make_tone(4, vec![15, 0]);
+        osc.set_tone(tone.clone());
+        assert_eq!(osc.sample(), expected_sample(15, 4));
+
+        rc_mut!(&tone).wavetable[0] = 8;
+        osc.update();
+        assert_eq!(osc.sample(), expected_sample(8, 4));
     }
 
     #[test]
@@ -775,7 +836,6 @@ mod tests {
     fn test_oscillator_noise_mode_switch() {
         let mut osc = Oscillator::new();
 
-        // Short period
         osc.set_noise(true);
         let short_samples: Vec<i32> = (0..10)
             .map(|_| {
@@ -785,7 +845,6 @@ mod tests {
             })
             .collect();
 
-        // Long period (different LFSR seed)
         osc.set_noise(false);
         let long_samples: Vec<i32> = (0..10)
             .map(|_| {
@@ -795,7 +854,6 @@ mod tests {
             })
             .collect();
 
-        // Different mode should produce different patterns
         assert_ne!(short_samples, long_samples);
     }
 
@@ -818,10 +876,13 @@ mod tests {
     }
 
     #[test]
-    #[should_panic(expected = "is_empty")]
-    fn test_oscillator_empty_waveform_panics() {
+    fn test_oscillator_empty_wavetable_silent() {
         let mut osc = Oscillator::new();
-        osc.set(&[]);
+        osc.set_tone(make_tone(4, vec![]));
+        assert_eq!(osc.sample(), 0);
+        assert_eq!(osc.samples_per_cycle(), 1);
+        osc.advance_sample();
+        assert_eq!(osc.sample(), 0);
     }
 
     #[test]
@@ -834,16 +895,15 @@ mod tests {
     #[test]
     fn test_oscillator_waveform_index_preservation() {
         let mut osc = Oscillator::new();
-        osc.set(&[1.0, 0.0, -1.0]);
+        let tone = make_tone(4, vec![15, 7, 0]);
+        osc.set_tone(tone.clone());
         osc.advance_sample();
         assert_eq!(osc.waveform_index, 1);
 
-        // Identical waveform preserves index
-        osc.set(&[1.0, 0.0, -1.0]);
+        osc.set_tone(tone);
         assert_eq!(osc.waveform_index, 1);
 
-        // Different waveform resets index
-        osc.set(&[0.5, -0.5]);
+        osc.set_tone(make_tone(4, vec![11, 4]));
         assert_eq!(osc.waveform_index, 0);
     }
 
@@ -1146,7 +1206,7 @@ mod tests {
         assert_eq!(voice.clock_rate, 44100);
         assert_eq!(voice.clocks_per_tick, 1);
         assert_eq!(voice.base_frequency, 0.0);
-        assert_eq!(voice.velocity, 0.0);
+        assert_eq!(voice.velocity_base, 0.0);
         assert_eq!(voice.remaining_note_clocks, 0);
         assert_eq!(voice.last_amplitude, 0);
         assert_eq!(voice.control_interval_clocks, 44100 / 60);
@@ -1156,7 +1216,7 @@ mod tests {
     #[test]
     fn test_voice_play_note_sets_state() {
         let mut voice = Voice::new(44100, 60, 512);
-        voice.oscillator.set(&[1.0, -1.0]);
+        voice.oscillator.set_tone(make_tone(1, vec![1, 0]));
         voice.play_note(69.0, 1.0, 1000);
 
         assert!(
@@ -1165,13 +1225,13 @@ mod tests {
             voice.base_frequency
         );
         assert!(voice.needs_processing());
-        assert_eq!(voice.velocity, 1.0);
+        assert_eq!(voice.velocity_base, 1.0);
     }
 
     #[test]
     fn test_voice_play_note_frequencies() {
         let mut voice = Voice::new(44100, 60, 512);
-        voice.oscillator.set(&[1.0, -1.0]);
+        voice.oscillator.set_tone(make_tone(1, vec![1, 0]));
 
         // C4 = MIDI 60, ~261.63 Hz
         voice.play_note(60.0, 1.0, 1000);
@@ -1221,7 +1281,7 @@ mod tests {
     #[test]
     fn test_voice_process_without_note_is_noop() {
         let mut voice = Voice::new(44100, 60, 512);
-        voice.oscillator.set(&[1.0, -1.0]);
+        voice.oscillator.set_tone(make_tone(1, vec![1, 0]));
         voice.process(None, 0, 1000);
         assert_eq!(voice.last_amplitude, 0);
     }
@@ -1229,7 +1289,7 @@ mod tests {
     #[test]
     fn test_voice_cancel_note_limits_remaining() {
         let mut voice = Voice::new(44100, 60, 512);
-        voice.oscillator.set(&[1.0, -1.0]);
+        voice.oscillator.set_tone(make_tone(1, vec![1, 0]));
         voice.play_note(69.0, 1.0, 10000);
 
         let before = voice.remaining_note_clocks;
@@ -1246,7 +1306,7 @@ mod tests {
     #[test]
     fn test_voice_needs_processing_transitions() {
         let mut voice = Voice::new(44100, 60, 512);
-        voice.oscillator.set(&[1.0, -1.0]);
+        voice.oscillator.set_tone(make_tone(1, vec![1, 0]));
         assert!(!voice.needs_processing(), "initially idle");
 
         voice.play_note(69.0, 1.0, 100);
