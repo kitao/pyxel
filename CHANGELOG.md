@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.9.6
+
+- Fixed mistyped notes in Pyxel MML Studio sample tune A URL
+
 ## 2.9.5
 
 - Fixed aliasing UB when tilemap imgsrc points to the target image
