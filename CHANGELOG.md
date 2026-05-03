@@ -6,6 +6,10 @@
 - Switched image color matching to plain RGB Euclidean distance
 - Removed unused string allocation in PyO3 type cast macro
 - Hoisted clip checks out of dithered row fill loop
+- Reduced WASM virtual gamepad input from 10 JS calls per frame to 1
+- Cached WASM keyboard scancode correction scripts per scancode
+- Prefetched WASM wheel and import hook in parallel with Pyodide load
+- Enabled WASM SIMD128 in Rust build flags for autovectorization
 - Switched shared types to Rc-based ownership and resolved sound leaks
 - Fixed missing audio lock in several audio API call paths
 - Fixed audio_bgm2 sample using off-palette colors
