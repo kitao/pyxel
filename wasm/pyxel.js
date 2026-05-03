@@ -34,6 +34,16 @@ const _virtualGamepadStates = [
   false, // Back
 ];
 
+// Pack the 10 button states into a single int so Rust can fetch them in
+// one emscripten_run_script_int call instead of ten per frame.
+const _readVirtualGamepadBitmask = () => {
+  let bits = 0;
+  for (let i = 0; i < 10; i++) {
+    if (_virtualGamepadStates[i]) bits |= 1 << i;
+  }
+  return bits;
+};
+
 // Safari emits Arrow key events with location=3 (numpad), which Emscripten
 // does not recognize. Re-dispatch them with location=0 (standard).
 if (
@@ -446,17 +456,26 @@ const _loadScript = async (scriptSrc) => {
 };
 
 const _loadPyodideAndPyxel = async (canvas) => {
+  // Prefetch wheel and import hook in parallel with pyodide.js download and
+  // runtime init. Consuming the wheel body populates the HTTP cache, so
+  // pyodide.loadPackage's later fetch of the same URL hits the cache.
+  const wheelUrl = `${_scriptDir}${PYXEL_WHEEL_PATH}`;
+  const wheelPrefetch = fetch(wheelUrl).then((r) => r.arrayBuffer());
+  const importHookFetch = fetch(`${_scriptDir}${IMPORT_HOOK_PATH}`);
+
   await _loadScript(PYODIDE_URL);
   const pyodide = await loadPyodide();
   pyodide._api._skip_unwind_fatal_error = true;
   pyodide.canvas.setCanvas2D(canvas);
-  await pyodide.loadPackage(`${_scriptDir}${PYXEL_WHEEL_PATH}`);
+
+  await wheelPrefetch;
+  await pyodide.loadPackage(wheelUrl);
 
   const fs = pyodide.FS;
   fs.mkdir(PYXEL_WORKING_DIRECTORY);
   fs.chdir(PYXEL_WORKING_DIRECTORY);
 
-  const response = await fetch(`${_scriptDir}${IMPORT_HOOK_PATH}`);
+  const response = await importHookFetch;
   if (!response.ok) {
     throw new Error(`Failed to fetch ${IMPORT_HOOK_PATH}: ${response.status}`);
   }

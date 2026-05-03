@@ -1,3 +1,5 @@
+#[cfg(target_os = "emscripten")]
+use std::ffi::CString;
 use std::ffi::{c_char, CStr};
 use std::mem::zeroed;
 #[cfg(target_os = "emscripten")]
@@ -28,14 +30,21 @@ extern "C" {
 }
 
 #[cfg(target_os = "emscripten")]
-static VIRTUAL_GAMEPAD_SCRIPTS: OnceLock<[std::ffi::CString; 10]> = OnceLock::new();
+const VIRTUAL_GAMEPAD_BITMASK_SCRIPT: &CStr = c"_readVirtualGamepadBitmask();";
+
+// Pre-built eval scripts indexed by SDL scancode. Sized to cover the full
+// USB HID short-scancode range; pyxel.js's _scanCorrection only populates
+// indices 4..=56 (printable ASCII keys), so values past that just return 0.
+#[cfg(target_os = "emscripten")]
+const SCAN_CORRECTION_SCRIPT_COUNT: usize = 256;
 
 #[cfg(target_os = "emscripten")]
-fn virtual_gamepad_scripts() -> &'static [std::ffi::CString; 10] {
-    VIRTUAL_GAMEPAD_SCRIPTS.get_or_init(|| {
-        std::array::from_fn(|i| {
-            std::ffi::CString::new(format!("_virtualGamepadStates[{i}];")).unwrap()
-        })
+static SCAN_CORRECTION_SCRIPTS: OnceLock<[CString; SCAN_CORRECTION_SCRIPT_COUNT]> = OnceLock::new();
+
+#[cfg(target_os = "emscripten")]
+fn scan_correction_scripts() -> &'static [CString; SCAN_CORRECTION_SCRIPT_COUNT] {
+    SCAN_CORRECTION_SCRIPTS.get_or_init(|| {
+        std::array::from_fn(|i| CString::new(format!("_scanCorrection[{i}]||0;")).unwrap())
     })
 }
 
@@ -236,10 +245,10 @@ impl PlatformSdl2 {
                 GAMEPAD1_BUTTON_BACK,
             ];
 
+            let bits = unsafe { emscripten_run_script_int(VIRTUAL_GAMEPAD_BITMASK_SCRIPT.as_ptr()) }
+                as u32;
             for (i, &button) in VIRTUAL_GAMEPAD_BUTTONS.iter().enumerate() {
-                let pressed = unsafe {
-                    emscripten_run_script_int(virtual_gamepad_scripts()[i].as_ptr()) != 0
-                };
+                let pressed = (bits >> i) & 1 == 1;
                 if pressed != self.virtual_gamepad_states[i] {
                     self.virtual_gamepad_states[i] = pressed;
                     let event = if pressed {
@@ -287,10 +296,11 @@ fn mouse_button_to_key(button: u32) -> Key {
 // queue desynchronization.
 #[cfg(target_os = "emscripten")]
 fn correct_emscripten_key(sdl_key: Key, scancode: u32) -> Key {
-    let js_key = unsafe {
-        let script = std::ffi::CString::new(format!("_scanCorrection[{scancode}]||0;")).unwrap();
-        emscripten_run_script_int(script.as_ptr())
-    } as u32;
+    let scripts = scan_correction_scripts();
+    let Some(script) = scripts.get(scancode as usize) else {
+        return sdl_key;
+    };
+    let js_key = unsafe { emscripten_run_script_int(script.as_ptr()) } as u32;
 
     // Only correct printable ASCII keys (0x20 space .. 0x7E tilde)
     if !(0x20..=0x7E).contains(&sdl_key) || !(0x20..=0x7E).contains(&js_key) {
