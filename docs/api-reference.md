@@ -1472,7 +1472,7 @@ The gain (volume) of the channel. Defaults to 0.125.
 
 ### `Channel.detune` — variable *(Advanced)*
 
-The detune value for pitch adjustment. Defaults to 0.
+Pitch detune in cents (100 cents = 1 semitone). Defaults to 0.
 
 - **Type:** `int`
 
@@ -1513,7 +1513,7 @@ Tone mode (0: Wavetable, 1: ShortPeriodNoise, 2: LongPeriodNoise).
 
 ### `Tone.sample_bits` — variable *(Advanced)*
 
-Sample bits for the wavetable. Defaults to 4.
+Sample bits for the wavetable (1-16). Defaults to 4.
 
 - **Type:** `int`
 

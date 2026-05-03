@@ -6,6 +6,11 @@
 - Switched image color matching to plain RGB Euclidean distance
 - Removed unused string allocation in PyO3 type cast macro
 - Hoisted clip checks out of dithered row fill loop
+- Reduced WASM virtual gamepad input from 10 JS calls per frame to 1
+- Cached WASM keyboard scancode correction scripts per scancode
+- Prefetched WASM wheel and import hook in parallel with Pyodide load
+- Enabled WASM SIMD128 in Rust build flags for autovectorization
+- Gated -Zbuild-std by the WASM target
 - Switched shared types to Rc-based ownership and resolved sound leaks
 - Fixed missing audio lock in several audio API call paths
 - Fixed audio_bgm2 sample using off-palette colors
@@ -15,6 +20,8 @@
 - Made Tone wavetable, sample_bits, and gain take effect mid-note
 - Removed deprecated Tone.waveform from API reference and type hints
 - Replaced Seq[T] with list[T] in type hints
+- Added Tone.sample_bits range and Channel.detune unit to docs
+- Refined API reference and user-guide translations
 
 ## 2.9.4
 
@@ -22,12 +29,10 @@
 - Fixed Pyxel Editor color picker cursor shape across palette sizes
 - Fixed missing id attributes on web pages
 - Reorganized Python test suite for broader pyxel-binding API coverage
-- Reorganized CLAUDE.md as compact behavioral guidelines
 - Added Pyxel coding policy with determinism principle and audit procedure
 - Added cfg(pyxel_core) gates to audio save APIs
 - Reused waveform buffer when updating tone wavetable
 - Gated reset_statics and pid_exists by target OS
-- Refined CLAUDE.md self-conformance and user-guide wording
 - Replaced gen_bgm preset clamp with a bounds assertion
 - Added explicit error for BDF fonts wider than 32 pixels
 - Added Python 3.14 to PyPI classifiers
@@ -39,7 +44,6 @@
 - Refactored editor widgets and cleaned up state handling
 - Simplified Rust binding error handling
 - Refined web pages, share links, and translation terminology
-- Refined CLAUDE.md coding policy structure and wording
 
 ## 2.9.2
 
