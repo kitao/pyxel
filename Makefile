@@ -53,19 +53,21 @@ WASM_PREFIX_MAP_FLAGS += -ffile-prefix-map=$(HOME)=$(REMAP_USER_HOME)
 endif
 
 # Build options
+CARGO_OPTS := --release --target $(TARGET)
+
 ifeq ($(TARGET),$(WASM_TARGET))
 RUSTFLAGS += \
 	$(RUST_REMAP_FLAGS) \
 	-C panic=abort \
+	-C target-feature=+simd128 \
 	-C link-arg=-fwasm-exceptions \
 	-C link-arg=-sSIDE_MODULE=2 \
 	-C link-arg=-lSDL2 \
 	-C link-arg=-lhtml5
 CFLAGS += $(WASM_PREFIX_MAP_FLAGS)
 CXXFLAGS += $(WASM_PREFIX_MAP_FLAGS)
+CARGO_OPTS += -Zbuild-std=std,panic_abort
 endif
-
-CARGO_OPTS := --release --target $(TARGET) -Zbuild-std=std,panic_abort
 
 ifneq (,$(or $(findstring windows,$(TARGET)),$(findstring darwin,$(TARGET))))
 CARGO_OPTS += --features sdl2_static
