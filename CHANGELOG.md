@@ -10,6 +10,7 @@
 - Cached WASM keyboard scancode correction scripts per scancode
 - Prefetched WASM wheel and import hook in parallel with Pyodide load
 - Enabled WASM SIMD128 in Rust build flags for autovectorization
+- Gated -Zbuild-std by the WASM target
 - Switched shared types to Rc-based ownership and resolved sound leaks
 - Fixed missing audio lock in several audio API call paths
 - Fixed audio_bgm2 sample using off-palette colors
