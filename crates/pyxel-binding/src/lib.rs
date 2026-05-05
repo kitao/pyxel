@@ -41,6 +41,9 @@ mod math_wrapper;
 mod resource_wrapper;
 mod system_wrapper;
 
+// Cube submodule
+mod cube;
+
 #[pymodule]
 fn pyxel_binding(_py: Python, m: Bound<'_, PyModule>) -> PyResult<()> {
     // Drawable classes
@@ -65,6 +68,9 @@ fn pyxel_binding(_py: Python, m: Bound<'_, PyModule>) -> PyResult<()> {
     graphics_wrapper::add_graphics_functions(&m)?;
     audio_wrapper::add_audio_functions(&m)?;
     math_wrapper::add_math_functions(&m)?;
+
+    // Cube submodule
+    cube::add_cube_submodule(&m)?;
 
     Ok(())
 }
