@@ -502,13 +502,37 @@ macro_rules! define_wrapper {
             }
 
             #[allow(dead_code)]
-            fn inner_ref(&self) -> &$inner_type {
+            pub(crate) fn inner_ref(&self) -> &$inner_type {
                 rc_ref!(self.inner)
             }
 
             #[allow(clippy::mut_from_ref)]
-            fn inner_mut(&self) -> &mut $inner_type {
+            pub(crate) fn inner_mut(&self) -> &mut $inner_type {
                 rc_mut!(self.inner)
+            }
+        }
+    };
+}
+
+// Frozen variant for immutable types (cube math primitives).
+// Skips inner_mut() and adds the `frozen` pyclass attribute, which lets PyO3
+// hand out &T directly without runtime borrow tracking.
+macro_rules! define_frozen_wrapper {
+    ($wrapper_name:ident, $inner_type:ty) => {
+        #[pyclass(unsendable, from_py_object, frozen)]
+        #[derive(Clone)]
+        pub struct $wrapper_name {
+            pub(crate) inner: std::rc::Rc<std::cell::UnsafeCell<$inner_type>>,
+        }
+
+        impl $wrapper_name {
+            pub fn wrap(inner: std::rc::Rc<std::cell::UnsafeCell<$inner_type>>) -> Self {
+                Self { inner }
+            }
+
+            #[allow(dead_code)]
+            pub(crate) fn inner_ref(&self) -> &$inner_type {
+                rc_ref!(self.inner)
             }
         }
     };

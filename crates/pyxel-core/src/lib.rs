@@ -27,6 +27,7 @@ mod audio;
 mod bgm_generator;
 mod canvas;
 mod channel;
+pub mod cube;
 mod font;
 mod graphics;
 mod image;
