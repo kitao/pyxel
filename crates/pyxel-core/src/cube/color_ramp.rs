@@ -6,16 +6,16 @@ use crate::pyxel::colors;
 
 pub const LEVEL_COUNT: usize = 16;
 
-pub struct Ramp {
+pub struct ColorRamp {
     pub data: Vec<Vec<i32>>,
 }
 
-define_rc_type!(RcRamp, Ramp);
+define_rc_type!(RcColorRamp, ColorRamp);
 
-impl Ramp {
-    pub fn new() -> RcRamp {
+impl ColorRamp {
+    pub fn new() -> RcColorRamp {
         let data = Self::compute_default();
-        new_rc_type!(Ramp { data })
+        new_rc_type!(ColorRamp { data })
     }
 
     pub fn build(&mut self) {
@@ -77,7 +77,7 @@ mod tests {
 
     #[test]
     fn test_default_dimensions() {
-        let r = Ramp::new();
+        let r = ColorRamp::new();
         let r = rc_ref!(&r);
         // Row count matches pyxel.colors length (default 16)
         assert!(r.palette_size() > 0);
@@ -89,7 +89,7 @@ mod tests {
 
     #[test]
     fn test_brightest_level_matches_self() {
-        let r = Ramp::new();
+        let r = ColorRamp::new();
         let r = rc_ref!(&r);
         // Level 15 (brightness factor = 1.0) should map to the col itself,
         // since the nearest palette color to "col's RGB * 1.0" is col itself.
@@ -100,7 +100,7 @@ mod tests {
 
     #[test]
     fn test_get_set() {
-        let r = Ramp::new();
+        let r = ColorRamp::new();
         let r_mut = rc_mut!(&r);
         r_mut.set(0, 0, 42);
         assert_eq!(r_mut.get(0, 0), 42);
@@ -108,7 +108,7 @@ mod tests {
 
     #[test]
     fn test_build_resets_table() {
-        let r = Ramp::new();
+        let r = ColorRamp::new();
         let r_mut = rc_mut!(&r);
         r_mut.set(0, 0, 99);
         r_mut.build();

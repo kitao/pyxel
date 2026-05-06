@@ -1,13 +1,20 @@
 pub mod camera;
+pub mod color_ramp;
 pub mod light;
 pub mod mat4;
+pub mod mesh;
+pub mod node;
 pub mod quat;
-pub mod ramp;
+pub mod raster;
+pub mod scene;
 pub mod vec3;
 
 pub use camera::{Camera, RcCamera};
+pub use color_ramp::{ColorRamp, RcColorRamp};
 pub use light::{Light, RcLight};
 pub use mat4::{Mat4, RcMat4};
+pub use mesh::{Mesh, RcMesh};
+pub use node::{Node, RcNode};
 pub use quat::{Quat, RcQuat};
-pub use ramp::{Ramp, RcRamp};
+pub use scene::{RcScene, Scene};
 pub use vec3::{RcVec3, Vec3};

@@ -110,6 +110,10 @@ impl Vec3 {
         Ok(list.call_method0("__iter__")?.unbind())
     }
 
+    // PyO3 dunder methods must take &self even when the body does not use
+    // it; refactoring to an associated function would not register the
+    // method on the Python class.
+    #[allow(clippy::unused_self)]
     fn __len__(&self) -> usize {
         3
     }
