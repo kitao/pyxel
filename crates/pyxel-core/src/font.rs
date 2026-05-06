@@ -178,6 +178,20 @@ impl Font {
         text: &str,
         color: Color,
     ) {
+        self.for_each_pixel(x, y, text, |px, py| {
+            if canvas.clip_rect.contains(px, py) {
+                canvas.write_data(px as usize, py as usize, color);
+            }
+        });
+    }
+
+    pub(crate) fn for_each_pixel(
+        &mut self,
+        x: i32,
+        y: i32,
+        text: &str,
+        mut f: impl FnMut(i32, i32),
+    ) {
         let (line_height, ascent) = self.line_metrics();
         let start_x = x;
         let mut x = x;
@@ -191,18 +205,17 @@ impl Font {
             if Self::is_invisible(c) {
                 continue;
             }
-            x += self.draw_glyph(canvas, c, x, y, ascent, color);
+            x += self.glyph_pixels(c, x, y, ascent, &mut f);
         }
     }
 
-    fn draw_glyph(
+    fn glyph_pixels(
         &mut self,
-        canvas: &mut Canvas<Color>,
         c: char,
         x: i32,
         y: i32,
         ascent: i32,
-        color: Color,
+        f: &mut impl FnMut(i32, i32),
     ) -> i32 {
         match self {
             Font::Bdf {
@@ -210,7 +223,18 @@ impl Font {
                 glyphs,
             } => {
                 if let Some(glyph) = glyphs.get(&(c as i32)) {
-                    Self::draw_bdf_glyph(canvas, x, y, bounding_box, glyph, color);
+                    let gx = x + bounding_box.x + glyph.bbx.x;
+                    let gy = y + bounding_box.y + bounding_box.height
+                        - glyph.bbx.y
+                        - glyph.bbx.height;
+                    for (i, &row) in glyph.bitmap.iter().enumerate() {
+                        let py = gy + i as i32;
+                        for j in 0..glyph.bbx.width {
+                            if (row >> j) & 1 == 1 {
+                                f(gx + j, py);
+                            }
+                        }
+                    }
                     glyph.dwidth
                 } else {
                     0
@@ -218,7 +242,14 @@ impl Font {
             }
             Font::Fontdue { font, cache, size } => {
                 let (metrics, bitmap) = cache.entry(c).or_insert_with(|| font.rasterize(c, *size));
-                Self::draw_fontdue_glyph(canvas, x, y, ascent, metrics, bitmap, color);
+                for (i, &alpha) in bitmap.iter().enumerate() {
+                    if alpha >= ALPHA_THRESHOLD {
+                        let px = x + metrics.xmin + (i % metrics.width) as i32;
+                        let py = (y + ascent) - (metrics.ymin + metrics.height as i32)
+                            + (i / metrics.width) as i32;
+                        f(px, py);
+                    }
+                }
                 metrics.advance_width.ceil() as i32
             }
         }
@@ -279,45 +310,4 @@ impl Font {
         }
     }
 
-    fn draw_bdf_glyph(
-        canvas: &mut Canvas<Color>,
-        x: i32,
-        y: i32,
-        bounding_box: &BdfBoundingBox,
-        glyph: &BdfGlyph,
-        color: Color,
-    ) {
-        let x = x + bounding_box.x + glyph.bbx.x;
-        let y = y + bounding_box.y + bounding_box.height - glyph.bbx.y - glyph.bbx.height;
-        for (i, &row) in glyph.bitmap.iter().enumerate() {
-            let py = y + i as i32;
-            for j in 0..glyph.bbx.width {
-                let px = x + j;
-                if canvas.clip_rect.contains(px, py) && (row >> j) & 1 == 1 {
-                    canvas.write_data(px as usize, py as usize, color);
-                }
-            }
-        }
-    }
-
-    fn draw_fontdue_glyph(
-        canvas: &mut Canvas<Color>,
-        x: i32,
-        y: i32,
-        ascent: i32,
-        metrics: &Metrics,
-        bitmap: &[u8],
-        color: Color,
-    ) {
-        for (i, &alpha) in bitmap.iter().enumerate() {
-            if alpha >= ALPHA_THRESHOLD {
-                let px = x + metrics.xmin + (i % metrics.width) as i32;
-                let py = (y + ascent) - (metrics.ymin + metrics.height as i32)
-                    + (i / metrics.width) as i32;
-                if canvas.clip_rect.contains(px, py) {
-                    canvas.write_data(px as usize, py as usize, color);
-                }
-            }
-        }
-    }
 }

@@ -1,3 +1,8 @@
+// Math primitives follow the standard linear-algebra notation: i/j/k for
+// matrix indices and c/s for cos/sin. Forcing iterator-based matrix code or
+// renaming geometric components hurts readability without clarifying intent.
+#![allow(clippy::many_single_char_names, clippy::needless_range_loop)]
+
 use crate::cube::quat::Quat;
 use crate::cube::vec3::{RcVec3, Vec3};
 

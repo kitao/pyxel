@@ -1,3 +1,7 @@
+// Quaternion math uses the standard (x, y, z, w) and intermediate scalar
+// names (s, t, m, ...) by convention. Renaming them obscures the algebra.
+#![allow(clippy::many_single_char_names)]
+
 use crate::cube::mat4::{Mat4, RcMat4};
 use crate::cube::vec3::{RcVec3, Vec3};
 
