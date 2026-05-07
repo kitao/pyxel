@@ -5,22 +5,24 @@ from pyxel.cube import ColorRamp
 
 class TestDefault:
     def test_construction(self):
-        # Pyxel default palette has 16 colors
         r = ColorRamp()
         assert repr(r).startswith("ColorRamp(")
 
     def test_brightest_level_matches_self(self):
-        # Level 15 (brightness factor = 1.0) should map to col itself
+        # Level 15 (factor 1.0) → target == col self → primary == col,
+        # ratio == 0 (flat fill; secondary is irrelevant in that case).
         r = ColorRamp()
         for col in range(16):
-            assert r[col, 15] == col
+            primary, _, ratio = r[col, 15]
+            assert primary == col
+            assert ratio == 0
 
 
 class TestIndexing:
     def test_get_set(self):
         r = ColorRamp()
-        r[0, 0] = 42
-        assert r[0, 0] == 42
+        r[0, 0] = (5, 7, 8)
+        assert r[0, 0] == (5, 7, 8)
 
     def test_out_of_range_col(self):
         r = ColorRamp()
@@ -42,11 +44,21 @@ class TestIndexing:
         with pytest.raises((IndexError, OverflowError)):
             _ = r[0, -1]
 
+    def test_ratio_within_bounds(self):
+        # Default-built ramp must stay within the 4x4 Bayer range [0, 16).
+        r = ColorRamp()
+        for col in range(16):
+            for level in range(16):
+                _, _, ratio = r[col, level]
+                assert 0 <= ratio < 16
+
 
 class TestBuild:
     def test_build_resets_modifications(self):
         r = ColorRamp()
-        r[0, 0] = 99
+        r[0, 0] = (99, 99, 0)
         r.build()
-        # After rebuild, the modified cell should be back to default
-        assert r[0, 0] != 99
+        primary, secondary, _ = r[0, 0]
+        # Default value will not be (99, 99, 0) — at minimum one of
+        # primary/secondary/ratio should change.
+        assert (primary, secondary) != (99, 99)

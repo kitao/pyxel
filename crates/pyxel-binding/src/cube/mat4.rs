@@ -45,10 +45,22 @@ impl Mat4 {
         let m = self.inner_ref();
         format!(
             "Mat4([[{}, {}, {}, {}], [{}, {}, {}, {}], [{}, {}, {}, {}], [{}, {}, {}, {}]])",
-            m.data[0][0], m.data[0][1], m.data[0][2], m.data[0][3],
-            m.data[1][0], m.data[1][1], m.data[1][2], m.data[1][3],
-            m.data[2][0], m.data[2][1], m.data[2][2], m.data[2][3],
-            m.data[3][0], m.data[3][1], m.data[3][2], m.data[3][3],
+            m.data[0][0],
+            m.data[0][1],
+            m.data[0][2],
+            m.data[0][3],
+            m.data[1][0],
+            m.data[1][1],
+            m.data[1][2],
+            m.data[1][3],
+            m.data[2][0],
+            m.data[2][1],
+            m.data[2][2],
+            m.data[2][3],
+            m.data[3][0],
+            m.data[3][1],
+            m.data[3][2],
+            m.data[3][3],
         )
     }
 
@@ -66,11 +78,7 @@ impl Mat4 {
         Ok(self.inner_ref().get(row, col))
     }
 
-    fn __mul__<'py>(
-        &self,
-        py: Python<'py>,
-        other: &Bound<'py, PyAny>,
-    ) -> PyResult<Py<PyAny>> {
+    fn __mul__<'py>(&self, py: Python<'py>, other: &Bound<'py, PyAny>) -> PyResult<Py<PyAny>> {
         if let Ok(mat) = other.extract::<Mat4>() {
             let result = Mat4::wrap(self.inner_ref().mul_mat(mat.inner_ref()));
             Ok(result.into_pyobject(py)?.into_any().unbind())
@@ -117,11 +125,7 @@ impl Mat4 {
 
     #[staticmethod]
     #[pyo3(signature = (eye, target, up=None))]
-    fn look_at(
-        eye: PyRef<'_, Vec3>,
-        target: PyRef<'_, Vec3>,
-        up: Option<PyRef<'_, Vec3>>,
-    ) -> Self {
+    fn look_at(eye: PyRef<'_, Vec3>, target: PyRef<'_, Vec3>, up: Option<PyRef<'_, Vec3>>) -> Self {
         let default_up = pyxel::cube::Vec3::up();
         let up_inner = up
             .as_ref()

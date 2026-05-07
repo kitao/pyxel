@@ -1,3 +1,9 @@
+use std::cell::Cell;
+
+use crate::cube::camera::RcCamera;
+use crate::cube::raster::{ClipRect, Mat4x4};
+use crate::image::RcImage;
+
 // Scene-level state shared with the binding wrapper. The Node hierarchy
 // itself lives on the inherited Node (see binding/cube/scene.rs); Scene
 // only owns the clear color and the depth buffer used by the rasterizer.
@@ -32,6 +38,49 @@ impl Scene {
     pub fn clear_depth(&mut self) {
         self.depth.fill(f32::INFINITY);
     }
+}
+
+// Per-frame rasterizer context shared between Scene::draw and each Node's
+// draw commands. Built at the start of Scene::draw, looked up by Node
+// draw commands through `with_draw_context`, torn down on draw end.
+
+pub struct DrawContext {
+    pub target: RcImage,
+    pub vp: Mat4x4,
+    pub vp_x: f32,
+    pub vp_y: f32,
+    pub vp_w: f32,
+    pub vp_h: f32,
+    pub clip: ClipRect,
+    pub camera: RcCamera,
+    pub scene: RcScene,
+}
+
+thread_local! {
+    // Current draw context, set by Scene::draw for the duration of the
+    // tree traversal. Single-threaded by design (cube runs on Pyxel's
+    // main thread); thread_local is the minimal carrier for the
+    // Rust-Python boundary.
+    static CURRENT_DRAW_CONTEXT: Cell<Option<DrawContext>> = const { Cell::new(None) };
+}
+
+pub fn set_draw_context(ctx: DrawContext) {
+    CURRENT_DRAW_CONTEXT.with(|c| c.set(Some(ctx)));
+}
+
+pub fn clear_draw_context() {
+    CURRENT_DRAW_CONTEXT.with(|c| c.set(None));
+}
+
+// Run `f` with mutable access to the current draw context, returning
+// None when no context is active (i.e., outside Scene::draw).
+pub fn with_draw_context<R>(f: impl FnOnce(&mut DrawContext) -> R) -> Option<R> {
+    CURRENT_DRAW_CONTEXT.with(|cell| {
+        let mut ctx = cell.take()?;
+        let result = f(&mut ctx);
+        cell.set(Some(ctx));
+        Some(result)
+    })
 }
 
 #[cfg(test)]
@@ -75,5 +124,12 @@ mod tests {
         s_mut.depth[0] = 0.5;
         s_mut.clear_depth();
         assert_eq!(s_mut.depth[0], f32::INFINITY);
+    }
+
+    #[test]
+    fn test_with_draw_context_outside_scope_returns_none() {
+        // No context set: with_draw_context returns None.
+        let result = with_draw_context(|_| 42);
+        assert!(result.is_none());
     }
 }

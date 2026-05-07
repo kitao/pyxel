@@ -224,9 +224,8 @@ impl Font {
             } => {
                 if let Some(glyph) = glyphs.get(&(c as i32)) {
                     let gx = x + bounding_box.x + glyph.bbx.x;
-                    let gy = y + bounding_box.y + bounding_box.height
-                        - glyph.bbx.y
-                        - glyph.bbx.height;
+                    let gy =
+                        y + bounding_box.y + bounding_box.height - glyph.bbx.y - glyph.bbx.height;
                     for (i, &row) in glyph.bitmap.iter().enumerate() {
                         let py = gy + i as i32;
                         for j in 0..glyph.bbx.width {
@@ -309,5 +308,4 @@ impl Font {
             }
         }
     }
-
 }

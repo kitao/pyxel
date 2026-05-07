@@ -1,5 +1,10 @@
 # Change Log
 
+## 3.0.0
+
+- Added Pyxel Cube — a software-rendered 3D extension module
+- Raised the minimum Python version to 3.11
+
 ## 2.9.6
 
 - Fixed mistyped notes in Pyxel MML Studio sample tune A URL

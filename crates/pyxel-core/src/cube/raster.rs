@@ -8,9 +8,8 @@ use crate::cube::vec3::Vec3;
 use crate::image::{Image, RcImage};
 use crate::tilemap::RcTilemap;
 
-// 4x4 matrix in column-major form (each row is one matrix row, indexed
-// `m[row][col]`). Used for the combined view-projection matrix that the
-// rasterizer applies to every world-space point.
+// 4x4 matrix in row-major form (m[i][j] is row i, column j). Used as the
+// combined view-projection matrix applied to every world-space point.
 pub type Mat4x4 = [[f32; 4]; 4];
 
 // Texture source for textured draw commands. Mirrors the cube `sprite` /
@@ -20,16 +19,51 @@ pub enum Texture {
     Tilemap(RcTilemap),
 }
 
+// Pixel-aligned destination rectangle that bounds rasterizer output.
+#[derive(Clone, Copy, Debug)]
+pub struct ClipRect {
+    pub left: i32,
+    pub top: i32,
+    pub right: i32,
+    pub bottom: i32,
+}
+
+impl ClipRect {
+    #[inline]
+    pub fn contains(&self, x: i32, y: i32) -> bool {
+        x >= self.left && x <= self.right && y >= self.top && y <= self.bottom
+    }
+}
+
+// Clamp the viewport rectangle to the target image bounds, in pixels.
+pub fn compute_clip_rect(
+    vp_x: f32,
+    vp_y: f32,
+    vp_w: f32,
+    vp_h: f32,
+    target_w: u32,
+    target_h: u32,
+) -> ClipRect {
+    let left = vp_x.floor() as i32;
+    let top = vp_y.floor() as i32;
+    let right = (vp_x + vp_w).ceil() as i32 - 1;
+    let bottom = (vp_y + vp_h).ceil() as i32 - 1;
+    ClipRect {
+        left: left.max(0),
+        top: top.max(0),
+        right: right.min(target_w as i32 - 1),
+        bottom: bottom.min(target_h as i32 - 1),
+    }
+}
+
 // View-projection helpers
 
-// Build the view matrix as the inverse of the camera's transform.
 pub fn view_matrix(camera: &Camera) -> Mat4x4 {
     let inv_rc = rc_ref!(&camera.transform).inverse();
     rc_ref!(&inv_rc).data
 }
 
-// Build the projection matrix from camera fov / near / far / aspect, or an
-// orthographic projection when `ortho_size` is set.
+// Perspective unless `ortho_size` is set, then orthographic.
 pub fn projection_matrix(camera: &Camera, vp_w: f32, vp_h: f32) -> Mat4x4 {
     let aspect = if vp_h == 0.0 { 1.0 } else { vp_w / vp_h };
     let near = camera.near;
@@ -59,7 +93,6 @@ pub fn projection_matrix(camera: &Camera, vp_w: f32, vp_h: f32) -> Mat4x4 {
     }
 }
 
-// 4x4 matrix multiplication.
 pub fn matmul(a: &Mat4x4, b: &Mat4x4) -> Mat4x4 {
     let mut r = [[0.0_f32; 4]; 4];
     for i in 0..4 {
@@ -72,22 +105,16 @@ pub fn matmul(a: &Mat4x4, b: &Mat4x4) -> Mat4x4 {
     r
 }
 
-// Apply a Mat4 transform to a Vec3 (treats v as a position; full 4x4
-// multiply with implicit w=1).
+// Apply a Mat4 transform to a Vec3 with implicit w=1.
 pub fn mat_apply(mat: &Mat4, v: &Vec3) -> Vec3 {
     let rc = mat.mul_vec(v);
     *rc_ref!(&rc)
 }
 
-// Project a world-space position through the combined view-projection
-// matrix `m` into a screen-space (sx, sy, ndc_z) triple.
-//
-// Points behind the near plane (cw <= 0) return None. Off-screen points
-// (NDC outside [-1, 1]) and points just past the far plane (ndc_z > 1)
-// are intentionally still projected so partially off-screen primitives
-// keep contributing to in-view pixels via the viewport-rect clip and the
-// z-test. Without this, large primitives flicker every time floating-
-// point round-off pushes a vertex's NDC z just past 1.0.
+// Project a world position to screen space; None when behind the near
+// plane (cw <= 0). Off-screen and far-plane-overshoot points still
+// project so partially off-screen primitives keep contributing through
+// the viewport clip and z-test, avoiding fp-roundoff flicker at z = 1.
 pub fn world_to_screen(
     pos: &Vec3,
     m: &Mat4x4,
@@ -113,8 +140,7 @@ pub fn world_to_screen(
 
 // Geometry helpers
 
-// Cross product of edges (p1-p0) x (p2-p0) — gives the unscaled face
-// normal of the CCW-wound triangle.
+// Unscaled face normal of the CCW triangle (cross product of two edges).
 pub fn tri_normal(p0: &Vec3, p1: &Vec3, p2: &Vec3) -> Vec3 {
     let e1 = Vec3 {
         x: p1.x - p0.x,
@@ -133,9 +159,8 @@ pub fn tri_normal(p0: &Vec3, p1: &Vec3, p2: &Vec3) -> Vec3 {
     }
 }
 
-// Camera right and up axes as world-space directions, taken from the
-// camera transform's column vectors. Used by billboard sprites and by
-// `screen_circle` to pick a stable edge sample direction.
+// Camera right and up axes as world-space directions; used by billboard
+// sprites and screen_circle's edge sample.
 pub fn camera_right_up(camera: &Camera) -> (Vec3, Vec3) {
     let m = rc_ref!(&camera.transform).data;
     (
@@ -152,19 +177,173 @@ pub fn camera_right_up(camera: &Camera) -> (Vec3, Vec3) {
     )
 }
 
-// Shading: pick a palette index from the color ramp based on lighting.
-// Output level = clamp(ambient + max(0, dot(face_normal, -light_dir)) *
-// intensity) mapped onto the ramp's 16 brightness levels.
-pub fn shade(
-    color_ramp: &ColorRamp,
-    light: &Light,
-    base_col: i32,
-    normal: Option<&Vec3>,
-) -> u8 {
-    let palette_size = color_ramp.palette_size();
-    if palette_size == 0 {
-        return base_col.max(0) as u8;
+// Project the four corners of a Mat4-positioned rectangle (the rectangle
+// lies in `mat`'s local XY plane, sized w x h, centered at the local
+// origin) into screen space. Row-major corner order: 0=top-left,
+// 1=top-right, 2=bottom-left, 3=bottom-right — matches uv layout used
+// by sprite / plane.
+pub fn project_rect_corners(
+    mat: &Mat4,
+    w: f32,
+    h: f32,
+    vp: &Mat4x4,
+    vp_x: f32,
+    vp_y: f32,
+    vp_w: f32,
+    vp_h: f32,
+) -> [Option<(f32, f32, f32)>; 4] {
+    let hw = w * 0.5;
+    let hh = h * 0.5;
+    let local = [
+        Vec3 {
+            x: -hw,
+            y: hh,
+            z: 0.0,
+        },
+        Vec3 {
+            x: hw,
+            y: hh,
+            z: 0.0,
+        },
+        Vec3 {
+            x: -hw,
+            y: -hh,
+            z: 0.0,
+        },
+        Vec3 {
+            x: hw,
+            y: -hh,
+            z: 0.0,
+        },
+    ];
+    std::array::from_fn(|i| {
+        let world = mat_apply(mat, &local[i]);
+        world_to_screen(&world, vp, vp_x, vp_y, vp_w, vp_h)
+    })
+}
+
+// Number of segments approximating an ellipse perimeter. 24 was chosen
+// for visible smoothness at SD pixel scales.
+pub const ELLIPSE_SEGMENTS: usize = 24;
+
+// Project ELLIPSE_SEGMENTS points along an ellipse perimeter (in mat's
+// local XY plane, axes w/2 and h/2) into screen space.
+pub fn project_ellipse_perimeter(
+    mat: &Mat4,
+    w: f32,
+    h: f32,
+    vp: &Mat4x4,
+    vp_x: f32,
+    vp_y: f32,
+    vp_w: f32,
+    vp_h: f32,
+) -> [Option<(f32, f32, f32)>; ELLIPSE_SEGMENTS] {
+    let hw = w * 0.5;
+    let hh = h * 0.5;
+    std::array::from_fn(|i| {
+        let theta = 2.0 * std::f32::consts::PI * (i as f32) / (ELLIPSE_SEGMENTS as f32);
+        let local = Vec3 {
+            x: hw * theta.cos(),
+            y: hh * theta.sin(),
+            z: 0.0,
+        };
+        let world = mat_apply(mat, &local);
+        world_to_screen(&world, vp, vp_x, vp_y, vp_w, vp_h)
+    })
+}
+
+// Billboard sprite corners: a quad facing the camera, rotated by
+// `angle_deg` in screen space (around view-z). Row-major corner order
+// matches project_rect_corners.
+pub fn sprite_corners(pos: &Vec3, w: f32, h: f32, angle_deg: f32, camera: &Camera) -> [Vec3; 4] {
+    let (right, up) = camera_right_up(camera);
+    let rad = angle_deg.to_radians();
+    let c = rad.cos();
+    let s = rad.sin();
+    let rright = Vec3 {
+        x: c * right.x + s * up.x,
+        y: c * right.y + s * up.y,
+        z: c * right.z + s * up.z,
+    };
+    let rup = Vec3 {
+        x: -s * right.x + c * up.x,
+        y: -s * right.y + c * up.y,
+        z: -s * right.z + c * up.z,
+    };
+    let hw = w * 0.5;
+    let hh = h * 0.5;
+    [
+        Vec3 {
+            x: pos.x - hw * rright.x + hh * rup.x,
+            y: pos.y - hw * rright.y + hh * rup.y,
+            z: pos.z - hw * rright.z + hh * rup.z,
+        },
+        Vec3 {
+            x: pos.x + hw * rright.x + hh * rup.x,
+            y: pos.y + hw * rright.y + hh * rup.y,
+            z: pos.z + hw * rright.z + hh * rup.z,
+        },
+        Vec3 {
+            x: pos.x - hw * rright.x - hh * rup.x,
+            y: pos.y - hw * rright.y - hh * rup.y,
+            z: pos.z - hw * rright.z - hh * rup.z,
+        },
+        Vec3 {
+            x: pos.x + hw * rright.x - hh * rup.x,
+            y: pos.y + hw * rright.y - hh * rup.y,
+            z: pos.z + hw * rright.z - hh * rup.z,
+        },
+    ]
+}
+
+// Project a screen-aligned circle. The radius is sampled along the
+// camera's right axis; sampling world +X collapses to zero when the
+// camera aligns with that axis.
+pub fn screen_circle(
+    pos: &Vec3,
+    radius: f32,
+    m: &Mat4x4,
+    camera: &Camera,
+    vp_x: f32,
+    vp_y: f32,
+    vp_w: f32,
+    vp_h: f32,
+) -> Option<(f32, f32, f32, f32)> {
+    let (right, _up) = camera_right_up(camera);
+    let center = world_to_screen(pos, m, vp_x, vp_y, vp_w, vp_h)?;
+    let edge_pos = Vec3 {
+        x: pos.x + radius * right.x,
+        y: pos.y + radius * right.y,
+        z: pos.z + radius * right.z,
+    };
+    let edge = world_to_screen(&edge_pos, m, vp_x, vp_y, vp_w, vp_h)?;
+    let dx = edge.0 - center.0;
+    let dy = edge.1 - center.1;
+    let screen_r = (dx * dx + dy * dy).sqrt();
+    Some((center.0, center.1, screen_r, center.2))
+}
+
+// 4x4 Bayer ordered-dither thresholds, each cell holding a unique value
+// 0..15. A pixel `(x, y)` picks `secondary` when ramp ratio strictly
+// exceeds the threshold; otherwise `primary` wins. With a ratio range
+// 0..16, this yields 16 evenly-spaced mix gradations matching the
+// brightness-level count.
+pub const BAYER4: [[u8; 4]; 4] = [[0, 8, 2, 10], [12, 4, 14, 6], [3, 11, 1, 9], [15, 7, 13, 5]];
+
+#[inline]
+pub fn dither_pick(primary: i32, secondary: i32, ratio: u8, x: i32, y: i32) -> u8 {
+    let threshold = BAYER4[(y.rem_euclid(4)) as usize][(x.rem_euclid(4)) as usize];
+    if ratio > threshold {
+        secondary as u8
+    } else {
+        primary as u8
     }
+}
+
+// Per-face brightness level (0..15) for a flat-shaded face, matching the
+// formula `shade` uses but exposed separately so callers (e.g. textured
+// faces) can reuse the level across many per-pixel ramp lookups.
+pub fn face_shade_level(light: &Light, normal: Option<&Vec3>) -> usize {
     let directional = match normal {
         Some(n) => {
             let dir = rc_ref!(&light.direction);
@@ -180,51 +359,41 @@ pub fn shade(
         None => 0.0,
     };
     let level_f = (light.ambient + directional) * 15.0;
-    let level = level_f.clamp(0.0, 15.0).round() as usize;
+    level_f.clamp(0.0, 15.0).round() as usize
+}
+
+// Resolve `(base_col, normal)` to a `(primary, secondary, ratio)` triple
+// at the face's brightness level. Hot-path callers should reuse this
+// once per face and dither at each pixel via `dither_pick`. Returns a
+// degenerate `(base_col, base_col, 0)` triple when the ramp is empty.
+pub fn lookup_ramp(
+    color_ramp: &ColorRamp,
+    light: &Light,
+    base_col: i32,
+    normal: Option<&Vec3>,
+) -> (i32, i32, u8) {
+    let palette_size = color_ramp.palette_size();
+    if palette_size == 0 {
+        let c = base_col.max(0);
+        return (c, c, 0);
+    }
+    let level = face_shade_level(light, normal);
     let col = base_col.clamp(0, palette_size as i32 - 1) as usize;
-    color_ramp.get(col, level) as u8
+    color_ramp.get(col, level)
 }
 
-// Clip rect
-
-#[derive(Clone, Copy, Debug)]
-pub struct ClipRect {
-    pub left: i32,
-    pub top: i32,
-    pub right: i32,
-    pub bottom: i32,
+// Shading: brightness = clamp(ambient + max(0, dot(face_normal,
+// -light_dir)) * intensity, 0, 1) mapped onto the ramp's levels. Returns
+// the ramp's primary index — callers that want dithering should use
+// `lookup_ramp` and `dither_pick` instead.
+pub fn shade(color_ramp: &ColorRamp, light: &Light, base_col: i32, normal: Option<&Vec3>) -> u8 {
+    let (primary, _, _) = lookup_ramp(color_ramp, light, base_col, normal);
+    primary as u8
 }
 
-impl ClipRect {
-    #[inline]
-    pub fn contains(&self, x: i32, y: i32) -> bool {
-        x >= self.left && x <= self.right && y >= self.top && y <= self.bottom
-    }
-}
-
-// Compute the pixel-aligned clip rect that clamps the given viewport
-// rectangle to the target image bounds.
-pub fn compute_clip_rect(
-    vp_x: f32,
-    vp_y: f32,
-    vp_w: f32,
-    vp_h: f32,
-    target_w: u32,
-    target_h: u32,
-) -> ClipRect {
-    let left = vp_x.floor() as i32;
-    let top = vp_y.floor() as i32;
-    let right = (vp_x + vp_w).ceil() as i32 - 1;
-    let bottom = (vp_y + vp_h).ceil() as i32 - 1;
-    ClipRect {
-        left: left.max(0),
-        top: top.max(0),
-        right: right.min(target_w as i32 - 1),
-        bottom: bottom.min(target_h as i32 - 1),
-    }
-}
-
-// Pixel write with depth test. Out-of-clip pixels are dropped silently.
+// Pixel write with depth test. Callers are responsible for clip
+// containment; bbox-driven rasterizers below already drop out-of-clip
+// pixels at the loop bounds, so this hot-path function does not re-check.
 #[inline]
 pub fn write_pixel(
     target: &mut Image,
@@ -234,11 +403,7 @@ pub fn write_pixel(
     y: i32,
     z: f32,
     col: u8,
-    clip: ClipRect,
 ) {
-    if !clip.contains(x, y) {
-        return;
-    }
     let i = (y as usize) * depth_w as usize + x as usize;
     if z < depth[i] {
         depth[i] = z;
@@ -248,18 +413,18 @@ pub fn write_pixel(
 
 // Rasterizers
 
-// Signed area of triangle abc (positive when CCW in screen space, where
-// +X is right and +Y is down). Used as a barycentric divisor.
+// Signed area of triangle abc (positive when CCW with +Y down). Acts as
+// a barycentric divisor.
 #[inline]
 fn edge_function(a: (f32, f32), b: (f32, f32), c: (f32, f32)) -> f32 {
     (b.0 - a.0) * (c.1 - a.1) - (b.1 - a.1) * (c.0 - a.0)
 }
 
-// Filled triangle with linear depth interpolation. Both faces draw
-// (no back-face culling — cube spec leaves winding-driven culling out).
-// Each pixel center is tested against three edge functions; pixels are
-// inside when all three carry the same sign as the triangle's signed
-// area.
+// Filled triangle with linear z interpolation. Both windings draw — cube
+// has no back-face culling. Per-pixel dither between `primary` and
+// `secondary` based on `ratio` (0..16); `primary == secondary` or
+// `ratio == 0` collapses to a flat fill.
+#[allow(clippy::too_many_arguments)]
 pub fn rasterize_triangle(
     target: &mut Image,
     depth: &mut [f32],
@@ -267,7 +432,9 @@ pub fn rasterize_triangle(
     p0: (f32, f32, f32),
     p1: (f32, f32, f32),
     p2: (f32, f32, f32),
-    col: u8,
+    primary: u8,
+    secondary: u8,
+    ratio: u8,
     clip: ClipRect,
 ) {
     let area = edge_function((p0.0, p0.1), (p1.0, p1.1), (p2.0, p2.1));
@@ -299,22 +466,167 @@ pub fn rasterize_triangle(
                 let bary1 = w1 * inv_area;
                 let bary2 = w2 * inv_area;
                 let z = bary0 * p0.2 + bary1 * p1.2 + bary2 * p2.2;
-                write_pixel(target, depth, depth_w, x, y, z, col, clip);
+                let col = dither_pick(primary as i32, secondary as i32, ratio, x, y);
+                write_pixel(target, depth, depth_w, x, y, z, col);
             }
         }
     }
 }
 
-// Bresenham-style 3D line with linear depth interpolation. Both endpoints
-// are screen-space (sx, sy, ndc_z). Width is fixed at 1 pixel regardless
-// of distance (cube spec: line is distance-independent width).
+// Filled triangle with linear UV + z interpolation. The sampler receives
+// `(u, v, x, y)` so it can mix in screen-space dither when shading a
+// textured face. colkey drops pixels whose source matches the key.
+// Interpolation is affine — good enough for cube's pixel-art scale.
+#[allow(clippy::too_many_arguments)]
+pub fn rasterize_textured_triangle<F>(
+    target: &mut Image,
+    depth: &mut [f32],
+    depth_w: u32,
+    p0: (f32, f32, f32),
+    p1: (f32, f32, f32),
+    p2: (f32, f32, f32),
+    uv0: (f32, f32),
+    uv1: (f32, f32),
+    uv2: (f32, f32),
+    sampler: F,
+    colkey: Option<i32>,
+    clip: ClipRect,
+) where
+    F: Fn(f32, f32, i32, i32) -> i32,
+{
+    let area = edge_function((p0.0, p0.1), (p1.0, p1.1), (p2.0, p2.1));
+    if area.abs() < 1e-6 {
+        return;
+    }
+    let inv_area = 1.0 / area;
+    let min_x = p0.0.min(p1.0).min(p2.0).floor() as i32;
+    let max_x = p0.0.max(p1.0).max(p2.0).ceil() as i32;
+    let min_y = p0.1.min(p1.1).min(p2.1).floor() as i32;
+    let max_y = p0.1.max(p1.1).max(p2.1).ceil() as i32;
+    let bx_min = min_x.max(clip.left);
+    let bx_max = max_x.min(clip.right);
+    let by_min = min_y.max(clip.top);
+    let by_max = max_y.min(clip.bottom);
+    for y in by_min..=by_max {
+        for x in bx_min..=bx_max {
+            let p = (x as f32 + 0.5, y as f32 + 0.5);
+            let w0 = edge_function((p1.0, p1.1), (p2.0, p2.1), p);
+            let w1 = edge_function((p2.0, p2.1), (p0.0, p0.1), p);
+            let w2 = edge_function((p0.0, p0.1), (p1.0, p1.1), p);
+            let inside = if area > 0.0 {
+                w0 >= 0.0 && w1 >= 0.0 && w2 >= 0.0
+            } else {
+                w0 <= 0.0 && w1 <= 0.0 && w2 <= 0.0
+            };
+            if !inside {
+                continue;
+            }
+            let bary0 = w0 * inv_area;
+            let bary1 = w1 * inv_area;
+            let bary2 = w2 * inv_area;
+            let z = bary0 * p0.2 + bary1 * p1.2 + bary2 * p2.2;
+            let u = bary0 * uv0.0 + bary1 * uv1.0 + bary2 * uv2.0;
+            let v = bary0 * uv0.1 + bary1 * uv1.1 + bary2 * uv2.1;
+            let col = sampler(u, v, x, y);
+            if let Some(key) = colkey {
+                if col == key {
+                    continue;
+                }
+            }
+            write_pixel(target, depth, depth_w, x, y, z, col as u8);
+        }
+    }
+}
+
+// Filled screen-space circle at constant depth. cx / cy / radius are in
+// pixels (project a world-space circle through `screen_circle` first).
+#[allow(clippy::too_many_arguments)]
+pub fn rasterize_circle_filled(
+    target: &mut Image,
+    depth: &mut [f32],
+    depth_w: u32,
+    cx: f32,
+    cy: f32,
+    radius: f32,
+    z: f32,
+    primary: u8,
+    secondary: u8,
+    ratio: u8,
+    clip: ClipRect,
+) {
+    let r_int = radius.ceil() as i32;
+    let r2 = radius * radius;
+    let cx_int = cx.round() as i32;
+    let cy_int = cy.round() as i32;
+    let bx_min = (cx_int - r_int).max(clip.left);
+    let bx_max = (cx_int + r_int).min(clip.right);
+    let by_min = (cy_int - r_int).max(clip.top);
+    let by_max = (cy_int + r_int).min(clip.bottom);
+    for y in by_min..=by_max {
+        for x in bx_min..=bx_max {
+            let dx = x as f32 + 0.5 - cx;
+            let dy = y as f32 + 0.5 - cy;
+            if dx * dx + dy * dy <= r2 {
+                let col = dither_pick(primary as i32, secondary as i32, ratio, x, y);
+                write_pixel(target, depth, depth_w, x, y, z, col);
+            }
+        }
+    }
+}
+
+// 1-pixel-thick screen-space circle outline. The band [radius - 0.5,
+// radius + 0.5] keeps the ring isotropic at any distance.
+#[allow(clippy::too_many_arguments)]
+pub fn rasterize_circle_border(
+    target: &mut Image,
+    depth: &mut [f32],
+    depth_w: u32,
+    cx: f32,
+    cy: f32,
+    radius: f32,
+    z: f32,
+    primary: u8,
+    secondary: u8,
+    ratio: u8,
+    clip: ClipRect,
+) {
+    let r_int = radius.ceil() as i32;
+    let outer = radius + 0.5;
+    let inner = (radius - 0.5).max(0.0);
+    let outer2 = outer * outer;
+    let inner2 = inner * inner;
+    let cx_int = cx.round() as i32;
+    let cy_int = cy.round() as i32;
+    let bx_min = (cx_int - r_int).max(clip.left);
+    let bx_max = (cx_int + r_int).min(clip.right);
+    let by_min = (cy_int - r_int).max(clip.top);
+    let by_max = (cy_int + r_int).min(clip.bottom);
+    for y in by_min..=by_max {
+        for x in bx_min..=bx_max {
+            let dx = x as f32 + 0.5 - cx;
+            let dy = y as f32 + 0.5 - cy;
+            let d2 = dx * dx + dy * dy;
+            if d2 <= outer2 && d2 >= inner2 {
+                let col = dither_pick(primary as i32, secondary as i32, ratio, x, y);
+                write_pixel(target, depth, depth_w, x, y, z, col);
+            }
+        }
+    }
+}
+
+// Bresenham-style 3D line with linear z interpolation. Width is fixed at
+// 1 pixel regardless of distance. The line span is not pre-clipped, so
+// each step is checked against `clip` here before write_pixel.
+#[allow(clippy::too_many_arguments)]
 pub fn rasterize_line(
     target: &mut Image,
     depth: &mut [f32],
     depth_w: u32,
     p0: (f32, f32, f32),
     p1: (f32, f32, f32),
-    col: u8,
+    primary: u8,
+    secondary: u8,
+    ratio: u8,
     clip: ClipRect,
 ) {
     let x1 = p0.0.round() as i32;
@@ -324,7 +636,10 @@ pub fn rasterize_line(
     let dx = (x2 - x1).abs();
     let dy = (y2 - y1).abs();
     if dx == 0 && dy == 0 {
-        write_pixel(target, depth, depth_w, x1, y1, p0.2, col, clip);
+        if clip.contains(x1, y1) {
+            let col = dither_pick(primary as i32, secondary as i32, ratio, x1, y1);
+            write_pixel(target, depth, depth_w, x1, y1, p0.2, col);
+        }
         return;
     }
     let steps = dx.max(dy);
@@ -336,16 +651,12 @@ pub fn rasterize_line(
     let mut fy = y1 as f32;
     let mut fz = p0.2;
     for _ in 0..=steps {
-        write_pixel(
-            target,
-            depth,
-            depth_w,
-            fx.round() as i32,
-            fy.round() as i32,
-            fz,
-            col,
-            clip,
-        );
+        let xi = fx.round() as i32;
+        let yi = fy.round() as i32;
+        if clip.contains(xi, yi) {
+            let col = dither_pick(primary as i32, secondary as i32, ratio, xi, yi);
+            write_pixel(target, depth, depth_w, xi, yi, fz, col);
+        }
         fx += dx_f;
         fy += dy_f;
         fz += dz_f;
@@ -355,10 +666,21 @@ pub fn rasterize_line(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::cube::camera::Camera;
 
     fn vec3(x: f32, y: f32, z: f32) -> Vec3 {
         Vec3 { x, y, z }
+    }
+
+    fn make_target_and_depth(w: u32, h: u32) -> (RcImage, Vec<f32>, ClipRect) {
+        let img = Image::new(w, h);
+        let depth = vec![f32::INFINITY; (w * h) as usize];
+        let clip = ClipRect {
+            left: 0,
+            top: 0,
+            right: w as i32 - 1,
+            bottom: h as i32 - 1,
+        };
+        (img, depth, clip)
     }
 
     #[test]
@@ -439,15 +761,30 @@ mod tests {
     }
 
     #[test]
+    fn test_mat_apply_translation() {
+        let mat = Mat4::from_translation(rc_ref!(&Vec3::new(1.0, 2.0, 3.0)));
+        let result = mat_apply(rc_ref!(&mat), &vec3(0.0, 0.0, 0.0));
+        assert_eq!(result.x, 1.0);
+        assert_eq!(result.y, 2.0);
+        assert_eq!(result.z, 3.0);
+    }
+
+    #[test]
+    fn test_mat_apply_identity_preserves_vec3() {
+        let mat = Mat4::identity();
+        let result = mat_apply(rc_ref!(&mat), &vec3(4.0, 5.0, 6.0));
+        assert_eq!(result.x, 4.0);
+        assert_eq!(result.y, 5.0);
+        assert_eq!(result.z, 6.0);
+    }
+
+    #[test]
     fn test_world_to_screen_center() {
-        // Origin point with a simple identity-like view-projection: place
-        // the origin at the center of the viewport.
         let camera = Camera::new();
         let v = view_matrix(rc_ref!(&camera));
         let p = projection_matrix(rc_ref!(&camera), 256.0, 192.0);
         let vp = matmul(&p, &v);
-        // Default camera looks down -Z; pick a point at (0,0,-2) which is
-        // in front of the camera.
+        // Default camera looks down -Z; pick a point in front.
         let result = world_to_screen(&vec3(0.0, 0.0, -2.0), &vp, 0.0, 0.0, 256.0, 192.0);
         let (sx, sy, _z) = result.expect("point in front of camera should project");
         assert!((sx - 128.0).abs() < 1e-3);
@@ -505,6 +842,47 @@ mod tests {
     }
 
     #[test]
+    fn test_screen_circle_centered() {
+        let camera = Camera::new();
+        let v = view_matrix(rc_ref!(&camera));
+        let p = projection_matrix(rc_ref!(&camera), 256.0, 192.0);
+        let vp = matmul(&p, &v);
+        let result = screen_circle(
+            &vec3(0.0, 0.0, -2.0),
+            0.5,
+            &vp,
+            rc_ref!(&camera),
+            0.0,
+            0.0,
+            256.0,
+            192.0,
+        );
+        let (sx, sy, sr, _z) = result.expect("circle in view should project");
+        assert!((sx - 128.0).abs() < 1e-3);
+        assert!((sy - 96.0).abs() < 1e-3);
+        assert!(sr > 0.0);
+    }
+
+    #[test]
+    fn test_screen_circle_behind_camera() {
+        let camera = Camera::new();
+        let v = view_matrix(rc_ref!(&camera));
+        let p = projection_matrix(rc_ref!(&camera), 256.0, 192.0);
+        let vp = matmul(&p, &v);
+        let result = screen_circle(
+            &vec3(0.0, 0.0, 5.0),
+            0.5,
+            &vp,
+            rc_ref!(&camera),
+            0.0,
+            0.0,
+            256.0,
+            192.0,
+        );
+        assert!(result.is_none());
+    }
+
+    #[test]
     fn test_shade_no_normal_uses_ambient() {
         let ramp = ColorRamp::new();
         let ramp = rc_ref!(&ramp);
@@ -512,8 +890,7 @@ mod tests {
         let light_mut = rc_mut!(&light);
         light_mut.ambient = 1.0;
         light_mut.intensity = 1.0;
-        // ambient=1.0 + no normal -> level 15 (full brightness).
-        // For col 7, level 15 should map back to col 7 itself.
+        // ambient=1.0 -> level 15 -> col 7 maps back to col 7 itself.
         let col = shade(ramp, light_mut, 7, None);
         assert_eq!(col, 7);
     }
@@ -526,11 +903,8 @@ mod tests {
         let light_mut = rc_mut!(&light);
         light_mut.ambient = 0.0;
         light_mut.intensity = 0.0;
-        // brightness=0 -> level 0 -> darkest entry (typically col 0 in
-        // default Pyxel palette).
+        // brightness=0 -> level 0 -> some valid palette index.
         let col = shade(ramp, light_mut, 7, None);
-        // Just verify it is a valid palette index, exact value depends on
-        // ramp's nearest-color algorithm.
         assert!(col < 64);
     }
 
@@ -553,7 +927,6 @@ mod tests {
 
     #[test]
     fn test_compute_clip_rect_clamps_to_target() {
-        // Viewport extends past the target — clip clamps to target bounds.
         let clip = compute_clip_rect(0.0, 0.0, 300.0, 200.0, 256, 192);
         assert_eq!(clip.left, 0);
         assert_eq!(clip.top, 0);
@@ -563,7 +936,6 @@ mod tests {
 
     #[test]
     fn test_compute_clip_rect_offset_viewport() {
-        // Viewport in upper-right corner, fully inside target.
         let clip = compute_clip_rect(64.0, 0.0, 64.0, 48.0, 256, 192);
         assert_eq!(clip.left, 64);
         assert_eq!(clip.top, 0);
@@ -573,57 +945,27 @@ mod tests {
 
     #[test]
     fn test_compute_clip_rect_negative_origin_clamped() {
-        // Negative viewport origin clamps to 0.
         let clip = compute_clip_rect(-10.0, -5.0, 100.0, 100.0, 256, 192);
         assert_eq!(clip.left, 0);
         assert_eq!(clip.top, 0);
     }
 
-    fn make_target_and_depth(w: u32, h: u32) -> (RcImage, Vec<f32>, ClipRect) {
-        let img = Image::new(w, h);
-        let depth = vec![f32::INFINITY; (w * h) as usize];
-        let clip = ClipRect {
-            left: 0,
-            top: 0,
-            right: w as i32 - 1,
-            bottom: h as i32 - 1,
-        };
-        (img, depth, clip)
-    }
-
     #[test]
-    fn test_write_pixel_inside_clip() {
-        let (img, mut depth, clip) = make_target_and_depth(8, 8);
+    fn test_write_pixel_writes_at_coord() {
+        let (img, mut depth, _) = make_target_and_depth(8, 8);
         let img_mut = rc_mut!(&img);
-        write_pixel(img_mut, &mut depth, 8, 3, 3, 0.0, 5, clip);
+        write_pixel(img_mut, &mut depth, 8, 3, 3, 0.0, 5);
         assert_eq!(img_mut.canvas.read_data(3, 3), 5);
         assert_eq!(depth[3 * 8 + 3], 0.0);
     }
 
     #[test]
-    fn test_write_pixel_outside_clip_dropped() {
+    fn test_write_pixel_z_test_blocks_far() {
         let (img, mut depth, _) = make_target_and_depth(8, 8);
         let img_mut = rc_mut!(&img);
-        let small_clip = ClipRect {
-            left: 0,
-            top: 0,
-            right: 1,
-            bottom: 1,
-        };
-        write_pixel(img_mut, &mut depth, 8, 5, 5, 0.0, 7, small_clip);
-        // Pixel at (5,5) was never written because clip excludes it.
-        assert_eq!(img_mut.canvas.read_data(5, 5), 0);
-        assert_eq!(depth[5 * 8 + 5], f32::INFINITY);
-    }
-
-    #[test]
-    fn test_write_pixel_z_test_blocks_far() {
-        let (img, mut depth, clip) = make_target_and_depth(8, 8);
-        let img_mut = rc_mut!(&img);
-        // Near pixel first.
-        write_pixel(img_mut, &mut depth, 8, 4, 4, 0.0, 10, clip);
-        // Farther write attempt — should be rejected.
-        write_pixel(img_mut, &mut depth, 8, 4, 4, 0.5, 11, clip);
+        write_pixel(img_mut, &mut depth, 8, 4, 4, 0.0, 10);
+        // A farther write attempt is rejected by the depth test.
+        write_pixel(img_mut, &mut depth, 8, 4, 4, 0.5, 11);
         assert_eq!(img_mut.canvas.read_data(4, 4), 10);
     }
 
@@ -638,6 +980,8 @@ mod tests {
             (5.0, 10.0, 0.0),
             (10.0, 10.0, 0.0),
             7,
+            7,
+            0,
             clip,
         );
         for x in 5..=10 {
@@ -656,6 +1000,8 @@ mod tests {
             (5.0, 5.0, 0.0),
             (5.0, 12.0, 0.0),
             8,
+            8,
+            0,
             clip,
         );
         for y in 5..=12 {
@@ -674,6 +1020,8 @@ mod tests {
             (3.0, 3.0, 0.25),
             (3.0, 3.0, 0.25),
             5,
+            5,
+            0,
             clip,
         );
         assert_eq!(img_mut.canvas.read_data(3, 3), 5);
@@ -684,7 +1032,6 @@ mod tests {
     fn test_rasterize_line_depth_z_test() {
         let (img, mut depth, clip) = make_target_and_depth(8, 8);
         let img_mut = rc_mut!(&img);
-        // Closer (z=0.0) line drawn first.
         rasterize_line(
             img_mut,
             &mut depth,
@@ -692,9 +1039,10 @@ mod tests {
             (0.0, 0.0, 0.0),
             (4.0, 0.0, 0.0),
             10,
+            10,
+            0,
             clip,
         );
-        // Farther (z=0.5) line on the same span — must not overwrite.
         rasterize_line(
             img_mut,
             &mut depth,
@@ -702,6 +1050,8 @@ mod tests {
             (0.0, 0.0, 0.5),
             (4.0, 0.0, 0.5),
             11,
+            11,
+            0,
             clip,
         );
         for x in 0..=4 {
@@ -710,10 +1060,38 @@ mod tests {
     }
 
     #[test]
+    fn test_rasterize_line_clip_rejects_outside() {
+        let (img, mut depth, _) = make_target_and_depth(8, 8);
+        let img_mut = rc_mut!(&img);
+        let small_clip = ClipRect {
+            left: 0,
+            top: 0,
+            right: 3,
+            bottom: 3,
+        };
+        rasterize_line(
+            img_mut,
+            &mut depth,
+            8,
+            (0.0, 0.0, 0.0),
+            (7.0, 0.0, 0.0),
+            5,
+            5,
+            0,
+            small_clip,
+        );
+        for x in 0..=3 {
+            assert_eq!(img_mut.canvas.read_data(x, 0), 5);
+        }
+        for x in 4..=7 {
+            assert_eq!(img_mut.canvas.read_data(x, 0), 0);
+        }
+    }
+
+    #[test]
     fn test_rasterize_triangle_fills_interior() {
         let (img, mut depth, clip) = make_target_and_depth(16, 16);
         let img_mut = rc_mut!(&img);
-        // Right triangle with vertices at (2,2), (12,2), (2,12), CCW.
         rasterize_triangle(
             img_mut,
             &mut depth,
@@ -722,11 +1100,11 @@ mod tests {
             (12.0, 2.0, 0.0),
             (2.0, 12.0, 0.0),
             9,
+            9,
+            0,
             clip,
         );
-        // A point clearly inside the triangle should be filled.
         assert_eq!(img_mut.canvas.read_data(4, 4), 9);
-        // A point outside the hypotenuse should be untouched.
         assert_eq!(img_mut.canvas.read_data(10, 10), 0);
     }
 
@@ -734,7 +1112,6 @@ mod tests {
     fn test_rasterize_triangle_z_interpolated() {
         let (img, mut depth, clip) = make_target_and_depth(16, 16);
         let img_mut = rc_mut!(&img);
-        // Triangle with z=0.0 at p0, z=0.5 at p1, z=1.0 at p2.
         rasterize_triangle(
             img_mut,
             &mut depth,
@@ -743,18 +1120,17 @@ mod tests {
             (15.0, 0.0, 0.5),
             (0.0, 15.0, 1.0),
             7,
+            7,
+            0,
             clip,
         );
-        // Depth at the (0,0) corner approximates p0's z.
         assert!(depth[0] < 0.1);
-        // Depth far from p0 trends toward 0.5 / 1.0 at the other corners.
         assert!(depth[15] > 0.3);
     }
 
     #[test]
     fn test_rasterize_triangle_back_face_also_drawn() {
-        // CW winding (negative signed area) still rasterizes — cube has no
-        // back-face culling.
+        // CW winding still rasterizes — cube has no back-face culling.
         let (img, mut depth, clip) = make_target_and_depth(16, 16);
         let img_mut = rc_mut!(&img);
         rasterize_triangle(
@@ -765,6 +1141,8 @@ mod tests {
             (2.0, 12.0, 0.0),
             (12.0, 2.0, 0.0),
             14,
+            14,
+            0,
             clip,
         );
         assert_eq!(img_mut.canvas.read_data(4, 4), 14);
@@ -783,9 +1161,10 @@ mod tests {
             (4.0, 0.0, 0.0),
             (8.0, 0.0, 0.0),
             5,
+            5,
+            0,
             clip,
         );
-        // No pixel was written to color 5.
         for x in 0..8 {
             assert_eq!(img_mut.canvas.read_data(x, 0), 0);
         }
@@ -809,39 +1188,160 @@ mod tests {
             (15.0, 0.0, 0.0),
             (0.0, 15.0, 0.0),
             6,
+            6,
+            0,
             small_clip,
         );
-        // Pixel inside clip filled.
         assert_eq!(img_mut.canvas.read_data(2, 2), 6);
-        // Pixel outside clip untouched.
         assert_eq!(img_mut.canvas.read_data(10, 1), 0);
     }
 
     #[test]
-    fn test_rasterize_line_clip_rejects_outside() {
-        let (img, mut depth, _) = make_target_and_depth(8, 8);
+    fn test_rasterize_textured_triangle_constant_sampler() {
+        let (img, mut depth, clip) = make_target_and_depth(16, 16);
+        let img_mut = rc_mut!(&img);
+        rasterize_textured_triangle(
+            img_mut,
+            &mut depth,
+            16,
+            (2.0, 2.0, 0.0),
+            (12.0, 2.0, 0.0),
+            (2.0, 12.0, 0.0),
+            (0.0, 0.0),
+            (1.0, 0.0),
+            (0.0, 1.0),
+            |_, _, _, _| 13,
+            None,
+            clip,
+        );
+        assert_eq!(img_mut.canvas.read_data(4, 4), 13);
+        assert_eq!(img_mut.canvas.read_data(2, 11), 13);
+    }
+
+    #[test]
+    fn test_rasterize_textured_triangle_uv_interpolation() {
+        let (img, mut depth, clip) = make_target_and_depth(32, 32);
+        let img_mut = rc_mut!(&img);
+        rasterize_textured_triangle(
+            img_mut,
+            &mut depth,
+            32,
+            (5.0, 5.0, 0.0),
+            (25.0, 5.0, 0.0),
+            (5.0, 25.0, 0.0),
+            (0.0, 0.0),
+            (1.0, 0.0),
+            (0.0, 1.0),
+            |u, _v, _, _| if u < 0.5 { 4 } else { 9 },
+            None,
+            clip,
+        );
+        // Near p0 (u ~ 0) -> color 4; near p1 (u ~ 1) -> color 9.
+        assert_eq!(img_mut.canvas.read_data(7, 6), 4);
+        assert_eq!(img_mut.canvas.read_data(22, 6), 9);
+    }
+
+    #[test]
+    fn test_rasterize_textured_triangle_colkey_skips() {
+        let (img, mut depth, clip) = make_target_and_depth(16, 16);
+        let img_mut = rc_mut!(&img);
+        rasterize_textured_triangle(
+            img_mut,
+            &mut depth,
+            16,
+            (2.0, 2.0, 0.0),
+            (12.0, 2.0, 0.0),
+            (2.0, 12.0, 0.0),
+            (0.0, 0.0),
+            (1.0, 0.0),
+            (0.0, 1.0),
+            |_, _, _, _| 0,
+            Some(0),
+            clip,
+        );
+        assert_eq!(img_mut.canvas.read_data(4, 4), 0);
+        assert_eq!(depth[4 * 16 + 4], f32::INFINITY);
+    }
+
+    #[test]
+    fn test_rasterize_textured_triangle_depth_test() {
+        let (img, mut depth, clip) = make_target_and_depth(16, 16);
+        let img_mut = rc_mut!(&img);
+        rasterize_textured_triangle(
+            img_mut,
+            &mut depth,
+            16,
+            (2.0, 2.0, 0.0),
+            (12.0, 2.0, 0.0),
+            (2.0, 12.0, 0.0),
+            (0.0, 0.0),
+            (1.0, 0.0),
+            (0.0, 1.0),
+            |_, _, _, _| 7,
+            None,
+            clip,
+        );
+        rasterize_textured_triangle(
+            img_mut,
+            &mut depth,
+            16,
+            (2.0, 2.0, 0.5),
+            (12.0, 2.0, 0.5),
+            (2.0, 12.0, 0.5),
+            (0.0, 0.0),
+            (1.0, 0.0),
+            (0.0, 1.0),
+            |_, _, _, _| 11,
+            None,
+            clip,
+        );
+        assert_eq!(img_mut.canvas.read_data(4, 4), 7);
+    }
+
+    #[test]
+    fn test_rasterize_circle_filled_center_and_edge() {
+        let (img, mut depth, clip) = make_target_and_depth(32, 32);
+        let img_mut = rc_mut!(&img);
+        rasterize_circle_filled(img_mut, &mut depth, 32, 16.0, 16.0, 5.0, 0.0, 12, 0, 0, clip);
+        assert_eq!(img_mut.canvas.read_data(16, 16), 12);
+        assert_eq!(img_mut.canvas.read_data(20, 16), 12);
+        assert_eq!(img_mut.canvas.read_data(25, 25), 0);
+    }
+
+    #[test]
+    fn test_rasterize_circle_border_thin_ring() {
+        let (img, mut depth, clip) = make_target_and_depth(32, 32);
+        let img_mut = rc_mut!(&img);
+        rasterize_circle_border(img_mut, &mut depth, 32, 16.0, 16.0, 5.0, 0.0, 8, 0, 0, clip);
+        // Center pixel is NOT filled (border only).
+        assert_eq!(img_mut.canvas.read_data(16, 16), 0);
+        // Pixel near the rim is filled.
+        assert_eq!(img_mut.canvas.read_data(20, 16), 8);
+    }
+
+    #[test]
+    fn test_rasterize_circle_filled_z_test() {
+        let (img, mut depth, clip) = make_target_and_depth(32, 32);
+        let img_mut = rc_mut!(&img);
+        rasterize_circle_filled(img_mut, &mut depth, 32, 16.0, 16.0, 5.0, 0.0, 10, 0, 0, clip);
+        rasterize_circle_filled(img_mut, &mut depth, 32, 16.0, 16.0, 5.0, 0.5, 11, 0, 0, clip);
+        assert_eq!(img_mut.canvas.read_data(16, 16), 10);
+    }
+
+    #[test]
+    fn test_rasterize_circle_filled_clip_rejects_outside() {
+        let (img, mut depth, _) = make_target_and_depth(32, 32);
         let img_mut = rc_mut!(&img);
         let small_clip = ClipRect {
             left: 0,
             top: 0,
-            right: 3,
-            bottom: 3,
+            right: 7,
+            bottom: 7,
         };
-        rasterize_line(
-            img_mut,
-            &mut depth,
-            8,
-            (0.0, 0.0, 0.0),
-            (7.0, 0.0, 0.0),
-            5,
-            small_clip,
+        rasterize_circle_filled(
+            img_mut, &mut depth, 32, 3.0, 3.0, 10.0, 0.0, 5, 0, 0, small_clip,
         );
-        // Pixels 0..=3 written, 4..=7 dropped.
-        for x in 0..=3 {
-            assert_eq!(img_mut.canvas.read_data(x, 0), 5);
-        }
-        for x in 4..=7 {
-            assert_eq!(img_mut.canvas.read_data(x, 0), 0);
-        }
+        assert_eq!(img_mut.canvas.read_data(3, 3), 5);
+        assert_eq!(img_mut.canvas.read_data(16, 16), 0);
     }
 }

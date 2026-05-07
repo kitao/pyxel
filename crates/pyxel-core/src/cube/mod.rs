@@ -1,5 +1,7 @@
 pub mod camera;
 pub mod color_ramp;
+pub mod float_buffer;
+pub mod int_buffer;
 pub mod light;
 pub mod mat4;
 pub mod mesh;
@@ -11,6 +13,8 @@ pub mod vec3;
 
 pub use camera::{Camera, RcCamera};
 pub use color_ramp::{ColorRamp, RcColorRamp};
+pub use float_buffer::{FloatBuffer, RcFloatBuffer};
+pub use int_buffer::{IntBuffer, RcIntBuffer};
 pub use light::{Light, RcLight};
 pub use mat4::{Mat4, RcMat4};
 pub use mesh::{Mesh, RcMesh};

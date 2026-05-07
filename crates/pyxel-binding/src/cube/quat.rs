@@ -87,11 +87,7 @@ impl Quat {
         Self::wrap(self.inner_ref().neg())
     }
 
-    fn __mul__<'py>(
-        &self,
-        py: Python<'py>,
-        other: &Bound<'py, PyAny>,
-    ) -> PyResult<Py<PyAny>> {
+    fn __mul__<'py>(&self, py: Python<'py>, other: &Bound<'py, PyAny>) -> PyResult<Py<PyAny>> {
         if let Ok(quat) = other.extract::<Quat>() {
             let result = Quat::wrap(self.inner_ref().mul_quat(quat.inner_ref()));
             Ok(result.into_pyobject(py)?.into_any().unbind())
