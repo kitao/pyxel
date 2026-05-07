@@ -7,7 +7,7 @@ name = "pyxel"
 version = "2.9.5"
 description = "A retro game engine for Python"
 readme = "../README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 authors = [{ name = "Takashi Kitao", email = "takashi.kitao@gmail.com" }]
 license = "MIT"
 license-files = ["pyxel/LICENSE"]
@@ -20,7 +20,6 @@ classifiers = [
     "Operating System :: POSIX :: Linux",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
