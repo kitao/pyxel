@@ -1,6 +1,6 @@
 #
 # Prerequisites:
-#   - git, make, cmake, rustup, python 3.10+, node.js
+#   - git, make, cmake, rustup, python 3.11+, node.js
 #   - Windows: Git Bash
 #   - Linux: python3-pip, python3-venv, clang, libclang-dev, libsdl2-dev 2.32.0
 #   - ./scripts/setup_venv
