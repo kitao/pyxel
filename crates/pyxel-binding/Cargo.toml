@@ -10,9 +10,10 @@ name = "pyxel_binding"
 crate-type = ["cdylib"]
 
 [dependencies]
-# abi3-py310 ships a single wheel for Python 3.10+; multiple-pymethods
-# lets binding modules split #[pymethods] across files
-pyo3 = { version = "0.28", features = ["abi3-py310", "extension-module", "multiple-pymethods"] }
+# abi3-py311 is the minimum that exposes Py_buffer in the stable ABI
+# (cube FloatBuffer / IntBuffer rely on it); multiple-pymethods lets
+# binding modules split #[pymethods] across files
+pyo3 = { version = "0.28", features = ["abi3-py311", "extension-module", "multiple-pymethods"] }
 pyxel-core = { path = "../pyxel-core" }
 
 # sysinfo has no Emscripten target; exclude from WASM builds
