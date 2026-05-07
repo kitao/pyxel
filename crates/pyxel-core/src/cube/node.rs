@@ -59,7 +59,9 @@ impl Node {
     pub fn detach(child: &RcNode) {
         let parent_rc = rc_ref!(child).parent.as_ref().and_then(Weak::upgrade);
         if let Some(parent_rc) = parent_rc {
-            rc_mut!(&parent_rc).children.retain(|c| !Rc::ptr_eq(c, child));
+            rc_mut!(&parent_rc)
+                .children
+                .retain(|c| !Rc::ptr_eq(c, child));
         }
         rc_mut!(child).parent = None;
     }
@@ -234,9 +236,11 @@ mod tests {
         rc_mut!(&n).transform = Mat4::from_translation(rc_ref!(&Vec3::new(1.0, 2.0, 3.0)));
         let world = Node::world_transform(&n);
         let world = rc_ref!(&world);
-        assert_eq!(world.pos.x, 1.0);
-        assert_eq!(world.pos.y, 2.0);
-        assert_eq!(world.pos.z, 3.0);
+        let pos = world.pos();
+        let pos = rc_ref!(&pos);
+        assert_eq!(pos.x, 1.0);
+        assert_eq!(pos.y, 2.0);
+        assert_eq!(pos.z, 3.0);
     }
 
     #[test]
@@ -248,8 +252,10 @@ mod tests {
         Node::add_child(&p, &c);
         let world = Node::world_transform(&c);
         let world = rc_ref!(&world);
-        assert_eq!(world.pos.x, 1.0);
-        assert_eq!(world.pos.y, 2.0);
+        let pos = world.pos();
+        let pos = rc_ref!(&pos);
+        assert_eq!(pos.x, 1.0);
+        assert_eq!(pos.y, 2.0);
     }
 
     #[test]

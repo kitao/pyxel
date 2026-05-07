@@ -74,9 +74,21 @@ impl Quat {
 
     pub fn from_euler(rot: &Vec3) -> RcQuat {
         // XYZ extrinsic: result = Rz * Ry * Rx (applied to vector from right)
-        let x_axis = Vec3 { x: 1.0, y: 0.0, z: 0.0 };
-        let y_axis = Vec3 { x: 0.0, y: 1.0, z: 0.0 };
-        let z_axis = Vec3 { x: 0.0, y: 0.0, z: 1.0 };
+        let x_axis = Vec3 {
+            x: 1.0,
+            y: 0.0,
+            z: 0.0,
+        };
+        let y_axis = Vec3 {
+            x: 0.0,
+            y: 1.0,
+            z: 0.0,
+        };
+        let z_axis = Vec3 {
+            x: 0.0,
+            y: 0.0,
+            z: 1.0,
+        };
         let qx = Self::from_axis_angle(&x_axis, rot.x);
         let qy = Self::from_axis_angle(&y_axis, rot.y);
         let qz = Self::from_axis_angle(&z_axis, rot.z);
@@ -85,8 +97,8 @@ impl Quat {
     }
 
     pub fn from_two_vectors(a: &Vec3, b: &Vec3) -> RcQuat {
-        let len_ab = (a.x * a.x + a.y * a.y + a.z * a.z).sqrt()
-            * (b.x * b.x + b.y * b.y + b.z * b.z).sqrt();
+        let len_ab =
+            (a.x * a.x + a.y * a.y + a.z * a.z).sqrt() * (b.x * b.x + b.y * b.y + b.z * b.z).sqrt();
         if len_ab == 0.0 {
             return Self::identity();
         }
@@ -98,9 +110,17 @@ impl Quat {
         if cos_theta < -0.999_999 {
             // Opposite vectors: pick any perpendicular axis and rotate 180 deg
             let axis = if a.x.abs() < 0.9 {
-                Vec3 { x: 1.0, y: 0.0, z: 0.0 }
+                Vec3 {
+                    x: 1.0,
+                    y: 0.0,
+                    z: 0.0,
+                }
             } else {
-                Vec3 { x: 0.0, y: 1.0, z: 0.0 }
+                Vec3 {
+                    x: 0.0,
+                    y: 1.0,
+                    z: 0.0,
+                }
             };
             let perp_x = a.y * axis.z - a.z * axis.y;
             let perp_y = a.z * axis.x - a.x * axis.z;
@@ -212,24 +232,9 @@ impl Quat {
         let wy = q.w * q.y;
         let wz = q.w * q.z;
         Mat4::from_rows([
-            [
-                1.0 - 2.0 * (yy + zz),
-                2.0 * (xy - wz),
-                2.0 * (xz + wy),
-                0.0,
-            ],
-            [
-                2.0 * (xy + wz),
-                1.0 - 2.0 * (xx + zz),
-                2.0 * (yz - wx),
-                0.0,
-            ],
-            [
-                2.0 * (xz - wy),
-                2.0 * (yz + wx),
-                1.0 - 2.0 * (xx + yy),
-                0.0,
-            ],
+            [1.0 - 2.0 * (yy + zz), 2.0 * (xy - wz), 2.0 * (xz + wy), 0.0],
+            [2.0 * (xy + wz), 1.0 - 2.0 * (xx + zz), 2.0 * (yz - wx), 0.0],
+            [2.0 * (xz - wy), 2.0 * (yz + wx), 1.0 - 2.0 * (xx + yy), 0.0],
             [0.0, 0.0, 0.0, 1.0],
         ])
     }
@@ -318,7 +323,15 @@ mod tests {
     #[test]
     fn test_identity() {
         let q = deref(&Quat::identity());
-        assert_eq!(q, Quat { x: 0.0, y: 0.0, z: 0.0, w: 1.0 });
+        assert_eq!(
+            q,
+            Quat {
+                x: 0.0,
+                y: 0.0,
+                z: 0.0,
+                w: 1.0
+            }
+        );
     }
 
     #[test]
@@ -332,25 +345,56 @@ mod tests {
 
     #[test]
     fn test_from_axis_angle_y_90() {
-        let axis = Vec3 { x: 0.0, y: 1.0, z: 0.0 };
+        let axis = Vec3 {
+            x: 0.0,
+            y: 1.0,
+            z: 0.0,
+        };
         let q = deref(&Quat::from_axis_angle(&axis, 90.0));
-        let expected = Quat { x: 0.0, y: (45.0_f32).to_radians().sin(), z: 0.0, w: (45.0_f32).to_radians().cos() };
+        let expected = Quat {
+            x: 0.0,
+            y: (45.0_f32).to_radians().sin(),
+            z: 0.0,
+            w: (45.0_f32).to_radians().cos(),
+        };
         assert!(approx_eq_q(&q, &expected));
     }
 
     #[test]
     fn test_mul_vec_y_90() {
-        let axis = Vec3 { x: 0.0, y: 1.0, z: 0.0 };
+        let axis = Vec3 {
+            x: 0.0,
+            y: 1.0,
+            z: 0.0,
+        };
         let q = Quat::from_axis_angle(&axis, 90.0);
-        let v = Vec3 { x: 1.0, y: 0.0, z: 0.0 };
+        let v = Vec3 {
+            x: 1.0,
+            y: 0.0,
+            z: 0.0,
+        };
         let r = deref_v(&rc_ref!(&q).mul_vec(&v));
         // (1, 0, 0) rotated 90 deg around Y-axis (right-handed) -> (0, 0, -1)
-        assert!(approx_eq_v(&r, &Vec3 { x: 0.0, y: 0.0, z: -1.0 }));
+        assert!(approx_eq_v(
+            &r,
+            &Vec3 {
+                x: 0.0,
+                y: 0.0,
+                z: -1.0
+            }
+        ));
     }
 
     #[test]
     fn test_mul_quat_identity() {
-        let q = Quat::from_axis_angle(&Vec3 { x: 0.0, y: 1.0, z: 0.0 }, 45.0);
+        let q = Quat::from_axis_angle(
+            &Vec3 {
+                x: 0.0,
+                y: 1.0,
+                z: 0.0,
+            },
+            45.0,
+        );
         let i = Quat::identity();
         let r = deref(&rc_ref!(&q).mul_quat(rc_ref!(&i)));
         let q_val = deref(&q);
@@ -359,14 +403,34 @@ mod tests {
 
     #[test]
     fn test_conjugate() {
-        let q = Quat { x: 1.0, y: 2.0, z: 3.0, w: 4.0 };
+        let q = Quat {
+            x: 1.0,
+            y: 2.0,
+            z: 3.0,
+            w: 4.0,
+        };
         let c = deref(&q.conjugate());
-        assert_eq!(c, Quat { x: -1.0, y: -2.0, z: -3.0, w: 4.0 });
+        assert_eq!(
+            c,
+            Quat {
+                x: -1.0,
+                y: -2.0,
+                z: -3.0,
+                w: 4.0
+            }
+        );
     }
 
     #[test]
     fn test_inverse_unit() {
-        let q = Quat::from_axis_angle(&Vec3 { x: 0.0, y: 1.0, z: 0.0 }, 60.0);
+        let q = Quat::from_axis_angle(
+            &Vec3 {
+                x: 0.0,
+                y: 1.0,
+                z: 0.0,
+            },
+            60.0,
+        );
         let q_ref = rc_ref!(&q);
         let inv = q_ref.inverse();
         let combined = q_ref.mul_quat(rc_ref!(&inv));
@@ -376,36 +440,72 @@ mod tests {
 
     #[test]
     fn test_normalize() {
-        let q = Quat { x: 2.0, y: 0.0, z: 0.0, w: 0.0 };
+        let q = Quat {
+            x: 2.0,
+            y: 0.0,
+            z: 0.0,
+            w: 0.0,
+        };
         let n = deref(&q.normalize());
         assert!((n.length() - 1.0).abs() < 1e-6);
     }
 
     #[test]
     fn test_length() {
-        let q = Quat { x: 1.0, y: 2.0, z: 2.0, w: 4.0 };
+        let q = Quat {
+            x: 1.0,
+            y: 2.0,
+            z: 2.0,
+            w: 4.0,
+        };
         assert!((q.length() - 5.0).abs() < 1e-5);
         assert_eq!(q.length_squared(), 25.0);
     }
 
     #[test]
     fn test_dot() {
-        let a = Quat { x: 1.0, y: 2.0, z: 3.0, w: 4.0 };
-        let b = Quat { x: 5.0, y: 6.0, z: 7.0, w: 8.0 };
+        let a = Quat {
+            x: 1.0,
+            y: 2.0,
+            z: 3.0,
+            w: 4.0,
+        };
+        let b = Quat {
+            x: 5.0,
+            y: 6.0,
+            z: 7.0,
+            w: 8.0,
+        };
         assert_eq!(a.dot(&b), 70.0);
     }
 
     #[test]
     fn test_angle_to_identity() {
-        let i = Quat { x: 0.0, y: 0.0, z: 0.0, w: 1.0 };
+        let i = Quat {
+            x: 0.0,
+            y: 0.0,
+            z: 0.0,
+            w: 1.0,
+        };
         assert!((i.angle_to(&i) - 0.0).abs() < 1e-3);
     }
 
     #[test]
     fn test_to_matrix_round_trip() {
-        let q = Quat::from_axis_angle(&Vec3 { x: 0.0, y: 1.0, z: 0.0 }, 30.0);
+        let q = Quat::from_axis_angle(
+            &Vec3 {
+                x: 0.0,
+                y: 1.0,
+                z: 0.0,
+            },
+            30.0,
+        );
         let m = rc_ref!(&q).to_matrix();
-        let v = Vec3 { x: 1.0, y: 0.0, z: 0.0 };
+        let v = Vec3 {
+            x: 1.0,
+            y: 0.0,
+            z: 0.0,
+        };
         let v_q = deref_v(&rc_ref!(&q).mul_vec(&v));
         let v_m = deref_v(&rc_ref!(&m).mul_vec(&v));
         assert!(approx_eq_v(&v_q, &v_m));
@@ -413,7 +513,11 @@ mod tests {
 
     #[test]
     fn test_to_axis_angle_round_trip() {
-        let axis_in = Vec3 { x: 0.0, y: 1.0, z: 0.0 };
+        let axis_in = Vec3 {
+            x: 0.0,
+            y: 1.0,
+            z: 0.0,
+        };
         let q = Quat::from_axis_angle(&axis_in, 60.0);
         let (axis_out, deg_out) = rc_ref!(&q).to_axis_angle();
         assert!((deg_out - 60.0).abs() < 1e-3);
@@ -422,8 +526,22 @@ mod tests {
 
     #[test]
     fn test_slerp_endpoints() {
-        let a = Quat::from_axis_angle(&Vec3 { x: 0.0, y: 1.0, z: 0.0 }, 0.0);
-        let b = Quat::from_axis_angle(&Vec3 { x: 0.0, y: 1.0, z: 0.0 }, 90.0);
+        let a = Quat::from_axis_angle(
+            &Vec3 {
+                x: 0.0,
+                y: 1.0,
+                z: 0.0,
+            },
+            0.0,
+        );
+        let b = Quat::from_axis_angle(
+            &Vec3 {
+                x: 0.0,
+                y: 1.0,
+                z: 0.0,
+            },
+            90.0,
+        );
         let s0 = deref(&rc_ref!(&a).slerp(rc_ref!(&b), 0.0));
         let s1 = deref(&rc_ref!(&a).slerp(rc_ref!(&b), 1.0));
         assert!(approx_eq_q(&s0, rc_ref!(&a)));
@@ -432,8 +550,16 @@ mod tests {
 
     #[test]
     fn test_from_two_vectors_unit() {
-        let a = Vec3 { x: 1.0, y: 0.0, z: 0.0 };
-        let b = Vec3 { x: 0.0, y: 1.0, z: 0.0 };
+        let a = Vec3 {
+            x: 1.0,
+            y: 0.0,
+            z: 0.0,
+        };
+        let b = Vec3 {
+            x: 0.0,
+            y: 1.0,
+            z: 0.0,
+        };
         let q = Quat::from_two_vectors(&a, &b);
         let r = deref_v(&rc_ref!(&q).mul_vec(&a));
         assert!(approx_eq_v(&r, &b));
@@ -441,10 +567,21 @@ mod tests {
 
     #[test]
     fn test_from_matrix_round_trip() {
-        let q = Quat::from_axis_angle(&Vec3 { x: 0.0, y: 1.0, z: 0.0 }, 30.0);
+        let q = Quat::from_axis_angle(
+            &Vec3 {
+                x: 0.0,
+                y: 1.0,
+                z: 0.0,
+            },
+            30.0,
+        );
         let m = rc_ref!(&q).to_matrix();
         let q2 = Quat::from_matrix(rc_ref!(&m));
-        let v = Vec3 { x: 1.0, y: 0.0, z: 0.0 };
+        let v = Vec3 {
+            x: 1.0,
+            y: 0.0,
+            z: 0.0,
+        };
         let v1 = deref_v(&rc_ref!(&q).mul_vec(&v));
         let v2 = deref_v(&rc_ref!(&q2).mul_vec(&v));
         assert!(approx_eq_v(&v1, &v2));

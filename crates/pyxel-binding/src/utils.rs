@@ -537,32 +537,3 @@ macro_rules! define_frozen_wrapper {
         }
     };
 }
-
-// Subclass-able variant for types that need Python-side subclassing
-// (cube `Node` / `Scene`, where user actors override on_update / on_draw).
-// Adds the `subclass` pyclass attribute on top of the standard wrapper.
-macro_rules! define_subclass_wrapper {
-    ($wrapper_name:ident, $inner_type:ty) => {
-        #[pyclass(unsendable, from_py_object, subclass)]
-        #[derive(Clone)]
-        pub struct $wrapper_name {
-            pub(crate) inner: std::rc::Rc<std::cell::UnsafeCell<$inner_type>>,
-        }
-
-        impl $wrapper_name {
-            pub fn wrap(inner: std::rc::Rc<std::cell::UnsafeCell<$inner_type>>) -> Self {
-                Self { inner }
-            }
-
-            #[allow(dead_code)]
-            pub(crate) fn inner_ref(&self) -> &$inner_type {
-                rc_ref!(self.inner)
-            }
-
-            #[allow(clippy::mut_from_ref)]
-            pub(crate) fn inner_mut(&self) -> &mut $inner_type {
-                rc_mut!(self.inner)
-            }
-        }
-    };
-}

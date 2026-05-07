@@ -1,5 +1,4 @@
 use pyo3::prelude::*;
-
 use pyxel::cube::color_ramp::LEVEL_COUNT;
 
 define_wrapper!(ColorRamp, pyxel::cube::ColorRamp);
@@ -11,7 +10,7 @@ impl ColorRamp {
         Self::wrap(pyxel::cube::ColorRamp::new())
     }
 
-    fn __getitem__(&self, key: (usize, usize)) -> PyResult<i32> {
+    fn __getitem__(&self, key: (usize, usize)) -> PyResult<(i32, i32, u8)> {
         let (col, level) = key;
         let r = self.inner_ref();
         if col >= r.palette_size() || level >= LEVEL_COUNT {
@@ -22,7 +21,7 @@ impl ColorRamp {
         Ok(r.get(col, level))
     }
 
-    fn __setitem__(&self, key: (usize, usize), value: i32) -> PyResult<()> {
+    fn __setitem__(&self, key: (usize, usize), value: (i32, i32, u8)) -> PyResult<()> {
         let (col, level) = key;
         let n = self.inner_ref().palette_size();
         if col >= n || level >= LEVEL_COUNT {

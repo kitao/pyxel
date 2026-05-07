@@ -56,22 +56,60 @@ impl Mesh {
         let hy = size.y * 0.5;
         let hz = size.z * 0.5;
         let vertices = vec![
-            Vec3 { x: -hx, y: -hy, z: -hz },
-            Vec3 { x:  hx, y: -hy, z: -hz },
-            Vec3 { x:  hx, y:  hy, z: -hz },
-            Vec3 { x: -hx, y:  hy, z: -hz },
-            Vec3 { x: -hx, y: -hy, z:  hz },
-            Vec3 { x:  hx, y: -hy, z:  hz },
-            Vec3 { x:  hx, y:  hy, z:  hz },
-            Vec3 { x: -hx, y:  hy, z:  hz },
+            Vec3 {
+                x: -hx,
+                y: -hy,
+                z: -hz,
+            },
+            Vec3 {
+                x: hx,
+                y: -hy,
+                z: -hz,
+            },
+            Vec3 {
+                x: hx,
+                y: hy,
+                z: -hz,
+            },
+            Vec3 {
+                x: -hx,
+                y: hy,
+                z: -hz,
+            },
+            Vec3 {
+                x: -hx,
+                y: -hy,
+                z: hz,
+            },
+            Vec3 {
+                x: hx,
+                y: -hy,
+                z: hz,
+            },
+            Vec3 {
+                x: hx,
+                y: hy,
+                z: hz,
+            },
+            Vec3 {
+                x: -hx,
+                y: hy,
+                z: hz,
+            },
         ];
         let faces = vec![
-            [0, 2, 1], [0, 3, 2],
-            [4, 5, 6], [4, 6, 7],
-            [0, 4, 7], [0, 7, 3],
-            [1, 2, 6], [1, 6, 5],
-            [3, 7, 6], [3, 6, 2],
-            [0, 1, 5], [0, 5, 4],
+            [0, 2, 1],
+            [0, 3, 2],
+            [4, 5, 6],
+            [4, 6, 7],
+            [0, 4, 7],
+            [0, 7, 3],
+            [1, 2, 6],
+            [1, 6, 5],
+            [3, 7, 6],
+            [3, 6, 2],
+            [0, 1, 5],
+            [0, 5, 4],
         ];
         new_rc_type!(Mesh {
             vertices,
@@ -127,7 +165,7 @@ impl Mesh {
             let x = radius * phi.cos();
             let z = radius * phi.sin();
             vertices.push(Vec3 { x, y: -hh, z });
-            vertices.push(Vec3 { x, y:  hh, z });
+            vertices.push(Vec3 { x, y: hh, z });
         }
         let mut faces = Vec::with_capacity(n * 2);
         for i in 0..n {
@@ -153,10 +191,26 @@ impl Mesh {
         let hh = h * 0.5;
         // Lies in the local XZ plane (Y up convention).
         let vertices = vec![
-            Vec3 { x: -hw, y: 0.0, z: -hh },
-            Vec3 { x:  hw, y: 0.0, z: -hh },
-            Vec3 { x:  hw, y: 0.0,  z: hh },
-            Vec3 { x: -hw, y: 0.0,  z: hh },
+            Vec3 {
+                x: -hw,
+                y: 0.0,
+                z: -hh,
+            },
+            Vec3 {
+                x: hw,
+                y: 0.0,
+                z: -hh,
+            },
+            Vec3 {
+                x: hw,
+                y: 0.0,
+                z: hh,
+            },
+            Vec3 {
+                x: -hw,
+                y: 0.0,
+                z: hh,
+            },
         ];
         let faces = vec![[0, 1, 2], [0, 2, 3]];
         new_rc_type!(Mesh {
@@ -318,9 +372,21 @@ mod tests {
     #[test]
     fn test_from_vertices() {
         let vertices = vec![
-            Vec3 { x: 0.0, y: 0.0, z: 0.0 },
-            Vec3 { x: 1.0, y: 0.0, z: 0.0 },
-            Vec3 { x: 0.0, y: 1.0, z: 0.0 },
+            Vec3 {
+                x: 0.0,
+                y: 0.0,
+                z: 0.0,
+            },
+            Vec3 {
+                x: 1.0,
+                y: 0.0,
+                z: 0.0,
+            },
+            Vec3 {
+                x: 0.0,
+                y: 1.0,
+                z: 0.0,
+            },
         ];
         let faces = vec![[0, 1, 2]];
         let m = Mesh::from_vertices(vertices, faces, None, 8, None);

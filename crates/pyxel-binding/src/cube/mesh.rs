@@ -1,5 +1,4 @@
 use pyo3::prelude::*;
-
 use pyxel::cube::mesh::{Face, Uv};
 
 use super::vec3::Vec3;
