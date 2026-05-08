@@ -2,6 +2,9 @@
 
 ## 2.9.6
 
+- Updated Pyodide to version 0.29.4
+- Updated Rust to version nightly-2026-05-08
+- Updated sysinfo crate to version 0.39
 - Fixed mistyped notes in Pyxel MML Studio sample tune A URL
 
 ## 2.9.5
