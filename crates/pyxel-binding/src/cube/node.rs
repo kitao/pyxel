@@ -5,6 +5,7 @@ use pyxel::cube::draw::DrawState;
 use pyxel::cube::scene::with_draw_context;
 use pyxel::cube::Node as InnerNode;
 
+use super::camera::Camera;
 use super::collider::Collider;
 use super::contact::Contact;
 use super::light::Light;
@@ -283,6 +284,21 @@ impl Node {
         pyo3::types::PyTuple::new(py, items)
     }
 
+    // Active camera, valid only inside on_draw. Outside on_draw the
+    // draw context is unset and accessing this getter raises so callers
+    // notice the misuse instead of seeing stale data.
+    #[getter]
+    #[allow(clippy::unused_self)]
+    fn camera(&self) -> PyResult<Camera> {
+        let camera_rc = pyxel::cube::scene::with_draw_context(|ctx| ctx.camera.clone());
+        match camera_rc {
+            Some(rc) => Ok(Camera::wrap(rc)),
+            None => Err(pyo3::exceptions::PyRuntimeError::new_err(
+                "Node.camera is only valid inside on_draw",
+            )),
+        }
+    }
+
     // Methods
 
     fn world_transform(&self) -> Mat4 {
@@ -341,9 +357,9 @@ impl Node {
     // collision pipeline is deferred; see cube-design.md § 15). The
     // signature is exposed so user subclasses can already define an
     // override that the future pipeline will call.
-    #[allow(clippy::unused_self)]
-    #[pyo3(signature = (_other, _contact=None))]
-    fn on_collide(&self, _other: PyRef<'_, Node>, _contact: Option<PyRef<'_, Contact>>) {}
+    #[allow(clippy::unused_self, unused_variables)]
+    #[pyo3(signature = (other, contact=None))]
+    fn on_collide(&self, other: PyRef<'_, Node>, contact: Option<PyRef<'_, Contact>>) {}
 
     #[allow(clippy::unused_self)]
     fn on_destroy(&self) {}

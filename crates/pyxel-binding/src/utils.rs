@@ -506,7 +506,7 @@ macro_rules! define_wrapper {
                 rc_ref!(self.inner)
             }
 
-            #[allow(clippy::mut_from_ref)]
+            #[allow(clippy::mut_from_ref, dead_code)]
             pub(crate) fn inner_mut(&self) -> &mut $inner_type {
                 rc_mut!(self.inner)
             }

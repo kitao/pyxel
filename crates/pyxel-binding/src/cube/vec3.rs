@@ -92,6 +92,16 @@ impl Vec3 {
         self.inner_ref() == other.inner_ref()
     }
 
+    fn __hash__(&self) -> u64 {
+        use std::hash::{Hash, Hasher};
+        let mut hasher = std::collections::hash_map::DefaultHasher::new();
+        let v = self.inner_ref();
+        v.x.to_bits().hash(&mut hasher);
+        v.y.to_bits().hash(&mut hasher);
+        v.z.to_bits().hash(&mut hasher);
+        hasher.finish()
+    }
+
     fn __getitem__(&self, key: isize) -> PyResult<f32> {
         let v = self.inner_ref();
         match key {

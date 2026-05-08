@@ -9,6 +9,7 @@ impl Collider {
         Self::wrap(pyxel::cube::Collider::new())
     }
 
+    #[allow(clippy::unused_self)]
     fn __repr__(&self) -> String {
         "Collider()".to_string()
     }
