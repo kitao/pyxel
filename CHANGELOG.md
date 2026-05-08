@@ -3,7 +3,6 @@
 ## 3.0.0
 
 - Added Pyxel Cube — a software-rendered 3D extension module
-- Raised the minimum Python version to 3.11
 
 ## 2.9.6
 
@@ -11,6 +10,7 @@
 - Updated Rust to version nightly-2026-05-08
 - Updated sysinfo crate to version 0.39
 - Fixed mistyped notes in Pyxel MML Studio sample tune A URL
+- Raised the minimum Python version to 3.11
 
 ## 2.9.5
 

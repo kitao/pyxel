@@ -1117,13 +1117,7 @@ pub fn plane(
 // over the underlying RcFloatBuffer / RcIntBuffer storage — no copy. An
 // empty positions buffer is silently skipped here; the binding layer
 // raises before we reach this point so the user sees the call site.
-pub fn mesh(
-    ctx: &mut DrawContext,
-    world_mat: &Mat4,
-    mesh: &Mesh,
-    col: i32,
-    state: DrawState,
-) {
+pub fn mesh(ctx: &mut DrawContext, world_mat: &Mat4, mesh: &Mesh, col: i32, state: DrawState) {
     let positions_buf = rc_ref!(&mesh.positions);
     let positions = positions_buf.data();
     if positions.is_empty() {
