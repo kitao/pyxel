@@ -29,7 +29,7 @@ signatures live in `python/pyxel/cube/__init__.pyi`.
 
 ---
 
-## 2. Public Classes (10)
+## 2. Public Classes (13)
 
 | Class | Role |
 |---|---|
@@ -37,10 +37,13 @@ signatures live in `python/pyxel/cube/__init__.pyi`.
 | `Mat4` | Immutable 4×4 matrix (transforms; projection lives in `Camera`) |
 | `Quat` | Immutable quaternion rotation |
 | `Camera` | View information (transform, fov, near, far, optional ortho size) |
-| `ColorRamp` | Color LUT (palette × 16 brightness levels) |
+| `ShadeRamp` | Shading LUT (palette × 16 brightness levels); absorbs per-color palette substitution |
 | `Light` | Flat-shading parameters (ambient, direction, intensity) |
-| `Mesh` | Single-geometry asset (vertices / faces / UVs / col / image); mutable, primitive factories + dynamic build |
-| `Model` | Hierarchy template asset (multiple Mesh refs + parent / child + relative transforms + part names); load-only |
+| `Contact` | Collision-pipeline payload placeholder (point / normal); pipeline deferred (§ 15) |
+| `Collider` | Collision-shape placeholder; pipeline deferred (§ 15) |
+| `FloatBuffer` | Fixed-shape 1-D `f32` buffer for fast Rust ↔ Python transfer |
+| `IntBuffer` | Fixed-shape 1-D `i32` buffer (companion to `FloatBuffer`) |
+| `Mesh` | Geometry asset (positions / indices / normals / uvs / image / colkey); flat buffer-based, shareable across Nodes |
 | `Node` | Hierarchy instance with transform, immediate-mode draw commands, and lifecycle hooks; references `Mesh` during draw |
 | `Scene` | `Node`-derived root that drives the update / draw cycle and owns the clear color |
 
@@ -371,20 +374,24 @@ animation and interpolation flexible.
 
 ---
 
-## 8. ColorRamp
+## 8. ShadeRamp
 
-Color LUT shared by the whole scene during a `render` call. The table is a
+Shading LUT shared by the whole scene during a `draw` call. The table is a
 2D structure: rows are palette colors, columns are 16 brightness levels.
+ShadeRamp also absorbs per-color palette substitution (replacing the
+classic `pal` operation): set every level of a row to the same target
+color and that source color is replaced uniformly across the subtree
+that resolves to this ramp.
 
 ```python
-ramp = ColorRamp()                        # default ramp built from current palette
+ramp = ShadeRamp()                   # default ramp built from current palette
 ramp[col, level]                     # int — sampled color at this cell
 ramp[col, level] = value             # int — overwrite this cell
 ramp.build()                         # rebuild from current pyxel palette
 ```
 
-- `ColorRamp()` initializes with a default ramp derived from the current Pyxel
-  palette via the same algorithm as `build()`. Ready to use without
+- `ShadeRamp()` initializes with a default ramp derived from the current
+  Pyxel palette via the same algorithm as `build()`. Ready to use without
   further setup.
 - `build()` rebuilds the ramp from the current Pyxel palette, used after
   the user changes the palette via `pyxel.colors`. Synchronization is
@@ -406,6 +413,13 @@ Perceptual color spaces (Lab etc.) are intentionally not used — simple
 RGB distance is good enough for the small Pyxel palette and avoids
 overhead. `__repr__` is provided for debugging.
 
+**Palette substitution use case**: setting `ramp[src_col, level] = dst_col`
+for every `level` makes `src_col` always render as `dst_col` regardless
+of the per-face brightness — the equivalent of Pyxel 2D's
+`pyxel.pal(src_col, dst_col)`. This unifies palette substitution and
+shading under one structure (one shared LUT instead of separate `pal`
+state plus a shading table — see § 16.3 for the rationale).
+
 Bulk get/set (`to_list` / `from_list`), factory variants, and
 file load/save are intentionally not provided in the initial API — they
 have no equivalent in pyxel main (where similar APIs are deprecated in
@@ -415,8 +429,10 @@ favor of slice assignment) and add no clear benefit at cube's scale.
 
 ## 9. Light
 
-Flat-shading parameters held independently so multiple light setups can be
-swapped quickly.
+Flat-shading parameters typically held scene-wide (Scene seeds a
+default at construction; see § 13.1). Multiple Light instances can be
+swapped on `Scene.light` for global changes, or set per Node to
+override lighting within a subtree (§ 12.4).
 
 ```python
 light = Light()
@@ -433,7 +449,7 @@ light.intensity = 1.0
 
 Output brightness for a face is computed as
 `ambient + max(0, dot(face_normal, -direction)) * intensity`, then mapped
-through `ColorRamp` to produce the final palette index.
+through `ShadeRamp` to produce the final palette index.
 
 **Flat shading only**: face-constant color, no Gouraud / Phong / per-pixel
 lighting. The reasoning is twofold — software rasterization makes per-pixel
@@ -444,180 +460,186 @@ gradients anyway.
 
 ---
 
-## 10. Mesh and Model
+## 10. Buffers
 
-Two assets that work together for 3D model data:
-
-- **Mesh**: a single geometry data unit (vertices / faces / UVs / col /
-  image). Mutable and resizable; suitable for static primitives, manual
-  shapes, and dynamic per-frame deformation.
-- **Model**: a hierarchy template that bundles multiple `Mesh` references
-  with parent / child relations, each part's relative transform, and each
-  part's name. Used for multi-part assets (characters, props with movable
-  joints).
-
-Their relation mirrors the asset / instance split common to 3D engines
-(Unity's Mesh ↔ Prefab, Godot's Mesh ↔ PackedScene, three.js's
-BufferGeometry ↔ GLTF Group). `Mesh` data is shared across instances;
-`create_node()` only duplicates the lightweight `Node` tree.
-
-### 10.1 Mesh
-
-A single geometry asset. Internally Rust manages a contiguous vertex /
-face buffer (cache-friendly, SIMD-friendly). The buffer is mutable and
-resizable so users can reshape a mesh per frame for dynamic effects.
-
-#### Construction
+Two fixed-shape 1-D typed buffers for fast Rust ↔ Python data transfer
+without per-element FFI cost: `FloatBuffer` (f32) and `IntBuffer` (i32
+signed). They behave like a 1-D `numpy.ndarray` in shape and indexing,
+restricted to the two element types cube uses for vertex / face / index /
+UV streams.
 
 ```python
-m = Mesh()                                              # empty mesh
-m = Mesh.from_vertices(vertices, faces, uvs=, col=, image=)
-m = Mesh.box(Vec3(1, 1, 1), col=4)                      # typical primitive
-m = Mesh.sphere(1.0, segments=16, col=12)
-m = Mesh.cylinder(0.5, 2.0, segments=16, col=8)
-m = Mesh.plane(2.0, 1.0, col=11)
+buf = FloatBuffer(1024)              # size 1024, zero-filled
+buf = FloatBuffer([1.0, 2.0, 3.0])   # built from a list
+
+buf[0] = 0.5                         # single-element write
+buf[0:10] = [0.0] * 10               # slice bulk write from list
+buf[0:10] = src                      # slice buffer-to-buffer copy
+chunk = buf[0:10]                    # slice bulk read into list[float]
+
+buf.fill(0.0)                        # in-place fill
+buf.resize(2048)                     # in-place size change
+
+len(buf), buf.size                   # element count
+for v in buf: ...                    # iteration
+
+memoryview(buf)                      # zero-copy view (buffer protocol)
 ```
 
-`Mesh` has no `load()`. File-based assets always go through `Model.load`
-(§ 10.2) — even single-mesh files come back as a one-part Model. This
-keeps the load entry point unified and lets the `cube` file format
-remain a single hierarchy-aware format.
+`IntBuffer` mirrors the same surface for `int` (signed 32-bit) elements.
 
-#### Per-element access
+### 10.1 Construction
 
 ```python
-m.vertex_count                 # int, read-only
-m.face_count                   # int, read-only
-v = m.get_vertex(i)            # Vec3
-m.set_vertex(i, Vec3(...))
-uv = m.get_uv(i)               # tuple[float, float]
-m.set_uv(i, (u, v))
-f = m.get_face(i)              # tuple[int, int, int]
-m.set_face(i, (a, b, c))
+FloatBuffer(0)                       # default: empty buffer
+FloatBuffer(1024)                    # int — pre-sized, zero-filled
+FloatBuffer([1.0, 2.0])              # list — sized to len(values)
 ```
 
-#### Resize
+`__init__` accepts either an `int` (size) or a `list[float]` (initial
+values). Bulk ingestion from an existing buffer goes through slice
+assignment.
 
-```python
-m.resize(vertex_count, face_count)
-```
+### 10.2 Indexing
 
-Reallocates the underlying buffer. Overhead-tolerant — same semantics as
-`Image.resize`. Use it once in `__init__` for static counts, then mutate
-per element. For variable counts (e.g. trail effects) call `resize` only
-when the count actually changes; consider sizing for the maximum and
-tracking active range in user code.
-
-#### Color and texture
-
-```python
-m.col = 7                      # default face color (used when image is None)
-m.image = pyxel.images[0]
-```
-
-#### Single-Node instantiation
-
-```python
-node = mesh.create_node()
-```
-
-Creates one `Node` whose `on_draw` automatically draws this mesh at the
-node's local origin. For multi-part assets, use `Model` instead.
-
-#### Drawing patterns
-
-| Use case | Pattern |
+| Form | Behavior |
 |---|---|
-| Static mesh on an actor | hold one `Mesh` and call `self.mesh(mat, mesh)` in `on_draw`, or use `mesh.create_node()` for a self-drawing Node |
-| Dynamic mesh (per-frame deform) | hold one `Mesh`, mutate via `set_vertex` / `set_face`, then `self.mesh(mat, mesh)` |
-| Many small line / triangle draws | use `self.line` / `self.tri` in `on_draw` directly (no `Mesh` needed) |
+| `buf[i]` | int element read |
+| `buf[i] = v` | int element write |
+| `buf[a:b]`, `buf[a:b:s]` | slice read → fresh `list[float]` |
+| `buf[a:b] = list` | slice write from list (size match required) |
+| `buf[a:b] = other` | slice write from same-type buffer (size match) |
 
-### 10.2 Model
+Slice writes are size-strict: when the destination range and the source
+have different lengths, `ValueError` is raised. Cube buffers do not grow
+or shrink through slice assignment — list-style implicit resizing is
+intentionally excluded.
 
-A hierarchy template that references multiple `Mesh` assets. Captures
-parent / child relations, each part's relative transform, and each part's
-name. `create_node()` instantiates the template into a `Node` tree;
-`Mesh` data is shared across all instances.
-
-```python
-model = Model.load("character.cube")
-char1 = model.create_node()                # Node tree (parts share Mesh data)
-scene.add_child(char1)
-
-# Pose each part by name
-head = char1.find("head")
-head.transform = head.transform.rotate_y(45)
-
-char2 = model.create_node()                # second instance, same template
-scene.add_child(char2)
-```
-
-`Model` is load-only — `Model.load(filename)` is the sole way to
-construct one (no public `__init__`). When users want to assemble a
-hierarchy programmatically (procedural characters, runtime-composed
-rigs), they build a `Node` tree directly from individual `Mesh`
-instances:
+### 10.3 In-place Operations
 
 ```python
-class RandomChar(Node):
-    def __init__(self):
-        super().__init__()
-        body = Mesh.box(Vec3(1, 2, 0.5)).create_node()
-        head = Mesh.sphere(0.5).create_node()
-        head.transform = Mat4.from_translation(Vec3(0, 1.5, 0))
-        self.add_child(body)
-        body.add_child(head)
+buf.fill(value)                      # set every element to value
+buf.resize(new_size)                 # change size; values retained up to
+                                     # min(old, new); zero-filled on grow,
+                                     # truncated on shrink
 ```
 
-This keeps the dynamic-hierarchy path inside the `Node` system (already
-the engine's hierarchy mechanism) and reserves `Model` for the static
-"pre-baked hierarchy from asset file" role.
+`resize` is the only operation that changes `buf.size`.
 
-The supported file format is deferred to implementation (initial
-expectation: a project-defined binary capturing vertices, faces, UVs,
-texture references, parent / child links, relative transforms, and part
-names).
+### 10.4 Buffer Protocol
 
-`Model` has no direct draw command — drawing is the `Node` tree's
-responsibility once instantiated. This keeps the asset / draw separation
-clean and avoids per-frame Node-tree construction in the hot path.
+Both classes implement Python's buffer protocol so callers can obtain a
+zero-copy view via `memoryview(buf)`. Buffer protocol interop also lets
+`array.array` and `bytes` read the data without going through the
+per-element `__getitem__` path. `resize` invalidates outstanding views.
+
+### 10.5 Design Notes
+
+- **Two static types instead of one tagged class**: `FloatBuffer` and
+  `IntBuffer` keep `__getitem__` / `__setitem__` static-typed at the
+  PyO3 boundary, avoiding the dispatch cost a `dtype`-tagged single
+  class would incur on the hot path. Type checkers see `float` / `int`
+  directly without union narrowing.
+- **No bulk methods (`from_list`, `to_list`, `copy_from`)**: every bulk
+  operation has a slice-idiom equivalent (`buf[:] = values`, `buf[:]`,
+  `dst[:] = src`); a parallel method API would only duplicate the slice
+  idiom and force callers to choose between two equivalent surfaces.
+- **Size-strict slice assignment**: a cube buffer is a fixed-shape data
+  carrier, not a dynamic list. Slice writes that silently change size
+  are the failure mode that distinguishes it from `list` and
+  `bytearray`. `resize` is the explicit, single-purpose size-changing
+  operation.
+- **No element-wise arithmetic / broadcasting**: cube buffers carry data
+  for the renderer; arithmetic happens in the renderer's hot path, not
+  through Python operator dispatch.
 
 ---
 
-## 11. Node
+## 11. Mesh
+
+A geometry asset for `Node.mesh(mat, mesh_asset, ...)`. Flat
+`FloatBuffer` / `IntBuffer` storage keeps the layout cache-friendly,
+SIMD-friendly, and shareable across Node instances (multiple Nodes can
+reference the same Mesh).
+
+### 11.1 Members
+
+| Field | Type | Meaning |
+|---|---|---|
+| `positions` | `FloatBuffer` | flat (x, y, z) triples; PRIM_TRIANGLES winding |
+| `indices` | `IntBuffer \| None` | triangle indices into positions; None draws as a flat triangle list |
+| `normals` | `FloatBuffer \| None` | flat (nx, ny, nz) per vertex; None auto-computes a per-face normal |
+| `uvs` | `FloatBuffer \| None` | flat (u, v) per vertex; None disables texture sampling |
+| `image` | `Image \| None` | source texture; None falls back to the per-call `col` |
+| `colkey` | `int \| None` | transparent color when `image` is set |
+
+### 11.2 Construction
+
+```python
+m = Mesh()                                  # empty; assign members later
+m = Mesh(positions=FloatBuffer([...]))      # one-shot through __init__
+m.indices = IntBuffer([0, 1, 2, ...])       # mutate fields directly
+```
+
+`__init__` is all-optional. Members can be assigned at construction or
+afterwards. Drawing a Mesh whose `positions` is empty raises at the
+call site — no silent no-op.
+
+`Mesh` has no `load()` and no factory methods (`box` / `sphere` /
+`from_vertices` etc.). Use the immediate-mode draw commands
+(`self.box`, `self.sphere`, …) for primitive shapes, and build custom
+meshes by populating `FloatBuffer` / `IntBuffer` directly.
+
+### 11.3 Drawing patterns
+
+| Use case | Pattern |
+|---|---|
+| Reusable mesh on an actor | hold one `Mesh` and call `self.mesh(mat, mesh_asset)` in `on_draw` |
+| Dynamic mesh (per-frame deform) | mutate `positions` / `indices` / `uvs` via `FloatBuffer` / `IntBuffer` slice ops, then `self.mesh(mat, mesh_asset)` |
+| Many small line / triangle draws | use `self.line` / `self.tri` in `on_draw` directly (no `Mesh` needed) |
+
+`Mesh` itself is asset-only — there is no `mesh.create_node()` or
+direct draw command on the Mesh. Drawing routes through `Node.mesh`
+(or `Node.prim` for raw buffer access).
+
+---
+
+## 12. Node
 
 Base class for everything in the scene tree. A `Node` carries a transform,
 hierarchy links, draw / collide / lifecycle hooks, and node-local draw
-commands. `Scene` (§ 12) is the root `Node`; user-defined actors subclass
+commands. `Scene` (§ 13) is the root `Node`; user-defined actors subclass
 `Node` and override the lifecycle hooks.
 
 ```python
 class Player(Node):
-    def __init__(self):
-        super().__init__()
-        self.body = Mesh.box(Vec3(1, 2, 0.5), col=4)
-
     def on_update(self):
         self.transform = self.transform.translate(Vec3(0.1, 0, 0))
 
     def on_draw(self):
-        self.mesh(Mat4.IDENTITY, self.body)
+        self.box(Mat4.IDENTITY, Vec3(1, 2, 0.5), 4)
 ```
 
-### 11.1 Attributes
+### 12.1 Attributes
 
 | Attribute | Type | Cascade | Meaning |
 |---|---|---|---|
-| `name` | `str` | — | identifier for `find()`; `Model.load` populates it from part names |
+| `name` | `str` | — | identifier for `find()` |
 | `transform` | `Mat4` | composed with parent's transform during draw | local-space transform |
 | `active` | `bool` | parent-dominant (False halts subtree update + collision) | enable/disable update + collision |
 | `visible` | `bool` | parent-dominant (False halts subtree drawing) | enable/disable draw |
-| `collider` | `Collider \| None` | this node only | shape used for collision against other nodes |
 | `light` | `Light \| None` | None inherits from the closest non-None ancestor | lighting parameters effective for this subtree |
-| `color_ramp` | `ColorRamp \| None` | None inherits from the closest non-None ancestor | color LUT effective for this subtree |
+| `shade_ramp` | `ShadeRamp \| None` | None inherits from the closest non-None ancestor | shading LUT effective for this subtree |
+| `collider` | `Collider \| None` | this node only | collision shape (placeholder; pipeline deferred — § 15) |
 | `parent` (read-only property) | `Node \| None` | — | direct parent in the tree |
 | `children` (read-only property) | `tuple[Node, ...]` | — | direct children |
 | `camera` (read-only property) | `Camera` | — | active camera; valid only inside `on_draw` |
+
+Per-draw modifiers (`shaded`, `dither_alpha`, `depth_test`,
+`depth_write`, `billboard`) are not Node properties — they are passed
+as keyword arguments to each draw command (§ 12.5). Only "scene-wide
+data shared across many draws" (`light`, `shade_ramp`) is held on the
+Node tree.
 
 #### Cascade modes
 
@@ -626,11 +648,32 @@ class Player(Node):
   `visible` — a single ancestor flag can suspend an entire branch.
 - **inherits-from-ancestor**: when this node's value is `None`, the
   effective value is the closest non-`None` ancestor's value. Used for
-  `light` and `color_ramp` — set them once on `Scene` (or any subtree
-  root) and override per-subtree as needed.
+  `light` and `shade_ramp` — set them once on `Scene` (Scene seeds
+  defaults at construction) and override per-subtree as needed.
 - **this node only**: no propagation. Used for `collider`.
 
-### 11.2 Tree Operations
+#### Class-level constants
+
+`Node` exposes integer constants for primitive modes (used by `prim`'s
+`mode` argument) and billboard modes (used by per-call `billboard`
+arguments):
+
+| Constant | Value | Meaning |
+|---|---|---|
+| `Node.PRIM_POINTS` | 0 | primitive mode for point lists |
+| `Node.PRIM_LINES` | 1 | primitive mode for line segments |
+| `Node.PRIM_TRIANGLES` | 2 | primitive mode for triangles |
+| `Node.BILLBOARD_OFF` | 0 | no billboard adjustment (Node `transform` used as-is) |
+| `Node.BILLBOARD_ON` | 1 | full camera-facing billboard (rotation overridden each draw) |
+| `Node.BILLBOARD_FIXED_Y` | 2 | Y axis fixed to world up; X / Z rotation follows the camera |
+
+Primitive mode values follow OpenGL ordering (POINTS=0, LINES=1,
+TRIANGLES=2); future additions (`PRIM_LINE_STRIP`, `PRIM_LINE_LOOP`,
+`PRIM_TRIANGLE_STRIP`, `PRIM_TRIANGLE_FAN`) keep the GL numbering.
+Billboard mode values mirror Godot's `BillboardMode`
+(`DISABLED` / `ENABLED` / `FIXED_Y`).
+
+### 12.2 Tree Operations
 
 ```python
 parent.add_child(child)             # also unlinks child from any prior parent
@@ -644,7 +687,7 @@ performs a depth-first pre-order search starting at `self` (matching this
 node's own `name` first), returning the first match or `None`. `destroy`
 removes the node from its parent and triggers `on_destroy`.
 
-### 11.3 World Transform
+### 12.3 World Transform
 
 ```python
 node.world_transform()              # Mat4 — composition of all ancestor transforms
@@ -654,59 +697,135 @@ Computed on demand by walking up the tree. Cube does not cache the world
 transform; users that hit this in a hot path should compute and reuse the
 value within a single frame.
 
-### 11.4 Draw State
+### 12.4 Lighting Cascade
 
-These methods adjust per-draw state inside `on_draw` and reset to defaults
-when `on_draw` returns. They mirror Pyxel 2D's per-frame state but scoped
-per node-draw rather than per frame:
+`light` and `shade_ramp` are Node properties (§ 12.1) that follow the
+inherits-from-ancestor cascade. `Scene` seeds defaults at construction
+(see § 13.1), so descendants always resolve to a usable lighting
+setup. The convention is to set them once on `Scene` for scene-wide
+control, then override per-subtree where a region needs different
+lighting:
 
 ```python
-self.pal(src_col=None, dst_col=None)    # palette substitution
-self.dither(alpha)                      # dither pattern by alpha (0.0-1.0)
-self.depth_test(enabled)                # toggle depth test for subsequent draws
-self.depth_write(enabled)               # toggle depth write for subsequent draws
+# scene-wide default
+scene.light.direction = Vec3(0.3, -0.7, 0.4)
+scene.shade_ramp.build()
+
+# subtree override: a dim cave area
+cave = Node()
+cave.light = Light()
+cave.light.ambient = 0.05
+cave.light.intensity = 0.2
+scene.add_child(cave)
 ```
 
-### 11.5 Immediate-Mode Draw Commands
+Other draw-related controls (`shaded`, `dither_alpha`, `depth_test`,
+`depth_write`, `billboard`) are not Node properties — they are passed
+as keyword arguments to each draw command (§ 12.5). The line is drawn
+between "scene-wide data shared by many draws" (`light`, `shade_ramp`)
+and "per-call decisions that can vary between adjacent draws within
+the same `on_draw`". See § 16.3 for the rationale.
+
+### 12.5 Immediate-Mode Draw Commands
 
 Inside `on_draw`, the node draws into the current camera and screen.
 Coordinates are node-local (the engine composes parent transforms
-during draw).
+during draw). Every draw command is a one-liner that fully specifies
+its style through positional + keyword-only arguments — there is no
+"current draw state" the user has to track.
 
 ```python
-# Vertex-specified
-self.pset(pos, col)
-self.line(p1, p2, col)
-self.tri(p1, p2, p3, col)
-self.trib(p1, p2, p3, col)
+# Vec3 vertex-list primitives
+self.pset(pos, col, ...)
+self.line(p1, p2, col, ...)
+self.tri(p1, p2, p3, col, ...)
+self.trib(p1, p2, p3, col, ...)
 
-# Screen-aligned (always face the camera)
-self.circ(pos, r, col)
-self.circb(pos, r, col)
-self.text(pos, s, col, font=None)
+# Screen-aligned 1-point shapes (always face camera)
+self.circ(pos, r, col, ...)
+self.circb(pos, r, col, ...)
 
-# Mat4-positioned (in mat's plane)
-self.rect(mat, w, h, col)
-self.rectb(mat, w, h, col)
-self.elli(mat, w, h, col)
-self.ellib(mat, w, h, col)
+# 3D solids (Vec3-positioned, symmetric)
+self.sphere(pos, r, col, ...)
+self.sphereb(pos, r, col, ...)
 
-# Billboard / planar / textured
-self.sprite(pos, img, uvs, w, h, colkey=None, angle=0.0)
-self.plane(mat, img, uvs, w, h, colkey=None)
+# Mat4-positioned plane shapes
+self.rect(mat, w, h, col, ...)
+self.rectb(mat, w, h, col, ...)
+self.elli(mat, w, h, col, ...)
+self.ellib(mat, w, h, col, ...)
+
+# Mat4-positioned solids
+self.box(mat, size, col, ...)
+self.boxb(mat, size, col, ...)
+
+# Text (Vec3-positioned, screen-space billboard glyphs)
+self.text(pos, s, col, font=None, ...)
+
+# Image quads
+self.sprite(pos, img, uvs, w, h, ...)        # always camera-facing
+self.plane(mat, img, uvs, w, h, ...)         # free orientation
 
 # Mesh asset draw
-self.mesh(mat, mesh)
+self.mesh(mat, mesh_asset, ...)
+
+# Generic primitive draw (low-level, buffer-based)
+# Modes: Node.PRIM_POINTS / Node.PRIM_LINES / Node.PRIM_TRIANGLES
+self.prim(mat, mode, positions, indices=None, normals=None, uvs=None,
+          first=0, count=None, col=7, colkey=None, ...)
 ```
 
-The two positioning conventions:
+#### Positioning conventions
 
-- **Vec3-positioned** (`pos`): used by vertex-specified primitives,
-  screen-aligned shapes, and billboards.
-- **Mat4-positioned** (`mat`): used by primitives with full orientation
-  (rectangles, ellipses, planes, mesh assets).
+- **Vec3-positioned** (`pos`, `p1`, `p2`, `p3`): used by vertex-specified
+  primitives, screen-aligned shapes, billboards, `text` (screen-space
+  glyphs anchored at the projected point), and `sphere` (symmetric: a
+  single point + radius is sufficient).
+- **Mat4-positioned** (`mat`): used by primitives that need full
+  orientation — plane shapes, 3D solids with a directional axis,
+  `plane`, `mesh`, and `prim`.
 
-#### Common conventions
+#### Common keyword-only arguments
+
+Every draw command takes keyword-only modifier arguments. Only those
+that meaningfully apply per command are exposed (rules below):
+
+| Argument | Type | Default | Applies to | Meaning |
+|---|---|---|---|---|
+| `colkey` | `int \| None` | `None` | image / mesh / prim commands | transparent palette index for textures |
+| `angle` | `float` | `0.0` | `sprite` only | screen-space rotation in degrees |
+| `font` | `Font \| None` | `None` | `text` only | overrides default font |
+| `shaded` | `bool` | varies | filled-face commands | apply directional + ambient lighting through `ShadeRamp` |
+| `dither_alpha` | `float` | `1.0` | all draw commands | Bayer-dither pseudo-alpha (`1.0` opaque, `0.0` fully transparent); same value space as `pyxel.dither(alpha)` |
+| `depth_test` | `bool` | `True` | all draw commands | enable depth-buffer comparison |
+| `depth_write` | `bool` | `True` | all draw commands | enable depth-buffer writes |
+| `billboard` | `int` | `BILLBOARD_OFF` | most Mat4 / multi-Vec3 commands | rotate `transform` to face the camera (see § 12.1 constants) |
+
+Rules for which modifier appears on which command:
+
+- **`shaded`** is omitted from commands that have no surface normal —
+  lines, points, outlines (`pset`, `line`, `trib`, `rectb`, `ellib`,
+  `boxb`, `sphereb`), screen-aligned circles (`circ`, `circb`), and
+  `text`. `prim` carries `shaded` for use with `PRIM_TRIANGLES`; with
+  `PRIM_LINES` / `PRIM_POINTS` the value is silently ignored.
+- **`billboard`** is omitted where it has no visible effect — single
+  points (`pset`), screen-aligned circles (`circ`, `circb`), `text`
+  (always screen-space billboard), and symmetric solids (`sphere`,
+  `sphereb`). `sprite` is always camera-facing (no `billboard` argument;
+  the function pins `BILLBOARD_ON` internally).
+
+Default values for `shaded` follow "what looks natural with no
+arguments":
+
+- **Outlines / lines / points / screen-aligned shapes**: `shaded` not
+  exposed (treated as unshaded internally).
+- **Filled 2D / 3D solids** (`tri`, `rect`, `elli`, `box`, `sphere`,
+  `plane`, `mesh`, `prim` with `PRIM_TRIANGLES`): `shaded=True`.
+- **`sprite`**: `shaded=False` (decoration / particle use cases are
+  the majority; set `shaded=True` to blend a sprite into the scene's
+  ambient + directional lighting).
+
+#### Shape conventions
 
 - **Center pivot**: every shape is centered at its `pos` / `mat.pos`. No
   top-left pivot anywhere in the cube API.
@@ -714,24 +833,46 @@ The two positioning conventions:
   units (perspective shrinks distant circles); border is 1 pixel
   regardless of distance.
 - **`line`**: world-positioned, fixed 1-pixel width.
-- **`text`**: screen-aligned, distance-independent character size (font's
-  native pixel size). Positioned at `pos` projected to screen, centered
-  around the text bounding box.
-- **`sprite`**: billboard — quad always faces the camera. `angle`
-  rotates in screen space (around view-z), in degrees.
-- **`plane`**: free-oriented quad. `mat` carries position, rotation, and
-  scale; `(w, h)` is the quad's local width and height.
+- **`sphere` / `sphereb`**: 12-vertex / 20-triangle icosahedron scaled by
+  `r`. Internally backed by a cached static vertex buffer and routed
+  through `prim`. `sphere` is filled, `sphereb` is wireframe
+  (icosahedron edges).
+- **`box` / `boxb`**: `size` is `Vec3(width, height, depth)`. Internally
+  backed by a cached static unit-cube buffer and routed through `prim`.
+  `box` is filled, `boxb` is wireframe edges.
+- **`text`**: 3D anchor + screen-space glyphs. `pos` is projected to
+  screen, then characters render in 2D pixels at the font's native size
+  (no perspective scaling on the glyphs themselves). Always
+  camera-facing; ancestor rotation / scale do not affect glyph layout.
+  Centered around the text bounding box at the projected point.
+  `depth_test` / `depth_write` still apply at `pos`'s screen-z.
+- **`sprite`**: billboard quad always facing the camera. `angle`
+  rotates the quad in screen space (around view-z), in degrees.
+  Internally: `billboard` is pinned to `BILLBOARD_ON`. With
+  `shaded=True` the sprite's normal is taken as `-view_dir` (matches
+  Godot `Sprite3D.shaded`).
+- **`plane`**: free-oriented quad. `mat` carries position, rotation,
+  and scale; `(w, h)` is the quad's local width and height.
 - **`mesh`**: draws the given `Mesh` asset's geometry, transformed by
-  `mat` in node-local space. Use `Mat4.IDENTITY` to draw the mesh at the
-  node's origin; pass a non-identity `mat` to nudge the mesh relative to
-  the node without changing the node's own transform.
+  `mat` in node-local space. Use `Mat4.IDENTITY` to draw the mesh at
+  the node's origin; pass a non-identity `mat` to nudge the mesh
+  relative to the node without changing the node's own transform.
+  `col` (default `7`) is the flat color used when `mesh.image` is None;
+  `colkey` lives on the Mesh (`mesh.colkey`) and is not exposed as a
+  per-call argument.
+- **`prim`**: low-level entry that all higher-level commands route
+  through. Takes raw `FloatBuffer` / `IntBuffer` arrays for vertex
+  / index / normal / UV data, plus a `mode` selecting POINTS / LINES
+  / TRIANGLES. `col` accepts `int | Image` (integer = flat color,
+  Image = textured triangles). `first` and `count` slice into the
+  buffers without copying.
 
 #### Texture and UV layout
 
-`sprite` and `plane` take `img: Image | Tilemap` (integer image bank
-indices are not accepted; use `pyxel.images[i]` if needed). `int` is
-intentionally excluded because cube treats Image and Tilemap as a single
-texture concept and the integer index space differs between them in
+`sprite` and `plane` take `img: Image` (integer image bank indices are
+not accepted; use `pyxel.images[i]` if needed). `Tilemap` is excluded:
+its tile-grid storage and tile-number indirection do not fit a UV-based
+texture sampler, and the integer index space differs from `Image` in
 Pyxel 2D.
 
 `uvs` is a 4-vertex UV tuple in row-major order:
@@ -751,14 +892,14 @@ image size) reproduces the source image in its natural orientation. The
 caller express flips, 90° rotations, and arbitrary trapezoidal mapping
 in one parameter without a separate `flip_x` / `flip_y` / `angle90` API.
 
-### 11.6 Lifecycle Hooks
+### 12.6 Lifecycle Hooks
 
 Subclasses override these hooks to define behavior. Defaults are no-ops.
 
 ```python
 def on_update(self): ...                         # called once per scene update
 def on_draw(self): ...                           # called once per scene draw
-def on_collide(self, other, contact): ...        # called when collision is detected
+def on_collide(self, other, contact=None): ...   # invoked by the (deferred) collision pipeline
 def on_destroy(self): ...                        # called when destroy() runs
 ```
 
@@ -767,15 +908,16 @@ def on_destroy(self): ...                        # called when destroy() runs
 - `on_draw`: drawing calls (immediate-mode + `self.mesh`). The driver
   visits subtrees with `visible = True` and runs each node's `on_draw`
   with draw state reset to defaults at entry.
-- `on_collide`: invoked once per frame for each colliding pair. `contact`
-  is `Contact | None` (None when contact details are not produced by
-  the collider type yet). Both nodes in a pair receive the call.
+- `on_collide`: signature is exposed today so user subclasses can stage
+  collision-response code, but the cube runtime does **not** invoke it
+  yet — the collision pipeline (§ 15) is deferred. `contact` will be a
+  `Contact` once the pipeline lands; today it is always `None`.
 - `on_destroy`: cleanup hook. Called once just before the node leaves
   the tree.
 
 ---
 
-## 12. Scene
+## 13. Scene
 
 `Node`-derived root that drives the per-frame update / draw cycle and
 owns the screen clear color. The application instantiates one `Scene`
@@ -786,10 +928,9 @@ and `draw` from Pyxel's update / draw callbacks.
 class App:
     def __init__(self):
         pyxel.init(256, 192)
+        # Scene seeds light + shade_ramp with defaults; override for taste.
         self.scene = Scene()
         self.scene.clear_color = 0
-        self.scene.light = Light()
-        self.scene.color_ramp = ColorRamp()
         self.camera = Camera()
         self.scene.add_child(Player())
         pyxel.run(self.update, self.draw)
@@ -801,15 +942,19 @@ class App:
         self.scene.draw(0, 0, 256, 192, self.camera)
 ```
 
-### 12.1 Inherited from Node
+### 13.1 Inherited from Node
 
-`Scene` inherits all `Node` attributes and methods (§ 11), so it is
+`Scene` inherits all `Node` attributes and methods (§ 12), so it is
 indistinguishable from any other node when assigning lights, ramps,
-running lifecycle hooks, or composing transforms. The convention is to
-set scene-wide `light` and `color_ramp` on the `Scene` itself; descendants
-inherit through the None-fallback rule.
+running lifecycle hooks, or composing transforms. Scene's `__init__`
+seeds `light` and `shade_ramp` with non-`None` defaults so descendants
+always resolve a usable lighting setup through the
+inherits-from-ancestor cascade (no `effective_*` lookup ever returns
+`None` to the renderer). The convention is to override these on the
+`Scene` itself for scene-wide changes; descendants inherit through the
+`None`-fallback rule.
 
-### 12.2 Scene-specific Attributes
+### 13.2 Scene-specific Attributes
 
 | Attribute | Type | Default | Meaning |
 |---|---|---|---|
@@ -820,7 +965,7 @@ multi-pass, or the application is clearing externally). `clear_color =
 int` fills the destination region with that color and resets the depth
 buffer at the start of each `draw` (the 3D equivalent of `pyxel.cls`).
 
-### 12.3 Driver Methods
+### 13.3 Driver Methods
 
 ```python
 scene.update()
@@ -829,9 +974,9 @@ scene.draw(x, y, w, h, camera, screen=None)
 
 - **`update()`**: traverses the tree pre-order and calls each active
   node's `on_update`. Subtrees rooted at a node with `active = False`
-  are skipped entirely. After hooks run, collision detection runs across
-  the active colliders and fires `on_collide` on both sides of each
-  colliding pair.
+  are skipped entirely. (The cube runtime does not yet drive collision
+  detection or the `on_collide` hook — that pipeline is deferred to
+  § 15; the `Collider` / `Contact` classes exist today as placeholders.)
 - **`draw(x, y, w, h, camera, screen=None)`**: rasterizes the scene
   into the destination rectangle `(x, y, w, h)` using `camera`. The
   driver clears the rectangle with `clear_color` (when set), traverses
@@ -840,7 +985,7 @@ scene.draw(x, y, w, h, camera, screen=None)
   - `screen=Image`: target a custom image (render-to-texture for
     minimap, multi-pass effects, off-screen rendering).
 
-### 12.4 Multi-angle Rendering
+### 13.4 Multi-angle Rendering
 
 Build the scene tree once, then call `draw` as many times per frame as
 needed with different cameras / rectangles / target screens. The same
@@ -857,7 +1002,7 @@ def draw(self):
 
 ---
 
-## 13. Performance Notes
+## 14. Performance Notes
 
 - A typical pixel-art game has tens to a few hundred drawables per frame.
   At that scale, immediate-mode command queueing has comparable cost to
@@ -873,10 +1018,16 @@ def draw(self):
 
 ---
 
-## 14. Open Items
+## 15. Open Items
 
-- **Mesh file format**: the concrete on-disk format for `Model.load(filename)`.
-- **Default ramp generation**: the algorithm `ColorRamp()` and `ColorRamp.build()`
+- **Collider system**: empty `Collider` / `Contact` classes,
+  `Node.collider` slot (this-node-only), and `on_collide(other,
+  contact)` lifecycle hook are exposed today as placeholders so user
+  code can stage setups. Shape vocabulary (sphere / box / mesh),
+  contact-payload fields beyond `point` / `normal`, broad-phase
+  queries, and the `Scene.update`-driven dispatch are deferred until
+  the first real-game collision use case surfaces.
+- **Default ramp generation**: the algorithm `ShadeRamp()` and `ShadeRamp.build()`
   use to derive a default ramp from the current palette.
 - **Joint animation system**: `Node.transform` is the per-frame surface;
   whether a higher-level `Motion` / animation player class is also needed
@@ -886,22 +1037,24 @@ def draw(self):
   mouse picking. Deferred because viewport size is not held by `Camera`
   in cube (it is a per-`render` argument), and the current need has not
   yet surfaced.
-- **Per-command dither**: a `scene.dither(alpha)` command analogous to
-  `pyxel.dither(alpha)` would let mid-queue dither state apply to
-  subsequent commands. Deferred until the rendering implementation can
-  evaluate the visual benefit against the small Pyxel palette.
-- **Text positioning variants**: a billboard or planar (Mat4-positioned)
-  `text` variant in addition to the screen-aligned default. Deferred
-  until concrete environment-label use cases appear.
+- **Extended PRIM modes**: `PRIM_LINE_STRIP`, `PRIM_LINE_LOOP`,
+  `PRIM_TRIANGLE_STRIP`, `PRIM_TRIANGLE_FAN` along OpenGL's primitive
+  numbering, for compact ribbon / fan / strip emissions through `prim`.
+  Defer until a real-game use case surfaces.
+- **World-scaled text variant**: an optional `text` mode that lays
+  glyphs as 3D-space quads transformed by `mat` (so rotation / scale
+  affect glyph layout). The current `text(pos, ...)` is screen-space
+  glyphs at the projected point; users that need 3D-text shapes can
+  build them through `prim()`. Revisit if a real use case surfaces.
 
 ---
 
-## 15. Decisions Explicitly Ruled Out
+## 16. Decisions Explicitly Ruled Out
 
 These were considered and rejected during design; revisit only with new
 evidence.
 
-### 15.1 Math classes
+### 16.1 Math classes
 
 - **`Vec2` / `Vec4` / `Mat3`** — not exposed publicly. Cube draws use
   `Vec3` for points and `Mat4` for full transforms; lower-dimensional
@@ -939,7 +1092,7 @@ evidence.
   on Euler `Vec3` for rotation arguments. Use `Mat4.from_quat(q) * ...` for
   quaternion-driven composition.
 
-### 15.2 Naming
+### 16.2 Naming
 
 - **`Vec` / `Mat` / `Quaternion`** — too generic or too long.
 - **`Vector3` / `Matrix4`** — standard but verbose; `Vec3` / `Mat4` chosen
@@ -956,7 +1109,7 @@ evidence.
 - **`rotate_axis` / `rotate_arbitrary`** — `Mat4.rotate(axis, deg)` is
   short and unambiguous.
 
-### 15.3 Drawing
+### 16.3 Drawing
 
 - **Retained-mode scene graph with per-Node draw callbacks** — replaced
   by Scene's immediate-mode queue. The retained model overcomplicated
@@ -968,21 +1121,22 @@ evidence.
 - **Specialized Node subclasses** (`SpriteNode`, `LineNode`, `MeshNode`,
   `TextNode`, etc.). One Node class is enough; per-shape behavior is in
   Scene's draw commands.
-- **`Model` class** (mesh instance node) — superseded by `Node` built from
-  `Mesh.create_node()`.
 - **`Shader` class** (combined shading + lighting + color tables) —
-  replaced by `ColorRamp` (color LUT) + `Light` (parameters). The split lets
-  multiple ramps and multiple lights be created and swapped independently.
+  replaced by `ShadeRamp` (shading LUT, also absorbing palette
+  substitution) + `Light` (parameters). The split lets multiple ramps
+  and multiple lights be created and swapped independently.
 - **`scene.push_matrix` / `scene.pop_matrix`** — the matrix stack pattern
   was dropped because draw commands accept their own `mat` directly, and
-  `model(mat, node)` already covers hierarchical placement.
-- **`int` for `img` parameter on `sprite` / `plane`** — `Image | Tilemap`
-  only. Pyxel 2D's `pyxel.blt(img: int | Image, ...)` allows a bank index,
-  but image bank index space and tilemap bank index space overlap, so a
-  bare `int` would be ambiguous in cube. Callers pass `pyxel.images[i]` /
-  `pyxel.tilemaps[i]` explicitly.
-- **`sprite_tm` / `plane_tm`** — separate Tilemap-textured methods folded
-  into the unified `sprite` / `plane` via `img: Image | Tilemap`.
+  the Node tree's transform composition already covers hierarchical
+  placement.
+- **`int` for `img` parameter on `sprite` / `plane`** — `Image` only.
+  Pyxel 2D's `pyxel.blt(img: int | Image, ...)` allows a bank index, but
+  cube callers pass `pyxel.images[i]` explicitly to avoid coupling the
+  cube API to bank-index semantics.
+- **`Tilemap` on `sprite` / `plane`** — Tilemap's tile-grid storage and
+  tile-number indirection do not match a UV-based texture sampler;
+  selection happens at draw-call granularity rather than per-pixel.
+  Use `Image` directly.
 - **`(u, v, sw, sh)` source-rectangle form on textured commands** —
   replaced by a 4-vertex `uvs` tuple. The 4-corner form is the
   software rasterizer's natural input and expresses flips, rotations,
@@ -991,12 +1145,43 @@ evidence.
   positional arguments; the nested-tuple form keeps the call site
   readable.
 - **`fill` draw op on `Node`** — out of scope. `fill` has no clean 3D
-  meaning (no obvious enclosure to flood). (Per-draw palette substitution
-  is provided as `Node.pal` draw state, see § 11.4.)
-- **`box` / `box_outline` / `sphere` / `sphere_outline` draw ops on
-  `Node`** — covered by `Mesh.box()` / `Mesh.sphere()` plus
-  `node.mesh(mat, mesh)`; no need for immediate-mode 3D-solid primitives
-  in the initial API.
+  meaning (no obvious enclosure to flood). (Palette substitution is
+  absorbed into `ShadeRamp` § 8 instead of being a draw op.)
+- **Standalone `pal` operation / `Node.pal` draw state** — replaced by
+  setting `ShadeRamp` rows uniformly (a row whose every level maps to
+  the same target color is equivalent to `pyxel.pal(src, dst)`). One LUT
+  (`ShadeRamp`) covers both shading and palette substitution; a
+  separate `pal` table would duplicate state and inflate per-Node memory
+  when the palette grows.
+- **`Node.depth_test(...)` / `Node.depth_write(...)` / `Node.dither(...)`
+  draw-state methods** — and also the later
+  `Node.shaded` / `Node.dither` / `Node.depth_test` / `Node.depth_write`
+  / `Node.billboard` *properties* with inherits-from-ancestor cascade
+  — both rejected. State-machine methods burden the renderer with
+  current-state tracking; cascading properties make it awkward to mix
+  lit and unlit draws within a single `on_draw` (a common pattern: a
+  shaded mesh actor + unshaded sprite decorations + dither-faded
+  smoke trails). The settled answer is **per-call keyword arguments**
+  on every draw command (§ 12.5). "Node = Actor" stays clean (Node
+  carries lifecycle, hierarchy, transform — not draw-style state).
+  Subtree-wide effects are still expressible via local helper
+  closures inside the `on_draw`.
+- **`alpha` argument named bare `alpha`** — rejected in favor of
+  `dither_alpha` to flag that the implementation is Bayer dithering,
+  not continuous alpha blending. Value space matches
+  `pyxel.dither(alpha)`: `1.0` opaque, `0.0` transparent.
+- **`Node.text(pos, ...)` screen-aligned form** — replaced by
+  `Node.text(mat, ...)` Mat4 form. 3D-spaced text (signs, NPC labels)
+  needs world-scale sizing; HUD text remains Pyxel 2D's
+  `pyxel.text(x, y, ...)` job, called after `scene.draw()`.
+- **`Node.billboard` cascade property** — rejected for the same reason
+  as the other cascade-based modifiers. Replaced by per-call
+  `billboard` keyword argument on Mat4-based and multi-Vec3 commands.
+  Constants `BILLBOARD_OFF` / `BILLBOARD_ON` / `BILLBOARD_FIXED_Y`
+  mirror Godot's `BillboardMode`. `sprite` is hard-coded to
+  `BILLBOARD_ON` (the function name communicates "always face camera");
+  `pset` / `circ` / `circb` / `sphere` / `sphereb` omit the argument
+  because billboard has no visible effect on those shapes.
 - **`draw_text` / `draw_image` / `make_*` prefixes** — cube uses bare
   verbs (`node.text`, `node.sprite`, etc.) without prefix on draw
   commands or factories.
@@ -1007,7 +1192,7 @@ evidence.
   Mat4, OpenGL handles, shader programs) — cube is software-rendered;
   GPU integration is intentionally out of scope.
 
-### 15.4 Scene structure
+### 16.4 Scene structure
 
 - **Scene as a Node subclass** — the previous design made `Scene` extend
   `Node` and used per-Node draw callbacks. Replaced by `Scene` as an

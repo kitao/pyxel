@@ -1,7 +1,8 @@
 use pyo3::prelude::*;
 
 mod camera;
-mod color_ramp;
+mod collider;
+mod contact;
 mod float_buffer;
 mod int_buffer;
 mod light;
@@ -10,6 +11,7 @@ mod mesh;
 mod node;
 mod quat;
 mod scene;
+mod shade_ramp;
 mod vec3;
 
 pub fn add_cube_submodule(parent: &Bound<'_, PyModule>) -> PyResult<()> {
@@ -18,8 +20,10 @@ pub fn add_cube_submodule(parent: &Bound<'_, PyModule>) -> PyResult<()> {
     mat4::add_mat4_class(&m)?;
     quat::add_quat_class(&m)?;
     camera::add_camera_class(&m)?;
-    color_ramp::add_color_ramp_class(&m)?;
+    shade_ramp::add_shade_ramp_class(&m)?;
     light::add_light_class(&m)?;
+    contact::add_contact_class(&m)?;
+    collider::add_collider_class(&m)?;
     float_buffer::add_float_buffer_class(&m)?;
     int_buffer::add_int_buffer_class(&m)?;
     mesh::add_mesh_class(&m)?;

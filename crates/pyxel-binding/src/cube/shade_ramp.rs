@@ -1,13 +1,13 @@
 use pyo3::prelude::*;
-use pyxel::cube::color_ramp::LEVEL_COUNT;
+use pyxel::cube::shade_ramp::LEVEL_COUNT;
 
-define_wrapper!(ColorRamp, pyxel::cube::ColorRamp);
+define_wrapper!(ShadeRamp, pyxel::cube::ShadeRamp);
 
 #[pymethods]
-impl ColorRamp {
+impl ShadeRamp {
     #[new]
     fn new() -> Self {
-        Self::wrap(pyxel::cube::ColorRamp::new())
+        Self::wrap(pyxel::cube::ShadeRamp::new())
     }
 
     fn __getitem__(&self, key: (usize, usize)) -> PyResult<(i32, i32, u8)> {
@@ -15,7 +15,7 @@ impl ColorRamp {
         let r = self.inner_ref();
         if col >= r.palette_size() || level >= LEVEL_COUNT {
             return Err(pyo3::exceptions::PyIndexError::new_err(
-                "ColorRamp index out of range",
+                "ShadeRamp index out of range",
             ));
         }
         Ok(r.get(col, level))
@@ -26,7 +26,7 @@ impl ColorRamp {
         let n = self.inner_ref().palette_size();
         if col >= n || level >= LEVEL_COUNT {
             return Err(pyo3::exceptions::PyIndexError::new_err(
-                "ColorRamp index out of range",
+                "ShadeRamp index out of range",
             ));
         }
         self.inner_mut().set(col, level, value);
@@ -39,11 +39,11 @@ impl ColorRamp {
 
     fn __repr__(&self) -> String {
         let r = self.inner_ref();
-        format!("ColorRamp({} × {})", r.palette_size(), LEVEL_COUNT)
+        format!("ShadeRamp({} × {})", r.palette_size(), LEVEL_COUNT)
     }
 }
 
-pub fn add_color_ramp_class(m: &Bound<'_, PyModule>) -> PyResult<()> {
-    m.add_class::<ColorRamp>()?;
+pub fn add_shade_ramp_class(m: &Bound<'_, PyModule>) -> PyResult<()> {
+    m.add_class::<ShadeRamp>()?;
     Ok(())
 }

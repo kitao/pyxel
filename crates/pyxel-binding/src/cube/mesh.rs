@@ -1,7 +1,7 @@
 use pyo3::prelude::*;
-use pyxel::cube::mesh::{Face, Uv};
 
-use super::vec3::Vec3;
+use super::float_buffer::FloatBuffer;
+use super::int_buffer::IntBuffer;
 use crate::image_wrapper::Image;
 
 define_wrapper!(Mesh, pyxel::cube::Mesh);
@@ -11,150 +11,87 @@ impl Mesh {
     // Constructor
 
     #[new]
-    fn new() -> Self {
-        Self::wrap(pyxel::cube::Mesh::new())
-    }
-
-    // Factories
-
-    #[staticmethod]
-    #[pyo3(signature = (vertices, faces, uvs=None, col=7, image=None))]
-    fn from_vertices(
-        vertices: Vec<PyRef<'_, Vec3>>,
-        faces: Vec<(u32, u32, u32)>,
-        uvs: Option<Vec<(f32, f32)>>,
-        col: i32,
+    #[pyo3(signature = (positions=None, indices=None, normals=None, uvs=None, image=None, colkey=None))]
+    fn new(
+        positions: Option<PyRef<'_, FloatBuffer>>,
+        indices: Option<PyRef<'_, IntBuffer>>,
+        normals: Option<PyRef<'_, FloatBuffer>>,
+        uvs: Option<PyRef<'_, FloatBuffer>>,
         image: Option<PyRef<'_, Image>>,
+        colkey: Option<i32>,
     ) -> Self {
-        let inner_vertices: Vec<pyxel::cube::Vec3> =
-            vertices.iter().map(|v| *v.inner_ref()).collect();
-        let inner_faces: Vec<Face> = faces.into_iter().map(|(a, b, c)| [a, b, c]).collect();
-        let inner_image = image.as_ref().map(|i| i.inner.clone());
-        Self::wrap(pyxel::cube::Mesh::from_vertices(
-            inner_vertices,
-            inner_faces,
-            uvs,
-            col,
-            inner_image,
-        ))
+        let mesh = pyxel::cube::Mesh::new();
+        {
+            let m = rc_mut!(&mesh);
+            if let Some(p) = positions {
+                m.positions = p.inner.clone();
+            }
+            if let Some(i) = indices {
+                m.indices = Some(i.inner.clone());
+            }
+            if let Some(n) = normals {
+                m.normals = Some(n.inner.clone());
+            }
+            if let Some(u) = uvs {
+                m.uvs = Some(u.inner.clone());
+            }
+            if let Some(img) = image {
+                m.image = Some(img.inner.clone());
+            }
+            m.colkey = colkey;
+        }
+        Self::wrap(mesh)
     }
 
-    #[staticmethod]
-    #[pyo3(name = "box", signature = (size, col=7))]
-    fn box_(size: PyRef<'_, Vec3>, col: i32) -> Self {
-        Self::wrap(pyxel::cube::Mesh::box_(*size.inner_ref(), col))
-    }
-
-    #[staticmethod]
-    #[pyo3(signature = (radius, segments=16, col=7))]
-    fn sphere(radius: f32, segments: usize, col: i32) -> Self {
-        Self::wrap(pyxel::cube::Mesh::sphere(radius, segments, col))
-    }
-
-    #[staticmethod]
-    #[pyo3(signature = (radius, height, segments=16, col=7))]
-    fn cylinder(radius: f32, height: f32, segments: usize, col: i32) -> Self {
-        Self::wrap(pyxel::cube::Mesh::cylinder(radius, height, segments, col))
-    }
-
-    #[staticmethod]
-    #[pyo3(signature = (w, h, col=7))]
-    fn plane(w: f32, h: f32, col: i32) -> Self {
-        Self::wrap(pyxel::cube::Mesh::plane(w, h, col))
-    }
-
-    // Sizes
+    // Members
 
     #[getter]
-    fn vertex_count(&self) -> usize {
-        self.inner_ref().vertex_count()
-    }
-
-    #[getter]
-    fn face_count(&self) -> usize {
-        self.inner_ref().face_count()
-    }
-
-    // Per-element access
-
-    fn get_vertex(&self, i: usize) -> PyResult<Vec3> {
-        let m = self.inner_ref();
-        if i >= m.vertex_count() {
-            return Err(pyo3::exceptions::PyIndexError::new_err(
-                "Mesh vertex index out of range",
-            ));
-        }
-        let v = m.get_vertex(i);
-        Ok(Vec3::wrap(pyxel::cube::Vec3::new(v.x, v.y, v.z)))
-    }
-
-    fn set_vertex(&self, i: usize, v: PyRef<'_, Vec3>) -> PyResult<()> {
-        if i >= self.inner_ref().vertex_count() {
-            return Err(pyo3::exceptions::PyIndexError::new_err(
-                "Mesh vertex index out of range",
-            ));
-        }
-        self.inner_mut().set_vertex(i, *v.inner_ref());
-        Ok(())
-    }
-
-    fn get_uv(&self, i: usize) -> PyResult<Uv> {
-        let m = self.inner_ref();
-        if i >= m.vertex_count() {
-            return Err(pyo3::exceptions::PyIndexError::new_err(
-                "Mesh uv index out of range",
-            ));
-        }
-        Ok(m.get_uv(i))
-    }
-
-    fn set_uv(&self, i: usize, uv: Uv) -> PyResult<()> {
-        if i >= self.inner_ref().vertex_count() {
-            return Err(pyo3::exceptions::PyIndexError::new_err(
-                "Mesh uv index out of range",
-            ));
-        }
-        self.inner_mut().set_uv(i, uv);
-        Ok(())
-    }
-
-    fn get_face(&self, i: usize) -> PyResult<(u32, u32, u32)> {
-        let m = self.inner_ref();
-        if i >= m.face_count() {
-            return Err(pyo3::exceptions::PyIndexError::new_err(
-                "Mesh face index out of range",
-            ));
-        }
-        let f = m.get_face(i);
-        Ok((f[0], f[1], f[2]))
-    }
-
-    fn set_face(&self, i: usize, f: (u32, u32, u32)) -> PyResult<()> {
-        if i >= self.inner_ref().face_count() {
-            return Err(pyo3::exceptions::PyIndexError::new_err(
-                "Mesh face index out of range",
-            ));
-        }
-        self.inner_mut().set_face(i, [f.0, f.1, f.2]);
-        Ok(())
-    }
-
-    // Resize
-
-    fn resize(&self, vertex_count: usize, face_count: usize) {
-        self.inner_mut().resize(vertex_count, face_count);
-    }
-
-    // Color and texture
-
-    #[getter]
-    fn col(&self) -> i32 {
-        self.inner_ref().col
+    fn positions(&self) -> FloatBuffer {
+        FloatBuffer::wrap(self.inner_ref().positions.clone())
     }
 
     #[setter]
-    fn set_col(&self, v: i32) {
-        self.inner_mut().col = v;
+    fn set_positions(&self, v: PyRef<'_, FloatBuffer>) {
+        self.inner_mut().positions = v.inner.clone();
+    }
+
+    #[getter]
+    fn indices(&self) -> Option<IntBuffer> {
+        self.inner_ref()
+            .indices
+            .as_ref()
+            .map(|i| IntBuffer::wrap(i.clone()))
+    }
+
+    #[setter]
+    fn set_indices(&self, v: Option<PyRef<'_, IntBuffer>>) {
+        self.inner_mut().indices = v.as_ref().map(|i| i.inner.clone());
+    }
+
+    #[getter]
+    fn normals(&self) -> Option<FloatBuffer> {
+        self.inner_ref()
+            .normals
+            .as_ref()
+            .map(|n| FloatBuffer::wrap(n.clone()))
+    }
+
+    #[setter]
+    fn set_normals(&self, v: Option<PyRef<'_, FloatBuffer>>) {
+        self.inner_mut().normals = v.as_ref().map(|n| n.inner.clone());
+    }
+
+    #[getter]
+    fn uvs(&self) -> Option<FloatBuffer> {
+        self.inner_ref()
+            .uvs
+            .as_ref()
+            .map(|u| FloatBuffer::wrap(u.clone()))
+    }
+
+    #[setter]
+    fn set_uvs(&self, v: Option<PyRef<'_, FloatBuffer>>) {
+        self.inner_mut().uvs = v.as_ref().map(|u| u.inner.clone());
     }
 
     #[getter]
@@ -170,16 +107,23 @@ impl Mesh {
         self.inner_mut().image = v.as_ref().map(|i| i.inner.clone());
     }
 
+    #[getter]
+    fn colkey(&self) -> Option<i32> {
+        self.inner_ref().colkey
+    }
+
+    #[setter]
+    fn set_colkey(&self, v: Option<i32>) {
+        self.inner_mut().colkey = v;
+    }
+
     // Dunder
 
     fn __repr__(&self) -> String {
         let m = self.inner_ref();
-        format!(
-            "Mesh(vertices={}, faces={}, col={})",
-            m.vertex_count(),
-            m.face_count(),
-            m.col
-        )
+        let pos_size = rc_ref!(&m.positions).size();
+        let idx_size = m.indices.as_ref().map_or(0, |i| rc_ref!(i).size());
+        format!("Mesh(positions={pos_size}, indices={idx_size})")
     }
 }
 
