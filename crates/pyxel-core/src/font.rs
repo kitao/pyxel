@@ -291,7 +291,7 @@ impl Font {
         }
     }
 
-    fn line_metrics(&self) -> (i32, i32) {
+    pub fn line_metrics(&self) -> (i32, i32) {
         match self {
             Font::Bdf { bounding_box, .. } => (bounding_box.height, 0),
             Font::Fontdue { font, size, .. } => {

@@ -1,5 +1,7 @@
 pub mod camera;
-pub mod color_ramp;
+pub mod collider;
+pub mod contact;
+pub mod draw;
 pub mod float_buffer;
 pub mod int_buffer;
 pub mod light;
@@ -9,10 +11,12 @@ pub mod node;
 pub mod quat;
 pub mod raster;
 pub mod scene;
+pub mod shade_ramp;
 pub mod vec3;
 
 pub use camera::{Camera, RcCamera};
-pub use color_ramp::{ColorRamp, RcColorRamp};
+pub use collider::{Collider, RcCollider};
+pub use contact::{Contact, RcContact};
 pub use float_buffer::{FloatBuffer, RcFloatBuffer};
 pub use int_buffer::{IntBuffer, RcIntBuffer};
 pub use light::{Light, RcLight};
@@ -21,4 +25,5 @@ pub use mesh::{Mesh, RcMesh};
 pub use node::{Node, RcNode};
 pub use quat::{Quat, RcQuat};
 pub use scene::{RcScene, Scene};
+pub use shade_ramp::{RcShadeRamp, ShadeRamp};
 pub use vec3::{RcVec3, Vec3};

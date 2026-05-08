@@ -6,8 +6,10 @@ from pyxel.cube import Mat4, Vec3
 
 
 def approx(a, b, tol=1e-5):
-    return isclose(a.x, b.x, abs_tol=tol) and isclose(a.y, b.y, abs_tol=tol) and isclose(
-        a.z, b.z, abs_tol=tol
+    return (
+        isclose(a.x, b.x, abs_tol=tol)
+        and isclose(a.y, b.y, abs_tol=tol)
+        and isclose(a.z, b.z, abs_tol=tol)
     )
 
 

@@ -54,6 +54,13 @@ pub struct DrawContext {
     pub clip: ClipRect,
     pub camera: RcCamera,
     pub scene: RcScene,
+    // Per-call modifiers, set by each draw command before invoking the
+    // rasterizer (rasterizer reads from ctx so individual rasterize_*
+    // functions don't need to grow new arguments). Defaults restored at
+    // the start of each draw command.
+    pub dither_alpha: f32,
+    pub depth_test: bool,
+    pub depth_write: bool,
 }
 
 thread_local! {

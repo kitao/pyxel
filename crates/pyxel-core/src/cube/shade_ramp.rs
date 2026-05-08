@@ -1,7 +1,7 @@
 use crate::image::{rgb24_to_rgb8, Rgb24};
 use crate::pyxel::colors;
 
-// Color LUT mapping (col, level) to a (primary, secondary, ratio) triple.
+// Shading LUT mapping (col, level) to a (primary, secondary, ratio) triple.
 // `primary` and `secondary` are palette indices; `ratio` is 0..RATIO_COUNT
 // describing how often `secondary` wins over `primary` in the 4x4 Bayer
 // dither pattern. `primary == secondary` collapses to a flat fill.
@@ -15,19 +15,20 @@ pub const RATIO_COUNT: u8 = 16;
 // (primary, secondary, ratio) — primary/secondary are palette indices,
 // ratio is the count of 4x4 Bayer cells that pick `secondary`. Kept
 // file-private so callers see plain (i32, i32, u8) tuples on the API
-// surface and the ColorRamp module owns the layout.
+// surface and the ShadeRamp module owns the layout.
+
 type Entry = (i32, i32, u8);
 
-pub struct ColorRamp {
+pub struct ShadeRamp {
     data: Vec<Vec<Entry>>,
 }
 
-define_rc_type!(RcColorRamp, ColorRamp);
+define_rc_type!(RcShadeRamp, ShadeRamp);
 
-impl ColorRamp {
-    pub fn new() -> RcColorRamp {
+impl ShadeRamp {
+    pub fn new() -> RcShadeRamp {
         let data = Self::compute_default();
-        new_rc_type!(ColorRamp { data })
+        new_rc_type!(ShadeRamp { data })
     }
 
     pub fn build(&mut self) {
@@ -79,10 +80,8 @@ impl ColorRamp {
         let mut best: Entry = (0, 0, 0);
         let mut best_dist = f32::INFINITY;
         let inv_count = 1.0 / RATIO_COUNT as f32;
-        for i in 0..rgb.len() {
-            let (ar, ag, ab) = rgb[i];
-            for j in 0..rgb.len() {
-                let (sr, sg, sb) = rgb[j];
+        for (i, &(ar, ag, ab)) in rgb.iter().enumerate() {
+            for (j, &(sr, sg, sb)) in rgb.iter().enumerate() {
                 for ratio in 0..RATIO_COUNT {
                     let t = ratio as f32 * inv_count;
                     let mr = ar + (sr - ar) * t;
@@ -109,7 +108,7 @@ mod tests {
 
     #[test]
     fn test_default_dimensions() {
-        let r = ColorRamp::new();
+        let r = ShadeRamp::new();
         let r = rc_ref!(&r);
         assert!(r.palette_size() > 0);
         for row in &r.data {
@@ -121,7 +120,7 @@ mod tests {
     fn test_brightest_level_matches_self() {
         // Level 15 (factor 1.0) → target == col self → primary == col,
         // ratio == 0 (flat fill, secondary is irrelevant in that case).
-        let r = ColorRamp::new();
+        let r = ShadeRamp::new();
         let r = rc_ref!(&r);
         for col in 0..r.palette_size() {
             let (primary, _, ratio) = r.get(col, LEVEL_COUNT - 1);
@@ -132,7 +131,7 @@ mod tests {
 
     #[test]
     fn test_get_set() {
-        let r = ColorRamp::new();
+        let r = ShadeRamp::new();
         let r_mut = rc_mut!(&r);
         r_mut.set(0, 0, (5, 7, 8));
         assert_eq!(r_mut.get(0, 0), (5, 7, 8));
@@ -140,7 +139,7 @@ mod tests {
 
     #[test]
     fn test_build_resets_table() {
-        let r = ColorRamp::new();
+        let r = ShadeRamp::new();
         let r_mut = rc_mut!(&r);
         r_mut.set(0, 0, (99, 99, 0));
         r_mut.build();
@@ -150,7 +149,7 @@ mod tests {
 
     #[test]
     fn test_ratio_within_bounds() {
-        let r = ColorRamp::new();
+        let r = ShadeRamp::new();
         let r = rc_ref!(&r);
         for row in &r.data {
             for &(_, _, ratio) in row {

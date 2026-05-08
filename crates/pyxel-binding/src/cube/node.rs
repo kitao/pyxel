@@ -1,18 +1,15 @@
 use std::cell::RefCell;
 
 use pyo3::prelude::*;
-use pyxel::cube::raster::{
-    project_ellipse_perimeter, project_rect_corners, rasterize_circle_border,
-    rasterize_circle_filled, rasterize_line, rasterize_textured_triangle, rasterize_triangle,
-    screen_circle, sprite_corners, world_to_screen, write_pixel, ELLIPSE_SEGMENTS,
-};
+use pyxel::cube::draw::DrawState;
 use pyxel::cube::scene::with_draw_context;
-use pyxel::cube::{Node as InnerNode, Vec3 as InnerVec3};
-use pyxel::{Image as InnerImage, RcImage as InnerRcImage};
+use pyxel::cube::Node as InnerNode;
 
-use super::color_ramp::ColorRamp;
+use super::collider::Collider;
+use super::contact::Contact;
 use super::light::Light;
 use super::mat4::Mat4;
+use super::shade_ramp::ShadeRamp;
 use super::vec3::Vec3;
 
 type Uvs = ((f32, f32), (f32, f32), (f32, f32), (f32, f32));
@@ -63,11 +60,10 @@ impl Node {
         rc_mut!(self.inner)
     }
 
-    // World-space position of a node-local Vec3 (composes the node's
-    // ancestor chain into a single transform and applies it).
-    fn world_pos(&self, local: InnerVec3) -> InnerVec3 {
-        let world_mat = InnerNode::world_transform(&self.inner);
-        pyxel::cube::raster::mat_apply(rc_ref!(&world_mat), &local)
+    // World transform of this node (composition of all ancestor transforms).
+    fn world_mat(&self) -> pyxel::cube::Mat4 {
+        let world_rc = InnerNode::world_transform(&self.inner);
+        *rc_ref!(&world_rc)
     }
 
     // World-space matrix for a node-local Mat4 (compose ancestor world
@@ -77,80 +73,78 @@ impl Node {
         let composed = rc_ref!(&world_rc).mul_mat(&local);
         *rc_ref!(&composed)
     }
-}
 
-// Build a sampler closure that reads from `img` using affine UV in [0,1].
-// Out-of-range UVs are clamped to the image bounds.
-fn make_image_sampler(img: &InnerImage) -> impl Fn(f32, f32, i32, i32) -> i32 + '_ {
-    let w = img.width() as f32;
-    let h = img.height() as f32;
-    let max_x = (img.width() as i32 - 1).max(0);
-    let max_y = (img.height() as i32 - 1).max(0);
-    move |u, v, _x, _y| {
-        let xi = ((u * w).floor() as i32).clamp(0, max_x);
-        let yi = ((v * h).floor() as i32).clamp(0, max_y);
-        i32::from(img.pixel(xi as f32, yi as f32))
+    // Resolve scene-wide cascade values (light / shade_ramp). Returns
+    // owned RcLight / RcShadeRamp clones so callers can borrow them
+    // through `rc_ref!` without conflicting with the immutable borrow
+    // on `self.inner`.
+    fn resolve_lighting(
+        &self,
+    ) -> (
+        Option<pyxel::cube::RcLight>,
+        Option<pyxel::cube::RcShadeRamp>,
+    ) {
+        (
+            InnerNode::effective_light(&self.inner),
+            InnerNode::effective_shade_ramp(&self.inner),
+        )
     }
-}
 
-// Image sampler that applies the ramp's per-level (primary, secondary,
-// ratio) blend at each pixel. Per-pixel dithering keeps the source
-// picture recognizable (each texel lands in its own ramp cell, so the
-// per-base palette mapping survives) while the secondary/ratio terms
-// add a Bayer-mediated brightness gradient across the face.
-fn make_shaded_sampler<'a>(
-    img: &'a InnerImage,
-    ramp: &'a pyxel::cube::ColorRamp,
-    level: usize,
-) -> impl Fn(f32, f32, i32, i32) -> i32 + 'a {
-    let w = img.width() as f32;
-    let h = img.height() as f32;
-    let max_x = (img.width() as i32 - 1).max(0);
-    let max_y = (img.height() as i32 - 1).max(0);
-    let palette_size = ramp.palette_size();
-    move |u, v, x, y| {
-        let xi = ((u * w).floor() as i32).clamp(0, max_x);
-        let yi = ((v * h).floor() as i32).clamp(0, max_y);
-        let base = i32::from(img.pixel(xi as f32, yi as f32));
-        if palette_size == 0 {
-            base
+    // Run `f` with a fully resolved DrawState. Each draw method shares
+    // this pattern (lookup light/ramp, build state, call into draw),
+    // so funneling it through a single helper keeps the per-method
+    // boilerplate to one line.
+    #[allow(clippy::too_many_arguments)]
+    fn with_state(
+        &self,
+        shaded: bool,
+        dither_alpha: f32,
+        depth_test: bool,
+        depth_write: bool,
+        billboard: i32,
+        f: impl FnOnce(&mut pyxel::cube::scene::DrawContext, pyxel::cube::draw::DrawState),
+    ) {
+        let (light, ramp) = if shaded {
+            self.resolve_lighting()
         } else {
-            let base_idx = base.clamp(0, palette_size as i32 - 1) as usize;
-            let (primary, secondary, ratio) = ramp.get(base_idx, level);
-            i32::from(pyxel::cube::raster::dither_pick(
-                primary, secondary, ratio, x, y,
-            ))
-        }
+            (None, None)
+        };
+        let light_ref = light.as_ref().map(|l: &pyxel::cube::RcLight| rc_ref!(l));
+        let ramp_ref = ramp.as_ref().map(|r: &pyxel::cube::RcShadeRamp| rc_ref!(r));
+        let state = DrawState {
+            shaded,
+            dither_alpha,
+            depth_test,
+            depth_write,
+            billboard,
+            light: light_ref,
+            ramp: ramp_ref,
+        };
+        with_draw_context(|ctx| f(ctx, state));
     }
-}
-
-// Rasterize a textured quad as two triangles. Row-major corner / uv
-// order: 0=top-left, 1=top-right, 2=bottom-left, 3=bottom-right.
-fn draw_textured_quad(
-    ctx: &mut pyxel::cube::scene::DrawContext,
-    corners: [(f32, f32, f32); 4],
-    uvs: Uvs,
-    img: &InnerRcImage,
-    colkey: Option<i32>,
-) {
-    let target_mut = rc_mut!(&ctx.target);
-    let scene_mut = rc_mut!(&ctx.scene);
-    let depth_w = scene_mut.depth_w;
-    let depth = scene_mut.depth.as_mut_slice();
-    let img_ref = rc_ref!(img);
-    let sampler = make_image_sampler(img_ref);
-    rasterize_textured_triangle(
-        target_mut, depth, depth_w, corners[0], corners[1], corners[2], uvs.0, uvs.1, uvs.2,
-        &sampler, colkey, ctx.clip,
-    );
-    rasterize_textured_triangle(
-        target_mut, depth, depth_w, corners[1], corners[3], corners[2], uvs.1, uvs.3, uvs.2,
-        &sampler, colkey, ctx.clip,
-    );
 }
 
 #[pymethods]
 impl Node {
+    // Primitive mode constants for `prim` (OpenGL ordering: POINTS=0,
+    // LINES=1, TRIANGLES=2; future LINE_STRIP / LINE_LOOP /
+    // TRIANGLE_STRIP / TRIANGLE_FAN keep the relative position).
+
+    #[classattr]
+    const PRIM_POINTS: i32 = pyxel::cube::draw::PRIM_POINTS;
+    #[classattr]
+    const PRIM_LINES: i32 = pyxel::cube::draw::PRIM_LINES;
+    #[classattr]
+    const PRIM_TRIANGLES: i32 = pyxel::cube::draw::PRIM_TRIANGLES;
+
+    // Billboard mode constants (mirror Godot BillboardMode).
+    #[classattr]
+    const BILLBOARD_OFF: i32 = pyxel::cube::draw::BILLBOARD_OFF;
+    #[classattr]
+    const BILLBOARD_ON: i32 = pyxel::cube::draw::BILLBOARD_ON;
+    #[classattr]
+    const BILLBOARD_FIXED_Y: i32 = pyxel::cube::draw::BILLBOARD_FIXED_Y;
+
     // Constructor
 
     #[new]
@@ -204,7 +198,8 @@ impl Node {
         self.inner_mut().visible = v;
     }
 
-    // Inheritable subtree state
+    // Scene-wide lighting cascade (None inherits from the closest non-None
+    // ancestor; Scene seeds defaults at construction).
 
     #[getter]
     fn light(&self) -> Option<Light> {
@@ -220,16 +215,33 @@ impl Node {
     }
 
     #[getter]
-    fn color_ramp(&self) -> Option<ColorRamp> {
+    fn shade_ramp(&self) -> Option<ShadeRamp> {
         self.inner_ref()
-            .color_ramp
+            .shade_ramp
             .as_ref()
-            .map(|r| ColorRamp::wrap(r.clone()))
+            .map(|r| ShadeRamp::wrap(r.clone()))
     }
 
     #[setter]
-    fn set_color_ramp(&self, v: Option<PyRef<'_, ColorRamp>>) {
-        self.inner_mut().color_ramp = v.as_ref().map(|r| r.inner.clone());
+    fn set_shade_ramp(&self, v: Option<PyRef<'_, ShadeRamp>>) {
+        self.inner_mut().shade_ramp = v.as_ref().map(|r| r.inner.clone());
+    }
+
+    // Collider slot — currently a placeholder; the collision pipeline
+    // is deferred (cube-design.md § 15). Stored here so user code can
+    // already round-trip `node.collider = Collider()` setups.
+
+    #[getter]
+    fn collider(&self) -> Option<Collider> {
+        self.inner_ref()
+            .collider
+            .as_ref()
+            .map(|c| Collider::wrap(c.clone()))
+    }
+
+    #[setter]
+    fn set_collider(&self, v: Option<PyRef<'_, Collider>>) {
+        self.inner_mut().collider = v.as_ref().map(|c| c.inner.clone());
     }
 
     // Hierarchy (read-only properties).
@@ -245,12 +257,30 @@ impl Node {
     }
 
     #[getter]
-    fn children(&self, py: Python<'_>) -> Vec<Py<Node>> {
-        self.children
-            .borrow()
-            .iter()
-            .map(|c| c.clone_ref(py))
-            .collect()
+    fn children<'py>(&self, py: Python<'py>) -> PyResult<Bound<'py, pyo3::types::PyTuple>> {
+        // Reconcile binding-side cache with the core-side child list.
+        // Core is the source of truth: re-parenting via `add_child` and
+        // `destroy()` mutate the core list directly, so the binding
+        // tuple is built from the core order and prunes any cached
+        // entries that no longer correspond to a live child.
+        let core_children = InnerNode::children(&self.inner);
+        let mut cache = self.children.borrow_mut();
+        cache.retain(|cached| {
+            let cached_inner = cached.bind(py).borrow().inner.clone();
+            core_children
+                .iter()
+                .any(|c| std::rc::Rc::ptr_eq(&cached_inner, c))
+        });
+        let mut items: Vec<Py<Node>> = Vec::with_capacity(core_children.len());
+        for c_inner in &core_children {
+            if let Some(cached) = cache
+                .iter()
+                .find(|cached| std::rc::Rc::ptr_eq(&cached.bind(py).borrow().inner, c_inner))
+            {
+                items.push(cached.clone_ref(py));
+            }
+        }
+        pyo3::types::PyTuple::new(py, items)
     }
 
     // Methods
@@ -275,9 +305,6 @@ impl Node {
     }
 
     fn add_child(&self, py: Python<'_>, child: Py<Node>) {
-        // Detach from previous parent (Python-tracked + core-tracked).
-        // For now `parent` is not tracked on the Python side, so just
-        // ensure the core hierarchy stays consistent.
         let child_inner = {
             let bound = child.bind(py).borrow();
             bound.inner.clone()
@@ -303,8 +330,6 @@ impl Node {
     }
 
     // Lifecycle hooks (default no-op; user overrides in Python subclass).
-    // Registering them here lets PyO3's dispatch find the override on the
-    // subclass via the standard Python MRO.
 
     #[allow(clippy::unused_self)]
     fn on_update(&self) {}
@@ -312,295 +337,449 @@ impl Node {
     #[allow(clippy::unused_self)]
     fn on_draw(&self) {}
 
+    // Collision hook — never invoked by the cube runtime today (the
+    // collision pipeline is deferred; see cube-design.md § 15). The
+    // signature is exposed so user subclasses can already define an
+    // override that the future pipeline will call.
     #[allow(clippy::unused_self)]
     #[pyo3(signature = (_other, _contact=None))]
-    fn on_collide(&self, _other: PyRef<'_, Node>, _contact: Option<Py<PyAny>>) {}
+    fn on_collide(&self, _other: PyRef<'_, Node>, _contact: Option<PyRef<'_, Contact>>) {}
 
     #[allow(clippy::unused_self)]
     fn on_destroy(&self) {}
 
-    // Immediate-mode draw commands (callable from on_draw scope)
+    // ===================================================================
+    // Immediate-mode draw commands. Each method captures Python args,
+    // resolves the world transform + scene-wide light/shade_ramp, builds
+    // a DrawState carrying per-call modifiers, then delegates to
+    // pyxel::cube::draw (single home for all draw logic).
+    // ===================================================================
 
-    fn pset(&self, pos: PyRef<'_, Vec3>, col: i32) {
-        let world = self.world_pos(*pos.inner_ref());
-        with_draw_context(|ctx| {
-            let projected =
-                world_to_screen(&world, &ctx.vp, ctx.vp_x, ctx.vp_y, ctx.vp_w, ctx.vp_h);
-            if let Some((sx, sy, sz)) = projected {
-                let xi = sx.round() as i32;
-                let yi = sy.round() as i32;
-                if !ctx.clip.contains(xi, yi) {
-                    return;
-                }
-                let target_mut = rc_mut!(&ctx.target);
-                let scene_mut = rc_mut!(&ctx.scene);
-                let depth_w = scene_mut.depth_w;
-                write_pixel(
-                    target_mut,
-                    scene_mut.depth.as_mut_slice(),
-                    depth_w,
-                    xi,
-                    yi,
-                    sz,
-                    col as u8,
-                );
-            }
-        });
+    #[pyo3(signature = (pos, col, *, dither_alpha=1.0, depth_test=true, depth_write=true))]
+    fn pset(
+        &self,
+        pos: PyRef<'_, Vec3>,
+        col: i32,
+        dither_alpha: f32,
+        depth_test: bool,
+        depth_write: bool,
+    ) {
+        let world_mat = self.world_mat();
+        let local = *pos.inner_ref();
+        self.with_state(
+            false,
+            dither_alpha,
+            depth_test,
+            depth_write,
+            pyxel::cube::draw::BILLBOARD_OFF,
+            |ctx, state| {
+                pyxel::cube::draw::pset(ctx, &world_mat, &local, col, state);
+            },
+        );
     }
 
-    fn line(&self, p1: PyRef<'_, Vec3>, p2: PyRef<'_, Vec3>, col: i32) {
-        let w1 = self.world_pos(*p1.inner_ref());
-        let w2 = self.world_pos(*p2.inner_ref());
-        with_draw_context(|ctx| {
-            let s1 = world_to_screen(&w1, &ctx.vp, ctx.vp_x, ctx.vp_y, ctx.vp_w, ctx.vp_h);
-            let s2 = world_to_screen(&w2, &ctx.vp, ctx.vp_x, ctx.vp_y, ctx.vp_w, ctx.vp_h);
-            if let (Some(s1), Some(s2)) = (s1, s2) {
-                let target_mut = rc_mut!(&ctx.target);
-                let scene_mut = rc_mut!(&ctx.scene);
-                let depth_w = scene_mut.depth_w;
-                rasterize_line(
-                    target_mut,
-                    scene_mut.depth.as_mut_slice(),
-                    depth_w,
-                    s1,
-                    s2,
-                    col as u8,
-                    col as u8,
-                    0,
-                    ctx.clip,
-                );
-            }
-        });
+    #[pyo3(signature = (p1, p2, col, *, dither_alpha=1.0, depth_test=true, depth_write=true,
+                        billboard=pyxel::cube::draw::BILLBOARD_OFF))]
+    #[allow(clippy::too_many_arguments)]
+    fn line(
+        &self,
+        p1: PyRef<'_, Vec3>,
+        p2: PyRef<'_, Vec3>,
+        col: i32,
+        dither_alpha: f32,
+        depth_test: bool,
+        depth_write: bool,
+        billboard: i32,
+    ) {
+        let world_mat = self.world_mat();
+        let v1 = *p1.inner_ref();
+        let v2 = *p2.inner_ref();
+        self.with_state(
+            false,
+            dither_alpha,
+            depth_test,
+            depth_write,
+            billboard,
+            |ctx, state| {
+                pyxel::cube::draw::line(ctx, &world_mat, &v1, &v2, col, state);
+            },
+        );
     }
 
-    fn tri(&self, p1: PyRef<'_, Vec3>, p2: PyRef<'_, Vec3>, p3: PyRef<'_, Vec3>, col: i32) {
-        let w1 = self.world_pos(*p1.inner_ref());
-        let w2 = self.world_pos(*p2.inner_ref());
-        let w3 = self.world_pos(*p3.inner_ref());
-        with_draw_context(|ctx| {
-            let s1 = world_to_screen(&w1, &ctx.vp, ctx.vp_x, ctx.vp_y, ctx.vp_w, ctx.vp_h);
-            let s2 = world_to_screen(&w2, &ctx.vp, ctx.vp_x, ctx.vp_y, ctx.vp_w, ctx.vp_h);
-            let s3 = world_to_screen(&w3, &ctx.vp, ctx.vp_x, ctx.vp_y, ctx.vp_w, ctx.vp_h);
-            if let (Some(s1), Some(s2), Some(s3)) = (s1, s2, s3) {
-                let target_mut = rc_mut!(&ctx.target);
-                let scene_mut = rc_mut!(&ctx.scene);
-                let depth_w = scene_mut.depth_w;
-                rasterize_triangle(
-                    target_mut,
-                    scene_mut.depth.as_mut_slice(),
-                    depth_w,
-                    s1,
-                    s2,
-                    s3,
-                    col as u8,
-                    col as u8,
-                    0,
-                    ctx.clip,
-                );
-            }
-        });
-    }
-
-    fn trib(&self, p1: PyRef<'_, Vec3>, p2: PyRef<'_, Vec3>, p3: PyRef<'_, Vec3>, col: i32) {
-        // Outline = 3 lines, reusing the line draw command for clipping +
-        // depth interpolation.
+    #[pyo3(signature = (p1, p2, p3, col, *, shaded=true, dither_alpha=1.0,
+                        depth_test=true, depth_write=true,
+                        billboard=pyxel::cube::draw::BILLBOARD_OFF))]
+    #[allow(clippy::too_many_arguments)]
+    fn tri(
+        &self,
+        p1: PyRef<'_, Vec3>,
+        p2: PyRef<'_, Vec3>,
+        p3: PyRef<'_, Vec3>,
+        col: i32,
+        shaded: bool,
+        dither_alpha: f32,
+        depth_test: bool,
+        depth_write: bool,
+        billboard: i32,
+    ) {
+        let world_mat = self.world_mat();
         let v1 = *p1.inner_ref();
         let v2 = *p2.inner_ref();
         let v3 = *p3.inner_ref();
-        let w1 = self.world_pos(v1);
-        let w2 = self.world_pos(v2);
-        let w3 = self.world_pos(v3);
-        with_draw_context(|ctx| {
-            let s1 = world_to_screen(&w1, &ctx.vp, ctx.vp_x, ctx.vp_y, ctx.vp_w, ctx.vp_h);
-            let s2 = world_to_screen(&w2, &ctx.vp, ctx.vp_x, ctx.vp_y, ctx.vp_w, ctx.vp_h);
-            let s3 = world_to_screen(&w3, &ctx.vp, ctx.vp_x, ctx.vp_y, ctx.vp_w, ctx.vp_h);
-            let target_mut = rc_mut!(&ctx.target);
-            let scene_mut = rc_mut!(&ctx.scene);
-            let depth_w = scene_mut.depth_w;
-            let depth = scene_mut.depth.as_mut_slice();
-            for (a, b) in [(s1, s2), (s2, s3), (s3, s1)] {
-                if let (Some(a), Some(b)) = (a, b) {
-                    rasterize_line(
-                        target_mut, depth, depth_w, a, b, col as u8, col as u8, 0, ctx.clip,
-                    );
-                }
-            }
-        });
+        self.with_state(
+            shaded,
+            dither_alpha,
+            depth_test,
+            depth_write,
+            billboard,
+            |ctx, state| {
+                pyxel::cube::draw::tri(ctx, &world_mat, &v1, &v2, &v3, col, state);
+            },
+        );
     }
 
-    fn circ(&self, pos: PyRef<'_, Vec3>, r: f32, col: i32) {
-        let world = self.world_pos(*pos.inner_ref());
-        with_draw_context(|ctx| {
-            let projected = screen_circle(
-                &world,
-                r,
-                &ctx.vp,
-                rc_ref!(&ctx.camera),
-                ctx.vp_x,
-                ctx.vp_y,
-                ctx.vp_w,
-                ctx.vp_h,
-            );
-            if let Some((sx, sy, sr, sz)) = projected {
-                let target_mut = rc_mut!(&ctx.target);
-                let scene_mut = rc_mut!(&ctx.scene);
-                let depth_w = scene_mut.depth_w;
-                rasterize_circle_filled(
-                    target_mut,
-                    scene_mut.depth.as_mut_slice(),
-                    depth_w,
-                    sx,
-                    sy,
-                    sr,
-                    sz,
-                    col as u8,
-                    col as u8,
-                    0,
-                    ctx.clip,
-                );
-            }
-        });
+    #[pyo3(signature = (p1, p2, p3, col, *, dither_alpha=1.0,
+                        depth_test=true, depth_write=true,
+                        billboard=pyxel::cube::draw::BILLBOARD_OFF))]
+    #[allow(clippy::too_many_arguments)]
+    fn trib(
+        &self,
+        p1: PyRef<'_, Vec3>,
+        p2: PyRef<'_, Vec3>,
+        p3: PyRef<'_, Vec3>,
+        col: i32,
+        dither_alpha: f32,
+        depth_test: bool,
+        depth_write: bool,
+        billboard: i32,
+    ) {
+        let world_mat = self.world_mat();
+        let v1 = *p1.inner_ref();
+        let v2 = *p2.inner_ref();
+        let v3 = *p3.inner_ref();
+        self.with_state(
+            false,
+            dither_alpha,
+            depth_test,
+            depth_write,
+            billboard,
+            |ctx, state| {
+                pyxel::cube::draw::trib(ctx, &world_mat, &v1, &v2, &v3, col, state);
+            },
+        );
     }
 
-    fn circb(&self, pos: PyRef<'_, Vec3>, r: f32, col: i32) {
-        let world = self.world_pos(*pos.inner_ref());
-        with_draw_context(|ctx| {
-            let projected = screen_circle(
-                &world,
-                r,
-                &ctx.vp,
-                rc_ref!(&ctx.camera),
-                ctx.vp_x,
-                ctx.vp_y,
-                ctx.vp_w,
-                ctx.vp_h,
-            );
-            if let Some((sx, sy, sr, sz)) = projected {
-                let target_mut = rc_mut!(&ctx.target);
-                let scene_mut = rc_mut!(&ctx.scene);
-                let depth_w = scene_mut.depth_w;
-                rasterize_circle_border(
-                    target_mut,
-                    scene_mut.depth.as_mut_slice(),
-                    depth_w,
-                    sx,
-                    sy,
-                    sr,
-                    sz,
-                    col as u8,
-                    col as u8,
-                    0,
-                    ctx.clip,
-                );
-            }
-        });
+    #[pyo3(signature = (pos, r, col, *, dither_alpha=1.0, depth_test=true, depth_write=true))]
+    fn circ(
+        &self,
+        pos: PyRef<'_, Vec3>,
+        r: f32,
+        col: i32,
+        dither_alpha: f32,
+        depth_test: bool,
+        depth_write: bool,
+    ) {
+        let world_mat = self.world_mat();
+        let local = *pos.inner_ref();
+        self.with_state(
+            false,
+            dither_alpha,
+            depth_test,
+            depth_write,
+            pyxel::cube::draw::BILLBOARD_OFF,
+            |ctx, state| {
+                pyxel::cube::draw::circ(ctx, &world_mat, &local, r, col, state);
+            },
+        );
     }
 
-    fn rect(&self, mat: PyRef<'_, Mat4>, w: f32, h: f32, col: i32) {
+    #[pyo3(signature = (pos, r, col, *, dither_alpha=1.0, depth_test=true, depth_write=true))]
+    fn circb(
+        &self,
+        pos: PyRef<'_, Vec3>,
+        r: f32,
+        col: i32,
+        dither_alpha: f32,
+        depth_test: bool,
+        depth_write: bool,
+    ) {
+        let world_mat = self.world_mat();
+        let local = *pos.inner_ref();
+        self.with_state(
+            false,
+            dither_alpha,
+            depth_test,
+            depth_write,
+            pyxel::cube::draw::BILLBOARD_OFF,
+            |ctx, state| {
+                pyxel::cube::draw::circb(ctx, &world_mat, &local, r, col, state);
+            },
+        );
+    }
+
+    #[pyo3(signature = (pos, r, col, *, shaded=true, dither_alpha=1.0,
+                        depth_test=true, depth_write=true))]
+    #[allow(clippy::too_many_arguments)]
+    fn sphere(
+        &self,
+        pos: PyRef<'_, Vec3>,
+        r: f32,
+        col: i32,
+        shaded: bool,
+        dither_alpha: f32,
+        depth_test: bool,
+        depth_write: bool,
+    ) {
+        let world_mat = self.world_mat();
+        let local = *pos.inner_ref();
+        self.with_state(
+            shaded,
+            dither_alpha,
+            depth_test,
+            depth_write,
+            pyxel::cube::draw::BILLBOARD_OFF,
+            |ctx, state| {
+                pyxel::cube::draw::sphere(ctx, &world_mat, &local, r, col, state);
+            },
+        );
+    }
+
+    #[pyo3(signature = (pos, r, col, *, dither_alpha=1.0, depth_test=true, depth_write=true))]
+    fn sphereb(
+        &self,
+        pos: PyRef<'_, Vec3>,
+        r: f32,
+        col: i32,
+        dither_alpha: f32,
+        depth_test: bool,
+        depth_write: bool,
+    ) {
+        let world_mat = self.world_mat();
+        let local = *pos.inner_ref();
+        self.with_state(
+            false,
+            dither_alpha,
+            depth_test,
+            depth_write,
+            pyxel::cube::draw::BILLBOARD_OFF,
+            |ctx, state| {
+                pyxel::cube::draw::sphereb(ctx, &world_mat, &local, r, col, state);
+            },
+        );
+    }
+
+    #[pyo3(signature = (mat, w, h, col, *, shaded=true, dither_alpha=1.0,
+                        depth_test=true, depth_write=true,
+                        billboard=pyxel::cube::draw::BILLBOARD_OFF))]
+    #[allow(clippy::too_many_arguments)]
+    fn rect(
+        &self,
+        mat: PyRef<'_, Mat4>,
+        w: f32,
+        h: f32,
+        col: i32,
+        shaded: bool,
+        dither_alpha: f32,
+        depth_test: bool,
+        depth_write: bool,
+        billboard: i32,
+    ) {
         let world_mat = self.world_mat_compose(*mat.inner_ref());
-        with_draw_context(|ctx| {
-            let corners = project_rect_corners(
-                &world_mat, w, h, &ctx.vp, ctx.vp_x, ctx.vp_y, ctx.vp_w, ctx.vp_h,
-            );
-            if let [Some(p0), Some(p1), Some(p2), Some(p3)] = corners {
-                let target_mut = rc_mut!(&ctx.target);
-                let scene_mut = rc_mut!(&ctx.scene);
-                let depth_w = scene_mut.depth_w;
-                let depth = scene_mut.depth.as_mut_slice();
-                rasterize_triangle(
-                    target_mut, depth, depth_w, p0, p1, p2, col as u8, col as u8, 0, ctx.clip,
-                );
-                rasterize_triangle(
-                    target_mut, depth, depth_w, p1, p3, p2, col as u8, col as u8, 0, ctx.clip,
-                );
-            }
-        });
+        self.with_state(
+            shaded,
+            dither_alpha,
+            depth_test,
+            depth_write,
+            billboard,
+            |ctx, state| {
+                pyxel::cube::draw::rect(ctx, &world_mat, w, h, col, state);
+            },
+        );
     }
 
-    fn rectb(&self, mat: PyRef<'_, Mat4>, w: f32, h: f32, col: i32) {
+    #[pyo3(signature = (mat, w, h, col, *, dither_alpha=1.0,
+                        depth_test=true, depth_write=true,
+                        billboard=pyxel::cube::draw::BILLBOARD_OFF))]
+    #[allow(clippy::too_many_arguments)]
+    fn rectb(
+        &self,
+        mat: PyRef<'_, Mat4>,
+        w: f32,
+        h: f32,
+        col: i32,
+        dither_alpha: f32,
+        depth_test: bool,
+        depth_write: bool,
+        billboard: i32,
+    ) {
         let world_mat = self.world_mat_compose(*mat.inner_ref());
-        with_draw_context(|ctx| {
-            let corners = project_rect_corners(
-                &world_mat, w, h, &ctx.vp, ctx.vp_x, ctx.vp_y, ctx.vp_w, ctx.vp_h,
-            );
-            let target_mut = rc_mut!(&ctx.target);
-            let scene_mut = rc_mut!(&ctx.scene);
-            let depth_w = scene_mut.depth_w;
-            let depth = scene_mut.depth.as_mut_slice();
-            // Top, right, bottom, left edges.
-            for (a, b) in [(0, 1), (1, 3), (3, 2), (2, 0)] {
-                if let (Some(p0), Some(p1)) = (corners[a], corners[b]) {
-                    rasterize_line(
-                        target_mut, depth, depth_w, p0, p1, col as u8, col as u8, 0, ctx.clip,
-                    );
-                }
-            }
-        });
+        self.with_state(
+            false,
+            dither_alpha,
+            depth_test,
+            depth_write,
+            billboard,
+            |ctx, state| {
+                pyxel::cube::draw::rectb(ctx, &world_mat, w, h, col, state);
+            },
+        );
     }
 
-    fn elli(&self, mat: PyRef<'_, Mat4>, w: f32, h: f32, col: i32) {
+    #[pyo3(signature = (mat, w, h, col, *, shaded=true, dither_alpha=1.0,
+                        depth_test=true, depth_write=true,
+                        billboard=pyxel::cube::draw::BILLBOARD_OFF))]
+    #[allow(clippy::too_many_arguments)]
+    fn elli(
+        &self,
+        mat: PyRef<'_, Mat4>,
+        w: f32,
+        h: f32,
+        col: i32,
+        shaded: bool,
+        dither_alpha: f32,
+        depth_test: bool,
+        depth_write: bool,
+        billboard: i32,
+    ) {
         let world_mat = self.world_mat_compose(*mat.inner_ref());
-        with_draw_context(|ctx| {
-            let perim = project_ellipse_perimeter(
-                &world_mat, w, h, &ctx.vp, ctx.vp_x, ctx.vp_y, ctx.vp_w, ctx.vp_h,
-            );
-            // Fan triangulation around the projected center (mat origin).
-            let center = world_to_screen(
-                &pyxel::cube::raster::mat_apply(
-                    &world_mat,
-                    &InnerVec3 {
-                        x: 0.0,
-                        y: 0.0,
-                        z: 0.0,
-                    },
-                ),
-                &ctx.vp,
-                ctx.vp_x,
-                ctx.vp_y,
-                ctx.vp_w,
-                ctx.vp_h,
-            );
-            if let Some(c) = center {
-                let target_mut = rc_mut!(&ctx.target);
-                let scene_mut = rc_mut!(&ctx.scene);
-                let depth_w = scene_mut.depth_w;
-                let depth = scene_mut.depth.as_mut_slice();
-                for i in 0..ELLIPSE_SEGMENTS {
-                    let a = perim[i];
-                    let b = perim[(i + 1) % ELLIPSE_SEGMENTS];
-                    if let (Some(a), Some(b)) = (a, b) {
-                        rasterize_triangle(
-                            target_mut, depth, depth_w, c, a, b, col as u8, col as u8, 0, ctx.clip,
-                        );
-                    }
-                }
-            }
-        });
+        self.with_state(
+            shaded,
+            dither_alpha,
+            depth_test,
+            depth_write,
+            billboard,
+            |ctx, state| {
+                pyxel::cube::draw::elli(ctx, &world_mat, w, h, col, state);
+            },
+        );
     }
 
-    fn ellib(&self, mat: PyRef<'_, Mat4>, w: f32, h: f32, col: i32) {
+    #[pyo3(signature = (mat, w, h, col, *, dither_alpha=1.0,
+                        depth_test=true, depth_write=true,
+                        billboard=pyxel::cube::draw::BILLBOARD_OFF))]
+    #[allow(clippy::too_many_arguments)]
+    fn ellib(
+        &self,
+        mat: PyRef<'_, Mat4>,
+        w: f32,
+        h: f32,
+        col: i32,
+        dither_alpha: f32,
+        depth_test: bool,
+        depth_write: bool,
+        billboard: i32,
+    ) {
         let world_mat = self.world_mat_compose(*mat.inner_ref());
+        self.with_state(
+            false,
+            dither_alpha,
+            depth_test,
+            depth_write,
+            billboard,
+            |ctx, state| {
+                pyxel::cube::draw::ellib(ctx, &world_mat, w, h, col, state);
+            },
+        );
+    }
+
+    #[pyo3(signature = (mat, size, col, *, shaded=true, dither_alpha=1.0,
+                        depth_test=true, depth_write=true,
+                        billboard=pyxel::cube::draw::BILLBOARD_OFF))]
+    #[allow(clippy::too_many_arguments)]
+    fn r#box(
+        &self,
+        mat: PyRef<'_, Mat4>,
+        size: PyRef<'_, Vec3>,
+        col: i32,
+        shaded: bool,
+        dither_alpha: f32,
+        depth_test: bool,
+        depth_write: bool,
+        billboard: i32,
+    ) {
+        let world_mat = self.world_mat_compose(*mat.inner_ref());
+        let size_v = *size.inner_ref();
+        self.with_state(
+            shaded,
+            dither_alpha,
+            depth_test,
+            depth_write,
+            billboard,
+            |ctx, state| {
+                pyxel::cube::draw::box_solid(ctx, &world_mat, &size_v, col, state);
+            },
+        );
+    }
+
+    #[pyo3(signature = (mat, size, col, *, dither_alpha=1.0,
+                        depth_test=true, depth_write=true,
+                        billboard=pyxel::cube::draw::BILLBOARD_OFF))]
+    #[allow(clippy::too_many_arguments)]
+    fn boxb(
+        &self,
+        mat: PyRef<'_, Mat4>,
+        size: PyRef<'_, Vec3>,
+        col: i32,
+        dither_alpha: f32,
+        depth_test: bool,
+        depth_write: bool,
+        billboard: i32,
+    ) {
+        let world_mat = self.world_mat_compose(*mat.inner_ref());
+        let size_v = *size.inner_ref();
+        self.with_state(
+            false,
+            dither_alpha,
+            depth_test,
+            depth_write,
+            billboard,
+            |ctx, state| {
+                pyxel::cube::draw::boxb(ctx, &world_mat, &size_v, col, state);
+            },
+        );
+    }
+
+    // text: Vec3-anchored, screen-space glyph rendering. The 3D point is
+    // projected and characters render in 2D pixels at the font's native
+    // size — ancestor rotation / scale do not affect glyph layout
+    // (cube-design.md § 12.5).
+    #[pyo3(signature = (pos, s, col, *, font=None, dither_alpha=1.0,
+                        depth_test=true, depth_write=true))]
+    #[allow(clippy::too_many_arguments)]
+    fn text(
+        &self,
+        pos: PyRef<'_, Vec3>,
+        s: &str,
+        col: i32,
+        font: Option<PyRef<'_, crate::font_wrapper::Font>>,
+        dither_alpha: f32,
+        depth_test: bool,
+        depth_write: bool,
+    ) {
+        let world_mat = self.world_mat();
+        let pos_v = *pos.inner_ref();
+        let state = DrawState {
+            shaded: false,
+            dither_alpha,
+            depth_test,
+            depth_write,
+            billboard: pyxel::cube::draw::BILLBOARD_OFF,
+            light: None,
+            ramp: None,
+        };
+        // Clone the Rc out so we can drop the PyRef before borrowing
+        // `&mut Font`. Builtin (None) font case: just pass None — the
+        // draw path resolves Pyxel's 4x6 glyph data directly.
+        let font_rc = font.as_ref().map(|f| f.inner.clone());
         with_draw_context(|ctx| {
-            let perim = project_ellipse_perimeter(
-                &world_mat, w, h, &ctx.vp, ctx.vp_x, ctx.vp_y, ctx.vp_w, ctx.vp_h,
-            );
-            let target_mut = rc_mut!(&ctx.target);
-            let scene_mut = rc_mut!(&ctx.scene);
-            let depth_w = scene_mut.depth_w;
-            let depth = scene_mut.depth.as_mut_slice();
-            for i in 0..ELLIPSE_SEGMENTS {
-                let a = perim[i];
-                let b = perim[(i + 1) % ELLIPSE_SEGMENTS];
-                if let (Some(a), Some(b)) = (a, b) {
-                    rasterize_line(
-                        target_mut, depth, depth_w, a, b, col as u8, col as u8, 0, ctx.clip,
-                    );
-                }
-            }
+            let font_ref: Option<&mut pyxel::Font> = font_rc.as_ref().map(|f| rc_mut!(f));
+            pyxel::cube::draw::text(ctx, &world_mat, &pos_v, s, col, font_ref, state);
         });
     }
 
-    #[pyo3(signature = (pos, img, uvs, w, h, colkey=None, angle=0.0))]
+    #[pyo3(signature = (pos, img, uvs, w, h, *, colkey=None, angle=0.0,
+                        shaded=false, dither_alpha=1.0,
+                        depth_test=true, depth_write=true))]
     #[allow(clippy::too_many_arguments)]
     fn sprite(
         &self,
@@ -611,21 +790,40 @@ impl Node {
         h: f32,
         colkey: Option<i32>,
         angle: f32,
+        shaded: bool,
+        dither_alpha: f32,
+        depth_test: bool,
+        depth_write: bool,
     ) {
-        let world_pos = self.world_pos(*pos.inner_ref());
+        let world_mat = self.world_mat();
+        let local = *pos.inner_ref();
         let img_inner = img.inner.clone();
+        let (light, ramp) = if shaded {
+            self.resolve_lighting()
+        } else {
+            (None, None)
+        };
+        let light_ref = light.as_ref().map(|l: &pyxel::cube::RcLight| rc_ref!(l));
+        let ramp_ref = ramp.as_ref().map(|r: &pyxel::cube::RcShadeRamp| rc_ref!(r));
+        let state = DrawState {
+            shaded,
+            dither_alpha,
+            depth_test,
+            depth_write,
+            billboard: pyxel::cube::draw::BILLBOARD_ON,
+            light: light_ref,
+            ramp: ramp_ref,
+        };
         with_draw_context(|ctx| {
-            let corners = sprite_corners(&world_pos, w, h, angle, rc_ref!(&ctx.camera));
-            let projected: [_; 4] = std::array::from_fn(|i| {
-                world_to_screen(&corners[i], &ctx.vp, ctx.vp_x, ctx.vp_y, ctx.vp_w, ctx.vp_h)
-            });
-            if let [Some(p0), Some(p1), Some(p2), Some(p3)] = projected {
-                draw_textured_quad(ctx, [p0, p1, p2, p3], uvs, &img_inner, colkey);
-            }
+            pyxel::cube::draw::sprite(
+                ctx, &world_mat, &local, &img_inner, uvs, w, h, colkey, angle, state,
+            );
         });
     }
 
-    #[pyo3(signature = (mat, img, uvs, w, h, colkey=None))]
+    #[pyo3(signature = (mat, img, uvs, w, h, *, colkey=None, shaded=true,
+                        dither_alpha=1.0, depth_test=true, depth_write=true,
+                        billboard=pyxel::cube::draw::BILLBOARD_OFF))]
     #[allow(clippy::too_many_arguments)]
     fn plane(
         &self,
@@ -635,113 +833,169 @@ impl Node {
         w: f32,
         h: f32,
         colkey: Option<i32>,
+        shaded: bool,
+        dither_alpha: f32,
+        depth_test: bool,
+        depth_write: bool,
+        billboard: i32,
     ) {
         let world_mat = self.world_mat_compose(*mat.inner_ref());
         let img_inner = img.inner.clone();
+        let (light, ramp) = if shaded {
+            self.resolve_lighting()
+        } else {
+            (None, None)
+        };
+        let light_ref = light.as_ref().map(|l: &pyxel::cube::RcLight| rc_ref!(l));
+        let ramp_ref = ramp.as_ref().map(|r: &pyxel::cube::RcShadeRamp| rc_ref!(r));
+        let state = DrawState {
+            shaded,
+            dither_alpha,
+            depth_test,
+            depth_write,
+            billboard,
+            light: light_ref,
+            ramp: ramp_ref,
+        };
         with_draw_context(|ctx| {
-            let corners = project_rect_corners(
-                &world_mat, w, h, &ctx.vp, ctx.vp_x, ctx.vp_y, ctx.vp_w, ctx.vp_h,
-            );
-            if let [Some(p0), Some(p1), Some(p2), Some(p3)] = corners {
-                draw_textured_quad(ctx, [p0, p1, p2, p3], uvs, &img_inner, colkey);
-            }
+            pyxel::cube::draw::plane(ctx, &world_mat, &img_inner, uvs, w, h, colkey, state);
         });
     }
 
-    fn mesh(&self, mat: PyRef<'_, Mat4>, mesh: PyRef<'_, super::mesh::Mesh>) {
+    #[pyo3(signature = (mat, mesh_asset, *, col=7, shaded=true,
+                        dither_alpha=1.0, depth_test=true, depth_write=true,
+                        billboard=pyxel::cube::draw::BILLBOARD_OFF))]
+    #[allow(clippy::too_many_arguments)]
+    fn mesh(
+        &self,
+        mat: PyRef<'_, Mat4>,
+        mesh_asset: PyRef<'_, super::mesh::Mesh>,
+        col: i32,
+        shaded: bool,
+        dither_alpha: f32,
+        depth_test: bool,
+        depth_write: bool,
+        billboard: i32,
+    ) -> PyResult<()> {
         let world_mat = self.world_mat_compose(*mat.inner_ref());
-        let mesh_inner = mesh.inner.clone();
-        // Resolve effective lighting from this node's hierarchy. None at
-        // every ancestor means flat-color (no shading); otherwise each
-        // face is shaded by its world-space normal against the light.
-        let effective_light = InnerNode::effective_light(&self.inner);
-        let effective_ramp = InnerNode::effective_color_ramp(&self.inner);
-        with_draw_context(|ctx| {
+        let mesh_inner = mesh_asset.inner.clone();
+        // Drawing an empty Mesh raises at the call site (cube-design.md
+        // § 11.2). Without this gate the draw silently no-ops and users
+        // chase a missing mesh through the renderer.
+        let is_empty = {
             let m = rc_ref!(&mesh_inner);
-            let world_vertices: Vec<InnerVec3> = m
-                .vertices
-                .iter()
-                .map(|v| pyxel::cube::raster::mat_apply(&world_mat, v))
-                .collect();
-            let projected: Vec<Option<(f32, f32, f32)>> = world_vertices
-                .iter()
-                .map(|w| world_to_screen(w, &ctx.vp, ctx.vp_x, ctx.vp_y, ctx.vp_w, ctx.vp_h))
-                .collect();
-            let target_mut = rc_mut!(&ctx.target);
-            let scene_mut = rc_mut!(&ctx.scene);
-            let depth_w = scene_mut.depth_w;
-            let depth = scene_mut.depth.as_mut_slice();
-            let base_col = m.col;
-            let image = m.image.clone();
-            let uvs_vec = m.uvs.clone();
-            for face in &m.faces {
-                let i0 = face[0] as usize;
-                let i1 = face[1] as usize;
-                let i2 = face[2] as usize;
-                let p0 = projected[i0];
-                let p1 = projected[i1];
-                let p2 = projected[i2];
-                if let (Some(p0), Some(p1), Some(p2)) = (p0, p1, p2) {
-                    let normal = pyxel::cube::raster::tri_normal(
-                        &world_vertices[i0],
-                        &world_vertices[i1],
-                        &world_vertices[i2],
-                    );
-                    if let (Some(image), Some(uvs)) = (image.as_ref(), uvs_vec.as_ref()) {
-                        let img = rc_ref!(image);
-                        let uv0 = uvs[i0];
-                        let uv1 = uvs[i1];
-                        let uv2 = uvs[i2];
-                        // For textured faces, compute the face's flat-shading
-                        // level once and lookup ramp[base, level] per pixel
-                        // so the texture also reacts to lighting.
-                        match (&effective_light, &effective_ramp) {
-                            (Some(light), Some(ramp)) => {
-                                let level = pyxel::cube::raster::face_shade_level(
-                                    rc_ref!(light),
-                                    Some(&normal),
-                                );
-                                let ramp_ref = rc_ref!(ramp);
-                                let sampler = make_shaded_sampler(img, ramp_ref, level);
-                                rasterize_textured_triangle(
-                                    target_mut, depth, depth_w, p0, p1, p2, uv0, uv1, uv2,
-                                    &sampler, None, ctx.clip,
-                                );
-                            }
-                            _ => {
-                                let sampler = make_image_sampler(img);
-                                rasterize_textured_triangle(
-                                    target_mut, depth, depth_w, p0, p1, p2, uv0, uv1, uv2,
-                                    &sampler, None, ctx.clip,
-                                );
-                            }
-                        }
-                    } else {
-                        let entry = match (&effective_light, &effective_ramp) {
-                            (Some(light), Some(ramp)) => pyxel::cube::raster::lookup_ramp(
-                                rc_ref!(ramp),
-                                rc_ref!(light),
-                                base_col,
-                                Some(&normal),
-                            ),
-                            _ => (base_col, base_col, 0_u8),
-                        };
-                        rasterize_triangle(
-                            target_mut,
-                            depth,
-                            depth_w,
-                            p0,
-                            p1,
-                            p2,
-                            entry.0 as u8,
-                            entry.1 as u8,
-                            entry.2,
-                            ctx.clip,
-                        );
-                    }
+            rc_ref!(&m.positions).size() == 0
+        };
+        if is_empty {
+            return Err(pyo3::exceptions::PyValueError::new_err(
+                "Mesh.positions is empty; assign a non-empty FloatBuffer before drawing",
+            ));
+        }
+        self.with_state(
+            shaded,
+            dither_alpha,
+            depth_test,
+            depth_write,
+            billboard,
+            |ctx, state| {
+                let m = rc_ref!(&mesh_inner);
+                pyxel::cube::draw::mesh(ctx, &world_mat, m, col, state);
+            },
+        );
+        Ok(())
+    }
+
+    #[pyo3(signature = (mat, mode, positions, *, indices=None, normals=None,
+                        uvs=None, first=0, count=None, col=None, colkey=None,
+                        shaded=true, dither_alpha=1.0,
+                        depth_test=true, depth_write=true,
+                        billboard=pyxel::cube::draw::BILLBOARD_OFF))]
+    #[allow(clippy::too_many_arguments)]
+    fn prim(
+        &self,
+        mat: PyRef<'_, Mat4>,
+        mode: i32,
+        positions: PyRef<'_, super::float_buffer::FloatBuffer>,
+        indices: Option<PyRef<'_, super::int_buffer::IntBuffer>>,
+        normals: Option<PyRef<'_, super::float_buffer::FloatBuffer>>,
+        uvs: Option<PyRef<'_, super::float_buffer::FloatBuffer>>,
+        first: usize,
+        count: Option<usize>,
+        col: Option<&Bound<'_, PyAny>>,
+        colkey: Option<i32>,
+        shaded: bool,
+        dither_alpha: f32,
+        depth_test: bool,
+        depth_write: bool,
+        billboard: i32,
+    ) -> PyResult<()> {
+        use pyo3::exceptions::{PyTypeError, PyValueError};
+
+        let world_mat = self.world_mat_compose(*mat.inner_ref());
+
+        // Snapshot buffer contents — the rasterizer borrows scene + target
+        // mutably while we still need to read these, so a copy keeps the
+        // FFI boundary clean.
+        let positions_data: Vec<f32> = positions.inner_ref().data().to_vec();
+        let indices_data: Option<Vec<i32>> =
+            indices.as_ref().map(|i| i.inner_ref().data().to_vec());
+        let normals_data: Option<Vec<f32>> =
+            normals.as_ref().map(|n| n.inner_ref().data().to_vec());
+        let uvs_data: Option<Vec<f32>> = uvs.as_ref().map(|u| u.inner_ref().data().to_vec());
+
+        // col: int → flat color, Image → textured.
+        let (col_flat, col_image) = match col {
+            Some(c) => {
+                if let Ok(i) = c.extract::<i32>() {
+                    (i, None)
+                } else if let Ok(img_ref) = c.cast::<crate::image_wrapper::Image>() {
+                    (0, Some(img_ref.borrow().inner.clone()))
+                } else {
+                    return Err(PyTypeError::new_err("col must be int or Image"));
                 }
             }
+            None => (7, None),
+        };
+
+        let (light, ramp) = if shaded {
+            self.resolve_lighting()
+        } else {
+            (None, None)
+        };
+        let light_ref = light.as_ref().map(|l: &pyxel::cube::RcLight| rc_ref!(l));
+        let ramp_ref = ramp.as_ref().map(|r: &pyxel::cube::RcShadeRamp| rc_ref!(r));
+        let state = DrawState {
+            shaded,
+            dither_alpha,
+            depth_test,
+            depth_write,
+            billboard,
+            light: light_ref,
+            ramp: ramp_ref,
+        };
+
+        let result = with_draw_context(|ctx| {
+            pyxel::cube::draw::prim(
+                ctx,
+                &world_mat,
+                mode,
+                &positions_data,
+                indices_data.as_deref(),
+                normals_data.as_deref(),
+                uvs_data.as_deref(),
+                first,
+                count,
+                col_flat,
+                col_image.as_ref(),
+                colkey,
+                state,
+            )
         });
+
+        match result {
+            Some(Err(msg)) => Err(PyValueError::new_err(msg)),
+            Some(Ok(())) | None => Ok(()),
+        }
     }
 
     // Dunder

@@ -1,10 +1,11 @@
 use std::cell::UnsafeCell;
 use std::rc::{Rc, Weak};
 
-use crate::cube::color_ramp::RcColorRamp;
+use crate::cube::collider::RcCollider;
 use crate::cube::light::RcLight;
 use crate::cube::mat4::{Mat4, RcMat4};
 use crate::cube::mesh::RcMesh;
+use crate::cube::shade_ramp::RcShadeRamp;
 
 pub type WeakNode = Weak<UnsafeCell<Node>>;
 
@@ -20,7 +21,8 @@ pub struct Node {
     pub active: bool,
     pub visible: bool,
     pub light: Option<RcLight>,
-    pub color_ramp: Option<RcColorRamp>,
+    pub shade_ramp: Option<RcShadeRamp>,
+    pub collider: Option<RcCollider>,
     pub parent: Option<WeakNode>,
     pub children: Vec<RcNode>,
     pub attached_mesh: Option<RcMesh>,
@@ -36,7 +38,8 @@ impl Node {
             active: true,
             visible: true,
             light: None,
-            color_ramp: None,
+            shade_ramp: None,
+            collider: None,
             parent: None,
             children: Vec::new(),
             attached_mesh: None,
@@ -105,7 +108,7 @@ impl Node {
     }
 
     // Effective inheritance: this node's value, or the closest non-None
-    // ancestor's value. Used for `light` and `color_ramp` cascade.
+    // ancestor's value. Used for `light` and `shade_ramp` cascade.
 
     pub fn effective_light(node: &RcNode) -> Option<RcLight> {
         if let Some(l) = rc_ref!(node).light.clone() {
@@ -114,11 +117,11 @@ impl Node {
         Self::parent(node).and_then(|p| Self::effective_light(&p))
     }
 
-    pub fn effective_color_ramp(node: &RcNode) -> Option<RcColorRamp> {
-        if let Some(r) = rc_ref!(node).color_ramp.clone() {
+    pub fn effective_shade_ramp(node: &RcNode) -> Option<RcShadeRamp> {
+        if let Some(r) = rc_ref!(node).shade_ramp.clone() {
             return Some(r);
         }
-        Self::parent(node).and_then(|p| Self::effective_color_ramp(&p))
+        Self::parent(node).and_then(|p| Self::effective_shade_ramp(&p))
     }
 
     // Effective gating: parent-dominant. False at any ancestor halts the

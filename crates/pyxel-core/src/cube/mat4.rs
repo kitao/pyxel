@@ -32,6 +32,19 @@ impl Mat4 {
         ])
     }
 
+    // Plain (non-Rc) identity for callers that need a value-typed Mat4
+    // (raster / draw internals). Avoids materializing through RcMat4.
+    pub fn identity_value() -> Self {
+        Self {
+            data: [
+                [1.0, 0.0, 0.0, 0.0],
+                [0.0, 1.0, 0.0, 0.0],
+                [0.0, 0.0, 1.0, 0.0],
+                [0.0, 0.0, 0.0, 1.0],
+            ],
+        }
+    }
+
     // Element access
 
     pub fn get(&self, row: usize, col: usize) -> f32 {

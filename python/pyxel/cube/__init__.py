@@ -1,7 +1,8 @@
 from ..pyxel_binding import cube as _binding_cube  # type: ignore
 
 Camera = _binding_cube.Camera
-ColorRamp = _binding_cube.ColorRamp
+Collider = _binding_cube.Collider
+Contact = _binding_cube.Contact
 FloatBuffer = _binding_cube.FloatBuffer
 IntBuffer = _binding_cube.IntBuffer
 Light = _binding_cube.Light
@@ -10,11 +11,13 @@ Mesh = _binding_cube.Mesh
 Node = _binding_cube.Node
 Quat = _binding_cube.Quat
 Scene = _binding_cube.Scene
+ShadeRamp = _binding_cube.ShadeRamp
 Vec3 = _binding_cube.Vec3
 
 __all__ = [
     "Camera",
-    "ColorRamp",
+    "Collider",
+    "Contact",
     "FloatBuffer",
     "IntBuffer",
     "Light",
@@ -23,5 +26,6 @@ __all__ = [
     "Node",
     "Quat",
     "Scene",
+    "ShadeRamp",
     "Vec3",
 ]

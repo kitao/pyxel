@@ -25,7 +25,17 @@ impl Scene {
         let scene = Scene {
             state: pyxel::cube::Scene::new(),
         };
-        let node = Node::wrap(pyxel::cube::Node::new());
+        // Scene seeds default Light + ShadeRamp so descendants always
+        // resolve a non-None effective light / ramp through the
+        // inherits-from-ancestor cascade. Users can swap them on the
+        // Scene for global changes or set per-subtree to override.
+        let inner_node = pyxel::cube::Node::new();
+        {
+            let n = rc_mut!(&inner_node);
+            n.light = Some(pyxel::cube::Light::new());
+            n.shade_ramp = Some(pyxel::cube::ShadeRamp::new());
+        }
+        let node = Node::wrap(inner_node);
         (scene, node)
     }
 
@@ -84,6 +94,11 @@ impl Scene {
             clip,
             camera: cam_inner,
             scene: scene_state,
+            // Defaults; each draw command rebinds these from its own
+            // keyword arguments before invoking the rasterizer.
+            dither_alpha: 1.0,
+            depth_test: true,
+            depth_write: true,
         });
         let any = self_.into_any();
         let result = traverse_draw(&any);

@@ -1,7 +1,6 @@
 from typing import Iterator, overload
 
-from pyxel import Font, Image, Tilemap
-
+from pyxel import Font, Image
 
 # Vec3 class
 class Vec3:
@@ -149,8 +148,8 @@ class Camera:
     def __init__(self) -> None: ...
     def __repr__(self) -> str: ...
 
-# ColorRamp class
-class ColorRamp:
+# ShadeRamp class
+class ShadeRamp:
     def __init__(self) -> None: ...
     def __repr__(self) -> str: ...
     def __getitem__(self, key: tuple[int, int]) -> tuple[int, int, int]: ...
@@ -168,7 +167,8 @@ class Light:
     def __init__(self) -> None: ...
     def __repr__(self) -> str: ...
 
-# Contact class
+# Contact class — placeholder for collision-pipeline payload (deferred;
+# see cube-design.md § 15).
 class Contact:
     point: Vec3
     normal: Vec3
@@ -176,7 +176,9 @@ class Contact:
     def __init__(self) -> None: ...
     def __repr__(self) -> str: ...
 
-# Collider class
+# Collider class — placeholder; shape vocabulary and collision pipeline
+# are deferred (cube-design.md § 15). Constructable today so user code
+# can stage `node.collider = Collider()` ahead of the implementation.
 class Collider:
     def __init__(self) -> None: ...
     def __repr__(self) -> str: ...
@@ -185,26 +187,21 @@ class Collider:
 class FloatBuffer:
     @property
     def size(self) -> int: ...
-
     def __init__(self, source: int | list[float] = 0) -> None: ...
     def __repr__(self) -> str: ...
     def __eq__(self, other: object) -> bool: ...
-
     @overload
     def __getitem__(self, i: int) -> float: ...
     @overload
     def __getitem__(self, s: slice) -> list[float]: ...
-
     @overload
     def __setitem__(self, i: int, value: float) -> None: ...
     @overload
     def __setitem__(self, s: slice, values: list[float]) -> None: ...
     @overload
     def __setitem__(self, s: slice, values: FloatBuffer) -> None: ...
-
     def __iter__(self) -> Iterator[float]: ...
     def __len__(self) -> int: ...
-
     def fill(self, value: float) -> None: ...
     def resize(self, size: int) -> None: ...
 
@@ -212,133 +209,257 @@ class FloatBuffer:
 class IntBuffer:
     @property
     def size(self) -> int: ...
-
     def __init__(self, source: int | list[int] = 0) -> None: ...
     def __repr__(self) -> str: ...
     def __eq__(self, other: object) -> bool: ...
-
     @overload
     def __getitem__(self, i: int) -> int: ...
     @overload
     def __getitem__(self, s: slice) -> list[int]: ...
-
     @overload
     def __setitem__(self, i: int, value: int) -> None: ...
     @overload
     def __setitem__(self, s: slice, values: list[int]) -> None: ...
     @overload
     def __setitem__(self, s: slice, values: IntBuffer) -> None: ...
-
     def __iter__(self) -> Iterator[int]: ...
     def __len__(self) -> int: ...
-
     def fill(self, value: int) -> None: ...
     def resize(self, size: int) -> None: ...
 
 # Mesh class
 class Mesh:
-    col: int             # default face color (used when image is None)
-    image: Image | None  # texture (None falls back to col)
+    positions: FloatBuffer  # flat (x,y,z) triples; PRIM_TRIANGLES winding
+    indices: IntBuffer | None  # flat triangle indices; None draws as a flat triangle list
+    normals: FloatBuffer | None  # flat (nx,ny,nz) per-vertex; None auto-computes from face
+    uvs: FloatBuffer | None  # flat (u,v) per-vertex; None disables texture sampling
+    image: Image | None  # source texture; None falls back to the mesh draw col
+    colkey: int | None  # transparent color when image is set; None disables colkey
 
-    @staticmethod
-    def from_vertices(
-        vertices: list[Vec3],
-        faces: list[tuple[int, int, int]],
-        uvs: list[tuple[float, float]] | None = None,
-        col: int = 7,
+    def __init__(
+        self,
+        positions: FloatBuffer | None = None,
+        indices: IntBuffer | None = None,
+        normals: FloatBuffer | None = None,
+        uvs: FloatBuffer | None = None,
         image: Image | None = None,
-    ) -> Mesh: ...
-    @staticmethod
-    def box(size: Vec3, col: int = 7) -> Mesh: ...
-    @staticmethod
-    def sphere(radius: float, segments: int = 16, col: int = 7) -> Mesh: ...
-    @staticmethod
-    def cylinder(
-        radius: float, height: float, segments: int = 16, col: int = 7
-    ) -> Mesh: ...
-    @staticmethod
-    def plane(w: float, h: float, col: int = 7) -> Mesh: ...
-
-    def __init__(self) -> None: ...
+        colkey: int | None = None,
+    ) -> None: ...
     def __repr__(self) -> str: ...
-
-    @property
-    def vertex_count(self) -> int: ...
-    @property
-    def face_count(self) -> int: ...
-
-    # Per-element access (mutable)
-    def get_vertex(self, i: int) -> Vec3: ...
-    def set_vertex(self, i: int, v: Vec3) -> None: ...
-    def get_uv(self, i: int) -> tuple[float, float]: ...
-    def set_uv(self, i: int, uv: tuple[float, float]) -> None: ...
-    def get_face(self, i: int) -> tuple[int, int, int]: ...
-    def set_face(self, i: int, f: tuple[int, int, int]) -> None: ...
-
-    # Resize (overhead-tolerant; matches Image's resize semantics)
-    def resize(self, vertex_count: int, face_count: int) -> None: ...
-
-    # Instantiate a single Node backed by this mesh
-    def create_node(self) -> Node: ...
-
-# Model class
-class Model:
-    @staticmethod
-    def load(filename: str) -> Model: ...
-
-    def __repr__(self) -> str: ...
-
-    def create_node(self) -> Node: ...   # instantiate the Node tree
 
 # Node class
 class Node:
-    name: str                     # tag for find(); set by Model.load for parts
+    # Primitive mode constants for `prim` (OpenGL-ordered)
+    PRIM_POINTS: int
+    PRIM_LINES: int
+    PRIM_TRIANGLES: int
+
+    # Billboard mode constants for the per-call `billboard` argument
+    BILLBOARD_OFF: int
+    BILLBOARD_ON: int
+    BILLBOARD_FIXED_Y: int
+
+    name: str  # tag for find()
     transform: Mat4
-    active: bool                  # parent-dominant; False halts update + collision
-    visible: bool                 # parent-dominant; False halts drawing
-    collider: Collider | None
-    light: Light | None           # None inherits from the closest non-None ancestor
-    color_ramp: ColorRamp | None  # None inherits from the closest non-None ancestor
+    active: bool  # parent-dominant; False halts update + collision
+    visible: bool  # parent-dominant; False halts drawing
+    light: Light | None  # None inherits from the closest non-None ancestor
+    shade_ramp: ShadeRamp | None  # None inherits from the closest non-None ancestor
+    collider: Collider | None  # this node only (collision pipeline deferred)
 
     @property
     def parent(self) -> Node | None: ...
     @property
     def children(self) -> tuple[Node, ...]: ...
     @property
-    def camera(self) -> Camera: ...   # valid only inside on_draw
-
+    def camera(self) -> Camera: ...  # valid only inside on_draw
     def __init__(self) -> None: ...
     def __repr__(self) -> str: ...
-
     def world_transform(self) -> Mat4: ...
-    def find(self, name: str) -> Node | None: ...   # subtree DFS by name
-
+    def find(self, name: str) -> Node | None: ...  # subtree DFS by name
     def add_child(self, node: Node) -> None: ...
     def remove_child(self, node: Node) -> None: ...
     def destroy(self) -> None: ...
 
-    # Draw state (on_draw scope; resets per call)
-    def pal(self, src_col: int | None = None, dst_col: int | None = None) -> None: ...
-    def dither(self, alpha: float) -> None: ...
-    def depth_test(self, enabled: bool) -> None: ...
-    def depth_write(self, enabled: bool) -> None: ...
-
-    # Immediate-mode draw commands (node-local coordinates)
-    def pset(self, pos: Vec3, col: int) -> None: ...
-    def line(self, p1: Vec3, p2: Vec3, col: int) -> None: ...
-    def tri(self, p1: Vec3, p2: Vec3, p3: Vec3, col: int) -> None: ...
-    def trib(self, p1: Vec3, p2: Vec3, p3: Vec3, col: int) -> None: ...
-    def circ(self, pos: Vec3, r: float, col: int) -> None: ...
-    def circb(self, pos: Vec3, r: float, col: int) -> None: ...
-    def text(self, pos: Vec3, s: str, col: int, font: Font | None = None) -> None: ...
-    def rect(self, mat: Mat4, w: float, h: float, col: int) -> None: ...
-    def rectb(self, mat: Mat4, w: float, h: float, col: int) -> None: ...
-    def elli(self, mat: Mat4, w: float, h: float, col: int) -> None: ...
-    def ellib(self, mat: Mat4, w: float, h: float, col: int) -> None: ...
+    # Immediate-mode draw commands (node-local coordinates).
+    # Modifier keyword arguments: shaded, dither_alpha (Bayer-dither
+    # pseudo-alpha; 1.0 = opaque), depth_test, depth_write, billboard.
+    # Each command exposes only the modifiers that meaningfully apply
+    # to it (see cube-design.md § 12.5 for the rules).
+    def pset(
+        self,
+        pos: Vec3,
+        col: int,
+        *,
+        dither_alpha: float = 1.0,
+        depth_test: bool = True,
+        depth_write: bool = True,
+    ) -> None: ...
+    def line(
+        self,
+        p1: Vec3,
+        p2: Vec3,
+        col: int,
+        *,
+        dither_alpha: float = 1.0,
+        depth_test: bool = True,
+        depth_write: bool = True,
+        billboard: int = 0,
+    ) -> None: ...
+    def tri(
+        self,
+        p1: Vec3,
+        p2: Vec3,
+        p3: Vec3,
+        col: int,
+        *,
+        shaded: bool = True,
+        dither_alpha: float = 1.0,
+        depth_test: bool = True,
+        depth_write: bool = True,
+        billboard: int = 0,
+    ) -> None: ...
+    def trib(
+        self,
+        p1: Vec3,
+        p2: Vec3,
+        p3: Vec3,
+        col: int,
+        *,
+        dither_alpha: float = 1.0,
+        depth_test: bool = True,
+        depth_write: bool = True,
+        billboard: int = 0,
+    ) -> None: ...
+    def circ(
+        self,
+        pos: Vec3,
+        r: float,
+        col: int,
+        *,
+        dither_alpha: float = 1.0,
+        depth_test: bool = True,
+        depth_write: bool = True,
+    ) -> None: ...
+    def circb(
+        self,
+        pos: Vec3,
+        r: float,
+        col: int,
+        *,
+        dither_alpha: float = 1.0,
+        depth_test: bool = True,
+        depth_write: bool = True,
+    ) -> None: ...
+    def sphere(
+        self,
+        pos: Vec3,
+        r: float,
+        col: int,
+        *,
+        shaded: bool = True,
+        dither_alpha: float = 1.0,
+        depth_test: bool = True,
+        depth_write: bool = True,
+    ) -> None: ...
+    def sphereb(
+        self,
+        pos: Vec3,
+        r: float,
+        col: int,
+        *,
+        dither_alpha: float = 1.0,
+        depth_test: bool = True,
+        depth_write: bool = True,
+    ) -> None: ...
+    def rect(
+        self,
+        mat: Mat4,
+        w: float,
+        h: float,
+        col: int,
+        *,
+        shaded: bool = True,
+        dither_alpha: float = 1.0,
+        depth_test: bool = True,
+        depth_write: bool = True,
+        billboard: int = 0,
+    ) -> None: ...
+    def rectb(
+        self,
+        mat: Mat4,
+        w: float,
+        h: float,
+        col: int,
+        *,
+        dither_alpha: float = 1.0,
+        depth_test: bool = True,
+        depth_write: bool = True,
+        billboard: int = 0,
+    ) -> None: ...
+    def elli(
+        self,
+        mat: Mat4,
+        w: float,
+        h: float,
+        col: int,
+        *,
+        shaded: bool = True,
+        dither_alpha: float = 1.0,
+        depth_test: bool = True,
+        depth_write: bool = True,
+        billboard: int = 0,
+    ) -> None: ...
+    def ellib(
+        self,
+        mat: Mat4,
+        w: float,
+        h: float,
+        col: int,
+        *,
+        dither_alpha: float = 1.0,
+        depth_test: bool = True,
+        depth_write: bool = True,
+        billboard: int = 0,
+    ) -> None: ...
+    def box(
+        self,
+        mat: Mat4,
+        size: Vec3,
+        col: int,
+        *,
+        shaded: bool = True,
+        dither_alpha: float = 1.0,
+        depth_test: bool = True,
+        depth_write: bool = True,
+        billboard: int = 0,
+    ) -> None: ...
+    def boxb(
+        self,
+        mat: Mat4,
+        size: Vec3,
+        col: int,
+        *,
+        dither_alpha: float = 1.0,
+        depth_test: bool = True,
+        depth_write: bool = True,
+        billboard: int = 0,
+    ) -> None: ...
+    def text(
+        self,
+        pos: Vec3,
+        s: str,
+        col: int,
+        *,
+        font: Font | None = None,
+        dither_alpha: float = 1.0,
+        depth_test: bool = True,
+        depth_write: bool = True,
+    ) -> None: ...
     def sprite(
         self,
         pos: Vec3,
-        img: Image | Tilemap,
+        img: Image,
         uvs: tuple[
             tuple[float, float],
             tuple[float, float],
@@ -347,13 +468,18 @@ class Node:
         ],
         w: float,
         h: float,
+        *,
         colkey: int | None = None,
         angle: float = 0.0,
+        shaded: bool = False,
+        dither_alpha: float = 1.0,
+        depth_test: bool = True,
+        depth_write: bool = True,
     ) -> None: ...
     def plane(
         self,
         mat: Mat4,
-        img: Image | Tilemap,
+        img: Image,
         uvs: tuple[
             tuple[float, float],
             tuple[float, float],
@@ -362,19 +488,57 @@ class Node:
         ],
         w: float,
         h: float,
+        *,
         colkey: int | None = None,
+        shaded: bool = True,
+        dither_alpha: float = 1.0,
+        depth_test: bool = True,
+        depth_write: bool = True,
+        billboard: int = 0,
     ) -> None: ...
-    def mesh(self, mat: Mat4, mesh: Mesh) -> None: ...
+    def mesh(
+        self,
+        mat: Mat4,
+        mesh_asset: Mesh,
+        *,
+        col: int = 7,
+        shaded: bool = True,
+        dither_alpha: float = 1.0,
+        depth_test: bool = True,
+        depth_write: bool = True,
+        billboard: int = 0,
+    ) -> None: ...
+    def prim(
+        self,
+        mat: Mat4,
+        mode: int,
+        positions: FloatBuffer,
+        *,
+        indices: IntBuffer | None = None,
+        normals: FloatBuffer | None = None,
+        uvs: FloatBuffer | None = None,
+        first: int = 0,
+        count: int | None = None,
+        col: int | Image = 7,
+        colkey: int | None = None,
+        shaded: bool = True,
+        dither_alpha: float = 1.0,
+        depth_test: bool = True,
+        depth_write: bool = True,
+        billboard: int = 0,
+    ) -> None: ...
 
     # Lifecycle hooks
     def on_update(self) -> None: ...
     def on_draw(self) -> None: ...
-    def on_collide(self, other: Node, contact: Contact | None) -> None: ...
+    def on_collide(
+        self, other: Node, contact: Contact | None = None
+    ) -> None: ...
     def on_destroy(self) -> None: ...
 
 # Scene class
 class Scene(Node):
-    clear_color: int | None       # None skips clear; int fills screen + depth buffer
+    clear_color: int | None  # None skips clear; int fills screen + depth buffer
 
     def __init__(self) -> None: ...
     def update(self) -> None: ...
