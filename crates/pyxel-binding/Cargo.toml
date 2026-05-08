@@ -18,7 +18,7 @@ pyxel-core = { path = "../pyxel-core" }
 
 # sysinfo has no Emscripten target; exclude from WASM builds
 [target.'cfg(not(target_os = "emscripten"))'.dependencies]
-sysinfo = "0.38"
+sysinfo = "0.39"
 
 [features]
 sdl2_dynamic = ["pyxel-core/sdl2_dynamic"]
