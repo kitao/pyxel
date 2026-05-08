@@ -56,6 +56,17 @@ impl Quat {
         self.inner_ref() == other.inner_ref()
     }
 
+    fn __hash__(&self) -> u64 {
+        use std::hash::{Hash, Hasher};
+        let mut hasher = std::collections::hash_map::DefaultHasher::new();
+        let q = self.inner_ref();
+        q.x.to_bits().hash(&mut hasher);
+        q.y.to_bits().hash(&mut hasher);
+        q.z.to_bits().hash(&mut hasher);
+        q.w.to_bits().hash(&mut hasher);
+        hasher.finish()
+    }
+
     fn __getitem__(&self, key: isize) -> PyResult<f32> {
         let q = self.inner_ref();
         match key {

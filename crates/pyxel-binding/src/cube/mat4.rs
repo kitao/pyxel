@@ -68,6 +68,18 @@ impl Mat4 {
         self.inner_ref() == other.inner_ref()
     }
 
+    fn __hash__(&self) -> u64 {
+        use std::hash::{Hash, Hasher};
+        let mut hasher = std::collections::hash_map::DefaultHasher::new();
+        let m = self.inner_ref();
+        for row in 0..4 {
+            for col in 0..4 {
+                m.get(row, col).to_bits().hash(&mut hasher);
+            }
+        }
+        hasher.finish()
+    }
+
     fn __getitem__(&self, key: (usize, usize)) -> PyResult<f32> {
         let (row, col) = key;
         if row >= 4 || col >= 4 {

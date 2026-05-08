@@ -96,6 +96,7 @@ v[0], v[1], v[2]         # __getitem__(key: int) -> float
 list(v), tuple(v)        # __iter__ over (x, y, z)
 len(v)                   # 3
 v == other, v != other   # value-wise comparison
+hash(v)                  # value-based hash (usable as dict key / set element)
 repr(v)                  # debug representation
 ```
 
@@ -199,6 +200,7 @@ immutable, so there is no `__setitem__`.
 m1 * m2                  # Mat4 (matrix multiply)
 m * v                    # Vec3 (transform point, equivalent to v.to_world(m))
 m1 == m2, m1 != m2       # value-wise comparison
+hash(m)                  # value-based hash (usable as dict key / set element)
 repr(m)                  # debug representation
 ```
 
@@ -245,13 +247,15 @@ m.determinant()          # float
 ### 5.8 Coordinate System Conversions
 
 ```python
-m.to_local(other)        # Mat4 expressed in other's local space
-m.to_world(other)        # Mat4 expressed in world space (other = local origin)
-m.to_local_dir(other)    # like to_local but translation-free
-m.to_world_dir(other)    # like to_world but translation-free
+m.to_local(mat)          # Mat4 expressed in mat's local space
+m.to_world(mat)          # Mat4 expressed in world space (mat = local origin)
+m.to_local_dir(mat)      # like to_local but translation-free
+m.to_world_dir(mat)      # like to_world but translation-free
 ```
 
 Same semantics as `Vec3.to_local` etc., but operating on a full transform.
+The argument name `mat` mirrors `Vec3.to_local(mat)` so the four methods
+read uniformly across both classes.
 
 ---
 
@@ -276,6 +280,7 @@ q[0], q[1], q[2], q[3]       # __getitem__(key: int) -> float
 list(q), tuple(q)            # __iter__ over (x, y, z, w)
 len(q)                       # 4
 q == other, q != other       # value-wise comparison
+hash(q)                      # value-based hash (usable as dict key / set element)
 repr(q)                      # debug representation
 ```
 
@@ -385,10 +390,16 @@ that resolves to this ramp.
 
 ```python
 ramp = ShadeRamp()                   # default ramp built from current palette
-ramp[col, level]                     # int — sampled color at this cell
-ramp[col, level] = value             # int — overwrite this cell
+ramp[col, level]                     # tuple[int, int, int] — (primary, secondary, ratio)
+ramp[col, level] = value             # tuple[int, int, int] — overwrite this cell
 ramp.build()                         # rebuild from current pyxel palette
 ```
+
+Each cell is a `(primary, secondary, ratio)` triple. `primary` and
+`secondary` are palette indices; `ratio` is `0..16`, the count of cells
+in the 4×4 Bayer dither pattern that pick `secondary` over `primary`.
+`ratio == 0` collapses the cell to a flat `primary` fill, which is the
+common case for the brightest level and for palette substitution.
 
 - `ShadeRamp()` initializes with a default ramp derived from the current
   Pyxel palette via the same algorithm as `build()`. Ready to use without
@@ -399,26 +410,32 @@ ramp.build()                         # rebuild from current pyxel palette
 - `__getitem__` / `__setitem__` use `(col, level)` keys, parallel with
   Mat4's `(row, col)` indexing style.
 
-Out of range keys raise `IndexError`. Multi-color dithering is not used
-(ramps reduce surface noise in pixel art).
+Out of range keys raise `IndexError`. The 4×4 Bayer dither lets cube
+approximate brightness levels that no single palette color matches; `ratio
+== 0` cells render as a flat `primary` fill so dithering is opt-in per
+cell.
 
 **Dimensions**: row count follows `pyxel.colors` length (Pyxel default
 16, but the actual length of the palette at `build()` time); column
 count is fixed at 16 brightness levels.
 
 **`build()` algorithm**: for each (col, level), the target RGB is the
-col's RGB scaled by `level / 15`; the picked palette index is the one
-with the smallest squared Euclidean RGB distance to that target.
-Perceptual color spaces (Lab etc.) are intentionally not used — simple
-RGB distance is good enough for the small Pyxel palette and avoids
-overhead. `__repr__` is provided for debugging.
+col's RGB scaled by `level / 15`; cube brute-force searches every
+`(primary, secondary, ratio)` triple and picks the one whose
+Bayer-blended RGB has the smallest squared Euclidean distance to the
+target. Perceptual color spaces (Lab etc.) are intentionally not used —
+simple RGB distance is good enough for the small Pyxel palette and
+avoids overhead. `__repr__` is provided for debugging.
 
-**Palette substitution use case**: setting `ramp[src_col, level] = dst_col`
-for every `level` makes `src_col` always render as `dst_col` regardless
-of the per-face brightness — the equivalent of Pyxel 2D's
-`pyxel.pal(src_col, dst_col)`. This unifies palette substitution and
-shading under one structure (one shared LUT instead of separate `pal`
-state plus a shading table — see § 16.3 for the rationale).
+**Palette substitution use case**: setting
+`ramp[src_col, level] = (dst_col, dst_col, 0)` for every `level` makes
+`src_col` always render as `dst_col` regardless of the per-face
+brightness — the equivalent of Pyxel 2D's `pyxel.pal(src_col, dst_col)`.
+(`ratio = 0` collapses the cell to a flat `primary` fill; `secondary`
+is irrelevant in that case, so any palette index works there.) This
+unifies palette substitution and shading under one structure (one shared
+LUT instead of separate `pal` state plus a shading table — see § 16.3
+for the rationale).
 
 Bulk get/set (`to_list` / `from_list`), factory variants, and
 file load/save are intentionally not provided in the initial API — they
@@ -670,8 +687,9 @@ arguments):
 Primitive mode values follow OpenGL ordering (POINTS=0, LINES=1,
 TRIANGLES=2); future additions (`PRIM_LINE_STRIP`, `PRIM_LINE_LOOP`,
 `PRIM_TRIANGLE_STRIP`, `PRIM_TRIANGLE_FAN`) keep the GL numbering.
-Billboard mode values mirror Godot's `BillboardMode`
-(`DISABLED` / `ENABLED` / `FIXED_Y`).
+Billboard mode values follow Godot's `BillboardMode` concept with
+shortened names for brevity: `OFF` corresponds to Godot's `DISABLED`,
+`ON` to `ENABLED`, and `FIXED_Y` matches Godot's `FIXED_Y` directly.
 
 ### 12.2 Tree Operations
 
@@ -1046,6 +1064,12 @@ def draw(self):
   affect glyph layout). The current `text(pos, ...)` is screen-space
   glyphs at the projected point; users that need 3D-text shapes can
   build them through `prim()`. Revisit if a real use case surfaces.
+- **Parent reference**: `Node.parent` returns `None` today as a
+  placeholder. A real parent reference would create a Python ref cycle
+  (`parent → children → parent`) that the cyclic GC cannot break
+  without weakref plumbing; populating it is deferred until a real-game
+  use case surfaces. Tree traversal via `children` and explicit user
+  references cover the current needs.
 
 ---
 
