@@ -17,7 +17,7 @@
 #
 # WASM:
 #   - Setup once:
-#       git clone --branch 0.29.3 --depth 1 https://github.com/pyodide/pyodide.git pyodide
+#       git clone --branch 0.29.4 --depth 1 https://github.com/pyodide/pyodide.git pyodide
 #       cd pyodide/emsdk
 #       CMAKE_POLICY_VERSION_MINIMUM=3.5 make
 #   - Each new shell before WASM commands:
