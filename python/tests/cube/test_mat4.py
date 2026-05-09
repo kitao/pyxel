@@ -37,6 +37,25 @@ class TestConstants:
             for j in range(4):
                 assert m[i, j] == (1.0 if i == j else 0.0)
 
+    def test_singleton_identity(self):
+        # Shared immutable singleton (cube-design.md § 5.1).
+        assert Mat4.IDENTITY is Mat4.IDENTITY
+
+
+class TestHash:
+    def test_hash_equal_for_equal_values(self):
+        m1 = Mat4.from_translation(Vec3(1, 2, 3))
+        m2 = Mat4.from_translation(Vec3(1, 2, 3))
+        assert hash(m1) == hash(m2)
+
+    def test_usable_as_dict_key(self):
+        d = {
+            Mat4.IDENTITY: "id",
+            Mat4.from_translation(Vec3(1, 0, 0)): "t",
+        }
+        assert d[Mat4.IDENTITY] == "id"
+        assert d[Mat4.from_translation(Vec3(1, 0, 0))] == "t"
+
 
 class TestElementAccess:
     def test_getitem_tuple(self):

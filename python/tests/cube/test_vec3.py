@@ -46,6 +46,27 @@ class TestConstants:
         assert Vec3.FORWARD == Vec3(0, 0, -1)
         assert Vec3.BACK == Vec3(0, 0, 1)
 
+    def test_singleton_identity(self):
+        # Shared immutable singletons (cube-design.md § 4.1):
+        # the same instance is returned on every access.
+        assert Vec3.ZERO is Vec3.ZERO
+        assert Vec3.UP is Vec3.UP
+        assert Vec3.FORWARD is Vec3.FORWARD
+
+
+class TestHash:
+    def test_hash_equal_for_equal_values(self):
+        assert hash(Vec3(1, 2, 3)) == hash(Vec3(1, 2, 3))
+
+    def test_usable_as_dict_key(self):
+        d = {Vec3(1, 2, 3): "a", Vec3(4, 5, 6): "b"}
+        assert d[Vec3(1, 2, 3)] == "a"
+        assert d[Vec3(4, 5, 6)] == "b"
+
+    def test_usable_in_set(self):
+        s = {Vec3(0, 0, 0), Vec3(1, 0, 0), Vec3(0, 0, 0)}
+        assert len(s) == 2
+
 
 class TestSequence:
     def test_getitem(self):
