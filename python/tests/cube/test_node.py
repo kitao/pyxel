@@ -7,6 +7,8 @@ active draw context (cube-design.md § 12.5). Functional rendering is
 covered by `cube_headless.py` and the example programs.
 """
 
+import pytest
+
 from pyxel.cube import (
     Camera,
     Collider,
@@ -119,7 +121,8 @@ class TestClassConstants:
         assert Node.PRIM_TRIANGLES == 2
 
     def test_billboard_modes_distinct(self):
-        # Mirrors Godot BillboardMode (DISABLED / ENABLED / FIXED_Y).
+        # Follows Godot BillboardMode with shortened names: OFF=DISABLED,
+        # ON=ENABLED, FIXED_Y matches Godot's FIXED_Y (cube-design.md § 12.1).
         assert Node.BILLBOARD_OFF == 0
         assert Node.BILLBOARD_ON == 1
         assert Node.BILLBOARD_FIXED_Y == 2
@@ -299,3 +302,42 @@ class TestSceneIntegrationOfNewMethods:
         # verifies the API signature wiring.
         assert hasattr(s, "draw")
         assert hasattr(cam, "transform")
+
+
+class TestCameraProperty:
+    """`Node.camera` is the active draw camera, valid only inside
+    `on_draw` (cube-design.md § 12.1). Accessing it outside an active
+    draw context raises so callers notice the misuse instead of seeing
+    stale data."""
+
+    def test_camera_outside_on_draw_raises(self):
+        n = Node()
+        with pytest.raises(RuntimeError):
+            _ = n.camera
+
+    def test_camera_on_scene_outside_on_draw_raises(self):
+        # Scene inherits Node, so the same rule applies.
+        s = Scene()
+        with pytest.raises(RuntimeError):
+            _ = s.camera
+
+
+class TestOnCollideSignature:
+    """`on_collide` is exposed today so user subclasses can stage
+    collision-response code; the cube runtime does not invoke it yet
+    (collision pipeline deferred — § 15). The signature must accept
+    both positional and keyword forms with the documented argument
+    names so the future pipeline (and user code) can call it freely."""
+
+    def test_positional(self):
+        n = Node()
+        other = Node()
+        n.on_collide(other)
+        n.on_collide(other, Contact())
+
+    def test_keyword(self):
+        n = Node()
+        other = Node()
+        n.on_collide(other=other)
+        n.on_collide(other=other, contact=None)
+        n.on_collide(other=other, contact=Contact())

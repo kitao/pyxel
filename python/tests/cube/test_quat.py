@@ -42,6 +42,24 @@ class TestConstants:
     def test_identity(self):
         assert Quat.IDENTITY == Quat(0, 0, 0, 1)
 
+    def test_singleton_identity(self):
+        # Shared immutable singleton (cube-design.md § 6.1).
+        assert Quat.IDENTITY is Quat.IDENTITY
+
+
+class TestHash:
+    def test_hash_equal_for_equal_values(self):
+        assert hash(Quat(1, 2, 3, 4)) == hash(Quat(1, 2, 3, 4))
+
+    def test_usable_as_dict_key(self):
+        d = {Quat.IDENTITY: "id", Quat(1, 0, 0, 0): "x"}
+        assert d[Quat.IDENTITY] == "id"
+        assert d[Quat(1, 0, 0, 0)] == "x"
+
+    def test_usable_in_set(self):
+        s = {Quat.IDENTITY, Quat(1, 0, 0, 0), Quat.IDENTITY}
+        assert len(s) == 2
+
 
 class TestSequence:
     def test_getitem(self):
