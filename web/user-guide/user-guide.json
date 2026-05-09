@@ -345,18 +345,18 @@
       "uk": "Windows / Mac / Linux"
     },
     "install_desktop_body": {
-      "en": "After installing {0} (version 3.8 or higher), run the following command:",
-      "cn": "安装 {0}（版本 3.8 或更高）后，运行以下命令：",
-      "de": "Nachdem Sie {0} (Version 3.8 oder höher) installiert haben, führen Sie den folgenden Befehl aus:",
-      "es": "Después de instalar {0} (versión 3.8 o superior), ejecuta el siguiente comando:",
-      "fr": "Après avoir installé {0} (version 3.8 ou supérieure), exécutez la commande suivante :",
-      "it": "Dopo aver installato {0} (versione 3.8 o superiore), esegui il seguente comando:",
-      "ja": "{0} (バージョン 3.8 以上) をインストールした後、次のコマンドを実行します。",
-      "ko": "{0} (버전 3.8 이상)을 설치한 후, 다음 명령어를 실행하세요.",
-      "pt": "Após instalar o {0} (versão 3.8 ou superior), execute o seguinte comando.",
-      "ru": "После установки {0} (версии 3.8 или выше) выполните следующую команду.",
-      "tr": "{0} (3.8 veya daha yüksek sürüm) kurduktan sonra, aşağıdaki komutu çalıştırın.",
-      "uk": "Після встановлення {0} (версія 3.8 або вища) виконайте наступну команду."
+      "en": "After installing {0} (version 3.11 or higher), run the following command:",
+      "cn": "安装 {0}（版本 3.11 或更高）后，运行以下命令：",
+      "de": "Nachdem Sie {0} (Version 3.11 oder höher) installiert haben, führen Sie den folgenden Befehl aus:",
+      "es": "Después de instalar {0} (versión 3.11 o superior), ejecuta el siguiente comando:",
+      "fr": "Après avoir installé {0} (version 3.11 ou supérieure), exécutez la commande suivante :",
+      "it": "Dopo aver installato {0} (versione 3.11 o superiore), esegui il seguente comando:",
+      "ja": "{0} (バージョン 3.11 以上) をインストールした後、次のコマンドを実行します。",
+      "ko": "{0} (버전 3.11 이상)을 설치한 후, 다음 명령어를 실행하세요.",
+      "pt": "Após instalar o {0} (versão 3.11 ou superior), execute o seguinte comando.",
+      "ru": "После установки {0} (версии 3.11 или выше) выполните следующую команду.",
+      "tr": "{0} (3.11 veya daha yüksek sürüm) kurduktan sonra, aşağıdaki komutu çalıştırın.",
+      "uk": "Після встановлення {0} (версія 3.11 або вища) виконайте наступну команду."
     },
     "install_desktop_note": {
       "en": "<strong>Note:</strong> On Windows, if installing Python using the installer from python.org, make sure to check {0} to enable the {1} command.",

@@ -54,7 +54,7 @@ Pyxel's specifications and APIs are inspired by [PICO-8](https://www.lexaloffle.
 
 ### Windows / Mac / Linux
 
-After installing [Python 3](https://www.python.org/) (version 3.8 or higher), run the following command:
+After installing [Python 3](https://www.python.org/) (version 3.11 or higher), run the following command:
 
 ```sh
 pip install -U pyxel
