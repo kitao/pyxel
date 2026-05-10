@@ -985,7 +985,7 @@ mod tests {
     #[test]
     fn test_shade_no_normal_returns_lv0() {
         // No normal → directional factor = 0 → level 0 (= darkest plateau).
-        let shading = Shading::new(&pyxel_default_palette(), 0.05, 0.95);
+        let shading = Shading::new(&pyxel_default_palette());
         let shading = rc_ref!(&shading);
         let col = shade(shading, 7, None);
         assert!(col < 16);
@@ -1064,7 +1064,6 @@ mod tests {
             (10.0, 10.0, 0.0),
             7,
             7,
-            0,
             clip,
             1.0,
             true,
@@ -1087,7 +1086,6 @@ mod tests {
             (5.0, 12.0, 0.0),
             8,
             8,
-            0,
             clip,
             1.0,
             true,
@@ -1110,7 +1108,6 @@ mod tests {
             (3.0, 3.0, 0.25),
             5,
             5,
-            0,
             clip,
             1.0,
             true,
@@ -1132,7 +1129,6 @@ mod tests {
             (4.0, 0.0, 0.0),
             10,
             10,
-            0,
             clip,
             1.0,
             true,
@@ -1146,7 +1142,6 @@ mod tests {
             (4.0, 0.0, 0.5),
             11,
             11,
-            0,
             clip,
             1.0,
             true,
@@ -1175,7 +1170,6 @@ mod tests {
             (7.0, 0.0, 0.0),
             5,
             5,
-            0,
             small_clip,
             1.0,
             true,
@@ -1202,7 +1196,6 @@ mod tests {
             (2.0, 12.0, 0.0),
             9,
             9,
-            0,
             clip,
             1.0,
             true,
@@ -1225,7 +1218,6 @@ mod tests {
             (0.0, 15.0, 1.0),
             7,
             7,
-            0,
             clip,
             1.0,
             true,
@@ -1249,7 +1241,6 @@ mod tests {
             (12.0, 2.0, 0.0),
             14,
             14,
-            0,
             clip,
             1.0,
             true,
@@ -1272,7 +1263,6 @@ mod tests {
             (8.0, 0.0, 0.0),
             5,
             5,
-            0,
             clip,
             1.0,
             true,
@@ -1302,7 +1292,6 @@ mod tests {
             (0.0, 15.0, 0.0),
             6,
             6,
-            0,
             small_clip,
             1.0,
             true,
@@ -1434,7 +1423,7 @@ mod tests {
         let (img, mut depth, clip) = make_target_and_depth(32, 32);
         let img_mut = rc_mut!(&img);
         rasterize_circle_filled(
-            img_mut, &mut depth, 32, 16.0, 16.0, 5.0, 0.0, 12, 0, 0, clip, 1.0, true, true,
+            img_mut, &mut depth, 32, 16.0, 16.0, 5.0, 0.0, 12, 0, clip, 1.0, true, true,
         );
         assert_eq!(img_mut.canvas.read_data(16, 16), 12);
         assert_eq!(img_mut.canvas.read_data(20, 16), 12);
@@ -1446,7 +1435,7 @@ mod tests {
         let (img, mut depth, clip) = make_target_and_depth(32, 32);
         let img_mut = rc_mut!(&img);
         rasterize_circle_border(
-            img_mut, &mut depth, 32, 16.0, 16.0, 5.0, 0.0, 8, 0, 0, clip, 1.0, true, true,
+            img_mut, &mut depth, 32, 16.0, 16.0, 5.0, 0.0, 8, 0, clip, 1.0, true, true,
         );
         // Center pixel is NOT filled (border only).
         assert_eq!(img_mut.canvas.read_data(16, 16), 0);
@@ -1459,10 +1448,10 @@ mod tests {
         let (img, mut depth, clip) = make_target_and_depth(32, 32);
         let img_mut = rc_mut!(&img);
         rasterize_circle_filled(
-            img_mut, &mut depth, 32, 16.0, 16.0, 5.0, 0.0, 10, 0, 0, clip, 1.0, true, true,
+            img_mut, &mut depth, 32, 16.0, 16.0, 5.0, 0.0, 10, 0, clip, 1.0, true, true,
         );
         rasterize_circle_filled(
-            img_mut, &mut depth, 32, 16.0, 16.0, 5.0, 0.5, 11, 0, 0, clip, 1.0, true, true,
+            img_mut, &mut depth, 32, 16.0, 16.0, 5.0, 0.5, 11, 0, clip, 1.0, true, true,
         );
         assert_eq!(img_mut.canvas.read_data(16, 16), 10);
     }
@@ -1478,7 +1467,7 @@ mod tests {
             bottom: 7,
         };
         rasterize_circle_filled(
-            img_mut, &mut depth, 32, 3.0, 3.0, 10.0, 0.0, 5, 0, 0, small_clip, 1.0, true, true,
+            img_mut, &mut depth, 32, 3.0, 3.0, 10.0, 0.0, 5, 0, small_clip, 1.0, true, true,
         );
         assert_eq!(img_mut.canvas.read_data(3, 3), 5);
         assert_eq!(img_mut.canvas.read_data(16, 16), 0);
