@@ -37,7 +37,7 @@ signatures live in `python/pyxel/cube/__init__.pyi`.
 | `Mat4` | Immutable 4×4 matrix (transforms; projection lives in `Camera`) |
 | `Quat` | Immutable quaternion rotation |
 | `Camera` | View information (transform, fov, near, far, optional ortho size) |
-| `ShadeRamp` | Shading LUT (palette × 16 brightness levels); absorbs per-color palette substitution |
+| `ShadeRamp` | Shading LUT (palette × 8 brightness levels); absorbs per-color palette substitution |
 | `Light` | Flat-shading parameters (ambient, direction, intensity) |
 | `Contact` | Collision-pipeline payload placeholder (point / normal); pipeline deferred (§ 15) |
 | `Collider` | Collision-shape placeholder; pipeline deferred (§ 15) |
@@ -382,7 +382,7 @@ animation and interpolation flexible.
 ## 8. ShadeRamp
 
 Shading LUT shared by the whole scene during a `draw` call. The table is a
-2D structure: rows are palette colors, columns are 16 brightness levels.
+2D structure: rows are palette colors, columns are 8 brightness levels.
 ShadeRamp also absorbs per-color palette substitution (replacing the
 classic `pal` operation): set every level of a row to the same target
 color and that source color is replaced uniformly across the subtree
@@ -398,8 +398,8 @@ ramp.build()                         # rebuild from current pyxel palette
 Each cell is a `(primary, secondary, ratio)` triple. `primary` and
 `secondary` are palette indices; `ratio` is `0..16`, the count of cells
 in the 4×4 Bayer dither pattern that pick `secondary` over `primary`.
-`ratio == 0` collapses the cell to a flat `primary` fill, which is the
-common case for the brightest level and for palette substitution.
+The default-built ramp emits only `0` (flat fill) or `8` (50:50 dither);
+`__setitem__` accepts any `0..16` for user-customized cells.
 
 - `ShadeRamp()` initializes with a default ramp derived from the current
   Pyxel palette via the same algorithm as `build()`. Ready to use without
@@ -417,15 +417,37 @@ cell.
 
 **Dimensions**: row count follows `pyxel.colors` length (Pyxel default
 16, but the actual length of the palette at `build()` time); column
-count is fixed at 16 brightness levels.
+count is fixed at 8 brightness levels.
 
-**`build()` algorithm**: for each (col, level), the target RGB is the
-col's RGB scaled by `level / 15`; cube brute-force searches every
-`(primary, secondary, ratio)` triple and picks the one whose
-Bayer-blended RGB has the smallest squared Euclidean distance to the
-target. Perceptual color spaces (Lab etc.) are intentionally not used —
-simple RGB distance is good enough for the small Pyxel palette and
-avoids overhead. `__repr__` is provided for debugging.
+**`build()` algorithm**: for each col, an internal *chain* is constructed
+by walking same-hue neighbors in OKLab perceptual space, starting from
+the col's own color. The chain extends up to 3 steps darker (shade) and
+2 steps brighter (highlight); each step requires an OKLab L delta of at
+least 0.10 against its predecessor and stays within the same hue family
+(chromatic↔achromatic crossings are refused). The 8 ramp levels are then
+filled by case analysis on chain length:
+
+- `lv 3, 4, 5` are always the base flat plateau.
+- `lv 7` is the chain top flat (= the highlight color); when the chain
+  top is achromatic, lv 7 falls back to a dither between hl1 and the top
+  so the brightest cell isn't a pure white/gray.
+- `lv 6` is `(base, hl1)` dither when only one highlight step exists, or
+  `hl1` flat when two exist.
+- `lv 0` is the chain-bottom flat (= the darkest shade reached).
+- `lv 2` is `(base, sh1)` dither when only one shade step exists, or
+  `sh1` flat otherwise.
+- `lv 1` fills the gap between lv 0 and lv 2 — sh1 flat when shade=1,
+  `(sh1, sh2)` dither when shade=2, sh2 flat when shade=3.
+
+By construction, each dither pair lies on adjacent chain entries and the
+two sides of every dither lv are flats matching the dither's two colors,
+so the ramp transitions smoothly without spurious colors leaking across
+boundaries. The chain-step floor (L_STEP_MIN = 0.10) keeps ramp depth
+independent of palette richness — packing more colors into the same
+hue family no longer collapses contrast. The full design rationale is
+captured in `docs/superpowers/specs/2026-05-09-cube-shade-ramp-design.md`.
+
+`__repr__` is provided for debugging.
 
 **Palette substitution use case**: setting
 `ramp[src_col, level] = (dst_col, dst_col, 0)` for every `level` makes

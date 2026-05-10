@@ -8,9 +8,8 @@ use pyxel::cube::Node as InnerNode;
 use super::camera::Camera;
 use super::collider::Collider;
 use super::contact::Contact;
-use super::light::Light;
 use super::mat4::Mat4;
-use super::shade_ramp::ShadeRamp;
+use super::shading::Shading;
 use super::vec3::Vec3;
 
 type Uvs = ((f32, f32), (f32, f32), (f32, f32), (f32, f32));
@@ -61,40 +60,24 @@ impl Node {
         rc_mut!(self.inner)
     }
 
-    // World transform of this node (composition of all ancestor transforms).
     fn world_mat(&self) -> pyxel::cube::Mat4 {
         let world_rc = InnerNode::world_transform(&self.inner);
         *rc_ref!(&world_rc)
     }
 
-    // World-space matrix for a node-local Mat4 (compose ancestor world
-    // transform with the local placement).
     fn world_mat_compose(&self, local: pyxel::cube::Mat4) -> pyxel::cube::Mat4 {
         let world_rc = InnerNode::world_transform(&self.inner);
         let composed = rc_ref!(&world_rc).mul_mat(&local);
         *rc_ref!(&composed)
     }
 
-    // Resolve scene-wide cascade values (light / shade_ramp). Returns
-    // owned RcLight / RcShadeRamp clones so callers can borrow them
-    // through `rc_ref!` without conflicting with the immutable borrow
-    // on `self.inner`.
-    fn resolve_lighting(
-        &self,
-    ) -> (
-        Option<pyxel::cube::RcLight>,
-        Option<pyxel::cube::RcShadeRamp>,
-    ) {
-        (
-            InnerNode::effective_light(&self.inner),
-            InnerNode::effective_shade_ramp(&self.inner),
-        )
+    // Resolve the scene-wide cascade `shading`. Returns owned RcShading
+    // so callers can borrow it through `rc_ref!` without conflicting
+    // with the immutable borrow on `self.inner`.
+    fn resolve_shading(&self) -> Option<pyxel::cube::RcShading> {
+        InnerNode::effective_shading(&self.inner)
     }
 
-    // Run `f` with a fully resolved DrawState. Each draw method shares
-    // this pattern (lookup light/ramp, build state, call into draw),
-    // so funneling it through a single helper keeps the per-method
-    // boilerplate to one line.
     #[allow(clippy::too_many_arguments)]
     fn with_state(
         &self,
@@ -105,21 +88,17 @@ impl Node {
         billboard: i32,
         f: impl FnOnce(&mut pyxel::cube::scene::DrawContext, pyxel::cube::draw::DrawState),
     ) {
-        let (light, ramp) = if shaded {
-            self.resolve_lighting()
-        } else {
-            (None, None)
-        };
-        let light_ref = light.as_ref().map(|l: &pyxel::cube::RcLight| rc_ref!(l));
-        let ramp_ref = ramp.as_ref().map(|r: &pyxel::cube::RcShadeRamp| rc_ref!(r));
+        let shading = if shaded { self.resolve_shading() } else { None };
+        let shading_ref = shading
+            .as_ref()
+            .map(|s: &pyxel::cube::RcShading| rc_ref!(s));
         let state = DrawState {
             shaded,
             dither_alpha,
             depth_test,
             depth_write,
             billboard,
-            light: light_ref,
-            ramp: ramp_ref,
+            shading: shading_ref,
         };
         with_draw_context(|ctx| f(ctx, state));
     }
@@ -127,10 +106,6 @@ impl Node {
 
 #[pymethods]
 impl Node {
-    // Primitive mode constants for `prim` (OpenGL ordering: POINTS=0,
-    // LINES=1, TRIANGLES=2; future LINE_STRIP / LINE_LOOP /
-    // TRIANGLE_STRIP / TRIANGLE_FAN keep the relative position).
-
     #[classattr]
     const PRIM_POINTS: i32 = pyxel::cube::draw::PRIM_POINTS;
     #[classattr]
@@ -138,7 +113,6 @@ impl Node {
     #[classattr]
     const PRIM_TRIANGLES: i32 = pyxel::cube::draw::PRIM_TRIANGLES;
 
-    // Billboard mode constants (mirror Godot BillboardMode).
     #[classattr]
     const BILLBOARD_OFF: i32 = pyxel::cube::draw::BILLBOARD_OFF;
     #[classattr]
@@ -146,14 +120,10 @@ impl Node {
     #[classattr]
     const BILLBOARD_FIXED_Y: i32 = pyxel::cube::draw::BILLBOARD_FIXED_Y;
 
-    // Constructor
-
     #[new]
     fn new() -> Self {
         Self::wrap(InnerNode::new())
     }
-
-    // Identification
 
     #[getter]
     fn name(&self) -> String {
@@ -165,8 +135,6 @@ impl Node {
         self.inner_mut().name = v;
     }
 
-    // Transform
-
     #[getter]
     fn transform(&self) -> Mat4 {
         Mat4::wrap(self.inner_ref().transform.clone())
@@ -176,8 +144,6 @@ impl Node {
     fn set_transform(&self, v: PyRef<'_, Mat4>) {
         self.inner_mut().transform = v.inner.clone();
     }
-
-    // Cascade flags
 
     #[getter]
     fn active(&self) -> bool {
@@ -199,38 +165,20 @@ impl Node {
         self.inner_mut().visible = v;
     }
 
-    // Scene-wide lighting cascade (None inherits from the closest non-None
-    // ancestor; Scene seeds defaults at construction).
-
+    // Scene-wide shading cascade. None inherits from the closest non-None
+    // ancestor; Scene seeds a default Shading at construction.
     #[getter]
-    fn light(&self) -> Option<Light> {
+    fn shading(&self) -> Option<Shading> {
         self.inner_ref()
-            .light
+            .shading
             .as_ref()
-            .map(|l| Light::wrap(l.clone()))
+            .map(|s| Shading::wrap(s.clone()))
     }
 
     #[setter]
-    fn set_light(&self, v: Option<PyRef<'_, Light>>) {
-        self.inner_mut().light = v.as_ref().map(|l| l.inner.clone());
+    fn set_shading(&self, v: Option<PyRef<'_, Shading>>) {
+        self.inner_mut().shading = v.as_ref().map(|s| s.inner.clone());
     }
-
-    #[getter]
-    fn shade_ramp(&self) -> Option<ShadeRamp> {
-        self.inner_ref()
-            .shade_ramp
-            .as_ref()
-            .map(|r| ShadeRamp::wrap(r.clone()))
-    }
-
-    #[setter]
-    fn set_shade_ramp(&self, v: Option<PyRef<'_, ShadeRamp>>) {
-        self.inner_mut().shade_ramp = v.as_ref().map(|r| r.inner.clone());
-    }
-
-    // Collider slot — currently a placeholder; the collision pipeline
-    // is deferred (cube-design.md § 15). Stored here so user code can
-    // already round-trip `node.collider = Collider()` setups.
 
     #[getter]
     fn collider(&self) -> Option<Collider> {
@@ -245,12 +193,6 @@ impl Node {
         self.inner_mut().collider = v.as_ref().map(|c| c.inner.clone());
     }
 
-    // Hierarchy (read-only properties).
-    // `parent` is intentionally None for now — adding parent references
-    // would create a Python ref cycle (parent->child->parent) that the
-    // GC cannot break without weakref plumbing. Tree traversal uses the
-    // children list and does not need parent.
-
     #[getter]
     #[allow(clippy::unused_self)]
     fn parent(&self) -> Option<Node> {
@@ -259,11 +201,6 @@ impl Node {
 
     #[getter]
     fn children<'py>(&self, py: Python<'py>) -> PyResult<Bound<'py, pyo3::types::PyTuple>> {
-        // Reconcile binding-side cache with the core-side child list.
-        // Core is the source of truth: re-parenting via `add_child` and
-        // `destroy()` mutate the core list directly, so the binding
-        // tuple is built from the core order and prunes any cached
-        // entries that no longer correspond to a live child.
         let core_children = InnerNode::children(&self.inner);
         let mut cache = self.children.borrow_mut();
         cache.retain(|cached| {
@@ -284,9 +221,6 @@ impl Node {
         pyo3::types::PyTuple::new(py, items)
     }
 
-    // Active camera, valid only inside on_draw. Outside on_draw the
-    // draw context is unset and accessing this getter raises so callers
-    // notice the misuse instead of seeing stale data.
     #[getter]
     #[allow(clippy::unused_self)]
     fn camera(&self) -> PyResult<Camera> {
@@ -299,15 +233,12 @@ impl Node {
         }
     }
 
-    // Methods
-
     fn world_transform(&self) -> Mat4 {
         Mat4::wrap(InnerNode::world_transform(&self.inner))
     }
 
     fn find(slf: PyRef<'_, Node>, py: Python<'_>, name: &str) -> Option<Py<Node>> {
         if slf.inner_ref().name == name {
-            // Bind back to the running Py<Self> so Python override survives.
             return Some(slf.into_pyobject(py).ok()?.unbind());
         }
         for child in slf.children.borrow().iter() {
@@ -345,31 +276,18 @@ impl Node {
         InnerNode::destroy(&self.inner);
     }
 
-    // Lifecycle hooks (default no-op; user overrides in Python subclass).
-
     #[allow(clippy::unused_self)]
     fn on_update(&self) {}
 
     #[allow(clippy::unused_self)]
     fn on_draw(&self) {}
 
-    // Collision hook — never invoked by the cube runtime today (the
-    // collision pipeline is deferred; see cube-design.md § 15). The
-    // signature is exposed so user subclasses can already define an
-    // override that the future pipeline will call.
     #[allow(clippy::unused_self, unused_variables)]
     #[pyo3(signature = (other, contact=None))]
     fn on_collide(&self, other: PyRef<'_, Node>, contact: Option<PyRef<'_, Contact>>) {}
 
     #[allow(clippy::unused_self)]
     fn on_destroy(&self) {}
-
-    // ===================================================================
-    // Immediate-mode draw commands. Each method captures Python args,
-    // resolves the world transform + scene-wide light/shade_ramp, builds
-    // a DrawState carrying per-call modifiers, then delegates to
-    // pyxel::cube::draw (single home for all draw logic).
-    // ===================================================================
 
     #[pyo3(signature = (pos, col, *, dither_alpha=1.0, depth_test=true, depth_write=true))]
     fn pset(
@@ -755,10 +673,6 @@ impl Node {
         );
     }
 
-    // text: Vec3-anchored, screen-space glyph rendering. The 3D point is
-    // projected and characters render in 2D pixels at the font's native
-    // size — ancestor rotation / scale do not affect glyph layout
-    // (cube-design.md § 12.5).
     #[pyo3(signature = (pos, s, col, *, font=None, dither_alpha=1.0,
                         depth_test=true, depth_write=true))]
     #[allow(clippy::too_many_arguments)]
@@ -780,12 +694,8 @@ impl Node {
             depth_test,
             depth_write,
             billboard: pyxel::cube::draw::BILLBOARD_OFF,
-            light: None,
-            ramp: None,
+            shading: None,
         };
-        // Clone the Rc out so we can drop the PyRef before borrowing
-        // `&mut Font`. Builtin (None) font case: just pass None — the
-        // draw path resolves Pyxel's 4x6 glyph data directly.
         let font_rc = font.as_ref().map(|f| f.inner.clone());
         with_draw_context(|ctx| {
             let font_ref: Option<&mut pyxel::Font> = font_rc.as_ref().map(|f| rc_mut!(f));
@@ -814,21 +724,15 @@ impl Node {
         let world_mat = self.world_mat();
         let local = *pos.inner_ref();
         let img_inner = img.inner.clone();
-        let (light, ramp) = if shaded {
-            self.resolve_lighting()
-        } else {
-            (None, None)
-        };
-        let light_ref = light.as_ref().map(|l: &pyxel::cube::RcLight| rc_ref!(l));
-        let ramp_ref = ramp.as_ref().map(|r: &pyxel::cube::RcShadeRamp| rc_ref!(r));
+        let shading = if shaded { self.resolve_shading() } else { None };
+        let shading_ref = shading.as_ref().map(|s| rc_ref!(s));
         let state = DrawState {
             shaded,
             dither_alpha,
             depth_test,
             depth_write,
             billboard: pyxel::cube::draw::BILLBOARD_ON,
-            light: light_ref,
-            ramp: ramp_ref,
+            shading: shading_ref,
         };
         with_draw_context(|ctx| {
             pyxel::cube::draw::sprite(
@@ -857,21 +761,15 @@ impl Node {
     ) {
         let world_mat = self.world_mat_compose(*mat.inner_ref());
         let img_inner = img.inner.clone();
-        let (light, ramp) = if shaded {
-            self.resolve_lighting()
-        } else {
-            (None, None)
-        };
-        let light_ref = light.as_ref().map(|l: &pyxel::cube::RcLight| rc_ref!(l));
-        let ramp_ref = ramp.as_ref().map(|r: &pyxel::cube::RcShadeRamp| rc_ref!(r));
+        let shading = if shaded { self.resolve_shading() } else { None };
+        let shading_ref = shading.as_ref().map(|s| rc_ref!(s));
         let state = DrawState {
             shaded,
             dither_alpha,
             depth_test,
             depth_write,
             billboard,
-            light: light_ref,
-            ramp: ramp_ref,
+            shading: shading_ref,
         };
         with_draw_context(|ctx| {
             pyxel::cube::draw::plane(ctx, &world_mat, &img_inner, uvs, w, h, colkey, state);
@@ -895,9 +793,6 @@ impl Node {
     ) -> PyResult<()> {
         let world_mat = self.world_mat_compose(*mat.inner_ref());
         let mesh_inner = mesh_asset.inner.clone();
-        // Drawing an empty Mesh raises at the call site (cube-design.md
-        // § 11.2). Without this gate the draw silently no-ops and users
-        // chase a missing mesh through the renderer.
         let is_empty = {
             let m = rc_ref!(&mesh_inner);
             rc_ref!(&m.positions).size() == 0
@@ -949,9 +844,6 @@ impl Node {
 
         let world_mat = self.world_mat_compose(*mat.inner_ref());
 
-        // Snapshot buffer contents — the rasterizer borrows scene + target
-        // mutably while we still need to read these, so a copy keeps the
-        // FFI boundary clean.
         let positions_data: Vec<f32> = positions.inner_ref().data().to_vec();
         let indices_data: Option<Vec<i32>> =
             indices.as_ref().map(|i| i.inner_ref().data().to_vec());
@@ -959,7 +851,6 @@ impl Node {
             normals.as_ref().map(|n| n.inner_ref().data().to_vec());
         let uvs_data: Option<Vec<f32>> = uvs.as_ref().map(|u| u.inner_ref().data().to_vec());
 
-        // col: int → flat color, Image → textured.
         let (col_flat, col_image) = match col {
             Some(c) => {
                 if let Ok(i) = c.extract::<i32>() {
@@ -973,21 +864,15 @@ impl Node {
             None => (7, None),
         };
 
-        let (light, ramp) = if shaded {
-            self.resolve_lighting()
-        } else {
-            (None, None)
-        };
-        let light_ref = light.as_ref().map(|l: &pyxel::cube::RcLight| rc_ref!(l));
-        let ramp_ref = ramp.as_ref().map(|r: &pyxel::cube::RcShadeRamp| rc_ref!(r));
+        let shading = if shaded { self.resolve_shading() } else { None };
+        let shading_ref = shading.as_ref().map(|s| rc_ref!(s));
         let state = DrawState {
             shaded,
             dither_alpha,
             depth_test,
             depth_write,
             billboard,
-            light: light_ref,
-            ramp: ramp_ref,
+            shading: shading_ref,
         };
 
         let result = with_draw_context(|ctx| {
@@ -1013,8 +898,6 @@ impl Node {
             Some(Ok(())) | None => Ok(()),
         }
     }
-
-    // Dunder
 
     fn __repr__(&self) -> String {
         let n = self.inner_ref();

@@ -1,9 +1,8 @@
 #![allow(clippy::many_single_char_names)]
 
 use crate::cube::camera::Camera;
-use crate::cube::light::Light;
 use crate::cube::mat4::Mat4;
-use crate::cube::shade_ramp::ShadeRamp;
+use crate::cube::shading::{Shading, LEVEL_COUNT};
 use crate::cube::vec3::Vec3;
 use crate::image::{Image, RcImage};
 use crate::tilemap::RcTilemap;
@@ -323,71 +322,71 @@ pub fn screen_circle(
     Some((center.0, center.1, screen_r, center.2))
 }
 
-// 4x4 Bayer ordered-dither thresholds, each cell holding a unique value
-// 0..15. A pixel `(x, y)` picks `secondary` when ramp ratio strictly
-// exceeds the threshold; otherwise `primary` wins. With a ratio range
-// 0..16, this yields 16 evenly-spaced mix gradations matching the
-// brightness-level count.
+// 4x4 Bayer ordered-dither thresholds for the alpha (= per-pixel
+// transparency) gate inside `write_pixel`. The shading LUT itself uses
+// only flat or 50:50 checker, which `dither_pick` handles directly via
+// the 2x2 parity (no Bayer matrix needed for that case).
 pub const BAYER4: [[u8; 4]; 4] = [[0, 8, 2, 10], [12, 4, 14, 6], [3, 11, 1, 9], [15, 7, 13, 5]];
 
+// Pick between primary and secondary for the LUT cell at pixel (x, y).
+// `primary == secondary` is a flat fill; otherwise a 2x2 checker.
 #[inline]
-pub fn dither_pick(primary: i32, secondary: i32, ratio: u8, x: i32, y: i32) -> u8 {
-    let threshold = BAYER4[(y.rem_euclid(4)) as usize][(x.rem_euclid(4)) as usize];
-    if ratio > threshold {
-        secondary as u8
-    } else {
+pub fn dither_pick(primary: i32, secondary: i32, x: i32, y: i32) -> u8 {
+    if primary == secondary {
+        return primary as u8;
+    }
+    if (x + y).rem_euclid(2) == 0 {
         primary as u8
+    } else {
+        secondary as u8
     }
 }
 
-// Per-face brightness level (0..15) for a flat-shaded face, matching the
-// formula `shade` uses but exposed separately so callers (e.g. textured
-// faces) can reuse the level across many per-pixel ramp lookups.
-pub fn face_shade_level(light: &Light, normal: Option<&Vec3>) -> usize {
-    let directional = match normal {
+// Per-face brightness level (0..LEVEL_COUNT-1) from the shading's light
+// direction and the face normal. Pure Lambert: brightness scales with
+// max(0, dot(face_normal, -light_dir)).
+pub fn face_shade_level(direction: &Vec3, normal: Option<&Vec3>) -> usize {
+    let dot_factor = match normal {
         Some(n) => {
-            let dir = rc_ref!(&light.direction);
             let n_len = (n.x * n.x + n.y * n.y + n.z * n.z).sqrt();
-            let d_len = (dir.x * dir.x + dir.y * dir.y + dir.z * dir.z).sqrt();
+            let d_len =
+                (direction.x * direction.x + direction.y * direction.y + direction.z * direction.z)
+                    .sqrt();
             if n_len == 0.0 || d_len == 0.0 {
                 0.0
             } else {
-                let dot = -(n.x * dir.x + n.y * dir.y + n.z * dir.z) / (n_len * d_len);
-                dot.max(0.0) * light.intensity
+                let dot =
+                    -(n.x * direction.x + n.y * direction.y + n.z * direction.z) / (n_len * d_len);
+                dot.max(0.0)
             }
         }
         None => 0.0,
     };
-    let level_f = (light.ambient + directional) * 15.0;
-    level_f.clamp(0.0, 15.0).round() as usize
+    let max_level = (LEVEL_COUNT - 1) as f32;
+    let level_f = dot_factor * max_level;
+    level_f.clamp(0.0, max_level).round() as usize
 }
 
-// Resolve `(base_col, normal)` to a `(primary, secondary, ratio)` triple
-// at the face's brightness level. Hot-path callers should reuse this
-// once per face and dither at each pixel via `dither_pick`. Returns a
-// degenerate `(base_col, base_col, 0)` triple when the ramp is empty.
-pub fn lookup_ramp(
-    ramp: &ShadeRamp,
-    light: &Light,
-    base_col: i32,
-    normal: Option<&Vec3>,
-) -> (i32, i32, u8) {
-    let palette_size = ramp.palette_size();
+// Resolve `(base_col, normal)` to a `(primary, secondary)` pair at the
+// face's brightness level. Hot-path callers should reuse this once per
+// face and dither at each pixel via `dither_pick`. Returns a degenerate
+// `(base_col, base_col)` pair when the LUT is empty.
+pub fn lookup_ramp(shading: &Shading, base_col: i32, normal: Option<&Vec3>) -> (i32, i32) {
+    let palette_size = shading.palette_size();
     if palette_size == 0 {
         let c = base_col.max(0);
-        return (c, c, 0);
+        return (c, c);
     }
-    let level = face_shade_level(light, normal);
+    let direction = rc_ref!(&shading.direction);
+    let level = face_shade_level(&direction, normal);
     let col = base_col.clamp(0, palette_size as i32 - 1) as usize;
-    ramp.get(col, level)
+    shading.get(col, level)
 }
 
-// Shading: brightness = clamp(ambient + max(0, dot(face_normal,
-// -light_dir)) * intensity, 0, 1) mapped onto the ramp's levels. Returns
-// the ramp's primary index — callers that want dithering should use
-// `lookup_ramp` and `dither_pick` instead.
-pub fn shade(ramp: &ShadeRamp, light: &Light, base_col: i32, normal: Option<&Vec3>) -> u8 {
-    let (primary, _, _) = lookup_ramp(ramp, light, base_col, normal);
+// Returns the LUT primary at the face's brightness level. Callers that
+// want dithering should use `lookup_ramp` and `dither_pick` instead.
+pub fn shade(shading: &Shading, base_col: i32, normal: Option<&Vec3>) -> u8 {
+    let (primary, _) = lookup_ramp(shading, base_col, normal);
     primary as u8
 }
 
@@ -451,7 +450,6 @@ pub fn rasterize_triangle(
     p2: (f32, f32, f32),
     primary: u8,
     secondary: u8,
-    ratio: u8,
     clip: ClipRect,
     dither_alpha: f32,
     depth_test: bool,
@@ -486,7 +484,7 @@ pub fn rasterize_triangle(
                 let bary1 = w1 * inv_area;
                 let bary2 = w2 * inv_area;
                 let z = bary0 * p0.2 + bary1 * p1.2 + bary2 * p2.2;
-                let col = dither_pick(primary as i32, secondary as i32, ratio, x, y);
+                let col = dither_pick(primary as i32, secondary as i32, x, y);
                 write_pixel(
                     target,
                     depth,
@@ -596,7 +594,6 @@ pub fn rasterize_circle_filled(
     z: f32,
     primary: u8,
     secondary: u8,
-    ratio: u8,
     clip: ClipRect,
     dither_alpha: f32,
     depth_test: bool,
@@ -615,7 +612,7 @@ pub fn rasterize_circle_filled(
             let dx = x as f32 + 0.5 - cx;
             let dy = y as f32 + 0.5 - cy;
             if dx * dx + dy * dy <= r2 {
-                let col = dither_pick(primary as i32, secondary as i32, ratio, x, y);
+                let col = dither_pick(primary as i32, secondary as i32, x, y);
                 write_pixel(
                     target,
                     depth,
@@ -646,7 +643,6 @@ pub fn rasterize_circle_border(
     z: f32,
     primary: u8,
     secondary: u8,
-    ratio: u8,
     clip: ClipRect,
     dither_alpha: f32,
     depth_test: bool,
@@ -669,7 +665,7 @@ pub fn rasterize_circle_border(
             let dy = y as f32 + 0.5 - cy;
             let d2 = dx * dx + dy * dy;
             if d2 <= outer2 && d2 >= inner2 {
-                let col = dither_pick(primary as i32, secondary as i32, ratio, x, y);
+                let col = dither_pick(primary as i32, secondary as i32, x, y);
                 write_pixel(
                     target,
                     depth,
@@ -699,7 +695,6 @@ pub fn rasterize_line(
     p1: (f32, f32, f32),
     primary: u8,
     secondary: u8,
-    ratio: u8,
     clip: ClipRect,
     dither_alpha: f32,
     depth_test: bool,
@@ -713,7 +708,7 @@ pub fn rasterize_line(
     let dy = (y2 - y1).abs();
     if dx == 0 && dy == 0 {
         if clip.contains(x1, y1) {
-            let col = dither_pick(primary as i32, secondary as i32, ratio, x1, y1);
+            let col = dither_pick(primary as i32, secondary as i32, x1, y1);
             write_pixel(
                 target,
                 depth,
@@ -741,7 +736,7 @@ pub fn rasterize_line(
         let xi = fx.round() as i32;
         let yi = fy.round() as i32;
         if clip.contains(xi, yi) {
-            let col = dither_pick(primary as i32, secondary as i32, ratio, xi, yi);
+            let col = dither_pick(primary as i32, secondary as i32, xi, yi);
             write_pixel(
                 target,
                 depth,
@@ -980,30 +975,20 @@ mod tests {
         assert!(result.is_none());
     }
 
-    #[test]
-    fn test_shade_no_normal_uses_ambient() {
-        let ramp = ShadeRamp::new();
-        let ramp = rc_ref!(&ramp);
-        let light = Light::new();
-        let light_mut = rc_mut!(&light);
-        light_mut.ambient = 1.0;
-        light_mut.intensity = 1.0;
-        // ambient=1.0 -> level 15 -> col 7 maps back to col 7 itself.
-        let col = shade(ramp, light_mut, 7, None);
-        assert_eq!(col, 7);
+    fn pyxel_default_palette() -> Vec<crate::image::Rgb24> {
+        vec![
+            0x000000, 0x2B335F, 0x7E2072, 0x19959C, 0x8B4852, 0x395C98, 0xA9C1FF, 0xEEEEEE,
+            0xD4186C, 0xD38441, 0xE9C35B, 0x70C6A9, 0x7696DE, 0xA3A3A3, 0xFF9798, 0xEDC7B0,
+        ]
     }
 
     #[test]
-    fn test_shade_zero_brightness() {
-        let ramp = ShadeRamp::new();
-        let ramp = rc_ref!(&ramp);
-        let light = Light::new();
-        let light_mut = rc_mut!(&light);
-        light_mut.ambient = 0.0;
-        light_mut.intensity = 0.0;
-        // brightness=0 -> level 0 -> some valid palette index.
-        let col = shade(ramp, light_mut, 7, None);
-        assert!(col < 64);
+    fn test_shade_no_normal_returns_lv0() {
+        // No normal → directional factor = 0 → level 0 (= darkest plateau).
+        let shading = Shading::new(&pyxel_default_palette(), 0.05, 0.95);
+        let shading = rc_ref!(&shading);
+        let col = shade(shading, 7, None);
+        assert!(col < 16);
     }
 
     #[test]

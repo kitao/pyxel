@@ -25,15 +25,15 @@ impl Scene {
         let scene = Scene {
             state: pyxel::cube::Scene::new(),
         };
-        // Scene seeds default Light + ShadeRamp so descendants always
-        // resolve a non-None effective light / ramp through the
-        // inherits-from-ancestor cascade. Users can swap them on the
-        // Scene for global changes or set per-subtree to override.
+        // Scene seeds a default Shading from the current Pyxel palette so
+        // descendants always resolve a non-None effective shading through
+        // the inherit-from-ancestor cascade. Users can swap it on the
+        // Scene for global changes or override per-subtree.
         let inner_node = pyxel::cube::Node::new();
         {
             let n = rc_mut!(&inner_node);
-            n.light = Some(pyxel::cube::Light::new());
-            n.shade_ramp = Some(pyxel::cube::ShadeRamp::new());
+            let palette = pyxel::colors().clone();
+            n.shading = Some(pyxel::cube::Shading::new(&palette));
         }
         let node = Node::wrap(inner_node);
         (scene, node)

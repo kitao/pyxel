@@ -5,13 +5,12 @@ mod collider;
 mod contact;
 mod float_buffer;
 mod int_buffer;
-mod light;
 mod mat4;
 mod mesh;
 mod node;
 mod quat;
 mod scene;
-mod shade_ramp;
+mod shading;
 mod vec3;
 
 pub fn add_cube_submodule(parent: &Bound<'_, PyModule>) -> PyResult<()> {
@@ -20,8 +19,7 @@ pub fn add_cube_submodule(parent: &Bound<'_, PyModule>) -> PyResult<()> {
     mat4::add_mat4_class(&m)?;
     quat::add_quat_class(&m)?;
     camera::add_camera_class(&m)?;
-    shade_ramp::add_shade_ramp_class(&m)?;
-    light::add_light_class(&m)?;
+    shading::add_shading_class(&m)?;
     contact::add_contact_class(&m)?;
     collider::add_collider_class(&m)?;
     float_buffer::add_float_buffer_class(&m)?;
