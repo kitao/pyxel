@@ -6,12 +6,11 @@ from pyxel.cube import (
     Camera,
     FloatBuffer,
     IntBuffer,
-    Light,
     Mat4,
     Mesh,
     Node,
     Scene,
-    ShadeRamp,
+    Shading,
     Vec3,
 )
 
@@ -20,38 +19,170 @@ from pyxel.cube import (
 _ICOSA_O = 0.5257311
 _ICOSA_T = 0.8506508
 _UNIT_ICOSA_VERTICES = [
-    -_ICOSA_O, _ICOSA_T, 0.0,
-    _ICOSA_O, _ICOSA_T, 0.0,
-    -_ICOSA_O, -_ICOSA_T, 0.0,
-    _ICOSA_O, -_ICOSA_T, 0.0,
-    0.0, -_ICOSA_O, _ICOSA_T,
-    0.0, _ICOSA_O, _ICOSA_T,
-    0.0, -_ICOSA_O, -_ICOSA_T,
-    0.0, _ICOSA_O, -_ICOSA_T,
-    _ICOSA_T, 0.0, -_ICOSA_O,
-    _ICOSA_T, 0.0, _ICOSA_O,
-    -_ICOSA_T, 0.0, -_ICOSA_O,
-    -_ICOSA_T, 0.0, _ICOSA_O,
+    -_ICOSA_O,
+    _ICOSA_T,
+    0.0,
+    _ICOSA_O,
+    _ICOSA_T,
+    0.0,
+    -_ICOSA_O,
+    -_ICOSA_T,
+    0.0,
+    _ICOSA_O,
+    -_ICOSA_T,
+    0.0,
+    0.0,
+    -_ICOSA_O,
+    _ICOSA_T,
+    0.0,
+    _ICOSA_O,
+    _ICOSA_T,
+    0.0,
+    -_ICOSA_O,
+    -_ICOSA_T,
+    0.0,
+    _ICOSA_O,
+    -_ICOSA_T,
+    _ICOSA_T,
+    0.0,
+    -_ICOSA_O,
+    _ICOSA_T,
+    0.0,
+    _ICOSA_O,
+    -_ICOSA_T,
+    0.0,
+    -_ICOSA_O,
+    -_ICOSA_T,
+    0.0,
+    _ICOSA_O,
 ]
 _ICOSA_TRI_INDICES = [
-    0, 11, 5, 0, 5, 1, 0, 1, 7, 0, 7, 10, 0, 10, 11,
-    1, 5, 9, 5, 11, 4, 11, 10, 2, 10, 7, 6, 7, 1, 8,
-    3, 9, 4, 3, 4, 2, 3, 2, 6, 3, 6, 8, 3, 8, 9,
-    4, 9, 5, 2, 4, 11, 6, 2, 10, 8, 6, 7, 9, 8, 1,
+    0,
+    11,
+    5,
+    0,
+    5,
+    1,
+    0,
+    1,
+    7,
+    0,
+    7,
+    10,
+    0,
+    10,
+    11,
+    1,
+    5,
+    9,
+    5,
+    11,
+    4,
+    11,
+    10,
+    2,
+    10,
+    7,
+    6,
+    7,
+    1,
+    8,
+    3,
+    9,
+    4,
+    3,
+    4,
+    2,
+    3,
+    2,
+    6,
+    3,
+    6,
+    8,
+    3,
+    8,
+    9,
+    4,
+    9,
+    5,
+    2,
+    4,
+    11,
+    6,
+    2,
+    10,
+    8,
+    6,
+    7,
+    9,
+    8,
+    1,
 ]
 # Box vertices: 8 corners of a unit cube centered at origin (the Mesh
 # variant scales by `size`). Indices match the cube/draw.rs winding.
 _UNIT_BOX_VERTICES = [
-    -0.5, -0.5, -0.5, 0.5, -0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, -0.5,
-    -0.5, -0.5, 0.5, 0.5, -0.5, 0.5, 0.5, 0.5, 0.5, -0.5, 0.5, 0.5,
+    -0.5,
+    -0.5,
+    -0.5,
+    0.5,
+    -0.5,
+    -0.5,
+    0.5,
+    0.5,
+    -0.5,
+    -0.5,
+    0.5,
+    -0.5,
+    -0.5,
+    -0.5,
+    0.5,
+    0.5,
+    -0.5,
+    0.5,
+    0.5,
+    0.5,
+    0.5,
+    -0.5,
+    0.5,
+    0.5,
 ]
 _BOX_TRI_INDICES = [
-    0, 2, 1, 0, 3, 2,    # -Z face
-    4, 5, 6, 4, 6, 7,    # +Z face
-    0, 1, 5, 0, 5, 4,    # -Y face
-    3, 6, 2, 3, 7, 6,    # +Y face
-    0, 4, 7, 0, 7, 3,    # -X face
-    1, 2, 6, 1, 6, 5,    # +X face
+    0,
+    2,
+    1,
+    0,
+    3,
+    2,  # -Z face
+    4,
+    5,
+    6,
+    4,
+    6,
+    7,  # +Z face
+    0,
+    1,
+    5,
+    0,
+    5,
+    4,  # -Y face
+    3,
+    6,
+    2,
+    3,
+    7,
+    6,  # +Y face
+    0,
+    4,
+    7,
+    0,
+    7,
+    3,  # -X face
+    1,
+    2,
+    6,
+    1,
+    6,
+    5,  # +X face
 ]
 
 
@@ -106,14 +237,34 @@ def _make_sphere_mesh(radius):
     # Mirrors `unit_icosa_lv1_*` in pyxel-core/src/cube/draw.rs so the
     # mesh-asset path matches the immediate-mode `node.sphere()` look.
     edges = [
-        (0, 1), (0, 5), (0, 7), (0, 10), (0, 11),
-        (1, 5), (1, 7), (1, 8), (1, 9),
-        (2, 3), (2, 4), (2, 6), (2, 10), (2, 11),
-        (3, 4), (3, 6), (3, 8), (3, 9),
-        (4, 5), (4, 9), (4, 11),
-        (5, 9), (5, 11),
-        (6, 7), (6, 8), (6, 10),
-        (7, 8), (7, 10),
+        (0, 1),
+        (0, 5),
+        (0, 7),
+        (0, 10),
+        (0, 11),
+        (1, 5),
+        (1, 7),
+        (1, 8),
+        (1, 9),
+        (2, 3),
+        (2, 4),
+        (2, 6),
+        (2, 10),
+        (2, 11),
+        (3, 4),
+        (3, 6),
+        (3, 8),
+        (3, 9),
+        (4, 5),
+        (4, 9),
+        (4, 11),
+        (5, 9),
+        (5, 11),
+        (6, 7),
+        (6, 8),
+        (6, 10),
+        (7, 8),
+        (7, 10),
         (8, 9),
         (10, 11),
     ]
@@ -166,7 +317,9 @@ def _make_textured_box(size):
         for v in face:
             pos_list.extend(v)
         uv_list.extend([0.0, 0.0, u_max, 0.0, 0.0, u_max, u_max, u_max])
-        idx_list.extend([base, base + 1, base + 2, base + 1, base + 3, base + 2])
+        # Wind each face CCW so the surface normal points outward (matches
+        # the colored-box mesh and gives correct Lambert shading).
+        idx_list.extend([base, base + 2, base + 1, base + 1, base + 2, base + 3])
     return Mesh(
         positions=FloatBuffer(pos_list),
         indices=IntBuffer(idx_list),
@@ -254,18 +407,21 @@ class Showcase(Node):
             self.plane(mat, pyxel.images[0], _CAT_UVS, 3.0, 3.0, colkey=0)
 
 
+def _palette() -> list[int]:
+    return [pyxel.colors[i] for i in range(16)]
+
+
 class App:
     def __init__(self):
         pyxel.init(256, 192, title="Pyxel Cube Showcase")
         _load_texture()
         self.scene = Scene()
         self.scene.clear_color = 0
-        light = Light()
-        light.ambient = 0.6
-        light.intensity = 0.4
-        light.direction = Vec3(-0.4, -0.8, -0.4)
-        self.scene.light = light
-        self.scene.shade_ramp = ShadeRamp()
+        self.shading = Shading(_palette())
+        # Light travels from upper-left-front to lower-right-back: +X
+        # (right), -Y (down), -Z (away from viewer).
+        self.shading.direction = Vec3(0.4, -0.8, -0.4)
+        self.scene.shading = self.shading
         self.actor = Showcase()
         self.scene.add_child(self.actor)
         self.camera = Camera()

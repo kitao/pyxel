@@ -10,7 +10,6 @@
 
 use std::sync::OnceLock;
 
-use crate::cube::light::Light;
 use crate::cube::mat4::Mat4;
 use crate::cube::mesh::Mesh;
 use crate::cube::raster::{
@@ -19,7 +18,7 @@ use crate::cube::raster::{
     screen_circle, sprite_corners, tri_normal, world_to_screen, write_pixel, ELLIPSE_SEGMENTS,
 };
 use crate::cube::scene::DrawContext;
-use crate::cube::shade_ramp::ShadeRamp;
+use crate::cube::shading::Shading;
 use crate::cube::vec3::Vec3;
 use crate::font::Font;
 use crate::image::{Image, RcImage};
@@ -44,8 +43,8 @@ pub type Uvs = ((f32, f32), (f32, f32), (f32, f32), (f32, f32));
 
 // Per-call modifier bundle. Bound by each draw command before it calls
 // the rasterizer; the rasterizer reads `ctx.dither_alpha`,
-// `ctx.depth_test`, `ctx.depth_write`. `shaded` decides whether
-// `light` / `ramp` are forwarded to the lighting calculation; `billboard`
+// `ctx.depth_test`, `ctx.depth_write`. `shaded` decides whether the
+// `shading` is consulted for the per-face brightness; `billboard`
 // rewrites `world_mat` rotation so the surface faces the camera.
 #[derive(Clone, Copy)]
 pub struct DrawState<'a> {
@@ -54,8 +53,7 @@ pub struct DrawState<'a> {
     pub depth_test: bool,
     pub depth_write: bool,
     pub billboard: i32,
-    pub light: Option<&'a Light>,
-    pub ramp: Option<&'a ShadeRamp>,
+    pub shading: Option<&'a Shading>,
 }
 
 impl DrawState<'_> {
@@ -66,8 +64,7 @@ impl DrawState<'_> {
             depth_test: true,
             depth_write: true,
             billboard: BILLBOARD_OFF,
-            light: None,
-            ramp: None,
+            shading: None,
         }
     }
 }
@@ -185,14 +182,14 @@ fn make_image_sampler(img: &Image) -> impl Fn(f32, f32, i32, i32) -> i32 + '_ {
 
 fn make_shaded_sampler<'a>(
     img: &'a Image,
-    ramp: &'a ShadeRamp,
+    shading: &'a Shading,
     level: usize,
 ) -> impl Fn(f32, f32, i32, i32) -> i32 + 'a {
     let w = img.width() as f32;
     let h = img.height() as f32;
     let max_x = (img.width() as i32 - 1).max(0);
     let max_y = (img.height() as i32 - 1).max(0);
-    let palette_size = ramp.palette_size();
+    let palette_size = shading.palette_size();
     move |u, v, x, y| {
         let xi = ((u * w).floor() as i32).clamp(0, max_x);
         let yi = ((v * h).floor() as i32).clamp(0, max_y);
@@ -201,8 +198,8 @@ fn make_shaded_sampler<'a>(
             base
         } else {
             let base_idx = base.clamp(0, palette_size as i32 - 1) as usize;
-            let (primary, secondary, ratio) = ramp.get(base_idx, level);
-            i32::from(dither_pick(primary, secondary, ratio, x, y))
+            let (primary, secondary) = shading.get(base_idx, level);
+            i32::from(dither_pick(primary, secondary, x, y))
         }
     }
 }
@@ -245,7 +242,7 @@ pub fn prim(
         return Err("first + count exceeds buffer size");
     }
     let world_mat = prepare_draw(ctx, world_mat, &state);
-    let lit = state.shaded && state.light.is_some() && state.ramp.is_some();
+    let lit = state.shaded && state.shading.is_some();
     let read_vertex = |idx: usize| -> Vec3 {
         let base = idx * 3;
         let local = Vec3 {
@@ -314,8 +311,10 @@ pub fn prim(
                     let img_ref = rc_ref!(img_rc);
                     if lit {
                         let normal = face_normal();
-                        let level = face_shade_level(state.light.unwrap(), Some(&normal));
-                        let sampler = make_shaded_sampler(img_ref, state.ramp.unwrap(), level);
+                        let shading = state.shading.unwrap();
+                        let direction = rc_ref!(&shading.direction);
+                        let level = face_shade_level(&direction, Some(&normal));
+                        let sampler = make_shaded_sampler(img_ref, shading, level);
                         rasterize_textured_triangle(
                             target_mut,
                             depth,
@@ -356,14 +355,9 @@ pub fn prim(
                 } else {
                     let entry = if lit {
                         let normal = face_normal();
-                        lookup_ramp(
-                            state.ramp.unwrap(),
-                            state.light.unwrap(),
-                            col_flat,
-                            Some(&normal),
-                        )
+                        lookup_ramp(state.shading.unwrap(), col_flat, Some(&normal))
                     } else {
-                        (col_flat, col_flat, 0_u8)
+                        (col_flat, col_flat)
                     };
                     rasterize_triangle(
                         target_mut,
@@ -374,7 +368,6 @@ pub fn prim(
                         p2,
                         entry.0 as u8,
                         entry.1 as u8,
-                        entry.2,
                         ctx.clip,
                         ctx.dither_alpha,
                         ctx.depth_test,
@@ -408,7 +401,6 @@ pub fn prim(
                         p1,
                         col_flat as u8,
                         col_flat as u8,
-                        0,
                         ctx.clip,
                         ctx.dither_alpha,
                         ctx.depth_test,
@@ -976,7 +968,6 @@ pub fn circ(
             sz,
             col as u8,
             col as u8,
-            0,
             ctx.clip,
             ctx.dither_alpha,
             ctx.depth_test,
@@ -1013,7 +1004,6 @@ pub fn circb(
             sz,
             col as u8,
             col as u8,
-            0,
             ctx.clip,
             ctx.dither_alpha,
             ctx.depth_test,

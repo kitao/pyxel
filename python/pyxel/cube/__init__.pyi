@@ -151,24 +151,17 @@ class Camera:
     def __init__(self) -> None: ...
     def __repr__(self) -> str: ...
 
-# ShadeRamp class
-class ShadeRamp:
-    def __init__(self) -> None: ...
-    def __repr__(self) -> str: ...
-    def __getitem__(self, key: tuple[int, int]) -> tuple[int, int, int]: ...
-    def __setitem__(
-        self, key: tuple[int, int], value: tuple[int, int, int]
-    ) -> None: ...
-    def build(self) -> None: ...
-
-# Light class
-class Light:
-    ambient: float
+# Shading class — palette × level lookup table plus the scene-wide light
+# direction. Each cell is either flat (primary == secondary) or a 50:50
+# 2x2 checker between primary and secondary.
+class Shading:
     direction: Vec3
-    intensity: float
 
-    def __init__(self) -> None: ...
+    def __init__(self, colors: list[int]) -> None: ...
     def __repr__(self) -> str: ...
+    def __getitem__(self, key: tuple[int, int]) -> tuple[int, int]: ...
+    def __setitem__(self, key: tuple[int, int], value: tuple[int, int]) -> None: ...
+    def build(self, colors: list[int]) -> None: ...
 
 # Contact class — placeholder for collision-pipeline payload (deferred;
 # see cube-design.md § 15).
@@ -233,8 +226,12 @@ class IntBuffer:
 # Mesh class
 class Mesh:
     positions: FloatBuffer  # flat (x,y,z) triples; PRIM_TRIANGLES winding
-    indices: IntBuffer | None  # flat triangle indices; None draws as a flat triangle list
-    normals: FloatBuffer | None  # flat (nx,ny,nz) per-vertex; None auto-computes from face
+    indices: (
+        IntBuffer | None
+    )  # flat triangle indices; None draws as a flat triangle list
+    normals: (
+        FloatBuffer | None
+    )  # flat (nx,ny,nz) per-vertex; None auto-computes from face
     uvs: FloatBuffer | None  # flat (u,v) per-vertex; None disables texture sampling
     image: Image | None  # source texture; None falls back to the mesh draw col
     colkey: int | None  # transparent color when image is set; None disables colkey
@@ -266,8 +263,7 @@ class Node:
     transform: Mat4
     active: bool  # parent-dominant; False halts update + collision
     visible: bool  # parent-dominant; False halts drawing
-    light: Light | None  # None inherits from the closest non-None ancestor
-    shade_ramp: ShadeRamp | None  # None inherits from the closest non-None ancestor
+    shading: Shading | None  # None inherits from the closest non-None ancestor
     collider: Collider | None  # this node only (collision pipeline deferred)
 
     @property
@@ -534,9 +530,7 @@ class Node:
     # Lifecycle hooks
     def on_update(self) -> None: ...
     def on_draw(self) -> None: ...
-    def on_collide(
-        self, other: Node, contact: Contact | None = None
-    ) -> None: ...
+    def on_collide(self, other: Node, contact: Contact | None = None) -> None: ...
     def on_destroy(self) -> None: ...
 
 # Scene class

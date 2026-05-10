@@ -7,6 +7,7 @@ active draw context (cube-design.md § 12.5). Functional rendering is
 covered by `cube_headless.py` and the example programs.
 """
 
+import pyxel
 import pytest
 
 from pyxel.cube import (
@@ -14,14 +15,17 @@ from pyxel.cube import (
     Collider,
     Contact,
     FloatBuffer,
-    Light,
     Mat4,
     Mesh,
     Node,
     Scene,
-    ShadeRamp,
+    Shading,
     Vec3,
 )
+
+
+def palette() -> list[int]:
+    return [pyxel.colors[i] for i in range(16)]
 
 
 class TestAttributes:
@@ -34,9 +38,8 @@ class TestAttributes:
         assert isinstance(n.transform, Mat4)
         # Cascade attributes are None on a freshly constructed Node so
         # they inherit from the closest non-None ancestor (Scene seeds
-        # both light and shade_ramp; see § 12.4).
-        assert n.light is None
-        assert n.shade_ramp is None
+        # the default Shading; see § 12.4).
+        assert n.shading is None
         assert n.collider is None
         assert n.parent is None
         assert n.children == ()
@@ -62,23 +65,15 @@ class TestAttributes:
         assert pos.y == 2
         assert pos.z == 3
 
-    def test_set_light(self):
+    def test_set_shading(self):
         n = Node()
-        light = Light()
-        light.intensity = 0.25
-        n.light = light
-        assert n.light.intensity == 0.25
-        n.light = None
-        assert n.light is None
-
-    def test_set_shade_ramp(self):
-        n = Node()
-        ramp = ShadeRamp()
-        n.shade_ramp = ramp
-        # Default ramp samples through to (col, col, 0) at level 15.
-        assert n.shade_ramp[0, 15] == ramp[0, 15]
-        n.shade_ramp = None
-        assert n.shade_ramp is None
+        shading = Shading(palette())
+        n.shading = shading
+        # Setter round-trips so reading via the node yields the same
+        # entry as reading from the original shading directly.
+        assert n.shading[0, 2] == shading[0, 2]
+        n.shading = None
+        assert n.shading is None
 
     def test_set_collider(self):
         n = Node()

@@ -1,11 +1,16 @@
-from pyxel.cube import ShadeRamp, Light, Mat4, Node, Scene, Vec3
+import pyxel
+
+from pyxel.cube import Mat4, Node, Scene, Shading, Vec3
+
+
+def palette() -> list[int]:
+    return [pyxel.colors[i] for i in range(16)]
 
 
 class TestDefault:
     def test_construction(self):
         s = Scene()
-        assert isinstance(s.light, Light)
-        assert isinstance(s.shade_ramp, ShadeRamp)
+        assert isinstance(s.shading, Shading)
         assert s.clear_color is None
         assert "Scene(" in repr(s)
 
@@ -16,19 +21,12 @@ class TestDefault:
 
 
 class TestAttributes:
-    def test_set_light(self):
+    def test_set_shading(self):
         s = Scene()
-        new_light = Light()
-        new_light.intensity = 0.5
-        s.light = new_light
-        assert s.light.intensity == 0.5
-
-    def test_set_shade_ramp(self):
-        s = Scene()
-        new_ramp = ShadeRamp()
-        s.shade_ramp = new_ramp
-        # ShadeRamp.__getitem__ returns (primary, secondary, ratio).
-        assert s.shade_ramp[0, 15] == new_ramp[0, 15]
+        new_shading = Shading(palette())
+        s.shading = new_shading
+        # Shading.__getitem__ returns (primary, secondary).
+        assert s.shading[0, 2] == new_shading[0, 2]
 
     def test_clear_color_default_none(self):
         assert Scene().clear_color is None
