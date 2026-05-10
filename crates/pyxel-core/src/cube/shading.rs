@@ -56,11 +56,22 @@ impl Shading {
         // Distance ≥ REJECT_THRESHOLD = "different color". A picker that
         // can't find anything inside the threshold falls back to base
         // flat (= the palette has no usable shade for this hue).
-        const STEP: f32 = 0.05;
+        // STEP keeps the ramp's per-step lightness change at a flavor
+        // level — large enough to read as a visible step in the 4-lv
+        // ramp, small enough that adjacent face brightness levels in 3D
+        // don't read as "neon-sign" abrupt color changes.
+        const STEP: f32 = 0.01;
         const V_DARK_TERMINAL: f32 = 0.05;
-        // Weights: H sensitive, S/V neutral. Calibrated so that two
-        // complementary colors (dH=0.5 at full saturation) score 1.0.
-        const WH: f32 = 4.0;
+        // distance() axis weights. Saturation and value are neutral so
+        // their full-range deltas (= 1.0) saturate REJECT_THRESHOLD on
+        // their own — pure white vs pure black scores 1.0 in V, gray
+        // vs full-saturation hue scores 1.0 in S. Hue is the sensitive
+        // axis: WH=8 means a hue gap of 1/8 of the color wheel
+        // (= 45°) at full saturation already scores 1.0, i.e. is
+        // treated as a different color. This matches the toon-shading
+        // requirement that the ramp must stay inside the source's
+        // hue band.
+        const WH: f32 = 8.0;
         const WS: f32 = 1.0;
         const WV: f32 = 1.0;
         // Achromatic ↔ chromatic crossing penalty, asymmetric.
@@ -174,13 +185,6 @@ impl Shading {
                 rgb_to_hsv(r, g, b)
             }
         };
-        // Score of an entry against an ideal: distance from the ideal
-        // (= source side) to the entry's perceived color (= candidate
-        // side). For dithers this uses the optical-blend HSV, giving
-        // honest credit when a 50:50 mix lands near the ideal.
-        let entry_score =
-            |entry: Entry, ideal: (f32, f32, f32)| -> f32 { distance(ideal, entry_hsv(entry)) };
-
         // Pick two entries (lv 1, lv 0) by enumerating three connectivity
         // patterns and keeping the lowest-total-distance pair. Returns
         // None when the cheapest pattern still exceeds 2 × REJECT.
@@ -217,7 +221,7 @@ impl Shading {
                 if !darker_than_source(lv1) {
                     continue;
                 }
-                let s = entry_score(lv1, ideal_1);
+                let s = distance(ideal_1, entry_hsv(lv1));
                 if s < lv1_solo_best {
                     lv1_solo_best = s;
                 }
@@ -236,13 +240,13 @@ impl Shading {
                     continue;
                 }
                 let l1 = entry_luma(lv1);
-                let s1 = entry_score(lv1, ideal_1);
+                let s1 = distance(ideal_1, entry_hsv(lv1));
                 for (t0, &t0_luma) in luma.iter().enumerate() {
                     if t0 == source || t0_luma >= l1 {
                         continue;
                     }
                     let lv0: Entry = (t0 as i32, t0 as i32);
-                    let s = s1 + entry_score(lv0, ideal_0);
+                    let s = s1 + distance(ideal_0, entry_hsv(lv0));
                     if s < best_a.0 {
                         best_a = (s, lv1, lv0);
                     }
@@ -264,7 +268,7 @@ impl Shading {
                 if !darker_than_source(lv1) || !darker_than_source(lv0) {
                     continue;
                 }
-                let s = entry_score(lv1, ideal_1) + entry_score(lv0, ideal_0);
+                let s = distance(ideal_1, entry_hsv(lv1)) + distance(ideal_0, entry_hsv(lv0));
                 if s < best_b.0 {
                     best_b = (s, lv1, lv0);
                 }
@@ -281,7 +285,7 @@ impl Shading {
                 if !darker_than_source(lv1) {
                     continue;
                 }
-                let s1 = entry_score(lv1, ideal_1);
+                let s1 = distance(ideal_1, entry_hsv(lv1));
                 if s1 > lv1_gate {
                     continue;
                 }
@@ -297,7 +301,7 @@ impl Shading {
                         continue;
                     }
                     let lv0: Entry = (x as i32, y as i32);
-                    let s = s1 + entry_score(lv0, ideal_0);
+                    let s = s1 + distance(ideal_0, entry_hsv(lv0));
                     if s < best_c.0 {
                         best_c = (s, lv1, lv0);
                     }
@@ -330,7 +334,7 @@ impl Shading {
                 }
                 let f: Entry = (t as i32, t as i32);
                 if brighter_than_source(f) {
-                    let s_f = entry_score(f, ideal);
+                    let s_f = distance(ideal, entry_hsv(f));
                     if s_f < best_score {
                         best_score = s_f;
                         best_entry = f;
@@ -338,7 +342,7 @@ impl Shading {
                 }
                 let d: Entry = (source as i32, t as i32);
                 if brighter_than_source(d) && distance(hsv[source], hsv[t]) <= REJECT_THRESHOLD {
-                    let s_d = entry_score(d, ideal);
+                    let s_d = distance(ideal, entry_hsv(d));
                     if s_d < best_score {
                         best_score = s_d;
                         best_entry = d;
