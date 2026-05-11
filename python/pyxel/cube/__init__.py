@@ -3,8 +3,7 @@ from ..pyxel_binding import cube as _binding_cube  # type: ignore
 Camera = _binding_cube.Camera
 Collider = _binding_cube.Collider
 Contact = _binding_cube.Contact
-FloatBuffer = _binding_cube.FloatBuffer
-IntBuffer = _binding_cube.IntBuffer
+Geometry = _binding_cube.Geometry
 Mat4 = _binding_cube.Mat4
 Mesh = _binding_cube.Mesh
 Node = _binding_cube.Node
@@ -17,8 +16,7 @@ __all__ = [
     "Camera",
     "Collider",
     "Contact",
-    "FloatBuffer",
-    "IntBuffer",
+    "Geometry",
     "Mat4",
     "Mesh",
     "Node",

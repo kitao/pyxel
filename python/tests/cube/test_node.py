@@ -14,7 +14,7 @@ from pyxel.cube import (
     Camera,
     Collider,
     Contact,
-    FloatBuffer,
+    Geometry,
     Mat4,
     Mesh,
     Node,
@@ -109,12 +109,6 @@ class TestColliderPlaceholder:
 
 
 class TestClassConstants:
-    def test_prim_modes_distinct_and_gl_ordered(self):
-        # OpenGL-ordered: POINTS=0, LINES=1, TRIANGLES=2 (cube-design.md § 12.1).
-        assert Node.PRIM_POINTS == 0
-        assert Node.PRIM_LINES == 1
-        assert Node.PRIM_TRIANGLES == 2
-
     def test_billboard_modes_distinct(self):
         # Follows Godot BillboardMode with shortened names: OFF=DISABLED,
         # ON=ENABLED, FIXED_Y matches Godot's FIXED_Y (cube-design.md § 12.1).
@@ -269,8 +263,50 @@ class TestImmediateDrawSafety:
     def test_mesh_renames_argument_to_mesh_asset(self):
         # mesh_asset suffix mirrors `mml_str` flow (cube-design.md § 12.5).
         # Mesh has no factory methods; build a 1-triangle mesh by hand.
-        m = Mesh(positions=FloatBuffer([0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0]))
-        Node().mesh(Mat4.IDENTITY, m, col=8, shaded=False)
+        geom = Geometry(positions=[0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0])
+        m = Mesh(geometries=[geom], transforms=[Mat4()], parents=[-1], col_img=8)
+        Node().mesh(Mat4.IDENTITY, m, shaded=False)
+
+    def test_prim_with_geometry(self):
+        # node.prim takes a Geometry asset directly (cube-design.md § 12.5).
+        geom = Geometry(
+            positions=[0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0],
+            indices=[0, 1, 2],
+            prim=Geometry.PRIM_TRIANGLES,
+            cull=Geometry.CULL_BACK,
+        )
+        Node().prim(Mat4.IDENTITY, geom, col_img=7, shaded=False)
+
+    def test_prim_col_img_accepts_image(self):
+        # col_img union accepts an Image (textured) as well as int (flat).
+        # The session-wide conftest fixture already calls pyxel.init.
+        img = pyxel.images[0]
+        geom = Geometry(
+            positions=[0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0],
+            uvs=[0.0, 0.0, 1.0, 0.0, 0.0, 1.0],
+        )
+        Node().prim(Mat4.IDENTITY, geom, col_img=img, colkey=0)
+
+    def test_mesh_col_img_accepts_image(self):
+        # Mesh.col_img union accepts Image — round-trip and draw.
+        img = pyxel.images[0]
+        geom = Geometry(
+            positions=[0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0],
+            uvs=[0.0, 0.0, 1.0, 0.0, 0.0, 1.0],
+        )
+        m = Mesh(
+            geometries=[geom],
+            transforms=[Mat4()],
+            parents=[-1],
+            col_img=img,
+            colkey=0,
+        )
+        # The col_img getter wraps the underlying core Image into a fresh
+        # binding object each call; verify the round-trip by checking it
+        # is an Image instance (not an int) and that drawing succeeds.
+        from pyxel import Image
+        assert isinstance(m.col_img, Image)
+        Node().mesh(Mat4.IDENTITY, m, shaded=False)
 
 
 class TestSceneIntegrationOfNewMethods:

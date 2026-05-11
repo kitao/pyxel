@@ -1,20 +1,32 @@
-use crate::cube::float_buffer::{FloatBuffer, RcFloatBuffer};
-use crate::cube::int_buffer::RcIntBuffer;
+use crate::cube::geometry::RcGeometry;
+use crate::cube::mat4::{Mat4, RcMat4};
 use crate::image::RcImage;
 
-// Geometry asset for `Node.mesh(mat, mesh_asset, ...)`. positions /
-// normals / uvs are flat f32 buffers; indices is a flat i32 buffer of
-// triangle vertex indices (PRIM_TRIANGLES winding). Every component
-// except positions is optional; positions defaults to an empty
-// FloatBuffer so `Mesh::new()` succeeds without arguments and members
-// can be assigned afterwards.
+// Asset container for a hierarchical 3D model. geometries / transforms /
+// parents are parallel arrays; col_img holds either a flat color
+// (ColImage::Color) or a shared texture (ColImage::Image). parents[i] < i
+// is required (topological order); validate() enforces this.
+
+#[derive(Clone)]
+pub enum ColImage {
+    Color(i32),
+    Image(RcImage),
+}
+
+impl ColImage {
+    pub fn as_flat_and_image(&self) -> (i32, Option<RcImage>) {
+        match self {
+            Self::Color(c) => (*c, None),
+            Self::Image(img) => (0, Some(img.clone())),
+        }
+    }
+}
 
 pub struct Mesh {
-    pub positions: RcFloatBuffer,
-    pub indices: Option<RcIntBuffer>,
-    pub normals: Option<RcFloatBuffer>,
-    pub uvs: Option<RcFloatBuffer>,
-    pub image: Option<RcImage>,
+    pub geometries: Vec<Option<RcGeometry>>,
+    pub transforms: Vec<RcMat4>,
+    pub parents: Vec<i32>,
+    pub col_img: ColImage,
     pub colkey: Option<i32>,
 }
 
@@ -23,53 +35,279 @@ define_rc_type!(RcMesh, Mesh);
 impl Mesh {
     pub fn new() -> RcMesh {
         new_rc_type!(Mesh {
-            positions: FloatBuffer::with_size(0),
-            indices: None,
-            normals: None,
-            uvs: None,
-            image: None,
+            geometries: Vec::new(),
+            transforms: Vec::new(),
+            parents: Vec::new(),
+            col_img: ColImage::Color(7),
             colkey: None,
         })
+    }
+
+    pub fn validate(&self) -> Result<(), String> {
+        let n = self.geometries.len();
+        if self.transforms.len() != n || self.parents.len() != n {
+            return Err(format!(
+                "Mesh parallel arrays length mismatch: geometries={}, transforms={}, parents={}",
+                n,
+                self.transforms.len(),
+                self.parents.len(),
+            ));
+        }
+        for (i, &p) in self.parents.iter().enumerate() {
+            if p < -1 {
+                return Err(format!("Mesh.parents[{i}] = {p} < -1"));
+            }
+            if p >= i as i32 {
+                return Err(format!(
+                    "Mesh.parents[{i}] = {p} violates topological order (must be < {i})"
+                ));
+            }
+        }
+        Ok(())
+    }
+
+    // Compose per-part world transforms by walking parents forward in
+    // topological order (parents[i] < i, enforced by validate). `root`
+    // is the outer transform applied to every root part. The returned
+    // vector has the same length as the parallel arrays.
+    pub fn compose_world_transforms(&self, root: &Mat4) -> Vec<Mat4> {
+        let n = self.geometries.len();
+        let mut world: Vec<Mat4> = Vec::with_capacity(n);
+        for i in 0..n {
+            let local: Mat4 = *rc_ref!(&self.transforms[i]);
+            let combined: Mat4 = if self.parents[i] == -1 {
+                *rc_ref!(&root.mul_mat(&local))
+            } else {
+                let parent = world[self.parents[i] as usize];
+                *rc_ref!(&parent.mul_mat(&local))
+            };
+            world.push(combined);
+        }
+        world
+    }
+
+    pub fn descendants(&self, root: i32) -> Vec<i32> {
+        let n = self.parents.len();
+        if root < 0 || (root as usize) >= n {
+            return Vec::new();
+        }
+        let mut in_subtree = vec![false; n];
+        in_subtree[root as usize] = true;
+        let mut result = Vec::new();
+        for j in (root as usize + 1)..n {
+            let p = self.parents[j];
+            if p >= 0 && in_subtree[p as usize] {
+                in_subtree[j] = true;
+                result.push(j as i32);
+            }
+        }
+        result
     }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::cube::int_buffer::IntBuffer;
+    use crate::cube::geometry::Geometry;
+    use crate::cube::mat4::Mat4;
 
     #[test]
     fn test_new_empty() {
         let m = Mesh::new();
         let m = rc_ref!(&m);
-        assert_eq!(rc_ref!(&m.positions).size(), 0);
-        assert!(m.indices.is_none());
-        assert!(m.normals.is_none());
-        assert!(m.uvs.is_none());
-        assert!(m.image.is_none());
+        assert!(m.geometries.is_empty());
+        assert!(m.transforms.is_empty());
+        assert!(m.parents.is_empty());
+        assert!(matches!(m.col_img, ColImage::Color(7)));
         assert!(m.colkey.is_none());
     }
 
     #[test]
-    fn test_assign_members() {
-        let mesh = Mesh::new();
-        let positions = FloatBuffer::from_values(vec![0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0]);
-        let indices = IntBuffer::from_values(vec![0, 1, 2]);
-        let normals = FloatBuffer::from_values(vec![0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0]);
-        let uvs = FloatBuffer::from_values(vec![0.0, 0.0, 1.0, 0.0, 0.0, 1.0]);
+    fn test_validate_topological_order_ok() {
+        let m = Mesh::new();
         {
-            let m = rc_mut!(&mesh);
-            m.positions = positions;
-            m.indices = Some(indices);
-            m.normals = Some(normals);
-            m.uvs = Some(uvs);
-            m.colkey = Some(3);
+            let m = rc_mut!(&m);
+            m.geometries = vec![Some(Geometry::new()), Some(Geometry::new())];
+            m.transforms = vec![Mat4::identity(), Mat4::identity()];
+            m.parents = vec![-1, 0];
         }
-        let m = rc_ref!(&mesh);
-        assert_eq!(rc_ref!(&m.positions).size(), 9);
-        assert_eq!(rc_ref!(m.indices.as_ref().unwrap()).size(), 3);
-        assert_eq!(rc_ref!(m.normals.as_ref().unwrap()).size(), 9);
-        assert_eq!(rc_ref!(m.uvs.as_ref().unwrap()).size(), 6);
-        assert_eq!(m.colkey, Some(3));
+        assert!(rc_ref!(&m).validate().is_ok());
+    }
+
+    #[test]
+    fn test_validate_rejects_forward_parent() {
+        let m = Mesh::new();
+        {
+            let m = rc_mut!(&m);
+            m.geometries = vec![Some(Geometry::new()), Some(Geometry::new())];
+            m.transforms = vec![Mat4::identity(), Mat4::identity()];
+            m.parents = vec![1, -1];
+        }
+        assert!(rc_ref!(&m).validate().is_err());
+    }
+
+    #[test]
+    fn test_validate_rejects_length_mismatch() {
+        let m = Mesh::new();
+        {
+            let m = rc_mut!(&m);
+            m.geometries = vec![Some(Geometry::new()), Some(Geometry::new())];
+            m.transforms = vec![Mat4::identity()];
+            m.parents = vec![-1, 0];
+        }
+        assert!(rc_ref!(&m).validate().is_err());
+    }
+
+    #[test]
+    fn test_validate_rejects_invalid_parent_index() {
+        let m = Mesh::new();
+        {
+            let m = rc_mut!(&m);
+            m.geometries = vec![Some(Geometry::new())];
+            m.transforms = vec![Mat4::identity()];
+            m.parents = vec![-2];
+        }
+        assert!(rc_ref!(&m).validate().is_err());
+    }
+
+    #[test]
+    fn test_descendants() {
+        let m = Mesh::new();
+        {
+            let m = rc_mut!(&m);
+            m.geometries = vec![None, None, None, None];
+            m.transforms = vec![
+                Mat4::identity(),
+                Mat4::identity(),
+                Mat4::identity(),
+                Mat4::identity(),
+            ];
+            m.parents = vec![-1, 0, 0, 2];
+        }
+        let m = rc_ref!(&m);
+        assert_eq!(m.descendants(0), vec![1, 2, 3]);
+        assert_eq!(m.descendants(2), vec![3]);
+        assert_eq!(m.descendants(3), Vec::<i32>::new());
+    }
+
+    #[test]
+    fn test_descendants_out_of_range() {
+        let m = Mesh::new();
+        {
+            let m = rc_mut!(&m);
+            m.geometries = vec![Some(Geometry::new())];
+            m.transforms = vec![Mat4::identity()];
+            m.parents = vec![-1];
+        }
+        let m = rc_ref!(&m);
+        assert_eq!(m.descendants(-1), Vec::<i32>::new());
+        assert_eq!(m.descendants(5), Vec::<i32>::new());
+    }
+
+    #[test]
+    fn test_col_img_as_flat_and_image() {
+        let ci = ColImage::Color(5);
+        let (flat, img) = ci.as_flat_and_image();
+        assert_eq!(flat, 5);
+        assert!(img.is_none());
+    }
+
+    #[test]
+    fn test_compose_world_transforms_single_root() {
+        let m = Mesh::new();
+        {
+            let m = rc_mut!(&m);
+            m.geometries = vec![None];
+            m.transforms = vec![Mat4::from_translation(&crate::cube::vec3::Vec3 {
+                x: 5.0,
+                y: 0.0,
+                z: 0.0,
+            })];
+            m.parents = vec![-1];
+        }
+        let m = rc_ref!(&m);
+        let root_rc = Mat4::from_translation(&crate::cube::vec3::Vec3 {
+            x: 10.0,
+            y: 0.0,
+            z: 0.0,
+        });
+        let root: Mat4 = *rc_ref!(&root_rc);
+        let world = m.compose_world_transforms(&root);
+        // world[0] = root * T(5,0,0) → position (15, 0, 0)
+        assert_eq!(world.len(), 1);
+        let pos0_rc = world[0].pos();
+        let pos0 = rc_ref!(&pos0_rc);
+        assert_eq!(pos0.x, 15.0, "pos0.x = {}", pos0.x);
+    }
+
+    #[test]
+    fn test_compose_world_transforms_chain() {
+        // Three-deep chain: root -> 0 -> 1 -> 2, each adds (1, 0, 0)
+        // translation. The final part 2 should end at (3, 0, 0) when
+        // the outer root is identity.
+        let m = Mesh::new();
+        {
+            let m = rc_mut!(&m);
+            m.geometries = vec![None, None, None];
+            let t = Mat4::from_translation(&crate::cube::vec3::Vec3 {
+                x: 1.0,
+                y: 0.0,
+                z: 0.0,
+            });
+            m.transforms = vec![t.clone(), t.clone(), t];
+            m.parents = vec![-1, 0, 1];
+        }
+        let m = rc_ref!(&m);
+        let root_rc = Mat4::identity();
+        let root = *rc_ref!(&root_rc);
+        let world = m.compose_world_transforms(&root);
+        assert_eq!(world.len(), 3);
+        let pos0_rc = world[0].pos();
+        let pos1_rc = world[1].pos();
+        let pos2_rc = world[2].pos();
+        let pos0 = rc_ref!(&pos0_rc);
+        let pos1 = rc_ref!(&pos1_rc);
+        let pos2 = rc_ref!(&pos2_rc);
+        assert!((pos0.x - 1.0).abs() < 1e-5);
+        assert!((pos1.x - 2.0).abs() < 1e-5);
+        assert!((pos2.x - 3.0).abs() < 1e-5);
+    }
+
+    #[test]
+    fn test_compose_world_transforms_branching() {
+        // Tree: 0 (root) -> 1, 0 -> 2. parts 1 and 2 are siblings.
+        let m = Mesh::new();
+        {
+            let m = rc_mut!(&m);
+            m.geometries = vec![None, None, None];
+            m.transforms = vec![
+                Mat4::identity(),
+                Mat4::from_translation(&crate::cube::vec3::Vec3 {
+                    x: 1.0,
+                    y: 0.0,
+                    z: 0.0,
+                }),
+                Mat4::from_translation(&crate::cube::vec3::Vec3 {
+                    x: 0.0,
+                    y: 1.0,
+                    z: 0.0,
+                }),
+            ];
+            m.parents = vec![-1, 0, 0];
+        }
+        let m = rc_ref!(&m);
+        let root_rc = Mat4::identity();
+        let root = *rc_ref!(&root_rc);
+        let world = m.compose_world_transforms(&root);
+        assert_eq!(world.len(), 3);
+        let pos1_rc = world[1].pos();
+        let pos2_rc = world[2].pos();
+        let pos1 = rc_ref!(&pos1_rc);
+        let pos2 = rc_ref!(&pos2_rc);
+        // Siblings inherit identity from root, so each is translated by its own local.
+        assert!((pos1.x - 1.0).abs() < 1e-5);
+        assert!((pos1.y).abs() < 1e-5);
+        assert!((pos2.x).abs() < 1e-5);
+        assert!((pos2.y - 1.0).abs() < 1e-5);
     }
 }

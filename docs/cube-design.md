@@ -29,7 +29,7 @@ signatures live in `python/pyxel/cube/__init__.pyi`.
 
 ---
 
-## 2. Public Classes (13)
+## 2. Public Classes (12)
 
 | Class | Role |
 |---|---|
@@ -41,10 +41,9 @@ signatures live in `python/pyxel/cube/__init__.pyi`.
 | `Light` | Flat-shading parameters (ambient, direction, intensity) |
 | `Contact` | Collision-pipeline payload placeholder (point / normal); pipeline deferred (§ 15) |
 | `Collider` | Collision-shape placeholder; pipeline deferred (§ 15) |
-| `FloatBuffer` | Fixed-shape 1-D `f32` buffer for fast Rust ↔ Python transfer |
-| `IntBuffer` | Fixed-shape 1-D `i32` buffer (companion to `FloatBuffer`) |
-| `Mesh` | Geometry asset (positions / indices / normals / uvs / image / colkey); flat buffer-based, shareable across Nodes |
-| `Node` | Hierarchy instance with transform, immediate-mode draw commands, and lifecycle hooks; references `Mesh` during draw |
+| `Geometry` | Static vertex-data asset (positions / normals / uvs / indices / prim mode / cull mode); shareable across Node draws and Mesh parts |
+| `Mesh` | Hierarchical 3D model asset (parallel arrays of geometries / transforms / parents) with shared col_img and colkey |
+| `Node` | Hierarchy instance with transform, immediate-mode draw commands, and lifecycle hooks; references `Geometry` / `Mesh` during draw |
 | `Scene` | `Node`-derived root that drives the update / draw cycle and owns the clear color |
 
 ---
@@ -501,145 +500,202 @@ gradients anyway.
 
 ## 10. Buffers
 
-Two fixed-shape 1-D typed buffers for fast Rust ↔ Python data transfer
-without per-element FFI cost: `FloatBuffer` (f32) and `IntBuffer` (i32
-signed). They behave like a 1-D `numpy.ndarray` in shape and indexing,
-restricted to the two element types cube uses for vertex / face / index /
-UV streams.
+Static vertex-data asset. `Geometry` carries the vertex attributes
+(positions / normals / uvs), the topology (indices, prim mode), and
+the back-face cull mode. It is shareable across many `Node` draws and
+across `Mesh` parts.
+
+### 10.1 Class-level Constants
+
+| Name | Value | Attribute |
+|---|---|---|
+| `Geometry.PRIM_POINTS` | `0` | `prim` |
+| `Geometry.PRIM_LINES` | `1` | `prim` |
+| `Geometry.PRIM_TRIANGLES` | `2` | `prim` |
+| `Geometry.CULL_NONE` | `0` | `cull` |
+| `Geometry.CULL_BACK` | `1` | `cull` |
+| `Geometry.CULL_FRONT` | `2` | `cull` |
+
+Mode values follow OpenGL ordering. Cull values use a small `CULL_` enum
+because raw `BACK` / `FRONT` would be ambiguous against other directional
+constants.
+
+### 10.2 Attributes
+
+| Field | Type | Default | Meaning |
+|---|---|---|---|
+| `positions` | `list[float]` | `[]` | flat (x, y, z) triples; `len(positions) % 3 == 0` |
+| `normals` | `list[float] \| None` | `None` | flat (nx, ny, nz) per vertex; `None` triggers per-face auto-compute on first draw |
+| `uvs` | `list[float] \| None` | `None` | flat (u, v) per vertex; `None` disables texture sampling |
+| `indices` | `list[int] \| None` | `None` | flat indices; `None` draws as a flat list whose chunk size follows `prim` |
+| `prim` | `int` | `PRIM_TRIANGLES` | topology (see § 10.1) |
+| `cull` | `int` | `CULL_BACK` | back-face cull mode |
+
+### 10.3 Construction and Mutation
 
 ```python
-buf = FloatBuffer(1024)              # size 1024, zero-filled
-buf = FloatBuffer([1.0, 2.0, 3.0])   # built from a list
-
-buf[0] = 0.5                         # single-element write
-buf[0:10] = [0.0] * 10               # slice bulk write from list
-buf[0:10] = src                      # slice buffer-to-buffer copy
-chunk = buf[0:10]                    # slice bulk read into list[float]
-
-buf.fill(0.0)                        # in-place fill
-buf.resize(2048)                     # in-place size change
-
-len(buf), buf.size                   # element count
-for v in buf: ...                    # iteration
-
-memoryview(buf)                      # zero-copy view (buffer protocol)
+geom = Geometry(
+    positions=[0, 1, 0,  -1, -1, 0,  1, -1, 0],
+    indices=[0, 1, 2],
+    uvs=[0.5, 0,  0, 1,  1, 1],
+    prim=Geometry.PRIM_TRIANGLES,
+    cull=Geometry.CULL_NONE,
+)
+geom.positions = [...]                  # reassign whole buffer
+geom.compute_normals(smooth=False)      # explicit per-face / smooth normals
 ```
 
-`IntBuffer` mirrors the same surface for `int` (signed 32-bit) elements.
+`__init__` is all-optional. Python native `list[float]` / `list[int]`
+are used directly — the redesign drops the earlier `FloatBuffer` /
+`IntBuffer` typed-buffer classes in favor of the standard list
+container. The binding layer copies the list into a contiguous internal
+buffer at attribute assignment, so subsequent draws read from the
+internal buffer without per-element FFI.
 
-### 10.1 Construction
+Slice mutation on the returned list (`geom.positions[0:9] = [...]`)
+does **not** propagate to the internal buffer; reassign the whole list
+to refresh (`geom.positions = new_list`). Dynamic per-frame deformation
+is expressed as a per-frame reassignment; cube's primary use case is
+static asset construction at load time.
 
-```python
-FloatBuffer(0)                       # default: empty buffer
-FloatBuffer(1024)                    # int — pre-sized, zero-filled
-FloatBuffer([1.0, 2.0])              # list — sized to len(values)
-```
+### 10.4 Normal Auto-Cache
 
-`__init__` accepts either an `int` (size) or a `list[float]` (initial
-values). Bulk ingestion from an existing buffer goes through slice
-assignment.
+When `normals` is `None`, the renderer computes per-face flat normals
+on the first draw and stores them on the attribute. Subsequent draws
+reuse the cached normals. To force recomputation after mutating
+`positions`, set `geom.normals = None` (the next draw recomputes), or
+call `compute_normals()` to refresh explicitly.
 
-### 10.2 Indexing
+`compute_normals(smooth: bool = False)`:
 
-| Form | Behavior |
-|---|---|
-| `buf[i]` | int element read |
-| `buf[i] = v` | int element write |
-| `buf[a:b]`, `buf[a:b:s]` | slice read → fresh `list[float]` |
-| `buf[a:b] = list` | slice write from list (size match required) |
-| `buf[a:b] = other` | slice write from same-type buffer (size match) |
+- `smooth=False` (default): one normal per face, replicated to each
+  vertex of that face (flat shading).
+- `smooth=True`: averages adjacent face normals at shared vertices
+  (smooth shading). Requires `indices` populated; with `indices = None`
+  the per-face flat behavior is used.
 
-Slice writes are size-strict: when the destination range and the source
-have different lengths, `ValueError` is raised. Cube buffers do not grow
-or shrink through slice assignment — list-style implicit resizing is
-intentionally excluded.
+### 10.5 Topology and `prim` / `indices` Interaction
 
-### 10.3 In-place Operations
+`prim` determines how indices (or positions, if `indices` is `None`)
+are grouped:
 
-```python
-buf.fill(value)                      # set every element to value
-buf.resize(new_size)                 # change size; values retained up to
-                                     # min(old, new); zero-filled on grow,
-                                     # truncated on shrink
-```
+- `PRIM_POINTS`: 1 index per point.
+- `PRIM_LINES`: 2 indices per line segment.
+- `PRIM_TRIANGLES`: 3 indices per triangle.
 
-`resize` is the only operation that changes `buf.size`.
+A geometry's `prim` is part of the asset's identity — switching the
+mode at draw time is not supported, because different prim modes have
+different index-list interpretations. To draw the same vertices as both
+a solid mesh and a wireframe, create two separate `Geometry` instances
+with different `indices` and `prim` values.
 
-### 10.4 Buffer Protocol
+### 10.6 Per-Geometry Cull Mode
 
-Both classes implement Python's buffer protocol so callers can obtain a
-zero-copy view via `memoryview(buf)`. Buffer protocol interop also lets
-`array.array` and `bytes` read the data without going through the
-per-element `__getitem__` path. `resize` invalidates outstanding views.
-
-### 10.5 Design Notes
-
-- **Two static types instead of one tagged class**: `FloatBuffer` and
-  `IntBuffer` keep `__getitem__` / `__setitem__` static-typed at the
-  PyO3 boundary, avoiding the dispatch cost a `dtype`-tagged single
-  class would incur on the hot path. Type checkers see `float` / `int`
-  directly without union narrowing.
-- **No bulk methods (`from_list`, `to_list`, `copy_from`)**: every bulk
-  operation has a slice-idiom equivalent (`buf[:] = values`, `buf[:]`,
-  `dst[:] = src`); a parallel method API would only duplicate the slice
-  idiom and force callers to choose between two equivalent surfaces.
-- **Size-strict slice assignment**: a cube buffer is a fixed-shape data
-  carrier, not a dynamic list. Slice writes that silently change size
-  are the failure mode that distinguishes it from `list` and
-  `bytearray`. `resize` is the explicit, single-purpose size-changing
-  operation.
-- **No element-wise arithmetic / broadcasting**: cube buffers carry data
-  for the renderer; arithmetic happens in the renderer's hot path, not
-  through Python operator dispatch.
+`cull` is held on `Geometry` (not per draw) because it is a geometric
+property: planar grass billboards need `CULL_NONE` (two-sided), solid
+boxes need `CULL_BACK` (single-sided), independent of the draw
+context. If a shape has mixed cull regions (e.g., character body
+cull-on + hair-plane cull-off), split the shape into two `Geometry`
+instances and combine them through `Mesh` parts or a `Node` hierarchy.
 
 ---
 
 ## 11. Mesh
 
-A geometry asset for `Node.mesh(mat, mesh_asset, ...)`. Flat
-`FloatBuffer` / `IntBuffer` storage keeps the layout cache-friendly,
-SIMD-friendly, and shareable across Node instances (multiple Nodes can
-reference the same Mesh).
+A hierarchical 3D model asset. `Mesh` bundles multiple `Geometry`
+parts (positions / topology / cull) with a shared texture or flat
+color (`col_img`) and parent-child relationships between parts (held
+as parallel arrays). Drawing routes through `Node.mesh(mat, mesh)`,
+which composes per-part world transforms and emits each part through
+the same internal path as `Node.prim`.
 
 ### 11.1 Members
 
 | Field | Type | Meaning |
 |---|---|---|
-| `positions` | `FloatBuffer` | flat (x, y, z) triples; PRIM_TRIANGLES winding |
-| `indices` | `IntBuffer \| None` | triangle indices into positions; None draws as a flat triangle list |
-| `normals` | `FloatBuffer \| None` | flat (nx, ny, nz) per vertex; None auto-computes a per-face normal |
-| `uvs` | `FloatBuffer \| None` | flat (u, v) per vertex; None disables texture sampling |
-| `image` | `Image \| None` | source texture; None falls back to the per-call `col` |
-| `colkey` | `int \| None` | transparent color when `image` is set |
+| `geometries` | `list[Geometry \| None]` | part i's `Geometry`, or `None` for a pure group (transform-only, no draw) |
+| `transforms` | `list[Mat4]` | part i's local transform in its parent's frame |
+| `parents` | `list[int]` | part i's parent index; `-1` marks a root; `parents[i] < i` always |
+| `col_img` | `int \| Image` | flat color (when `int`) or shared texture (when `Image`) for all parts |
+| `colkey` | `int \| None` | transparent color when `col_img` is `Image` |
 
-### 11.2 Construction
+### 11.2 Parallel Arrays
+
+The three lists `geometries`, `transforms`, and `parents` are parallel:
+all three index the same set of mesh parts and must have the same
+length. The constructor validates the length match and raises
+`ValueError` on mismatch.
+
+### 11.3 Topological Order Constraint
+
+`parents[i] < i` is required for every `i`. The constructor enforces
+the constraint, raising `ValueError` if violated. This makes world
+transform computation a single forward pass:
 
 ```python
-m = Mesh()                                  # empty; assign members later
-m = Mesh(positions=FloatBuffer([...]))      # one-shot through __init__
-m.indices = IntBuffer([0, 1, 2, ...])       # mutate fields directly
+world = [None] * len(transforms)
+for i in range(len(transforms)):
+    if parents[i] == -1:
+        world[i] = transforms[i]
+    else:
+        world[i] = world[parents[i]] * transforms[i]
 ```
 
-`__init__` is all-optional. Members can be assigned at construction or
-afterwards. Drawing a Mesh whose `positions` is empty raises at the
-call site — no silent no-op.
+### 11.4 Construction
 
-`Mesh` has no `load()` and no factory methods (`box` / `sphere` /
-`from_vertices` etc.). Use the immediate-mode draw commands
-(`self.box`, `self.sphere`, …) for primitive shapes, and build custom
-meshes by populating `FloatBuffer` / `IntBuffer` directly.
+```python
+character = Mesh(
+    geometries=[geom_body, geom_hair, geom_sword, None],
+    transforms=[
+        Mat4.IDENTITY,
+        Mat4.from_translation(Vec3(0, 1, 0)),
+        Mat4.from_rotation(Vec3(0, 0, 90)),
+        Mat4.from_translation(Vec3(0.5, 0, 0)),
+    ],
+    parents=[-1, 0, 3, 0],
+    col_img=pyxel.images[0],
+    colkey=0,
+)
+```
 
-### 11.3 Drawing patterns
+`__init__` is all-optional. Parts can be added by reassigning the three
+arrays (each reassignment revalidates). `Mesh` has no factory methods;
+build the asset by populating the arrays directly. For load-from-file
+workflows (e.g., glTF import), the importer assembles the arrays in
+topological order and hands them to the constructor.
+
+### 11.5 `descendants` Helper
+
+```python
+indices: list[int] = mesh.descendants(i)
+```
+
+Returns all part indices that are transitive children of part `i`
+(excluding `i` itself), in topological order. Used by callers that
+want to bulk-transform a subtree (e.g., move the weapon and everything
+attached). Runs in O(N) via a single forward sweep using the
+topological-order invariant.
+
+### 11.6 Shared `col_img` and `colkey`
+
+`col_img` is shared across every part of the mesh. Mixed-texture models
+(different parts needing different images) are expressed as separate
+`Mesh` instances combined through a `Node` hierarchy. This keeps `Mesh`
+focused on "one model, one texture atlas" — the typical structure for
+pixel-art asset workflows.
+
+### 11.7 Drawing patterns
 
 | Use case | Pattern |
 |---|---|
 | Reusable mesh on an actor | hold one `Mesh` and call `self.mesh(mat, mesh_asset)` in `on_draw` |
-| Dynamic mesh (per-frame deform) | mutate `positions` / `indices` / `uvs` via `FloatBuffer` / `IntBuffer` slice ops, then `self.mesh(mat, mesh_asset)` |
+| Same model, different transform per instance | one `Mesh` referenced from many `Node` instances |
+| Dynamic mesh (per-frame deform) | reassign `geom.positions` per frame for the part being deformed |
 | Many small line / triangle draws | use `self.line` / `self.tri` in `on_draw` directly (no `Mesh` needed) |
+| Custom raw draw | construct a `Geometry` directly and call `self.prim(mat, geom)` |
 
-`Mesh` itself is asset-only — there is no `mesh.create_node()` or
-direct draw command on the Mesh. Drawing routes through `Node.mesh`
-(or `Node.prim` for raw buffer access).
+`Mesh` is asset-only — drawing routes through `Node.mesh` (or `Node.prim`
+for a single `Geometry` without the hierarchical container).
 
 ---
 
@@ -693,25 +749,25 @@ Node tree.
 
 #### Class-level constants
 
-`Node` exposes integer constants for primitive modes (used by `prim`'s
-`mode` argument) and billboard modes (used by per-call `billboard`
-arguments):
+`Node` exposes integer constants for billboard modes (used by per-call
+`billboard` arguments):
 
 | Constant | Value | Meaning |
 |---|---|---|
-| `Node.PRIM_POINTS` | 0 | primitive mode for point lists |
-| `Node.PRIM_LINES` | 1 | primitive mode for line segments |
-| `Node.PRIM_TRIANGLES` | 2 | primitive mode for triangles |
 | `Node.BILLBOARD_OFF` | 0 | no billboard adjustment (Node `transform` used as-is) |
 | `Node.BILLBOARD_ON` | 1 | full camera-facing billboard (rotation overridden each draw) |
 | `Node.BILLBOARD_FIXED_Y` | 2 | Y axis fixed to world up; X / Z rotation follows the camera |
 
-Primitive mode values follow OpenGL ordering (POINTS=0, LINES=1,
-TRIANGLES=2); future additions (`PRIM_LINE_STRIP`, `PRIM_LINE_LOOP`,
-`PRIM_TRIANGLE_STRIP`, `PRIM_TRIANGLE_FAN`) keep the GL numbering.
 Billboard mode values follow Godot's `BillboardMode` concept with
 shortened names for brevity: `OFF` corresponds to Godot's `DISABLED`,
 `ON` to `ENABLED`, and `FIXED_Y` matches Godot's `FIXED_Y` directly.
+
+The primitive mode constants (`PRIM_POINTS` / `PRIM_LINES` /
+`PRIM_TRIANGLES`) live on `Geometry` instead (see § 10.1); the mode is
+a property of the asset, not the draw caller. Future additions
+(`PRIM_LINE_STRIP`, `PRIM_LINE_LOOP`, `PRIM_TRIANGLE_STRIP`,
+`PRIM_TRIANGLE_FAN`) will keep the OpenGL numbering established on
+`Geometry`.
 
 ### 12.2 Tree Operations
 
@@ -806,13 +862,13 @@ self.text(pos, s, col, font=None, ...)
 self.sprite(pos, img, uvs, w, h, ...)        # always camera-facing
 self.plane(mat, img, uvs, w, h, ...)         # free orientation
 
-# Mesh asset draw
+# Mesh asset draw (hierarchical, parallel-array based; see § 11)
 self.mesh(mat, mesh_asset, ...)
 
-# Generic primitive draw (low-level, buffer-based)
-# Modes: Node.PRIM_POINTS / Node.PRIM_LINES / Node.PRIM_TRIANGLES
-self.prim(mat, mode, positions, indices=None, normals=None, uvs=None,
-          first=0, count=None, col=7, colkey=None, ...)
+# Generic primitive draw (low-level, takes a Geometry; see § 10)
+# The Geometry carries its own positions / normals / uvs / indices /
+# prim mode / cull mode.
+self.prim(mat, geom, col_img=7, colkey=None, ...)
 ```
 
 #### Positioning conventions
@@ -832,6 +888,7 @@ that meaningfully apply per command are exposed (rules below):
 
 | Argument | Type | Default | Applies to | Meaning |
 |---|---|---|---|---|
+| `col_img` | `int \| Image` | `7` | `prim` only | flat color when `int`, texture when `Image` (Mesh's own `col_img` is consulted by `mesh`) |
 | `colkey` | `int \| None` | `None` | image / mesh / prim commands | transparent palette index for textures |
 | `angle` | `float` | `0.0` | `sprite` only | screen-space rotation in degrees |
 | `font` | `Font \| None` | `None` | `text` only | overrides default font |
@@ -846,8 +903,9 @@ Rules for which modifier appears on which command:
 - **`shaded`** is omitted from commands that have no surface normal —
   lines, points, outlines (`pset`, `line`, `trib`, `rectb`, `ellib`,
   `boxb`, `sphereb`), screen-aligned circles (`circ`, `circb`), and
-  `text`. `prim` carries `shaded` for use with `PRIM_TRIANGLES`; with
-  `PRIM_LINES` / `PRIM_POINTS` the value is silently ignored.
+  `text`. `prim` carries `shaded` for use with a `Geometry` whose
+  `prim` is `PRIM_TRIANGLES`; with `PRIM_LINES` / `PRIM_POINTS` the
+  value is silently ignored.
 - **`billboard`** is omitted where it has no visible effect — single
   points (`pset`), screen-aligned circles (`circ`, `circb`), `text`
   (always screen-space billboard), and symmetric solids (`sphere`,
@@ -860,7 +918,7 @@ arguments":
 - **Outlines / lines / points / screen-aligned shapes**: `shaded` not
   exposed (treated as unshaded internally).
 - **Filled 2D / 3D solids** (`tri`, `rect`, `elli`, `box`, `sphere`,
-  `plane`, `mesh`, `prim` with `PRIM_TRIANGLES`): `shaded=True`.
+  `plane`, `mesh`, `prim` on a `PRIM_TRIANGLES` Geometry): `shaded=True`.
 - **`sprite`**: `shaded=False` (decoration / particle use cases are
   the majority; set `shaded=True` to blend a sprite into the scene's
   ambient + directional lighting).
@@ -895,17 +953,20 @@ arguments":
   and scale; `(w, h)` is the quad's local width and height.
 - **`mesh`**: draws the given `Mesh` asset's geometry, transformed by
   `mat` in node-local space. Use `Mat4.IDENTITY` to draw the mesh at
-  the node's origin; pass a non-identity `mat` to nudge the mesh
-  relative to the node without changing the node's own transform.
-  `col` (default `7`) is the flat color used when `mesh.image` is None;
-  `colkey` lives on the Mesh (`mesh.colkey`) and is not exposed as a
-  per-call argument.
+  the mesh root at the node's origin; pass a non-identity `mat` to
+  nudge the whole mesh relative to the node without changing the
+  node's own transform. The mesh's parts each carry their own local
+  transform, prim mode, and cull mode; the renderer composes them in
+  topological order. `col_img` and `colkey` live on the `Mesh`
+  (`mesh.col_img`, `mesh.colkey`) and are not exposed as per-call
+  arguments — the asset is the single source of truth for its
+  material.
 - **`prim`**: low-level entry that all higher-level commands route
-  through. Takes raw `FloatBuffer` / `IntBuffer` arrays for vertex
-  / index / normal / UV data, plus a `mode` selecting POINTS / LINES
-  / TRIANGLES. `col` accepts `int | Image` (integer = flat color,
-  Image = textured triangles). `first` and `count` slice into the
-  buffers without copying.
+  through. Takes a single `Geometry` argument carrying the vertex
+  data (positions / normals / uvs / indices), the prim mode, and the
+  cull mode. `col_img` accepts `int | Image` (integer = flat color,
+  Image = textured triangles); `colkey` is the transparent palette
+  index when `col_img` is an Image.
 
 #### Texture and UV layout
 
@@ -1237,6 +1298,31 @@ evidence.
 - **GPU-oriented features** (flat 16-element `to_list` / `from_list` on
   Mat4, OpenGL handles, shader programs) — cube is software-rendered;
   GPU integration is intentionally out of scope.
+- **`col_tex` argument name for asset draws** — would imply a `Texture`
+  class. The 3D industry's `tex` convention (three.js / Godot / Unity)
+  aligns with a separate Texture class on each engine. Cube uses
+  `pyxel.Image` directly with no `Texture` wrapper, so `tex` lacks the
+  language fit; revisit if a Texture class is introduced.
+- **`col_image` argument name** — short-form `col` + full-form `image`
+  mixes naming registers within one compound; the all-short `col_img`
+  is internally consistent.
+- **`mode` as the topology attribute name on `Geometry`** — generic
+  ("mode of what?") and clashes with `cull` as a separate "mode" axis.
+  `prim` is chosen for parallelism with `Node.prim(...)` and the
+  `PRIM_*` constant prefix.
+- **`Geometry.MODE_LINES` / `Geometry.DRAW_LINES` constant prefixes** —
+  ruled out in favor of `Geometry.PRIM_LINES`. `MODE_` ties weakly
+  back to the attribute name and `DRAW_` reads above the topology
+  layer; `PRIM_` matches the 3D-graphics convention (OpenGL `GL_LINES`
+  style) and reuses the symbols that already shipped under `Node.PRIM_*`
+  in the previous draft.
+- **`FloatBuffer` / `IntBuffer` typed-buffer classes** — replaced by
+  native Python `list[float]` / `list[int]`. The earlier design's
+  buffer-protocol / `memoryview` integration is rarely needed at
+  cube's scale, and the two extra classes inflated the public surface
+  for a small subset of consumers. The binding layer copies lists into
+  contiguous internal buffers at attribute assignment, so the
+  rendering hot path is unaffected.
 
 ### 16.4 Scene structure
 
@@ -1250,3 +1336,23 @@ evidence.
   without clear benefit at cube's scale.
 - **Module-level functions in `pyxel.cube`** — the namespace stays
   classes-only for clarity.
+- **`MeshPart` / `MeshNode` as a separate class for parts** — rejected
+  in favor of parallel arrays (`geometries` / `transforms` / `parents`)
+  on `Mesh`. Keeps the public class count down and avoids nested
+  navigation (`mesh.parts[i].transform`) for what is essentially a
+  flat array of per-part data.
+- **Recursive `Mesh` tree** (each `Mesh` has `children: list[Mesh]`) —
+  rejected as overly nested for what is functionally a parts array,
+  and creates a confusing "root vs child Mesh" image-cascade story.
+- **`names: list[str]` on `Mesh`** — deferred until a joint-animation
+  system lands (§ 15 open item). At cube's scale, integer indices and
+  application-side constants cover the immediate need.
+- **`Mesh` holding `image` as an asset attribute** — the prior design
+  bundled `positions / indices / image / colkey` in a single `Mesh`.
+  The redesign splits geometry data (`Geometry`) from textured-model
+  data (`Mesh`), so the reusable shape layer never owns texture; the
+  textured-model layer (Mesh) owns its texture via `col_img`.
+- **Per-part `image` override inside `Mesh`** — rejected in the initial
+  design; mixed-image models split into multiple `Mesh` instances
+  combined via a `Node` hierarchy. Revisit if frequent
+  mixed-image-within-one-asset cases emerge.

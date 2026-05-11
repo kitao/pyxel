@@ -179,81 +179,58 @@ class Collider:
     def __init__(self) -> None: ...
     def __repr__(self) -> str: ...
 
-# FloatBuffer class
-class FloatBuffer:
-    @property
-    def size(self) -> int: ...
-    def __init__(self, source: int | list[float] = 0) -> None: ...
-    def __repr__(self) -> str: ...
-    def __eq__(self, other: object) -> bool: ...
-    @overload
-    def __getitem__(self, i: int) -> float: ...
-    @overload
-    def __getitem__(self, s: slice) -> list[float]: ...
-    @overload
-    def __setitem__(self, i: int, value: float) -> None: ...
-    @overload
-    def __setitem__(self, s: slice, values: list[float]) -> None: ...
-    @overload
-    def __setitem__(self, s: slice, values: FloatBuffer) -> None: ...
-    def __iter__(self) -> Iterator[float]: ...
-    def __len__(self) -> int: ...
-    def fill(self, value: float) -> None: ...
-    def resize(self, size: int) -> None: ...
-
-# IntBuffer class
-class IntBuffer:
-    @property
-    def size(self) -> int: ...
-    def __init__(self, source: int | list[int] = 0) -> None: ...
-    def __repr__(self) -> str: ...
-    def __eq__(self, other: object) -> bool: ...
-    @overload
-    def __getitem__(self, i: int) -> int: ...
-    @overload
-    def __getitem__(self, s: slice) -> list[int]: ...
-    @overload
-    def __setitem__(self, i: int, value: int) -> None: ...
-    @overload
-    def __setitem__(self, s: slice, values: list[int]) -> None: ...
-    @overload
-    def __setitem__(self, s: slice, values: IntBuffer) -> None: ...
-    def __iter__(self) -> Iterator[int]: ...
-    def __len__(self) -> int: ...
-    def fill(self, value: int) -> None: ...
-    def resize(self, size: int) -> None: ...
-
-# Mesh class
-class Mesh:
-    positions: FloatBuffer  # flat (x,y,z) triples; PRIM_TRIANGLES winding
-    indices: (
-        IntBuffer | None
-    )  # flat triangle indices; None draws as a flat triangle list
-    normals: (
-        FloatBuffer | None
-    )  # flat (nx,ny,nz) per-vertex; None auto-computes from face
-    uvs: FloatBuffer | None  # flat (u,v) per-vertex; None disables texture sampling
-    image: Image | None  # source texture; None falls back to the mesh draw col
-    colkey: int | None  # transparent color when image is set; None disables colkey
-
-    def __init__(
-        self,
-        positions: FloatBuffer | None = None,
-        indices: IntBuffer | None = None,
-        normals: FloatBuffer | None = None,
-        uvs: FloatBuffer | None = None,
-        image: Image | None = None,
-        colkey: int | None = None,
-    ) -> None: ...
-    def __repr__(self) -> str: ...
-
-# Node class
-class Node:
-    # Primitive mode constants for `prim` (OpenGL-ordered)
+# Geometry class — static vertex-data asset (positions / normals / uvs /
+# indices / prim mode / cull mode). Shareable across Node draws and Mesh parts.
+class Geometry:
     PRIM_POINTS: int
     PRIM_LINES: int
     PRIM_TRIANGLES: int
 
+    CULL_NONE: int
+    CULL_BACK: int
+    CULL_FRONT: int
+
+    positions: list[float]
+    normals: list[float] | None
+    uvs: list[float] | None
+    indices: list[int] | None
+    prim: int
+    cull: int
+
+    def __init__(
+        self,
+        positions: list[float] | None = None,
+        normals: list[float] | None = None,
+        uvs: list[float] | None = None,
+        indices: list[int] | None = None,
+        prim: int = PRIM_TRIANGLES,
+        cull: int = CULL_BACK,
+    ) -> None: ...
+    def __repr__(self) -> str: ...
+    def compute_normals(self, smooth: bool = False) -> None: ...
+
+# Mesh class — hierarchical 3D model asset (parallel arrays of geometries
+# / transforms / parents, with shared col_img and colkey).
+class Mesh:
+    geometries: list[Geometry | None]  # part i's Geometry (None = pure group)
+    transforms: list[Mat4]  # part i's local transform
+    parents: list[int]  # part i's parent index (-1 = root); parents[i] < i
+    col_img: int | Image  # int = flat color, Image = texture for all parts
+    colkey: int | None  # transparent color when col_img is Image
+
+    def __init__(
+        self,
+        geometries: list[Geometry | None] | None = None,
+        transforms: list[Mat4] | None = None,
+        parents: list[int] | None = None,
+        col_img: int | Image = 7,
+        colkey: int | None = None,
+    ) -> None: ...
+    def __repr__(self) -> str: ...
+    def descendants(self, i: int) -> list[int]: ...
+
+# Node class
+class Node:
     # Billboard mode constants for the per-call `billboard` argument
     BILLBOARD_OFF: int
     BILLBOARD_ON: int
@@ -500,7 +477,6 @@ class Node:
         mat: Mat4,
         mesh_asset: Mesh,
         *,
-        col: int = 7,
         shaded: bool = True,
         dither_alpha: float = 1.0,
         depth_test: bool = True,
@@ -510,15 +486,9 @@ class Node:
     def prim(
         self,
         mat: Mat4,
-        mode: int,
-        positions: FloatBuffer,
+        geom: Geometry,
         *,
-        indices: IntBuffer | None = None,
-        normals: FloatBuffer | None = None,
-        uvs: FloatBuffer | None = None,
-        first: int = 0,
-        count: int | None = None,
-        col: int | Image = 7,
+        col_img: int | Image = 7,
         colkey: int | None = None,
         shaded: bool = True,
         dither_alpha: float = 1.0,

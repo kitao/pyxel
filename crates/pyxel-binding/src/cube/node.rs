@@ -107,13 +107,6 @@ impl Node {
 #[pymethods]
 impl Node {
     #[classattr]
-    const PRIM_POINTS: i32 = pyxel::cube::draw::PRIM_POINTS;
-    #[classattr]
-    const PRIM_LINES: i32 = pyxel::cube::draw::PRIM_LINES;
-    #[classattr]
-    const PRIM_TRIANGLES: i32 = pyxel::cube::draw::PRIM_TRIANGLES;
-
-    #[classattr]
     const BILLBOARD_OFF: i32 = pyxel::cube::draw::BILLBOARD_OFF;
     #[classattr]
     const BILLBOARD_ON: i32 = pyxel::cube::draw::BILLBOARD_ON;
@@ -776,7 +769,7 @@ impl Node {
         });
     }
 
-    #[pyo3(signature = (mat, mesh_asset, *, col=7, shaded=true,
+    #[pyo3(signature = (mat, mesh_asset, *, shaded=true,
                         dither_alpha=1.0, depth_test=true, depth_write=true,
                         billboard=pyxel::cube::draw::BILLBOARD_OFF))]
     #[allow(clippy::too_many_arguments)]
@@ -784,24 +777,14 @@ impl Node {
         &self,
         mat: PyRef<'_, Mat4>,
         mesh_asset: PyRef<'_, super::mesh::Mesh>,
-        col: i32,
         shaded: bool,
         dither_alpha: f32,
         depth_test: bool,
         depth_write: bool,
         billboard: i32,
-    ) -> PyResult<()> {
+    ) {
         let world_mat = self.world_mat_compose(*mat.inner_ref());
         let mesh_inner = mesh_asset.inner.clone();
-        let is_empty = {
-            let m = rc_ref!(&mesh_inner);
-            rc_ref!(&m.positions).size() == 0
-        };
-        if is_empty {
-            return Err(pyo3::exceptions::PyValueError::new_err(
-                "Mesh.positions is empty; assign a non-empty FloatBuffer before drawing",
-            ));
-        }
         self.with_state(
             shaded,
             dither_alpha,
@@ -810,14 +793,12 @@ impl Node {
             billboard,
             |ctx, state| {
                 let m = rc_ref!(&mesh_inner);
-                pyxel::cube::draw::mesh(ctx, &world_mat, m, col, state);
+                pyxel::cube::draw::mesh(ctx, &world_mat, m, state);
             },
         );
-        Ok(())
     }
 
-    #[pyo3(signature = (mat, mode, positions, *, indices=None, normals=None,
-                        uvs=None, first=0, count=None, col=None, colkey=None,
+    #[pyo3(signature = (mat, geom, *, col_img=None, colkey=None,
                         shaded=true, dither_alpha=1.0,
                         depth_test=true, depth_write=true,
                         billboard=pyxel::cube::draw::BILLBOARD_OFF))]
@@ -825,14 +806,8 @@ impl Node {
     fn prim(
         &self,
         mat: PyRef<'_, Mat4>,
-        mode: i32,
-        positions: PyRef<'_, super::float_buffer::FloatBuffer>,
-        indices: Option<PyRef<'_, super::int_buffer::IntBuffer>>,
-        normals: Option<PyRef<'_, super::float_buffer::FloatBuffer>>,
-        uvs: Option<PyRef<'_, super::float_buffer::FloatBuffer>>,
-        first: usize,
-        count: Option<usize>,
-        col: Option<&Bound<'_, PyAny>>,
+        geom: PyRef<'_, super::geometry::Geometry>,
+        col_img: Option<&Bound<'_, PyAny>>,
         colkey: Option<i32>,
         shaded: bool,
         dither_alpha: f32,
@@ -844,21 +819,26 @@ impl Node {
 
         let world_mat = self.world_mat_compose(*mat.inner_ref());
 
-        let positions_data: Vec<f32> = positions.inner_ref().data().to_vec();
-        let indices_data: Option<Vec<i32>> =
-            indices.as_ref().map(|i| i.inner_ref().data().to_vec());
-        let normals_data: Option<Vec<f32>> =
-            normals.as_ref().map(|n| n.inner_ref().data().to_vec());
-        let uvs_data: Option<Vec<f32>> = uvs.as_ref().map(|u| u.inner_ref().data().to_vec());
+        let (positions_data, indices_data, normals_data, uvs_data, prim_mode, cull_mode) = {
+            let g = rc_ref!(&geom.inner);
+            (
+                g.positions.clone(),
+                g.indices.clone(),
+                g.normals.clone(),
+                g.uvs.clone(),
+                g.prim,
+                g.cull,
+            )
+        };
 
-        let (col_flat, col_image) = match col {
+        let (col_flat, col_image) = match col_img {
             Some(c) => {
                 if let Ok(i) = c.extract::<i32>() {
                     (i, None)
                 } else if let Ok(img_ref) = c.cast::<crate::image_wrapper::Image>() {
                     (0, Some(img_ref.borrow().inner.clone()))
                 } else {
-                    return Err(PyTypeError::new_err("col must be int or Image"));
+                    return Err(PyTypeError::new_err("col_img must be int or Image"));
                 }
             }
             None => (7, None),
@@ -879,13 +859,12 @@ impl Node {
             pyxel::cube::draw::prim(
                 ctx,
                 &world_mat,
-                mode,
+                prim_mode,
+                cull_mode,
                 &positions_data,
                 indices_data.as_deref(),
                 normals_data.as_deref(),
                 uvs_data.as_deref(),
-                first,
-                count,
                 col_flat,
                 col_image.as_ref(),
                 colkey,
