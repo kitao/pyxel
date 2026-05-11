@@ -212,9 +212,9 @@ class Geometry:
 # Mesh class — hierarchical 3D model asset (parallel arrays of geometries
 # / transforms / parents, with shared col_img and colkey).
 class Mesh:
-    geometries: list[Geometry | None]  # part i's Geometry (None = pure group)
-    transforms: list[Mat4]  # part i's local transform
-    parents: list[int]  # part i's parent index (-1 = root); parents[i] < i
+    geometries: list[Geometry | None]  # None = pure group (transform-only)
+    transforms: list[Mat4]
+    parents: list[int]  # -1 = root; parents[i] < i invariant
     col_img: int | Image  # int = flat color, Image = texture for all parts
     colkey: int | None  # transparent color when col_img is Image
 
