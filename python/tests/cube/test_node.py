@@ -1,12 +1,3 @@
-"""Tests for `pyxel.cube.Node`.
-
-Most cube primitives are wired through Scene-rooted draw contexts; the
-draw command tests below confirm that each public method accepts its
-documented signature without raising and is a safe no-op outside an
-active draw context (cube-design.md § 12.5). Functional rendering is
-covered by `cube_headless.py` and the example programs.
-"""
-
 import pyxel
 import pytest
 from pyxel import Image

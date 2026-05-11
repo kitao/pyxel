@@ -378,7 +378,7 @@ pub fn lookup_ramp(shading: &Shading, base_col: i32, normal: Option<&Vec3>) -> (
         return (c, c);
     }
     let direction = rc_ref!(&shading.direction);
-    let level = face_shade_level(&direction, normal);
+    let level = face_shade_level(direction, normal);
     let col = base_col.clamp(0, palette_size as i32 - 1) as usize;
     shading.get(col, level)
 }

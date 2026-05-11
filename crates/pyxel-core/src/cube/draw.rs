@@ -327,7 +327,7 @@ pub fn prim(
                         let normal = face_normal();
                         let shading = state.shading.unwrap();
                         let direction = rc_ref!(&shading.direction);
-                        let level = face_shade_level(&direction, Some(&normal));
+                        let level = face_shade_level(direction, Some(&normal));
                         let sampler = make_shaded_sampler(img_ref, shading, level);
                         rasterize_textured_triangle(
                             target_mut,

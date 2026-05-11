@@ -1,11 +1,3 @@
-"""Tests for `pyxel.cube.Mesh`.
-
-Mesh is a hierarchical 3D model asset (cube-design.md § 11): parallel
-arrays of geometries / transforms / parents, plus shared col_img and
-colkey. Topological order (parents[i] < i, with -1 marking roots) is
-enforced at construction.
-"""
-
 import pytest
 
 from pyxel.cube import Geometry, Mat4, Mesh
