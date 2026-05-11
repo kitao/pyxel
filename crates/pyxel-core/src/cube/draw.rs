@@ -10,7 +10,9 @@
 
 use std::sync::OnceLock;
 
-use crate::cube::geometry::{CULL_BACK, CULL_FRONT, CULL_NONE};
+use crate::cube::geometry::{
+    CULL_BACK, CULL_FRONT, CULL_NONE, PRIM_LINES, PRIM_POINTS, PRIM_TRIANGLES,
+};
 use crate::cube::mat4::Mat4;
 use crate::cube::mesh::Mesh;
 use crate::cube::raster::{
@@ -25,14 +27,12 @@ use crate::font::Font;
 use crate::image::{Image, RcImage};
 use crate::settings::{FONT_HEIGHT, FONT_WIDTH, MAX_FONT_CODE, MIN_FONT_CODE, NUM_FONT_COLS};
 
-// Primitive draw modes (binding mirrors these as Node class attrs).
-// Values follow OpenGL ordering (GL_POINTS=0, GL_LINES=1, GL_TRIANGLES=4
-// — cube uses 0/1/2 internally but keeps the relative ordering so
-// future PRIM_LINE_STRIP / LINE_LOOP / TRIANGLE_STRIP / TRIANGLE_FAN
-// additions can interleave the GL numbering as needed).
-pub const PRIM_POINTS: i32 = 0;
-pub const PRIM_LINES: i32 = 1;
-pub const PRIM_TRIANGLES: i32 = 2;
+// Primitive draw modes are owned by `Geometry` (see geometry.rs); this
+// file imports them at the top. Values follow OpenGL ordering
+// (GL_POINTS=0, GL_LINES=1, GL_TRIANGLES=4 — cube uses 0/1/2 internally
+// but keeps the relative ordering so future PRIM_LINE_STRIP / LINE_LOOP
+// / TRIANGLE_STRIP / TRIANGLE_FAN additions can interleave the GL
+// numbering as needed).
 
 // Billboard modes (binding mirrors these as Node class attrs).
 // Mirrors Godot's BillboardMode (DISABLED / ENABLED / FIXED_Y).

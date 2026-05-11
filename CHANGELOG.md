@@ -3,6 +3,7 @@
 ## 3.0.0
 
 - Added Pyxel Cube — a software-rendered 3D extension module
+- Restructured Pyxel Cube assets into Geometry and hierarchical Mesh
 
 ## 2.9.6
 
