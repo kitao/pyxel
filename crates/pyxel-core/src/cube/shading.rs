@@ -1,3 +1,8 @@
+// File-level allow: HSV / RGB color math uses single-letter component
+// names (r, g, b, h, s, v) standard in color science; renaming them
+// would hurt the readability of the ramp-building loops.
+#![allow(clippy::many_single_char_names)]
+
 use crate::cube::vec3::{RcVec3, Vec3};
 use crate::image::{rgb24_to_rgb8, Rgb24};
 

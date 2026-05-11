@@ -1,11 +1,3 @@
-"""Tests for `pyxel.cube.Geometry`.
-
-Geometry is a static vertex-data asset (cube-design.md § 10): positions
-/ normals / uvs / indices plus prim and cull modes. Tests cover
-construction, attribute round-trip, compute_normals (flat / smooth /
-non-triangle / empty / out-of-range), and class-level constants.
-"""
-
 from pyxel.cube import Geometry
 
 
