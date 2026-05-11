@@ -1,7 +1,9 @@
+use pyo3::exceptions::{PyTypeError, PyValueError};
 use pyo3::prelude::*;
+use pyo3::types::PyList;
 
-use super::float_buffer::FloatBuffer;
-use super::int_buffer::IntBuffer;
+use super::geometry::Geometry;
+use super::mat4::Mat4;
 use crate::image_wrapper::Image;
 
 define_wrapper!(Mesh, pyxel::cube::Mesh);
@@ -11,100 +13,110 @@ impl Mesh {
     // Constructor
 
     #[new]
-    #[pyo3(signature = (positions=None, indices=None, normals=None, uvs=None, image=None, colkey=None))]
+    #[pyo3(signature = (
+        geometries=None,
+        transforms=None,
+        parents=None,
+        col_img=None,
+        colkey=None,
+    ))]
     fn new(
-        positions: Option<PyRef<'_, FloatBuffer>>,
-        indices: Option<PyRef<'_, IntBuffer>>,
-        normals: Option<PyRef<'_, FloatBuffer>>,
-        uvs: Option<PyRef<'_, FloatBuffer>>,
-        image: Option<PyRef<'_, Image>>,
+        py: Python<'_>,
+        geometries: Option<Vec<Option<PyRef<'_, Geometry>>>>,
+        transforms: Option<Vec<PyRef<'_, Mat4>>>,
+        parents: Option<Vec<i32>>,
+        col_img: Option<Bound<'_, PyAny>>,
         colkey: Option<i32>,
-    ) -> Self {
+    ) -> PyResult<Self> {
         let mesh = pyxel::cube::Mesh::new();
         {
             let m = rc_mut!(&mesh);
-            if let Some(p) = positions {
-                m.positions = p.inner.clone();
+            if let Some(gs) = geometries {
+                m.geometries = gs.into_iter().map(|g| g.map(|g| g.inner.clone())).collect();
             }
-            if let Some(i) = indices {
-                m.indices = Some(i.inner.clone());
+            if let Some(ts) = transforms {
+                m.transforms = ts.iter().map(|t| t.inner.clone()).collect();
             }
-            if let Some(n) = normals {
-                m.normals = Some(n.inner.clone());
+            if let Some(ps) = parents {
+                m.parents = ps;
             }
-            if let Some(u) = uvs {
-                m.uvs = Some(u.inner.clone());
-            }
-            if let Some(img) = image {
-                m.image = Some(img.inner.clone());
+            if let Some(ci) = col_img {
+                m.col_img = parse_col_img(py, &ci)?;
             }
             m.colkey = colkey;
         }
-        Self::wrap(mesh)
+        rc_ref!(&mesh).validate().map_err(PyValueError::new_err)?;
+        Ok(Self::wrap(mesh))
     }
 
-    // Members
+    // Parts (parallel arrays)
 
     #[getter]
-    fn positions(&self) -> FloatBuffer {
-        FloatBuffer::wrap(self.inner_ref().positions.clone())
+    fn geometries(&self, py: Python<'_>) -> PyResult<Py<PyList>> {
+        let inner = self.inner_ref();
+        let items: Vec<Py<PyAny>> = inner
+            .geometries
+            .iter()
+            .map(|g| match g {
+                Some(g) => match Geometry::wrap(g.clone()).into_pyobject(py) {
+                    Ok(b) => b.into_any().unbind(),
+                    Err(_) => py.None(),
+                },
+                None => py.None(),
+            })
+            .collect();
+        Ok(PyList::new(py, items)?.unbind())
     }
 
     #[setter]
-    fn set_positions(&self, v: PyRef<'_, FloatBuffer>) {
-        self.inner_mut().positions = v.inner.clone();
+    fn set_geometries(&self, v: Vec<Option<PyRef<'_, Geometry>>>) -> PyResult<()> {
+        self.inner_mut().geometries = v.into_iter().map(|g| g.map(|g| g.inner.clone())).collect();
+        self.inner_ref().validate().map_err(PyValueError::new_err)
     }
 
     #[getter]
-    fn indices(&self) -> Option<IntBuffer> {
+    fn transforms(&self) -> Vec<Mat4> {
         self.inner_ref()
-            .indices
-            .as_ref()
-            .map(|i| IntBuffer::wrap(i.clone()))
+            .transforms
+            .iter()
+            .map(|t| Mat4::wrap(t.clone()))
+            .collect()
     }
 
     #[setter]
-    fn set_indices(&self, v: Option<PyRef<'_, IntBuffer>>) {
-        self.inner_mut().indices = v.as_ref().map(|i| i.inner.clone());
+    fn set_transforms(&self, v: Vec<PyRef<'_, Mat4>>) -> PyResult<()> {
+        self.inner_mut().transforms = v.iter().map(|t| t.inner.clone()).collect();
+        self.inner_ref().validate().map_err(PyValueError::new_err)
     }
 
     #[getter]
-    fn normals(&self) -> Option<FloatBuffer> {
-        self.inner_ref()
-            .normals
-            .as_ref()
-            .map(|n| FloatBuffer::wrap(n.clone()))
+    fn parents(&self) -> Vec<i32> {
+        self.inner_ref().parents.clone()
     }
 
     #[setter]
-    fn set_normals(&self, v: Option<PyRef<'_, FloatBuffer>>) {
-        self.inner_mut().normals = v.as_ref().map(|n| n.inner.clone());
+    fn set_parents(&self, v: Vec<i32>) -> PyResult<()> {
+        self.inner_mut().parents = v;
+        self.inner_ref().validate().map_err(PyValueError::new_err)
     }
+
+    // Shared material
 
     #[getter]
-    fn uvs(&self) -> Option<FloatBuffer> {
-        self.inner_ref()
-            .uvs
-            .as_ref()
-            .map(|u| FloatBuffer::wrap(u.clone()))
+    fn col_img(&self, py: Python<'_>) -> PyResult<Py<PyAny>> {
+        match &self.inner_ref().col_img {
+            pyxel::cube::mesh::ColImage::Color(c) => Ok(c.into_pyobject(py)?.into_any().unbind()),
+            pyxel::cube::mesh::ColImage::Image(img) => Ok(Image::wrap(img.clone())
+                .into_pyobject(py)?
+                .into_any()
+                .unbind()),
+        }
     }
 
     #[setter]
-    fn set_uvs(&self, v: Option<PyRef<'_, FloatBuffer>>) {
-        self.inner_mut().uvs = v.as_ref().map(|u| u.inner.clone());
-    }
-
-    #[getter]
-    fn image(&self) -> Option<Image> {
-        self.inner_ref()
-            .image
-            .as_ref()
-            .map(|i| Image::wrap(i.clone()))
-    }
-
-    #[setter]
-    fn set_image(&self, v: Option<PyRef<'_, Image>>) {
-        self.inner_mut().image = v.as_ref().map(|i| i.inner.clone());
+    fn set_col_img(&self, py: Python<'_>, v: Bound<'_, PyAny>) -> PyResult<()> {
+        self.inner_mut().col_img = parse_col_img(py, &v)?;
+        Ok(())
     }
 
     #[getter]
@@ -117,14 +129,33 @@ impl Mesh {
         self.inner_mut().colkey = v;
     }
 
+    // Methods
+
+    fn descendants(&self, i: i32) -> Vec<i32> {
+        self.inner_ref().descendants(i)
+    }
+
     // Dunder
 
     fn __repr__(&self) -> String {
         let m = self.inner_ref();
-        let pos_size = rc_ref!(&m.positions).size();
-        let idx_size = m.indices.as_ref().map_or(0, |i| rc_ref!(i).size());
-        format!("Mesh(positions={pos_size}, indices={idx_size})")
+        format!("Mesh(parts={})", m.geometries.len())
     }
+}
+
+pub(super) fn parse_col_img(
+    _py: Python<'_>,
+    v: &Bound<'_, PyAny>,
+) -> PyResult<pyxel::cube::mesh::ColImage> {
+    if let Ok(c) = v.extract::<i32>() {
+        return Ok(pyxel::cube::mesh::ColImage::Color(c));
+    }
+    if let Ok(img_ref) = v.cast::<Image>() {
+        return Ok(pyxel::cube::mesh::ColImage::Image(
+            img_ref.borrow().inner.clone(),
+        ));
+    }
+    Err(PyTypeError::new_err("col_img must be int or Image"))
 }
 
 pub fn add_mesh_class(m: &Bound<'_, PyModule>) -> PyResult<()> {

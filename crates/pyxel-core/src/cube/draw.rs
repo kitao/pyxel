@@ -10,6 +10,7 @@
 
 use std::sync::OnceLock;
 
+use crate::cube::geometry::{CULL_BACK, CULL_FRONT, CULL_NONE};
 use crate::cube::mat4::Mat4;
 use crate::cube::mesh::Mesh;
 use crate::cube::raster::{
@@ -67,6 +68,21 @@ impl DrawState<'_> {
             shading: None,
         }
     }
+}
+
+// Signed area of the triangle in Y-down screen space. Positive area =
+// CCW winding = front-facing.
+#[inline]
+fn signed_screen_area(p0: (f32, f32, f32), p1: (f32, f32, f32), p2: (f32, f32, f32)) -> f32 {
+    (p1.0 - p0.0) * (p2.1 - p0.1) - (p1.1 - p0.1) * (p2.0 - p0.0)
+}
+
+// Decide whether to skip a face under the given cull mode. Degenerate
+// faces (area == 0) are skipped under any non-NONE cull, matching the
+// convention that they have no front side to draw.
+#[inline]
+fn should_cull(area: f32, cull: i32) -> bool {
+    (cull == CULL_BACK && area <= 0.0) || (cull == CULL_FRONT && area >= 0.0)
 }
 
 // Apply billboard rewriting and per-call modifiers to ctx, returning the
@@ -210,12 +226,11 @@ pub fn prim(
     ctx: &mut DrawContext,
     world_mat: &Mat4,
     mode: i32,
+    cull: i32,
     positions: &[f32],
     indices: Option<&[i32]>,
     normals: Option<&[f32]>,
     uvs: Option<&[f32]>,
-    first: usize,
-    count: Option<usize>,
     col_flat: i32,
     col_image: Option<&RcImage>,
     colkey: Option<i32>,
@@ -230,17 +245,10 @@ pub fn prim(
             return Err("uvs length must equal vertex_count * 2");
         }
     }
-    let total_steps = match indices {
+    let step_count = match indices {
         Some(idx) => idx.len(),
         None => vertex_count,
     };
-    let step_count = match count {
-        Some(c) => c,
-        None => total_steps.saturating_sub(first),
-    };
-    if first.saturating_add(step_count) > total_steps {
-        return Err("first + count exceeds buffer size");
-    }
     let world_mat = prepare_draw(ctx, world_mat, &state);
     let lit = state.shaded && state.shading.is_some();
     let read_vertex = |idx: usize| -> Vec3 {
@@ -254,8 +262,8 @@ pub fn prim(
     };
     let resolve_vertex_index = |step: usize| -> Result<usize, &'static str> {
         let raw = match indices {
-            Some(idx) => idx[first + step],
-            None => (first + step) as i32,
+            Some(idx) => idx[step],
+            None => step as i32,
         };
         if raw < 0 || (raw as usize) >= vertex_count {
             return Err("index out of vertex range");
@@ -293,6 +301,12 @@ pub fn prim(
                 let (Some(p0), Some(p1), Some(p2)) = (p0, p1, p2) else {
                     continue;
                 };
+                if cull != CULL_NONE {
+                    let area = signed_screen_area(p0, p1, p2);
+                    if should_cull(area, cull) {
+                        continue;
+                    }
+                }
                 let face_normal = || -> Vec3 {
                     match normals {
                         Some(n) => Vec3 {
@@ -453,11 +467,10 @@ pub fn pset(ctx: &mut DrawContext, world_mat: &Mat4, local: &Vec3, col: i32, sta
         ctx,
         world_mat,
         PRIM_POINTS,
+        CULL_NONE,
         &positions,
         None,
         None,
-        None,
-        0,
         None,
         col,
         None,
@@ -476,7 +489,7 @@ pub fn line(
 ) {
     let positions = [p1.x, p1.y, p1.z, p2.x, p2.y, p2.z];
     let _ = prim(
-        ctx, world_mat, PRIM_LINES, &positions, None, None, None, 0, None, col, None, None, state,
+        ctx, world_mat, PRIM_LINES, CULL_NONE, &positions, None, None, None, col, None, None, state,
     );
 }
 
@@ -494,11 +507,10 @@ pub fn tri(
         ctx,
         world_mat,
         PRIM_TRIANGLES,
+        CULL_NONE,
         &positions,
         None,
         None,
-        None,
-        0,
         None,
         col,
         None,
@@ -522,7 +534,7 @@ pub fn trib(
         p1.x, p1.y, p1.z,
     ];
     let _ = prim(
-        ctx, world_mat, PRIM_LINES, &positions, None, None, None, 0, None, col, None, None, state,
+        ctx, world_mat, PRIM_LINES, CULL_NONE, &positions, None, None, None, col, None, None, state,
     );
 }
 
@@ -533,11 +545,10 @@ pub fn rect(ctx: &mut DrawContext, world_mat: &Mat4, w: f32, h: f32, col: i32, s
         ctx,
         &scaled,
         PRIM_TRIANGLES,
+        CULL_NONE,
         &UNIT_RECT_POSITIONS,
         Some(&RECT_TRI_INDICES),
         None,
-        None,
-        0,
         None,
         col,
         None,
@@ -552,11 +563,10 @@ pub fn rectb(ctx: &mut DrawContext, world_mat: &Mat4, w: f32, h: f32, col: i32, 
         ctx,
         &scaled,
         PRIM_LINES,
+        CULL_NONE,
         &UNIT_RECT_POSITIONS,
         Some(&RECT_EDGE_INDICES),
         None,
-        None,
-        0,
         None,
         col,
         None,
@@ -573,11 +583,10 @@ pub fn elli(ctx: &mut DrawContext, world_mat: &Mat4, w: f32, h: f32, col: i32, s
         ctx,
         &scaled,
         PRIM_TRIANGLES,
+        CULL_NONE,
         unit_ellipse_positions(),
         Some(&ELLIPSE_TRI_INDICES),
         None,
-        None,
-        0,
         None,
         col,
         None,
@@ -592,11 +601,10 @@ pub fn ellib(ctx: &mut DrawContext, world_mat: &Mat4, w: f32, h: f32, col: i32, 
         ctx,
         &scaled,
         PRIM_LINES,
+        CULL_NONE,
         unit_ellipse_positions(),
         Some(&ELLIPSE_EDGE_INDICES),
         None,
-        None,
-        0,
         None,
         col,
         None,
@@ -613,11 +621,10 @@ pub fn box_solid(ctx: &mut DrawContext, world_mat: &Mat4, size: &Vec3, col: i32,
         ctx,
         &scaled,
         PRIM_TRIANGLES,
+        CULL_NONE,
         &UNIT_BOX_POSITIONS,
         Some(&BOX_TRI_INDICES),
         None,
-        None,
-        0,
         None,
         col,
         None,
@@ -632,11 +639,10 @@ pub fn boxb(ctx: &mut DrawContext, world_mat: &Mat4, size: &Vec3, col: i32, stat
         ctx,
         &scaled,
         PRIM_LINES,
+        CULL_NONE,
         &UNIT_BOX_POSITIONS,
         Some(&BOX_EDGE_INDICES),
         None,
-        None,
-        0,
         None,
         col,
         None,
@@ -897,11 +903,10 @@ pub fn sphere(
         ctx,
         &scaled,
         PRIM_TRIANGLES,
+        CULL_NONE,
         unit_icosa_lv1_positions(),
         Some(unit_icosa_lv1_tri_indices()),
         None,
-        None,
-        0,
         None,
         col,
         None,
@@ -924,11 +929,10 @@ pub fn sphereb(
         ctx,
         &scaled,
         PRIM_LINES,
+        CULL_NONE,
         unit_icosa_lv1_positions(),
         Some(unit_icosa_lv1_edge_indices()),
         None,
-        None,
-        0,
         None,
         col,
         None,
@@ -1058,12 +1062,11 @@ pub fn sprite(
         ctx,
         &identity,
         PRIM_TRIANGLES,
+        CULL_NONE,
         &positions,
         Some(&indices),
         None,
         Some(&uv_array),
-        0,
-        None,
         0,
         Some(img),
         colkey,
@@ -1089,12 +1092,11 @@ pub fn plane(
         ctx,
         &scaled,
         PRIM_TRIANGLES,
+        CULL_NONE,
         &UNIT_RECT_POSITIONS,
         Some(&RECT_TRI_INDICES),
         None,
         Some(&uv_array),
-        0,
-        None,
         0,
         Some(img),
         colkey,
@@ -1102,38 +1104,40 @@ pub fn plane(
     );
 }
 
-// Draw the given Mesh asset's geometry through prim. positions /
-// indices / normals / uvs are passed through directly as slice views
-// over the underlying RcFloatBuffer / RcIntBuffer storage — no copy. An
-// empty positions buffer is silently skipped here; the binding layer
-// raises before we reach this point so the user sees the call site.
-pub fn mesh(ctx: &mut DrawContext, world_mat: &Mat4, mesh: &Mesh, col: i32, state: DrawState) {
-    let positions_buf = rc_ref!(&mesh.positions);
-    let positions = positions_buf.data();
-    if positions.is_empty() {
+// Draw a hierarchical Mesh asset. Each part's world transform is
+// composed in topological order (parents[i] < i is validated at Mesh
+// construction). Per-part vertex / index / uv / normal data and the
+// prim / cull mode come from the part's Geometry; col_img and colkey
+// are shared across the whole mesh.
+pub fn mesh(ctx: &mut DrawContext, world_mat: &Mat4, mesh: &Mesh, state: DrawState) {
+    if mesh.geometries.is_empty() {
         return;
     }
-    let indices_buf = mesh.indices.as_ref().map(|b| rc_ref!(b));
-    let normals_buf = mesh.normals.as_ref().map(|b| rc_ref!(b));
-    let uvs_buf = mesh.uvs.as_ref().map(|b| rc_ref!(b));
-    let indices = indices_buf.as_ref().map(|b| b.data());
-    let normals = normals_buf.as_ref().map(|b| b.data());
-    let uvs = uvs_buf.as_ref().map(|b| b.data());
-    let _ = prim(
-        ctx,
-        world_mat,
-        PRIM_TRIANGLES,
-        positions,
-        indices,
-        normals,
-        uvs,
-        0,
-        None,
-        col,
-        mesh.image.as_ref(),
-        mesh.colkey,
-        state,
-    );
+    let world = mesh.compose_world_transforms(world_mat);
+    let (col_flat, col_image) = mesh.col_img.as_flat_and_image();
+    for (i, geom_opt) in mesh.geometries.iter().enumerate() {
+        let Some(geom_rc) = geom_opt.as_ref() else {
+            continue;
+        };
+        let g = rc_ref!(geom_rc);
+        if g.positions.is_empty() {
+            continue;
+        }
+        let _ = prim(
+            ctx,
+            &world[i],
+            g.prim,
+            g.cull,
+            &g.positions,
+            g.indices.as_deref(),
+            g.normals.as_deref(),
+            g.uvs.as_deref(),
+            col_flat,
+            col_image.as_ref(),
+            mesh.colkey,
+            state,
+        );
+    }
 }
 
 // ============================================================
@@ -1266,5 +1270,59 @@ pub fn text(
             state.depth_test,
             state.depth_write,
         );
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_signed_screen_area_ccw_positive() {
+        // CCW in Y-down screen: (0,0), (1,0), (0,1) → triangle pointing
+        // away from camera with +Y down has positive signed area.
+        let area =
+            signed_screen_area((0.0, 0.0, 0.0), (1.0, 0.0, 0.0), (0.0, 1.0, 0.0));
+        assert!(area > 0.0);
+    }
+
+    #[test]
+    fn test_signed_screen_area_cw_negative() {
+        // CW winding produces negative signed area.
+        let area =
+            signed_screen_area((0.0, 0.0, 0.0), (0.0, 1.0, 0.0), (1.0, 0.0, 0.0));
+        assert!(area < 0.0);
+    }
+
+    #[test]
+    fn test_signed_screen_area_degenerate_zero() {
+        // Collinear points produce zero signed area.
+        let area =
+            signed_screen_area((0.0, 0.0, 0.0), (1.0, 0.0, 0.0), (2.0, 0.0, 0.0));
+        assert_eq!(area, 0.0);
+    }
+
+    #[test]
+    fn test_should_cull_back_skips_back_face() {
+        // CULL_BACK: skip when area <= 0 (back-facing or degenerate).
+        assert!(should_cull(-1.0, CULL_BACK));
+        assert!(should_cull(0.0, CULL_BACK));
+        assert!(!should_cull(1.0, CULL_BACK));
+    }
+
+    #[test]
+    fn test_should_cull_front_skips_front_face() {
+        // CULL_FRONT: skip when area >= 0 (front-facing or degenerate).
+        assert!(should_cull(1.0, CULL_FRONT));
+        assert!(should_cull(0.0, CULL_FRONT));
+        assert!(!should_cull(-1.0, CULL_FRONT));
+    }
+
+    #[test]
+    fn test_should_cull_none_draws_everything() {
+        // CULL_NONE: never skip, regardless of area sign.
+        assert!(!should_cull(1.0, CULL_NONE));
+        assert!(!should_cull(-1.0, CULL_NONE));
+        assert!(!should_cull(0.0, CULL_NONE));
     }
 }
