@@ -1132,7 +1132,10 @@ def draw(self):
   use to derive a default ramp from the current palette.
 - **Joint animation system**: `Node.transform` is the per-frame surface;
   whether a higher-level `Motion` / animation player class is also needed
-  is to be decided alongside the first real-game implementation.
+  is to be decided alongside the first real-game implementation. A
+  `Mesh.names` parallel array (string identifiers for each part, with a
+  `find(name) -> int` lookup) is also deferred to this work, since the
+  primary value of part names is binding them to animation channels.
 - **Camera world ↔ screen helpers**: `Camera.world_to_screen(pos, ...)` /
   `screen_to_world(x, y, depth, ...)` would help HUD coordinates and
   mouse picking. Deferred because viewport size is not held by `Camera`

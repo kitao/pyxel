@@ -9,6 +9,7 @@ covered by `cube_headless.py` and the example programs.
 
 import pyxel
 import pytest
+from pyxel import Image
 
 from pyxel.cube import (
     Camera,
@@ -304,7 +305,6 @@ class TestImmediateDrawSafety:
         # The col_img getter wraps the underlying core Image into a fresh
         # binding object each call; verify the round-trip by checking it
         # is an Image instance (not an int) and that drawing succeeds.
-        from pyxel import Image
         assert isinstance(m.col_img, Image)
         Node().mesh(Mat4.IDENTITY, m, shaded=False)
 

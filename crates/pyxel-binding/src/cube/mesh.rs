@@ -1,6 +1,7 @@
 use pyo3::exceptions::{PyTypeError, PyValueError};
 use pyo3::prelude::*;
 use pyo3::types::PyList;
+use pyxel::cube::mesh::ColImage;
 
 use super::geometry::Geometry;
 use super::mat4::Mat4;
@@ -21,7 +22,6 @@ impl Mesh {
         colkey=None,
     ))]
     fn new(
-        py: Python<'_>,
         geometries: Option<Vec<Option<PyRef<'_, Geometry>>>>,
         transforms: Option<Vec<PyRef<'_, Mat4>>>,
         parents: Option<Vec<i32>>,
@@ -41,7 +41,7 @@ impl Mesh {
                 m.parents = ps;
             }
             if let Some(ci) = col_img {
-                m.col_img = parse_col_img(py, &ci)?;
+                m.col_img = parse_col_img(&ci)?;
             }
             m.colkey = colkey;
         }
@@ -105,8 +105,8 @@ impl Mesh {
     #[getter]
     fn col_img(&self, py: Python<'_>) -> PyResult<Py<PyAny>> {
         match &self.inner_ref().col_img {
-            pyxel::cube::mesh::ColImage::Color(c) => Ok(c.into_pyobject(py)?.into_any().unbind()),
-            pyxel::cube::mesh::ColImage::Image(img) => Ok(Image::wrap(img.clone())
+            ColImage::Color(c) => Ok(c.into_pyobject(py)?.into_any().unbind()),
+            ColImage::Image(img) => Ok(Image::wrap(img.clone())
                 .into_pyobject(py)?
                 .into_any()
                 .unbind()),
@@ -114,8 +114,8 @@ impl Mesh {
     }
 
     #[setter]
-    fn set_col_img(&self, py: Python<'_>, v: Bound<'_, PyAny>) -> PyResult<()> {
-        self.inner_mut().col_img = parse_col_img(py, &v)?;
+    fn set_col_img(&self, v: Bound<'_, PyAny>) -> PyResult<()> {
+        self.inner_mut().col_img = parse_col_img(&v)?;
         Ok(())
     }
 
@@ -143,17 +143,12 @@ impl Mesh {
     }
 }
 
-pub(super) fn parse_col_img(
-    _py: Python<'_>,
-    v: &Bound<'_, PyAny>,
-) -> PyResult<pyxel::cube::mesh::ColImage> {
+fn parse_col_img(v: &Bound<'_, PyAny>) -> PyResult<ColImage> {
     if let Ok(c) = v.extract::<i32>() {
-        return Ok(pyxel::cube::mesh::ColImage::Color(c));
+        return Ok(ColImage::Color(c));
     }
     if let Ok(img_ref) = v.cast::<Image>() {
-        return Ok(pyxel::cube::mesh::ColImage::Image(
-            img_ref.borrow().inner.clone(),
-        ));
+        return Ok(ColImage::Image(img_ref.borrow().inner.clone()));
     }
     Err(PyTypeError::new_err("col_img must be int or Image"))
 }
