@@ -134,8 +134,17 @@ class ImageEditor(EditorBase):
                     col = key - pyxel.KEY_1
                     if pyxel.btn(pyxel.KEY_SHIFT):
                         col += 8
-                    self.color_var = col
+                    if any(pyxel.btn(k) for k in (pyxel.KEY_CTRL, pyxel.KEY_GUI)):
+                        self.secondary_color_var = col
+                    else:
+                        self.color_var = col
                     break
+
+        # image selection shortcuts
+        if pyxel.btnp(pyxel.KEY_PAGEUP):
+            self.image_index_var = min(self.image_index_var + 1, 2)
+        elif pyxel.btnp(pyxel.KEY_PAGEDOWN):
+            self.image_index_var = max(self.image_index_var - 1, 0)
 
     def __on_draw(self):
         self.draw_panel(11, 156, 136, 17)

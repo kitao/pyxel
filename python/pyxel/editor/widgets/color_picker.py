@@ -12,6 +12,7 @@ class ColorPicker(Widget):
 
     def __init__(self, parent, x, y, value, *, with_shadow=False, **kwargs):
         super().__init__(parent, x, y, 65, 17, **kwargs)
+        self.copy_var("secondary_color_var", parent)
         self._with_shadow = with_shadow
         self._color_width = 4 if pyxel.num_user_colors > 16 else 8
         self._color_height = 4 if pyxel.num_user_colors > 32 else 8
@@ -47,11 +48,15 @@ class ColorPicker(Widget):
         self.trigger_event("change", value)
 
     def __on_mouse_down(self, key, x, y):
-        if key != pyxel.MOUSE_BUTTON_LEFT:
+        if key == pyxel.MOUSE_BUTTON_RIGHT:
+            value = self.check_value(x, y)
+            if value is not None:
+                self.secondary_color_var = value
             return
-        value = self.check_value(x, y)
-        if value is not None:
-            self.value_var = value
+        if key == pyxel.MOUSE_BUTTON_LEFT:
+            value = self.check_value(x, y)
+            if value is not None:
+                self.value_var = value
 
     def __on_mouse_drag(self, key, x, y, dx, dy):
         self.__on_mouse_down(key, x, y)
@@ -84,12 +89,8 @@ class ColorPicker(Widget):
         x = self.x + cw * (col % self._num_cols) + cw // 2
         y = self.y + ch * (col // self._num_cols) + ch // 2
         rgb = pyxel.colors[pyxel.NUM_COLORS + col]
-        # ITU-R BT.601 luma
-        brightness = int(
-            ((rgb >> 16) & 0xFF) * 0.299
-            + ((rgb >> 8) & 0xFF) * 0.587
-            + (rgb & 0xFF) * 0.114
-        )
+        brightness = self._luminance(rgb)
+        
         # Cursor scales with cell size:
         #   cell 8x8 -> 3x3 cross, cell 4x8 -> 1x3 vertical, cell 4x4 -> 1x1 dot
         cursor_w = cw // 2 - 1
@@ -99,7 +100,24 @@ class ColorPicker(Widget):
             y - cursor_h // 2,
             cursor_w,
             cursor_h,
-            7 if brightness < 140 else 0,
+            pyxel.COLOR_WHITE if brightness < 140 else pyxel.COLOR_BLACK,
+        )
+        
+        # Secondary Color
+        secondary = self.secondary_color_var
+        x = self.x + cw * (secondary % self._num_cols)+1
+        y = self.y + ch * (secondary // self._num_cols)+1
+        rgb = pyxel.colors[pyxel.NUM_COLORS + secondary]
+        brightness = self._luminance(rgb)
+
+        pyxel.pset(x,y,pyxel.COLOR_WHITE if brightness < 140 else pyxel.COLOR_BLACK)
+
+    def _luminance(self, rgb: int):
+        # ITU-R BT.601 luma
+        return int(
+            ((rgb >> 16) & 0xFF)  * 0.299 #red
+            + ((rgb >> 8) & 0xFF) * 0.587 #green
+            + (rgb & 0xFF)        * 0.114 #blue
         )
 
     def __on_draw(self):
