@@ -81,6 +81,7 @@ class ImageViewer(Widget):
         self.add_event_listener("mouse_drag", self.__on_mouse_drag)
         self.add_event_listener("mouse_hover", self.__on_mouse_hover)
         self.add_event_listener("mouse_wheel", self.__on_mouse_wheel)
+        self.add_event_listener("update", self.__on_update)
         self.add_event_listener("draw", self.__on_draw)
         self.add_var_event_listener("viewport_y_var", "set", self.__on_viewport_y_set)
         self.add_var_event_listener("viewport_x_var", "set", self.__on_viewport_x_set)
@@ -130,7 +131,7 @@ class ImageViewer(Widget):
             self.focus_x_var, self.focus_y_var = self._screen_to_focus(x, y)
             self._press_x = self.focus_x_var
             self._press_y = self.focus_y_var
-        elif key == pyxel.MOUSE_BUTTON_RIGHT:
+        elif key == pyxel.MOUSE_BUTTON_MIDDLE or key == pyxel.MOUSE_BUTTON_RIGHT:
             self._drag_offset_x = 0
             self._drag_offset_y = 0
 
@@ -144,7 +145,7 @@ class ImageViewer(Widget):
                 self.focus_y_var = min(new_y, self._press_y)
             else:
                 self.__on_mouse_down(key, x, y)
-        elif key == pyxel.MOUSE_BUTTON_RIGHT:
+        elif key == pyxel.MOUSE_BUTTON_MIDDLE or key == pyxel.MOUSE_BUTTON_RIGHT:
             self._drag_offset_x -= dx
             self._drag_offset_y -= dy
             if abs(self._drag_offset_x) >= _GRID_SIZE:
@@ -158,6 +159,25 @@ class ImageViewer(Widget):
 
     def __on_mouse_wheel(self, dy):
         self.viewport_y_var -= dy
+
+    def __on_update(self):
+        if self.is_hit(pyxel.mouse_x, pyxel.mouse_y):
+            has_ctrl = pyxel.btn(pyxel.KEY_CTRL) or pyxel.btn(pyxel.KEY_GUI)
+            if has_ctrl and pyxel.btnp(pyxel.KEY_HOME):
+                self.focus_x_var = 0
+                self.focus_y_var = 0
+            elif not has_ctrl and pyxel.btnp(pyxel.KEY_HOME):
+                self.focus_x_var = 0
+            elif has_ctrl and pyxel.btnp(pyxel.KEY_END):
+                self.focus_x_var = _MAX_TILE_INDEX + 1 - self.focus_w_var
+                self.focus_y_var = _MAX_TILE_INDEX + 1 - self.focus_h_var
+            elif not has_ctrl and pyxel.btnp(pyxel.KEY_END):
+                self.focus_x_var = _MAX_TILE_INDEX + 1 - self.focus_w_var
+
+            elif pyxel.btnp(pyxel.KEY_PAGEUP):
+                self.focus_y_var -= 8
+            elif pyxel.btnp(pyxel.KEY_PAGEDOWN):
+                self.focus_y_var += 8
 
     def __on_mouse_hover(self, x, y):
         x, y = self._screen_to_focus(x, y)

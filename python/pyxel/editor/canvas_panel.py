@@ -107,6 +107,7 @@ class CanvasPanel(Widget):
         self.add_event_listener("mouse_up", self.__on_mouse_up)
         self.add_event_listener("mouse_drag", self.__on_mouse_drag)
         self.add_event_listener("mouse_hover", self.__on_mouse_hover)
+        self.add_event_listener("mouse_wheel", self.__on_mouse_wheel)
         self.add_event_listener("update", self.__on_update)
         self.add_event_listener("draw", self.__on_draw)
 
@@ -211,14 +212,21 @@ class CanvasPanel(Widget):
         self._v_scroll_bar.value_var = value
 
     def __on_mouse_down(self, key, x, y):
-        # Color pick (right click on selection tool)
-        if key == pyxel.MOUSE_BUTTON_RIGHT and self.tool_var == TOOL_SELECT:
-            x = self.focus_x_var * 8 + (x - self.x) // 8
-            y = self.focus_y_var * 8 + (y - self.y) // 8
+        # Color pick (middle click on any tool)
+        if key == pyxel.MOUSE_BUTTON_MIDDLE:
+            x_focus = self.focus_x_var * 8 + (x - self.x) // 8
+            y_focus = self.focus_y_var * 8 + (y - self.y) // 8
             if self._is_tilemap_mode:
-                (self.tile_x_var, self.tile_y_var) = self.canvas_var.pget(x, y)
+                (self.tile_x_var, self.tile_y_var) = self.canvas_var.pget(x_focus, y_focus)
             else:
-                self.color_var = self.canvas_var.pget(x, y)
+                color = self.canvas_var.pget(x_focus, y_focus)
+                if pyxel.btn(pyxel.KEY_CTRL):
+                    self.secondary_color_var = color
+                else:
+                    self.color_var = color
+            self._drag_offset_x = 0
+            self._drag_offset_y = 0
+            self._drag_button = key
             return
 
         if key not in (pyxel.MOUSE_BUTTON_LEFT, pyxel.MOUSE_BUTTON_RIGHT):
@@ -275,8 +283,11 @@ class CanvasPanel(Widget):
         if key != self._drag_button:
             return
 
-        self._is_dragged = False
         self._drag_button = None
+        if key == pyxel.MOUSE_BUTTON_MIDDLE:
+            return
+
+        self._is_dragged = False
         if TOOL_PENCIL <= self.tool_var <= TOOL_CIRC:
             self._add_pre_history()
             self.canvas_var.blt(
@@ -291,6 +302,20 @@ class CanvasPanel(Widget):
             self._add_post_history()
 
     def __on_mouse_drag(self, key, x, y, dx, dy):
+        if key == pyxel.MOUSE_BUTTON_MIDDLE:
+            self._drag_offset_x -= dx
+            self._drag_offset_y -= dy
+
+            if abs(self._drag_offset_x) >= 16:
+                offset = self._drag_offset_x // 16
+                self.focus_x_var += offset
+                self._drag_offset_x -= offset * 16
+            if abs(self._drag_offset_y) >= 16:
+                offset = self._drag_offset_y // 16
+                self.focus_y_var += offset
+                self._drag_offset_y -= offset * 16
+            return
+
         if key == self._drag_button:
             x1 = self._press_x
             y1 = self._press_y
@@ -357,31 +382,21 @@ class CanvasPanel(Widget):
             self._last_x = x2
             self._last_y = y2
 
-        elif key == pyxel.MOUSE_BUTTON_RIGHT:
-            self._drag_offset_x -= dx
-            self._drag_offset_y -= dy
-
-            if abs(self._drag_offset_x) >= 16:
-                offset = self._drag_offset_x // 16
-                self.focus_x_var += offset
-                self._drag_offset_x -= offset * 16
-            if abs(self._drag_offset_y) >= 16:
-                offset = self._drag_offset_y // 16
-                self.focus_y_var += offset
-                self._drag_offset_y -= offset * 16
-
     def __on_mouse_hover(self, x, y):
         if self.tool_var == TOOL_SELECT:
             s = "COPY:CTRL+C/X/V FLIP:H/V"
         elif self._is_dragged:
             s = "ASSIST:SHIFT"
         else:
-            s = "PICK:R-CLICK VIEW:R-DRAG"
+            s = "PICK:M-CLICK VIEW:M-DRAG"
 
         x, y = self._screen_to_focus(x, y)
         x += self.focus_x_var * 8
         y += self.focus_y_var * 8
         self.help_message_var = s + f" ({x},{y})"
+
+    def __on_mouse_wheel(self, dy):
+        self.tool_var = (self.tool_var + dy) % 7
 
     def __on_update(self):
         if self._is_dragged and not self._is_assist_mode and pyxel.btn(pyxel.KEY_SHIFT):
