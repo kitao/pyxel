@@ -257,16 +257,22 @@ pub fn sphere_vs_aabb(
         return None;
     }
     let dist = dist_sq.sqrt();
-    let depth = sphere_radius - dist;
-    let normal = if dist > 1e-12 {
-        Vec3 {
+    let (normal, depth) = if dist > 1e-12 {
+        // Sphere center outside the box: normal points from the closest
+        // surface point toward the sphere center; depth is how far the
+        // sphere overhangs the surface along that normal.
+        let n = Vec3 {
             x: dx / dist,
             y: dy / dist,
             z: dz / dist,
-        }
+        };
+        (n, sphere_radius - dist)
     } else {
-        // Sphere center is inside the box; pick the axis with the
-        // smallest penetration so the push-back leaves the box quickly.
+        // Sphere center inside the box: pick the axis of smallest
+        // penetration so the push-back leaves the box quickly. depth
+        // must cover both the center-to-surface distance (min_pen) and
+        // the sphere radius — otherwise an embedded sphere only emerges
+        // partially per frame.
         let pen_x_min = sphere_center.x - box_aabb.min.x;
         let pen_x_max = box_aabb.max.x - sphere_center.x;
         let pen_y_min = sphere_center.y - box_aabb.min.y;
@@ -331,7 +337,7 @@ pub fn sphere_vs_aabb(
                 min_normal = *n;
             }
         }
-        min_normal
+        (min_normal, sphere_radius + min_pen)
     };
     Some(ContactGeom {
         point: Vec3 {
@@ -492,10 +498,13 @@ pub fn ray_vs_aabb(
         }
         let t1 = (bmin - o) / d;
         let t2 = (bmax - o) / d;
+        // t1 < t2 iff d > 0 (bmin < bmax guaranteed); the d == 0 case
+        // is handled above. So the entry face's outward normal is the
+        // axis sign opposite the ray's direction.
         let (t_near, t_far, sign_near) = if t1 < t2 {
-            (t1, t2, if *d > 0.0 { -1.0 } else { 1.0 })
+            (t1, t2, -1.0)
         } else {
-            (t2, t1, if *d > 0.0 { 1.0 } else { -1.0 })
+            (t2, t1, 1.0)
         };
         if t_near > tmin {
             tmin = t_near;
@@ -1294,5 +1303,617 @@ mod tests {
         };
         let r = aabb_vs_triangle(&aabb, v0, v1, v2);
         assert!(r.is_none());
+    }
+
+    #[test]
+    fn test_sphere_vs_aabb_interior_fallback_depth_covers_radius_plus_pen() {
+        // Sphere center fully inside the box. Pre-fix the depth was
+        // sphere_radius (= 1.0) regardless of how deep the center sat,
+        // so a centred sphere never popped out in one frame. The fix
+        // ensures depth = radius + min_pen so the push-back fully
+        // clears the box.
+        let aabb = Aabb {
+            min: Vec3 {
+                x: -1.0,
+                y: -2.0,
+                z: -3.0,
+            },
+            max: Vec3 {
+                x: 1.0,
+                y: 2.0,
+                z: 3.0,
+            },
+        };
+        let center = Vec3 {
+            x: 0.0,
+            y: 0.0,
+            z: 0.0,
+        };
+        let r = sphere_vs_aabb(center, 0.5, &aabb).unwrap();
+        // Minimum penetration is along ±X (X half-extent = 1.0 is the
+        // smallest), so min_pen = 1.0 and depth should be 1.5.
+        assert!(
+            (r.depth - 1.5).abs() < 1e-4,
+            "interior depth {} != 1.5",
+            r.depth
+        );
+        assert!(r.normal.x.abs() > 0.999, "normal not on ±X axis");
+        assert!(r.normal.y.abs() < 1e-4);
+        assert!(r.normal.z.abs() < 1e-4);
+    }
+
+    #[test]
+    fn test_sphere_vs_aabb_interior_picks_smallest_axis() {
+        // Off-centre interior: min_pen along +Y direction (y half =
+        // 1.0, center at y = 0.6 → +Y face at 0.4 distance is smallest).
+        let aabb = Aabb {
+            min: Vec3 {
+                x: -2.0,
+                y: -1.0,
+                z: -2.0,
+            },
+            max: Vec3 {
+                x: 2.0,
+                y: 1.0,
+                z: 2.0,
+            },
+        };
+        let center = Vec3 {
+            x: 0.0,
+            y: 0.6,
+            z: 0.0,
+        };
+        let r = sphere_vs_aabb(center, 0.5, &aabb).unwrap();
+        // Push toward +Y so depth = radius + (1.0 - 0.6) = 0.9.
+        assert!(r.normal.y > 0.99, "normal should point +Y");
+        assert!((r.depth - 0.9).abs() < 1e-4);
+    }
+
+    #[test]
+    fn test_sphere_vs_sphere_touching_returns_none() {
+        // Distance == r_sum is the touching limit (not penetrating).
+        let r = sphere_vs_sphere(
+            Vec3 {
+                x: 0.0,
+                y: 0.0,
+                z: 0.0,
+            },
+            1.0,
+            Vec3 {
+                x: 2.0,
+                y: 0.0,
+                z: 0.0,
+            },
+            1.0,
+        );
+        assert!(r.is_none());
+    }
+
+    #[test]
+    fn test_sphere_vs_sphere_coincident_centers_uses_fallback_normal() {
+        let r = sphere_vs_sphere(
+            Vec3 {
+                x: 0.0,
+                y: 0.0,
+                z: 0.0,
+            },
+            1.0,
+            Vec3 {
+                x: 0.0,
+                y: 0.0,
+                z: 0.0,
+            },
+            1.0,
+        )
+        .unwrap();
+        // Fallback normal points along +Y when centers coincide.
+        assert!((r.normal.y - 1.0).abs() < 1e-4);
+        assert!((r.depth - 2.0).abs() < 1e-4);
+    }
+
+    #[test]
+    fn test_aabb_vs_aabb_picks_smallest_axis() {
+        // Overlap is 2 on X, 0.5 on Y, 1 on Z → Y wins.
+        let a = Aabb {
+            min: Vec3 {
+                x: 0.0,
+                y: 0.0,
+                z: 0.0,
+            },
+            max: Vec3 {
+                x: 2.0,
+                y: 1.0,
+                z: 2.0,
+            },
+        };
+        let b = Aabb {
+            min: Vec3 {
+                x: 0.0,
+                y: 0.5,
+                z: 1.0,
+            },
+            max: Vec3 {
+                x: 2.0,
+                y: 1.5,
+                z: 3.0,
+            },
+        };
+        let r = aabb_vs_aabb(&a, &b).unwrap();
+        assert!(r.normal.y.abs() > 0.99);
+        assert!((r.depth - 0.5).abs() < 1e-4);
+    }
+
+    #[test]
+    fn test_aabb_vs_aabb_no_overlap() {
+        let a = Aabb {
+            min: Vec3 {
+                x: 0.0,
+                y: 0.0,
+                z: 0.0,
+            },
+            max: Vec3 {
+                x: 1.0,
+                y: 1.0,
+                z: 1.0,
+            },
+        };
+        let b = Aabb {
+            min: Vec3 {
+                x: 5.0,
+                y: 5.0,
+                z: 5.0,
+            },
+            max: Vec3 {
+                x: 6.0,
+                y: 6.0,
+                z: 6.0,
+            },
+        };
+        assert!(aabb_vs_aabb(&a, &b).is_none());
+    }
+
+    #[test]
+    fn test_ray_vs_sphere_miss() {
+        let r = ray_vs_sphere(
+            Vec3 {
+                x: 0.0,
+                y: 5.0,
+                z: -5.0,
+            },
+            Vec3 {
+                x: 0.0,
+                y: 0.0,
+                z: 1.0,
+            },
+            Vec3 {
+                x: 0.0,
+                y: 0.0,
+                z: 0.0,
+            },
+            1.0,
+            f32::INFINITY,
+        );
+        assert!(r.is_none());
+    }
+
+    #[test]
+    fn test_ray_vs_sphere_zero_direction_rejected() {
+        let r = ray_vs_sphere(
+            Vec3 {
+                x: 0.0,
+                y: 0.0,
+                z: -5.0,
+            },
+            Vec3 {
+                x: 0.0,
+                y: 0.0,
+                z: 0.0,
+            },
+            Vec3 {
+                x: 0.0,
+                y: 0.0,
+                z: 0.0,
+            },
+            1.0,
+            f32::INFINITY,
+        );
+        assert!(r.is_none());
+    }
+
+    #[test]
+    fn test_ray_vs_sphere_max_distance_cap() {
+        // Ray hits at t=4 with infinite cap, misses with cap=3.5.
+        let origin = Vec3 {
+            x: 0.0,
+            y: 0.0,
+            z: -5.0,
+        };
+        let dir = Vec3 {
+            x: 0.0,
+            y: 0.0,
+            z: 1.0,
+        };
+        let center = Vec3 {
+            x: 0.0,
+            y: 0.0,
+            z: 0.0,
+        };
+        assert!(ray_vs_sphere(origin, dir, center, 1.0, 4.5).is_some());
+        assert!(ray_vs_sphere(origin, dir, center, 1.0, 3.5).is_none());
+    }
+
+    #[test]
+    fn test_ray_vs_aabb_misses_when_pointed_away() {
+        let aabb = Aabb {
+            min: Vec3 {
+                x: -1.0,
+                y: -1.0,
+                z: -1.0,
+            },
+            max: Vec3 {
+                x: 1.0,
+                y: 1.0,
+                z: 1.0,
+            },
+        };
+        let r = ray_vs_aabb(
+            Vec3 {
+                x: 0.0,
+                y: 0.0,
+                z: 5.0,
+            },
+            Vec3 {
+                x: 0.0,
+                y: 0.0,
+                z: 1.0,
+            },
+            &aabb,
+            f32::INFINITY,
+        );
+        assert!(r.is_none());
+    }
+
+    #[test]
+    fn test_ray_vs_aabb_parallel_outside_misses() {
+        // Ray parallel to X axis, origin above the box.
+        let aabb = Aabb {
+            min: Vec3 {
+                x: -1.0,
+                y: -1.0,
+                z: -1.0,
+            },
+            max: Vec3 {
+                x: 1.0,
+                y: 1.0,
+                z: 1.0,
+            },
+        };
+        let r = ray_vs_aabb(
+            Vec3 {
+                x: -5.0,
+                y: 5.0,
+                z: 0.0,
+            },
+            Vec3 {
+                x: 1.0,
+                y: 0.0,
+                z: 0.0,
+            },
+            &aabb,
+            f32::INFINITY,
+        );
+        assert!(r.is_none());
+    }
+
+    #[test]
+    fn test_ray_vs_aabb_face_normal_each_axis() {
+        let aabb = Aabb {
+            min: Vec3 {
+                x: -1.0,
+                y: -1.0,
+                z: -1.0,
+            },
+            max: Vec3 {
+                x: 1.0,
+                y: 1.0,
+                z: 1.0,
+            },
+        };
+        // From -X: normal = (-1, 0, 0)
+        let (_, _, n) = ray_vs_aabb(
+            Vec3 {
+                x: -5.0,
+                y: 0.0,
+                z: 0.0,
+            },
+            Vec3 {
+                x: 1.0,
+                y: 0.0,
+                z: 0.0,
+            },
+            &aabb,
+            f32::INFINITY,
+        )
+        .unwrap();
+        assert!((n.x - (-1.0)).abs() < 1e-4);
+        // From +Y: normal = (0, 1, 0)
+        let (_, _, n) = ray_vs_aabb(
+            Vec3 {
+                x: 0.0,
+                y: 5.0,
+                z: 0.0,
+            },
+            Vec3 {
+                x: 0.0,
+                y: -1.0,
+                z: 0.0,
+            },
+            &aabb,
+            f32::INFINITY,
+        )
+        .unwrap();
+        assert!((n.y - 1.0).abs() < 1e-4);
+    }
+
+    #[test]
+    fn test_ray_vs_triangle_parallel_misses() {
+        let (v0, v1, v2) = (
+            Vec3 {
+                x: 0.0,
+                y: 0.0,
+                z: 0.0,
+            },
+            Vec3 {
+                x: 1.0,
+                y: 0.0,
+                z: 0.0,
+            },
+            Vec3 {
+                x: 0.0,
+                y: 1.0,
+                z: 0.0,
+            },
+        );
+        // Ray parallel to the z=0 triangle plane.
+        let r = ray_vs_triangle(
+            Vec3 {
+                x: 0.5,
+                y: 0.5,
+                z: 1.0,
+            },
+            Vec3 {
+                x: 1.0,
+                y: 0.0,
+                z: 0.0,
+            },
+            v0,
+            v1,
+            v2,
+            f32::INFINITY,
+        );
+        assert!(r.is_none());
+    }
+
+    #[test]
+    fn test_ray_vs_triangle_outside_uv_misses() {
+        let (v0, v1, v2) = (
+            Vec3 {
+                x: 0.0,
+                y: 0.0,
+                z: 0.0,
+            },
+            Vec3 {
+                x: 1.0,
+                y: 0.0,
+                z: 0.0,
+            },
+            Vec3 {
+                x: 0.0,
+                y: 1.0,
+                z: 0.0,
+            },
+        );
+        // Ray crosses the plane but well outside the triangle's UV.
+        let r = ray_vs_triangle(
+            Vec3 {
+                x: 5.0,
+                y: 5.0,
+                z: 5.0,
+            },
+            Vec3 {
+                x: 0.0,
+                y: 0.0,
+                z: -1.0,
+            },
+            v0,
+            v1,
+            v2,
+            f32::INFINITY,
+        );
+        assert!(r.is_none());
+    }
+
+    #[test]
+    fn test_sphere_vs_triangle_edge_hit() {
+        // Sphere center sits over the AB edge at (0.5, -0.4, 0). The
+        // closest point on the triangle is on the edge, not a vertex
+        // and not the face interior.
+        let (v0, v1, v2) = (
+            Vec3 {
+                x: 0.0,
+                y: 0.0,
+                z: 0.0,
+            },
+            Vec3 {
+                x: 1.0,
+                y: 0.0,
+                z: 0.0,
+            },
+            Vec3 {
+                x: 0.0,
+                y: 1.0,
+                z: 0.0,
+            },
+        );
+        let r = sphere_vs_triangle(
+            Vec3 {
+                x: 0.5,
+                y: -0.2,
+                z: 0.0,
+            },
+            0.5,
+            v0,
+            v1,
+            v2,
+        )
+        .unwrap();
+        // Closest point should be on the edge segment AB at (0.5, 0, 0).
+        assert!((r.point.x - 0.5).abs() < 1e-4);
+        assert!(r.point.y.abs() < 1e-4);
+        // Depth = sphere radius - distance from center to closest point.
+        assert!((r.depth - 0.3).abs() < 1e-4);
+    }
+
+    #[test]
+    fn test_sphere_vs_triangle_vertex_hit() {
+        let (v0, v1, v2) = (
+            Vec3 {
+                x: 0.0,
+                y: 0.0,
+                z: 0.0,
+            },
+            Vec3 {
+                x: 1.0,
+                y: 0.0,
+                z: 0.0,
+            },
+            Vec3 {
+                x: 0.0,
+                y: 1.0,
+                z: 0.0,
+            },
+        );
+        let r = sphere_vs_triangle(
+            Vec3 {
+                x: -0.2,
+                y: -0.2,
+                z: 0.0,
+            },
+            0.5,
+            v0,
+            v1,
+            v2,
+        )
+        .unwrap();
+        // Closest is vertex a (0, 0, 0).
+        assert!(r.point.x.abs() < 1e-4);
+        assert!(r.point.y.abs() < 1e-4);
+    }
+
+    #[test]
+    fn test_closest_point_on_triangle_regions() {
+        let a = Vec3 {
+            x: 0.0,
+            y: 0.0,
+            z: 0.0,
+        };
+        let b = Vec3 {
+            x: 1.0,
+            y: 0.0,
+            z: 0.0,
+        };
+        let c = Vec3 {
+            x: 0.0,
+            y: 1.0,
+            z: 0.0,
+        };
+        // Outside near vertex a.
+        let p = Vec3 {
+            x: -1.0,
+            y: -1.0,
+            z: 0.0,
+        };
+        let cp = closest_point_on_triangle(p, a, b, c);
+        assert!(cp.x.abs() < 1e-4 && cp.y.abs() < 1e-4);
+        // Outside near vertex b.
+        let p = Vec3 {
+            x: 2.0,
+            y: -1.0,
+            z: 0.0,
+        };
+        let cp = closest_point_on_triangle(p, a, b, c);
+        assert!((cp.x - 1.0).abs() < 1e-4 && cp.y.abs() < 1e-4);
+        // Outside near vertex c.
+        let p = Vec3 {
+            x: -1.0,
+            y: 2.0,
+            z: 0.0,
+        };
+        let cp = closest_point_on_triangle(p, a, b, c);
+        assert!(cp.x.abs() < 1e-4 && (cp.y - 1.0).abs() < 1e-4);
+        // Interior projects straight down to the plane.
+        let p = Vec3 {
+            x: 0.25,
+            y: 0.25,
+            z: 5.0,
+        };
+        let cp = closest_point_on_triangle(p, a, b, c);
+        assert!((cp.x - 0.25).abs() < 1e-4);
+        assert!((cp.y - 0.25).abs() < 1e-4);
+        assert!(cp.z.abs() < 1e-4);
+    }
+
+    #[test]
+    fn test_collider_aabb_for_sphere_collider() {
+        let coll = crate::cube::Collider::new(
+            crate::cube::Vec3::zero(),
+            0.5,
+            None,
+            false,
+            false,
+            1.0,
+            0.0,
+            0.5,
+            crate::cube::Vec3::zero(),
+            crate::cube::Vec3::zero(),
+        );
+        let transform_rc = crate::cube::Mat4::from_translation(&Vec3 {
+            x: 1.0,
+            y: 2.0,
+            z: 3.0,
+        });
+        let transform = *rc_ref!(&transform_rc);
+        let aabb = collider_aabb(rc_ref!(&coll), &transform);
+        assert!((aabb.min.x - 0.5).abs() < 1e-4); // 1 - 0.5
+        assert!((aabb.max.x - 1.5).abs() < 1e-4);
+        assert!((aabb.min.y - 1.5).abs() < 1e-4);
+        assert!((aabb.max.y - 2.5).abs() < 1e-4);
+    }
+
+    #[test]
+    fn test_aabb_from_rounded_box_rotated_grows_extent() {
+        // A 1x1x1 box rotated 45° around Y projects to a larger AABB
+        // along X / Z (full diagonal ≈ sqrt(2)).
+        let rot_rc = crate::cube::Mat4::from_axis_angle(
+            &Vec3 {
+                x: 0.0,
+                y: 1.0,
+                z: 0.0,
+            },
+            45.0,
+        );
+        let rot = *rc_ref!(&rot_rc);
+        let aabb = Aabb::from_rounded_box(
+            &rot,
+            Vec3 {
+                x: 1.0,
+                y: 1.0,
+                z: 1.0,
+            },
+            0.0,
+        );
+        let extent_x = aabb.max.x - aabb.min.x;
+        // sqrt(2) ≈ 1.414; the non-rotated extent would be 1.0.
+        assert!(extent_x > 1.2);
     }
 }
