@@ -82,7 +82,11 @@ fn signed_screen_area(p0: (f32, f32, f32), p1: (f32, f32, f32), p2: (f32, f32, f
 // convention that they have no front side to draw.
 #[inline]
 fn should_cull(area: f32, cull: i32) -> bool {
-    (cull == CULL_BACK && area <= 0.0) || (cull == CULL_FRONT && area >= 0.0)
+    // Pyxel cube uses CCW outward winding (front face from outside).
+    // Projecting onto the Y-down screen flips the sign: front faces yield
+    // a negative signed_screen_area, back faces yield a positive one.
+    // Degenerate faces (area == 0) are skipped under any non-NONE cull.
+    (cull == CULL_BACK && area >= 0.0) || (cull == CULL_FRONT && area <= 0.0)
 }
 
 // Apply billboard rewriting and per-call modifiers to ctx, returning the
@@ -1304,18 +1308,19 @@ mod tests {
 
     #[test]
     fn test_should_cull_back_skips_back_face() {
-        // CULL_BACK: skip when area <= 0 (back-facing or degenerate).
-        assert!(should_cull(-1.0, CULL_BACK));
+        // CULL_BACK: skip when area >= 0 (back-facing or degenerate) under
+        // CCW-front + Y-down convention.
+        assert!(should_cull(1.0, CULL_BACK));
         assert!(should_cull(0.0, CULL_BACK));
-        assert!(!should_cull(1.0, CULL_BACK));
+        assert!(!should_cull(-1.0, CULL_BACK));
     }
 
     #[test]
     fn test_should_cull_front_skips_front_face() {
-        // CULL_FRONT: skip when area >= 0 (front-facing or degenerate).
-        assert!(should_cull(1.0, CULL_FRONT));
+        // CULL_FRONT: skip when area <= 0 (front-facing or degenerate).
+        assert!(should_cull(-1.0, CULL_FRONT));
         assert!(should_cull(0.0, CULL_FRONT));
-        assert!(!should_cull(-1.0, CULL_FRONT));
+        assert!(!should_cull(1.0, CULL_FRONT));
     }
 
     #[test]

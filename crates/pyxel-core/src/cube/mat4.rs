@@ -3,7 +3,7 @@
 // renaming geometric components hurts readability without clarifying intent.
 #![allow(clippy::many_single_char_names, clippy::needless_range_loop)]
 
-use crate::cube::quat::Quat;
+use crate::cube::quat::{Quat, RcQuat};
 use crate::cube::vec3::{RcVec3, Vec3};
 
 // Immutable 4x4 matrix. Internal storage is row-major: data[row][col].
@@ -67,31 +67,36 @@ impl Mat4 {
         Vec3::new(sx, sy, sz)
     }
 
-    pub fn rot(&self) -> RcVec3 {
-        // Extract Euler XYZ extrinsic from rotation submatrix after removing scale.
+    pub fn rot(&self) -> RcQuat {
+        // Strip scale from the upper-left 3x3 and derive the rotation Quat.
         let scale = *rc_ref!(&self.scale_vec());
-        let r00 = self.data[0][0] / scale.x;
-        let r10 = self.data[1][0] / scale.x;
-        let r11 = self.data[1][1] / scale.y;
-        let r12 = self.data[1][2] / scale.z;
-        let r20 = self.data[2][0] / scale.x;
-        let r21 = self.data[2][1] / scale.y;
-        let r22 = self.data[2][2] / scale.z;
-
-        // XYZ extrinsic decomposition (R = Rz * Ry * Rx applied to a column vector)
-        let sy = -r20;
-        let (rx, ry, rz);
-        if sy.abs() < 0.9999 {
-            ry = sy.asin();
-            rx = r21.atan2(r22);
-            rz = r10.atan2(r00);
-        } else {
-            // Gimbal lock: rz arbitrary; pick rz = 0
-            ry = sy.asin();
-            rx = (-r12).atan2(r11);
-            rz = 0.0;
-        }
-        Vec3::new(rx.to_degrees(), ry.to_degrees(), rz.to_degrees())
+        let sx = if scale.x.abs() > 1e-9 { scale.x } else { 1.0 };
+        let sy = if scale.y.abs() > 1e-9 { scale.y } else { 1.0 };
+        let sz = if scale.z.abs() > 1e-9 { scale.z } else { 1.0 };
+        let rot_only = Mat4 {
+            data: [
+                [
+                    self.data[0][0] / sx,
+                    self.data[0][1] / sy,
+                    self.data[0][2] / sz,
+                    0.0,
+                ],
+                [
+                    self.data[1][0] / sx,
+                    self.data[1][1] / sy,
+                    self.data[1][2] / sz,
+                    0.0,
+                ],
+                [
+                    self.data[2][0] / sx,
+                    self.data[2][1] / sy,
+                    self.data[2][2] / sz,
+                    0.0,
+                ],
+                [0.0, 0.0, 0.0, 1.0],
+            ],
+        };
+        Quat::from_matrix(&rot_only)
     }
 
     // Class-method factories
@@ -105,13 +110,17 @@ impl Mat4 {
         ])
     }
 
-    pub fn from_rotation(rot: &Vec3) -> RcMat4 {
-        let rx = Self::rotation_x(rot.x);
-        let ry = Self::rotation_y(rot.y);
-        let rz = Self::rotation_z(rot.z);
+    pub fn from_euler(euler: &Vec3) -> RcMat4 {
+        let rx = Self::rotation_x(euler.x);
+        let ry = Self::rotation_y(euler.y);
+        let rz = Self::rotation_z(euler.z);
         // XYZ extrinsic: result = Rz * Ry * Rx
         let zy = rc_ref!(&rz).mul_mat(rc_ref!(&ry));
         rc_ref!(&zy).mul_mat(rc_ref!(&rx))
+    }
+
+    pub fn from_axis_angle(axis: &Vec3, deg: f32) -> RcMat4 {
+        Self::rotation_axis_angle(axis, deg)
     }
 
     pub fn from_scale(scale: &Vec3) -> RcMat4 {
@@ -127,9 +136,9 @@ impl Mat4 {
         quat.to_matrix()
     }
 
-    pub fn compose(pos: &Vec3, rot: &Vec3, scale: &Vec3) -> RcMat4 {
+    pub fn compose(pos: &Vec3, rot: &Quat, scale: &Vec3) -> RcMat4 {
         let t = Self::from_translation(pos);
-        let r = Self::from_rotation(rot);
+        let r = Self::from_quat(rot);
         let s = Self::from_scale(scale);
         let tr = rc_ref!(&t).mul_mat(rc_ref!(&r));
         rc_ref!(&tr).mul_mat(rc_ref!(&s))
@@ -466,6 +475,7 @@ impl Mat4 {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::cube::quat::Quat;
 
     fn deref(rc: &RcMat4) -> Mat4 {
         *rc_ref!(rc)
@@ -544,13 +554,13 @@ mod tests {
     }
 
     #[test]
-    fn test_from_rotation_y_90() {
+    fn test_from_euler_y_90() {
         let v = Vec3 {
             x: 0.0,
             y: 90.0,
             z: 0.0,
         };
-        let m = deref(&Mat4::from_rotation(&v));
+        let m = deref(&Mat4::from_euler(&v));
         // Rotating (1, 0, 0) by 90 deg around Y -> (0, 0, -1) in right-handed.
         let p = Vec3 {
             x: 1.0,
@@ -575,11 +585,13 @@ mod tests {
             y: 2.0,
             z: 3.0,
         };
-        let rot = Vec3 {
+        let rot_euler = Vec3 {
             x: 0.0,
             y: 45.0,
             z: 0.0,
         };
+        let rot_rc = Quat::from_euler(&rot_euler);
+        let rot = *rc_ref!(&rot_rc);
         let scale = Vec3 {
             x: 2.0,
             y: 2.0,
@@ -588,7 +600,9 @@ mod tests {
         let m = deref(&Mat4::compose(&pos, &rot, &scale));
         assert!(approx_eq_vec(&deref_v(&m.pos()), &pos));
         assert!(approx_eq_vec(&deref_v(&m.scale_vec()), &scale));
-        assert!(approx_eq_vec(&deref_v(&m.rot()), &rot));
+        let extracted = m.rot();
+        let extracted_euler = deref_v(&rc_ref!(&extracted).to_euler());
+        assert!(approx_eq_vec(&extracted_euler, &rot_euler));
     }
 
     #[test]
@@ -646,17 +660,19 @@ mod tests {
 
     #[test]
     fn test_inverse_round_trip() {
+        let rot_rc = Quat::from_euler(&Vec3 {
+            x: 30.0,
+            y: 45.0,
+            z: 60.0,
+        });
+        let rot = *rc_ref!(&rot_rc);
         let m = Mat4::compose(
             &Vec3 {
                 x: 1.0,
                 y: 2.0,
                 z: 3.0,
             },
-            &Vec3 {
-                x: 30.0,
-                y: 45.0,
-                z: 60.0,
-            },
+            &rot,
             &Vec3 {
                 x: 1.5,
                 y: 2.0,

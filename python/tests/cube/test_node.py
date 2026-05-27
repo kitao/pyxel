@@ -133,21 +133,51 @@ class TestHierarchy:
         head = Node()
         head.name = "head"
         root.add_child(head)
-        # find walks the subtree depth-first; root matches itself first.
+        # Subtree DFS pre-order; self matches first when its name fits.
         root.name = "root"
-        assert root.find("root") is not None
-        found = root.find("head")
-        assert found is not None
-        assert found.name == "head"
-        assert root.find("missing") is None
+        assert len(root.find_by_name("root")) == 1
+        found = root.find_by_name("head")
+        assert len(found) == 1
+        assert found[0].name == "head"
+        assert root.find_by_name("missing") == []
+
+    def test_find_by_name_multiple_matches(self):
+        # Pyxel cube does not enforce unique names; find_by_name returns
+        # every match (e.g. multiple "zako" enemies under the same root).
+        root = Node()
+        a = Node()
+        b = Node()
+        a.name = "zako"
+        b.name = "zako"
+        root.add_child(a)
+        root.add_child(b)
+        assert len(root.find_by_name("zako")) == 2
+
+    def test_find_by_tags(self):
+        root = Node()
+        a = Node()
+        b = Node()
+        a.tags = ["enemy"]
+        b.tags = ["player"]
+        root.add_child(a)
+        root.add_child(b)
+        found = root.find_by_tags("enemy")
+        assert len(found) == 1
+        assert found[0] is a
+        # list[str] form: matches any.
+        found2 = root.find_by_tags(["enemy", "player"])
+        assert len(found2) == 2
 
     def test_destroy(self):
         p = Node()
         c = Node()
         p.add_child(c)
         c.destroy()
-        # destroy detaches from parent.
-        assert p.children == ()
+        # Deferred semantics (cube-design.md § 16 step 8): destroy()
+        # sets the flag but the parent / child links survive until
+        # Scene.update detaches the node at the end of the frame.
+        assert c.destroyed is True
+        assert len(p.children) == 1
 
 
 class TestSubclassing:
@@ -164,12 +194,11 @@ class TestSubclassing:
     def test_lifecycle_hooks_default_noop(self):
         # Default implementations are no-op; they must be callable.
         # on_collide is wired even though the cube runtime does not
-        # invoke it yet (collision pipeline deferred — § 15).
+        # invoke it yet (collision pipeline deferred — § 16).
         n = Node()
         other = Node()
         n.on_update()
         n.on_draw()
-        n.on_collide(other, None)
         n.on_collide(other, Contact())
         n.on_destroy()
 
@@ -354,12 +383,9 @@ class TestOnCollideSignature:
     def test_positional(self):
         n = Node()
         other = Node()
-        n.on_collide(other)
         n.on_collide(other, Contact())
 
     def test_keyword(self):
         n = Node()
         other = Node()
-        n.on_collide(other=other)
-        n.on_collide(other=other, contact=None)
         n.on_collide(other=other, contact=Contact())

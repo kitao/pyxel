@@ -30,8 +30,8 @@ impl Mat4 {
     }
 
     #[getter]
-    fn rot(&self) -> Vec3 {
-        Vec3::wrap(self.inner_ref().rot())
+    fn rot(&self) -> Quat {
+        Quat::wrap(self.inner_ref().rot())
     }
 
     #[getter]
@@ -112,8 +112,13 @@ impl Mat4 {
     }
 
     #[staticmethod]
-    fn from_rotation(rot: PyRef<'_, Vec3>) -> Self {
-        Self::wrap(pyxel::cube::Mat4::from_rotation(rot.inner_ref()))
+    fn from_euler(euler: PyRef<'_, Vec3>) -> Self {
+        Self::wrap(pyxel::cube::Mat4::from_euler(euler.inner_ref()))
+    }
+
+    #[staticmethod]
+    fn from_quat(rot: PyRef<'_, Quat>) -> Self {
+        Self::wrap(pyxel::cube::Mat4::from_quat(rot.inner_ref()))
     }
 
     #[staticmethod]
@@ -122,12 +127,12 @@ impl Mat4 {
     }
 
     #[staticmethod]
-    fn from_quat(quat: PyRef<'_, Quat>) -> Self {
-        Self::wrap(pyxel::cube::Mat4::from_quat(quat.inner_ref()))
+    fn from_axis_angle(axis: PyRef<'_, Vec3>, deg: f32) -> Self {
+        Self::wrap(pyxel::cube::Mat4::from_axis_angle(axis.inner_ref(), deg))
     }
 
     #[staticmethod]
-    fn compose(pos: PyRef<'_, Vec3>, rot: PyRef<'_, Vec3>, scale: PyRef<'_, Vec3>) -> Self {
+    fn compose(pos: PyRef<'_, Vec3>, rot: PyRef<'_, Quat>, scale: PyRef<'_, Vec3>) -> Self {
         Self::wrap(pyxel::cube::Mat4::compose(
             pos.inner_ref(),
             rot.inner_ref(),

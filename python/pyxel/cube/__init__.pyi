@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Iterator, overload
 
 from pyxel import Font, Image
@@ -55,7 +57,7 @@ class Mat4:
     IDENTITY: Mat4
 
     pos: Vec3
-    rot: Vec3
+    rot: Quat
     scale: Vec3
 
     def __init__(self) -> None: ...
@@ -70,13 +72,15 @@ class Mat4:
     @staticmethod
     def from_translation(pos: Vec3) -> Mat4: ...
     @staticmethod
-    def from_rotation(rot: Vec3) -> Mat4: ...
+    def from_euler(euler: Vec3) -> Mat4: ...
     @staticmethod
-    def from_quat(quat: Quat) -> Mat4: ...
+    def from_quat(rot: Quat) -> Mat4: ...
     @staticmethod
     def from_scale(scale: Vec3) -> Mat4: ...
     @staticmethod
-    def compose(pos: Vec3, rot: Vec3, scale: Vec3) -> Mat4: ...
+    def from_axis_angle(axis: Vec3, deg: float) -> Mat4: ...
+    @staticmethod
+    def compose(pos: Vec3, rot: Quat, scale: Vec3) -> Mat4: ...
     @staticmethod
     def look_at(eye: Vec3, target: Vec3, up: Vec3 = Vec3.UP) -> Mat4: ...
     def translate(self, v: Vec3) -> Mat4: ...
@@ -128,6 +132,8 @@ class Quat:
     def from_two_vectors(a: Vec3, b: Vec3) -> Quat: ...
     @staticmethod
     def from_matrix(mat: Mat4) -> Quat: ...
+    @staticmethod
+    def from_direction(forward: Vec3, up: Vec3 = Vec3.UP) -> Quat: ...
     def conjugate(self) -> Quat: ...
     def inverse(self) -> Quat: ...
     def normalize(self) -> Quat: ...
@@ -151,9 +157,7 @@ class Camera:
     def __init__(self) -> None: ...
     def __repr__(self) -> str: ...
 
-# Shading class — palette × level lookup table plus the scene-wide light
-# direction. Each cell is either flat (primary == secondary) or a 50:50
-# 2x2 checker between primary and secondary.
+# Shading class — palette × level color lookup table with scene-wide light direction.
 class Shading:
     direction: Vec3
 
@@ -163,24 +167,7 @@ class Shading:
     def __setitem__(self, key: tuple[int, int], value: tuple[int, int]) -> None: ...
     def build(self, colors: list[int]) -> None: ...
 
-# Contact class — placeholder for collision-pipeline payload (deferred;
-# see cube-design.md § 15).
-class Contact:
-    point: Vec3
-    normal: Vec3
-
-    def __init__(self) -> None: ...
-    def __repr__(self) -> str: ...
-
-# Collider class — placeholder; shape vocabulary and collision pipeline
-# are deferred (cube-design.md § 15). Constructable today so user code
-# can stage `node.collider = Collider()` ahead of the implementation.
-class Collider:
-    def __init__(self) -> None: ...
-    def __repr__(self) -> str: ...
-
-# Geometry class — static vertex-data asset (positions / normals / uvs /
-# indices / prim mode / cull mode). Shareable across Node draws and Mesh parts.
+# Geometry class — static vertex-data asset shareable across Node draws and Mesh parts.
 class Geometry:
     PRIM_POINTS: int
     PRIM_LINES: int
@@ -209,8 +196,7 @@ class Geometry:
     def __repr__(self) -> str: ...
     def compute_normals(self, smooth: bool = False) -> None: ...
 
-# Mesh class — hierarchical 3D model asset (parallel arrays of geometries
-# / transforms / parents, with shared col_img and colkey).
+# Mesh class — hierarchical 3D model asset (parallel arrays of geometries / transforms / parents).
 class Mesh:
     geometries: list[Geometry | None]  # None = pure group (transform-only)
     transforms: list[Mat4]
@@ -229,6 +215,46 @@ class Mesh:
     def __repr__(self) -> str: ...
     def descendants(self, i: int) -> list[int]: ...
 
+# Collider class — unified shape + behavior flags + physical coefficients + motion state.
+class Collider:
+    size: Vec3
+    radius: float
+    mesh: Mesh | None
+    trigger: bool
+    rolls: bool
+    mass: float
+    restitution: float
+    friction: float
+    velocity: Vec3
+    angular_velocity: Vec3
+
+    def __init__(
+        self,
+        size: Vec3 = Vec3.ZERO,
+        radius: float = 0.0,
+        mesh: Mesh | None = None,
+        trigger: bool = False,
+        rolls: bool = False,
+        mass: float = 1.0,
+        restitution: float = 0.0,
+        friction: float = 0.5,
+        velocity: Vec3 = Vec3.ZERO,
+        angular_velocity: Vec3 = Vec3.ZERO,
+    ) -> None: ...
+    def __repr__(self) -> str: ...
+
+# Contact class — collision payload for on_collide (geometry + engine-resolved motion deltas).
+class Contact:
+    point: Vec3
+    normal: Vec3
+    depth: float
+    delta_rotation: Mat4
+    delta_velocity: Vec3
+    delta_angular_velocity: Vec3
+
+    def __init__(self) -> None: ...
+    def __repr__(self) -> str: ...
+
 # Node class
 class Node:
     # Billboard mode constants for the per-call `billboard` argument
@@ -236,32 +262,40 @@ class Node:
     BILLBOARD_ON: int
     BILLBOARD_FIXED_Y: int
 
-    name: str  # tag for find()
+    name: str
     transform: Mat4
     active: bool  # parent-dominant; False halts update + collision
     visible: bool  # parent-dominant; False halts drawing
     shading: Shading | None  # None inherits from the closest non-None ancestor
-    collider: Collider | None  # this node only (collision pipeline deferred)
+    collider: Collider | None
+    tags: list[str]
 
     @property
     def parent(self) -> Node | None: ...
     @property
     def children(self) -> tuple[Node, ...]: ...
     @property
+    def destroyed(self) -> bool: ...
+    @property
     def camera(self) -> Camera: ...  # valid only inside on_draw
+    @property
+    def forward(self) -> Vec3: ...
+    @property
+    def right(self) -> Vec3: ...
+    @property
+    def up(self) -> Vec3: ...
+    @property
+    def scene(self) -> Scene | None: ...
     def __init__(self) -> None: ...
     def __repr__(self) -> str: ...
     def world_transform(self) -> Mat4: ...
-    def find(self, name: str) -> Node | None: ...  # subtree DFS by name
+    def find_by_name(self, name: str) -> list[Node]: ...
+    def find_by_tags(self, tags: str | list[str]) -> list[Node]: ...
     def add_child(self, node: Node) -> None: ...
     def remove_child(self, node: Node) -> None: ...
     def destroy(self) -> None: ...
 
-    # Immediate-mode draw commands (node-local coordinates).
-    # Modifier keyword arguments: shaded, dither_alpha (Bayer-dither
-    # pseudo-alpha; 1.0 = opaque), depth_test, depth_write, billboard.
-    # Each command exposes only the modifiers that meaningfully apply
-    # to it (see cube-design.md § 12.5 for the rules).
+    # Immediate-mode draw commands (node-local coordinates; modifier kwargs per command rules).
     def pset(
         self,
         pos: Vec3,
@@ -500,8 +534,18 @@ class Node:
     # Lifecycle hooks
     def on_update(self) -> None: ...
     def on_draw(self) -> None: ...
-    def on_collide(self, other: Node, contact: Contact | None = None) -> None: ...
+    def on_collide(self, other: Node, contact: Contact) -> None: ...
     def on_destroy(self) -> None: ...
+
+# RaycastHit class — payload returned by Scene.raycast / raycast_all.
+class RaycastHit:
+    node: Node
+    point: Vec3
+    normal: Vec3
+    distance: float
+
+    def __init__(self) -> None: ...
+    def __repr__(self) -> str: ...
 
 # Scene class
 class Scene(Node):
@@ -519,3 +563,33 @@ class Scene(Node):
         camera: Camera,
         screen: Image | None = None,
     ) -> None: ...
+    def raycast(
+        self,
+        origin: Vec3,
+        direction: Vec3,
+        max_distance: float = float("inf"),
+        hit_triggers: bool = False,
+        tags: list[str] | None = None,
+    ) -> RaycastHit | None: ...
+    def raycast_all(
+        self,
+        origin: Vec3,
+        direction: Vec3,
+        max_distance: float = float("inf"),
+        hit_triggers: bool = False,
+        tags: list[str] | None = None,
+    ) -> list[RaycastHit]: ...
+    def overlap_sphere(
+        self,
+        center: Vec3,
+        radius: float,
+        hit_triggers: bool = False,
+        tags: list[str] | None = None,
+    ) -> list[Node]: ...
+    def overlap_box(
+        self,
+        transform: Mat4,
+        size: Vec3,
+        hit_triggers: bool = False,
+        tags: list[str] | None = None,
+    ) -> list[Node]: ...

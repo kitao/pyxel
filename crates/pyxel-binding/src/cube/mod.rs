@@ -8,6 +8,7 @@ mod mat4;
 mod mesh;
 mod node;
 mod quat;
+mod raycast_hit;
 mod scene;
 mod shading;
 mod vec3;
@@ -21,6 +22,7 @@ pub fn add_cube_submodule(parent: &Bound<'_, PyModule>) -> PyResult<()> {
     shading::add_shading_class(&m)?;
     contact::add_contact_class(&m)?;
     collider::add_collider_class(&m)?;
+    raycast_hit::add_raycast_hit_class(&m)?;
     geometry::add_geometry_class(&m)?;
     mesh::add_mesh_class(&m)?;
     node::add_node_class(&m)?;

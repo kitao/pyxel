@@ -24,6 +24,10 @@ type Uvs = ((f32, f32), (f32, f32), (f32, f32), (f32, f32));
 pub struct Node {
     pub(crate) inner: pyxel::cube::RcNode,
     children: RefCell<Vec<Py<Node>>>,
+    // Strong ref back to the parent wrapper; the cyclic ref is resolved
+    // by __traverse__ / __clear__ so Python's gc can collect detached
+    // subtrees.
+    parent: RefCell<Option<Py<Node>>>,
 }
 
 impl Clone for Node {
@@ -37,6 +41,7 @@ impl Clone for Node {
                     .map(|c| c.clone_ref(py))
                     .collect(),
             ),
+            parent: RefCell::new(self.parent.borrow().as_ref().map(|p| p.clone_ref(py))),
         })
         .expect("Node clone requires the Python GIL to be attached")
     }
@@ -47,6 +52,19 @@ impl Node {
         Self {
             inner,
             children: RefCell::new(Vec::new()),
+            parent: RefCell::new(None),
+        }
+    }
+
+    // Detach this node from its Python-side parent wrapper. Used by
+    // Scene.update step 8 to finalize a destroyed node's removal.
+    pub(crate) fn detach_from_parent_py(&self, py: Python<'_>) {
+        let parent = self.parent.borrow_mut().take();
+        if let Some(parent_py) = parent {
+            let pb = parent_py.bind(py).borrow();
+            pb.children
+                .borrow_mut()
+                .retain(|c| !std::rc::Rc::ptr_eq(&c.bind(py).borrow().inner, &self.inner));
         }
     }
 
@@ -101,6 +119,40 @@ impl Node {
             shading: shading_ref,
         };
         with_draw_context(|ctx| f(ctx, state));
+    }
+
+    fn collect_by_name(node: &Py<Node>, py: Python<'_>, name: &str, out: &mut Vec<Py<Node>>) {
+        let bound = node.bind(py);
+        let n = bound.borrow();
+        if n.inner_ref().name == name {
+            out.push(node.clone_ref(py));
+        }
+        let children: Vec<Py<Node>> =
+            n.children.borrow().iter().map(|c| c.clone_ref(py)).collect();
+        drop(n);
+        for child in &children {
+            Self::collect_by_name(child, py, name, out);
+        }
+    }
+
+    fn collect_by_tags(
+        node: &Py<Node>,
+        py: Python<'_>,
+        tags: &[String],
+        out: &mut Vec<Py<Node>>,
+    ) {
+        let bound = node.bind(py);
+        let n = bound.borrow();
+        let node_tags = n.inner_ref().tags.clone();
+        if tags.iter().any(|t| node_tags.iter().any(|nt| nt == t)) {
+            out.push(node.clone_ref(py));
+        }
+        let children: Vec<Py<Node>> =
+            n.children.borrow().iter().map(|c| c.clone_ref(py)).collect();
+        drop(n);
+        for child in &children {
+            Self::collect_by_tags(child, py, tags, out);
+        }
     }
 }
 
@@ -187,9 +239,53 @@ impl Node {
     }
 
     #[getter]
-    #[allow(clippy::unused_self)]
-    fn parent(&self) -> Option<Node> {
-        None
+    fn parent(&self, py: Python<'_>) -> Option<Py<Node>> {
+        self.parent.borrow().as_ref().map(|p| p.clone_ref(py))
+    }
+
+    #[getter]
+    fn scene(
+        slf: PyRef<'_, Node>,
+        py: Python<'_>,
+    ) -> PyResult<Option<Py<super::scene::Scene>>> {
+        // Walk up via cached parent until a Scene wrapper is reached.
+        let mut current: Py<Node> = slf.into_pyobject(py)?.unbind();
+        loop {
+            let bound = current.bind(py).clone();
+            if let Ok(scene_bound) = bound.cast::<super::scene::Scene>() {
+                return Ok(Some(scene_bound.clone().unbind()));
+            }
+            let parent_opt = bound.borrow().parent.borrow().as_ref().map(|p| p.clone_ref(py));
+            match parent_opt {
+                Some(p) => current = p,
+                None => return Ok(None),
+            }
+        }
+    }
+
+    #[getter]
+    fn tags(&self) -> Vec<String> {
+        self.inner_ref().tags.clone()
+    }
+
+    #[setter]
+    fn set_tags(&self, v: Vec<String>) {
+        self.inner_mut().tags = v;
+    }
+
+    #[getter]
+    fn forward(&self) -> Vec3 {
+        Vec3::wrap(InnerNode::forward(&self.inner))
+    }
+
+    #[getter]
+    fn right(&self) -> Vec3 {
+        Vec3::wrap(InnerNode::right(&self.inner))
+    }
+
+    #[getter]
+    fn up(&self) -> Vec3 {
+        Vec3::wrap(InnerNode::up(&self.inner))
     }
 
     #[getter]
@@ -230,43 +326,71 @@ impl Node {
         Mat4::wrap(InnerNode::world_transform(&self.inner))
     }
 
-    fn find(slf: PyRef<'_, Node>, py: Python<'_>, name: &str) -> Option<Py<Node>> {
-        if slf.inner_ref().name == name {
-            return Some(slf.into_pyobject(py).ok()?.unbind());
-        }
-        for child in slf.children.borrow().iter() {
-            let bound = child.bind(py);
-            let inner_ref: PyRef<'_, Node> = bound.borrow();
-            if let Some(found) = Node::find(inner_ref, py, name) {
-                return Some(found);
-            }
-        }
-        None
+    fn find_by_name(slf: PyRef<'_, Node>, py: Python<'_>, name: &str) -> PyResult<Vec<Py<Node>>> {
+        let self_py: Py<Node> = slf.into_pyobject(py)?.unbind();
+        let mut out: Vec<Py<Node>> = Vec::new();
+        Self::collect_by_name(&self_py, py, name, &mut out);
+        Ok(out)
     }
 
-    fn add_child(&self, py: Python<'_>, child: Py<Node>) {
-        let child_inner = {
-            let bound = child.bind(py).borrow();
-            bound.inner.clone()
+    fn find_by_tags(
+        slf: PyRef<'_, Node>,
+        py: Python<'_>,
+        tags: &Bound<'_, pyo3::types::PyAny>,
+    ) -> PyResult<Vec<Py<Node>>> {
+        let tag_list: Vec<String> = if let Ok(s) = tags.extract::<String>() {
+            vec![s]
+        } else if let Ok(v) = tags.extract::<Vec<String>>() {
+            v
+        } else {
+            return Err(pyo3::exceptions::PyTypeError::new_err(
+                "tags must be str or list[str]",
+            ));
         };
-        InnerNode::add_child(&self.inner, &child_inner);
-        self.children.borrow_mut().push(child);
+        let self_py: Py<Node> = slf.into_pyobject(py)?.unbind();
+        let mut out: Vec<Py<Node>> = Vec::new();
+        Self::collect_by_tags(&self_py, py, &tag_list, &mut out);
+        Ok(out)
     }
 
-    fn remove_child(&self, py: Python<'_>, child: Py<Node>) {
-        let child_inner = {
-            let bound = child.bind(py).borrow();
-            bound.inner.clone()
-        };
-        InnerNode::remove_child(&self.inner, &child_inner);
-        self.children.borrow_mut().retain(|c| {
-            let c_inner = c.bind(py).borrow().inner.clone();
-            !std::rc::Rc::ptr_eq(&c_inner, &child_inner)
-        });
+    fn add_child(slf: Bound<'_, Self>, py: Python<'_>, child: Py<Node>) {
+        let child_inner = child.bind(py).borrow().inner.clone();
+        InnerNode::add_child(&slf.borrow().inner, &child_inner);
+        // Detach from any previous parent's wrapper cache.
+        let prev_parent: Option<Py<Node>> = child.bind(py).borrow().parent.borrow_mut().take();
+        if let Some(prev) = prev_parent {
+            let pb = prev.bind(py).borrow();
+            pb.children
+                .borrow_mut()
+                .retain(|c| !std::rc::Rc::ptr_eq(&c.bind(py).borrow().inner, &child_inner));
+        }
+        let self_py: Py<Node> = slf.clone().unbind();
+        *child.bind(py).borrow().parent.borrow_mut() = Some(self_py);
+        slf.borrow().children.borrow_mut().push(child);
     }
 
-    fn destroy(&self) {
-        InnerNode::destroy(&self.inner);
+    fn remove_child(slf: Bound<'_, Self>, py: Python<'_>, child: Py<Node>) {
+        let child_inner = child.bind(py).borrow().inner.clone();
+        InnerNode::remove_child(&slf.borrow().inner, &child_inner);
+        slf.borrow()
+            .children
+            .borrow_mut()
+            .retain(|c| !std::rc::Rc::ptr_eq(&c.bind(py).borrow().inner, &child_inner));
+        *child.bind(py).borrow().parent.borrow_mut() = None;
+    }
+
+    // Flag-only destroy (cube-design.md § 16 step 8). Scene.update
+    // walks the tree post-order, fires on_destroy, and detaches the
+    // flagged nodes at the end of the frame. Parent / child links
+    // stay intact for the rest of the current frame so traversal
+    // remains safe.
+    fn destroy(slf: PyRef<'_, Self>) {
+        InnerNode::destroy(&slf.inner);
+    }
+
+    #[getter]
+    fn destroyed(&self) -> bool {
+        self.inner_ref().destroyed
     }
 
     #[allow(clippy::unused_self)]
@@ -276,8 +400,7 @@ impl Node {
     fn on_draw(&self) {}
 
     #[allow(clippy::unused_self, unused_variables)]
-    #[pyo3(signature = (other, contact=None))]
-    fn on_collide(&self, other: PyRef<'_, Node>, contact: Option<PyRef<'_, Contact>>) {}
+    fn on_collide(&self, other: PyRef<'_, Node>, contact: PyRef<'_, Contact>) {}
 
     #[allow(clippy::unused_self)]
     fn on_destroy(&self) {}
@@ -876,6 +999,21 @@ impl Node {
             Some(Err(msg)) => Err(PyValueError::new_err(msg)),
             Some(Ok(())) | None => Ok(()),
         }
+    }
+
+    fn __traverse__(&self, visit: pyo3::PyVisit<'_>) -> Result<(), pyo3::PyTraverseError> {
+        for child in self.children.borrow().iter() {
+            visit.call(child)?;
+        }
+        if let Some(parent) = self.parent.borrow().as_ref() {
+            visit.call(parent)?;
+        }
+        Ok(())
+    }
+
+    fn __clear__(&self) {
+        self.children.borrow_mut().clear();
+        *self.parent.borrow_mut() = None;
     }
 
     fn __repr__(&self) -> String {

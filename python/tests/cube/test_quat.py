@@ -118,6 +118,11 @@ class TestFactories:
         q2 = Quat.from_matrix(m)
         assert approx_v(q1 * Vec3(1, 0, 0), q2 * Vec3(1, 0, 0))
 
+    def test_from_direction_negative_x(self):
+        q = Quat.from_direction(Vec3(-1, 0, 0), Vec3.UP)
+        # Object's local -Z mapped to world should match the requested forward.
+        assert approx_v(q * Vec3(0, 0, -1), Vec3(-1, 0, 0))
+
 
 class TestUnary:
     def test_conjugate(self):

@@ -20,7 +20,6 @@ def dump(label: str) -> None:
 pyxel.init(W, H, title="cube headless")
 
 scene = Scene()
-scene.shade_ramp.build()
 camera = Camera()
 
 
@@ -56,7 +55,7 @@ def run_case(label: str, draw_fn) -> None:
 
 # --- case 1: a single unshaded front-facing triangle, identity camera ---
 # Unshaded so the test focuses on geometry / projection rather than the
-# scene-wide light direction.
+# scene-wide shading direction.
 camera.transform = Mat4.look_at(Vec3(0, 0, 4), Vec3.ZERO, Vec3.UP)
 run_case(
     "triangle (color 8) at z=0, camera at +Z=4 looking at origin",
@@ -103,14 +102,14 @@ run_case(
 
 
 # --- case 6: cube with shaded faces ---
-scene.light.ambient = 0.5
-scene.light.intensity = 0.5
-scene.light.direction = Vec3(0, -1, 0)
+# Scene seeds a default Shading from the current Pyxel palette at
+# construction; box is rendered with shaded=True (default) to exercise
+# the directional shading LUT.
 camera.transform = Mat4.look_at(Vec3(3, 2, 4), Vec3.ZERO, Vec3.UP)
 
 
 def _box(node):
-    # Filled box of size (2, 2, 2), shaded by the scene-wide light.
+    # Filled box of size (2, 2, 2), shaded by the scene-wide Shading.
     node.box(Mat4.IDENTITY, Vec3(2, 2, 2), 7)
 
 
@@ -156,7 +155,7 @@ camera.transform = Mat4.look_at(Vec3(0, 0, 4), Vec3.ZERO, Vec3.UP)
 run_case(
     "rect with billboard=BILLBOARD_ON (faces camera)",
     lambda node: node.rect(
-        Mat4.from_rotation(Vec3(45, 30, 0)),
+        Mat4.from_euler(Vec3(45, 30, 0)),
         2.0,
         2.0,
         13,

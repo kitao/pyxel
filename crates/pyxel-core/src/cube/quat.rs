@@ -171,6 +171,58 @@ impl Quat {
         }
     }
 
+    pub fn from_direction(forward: &Vec3, up: &Vec3) -> RcQuat {
+        // Align the object's -Z axis with `forward`; +Y follows `up` as
+        // closely as the constraint allows. Right-handed.
+        let f_len_sq = forward.x * forward.x + forward.y * forward.y + forward.z * forward.z;
+        if f_len_sq < 1e-12 {
+            return Self::identity();
+        }
+        let inv_f = 1.0 / f_len_sq.sqrt();
+        let fx = forward.x * inv_f;
+        let fy = forward.y * inv_f;
+        let fz = forward.z * inv_f;
+        // right = forward × up (matches look_at convention, right-handed).
+        let rx0 = fy * up.z - fz * up.y;
+        let ry0 = fz * up.x - fx * up.z;
+        let rz0 = fx * up.y - fy * up.x;
+        let r_len_sq = rx0 * rx0 + ry0 * ry0 + rz0 * rz0;
+        if r_len_sq < 1e-12 {
+            // forward parallel to up — fall back to rotating canonical -Z
+            // onto the requested direction.
+            return Self::from_two_vectors(
+                &Vec3 {
+                    x: 0.0,
+                    y: 0.0,
+                    z: -1.0,
+                },
+                &Vec3 {
+                    x: fx,
+                    y: fy,
+                    z: fz,
+                },
+            );
+        }
+        let inv_r = 1.0 / r_len_sq.sqrt();
+        let rx = rx0 * inv_r;
+        let ry = ry0 * inv_r;
+        let rz = rz0 * inv_r;
+        // up' = right × forward (so up' aligns with the up hint as
+        // closely as the constraint allows).
+        let ux = ry * fz - rz * fy;
+        let uy = rz * fx - rx * fz;
+        let uz = rx * fy - ry * fx;
+        let mat = Mat4 {
+            data: [
+                [rx, ux, -fx, 0.0],
+                [ry, uy, -fy, 0.0],
+                [rz, uz, -fz, 0.0],
+                [0.0, 0.0, 0.0, 1.0],
+            ],
+        };
+        Self::from_matrix(&mat)
+    }
+
     // Unary
 
     pub fn conjugate(&self) -> RcQuat {
@@ -240,8 +292,29 @@ impl Quat {
     }
 
     pub fn to_euler(&self) -> RcVec3 {
-        let m = self.to_matrix();
-        rc_ref!(&m).rot()
+        // XYZ extrinsic (matches from_euler).
+        let q = self.normalize();
+        let q = rc_ref!(&q);
+        let r00 = 1.0 - 2.0 * (q.y * q.y + q.z * q.z);
+        let r10 = 2.0 * (q.x * q.y + q.w * q.z);
+        let r11 = 1.0 - 2.0 * (q.x * q.x + q.z * q.z);
+        let r12 = 2.0 * (q.y * q.z - q.w * q.x);
+        let r20 = 2.0 * (q.x * q.z - q.w * q.y);
+        let r21 = 2.0 * (q.y * q.z + q.w * q.x);
+        let r22 = 1.0 - 2.0 * (q.x * q.x + q.y * q.y);
+        let sy = -r20;
+        let sy_clamped = sy.clamp(-1.0, 1.0);
+        let (rx, ry, rz);
+        if sy.abs() < 0.999_999 {
+            ry = sy_clamped.asin();
+            rx = r21.atan2(r22);
+            rz = r10.atan2(r00);
+        } else {
+            ry = sy_clamped.asin();
+            rx = (-r12).atan2(r11);
+            rz = 0.0;
+        }
+        Vec3::new(rx.to_degrees(), ry.to_degrees(), rz.to_degrees())
     }
 
     pub fn to_axis_angle(&self) -> (RcVec3, f32) {
@@ -585,5 +658,40 @@ mod tests {
         let v1 = deref_v(&rc_ref!(&q).mul_vec(&v));
         let v2 = deref_v(&rc_ref!(&q2).mul_vec(&v));
         assert!(approx_eq_v(&v1, &v2));
+    }
+
+    #[test]
+    fn test_from_direction_negative_x() {
+        let forward = Vec3 {
+            x: -1.0,
+            y: 0.0,
+            z: 0.0,
+        };
+        let up = Vec3 {
+            x: 0.0,
+            y: 1.0,
+            z: 0.0,
+        };
+        let q = Quat::from_direction(&forward, &up);
+        // Local -Z mapped to world space should match the requested forward.
+        let local_forward = Vec3 {
+            x: 0.0,
+            y: 0.0,
+            z: -1.0,
+        };
+        let world_forward = deref_v(&rc_ref!(&q).mul_vec(&local_forward));
+        assert!(approx_eq_v(&world_forward, &forward));
+    }
+
+    #[test]
+    fn test_to_euler_round_trip() {
+        let in_euler = Vec3 {
+            x: 0.0,
+            y: 30.0,
+            z: 0.0,
+        };
+        let q = Quat::from_euler(&in_euler);
+        let out_euler = deref_v(&rc_ref!(&q).to_euler());
+        assert!(approx_eq_v(&out_euler, &in_euler));
     }
 }
