@@ -1,28 +1,27 @@
 # Python
 *.egg-info/
 *.py[cod]
-*.so
-.mypy_cache/
-.ruff_cache/
 __pycache__/
+dist/
+dist-*/
 
 # Rust
 *.pdb
+*.so
+target/
 
 # Node
 node_modules/
 
-# Build
-dist/
-dist-*/
-target/
-
 # Environment
 .env
-.venv/
 
-# Workspaces
+# AI tools
 .claude/
+.superpowers/
+docs/superpowers/
+
+# Local shortcuts
 /examples
 
 # OS
