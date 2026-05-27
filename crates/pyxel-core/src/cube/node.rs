@@ -3,7 +3,6 @@ use std::rc::{Rc, Weak};
 
 use crate::cube::collider::RcCollider;
 use crate::cube::mat4::{Mat4, RcMat4};
-use crate::cube::mesh::RcMesh;
 use crate::cube::shading::RcShading;
 use crate::cube::vec3::{RcVec3, Vec3};
 
@@ -11,9 +10,7 @@ pub type WeakNode = Weak<UnsafeCell<Node>>;
 
 // Hierarchy instance. Holds local transform, draw / lifecycle state, and
 // child links. Parent is a weak ref to avoid Rc cycles between parent and
-// children. The optional `attached_mesh` is the mesh placed by
-// `Mesh::create_node`; the default `on_draw` will render it at the local
-// origin.
+// children.
 
 pub struct Node {
     pub name: String,
@@ -25,7 +22,6 @@ pub struct Node {
     pub tags: Vec<String>,
     pub parent: Option<WeakNode>,
     pub children: Vec<RcNode>,
-    pub attached_mesh: Option<RcMesh>,
     // Set by destroy() and cascaded to the subtree. Scene.update step 8
     // (cube-design.md § 16) collects flagged nodes post-order, fires
     // on_destroy, and detaches them. The flag is exposed read-only as
@@ -47,7 +43,6 @@ impl Node {
             tags: Vec::new(),
             parent: None,
             children: Vec::new(),
-            attached_mesh: None,
             destroyed: false,
         })
     }
@@ -231,7 +226,6 @@ mod tests {
         assert!(r.visible);
         assert!(r.parent.is_none());
         assert!(r.children.is_empty());
-        assert!(r.attached_mesh.is_none());
     }
 
     #[test]
@@ -439,5 +433,114 @@ mod tests {
         assert!(Node::effective_visible(&c));
         rc_mut!(&p).visible = false;
         assert!(!Node::effective_visible(&c));
+    }
+
+    #[test]
+    fn test_forward_after_y_rotation() {
+        // Rotate the node 90° around Y. The forward axis (-Z in
+        // node-local) becomes -X in world space.
+        let n = Node::new();
+        let rot = Mat4::from_axis_angle(
+            &Vec3 {
+                x: 0.0,
+                y: 1.0,
+                z: 0.0,
+            },
+            90.0,
+        );
+        rc_mut!(&n).transform = rot;
+        let f = Node::forward(&n);
+        let f = rc_ref!(&f);
+        assert!((f.x - (-1.0)).abs() < 1e-4);
+        assert!(f.y.abs() < 1e-4);
+        assert!(f.z.abs() < 1e-4);
+    }
+
+    #[test]
+    fn test_forward_normalized_under_non_uniform_scale() {
+        // Even when the transform carries non-uniform scale, forward
+        // returns a unit vector.
+        let n = Node::new();
+        let scale = Mat4::from_scale(&Vec3 {
+            x: 2.0,
+            y: 3.0,
+            z: 4.0,
+        });
+        rc_mut!(&n).transform = scale;
+        let f = Node::forward(&n);
+        let f = rc_ref!(&f);
+        let len = (f.x * f.x + f.y * f.y + f.z * f.z).sqrt();
+        assert!((len - 1.0).abs() < 1e-4);
+    }
+
+    #[test]
+    fn test_forward_falls_back_when_column_zero() {
+        // A degenerate transform whose Z column is zero should still
+        // produce a valid forward (default forward = -Z).
+        let n = Node::new();
+        let zero_z = Mat4::from_rows([
+            [1.0, 0.0, 0.0, 0.0],
+            [0.0, 1.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0], // <- zero Z column
+            [0.0, 0.0, 0.0, 1.0],
+        ]);
+        rc_mut!(&n).transform = zero_z;
+        let f = Node::forward(&n);
+        let f = rc_ref!(&f);
+        assert!((f.z - (-1.0)).abs() < 1e-4);
+    }
+
+    #[test]
+    fn test_effective_shading_cascade_resolves_ancestor() {
+        use crate::cube::shading::Shading;
+        let root = Node::new();
+        let mid = Node::new();
+        let leaf = Node::new();
+        let palette = [0x000000u32 as crate::image::Rgb24; 4];
+        let shading = Shading::new(&palette);
+        rc_mut!(&root).shading = Some(shading.clone());
+        Node::add_child(&root, &mid);
+        Node::add_child(&mid, &leaf);
+        // leaf has shading=None; effective should resolve to root's.
+        let resolved = Node::effective_shading(&leaf).unwrap();
+        assert!(std::rc::Rc::ptr_eq(&resolved, &shading));
+    }
+
+    #[test]
+    fn test_effective_shading_uses_self_when_set() {
+        use crate::cube::shading::Shading;
+        let root = Node::new();
+        let leaf = Node::new();
+        let palette = [0x000000u32 as crate::image::Rgb24; 4];
+        let root_shading = Shading::new(&palette);
+        let leaf_shading = Shading::new(&palette);
+        rc_mut!(&root).shading = Some(root_shading);
+        rc_mut!(&leaf).shading = Some(leaf_shading.clone());
+        Node::add_child(&root, &leaf);
+        let resolved = Node::effective_shading(&leaf).unwrap();
+        assert!(std::rc::Rc::ptr_eq(&resolved, &leaf_shading));
+    }
+
+    #[test]
+    fn test_world_transform_deep_chain() {
+        let root = Node::new();
+        let a = Node::new();
+        let b = Node::new();
+        rc_mut!(&a).transform = Mat4::from_translation(&Vec3 {
+            x: 1.0,
+            y: 0.0,
+            z: 0.0,
+        });
+        rc_mut!(&b).transform = Mat4::from_translation(&Vec3 {
+            x: 2.0,
+            y: 0.0,
+            z: 0.0,
+        });
+        Node::add_child(&root, &a);
+        Node::add_child(&a, &b);
+        let world = Node::world_transform(&b);
+        let pos = rc_ref!(&world).pos();
+        let pos = rc_ref!(&pos);
+        assert!((pos.x - 3.0).abs() < 1e-4);
     }
 }
