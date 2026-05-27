@@ -483,4 +483,66 @@ mod tests {
         let (p, s) = r_mut.get(0, 0);
         assert!(p != 99 || s != 99);
     }
+
+    #[test]
+    fn test_empty_palette_returns_empty_data() {
+        let r = Shading::new(&[]);
+        let r = rc_ref!(&r);
+        assert_eq!(r.palette_size(), 0);
+    }
+
+    #[test]
+    fn test_direction_default_is_down() {
+        let r = Shading::new(&pyxel_default());
+        let r = rc_ref!(&r);
+        let dir = *rc_ref!(&r.direction);
+        assert_eq!(dir.x, 0.0);
+        assert!((dir.y - (-1.0)).abs() < 1e-6);
+        assert_eq!(dir.z, 0.0);
+    }
+
+    fn srgb_to_linear(c: f32) -> f32 {
+        if c <= 0.04045 {
+            c / 12.92
+        } else {
+            ((c + 0.055) / 1.055).powf(2.4)
+        }
+    }
+
+    fn entry_luma(palette: &[Rgb24], primary: i32, secondary: i32) -> f32 {
+        let component =
+            |idx: i32, shift: u32| ((palette[idx as usize] >> shift) & 0xFF) as f32 / 255.0;
+        let pixel_luma = |idx: i32| {
+            let r = srgb_to_linear(component(idx, 16));
+            let g = srgb_to_linear(component(idx, 8));
+            let b = srgb_to_linear(component(idx, 0));
+            0.2126 * r + 0.7152 * g + 0.0722 * b
+        };
+        if primary == secondary {
+            pixel_luma(primary)
+        } else {
+            (pixel_luma(primary) + pixel_luma(secondary)) * 0.5
+        }
+    }
+
+    #[test]
+    fn test_pyxel_default_ramp_is_monotone() {
+        // Default palette must produce a strictly non-decreasing luma
+        // ramp lv 0 ≤ lv 1 ≤ lv 2 ≤ lv 3 for every column.
+        let pal = pyxel_default();
+        let r = Shading::new(&pal);
+        let r = rc_ref!(&r);
+        for col in 0..pal.len() {
+            let lumas: [f32; 4] = std::array::from_fn(|lv| {
+                let (p, s) = r.get(col, lv);
+                entry_luma(&pal, p, s)
+            });
+            for lv in 1..4 {
+                assert!(
+                    lumas[lv] >= lumas[lv - 1] - 1e-6,
+                    "col {col} ramp not monotone: {lumas:?}",
+                );
+            }
+        }
+    }
 }

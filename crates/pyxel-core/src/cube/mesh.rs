@@ -177,6 +177,7 @@ mod tests {
     use super::*;
     use crate::cube::geometry::Geometry;
     use crate::cube::mat4::Mat4;
+    use crate::cube::vec3::Vec3;
 
     #[test]
     fn test_new_empty() {
@@ -277,6 +278,51 @@ mod tests {
         let (flat, img) = ci.as_flat_and_image();
         assert_eq!(flat, 5);
         assert!(img.is_none());
+    }
+
+    #[test]
+    fn test_col_img_as_flat_and_image_for_image_variant() {
+        let img = crate::image::Image::new(4, 4);
+        let ci = ColImage::Image(img);
+        let (flat, img_opt) = ci.as_flat_and_image();
+        // Image variant returns flat=0 and the wrapped image.
+        assert_eq!(flat, 0);
+        assert!(img_opt.is_some());
+    }
+
+    #[test]
+    fn test_compose_world_transforms_with_rotation() {
+        // Parent rotates 90° around Y, child translates +X by 1.
+        // Child's world position should land at -Z=1 in world.
+        let m = Mesh::new();
+        {
+            let m = rc_mut!(&m);
+            m.geometries = vec![None, None];
+            m.transforms = vec![
+                Mat4::from_axis_angle(
+                    &Vec3 {
+                        x: 0.0,
+                        y: 1.0,
+                        z: 0.0,
+                    },
+                    90.0,
+                ),
+                Mat4::from_translation(&Vec3 {
+                    x: 1.0,
+                    y: 0.0,
+                    z: 0.0,
+                }),
+            ];
+            m.parents = vec![-1, 0];
+        }
+        let m = rc_ref!(&m);
+        let root_rc = Mat4::identity();
+        let root = *rc_ref!(&root_rc);
+        let world = m.compose_world_transforms(&root);
+        let pos1 = world[1].pos();
+        let pos1 = rc_ref!(&pos1);
+        assert!(pos1.x.abs() < 1e-4);
+        assert!((pos1.z - (-1.0)).abs() < 1e-4);
     }
 
     #[test]
