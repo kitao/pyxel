@@ -35,56 +35,38 @@ impl Geometry {
         })
     }
 
-    pub fn compute_normals(&mut self, smooth: bool) {
+    // Per-face flat normals: one (nx, ny, nz) per triangle, matching the
+    // layout draw::prim consumes. Non-triangle topology, empty positions,
+    // and out-of-range indices each yield a zero entry instead of a hit.
+    pub fn compute_normals(&mut self) {
         let vertex_count = self.positions.len() / 3;
-        if vertex_count == 0 {
+        if vertex_count == 0 || self.prim != PRIM_TRIANGLES {
             self.normals = Some(Vec::new());
             return;
         }
-        let mut out = vec![0.0_f32; vertex_count * 3];
-        if self.prim != PRIM_TRIANGLES {
-            // Non-triangle topology has no per-face normal concept.
-            self.normals = Some(out);
-            return;
-        }
-        let triangles: Vec<[usize; 3]> = match &self.indices {
-            Some(idx) => idx
-                .chunks_exact(3)
-                .filter_map(|c| {
-                    let a = c[0] as usize;
-                    let b = c[1] as usize;
-                    let cc = c[2] as usize;
-                    if a < vertex_count && b < vertex_count && cc < vertex_count {
-                        Some([a, b, cc])
-                    } else {
-                        None
-                    }
-                })
-                .collect(),
-            None => (0..vertex_count / 3)
-                .map(|i| [i * 3, i * 3 + 1, i * 3 + 2])
-                .collect(),
+        let face_count = match &self.indices {
+            Some(idx) => idx.len() / 3,
+            None => vertex_count / 3,
         };
-        for [a, b, c] in &triangles {
-            let pa = read_vec3(&self.positions, *a);
-            let pb = read_vec3(&self.positions, *b);
-            let pc = read_vec3(&self.positions, *c);
+        let mut out = vec![0.0_f32; face_count * 3];
+        for f in 0..face_count {
+            let (a, b, c) = match &self.indices {
+                Some(idx) => {
+                    let i0 = idx[f * 3] as usize;
+                    let i1 = idx[f * 3 + 1] as usize;
+                    let i2 = idx[f * 3 + 2] as usize;
+                    if i0 >= vertex_count || i1 >= vertex_count || i2 >= vertex_count {
+                        continue;
+                    }
+                    (i0, i1, i2)
+                }
+                None => (f * 3, f * 3 + 1, f * 3 + 2),
+            };
+            let pa = read_vec3(&self.positions, a);
+            let pb = read_vec3(&self.positions, b);
+            let pc = read_vec3(&self.positions, c);
             let face_normal = vec3_normalize(vec3_cross(vec3_sub(pb, pa), vec3_sub(pc, pa)));
-            if smooth {
-                add_vec3(&mut out, *a, face_normal);
-                add_vec3(&mut out, *b, face_normal);
-                add_vec3(&mut out, *c, face_normal);
-            } else {
-                write_vec3(&mut out, *a, face_normal);
-                write_vec3(&mut out, *b, face_normal);
-                write_vec3(&mut out, *c, face_normal);
-            }
-        }
-        if smooth {
-            for i in 0..vertex_count {
-                let v = read_vec3(&out, i);
-                write_vec3(&mut out, i, vec3_normalize(v));
-            }
+            write_vec3(&mut out, f, face_normal);
         }
         self.normals = Some(out);
     }
@@ -107,13 +89,6 @@ fn write_vec3(buf: &mut [f32], i: usize, v: Vec3) {
     buf[base] = v.x;
     buf[base + 1] = v.y;
     buf[base + 2] = v.z;
-}
-
-fn add_vec3(buf: &mut [f32], i: usize, v: Vec3) {
-    let base = i * 3;
-    buf[base] += v.x;
-    buf[base + 1] += v.y;
-    buf[base + 2] += v.z;
 }
 
 fn vec3_sub(a: Vec3, b: Vec3) -> Vec3 {
@@ -171,16 +146,15 @@ mod tests {
         {
             let g = rc_mut!(&g);
             g.positions = vec![0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0];
-            g.compute_normals(false);
+            g.compute_normals();
         }
         let g = rc_ref!(&g);
         let n = g.normals.as_ref().unwrap();
-        assert_eq!(n.len(), 9);
-        for v in n.chunks(3) {
-            assert!(v[0].abs() < 1e-5);
-            assert!(v[1].abs() < 1e-5);
-            assert!((v[2] - 1.0).abs() < 1e-5);
-        }
+        // Per-face normals: 1 triangle → 3 floats.
+        assert_eq!(n.len(), 3);
+        assert!(n[0].abs() < 1e-5);
+        assert!(n[1].abs() < 1e-5);
+        assert!((n[2] - 1.0).abs() < 1e-5);
     }
 
     #[test]
@@ -190,45 +164,44 @@ mod tests {
             let g = rc_mut!(&g);
             g.positions = vec![0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0];
             g.indices = Some(vec![0, 1, 2]);
-            g.compute_normals(false);
+            g.compute_normals();
         }
         let g = rc_ref!(&g);
         let n = g.normals.as_ref().unwrap();
-        assert_eq!(n.len(), 9);
-        for v in n.chunks(3) {
-            assert!((v[2] - 1.0).abs() < 1e-5);
-        }
+        assert_eq!(n.len(), 3);
+        assert!((n[2] - 1.0).abs() < 1e-5);
     }
 
     #[test]
-    fn test_compute_normals_smooth_shared_vertex() {
-        // Two triangles share vertex 1; with smooth=true, the shared
-        // vertex normal should be averaged between the two faces.
+    fn test_compute_normals_two_triangles_have_distinct_face_normals() {
+        // Triangle 0 in z=0 plane (normal +Z), triangle 1 in x=1 plane
+        // (normal +X). Per-face layout means the two normals occupy
+        // disjoint output slots.
         let g = Geometry::new();
         {
             let g = rc_mut!(&g);
-            // Triangle 0: (0,0,0), (1,0,0), (0,1,0) — normal +Z
-            // Triangle 1: (1,0,0), (1,1,0), (1,0,1) — normal +X
             g.positions = vec![
                 0.0, 0.0, 0.0, // 0
-                1.0, 0.0, 0.0, // 1 (shared)
+                1.0, 0.0, 0.0, // 1
                 0.0, 1.0, 0.0, // 2
                 1.0, 0.0, 1.0, // 3
                 1.0, 1.0, 0.0, // 4
             ];
             g.indices = Some(vec![0, 1, 2, 1, 4, 3]);
-            g.compute_normals(true);
+            g.compute_normals();
         }
         let g = rc_ref!(&g);
         let n = g.normals.as_ref().unwrap();
-        // Vertex 1 normal should be midway between +X and +Z (normalized)
-        let nx = n[3];
-        let ny = n[4];
-        let nz = n[5];
-        let half = 1.0_f32 / 2.0_f32.sqrt();
-        assert!((nx - half).abs() < 1e-3);
-        assert!(ny.abs() < 1e-3);
-        assert!((nz - half).abs() < 1e-3);
+        // Face count = 2 → 6 floats.
+        assert_eq!(n.len(), 6);
+        // Face 0 normal = +Z.
+        assert!(n[0].abs() < 1e-5);
+        assert!(n[1].abs() < 1e-5);
+        assert!((n[2] - 1.0).abs() < 1e-5);
+        // Face 1 normal = +X.
+        assert!((n[3] - 1.0).abs() < 1e-5);
+        assert!(n[4].abs() < 1e-5);
+        assert!(n[5].abs() < 1e-5);
     }
 
     #[test]
@@ -236,7 +209,7 @@ mod tests {
         let g = Geometry::new();
         {
             let g = rc_mut!(&g);
-            g.compute_normals(false);
+            g.compute_normals();
         }
         let g = rc_ref!(&g);
         assert_eq!(g.normals.as_ref().unwrap().len(), 0);
@@ -249,15 +222,11 @@ mod tests {
             let g = rc_mut!(&g);
             g.positions = vec![0.0, 0.0, 0.0, 1.0, 0.0, 0.0];
             g.prim = PRIM_LINES;
-            g.compute_normals(false);
+            g.compute_normals();
         }
         let g = rc_ref!(&g);
-        // Non-triangle prim yields zero-filled normals (no face normal concept).
-        let n = g.normals.as_ref().unwrap();
-        assert_eq!(n.len(), 6);
-        for v in n.iter() {
-            assert_eq!(*v, 0.0);
-        }
+        // Non-triangle prim has no face normal concept; output is empty.
+        assert_eq!(g.normals.as_ref().unwrap().len(), 0);
     }
 
     #[test]
@@ -267,12 +236,12 @@ mod tests {
             let g = rc_mut!(&g);
             g.positions = vec![0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0];
             g.indices = Some(vec![0, 1, 99]); // 99 is out of range
-            g.compute_normals(false);
+            g.compute_normals();
         }
         let g = rc_ref!(&g);
-        // Triangle skipped because of out-of-range index → all normals stay zero
         let n = g.normals.as_ref().unwrap();
-        assert_eq!(n.len(), 9);
+        // 1 face slot allocated, but the out-of-range index leaves it zero.
+        assert_eq!(n.len(), 3);
         for v in n.iter() {
             assert_eq!(*v, 0.0);
         }
