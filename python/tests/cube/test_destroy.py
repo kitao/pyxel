@@ -18,7 +18,9 @@ class DestroyTracker(Node):
         DestroyTracker.fire_log.append(self.label)
 
 
-def setup_scene_with_subtree() -> tuple[Scene, DestroyTracker, DestroyTracker, DestroyTracker]:
+def setup_scene_with_subtree() -> tuple[
+    Scene, DestroyTracker, DestroyTracker, DestroyTracker
+]:
     DestroyTracker.fire_log = []
     scene = Scene()
     root = DestroyTracker("root")

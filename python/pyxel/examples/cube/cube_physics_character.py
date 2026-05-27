@@ -15,10 +15,18 @@ from pyxel.cube import (
 
 def _stage_mesh() -> Mesh:
     verts = [
-        -8.0, 0.0, -8.0,
-         8.0, 0.0, -8.0,
-        -8.0, 0.0,  8.0,
-         8.0, 0.0,  8.0,
+        -8.0,
+        0.0,
+        -8.0,
+        8.0,
+        0.0,
+        -8.0,
+        -8.0,
+        0.0,
+        8.0,
+        8.0,
+        0.0,
+        8.0,
     ]
     indices = [0, 1, 2, 1, 3, 2]
     geom = Geometry(positions=verts, indices=indices)
@@ -76,20 +84,18 @@ class Character(Node):
     def __init__(self):
         super().__init__()
         self.transform = Mat4.from_translation(Vec3(0, 1.0, -3))
-        self.collider = Collider(
-            radius=0.6, mass=1.0, rolls=False, friction=0.5
-        )
+        self.collider = Collider(radius=0.6, mass=1.0, rolls=False, friction=0.5)
 
     def on_update(self):
         v = Vec3(0, self.collider.velocity.y - 0.02, 0)
         if pyxel.btn(pyxel.KEY_W):
             v += Vec3(0, 0, -0.1)
         if pyxel.btn(pyxel.KEY_S):
-            v += Vec3(0, 0,  0.1)
+            v += Vec3(0, 0, 0.1)
         if pyxel.btn(pyxel.KEY_A):
             v += Vec3(-0.1, 0, 0)
         if pyxel.btn(pyxel.KEY_D):
-            v += Vec3( 0.1, 0, 0)
+            v += Vec3(0.1, 0, 0)
         self.collider.velocity = v
 
     def on_collide(self, other, contact):
@@ -112,9 +118,9 @@ class App:
         self.scene.shading.direction = Vec3(0.4, -0.8, 0.2)
         self.scene.add_child(Stage())
         self.scene.add_child(Wall(Vec3(-7, 1.0, 0), Vec3(0.4, 2.0, 14)))
-        self.scene.add_child(Wall(Vec3( 7, 1.0, 0), Vec3(0.4, 2.0, 14)))
+        self.scene.add_child(Wall(Vec3(7, 1.0, 0), Vec3(0.4, 2.0, 14)))
         self.scene.add_child(Wall(Vec3(0, 1.0, -7), Vec3(14, 2.0, 0.4)))
-        self.scene.add_child(Wall(Vec3(0, 1.0,  7), Vec3(14, 2.0, 0.4)))
+        self.scene.add_child(Wall(Vec3(0, 1.0, 7), Vec3(14, 2.0, 0.4)))
         self.scene.add_child(MovingPlatform())
         self.scene.add_child(Character())
         self.orbit = OrbitCamera(target=Vec3(0, 1, 0), pitch_deg=35, radius=18)

@@ -366,9 +366,7 @@ class Showcase(Node):
         for name, x, y in LAYOUT_3D:
             spin_mat = Mat4.compose(
                 Vec3(x, y, 0),
-                Quat.from_euler(
-                    Vec3(spin * 1.5 + 30.0, spin * 1.2 + 45.0, spin * 0.8)
-                ),
+                Quat.from_euler(Vec3(spin * 1.5 + 30.0, spin * 1.2 + 45.0, spin * 0.8)),
                 Vec3.ONE,
             )
             if name == "mesh-box":
@@ -453,9 +451,7 @@ class App:
         if pyxel.btnp(pyxel.KEY_Q) or pyxel.btnp(pyxel.KEY_ESCAPE):
             pyxel.quit()
         self.actor.frame += 1
-        self.actor.transform = Mat4.from_euler(
-            Vec3(0, self.actor.spin_deg() * 0.5, 0)
-        )
+        self.actor.transform = Mat4.from_euler(Vec3(0, self.actor.spin_deg() * 0.5, 0))
         self.scene.update()
 
     def draw(self):
