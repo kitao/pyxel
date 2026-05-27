@@ -127,28 +127,31 @@ impl Node {
         if n.inner_ref().name == name {
             out.push(node.clone_ref(py));
         }
-        let children: Vec<Py<Node>> =
-            n.children.borrow().iter().map(|c| c.clone_ref(py)).collect();
+        let children: Vec<Py<Node>> = n
+            .children
+            .borrow()
+            .iter()
+            .map(|c| c.clone_ref(py))
+            .collect();
         drop(n);
         for child in &children {
             Self::collect_by_name(child, py, name, out);
         }
     }
 
-    fn collect_by_tags(
-        node: &Py<Node>,
-        py: Python<'_>,
-        tags: &[String],
-        out: &mut Vec<Py<Node>>,
-    ) {
+    fn collect_by_tags(node: &Py<Node>, py: Python<'_>, tags: &[String], out: &mut Vec<Py<Node>>) {
         let bound = node.bind(py);
         let n = bound.borrow();
         let node_tags = n.inner_ref().tags.clone();
         if tags.iter().any(|t| node_tags.iter().any(|nt| nt == t)) {
             out.push(node.clone_ref(py));
         }
-        let children: Vec<Py<Node>> =
-            n.children.borrow().iter().map(|c| c.clone_ref(py)).collect();
+        let children: Vec<Py<Node>> = n
+            .children
+            .borrow()
+            .iter()
+            .map(|c| c.clone_ref(py))
+            .collect();
         drop(n);
         for child in &children {
             Self::collect_by_tags(child, py, tags, out);
@@ -244,10 +247,7 @@ impl Node {
     }
 
     #[getter]
-    fn scene(
-        slf: PyRef<'_, Node>,
-        py: Python<'_>,
-    ) -> PyResult<Option<Py<super::scene::Scene>>> {
+    fn scene(slf: PyRef<'_, Node>, py: Python<'_>) -> PyResult<Option<Py<super::scene::Scene>>> {
         // Walk up via cached parent until a Scene wrapper is reached.
         let mut current: Py<Node> = slf.into_pyobject(py)?.unbind();
         loop {
@@ -255,7 +255,12 @@ impl Node {
             if let Ok(scene_bound) = bound.cast::<super::scene::Scene>() {
                 return Ok(Some(scene_bound.clone().unbind()));
             }
-            let parent_opt = bound.borrow().parent.borrow().as_ref().map(|p| p.clone_ref(py));
+            let parent_opt = bound
+                .borrow()
+                .parent
+                .borrow()
+                .as_ref()
+                .map(|p| p.clone_ref(py));
             match parent_opt {
                 Some(p) => current = p,
                 None => return Ok(None),

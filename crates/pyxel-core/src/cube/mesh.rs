@@ -71,7 +71,9 @@ impl Mesh {
         let mut positions: Vec<crate::cube::vec3::Vec3> = Vec::new();
         let mut triangles: Vec<[u32; 3]> = Vec::new();
         for (i, geom_opt) in self.geometries.iter().enumerate() {
-            let Some(geom_rc) = geom_opt else { continue; };
+            let Some(geom_rc) = geom_opt else {
+                continue;
+            };
             let geom = rc_ref!(geom_rc);
             if geom.prim != crate::cube::geometry::PRIM_TRIANGLES {
                 continue;
@@ -347,9 +349,7 @@ mod tests {
             let geom = Geometry::new();
             {
                 let g = rc_mut!(&geom);
-                g.positions = vec![
-                    0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0,
-                ];
+                g.positions = vec![0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0];
                 g.indices = Some(vec![0, 1, 2]);
             }
             m.geometries = vec![Some(geom)];
@@ -358,9 +358,8 @@ mod tests {
         }
         let m = rc_ref!(&m);
         assert!(m.bvh.borrow().is_none());
-        let leaf_count = m.with_collision_bvh(|bvh| {
-            bvh.nodes.iter().filter(|n| n.left == -1).count()
-        });
+        let leaf_count =
+            m.with_collision_bvh(|bvh| bvh.nodes.iter().filter(|n| n.left == -1).count());
         assert_eq!(leaf_count, 1);
         assert!(m.bvh.borrow().is_some());
     }

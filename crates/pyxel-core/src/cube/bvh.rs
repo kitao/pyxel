@@ -94,13 +94,7 @@ impl Bvh {
         let mid = n / 2;
         let (left_slice, right_slice) = tri_indices.split_at_mut(mid);
         let left = Self::build_recursive(positions, triangles, left_slice, offset, nodes);
-        let right = Self::build_recursive(
-            positions,
-            triangles,
-            right_slice,
-            offset + mid,
-            nodes,
-        );
+        let right = Self::build_recursive(positions, triangles, right_slice, offset + mid, nodes);
         nodes[node_index as usize].left = left;
         nodes[node_index as usize].right = right;
         node_index
@@ -185,9 +179,21 @@ mod tests {
     #[test]
     fn test_single_triangle_build_produces_one_leaf() {
         let positions = vec![
-            Vec3 { x: 0.0, y: 0.0, z: 0.0 },
-            Vec3 { x: 1.0, y: 0.0, z: 0.0 },
-            Vec3 { x: 0.0, y: 1.0, z: 0.0 },
+            Vec3 {
+                x: 0.0,
+                y: 0.0,
+                z: 0.0,
+            },
+            Vec3 {
+                x: 1.0,
+                y: 0.0,
+                z: 0.0,
+            },
+            Vec3 {
+                x: 0.0,
+                y: 1.0,
+                z: 0.0,
+            },
         ];
         let triangles = vec![[0u32, 1, 2]];
         let bvh = Bvh::build(positions, triangles);
@@ -200,13 +206,37 @@ mod tests {
     fn test_two_separated_triangles_split_into_two_leaves() {
         let positions = vec![
             // Triangle A at x ≈ 0
-            Vec3 { x: 0.0, y: 0.0, z: 0.0 },
-            Vec3 { x: 1.0, y: 0.0, z: 0.0 },
-            Vec3 { x: 0.0, y: 1.0, z: 0.0 },
+            Vec3 {
+                x: 0.0,
+                y: 0.0,
+                z: 0.0,
+            },
+            Vec3 {
+                x: 1.0,
+                y: 0.0,
+                z: 0.0,
+            },
+            Vec3 {
+                x: 0.0,
+                y: 1.0,
+                z: 0.0,
+            },
             // Triangle B at x ≈ 100
-            Vec3 { x: 100.0, y: 0.0, z: 0.0 },
-            Vec3 { x: 101.0, y: 0.0, z: 0.0 },
-            Vec3 { x: 100.0, y: 1.0, z: 0.0 },
+            Vec3 {
+                x: 100.0,
+                y: 0.0,
+                z: 0.0,
+            },
+            Vec3 {
+                x: 101.0,
+                y: 0.0,
+                z: 0.0,
+            },
+            Vec3 {
+                x: 100.0,
+                y: 1.0,
+                z: 0.0,
+            },
         ];
         let triangles = vec![[0u32, 1, 2], [3, 4, 5]];
         let bvh = Bvh::build(positions, triangles);
@@ -220,12 +250,36 @@ mod tests {
     #[test]
     fn test_root_aabb_contains_all_triangle_vertices() {
         let positions = vec![
-            Vec3 { x: -5.0, y: -2.0, z: 0.0 },
-            Vec3 { x:  5.0, y: -2.0, z: 0.0 },
-            Vec3 { x:  0.0, y:  3.0, z: 0.0 },
-            Vec3 { x: -5.0, y: -2.0, z: 10.0 },
-            Vec3 { x:  5.0, y: -2.0, z: 10.0 },
-            Vec3 { x:  0.0, y:  3.0, z: 10.0 },
+            Vec3 {
+                x: -5.0,
+                y: -2.0,
+                z: 0.0,
+            },
+            Vec3 {
+                x: 5.0,
+                y: -2.0,
+                z: 0.0,
+            },
+            Vec3 {
+                x: 0.0,
+                y: 3.0,
+                z: 0.0,
+            },
+            Vec3 {
+                x: -5.0,
+                y: -2.0,
+                z: 10.0,
+            },
+            Vec3 {
+                x: 5.0,
+                y: -2.0,
+                z: 10.0,
+            },
+            Vec3 {
+                x: 0.0,
+                y: 3.0,
+                z: 10.0,
+            },
         ];
         let triangles = vec![[0u32, 1, 2], [3, 4, 5]];
         let bvh = Bvh::build(positions, triangles);
@@ -238,18 +292,50 @@ mod tests {
     #[test]
     fn test_query_returns_overlapping_triangle_only() {
         let positions = vec![
-            Vec3 { x: 0.0, y: 0.0, z: 0.0 },
-            Vec3 { x: 1.0, y: 0.0, z: 0.0 },
-            Vec3 { x: 0.0, y: 1.0, z: 0.0 },
-            Vec3 { x: 100.0, y: 0.0, z: 0.0 },
-            Vec3 { x: 101.0, y: 0.0, z: 0.0 },
-            Vec3 { x: 100.0, y: 1.0, z: 0.0 },
+            Vec3 {
+                x: 0.0,
+                y: 0.0,
+                z: 0.0,
+            },
+            Vec3 {
+                x: 1.0,
+                y: 0.0,
+                z: 0.0,
+            },
+            Vec3 {
+                x: 0.0,
+                y: 1.0,
+                z: 0.0,
+            },
+            Vec3 {
+                x: 100.0,
+                y: 0.0,
+                z: 0.0,
+            },
+            Vec3 {
+                x: 101.0,
+                y: 0.0,
+                z: 0.0,
+            },
+            Vec3 {
+                x: 100.0,
+                y: 1.0,
+                z: 0.0,
+            },
         ];
         let triangles = vec![[0u32, 1, 2], [3, 4, 5]];
         let bvh = Bvh::build(positions, triangles);
         let query = Aabb {
-            min: Vec3 { x: -1.0, y: -1.0, z: -1.0 },
-            max: Vec3 { x:  2.0, y:  2.0, z:  1.0 },
+            min: Vec3 {
+                x: -1.0,
+                y: -1.0,
+                z: -1.0,
+            },
+            max: Vec3 {
+                x: 2.0,
+                y: 2.0,
+                z: 1.0,
+            },
         };
         let mut hits = Vec::new();
         bvh.query_aabb(&query, |tri| hits.push(tri));
@@ -262,14 +348,34 @@ mod tests {
     #[test]
     fn test_query_returns_empty_when_aabb_misses_all() {
         let positions = vec![
-            Vec3 { x: 0.0, y: 0.0, z: 0.0 },
-            Vec3 { x: 1.0, y: 0.0, z: 0.0 },
-            Vec3 { x: 0.0, y: 1.0, z: 0.0 },
+            Vec3 {
+                x: 0.0,
+                y: 0.0,
+                z: 0.0,
+            },
+            Vec3 {
+                x: 1.0,
+                y: 0.0,
+                z: 0.0,
+            },
+            Vec3 {
+                x: 0.0,
+                y: 1.0,
+                z: 0.0,
+            },
         ];
         let bvh = Bvh::build(positions, vec![[0u32, 1, 2]]);
         let query = Aabb {
-            min: Vec3 { x: 100.0, y: 100.0, z: 100.0 },
-            max: Vec3 { x: 101.0, y: 101.0, z: 101.0 },
+            min: Vec3 {
+                x: 100.0,
+                y: 100.0,
+                z: 100.0,
+            },
+            max: Vec3 {
+                x: 101.0,
+                y: 101.0,
+                z: 101.0,
+            },
         };
         let mut hits = 0;
         bvh.query_aabb(&query, |_| hits += 1);
