@@ -221,6 +221,7 @@ impl Vec3 {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::cube::mat4::Mat4;
 
     fn deref(rc: &RcVec3) -> Vec3 {
         *rc_ref!(rc)
@@ -615,5 +616,89 @@ mod tests {
                 z: 0.0
             }
         );
+    }
+
+    #[test]
+    fn test_to_world_translation_only() {
+        // Identity rotation, translation by (10, 0, 0): the local origin
+        // ends up at (10, 0, 0) in world space.
+        let v = Vec3 {
+            x: 1.0,
+            y: 0.0,
+            z: 0.0,
+        };
+        let mat_rc = Mat4::from_translation(&Vec3 {
+            x: 10.0,
+            y: 0.0,
+            z: 0.0,
+        });
+        let mat = rc_ref!(&mat_rc);
+        let r = deref(&v.to_world(mat));
+        assert_eq!(r.x, 11.0);
+        assert_eq!(r.y, 0.0);
+        assert_eq!(r.z, 0.0);
+    }
+
+    #[test]
+    fn test_to_local_round_trip_with_to_world() {
+        // to_local should invert to_world for the same mat.
+        let v = Vec3 {
+            x: 1.0,
+            y: 2.0,
+            z: 3.0,
+        };
+        let mat_rc = Mat4::from_translation(&Vec3 {
+            x: 5.0,
+            y: 0.0,
+            z: -1.0,
+        });
+        let mat = rc_ref!(&mat_rc);
+        let world = v.to_world(mat);
+        let back = rc_ref!(&world).to_local(mat);
+        let back = deref(&back);
+        assert!((back.x - v.x).abs() < 1e-4);
+        assert!((back.y - v.y).abs() < 1e-4);
+        assert!((back.z - v.z).abs() < 1e-4);
+    }
+
+    #[test]
+    fn test_to_world_dir_ignores_translation() {
+        // Direction vectors do not pick up the translation column.
+        let dir = Vec3 {
+            x: 1.0,
+            y: 0.0,
+            z: 0.0,
+        };
+        let mat_rc = Mat4::from_translation(&Vec3 {
+            x: 100.0,
+            y: 100.0,
+            z: 100.0,
+        });
+        let mat = rc_ref!(&mat_rc);
+        let r = deref(&dir.to_world_dir(mat));
+        assert_eq!(r.x, 1.0);
+        assert_eq!(r.y, 0.0);
+        assert_eq!(r.z, 0.0);
+    }
+
+    #[test]
+    fn test_to_local_dir_round_trip() {
+        let dir = Vec3 {
+            x: 0.0,
+            y: 1.0,
+            z: 0.0,
+        };
+        let mat_rc = Mat4::from_translation(&Vec3 {
+            x: 5.0,
+            y: 0.0,
+            z: 0.0,
+        });
+        let mat = rc_ref!(&mat_rc);
+        let world = dir.to_world_dir(mat);
+        let back = rc_ref!(&world).to_local_dir(mat);
+        let back = deref(&back);
+        assert!((back.x - dir.x).abs() < 1e-4);
+        assert!((back.y - dir.y).abs() < 1e-4);
+        assert!((back.z - dir.z).abs() < 1e-4);
     }
 }

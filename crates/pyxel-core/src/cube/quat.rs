@@ -694,4 +694,199 @@ mod tests {
         let out_euler = deref_v(&rc_ref!(&q).to_euler());
         assert!(approx_eq_v(&out_euler, &in_euler));
     }
+
+    #[test]
+    fn test_from_two_vectors_anti_parallel() {
+        // (1, 0, 0) → (-1, 0, 0) is a 180° rotation about any axis
+        // perpendicular to X. The resulting quaternion's mul_vec must
+        // map a back to b.
+        let a = Vec3 {
+            x: 1.0,
+            y: 0.0,
+            z: 0.0,
+        };
+        let b = Vec3 {
+            x: -1.0,
+            y: 0.0,
+            z: 0.0,
+        };
+        let q = Quat::from_two_vectors(&a, &b);
+        let r = deref_v(&rc_ref!(&q).mul_vec(&a));
+        assert!(approx_eq_v(&r, &b));
+    }
+
+    #[test]
+    fn test_from_two_vectors_zero_input_returns_identity() {
+        let a = Vec3 {
+            x: 0.0,
+            y: 0.0,
+            z: 0.0,
+        };
+        let b = Vec3 {
+            x: 1.0,
+            y: 0.0,
+            z: 0.0,
+        };
+        let q = deref(&Quat::from_two_vectors(&a, &b));
+        let id = deref(&Quat::identity());
+        assert!(approx_eq_q(&q, &id));
+    }
+
+    #[test]
+    fn test_from_two_vectors_same_vector_returns_identity() {
+        let a = Vec3 {
+            x: 1.0,
+            y: 0.0,
+            z: 0.0,
+        };
+        let q = deref(&Quat::from_two_vectors(&a, &a));
+        let id = deref(&Quat::identity());
+        assert!(approx_eq_q(&q, &id));
+    }
+
+    #[test]
+    fn test_to_euler_gimbal_lock_positive_pitch() {
+        // 90° rotation around X axis hits the gimbal-lock branch
+        // (sy = sin(±90°) = ±1). The branch must still recover the
+        // requested rotation when re-mul'd onto a probe vector.
+        let in_euler = Vec3 {
+            x: 90.0,
+            y: 0.0,
+            z: 0.0,
+        };
+        let q = Quat::from_euler(&in_euler);
+        let recovered_euler = deref_v(&rc_ref!(&q).to_euler());
+        let q_back = Quat::from_euler(&recovered_euler);
+        let probe = Vec3 {
+            x: 0.0,
+            y: 1.0,
+            z: 0.0,
+        };
+        let r1 = deref_v(&rc_ref!(&q).mul_vec(&probe));
+        let r2 = deref_v(&rc_ref!(&q_back).mul_vec(&probe));
+        assert!(approx_eq_v(&r1, &r2));
+    }
+
+    #[test]
+    fn test_slerp_middle_is_average_rotation() {
+        let a = Quat::from_axis_angle(
+            &Vec3 {
+                x: 0.0,
+                y: 1.0,
+                z: 0.0,
+            },
+            0.0,
+        );
+        let b = Quat::from_axis_angle(
+            &Vec3 {
+                x: 0.0,
+                y: 1.0,
+                z: 0.0,
+            },
+            90.0,
+        );
+        let mid = rc_ref!(&a).slerp(rc_ref!(&b), 0.5);
+        let probe = Vec3 {
+            x: 1.0,
+            y: 0.0,
+            z: 0.0,
+        };
+        // 45° rotation around Y maps (1, 0, 0) → (cos45, 0, -sin45).
+        let r = deref_v(&rc_ref!(&mid).mul_vec(&probe));
+        let s = (0.5_f32).sqrt();
+        assert!(approx_eq_v(
+            &r,
+            &Vec3 {
+                x: s,
+                y: 0.0,
+                z: -s,
+            }
+        ));
+    }
+
+    #[test]
+    fn test_slerp_near_endpoints_uses_lerp_fallback() {
+        // Two nearly-identical rotations trigger the cos > 0.9995 branch
+        // that lerps and normalizes. The interpolated rotation must
+        // still produce a probe close to the starting orientation.
+        let a = Quat::from_axis_angle(
+            &Vec3 {
+                x: 0.0,
+                y: 1.0,
+                z: 0.0,
+            },
+            10.0,
+        );
+        let b = Quat::from_axis_angle(
+            &Vec3 {
+                x: 0.0,
+                y: 1.0,
+                z: 0.0,
+            },
+            10.01,
+        );
+        let mid = deref(&rc_ref!(&a).slerp(rc_ref!(&b), 0.5));
+        // Result must be a unit quaternion.
+        let len = mid.x * mid.x + mid.y * mid.y + mid.z * mid.z + mid.w * mid.w;
+        assert!((len - 1.0).abs() < 1e-4);
+    }
+
+    #[test]
+    fn test_slerp_negate_takes_short_path() {
+        // a and -a represent the same orientation; without the negate
+        // step slerp would take the long way around. The test asserts
+        // that mid produces the same rotation as a on a probe vector.
+        let a = Quat::from_axis_angle(
+            &Vec3 {
+                x: 0.0,
+                y: 1.0,
+                z: 0.0,
+            },
+            30.0,
+        );
+        let a_val = *rc_ref!(&a);
+        let neg = Quat::new(-a_val.x, -a_val.y, -a_val.z, -a_val.w);
+        let mid = rc_ref!(&a).slerp(rc_ref!(&neg), 0.5);
+        let probe = Vec3 {
+            x: 1.0,
+            y: 0.0,
+            z: 0.0,
+        };
+        let r_a = deref_v(&rc_ref!(&a).mul_vec(&probe));
+        let r_mid = deref_v(&rc_ref!(&mid).mul_vec(&probe));
+        assert!(approx_eq_v(&r_a, &r_mid));
+    }
+
+    #[test]
+    fn test_inverse_zero_returns_identity() {
+        let q = Quat::new(0.0, 0.0, 0.0, 0.0);
+        let inv = deref(&rc_ref!(&q).inverse());
+        let id = deref(&Quat::identity());
+        assert!(approx_eq_q(&inv, &id));
+    }
+
+    #[test]
+    fn test_from_direction_parallel_to_up_uses_fallback() {
+        // forward parallel to up forces from_direction's perpendicular
+        // recovery path via from_two_vectors. The resulting rotation
+        // must still map local -Z to the requested forward.
+        let forward = Vec3 {
+            x: 0.0,
+            y: 1.0,
+            z: 0.0,
+        };
+        let up = Vec3 {
+            x: 0.0,
+            y: 1.0,
+            z: 0.0,
+        };
+        let q = Quat::from_direction(&forward, &up);
+        let local_forward = Vec3 {
+            x: 0.0,
+            y: 0.0,
+            z: -1.0,
+        };
+        let r = deref_v(&rc_ref!(&q).mul_vec(&local_forward));
+        assert!(approx_eq_v(&r, &forward));
+    }
 }

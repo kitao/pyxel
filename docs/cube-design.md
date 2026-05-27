@@ -225,11 +225,18 @@ Mat4.look_at(eye, target, up=Vec3.UP)   # camera-style view matrix
 
 `from_axis_angle(axis, deg)` is provided directly on Mat4 to parallel
 `Quat.from_axis_angle` and avoid forcing the `Mat4.from_quat(Quat.from_axis_angle(...))`
-chain at every call site.
+chain at every call site. A zero-length axis returns `Mat4.IDENTITY`
+(no exception), matching `Quat.from_axis_angle`.
 
 `compose(pos, rot, scale)` takes `rot: Quat` (paralleling `m.rot: Quat`).
 The `T × R × S` composition equivalently spells
 `Mat4.from_translation(pos) * Mat4.from_quat(rot) * Mat4.from_scale(scale)`.
+
+`look_at(eye, target, up)` is right-handed (camera looks toward `target`,
+forward = `-Z`). When `up` is parallel or anti-parallel to the forward
+direction (e.g. straight-up / straight-down camera with `up=Vec3.UP`),
+the function picks a fallback up axis so the resulting basis stays
+non-degenerate.
 
 ### 5.6 Mutate Methods (return new Mat4)
 
@@ -248,10 +255,14 @@ read accessor.
 ### 5.7 Matrix Operations
 
 ```python
-m.inverse()              # Mat4
+m.inverse()              # Mat4 (singular input returns Mat4.IDENTITY)
 m.transpose()            # Mat4
 m.determinant()          # float
 ```
+
+`inverse` of a near-singular matrix (`|determinant| < 1e-12`) returns
+`Mat4.IDENTITY` (no exception), matching the silent-fallback policy
+used by `Vec3.normalize` and `Quat.inverse`.
 
 ### 5.8 Coordinate System Conversions
 
@@ -520,7 +531,7 @@ constants.
 | Field | Type | Default | Meaning |
 |---|---|---|---|
 | `positions` | `list[float]` | `[]` | flat (x, y, z) triples; `len(positions) % 3 == 0` |
-| `normals` | `list[float] \| None` | `None` | flat (nx, ny, nz) per vertex; `None` triggers per-face auto-compute on first draw |
+| `normals` | `list[float] \| None` | `None` | flat (nx, ny, nz) per face (one triple per triangle); `None` triggers per-face auto-compute on first draw |
 | `uvs` | `list[float] \| None` | `None` | flat (u, v) per vertex; `None` disables texture sampling |
 | `indices` | `list[int] \| None` | `None` | flat indices; `None` draws as a flat list whose chunk size follows `prim` |
 | `prim` | `int` | `PRIM_TRIANGLES` | topology (see § 9.1) |
@@ -537,7 +548,7 @@ geom = Geometry(
     cull=Geometry.CULL_NONE,
 )
 geom.positions = [...]                  # reassign whole buffer
-geom.compute_normals(smooth=False)      # explicit per-face / smooth normals
+geom.compute_normals()                  # explicit per-face flat normals
 ```
 
 `__init__` is all-optional. Python native `list[float]` / `list[int]`
@@ -552,18 +563,15 @@ to refresh.
 ### 9.4 Normal Auto-Cache
 
 When `normals` is `None`, the renderer computes per-face flat normals
-on the first draw and stores them on the attribute. Subsequent draws
-reuse the cached normals. To force recomputation after mutating
-`positions`, set `geom.normals = None` (the next draw recomputes), or
-call `compute_normals()` to refresh explicitly.
+on the first draw and stores them on the attribute (one `(nx, ny, nz)`
+per triangle, indexed by face). Subsequent draws reuse the cached
+normals. To force recomputation after mutating `positions`, set
+`geom.normals = None` (the next draw recomputes), or call
+`compute_normals()` to refresh explicitly.
 
-`compute_normals(smooth: bool = False)`:
-
-- `smooth=False` (default): one normal per face, replicated to each
-  vertex of that face (flat shading).
-- `smooth=True`: averages adjacent face normals at shared vertices
-  (smooth shading). Requires `indices` populated; with `indices = None`
-  the per-face flat behavior is used.
+Smooth shading (averaging adjacent face normals at shared vertices) is
+not supported; cube targets flat-shaded retro look and per-face normals
+match the rasterizer's input layout.
 
 ### 9.5 Topology and `prim` / `indices` Interaction
 
@@ -1286,12 +1294,18 @@ specific traversal order.
 
 ### 15.5 Self-exclusion
 
-The spatial-query API does not include an `ignore` parameter. Excluding
-self is straightforward at the call site:
+The spatial-query API does not include an `ignore` parameter. Spatial
+queries follow the same silent-fallback policy as the math primitives:
+a query whose origin / probe volume overlaps the caller's own collider
+returns a hit on that collider rather than silently dropping it.
+Excluding self is a one-line post-filter at the call site:
 
 ```python
 # Skip self in the overlap list.
 nearby = [n for n in self.scene.overlap_sphere(self.transform.pos, 3.0) if n is not self]
+# Skip self in raycast hits (origin inside the caller's collider would
+# otherwise produce a zero-distance self-hit).
+hits = [h for h in self.scene.raycast_all(origin, direction) if h.node is not self]
 ```
 
 The earlier `ignore: Node | list[Node] | None` parameter was considered

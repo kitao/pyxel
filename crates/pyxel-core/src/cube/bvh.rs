@@ -381,4 +381,136 @@ mod tests {
         bvh.query_aabb(&query, |_| hits += 1);
         assert_eq!(hits, 0);
     }
+
+    fn unit_triangle(offset: Vec3) -> ([Vec3; 3], [u32; 3]) {
+        (
+            [
+                offset,
+                Vec3 {
+                    x: offset.x + 1.0,
+                    y: offset.y,
+                    z: offset.z,
+                },
+                Vec3 {
+                    x: offset.x,
+                    y: offset.y + 1.0,
+                    z: offset.z,
+                },
+            ],
+            [0u32, 1, 2],
+        )
+    }
+
+    #[test]
+    fn test_multi_triangle_build_produces_single_triangle_leaves() {
+        // 4 separated triangles → 4 leaves (MAX_LEAF_TRIANGLES = 1).
+        let mut positions: Vec<Vec3> = Vec::new();
+        let mut triangles: Vec<[u32; 3]> = Vec::new();
+        for i in 0..4 {
+            let (verts, tri) = unit_triangle(Vec3 {
+                x: i as f32 * 10.0,
+                y: 0.0,
+                z: 0.0,
+            });
+            let base = positions.len() as u32;
+            positions.extend_from_slice(&verts);
+            triangles.push([tri[0] + base, tri[1] + base, tri[2] + base]);
+        }
+        let bvh = Bvh::build(positions, triangles);
+        let leaf_count = bvh.nodes.iter().filter(|n| n.left == -1).count();
+        assert_eq!(leaf_count, 4);
+    }
+
+    #[test]
+    fn test_query_hits_every_triangle_when_aabb_contains_all() {
+        let mut positions: Vec<Vec3> = Vec::new();
+        let mut triangles: Vec<[u32; 3]> = Vec::new();
+        for i in 0..3 {
+            let (verts, tri) = unit_triangle(Vec3 {
+                x: i as f32,
+                y: 0.0,
+                z: 0.0,
+            });
+            let base = positions.len() as u32;
+            positions.extend_from_slice(&verts);
+            triangles.push([tri[0] + base, tri[1] + base, tri[2] + base]);
+        }
+        let bvh = Bvh::build(positions, triangles);
+        let query = Aabb {
+            min: Vec3 {
+                x: -1.0,
+                y: -1.0,
+                z: -1.0,
+            },
+            max: Vec3 {
+                x: 10.0,
+                y: 10.0,
+                z: 10.0,
+            },
+        };
+        let mut hits = 0;
+        bvh.query_aabb(&query, |_| hits += 1);
+        assert_eq!(hits, 3);
+    }
+
+    #[test]
+    fn test_split_axis_uses_longest_extent_y() {
+        // Triangles stretched along Y so the median split picks Y. The
+        // two resulting leaves' AABBs must lie on opposite sides of the
+        // Y midpoint, confirming the split happened on the Y axis (an
+        // X-axis split would leave both leaves spanning the full Y
+        // range).
+        let positions = vec![
+            Vec3 {
+                x: 0.0,
+                y: 0.0,
+                z: 0.0,
+            },
+            Vec3 {
+                x: 1.0,
+                y: 0.0,
+                z: 0.0,
+            },
+            Vec3 {
+                x: 0.0,
+                y: 1.0,
+                z: 0.0,
+            },
+            Vec3 {
+                x: 0.0,
+                y: 100.0,
+                z: 0.0,
+            },
+            Vec3 {
+                x: 1.0,
+                y: 100.0,
+                z: 0.0,
+            },
+            Vec3 {
+                x: 0.0,
+                y: 101.0,
+                z: 0.0,
+            },
+        ];
+        let triangles = vec![[0u32, 1, 2], [3, 4, 5]];
+        let bvh = Bvh::build(positions, triangles);
+        // Root AABB Y extent (~101) should dominate X / Z.
+        let root = bvh.nodes[0].aabb;
+        let ex = root.max.x - root.min.x;
+        let ey = root.max.y - root.min.y;
+        let ez = root.max.z - root.min.z;
+        assert!(ey > ex && ey > ez);
+        let leaf_aabbs: Vec<_> = bvh.nodes.iter().filter(|n| n.left == -1).collect();
+        assert_eq!(leaf_aabbs.len(), 2);
+        // Leaf 0 wraps y≈0..1, leaf 1 wraps y≈100..101 (or vice versa).
+        // Either way the leaves must not overlap in Y, which is the
+        // signature of a Y-axis split.
+        let (a, b) = (leaf_aabbs[0].aabb, leaf_aabbs[1].aabb);
+        let y_disjoint = a.max.y < b.min.y || b.max.y < a.min.y;
+        assert!(
+            y_disjoint,
+            "leaves overlap in Y; split did not occur on Y axis: a=({}..{}) b=({}..{})",
+            a.min.y, a.max.y, b.min.y, b.max.y,
+        );
+    }
 }

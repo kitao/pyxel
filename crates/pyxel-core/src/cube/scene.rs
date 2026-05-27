@@ -999,4 +999,240 @@ mod tests {
         assert!(std::rc::Rc::ptr_eq(&collected[0], &leaf));
         assert!(std::rc::Rc::ptr_eq(&collected[1], &mid));
     }
+
+    fn sphere_collider(radius: f32, mass: f32) -> crate::cube::RcCollider {
+        crate::cube::Collider::new(
+            crate::cube::Vec3::zero(),
+            radius,
+            None,
+            false,
+            false,
+            mass,
+            0.0,
+            0.5,
+            crate::cube::Vec3::zero(),
+            crate::cube::Vec3::zero(),
+        )
+    }
+
+    fn place_at(node: &RcNode, x: f32, y: f32, z: f32) {
+        rc_mut!(node).transform = Mat4::from_translation(&Vec3 { x, y, z });
+    }
+
+    #[test]
+    fn test_detect_contacts_two_overlapping_spheres() {
+        let root = Node::new();
+        let a = Node::new();
+        let b = Node::new();
+        rc_mut!(&a).collider = Some(sphere_collider(0.5, 1.0));
+        rc_mut!(&b).collider = Some(sphere_collider(0.5, 1.0));
+        place_at(&a, 0.0, 0.0, 0.0);
+        place_at(&b, 0.5, 0.0, 0.0);
+        Node::add_child(&root, &a);
+        Node::add_child(&root, &b);
+        let pairs = Scene::detect_contacts(&root);
+        assert_eq!(pairs.len(), 1);
+        // Normal points from b toward a (= -X).
+        let contact = rc_ref!(&pairs[0].contact_a);
+        let normal = rc_ref!(&contact.normal);
+        assert!(normal.x < -0.99);
+    }
+
+    #[test]
+    fn test_detect_contacts_skips_two_static() {
+        // mass==0 on both sides means neither moves; the broad/narrow
+        // pipeline drops the pair to avoid emitting no-op deltas.
+        let root = Node::new();
+        let a = Node::new();
+        let b = Node::new();
+        rc_mut!(&a).collider = Some(sphere_collider(0.5, 0.0));
+        rc_mut!(&b).collider = Some(sphere_collider(0.5, 0.0));
+        place_at(&a, 0.0, 0.0, 0.0);
+        place_at(&b, 0.5, 0.0, 0.0);
+        Node::add_child(&root, &a);
+        Node::add_child(&root, &b);
+        let pairs = Scene::detect_contacts(&root);
+        assert!(pairs.is_empty());
+    }
+
+    #[test]
+    fn test_raycast_returns_nearest_hit() {
+        let root = Node::new();
+        let near = Node::new();
+        let far = Node::new();
+        rc_mut!(&near).collider = Some(sphere_collider(0.5, 1.0));
+        rc_mut!(&far).collider = Some(sphere_collider(0.5, 1.0));
+        place_at(&near, 0.0, 0.0, 0.0);
+        place_at(&far, 0.0, 0.0, -5.0);
+        Node::add_child(&root, &near);
+        Node::add_child(&root, &far);
+        let hit = Scene::raycast(
+            &root,
+            Vec3 {
+                x: 0.0,
+                y: 0.0,
+                z: 5.0,
+            },
+            Vec3 {
+                x: 0.0,
+                y: 0.0,
+                z: -1.0,
+            },
+            f32::INFINITY,
+            false,
+            None,
+        )
+        .unwrap();
+        assert!((hit.distance - 4.5).abs() < 1e-3);
+        assert!(std::rc::Rc::ptr_eq(&hit.node, &near));
+    }
+
+    #[test]
+    fn test_raycast_skips_triggers_by_default() {
+        let root = Node::new();
+        let n = Node::new();
+        let coll = sphere_collider(0.5, 1.0);
+        rc_mut!(&coll).trigger = true;
+        rc_mut!(&n).collider = Some(coll);
+        Node::add_child(&root, &n);
+        let hit = Scene::raycast(
+            &root,
+            Vec3 {
+                x: 0.0,
+                y: 0.0,
+                z: 5.0,
+            },
+            Vec3 {
+                x: 0.0,
+                y: 0.0,
+                z: -1.0,
+            },
+            f32::INFINITY,
+            false,
+            None,
+        );
+        assert!(hit.is_none());
+        let hit_with_triggers = Scene::raycast(
+            &root,
+            Vec3 {
+                x: 0.0,
+                y: 0.0,
+                z: 5.0,
+            },
+            Vec3 {
+                x: 0.0,
+                y: 0.0,
+                z: -1.0,
+            },
+            f32::INFINITY,
+            true,
+            None,
+        );
+        assert!(hit_with_triggers.is_some());
+    }
+
+    #[test]
+    fn test_raycast_all_sorted_by_distance() {
+        let root = Node::new();
+        let a = Node::new();
+        let b = Node::new();
+        let c = Node::new();
+        rc_mut!(&a).collider = Some(sphere_collider(0.3, 1.0));
+        rc_mut!(&b).collider = Some(sphere_collider(0.3, 1.0));
+        rc_mut!(&c).collider = Some(sphere_collider(0.3, 1.0));
+        place_at(&a, 0.0, 0.0, -3.0);
+        place_at(&b, 0.0, 0.0, -1.0);
+        place_at(&c, 0.0, 0.0, -2.0);
+        Node::add_child(&root, &a);
+        Node::add_child(&root, &b);
+        Node::add_child(&root, &c);
+        let hits = Scene::raycast_all(
+            &root,
+            Vec3 {
+                x: 0.0,
+                y: 0.0,
+                z: 5.0,
+            },
+            Vec3 {
+                x: 0.0,
+                y: 0.0,
+                z: -1.0,
+            },
+            f32::INFINITY,
+            false,
+            None,
+        );
+        assert_eq!(hits.len(), 3);
+        for i in 1..hits.len() {
+            assert!(hits[i].distance >= hits[i - 1].distance);
+        }
+    }
+
+    #[test]
+    fn test_overlap_sphere_filters_by_tag() {
+        let root = Node::new();
+        let enemy = Node::new();
+        let friend = Node::new();
+        rc_mut!(&enemy).collider = Some(sphere_collider(0.5, 1.0));
+        rc_mut!(&friend).collider = Some(sphere_collider(0.5, 1.0));
+        rc_mut!(&enemy).tags = vec!["enemy".to_string()];
+        rc_mut!(&friend).tags = vec!["friend".to_string()];
+        Node::add_child(&root, &enemy);
+        Node::add_child(&root, &friend);
+        let only_enemy = Scene::overlap_sphere(
+            &root,
+            Vec3 {
+                x: 0.0,
+                y: 0.0,
+                z: 0.0,
+            },
+            1.0,
+            false,
+            Some(&["enemy".to_string()]),
+        );
+        assert_eq!(only_enemy.len(), 1);
+        assert!(std::rc::Rc::ptr_eq(&only_enemy[0], &enemy));
+    }
+
+    #[test]
+    fn test_overlap_box_finds_overlapping_sphere() {
+        let root = Node::new();
+        let inside = Node::new();
+        let outside = Node::new();
+        rc_mut!(&inside).collider = Some(sphere_collider(0.5, 1.0));
+        rc_mut!(&outside).collider = Some(sphere_collider(0.5, 1.0));
+        place_at(&outside, 10.0, 0.0, 0.0);
+        Node::add_child(&root, &inside);
+        Node::add_child(&root, &outside);
+        let identity_rc = Mat4::identity();
+        let identity = *rc_ref!(&identity_rc);
+        let nodes = Scene::overlap_box(
+            &root,
+            &identity,
+            Vec3 {
+                x: 2.0,
+                y: 2.0,
+                z: 2.0,
+            },
+            false,
+            None,
+        );
+        assert_eq!(nodes.len(), 1);
+        assert!(std::rc::Rc::ptr_eq(&nodes[0], &inside));
+    }
+
+    #[test]
+    fn test_integrate_motion_skips_inactive_subtree() {
+        let root = Node::new();
+        let n = Node::new();
+        let coll = sphere_collider(0.5, 1.0);
+        rc_mut!(&coll).velocity = Vec3::new(1.0, 0.0, 0.0);
+        rc_mut!(&n).collider = Some(coll);
+        rc_mut!(&root).active = false;
+        Node::add_child(&root, &n);
+        Scene::integrate_motion(&root);
+        let pos_rc = rc_ref!(&n).transform.clone();
+        let pos = rc_ref!(&pos_rc).pos();
+        assert_eq!(rc_ref!(&pos).x, 0.0, "inactive subtree should not move");
+    }
 }
