@@ -6,9 +6,9 @@ use crate::cube::collision::{
     aabb_vs_aabb, aabb_vs_triangle, collider_aabb, ray_vs_aabb, ray_vs_sphere, ray_vs_triangle,
     sphere_vs_aabb, sphere_vs_sphere, sphere_vs_triangle, Aabb, ContactGeom,
 };
-use crate::cube::mesh::RcMesh;
 use crate::cube::contact::{Contact, RcContact};
 use crate::cube::mat4::Mat4;
+use crate::cube::mesh::RcMesh;
 use crate::cube::node::{Node, RcNode};
 use crate::cube::raster::{ClipRect, Mat4x4};
 use crate::cube::vec3::Vec3;
@@ -737,9 +737,7 @@ impl Scene {
                 let v2_rc = part_world.mul_vec(&v2);
                 let v2_w = *rc_ref!(&v2_rc);
                 let cur_max = best.as_ref().map_or(max_distance, |(t, _, _)| *t);
-                if let Some(hit) =
-                    ray_vs_triangle(origin, direction, v0_w, v1_w, v2_w, cur_max)
-                {
+                if let Some(hit) = ray_vs_triangle(origin, direction, v0_w, v1_w, v2_w, cur_max) {
                     best = Some(hit);
                 }
             }
@@ -760,8 +758,7 @@ fn narrow_phase_mesh_vs_dynamic(
     size_dyn: Vec3,
     r_dyn: f32,
 ) -> Option<ContactGeom> {
-    let is_sphere =
-        size_dyn.x.abs() < 1e-9 && size_dyn.y.abs() < 1e-9 && size_dyn.z.abs() < 1e-9;
+    let is_sphere = size_dyn.x.abs() < 1e-9 && size_dyn.y.abs() < 1e-9 && size_dyn.z.abs() < 1e-9;
     let mesh_inv_rc = world_mesh.inverse();
     let mesh_inv = *rc_ref!(&mesh_inv_rc);
     // Dynamic body's AABB in world space, then mapped into the mesh-
@@ -813,17 +810,57 @@ fn mul_point(m: &Mat4, v: Vec3) -> Vec3 {
 
 fn transform_aabb_to_local(inv: &Mat4, aabb: &Aabb) -> Aabb {
     let corners = [
-        Vec3 { x: aabb.min.x, y: aabb.min.y, z: aabb.min.z },
-        Vec3 { x: aabb.max.x, y: aabb.min.y, z: aabb.min.z },
-        Vec3 { x: aabb.min.x, y: aabb.max.y, z: aabb.min.z },
-        Vec3 { x: aabb.max.x, y: aabb.max.y, z: aabb.min.z },
-        Vec3 { x: aabb.min.x, y: aabb.min.y, z: aabb.max.z },
-        Vec3 { x: aabb.max.x, y: aabb.min.y, z: aabb.max.z },
-        Vec3 { x: aabb.min.x, y: aabb.max.y, z: aabb.max.z },
-        Vec3 { x: aabb.max.x, y: aabb.max.y, z: aabb.max.z },
+        Vec3 {
+            x: aabb.min.x,
+            y: aabb.min.y,
+            z: aabb.min.z,
+        },
+        Vec3 {
+            x: aabb.max.x,
+            y: aabb.min.y,
+            z: aabb.min.z,
+        },
+        Vec3 {
+            x: aabb.min.x,
+            y: aabb.max.y,
+            z: aabb.min.z,
+        },
+        Vec3 {
+            x: aabb.max.x,
+            y: aabb.max.y,
+            z: aabb.min.z,
+        },
+        Vec3 {
+            x: aabb.min.x,
+            y: aabb.min.y,
+            z: aabb.max.z,
+        },
+        Vec3 {
+            x: aabb.max.x,
+            y: aabb.min.y,
+            z: aabb.max.z,
+        },
+        Vec3 {
+            x: aabb.min.x,
+            y: aabb.max.y,
+            z: aabb.max.z,
+        },
+        Vec3 {
+            x: aabb.max.x,
+            y: aabb.max.y,
+            z: aabb.max.z,
+        },
     ];
-    let mut min = Vec3 { x: f32::INFINITY, y: f32::INFINITY, z: f32::INFINITY };
-    let mut max = Vec3 { x: f32::NEG_INFINITY, y: f32::NEG_INFINITY, z: f32::NEG_INFINITY };
+    let mut min = Vec3 {
+        x: f32::INFINITY,
+        y: f32::INFINITY,
+        z: f32::INFINITY,
+    };
+    let mut max = Vec3 {
+        x: f32::NEG_INFINITY,
+        y: f32::NEG_INFINITY,
+        z: f32::NEG_INFINITY,
+    };
     for c in &corners {
         let local = mul_point(inv, *c);
         min.x = min.x.min(local.x);
@@ -899,10 +936,7 @@ mod tests {
             {
                 let g = rc_mut!(&geom);
                 g.positions = vec![
-                    -5.0, 0.0, -5.0,
-                     5.0, 0.0, -5.0,
-                    -5.0, 0.0,  5.0,
-                     5.0, 0.0,  5.0,
+                    -5.0, 0.0, -5.0, 5.0, 0.0, -5.0, -5.0, 0.0, 5.0, 5.0, 0.0, 5.0,
                 ];
                 g.indices = Some(vec![0, 1, 2, 1, 3, 2]);
             }

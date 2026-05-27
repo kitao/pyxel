@@ -461,9 +461,7 @@ pub fn prim(
     Ok(())
 }
 
-// ============================================================
-// Shortcut commands — fabricate buffers and route through prim.
-// ============================================================
+// Shortcut commands fabricate buffers and route through prim.
 
 pub fn pset(ctx: &mut DrawContext, world_mat: &Mat4, local: &Vec3, col: i32, state: DrawState) {
     let positions = [local.x, local.y, local.z];
@@ -1144,13 +1142,11 @@ pub fn mesh(ctx: &mut DrawContext, world_mat: &Mat4, mesh: &Mesh, state: DrawSta
     }
 }
 
-// ============================================================
-// Text rendering — Vec3-positioned, screen-space glyphs.
+// Text rendering uses Vec3-positioned, screen-space glyphs.
 // `pos` is projected to screen, then each visible glyph pixel
 // is plotted through `write_pixel` at the glyph's screen offset.
 // Always camera-facing; ancestor rotation / scale do not affect
 // glyph layout (cube-design.md § 12.5).
-// ============================================================
 
 // Compute pixel-space bounding box and emit each visible glyph pixel
 // to `out` in a single pass that borrows `font` only once. Returns
@@ -1285,24 +1281,21 @@ mod tests {
     fn test_signed_screen_area_ccw_positive() {
         // CCW in Y-down screen: (0,0), (1,0), (0,1) → triangle pointing
         // away from camera with +Y down has positive signed area.
-        let area =
-            signed_screen_area((0.0, 0.0, 0.0), (1.0, 0.0, 0.0), (0.0, 1.0, 0.0));
+        let area = signed_screen_area((0.0, 0.0, 0.0), (1.0, 0.0, 0.0), (0.0, 1.0, 0.0));
         assert!(area > 0.0);
     }
 
     #[test]
     fn test_signed_screen_area_cw_negative() {
         // CW winding produces negative signed area.
-        let area =
-            signed_screen_area((0.0, 0.0, 0.0), (0.0, 1.0, 0.0), (1.0, 0.0, 0.0));
+        let area = signed_screen_area((0.0, 0.0, 0.0), (0.0, 1.0, 0.0), (1.0, 0.0, 0.0));
         assert!(area < 0.0);
     }
 
     #[test]
     fn test_signed_screen_area_degenerate_zero() {
         // Collinear points produce zero signed area.
-        let area =
-            signed_screen_area((0.0, 0.0, 0.0), (1.0, 0.0, 0.0), (2.0, 0.0, 0.0));
+        let area = signed_screen_area((0.0, 0.0, 0.0), (1.0, 0.0, 0.0), (2.0, 0.0, 0.0));
         assert_eq!(area, 0.0);
     }
 

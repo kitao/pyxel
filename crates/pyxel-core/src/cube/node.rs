@@ -158,11 +158,7 @@ impl Node {
             return Vec3::right();
         }
         let inv = 1.0 / len_sq.sqrt();
-        Vec3::new(
-            t.data[0][0] * inv,
-            t.data[1][0] * inv,
-            t.data[2][0] * inv,
-        )
+        Vec3::new(t.data[0][0] * inv, t.data[1][0] * inv, t.data[2][0] * inv)
     }
 
     pub fn up(node: &RcNode) -> RcVec3 {
@@ -173,11 +169,7 @@ impl Node {
             return Vec3::up();
         }
         let inv = 1.0 / len_sq.sqrt();
-        Vec3::new(
-            t.data[0][1] * inv,
-            t.data[1][1] * inv,
-            t.data[2][1] * inv,
-        )
+        Vec3::new(t.data[0][1] * inv, t.data[1][1] * inv, t.data[2][1] * inv)
     }
 
     pub fn world_transform(node: &RcNode) -> RcMat4 {

@@ -82,8 +82,7 @@ void main() {
         return;
     }
 
-    //---------------------------------------
-    // Input Pixel Mapping:  -|x|x|x|-
+    // Input pixel mapping:  -|x|x|x|-
     //                       x|A|B|C|x
     //                       x|D|E|F|x
     //                       x|G|H|I|x

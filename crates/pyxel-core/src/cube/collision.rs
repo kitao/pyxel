@@ -44,14 +44,46 @@ impl Aabb {
         let hy = size.y.abs() * 0.5 + radius.max(0.0);
         let hz = size.z.abs() * 0.5 + radius.max(0.0);
         let corners = [
-            Vec3 { x: -hx, y: -hy, z: -hz },
-            Vec3 { x: hx, y: -hy, z: -hz },
-            Vec3 { x: -hx, y: hy, z: -hz },
-            Vec3 { x: hx, y: hy, z: -hz },
-            Vec3 { x: -hx, y: -hy, z: hz },
-            Vec3 { x: hx, y: -hy, z: hz },
-            Vec3 { x: -hx, y: hy, z: hz },
-            Vec3 { x: hx, y: hy, z: hz },
+            Vec3 {
+                x: -hx,
+                y: -hy,
+                z: -hz,
+            },
+            Vec3 {
+                x: hx,
+                y: -hy,
+                z: -hz,
+            },
+            Vec3 {
+                x: -hx,
+                y: hy,
+                z: -hz,
+            },
+            Vec3 {
+                x: hx,
+                y: hy,
+                z: -hz,
+            },
+            Vec3 {
+                x: -hx,
+                y: -hy,
+                z: hz,
+            },
+            Vec3 {
+                x: hx,
+                y: -hy,
+                z: hz,
+            },
+            Vec3 {
+                x: -hx,
+                y: hy,
+                z: hz,
+            },
+            Vec3 {
+                x: hx,
+                y: hy,
+                z: hz,
+            },
         ];
         let mut min = Vec3 {
             x: f32::INFINITY,
@@ -209,7 +241,11 @@ pub fn sphere_vs_sphere(c_a: Vec3, r_a: f32, c_b: Vec3, r_b: f32) -> Option<Cont
 // Sphere vs axis-aligned box. The box is passed as an AABB in world
 // space; this is the world-space approximation cube uses for the
 // rounded-box family (size > 0).
-pub fn sphere_vs_aabb(sphere_center: Vec3, sphere_radius: f32, box_aabb: &Aabb) -> Option<ContactGeom> {
+pub fn sphere_vs_aabb(
+    sphere_center: Vec3,
+    sphere_radius: f32,
+    box_aabb: &Aabb,
+) -> Option<ContactGeom> {
     let cx = sphere_center.x.clamp(box_aabb.min.x, box_aabb.max.x);
     let cy = sphere_center.y.clamp(box_aabb.min.y, box_aabb.max.y);
     let cz = sphere_center.z.clamp(box_aabb.min.z, box_aabb.max.z);
@@ -589,13 +625,7 @@ pub fn ray_vs_triangle(
 // sphere center, then accept the hit when that point is inside the
 // sphere. Returns ContactGeom with normal pointing from the triangle
 // toward the sphere center.
-pub fn sphere_vs_triangle(
-    c: Vec3,
-    r: f32,
-    v0: Vec3,
-    v1: Vec3,
-    v2: Vec3,
-) -> Option<ContactGeom> {
+pub fn sphere_vs_triangle(c: Vec3, r: f32, v0: Vec3, v1: Vec3, v2: Vec3) -> Option<ContactGeom> {
     let closest = closest_point_on_triangle(c, v0, v1, v2);
     let dx = c.x - closest.x;
     let dy = c.y - closest.y;
@@ -807,15 +837,11 @@ pub fn aabb_vs_triangle(aabb: &Aabb, v0: Vec3, v1: Vec3, v2: Vec3) -> Option<Con
             if axis.x.abs() < 1e-9 && axis.y.abs() < 1e-9 && axis.z.abs() < 1e-9 {
                 continue;
             }
-            if sat_overlap(&axis, &p0, &p1, &p2, &extents).is_none() {
-                return None;
-            }
+            sat_overlap(&axis, &p0, &p1, &p2, &extents)?;
         }
     }
     for a in &aabb_axes {
-        if sat_overlap(a, &p0, &p1, &p2, &extents).is_none() {
-            return None;
-        }
+        sat_overlap(a, &p0, &p1, &p2, &extents)?;
     }
     let face_normal = {
         let e1 = edges[0];
@@ -836,9 +862,7 @@ pub fn aabb_vs_triangle(aabb: &Aabb, v0: Vec3, v1: Vec3, v2: Vec3) -> Option<Con
     if fnlen_sq < 1e-18 {
         return None;
     }
-    if sat_overlap(&face_normal, &p0, &p1, &p2, &extents).is_none() {
-        return None;
-    }
+    sat_overlap(&face_normal, &p0, &p1, &p2, &extents)?;
     // Orient the normal toward the AABB center (= origin in this
     // local frame). Without this, the result depends on the triangle
     // winding, which the caller cannot guarantee for arbitrary mesh
@@ -920,19 +944,48 @@ mod tests {
 
     #[test]
     fn test_aabb_overlap() {
-        let a = Aabb::from_sphere(Vec3 { x: 0.0, y: 0.0, z: 0.0 }, 1.0);
-        let b = Aabb::from_sphere(Vec3 { x: 1.5, y: 0.0, z: 0.0 }, 1.0);
+        let a = Aabb::from_sphere(
+            Vec3 {
+                x: 0.0,
+                y: 0.0,
+                z: 0.0,
+            },
+            1.0,
+        );
+        let b = Aabb::from_sphere(
+            Vec3 {
+                x: 1.5,
+                y: 0.0,
+                z: 0.0,
+            },
+            1.0,
+        );
         assert!(a.overlaps(&b));
-        let c = Aabb::from_sphere(Vec3 { x: 5.0, y: 0.0, z: 0.0 }, 1.0);
+        let c = Aabb::from_sphere(
+            Vec3 {
+                x: 5.0,
+                y: 0.0,
+                z: 0.0,
+            },
+            1.0,
+        );
         assert!(!a.overlaps(&c));
     }
 
     #[test]
     fn test_sphere_vs_sphere_hit() {
         let r = sphere_vs_sphere(
-            Vec3 { x: 0.0, y: 0.0, z: 0.0 },
+            Vec3 {
+                x: 0.0,
+                y: 0.0,
+                z: 0.0,
+            },
             1.0,
-            Vec3 { x: 1.5, y: 0.0, z: 0.0 },
+            Vec3 {
+                x: 1.5,
+                y: 0.0,
+                z: 0.0,
+            },
             1.0,
         )
         .unwrap();
@@ -943,9 +996,17 @@ mod tests {
     #[test]
     fn test_sphere_vs_sphere_miss() {
         let r = sphere_vs_sphere(
-            Vec3 { x: 0.0, y: 0.0, z: 0.0 },
+            Vec3 {
+                x: 0.0,
+                y: 0.0,
+                z: 0.0,
+            },
             1.0,
-            Vec3 { x: 3.0, y: 0.0, z: 0.0 },
+            Vec3 {
+                x: 3.0,
+                y: 0.0,
+                z: 0.0,
+            },
             1.0,
         );
         assert!(r.is_none());
@@ -954,11 +1015,23 @@ mod tests {
     #[test]
     fn test_sphere_vs_aabb_hit_from_side() {
         let aabb = Aabb {
-            min: Vec3 { x: 0.0, y: 0.0, z: 0.0 },
-            max: Vec3 { x: 2.0, y: 2.0, z: 2.0 },
+            min: Vec3 {
+                x: 0.0,
+                y: 0.0,
+                z: 0.0,
+            },
+            max: Vec3 {
+                x: 2.0,
+                y: 2.0,
+                z: 2.0,
+            },
         };
         let r = sphere_vs_aabb(
-            Vec3 { x: -0.5, y: 1.0, z: 1.0 },
+            Vec3 {
+                x: -0.5,
+                y: 1.0,
+                z: 1.0,
+            },
             1.0,
             &aabb,
         )
@@ -970,12 +1043,28 @@ mod tests {
     #[test]
     fn test_aabb_vs_aabb_hit() {
         let a = Aabb {
-            min: Vec3 { x: 0.0, y: 0.0, z: 0.0 },
-            max: Vec3 { x: 2.0, y: 2.0, z: 2.0 },
+            min: Vec3 {
+                x: 0.0,
+                y: 0.0,
+                z: 0.0,
+            },
+            max: Vec3 {
+                x: 2.0,
+                y: 2.0,
+                z: 2.0,
+            },
         };
         let b = Aabb {
-            min: Vec3 { x: 1.5, y: 0.5, z: 0.5 },
-            max: Vec3 { x: 3.5, y: 1.5, z: 1.5 },
+            min: Vec3 {
+                x: 1.5,
+                y: 0.5,
+                z: 0.5,
+            },
+            max: Vec3 {
+                x: 3.5,
+                y: 1.5,
+                z: 1.5,
+            },
         };
         let r = aabb_vs_aabb(&a, &b).unwrap();
         assert!(approx_eq(r.depth, 0.5));
@@ -985,9 +1074,21 @@ mod tests {
     #[test]
     fn test_ray_vs_sphere_hit() {
         let (t, _, _) = ray_vs_sphere(
-            Vec3 { x: 0.0, y: 0.0, z: -5.0 },
-            Vec3 { x: 0.0, y: 0.0, z: 1.0 },
-            Vec3 { x: 0.0, y: 0.0, z: 0.0 },
+            Vec3 {
+                x: 0.0,
+                y: 0.0,
+                z: -5.0,
+            },
+            Vec3 {
+                x: 0.0,
+                y: 0.0,
+                z: 1.0,
+            },
+            Vec3 {
+                x: 0.0,
+                y: 0.0,
+                z: 0.0,
+            },
             1.0,
             f32::INFINITY,
         )
@@ -998,12 +1099,28 @@ mod tests {
     #[test]
     fn test_ray_vs_aabb_hit() {
         let aabb = Aabb {
-            min: Vec3 { x: -1.0, y: -1.0, z: -1.0 },
-            max: Vec3 { x: 1.0, y: 1.0, z: 1.0 },
+            min: Vec3 {
+                x: -1.0,
+                y: -1.0,
+                z: -1.0,
+            },
+            max: Vec3 {
+                x: 1.0,
+                y: 1.0,
+                z: 1.0,
+            },
         };
         let (t, _, normal) = ray_vs_aabb(
-            Vec3 { x: 0.0, y: 0.0, z: -5.0 },
-            Vec3 { x: 0.0, y: 0.0, z: 1.0 },
+            Vec3 {
+                x: 0.0,
+                y: 0.0,
+                z: -5.0,
+            },
+            Vec3 {
+                x: 0.0,
+                y: 0.0,
+                z: 1.0,
+            },
             &aabb,
             f32::INFINITY,
         )
@@ -1015,11 +1132,31 @@ mod tests {
     #[test]
     fn test_ray_vs_triangle_hit() {
         let (t, _, _) = ray_vs_triangle(
-            Vec3 { x: 0.0, y: 0.0, z: -5.0 },
-            Vec3 { x: 0.0, y: 0.0, z: 1.0 },
-            Vec3 { x: -1.0, y: -1.0, z: 0.0 },
-            Vec3 { x: 1.0, y: -1.0, z: 0.0 },
-            Vec3 { x: 0.0, y: 1.0, z: 0.0 },
+            Vec3 {
+                x: 0.0,
+                y: 0.0,
+                z: -5.0,
+            },
+            Vec3 {
+                x: 0.0,
+                y: 0.0,
+                z: 1.0,
+            },
+            Vec3 {
+                x: -1.0,
+                y: -1.0,
+                z: 0.0,
+            },
+            Vec3 {
+                x: 1.0,
+                y: -1.0,
+                z: 0.0,
+            },
+            Vec3 {
+                x: 0.0,
+                y: 1.0,
+                z: 0.0,
+            },
             f32::INFINITY,
         )
         .unwrap();
@@ -1030,11 +1167,27 @@ mod tests {
     fn test_sphere_vs_triangle_hit_above_face() {
         // Triangle in the z=0 plane; sphere center hovers above the
         // centroid at z=+0.3 with radius 0.5 → 0.2 penetration depth.
-        let v0 = Vec3 { x: 0.0, y: 0.0, z: 0.0 };
-        let v1 = Vec3 { x: 1.0, y: 0.0, z: 0.0 };
-        let v2 = Vec3 { x: 0.0, y: 1.0, z: 0.0 };
+        let v0 = Vec3 {
+            x: 0.0,
+            y: 0.0,
+            z: 0.0,
+        };
+        let v1 = Vec3 {
+            x: 1.0,
+            y: 0.0,
+            z: 0.0,
+        };
+        let v2 = Vec3 {
+            x: 0.0,
+            y: 1.0,
+            z: 0.0,
+        };
         let r = sphere_vs_triangle(
-            Vec3 { x: 0.25, y: 0.25, z: 0.3 },
+            Vec3 {
+                x: 0.25,
+                y: 0.25,
+                z: 0.3,
+            },
             0.5,
             v0,
             v1,
@@ -1047,11 +1200,27 @@ mod tests {
 
     #[test]
     fn test_sphere_vs_triangle_miss_outside_face() {
-        let v0 = Vec3 { x: 0.0, y: 0.0, z: 0.0 };
-        let v1 = Vec3 { x: 1.0, y: 0.0, z: 0.0 };
-        let v2 = Vec3 { x: 0.0, y: 1.0, z: 0.0 };
+        let v0 = Vec3 {
+            x: 0.0,
+            y: 0.0,
+            z: 0.0,
+        };
+        let v1 = Vec3 {
+            x: 1.0,
+            y: 0.0,
+            z: 0.0,
+        };
+        let v2 = Vec3 {
+            x: 0.0,
+            y: 1.0,
+            z: 0.0,
+        };
         let r = sphere_vs_triangle(
-            Vec3 { x: 5.0, y: 5.0, z: 0.3 },
+            Vec3 {
+                x: 5.0,
+                y: 5.0,
+                z: 0.3,
+            },
             0.5,
             v0,
             v1,
@@ -1063,12 +1232,32 @@ mod tests {
     #[test]
     fn test_aabb_vs_triangle_hit_through_face() {
         // Triangle in z=0 plane; AABB straddles z=0.
-        let v0 = Vec3 { x: 0.0, y: 0.0, z: 0.0 };
-        let v1 = Vec3 { x: 2.0, y: 0.0, z: 0.0 };
-        let v2 = Vec3 { x: 0.0, y: 2.0, z: 0.0 };
+        let v0 = Vec3 {
+            x: 0.0,
+            y: 0.0,
+            z: 0.0,
+        };
+        let v1 = Vec3 {
+            x: 2.0,
+            y: 0.0,
+            z: 0.0,
+        };
+        let v2 = Vec3 {
+            x: 0.0,
+            y: 2.0,
+            z: 0.0,
+        };
         let aabb = Aabb {
-            min: Vec3 { x: 0.5, y: 0.5, z: -0.5 },
-            max: Vec3 { x: 1.0, y: 1.0, z:  0.5 },
+            min: Vec3 {
+                x: 0.5,
+                y: 0.5,
+                z: -0.5,
+            },
+            max: Vec3 {
+                x: 1.0,
+                y: 1.0,
+                z: 0.5,
+            },
         };
         let r = aabb_vs_triangle(&aabb, v0, v1, v2).unwrap();
         assert!(r.depth > 0.0);
@@ -1076,12 +1265,32 @@ mod tests {
 
     #[test]
     fn test_aabb_vs_triangle_miss_far_away() {
-        let v0 = Vec3 { x: 0.0, y: 0.0, z: 0.0 };
-        let v1 = Vec3 { x: 1.0, y: 0.0, z: 0.0 };
-        let v2 = Vec3 { x: 0.0, y: 1.0, z: 0.0 };
+        let v0 = Vec3 {
+            x: 0.0,
+            y: 0.0,
+            z: 0.0,
+        };
+        let v1 = Vec3 {
+            x: 1.0,
+            y: 0.0,
+            z: 0.0,
+        };
+        let v2 = Vec3 {
+            x: 0.0,
+            y: 1.0,
+            z: 0.0,
+        };
         let aabb = Aabb {
-            min: Vec3 { x: 10.0, y: 10.0, z: 10.0 },
-            max: Vec3 { x: 11.0, y: 11.0, z: 11.0 },
+            min: Vec3 {
+                x: 10.0,
+                y: 10.0,
+                z: 10.0,
+            },
+            max: Vec3 {
+                x: 11.0,
+                y: 11.0,
+                z: 11.0,
+            },
         };
         let r = aabb_vs_triangle(&aabb, v0, v1, v2);
         assert!(r.is_none());
