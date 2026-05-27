@@ -26,7 +26,9 @@ for frame in range(60):
     if target.destroyed and bullet.destroyed:
         break
 
-print(f"target_destroyed_at={target_destroyed_at}  bullet_destroyed_at={bullet_destroyed_at}")
+print(
+    f"target_destroyed_at={target_destroyed_at}  bullet_destroyed_at={bullet_destroyed_at}"
+)
 assert target.destroyed and bullet.destroyed, "target / bullet not destroyed"
 print("shoot audit OK")
 pyxel.quit()
