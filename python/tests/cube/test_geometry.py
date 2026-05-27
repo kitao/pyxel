@@ -41,15 +41,16 @@ class TestAttributes:
 
 class TestComputeNormals:
     def test_flat(self):
+        # Per-face layout (cube-design.md § 9.4): one (nx, ny, nz) per
+        # triangle. A single +Z-facing triangle yields 3 floats.
         geom = Geometry(positions=[0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0])
         geom.compute_normals()
         assert geom.normals is not None
-        assert len(geom.normals) == 9
-        for i in range(3):
-            nx, ny, nz = geom.normals[i * 3 : i * 3 + 3]
-            assert abs(nx) < 1e-5
-            assert abs(ny) < 1e-5
-            assert abs(nz - 1.0) < 1e-5
+        assert len(geom.normals) == 3
+        nx, ny, nz = geom.normals
+        assert abs(nx) < 1e-5
+        assert abs(ny) < 1e-5
+        assert abs(nz - 1.0) < 1e-5
 
     def test_set_to_none_clears_cache(self):
         geom = Geometry(positions=[0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0])
@@ -58,26 +59,42 @@ class TestComputeNormals:
         geom.normals = None
         assert geom.normals is None
 
-    def test_smooth(self):
+    def test_two_faces_have_distinct_normals(self):
+        # Triangle 0 lies in the z=0 plane (normal +Z); triangle 1 lies
+        # in the x=1 plane (normal +X). Per-face normals keep them in
+        # separate output slots, unlike a per-vertex layout that would
+        # blend at the shared vertex 1.
         geom = Geometry(
             positions=[
-                0.0, 0.0, 0.0,
-                1.0, 0.0, 0.0,
-                0.0, 1.0, 0.0,
-                1.0, 0.0, 1.0,
-                1.0, 1.0, 0.0,
+                0.0,
+                0.0,
+                0.0,
+                1.0,
+                0.0,
+                0.0,
+                0.0,
+                1.0,
+                0.0,
+                1.0,
+                0.0,
+                1.0,
+                1.0,
+                1.0,
+                0.0,
             ],
             indices=[0, 1, 2, 1, 4, 3],
         )
-        geom.compute_normals(smooth=True)
+        geom.compute_normals()
         assert geom.normals is not None
-        # vertex 1 is shared by triangle 0 (+Z normal) and triangle 1 (+X normal),
-        # so the smoothed normal at vertex 1 is the normalized average.
-        nx, ny, nz = geom.normals[3:6]
-        half = 1.0 / (2.0**0.5)
-        assert abs(nx - half) < 1e-3
-        assert abs(ny) < 1e-3
-        assert abs(nz - half) < 1e-3
+        assert len(geom.normals) == 6
+        # Face 0 = +Z.
+        assert abs(geom.normals[0]) < 1e-5
+        assert abs(geom.normals[1]) < 1e-5
+        assert abs(geom.normals[2] - 1.0) < 1e-5
+        # Face 1 = +X.
+        assert abs(geom.normals[3] - 1.0) < 1e-5
+        assert abs(geom.normals[4]) < 1e-5
+        assert abs(geom.normals[5]) < 1e-5
 
 
 class TestConstants:

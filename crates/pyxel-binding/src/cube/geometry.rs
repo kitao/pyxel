@@ -124,9 +124,8 @@ impl Geometry {
 
     // Methods
 
-    #[pyo3(signature = (smooth=false))]
-    fn compute_normals(&self, smooth: bool) {
-        self.inner_mut().compute_normals(smooth);
+    fn compute_normals(&self) {
+        self.inner_mut().compute_normals();
     }
 
     // Dunder
