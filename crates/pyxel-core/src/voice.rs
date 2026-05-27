@@ -448,7 +448,7 @@ impl Voice {
     }
 
     fn refresh_tone_state(&mut self) {
-        if let Some(tone_rc) = self.current_tone.clone() {
+        if let Some(tone_rc) = self.current_tone.as_ref() {
             let tone = rc_mut!(&tone_rc);
             match tone.mode {
                 ToneMode::Wavetable => self.oscillator.set(tone.waveform()),
