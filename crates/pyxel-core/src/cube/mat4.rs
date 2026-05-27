@@ -149,7 +149,27 @@ impl Mat4 {
         let f_rc = target.sub(eye);
         let f = rc_ref!(&f_rc).normalize();
         let f = rc_ref!(&f);
-        let s_rc = f.cross(up);
+        let mut s_rc = f.cross(up);
+        if rc_ref!(&s_rc).length_squared() < 1e-12 {
+            // up is parallel to forward (e.g. looking straight up with
+            // up=Vec3.UP). Pick a fallback up that is guaranteed not to
+            // be parallel: world Z when forward aligns with world Y,
+            // world Y otherwise.
+            let alt_up = if f.y.abs() > 0.9 {
+                Vec3 {
+                    x: 0.0,
+                    y: 0.0,
+                    z: 1.0,
+                }
+            } else {
+                Vec3 {
+                    x: 0.0,
+                    y: 1.0,
+                    z: 0.0,
+                }
+            };
+            s_rc = f.cross(&alt_up);
+        }
         let s = rc_ref!(&s_rc).normalize();
         let s = rc_ref!(&s);
         let u_rc = s.cross(f);
@@ -781,5 +801,259 @@ mod tests {
             },
             &eye,
         ));
+    }
+
+    #[test]
+    fn test_look_at_basis_columns() {
+        // Eye at +Z looking toward origin with world up: column 0 = +X
+        // (right), column 1 = +Y (up), column 2 = +Z (the negated
+        // forward, since forward = target-eye = -Z).
+        let eye = Vec3 {
+            x: 0.0,
+            y: 0.0,
+            z: 5.0,
+        };
+        let target = Vec3 {
+            x: 0.0,
+            y: 0.0,
+            z: 0.0,
+        };
+        let up = Vec3 {
+            x: 0.0,
+            y: 1.0,
+            z: 0.0,
+        };
+        let m = deref(&Mat4::look_at(&eye, &target, &up));
+        assert!((m.data[0][0] - 1.0).abs() < 1e-5); // right.x
+        assert!(m.data[1][0].abs() < 1e-5);
+        assert!(m.data[2][0].abs() < 1e-5);
+        assert!(m.data[0][1].abs() < 1e-5);
+        assert!((m.data[1][1] - 1.0).abs() < 1e-5); // up.y
+        assert!(m.data[2][1].abs() < 1e-5);
+        assert!(m.data[0][2].abs() < 1e-5);
+        assert!(m.data[1][2].abs() < 1e-5);
+        assert!((m.data[2][2] - 1.0).abs() < 1e-5); // -forward.z
+    }
+
+    #[test]
+    fn test_look_at_parallel_up_does_not_collapse() {
+        // Camera looking straight down with up = world up: forward is
+        // parallel to up, the naive f.cross(up) collapses. The fallback
+        // must pick another axis so the resulting matrix is invertible.
+        let eye = Vec3 {
+            x: 0.0,
+            y: 5.0,
+            z: 0.0,
+        };
+        let target = Vec3 {
+            x: 0.0,
+            y: 0.0,
+            z: 0.0,
+        };
+        let up = Vec3 {
+            x: 0.0,
+            y: 1.0,
+            z: 0.0,
+        };
+        let m = deref(&Mat4::look_at(&eye, &target, &up));
+        // The translation column still equals eye.
+        assert_eq!(m.data[0][3], 0.0);
+        assert_eq!(m.data[1][3], 5.0);
+        assert_eq!(m.data[2][3], 0.0);
+        // The basis must be non-degenerate (determinant of the 3x3
+        // upper-left ≠ 0). For an orthonormal rotation it should be ±1.
+        let det = m.data[0][0] * (m.data[1][1] * m.data[2][2] - m.data[1][2] * m.data[2][1])
+            - m.data[0][1] * (m.data[1][0] * m.data[2][2] - m.data[1][2] * m.data[2][0])
+            + m.data[0][2] * (m.data[1][0] * m.data[2][1] - m.data[1][1] * m.data[2][0]);
+        assert!(det.abs() > 0.5, "look_at basis collapsed (det={det})");
+    }
+
+    #[test]
+    fn test_look_at_parallel_up_inverse_up() {
+        // Looking straight up with up = world up: forward and up are
+        // anti-parallel; the same fallback path must engage.
+        let eye = Vec3 {
+            x: 0.0,
+            y: -5.0,
+            z: 0.0,
+        };
+        let target = Vec3 {
+            x: 0.0,
+            y: 0.0,
+            z: 0.0,
+        };
+        let up = Vec3 {
+            x: 0.0,
+            y: 1.0,
+            z: 0.0,
+        };
+        let m = deref(&Mat4::look_at(&eye, &target, &up));
+        let det = m.data[0][0] * (m.data[1][1] * m.data[2][2] - m.data[1][2] * m.data[2][1])
+            - m.data[0][1] * (m.data[1][0] * m.data[2][2] - m.data[1][2] * m.data[2][0])
+            + m.data[0][2] * (m.data[1][0] * m.data[2][1] - m.data[1][1] * m.data[2][0]);
+        assert!(det.abs() > 0.5, "look_at basis collapsed (det={det})");
+    }
+
+    #[test]
+    fn test_from_axis_angle_y_90() {
+        // (1, 0, 0) rotated 90° around Y → (0, 0, -1) in right-handed.
+        let axis = Vec3 {
+            x: 0.0,
+            y: 1.0,
+            z: 0.0,
+        };
+        let m = Mat4::from_axis_angle(&axis, 90.0);
+        let v = Vec3 {
+            x: 1.0,
+            y: 0.0,
+            z: 0.0,
+        };
+        let r = deref_v(&rc_ref!(&m).mul_vec(&v));
+        assert!(approx_eq_vec(
+            &r,
+            &Vec3 {
+                x: 0.0,
+                y: 0.0,
+                z: -1.0,
+            }
+        ));
+    }
+
+    #[test]
+    fn test_from_axis_angle_normalizes_axis() {
+        // A non-unit axis must be normalized internally so the rotation
+        // angle stays at the requested 90°.
+        let axis = Vec3 {
+            x: 0.0,
+            y: 5.0,
+            z: 0.0,
+        };
+        let m = Mat4::from_axis_angle(&axis, 90.0);
+        let v = Vec3 {
+            x: 1.0,
+            y: 0.0,
+            z: 0.0,
+        };
+        let r = deref_v(&rc_ref!(&m).mul_vec(&v));
+        assert!(approx_eq_vec(
+            &r,
+            &Vec3 {
+                x: 0.0,
+                y: 0.0,
+                z: -1.0,
+            }
+        ));
+    }
+
+    #[test]
+    fn test_from_axis_angle_zero_axis_yields_identity() {
+        let axis = Vec3 {
+            x: 0.0,
+            y: 0.0,
+            z: 0.0,
+        };
+        let m = deref(&Mat4::from_axis_angle(&axis, 90.0));
+        let id = deref(&Mat4::identity());
+        assert!(approx_eq_mat(&m, &id));
+    }
+
+    #[test]
+    fn test_from_euler_each_axis_matches_from_axis_angle() {
+        for (axis, label) in [
+            (
+                Vec3 {
+                    x: 1.0,
+                    y: 0.0,
+                    z: 0.0,
+                },
+                "X",
+            ),
+            (
+                Vec3 {
+                    x: 0.0,
+                    y: 1.0,
+                    z: 0.0,
+                },
+                "Y",
+            ),
+            (
+                Vec3 {
+                    x: 0.0,
+                    y: 0.0,
+                    z: 1.0,
+                },
+                "Z",
+            ),
+        ] {
+            let euler = Vec3 {
+                x: axis.x * 30.0,
+                y: axis.y * 30.0,
+                z: axis.z * 30.0,
+            };
+            let m_euler = deref(&Mat4::from_euler(&euler));
+            let m_axis = deref(&Mat4::from_axis_angle(&axis, 30.0));
+            assert!(
+                approx_eq_mat(&m_euler, &m_axis),
+                "from_euler vs from_axis_angle disagree on {label}",
+            );
+        }
+    }
+
+    #[test]
+    fn test_inverse_singular_returns_identity() {
+        // Zero matrix has det=0 — the inverse falls back to identity to
+        // keep callers panic-free (cube-design.md performance posture).
+        let m = Mat4::from_rows([[0.0; 4]; 4]);
+        let inv = deref(&rc_ref!(&m).inverse());
+        let id = deref(&Mat4::identity());
+        assert!(approx_eq_mat(&inv, &id));
+    }
+
+    #[test]
+    fn test_to_world_and_to_local_round_trip() {
+        let outer = Mat4::from_translation(&Vec3 {
+            x: 10.0,
+            y: 0.0,
+            z: 0.0,
+        });
+        let outer_val = *rc_ref!(&outer);
+        let inner = Mat4::from_translation(&Vec3 {
+            x: 5.0,
+            y: 0.0,
+            z: 0.0,
+        });
+        let inner_val = *rc_ref!(&inner);
+        let world = inner_val.to_world(&outer_val);
+        let world_val = *rc_ref!(&world);
+        let pos = deref_v(&world_val.pos());
+        assert!((pos.x - 15.0).abs() < 1e-5);
+        let back = world_val.to_local(&outer_val);
+        let back_val = *rc_ref!(&back);
+        let back_pos = deref_v(&back_val.pos());
+        assert!((back_pos.x - 5.0).abs() < 1e-5);
+    }
+
+    #[test]
+    fn test_to_world_dir_ignores_outer_translation() {
+        let outer = Mat4::from_translation(&Vec3 {
+            x: 10.0,
+            y: 0.0,
+            z: 0.0,
+        });
+        let outer_val = *rc_ref!(&outer);
+        let inner = Mat4::from_translation(&Vec3 {
+            x: 5.0,
+            y: 0.0,
+            z: 0.0,
+        });
+        let inner_val = *rc_ref!(&inner);
+        // _dir variants drop translation: inner's translation column
+        // stays, outer's contribution is the rotation-only part.
+        let world = inner_val.to_world_dir(&outer_val);
+        let world_val = *rc_ref!(&world);
+        let pos = deref_v(&world_val.pos());
+        // outer's rotation is identity, so inner's translation passes
+        // through unmodified.
+        assert!((pos.x - 5.0).abs() < 1e-5);
     }
 }
