@@ -96,13 +96,15 @@ impl Scene {
     #[pyo3(signature = (origin, direction, max_distance=None, hit_triggers=false, tags=None))]
     fn raycast(
         slf: PyRef<'_, Self>,
+        py: Python<'_>,
         origin: PyRef<'_, Vec3>,
         direction: PyRef<'_, Vec3>,
         max_distance: Option<f32>,
         hit_triggers: bool,
         tags: Option<Vec<String>>,
-    ) -> Option<RaycastHit> {
+    ) -> PyResult<Option<RaycastHit>> {
         let scene_inner_node = slf.as_super().inner.clone();
+        let scene_any = slf.into_pyobject(py)?.into_any();
         let origin_v = *origin.inner_ref();
         let direction_v = *direction.inner_ref();
         let max_dist = max_distance.unwrap_or(f32::INFINITY);
@@ -113,34 +115,41 @@ impl Scene {
             max_dist,
             hit_triggers,
             tags.as_deref(),
-        )?;
-        Some(wrap_raycast_hit(hit))
+        );
+        match hit {
+            Some(info) => Ok(Some(wrap_raycast_hit(&scene_any, info)?)),
+            None => Ok(None),
+        }
     }
 
     #[pyo3(signature = (origin, direction, max_distance=None, hit_triggers=false, tags=None))]
     fn raycast_all(
         slf: PyRef<'_, Self>,
+        py: Python<'_>,
         origin: PyRef<'_, Vec3>,
         direction: PyRef<'_, Vec3>,
         max_distance: Option<f32>,
         hit_triggers: bool,
         tags: Option<Vec<String>>,
-    ) -> Vec<RaycastHit> {
+    ) -> PyResult<Vec<RaycastHit>> {
         let scene_inner_node = slf.as_super().inner.clone();
+        let scene_any = slf.into_pyobject(py)?.into_any();
         let origin_v = *origin.inner_ref();
         let direction_v = *direction.inner_ref();
         let max_dist = max_distance.unwrap_or(f32::INFINITY);
-        pyxel::cube::Scene::raycast_all(
+        let infos = pyxel::cube::Scene::raycast_all(
             &scene_inner_node,
             origin_v,
             direction_v,
             max_dist,
             hit_triggers,
             tags.as_deref(),
-        )
-        .into_iter()
-        .map(wrap_raycast_hit)
-        .collect()
+        );
+        let mut out: Vec<RaycastHit> = Vec::with_capacity(infos.len());
+        for info in infos {
+            out.push(wrap_raycast_hit(&scene_any, info)?);
+        }
+        Ok(out)
     }
 
     #[pyo3(signature = (center, radius, hit_triggers=false, tags=None))]
@@ -301,7 +310,13 @@ fn find_py_node_in_tree(
     Ok(None)
 }
 
-fn wrap_raycast_hit(info: pyxel::cube::scene::RaycastHitInfo) -> RaycastHit {
+fn wrap_raycast_hit(
+    scene_any: &Bound<'_, PyAny>,
+    info: pyxel::cube::scene::RaycastHitInfo,
+) -> PyResult<RaycastHit> {
+    // Resolve the inner RcNode to its scene-tree Py<Node> so
+    // `hit.node is scene_node` holds (mirrors the overlap_* path).
+    let py_node = find_py_node_in_tree(scene_any, &info.node)?;
     let rch = pyxel::cube::RaycastHit::new();
     {
         let r = rc_mut!(&rch);
@@ -310,7 +325,10 @@ fn wrap_raycast_hit(info: pyxel::cube::scene::RaycastHitInfo) -> RaycastHit {
         r.normal = pyxel::cube::Vec3::new(info.normal.x, info.normal.y, info.normal.z);
         r.distance = info.distance;
     }
-    RaycastHit::wrap(rch)
+    Ok(match py_node {
+        Some(p) => RaycastHit::wrap_with_py_node(rch, p),
+        None => RaycastHit::wrap(rch),
+    })
 }
 
 fn wrap_node_results(
