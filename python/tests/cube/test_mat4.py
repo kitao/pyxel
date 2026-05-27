@@ -80,16 +80,17 @@ class TestDecomposed:
 
     def test_rot_zero_after_translation(self):
         m = Mat4.from_translation(Vec3(1, 2, 3))
-        assert approx_v(m.rot, Vec3(0, 0, 0))
+        assert approx_v(m.rot.to_euler(), Vec3(0, 0, 0))
 
     def test_compose_round_trip(self):
         pos = Vec3(1, 2, 3)
-        rot = Vec3(0, 45, 0)
+        rot_euler = Vec3(0, 45, 0)
+        rot = Quat.from_euler(rot_euler)
         scale = Vec3(2, 2, 2)
         m = Mat4.compose(pos, rot, scale)
         assert approx_v(m.pos, pos)
         assert approx_v(m.scale, scale)
-        assert approx_v(m.rot, rot)
+        assert approx_v(m.rot.to_euler(), rot_euler)
 
 
 class TestOperators:
@@ -115,8 +116,12 @@ class TestFactories:
         m = Mat4.from_translation(Vec3(1, 2, 3))
         assert m.pos == Vec3(1, 2, 3)
 
-    def test_from_rotation_y90(self):
-        m = Mat4.from_rotation(Vec3(0, 90, 0))
+    def test_from_euler_y90(self):
+        m = Mat4.from_euler(Vec3(0, 90, 0))
+        assert approx_v(m * Vec3(1, 0, 0), Vec3(0, 0, -1))
+
+    def test_from_axis_angle_y90(self):
+        m = Mat4.from_axis_angle(Vec3.UP, 90)
         assert approx_v(m * Vec3(1, 0, 0), Vec3(0, 0, -1))
 
     def test_from_scale(self):
@@ -130,7 +135,7 @@ class TestFactories:
 
     def test_compose(self):
         pos = Vec3(1, 2, 3)
-        rot = Vec3(0, 0, 0)
+        rot = Quat.IDENTITY
         scale = Vec3(2, 2, 2)
         m = Mat4.compose(pos, rot, scale)
         assert m.pos == pos
@@ -169,7 +174,8 @@ class TestMutate:
 
 class TestMatrixOps:
     def test_inverse_round_trip(self):
-        m = Mat4.compose(Vec3(1, 2, 3), Vec3(30, 45, 60), Vec3(1.5, 2, 0.5))
+        rot = Quat.from_euler(Vec3(30, 45, 60))
+        m = Mat4.compose(Vec3(1, 2, 3), rot, Vec3(1.5, 2, 0.5))
         identity_back = m * m.inverse()
         assert approx_m(identity_back, Mat4.IDENTITY)
 

@@ -5,6 +5,7 @@ use crate::cube::collider::RcCollider;
 use crate::cube::mat4::{Mat4, RcMat4};
 use crate::cube::mesh::RcMesh;
 use crate::cube::shading::RcShading;
+use crate::cube::vec3::{RcVec3, Vec3};
 
 pub type WeakNode = Weak<UnsafeCell<Node>>;
 
@@ -21,9 +22,15 @@ pub struct Node {
     pub visible: bool,
     pub shading: Option<RcShading>,
     pub collider: Option<RcCollider>,
+    pub tags: Vec<String>,
     pub parent: Option<WeakNode>,
     pub children: Vec<RcNode>,
     pub attached_mesh: Option<RcMesh>,
+    // Set by destroy() and cascaded to the subtree. Scene.update step 8
+    // (cube-design.md § 16) collects flagged nodes post-order, fires
+    // on_destroy, and detaches them. The flag is exposed read-only as
+    // Node.destroyed so user hooks can early-return after a destroy().
+    pub destroyed: bool,
 }
 
 define_rc_type!(RcNode, Node);
@@ -37,9 +44,11 @@ impl Node {
             visible: true,
             shading: None,
             collider: None,
+            tags: Vec::new(),
             parent: None,
             children: Vec::new(),
             attached_mesh: None,
+            destroyed: false,
         })
     }
 
@@ -66,10 +75,19 @@ impl Node {
         rc_mut!(child).parent = None;
     }
 
+    // Flag this node and every descendant as destroyed without
+    // touching parent / child links. Scene.update step 8 collects
+    // the flagged nodes post-order, fires on_destroy, then detaches.
     pub fn destroy(node: &RcNode) {
-        Self::detach(node);
-        // Subtree links remain intact for callers that still hold references;
-        // dropping the last Rc reclaims memory naturally.
+        Self::mark_destroyed_recursive(node);
+    }
+
+    fn mark_destroyed_recursive(node: &RcNode) {
+        rc_mut!(node).destroyed = true;
+        let children = rc_ref!(node).children.clone();
+        for child in &children {
+            Self::mark_destroyed_recursive(child);
+        }
     }
 
     pub fn parent(node: &RcNode) -> Option<RcNode> {
@@ -80,17 +98,86 @@ impl Node {
         rc_ref!(node).children.clone()
     }
 
-    // Subtree DFS pre-order, matching `self` first.
-    pub fn find(start: &RcNode, name: &str) -> Option<RcNode> {
-        if rc_ref!(start).name == name {
-            return Some(start.clone());
+    // Subtree DFS pre-order; returns every node whose `name` matches.
+    pub fn find_by_name(start: &RcNode, name: &str) -> Vec<RcNode> {
+        let mut out = Vec::new();
+        Self::collect_by_name(start, name, &mut out);
+        out
+    }
+
+    fn collect_by_name(node: &RcNode, name: &str, out: &mut Vec<RcNode>) {
+        if rc_ref!(node).name == name {
+            out.push(node.clone());
         }
-        for child in &rc_ref!(start).children {
-            if let Some(found) = Self::find(child, name) {
-                return Some(found);
-            }
+        let children = rc_ref!(node).children.clone();
+        for child in &children {
+            Self::collect_by_name(child, name, out);
         }
-        None
+    }
+
+    // Subtree DFS pre-order; returns every node carrying any of `tags`.
+    pub fn find_by_tags(start: &RcNode, tags: &[String]) -> Vec<RcNode> {
+        let mut out = Vec::new();
+        Self::collect_by_tags(start, tags, &mut out);
+        out
+    }
+
+    fn collect_by_tags(node: &RcNode, tags: &[String], out: &mut Vec<RcNode>) {
+        let node_tags = rc_ref!(node).tags.clone();
+        if tags.iter().any(|t| node_tags.iter().any(|nt| nt == t)) {
+            out.push(node.clone());
+        }
+        let children = rc_ref!(node).children.clone();
+        for child in &children {
+            Self::collect_by_tags(child, tags, out);
+        }
+    }
+
+    // Local transform basis columns, normalized. Pyxel cube convention:
+    // forward = -Z axis, right = +X axis, up = +Y axis.
+    pub fn forward(node: &RcNode) -> RcVec3 {
+        let t_rc = rc_ref!(node).transform.clone();
+        let t = rc_ref!(&t_rc);
+        let len_sq = t.data[0][2].powi(2) + t.data[1][2].powi(2) + t.data[2][2].powi(2);
+        if len_sq < 1e-24 {
+            return Vec3::forward();
+        }
+        let inv = 1.0 / len_sq.sqrt();
+        Vec3::new(
+            -t.data[0][2] * inv,
+            -t.data[1][2] * inv,
+            -t.data[2][2] * inv,
+        )
+    }
+
+    pub fn right(node: &RcNode) -> RcVec3 {
+        let t_rc = rc_ref!(node).transform.clone();
+        let t = rc_ref!(&t_rc);
+        let len_sq = t.data[0][0].powi(2) + t.data[1][0].powi(2) + t.data[2][0].powi(2);
+        if len_sq < 1e-24 {
+            return Vec3::right();
+        }
+        let inv = 1.0 / len_sq.sqrt();
+        Vec3::new(
+            t.data[0][0] * inv,
+            t.data[1][0] * inv,
+            t.data[2][0] * inv,
+        )
+    }
+
+    pub fn up(node: &RcNode) -> RcVec3 {
+        let t_rc = rc_ref!(node).transform.clone();
+        let t = rc_ref!(&t_rc);
+        let len_sq = t.data[0][1].powi(2) + t.data[1][1].powi(2) + t.data[2][1].powi(2);
+        if len_sq < 1e-24 {
+            return Vec3::up();
+        }
+        let inv = 1.0 / len_sq.sqrt();
+        Vec3::new(
+            t.data[0][1] * inv,
+            t.data[1][1] * inv,
+            t.data[2][1] * inv,
+        )
     }
 
     pub fn world_transform(node: &RcNode) -> RcMat4 {
@@ -165,6 +252,24 @@ mod tests {
     }
 
     #[test]
+    fn test_destroy_marks_subtree_without_detaching() {
+        let root = Node::new();
+        let mid = Node::new();
+        let leaf = Node::new();
+        Node::add_child(&root, &mid);
+        Node::add_child(&mid, &leaf);
+        Node::destroy(&mid);
+        // Flag set on mid + leaf, not on root.
+        assert!(!rc_ref!(&root).destroyed);
+        assert!(rc_ref!(&mid).destroyed);
+        assert!(rc_ref!(&leaf).destroyed);
+        // Tree links untouched (deferred removal happens in Scene
+        // step 8, not in destroy()).
+        assert_eq!(Node::children(&root).len(), 1);
+        assert_eq!(Node::children(&mid).len(), 1);
+    }
+
+    #[test]
     fn test_reparent() {
         let p1 = Node::new();
         let p2 = Node::new();
@@ -192,12 +297,15 @@ mod tests {
         let c = Node::new();
         Node::add_child(&p, &c);
         Node::destroy(&c);
-        assert!(rc_ref!(&p).children.is_empty());
-        assert!(Node::parent(&c).is_none());
+        // Deferred semantics: the flag is set, but parent / child
+        // links survive until Scene step 8 detaches them.
+        assert!(rc_ref!(&c).destroyed);
+        assert_eq!(rc_ref!(&p).children.len(), 1);
+        assert!(Node::parent(&c).is_some());
     }
 
     #[test]
-    fn test_find() {
+    fn test_find_by_name() {
         let root = Node::new();
         let a = Node::new();
         let b = Node::new();
@@ -205,22 +313,92 @@ mod tests {
         rc_mut!(&b).name = "arm".to_string();
         Node::add_child(&root, &a);
         Node::add_child(&root, &b);
-        let found = Node::find(&root, "arm").unwrap();
-        assert!(Rc::ptr_eq(&found, &b));
+        let found = Node::find_by_name(&root, "arm");
+        assert_eq!(found.len(), 1);
+        assert!(Rc::ptr_eq(&found[0], &b));
     }
 
     #[test]
-    fn test_find_self() {
+    fn test_find_by_name_self() {
         let n = Node::new();
         rc_mut!(&n).name = "self".to_string();
-        let found = Node::find(&n, "self").unwrap();
-        assert!(Rc::ptr_eq(&found, &n));
+        let found = Node::find_by_name(&n, "self");
+        assert_eq!(found.len(), 1);
+        assert!(Rc::ptr_eq(&found[0], &n));
     }
 
     #[test]
-    fn test_find_missing() {
+    fn test_find_by_name_missing() {
         let n = Node::new();
-        assert!(Node::find(&n, "absent").is_none());
+        assert!(Node::find_by_name(&n, "absent").is_empty());
+    }
+
+    #[test]
+    fn test_find_by_name_multiple_matches() {
+        let root = Node::new();
+        let a = Node::new();
+        let b = Node::new();
+        rc_mut!(&a).name = "zako".to_string();
+        rc_mut!(&b).name = "zako".to_string();
+        Node::add_child(&root, &a);
+        Node::add_child(&root, &b);
+        let found = Node::find_by_name(&root, "zako");
+        assert_eq!(found.len(), 2);
+    }
+
+    #[test]
+    fn test_find_by_tags_single() {
+        let root = Node::new();
+        let a = Node::new();
+        let b = Node::new();
+        rc_mut!(&a).tags = vec!["enemy".to_string()];
+        rc_mut!(&b).tags = vec!["player".to_string()];
+        Node::add_child(&root, &a);
+        Node::add_child(&root, &b);
+        let found = Node::find_by_tags(&root, &["enemy".to_string()]);
+        assert_eq!(found.len(), 1);
+        assert!(Rc::ptr_eq(&found[0], &a));
+    }
+
+    #[test]
+    fn test_find_by_tags_any_match() {
+        let root = Node::new();
+        let a = Node::new();
+        rc_mut!(&a).tags = vec!["enemy".to_string(), "boss".to_string()];
+        Node::add_child(&root, &a);
+        let found = Node::find_by_tags(&root, &["boss".to_string(), "player".to_string()]);
+        assert_eq!(found.len(), 1);
+        assert!(Rc::ptr_eq(&found[0], &a));
+    }
+
+    #[test]
+    fn test_forward_identity() {
+        let n = Node::new();
+        let f = Node::forward(&n);
+        let f = rc_ref!(&f);
+        assert!((f.x - 0.0).abs() < 1e-4);
+        assert!((f.y - 0.0).abs() < 1e-4);
+        assert!((f.z - (-1.0)).abs() < 1e-4);
+    }
+
+    #[test]
+    fn test_right_identity() {
+        let n = Node::new();
+        let r = Node::right(&n);
+        let r = rc_ref!(&r);
+        assert!((r.x - 1.0).abs() < 1e-4);
+        assert!((r.y - 0.0).abs() < 1e-4);
+        assert!((r.z - 0.0).abs() < 1e-4);
+    }
+
+    #[test]
+    fn test_up_identity() {
+        let n = Node::new();
+        let u = Node::up(&n);
+        let u = rc_ref!(&u);
+        assert!((u.x - 0.0).abs() < 1e-4);
+        assert!((u.y - 1.0).abs() < 1e-4);
+        assert!((u.z - 0.0).abs() < 1e-4);
     }
 
     #[test]

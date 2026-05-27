@@ -137,6 +137,19 @@ impl Quat {
         Self::wrap(pyxel::cube::Quat::from_matrix(mat.inner_ref()))
     }
 
+    #[staticmethod]
+    #[pyo3(signature = (forward, up=None))]
+    fn from_direction(forward: PyRef<'_, Vec3>, up: Option<PyRef<'_, Vec3>>) -> Self {
+        let default_up = pyxel::cube::Vec3::up();
+        let up_inner = up
+            .as_ref()
+            .map_or_else(|| rc_ref!(&default_up), |u| u.inner_ref());
+        Self::wrap(pyxel::cube::Quat::from_direction(
+            forward.inner_ref(),
+            up_inner,
+        ))
+    }
+
     // Unary operations
 
     fn conjugate(&self) -> Self {

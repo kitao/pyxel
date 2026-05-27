@@ -1,3 +1,6 @@
+use std::cell::RefCell;
+
+use crate::cube::bvh::Bvh;
 use crate::cube::geometry::RcGeometry;
 use crate::cube::mat4::{Mat4, RcMat4};
 use crate::image::RcImage;
@@ -28,6 +31,10 @@ pub struct Mesh {
     pub parents: Vec<i32>,
     pub col_img: ColImage,
     pub colkey: Option<i32>,
+    // Lazy collision BVH. Built on first mesh-collider query; never
+    // refit (cube-design.md § 11.1: dynamic mesh colliders are out of
+    // scope). Not exposed through the binding.
+    pub bvh: RefCell<Option<Bvh>>,
 }
 
 define_rc_type!(RcMesh, Mesh);
@@ -40,7 +47,65 @@ impl Mesh {
             parents: Vec::new(),
             col_img: ColImage::Color(7),
             colkey: None,
+            bvh: RefCell::new(None),
         })
+    }
+
+    // Build the collision BVH if absent and call `f` with a borrowed
+    // reference. The BVH is stored in mesh-local space (parts composed
+    // with the identity outer transform); callers transform the query
+    // AABB into this frame before traversing.
+    pub fn with_collision_bvh<R>(&self, f: impl FnOnce(&Bvh) -> R) -> R {
+        if self.bvh.borrow().is_none() {
+            let (positions, triangles) = self.collect_triangles();
+            *self.bvh.borrow_mut() = Some(Bvh::build(positions, triangles));
+        }
+        let guard = self.bvh.borrow();
+        f(guard.as_ref().unwrap())
+    }
+
+    fn collect_triangles(&self) -> (Vec<crate::cube::vec3::Vec3>, Vec<[u32; 3]>) {
+        let identity_rc = Mat4::identity();
+        let identity = *rc_ref!(&identity_rc);
+        let world_per_part = self.compose_world_transforms(&identity);
+        let mut positions: Vec<crate::cube::vec3::Vec3> = Vec::new();
+        let mut triangles: Vec<[u32; 3]> = Vec::new();
+        for (i, geom_opt) in self.geometries.iter().enumerate() {
+            let Some(geom_rc) = geom_opt else { continue; };
+            let geom = rc_ref!(geom_rc);
+            if geom.prim != crate::cube::geometry::PRIM_TRIANGLES {
+                continue;
+            }
+            let world = world_per_part[i];
+            let base_index = positions.len() as u32;
+            for chunk in geom.positions.chunks_exact(3) {
+                let local = crate::cube::vec3::Vec3 {
+                    x: chunk[0],
+                    y: chunk[1],
+                    z: chunk[2],
+                };
+                let p_rc = world.mul_vec(&local);
+                let p = *rc_ref!(&p_rc);
+                positions.push(p);
+            }
+            if let Some(indices) = geom.indices.as_ref() {
+                for tri in indices.chunks_exact(3) {
+                    triangles.push([
+                        base_index + tri[0] as u32,
+                        base_index + tri[1] as u32,
+                        base_index + tri[2] as u32,
+                    ]);
+                }
+            } else {
+                let vert_count = (geom.positions.len() / 3) as u32;
+                let mut t = 0u32;
+                while t + 2 < vert_count {
+                    triangles.push([base_index + t, base_index + t + 1, base_index + t + 2]);
+                    t += 3;
+                }
+            }
+        }
+        (positions, triangles)
     }
 
     pub fn validate(&self) -> Result<(), String> {
@@ -271,6 +336,33 @@ mod tests {
         assert!((pos0.x - 1.0).abs() < 1e-5);
         assert!((pos1.x - 2.0).abs() < 1e-5);
         assert!((pos2.x - 3.0).abs() < 1e-5);
+    }
+
+    #[test]
+    fn test_with_collision_bvh_builds_lazily_and_caches() {
+        use crate::cube::geometry::Geometry;
+        let m = Mesh::new();
+        {
+            let m = rc_mut!(&m);
+            let geom = Geometry::new();
+            {
+                let g = rc_mut!(&geom);
+                g.positions = vec![
+                    0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0,
+                ];
+                g.indices = Some(vec![0, 1, 2]);
+            }
+            m.geometries = vec![Some(geom)];
+            m.transforms = vec![Mat4::identity()];
+            m.parents = vec![-1];
+        }
+        let m = rc_ref!(&m);
+        assert!(m.bvh.borrow().is_none());
+        let leaf_count = m.with_collision_bvh(|bvh| {
+            bvh.nodes.iter().filter(|n| n.left == -1).count()
+        });
+        assert_eq!(leaf_count, 1);
+        assert!(m.bvh.borrow().is_some());
     }
 
     #[test]

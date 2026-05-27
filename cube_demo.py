@@ -4,11 +4,11 @@ import os
 import pyxel
 from pyxel.cube import (
     Camera,
-    FloatBuffer,
-    IntBuffer,
+    Geometry,
     Mat4,
     Mesh,
     Node,
+    Quat,
     Scene,
     Shading,
     Vec3,
@@ -226,16 +226,23 @@ def _load_texture():
     pyxel.images[0].load(0, 0, asset)
 
 
-def _make_box_mesh(size):
-    # Scale the unit cube by `size`; Mesh holds geometry only.
+def _make_box_mesh(size, color):
+    # Scale the unit cube; the Mesh wraps a single Geometry carrying the
+    # flat color through col_img.
     pos = [v * size for v in _UNIT_BOX_VERTICES]
-    return Mesh(positions=FloatBuffer(pos), indices=IntBuffer(_BOX_TRI_INDICES))
+    geom = Geometry(positions=pos, indices=_BOX_TRI_INDICES)
+    return Mesh(
+        geometries=[geom],
+        transforms=[Mat4.IDENTITY],
+        parents=[-1],
+        col_img=color,
+    )
 
 
-def _make_sphere_mesh(radius):
-    # Level-1 subdivided icosahedron (42 vertices / 80 triangles).
-    # Mirrors `unit_icosa_lv1_*` in pyxel-core/src/cube/draw.rs so the
-    # mesh-asset path matches the immediate-mode `node.sphere()` look.
+def _make_sphere_mesh(radius, color):
+    # Level-1 subdivided icosahedron (42 vertices / 80 triangles). Mirrors
+    # `unit_icosa_lv1_*` in pyxel-core/src/cube/draw.rs so the mesh-asset
+    # path matches the immediate-mode `node.sphere()` look.
     edges = [
         (0, 1),
         (0, 5),
@@ -293,7 +300,13 @@ def _make_sphere_mesh(radius):
         )
 
     scaled = [v * radius for v in pos]
-    return Mesh(positions=FloatBuffer(scaled), indices=IntBuffer(tri_indices))
+    geom = Geometry(positions=scaled, indices=tri_indices)
+    return Mesh(
+        geometries=[geom],
+        transforms=[Mat4.IDENTITY],
+        parents=[-1],
+        col_img=color,
+    )
 
 
 def _make_textured_box(size):
@@ -320,45 +333,52 @@ def _make_textured_box(size):
         # Wind each face CCW so the surface normal points outward (matches
         # the colored-box mesh and gives correct Lambert shading).
         idx_list.extend([base, base + 2, base + 1, base + 1, base + 2, base + 3])
+    geom = Geometry(positions=pos_list, indices=idx_list, uvs=uv_list)
     return Mesh(
-        positions=FloatBuffer(pos_list),
-        indices=IntBuffer(idx_list),
-        uvs=FloatBuffer(uv_list),
-        image=pyxel.images[0],
+        geometries=[geom],
+        transforms=[Mat4.IDENTITY],
+        parents=[-1],
+        col_img=pyxel.images[0],
     )
 
 
 class Showcase(Node):
     def __init__(self):
         super().__init__()
-        self.box_mesh = _make_box_mesh(3.6)
+        self.box_mesh = _make_box_mesh(3.6, 8)
         self.tex_box = _make_textured_box(4.0)
-        self.sphere_mesh = _make_sphere_mesh(2.2)
-        self.spin = 0.0
+        self.sphere_mesh = _make_sphere_mesh(2.2, 11)
+        self.frame = 0
+
+    def spin_deg(self) -> float:
+        return self.frame * 1.5
 
     def on_draw(self):
+        spin = self.spin_deg()
         for name, x, y in LAYOUT_2D:
-            wobble = 12.0 * math.sin(math.radians(self.spin) + (x + y) * 0.3)
-            mat = Mat4.compose(Vec3(x, y, 0), Vec3(0, 0, wobble), Vec3.ONE)
-            self._draw_2d(name, x, y, mat)
+            wobble = 12.0 * math.sin(math.radians(spin) + (x + y) * 0.3)
+            mat = Mat4.compose(
+                Vec3(x, y, 0),
+                Quat.from_euler(Vec3(0, 0, wobble)),
+                Vec3.ONE,
+            )
+            self._draw_2d(name, x, y, mat, spin)
         for name, x, y in LAYOUT_3D:
             spin_mat = Mat4.compose(
                 Vec3(x, y, 0),
-                Vec3(
-                    self.spin * 1.5 + 30.0,
-                    self.spin * 1.2 + 45.0,
-                    self.spin * 0.8,
+                Quat.from_euler(
+                    Vec3(spin * 1.5 + 30.0, spin * 1.2 + 45.0, spin * 0.8)
                 ),
                 Vec3.ONE,
             )
             if name == "mesh-box":
-                self.mesh(spin_mat, self.box_mesh, col=8)
+                self.mesh(spin_mat, self.box_mesh)
             elif name == "mesh-tex-box":
                 self.mesh(spin_mat, self.tex_box)
             elif name == "mesh-sphere":
-                self.mesh(spin_mat, self.sphere_mesh, col=11)
+                self.mesh(spin_mat, self.sphere_mesh)
 
-    def _draw_2d(self, name, x, y, mat):
+    def _draw_2d(self, name, x, y, mat, spin):
         if name == "pset":
             self.pset(Vec3(x, y, 0), 7)
         elif name == "line":
@@ -401,7 +421,7 @@ class Showcase(Node):
                 3.0,
                 3.0,
                 colkey=0,
-                angle=self.spin,
+                angle=spin,
             )
         elif name == "plane":
             self.plane(mat, pyxel.images[0], _CAT_UVS, 3.0, 3.0, colkey=0)
@@ -427,15 +447,15 @@ class App:
         self.camera = Camera()
         self.camera.fov = 60.0
         self.camera.transform = Mat4.look_at(Vec3(0, 0, 22), Vec3.ZERO, Vec3.UP)
-        self.frame = 0
         pyxel.run(self.update, self.draw)
 
     def update(self):
         if pyxel.btnp(pyxel.KEY_Q) or pyxel.btnp(pyxel.KEY_ESCAPE):
             pyxel.quit()
-        self.frame += 1
-        self.actor.spin = self.frame * 1.5
-        self.actor.transform = Mat4.from_rotation(Vec3(0, self.actor.spin * 0.5, 0))
+        self.actor.frame += 1
+        self.actor.transform = Mat4.from_euler(
+            Vec3(0, self.actor.spin_deg() * 0.5, 0)
+        )
         self.scene.update()
 
     def draw(self):
