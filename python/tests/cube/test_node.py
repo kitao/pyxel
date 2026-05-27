@@ -374,11 +374,10 @@ class TestCameraProperty:
 
 
 class TestOnCollideSignature:
-    """`on_collide` is exposed today so user subclasses can stage
-    collision-response code; the cube runtime does not invoke it yet
-    (collision pipeline deferred — § 15). The signature must accept
-    both positional and keyword forms with the documented argument
-    names so the future pipeline (and user code) can call it freely."""
+    """`on_collide` is invoked by Scene.update step 7 once per contact
+    pair (cube-design.md § 16). The signature must accept both
+    positional and keyword forms with the documented argument names so
+    the engine call and direct user calls both work."""
 
     def test_positional(self):
         n = Node()
