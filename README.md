@@ -13,9 +13,21 @@ With simple specifications inspired by retro gaming consoles, such as displaying
 
 Pyxel is open source under the [MIT License](https://github.com/kitao/pyxel/blob/main/LICENSE) and free to use. Let's start making retro games with Pyxel!
 
-Also, if you like Pyxel, please give it a star on GitHub.
+Pyxel is developed by one person, kept going by your GitHub stars. If you enjoy it, please give it a star!
 
-**[▸ Pyxel User Guide / ユーザーガイド](https://kitao.github.io/pyxel/web/user-guide/)**
+**[▸ Pyxel User Guide (multilingual)](https://kitao.github.io/pyxel/web/user-guide/)**
+
+---
+
+**Pyxel**（ピクセル）は Python 向けのレトロゲームエンジンです。
+
+使える色は 16 色のみ、同時に再生できる音は 4 音までなど、レトロゲーム機を意識したシンプルな仕様で、Python を使ってドット絵スタイルのゲームづくりが気軽に楽しめます。
+
+Pyxel は [MIT License](https://github.com/kitao/pyxel/blob/main/LICENSE) のオープンソースで、無料で自由に使えます。Pyxel でレトロゲームづくりを始めましょう！
+
+Pyxel は GitHub のスターを励みに、個人で開発を続けています。気に入ったらぜひスター登録をお願いします！
+
+**[▸ Pyxel ユーザーガイド](https://kitao.github.io/pyxel/web/user-guide/)**
 
 [<img src="https://raw.githubusercontent.com/kitao/pyxel/main/docs/images/pyxel_thanks.png" alt="Pyxel User Examples" width="553">](https://kitao.github.io/pyxel-user-examples/) [<img src="https://raw.githubusercontent.com/kitao/pyxel/main/docs/images/pyxel_book.png" alt="Pyxel book" width="190">](https://gihyo.jp/book/2025/978-4-297-14657-3)
 
