@@ -1,5 +1,7 @@
+use std::cell::RefCell;
+
 use pyo3::prelude::*;
-use pyo3::types::PyAny;
+use pyo3::types::{PyAny, PyDict, PyTuple};
 use pyxel::cube::raster::{compute_clip_rect, matmul, projection_matrix, view_matrix};
 use pyxel::cube::scene::{clear_draw_context, set_draw_context, DrawContext};
 
@@ -16,31 +18,23 @@ use crate::image_wrapper::Image;
 // scene-level state defined in core::cube::Scene and the per-frame
 // DrawContext that Node draw commands consume.
 
-#[pyclass(unsendable, from_py_object, extends = Node)]
+#[pyclass(unsendable, from_py_object, extends = Node, subclass)]
 #[derive(Clone)]
 pub struct Scene {
     pub(crate) state: pyxel::cube::RcScene,
+    camera: RefCell<Camera>,
 }
 
 #[pymethods]
 impl Scene {
     #[new]
-    fn new() -> (Self, Node) {
+    #[pyo3(signature = (*_args, **_kwargs))]
+    fn new(_args: &Bound<'_, PyTuple>, _kwargs: Option<&Bound<'_, PyDict>>) -> (Self, Node) {
         let scene = Scene {
             state: pyxel::cube::Scene::new(),
+            camera: RefCell::new(Camera::wrap(pyxel::cube::Camera::new())),
         };
-        // Scene seeds a default Shading from the current Pyxel palette so
-        // descendants always resolve a non-None effective shading through
-        // the inherit-from-ancestor cascade. Users can swap it on the
-        // Scene for global changes or override per-subtree.
-        let inner_node = pyxel::cube::Node::new();
-        {
-            let n = rc_mut!(&inner_node);
-            let palette = pyxel::colors().clone();
-            n.shading = Some(pyxel::cube::Shading::new(&palette));
-        }
-        let node = Node::wrap(inner_node);
-        (scene, node)
+        (scene, Node::wrap(pyxel::cube::Node::new()))
     }
 
     #[getter]
@@ -51,6 +45,16 @@ impl Scene {
     #[setter]
     fn set_clear_color(&self, v: Option<i32>) {
         rc_mut!(self.state).clear_color = v;
+    }
+
+    #[getter]
+    fn camera(&self) -> Camera {
+        self.camera.borrow().clone()
+    }
+
+    #[setter]
+    fn set_camera(&self, camera: Camera) {
+        *self.camera.borrow_mut() = camera;
     }
 
     fn update(slf: PyRef<'_, Self>, py: Python<'_>) -> PyResult<()> {
@@ -197,14 +201,13 @@ impl Scene {
         wrap_node_results(&scene_any, &inner_results)
     }
 
-    #[pyo3(signature = (x, y, w, h, camera, screen=None))]
+    #[pyo3(signature = (x, y, w, h, screen=None))]
     fn draw(
         self_: Bound<'_, Self>,
         x: i32,
         y: i32,
         w: i32,
         h: i32,
-        camera: PyRef<'_, Camera>,
         screen: Option<PyRef<'_, Image>>,
     ) -> PyResult<()> {
         let scene_state = self_.borrow().state.clone();
@@ -222,7 +225,7 @@ impl Scene {
                 scene_mut.clear_depth();
             }
         }
-        let cam_inner = camera.inner.clone();
+        let cam_inner = self_.borrow().camera.borrow().inner.clone();
         let view = view_matrix(rc_ref!(&cam_inner));
         let proj = projection_matrix(rc_ref!(&cam_inner), w as f32, h as f32);
         let vp = matmul(&proj, &view);

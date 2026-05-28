@@ -1,11 +1,11 @@
 use std::cell::RefCell;
 
 use pyo3::prelude::*;
+use pyo3::types::{PyDict, PyTuple};
 use pyxel::cube::draw::DrawState;
 use pyxel::cube::scene::with_draw_context;
 use pyxel::cube::Node as InnerNode;
 
-use super::camera::Camera;
 use super::collider::Collider;
 use super::contact::Contact;
 use super::mat4::Mat4;
@@ -169,7 +169,8 @@ impl Node {
     const BILLBOARD_FIXED_Y: i32 = pyxel::cube::draw::BILLBOARD_FIXED_Y;
 
     #[new]
-    fn new() -> Self {
+    #[pyo3(signature = (*_args, **_kwargs))]
+    fn new(_args: &Bound<'_, PyTuple>, _kwargs: Option<&Bound<'_, PyDict>>) -> Self {
         Self::wrap(InnerNode::new())
     }
 
@@ -313,18 +314,6 @@ impl Node {
             }
         }
         pyo3::types::PyTuple::new(py, items)
-    }
-
-    #[getter]
-    #[allow(clippy::unused_self)]
-    fn camera(&self) -> PyResult<Camera> {
-        let camera_rc = pyxel::cube::scene::with_draw_context(|ctx| ctx.camera.clone());
-        match camera_rc {
-            Some(rc) => Ok(Camera::wrap(rc)),
-            None => Err(pyo3::exceptions::PyRuntimeError::new_err(
-                "Node.camera is only valid inside on_draw",
-            )),
-        }
     }
 
     fn world_transform(&self) -> Mat4 {
