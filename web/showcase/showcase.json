@@ -784,9 +784,9 @@
           }
         },
         {
-          "file": "20_flip_animation.py",
-          "demo": "https://kitao.github.io/pyxel/docs/images/20_flip_animation.gif",
-          "code": "https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/20_flip_animation.py",
+          "file": "99_flip_animation.py",
+          "demo": "https://kitao.github.io/pyxel/docs/images/99_flip_animation.gif",
+          "code": "https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/99_flip_animation.py",
           "description": {
             "en": "Animation with flip function (non-web platforms only)",
             "cn": "使用 flip 函数的动画（仅限非 Web 平台）",
