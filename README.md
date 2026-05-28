@@ -13,7 +13,7 @@ With simple specifications inspired by retro gaming consoles, such as displaying
 
 Pyxel is open source under the [MIT License](https://github.com/kitao/pyxel/blob/main/LICENSE) and free to use. Let's start making retro games with Pyxel!
 
-Pyxel is developed by one person, kept going by your GitHub stars. If you enjoy it, please give it a star!
+Also, this project is developed by one person, kept going by your GitHub stars. If you enjoy it, please give it a star!
 
 **[▸ Pyxel User Guide (multilingual)](https://kitao.github.io/pyxel/web/user-guide/)**
 
@@ -25,7 +25,7 @@ Pyxel is developed by one person, kept going by your GitHub stars. If you enjoy 
 
 Pyxel は [MIT License](https://github.com/kitao/pyxel/blob/main/LICENSE) のオープンソースで、無料で自由に使えます。Pyxel でレトロゲームづくりを始めましょう！
 
-Pyxel は GitHub のスターを励みに、個人で開発を続けています。気に入ったらぜひスター登録をお願いします！
+また、このプロジェクトは GitHub のスターを励みに、個人で開発を続けています。気に入ったらぜひスター登録をお願いします！
 
 **[▸ Pyxel ユーザーガイド](https://kitao.github.io/pyxel/web/user-guide/)**
 
