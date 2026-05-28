@@ -57,10 +57,10 @@ CAPTURE_PLANS = {
         {"frame": 155, "press": [pyxel.KEY_SPACE]},
     ],
     # while+flip() loop
-    "20_flip_animation": [{"frame": 1}, {"frame": 30}],
+    "99_flip_animation": [{"frame": 1}, {"frame": 30}],
 }
 
-FLIP_EXAMPLES = {"20_flip_animation"}
+FLIP_EXAMPLES = {"99_flip_animation"}
 
 
 class TestExamples:
