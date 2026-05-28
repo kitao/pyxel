@@ -7,6 +7,8 @@
 - Updated sysinfo crate to version 0.39
 - Fixed mistyped notes in Pyxel MML Studio sample tune A URL
 - Raised the minimum Python version to 3.11
+- Reorganized .gitignore and added AI tool ignore entries
+- Avoided Rc clone when refreshing voice tone state
 
 ## 2.9.5
 
