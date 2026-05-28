@@ -11,7 +11,7 @@ def palette() -> list[int]:
 class TestDefault:
     def test_construction(self):
         s = Scene()
-        assert isinstance(s.shading, Shading)
+        assert s.shading is None
         assert s.clear_color is None
         assert "Scene(" in repr(s)
 
@@ -89,12 +89,6 @@ def _ball(pos: Vec3, *, radius: float = 0.5, mass: float = 1.0) -> Node:
 
 
 class _CollisionCounter(Node):
-    # Node.__new__ rejects positional/keyword args; the override routes
-    # __init__'s `pos` away from the base constructor.
-    def __new__(cls, *args, **kwargs):
-        del args, kwargs
-        return super().__new__(cls)
-
     def __init__(self, pos: Vec3):
         super().__init__()
         self.transform = Mat4.from_translation(pos)

@@ -1,5 +1,4 @@
 import pyxel
-import pytest
 from pyxel import Image
 
 from pyxel.cube import (
@@ -191,6 +190,26 @@ class TestSubclassing:
         assert a.payload == 42
         assert isinstance(a, Node)
 
+    def test_subclass_with_init_args(self):
+        # A subclass __init__ taking extra positional args must work; the
+        # args must not reach Node.__new__ (cube-design.md § 14).
+        class Tagged(Node):
+            def __init__(self, label):
+                super().__init__()
+                self.name = label
+
+        n = Tagged("hero")
+        assert n.name == "hero"
+
+    def test_scene_subclass_with_init_args(self):
+        class Level(Scene):
+            def __init__(self, depth):
+                super().__init__()
+                self.name = f"level-{depth}"
+
+        s = Level(3)
+        assert s.name == "level-3"
+
     def test_lifecycle_hooks_default_noop(self):
         # Default implementations are no-op; they must be callable.
         # on_collide is wired even though the cube runtime does not
@@ -355,22 +374,30 @@ class TestSceneIntegrationOfNewMethods:
         assert hasattr(cam, "transform")
 
 
-class TestCameraProperty:
-    """`Node.camera` is the active draw camera, valid only inside
-    `on_draw` (cube-design.md § 12.1). Accessing it outside an active
-    draw context raises so callers notice the misuse instead of seeing
-    stale data."""
+class TestSceneCamera:
+    """`Scene.camera` is a settable view Camera seeded on construction.
+    `Node` no longer exposes a `camera` attribute."""
 
-    def test_camera_outside_on_draw_raises(self):
-        n = Node()
-        with pytest.raises(RuntimeError):
-            _ = n.camera
+    def test_node_has_no_camera(self):
+        assert not hasattr(Node(), "camera")
 
-    def test_camera_on_scene_outside_on_draw_raises(self):
-        # Scene inherits Node, so the same rule applies.
+    def test_scene_camera_is_seeded(self):
+        assert isinstance(Scene().camera, Camera)
+
+    def test_scene_camera_transform_writethrough(self):
+        # The getter returns a clone sharing the inner Camera, so a
+        # transform set through it is visible on subsequent reads.
         s = Scene()
-        with pytest.raises(RuntimeError):
-            _ = s.camera
+        m = Mat4.look_at(Vec3(0.0, 2.5, 5.0), Vec3.ZERO)
+        s.camera.transform = m
+        assert s.camera.transform == m
+
+    def test_scene_camera_replace(self):
+        s = Scene()
+        cam = Camera()
+        cam.transform = Mat4.look_at(Vec3(1.0, 0.0, 0.0), Vec3.ZERO)
+        s.camera = cam
+        assert s.camera.transform == cam.transform
 
 
 class TestOnCollideSignature:

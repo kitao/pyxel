@@ -277,8 +277,6 @@ class Node:
     @property
     def destroyed(self) -> bool: ...
     @property
-    def camera(self) -> Camera: ...  # valid only inside on_draw
-    @property
     def forward(self) -> Vec3: ...
     @property
     def right(self) -> Vec3: ...
@@ -550,6 +548,7 @@ class RaycastHit:
 # Scene class
 class Scene(Node):
     clear_color: int | None  # None skips clear; int fills screen + depth buffer
+    camera: Camera  # view used by draw; seeded with a default Camera on construction
 
     def __init__(self) -> None: ...
     def __repr__(self) -> str: ...
@@ -560,7 +559,6 @@ class Scene(Node):
         y: int,
         w: int,
         h: int,
-        camera: Camera,
         screen: Image | None = None,
     ) -> None: ...
     def raycast(
