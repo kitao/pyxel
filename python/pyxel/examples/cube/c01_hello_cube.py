@@ -13,45 +13,48 @@ class Cube(Node):
 
     def on_update(self):
         t = pyxel.frame_count
-        orbit = self.phase + t * 1.4
-        bob = pyxel.sin(self.phase + t * 4.0) * 0.3
+        orbit = self.phase + t * 2.0
         pos = Vec3(
             pyxel.cos(orbit) * 2.0,
-            bob,
+            pyxel.sin(self.phase + t * 4.0) * 0.5 + 0.4,
             pyxel.sin(orbit) * 2.0,
         )
-        spin = Mat4.from_euler(Vec3(t, t * 2.0, 0.0))
+        spin = Mat4.from_euler(Vec3(t * 3.0, t * 5.0, 0.0))
         self.transform = Mat4.from_translation(pos) * spin
 
     def on_draw(self):
         self.box(Mat4.IDENTITY, Vec3(0.6, 0.6, 0.6), self.color)
 
 
-class MainScene(Scene):
-    def __init__(self):
-        super().__init__()
-
-        self.shading = Shading(pyxel.colors)
-        self.shading.direction = Vec3(-0.5, -1.0, -0.7).normalize()
-        self.clear_color = 0
-        self.camera.transform = Mat4.look_at(Vec3(0.0, 2.5, 5.0), Vec3.ZERO)
-
-        for i in range(CUBE_COUNT):
-            self.add_child(Cube(i))
-
+class Label(Node):
     def on_draw(self):
-        self.text(Vec3(0.0, 0.0, 0.0), "Hello, Pyxel Cube!", pyxel.frame_count % 16)
+        self.text(
+            Vec3.ZERO, "Hello, Pyxel Cube!", pyxel.frame_count % 16, depth_test=False
+        )
 
 
 class App:
     def __init__(self):
         pyxel.init(160, 120, title="Hello Pyxel Cube")
-        self.scene = MainScene()
+
+        self.scene = Scene()
+        self.scene.shading = Shading(pyxel.colors)
+        self.scene.shading.direction = Vec3(0.5, -1.5, -1.0).normalize()
+        self.scene.clear_color = 0
+        self.scene.camera.transform = Mat4.look_at(Vec3(0.0, 3.5, 4.0), Vec3.ZERO)
+
+        for i in range(CUBE_COUNT):
+            self.scene.add_child(Cube(i))
+        self.scene.add_child(Label())
+
         pyxel.run(self.update, self.draw)
 
     def update(self):
         if pyxel.btnp(pyxel.KEY_Q):
             pyxel.quit()
+
+        if pyxel.frame_count == 180:
+            pyxel.screencast()
 
         self.scene.update()
 
