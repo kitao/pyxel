@@ -1,3 +1,5 @@
+import pytest
+
 import pyxel
 from pyxel import Image
 
@@ -444,3 +446,41 @@ class TestOnCollideSignature:
         n = Node()
         other = Node()
         n.on_collide(other=other, contact=Contact())
+
+
+class TestAlwaysBillboard:
+    """circ, circb, text, and sprite are always-billboard primitives.
+
+    Pixel-level verification that the geometry faces the camera is
+    covered by manual visual inspection of c01_hello_cube (the Label
+    text must stay readable as the scene rotates). This unit test only
+    confirms the plain positional shape continues to work.
+    """
+
+    def test_circ_circb_text_plain_call(self):
+        n = Node()
+        n.circ(Vec3.ZERO, 1.0, 11)
+        n.circb(Vec3.ZERO, 1.0, 12)
+        n.text(Vec3.ZERO, "X", 7)
+
+
+class TestBillboardKwargRemoved:
+    """billboard kwarg is removed from all primitives that previously had it."""
+
+    @pytest.mark.parametrize(
+        "call",
+        [
+            lambda n: n.line(Vec3.ZERO, Vec3(1, 0, 0), 7, billboard=1),
+            lambda n: n.tri(Vec3.ZERO, Vec3(1, 0, 0), Vec3(0, 1, 0), 7, billboard=1),
+            lambda n: n.trib(Vec3.ZERO, Vec3(1, 0, 0), Vec3(0, 1, 0), 7, billboard=1),
+            lambda n: n.rect(Mat4.IDENTITY, 1.0, 1.0, 7, billboard=1),
+            lambda n: n.rectb(Mat4.IDENTITY, 1.0, 1.0, 7, billboard=1),
+            lambda n: n.elli(Mat4.IDENTITY, 1.0, 1.0, 7, billboard=1),
+            lambda n: n.ellib(Mat4.IDENTITY, 1.0, 1.0, 7, billboard=1),
+            lambda n: n.box(Mat4.IDENTITY, Vec3(1, 1, 1), 7, billboard=1),
+            lambda n: n.boxb(Mat4.IDENTITY, Vec3(1, 1, 1), 7, billboard=1),
+        ],
+    )
+    def test_billboard_kwarg_rejected(self, call):
+        with pytest.raises(TypeError):
+            call(Node())
