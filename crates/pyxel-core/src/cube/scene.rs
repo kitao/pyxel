@@ -66,7 +66,7 @@ pub struct DrawContext {
     pub scene: RcScene,
     // Per-on_draw state modifiers, mutated via Node.dither / depth_test /
     // depth_write / shaded setters; reset to defaults before each Node's
-    // on_draw via reset_draw_state(ctx). Rasterizers consult ctx for these
+    // on_draw via reset_draw_state(). Rasterizers consult ctx for these
     // fields directly.
     pub dither_alpha: f32,
     pub depth_test: bool,
@@ -92,7 +92,7 @@ pub fn clear_draw_context() {
 
 // Reset the per-on_draw state modifiers on the active draw context to
 // their defaults. Called by the binding's traverse_draw before invoking
-// each Node.on_draw so siblings start clean (cube draw API refresh spec).
+// each Node.on_draw so state never leaks across siblings or children.
 pub fn reset_draw_state() {
     with_draw_context(|ctx| {
         ctx.dither_alpha = 1.0;
