@@ -617,22 +617,57 @@ pub fn ellib(ctx: &mut DrawContext, world_mat: &Mat4, w: f32, h: f32, col: i32, 
 
 // Box / boxb: cube faces / edges as 3D solid primitives. Folds `size`
 // into the world matrix as per-axis scale of the cached unit cube.
-pub fn box_solid(ctx: &mut DrawContext, world_mat: &Mat4, size: &Vec3, col: i32, state: DrawState) {
+//
+// When `col_image` is Some, the textured path is used: each face is
+// rendered with a full-texture UV span (0..1 × 0..1) using the
+// face-aware UV convention documented in cube-design.md §UV. The
+// `col_flat` value is ignored in that case.
+pub fn box_solid(
+    ctx: &mut DrawContext,
+    world_mat: &Mat4,
+    size: &Vec3,
+    col_flat: i32,
+    col_image: Option<&RcImage>,
+    colkey: Option<i32>,
+    state: DrawState,
+) {
     let scaled = scale_axes(world_mat, size.x, size.y, size.z);
-    let _ = prim(
-        ctx,
-        &scaled,
-        PRIM_TRIANGLES,
-        CULL_NONE,
-        &UNIT_BOX_POSITIONS,
-        Some(&BOX_TRI_INDICES),
-        None,
-        None,
-        col,
-        None,
-        None,
-        state,
-    );
+    if col_image.is_some() {
+        // Textured path: use the unrolled 24-vertex layout so each face
+        // has its own UV coordinates (shared-vertex layout cannot assign
+        // different UVs to the same vertex for adjacent faces).
+        let _ = prim(
+            ctx,
+            &scaled,
+            PRIM_TRIANGLES,
+            CULL_NONE,
+            &BOX_UNROLLED_POSITIONS,
+            Some(&BOX_UNROLLED_TRI_INDICES),
+            None,
+            Some(&BOX_UNROLLED_UVS),
+            col_flat,
+            col_image,
+            colkey,
+            state,
+        );
+    } else {
+        // Flat-color path: keep the original 8-vertex shared layout so
+        // there is zero per-frame allocation overhead.
+        let _ = prim(
+            ctx,
+            &scaled,
+            PRIM_TRIANGLES,
+            CULL_NONE,
+            &UNIT_BOX_POSITIONS,
+            Some(&BOX_TRI_INDICES),
+            None,
+            None,
+            col_flat,
+            None,
+            None,
+            state,
+        );
+    }
 }
 
 pub fn boxb(ctx: &mut DrawContext, world_mat: &Mat4, size: &Vec3, col: i32, state: DrawState) {
@@ -676,6 +711,95 @@ const BOX_EDGE_INDICES: [i32; 24] = [
     0, 1, 1, 2, 2, 3, 3, 0, // back face square
     4, 5, 5, 6, 6, 7, 7, 4, // front face square
     0, 4, 1, 5, 2, 6, 3, 7, // four connecting edges
+];
+
+// Unrolled box: 24 vertices (4 per face × 6 faces). Each face owns its
+// own copy of its 4 corners so every vertex can have a unique UV without
+// sharing conflicts. Face order mirrors BOX_TRI_INDICES: -Z, +Z, -Y, +Y,
+// -X, +X. Positions are identical to UNIT_BOX_POSITIONS but replicated.
+//
+// UV convention (cube-design.md §UV):
+//   +X face: UV +U = local -Z,  UV +V = local +Y
+//   -X face: UV +U = local +Z,  UV +V = local +Y
+//   +Z face: UV +U = local +X,  UV +V = local +Y
+//   -Z face: UV +U = local -X,  UV +V = local +Y
+//   +Y face: UV +U = local +X,  UV +V = local -Z
+//   -Y face: UV +U = local +X,  UV +V = local +Z
+#[rustfmt::skip]
+const BOX_UNROLLED_POSITIONS: [f32; 72] = [
+    // -Z face (z=-0.5): vertices 0-3
+    -0.5, -0.5, -0.5,   0.5, -0.5, -0.5,   0.5, 0.5, -0.5,  -0.5, 0.5, -0.5,
+    // +Z face (z=+0.5): vertices 4-7
+    -0.5, -0.5,  0.5,   0.5, -0.5,  0.5,   0.5, 0.5,  0.5,  -0.5, 0.5,  0.5,
+    // -Y face (y=-0.5): vertices 8-11
+    -0.5, -0.5, -0.5,   0.5, -0.5, -0.5,  -0.5, -0.5, 0.5,   0.5, -0.5, 0.5,
+    // +Y face (y=+0.5): vertices 12-15
+    -0.5,  0.5, -0.5,   0.5,  0.5, -0.5,  -0.5,  0.5, 0.5,   0.5,  0.5, 0.5,
+    // -X face (x=-0.5): vertices 16-19
+    -0.5, -0.5, -0.5,  -0.5,  0.5, -0.5,  -0.5, -0.5, 0.5,  -0.5,  0.5, 0.5,
+    // +X face (x=+0.5): vertices 20-23
+     0.5, -0.5, -0.5,   0.5,  0.5, -0.5,   0.5, -0.5, 0.5,   0.5,  0.5, 0.5,
+];
+
+// UV coordinates for BOX_UNROLLED_POSITIONS. Layout mirrors the
+// per-face convention: U and V each span [0, 1] across the face.
+#[rustfmt::skip]
+const BOX_UNROLLED_UVS: [f32; 48] = [
+    // -Z face: U = (-x+0.5), V = (y+0.5)
+    //   v0(-0.5,-0.5,-0.5): U=1.0 V=0.0
+    //   v1( 0.5,-0.5,-0.5): U=0.0 V=0.0
+    //   v2( 0.5, 0.5,-0.5): U=0.0 V=1.0
+    //   v3(-0.5, 0.5,-0.5): U=1.0 V=1.0
+    1.0, 0.0,  0.0, 0.0,  0.0, 1.0,  1.0, 1.0,
+    // +Z face: U = (x+0.5), V = (y+0.5)
+    //   v4(-0.5,-0.5, 0.5): U=0.0 V=0.0
+    //   v5( 0.5,-0.5, 0.5): U=1.0 V=0.0
+    //   v6( 0.5, 0.5, 0.5): U=1.0 V=1.0
+    //   v7(-0.5, 0.5, 0.5): U=0.0 V=1.0
+    0.0, 0.0,  1.0, 0.0,  1.0, 1.0,  0.0, 1.0,
+    // -Y face: U = (x+0.5), V = (z+0.5)
+    //   v8 (-0.5,-0.5,-0.5): U=0.0 V=0.0
+    //   v9 ( 0.5,-0.5,-0.5): U=1.0 V=0.0
+    //   v10(-0.5,-0.5, 0.5): U=0.0 V=1.0
+    //   v11( 0.5,-0.5, 0.5): U=1.0 V=1.0
+    0.0, 0.0,  1.0, 0.0,  0.0, 1.0,  1.0, 1.0,
+    // +Y face: U = (x+0.5), V = (-z+0.5)
+    //   v12(-0.5, 0.5,-0.5): U=0.0 V=1.0
+    //   v13( 0.5, 0.5,-0.5): U=1.0 V=1.0
+    //   v14(-0.5, 0.5, 0.5): U=0.0 V=0.0
+    //   v15( 0.5, 0.5, 0.5): U=1.0 V=0.0
+    0.0, 1.0,  1.0, 1.0,  0.0, 0.0,  1.0, 0.0,
+    // -X face: U = (z+0.5), V = (y+0.5)
+    //   v16(-0.5,-0.5,-0.5): U=0.0 V=0.0
+    //   v17(-0.5, 0.5,-0.5): U=0.0 V=1.0
+    //   v18(-0.5,-0.5, 0.5): U=1.0 V=0.0
+    //   v19(-0.5, 0.5, 0.5): U=1.0 V=1.0
+    0.0, 0.0,  0.0, 1.0,  1.0, 0.0,  1.0, 1.0,
+    // +X face: U = (-z+0.5), V = (y+0.5)
+    //   v20( 0.5,-0.5,-0.5): U=1.0 V=0.0
+    //   v21( 0.5, 0.5,-0.5): U=1.0 V=1.0
+    //   v22( 0.5,-0.5, 0.5): U=0.0 V=0.0
+    //   v23( 0.5, 0.5, 0.5): U=0.0 V=1.0
+    1.0, 0.0,  1.0, 1.0,  0.0, 0.0,  0.0, 1.0,
+];
+
+// Triangle indices for BOX_UNROLLED_POSITIONS. Winding order mirrors
+// BOX_TRI_INDICES (CCW outward from outside) but uses the unrolled
+// per-face vertex offsets.
+#[rustfmt::skip]
+const BOX_UNROLLED_TRI_INDICES: [i32; 36] = [
+    // -Z face (verts 0-3): tri (0,2,1), (0,3,2)
+     0,  2,  1,   0,  3,  2,
+    // +Z face (verts 4-7): tri (4,5,6), (4,6,7)
+     4,  5,  6,   4,  6,  7,
+    // -Y face (verts 8-11): tri (8,9,11), (8,11,10)
+     8,  9, 11,   8, 11, 10,
+    // +Y face (verts 12-15): tri (12,15,13), (12,14,15)
+    12, 15, 13,  12, 14, 15,
+    // -X face (verts 16-19): tri (16,18,19), (16,19,17)
+    16, 18, 19,  16, 19, 17,
+    // +X face (verts 20-23): tri (20,21,23), (20,23,22)
+    20, 21, 23,  20, 23, 22,
 ];
 
 // Unit rectangle: 4 vertices at ±1 on the XY plane. RECT_TRI_INDICES
