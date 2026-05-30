@@ -96,29 +96,30 @@ impl Node {
         InnerNode::effective_shading(&self.inner)
     }
 
-    #[allow(clippy::too_many_arguments)]
-    fn with_state(
+    fn with_state_from_ctx(
         &self,
-        shaded: bool,
-        dither_alpha: f32,
-        depth_test: bool,
-        depth_write: bool,
         billboard: i32,
         f: impl FnOnce(&mut pyxel::cube::scene::DrawContext, pyxel::cube::draw::DrawState),
     ) {
-        let shading = if shaded { self.resolve_shading() } else { None };
-        let shading_ref = shading
-            .as_ref()
-            .map(|s: &pyxel::cube::RcShading| rc_ref!(s));
-        let state = DrawState {
-            shaded,
-            dither_alpha,
-            depth_test,
-            depth_write,
-            billboard,
-            shading: shading_ref,
-        };
-        with_draw_context(|ctx| f(ctx, state));
+        // Resolve the per-Node cascading shading once. The rasterizer will
+        // only consult it when ctx.shaded is true.
+        let shading_rc = self.resolve_shading();
+        with_draw_context(|ctx| {
+            let shading_ref = if ctx.shaded {
+                shading_rc.as_ref().map(|s| rc_ref!(s))
+            } else {
+                None
+            };
+            let state = DrawState {
+                shaded: ctx.shaded,
+                dither_alpha: ctx.dither_alpha,
+                depth_test: ctx.depth_test,
+                depth_write: ctx.depth_write,
+                billboard,
+                shading: shading_ref,
+            };
+            f(ctx, state);
+        });
     }
 
     fn collect_by_name(node: &Py<Node>, py: Python<'_>, name: &str, out: &mut Vec<Py<Node>>) {
@@ -428,424 +429,235 @@ impl Node {
         });
     }
 
-    #[pyo3(signature = (pos, col, *, dither_alpha=1.0, depth_test=true, depth_write=true))]
+    #[pyo3(signature = (pos, col))]
     fn pset(
         &self,
         pos: PyRef<'_, Vec3>,
         col: i32,
-        dither_alpha: f32,
-        depth_test: bool,
-        depth_write: bool,
     ) {
         let world_mat = self.world_mat();
         let local = *pos.inner_ref();
-        self.with_state(
-            false,
-            dither_alpha,
-            depth_test,
-            depth_write,
-            pyxel::cube::draw::BILLBOARD_OFF,
-            |ctx, state| {
-                pyxel::cube::draw::pset(ctx, &world_mat, &local, col, state);
-            },
-        );
+        self.with_state_from_ctx(pyxel::cube::draw::BILLBOARD_OFF, |ctx, state| {
+            pyxel::cube::draw::pset(ctx, &world_mat, &local, col, state);
+        });
     }
 
-    #[pyo3(signature = (p1, p2, col, *, dither_alpha=1.0, depth_test=true, depth_write=true,
-                        billboard=pyxel::cube::draw::BILLBOARD_OFF))]
-    #[allow(clippy::too_many_arguments)]
+    #[pyo3(signature = (p1, p2, col, *, billboard=pyxel::cube::draw::BILLBOARD_OFF))]
     fn line(
         &self,
         p1: PyRef<'_, Vec3>,
         p2: PyRef<'_, Vec3>,
         col: i32,
-        dither_alpha: f32,
-        depth_test: bool,
-        depth_write: bool,
         billboard: i32,
     ) {
         let world_mat = self.world_mat();
         let v1 = *p1.inner_ref();
         let v2 = *p2.inner_ref();
-        self.with_state(
-            false,
-            dither_alpha,
-            depth_test,
-            depth_write,
-            billboard,
-            |ctx, state| {
-                pyxel::cube::draw::line(ctx, &world_mat, &v1, &v2, col, state);
-            },
-        );
+        self.with_state_from_ctx(billboard, |ctx, state| {
+            pyxel::cube::draw::line(ctx, &world_mat, &v1, &v2, col, state);
+        });
     }
 
-    #[pyo3(signature = (p1, p2, p3, col, *, shaded=true, dither_alpha=1.0,
-                        depth_test=true, depth_write=true,
-                        billboard=pyxel::cube::draw::BILLBOARD_OFF))]
-    #[allow(clippy::too_many_arguments)]
+    #[pyo3(signature = (p1, p2, p3, col, *, billboard=pyxel::cube::draw::BILLBOARD_OFF))]
     fn tri(
         &self,
         p1: PyRef<'_, Vec3>,
         p2: PyRef<'_, Vec3>,
         p3: PyRef<'_, Vec3>,
         col: i32,
-        shaded: bool,
-        dither_alpha: f32,
-        depth_test: bool,
-        depth_write: bool,
         billboard: i32,
     ) {
         let world_mat = self.world_mat();
         let v1 = *p1.inner_ref();
         let v2 = *p2.inner_ref();
         let v3 = *p3.inner_ref();
-        self.with_state(
-            shaded,
-            dither_alpha,
-            depth_test,
-            depth_write,
-            billboard,
-            |ctx, state| {
-                pyxel::cube::draw::tri(ctx, &world_mat, &v1, &v2, &v3, col, state);
-            },
-        );
+        self.with_state_from_ctx(billboard, |ctx, state| {
+            pyxel::cube::draw::tri(ctx, &world_mat, &v1, &v2, &v3, col, state);
+        });
     }
 
-    #[pyo3(signature = (p1, p2, p3, col, *, dither_alpha=1.0,
-                        depth_test=true, depth_write=true,
-                        billboard=pyxel::cube::draw::BILLBOARD_OFF))]
-    #[allow(clippy::too_many_arguments)]
+    #[pyo3(signature = (p1, p2, p3, col, *, billboard=pyxel::cube::draw::BILLBOARD_OFF))]
     fn trib(
         &self,
         p1: PyRef<'_, Vec3>,
         p2: PyRef<'_, Vec3>,
         p3: PyRef<'_, Vec3>,
         col: i32,
-        dither_alpha: f32,
-        depth_test: bool,
-        depth_write: bool,
         billboard: i32,
     ) {
         let world_mat = self.world_mat();
         let v1 = *p1.inner_ref();
         let v2 = *p2.inner_ref();
         let v3 = *p3.inner_ref();
-        self.with_state(
-            false,
-            dither_alpha,
-            depth_test,
-            depth_write,
-            billboard,
-            |ctx, state| {
-                pyxel::cube::draw::trib(ctx, &world_mat, &v1, &v2, &v3, col, state);
-            },
-        );
+        self.with_state_from_ctx(billboard, |ctx, state| {
+            pyxel::cube::draw::trib(ctx, &world_mat, &v1, &v2, &v3, col, state);
+        });
     }
 
-    #[pyo3(signature = (pos, r, col, *, dither_alpha=1.0, depth_test=true, depth_write=true))]
+    #[pyo3(signature = (pos, r, col))]
     fn circ(
         &self,
         pos: PyRef<'_, Vec3>,
         r: f32,
         col: i32,
-        dither_alpha: f32,
-        depth_test: bool,
-        depth_write: bool,
     ) {
         let world_mat = self.world_mat();
         let local = *pos.inner_ref();
-        self.with_state(
-            false,
-            dither_alpha,
-            depth_test,
-            depth_write,
-            pyxel::cube::draw::BILLBOARD_OFF,
-            |ctx, state| {
-                pyxel::cube::draw::circ(ctx, &world_mat, &local, r, col, state);
-            },
-        );
+        self.with_state_from_ctx(pyxel::cube::draw::BILLBOARD_OFF, |ctx, state| {
+            pyxel::cube::draw::circ(ctx, &world_mat, &local, r, col, state);
+        });
     }
 
-    #[pyo3(signature = (pos, r, col, *, dither_alpha=1.0, depth_test=true, depth_write=true))]
+    #[pyo3(signature = (pos, r, col))]
     fn circb(
         &self,
         pos: PyRef<'_, Vec3>,
         r: f32,
         col: i32,
-        dither_alpha: f32,
-        depth_test: bool,
-        depth_write: bool,
     ) {
         let world_mat = self.world_mat();
         let local = *pos.inner_ref();
-        self.with_state(
-            false,
-            dither_alpha,
-            depth_test,
-            depth_write,
-            pyxel::cube::draw::BILLBOARD_OFF,
-            |ctx, state| {
-                pyxel::cube::draw::circb(ctx, &world_mat, &local, r, col, state);
-            },
-        );
+        self.with_state_from_ctx(pyxel::cube::draw::BILLBOARD_OFF, |ctx, state| {
+            pyxel::cube::draw::circb(ctx, &world_mat, &local, r, col, state);
+        });
     }
 
-    #[pyo3(signature = (pos, r, col, *, shaded=true, dither_alpha=1.0,
-                        depth_test=true, depth_write=true))]
-    #[allow(clippy::too_many_arguments)]
+    #[pyo3(signature = (pos, r, col))]
     fn sphere(
         &self,
         pos: PyRef<'_, Vec3>,
         r: f32,
         col: i32,
-        shaded: bool,
-        dither_alpha: f32,
-        depth_test: bool,
-        depth_write: bool,
     ) {
         let world_mat = self.world_mat();
         let local = *pos.inner_ref();
-        self.with_state(
-            shaded,
-            dither_alpha,
-            depth_test,
-            depth_write,
-            pyxel::cube::draw::BILLBOARD_OFF,
-            |ctx, state| {
-                pyxel::cube::draw::sphere(ctx, &world_mat, &local, r, col, state);
-            },
-        );
+        self.with_state_from_ctx(pyxel::cube::draw::BILLBOARD_OFF, |ctx, state| {
+            pyxel::cube::draw::sphere(ctx, &world_mat, &local, r, col, state);
+        });
     }
 
-    #[pyo3(signature = (pos, r, col, *, dither_alpha=1.0, depth_test=true, depth_write=true))]
+    #[pyo3(signature = (pos, r, col))]
     fn sphereb(
         &self,
         pos: PyRef<'_, Vec3>,
         r: f32,
         col: i32,
-        dither_alpha: f32,
-        depth_test: bool,
-        depth_write: bool,
     ) {
         let world_mat = self.world_mat();
         let local = *pos.inner_ref();
-        self.with_state(
-            false,
-            dither_alpha,
-            depth_test,
-            depth_write,
-            pyxel::cube::draw::BILLBOARD_OFF,
-            |ctx, state| {
-                pyxel::cube::draw::sphereb(ctx, &world_mat, &local, r, col, state);
-            },
-        );
+        self.with_state_from_ctx(pyxel::cube::draw::BILLBOARD_OFF, |ctx, state| {
+            pyxel::cube::draw::sphereb(ctx, &world_mat, &local, r, col, state);
+        });
     }
 
-    #[pyo3(signature = (mat, w, h, col, *, shaded=true, dither_alpha=1.0,
-                        depth_test=true, depth_write=true,
-                        billboard=pyxel::cube::draw::BILLBOARD_OFF))]
-    #[allow(clippy::too_many_arguments)]
+    #[pyo3(signature = (mat, w, h, col, *, billboard=pyxel::cube::draw::BILLBOARD_OFF))]
     fn rect(
         &self,
         mat: PyRef<'_, Mat4>,
         w: f32,
         h: f32,
         col: i32,
-        shaded: bool,
-        dither_alpha: f32,
-        depth_test: bool,
-        depth_write: bool,
         billboard: i32,
     ) {
         let world_mat = self.world_mat_compose(*mat.inner_ref());
-        self.with_state(
-            shaded,
-            dither_alpha,
-            depth_test,
-            depth_write,
-            billboard,
-            |ctx, state| {
-                pyxel::cube::draw::rect(ctx, &world_mat, w, h, col, state);
-            },
-        );
+        self.with_state_from_ctx(billboard, |ctx, state| {
+            pyxel::cube::draw::rect(ctx, &world_mat, w, h, col, state);
+        });
     }
 
-    #[pyo3(signature = (mat, w, h, col, *, dither_alpha=1.0,
-                        depth_test=true, depth_write=true,
-                        billboard=pyxel::cube::draw::BILLBOARD_OFF))]
-    #[allow(clippy::too_many_arguments)]
+    #[pyo3(signature = (mat, w, h, col, *, billboard=pyxel::cube::draw::BILLBOARD_OFF))]
     fn rectb(
         &self,
         mat: PyRef<'_, Mat4>,
         w: f32,
         h: f32,
         col: i32,
-        dither_alpha: f32,
-        depth_test: bool,
-        depth_write: bool,
         billboard: i32,
     ) {
         let world_mat = self.world_mat_compose(*mat.inner_ref());
-        self.with_state(
-            false,
-            dither_alpha,
-            depth_test,
-            depth_write,
-            billboard,
-            |ctx, state| {
-                pyxel::cube::draw::rectb(ctx, &world_mat, w, h, col, state);
-            },
-        );
+        self.with_state_from_ctx(billboard, |ctx, state| {
+            pyxel::cube::draw::rectb(ctx, &world_mat, w, h, col, state);
+        });
     }
 
-    #[pyo3(signature = (mat, w, h, col, *, shaded=true, dither_alpha=1.0,
-                        depth_test=true, depth_write=true,
-                        billboard=pyxel::cube::draw::BILLBOARD_OFF))]
-    #[allow(clippy::too_many_arguments)]
+    #[pyo3(signature = (mat, w, h, col, *, billboard=pyxel::cube::draw::BILLBOARD_OFF))]
     fn elli(
         &self,
         mat: PyRef<'_, Mat4>,
         w: f32,
         h: f32,
         col: i32,
-        shaded: bool,
-        dither_alpha: f32,
-        depth_test: bool,
-        depth_write: bool,
         billboard: i32,
     ) {
         let world_mat = self.world_mat_compose(*mat.inner_ref());
-        self.with_state(
-            shaded,
-            dither_alpha,
-            depth_test,
-            depth_write,
-            billboard,
-            |ctx, state| {
-                pyxel::cube::draw::elli(ctx, &world_mat, w, h, col, state);
-            },
-        );
+        self.with_state_from_ctx(billboard, |ctx, state| {
+            pyxel::cube::draw::elli(ctx, &world_mat, w, h, col, state);
+        });
     }
 
-    #[pyo3(signature = (mat, w, h, col, *, dither_alpha=1.0,
-                        depth_test=true, depth_write=true,
-                        billboard=pyxel::cube::draw::BILLBOARD_OFF))]
-    #[allow(clippy::too_many_arguments)]
+    #[pyo3(signature = (mat, w, h, col, *, billboard=pyxel::cube::draw::BILLBOARD_OFF))]
     fn ellib(
         &self,
         mat: PyRef<'_, Mat4>,
         w: f32,
         h: f32,
         col: i32,
-        dither_alpha: f32,
-        depth_test: bool,
-        depth_write: bool,
         billboard: i32,
     ) {
         let world_mat = self.world_mat_compose(*mat.inner_ref());
-        self.with_state(
-            false,
-            dither_alpha,
-            depth_test,
-            depth_write,
-            billboard,
-            |ctx, state| {
-                pyxel::cube::draw::ellib(ctx, &world_mat, w, h, col, state);
-            },
-        );
+        self.with_state_from_ctx(billboard, |ctx, state| {
+            pyxel::cube::draw::ellib(ctx, &world_mat, w, h, col, state);
+        });
     }
 
-    #[pyo3(signature = (mat, size, col, *, shaded=true, dither_alpha=1.0,
-                        depth_test=true, depth_write=true,
-                        billboard=pyxel::cube::draw::BILLBOARD_OFF))]
-    #[allow(clippy::too_many_arguments)]
+    #[pyo3(signature = (mat, size, col, *, billboard=pyxel::cube::draw::BILLBOARD_OFF))]
     fn r#box(
         &self,
         mat: PyRef<'_, Mat4>,
         size: PyRef<'_, Vec3>,
         col: i32,
-        shaded: bool,
-        dither_alpha: f32,
-        depth_test: bool,
-        depth_write: bool,
         billboard: i32,
     ) {
         let world_mat = self.world_mat_compose(*mat.inner_ref());
         let size_v = *size.inner_ref();
-        self.with_state(
-            shaded,
-            dither_alpha,
-            depth_test,
-            depth_write,
-            billboard,
-            |ctx, state| {
-                pyxel::cube::draw::box_solid(ctx, &world_mat, &size_v, col, state);
-            },
-        );
+        self.with_state_from_ctx(billboard, |ctx, state| {
+            pyxel::cube::draw::box_solid(ctx, &world_mat, &size_v, col, state);
+        });
     }
 
-    #[pyo3(signature = (mat, size, col, *, dither_alpha=1.0,
-                        depth_test=true, depth_write=true,
-                        billboard=pyxel::cube::draw::BILLBOARD_OFF))]
-    #[allow(clippy::too_many_arguments)]
+    #[pyo3(signature = (mat, size, col, *, billboard=pyxel::cube::draw::BILLBOARD_OFF))]
     fn boxb(
         &self,
         mat: PyRef<'_, Mat4>,
         size: PyRef<'_, Vec3>,
         col: i32,
-        dither_alpha: f32,
-        depth_test: bool,
-        depth_write: bool,
         billboard: i32,
     ) {
         let world_mat = self.world_mat_compose(*mat.inner_ref());
         let size_v = *size.inner_ref();
-        self.with_state(
-            false,
-            dither_alpha,
-            depth_test,
-            depth_write,
-            billboard,
-            |ctx, state| {
-                pyxel::cube::draw::boxb(ctx, &world_mat, &size_v, col, state);
-            },
-        );
+        self.with_state_from_ctx(billboard, |ctx, state| {
+            pyxel::cube::draw::boxb(ctx, &world_mat, &size_v, col, state);
+        });
     }
 
-    #[pyo3(signature = (pos, s, col, *, font=None, dither_alpha=1.0,
-                        depth_test=true, depth_write=true))]
-    #[allow(clippy::too_many_arguments)]
+    #[pyo3(signature = (pos, s, col, *, font=None))]
     fn text(
         &self,
         pos: PyRef<'_, Vec3>,
         s: &str,
         col: i32,
         font: Option<PyRef<'_, crate::font_wrapper::Font>>,
-        dither_alpha: f32,
-        depth_test: bool,
-        depth_write: bool,
     ) {
         let world_mat = self.world_mat();
         let pos_v = *pos.inner_ref();
-        let state = DrawState {
-            shaded: false,
-            dither_alpha,
-            depth_test,
-            depth_write,
-            billboard: pyxel::cube::draw::BILLBOARD_OFF,
-            shading: None,
-        };
         let font_rc = font.as_ref().map(|f| f.inner.clone());
-        with_draw_context(|ctx| {
+        self.with_state_from_ctx(pyxel::cube::draw::BILLBOARD_OFF, |ctx, state| {
             let font_ref: Option<&mut pyxel::Font> = font_rc.as_ref().map(|f| rc_mut!(f));
             pyxel::cube::draw::text(ctx, &world_mat, &pos_v, s, col, font_ref, state);
         });
     }
 
-    #[pyo3(signature = (pos, img, uvs, w, h, *, colkey=None, angle=0.0,
-                        shaded=false, dither_alpha=1.0,
-                        depth_test=true, depth_write=true))]
-    #[allow(clippy::too_many_arguments)]
+    #[pyo3(signature = (pos, img, uvs, w, h, *, colkey=None, angle=0.0))]
     fn sprite(
         &self,
         pos: PyRef<'_, Vec3>,
@@ -855,35 +667,18 @@ impl Node {
         h: f32,
         colkey: Option<i32>,
         angle: f32,
-        shaded: bool,
-        dither_alpha: f32,
-        depth_test: bool,
-        depth_write: bool,
     ) {
         let world_mat = self.world_mat();
         let local = *pos.inner_ref();
         let img_inner = img.inner.clone();
-        let shading = if shaded { self.resolve_shading() } else { None };
-        let shading_ref = shading.as_ref().map(|s| rc_ref!(s));
-        let state = DrawState {
-            shaded,
-            dither_alpha,
-            depth_test,
-            depth_write,
-            billboard: pyxel::cube::draw::BILLBOARD_ON,
-            shading: shading_ref,
-        };
-        with_draw_context(|ctx| {
+        self.with_state_from_ctx(pyxel::cube::draw::BILLBOARD_ON, |ctx, state| {
             pyxel::cube::draw::sprite(
                 ctx, &world_mat, &local, &img_inner, uvs, w, h, colkey, angle, state,
             );
         });
     }
 
-    #[pyo3(signature = (mat, img, uvs, w, h, *, colkey=None, shaded=true,
-                        dither_alpha=1.0, depth_test=true, depth_write=true,
-                        billboard=pyxel::cube::draw::BILLBOARD_OFF))]
-    #[allow(clippy::too_many_arguments)]
+    #[pyo3(signature = (mat, img, uvs, w, h, *, colkey=None, billboard=pyxel::cube::draw::BILLBOARD_OFF))]
     fn plane(
         &self,
         mat: PyRef<'_, Mat4>,
@@ -892,73 +687,38 @@ impl Node {
         w: f32,
         h: f32,
         colkey: Option<i32>,
-        shaded: bool,
-        dither_alpha: f32,
-        depth_test: bool,
-        depth_write: bool,
         billboard: i32,
     ) {
         let world_mat = self.world_mat_compose(*mat.inner_ref());
         let img_inner = img.inner.clone();
-        let shading = if shaded { self.resolve_shading() } else { None };
-        let shading_ref = shading.as_ref().map(|s| rc_ref!(s));
-        let state = DrawState {
-            shaded,
-            dither_alpha,
-            depth_test,
-            depth_write,
-            billboard,
-            shading: shading_ref,
-        };
-        with_draw_context(|ctx| {
+        self.with_state_from_ctx(billboard, |ctx, state| {
             pyxel::cube::draw::plane(ctx, &world_mat, &img_inner, uvs, w, h, colkey, state);
         });
     }
 
-    #[pyo3(signature = (mat, mesh_asset, *, shaded=true,
-                        dither_alpha=1.0, depth_test=true, depth_write=true,
-                        billboard=pyxel::cube::draw::BILLBOARD_OFF))]
-    #[allow(clippy::too_many_arguments)]
+    #[pyo3(signature = (mat, mesh_asset, *, billboard=pyxel::cube::draw::BILLBOARD_OFF))]
     fn mesh(
         &self,
         mat: PyRef<'_, Mat4>,
         mesh_asset: PyRef<'_, super::mesh::Mesh>,
-        shaded: bool,
-        dither_alpha: f32,
-        depth_test: bool,
-        depth_write: bool,
         billboard: i32,
     ) {
         let world_mat = self.world_mat_compose(*mat.inner_ref());
         let mesh_inner = mesh_asset.inner.clone();
-        self.with_state(
-            shaded,
-            dither_alpha,
-            depth_test,
-            depth_write,
-            billboard,
-            |ctx, state| {
-                let m = rc_ref!(&mesh_inner);
-                pyxel::cube::draw::mesh(ctx, &world_mat, m, state);
-            },
-        );
+        self.with_state_from_ctx(billboard, |ctx, state| {
+            let m = rc_ref!(&mesh_inner);
+            pyxel::cube::draw::mesh(ctx, &world_mat, m, state);
+        });
     }
 
     #[pyo3(signature = (mat, geom, *, col_img=None, colkey=None,
-                        shaded=true, dither_alpha=1.0,
-                        depth_test=true, depth_write=true,
                         billboard=pyxel::cube::draw::BILLBOARD_OFF))]
-    #[allow(clippy::too_many_arguments)]
     fn prim(
         &self,
         mat: PyRef<'_, Mat4>,
         geom: PyRef<'_, super::geometry::Geometry>,
         col_img: Option<&Bound<'_, PyAny>>,
         colkey: Option<i32>,
-        shaded: bool,
-        dither_alpha: f32,
-        depth_test: bool,
-        depth_write: bool,
         billboard: i32,
     ) -> PyResult<()> {
         use pyo3::exceptions::{PyTypeError, PyValueError};
@@ -990,19 +750,12 @@ impl Node {
             None => (7, None),
         };
 
-        let shading = if shaded { self.resolve_shading() } else { None };
-        let shading_ref = shading.as_ref().map(|s| rc_ref!(s));
-        let state = DrawState {
-            shaded,
-            dither_alpha,
-            depth_test,
-            depth_write,
-            billboard,
-            shading: shading_ref,
-        };
-
-        let result = with_draw_context(|ctx| {
-            pyxel::cube::draw::prim(
+        // Collect the draw result through with_state_from_ctx so that
+        // shaded/dither_alpha/depth_test/depth_write are read from the
+        // active DrawContext, consistent with every other primitive.
+        let mut inner_result: Option<Result<(), &str>> = None;
+        self.with_state_from_ctx(billboard, |ctx, state| {
+            inner_result = Some(pyxel::cube::draw::prim(
                 ctx,
                 &world_mat,
                 prim_mode,
@@ -1015,10 +768,10 @@ impl Node {
                 col_image.as_ref(),
                 colkey,
                 state,
-            )
+            ));
         });
 
-        match result {
+        match inner_result {
             Some(Err(msg)) => Err(PyValueError::new_err(msg)),
             Some(Ok(())) | None => Ok(()),
         }

@@ -224,102 +224,70 @@ class TestSubclassing:
 
 # Calling draw methods outside a `Scene.draw` context must be a safe
 # no-op (cube-design.md § 12.5: with_draw_context returns None when no
-# context is active). The tests below confirm each new immediate-mode
-# command — including the keyword-only modifier slots — is accepted.
+# context is active). The tests below confirm each primitive is accepted
+# with its post-Task-3 signature (state kwargs removed).
 class TestImmediateDrawSafety:
     def test_pset(self):
-        Node().pset(Vec3.ZERO, 7, dither_alpha=0.5, depth_test=False)
+        Node().pset(Vec3.ZERO, 7)
 
     def test_line(self):
-        Node().line(
-            Vec3.ZERO,
-            Vec3(1, 0, 0),
-            8,
-            dither_alpha=1.0,
-            depth_write=False,
-            billboard=Node.BILLBOARD_ON,
-        )
+        Node().line(Vec3.ZERO, Vec3(1, 0, 0), 8)
 
     def test_tri_filled(self):
-        Node().tri(
-            Vec3.ZERO,
-            Vec3(1, 0, 0),
-            Vec3(0, 1, 0),
-            9,
-            shaded=False,
-            dither_alpha=0.75,
-            billboard=Node.BILLBOARD_FIXED_Y,
-        )
+        Node().tri(Vec3.ZERO, Vec3(1, 0, 0), Vec3(0, 1, 0), 9)
 
     def test_trib(self):
         Node().trib(Vec3.ZERO, Vec3(1, 0, 0), Vec3(0, 1, 0), 10)
 
     def test_circ(self):
-        Node().circ(Vec3.ZERO, 1.0, 11, dither_alpha=0.25)
+        Node().circ(Vec3.ZERO, 1.0, 11)
 
     def test_circb(self):
-        Node().circb(Vec3.ZERO, 1.0, 12, depth_test=False, depth_write=False)
+        Node().circb(Vec3.ZERO, 1.0, 12)
 
     def test_rect_family(self):
         m = Mat4.IDENTITY
         n = Node()
-        n.rect(m, 2.0, 1.0, 7, shaded=False)
-        n.rectb(m, 2.0, 1.0, 8, billboard=Node.BILLBOARD_ON)
-        n.elli(m, 2.0, 1.0, 9, shaded=True)
+        n.rect(m, 2.0, 1.0, 7)
+        n.rectb(m, 2.0, 1.0, 8)
+        n.elli(m, 2.0, 1.0, 9)
         n.ellib(m, 2.0, 1.0, 10)
 
     def test_box_family(self):
         m = Mat4.IDENTITY
         n = Node()
-        n.box(m, Vec3(1, 1, 1), 4, shaded=True, dither_alpha=0.5)
-        n.boxb(m, Vec3(1, 1, 1), 5, billboard=Node.BILLBOARD_FIXED_Y)
+        n.box(m, Vec3(1, 1, 1), 4)
+        n.boxb(m, Vec3(1, 1, 1), 5)
 
     def test_sphere_family(self):
         n = Node()
-        # sphere takes Vec3 pos + radius (symmetric, so no Mat4 needed).
-        n.sphere(Vec3.ZERO, 0.5, 12, shaded=True)
-        n.sphereb(Vec3.ZERO, 0.5, 13, depth_write=False)
+        n.sphere(Vec3.ZERO, 0.5, 12)
+        n.sphereb(Vec3.ZERO, 0.5, 13)
 
     def test_text(self):
-        # Vec3-positioned screen-space text.
         Node().text(Vec3.ZERO, "X", 7)
-        # With explicit font=None and modifier kwargs.
-        Node().text(
-            Vec3(0, 1, 0),
-            "Hi",
-            6,
-            font=None,
-            dither_alpha=0.5,
-        )
+        Node().text(Vec3(0, 1, 0), "Hi", 6, font=None)
 
     def test_sprite_takes_image(self):
-        # sprite needs an Image; we can't easily construct one without
-        # a Pyxel system, so just exercise the no-op signature shape via
-        # the Scene helper that rejects Vec3 input (covered via
-        # `cube_headless.py` end-to-end). This test placeholder confirms
-        # the sprite method exists with the documented signature.
+        # sprite needs an Image; the no-window environment cannot
+        # construct one easily — verify the method is callable.
         assert callable(Node().sprite)
 
     def test_mesh_renames_argument_to_mesh_asset(self):
-        # mesh_asset suffix mirrors `mml_str` flow (cube-design.md § 12.5).
-        # Mesh has no factory methods; build a 1-triangle mesh by hand.
         geom = Geometry(positions=[0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0])
         m = Mesh(geometries=[geom], transforms=[Mat4()], parents=[-1], col_img=8)
-        Node().mesh(Mat4.IDENTITY, m, shaded=False)
+        Node().mesh(Mat4.IDENTITY, m)
 
     def test_prim_with_geometry(self):
-        # node.prim takes a Geometry asset directly (cube-design.md § 12.5).
         geom = Geometry(
             positions=[0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0],
             indices=[0, 1, 2],
             prim=Geometry.PRIM_TRIANGLES,
             cull=Geometry.CULL_BACK,
         )
-        Node().prim(Mat4.IDENTITY, geom, col_img=7, shaded=False)
+        Node().prim(Mat4.IDENTITY, geom, col_img=7)
 
     def test_prim_col_img_accepts_image(self):
-        # col_img union accepts an Image (textured) as well as int (flat).
-        # The session-wide conftest fixture already calls pyxel.init.
         img = pyxel.images[0]
         geom = Geometry(
             positions=[0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0],
@@ -328,7 +296,6 @@ class TestImmediateDrawSafety:
         Node().prim(Mat4.IDENTITY, geom, col_img=img, colkey=0)
 
     def test_mesh_col_img_accepts_image(self):
-        # Mesh.col_img union accepts Image — round-trip and draw.
         img = pyxel.images[0]
         geom = Geometry(
             positions=[0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0],
@@ -341,11 +308,8 @@ class TestImmediateDrawSafety:
             col_img=img,
             colkey=0,
         )
-        # The col_img getter wraps the underlying core Image into a fresh
-        # binding object each call; verify the round-trip by checking it
-        # is an Image instance (not an int) and that drawing succeeds.
         assert isinstance(m.col_img, Image)
-        Node().mesh(Mat4.IDENTITY, m, shaded=False)
+        Node().mesh(Mat4.IDENTITY, m)
 
 
 class TestStateSetters:
