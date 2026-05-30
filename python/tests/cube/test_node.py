@@ -493,7 +493,12 @@ class TestBillboardKwargRemoved:
             ),
             lambda n: n.mesh(
                 Mat4.IDENTITY,
-                Mesh(geometries=[_TRIANGLE_GEOMETRY], transforms=[Mat4()], parents=[-1], col_img=8),
+                Mesh(
+                    geometries=[_TRIANGLE_GEOMETRY],
+                    transforms=[Mat4()],
+                    parents=[-1],
+                    col_img=8,
+                ),
                 billboard=1,
             ),
             lambda n: n.prim(Mat4.IDENTITY, _TRIANGLE_GEOMETRY, billboard=1),
