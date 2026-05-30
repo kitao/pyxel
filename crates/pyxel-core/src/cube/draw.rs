@@ -289,9 +289,8 @@ pub fn prim(
                 return Err("textured prim requires uvs");
             }
             let target_mut = rc_mut!(&ctx.target);
-            let scene_mut = rc_mut!(&ctx.scene);
-            let depth_w = scene_mut.depth_w;
-            let depth = scene_mut.depth.as_mut_slice();
+            let depth_w = ctx.depth_w;
+            let depth = ctx.depth.as_mut_slice();
             for f in 0..face_count {
                 let i0 = resolve_vertex_index(f * 3)?;
                 let i1 = resolve_vertex_index(f * 3 + 1)?;
@@ -400,9 +399,8 @@ pub fn prim(
             }
             let line_count = step_count / 2;
             let target_mut = rc_mut!(&ctx.target);
-            let scene_mut = rc_mut!(&ctx.scene);
-            let depth_w = scene_mut.depth_w;
-            let depth = scene_mut.depth.as_mut_slice();
+            let depth_w = ctx.depth_w;
+            let depth = ctx.depth.as_mut_slice();
             for l in 0..line_count {
                 let i0 = resolve_vertex_index(l * 2)?;
                 let i1 = resolve_vertex_index(l * 2 + 1)?;
@@ -429,9 +427,8 @@ pub fn prim(
         }
         PRIM_POINTS => {
             let target_mut = rc_mut!(&ctx.target);
-            let scene_mut = rc_mut!(&ctx.scene);
-            let depth_w = scene_mut.depth_w;
-            let depth = scene_mut.depth.as_mut_slice();
+            let depth_w = ctx.depth_w;
+            let depth = ctx.depth.as_mut_slice();
             for s in 0..step_count {
                 let i0 = resolve_vertex_index(s)?;
                 let v0 = read_vertex(i0);
@@ -1213,11 +1210,10 @@ pub fn circ(
     );
     if let Some((sx, sy, sr, sz)) = projected {
         let target_mut = rc_mut!(&ctx.target);
-        let scene_mut = rc_mut!(&ctx.scene);
-        let depth_w = scene_mut.depth_w;
+        let depth_w = ctx.depth_w;
         rasterize_circle_filled(
             target_mut,
-            scene_mut.depth.as_mut_slice(),
+            ctx.depth.as_mut_slice(),
             depth_w,
             sx,
             sy,
@@ -1249,11 +1245,10 @@ pub fn circb(
     );
     if let Some((sx, sy, sr, sz)) = projected {
         let target_mut = rc_mut!(&ctx.target);
-        let scene_mut = rc_mut!(&ctx.scene);
-        let depth_w = scene_mut.depth_w;
+        let depth_w = ctx.depth_w;
         rasterize_circle_border(
             target_mut,
-            scene_mut.depth.as_mut_slice(),
+            ctx.depth.as_mut_slice(),
             depth_w,
             sx,
             sy,
@@ -1500,9 +1495,8 @@ pub fn text(
     let cx = sx - text_w / 2;
     let cy = sy - text_h / 2;
     let target_mut = rc_mut!(&ctx.target);
-    let scene_mut = rc_mut!(&ctx.scene);
-    let depth_w = scene_mut.depth_w;
-    let depth = scene_mut.depth.as_mut_slice();
+    let depth_w = ctx.depth_w;
+    let depth = ctx.depth.as_mut_slice();
     for (px, py) in pixel_xy {
         let x = cx + px;
         let y = cy + py;
