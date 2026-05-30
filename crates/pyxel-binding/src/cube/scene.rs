@@ -3,7 +3,7 @@ use std::cell::RefCell;
 use pyo3::prelude::*;
 use pyo3::types::{PyAny, PyDict, PyTuple};
 use pyxel::cube::raster::{compute_clip_rect, matmul, projection_matrix, view_matrix};
-use pyxel::cube::scene::{clear_draw_context, set_draw_context, DrawContext};
+use pyxel::cube::scene::{clear_draw_context, reset_draw_state, set_draw_context, DrawContext};
 
 use super::camera::Camera;
 use super::contact::Contact;
@@ -240,11 +240,13 @@ impl Scene {
             clip,
             camera: cam_inner,
             scene: scene_state,
-            // Defaults; each draw command rebinds these from its own
-            // keyword arguments before invoking the rasterizer.
+            // Per-on_draw modifiers; reset_draw_state() is invoked by
+            // traverse_draw before each Node.on_draw so these defaults are
+            // re-seeded per-node.
             dither_alpha: 1.0,
             depth_test: true,
             depth_write: true,
+            shaded: true,
         });
         let any = self_.into_any();
         let result = traverse_draw(&any);
@@ -281,6 +283,7 @@ fn traverse_draw(node: &Bound<'_, PyAny>) -> PyResult<()> {
     if !visible {
         return Ok(());
     }
+    reset_draw_state();
     node.call_method0("on_draw")?;
     let children = node.getattr("children")?;
     let children_iter = children.try_iter()?;
