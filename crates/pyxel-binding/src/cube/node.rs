@@ -9,6 +9,7 @@ use pyxel::cube::scene::{
 };
 use pyxel::cube::Node as InnerNode;
 
+use super::camera::Camera;
 use super::collider::Collider;
 use super::contact::Contact;
 use super::mat4::Mat4;
@@ -210,6 +211,26 @@ impl Node {
     #[setter]
     fn set_visible(&self, v: bool) {
         self.inner_mut().visible = v;
+    }
+
+    // Scene-wide camera cascade. None inherits from the closest non-None
+    // ancestor. Read `effective_camera` in on_draw for billboard math.
+    #[getter]
+    fn camera(&self) -> Option<Camera> {
+        self.inner_ref()
+            .camera
+            .as_ref()
+            .map(|c| Camera::wrap(c.clone()))
+    }
+
+    #[setter]
+    fn set_camera(&self, v: Option<PyRef<'_, Camera>>) {
+        self.inner_mut().camera = v.as_ref().map(|c| c.inner.clone());
+    }
+
+    #[getter]
+    fn effective_camera(&self) -> Option<Camera> {
+        InnerNode::effective_camera(&self.inner).map(Camera::wrap)
     }
 
     // Scene-wide shading cascade. None inherits from the closest non-None
