@@ -442,54 +442,51 @@ impl Node {
         });
     }
 
-    #[pyo3(signature = (p1, p2, col, *, billboard=pyxel::cube::draw::BILLBOARD_OFF))]
+    #[pyo3(signature = (p1, p2, col))]
     fn line(
         &self,
         p1: PyRef<'_, Vec3>,
         p2: PyRef<'_, Vec3>,
         col: i32,
-        billboard: i32,
     ) {
         let world_mat = self.world_mat();
         let v1 = *p1.inner_ref();
         let v2 = *p2.inner_ref();
-        self.with_state_from_ctx(billboard, |ctx, state| {
+        self.with_state_from_ctx(pyxel::cube::draw::BILLBOARD_OFF, |ctx, state| {
             pyxel::cube::draw::line(ctx, &world_mat, &v1, &v2, col, state);
         });
     }
 
-    #[pyo3(signature = (p1, p2, p3, col, *, billboard=pyxel::cube::draw::BILLBOARD_OFF))]
+    #[pyo3(signature = (p1, p2, p3, col))]
     fn tri(
         &self,
         p1: PyRef<'_, Vec3>,
         p2: PyRef<'_, Vec3>,
         p3: PyRef<'_, Vec3>,
         col: i32,
-        billboard: i32,
     ) {
         let world_mat = self.world_mat();
         let v1 = *p1.inner_ref();
         let v2 = *p2.inner_ref();
         let v3 = *p3.inner_ref();
-        self.with_state_from_ctx(billboard, |ctx, state| {
+        self.with_state_from_ctx(pyxel::cube::draw::BILLBOARD_OFF, |ctx, state| {
             pyxel::cube::draw::tri(ctx, &world_mat, &v1, &v2, &v3, col, state);
         });
     }
 
-    #[pyo3(signature = (p1, p2, p3, col, *, billboard=pyxel::cube::draw::BILLBOARD_OFF))]
+    #[pyo3(signature = (p1, p2, p3, col))]
     fn trib(
         &self,
         p1: PyRef<'_, Vec3>,
         p2: PyRef<'_, Vec3>,
         p3: PyRef<'_, Vec3>,
         col: i32,
-        billboard: i32,
     ) {
         let world_mat = self.world_mat();
         let v1 = *p1.inner_ref();
         let v2 = *p2.inner_ref();
         let v3 = *p3.inner_ref();
-        self.with_state_from_ctx(billboard, |ctx, state| {
+        self.with_state_from_ctx(pyxel::cube::draw::BILLBOARD_OFF, |ctx, state| {
             pyxel::cube::draw::trib(ctx, &world_mat, &v1, &v2, &v3, col, state);
         });
     }
@@ -503,7 +500,7 @@ impl Node {
     ) {
         let world_mat = self.world_mat();
         let local = *pos.inner_ref();
-        self.with_state_from_ctx(pyxel::cube::draw::BILLBOARD_OFF, |ctx, state| {
+        self.with_state_from_ctx(pyxel::cube::draw::BILLBOARD_ON, |ctx, state| {
             pyxel::cube::draw::circ(ctx, &world_mat, &local, r, col, state);
         });
     }
@@ -517,7 +514,7 @@ impl Node {
     ) {
         let world_mat = self.world_mat();
         let local = *pos.inner_ref();
-        self.with_state_from_ctx(pyxel::cube::draw::BILLBOARD_OFF, |ctx, state| {
+        self.with_state_from_ctx(pyxel::cube::draw::BILLBOARD_ON, |ctx, state| {
             pyxel::cube::draw::circb(ctx, &world_mat, &local, r, col, state);
         });
     }
@@ -574,67 +571,63 @@ impl Node {
         });
     }
 
-    #[pyo3(signature = (mat, w, h, col, *, billboard=pyxel::cube::draw::BILLBOARD_OFF))]
+    #[pyo3(signature = (mat, w, h, col))]
     fn rect(
         &self,
         mat: PyRef<'_, Mat4>,
         w: f32,
         h: f32,
         col: i32,
-        billboard: i32,
     ) {
         let world_mat = self.world_mat_compose(*mat.inner_ref());
-        self.with_state_from_ctx(billboard, |ctx, state| {
+        self.with_state_from_ctx(pyxel::cube::draw::BILLBOARD_OFF, |ctx, state| {
             pyxel::cube::draw::rect(ctx, &world_mat, w, h, col, state);
         });
     }
 
-    #[pyo3(signature = (mat, w, h, col, *, billboard=pyxel::cube::draw::BILLBOARD_OFF))]
+    #[pyo3(signature = (mat, w, h, col))]
     fn rectb(
         &self,
         mat: PyRef<'_, Mat4>,
         w: f32,
         h: f32,
         col: i32,
-        billboard: i32,
     ) {
         let world_mat = self.world_mat_compose(*mat.inner_ref());
-        self.with_state_from_ctx(billboard, |ctx, state| {
+        self.with_state_from_ctx(pyxel::cube::draw::BILLBOARD_OFF, |ctx, state| {
             pyxel::cube::draw::rectb(ctx, &world_mat, w, h, col, state);
         });
     }
 
-    #[pyo3(signature = (mat, w, h, col, *, billboard=pyxel::cube::draw::BILLBOARD_OFF))]
+    #[pyo3(signature = (mat, w, h, col))]
     fn elli(
         &self,
         mat: PyRef<'_, Mat4>,
         w: f32,
         h: f32,
         col: i32,
-        billboard: i32,
     ) {
         let world_mat = self.world_mat_compose(*mat.inner_ref());
-        self.with_state_from_ctx(billboard, |ctx, state| {
+        self.with_state_from_ctx(pyxel::cube::draw::BILLBOARD_OFF, |ctx, state| {
             pyxel::cube::draw::elli(ctx, &world_mat, w, h, col, state);
         });
     }
 
-    #[pyo3(signature = (mat, w, h, col, *, billboard=pyxel::cube::draw::BILLBOARD_OFF))]
+    #[pyo3(signature = (mat, w, h, col))]
     fn ellib(
         &self,
         mat: PyRef<'_, Mat4>,
         w: f32,
         h: f32,
         col: i32,
-        billboard: i32,
     ) {
         let world_mat = self.world_mat_compose(*mat.inner_ref());
-        self.with_state_from_ctx(billboard, |ctx, state| {
+        self.with_state_from_ctx(pyxel::cube::draw::BILLBOARD_OFF, |ctx, state| {
             pyxel::cube::draw::ellib(ctx, &world_mat, w, h, col, state);
         });
     }
 
-    #[pyo3(signature = (mat, size, col_img=None, *, colkey=None, billboard=pyxel::cube::draw::BILLBOARD_OFF))]
+    #[pyo3(signature = (mat, size, col_img=None, *, colkey=None))]
     #[allow(clippy::too_many_arguments)]
     fn r#box(
         &self,
@@ -642,7 +635,6 @@ impl Node {
         size: PyRef<'_, Vec3>,
         col_img: Option<&Bound<'_, PyAny>>,
         colkey: Option<i32>,
-        billboard: i32,
     ) -> PyResult<()> {
         use pyo3::exceptions::PyTypeError;
         let world_mat = self.world_mat_compose(*mat.inner_ref());
@@ -659,7 +651,7 @@ impl Node {
             }
             None => (7, None),
         };
-        self.with_state_from_ctx(billboard, |ctx, state| {
+        self.with_state_from_ctx(pyxel::cube::draw::BILLBOARD_OFF, |ctx, state| {
             pyxel::cube::draw::box_solid(
                 ctx,
                 &world_mat,
@@ -673,17 +665,16 @@ impl Node {
         Ok(())
     }
 
-    #[pyo3(signature = (mat, size, col, *, billboard=pyxel::cube::draw::BILLBOARD_OFF))]
+    #[pyo3(signature = (mat, size, col))]
     fn boxb(
         &self,
         mat: PyRef<'_, Mat4>,
         size: PyRef<'_, Vec3>,
         col: i32,
-        billboard: i32,
     ) {
         let world_mat = self.world_mat_compose(*mat.inner_ref());
         let size_v = *size.inner_ref();
-        self.with_state_from_ctx(billboard, |ctx, state| {
+        self.with_state_from_ctx(pyxel::cube::draw::BILLBOARD_OFF, |ctx, state| {
             pyxel::cube::draw::boxb(ctx, &world_mat, &size_v, col, state);
         });
     }
@@ -699,7 +690,7 @@ impl Node {
         let world_mat = self.world_mat();
         let pos_v = *pos.inner_ref();
         let font_rc = font.as_ref().map(|f| f.inner.clone());
-        self.with_state_from_ctx(pyxel::cube::draw::BILLBOARD_OFF, |ctx, state| {
+        self.with_state_from_ctx(pyxel::cube::draw::BILLBOARD_ON, |ctx, state| {
             let font_ref: Option<&mut pyxel::Font> = font_rc.as_ref().map(|f| rc_mut!(f));
             pyxel::cube::draw::text(ctx, &world_mat, &pos_v, s, col, font_ref, state);
         });
@@ -726,7 +717,7 @@ impl Node {
         });
     }
 
-    #[pyo3(signature = (mat, img, uvs, w, h, *, colkey=None, billboard=pyxel::cube::draw::BILLBOARD_OFF))]
+    #[pyo3(signature = (mat, img, uvs, w, h, *, colkey=None))]
     fn plane(
         &self,
         mat: PyRef<'_, Mat4>,
@@ -735,39 +726,35 @@ impl Node {
         w: f32,
         h: f32,
         colkey: Option<i32>,
-        billboard: i32,
     ) {
         let world_mat = self.world_mat_compose(*mat.inner_ref());
         let img_inner = img.inner.clone();
-        self.with_state_from_ctx(billboard, |ctx, state| {
+        self.with_state_from_ctx(pyxel::cube::draw::BILLBOARD_OFF, |ctx, state| {
             pyxel::cube::draw::plane(ctx, &world_mat, &img_inner, uvs, w, h, colkey, state);
         });
     }
 
-    #[pyo3(signature = (mat, mesh_asset, *, billboard=pyxel::cube::draw::BILLBOARD_OFF))]
+    #[pyo3(signature = (mat, mesh_asset))]
     fn mesh(
         &self,
         mat: PyRef<'_, Mat4>,
         mesh_asset: PyRef<'_, super::mesh::Mesh>,
-        billboard: i32,
     ) {
         let world_mat = self.world_mat_compose(*mat.inner_ref());
         let mesh_inner = mesh_asset.inner.clone();
-        self.with_state_from_ctx(billboard, |ctx, state| {
+        self.with_state_from_ctx(pyxel::cube::draw::BILLBOARD_OFF, |ctx, state| {
             let m = rc_ref!(&mesh_inner);
             pyxel::cube::draw::mesh(ctx, &world_mat, m, state);
         });
     }
 
-    #[pyo3(signature = (mat, geom, *, col_img=None, colkey=None,
-                        billboard=pyxel::cube::draw::BILLBOARD_OFF))]
+    #[pyo3(signature = (mat, geom, *, col_img=None, colkey=None))]
     fn prim(
         &self,
         mat: PyRef<'_, Mat4>,
         geom: PyRef<'_, super::geometry::Geometry>,
         col_img: Option<&Bound<'_, PyAny>>,
         colkey: Option<i32>,
-        billboard: i32,
     ) -> PyResult<()> {
         use pyo3::exceptions::{PyTypeError, PyValueError};
 
@@ -804,7 +791,7 @@ impl Node {
         // returns (), so we capture the rasterizer result in an outer
         // variable and propagate any error after the call returns.
         let mut inner_result: Option<Result<(), &str>> = None;
-        self.with_state_from_ctx(billboard, |ctx, state| {
+        self.with_state_from_ctx(pyxel::cube::draw::BILLBOARD_OFF, |ctx, state| {
             inner_result = Some(pyxel::cube::draw::prim(
                 ctx,
                 &world_mat,

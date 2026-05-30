@@ -322,7 +322,6 @@ class Node:
         dither_alpha: float = 1.0,
         depth_test: bool = True,
         depth_write: bool = True,
-        billboard: int = 0,
     ) -> None: ...
     def tri(
         self,
@@ -335,7 +334,6 @@ class Node:
         dither_alpha: float = 1.0,
         depth_test: bool = True,
         depth_write: bool = True,
-        billboard: int = 0,
     ) -> None: ...
     def trib(
         self,
@@ -347,7 +345,6 @@ class Node:
         dither_alpha: float = 1.0,
         depth_test: bool = True,
         depth_write: bool = True,
-        billboard: int = 0,
     ) -> None: ...
     def circ(
         self,
@@ -402,7 +399,6 @@ class Node:
         dither_alpha: float = 1.0,
         depth_test: bool = True,
         depth_write: bool = True,
-        billboard: int = 0,
     ) -> None: ...
     def rectb(
         self,
@@ -414,7 +410,6 @@ class Node:
         dither_alpha: float = 1.0,
         depth_test: bool = True,
         depth_write: bool = True,
-        billboard: int = 0,
     ) -> None: ...
     def elli(
         self,
@@ -427,7 +422,6 @@ class Node:
         dither_alpha: float = 1.0,
         depth_test: bool = True,
         depth_write: bool = True,
-        billboard: int = 0,
     ) -> None: ...
     def ellib(
         self,
@@ -439,7 +433,6 @@ class Node:
         dither_alpha: float = 1.0,
         depth_test: bool = True,
         depth_write: bool = True,
-        billboard: int = 0,
     ) -> None: ...
     def box(
         self,
@@ -452,7 +445,6 @@ class Node:
         dither_alpha: float = 1.0,
         depth_test: bool = True,
         depth_write: bool = True,
-        billboard: int = 0,
     ) -> None: ...
     def boxb(
         self,
@@ -463,7 +455,6 @@ class Node:
         dither_alpha: float = 1.0,
         depth_test: bool = True,
         depth_write: bool = True,
-        billboard: int = 0,
     ) -> None: ...
     def text(
         self,
@@ -514,7 +505,6 @@ class Node:
         dither_alpha: float = 1.0,
         depth_test: bool = True,
         depth_write: bool = True,
-        billboard: int = 0,
     ) -> None: ...
     def mesh(
         self,
@@ -525,7 +515,6 @@ class Node:
         dither_alpha: float = 1.0,
         depth_test: bool = True,
         depth_write: bool = True,
-        billboard: int = 0,
     ) -> None: ...
     def prim(
         self,
@@ -538,7 +527,6 @@ class Node:
         dither_alpha: float = 1.0,
         depth_test: bool = True,
         depth_write: bool = True,
-        billboard: int = 0,
     ) -> None: ...
 
     # Lifecycle hooks
