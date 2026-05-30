@@ -277,8 +277,6 @@ class Node:
     def right(self) -> Vec3: ...
     @property
     def up(self) -> Vec3: ...
-    @property
-    def scene(self) -> Scene | None: ...
     def __init__(self) -> None: ...
     def __repr__(self) -> str: ...
     def world_transform(self) -> Mat4: ...
@@ -384,7 +382,52 @@ class Node:
     def on_collide(self, other: Node, contact: Contact) -> None: ...
     def on_destroy(self) -> None: ...
 
-# RaycastHit class — payload returned by Scene.raycast / raycast_all.
+    # Frame-level pipeline.
+    def update(self) -> None: ...
+    def draw(
+        self,
+        x: int,
+        y: int,
+        w: int,
+        h: int,
+        camera: Camera,
+        clear_color: int | None = None,
+        target: Image | None = None,
+    ) -> None: ...
+
+    # Spatial queries on this Node's subtree.
+    def raycast(
+        self,
+        origin: Vec3,
+        direction: Vec3,
+        max_distance: float | None = None,
+        hit_triggers: bool = False,
+        tags: str | list[str] | None = None,
+    ) -> RaycastHit | None: ...
+    def raycast_all(
+        self,
+        origin: Vec3,
+        direction: Vec3,
+        max_distance: float | None = None,
+        hit_triggers: bool = False,
+        tags: str | list[str] | None = None,
+    ) -> list[RaycastHit]: ...
+    def overlap_sphere(
+        self,
+        center: Vec3,
+        radius: float,
+        hit_triggers: bool = False,
+        tags: str | list[str] | None = None,
+    ) -> list[Node]: ...
+    def overlap_box(
+        self,
+        transform: Mat4,
+        size: Vec3,
+        hit_triggers: bool = False,
+        tags: str | list[str] | None = None,
+    ) -> list[Node]: ...
+
+# RaycastHit class — payload returned by Node.raycast / raycast_all.
 class RaycastHit:
     node: Node
     point: Vec3
