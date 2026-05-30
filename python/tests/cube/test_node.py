@@ -224,8 +224,8 @@ class TestSubclassing:
 
 # Calling draw methods outside a `Scene.draw` context must be a safe
 # no-op (cube-design.md § 12.5: with_draw_context returns None when no
-# context is active). The tests below confirm each primitive is accepted
-# with its post-Task-3 signature (state kwargs removed).
+# context is active). Per-call state kwargs were removed in favor of
+# Node.dither / depth_test / depth_write / shaded state-setters.
 class TestImmediateDrawSafety:
     def test_pset(self):
         Node().pset(Vec3.ZERO, 7)

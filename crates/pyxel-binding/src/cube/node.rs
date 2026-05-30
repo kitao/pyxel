@@ -750,9 +750,11 @@ impl Node {
             None => (7, None),
         };
 
-        // Collect the draw result through with_state_from_ctx so that
-        // shaded/dither_alpha/depth_test/depth_write are read from the
-        // active DrawContext, consistent with every other primitive.
+        // Route the draw through with_state_from_ctx so the shared state
+        // (shaded / dither_alpha / depth_test / depth_write) is read from
+        // the active DrawContext like every other primitive. The closure
+        // returns (), so we capture the rasterizer result in an outer
+        // variable and propagate any error after the call returns.
         let mut inner_result: Option<Result<(), &str>> = None;
         self.with_state_from_ctx(billboard, |ctx, state| {
             inner_result = Some(pyxel::cube::draw::prim(
