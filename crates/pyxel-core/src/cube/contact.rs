@@ -1,4 +1,4 @@
-use crate::cube::mat4::{Mat4, RcMat4};
+use crate::cube::quat::{Quat, RcQuat};
 use crate::cube::vec3::{RcVec3, Vec3};
 
 // Collision payload passed to on_collide(other, contact). Carries the
@@ -10,7 +10,7 @@ pub struct Contact {
     pub point: RcVec3,
     pub normal: RcVec3,
     pub depth: f32,
-    pub delta_rotation: RcMat4,
+    pub delta_rotation: RcQuat,
     pub delta_velocity: RcVec3,
     pub delta_angular_velocity: RcVec3,
 }
@@ -23,7 +23,7 @@ impl Contact {
             point: Vec3::zero(),
             normal: Vec3::zero(),
             depth: 0.0,
-            delta_rotation: Mat4::identity(),
+            delta_rotation: Quat::identity(),
             delta_velocity: Vec3::zero(),
             delta_angular_velocity: Vec3::zero(),
         })
