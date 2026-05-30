@@ -1,5 +1,5 @@
 import pyxel
-from pyxel.cube import Mat4, Node, Scene, Shading, Vec3
+from pyxel.cube import Camera, Mat4, Node, Shading, Vec3
 
 CUBE_COLORS = [8, 9, 10, 11, 12, 14]
 CUBE_COUNT = len(CUBE_COLORS)
@@ -36,15 +36,15 @@ class App:
     def __init__(self):
         pyxel.init(160, 120, title="Hello Pyxel Cube")
 
-        self.scene = Scene()
-        self.scene.shading = Shading(pyxel.colors)
-        self.scene.shading.direction = Vec3(0.5, -1.5, -1.0).normalize()
-        self.scene.clear_color = 0
-        self.scene.camera.transform = Mat4.look_at(Vec3(0.0, 3.5, 4.0), Vec3.ZERO)
+        self.root = Node()
+        self.root.shading = Shading(pyxel.colors)
+        self.root.shading.direction = Vec3(0.5, -1.5, -1.0).normalize()
+        self.camera = Camera()
+        self.camera.transform = Mat4.look_at(Vec3(0.0, 3.5, 4.0), Vec3.ZERO)
 
         for i in range(CUBE_COUNT):
-            self.scene.add_child(Cube(i))
-        self.scene.add_child(Label())
+            self.root.add_child(Cube(i))
+        self.root.add_child(Label())
 
         pyxel.run(self.update, self.draw)
 
@@ -52,10 +52,10 @@ class App:
         if pyxel.btnp(pyxel.KEY_Q):
             pyxel.quit()
 
-        self.scene.update()
+        self.root.update()
 
     def draw(self):
-        self.scene.draw(0, 0, pyxel.width, pyxel.height)
+        self.root.draw(0, 0, pyxel.width, pyxel.height, self.camera, clear_color=0)
 
 
 App()
