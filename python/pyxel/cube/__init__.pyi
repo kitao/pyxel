@@ -272,6 +272,7 @@ class Node:
     transform: Mat4
     active: bool  # parent-dominant; False halts update + collision
     visible: bool  # parent-dominant; False halts drawing
+    camera: Camera | None  # None inherits from the closest non-None ancestor
     shading: Shading | None  # None inherits from the closest non-None ancestor
     collider: Collider | None
     tags: list[str]
@@ -289,6 +290,10 @@ class Node:
     def right(self) -> Vec3: ...
     @property
     def up(self) -> Vec3: ...
+    @property
+    def effective_camera(
+        self,
+    ) -> Camera | None: ...  # cascade-resolved; read in on_draw
 
     # Constructor
     def __init__(self) -> None: ...
@@ -413,7 +418,6 @@ class Node:
         y: int,
         w: int,
         h: int,
-        camera: Camera,
         clear_color: int | None = None,
         target: Image | None = None,
     ) -> None: ...
