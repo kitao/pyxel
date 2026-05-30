@@ -937,6 +937,14 @@ mod tests {
     }
 
     #[test]
+    fn reset_draw_state_outside_scope_is_noop() {
+        // No context set: reset_draw_state must not panic, and
+        // with_draw_context still returns None.
+        reset_draw_state();
+        assert!(with_draw_context(|_| ()).is_none());
+    }
+
+    #[test]
     fn test_sphere_above_mesh_floor_generates_contact() {
         use crate::cube::collider::Collider;
         use crate::cube::geometry::Geometry;
