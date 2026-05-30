@@ -620,8 +620,8 @@ pub fn ellib(ctx: &mut DrawContext, world_mat: &Mat4, w: f32, h: f32, col: i32, 
 //
 // When `col_image` is Some, the textured path is used: each face is
 // rendered with a full-texture UV span (0..1 × 0..1) using the
-// face-aware UV convention documented in cube-design.md §UV. The
-// `col_flat` value is ignored in that case.
+// face-aware UV convention defined alongside BOX_UNROLLED_POSITIONS
+// below. The `col_flat` value is ignored in that case.
 pub fn box_solid(
     ctx: &mut DrawContext,
     world_mat: &Mat4,
@@ -718,7 +718,8 @@ const BOX_EDGE_INDICES: [i32; 24] = [
 // sharing conflicts. Face order mirrors BOX_TRI_INDICES: -Z, +Z, -Y, +Y,
 // -X, +X. Positions are identical to UNIT_BOX_POSITIONS but replicated.
 //
-// UV convention (cube-design.md §UV):
+// UV convention (sides upright in the local frame, top/bottom defined
+// so orientation is determinate):
 //   +X face: UV +U = local -Z,  UV +V = local +Y
 //   -X face: UV +U = local +Z,  UV +V = local +Y
 //   +Z face: UV +U = local +X,  UV +V = local +Y

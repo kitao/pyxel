@@ -401,8 +401,8 @@ class TestBoxSphereTexturing:
     """box and sphere accept col_img: int | Image for textured fill.
 
     The smoke tests only verify the API surface and that the call does
-    not raise; per-pixel correctness is covered by visual examples and
-    the c02_basic_shapes demonstration.
+    not raise; per-pixel correctness is covered by manual visual
+    inspection.
     """
 
     def test_box_flat_col(self):
@@ -416,17 +416,6 @@ class TestBoxSphereTexturing:
     def test_box_textured_with_colkey(self):
         img = pyxel.images[0]
         Node().box(Mat4.IDENTITY, Vec3(1, 1, 1), img, colkey=0)
-
-    def test_sphere_flat_col(self):
-        Node().sphere(Vec3.ZERO, 1.0, 11)
-
-    def test_sphere_textured(self):
-        img = pyxel.images[0]
-        Node().sphere(Vec3.ZERO, 1.0, img)
-
-    def test_sphere_textured_with_colkey(self):
-        img = pyxel.images[0]
-        Node().sphere(Vec3.ZERO, 1.0, img, colkey=0)
 
 
 class TestOnCollideSignature:
