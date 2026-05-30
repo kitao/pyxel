@@ -64,13 +64,14 @@ pub struct DrawContext {
     pub clip: ClipRect,
     pub camera: RcCamera,
     pub scene: RcScene,
-    // Per-call modifiers, set by each draw command before invoking the
-    // rasterizer (rasterizer reads from ctx so individual rasterize_*
-    // functions don't need to grow new arguments). Defaults restored at
-    // the start of each draw command.
+    // Per-on_draw state modifiers, mutated via Node.dither / depth_test /
+    // depth_write / shaded setters; reset to defaults before each Node's
+    // on_draw via reset_draw_state(ctx). Rasterizers consult ctx for these
+    // fields directly.
     pub dither_alpha: f32,
     pub depth_test: bool,
     pub depth_write: bool,
+    pub shaded: bool,
 }
 
 thread_local! {
@@ -87,6 +88,18 @@ pub fn set_draw_context(ctx: DrawContext) {
 
 pub fn clear_draw_context() {
     CURRENT_DRAW_CONTEXT.with(|c| c.set(None));
+}
+
+// Reset the per-on_draw state modifiers on the active draw context to
+// their defaults. Called by the binding's traverse_draw before invoking
+// each Node.on_draw so siblings start clean (cube draw API refresh spec).
+pub fn reset_draw_state() {
+    with_draw_context(|ctx| {
+        ctx.dither_alpha = 1.0;
+        ctx.depth_test = true;
+        ctx.depth_write = true;
+        ctx.shaded = true;
+    });
 }
 
 // Run `f` with mutable access to the current draw context, returning
