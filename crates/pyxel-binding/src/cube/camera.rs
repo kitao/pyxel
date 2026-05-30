@@ -63,6 +63,16 @@ impl Camera {
         self.inner_mut().ortho_size = v;
     }
 
+    #[getter]
+    fn clear_color(&self) -> Option<i32> {
+        self.inner_ref().clear_color
+    }
+
+    #[setter]
+    fn set_clear_color(&self, v: Option<i32>) {
+        self.inner_mut().clear_color = v;
+    }
+
     // Dunder
 
     fn __repr__(&self) -> String {
