@@ -9,6 +9,7 @@ pub struct Camera {
     pub near: f32,
     pub far: f32,
     pub ortho_size: Option<f32>,
+    pub clear_color: Option<i32>,
 }
 
 define_rc_type!(RcCamera, Camera);
@@ -21,6 +22,7 @@ impl Camera {
             near: 0.1,
             far: 1000.0,
             ortho_size: None,
+            clear_color: None,
         })
     }
 }
@@ -54,5 +56,18 @@ mod tests {
         c_mut.ortho_size = Some(10.0);
         assert_eq!(c_mut.fov, 90.0);
         assert_eq!(c_mut.ortho_size, Some(10.0));
+    }
+
+    #[test]
+    fn test_clear_color_default_none() {
+        let c = Camera::new();
+        assert!(rc_ref!(&c).clear_color.is_none());
+    }
+
+    #[test]
+    fn test_clear_color_set() {
+        let c = Camera::new();
+        rc_mut!(&c).clear_color = Some(7);
+        assert_eq!(rc_ref!(&c).clear_color, Some(7));
     }
 }
