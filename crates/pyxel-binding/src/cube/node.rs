@@ -399,6 +399,35 @@ impl Node {
     #[allow(clippy::unused_self)]
     fn on_destroy(&self) {}
 
+    // State setters for the per-on_draw draw modifiers. Called from inside
+    // on_draw, they mutate the active draw context; subsequent primitives
+    // in the same on_draw consult these values. The values reset to
+    // defaults at the entry of every Node's on_draw (see scene.rs
+    // reset_draw_state). Outside a draw scope, these are no-ops.
+    fn dither(&self, alpha: f32) {
+        with_draw_context(|ctx| {
+            ctx.dither_alpha = alpha.clamp(0.0, 1.0);
+        });
+    }
+
+    fn depth_test(&self, on: bool) {
+        with_draw_context(|ctx| {
+            ctx.depth_test = on;
+        });
+    }
+
+    fn depth_write(&self, on: bool) {
+        with_draw_context(|ctx| {
+            ctx.depth_write = on;
+        });
+    }
+
+    fn shaded(&self, on: bool) {
+        with_draw_context(|ctx| {
+            ctx.shaded = on;
+        });
+    }
+
     #[pyo3(signature = (pos, col, *, dither_alpha=1.0, depth_test=true, depth_write=true))]
     fn pset(
         &self,
