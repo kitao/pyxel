@@ -4,6 +4,10 @@
 
 - Added Pyxel Cube — a software-rendered 3D extension module
 - Restructured Pyxel Cube assets into Geometry and hierarchical Mesh
+- Moved cube draw modifiers to Node state-setter methods
+- Added cube box and sphere texturing via col_img
+- Made cube circ, circb, and text always face the camera
+- Removed cube billboard parameter and BILLBOARD_* class constants
 
 ## 2.9.6
 
