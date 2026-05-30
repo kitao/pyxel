@@ -628,7 +628,6 @@ impl Node {
     }
 
     #[pyo3(signature = (mat, size, col_img=None, *, colkey=None))]
-    #[allow(clippy::too_many_arguments)]
     fn r#box(
         &self,
         mat: PyRef<'_, Mat4>,

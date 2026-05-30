@@ -464,6 +464,10 @@ class TestAlwaysBillboard:
         n.text(Vec3.ZERO, "X", 7)
 
 
+_TRIANGLE_GEOMETRY = Geometry(positions=[0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0])
+_UNIT_QUAD_UVS = ((0.0, 0.0), (1.0, 0.0), (1.0, 1.0), (0.0, 1.0))
+
+
 class TestBillboardKwargRemoved:
     """billboard kwarg is removed from all primitives that previously had it."""
 
@@ -479,6 +483,15 @@ class TestBillboardKwargRemoved:
             lambda n: n.ellib(Mat4.IDENTITY, 1.0, 1.0, 7, billboard=1),
             lambda n: n.box(Mat4.IDENTITY, Vec3(1, 1, 1), 7, billboard=1),
             lambda n: n.boxb(Mat4.IDENTITY, Vec3(1, 1, 1), 7, billboard=1),
+            lambda n: n.plane(
+                Mat4.IDENTITY, pyxel.images[0], _UNIT_QUAD_UVS, 1.0, 1.0, billboard=1
+            ),
+            lambda n: n.mesh(
+                Mat4.IDENTITY,
+                Mesh(geometries=[_TRIANGLE_GEOMETRY], transforms=[Mat4()], parents=[-1], col_img=8),
+                billboard=1,
+            ),
+            lambda n: n.prim(Mat4.IDENTITY, _TRIANGLE_GEOMETRY, billboard=1),
         ],
     )
     def test_billboard_kwarg_rejected(self, call):
