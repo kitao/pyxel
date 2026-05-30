@@ -28,9 +28,8 @@ class Cube(Node):
 
 class Label(Node):
     def on_draw(self):
-        self.text(
-            Vec3.ZERO, "Hello, Pyxel Cube!", pyxel.frame_count % 16, depth_test=False
-        )
+        self.depth_test(False)
+        self.text(Vec3.ZERO, "Hello, Pyxel Cube!", pyxel.frame_count % 16)
 
 
 class App:
@@ -52,9 +51,6 @@ class App:
     def update(self):
         if pyxel.btnp(pyxel.KEY_Q):
             pyxel.quit()
-
-        if pyxel.frame_count == 180:
-            pyxel.screencast()
 
         self.scene.update()
 
