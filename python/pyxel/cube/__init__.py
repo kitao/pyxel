@@ -8,7 +8,7 @@ Mat4 = _binding_cube.Mat4
 Mesh = _binding_cube.Mesh
 Node = _binding_cube.Node
 Quat = _binding_cube.Quat
-Scene = _binding_cube.Scene
+RaycastHit = _binding_cube.RaycastHit
 Shading = _binding_cube.Shading
 Vec3 = _binding_cube.Vec3
 
@@ -21,7 +21,7 @@ __all__ = [
     "Mesh",
     "Node",
     "Quat",
-    "Scene",
+    "RaycastHit",
     "Shading",
     "Vec3",
 ]

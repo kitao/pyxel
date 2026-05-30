@@ -9,7 +9,6 @@ mod mesh;
 mod node;
 mod quat;
 mod raycast_hit;
-mod scene;
 mod shading;
 mod vec3;
 
@@ -26,7 +25,6 @@ pub fn add_cube_submodule(parent: &Bound<'_, PyModule>) -> PyResult<()> {
     geometry::add_geometry_class(&m)?;
     mesh::add_mesh_class(&m)?;
     node::add_node_class(&m)?;
-    scene::add_scene_class(&m)?;
     parent.add_submodule(&m)?;
     Ok(())
 }
