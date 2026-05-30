@@ -10,6 +10,7 @@ use crate::cube::contact::{Contact, RcContact};
 use crate::cube::mat4::Mat4;
 use crate::cube::mesh::RcMesh;
 use crate::cube::node::{Node, RcNode};
+use crate::cube::quat::Quat;
 use crate::cube::raster::{ClipRect, Mat4x4};
 use crate::cube::vec3::Vec3;
 use crate::image::RcImage;
@@ -396,7 +397,7 @@ impl Scene {
             c.depth = depth_a;
             c.delta_velocity = Vec3::new(dv_a.x, dv_a.y, dv_a.z);
             c.delta_angular_velocity = Vec3::new(dav_a.x, dav_a.y, dav_a.z);
-            c.delta_rotation = Mat4::identity();
+            c.delta_rotation = Quat::identity();
         }
         let contact_b = Contact::new();
         {
@@ -406,7 +407,7 @@ impl Scene {
             c.depth = depth_b;
             c.delta_velocity = Vec3::new(dv_b.x, dv_b.y, dv_b.z);
             c.delta_angular_velocity = Vec3::new(dav_b.x, dav_b.y, dav_b.z);
-            c.delta_rotation = Mat4::identity();
+            c.delta_rotation = Quat::identity();
         }
         ContactPair {
             node_a: node_a.clone(),
