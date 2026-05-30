@@ -423,11 +423,7 @@ impl Node {
     }
 
     #[pyo3(signature = (pos, col))]
-    fn pset(
-        &self,
-        pos: PyRef<'_, Vec3>,
-        col: i32,
-    ) {
+    fn pset(&self, pos: PyRef<'_, Vec3>, col: i32) {
         let world_mat = self.world_mat();
         let local = *pos.inner_ref();
         self.with_state_from_ctx(pyxel::cube::draw::BILLBOARD_OFF, |ctx, state| {
@@ -436,12 +432,7 @@ impl Node {
     }
 
     #[pyo3(signature = (p1, p2, col))]
-    fn line(
-        &self,
-        p1: PyRef<'_, Vec3>,
-        p2: PyRef<'_, Vec3>,
-        col: i32,
-    ) {
+    fn line(&self, p1: PyRef<'_, Vec3>, p2: PyRef<'_, Vec3>, col: i32) {
         let world_mat = self.world_mat();
         let v1 = *p1.inner_ref();
         let v2 = *p2.inner_ref();
@@ -451,13 +442,7 @@ impl Node {
     }
 
     #[pyo3(signature = (p1, p2, p3, col))]
-    fn tri(
-        &self,
-        p1: PyRef<'_, Vec3>,
-        p2: PyRef<'_, Vec3>,
-        p3: PyRef<'_, Vec3>,
-        col: i32,
-    ) {
+    fn tri(&self, p1: PyRef<'_, Vec3>, p2: PyRef<'_, Vec3>, p3: PyRef<'_, Vec3>, col: i32) {
         let world_mat = self.world_mat();
         let v1 = *p1.inner_ref();
         let v2 = *p2.inner_ref();
@@ -468,13 +453,7 @@ impl Node {
     }
 
     #[pyo3(signature = (p1, p2, p3, col))]
-    fn trib(
-        &self,
-        p1: PyRef<'_, Vec3>,
-        p2: PyRef<'_, Vec3>,
-        p3: PyRef<'_, Vec3>,
-        col: i32,
-    ) {
+    fn trib(&self, p1: PyRef<'_, Vec3>, p2: PyRef<'_, Vec3>, p3: PyRef<'_, Vec3>, col: i32) {
         let world_mat = self.world_mat();
         let v1 = *p1.inner_ref();
         let v2 = *p2.inner_ref();
@@ -485,12 +464,7 @@ impl Node {
     }
 
     #[pyo3(signature = (pos, r, col))]
-    fn circ(
-        &self,
-        pos: PyRef<'_, Vec3>,
-        r: f32,
-        col: i32,
-    ) {
+    fn circ(&self, pos: PyRef<'_, Vec3>, r: f32, col: i32) {
         let world_mat = self.world_mat();
         let local = *pos.inner_ref();
         self.with_state_from_ctx(pyxel::cube::draw::BILLBOARD_ON, |ctx, state| {
@@ -499,12 +473,7 @@ impl Node {
     }
 
     #[pyo3(signature = (pos, r, col))]
-    fn circb(
-        &self,
-        pos: PyRef<'_, Vec3>,
-        r: f32,
-        col: i32,
-    ) {
+    fn circb(&self, pos: PyRef<'_, Vec3>, r: f32, col: i32) {
         let world_mat = self.world_mat();
         let local = *pos.inner_ref();
         self.with_state_from_ctx(pyxel::cube::draw::BILLBOARD_ON, |ctx, state| {
@@ -551,12 +520,7 @@ impl Node {
     }
 
     #[pyo3(signature = (pos, r, col))]
-    fn sphereb(
-        &self,
-        pos: PyRef<'_, Vec3>,
-        r: f32,
-        col: i32,
-    ) {
+    fn sphereb(&self, pos: PyRef<'_, Vec3>, r: f32, col: i32) {
         let world_mat = self.world_mat();
         let local = *pos.inner_ref();
         self.with_state_from_ctx(pyxel::cube::draw::BILLBOARD_OFF, |ctx, state| {
@@ -565,13 +529,7 @@ impl Node {
     }
 
     #[pyo3(signature = (mat, w, h, col))]
-    fn rect(
-        &self,
-        mat: PyRef<'_, Mat4>,
-        w: f32,
-        h: f32,
-        col: i32,
-    ) {
+    fn rect(&self, mat: PyRef<'_, Mat4>, w: f32, h: f32, col: i32) {
         let world_mat = self.world_mat_compose(*mat.inner_ref());
         self.with_state_from_ctx(pyxel::cube::draw::BILLBOARD_OFF, |ctx, state| {
             pyxel::cube::draw::rect(ctx, &world_mat, w, h, col, state);
@@ -579,13 +537,7 @@ impl Node {
     }
 
     #[pyo3(signature = (mat, w, h, col))]
-    fn rectb(
-        &self,
-        mat: PyRef<'_, Mat4>,
-        w: f32,
-        h: f32,
-        col: i32,
-    ) {
+    fn rectb(&self, mat: PyRef<'_, Mat4>, w: f32, h: f32, col: i32) {
         let world_mat = self.world_mat_compose(*mat.inner_ref());
         self.with_state_from_ctx(pyxel::cube::draw::BILLBOARD_OFF, |ctx, state| {
             pyxel::cube::draw::rectb(ctx, &world_mat, w, h, col, state);
@@ -593,13 +545,7 @@ impl Node {
     }
 
     #[pyo3(signature = (mat, w, h, col))]
-    fn elli(
-        &self,
-        mat: PyRef<'_, Mat4>,
-        w: f32,
-        h: f32,
-        col: i32,
-    ) {
+    fn elli(&self, mat: PyRef<'_, Mat4>, w: f32, h: f32, col: i32) {
         let world_mat = self.world_mat_compose(*mat.inner_ref());
         self.with_state_from_ctx(pyxel::cube::draw::BILLBOARD_OFF, |ctx, state| {
             pyxel::cube::draw::elli(ctx, &world_mat, w, h, col, state);
@@ -607,13 +553,7 @@ impl Node {
     }
 
     #[pyo3(signature = (mat, w, h, col))]
-    fn ellib(
-        &self,
-        mat: PyRef<'_, Mat4>,
-        w: f32,
-        h: f32,
-        col: i32,
-    ) {
+    fn ellib(&self, mat: PyRef<'_, Mat4>, w: f32, h: f32, col: i32) {
         let world_mat = self.world_mat_compose(*mat.inner_ref());
         self.with_state_from_ctx(pyxel::cube::draw::BILLBOARD_OFF, |ctx, state| {
             pyxel::cube::draw::ellib(ctx, &world_mat, w, h, col, state);
@@ -658,12 +598,7 @@ impl Node {
     }
 
     #[pyo3(signature = (mat, size, col))]
-    fn boxb(
-        &self,
-        mat: PyRef<'_, Mat4>,
-        size: PyRef<'_, Vec3>,
-        col: i32,
-    ) {
+    fn boxb(&self, mat: PyRef<'_, Mat4>, size: PyRef<'_, Vec3>, col: i32) {
         let world_mat = self.world_mat_compose(*mat.inner_ref());
         let size_v = *size.inner_ref();
         self.with_state_from_ctx(pyxel::cube::draw::BILLBOARD_OFF, |ctx, state| {
@@ -727,11 +662,7 @@ impl Node {
     }
 
     #[pyo3(signature = (mat, mesh_asset))]
-    fn mesh(
-        &self,
-        mat: PyRef<'_, Mat4>,
-        mesh_asset: PyRef<'_, super::mesh::Mesh>,
-    ) {
+    fn mesh(&self, mat: PyRef<'_, Mat4>, mesh_asset: PyRef<'_, super::mesh::Mesh>) {
         let world_mat = self.world_mat_compose(*mat.inner_ref());
         let mesh_inner = mesh_asset.inner.clone();
         self.with_state_from_ctx(pyxel::cube::draw::BILLBOARD_OFF, |ctx, state| {

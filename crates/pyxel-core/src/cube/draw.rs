@@ -1074,10 +1074,10 @@ pub fn sphere(
         let mut vertex_map: Vec<[Option<i32>; 2]> = vec![[None; 2]; vertex_count];
 
         let get_or_add = |out_positions: &mut Vec<f32>,
-                               out_uvs: &mut Vec<f32>,
-                               vertex_map: &mut Vec<[Option<i32>; 2]>,
-                               base_idx: usize,
-                               seam_side: usize|
+                          out_uvs: &mut Vec<f32>,
+                          vertex_map: &mut Vec<[Option<i32>; 2]>,
+                          base_idx: usize,
+                          seam_side: usize|
          -> i32 {
             if let Some(existing) = vertex_map[base_idx][seam_side] {
                 return existing;
@@ -1126,27 +1126,9 @@ pub fn sphere(
                 (0, 0, 0)
             };
 
-            let o0 = get_or_add(
-                &mut out_positions,
-                &mut out_uvs,
-                &mut vertex_map,
-                i0,
-                s0,
-            );
-            let o1 = get_or_add(
-                &mut out_positions,
-                &mut out_uvs,
-                &mut vertex_map,
-                i1,
-                s1,
-            );
-            let o2 = get_or_add(
-                &mut out_positions,
-                &mut out_uvs,
-                &mut vertex_map,
-                i2,
-                s2,
-            );
+            let o0 = get_or_add(&mut out_positions, &mut out_uvs, &mut vertex_map, i0, s0);
+            let o1 = get_or_add(&mut out_positions, &mut out_uvs, &mut vertex_map, i1, s1);
+            let o2 = get_or_add(&mut out_positions, &mut out_uvs, &mut vertex_map, i2, s2);
             out_indices.push(o0);
             out_indices.push(o1);
             out_indices.push(o2);
