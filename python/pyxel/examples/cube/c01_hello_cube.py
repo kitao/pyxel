@@ -60,9 +60,7 @@ class App:
         self.scene.update()
 
     def draw(self):
-        self.scene.draw(
-            0, 0, pyxel.width, pyxel.height, self.scene.camera, clear_color=0
-        )
+        self.scene.draw(0, 0, pyxel.width, pyxel.height, clear_color=0)
 
 
 App()
