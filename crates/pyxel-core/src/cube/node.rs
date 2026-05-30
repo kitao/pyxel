@@ -1,6 +1,7 @@
 use std::cell::UnsafeCell;
 use std::rc::{Rc, Weak};
 
+use crate::cube::camera::RcCamera;
 use crate::cube::collider::RcCollider;
 use crate::cube::mat4::{Mat4, RcMat4};
 use crate::cube::shading::RcShading;
@@ -17,6 +18,7 @@ pub struct Node {
     pub transform: RcMat4,
     pub active: bool,
     pub visible: bool,
+    pub camera: Option<RcCamera>,
     pub shading: Option<RcShading>,
     pub collider: Option<RcCollider>,
     pub tags: Vec<String>,
@@ -43,6 +45,7 @@ impl Node {
             transform: Mat4::identity(),
             active: true,
             visible: true,
+            camera: None,
             shading: None,
             collider: None,
             tags: Vec::new(),
@@ -206,6 +209,15 @@ impl Node {
             return Some(s);
         }
         Self::parent(node).and_then(|p| Self::effective_shading(&p))
+    }
+
+    // Resolve the cascading `camera`: self if set, else the closest
+    // non-None ancestor's value. Mirrors `effective_shading`.
+    pub fn effective_camera(node: &RcNode) -> Option<RcCamera> {
+        if let Some(c) = rc_ref!(node).camera.clone() {
+            return Some(c);
+        }
+        Self::parent(node).and_then(|p| Self::effective_camera(&p))
     }
 
     // Effective gating: parent-dominant. False at any ancestor halts the
@@ -539,6 +551,39 @@ mod tests {
         Node::add_child(&root, &leaf);
         let resolved = Node::effective_shading(&leaf).unwrap();
         assert!(std::rc::Rc::ptr_eq(&resolved, &leaf_shading));
+    }
+
+    #[test]
+    fn test_effective_camera_cascade_resolves_ancestor() {
+        use crate::cube::camera::Camera;
+        let root = Node::new();
+        let leaf = Node::new();
+        Node::add_child(&root, &leaf);
+        let camera = Camera::new();
+        rc_mut!(&root).camera = Some(camera.clone());
+        // leaf has camera=None; effective should resolve to root's.
+        let resolved = Node::effective_camera(&leaf).unwrap();
+        assert!(std::rc::Rc::ptr_eq(&resolved, &camera));
+    }
+
+    #[test]
+    fn test_effective_camera_uses_self_when_set() {
+        use crate::cube::camera::Camera;
+        let root = Node::new();
+        let leaf = Node::new();
+        Node::add_child(&root, &leaf);
+        let root_camera = Camera::new();
+        let leaf_camera = Camera::new();
+        rc_mut!(&root).camera = Some(root_camera);
+        rc_mut!(&leaf).camera = Some(leaf_camera.clone());
+        let resolved = Node::effective_camera(&leaf).unwrap();
+        assert!(std::rc::Rc::ptr_eq(&resolved, &leaf_camera));
+    }
+
+    #[test]
+    fn test_effective_camera_none_when_unset() {
+        let root = Node::new();
+        assert!(Node::effective_camera(&root).is_none());
     }
 
     #[test]
