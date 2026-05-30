@@ -1,4 +1,4 @@
-from pyxel.cube import Node, Scene
+from pyxel.cube import Node
 
 
 class DestroyTracker(Node):
@@ -18,43 +18,43 @@ class DestroyTracker(Node):
         DestroyTracker.fire_log.append(self.label)
 
 
-def setup_scene_with_subtree() -> tuple[
-    Scene, DestroyTracker, DestroyTracker, DestroyTracker
+def setup_root_with_subtree() -> tuple[
+    Node, DestroyTracker, DestroyTracker, DestroyTracker
 ]:
     DestroyTracker.fire_log = []
-    scene = Scene()
+    root_node = Node()
     root = DestroyTracker("root")
     mid = DestroyTracker("mid")
     leaf = DestroyTracker("leaf")
-    scene.add_child(root)
+    root_node.add_child(root)
     root.add_child(mid)
     mid.add_child(leaf)
-    return scene, root, mid, leaf
+    return root_node, root, mid, leaf
 
 
 def test_destroyed_flag_set_immediately_but_not_detached():
-    scene, root, mid, leaf = setup_scene_with_subtree()
+    _root_node, root, mid, leaf = setup_root_with_subtree()
     mid.destroy()
     assert mid.destroyed is True
     assert leaf.destroyed is True
     assert root.destroyed is False
-    # Tree intact until Scene.update step 8.
+    # Tree intact until Node.update step 8.
     assert len(root.children) == 1
     assert len(mid.children) == 1
 
 
-def test_scene_update_fires_on_destroy_post_order_then_detaches():
-    scene, root, mid, _leaf = setup_scene_with_subtree()
+def test_update_fires_on_destroy_post_order_then_detaches():
+    root_node, root, mid, _leaf = setup_root_with_subtree()
     mid.destroy()
-    scene.update()
+    root_node.update()
     # Post-order: leaf first, then mid.
     assert DestroyTracker.fire_log == ["leaf", "mid"]
     assert len(root.children) == 0
 
 
-def test_destroy_on_subtree_does_not_destroy_scene():
-    scene, root, _mid, _leaf = setup_scene_with_subtree()
+def test_destroy_on_subtree_does_not_destroy_root():
+    root_node, root, _mid, _leaf = setup_root_with_subtree()
     root.destroy()
-    scene.update()
-    assert scene.destroyed is False
-    assert len(scene.children) == 0
+    root_node.update()
+    assert root_node.destroyed is False
+    assert len(root_node.children) == 0
