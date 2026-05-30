@@ -1,6 +1,6 @@
 use pyo3::prelude::*;
 
-use super::mat4::Mat4;
+use super::quat::Quat;
 use super::vec3::Vec3;
 
 define_wrapper!(Contact, pyxel::cube::Contact);
@@ -43,12 +43,12 @@ impl Contact {
     }
 
     #[getter]
-    fn delta_rotation(&self) -> Mat4 {
-        Mat4::wrap(self.inner_ref().delta_rotation.clone())
+    fn delta_rotation(&self) -> Quat {
+        Quat::wrap(self.inner_ref().delta_rotation.clone())
     }
 
     #[setter]
-    fn set_delta_rotation(&self, v: PyRef<'_, Mat4>) {
+    fn set_delta_rotation(&self, v: PyRef<'_, Quat>) {
         self.inner_mut().delta_rotation = v.inner.clone();
     }
 

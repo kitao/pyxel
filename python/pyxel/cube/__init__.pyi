@@ -248,7 +248,7 @@ class Contact:
     point: Vec3
     normal: Vec3
     depth: float
-    delta_rotation: Mat4
+    delta_rotation: Quat
     delta_velocity: Vec3
     delta_angular_velocity: Vec3
 
