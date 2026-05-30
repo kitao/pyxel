@@ -8,6 +8,8 @@
 - Added cube box and sphere texturing via col_img
 - Made cube circ, circb, and text always face the camera
 - Removed cube billboard parameter and BILLBOARD_* class constants
+- Removed cube Scene class; Node owns draw, update, and spatial queries
+- Audited and reordered cube stub members for consistency
 
 ## 2.9.6
 
