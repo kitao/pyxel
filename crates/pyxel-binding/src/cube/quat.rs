@@ -125,10 +125,10 @@ impl Quat {
     }
 
     #[staticmethod]
-    fn from_two_vectors(a: PyRef<'_, Vec3>, b: PyRef<'_, Vec3>) -> Self {
+    fn from_two_vectors(from_vec: PyRef<'_, Vec3>, to_vec: PyRef<'_, Vec3>) -> Self {
         Self::wrap(pyxel::cube::Quat::from_two_vectors(
-            a.inner_ref(),
-            b.inner_ref(),
+            from_vec.inner_ref(),
+            to_vec.inner_ref(),
         ))
     }
 
