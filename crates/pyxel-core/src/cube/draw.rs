@@ -1110,7 +1110,7 @@ pub fn sphere(
             let u2 = base_uvs[i2 * 2];
 
             // Check if this triangle straddles the seam. The seam runs
-            // along the atan2 discontinuity (u≈0 / u≈1 boundary at z>0,
+            // along the atan2 discontinuity (u≈0 / u≈1 boundary at z≈0,
             // x<0). When the max-min u spread across the three vertices
             // exceeds 0.5 the triangle must be split at the seam.
             let u_min = u0.min(u1).min(u2);
