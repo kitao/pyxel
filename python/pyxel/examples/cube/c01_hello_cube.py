@@ -35,10 +35,12 @@ class Label(Node):
 class Scene(Node):
     def __init__(self):
         super().__init__()
-        self.camera = Camera()
-        self.camera.transform = Mat4.look_at(Vec3(0.0, 3.5, 4.0), Vec3.ZERO)
         self.shading = Shading(pyxel.colors)
         self.shading.direction = Vec3(0.5, -1.5, -1.0).normalize()
+
+        self.camera = Camera()
+        self.camera.transform = Mat4.look_at(Vec3(0.0, 3.5, 4.0), Vec3.ZERO)
+
         for i in range(CUBE_COUNT):
             self.add_child(Cube(i))
         self.add_child(Label())
@@ -53,10 +55,13 @@ class App:
     def update(self):
         if pyxel.btnp(pyxel.KEY_Q):
             pyxel.quit()
+
         self.scene.update()
 
     def draw(self):
-        self.scene.draw(0, 0, pyxel.width, pyxel.height, self.scene.camera, clear_color=0)
+        self.scene.draw(
+            0, 0, pyxel.width, pyxel.height, self.scene.camera, clear_color=0
+        )
 
 
 App()
