@@ -1,5 +1,6 @@
 use std::cell::RefCell;
 
+use pyo3::exceptions::PyValueError;
 use pyo3::prelude::*;
 use pyo3::types::{PyDict, PyTuple};
 use pyxel::cube::draw::DrawState;
@@ -776,18 +777,20 @@ impl Node {
         Ok(())
     }
 
-    #[pyo3(signature = (x, y, w, h, camera, clear_color=None, target=None))]
-    #[allow(clippy::too_many_arguments)]
+    #[pyo3(signature = (x, y, w, h, clear_color=None, target=None))]
     fn draw(
         self_: Bound<'_, Self>,
         x: i32,
         y: i32,
         w: i32,
         h: i32,
-        camera: PyRef<'_, super::camera::Camera>,
         clear_color: Option<i32>,
         target: Option<PyRef<'_, crate::image_wrapper::Image>>,
     ) -> PyResult<()> {
+        let node_inner = self_.borrow().inner.clone();
+        let cam_inner = InnerNode::effective_camera(&node_inner).ok_or_else(|| {
+            PyValueError::new_err("draw: no camera set on this node or any ancestor")
+        })?;
         let target_rc = match target.as_ref() {
             Some(t) => t.inner.clone(),
             None => pyxel::screen().clone(),
@@ -797,13 +800,11 @@ impl Node {
         if let Some(col) = clear_color {
             rc_mut!(&target_rc).clear(col as u8);
         }
-        let node_inner = self_.borrow().inner.clone();
         // Resize cache if needed, then clear; move the buffer out for the
         // duration of the traversal and put it back when ctx is taken.
         rc_mut!(&node_inner).ensure_depth(target_w, target_h);
         rc_mut!(&node_inner).clear_depth();
         let depth = std::mem::take(&mut rc_mut!(&node_inner).depth);
-        let cam_inner = camera.inner.clone();
         let view = view_matrix(rc_ref!(&cam_inner));
         let proj = projection_matrix(rc_ref!(&cam_inner), w as f32, h as f32);
         let vp = matmul(&proj, &view);
