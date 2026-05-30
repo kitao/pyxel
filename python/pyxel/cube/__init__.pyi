@@ -153,6 +153,7 @@ class Camera:
     near: float
     far: float
     ortho_size: float | None
+    clear_color: int | None
 
     def __init__(self) -> None: ...
     def __repr__(self) -> str: ...
@@ -418,7 +419,6 @@ class Node:
         y: int,
         w: int,
         h: int,
-        clear_color: int | None = None,
         target: Image | None = None,
     ) -> None: ...
 
