@@ -153,17 +153,16 @@ class App:
         if pyxel.btnp(pyxel.KEY_Q):
             pyxel.quit()
 
-        if pyxel.btn(pyxel.MOUSE_BUTTON_LEFT):
-            dx = pyxel.mouse_x - self.mouse_prev_x
-            dy = pyxel.mouse_y - self.mouse_prev_y
-            self.cam_yaw = max(
-                -CAM_YAW_LIMIT, min(CAM_YAW_LIMIT, self.cam_yaw - dx * MOUSE_SENS)
-            )
-            self.cam_pitch = max(
-                -CAM_PITCH_LIMIT,
-                min(CAM_PITCH_LIMIT, self.cam_pitch - dy * MOUSE_SENS),
-            )
-            self._update_camera_transform()
+        dx = pyxel.mouse_x - self.mouse_prev_x
+        dy = pyxel.mouse_y - self.mouse_prev_y
+        self.cam_yaw = max(
+            -CAM_YAW_LIMIT, min(CAM_YAW_LIMIT, self.cam_yaw - dx * MOUSE_SENS)
+        )
+        self.cam_pitch = max(
+            -CAM_PITCH_LIMIT,
+            min(CAM_PITCH_LIMIT, self.cam_pitch - dy * MOUSE_SENS),
+        )
+        self._update_camera_transform()
         self.mouse_prev_x = pyxel.mouse_x
         self.mouse_prev_y = pyxel.mouse_y
 
