@@ -11,7 +11,6 @@ from pyxel.cube import (
     Mat4,
     Mesh,
     Node,
-    Scene,
     Shading,
     Vec3,
 )
@@ -208,8 +207,12 @@ class TestSubclassing:
         n = Tagged("hero")
         assert n.name == "hero"
 
-    def test_scene_subclass_with_init_args(self):
-        class Level(Scene):
+    def test_node_subclass_chained_init_args(self):
+        # Subclass __init__ taking extra positional args must work; the
+        # args must not reach Node.__new__ (mirrors the simpler
+        # test_subclass_with_init_args; this variant exercises the same
+        # chain through a deeper hierarchy).
+        class Level(Node):
             def __init__(self, depth):
                 super().__init__()
                 self.name = f"level-{depth}"
@@ -229,7 +232,7 @@ class TestSubclassing:
         n.on_destroy()
 
 
-# Calling draw methods outside a `Scene.draw` context must be a safe
+# Calling draw methods outside an active draw context must be a safe
 # no-op (cube-design.md § 12.5: with_draw_context returns None when no
 # context is active). Per-call state kwargs were removed in favor of
 # Node.dither / depth_test / depth_write / shaded state-setters.
@@ -345,63 +348,33 @@ class TestStateSetters:
                 self.shaded(False)
                 self.box(Mat4.IDENTITY, Vec3(1, 1, 1), 7)
 
-        s = Scene()
-        s.add_child(Probe())
-        # No window — Scene.draw composes the context and dispatches
+        root = Node()
+        cam = Camera()
+        root.add_child(Probe())
+        # No window — Node.draw composes the context and dispatches
         # on_draw without rasterizing. We only assert no error is raised.
-        s.draw(0, 0, 64, 64)
+        root.draw(0, 0, 64, 64, cam)
 
 
-class TestSceneIntegrationOfNewMethods:
-    """Smoke-test that Scene (Node-derived) exposes the new methods too."""
+class TestNodeIntegrationOfDrawAndQueries:
+    """Smoke-test that Node exposes the frame-level draw API and queries."""
 
-    def test_box_sphere_text_via_scene(self):
-        s = Scene()
-        s.box(Mat4.IDENTITY, Vec3(1, 1, 1), 4)
-        s.boxb(Mat4.IDENTITY, Vec3(1, 1, 1), 5)
-        s.sphere(Vec3.ZERO, 1.0, 7)
-        s.sphereb(Vec3.ZERO, 1.0, 8)
-        s.text(Vec3.ZERO, "ok", 9)
+    def test_box_sphere_text_via_node(self):
+        n = Node()
+        n.box(Mat4.IDENTITY, Vec3(1, 1, 1), 4)
+        n.boxb(Mat4.IDENTITY, Vec3(1, 1, 1), 5)
+        n.sphere(Vec3.ZERO, 1.0, 7)
+        n.sphereb(Vec3.ZERO, 1.0, 8)
+        n.text(Vec3.ZERO, "ok", 9)
 
-    def test_run_multi_camera(self):
-        # Multi-angle rendering: building the scene once and rendering
-        # via different cameras is exercised in cube-design.md § 13.4.
-        # The smoke test here confirms the API surface accepts repeated
-        # calls without state corruption.
-        s = Scene()
+    def test_draw_api_signature_wiring(self):
+        # Multi-angle rendering: building the tree once and rendering
+        # via different cameras is part of the contract. The smoke test
+        # here confirms the draw API and Camera type are reachable.
+        n = Node()
         cam = Camera()
-        # No actual graphics — running outside an SDL window means
-        # scene.draw composes the context but with_draw_context's
-        # rasterizer is a no-op when target rebind is missed; this only
-        # verifies the API signature wiring.
-        assert hasattr(s, "draw")
+        assert hasattr(n, "draw")
         assert hasattr(cam, "transform")
-
-
-class TestSceneCamera:
-    """`Scene.camera` is a settable view Camera seeded on construction.
-    `Node` no longer exposes a `camera` attribute."""
-
-    def test_node_has_no_camera(self):
-        assert not hasattr(Node(), "camera")
-
-    def test_scene_camera_is_seeded(self):
-        assert isinstance(Scene().camera, Camera)
-
-    def test_scene_camera_transform_writethrough(self):
-        # The getter returns a clone sharing the inner Camera, so a
-        # transform set through it is visible on subsequent reads.
-        s = Scene()
-        m = Mat4.look_at(Vec3(0.0, 2.5, 5.0), Vec3.ZERO)
-        s.camera.transform = m
-        assert s.camera.transform == m
-
-    def test_scene_camera_replace(self):
-        s = Scene()
-        cam = Camera()
-        cam.transform = Mat4.look_at(Vec3(1.0, 0.0, 0.0), Vec3.ZERO)
-        s.camera = cam
-        assert s.camera.transform == cam.transform
 
 
 class TestBoxSphereTexturing:
