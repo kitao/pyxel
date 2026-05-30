@@ -1,14 +1,10 @@
 import pyxel
 from pyxel.cube import Camera, Mat4, Node, Shading, Vec3
 
-# A specimen-book style display of cube draw primitives, arranged in a
-# 3x3 grid. Each specimen spins around its local Y axis. Holding SPACE
-# overlays the wireframe variant on the six pair primitives (tri/trib,
-# rect/rectb, elli/ellib, circ/circb, box/boxb, sphere/sphereb). The
-# mouse cursor movement orbits the scene camera around the grid center.
-
-GRID_SPACING = 1.5
-SPEC_SCALE = 0.7
+GRID_SPACING = 2.2
+GRID_OFFSET_Y = 0.25  # lower grid so text-inclusive content stays centered
+SPEC_SCALE = 1.1
+BOX_SCALE = SPEC_SCALE * 0.85  # solid cube reads larger; shrink to match
 LABEL_OFFSET_Y = 0.9
 ROT_SPEED = 2.0  # deg/frame
 CAM_DIST = 6.0
@@ -18,9 +14,28 @@ MOUSE_SENS = 0.5
 SPRITE_UVS = ((0.0, 0.0), (1.0, 0.0), (1.0, 1.0), (0.0, 1.0))
 
 
+def clamp(value, limit):
+    return max(-limit, min(limit, value))
+
+
+class Label(Node):
+    def __init__(self, label: str):
+        super().__init__()
+        self.label = label
+
+    def on_draw(self):
+        self.text(Vec3(0, LABEL_OFFSET_Y, 0), self.label, 7)
+
+
 class Spinner(Node):
+    def __init__(self, pos: Vec3, label: str):
+        super().__init__()
+        self.pos = pos
+        self.add_child(Label(label))
+
     def on_update(self):
-        self.transform = Mat4.from_euler(Vec3(0, pyxel.frame_count * ROT_SPEED, 0))
+        spin = Mat4.from_euler(Vec3(0, pyxel.frame_count * ROT_SPEED, 0))
+        self.transform = Mat4.from_translation(self.pos) * spin
 
 
 class PsetSpinner(Spinner):
@@ -69,7 +84,7 @@ class CircSpinner(Spinner):
 
 class BoxSpinner(Spinner):
     def on_draw(self):
-        size = Vec3(SPEC_SCALE, SPEC_SCALE, SPEC_SCALE)
+        size = Vec3(BOX_SCALE, BOX_SCALE, BOX_SCALE)
         self.box(Mat4.IDENTITY, size, pyxel.images[0])
         if pyxel.btn(pyxel.KEY_SPACE):
             self.boxb(Mat4.IDENTITY, size, 7)
@@ -86,17 +101,6 @@ class SphereSpinner(Spinner):
 class SpriteSpinner(Spinner):
     def on_draw(self):
         self.sprite(Vec3.ZERO, pyxel.images[0], SPRITE_UVS, SPEC_SCALE, SPEC_SCALE)
-
-
-class Cell(Node):
-    def __init__(self, pos: Vec3, label: str, spinner: Spinner):
-        super().__init__()
-        self.transform = Mat4.from_translation(pos)
-        self._label = label
-        self.add_child(spinner)
-
-    def on_draw(self):
-        self.text(Vec3(0, LABEL_OFFSET_Y, 0), self._label, 7)
 
 
 CELL_SPECS = [
@@ -116,48 +120,48 @@ CELL_SPECS = [
 class Scene(Node):
     def __init__(self):
         super().__init__()
-        self.camera = Camera()
+
         self.shading = Shading(pyxel.colors)
         self.shading.direction = Vec3(0.5, -1.5, -1.0).normalize()
-        self._yaw = 0.0
-        self._pitch = 0.0
-        self._mouse_prev_x = pyxel.mouse_x
-        self._mouse_prev_y = pyxel.mouse_y
-        self._refresh_camera()
 
-    def _refresh_camera(self):
+        self.camera = Camera()
+        self.yaw = 0.0
+        self.pitch = 0.0
+        self.mouse_prev = None
+        self.refresh_camera()
+
+        for gx, gy, label, spinner_cls in CELL_SPECS:
+            pos = Vec3(gx * GRID_SPACING, gy * GRID_SPACING - GRID_OFFSET_Y, 0)
+            self.add_child(spinner_cls(pos, label))
+
+    def refresh_camera(self):
         eye = Vec3(
-            CAM_DIST * pyxel.sin(self._yaw) * pyxel.cos(self._pitch),
-            CAM_DIST * pyxel.sin(self._pitch),
-            CAM_DIST * pyxel.cos(self._yaw) * pyxel.cos(self._pitch),
+            CAM_DIST * pyxel.sin(self.yaw) * pyxel.cos(self.pitch),
+            CAM_DIST * pyxel.sin(self.pitch),
+            CAM_DIST * pyxel.cos(self.yaw) * pyxel.cos(self.pitch),
         )
         self.camera.transform = Mat4.look_at(eye, Vec3.ZERO)
 
     def on_update(self):
-        dx = pyxel.mouse_x - self._mouse_prev_x
-        dy = pyxel.mouse_y - self._mouse_prev_y
-        self._yaw = max(-CAM_YAW_LIMIT, min(CAM_YAW_LIMIT, self._yaw - dx * MOUSE_SENS))
-        self._pitch = max(
-            -CAM_PITCH_LIMIT, min(CAM_PITCH_LIMIT, self._pitch + dy * MOUSE_SENS)
-        )
-        self._refresh_camera()
-        self._mouse_prev_x = pyxel.mouse_x
-        self._mouse_prev_y = pyxel.mouse_y
+        mx, my = pyxel.mouse_x, pyxel.mouse_y
+        if self.mouse_prev is not None:
+            px, py = self.mouse_prev
+            dx = mx - px
+            dy = my - py
+            self.yaw = clamp(self.yaw - dx * MOUSE_SENS, CAM_YAW_LIMIT)
+            self.pitch = clamp(self.pitch + dy * MOUSE_SENS, CAM_PITCH_LIMIT)
+            self.refresh_camera()
+        self.mouse_prev = (mx, my)
 
 
 class App:
     def __init__(self):
-        pyxel.init(192, 192, title="Cube Basic Shapes")
-        self._populate_texture()
-
+        pyxel.init(160, 160, title="Cube Basic Shapes")
+        self.populate_texture()
         self.scene = Scene()
-        for gx, gy, label, spinner_cls in CELL_SPECS:
-            pos = Vec3(gx * GRID_SPACING, gy * GRID_SPACING, 0)
-            self.scene.add_child(Cell(pos, label, spinner_cls()))
-
         pyxel.run(self.update, self.draw)
 
-    def _populate_texture(self):
+    def populate_texture(self):
         # 4-color quadrant pattern: makes rotation of box/sphere visible.
         img = pyxel.images[0]
         half_w = img.width // 2
@@ -170,10 +174,13 @@ class App:
     def update(self):
         if pyxel.btnp(pyxel.KEY_Q):
             pyxel.quit()
+
         self.scene.update()
 
     def draw(self):
-        self.scene.draw(0, 0, pyxel.width, pyxel.height, self.scene.camera, clear_color=1)
+        self.scene.draw(
+            0, 0, pyxel.width, pyxel.height, self.scene.camera, clear_color=1
+        )
 
 
 App()

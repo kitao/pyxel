@@ -35,6 +35,7 @@ class Label(Node):
 class Scene(Node):
     def __init__(self):
         super().__init__()
+
         self.shading = Shading(pyxel.colors)
         self.shading.direction = Vec3(0.5, -1.5, -1.0).normalize()
 
