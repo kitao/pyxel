@@ -97,6 +97,14 @@ pub fn clear_draw_context() {
     CURRENT_DRAW_CONTEXT.with(|c| c.set(None));
 }
 
+// Move the active draw context out of the thread-local, returning it to
+// the caller. After this call, with_draw_context returns None until
+// set_draw_context is called again. Used by Node::draw to recover the
+// depth buffer after traverse_draw completes.
+pub fn take_draw_context() -> Option<DrawContext> {
+    CURRENT_DRAW_CONTEXT.with(|c| c.take())
+}
+
 // Reset the per-on_draw state modifiers on the active draw context to
 // their defaults. Called by the binding's traverse_draw before invoking
 // each Node.on_draw so state never leaks across siblings or children.

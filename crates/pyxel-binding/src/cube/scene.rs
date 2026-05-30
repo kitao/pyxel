@@ -266,7 +266,7 @@ impl Scene {
 // Pre-order tree traversal that respects `active` cascade and dispatches
 // each node's `on_update`. Subtrees rooted at an inactive node are
 // skipped entirely.
-fn traverse_update(node: &Bound<'_, PyAny>) -> PyResult<()> {
+pub(super) fn traverse_update(node: &Bound<'_, PyAny>) -> PyResult<()> {
     let active: bool = node.getattr("active")?.extract()?;
     if !active {
         return Ok(());
@@ -282,7 +282,7 @@ fn traverse_update(node: &Bound<'_, PyAny>) -> PyResult<()> {
 
 // Pre-order tree traversal that respects `visible` cascade and
 // dispatches each node's `on_draw` inside the active draw context.
-fn traverse_draw(node: &Bound<'_, PyAny>) -> PyResult<()> {
+pub(super) fn traverse_draw(node: &Bound<'_, PyAny>) -> PyResult<()> {
     let visible: bool = node.getattr("visible")?.extract()?;
     if !visible {
         return Ok(());
@@ -300,7 +300,7 @@ fn traverse_draw(node: &Bound<'_, PyAny>) -> PyResult<()> {
 // Resolve an inner RcNode to the matching Py<Node> wrapper by walking
 // the scene tree. The lookup is O(N) per call; spatial queries are not
 // expected to fire on the hot path.
-fn find_py_node_in_tree(
+pub(super) fn find_py_node_in_tree(
     root: &Bound<'_, PyAny>,
     target: &pyxel::cube::RcNode,
 ) -> PyResult<Option<Py<Node>>> {
@@ -320,7 +320,7 @@ fn find_py_node_in_tree(
     Ok(None)
 }
 
-fn wrap_raycast_hit(
+pub(super) fn wrap_raycast_hit(
     scene_any: &Bound<'_, PyAny>,
     info: pyxel::cube::scene::RaycastHitInfo,
 ) -> PyResult<RaycastHit> {
@@ -341,7 +341,7 @@ fn wrap_raycast_hit(
     })
 }
 
-fn wrap_node_results(
+pub(super) fn wrap_node_results(
     scene_any: &Bound<'_, PyAny>,
     inner: &[pyxel::cube::RcNode],
 ) -> PyResult<Vec<Py<Node>>> {
