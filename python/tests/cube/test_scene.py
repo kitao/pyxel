@@ -201,3 +201,46 @@ class TestOverlapQueries:
         # Opt-in includes the trigger.
         nodes_with_triggers = scene.overlap_sphere(Vec3.ZERO, 1.0, hit_triggers=True)
         assert trigger in nodes_with_triggers
+
+
+class TestStateSetterIsolation:
+    """State set in one Node.on_draw must not leak to siblings or children.
+
+    Pixel-level verification of the isolation contract is by manual
+    visual inspection. The smoke tests below confirm the dispatch
+    wiring does not raise when state is mutated in mid-on_draw and
+    again in sibling/child on_draw bodies.
+    """
+
+    def test_sibling_isolation_runs_without_error(self):
+        class A(Node):
+            def on_draw(self):
+                self.dither(0.5)
+                self.depth_test(False)
+                self.box(Mat4.IDENTITY, Vec3(1, 1, 1), 7)
+
+        class B(Node):
+            def on_draw(self):
+                self.shaded(False)
+                self.box(Mat4.IDENTITY, Vec3(1, 1, 1), 8)
+
+        s = Scene()
+        s.add_child(A())
+        s.add_child(B())
+        s.draw(0, 0, 64, 64)
+
+    def test_child_isolation_runs_without_error(self):
+        class Parent(Node):
+            def on_draw(self):
+                self.depth_write(False)
+                self.box(Mat4.IDENTITY, Vec3(1, 1, 1), 7)
+
+        class Child(Node):
+            def on_draw(self):
+                self.box(Mat4.IDENTITY, Vec3(1, 1, 1), 8)
+
+        s = Scene()
+        parent = Parent()
+        parent.add_child(Child())
+        s.add_child(parent)
+        s.draw(0, 0, 64, 64)
