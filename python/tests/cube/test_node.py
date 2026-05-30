@@ -101,13 +101,18 @@ class TestColliderPlaceholder:
         assert c.normal == Vec3(0, 1, 0)
 
 
-class TestClassConstants:
-    def test_billboard_modes_distinct(self):
-        # Follows Godot BillboardMode with shortened names: OFF=DISABLED,
-        # ON=ENABLED, FIXED_Y matches Godot's FIXED_Y (cube-design.md § 12.1).
-        assert Node.BILLBOARD_OFF == 0
-        assert Node.BILLBOARD_ON == 1
-        assert Node.BILLBOARD_FIXED_Y == 2
+class TestClassConstantsRemoved:
+    """Node.BILLBOARD_* class constants were removed along with the
+    billboard kwarg (use Mat4 to face the camera when needed)."""
+
+    def test_billboard_off_attribute_removed(self):
+        assert not hasattr(Node, "BILLBOARD_OFF")
+
+    def test_billboard_on_attribute_removed(self):
+        assert not hasattr(Node, "BILLBOARD_ON")
+
+    def test_billboard_fixed_y_attribute_removed(self):
+        assert not hasattr(Node, "BILLBOARD_FIXED_Y")
 
 
 class TestHierarchy:
