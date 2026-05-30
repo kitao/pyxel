@@ -610,19 +610,43 @@ impl Node {
         });
     }
 
-    #[pyo3(signature = (mat, size, col, *, billboard=pyxel::cube::draw::BILLBOARD_OFF))]
+    #[pyo3(signature = (mat, size, col_img=None, *, colkey=None, billboard=pyxel::cube::draw::BILLBOARD_OFF))]
+    #[allow(clippy::too_many_arguments)]
     fn r#box(
         &self,
         mat: PyRef<'_, Mat4>,
         size: PyRef<'_, Vec3>,
-        col: i32,
+        col_img: Option<&Bound<'_, PyAny>>,
+        colkey: Option<i32>,
         billboard: i32,
-    ) {
+    ) -> PyResult<()> {
+        use pyo3::exceptions::PyTypeError;
         let world_mat = self.world_mat_compose(*mat.inner_ref());
         let size_v = *size.inner_ref();
+        let (col_flat, col_image) = match col_img {
+            Some(c) => {
+                if let Ok(i) = c.extract::<i32>() {
+                    (i, None)
+                } else if let Ok(img_ref) = c.cast::<crate::image_wrapper::Image>() {
+                    (0, Some(img_ref.borrow().inner.clone()))
+                } else {
+                    return Err(PyTypeError::new_err("col_img must be int or Image"));
+                }
+            }
+            None => (7, None),
+        };
         self.with_state_from_ctx(billboard, |ctx, state| {
-            pyxel::cube::draw::box_solid(ctx, &world_mat, &size_v, col, state);
+            pyxel::cube::draw::box_solid(
+                ctx,
+                &world_mat,
+                &size_v,
+                col_flat,
+                col_image.as_ref(),
+                colkey,
+                state,
+            );
         });
+        Ok(())
     }
 
     #[pyo3(signature = (mat, size, col, *, billboard=pyxel::cube::draw::BILLBOARD_OFF))]
