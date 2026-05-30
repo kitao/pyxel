@@ -292,6 +292,7 @@ impl Node {
         pyo3::types::PyTuple::new(py, items)
     }
 
+    #[getter]
     fn world_transform(&self) -> Mat4 {
         Mat4::wrap(InnerNode::world_transform(&self.inner))
     }
