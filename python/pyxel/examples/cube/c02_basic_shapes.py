@@ -2,11 +2,10 @@ import pyxel
 from pyxel.cube import Camera, Mat4, Node, Shading, Vec3
 
 # A specimen-book style display of cube draw primitives, arranged in a
-# 3x3 grid with the center cell empty. Each specimen spins around its
-# local Y axis. Holding SPACE overlays the wireframe variant on the six
-# pair primitives (tri/trib, rect/rectb, elli/ellib, circ/circb,
-# box/boxb, sphere/sphereb). The mouse drag orbits the camera around
-# the grid center.
+# 3x3 grid. Each specimen spins around its local Y axis. Holding SPACE
+# overlays the wireframe variant on the six pair primitives (tri/trib,
+# rect/rectb, elli/ellib, circ/circb, box/boxb, sphere/sphereb). The
+# mouse cursor movement orbits the scene camera around the grid center.
 
 GRID_SPACING = 1.5
 SPEC_SCALE = 0.7
@@ -16,6 +15,7 @@ CAM_DIST = 6.0
 CAM_YAW_LIMIT = 45.0
 CAM_PITCH_LIMIT = 30.0
 MOUSE_SENS = 0.5
+SPRITE_UVS = ((0.0, 0.0), (1.0, 0.0), (1.0, 1.0), (0.0, 1.0))
 
 
 class Spinner(Node):
@@ -83,6 +83,11 @@ class SphereSpinner(Spinner):
             self.sphereb(Vec3.ZERO, r, 7)
 
 
+class SpriteSpinner(Spinner):
+    def on_draw(self):
+        self.sprite(Vec3.ZERO, pyxel.images[0], SPRITE_UVS, SPEC_SCALE, SPEC_SCALE)
+
+
 class Cell(Node):
     def __init__(self, pos: Vec3, label: str, spinner: Spinner):
         super().__init__()
@@ -95,11 +100,12 @@ class Cell(Node):
 
 
 CELL_SPECS = [
-    # (grid_x, grid_y, label, spinner class) — center (0, 0) is empty.
+    # (grid_x, grid_y, label, spinner class)
     (-1, +1, "pset", PsetSpinner),
     (0, +1, "line", LineSpinner),
     (+1, +1, "tri", TriSpinner),
     (-1, 0, "rect", RectSpinner),
+    (0, 0, "sprite", SpriteSpinner),
     (+1, 0, "elli", ElliSpinner),
     (-1, -1, "circ", CircSpinner),
     (0, -1, "box", BoxSpinner),
@@ -107,27 +113,47 @@ CELL_SPECS = [
 ]
 
 
+class Scene(Node):
+    def __init__(self):
+        super().__init__()
+        self.camera = Camera()
+        self.shading = Shading(pyxel.colors)
+        self.shading.direction = Vec3(0.5, -1.5, -1.0).normalize()
+        self._yaw = 0.0
+        self._pitch = 0.0
+        self._mouse_prev_x = pyxel.mouse_x
+        self._mouse_prev_y = pyxel.mouse_y
+        self._refresh_camera()
+
+    def _refresh_camera(self):
+        eye = Vec3(
+            CAM_DIST * pyxel.sin(self._yaw) * pyxel.cos(self._pitch),
+            CAM_DIST * pyxel.sin(self._pitch),
+            CAM_DIST * pyxel.cos(self._yaw) * pyxel.cos(self._pitch),
+        )
+        self.camera.transform = Mat4.look_at(eye, Vec3.ZERO)
+
+    def on_update(self):
+        dx = pyxel.mouse_x - self._mouse_prev_x
+        dy = pyxel.mouse_y - self._mouse_prev_y
+        self._yaw = max(-CAM_YAW_LIMIT, min(CAM_YAW_LIMIT, self._yaw - dx * MOUSE_SENS))
+        self._pitch = max(
+            -CAM_PITCH_LIMIT, min(CAM_PITCH_LIMIT, self._pitch + dy * MOUSE_SENS)
+        )
+        self._refresh_camera()
+        self._mouse_prev_x = pyxel.mouse_x
+        self._mouse_prev_y = pyxel.mouse_y
+
+
 class App:
     def __init__(self):
         pyxel.init(192, 192, title="Cube Basic Shapes")
-        pyxel.mouse(True)
-
         self._populate_texture()
 
-        self.root = Node()
-        self.root.shading = Shading(pyxel.colors)
-        self.root.shading.direction = Vec3(0.5, -1.5, -1.0).normalize()
-
+        self.scene = Scene()
         for gx, gy, label, spinner_cls in CELL_SPECS:
             pos = Vec3(gx * GRID_SPACING, gy * GRID_SPACING, 0)
-            self.root.add_child(Cell(pos, label, spinner_cls()))
-
-        self.camera = Camera()
-        self.cam_yaw = 0.0
-        self.cam_pitch = 0.0
-        self.mouse_prev_x = pyxel.mouse_x
-        self.mouse_prev_y = pyxel.mouse_y
-        self._update_camera_transform()
+            self.scene.add_child(Cell(pos, label, spinner_cls()))
 
         pyxel.run(self.update, self.draw)
 
@@ -141,35 +167,13 @@ class App:
         img.rect(0, half_h, half_w, half_h, 14)
         img.rect(half_w, half_h, half_w, half_h, 7)
 
-    def _update_camera_transform(self):
-        eye = Vec3(
-            CAM_DIST * pyxel.sin(self.cam_yaw) * pyxel.cos(self.cam_pitch),
-            CAM_DIST * pyxel.sin(self.cam_pitch),
-            CAM_DIST * pyxel.cos(self.cam_yaw) * pyxel.cos(self.cam_pitch),
-        )
-        self.camera.transform = Mat4.look_at(eye, Vec3.ZERO)
-
     def update(self):
         if pyxel.btnp(pyxel.KEY_Q):
             pyxel.quit()
-
-        dx = pyxel.mouse_x - self.mouse_prev_x
-        dy = pyxel.mouse_y - self.mouse_prev_y
-        self.cam_yaw = max(
-            -CAM_YAW_LIMIT, min(CAM_YAW_LIMIT, self.cam_yaw - dx * MOUSE_SENS)
-        )
-        self.cam_pitch = max(
-            -CAM_PITCH_LIMIT,
-            min(CAM_PITCH_LIMIT, self.cam_pitch - dy * MOUSE_SENS),
-        )
-        self._update_camera_transform()
-        self.mouse_prev_x = pyxel.mouse_x
-        self.mouse_prev_y = pyxel.mouse_y
-
-        self.root.update()
+        self.scene.update()
 
     def draw(self):
-        self.root.draw(0, 0, pyxel.width, pyxel.height, self.camera, clear_color=1)
+        self.scene.draw(0, 0, pyxel.width, pyxel.height, self.scene.camera, clear_color=1)
 
 
 App()
