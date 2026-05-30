@@ -3,7 +3,10 @@ use std::cell::RefCell;
 use pyo3::prelude::*;
 use pyo3::types::{PyDict, PyTuple};
 use pyxel::cube::draw::DrawState;
-use pyxel::cube::scene::with_draw_context;
+use pyxel::cube::raster::{compute_clip_rect, matmul, projection_matrix, view_matrix};
+use pyxel::cube::scene::{
+    set_draw_context, take_draw_context, with_draw_context, DrawContext,
+};
 use pyxel::cube::Node as InnerNode;
 
 use super::collider::Collider;
@@ -239,28 +242,6 @@ impl Node {
     #[getter]
     fn parent(&self, py: Python<'_>) -> Option<Py<Node>> {
         self.parent.borrow().as_ref().map(|p| p.clone_ref(py))
-    }
-
-    #[getter]
-    fn scene(slf: PyRef<'_, Node>, py: Python<'_>) -> PyResult<Option<Py<super::scene::Scene>>> {
-        // Walk up via cached parent until a Scene wrapper is reached.
-        let mut current: Py<Node> = slf.into_pyobject(py)?.unbind();
-        loop {
-            let bound = current.bind(py).clone();
-            if let Ok(scene_bound) = bound.cast::<super::scene::Scene>() {
-                return Ok(Some(scene_bound.clone().unbind()));
-            }
-            let parent_opt = bound
-                .borrow()
-                .parent
-                .borrow()
-                .as_ref()
-                .map(|p| p.clone_ref(py));
-            match parent_opt {
-                Some(p) => current = p,
-                None => return Ok(None),
-            }
-        }
     }
 
     #[getter]
@@ -735,6 +716,202 @@ impl Node {
             Some(Err(msg)) => Err(PyValueError::new_err(msg)),
             Some(Ok(())) | None => Ok(()),
         }
+    }
+
+    // Frame-level pipeline (motion integration -> on_update traversal
+    // -> collision -> on_destroy traversal + detachment) starting from
+    // this Node's subtree.
+    fn update(slf: PyRef<'_, Self>, py: Python<'_>) -> PyResult<()> {
+        let root_inner = slf.inner.clone();
+        let any = slf.into_pyobject(py)?.into_any();
+        super::scene::traverse_update(&any)?;
+        pyxel::cube::Scene::integrate_motion(&root_inner);
+        let pairs = pyxel::cube::Scene::detect_contacts(&root_inner);
+        for pair in pairs {
+            let py_a = super::scene::find_py_node_in_tree(&any, &pair.node_a)?;
+            let py_b = super::scene::find_py_node_in_tree(&any, &pair.node_b)?;
+            if let (Some(a), Some(b)) = (py_a, py_b) {
+                let contact_a = Contact::wrap(pair.contact_a);
+                let contact_b = Contact::wrap(pair.contact_b);
+                a.bind(py)
+                    .call_method1("on_collide", (b.clone_ref(py), contact_a))?;
+                b.bind(py).call_method1("on_collide", (a, contact_b))?;
+            }
+        }
+        let destroyed = pyxel::cube::Scene::collect_destroyed_post_order(&root_inner);
+        for inner in &destroyed {
+            if let Some(py_node) = super::scene::find_py_node_in_tree(&any, inner)? {
+                py_node.bind(py).call_method0("on_destroy")?;
+            }
+        }
+        for inner in &destroyed {
+            if let Some(py_node) = super::scene::find_py_node_in_tree(&any, inner)? {
+                py_node.bind(py).borrow().detach_from_parent_py(py);
+            }
+            pyxel::cube::Scene::detach_destroyed(inner);
+        }
+        Ok(())
+    }
+
+    #[pyo3(signature = (x, y, w, h, camera, clear_color=None, target=None))]
+    #[allow(clippy::too_many_arguments)]
+    fn draw(
+        self_: Bound<'_, Self>,
+        x: i32,
+        y: i32,
+        w: i32,
+        h: i32,
+        camera: PyRef<'_, super::camera::Camera>,
+        clear_color: Option<i32>,
+        target: Option<PyRef<'_, crate::image_wrapper::Image>>,
+    ) -> PyResult<()> {
+        let target_rc = match target.as_ref() {
+            Some(t) => t.inner.clone(),
+            None => pyxel::screen().clone(),
+        };
+        let target_w = rc_ref!(&target_rc).width();
+        let target_h = rc_ref!(&target_rc).height();
+        if let Some(col) = clear_color {
+            rc_mut!(&target_rc).clear(col as u8);
+        }
+        let node_inner = self_.borrow().inner.clone();
+        // Resize cache if needed, then clear; move the buffer out for the
+        // duration of the traversal and put it back when ctx is taken.
+        rc_mut!(&node_inner).ensure_depth(target_w, target_h);
+        rc_mut!(&node_inner).clear_depth();
+        let depth = std::mem::take(&mut rc_mut!(&node_inner).depth);
+        let cam_inner = camera.inner.clone();
+        let view = view_matrix(rc_ref!(&cam_inner));
+        let proj = projection_matrix(rc_ref!(&cam_inner), w as f32, h as f32);
+        let vp = matmul(&proj, &view);
+        let clip = compute_clip_rect(x as f32, y as f32, w as f32, h as f32, target_w, target_h);
+        set_draw_context(DrawContext {
+            target: target_rc,
+            vp,
+            vp_x: x as f32,
+            vp_y: y as f32,
+            vp_w: w as f32,
+            vp_h: h as f32,
+            clip,
+            camera: cam_inner,
+            depth,
+            depth_w: target_w,
+            depth_h: target_h,
+            dither_alpha: 1.0,
+            depth_test: true,
+            depth_write: true,
+            shaded: true,
+        });
+        let any = self_.into_any();
+        let result = super::scene::traverse_draw(&any);
+        if let Some(ctx) = take_draw_context() {
+            rc_mut!(&node_inner).depth = ctx.depth;
+        }
+        result
+    }
+
+    #[pyo3(signature = (origin, direction, max_distance=None, hit_triggers=false, tags=None))]
+    fn raycast(
+        slf: PyRef<'_, Self>,
+        py: Python<'_>,
+        origin: PyRef<'_, Vec3>,
+        direction: PyRef<'_, Vec3>,
+        max_distance: Option<f32>,
+        hit_triggers: bool,
+        tags: Option<Vec<String>>,
+    ) -> PyResult<Option<super::raycast_hit::RaycastHit>> {
+        let root_inner = slf.inner.clone();
+        let root_any = slf.into_pyobject(py)?.into_any();
+        let origin_v = *origin.inner_ref();
+        let direction_v = *direction.inner_ref();
+        let max_dist = max_distance.unwrap_or(f32::INFINITY);
+        let hit = pyxel::cube::Scene::raycast(
+            &root_inner,
+            origin_v,
+            direction_v,
+            max_dist,
+            hit_triggers,
+            tags.as_deref(),
+        );
+        match hit {
+            Some(info) => Ok(Some(super::scene::wrap_raycast_hit(&root_any, info)?)),
+            None => Ok(None),
+        }
+    }
+
+    #[pyo3(signature = (origin, direction, max_distance=None, hit_triggers=false, tags=None))]
+    fn raycast_all(
+        slf: PyRef<'_, Self>,
+        py: Python<'_>,
+        origin: PyRef<'_, Vec3>,
+        direction: PyRef<'_, Vec3>,
+        max_distance: Option<f32>,
+        hit_triggers: bool,
+        tags: Option<Vec<String>>,
+    ) -> PyResult<Vec<super::raycast_hit::RaycastHit>> {
+        let root_inner = slf.inner.clone();
+        let root_any = slf.into_pyobject(py)?.into_any();
+        let origin_v = *origin.inner_ref();
+        let direction_v = *direction.inner_ref();
+        let max_dist = max_distance.unwrap_or(f32::INFINITY);
+        let infos = pyxel::cube::Scene::raycast_all(
+            &root_inner,
+            origin_v,
+            direction_v,
+            max_dist,
+            hit_triggers,
+            tags.as_deref(),
+        );
+        let mut out: Vec<super::raycast_hit::RaycastHit> = Vec::with_capacity(infos.len());
+        for info in infos {
+            out.push(super::scene::wrap_raycast_hit(&root_any, info)?);
+        }
+        Ok(out)
+    }
+
+    #[pyo3(signature = (center, radius, hit_triggers=false, tags=None))]
+    fn overlap_sphere(
+        slf: PyRef<'_, Self>,
+        py: Python<'_>,
+        center: PyRef<'_, Vec3>,
+        radius: f32,
+        hit_triggers: bool,
+        tags: Option<Vec<String>>,
+    ) -> PyResult<Vec<Py<Node>>> {
+        let root_inner = slf.inner.clone();
+        let root_any = slf.into_pyobject(py)?.into_any();
+        let center_v = *center.inner_ref();
+        let inner_results = pyxel::cube::Scene::overlap_sphere(
+            &root_inner,
+            center_v,
+            radius,
+            hit_triggers,
+            tags.as_deref(),
+        );
+        super::scene::wrap_node_results(&root_any, &inner_results)
+    }
+
+    #[pyo3(signature = (transform, size, hit_triggers=false, tags=None))]
+    fn overlap_box(
+        slf: PyRef<'_, Self>,
+        py: Python<'_>,
+        transform: PyRef<'_, Mat4>,
+        size: PyRef<'_, Vec3>,
+        hit_triggers: bool,
+        tags: Option<Vec<String>>,
+    ) -> PyResult<Vec<Py<Node>>> {
+        let root_inner = slf.inner.clone();
+        let root_any = slf.into_pyobject(py)?.into_any();
+        let transform_m = *transform.inner_ref();
+        let size_v = *size.inner_ref();
+        let inner_results = pyxel::cube::Scene::overlap_box(
+            &root_inner,
+            &transform_m,
+            size_v,
+            hit_triggers,
+            tags.as_deref(),
+        );
+        super::scene::wrap_node_results(&root_any, &inner_results)
     }
 
     fn __traverse__(&self, visit: pyo3::PyVisit<'_>) -> Result<(), pyo3::PyTraverseError> {
