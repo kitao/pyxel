@@ -777,14 +777,13 @@ impl Node {
         Ok(())
     }
 
-    #[pyo3(signature = (x, y, w, h, clear_color=None, target=None))]
+    #[pyo3(signature = (x, y, w, h, target=None))]
     fn draw(
         self_: Bound<'_, Self>,
         x: i32,
         y: i32,
         w: i32,
         h: i32,
-        clear_color: Option<i32>,
         target: Option<PyRef<'_, crate::image_wrapper::Image>>,
     ) -> PyResult<()> {
         let node_inner = self_.borrow().inner.clone();
@@ -797,7 +796,7 @@ impl Node {
         };
         let target_w = rc_ref!(&target_rc).width();
         let target_h = rc_ref!(&target_rc).height();
-        if let Some(col) = clear_color {
+        if let Some(col) = rc_ref!(&cam_inner).clear_color {
             rc_mut!(&target_rc).clear(col as u8);
         }
         // Resize cache if needed, then clear; move the buffer out for the
