@@ -1,79 +1,51 @@
 import pyxel
 import pytest
 
-from pyxel.cube import Collider, Mat4, Node, Scene, Shading, Vec3
+from pyxel.cube import Camera, Collider, Mat4, Node, Shading, Vec3
+
+# Frame-level pipeline (update + draw) and spatial queries are tested
+# here against the universal Node API. Camera is a separately held
+# instance; clear_color is passed as a draw() argument.
 
 
 def palette() -> list[int]:
     return [pyxel.colors[i] for i in range(16)]
 
 
-class TestDefault:
-    def test_construction(self):
-        s = Scene()
-        assert s.shading is None
-        assert s.clear_color is None
-        assert "Scene(" in repr(s)
-
-    def test_is_node_subclass(self):
-        # Scene inherits Node so the entire Node API (transform, hierarchy,
-        # immediate-mode draw commands, lifecycle hooks) is available.
-        assert isinstance(Scene(), Node)
-
-
-class TestAttributes:
-    def test_set_shading(self):
-        s = Scene()
-        new_shading = Shading(palette())
-        s.shading = new_shading
-        # Shading.__getitem__ returns (primary, secondary).
-        assert s.shading[0, 2] == new_shading[0, 2]
-
-    def test_clear_color_default_none(self):
-        assert Scene().clear_color is None
-
-    def test_clear_color_round_trips(self):
-        s = Scene()
-        s.clear_color = 5
-        assert s.clear_color == 5
-        s.clear_color = None
-        assert s.clear_color is None
-
-
 class TestUpdate:
     def test_update_no_children(self):
-        # Empty scene update must not crash.
-        Scene().update()
+        # Empty subtree update must not crash.
+        Node().update()
 
 
 # Immediate-mode draw commands are no-op outside an active DrawContext
-# (i.e., when called outside Scene.draw). The tests confirm they do not
+# (i.e., when called outside Node.draw). The tests confirm they do not
 # crash when invoked from outside; functional rendering is exercised by
 # integration tests / sample programs.
 class TestImmediateDrawSafety:
     def test_pset(self):
-        Scene().pset(Vec3.ZERO, 7)
+        Node().pset(Vec3.ZERO, 7)
 
     def test_line(self):
-        Scene().line(Vec3.ZERO, Vec3(1, 0, 0), 7)
+        Node().line(Vec3.ZERO, Vec3(1, 0, 0), 7)
 
     def test_tri(self):
-        s = Scene()
-        s.tri(Vec3.ZERO, Vec3(1, 0, 0), Vec3(0, 1, 0), 7)
-        s.trib(Vec3.ZERO, Vec3(1, 0, 0), Vec3(0, 1, 0), 8)
+        n = Node()
+        n.tri(Vec3.ZERO, Vec3(1, 0, 0), Vec3(0, 1, 0), 7)
+        n.trib(Vec3.ZERO, Vec3(1, 0, 0), Vec3(0, 1, 0), 8)
 
     def test_circ(self):
-        s = Scene()
-        s.circ(Vec3.ZERO, 1.0, 7)
-        s.circb(Vec3.ZERO, 1.0, 8)
+        n = Node()
+        n.circ(Vec3.ZERO, 1.0, 7)
+        n.circb(Vec3.ZERO, 1.0, 8)
 
     def test_rect_family(self):
-        s = Scene()
+        n = Node()
         m = Mat4.IDENTITY
-        s.rect(m, 1.0, 1.0, 7)
-        s.rectb(m, 1.0, 1.0, 8)
-        s.elli(m, 1.0, 1.0, 9)
-        s.ellib(m, 1.0, 1.0, 10)
+        n.rect(m, 1.0, 1.0, 7)
+        n.rectb(m, 1.0, 1.0, 8)
+        n.elli(m, 1.0, 1.0, 9)
+        n.ellib(m, 1.0, 1.0, 10)
 
 
 # Collision pipeline smoke tests. The detailed geometric correctness
@@ -103,55 +75,55 @@ class _CollisionCounter(Node):
 class TestCollisionPipeline:
     def test_overlapping_spheres_fire_on_collide(self):
         # Two spheres at distance 0.5 with radius 0.5 each → overlap.
-        scene = Scene()
+        root = Node()
         a = _CollisionCounter(Vec3(0, 0, 0))
         b = _CollisionCounter(Vec3(0.5, 0, 0))
-        scene.add_child(a)
-        scene.add_child(b)
-        scene.update()
+        root.add_child(a)
+        root.add_child(b)
+        root.update()
         assert a.collide_count == 1
         assert b.collide_count == 1
 
     def test_separated_spheres_do_not_collide(self):
-        scene = Scene()
+        root = Node()
         a = _CollisionCounter(Vec3(0, 0, 0))
         b = _CollisionCounter(Vec3(5, 0, 0))
-        scene.add_child(a)
-        scene.add_child(b)
-        scene.update()
+        root.add_child(a)
+        root.add_child(b)
+        root.update()
         assert a.collide_count == 0
         assert b.collide_count == 0
 
 
 class TestRaycast:
     def test_raycast_hits_nearer_sphere(self):
-        scene = Scene()
+        root = Node()
         near = _ball(Vec3(0, 0, 0))
         far = _ball(Vec3(0, 0, -5))
-        scene.add_child(near)
-        scene.add_child(far)
-        hit = scene.raycast(Vec3(0, 0, 5), Vec3(0, 0, -1))
+        root.add_child(near)
+        root.add_child(far)
+        hit = root.raycast(Vec3(0, 0, 5), Vec3(0, 0, -1))
         assert hit is not None
         # The near sphere sits at z=0 with radius 0.5; the ray enters
         # its surface at z=0.5, so distance = 5 - 0.5 = 4.5.
         assert hit.distance == pytest.approx(4.5)
-        # RaycastHit.node preserves the scene tree's Py<Node> instance
+        # RaycastHit.node preserves the tree's Py<Node> instance
         # (binding mirrors the overlap_* identity path).
         assert hit.node is near
         del far  # silence unused-variable lint
 
     def test_raycast_returns_none_when_miss(self):
-        scene = Scene()
-        scene.add_child(_ball(Vec3(0, 0, 0)))
-        hit = scene.raycast(Vec3(10, 10, 10), Vec3(1, 0, 0))
+        root = Node()
+        root.add_child(_ball(Vec3(0, 0, 0)))
+        hit = root.raycast(Vec3(10, 10, 10), Vec3(1, 0, 0))
         assert hit is None
 
     def test_raycast_all_sorted_by_distance(self):
-        scene = Scene()
-        scene.add_child(_ball(Vec3(0, 0, -1)))
-        scene.add_child(_ball(Vec3(0, 0, -3)))
-        scene.add_child(_ball(Vec3(0, 0, -2)))
-        hits = scene.raycast_all(Vec3(0, 0, 5), Vec3(0, 0, -1))
+        root = Node()
+        root.add_child(_ball(Vec3(0, 0, -1)))
+        root.add_child(_ball(Vec3(0, 0, -3)))
+        root.add_child(_ball(Vec3(0, 0, -2)))
+        hits = root.raycast_all(Vec3(0, 0, 5), Vec3(0, 0, -1))
         assert len(hits) == 3
         for i in range(1, len(hits)):
             assert hits[i].distance >= hits[i - 1].distance
@@ -159,48 +131,57 @@ class TestRaycast:
 
 class TestOverlapQueries:
     def test_overlap_sphere_finds_overlapping_node(self):
-        scene = Scene()
+        root = Node()
         inside = _ball(Vec3(0, 0, 0))
         outside = _ball(Vec3(10, 0, 0))
-        scene.add_child(inside)
-        scene.add_child(outside)
-        nodes = scene.overlap_sphere(Vec3.ZERO, 1.0)
+        root.add_child(inside)
+        root.add_child(outside)
+        nodes = root.overlap_sphere(Vec3.ZERO, 1.0)
         assert inside in nodes
         assert outside not in nodes
 
     def test_overlap_box_finds_overlapping_node(self):
-        scene = Scene()
+        root = Node()
         inside = _ball(Vec3(0, 0, 0))
         outside = _ball(Vec3(10, 0, 0))
-        scene.add_child(inside)
-        scene.add_child(outside)
-        nodes = scene.overlap_box(Mat4.IDENTITY, Vec3(2, 2, 2))
+        root.add_child(inside)
+        root.add_child(outside)
+        nodes = root.overlap_box(Mat4.IDENTITY, Vec3(2, 2, 2))
         assert inside in nodes
         assert outside not in nodes
 
     def test_overlap_sphere_filters_by_tag(self):
-        scene = Scene()
+        root = Node()
         enemy = _ball(Vec3(0, 0, 0))
         enemy.tags = ["enemy"]
         friend = _ball(Vec3(0.5, 0, 0))
         friend.tags = ["friend"]
-        scene.add_child(enemy)
-        scene.add_child(friend)
-        nodes = scene.overlap_sphere(Vec3.ZERO, 1.0, tags=["enemy"])
+        root.add_child(enemy)
+        root.add_child(friend)
+        nodes = root.overlap_sphere(Vec3.ZERO, 1.0, tags=["enemy"])
         assert enemy in nodes
         assert friend not in nodes
 
     def test_trigger_skipped_by_default(self):
-        scene = Scene()
+        root = Node()
         trigger = _ball(Vec3(0, 0, 0))
         trigger.collider = Collider(radius=0.5, trigger=True)
-        scene.add_child(trigger)
+        root.add_child(trigger)
         # hit_triggers default is False.
-        nodes = scene.overlap_sphere(Vec3.ZERO, 1.0)
+        nodes = root.overlap_sphere(Vec3.ZERO, 1.0)
         assert trigger not in nodes
         # Opt-in includes the trigger.
-        nodes_with_triggers = scene.overlap_sphere(Vec3.ZERO, 1.0, hit_triggers=True)
+        nodes_with_triggers = root.overlap_sphere(Vec3.ZERO, 1.0, hit_triggers=True)
         assert trigger in nodes_with_triggers
+
+
+class TestShading:
+    def test_set_shading(self):
+        n = Node()
+        new_shading = Shading(palette())
+        n.shading = new_shading
+        # Shading.__getitem__ returns (primary, secondary).
+        assert n.shading[0, 2] == new_shading[0, 2]
 
 
 class TestStateSetterIsolation:
@@ -224,10 +205,11 @@ class TestStateSetterIsolation:
                 self.shaded(False)
                 self.box(Mat4.IDENTITY, Vec3(1, 1, 1), 8)
 
-        s = Scene()
-        s.add_child(A())
-        s.add_child(B())
-        s.draw(0, 0, 64, 64)
+        root = Node()
+        cam = Camera()
+        root.add_child(A())
+        root.add_child(B())
+        root.draw(0, 0, 64, 64, cam)
 
     def test_child_isolation_runs_without_error(self):
         class Parent(Node):
@@ -239,8 +221,9 @@ class TestStateSetterIsolation:
             def on_draw(self):
                 self.box(Mat4.IDENTITY, Vec3(1, 1, 1), 8)
 
-        s = Scene()
+        root = Node()
+        cam = Camera()
         parent = Parent()
         parent.add_child(Child())
-        s.add_child(parent)
-        s.draw(0, 0, 64, 64)
+        root.add_child(parent)
+        root.draw(0, 0, 64, 64, cam)
