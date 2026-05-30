@@ -298,69 +298,15 @@ class Node:
     def depth_write(self, on: bool) -> None: ...
     def shaded(self, on: bool) -> None: ...
 
-    # Immediate-mode draw commands (node-local coordinates; modifier kwargs per command rules).
-    def pset(
-        self,
-        pos: Vec3,
-        col: int,
-        *,
-        dither_alpha: float = 1.0,
-        depth_test: bool = True,
-        depth_write: bool = True,
-    ) -> None: ...
-    def line(
-        self,
-        p1: Vec3,
-        p2: Vec3,
-        col: int,
-        *,
-        dither_alpha: float = 1.0,
-        depth_test: bool = True,
-        depth_write: bool = True,
-    ) -> None: ...
-    def tri(
-        self,
-        p1: Vec3,
-        p2: Vec3,
-        p3: Vec3,
-        col: int,
-        *,
-        shaded: bool = True,
-        dither_alpha: float = 1.0,
-        depth_test: bool = True,
-        depth_write: bool = True,
-    ) -> None: ...
-    def trib(
-        self,
-        p1: Vec3,
-        p2: Vec3,
-        p3: Vec3,
-        col: int,
-        *,
-        dither_alpha: float = 1.0,
-        depth_test: bool = True,
-        depth_write: bool = True,
-    ) -> None: ...
-    def circ(
-        self,
-        pos: Vec3,
-        r: float,
-        col: int,
-        *,
-        dither_alpha: float = 1.0,
-        depth_test: bool = True,
-        depth_write: bool = True,
-    ) -> None: ...
-    def circb(
-        self,
-        pos: Vec3,
-        r: float,
-        col: int,
-        *,
-        dither_alpha: float = 1.0,
-        depth_test: bool = True,
-        depth_write: bool = True,
-    ) -> None: ...
+    # Immediate-mode draw commands (node-local coordinates). Per-draw
+    # modifiers (dither, depth_test, depth_write, shaded) are set via the
+    # Node state-setter methods above, not per-call kwargs.
+    def pset(self, pos: Vec3, col: int) -> None: ...
+    def line(self, p1: Vec3, p2: Vec3, col: int) -> None: ...
+    def tri(self, p1: Vec3, p2: Vec3, p3: Vec3, col: int) -> None: ...
+    def trib(self, p1: Vec3, p2: Vec3, p3: Vec3, col: int) -> None: ...
+    def circ(self, pos: Vec3, r: float, col: int) -> None: ...
+    def circb(self, pos: Vec3, r: float, col: int) -> None: ...
     def sphere(
         self,
         pos: Vec3,
@@ -368,67 +314,12 @@ class Node:
         col_img: int | Image = 7,
         *,
         colkey: int | None = None,
-        shaded: bool = True,
-        dither_alpha: float = 1.0,
-        depth_test: bool = True,
-        depth_write: bool = True,
     ) -> None: ...
-    def sphereb(
-        self,
-        pos: Vec3,
-        r: float,
-        col: int,
-        *,
-        dither_alpha: float = 1.0,
-        depth_test: bool = True,
-        depth_write: bool = True,
-    ) -> None: ...
-    def rect(
-        self,
-        mat: Mat4,
-        w: float,
-        h: float,
-        col: int,
-        *,
-        shaded: bool = True,
-        dither_alpha: float = 1.0,
-        depth_test: bool = True,
-        depth_write: bool = True,
-    ) -> None: ...
-    def rectb(
-        self,
-        mat: Mat4,
-        w: float,
-        h: float,
-        col: int,
-        *,
-        dither_alpha: float = 1.0,
-        depth_test: bool = True,
-        depth_write: bool = True,
-    ) -> None: ...
-    def elli(
-        self,
-        mat: Mat4,
-        w: float,
-        h: float,
-        col: int,
-        *,
-        shaded: bool = True,
-        dither_alpha: float = 1.0,
-        depth_test: bool = True,
-        depth_write: bool = True,
-    ) -> None: ...
-    def ellib(
-        self,
-        mat: Mat4,
-        w: float,
-        h: float,
-        col: int,
-        *,
-        dither_alpha: float = 1.0,
-        depth_test: bool = True,
-        depth_write: bool = True,
-    ) -> None: ...
+    def sphereb(self, pos: Vec3, r: float, col: int) -> None: ...
+    def rect(self, mat: Mat4, w: float, h: float, col: int) -> None: ...
+    def rectb(self, mat: Mat4, w: float, h: float, col: int) -> None: ...
+    def elli(self, mat: Mat4, w: float, h: float, col: int) -> None: ...
+    def ellib(self, mat: Mat4, w: float, h: float, col: int) -> None: ...
     def box(
         self,
         mat: Mat4,
@@ -436,21 +327,8 @@ class Node:
         col_img: int | Image = 7,
         *,
         colkey: int | None = None,
-        shaded: bool = True,
-        dither_alpha: float = 1.0,
-        depth_test: bool = True,
-        depth_write: bool = True,
     ) -> None: ...
-    def boxb(
-        self,
-        mat: Mat4,
-        size: Vec3,
-        col: int,
-        *,
-        dither_alpha: float = 1.0,
-        depth_test: bool = True,
-        depth_write: bool = True,
-    ) -> None: ...
+    def boxb(self, mat: Mat4, size: Vec3, col: int) -> None: ...
     def text(
         self,
         pos: Vec3,
@@ -458,9 +336,6 @@ class Node:
         col: int,
         *,
         font: Font | None = None,
-        dither_alpha: float = 1.0,
-        depth_test: bool = True,
-        depth_write: bool = True,
     ) -> None: ...
     def sprite(
         self,
@@ -477,10 +352,6 @@ class Node:
         *,
         colkey: int | None = None,
         angle: float = 0.0,
-        shaded: bool = False,
-        dither_alpha: float = 1.0,
-        depth_test: bool = True,
-        depth_write: bool = True,
     ) -> None: ...
     def plane(
         self,
@@ -496,21 +367,8 @@ class Node:
         h: float,
         *,
         colkey: int | None = None,
-        shaded: bool = True,
-        dither_alpha: float = 1.0,
-        depth_test: bool = True,
-        depth_write: bool = True,
     ) -> None: ...
-    def mesh(
-        self,
-        mat: Mat4,
-        mesh_asset: Mesh,
-        *,
-        shaded: bool = True,
-        dither_alpha: float = 1.0,
-        depth_test: bool = True,
-        depth_write: bool = True,
-    ) -> None: ...
+    def mesh(self, mat: Mat4, mesh_asset: Mesh) -> None: ...
     def prim(
         self,
         mat: Mat4,
@@ -518,10 +376,6 @@ class Node:
         *,
         col_img: int | Image = 7,
         colkey: int | None = None,
-        shaded: bool = True,
-        dither_alpha: float = 1.0,
-        depth_test: bool = True,
-        depth_write: bool = True,
     ) -> None: ...
 
     # Lifecycle hooks
