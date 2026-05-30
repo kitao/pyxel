@@ -348,6 +348,39 @@ class TestImmediateDrawSafety:
         Node().mesh(Mat4.IDENTITY, m, shaded=False)
 
 
+class TestStateSetters:
+    """Setter methods on Node that mutate the active DrawContext state.
+
+    Called outside on_draw, they are no-ops (no active draw context).
+    Inside on_draw, they affect subsequent draws within the same body
+    and reset at the entry of the next Node's on_draw.
+    """
+
+    def test_setters_callable_outside_draw_are_noop(self):
+        # Called with no active draw context — should not raise.
+        n = Node()
+        n.dither(0.5)
+        n.depth_test(False)
+        n.depth_write(False)
+        n.shaded(False)
+
+    def test_setters_inside_on_draw(self):
+        # Subclass that exercises the setters inside on_draw and draws.
+        class Probe(Node):
+            def on_draw(self):
+                self.dither(0.5)
+                self.depth_test(False)
+                self.depth_write(False)
+                self.shaded(False)
+                self.box(Mat4.IDENTITY, Vec3(1, 1, 1), 7)
+
+        s = Scene()
+        s.add_child(Probe())
+        # No window — Scene.draw composes the context and dispatches
+        # on_draw without rasterizing. We only assert no error is raised.
+        s.draw(0, 0, 64, 64)
+
+
 class TestSceneIntegrationOfNewMethods:
     """Smoke-test that Scene (Node-derived) exposes the new methods too."""
 
