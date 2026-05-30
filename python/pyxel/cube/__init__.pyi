@@ -257,11 +257,6 @@ class Contact:
 
 # Node class
 class Node:
-    # Billboard mode constants for the per-call `billboard` argument
-    BILLBOARD_OFF: int
-    BILLBOARD_ON: int
-    BILLBOARD_FIXED_Y: int
-
     name: str
     transform: Mat4
     active: bool  # parent-dominant; False halts update + collision

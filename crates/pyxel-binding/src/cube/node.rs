@@ -162,13 +162,6 @@ impl Node {
 
 #[pymethods]
 impl Node {
-    #[classattr]
-    const BILLBOARD_OFF: i32 = pyxel::cube::draw::BILLBOARD_OFF;
-    #[classattr]
-    const BILLBOARD_ON: i32 = pyxel::cube::draw::BILLBOARD_ON;
-    #[classattr]
-    const BILLBOARD_FIXED_Y: i32 = pyxel::cube::draw::BILLBOARD_FIXED_Y;
-
     #[new]
     #[pyo3(signature = (*_args, **_kwargs))]
     fn new(_args: &Bound<'_, PyTuple>, _kwargs: Option<&Bound<'_, PyDict>>) -> Self {
