@@ -24,6 +24,6 @@ pub use mesh::{ColImage, Mesh, RcMesh};
 pub use node::{Node, RcNode};
 pub use quat::{Quat, RcQuat};
 pub use raycast_hit::{RaycastHit, RcRaycastHit};
-pub use scene::{RcScene, Scene};
+pub use scene::Scene;
 pub use shading::{RcShading, Shading};
 pub use vec3::{RcVec3, Vec3};
