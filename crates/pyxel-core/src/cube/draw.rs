@@ -1016,30 +1016,174 @@ fn translate_local(world_mat: &Mat4, local: &Vec3) -> Mat4 {
 // sphere / sphereb: level-1 subdivided icosahedron (42 vertices / 80
 // triangles / 120 edges) centered at `local`, scaled by `r`. Folds the
 // radius into the world matrix as uniform scale.
+//
+// When `col_image` is Some, the textured path is used with equirectangular
+// (lat/long) UV mapping:
+//   u = atan2(z, x) / (2π) + 0.5   (longitude, seam at x<0 meridian)
+//   v = asin(y) / π + 0.5           (latitude, v=0 south pole, v=1 north pole)
+//
+// Vertices on the seam (u≈0 or u≈1) are duplicated in the textured path so
+// that triangles straddling the seam get the correct u=0/u=1 split. For the
+// flat-color path, no UV computation or vertex duplication is needed.
 pub fn sphere(
     ctx: &mut DrawContext,
     world_mat: &Mat4,
     local: &Vec3,
     r: f32,
-    col: i32,
+    col_flat: i32,
+    col_image: Option<&RcImage>,
+    colkey: Option<i32>,
     state: DrawState,
 ) {
     let translated = translate_local(world_mat, local);
     let scaled = scale_axes(&translated, r, r, r);
-    let _ = prim(
-        ctx,
-        &scaled,
-        PRIM_TRIANGLES,
-        CULL_NONE,
-        unit_icosa_lv1_positions(),
-        Some(unit_icosa_lv1_tri_indices()),
-        None,
-        None,
-        col,
-        None,
-        None,
-        state,
-    );
+
+    if col_image.is_some() {
+        // Textured path: compute per-vertex equirectangular UVs and handle
+        // the seam. Triangles whose vertices span the u=0/u=1 seam are
+        // rebuilt with duplicated vertices so the u coordinate is
+        // consistent on each side (u=0 on the left, u=1 on the right).
+
+        let base_positions = unit_icosa_lv1_positions();
+        let base_indices = unit_icosa_lv1_tri_indices();
+        let vertex_count = base_positions.len() / 3;
+
+        // Compute UV for every base vertex using:
+        //   u = atan2(z, x) / (2π) + 0.5  (lon in [-π, π] → [0, 1])
+        //   v = asin(y) / π + 0.5          (lat in [-π/2, π/2] → [0, 1])
+        let mut base_uvs = Vec::with_capacity(vertex_count * 2);
+        for i in 0..vertex_count {
+            let bx = base_positions[i * 3];
+            let by = base_positions[i * 3 + 1];
+            let bz = base_positions[i * 3 + 2];
+            let u = bz.atan2(bx) / (2.0 * std::f32::consts::PI) + 0.5;
+            let v = by.asin() / std::f32::consts::PI + 0.5;
+            base_uvs.push(u);
+            base_uvs.push(v);
+        }
+
+        // Build output buffers, expanding seam-straddling triangles by
+        // duplicating vertices with corrected u coordinates.
+        let face_count = base_indices.len() / 3;
+        let mut out_positions: Vec<f32> = Vec::with_capacity(base_positions.len());
+        let mut out_uvs: Vec<f32> = Vec::with_capacity(base_uvs.len());
+        let mut out_indices: Vec<i32> = Vec::with_capacity(base_indices.len());
+
+        // Map (base_vertex_index, seam_side) → output index.
+        // seam_side: 0 = normal, 1 = duplicated with u adjusted toward 1.
+        let mut vertex_map: Vec<[Option<i32>; 2]> = vec![[None; 2]; vertex_count];
+
+        let get_or_add = |out_positions: &mut Vec<f32>,
+                               out_uvs: &mut Vec<f32>,
+                               vertex_map: &mut Vec<[Option<i32>; 2]>,
+                               base_idx: usize,
+                               seam_side: usize|
+         -> i32 {
+            if let Some(existing) = vertex_map[base_idx][seam_side] {
+                return existing;
+            }
+            let new_idx = (out_positions.len() / 3) as i32;
+            let bx = base_positions[base_idx * 3];
+            let by = base_positions[base_idx * 3 + 1];
+            let bz = base_positions[base_idx * 3 + 2];
+            out_positions.push(bx);
+            out_positions.push(by);
+            out_positions.push(bz);
+            let mut u = base_uvs[base_idx * 2];
+            let v = base_uvs[base_idx * 2 + 1];
+            // seam_side=1 means the vertex should appear on the u=1 side.
+            if seam_side == 1 && u < 0.5 {
+                u += 1.0;
+            }
+            out_uvs.push(u);
+            out_uvs.push(v);
+            vertex_map[base_idx][seam_side] = Some(new_idx);
+            new_idx
+        };
+
+        for f in 0..face_count {
+            let i0 = base_indices[f * 3] as usize;
+            let i1 = base_indices[f * 3 + 1] as usize;
+            let i2 = base_indices[f * 3 + 2] as usize;
+            let u0 = base_uvs[i0 * 2];
+            let u1 = base_uvs[i1 * 2];
+            let u2 = base_uvs[i2 * 2];
+
+            // Check if this triangle straddles the seam. The seam runs
+            // along the atan2 discontinuity (u≈0 / u≈1 boundary at z>0,
+            // x<0). When the max-min u spread across the three vertices
+            // exceeds 0.5 the triangle must be split at the seam.
+            let u_min = u0.min(u1).min(u2);
+            let u_max = u0.max(u1).max(u2);
+            let straddles_seam = (u_max - u_min) > 0.5;
+
+            let (s0, s1, s2) = if straddles_seam {
+                // Vertices with low u (< 0.5) are on the left side of the
+                // seam; assign them seam_side=1 so u is bumped to ~1.
+                let side = |u: f32| if u < 0.5 { 1usize } else { 0usize };
+                (side(u0), side(u1), side(u2))
+            } else {
+                (0, 0, 0)
+            };
+
+            let o0 = get_or_add(
+                &mut out_positions,
+                &mut out_uvs,
+                &mut vertex_map,
+                i0,
+                s0,
+            );
+            let o1 = get_or_add(
+                &mut out_positions,
+                &mut out_uvs,
+                &mut vertex_map,
+                i1,
+                s1,
+            );
+            let o2 = get_or_add(
+                &mut out_positions,
+                &mut out_uvs,
+                &mut vertex_map,
+                i2,
+                s2,
+            );
+            out_indices.push(o0);
+            out_indices.push(o1);
+            out_indices.push(o2);
+        }
+
+        let _ = prim(
+            ctx,
+            &scaled,
+            PRIM_TRIANGLES,
+            CULL_NONE,
+            &out_positions,
+            Some(&out_indices),
+            None,
+            Some(&out_uvs),
+            col_flat,
+            col_image,
+            colkey,
+            state,
+        );
+    } else {
+        // Flat-color path: keep the original shared-vertex layout with
+        // zero per-call allocation.
+        let _ = prim(
+            ctx,
+            &scaled,
+            PRIM_TRIANGLES,
+            CULL_NONE,
+            unit_icosa_lv1_positions(),
+            Some(unit_icosa_lv1_tri_indices()),
+            None,
+            None,
+            col_flat,
+            None,
+            None,
+            state,
+        );
+    }
 }
 
 pub fn sphereb(

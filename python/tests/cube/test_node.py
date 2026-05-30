@@ -417,6 +417,17 @@ class TestBoxSphereTexturing:
         img = pyxel.images[0]
         Node().box(Mat4.IDENTITY, Vec3(1, 1, 1), img, colkey=0)
 
+    def test_sphere_flat_col(self):
+        Node().sphere(Vec3.ZERO, 1.0, 11)
+
+    def test_sphere_textured(self):
+        img = pyxel.images[0]
+        Node().sphere(Vec3.ZERO, 1.0, img)
+
+    def test_sphere_textured_with_colkey(self):
+        img = pyxel.images[0]
+        Node().sphere(Vec3.ZERO, 1.0, img, colkey=0)
+
 
 class TestOnCollideSignature:
     """`on_collide` is invoked by Scene.update step 7 once per contact
