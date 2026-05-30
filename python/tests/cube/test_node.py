@@ -480,3 +480,32 @@ class TestBillboardKwargRemoved:
     def test_billboard_kwarg_rejected(self, call):
         with pytest.raises(TypeError):
             call(Node())
+
+
+class TestCameraCascade:
+    def test_camera_default_none(self):
+        n = Node()
+        assert n.camera is None
+        assert n.effective_camera is None
+
+    def test_set_and_get_camera(self):
+        n = Node()
+        c = Camera()
+        n.camera = c
+        assert n.camera is not None
+        assert n.effective_camera is not None
+
+    def test_effective_camera_inherits_from_ancestor(self):
+        root = Node()
+        leaf = Node()
+        root.add_child(leaf)
+        c = Camera()
+        root.camera = c
+        # leaf has no own camera; resolves to root's.
+        assert leaf.camera is None
+        assert leaf.effective_camera is not None
+
+    def test_draw_without_camera_raises(self):
+        n = Node()
+        with pytest.raises(ValueError):
+            n.draw(0, 0, 64, 64)
