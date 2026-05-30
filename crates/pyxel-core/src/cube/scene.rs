@@ -50,9 +50,11 @@ impl Scene {
     }
 }
 
-// Per-frame rasterizer context shared between Scene::draw and each Node's
-// draw commands. Built at the start of Scene::draw, looked up by Node
-// draw commands through `with_draw_context`, torn down on draw end.
+// Per-frame rasterizer context shared between Node::draw and each Node's
+// draw commands. Built at the start of Node::draw (depth buffer moved out
+// of the receiver Node's cache for the duration of the traversal), looked
+// up by Node draw commands through `with_draw_context`, torn down on draw
+// end (depth buffer moved back into the receiver Node).
 
 pub struct DrawContext {
     pub target: RcImage,
@@ -63,7 +65,12 @@ pub struct DrawContext {
     pub vp_h: f32,
     pub clip: ClipRect,
     pub camera: RcCamera,
-    pub scene: RcScene,
+    // Depth buffer (and its dimensions) owned by ctx for the duration of
+    // one draw. The receiver Node caches the allocation between frames;
+    // ctx takes it in at draw entry and returns it on exit.
+    pub depth: Vec<f32>,
+    pub depth_w: u32,
+    pub depth_h: u32,
     // Per-on_draw state modifiers, mutated via Node.dither / depth_test /
     // depth_write / shaded setters; reset to defaults before each Node's
     // on_draw via reset_draw_state(). Rasterizers consult ctx for these

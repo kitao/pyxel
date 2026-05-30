@@ -217,14 +217,16 @@ impl Scene {
         };
         let target_w = rc_ref!(&target_rc).width();
         let target_h = rc_ref!(&target_rc).height();
-        {
-            let scene_mut = rc_mut!(&scene_state);
-            scene_mut.ensure_depth(target_w, target_h);
-            if let Some(col) = scene_mut.clear_color {
-                rc_mut!(&target_rc).clear(col as u8);
-                scene_mut.clear_depth();
-            }
+        let clear_color = rc_ref!(&scene_state).clear_color;
+        if let Some(col) = clear_color {
+            rc_mut!(&target_rc).clear(col as u8);
         }
+        // Depth buffer is owned by the receiver Node's cache. For Scene
+        // backward-compatibility (Tasks 1-6 transitional state), allocate
+        // a fresh per-call buffer here; Task 6 routes this entry point
+        // through Node::draw so the cache is reused across frames.
+        let depth_size = (target_w * target_h) as usize;
+        let depth = vec![f32::INFINITY; depth_size];
         let cam_inner = self_.borrow().camera.borrow().inner.clone();
         let view = view_matrix(rc_ref!(&cam_inner));
         let proj = projection_matrix(rc_ref!(&cam_inner), w as f32, h as f32);
@@ -239,7 +241,9 @@ impl Scene {
             vp_h: h as f32,
             clip,
             camera: cam_inner,
-            scene: scene_state,
+            depth,
+            depth_w: target_w,
+            depth_h: target_h,
             // Per-on_draw modifiers; reset_draw_state() is invoked by
             // traverse_draw before each Node.on_draw so these defaults are
             // re-seeded per-node.
