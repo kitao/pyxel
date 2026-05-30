@@ -255,8 +255,19 @@ class Contact:
     def __init__(self) -> None: ...
     def __repr__(self) -> str: ...
 
+# RaycastHit class — payload returned by Node.raycast / raycast_all.
+class RaycastHit:
+    node: Node
+    point: Vec3
+    normal: Vec3
+    distance: float
+
+    def __init__(self) -> None: ...
+    def __repr__(self) -> str: ...
+
 # Node class
 class Node:
+    # Data attributes
     name: str
     transform: Mat4
     active: bool  # parent-dominant; False halts update + collision
@@ -265,6 +276,7 @@ class Node:
     collider: Collider | None
     tags: list[str]
 
+    # Properties
     @property
     def parent(self) -> Node | None: ...
     @property
@@ -277,8 +289,12 @@ class Node:
     def right(self) -> Vec3: ...
     @property
     def up(self) -> Vec3: ...
+
+    # Constructor
     def __init__(self) -> None: ...
     def __repr__(self) -> str: ...
+
+    # Hierarchy management
     def world_transform(self) -> Mat4: ...
     def find_by_name(self, name: str) -> list[Node]: ...
     def find_by_tags(self, tags: str | list[str]) -> list[Node]: ...
@@ -286,38 +302,35 @@ class Node:
     def remove_child(self, node: Node) -> None: ...
     def destroy(self) -> None: ...
 
-    # State setters for the per-on_draw draw modifiers. Called from inside
-    # on_draw, they mutate state that persists to subsequent draws within
-    # the same on_draw body. State resets at the entry of every Node's
-    # on_draw (no leak across siblings or to children). Outside a draw
-    # scope, these are no-ops.
+    # Lifecycle hooks
+    def on_update(self) -> None: ...
+    def on_draw(self) -> None: ...
+    def on_collide(self, other: Node, contact: Contact) -> None: ...
+    def on_destroy(self) -> None: ...
+
+    # Per-draw state setters; called from on_draw, reset at each Node's on_draw entry.
     def dither(self, alpha: float) -> None: ...
     def depth_test(self, on: bool) -> None: ...
     def depth_write(self, on: bool) -> None: ...
     def shaded(self, on: bool) -> None: ...
 
-    # Immediate-mode draw commands (node-local coordinates). Per-draw
-    # modifiers (dither, depth_test, depth_write, shaded) are set via the
-    # Node state-setter methods above, not per-call kwargs.
+    # Linework
     def pset(self, pos: Vec3, col: int) -> None: ...
     def line(self, p1: Vec3, p2: Vec3, col: int) -> None: ...
+
+    # 2D polygons
     def tri(self, p1: Vec3, p2: Vec3, p3: Vec3, col: int) -> None: ...
     def trib(self, p1: Vec3, p2: Vec3, p3: Vec3, col: int) -> None: ...
-    def circ(self, pos: Vec3, r: float, col: int) -> None: ...
-    def circb(self, pos: Vec3, r: float, col: int) -> None: ...
-    def sphere(
-        self,
-        pos: Vec3,
-        r: float,
-        col_img: int | Image = 7,
-        *,
-        colkey: int | None = None,
-    ) -> None: ...
-    def sphereb(self, pos: Vec3, r: float, col: int) -> None: ...
     def rect(self, mat: Mat4, w: float, h: float, col: int) -> None: ...
     def rectb(self, mat: Mat4, w: float, h: float, col: int) -> None: ...
+
+    # 2D curves
+    def circ(self, pos: Vec3, r: float, col: int) -> None: ...
+    def circb(self, pos: Vec3, r: float, col: int) -> None: ...
     def elli(self, mat: Mat4, w: float, h: float, col: int) -> None: ...
     def ellib(self, mat: Mat4, w: float, h: float, col: int) -> None: ...
+
+    # 3D solids
     def box(
         self,
         mat: Mat4,
@@ -327,13 +340,31 @@ class Node:
         colkey: int | None = None,
     ) -> None: ...
     def boxb(self, mat: Mat4, size: Vec3, col: int) -> None: ...
-    def text(
+    def sphere(
         self,
         pos: Vec3,
-        s: str,
-        col: int,
+        r: float,
+        col_img: int | Image = 7,
         *,
-        font: Font | None = None,
+        colkey: int | None = None,
+    ) -> None: ...
+    def sphereb(self, pos: Vec3, r: float, col: int) -> None: ...
+
+    # Textured quads
+    def plane(
+        self,
+        mat: Mat4,
+        img: Image,
+        uvs: tuple[
+            tuple[float, float],
+            tuple[float, float],
+            tuple[float, float],
+            tuple[float, float],
+        ],
+        w: float,
+        h: float,
+        *,
+        colkey: int | None = None,
     ) -> None: ...
     def sprite(
         self,
@@ -351,21 +382,8 @@ class Node:
         colkey: int | None = None,
         angle: float = 0.0,
     ) -> None: ...
-    def plane(
-        self,
-        mat: Mat4,
-        img: Image,
-        uvs: tuple[
-            tuple[float, float],
-            tuple[float, float],
-            tuple[float, float],
-            tuple[float, float],
-        ],
-        w: float,
-        h: float,
-        *,
-        colkey: int | None = None,
-    ) -> None: ...
+
+    # Asset-based
     def mesh(self, mat: Mat4, mesh_asset: Mesh) -> None: ...
     def prim(
         self,
@@ -376,13 +394,17 @@ class Node:
         colkey: int | None = None,
     ) -> None: ...
 
-    # Lifecycle hooks
-    def on_update(self) -> None: ...
-    def on_draw(self) -> None: ...
-    def on_collide(self, other: Node, contact: Contact) -> None: ...
-    def on_destroy(self) -> None: ...
+    # Text
+    def text(
+        self,
+        pos: Vec3,
+        s: str,
+        col: int,
+        *,
+        font: Font | None = None,
+    ) -> None: ...
 
-    # Frame-level pipeline.
+    # Frame-level pipeline
     def update(self) -> None: ...
     def draw(
         self,
@@ -395,7 +417,7 @@ class Node:
         target: Image | None = None,
     ) -> None: ...
 
-    # Spatial queries on this Node's subtree.
+    # Spatial queries on this Node's subtree
     def raycast(
         self,
         origin: Vec3,
@@ -426,13 +448,3 @@ class Node:
         hit_triggers: bool = False,
         tags: str | list[str] | None = None,
     ) -> list[Node]: ...
-
-# RaycastHit class — payload returned by Node.raycast / raycast_all.
-class RaycastHit:
-    node: Node
-    point: Vec3
-    normal: Vec3
-    distance: float
-
-    def __init__(self) -> None: ...
-    def __repr__(self) -> str: ...
