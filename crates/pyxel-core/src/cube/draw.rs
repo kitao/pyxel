@@ -715,14 +715,14 @@ const BOX_EDGE_INDICES: [i32; 24] = [
 // sharing conflicts. Face order mirrors BOX_TRI_INDICES: -Z, +Z, -Y, +Y,
 // -X, +X. Positions are identical to UNIT_BOX_POSITIONS but replicated.
 //
-// UV convention (sides upright in the local frame, top/bottom defined
-// so orientation is determinate):
-//   +X face: UV +U = local -Z,  UV +V = local +Y
-//   -X face: UV +U = local +Z,  UV +V = local +Y
-//   +Z face: UV +U = local +X,  UV +V = local +Y
-//   -Z face: UV +U = local -X,  UV +V = local +Y
-//   +Y face: UV +U = local +X,  UV +V = local -Z
-//   -Y face: UV +U = local +X,  UV +V = local +Z
+// UV convention (the sampler maps v=0 to image row 0 / the top, so +V
+// points toward local "down" on the side faces to keep them upright):
+//   +X face: UV +U = local -Z,  UV +V = local -Y
+//   -X face: UV +U = local +Z,  UV +V = local -Y
+//   +Z face: UV +U = local +X,  UV +V = local -Y
+//   -Z face: UV +U = local -X,  UV +V = local -Y
+//   +Y face: UV +U = local +X,  UV +V = local +Z
+//   -Y face: UV +U = local +X,  UV +V = local -Z
 #[rustfmt::skip]
 const BOX_UNROLLED_POSITIONS: [f32; 72] = [
     // -Z face (z=-0.5): vertices 0-3
@@ -743,42 +743,42 @@ const BOX_UNROLLED_POSITIONS: [f32; 72] = [
 // per-face convention: U and V each span [0, 1] across the face.
 #[rustfmt::skip]
 const BOX_UNROLLED_UVS: [f32; 48] = [
-    // -Z face: U = (-x+0.5), V = (y+0.5)
-    //   v0(-0.5,-0.5,-0.5): U=1.0 V=0.0
-    //   v1( 0.5,-0.5,-0.5): U=0.0 V=0.0
-    //   v2( 0.5, 0.5,-0.5): U=0.0 V=1.0
-    //   v3(-0.5, 0.5,-0.5): U=1.0 V=1.0
-    1.0, 0.0,  0.0, 0.0,  0.0, 1.0,  1.0, 1.0,
-    // +Z face: U = (x+0.5), V = (y+0.5)
-    //   v4(-0.5,-0.5, 0.5): U=0.0 V=0.0
-    //   v5( 0.5,-0.5, 0.5): U=1.0 V=0.0
-    //   v6( 0.5, 0.5, 0.5): U=1.0 V=1.0
-    //   v7(-0.5, 0.5, 0.5): U=0.0 V=1.0
-    0.0, 0.0,  1.0, 0.0,  1.0, 1.0,  0.0, 1.0,
-    // -Y face: U = (x+0.5), V = (z+0.5)
-    //   v8 (-0.5,-0.5,-0.5): U=0.0 V=0.0
-    //   v9 ( 0.5,-0.5,-0.5): U=1.0 V=0.0
-    //   v10(-0.5,-0.5, 0.5): U=0.0 V=1.0
-    //   v11( 0.5,-0.5, 0.5): U=1.0 V=1.0
-    0.0, 0.0,  1.0, 0.0,  0.0, 1.0,  1.0, 1.0,
-    // +Y face: U = (x+0.5), V = (-z+0.5)
-    //   v12(-0.5, 0.5,-0.5): U=0.0 V=1.0
-    //   v13( 0.5, 0.5,-0.5): U=1.0 V=1.0
-    //   v14(-0.5, 0.5, 0.5): U=0.0 V=0.0
-    //   v15( 0.5, 0.5, 0.5): U=1.0 V=0.0
+    // -Z face: U = (-x+0.5), V = (-y+0.5)
+    //   v0(-0.5,-0.5,-0.5): U=1.0 V=1.0
+    //   v1( 0.5,-0.5,-0.5): U=0.0 V=1.0
+    //   v2( 0.5, 0.5,-0.5): U=0.0 V=0.0
+    //   v3(-0.5, 0.5,-0.5): U=1.0 V=0.0
+    1.0, 1.0,  0.0, 1.0,  0.0, 0.0,  1.0, 0.0,
+    // +Z face: U = (x+0.5), V = (-y+0.5)
+    //   v4(-0.5,-0.5, 0.5): U=0.0 V=1.0
+    //   v5( 0.5,-0.5, 0.5): U=1.0 V=1.0
+    //   v6( 0.5, 0.5, 0.5): U=1.0 V=0.0
+    //   v7(-0.5, 0.5, 0.5): U=0.0 V=0.0
+    0.0, 1.0,  1.0, 1.0,  1.0, 0.0,  0.0, 0.0,
+    // -Y face: U = (x+0.5), V = (-z+0.5)
+    //   v8 (-0.5,-0.5,-0.5): U=0.0 V=1.0
+    //   v9 ( 0.5,-0.5,-0.5): U=1.0 V=1.0
+    //   v10(-0.5,-0.5, 0.5): U=0.0 V=0.0
+    //   v11( 0.5,-0.5, 0.5): U=1.0 V=0.0
     0.0, 1.0,  1.0, 1.0,  0.0, 0.0,  1.0, 0.0,
-    // -X face: U = (z+0.5), V = (y+0.5)
-    //   v16(-0.5,-0.5,-0.5): U=0.0 V=0.0
-    //   v17(-0.5, 0.5,-0.5): U=0.0 V=1.0
-    //   v18(-0.5,-0.5, 0.5): U=1.0 V=0.0
-    //   v19(-0.5, 0.5, 0.5): U=1.0 V=1.0
-    0.0, 0.0,  0.0, 1.0,  1.0, 0.0,  1.0, 1.0,
-    // +X face: U = (-z+0.5), V = (y+0.5)
-    //   v20( 0.5,-0.5,-0.5): U=1.0 V=0.0
-    //   v21( 0.5, 0.5,-0.5): U=1.0 V=1.0
-    //   v22( 0.5,-0.5, 0.5): U=0.0 V=0.0
-    //   v23( 0.5, 0.5, 0.5): U=0.0 V=1.0
-    1.0, 0.0,  1.0, 1.0,  0.0, 0.0,  0.0, 1.0,
+    // +Y face: U = (x+0.5), V = (z+0.5)
+    //   v12(-0.5, 0.5,-0.5): U=0.0 V=0.0
+    //   v13( 0.5, 0.5,-0.5): U=1.0 V=0.0
+    //   v14(-0.5, 0.5, 0.5): U=0.0 V=1.0
+    //   v15( 0.5, 0.5, 0.5): U=1.0 V=1.0
+    0.0, 0.0,  1.0, 0.0,  0.0, 1.0,  1.0, 1.0,
+    // -X face: U = (z+0.5), V = (-y+0.5)
+    //   v16(-0.5,-0.5,-0.5): U=0.0 V=1.0
+    //   v17(-0.5, 0.5,-0.5): U=0.0 V=0.0
+    //   v18(-0.5,-0.5, 0.5): U=1.0 V=1.0
+    //   v19(-0.5, 0.5, 0.5): U=1.0 V=0.0
+    0.0, 1.0,  0.0, 0.0,  1.0, 1.0,  1.0, 0.0,
+    // +X face: U = (-z+0.5), V = (-y+0.5)
+    //   v20( 0.5,-0.5,-0.5): U=1.0 V=1.0
+    //   v21( 0.5, 0.5,-0.5): U=1.0 V=0.0
+    //   v22( 0.5,-0.5, 0.5): U=0.0 V=1.0
+    //   v23( 0.5, 0.5, 0.5): U=0.0 V=0.0
+    1.0, 1.0,  1.0, 0.0,  0.0, 1.0,  0.0, 0.0,
 ];
 
 // Triangle indices for BOX_UNROLLED_POSITIONS. Winding order mirrors
@@ -1017,7 +1017,7 @@ fn translate_local(world_mat: &Mat4, local: &Vec3) -> Mat4 {
 // When `col_image` is Some, the textured path is used with equirectangular
 // (lat/long) UV mapping:
 //   u = atan2(z, x) / (2π) + 0.5   (longitude, seam at x<0 meridian)
-//   v = asin(y) / π + 0.5           (latitude, v=0 south pole, v=1 north pole)
+//   v = 0.5 - asin(y) / π           (latitude, v=0 north pole, v=1 south pole)
 //
 // Vertices on the seam (u≈0 or u≈1) are duplicated in the textured path so
 // that triangles straddling the seam get the correct u=0/u=1 split. For the
@@ -1047,14 +1047,16 @@ pub fn sphere(
 
         // Compute UV for every base vertex using:
         //   u = atan2(z, x) / (2π) + 0.5  (lon in [-π, π] → [0, 1])
-        //   v = asin(y) / π + 0.5          (lat in [-π/2, π/2] → [0, 1])
+        //   v = 0.5 - asin(y) / π          (lat in [-π/2, π/2] → [1, 0])
         let mut base_uvs = Vec::with_capacity(vertex_count * 2);
         for i in 0..vertex_count {
             let bx = base_positions[i * 3];
             let by = base_positions[i * 3 + 1];
             let bz = base_positions[i * 3 + 2];
             let u = bz.atan2(bx) / (2.0 * std::f32::consts::PI) + 0.5;
-            let v = by.asin() / std::f32::consts::PI + 0.5;
+            // v=0 at the north pole: the sampler maps v=0 to image row 0
+            // (top), so the texture's top wraps onto the sphere's top.
+            let v = 0.5 - by.asin() / std::f32::consts::PI;
             base_uvs.push(u);
             base_uvs.push(v);
         }
