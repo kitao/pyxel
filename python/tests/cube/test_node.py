@@ -349,11 +349,11 @@ class TestStateSetters:
                 self.box(Mat4.IDENTITY, Vec3(1, 1, 1), 7)
 
         root = Node()
-        cam = Camera()
+        root.camera = Camera()
         root.add_child(Probe())
         # No window — Node.draw composes the context and dispatches
         # on_draw without rasterizing. We only assert no error is raised.
-        root.draw(0, 0, 64, 64, cam)
+        root.draw(0, 0, 64, 64)
 
 
 class TestNodeIntegrationOfDrawAndQueries:
