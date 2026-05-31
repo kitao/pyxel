@@ -10,6 +10,9 @@
 - Removed cube billboard parameter and BILLBOARD_* class constants
 - Removed cube Scene class; Node owns draw, update, and spatial queries
 - Audited and reordered cube stub members for consistency
+- Made cube camera a cascading Node property readable in on_draw
+- Moved cube clear color and depth buffer onto the camera
+- Removed cube draw camera and clear_color arguments
 
 ## 2.9.6
 
