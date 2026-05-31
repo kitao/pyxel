@@ -304,7 +304,7 @@ class Node:
     @property
     def world_transform(self) -> Mat4: ...
     def find_by_name(self, name: str) -> list[Node]: ...
-    def find_by_tags(self, tags: str | list[str]) -> list[Node]: ...
+    def find_by_tags(self, tags: list[str]) -> list[Node]: ...
     def add_child(self, node: Node) -> None: ...
     def remove_child(self, node: Node) -> None: ...
     def destroy(self) -> None: ...
@@ -396,8 +396,8 @@ class Node:
         self,
         mat: Mat4,
         geom: Geometry,
-        *,
         col_img: int | Image = 7,
+        *,
         colkey: int | None = None,
     ) -> None: ...
 
@@ -429,7 +429,7 @@ class Node:
         direction: Vec3,
         max_distance: float | None = None,
         hit_triggers: bool = False,
-        tags: str | list[str] | None = None,
+        tags: list[str] | None = None,
     ) -> RaycastHit | None: ...
     def raycast_all(
         self,
@@ -437,19 +437,19 @@ class Node:
         direction: Vec3,
         max_distance: float | None = None,
         hit_triggers: bool = False,
-        tags: str | list[str] | None = None,
+        tags: list[str] | None = None,
     ) -> list[RaycastHit]: ...
     def overlap_sphere(
         self,
         center: Vec3,
         radius: float,
         hit_triggers: bool = False,
-        tags: str | list[str] | None = None,
+        tags: list[str] | None = None,
     ) -> list[Node]: ...
     def overlap_box(
         self,
-        transform: Mat4,
+        mat: Mat4,
         size: Vec3,
         hit_triggers: bool = False,
-        tags: str | list[str] | None = None,
+        tags: list[str] | None = None,
     ) -> list[Node]: ...

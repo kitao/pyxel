@@ -329,20 +329,11 @@ impl Node {
     fn find_by_tags(
         slf: PyRef<'_, Node>,
         py: Python<'_>,
-        tags: &Bound<'_, pyo3::types::PyAny>,
+        tags: Vec<String>,
     ) -> PyResult<Vec<Py<Node>>> {
-        let tag_list: Vec<String> = if let Ok(s) = tags.extract::<String>() {
-            vec![s]
-        } else if let Ok(v) = tags.extract::<Vec<String>>() {
-            v
-        } else {
-            return Err(pyo3::exceptions::PyTypeError::new_err(
-                "tags must be str or list[str]",
-            ));
-        };
         let self_py: Py<Node> = slf.into_pyobject(py)?.unbind();
         let mut out: Vec<Py<Node>> = Vec::new();
-        Self::collect_by_tags(&self_py, py, &tag_list, &mut out);
+        Self::collect_by_tags(&self_py, py, &tags, &mut out);
         Ok(out)
     }
 
@@ -676,7 +667,7 @@ impl Node {
         });
     }
 
-    #[pyo3(signature = (mat, geom, *, col_img=None, colkey=None))]
+    #[pyo3(signature = (mat, geom, col_img=None, *, colkey=None))]
     fn prim(
         &self,
         mat: PyRef<'_, Mat4>,
@@ -914,22 +905,22 @@ impl Node {
         wrap_node_results(&root_any, &inner_results)
     }
 
-    #[pyo3(signature = (transform, size, hit_triggers=false, tags=None))]
+    #[pyo3(signature = (mat, size, hit_triggers=false, tags=None))]
     fn overlap_box(
         slf: PyRef<'_, Self>,
         py: Python<'_>,
-        transform: PyRef<'_, Mat4>,
+        mat: PyRef<'_, Mat4>,
         size: PyRef<'_, Vec3>,
         hit_triggers: bool,
         tags: Option<Vec<String>>,
     ) -> PyResult<Vec<Py<Node>>> {
         let root_inner = slf.inner.clone();
         let root_any = slf.into_pyobject(py)?.into_any();
-        let transform_m = *transform.inner_ref();
+        let mat_m = *mat.inner_ref();
         let size_v = *size.inner_ref();
         let inner_results = pyxel::cube::Scene::overlap_box(
             &root_inner,
-            &transform_m,
+            &mat_m,
             size_v,
             hit_triggers,
             tags.as_deref(),
