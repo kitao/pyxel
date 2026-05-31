@@ -125,6 +125,7 @@ class Scene(Node):
         self.shading.direction = Vec3(0.5, -1.5, -1.0).normalize()
 
         self.camera = Camera()
+        self.camera.clear_color = 1
         self.yaw = 0.0
         self.pitch = 0.0
         self.mouse_prev = None
@@ -178,7 +179,7 @@ class App:
         self.scene.update()
 
     def draw(self):
-        self.scene.draw(0, 0, pyxel.width, pyxel.height, clear_color=1)
+        self.scene.draw(0, 0, pyxel.width, pyxel.height)
 
 
 App()

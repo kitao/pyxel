@@ -40,6 +40,7 @@ class Scene(Node):
         self.shading.direction = Vec3(0.5, -1.5, -1.0).normalize()
 
         self.camera = Camera()
+        self.camera.clear_color = 0
         self.camera.transform = Mat4.look_at(Vec3(0.0, 3.5, 4.0), Vec3.ZERO)
 
         for i in range(CUBE_COUNT):
@@ -60,7 +61,7 @@ class App:
         self.scene.update()
 
     def draw(self):
-        self.scene.draw(0, 0, pyxel.width, pyxel.height, clear_color=0)
+        self.scene.draw(0, 0, pyxel.width, pyxel.height)
 
 
 App()
