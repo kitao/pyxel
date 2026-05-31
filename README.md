@@ -15,7 +15,11 @@ Pyxel is open source under the [MIT License](https://github.com/kitao/pyxel/blob
 
 Also, this project is developed by one person, kept going by your GitHub stars. If you enjoy it, please give it a star!
 
-**[▸ Pyxel User Guide (multilingual)](https://kitao.github.io/pyxel/web/user-guide/)**
+**[▸ User Guide](https://kitao.github.io/pyxel/web/user-guide/)**
+
+**[▸ User Examples](https://kitao.github.io/pyxel-user-examples/)**
+
+**[▸ Share Your Work](https://github.com/kitao/pyxel/discussions/new?category=user-examples)**
 
 ---
 
@@ -27,7 +31,11 @@ Pyxel は [MIT License](https://github.com/kitao/pyxel/blob/main/LICENSE) のオ
 
 また、このプロジェクトは GitHub のスターを励みに、個人で開発を続けています。気に入ったらぜひスター登録をお願いします！
 
-**[▸ Pyxel ユーザーガイド](https://kitao.github.io/pyxel/web/user-guide/)**
+**[▸ ユーザーガイド](https://kitao.github.io/pyxel/web/user-guide/)**
+
+**[▸ ユーザー作品集](https://kitao.github.io/pyxel-user-examples/)**
+
+**[▸ 作品を投稿する](https://github.com/kitao/pyxel/discussions/new?category=user-examples)**
 
 [<img src="https://raw.githubusercontent.com/kitao/pyxel/main/docs/images/pyxel_thanks.png" alt="Pyxel User Examples" width="553">](https://kitao.github.io/pyxel-user-examples/) [<img src="https://raw.githubusercontent.com/kitao/pyxel/main/docs/images/pyxel_book.png" alt="Pyxel book" width="190">](https://gihyo.jp/book/2025/978-4-297-14657-3)
 
