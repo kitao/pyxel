@@ -509,3 +509,15 @@ class TestCameraCascade:
         n = Node()
         with pytest.raises(ValueError):
             n.draw(0, 0, 64, 64)
+
+    def test_camera_clear_color_roundtrip(self):
+        c = Camera()
+        assert c.clear_color is None
+        c.clear_color = 5
+        assert c.clear_color == 5
+
+    def test_draw_accepts_no_clear_color_arg(self):
+        n = Node()
+        n.camera = Camera()
+        # clear_color is no longer a draw parameter.
+        n.draw(0, 0, 32, 32)
