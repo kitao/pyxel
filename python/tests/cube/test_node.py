@@ -166,10 +166,10 @@ class TestHierarchy:
         b.tags = ["player"]
         root.add_child(a)
         root.add_child(b)
-        found = root.find_by_tags("enemy")
+        found = root.find_by_tags(["enemy"])
         assert len(found) == 1
         assert found[0] is a
-        # list[str] form: matches any.
+        # Multiple tags match any (OR).
         found2 = root.find_by_tags(["enemy", "player"])
         assert len(found2) == 2
 
