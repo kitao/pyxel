@@ -29,11 +29,6 @@ pub struct Node {
     // on_destroy, and detaches them. The flag is exposed read-only as
     // Node.destroyed so user hooks can early-return after a destroy().
     pub destroyed: bool,
-    // Depth buffer cache populated lazily by draw(); sized to the most
-    // recent viewport (w * h). Resized only when dimensions change.
-    pub depth: Vec<f32>,
-    pub depth_w: u32,
-    pub depth_h: u32,
 }
 
 define_rc_type!(RcNode, Node);
@@ -52,22 +47,7 @@ impl Node {
             parent: None,
             children: Vec::new(),
             destroyed: false,
-            depth: Vec::new(),
-            depth_w: 0,
-            depth_h: 0,
         })
-    }
-
-    pub fn ensure_depth(&mut self, w: u32, h: u32) {
-        if self.depth_w != w || self.depth_h != h {
-            self.depth = vec![f32::INFINITY; (w * h) as usize];
-            self.depth_w = w;
-            self.depth_h = h;
-        }
-    }
-
-    pub fn clear_depth(&mut self) {
-        self.depth.fill(f32::INFINITY);
     }
 
     // Hierarchy operations
