@@ -3,16 +3,6 @@
 ## 3.0.0
 
 - Added Pyxel Cube — a software-rendered 3D extension module
-- Restructured Pyxel Cube assets into Geometry and hierarchical Mesh
-- Moved cube draw modifiers to Node state-setter methods
-- Added cube box and sphere texturing via col_img
-- Made cube circ, circb, and text always face the camera
-- Removed cube billboard parameter and BILLBOARD_* class constants
-- Removed cube Scene class; Node owns draw, update, and spatial queries
-- Audited and reordered cube stub members for consistency
-- Made cube camera a cascading Node property readable in on_draw
-- Moved cube clear color and depth buffer onto the camera
-- Removed cube draw camera and clear_color arguments
 
 ## 2.9.6
 
