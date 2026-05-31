@@ -801,9 +801,9 @@ impl Node {
         }
         // Resize cache if needed, then clear; move the buffer out for the
         // duration of the traversal and put it back when ctx is taken.
-        rc_mut!(&node_inner).ensure_depth(target_w, target_h);
-        rc_mut!(&node_inner).clear_depth();
-        let depth = std::mem::take(&mut rc_mut!(&node_inner).depth);
+        rc_mut!(&cam_inner).ensure_depth(target_w, target_h);
+        rc_mut!(&cam_inner).clear_depth();
+        let depth = std::mem::take(&mut rc_mut!(&cam_inner).depth);
         let view = view_matrix(rc_ref!(&cam_inner));
         let proj = projection_matrix(rc_ref!(&cam_inner), w as f32, h as f32);
         let vp = matmul(&proj, &view);
@@ -816,7 +816,7 @@ impl Node {
             vp_w: w as f32,
             vp_h: h as f32,
             clip,
-            camera: cam_inner,
+            camera: cam_inner.clone(),
             depth,
             depth_w: target_w,
             depth_h: target_h,
@@ -828,7 +828,7 @@ impl Node {
         let any = self_.into_any();
         let result = traverse_draw(&any);
         if let Some(ctx) = take_draw_context() {
-            rc_mut!(&node_inner).depth = ctx.depth;
+            rc_mut!(&cam_inner).depth = ctx.depth;
         }
         result
     }

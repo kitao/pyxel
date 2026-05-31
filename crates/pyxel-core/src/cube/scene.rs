@@ -879,44 +879,6 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_node_depth_default() {
-        let n = Node::new();
-        let n = rc_ref!(&n);
-        assert_eq!(n.depth_w, 0);
-        assert_eq!(n.depth_h, 0);
-        assert!(n.depth.is_empty());
-    }
-
-    #[test]
-    fn test_node_ensure_depth() {
-        let n = Node::new();
-        let n_mut = rc_mut!(&n);
-        n_mut.ensure_depth(64, 48);
-        assert_eq!(n_mut.depth_w, 64);
-        assert_eq!(n_mut.depth_h, 48);
-        assert_eq!(n_mut.depth.len(), 64 * 48);
-    }
-
-    #[test]
-    fn test_node_ensure_depth_resize() {
-        let n = Node::new();
-        let n_mut = rc_mut!(&n);
-        n_mut.ensure_depth(64, 48);
-        n_mut.ensure_depth(128, 96);
-        assert_eq!(n_mut.depth.len(), 128 * 96);
-    }
-
-    #[test]
-    fn test_node_clear_depth() {
-        let n = Node::new();
-        let n_mut = rc_mut!(&n);
-        n_mut.ensure_depth(8, 8);
-        n_mut.depth[0] = 0.5;
-        n_mut.clear_depth();
-        assert_eq!(n_mut.depth[0], f32::INFINITY);
-    }
-
-    #[test]
     fn test_with_draw_context_outside_scope_returns_none() {
         // No context set: with_draw_context returns None.
         let result = with_draw_context(|_| 42);
