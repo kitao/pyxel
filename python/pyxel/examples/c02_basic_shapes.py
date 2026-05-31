@@ -1,136 +1,119 @@
 import pyxel
 from pyxel.cube import Camera, Mat4, Node, Shading, Vec3
 
-# A standalone texture for the box and sphere. Image banks (pyxel.images)
-# are sprite sheets, so a single texture gets its own small Image. Its
-# 4-color quadrants make the rotation of the box and sphere visible.
-texture = pyxel.Image(16, 16)
-texture.rect(0, 0, 8, 8, 8)
-texture.rect(8, 0, 8, 8, 11)
-texture.rect(0, 8, 8, 8, 14)
-texture.rect(8, 8, 8, 8, 7)
+cat_image = None
 
 
 class Label(Node):
-    def __init__(self, name: str):
-        super().__init__()
-        self.name = name
+    caption = ""
 
     def on_draw(self):
-        self.text(Vec3(0, 0.9, 0), self.name, 7)
+        self.text(Vec3(0, 0.9, 0), self.caption, 7)
 
 
-# Each shape spins around its local Y axis and carries a Label naming the
-# draw API it shows. Shapes with a wireframe counterpart toggle solid<->wire
-# (exclusively) while SPACE is held, updating the label to the API in use.
 class Shape(Node):
-    solid_name = ""
+    solid_method = ""
+    wire_method = ""
 
-    def __init__(self, pos: Vec3):
+    def __init__(self, pos):
         super().__init__()
         self.pos = pos
-        self.label = Label(self.solid_name)
+        self.label = Label()
         self.add_child(self.label)
 
     def on_update(self):
         spin = Mat4.from_euler(Vec3(0, pyxel.frame_count * 2.0, 0))
         self.transform = Mat4.from_translation(self.pos) * spin
 
+    def on_draw(self):
+        if self.wire_method and pyxel.btn(pyxel.KEY_SPACE):
+            self.label.caption = self.wire_method
+            self.draw_wire()
+        else:
+            self.label.caption = self.solid_method
+            self.draw_solid()
+
 
 class PsetShape(Shape):
-    solid_name = "pset"
+    solid_method = "pset"
 
-    def on_draw(self):
-        self.pset(Vec3.ZERO, 11)
+    def draw_solid(self):
+        self.pset(Vec3.ZERO, 8)
 
 
 class LineShape(Shape):
-    solid_name = "line"
+    solid_method = "line"
 
-    def on_draw(self):
-        self.line(Vec3(-0.5, 0, 0), Vec3(0.5, 0, 0), 7)
+    def draw_solid(self):
+        self.line(Vec3(-0.5, 0, 0), Vec3(0.5, 0, 0), 14)
 
 
 class TriShape(Shape):
-    solid_name, wire_name = "tri", "trib"
+    solid_method, wire_method = "tri", "trib"
 
-    def on_draw(self):
-        p1, p2, p3 = Vec3(0, 0.5, 0), Vec3(-0.5, -0.35, 0), Vec3(0.5, -0.35, 0)
-        if pyxel.btn(pyxel.KEY_SPACE):
-            self.label.name = self.wire_name
-            self.trib(p1, p2, p3, 7)
-        else:
-            self.label.name = self.solid_name
-            self.tri(p1, p2, p3, 8)
+    def draw_solid(self):
+        self.tri(Vec3(0, 0.5, 0), Vec3(-0.5, -0.35, 0), Vec3(0.5, -0.35, 0), 9)
+
+    def draw_wire(self):
+        self.trib(Vec3(0, 0.5, 0), Vec3(-0.5, -0.35, 0), Vec3(0.5, -0.35, 0), 9)
 
 
 class RectShape(Shape):
-    solid_name, wire_name = "rect", "rectb"
+    solid_method, wire_method = "rect", "rectb"
 
-    def on_draw(self):
-        if pyxel.btn(pyxel.KEY_SPACE):
-            self.label.name = self.wire_name
-            self.rectb(Mat4.IDENTITY, 1.0, 0.7, 7)
-        else:
-            self.label.name = self.solid_name
-            self.rect(Mat4.IDENTITY, 1.0, 0.7, 9)
+    def draw_solid(self):
+        self.rect(Mat4.IDENTITY, 1.0, 0.7, 10)
+
+    def draw_wire(self):
+        self.rectb(Mat4.IDENTITY, 1.0, 0.7, 10)
 
 
 class ElliShape(Shape):
-    solid_name, wire_name = "elli", "ellib"
+    solid_method, wire_method = "elli", "ellib"
 
-    def on_draw(self):
-        if pyxel.btn(pyxel.KEY_SPACE):
-            self.label.name = self.wire_name
-            self.ellib(Mat4.IDENTITY, 1.0, 0.7, 7)
-        else:
-            self.label.name = self.solid_name
-            self.elli(Mat4.IDENTITY, 1.0, 0.7, 10)
+    def draw_solid(self):
+        self.elli(Mat4.IDENTITY, 1.0, 0.7, 11)
+
+    def draw_wire(self):
+        self.ellib(Mat4.IDENTITY, 1.0, 0.7, 11)
 
 
 class CircShape(Shape):
-    solid_name, wire_name = "circ", "circb"
+    solid_method, wire_method = "circ", "circb"
 
-    def on_draw(self):
-        if pyxel.btn(pyxel.KEY_SPACE):
-            self.label.name = self.wire_name
-            self.circb(Vec3.ZERO, 0.5, 7)
-        else:
-            self.label.name = self.solid_name
-            self.circ(Vec3.ZERO, 0.5, 11)
+    def draw_solid(self):
+        self.circ(Vec3.ZERO, 0.5, 3)
+
+    def draw_wire(self):
+        self.circb(Vec3.ZERO, 0.5, 3)
 
 
 class SpriteShape(Shape):
-    solid_name = "sprite"
+    solid_method = "sprite"
 
-    def on_draw(self):
-        uvs = ((0.0, 0.0), (1.0, 0.0), (1.0, 1.0), (0.0, 1.0))
-        self.sprite(Vec3.ZERO, texture, uvs, 1.0, 1.0)
+    def draw_solid(self):
+        uvs = ((0.0, 0.0), (1.0, 0.0), (0.0, 1.0), (1.0, 1.0))
+        self.sprite(Vec3.ZERO, cat_image, uvs, 1.0, 1.0)
 
 
 class BoxShape(Shape):
-    solid_name, wire_name = "box", "boxb"
+    solid_method, wire_method = "box", "boxb"
 
-    def on_draw(self):
-        size = Vec3(0.85, 0.85, 0.85)
-        if pyxel.btn(pyxel.KEY_SPACE):
-            self.label.name = self.wire_name
-            self.boxb(Mat4.IDENTITY, size, 7)
-        else:
-            self.label.name = self.solid_name
-            self.box(Mat4.IDENTITY, size, texture)
+    def draw_solid(self):
+        self.box(Mat4.IDENTITY, Vec3(0.85, 0.85, 0.85), cat_image)
+
+    def draw_wire(self):
+        self.boxb(Mat4.IDENTITY, Vec3(0.85, 0.85, 0.85), 12)
 
 
 class SphereShape(Shape):
-    solid_name, wire_name = "sphere", "sphereb"
+    solid_method, wire_method = "sphere", "sphereb"
 
-    def on_draw(self):
-        if pyxel.btn(pyxel.KEY_SPACE):
-            self.label.name = self.wire_name
-            self.sphereb(Vec3.ZERO, 0.5, 7)
-        else:
-            self.label.name = self.solid_name
-            self.sphere(Vec3.ZERO, 0.5, texture)
+    def draw_solid(self):
+        self.sphere(Vec3.ZERO, 0.5, cat_image)
+
+    def draw_wire(self):
+        self.sphereb(Vec3.ZERO, 0.5, 2)
 
 
 class Scene(Node):
@@ -147,8 +130,6 @@ class Scene(Node):
         self.mouse_prev = None
         self.update_camera()
 
-        # Lay shapes left-to-right, top-to-bottom in definition order on a
-        # 3x3 grid (cells 2.2 apart), lowered 0.25 so labels fit above.
         shapes = [
             PsetShape,
             LineShape,
@@ -186,7 +167,12 @@ class Scene(Node):
 class App:
     def __init__(self):
         pyxel.init(160, 160, title="Cube Basic Shapes")
+
+        global cat_image
+        cat_image = pyxel.Image.from_image("assets/cat_16x16.png")
+
         self.scene = Scene()
+
         pyxel.run(self.update, self.draw)
 
     def update(self):
