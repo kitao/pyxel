@@ -206,10 +206,10 @@ class TestStateSetterIsolation:
                 self.box(Mat4.IDENTITY, Vec3(1, 1, 1), 8)
 
         root = Node()
-        cam = Camera()
+        root.camera = Camera()
         root.add_child(A())
         root.add_child(B())
-        root.draw(0, 0, 64, 64, cam)
+        root.draw(0, 0, 64, 64)
 
     def test_child_isolation_runs_without_error(self):
         class Parent(Node):
@@ -222,8 +222,8 @@ class TestStateSetterIsolation:
                 self.box(Mat4.IDENTITY, Vec3(1, 1, 1), 8)
 
         root = Node()
-        cam = Camera()
+        root.camera = Camera()
         parent = Parent()
         parent.add_child(Child())
         root.add_child(parent)
-        root.draw(0, 0, 64, 64, cam)
+        root.draw(0, 0, 64, 64)
