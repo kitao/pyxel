@@ -3,8 +3,8 @@ from pyxel.cube import Camera, Mat4, Node, Shading, Vec3
 
 GRID_SPACING = 2.2
 GRID_OFFSET_Y = 0.25  # lower grid so text-inclusive content stays centered
-SPEC_SCALE = 1.1
-BOX_SCALE = SPEC_SCALE * 0.85  # solid cube reads larger; shrink to match
+SHAPE_SCALE = 1.1
+BOX_SCALE = SHAPE_SCALE * 0.85  # solid cube reads larger; shrink to match
 LABEL_OFFSET_Y = 0.9
 ROT_SPEED = 2.0  # deg/frame
 CAM_DIST = 6.0
@@ -14,107 +14,131 @@ MOUSE_SENS = 0.5
 SPRITE_UVS = ((0.0, 0.0), (1.0, 0.0), (1.0, 1.0), (0.0, 1.0))
 
 
-def clamp(value, limit):
-    return max(-limit, min(limit, value))
-
-
 class Label(Node):
-    def __init__(self, label: str):
+    def __init__(self, name: str):
         super().__init__()
-        self.label = label
+        self.name = name
 
     def on_draw(self):
-        self.text(Vec3(0, LABEL_OFFSET_Y, 0), self.label, 7)
+        self.text(Vec3(0, LABEL_OFFSET_Y, 0), self.name, 7)
 
 
-class Spinner(Node):
-    def __init__(self, pos: Vec3, label: str):
+# Each shape spins around its local Y axis and carries a Label naming the
+# draw API it shows. Shapes with a wireframe counterpart toggle solid<->wire
+# (exclusively) while SPACE is held, updating the label to the API in use.
+class Shape(Node):
+    solid_name = ""
+
+    def __init__(self, pos: Vec3):
         super().__init__()
         self.pos = pos
-        self.add_child(Label(label))
+        self.label = Label(self.solid_name)
+        self.add_child(self.label)
 
     def on_update(self):
         spin = Mat4.from_euler(Vec3(0, pyxel.frame_count * ROT_SPEED, 0))
         self.transform = Mat4.from_translation(self.pos) * spin
 
 
-class PsetSpinner(Spinner):
+class PsetShape(Shape):
+    solid_name = "pset"
+
     def on_draw(self):
         self.pset(Vec3.ZERO, 11)
 
 
-class LineSpinner(Spinner):
+class LineShape(Shape):
+    solid_name = "line"
+
     def on_draw(self):
-        half = SPEC_SCALE / 2
+        half = SHAPE_SCALE / 2
         self.line(Vec3(-half, 0, 0), Vec3(half, 0, 0), 7)
 
 
-class TriSpinner(Spinner):
+class TriShape(Shape):
+    solid_name, wire_name = "tri", "trib"
+
     def on_draw(self):
-        s = SPEC_SCALE / 2
+        s = SHAPE_SCALE / 2
         p1, p2, p3 = Vec3(0, s, 0), Vec3(-s, -s * 0.7, 0), Vec3(s, -s * 0.7, 0)
-        self.tri(p1, p2, p3, 8)
         if pyxel.btn(pyxel.KEY_SPACE):
+            self.label.name = self.wire_name
             self.trib(p1, p2, p3, 7)
+        else:
+            self.label.name = self.solid_name
+            self.tri(p1, p2, p3, 8)
 
 
-class RectSpinner(Spinner):
+class RectShape(Shape):
+    solid_name, wire_name = "rect", "rectb"
+
     def on_draw(self):
-        w, h = SPEC_SCALE, SPEC_SCALE * 0.7
-        self.rect(Mat4.IDENTITY, w, h, 9)
+        w, h = SHAPE_SCALE, SHAPE_SCALE * 0.7
         if pyxel.btn(pyxel.KEY_SPACE):
+            self.label.name = self.wire_name
             self.rectb(Mat4.IDENTITY, w, h, 7)
+        else:
+            self.label.name = self.solid_name
+            self.rect(Mat4.IDENTITY, w, h, 9)
 
 
-class ElliSpinner(Spinner):
+class ElliShape(Shape):
+    solid_name, wire_name = "elli", "ellib"
+
     def on_draw(self):
-        w, h = SPEC_SCALE, SPEC_SCALE * 0.7
-        self.elli(Mat4.IDENTITY, w, h, 10)
+        w, h = SHAPE_SCALE, SHAPE_SCALE * 0.7
         if pyxel.btn(pyxel.KEY_SPACE):
+            self.label.name = self.wire_name
             self.ellib(Mat4.IDENTITY, w, h, 7)
+        else:
+            self.label.name = self.solid_name
+            self.elli(Mat4.IDENTITY, w, h, 10)
 
 
-class CircSpinner(Spinner):
+class CircShape(Shape):
+    solid_name, wire_name = "circ", "circb"
+
     def on_draw(self):
-        r = SPEC_SCALE / 2
-        self.circ(Vec3.ZERO, r, 11)
+        r = SHAPE_SCALE / 2
         if pyxel.btn(pyxel.KEY_SPACE):
+            self.label.name = self.wire_name
             self.circb(Vec3.ZERO, r, 7)
+        else:
+            self.label.name = self.solid_name
+            self.circ(Vec3.ZERO, r, 11)
 
 
-class BoxSpinner(Spinner):
+class SpriteShape(Shape):
+    solid_name = "sprite"
+
+    def on_draw(self):
+        self.sprite(Vec3.ZERO, pyxel.images[0], SPRITE_UVS, SHAPE_SCALE, SHAPE_SCALE)
+
+
+class BoxShape(Shape):
+    solid_name, wire_name = "box", "boxb"
+
     def on_draw(self):
         size = Vec3(BOX_SCALE, BOX_SCALE, BOX_SCALE)
-        self.box(Mat4.IDENTITY, size, pyxel.images[0])
         if pyxel.btn(pyxel.KEY_SPACE):
+            self.label.name = self.wire_name
             self.boxb(Mat4.IDENTITY, size, 7)
+        else:
+            self.label.name = self.solid_name
+            self.box(Mat4.IDENTITY, size, pyxel.images[0])
 
 
-class SphereSpinner(Spinner):
+class SphereShape(Shape):
+    solid_name, wire_name = "sphere", "sphereb"
+
     def on_draw(self):
-        r = SPEC_SCALE / 2
-        self.sphere(Vec3.ZERO, r, pyxel.images[0])
+        r = SHAPE_SCALE / 2
         if pyxel.btn(pyxel.KEY_SPACE):
+            self.label.name = self.wire_name
             self.sphereb(Vec3.ZERO, r, 7)
-
-
-class SpriteSpinner(Spinner):
-    def on_draw(self):
-        self.sprite(Vec3.ZERO, pyxel.images[0], SPRITE_UVS, SPEC_SCALE, SPEC_SCALE)
-
-
-CELL_SPECS = [
-    # (grid_x, grid_y, label, spinner class)
-    (-1, +1, "pset", PsetSpinner),
-    (0, +1, "line", LineSpinner),
-    (+1, +1, "tri", TriSpinner),
-    (-1, 0, "rect", RectSpinner),
-    (0, 0, "sprite", SpriteSpinner),
-    (+1, 0, "elli", ElliSpinner),
-    (-1, -1, "circ", CircSpinner),
-    (0, -1, "box", BoxSpinner),
-    (+1, -1, "sphere", SphereSpinner),
-]
+        else:
+            self.label.name = self.solid_name
+            self.sphere(Vec3.ZERO, r, pyxel.images[0])
 
 
 class Scene(Node):
@@ -131,9 +155,22 @@ class Scene(Node):
         self.mouse_prev = None
         self.refresh_camera()
 
-        for gx, gy, label, spinner_cls in CELL_SPECS:
+        # Lay shapes left-to-right, top-to-bottom in definition order.
+        shapes = [
+            PsetShape,
+            LineShape,
+            TriShape,
+            RectShape,
+            ElliShape,
+            CircShape,
+            SpriteShape,
+            BoxShape,
+            SphereShape,
+        ]
+        for i, shape_cls in enumerate(shapes):
+            gx, gy = i % 3 - 1, 1 - i // 3
             pos = Vec3(gx * GRID_SPACING, gy * GRID_SPACING - GRID_OFFSET_Y, 0)
-            self.add_child(spinner_cls(pos, label))
+            self.add_child(shape_cls(pos))
 
     def refresh_camera(self):
         eye = Vec3(
@@ -149,8 +186,12 @@ class Scene(Node):
             px, py = self.mouse_prev
             dx = mx - px
             dy = my - py
-            self.yaw = clamp(self.yaw - dx * MOUSE_SENS, CAM_YAW_LIMIT)
-            self.pitch = clamp(self.pitch + dy * MOUSE_SENS, CAM_PITCH_LIMIT)
+            self.yaw = max(
+                -CAM_YAW_LIMIT, min(CAM_YAW_LIMIT, self.yaw - dx * MOUSE_SENS)
+            )
+            self.pitch = max(
+                -CAM_PITCH_LIMIT, min(CAM_PITCH_LIMIT, self.pitch + dy * MOUSE_SENS)
+            )
             self.refresh_camera()
         self.mouse_prev = (mx, my)
 
