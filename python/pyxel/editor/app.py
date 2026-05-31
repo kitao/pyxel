@@ -58,6 +58,7 @@ class App(Widget):
         self._resource_file = resource_file
 
         self.new_var("help_message_var", "")
+        self.new_var("secondary_color_var", 0)
 
         # Initialize editor button
         self._editor_button = RadioButton(
