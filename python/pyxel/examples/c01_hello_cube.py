@@ -26,12 +26,6 @@ class Cube(Node):
         self.box(Mat4.IDENTITY, Vec3(0.6, 0.6, 0.6), self.color)
 
 
-class Label(Node):
-    def on_draw(self):
-        self.depth_test(False)
-        self.text(Vec3.ZERO, "Hello, Pyxel Cube!", pyxel.frame_count % 16)
-
-
 class Scene(Node):
     def __init__(self):
         super().__init__()
@@ -45,12 +39,15 @@ class Scene(Node):
 
         for i in range(CUBE_COUNT):
             self.add_child(Cube(i))
-        self.add_child(Label())
+
+    def on_draw(self):
+        self.depth_offset(-3.0)
+        self.text(Vec3.ZERO, "Hello, Pyxel Cube!", pyxel.frame_count % 16)
 
 
 class App:
     def __init__(self):
-        pyxel.init(160, 120, title="Hello Pyxel Cube")
+        pyxel.init(200, 150, title="Hello Pyxel Cube")
         self.scene = Scene()
         pyxel.run(self.update, self.draw)
 
