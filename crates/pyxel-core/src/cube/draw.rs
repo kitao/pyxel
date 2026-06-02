@@ -10,13 +10,14 @@
 
 use std::sync::OnceLock;
 
+use crate::cube::camera::RcCamera;
 use crate::cube::geometry::{
     CULL_BACK, CULL_FRONT, CULL_NONE, PRIM_LINES, PRIM_POINTS, PRIM_TRIANGLES,
 };
 use crate::cube::mat4::Mat4;
 use crate::cube::mesh::Mesh;
 use crate::cube::raster::{
-    dither_pick, face_shade_level, lookup_ramp, mat_apply, rasterize_circle_border,
+    dither_pick, face_shade_level, lookup_ramp, mat_apply, mat_apply_dir, rasterize_circle_border,
     rasterize_circle_filled, rasterize_line, rasterize_textured_triangle, rasterize_triangle,
     screen_circle, sprite_corners, tri_normal, world_to_screen, write_pixel, ELLIPSE_SEGMENTS,
 };
@@ -96,6 +97,56 @@ fn prepare_draw(ctx: &mut DrawContext, world_mat: &Mat4, state: &DrawState) -> M
     ctx.depth_test = state.depth_test;
     ctx.depth_write = state.depth_write;
     apply_billboard(world_mat, ctx, state.billboard)
+}
+
+// World-space shift for a depth offset: `offset` units along the camera's
+// view direction (the look direction is the -Z column of the
+// camera-to-world transform). Positive pushes away from the camera,
+// negative toward it. Returns a zero vector when no offset is set.
+fn depth_offset_shift(camera: &RcCamera, offset: f32) -> Vec3 {
+    if offset == 0.0 {
+        return Vec3 {
+            x: 0.0,
+            y: 0.0,
+            z: 0.0,
+        };
+    }
+    let cam = rc_ref!(camera);
+    let m = rc_ref!(&cam.transform).data;
+    Vec3 {
+        x: -m[0][2] * offset,
+        y: -m[1][2] * offset,
+        z: -m[2][2] * offset,
+    }
+}
+
+// Project `pos` to screen, then replace only its depth with the depth of
+// `pos + shift`. Screen x/y stay at the original projection, so a depth
+// offset never moves or resizes the draw; it only shifts the depth used
+// for the test / write. A zero `shift` is the no-offset fast path (single
+// projection).
+fn project_offset(
+    pos: &Vec3,
+    vp: &[[f32; 4]; 4],
+    vp_x: f32,
+    vp_y: f32,
+    vp_w: f32,
+    vp_h: f32,
+    shift: &Vec3,
+) -> Option<(f32, f32, f32)> {
+    let p = world_to_screen(pos, vp, vp_x, vp_y, vp_w, vp_h)?;
+    if shift.x == 0.0 && shift.y == 0.0 && shift.z == 0.0 {
+        return Some(p);
+    }
+    let shifted = Vec3 {
+        x: pos.x + shift.x,
+        y: pos.y + shift.y,
+        z: pos.z + shift.z,
+    };
+    match world_to_screen(&shifted, vp, vp_x, vp_y, vp_w, vp_h) {
+        Some(d) => Some((p.0, p.1, d.2)),
+        None => Some(p),
+    }
 }
 
 fn apply_billboard(world_mat: &Mat4, ctx: &DrawContext, mode: i32) -> Mat4 {
@@ -254,6 +305,7 @@ pub fn prim(
         None => vertex_count,
     };
     let world_mat = prepare_draw(ctx, world_mat, &state);
+    let z_shift = depth_offset_shift(&ctx.camera, ctx.depth_offset);
     let lit = state.shaded && state.shading.is_some();
     let read_vertex = |idx: usize| -> Vec3 {
         let base = idx * 3;
@@ -298,9 +350,9 @@ pub fn prim(
                 let v0 = read_vertex(i0);
                 let v1 = read_vertex(i1);
                 let v2 = read_vertex(i2);
-                let p0 = world_to_screen(&v0, &ctx.vp, ctx.vp_x, ctx.vp_y, ctx.vp_w, ctx.vp_h);
-                let p1 = world_to_screen(&v1, &ctx.vp, ctx.vp_x, ctx.vp_y, ctx.vp_w, ctx.vp_h);
-                let p2 = world_to_screen(&v2, &ctx.vp, ctx.vp_x, ctx.vp_y, ctx.vp_w, ctx.vp_h);
+                let p0 = project_offset(&v0, &ctx.vp, ctx.vp_x, ctx.vp_y, ctx.vp_w, ctx.vp_h, &z_shift);
+                let p1 = project_offset(&v1, &ctx.vp, ctx.vp_x, ctx.vp_y, ctx.vp_w, ctx.vp_h, &z_shift);
+                let p2 = project_offset(&v2, &ctx.vp, ctx.vp_x, ctx.vp_y, ctx.vp_w, ctx.vp_h, &z_shift);
                 let (Some(p0), Some(p1), Some(p2)) = (p0, p1, p2) else {
                     continue;
                 };
@@ -312,11 +364,19 @@ pub fn prim(
                 }
                 let face_normal = || -> Vec3 {
                     match normals {
-                        Some(n) => Vec3 {
-                            x: n[f * 3],
-                            y: n[f * 3 + 1],
-                            z: n[f * 3 + 2],
-                        },
+                        // Stored normals are model-space (e.g. from
+                        // Geometry::compute_normals). Carry them into world
+                        // space so shading matches the world-space light
+                        // direction; the auto path below already yields a
+                        // world-space normal from the world vertices.
+                        Some(n) => mat_apply_dir(
+                            &world_mat,
+                            &Vec3 {
+                                x: n[f * 3],
+                                y: n[f * 3 + 1],
+                                z: n[f * 3 + 2],
+                            },
+                        ),
                         None => tri_normal(&v0, &v1, &v2),
                     }
                 };
@@ -406,8 +466,8 @@ pub fn prim(
                 let i1 = resolve_vertex_index(l * 2 + 1)?;
                 let v0 = read_vertex(i0);
                 let v1 = read_vertex(i1);
-                let p0 = world_to_screen(&v0, &ctx.vp, ctx.vp_x, ctx.vp_y, ctx.vp_w, ctx.vp_h);
-                let p1 = world_to_screen(&v1, &ctx.vp, ctx.vp_x, ctx.vp_y, ctx.vp_w, ctx.vp_h);
+                let p0 = project_offset(&v0, &ctx.vp, ctx.vp_x, ctx.vp_y, ctx.vp_w, ctx.vp_h, &z_shift);
+                let p1 = project_offset(&v1, &ctx.vp, ctx.vp_x, ctx.vp_y, ctx.vp_w, ctx.vp_h, &z_shift);
                 if let (Some(p0), Some(p1)) = (p0, p1) {
                     rasterize_line(
                         target_mut,
@@ -432,7 +492,7 @@ pub fn prim(
             for s in 0..step_count {
                 let i0 = resolve_vertex_index(s)?;
                 let v0 = read_vertex(i0);
-                let p0 = world_to_screen(&v0, &ctx.vp, ctx.vp_x, ctx.vp_y, ctx.vp_w, ctx.vp_h);
+                let p0 = project_offset(&v0, &ctx.vp, ctx.vp_x, ctx.vp_y, ctx.vp_w, ctx.vp_h, &z_shift);
                 if let Some((sx, sy, sz)) = p0 {
                     let xi = sx.round() as i32;
                     let yi = sy.round() as i32;
@@ -1119,7 +1179,7 @@ pub fn sphere(
             let (s0, s1, s2) = if straddles_seam {
                 // Vertices with low u (< 0.5) are on the left side of the
                 // seam; assign them seam_side=1 so u is bumped to ~1.
-                let side = |u: f32| if u < 0.5 { 1usize } else { 0usize };
+                let side = |u: f32| usize::from(u < 0.5);
                 (side(u0), side(u1), side(u2))
             } else {
                 (0, 0, 0)
@@ -1206,11 +1266,14 @@ pub fn circ(
 ) {
     let world_mat = prepare_draw(ctx, world_mat, &state);
     let world = mat_apply(&world_mat, local);
+    let z_shift = depth_offset_shift(&ctx.camera, ctx.depth_offset);
     let camera = rc_ref!(&ctx.camera);
     let projected = screen_circle(
         &world, r, &ctx.vp, camera, ctx.vp_x, ctx.vp_y, ctx.vp_w, ctx.vp_h,
     );
     if let Some((sx, sy, sr, sz)) = projected {
+        let sz = project_offset(&world, &ctx.vp, ctx.vp_x, ctx.vp_y, ctx.vp_w, ctx.vp_h, &z_shift)
+            .map_or(sz, |p| p.2);
         let target_mut = rc_mut!(&ctx.target);
         let depth_w = ctx.depth_w;
         rasterize_circle_filled(
@@ -1241,11 +1304,14 @@ pub fn circb(
 ) {
     let world_mat = prepare_draw(ctx, world_mat, &state);
     let world = mat_apply(&world_mat, local);
+    let z_shift = depth_offset_shift(&ctx.camera, ctx.depth_offset);
     let camera = rc_ref!(&ctx.camera);
     let projected = screen_circle(
         &world, r, &ctx.vp, camera, ctx.vp_x, ctx.vp_y, ctx.vp_w, ctx.vp_h,
     );
     if let Some((sx, sy, sr, sz)) = projected {
+        let sz = project_offset(&world, &ctx.vp, ctx.vp_x, ctx.vp_y, ctx.vp_w, ctx.vp_h, &z_shift)
+            .map_or(sz, |p| p.2);
         let target_mut = rc_mut!(&ctx.target);
         let depth_w = ctx.depth_w;
         rasterize_circle_border(
@@ -1305,9 +1371,13 @@ pub fn sprite(
     let identity = Mat4::identity_value();
     // sprite uses an identity world_mat (corners are already world-space)
     // and disables billboard rewriting (the corners themselves are the
-    // billboard).
+    // billboard). It also forces `shaded = false`: a camera-facing
+    // billboard has no meaningful lit normal, so sprites render unshaded
+    // by spec (decoration / particle default; see cube-design.md shaded
+    // defaults).
     let mut sprite_state = state;
     sprite_state.billboard = BILLBOARD_OFF;
+    sprite_state.shaded = false;
     let _ = prim(
         ctx,
         &identity,
@@ -1480,7 +1550,8 @@ pub fn text(
         return;
     }
     let world = mat_apply(world_mat, pos);
-    let projected = world_to_screen(&world, &ctx.vp, ctx.vp_x, ctx.vp_y, ctx.vp_w, ctx.vp_h);
+    let z_shift = depth_offset_shift(&ctx.camera, ctx.depth_offset);
+    let projected = project_offset(&world, &ctx.vp, ctx.vp_x, ctx.vp_y, ctx.vp_w, ctx.vp_h, &z_shift);
     let Some((sx_f, sy_f, sz)) = projected else {
         return;
     };
@@ -1569,5 +1640,176 @@ mod tests {
         assert!(!should_cull(1.0, CULL_NONE));
         assert!(!should_cull(-1.0, CULL_NONE));
         assert!(!should_cull(0.0, CULL_NONE));
+    }
+
+    #[test]
+    fn depth_offset_negative_moves_toward_camera() {
+        use crate::cube::camera::Camera;
+        use crate::cube::raster::{matmul, projection_matrix, view_matrix};
+        let camera = Camera::new();
+        let v = view_matrix(rc_ref!(&camera));
+        let p = projection_matrix(rc_ref!(&camera), 256.0, 192.0);
+        let vp = matmul(&p, &v);
+        // Off-axis point in front of the default (-Z looking) camera.
+        let pos = Vec3 {
+            x: 1.0,
+            y: 0.5,
+            z: -3.0,
+        };
+        let base = world_to_screen(&pos, &vp, 0.0, 0.0, 256.0, 192.0).unwrap();
+        // Negative offset = toward the camera: depth shrinks, screen x/y
+        // stay put (the offset must not move the draw).
+        let near = depth_offset_shift(&camera, -0.5);
+        let near_p = project_offset(&pos, &vp, 0.0, 0.0, 256.0, 192.0, &near).unwrap();
+        assert!((near_p.0 - base.0).abs() < 1e-4);
+        assert!((near_p.1 - base.1).abs() < 1e-4);
+        assert!(near_p.2 < base.2);
+        // Positive offset = away: depth grows.
+        let far = depth_offset_shift(&camera, 0.5);
+        let far_p = project_offset(&pos, &vp, 0.0, 0.0, 256.0, 192.0, &far).unwrap();
+        assert!(far_p.2 > base.2);
+    }
+
+    #[test]
+    fn depth_offset_zero_is_identity() {
+        use crate::cube::camera::Camera;
+        use crate::cube::raster::{matmul, projection_matrix, view_matrix};
+        let camera = Camera::new();
+        let v = view_matrix(rc_ref!(&camera));
+        let p = projection_matrix(rc_ref!(&camera), 256.0, 192.0);
+        let vp = matmul(&p, &v);
+        let pos = Vec3 {
+            x: 1.0,
+            y: 0.5,
+            z: -3.0,
+        };
+        let base = world_to_screen(&pos, &vp, 0.0, 0.0, 256.0, 192.0).unwrap();
+        let zero = depth_offset_shift(&camera, 0.0);
+        let same = project_offset(&pos, &vp, 0.0, 0.0, 256.0, 192.0, &zero).unwrap();
+        assert_eq!(base, same);
+    }
+
+    #[test]
+    fn shaded_stored_normals_track_rotation() {
+        // Regression: stored (model-space) normals must be rotated into
+        // world space before shading, so a shaded draw on a rotated
+        // transform lights the same as the auto path (which derives a
+        // world-space normal from the rotated vertices). Without the
+        // transform a rotated mesh keeps its unrotated lighting.
+        use crate::cube::camera::Camera;
+        use crate::cube::geometry::Geometry;
+        use crate::cube::raster::{compute_clip_rect, matmul, projection_matrix, view_matrix};
+        use crate::cube::scene::DrawContext;
+
+        let palette: Vec<crate::image::Rgb24> = vec![
+            0x000000, 0x2B335F, 0x7E2072, 0x19959C, 0x8B4852, 0x395C98, 0xA9C1FF, 0xEEEEEE,
+            0xD4186C, 0xD38441, 0xE9C35B, 0x70C6A9, 0x7696DE, 0xA3A3A3, 0xFF9798, 0xEDC7B0,
+        ];
+        let shading_rc = Shading::new(&palette);
+        rc_mut!(&shading_rc).direction = Vec3::new(0.0, 0.0, -1.0); // light travels -Z
+
+        // A 4×4 quad in the model XY plane (two triangles). compute_normals
+        // fills per-face model-space normals.
+        let geom = Geometry::new();
+        {
+            let g = rc_mut!(&geom);
+            g.positions = vec![
+                -2.0, 2.0, 0.0, 2.0, 2.0, 0.0, -2.0, -2.0, 0.0, 2.0, -2.0, 0.0,
+            ];
+            g.indices = Some(vec![0, 1, 2, 1, 3, 2]);
+            g.cull = CULL_NONE;
+            g.compute_normals();
+        }
+        let model_normals = rc_ref!(&geom).normals.clone().unwrap();
+        let positions = rc_ref!(&geom).positions.clone();
+        let indices = rc_ref!(&geom).indices.clone().unwrap();
+
+        // world = translate(0, 0, -3) * rotateY(180): the quad sits in front
+        // of the camera with its face normal flipped by the spin.
+        let spin = Mat4::from_axis_angle(rc_ref!(&Vec3::new(0.0, 1.0, 0.0)), 180.0);
+        let trans = Mat4::from_translation(rc_ref!(&Vec3::new(0.0, 0.0, -3.0)));
+        let world_rc = rc_ref!(&trans).mul_mat(rc_ref!(&spin));
+        let world = *rc_ref!(&world_rc);
+
+        // The model normal and its world-space image must fall on different
+        // shade levels, otherwise the test could not tell the two apart.
+        let model_n = Vec3 {
+            x: model_normals[0],
+            y: model_normals[1],
+            z: model_normals[2],
+        };
+        let world_n = mat_apply_dir(&world, &model_n);
+        let dir = Vec3 {
+            x: 0.0,
+            y: 0.0,
+            z: -1.0,
+        };
+        assert_ne!(
+            face_shade_level(&dir, Some(&world_n)),
+            face_shade_level(&dir, Some(&model_n)),
+            "test setup must distinguish world-space vs model-space normal"
+        );
+
+        let render = |normals: Option<&[f32]>| -> u8 {
+            let target = Image::new(64, 64);
+            rc_mut!(&target).clear(2); // sentinel so an undrawn quad is detectable
+            let camera = Camera::new();
+            let vp = matmul(
+                &projection_matrix(rc_ref!(&camera), 64.0, 64.0),
+                &view_matrix(rc_ref!(&camera)),
+            );
+            let clip = compute_clip_rect(0.0, 0.0, 64.0, 64.0, 64, 64);
+            let mut ctx = DrawContext {
+                target: target.clone(),
+                vp,
+                vp_x: 0.0,
+                vp_y: 0.0,
+                vp_w: 64.0,
+                vp_h: 64.0,
+                clip,
+                camera: camera.clone(),
+                depth: vec![f32::INFINITY; 64 * 64],
+                depth_w: 64,
+                depth_h: 64,
+                dither_alpha: 1.0,
+                depth_test: true,
+                depth_write: true,
+                depth_offset: 0.0,
+                shaded: true,
+            };
+            let shading_ref = rc_ref!(&shading_rc);
+            let state = DrawState {
+                shaded: true,
+                dither_alpha: 1.0,
+                depth_test: true,
+                depth_write: true,
+                billboard: BILLBOARD_OFF,
+                shading: Some(shading_ref),
+            };
+            prim(
+                &mut ctx,
+                &world,
+                PRIM_TRIANGLES,
+                CULL_NONE,
+                &positions,
+                Some(&indices),
+                normals,
+                None,
+                7,
+                None,
+                None,
+                state,
+            )
+            .unwrap();
+            rc_ref!(&target).pixel(32.0, 32.0)
+        };
+
+        let auto = render(None);
+        let stored = render(Some(&model_normals));
+        assert_ne!(auto, 2, "quad must cover the center pixel");
+        assert_eq!(
+            stored, auto,
+            "stored-normal shading must match the auto path under rotation"
+        );
     }
 }

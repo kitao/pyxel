@@ -110,6 +110,17 @@ pub fn mat_apply(mat: &Mat4, v: &Vec3) -> Vec3 {
     *rc_ref!(&rc)
 }
 
+// Apply only the linear (3x3) part of a Mat4 to a direction vector,
+// ignoring translation. Alloc-free (no RcVec3) for the per-face hot path;
+// used to carry model-space normals into world space before shading.
+pub fn mat_apply_dir(mat: &Mat4, v: &Vec3) -> Vec3 {
+    Vec3 {
+        x: mat.data[0][0] * v.x + mat.data[0][1] * v.y + mat.data[0][2] * v.z,
+        y: mat.data[1][0] * v.x + mat.data[1][1] * v.y + mat.data[1][2] * v.z,
+        z: mat.data[2][0] * v.x + mat.data[2][1] * v.y + mat.data[2][2] * v.z,
+    }
+}
+
 // Project a world position to screen space; None when behind the near
 // plane (cw <= 0). Off-screen and far-plane-overshoot points still
 // project so partially off-screen primitives keep contributing through
