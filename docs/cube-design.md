@@ -29,22 +29,21 @@ signatures live in `python/pyxel/cube/__init__.pyi`.
 
 ---
 
-## 2. Public Classes (12)
+## 2. Public Classes (11)
 
 | Class | Role |
 |---|---|
 | `Vec3` | Immutable 3D vector |
 | `Mat4` | Immutable 4×4 matrix (transforms; projection lives in `Camera`) |
 | `Quat` | Immutable quaternion rotation |
-| `Camera` | View information (transform, fov, near, far, optional ortho size) |
+| `Camera` | View information (transform, fov, near, far, optional ortho size) plus the clear color |
 | `Shading` | Color lookup table (palette × levels) plus scene-wide light direction |
 | `Geometry` | Static vertex-data asset (positions / normals / uvs / indices / prim mode / cull mode); shareable across Node draws and Mesh parts |
 | `Mesh` | Hierarchical 3D model asset (parallel arrays of geometries / transforms / parents) with shared col_img and colkey |
 | `Collider` | Unified collider holding shape + behavior flags + physical coefficients + motion state |
 | `Contact` | Collision-pipeline payload (contact geometry + engine-resolved motion deltas) |
-| `RaycastHit` | Result payload returned by `Scene.raycast` / `Scene.raycast_all` |
-| `Node` | Hierarchy instance with transform, immediate-mode draw commands, lifecycle hooks, and collision-related callbacks |
-| `Scene` | `Node`-derived root that drives the update / draw cycle, owns the clear color, and exposes spatial queries (raycast, overlap) |
+| `RaycastHit` | Result payload returned by `Node.raycast` / `Node.raycast_all` |
+| `Node` | Scene-tree node: transform, hierarchy, immediate-mode draw commands, lifecycle hooks, collision callbacks, and — on the root — the update / draw cycle and spatial queries |
 
 ---
 
@@ -52,7 +51,7 @@ signatures live in `python/pyxel/cube/__init__.pyi`.
 
 - **+X right, +Y up, +Z toward viewer**, **right-handed**, forward = `-Z`.
 - Aligned with Godot / pyglet / three.js / OpenGL / glTF.
-- **Origin** for `scene.draw(x, y, w, h, camera)` maps the world origin to
+- **Origin** for `node.draw(x, y, w, h)` maps the world origin to
   the center of the destination rectangle.
 - **Angles in degrees** throughout the cube API.
 - **Euler order**: `XYZ` extrinsic (apply X rotation first about the world
@@ -368,8 +367,9 @@ q.slerp(other, t)        # Quat (spherical linear interpolation)
 
 ## 7. Camera
 
-View information held independently from the scene so multiple cameras can
-be swapped quickly (e.g. multi-angle rendering).
+View information held independently from the node tree. A camera is
+assigned to a node through `Node.camera` (a cascading attribute, § 14.1)
+and can be swapped between draws for multi-angle rendering.
 
 ```python
 camera = Camera()
@@ -384,11 +384,18 @@ camera.fov = 60.0
 | `near` | `float` | `0.1` | near plane distance |
 | `far` | `float` | `1000.0` | far plane distance |
 | `ortho_size` | `float \| None` | `None` | `None` → perspective; value → orthographic with that vertical size |
+| `clear_color` | `int \| None` | `None` | screen clear color applied before each `draw` that uses this camera; `None` skips the screen clear |
 
 The single `ortho_size: float | None` attribute encodes both "is
 orthographic?" and "what size?" in one place. Setting `ortho_size = N`
 switches the camera to orthographic projection with vertical world size
 `N`; setting `ortho_size = None` restores perspective using `fov`.
+
+`clear_color` is the color the target screen is filled with at the start
+of each `draw` that uses this camera; `None` draws over the existing
+contents without clearing (useful when compositing over a 2D background
+or layering several `draw` passes). The depth buffer is independent of
+this setting — it is cleared at the start of every `draw` regardless.
 
 View-control helpers like `look_at` are intentionally not on `Camera` —
 building the transform through `Mat4` (e.g.
@@ -396,7 +403,7 @@ building the transform through `Mat4` (e.g.
 flexible.
 
 The Camera does not hold viewport information (width / height); the
-viewport is a per-`Scene.draw` argument, so multiple viewports can share
+viewport is a per-`draw` argument, so multiple viewports can share
 the same Camera (split-screen, picture-in-picture, render-to-texture).
 
 ---
@@ -531,7 +538,7 @@ constants.
 | Field | Type | Default | Meaning |
 |---|---|---|---|
 | `positions` | `list[float]` | `[]` | flat (x, y, z) triples; `len(positions) % 3 == 0` |
-| `normals` | `list[float] \| None` | `None` | flat (nx, ny, nz) per face (one triple per triangle); `None` triggers per-face auto-compute on first draw |
+| `normals` | `list[float] \| None` | `None` | flat (nx, ny, nz) per face (one triple per triangle); `None` computes per-face normals on the fly at draw time (see § 9.4) |
 | `uvs` | `list[float] \| None` | `None` | flat (u, v) per vertex; `None` disables texture sampling |
 | `indices` | `list[int] \| None` | `None` | flat indices; `None` draws as a flat list whose chunk size follows `prim` |
 | `prim` | `int` | `PRIM_TRIANGLES` | topology (see § 9.1) |
@@ -560,14 +567,17 @@ Slice mutation on the returned list (`geom.positions[0:9] = [...]`)
 does **not** propagate to the internal buffer; reassign the whole list
 to refresh.
 
-### 9.4 Normal Auto-Cache
+### 9.4 Normal Computation
 
-When `normals` is `None`, the renderer computes per-face flat normals
-on the first draw and stores them on the attribute (one `(nx, ny, nz)`
-per triangle, indexed by face). Subsequent draws reuse the cached
-normals. To force recomputation after mutating `positions`, set
-`geom.normals = None` (the next draw recomputes), or call
-`compute_normals()` to refresh explicitly.
+When `normals` is `None` and the draw is shaded, the renderer computes
+per-face flat normals on the fly for that draw (one `(nx, ny, nz)` per
+triangle, from each triangle's world-space vertices). This recomputes
+every draw — it is **not** cached back onto the attribute. For static
+geometry redrawn each frame, call `compute_normals()` once to compute
+and store the per-face normals on `geom.normals`, so later draws reuse
+the stored set instead of recomputing. Mutating `positions` does not
+invalidate stored normals; set `geom.normals = None` to return to
+on-the-fly computation, or call `compute_normals()` again to refresh.
 
 Smooth shading (averaging adjacent face normals at shared vertices) is
 not supported; cube targets flat-shaded retro look and per-face normals
@@ -770,7 +780,7 @@ the rotation in degrees applied in one frame around the axis
 `angular_velocity.normalize()`.
 
 The engine reads `collider.velocity` and `collider.angular_velocity`
-during `Scene.update` and translates / rotates the owning Node's
+during the `update` pipeline and translates / rotates the owning Node's
 transform accordingly (see § 16). The user sets these in `on_update` to
 express movement intent and re-assigns them in `on_collide` to apply
 the engine-resolved post-collision values.
@@ -792,7 +802,8 @@ class Ball(Node):
 
     def on_collide(self, other, contact):
         push = Mat4.from_translation(contact.normal * contact.depth)
-        self.transform = push * self.transform * contact.delta_rotation
+        spin = Mat4.from_quat(contact.delta_rotation)
+        self.transform = push * self.transform * spin
         self.collider.velocity += contact.delta_velocity
         self.collider.angular_velocity += contact.delta_angular_velocity
 ```
@@ -811,9 +822,15 @@ non-penetrating state.
 | `point` | `Vec3` | world-space contact point |
 | `normal` | `Vec3` | world-space contact normal (points from `other` toward `self`) |
 | `depth` | `float` | self-side push-back distance (already adjusted for the mass-share split) |
-| `delta_rotation` | `Mat4` | rotation correction to apply to `self.transform` via matrix multiply |
+| `delta_rotation` | `Quat` | rotation correction to apply to `self.transform` (compose via `Mat4.from_quat`) |
 | `delta_velocity` | `Vec3` | additive velocity correction from the collision |
 | `delta_angular_velocity` | `Vec3` | additive angular velocity correction from the collision |
+
+The current engine resolves rotational response through
+`delta_angular_velocity` (the spin integrates into the transform on the
+next frame, § 16). `delta_rotation` is reserved for a future immediate
+orientation correction and is presently always identity, so applying it
+(below) is a harmless no-op until that response is implemented.
 
 ### 12.1 Application Pattern
 
@@ -825,7 +842,8 @@ def on_collide(self, other, contact):
     # frame, § 5.6, and would bend the push vector through the body's
     # own basis once it starts rotating).
     push = Mat4.from_translation(contact.normal * contact.depth)
-    self.transform = push * self.transform * contact.delta_rotation
+    spin = Mat4.from_quat(contact.delta_rotation)
+    self.transform = push * self.transform * spin
     # 2) Velocity / angular velocity updates: additive.
     self.collider.velocity += contact.delta_velocity
     self.collider.angular_velocity += contact.delta_angular_velocity
@@ -840,11 +858,12 @@ The decomposition is deliberate:
   applied as a left-multiplied `Mat4.from_translation`, i.e. a
   world-space shift; the local-frame `Mat4.translate` would produce a
   different motion for a body whose orientation drifts from identity.
-- **Rotation is `delta_rotation: Mat4`**, applied by right-multiplying
-  with `self.transform`. Rotation has no natural "scalar × axis" form
-  analogous to `normal * depth`, so the engine emits the composed
-  rotation directly. Right-multiplication keeps the rotation local to
-  the body's origin.
+- **Rotation is `delta_rotation: Quat`**, composed into a matrix with
+  `Mat4.from_quat` and right-multiplied onto `self.transform`. Rotation
+  has no natural "scalar × axis" form analogous to `normal * depth`, so
+  the engine emits the resolved rotation as a quaternion (which also
+  interpolates cleanly). Right-multiplication keeps the rotation local
+  to the body's origin.
 - **Velocity / angular velocity are additive**. Adding the engine-resolved
   deltas to the current values composes naturally with whatever the user
   set in `on_update` (gravity, thrust, controller input). The user's
@@ -874,7 +893,7 @@ correction.
 
 ## 13. RaycastHit
 
-Result payload returned by `Scene.raycast` and `Scene.raycast_all`.
+Result payload returned by `Node.raycast` and `Node.raycast_all`.
 
 | Field | Type | Meaning |
 |---|---|---|
@@ -895,8 +914,8 @@ PS1-scale shape vocabulary cube supports.
 
 Base class for everything in the scene tree. A `Node` carries a transform,
 hierarchy links, tags, draw / collide / lifecycle hooks, and node-local
-draw commands. `Scene` (§ 15) is the root `Node`; user-defined actors
-subclass `Node` and override the lifecycle hooks.
+draw commands. The scene root (§ 15) is itself a `Node`; user-defined
+actors subclass `Node` and override the lifecycle hooks.
 
 ```python
 class Player(Node):
@@ -922,6 +941,7 @@ class Player(Node):
 | `transform` | `Mat4` | composed with parent's transform during draw | local-space transform |
 | `active` | `bool` | parent-dominant (False halts subtree update + collision) | enable/disable update + collision |
 | `visible` | `bool` | parent-dominant (False halts subtree drawing) | enable/disable draw |
+| `camera` | `Camera \| None` | None inherits from the closest non-None ancestor | active camera for this subtree's draws |
 | `shading` | `Shading \| None` | None inherits from the closest non-None ancestor | shading LUT effective for this subtree |
 | `collider` | `Collider \| None` | this node only | collision shape and behavior (§ 11) |
 | `tags` | `list[str]` | this node only | multi-tag membership (Godot groups style); used by `find_by_tags` and spatial-query `tags` filters |
@@ -932,17 +952,20 @@ class Player(Node):
 |---|---|---|
 | `parent` | `Node \| None` | direct parent in the tree |
 | `children` | `tuple[Node, ...]` | direct children |
-| `camera` | `Camera` | active camera; valid only inside `on_draw` |
+| `destroyed` | `bool` | `True` after `destroy()` until end-of-frame detachment |
 | `forward` | `Vec3` | normalized forward-axis vector derived from `transform` |
 | `right` | `Vec3` | normalized right-axis vector derived from `transform` |
 | `up` | `Vec3` | normalized up-axis vector derived from `transform` |
-| `scene` | `Scene \| None` | the owning Scene, or `None` if not attached to one |
+| `effective_camera` | `Camera \| None` | cascade-resolved active camera (nearest non-`None` `camera` up the tree); read inside `on_draw` |
+| `world_transform` | `Mat4` | composition of all ancestor transforms (§ 14.4) |
 
-`forward` / `right` / `up` read directly from the transform's basis
-columns (no per-call Mat4 decomposition); they are normalized so that
-they remain unit vectors even when the transform carries non-uniform
-scale. `scene` is the entry point for spatial queries from inside a
-Node's lifecycle hooks (`self.scene.raycast(...)`).
+`forward` / `right` / `up` read directly from the (local) transform's
+basis columns (no per-call Mat4 decomposition); they are normalized so
+that they remain unit vectors even when the transform carries
+non-uniform scale. Spatial queries (§ 15.4) are `Node` methods that
+search the node's own subtree, so an actor reaches scene-wide queries by
+holding a reference to the scene root and calling, for example,
+`root.raycast(...)`.
 
 #### Cascade modes
 
@@ -951,19 +974,9 @@ Node's lifecycle hooks (`self.scene.raycast(...)`).
   and `visible`.
 - **inherits-from-ancestor**: when this node's value is `None`, the
   effective value is the closest non-`None` ancestor's value. Used for
-  `shading`. Set once on `Scene` and override per-subtree as needed.
+  `shading` and `camera`. Set once on the scene root and override
+  per-subtree as needed.
 - **this node only**: no propagation. Used for `collider` and `tags`.
-
-#### Class-level constants
-
-`Node` exposes integer constants for billboard modes (used by per-call
-`billboard` arguments):
-
-| Constant | Value | Meaning |
-|---|---|---|
-| `Node.BILLBOARD_OFF` | 0 | no billboard adjustment (Node `transform` used as-is) |
-| `Node.BILLBOARD_ON` | 1 | full camera-facing billboard |
-| `Node.BILLBOARD_FIXED_Y` | 2 | Y axis fixed to world up; X / Z rotation follows the camera |
 
 ### 14.2 Tree Operations
 
@@ -975,7 +988,7 @@ node.destroy()                      # detach and remove from the tree
 
 `add_child` implicitly removes the child from its previous parent.
 `destroy` removes the node from its parent and triggers `on_destroy`.
-Destruction is deferred to the end of the current `Scene.update` step
+Destruction is deferred to the end of the current `update` step
 to avoid mid-traversal mutation hazards.
 
 ### 14.3 Lookup
@@ -986,9 +999,8 @@ node.find_by_tags(tags)             # list[Node] — subtree DFS, matches any of
 ```
 
 Both methods perform a depth-first pre-order traversal starting at
-`self`, returning every match (or `[]` if none). `tags` accepts either
-a single string or a list of strings; a Node matches if it carries any
-of the listed tags.
+`self`, returning every match (or `[]` if none). `find_by_tags` takes a
+list of strings; a Node matches if it carries any of the listed tags.
 
 The list-returning shape is symmetric across both lookups: even
 `find_by_name` returns a list, because Pyxel cube does not enforce name
@@ -999,7 +1011,7 @@ else None`.
 ### 14.4 World Transform
 
 ```python
-node.world_transform()              # Mat4 — composition of all ancestor transforms
+node.world_transform                # Mat4 property — composition of all ancestor transforms
 ```
 
 Computed on demand by walking up the tree. Cube does not cache the world
@@ -1008,93 +1020,107 @@ within a single frame.
 
 ### 14.5 Immediate-Mode Draw Commands
 
-Inside `on_draw`, the node draws into the current camera and screen.
-Coordinates are node-local (the engine composes parent transforms
-during draw). Every draw command is a one-liner that fully specifies
-its style through positional + keyword-only arguments — there is no
-"current draw state" the user has to track.
+Inside `on_draw`, the node draws into the effective camera (§ 14.1) and
+the target screen. Coordinates are node-local (the engine composes
+parent transforms during draw). A draw command takes its geometry, its
+color or texture, and the few options intrinsic to it (`col_img`,
+`colkey`, `angle`, `font`). Cross-cutting render state (shading, dither,
+depth) is not passed per call; it is set through state-setter methods
+that reset to their defaults at the start of every node's `on_draw`
+(see below).
 
 ```python
 # Vec3 vertex-list primitives
-self.pset(pos, col, ...)
-self.line(p1, p2, col, ...)
-self.tri(p1, p2, p3, col, ...)
-self.trib(p1, p2, p3, col, ...)
+self.pset(pos, col)
+self.line(p1, p2, col)
+self.tri(p1, p2, p3, col)
+self.trib(p1, p2, p3, col)
 
-# Screen-aligned 1-point shapes (always face camera)
-self.circ(pos, r, col, ...)
-self.circb(pos, r, col, ...)
-
-# 3D solids (Vec3-positioned, symmetric)
-self.sphere(pos, r, col, ...)
-self.sphereb(pos, r, col, ...)
+# Screen-aligned 1-point shapes (always face the camera)
+self.circ(pos, r, col)
+self.circb(pos, r, col)
 
 # Mat4-positioned plane shapes
-self.rect(mat, w, h, col, ...)
-self.rectb(mat, w, h, col, ...)
-self.elli(mat, w, h, col, ...)
-self.ellib(mat, w, h, col, ...)
+self.rect(mat, w, h, col)
+self.rectb(mat, w, h, col)
+self.elli(mat, w, h, col)
+self.ellib(mat, w, h, col)
 
-# Mat4-positioned solids
-self.box(mat, size, col, ...)
-self.boxb(mat, size, col, ...)
-
-# Text (Vec3-positioned, screen-space billboard glyphs)
-self.text(pos, s, col, font=None, ...)
+# 3D solids (box is Mat4-positioned, sphere is Vec3-positioned)
+self.box(mat, size, col_img=7, *, colkey=None)
+self.boxb(mat, size, col)
+self.sphere(pos, r, col_img=7, *, colkey=None)
+self.sphereb(pos, r, col)
 
 # Image quads
-self.sprite(pos, img, uvs, w, h, ...)        # always camera-facing
-self.plane(mat, img, uvs, w, h, ...)         # free orientation
+self.sprite(pos, img, uvs, w, h, *, colkey=None, angle=0.0)   # always camera-facing
+self.plane(mat, img, uvs, w, h, *, colkey=None)               # free orientation
 
 # Mesh asset draw (hierarchical; see § 10)
-self.mesh(mat, mesh_asset, ...)
+self.mesh(mat, mesh_asset)
 
 # Generic primitive draw (low-level, takes a Geometry; see § 9)
-self.prim(mat, geom, col_img=7, colkey=None, ...)
+self.prim(mat, geom, col_img=7, *, colkey=None)
+
+# Text (Vec3 anchor, screen-space glyphs; always camera-facing)
+self.text(pos, s, col, *, font=None)
 ```
 
 #### Positioning conventions
 
 - **Vec3-positioned** (`pos`, `p1`, `p2`, `p3`): used by vertex-specified
-  primitives, screen-aligned shapes, billboards, `text`, and `sphere`.
+  primitives, screen-aligned shapes, `sprite`, `text`, and `sphere`.
 - **Mat4-positioned** (`mat`): used by primitives that need full
   orientation — plane shapes, 3D solids with a directional axis,
   `plane`, `mesh`, and `prim`.
 
-#### Common keyword-only arguments
+#### Per-`on_draw` render state
 
-Every draw command takes keyword-only modifier arguments. Only those
-that meaningfully apply per command are exposed:
+Cross-cutting render state is set with state-setter methods rather than
+per-call arguments. A setter takes effect for the draws that follow it
+in the same `on_draw`, and **every node's `on_draw` begins with the
+state reset to its defaults**, so one node cannot leak render state into
+another (the tree is walked parent-first; see § 16).
 
-| Argument | Type | Default | Applies to | Meaning |
+```python
+self.shaded(on)             # bool       — directional shading through the effective Shading
+self.dither(alpha)          # float 0..1 — Bayer-dither pseudo-alpha
+self.depth_test(on)         # bool       — depth-buffer comparison
+self.depth_write(on)        # bool       — depth-buffer writes
+self.depth_offset(offset)   # float      — world-unit depth bias
+```
+
+| Setter | Type | Default | Effect |
+|---|---|---|---|
+| `shaded` | `bool` | `True` | apply directional shading through the effective `Shading` |
+| `dither` | `float` (0..1) | `1.0` | Bayer-dither pseudo-alpha (`1.0` opaque, `0.0` fully transparent) |
+| `depth_test` | `bool` | `True` | enable depth-buffer comparison |
+| `depth_write` | `bool` | `True` | enable depth-buffer writes |
+| `depth_offset` | `float` | `0.0` | world-unit depth bias; negative toward the camera, positive away |
+
+- `shaded` has no effect on commands without a surface normal — lines,
+  points, outlines, screen-aligned circles, and `text` — and `sprite`
+  is drawn unshaded regardless (decoration / particle use is the
+  majority).
+
+`depth_offset` biases only the depth test / write — as if the draw moved
+`offset` world units along the camera's view direction — without changing
+its screen position or size (it is a depth bias, not a translation).
+Negative draws toward the camera so it wins against coplanar or
+overlapping geometry; positive pushes it away. Use it to layer overlays
+(labels, decals, outlines on a surface) without z-fighting. The sign
+matches the depth-bias convention of `glPolygonOffset` / Direct3D / Unity
+(negative = toward the camera).
+
+The remaining options are per-call arguments, intrinsic to specific
+commands:
+
+| Argument | Type | Default | Commands | Meaning |
 |---|---|---|---|---|
-| `col_img` | `int \| Image` | `7` | `prim` only | flat color when `int`, texture when `Image` (Mesh's own `col_img` is consulted by `mesh`) |
-| `colkey` | `int \| None` | `None` | image / mesh / prim commands | transparent palette index for textures |
+| `col_img` | `int \| Image` | `7` | `box`, `sphere`, `prim` | flat color when `int`, texture when `Image` (`mesh` reads the `Mesh`'s own `col_img`) |
+| `colkey` | `int \| None` | `None` | `box` / `sphere` / `plane` / `sprite` / `prim` | transparent palette index for textures |
 | `angle` | `float` | `0.0` | `sprite` only | screen-space rotation in degrees |
 | `font` | `Font \| None` | `None` | `text` only | overrides default font |
-| `shaded` | `bool` | varies | filled-face commands | apply directional shading through `Shading` |
-| `dither_alpha` | `float` | `1.0` | all draw commands | Bayer-dither pseudo-alpha (`1.0` opaque, `0.0` fully transparent) |
-| `depth_test` | `bool` | `True` | all draw commands | enable depth-buffer comparison |
-| `depth_write` | `bool` | `True` | all draw commands | enable depth-buffer writes |
-| `billboard` | `int` | `BILLBOARD_OFF` | most Mat4 / multi-Vec3 commands | rotate `transform` to face the camera |
-
-Rules for which modifier appears on which command:
-
-- **`shaded`** is omitted from commands that have no surface normal —
-  lines, points, outlines, screen-aligned circles, and `text`.
-- **`billboard`** is omitted where it has no visible effect — single
-  points, screen-aligned circles, `text`, and symmetric solids
-  (`sphere`, `sphereb`). `sprite` is always camera-facing (no
-  `billboard` argument; the function pins `BILLBOARD_ON` internally).
-
-Defaults for `shaded` follow "what looks natural with no arguments":
-
-- **Outlines / lines / points / screen-aligned shapes**: `shaded` not
-  exposed (treated as unshaded internally).
-- **Filled 2D / 3D solids** (`tri`, `rect`, `elli`, `box`, `sphere`,
-  `plane`, `mesh`, `prim` on a `PRIM_TRIANGLES` Geometry): `shaded=True`.
-- **`sprite`**: `shaded=False` (decoration / particle use cases are
-  the majority).
 
 #### Shape conventions
 
@@ -1102,9 +1128,9 @@ Defaults for `shaded` follow "what looks natural with no arguments":
 - **`circ` / `circb`**: always face the camera; radius `r` is in world
   units; border is 1 pixel.
 - **`line`**: world-positioned, fixed 1-pixel width.
-- **`sphere` / `sphereb`**: 12-vertex / 20-triangle icosahedron scaled
-  by `r`. Internally backed by a cached static buffer and routed through
-  `prim`.
+- **`sphere` / `sphereb`**: level-1 subdivided icosahedron (42 vertices
+  / 80 triangles) scaled by `r`. Internally backed by a cached static
+  buffer and routed through `prim`.
 - **`box` / `boxb`**: `size` is `Vec3(width, height, depth)`. Internally
   backed by a cached static unit-cube buffer.
 - **`text`**: 3D anchor + screen-space glyphs. `pos` is projected to
@@ -1119,10 +1145,11 @@ Defaults for `shaded` follow "what looks natural with no arguments":
   `mat` in node-local space. The mesh's parts each carry their own
   local transform, prim mode, and cull mode; the renderer composes
   them in topological order. `col_img` and `colkey` live on the `Mesh`.
-- **`prim`**: low-level entry that all higher-level commands route
-  through. Takes a single `Geometry` argument. `col_img` accepts
-  `int | Image` (integer = flat color, Image = textured triangles);
-  `colkey` is the transparent palette index when `col_img` is an Image.
+- **`prim`**: low-level entry that most higher-level commands route
+  through (`circ` / `circb` / `text` take dedicated screen-space paths).
+  Takes a single `Geometry` argument. `col_img` accepts `int | Image`
+  (integer = flat color, Image = textured triangles); `colkey` is the
+  transparent palette index when `col_img` is an Image.
 
 #### Texture and UV layout
 
@@ -1173,90 +1200,105 @@ def on_destroy(self): ...                      # called when destroy() runs
 
 ---
 
-## 15. Scene
+## 15. Scene Root and Frame Loop
 
-`Node`-derived root that drives the per-frame update / draw cycle, owns
-the screen clear color, and exposes spatial-query methods (raycast,
-overlap). The application instantiates one `Scene` (or several), adds
-actor `Node` subtrees as children, and calls `update` and `draw` from
-Pyxel's update / draw callbacks.
+There is no dedicated `Scene` class — the root of a scene tree is an
+ordinary `Node`. `Node` itself carries the per-frame `update` / `draw`
+cycle and the spatial-query methods (raycast, overlap); the clear color
+lives on `Camera`. The application builds a root node, gives it a
+`camera` and a `shading`, adds actor `Node` subtrees as children, and
+calls `update` and `draw` from Pyxel's update / draw callbacks.
+
+The convention is to subclass `Node` for the root (often named `Scene`)
+so scene-wide setup lives in its `__init__`:
 
 ```python
+class Scene(Node):
+    def __init__(self):
+        super().__init__()
+        self.camera = Camera()
+        self.camera.clear_color = 0
+        self.shading = Shading(pyxel.colors.to_list())
+        self.add_child(Player(Vec3(0, 0, 0)))
+
+
 class App:
     def __init__(self):
         pyxel.init(256, 192)
         self.scene = Scene()
-        self.scene.shading = Shading(pyxel.colors.to_list())
-        self.scene.clear_color = 0
-        self.camera = Camera()
-        self.scene.add_child(Player(Vec3(0, 0, 0)))
         pyxel.run(self.update, self.draw)
 
     def update(self):
         self.scene.update()
 
     def draw(self):
-        self.scene.draw(0, 0, 256, 192, self.camera)
+        self.scene.draw(0, 0, 256, 192)
 ```
 
-### 15.1 Inherited from Node
+### 15.1 The Root Node
 
-`Scene` inherits all `Node` attributes and methods (§ 14), so it is
-indistinguishable from any other node when assigning shading, running
-lifecycle hooks, or composing transforms. The convention is to set
-`scene.shading` once for scene-wide lighting and override per-subtree
-where a region needs different shading.
+The root node is a `Node` like any other (§ 14); nothing distinguishes
+it structurally. `camera` and `shading` are cascading attributes, so the
+convention is to set them once on the root for a scene-wide view and
+lighting, and override them per-subtree where a region needs a different
+camera or shading.
 
-### 15.2 Scene-specific Attributes
+### 15.2 Clear Color
 
-| Attribute | Type | Default | Meaning |
-|---|---|---|---|
-| `clear_color` | `int \| None` | `None` | screen + depth buffer clear color before each draw; `None` skips clear |
+The screen clear color is a `Camera` attribute (`clear_color`, § 7), not
+a root-node attribute — each camera clears with its own color (or skips
+the screen clear when `None`); the depth buffer is cleared every `draw`
+regardless. The root node has no scene-specific attributes of its own
+beyond the `Node` surface.
 
 ### 15.3 Driver Methods
 
 ```python
-scene.update()
-scene.draw(x, y, w, h, camera, screen=None)
+node.update()
+node.draw(x, y, w, h, target=None)
 ```
 
-- **`update()`**: one frame of the game loop. Steps detailed in § 16.
-- **`draw(x, y, w, h, camera, screen=None)`**: rasterizes the scene
-  into the destination rectangle `(x, y, w, h)` using `camera`.
-  - `screen=None` (default): target `pyxel.screen`.
-  - `screen=Image`: target a custom image (render-to-texture for
+- **`update()`**: one frame of the game loop over this node's subtree.
+  Steps detailed in § 16.
+- **`draw(x, y, w, h, target=None)`**: rasterizes this node's subtree
+  into the destination rectangle `(x, y, w, h)` using the node's
+  effective camera (§ 14.1). Raises if no `camera` is set on the node
+  or any ancestor.
+  - `target=None` (default): draw to `pyxel.screen`.
+  - `target=Image`: draw to a custom image (render-to-texture for
     minimap, multi-pass effects, off-screen rendering).
 
 ### 15.4 Spatial Queries
 
-Pyxel cube exposes four spatial-query primitives on the Scene, mirroring
+Pyxel cube exposes four spatial-query primitives on `Node`, mirroring
 Unity Physics's `Raycast`, `RaycastAll`, `OverlapSphere`, and
-`OverlapBox`. All four operate against the colliders attached to the
-Scene's Node subtree.
+`OverlapBox`. Each operates against the colliders in the subtree rooted
+at the node it is called on — call it on the scene root to query the
+whole scene.
 
 ```python
-scene.raycast(
+node.raycast(
     origin, direction,
-    max_distance=float("inf"),
+    max_distance=None,
     hit_triggers=False,
     tags=None,
 ) -> RaycastHit | None
 
-scene.raycast_all(
+node.raycast_all(
     origin, direction,
-    max_distance=float("inf"),
+    max_distance=None,
     hit_triggers=False,
     tags=None,
 ) -> list[RaycastHit]
 
-scene.overlap_sphere(
+node.overlap_sphere(
     center, radius,
     hit_triggers=False,
     tags=None,
 ) -> list[Node]
 
-scene.overlap_box(
-    transform, size,
+node.overlap_box(
+    mat, size,
     hit_triggers=False,
     tags=None,
 ) -> list[Node]
@@ -1285,9 +1327,9 @@ scene.overlap_box(
 Return every Node whose collider overlaps the query volume.
 
 - `overlap_sphere(center, radius, ...)`: spherical query.
-- `overlap_box(transform, size, ...)`: oriented-box query. `transform`
-  positions and rotates the box; `size` is the full extent (same
-  convention as `Collider.size` and `Node.box`).
+- `overlap_box(mat, size, ...)`: oriented-box query. `mat` positions
+  and rotates the box; `size` is the full extent (same convention as
+  `Collider.size` and `Node.box`).
 
 The result list ordering is implementation-defined; do not rely on a
 specific traversal order.
@@ -1298,14 +1340,15 @@ The spatial-query API does not include an `ignore` parameter. Spatial
 queries follow the same silent-fallback policy as the math primitives:
 a query whose origin / probe volume overlaps the caller's own collider
 returns a hit on that collider rather than silently dropping it.
-Excluding self is a one-line post-filter at the call site:
+Excluding self is a one-line post-filter at the call site (`root` is the
+scene-root node the actor holds a reference to):
 
 ```python
 # Skip self in the overlap list.
-nearby = [n for n in self.scene.overlap_sphere(self.transform.pos, 3.0) if n is not self]
+nearby = [n for n in root.overlap_sphere(self.transform.pos, 3.0) if n is not self]
 # Skip self in raycast hits (origin inside the caller's collider would
 # otherwise produce a zero-distance self-hit).
-hits = [h for h in self.scene.raycast_all(origin, direction) if h.node is not self]
+hits = [h for h in root.raycast_all(origin, direction) if h.node is not self]
 ```
 
 The earlier `ignore: Node | list[Node] | None` parameter was considered
@@ -1315,21 +1358,26 @@ the post-filter idiom above covers the rest with one line.
 ### 15.6 Multi-angle Rendering
 
 Build the scene tree once, then call `draw` as many times per frame as
-needed with different cameras / rectangles / target screens. The same
-scene state drives every `draw` call within a frame.
+needed into different rectangles / target screens. The camera comes from
+the node's `camera` attribute, so swap it between calls (or assign
+different cameras to different subtrees). The same scene state drives
+every `draw` call within a frame.
 
 ```python
 def draw(self):
-    self.scene.draw(0, 0, 256, 192, self.main_camera)
-    self.scene.draw(0, 144, 64, 48, self.minimap_camera)
+    self.scene.camera = self.main_camera
+    self.scene.draw(0, 0, 256, 192)
+    self.scene.camera = self.minimap_camera
+    self.scene.draw(0, 144, 64, 48)
 ```
 
 ---
 
-## 16. Scene.update Pipeline
+## 16. The update Pipeline
 
-The per-frame `Scene.update()` runs the following pipeline. Each phase
-operates on the entire tree before the next phase begins.
+The per-frame `Node.update()` runs the following pipeline over the
+node's subtree. Each phase operates on the entire tree before the next
+phase begins.
 
 1. **User update**: depth-first pre-order traversal of the tree,
    calling each active Node's `on_update`. Subtrees rooted at a node
@@ -1392,10 +1440,9 @@ operates on the entire tree before the next phase begins.
    the Unity / Godot convention), then detaches each flagged node.
    `Node.destroyed: bool` exposes the flag read-only so user hooks can
    early-return from `on_update` / `on_collide` after a `destroy()`
-   within the same frame. Because `Scene.update` runs before
-   `Scene.draw`, a node destroyed in `update()` is already detached
-   when the next `draw()` walks the tree, so its `on_draw` does not
-   fire.
+   within the same frame. Because `update()` runs before `draw()`, a
+   node destroyed in `update()` is already detached when the next
+   `draw()` walks the tree, so its `on_draw` does not fire.
 
 The pipeline is single-pass per frame: there is no iterative
 constraint solver. PS1-scale games (a hundred or so dynamic bodies)
@@ -1407,11 +1454,12 @@ or constraint chains are out of scope.
 ## 17. Performance Notes
 
 - A typical pixel-art game has tens to a few hundred drawables per
-  frame. At that scale, immediate-mode command queueing has comparable
-  cost to Pyxel 2D's existing per-call overhead.
-- Multi-angle rendering (re-running `draw` with a different camera) is
-  cheap in the sense that no scene-graph traversal is repeated — only
-  the rasterization stage runs again per call.
+  frame. At that scale, immediate-mode drawing has comparable cost to
+  Pyxel 2D's existing per-call overhead.
+- Multi-angle rendering calls `draw` again with a different camera; each
+  call re-runs the subtree's `on_draw` traversal and rasterizes afresh
+  (cube is immediate-mode, with no retained draw-command cache between
+  calls). At PS1 scale a few views per frame stay in budget.
 - `Mesh` is loaded once; `Node` trees built from it carry per-instance
   poses without copying mesh data.
 - `Vec3` / `Mat4` / `Quat` are immutable; their constants are shared
@@ -1486,7 +1534,7 @@ recognize and which they will need to translate.
   affect glyph layout). The current `text(pos, ...)` is screen-space
   glyphs at the projected point; users that need 3D-text shapes can
   build them through `prim()`. Revisit if a real use case surfaces.
-- **Lifecycle hook on attach**: `on_attach` / `on_ready` for Scene
+- **Lifecycle hook on attach**: `on_attach` / `on_ready` for scene-tree
   insertion was considered but rejected; `__init__` covers the typical
   setup needs and the additional hook adds learning surface for
   marginal benefit. Revisit if real-game patterns need it.
@@ -1572,12 +1620,12 @@ evidence.
 
 ### 20.4 Drawing
 
-- **Retained-mode scene graph with per-Node draw callbacks** —
-  replaced by Scene's immediate-mode queue.
+- **Retained-mode scene graph with registered per-Node draw
+  primitives** — replaced by per-`on_draw` immediate-mode draw commands.
 - **`Primitive` class** (multi-shape aggregate registered into a node).
 - **Specialized Node subclasses** (`SpriteNode`, `LineNode`,
   `MeshNode`, `TextNode`, etc.). One Node class is enough; per-shape
-  behavior is in Scene's draw commands.
+  behavior is in the `Node` draw commands.
 - **`Shader` class** — replaced by `Shading` (LUT + direction).
 - **`scene.push_matrix` / `scene.pop_matrix`** — draw commands accept
   their own `mat` directly.
@@ -1591,11 +1639,14 @@ evidence.
 - **`fill` draw op on `Node`** — no clean 3D meaning.
 - **Standalone `pal` operation / `Node.pal` draw state** — replaced by
   setting `Shading` rows uniformly.
-- **`Node.depth_test(...)` / `Node.dither(...)` draw-state methods
-  and cascading properties** — replaced by per-call keyword arguments
-  on every draw command.
-- **`alpha` argument name** — replaced with `dither_alpha` to flag
-  that the implementation is Bayer dithering.
+- **Per-call keyword-argument modifiers** (`shaded=`, `dither_alpha=`,
+  `depth_test=`, … on every draw command) **and cascading draw-state
+  properties** — replaced by per-`on_draw` state-setter methods
+  (`shaded` / `dither` / `depth_test` / `depth_write` / `depth_offset`)
+  that reset to defaults at each node's `on_draw` entry.
+- **A standalone `alpha` modifier name** — the pseudo-alpha control is
+  the `dither(alpha)` setter, named to flag that the implementation is
+  Bayer dithering rather than true alpha blending.
 - **`draw_text` / `draw_image` / `make_*` prefixes** — cube uses bare
   verbs.
 - **GPU-oriented features** (flat 16-element `to_list` / `from_list`
@@ -1613,6 +1664,10 @@ evidence.
 
 ### 20.5 Scene structure and lookup
 
+- **A distinct `Scene` class** — the scene root is a plain `Node`; the
+  frame loop (`update` / `draw`) and the spatial queries are `Node`
+  methods, so no separate `Scene` type is exposed. Apps conventionally
+  subclass `Node` (often named `Scene`) for the root.
 - **`add_child` returning the child or self for chaining** — tree ops
   return `None`.
 - **Module-level functions in `pyxel.cube`** — the namespace stays
