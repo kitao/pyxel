@@ -4,13 +4,6 @@ from pyxel.cube import Camera, Mat4, Node, Shading, Vec3
 cat_image = None
 
 
-class Label(Node):
-    caption = ""
-
-    def on_draw(self):
-        self.text(Vec3(0, 0.9, 0), self.caption, 7)
-
-
 class Shape(Node):
     solid_method = ""
     wire_method = ""
@@ -18,8 +11,6 @@ class Shape(Node):
     def __init__(self, pos):
         super().__init__()
         self.pos = pos
-        self.label = Label()
-        self.add_child(self.label)
 
     def on_update(self):
         spin = Mat4.from_euler(Vec3(0, pyxel.frame_count * 2.0, 0))
@@ -27,11 +18,14 @@ class Shape(Node):
 
     def on_draw(self):
         if self.wire_method and pyxel.btn(pyxel.KEY_SPACE):
-            self.label.caption = self.wire_method
+            caption = self.wire_method
             self.draw_wire()
         else:
-            self.label.caption = self.solid_method
+            caption = self.solid_method
             self.draw_solid()
+
+        self.depth_offset(-1.0)
+        self.text(Vec3(0, 0.7, 0), caption, 7)
 
 
 class PsetShape(Shape):
@@ -68,6 +62,16 @@ class RectShape(Shape):
         self.rectb(Mat4.IDENTITY, 1.0, 0.7, 10)
 
 
+class CircShape(Shape):
+    solid_method, wire_method = "circ", "circb"
+
+    def draw_solid(self):
+        self.circ(Vec3.ZERO, 0.5, 3)
+
+    def draw_wire(self):
+        self.circb(Vec3.ZERO, 0.5, 3)
+
+
 class ElliShape(Shape):
     solid_method, wire_method = "elli", "ellib"
 
@@ -78,14 +82,12 @@ class ElliShape(Shape):
         self.ellib(Mat4.IDENTITY, 1.0, 0.7, 11)
 
 
-class CircShape(Shape):
-    solid_method, wire_method = "circ", "circb"
+class PlaneShape(Shape):
+    solid_method = "plane"
 
     def draw_solid(self):
-        self.circ(Vec3.ZERO, 0.5, 3)
-
-    def draw_wire(self):
-        self.circb(Vec3.ZERO, 0.5, 3)
+        uvs = ((0.0, 0.0), (1.0, 0.0), (0.0, 1.0), (1.0, 1.0))
+        self.plane(Mat4.IDENTITY, cat_image, uvs, 1.0, 1.0)
 
 
 class SpriteShape(Shape):
@@ -135,24 +137,26 @@ class Scene(Node):
             LineShape,
             TriShape,
             RectShape,
-            ElliShape,
             CircShape,
+            ElliShape,
+            PlaneShape,
             SpriteShape,
             BoxShape,
             SphereShape,
         ]
         for i, shape_cls in enumerate(shapes):
-            col, row = i % 3, i // 3
-            pos = Vec3((col - 1) * 2.2, (1 - row) * 2.2 - 0.25, 0)
+            angle = i * 360.0 / len(shapes)
+            pos = Vec3(2.5 * pyxel.sin(angle), 2.5 * pyxel.cos(angle), 0)
             self.add_child(shape_cls(pos))
 
     def update_camera(self):
-        eye = Vec3(
+        target = Vec3(0, 0.2, 0)
+        eye = target + Vec3(
             6.0 * pyxel.sin(self.yaw) * pyxel.cos(self.pitch),
             6.0 * pyxel.sin(self.pitch),
             6.0 * pyxel.cos(self.yaw) * pyxel.cos(self.pitch),
         )
-        self.camera.transform = Mat4.look_at(eye, Vec3.ZERO)
+        self.camera.transform = Mat4.look_at(eye, target)
 
     def on_update(self):
         mx, my = pyxel.mouse_x, pyxel.mouse_y
@@ -166,7 +170,7 @@ class Scene(Node):
 
 class App:
     def __init__(self):
-        pyxel.init(160, 160, title="Cube Basic Shapes")
+        pyxel.init(240, 240, title="Cube Basic Shapes")
 
         global cat_image
         cat_image = pyxel.Image.from_image("assets/cat_16x16.png")
@@ -183,6 +187,10 @@ class App:
 
     def draw(self):
         self.scene.draw(0, 0, pyxel.width, pyxel.height)
+
+        cx, cy = pyxel.width // 2, pyxel.height // 2
+        for i, s in enumerate(["Mouse: rotate", "Space: wireframe"]):
+            pyxel.text(cx - len(s) * 2, cy - 7 + i * 8, s, 7)
 
 
 App()
