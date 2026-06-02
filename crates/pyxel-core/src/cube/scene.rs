@@ -37,12 +37,17 @@ pub struct DrawContext {
     pub depth_w: u32,
     pub depth_h: u32,
     // Per-on_draw state modifiers, mutated via Node.dither / depth_test /
-    // depth_write / shaded setters; reset to defaults before each Node's
-    // on_draw via reset_draw_state(). Rasterizers consult ctx for these
-    // fields directly.
+    // depth_write / depth_offset / shaded setters; reset to defaults before
+    // each Node's on_draw via reset_draw_state(). Rasterizers consult ctx
+    // for these fields directly.
     pub dither_alpha: f32,
     pub depth_test: bool,
     pub depth_write: bool,
+    // World-unit depth bias applied at projection time: a draw's depth is
+    // computed as if it were shifted this many units along the camera's
+    // view direction (negative = toward the camera), while its screen
+    // position is left unchanged. 0.0 = no bias.
+    pub depth_offset: f32,
     pub shaded: bool,
 }
 
@@ -67,7 +72,7 @@ pub fn clear_draw_context() {
 // set_draw_context is called again. Used by Node::draw to recover the
 // depth buffer after traverse_draw completes.
 pub fn take_draw_context() -> Option<DrawContext> {
-    CURRENT_DRAW_CONTEXT.with(|c| c.take())
+    CURRENT_DRAW_CONTEXT.with(Cell::take)
 }
 
 // Reset the per-on_draw state modifiers on the active draw context to
@@ -78,6 +83,7 @@ pub fn reset_draw_state() {
         ctx.dither_alpha = 1.0;
         ctx.depth_test = true;
         ctx.depth_write = true;
+        ctx.depth_offset = 0.0;
         ctx.shaded = true;
     });
 }
@@ -1006,6 +1012,53 @@ mod tests {
         let contact = rc_ref!(&pairs[0].contact_a);
         let normal = rc_ref!(&contact.normal);
         assert!(normal.x < -0.99);
+    }
+
+    #[test]
+    fn test_contact_depth_split_evenly_for_equal_mass() {
+        // Equal-mass overlap splits the penetration depth 50/50 between
+        // the two contacts (mass-share resolution, cube-design.md § 12.3).
+        let root = Node::new();
+        let a = Node::new();
+        let b = Node::new();
+        rc_mut!(&a).collider = Some(sphere_collider(0.5, 1.0));
+        rc_mut!(&b).collider = Some(sphere_collider(0.5, 1.0));
+        place_at(&a, 0.0, 0.0, 0.0);
+        place_at(&b, 0.5, 0.0, 0.0);
+        Node::add_child(&root, &a);
+        Node::add_child(&root, &b);
+        let pairs = Scene::detect_contacts(&root);
+        assert_eq!(pairs.len(), 1);
+        // Penetration = (0.5 + 0.5) - 0.5 = 0.5, halved for equal mass.
+        let depth_a = rc_ref!(&pairs[0].contact_a).depth;
+        let depth_b = rc_ref!(&pairs[0].contact_b).depth;
+        assert!((depth_a - 0.25).abs() < 1e-4, "depth_a = {depth_a}");
+        assert!((depth_b - 0.25).abs() < 1e-4, "depth_b = {depth_b}");
+    }
+
+    #[test]
+    fn test_contact_depth_full_on_movable_against_immovable() {
+        // mass == 0 short-circuits the share: the immovable side takes
+        // zero push-back, the movable side absorbs the full penetration.
+        let root = Node::new();
+        let movable = Node::new();
+        let wall = Node::new();
+        rc_mut!(&movable).collider = Some(sphere_collider(0.5, 1.0));
+        rc_mut!(&wall).collider = Some(sphere_collider(0.5, 0.0));
+        place_at(&movable, 0.0, 0.0, 0.0);
+        place_at(&wall, 0.5, 0.0, 0.0);
+        Node::add_child(&root, &movable);
+        Node::add_child(&root, &wall);
+        let pairs = Scene::detect_contacts(&root);
+        assert_eq!(pairs.len(), 1);
+        // node_a = movable (added first), node_b = wall.
+        let depth_movable = rc_ref!(&pairs[0].contact_a).depth;
+        let depth_wall = rc_ref!(&pairs[0].contact_b).depth;
+        assert!(
+            (depth_movable - 0.5).abs() < 1e-4,
+            "movable absorbs full = {depth_movable}"
+        );
+        assert!(depth_wall.abs() < 1e-4, "immovable takes none = {depth_wall}");
     }
 
     #[test]

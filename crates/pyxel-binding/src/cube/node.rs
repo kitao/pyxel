@@ -393,25 +393,38 @@ impl Node {
     // on_draw, they mutate the active draw context; subsequent primitives
     // in the same on_draw consult these values. The values reset to
     // defaults at the entry of every Node's on_draw (see scene.rs
-    // reset_draw_state). Outside a draw scope, these are no-ops.
+    // reset_draw_state). Outside a draw scope, these are no-ops. They take
+    // `&self` to register as Python instance methods even though the active
+    // draw context lives in a thread-local, not on the node.
+    #[allow(clippy::unused_self)]
     fn dither(&self, alpha: f32) {
         with_draw_context(|ctx| {
             ctx.dither_alpha = alpha.clamp(0.0, 1.0);
         });
     }
 
+    #[allow(clippy::unused_self)]
     fn depth_test(&self, on: bool) {
         with_draw_context(|ctx| {
             ctx.depth_test = on;
         });
     }
 
+    #[allow(clippy::unused_self)]
     fn depth_write(&self, on: bool) {
         with_draw_context(|ctx| {
             ctx.depth_write = on;
         });
     }
 
+    #[allow(clippy::unused_self)]
+    fn depth_offset(&self, offset: f32) {
+        with_draw_context(|ctx| {
+            ctx.depth_offset = offset;
+        });
+    }
+
+    #[allow(clippy::unused_self)]
     fn shaded(&self, on: bool) {
         with_draw_context(|ctx| {
             ctx.shaded = on;
@@ -814,6 +827,7 @@ impl Node {
             dither_alpha: 1.0,
             depth_test: true,
             depth_write: true,
+            depth_offset: 0.0,
             shaded: true,
         });
         let any = self_.into_any();
