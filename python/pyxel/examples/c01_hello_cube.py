@@ -35,13 +35,12 @@ class Scene(Node):
 
         self.camera = Camera()
         self.camera.clear_color = 0
-        self.camera.transform = Mat4.look_at(Vec3(0.0, 3.5, 4.0), Vec3.ZERO)
+        self.camera.transform = Mat4.look_at(Vec3(0.0, 3.0, 4.0), Vec3.ZERO)
 
         for i in range(CUBE_COUNT):
             self.add_child(Cube(i))
 
     def on_draw(self):
-        self.depth_offset(-3.0)
         self.text(Vec3.ZERO, "Hello, Pyxel Cube!", pyxel.frame_count % 16)
 
 
