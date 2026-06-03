@@ -97,6 +97,9 @@ This file is the Pyxel coding policy. It applies to every in-scope file (see Ver
 - Parallel mirrors — shapes deliberately repeated across sibling files for API symmetry or data-structure parallelism — are preserved as-is.
   - e.g., binding wrappers mirror the Python API one-to-one; image and tilemap drawing primitives mirror each other; the `languages` array is independently loaded by each i18n JSON.
 
+- The `.pyi` API stub records each parameter's effective default — the value the implementation resolves to — while its binding may take `None` as a sentinel and resolve it internally. The `.pyi` default and the binding-signature default may therefore differ; that divergence is intentional, not an inconsistency.
+  - e.g., the `.pyi` writes `init(title="Pyxel", fps=30, ...)` and `look_at(eye, target, up=Vec3.UP)` / `box(..., col_img=7)` while the binding takes `up=None` / `col_img=None` and maps them; `None` stays in the `.pyi` only where `None` is itself the default behavior (`display_scale` auto, `max_distance` unbounded, `colkey` / `font` none).
+
 ### Documentation
 
 #### Prose
@@ -212,6 +215,7 @@ A *false positive* in this procedure is a fix candidate that, on closer inspecti
    - section-context label substitution for a product name (Standards > Documentation > Proper Nouns);
    - wording reused intentionally from prior entries of the same change category, including generic phrasing repeated across versions (Standards > Release Notes);
    - parallel-mirror design (Standards > Source Code > Consistency);
+   - effective-default divergence between a `.pyi` stub and its binding (Standards > Source Code > Consistency);
    - intentional platform-conditional code (`cfg(...)` gates);
    - code duplicated for self-contained distribution (e.g., samples);
    - defensive code at system boundaries.
