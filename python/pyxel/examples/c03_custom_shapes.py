@@ -14,8 +14,8 @@ GRID_LINES = 12
 GRID_HALF = 7.0
 FLOOR_COLOR = 5
 
-EYE = Vec3(0.0, 6.0, 11.0)
-TARGET = Vec3(0.0, 2.0, 0.0)
+EYE = Vec3(0.0, 12.0, 10.0)
+TARGET = Vec3(0.0, 1.0, 0.0)
 EMITTER = Vec3(0.0, 0.5, 7.0)
 AIM_W = 9.0
 AIM_H = 7.0
@@ -34,11 +34,6 @@ MARK_COLOR = 8
 FLASH_COLOR = 7
 
 
-# Build a UV sphere as raw vertex data: unit directions per vertex (the
-# wobble displaces along these each frame), triangle indices, and one
-# outward normal per face. Normals are the radial average of each face's
-# vertices, so shading is correct regardless of winding (we draw with
-# CULL_NONE, so winding never hides the blob either).
 def build_sphere(rings, segs):
     dirs = []
     for i in range(rings + 1):
@@ -71,8 +66,6 @@ def build_sphere(rings, segs):
     return dirs, indices, normals
 
 
-# Per-vertex radius: a few sinusoids of direction + time give organic,
-# non-spherical lumps that writhe over time.
 def wobble_radius(d, t, phase):
     r = 1.0
     r += 0.25 * math.sin(3.0 * d[0] + 1.7 * t + phase)
@@ -81,9 +74,6 @@ def wobble_radius(d, t, phase):
     return r
 
 
-# A small glowing-beam texture: rows are the beam cross-section (dark
-# edges -> white core), sampled across the ribbon's width. Color 0 is the
-# transparent colorkey, so the beam has soft edges.
 def make_laser_texture():
     tex = pyxel.Image(8, 8)
     tex.set(
@@ -129,8 +119,6 @@ class Enemy(Node):
         return pos
 
     def on_update(self):
-        # Only the positions change each frame; indices and normals stay
-        # fixed, so the topology is built once.
         self.geom.positions = self.wobbled(pyxel.frame_count * 0.06)
         cx = DRIFT_R * math.cos(self.orbit + pyxel.frame_count * 0.01)
         cz = DRIFT_R * math.sin(self.orbit + pyxel.frame_count * 0.01)
@@ -149,8 +137,6 @@ class Enemy(Node):
 class Floor(Node):
     def __init__(self):
         super().__init__()
-        # Grid of lines on the y=0 plane as a PRIM_LINES geometry: each
-        # consecutive pair of vertices is one segment.
         pos = []
         for k in range(GRID_LINES + 1):
             u = -GRID_HALF + 2 * GRID_HALF * k / GRID_LINES
@@ -168,7 +154,6 @@ class Weapon(Node):
     def __init__(self, enemies):
         super().__init__()
         self.enemies = enemies
-        # Fixed camera basis (world space) for screen-facing geometry.
         forward = (TARGET - EYE).normalize()
         self.cam_right = forward.cross(Vec3(0.0, 1.0, 0.0)).normalize()
         self.cam_up = self.cam_right.cross(forward)
@@ -177,10 +162,7 @@ class Weapon(Node):
         self.firing = []
         self.fire_t = 0
         self.laser_tex = make_laser_texture()
-        # One ribbon mesh per possible beam; topology + uvs built once,
-        # positions rewritten each frame.
         self.beams = [self.make_ribbon() for _ in range(ENEMY_COUNT)]
-        # A square-outline polyline reused for the reticle and lock marks.
         self.square_geom = Geometry(
             positions=[0.0] * 12,
             indices=[0, 1, 1, 2, 2, 3, 3, 0],
@@ -193,8 +175,6 @@ class Weapon(Node):
         indices = []
         for k in range(N_PTS):
             u = k / (N_PTS - 1)
-            # v inset slightly so the width samples rows 0..7 without
-            # running off the texture edge.
             uvs += [u, 0.07, u, 0.93]
         for k in range(N_PTS - 1):
             a = 2 * k
@@ -230,9 +210,6 @@ class Weapon(Node):
         if pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT):
             self.clear_locks()
         if pyxel.btn(pyxel.MOUSE_BUTTON_LEFT):
-            # No screen projection is exposed, so pick by the ray from the
-            # camera through the reticle: an enemy locks when its center is
-            # within LOCK_DIST of that ray (perpendicular distance).
             ray = self.reticle - EYE
             for e in self.enemies:
                 if not e.locked:
@@ -246,9 +223,6 @@ class Weapon(Node):
             self.fire_t = 1
 
     def update_beam(self, geom, target, idx, extent):
-        # Quadratic Bezier: launch out along a fanned direction, then hook
-        # onto the target. Sampled up to `extent`, then expanded into a
-        # camera-facing ribbon (left/right edge per point).
         angle = (idx - (len(self.firing) - 1) * 0.5) * FAN
         launch = self.cam_up * math.cos(angle) + self.cam_right * math.sin(angle)
         ctrl = EMITTER + launch * LAUNCH
@@ -333,7 +307,7 @@ class Scene(Node):
 
 class App:
     def __init__(self):
-        pyxel.init(256, 192, title="Cube Custom Shapes")
+        pyxel.init(256, 192, title="Custom Shapes")
         self.scene = Scene()
         pyxel.run(self.update, self.draw)
 

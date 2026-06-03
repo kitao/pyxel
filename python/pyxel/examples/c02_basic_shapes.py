@@ -170,7 +170,7 @@ class Scene(Node):
 
 class App:
     def __init__(self):
-        pyxel.init(240, 240, title="Cube Basic Shapes")
+        pyxel.init(240, 240, title="Basic Shapes")
 
         global cat_image
         cat_image = pyxel.Image.from_image("assets/cat_16x16.png")
@@ -188,9 +188,10 @@ class App:
     def draw(self):
         self.scene.draw(0, 0, pyxel.width, pyxel.height)
 
-        cx, cy = pyxel.width // 2, pyxel.height // 2
-        for i, s in enumerate(["Mouse: rotate", "Space: wireframe"]):
-            pyxel.text(cx - len(s) * 2, cy - 7 + i * 8, s, 7)
+        x, y = pyxel.width // 2 - 35, pyxel.height // 2 - 10
+        pyxel.rect(x, y, 70, 20, 0)
+        pyxel.text(x + 3, y + 3, "Mouse: Rotate", 7)
+        pyxel.text(x + 3, y + 11, "Space: Wireframe", 7)
 
 
 App()
