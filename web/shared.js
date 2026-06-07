@@ -51,6 +51,26 @@ const buildLangSelector = (
   return select;
 };
 
+// Base / Cube variant switch (the Cube variant lives in a /cube/ subdirectory)
+
+const buildVariantSwitch = () => {
+  const onCube = /\/cube\/?$/.test(location.pathname);
+  const sw = document.createElement("div");
+  sw.className = "seg mt-1";
+  const variants = [
+    { label: "Base", href: onCube ? "../" : "./", active: !onCube },
+    { label: "Cube", href: onCube ? "./" : "cube/", active: onCube },
+  ];
+  for (const v of variants) {
+    const seg = document.createElement(v.active ? "span" : "a");
+    seg.className = v.active ? "seg-btn seg-active" : "seg-btn";
+    if (!v.active) seg.href = v.href;
+    seg.textContent = v.label;
+    sw.appendChild(seg);
+  }
+  return sw;
+};
+
 // HTML helpers
 
 const esc = (s) =>
