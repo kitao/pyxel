@@ -1350,6 +1350,52 @@
           }
         }
       ]
+    },
+    {
+      "id": "cube-examples",
+      "title": {
+        "en": "Cube Examples",
+        "cn": "Cube 示例",
+        "de": "Cube Beispiele",
+        "es": "Cube Ejemplos",
+        "fr": "Cube Exemples",
+        "it": "Cube Esempi",
+        "ja": "Cube サンプル",
+        "ko": "Cube 예제",
+        "pt": "Cube Exemplos",
+        "ru": "Cube Примеры",
+        "tr": "Cube Örnekler",
+        "uk": "Cube Приклади"
+      },
+      "collapsed": true,
+      "items": [
+        {
+          "file": "c01_hello_cube.py",
+          "demo": "examples/c01-hello-cube.html",
+          "code": "https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/c01_hello_cube.py",
+          "description": {
+            "en": "Hello, Pyxel Cube",
+            "ja": "Pyxel Cube 入門"
+          },
+          "details": {
+            "en": "A minimal 3D scene with orbiting shaded cubes, a camera, and a light direction.",
+            "ja": "カメラと光方向を設定し、陰影付きの立方体が周回する最小の 3D シーン。"
+          }
+        },
+        {
+          "file": "c02_basic_shapes.py",
+          "demo": "examples/c02-basic-shapes.html",
+          "code": "https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/c02_basic_shapes.py",
+          "description": {
+            "en": "Basic 3D shapes",
+            "ja": "基本的な 3D 形状"
+          },
+          "details": {
+            "en": "Draws the built-in 3D primitives such as boxes and spheres.",
+            "ja": "box や sphere などの組み込み 3D プリミティブを描画する。"
+          }
+        }
+      ]
     }
   ]
 }
