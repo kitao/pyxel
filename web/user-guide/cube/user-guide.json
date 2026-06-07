@@ -1,0 +1,82 @@
+{
+  "languages": [
+    {
+      "code": "en",
+      "name": "English"
+    },
+    {
+      "code": "cn",
+      "name": "中文"
+    },
+    {
+      "code": "de",
+      "name": "Deutsch"
+    },
+    {
+      "code": "es",
+      "name": "Español"
+    },
+    {
+      "code": "fr",
+      "name": "Français"
+    },
+    {
+      "code": "it",
+      "name": "Italiano"
+    },
+    {
+      "code": "ja",
+      "name": "日本語"
+    },
+    {
+      "code": "ko",
+      "name": "한국어"
+    },
+    {
+      "code": "pt",
+      "name": "Português"
+    },
+    {
+      "code": "ru",
+      "name": "Русский"
+    },
+    {
+      "code": "tr",
+      "name": "Türkçe"
+    },
+    {
+      "code": "uk",
+      "name": "Українська"
+    }
+  ],
+  "ui": {
+    "title": {
+      "en": "Pyxel Cube User Guide",
+      "ja": "Pyxel Cube ユーザーガイド"
+    },
+    "subtitle": {
+      "en": "User guide for the Cube 3D extension of {0}.",
+      "ja": "{0} の 3D 拡張モジュール Cube のユーザーガイド"
+    },
+    "overview_title": {
+      "en": "Overview",
+      "ja": "概要"
+    },
+    "overview_body": {
+      "en": "{0} is the software-rendered 3D extension of Pyxel.",
+      "ja": "{0} は Pyxel のソフトウェアレンダリングによる 3D 拡張モジュールです。"
+    },
+    "wip": {
+      "en": "This guide is a work in progress; the Cube API is still being finalized.",
+      "ja": "本ガイドは作成中で、Cube API はまだ確定していません。"
+    },
+    "start_title": {
+      "en": "Getting Started",
+      "ja": "はじめに"
+    },
+    "start_body": {
+      "en": "A minimal Cube program subclasses Node, sets up a camera, and draws inside the scene:",
+      "ja": "最小の Cube プログラムは Node を継承し、カメラを設定してシーン内に描画します："
+    }
+  }
+}

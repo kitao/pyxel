@@ -139,23 +139,7 @@ function buildPage() {
     updateTexts();
   });
 
-  // Variant switch (Base / Cube); the Cube page lives in a /cube/ subdirectory.
-  const onCube = /\/cube\/?$/.test(location.pathname);
-  const variantSwitch = document.createElement("div");
-  variantSwitch.className = "seg mt-1";
-  const variants = [
-    { label: "Base", href: onCube ? "../" : "./", active: !onCube },
-    { label: "Cube", href: onCube ? "./" : "cube/", active: onCube },
-  ];
-  for (const v of variants) {
-    const seg = document.createElement(v.active ? "span" : "a");
-    seg.className = v.active ? "seg-btn seg-active" : "seg-btn";
-    if (!v.active) seg.href = v.href;
-    seg.textContent = v.label;
-    variantSwitch.appendChild(seg);
-  }
-
-  header.appendChild(variantSwitch);
+  header.appendChild(buildVariantSwitch());
   header.appendChild(langSelect);
   header.appendChild(titleBlock);
   app.appendChild(header);

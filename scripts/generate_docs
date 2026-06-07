@@ -12,6 +12,8 @@ CUBE_API_REF_JSON = WEB_DIR / "api-reference" / "cube" / "api-reference.json"
 MML_COMMANDS_JSON = WEB_DIR / "mml-studio" / "mml-commands.json"
 USER_GUIDE_HTML = WEB_DIR / "user-guide" / "index.html"
 USER_GUIDE_JSON = WEB_DIR / "user-guide" / "user-guide.json"
+CUBE_USER_GUIDE_HTML = WEB_DIR / "user-guide" / "cube" / "index.html"
+CUBE_USER_GUIDE_JSON = WEB_DIR / "user-guide" / "cube" / "user-guide.json"
 WEB_USAGE_HTML = WEB_DIR / "web-usage" / "index.html"
 WEB_USAGE_JSON = WEB_DIR / "web-usage" / "web-usage.json"
 EDITOR_MANUAL_HTML = WEB_DIR / "editor-manual" / "index.html"
@@ -688,10 +690,11 @@ def _strip_html(text):
     return html.unescape(text).strip()
 
 
-def generate_from_html(html_path, json_path, doc_name):
+def generate_from_html(html_path, json_path, doc_name, web_path=None):
+    web_path = web_path or doc_name
     html_text = html_path.read_text(encoding="utf-8")
     data = json.loads(json_path.read_text(encoding="utf-8"))
-    ev = JsEval(data["ui"], data, doc_name)
+    ev = JsEval(data["ui"], data, web_path)
 
     # Extract updateTexts() body
     m = re.search(r"function updateTexts\(\)\s*\{", html_text)
@@ -751,7 +754,7 @@ def generate_from_html(html_path, json_path, doc_name):
         )
         evaluated = re.sub(
             r'<img\s[^>]*src="([^"]*)"[^>]*alt="([^"]*)"[^>]*/?>',
-            lambda m: f"\n![{m.group(2)}]({_transform_url(m.group(1), doc_name)})\n",
+            lambda m: f"\n![{m.group(2)}]({_transform_url(m.group(1), web_path)})\n",
             evaluated,
         )
         evaluated = re.sub(
@@ -771,7 +774,7 @@ def generate_from_html(html_path, json_path, doc_name):
 
     # Assemble
     title = localize(data["ui"].get("title", ""))
-    url = f"{PYXEL_WEB}/{doc_name}/"
+    url = f"{PYXEL_WEB}/{web_path}/"
     header = (
         f"# {title}\n\n"
         f"*This document was auto-generated from the "
@@ -931,6 +934,9 @@ def generate_mml_commands():
 
 if __name__ == "__main__":
     generate_from_html(USER_GUIDE_HTML, USER_GUIDE_JSON, "user-guide")
+    generate_from_html(
+        CUBE_USER_GUIDE_HTML, CUBE_USER_GUIDE_JSON, "user-guide-cube", "user-guide/cube"
+    )
     generate_api_reference(API_REF_JSON, "api-reference", "api-reference")
     generate_api_reference(
         CUBE_API_REF_JSON, "api-reference-cube", "api-reference/cube"
