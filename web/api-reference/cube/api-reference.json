@@ -1,0 +1,409 @@
+{
+  "languages": [
+    {
+      "code": "en",
+      "name": "English"
+    },
+    {
+      "code": "cn",
+      "name": "中文"
+    },
+    {
+      "code": "de",
+      "name": "Deutsch"
+    },
+    {
+      "code": "es",
+      "name": "Español"
+    },
+    {
+      "code": "fr",
+      "name": "Français"
+    },
+    {
+      "code": "it",
+      "name": "Italiano"
+    },
+    {
+      "code": "ja",
+      "name": "日本語"
+    },
+    {
+      "code": "ko",
+      "name": "한국어"
+    },
+    {
+      "code": "pt",
+      "name": "Português"
+    },
+    {
+      "code": "ru",
+      "name": "Русский"
+    },
+    {
+      "code": "tr",
+      "name": "Türkçe"
+    },
+    {
+      "code": "uk",
+      "name": "Українська"
+    }
+  ],
+  "ui": {
+    "title": {
+      "en": "Pyxel Cube API Reference",
+      "cn": "Pyxel Cube API 参考",
+      "de": "Pyxel Cube API-Referenz",
+      "es": "Referencia de API de Pyxel Cube",
+      "fr": "Référence API de Pyxel Cube",
+      "it": "Riferimento API di Pyxel Cube",
+      "ja": "Pyxel Cube API リファレンス",
+      "ko": "Pyxel Cube API 레퍼런스",
+      "pt": "Referência de API do Pyxel Cube",
+      "ru": "Справочник API Pyxel Cube",
+      "tr": "Pyxel Cube API Referansı",
+      "uk": "Довідник API Pyxel Cube"
+    },
+    "subtitle": {
+      "en": "API reference for {0}, a retro game engine for Python.",
+      "cn": "Python 复古游戏引擎 {0} 的 API 参考",
+      "de": "API-Referenz für {0}, eine Retro-Spielengine für Python.",
+      "es": "Referencia de API de {0}, un motor de juegos retro para Python.",
+      "fr": "Référence API de {0}, un moteur de jeux rétro pour Python.",
+      "it": "Riferimento API di {0}, un motore di giochi retrò per Python.",
+      "ja": "Python 向けレトロゲームエンジン {0} の API リファレンス",
+      "ko": "Python용 레트로 게임 엔진 {0}의 API 레퍼런스",
+      "pt": "Referência de API do {0}, um motor de jogos retrô para Python.",
+      "ru": "Справочник API {0}, ретро-игрового движка для Python.",
+      "tr": "Python için retro oyun motoru {0} API referansı.",
+      "uk": "Довідник API {0}, ретро-ігрового рушія для Python."
+    },
+    "search_placeholder": {
+      "en": "Search APIs...",
+      "cn": "搜索API...",
+      "de": "APIs durchsuchen...",
+      "es": "Buscar APIs...",
+      "fr": "Rechercher des API...",
+      "it": "Cerca API...",
+      "ja": "APIを検索...",
+      "ko": "API 검색...",
+      "pt": "Pesquisar APIs...",
+      "ru": "Поиск API...",
+      "tr": "API ara...",
+      "uk": "Пошук API..."
+    },
+    "show_advanced": {
+      "en": "Advanced",
+      "cn": "高级",
+      "de": "Fortgeschritten",
+      "es": "Avanzado",
+      "fr": "Avancé",
+      "it": "Avanzato",
+      "ja": "上級者向け",
+      "ko": "고급",
+      "pt": "Avançado",
+      "ru": "Продвинутые",
+      "tr": "İleri",
+      "uk": "Просунуті"
+    },
+    "no_results": {
+      "en": "No matching APIs found.",
+      "cn": "未找到匹配的API。",
+      "de": "Keine passenden APIs gefunden.",
+      "es": "No se encontraron APIs coincidentes.",
+      "fr": "Aucune API correspondante trouvée.",
+      "it": "Nessuna API corrispondente trovata.",
+      "ja": "一致するAPIが見つかりません。",
+      "ko": "일치하는 API를 찾을 수 없습니다.",
+      "pt": "Nenhuma API correspondente encontrada.",
+      "ru": "Подходящие API не найдены.",
+      "tr": "Eşleşen API bulunamadı.",
+      "uk": "Відповідні API не знайдено."
+    },
+    "details": {
+      "en": "Details",
+      "cn": "详细",
+      "de": "Details",
+      "es": "Detalles",
+      "fr": "Détails",
+      "it": "Dettagli",
+      "ja": "詳細",
+      "ko": "상세",
+      "pt": "Detalhes",
+      "ru": "Подробности",
+      "tr": "Ayrıntılar",
+      "uk": "Деталі"
+    },
+    "parameters": {
+      "en": "Parameters",
+      "cn": "参数",
+      "de": "Parameter",
+      "es": "Parámetros",
+      "fr": "Paramètres",
+      "it": "Parametri",
+      "ja": "引数",
+      "ko": "인수",
+      "pt": "Parâmetros",
+      "ru": "Параметры",
+      "tr": "Parametreler",
+      "uk": "Параметри"
+    },
+    "returns": {
+      "en": "Returns",
+      "cn": "返回值",
+      "de": "Rückgabewert",
+      "es": "Retorno",
+      "fr": "Retour",
+      "it": "Ritorno",
+      "ja": "戻り値",
+      "ko": "반환값",
+      "pt": "Retorno",
+      "ru": "Возвращаемое значение",
+      "tr": "Dönüş değeri",
+      "uk": "Повертає"
+    },
+    "example": {
+      "en": "Example",
+      "cn": "示例",
+      "de": "Beispiel",
+      "es": "Ejemplo",
+      "fr": "Exemple",
+      "it": "Esempio",
+      "ja": "記述例",
+      "ko": "기술 예",
+      "pt": "Exemplo",
+      "ru": "Пример",
+      "tr": "Örnek",
+      "uk": "Приклад"
+    },
+    "notes": {
+      "en": "Note",
+      "cn": "备注",
+      "de": "Hinweis",
+      "es": "Nota",
+      "fr": "Remarque",
+      "it": "Nota",
+      "ja": "備考",
+      "ko": "비고",
+      "pt": "Nota",
+      "ru": "Примечание",
+      "tr": "Not",
+      "uk": "Примітка"
+    },
+    "type_label": {
+      "en": "Type",
+      "cn": "类型",
+      "de": "Typ",
+      "es": "Tipo",
+      "fr": "Type",
+      "it": "Tipo",
+      "ja": "型",
+      "ko": "형",
+      "pt": "Tipo",
+      "ru": "Тип",
+      "tr": "Tür",
+      "uk": "Тип"
+    }
+  },
+  "categories": [
+    {
+      "id": "vec3",
+      "title": {
+        "en": "Vec3",
+        "ja": "Vec3"
+      },
+      "items": [
+        {
+          "name": "Vec3",
+          "type": "class",
+          "signature": "Vec3(x, y, z)",
+          "description": {
+            "en": "A 3D vector with x, y, and z components.",
+            "ja": "x・y・z 成分を持つ 3 次元ベクトル。"
+          },
+          "params": [
+            {
+              "name": "x",
+              "type": "float",
+              "description": {
+                "en": "X component (default 0.0).",
+                "ja": "x 成分（デフォルト 0.0）。"
+              }
+            },
+            {
+              "name": "y",
+              "type": "float",
+              "description": {
+                "en": "Y component (default 0.0).",
+                "ja": "y 成分（デフォルト 0.0）。"
+              }
+            },
+            {
+              "name": "z",
+              "type": "float",
+              "description": {
+                "en": "Z component (default 0.0).",
+                "ja": "z 成分（デフォルト 0.0）。"
+              }
+            }
+          ],
+          "examples": [
+            "from pyxel.cube import Vec3",
+            "v = Vec3(1.0, 2.0, 3.0)",
+            "length = v.length()"
+          ],
+          "notes": {
+            "en": "Import it from the pyxel.cube module.",
+            "ja": "pyxel.cube モジュールからインポートして使う。"
+          },
+          "advanced": false
+        },
+        {
+          "name": "x",
+          "type": "variable",
+          "signature": "x",
+          "description": {
+            "en": "The x component of the vector.",
+            "ja": "ベクトルの x 成分。"
+          },
+          "value_type": "float",
+          "advanced": false
+        },
+        {
+          "name": "UP",
+          "type": "constant",
+          "signature": "Vec3.UP",
+          "description": {
+            "en": "Unit vector pointing up.",
+            "ja": "上方向の単位ベクトル。"
+          },
+          "value_type": "Vec3",
+          "advanced": false
+        },
+        {
+          "name": "dot",
+          "type": "function",
+          "signature": "dot(other)",
+          "description": {
+            "en": "Return the dot product with another vector.",
+            "ja": "別のベクトルとの内積を返す。"
+          },
+          "params": [
+            {
+              "name": "other",
+              "type": "Vec3",
+              "description": {
+                "en": "The other vector.",
+                "ja": "もう一方のベクトル。"
+              }
+            }
+          ],
+          "returns": {
+            "type": "float",
+            "description": {
+              "en": "The dot product.",
+              "ja": "内積。"
+            }
+          },
+          "advanced": false
+        },
+        {
+          "name": "cross",
+          "type": "function",
+          "signature": "cross(other)",
+          "description": {
+            "en": "Return the cross product with another vector.",
+            "ja": "別のベクトルとの外積を返す。"
+          },
+          "params": [
+            {
+              "name": "other",
+              "type": "Vec3",
+              "description": {
+                "en": "The other vector.",
+                "ja": "もう一方のベクトル。"
+              }
+            }
+          ],
+          "returns": {
+            "type": "Vec3",
+            "description": {
+              "en": "The cross product vector.",
+              "ja": "外積ベクトル。"
+            }
+          },
+          "advanced": false
+        },
+        {
+          "name": "length",
+          "type": "function",
+          "signature": "length()",
+          "description": {
+            "en": "Return the length (magnitude) of the vector.",
+            "ja": "ベクトルの長さ（大きさ）を返す。"
+          },
+          "returns": {
+            "type": "float",
+            "description": {
+              "en": "The length of the vector.",
+              "ja": "ベクトルの長さ。"
+            }
+          },
+          "advanced": false
+        },
+        {
+          "name": "normalize",
+          "type": "function",
+          "signature": "normalize()",
+          "description": {
+            "en": "Return a unit vector pointing in the same direction.",
+            "ja": "同じ向きの単位ベクトルを返す。"
+          },
+          "returns": {
+            "type": "Vec3",
+            "description": {
+              "en": "The normalized vector.",
+              "ja": "正規化したベクトル。"
+            }
+          },
+          "advanced": false
+        },
+        {
+          "name": "lerp",
+          "type": "function",
+          "signature": "lerp(other, t)",
+          "description": {
+            "en": "Linearly interpolate toward another vector.",
+            "ja": "別のベクトルへ線形補間する。"
+          },
+          "params": [
+            {
+              "name": "other",
+              "type": "Vec3",
+              "description": {
+                "en": "The target vector.",
+                "ja": "補間先のベクトル。"
+              }
+            },
+            {
+              "name": "t",
+              "type": "float",
+              "description": {
+                "en": "Interpolation factor from 0.0 to 1.0.",
+                "ja": "0.0〜1.0 の補間係数。"
+              }
+            }
+          ],
+          "returns": {
+            "type": "Vec3",
+            "description": {
+              "en": "The interpolated vector.",
+              "ja": "補間したベクトル。"
+            }
+          },
+          "advanced": false
+        }
+      ]
+    }
+  ]
+}
