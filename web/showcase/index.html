@@ -53,7 +53,7 @@
         // Categories
         for (const cat of data.categories) {
           const section = document.createElement("details");
-          section.open = true;
+          section.open = !cat.collapsed;
           section.className = "mt-6";
 
           const catHeader = document.createElement("summary");
