@@ -168,38 +168,38 @@ class Shading:
     def __setitem__(self, key: tuple[int, int], value: tuple[int, int]) -> None: ...
     def build(self, colors: list[int]) -> None: ...
 
-# Geometry class — static vertex-data asset shareable across Node draws and Mesh parts.
-class Geometry:
-    PRIM_POINTS: int
-    PRIM_LINES: int
-    PRIM_TRIANGLES: int
+# Primitive class — vertex-data asset; mode/cull are indices-intrinsic, shareable across Node draws and Mesh parts.
+class Primitive:
+    MODE_POINTS: int
+    MODE_LINES: int
+    MODE_TRIANGLES: int
 
     CULL_NONE: int
     CULL_BACK: int
     CULL_FRONT: int
 
+    mode: int
     positions: list[float]
-    normals: list[float] | None
-    uvs: list[float] | None
-    indices: list[int] | None
-    prim: int
+    indices: list[int]
+    normals: list[float]
+    uvs: list[float]
     cull: int
 
     def __init__(
         self,
-        positions: list[float] | None = None,
-        normals: list[float] | None = None,
-        uvs: list[float] | None = None,
-        indices: list[int] | None = None,
-        prim: int = PRIM_TRIANGLES,
+        mode: int,
+        positions: list[float],
+        indices: list[int],
+        normals: list[float] = [],
+        uvs: list[float] = [],
         cull: int = CULL_BACK,
     ) -> None: ...
     def __repr__(self) -> str: ...
     def compute_normals(self) -> None: ...
 
-# Mesh class — hierarchical 3D model asset (parallel arrays of geometries / transforms / parents).
+# Mesh class — hierarchical 3D model asset (parallel arrays of primitives / transforms / parents).
 class Mesh:
-    geometries: list[Geometry | None]  # None = pure group (transform-only)
+    primitives: list[Primitive | None]  # None = pure group (transform-only)
     transforms: list[Mat4]
     parents: list[int]  # -1 = root; parents[i] < i invariant
     col_img: int | Image  # int = flat color, Image = texture for all parts
@@ -207,7 +207,7 @@ class Mesh:
 
     def __init__(
         self,
-        geometries: list[Geometry | None] | None = None,
+        primitives: list[Primitive | None] | None = None,
         transforms: list[Mat4] | None = None,
         parents: list[int] | None = None,
         col_img: int | Image = 7,
@@ -396,7 +396,7 @@ class Node:
     def prim(
         self,
         mat: Mat4,
-        geom: Geometry,
+        primitive: Primitive,
         col_img: int | Image = 7,
         *,
         colkey: int | None = None,

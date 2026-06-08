@@ -680,11 +680,11 @@ impl Node {
         });
     }
 
-    #[pyo3(signature = (mat, geom, col_img=None, *, colkey=None))]
+    #[pyo3(signature = (mat, primitive, col_img=None, *, colkey=None))]
     fn prim(
         &self,
         mat: PyRef<'_, Mat4>,
-        geom: PyRef<'_, super::geometry::Geometry>,
+        primitive: PyRef<'_, super::primitive::Primitive>,
         col_img: Option<&Bound<'_, PyAny>>,
         colkey: Option<i32>,
     ) -> PyResult<()> {
@@ -693,14 +693,14 @@ impl Node {
         let world_mat = self.world_mat_compose(*mat.inner_ref());
 
         let (positions_data, indices_data, normals_data, uvs_data, prim_mode, cull_mode) = {
-            let g = rc_ref!(&geom.inner);
+            let p = rc_ref!(&primitive.inner);
             (
-                g.positions.clone(),
-                g.indices.clone(),
-                g.normals.clone(),
-                g.uvs.clone(),
-                g.prim,
-                g.cull,
+                p.positions.clone(),
+                p.indices.clone(),
+                p.normals.clone(),
+                p.uvs.clone(),
+                p.mode,
+                p.cull,
             )
         };
 
@@ -722,6 +722,11 @@ impl Node {
         // the active DrawContext like every other primitive. The closure
         // returns (), so we capture the rasterizer result in an outer
         // variable and propagate any error after the call returns.
+        // Empty attribute Vecs mean "absent" on the Primitive; the
+        // rasterizer still takes Option<&[..]>, so map empty -> None.
+        let indices_opt = (!indices_data.is_empty()).then_some(indices_data.as_slice());
+        let normals_opt = (!normals_data.is_empty()).then_some(normals_data.as_slice());
+        let uvs_opt = (!uvs_data.is_empty()).then_some(uvs_data.as_slice());
         let mut inner_result: Option<Result<(), &str>> = None;
         self.with_state_from_ctx(pyxel::cube::draw::BILLBOARD_OFF, |ctx, state| {
             inner_result = Some(pyxel::cube::draw::prim(
@@ -730,9 +735,9 @@ impl Node {
                 prim_mode,
                 cull_mode,
                 &positions_data,
-                indices_data.as_deref(),
-                normals_data.as_deref(),
-                uvs_data.as_deref(),
+                indices_opt,
+                normals_opt,
+                uvs_opt,
                 col_flat,
                 col_image.as_ref(),
                 colkey,

@@ -3,8 +3,8 @@ use pyo3::prelude::*;
 use pyo3::types::PyList;
 use pyxel::cube::mesh::ColImage;
 
-use super::geometry::Geometry;
 use super::mat4::Mat4;
+use super::primitive::Primitive;
 use crate::image_wrapper::Image;
 
 define_wrapper!(Mesh, pyxel::cube::Mesh);
@@ -15,14 +15,14 @@ impl Mesh {
 
     #[new]
     #[pyo3(signature = (
-        geometries=None,
+        primitives=None,
         transforms=None,
         parents=None,
         col_img=None,
         colkey=None,
     ))]
     fn new(
-        geometries: Option<Vec<Option<PyRef<'_, Geometry>>>>,
+        primitives: Option<Vec<Option<PyRef<'_, Primitive>>>>,
         transforms: Option<Vec<PyRef<'_, Mat4>>>,
         parents: Option<Vec<i32>>,
         col_img: Option<Bound<'_, PyAny>>,
@@ -31,8 +31,8 @@ impl Mesh {
         let mesh = pyxel::cube::Mesh::new();
         {
             let m = rc_mut!(&mesh);
-            if let Some(gs) = geometries {
-                m.geometries = gs.into_iter().map(|g| g.map(|g| g.inner.clone())).collect();
+            if let Some(ps) = primitives {
+                m.primitives = ps.into_iter().map(|p| p.map(|p| p.inner.clone())).collect();
             }
             if let Some(ts) = transforms {
                 m.transforms = ts.iter().map(|t| t.inner.clone()).collect();
@@ -52,13 +52,13 @@ impl Mesh {
     // Parts (parallel arrays)
 
     #[getter]
-    fn geometries(&self, py: Python<'_>) -> PyResult<Py<PyList>> {
+    fn primitives(&self, py: Python<'_>) -> PyResult<Py<PyList>> {
         let inner = self.inner_ref();
         let items: Vec<Py<PyAny>> = inner
-            .geometries
+            .primitives
             .iter()
-            .map(|g| match g {
-                Some(g) => match Geometry::wrap(g.clone()).into_pyobject(py) {
+            .map(|p| match p {
+                Some(p) => match Primitive::wrap(p.clone()).into_pyobject(py) {
                     Ok(b) => b.into_any().unbind(),
                     Err(_) => py.None(),
                 },
@@ -69,8 +69,8 @@ impl Mesh {
     }
 
     #[setter]
-    fn set_geometries(&self, v: Vec<Option<PyRef<'_, Geometry>>>) -> PyResult<()> {
-        self.inner_mut().geometries = v.into_iter().map(|g| g.map(|g| g.inner.clone())).collect();
+    fn set_primitives(&self, v: Vec<Option<PyRef<'_, Primitive>>>) -> PyResult<()> {
+        self.inner_mut().primitives = v.into_iter().map(|p| p.map(|p| p.inner.clone())).collect();
         self.inner_ref().validate().map_err(PyValueError::new_err)
     }
 
@@ -139,7 +139,7 @@ impl Mesh {
 
     fn __repr__(&self) -> String {
         let m = self.inner_ref();
-        format!("Mesh(parts={})", m.geometries.len())
+        format!("Mesh(parts={})", m.primitives.len())
     }
 }
 

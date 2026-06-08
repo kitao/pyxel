@@ -702,25 +702,26 @@ impl Scene {
         let world_per_part = mesh.compose_world_transforms(world);
         let mut best: Option<(f32, Vec3, Vec3)> = None;
         for (idx, part_world) in world_per_part.iter().enumerate() {
-            let Some(geom_rc) = &mesh.geometries[idx] else {
+            let Some(geom_rc) = &mesh.primitives[idx] else {
                 continue;
             };
             let g = rc_ref!(geom_rc);
             let positions = &g.positions;
             let indices_clone = g.indices.clone();
-            let triangle_count = match &indices_clone {
-                Some(idx) => idx.len() / 3,
-                None => positions.len() / 9,
+            let triangle_count = if indices_clone.is_empty() {
+                positions.len() / 9
+            } else {
+                indices_clone.len() / 3
             };
             for tri in 0..triangle_count {
-                let (i0, i1, i2) = if let Some(ids) = &indices_clone {
-                    (
-                        ids[tri * 3] as usize,
-                        ids[tri * 3 + 1] as usize,
-                        ids[tri * 3 + 2] as usize,
-                    )
-                } else {
+                let (i0, i1, i2) = if indices_clone.is_empty() {
                     (tri * 3, tri * 3 + 1, tri * 3 + 2)
+                } else {
+                    (
+                        indices_clone[tri * 3] as usize,
+                        indices_clone[tri * 3 + 1] as usize,
+                        indices_clone[tri * 3 + 2] as usize,
+                    )
                 };
                 let v0 = Vec3 {
                     x: positions[i0 * 3],
@@ -902,21 +903,21 @@ mod tests {
     #[test]
     fn test_sphere_above_mesh_floor_generates_contact() {
         use crate::cube::collider::Collider;
-        use crate::cube::geometry::Geometry;
         use crate::cube::mesh::Mesh;
+        use crate::cube::primitive::Primitive;
 
         let floor_mesh = Mesh::new();
         {
             let m = rc_mut!(&floor_mesh);
-            let geom = Geometry::new();
+            let geom = Primitive::new();
             {
                 let g = rc_mut!(&geom);
                 g.positions = vec![
                     -5.0, 0.0, -5.0, 5.0, 0.0, -5.0, -5.0, 0.0, 5.0, 5.0, 0.0, 5.0,
                 ];
-                g.indices = Some(vec![0, 1, 2, 1, 3, 2]);
+                g.indices = vec![0, 1, 2, 1, 3, 2];
             }
-            m.geometries = vec![Some(geom)];
+            m.primitives = vec![Some(geom)];
             m.transforms = vec![Mat4::identity()];
             m.parents = vec![-1];
         }
@@ -1058,7 +1059,10 @@ mod tests {
             (depth_movable - 0.5).abs() < 1e-4,
             "movable absorbs full = {depth_movable}"
         );
-        assert!(depth_wall.abs() < 1e-4, "immovable takes none = {depth_wall}");
+        assert!(
+            depth_wall.abs() < 1e-4,
+            "immovable takes none = {depth_wall}"
+        );
     }
 
     #[test]

@@ -4,10 +4,10 @@ import os
 import pyxel
 from pyxel.cube import (
     Camera,
-    Geometry,
     Mat4,
     Mesh,
     Node,
+    Primitive,
     Quat,
     Scene,
     Shading,
@@ -227,10 +227,10 @@ def _load_texture():
 
 
 def _make_box_mesh(size, color):
-    # Scale the unit cube; the Mesh wraps a single Geometry carrying the
+    # Scale the unit cube; the Mesh wraps a single Primitive carrying the
     # flat color through col_img.
     pos = [v * size for v in _UNIT_BOX_VERTICES]
-    geom = Geometry(positions=pos, indices=_BOX_TRI_INDICES)
+    geom = Primitive(Primitive.MODE_TRIANGLES, pos, _BOX_TRI_INDICES)
     return Mesh(
         geometries=[geom],
         transforms=[Mat4.IDENTITY],
@@ -300,7 +300,7 @@ def _make_sphere_mesh(radius, color):
         )
 
     scaled = [v * radius for v in pos]
-    geom = Geometry(positions=scaled, indices=tri_indices)
+    geom = Primitive(Primitive.MODE_TRIANGLES, scaled, tri_indices)
     return Mesh(
         geometries=[geom],
         transforms=[Mat4.IDENTITY],
@@ -333,7 +333,7 @@ def _make_textured_box(size):
         # Wind each face CCW so the surface normal points outward (matches
         # the colored-box mesh and gives correct Lambert shading).
         idx_list.extend([base, base + 2, base + 1, base + 1, base + 2, base + 3])
-    geom = Geometry(positions=pos_list, indices=idx_list, uvs=uv_list)
+    geom = Primitive(Primitive.MODE_TRIANGLES, pos_list, idx_list, uvs=uv_list)
     return Mesh(
         geometries=[geom],
         transforms=[Mat4.IDENTITY],
