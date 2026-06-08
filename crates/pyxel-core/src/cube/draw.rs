@@ -11,8 +11,8 @@
 use std::sync::OnceLock;
 
 use crate::cube::camera::RcCamera;
-use crate::cube::geometry::{
-    CULL_BACK, CULL_FRONT, CULL_NONE, PRIM_LINES, PRIM_POINTS, PRIM_TRIANGLES,
+use crate::cube::primitive::{
+    CULL_BACK, CULL_FRONT, CULL_NONE, MODE_LINES, MODE_POINTS, MODE_TRIANGLES,
 };
 use crate::cube::mat4::Mat4;
 use crate::cube::mesh::Mesh;
@@ -28,10 +28,10 @@ use crate::font::Font;
 use crate::image::{Image, RcImage};
 use crate::settings::{FONT_HEIGHT, FONT_WIDTH, MAX_FONT_CODE, MIN_FONT_CODE, NUM_FONT_COLS};
 
-// Primitive draw modes are owned by `Geometry` (see geometry.rs); this
+// Primitive draw modes are owned by `Primitive` (see primitive.rs); this
 // file imports them at the top. Values follow OpenGL ordering
 // (GL_POINTS=0, GL_LINES=1, GL_TRIANGLES=4 — cube uses 0/1/2 internally
-// but keeps the relative ordering so future PRIM_LINE_STRIP / LINE_LOOP
+// but keeps the relative ordering so future MODE_LINE_STRIP / LINE_LOOP
 // / TRIANGLE_STRIP / TRIANGLE_FAN additions can interleave the GL
 // numbering as needed).
 
@@ -327,7 +327,7 @@ pub fn prim(
         Ok(raw as usize)
     };
     match mode {
-        PRIM_TRIANGLES => {
+        MODE_TRIANGLES => {
             if !step_count.is_multiple_of(3) {
                 return Err("TRIANGLES requires step count to be a multiple of 3");
             }
@@ -350,9 +350,15 @@ pub fn prim(
                 let v0 = read_vertex(i0);
                 let v1 = read_vertex(i1);
                 let v2 = read_vertex(i2);
-                let p0 = project_offset(&v0, &ctx.vp, ctx.vp_x, ctx.vp_y, ctx.vp_w, ctx.vp_h, &z_shift);
-                let p1 = project_offset(&v1, &ctx.vp, ctx.vp_x, ctx.vp_y, ctx.vp_w, ctx.vp_h, &z_shift);
-                let p2 = project_offset(&v2, &ctx.vp, ctx.vp_x, ctx.vp_y, ctx.vp_w, ctx.vp_h, &z_shift);
+                let p0 = project_offset(
+                    &v0, &ctx.vp, ctx.vp_x, ctx.vp_y, ctx.vp_w, ctx.vp_h, &z_shift,
+                );
+                let p1 = project_offset(
+                    &v1, &ctx.vp, ctx.vp_x, ctx.vp_y, ctx.vp_w, ctx.vp_h, &z_shift,
+                );
+                let p2 = project_offset(
+                    &v2, &ctx.vp, ctx.vp_x, ctx.vp_y, ctx.vp_w, ctx.vp_h, &z_shift,
+                );
                 let (Some(p0), Some(p1), Some(p2)) = (p0, p1, p2) else {
                     continue;
                 };
@@ -365,7 +371,7 @@ pub fn prim(
                 let face_normal = || -> Vec3 {
                     match normals {
                         // Stored normals are model-space (e.g. from
-                        // Geometry::compute_normals). Carry them into world
+                        // Primitive::compute_normals). Carry them into world
                         // space so shading matches the world-space light
                         // direction; the auto path below already yields a
                         // world-space normal from the world vertices.
@@ -453,7 +459,7 @@ pub fn prim(
                 }
             }
         }
-        PRIM_LINES => {
+        MODE_LINES => {
             if !step_count.is_multiple_of(2) {
                 return Err("LINES requires step count to be a multiple of 2");
             }
@@ -466,8 +472,12 @@ pub fn prim(
                 let i1 = resolve_vertex_index(l * 2 + 1)?;
                 let v0 = read_vertex(i0);
                 let v1 = read_vertex(i1);
-                let p0 = project_offset(&v0, &ctx.vp, ctx.vp_x, ctx.vp_y, ctx.vp_w, ctx.vp_h, &z_shift);
-                let p1 = project_offset(&v1, &ctx.vp, ctx.vp_x, ctx.vp_y, ctx.vp_w, ctx.vp_h, &z_shift);
+                let p0 = project_offset(
+                    &v0, &ctx.vp, ctx.vp_x, ctx.vp_y, ctx.vp_w, ctx.vp_h, &z_shift,
+                );
+                let p1 = project_offset(
+                    &v1, &ctx.vp, ctx.vp_x, ctx.vp_y, ctx.vp_w, ctx.vp_h, &z_shift,
+                );
                 if let (Some(p0), Some(p1)) = (p0, p1) {
                     rasterize_line(
                         target_mut,
@@ -485,14 +495,16 @@ pub fn prim(
                 }
             }
         }
-        PRIM_POINTS => {
+        MODE_POINTS => {
             let target_mut = rc_mut!(&ctx.target);
             let depth_w = ctx.depth_w;
             let depth = ctx.depth.as_mut_slice();
             for s in 0..step_count {
                 let i0 = resolve_vertex_index(s)?;
                 let v0 = read_vertex(i0);
-                let p0 = project_offset(&v0, &ctx.vp, ctx.vp_x, ctx.vp_y, ctx.vp_w, ctx.vp_h, &z_shift);
+                let p0 = project_offset(
+                    &v0, &ctx.vp, ctx.vp_x, ctx.vp_y, ctx.vp_w, ctx.vp_h, &z_shift,
+                );
                 if let Some((sx, sy, sz)) = p0 {
                     let xi = sx.round() as i32;
                     let yi = sy.round() as i32;
@@ -525,7 +537,7 @@ pub fn pset(ctx: &mut DrawContext, world_mat: &Mat4, local: &Vec3, col: i32, sta
     let _ = prim(
         ctx,
         world_mat,
-        PRIM_POINTS,
+        MODE_POINTS,
         CULL_NONE,
         &positions,
         None,
@@ -548,7 +560,7 @@ pub fn line(
 ) {
     let positions = [p1.x, p1.y, p1.z, p2.x, p2.y, p2.z];
     let _ = prim(
-        ctx, world_mat, PRIM_LINES, CULL_NONE, &positions, None, None, None, col, None, None, state,
+        ctx, world_mat, MODE_LINES, CULL_NONE, &positions, None, None, None, col, None, None, state,
     );
 }
 
@@ -565,7 +577,7 @@ pub fn tri(
     let _ = prim(
         ctx,
         world_mat,
-        PRIM_TRIANGLES,
+        MODE_TRIANGLES,
         CULL_NONE,
         &positions,
         None,
@@ -593,7 +605,7 @@ pub fn trib(
         p1.x, p1.y, p1.z,
     ];
     let _ = prim(
-        ctx, world_mat, PRIM_LINES, CULL_NONE, &positions, None, None, None, col, None, None, state,
+        ctx, world_mat, MODE_LINES, CULL_NONE, &positions, None, None, None, col, None, None, state,
     );
 }
 
@@ -603,7 +615,7 @@ pub fn rect(ctx: &mut DrawContext, world_mat: &Mat4, w: f32, h: f32, col: i32, s
     let _ = prim(
         ctx,
         &scaled,
-        PRIM_TRIANGLES,
+        MODE_TRIANGLES,
         CULL_NONE,
         &UNIT_RECT_POSITIONS,
         Some(&RECT_TRI_INDICES),
@@ -621,7 +633,7 @@ pub fn rectb(ctx: &mut DrawContext, world_mat: &Mat4, w: f32, h: f32, col: i32, 
     let _ = prim(
         ctx,
         &scaled,
-        PRIM_LINES,
+        MODE_LINES,
         CULL_NONE,
         &UNIT_RECT_POSITIONS,
         Some(&RECT_EDGE_INDICES),
@@ -641,7 +653,7 @@ pub fn elli(ctx: &mut DrawContext, world_mat: &Mat4, w: f32, h: f32, col: i32, s
     let _ = prim(
         ctx,
         &scaled,
-        PRIM_TRIANGLES,
+        MODE_TRIANGLES,
         CULL_NONE,
         unit_ellipse_positions(),
         Some(&ELLIPSE_TRI_INDICES),
@@ -659,7 +671,7 @@ pub fn ellib(ctx: &mut DrawContext, world_mat: &Mat4, w: f32, h: f32, col: i32, 
     let _ = prim(
         ctx,
         &scaled,
-        PRIM_LINES,
+        MODE_LINES,
         CULL_NONE,
         unit_ellipse_positions(),
         Some(&ELLIPSE_EDGE_INDICES),
@@ -696,7 +708,7 @@ pub fn box_solid(
         let _ = prim(
             ctx,
             &scaled,
-            PRIM_TRIANGLES,
+            MODE_TRIANGLES,
             CULL_NONE,
             &BOX_UNROLLED_POSITIONS,
             Some(&BOX_UNROLLED_TRI_INDICES),
@@ -713,7 +725,7 @@ pub fn box_solid(
         let _ = prim(
             ctx,
             &scaled,
-            PRIM_TRIANGLES,
+            MODE_TRIANGLES,
             CULL_NONE,
             &UNIT_BOX_POSITIONS,
             Some(&BOX_TRI_INDICES),
@@ -732,7 +744,7 @@ pub fn boxb(ctx: &mut DrawContext, world_mat: &Mat4, size: &Vec3, col: i32, stat
     let _ = prim(
         ctx,
         &scaled,
-        PRIM_LINES,
+        MODE_LINES,
         CULL_NONE,
         &UNIT_BOX_POSITIONS,
         Some(&BOX_EDGE_INDICES),
@@ -1196,7 +1208,7 @@ pub fn sphere(
         let _ = prim(
             ctx,
             &scaled,
-            PRIM_TRIANGLES,
+            MODE_TRIANGLES,
             CULL_NONE,
             &out_positions,
             Some(&out_indices),
@@ -1213,7 +1225,7 @@ pub fn sphere(
         let _ = prim(
             ctx,
             &scaled,
-            PRIM_TRIANGLES,
+            MODE_TRIANGLES,
             CULL_NONE,
             unit_icosa_lv1_positions(),
             Some(unit_icosa_lv1_tri_indices()),
@@ -1240,7 +1252,7 @@ pub fn sphereb(
     let _ = prim(
         ctx,
         &scaled,
-        PRIM_LINES,
+        MODE_LINES,
         CULL_NONE,
         unit_icosa_lv1_positions(),
         Some(unit_icosa_lv1_edge_indices()),
@@ -1272,8 +1284,10 @@ pub fn circ(
         &world, r, &ctx.vp, camera, ctx.vp_x, ctx.vp_y, ctx.vp_w, ctx.vp_h,
     );
     if let Some((sx, sy, sr, sz)) = projected {
-        let sz = project_offset(&world, &ctx.vp, ctx.vp_x, ctx.vp_y, ctx.vp_w, ctx.vp_h, &z_shift)
-            .map_or(sz, |p| p.2);
+        let sz = project_offset(
+            &world, &ctx.vp, ctx.vp_x, ctx.vp_y, ctx.vp_w, ctx.vp_h, &z_shift,
+        )
+        .map_or(sz, |p| p.2);
         let target_mut = rc_mut!(&ctx.target);
         let depth_w = ctx.depth_w;
         rasterize_circle_filled(
@@ -1310,8 +1324,10 @@ pub fn circb(
         &world, r, &ctx.vp, camera, ctx.vp_x, ctx.vp_y, ctx.vp_w, ctx.vp_h,
     );
     if let Some((sx, sy, sr, sz)) = projected {
-        let sz = project_offset(&world, &ctx.vp, ctx.vp_x, ctx.vp_y, ctx.vp_w, ctx.vp_h, &z_shift)
-            .map_or(sz, |p| p.2);
+        let sz = project_offset(
+            &world, &ctx.vp, ctx.vp_x, ctx.vp_y, ctx.vp_w, ctx.vp_h, &z_shift,
+        )
+        .map_or(sz, |p| p.2);
         let target_mut = rc_mut!(&ctx.target);
         let depth_w = ctx.depth_w;
         rasterize_circle_border(
@@ -1381,7 +1397,7 @@ pub fn sprite(
     let _ = prim(
         ctx,
         &identity,
-        PRIM_TRIANGLES,
+        MODE_TRIANGLES,
         CULL_NONE,
         &positions,
         Some(&indices),
@@ -1411,7 +1427,7 @@ pub fn plane(
     let _ = prim(
         ctx,
         &scaled,
-        PRIM_TRIANGLES,
+        MODE_TRIANGLES,
         CULL_NONE,
         &UNIT_RECT_POSITIONS,
         Some(&RECT_TRI_INDICES),
@@ -1427,31 +1443,43 @@ pub fn plane(
 // Draw a hierarchical Mesh asset. Each part's world transform is
 // composed in topological order (parents[i] < i is validated at Mesh
 // construction). Per-part vertex / index / uv / normal data and the
-// prim / cull mode come from the part's Geometry; col_img and colkey
+// prim / cull mode come from the part's Primitive; col_img and colkey
 // are shared across the whole mesh.
 pub fn mesh(ctx: &mut DrawContext, world_mat: &Mat4, mesh: &Mesh, state: DrawState) {
-    if mesh.geometries.is_empty() {
+    if mesh.primitives.is_empty() {
         return;
     }
     let world = mesh.compose_world_transforms(world_mat);
     let (col_flat, col_image) = mesh.col_img.as_flat_and_image();
-    for (i, geom_opt) in mesh.geometries.iter().enumerate() {
-        let Some(geom_rc) = geom_opt.as_ref() else {
+    for (i, prim_opt) in mesh.primitives.iter().enumerate() {
+        let Some(prim_rc) = prim_opt.as_ref() else {
             continue;
         };
-        let g = rc_ref!(geom_rc);
+        let g = rc_ref!(prim_rc);
         if g.positions.is_empty() {
             continue;
         }
         let _ = prim(
             ctx,
             &world[i],
-            g.prim,
+            g.mode,
             g.cull,
             &g.positions,
-            g.indices.as_deref(),
-            g.normals.as_deref(),
-            g.uvs.as_deref(),
+            if g.indices.is_empty() {
+                None
+            } else {
+                Some(g.indices.as_slice())
+            },
+            if g.normals.is_empty() {
+                None
+            } else {
+                Some(g.normals.as_slice())
+            },
+            if g.uvs.is_empty() {
+                None
+            } else {
+                Some(g.uvs.as_slice())
+            },
             col_flat,
             col_image.as_ref(),
             mesh.colkey,
@@ -1551,7 +1579,9 @@ pub fn text(
     }
     let world = mat_apply(world_mat, pos);
     let z_shift = depth_offset_shift(&ctx.camera, ctx.depth_offset);
-    let projected = project_offset(&world, &ctx.vp, ctx.vp_x, ctx.vp_y, ctx.vp_w, ctx.vp_h, &z_shift);
+    let projected = project_offset(
+        &world, &ctx.vp, ctx.vp_x, ctx.vp_y, ctx.vp_w, ctx.vp_h, &z_shift,
+    );
     let Some((sx_f, sy_f, sz)) = projected else {
         return;
     };
@@ -1697,7 +1727,7 @@ mod tests {
         // world-space normal from the rotated vertices). Without the
         // transform a rotated mesh keeps its unrotated lighting.
         use crate::cube::camera::Camera;
-        use crate::cube::geometry::Geometry;
+        use crate::cube::primitive::Primitive;
         use crate::cube::raster::{compute_clip_rect, matmul, projection_matrix, view_matrix};
         use crate::cube::scene::DrawContext;
 
@@ -1710,19 +1740,19 @@ mod tests {
 
         // A 4×4 quad in the model XY plane (two triangles). compute_normals
         // fills per-face model-space normals.
-        let geom = Geometry::new();
+        let geom = Primitive::new();
         {
             let g = rc_mut!(&geom);
             g.positions = vec![
                 -2.0, 2.0, 0.0, 2.0, 2.0, 0.0, -2.0, -2.0, 0.0, 2.0, -2.0, 0.0,
             ];
-            g.indices = Some(vec![0, 1, 2, 1, 3, 2]);
+            g.indices = vec![0, 1, 2, 1, 3, 2];
             g.cull = CULL_NONE;
             g.compute_normals();
         }
-        let model_normals = rc_ref!(&geom).normals.clone().unwrap();
+        let model_normals = rc_ref!(&geom).normals.clone();
         let positions = rc_ref!(&geom).positions.clone();
-        let indices = rc_ref!(&geom).indices.clone().unwrap();
+        let indices = rc_ref!(&geom).indices.clone();
 
         // world = translate(0, 0, -3) * rotateY(180): the quad sits in front
         // of the camera with its face normal flipped by the spin.
@@ -1789,7 +1819,7 @@ mod tests {
             prim(
                 &mut ctx,
                 &world,
-                PRIM_TRIANGLES,
+                MODE_TRIANGLES,
                 CULL_NONE,
                 &positions,
                 Some(&indices),

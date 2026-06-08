@@ -3,10 +3,10 @@ from cube_physics_camera import OrbitCamera
 
 from pyxel.cube import (
     Collider,
-    Geometry,
     Mat4,
     Mesh,
     Node,
+    Primitive,
     Scene,
     Shading,
     Vec3,
@@ -30,7 +30,7 @@ def _slope_mesh() -> Mesh:
         for ix in range(nx - 1):
             i = iz * nx + ix
             indices.extend([i, i + nx, i + 1, i + 1, i + nx, i + nx + 1])
-    geom = Geometry(positions=verts, indices=indices)
+    geom = Primitive(Primitive.MODE_TRIANGLES, verts, indices)
     return Mesh(
         geometries=[geom],
         transforms=[Mat4.IDENTITY],

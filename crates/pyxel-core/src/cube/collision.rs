@@ -123,7 +123,7 @@ impl Aabb {
         };
         let mut any = false;
         for (idx, world_t) in world_per_part.iter().enumerate() {
-            let Some(geom_rc) = &mesh.geometries[idx] else {
+            let Some(geom_rc) = &mesh.primitives[idx] else {
                 continue;
             };
             let geom = rc_ref!(geom_rc);

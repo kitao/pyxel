@@ -1,19 +1,20 @@
 import pytest
 
-from pyxel.cube import Geometry, Mat4, Mesh
+from pyxel.cube import Mat4, Mesh, Primitive
 
 
-def _square_geom() -> Geometry:
-    return Geometry(
-        positions=[0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0],
-        indices=[0, 1, 2],
+def _square_prim() -> Primitive:
+    return Primitive(
+        Primitive.MODE_TRIANGLES,
+        [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0],
+        [0, 1, 2],
     )
 
 
 class TestConstruction:
     def test_default_empty(self):
         m = Mesh()
-        assert m.geometries == []
+        assert m.primitives == []
         assert m.transforms == []
         assert m.parents == []
         # Default col_img is the flat color 7.
@@ -21,58 +22,58 @@ class TestConstruction:
         assert m.colkey is None
 
     def test_full_kwargs(self):
-        g0 = _square_geom()
-        g1 = _square_geom()
+        p0 = _square_prim()
+        p1 = _square_prim()
         m = Mesh(
-            geometries=[g0, g1, None],
+            primitives=[p0, p1, None],
             transforms=[Mat4(), Mat4(), Mat4()],
             parents=[-1, 0, 1],
             col_img=8,
             colkey=0,
         )
-        assert len(m.geometries) == 3
-        assert m.geometries[2] is None
+        assert len(m.primitives) == 3
+        assert m.primitives[2] is None
         assert m.parents == [-1, 0, 1]
         assert m.col_img == 8
         assert m.colkey == 0
 
     def test_topological_order_violation_rejected(self):
-        g = _square_geom()
+        p = _square_prim()
         with pytest.raises(ValueError):
             Mesh(
-                geometries=[g, g],
+                primitives=[p, p],
                 transforms=[Mat4(), Mat4()],
                 parents=[1, -1],  # parents[0] = 1 violates parents[i] < i
             )
 
     def test_parallel_array_length_mismatch_rejected(self):
-        g = _square_geom()
+        p = _square_prim()
         with pytest.raises(ValueError):
             Mesh(
-                geometries=[g, g],
+                primitives=[p, p],
                 transforms=[Mat4()],  # one short
                 parents=[-1, 0],
             )
 
     def test_invalid_parent_index_rejected(self):
-        g = _square_geom()
+        p = _square_prim()
         with pytest.raises(ValueError):
             Mesh(
-                geometries=[g],
+                primitives=[p],
                 transforms=[Mat4()],
                 parents=[-2],  # only -1 is valid for "no parent"
             )
 
-    def test_construct_with_none_geometries(self):
-        # geometries[i] = None represents a pure transform group with no
-        # geometry of its own; useful as a joint / pivot for descendants.
+    def test_construct_with_none_prims(self):
+        # primitives[i] = None represents a pure transform group with no
+        # primitive of its own; useful as a joint / pivot for descendants.
         m = Mesh(
-            geometries=[None, _square_geom()],
+            primitives=[None, _square_prim()],
             transforms=[Mat4(), Mat4()],
             parents=[-1, 0],
         )
-        assert m.geometries[0] is None
-        assert m.geometries[1] is not None
+        assert m.primitives[0] is None
+        assert m.primitives[1] is not None
 
 
 class TestAttributes:
@@ -88,24 +89,24 @@ class TestAttributes:
         m.colkey = None
         assert m.colkey is None
 
-    def test_set_geometries_revalidates(self):
-        g = _square_geom()
+    def test_set_prims_revalidates(self):
+        p = _square_prim()
         m = Mesh(
-            geometries=[g],
+            primitives=[p],
             transforms=[Mat4()],
             parents=[-1],
         )
-        # Reassigning geometries to a different length without also
-        # updating transforms / parents must raise.
+        # Reassigning primitives to a different length without also updating
+        # transforms / parents must raise.
         with pytest.raises(ValueError):
-            m.geometries = [g, g]
+            m.primitives = [p, p]
 
 
 class TestDescendants:
     def test_subtree(self):
-        g = _square_geom()
+        p = _square_prim()
         m = Mesh(
-            geometries=[g, g, g, g],
+            primitives=[p, p, p, p],
             transforms=[Mat4(), Mat4(), Mat4(), Mat4()],
             parents=[-1, 0, 0, 2],
         )
@@ -115,17 +116,17 @@ class TestDescendants:
         assert m.descendants(3) == []
 
     def test_out_of_range(self):
-        g = _square_geom()
-        m = Mesh(geometries=[g], transforms=[Mat4()], parents=[-1])
+        p = _square_prim()
+        m = Mesh(primitives=[p], transforms=[Mat4()], parents=[-1])
         assert m.descendants(-1) == []
         assert m.descendants(5) == []
 
 
 class TestRepr:
     def test_repr_includes_part_count(self):
-        g = _square_geom()
+        p = _square_prim()
         m = Mesh(
-            geometries=[g, g],
+            primitives=[p, p],
             transforms=[Mat4(), Mat4()],
             parents=[-1, 0],
         )

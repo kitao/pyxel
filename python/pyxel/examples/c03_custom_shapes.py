@@ -1,7 +1,7 @@
 import math
 
 import pyxel
-from pyxel.cube import Camera, Geometry, Mat4, Node, Shading, Vec3
+from pyxel.cube import Camera, Mat4, Node, Primitive, Shading, Vec3
 
 ENEMY_COUNT = 5
 ENEMY_COLORS = [11, 3, 14, 12, 10]
@@ -103,12 +103,12 @@ class Enemy(Node):
         self.locked = False
         self.flash = 0
         self.dirs, indices, normals = build_sphere(RINGS, SEGS)
-        self.geom = Geometry(
-            positions=self.wobbled(0.0),
-            indices=indices,
+        self.geom = Primitive(
+            Primitive.MODE_TRIANGLES,
+            self.wobbled(0.0),
+            indices,
             normals=normals,
-            prim=Geometry.PRIM_TRIANGLES,
-            cull=Geometry.CULL_NONE,
+            cull=Primitive.CULL_NONE,
         )
 
     def wobbled(self, t):
@@ -119,7 +119,7 @@ class Enemy(Node):
         return pos
 
     def on_update(self):
-        self.geom.positions = self.wobbled(pyxel.frame_count * 0.06)
+        self.geom.positions[:] = self.wobbled(pyxel.frame_count * 0.06)
         cx = DRIFT_R * math.cos(self.orbit + pyxel.frame_count * 0.01)
         cz = DRIFT_R * math.sin(self.orbit + pyxel.frame_count * 0.01)
         cy = FLOAT_Y + 0.5 * math.sin(pyxel.frame_count * 0.02 + self.phase)
@@ -142,8 +142,11 @@ class Floor(Node):
             u = -GRID_HALF + 2 * GRID_HALF * k / GRID_LINES
             pos += [u, 0.0, -GRID_HALF, u, 0.0, GRID_HALF]
             pos += [-GRID_HALF, 0.0, u, GRID_HALF, 0.0, u]
-        self.grid = Geometry(
-            positions=pos, prim=Geometry.PRIM_LINES, cull=Geometry.CULL_NONE
+        self.grid = Primitive(
+            Primitive.MODE_LINES,
+            pos,
+            list(range(len(pos) // 3)),
+            cull=Primitive.CULL_NONE,
         )
 
     def on_draw(self):
@@ -163,11 +166,11 @@ class Weapon(Node):
         self.fire_t = 0
         self.laser_tex = make_laser_texture()
         self.beams = [self.make_ribbon() for _ in range(ENEMY_COUNT)]
-        self.square_geom = Geometry(
-            positions=[0.0] * 12,
-            indices=[0, 1, 1, 2, 2, 3, 3, 0],
-            prim=Geometry.PRIM_LINES,
-            cull=Geometry.CULL_NONE,
+        self.square_geom = Primitive(
+            Primitive.MODE_LINES,
+            [0.0] * 12,
+            [0, 1, 1, 2, 2, 3, 3, 0],
+            cull=Primitive.CULL_NONE,
         )
 
     def make_ribbon(self):
@@ -179,12 +182,12 @@ class Weapon(Node):
         for k in range(N_PTS - 1):
             a = 2 * k
             indices += [a, a + 1, a + 2, a + 1, a + 3, a + 2]
-        return Geometry(
-            positions=[0.0] * (2 * N_PTS * 3),
+        return Primitive(
+            Primitive.MODE_TRIANGLES,
+            [0.0] * (2 * N_PTS * 3),
+            indices,
             uvs=uvs,
-            indices=indices,
-            prim=Geometry.PRIM_TRIANGLES,
-            cull=Geometry.CULL_NONE,
+            cull=Primitive.CULL_NONE,
         )
 
     def clear_locks(self):
@@ -249,14 +252,14 @@ class Weapon(Node):
             left = pts[k] - perp
             right = pts[k] + perp
             pos += [left.x, left.y, left.z, right.x, right.y, right.z]
-        geom.positions = pos
+        geom.positions[:] = pos
 
     def square(self, center, s):
         a = center + self.cam_right * s + self.cam_up * s
         b = center + self.cam_right * s - self.cam_up * s
         c = center - self.cam_right * s - self.cam_up * s
         d = center - self.cam_right * s + self.cam_up * s
-        self.square_geom.positions = [
+        self.square_geom.positions[:] = [
             a.x,
             a.y,
             a.z,

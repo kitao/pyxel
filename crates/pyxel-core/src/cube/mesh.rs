@@ -1,11 +1,11 @@
 use std::cell::RefCell;
 
 use crate::cube::bvh::Bvh;
-use crate::cube::geometry::RcGeometry;
 use crate::cube::mat4::{Mat4, RcMat4};
+use crate::cube::primitive::RcPrimitive;
 use crate::image::RcImage;
 
-// Asset container for a hierarchical 3D model. geometries / transforms /
+// Asset container for a hierarchical 3D model. primitives / transforms /
 // parents are parallel arrays; col_img holds either a flat color
 // (ColImage::Color) or a shared texture (ColImage::Image). parents[i] < i
 // is required (topological order); validate() enforces this.
@@ -26,7 +26,7 @@ impl ColImage {
 }
 
 pub struct Mesh {
-    pub geometries: Vec<Option<RcGeometry>>,
+    pub primitives: Vec<Option<RcPrimitive>>,
     pub transforms: Vec<RcMat4>,
     pub parents: Vec<i32>,
     pub col_img: ColImage,
@@ -42,7 +42,7 @@ define_rc_type!(RcMesh, Mesh);
 impl Mesh {
     pub fn new() -> RcMesh {
         new_rc_type!(Mesh {
-            geometries: Vec::new(),
+            primitives: Vec::new(),
             transforms: Vec::new(),
             parents: Vec::new(),
             col_img: ColImage::Color(7),
@@ -70,17 +70,17 @@ impl Mesh {
         let world_per_part = self.compose_world_transforms(&identity);
         let mut positions: Vec<crate::cube::vec3::Vec3> = Vec::new();
         let mut triangles: Vec<[u32; 3]> = Vec::new();
-        for (i, geom_opt) in self.geometries.iter().enumerate() {
-            let Some(geom_rc) = geom_opt else {
+        for (i, prim_opt) in self.primitives.iter().enumerate() {
+            let Some(prim_rc) = prim_opt else {
                 continue;
             };
-            let geom = rc_ref!(geom_rc);
-            if geom.prim != crate::cube::geometry::PRIM_TRIANGLES {
+            let prim = rc_ref!(prim_rc);
+            if prim.mode != crate::cube::primitive::MODE_TRIANGLES {
                 continue;
             }
             let world = world_per_part[i];
             let base_index = positions.len() as u32;
-            for chunk in geom.positions.chunks_exact(3) {
+            for chunk in prim.positions.chunks_exact(3) {
                 let local = crate::cube::vec3::Vec3 {
                     x: chunk[0],
                     y: chunk[1],
@@ -90,20 +90,20 @@ impl Mesh {
                 let p = *rc_ref!(&p_rc);
                 positions.push(p);
             }
-            if let Some(indices) = geom.indices.as_ref() {
-                for tri in indices.chunks_exact(3) {
+            if prim.indices.is_empty() {
+                let vert_count = (prim.positions.len() / 3) as u32;
+                let mut t = 0u32;
+                while t + 2 < vert_count {
+                    triangles.push([base_index + t, base_index + t + 1, base_index + t + 2]);
+                    t += 3;
+                }
+            } else {
+                for tri in prim.indices.chunks_exact(3) {
                     triangles.push([
                         base_index + tri[0] as u32,
                         base_index + tri[1] as u32,
                         base_index + tri[2] as u32,
                     ]);
-                }
-            } else {
-                let vert_count = (geom.positions.len() / 3) as u32;
-                let mut t = 0u32;
-                while t + 2 < vert_count {
-                    triangles.push([base_index + t, base_index + t + 1, base_index + t + 2]);
-                    t += 3;
                 }
             }
         }
@@ -111,10 +111,10 @@ impl Mesh {
     }
 
     pub fn validate(&self) -> Result<(), String> {
-        let n = self.geometries.len();
+        let n = self.primitives.len();
         if self.transforms.len() != n || self.parents.len() != n {
             return Err(format!(
-                "Mesh parallel arrays length mismatch: geometries={}, transforms={}, parents={}",
+                "Mesh parallel arrays length mismatch: primitives={}, transforms={}, parents={}",
                 n,
                 self.transforms.len(),
                 self.parents.len(),
@@ -138,7 +138,7 @@ impl Mesh {
     // is the outer transform applied to every root part. The returned
     // vector has the same length as the parallel arrays.
     pub fn compose_world_transforms(&self, root: &Mat4) -> Vec<Mat4> {
-        let n = self.geometries.len();
+        let n = self.primitives.len();
         let mut world: Vec<Mat4> = Vec::with_capacity(n);
         for i in 0..n {
             let local: Mat4 = *rc_ref!(&self.transforms[i]);
@@ -175,15 +175,15 @@ impl Mesh {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::cube::geometry::Geometry;
     use crate::cube::mat4::Mat4;
+    use crate::cube::primitive::Primitive;
     use crate::cube::vec3::Vec3;
 
     #[test]
     fn test_new_empty() {
         let m = Mesh::new();
         let m = rc_ref!(&m);
-        assert!(m.geometries.is_empty());
+        assert!(m.primitives.is_empty());
         assert!(m.transforms.is_empty());
         assert!(m.parents.is_empty());
         assert!(matches!(m.col_img, ColImage::Color(7)));
@@ -195,7 +195,7 @@ mod tests {
         let m = Mesh::new();
         {
             let m = rc_mut!(&m);
-            m.geometries = vec![Some(Geometry::new()), Some(Geometry::new())];
+            m.primitives = vec![Some(Primitive::new()), Some(Primitive::new())];
             m.transforms = vec![Mat4::identity(), Mat4::identity()];
             m.parents = vec![-1, 0];
         }
@@ -207,7 +207,7 @@ mod tests {
         let m = Mesh::new();
         {
             let m = rc_mut!(&m);
-            m.geometries = vec![Some(Geometry::new()), Some(Geometry::new())];
+            m.primitives = vec![Some(Primitive::new()), Some(Primitive::new())];
             m.transforms = vec![Mat4::identity(), Mat4::identity()];
             m.parents = vec![1, -1];
         }
@@ -219,7 +219,7 @@ mod tests {
         let m = Mesh::new();
         {
             let m = rc_mut!(&m);
-            m.geometries = vec![Some(Geometry::new()), Some(Geometry::new())];
+            m.primitives = vec![Some(Primitive::new()), Some(Primitive::new())];
             m.transforms = vec![Mat4::identity()];
             m.parents = vec![-1, 0];
         }
@@ -231,7 +231,7 @@ mod tests {
         let m = Mesh::new();
         {
             let m = rc_mut!(&m);
-            m.geometries = vec![Some(Geometry::new())];
+            m.primitives = vec![Some(Primitive::new())];
             m.transforms = vec![Mat4::identity()];
             m.parents = vec![-2];
         }
@@ -243,7 +243,7 @@ mod tests {
         let m = Mesh::new();
         {
             let m = rc_mut!(&m);
-            m.geometries = vec![None, None, None, None];
+            m.primitives = vec![None, None, None, None];
             m.transforms = vec![
                 Mat4::identity(),
                 Mat4::identity(),
@@ -263,7 +263,7 @@ mod tests {
         let m = Mesh::new();
         {
             let m = rc_mut!(&m);
-            m.geometries = vec![Some(Geometry::new())];
+            m.primitives = vec![Some(Primitive::new())];
             m.transforms = vec![Mat4::identity()];
             m.parents = vec![-1];
         }
@@ -297,7 +297,7 @@ mod tests {
         let m = Mesh::new();
         {
             let m = rc_mut!(&m);
-            m.geometries = vec![None, None];
+            m.primitives = vec![None, None];
             m.transforms = vec![
                 Mat4::from_axis_angle(
                     &Vec3 {
@@ -330,7 +330,7 @@ mod tests {
         let m = Mesh::new();
         {
             let m = rc_mut!(&m);
-            m.geometries = vec![None];
+            m.primitives = vec![None];
             m.transforms = vec![Mat4::from_translation(&crate::cube::vec3::Vec3 {
                 x: 5.0,
                 y: 0.0,
@@ -361,7 +361,7 @@ mod tests {
         let m = Mesh::new();
         {
             let m = rc_mut!(&m);
-            m.geometries = vec![None, None, None];
+            m.primitives = vec![None, None, None];
             let t = Mat4::from_translation(&crate::cube::vec3::Vec3 {
                 x: 1.0,
                 y: 0.0,
@@ -388,17 +388,16 @@ mod tests {
 
     #[test]
     fn test_with_collision_bvh_builds_lazily_and_caches() {
-        use crate::cube::geometry::Geometry;
         let m = Mesh::new();
         {
             let m = rc_mut!(&m);
-            let geom = Geometry::new();
+            let prim = Primitive::new();
             {
-                let g = rc_mut!(&geom);
+                let g = rc_mut!(&prim);
                 g.positions = vec![0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0];
-                g.indices = Some(vec![0, 1, 2]);
+                g.indices = vec![0, 1, 2];
             }
-            m.geometries = vec![Some(geom)];
+            m.primitives = vec![Some(prim)];
             m.transforms = vec![Mat4::identity()];
             m.parents = vec![-1];
         }
@@ -416,7 +415,7 @@ mod tests {
         let m = Mesh::new();
         {
             let m = rc_mut!(&m);
-            m.geometries = vec![None, None, None];
+            m.primitives = vec![None, None, None];
             m.transforms = vec![
                 Mat4::identity(),
                 Mat4::from_translation(&crate::cube::vec3::Vec3 {

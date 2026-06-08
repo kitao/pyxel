@@ -7,10 +7,10 @@ from pyxel.cube import (
     Camera,
     Collider,
     Contact,
-    Geometry,
     Mat4,
     Mesh,
     Node,
+    Primitive,
     Shading,
     Vec3,
 )
@@ -284,35 +284,43 @@ class TestImmediateDrawSafety:
         assert callable(Node().sprite)
 
     def test_mesh_renames_argument_to_mesh_asset(self):
-        geom = Geometry(positions=[0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0])
-        m = Mesh(geometries=[geom], transforms=[Mat4()], parents=[-1], col_img=8)
+        prim = Primitive(
+            Primitive.MODE_TRIANGLES,
+            [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0],
+            [0, 1, 2],
+        )
+        m = Mesh(primitives=[prim], transforms=[Mat4()], parents=[-1], col_img=8)
         Node().mesh(Mat4.IDENTITY, m)
 
-    def test_prim_with_geometry(self):
-        geom = Geometry(
-            positions=[0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0],
-            indices=[0, 1, 2],
-            prim=Geometry.PRIM_TRIANGLES,
-            cull=Geometry.CULL_BACK,
+    def test_prim_with_primitive(self):
+        prim = Primitive(
+            Primitive.MODE_TRIANGLES,
+            [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0],
+            [0, 1, 2],
+            cull=Primitive.CULL_BACK,
         )
-        Node().prim(Mat4.IDENTITY, geom, col_img=7)
+        Node().prim(Mat4.IDENTITY, prim, col_img=7)
 
     def test_prim_col_img_accepts_image(self):
         img = pyxel.images[0]
-        geom = Geometry(
-            positions=[0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0],
+        prim = Primitive(
+            Primitive.MODE_TRIANGLES,
+            [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0],
+            [0, 1, 2],
             uvs=[0.0, 0.0, 1.0, 0.0, 0.0, 1.0],
         )
-        Node().prim(Mat4.IDENTITY, geom, col_img=img, colkey=0)
+        Node().prim(Mat4.IDENTITY, prim, col_img=img, colkey=0)
 
     def test_mesh_col_img_accepts_image(self):
         img = pyxel.images[0]
-        geom = Geometry(
-            positions=[0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0],
+        prim = Primitive(
+            Primitive.MODE_TRIANGLES,
+            [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0],
+            [0, 1, 2],
             uvs=[0.0, 0.0, 1.0, 0.0, 0.0, 1.0],
         )
         m = Mesh(
-            geometries=[geom],
+            primitives=[prim],
             transforms=[Mat4()],
             parents=[-1],
             col_img=img,
@@ -442,7 +450,11 @@ class TestAlwaysBillboard:
         n.text(Vec3.ZERO, "X", 7)
 
 
-_TRIANGLE_GEOMETRY = Geometry(positions=[0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0])
+_TRIANGLE_PRIMITIVE = Primitive(
+    Primitive.MODE_TRIANGLES,
+    [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0],
+    [0, 1, 2],
+)
 _UNIT_QUAD_UVS = ((0.0, 0.0), (1.0, 0.0), (1.0, 1.0), (0.0, 1.0))
 
 
@@ -467,14 +479,14 @@ class TestBillboardKwargRemoved:
             lambda n: n.mesh(
                 Mat4.IDENTITY,
                 Mesh(
-                    geometries=[_TRIANGLE_GEOMETRY],
+                    primitives=[_TRIANGLE_PRIMITIVE],
                     transforms=[Mat4()],
                     parents=[-1],
                     col_img=8,
                 ),
                 billboard=1,
             ),
-            lambda n: n.prim(Mat4.IDENTITY, _TRIANGLE_GEOMETRY, billboard=1),
+            lambda n: n.prim(Mat4.IDENTITY, _TRIANGLE_PRIMITIVE, billboard=1),
         ],
     )
     def test_billboard_kwarg_rejected(self, call):
