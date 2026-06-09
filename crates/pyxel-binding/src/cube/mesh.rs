@@ -129,17 +129,17 @@ impl Mesh {
         self.inner_mut().colkey = v;
     }
 
-    // Methods
-
-    fn descendants(&self, i: i32) -> Vec<i32> {
-        self.inner_ref().descendants(i)
-    }
-
     // Dunder
 
     fn __repr__(&self) -> String {
         let m = self.inner_ref();
         format!("Mesh(parts={})", m.primitives.len())
+    }
+
+    // Methods
+
+    fn descendants(&self, i: i32) -> Vec<i32> {
+        self.inner_ref().descendants(i)
     }
 }
 

@@ -94,10 +94,6 @@ impl Quat {
         4
     }
 
-    fn __neg__(&self) -> Self {
-        Self::wrap(self.inner_ref().neg())
-    }
-
     fn __mul__<'py>(&self, py: Python<'py>, other: &Bound<'py, PyAny>) -> PyResult<Py<PyAny>> {
         if let Ok(quat) = other.extract::<Quat>() {
             let result = Quat::wrap(self.inner_ref().mul_quat(quat.inner_ref()));
@@ -110,6 +106,10 @@ impl Quat {
                 "Quat * other: other must be Quat or Vec3",
             ))
         }
+    }
+
+    fn __neg__(&self) -> Self {
+        Self::wrap(self.inner_ref().neg())
     }
 
     // Class-method factories
