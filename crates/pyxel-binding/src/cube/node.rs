@@ -168,11 +168,15 @@ impl Node {
 
 #[pymethods]
 impl Node {
+    // Constructor
+
     #[new]
     #[pyo3(signature = (*_args, **_kwargs))]
     fn new(_args: &Bound<'_, PyTuple>, _kwargs: Option<&Bound<'_, PyDict>>) -> Self {
         Self::wrap(InnerNode::new())
     }
+
+    // Data attributes
 
     #[getter]
     fn name(&self) -> String {
@@ -229,11 +233,6 @@ impl Node {
         self.inner_mut().camera = v.as_ref().map(|c| c.inner.clone());
     }
 
-    #[getter]
-    fn effective_camera(&self) -> Option<Camera> {
-        InnerNode::effective_camera(&self.inner).map(Camera::wrap)
-    }
-
     // Scene-wide shading cascade. None inherits from the closest non-None
     // ancestor; Scene seeds a default Shading at construction.
     #[getter]
@@ -263,11 +262,6 @@ impl Node {
     }
 
     #[getter]
-    fn parent(&self, py: Python<'_>) -> Option<Py<Node>> {
-        self.parent.borrow().as_ref().map(|p| p.clone_ref(py))
-    }
-
-    #[getter]
     fn tags(&self) -> Vec<String> {
         self.inner_ref().tags.clone()
     }
@@ -277,19 +271,11 @@ impl Node {
         self.inner_mut().tags = v;
     }
 
-    #[getter]
-    fn forward(&self) -> Vec3 {
-        Vec3::wrap(InnerNode::forward(&self.inner))
-    }
+    // Properties
 
     #[getter]
-    fn right(&self) -> Vec3 {
-        Vec3::wrap(InnerNode::right(&self.inner))
-    }
-
-    #[getter]
-    fn up(&self) -> Vec3 {
-        Vec3::wrap(InnerNode::up(&self.inner))
+    fn parent(&self, py: Python<'_>) -> Option<Py<Node>> {
+        self.parent.borrow().as_ref().map(|p| p.clone_ref(py))
     }
 
     #[getter]
@@ -313,6 +299,44 @@ impl Node {
         }
         pyo3::types::PyTuple::new(py, items)
     }
+
+    #[getter]
+    fn destroyed(&self) -> bool {
+        self.inner_ref().destroyed
+    }
+
+    #[getter]
+    fn forward(&self) -> Vec3 {
+        Vec3::wrap(InnerNode::forward(&self.inner))
+    }
+
+    #[getter]
+    fn right(&self) -> Vec3 {
+        Vec3::wrap(InnerNode::right(&self.inner))
+    }
+
+    #[getter]
+    fn up(&self) -> Vec3 {
+        Vec3::wrap(InnerNode::up(&self.inner))
+    }
+
+    #[getter]
+    fn effective_camera(&self) -> Option<Camera> {
+        InnerNode::effective_camera(&self.inner).map(Camera::wrap)
+    }
+
+    // Dunder
+
+    fn __repr__(&self) -> String {
+        let n = self.inner_ref();
+        format!(
+            "Node(name={:?}, children={})",
+            n.name,
+            self.children.borrow().len()
+        )
+    }
+
+    // Hierarchy management
 
     #[getter]
     fn world_transform(&self) -> Mat4 {
@@ -372,10 +396,7 @@ impl Node {
         InnerNode::destroy(&slf.inner);
     }
 
-    #[getter]
-    fn destroyed(&self) -> bool {
-        self.inner_ref().destroyed
-    }
+    // Lifecycle hooks
 
     #[allow(clippy::unused_self)]
     fn on_update(&self) {}
@@ -431,6 +452,8 @@ impl Node {
         });
     }
 
+    // Linework
+
     #[pyo3(signature = (pos, col))]
     fn pset(&self, pos: PyRef<'_, Vec3>, col: i32) {
         let world_mat = self.world_mat();
@@ -449,6 +472,8 @@ impl Node {
             pyxel::cube::draw::line(ctx, &world_mat, &v1, &v2, col, state);
         });
     }
+
+    // 2D polygons
 
     #[pyo3(signature = (p1, p2, p3, col))]
     fn tri(&self, p1: PyRef<'_, Vec3>, p2: PyRef<'_, Vec3>, p3: PyRef<'_, Vec3>, col: i32) {
@@ -472,6 +497,24 @@ impl Node {
         });
     }
 
+    #[pyo3(signature = (mat, w, h, col))]
+    fn rect(&self, mat: PyRef<'_, Mat4>, w: f32, h: f32, col: i32) {
+        let world_mat = self.world_mat_compose(*mat.inner_ref());
+        self.with_state_from_ctx(pyxel::cube::draw::BILLBOARD_OFF, |ctx, state| {
+            pyxel::cube::draw::rect(ctx, &world_mat, w, h, col, state);
+        });
+    }
+
+    #[pyo3(signature = (mat, w, h, col))]
+    fn rectb(&self, mat: PyRef<'_, Mat4>, w: f32, h: f32, col: i32) {
+        let world_mat = self.world_mat_compose(*mat.inner_ref());
+        self.with_state_from_ctx(pyxel::cube::draw::BILLBOARD_OFF, |ctx, state| {
+            pyxel::cube::draw::rectb(ctx, &world_mat, w, h, col, state);
+        });
+    }
+
+    // 2D curves
+
     #[pyo3(signature = (pos, r, col))]
     fn circ(&self, pos: PyRef<'_, Vec3>, r: f32, col: i32) {
         let world_mat = self.world_mat();
@@ -487,6 +530,70 @@ impl Node {
         let local = *pos.inner_ref();
         self.with_state_from_ctx(pyxel::cube::draw::BILLBOARD_ON, |ctx, state| {
             pyxel::cube::draw::circb(ctx, &world_mat, &local, r, col, state);
+        });
+    }
+
+    #[pyo3(signature = (mat, w, h, col))]
+    fn elli(&self, mat: PyRef<'_, Mat4>, w: f32, h: f32, col: i32) {
+        let world_mat = self.world_mat_compose(*mat.inner_ref());
+        self.with_state_from_ctx(pyxel::cube::draw::BILLBOARD_OFF, |ctx, state| {
+            pyxel::cube::draw::elli(ctx, &world_mat, w, h, col, state);
+        });
+    }
+
+    #[pyo3(signature = (mat, w, h, col))]
+    fn ellib(&self, mat: PyRef<'_, Mat4>, w: f32, h: f32, col: i32) {
+        let world_mat = self.world_mat_compose(*mat.inner_ref());
+        self.with_state_from_ctx(pyxel::cube::draw::BILLBOARD_OFF, |ctx, state| {
+            pyxel::cube::draw::ellib(ctx, &world_mat, w, h, col, state);
+        });
+    }
+
+    // 3D solids
+
+    #[pyo3(signature = (mat, size, col_img=None, *, colkey=None))]
+    fn r#box(
+        &self,
+        mat: PyRef<'_, Mat4>,
+        size: PyRef<'_, Vec3>,
+        col_img: Option<&Bound<'_, PyAny>>,
+        colkey: Option<i32>,
+    ) -> PyResult<()> {
+        use pyo3::exceptions::PyTypeError;
+        let world_mat = self.world_mat_compose(*mat.inner_ref());
+        let size_v = *size.inner_ref();
+        let (col_flat, col_image) = match col_img {
+            Some(c) => {
+                if let Ok(i) = c.extract::<i32>() {
+                    (i, None)
+                } else if let Ok(img_ref) = c.cast::<crate::image_wrapper::Image>() {
+                    (0, Some(img_ref.borrow().inner.clone()))
+                } else {
+                    return Err(PyTypeError::new_err("col_img must be int or Image"));
+                }
+            }
+            None => (7, None),
+        };
+        self.with_state_from_ctx(pyxel::cube::draw::BILLBOARD_OFF, |ctx, state| {
+            pyxel::cube::draw::box_solid(
+                ctx,
+                &world_mat,
+                &size_v,
+                col_flat,
+                col_image.as_ref(),
+                colkey,
+                state,
+            );
+        });
+        Ok(())
+    }
+
+    #[pyo3(signature = (mat, size, col))]
+    fn boxb(&self, mat: PyRef<'_, Mat4>, size: PyRef<'_, Vec3>, col: i32) {
+        let world_mat = self.world_mat_compose(*mat.inner_ref());
+        let size_v = *size.inner_ref();
+        self.with_state_from_ctx(pyxel::cube::draw::BILLBOARD_OFF, |ctx, state| {
+            pyxel::cube::draw::boxb(ctx, &world_mat, &size_v, col, state);
         });
     }
 
@@ -537,98 +644,22 @@ impl Node {
         });
     }
 
-    #[pyo3(signature = (mat, w, h, col))]
-    fn rect(&self, mat: PyRef<'_, Mat4>, w: f32, h: f32, col: i32) {
-        let world_mat = self.world_mat_compose(*mat.inner_ref());
-        self.with_state_from_ctx(pyxel::cube::draw::BILLBOARD_OFF, |ctx, state| {
-            pyxel::cube::draw::rect(ctx, &world_mat, w, h, col, state);
-        });
-    }
+    // Textured quads
 
-    #[pyo3(signature = (mat, w, h, col))]
-    fn rectb(&self, mat: PyRef<'_, Mat4>, w: f32, h: f32, col: i32) {
-        let world_mat = self.world_mat_compose(*mat.inner_ref());
-        self.with_state_from_ctx(pyxel::cube::draw::BILLBOARD_OFF, |ctx, state| {
-            pyxel::cube::draw::rectb(ctx, &world_mat, w, h, col, state);
-        });
-    }
-
-    #[pyo3(signature = (mat, w, h, col))]
-    fn elli(&self, mat: PyRef<'_, Mat4>, w: f32, h: f32, col: i32) {
-        let world_mat = self.world_mat_compose(*mat.inner_ref());
-        self.with_state_from_ctx(pyxel::cube::draw::BILLBOARD_OFF, |ctx, state| {
-            pyxel::cube::draw::elli(ctx, &world_mat, w, h, col, state);
-        });
-    }
-
-    #[pyo3(signature = (mat, w, h, col))]
-    fn ellib(&self, mat: PyRef<'_, Mat4>, w: f32, h: f32, col: i32) {
-        let world_mat = self.world_mat_compose(*mat.inner_ref());
-        self.with_state_from_ctx(pyxel::cube::draw::BILLBOARD_OFF, |ctx, state| {
-            pyxel::cube::draw::ellib(ctx, &world_mat, w, h, col, state);
-        });
-    }
-
-    #[pyo3(signature = (mat, size, col_img=None, *, colkey=None))]
-    fn r#box(
+    #[pyo3(signature = (mat, img, uvs, w, h, *, colkey=None))]
+    fn plane(
         &self,
         mat: PyRef<'_, Mat4>,
-        size: PyRef<'_, Vec3>,
-        col_img: Option<&Bound<'_, PyAny>>,
+        img: PyRef<'_, crate::image_wrapper::Image>,
+        uvs: Uvs,
+        w: f32,
+        h: f32,
         colkey: Option<i32>,
-    ) -> PyResult<()> {
-        use pyo3::exceptions::PyTypeError;
-        let world_mat = self.world_mat_compose(*mat.inner_ref());
-        let size_v = *size.inner_ref();
-        let (col_flat, col_image) = match col_img {
-            Some(c) => {
-                if let Ok(i) = c.extract::<i32>() {
-                    (i, None)
-                } else if let Ok(img_ref) = c.cast::<crate::image_wrapper::Image>() {
-                    (0, Some(img_ref.borrow().inner.clone()))
-                } else {
-                    return Err(PyTypeError::new_err("col_img must be int or Image"));
-                }
-            }
-            None => (7, None),
-        };
-        self.with_state_from_ctx(pyxel::cube::draw::BILLBOARD_OFF, |ctx, state| {
-            pyxel::cube::draw::box_solid(
-                ctx,
-                &world_mat,
-                &size_v,
-                col_flat,
-                col_image.as_ref(),
-                colkey,
-                state,
-            );
-        });
-        Ok(())
-    }
-
-    #[pyo3(signature = (mat, size, col))]
-    fn boxb(&self, mat: PyRef<'_, Mat4>, size: PyRef<'_, Vec3>, col: i32) {
-        let world_mat = self.world_mat_compose(*mat.inner_ref());
-        let size_v = *size.inner_ref();
-        self.with_state_from_ctx(pyxel::cube::draw::BILLBOARD_OFF, |ctx, state| {
-            pyxel::cube::draw::boxb(ctx, &world_mat, &size_v, col, state);
-        });
-    }
-
-    #[pyo3(signature = (pos, s, col, *, font=None))]
-    fn text(
-        &self,
-        pos: PyRef<'_, Vec3>,
-        s: &str,
-        col: i32,
-        font: Option<PyRef<'_, crate::font_wrapper::Font>>,
     ) {
-        let world_mat = self.world_mat();
-        let pos_v = *pos.inner_ref();
-        let font_rc = font.as_ref().map(|f| f.inner.clone());
-        self.with_state_from_ctx(pyxel::cube::draw::BILLBOARD_ON, |ctx, state| {
-            let font_ref: Option<&mut pyxel::Font> = font_rc.as_ref().map(|f| rc_mut!(f));
-            pyxel::cube::draw::text(ctx, &world_mat, &pos_v, s, col, font_ref, state);
+        let world_mat = self.world_mat_compose(*mat.inner_ref());
+        let img_inner = img.inner.clone();
+        self.with_state_from_ctx(pyxel::cube::draw::BILLBOARD_OFF, |ctx, state| {
+            pyxel::cube::draw::plane(ctx, &world_mat, &img_inner, uvs, w, h, colkey, state);
         });
     }
 
@@ -653,22 +684,7 @@ impl Node {
         });
     }
 
-    #[pyo3(signature = (mat, img, uvs, w, h, *, colkey=None))]
-    fn plane(
-        &self,
-        mat: PyRef<'_, Mat4>,
-        img: PyRef<'_, crate::image_wrapper::Image>,
-        uvs: Uvs,
-        w: f32,
-        h: f32,
-        colkey: Option<i32>,
-    ) {
-        let world_mat = self.world_mat_compose(*mat.inner_ref());
-        let img_inner = img.inner.clone();
-        self.with_state_from_ctx(pyxel::cube::draw::BILLBOARD_OFF, |ctx, state| {
-            pyxel::cube::draw::plane(ctx, &world_mat, &img_inner, uvs, w, h, colkey, state);
-        });
-    }
+    // Asset-based
 
     #[pyo3(signature = (mat, mesh_asset))]
     fn mesh(&self, mat: PyRef<'_, Mat4>, mesh_asset: PyRef<'_, super::mesh::Mesh>) {
@@ -749,6 +765,25 @@ impl Node {
             Some(Err(msg)) => Err(PyValueError::new_err(msg)),
             Some(Ok(())) | None => Ok(()),
         }
+    }
+
+    // Text
+
+    #[pyo3(signature = (pos, s, col, *, font=None))]
+    fn text(
+        &self,
+        pos: PyRef<'_, Vec3>,
+        s: &str,
+        col: i32,
+        font: Option<PyRef<'_, crate::font_wrapper::Font>>,
+    ) {
+        let world_mat = self.world_mat();
+        let pos_v = *pos.inner_ref();
+        let font_rc = font.as_ref().map(|f| f.inner.clone());
+        self.with_state_from_ctx(pyxel::cube::draw::BILLBOARD_ON, |ctx, state| {
+            let font_ref: Option<&mut pyxel::Font> = font_rc.as_ref().map(|f| rc_mut!(f));
+            pyxel::cube::draw::text(ctx, &world_mat, &pos_v, s, col, font_ref, state);
+        });
     }
 
     // Frame-level pipeline (motion integration -> on_update traversal
@@ -842,6 +877,8 @@ impl Node {
         }
         result
     }
+
+    // Spatial queries on this Node's subtree
 
     #[pyo3(signature = (origin, direction, max_distance=None, hit_triggers=false, tags=None))]
     fn raycast(
@@ -947,6 +984,8 @@ impl Node {
         wrap_node_results(&root_any, &inner_results)
     }
 
+    // Python GC integration
+
     fn __traverse__(&self, visit: pyo3::PyVisit<'_>) -> Result<(), pyo3::PyTraverseError> {
         for child in self.children.borrow().iter() {
             visit.call(child)?;
@@ -960,15 +999,6 @@ impl Node {
     fn __clear__(&self) {
         self.children.borrow_mut().clear();
         *self.parent.borrow_mut() = None;
-    }
-
-    fn __repr__(&self) -> String {
-        let n = self.inner_ref();
-        format!(
-            "Node(name={:?}, children={})",
-            n.name,
-            self.children.borrow().len()
-        )
     }
 }
 

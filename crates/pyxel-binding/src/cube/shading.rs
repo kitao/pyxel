@@ -23,6 +23,11 @@ impl Shading {
         self.inner_mut().direction = v.inner.clone();
     }
 
+    fn __repr__(&self) -> String {
+        let r = self.inner_ref();
+        format!("Shading({} × {})", r.palette_size(), LEVEL_COUNT)
+    }
+
     fn __getitem__(&self, key: (usize, usize)) -> PyResult<(i32, i32)> {
         let (col, level) = key;
         let r = self.inner_ref();
@@ -49,11 +54,6 @@ impl Shading {
     fn build(&self, colors: Vec<u32>) {
         let palette: Vec<pyxel::Rgb24> = colors.into_iter().map(|c| c as pyxel::Rgb24).collect();
         self.inner_mut().build(&palette);
-    }
-
-    fn __repr__(&self) -> String {
-        let r = self.inner_ref();
-        format!("Shading({} × {})", r.palette_size(), LEVEL_COUNT)
     }
 }
 

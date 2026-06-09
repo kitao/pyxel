@@ -137,12 +137,6 @@ impl Primitive {
         self.inner_mut().cull = v;
     }
 
-    // Methods
-
-    fn compute_normals(&self) {
-        self.inner_mut().compute_normals();
-    }
-
     // Dunder
 
     fn __repr__(&self) -> String {
@@ -153,6 +147,12 @@ impl Primitive {
             p.mode,
             p.cull
         )
+    }
+
+    // Methods
+
+    fn compute_normals(&self) {
+        self.inner_mut().compute_normals();
     }
 }
 
