@@ -4,16 +4,16 @@ from cube_physics_camera import OrbitCamera
 from pyxel.cube import (
     Collider,
     Mat4,
-    Mesh,
+    MeshData,
     Node,
-    Primitive,
+    PrimData,
     Scene,
     Shading,
     Vec3,
 )
 
 
-def _stage_mesh() -> Mesh:
+def _stage_mesh() -> MeshData:
     verts = [
         -8.0,
         0.0,
@@ -29,9 +29,9 @@ def _stage_mesh() -> Mesh:
         8.0,
     ]
     indices = [0, 1, 2, 1, 3, 2]
-    geom = Primitive(Primitive.MODE_TRIANGLES, verts, indices)
-    return Mesh(
-        geometries=[geom],
+    prim_data = PrimData(PrimData.MODE_TRIANGLES, verts, indices)
+    return MeshData(
+        geometries=[prim_data],
         transforms=[Mat4.IDENTITY],
         parents=[-1],
         col_img=11,

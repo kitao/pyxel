@@ -2,7 +2,7 @@ use crate::cube::vec3::Vec3;
 
 // Static vertex-data asset. Carries vertex attributes (positions /
 // normals / uvs) and topology (indices, mode); mode and cull are
-// indices-intrinsic. Shareable across many Node draw calls and Mesh
+// indices-intrinsic. Shareable across many Node draw calls and MeshData
 // parts. Empty normals / uvs / indices mean "absent".
 
 pub const MODE_POINTS: i32 = 0;
@@ -13,7 +13,7 @@ pub const CULL_NONE: i32 = 0;
 pub const CULL_BACK: i32 = 1;
 pub const CULL_FRONT: i32 = 2;
 
-pub struct Primitive {
+pub struct PrimData {
     pub positions: Vec<f32>,
     pub normals: Vec<f32>,
     pub uvs: Vec<f32>,
@@ -22,11 +22,11 @@ pub struct Primitive {
     pub cull: i32,
 }
 
-define_rc_type!(RcPrimitive, Primitive);
+define_rc_type!(RcPrimData, PrimData);
 
-impl Primitive {
-    pub fn new() -> RcPrimitive {
-        new_rc_type!(Primitive {
+impl PrimData {
+    pub fn new() -> RcPrimData {
+        new_rc_type!(PrimData {
             positions: Vec::new(),
             normals: Vec::new(),
             uvs: Vec::new(),
@@ -133,7 +133,7 @@ mod tests {
 
     #[test]
     fn test_new_defaults() {
-        let p = Primitive::new();
+        let p = PrimData::new();
         let p = rc_ref!(&p);
         assert!(p.positions.is_empty());
         assert!(p.normals.is_empty());
@@ -146,7 +146,7 @@ mod tests {
     #[test]
     fn test_compute_normals_empty_indices_is_sequential() {
         // Empty indices => vertices consumed 0, 1, 2, ...; 1 triangle, +Z.
-        let p = Primitive::new();
+        let p = PrimData::new();
         {
             let p = rc_mut!(&p);
             p.positions = vec![0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0];
@@ -163,7 +163,7 @@ mod tests {
 
     #[test]
     fn test_compute_normals_with_indices() {
-        let p = Primitive::new();
+        let p = PrimData::new();
         {
             let p = rc_mut!(&p);
             p.positions = vec![0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0];
@@ -181,7 +181,7 @@ mod tests {
         // Triangle 0 in z=0 plane (normal +Z), triangle 1 in x=1 plane
         // (normal +X). Per-face layout means the two normals occupy
         // disjoint output slots.
-        let p = Primitive::new();
+        let p = PrimData::new();
         {
             let p = rc_mut!(&p);
             p.positions = vec![
@@ -210,7 +210,7 @@ mod tests {
 
     #[test]
     fn test_compute_normals_empty_positions() {
-        let p = Primitive::new();
+        let p = PrimData::new();
         {
             let p = rc_mut!(&p);
             p.compute_normals();
@@ -221,7 +221,7 @@ mod tests {
 
     #[test]
     fn test_compute_normals_non_triangle_mode() {
-        let p = Primitive::new();
+        let p = PrimData::new();
         {
             let p = rc_mut!(&p);
             p.positions = vec![0.0, 0.0, 0.0, 1.0, 0.0, 0.0];
@@ -235,7 +235,7 @@ mod tests {
 
     #[test]
     fn test_indices_out_of_range_skipped() {
-        let p = Primitive::new();
+        let p = PrimData::new();
         {
             let p = rc_mut!(&p);
             p.positions = vec![0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0];

@@ -8,9 +8,9 @@ from pyxel.cube import (
     Collider,
     Contact,
     Mat4,
-    Mesh,
+    MeshData,
     Node,
-    Primitive,
+    PrimData,
     Shading,
     Vec3,
 )
@@ -284,27 +284,27 @@ class TestImmediateDrawSafety:
         assert callable(Node().sprite)
 
     def test_mesh_renames_argument_to_mesh_asset(self):
-        prim = Primitive(
-            Primitive.MODE_TRIANGLES,
+        prim = PrimData(
+            PrimData.MODE_TRIANGLES,
             [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0],
             [0, 1, 2],
         )
-        m = Mesh(primitives=[prim], transforms=[Mat4()], parents=[-1], col_img=8)
+        m = MeshData(primitives=[prim], transforms=[Mat4()], parents=[-1], col_img=8)
         Node().mesh(Mat4.IDENTITY, m)
 
     def test_prim_with_primitive(self):
-        prim = Primitive(
-            Primitive.MODE_TRIANGLES,
+        prim = PrimData(
+            PrimData.MODE_TRIANGLES,
             [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0],
             [0, 1, 2],
-            cull=Primitive.CULL_BACK,
+            cull=PrimData.CULL_BACK,
         )
         Node().prim(Mat4.IDENTITY, prim, col_img=7)
 
     def test_prim_col_img_accepts_image(self):
         img = pyxel.images[0]
-        prim = Primitive(
-            Primitive.MODE_TRIANGLES,
+        prim = PrimData(
+            PrimData.MODE_TRIANGLES,
             [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0],
             [0, 1, 2],
             uvs=[0.0, 0.0, 1.0, 0.0, 0.0, 1.0],
@@ -313,13 +313,13 @@ class TestImmediateDrawSafety:
 
     def test_mesh_col_img_accepts_image(self):
         img = pyxel.images[0]
-        prim = Primitive(
-            Primitive.MODE_TRIANGLES,
+        prim = PrimData(
+            PrimData.MODE_TRIANGLES,
             [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0],
             [0, 1, 2],
             uvs=[0.0, 0.0, 1.0, 0.0, 0.0, 1.0],
         )
-        m = Mesh(
+        m = MeshData(
             primitives=[prim],
             transforms=[Mat4()],
             parents=[-1],
@@ -450,8 +450,8 @@ class TestAlwaysBillboard:
         n.text(Vec3.ZERO, "X", 7)
 
 
-_TRIANGLE_PRIMITIVE = Primitive(
-    Primitive.MODE_TRIANGLES,
+_TRIANGLE_PRIMITIVE = PrimData(
+    PrimData.MODE_TRIANGLES,
     [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0],
     [0, 1, 2],
 )
@@ -478,7 +478,7 @@ class TestBillboardKwargRemoved:
             ),
             lambda n: n.mesh(
                 Mat4.IDENTITY,
-                Mesh(
+                MeshData(
                     primitives=[_TRIANGLE_PRIMITIVE],
                     transforms=[Mat4()],
                     parents=[-1],

@@ -4,9 +4,9 @@ Camera = _binding_cube.Camera
 Collider = _binding_cube.Collider
 Contact = _binding_cube.Contact
 Mat4 = _binding_cube.Mat4
-Mesh = _binding_cube.Mesh
+MeshData = _binding_cube.MeshData
 Node = _binding_cube.Node
-Primitive = _binding_cube.Primitive
+PrimData = _binding_cube.PrimData
 Quat = _binding_cube.Quat
 RaycastHit = _binding_cube.RaycastHit
 Shading = _binding_cube.Shading
@@ -17,9 +17,9 @@ __all__ = [
     "Collider",
     "Contact",
     "Mat4",
-    "Mesh",
+    "MeshData",
     "Node",
-    "Primitive",
+    "PrimData",
     "Quat",
     "RaycastHit",
     "Shading",

@@ -1,16 +1,16 @@
 use pyo3::exceptions::{PyTypeError, PyValueError};
 use pyo3::prelude::*;
 use pyo3::types::PyList;
-use pyxel::cube::mesh::ColImage;
+use pyxel::cube::mesh_data::ColImage;
 
 use super::mat4::Mat4;
-use super::primitive::Primitive;
+use super::prim_data::PrimData;
 use crate::image_wrapper::Image;
 
-define_wrapper!(Mesh, pyxel::cube::Mesh);
+define_wrapper!(MeshData, pyxel::cube::MeshData);
 
 #[pymethods]
-impl Mesh {
+impl MeshData {
     // Constructor
 
     #[new]
@@ -22,13 +22,13 @@ impl Mesh {
         colkey=None,
     ))]
     fn new(
-        primitives: Option<Vec<Option<PyRef<'_, Primitive>>>>,
+        primitives: Option<Vec<Option<PyRef<'_, PrimData>>>>,
         transforms: Option<Vec<PyRef<'_, Mat4>>>,
         parents: Option<Vec<i32>>,
         col_img: Option<Bound<'_, PyAny>>,
         colkey: Option<i32>,
     ) -> PyResult<Self> {
-        let mesh = pyxel::cube::Mesh::new();
+        let mesh = pyxel::cube::MeshData::new();
         {
             let m = rc_mut!(&mesh);
             if let Some(ps) = primitives {
@@ -58,7 +58,7 @@ impl Mesh {
             .primitives
             .iter()
             .map(|p| match p {
-                Some(p) => match Primitive::wrap(p.clone()).into_pyobject(py) {
+                Some(p) => match PrimData::wrap(p.clone()).into_pyobject(py) {
                     Ok(b) => b.into_any().unbind(),
                     Err(_) => py.None(),
                 },
@@ -69,7 +69,7 @@ impl Mesh {
     }
 
     #[setter]
-    fn set_primitives(&self, v: Vec<Option<PyRef<'_, Primitive>>>) -> PyResult<()> {
+    fn set_primitives(&self, v: Vec<Option<PyRef<'_, PrimData>>>) -> PyResult<()> {
         self.inner_mut().primitives = v.into_iter().map(|p| p.map(|p| p.inner.clone())).collect();
         self.inner_ref().validate().map_err(PyValueError::new_err)
     }
@@ -133,7 +133,7 @@ impl Mesh {
 
     fn __repr__(&self) -> String {
         let m = self.inner_ref();
-        format!("Mesh(parts={})", m.primitives.len())
+        format!("MeshData(parts={})", m.primitives.len())
     }
 
     // Methods
@@ -153,7 +153,7 @@ fn parse_col_img(v: &Bound<'_, PyAny>) -> PyResult<ColImage> {
     Err(PyTypeError::new_err("col_img must be int or Image"))
 }
 
-pub fn add_mesh_class(m: &Bound<'_, PyModule>) -> PyResult<()> {
-    m.add_class::<Mesh>()?;
+pub fn add_mesh_data_class(m: &Bound<'_, PyModule>) -> PyResult<()> {
+    m.add_class::<MeshData>()?;
     Ok(())
 }

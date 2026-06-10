@@ -686,21 +686,21 @@ impl Node {
 
     // Asset-based
 
-    #[pyo3(signature = (mat, mesh_asset))]
-    fn mesh(&self, mat: PyRef<'_, Mat4>, mesh_asset: PyRef<'_, super::mesh::Mesh>) {
+    #[pyo3(signature = (mat, mesh_data))]
+    fn mesh(&self, mat: PyRef<'_, Mat4>, mesh_data: PyRef<'_, super::mesh_data::MeshData>) {
         let world_mat = self.world_mat_compose(*mat.inner_ref());
-        let mesh_inner = mesh_asset.inner.clone();
+        let mesh_inner = mesh_data.inner.clone();
         self.with_state_from_ctx(pyxel::cube::draw::BILLBOARD_OFF, |ctx, state| {
             let m = rc_ref!(&mesh_inner);
             pyxel::cube::draw::mesh(ctx, &world_mat, m, state);
         });
     }
 
-    #[pyo3(signature = (mat, primitive, col_img=None, *, colkey=None))]
+    #[pyo3(signature = (mat, prim_data, col_img=None, *, colkey=None))]
     fn prim(
         &self,
         mat: PyRef<'_, Mat4>,
-        primitive: PyRef<'_, super::primitive::Primitive>,
+        prim_data: PyRef<'_, super::prim_data::PrimData>,
         col_img: Option<&Bound<'_, PyAny>>,
         colkey: Option<i32>,
     ) -> PyResult<()> {
@@ -709,7 +709,7 @@ impl Node {
         let world_mat = self.world_mat_compose(*mat.inner_ref());
 
         let (positions_data, indices_data, normals_data, uvs_data, prim_mode, cull_mode) = {
-            let p = rc_ref!(&primitive.inner);
+            let p = rc_ref!(&prim_data.inner);
             (
                 p.positions.clone(),
                 p.indices.clone(),
@@ -738,7 +738,7 @@ impl Node {
         // the active DrawContext like every other primitive. The closure
         // returns (), so we capture the rasterizer result in an outer
         // variable and propagate any error after the call returns.
-        // Empty attribute Vecs mean "absent" on the Primitive; the
+        // Empty attribute Vecs mean "absent" on the PrimData; the
         // rasterizer still takes Option<&[..]>, so map empty -> None.
         let indices_opt = (!indices_data.is_empty()).then_some(indices_data.as_slice());
         let normals_opt = (!normals_data.is_empty()).then_some(normals_data.as_slice());
