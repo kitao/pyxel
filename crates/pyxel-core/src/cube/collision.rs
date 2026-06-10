@@ -5,7 +5,7 @@
 
 use crate::cube::collider::Collider;
 use crate::cube::mat4::Mat4;
-use crate::cube::mesh::Mesh;
+use crate::cube::mesh_data::MeshData;
 use crate::cube::vec3::Vec3;
 
 // Axis-aligned bounding box used by the broad phase and by ray hit
@@ -108,8 +108,8 @@ impl Aabb {
         Self { min, max }
     }
 
-    // Mesh-collider AABB: union of every part's transformed positions.
-    pub fn from_mesh(mesh: &Mesh, transform: &Mat4) -> Self {
+    // MeshData-collider AABB: union of every part's transformed positions.
+    pub fn from_mesh(mesh: &MeshData, transform: &Mat4) -> Self {
         let world_per_part = mesh.compose_world_transforms(transform);
         let mut min = Vec3 {
             x: f32::INFINITY,

@@ -1,7 +1,7 @@
 import math
 
 import pyxel
-from pyxel.cube import Camera, Mat4, Node, Primitive, Shading, Vec3
+from pyxel.cube import Camera, Mat4, Node, PrimData, Shading, Vec3
 
 ENEMY_COUNT = 5
 ENEMY_COLORS = [11, 3, 14, 12, 10]
@@ -103,12 +103,12 @@ class Enemy(Node):
         self.locked = False
         self.flash = 0
         self.dirs, indices, normals = build_sphere(RINGS, SEGS)
-        self.geom = Primitive(
-            Primitive.MODE_TRIANGLES,
+        self.body = PrimData(
+            PrimData.MODE_TRIANGLES,
             self.wobbled(0.0),
             indices,
             normals=normals,
-            cull=Primitive.CULL_NONE,
+            cull=PrimData.CULL_NONE,
         )
 
     def wobbled(self, t):
@@ -119,7 +119,7 @@ class Enemy(Node):
         return pos
 
     def on_update(self):
-        self.geom.positions[:] = self.wobbled(pyxel.frame_count * 0.06)
+        self.body.positions[:] = self.wobbled(pyxel.frame_count * 0.06)
         cx = DRIFT_R * math.cos(self.orbit + pyxel.frame_count * 0.01)
         cz = DRIFT_R * math.sin(self.orbit + pyxel.frame_count * 0.01)
         cy = FLOAT_Y + 0.5 * math.sin(pyxel.frame_count * 0.02 + self.phase)
@@ -130,7 +130,7 @@ class Enemy(Node):
 
     def on_draw(self):
         self.prim(
-            Mat4.IDENTITY, self.geom, FLASH_COLOR if self.flash > 0 else self.color
+            Mat4.IDENTITY, self.body, FLASH_COLOR if self.flash > 0 else self.color
         )
 
 
@@ -142,11 +142,11 @@ class Floor(Node):
             u = -GRID_HALF + 2 * GRID_HALF * k / GRID_LINES
             pos += [u, 0.0, -GRID_HALF, u, 0.0, GRID_HALF]
             pos += [-GRID_HALF, 0.0, u, GRID_HALF, 0.0, u]
-        self.grid = Primitive(
-            Primitive.MODE_LINES,
+        self.grid = PrimData(
+            PrimData.MODE_LINES,
             pos,
             list(range(len(pos) // 3)),
-            cull=Primitive.CULL_NONE,
+            cull=PrimData.CULL_NONE,
         )
 
     def on_draw(self):
@@ -166,11 +166,11 @@ class Weapon(Node):
         self.fire_t = 0
         self.laser_tex = make_laser_texture()
         self.beams = [self.make_ribbon() for _ in range(ENEMY_COUNT)]
-        self.square_geom = Primitive(
-            Primitive.MODE_LINES,
+        self.marker = PrimData(
+            PrimData.MODE_LINES,
             [0.0] * 12,
             [0, 1, 1, 2, 2, 3, 3, 0],
-            cull=Primitive.CULL_NONE,
+            cull=PrimData.CULL_NONE,
         )
 
     def make_ribbon(self):
@@ -182,12 +182,12 @@ class Weapon(Node):
         for k in range(N_PTS - 1):
             a = 2 * k
             indices += [a, a + 1, a + 2, a + 1, a + 3, a + 2]
-        return Primitive(
-            Primitive.MODE_TRIANGLES,
+        return PrimData(
+            PrimData.MODE_TRIANGLES,
             [0.0] * (2 * N_PTS * 3),
             indices,
             uvs=uvs,
-            cull=Primitive.CULL_NONE,
+            cull=PrimData.CULL_NONE,
         )
 
     def clear_locks(self):
@@ -225,7 +225,7 @@ class Weapon(Node):
             self.locked = []
             self.fire_t = 1
 
-    def update_beam(self, geom, target, idx, extent):
+    def update_beam(self, beam, target, idx, extent):
         angle = (idx - (len(self.firing) - 1) * 0.5) * FAN
         launch = self.cam_up * math.cos(angle) + self.cam_right * math.sin(angle)
         ctrl = EMITTER + launch * LAUNCH
@@ -252,14 +252,14 @@ class Weapon(Node):
             left = pts[k] - perp
             right = pts[k] + perp
             pos += [left.x, left.y, left.z, right.x, right.y, right.z]
-        geom.positions[:] = pos
+        beam.positions[:] = pos
 
     def square(self, center, s):
         a = center + self.cam_right * s + self.cam_up * s
         b = center + self.cam_right * s - self.cam_up * s
         c = center - self.cam_right * s - self.cam_up * s
         d = center - self.cam_right * s + self.cam_up * s
-        self.square_geom.positions[:] = [
+        self.marker.positions[:] = [
             a.x,
             a.y,
             a.z,
@@ -278,11 +278,11 @@ class Weapon(Node):
         self.depth_test(False)
         self.shaded(False)
         self.square(self.reticle, RETICLE_SIZE)
-        self.prim(Mat4.IDENTITY, self.square_geom, RETICLE_COLOR)
+        self.prim(Mat4.IDENTITY, self.marker, RETICLE_COLOR)
         for e in self.enemies:
             if e.locked:
                 self.square(e.center, MARK_SIZE)
-                self.prim(Mat4.IDENTITY, self.square_geom, MARK_COLOR)
+                self.prim(Mat4.IDENTITY, self.marker, MARK_COLOR)
         if self.fire_t > 0:
             extent = min(1.0, self.fire_t / FIRE_FRAMES)
             for i, e in enumerate(self.firing):

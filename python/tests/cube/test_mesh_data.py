@@ -1,11 +1,11 @@
 import pytest
 
-from pyxel.cube import Mat4, Mesh, Primitive
+from pyxel.cube import Mat4, MeshData, PrimData
 
 
-def _square_prim() -> Primitive:
-    return Primitive(
-        Primitive.MODE_TRIANGLES,
+def _square_prim() -> PrimData:
+    return PrimData(
+        PrimData.MODE_TRIANGLES,
         [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0],
         [0, 1, 2],
     )
@@ -13,7 +13,7 @@ def _square_prim() -> Primitive:
 
 class TestConstruction:
     def test_default_empty(self):
-        m = Mesh()
+        m = MeshData()
         assert m.primitives == []
         assert m.transforms == []
         assert m.parents == []
@@ -24,7 +24,7 @@ class TestConstruction:
     def test_full_kwargs(self):
         p0 = _square_prim()
         p1 = _square_prim()
-        m = Mesh(
+        m = MeshData(
             primitives=[p0, p1, None],
             transforms=[Mat4(), Mat4(), Mat4()],
             parents=[-1, 0, 1],
@@ -40,7 +40,7 @@ class TestConstruction:
     def test_topological_order_violation_rejected(self):
         p = _square_prim()
         with pytest.raises(ValueError):
-            Mesh(
+            MeshData(
                 primitives=[p, p],
                 transforms=[Mat4(), Mat4()],
                 parents=[1, -1],  # parents[0] = 1 violates parents[i] < i
@@ -49,7 +49,7 @@ class TestConstruction:
     def test_parallel_array_length_mismatch_rejected(self):
         p = _square_prim()
         with pytest.raises(ValueError):
-            Mesh(
+            MeshData(
                 primitives=[p, p],
                 transforms=[Mat4()],  # one short
                 parents=[-1, 0],
@@ -58,7 +58,7 @@ class TestConstruction:
     def test_invalid_parent_index_rejected(self):
         p = _square_prim()
         with pytest.raises(ValueError):
-            Mesh(
+            MeshData(
                 primitives=[p],
                 transforms=[Mat4()],
                 parents=[-2],  # only -1 is valid for "no parent"
@@ -67,7 +67,7 @@ class TestConstruction:
     def test_construct_with_none_prims(self):
         # primitives[i] = None represents a pure transform group with no
         # primitive of its own; useful as a joint / pivot for descendants.
-        m = Mesh(
+        m = MeshData(
             primitives=[None, _square_prim()],
             transforms=[Mat4(), Mat4()],
             parents=[-1, 0],
@@ -78,12 +78,12 @@ class TestConstruction:
 
 class TestAttributes:
     def test_set_col_img_int(self):
-        m = Mesh()
+        m = MeshData()
         m.col_img = 5
         assert m.col_img == 5
 
     def test_set_colkey(self):
-        m = Mesh()
+        m = MeshData()
         m.colkey = 0
         assert m.colkey == 0
         m.colkey = None
@@ -91,7 +91,7 @@ class TestAttributes:
 
     def test_set_prims_revalidates(self):
         p = _square_prim()
-        m = Mesh(
+        m = MeshData(
             primitives=[p],
             transforms=[Mat4()],
             parents=[-1],
@@ -105,7 +105,7 @@ class TestAttributes:
 class TestDescendants:
     def test_subtree(self):
         p = _square_prim()
-        m = Mesh(
+        m = MeshData(
             primitives=[p, p, p, p],
             transforms=[Mat4(), Mat4(), Mat4(), Mat4()],
             parents=[-1, 0, 0, 2],
@@ -117,7 +117,7 @@ class TestDescendants:
 
     def test_out_of_range(self):
         p = _square_prim()
-        m = Mesh(primitives=[p], transforms=[Mat4()], parents=[-1])
+        m = MeshData(primitives=[p], transforms=[Mat4()], parents=[-1])
         assert m.descendants(-1) == []
         assert m.descendants(5) == []
 
@@ -125,11 +125,11 @@ class TestDescendants:
 class TestRepr:
     def test_repr_includes_part_count(self):
         p = _square_prim()
-        m = Mesh(
+        m = MeshData(
             primitives=[p, p],
             transforms=[Mat4(), Mat4()],
             parents=[-1, 0],
         )
         r = repr(m)
-        assert "Mesh(" in r
+        assert "MeshData(" in r
         assert "parts=2" in r

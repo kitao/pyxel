@@ -1,6 +1,6 @@
 use pyo3::prelude::*;
 
-use super::mesh::Mesh;
+use super::mesh_data::MeshData;
 use super::vec3::Vec3;
 
 define_wrapper!(Collider, pyxel::cube::Collider);
@@ -24,7 +24,7 @@ impl Collider {
     fn new(
         size: Option<PyRef<'_, Vec3>>,
         radius: f32,
-        mesh: Option<PyRef<'_, Mesh>>,
+        mesh: Option<PyRef<'_, MeshData>>,
         trigger: bool,
         rolls: bool,
         mass: f32,
@@ -78,15 +78,15 @@ impl Collider {
     }
 
     #[getter]
-    fn mesh(&self) -> Option<Mesh> {
+    fn mesh(&self) -> Option<MeshData> {
         self.inner_ref()
             .mesh
             .as_ref()
-            .map(|m| Mesh::wrap(m.clone()))
+            .map(|m| MeshData::wrap(m.clone()))
     }
 
     #[setter]
-    fn set_mesh(&self, v: Option<PyRef<'_, Mesh>>) {
+    fn set_mesh(&self, v: Option<PyRef<'_, MeshData>>) {
         self.inner_mut().mesh = v.as_ref().map(|m| m.inner.clone());
     }
 

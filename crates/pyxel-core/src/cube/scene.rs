@@ -8,7 +8,7 @@ use crate::cube::collision::{
 };
 use crate::cube::contact::{Contact, RcContact};
 use crate::cube::mat4::Mat4;
-use crate::cube::mesh::RcMesh;
+use crate::cube::mesh_data::RcMeshData;
 use crate::cube::node::{Node, RcNode};
 use crate::cube::quat::Quat;
 use crate::cube::raster::{ClipRect, Mat4x4};
@@ -287,7 +287,7 @@ impl Scene {
                 b.mesh.clone(),
             )
         };
-        // Mesh-vs-mesh is unsupported: both sides are static terrain
+        // MeshData-vs-mesh is unsupported: both sides are static terrain
         // with no resolution payload.
         if has_mesh_a && has_mesh_b {
             return None;
@@ -354,7 +354,7 @@ impl Scene {
     ) -> ContactPair {
         let a = rc_ref!(coll_a);
         let b = rc_ref!(coll_b);
-        // Mesh colliders are always immovable terrain (cube-design.md
+        // MeshData colliders are always immovable terrain (cube-design.md
         // § 11.1); ignore any user-set mass on the mesh side.
         let mass_a = if a.mesh.is_some() { 0.0 } else { a.mass };
         let mass_b = if b.mesh.is_some() { 0.0 } else { b.mass };
@@ -754,14 +754,14 @@ impl Scene {
     }
 }
 
-// Mesh-vs-dynamic narrow phase. `world_mesh` is the mesh collider's
+// MeshData-vs-dynamic narrow phase. `world_mesh` is the mesh collider's
 // world transform; `mesh` is the static terrain. `world_dyn` is the
 // dynamic body's world transform; `size_dyn` / `r_dyn` describe its
 // rounded-box family. Returns ContactGeom with normal pointing FROM
 // the mesh TOWARD the dynamic body.
 fn narrow_phase_mesh_vs_dynamic(
     world_mesh: &Mat4,
-    mesh: &RcMesh,
+    mesh: &RcMeshData,
     world_dyn: &Mat4,
     size_dyn: Vec3,
     r_dyn: f32,
@@ -903,13 +903,13 @@ mod tests {
     #[test]
     fn test_sphere_above_mesh_floor_generates_contact() {
         use crate::cube::collider::Collider;
-        use crate::cube::mesh::Mesh;
-        use crate::cube::primitive::Primitive;
+        use crate::cube::mesh_data::MeshData;
+        use crate::cube::prim_data::PrimData;
 
-        let floor_mesh = Mesh::new();
+        let floor_mesh = MeshData::new();
         {
             let m = rc_mut!(&floor_mesh);
-            let geom = Primitive::new();
+            let geom = PrimData::new();
             {
                 let g = rc_mut!(&geom);
                 g.positions = vec![

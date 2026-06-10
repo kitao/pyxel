@@ -168,8 +168,8 @@ class Shading:
     def __setitem__(self, key: tuple[int, int], value: tuple[int, int]) -> None: ...
     def build(self, colors: list[int]) -> None: ...
 
-# Primitive class — vertex-data asset; mode/cull are indices-intrinsic, shareable across Node draws and Mesh parts.
-class Primitive:
+# PrimData class — vertex-data asset; mode/cull are indices-intrinsic, shareable across Node draws and MeshData parts.
+class PrimData:
     MODE_POINTS: int
     MODE_LINES: int
     MODE_TRIANGLES: int
@@ -197,9 +197,9 @@ class Primitive:
     def __repr__(self) -> str: ...
     def compute_normals(self) -> None: ...
 
-# Mesh class — hierarchical 3D model asset (parallel arrays of primitives / transforms / parents).
-class Mesh:
-    primitives: list[Primitive | None]  # None = pure group (transform-only)
+# MeshData class — hierarchical 3D model asset (parallel arrays of primitives / transforms / parents).
+class MeshData:
+    primitives: list[PrimData | None]  # None = pure group (transform-only)
     transforms: list[Mat4]
     parents: list[int]  # -1 = root; parents[i] < i invariant
     col_img: int | Image  # int = flat color, Image = texture for all parts
@@ -207,7 +207,7 @@ class Mesh:
 
     def __init__(
         self,
-        primitives: list[Primitive | None] | None = None,
+        primitives: list[PrimData | None] | None = None,
         transforms: list[Mat4] | None = None,
         parents: list[int] | None = None,
         col_img: int | Image = 7,
@@ -220,7 +220,7 @@ class Mesh:
 class Collider:
     size: Vec3
     radius: float
-    mesh: Mesh | None
+    mesh: MeshData | None
     trigger: bool
     rolls: bool
     mass: float
@@ -233,7 +233,7 @@ class Collider:
         self,
         size: Vec3 = Vec3.ZERO,
         radius: float = 0.0,
-        mesh: Mesh | None = None,
+        mesh: MeshData | None = None,
         trigger: bool = False,
         rolls: bool = False,
         mass: float = 1.0,
@@ -392,11 +392,11 @@ class Node:
     ) -> None: ...
 
     # Asset-based
-    def mesh(self, mat: Mat4, mesh_asset: Mesh) -> None: ...
+    def mesh(self, mat: Mat4, mesh_data: MeshData) -> None: ...
     def prim(
         self,
         mat: Mat4,
-        primitive: Primitive,
+        primitive: PrimData,
         col_img: int | Image = 7,
         *,
         colkey: int | None = None,

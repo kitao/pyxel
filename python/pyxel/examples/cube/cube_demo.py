@@ -5,9 +5,9 @@ import pyxel
 from pyxel.cube import (
     Camera,
     Mat4,
-    Mesh,
+    MeshData,
     Node,
-    Primitive,
+    PrimData,
     Quat,
     Scene,
     Shading,
@@ -118,7 +118,7 @@ _ICOSA_TRI_INDICES = [
     8,
     1,
 ]
-# Box vertices: 8 corners of a unit cube centered at origin (the Mesh
+# Box vertices: 8 corners of a unit cube centered at origin (the MeshData
 # variant scales by `size`). Indices match the cube/draw.rs winding.
 _UNIT_BOX_VERTICES = [
     -0.5,
@@ -227,12 +227,12 @@ def _load_texture():
 
 
 def _make_box_mesh(size, color):
-    # Scale the unit cube; the Mesh wraps a single Primitive carrying the
+    # Scale the unit cube; the MeshData wraps a single PrimData carrying the
     # flat color through col_img.
     pos = [v * size for v in _UNIT_BOX_VERTICES]
-    geom = Primitive(Primitive.MODE_TRIANGLES, pos, _BOX_TRI_INDICES)
-    return Mesh(
-        geometries=[geom],
+    prim_data = PrimData(PrimData.MODE_TRIANGLES, pos, _BOX_TRI_INDICES)
+    return MeshData(
+        geometries=[prim_data],
         transforms=[Mat4.IDENTITY],
         parents=[-1],
         col_img=color,
@@ -300,9 +300,9 @@ def _make_sphere_mesh(radius, color):
         )
 
     scaled = [v * radius for v in pos]
-    geom = Primitive(Primitive.MODE_TRIANGLES, scaled, tri_indices)
-    return Mesh(
-        geometries=[geom],
+    prim_data = PrimData(PrimData.MODE_TRIANGLES, scaled, tri_indices)
+    return MeshData(
+        geometries=[prim_data],
         transforms=[Mat4.IDENTITY],
         parents=[-1],
         col_img=color,
@@ -333,9 +333,9 @@ def _make_textured_box(size):
         # Wind each face CCW so the surface normal points outward (matches
         # the colored-box mesh and gives correct Lambert shading).
         idx_list.extend([base, base + 2, base + 1, base + 1, base + 2, base + 3])
-    geom = Primitive(Primitive.MODE_TRIANGLES, pos_list, idx_list, uvs=uv_list)
-    return Mesh(
-        geometries=[geom],
+    prim_data = PrimData(PrimData.MODE_TRIANGLES, pos_list, idx_list, uvs=uv_list)
+    return MeshData(
+        geometries=[prim_data],
         transforms=[Mat4.IDENTITY],
         parents=[-1],
         col_img=pyxel.images[0],
