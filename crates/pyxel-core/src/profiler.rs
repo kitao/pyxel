@@ -33,7 +33,8 @@ impl Profiler {
     }
 
     pub fn end(&mut self, tick_count: u32) {
-        self.total_time += tick_count - self.start_time;
+        // The tick counter wraps at u32::MAX (~49.7 days); wrapping_sub keeps the delta correct.
+        self.total_time += tick_count.wrapping_sub(self.start_time);
         self.measured_frame_count += 1;
 
         if self.measured_frame_count >= self.measure_frame_count {
@@ -129,10 +130,10 @@ mod tests {
 
     #[test]
     fn test_tick_count_wraparound() {
-        // u32 subtraction wraps around correctly
+        // Tick counter wrapped past u32::MAX: true delta = 10
         let mut p = Profiler::new(1);
         p.start(u32::MAX - 5);
-        p.end(u32::MAX); // delta = 5
-        assert_eq!(p.average_time(), 5.0);
+        p.end(4);
+        assert_eq!(p.average_time(), 10.0);
     }
 }
