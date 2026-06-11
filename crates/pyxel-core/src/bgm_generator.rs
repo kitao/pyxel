@@ -2281,6 +2281,29 @@ mod tests {
         }
     }
 
+    #[test]
+    fn test_generated_mml_parses() {
+        // Every generated channel must survive the MML parser: a generator change
+        // that emits now-invalid syntax would otherwise fail silently at play time.
+        for preset_idx in 0..PRESET_COUNT as i32 {
+            for seed in [0, 42, 12345] {
+                let params = preset_params(preset_idx);
+                let mml =
+                    generate_bgm_mml(preset_idx, params.transpose, params.instrumentation, seed);
+                for (ch, s) in mml.iter().enumerate() {
+                    assert!(
+                        crate::mml_parser::parse_mml(s).is_ok(),
+                        "preset {preset_idx} seed {seed} ch{ch} generated unparseable MML: {s}"
+                    );
+                }
+            }
+        }
+    }
+
+    // The JSON tests below are compiled out of the pyxel-core build (build.rs
+    // sets cfg(pyxel_core) unconditionally) and run only when this shared file
+    // is built inside Pyxel Composer.
+
     #[cfg(not(pyxel_core))]
     #[test]
     fn test_bgm_data_json_roundtrip() {

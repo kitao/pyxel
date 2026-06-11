@@ -12,6 +12,7 @@
 - Refined README intro and user-guide star request wording
 - Made MML parser reject unresolved ties, invalid lengths, and unmatched repeats
 - Fixed profiler frame time on tick counter wraparound
+- Added voice chunk invariance and generated MML parse tests
 
 ## 2.9.5
 
