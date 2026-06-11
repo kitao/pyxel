@@ -14,6 +14,9 @@
 - Fixed profiler frame time on tick counter wraparound
 - Added testing and pyi default standards to the coding policy
 - Optimized line, rectb, circ, and elli drawing with span fills
+- Lazy-loaded below-the-fold images in the web user guide
+- Cached API reference element lookups for search input
+- Debounced Pyxel MML Studio URL and QR updates while typing
 
 ## 2.9.5
 
