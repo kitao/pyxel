@@ -216,45 +216,45 @@
         {
           "name": "Vec3",
           "type": "class",
-          "signature": "Vec3(x, y, z)",
+          "signature": "Vec3(x=0.0, y=0.0, z=0.0)",
           "description": {
-            "en": "A 3D vector with x, y, and z components.",
-            "ja": "x・y・z 成分を持つ 3 次元ベクトル。"
+            "en": "A 3D vector with x, y, and z components. Values are immutable; arithmetic and transform methods return a new Vec3.",
+            "ja": "x・y・z 成分を持つ 3 次元ベクトル。値は不変で、演算・変換メソッドは新しい Vec3 を返す。"
           },
           "params": [
             {
               "name": "x",
               "type": "float",
               "description": {
-                "en": "X component (default 0.0).",
-                "ja": "x 成分（デフォルト 0.0）。"
+                "en": "X component. Defaults to 0.0.",
+                "ja": "x 成分。デフォルトは 0.0。"
               }
             },
             {
               "name": "y",
               "type": "float",
               "description": {
-                "en": "Y component (default 0.0).",
-                "ja": "y 成分（デフォルト 0.0）。"
+                "en": "Y component. Defaults to 0.0.",
+                "ja": "y 成分。デフォルトは 0.0。"
               }
             },
             {
               "name": "z",
               "type": "float",
               "description": {
-                "en": "Z component (default 0.0).",
-                "ja": "z 成分（デフォルト 0.0）。"
+                "en": "Z component. Defaults to 0.0.",
+                "ja": "z 成分。デフォルトは 0.0。"
               }
             }
           ],
           "examples": [
             "from pyxel.cube import Vec3",
             "v = Vec3(1.0, 2.0, 3.0)",
-            "length = v.length()"
+            "w = (v + Vec3.UP) * 2.0"
           ],
           "notes": {
-            "en": "Import it from the pyxel.cube module.",
-            "ja": "pyxel.cube モジュールからインポートして使う。"
+            "en": "Import it from the pyxel.cube module. Supports +, -, * and / with a scalar, unary -, ==, len(), indexing, and iteration.",
+            "ja": "pyxel.cube モジュールからインポートして使う。+、-、スカラーとの *・/、単項 -、==、len()、インデックス参照、イテレートに対応する。"
           },
           "advanced": false
         },
@@ -270,12 +270,111 @@
           "advanced": false
         },
         {
+          "name": "y",
+          "type": "variable",
+          "signature": "y",
+          "description": {
+            "en": "The y component of the vector.",
+            "ja": "ベクトルの y 成分。"
+          },
+          "value_type": "float",
+          "advanced": false
+        },
+        {
+          "name": "z",
+          "type": "variable",
+          "signature": "z",
+          "description": {
+            "en": "The z component of the vector.",
+            "ja": "ベクトルの z 成分。"
+          },
+          "value_type": "float",
+          "advanced": false
+        },
+        {
+          "name": "ZERO",
+          "type": "constant",
+          "signature": "Vec3.ZERO",
+          "description": {
+            "en": "Vector with all components 0.",
+            "ja": "全成分が 0 のベクトル。"
+          },
+          "value_type": "Vec3",
+          "advanced": false
+        },
+        {
+          "name": "ONE",
+          "type": "constant",
+          "signature": "Vec3.ONE",
+          "description": {
+            "en": "Vector with all components 1.",
+            "ja": "全成分が 1 のベクトル。"
+          },
+          "value_type": "Vec3",
+          "advanced": false
+        },
+        {
+          "name": "RIGHT",
+          "type": "constant",
+          "signature": "Vec3.RIGHT",
+          "description": {
+            "en": "Unit vector pointing right (1, 0, 0).",
+            "ja": "右方向 (1, 0, 0) の単位ベクトル。"
+          },
+          "value_type": "Vec3",
+          "advanced": false
+        },
+        {
+          "name": "LEFT",
+          "type": "constant",
+          "signature": "Vec3.LEFT",
+          "description": {
+            "en": "Unit vector pointing left (-1, 0, 0).",
+            "ja": "左方向 (-1, 0, 0) の単位ベクトル。"
+          },
+          "value_type": "Vec3",
+          "advanced": false
+        },
+        {
           "name": "UP",
           "type": "constant",
           "signature": "Vec3.UP",
           "description": {
-            "en": "Unit vector pointing up.",
-            "ja": "上方向の単位ベクトル。"
+            "en": "Unit vector pointing up (0, 1, 0).",
+            "ja": "上方向 (0, 1, 0) の単位ベクトル。"
+          },
+          "value_type": "Vec3",
+          "advanced": false
+        },
+        {
+          "name": "DOWN",
+          "type": "constant",
+          "signature": "Vec3.DOWN",
+          "description": {
+            "en": "Unit vector pointing down (0, -1, 0).",
+            "ja": "下方向 (0, -1, 0) の単位ベクトル。"
+          },
+          "value_type": "Vec3",
+          "advanced": false
+        },
+        {
+          "name": "FORWARD",
+          "type": "constant",
+          "signature": "Vec3.FORWARD",
+          "description": {
+            "en": "Unit vector pointing forward (0, 0, -1). Pyxel Cube uses a right-handed system where forward is -Z.",
+            "ja": "前方向 (0, 0, -1) の単位ベクトル。Pyxel Cube は前方を -Z とする右手系を使う。"
+          },
+          "value_type": "Vec3",
+          "advanced": false
+        },
+        {
+          "name": "BACK",
+          "type": "constant",
+          "signature": "Vec3.BACK",
+          "description": {
+            "en": "Unit vector pointing back (0, 0, 1).",
+            "ja": "後方向 (0, 0, 1) の単位ベクトル。"
           },
           "value_type": "Vec3",
           "advanced": false
@@ -352,18 +451,197 @@
           "advanced": false
         },
         {
+          "name": "length_squared",
+          "type": "function",
+          "signature": "length_squared()",
+          "description": {
+            "en": "Return the squared length. Cheaper than length() for comparisons.",
+            "ja": "長さの 2 乗を返す。大小比較なら length() より軽い。"
+          },
+          "returns": {
+            "type": "float",
+            "description": {
+              "en": "The squared length.",
+              "ja": "長さの 2 乗。"
+            }
+          },
+          "advanced": false
+        },
+        {
+          "name": "distance_to",
+          "type": "function",
+          "signature": "distance_to(other)",
+          "description": {
+            "en": "Return the distance to another vector.",
+            "ja": "別のベクトルまでの距離を返す。"
+          },
+          "params": [
+            {
+              "name": "other",
+              "type": "Vec3",
+              "description": {
+                "en": "The other vector.",
+                "ja": "もう一方のベクトル。"
+              }
+            }
+          ],
+          "returns": {
+            "type": "float",
+            "description": {
+              "en": "The distance.",
+              "ja": "距離。"
+            }
+          },
+          "advanced": false
+        },
+        {
+          "name": "distance_squared_to",
+          "type": "function",
+          "signature": "distance_squared_to(other)",
+          "description": {
+            "en": "Return the squared distance to another vector.",
+            "ja": "別のベクトルまでの距離の 2 乗を返す。"
+          },
+          "params": [
+            {
+              "name": "other",
+              "type": "Vec3",
+              "description": {
+                "en": "The other vector.",
+                "ja": "もう一方のベクトル。"
+              }
+            }
+          ],
+          "returns": {
+            "type": "float",
+            "description": {
+              "en": "The squared distance.",
+              "ja": "距離の 2 乗。"
+            }
+          },
+          "advanced": false
+        },
+        {
+          "name": "angle_to",
+          "type": "function",
+          "signature": "angle_to(other)",
+          "description": {
+            "en": "Return the angle to another vector in degrees.",
+            "ja": "別のベクトルとの角度を度で返す。"
+          },
+          "params": [
+            {
+              "name": "other",
+              "type": "Vec3",
+              "description": {
+                "en": "The other vector.",
+                "ja": "もう一方のベクトル。"
+              }
+            }
+          ],
+          "returns": {
+            "type": "float",
+            "description": {
+              "en": "The angle in degrees (0-180).",
+              "ja": "角度（0〜180 度）。"
+            }
+          },
+          "advanced": false
+        },
+        {
           "name": "normalize",
           "type": "function",
           "signature": "normalize()",
           "description": {
-            "en": "Return a unit vector pointing in the same direction.",
-            "ja": "同じ向きの単位ベクトルを返す。"
+            "en": "Return a unit vector pointing in the same direction. A zero vector returns Vec3.ZERO.",
+            "ja": "同じ向きの単位ベクトルを返す。ゼロベクトルは Vec3.ZERO を返す。"
           },
           "returns": {
             "type": "Vec3",
             "description": {
               "en": "The normalized vector.",
               "ja": "正規化したベクトル。"
+            }
+          },
+          "advanced": false
+        },
+        {
+          "name": "clamp_length",
+          "type": "function",
+          "signature": "clamp_length(max_length)",
+          "description": {
+            "en": "Return a copy whose length is clamped to max_length.",
+            "ja": "長さを max_length 以下に制限したコピーを返す。"
+          },
+          "params": [
+            {
+              "name": "max_length",
+              "type": "float",
+              "description": {
+                "en": "Maximum allowed length.",
+                "ja": "許容する最大の長さ。"
+              }
+            }
+          ],
+          "returns": {
+            "type": "Vec3",
+            "description": {
+              "en": "The clamped vector.",
+              "ja": "制限後のベクトル。"
+            }
+          },
+          "advanced": false
+        },
+        {
+          "name": "min",
+          "type": "function",
+          "signature": "min(other)",
+          "description": {
+            "en": "Return the component-wise minimum with another vector.",
+            "ja": "別のベクトルとの成分ごとの最小値を返す。"
+          },
+          "params": [
+            {
+              "name": "other",
+              "type": "Vec3",
+              "description": {
+                "en": "The other vector.",
+                "ja": "もう一方のベクトル。"
+              }
+            }
+          ],
+          "returns": {
+            "type": "Vec3",
+            "description": {
+              "en": "The component-wise minimum.",
+              "ja": "成分ごとの最小値。"
+            }
+          },
+          "advanced": false
+        },
+        {
+          "name": "max",
+          "type": "function",
+          "signature": "max(other)",
+          "description": {
+            "en": "Return the component-wise maximum with another vector.",
+            "ja": "別のベクトルとの成分ごとの最大値を返す。"
+          },
+          "params": [
+            {
+              "name": "other",
+              "type": "Vec3",
+              "description": {
+                "en": "The other vector.",
+                "ja": "もう一方のベクトル。"
+              }
+            }
+          ],
+          "returns": {
+            "type": "Vec3",
+            "description": {
+              "en": "The component-wise maximum.",
+              "ja": "成分ごとの最大値。"
             }
           },
           "advanced": false
@@ -399,6 +677,3778 @@
             "description": {
               "en": "The interpolated vector.",
               "ja": "補間したベクトル。"
+            }
+          },
+          "advanced": false
+        },
+        {
+          "name": "slerp",
+          "type": "function",
+          "signature": "slerp(other, t)",
+          "description": {
+            "en": "Spherically interpolate toward another vector. Both vectors should be unit length.",
+            "ja": "別のベクトルへ球面線形補間する。両ベクトルは単位ベクトルを前提とする。"
+          },
+          "params": [
+            {
+              "name": "other",
+              "type": "Vec3",
+              "description": {
+                "en": "The target unit vector.",
+                "ja": "補間先の単位ベクトル。"
+              }
+            },
+            {
+              "name": "t",
+              "type": "float",
+              "description": {
+                "en": "Interpolation factor from 0.0 to 1.0.",
+                "ja": "0.0〜1.0 の補間係数。"
+              }
+            }
+          ],
+          "returns": {
+            "type": "Vec3",
+            "description": {
+              "en": "The interpolated vector.",
+              "ja": "補間したベクトル。"
+            }
+          },
+          "advanced": false
+        },
+        {
+          "name": "reflect",
+          "type": "function",
+          "signature": "reflect(normal)",
+          "description": {
+            "en": "Return the reflection of the vector against a surface with the given unit normal.",
+            "ja": "指定した単位法線を持つ面に対する反射ベクトルを返す。"
+          },
+          "params": [
+            {
+              "name": "normal",
+              "type": "Vec3",
+              "description": {
+                "en": "The unit surface normal.",
+                "ja": "面の単位法線。"
+              }
+            }
+          ],
+          "returns": {
+            "type": "Vec3",
+            "description": {
+              "en": "The reflected vector.",
+              "ja": "反射ベクトル。"
+            }
+          },
+          "advanced": false
+        },
+        {
+          "name": "project",
+          "type": "function",
+          "signature": "project(other)",
+          "description": {
+            "en": "Return the projection of the vector onto another vector.",
+            "ja": "別のベクトルへの射影ベクトルを返す。"
+          },
+          "params": [
+            {
+              "name": "other",
+              "type": "Vec3",
+              "description": {
+                "en": "The vector to project onto.",
+                "ja": "射影先のベクトル。"
+              }
+            }
+          ],
+          "returns": {
+            "type": "Vec3",
+            "description": {
+              "en": "The projected vector.",
+              "ja": "射影ベクトル。"
+            }
+          },
+          "advanced": false
+        },
+        {
+          "name": "to_local",
+          "type": "function",
+          "signature": "to_local(mat)",
+          "description": {
+            "en": "Convert a world-space position into mat's local space.",
+            "ja": "ワールド座標の位置を mat のローカル座標へ変換する。"
+          },
+          "params": [
+            {
+              "name": "mat",
+              "type": "Mat4",
+              "description": {
+                "en": "The reference transform.",
+                "ja": "基準となる変換行列。"
+              }
+            }
+          ],
+          "returns": {
+            "type": "Vec3",
+            "description": {
+              "en": "The position in local space.",
+              "ja": "ローカル座標での位置。"
+            }
+          },
+          "advanced": true
+        },
+        {
+          "name": "to_world",
+          "type": "function",
+          "signature": "to_world(mat)",
+          "description": {
+            "en": "Convert a local-space position into world space through mat.",
+            "ja": "ローカル座標の位置を mat でワールド座標へ変換する。"
+          },
+          "params": [
+            {
+              "name": "mat",
+              "type": "Mat4",
+              "description": {
+                "en": "The reference transform.",
+                "ja": "基準となる変換行列。"
+              }
+            }
+          ],
+          "returns": {
+            "type": "Vec3",
+            "description": {
+              "en": "The position in world space.",
+              "ja": "ワールド座標での位置。"
+            }
+          },
+          "advanced": true
+        },
+        {
+          "name": "to_local_dir",
+          "type": "function",
+          "signature": "to_local_dir(mat)",
+          "description": {
+            "en": "Convert a world-space direction into mat's local space, ignoring translation.",
+            "ja": "ワールド座標の方向ベクトルを、平行移動を無視して mat のローカル座標へ変換する。"
+          },
+          "params": [
+            {
+              "name": "mat",
+              "type": "Mat4",
+              "description": {
+                "en": "The reference transform.",
+                "ja": "基準となる変換行列。"
+              }
+            }
+          ],
+          "returns": {
+            "type": "Vec3",
+            "description": {
+              "en": "The direction in local space.",
+              "ja": "ローカル座標での方向。"
+            }
+          },
+          "advanced": true
+        },
+        {
+          "name": "to_world_dir",
+          "type": "function",
+          "signature": "to_world_dir(mat)",
+          "description": {
+            "en": "Convert a local-space direction into world space, ignoring translation.",
+            "ja": "ローカル座標の方向ベクトルを、平行移動を無視してワールド座標へ変換する。"
+          },
+          "params": [
+            {
+              "name": "mat",
+              "type": "Mat4",
+              "description": {
+                "en": "The reference transform.",
+                "ja": "基準となる変換行列。"
+              }
+            }
+          ],
+          "returns": {
+            "type": "Vec3",
+            "description": {
+              "en": "The direction in world space.",
+              "ja": "ワールド座標での方向。"
+            }
+          },
+          "advanced": true
+        }
+      ]
+    },
+    {
+      "id": "mat4",
+      "title": {
+        "en": "Mat4",
+        "ja": "Mat4"
+      },
+      "items": [
+        {
+          "name": "Mat4",
+          "type": "class",
+          "signature": "Mat4()",
+          "description": {
+            "en": "A 4x4 transform matrix. The constructor creates an identity matrix. Values are immutable; transform methods return a new Mat4.",
+            "ja": "4x4 の変換行列。コンストラクタは単位行列を作る。値は不変で、変換メソッドは新しい Mat4 を返す。"
+          },
+          "examples": [
+            "from pyxel.cube import Mat4, Quat, Vec3",
+            "node.transform = Mat4.from_translation(Vec3(0, 1, 0))",
+            "spin = node.transform * Mat4.from_axis_angle(Vec3.UP, 90)"
+          ],
+          "notes": {
+            "en": "Supports * with another Mat4 or a Vec3, indexing with [row, col], and ==. Used for Node.transform and the placement argument of draw commands.",
+            "ja": "Mat4 同士や Vec3 との *、[row, col] での成分参照、== に対応する。Node.transform や描画コマンドの配置引数に使う。"
+          },
+          "advanced": false
+        },
+        {
+          "name": "IDENTITY",
+          "type": "constant",
+          "signature": "Mat4.IDENTITY",
+          "description": {
+            "en": "The identity matrix.",
+            "ja": "単位行列。"
+          },
+          "value_type": "Mat4",
+          "advanced": false
+        },
+        {
+          "name": "pos",
+          "type": "variable",
+          "signature": "pos",
+          "description": {
+            "en": "The translation part of the matrix.",
+            "ja": "行列の平行移動成分。"
+          },
+          "value_type": "Vec3",
+          "advanced": false
+        },
+        {
+          "name": "rot",
+          "type": "variable",
+          "signature": "rot",
+          "description": {
+            "en": "The rotation part of the matrix as a Quat. Assumes a translation-rotation-scale composition.",
+            "ja": "行列の回転成分（Quat）。平行移動・回転・スケールの合成を前提とする。"
+          },
+          "value_type": "Quat",
+          "advanced": false
+        },
+        {
+          "name": "scale",
+          "type": "variable",
+          "signature": "scale",
+          "description": {
+            "en": "The scale part of the matrix.",
+            "ja": "行列のスケール成分。"
+          },
+          "value_type": "Vec3",
+          "advanced": false
+        },
+        {
+          "name": "Mat4.from_translation",
+          "type": "class",
+          "signature": "Mat4.from_translation(pos)",
+          "description": {
+            "en": "Create a translation matrix.",
+            "ja": "平行移動行列を作る。"
+          },
+          "params": [
+            {
+              "name": "pos",
+              "type": "Vec3",
+              "description": {
+                "en": "The translation.",
+                "ja": "平行移動量。"
+              }
+            }
+          ],
+          "returns": {
+            "type": "Mat4"
+          },
+          "advanced": false
+        },
+        {
+          "name": "Mat4.from_euler",
+          "type": "class",
+          "signature": "Mat4.from_euler(euler)",
+          "description": {
+            "en": "Create a rotation matrix from Euler angles in degrees, applied around the world axes in X, Y, Z order.",
+            "ja": "オイラー角（度）から回転行列を作る。世界軸回りに X→Y→Z の順で回転する。"
+          },
+          "params": [
+            {
+              "name": "euler",
+              "type": "Vec3",
+              "description": {
+                "en": "Rotation around each axis in degrees.",
+                "ja": "各軸回りの回転角（度）。"
+              }
+            }
+          ],
+          "returns": {
+            "type": "Mat4"
+          },
+          "advanced": false
+        },
+        {
+          "name": "Mat4.from_quat",
+          "type": "class",
+          "signature": "Mat4.from_quat(rot)",
+          "description": {
+            "en": "Create a rotation matrix from a Quat.",
+            "ja": "Quat から回転行列を作る。"
+          },
+          "params": [
+            {
+              "name": "rot",
+              "type": "Quat",
+              "description": {
+                "en": "The rotation.",
+                "ja": "回転。"
+              }
+            }
+          ],
+          "returns": {
+            "type": "Mat4"
+          },
+          "advanced": false
+        },
+        {
+          "name": "Mat4.from_scale",
+          "type": "class",
+          "signature": "Mat4.from_scale(scale)",
+          "description": {
+            "en": "Create a scale matrix.",
+            "ja": "スケール行列を作る。"
+          },
+          "params": [
+            {
+              "name": "scale",
+              "type": "Vec3",
+              "description": {
+                "en": "The per-axis scale.",
+                "ja": "軸ごとの倍率。"
+              }
+            }
+          ],
+          "returns": {
+            "type": "Mat4"
+          },
+          "advanced": false
+        },
+        {
+          "name": "Mat4.from_axis_angle",
+          "type": "class",
+          "signature": "Mat4.from_axis_angle(axis, deg)",
+          "description": {
+            "en": "Create a rotation matrix around an axis.",
+            "ja": "指定した軸回りの回転行列を作る。"
+          },
+          "params": [
+            {
+              "name": "axis",
+              "type": "Vec3",
+              "description": {
+                "en": "The rotation axis.",
+                "ja": "回転軸。"
+              }
+            },
+            {
+              "name": "deg",
+              "type": "float",
+              "description": {
+                "en": "The rotation angle in degrees.",
+                "ja": "回転角（度）。"
+              }
+            }
+          ],
+          "returns": {
+            "type": "Mat4"
+          },
+          "advanced": false
+        },
+        {
+          "name": "Mat4.compose",
+          "type": "class",
+          "signature": "Mat4.compose(pos, rot, scale)",
+          "description": {
+            "en": "Create a matrix combining translation, rotation, and scale, applied in scale, rotation, translation order.",
+            "ja": "平行移動・回転・スケールを合成した行列を作る。スケール→回転→平行移動の順に適用される。"
+          },
+          "params": [
+            {
+              "name": "pos",
+              "type": "Vec3",
+              "description": {
+                "en": "The translation.",
+                "ja": "平行移動量。"
+              }
+            },
+            {
+              "name": "rot",
+              "type": "Quat",
+              "description": {
+                "en": "The rotation.",
+                "ja": "回転。"
+              }
+            },
+            {
+              "name": "scale",
+              "type": "Vec3",
+              "description": {
+                "en": "The per-axis scale.",
+                "ja": "軸ごとの倍率。"
+              }
+            }
+          ],
+          "returns": {
+            "type": "Mat4"
+          },
+          "examples": [
+            "mat = Mat4.compose(Vec3(0, 1, 0), Quat.from_euler(Vec3(0, 45, 0)), Vec3.ONE)"
+          ],
+          "advanced": false
+        },
+        {
+          "name": "Mat4.look_at",
+          "type": "class",
+          "signature": "Mat4.look_at(eye, target, up=Vec3.UP)",
+          "description": {
+            "en": "Create a transform located at eye and facing target. Typically assigned to a camera's transform.",
+            "ja": "eye に位置して target の方を向く変換を作る。主にカメラの transform に設定して使う。"
+          },
+          "params": [
+            {
+              "name": "eye",
+              "type": "Vec3",
+              "description": {
+                "en": "The viewpoint position.",
+                "ja": "視点の位置。"
+              }
+            },
+            {
+              "name": "target",
+              "type": "Vec3",
+              "description": {
+                "en": "The point to look at.",
+                "ja": "注視点。"
+              }
+            },
+            {
+              "name": "up",
+              "type": "Vec3",
+              "description": {
+                "en": "The up direction. Defaults to Vec3.UP.",
+                "ja": "上方向。デフォルトは Vec3.UP。"
+              }
+            }
+          ],
+          "returns": {
+            "type": "Mat4"
+          },
+          "examples": [
+            "camera.transform = Mat4.look_at(Vec3(0, 3, 8), Vec3.ZERO)"
+          ],
+          "advanced": false
+        },
+        {
+          "name": "translate",
+          "type": "function",
+          "signature": "translate(v)",
+          "description": {
+            "en": "Return a new matrix moved by v along the matrix's local axes.",
+            "ja": "ローカル軸に沿って v だけ移動した新しい行列を返す。"
+          },
+          "params": [
+            {
+              "name": "v",
+              "type": "Vec3",
+              "description": {
+                "en": "The local-space translation.",
+                "ja": "ローカル座標での移動量。"
+              }
+            }
+          ],
+          "returns": {
+            "type": "Mat4"
+          },
+          "advanced": false
+        },
+        {
+          "name": "rotate",
+          "type": "function",
+          "signature": "rotate(axis, deg)",
+          "description": {
+            "en": "Return a new matrix rotated around a local axis.",
+            "ja": "ローカル軸回りに回転した新しい行列を返す。"
+          },
+          "params": [
+            {
+              "name": "axis",
+              "type": "Vec3",
+              "description": {
+                "en": "The rotation axis.",
+                "ja": "回転軸。"
+              }
+            },
+            {
+              "name": "deg",
+              "type": "float",
+              "description": {
+                "en": "The rotation angle in degrees.",
+                "ja": "回転角（度）。"
+              }
+            }
+          ],
+          "returns": {
+            "type": "Mat4"
+          },
+          "advanced": false
+        },
+        {
+          "name": "rotate_x",
+          "type": "function",
+          "signature": "rotate_x(deg)",
+          "description": {
+            "en": "Return a new matrix rotated around the local X axis.",
+            "ja": "ローカル X 軸回りに回転した新しい行列を返す。"
+          },
+          "params": [
+            {
+              "name": "deg",
+              "type": "float",
+              "description": {
+                "en": "The rotation angle in degrees.",
+                "ja": "回転角（度）。"
+              }
+            }
+          ],
+          "returns": {
+            "type": "Mat4"
+          },
+          "advanced": false
+        },
+        {
+          "name": "rotate_y",
+          "type": "function",
+          "signature": "rotate_y(deg)",
+          "description": {
+            "en": "Return a new matrix rotated around the local Y axis.",
+            "ja": "ローカル Y 軸回りに回転した新しい行列を返す。"
+          },
+          "params": [
+            {
+              "name": "deg",
+              "type": "float",
+              "description": {
+                "en": "The rotation angle in degrees.",
+                "ja": "回転角（度）。"
+              }
+            }
+          ],
+          "returns": {
+            "type": "Mat4"
+          },
+          "advanced": false
+        },
+        {
+          "name": "rotate_z",
+          "type": "function",
+          "signature": "rotate_z(deg)",
+          "description": {
+            "en": "Return a new matrix rotated around the local Z axis.",
+            "ja": "ローカル Z 軸回りに回転した新しい行列を返す。"
+          },
+          "params": [
+            {
+              "name": "deg",
+              "type": "float",
+              "description": {
+                "en": "The rotation angle in degrees.",
+                "ja": "回転角（度）。"
+              }
+            }
+          ],
+          "returns": {
+            "type": "Mat4"
+          },
+          "advanced": false
+        },
+        {
+          "name": "scale_by",
+          "type": "function",
+          "signature": "scale_by(v)",
+          "description": {
+            "en": "Return a new matrix scaled along the matrix's local axes.",
+            "ja": "ローカル軸に沿ってスケールした新しい行列を返す。"
+          },
+          "params": [
+            {
+              "name": "v",
+              "type": "Vec3",
+              "description": {
+                "en": "The per-axis scale.",
+                "ja": "軸ごとの倍率。"
+              }
+            }
+          ],
+          "returns": {
+            "type": "Mat4"
+          },
+          "advanced": false
+        },
+        {
+          "name": "inverse",
+          "type": "function",
+          "signature": "inverse()",
+          "description": {
+            "en": "Return the inverse matrix. A singular matrix returns the identity.",
+            "ja": "逆行列を返す。逆行列が存在しない場合は単位行列を返す。"
+          },
+          "returns": {
+            "type": "Mat4"
+          },
+          "advanced": false
+        },
+        {
+          "name": "transpose",
+          "type": "function",
+          "signature": "transpose()",
+          "description": {
+            "en": "Return the transposed matrix.",
+            "ja": "転置行列を返す。"
+          },
+          "returns": {
+            "type": "Mat4"
+          },
+          "advanced": true
+        },
+        {
+          "name": "determinant",
+          "type": "function",
+          "signature": "determinant()",
+          "description": {
+            "en": "Return the determinant of the matrix.",
+            "ja": "行列式を返す。"
+          },
+          "returns": {
+            "type": "float"
+          },
+          "advanced": true
+        },
+        {
+          "name": "to_local",
+          "type": "function",
+          "signature": "to_local(mat)",
+          "description": {
+            "en": "Convert a world-space transform into mat's local space.",
+            "ja": "ワールド座標の変換を mat のローカル座標へ変換する。"
+          },
+          "params": [
+            {
+              "name": "mat",
+              "type": "Mat4",
+              "description": {
+                "en": "The reference transform.",
+                "ja": "基準となる変換行列。"
+              }
+            }
+          ],
+          "returns": {
+            "type": "Mat4"
+          },
+          "advanced": true
+        },
+        {
+          "name": "to_world",
+          "type": "function",
+          "signature": "to_world(mat)",
+          "description": {
+            "en": "Convert a local-space transform into world space through mat.",
+            "ja": "ローカル座標の変換を mat でワールド座標へ変換する。"
+          },
+          "params": [
+            {
+              "name": "mat",
+              "type": "Mat4",
+              "description": {
+                "en": "The reference transform.",
+                "ja": "基準となる変換行列。"
+              }
+            }
+          ],
+          "returns": {
+            "type": "Mat4"
+          },
+          "advanced": true
+        },
+        {
+          "name": "to_local_dir",
+          "type": "function",
+          "signature": "to_local_dir(mat)",
+          "description": {
+            "en": "Convert a world-space transform into mat's local space, ignoring translation.",
+            "ja": "平行移動を無視して、ワールド座標の変換を mat のローカル座標へ変換する。"
+          },
+          "params": [
+            {
+              "name": "mat",
+              "type": "Mat4",
+              "description": {
+                "en": "The reference transform.",
+                "ja": "基準となる変換行列。"
+              }
+            }
+          ],
+          "returns": {
+            "type": "Mat4"
+          },
+          "advanced": true
+        },
+        {
+          "name": "to_world_dir",
+          "type": "function",
+          "signature": "to_world_dir(mat)",
+          "description": {
+            "en": "Convert a local-space transform into world space, ignoring translation.",
+            "ja": "平行移動を無視して、ローカル座標の変換をワールド座標へ変換する。"
+          },
+          "params": [
+            {
+              "name": "mat",
+              "type": "Mat4",
+              "description": {
+                "en": "The reference transform.",
+                "ja": "基準となる変換行列。"
+              }
+            }
+          ],
+          "returns": {
+            "type": "Mat4"
+          },
+          "advanced": true
+        }
+      ]
+    },
+    {
+      "id": "quat",
+      "title": {
+        "en": "Quat",
+        "ja": "Quat"
+      },
+      "items": [
+        {
+          "name": "Quat",
+          "type": "class",
+          "signature": "Quat(x=0.0, y=0.0, z=0.0, w=1.0)",
+          "description": {
+            "en": "A quaternion representing a rotation. The default is the identity rotation. Values are immutable; methods return a new Quat.",
+            "ja": "回転を表すクォータニオン。デフォルトは恒等回転。値は不変で、メソッドは新しい Quat を返す。"
+          },
+          "params": [
+            {
+              "name": "x",
+              "type": "float",
+              "description": {
+                "en": "X component. Defaults to 0.0.",
+                "ja": "x 成分。デフォルトは 0.0。"
+              }
+            },
+            {
+              "name": "y",
+              "type": "float",
+              "description": {
+                "en": "Y component. Defaults to 0.0.",
+                "ja": "y 成分。デフォルトは 0.0。"
+              }
+            },
+            {
+              "name": "z",
+              "type": "float",
+              "description": {
+                "en": "Z component. Defaults to 0.0.",
+                "ja": "z 成分。デフォルトは 0.0。"
+              }
+            },
+            {
+              "name": "w",
+              "type": "float",
+              "description": {
+                "en": "W component. Defaults to 1.0.",
+                "ja": "w 成分。デフォルトは 1.0。"
+              }
+            }
+          ],
+          "examples": [
+            "from pyxel.cube import Quat, Vec3",
+            "q = Quat.from_axis_angle(Vec3.UP, 45)",
+            "rotated = q * Vec3.FORWARD"
+          ],
+          "notes": {
+            "en": "Supports * with another Quat (composition) or a Vec3 (applies the rotation), unary -, ==, indexing, and iteration.",
+            "ja": "Quat 同士の *（回転の合成）、Vec3 との *（回転の適用）、単項 -、==、インデックス参照、イテレートに対応する。"
+          },
+          "advanced": false
+        },
+        {
+          "name": "IDENTITY",
+          "type": "constant",
+          "signature": "Quat.IDENTITY",
+          "description": {
+            "en": "The identity rotation.",
+            "ja": "恒等回転。"
+          },
+          "value_type": "Quat",
+          "advanced": false
+        },
+        {
+          "name": "x",
+          "type": "variable",
+          "signature": "x",
+          "description": {
+            "en": "The x component of the quaternion.",
+            "ja": "クォータニオンの x 成分。"
+          },
+          "value_type": "float",
+          "advanced": false
+        },
+        {
+          "name": "y",
+          "type": "variable",
+          "signature": "y",
+          "description": {
+            "en": "The y component of the quaternion.",
+            "ja": "クォータニオンの y 成分。"
+          },
+          "value_type": "float",
+          "advanced": false
+        },
+        {
+          "name": "z",
+          "type": "variable",
+          "signature": "z",
+          "description": {
+            "en": "The z component of the quaternion.",
+            "ja": "クォータニオンの z 成分。"
+          },
+          "value_type": "float",
+          "advanced": false
+        },
+        {
+          "name": "w",
+          "type": "variable",
+          "signature": "w",
+          "description": {
+            "en": "The w component of the quaternion.",
+            "ja": "クォータニオンの w 成分。"
+          },
+          "value_type": "float",
+          "advanced": false
+        },
+        {
+          "name": "Quat.from_axis_angle",
+          "type": "class",
+          "signature": "Quat.from_axis_angle(axis, deg)",
+          "description": {
+            "en": "Create a rotation around an axis.",
+            "ja": "指定した軸回りの回転を作る。"
+          },
+          "params": [
+            {
+              "name": "axis",
+              "type": "Vec3",
+              "description": {
+                "en": "The rotation axis.",
+                "ja": "回転軸。"
+              }
+            },
+            {
+              "name": "deg",
+              "type": "float",
+              "description": {
+                "en": "The rotation angle in degrees.",
+                "ja": "回転角（度）。"
+              }
+            }
+          ],
+          "returns": {
+            "type": "Quat"
+          },
+          "advanced": false
+        },
+        {
+          "name": "Quat.from_euler",
+          "type": "class",
+          "signature": "Quat.from_euler(rot)",
+          "description": {
+            "en": "Create a rotation from Euler angles in degrees, applied around the world axes in X, Y, Z order.",
+            "ja": "オイラー角（度）から回転を作る。世界軸回りに X→Y→Z の順で回転する。"
+          },
+          "params": [
+            {
+              "name": "rot",
+              "type": "Vec3",
+              "description": {
+                "en": "Rotation around each axis in degrees.",
+                "ja": "各軸回りの回転角（度）。"
+              }
+            }
+          ],
+          "returns": {
+            "type": "Quat"
+          },
+          "advanced": false
+        },
+        {
+          "name": "Quat.from_two_vectors",
+          "type": "class",
+          "signature": "Quat.from_two_vectors(from_vec, to_vec)",
+          "description": {
+            "en": "Create the shortest rotation that turns from_vec to face the same direction as to_vec.",
+            "ja": "from_vec を to_vec と同じ向きへ回す最短の回転を作る。"
+          },
+          "params": [
+            {
+              "name": "from_vec",
+              "type": "Vec3",
+              "description": {
+                "en": "The starting direction.",
+                "ja": "回転前の方向。"
+              }
+            },
+            {
+              "name": "to_vec",
+              "type": "Vec3",
+              "description": {
+                "en": "The target direction.",
+                "ja": "回転後の方向。"
+              }
+            }
+          ],
+          "returns": {
+            "type": "Quat"
+          },
+          "advanced": false
+        },
+        {
+          "name": "Quat.from_matrix",
+          "type": "class",
+          "signature": "Quat.from_matrix(mat)",
+          "description": {
+            "en": "Extract the rotation of a matrix as a Quat.",
+            "ja": "行列の回転成分を Quat として取り出す。"
+          },
+          "params": [
+            {
+              "name": "mat",
+              "type": "Mat4",
+              "description": {
+                "en": "The source matrix.",
+                "ja": "元の行列。"
+              }
+            }
+          ],
+          "returns": {
+            "type": "Quat"
+          },
+          "advanced": true
+        },
+        {
+          "name": "Quat.from_direction",
+          "type": "class",
+          "signature": "Quat.from_direction(forward, up=Vec3.UP)",
+          "description": {
+            "en": "Create a rotation facing the forward direction (the forward axis is -Z), keeping up as close as possible.",
+            "ja": "forward の方向を向く回転を作る（前方向は -Z 規約）。up へできるだけ上方向を合わせる。"
+          },
+          "params": [
+            {
+              "name": "forward",
+              "type": "Vec3",
+              "description": {
+                "en": "The direction to face.",
+                "ja": "向きたい方向。"
+              }
+            },
+            {
+              "name": "up",
+              "type": "Vec3",
+              "description": {
+                "en": "The up direction. Defaults to Vec3.UP.",
+                "ja": "上方向。デフォルトは Vec3.UP。"
+              }
+            }
+          ],
+          "returns": {
+            "type": "Quat"
+          },
+          "advanced": false
+        },
+        {
+          "name": "conjugate",
+          "type": "function",
+          "signature": "conjugate()",
+          "description": {
+            "en": "Return the conjugate quaternion.",
+            "ja": "共役クォータニオンを返す。"
+          },
+          "returns": {
+            "type": "Quat"
+          },
+          "advanced": true
+        },
+        {
+          "name": "inverse",
+          "type": "function",
+          "signature": "inverse()",
+          "description": {
+            "en": "Return the inverse rotation.",
+            "ja": "逆回転を返す。"
+          },
+          "returns": {
+            "type": "Quat"
+          },
+          "advanced": false
+        },
+        {
+          "name": "normalize",
+          "type": "function",
+          "signature": "normalize()",
+          "description": {
+            "en": "Return a unit quaternion pointing in the same direction.",
+            "ja": "同じ回転を表す単位クォータニオンを返す。"
+          },
+          "returns": {
+            "type": "Quat"
+          },
+          "advanced": false
+        },
+        {
+          "name": "length",
+          "type": "function",
+          "signature": "length()",
+          "description": {
+            "en": "Return the length of the quaternion.",
+            "ja": "クォータニオンの長さを返す。"
+          },
+          "returns": {
+            "type": "float"
+          },
+          "advanced": true
+        },
+        {
+          "name": "length_squared",
+          "type": "function",
+          "signature": "length_squared()",
+          "description": {
+            "en": "Return the squared length of the quaternion.",
+            "ja": "クォータニオンの長さの 2 乗を返す。"
+          },
+          "returns": {
+            "type": "float"
+          },
+          "advanced": true
+        },
+        {
+          "name": "dot",
+          "type": "function",
+          "signature": "dot(other)",
+          "description": {
+            "en": "Return the dot product with another quaternion.",
+            "ja": "別のクォータニオンとの内積を返す。"
+          },
+          "params": [
+            {
+              "name": "other",
+              "type": "Quat",
+              "description": {
+                "en": "The other quaternion.",
+                "ja": "もう一方のクォータニオン。"
+              }
+            }
+          ],
+          "returns": {
+            "type": "float"
+          },
+          "advanced": true
+        },
+        {
+          "name": "angle_to",
+          "type": "function",
+          "signature": "angle_to(other)",
+          "description": {
+            "en": "Return the angle between two rotations in degrees.",
+            "ja": "もう一方の回転との角度差を度で返す。"
+          },
+          "params": [
+            {
+              "name": "other",
+              "type": "Quat",
+              "description": {
+                "en": "The other rotation.",
+                "ja": "もう一方の回転。"
+              }
+            }
+          ],
+          "returns": {
+            "type": "float",
+            "description": {
+              "en": "The angle in degrees.",
+              "ja": "角度（度）。"
+            }
+          },
+          "advanced": false
+        },
+        {
+          "name": "to_matrix",
+          "type": "function",
+          "signature": "to_matrix()",
+          "description": {
+            "en": "Convert the rotation to a Mat4.",
+            "ja": "回転を Mat4 に変換する。"
+          },
+          "returns": {
+            "type": "Mat4"
+          },
+          "advanced": false
+        },
+        {
+          "name": "to_euler",
+          "type": "function",
+          "signature": "to_euler()",
+          "description": {
+            "en": "Convert the rotation to Euler angles in degrees (same convention as Quat.from_euler).",
+            "ja": "回転をオイラー角（度）に変換する（Quat.from_euler と同じ規約）。"
+          },
+          "returns": {
+            "type": "Vec3",
+            "description": {
+              "en": "Rotation around each axis in degrees.",
+              "ja": "各軸回りの回転角（度）。"
+            }
+          },
+          "advanced": false
+        },
+        {
+          "name": "to_axis_angle",
+          "type": "function",
+          "signature": "to_axis_angle()",
+          "description": {
+            "en": "Convert the rotation to an axis and an angle in degrees.",
+            "ja": "回転を回転軸と角度（度）に変換する。"
+          },
+          "returns": {
+            "type": "(Vec3, float)",
+            "description": {
+              "en": "A tuple of the axis and the angle in degrees.",
+              "ja": "回転軸と角度（度）のタプル。"
+            }
+          },
+          "advanced": false
+        },
+        {
+          "name": "slerp",
+          "type": "function",
+          "signature": "slerp(other, t)",
+          "description": {
+            "en": "Spherically interpolate toward another rotation.",
+            "ja": "別の回転へ球面線形補間する。"
+          },
+          "params": [
+            {
+              "name": "other",
+              "type": "Quat",
+              "description": {
+                "en": "The target rotation.",
+                "ja": "補間先の回転。"
+              }
+            },
+            {
+              "name": "t",
+              "type": "float",
+              "description": {
+                "en": "Interpolation factor from 0.0 to 1.0.",
+                "ja": "0.0〜1.0 の補間係数。"
+              }
+            }
+          ],
+          "returns": {
+            "type": "Quat",
+            "description": {
+              "en": "The interpolated rotation.",
+              "ja": "補間した回転。"
+            }
+          },
+          "advanced": false
+        }
+      ]
+    },
+    {
+      "id": "camera",
+      "title": {
+        "en": "Camera",
+        "ja": "Camera"
+      },
+      "items": [
+        {
+          "name": "Camera",
+          "type": "class",
+          "signature": "Camera()",
+          "description": {
+            "en": "View settings for rendering: position and orientation, field of view, clip range, projection mode, and clear color. Assign it to Node.camera.",
+            "ja": "描画の視点設定。位置と向き・画角・クリップ範囲・投影方式・クリア色を持つ。Node.camera に設定して使う。"
+          },
+          "examples": [
+            "from pyxel.cube import Camera, Mat4, Vec3",
+            "camera = Camera()",
+            "camera.transform = Mat4.look_at(Vec3(0, 3, 8), Vec3.ZERO)",
+            "scene.camera = camera"
+          ],
+          "advanced": false
+        },
+        {
+          "name": "transform",
+          "type": "variable",
+          "signature": "transform",
+          "description": {
+            "en": "The camera's position and orientation in world space. Typically set with Mat4.look_at(). The default is the identity matrix.",
+            "ja": "カメラのワールド座標での位置と向き。通常 Mat4.look_at() で設定する。デフォルトは単位行列。"
+          },
+          "value_type": "Mat4",
+          "advanced": false
+        },
+        {
+          "name": "fov",
+          "type": "variable",
+          "signature": "fov",
+          "description": {
+            "en": "The vertical field of view in degrees, used by the perspective projection. The default is 60.",
+            "ja": "透視投影で使う垂直画角（度）。デフォルトは 60。"
+          },
+          "value_type": "float",
+          "advanced": false
+        },
+        {
+          "name": "near",
+          "type": "variable",
+          "signature": "near",
+          "description": {
+            "en": "The near clip distance. Geometry closer than this is not drawn. The default is 0.1.",
+            "ja": "ニアクリップ距離。これより手前は描画されない。デフォルトは 0.1。"
+          },
+          "value_type": "float",
+          "advanced": false
+        },
+        {
+          "name": "far",
+          "type": "variable",
+          "signature": "far",
+          "description": {
+            "en": "The far clip distance. The default is 1000.",
+            "ja": "ファークリップ距離。デフォルトは 1000。"
+          },
+          "value_type": "float",
+          "advanced": false
+        },
+        {
+          "name": "ortho_size",
+          "type": "variable",
+          "signature": "ortho_size",
+          "description": {
+            "en": "When set to a number, switches to an orthographic projection with this view height in world units. None (the default) keeps the perspective projection.",
+            "ja": "数値を設定すると平行投影に切り替わり、その値が表示範囲の高さ（ワールド単位）になる。None（デフォルト）では透視投影。"
+          },
+          "value_type": "float | None",
+          "advanced": false
+        },
+        {
+          "name": "clear_color",
+          "type": "variable",
+          "signature": "clear_color",
+          "description": {
+            "en": "When set to a color number, Node.draw() fills the target with it before rendering. None (the default) draws over the existing pixels.",
+            "ja": "色番号を設定すると、Node.draw() が描画前に描画先をその色で塗りつぶす。None（デフォルト）では塗りつぶさずに描画する。"
+          },
+          "value_type": "int | None",
+          "advanced": false
+        }
+      ]
+    },
+    {
+      "id": "shading",
+      "title": {
+        "en": "Shading",
+        "ja": "Shading"
+      },
+      "items": [
+        {
+          "name": "Shading",
+          "type": "class",
+          "signature": "Shading(colors)",
+          "description": {
+            "en": "A face-brightness lookup table with a scene-wide light direction. Built automatically from a palette: each color gets 4 brightness levels (0 = darkest, 3 = brightest), where a level is either a flat color or a 2x2 dither pair. Assign it to Node.shading.",
+            "ja": "シーン全体の光の向きと、面の明るさ変換テーブル。パレットから自動構築され、各色が 4 段階の明度レベル（0 が最暗、3 が最明）を持つ。各レベルは単色か 2x2 ディザのペア。Node.shading に設定して使う。"
+          },
+          "params": [
+            {
+              "name": "colors",
+              "type": "list",
+              "description": {
+                "en": "Display colors as 24-bit values. Typically pyxel.colors.",
+                "ja": "24 ビット数値の表示色リスト。通常は pyxel.colors を渡す。"
+              }
+            }
+          ],
+          "examples": [
+            "from pyxel.cube import Shading, Vec3",
+            "scene.shading = Shading(pyxel.colors)",
+            "scene.shading.direction = Vec3(0.4, -0.8, -0.4)"
+          ],
+          "notes": {
+            "en": "shading[(col, level)] reads or assigns the (primary, secondary) color pair of a table cell.",
+            "ja": "shading[(col, level)] でテーブルセルの (primary, secondary) 色ペアを読み書きできる。"
+          },
+          "advanced": false
+        },
+        {
+          "name": "direction",
+          "type": "variable",
+          "signature": "direction",
+          "description": {
+            "en": "The direction the light travels, in world space. Face brightness follows the angle between this and the face normal. The default is Vec3.DOWN.",
+            "ja": "光が進む方向（ワールド座標）。面の明るさは、この方向と面法線のなす角で決まる。デフォルトは Vec3.DOWN。"
+          },
+          "value_type": "Vec3",
+          "advanced": false
+        },
+        {
+          "name": "build",
+          "type": "function",
+          "signature": "build(colors)",
+          "description": {
+            "en": "Rebuild the lookup table from a palette. Manual edits through shading[(col, level)] are overwritten.",
+            "ja": "パレットから変換テーブルを再構築する。shading[(col, level)] による手動編集は上書きされる。"
+          },
+          "params": [
+            {
+              "name": "colors",
+              "type": "list",
+              "description": {
+                "en": "Display colors as 24-bit values.",
+                "ja": "24 ビット数値の表示色リスト。"
+              }
+            }
+          ],
+          "returns": {
+            "type": "None"
+          },
+          "advanced": false
+        }
+      ]
+    },
+    {
+      "id": "primdata",
+      "title": {
+        "en": "PrimData",
+        "ja": "PrimData"
+      },
+      "items": [
+        {
+          "name": "PrimData",
+          "type": "class",
+          "signature": "PrimData(mode, positions, indices, normals=[], uvs=[], cull=PrimData.CULL_BACK)",
+          "description": {
+            "en": "A vertex-data asset: positions, optional normals and UVs, plus the topology (indices and draw mode). One PrimData can be shared by many Node.prim() draws and MeshData parts.",
+            "ja": "頂点データのアセット。頂点座標、任意の法線と UV、トポロジ（indices と描画モード）を持つ。1 つの PrimData を複数の Node.prim() 描画や MeshData のパーツで共有できる。"
+          },
+          "params": [
+            {
+              "name": "mode",
+              "type": "int",
+              "description": {
+                "en": "Draw mode: MODE_POINTS, MODE_LINES, or MODE_TRIANGLES.",
+                "ja": "描画モード。MODE_POINTS・MODE_LINES・MODE_TRIANGLES のいずれか。"
+              }
+            },
+            {
+              "name": "positions",
+              "type": "list",
+              "description": {
+                "en": "Vertex coordinates as a flat list of x, y, z repeats.",
+                "ja": "頂点座標。x, y, z の繰り返しのフラットなリスト。"
+              }
+            },
+            {
+              "name": "indices",
+              "type": "list",
+              "description": {
+                "en": "Vertex indices. An empty list consumes the vertices in order 0, 1, 2, ...",
+                "ja": "頂点インデックス列。空リストなら頂点を 0, 1, 2, ... の順で消費する。"
+              }
+            },
+            {
+              "name": "normals",
+              "type": "list",
+              "description": {
+                "en": "Per-face normals as a flat list. Defaults to empty (= derived from the vertices while drawing).",
+                "ja": "面ごとの法線のフラットなリスト。デフォルトは空（描画時に頂点から導出）。"
+              }
+            },
+            {
+              "name": "uvs",
+              "type": "list",
+              "description": {
+                "en": "Per-vertex UVs as a flat list of u, v repeats. Required for textured draws. Defaults to empty.",
+                "ja": "頂点ごとの UV。u, v の繰り返しのフラットなリスト。テクスチャ描画では必須。デフォルトは空。"
+              }
+            },
+            {
+              "name": "cull",
+              "type": "int",
+              "description": {
+                "en": "Face culling mode. Defaults to PrimData.CULL_BACK.",
+                "ja": "面カリングモード。デフォルトは PrimData.CULL_BACK。"
+              }
+            }
+          ],
+          "examples": [
+            "from pyxel.cube import PrimData",
+            "prim = PrimData(PrimData.MODE_TRIANGLES, [0, 1, 0, -1, -1, 0, 1, -1, 0], [])",
+            "node.prim(Mat4.IDENTITY, prim, 11)"
+          ],
+          "notes": {
+            "en": "The list attributes are live proxies: edit elements or assign slices (positions[:] = ...); whole-attribute assignment is not supported.",
+            "ja": "リスト属性はライブプロキシで、要素の変更やスライス代入（positions[:] = ...）で編集する。属性全体の再代入はできない。"
+          },
+          "advanced": false
+        },
+        {
+          "name": "MODE_POINTS",
+          "type": "constant",
+          "signature": "PrimData.MODE_POINTS",
+          "description": {
+            "en": "Draw each vertex as a point.",
+            "ja": "各頂点を点として描くモード。"
+          },
+          "value_type": "int",
+          "advanced": false
+        },
+        {
+          "name": "MODE_LINES",
+          "type": "constant",
+          "signature": "PrimData.MODE_LINES",
+          "description": {
+            "en": "Draw every 2 vertices as a line segment.",
+            "ja": "頂点 2 個ごとに線分を描くモード。"
+          },
+          "value_type": "int",
+          "advanced": false
+        },
+        {
+          "name": "MODE_TRIANGLES",
+          "type": "constant",
+          "signature": "PrimData.MODE_TRIANGLES",
+          "description": {
+            "en": "Draw every 3 vertices as a filled triangle.",
+            "ja": "頂点 3 個ごとに三角形を塗って描くモード。"
+          },
+          "value_type": "int",
+          "advanced": false
+        },
+        {
+          "name": "CULL_NONE",
+          "type": "constant",
+          "signature": "PrimData.CULL_NONE",
+          "description": {
+            "en": "Draw both sides of each face.",
+            "ja": "面の両側を描く。"
+          },
+          "value_type": "int",
+          "advanced": false
+        },
+        {
+          "name": "CULL_BACK",
+          "type": "constant",
+          "signature": "PrimData.CULL_BACK",
+          "description": {
+            "en": "Skip faces seen from the back (counterclockwise winding is the front).",
+            "ja": "裏向きの面を省略する（反時計回りが表）。"
+          },
+          "value_type": "int",
+          "advanced": false
+        },
+        {
+          "name": "CULL_FRONT",
+          "type": "constant",
+          "signature": "PrimData.CULL_FRONT",
+          "description": {
+            "en": "Skip faces seen from the front.",
+            "ja": "表向きの面を省略する。"
+          },
+          "value_type": "int",
+          "advanced": false
+        },
+        {
+          "name": "mode",
+          "type": "variable",
+          "signature": "mode",
+          "description": {
+            "en": "Draw mode: MODE_POINTS, MODE_LINES, or MODE_TRIANGLES.",
+            "ja": "描画モード。MODE_POINTS・MODE_LINES・MODE_TRIANGLES のいずれか。"
+          },
+          "value_type": "int",
+          "advanced": false
+        },
+        {
+          "name": "positions",
+          "type": "variable",
+          "signature": "positions",
+          "description": {
+            "en": "Vertex coordinates as a flat list of x, y, z repeats.",
+            "ja": "頂点座標。x, y, z の繰り返しのフラットなリスト。"
+          },
+          "value_type": "list",
+          "advanced": false
+        },
+        {
+          "name": "indices",
+          "type": "variable",
+          "signature": "indices",
+          "description": {
+            "en": "Vertex indices. An empty list consumes the vertices in order.",
+            "ja": "頂点インデックス列。空なら頂点を順番どおり消費する。"
+          },
+          "value_type": "list",
+          "advanced": false
+        },
+        {
+          "name": "normals",
+          "type": "variable",
+          "signature": "normals",
+          "description": {
+            "en": "Per-face normals as a flat list. Empty means derived from the vertices while drawing.",
+            "ja": "面ごとの法線のフラットなリスト。空なら描画時に頂点から導出する。"
+          },
+          "value_type": "list",
+          "advanced": false
+        },
+        {
+          "name": "uvs",
+          "type": "variable",
+          "signature": "uvs",
+          "description": {
+            "en": "Per-vertex UVs as a flat list of u, v repeats.",
+            "ja": "頂点ごとの UV。u, v の繰り返しのフラットなリスト。"
+          },
+          "value_type": "list",
+          "advanced": false
+        },
+        {
+          "name": "cull",
+          "type": "variable",
+          "signature": "cull",
+          "description": {
+            "en": "Face culling mode: CULL_NONE, CULL_BACK, or CULL_FRONT.",
+            "ja": "面カリングモード。CULL_NONE・CULL_BACK・CULL_FRONT のいずれか。"
+          },
+          "value_type": "int",
+          "advanced": false
+        },
+        {
+          "name": "compute_normals",
+          "type": "function",
+          "signature": "compute_normals()",
+          "description": {
+            "en": "Compute flat per-face normals from positions and indices and store them in normals. Only meaningful for MODE_TRIANGLES.",
+            "ja": "positions と indices から面ごとのフラット法線を計算して normals に格納する。MODE_TRIANGLES でのみ意味を持つ。"
+          },
+          "returns": {
+            "type": "None"
+          },
+          "advanced": false
+        }
+      ]
+    },
+    {
+      "id": "meshdata",
+      "title": {
+        "en": "MeshData",
+        "ja": "MeshData"
+      },
+      "items": [
+        {
+          "name": "MeshData",
+          "type": "class",
+          "signature": "MeshData(primitives=None, transforms=None, parents=None, col_img=7, colkey=None)",
+          "description": {
+            "en": "A hierarchical 3D model asset. primitives, transforms, and parents are parallel arrays of the same length describing the part tree; parents must come before children (parents[i] < i). Draw it with Node.mesh(), or set it on Collider.mesh as static terrain.",
+            "ja": "階層構造を持つ 3D モデルアセット。primitives・transforms・parents は同じ長さの並列配列でパーツの木を表し、親は子より先に並べる（parents[i] < i）。Node.mesh() で描画するほか、Collider.mesh に設定して静的な地形にもできる。"
+          },
+          "params": [
+            {
+              "name": "primitives",
+              "type": "list",
+              "description": {
+                "en": "PrimData per part, or None for a transform-only group part. Defaults to empty.",
+                "ja": "パーツごとの PrimData。None のパーツは変換のみのグループ。デフォルトは空。"
+              }
+            },
+            {
+              "name": "transforms",
+              "type": "list",
+              "description": {
+                "en": "Local transform of each part relative to its parent. Defaults to empty.",
+                "ja": "各パーツの親に対するローカル変換。デフォルトは空。"
+              }
+            },
+            {
+              "name": "parents",
+              "type": "list",
+              "description": {
+                "en": "Parent index of each part. -1 is a root. Defaults to empty.",
+                "ja": "各パーツの親インデックス。-1 はルート。デフォルトは空。"
+              }
+            },
+            {
+              "name": "col_img",
+              "type": "int | Image",
+              "description": {
+                "en": "Flat color number, or a texture Image shared by every part. Defaults to 7.",
+                "ja": "単色の色番号、または全パーツ共通のテクスチャ Image。デフォルトは 7。"
+              }
+            },
+            {
+              "name": "colkey",
+              "type": "int | None",
+              "description": {
+                "en": "Transparent color when col_img is an Image. Defaults to None.",
+                "ja": "col_img が Image のときの透明色。デフォルトは None。"
+              }
+            }
+          ],
+          "examples": [
+            "from pyxel.cube import Mat4, MeshData, PrimData",
+            "mesh = MeshData(primitives=[prim], transforms=[Mat4.IDENTITY], parents=[-1], col_img=8)",
+            "node.mesh(Mat4.IDENTITY, mesh)"
+          ],
+          "advanced": false
+        },
+        {
+          "name": "primitives",
+          "type": "variable",
+          "signature": "primitives",
+          "description": {
+            "en": "PrimData per part. None means a transform-only group part.",
+            "ja": "パーツごとの PrimData。None は変換のみのグループ。"
+          },
+          "value_type": "list",
+          "advanced": false
+        },
+        {
+          "name": "transforms",
+          "type": "variable",
+          "signature": "transforms",
+          "description": {
+            "en": "Local transform of each part relative to its parent.",
+            "ja": "各パーツの親に対するローカル変換。"
+          },
+          "value_type": "list",
+          "advanced": false
+        },
+        {
+          "name": "parents",
+          "type": "variable",
+          "signature": "parents",
+          "description": {
+            "en": "Parent index of each part. -1 is a root; parents[i] < i is required.",
+            "ja": "各パーツの親インデックス。-1 はルートで、parents[i] < i が必要。"
+          },
+          "value_type": "list",
+          "advanced": false
+        },
+        {
+          "name": "col_img",
+          "type": "variable",
+          "signature": "col_img",
+          "description": {
+            "en": "Flat color number, or a texture Image shared by every part.",
+            "ja": "単色の色番号、または全パーツ共通のテクスチャ Image。"
+          },
+          "value_type": "int | Image",
+          "advanced": false
+        },
+        {
+          "name": "colkey",
+          "type": "variable",
+          "signature": "colkey",
+          "description": {
+            "en": "Transparent color when col_img is an Image.",
+            "ja": "col_img が Image のときの透明色。"
+          },
+          "value_type": "int | None",
+          "advanced": false
+        },
+        {
+          "name": "descendants",
+          "type": "function",
+          "signature": "descendants(i)",
+          "description": {
+            "en": "Return the indices of every part under part i.",
+            "ja": "パーツ i の配下にある全パーツのインデックスを返す。"
+          },
+          "params": [
+            {
+              "name": "i",
+              "type": "int",
+              "description": {
+                "en": "The root part index.",
+                "ja": "起点のパーツインデックス。"
+              }
+            }
+          ],
+          "returns": {
+            "type": "list",
+            "description": {
+              "en": "Descendant part indices.",
+              "ja": "子孫パーツのインデックスのリスト。"
+            }
+          },
+          "advanced": true
+        }
+      ]
+    },
+    {
+      "id": "collider",
+      "title": {
+        "en": "Collider",
+        "ja": "Collider"
+      },
+      "items": [
+        {
+          "name": "Collider",
+          "type": "class",
+          "signature": "Collider(size=Vec3.ZERO, radius=0.0, mesh=None, trigger=False, rolls=False, mass=1.0, restitution=0.0, friction=0.5, velocity=Vec3.ZERO, angular_velocity=Vec3.ZERO)",
+          "description": {
+            "en": "Collision shape, physical coefficients, and motion state for a Node. The shape follows from size and radius: size of all zeros is a sphere, (0, h, 0) is a capsule of height h, and any other size is a box with rounded corners of the radius. Setting mesh turns the collider into static triangle terrain.",
+            "ja": "Node の衝突形状・物理係数・運動状態。形状は size と radius で決まる。size が全成分 0 なら球、(0, h, 0) なら高さ h のカプセル、それ以外は radius で角を丸めたボックスになる。mesh を設定すると静的な三角形メッシュ地形になる。"
+          },
+          "params": [
+            {
+              "name": "size",
+              "type": "Vec3",
+              "description": {
+                "en": "Core dimensions of the shape. Defaults to Vec3.ZERO (a sphere).",
+                "ja": "形状の芯の寸法。デフォルトは Vec3.ZERO（球）。"
+              }
+            },
+            {
+              "name": "radius",
+              "type": "float",
+              "description": {
+                "en": "Sphere or capsule radius, and the corner rounding of a box. Defaults to 0.0.",
+                "ja": "球・カプセルの半径、またはボックスの角の丸め。デフォルトは 0.0。"
+              }
+            },
+            {
+              "name": "mesh",
+              "type": "MeshData | None",
+              "description": {
+                "en": "Static terrain mesh. Defaults to None.",
+                "ja": "静的な地形メッシュ。デフォルトは None。"
+              }
+            },
+            {
+              "name": "trigger",
+              "type": "bool",
+              "description": {
+                "en": "When True, reports contacts without any push-back. Defaults to False.",
+                "ja": "True にすると押し戻しなしで接触通知のみ行う。デフォルトは False。"
+              }
+            },
+            {
+              "name": "rolls",
+              "type": "bool",
+              "description": {
+                "en": "When True, contacts also produce delta_angular_velocity. Defaults to False.",
+                "ja": "True にすると接触で delta_angular_velocity も計算される。デフォルトは False。"
+              }
+            },
+            {
+              "name": "mass",
+              "type": "float",
+              "description": {
+                "en": "Mass for contact resolution. 0.0 makes the body immovable. Defaults to 1.0.",
+                "ja": "衝突解決に使う質量。0.0 で不動になる。デフォルトは 1.0。"
+              }
+            },
+            {
+              "name": "restitution",
+              "type": "float",
+              "description": {
+                "en": "Bounciness. The larger of the two contacting values is used. Defaults to 0.0.",
+                "ja": "反発係数。接触相手との大きい方が使われる。デフォルトは 0.0。"
+              }
+            },
+            {
+              "name": "friction",
+              "type": "float",
+              "description": {
+                "en": "Friction. The average of the two contacting values is used. Defaults to 0.5.",
+                "ja": "摩擦係数。接触相手との平均が使われる。デフォルトは 0.5。"
+              }
+            },
+            {
+              "name": "velocity",
+              "type": "Vec3",
+              "description": {
+                "en": "World-space displacement applied every update. Defaults to Vec3.ZERO.",
+                "ja": "毎フレームの update で適用されるワールド座標の変位。デフォルトは Vec3.ZERO。"
+              }
+            },
+            {
+              "name": "angular_velocity",
+              "type": "Vec3",
+              "description": {
+                "en": "Axis times angle (in degrees) applied as a local spin every update. Defaults to Vec3.ZERO.",
+                "ja": "毎フレームの update でローカル回転として適用される、軸×角度（度）。デフォルトは Vec3.ZERO。"
+              }
+            }
+          ],
+          "examples": [
+            "from pyxel.cube import Collider, Vec3",
+            "node.collider = Collider(radius=0.5)",
+            "floor.collider = Collider(size=Vec3(20, 0.5, 20), mass=0.0)"
+          ],
+          "advanced": false
+        },
+        {
+          "name": "size",
+          "type": "variable",
+          "signature": "size",
+          "description": {
+            "en": "Core dimensions deciding the shape family.",
+            "ja": "形状を決める芯の寸法。"
+          },
+          "value_type": "Vec3",
+          "advanced": false
+        },
+        {
+          "name": "radius",
+          "type": "variable",
+          "signature": "radius",
+          "description": {
+            "en": "Sphere or capsule radius, and the corner rounding of a box.",
+            "ja": "球・カプセルの半径、またはボックスの角の丸め。"
+          },
+          "value_type": "float",
+          "advanced": false
+        },
+        {
+          "name": "mesh",
+          "type": "variable",
+          "signature": "mesh",
+          "description": {
+            "en": "Static terrain mesh. A mesh collider never moves.",
+            "ja": "静的な地形メッシュ。メッシュコライダーは動かない。"
+          },
+          "value_type": "MeshData | None",
+          "advanced": false
+        },
+        {
+          "name": "trigger",
+          "type": "variable",
+          "signature": "trigger",
+          "description": {
+            "en": "When True, reports contacts without any push-back.",
+            "ja": "True のとき、押し戻しなしで接触通知のみ行う。"
+          },
+          "value_type": "bool",
+          "advanced": false
+        },
+        {
+          "name": "rolls",
+          "type": "variable",
+          "signature": "rolls",
+          "description": {
+            "en": "When True, contacts also produce delta_angular_velocity.",
+            "ja": "True のとき、接触で delta_angular_velocity も計算される。"
+          },
+          "value_type": "bool",
+          "advanced": false
+        },
+        {
+          "name": "mass",
+          "type": "variable",
+          "signature": "mass",
+          "description": {
+            "en": "Mass for contact resolution. 0.0 makes the body immovable.",
+            "ja": "衝突解決に使う質量。0.0 で不動になる。"
+          },
+          "value_type": "float",
+          "advanced": false
+        },
+        {
+          "name": "restitution",
+          "type": "variable",
+          "signature": "restitution",
+          "description": {
+            "en": "Bounciness. The larger of the two contacting values is used.",
+            "ja": "反発係数。接触相手との大きい方が使われる。"
+          },
+          "value_type": "float",
+          "advanced": false
+        },
+        {
+          "name": "friction",
+          "type": "variable",
+          "signature": "friction",
+          "description": {
+            "en": "Friction. The average of the two contacting values is used.",
+            "ja": "摩擦係数。接触相手との平均が使われる。"
+          },
+          "value_type": "float",
+          "advanced": false
+        },
+        {
+          "name": "velocity",
+          "type": "variable",
+          "signature": "velocity",
+          "description": {
+            "en": "World-space displacement applied to the node's transform every update.",
+            "ja": "毎フレームの update でノードの transform に適用される、ワールド座標の変位。"
+          },
+          "value_type": "Vec3",
+          "advanced": false
+        },
+        {
+          "name": "angular_velocity",
+          "type": "variable",
+          "signature": "angular_velocity",
+          "description": {
+            "en": "Axis times angle (in degrees) applied as a local spin every update.",
+            "ja": "毎フレームの update でローカル回転として適用される、軸×角度（度）。"
+          },
+          "value_type": "Vec3",
+          "advanced": false
+        }
+      ]
+    },
+    {
+      "id": "contact",
+      "title": {
+        "en": "Contact",
+        "ja": "Contact"
+      },
+      "items": [
+        {
+          "name": "Contact",
+          "type": "class",
+          "signature": "Contact()",
+          "description": {
+            "en": "Collision payload passed to Node.on_collide(). Carries the contact geometry and the engine-resolved motion corrections for the receiving side.",
+            "ja": "Node.on_collide() に渡される衝突情報。接触の幾何と、受け取り側に対するエンジン算出の補正量を持つ。"
+          },
+          "examples": [
+            "def on_collide(self, other, contact):",
+            "    push = Mat4.from_translation(contact.normal * contact.depth)",
+            "    self.transform = push * self.transform",
+            "    self.collider.velocity += contact.delta_velocity"
+          ],
+          "advanced": false
+        },
+        {
+          "name": "point",
+          "type": "variable",
+          "signature": "point",
+          "description": {
+            "en": "The contact point in world space.",
+            "ja": "接触点（ワールド座標）。"
+          },
+          "value_type": "Vec3",
+          "advanced": false
+        },
+        {
+          "name": "normal",
+          "type": "variable",
+          "signature": "normal",
+          "description": {
+            "en": "The contact normal in world space, pointing from the other node toward this node.",
+            "ja": "接触法線（ワールド座標）。相手のノードから自分へ向く。"
+          },
+          "value_type": "Vec3",
+          "advanced": false
+        },
+        {
+          "name": "depth",
+          "type": "variable",
+          "signature": "depth",
+          "description": {
+            "en": "Penetration depth this side should resolve, already split by the mass ratio.",
+            "ja": "自分の側が解決すべき貫通量。質量比で配分済み。"
+          },
+          "value_type": "float",
+          "advanced": false
+        },
+        {
+          "name": "delta_rotation",
+          "type": "variable",
+          "signature": "delta_rotation",
+          "description": {
+            "en": "Rotation correction reserved for a future response; currently always the identity, so applying it is a harmless no-op.",
+            "ja": "将来の応答のために予約された回転補正。現在は常に恒等回転で、適用しても影響はない。"
+          },
+          "value_type": "Quat",
+          "advanced": false
+        },
+        {
+          "name": "delta_velocity",
+          "type": "variable",
+          "signature": "delta_velocity",
+          "description": {
+            "en": "Suggested additive velocity correction from the collision.",
+            "ja": "衝突による速度補正の推奨加算量。"
+          },
+          "value_type": "Vec3",
+          "advanced": false
+        },
+        {
+          "name": "delta_angular_velocity",
+          "type": "variable",
+          "signature": "delta_angular_velocity",
+          "description": {
+            "en": "Suggested additive angular velocity correction. Non-zero only when the collider has rolls=True.",
+            "ja": "角速度補正の推奨加算量。コライダーが rolls=True のときのみ非ゼロ。"
+          },
+          "value_type": "Vec3",
+          "advanced": false
+        }
+      ]
+    },
+    {
+      "id": "raycasthit",
+      "title": {
+        "en": "RaycastHit",
+        "ja": "RaycastHit"
+      },
+      "items": [
+        {
+          "name": "RaycastHit",
+          "type": "class",
+          "signature": "RaycastHit()",
+          "description": {
+            "en": "Hit information returned by Node.raycast() and Node.raycast_all().",
+            "ja": "Node.raycast() / Node.raycast_all() が返すヒット情報。"
+          },
+          "examples": [
+            "hit = scene.raycast(origin, Vec3.DOWN, max_distance=10.0)",
+            "if hit is not None:",
+            "    ground_y = hit.point.y"
+          ],
+          "advanced": false
+        },
+        {
+          "name": "node",
+          "type": "variable",
+          "signature": "node",
+          "description": {
+            "en": "The node that was hit.",
+            "ja": "ヒットしたノード。"
+          },
+          "value_type": "Node",
+          "advanced": false
+        },
+        {
+          "name": "point",
+          "type": "variable",
+          "signature": "point",
+          "description": {
+            "en": "The hit position in world space.",
+            "ja": "ヒット位置（ワールド座標）。"
+          },
+          "value_type": "Vec3",
+          "advanced": false
+        },
+        {
+          "name": "normal",
+          "type": "variable",
+          "signature": "normal",
+          "description": {
+            "en": "The surface normal at the hit, facing the ray origin's side.",
+            "ja": "ヒット面の法線。レイの始点側を向く。"
+          },
+          "value_type": "Vec3",
+          "advanced": false
+        },
+        {
+          "name": "distance",
+          "type": "variable",
+          "signature": "distance",
+          "description": {
+            "en": "The distance from the ray origin to the hit.",
+            "ja": "レイの始点からヒットまでの距離。"
+          },
+          "value_type": "float",
+          "advanced": false
+        }
+      ]
+    },
+    {
+      "id": "node",
+      "title": {
+        "en": "Node",
+        "ja": "Node"
+      },
+      "items": [
+        {
+          "name": "Node",
+          "type": "class",
+          "signature": "Node()",
+          "description": {
+            "en": "A scene-graph node. Subclass it and implement on_update / on_draw, then drive the whole tree with update() and draw() on the root. Draw commands render relative to the node's world transform.",
+            "ja": "シーングラフのノード。継承して on_update / on_draw を実装し、ルートの update() / draw() で木全体を駆動する。描画コマンドはノードのワールド変換を基準に描かれる。"
+          },
+          "examples": [
+            "from pyxel.cube import Camera, Mat4, Node, Shading, Vec3",
+            "class Scene(Node):",
+            "    def on_draw(self):",
+            "        self.box(Mat4.IDENTITY, Vec3(2, 2, 2), 8)",
+            "scene = Scene()",
+            "scene.shading = Shading(pyxel.colors)",
+            "scene.camera = Camera()",
+            "scene.camera.transform = Mat4.look_at(Vec3(3, 2, 4), Vec3.ZERO)"
+          ],
+          "advanced": false
+        },
+        {
+          "name": "name",
+          "type": "variable",
+          "signature": "name",
+          "description": {
+            "en": "Node name, searchable with find_by_name().",
+            "ja": "ノード名。find_by_name() で検索できる。"
+          },
+          "value_type": "str",
+          "advanced": false
+        },
+        {
+          "name": "transform",
+          "type": "variable",
+          "signature": "transform",
+          "description": {
+            "en": "Local transform relative to the parent.",
+            "ja": "親に対するローカル変換。"
+          },
+          "value_type": "Mat4",
+          "advanced": false
+        },
+        {
+          "name": "active",
+          "type": "variable",
+          "signature": "active",
+          "description": {
+            "en": "When False, stops update and collision for this node and its descendants.",
+            "ja": "False にすると、自分と子孫の update と衝突が止まる。"
+          },
+          "value_type": "bool",
+          "advanced": false
+        },
+        {
+          "name": "visible",
+          "type": "variable",
+          "signature": "visible",
+          "description": {
+            "en": "When False, stops drawing for this node and its descendants.",
+            "ja": "False にすると、自分と子孫の描画が止まる。"
+          },
+          "value_type": "bool",
+          "advanced": false
+        },
+        {
+          "name": "camera",
+          "type": "variable",
+          "signature": "camera",
+          "description": {
+            "en": "Camera used for drawing. None inherits from the closest ancestor that has one.",
+            "ja": "描画に使うカメラ。None なら最も近い設定済みの祖先から継承する。"
+          },
+          "value_type": "Camera | None",
+          "advanced": false
+        },
+        {
+          "name": "shading",
+          "type": "variable",
+          "signature": "shading",
+          "description": {
+            "en": "Face-brightness table used for drawing. None inherits from the closest ancestor that has one.",
+            "ja": "描画に使う明るさ変換テーブル。None なら最も近い設定済みの祖先から継承する。"
+          },
+          "value_type": "Shading | None",
+          "advanced": false
+        },
+        {
+          "name": "collider",
+          "type": "variable",
+          "signature": "collider",
+          "description": {
+            "en": "Collision shape and motion state. None keeps the node out of collision.",
+            "ja": "衝突形状と運動状態。None なら衝突に参加しない。"
+          },
+          "value_type": "Collider | None",
+          "advanced": false
+        },
+        {
+          "name": "tags",
+          "type": "variable",
+          "signature": "tags",
+          "description": {
+            "en": "Tag strings used by find_by_tags() and the tags filter of spatial queries.",
+            "ja": "タグ文字列のリスト。find_by_tags() や空間クエリの tags 絞り込みに使う。"
+          },
+          "value_type": "list",
+          "advanced": false
+        },
+        {
+          "name": "parent",
+          "type": "variable",
+          "signature": "parent",
+          "description": {
+            "en": "The parent node, or None for a root.",
+            "ja": "親ノード。ルートでは None。"
+          },
+          "value_type": "Node | None",
+          "advanced": false
+        },
+        {
+          "name": "children",
+          "type": "variable",
+          "signature": "children",
+          "description": {
+            "en": "The child nodes as a tuple.",
+            "ja": "子ノードのタプル。"
+          },
+          "value_type": "tuple",
+          "advanced": false
+        },
+        {
+          "name": "destroyed",
+          "type": "variable",
+          "signature": "destroyed",
+          "description": {
+            "en": "True after destroy() has been called, until the node is detached at the end of update().",
+            "ja": "destroy() 呼び出し後に True になる。update() の最後に木から外れるまで保たれる。"
+          },
+          "value_type": "bool",
+          "advanced": false
+        },
+        {
+          "name": "forward",
+          "type": "variable",
+          "signature": "forward",
+          "description": {
+            "en": "The transform's forward direction (-Z axis) as a unit vector.",
+            "ja": "transform の前方向（-Z 軸）の単位ベクトル。"
+          },
+          "value_type": "Vec3",
+          "advanced": false
+        },
+        {
+          "name": "right",
+          "type": "variable",
+          "signature": "right",
+          "description": {
+            "en": "The transform's right direction (+X axis) as a unit vector.",
+            "ja": "transform の右方向（+X 軸）の単位ベクトル。"
+          },
+          "value_type": "Vec3",
+          "advanced": false
+        },
+        {
+          "name": "up",
+          "type": "variable",
+          "signature": "up",
+          "description": {
+            "en": "The transform's up direction (+Y axis) as a unit vector.",
+            "ja": "transform の上方向（+Y 軸）の単位ベクトル。"
+          },
+          "value_type": "Vec3",
+          "advanced": false
+        },
+        {
+          "name": "effective_camera",
+          "type": "variable",
+          "signature": "effective_camera",
+          "description": {
+            "en": "The camera after cascade resolution: this node's camera, or the closest ancestor's.",
+            "ja": "カスケード解決後のカメラ。自分のカメラか、最も近い祖先のもの。"
+          },
+          "value_type": "Camera | None",
+          "advanced": true
+        },
+        {
+          "name": "world_transform",
+          "type": "variable",
+          "signature": "world_transform",
+          "description": {
+            "en": "The world transform composed from the root down to this node.",
+            "ja": "ルートからこのノードまで合成したワールド変換。"
+          },
+          "value_type": "Mat4",
+          "advanced": true
+        },
+        {
+          "name": "add_child",
+          "type": "function",
+          "signature": "add_child(node)",
+          "description": {
+            "en": "Add a node as a child. A node that already has a parent is reparented.",
+            "ja": "ノードを子として追加する。既に親を持つノードは付け替えられる。"
+          },
+          "params": [
+            {
+              "name": "node",
+              "type": "Node",
+              "description": {
+                "en": "The node to add.",
+                "ja": "追加するノード。"
+              }
+            }
+          ],
+          "returns": {
+            "type": "None"
+          },
+          "advanced": false
+        },
+        {
+          "name": "remove_child",
+          "type": "function",
+          "signature": "remove_child(node)",
+          "description": {
+            "en": "Remove a child node.",
+            "ja": "子ノードを取り外す。"
+          },
+          "params": [
+            {
+              "name": "node",
+              "type": "Node",
+              "description": {
+                "en": "The node to remove.",
+                "ja": "取り外すノード。"
+              }
+            }
+          ],
+          "returns": {
+            "type": "None"
+          },
+          "advanced": false
+        },
+        {
+          "name": "destroy",
+          "type": "function",
+          "signature": "destroy()",
+          "description": {
+            "en": "Flag this node and its descendants for destruction. At the end of update(), on_destroy() fires on each flagged node and it is detached from the tree.",
+            "ja": "自分と子孫に破棄フラグを立てる。update() の最後に各ノードの on_destroy() が呼ばれ、木から外れる。"
+          },
+          "returns": {
+            "type": "None"
+          },
+          "advanced": false
+        },
+        {
+          "name": "find_by_name",
+          "type": "function",
+          "signature": "find_by_name(name)",
+          "description": {
+            "en": "Return every node in this subtree whose name matches.",
+            "ja": "サブツリーから name が一致するノードをすべて返す。"
+          },
+          "params": [
+            {
+              "name": "name",
+              "type": "str",
+              "description": {
+                "en": "The name to search for.",
+                "ja": "検索する名前。"
+              }
+            }
+          ],
+          "returns": {
+            "type": "list",
+            "description": {
+              "en": "The matching nodes.",
+              "ja": "一致したノードのリスト。"
+            }
+          },
+          "advanced": false
+        },
+        {
+          "name": "find_by_tags",
+          "type": "function",
+          "signature": "find_by_tags(tags)",
+          "description": {
+            "en": "Return every node in this subtree carrying any of the given tags.",
+            "ja": "サブツリーから、指定タグのいずれかを持つノードをすべて返す。"
+          },
+          "params": [
+            {
+              "name": "tags",
+              "type": "list",
+              "description": {
+                "en": "Tags to search for.",
+                "ja": "検索するタグのリスト。"
+              }
+            }
+          ],
+          "returns": {
+            "type": "list",
+            "description": {
+              "en": "The matching nodes.",
+              "ja": "一致したノードのリスト。"
+            }
+          },
+          "advanced": false
+        },
+        {
+          "name": "on_update",
+          "type": "function",
+          "signature": "on_update()",
+          "description": {
+            "en": "Per-frame update hook, called by update() in tree order. Override it in a subclass.",
+            "ja": "フレームごとの更新フック。update() が木の順に呼ぶ。サブクラスでオーバーライドして使う。"
+          },
+          "returns": {
+            "type": "None"
+          },
+          "advanced": false
+        },
+        {
+          "name": "on_draw",
+          "type": "function",
+          "signature": "on_draw()",
+          "description": {
+            "en": "Per-frame draw hook, called by draw() in tree order. Call draw commands from here.",
+            "ja": "フレームごとの描画フック。draw() が木の順に呼ぶ。描画コマンドはここから呼ぶ。"
+          },
+          "returns": {
+            "type": "None"
+          },
+          "advanced": false
+        },
+        {
+          "name": "on_collide",
+          "type": "function",
+          "signature": "on_collide(other, contact)",
+          "description": {
+            "en": "Collision hook, called by update() once per contacting pair. Apply contact.depth and contact.delta_velocity here to resolve the hit.",
+            "ja": "衝突フック。update() が接触ペアごとに呼ぶ。contact.depth や contact.delta_velocity をここで適用して衝突を解決する。"
+          },
+          "params": [
+            {
+              "name": "other",
+              "type": "Node",
+              "description": {
+                "en": "The other node of the contact.",
+                "ja": "接触相手のノード。"
+              }
+            },
+            {
+              "name": "contact",
+              "type": "Contact",
+              "description": {
+                "en": "The contact information for this side.",
+                "ja": "自分の側の接触情報。"
+              }
+            }
+          ],
+          "returns": {
+            "type": "None"
+          },
+          "advanced": false
+        },
+        {
+          "name": "on_destroy",
+          "type": "function",
+          "signature": "on_destroy()",
+          "description": {
+            "en": "Destruction hook, called at the end of update() before the node is detached.",
+            "ja": "破棄フック。update() の最後、木から外れる直前に呼ばれる。"
+          },
+          "returns": {
+            "type": "None"
+          },
+          "advanced": false
+        },
+        {
+          "name": "dither",
+          "type": "function",
+          "signature": "dither(alpha)",
+          "description": {
+            "en": "Apply dithered transparency to the following draw commands in this on_draw. Resets to 1.0 at the start of every node's on_draw.",
+            "ja": "同じ on_draw 内の以降の描画コマンドにディザ透明度を適用する。各ノードの on_draw 開始時に 1.0 へ戻る。"
+          },
+          "params": [
+            {
+              "name": "alpha",
+              "type": "float",
+              "description": {
+                "en": "Opacity from 0.0 to 1.0.",
+                "ja": "0.0〜1.0 の不透明度。"
+              }
+            }
+          ],
+          "returns": {
+            "type": "None"
+          },
+          "advanced": false
+        },
+        {
+          "name": "depth_test",
+          "type": "function",
+          "signature": "depth_test(on)",
+          "description": {
+            "en": "Toggle the depth test for the following draw commands in this on_draw. Resets to True at the start of every node's on_draw.",
+            "ja": "同じ on_draw 内の以降の描画コマンドの深度テストを切り替える。各ノードの on_draw 開始時に True へ戻る。"
+          },
+          "params": [
+            {
+              "name": "on",
+              "type": "bool",
+              "description": {
+                "en": "False draws over everything regardless of depth.",
+                "ja": "False にすると深度に関係なく上書きで描く。"
+              }
+            }
+          ],
+          "returns": {
+            "type": "None"
+          },
+          "advanced": false
+        },
+        {
+          "name": "depth_write",
+          "type": "function",
+          "signature": "depth_write(on)",
+          "description": {
+            "en": "Toggle depth-buffer writes for the following draw commands in this on_draw. Resets to True at the start of every node's on_draw.",
+            "ja": "同じ on_draw 内の以降の描画コマンドの深度書き込みを切り替える。各ノードの on_draw 開始時に True へ戻る。"
+          },
+          "params": [
+            {
+              "name": "on",
+              "type": "bool",
+              "description": {
+                "en": "False leaves the depth buffer untouched.",
+                "ja": "False にすると深度バッファを更新しない。"
+              }
+            }
+          ],
+          "returns": {
+            "type": "None"
+          },
+          "advanced": true
+        },
+        {
+          "name": "depth_offset",
+          "type": "function",
+          "signature": "depth_offset(offset)",
+          "description": {
+            "en": "Shift only the depth of the following draw commands along the view direction, in world units. Negative is toward the camera. The screen position and size never change. Resets to 0.0 at the start of every node's on_draw.",
+            "ja": "同じ on_draw 内の以降の描画コマンドの深度だけを、視線方向にワールド単位でずらす。負で手前。画面上の位置と大きさは変わらない。各ノードの on_draw 開始時に 0.0 へ戻る。"
+          },
+          "params": [
+            {
+              "name": "offset",
+              "type": "float",
+              "description": {
+                "en": "Depth shift in world units. Negative is toward the camera.",
+                "ja": "ワールド単位の深度シフト。負で手前。"
+              }
+            }
+          ],
+          "returns": {
+            "type": "None"
+          },
+          "advanced": true
+        },
+        {
+          "name": "shaded",
+          "type": "function",
+          "signature": "shaded(on)",
+          "description": {
+            "en": "Toggle directional shading for the following draw commands in this on_draw. Resets to True at the start of every node's on_draw.",
+            "ja": "同じ on_draw 内の以降の描画コマンドの方向シェーディングを切り替える。各ノードの on_draw 開始時に True へ戻る。"
+          },
+          "params": [
+            {
+              "name": "on",
+              "type": "bool",
+              "description": {
+                "en": "False draws with the base color only.",
+                "ja": "False にすると元の色のまま描く。"
+              }
+            }
+          ],
+          "returns": {
+            "type": "None"
+          },
+          "advanced": false
+        },
+        {
+          "name": "pset",
+          "type": "function",
+          "signature": "pset(pos, col)",
+          "description": {
+            "en": "Draw a single pixel at a position.",
+            "ja": "指定位置に 1 ピクセルを描く。"
+          },
+          "params": [
+            {
+              "name": "pos",
+              "type": "Vec3",
+              "description": {
+                "en": "Position in node-local coordinates.",
+                "ja": "ノードローカル座標での位置。"
+              }
+            },
+            {
+              "name": "col",
+              "type": "int",
+              "description": {
+                "en": "Color number.",
+                "ja": "色番号。"
+              }
+            }
+          ],
+          "returns": {
+            "type": "None"
+          },
+          "advanced": false
+        },
+        {
+          "name": "line",
+          "type": "function",
+          "signature": "line(p1, p2, col)",
+          "description": {
+            "en": "Draw a 1-pixel-wide line segment.",
+            "ja": "太さ 1 ピクセルの線分を描く。"
+          },
+          "params": [
+            {
+              "name": "p1",
+              "type": "Vec3",
+              "description": {
+                "en": "Start position.",
+                "ja": "始点。"
+              }
+            },
+            {
+              "name": "p2",
+              "type": "Vec3",
+              "description": {
+                "en": "End position.",
+                "ja": "終点。"
+              }
+            },
+            {
+              "name": "col",
+              "type": "int",
+              "description": {
+                "en": "Color number.",
+                "ja": "色番号。"
+              }
+            }
+          ],
+          "returns": {
+            "type": "None"
+          },
+          "advanced": false
+        },
+        {
+          "name": "tri",
+          "type": "function",
+          "signature": "tri(p1, p2, p3, col)",
+          "description": {
+            "en": "Draw a filled triangle.",
+            "ja": "三角形を塗って描く。"
+          },
+          "params": [
+            {
+              "name": "p1",
+              "type": "Vec3",
+              "description": {
+                "en": "First vertex.",
+                "ja": "頂点 1。"
+              }
+            },
+            {
+              "name": "p2",
+              "type": "Vec3",
+              "description": {
+                "en": "Second vertex.",
+                "ja": "頂点 2。"
+              }
+            },
+            {
+              "name": "p3",
+              "type": "Vec3",
+              "description": {
+                "en": "Third vertex.",
+                "ja": "頂点 3。"
+              }
+            },
+            {
+              "name": "col",
+              "type": "int",
+              "description": {
+                "en": "Color number.",
+                "ja": "色番号。"
+              }
+            }
+          ],
+          "returns": {
+            "type": "None"
+          },
+          "advanced": false
+        },
+        {
+          "name": "trib",
+          "type": "function",
+          "signature": "trib(p1, p2, p3, col)",
+          "description": {
+            "en": "Draw a triangle outline.",
+            "ja": "三角形の輪郭を描く。"
+          },
+          "params": [
+            {
+              "name": "p1",
+              "type": "Vec3",
+              "description": {
+                "en": "First vertex.",
+                "ja": "頂点 1。"
+              }
+            },
+            {
+              "name": "p2",
+              "type": "Vec3",
+              "description": {
+                "en": "Second vertex.",
+                "ja": "頂点 2。"
+              }
+            },
+            {
+              "name": "p3",
+              "type": "Vec3",
+              "description": {
+                "en": "Third vertex.",
+                "ja": "頂点 3。"
+              }
+            },
+            {
+              "name": "col",
+              "type": "int",
+              "description": {
+                "en": "Color number.",
+                "ja": "色番号。"
+              }
+            }
+          ],
+          "returns": {
+            "type": "None"
+          },
+          "advanced": false
+        },
+        {
+          "name": "rect",
+          "type": "function",
+          "signature": "rect(mat, w, h, col)",
+          "description": {
+            "en": "Draw a filled rectangle of size w x h on mat's local XY plane.",
+            "ja": "mat のローカル XY 平面に、幅 w・高さ h の矩形を塗って描く。"
+          },
+          "params": [
+            {
+              "name": "mat",
+              "type": "Mat4",
+              "description": {
+                "en": "Placement relative to the node.",
+                "ja": "ノードに対する配置。"
+              }
+            },
+            {
+              "name": "w",
+              "type": "float",
+              "description": {
+                "en": "Width in world units.",
+                "ja": "幅（ワールド単位）。"
+              }
+            },
+            {
+              "name": "h",
+              "type": "float",
+              "description": {
+                "en": "Height in world units.",
+                "ja": "高さ（ワールド単位）。"
+              }
+            },
+            {
+              "name": "col",
+              "type": "int",
+              "description": {
+                "en": "Color number.",
+                "ja": "色番号。"
+              }
+            }
+          ],
+          "returns": {
+            "type": "None"
+          },
+          "advanced": false
+        },
+        {
+          "name": "rectb",
+          "type": "function",
+          "signature": "rectb(mat, w, h, col)",
+          "description": {
+            "en": "Draw a rectangle outline on mat's local XY plane.",
+            "ja": "mat のローカル XY 平面に矩形の輪郭を描く。"
+          },
+          "params": [
+            {
+              "name": "mat",
+              "type": "Mat4",
+              "description": {
+                "en": "Placement relative to the node.",
+                "ja": "ノードに対する配置。"
+              }
+            },
+            {
+              "name": "w",
+              "type": "float",
+              "description": {
+                "en": "Width in world units.",
+                "ja": "幅（ワールド単位）。"
+              }
+            },
+            {
+              "name": "h",
+              "type": "float",
+              "description": {
+                "en": "Height in world units.",
+                "ja": "高さ（ワールド単位）。"
+              }
+            },
+            {
+              "name": "col",
+              "type": "int",
+              "description": {
+                "en": "Color number.",
+                "ja": "色番号。"
+              }
+            }
+          ],
+          "returns": {
+            "type": "None"
+          },
+          "advanced": false
+        },
+        {
+          "name": "circ",
+          "type": "function",
+          "signature": "circ(pos, r, col)",
+          "description": {
+            "en": "Draw a filled circle that always faces the camera.",
+            "ja": "常にカメラの方を向く円を塗って描く。"
+          },
+          "params": [
+            {
+              "name": "pos",
+              "type": "Vec3",
+              "description": {
+                "en": "Center position.",
+                "ja": "中心位置。"
+              }
+            },
+            {
+              "name": "r",
+              "type": "float",
+              "description": {
+                "en": "Radius in world units.",
+                "ja": "半径（ワールド単位）。"
+              }
+            },
+            {
+              "name": "col",
+              "type": "int",
+              "description": {
+                "en": "Color number.",
+                "ja": "色番号。"
+              }
+            }
+          ],
+          "returns": {
+            "type": "None"
+          },
+          "advanced": false
+        },
+        {
+          "name": "circb",
+          "type": "function",
+          "signature": "circb(pos, r, col)",
+          "description": {
+            "en": "Draw a circle outline that always faces the camera.",
+            "ja": "常にカメラの方を向く円の輪郭を描く。"
+          },
+          "params": [
+            {
+              "name": "pos",
+              "type": "Vec3",
+              "description": {
+                "en": "Center position.",
+                "ja": "中心位置。"
+              }
+            },
+            {
+              "name": "r",
+              "type": "float",
+              "description": {
+                "en": "Radius in world units.",
+                "ja": "半径（ワールド単位）。"
+              }
+            },
+            {
+              "name": "col",
+              "type": "int",
+              "description": {
+                "en": "Color number.",
+                "ja": "色番号。"
+              }
+            }
+          ],
+          "returns": {
+            "type": "None"
+          },
+          "advanced": false
+        },
+        {
+          "name": "elli",
+          "type": "function",
+          "signature": "elli(mat, w, h, col)",
+          "description": {
+            "en": "Draw a filled ellipse of size w x h on mat's local XY plane.",
+            "ja": "mat のローカル XY 平面に、幅 w・高さ h の楕円を塗って描く。"
+          },
+          "params": [
+            {
+              "name": "mat",
+              "type": "Mat4",
+              "description": {
+                "en": "Placement relative to the node.",
+                "ja": "ノードに対する配置。"
+              }
+            },
+            {
+              "name": "w",
+              "type": "float",
+              "description": {
+                "en": "Width in world units.",
+                "ja": "幅（ワールド単位）。"
+              }
+            },
+            {
+              "name": "h",
+              "type": "float",
+              "description": {
+                "en": "Height in world units.",
+                "ja": "高さ（ワールド単位）。"
+              }
+            },
+            {
+              "name": "col",
+              "type": "int",
+              "description": {
+                "en": "Color number.",
+                "ja": "色番号。"
+              }
+            }
+          ],
+          "returns": {
+            "type": "None"
+          },
+          "advanced": false
+        },
+        {
+          "name": "ellib",
+          "type": "function",
+          "signature": "ellib(mat, w, h, col)",
+          "description": {
+            "en": "Draw an ellipse outline on mat's local XY plane.",
+            "ja": "mat のローカル XY 平面に楕円の輪郭を描く。"
+          },
+          "params": [
+            {
+              "name": "mat",
+              "type": "Mat4",
+              "description": {
+                "en": "Placement relative to the node.",
+                "ja": "ノードに対する配置。"
+              }
+            },
+            {
+              "name": "w",
+              "type": "float",
+              "description": {
+                "en": "Width in world units.",
+                "ja": "幅（ワールド単位）。"
+              }
+            },
+            {
+              "name": "h",
+              "type": "float",
+              "description": {
+                "en": "Height in world units.",
+                "ja": "高さ（ワールド単位）。"
+              }
+            },
+            {
+              "name": "col",
+              "type": "int",
+              "description": {
+                "en": "Color number.",
+                "ja": "色番号。"
+              }
+            }
+          ],
+          "returns": {
+            "type": "None"
+          },
+          "advanced": false
+        },
+        {
+          "name": "box",
+          "type": "function",
+          "signature": "box(mat, size, col_img=7, colkey=None)",
+          "description": {
+            "en": "Draw a filled box. When col_img is an Image, every face is textured with the whole image.",
+            "ja": "直方体を塗って描く。col_img が Image のときは各面に画像全体をテクスチャとして貼る。"
+          },
+          "params": [
+            {
+              "name": "mat",
+              "type": "Mat4",
+              "description": {
+                "en": "Placement relative to the node.",
+                "ja": "ノードに対する配置。"
+              }
+            },
+            {
+              "name": "size",
+              "type": "Vec3",
+              "description": {
+                "en": "Edge lengths along each axis.",
+                "ja": "各軸の辺の長さ。"
+              }
+            },
+            {
+              "name": "col_img",
+              "type": "int | Image",
+              "description": {
+                "en": "Flat color number or a texture Image. Defaults to 7.",
+                "ja": "単色の色番号、またはテクスチャ Image。デフォルトは 7。"
+              }
+            },
+            {
+              "name": "colkey",
+              "type": "int | None",
+              "description": {
+                "en": "Transparent color of the texture. Defaults to None.",
+                "ja": "テクスチャの透明色。デフォルトは None。"
+              }
+            }
+          ],
+          "returns": {
+            "type": "None"
+          },
+          "examples": ["self.box(Mat4.IDENTITY, Vec3(2, 2, 2), 8)"],
+          "advanced": false
+        },
+        {
+          "name": "boxb",
+          "type": "function",
+          "signature": "boxb(mat, size, col)",
+          "description": {
+            "en": "Draw the 12 edges of a box.",
+            "ja": "直方体の 12 本の辺を描く。"
+          },
+          "params": [
+            {
+              "name": "mat",
+              "type": "Mat4",
+              "description": {
+                "en": "Placement relative to the node.",
+                "ja": "ノードに対する配置。"
+              }
+            },
+            {
+              "name": "size",
+              "type": "Vec3",
+              "description": {
+                "en": "Edge lengths along each axis.",
+                "ja": "各軸の辺の長さ。"
+              }
+            },
+            {
+              "name": "col",
+              "type": "int",
+              "description": {
+                "en": "Color number.",
+                "ja": "色番号。"
+              }
+            }
+          ],
+          "returns": {
+            "type": "None"
+          },
+          "advanced": false
+        },
+        {
+          "name": "sphere",
+          "type": "function",
+          "signature": "sphere(pos, r, col_img=7, colkey=None)",
+          "description": {
+            "en": "Draw a filled sphere (a subdivided icosahedron of 80 faces). When col_img is an Image, it is wrapped with an equirectangular mapping.",
+            "ja": "球（80 面の細分化二十面体）を塗って描く。col_img が Image のときは正距円筒図法でテクスチャを貼る。"
+          },
+          "params": [
+            {
+              "name": "pos",
+              "type": "Vec3",
+              "description": {
+                "en": "Center position.",
+                "ja": "中心位置。"
+              }
+            },
+            {
+              "name": "r",
+              "type": "float",
+              "description": {
+                "en": "Radius in world units.",
+                "ja": "半径（ワールド単位）。"
+              }
+            },
+            {
+              "name": "col_img",
+              "type": "int | Image",
+              "description": {
+                "en": "Flat color number or a texture Image. Defaults to 7.",
+                "ja": "単色の色番号、またはテクスチャ Image。デフォルトは 7。"
+              }
+            },
+            {
+              "name": "colkey",
+              "type": "int | None",
+              "description": {
+                "en": "Transparent color of the texture. Defaults to None.",
+                "ja": "テクスチャの透明色。デフォルトは None。"
+              }
+            }
+          ],
+          "returns": {
+            "type": "None"
+          },
+          "advanced": false
+        },
+        {
+          "name": "sphereb",
+          "type": "function",
+          "signature": "sphereb(pos, r, col)",
+          "description": {
+            "en": "Draw the wireframe edges of a sphere.",
+            "ja": "球のワイヤーフレームを描く。"
+          },
+          "params": [
+            {
+              "name": "pos",
+              "type": "Vec3",
+              "description": {
+                "en": "Center position.",
+                "ja": "中心位置。"
+              }
+            },
+            {
+              "name": "r",
+              "type": "float",
+              "description": {
+                "en": "Radius in world units.",
+                "ja": "半径（ワールド単位）。"
+              }
+            },
+            {
+              "name": "col",
+              "type": "int",
+              "description": {
+                "en": "Color number.",
+                "ja": "色番号。"
+              }
+            }
+          ],
+          "returns": {
+            "type": "None"
+          },
+          "advanced": false
+        },
+        {
+          "name": "plane",
+          "type": "function",
+          "signature": "plane(mat, img, uvs, w, h, colkey=None)",
+          "description": {
+            "en": "Draw a textured rectangle of size w x h on mat's local XY plane.",
+            "ja": "mat のローカル XY 平面に、幅 w・高さ h のテクスチャ付き矩形を描く。"
+          },
+          "params": [
+            {
+              "name": "mat",
+              "type": "Mat4",
+              "description": {
+                "en": "Placement relative to the node.",
+                "ja": "ノードに対する配置。"
+              }
+            },
+            {
+              "name": "img",
+              "type": "Image",
+              "description": {
+                "en": "Texture image.",
+                "ja": "テクスチャ画像。"
+              }
+            },
+            {
+              "name": "uvs",
+              "type": "tuple",
+              "description": {
+                "en": "UV coordinates of the four corners: top-left, top-right, bottom-left, bottom-right.",
+                "ja": "四隅の UV 座標。左上・右上・左下・右下の順。"
+              }
+            },
+            {
+              "name": "w",
+              "type": "float",
+              "description": {
+                "en": "Width in world units.",
+                "ja": "幅（ワールド単位）。"
+              }
+            },
+            {
+              "name": "h",
+              "type": "float",
+              "description": {
+                "en": "Height in world units.",
+                "ja": "高さ（ワールド単位）。"
+              }
+            },
+            {
+              "name": "colkey",
+              "type": "int | None",
+              "description": {
+                "en": "Transparent color. Defaults to None.",
+                "ja": "透明色。デフォルトは None。"
+              }
+            }
+          ],
+          "returns": {
+            "type": "None"
+          },
+          "advanced": false
+        },
+        {
+          "name": "sprite",
+          "type": "function",
+          "signature": "sprite(pos, img, uvs, w, h, colkey=None, angle=0.0)",
+          "description": {
+            "en": "Draw a textured rectangle that always faces the camera. Sprites render unshaded.",
+            "ja": "常にカメラの方を向くテクスチャ付き矩形を描く。スプライトはシェーディングなしで描かれる。"
+          },
+          "params": [
+            {
+              "name": "pos",
+              "type": "Vec3",
+              "description": {
+                "en": "Center position.",
+                "ja": "中心位置。"
+              }
+            },
+            {
+              "name": "img",
+              "type": "Image",
+              "description": {
+                "en": "Texture image.",
+                "ja": "テクスチャ画像。"
+              }
+            },
+            {
+              "name": "uvs",
+              "type": "tuple",
+              "description": {
+                "en": "UV coordinates of the four corners: top-left, top-right, bottom-left, bottom-right.",
+                "ja": "四隅の UV 座標。左上・右上・左下・右下の順。"
+              }
+            },
+            {
+              "name": "w",
+              "type": "float",
+              "description": {
+                "en": "Width in world units.",
+                "ja": "幅（ワールド単位）。"
+              }
+            },
+            {
+              "name": "h",
+              "type": "float",
+              "description": {
+                "en": "Height in world units.",
+                "ja": "高さ（ワールド単位）。"
+              }
+            },
+            {
+              "name": "colkey",
+              "type": "int | None",
+              "description": {
+                "en": "Transparent color. Defaults to None.",
+                "ja": "透明色。デフォルトは None。"
+              }
+            },
+            {
+              "name": "angle",
+              "type": "float",
+              "description": {
+                "en": "Screen-space rotation in degrees. Defaults to 0.0.",
+                "ja": "画面上の回転角（度）。デフォルトは 0.0。"
+              }
+            }
+          ],
+          "returns": {
+            "type": "None"
+          },
+          "advanced": false
+        },
+        {
+          "name": "mesh",
+          "type": "function",
+          "signature": "mesh(mat, mesh_data)",
+          "description": {
+            "en": "Draw a MeshData asset, composing each part's transform down the part tree.",
+            "ja": "MeshData アセットを描く。パーツの木に沿って各パーツの変換を合成する。"
+          },
+          "params": [
+            {
+              "name": "mat",
+              "type": "Mat4",
+              "description": {
+                "en": "Placement relative to the node.",
+                "ja": "ノードに対する配置。"
+              }
+            },
+            {
+              "name": "mesh_data",
+              "type": "MeshData",
+              "description": {
+                "en": "The model to draw.",
+                "ja": "描画するモデル。"
+              }
+            }
+          ],
+          "returns": {
+            "type": "None"
+          },
+          "advanced": false
+        },
+        {
+          "name": "prim",
+          "type": "function",
+          "signature": "prim(mat, prim_data, col_img=7, colkey=None)",
+          "description": {
+            "en": "Draw a PrimData asset with its own mode and culling.",
+            "ja": "PrimData アセットを、その mode と cull 設定で描く。"
+          },
+          "params": [
+            {
+              "name": "mat",
+              "type": "Mat4",
+              "description": {
+                "en": "Placement relative to the node.",
+                "ja": "ノードに対する配置。"
+              }
+            },
+            {
+              "name": "prim_data",
+              "type": "PrimData",
+              "description": {
+                "en": "The vertex data to draw.",
+                "ja": "描画する頂点データ。"
+              }
+            },
+            {
+              "name": "col_img",
+              "type": "int | Image",
+              "description": {
+                "en": "Flat color number or a texture Image. Defaults to 7.",
+                "ja": "単色の色番号、またはテクスチャ Image。デフォルトは 7。"
+              }
+            },
+            {
+              "name": "colkey",
+              "type": "int | None",
+              "description": {
+                "en": "Transparent color of the texture. Defaults to None.",
+                "ja": "テクスチャの透明色。デフォルトは None。"
+              }
+            }
+          ],
+          "returns": {
+            "type": "None"
+          },
+          "advanced": false
+        },
+        {
+          "name": "text",
+          "type": "function",
+          "signature": "text(pos, s, col, font=None)",
+          "description": {
+            "en": "Draw a screen-space string centered at the projected position. Glyphs keep their pixel size at any distance; the depth test still applies.",
+            "ja": "投影位置を中心にスクリーンスペースで文字列を描く。距離によらず文字は等倍で、深度テストは適用される。"
+          },
+          "params": [
+            {
+              "name": "pos",
+              "type": "Vec3",
+              "description": {
+                "en": "Anchor position.",
+                "ja": "アンカー位置。"
+              }
+            },
+            {
+              "name": "s",
+              "type": "str",
+              "description": {
+                "en": "The string to draw.",
+                "ja": "描画する文字列。"
+              }
+            },
+            {
+              "name": "col",
+              "type": "int",
+              "description": {
+                "en": "Color number.",
+                "ja": "色番号。"
+              }
+            },
+            {
+              "name": "font",
+              "type": "Font | None",
+              "description": {
+                "en": "BDF font to use. Defaults to None (the built-in font).",
+                "ja": "使用する BDF フォント。デフォルトは None（内蔵フォント）。"
+              }
+            }
+          ],
+          "returns": {
+            "type": "None"
+          },
+          "advanced": false
+        },
+        {
+          "name": "update",
+          "type": "function",
+          "signature": "update()",
+          "description": {
+            "en": "Advance this subtree by one frame: on_update hooks, collider motion, collision detection, on_collide hooks, then on_destroy and detachment of destroyed nodes.",
+            "ja": "サブツリーを 1 フレーム進める。on_update フック、コライダーの速度適用、衝突検出、on_collide フック、破棄ノードの on_destroy と取り外しの順に実行する。"
+          },
+          "returns": {
+            "type": "None"
+          },
+          "advanced": false
+        },
+        {
+          "name": "draw",
+          "type": "function",
+          "signature": "draw(x, y, w, h, target=None)",
+          "description": {
+            "en": "Render this subtree into the viewport (x, y, w, h). A camera must be set on this node or an ancestor. When the camera has a clear_color, the target is filled with it first.",
+            "ja": "サブツリーをビューポート (x, y, w, h) に描画する。このノードか祖先にカメラが必要。カメラに clear_color があれば、まず描画先をその色で塗りつぶす。"
+          },
+          "params": [
+            {
+              "name": "x",
+              "type": "int",
+              "description": {
+                "en": "Left edge of the viewport.",
+                "ja": "ビューポートの左端。"
+              }
+            },
+            {
+              "name": "y",
+              "type": "int",
+              "description": {
+                "en": "Top edge of the viewport.",
+                "ja": "ビューポートの上端。"
+              }
+            },
+            {
+              "name": "w",
+              "type": "int",
+              "description": {
+                "en": "Viewport width in pixels.",
+                "ja": "ビューポートの幅（ピクセル）。"
+              }
+            },
+            {
+              "name": "h",
+              "type": "int",
+              "description": {
+                "en": "Viewport height in pixels.",
+                "ja": "ビューポートの高さ（ピクセル）。"
+              }
+            },
+            {
+              "name": "target",
+              "type": "Image | None",
+              "description": {
+                "en": "Render target. Defaults to None (the screen).",
+                "ja": "描画先。デフォルトは None（画面）。"
+              }
+            }
+          ],
+          "returns": {
+            "type": "None"
+          },
+          "examples": ["scene.draw(0, 0, pyxel.width, pyxel.height)"],
+          "advanced": false
+        },
+        {
+          "name": "raycast",
+          "type": "function",
+          "signature": "raycast(origin, direction, max_distance=None, hit_triggers=False, tags=None)",
+          "description": {
+            "en": "Cast a ray against the colliders in this subtree and return the closest hit.",
+            "ja": "サブツリーのコライダーへレイを飛ばし、最も近いヒットを返す。"
+          },
+          "params": [
+            {
+              "name": "origin",
+              "type": "Vec3",
+              "description": {
+                "en": "Ray origin in world space.",
+                "ja": "レイの始点（ワールド座標）。"
+              }
+            },
+            {
+              "name": "direction",
+              "type": "Vec3",
+              "description": {
+                "en": "Ray direction.",
+                "ja": "レイの方向。"
+              }
+            },
+            {
+              "name": "max_distance",
+              "type": "float | None",
+              "description": {
+                "en": "Maximum hit distance. Defaults to None (unlimited).",
+                "ja": "ヒットの最大距離。デフォルトは None（無制限）。"
+              }
+            },
+            {
+              "name": "hit_triggers",
+              "type": "bool",
+              "description": {
+                "en": "When True, trigger colliders can also be hit. Defaults to False.",
+                "ja": "True にするとトリガーのコライダーにもヒットする。デフォルトは False。"
+              }
+            },
+            {
+              "name": "tags",
+              "type": "list | None",
+              "description": {
+                "en": "When set, only nodes carrying any of these tags are tested. Defaults to None.",
+                "ja": "指定すると、いずれかのタグを持つノードだけを対象にする。デフォルトは None。"
+              }
+            }
+          ],
+          "returns": {
+            "type": "RaycastHit | None",
+            "description": {
+              "en": "The closest hit, or None.",
+              "ja": "最も近いヒット。なければ None。"
+            }
+          },
+          "examples": [
+            "hit = scene.raycast(self.transform.pos, Vec3.DOWN, max_distance=2.0)"
+          ],
+          "advanced": false
+        },
+        {
+          "name": "raycast_all",
+          "type": "function",
+          "signature": "raycast_all(origin, direction, max_distance=None, hit_triggers=False, tags=None)",
+          "description": {
+            "en": "Cast a ray and return every hit sorted by distance.",
+            "ja": "レイを飛ばし、全ヒットを距離順で返す。"
+          },
+          "params": [
+            {
+              "name": "origin",
+              "type": "Vec3",
+              "description": {
+                "en": "Ray origin in world space.",
+                "ja": "レイの始点（ワールド座標）。"
+              }
+            },
+            {
+              "name": "direction",
+              "type": "Vec3",
+              "description": {
+                "en": "Ray direction.",
+                "ja": "レイの方向。"
+              }
+            },
+            {
+              "name": "max_distance",
+              "type": "float | None",
+              "description": {
+                "en": "Maximum hit distance. Defaults to None (unlimited).",
+                "ja": "ヒットの最大距離。デフォルトは None（無制限）。"
+              }
+            },
+            {
+              "name": "hit_triggers",
+              "type": "bool",
+              "description": {
+                "en": "When True, trigger colliders can also be hit. Defaults to False.",
+                "ja": "True にするとトリガーのコライダーにもヒットする。デフォルトは False。"
+              }
+            },
+            {
+              "name": "tags",
+              "type": "list | None",
+              "description": {
+                "en": "When set, only nodes carrying any of these tags are tested. Defaults to None.",
+                "ja": "指定すると、いずれかのタグを持つノードだけを対象にする。デフォルトは None。"
+              }
+            }
+          ],
+          "returns": {
+            "type": "list",
+            "description": {
+              "en": "Every hit sorted by distance.",
+              "ja": "距離順の全ヒットのリスト。"
+            }
+          },
+          "advanced": false
+        },
+        {
+          "name": "overlap_sphere",
+          "type": "function",
+          "signature": "overlap_sphere(center, radius, hit_triggers=False, tags=None)",
+          "description": {
+            "en": "Return every node in this subtree whose collider overlaps the given sphere.",
+            "ja": "指定した球と重なるコライダーを持つノードをサブツリーから返す。"
+          },
+          "params": [
+            {
+              "name": "center",
+              "type": "Vec3",
+              "description": {
+                "en": "Sphere center in world space.",
+                "ja": "球の中心（ワールド座標）。"
+              }
+            },
+            {
+              "name": "radius",
+              "type": "float",
+              "description": {
+                "en": "Sphere radius.",
+                "ja": "球の半径。"
+              }
+            },
+            {
+              "name": "hit_triggers",
+              "type": "bool",
+              "description": {
+                "en": "When True, trigger colliders are also reported. Defaults to False.",
+                "ja": "True にするとトリガーのコライダーも対象になる。デフォルトは False。"
+              }
+            },
+            {
+              "name": "tags",
+              "type": "list | None",
+              "description": {
+                "en": "When set, only nodes carrying any of these tags are tested. Defaults to None.",
+                "ja": "指定すると、いずれかのタグを持つノードだけを対象にする。デフォルトは None。"
+              }
+            }
+          ],
+          "returns": {
+            "type": "list",
+            "description": {
+              "en": "The overlapping nodes.",
+              "ja": "重なっているノードのリスト。"
+            }
+          },
+          "advanced": false
+        },
+        {
+          "name": "overlap_box",
+          "type": "function",
+          "signature": "overlap_box(mat, size, hit_triggers=False, tags=None)",
+          "description": {
+            "en": "Return every node in this subtree whose collider overlaps the given box.",
+            "ja": "指定したボックスと重なるコライダーを持つノードをサブツリーから返す。"
+          },
+          "params": [
+            {
+              "name": "mat",
+              "type": "Mat4",
+              "description": {
+                "en": "Box placement in world space.",
+                "ja": "ボックスの配置（ワールド座標）。"
+              }
+            },
+            {
+              "name": "size",
+              "type": "Vec3",
+              "description": {
+                "en": "Edge lengths along each axis.",
+                "ja": "各軸の辺の長さ。"
+              }
+            },
+            {
+              "name": "hit_triggers",
+              "type": "bool",
+              "description": {
+                "en": "When True, trigger colliders are also reported. Defaults to False.",
+                "ja": "True にするとトリガーのコライダーも対象になる。デフォルトは False。"
+              }
+            },
+            {
+              "name": "tags",
+              "type": "list | None",
+              "description": {
+                "en": "When set, only nodes carrying any of these tags are tested. Defaults to None.",
+                "ja": "指定すると、いずれかのタグを持つノードだけを対象にする。デフォルトは None。"
+              }
+            }
+          ],
+          "returns": {
+            "type": "list",
+            "description": {
+              "en": "The overlapping nodes.",
+              "ja": "重なっているノードのリスト。"
             }
           },
           "advanced": false
