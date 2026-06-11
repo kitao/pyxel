@@ -307,15 +307,25 @@ pub fn prim(
     let world_mat = prepare_draw(ctx, world_mat, &state);
     let z_shift = depth_offset_shift(&ctx.camera, ctx.depth_offset);
     let lit = state.shaded && state.shading.is_some();
-    let read_vertex = |idx: usize| -> Vec3 {
-        let base = idx * 3;
+    // Transform and project every vertex once into the per-draw scratch
+    // cache. Indexed tables (box / sphere / rect) reference shared
+    // vertices from several faces; the cache keeps each vertex's
+    // transform + projection single no matter how many faces consume it.
+    ctx.vertex_cache.clear();
+    ctx.vertex_cache.reserve(vertex_count);
+    for i in 0..vertex_count {
+        let base = i * 3;
         let local = Vec3 {
             x: positions[base],
             y: positions[base + 1],
             z: positions[base + 2],
         };
-        mat_apply(&world_mat, &local)
-    };
+        let world = mat_apply(&world_mat, &local);
+        let screen = project_offset(
+            &world, &ctx.vp, ctx.vp_x, ctx.vp_y, ctx.vp_w, ctx.vp_h, &z_shift,
+        );
+        ctx.vertex_cache.push((world, screen));
+    }
     let resolve_vertex_index = |step: usize| -> Result<usize, &'static str> {
         let raw = match indices {
             Some(idx) => idx[step],
@@ -347,18 +357,9 @@ pub fn prim(
                 let i0 = resolve_vertex_index(f * 3)?;
                 let i1 = resolve_vertex_index(f * 3 + 1)?;
                 let i2 = resolve_vertex_index(f * 3 + 2)?;
-                let v0 = read_vertex(i0);
-                let v1 = read_vertex(i1);
-                let v2 = read_vertex(i2);
-                let p0 = project_offset(
-                    &v0, &ctx.vp, ctx.vp_x, ctx.vp_y, ctx.vp_w, ctx.vp_h, &z_shift,
-                );
-                let p1 = project_offset(
-                    &v1, &ctx.vp, ctx.vp_x, ctx.vp_y, ctx.vp_w, ctx.vp_h, &z_shift,
-                );
-                let p2 = project_offset(
-                    &v2, &ctx.vp, ctx.vp_x, ctx.vp_y, ctx.vp_w, ctx.vp_h, &z_shift,
-                );
+                let (v0, p0) = ctx.vertex_cache[i0];
+                let (v1, p1) = ctx.vertex_cache[i1];
+                let (v2, p2) = ctx.vertex_cache[i2];
                 let (Some(p0), Some(p1), Some(p2)) = (p0, p1, p2) else {
                     continue;
                 };
@@ -470,14 +471,8 @@ pub fn prim(
             for l in 0..line_count {
                 let i0 = resolve_vertex_index(l * 2)?;
                 let i1 = resolve_vertex_index(l * 2 + 1)?;
-                let v0 = read_vertex(i0);
-                let v1 = read_vertex(i1);
-                let p0 = project_offset(
-                    &v0, &ctx.vp, ctx.vp_x, ctx.vp_y, ctx.vp_w, ctx.vp_h, &z_shift,
-                );
-                let p1 = project_offset(
-                    &v1, &ctx.vp, ctx.vp_x, ctx.vp_y, ctx.vp_w, ctx.vp_h, &z_shift,
-                );
+                let (_, p0) = ctx.vertex_cache[i0];
+                let (_, p1) = ctx.vertex_cache[i1];
                 if let (Some(p0), Some(p1)) = (p0, p1) {
                     rasterize_line(
                         target_mut,
@@ -501,10 +496,7 @@ pub fn prim(
             let depth = ctx.depth.as_mut_slice();
             for s in 0..step_count {
                 let i0 = resolve_vertex_index(s)?;
-                let v0 = read_vertex(i0);
-                let p0 = project_offset(
-                    &v0, &ctx.vp, ctx.vp_x, ctx.vp_y, ctx.vp_w, ctx.vp_h, &z_shift,
-                );
+                let (_, p0) = ctx.vertex_cache[i0];
                 if let Some((sx, sy, sz)) = p0 {
                     let xi = sx.round() as i32;
                     let yi = sy.round() as i32;
@@ -1801,6 +1793,7 @@ mod tests {
                 depth: vec![f32::INFINITY; 64 * 64],
                 depth_w: 64,
                 depth_h: 64,
+                vertex_cache: Vec::new(),
                 dither_alpha: 1.0,
                 depth_test: true,
                 depth_write: true,

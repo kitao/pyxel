@@ -171,13 +171,18 @@ impl Node {
     }
 
     pub fn world_transform(node: &RcNode) -> RcMat4 {
+        Mat4::from_rows(Self::world_transform_value(node).data)
+    }
+
+    // Plain (non-Rc) world transform for the per-command draw path and
+    // the per-frame collision walks: one value-typed multiply per
+    // ancestor instead of an Rc allocation per level.
+    pub fn world_transform_value(node: &RcNode) -> Mat4 {
+        let local_rc = &rc_ref!(node).transform;
+        let local = rc_ref!(local_rc);
         match Self::parent(node) {
-            Some(parent) => {
-                let parent_world = Self::world_transform(&parent);
-                let local = rc_ref!(node).transform.clone();
-                rc_ref!(&parent_world).mul_mat(rc_ref!(&local))
-            }
-            None => rc_ref!(node).transform.clone(),
+            Some(parent) => Self::world_transform_value(&parent).mul_mat_value(local),
+            None => *local,
         }
     }
 

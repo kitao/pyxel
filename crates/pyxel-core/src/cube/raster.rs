@@ -58,8 +58,7 @@ pub fn compute_clip_rect(
 // View-projection helpers
 
 pub fn view_matrix(camera: &Camera) -> Mat4x4 {
-    let inv_rc = rc_ref!(&camera.transform).inverse();
-    rc_ref!(&inv_rc).data
+    rc_ref!(&camera.transform).inverse_value().data
 }
 
 // Perspective unless `ortho_size` is set, then orthographic.
@@ -104,21 +103,17 @@ pub fn matmul(a: &Mat4x4, b: &Mat4x4) -> Mat4x4 {
     r
 }
 
-// Apply a Mat4 transform to a Vec3 with implicit w=1.
+// Apply a Mat4 transform to a Vec3 with implicit w=1. Alloc-free (no
+// RcVec3) for the per-vertex hot path.
 pub fn mat_apply(mat: &Mat4, v: &Vec3) -> Vec3 {
-    let rc = mat.mul_vec(v);
-    *rc_ref!(&rc)
+    mat.mul_vec_value(v)
 }
 
 // Apply only the linear (3x3) part of a Mat4 to a direction vector,
 // ignoring translation. Alloc-free (no RcVec3) for the per-face hot path;
 // used to carry model-space normals into world space before shading.
 pub fn mat_apply_dir(mat: &Mat4, v: &Vec3) -> Vec3 {
-    Vec3 {
-        x: mat.data[0][0] * v.x + mat.data[0][1] * v.y + mat.data[0][2] * v.z,
-        y: mat.data[1][0] * v.x + mat.data[1][1] * v.y + mat.data[1][2] * v.z,
-        z: mat.data[2][0] * v.x + mat.data[2][1] * v.y + mat.data[2][2] * v.z,
-    }
+    mat.mul_dir_value(v)
 }
 
 // Project a world position to screen space; None when behind the near
@@ -479,36 +474,58 @@ pub fn rasterize_triangle(
     let bx_max = max_x.min(clip.right);
     let by_min = min_y.max(clip.top);
     let by_max = max_y.min(clip.bottom);
+    // Winding test hoisted out of the pixel loop; NaN edge values fail
+    // it exactly like the original three-way conjunction.
+    let pos_area = area > 0.0;
+    let edge_inside = |w: f32| if pos_area { w >= 0.0 } else { w <= 0.0 };
     for y in by_min..=by_max {
+        let py = y as f32 + 0.5;
+        // Each edge value is monotonic in x, so a row's inside run is one
+        // contiguous span: edges are tested lazily (a failing edge skips
+        // the rest), and once the span has been entered and exited the
+        // remainder of the row is skipped.
+        let mut was_inside = false;
         for x in bx_min..=bx_max {
-            let p = (x as f32 + 0.5, y as f32 + 0.5);
+            let p = (x as f32 + 0.5, py);
             let w0 = edge_function((p1.0, p1.1), (p2.0, p2.1), p);
-            let w1 = edge_function((p2.0, p2.1), (p0.0, p0.1), p);
-            let w2 = edge_function((p0.0, p0.1), (p1.0, p1.1), p);
-            let inside = if area > 0.0 {
-                w0 >= 0.0 && w1 >= 0.0 && w2 >= 0.0
-            } else {
-                w0 <= 0.0 && w1 <= 0.0 && w2 <= 0.0
-            };
-            if inside {
-                let bary0 = w0 * inv_area;
-                let bary1 = w1 * inv_area;
-                let bary2 = w2 * inv_area;
-                let z = bary0 * p0.2 + bary1 * p1.2 + bary2 * p2.2;
-                let col = dither_pick(primary as i32, secondary as i32, x, y);
-                write_pixel(
-                    target,
-                    depth,
-                    depth_w,
-                    x,
-                    y,
-                    z,
-                    col,
-                    dither_alpha,
-                    depth_test,
-                    depth_write,
-                );
+            if !edge_inside(w0) {
+                if was_inside {
+                    break;
+                }
+                continue;
             }
+            let w1 = edge_function((p2.0, p2.1), (p0.0, p0.1), p);
+            if !edge_inside(w1) {
+                if was_inside {
+                    break;
+                }
+                continue;
+            }
+            let w2 = edge_function((p0.0, p0.1), (p1.0, p1.1), p);
+            if !edge_inside(w2) {
+                if was_inside {
+                    break;
+                }
+                continue;
+            }
+            was_inside = true;
+            let bary0 = w0 * inv_area;
+            let bary1 = w1 * inv_area;
+            let bary2 = w2 * inv_area;
+            let z = bary0 * p0.2 + bary1 * p1.2 + bary2 * p2.2;
+            let col = dither_pick(primary as i32, secondary as i32, x, y);
+            write_pixel(
+                target,
+                depth,
+                depth_w,
+                x,
+                y,
+                z,
+                col,
+                dither_alpha,
+                depth_test,
+                depth_write,
+            );
         }
     }
 }
@@ -550,20 +567,36 @@ pub fn rasterize_textured_triangle<F>(
     let bx_max = max_x.min(clip.right);
     let by_min = min_y.max(clip.top);
     let by_max = max_y.min(clip.bottom);
+    // Same lazy-edge, contiguous-span row scan as rasterize_triangle.
+    let pos_area = area > 0.0;
+    let edge_inside = |w: f32| if pos_area { w >= 0.0 } else { w <= 0.0 };
     for y in by_min..=by_max {
+        let py = y as f32 + 0.5;
+        let mut was_inside = false;
         for x in bx_min..=bx_max {
-            let p = (x as f32 + 0.5, y as f32 + 0.5);
+            let p = (x as f32 + 0.5, py);
             let w0 = edge_function((p1.0, p1.1), (p2.0, p2.1), p);
-            let w1 = edge_function((p2.0, p2.1), (p0.0, p0.1), p);
-            let w2 = edge_function((p0.0, p0.1), (p1.0, p1.1), p);
-            let inside = if area > 0.0 {
-                w0 >= 0.0 && w1 >= 0.0 && w2 >= 0.0
-            } else {
-                w0 <= 0.0 && w1 <= 0.0 && w2 <= 0.0
-            };
-            if !inside {
+            if !edge_inside(w0) {
+                if was_inside {
+                    break;
+                }
                 continue;
             }
+            let w1 = edge_function((p2.0, p2.1), (p0.0, p0.1), p);
+            if !edge_inside(w1) {
+                if was_inside {
+                    break;
+                }
+                continue;
+            }
+            let w2 = edge_function((p0.0, p0.1), (p1.0, p1.1), p);
+            if !edge_inside(w2) {
+                if was_inside {
+                    break;
+                }
+                continue;
+            }
+            was_inside = true;
             let bary0 = w0 * inv_area;
             let bary1 = w1 * inv_area;
             let bary2 = w2 * inv_area;
@@ -619,10 +652,15 @@ pub fn rasterize_circle_filled(
     let by_min = (cy_int - r_int).max(clip.top);
     let by_max = (cy_int + r_int).min(clip.bottom);
     for y in by_min..=by_max {
+        let dy = y as f32 + 0.5 - cy;
+        let dy2 = dy * dy;
+        // A row's inside run on a disc is one contiguous span; skip the
+        // rest of the row once the span has been entered and exited.
+        let mut was_inside = false;
         for x in bx_min..=bx_max {
             let dx = x as f32 + 0.5 - cx;
-            let dy = y as f32 + 0.5 - cy;
-            if dx * dx + dy * dy <= r2 {
+            if dx * dx + dy2 <= r2 {
+                was_inside = true;
                 let col = dither_pick(primary as i32, secondary as i32, x, y);
                 write_pixel(
                     target,
@@ -636,6 +674,8 @@ pub fn rasterize_circle_filled(
                     depth_test,
                     depth_write,
                 );
+            } else if was_inside {
+                break;
             }
         }
     }
@@ -671,10 +711,12 @@ pub fn rasterize_circle_border(
     let by_min = (cy_int - r_int).max(clip.top);
     let by_max = (cy_int + r_int).min(clip.bottom);
     for y in by_min..=by_max {
+        let dy = y as f32 + 0.5 - cy;
+        let dy2 = dy * dy;
+        // No span early-out here: a ring row splits into two runs.
         for x in bx_min..=bx_max {
             let dx = x as f32 + 0.5 - cx;
-            let dy = y as f32 + 0.5 - cy;
-            let d2 = dx * dx + dy * dy;
+            let d2 = dx * dx + dy2;
             if d2 <= outer2 && d2 >= inner2 {
                 let col = dither_pick(primary as i32, secondary as i32, x, y);
                 write_pixel(

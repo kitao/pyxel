@@ -19,9 +19,13 @@ use crate::image::RcImage;
 
 // Per-frame rasterizer context shared between Node::draw and each Node's
 // draw commands. Built at the start of Node::draw (depth buffer moved out
-// of the receiver Node's cache for the duration of the traversal), looked
-// up by Node draw commands through `with_draw_context`, torn down on draw
-// end (depth buffer moved back into the receiver Node).
+// of the effective camera's cache for the duration of the traversal),
+// looked up by Node draw commands through `with_draw_context`, torn down
+// on draw end (depth buffer moved back into the camera).
+
+// One transformed vertex in the prim scratch cache: world position and
+// screen projection (None = behind the near plane).
+pub type ProjectedVertex = (Vec3, Option<(f32, f32, f32)>);
 
 pub struct DrawContext {
     pub target: RcImage,
@@ -33,11 +37,15 @@ pub struct DrawContext {
     pub clip: ClipRect,
     pub camera: RcCamera,
     // Depth buffer (and its dimensions) owned by ctx for the duration of
-    // one draw. The receiver Node caches the allocation between frames;
+    // one draw. The effective camera caches the allocation between frames;
     // ctx takes it in at draw entry and returns it on exit.
     pub depth: Vec<f32>,
     pub depth_w: u32,
     pub depth_h: u32,
+    // Per-draw scratch holding each vertex's world position and screen
+    // projection. Cleared (not reallocated) at every prim call, so
+    // indexed tables with shared vertices project each vertex once.
+    pub vertex_cache: Vec<ProjectedVertex>,
     // Per-on_draw state modifiers, mutated via Node.dither / depth_test /
     // depth_write / depth_offset / shaded setters; reset to defaults before
     // each Node's on_draw via reset_draw_state(). Rasterizers consult ctx
@@ -254,8 +262,7 @@ impl Scene {
         }
         let coll_opt = rc_ref!(node).collider.clone();
         if let Some(coll_rc) = coll_opt {
-            let world_rc = Node::world_transform(node);
-            let world = *rc_ref!(&world_rc);
+            let world = Node::world_transform_value(node);
             let aabb = collider_aabb(rc_ref!(&coll_rc), &world);
             out.push((node.clone(), world, aabb));
         }
@@ -316,10 +323,8 @@ impl Scene {
             let mesh_rc = mesh_b.unwrap();
             return narrow_phase_mesh_vs_dynamic(world_b, &mesh_rc, world_a, size_a, r_a);
         }
-        let c_a_rc = world_a.pos();
-        let c_a = *rc_ref!(&c_a_rc);
-        let c_b_rc = world_b.pos();
-        let c_b = *rc_ref!(&c_b_rc);
+        let c_a = world_a.pos_value();
+        let c_b = world_b.pos_value();
         // Shape-exact dispatch (cube-design.md § 11.1): each pair is
         // solved in the body frame of the box side (or on segments for
         // capsules), so rotation is honored instead of being inflated
@@ -593,9 +598,7 @@ impl Scene {
         let hit = if has_mesh {
             Self::ray_vs_mesh_collider(origin, direction, world, &coll_rc, max_distance)
         } else if is_sphere {
-            let center_rc = world.pos();
-            let center = *rc_ref!(&center_rc);
-            ray_vs_sphere(origin, direction, center, radius, max_distance)
+            ray_vs_sphere(origin, direction, world.pos_value(), radius, max_distance)
         } else {
             ray_vs_aabb(origin, direction, aabb, max_distance)
         };
@@ -642,9 +645,7 @@ impl Scene {
             let hit = if has_mesh {
                 true
             } else if is_sphere {
-                let c_rc = world.pos();
-                let c = *rc_ref!(&c_rc);
-                sphere_vs_sphere(center, radius, c, r_other).is_some()
+                sphere_vs_sphere(center, radius, world.pos_value(), r_other).is_some()
             } else {
                 sphere_vs_aabb(center, radius, aabb).is_some()
             };
@@ -691,9 +692,7 @@ impl Scene {
             let hit = if has_mesh {
                 true
             } else if is_sphere {
-                let c_rc = world.pos();
-                let c = *rc_ref!(&c_rc);
-                sphere_vs_aabb(c, r_other, &probe).is_some()
+                sphere_vs_aabb(world.pos_value(), r_other, &probe).is_some()
             } else {
                 aabb_vs_aabb(&probe, aabb).is_some()
             };
@@ -789,22 +788,20 @@ fn narrow_phase_mesh_vs_dynamic(
     r_dyn: f32,
 ) -> Option<ContactGeom> {
     let shape_dyn = classify_shape(size_dyn, r_dyn);
-    let mesh_inv_rc = world_mesh.inverse();
-    let mesh_inv = *rc_ref!(&mesh_inv_rc);
+    let mesh_inv = world_mesh.inverse_value();
     // Dynamic body's AABB in world space, then mapped into the mesh-
     // local frame where the BVH lives. The AABB stays a broad filter;
     // the per-triangle test below is shape-exact.
     let dyn_aabb_world = if matches!(shape_dyn, ColliderShape::Sphere { .. }) {
-        let c_rc = world_dyn.pos();
-        let c = *rc_ref!(&c_rc);
-        Aabb::from_sphere(c, r_dyn)
+        Aabb::from_sphere(world_dyn.pos_value(), r_dyn)
     } else {
         Aabb::from_rounded_box(world_dyn, size_dyn, r_dyn)
     };
     let query_local = transform_aabb_to_local(&mesh_inv, &dyn_aabb_world);
-    // Body-local inverse for the rounded-box arm, computed once.
-    let dyn_inv_rc = world_dyn.inverse();
-    let dyn_inv = *rc_ref!(&dyn_inv_rc);
+    // Body-local inverse (rounded-box arm) and world center (sphere arm),
+    // computed once outside the per-triangle callback.
+    let dyn_inv = world_dyn.inverse_value();
+    let dyn_center = world_dyn.pos_value();
     let m = rc_ref!(mesh);
     let mut best: Option<ContactGeom> = None;
     m.with_collision_bvh(|bvh| {
@@ -818,11 +815,7 @@ fn narrow_phase_mesh_vs_dynamic(
             let v1 = mul_point(world_mesh, v1_local);
             let v2 = mul_point(world_mesh, v2_local);
             let hit = match shape_dyn {
-                ColliderShape::Sphere { r } => {
-                    let c_rc = world_dyn.pos();
-                    let c = *rc_ref!(&c_rc);
-                    sphere_vs_triangle(c, r, v0, v1, v2)
-                }
+                ColliderShape::Sphere { r } => sphere_vs_triangle(dyn_center, r, v0, v1, v2),
                 ColliderShape::Capsule { half_h, r } => {
                     capsule_vs_triangle(world_dyn, half_h, r, v0, v1, v2)
                 }
@@ -833,13 +826,10 @@ fn narrow_phase_mesh_vs_dynamic(
                     let l0 = mul_point(&dyn_inv, v0);
                     let l1 = mul_point(&dyn_inv, v1);
                     let l2 = mul_point(&dyn_inv, v2);
-                    local_box_vs_triangle(half, r, l0, l1, l2).map(|g| {
-                        let n_rc = world_dyn.mul_dir(&g.normal);
-                        ContactGeom {
-                            point: mul_point(world_dyn, g.point),
-                            normal: *rc_ref!(&n_rc),
-                            depth: g.depth,
-                        }
+                    local_box_vs_triangle(half, r, l0, l1, l2).map(|g| ContactGeom {
+                        point: mul_point(world_dyn, g.point),
+                        normal: world_dyn.mul_dir_value(&g.normal),
+                        depth: g.depth,
                     })
                 }
             };
@@ -856,8 +846,7 @@ fn narrow_phase_mesh_vs_dynamic(
 }
 
 fn mul_point(m: &Mat4, v: Vec3) -> Vec3 {
-    let r = m.mul_vec(&v);
-    *rc_ref!(&r)
+    m.mul_vec_value(&v)
 }
 
 fn transform_aabb_to_local(inv: &Mat4, aabb: &Aabb) -> Aabb {

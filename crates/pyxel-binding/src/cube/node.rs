@@ -85,14 +85,11 @@ impl Node {
     }
 
     fn world_mat(&self) -> pyxel::cube::Mat4 {
-        let world_rc = InnerNode::world_transform(&self.inner);
-        *rc_ref!(&world_rc)
+        InnerNode::world_transform_value(&self.inner)
     }
 
     fn world_mat_compose(&self, local: pyxel::cube::Mat4) -> pyxel::cube::Mat4 {
-        let world_rc = InnerNode::world_transform(&self.inner);
-        let composed = rc_ref!(&world_rc).mul_mat(&local);
-        *rc_ref!(&composed)
+        InnerNode::world_transform_value(&self.inner).mul_mat_value(&local)
     }
 
     // Resolve the scene-wide cascade `shading`. Returns owned RcShading
@@ -707,18 +704,10 @@ impl Node {
         use pyo3::exceptions::{PyTypeError, PyValueError};
 
         let world_mat = self.world_mat_compose(*mat.inner_ref());
-
-        let (positions_data, indices_data, normals_data, uvs_data, prim_mode, cull_mode) = {
-            let p = rc_ref!(&prim_data.inner);
-            (
-                p.positions.clone(),
-                p.indices.clone(),
-                p.normals.clone(),
-                p.uvs.clone(),
-                p.mode,
-                p.cull,
-            )
-        };
+        // Borrowed for the duration of the draw; the closure below runs
+        // Rust-only code, so the proxy-backed arrays cannot change
+        // mid-draw (mirrors the mesh() path).
+        let p = rc_ref!(&prim_data.inner);
 
         let (col_flat, col_image) = match col_img {
             Some(c) => {
@@ -740,17 +729,17 @@ impl Node {
         // variable and propagate any error after the call returns.
         // Empty attribute Vecs mean "absent" on the PrimData; the
         // rasterizer still takes Option<&[..]>, so map empty -> None.
-        let indices_opt = (!indices_data.is_empty()).then_some(indices_data.as_slice());
-        let normals_opt = (!normals_data.is_empty()).then_some(normals_data.as_slice());
-        let uvs_opt = (!uvs_data.is_empty()).then_some(uvs_data.as_slice());
+        let indices_opt = (!p.indices.is_empty()).then_some(p.indices.as_slice());
+        let normals_opt = (!p.normals.is_empty()).then_some(p.normals.as_slice());
+        let uvs_opt = (!p.uvs.is_empty()).then_some(p.uvs.as_slice());
         let mut inner_result: Option<Result<(), &str>> = None;
         self.with_state_from_ctx(pyxel::cube::draw::BILLBOARD_OFF, |ctx, state| {
             inner_result = Some(pyxel::cube::draw::prim(
                 ctx,
                 &world_mat,
-                prim_mode,
-                cull_mode,
-                &positions_data,
+                p.mode,
+                p.cull,
+                &p.positions,
                 indices_opt,
                 normals_opt,
                 uvs_opt,
@@ -864,6 +853,7 @@ impl Node {
             depth,
             depth_w: target_w,
             depth_h: target_h,
+            vertex_cache: Vec::new(),
             dither_alpha: 1.0,
             depth_test: true,
             depth_write: true,
