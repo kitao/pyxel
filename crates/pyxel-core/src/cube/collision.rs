@@ -617,58 +617,6 @@ pub fn capsule_vs_rounded_obb(
     sphere_vs_rounded_obb(on_seg_world, cap_r.max(0.0), box_world, half, box_r)
 }
 
-// Capsule vs triangle: global closest pair between the capsule segment
-// and the triangle, then a sphere test of the capsule radius at that
-// segment point (Ericson § 5.1.10 decomposition: closest point on the
-// triangle to each segment endpoint, plus segment-vs-each-edge pairs).
-// Normal points from the triangle toward the capsule, matching
-// sphere_vs_triangle.
-pub fn capsule_vs_triangle(
-    cap_world: &Mat4,
-    half_h: f32,
-    cap_r: f32,
-    v0: Vec3,
-    v1: Vec3,
-    v2: Vec3,
-) -> Option<ContactGeom> {
-    let top_rc = cap_world.mul_vec(&Vec3 {
-        x: 0.0,
-        y: half_h,
-        z: 0.0,
-    });
-    let top = *rc_ref!(&top_rc);
-    let bot_rc = cap_world.mul_vec(&Vec3 {
-        x: 0.0,
-        y: -half_h,
-        z: 0.0,
-    });
-    let bot = *rc_ref!(&bot_rc);
-    let d2 = |p: &Vec3, q: &Vec3| (p.x - q.x).powi(2) + (p.y - q.y).powi(2) + (p.z - q.z).powi(2);
-    // Candidate pairs: (segment endpoint → triangle interior/edges) and
-    // (segment ↔ each triangle edge).
-    let mut best_on_seg = top;
-    let mut best_dist2 = f32::INFINITY;
-    for p in [top, bot] {
-        let q = closest_point_on_triangle(p, v0, v1, v2);
-        let d = d2(&p, &q);
-        if d < best_dist2 {
-            best_dist2 = d;
-            best_on_seg = p;
-        }
-    }
-    for (e0, e1) in [(v0, v1), (v1, v2), (v2, v0)] {
-        let (s, q) = closest_points_segment_segment(top, bot, e0, e1);
-        let d = d2(&s, &q);
-        if d < best_dist2 {
-            best_dist2 = d;
-            best_on_seg = s;
-        }
-    }
-    // sphere_vs_triangle re-derives the exact closest triangle point and
-    // handles the depth/normal conventions (incl. the interior case).
-    sphere_vs_triangle(best_on_seg, cap_r.max(0.0), v0, v1, v2)
-}
-
 // Rounded OBB vs rounded OBB via 15-axis SAT (3 + 3 face axes, 9 edge
 // cross products). The rounding radius is a sphere sweep, so it adds
 // to the projection radius on every axis. Near-parallel edge pairs
@@ -1171,6 +1119,58 @@ pub fn sphere_vs_triangle(c: Vec3, r: f32, v0: Vec3, v1: Vec3, v2: Vec3) -> Opti
     })
 }
 
+// Capsule vs triangle: global closest pair between the capsule segment
+// and the triangle, then a sphere test of the capsule radius at that
+// segment point (Ericson § 5.1.10 decomposition: closest point on the
+// triangle to each segment endpoint, plus segment-vs-each-edge pairs).
+// Normal points from the triangle toward the capsule, matching
+// sphere_vs_triangle.
+pub fn capsule_vs_triangle(
+    cap_world: &Mat4,
+    half_h: f32,
+    cap_r: f32,
+    v0: Vec3,
+    v1: Vec3,
+    v2: Vec3,
+) -> Option<ContactGeom> {
+    let top_rc = cap_world.mul_vec(&Vec3 {
+        x: 0.0,
+        y: half_h,
+        z: 0.0,
+    });
+    let top = *rc_ref!(&top_rc);
+    let bot_rc = cap_world.mul_vec(&Vec3 {
+        x: 0.0,
+        y: -half_h,
+        z: 0.0,
+    });
+    let bot = *rc_ref!(&bot_rc);
+    let d2 = |p: &Vec3, q: &Vec3| (p.x - q.x).powi(2) + (p.y - q.y).powi(2) + (p.z - q.z).powi(2);
+    // Candidate pairs: (segment endpoint → triangle interior/edges) and
+    // (segment ↔ each triangle edge).
+    let mut best_on_seg = top;
+    let mut best_dist2 = f32::INFINITY;
+    for p in [top, bot] {
+        let q = closest_point_on_triangle(p, v0, v1, v2);
+        let d = d2(&p, &q);
+        if d < best_dist2 {
+            best_dist2 = d;
+            best_on_seg = p;
+        }
+    }
+    for (e0, e1) in [(v0, v1), (v1, v2), (v2, v0)] {
+        let (s, q) = closest_points_segment_segment(top, bot, e0, e1);
+        let d = d2(&s, &q);
+        if d < best_dist2 {
+            best_dist2 = d;
+            best_on_seg = s;
+        }
+    }
+    // sphere_vs_triangle re-derives the exact closest triangle point and
+    // handles the depth/normal conventions (incl. the interior case).
+    sphere_vs_triangle(best_on_seg, cap_r.max(0.0), v0, v1, v2)
+}
+
 // Closest point on triangle to p (Ericson, Real-Time Collision
 // Detection §5.1.5). Returns the barycentric point on the triangle
 // or its nearest edge / vertex.
@@ -1418,7 +1418,6 @@ pub fn local_box_vs_triangle(
     p2: Vec3,
 ) -> Option<ContactGeom> {
     let r = r.max(0.0);
-    let extents = half;
     let edges = [
         Vec3 {
             x: p1.x - p0.x,
@@ -1468,11 +1467,11 @@ pub fn local_box_vs_triangle(
             if axis.x.abs() < 1e-9 && axis.y.abs() < 1e-9 && axis.z.abs() < 1e-9 {
                 continue;
             }
-            sat_overlap(&axis, &p0, &p1, &p2, &extents, r)?;
+            sat_overlap(&axis, &p0, &p1, &p2, &half, r)?;
         }
     }
     for a in &aabb_axes {
-        sat_overlap(a, &p0, &p1, &p2, &extents, r)?;
+        sat_overlap(a, &p0, &p1, &p2, &half, r)?;
     }
     let face_normal = {
         let e1 = edges[0];
@@ -1493,7 +1492,7 @@ pub fn local_box_vs_triangle(
     if fnlen_sq < 1e-18 {
         return None;
     }
-    sat_overlap(&face_normal, &p0, &p1, &p2, &extents, r)?;
+    sat_overlap(&face_normal, &p0, &p1, &p2, &half, r)?;
     // Orient the normal toward the box center (= origin in this
     // local frame). Without this, the result depends on the triangle
     // winding, which the caller cannot guarantee for arbitrary mesh
@@ -1521,7 +1520,7 @@ pub fn local_box_vs_triangle(
     // half-extent along the normal minus the signed distance from
     // the box center (origin) to the triangle plane.
     let r_along_normal =
-        extents.x * normal.x.abs() + extents.y * normal.y.abs() + extents.z * normal.z.abs() + r;
+        half.x * normal.x.abs() + half.y * normal.y.abs() + half.z * normal.z.abs() + r;
     let plane_offset = normal.x * p0.x + normal.y * p0.y + normal.z * p0.z;
     let depth = (r_along_normal - plane_offset.abs()).max(0.0);
     Some(ContactGeom {
