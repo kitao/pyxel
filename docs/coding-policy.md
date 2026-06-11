@@ -109,7 +109,7 @@ This file is the Pyxel coding policy. It applies to every in-scope file (see Ver
 - The maintainer writes in Japanese; Japanese is the source of truth for translation. Translations route through English first, then to every other language. Routing through English keeps target phrasing free of Japanese compound-noun structure.
 
 - Each target language follows its own technical-writing conventions and retains established English loanwords where the target language conventionally uses them.
-  - e.g., German and Romance languages (de, es, fr, it, pt) keep "Editor", "Launcher", "Gamepad", and similar technical terms in English.
+  - e.g., German and Romance languages (de, es, it, pt) keep "Editor", "Launcher", "Gamepad", and similar technical terms in English; French keeps "Editor" and "Launcher" but conventionally uses "manette" for gamepad.
 
 - Translations are produced from English; comparison (including audit) is made against the English version, not the Japanese.
   - e.g., a German `"Installation des Pakets Anleitung"` mirrors a Japanese compound-noun chain and is rewritten as `"Paket-Installationsanleitung"`.
