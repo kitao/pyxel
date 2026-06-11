@@ -3,8 +3,10 @@ use std::cell::Cell;
 use crate::cube::camera::RcCamera;
 use crate::cube::collider::RcCollider;
 use crate::cube::collision::{
-    aabb_vs_aabb, aabb_vs_triangle, collider_aabb, ray_vs_aabb, ray_vs_sphere, ray_vs_triangle,
-    sphere_vs_aabb, sphere_vs_sphere, sphere_vs_triangle, Aabb, ContactGeom,
+    aabb_vs_aabb, capsule_vs_capsule, capsule_vs_rounded_obb, capsule_vs_sphere,
+    capsule_vs_triangle, classify_shape, collider_aabb, local_box_vs_triangle, ray_vs_aabb,
+    ray_vs_sphere, ray_vs_triangle, rounded_obb_vs_rounded_obb, sphere_vs_aabb,
+    sphere_vs_rounded_obb, sphere_vs_sphere, sphere_vs_triangle, Aabb, ColliderShape, ContactGeom,
 };
 use crate::cube::contact::{Contact, RcContact};
 use crate::cube::mat4::Mat4;
@@ -269,6 +271,7 @@ impl Scene {
         world_b: &Mat4,
         coll_b: &RcCollider,
     ) -> Option<ContactGeom> {
+        use ColliderShape as S;
         let (size_a, r_a, has_mesh_a, mesh_a) = {
             let a = rc_ref!(coll_a);
             (
@@ -313,35 +316,54 @@ impl Scene {
             let mesh_rc = mesh_b.unwrap();
             return narrow_phase_mesh_vs_dynamic(world_b, &mesh_rc, world_a, size_a, r_a);
         }
-        let is_sphere_a = size_a.x.abs() < 1e-9 && size_a.y.abs() < 1e-9 && size_a.z.abs() < 1e-9;
-        let is_sphere_b = size_b.x.abs() < 1e-9 && size_b.y.abs() < 1e-9 && size_b.z.abs() < 1e-9;
         let c_a_rc = world_a.pos();
         let c_a = *rc_ref!(&c_a_rc);
         let c_b_rc = world_b.pos();
         let c_b = *rc_ref!(&c_b_rc);
-
-        if is_sphere_a && is_sphere_b {
-            sphere_vs_sphere(c_a, r_a, c_b, r_b)
-        } else if is_sphere_a {
-            let aabb_b = Aabb::from_rounded_box(world_b, size_b, r_b);
-            sphere_vs_aabb(c_a, r_a, &aabb_b)
-        } else if is_sphere_b {
-            let aabb_a = Aabb::from_rounded_box(world_a, size_a, r_a);
-            // Reverse the result so the normal points from b -> a.
-            let r = sphere_vs_aabb(c_b, r_b, &aabb_a)?;
-            Some(ContactGeom {
-                point: r.point,
-                normal: Vec3 {
-                    x: -r.normal.x,
-                    y: -r.normal.y,
-                    z: -r.normal.z,
-                },
-                depth: r.depth,
-            })
-        } else {
-            let aabb_a = Aabb::from_rounded_box(world_a, size_a, r_a);
-            let aabb_b = Aabb::from_rounded_box(world_b, size_b, r_b);
-            aabb_vs_aabb(&aabb_a, &aabb_b)
+        // Shape-exact dispatch (cube-design.md § 11.1): each pair is
+        // solved in the body frame of the box side (or on segments for
+        // capsules), so rotation is honored instead of being inflated
+        // into a world AABB. Pair helpers document their own normal
+        // orientation; arms that solve with the roles swapped flip back
+        // to the b → a contract.
+        let flip = |g: ContactGeom| ContactGeom {
+            point: g.point,
+            normal: Vec3 {
+                x: -g.normal.x,
+                y: -g.normal.y,
+                z: -g.normal.z,
+            },
+            depth: g.depth,
+        };
+        match (classify_shape(size_a, r_a), classify_shape(size_b, r_b)) {
+            (S::Sphere { r: ra }, S::Sphere { r: rb }) => sphere_vs_sphere(c_a, ra, c_b, rb),
+            (S::Sphere { r: ra }, S::RoundedBox { half, r }) => {
+                // Normal box → sphere = b → a: no flip.
+                sphere_vs_rounded_obb(c_a, ra, world_b, half, r)
+            }
+            (S::RoundedBox { half, r }, S::Sphere { r: rb }) => {
+                sphere_vs_rounded_obb(c_b, rb, world_a, half, r).map(flip)
+            }
+            (S::Sphere { r: ra }, S::Capsule { half_h, r }) => {
+                // Normal capsule → sphere = b → a: no flip.
+                capsule_vs_sphere(world_b, half_h, r, c_a, ra)
+            }
+            (S::Capsule { half_h, r }, S::Sphere { r: rb }) => {
+                capsule_vs_sphere(world_a, half_h, r, c_b, rb).map(flip)
+            }
+            (S::Capsule { half_h: ha, r: ra }, S::Capsule { half_h: hb, r: rb }) => {
+                capsule_vs_capsule(world_a, ha, ra, world_b, hb, rb)
+            }
+            (S::Capsule { half_h, r }, S::RoundedBox { half, r: br }) => {
+                // Normal box → capsule = b → a: no flip.
+                capsule_vs_rounded_obb(world_a, half_h, r, world_b, half, br)
+            }
+            (S::RoundedBox { half, r: br }, S::Capsule { half_h, r }) => {
+                capsule_vs_rounded_obb(world_b, half_h, r, world_a, half, br).map(flip)
+            }
+            (S::RoundedBox { half: ha, r: ra }, S::RoundedBox { half: hb, r: rb }) => {
+                rounded_obb_vs_rounded_obb(world_a, ha, ra, world_b, hb, rb)
+            }
         }
     }
 
@@ -766,12 +788,13 @@ fn narrow_phase_mesh_vs_dynamic(
     size_dyn: Vec3,
     r_dyn: f32,
 ) -> Option<ContactGeom> {
-    let is_sphere = size_dyn.x.abs() < 1e-9 && size_dyn.y.abs() < 1e-9 && size_dyn.z.abs() < 1e-9;
+    let shape_dyn = classify_shape(size_dyn, r_dyn);
     let mesh_inv_rc = world_mesh.inverse();
     let mesh_inv = *rc_ref!(&mesh_inv_rc);
     // Dynamic body's AABB in world space, then mapped into the mesh-
-    // local frame where the BVH lives.
-    let dyn_aabb_world = if is_sphere {
+    // local frame where the BVH lives. The AABB stays a broad filter;
+    // the per-triangle test below is shape-exact.
+    let dyn_aabb_world = if matches!(shape_dyn, ColliderShape::Sphere { .. }) {
         let c_rc = world_dyn.pos();
         let c = *rc_ref!(&c_rc);
         Aabb::from_sphere(c, r_dyn)
@@ -779,6 +802,9 @@ fn narrow_phase_mesh_vs_dynamic(
         Aabb::from_rounded_box(world_dyn, size_dyn, r_dyn)
     };
     let query_local = transform_aabb_to_local(&mesh_inv, &dyn_aabb_world);
+    // Body-local inverse for the rounded-box arm, computed once.
+    let dyn_inv_rc = world_dyn.inverse();
+    let dyn_inv = *rc_ref!(&dyn_inv_rc);
     let m = rc_ref!(mesh);
     let mut best: Option<ContactGeom> = None;
     m.with_collision_bvh(|bvh| {
@@ -791,13 +817,31 @@ fn narrow_phase_mesh_vs_dynamic(
             let v0 = mul_point(world_mesh, v0_local);
             let v1 = mul_point(world_mesh, v1_local);
             let v2 = mul_point(world_mesh, v2_local);
-            let hit = if is_sphere {
-                let c_rc = world_dyn.pos();
-                let c = *rc_ref!(&c_rc);
-                sphere_vs_triangle(c, r_dyn, v0, v1, v2)
-            } else {
-                let aabb = Aabb::from_rounded_box(world_dyn, size_dyn, r_dyn);
-                aabb_vs_triangle(&aabb, v0, v1, v2)
+            let hit = match shape_dyn {
+                ColliderShape::Sphere { r } => {
+                    let c_rc = world_dyn.pos();
+                    let c = *rc_ref!(&c_rc);
+                    sphere_vs_triangle(c, r, v0, v1, v2)
+                }
+                ColliderShape::Capsule { half_h, r } => {
+                    capsule_vs_triangle(world_dyn, half_h, r, v0, v1, v2)
+                }
+                ColliderShape::RoundedBox { half, r } => {
+                    // Solve in the body-local frame where the box is
+                    // axis-aligned, then map the contact back to world
+                    // (rotation + translation only, so depth carries).
+                    let l0 = mul_point(&dyn_inv, v0);
+                    let l1 = mul_point(&dyn_inv, v1);
+                    let l2 = mul_point(&dyn_inv, v2);
+                    local_box_vs_triangle(half, r, l0, l1, l2).map(|g| {
+                        let n_rc = world_dyn.mul_dir(&g.normal);
+                        ContactGeom {
+                            point: mul_point(world_dyn, g.point),
+                            normal: *rc_ref!(&n_rc),
+                            depth: g.depth,
+                        }
+                    })
+                }
             };
             if let Some(h) = hit {
                 match best {
@@ -992,6 +1036,26 @@ mod tests {
         )
     }
 
+    // Rounded-box family collider (box, rounded box, or capsule by size).
+    fn box_family_collider(
+        size: crate::cube::RcVec3,
+        radius: f32,
+        mass: f32,
+    ) -> crate::cube::RcCollider {
+        crate::cube::Collider::new(
+            size,
+            radius,
+            None,
+            false,
+            false,
+            mass,
+            0.0,
+            0.5,
+            crate::cube::Vec3::zero(),
+            crate::cube::Vec3::zero(),
+        )
+    }
+
     fn place_at(node: &RcNode, x: f32, y: f32, z: f32) {
         rc_mut!(node).transform = Mat4::from_translation(&Vec3 { x, y, z });
     }
@@ -1063,6 +1127,79 @@ mod tests {
             depth_wall.abs() < 1e-4,
             "immovable takes none = {depth_wall}"
         );
+    }
+
+    #[test]
+    fn test_narrow_phase_rotated_wall_no_phantom_contact() {
+        // A thin wall (size=(0.4, 4, 4)) rotated 45° about Y and a sphere
+        // 1.0 along the wall's world face normal: the true face gap is
+        // 1.0 - 0.2 - 0.5 = 0.3, but the wall's world AABB spans ±1.56
+        // on X/Z and swallows the sphere center — the pre-fix AABB
+        // narrow phase reported a phantom contact here.
+        let root = Node::new();
+        let wall = Node::new();
+        rc_mut!(&wall).transform = Mat4::from_axis_angle(
+            &Vec3 {
+                x: 0.0,
+                y: 1.0,
+                z: 0.0,
+            },
+            45.0,
+        );
+        rc_mut!(&wall).collider = Some(box_family_collider(Vec3::new(0.4, 4.0, 4.0), 0.0, 0.0));
+        let ball = Node::new();
+        // The wall's local +X face normal maps to (1, 0, -1)/√2 in world.
+        let s = 1.0 / std::f32::consts::SQRT_2;
+        place_at(&ball, s, 0.0, -s);
+        rc_mut!(&ball).collider = Some(sphere_collider(0.5, 1.0));
+        Node::add_child(&root, &wall);
+        Node::add_child(&root, &ball);
+        let pairs = Scene::detect_contacts(&root);
+        assert!(pairs.is_empty(), "phantom contact reported");
+    }
+
+    #[test]
+    fn test_narrow_phase_capsule_rests_on_box_top() {
+        // Capsule (size=(0, 1, 0), radius=0.3) standing 0.05 into a
+        // static box floor (size=(4, 1, 4), top at y=0.5): bottom cap
+        // reach = 1.25 - 0.5 - 0.3 = 0.45 → depth 0.05, normal +Y
+        // toward the capsule, full depth on the movable side.
+        let root = Node::new();
+        let capsule = Node::new();
+        place_at(&capsule, 0.0, 1.25, 0.0);
+        rc_mut!(&capsule).collider = Some(box_family_collider(Vec3::new(0.0, 1.0, 0.0), 0.3, 1.0));
+        let floor = Node::new();
+        rc_mut!(&floor).collider = Some(box_family_collider(Vec3::new(4.0, 1.0, 4.0), 0.0, 0.0));
+        Node::add_child(&root, &capsule);
+        Node::add_child(&root, &floor);
+        let pairs = Scene::detect_contacts(&root);
+        assert_eq!(pairs.len(), 1);
+        let contact = rc_ref!(&pairs[0].contact_a);
+        let normal = rc_ref!(&contact.normal);
+        assert!(normal.y > 0.99, "normal should point +Y");
+        assert!(
+            (contact.depth - 0.05).abs() < 1e-4,
+            "depth = {}",
+            contact.depth
+        );
+    }
+
+    #[test]
+    fn test_narrow_phase_capsule_edge_miss_beyond_box_rim() {
+        // Capsule center at (2.2, 1.25, 0), floor rim corner at
+        // (2.0, 0.5, 0): segment-to-corner distance √(0.2² + 0.25²)
+        // ≈ 0.32 > radius 0.3 → no contact. The pre-fix AABB path
+        // overlapped on every axis and reported one.
+        let root = Node::new();
+        let capsule = Node::new();
+        place_at(&capsule, 2.2, 1.25, 0.0);
+        rc_mut!(&capsule).collider = Some(box_family_collider(Vec3::new(0.0, 1.0, 0.0), 0.3, 1.0));
+        let floor = Node::new();
+        rc_mut!(&floor).collider = Some(box_family_collider(Vec3::new(4.0, 1.0, 4.0), 0.0, 0.0));
+        Node::add_child(&root, &capsule);
+        Node::add_child(&root, &floor);
+        let pairs = Scene::detect_contacts(&root);
+        assert!(pairs.is_empty(), "rim phantom contact reported");
     }
 
     #[test]

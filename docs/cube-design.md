@@ -736,7 +736,11 @@ Three shape inputs combine to form the rounded-box family:
 The `size` value follows the **full-size** convention (Unity / Godot 4
 style), not the Bullet `halfExtents` convention. The same `Vec3(w, h, d)`
 that produces a visible box via `Node.box(mat, size, ...)` produces the
-collision shape of the same dimensions via `Collider(size=...)`.
+collision shape of the same dimensions via `Collider(size=...)`. The
+narrow phase honors the collider's rotation exactly — shapes are solved
+in the body's local frame, not as world-axis-aligned boxes — and the
+only rounding-radius approximation is in the mesh triangle test, whose
+corner regions over-report by at most `r·(√3−1)` (§ 16 step 5).
 
 ### 11.2 Behavior Flags (opt-in)
 
@@ -1414,10 +1418,19 @@ phase begins.
    AABB.
 
 5. **Narrow phase**: each candidate pair is tested for actual collision.
-   The supported combinations are sphere-vs-sphere, sphere-vs-rounded-box,
-   rounded-box-vs-rounded-box, sphere-vs-mesh, and rounded-box-vs-mesh.
-   MeshData-vs-mesh is unsupported (both sides are static and need no
-   resolution payload) and is silently skipped. The result is a stream
+   Shapes are classified per § 11.1 (sphere / capsule / rounded box /
+   mesh); every sphere / capsule / rounded-box pairing (all six
+   combinations) is supported, plus each of the three against a static
+   mesh. Pairs are solved shape-exactly in the box side's body frame
+   (or on capsule segments), so collider rotation is honored — the
+   world AABB stays a broad-phase-only construct. MeshData-vs-mesh is
+   unsupported (both sides are static and need no resolution payload)
+   and is silently skipped. Two bounded approximations remain: the
+   rounding radius enters the box-vs-triangle SAT as a uniform axis
+   extension (exact on faces and edges, over-reporting by at most
+   `r·(√3−1)` in corner regions), and the capsule-vs-box closest point
+   uses alternating projection between the two convex sets (converges
+   well within its fixed iteration budget). The result is a stream
    of `Contact` records with `point`, `normal`, and `depth` filled in.
 
 6. **Response resolution**: the engine computes the mass-share split
