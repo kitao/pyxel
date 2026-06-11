@@ -65,8 +65,7 @@ impl MeshData {
     }
 
     fn collect_triangles(&self) -> (Vec<crate::cube::vec3::Vec3>, Vec<[u32; 3]>) {
-        let identity_rc = Mat4::identity();
-        let identity = *rc_ref!(&identity_rc);
+        let identity = Mat4::identity_value();
         let world_per_part = self.compose_world_transforms(&identity);
         let mut positions: Vec<crate::cube::vec3::Vec3> = Vec::new();
         let mut triangles: Vec<[u32; 3]> = Vec::new();
@@ -86,9 +85,7 @@ impl MeshData {
                     y: chunk[1],
                     z: chunk[2],
                 };
-                let p_rc = world.mul_vec(&local);
-                let p = *rc_ref!(&p_rc);
-                positions.push(p);
+                positions.push(world.mul_vec_value(&local));
             }
             if prim.indices.is_empty() {
                 let vert_count = (prim.positions.len() / 3) as u32;
@@ -143,10 +140,9 @@ impl MeshData {
         for i in 0..n {
             let local: Mat4 = *rc_ref!(&self.transforms[i]);
             let combined: Mat4 = if self.parents[i] == -1 {
-                *rc_ref!(&root.mul_mat(&local))
+                root.mul_mat_value(&local)
             } else {
-                let parent = world[self.parents[i] as usize];
-                *rc_ref!(&parent.mul_mat(&local))
+                world[self.parents[i] as usize].mul_mat_value(&local)
             };
             world.push(combined);
         }

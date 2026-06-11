@@ -54,7 +54,18 @@ impl Mat4 {
     // Decomposed view (assumes affine T * R(XYZ extrinsic) * S)
 
     pub fn pos(&self) -> RcVec3 {
-        Vec3::new(self.data[0][3], self.data[1][3], self.data[2][3])
+        let p = self.pos_value();
+        Vec3::new(p.x, p.y, p.z)
+    }
+
+    // Plain (non-Rc) translation column for internal hot paths; see the
+    // value-typed operator cores under Operators.
+    pub fn pos_value(&self) -> Vec3 {
+        Vec3 {
+            x: self.data[0][3],
+            y: self.data[1][3],
+            z: self.data[2][3],
+        }
     }
 
     pub fn scale_vec(&self) -> RcVec3 {
@@ -185,6 +196,16 @@ impl Mat4 {
     // Operators
 
     pub fn mul_mat(&self, other: &Self) -> RcMat4 {
+        Self::from_rows(self.mul_mat_value(other).data)
+    }
+
+    // Plain (non-Rc) operator cores for internal hot paths (raster, draw,
+    // scene, collision): per-vertex and per-triangle work must not heap-
+    // allocate. The Rc operators delegate here, so both paths compute
+    // bit-identical results.
+
+    #[must_use]
+    pub fn mul_mat_value(&self, other: &Self) -> Self {
         let mut result = [[0.0; 4]; 4];
         for i in 0..4 {
             for j in 0..4 {
@@ -195,25 +216,43 @@ impl Mat4 {
                 result[i][j] = sum;
             }
         }
-        Self::from_rows(result)
+        Self { data: result }
     }
 
     pub fn mul_vec(&self, v: &Vec3) -> RcVec3 {
-        let x =
-            self.data[0][0] * v.x + self.data[0][1] * v.y + self.data[0][2] * v.z + self.data[0][3];
-        let y =
-            self.data[1][0] * v.x + self.data[1][1] * v.y + self.data[1][2] * v.z + self.data[1][3];
-        let z =
-            self.data[2][0] * v.x + self.data[2][1] * v.y + self.data[2][2] * v.z + self.data[2][3];
-        Vec3::new(x, y, z)
+        let r = self.mul_vec_value(v);
+        Vec3::new(r.x, r.y, r.z)
+    }
+
+    pub fn mul_vec_value(&self, v: &Vec3) -> Vec3 {
+        Vec3 {
+            x: self.data[0][0] * v.x
+                + self.data[0][1] * v.y
+                + self.data[0][2] * v.z
+                + self.data[0][3],
+            y: self.data[1][0] * v.x
+                + self.data[1][1] * v.y
+                + self.data[1][2] * v.z
+                + self.data[1][3],
+            z: self.data[2][0] * v.x
+                + self.data[2][1] * v.y
+                + self.data[2][2] * v.z
+                + self.data[2][3],
+        }
     }
 
     pub fn mul_dir(&self, v: &Vec3) -> RcVec3 {
-        // Transform direction vector (ignore translation row).
-        let x = self.data[0][0] * v.x + self.data[0][1] * v.y + self.data[0][2] * v.z;
-        let y = self.data[1][0] * v.x + self.data[1][1] * v.y + self.data[1][2] * v.z;
-        let z = self.data[2][0] * v.x + self.data[2][1] * v.y + self.data[2][2] * v.z;
-        Vec3::new(x, y, z)
+        let r = self.mul_dir_value(v);
+        Vec3::new(r.x, r.y, r.z)
+    }
+
+    // Transform direction vector (ignore translation row).
+    pub fn mul_dir_value(&self, v: &Vec3) -> Vec3 {
+        Vec3 {
+            x: self.data[0][0] * v.x + self.data[0][1] * v.y + self.data[0][2] * v.z,
+            y: self.data[1][0] * v.x + self.data[1][1] * v.y + self.data[1][2] * v.z,
+            z: self.data[2][0] * v.x + self.data[2][1] * v.y + self.data[2][2] * v.z,
+        }
     }
 
     // Mutate methods (return new Mat4)
@@ -251,6 +290,14 @@ impl Mat4 {
     // Matrix operations
 
     pub fn inverse(&self) -> RcMat4 {
+        Self::from_rows(self.inverse_value().data)
+    }
+
+    // Plain (non-Rc) inverse for internal hot paths; see the value-typed
+    // operator cores under Operators. A singular matrix falls back to
+    // identity, keeping the panic-free posture of the Rc operator.
+    #[must_use]
+    pub fn inverse_value(&self) -> Self {
         let m = &self.data;
         let mut inv = [[0.0_f32; 4]; 4];
 
@@ -346,7 +393,7 @@ impl Mat4 {
         let det =
             m[0][0] * inv[0][0] + m[0][1] * inv[1][0] + m[0][2] * inv[2][0] + m[0][3] * inv[3][0];
         if det.abs() < 1e-12 {
-            return Self::identity();
+            return Self::identity_value();
         }
         let inv_det = 1.0 / det;
         for i in 0..4 {
@@ -354,7 +401,7 @@ impl Mat4 {
                 inv[i][j] *= inv_det;
             }
         }
-        Self::from_rows(inv)
+        Self { data: inv }
     }
 
     pub fn transpose(&self) -> RcMat4 {

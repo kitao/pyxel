@@ -96,8 +96,7 @@ impl Aabb {
             z: f32::NEG_INFINITY,
         };
         for c in &corners {
-            let wc_rc = transform.mul_vec(c);
-            let wc = *rc_ref!(&wc_rc);
+            let wc = transform.mul_vec_value(c);
             min.x = min.x.min(wc.x);
             min.y = min.y.min(wc.y);
             min.z = min.z.min(wc.z);
@@ -134,8 +133,7 @@ impl Aabb {
                     y: chunk[1],
                     z: chunk[2],
                 };
-                let wp_rc = world_t.mul_vec(&p);
-                let wp = *rc_ref!(&wp_rc);
+                let wp = world_t.mul_vec_value(&p);
                 min.x = min.x.min(wp.x);
                 min.y = min.y.min(wp.y);
                 min.z = min.z.min(wp.z);
@@ -146,12 +144,11 @@ impl Aabb {
             }
         }
         if !any {
-            let p_rc = transform.mul_vec(&Vec3 {
+            let p = transform.mul_vec_value(&Vec3 {
                 x: 0.0,
                 y: 0.0,
                 z: 0.0,
             });
-            let p = *rc_ref!(&p_rc);
             min = p;
             max = p;
         }
@@ -400,10 +397,8 @@ pub fn sphere_vs_rounded_obb(
     box_r: f32,
 ) -> Option<ContactGeom> {
     let box_r = box_r.max(0.0);
-    let inv_rc = box_world.inverse();
-    let inv = *rc_ref!(&inv_rc);
-    let p_rc = inv.mul_vec(&c_sphere);
-    let p = *rc_ref!(&p_rc);
+    let inv = box_world.inverse_value();
+    let p = inv.mul_vec_value(&c_sphere);
     let q = Vec3 {
         x: p.x.clamp(-half.x, half.x),
         y: p.y.clamp(-half.y, half.y),
@@ -426,15 +421,13 @@ pub fn sphere_vs_rounded_obb(
             y: dy / dist,
             z: dz / dist,
         };
-        let n_world_rc = box_world.mul_dir(&n_local);
-        let n_world = *rc_ref!(&n_world_rc);
+        let n_world = box_world.mul_dir_value(&n_local);
         let surf_local = Vec3 {
             x: q.x + n_local.x * box_r,
             y: q.y + n_local.y * box_r,
             z: q.z + n_local.z * box_r,
         };
-        let point_rc = box_world.mul_vec(&surf_local);
-        let point = *rc_ref!(&point_rc);
+        let point = box_world.mul_vec_value(&surf_local);
         return Some(ContactGeom {
             point,
             normal: n_world,
@@ -499,10 +492,8 @@ pub fn sphere_vs_rounded_obb(
         .copied()
         .min_by(|a, b| a.0.partial_cmp(&b.0).unwrap())
         .unwrap();
-    let n_world_rc = box_world.mul_dir(&n_local);
-    let n_world = *rc_ref!(&n_world_rc);
-    let point_rc = box_world.mul_vec(&p);
-    let point = *rc_ref!(&point_rc);
+    let n_world = box_world.mul_dir_value(&n_local);
+    let point = box_world.mul_vec_value(&p);
     Some(ContactGeom {
         point,
         normal: n_world,
@@ -520,18 +511,16 @@ pub fn capsule_vs_sphere(
     c_sphere: Vec3,
     r_sphere: f32,
 ) -> Option<ContactGeom> {
-    let top_rc = cap_world.mul_vec(&Vec3 {
+    let top = cap_world.mul_vec_value(&Vec3 {
         x: 0.0,
         y: half_h,
         z: 0.0,
     });
-    let top = *rc_ref!(&top_rc);
-    let bot_rc = cap_world.mul_vec(&Vec3 {
+    let bot = cap_world.mul_vec_value(&Vec3 {
         x: 0.0,
         y: -half_h,
         z: 0.0,
     });
-    let bot = *rc_ref!(&bot_rc);
     let on_axis = closest_point_on_segment(c_sphere, top, bot);
     // sphere_vs_sphere(a=sphere, b=capsule-point) yields a normal from
     // b toward a, i.e. capsule → sphere, which is what we document.
@@ -548,30 +537,26 @@ pub fn capsule_vs_capsule(
     half_h_b: f32,
     r_b: f32,
 ) -> Option<ContactGeom> {
-    let a_top_rc = world_a.mul_vec(&Vec3 {
+    let a_top = world_a.mul_vec_value(&Vec3 {
         x: 0.0,
         y: half_h_a,
         z: 0.0,
     });
-    let a_top = *rc_ref!(&a_top_rc);
-    let a_bot_rc = world_a.mul_vec(&Vec3 {
+    let a_bot = world_a.mul_vec_value(&Vec3 {
         x: 0.0,
         y: -half_h_a,
         z: 0.0,
     });
-    let a_bot = *rc_ref!(&a_bot_rc);
-    let b_top_rc = world_b.mul_vec(&Vec3 {
+    let b_top = world_b.mul_vec_value(&Vec3 {
         x: 0.0,
         y: half_h_b,
         z: 0.0,
     });
-    let b_top = *rc_ref!(&b_top_rc);
-    let b_bot_rc = world_b.mul_vec(&Vec3 {
+    let b_bot = world_b.mul_vec_value(&Vec3 {
         x: 0.0,
         y: -half_h_b,
         z: 0.0,
     });
-    let b_bot = *rc_ref!(&b_bot_rc);
     let (on_a, on_b) = closest_points_segment_segment(a_top, a_bot, b_top, b_bot);
     sphere_vs_sphere(on_a, r_a.max(0.0), on_b, r_b.max(0.0))
 }
@@ -589,30 +574,25 @@ pub fn capsule_vs_rounded_obb(
     half: Vec3,
     box_r: f32,
 ) -> Option<ContactGeom> {
-    let inv_rc = box_world.inverse();
-    let inv = *rc_ref!(&inv_rc);
-    let to_local = |p: &Vec3| -> Vec3 {
-        let local_rc = inv.mul_vec(p);
-        *rc_ref!(&local_rc)
-    };
-    let top_world_rc = cap_world.mul_vec(&Vec3 {
+    let inv = box_world.inverse_value();
+    let to_local = |p: &Vec3| -> Vec3 { inv.mul_vec_value(p) };
+    let top_world = cap_world.mul_vec_value(&Vec3 {
         x: 0.0,
         y: half_h,
         z: 0.0,
     });
-    let top = to_local(rc_ref!(&top_world_rc));
-    let bot_world_rc = cap_world.mul_vec(&Vec3 {
+    let top = to_local(&top_world);
+    let bot_world = cap_world.mul_vec_value(&Vec3 {
         x: 0.0,
         y: -half_h,
         z: 0.0,
     });
-    let bot = to_local(rc_ref!(&bot_world_rc));
+    let bot = to_local(&bot_world);
     let (on_seg, _) = closest_points_segment_aabb(top, bot, half);
     // Resolve at the segment's closest point: identical contract to a
     // sphere of the capsule radius centered there (handles both the
     // outside gap and the inside fallback uniformly).
-    let on_seg_world_rc = box_world.mul_vec(&on_seg);
-    let on_seg_world = *rc_ref!(&on_seg_world_rc);
+    let on_seg_world = box_world.mul_vec_value(&on_seg);
     // sphere_vs_rounded_obb's normal points box → "sphere" = box → capsule.
     sphere_vs_rounded_obb(on_seg_world, cap_r.max(0.0), box_world, half, box_r)
 }
@@ -633,10 +613,7 @@ pub fn rounded_obb_vs_rounded_obb(
     half_b: Vec3,
     r_b: f32,
 ) -> Option<ContactGeom> {
-    let axis = |m: &Mat4, v: Vec3| -> Vec3 {
-        let d_rc = m.mul_dir(&v);
-        *rc_ref!(&d_rc)
-    };
+    let axis = |m: &Mat4, v: Vec3| -> Vec3 { m.mul_dir_value(&v) };
     let ax = [
         axis(
             world_a,
@@ -1133,18 +1110,16 @@ pub fn capsule_vs_triangle(
     v1: Vec3,
     v2: Vec3,
 ) -> Option<ContactGeom> {
-    let top_rc = cap_world.mul_vec(&Vec3 {
+    let top = cap_world.mul_vec_value(&Vec3 {
         x: 0.0,
         y: half_h,
         z: 0.0,
     });
-    let top = *rc_ref!(&top_rc);
-    let bot_rc = cap_world.mul_vec(&Vec3 {
+    let bot = cap_world.mul_vec_value(&Vec3 {
         x: 0.0,
         y: -half_h,
         z: 0.0,
     });
-    let bot = *rc_ref!(&bot_rc);
     let d2 = |p: &Vec3, q: &Vec3| (p.x - q.x).powi(2) + (p.y - q.y).powi(2) + (p.z - q.z).powi(2);
     // Candidate pairs: (segment endpoint → triangle interior/edges) and
     // (segment ↔ each triangle edge).
