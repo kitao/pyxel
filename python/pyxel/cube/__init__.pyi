@@ -396,7 +396,7 @@ class Node:
     def prim(
         self,
         mat: Mat4,
-        primitive: PrimData,
+        prim_data: PrimData,
         col_img: int | Image = 7,
         *,
         colkey: int | None = None,

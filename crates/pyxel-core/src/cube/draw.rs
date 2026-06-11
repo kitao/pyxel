@@ -28,7 +28,7 @@ use crate::font::Font;
 use crate::image::{Image, RcImage};
 use crate::settings::{FONT_HEIGHT, FONT_WIDTH, MAX_FONT_CODE, MIN_FONT_CODE, NUM_FONT_COLS};
 
-// PrimData draw modes are owned by `PrimData` (see primitive.rs); this
+// PrimData draw modes are owned by `PrimData` (see prim_data.rs); this
 // file imports them at the top. Values follow OpenGL ordering
 // (GL_POINTS=0, GL_LINES=1, GL_TRIANGLES=4 — cube uses 0/1/2 internally
 // but keeps the relative ordering so future MODE_LINE_STRIP / LINE_LOOP

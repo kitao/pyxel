@@ -29,8 +29,8 @@ class TestAttributes:
         # transform reads as Mat4.IDENTITY by default.
         assert isinstance(n.transform, Mat4)
         # Cascade attributes are None on a freshly constructed Node so
-        # they inherit from the closest non-None ancestor (Scene seeds
-        # the default Shading; see § 12.4).
+        # they inherit from the closest non-None ancestor; the root node
+        # provides the camera / shading (cube-design.md § 15).
         assert n.shading is None
         assert n.collider is None
         assert n.parent is None
@@ -71,17 +71,16 @@ class TestAttributes:
         n = Node()
         collider = Collider()
         n.collider = collider
-        # Collider is currently a placeholder (no comparable state),
-        # so we only verify the round-trip through the cascade slot.
+        # Verify the round-trip through the cascade slot (set, read
+        # back, reset to None).
         assert isinstance(n.collider, Collider)
         n.collider = None
         assert n.collider is None
 
 
-class TestColliderPlaceholder:
-    """Collider / Contact ship as placeholders today; verify the API
-    surface only (cube-design.md § 15)."""
-
+# Collider / Contact construction and field round-trips (cube-design.md
+# § 11 / § 12); geometric correctness lives in the Rust unit tests.
+class TestColliderContactBasics:
     def test_collider_constructable(self):
         c = Collider()
         assert "Collider(" in repr(c)
@@ -100,10 +99,9 @@ class TestColliderPlaceholder:
         assert c.normal == Vec3(0, 1, 0)
 
 
+# Node.BILLBOARD_* class constants were removed along with the
+# billboard kwarg (use Mat4 to face the camera when needed).
 class TestClassConstantsRemoved:
-    """Node.BILLBOARD_* class constants were removed along with the
-    billboard kwarg (use Mat4 to face the camera when needed)."""
-
     def test_billboard_off_attribute_removed(self):
         assert not hasattr(Node, "BILLBOARD_OFF")
 
@@ -197,8 +195,9 @@ class TestSubclassing:
         assert isinstance(a, Node)
 
     def test_subclass_with_init_args(self):
-        # A subclass __init__ taking extra positional args must work; the
-        # args must not reach Node.__new__ (cube-design.md § 14).
+        # A subclass __init__ taking extra positional args must work;
+        # Node.__new__ accepts and ignores the extra args (the § 14
+        # Player sample relies on this).
         class Tagged(Node):
             def __init__(self, label):
                 super().__init__()
@@ -208,10 +207,10 @@ class TestSubclassing:
         assert n.name == "hero"
 
     def test_node_subclass_chained_init_args(self):
-        # Subclass __init__ taking extra positional args must work; the
-        # args must not reach Node.__new__ (mirrors the simpler
-        # test_subclass_with_init_args; this variant exercises the same
-        # chain through a deeper hierarchy).
+        # Subclass __init__ taking extra positional args must work;
+        # Node.__new__ accepts and ignores the extra args (mirrors the
+        # simpler test_subclass_with_init_args; this variant exercises
+        # the same chain through a deeper hierarchy).
         class Level(Node):
             def __init__(self, depth):
                 super().__init__()
@@ -221,9 +220,8 @@ class TestSubclassing:
         assert s.name == "level-3"
 
     def test_lifecycle_hooks_default_noop(self):
-        # Default implementations are no-op; they must be callable.
-        # on_collide is wired even though the cube runtime does not
-        # invoke it yet (collision pipeline deferred — § 16).
+        # Default implementations are no-op; they must be callable
+        # directly as well as from the pipeline (§ 16).
         n = Node()
         other = Node()
         n.on_update()
@@ -233,9 +231,9 @@ class TestSubclassing:
 
 
 # Calling draw methods outside an active draw context must be a safe
-# no-op (cube-design.md § 12.5: with_draw_context returns None when no
-# context is active). Per-call state kwargs were removed in favor of
-# Node.dither / depth_test / depth_write / shaded state-setters.
+# no-op (the binding dispatches through with_draw_context, which skips
+# when no context is active). Per-call state kwargs were removed in
+# favor of Node.dither / depth_test / depth_write / shaded state-setters.
 class TestImmediateDrawSafety:
     def test_pset(self):
         Node().pset(Vec3.ZERO, 7)
@@ -330,14 +328,11 @@ class TestImmediateDrawSafety:
         Node().mesh(Mat4.IDENTITY, m)
 
 
+# Setter methods on Node that mutate the active DrawContext state.
+# Called outside on_draw, they are no-ops (no active draw context).
+# Inside on_draw, they affect subsequent draws within the same body and
+# reset at the entry of the next Node's on_draw.
 class TestStateSetters:
-    """Setter methods on Node that mutate the active DrawContext state.
-
-    Called outside on_draw, they are no-ops (no active draw context).
-    Inside on_draw, they affect subsequent draws within the same body
-    and reset at the entry of the next Node's on_draw.
-    """
-
     def test_setters_callable_outside_draw_are_noop(self):
         # Called with no active draw context — should not raise.
         n = Node()
@@ -364,9 +359,8 @@ class TestStateSetters:
         root.draw(0, 0, 64, 64)
 
 
+# Smoke-test that Node exposes the frame-level draw API and queries.
 class TestNodeIntegrationOfDrawAndQueries:
-    """Smoke-test that Node exposes the frame-level draw API and queries."""
-
     def test_box_sphere_text_via_node(self):
         n = Node()
         n.box(Mat4.IDENTITY, Vec3(1, 1, 1), 4)
@@ -385,14 +379,10 @@ class TestNodeIntegrationOfDrawAndQueries:
         assert hasattr(cam, "transform")
 
 
+# box and sphere accept col_img: int | Image for textured fill. The
+# smoke tests only verify the API surface and that the call does not
+# raise; per-pixel correctness is covered by manual visual inspection.
 class TestBoxSphereTexturing:
-    """box and sphere accept col_img: int | Image for textured fill.
-
-    The smoke tests only verify the API surface and that the call does
-    not raise; per-pixel correctness is covered by manual visual
-    inspection.
-    """
-
     def test_box_flat_col(self):
         # Existing positional-int path still works.
         Node().box(Mat4.IDENTITY, Vec3(1, 1, 1), 11)
@@ -417,12 +407,11 @@ class TestBoxSphereTexturing:
         Node().sphere(Vec3.ZERO, 1.0, img, colkey=0)
 
 
+# `on_collide` is invoked by Node.update step 7 once per contact pair
+# (cube-design.md § 16). The signature must accept both positional and
+# keyword forms with the documented argument names so the engine call
+# and direct user calls both work.
 class TestOnCollideSignature:
-    """`on_collide` is invoked by Scene.update step 7 once per contact
-    pair (cube-design.md § 16). The signature must accept both
-    positional and keyword forms with the documented argument names so
-    the engine call and direct user calls both work."""
-
     def test_positional(self):
         n = Node()
         other = Node()
@@ -434,15 +423,12 @@ class TestOnCollideSignature:
         n.on_collide(other=other, contact=Contact())
 
 
+# circ, circb, text, and sprite are always-billboard primitives.
+# Pixel-level verification that the geometry faces the camera is
+# covered by manual visual inspection of c01_hello_cube (the Label text
+# must stay readable as the scene rotates). This unit test only
+# confirms the plain positional shape continues to work.
 class TestAlwaysBillboard:
-    """circ, circb, text, and sprite are always-billboard primitives.
-
-    Pixel-level verification that the geometry faces the camera is
-    covered by manual visual inspection of c01_hello_cube (the Label
-    text must stay readable as the scene rotates). This unit test only
-    confirms the plain positional shape continues to work.
-    """
-
     def test_circ_circb_text_plain_call(self):
         n = Node()
         n.circ(Vec3.ZERO, 1.0, 11)
@@ -458,9 +444,8 @@ _TRIANGLE_PRIMITIVE = PrimData(
 _UNIT_QUAD_UVS = ((0.0, 0.0), (1.0, 0.0), (1.0, 1.0), (0.0, 1.0))
 
 
+# billboard kwarg is removed from all primitives that previously had it.
 class TestBillboardKwargRemoved:
-    """billboard kwarg is removed from all primitives that previously had it."""
-
     @pytest.mark.parametrize(
         "call",
         [

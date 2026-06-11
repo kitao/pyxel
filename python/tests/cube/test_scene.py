@@ -4,8 +4,9 @@ import pytest
 from pyxel.cube import Camera, Collider, Mat4, Node, Shading, Vec3
 
 # Frame-level pipeline (update + draw) and spatial queries are tested
-# here against the universal Node API. Camera is a separately held
-# instance; clear_color is passed as a draw() argument.
+# here against the universal Node API. The camera attaches to the tree
+# via Node.camera (cascading to descendants); clear_color is a Camera
+# attribute.
 
 
 def palette() -> list[int]:
@@ -184,15 +185,12 @@ class TestShading:
         assert n.shading[0, 2] == new_shading[0, 2]
 
 
+# State set in one Node.on_draw must not leak to siblings or children.
+# Pixel-level verification of the isolation contract is by manual
+# visual inspection. The smoke tests below confirm the dispatch wiring
+# does not raise when state is mutated in mid-on_draw and again in
+# sibling/child on_draw bodies.
 class TestStateSetterIsolation:
-    """State set in one Node.on_draw must not leak to siblings or children.
-
-    Pixel-level verification of the isolation contract is by manual
-    visual inspection. The smoke tests below confirm the dispatch
-    wiring does not raise when state is mutated in mid-on_draw and
-    again in sibling/child on_draw bodies.
-    """
-
     def test_sibling_isolation_runs_without_error(self):
         class A(Node):
             def on_draw(self):

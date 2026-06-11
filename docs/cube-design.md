@@ -38,8 +38,8 @@ signatures live in `python/pyxel/cube/__init__.pyi`.
 | `Quat` | Immutable quaternion rotation |
 | `Camera` | View information (transform, fov, near, far, optional ortho size) plus the clear color |
 | `Shading` | Color lookup table (palette × levels) plus scene-wide light direction |
-| `PrimData` | Static vertex-data asset (positions / normals / uvs / indices / prim mode / cull mode); shareable across Node draws and MeshData parts |
-| `MeshData` | Hierarchical 3D model asset (parallel arrays of geometries / transforms / parents) with shared col_img and colkey |
+| `PrimData` | Static vertex-data asset (positions / normals / uvs / indices / mode / cull); shareable across Node draws and MeshData parts |
+| `MeshData` | Hierarchical 3D model asset (parallel arrays of primitives / transforms / parents) with shared col_img and colkey |
 | `Collider` | Unified collider holding shape + behavior flags + physical coefficients + motion state |
 | `Contact` | Collision-pipeline payload (contact geometry + engine-resolved motion deltas) |
 | `RaycastHit` | Result payload returned by `Node.raycast` / `Node.raycast_all` |
@@ -522,9 +522,9 @@ across `MeshData` parts.
 
 | Name | Value | Attribute |
 |---|---|---|
-| `PrimData.MODE_POINTS` | `0` | `prim` |
-| `PrimData.MODE_LINES` | `1` | `prim` |
-| `PrimData.MODE_TRIANGLES` | `2` | `prim` |
+| `PrimData.MODE_POINTS` | `0` | `mode` |
+| `PrimData.MODE_LINES` | `1` | `mode` |
+| `PrimData.MODE_TRIANGLES` | `2` | `mode` |
 | `PrimData.CULL_NONE` | `0` | `cull` |
 | `PrimData.CULL_BACK` | `1` | `cull` |
 | `PrimData.CULL_FRONT` | `2` | `cull` |
@@ -537,62 +537,64 @@ constants.
 
 | Field | Type | Default | Meaning |
 |---|---|---|---|
-| `positions` | `list[float]` | `[]` | flat (x, y, z) triples; `len(positions) % 3 == 0` |
-| `normals` | `list[float] \| None` | `None` | flat (nx, ny, nz) per face (one triple per triangle); `None` computes per-face normals on the fly at draw time (see § 9.4) |
-| `uvs` | `list[float] \| None` | `None` | flat (u, v) per vertex; `None` disables texture sampling |
-| `indices` | `list[int] \| None` | `None` | flat indices; `None` draws as a flat list whose chunk size follows `prim` |
-| `prim` | `int` | `MODE_TRIANGLES` | topology (see § 9.1) |
+| `positions` | `list[float]` | required | flat (x, y, z) triples; `len(positions) % 3 == 0` |
+| `normals` | `list[float]` | `[]` | flat (nx, ny, nz) per face (one triple per triangle); empty computes per-face normals on the fly at draw time (see § 9.4) |
+| `uvs` | `list[float]` | `[]` | flat (u, v) per vertex; empty disables texture sampling |
+| `indices` | `list[int]` | required | flat indices; empty consumes positions sequentially in chunks that follow `mode` |
+| `mode` | `int` | required | topology (see § 9.1) |
 | `cull` | `int` | `CULL_BACK` | back-face cull mode |
 
 ### 9.3 Construction and Mutation
 
 ```python
-geom = PrimData(
-    positions=[0, 1, 0,  -1, -1, 0,  1, -1, 0],
-    indices=[0, 1, 2],
+prim_data = PrimData(
+    PrimData.MODE_TRIANGLES,
+    [0, 1, 0,  -1, -1, 0,  1, -1, 0],
+    [0, 1, 2],
     uvs=[0.5, 0,  0, 1,  1, 1],
-    prim=PrimData.MODE_TRIANGLES,
     cull=PrimData.CULL_NONE,
 )
-geom.positions = [...]                  # reassign whole buffer
-geom.compute_normals()                  # explicit per-face flat normals
+prim_data.positions[0:3] = [0, 2, 0]    # in-place mutation (live view)
+prim_data.compute_normals()             # explicit per-face flat normals
 ```
 
-`__init__` is all-optional. Python native `list[float]` / `list[int]`
-are used directly. The binding layer copies the list into a contiguous
-internal buffer at attribute assignment, so subsequent draws read from
-the internal buffer without per-element FFI.
+`mode`, `positions`, and `indices` are required positional arguments;
+`normals`, `uvs`, and `cull` are optional keywords. Python native
+`list[float]` / `list[int]` are used directly.
 
-Slice mutation on the returned list (`geom.positions[0:9] = [...]`)
-does **not** propagate to the internal buffer; reassign the whole list
-to refresh.
+The vertex-attribute lists are live views backed by the internal
+buffer (the `Sound.notes` pattern): index and slice mutation write
+through to the buffer, and replacing the whole content is spelled
+`prim_data.positions[:] = [...]`. The attributes themselves cannot be
+reassigned.
 
 ### 9.4 Normal Computation
 
-When `normals` is `None` and the draw is shaded, the renderer computes
+When `normals` is empty and the draw is shaded, the renderer computes
 per-face flat normals on the fly for that draw (one `(nx, ny, nz)` per
 triangle, from each triangle's world-space vertices). This recomputes
 every draw — it is **not** cached back onto the attribute. For static
 geometry redrawn each frame, call `compute_normals()` once to compute
-and store the per-face normals on `geom.normals`, so later draws reuse
-the stored set instead of recomputing. Mutating `positions` does not
-invalidate stored normals; set `geom.normals = None` to return to
-on-the-fly computation, or call `compute_normals()` again to refresh.
+and store the per-face normals on `prim_data.normals`, so later draws
+reuse the stored set instead of recomputing. Mutating `positions` does
+not invalidate stored normals; clear them (`prim_data.normals[:] = []`)
+to return to on-the-fly computation, or call `compute_normals()` again
+to refresh.
 
 Smooth shading (averaging adjacent face normals at shared vertices) is
 not supported; cube targets flat-shaded retro look and per-face normals
 match the rasterizer's input layout.
 
-### 9.5 Topology and `prim` / `indices` Interaction
+### 9.5 Topology and `mode` / `indices` Interaction
 
-`prim` determines how indices (or positions, if `indices` is `None`)
+`mode` determines how indices (or positions, when `indices` is empty)
 are grouped:
 
 - `MODE_POINTS`: 1 index per point.
 - `MODE_LINES`: 2 indices per line segment.
 - `MODE_TRIANGLES`: 3 indices per triangle.
 
-A geometry's `prim` is part of the asset's identity — switching the
+A `PrimData`'s `mode` is part of the asset's identity — switching the
 mode at draw time is not supported. To draw the same vertices as both
 a solid mesh and a wireframe, create two separate `PrimData` instances.
 
@@ -619,7 +621,7 @@ the same internal path as `Node.prim`.
 
 | Field | Type | Meaning |
 |---|---|---|
-| `geometries` | `list[PrimData \| None]` | part i's `PrimData`, or `None` for a pure group (transform-only, no draw) |
+| `primitives` | `list[PrimData \| None]` | part i's `PrimData`, or `None` for a pure group (transform-only, no draw) |
 | `transforms` | `list[Mat4]` | part i's local transform in its parent's frame |
 | `parents` | `list[int]` | part i's parent index; `-1` marks a root; `parents[i] < i` always |
 | `col_img` | `int \| Image` | flat color (when `int`) or shared texture (when `Image`) for all parts |
@@ -627,7 +629,7 @@ the same internal path as `Node.prim`.
 
 ### 10.2 Parallel Arrays
 
-The three lists `geometries`, `transforms`, and `parents` are parallel:
+The three lists `primitives`, `transforms`, and `parents` are parallel:
 all three index the same set of mesh parts and must have the same
 length. The constructor validates the length match and raises
 `ValueError` on mismatch.
@@ -651,7 +653,7 @@ for i in range(len(transforms)):
 
 ```python
 character = MeshData(
-    geometries=[geom_body, geom_hair, geom_sword, None],
+    primitives=[prim_body, prim_hair, prim_sword, None],
     transforms=[
         Mat4.IDENTITY,
         Mat4.from_translation(Vec3(0, 1, 0)),
@@ -695,9 +697,9 @@ does not affect equality or repr.
 |---|---|
 | Reusable mesh on an actor | hold one `MeshData` and call `self.mesh(mat, mesh_asset)` in `on_draw` |
 | Same model, different transform per instance | one `MeshData` referenced from many `Node` instances |
-| Dynamic mesh (per-frame deform) | reassign `geom.positions` per frame for the part being deformed |
+| Dynamic mesh (per-frame deform) | mutate the deformed part's `prim_data.positions[:]` per frame |
 | Many small line / triangle draws | use `self.line` / `self.tri` in `on_draw` directly |
-| Custom raw draw | construct a `PrimData` directly and call `self.prim(mat, geom)` |
+| Custom raw draw | construct a `PrimData` directly and call `self.prim(mat, prim_data)` |
 
 `MeshData` is asset-only — drawing routes through `Node.mesh` (or `Node.prim`
 for a single `PrimData` without the hierarchical container).
@@ -1060,7 +1062,7 @@ self.plane(mat, img, uvs, w, h, *, colkey=None)               # free orientation
 self.mesh(mat, mesh_asset)
 
 # Generic primitive draw (low-level, takes a PrimData; see § 9)
-self.prim(mat, geom, col_img=7, *, colkey=None)
+self.prim(mat, prim_data, col_img=7, *, colkey=None)
 
 # Text (Vec3 anchor, screen-space glyphs; always camera-facing)
 self.text(pos, s, col, *, font=None)
@@ -1655,8 +1657,9 @@ evidence.
 - **`col_tex` argument name for asset draws** — `tex` lacks language
   fit without a `Texture` class.
 - **`col_image` argument name** — `col_img` is internally consistent.
-- **`mode` as the topology attribute name on `PrimData`** — generic;
-  `prim` is chosen instead.
+- **`prim` as the topology attribute name on `PrimData`** — `mode`
+  pairs with the `MODE_*` constant prefixes and avoids overloading the
+  `Node.prim` command name.
 - **`PrimData.MODE_LINES` / `DRAW_LINES` constant prefixes** —
   `MODE_LINES` matches the OpenGL `GL_LINES` style.
 - **`FloatBuffer` / `IntBuffer` typed-buffer classes** — replaced by
