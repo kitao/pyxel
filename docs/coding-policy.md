@@ -94,6 +94,9 @@
 - Parallel mirrors — shapes deliberately repeated across sibling files for API symmetry or data-structure parallelism — are preserved as-is.
   - e.g., binding wrappers mirror the Python API one-to-one; image and tilemap drawing primitives mirror each other; the `languages` array is independently loaded by each i18n JSON.
 
+- The `.pyi` API stub records each parameter's effective default — the value the implementation resolves to — while its binding may take `None` as a sentinel and resolve it internally. The `.pyi` default and the binding-signature default may therefore differ; that divergence is intentional, not an inconsistency.
+  - e.g., the `.pyi` writes `init(title="Pyxel", fps=30, ...)` while the binding takes `Option` sentinels and resolves them; `None` stays in the `.pyi` only where `None` is itself the default behavior (`display_scale` auto, `colkey` / `font` none).
+
 ### Testing
 
 Tests cover the product in four layers: Rust unit tests for platform-independent pure logic; Python API tests for the public interface surface; screenshot regression over the bundled examples, apps, and editor; and a manual pass on running samples for look, sound, and feel. Test code itself is in scope for every Source Code rule.
@@ -233,6 +236,7 @@ A *false positive* in this procedure is a fix candidate that, on closer inspecti
    - section-context label substitution for a product name (Standards > Documentation > Proper Nouns);
    - wording reused intentionally from prior entries of the same change category, including generic phrasing repeated across versions (Standards > Release Notes);
    - parallel-mirror design (Standards > Source Code > Consistency);
+   - effective-default divergence between a `.pyi` stub and its binding (Standards > Source Code > Consistency);
    - intentional platform-conditional code (`cfg(...)` gates);
    - code duplicated for self-contained distribution (e.g., samples);
    - defensive code at system boundaries.
