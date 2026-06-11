@@ -11,6 +11,7 @@
 - Avoided Rc clone when refreshing voice tone state
 - Refined README intro and user-guide star request wording
 - Made MML parser reject unresolved ties, invalid lengths, and unmatched repeats
+- Fixed profiler frame time on tick counter wraparound
 
 ## 2.9.5
 
