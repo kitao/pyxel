@@ -125,6 +125,61 @@ impl Bvh {
             }
         }
     }
+
+    // Walk the tree and call `visit` for every triangle whose owning
+    // leaf's AABB the ray can reach within `max_t`. `direction` need not
+    // be normalized: `max_t` is in units of the direction's length, so a
+    // ray mapped into mesh-local space keeps its world t parameterization.
+    pub fn query_ray(
+        &self,
+        origin: Vec3,
+        direction: Vec3,
+        max_t: f32,
+        mut visit: impl FnMut([u32; 3]),
+    ) {
+        if self.nodes.is_empty() {
+            return;
+        }
+        let inv_dir = Vec3 {
+            x: 1.0 / direction.x,
+            y: 1.0 / direction.y,
+            z: 1.0 / direction.z,
+        };
+        let mut stack: Vec<i32> = vec![0];
+        while let Some(idx) = stack.pop() {
+            let node = self.nodes[idx as usize];
+            if !ray_reaches_aabb(origin, inv_dir, &node.aabb, max_t) {
+                continue;
+            }
+            if node.left == -1 {
+                let start = node.tri_first as usize;
+                let end = start + node.tri_count as usize;
+                for tri in &self.triangles[start..end] {
+                    visit(*tri);
+                }
+            } else {
+                stack.push(node.left);
+                stack.push(node.right);
+            }
+        }
+    }
+}
+
+// Conservative slab test for BVH pruning: false only when the ray
+// certainly misses the AABB within [0, max_t]. Zero direction components
+// give ±inf slopes, which the min / max folding handles; a NaN slab
+// (origin exactly on a zero-direction face) drops out of the folding via
+// f32::min / f32::max NaN semantics and keeps the branch alive.
+fn ray_reaches_aabb(origin: Vec3, inv_dir: Vec3, aabb: &Aabb, max_t: f32) -> bool {
+    let tx1 = (aabb.min.x - origin.x) * inv_dir.x;
+    let tx2 = (aabb.max.x - origin.x) * inv_dir.x;
+    let ty1 = (aabb.min.y - origin.y) * inv_dir.y;
+    let ty2 = (aabb.max.y - origin.y) * inv_dir.y;
+    let tz1 = (aabb.min.z - origin.z) * inv_dir.z;
+    let tz2 = (aabb.max.z - origin.z) * inv_dir.z;
+    let t_enter = tx1.min(tx2).max(ty1.min(ty2)).max(tz1.min(tz2)).max(0.0);
+    let t_exit = tx1.max(tx2).min(ty1.max(ty2)).min(tz1.max(tz2)).min(max_t);
+    t_enter <= t_exit
 }
 
 fn subset_aabb(positions: &[Vec3], triangles: &[[u32; 3]], indices: &[u32]) -> Aabb {
@@ -451,6 +506,181 @@ mod tests {
         let mut hits = 0;
         bvh.query_aabb(&query, |_| hits += 1);
         assert_eq!(hits, 3);
+    }
+
+    // Two unit triangles in the z=0 plane, at x≈0 and x≈100, as a
+    // shared fixture for the ray-query tests below.
+    fn two_separated_triangles() -> Bvh {
+        let positions = vec![
+            Vec3 {
+                x: 0.0,
+                y: 0.0,
+                z: 0.0,
+            },
+            Vec3 {
+                x: 1.0,
+                y: 0.0,
+                z: 0.0,
+            },
+            Vec3 {
+                x: 0.0,
+                y: 1.0,
+                z: 0.0,
+            },
+            Vec3 {
+                x: 100.0,
+                y: 0.0,
+                z: 0.0,
+            },
+            Vec3 {
+                x: 101.0,
+                y: 0.0,
+                z: 0.0,
+            },
+            Vec3 {
+                x: 100.0,
+                y: 1.0,
+                z: 0.0,
+            },
+        ];
+        Bvh::build(positions, vec![[0u32, 1, 2], [3, 4, 5]])
+    }
+
+    #[test]
+    fn test_query_ray_prunes_off_axis_leaf() {
+        // A +Z ray through the first triangle never reaches the x≈100
+        // leaf, so only the near triangle is visited.
+        let bvh = two_separated_triangles();
+        let mut hits = Vec::new();
+        bvh.query_ray(
+            Vec3 {
+                x: 0.25,
+                y: 0.25,
+                z: -5.0,
+            },
+            Vec3 {
+                x: 0.0,
+                y: 0.0,
+                z: 1.0,
+            },
+            f32::INFINITY,
+            |tri| hits.push(tri),
+        );
+        assert_eq!(hits.len(), 1);
+        assert!(bvh.positions[hits[0][0] as usize].x < 50.0);
+    }
+
+    #[test]
+    fn test_query_ray_visits_both_leaves_along_x() {
+        // A +X ray skimming y=z=0 passes through both leaf AABBs.
+        let bvh = two_separated_triangles();
+        let mut hits = 0;
+        bvh.query_ray(
+            Vec3 {
+                x: -1.0,
+                y: 0.5,
+                z: 0.0,
+            },
+            Vec3 {
+                x: 1.0,
+                y: 0.0,
+                z: 0.0,
+            },
+            f32::INFINITY,
+            |_| hits += 1,
+        );
+        assert_eq!(hits, 2);
+    }
+
+    #[test]
+    fn test_query_ray_max_t_prunes_far_leaf() {
+        // Same +X ray, but capped before the x≈100 leaf: only the near
+        // triangle is visited. max_t is in direction-length units.
+        let bvh = two_separated_triangles();
+        let mut hits = 0;
+        bvh.query_ray(
+            Vec3 {
+                x: -1.0,
+                y: 0.5,
+                z: 0.0,
+            },
+            Vec3 {
+                x: 1.0,
+                y: 0.0,
+                z: 0.0,
+            },
+            10.0,
+            |_| hits += 1,
+        );
+        assert_eq!(hits, 1);
+    }
+
+    #[test]
+    fn test_query_ray_negative_direction_reaches_leaf() {
+        // A -X ray starting beyond the far triangle reaches both leaves.
+        let bvh = two_separated_triangles();
+        let mut hits = 0;
+        bvh.query_ray(
+            Vec3 {
+                x: 200.0,
+                y: 0.5,
+                z: 0.0,
+            },
+            Vec3 {
+                x: -1.0,
+                y: 0.0,
+                z: 0.0,
+            },
+            f32::INFINITY,
+            |_| hits += 1,
+        );
+        assert_eq!(hits, 2);
+    }
+
+    #[test]
+    fn test_query_ray_behind_origin_is_pruned() {
+        // The ray points away from every leaf: nothing is visited
+        // (the [0, max_t] clamp rejects negative-t reaches).
+        let bvh = two_separated_triangles();
+        let mut hits = 0;
+        bvh.query_ray(
+            Vec3 {
+                x: -10.0,
+                y: 0.5,
+                z: 0.0,
+            },
+            Vec3 {
+                x: -1.0,
+                y: 0.0,
+                z: 0.0,
+            },
+            f32::INFINITY,
+            |_| hits += 1,
+        );
+        assert_eq!(hits, 0);
+    }
+
+    #[test]
+    fn test_query_ray_origin_inside_leaf_aabb() {
+        // Starting inside a leaf AABB (t_enter clamps to 0) still visits
+        // that leaf regardless of direction.
+        let bvh = two_separated_triangles();
+        let mut hits = 0;
+        bvh.query_ray(
+            Vec3 {
+                x: 0.5,
+                y: 0.25,
+                z: 0.0,
+            },
+            Vec3 {
+                x: 0.0,
+                y: 0.0,
+                z: -1.0,
+            },
+            f32::INFINITY,
+            |_| hits += 1,
+        );
+        assert_eq!(hits, 1);
     }
 
     #[test]

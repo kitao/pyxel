@@ -711,6 +711,11 @@ impl Scene {
         tags.iter().any(|t| node_tags.iter().any(|nt| nt == t))
     }
 
+    // Mesh raycast through the collision BVH. The ray is mapped into
+    // mesh-local space (where the BVH lives) for pruning only; the hit
+    // test runs in world space on the world-lifted triangle, matching
+    // the mesh narrow phase. The affine map preserves the ray's t
+    // parameterization, so pruning with `max_distance` stays valid.
     fn ray_vs_mesh_collider(
         origin: Vec3,
         direction: Vec3,
@@ -720,57 +725,21 @@ impl Scene {
     ) -> Option<(f32, Vec3, Vec3)> {
         let mesh_rc = rc_ref!(coll).mesh.clone()?;
         let mesh = rc_ref!(&mesh_rc);
-        let world_per_part = mesh.compose_world_transforms(world);
+        let inv = world.inverse_value();
+        let local_origin = inv.mul_vec_value(&origin);
+        let local_direction = inv.mul_dir_value(&direction);
         let mut best: Option<(f32, Vec3, Vec3)> = None;
-        for (idx, part_world) in world_per_part.iter().enumerate() {
-            let Some(geom_rc) = &mesh.primitives[idx] else {
-                continue;
-            };
-            let g = rc_ref!(geom_rc);
-            let positions = &g.positions;
-            let indices_clone = g.indices.clone();
-            let triangle_count = if indices_clone.is_empty() {
-                positions.len() / 9
-            } else {
-                indices_clone.len() / 3
-            };
-            for tri in 0..triangle_count {
-                let (i0, i1, i2) = if indices_clone.is_empty() {
-                    (tri * 3, tri * 3 + 1, tri * 3 + 2)
-                } else {
-                    (
-                        indices_clone[tri * 3] as usize,
-                        indices_clone[tri * 3 + 1] as usize,
-                        indices_clone[tri * 3 + 2] as usize,
-                    )
-                };
-                let v0 = Vec3 {
-                    x: positions[i0 * 3],
-                    y: positions[i0 * 3 + 1],
-                    z: positions[i0 * 3 + 2],
-                };
-                let v1 = Vec3 {
-                    x: positions[i1 * 3],
-                    y: positions[i1 * 3 + 1],
-                    z: positions[i1 * 3 + 2],
-                };
-                let v2 = Vec3 {
-                    x: positions[i2 * 3],
-                    y: positions[i2 * 3 + 1],
-                    z: positions[i2 * 3 + 2],
-                };
-                let v0_rc = part_world.mul_vec(&v0);
-                let v0_w = *rc_ref!(&v0_rc);
-                let v1_rc = part_world.mul_vec(&v1);
-                let v1_w = *rc_ref!(&v1_rc);
-                let v2_rc = part_world.mul_vec(&v2);
-                let v2_w = *rc_ref!(&v2_rc);
+        mesh.with_collision_bvh(|bvh| {
+            bvh.query_ray(local_origin, local_direction, max_distance, |tri| {
+                let v0 = world.mul_vec_value(&bvh.positions[tri[0] as usize]);
+                let v1 = world.mul_vec_value(&bvh.positions[tri[1] as usize]);
+                let v2 = world.mul_vec_value(&bvh.positions[tri[2] as usize]);
                 let cur_max = best.as_ref().map_or(max_distance, |(t, _, _)| *t);
-                if let Some(hit) = ray_vs_triangle(origin, direction, v0_w, v1_w, v2_w, cur_max) {
+                if let Some(hit) = ray_vs_triangle(origin, direction, v0, v1, v2, cur_max) {
                     best = Some(hit);
                 }
-            }
-        }
+            });
+        });
         best
     }
 }
@@ -1206,6 +1175,98 @@ mod tests {
         Node::add_child(&root, &b);
         let pairs = Scene::detect_contacts(&root);
         assert!(pairs.is_empty());
+    }
+
+    // Two-triangle floor quad at y=0 under a mesh collider, as the
+    // fixture for the mesh raycast tests below.
+    fn mesh_floor_root() -> RcNode {
+        use crate::cube::collider::Collider;
+        use crate::cube::mesh_data::MeshData;
+        use crate::cube::prim_data::PrimData;
+
+        let floor_mesh = MeshData::new();
+        {
+            let m = rc_mut!(&floor_mesh);
+            let geom = PrimData::new();
+            {
+                let g = rc_mut!(&geom);
+                g.positions = vec![
+                    -5.0, 0.0, -5.0, 5.0, 0.0, -5.0, -5.0, 0.0, 5.0, 5.0, 0.0, 5.0,
+                ];
+                g.indices = vec![0, 1, 2, 1, 3, 2];
+            }
+            m.primitives = vec![Some(geom)];
+            m.transforms = vec![Mat4::identity()];
+            m.parents = vec![-1];
+        }
+        let root = Node::new();
+        let floor = Node::new();
+        rc_mut!(&floor).collider = Some(Collider::new(
+            Vec3::zero(),
+            0.0,
+            Some(floor_mesh),
+            false,
+            false,
+            0.0,
+            0.0,
+            0.5,
+            Vec3::zero(),
+            Vec3::zero(),
+        ));
+        Node::add_child(&root, &floor);
+        root
+    }
+
+    #[test]
+    fn test_raycast_mesh_floor_reports_triangle_hit() {
+        let root = mesh_floor_root();
+        let hit = Scene::raycast(
+            &root,
+            Vec3 {
+                x: 0.3,
+                y: 5.0,
+                z: 0.3,
+            },
+            Vec3 {
+                x: 0.0,
+                y: -1.0,
+                z: 0.0,
+            },
+            f32::INFINITY,
+            false,
+            None,
+        )
+        .expect("downward ray must hit the mesh floor");
+        assert!(
+            (hit.distance - 5.0).abs() < 1e-3,
+            "distance = {}",
+            hit.distance
+        );
+        // ray_vs_triangle faces the normal toward the ray origin (+Y here).
+        assert!(hit.normal.y > 0.99);
+        assert!(hit.point.y.abs() < 1e-3);
+    }
+
+    #[test]
+    fn test_raycast_mesh_respects_max_distance() {
+        let root = mesh_floor_root();
+        let hit = Scene::raycast(
+            &root,
+            Vec3 {
+                x: 0.3,
+                y: 5.0,
+                z: 0.3,
+            },
+            Vec3 {
+                x: 0.0,
+                y: -1.0,
+                z: 0.0,
+            },
+            3.0,
+            false,
+            None,
+        );
+        assert!(hit.is_none(), "floor at distance 5 must not hit within 3");
     }
 
     #[test]
