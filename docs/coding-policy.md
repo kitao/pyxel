@@ -32,7 +32,7 @@
 - Mechanical naming rules (the language's standard case conventions and lint-enforced patterns) apply first.
   - e.g., case convention and prefix/suffix patterns are checked before asking "does this read well?".
 
-- A symbol referenced from more than one file uses the same base name at every site (function and type names, CSS classes, HTML IDs, i18n keys, public API entries). Suffixed variants of the base name are allowed when each variant is exposed as a separate public entry. When sibling files disagree, the cross-referenced file's name wins.
+- A symbol referenced from more than one file uses the same base name at every site (function and type names, CSS classes, HTML IDs, i18n keys, public API entries). Suffixed variants of the base name are allowed when each variant is exposed as a separate public entry. When sibling files disagree, the cross-referenced file's name wins; between a binding and the `.pyi`, the `.pyi` wins.
   - e.g., a `pyxel-core` function `gen_bgm` keeps the same base name in `crates/pyxel-binding/src/*_wrapper.rs` and `python/pyxel/__init__.pyi`; if it is split for separate exposure, the split uses suffixes (`gen_bgm_mml`, `gen_bgm_json`) rather than a renaming.
 
 - Names that signal confusion or rewrite leftovers are rewritten.
@@ -188,7 +188,7 @@ The authoritative Pyxel product names are: Pyxel, Pyxel Editor, Pyxel Showcase, 
 
 - A file's code-side aspects (structure, syntax, identifiers, non-prose elements) remain in scope even when its prose content has been handed off for separate work.
 
-### Build and Lint
+### Format, Lint, and Test
 
 - After a code change, `make format` runs before the commit.
 
