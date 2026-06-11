@@ -106,8 +106,10 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         let x2 = f32_to_i32(x2) - self.camera_x;
         let y2 = f32_to_i32(y2) - self.camera_y;
 
-        if x1 == x2 && y1 == y2 {
-            self.write_data_with_clipping(x1, y1, value);
+        if y1 == y2 {
+            self.fill_row_with_dither(x1.min(x2), x1.max(x2), y1, value);
+        } else if x1 == x2 {
+            self.fill_column_with_dither(y1.min(y2), y1.max(y2), x1, value);
         } else if (x1 - x2).abs() > (y1 - y2).abs() {
             let (start_x, start_y, end_x, end_y) = if x1 < x2 {
                 (x1, y1, x2, y2)
@@ -184,14 +186,10 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         let top = rect.top();
         let right = rect.right();
         let bottom = rect.bottom();
-        for x in left..=right {
-            self.write_data_with_clipping(x, top, value);
-            self.write_data_with_clipping(x, bottom, value);
-        }
-        for y in top..=bottom {
-            self.write_data_with_clipping(left, y, value);
-            self.write_data_with_clipping(right, y, value);
-        }
+        self.fill_row_with_dither(left, right, top, value);
+        self.fill_row_with_dither(left, right, bottom, value);
+        self.fill_column_with_dither(top, bottom, left, value);
+        self.fill_column_with_dither(top, bottom, right, value);
     }
 
     pub fn draw_circle(&mut self, x: f32, y: f32, radius: f32, value: T) {
@@ -202,10 +200,8 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
 
         for xi in 0..=radius as i32 {
             let (x1, y1, x2, y2) = Self::ellipse_area(0.0, 0.0, r, r, xi);
-            for yi in y1..=y2 {
-                self.write_data_with_clipping(x + x1, y + yi, value);
-                self.write_data_with_clipping(x + x2, y + yi, value);
-            }
+            self.fill_column_with_dither(y + y1, y + y2, x + x1, value);
+            self.fill_column_with_dither(y + y1, y + y2, x + x2, value);
             self.fill_row_with_dither(x + y1, x + y2, y + x1, value);
             self.fill_row_with_dither(x + y1, x + y2, y + x2, value);
         }
@@ -240,10 +236,8 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
 
         for xi in x..=(x + width as i32 / 2) {
             let (x1, y1, x2, y2) = Self::ellipse_area(cx, cy, ra, rb, xi);
-            for yi in y1..=y2 {
-                self.write_data_with_clipping(x1, yi, value);
-                self.write_data_with_clipping(x2, yi, value);
-            }
+            self.fill_column_with_dither(y1, y2, x1, value);
+            self.fill_column_with_dither(y1, y2, x2, value);
         }
 
         for yi in y..=(y + height as i32 / 2) {
@@ -857,9 +851,41 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
             return;
         }
         for x in left..=right {
-            if self.should_write(x, y) {
-                self.write_data(x as usize, y as usize, value);
-            }
+            self.write_data(x as usize, y as usize, value);
+        }
+    }
+
+    fn fill_column(&mut self, y1: i32, y2: i32, x: i32, value: T) {
+        if x < self.clip_rect.left() || x > self.clip_rect.right() {
+            return;
+        }
+        let top = y1.max(self.clip_rect.top());
+        let bottom = y2.min(self.clip_rect.bottom());
+        if top > bottom {
+            return;
+        }
+        let w = self.width() as usize;
+        let x = x as usize;
+        for data in self.data[w * top as usize + x..=w * bottom as usize + x]
+            .iter_mut()
+            .step_by(w)
+        {
+            *data = value;
+        }
+    }
+
+    fn fill_column_with_dither(&mut self, y1: i32, y2: i32, x: i32, value: T) {
+        if self.alpha >= 1.0 {
+            self.fill_column(y1, y2, x, value);
+            return;
+        }
+        if x < self.clip_rect.left() || x > self.clip_rect.right() {
+            return;
+        }
+        let top = y1.max(self.clip_rect.top());
+        let bottom = y2.min(self.clip_rect.bottom());
+        for y in top..=bottom {
+            self.write_data(x as usize, y as usize, value);
         }
     }
 
