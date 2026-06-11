@@ -13,6 +13,7 @@
 - Made MML parser reject unresolved ties, invalid lengths, and unmatched repeats
 - Fixed profiler frame time on tick counter wraparound
 - Added testing and pyi default standards to the coding policy
+- Optimized line, rectb, circ, and elli drawing with span fills
 
 ## 2.9.5
 
