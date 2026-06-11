@@ -10,7 +10,7 @@
 
 Pyxel is open source under the [MIT License](https://github.com/kitao/pyxel/blob/main/LICENSE) and free to use. Let's start making retro games with Pyxel!
 
-Also, if you like Pyxel, please give it a star on [GitHub](https://github.com/kitao/pyxel).
+Also, this project is developed by one person, kept going by your [GitHub](https://github.com/kitao/pyxel) stars. If you enjoy it, please give it a star!
 
 ![](images/pyxel_thanks.png)
 
