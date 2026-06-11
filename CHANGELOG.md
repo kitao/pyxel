@@ -10,6 +10,7 @@
 - Reorganized .gitignore and added AI tool ignore entries
 - Avoided Rc clone when refreshing voice tone state
 - Refined README intro and user-guide star request wording
+- Made MML parser reject unresolved ties, invalid lengths, and unmatched repeats
 
 ## 2.9.5
 
