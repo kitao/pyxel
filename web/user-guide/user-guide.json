@@ -121,18 +121,18 @@
       "uk": "{0} є відкритим програмним забезпеченням під {1} та безкоштовним для використання. Давайте почнемо створювати ретро-ігри з {0}!"
     },
     "overview_star": {
-      "en": "Also, if you like Pyxel, please give it a star on {0}.",
-      "cn": "另外，如果您喜欢 Pyxel，请在 {0} 上给它一个 Star。",
-      "de": "Wenn Ihnen Pyxel außerdem gefällt, geben Sie ihm bitte einen Stern auf {0}.",
-      "es": "Además, si te gusta Pyxel, por favor dale una estrella en {0}.",
-      "fr": "De plus, si vous aimez Pyxel, n'hésitez pas à lui donner une étoile sur {0}.",
-      "it": "Inoltre, se ti piace Pyxel, dagli una stella su {0}.",
-      "ja": "また、Pyxel を気に入ったら、{0} でスターをよろしくお願いします。",
-      "ko": "또한, Pyxel이 마음에 드셨다면 {0}에서 별을 주세요.",
-      "pt": "Além disso, se você gostou do Pyxel, por favor dê uma estrela no {0}.",
-      "ru": "Также, если вам понравился Pyxel, пожалуйста, поставьте ему звезду на {0}.",
-      "tr": "Ayrıca, Pyxel'i beğendiyseniz, lütfen {0} üzerinde bir yıldız verin.",
-      "uk": "Також, якщо вам сподобався Pyxel, будь ласка, поставте йому зірку на {0}."
+      "en": "Also, this project is developed by one person, kept going by your {0} stars. If you enjoy it, please give it a star!",
+      "cn": "另外，这个项目由一人开发，{0} 上的星标是持续开发的动力。如果您喜欢，请给它一个 Star！",
+      "de": "Außerdem wird dieses Projekt von einer einzelnen Person entwickelt und durch Ihre Sterne auf {0} am Leben erhalten. Wenn es Ihnen gefällt, geben Sie ihm bitte einen Stern!",
+      "es": "Además, este proyecto es desarrollado por una sola persona, impulsado por tus estrellas en {0}. Si te gusta, ¡por favor dale una estrella!",
+      "fr": "De plus, ce projet est développé par une seule personne, soutenu par vos étoiles sur {0}. Si vous l'aimez, n'hésitez pas à lui donner une étoile !",
+      "it": "Inoltre, questo progetto è sviluppato da una sola persona, sostenuto dalle tue stelle su {0}. Se ti piace, lascia una stella!",
+      "ja": "また、このプロジェクトは {0} のスターを励みに、個人で開発を続けています。気に入ったらぜひスター登録をお願いします！",
+      "ko": "또한, 이 프로젝트는 한 사람이 개발하고 있으며, {0}의 별이 큰 응원이 됩니다. 마음에 드셨다면 별을 주세요!",
+      "pt": "Além disso, este projeto é desenvolvido por uma única pessoa, mantido pelas suas estrelas no {0}. Se você gostou, por favor dê uma estrela!",
+      "ru": "Также, этот проект разрабатывается одним человеком, и звёзды на {0} — большая поддержка. Если вам нравится, пожалуйста, поставьте звезду!",
+      "tr": "Ayrıca, bu proje tek bir kişi tarafından geliştirilmektedir ve {0} üzerindeki yıldızlarınız büyük bir teşviktir. Beğendiyseniz, lütfen bir yıldız verin!",
+      "uk": "Також, цей проєкт розробляється однією людиною, і ваші зірки на {0} — велика підтримка. Якщо вам подобається, будь ласка, поставте зірку!"
     },
     "specs_title": {
       "en": "Specifications",
