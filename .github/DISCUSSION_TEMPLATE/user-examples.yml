@@ -1,24 +1,24 @@
-title: "Your Creation Title / 作品名"
+title: "Your Work Title / 作品名"
 labels: []
 body:
   - type: markdown
     attributes:
       value: |
-        Share your Pyxel creation! Your submission will be featured on the [Pyxel User Examples](https://kitao.github.io/pyxel-user-examples/) page. Enter your creation's title in the Title field above.
+        Share your Pyxel work! Your submission will be featured on the [Pyxel User Examples](https://kitao.github.io/pyxel-user-examples/) page. Enter your work's title in the Title field above.
         Pyxelで作った作品を投稿してください！投稿された作品は [Pyxel User Examples](https://kitao.github.io/pyxel-user-examples/) ページで紹介されます。上のTitleに作品名を入力してください。
   - type: input
     id: description
     attributes:
       label: "Description / 作品の説明"
-      description: "Brief one-line description of your creation / 作品を一行で説明してください"
+      description: "Brief one-line description of your work / 作品を一行で説明してください"
       placeholder: "e.g. Side-scrolling action game / 横スクロールアクションゲーム"
     validations:
       required: true
   - type: input
     id: url
     attributes:
-      label: "Creation URL (optional) / 作品URL（任意）"
-      description: "URL of your published creation, if available / 作品を公開している場合はURLを記入してください"
+      label: "Work URL (optional) / 作品URL（任意）"
+      description: "URL of your published work, if available / 作品を公開している場合はURLを記入してください"
     validations:
       required: false
   - type: input
