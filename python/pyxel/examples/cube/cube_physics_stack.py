@@ -5,10 +5,21 @@ from pyxel.cube import (
     Collider,
     Mat4,
     Node,
-    Scene,
     Shading,
     Vec3,
 )
+
+# Carnival-style 2-high pyramid. Vertical chains of three or more cans
+# collapse under the single-pass resolver (stable stacks are out of
+# scope, cube-design.md § 16); a 2-high interlocked pyramid settles
+# with ~0.1 sink and no lateral drift.
+CAN_LAYOUT = [
+    Vec3(-0.85, 0.4, 0),
+    Vec3(0.0, 0.4, 0),
+    Vec3(0.85, 0.4, 0),
+    Vec3(-0.425, 1.2, 0),
+    Vec3(0.425, 1.2, 0),
+]
 
 
 class Floor(Node):
@@ -23,9 +34,6 @@ class Floor(Node):
 
 
 class Can(Node):
-    def __new__(cls, *args, **kwargs):
-        return super().__new__(cls)
-
     def __init__(self, pos: Vec3):
         super().__init__()
         self.transform = Mat4.from_translation(pos)
@@ -51,9 +59,6 @@ class Can(Node):
 
 
 class Bullet(Node):
-    def __new__(cls, *args, **kwargs):
-        return super().__new__(cls)
-
     def __init__(self, pos: Vec3, vel: Vec3):
         super().__init__()
         self.transform = Mat4.from_translation(pos)
@@ -80,14 +85,15 @@ class App:
     def __init__(self):
         pyxel.init(160, 120, title="Cube Physics: Stack")
         pyxel.mouse(True)
-        self.scene = Scene()
-        self.scene.clear_color = 1
+        self.scene = Node()
         self.scene.shading = Shading([pyxel.colors[i] for i in range(16)])
         self.scene.shading.direction = Vec3(0.4, -0.8, 0.2)
         self.scene.add_child(Floor())
-        for y in range(4):
-            self.scene.add_child(Can(Vec3(0, 0.4 + y * 0.85, 0)))
-        self.orbit = OrbitCamera(target=Vec3(0, 1.5, 0), pitch_deg=15, radius=10)
+        for pos in CAN_LAYOUT:
+            self.scene.add_child(Can(pos))
+        self.orbit = OrbitCamera(target=Vec3(0, 1, 0), pitch_deg=15, radius=10)
+        self.orbit.camera.clear_color = 1
+        self.scene.camera = self.orbit.camera
         pyxel.run(self.update, self.draw)
 
     def update(self):
@@ -99,7 +105,7 @@ class App:
         self.scene.update()
 
     def draw(self):
-        self.scene.draw(0, 0, 160, 120, self.orbit.camera)
+        self.scene.draw(0, 0, 160, 120)
 
 
 if __name__ == "__main__":
