@@ -7,7 +7,6 @@ from pyxel.cube import (
     MeshData,
     Node,
     PrimData,
-    Scene,
     Shading,
     Vec3,
 )
@@ -31,7 +30,7 @@ def _stage_mesh() -> MeshData:
     indices = [0, 1, 2, 1, 3, 2]
     prim_data = PrimData(PrimData.MODE_TRIANGLES, verts, indices)
     return MeshData(
-        geometries=[prim_data],
+        primitives=[prim_data],
         transforms=[Mat4.IDENTITY],
         parents=[-1],
         col_img=11,
@@ -49,9 +48,6 @@ class Stage(Node):
 
 
 class Wall(Node):
-    def __new__(cls, *args, **kwargs):
-        return super().__new__(cls)
-
     def __init__(self, pos: Vec3, size: Vec3):
         super().__init__()
         self.transform = Mat4.from_translation(pos)
@@ -112,8 +108,7 @@ class App:
     def __init__(self):
         pyxel.init(160, 120, title="Cube Physics: Character")
         pyxel.mouse(True)
-        self.scene = Scene()
-        self.scene.clear_color = 1
+        self.scene = Node()
         self.scene.shading = Shading([pyxel.colors[i] for i in range(16)])
         self.scene.shading.direction = Vec3(0.4, -0.8, 0.2)
         self.scene.add_child(Stage())
@@ -124,6 +119,8 @@ class App:
         self.scene.add_child(MovingPlatform())
         self.scene.add_child(Character())
         self.orbit = OrbitCamera(target=Vec3(0, 1, 0), pitch_deg=35, radius=18)
+        self.orbit.camera.clear_color = 1
+        self.scene.camera = self.orbit.camera
         pyxel.run(self.update, self.draw)
 
     def update(self):
@@ -133,7 +130,7 @@ class App:
         self.scene.update()
 
     def draw(self):
-        self.scene.draw(0, 0, 160, 120, self.orbit.camera)
+        self.scene.draw(0, 0, 160, 120)
 
 
 if __name__ == "__main__":

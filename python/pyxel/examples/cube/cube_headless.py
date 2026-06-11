@@ -1,5 +1,5 @@
 import pyxel
-from pyxel.cube import Camera, Mat4, Node, Scene, Vec3
+from pyxel.cube import Camera, Mat4, Node, Shading, Vec3
 
 W, H = 40, 30
 LOG = open("/tmp/cube_check.log", "w")
@@ -19,36 +19,30 @@ def dump(label: str) -> None:
 
 pyxel.init(W, H, title="cube headless")
 
-scene = Scene()
+scene = Node()
+scene.shading = Shading([pyxel.colors[i] for i in range(16)])
 camera = Camera()
+camera.clear_color = 0
+scene.camera = camera
 
 
-# Per-case helper: every check pattern is a `scene.clear_color + Node` pair
-# that draws into `scene` then dumps the resulting screen as ASCII hex.
-# `Node.__new__` does not accept extra positional arguments, so the draw
-# callback is set after construction rather than passed through __init__.
+# Per-case helper: every check pattern is a fresh Probe node that draws
+# into `scene` then dumps the resulting screen as ASCII hex.
 class Probe(Node):
-    def __init__(self):
+    def __init__(self, draw_fn):
         super().__init__()
-        self._draw_fn = None
-
-    def set_draw(self, draw_fn) -> None:
         self._draw_fn = draw_fn
 
     def on_draw(self):
-        if self._draw_fn is not None:
-            self._draw_fn(self)
+        self._draw_fn(self)
 
 
 def run_case(label: str, draw_fn) -> None:
     # Replace any existing probe so test cases stay isolated.
     for child in list(scene.children):
         scene.remove_child(child)
-    scene.clear_color = 0
-    probe = Probe()
-    probe.set_draw(draw_fn)
-    scene.add_child(probe)
-    scene.draw(0, 0, W, H, camera)
+    scene.add_child(Probe(draw_fn))
+    scene.draw(0, 0, W, H)
     pyxel.flip()
     dump(label)
 
@@ -56,33 +50,31 @@ def run_case(label: str, draw_fn) -> None:
 # --- case 1: a single unshaded front-facing triangle, identity camera ---
 # Unshaded so the test focuses on geometry / projection rather than the
 # scene-wide shading direction.
+def _tri_near(node):
+    node.shaded(False)
+    node.tri(Vec3(-1, -1, 0), Vec3(1, -1, 0), Vec3(0, 1, 0), 8)
+
+
 camera.transform = Mat4.look_at(Vec3(0, 0, 4), Vec3.ZERO, Vec3.UP)
-run_case(
-    "triangle (color 8) at z=0, camera at +Z=4 looking at origin",
-    lambda node: node.tri(
-        Vec3(-1, -1, 0), Vec3(1, -1, 0), Vec3(0, 1, 0), 8, shaded=False
-    ),
-)
+run_case("triangle (color 8) at z=0, camera at +Z=4 looking at origin", _tri_near)
 
 
 # --- case 2: same triangle, but moved further away ---
-run_case(
-    "triangle (color 11) at z=-2 (further from camera)",
-    lambda node: node.tri(
-        Vec3(-1, -1, -2),
-        Vec3(1, -1, -2),
-        Vec3(0, 1, -2),
-        11,
-        shaded=False,
-    ),
-)
+def _tri_far(node):
+    node.shaded(False)
+    node.tri(Vec3(-1, -1, -2), Vec3(1, -1, -2), Vec3(0, 1, -2), 11)
+
+
+run_case("triangle (color 11) at z=-2 (further from camera)", _tri_far)
 
 
 # --- case 3: rect on Mat4.IDENTITY, identity camera at +Z=4 ---
-run_case(
-    "rect 2x2 on IDENTITY (face normal +Z), color 12",
-    lambda node: node.rect(Mat4.IDENTITY, 2.0, 2.0, 12, shaded=False),
-)
+def _rect_identity(node):
+    node.shaded(False)
+    node.rect(Mat4.IDENTITY, 2.0, 2.0, 12)
+
+
+run_case("rect 2x2 on IDENTITY (face normal +Z), color 12", _rect_identity)
 
 
 # --- case 4: crosshair lines at origin ---
@@ -102,9 +94,9 @@ run_case(
 
 
 # --- case 6: cube with shaded faces ---
-# Scene seeds a default Shading from the current Pyxel palette at
-# construction; box is rendered with shaded=True (default) to exercise
-# the directional shading LUT.
+# The scene root carries the Shading seeded at the top of this script;
+# box is drawn with shading on (the default state) to exercise the
+# directional shading LUT.
 camera.transform = Mat4.look_at(Vec3(3, 2, 4), Vec3.ZERO, Vec3.UP)
 
 
@@ -116,53 +108,43 @@ def _box(node):
 run_case("filled box (size 2) viewed from (3,2,4)", _box)
 
 
-# --- case 7: per-call alpha (dither pattern) ---
-run_case(
-    "rect with dither_alpha=0.5 (50% Bayer dither)",
-    lambda node: node.rect(
-        Mat4.IDENTITY,
-        2.0,
-        2.0,
-        9,
-        shaded=False,
-        dither_alpha=0.5,
-    ),
-)
+# --- case 7: dither state (50% alpha pattern) ---
+def _rect_dithered(node):
+    node.shaded(False)
+    node.dither(0.5)
+    node.rect(Mat4.IDENTITY, 2.0, 2.0, 9)
 
 
-# --- case 8: per-call depth_test off (always on top) ---
+run_case("rect with dither(0.5) (50% Bayer dither)", _rect_dithered)
+
+
+# --- case 8: depth_test state off (always on top) ---
 def _two_rects(node):
+    node.shaded(False)
     # Far rect drawn first (color 11, occupies full 2x2 area).
-    node.rect(
-        Mat4.from_translation(Vec3(0, 0, -1)),
-        2.0,
-        2.0,
-        11,
-        shaded=False,
-    )
-    # Closer rect with depth_test off — overrides regardless of z.
-    node.rect(Mat4.IDENTITY, 1.0, 1.0, 14, shaded=False, depth_test=False)
+    node.rect(Mat4.from_translation(Vec3(0, 0, -1)), 2.0, 2.0, 11)
+    # Closer rect with depth test off — overrides regardless of z.
+    node.depth_test(False)
+    node.rect(Mat4.IDENTITY, 1.0, 1.0, 14)
 
 
-run_case("rect overdraw with depth_test=False", _two_rects)
+run_case("rect overdraw with depth_test(False)", _two_rects)
 
 
-# --- case 9: BILLBOARD_ON makes a tilted plane face the camera ---
-# Without billboard, a 45°-tilted rect appears as a diamond; with
-# BILLBOARD_ON, the rotation is overridden to face the camera so the
-# rect renders as a full square.
-camera.transform = Mat4.look_at(Vec3(0, 0, 4), Vec3.ZERO, Vec3.UP)
-run_case(
-    "rect with billboard=BILLBOARD_ON (faces camera)",
-    lambda node: node.rect(
-        Mat4.from_euler(Vec3(45, 30, 0)),
-        2.0,
-        2.0,
-        13,
-        shaded=False,
-        billboard=Node.BILLBOARD_ON,
-    ),
-)
+# --- case 9: camera-facing primitive under an oblique camera ---
+# Billboarding is baked into the camera-facing primitives (circ, circb,
+# sprite, text) rather than toggled per call. Viewed from an oblique
+# angle, a billboarded circle still rasterizes as a round disc instead
+# of a foreshortened ellipse.
+camera.transform = Mat4.look_at(Vec3(3, 2, 4), Vec3.ZERO, Vec3.UP)
+
+
+def _circ_billboard(node):
+    node.shaded(False)
+    node.circ(Vec3.ZERO, 1.0, 13)
+
+
+run_case("circ r=1 from oblique camera (billboards to a disc)", _circ_billboard)
 
 
 pyxel.quit()

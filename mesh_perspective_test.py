@@ -1,5 +1,5 @@
 import pyxel
-from pyxel.cube import Camera, Geometry, Mat4, Mesh, Node, Scene, Vec3
+from pyxel.cube import Camera, Mat4, MeshData, Node, PrimData, Shading, Vec3
 
 W, H = 40, 30
 pyxel.init(W, H)
@@ -68,19 +68,23 @@ indices = [
     6,
     5,
 ]
-geom = Geometry(positions=verts, indices=indices)
-mesh = Mesh(geometries=[geom], transforms=[Mat4.IDENTITY], parents=[-1], col_img=7)
+prim_data = PrimData(PrimData.MODE_TRIANGLES, verts, indices)
+mesh_data = MeshData(
+    primitives=[prim_data], transforms=[Mat4.IDENTITY], parents=[-1], col_img=7
+)
 
-scene = Scene()
-scene.clear_color = 0
+scene = Node()
+scene.shading = Shading([pyxel.colors[i] for i in range(16)])
 
 camera = Camera()
+camera.clear_color = 0
 camera.transform = Mat4.look_at(Vec3(3, 2, 4), Vec3.ZERO, Vec3.UP)
+scene.camera = camera
 
 
 class MeshNode(Node):
     def on_draw(self):
-        self.mesh(Mat4.IDENTITY, mesh)
+        self.mesh(Mat4.IDENTITY, mesh_data)
 
 
 class BoxNode(Node):
@@ -104,7 +108,7 @@ with open("/tmp/cmp_path.txt", "w") as f:
     for child in list(scene.children):
         scene.remove_child(child)
     scene.add_child(MeshNode())
-    scene.draw(0, 0, W, H, camera)
+    scene.draw(0, 0, W, H)
     pyxel.flip()
     dump_screen("mesh path", f)
 
@@ -112,7 +116,7 @@ with open("/tmp/cmp_path.txt", "w") as f:
     for child in list(scene.children):
         scene.remove_child(child)
     scene.add_child(BoxNode())
-    scene.draw(0, 0, W, H, camera)
+    scene.draw(0, 0, W, H)
     pyxel.flip()
     dump_screen("box_solid path", f)
 

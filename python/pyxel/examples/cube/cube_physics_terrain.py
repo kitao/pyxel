@@ -7,7 +7,6 @@ from pyxel.cube import (
     MeshData,
     Node,
     PrimData,
-    Scene,
     Shading,
     Vec3,
 )
@@ -32,7 +31,7 @@ def _slope_mesh() -> MeshData:
             indices.extend([i, i + nx, i + 1, i + 1, i + nx, i + nx + 1])
     prim_data = PrimData(PrimData.MODE_TRIANGLES, verts, indices)
     return MeshData(
-        geometries=[prim_data],
+        primitives=[prim_data],
         transforms=[Mat4.IDENTITY],
         parents=[-1],
         col_img=3,
@@ -66,7 +65,8 @@ class Ball(Node):
         # its own basis and drift sideways across the slope. Compose a
         # world translation by left-multiplying with from_translation.
         push = Mat4.from_translation(contact.normal * contact.depth)
-        self.transform = push * self.transform * contact.delta_rotation
+        spin = Mat4.from_quat(contact.delta_rotation)
+        self.transform = push * self.transform * spin
         self.collider.velocity += contact.delta_velocity
         self.collider.angular_velocity += contact.delta_angular_velocity
 
@@ -78,13 +78,14 @@ class App:
     def __init__(self):
         pyxel.init(160, 120, title="Cube Physics: Terrain")
         pyxel.mouse(True)
-        self.scene = Scene()
-        self.scene.clear_color = 1
+        self.scene = Node()
         self.scene.shading = Shading([pyxel.colors[i] for i in range(16)])
         self.scene.shading.direction = Vec3(0.4, -0.8, 0.2)
         self.scene.add_child(Floor())
         self.scene.add_child(Ball())
         self.orbit = OrbitCamera(target=Vec3(0, 0, 0), pitch_deg=25, radius=18)
+        self.orbit.camera.clear_color = 1
+        self.scene.camera = self.orbit.camera
         pyxel.run(self.update, self.draw)
 
     def update(self):
@@ -94,7 +95,7 @@ class App:
         self.scene.update()
 
     def draw(self):
-        self.scene.draw(0, 0, 160, 120, self.orbit.camera)
+        self.scene.draw(0, 0, 160, 120)
 
 
 # `if __name__` guard so the headless audit script can import the

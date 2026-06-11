@@ -9,7 +9,6 @@ from pyxel.cube import (
     Node,
     PrimData,
     Quat,
-    Scene,
     Shading,
     Vec3,
 )
@@ -232,7 +231,7 @@ def _make_box_mesh(size, color):
     pos = [v * size for v in _UNIT_BOX_VERTICES]
     prim_data = PrimData(PrimData.MODE_TRIANGLES, pos, _BOX_TRI_INDICES)
     return MeshData(
-        geometries=[prim_data],
+        primitives=[prim_data],
         transforms=[Mat4.IDENTITY],
         parents=[-1],
         col_img=color,
@@ -302,7 +301,7 @@ def _make_sphere_mesh(radius, color):
     scaled = [v * radius for v in pos]
     prim_data = PrimData(PrimData.MODE_TRIANGLES, scaled, tri_indices)
     return MeshData(
-        geometries=[prim_data],
+        primitives=[prim_data],
         transforms=[Mat4.IDENTITY],
         parents=[-1],
         col_img=color,
@@ -335,7 +334,7 @@ def _make_textured_box(size):
         idx_list.extend([base, base + 2, base + 1, base + 1, base + 2, base + 3])
     prim_data = PrimData(PrimData.MODE_TRIANGLES, pos_list, idx_list, uvs=uv_list)
     return MeshData(
-        geometries=[prim_data],
+        primitives=[prim_data],
         transforms=[Mat4.IDENTITY],
         parents=[-1],
         col_img=pyxel.images[0],
@@ -433,8 +432,7 @@ class App:
     def __init__(self):
         pyxel.init(256, 192, title="Pyxel Cube Showcase")
         _load_texture()
-        self.scene = Scene()
-        self.scene.clear_color = 0
+        self.scene = Node()
         self.shading = Shading(_palette())
         # Light travels from upper-left-front to lower-right-back: +X
         # (right), -Y (down), -Z (away from viewer).
@@ -444,7 +442,9 @@ class App:
         self.scene.add_child(self.actor)
         self.camera = Camera()
         self.camera.fov = 60.0
+        self.camera.clear_color = 0
         self.camera.transform = Mat4.look_at(Vec3(0, 0, 22), Vec3.ZERO, Vec3.UP)
+        self.scene.camera = self.camera
         pyxel.run(self.update, self.draw)
 
     def update(self):
@@ -455,7 +455,7 @@ class App:
         self.scene.update()
 
     def draw(self):
-        self.scene.draw(0, 0, 256, 192, self.camera)
+        self.scene.draw(0, 0, 256, 192)
 
 
 App()
