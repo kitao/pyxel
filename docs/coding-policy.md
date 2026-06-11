@@ -95,7 +95,7 @@
   - e.g., binding wrappers mirror the Python API one-to-one; image and tilemap drawing primitives mirror each other; the `languages` array is independently loaded by each i18n JSON.
 
 - The `.pyi` API stub records each parameter's effective default — the value the implementation resolves to — while its binding may take `None` as a sentinel and resolve it internally. The `.pyi` default and the binding-signature default may therefore differ; that divergence is intentional, not an inconsistency.
-  - e.g., the `.pyi` writes `init(title="Pyxel", fps=30, ...)` and `look_at(eye, target, up=Vec3.UP)` / `box(..., col_img=7)` while the binding takes `up=None` / `col_img=None` and maps them; `None` stays in the `.pyi` only where `None` is itself the default behavior (`display_scale` auto, `max_distance` unbounded, `colkey` / `font` none).
+  - e.g., the `.pyi` writes `init(title="Pyxel", fps=30, ...)` while the binding takes `Option` sentinels and resolves them; `None` stays in the `.pyi` only where `None` is itself the default behavior (`display_scale` auto, `colkey` / `font` none).
 
 ### Testing
 
