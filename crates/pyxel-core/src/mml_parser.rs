@@ -72,10 +72,10 @@ pub fn parse_mml(mml: &str) -> Result<Vec<MmlCommand>, String> {
 
     let mut connected_note: Option<u32> = None;
     let mut last_note_index: Option<usize> = None;
+    let mut repeat_depth: u32 = 0;
 
     // Parse MML commands
     while stream.peek().is_some() {
-        let mut is_connected = false;
         if let Some(bpm) = parse_command(&mut stream, "T", RANGE_GE1)? {
             // T<bpm> - Set tempo (bpm >= 1)
             is_tempo_set = true;
@@ -146,9 +146,8 @@ pub fn parse_mml(mml: &str) -> Result<Vec<MmlCommand>, String> {
         } else if parse_string(&mut stream, "L").is_ok() {
             // L<len> - Set default note length (1 <= len <= 192)
             note_ticks = parse_length_ticks(&mut stream, note_ticks)?;
-        } else if let Some((command, connected)) = parse_note(&mut stream, octave, note_ticks)? {
+        } else if let Some((command, is_connected)) = parse_note(&mut stream, octave, note_ticks)? {
             // C/D/E/F/G/A/B[#+-][<len>][.][&] - Play note (1 <= len <= 192)
-            is_connected = connected;
 
             // Combine durations if this note is tied to the previous one.
             if let Some(prev_note) = connected_note.take() {
@@ -238,6 +237,9 @@ pub fn parse_mml(mml: &str) -> Result<Vec<MmlCommand>, String> {
             commands.push(command);
         } else if let Some(command) = parse_rest(&mut stream, note_ticks)? {
             // R[<len>][.] - Rest (1 <= len <= 192)
+            if connected_note.is_some() {
+                parse_error!(stream, "Tie '&' is not followed by a note");
+            }
             if !is_tempo_set {
                 is_tempo_set = true;
                 commands.push(MmlCommand::Tempo {
@@ -245,26 +247,31 @@ pub fn parse_mml(mml: &str) -> Result<Vec<MmlCommand>, String> {
                 });
             }
 
-            if is_connected && quantize != 100 {
-                commands.push(MmlCommand::Quantize {
-                    gate_ratio: gate_time_to_gate_ratio(quantize),
-                });
-            }
-            connected_note = None;
-
             commands.push(command);
             last_note_index = None;
         } else if parse_string(&mut stream, "[").is_ok() {
             // [ - Repeat start marker
+            repeat_depth += 1;
             commands.push(MmlCommand::RepeatStart);
         } else if parse_string(&mut stream, "]").is_ok() {
             // ]<count> - Repeat end (count >= 1, 0 = infinite)
+            if repeat_depth == 0 {
+                parse_error!(stream, "Repeat end ']' has no matching '['");
+            }
+            repeat_depth -= 1;
             let count = parse_number(&mut stream, "count", RANGE_GE1).unwrap_or(0);
             commands.push(MmlCommand::RepeatEnd { play_count: count });
         } else {
             let c = stream.peek().unwrap();
             parse_error!(stream, "Unexpected character '{c}'");
         }
+    }
+
+    if connected_note.is_some() {
+        parse_error!(stream, "Tie '&' is not followed by a note");
+    }
+    if repeat_depth > 0 {
+        parse_error!(stream, "Repeat start '[' has no matching ']'");
     }
     Ok(commands)
 }
@@ -414,7 +421,9 @@ fn parse_length_ticks(stream: &mut CharStream, note_ticks: u32) -> Result<u32, S
     const WHOLE_NOTE_TICKS: u32 = TICKS_PER_QUARTER_NOTE * 4;
     let mut note_ticks = note_ticks;
 
-    if let Ok(len) = parse_number::<u32>(stream, "Note length", RANGE_LENGTH) {
+    skip_whitespace(stream);
+    if stream.peek().is_some_and(|c| c.is_ascii_digit()) {
+        let len: u32 = expect_number(stream, "Note length", RANGE_LENGTH)?;
         if WHOLE_NOTE_TICKS.is_multiple_of(len) {
             note_ticks = WHOLE_NOTE_TICKS / len;
         } else {
@@ -496,6 +505,10 @@ fn parse_rest(stream: &mut CharStream, note_ticks: u32) -> Result<Option<MmlComm
 
     let mut duration_ticks = parse_length_ticks(stream, note_ticks)?;
     while parse_string(stream, "&").is_ok() {
+        skip_whitespace(stream);
+        if !stream.peek().is_some_and(|c| c.is_ascii_digit()) {
+            parse_error!(stream, "Tie '&' after a rest requires a length");
+        }
         duration_ticks += parse_length_ticks(stream, note_ticks)?;
     }
 
@@ -802,6 +815,29 @@ mod tests {
         assert_eq!(notes.len(), 2);
         assert_eq!(notes[0], (60, 48)); // C4
         assert_eq!(notes[1], (62, 48)); // D4
+    }
+
+    #[test]
+    fn test_tie_same_note_merges() {
+        let cmds = parse("C4& C4");
+        let notes = note_commands(&cmds);
+        // 48 + 48 merged into a single note
+        assert_eq!(notes, [(60, 96)]);
+    }
+
+    #[test]
+    fn test_tie_chain_merges() {
+        let cmds = parse("C4& C4& C4");
+        let notes = note_commands(&cmds);
+        assert_eq!(notes, [(60, 144)]);
+    }
+
+    #[test]
+    fn test_tie_survives_non_note_commands() {
+        // Parameter commands may sit between tied notes
+        let cmds = parse("C4& T140 C4");
+        let notes = note_commands(&cmds);
+        assert_eq!(notes, [(60, 96)]);
     }
 
     // Repeat
@@ -1118,14 +1154,37 @@ mod tests {
     }
 
     #[test]
-    fn test_err_note_length_out_of_range_falls_back() {
-        // L0 and L193 are out of range - parser silently uses default length
-        let cmds_l0 = parse("L0 C");
-        let cmds_default = parse("C");
-        assert_eq!(note_commands(&cmds_l0), note_commands(&cmds_default));
+    fn test_err_note_length_out_of_range() {
+        assert!(parse_mml("L0 C").is_err());
+        assert!(parse_mml("L193 C").is_err());
+        assert!(parse_mml("C0").is_err());
+    }
 
-        let cmds_l193 = parse("L193 C");
-        assert_eq!(note_commands(&cmds_l193), note_commands(&cmds_default));
+    #[test]
+    fn test_err_tie_before_rest() {
+        assert!(parse_mml("C4& R4").is_err());
+    }
+
+    #[test]
+    fn test_err_tie_at_end() {
+        assert!(parse_mml("C4&").is_err());
+    }
+
+    #[test]
+    fn test_err_rest_tie_without_length() {
+        assert!(parse_mml("R4& C4").is_err());
+    }
+
+    #[test]
+    fn test_err_unmatched_repeat_end() {
+        assert!(parse_mml("]2").is_err());
+        assert!(parse_mml("[C]2 ]").is_err());
+    }
+
+    #[test]
+    fn test_err_unclosed_repeat_start() {
+        assert!(parse_mml("[C").is_err());
+        assert!(parse_mml("[[C]2").is_err());
     }
 
     #[test]

@@ -14,6 +14,11 @@
 - Reorganized .gitignore and added AI tool ignore entries
 - Avoided Rc clone when refreshing voice tone state
 - Refined README intro and user-guide star request wording
+- Made MML parser reject unresolved ties, invalid lengths, and unmatched repeats
+- Fixed profiler frame time on tick counter wraparound
+- Added voice chunk invariance and generated MML parse tests
+- Added testing standards section to the coding policy
+- Refined coding policy wording for concision and consistency
 
 ## 2.9.5
 
