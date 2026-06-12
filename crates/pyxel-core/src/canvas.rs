@@ -242,6 +242,9 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         let y = f32_to_i32(y) - self.camera_y;
         let width = f32_to_u32(width);
         let height = f32_to_u32(height);
+        if width == 0 || height == 0 {
+            return;
+        }
         let (ra, rb, cx, cy) = Self::ellipse_params(x, y, width, height);
 
         for xi in x..=(x + width as i32 / 2) {
@@ -262,6 +265,9 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         let y = f32_to_i32(y) - self.camera_y;
         let width = f32_to_u32(width);
         let height = f32_to_u32(height);
+        if width == 0 || height == 0 {
+            return;
+        }
         let (ra, rb, cx, cy) = Self::ellipse_params(x, y, width, height);
 
         for xi in x..=(x + width as i32 / 2) {
@@ -309,6 +315,12 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         if y2 > y3 {
             swap(&mut y2, &mut y3);
             swap(&mut x2, &mut x3);
+        }
+
+        // All vertices on one row: the split fill below would drop the x3 span
+        if y1 == y3 {
+            self.fill_row_with_dither(x1.min(x2).min(x3), x1.max(x2).max(x3), y1, value);
+            return;
         }
 
         let slope12 = if y2 == y1 {
@@ -963,15 +975,24 @@ impl CopyArea {
         let width = width.abs();
         let height = height.abs();
 
-        let left_cut = (src_rect.left() - src_x)
-            .max(dst_rect.left() - dst_x)
+        let src_left_cut = src_rect.left() - src_x;
+        let src_top_cut = src_rect.top() - src_y;
+        let src_right_cut = src_x + width - 1 - src_rect.right();
+        let src_bottom_cut = src_y + height - 1 - src_rect.bottom();
+
+        // A flipped blit reads the source backwards, so a source overhang
+        // trims the opposite edge of the copy window
+        let left_cut = (dst_rect.left() - dst_x)
+            .max(if flip_x { src_right_cut } else { src_left_cut })
             .max(0);
-        let top_cut = (src_rect.top() - src_y).max(dst_rect.top() - dst_y).max(0);
-        let right_cut = (src_x + width - 1 - src_rect.right())
-            .max(dst_x + width - 1 - dst_rect.right())
+        let top_cut = (dst_rect.top() - dst_y)
+            .max(if flip_y { src_bottom_cut } else { src_top_cut })
             .max(0);
-        let bottom_cut = (src_y + height - 1 - src_rect.bottom())
-            .max(dst_y + height - 1 - dst_rect.bottom())
+        let right_cut = (dst_x + width - 1 - dst_rect.right())
+            .max(if flip_x { src_left_cut } else { src_right_cut })
+            .max(0);
+        let bottom_cut = (dst_y + height - 1 - dst_rect.bottom())
+            .max(if flip_y { src_top_cut } else { src_bottom_cut })
             .max(0);
 
         let width = (width - left_cut - right_cut).max(0);
@@ -1113,5 +1134,67 @@ impl PerspectiveProjection {
             self.r10 * vx2 + self.r11 * vy2 - self.r12,
             self.r21 * vy2 - self.r22,
         )
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::image::Color;
+
+    // CopyArea clipping
+
+    #[test]
+    fn test_copy_area_unflipped_overhangs() {
+        let rect = RectArea::new(0, 0, 16, 16);
+
+        // Source overhang on the right shrinks the window in place
+        let area = CopyArea::new(0, 0, rect, 12, 0, rect, 8, 1);
+        assert_eq!((area.dst_x, area.src_x, area.width), (0, 12, 4));
+
+        // Destination overhang on the left advances both windows
+        let area = CopyArea::new(-3, 0, rect, 0, 0, rect, 8, 1);
+        assert_eq!((area.dst_x, area.src_x, area.width), (0, 3, 5));
+    }
+
+    #[test]
+    fn test_copy_area_flip_source_overhang() {
+        // Source columns 12-19 overhang a 16-wide source by 4; with flip_x the
+        // lost columns must disappear from the LEFT of the destination window
+        let rect = RectArea::new(0, 0, 16, 16);
+        let area = CopyArea::new(0, 0, rect, 12, 0, rect, -8, 1);
+        assert_eq!((area.dst_x, area.src_x, area.width), (4, 12, 4));
+        // Reads run right-to-left from the last kept source column (15)
+        assert_eq!((area.sign_x, area.offset_x), (-1, 3));
+    }
+
+    #[test]
+    fn test_copy_area_flip_dst_overhang() {
+        // Destination overhang on the left trims the source's RIGHT edge
+        let rect = RectArea::new(0, 0, 16, 16);
+        let area = CopyArea::new(-3, 0, rect, 0, 0, rect, -8, 1);
+        assert_eq!((area.dst_x, area.src_x, area.width), (0, 0, 5));
+        assert_eq!((area.sign_x, area.offset_x), (-1, 4));
+    }
+
+    // Degenerate draw inputs
+
+    #[test]
+    fn test_draw_ellipse_zero_size_draws_nothing() {
+        let mut canvas: Canvas<Color> = Canvas::new(16, 16);
+        canvas.draw_ellipse(4.0, 4.0, 0.0, 5.0, 7);
+        canvas.draw_ellipse_border(4.0, 4.0, 5.0, 0.0, 7);
+        assert!(canvas.data.iter().all(|&value| value == 0));
+    }
+
+    #[test]
+    fn test_draw_triangle_collinear_horizontal() {
+        // All vertices on one row must fill the full extent including x3
+        let mut canvas: Canvas<Color> = Canvas::new(24, 8);
+        canvas.draw_triangle(0.0, 3.0, 10.0, 3.0, 20.0, 3.0, 7);
+        for x in 0..=20 {
+            assert_eq!(canvas.read_data(x, 3), 7, "x={x}");
+        }
+        assert_eq!(canvas.read_data(21, 3), 0);
     }
 }
