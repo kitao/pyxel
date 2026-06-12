@@ -316,7 +316,7 @@
       "tr": "İşlem",
       "uk": "Дія"
     },
-    "th_attribute": {
+    "th_param": {
       "en": "Parameter",
       "cn": "参数",
       "de": "Parameter",
@@ -456,7 +456,7 @@
       "tr": "Aynı depodaki {0} dosyasını çalıştırmak için:",
       "uk": "Щоб запустити {0} у тому ж репозиторії:"
     },
-    "launcher_attrs_title": {
+    "launcher_params_title": {
       "en": "Additional Parameters",
       "cn": "附加参数",
       "de": "Zusätzliche Parameter",
@@ -470,7 +470,7 @@
       "tr": "Ek Parametreler",
       "uk": "Додаткові параметри"
     },
-    "launcher_attrs_body": {
+    "launcher_params_body": {
       "en": "The following additional parameters can be specified for the {0} and {1} commands.",
       "cn": "以下附加参数可用于 {0} 和 {1} 命令。",
       "de": "Die folgenden zusätzlichen Parameter können für die Befehle {0} und {1} angegeben werden.",
@@ -484,7 +484,7 @@
       "tr": "{0} ve {1} komutları için aşağıdaki ek parametreler belirtilebilir.",
       "uk": "Для команд {0} та {1} можна вказати такі додаткові параметри."
     },
-    "attr_gamepad": {
+    "param_gamepad": {
       "en": "Display a virtual gamepad on touch devices (smartphones and tablets)",
       "cn": "在触控设备（智能手机和平板电脑）上显示虚拟游戏手柄",
       "de": "Ein virtuelles Gamepad auf Touch-Geräten (Smartphones und Tablets) anzeigen",
@@ -498,7 +498,7 @@
       "tr": "Dokunmatik cihazlarda (akıllı telefonlar ve tabletler) sanal bir oyun kumandası görüntüle",
       "uk": "Відображати віртуальний геймпад на сенсорних пристроях (смартфонах та планшетах)"
     },
-    "launcher_attrs_run_example": {
+    "launcher_params_run_example": {
       "en": "Example URL with additional parameters for the {0} command:",
       "cn": "为 {0} 命令附加参数的 URL 示例：",
       "de": "Beispiel-URL mit zusätzlichen Parametern für den Befehl {0}:",
@@ -512,7 +512,7 @@
       "tr": "{0} komutu için ek parametreli örnek URL:",
       "uk": "Приклад URL з додатковими параметрами для команди {0}:"
     },
-    "launcher_attrs_edit": {
+    "launcher_params_edit": {
       "en": "The {0} command has the {1} parameter to specify which editor to launch: {2}, {3}, {4}, {5}",
       "cn": "{0} 命令的 {1} 参数可指定启动的编辑器：{2}、{3}、{4}、{5}",
       "de": "Der Befehl {0} hat den Parameter {1}, um den zu startenden Editor anzugeben: {2}, {3}, {4}, {5}",
@@ -526,7 +526,7 @@
       "tr": "{0} komutu, hangi düzenleyicinin başlatılacağını belirten {1} parametresine sahiptir: {2}, {3}, {4}, {5}",
       "uk": "Команда {0} має параметр {1} для вказівки редактора, який потрібно запустити: {2}, {3}, {4}, {5}"
     },
-    "launcher_attrs_edit_example": {
+    "launcher_params_edit_example": {
       "en": "Example URL for the {0} command:",
       "cn": "{0} 命令的 URL 示例：",
       "de": "Beispiel-URL für den Befehl {0}:",

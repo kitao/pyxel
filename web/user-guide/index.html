@@ -178,7 +178,7 @@
           )}</p>
           <p class="body mt-2">${t("install_web_other").replace(
             "{0}",
-            link("../web-usage/", esc(t("other_web_usage"))),
+            link("../web-usage/", t("other_web_usage")),
           )}</p>
           <h3 class="sub-title">${esc(t("install_vscode_title"))}</h3>
           <p class="body">${t("install_vscode_body").replace(
@@ -306,7 +306,7 @@ pyxel.show()`,
             ${esc(t("resources_editor_save"))}</p>
           <p class="body mt-2">${t("resources_editor_link").replace(
             "{0}",
-            link("../editor-manual/", esc(t("tool_editor_manual"))),
+            link("../editor-manual/", t("tool_editor_manual")),
           )}</p>
           <h3 class="sub-title">${esc(t("resources_other_title"))}</h3>
           <p class="body">${esc(t("resources_other_images"))}</p>
@@ -350,7 +350,7 @@ pyxel.show()`,
           <h2 class="section-title">${esc(t("apiref_title"))}</h2>
           <p class="body">${t("apiref_body").replace(
             "{0}",
-            link("../api-reference/", esc(t("tool_api_reference"))),
+            link("../api-reference/", t("tool_api_reference")),
           )}</p>
           <p class="body mt-2">${esc(t("apiref_advanced"))}</p>
           <p class="body mt-2">${esc(t("apiref_challenge"))}</p>`;
@@ -371,7 +371,7 @@ pyxel.show()`,
           ],
           [faqUrl, t("other_faq")],
         ]
-          .map(([u, n]) => `<li>${link(u, esc(n))}</li>`)
+          .map(([u, n]) => `<li>${link(u, n)}</li>`)
           .join("");
         const tools = [
           ["../showcase/", "Pyxel Showcase"],
@@ -385,7 +385,7 @@ pyxel.show()`,
           ["https://github.com/kitao/pyxel-mcp", t("tool_mcp")],
           ["https://github.com/kitao/pyxel-skill", t("tool_skill")],
         ]
-          .map(([u, n]) => `<li>${link(u, esc(n))}</li>`)
+          .map(([u, n]) => `<li>${link(u, n)}</li>`)
           .join("");
         const others = [
           ["https://kitao.github.io/pyxel-user-examples/", t("other_examples")],
@@ -394,7 +394,7 @@ pyxel.show()`,
           ["https://discord.gg/qHA5BCS", t("other_discord_ja")],
           ["https://gihyo.jp/book/2025/978-4-297-14657-3", t("other_book")],
         ]
-          .map(([u, n]) => `<li>${link(u, esc(n))}</li>`)
+          .map(([u, n]) => `<li>${link(u, n)}</li>`)
           .join("");
         document.getElementById("s-links").innerHTML = `
           <h2 class="section-title">${esc(t("links_title"))}</h2>
@@ -444,7 +444,7 @@ pyxel.show()`,
           <h2 class="section-title">${esc(t("sponsors_title"))}</h2>
           <p class="body">${t("sponsors_body").replace(
             "{0}",
-            link("https://github.com/sponsors/kitao", esc(t("sponsors_link"))),
+            link("https://github.com/sponsors/kitao", t("sponsors_link")),
           )}</p>`;
 
         setDocLang(lang);
