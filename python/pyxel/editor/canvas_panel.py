@@ -387,7 +387,7 @@ class CanvasPanel(Widget):
             if pyxel.btnp(pyxel.KEY_X):
                 self._add_pre_history(bank_copy=True)
                 if self._is_tilemap_mode:
-                    pyxel.tilemaps[self.tilemap_index_var].rect(0, 0, 256, 256, 0)
+                    pyxel.tilemaps[self.tilemap_index_var].rect(0, 0, 256, 256, (0, 0))
                 else:
                     pyxel.images[self.image_index_var].rect(0, 0, 256, 256, 0)
                 self._add_post_history(bank_copy=True)
