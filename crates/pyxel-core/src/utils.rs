@@ -195,13 +195,9 @@ mod tests {
 
     #[test]
     fn test_parse_hex_string_edge_cases() {
-        // Empty string
         assert_eq!(parse_hex_string(""), Ok(0));
-        // Single digit
         assert_eq!(parse_hex_string("F"), Ok(15));
-        // u32 max value
         assert_eq!(parse_hex_string("FFFFFFFF"), Ok(u32::MAX));
-        // Mixed case in same string
         assert_eq!(parse_hex_string("aB"), Ok(0xAB));
     }
 
@@ -215,11 +211,9 @@ mod tests {
 
     #[test]
     fn test_add_file_extension_edge_cases() {
-        // Empty filename
         assert_eq!(add_file_extension("", ".png"), ".png");
         // Partial extension match (should NOT match)
         assert_eq!(add_file_extension("test.pn", ".png"), "test.pn.png");
-        // Extension only
         assert_eq!(add_file_extension(".png", ".png"), ".png");
     }
 

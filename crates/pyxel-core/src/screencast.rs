@@ -257,7 +257,7 @@ impl Screencast {
         let frame_count = self.screen_at(index).frame_count;
         let next_frame_count = self.screen_at(index + 1).frame_count;
 
-        // Ring buffer wraparound: next screen was captured before current
+        // The frame counter can restart (pyxel.reset); treat it as one frame
         let num_elapsed_frames = if frame_count > next_frame_count {
             1
         } else {
@@ -533,8 +533,8 @@ mod tests {
 
     #[test]
     fn test_save_gif_with_wraparound_and_overflow() {
-        // Two 256-color screens with disjoint palettes: the diff needs 512
-        // colors plus transparent, forcing the full-frame fallback
+        // Two 256-color screens with disjoint palettes: the diff frame needs
+        // all 256 new colors plus transparent, forcing the full-frame fallback
         let image: Vec<Color> = (0..=255).collect();
         let colors1: Vec<Rgb24> = (0..256).collect();
         let colors2: Vec<Rgb24> = (256..512).collect();
