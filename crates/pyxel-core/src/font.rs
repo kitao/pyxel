@@ -98,6 +98,10 @@ impl Font {
                 bitmap = None;
             } else if let Some(ref mut rows) = bitmap {
                 let hex = line.trim();
+                // More than 8 hex digits would underflow the alignment shift below
+                if hex.len() > 8 {
+                    return Err(parse_err());
+                }
                 let bits = u32::from_str_radix(hex, 16).map_err(|_| parse_err())?;
                 rows.push(bits.reverse_bits() >> (32 - hex.len() * 4));
             }
@@ -196,35 +200,6 @@ impl Font {
         }
     }
 
-    fn draw_glyph(
-        &mut self,
-        canvas: &mut Canvas<Color>,
-        c: char,
-        x: i32,
-        y: i32,
-        ascent: i32,
-        color: Color,
-    ) -> i32 {
-        match self {
-            Font::Bdf {
-                bounding_box,
-                glyphs,
-            } => {
-                if let Some(glyph) = glyphs.get(&(c as i32)) {
-                    Self::draw_bdf_glyph(canvas, x, y, bounding_box, glyph, color);
-                    glyph.dwidth
-                } else {
-                    0
-                }
-            }
-            Font::Fontdue { font, cache, size } => {
-                let (metrics, bitmap) = cache.entry(c).or_insert_with(|| font.rasterize(c, *size));
-                Self::draw_fontdue_glyph(canvas, x, y, ascent, metrics, bitmap, color);
-                metrics.advance_width.ceil() as i32
-            }
-        }
-    }
-
     // Private methods
 
     fn is_invisible(c: char) -> bool {
@@ -280,6 +255,35 @@ impl Font {
         }
     }
 
+    fn draw_glyph(
+        &mut self,
+        canvas: &mut Canvas<Color>,
+        c: char,
+        x: i32,
+        y: i32,
+        ascent: i32,
+        color: Color,
+    ) -> i32 {
+        match self {
+            Font::Bdf {
+                bounding_box,
+                glyphs,
+            } => {
+                if let Some(glyph) = glyphs.get(&(c as i32)) {
+                    Self::draw_bdf_glyph(canvas, x, y, bounding_box, glyph, color);
+                    glyph.dwidth
+                } else {
+                    0
+                }
+            }
+            Font::Fontdue { font, cache, size } => {
+                let (metrics, bitmap) = cache.entry(c).or_insert_with(|| font.rasterize(c, *size));
+                Self::draw_fontdue_glyph(canvas, x, y, ascent, metrics, bitmap, color);
+                metrics.advance_width.ceil() as i32
+            }
+        }
+    }
+
     fn draw_bdf_glyph(
         canvas: &mut Canvas<Color>,
         x: i32,
@@ -320,5 +324,30 @@ impl Font {
                 }
             }
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use std::io::Write;
+
+    use super::*;
+
+    #[test]
+    fn test_parse_bdf_rejects_overlong_bitmap_row() {
+        // A 9-digit BITMAP row must fail with the parser's Err contract
+        // instead of underflowing the bit-alignment shift
+        let path = std::env::temp_dir().join(format!("pyxel_font_test_{}.bdf", std::process::id()));
+        let mut file = File::create(&path).unwrap();
+        writeln!(
+            file,
+            "FONTBOUNDINGBOX 4 6 0 0\nSTARTCHAR A\nENCODING 65\nDWIDTH 4 0\nBBX 4 6 0 0\nBITMAP\n000000000\nENDCHAR"
+        )
+        .unwrap();
+
+        let result = Font::parse_bdf(path.to_str().unwrap());
+        assert!(result.is_err());
+
+        std::fs::remove_file(&path).ok();
     }
 }
