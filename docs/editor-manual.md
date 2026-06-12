@@ -383,7 +383,7 @@ A mode for arranging sounds in playback order to compose music tracks.
 
 ### Specifications
 
-- **Musics:** 0–7 (8 tracks)
+- **Music Tracks:** 0–7 (8 tracks)
 - **Channels:** 4
 - **Sounds per Channel:** Max 32
 

@@ -116,7 +116,7 @@ All fields are required. Empty sounds use empty arrays (e.g., `notes = []`).
 | `effects` | array of u8 | 0 = None, 1 = Slide, 2 = Vibrato, 3 = FadeOut, 4 = Half-FadeOut, 5 = Quarter-FadeOut |
 | `speed` | u16 | Playback speed in ticks per note (1 tick = 1/120 second). Default: 30 |
 
-The `tones`, `volumes`, and `effects` arrays may be shorter than `notes` due to trailing-value compression. When loading, the last value in each array is repeated to match the length of `notes`.
+The `tones`, `volumes`, and `effects` arrays are stored exactly as set on the sound and may be shorter than `notes`. During playback, values are read cyclically (index modulo array length), and an empty array falls back to the default: tone 0 (Triangle), volume 7, effect 0 (None).
 
 **Note mapping:** Notes are encoded as `base + octave × 12`, where C=0, D=2, E=4, F=5, G=7, A=9, B=11, and octave ranges from 0 to 4. For example, C0=0, A4=57, B4=59.
 

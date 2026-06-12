@@ -27,7 +27,7 @@
 
       function shortcutTable(items) {
         let html = `<div class="overflow-x-auto"><table class="w-full border-collapse">
-          <thead><tr><th class="th">${t("th_key")}</th><th class="th">${t("th_action")}</th></tr></thead><tbody>`;
+          <thead><tr><th class="th">${esc(t("th_key"))}</th><th class="th">${esc(t("th_action"))}</th></tr></thead><tbody>`;
         const inlineCode = (s) =>
           esc(s).replace(/`([^`]+)`/g, (_, m) => chip(m));
         for (const i of items)
