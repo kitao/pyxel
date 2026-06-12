@@ -19,6 +19,7 @@
 - Debounced Pyxel MML Studio URL and QR updates while typing
 - Fixed old MML parser panic on zero tempo or note length
 - Fixed Pyxel Editor crash when cutting a bank in tilemap mode
+- Fixed sound editor speed display not updating when switching sounds
 - Fixed negative sample rounding bias in voice gain processing
 - Removed unused semver dependency, constants, and dead code
 - Refined wording, translations, and data across web pages and docs
