@@ -133,7 +133,9 @@ pub fn parse_old_mml(mml: &str) -> Result<Vec<MmlCommand>, String> {
             note_info.quantize = 8;
             note_info.is_tied = true;
         } else {
-            let c = chars.peek().unwrap();
+            // The matchers above consume trailing whitespace; end cleanly
+            // when nothing but whitespace remained
+            let Some(c) = chars.peek() else { break };
             return Err(format!("Invalid command '{c}' in MML"));
         }
     }
@@ -543,6 +545,15 @@ mod tests {
     fn test_err_octave_shift_limits() {
         assert!(parse_old_mml("o4>c").is_err());
         assert!(parse_old_mml("o0<c").is_err());
+    }
+
+    #[test]
+    fn test_trailing_whitespace_ends_parse() {
+        // Branch matchers consume trailing whitespace; the parser must end
+        // cleanly instead of panicking on the exhausted stream
+        assert!(parse_old_mml("c~\n").is_ok());
+        assert!(parse_old_mml("v7 ").is_ok());
+        assert!(parse_old_mml(" ").is_ok());
     }
 
     #[test]
