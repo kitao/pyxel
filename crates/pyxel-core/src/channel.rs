@@ -245,7 +245,18 @@ impl Channel {
         while clock_count > 0 {
             // Playback has ended
             if !self.is_playing {
-                self.voice.process(blip_buf.as_deref_mut(), 0, clock_count);
+                self.voice
+                    .process(blip_buf.as_deref_mut(), clock_offset, clock_count);
+                return;
+            }
+
+            // Reached a PCM sound mid-chunk: flush the voice and hand the
+            // remaining playback over to mix_pcm from the next buffer
+            if self.playing_pcm {
+                if self.voice.needs_processing() {
+                    self.voice
+                        .process(blip_buf.as_deref_mut(), clock_offset, clock_count);
+                }
                 return;
             }
 
@@ -613,13 +624,20 @@ impl Channel {
         }
 
         self.sound_elapsed_clocks = (self.pcm_position as u32) * AUDIO_CLOCKS_PER_SAMPLE;
-        self.total_elapsed_clocks += start_clock;
+        let remaining_clocks = remaining as u32 * AUDIO_CLOCKS_PER_SAMPLE;
+        self.total_elapsed_clocks += start_clock - remaining_clocks;
 
         if (self.sound_index as usize) >= self.sounds.len() {
             self.is_playing = false;
             self.playing_pcm = false;
         } else {
             self.update_playing_pcm();
+
+            // A non-PCM sound follows the PCM part: seek the rest of the way
+            // through the command path (process re-adds the remaining clocks)
+            if !self.playing_pcm && remaining_clocks > 0 {
+                self.process(None, remaining_clocks);
+            }
         }
     }
 
@@ -640,5 +658,96 @@ impl Channel {
 
     pub(crate) fn is_playing_pcm(&self) -> bool {
         self.is_playing && self.playing_pcm
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::pcm_decoder::PcmData;
+    use crate::settings::SOUND_TICKS_PER_SECOND;
+
+    const NOTE_CLOCKS: u32 = AUDIO_CLOCK_RATE / SOUND_TICKS_PER_SECOND;
+
+    fn note_sound(num_notes: usize) -> RcSound {
+        let sound = Sound::new();
+        {
+            let mut sound = rc_mut!(sound);
+            sound.notes = vec![0; num_notes];
+            sound.speed = 1;
+        }
+        sound
+    }
+
+    fn pcm_sound(num_samples: usize) -> RcSound {
+        let sound = Sound::new();
+        rc_mut!(sound).pcm = Some(PcmData {
+            samples: vec![0; num_samples],
+        });
+        sound
+    }
+
+    #[test]
+    fn test_process_stops_at_pcm_sound_mid_chunk() {
+        // A PCM sound after a note sound must not be skipped when the note
+        // sound ends in the middle of a processing chunk
+        let channel = Channel::new();
+        let mut channel = rc_mut!(channel);
+        channel.play(vec![note_sound(1), pcm_sound(1000)], None, false, false);
+        channel.process(None, NOTE_CLOCKS + 5000);
+
+        assert!(channel.is_playing);
+        assert!(channel.playing_pcm);
+        assert_eq!(channel.sound_index, 1);
+        assert_eq!(channel.pcm_position, 0);
+    }
+
+    #[test]
+    fn test_seek_past_pcm_into_note_sound() {
+        // Seeking beyond the PCM part must seek into the following note
+        // sound instead of restarting it from the head
+        let channel = Channel::new();
+        let mut channel = rc_mut!(channel);
+        let pcm_samples = 1000;
+        let extra_samples = 500;
+        let start_sec = (pcm_samples + extra_samples) as f32 / AUDIO_SAMPLE_RATE as f32;
+        channel.play(
+            vec![pcm_sound(pcm_samples), note_sound(4)],
+            Some(start_sec),
+            false,
+            false,
+        );
+
+        assert!(channel.is_playing);
+        assert!(!channel.playing_pcm);
+        assert_eq!(channel.sound_index, 1);
+        // Mirror the implementation's sec -> clock -> sample conversion so the
+        // expectation stays exact across f32 rounding at the API boundary
+        let start_clock = (start_sec * AUDIO_CLOCK_RATE as f32).round() as u64;
+        let seek_samples = (start_clock * AUDIO_SAMPLE_RATE as u64 / AUDIO_CLOCK_RATE as u64
+            - pcm_samples as u64) as u32;
+        assert_eq!(
+            channel.sound_elapsed_clocks,
+            seek_samples * AUDIO_CLOCKS_PER_SAMPLE
+        );
+    }
+
+    #[test]
+    fn test_resume_to_pcm_replays_no_stale_commands() {
+        // Resuming PCM playback after an interrupting note sound must not
+        // re-execute the finished sound's commands as a ghost note
+        let channel = Channel::new();
+        let mut channel = rc_mut!(channel);
+        channel.play(vec![pcm_sound(1000)], None, false, false);
+        channel.play(vec![note_sound(1)], None, false, true);
+        channel.process(None, NOTE_CLOCKS + 5000);
+
+        assert!(channel.is_playing);
+        assert!(channel.playing_pcm);
+        assert_eq!(channel.sound_index, 0);
+        let expected_position =
+            (NOTE_CLOCKS as u64 * AUDIO_SAMPLE_RATE as u64 / AUDIO_CLOCK_RATE as u64) as usize;
+        assert_eq!(channel.pcm_position, expected_position);
+        assert_eq!(channel.note_duration_clocks, 0);
     }
 }
