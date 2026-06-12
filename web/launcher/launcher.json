@@ -208,7 +208,7 @@
       "uk": "Редактор музики"
     },
     "footer": {
-      "en": "For specific instructions, please refer to {0}.",
+      "en": "For detailed instructions, please refer to {0}.",
       "cn": "详细说明请参考{0}。",
       "de": "Für detaillierte Anweisungen siehe {0}.",
       "es": "Para instrucciones detalladas, consulte {0}.",
@@ -219,7 +219,7 @@
       "pt": "Para instruções detalhadas, consulte {0}.",
       "ru": "Подробные инструкции см. {0}.",
       "tr": "Ayrıntılı talimatlar için {0} bakın.",
-      "uk": "Докладні інструкції див. на {0}."
+      "uk": "Докладні інструкції див. {0}."
     },
     "footer_link": {
       "en": "here",

@@ -110,7 +110,7 @@ To make your code compatible with version 2.4, please make the following changes
 
 - Rename the `waveform` field of the Tone class to `wavetable`
 - Change the `tick` argument of the `play` and `playm` functions to `sec` (a float value in seconds)
-- Update code to handle the return value of the `play_pos` function, which is now `(sound_no, sec)`
+- Update code to handle the return value of the `play_pos` function, which is now `(sound_index, sec)`
 - Change the `count` argument of the `save` function in the Sound and Music classes to `sec`
 - If you need the playback duration of a sound, use the `total_sec` function of the Sound class
 - For the Sound class's `mml` function, use code that follows the new MML syntax (old syntax is auto-detected; the `old_mml` function is deprecated)

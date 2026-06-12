@@ -974,20 +974,6 @@
       "tr": "Diğer kısayollar",
       "uk": "Інші гарячі клавіші"
     },
-    "image_selection_body": {
-      "en": "The following shortcut keys are available while using the selection tool.",
-      "cn": "使用范围选择工具时，可使用以下快捷键。",
-      "de": "Bei aktiviertem Bereichsauswahl-Werkzeug stehen folgende Tastenkürzel zur Verfügung.",
-      "es": "Los siguientes atajos están disponibles durante el uso de la herramienta de selección de rango.",
-      "fr": "Les raccourcis suivants sont disponibles lors de l'utilisation de l'outil de sélection.",
-      "it": "Durante l'uso dello strumento di selezione intervallo sono disponibili le seguenti scorciatoie.",
-      "ja": "範囲選択ツール使用中は、以下のショートカットキーが使用できます。",
-      "ko": "범위 선택 도구 사용 중에는 다음 단축키를 사용할 수 있습니다.",
-      "pt": "Durante o uso da ferramenta de seleção de intervalo, os seguintes atalhos estão disponíveis.",
-      "ru": "При использовании инструмента выделения доступны следующие горячие клавиши.",
-      "tr": "Aralık seçim aracı kullanılırken aşağıdaki kısayol tuşları kullanılabilir.",
-      "uk": "При використанні інструмента виділення доступні такі гарячі клавіші."
-    },
     "image_selection_title": {
       "en": "Selection Tool Shortcuts",
       "cn": "范围选择工具的快捷键",
@@ -1001,6 +987,20 @@
       "ru": "Горячие клавиши при выделении",
       "tr": "Aralık seçim aracı kısayolları",
       "uk": "Гарячі клавіші при виділенні"
+    },
+    "image_selection_body": {
+      "en": "The following shortcut keys are available while using the selection tool.",
+      "cn": "使用范围选择工具时，可使用以下快捷键。",
+      "de": "Bei aktiviertem Bereichsauswahl-Werkzeug stehen folgende Tastenkürzel zur Verfügung.",
+      "es": "Los siguientes atajos están disponibles durante el uso de la herramienta de selección de rango.",
+      "fr": "Les raccourcis suivants sont disponibles lors de l'utilisation de l'outil de sélection.",
+      "it": "Durante l'uso dello strumento di selezione intervallo sono disponibili le seguenti scorciatoie.",
+      "ja": "範囲選択ツール使用中は、以下のショートカットキーが使用できます。",
+      "ko": "범위 선택 도구 사용 중에는 다음 단축키를 사용할 수 있습니다.",
+      "pt": "Durante o uso da ferramenta de seleção de intervalo, os seguintes atalhos estão disponíveis.",
+      "ru": "При использовании инструмента выделения доступны следующие горячие клавиши.",
+      "tr": "Aralık seçim aracı kullanılırken aşağıdaki kısayol tuşları kullanılabilir.",
+      "uk": "При використанні інструмента виділення доступні такі гарячі клавіші."
     }
   },
   "annotations": {
