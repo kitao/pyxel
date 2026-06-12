@@ -124,8 +124,8 @@ mod tests {
         p.start(100);
         p.end(100);
         assert_eq!(p.average_time(), 0.0);
-        // FPS is inf (1000/0), but we just verify it doesn't panic
-        assert!(p.average_fps().is_infinite());
+        // fps = 1000/0 = +inf
+        assert_eq!(p.average_fps(), f32::INFINITY);
     }
 
     #[test]
