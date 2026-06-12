@@ -304,14 +304,18 @@
         return b64urlEncode(compressed);
       }
 
-      // Decoder: detect legacy lz-string by presence of characters it uses
-      // that base64url does not: `+`, `$`, and ` ` (the `+` in a URL query
-      // becomes a space after URLSearchParams decoding).
+      // Decoder: `+` (or its space form after URLSearchParams decoding) marks
+      // legacy lz-string. Short legacy values may consist of base64url
+      // characters only, so try the new format first and fall back on failure.
       async function decodeMmlFromUrl(value) {
-        if (value.includes("+") || value.includes("$") || value.includes(" ")) {
+        if (value.includes("+") || value.includes(" ")) {
           return LZString.decompressFromEncodedURIComponent(value);
         }
-        return await decompressDeflateRaw(b64urlDecode(value));
+        try {
+          return await decompressDeflateRaw(b64urlDecode(value));
+        } catch {
+          return LZString.decompressFromEncodedURIComponent(value);
+        }
       }
 
       function setButtonStyle(button, isActive) {
