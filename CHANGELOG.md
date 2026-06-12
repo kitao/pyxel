@@ -12,11 +12,16 @@
 - Refined README intro and user-guide star request wording
 - Made MML parser reject unresolved ties, invalid lengths, and unmatched repeats
 - Fixed profiler frame time on tick counter wraparound
-- Added testing and pyi default standards to the coding policy
+- Added testing, pyi defaults, and Japanese typography to the coding policy
 - Optimized line, rectb, circ, and elli drawing with span fills
 - Lazy-loaded below-the-fold images in the web user guide
 - Cached API reference element lookups for search input
 - Debounced Pyxel MML Studio URL and QR updates while typing
+- Fixed old MML parser panic on zero tempo or note length
+- Fixed Pyxel Editor crash when cutting a bank in tilemap mode
+- Fixed negative sample rounding bias in voice gain processing
+- Removed unused semver dependency, constants, and dead code
+- Refined wording, translations, and data across web pages and docs
 
 ## 2.9.5
 
