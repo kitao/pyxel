@@ -298,7 +298,13 @@ class TestBlt3d:
         pyxel.images[0].cls(0)
         pyxel.images[0].rect(0, 0, 16, 16, 9)
         pyxel.blt3d(0, 0, 160, 120, 0, (0, 0, 10), (0, 30, 0), fov=60.0)
-        assert any(pyxel.pget(x, y) == 9 for x in range(160) for y in range(120))
+        narrow = [pyxel.pget(x, y) for x in range(160) for y in range(120)]
+        pyxel.cls(0)
+        pyxel.blt3d(0, 0, 160, 120, 0, (0, 0, 10), (0, 30, 0), fov=90.0)
+        wide = [pyxel.pget(x, y) for x in range(160) for y in range(120)]
+        assert 9 in narrow
+        # A wider field of view must change the projection
+        assert wide != narrow
 
     def test_blt3d_with_colkey(self):
         pyxel.cls(3)
@@ -306,6 +312,8 @@ class TestBlt3d:
         pyxel.images[0].rect(0, 0, 8, 8, 7)
         pyxel.blt3d(0, 0, 160, 120, 0, (0, 0, 10), (0, 30, 0), colkey=0)
         assert any(pyxel.pget(x, y) == 7 for x in range(160) for y in range(120))
+        # Color-0 texels are transparent, so no pixel may be 0
+        assert not any(pyxel.pget(x, y) == 0 for x in range(160) for y in range(120))
 
     def test_blt3d_with_fov_and_colkey(self):
         pyxel.cls(3)
@@ -313,6 +321,8 @@ class TestBlt3d:
         pyxel.images[0].rect(0, 0, 8, 8, 11)
         pyxel.blt3d(0, 0, 160, 120, 0, (0, 0, 10), (0, 30, 0), fov=90.0, colkey=0)
         assert any(pyxel.pget(x, y) == 11 for x in range(160) for y in range(120))
+        # Color-0 texels are transparent, so no pixel may be 0
+        assert not any(pyxel.pget(x, y) == 0 for x in range(160) for y in range(120))
 
     def test_bltm3d_with_fov_and_colkey(self):
         pyxel.cls(3)
@@ -322,6 +332,8 @@ class TestBlt3d:
         pyxel.tilemaps[0].rect(0, 0, 8, 8, (0, 0))
         pyxel.bltm3d(0, 0, 160, 120, 0, (0, 0, 10), (0, 30, 0), fov=90.0, colkey=0)
         assert any(pyxel.pget(x, y) == 6 for x in range(160) for y in range(120))
+        # Color-0 texels are transparent, so no pixel may be 0
+        assert not any(pyxel.pget(x, y) == 0 for x in range(160) for y in range(120))
 
 
 class TestText:

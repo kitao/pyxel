@@ -6,8 +6,8 @@ import pyxel
 class TestChannel:
     def test_new_defaults(self):
         ch = pyxel.Channel()
-        assert isinstance(ch.gain, float)
-        assert isinstance(ch.detune, int)
+        assert ch.gain == 0.125
+        assert ch.detune == 0
 
     def test_gain_read_write(self):
         ch = pyxel.Channel()

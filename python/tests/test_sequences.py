@@ -66,9 +66,9 @@ class TestSeqGetitem:
 class TestSeqSetitem:
     def test_images_set_by_index(self):
         original = pyxel.images[0]
-        new_img = pyxel.Image(256, 256)
+        new_img = pyxel.Image(64, 64)
         pyxel.images[0] = new_img
-        assert pyxel.images[0].width == 256
+        assert pyxel.images[0].width == 64
         pyxel.images[0] = original
 
 
@@ -133,7 +133,7 @@ class TestSeqAppendPop:
 
 
 class TestSeqIteration:
-    def test_iter(self):
+    def test_iter_images(self):
         count = 0
         for img in pyxel.images:
             assert isinstance(img, pyxel.Image)
@@ -263,9 +263,8 @@ class TestSeqReversed:
 
 class TestSeqRepr:
     def test_colors_repr(self):
-        r = repr(pyxel.colors)
-        assert isinstance(r, str)
-        assert len(r) > 0
+        # Value-type sequences have a deterministic wrapper-name + list repr
+        assert repr(pyxel.colors) == f"Colors{list(pyxel.colors)!r}"
 
     def test_images_repr(self):
         r = repr(pyxel.images)

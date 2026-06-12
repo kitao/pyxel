@@ -55,7 +55,8 @@ class TestSaveLoad:
         pyxel.load(path)
         assert pyxel.images[0].pget(0, 0) == 7
         assert pyxel.images[0].pget(1, 0) == 3
-        assert len(pyxel.sounds[0].notes) == 3
+        assert list(pyxel.sounds[0].notes) == [24, 28, 31]
+        assert pyxel.sounds[0].speed == 10
         assert pyxel.tilemaps[0].pget(0, 0) == (5, 5)
         assert list(pyxel.musics[0].seqs[0]) == [0]
 
@@ -85,9 +86,9 @@ class TestSaveLoad:
         pyxel.save(path, exclude_sounds=True)
 
         pyxel.sounds[0].set("a2", "s", "7", "n", 5)
-        original_notes_len = len(pyxel.sounds[0].notes)
+        modified_notes = list(pyxel.sounds[0].notes)
         pyxel.load(path)
-        assert len(pyxel.sounds[0].notes) == original_notes_len
+        assert list(pyxel.sounds[0].notes) == modified_notes
 
     def test_save_exclude_musics(self, tmp_path):
         pyxel.musics[0].set([0])
@@ -108,10 +109,10 @@ class TestSaveLoad:
 
         pyxel.images[0].cls(0)
         pyxel.sounds[0].set("a2", "s", "7", "n", 5)
-        original_notes_len = len(pyxel.sounds[0].notes)
+        modified_notes = list(pyxel.sounds[0].notes)
         pyxel.load(path)
         assert pyxel.images[0].pget(0, 0) == 0
-        assert len(pyxel.sounds[0].notes) == original_notes_len
+        assert list(pyxel.sounds[0].notes) == modified_notes
 
     def test_load_nonexistent_file_raises(self):
         with pytest.raises(Exception):
@@ -169,9 +170,7 @@ class TestPalette:
 
         pyxel.colors[0] = 0xFFFFFF
         pyxel.load_pal(path)
-        assert pyxel.colors[0] == original_colors[0]
-        for i in range(min(len(original_colors), 16)):
-            assert pyxel.colors[i] == original_colors[i]
+        assert list(pyxel.colors) == original_colors
 
     def test_save_pal_creates_file(self, tmp_path):
         path = str(tmp_path / "test_save_only.pyxpal")
