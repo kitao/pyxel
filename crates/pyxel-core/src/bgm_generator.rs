@@ -91,6 +91,7 @@ impl GeneratorParams {
         serde_json::to_string(self)
             .expect("GeneratorParams serialization cannot fail for plain data")
     }
+
     pub fn from_json(json: &str) -> Self {
         serde_json::from_str(json)
             .expect("GeneratorParams JSON must come from a trusted Composer source")
@@ -102,6 +103,7 @@ impl BgmData {
     pub fn to_json(&self) -> String {
         serde_json::to_string(self).expect("BgmData serialization cannot fail for plain data")
     }
+
     pub fn from_json(json: &str) -> Self {
         serde_json::from_str(json).expect("BgmData JSON must come from a trusted Composer source")
     }
@@ -900,7 +902,15 @@ fn chord_bits_per_step(progression: &[OwnedChordEntry]) -> Vec<[i32; 12]> {
                 break;
             }
         }
-        *slot = resolve_entry_notes(progression, entry_idx).map_or([0; 12], parse_notes_bits);
+        let bits = resolve_entry_notes(progression, entry_idx).map_or([0; 12], parse_notes_bits);
+
+        // An entry with no chord tones would make the note-pool loop below
+        // run forever; fall back to I major like the other chord fallbacks
+        *slot = if bits.iter().any(|kind| matches!(kind, 1 | 2 | 3 | 9)) {
+            bits
+        } else {
+            parse_notes_bits(I_MAJOR_NOTES_BITS)
+        };
     }
     out
 }
@@ -1057,6 +1067,8 @@ fn pick_rhythm_events(
             }
         }
         if is_sub || !use_16th || used16 {
+            // Two sentinels: next_note_events reads one entry past rhythm_idx
+            // even when rhythm_idx itself lands on the first sentinel
             results.push((TOTAL_STEPS, -1));
             results.push((TOTAL_STEPS, -1));
             return results;
@@ -2298,6 +2310,20 @@ mod tests {
                 }
             }
         }
+    }
+
+    #[test]
+    fn test_chord_bits_with_no_tones_fall_back() {
+        // A custom entry without chord tones must fall back to I major
+        // instead of sending build_chord_note_pool into an infinite loop
+        let progression = vec![OwnedChordEntry {
+            loc: 0,
+            notes: Some("000000000000".to_string()),
+            repeat: None,
+        }];
+        let bits = chord_bits_per_step(&progression);
+        assert_eq!(bits[0], parse_notes_bits(I_MAJOR_NOTES_BITS));
+        assert!(!build_chord_note_pool(&bits[0], 0, 24).is_empty());
     }
 
     // The JSON tests below are compiled out of the pyxel-core build (build.rs
