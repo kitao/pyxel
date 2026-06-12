@@ -35,6 +35,8 @@ pub struct Screencast {
 }
 
 impl Screencast {
+    // Constructors
+
     pub fn new(fps: u32, capture_sec: u32) -> Self {
         let max_screens = fps * capture_sec;
 
@@ -56,6 +58,8 @@ impl Screencast {
             num_captured_screens: 0,
         }
     }
+
+    // Public methods
 
     pub fn reset(&mut self) {
         self.capture_start_index = 0;
@@ -405,5 +409,160 @@ impl Screencast {
                 rect.height() * scale,
             )
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn capture_solid(screencast: &mut Screencast, rgb: Rgb24, frame_count: u32) {
+        screencast.capture(2, 2, &[0, 0, 0, 0], &[rgb], frame_count);
+    }
+
+    // Ring buffer
+
+    #[test]
+    fn test_capture_ring_buffer_wraparound() {
+        // Capacity 2: a third capture drops the oldest screen
+        let mut screencast = Screencast::new(2, 1);
+        capture_solid(&mut screencast, 0x111111, 10);
+        capture_solid(&mut screencast, 0x222222, 20);
+        capture_solid(&mut screencast, 0x333333, 30);
+
+        assert_eq!(screencast.num_captured_screens, 2);
+        assert_eq!(screencast.capture_start_index, 1);
+        assert_eq!(screencast.screen_at(0).frame_count, 20);
+        assert_eq!(screencast.screen_at(1).frame_count, 30);
+    }
+
+    // Frame delays
+
+    #[test]
+    fn test_screen_delay() {
+        let mut screencast = Screencast::new(30, 1);
+        capture_solid(&mut screencast, 0x111111, 10);
+        capture_solid(&mut screencast, 0x222222, 20);
+
+        // 10 elapsed frames at 30 fps: 100 / 30 * 10 = 33 (1/100s units)
+        assert_eq!(screencast.screen_delay(0), 33);
+        // Last frame falls back to a single frame interval
+        assert_eq!(screencast.screen_delay(1), 3);
+    }
+
+    #[test]
+    fn test_screen_delay_frame_count_wraparound() {
+        // The frame counter can restart (pyxel.reset); treat it as one frame
+        let mut screencast = Screencast::new(30, 1);
+        capture_solid(&mut screencast, 0x111111, 100);
+        capture_solid(&mut screencast, 0x222222, 5);
+
+        assert_eq!(screencast.screen_delay(0), 3);
+    }
+
+    // Diff computation
+
+    #[test]
+    fn test_compute_diff() {
+        let mut base = vec![0x111111, 0x111111, 0x111111, 0x111111];
+        let next = vec![0x111111, 0x222222, 0x111111, 0x333333];
+        let mut diff = vec![0; 4];
+
+        let rect = Screencast::compute_diff(&mut base, &next, 2, 2, &mut diff);
+        assert_eq!(
+            (rect.left(), rect.top(), rect.width(), rect.height()),
+            (1, 0, 1, 2)
+        );
+        assert_eq!(diff, [TRANSPARENT, 0x222222, TRANSPARENT, 0x333333]);
+        assert_eq!(base, next);
+    }
+
+    #[test]
+    fn test_compute_diff_identical_frames() {
+        let mut base = vec![0x111111; 4];
+        let next = vec![0x111111; 4];
+        let mut diff = vec![0; 4];
+
+        let rect = Screencast::compute_diff(&mut base, &next, 2, 2, &mut diff);
+        assert!(rect.is_empty());
+        assert_eq!(diff, [TRANSPARENT; 4]);
+    }
+
+    // Color overflow
+
+    #[test]
+    fn test_encode_region_color_overflow() {
+        // 16x16 region with 256 unique colors: exactly fits without the
+        // transparent slot, overflows with it (257 entries needed)
+        let src: Vec<Rgb24> = (0..256).collect();
+        let rect = RectArea::new(0, 0, 16, 16);
+        let mut color_table = IndexMap::new();
+        let mut index_buf = Vec::new();
+        let mut scaled_buf = Vec::new();
+        let mut palette = Vec::new();
+
+        let overflow = Screencast::encode_region(
+            &src,
+            16,
+            rect,
+            1,
+            false,
+            &mut color_table,
+            &mut index_buf,
+            &mut scaled_buf,
+            &mut palette,
+        );
+        assert!(!overflow);
+        assert_eq!(palette.len(), 256 * 3);
+
+        let overflow = Screencast::encode_region(
+            &src,
+            16,
+            rect,
+            1,
+            true,
+            &mut color_table,
+            &mut index_buf,
+            &mut scaled_buf,
+            &mut palette,
+        );
+        assert!(overflow);
+    }
+
+    // GIF save
+
+    #[test]
+    fn test_save_gif_with_wraparound_and_overflow() {
+        // Two 256-color screens with disjoint palettes: the diff needs 512
+        // colors plus transparent, forcing the full-frame fallback
+        let image: Vec<Color> = (0..=255).collect();
+        let colors1: Vec<Rgb24> = (0..256).collect();
+        let colors2: Vec<Rgb24> = (256..512).collect();
+
+        let mut screencast = Screencast::new(2, 1);
+        screencast.capture(16, 16, &image, &colors1, 10);
+        screencast.capture(16, 16, &image, &colors2, 11);
+        screencast.capture(16, 16, &image, &colors1, 12); // wraps, drops the first
+
+        let path =
+            std::env::temp_dir().join(format!("pyxel_screencast_test_{}.gif", std::process::id()));
+        let path_str = path.to_str().unwrap();
+        screencast.save(path_str, 1).unwrap();
+        assert_eq!(screencast.num_captured_screens, 0); // save resets
+
+        let mut options = gif::DecodeOptions::new();
+        options.set_color_output(gif::ColorOutput::Indexed);
+        let mut decoder = options.read_info(File::open(&path).unwrap()).unwrap();
+        let first = decoder.read_next_frame().unwrap().unwrap().clone();
+        let second = decoder.read_next_frame().unwrap().unwrap().clone();
+        assert!(decoder.read_next_frame().unwrap().is_none());
+
+        // Both frames are full-size: the first by definition, the second via
+        // the color-overflow fallback (a diff frame would be transparent-keyed)
+        assert_eq!((first.width, first.height), (16, 16));
+        assert_eq!((second.width, second.height), (16, 16));
+        assert_eq!(second.transparent, None);
+
+        std::fs::remove_file(&path).ok();
     }
 }

@@ -163,8 +163,8 @@ class TestTilemapBlt:
         dst = pyxel.Tilemap(16, 16, 0)
         dst.cls((0, 0))
         dst.blt(4, 4, src, 0, 0, 8, 8, rotate=45)
-        has_tile = any(dst.pget(x, y) == (1, 1) for x in range(16) for y in range(16))
-        assert has_tile
+        # (3, 7) is outside the unrotated 8x8 box and painted only when rotated
+        assert dst.pget(3, 7) == (1, 1)
 
     def test_blt_with_scale(self):
         src = pyxel.Tilemap(8, 8, 0)
@@ -173,8 +173,9 @@ class TestTilemapBlt:
         dst = pyxel.Tilemap(16, 16, 0)
         dst.cls((0, 0))
         dst.blt(0, 0, src, 0, 0, 1, 1, scale=4)
-        has_tile = any(dst.pget(x, y) == (5, 5) for x in range(8) for y in range(8))
-        assert has_tile
+        # A 1x1 source with scale=4 deterministically paints a 2x2 block
+        drawn = sum(1 for x in range(8) for y in range(8) if dst.pget(x, y) == (5, 5))
+        assert drawn == 4
 
 
 class TestTilemapState:

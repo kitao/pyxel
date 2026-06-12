@@ -928,7 +928,8 @@ mod tests {
         let cmds = parse("Q100 C D");
         let qvals = quantize_commands(&cmds);
         // Only the Q100 command itself (gate_ratio=1.0), no per-note quantize
-        assert!(qvals.iter().all(|&r| (r - 1.0).abs() < 1e-4));
+        assert_eq!(qvals.len(), 1, "expected only the Q100 command: {qvals:?}");
+        assert!((qvals[0] - 1.0).abs() < 1e-4);
     }
 
     #[test]

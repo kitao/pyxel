@@ -26,9 +26,8 @@ class TestSound:
     def test_set_notes_values(self):
         snd = pyxel.Sound()
         snd.set_notes("c2d2e2f2g2a2b2")
-        # Verify note values are in valid range (0-59 for notes, -1 for rest)
-        for note in snd.notes:
-            assert -1 <= note <= 59
+        # C major scale at octave 2: note = letter offset + octave * 12
+        assert list(snd.notes) == [24, 26, 28, 29, 31, 33, 35]
 
     def test_set_notes_rest(self):
         snd = pyxel.Sound()

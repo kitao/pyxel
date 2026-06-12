@@ -1,3 +1,4 @@
+import zipfile
 from pathlib import Path
 
 import pytest
@@ -8,6 +9,29 @@ import pyxel
 class TestSaveLoad:
     def test_load_pyxres(self, assets_dir):
         pyxel.load(str(assets_dir / "sample.pyxres"))
+
+    def test_load_old_format_pyxres(self, tmp_path):
+        # Legacy text format: hex grids per bank under pyxel_resource/
+        path = tmp_path / "legacy.pyxres"
+        with zipfile.ZipFile(path, "w") as zf:
+            zf.writestr("pyxel_resource/version", "1.9.0")
+            zf.writestr("pyxel_resource/image0", "78\n9a\n")
+            zf.writestr("pyxel_resource/tilemap0", "0101\n")
+            zf.writestr("pyxel_resource/sound00", "000c\n01\n73\n00\n20\n")
+            zf.writestr("pyxel_resource/music0", "0001\nnone\nnone\nnone\n")
+
+        pyxel.load(str(path))
+        assert pyxel.images[0].pget(0, 0) == 7
+        assert pyxel.images[0].pget(1, 0) == 8
+        assert pyxel.images[0].pget(0, 1) == 9
+        assert pyxel.images[0].pget(1, 1) == 10
+        assert pyxel.tilemaps[0].pget(0, 0) == (1, 1)
+        assert list(pyxel.sounds[0].notes) == [0, 12]
+        assert list(pyxel.sounds[0].tones) == [0, 1]
+        assert list(pyxel.sounds[0].volumes) == [7, 3]
+        assert list(pyxel.sounds[0].effects) == [0, 0]
+        assert pyxel.sounds[0].speed == 20
+        assert list(pyxel.musics[0].seqs[0]) == [0, 1]
 
     def test_save_load_roundtrip(self, tmp_path):
         img = pyxel.images[0]
@@ -118,7 +142,13 @@ class TestSaveLoad:
 
 class TestPalette:
     def test_load_pal(self, assets_dir):
-        pyxel.load_pal(str(assets_dir / "audio_bgm.pyxpal"))
+        original_colors = list(pyxel.colors)
+        try:
+            pyxel.load_pal(str(assets_dir / "audio_bgm.pyxpal"))
+            # The bundled palette carries 32 colors, one hex value per line
+            assert len(pyxel.colors) == 32
+        finally:
+            pyxel.colors[:] = original_colors
 
     def test_load_pal_skips_whitespace_only_lines(self, tmp_path):
         backup_path = str(tmp_path / "backup.pyxpal")
