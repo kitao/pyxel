@@ -24,6 +24,13 @@ use crate::system::System;
 use crate::tilemap::{ImageSource, RcTilemap, Tilemap};
 use crate::tone::{RcTone, Tone};
 
+pub struct Pyxel {
+    pub(crate) system: System,
+    pub(crate) resource: Resource,
+    pub(crate) input: Input,
+    pub(crate) graphics: Option<Graphics>,
+}
+
 static IS_INITIALIZED: AtomicBool = AtomicBool::new(false);
 
 // Singleton
@@ -105,13 +112,6 @@ define_global!(channels, CHANNELS, Vec<RcChannel>, init_channels());
 define_global!(tones, TONES, Vec<RcTone>, init_tones());
 define_global!(sounds, SOUNDS, Vec<RcSound>, init_sounds());
 define_global!(musics, MUSICS, Vec<RcMusic>, init_musics());
-
-pub struct Pyxel {
-    pub(crate) system: System,
-    pub(crate) resource: Resource,
-    pub(crate) input: Input,
-    pub(crate) graphics: Option<Graphics>,
-}
 
 pub fn init(
     w: u32,

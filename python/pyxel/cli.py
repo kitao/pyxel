@@ -74,6 +74,9 @@ def cli() -> None:
     sys.exit(1)
 
 
+# Helpers
+
+
 def _exit_with_error(message):
     print(message)
     sys.exit(1)
@@ -219,6 +222,9 @@ def _make_metadata_comment(startup_script_file):
     metadata_comment += border
 
     return metadata_comment
+
+
+# CLI commands
 
 
 def run_python_script(python_script_file: str) -> None:

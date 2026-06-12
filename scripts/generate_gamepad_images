@@ -139,6 +139,7 @@ class App:
         if pyxel.btnp(pyxel.KEY_SPACE):
             self.show_guide = not self.show_guide
 
+        # Save each pad area as a separate image
         if pyxel.btnp(pyxel.KEY_RETURN):
             cross_image = pyxel.Image(CROSS_AREA_WIDTH, CROSS_AREA_WIDTH)
             cross_image.blt(
@@ -215,6 +216,7 @@ class App:
         )
         pyxel.rect(ACTION_AREA_X - 1, 0, 1, SCREEN_HEIGHT, 3)
 
+        # Draw margin and corner guide rectangles for each pad area
         if self.show_guide:
             pyxel.camera(-CROSS_AREA_X, 0)
 

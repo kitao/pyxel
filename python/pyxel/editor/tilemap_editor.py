@@ -122,7 +122,7 @@ class TilemapEditor(EditorBase):
     def __on_tilemap_picker_change(self, value):
         self.image_index_var = pyxel.tilemaps[value].imgsrc
 
-    def __on_tilemap_picker_mouse_hover(self, x, y):
+    def __on_tilemap_picker_mouse_hover(self, _x, _y):
         self.help_message_var = "COPY_ALL:CTRL+SHIFT+C/X/V"
 
     def __on_image_picker_change(self, value):

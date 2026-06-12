@@ -27,6 +27,8 @@ pub struct Canvas<T: Copy + PartialEq + Default + ToIndex> {
 }
 
 impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
+    // Constructors
+
     pub fn new(width: u32, height: u32) -> Self {
         Self {
             self_rect: RectArea::new(0, 0, width, height),
@@ -37,6 +39,8 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
             data: vec![T::default(); (width * height) as usize],
         }
     }
+
+    // Public accessors
 
     pub const fn width(&self) -> u32 {
         self.self_rect.width()
@@ -49,6 +53,8 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
     pub fn data_ptr(&mut self) -> *mut T {
         self.data.as_mut_ptr()
     }
+
+    // Clip and offset
 
     pub fn set_clip_rect(&mut self, x: f32, y: f32, width: f32, height: f32) {
         let x = f32_to_i32(x);
@@ -74,9 +80,13 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         self.camera_y = 0;
     }
 
+    // Dithering
+
     pub fn set_dithering(&mut self, alpha: f32) {
         self.alpha = alpha;
     }
+
+    // Public data operations
 
     pub fn clear(&mut self, value: T) {
         self.data.fill(value);

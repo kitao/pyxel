@@ -62,6 +62,7 @@ def _parse_arg(text):
     text = text.lstrip()
     if not text:
         return "", ""
+    # Split one argument off the front, dispatching on its first character
     if text[0] in ('"', "'"):
         q = text[0]
         i = 1
@@ -239,7 +240,7 @@ class JsEval:
                 val = obj.get(m.group(2), "")
                 return localize(val) if isinstance(val, dict) else val
 
-        # localize("key") / localize(var) / localize(var.prop)
+        # t("key") / t(var) / t(var.prop)
         m = re.match(r't\("([^"]+)"\)$', expr)
         if m:
             return self._localize(m.group(1))
@@ -310,7 +311,7 @@ class JsEval:
             inner = expr[10 : _find_matching(expr, 10, "(", ")") - 1]
             return self._icon_table(inner)
 
-        # areaTitle(label, index) -> ### heading
+        # areaTitle(label, index) -> #### heading
         if expr.startswith("areaTitle("):
             inner = expr[10 : _find_matching(expr, 10, "(", ")") - 1]
             label_s, _ = _parse_arg(inner)
@@ -338,7 +339,7 @@ class JsEval:
                 return f"\n![{url}]({url})\n"
             return ""
 
-        # toolIcons() -> tool list with icons from D.image_tools
+        # toolIcons() -> tool list with icons from data.image_tools
         if expr.startswith("toolIcons("):
             tool_icons = [
                 "tool_select",
@@ -396,7 +397,7 @@ class JsEval:
             inner = expr[6 : _find_matching(expr, 6, "(", ")") - 1]
             return self._table(inner)
 
-        # localize("key").replace(...) or esc(localize("key")).replace(...) chain
+        # t("key").replace(...) or esc(t("key")).replace(...) chain
         if re.match(r'(?:esc\()?t\("', expr) and re.search(r"\.replace(All)?\(", expr):
             return self._replace_chain(expr)
 
@@ -412,7 +413,7 @@ class JsEval:
         return expr
 
     def _replace_chain(self, expr):
-        # Handle localize("key").replace/replaceAll(...) and esc(localize("key")).replace/replaceAll(...)
+        # Handle t("key").replace/replaceAll(...) and esc(t("key")).replace/replaceAll(...)
         m = re.match(r'(?:esc\()?t\("([^"]+)"\)\)?', expr)
         if not m:
             return expr
@@ -488,7 +489,6 @@ class JsEval:
                 localize(item["key"]) if isinstance(item["key"], dict) else item["key"]
             )
             action = localize(item["action"])
-            action = re.sub(r"`([^`]+)`", r"`\1`", action)
             rows.append(f"| {key} | {action} |")
         return "\n| Shortcut | Action |\n| --- | --- |\n" + "\n".join(rows) + "\n"
 
@@ -826,6 +826,7 @@ def generate_api_reference():
     )
     lines.append("")
 
+    # Emit each category's items and constant groups
     for cat in api_data["categories"]:
         lines.append(f"## {localize(cat['title'])}")
         lines.append("")

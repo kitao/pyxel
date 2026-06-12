@@ -61,6 +61,7 @@ impl Font {
         let mut dwidth = 0;
         let mut bbx = BdfBoundingBox::default();
 
+        // Dispatch on BDF keyword lines
         for line in BufReader::new(file).lines().map_while(Result::ok) {
             if line.starts_with("FONTBOUNDINGBOX") {
                 bounding_box = Self::parse_bdf_bbox(&line, &parse_err)?;
