@@ -125,9 +125,6 @@ pub const NOTE_INTERP_CLOCKS: u32 = AUDIO_CLOCK_RATE / 1000; // 1 / 1000 = 1ms
 pub const TICKS_PER_QUARTER_NOTE: u32 = 48;
 pub const SOUND_TICKS_PER_SECOND: u32 = 120;
 
-pub const WAVETABLE_LENGTH: u32 = 32;
-pub const WAVETABLE_LEVELS: u32 = 16;
-
 pub const VIBRATO_PERIOD_TICKS: u32 = SOUND_TICKS_PER_SECOND / 6; // 6Hz
 pub const VIBRATO_DEPTH_CENTS: u32 = 25; // -25 to 25 cents
 

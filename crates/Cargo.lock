@@ -1268,7 +1268,6 @@ dependencies = [
  "paste",
  "rand 0.10.1",
  "rand_xoshiro",
- "semver",
  "serde",
  "serde-xml-rs",
  "symphonia",
