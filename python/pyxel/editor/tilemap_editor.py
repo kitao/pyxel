@@ -66,8 +66,8 @@ class TilemapEditor(EditorBase):
 
         # Initialize tilemap viewer
         self._tilemap_viewer = TilemapViewer(self)
-        self.copy_var("focus_x_var", self._tilemap_viewer, "focus_x_var")
-        self.copy_var("focus_y_var", self._tilemap_viewer, "focus_y_var")
+        self.copy_var("focus_x_var", self._tilemap_viewer)
+        self.copy_var("focus_y_var", self._tilemap_viewer)
 
         # Initialize image picker
         self._image_picker = NumberPicker(
