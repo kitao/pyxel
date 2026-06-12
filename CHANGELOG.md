@@ -22,6 +22,19 @@
 - Fixed sound editor speed display not updating when switching sounds
 - Fixed negative sample rounding bias in voice gain processing
 - Removed unused semver dependency, constants, and dead code
+- Fixed flipped blt and bltm clipping when the source overhangs
+- Fixed elli and ellib drawing with zero width or height
+- Fixed tri fill when all three vertices share one row
+- Fixed PCM sounds being skipped after note sounds in a playlist
+- Fixed seek into sounds following a PCM sound in a playlist
+- Fixed ghost notes when resuming PCM playback after an interrupting sound
+- Fixed BGM generator hang on custom chords without tones
+- Fixed old MML parser panic on trailing whitespace
+- Fixed old resource load crashing on malformed palette files
+- Fixed BDF font parse crash on overlong bitmap rows
+- Fixed Pyxel Editor color pick offset at pixel boundaries
+- Fixed Pyxel MML Studio legacy share URLs failing to load
+- Fixed doubled HTML escaping in web user guide link labels
 - Refined wording, translations, and data across web pages and docs
 
 ## 2.9.5
@@ -549,7 +562,7 @@
 - Updated Pyodide to version 0.27.5
 - Added a Q&A about saving application data to the FAQ
 - Updated zip crate to version 4.0
-- Updated serde-xml-rs to version 0.8
+- Updated serde-xml-rs crate to version 0.8
 - Updated pyo3 crate to version 0.25
 - Updated sysinfo crate to version 0.35
 - Updated bindgen crate to version 0.72
@@ -610,7 +623,7 @@
 
 - Added a Q&A about file loading to the FAQ
 - Added support for overriding screen position and size in the web version
-- Updated pyo3 crate to version 2.4
+- Updated pyo3 crate to version 0.24
 
 ## 2.3.11
 
@@ -702,7 +715,7 @@
 
 ## 2.2.10
 
-- Updated pyo3 crate to version 2.3
+- Updated pyo3 crate to version 0.23
 - Reduced sound clock rate from 120MHz to 2.048MHz
 
 ## 2.2.9
@@ -754,7 +767,7 @@
 ## 2.2.4
 
 - Fixed a bug when playing a pyxapp with the same process ID
-- Updated sysinfo crate to version 0.25
+- Updated sysinfo crate to version 0.32
 - Updated license description in the README files
 - Updated instructions for using the web version of Pyxel
 - Updated Q&A
@@ -908,7 +921,7 @@
 
 ## 2.0.7
 
-- Turned off the high DPI mode for performance perspective
+- Turned off the high DPI mode for performance
 - Added a shortcut to output the current color palette
 - Added the load_tmx and load methods to Tilemap
 - Enabled importing a TMX file via drag and drop in the tilemap editor
