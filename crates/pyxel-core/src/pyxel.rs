@@ -49,6 +49,8 @@ fn set_pyxel(instance: Pyxel) {
     }
 }
 
+// Lifecycle callbacks
+
 static mut RESET_CALLBACK: Option<Box<dyn FnMut() + Send>> = None;
 
 pub fn reset_callback() -> &'static mut Option<Box<dyn FnMut() + Send>> {
@@ -283,6 +285,7 @@ fn init_font_image() -> RcImage {
         palette_is_identity: true,
     });
     let image = rc_mut!(rc);
+    // Each u32 packs one 4x6 glyph MSB-first in its low 24 bits (bit 23 = top-left)
     for (i, data) in FONT_DATA.iter().enumerate() {
         let row = i as u32 / NUM_FONT_COLS;
         let col = i as u32 % NUM_FONT_COLS;

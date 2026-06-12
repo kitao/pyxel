@@ -65,6 +65,7 @@ fn init(
             let script = CString::new(
                 r"
 import os, subprocess, sys
+# 0x52 = WATCH_RESET_EXIT_CODE in settings.rs, checked by cli.py watch mode
 if os.environ.get('PYXEL_WATCH_STATE_FILE'):
     os._exit(0x52)
 if sys.platform == 'darwin':

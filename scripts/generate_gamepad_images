@@ -21,14 +21,14 @@ MENU_AREA_HEIGHT = MENU_HEIGHT + MENU_MARGIN * 2
 MENU_AREA_X = CROSS_AREA_WIDTH + 1
 MENU_AREA_Y = CROSS_AREA_WIDTH - MENU_AREA_HEIGHT
 
-ACTION_WIDTH = 32
-ACTION_MARGIN = 5
-ACTION_INNER_GAP = 24
-ACTION_X = ACTION_MARGIN + ACTION_WIDTH + (ACTION_INNER_GAP - ACTION_WIDTH) // 2
-ACTION_AREA_X = MENU_AREA_X + MENU_AREA_WIDTH + 1
-ACTION_AREA_WIDTH = ACTION_MARGIN * 2 + ACTION_WIDTH * 2 + ACTION_INNER_GAP
+BUTTON_WIDTH = 32
+BUTTON_MARGIN = 5
+BUTTON_INNER_GAP = 24
+BUTTON_X = BUTTON_MARGIN + BUTTON_WIDTH + (BUTTON_INNER_GAP - BUTTON_WIDTH) // 2
+BUTTON_AREA_X = MENU_AREA_X + MENU_AREA_WIDTH + 1
+BUTTON_AREA_WIDTH = BUTTON_MARGIN * 2 + BUTTON_WIDTH * 2 + BUTTON_INNER_GAP
 
-SCREEN_WIDTH = ACTION_AREA_X + ACTION_AREA_WIDTH
+SCREEN_WIDTH = BUTTON_AREA_X + BUTTON_AREA_WIDTH
 SCREEN_HEIGHT = CROSS_AREA_WIDTH
 
 
@@ -110,18 +110,19 @@ def draw_gamepad_menu(x, y, color):
 def draw_gamepad_button(x, y, color):
     pyxel.camera(-x, -y)
 
-    x1 = ACTION_MARGIN
-    x2 = ACTION_X
-    x3 = x1 + ACTION_WIDTH + ACTION_INNER_GAP
+    x1 = BUTTON_MARGIN
+    x2 = BUTTON_X
+    x3 = x1 + BUTTON_WIDTH + BUTTON_INNER_GAP
 
+    # Button cluster is symmetric, reuse x coordinates as y
     y1 = x1
     y2 = x2
     y3 = x3
 
-    pyxel.ellib(x1, y2, ACTION_WIDTH, ACTION_WIDTH, color)
-    pyxel.ellib(x3, y2, ACTION_WIDTH, ACTION_WIDTH, color)
-    pyxel.ellib(x2, y1, ACTION_WIDTH, ACTION_WIDTH, color)
-    pyxel.ellib(x2, y3, ACTION_WIDTH, ACTION_WIDTH, color)
+    pyxel.ellib(x1, y2, BUTTON_WIDTH, BUTTON_WIDTH, color)
+    pyxel.ellib(x3, y2, BUTTON_WIDTH, BUTTON_WIDTH, color)
+    pyxel.ellib(x2, y1, BUTTON_WIDTH, BUTTON_WIDTH, color)
+    pyxel.ellib(x2, y3, BUTTON_WIDTH, BUTTON_WIDTH, color)
 
     pyxel.camera()
 
@@ -171,20 +172,20 @@ class App:
                 1,
             )
 
-            button_image = pyxel.Image(ACTION_AREA_WIDTH, ACTION_AREA_WIDTH)
+            button_image = pyxel.Image(BUTTON_AREA_WIDTH, BUTTON_AREA_WIDTH)
             button_image.blt(
                 0,
                 0,
                 pyxel.screen,
-                ACTION_AREA_X,
+                BUTTON_AREA_X,
                 0,
-                ACTION_AREA_WIDTH,
-                ACTION_AREA_WIDTH,
+                BUTTON_AREA_WIDTH,
+                BUTTON_AREA_WIDTH,
             )
             button_image.save(
                 str(
                     OUTPUT_DIR
-                    / f"gamepad_button_{ACTION_AREA_WIDTH}x{ACTION_AREA_WIDTH}.png"
+                    / f"gamepad_button_{BUTTON_AREA_WIDTH}x{BUTTON_AREA_WIDTH}.png"
                 ),
                 1,
             )
@@ -200,11 +201,11 @@ class App:
                     MENU_AREA_Y + i,
                     1,
                 )
-                draw_gamepad_button(ACTION_AREA_X + j, i, 1)
+                draw_gamepad_button(BUTTON_AREA_X + j, i, 1)
 
         draw_gamepad_cross(CROSS_AREA_X, 0, 12)
         draw_gamepad_menu(MENU_AREA_X, MENU_AREA_Y, 12)
-        draw_gamepad_button(ACTION_AREA_X, 0, 12)
+        draw_gamepad_button(BUTTON_AREA_X, 0, 12)
 
         pyxel.rect(MENU_AREA_X - 1, 0, 1, SCREEN_HEIGHT, 3)
         pyxel.rect(
@@ -214,7 +215,7 @@ class App:
             1,
             3,
         )
-        pyxel.rect(ACTION_AREA_X - 1, 0, 1, SCREEN_HEIGHT, 3)
+        pyxel.rect(BUTTON_AREA_X - 1, 0, 1, SCREEN_HEIGHT, 3)
 
         # Draw margin and corner guide rectangles for each pad area
         if self.show_guide:
@@ -300,30 +301,30 @@ class App:
                 8,
             )
 
-            pyxel.camera(-ACTION_AREA_X, 0)
+            pyxel.camera(-BUTTON_AREA_X, 0)
 
-            pyxel.rectb(0, ACTION_X, ACTION_MARGIN, ACTION_WIDTH, 8)
+            pyxel.rectb(0, BUTTON_X, BUTTON_MARGIN, BUTTON_WIDTH, 8)
             pyxel.rectb(
-                ACTION_MARGIN + ACTION_WIDTH * 2 + ACTION_INNER_GAP,
-                ACTION_X,
-                ACTION_MARGIN,
-                ACTION_WIDTH,
+                BUTTON_MARGIN + BUTTON_WIDTH * 2 + BUTTON_INNER_GAP,
+                BUTTON_X,
+                BUTTON_MARGIN,
+                BUTTON_WIDTH,
                 8,
             )
-            pyxel.rectb(ACTION_X, 0, ACTION_WIDTH, ACTION_MARGIN, 8)
+            pyxel.rectb(BUTTON_X, 0, BUTTON_WIDTH, BUTTON_MARGIN, 8)
             pyxel.rectb(
-                ACTION_X,
-                ACTION_MARGIN + ACTION_WIDTH * 2 + ACTION_INNER_GAP,
-                ACTION_WIDTH,
-                ACTION_MARGIN,
+                BUTTON_X,
+                BUTTON_MARGIN + BUTTON_WIDTH * 2 + BUTTON_INNER_GAP,
+                BUTTON_WIDTH,
+                BUTTON_MARGIN,
                 8,
             )
 
-            pyxel.rectb(0, 0, ACTION_X, ACTION_X, 9)
-            pyxel.rectb(ACTION_X + ACTION_WIDTH, 0, ACTION_X, ACTION_X, 9)
-            pyxel.rectb(0, ACTION_X + ACTION_WIDTH, ACTION_X, ACTION_X, 9)
+            pyxel.rectb(0, 0, BUTTON_X, BUTTON_X, 9)
+            pyxel.rectb(BUTTON_X + BUTTON_WIDTH, 0, BUTTON_X, BUTTON_X, 9)
+            pyxel.rectb(0, BUTTON_X + BUTTON_WIDTH, BUTTON_X, BUTTON_X, 9)
             pyxel.rectb(
-                ACTION_X + ACTION_WIDTH, ACTION_X + ACTION_WIDTH, ACTION_X, ACTION_X, 9
+                BUTTON_X + BUTTON_WIDTH, BUTTON_X + BUTTON_WIDTH, BUTTON_X, BUTTON_X, 9
             )
 
             pyxel.camera()
