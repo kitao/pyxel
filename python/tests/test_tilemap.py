@@ -92,7 +92,8 @@ class TestTilemapDrawing:
         tm = pyxel.Tilemap(32, 32, 0)
         tm.cls((0, 0))
         tm.circb(16, 16, 5, (2, 2))
-        assert tm.pget(16, 16) == (0, 0)
+        assert tm.pget(16, 11) == (2, 2)  # Top of the border
+        assert tm.pget(16, 16) == (0, 0)  # Interior stays empty
 
     def test_elli(self):
         tm = pyxel.Tilemap(32, 32, 0)
@@ -104,7 +105,8 @@ class TestTilemapDrawing:
         tm = pyxel.Tilemap(32, 32, 0)
         tm.cls((0, 0))
         tm.ellib(8, 8, 16, 8, (1, 1))
-        assert tm.pget(16, 12) == (0, 0)
+        assert tm.pget(16, 8) == (1, 1)  # Top of the border
+        assert tm.pget(16, 12) == (0, 0)  # Interior stays empty
 
     def test_tri(self):
         tm = pyxel.Tilemap(32, 32, 0)
@@ -116,7 +118,11 @@ class TestTilemapDrawing:
         tm = pyxel.Tilemap(32, 32, 0)
         tm.cls((0, 0))
         tm.trib(8, 0, 0, 15, 15, 15, (4, 4))
-        assert tm.pget(8, 8) == (0, 0)
+        # Vertices
+        assert tm.pget(8, 0) == (4, 4)
+        assert tm.pget(0, 15) == (4, 4)
+        assert tm.pget(15, 15) == (4, 4)
+        assert tm.pget(8, 8) == (0, 0)  # Interior stays empty
 
     def test_fill(self):
         tm = pyxel.Tilemap(16, 16, 0)
@@ -200,10 +206,10 @@ class TestTilemapState:
 class TestTilemapIO:
     def test_from_tmx(self, assets_dir):
         tm = pyxel.Tilemap.from_tmx(str(assets_dir / "urban_rpg.tmx"), 0)
-        assert tm.width > 0
-        assert tm.height > 0
-        has_content = any(tm.pget(x, 0) != (0, 0) for x in range(tm.width))
-        assert has_content
+        assert tm.width == 58
+        assert tm.height == 32
+        has_nonzero = any(tm.pget(x, 0) != (0, 0) for x in range(tm.width))
+        assert has_nonzero
 
     def test_load_tmx(self, assets_dir):
         tm = pyxel.Tilemap(32, 32, 0)
@@ -293,10 +299,11 @@ class TestTilemapCollide:
         wall2 = (2, 0)
         tm.pset(2, 0, wall1)
         tm.pset(0, 2, wall2)
+        # The entity's leading edge starts at 8 and each wall starts at 16
         dx, _ = tm.collide(0, 0, 8, 8, 100.0, 0.0, [wall1, wall2])
-        assert dx < 100.0
+        assert dx == 8.0
         _, dy = tm.collide(0, 0, 8, 8, 0.0, 100.0, [wall1, wall2])
-        assert dy < 100.0
+        assert dy == 8.0
 
     def test_collide_negative_direction(self):
         tm = pyxel.Tilemap(8, 8, 0)
@@ -305,7 +312,7 @@ class TestTilemapCollide:
         tm.pset(0, 0, wall_tile)  # Wall at origin
         # Moving left into wall from position (24, 0)
         dx, dy = tm.collide(24, 0, 8, 8, -100.0, 0.0, [wall_tile])
-        assert dx > -100.0  # Stopped before reaching full distance
+        assert dx == -16.0  # Stopped at the wall's right edge (8)
         assert dy == 0.0
 
     def test_collide_empty_walls_list(self):
