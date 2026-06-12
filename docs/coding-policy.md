@@ -128,6 +128,15 @@ Tests cover the product in four layers: Rust unit tests for platform-independent
 - Documentation prose reads as natural technical writing in its own language, using the target language's standard conventions for compound-noun chains rather than literal translation from another language.
   - e.g., English "package installation guide" — typical; "installation of the package guide" — anti-pattern (translationese).
 
+- Japanese text separates Japanese characters from adjacent alphanumeric tokens with a single half-width space, regardless of which file the text lives in; code spans keep their literal spacing.
+  - e.g., 「Web 版 Pyxel」「16 色」「.pyxres ファイル」 — typical; 「Web版」「16色」 — anti-pattern (missing separation).
+
+- Japanese text writes loanwords with the trailing long-vowel mark per the current technical-writing standard: English -er/-or/-ar endings take the mark, -y endings do not.
+  - e.g., 「ブラウザー」「エディター」「パラメーター」 — typical; 「ブラウザ」 — anti-pattern (dropped mark); 「ディレクトリ」 — typical (-y ending takes no mark).
+
+- Japanese text chooses parenthesis width by content: parentheses containing Japanese characters are full-width and sit flush; parentheses with ASCII-only content are half-width, separated by half-width spaces except against punctuation.
+  - e.g., 「イメージバンク（Image クラスのインスタンス）のリスト (0-2)」 — typical; 「リスト（0-2）」 — anti-pattern (full-width around ASCII-only content).
+
 #### Translation
 
 - The maintainer writes in Japanese; Japanese is the source of truth for translation. Translations route through English first, then to every other language.
