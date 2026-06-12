@@ -5,7 +5,7 @@ import pyxel
 
 class TestSeqLen:
     def test_colors_len(self):
-        assert len(pyxel.colors) >= 16
+        assert len(pyxel.colors) == pyxel.NUM_COLORS
 
     def test_images_len(self):
         assert len(pyxel.images) == pyxel.NUM_IMAGES
@@ -17,7 +17,7 @@ class TestSeqLen:
         assert len(pyxel.tilemaps) == pyxel.NUM_TILEMAPS
 
     def test_channels_len(self):
-        assert len(pyxel.channels) >= pyxel.NUM_CHANNELS
+        assert len(pyxel.channels) == pyxel.NUM_CHANNELS
 
     def test_tones_len(self):
         assert len(pyxel.tones) == pyxel.NUM_TONES

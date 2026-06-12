@@ -172,9 +172,9 @@ class TestImageBlt:
         src.rect(0, 0, 8, 8, 7)
         dst = pyxel.Image(32, 32)
         dst.cls(0)
-        dst.blt(8, 8, src, 0, 0, 8, 8, rotate=90)
-        has_drawn = any(dst.pget(x, y) == 7 for x in range(32) for y in range(32))
-        assert has_drawn
+        dst.blt(8, 8, src, 0, 0, 8, 8, rotate=45)
+        # (7, 11) is outside the unrotated 8x8 box and painted only when rotated
+        assert dst.pget(7, 11) == 7
 
     def test_blt_with_scale(self):
         src = pyxel.Image(8, 8)
@@ -183,9 +183,9 @@ class TestImageBlt:
         dst = pyxel.Image(32, 32)
         dst.cls(0)
         dst.blt(0, 0, src, 0, 0, 1, 1, scale=4)
-        # 1x1 source scaled 4x must produce at least one painted pixel near origin
+        # A 1x1 source with scale=4 deterministically paints a 2x2 block
         drawn = sum(1 for x in range(8) for y in range(8) if dst.pget(x, y) == 7)
-        assert drawn > 0
+        assert drawn == 4
 
     def test_bltm_with_int(self):
         pyxel.tilemaps[0].cls((0, 0))
@@ -261,7 +261,8 @@ class TestImageState:
         img.rect(0, 0, 16, 16, 7)
         img.dither(1.0)
         drawn = sum(1 for x in range(16) for y in range(16) if img.pget(x, y) == 7)
-        assert 0 < drawn < 256
+        # dither(0.5) deterministically draws exactly half of the 256 pixels
+        assert drawn == 128
 
 
 class TestImageIO:
@@ -297,39 +298,45 @@ class TestImageIO:
         assert Path(path2).stat().st_size > Path(path1).stat().st_size
 
     def test_from_image_with_include_colors(self, assets_dir):
-        original_color0 = pyxel.colors[0]
-        img = pyxel.Image.from_image(
-            str(assets_dir / "cat_16x16.png"), include_colors=True
-        )
-        assert img.width == 16
-        pyxel.colors[0] = original_color0
+        # include_colors replaces the whole global palette; restore it fully
+        original_colors = list(pyxel.colors)
+        try:
+            img = pyxel.Image.from_image(
+                str(assets_dir / "cat_16x16.png"), include_colors=True
+            )
+            assert img.width == 16
+        finally:
+            pyxel.colors[:] = original_colors
 
     def test_load_with_include_colors(self, assets_dir):
-        original_color0 = pyxel.colors[0]
-        img = pyxel.Image(32, 32)
-        img.load(0, 0, str(assets_dir / "cat_16x16.png"), include_colors=True)
-        has_nonzero = any(img.pget(x, 0) != 0 for x in range(16))
-        assert has_nonzero
-        pyxel.colors[0] = original_color0
+        original_colors = list(pyxel.colors)
+        try:
+            img = pyxel.Image(32, 32)
+            img.load(0, 0, str(assets_dir / "cat_16x16.png"), include_colors=True)
+            has_nonzero = any(img.pget(x, 0) != 0 for x in range(16))
+            assert has_nonzero
+        finally:
+            pyxel.colors[:] = original_colors
 
     def test_incl_colors_deprecated(self, capfd, assets_dir):
         # incl_colors is the deprecated alias; warning fires only once per session,
         # so test both APIs in order.
-        original_color0 = pyxel.colors[0]
-        img1 = pyxel.Image.from_image(
-            str(assets_dir / "cat_16x16.png"),
-            incl_colors=True,  # type: ignore[call-arg]
-        )
-        assert img1.width == 16
-        out = capfd.readouterr().out
-        assert "deprecated" in out.lower()
-        pyxel.colors[0] = original_color0
+        original_colors = list(pyxel.colors)
+        try:
+            img1 = pyxel.Image.from_image(
+                str(assets_dir / "cat_16x16.png"),
+                incl_colors=True,  # type: ignore[call-arg]
+            )
+            assert img1.width == 16
+            out = capfd.readouterr().out
+            assert "deprecated" in out.lower()
 
-        img2 = pyxel.Image(32, 32)
-        img2.load(0, 0, str(assets_dir / "cat_16x16.png"), incl_colors=True)  # type: ignore[call-arg]
-        has_nonzero = any(img2.pget(x, 0) != 0 for x in range(16))
-        assert has_nonzero
-        pyxel.colors[0] = original_color0
+            img2 = pyxel.Image(32, 32)
+            img2.load(0, 0, str(assets_dir / "cat_16x16.png"), incl_colors=True)  # type: ignore[call-arg]
+            has_nonzero = any(img2.pget(x, 0) != 0 for x in range(16))
+            assert has_nonzero
+        finally:
+            pyxel.colors[:] = original_colors
 
 
 class TestImageDataPtr:

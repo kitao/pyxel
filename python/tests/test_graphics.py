@@ -160,8 +160,8 @@ class TestDrawingState:
         pyxel.rect(0, 0, 20, 20, 7)
         pyxel.dither(1.0)
         drawn = sum(1 for x in range(20) for y in range(20) if pyxel.pget(x, y) == 7)
-        # ~50% of 400 pixels = ~200 (allow wide range for dither pattern)
-        assert 150 < drawn < 250
+        # dither(0.5) deterministically draws exactly half of the 400 pixels
+        assert drawn == 200
 
 
 class TestBlt:
@@ -193,20 +193,18 @@ class TestBlt:
         pyxel.images[0].cls(0)
         pyxel.images[0].rect(0, 0, 8, 8, 7)
         pyxel.blt(80, 60, 0, 0, 0, 8, 8, rotate=45)
-        # After rotation, pixels should be drawn somewhere near (80, 60)
-        has_drawn = any(
-            pyxel.pget(x, y) == 7 for x in range(70, 90) for y in range(50, 70)
-        )
-        assert has_drawn
+        # (79, 63) is outside the unrotated 8x8 box and painted only when rotated
+        assert pyxel.pget(79, 63) == 7
 
     def test_blt_with_scale(self):
         pyxel.cls(0)
         pyxel.images[0].cls(0)
         pyxel.images[0].pset(0, 0, 7)
         pyxel.blt(0, 0, 0, 0, 0, 1, 1, scale=4)
-        # A 1x1 pixel scaled 4x should cover approximately 4x4 area
+        # A 1x1 source with scale=4 deterministically paints a 2x2 block;
+        # a single painted pixel would mean the scale argument was ignored
         drawn = sum(1 for x in range(8) for y in range(8) if pyxel.pget(x, y) == 7)
-        assert drawn > 0
+        assert drawn == 4
 
 
 class TestBltm:
@@ -245,10 +243,8 @@ class TestBltm:
         pyxel.tilemaps[0].cls((0, 0))
         pyxel.tilemaps[0].pset(0, 0, (0, 0))
         pyxel.bltm(80, 60, 0, 0, 0, 8, 8, rotate=45)
-        has_drawn = any(
-            pyxel.pget(x, y) == 7 for x in range(70, 90) for y in range(50, 70)
-        )
-        assert has_drawn
+        # (79, 63) is outside the unrotated 8x8 box and painted only when rotated
+        assert pyxel.pget(79, 63) == 7
 
     def test_bltm_scale(self):
         pyxel.cls(0)
@@ -257,8 +253,9 @@ class TestBltm:
         pyxel.tilemaps[0].cls((0, 0))
         pyxel.tilemaps[0].pset(0, 0, (0, 0))
         pyxel.bltm(0, 0, 0, 0, 0, 1, 1, scale=4)
+        # A 1x1 source with scale=4 deterministically paints a 2x2 block
         drawn = sum(1 for x in range(8) for y in range(8) if pyxel.pget(x, y) == 7)
-        assert drawn > 0
+        assert drawn == 4
 
 
 class TestBlt3d:
