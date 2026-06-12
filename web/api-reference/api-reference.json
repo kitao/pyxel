@@ -8483,7 +8483,7 @@
             "es": "Devuelve el puntero de datos brutos de la imagen como un array ctypes c_uint8.",
             "fr": "Renvoie le pointeur de données brutes de l'image sous forme de tableau ctypes c_uint8.",
             "it": "Restituisce il puntatore ai dati grezzi dell'immagine come array ctypes c_uint8.",
-            "ja": "画像の生データポインタを ctypes c_uint8 配列として返す。",
+            "ja": "画像の生データポインターを ctypes c_uint8 配列として返す。",
             "ko": "이미지의 원시 데이터 포인터를 ctypes c_uint8 배열로 반환한다.",
             "pt": "Retorna o ponteiro de dados brutos da imagem como um array ctypes c_uint8.",
             "ru": "Возвращает указатель на необработанные данные изображения в виде массива ctypes c_uint8.",
@@ -8499,7 +8499,7 @@
               "es": "Puntero a datos sin procesar",
               "fr": "Pointeur de données brutes",
               "it": "Puntatore ai dati grezzi",
-              "ja": "生データポインタ",
+              "ja": "生データポインター",
               "ko": "원시 데이터 포인터",
               "pt": "Ponteiro de dados brutos",
               "ru": "Указатель на необработанные данные",
@@ -9014,7 +9014,7 @@
             "ko": "(x, y)의 타일을 가져온다. 좌표는 절대 좌표이며 카메라 오프셋의 영향을 받지 않는다. 타일은 (image_tx, image_ty) 튜플이다.",
             "pt": "Obtém o tile em (x, y). As coordenadas são absolutas e não são afetadas pelo deslocamento da câmera. Um tile é uma tupla de (image_tx, image_ty).",
             "ru": "Возвращает тайл в (x, y). Координаты являются абсолютными и не зависят от смещения камеры. Тайл — это кортеж (image_tx, image_ty).",
-            "tr": "(x, y) konumundaki tile'ı döndürür. Koordinatlar mutlak olup kamera ofsetinden etkilenmez. Tile, (image_tx, image_ty) demetidir.",
+            "tr": "(x, y) konumundaki karoyu döndürür. Koordinatlar mutlak olup kamera ofsetinden etkilenmez. Karo, (image_tx, image_ty) demetidir.",
             "uk": "Повертає тайл у (x, y). Координати є абсолютними і не залежать від зміщення камери. Тайл — це кортеж (image_tx, image_ty)."
           },
           "params": [
@@ -9089,7 +9089,7 @@
             "ko": "(x, y)에 타일을 설정한다. 타일은 (image_tx, image_ty) 튜플이다.",
             "pt": "Define um tile em (x, y). Um tile é uma tupla de (image_tx, image_ty).",
             "ru": "Устанавливает тайл в (x, y). Тайл — это кортеж (image_tx, image_ty).",
-            "tr": "(x, y) konumunda bir tile ayarlar. Tile, (image_tx, image_ty) demetidir.",
+            "tr": "(x, y) konumunda bir karo ayarlar. Karo, (image_tx, image_ty) demetidir.",
             "uk": "Встановлює тайл у (x, y). Тайл — це кортеж (image_tx, image_ty)."
           },
           "params": [
@@ -9168,7 +9168,7 @@
             "ko": "Tilemap 인스턴스는 그래픽 섹션의 그리기 함수를 지원한다. 화면에 픽셀을 그리는 대신 타일맵에 타일을 그린다. 색상 값 대신 타일 튜플 (image_tx, image_ty)을 사용한다.",
             "pt": "As instâncias de Tilemap suportam funções de desenho da seção de Gráficos. Funcionam da mesma forma, mas desenham tiles no tilemap em vez de píxeis na tela. Use uma tupla de tile (image_tx, image_ty) em vez de um valor de cor.",
             "ru": "Экземпляры Tilemap поддерживают функции рисования из раздела «Графика». Они работают так же, но рисуют тайлы на тайловой карте вместо пикселей на экране. Используйте кортеж тайла (image_tx, image_ty) вместо значения цвета.",
-            "tr": "Tilemap örnekleri, Grafikler bölümündeki çizim işlevlerini destekler. Aynı şekilde çalışır ancak ekrana piksel yerine tilemap'e tile çizer. Renk değeri yerine tile demeti (image_tx, image_ty) kullanın.",
+            "tr": "Tilemap örnekleri, Grafikler bölümündeki çizim işlevlerini destekler. Aynı şekilde çalışır ancak ekrana piksel yerine tilemap'e karo çizer. Renk değeri yerine karo demeti (image_tx, image_ty) kullanın.",
             "uk": "Екземпляри Tilemap підтримують функції малювання з розділу «Графіка». Вони працюють так само, але малюють тайли на тайловій карті замість пікселів на екрані. Використовуйте кортеж тайла (image_tx, image_ty) замість значення кольору."
           },
           "advanced": false
@@ -9349,7 +9349,7 @@
             "es": "Devuelve el puntero de datos brutos del tilemap como un array ctypes c_uint16 (4 bytes por tile: image_tx, image_ty).",
             "fr": "Renvoie le pointeur de données brutes de la tilemap sous forme de tableau ctypes c_uint16 (4 octets par tuile : image_tx, image_ty).",
             "it": "Restituisce il puntatore ai dati grezzi della tilemap come array ctypes c_uint16 (4 byte per tile: image_tx, image_ty).",
-            "ja": "タイルマップの生データポインタを ctypes c_uint16 配列として返す（タイルあたり 4 バイト：image_tx, image_ty）。",
+            "ja": "タイルマップの生データポインターを ctypes c_uint16 配列として返す（タイルあたり 4 バイト：image_tx, image_ty）。",
             "ko": "타일맵의 원시 데이터 포인터를 ctypes c_uint16 배열로 반환한다 (타일당 4바이트: image_tx, image_ty).",
             "pt": "Retorna o ponteiro de dados brutos do tilemap como um array ctypes c_uint16 (4 bytes por tile: image_tx, image_ty).",
             "ru": "Возвращает указатель на необработанные данные тайловой карты в виде массива ctypes c_uint16 (4 байта на тайл: image_tx, image_ty).",
@@ -9365,7 +9365,7 @@
               "es": "Puntero a datos sin procesar",
               "fr": "Pointeur de données brutes",
               "it": "Puntatore ai dati grezzi",
-              "ja": "生データポインタ",
+              "ja": "生データポインター",
               "ko": "원시 데이터 포인터",
               "pt": "Ponteiro de dados brutos",
               "ru": "Указатель на необработанные данные",
@@ -9442,7 +9442,7 @@
             "es": "Lista de notas (0-59). Los valores más altos producen tonos más altos. 33 = 'A2' (440 Hz). Los silencios son -1.",
             "fr": "Liste des notes (0-59). Les valeurs plus élevées produisent des sons plus aigus. 33 = 'A2' (440 Hz). Les silences sont -1.",
             "it": "Lista delle note (0-59). Valori più alti producono tonalità più alte. 33 = 'A2' (440 Hz). Le pause sono -1.",
-            "ja": "音程 (0-59) のリスト。数値が大きいほど音程は高く、33 で'A2' (440Hz)。休符は -1。",
+            "ja": "音程 (0-59) のリスト。数値が大きいほど音程は高く、33 で 'A2' (440Hz)。休符は -1。",
             "ko": "음정 (0-59) 목록. 값이 클수록 음이 높아지며, 33은 'A2' (440Hz). 쉼표는 -1.",
             "pt": "Lista de notas (0-59). Valores mais altos produzem tons mais altos. 33 = 'A2' (440 Hz). Pausas são -1.",
             "ru": "Список нот (0-59). Более высокие значения дают более высокий тон. 33 = 'A2' (440 Гц). Паузы обозначаются -1.",
