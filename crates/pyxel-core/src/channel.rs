@@ -54,6 +54,8 @@ pub struct Channel {
 define_rc_type!(RcChannel, Channel);
 
 impl Channel {
+    // Constructors
+
     pub fn new() -> RcChannel {
         new_rc_type!(Self {
             sounds: Vec::new(),
@@ -91,6 +93,8 @@ impl Channel {
             pcm_position: 0,
         })
     }
+
+    // Playback Start
 
     pub fn play(
         &mut self,
@@ -320,6 +324,7 @@ impl Channel {
             }};
         }
 
+        // Execute MML commands until the next note, rest, or end of stream
         while self.command_index < self.commands.len() as u32 {
             let command = &self.commands[self.command_index as usize];
             self.command_index += 1;

@@ -1,3 +1,5 @@
+// Macros
+
 macro_rules! string_loop {
     ($i: ident, $piece: ident, $s: ident, $step: expr, $block: block) => {
         for $i in 0..($s.len() / $step) {
@@ -38,6 +40,8 @@ macro_rules! rc_mut {
     };
 }
 
+// Float conversion
+
 pub fn f32_to_i32(x: f32) -> i32 {
     x.round() as i32
 }
@@ -45,6 +49,8 @@ pub fn f32_to_i32(x: f32) -> i32 {
 pub fn f32_to_u32(x: f32) -> u32 {
     x.round() as u32
 }
+
+// String functions
 
 pub fn remove_whitespace(string: &str) -> String {
     string.replace(&[' ', '\n', '\r', '\t'][..], "")
@@ -79,6 +85,8 @@ pub fn add_file_extension(filename: &str, ext: &str) -> String {
         format!("{filename}{ext}")
     }
 }
+
+// Vec compress/expand/trim
 
 pub fn compress_vec<T: PartialEq + Clone>(vec: &[T]) -> Vec<T> {
     assert!(!vec.is_empty());
