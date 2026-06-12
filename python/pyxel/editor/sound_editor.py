@@ -203,7 +203,7 @@ class SoundEditor(EditorBase):
         return pyxel.play_pos(0) is not None
 
     def __on_sound_picker_change(self, value):
-        self._speed_picker.value = pyxel.sounds[value].speed
+        self._speed_picker.value_var = pyxel.sounds[value].speed
 
     def __on_sound_picker_mouse_hover(self, _x, _y):
         self.help_message_var = "COPY_ALL:CTRL+SHIFT+C/X/V"
