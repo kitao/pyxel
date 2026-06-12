@@ -1,4 +1,3 @@
-use std::fmt;
 use std::fs::File;
 use std::io::Read;
 use std::path::Path;
@@ -22,15 +21,6 @@ trait ResourceItem {
     fn resource_name(item_index: u32) -> String;
     fn clear(&mut self);
     fn deserialize(&mut self, version: u32, input: &str);
-}
-
-impl fmt::Display for ImageSource {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            ImageSource::Index(index) => write!(f, "{index}"),
-            ImageSource::Image(_) => write!(f, "0"),
-        }
-    }
 }
 
 impl ResourceItem for Image {
