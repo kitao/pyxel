@@ -2,7 +2,7 @@
 # Prerequisites:
 #   - git, make, cmake, rustup, python 3.11+, node.js
 #   - Windows: Git Bash
-#   - Linux: python3-pip, python3-venv, clang, libclang-dev, libsdl2-dev 2.32.0
+#   - Linux: python3-pip, python3-venv, clang, libclang-dev, libsdl2-dev 2.32.10
 #   - ./scripts/setup_venv
 #
 # Each new shell:
@@ -16,12 +16,8 @@
 #   - Run: make run
 #
 # WASM:
-#   - Setup once:
-#       git clone --branch 0.29.4 --depth 1 https://github.com/pyodide/pyodide.git pyodide
-#       cd pyodide/emsdk
-#       CMAKE_POLICY_VERSION_MINIMUM=3.5 make
-#   - Each new shell before WASM commands:
-#       source pyodide/emsdk/emsdk_env.sh
+#   - Requires Emscripten 5.0.3 (the version Pyodide uses)
+#   - Each new shell before WASM commands: source the emsdk environment
 #   - Lint: make lint-wasm
 #   - Build: make clean-wasm build-wasm
 #   - Run: make run-wasm
