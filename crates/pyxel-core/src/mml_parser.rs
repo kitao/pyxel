@@ -299,6 +299,7 @@ pub fn total_duration_sec(commands: &[MmlCommand]) -> Option<f32> {
             }
             MmlCommand::RepeatEnd { play_count } => {
                 if *play_count == 0 {
+                    // Repeat count 0 is infinite, so total duration is unbounded.
                     return None;
                 }
                 if let Some((start_index, count)) = repeat_points.pop() {

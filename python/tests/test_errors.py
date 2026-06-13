@@ -90,16 +90,16 @@ class TestIndexErrors:
 
     def test_images_boundary_valid(self):
         # Last valid index should not raise
-        _ = pyxel.images[pyxel.NUM_IMAGES - 1]
-        _ = pyxel.images[-1]
+        assert isinstance(pyxel.images[pyxel.NUM_IMAGES - 1], pyxel.Image)
+        assert isinstance(pyxel.images[-1], pyxel.Image)
 
     def test_sounds_boundary_valid(self):
-        _ = pyxel.sounds[pyxel.NUM_SOUNDS - 1]
-        _ = pyxel.sounds[-1]
+        assert isinstance(pyxel.sounds[pyxel.NUM_SOUNDS - 1], pyxel.Sound)
+        assert isinstance(pyxel.sounds[-1], pyxel.Sound)
 
     def test_tilemaps_boundary_valid(self):
-        _ = pyxel.tilemaps[pyxel.NUM_TILEMAPS - 1]
-        _ = pyxel.tilemaps[-1]
+        assert isinstance(pyxel.tilemaps[pyxel.NUM_TILEMAPS - 1], pyxel.Tilemap)
+        assert isinstance(pyxel.tilemaps[-1], pyxel.Tilemap)
 
 
 class TestAttributeErrors:
