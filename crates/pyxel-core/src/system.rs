@@ -310,6 +310,7 @@ impl Pyxel {
         self.system.event_buf = events;
     }
 
+    // Handle hidden capture and display shortcuts before regular update code.
     fn check_special_input(&mut self) {
         if self.is_button_pressed(self.system.quit_key, None, None) {
             self.reset_key(self.system.quit_key);

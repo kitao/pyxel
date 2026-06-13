@@ -798,11 +798,11 @@ const I_MAJOR_NOTES_BITS: &str = "209019030909";
 
 // Notes-bits strings encode per-semitone weights (one digit per semitone in
 // [0, 12)):
-//   0 — non-chord; excluded from every pool
-//   1 — chord tone (required for the coverage check, melody-selectable)
-//   2 — root (exactly one per chord; drives the chord base)
-//   3 — chord tone (melody-selectable, counted as "important" in harmony)
-//   9 — tension (harmony pool only, not melody-selectable)
+//   0: non-chord; excluded from every pool
+//   1: chord tone (required for the coverage check, melody-selectable)
+//   2: root (exactly one per chord; drives the chord base)
+//   3: chord tone (melody-selectable, counted as "important" in harmony)
+//   9: tension (harmony pool only, not melody-selectable)
 fn parse_notes_bits(s: &str) -> [i32; 12] {
     let mut out = [0; 12];
     for (i, ch) in s.bytes().take(12).enumerate() {

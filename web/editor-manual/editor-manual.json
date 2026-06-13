@@ -794,7 +794,7 @@
     },
     "tilemap_canvas_body": {
       "en": "The editing area selected in the tilemap view is displayed magnified. Place tile images selected in the tile image view. Drawing tools and selection shortcuts are shared with the Image Editor. Note that all cells default to tile (0,0), so it is recommended to keep image bank position (0,0) empty.",
-      "cn": "在瓦片地图视图中选择的编辑区域以放大形式显示。放置在图块图像视图中选择的图块图像。绘制工具和范围选择的快捷键与图像编辑器通用。注意：所有单元格的初始值为图块(0,0)，建议将图像库的(0,0)留空。",
+      "cn": "在瓦片地图视图中选择的编辑区域以放大形式显示。放置在图块图像视图中选择的图块图像。绘制工具和范围选择的快捷键与图像编辑器通用。注意：所有单元格的初始值为图块 (0,0)，建议将图像库的 (0,0) 留空。",
       "de": "Der in der Tilemap-Ansicht ausgewählte Bearbeitungsbereich wird vergrößert dargestellt. Platzieren Sie das in der Kachelbild-Ansicht gewählte Kachelbild. Zeichenwerkzeuge und Bereichsauswahl-Kürzel sind mit dem Bildeditor identisch. Hinweis: Da alle Zellen initial Kachel (0,0) sind, wird empfohlen, Position (0,0) der Bildbank leer zu lassen.",
       "es": "El área de edición seleccionada en la vista del tilemap se muestra ampliada. Coloque la imagen de tile seleccionada en la vista de imagen de tiles. Los atajos de herramientas de dibujo y selección de rango son los mismos que en el editor de imágenes. El valor inicial de todas las celdas es el tile (0,0), por lo que se recomienda dejar vacía la posición (0,0) del banco de imágenes.",
       "fr": "La zone d'édition sélectionnée dans la vue de la tilemap est affichée en zoom. Placez les tuiles sélectionnées dans la vue des tuiles. Les raccourcis des outils de dessin et de sélection sont les mêmes que dans l'éditeur d'images. La valeur initiale de toutes les cellules étant la tuile (0,0), il est recommandé de laisser la position (0,0) de la banque d'images vide.",
@@ -1575,7 +1575,7 @@
       },
       "value": {
         "en": "Origin (0,0) at top-left, X+ rightward, Y+ downward",
-        "cn": "左上角为(0,0)，向右为X+，向下为Y+",
+        "cn": "左上角为 (0,0)，向右为 X+，向下为 Y+",
         "de": "Ursprung (0,0) oben links, X+ nach rechts, Y+ nach unten",
         "es": "(0,0) en la esquina superior izquierda, X+ hacia la derecha, Y+ hacia abajo",
         "fr": "(0,0) en haut à gauche, X+ vers la droite, Y+ vers le bas",

@@ -225,6 +225,7 @@ impl ResourceData {
         exclude_sounds: bool,
         exclude_musics: bool,
     ) -> String {
+        // Serialize excluded banks as empty arrays without cloning retained banks.
         let empty_images = Vec::new();
         let empty_tilemaps = Vec::new();
         let empty_sounds = Vec::new();

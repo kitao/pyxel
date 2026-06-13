@@ -80,7 +80,7 @@
     },
     "search_placeholder": {
       "en": "Search APIs...",
-      "cn": "搜索API...",
+      "cn": "搜索 API...",
       "de": "APIs durchsuchen...",
       "es": "Buscar API...",
       "fr": "Rechercher des API...",
@@ -108,7 +108,7 @@
     },
     "no_results": {
       "en": "No matching APIs found.",
-      "cn": "未找到匹配的API。",
+      "cn": "未找到匹配的 API。",
       "de": "Keine passenden APIs gefunden.",
       "es": "No se encontraron API coincidentes.",
       "fr": "Aucune API correspondante trouvée.",
@@ -566,7 +566,7 @@
           "signature": "flip()",
           "description": {
             "en": "Refresh the screen by one frame. The application exits when the quit key is pressed. This function is not available in the web version.",
-            "cn": "更新一帧画面。按下退出键时应用程序退出。此函数在Web版中不可用。",
+            "cn": "更新一帧画面。按下退出键时应用程序退出。此函数在 Web 版中不可用。",
             "de": "Aktualisiert den Bildschirm um einen Frame. Die Anwendung wird beim Drücken der Quit-Taste beendet. Diese Funktion ist in der Web-Version nicht verfügbar.",
             "es": "Actualiza la pantalla en un fotograma. La aplicación se cierra al presionar la tecla de salida. Esta función no está disponible en la versión web.",
             "fr": "Rafraîchit l'écran d'une frame. L'application se termine lorsque la touche de fermeture est pressée. Cette fonction n'est pas disponible dans la version web.",
@@ -1009,7 +1009,7 @@
           "signature": "load(filename, exclude_images=False, exclude_tilemaps=False, exclude_sounds=False, exclude_musics=False)",
           "description": {
             "en": "Load the resource file (.pyxres). If an option is set to True, the corresponding resource will be excluded from loading.",
-            "cn": "加载资源文件 (.pyxres)。如果选项设为True，则对应的资源不会被加载。",
+            "cn": "加载资源文件 (.pyxres)。如果选项设为 True，则对应的资源不会被加载。",
             "de": "Lädt die Ressourcendatei (.pyxres). Wenn eine Option auf True gesetzt ist, wird die entsprechende Ressource nicht geladen.",
             "es": "Carga el archivo de recursos (.pyxres). Si una opción se establece en True, el recurso correspondiente se excluirá de la carga.",
             "fr": "Charge le fichier de ressources (.pyxres). Si une option est définie sur True, la ressource correspondante ne sera pas chargée.",
@@ -1138,7 +1138,7 @@
           "signature": "user_data_dir(vendor_name, app_name)",
           "description": {
             "en": "Return the user data directory created based on vendor_name and app_name. If the directory does not exist, it will be created automatically.",
-            "cn": "返回根据vendor_name和app_name生成的用户数据保存目录。如果目录不存在，则会自动创建。",
+            "cn": "返回根据 vendor_name 和 app_name 生成的用户数据保存目录。如果目录不存在，则会自动创建。",
             "de": "Gibt das Benutzerdatenverzeichnis zurück, das auf Basis von vendor_name und app_name erstellt wurde. Falls das Verzeichnis nicht existiert, wird es automatisch erstellt.",
             "es": "Devuelve el directorio de datos de usuario creado a partir de vendor_name y app_name. Si el directorio no existe, se creará automáticamente.",
             "fr": "Renvoie le répertoire de données utilisateur créé à partir de vendor_name et app_name. Si le répertoire n'existe pas, il sera créé automatiquement.",
@@ -1216,7 +1216,7 @@
           "signature": "save(filename, exclude_images=False, exclude_tilemaps=False, exclude_sounds=False, exclude_musics=False)",
           "description": {
             "en": "Save the resource file (.pyxres). If an option is set to True, the corresponding resource will be excluded from saving.",
-            "cn": "保存资源文件 (.pyxres)。如果选项设为True，则对应的资源将不会被保存。",
+            "cn": "保存资源文件 (.pyxres)。如果选项设为 True，则对应的资源将不会被保存。",
             "de": "Speichert die Ressourcendatei (.pyxres). Wenn eine Option auf True gesetzt ist, wird die entsprechende Ressource vom Speichern ausgeschlossen.",
             "es": "Guarda el archivo de recursos (.pyxres). Si una opción se establece en True, el recurso correspondiente se excluirá del guardado.",
             "fr": "Enregistre le fichier de ressources (.pyxres). Si une option est définie sur True, la ressource correspondante sera exclue de la sauvegarde.",
@@ -1392,7 +1392,7 @@
           "signature": "screencast(filename=None, scale=2)",
           "description": {
             "en": "Save the screen recording as a GIF file.",
-            "cn": "保存屏幕录制为GIF文件。",
+            "cn": "保存屏幕录制为 GIF 文件。",
             "de": "Speichert die Bildschirmaufnahme als GIF-Datei.",
             "es": "Guarda la grabación de pantalla como un archivo GIF.",
             "fr": "Enregistre la capture vidéo de l'écran au format GIF.",
@@ -1581,7 +1581,7 @@
           "signature": "mouse_x",
           "description": {
             "en": "The current x position of the mouse cursor.",
-            "cn": "当前鼠标光标的X坐标",
+            "cn": "当前鼠标光标的 X 坐标",
             "de": "Die aktuelle X-Position des Mauszeigers.",
             "es": "La posición X actual del cursor del ratón.",
             "fr": "La position X actuelle du curseur de la souris.",
@@ -1602,7 +1602,7 @@
           "signature": "mouse_y",
           "description": {
             "en": "The current y position of the mouse cursor.",
-            "cn": "当前鼠标光标的Y坐标",
+            "cn": "当前鼠标光标的 Y 坐标",
             "de": "Die aktuelle Y-Position des Mauszeigers.",
             "es": "La posición Y actual del cursor del ratón.",
             "fr": "La position Y actuelle du curseur de la souris.",
@@ -1707,7 +1707,7 @@
           "signature": "btn(key)",
           "description": {
             "en": "Return True if the key is pressed, otherwise return False.",
-            "cn": "如果key被按下则返回True，否则返回False。",
+            "cn": "如果 key 被按下则返回 True，否则返回 False。",
             "de": "Gibt True zurück, wenn die Taste gedrückt ist, andernfalls False.",
             "es": "Devuelve True si la tecla está presionada, de lo contrario devuelve False.",
             "fr": "Renvoie True si la touche est enfoncée, sinon False.",
@@ -1743,7 +1743,7 @@
             "type": "bool",
             "description": {
               "en": "True if pressed",
-              "cn": "按下时为True",
+              "cn": "按下时为 True",
               "de": "True, wenn gedrückt",
               "es": "True si está presionado",
               "fr": "True si pressé",
@@ -1764,7 +1764,7 @@
           "signature": "btnp(key, hold=0, repeat=0)",
           "description": {
             "en": "Return True if the key is pressed in that frame. When hold and repeat are specified, after holding the key for hold frames, return True every repeat frames.",
-            "cn": "如果在该帧按下key则返回True。指定hold和repeat后，按住hold帧以上时每隔repeat帧返回True。",
+            "cn": "如果在该帧按下 key 则返回 True。指定 hold 和 repeat 后，按住 hold 帧以上时每隔 repeat 帧返回 True。",
             "de": "Gibt True zurück, wenn die Taste in diesem Frame gedrückt wurde. Wenn hold und repeat angegeben sind, wird nach dem Halten der Taste für hold Frames alle repeat Frames True zurückgegeben.",
             "es": "Devuelve True si la tecla se presionó en ese fotograma. Cuando se especifican hold y repeat, después de mantener la tecla durante hold fotogramas, devuelve True cada repeat fotogramas.",
             "fr": "Renvoie True si la touche est pressée dans cette frame. Lorsque hold et repeat sont spécifiés, après avoir maintenu la touche pendant hold frames, renvoie True toutes les repeat frames.",
@@ -1836,7 +1836,7 @@
             "type": "bool",
             "description": {
               "en": "True if pressed in that frame",
-              "cn": "该帧按下时为True",
+              "cn": "该帧按下时为 True",
               "de": "True, wenn in dem Frame gedrückt",
               "es": "True si se presionó en ese fotograma",
               "fr": "True si pressé dans cette frame",
@@ -1857,7 +1857,7 @@
           "signature": "btnr(key)",
           "description": {
             "en": "Return True if the key is released in that frame, otherwise return False.",
-            "cn": "如果在该帧释放key则返回True，否则返回False。",
+            "cn": "如果在该帧释放 key 则返回 True，否则返回 False。",
             "de": "Gibt True zurück, wenn die Taste in diesem Frame losgelassen wurde, andernfalls False.",
             "es": "Devuelve True si la tecla se suelta en ese fotograma, de lo contrario devuelve False.",
             "fr": "Renvoie True si la touche est relâchée dans cette frame, sinon False.",
@@ -1893,7 +1893,7 @@
             "type": "bool",
             "description": {
               "en": "True if released in that frame",
-              "cn": "该帧释放时为True",
+              "cn": "该帧释放时为 True",
               "de": "True, wenn in dem Frame losgelassen",
               "es": "True si se soltó en ese fotograma",
               "fr": "True si relâché dans cette frame",
@@ -1914,7 +1914,7 @@
           "signature": "mouse(visible)",
           "description": {
             "en": "Show the mouse cursor if visible is True, and hide it if False. The cursor position continues to update even when hidden.",
-            "cn": "visible为True时显示鼠标光标，为False时隐藏。隐藏时坐标仍会更新。",
+            "cn": "visible 为 True 时显示鼠标光标，为 False 时隐藏。隐藏时坐标仍会更新。",
             "de": "Zeigt den Mauszeiger an, wenn visible True ist, und blendet ihn aus, wenn False. Die Cursorposition wird auch im verborgenen Zustand weiterhin aktualisiert.",
             "es": "Muestra el cursor del ratón si visible es True y lo oculta si es False. La posición del cursor se sigue actualizando aunque esté oculto.",
             "fr": "Affiche le curseur de la souris si visible est True, et le masque si False. La position du curseur continue d'être mise à jour même lorsqu'il est masqué.",
@@ -2050,7 +2050,7 @@
               "type": "bool",
               "description": {
                 "en": "True for press, False for release",
-                "cn": "True为按下，False为释放",
+                "cn": "True 为按下，False 为释放",
                 "de": "True für Drücken, False für Loslassen",
                 "es": "True para presionar, False para liberar",
                 "fr": "True pour appuyer, False pour relâcher",
@@ -2154,7 +2154,7 @@
               "type": "float",
               "description": {
                 "en": "X coordinate",
-                "cn": "X坐标",
+                "cn": "X 坐标",
                 "de": "X-Koordinate",
                 "es": "Coordenada X",
                 "fr": "Coordonnée X",
@@ -2172,7 +2172,7 @@
               "type": "float",
               "description": {
                 "en": "Y coordinate",
-                "cn": "Y坐标",
+                "cn": "Y 坐标",
                 "de": "Y-Koordinate",
                 "es": "Coordenada Y",
                 "fr": "Coordonnée Y",
@@ -2759,7 +2759,7 @@
             {
               "label": {
                 "en": "Gamepad 1",
-                "cn": "游戏手柄1",
+                "cn": "游戏手柄 1",
                 "de": "Gamepad 1",
                 "es": "Gamepad 1",
                 "fr": "Manette 1",
@@ -2798,7 +2798,7 @@
             {
               "label": {
                 "en": "Gamepad 2",
-                "cn": "游戏手柄2",
+                "cn": "游戏手柄 2",
                 "de": "Gamepad 2",
                 "es": "Gamepad 2",
                 "fr": "Manette 2",
@@ -2837,7 +2837,7 @@
             {
               "label": {
                 "en": "Gamepad 3",
-                "cn": "游戏手柄3",
+                "cn": "游戏手柄 3",
                 "de": "Gamepad 3",
                 "es": "Gamepad 3",
                 "fr": "Manette 3",
@@ -2876,7 +2876,7 @@
             {
               "label": {
                 "en": "Gamepad 4",
-                "cn": "游戏手柄4",
+                "cn": "游戏手柄 4",
                 "de": "Gamepad 4",
                 "es": "Gamepad 4",
                 "fr": "Manette 4",
@@ -2939,7 +2939,7 @@
           "signature": "colors",
           "description": {
             "en": "List of the palette display colors. Specified by 24-bit numerical value. Supports Python list operations.",
-            "cn": "调色板的显示颜色列表。以24位数值指定。支持与Python列表相同的操作。",
+            "cn": "调色板的显示颜色列表。以 24 位数值指定。支持与 Python 列表相同的操作。",
             "de": "Liste der Palettenanzeigefarben. Angabe als 24-Bit-Zahlenwert. Unterstützt Python-Listenoperationen.",
             "es": "Lista de colores de visualización de la paleta. Se especifica con un valor numérico de 24 bits. Admite operaciones de lista de Python.",
             "fr": "Liste des couleurs d'affichage de la palette. Spécifiées par une valeur numérique de 24 bits. Prend en charge les opérations de liste Python.",
@@ -2964,7 +2964,7 @@
           "signature": "images",
           "description": {
             "en": "List of the image banks (instances of the Image class) (0-2).",
-            "cn": "图像库 (Image类的实例) 的列表 (0-2)",
+            "cn": "图像库 (Image 类的实例) 的列表 (0-2)",
             "de": "Liste der Bildbanken (Instanzen der Image-Klasse) (0-2).",
             "es": "Lista de bancos de imágenes (instancias de la clase Image) (0-2).",
             "fr": "Liste des banques d'images (instances de la classe Image) (0-2).",
@@ -2986,7 +2986,7 @@
           "signature": "tilemaps",
           "description": {
             "en": "List of the tilemaps (instances of the Tilemap class) (0-7).",
-            "cn": "瓦片地图 (Tilemap类的实例) 的列表 (0-7)",
+            "cn": "瓦片地图 (Tilemap 类的实例) 的列表 (0-7)",
             "de": "Liste der Tilemaps (Instanzen der Tilemap-Klasse) (0-7).",
             "es": "Lista de tilemaps (instancias de la clase Tilemap) (0-7).",
             "fr": "Liste des tilemaps (instances de la classe Tilemap) (0-7).",
@@ -3007,7 +3007,7 @@
           "signature": "screen",
           "description": {
             "en": "The screen image (Image class instance).",
-            "cn": "屏幕图像 (Image类的实例)",
+            "cn": "屏幕图像 (Image 类的实例)",
             "de": "Das Bildschirmbild (Image-Klasseninstanz).",
             "es": "La imagen de pantalla (instancia de la clase Image).",
             "fr": "L'image de l'écran (instance de la classe Image).",
@@ -3028,7 +3028,7 @@
           "signature": "cursor",
           "description": {
             "en": "The cursor image (Image class instance).",
-            "cn": "光标图像 (Image类的实例)",
+            "cn": "光标图像 (Image 类的实例)",
             "de": "Das Cursorbild (Image-Klasseninstanz).",
             "es": "La imagen del cursor (instancia de la clase Image).",
             "fr": "L'image du curseur (instance de la classe Image).",
@@ -3049,7 +3049,7 @@
           "signature": "font",
           "description": {
             "en": "The font image (Image class instance).",
-            "cn": "字体图像 (Image类的实例)",
+            "cn": "字体图像 (Image 类的实例)",
             "de": "Das Schriftbild (Image-Klasseninstanz).",
             "es": "La imagen de fuente (instancia de la clase Image).",
             "fr": "L'image de la police (instance de la classe Image).",
@@ -3070,7 +3070,7 @@
           "signature": "clip(x, y, w, h)",
           "description": {
             "en": "Set the drawing area of the screen from (x, y) with a width of w and a height of h. Call clip() to reset to full screen.",
-            "cn": "将画面的绘制区域设置为从 (x, y) 开始、宽w、高h。调用clip()重置为全屏。",
+            "cn": "将画面的绘制区域设置为从 (x, y) 开始、宽 w、高 h。调用 clip() 重置为全屏。",
             "de": "Setzt den Zeichenbereich des Bildschirms ab (x, y) mit Breite w und Höhe h. clip() setzt auf Vollbild zurück.",
             "es": "Establece el área de dibujo de la pantalla desde (x, y) con ancho w y alto h. Llame a clip() para restablecer a pantalla completa.",
             "fr": "Définit la zone de dessin de l'écran à partir de (x, y) avec une largeur w et une hauteur h. Appeler clip() pour réinitialiser en plein écran.",
@@ -3088,7 +3088,7 @@
               "type": "float",
               "description": {
                 "en": "X coordinate of the upper-left corner",
-                "cn": "左上角的X坐标",
+                "cn": "左上角的 X 坐标",
                 "de": "X-Koordinate der oberen linken Ecke",
                 "es": "Coordenada X de la esquina superior izquierda",
                 "fr": "Coordonnée X du coin supérieur gauche",
@@ -3106,7 +3106,7 @@
               "type": "float",
               "description": {
                 "en": "Y coordinate of the upper-left corner",
-                "cn": "左上角的Y坐标",
+                "cn": "左上角的 Y 坐标",
                 "de": "Y-Koordinate der oberen linken Ecke",
                 "es": "Coordenada Y de la esquina superior izquierda",
                 "fr": "Coordonnée Y du coin supérieur gauche",
@@ -3208,7 +3208,7 @@
               "type": "float",
               "description": {
                 "en": "X coordinate",
-                "cn": "X坐标",
+                "cn": "X 坐标",
                 "de": "X-Koordinate",
                 "es": "Coordenada X",
                 "fr": "Coordonnée X",
@@ -3226,7 +3226,7 @@
               "type": "float",
               "description": {
                 "en": "Y coordinate",
-                "cn": "Y坐标",
+                "cn": "Y 坐标",
                 "de": "Y-Koordinate",
                 "es": "Coordenada Y",
                 "fr": "Coordonnée Y",
@@ -3274,7 +3274,7 @@
           "signature": "pal(col1, col2)",
           "description": {
             "en": "Replace color col1 with col2 when drawing.",
-            "cn": "绘制时将颜色col1替换为col2。",
+            "cn": "绘制时将颜色 col1 替换为 col2。",
             "de": "Ersetzt beim Zeichnen Farbe col1 durch col2.",
             "es": "Reemplaza el color col1 con col2 al dibujar.",
             "fr": "Remplace la couleur col1 par col2 lors du dessin.",
@@ -3358,7 +3358,7 @@
           "signature": "dither(alpha)",
           "description": {
             "en": "Apply dithering (pseudo-transparency) when drawing. Set alpha in the range 0.0-1.0.",
-            "cn": "绘制时应用抖动 (伪半透明)。alpha范围为0.0-1.0。",
+            "cn": "绘制时应用抖动 (伪半透明)。alpha 范围为 0.0-1.0。",
             "de": "Wendet beim Zeichnen Dithering (Pseudo-Transparenz) an. Alpha wird im Bereich 0.0-1.0 gesetzt.",
             "es": "Aplica dithering (pseudo-transparencia) al dibujar. Establece alpha en el rango 0.0-1.0.",
             "fr": "Applique le tramage (pseudo-transparence) lors du dessin. Définit alpha dans la plage 0.0-1.0.",
@@ -3401,7 +3401,7 @@
           "signature": "cls(col)",
           "description": {
             "en": "Clear the screen with color col.",
-            "cn": "以颜色col清除屏幕。",
+            "cn": "以颜色 col 清除屏幕。",
             "de": "Löscht den Bildschirm mit Farbe col.",
             "es": "Limpia la pantalla con el color col.",
             "fr": "Efface l'écran avec la couleur col.",
@@ -3462,7 +3462,7 @@
               "type": "float",
               "description": {
                 "en": "X coordinate",
-                "cn": "X坐标",
+                "cn": "X 坐标",
                 "de": "X-Koordinate",
                 "es": "Coordenada X",
                 "fr": "Coordonnée X",
@@ -3480,7 +3480,7 @@
               "type": "float",
               "description": {
                 "en": "Y coordinate",
-                "cn": "Y坐标",
+                "cn": "Y 坐标",
                 "de": "Y-Koordinate",
                 "es": "Coordenada Y",
                 "fr": "Coordonnée Y",
@@ -3519,7 +3519,7 @@
           "signature": "pset(x, y, col)",
           "description": {
             "en": "Draw a pixel of color col at (x, y).",
-            "cn": "在 (x, y) 绘制颜色col的像素。",
+            "cn": "在 (x, y) 绘制颜色 col 的像素。",
             "de": "Zeichnet ein Pixel der Farbe col bei (x, y).",
             "es": "Dibuja un píxel de color col en (x, y).",
             "fr": "Dessine un pixel de couleur col en (x, y).",
@@ -3537,7 +3537,7 @@
               "type": "float",
               "description": {
                 "en": "X coordinate",
-                "cn": "X坐标",
+                "cn": "X 坐标",
                 "de": "X-Koordinate",
                 "es": "Coordenada X",
                 "fr": "Coordonnée X",
@@ -3555,7 +3555,7 @@
               "type": "float",
               "description": {
                 "en": "Y coordinate",
-                "cn": "Y坐标",
+                "cn": "Y 坐标",
                 "de": "Y-Koordinate",
                 "es": "Coordenada Y",
                 "fr": "Coordonnée Y",
@@ -3598,7 +3598,7 @@
           "signature": "line(x1, y1, x2, y2, col)",
           "description": {
             "en": "Draw a line of color col from (x1, y1) to (x2, y2).",
-            "cn": "绘制颜色col的直线，从 (x1, y1) 到 (x2, y2)。",
+            "cn": "绘制颜色 col 的直线，从 (x1, y1) 到 (x2, y2)。",
             "de": "Zeichnet eine Linie der Farbe col von (x1, y1) nach (x2, y2).",
             "es": "Dibuja una línea de color col de (x1, y1) a (x2, y2).",
             "fr": "Dessine une ligne de couleur col de (x1, y1) à (x2, y2).",
@@ -3616,7 +3616,7 @@
               "type": "float",
               "description": {
                 "en": "Start X coordinate",
-                "cn": "起点X坐标",
+                "cn": "起点 X 坐标",
                 "de": "X-Koordinate des Startpunkts",
                 "es": "Coordenada X de inicio",
                 "fr": "Coordonnée X de début",
@@ -3634,7 +3634,7 @@
               "type": "float",
               "description": {
                 "en": "Start Y coordinate",
-                "cn": "起点Y坐标",
+                "cn": "起点 Y 坐标",
                 "de": "Y-Koordinate des Startpunkts",
                 "es": "Coordenada Y de inicio",
                 "fr": "Coordonnée Y de début",
@@ -3652,7 +3652,7 @@
               "type": "float",
               "description": {
                 "en": "End X coordinate",
-                "cn": "终点X坐标",
+                "cn": "终点 X 坐标",
                 "de": "X-Koordinate des Endpunkts",
                 "es": "Coordenada X de fin",
                 "fr": "Coordonnée X de fin",
@@ -3670,7 +3670,7 @@
               "type": "float",
               "description": {
                 "en": "End Y coordinate",
-                "cn": "终点Y坐标",
+                "cn": "终点 Y 坐标",
                 "de": "Y-Koordinate des Endpunkts",
                 "es": "Coordenada Y de fin",
                 "fr": "Coordonnée Y de fin",
@@ -3713,7 +3713,7 @@
           "signature": "rect(x, y, w, h, col)",
           "description": {
             "en": "Draw a filled rectangle of width w, height h, and color col at (x, y).",
-            "cn": "在 (x, y) 绘制宽w、高h、颜色col的填充矩形。",
+            "cn": "在 (x, y) 绘制宽 w、高 h、颜色 col 的填充矩形。",
             "de": "Zeichnet ein gefülltes Rechteck der Breite w, Höhe h und Farbe col bei (x, y).",
             "es": "Dibuja un rectángulo relleno de ancho w, alto h y color col en (x, y).",
             "fr": "Dessine un rectangle rempli de largeur w, hauteur h et couleur col en (x, y).",
@@ -3731,7 +3731,7 @@
               "type": "float",
               "description": {
                 "en": "X coordinate",
-                "cn": "X坐标",
+                "cn": "X 坐标",
                 "de": "X-Koordinate",
                 "es": "Coordenada X",
                 "fr": "Coordonnée X",
@@ -3749,7 +3749,7 @@
               "type": "float",
               "description": {
                 "en": "Y coordinate",
-                "cn": "Y坐标",
+                "cn": "Y 坐标",
                 "de": "Y-Koordinate",
                 "es": "Coordenada Y",
                 "fr": "Coordonnée Y",
@@ -3828,7 +3828,7 @@
           "signature": "rectb(x, y, w, h, col)",
           "description": {
             "en": "Draw the outline of a rectangle of width w, height h, and color col at (x, y).",
-            "cn": "在 (x, y) 绘制宽w、高h、颜色col的矩形轮廓。",
+            "cn": "在 (x, y) 绘制宽 w、高 h、颜色 col 的矩形轮廓。",
             "de": "Zeichnet den Umriss eines Rechtecks der Breite w, Höhe h und Farbe col bei (x, y).",
             "es": "Dibuja el contorno de un rectángulo de ancho w, alto h y color col en (x, y).",
             "fr": "Dessine le contour d'un rectangle de largeur w, hauteur h et couleur col en (x, y).",
@@ -3846,7 +3846,7 @@
               "type": "float",
               "description": {
                 "en": "X coordinate",
-                "cn": "X坐标",
+                "cn": "X 坐标",
                 "de": "X-Koordinate",
                 "es": "Coordenada X",
                 "fr": "Coordonnée X",
@@ -3864,7 +3864,7 @@
               "type": "float",
               "description": {
                 "en": "Y coordinate",
-                "cn": "Y坐标",
+                "cn": "Y 坐标",
                 "de": "Y-Koordinate",
                 "es": "Coordenada Y",
                 "fr": "Coordonnée Y",
@@ -3943,7 +3943,7 @@
           "signature": "circ(x, y, r, col)",
           "description": {
             "en": "Draw a filled circle of radius r and color col at (x, y).",
-            "cn": "在 (x, y) 绘制半径r、颜色col的填充圆。",
+            "cn": "在 (x, y) 绘制半径 r、颜色 col 的填充圆。",
             "de": "Zeichnet einen gefüllten Kreis mit Radius r und Farbe col bei (x, y).",
             "es": "Dibuja un círculo relleno de radio r y color col en (x, y).",
             "fr": "Dessine un cercle rempli de rayon r et couleur col en (x, y).",
@@ -3961,7 +3961,7 @@
               "type": "float",
               "description": {
                 "en": "Center X coordinate",
-                "cn": "中心X坐标",
+                "cn": "中心 X 坐标",
                 "de": "X-Koordinate des Mittelpunkts",
                 "es": "Coordenada X del centro",
                 "fr": "Coordonnée X du centre",
@@ -3979,7 +3979,7 @@
               "type": "float",
               "description": {
                 "en": "Center Y coordinate",
-                "cn": "中心Y坐标",
+                "cn": "中心 Y 坐标",
                 "de": "Y-Koordinate des Mittelpunkts",
                 "es": "Coordenada Y del centro",
                 "fr": "Coordonnée Y du centre",
@@ -4040,7 +4040,7 @@
           "signature": "circb(x, y, r, col)",
           "description": {
             "en": "Draw the outline of a circle of radius r and color col at (x, y).",
-            "cn": "在 (x, y) 绘制半径r、颜色col的圆的轮廓。",
+            "cn": "在 (x, y) 绘制半径 r、颜色 col 的圆的轮廓。",
             "de": "Zeichnet den Umriss eines Kreises mit Radius r und Farbe col bei (x, y).",
             "es": "Dibuja el contorno de un círculo de radio r y color col en (x, y).",
             "fr": "Dessine le contour d'un cercle de rayon r et couleur col en (x, y).",
@@ -4058,7 +4058,7 @@
               "type": "float",
               "description": {
                 "en": "Center X coordinate",
-                "cn": "中心X坐标",
+                "cn": "中心 X 坐标",
                 "de": "X-Koordinate des Mittelpunkts",
                 "es": "Coordenada X del centro",
                 "fr": "Coordonnée X du centre",
@@ -4076,7 +4076,7 @@
               "type": "float",
               "description": {
                 "en": "Center Y coordinate",
-                "cn": "中心Y坐标",
+                "cn": "中心 Y 坐标",
                 "de": "Y-Koordinate des Mittelpunkts",
                 "es": "Coordenada Y del centro",
                 "fr": "Coordonnée Y du centre",
@@ -4137,7 +4137,7 @@
           "signature": "elli(x, y, w, h, col)",
           "description": {
             "en": "Draw a filled ellipse of width w, height h, and color col at (x, y).",
-            "cn": "在 (x, y) 绘制宽w、高h、颜色col的填充椭圆。",
+            "cn": "在 (x, y) 绘制宽 w、高 h、颜色 col 的填充椭圆。",
             "de": "Zeichnet eine gefüllte Ellipse der Breite w, Höhe h und Farbe col bei (x, y).",
             "es": "Dibuja una elipse rellena de ancho w, alto h y color col en (x, y).",
             "fr": "Dessine une ellipse remplie de largeur w, hauteur h et couleur col en (x, y).",
@@ -4155,7 +4155,7 @@
               "type": "float",
               "description": {
                 "en": "X coordinate",
-                "cn": "X坐标",
+                "cn": "X 坐标",
                 "de": "X-Koordinate",
                 "es": "Coordenada X",
                 "fr": "Coordonnée X",
@@ -4173,7 +4173,7 @@
               "type": "float",
               "description": {
                 "en": "Y coordinate",
-                "cn": "Y坐标",
+                "cn": "Y 坐标",
                 "de": "Y-Koordinate",
                 "es": "Coordenada Y",
                 "fr": "Coordonnée Y",
@@ -4252,7 +4252,7 @@
           "signature": "ellib(x, y, w, h, col)",
           "description": {
             "en": "Draw the outline of an ellipse of width w, height h, and color col at (x, y).",
-            "cn": "在 (x, y) 绘制宽w、高h、颜色col的椭圆轮廓。",
+            "cn": "在 (x, y) 绘制宽 w、高 h、颜色 col 的椭圆轮廓。",
             "de": "Zeichnet den Umriss einer Ellipse der Breite w, Höhe h und Farbe col bei (x, y).",
             "es": "Dibuja el contorno de una elipse de ancho w, alto h y color col en (x, y).",
             "fr": "Dessine le contour d'une ellipse de largeur w, hauteur h et couleur col en (x, y).",
@@ -4270,7 +4270,7 @@
               "type": "float",
               "description": {
                 "en": "X coordinate",
-                "cn": "X坐标",
+                "cn": "X 坐标",
                 "de": "X-Koordinate",
                 "es": "Coordenada X",
                 "fr": "Coordonnée X",
@@ -4288,7 +4288,7 @@
               "type": "float",
               "description": {
                 "en": "Y coordinate",
-                "cn": "Y坐标",
+                "cn": "Y 坐标",
                 "de": "Y-Koordinate",
                 "es": "Coordenada Y",
                 "fr": "Coordonnée Y",
@@ -4367,7 +4367,7 @@
           "signature": "tri(x1, y1, x2, y2, x3, y3, col)",
           "description": {
             "en": "Draw a filled triangle with vertices (x1, y1), (x2, y2), (x3, y3) and color col.",
-            "cn": "绘制顶点为 (x1, y1)、(x2, y2)、(x3, y3)、颜色col的填充三角形。",
+            "cn": "绘制顶点为 (x1, y1)、(x2, y2)、(x3, y3)、颜色 col 的填充三角形。",
             "de": "Zeichnet ein gefülltes Dreieck mit den Eckpunkten (x1, y1), (x2, y2), (x3, y3) und Farbe col.",
             "es": "Dibuja un triángulo relleno con vértices (x1, y1), (x2, y2), (x3, y3) y color col.",
             "fr": "Dessine un triangle rempli avec les sommets (x1, y1), (x2, y2), (x3, y3) et la couleur col.",
@@ -4385,7 +4385,7 @@
               "type": "float",
               "description": {
                 "en": "Vertex 1 X",
-                "cn": "顶点1的X坐标",
+                "cn": "顶点 1 的 X 坐标",
                 "de": "X-Koordinate von Eckpunkt 1",
                 "es": "X del vértice 1",
                 "fr": "X du sommet 1",
@@ -4403,7 +4403,7 @@
               "type": "float",
               "description": {
                 "en": "Vertex 1 Y",
-                "cn": "顶点1的Y坐标",
+                "cn": "顶点 1 的 Y 坐标",
                 "de": "Y-Koordinate von Eckpunkt 1",
                 "es": "Y del vértice 1",
                 "fr": "Y du sommet 1",
@@ -4421,7 +4421,7 @@
               "type": "float",
               "description": {
                 "en": "Vertex 2 X",
-                "cn": "顶点2的X坐标",
+                "cn": "顶点 2 的 X 坐标",
                 "de": "X-Koordinate von Eckpunkt 2",
                 "es": "X del vértice 2",
                 "fr": "X du sommet 2",
@@ -4439,7 +4439,7 @@
               "type": "float",
               "description": {
                 "en": "Vertex 2 Y",
-                "cn": "顶点2的Y坐标",
+                "cn": "顶点 2 的 Y 坐标",
                 "de": "Y-Koordinate von Eckpunkt 2",
                 "es": "Y del vértice 2",
                 "fr": "Y du sommet 2",
@@ -4457,7 +4457,7 @@
               "type": "float",
               "description": {
                 "en": "Vertex 3 X",
-                "cn": "顶点3的X坐标",
+                "cn": "顶点 3 的 X 坐标",
                 "de": "X-Koordinate von Eckpunkt 3",
                 "es": "X del vértice 3",
                 "fr": "X du sommet 3",
@@ -4475,7 +4475,7 @@
               "type": "float",
               "description": {
                 "en": "Vertex 3 Y",
-                "cn": "顶点3的Y坐标",
+                "cn": "顶点 3 的 Y 坐标",
                 "de": "Y-Koordinate von Eckpunkt 3",
                 "es": "Y del vértice 3",
                 "fr": "Y du sommet 3",
@@ -4518,7 +4518,7 @@
           "signature": "trib(x1, y1, x2, y2, x3, y3, col)",
           "description": {
             "en": "Draw the outline of a triangle with vertices (x1, y1), (x2, y2), (x3, y3) and color col.",
-            "cn": "绘制顶点为 (x1, y1)、(x2, y2)、(x3, y3)、颜色col的三角形轮廓。",
+            "cn": "绘制顶点为 (x1, y1)、(x2, y2)、(x3, y3)、颜色 col 的三角形轮廓。",
             "de": "Zeichnet den Umriss eines Dreiecks mit den Eckpunkten (x1, y1), (x2, y2), (x3, y3) und Farbe col.",
             "es": "Dibuja el contorno de un triángulo con vértices (x1, y1), (x2, y2), (x3, y3) y color col.",
             "fr": "Dessine le contour d'un triangle avec les sommets (x1, y1), (x2, y2), (x3, y3) et la couleur col.",
@@ -4536,7 +4536,7 @@
               "type": "float",
               "description": {
                 "en": "Vertex 1 X",
-                "cn": "顶点1的X坐标",
+                "cn": "顶点 1 的 X 坐标",
                 "de": "X-Koordinate von Eckpunkt 1",
                 "es": "X del vértice 1",
                 "fr": "X du sommet 1",
@@ -4554,7 +4554,7 @@
               "type": "float",
               "description": {
                 "en": "Vertex 1 Y",
-                "cn": "顶点1的Y坐标",
+                "cn": "顶点 1 的 Y 坐标",
                 "de": "Y-Koordinate von Eckpunkt 1",
                 "es": "Y del vértice 1",
                 "fr": "Y du sommet 1",
@@ -4572,7 +4572,7 @@
               "type": "float",
               "description": {
                 "en": "Vertex 2 X",
-                "cn": "顶点2的X坐标",
+                "cn": "顶点 2 的 X 坐标",
                 "de": "X-Koordinate von Eckpunkt 2",
                 "es": "X del vértice 2",
                 "fr": "X du sommet 2",
@@ -4590,7 +4590,7 @@
               "type": "float",
               "description": {
                 "en": "Vertex 2 Y",
-                "cn": "顶点2的Y坐标",
+                "cn": "顶点 2 的 Y 坐标",
                 "de": "Y-Koordinate von Eckpunkt 2",
                 "es": "Y del vértice 2",
                 "fr": "Y du sommet 2",
@@ -4608,7 +4608,7 @@
               "type": "float",
               "description": {
                 "en": "Vertex 3 X",
-                "cn": "顶点3的X坐标",
+                "cn": "顶点 3 的 X 坐标",
                 "de": "X-Koordinate von Eckpunkt 3",
                 "es": "X del vértice 3",
                 "fr": "X du sommet 3",
@@ -4626,7 +4626,7 @@
               "type": "float",
               "description": {
                 "en": "Vertex 3 Y",
-                "cn": "顶点3的Y坐标",
+                "cn": "顶点 3 的 Y 坐标",
                 "de": "Y-Koordinate von Eckpunkt 3",
                 "es": "Y del vértice 3",
                 "fr": "Y du sommet 3",
@@ -4669,7 +4669,7 @@
           "signature": "fill(x, y, col)",
           "description": {
             "en": "Fill the area connected with the same color as (x, y) with color col.",
-            "cn": "用颜色col填充与 (x, y) 相同颜色相连的区域。",
+            "cn": "用颜色 col 填充与 (x, y) 相同颜色相连的区域。",
             "de": "Füllt den zusammenhängenden Bereich gleicher Farbe wie (x, y) mit Farbe col.",
             "es": "Rellena el área conectada del mismo color que (x, y) con el color col.",
             "fr": "Remplit la zone connectée de la même couleur que (x, y) avec la couleur col.",
@@ -4687,7 +4687,7 @@
               "type": "float",
               "description": {
                 "en": "X coordinate",
-                "cn": "X坐标",
+                "cn": "X 坐标",
                 "de": "X-Koordinate",
                 "es": "Coordenada X",
                 "fr": "Coordonnée X",
@@ -4705,7 +4705,7 @@
               "type": "float",
               "description": {
                 "en": "Y coordinate",
-                "cn": "Y坐标",
+                "cn": "Y 坐标",
                 "de": "Y-Koordinate",
                 "es": "Coordenada Y",
                 "fr": "Coordonnée Y",
@@ -4748,7 +4748,7 @@
           "signature": "blt(x, y, img, u, v, w, h, colkey=None, rotate=0, scale=1)",
           "description": {
             "en": "Copy the region of size (w, h) from (u, v) of image bank img (0-2 or Image instance) to (x, y). Negative w/h flips the image. colkey sets the transparent color. rotate and scale apply transformations.",
-            "cn": "将图像库img (0-2或Image实例) 的 (u, v) 处大小为 (w, h) 的区域复制到 (x, y)。w、h为负值时翻转图像。colkey指定透明色。rotate和scale应用变换。",
+            "cn": "将图像库 img (0-2 或 Image 实例) 的 (u, v) 处大小为 (w, h) 的区域复制到 (x, y)。w、h 为负值时翻转图像。colkey 指定透明色。rotate 和 scale 应用变换。",
             "de": "Kopiert den Bereich der Größe (w, h) ab (u, v) der Bildbank img (0-2 oder Image-Instanz) nach (x, y). Negative w/h-Werte spiegeln das Bild. colkey legt die transparente Farbe fest. rotate und scale wenden Transformationen an.",
             "es": "Copia la región de tamaño (w, h) desde (u, v) del banco de imágenes img (0-2 o instancia de Image) a (x, y). Valores negativos de w/h voltean la imagen. colkey establece el color transparente. rotate y scale aplican transformaciones.",
             "fr": "Copie la région de taille (w, h) depuis (u, v) de la banque d'images img (0-2 ou instance Image) vers (x, y). Des valeurs négatives de w/h retournent l'image. colkey définit la couleur transparente. rotate et scale appliquent des transformations.",
@@ -4766,7 +4766,7 @@
               "type": "float",
               "description": {
                 "en": "Destination X",
-                "cn": "目标X坐标",
+                "cn": "目标 X 坐标",
                 "de": "Ziel-X-Koordinate",
                 "es": "X de destino",
                 "fr": "X de destination",
@@ -4784,7 +4784,7 @@
               "type": "float",
               "description": {
                 "en": "Destination Y",
-                "cn": "目标Y坐标",
+                "cn": "目标 Y 坐标",
                 "de": "Ziel-Y-Koordinate",
                 "es": "Y de destino",
                 "fr": "Y de destination",
@@ -4802,7 +4802,7 @@
               "type": "int/Image",
               "description": {
                 "en": "Image bank number (0-2) or Image instance",
-                "cn": "图像库编号 (0-2) 或Image实例",
+                "cn": "图像库编号 (0-2) 或 Image 实例",
                 "de": "Bildbank-Nummer (0-2) oder Image-Instanz",
                 "es": "Número de banco de imagen (0-2) o instancia Image",
                 "fr": "Numéro de banque d'images (0-2) ou instance Image",
@@ -4820,7 +4820,7 @@
               "type": "float",
               "description": {
                 "en": "Source X in the image bank",
-                "cn": "图像库中的源X",
+                "cn": "图像库中的源 X",
                 "de": "Quell-X in der Bildbank",
                 "es": "X de origen en el banco de imagen",
                 "fr": "X source dans la banque d'images",
@@ -4838,7 +4838,7 @@
               "type": "float",
               "description": {
                 "en": "Source Y in the image bank",
-                "cn": "图像库中的源Y",
+                "cn": "图像库中的源 Y",
                 "de": "Quell-Y in der Bildbank",
                 "es": "Y de origen en el banco de imagen",
                 "fr": "Y source dans la banque d'images",
@@ -4953,7 +4953,7 @@
           "signature": "bltm(x, y, tm, u, v, w, h, colkey=None, rotate=0, scale=1)",
           "description": {
             "en": "Copy the region of size (w, h) from (u, v) of tilemap tm (0-7 or Tilemap instance) to (x, y). Each tile is 8x8 pixels stored as (image_tx, image_ty). Negative w/h flips the image. colkey sets the transparent color. rotate and scale apply transformations.",
-            "cn": "将瓦片地图tm (0-7或Tilemap实例) 的 (u, v) 处大小为 (w, h) 的区域复制到 (x, y)。每个瓦片为8x8像素，存储为 (image_tx, image_ty)。w、h为负值时翻转图像。colkey指定透明色。rotate和scale应用变换。",
+            "cn": "将瓦片地图 tm (0-7 或 Tilemap 实例) 的 (u, v) 处大小为 (w, h) 的区域复制到 (x, y)。每个瓦片为 8x8 像素，存储为 (image_tx, image_ty)。w、h 为负值时翻转图像。colkey 指定透明色。rotate 和 scale 应用变换。",
             "de": "Kopiert den Bereich der Größe (w, h) ab (u, v) der Tilemap tm (0-7 oder Tilemap-Instanz) nach (x, y). Jede Kachel ist 8x8 Pixel, gespeichert als (image_tx, image_ty). Negative w/h-Werte spiegeln das Bild. colkey legt die transparente Farbe fest. rotate und scale wenden Transformationen an.",
             "es": "Copia la región de tamaño (w, h) desde (u, v) del tilemap tm (0-7 o instancia de Tilemap) a (x, y). Cada tile es de 8x8 píxeles almacenado como (image_tx, image_ty). Valores negativos de w/h voltean la imagen. colkey establece el color transparente. rotate y scale aplican transformaciones.",
             "fr": "Copie la région de taille (w, h) depuis (u, v) de la tilemap tm (0-7 ou instance Tilemap) vers (x, y). Chaque tuile fait 8x8 pixels, stockée en (image_tx, image_ty). Des valeurs négatives de w/h retournent l'image. colkey définit la couleur transparente. rotate et scale appliquent des transformations.",
@@ -4971,7 +4971,7 @@
               "type": "float",
               "description": {
                 "en": "Destination X",
-                "cn": "目标X坐标",
+                "cn": "目标 X 坐标",
                 "de": "Ziel-X-Koordinate",
                 "es": "X de destino",
                 "fr": "X de destination",
@@ -4989,7 +4989,7 @@
               "type": "float",
               "description": {
                 "en": "Destination Y",
-                "cn": "目标Y坐标",
+                "cn": "目标 Y 坐标",
                 "de": "Ziel-Y-Koordinate",
                 "es": "Y de destino",
                 "fr": "Y de destination",
@@ -5007,7 +5007,7 @@
               "type": "int/Tilemap",
               "description": {
                 "en": "Tilemap number (0-7) or Tilemap instance",
-                "cn": "瓦片地图编号 (0-7) 或Tilemap实例",
+                "cn": "瓦片地图编号 (0-7) 或 Tilemap 实例",
                 "de": "Tilemap-Nummer (0-7) oder Tilemap-Instanz",
                 "es": "Número de tilemap (0-7) o instancia Tilemap",
                 "fr": "Numéro de tilemap (0-7) ou instance Tilemap",
@@ -5025,7 +5025,7 @@
               "type": "float",
               "description": {
                 "en": "Source X in the tilemap",
-                "cn": "瓦片地图中的源X",
+                "cn": "瓦片地图中的源 X",
                 "de": "Quell-X in der Tilemap",
                 "es": "X de origen en el tilemap",
                 "fr": "X source dans la tilemap",
@@ -5043,7 +5043,7 @@
               "type": "float",
               "description": {
                 "en": "Source Y in the tilemap",
-                "cn": "瓦片地图中的源Y",
+                "cn": "瓦片地图中的源 Y",
                 "de": "Quell-Y in der Tilemap",
                 "es": "Y de origen en el tilemap",
                 "fr": "Y source dans la tilemap",
@@ -5158,7 +5158,7 @@
           "signature": "blt3d(x, y, w, h, img, pos, rot, fov=60, colkey=None)",
           "description": {
             "en": "Draw the image bank img (0-2 or Image instance) with perspective projection onto the screen rectangle (x, y, w, h). pos is the camera position where x, y match 2D coordinates and z is height. rot is the rotation in degrees. fov sets the field of view in degrees. colkey sets the transparent color.",
-            "cn": "将图像库img (0-2或Image实例) 以透视投影绘制到屏幕矩形 (x, y, w, h)。pos为相机位置，x, y与2D坐标一致，z为高度。rot为旋转角度，单位为度。fov设置视野角度。colkey指定透明色。",
+            "cn": "将图像库 img (0-2 或 Image 实例) 以透视投影绘制到屏幕矩形 (x, y, w, h)。pos 为相机位置，x, y 与 2D 坐标一致，z 为高度。rot 为旋转角度，单位为度。fov 设置视野角度。colkey 指定透明色。",
             "de": "Zeichnet die Bildbank img (0-2 oder Image-Instanz) mit perspektivischer Projektion in das Bildschirmrechteck (x, y, w, h). pos ist die Kameraposition, wobei x, y den 2D-Koordinaten entsprechen und z die Höhe ist. rot ist die Rotation in Grad. fov setzt das Sichtfeld in Grad. colkey legt die transparente Farbe fest.",
             "es": "Dibuja el banco de imágenes img (0-2 o instancia de Image) con proyección de perspectiva en el rectángulo (x, y, w, h). pos es la posición de la cámara donde x, y coinciden con las coordenadas 2D y z es la altitud. rot es la rotación en grados. fov establece el campo de visión. colkey establece el color transparente.",
             "fr": "Dessine la banque d'images img (0-2 ou instance Image) avec projection en perspective dans le rectangle (x, y, w, h). pos est la position de la caméra où x, y correspondent aux coordonnées 2D et z est l'altitude. rot est la rotation en degrés. fov définit le champ de vision. colkey définit la couleur transparente.",
@@ -5176,7 +5176,7 @@
               "type": "float",
               "description": {
                 "en": "Destination X",
-                "cn": "目标X坐标",
+                "cn": "目标 X 坐标",
                 "de": "Ziel-X-Koordinate",
                 "es": "X de destino",
                 "fr": "X de destination",
@@ -5194,7 +5194,7 @@
               "type": "float",
               "description": {
                 "en": "Destination Y",
-                "cn": "目标Y坐标",
+                "cn": "目标 Y 坐标",
                 "de": "Ziel-Y-Koordinate",
                 "es": "Y de destino",
                 "fr": "Y de destination",
@@ -5248,7 +5248,7 @@
               "type": "int/Image",
               "description": {
                 "en": "Image bank number (0-2) or Image instance",
-                "cn": "图像库编号 (0-2) 或Image实例",
+                "cn": "图像库编号 (0-2) 或 Image 实例",
                 "de": "Bildbank-Nummer (0-2) oder Image-Instanz",
                 "es": "Número de banco de imagen (0-2) o instancia Image",
                 "fr": "Numéro de banque d'images (0-2) ou instance Image",
@@ -5266,7 +5266,7 @@
               "type": "(float, float, float)",
               "description": {
                 "en": "Camera position (x, y, z). x, y match 2D coordinates, z is height",
-                "cn": "相机位置(x, y, z)。x, y与2D坐标一致，z为高度",
+                "cn": "相机位置 (x, y, z)。x, y 与 2D 坐标一致，z 为高度",
                 "de": "Kameraposition (x, y, z). x, y entsprechen 2D-Koordinaten, z ist die Höhe",
                 "es": "Posición de la cámara (x, y, z). x, y coinciden con las coordenadas 2D, z es la altitud",
                 "fr": "Position de la caméra (x, y, z). x, y correspondent aux coordonnées 2D, z est l'altitude",
@@ -5284,7 +5284,7 @@
               "type": "(float, float, float)",
               "description": {
                 "en": "Rotation in degrees. rot_x is vertical, rot_y is horizontal, rot_z is tilt",
-                "cn": "旋转角度（度）。rot_x为上下，rot_y为水平方向，rot_z为倾斜",
+                "cn": "旋转角度（度）。rot_x 为上下，rot_y 为水平方向，rot_z 为倾斜",
                 "de": "Rotation in Grad. rot_x ist vertikal, rot_y horizontal, rot_z ist Neigung",
                 "es": "Rotación en grados. rot_x es vertical, rot_y es horizontal, rot_z es inclinación",
                 "fr": "Rotation en degrés. rot_x est vertical, rot_y horizontal, rot_z est l'inclinaison",
@@ -5345,7 +5345,7 @@
           "signature": "bltm3d(x, y, w, h, tm, pos, rot, fov=60, colkey=None)",
           "description": {
             "en": "Draw the tilemap tm (0-7 or Tilemap instance) with perspective projection onto the screen rectangle (x, y, w, h). pos is the camera position where x, y match 2D coordinates and z is height. rot is the rotation in degrees. fov sets the field of view in degrees. colkey sets the transparent color.",
-            "cn": "将瓦片地图tm (0-7或Tilemap实例) 以透视投影绘制到屏幕矩形 (x, y, w, h)。pos为相机位置，x, y与2D坐标一致，z为高度。rot为旋转角度，单位为度。fov设置视野角度。colkey指定透明色。",
+            "cn": "将瓦片地图 tm (0-7 或 Tilemap 实例) 以透视投影绘制到屏幕矩形 (x, y, w, h)。pos 为相机位置，x, y 与 2D 坐标一致，z 为高度。rot 为旋转角度，单位为度。fov 设置视野角度。colkey 指定透明色。",
             "de": "Zeichnet die Tilemap tm (0-7 oder Tilemap-Instanz) mit perspektivischer Projektion in das Bildschirmrechteck (x, y, w, h). pos ist die Kameraposition, wobei x, y den 2D-Koordinaten entsprechen und z die Höhe ist. rot ist die Rotation in Grad. fov setzt das Sichtfeld in Grad. colkey legt die transparente Farbe fest.",
             "es": "Dibuja el tilemap tm (0-7 o instancia de Tilemap) con proyección de perspectiva en el rectángulo (x, y, w, h). pos es la posición de la cámara donde x, y coinciden con las coordenadas 2D y z es la altitud. rot es la rotación en grados. fov establece el campo de visión. colkey establece el color transparente.",
             "fr": "Dessine la tilemap tm (0-7 ou instance Tilemap) avec projection en perspective dans le rectangle (x, y, w, h). pos est la position de la caméra où x, y correspondent aux coordonnées 2D et z est l'altitude. rot est la rotation en degrés. fov définit le champ de vision. colkey définit la couleur transparente.",
@@ -5363,7 +5363,7 @@
               "type": "float",
               "description": {
                 "en": "Destination X",
-                "cn": "目标X坐标",
+                "cn": "目标 X 坐标",
                 "de": "Ziel-X-Koordinate",
                 "es": "X de destino",
                 "fr": "X de destination",
@@ -5381,7 +5381,7 @@
               "type": "float",
               "description": {
                 "en": "Destination Y",
-                "cn": "目标Y坐标",
+                "cn": "目标 Y 坐标",
                 "de": "Ziel-Y-Koordinate",
                 "es": "Y de destino",
                 "fr": "Y de destination",
@@ -5435,7 +5435,7 @@
               "type": "int/Tilemap",
               "description": {
                 "en": "Tilemap number (0-7) or Tilemap instance",
-                "cn": "瓦片地图编号 (0-7) 或Tilemap实例",
+                "cn": "瓦片地图编号 (0-7) 或 Tilemap 实例",
                 "de": "Tilemap-Nummer (0-7) oder Tilemap-Instanz",
                 "es": "Número de tilemap (0-7) o instancia Tilemap",
                 "fr": "Numéro de tilemap (0-7) ou instance Tilemap",
@@ -5453,7 +5453,7 @@
               "type": "(float, float, float)",
               "description": {
                 "en": "Camera position (x, y, z). x, y match 2D coordinates, z is height",
-                "cn": "相机位置(x, y, z)。x, y与2D坐标一致，z为高度",
+                "cn": "相机位置 (x, y, z)。x, y 与 2D 坐标一致，z 为高度",
                 "de": "Kameraposition (x, y, z). x, y entsprechen 2D-Koordinaten, z ist die Höhe",
                 "es": "Posición de la cámara (x, y, z). x, y coinciden con las coordenadas 2D, z es la altitud",
                 "fr": "Position de la caméra (x, y, z). x, y correspondent aux coordonnées 2D, z est l'altitude",
@@ -5471,7 +5471,7 @@
               "type": "(float, float, float)",
               "description": {
                 "en": "Rotation in degrees. rot_x is vertical, rot_y is horizontal, rot_z is tilt",
-                "cn": "旋转角度（度）。rot_x为上下，rot_y为水平方向，rot_z为倾斜",
+                "cn": "旋转角度（度）。rot_x 为上下，rot_y 为水平方向，rot_z 为倾斜",
                 "de": "Rotation in Grad. rot_x ist vertikal, rot_y horizontal, rot_z ist Neigung",
                 "es": "Rotación en grados. rot_x es vertical, rot_y es horizontal, rot_z es inclinación",
                 "fr": "Rotation en degrés. rot_x est vertical, rot_y horizontal, rot_z est l'inclinaison",
@@ -5532,7 +5532,7 @@
           "signature": "text(x, y, s, col, font=None)",
           "description": {
             "en": "Draw a string s in color col at (x, y).",
-            "cn": "在 (x, y) 绘制颜色col的字符串s。",
+            "cn": "在 (x, y) 绘制颜色 col 的字符串 s。",
             "de": "Zeichnet eine Zeichenkette s in Farbe col bei (x, y).",
             "es": "Dibuja una cadena s en color col en (x, y).",
             "fr": "Dessine une chaîne s en couleur col en (x, y).",
@@ -5550,7 +5550,7 @@
               "type": "float",
               "description": {
                 "en": "X coordinate",
-                "cn": "X坐标",
+                "cn": "X 坐标",
                 "de": "X-Koordinate",
                 "es": "Coordenada X",
                 "fr": "Coordonnée X",
@@ -5568,7 +5568,7 @@
               "type": "float",
               "description": {
                 "en": "Y coordinate",
-                "cn": "Y坐标",
+                "cn": "Y 坐标",
                 "de": "Y-Koordinate",
                 "es": "Coordenada Y",
                 "fr": "Coordonnée Y",
@@ -6078,7 +6078,7 @@
           "signature": "channels",
           "description": {
             "en": "List of the channels (instances of the Channel class) (0-3).",
-            "cn": "通道 (Channel类的实例) 的列表 (0-3)",
+            "cn": "通道 (Channel 类的实例) 的列表 (0-3)",
             "de": "Liste der Kanäle (Instanzen der Channel-Klasse) (0-3).",
             "es": "Lista de los canales (instancias de la clase Channel) (0-3).",
             "fr": "Liste des canaux (instances de la classe Channel) (0-3).",
@@ -6099,7 +6099,7 @@
           "signature": "tones",
           "description": {
             "en": "List of the tone definitions (instances of the Tone class) (0-3).",
-            "cn": "音色定义 (Tone类的实例) 的列表 (0-3)",
+            "cn": "音色定义 (Tone 类的实例) 的列表 (0-3)",
             "de": "Liste der Tondefinitionen (Instanzen der Tone-Klasse) (0-3).",
             "es": "Lista de las definiciones de tono (instancias de la clase Tone) (0-3).",
             "fr": "Liste des définitions de timbre (instances de la classe Tone) (0-3).",
@@ -6120,7 +6120,7 @@
           "signature": "sounds",
           "description": {
             "en": "List of the sounds (instances of the Sound class) (0-63).",
-            "cn": "声音 (Sound类的实例) 的列表 (0-63)",
+            "cn": "声音 (Sound 类的实例) 的列表 (0-63)",
             "de": "Liste der Sounds (Instanzen der Sound-Klasse) (0-63).",
             "es": "Lista de los sonidos (instancias de la clase Sound) (0-63).",
             "fr": "Liste des sons (instances de la classe Sound) (0-63).",
@@ -6142,7 +6142,7 @@
           "signature": "musics",
           "description": {
             "en": "List of music tracks (instances of the Music class) (0-7).",
-            "cn": "音乐 (Music类的实例) 的列表 (0-7)",
+            "cn": "音乐 (Music 类的实例) 的列表 (0-7)",
             "de": "Liste der Musikstücke (Instanzen der Music-Klasse) (0-7).",
             "es": "Lista de las pistas de música (instancias de la clase Music) (0-7).",
             "fr": "Liste des pistes musicales (instances de la classe Music) (0-7).",
@@ -6163,7 +6163,7 @@
           "signature": "play(ch, snd, sec=0, loop=False, resume=False)",
           "description": {
             "en": "Play the sound snd on channel ch (0-3). snd can be a sound number (0-63), a list of numbers, a Sound instance, a list of Sounds, or an MML string.",
-            "cn": "在通道ch (0-3) 上播放声音snd。snd可以是声音编号 (0-63)、编号列表、Sound实例、Sound列表或MML字符串。",
+            "cn": "在通道 ch (0-3) 上播放声音 snd。snd 可以是声音编号 (0-63)、编号列表、Sound 实例、Sound 列表或 MML 字符串。",
             "de": "Spielt den Sound snd auf Kanal ch (0-3) ab. snd kann eine Soundnummer (0-63), eine Nummernliste, eine Sound-Instanz, eine Liste von Sounds oder ein MML-String sein.",
             "es": "Reproduce el sonido snd en el canal ch (0-3). snd puede ser un número de sonido (0-63), una lista de números, una instancia de Sound, una lista de Sounds o una cadena MML.",
             "fr": "Joue le son snd sur le canal ch (0-3). snd peut être un numéro de son (0-63), une liste de numéros, une instance de Sound, une liste de Sounds ou une chaîne MML.",
@@ -6199,7 +6199,7 @@
               "type": "int/list/Sound/str",
               "description": {
                 "en": "Sound number (0-63), list of numbers, Sound instance, list of Sounds, or MML string",
-                "cn": "音效编号 (0-63)、编号列表、Sound实例、Sound列表或MML字符串",
+                "cn": "音效编号 (0-63)、编号列表、Sound 实例、Sound 列表或 MML 字符串",
                 "de": "Soundnummer (0-63), Nummernliste, Sound-Instanz, Sound-Liste oder MML-String",
                 "es": "Número de sonido (0-63), lista de números, instancia Sound, lista de Sounds o cadena MML",
                 "fr": "Numéro de son (0-63), liste de numéros, instance Sound, liste de Sounds ou chaîne MML",
@@ -6278,7 +6278,7 @@
           "signature": "playm(msc, sec=0, loop=False)",
           "description": {
             "en": "Play the music msc (0-7).",
-            "cn": "播放音乐msc (0-7)。",
+            "cn": "播放音乐 msc (0-7)。",
             "de": "Spielt die Musik msc (0-7) ab.",
             "es": "Reproduce la música msc (0-7).",
             "fr": "Joue la musique msc (0-7).",
@@ -6357,7 +6357,7 @@
           "signature": "stop(ch)",
           "description": {
             "en": "Stop playback of the specified channel ch (0-3).",
-            "cn": "停止指定通道ch (0-3) 的播放。",
+            "cn": "停止指定通道 ch (0-3) 的播放。",
             "de": "Stoppt die Wiedergabe des angegebenen Kanals ch (0-3).",
             "es": "Detiene la reproducción del canal especificado ch (0-3).",
             "fr": "Arrête la lecture du canal spécifié ch (0-3).",
@@ -6423,7 +6423,7 @@
           "signature": "play_pos(ch)",
           "description": {
             "en": "Get the sound playback position of channel ch (0-3) as a tuple of (sound_index, sec). Return None when playback has stopped.",
-            "cn": "获取通道ch (0-3) 的声音播放位置，以 (sound_index, sec) 元组返回。播放停止时返回None。",
+            "cn": "获取通道 ch (0-3) 的声音播放位置，以 (sound_index, sec) 元组返回。播放停止时返回 None。",
             "de": "Gibt die Sound-Wiedergabeposition von Kanal ch (0-3) als Tupel (sound_index, sec) zurück. Gibt None zurück, wenn die Wiedergabe gestoppt ist.",
             "es": "Obtiene la posición de reproducción de sonido del canal ch (0-3) como una tupla (sound_index, sec). Devuelve None cuando la reproducción se ha detenido.",
             "fr": "Obtient la position de lecture du son du canal ch (0-3) sous forme de tuple (sound_index, sec). Renvoie None lorsque la lecture est arrêtée.",
@@ -6480,7 +6480,7 @@
           "signature": "gen_bgm(preset, transp, instr, seed, play=False)",
           "description": {
             "en": "Generate a BGM MML list using an algorithm. preset (0-7) selects the preset, instr (0-3) selects the instrumentation.",
-            "cn": "使用算法生成BGM的MML列表。preset (0-7) 选择预设，instr (0-3) 选择编制。",
+            "cn": "使用算法生成 BGM 的 MML 列表。preset (0-7) 选择预设，instr (0-3) 选择编制。",
             "de": "Erzeugt eine BGM-MML-Liste mittels Algorithmus. preset (0-7) wählt das Preset, instr (0-3) wählt die Instrumentierung.",
             "es": "Genera una lista MML de BGM mediante un algoritmo. preset (0-7) selecciona el preset, instr (0-3) selecciona la instrumentación.",
             "fr": "Génère une liste MML de BGM à l'aide d'un algorithme. preset (0-7) sélectionne le preset, instr (0-3) sélectionne l'instrumentation.",
@@ -6570,7 +6570,7 @@
               "type": "bool",
               "description": {
                 "en": "Play the generated MML. Defaults to False.",
-                "cn": "播放生成的MML。默认为 False。",
+                "cn": "播放生成的 MML。默认为 False。",
                 "de": "Generiertes MML abspielen. Standard ist False.",
                 "es": "Reproducir el MML generado. Por defecto es False.",
                 "fr": "Lire le MML généré. Par défaut : False.",
@@ -6588,7 +6588,7 @@
             "type": "list[str]",
             "description": {
               "en": "List of MML strings",
-              "cn": "MML字符串列表",
+              "cn": "MML 字符串列表",
               "de": "Liste von MML-Strings",
               "es": "Lista de cadenas MML",
               "fr": "Liste de chaînes MML",
@@ -6924,7 +6924,7 @@
           "signature": "ceil(x)",
           "description": {
             "en": "Return the smallest integer greater than or equal to x.",
-            "cn": "返回大于或等于x的最小整数。",
+            "cn": "返回大于或等于 x 的最小整数。",
             "de": "Gibt die kleinste Ganzzahl zurück, die größer oder gleich x ist.",
             "es": "Devuelve el menor entero mayor o igual a x.",
             "fr": "Renvoie le plus petit entier supérieur ou égal à x.",
@@ -6960,7 +6960,7 @@
             "type": "int",
             "description": {
               "en": "Smallest integer >= x",
-              "cn": "不小于x的最小整数",
+              "cn": "不小于 x 的最小整数",
               "de": "Kleinste Ganzzahl >= x",
               "es": "Menor entero >= x",
               "fr": "Plus petit entier >= x",
@@ -6981,7 +6981,7 @@
           "signature": "floor(x)",
           "description": {
             "en": "Return the largest integer less than or equal to x.",
-            "cn": "返回小于或等于x的最大整数。",
+            "cn": "返回小于或等于 x 的最大整数。",
             "de": "Gibt die größte Ganzzahl zurück, die kleiner oder gleich x ist.",
             "es": "Devuelve el mayor entero menor o igual a x.",
             "fr": "Renvoie le plus grand entier inférieur ou égal à x.",
@@ -7017,7 +7017,7 @@
             "type": "int",
             "description": {
               "en": "Largest integer <= x",
-              "cn": "不超过x的最大整数",
+              "cn": "不超过 x 的最大整数",
               "de": "Größte Ganzzahl <= x",
               "es": "Mayor entero <= x",
               "fr": "Plus grand entier <= x",
@@ -7038,7 +7038,7 @@
           "signature": "clamp(x, lower, upper)",
           "description": {
             "en": "Return x clamped between lower and upper.",
-            "cn": "返回将x限制在lower和upper之间的值。",
+            "cn": "返回将 x 限制在 lower 和 upper 之间的值。",
             "de": "Gibt x auf den Bereich zwischen lower und upper begrenzt zurück.",
             "es": "Devuelve x limitado entre lower y upper.",
             "fr": "Renvoie x limité entre lower et upper.",
@@ -7131,7 +7131,7 @@
           "signature": "sgn(x)",
           "description": {
             "en": "Return 1 when x is positive, 0 when it is 0, and -1 when it is negative.",
-            "cn": "当x为正时返回1，为0时返回0，为负时返回-1。",
+            "cn": "当 x 为正时返回 1，为 0 时返回 0，为负时返回 -1。",
             "de": "Gibt 1 zurück, wenn x positiv ist, 0, wenn es 0 ist, und -1, wenn es negativ ist.",
             "es": "Devuelve 1 cuando x es positivo, 0 cuando es 0 y -1 cuando es negativo.",
             "fr": "Renvoie 1 lorsque x est positif, 0 lorsqu'il vaut 0 et -1 lorsqu'il est négatif.",
@@ -7188,7 +7188,7 @@
           "signature": "sqrt(x)",
           "description": {
             "en": "Return the square root of x.",
-            "cn": "返回x的平方根。",
+            "cn": "返回 x 的平方根。",
             "de": "Gibt die Quadratwurzel von x zurück.",
             "es": "Devuelve la raíz cuadrada de x.",
             "fr": "Renvoie la racine carrée de x.",
@@ -7224,7 +7224,7 @@
             "type": "float",
             "description": {
               "en": "Square root of x",
-              "cn": "x的平方根",
+              "cn": "x 的平方根",
               "de": "Quadratwurzel von x",
               "es": "Raíz cuadrada de x",
               "fr": "Racine carrée de x",
@@ -7245,7 +7245,7 @@
           "signature": "sin(deg)",
           "description": {
             "en": "Return the sine of deg degrees.",
-            "cn": "返回deg度的正弦值。",
+            "cn": "返回 deg 度的正弦值。",
             "de": "Gibt den Sinus von deg Grad zurück.",
             "es": "Devuelve el seno de deg grados.",
             "fr": "Renvoie le sinus de deg degrés.",
@@ -7302,7 +7302,7 @@
           "signature": "cos(deg)",
           "description": {
             "en": "Return the cosine of deg degrees.",
-            "cn": "返回deg度的余弦值。",
+            "cn": "返回 deg 度的余弦值。",
             "de": "Gibt den Kosinus von deg Grad zurück.",
             "es": "Devuelve el coseno de deg grados.",
             "fr": "Renvoie le cosinus de deg degrés.",
@@ -7359,7 +7359,7 @@
           "signature": "atan2(y, x)",
           "description": {
             "en": "Return the arctangent of y/x in degrees.",
-            "cn": "返回y/x的反正切值（以度为单位）。",
+            "cn": "返回 y/x 的反正切值（以度为单位）。",
             "de": "Gibt den Arkustangens von y/x in Grad zurück.",
             "es": "Devuelve la arcotangente de y/x en grados.",
             "fr": "Renvoie l'arctangente de y/x en degrés.",
@@ -7377,7 +7377,7 @@
               "type": "float",
               "description": {
                 "en": "Y value",
-                "cn": "Y值",
+                "cn": "Y 值",
                 "de": "Y-Wert",
                 "es": "Valor Y",
                 "fr": "Valeur Y",
@@ -7395,7 +7395,7 @@
               "type": "float",
               "description": {
                 "en": "X value",
-                "cn": "X值",
+                "cn": "X 值",
                 "de": "X-Wert",
                 "es": "Valor X",
                 "fr": "Valeur X",
@@ -7477,7 +7477,7 @@
           "signature": "rndi(a, b)",
           "description": {
             "en": "Return a random integer from a to b (inclusive).",
-            "cn": "返回a到b之间的随机整数（含两端）。",
+            "cn": "返回 a 到 b 之间的随机整数（含两端）。",
             "de": "Gibt eine zufällige Ganzzahl von a bis b (einschließlich) zurück.",
             "es": "Devuelve un entero aleatorio de a a b (inclusive).",
             "fr": "Renvoie un entier aléatoire de a à b (inclus).",
@@ -7531,7 +7531,7 @@
             "type": "int",
             "description": {
               "en": "Random integer from a to b",
-              "cn": "a到b的随机整数",
+              "cn": "a 到 b 的随机整数",
               "de": "Zufällige Ganzzahl von a bis b",
               "es": "Número entero aleatorio de a a b",
               "fr": "Nombre entier aléatoire de a à b",
@@ -7552,7 +7552,7 @@
           "signature": "rndf(a, b)",
           "description": {
             "en": "Return a random float from a to b (inclusive).",
-            "cn": "返回a到b之间的随机浮点数（含两端）。",
+            "cn": "返回 a 到 b 之间的随机浮点数（含两端）。",
             "de": "Gibt eine zufällige Gleitkommazahl von a bis b (einschließlich) zurück.",
             "es": "Devuelve un número de punto flotante aleatorio de a a b (inclusive).",
             "fr": "Renvoie un nombre à virgule flottante aléatoire de a à b (inclus).",
@@ -7606,7 +7606,7 @@
             "type": "float",
             "description": {
               "en": "Random float from a to b",
-              "cn": "a到b的随机浮点数",
+              "cn": "a 到 b 的随机浮点数",
               "de": "Zufällige Gleitkommazahl von a bis b",
               "es": "Número decimal aleatorio de a a b",
               "fr": "Nombre décimal aléatoire de a à b",
@@ -7627,7 +7627,7 @@
           "signature": "nseed(seed)",
           "description": {
             "en": "Set the seed of Perlin noise.",
-            "cn": "设置Perlin噪声的种子。",
+            "cn": "设置 Perlin 噪声的种子。",
             "de": "Setzt den Seed des Perlin-Rauschens.",
             "es": "Establece la semilla del ruido Perlin.",
             "fr": "Définit la graine du bruit de Perlin.",
@@ -7670,7 +7670,7 @@
           "signature": "noise(x, y=0, z=0)",
           "description": {
             "en": "Return the Perlin noise value for the specified coordinates.",
-            "cn": "返回指定坐标的Perlin噪声值。",
+            "cn": "返回指定坐标的 Perlin 噪声值。",
             "de": "Gibt den Perlin-Rauschwert für die angegebenen Koordinaten zurück.",
             "es": "Devuelve el valor de ruido Perlin para las coordenadas especificadas.",
             "fr": "Renvoie la valeur du bruit de Perlin pour les coordonnées spécifiées.",
@@ -7688,7 +7688,7 @@
               "type": "float",
               "description": {
                 "en": "X coordinate",
-                "cn": "X坐标",
+                "cn": "X 坐标",
                 "de": "X-Koordinate",
                 "es": "Coordenada X",
                 "fr": "Coordonnée X",
@@ -7706,7 +7706,7 @@
               "type": "float",
               "description": {
                 "en": "Y coordinate. Defaults to 0.",
-                "cn": "Y坐标。默认为 0。",
+                "cn": "Y 坐标。默认为 0。",
                 "de": "Y-Koordinate. Standard ist 0.",
                 "es": "Coordenada Y. Por defecto es 0.",
                 "fr": "Coordonnée Y. Par défaut : 0.",
@@ -7724,7 +7724,7 @@
               "type": "float",
               "description": {
                 "en": "Z coordinate. Defaults to 0.",
-                "cn": "Z坐标。默认为 0。",
+                "cn": "Z 坐标。默认为 0。",
                 "de": "Z-Koordinate. Standard ist 0.",
                 "es": "Coordenada Z. Por defecto es 0.",
                 "fr": "Coordonnée Z. Par défaut : 0.",
@@ -7742,7 +7742,7 @@
             "type": "float",
             "description": {
               "en": "Perlin noise value",
-              "cn": "Perlin噪声值",
+              "cn": "Perlin 噪声值",
               "de": "Perlin-Rauschwert",
               "es": "Valor de ruido Perlin",
               "fr": "Valeur de bruit Perlin",
@@ -7763,7 +7763,7 @@
       "id": "font",
       "title": {
         "en": "Font Class",
-        "cn": "Font类",
+        "cn": "Font 类",
         "de": "Font-Klasse",
         "es": "Clase Font",
         "fr": "Classe Font",
@@ -7782,7 +7782,7 @@
           "signature": "Font(filename, font_size=10.0)",
           "description": {
             "en": "Create a Font instance from a font file (BDF/OTF/TTF/TTC).",
-            "cn": "从字体文件 (BDF/OTF/TTF/TTC) 创建Font实例。",
+            "cn": "从字体文件 (BDF/OTF/TTF/TTC) 创建 Font 实例。",
             "de": "Erstellt eine Font-Instanz aus einer Schriftdatei (BDF/OTF/TTF/TTC).",
             "es": "Crea una instancia de Font a partir de un archivo de fuente (BDF/OTF/TTF/TTC).",
             "fr": "Crée une instance Font à partir d'un fichier de police (BDF/OTF/TTF/TTC).",
@@ -7836,7 +7836,7 @@
             "type": "Font",
             "description": {
               "en": "New Font instance",
-              "cn": "新Font实例",
+              "cn": "新 Font 实例",
               "de": "Neue Font-Instanz",
               "es": "Nueva instancia Font",
               "fr": "Nouvelle instance Font",
@@ -7857,7 +7857,7 @@
           "signature": "Font.text_width(s)",
           "description": {
             "en": "Return the display width of the string s in this font.",
-            "cn": "返回字符串s在此字体中的显示宽度。",
+            "cn": "返回字符串 s 在此字体中的显示宽度。",
             "de": "Gibt die Anzeigebreite der Zeichenkette s in dieser Schriftart zurück.",
             "es": "Devuelve el ancho de visualización de la cadena s en esta fuente.",
             "fr": "Renvoie la largeur d'affichage de la chaîne s dans cette police.",
@@ -7914,7 +7914,7 @@
       "id": "image",
       "title": {
         "en": "Image Class",
-        "cn": "Image类",
+        "cn": "Image 类",
         "de": "Image-Klasse",
         "es": "Clase Image",
         "fr": "Classe Image",
@@ -7933,7 +7933,7 @@
           "signature": "Image(width, height)",
           "description": {
             "en": "Create a new Image instance with the specified size.",
-            "cn": "以指定大小创建新的Image实例。",
+            "cn": "以指定大小创建新的 Image 实例。",
             "de": "Erstellt eine neue Image-Instanz mit der angegebenen Größe.",
             "es": "Crea una nueva instancia de Image con el tamaño especificado.",
             "fr": "Crée une nouvelle instance Image avec la taille spécifiée.",
@@ -7987,7 +7987,7 @@
             "type": "Image",
             "description": {
               "en": "New Image instance",
-              "cn": "新Image实例",
+              "cn": "新 Image 实例",
               "de": "Neue Image-Instanz",
               "es": "Nueva instancia Image",
               "fr": "Nouvelle instance Image",
@@ -8008,7 +8008,7 @@
           "signature": "Image.from_image(filename, include_colors=False)",
           "description": {
             "en": "Create an Image instance from an image file.",
-            "cn": "从图像文件创建Image实例。",
+            "cn": "从图像文件创建 Image 实例。",
             "de": "Erstellt eine Image-Instanz aus einer Bilddatei.",
             "es": "Crea una instancia de Image a partir de un archivo de imagen.",
             "fr": "Crée une instance Image à partir d'un fichier image.",
@@ -8062,7 +8062,7 @@
             "type": "Image",
             "description": {
               "en": "Image instance from file",
-              "cn": "从文件创建的Image实例",
+              "cn": "从文件创建的 Image 实例",
               "de": "Image-Instanz aus Datei",
               "es": "Instancia Image desde archivo",
               "fr": "Instance Image depuis un fichier",
@@ -8143,7 +8143,7 @@
               "type": "int",
               "description": {
                 "en": "X coordinate",
-                "cn": "X坐标",
+                "cn": "X 坐标",
                 "de": "X-Koordinate",
                 "es": "Coordenada X",
                 "fr": "Coordonnée X",
@@ -8161,7 +8161,7 @@
               "type": "int",
               "description": {
                 "en": "Y coordinate",
-                "cn": "Y坐标",
+                "cn": "Y 坐标",
                 "de": "Y-Koordinate",
                 "es": "Coordenada Y",
                 "fr": "Coordonnée Y",
@@ -8225,7 +8225,7 @@
               "type": "int",
               "description": {
                 "en": "X coordinate",
-                "cn": "X坐标",
+                "cn": "X 坐标",
                 "de": "X-Koordinate",
                 "es": "Coordenada X",
                 "fr": "Coordonnée X",
@@ -8243,7 +8243,7 @@
               "type": "int",
               "description": {
                 "en": "Y coordinate",
-                "cn": "Y坐标",
+                "cn": "Y 坐标",
                 "de": "Y-Koordinate",
                 "es": "Coordenada Y",
                 "fr": "Coordonnée Y",
@@ -8322,7 +8322,7 @@
               "type": "float",
               "description": {
                 "en": "X coordinate",
-                "cn": "X坐标",
+                "cn": "X 坐标",
                 "de": "X-Koordinate",
                 "es": "Coordenada X",
                 "fr": "Coordonnée X",
@@ -8340,7 +8340,7 @@
               "type": "float",
               "description": {
                 "en": "Y coordinate",
-                "cn": "Y坐标",
+                "cn": "Y 坐标",
                 "de": "Y-Koordinate",
                 "es": "Coordenada Y",
                 "fr": "Coordonnée Y",
@@ -8379,7 +8379,7 @@
           "signature": "Image.pset(x, y, col)",
           "description": {
             "en": "Draw a pixel with the color col at (x, y).",
-            "cn": "在 (x, y) 绘制颜色col的像素。",
+            "cn": "在 (x, y) 绘制颜色 col 的像素。",
             "de": "Zeichnet ein Pixel mit der Farbe col an (x, y).",
             "es": "Dibuja un píxel con el color col en (x, y).",
             "fr": "Dessine un pixel de couleur col en (x, y).",
@@ -8397,7 +8397,7 @@
               "type": "float",
               "description": {
                 "en": "X coordinate",
-                "cn": "X坐标",
+                "cn": "X 坐标",
                 "de": "X-Koordinate",
                 "es": "Coordenada X",
                 "fr": "Coordonnée X",
@@ -8415,7 +8415,7 @@
               "type": "float",
               "description": {
                 "en": "Y coordinate",
-                "cn": "Y坐标",
+                "cn": "Y 坐标",
                 "de": "Y-Koordinate",
                 "es": "Coordenada Y",
                 "fr": "Coordonnée Y",
@@ -8458,7 +8458,7 @@
           "signature": "Image.{cls, line, rect, rectb, circ, circb, elli, ellib, tri, trib, fill, blt, bltm, blt3d, bltm3d, text, clip, camera, pal, dither}",
           "description": {
             "en": "Image instances support all drawing functions from the Graphics section. They work the same way but draw on the image instead of the screen.",
-            "cn": "Image实例支持图形部分的所有绘图函数。用法相同，但绘制到图像上而不是屏幕上。",
+            "cn": "Image 实例支持图形部分的所有绘图函数。用法相同，但绘制到图像上而不是屏幕上。",
             "de": "Image-Instanzen unterstützen alle Zeichenfunktionen aus dem Grafikabschnitt. Sie funktionieren gleich, zeichnen aber auf das Bild statt auf den Bildschirm.",
             "es": "Las instancias de Image soportan todas las funciones de dibujo de la sección de Gráficos. Funcionan de la misma manera pero dibujan en la imagen en lugar de la pantalla.",
             "fr": "Les instances d'Image prennent en charge toutes les fonctions de dessin de la section Graphiques. Elles fonctionnent de la même manière mais dessinent sur l'image au lieu de l'écran.",
@@ -8478,7 +8478,7 @@
           "signature": "Image.data_ptr()",
           "description": {
             "en": "Return the raw data pointer of the image as a ctypes c_uint8 array.",
-            "cn": "以ctypes c_uint8数组形式返回图像的原始数据指针。",
+            "cn": "以 ctypes c_uint8 数组形式返回图像的原始数据指针。",
             "de": "Gibt den Rohdatenzeiger des Bildes als ctypes c_uint8-Array zurück.",
             "es": "Devuelve el puntero de datos brutos de la imagen como un array ctypes c_uint8.",
             "fr": "Renvoie le pointeur de données brutes de l'image sous forme de tableau ctypes c_uint8.",
@@ -8576,7 +8576,7 @@
       "id": "tilemap",
       "title": {
         "en": "Tilemap Class",
-        "cn": "Tilemap类",
+        "cn": "Tilemap 类",
         "de": "Tilemap-Klasse",
         "es": "Clase Tilemap",
         "fr": "Classe Tilemap",
@@ -8595,7 +8595,7 @@
           "signature": "Tilemap(width, height, img)",
           "description": {
             "en": "Create a new Tilemap instance.",
-            "cn": "创建新的Tilemap实例。",
+            "cn": "创建新的 Tilemap 实例。",
             "de": "Erstellt eine neue Tilemap-Instanz.",
             "es": "Crea una nueva instancia de Tilemap.",
             "fr": "Crée une nouvelle instance Tilemap.",
@@ -8649,7 +8649,7 @@
               "type": "int/Image",
               "description": {
                 "en": "Image bank number (0-2) or Image instance",
-                "cn": "图像库编号 (0-2) 或Image实例",
+                "cn": "图像库编号 (0-2) 或 Image 实例",
                 "de": "Bildbank-Nummer (0-2) oder Image-Instanz",
                 "es": "Número de banco de imagen (0-2) o instancia Image",
                 "fr": "Numéro de banque d'images (0-2) ou instance Image",
@@ -8667,7 +8667,7 @@
             "type": "Tilemap",
             "description": {
               "en": "New Tilemap instance",
-              "cn": "新Tilemap实例",
+              "cn": "新 Tilemap 实例",
               "de": "Neue Tilemap-Instanz",
               "es": "Nueva instancia Tilemap",
               "fr": "Nouvelle instance Tilemap",
@@ -8688,7 +8688,7 @@
           "signature": "Tilemap.from_tmx(filename, layer)",
           "description": {
             "en": "Create a Tilemap instance from a TMX file.",
-            "cn": "从TMX文件创建Tilemap实例。",
+            "cn": "从 TMX 文件创建 Tilemap 实例。",
             "de": "Erstellt eine Tilemap-Instanz aus einer TMX-Datei.",
             "es": "Crea una instancia de Tilemap a partir de un archivo TMX.",
             "fr": "Crée une instance Tilemap à partir d'un fichier TMX.",
@@ -8706,7 +8706,7 @@
               "type": "str",
               "description": {
                 "en": "TMX file name",
-                "cn": "TMX文件名",
+                "cn": "TMX 文件名",
                 "de": "TMX-Dateiname",
                 "es": "Nombre del archivo TMX",
                 "fr": "Nom du fichier TMX",
@@ -8742,7 +8742,7 @@
             "type": "Tilemap",
             "description": {
               "en": "Tilemap instance from TMX file",
-              "cn": "从TMX文件创建的Tilemap实例",
+              "cn": "从 TMX 文件创建的 Tilemap 实例",
               "de": "Tilemap-Instanz aus TMX-Datei",
               "es": "Instancia Tilemap desde archivo TMX",
               "fr": "Instance Tilemap depuis un fichier TMX",
@@ -8805,7 +8805,7 @@
           "signature": "Tilemap.imgsrc",
           "description": {
             "en": "The image bank (0-2) or Image instance referenced by the tilemap.",
-            "cn": "瓦片地图引用的图像库 (0-2) 或Image实例",
+            "cn": "瓦片地图引用的图像库 (0-2) 或 Image 实例",
             "de": "Die Bildbank (0-2) oder Image-Instanz, auf die die Tilemap verweist.",
             "es": "El banco de imágenes (0-2) o la instancia de Image referenciada por el tilemap.",
             "fr": "La banque d'images (0-2) ou l'instance Image référencée par la tilemap.",
@@ -8826,7 +8826,7 @@
           "signature": "Tilemap.set(x, y, data)",
           "description": {
             "en": "Set the tilemap at (x, y) using a list of strings. Each tile is a 4-digit hex value representing (image_tx, image_ty), separated by spaces.",
-            "cn": "使用字符串列表在 (x, y) 处设置瓦片地图。每个瓦片为4位十六进制值，表示 (image_tx, image_ty)，以空格分隔。",
+            "cn": "使用字符串列表在 (x, y) 处设置瓦片地图。每个瓦片为 4 位十六进制值，表示 (image_tx, image_ty)，以空格分隔。",
             "de": "Setzt die Tilemap an (x, y) mit einer Liste von Zeichenketten. Jede Kachel ist ein 4-stelliger Hex-Wert für (image_tx, image_ty), getrennt durch Leerzeichen.",
             "es": "Establece el tilemap en (x, y) usando una lista de cadenas. Cada tile es un valor hexadecimal de 4 dígitos que representa (image_tx, image_ty), separados por espacios.",
             "fr": "Définit la tilemap à (x, y) à l'aide d'une liste de chaînes. Chaque tuile est une valeur hexadécimale à 4 chiffres représentant (image_tx, image_ty), séparées par des espaces.",
@@ -8844,7 +8844,7 @@
               "type": "int",
               "description": {
                 "en": "X coordinate",
-                "cn": "X坐标",
+                "cn": "X 坐标",
                 "de": "X-Koordinate",
                 "es": "Coordenada X",
                 "fr": "Coordonnée X",
@@ -8862,7 +8862,7 @@
               "type": "int",
               "description": {
                 "en": "Y coordinate",
-                "cn": "Y坐标",
+                "cn": "Y 坐标",
                 "de": "Y-Koordinate",
                 "es": "Coordenada Y",
                 "fr": "Coordonnée Y",
@@ -8908,7 +8908,7 @@
           "signature": "Tilemap.load(x, y, filename, layer)",
           "description": {
             "en": "Load the layer (0-) from the TMX file at (x, y).",
-            "cn": "在 (x, y) 处从TMX文件加载layer (0-)。",
+            "cn": "在 (x, y) 处从 TMX 文件加载 layer (0-)。",
             "de": "Lädt den Layer (0-) aus der TMX-Datei an (x, y).",
             "es": "Carga la capa layer (0-) del archivo TMX en (x, y).",
             "fr": "Charge le calque layer (0-) du fichier TMX en (x, y).",
@@ -8926,7 +8926,7 @@
               "type": "int",
               "description": {
                 "en": "X coordinate",
-                "cn": "X坐标",
+                "cn": "X 坐标",
                 "de": "X-Koordinate",
                 "es": "Coordenada X",
                 "fr": "Coordonnée X",
@@ -8944,7 +8944,7 @@
               "type": "int",
               "description": {
                 "en": "Y coordinate",
-                "cn": "Y坐标",
+                "cn": "Y 坐标",
                 "de": "Y-Koordinate",
                 "es": "Coordenada Y",
                 "fr": "Coordonnée Y",
@@ -8962,7 +8962,7 @@
               "type": "str",
               "description": {
                 "en": "TMX file name",
-                "cn": "TMX文件名",
+                "cn": "TMX 文件名",
                 "de": "TMX-Dateiname",
                 "es": "Nombre del archivo TMX",
                 "fr": "Nom du fichier TMX",
@@ -9023,7 +9023,7 @@
               "type": "float",
               "description": {
                 "en": "X coordinate",
-                "cn": "X坐标",
+                "cn": "X 坐标",
                 "de": "X-Koordinate",
                 "es": "Coordenada X",
                 "fr": "Coordonnée X",
@@ -9041,7 +9041,7 @@
               "type": "float",
               "description": {
                 "en": "Y coordinate",
-                "cn": "Y坐标",
+                "cn": "Y 坐标",
                 "de": "Y-Koordinate",
                 "es": "Coordenada Y",
                 "fr": "Coordonnée Y",
@@ -9098,7 +9098,7 @@
               "type": "float",
               "description": {
                 "en": "X coordinate",
-                "cn": "X坐标",
+                "cn": "X 坐标",
                 "de": "X-Koordinate",
                 "es": "Coordenada X",
                 "fr": "Coordonnée X",
@@ -9116,7 +9116,7 @@
               "type": "float",
               "description": {
                 "en": "Y coordinate",
-                "cn": "Y坐标",
+                "cn": "Y 坐标",
                 "de": "Y-Koordinate",
                 "es": "Coordenada Y",
                 "fr": "Coordonnée Y",
@@ -9159,7 +9159,7 @@
           "signature": "Tilemap.{cls, line, rect, rectb, circ, circb, elli, ellib, tri, trib, fill, blt, clip, camera}",
           "description": {
             "en": "Tilemap instances support drawing functions from the Graphics section. They work the same way but draw tiles on the tilemap instead of pixels on the screen. Use a tile tuple (image_tx, image_ty) instead of a color value.",
-            "cn": "Tilemap实例支持图形部分的绘图函数。用法相同，但在瓦片地图上绘制瓦片而不是在屏幕上绘制像素。使用瓦片元组(image_tx, image_ty)代替颜色值。",
+            "cn": "Tilemap 实例支持图形部分的绘图函数。用法相同，但在瓦片地图上绘制瓦片而不是在屏幕上绘制像素。使用瓦片元组 (image_tx, image_ty) 代替颜色值。",
             "de": "Tilemap-Instanzen unterstützen Zeichenfunktionen aus dem Grafikabschnitt. Sie funktionieren gleich, zeichnen aber Kacheln auf die Tilemap statt Pixel auf den Bildschirm. Verwenden Sie ein Kachel-Tupel (image_tx, image_ty) anstelle eines Farbwerts.",
             "es": "Las instancias de Tilemap soportan funciones de dibujo de la sección de Gráficos. Funcionan de la misma manera pero dibujan tiles en el tilemap en lugar de píxeles en la pantalla. Use una tupla de tile (image_tx, image_ty) en lugar de un valor de color.",
             "fr": "Les instances de Tilemap prennent en charge les fonctions de dessin de la section Graphiques. Elles fonctionnent de la même manière mais dessinent des tuiles sur la tilemap au lieu de pixels sur l'écran. Utilisez un tuple de tuile (image_tx, image_ty) au lieu d'une valeur de couleur.",
@@ -9179,7 +9179,7 @@
           "signature": "Tilemap.collide(x, y, w, h, dx, dy, walls)",
           "description": {
             "en": "Resolve collisions after applying pixel movement (dx, dy) to the pixel rectangle at (x, y) with pixel size (w, h), and return the adjusted (dx, dy). walls is a list of tile coordinates that act as obstacles.",
-            "cn": "将像素移动量 (dx, dy) 应用于位于 (x, y) 的像素矩形（大小为 (w, h)）后解决碰撞，返回调整后的 (dx, dy)。walls是作为障碍物的瓦片坐标列表。",
+            "cn": "将像素移动量 (dx, dy) 应用于位于 (x, y) 的像素矩形（大小为 (w, h)）后解决碰撞，返回调整后的 (dx, dy)。walls 是作为障碍物的瓦片坐标列表。",
             "de": "Löst Kollisionen auf, nachdem die Pixelbewegung (dx, dy) auf das Pixelrechteck bei (x, y) mit Pixelgröße (w, h) angewendet wurde, und gibt das angepasste (dx, dy) zurück. walls ist eine Liste von Kachelkoordinaten, die als Hindernisse dienen.",
             "es": "Resuelve colisiones tras aplicar el movimiento en píxeles (dx, dy) al rectángulo en píxeles en (x, y) con tamaño (w, h), y devuelve el (dx, dy) ajustado. walls es una lista de coordenadas de tiles que actúan como obstáculos.",
             "fr": "Résout les collisions après application du mouvement en pixels (dx, dy) au rectangle en pixels à (x, y) de taille (w, h), et renvoie le (dx, dy) ajusté. walls est une liste de coordonnées de tuiles faisant office d'obstacles.",
@@ -9197,7 +9197,7 @@
               "type": "float",
               "description": {
                 "en": "Rectangle X position",
-                "cn": "矩形的X位置",
+                "cn": "矩形的 X 位置",
                 "de": "X-Position des Rechtecks",
                 "es": "Posición X del rectángulo",
                 "fr": "Position X du rectangle",
@@ -9215,7 +9215,7 @@
               "type": "float",
               "description": {
                 "en": "Rectangle Y position",
-                "cn": "矩形的Y位置",
+                "cn": "矩形的 Y 位置",
                 "de": "Y-Position des Rechtecks",
                 "es": "Posición Y del rectángulo",
                 "fr": "Position Y du rectangle",
@@ -9269,7 +9269,7 @@
               "type": "float",
               "description": {
                 "en": "Movement in X",
-                "cn": "X方向的移动量",
+                "cn": "X 方向的移动量",
                 "de": "Verschiebung in X",
                 "es": "Movimiento en X",
                 "fr": "Déplacement en X",
@@ -9287,7 +9287,7 @@
               "type": "float",
               "description": {
                 "en": "Movement in Y",
-                "cn": "Y方向的移动量",
+                "cn": "Y 方向的移动量",
                 "de": "Verschiebung in Y",
                 "es": "Movimiento en Y",
                 "fr": "Déplacement en Y",
@@ -9344,7 +9344,7 @@
           "signature": "Tilemap.data_ptr()",
           "description": {
             "en": "Return the raw data pointer of the tilemap as a ctypes c_uint16 array (4 bytes per tile: image_tx, image_ty).",
-            "cn": "以ctypes c_uint16数组形式返回瓦片地图的原始数据指针（每个瓦片4字节：image_tx, image_ty）。",
+            "cn": "以 ctypes c_uint16 数组形式返回瓦片地图的原始数据指针（每个瓦片 4 字节：image_tx, image_ty）。",
             "de": "Gibt den Rohdatenzeiger der Tilemap als ctypes c_uint16-Array zurück (4 Bytes pro Kachel: image_tx, image_ty).",
             "es": "Devuelve el puntero de datos brutos del tilemap como un array ctypes c_uint16 (4 bytes por tile: image_tx, image_ty).",
             "fr": "Renvoie le pointeur de données brutes de la tilemap sous forme de tableau ctypes c_uint16 (4 octets par tuile : image_tx, image_ty).",
@@ -9381,7 +9381,7 @@
       "id": "sound",
       "title": {
         "en": "Sound Class",
-        "cn": "Sound类",
+        "cn": "Sound 类",
         "de": "Sound-Klasse",
         "es": "Clase Sound",
         "fr": "Classe Sound",
@@ -9400,7 +9400,7 @@
           "signature": "Sound()",
           "description": {
             "en": "Create a new Sound instance.",
-            "cn": "创建新的Sound实例。",
+            "cn": "创建新的 Sound 实例。",
             "de": "Erstellt eine neue Sound-Instanz.",
             "es": "Crea una nueva instancia de Sound.",
             "fr": "Crée une nouvelle instance Sound.",
@@ -9416,7 +9416,7 @@
             "type": "Sound",
             "description": {
               "en": "New Sound instance",
-              "cn": "新Sound实例",
+              "cn": "新 Sound 实例",
               "de": "Neue Sound-Instanz",
               "es": "Nueva instancia Sound",
               "fr": "Nouvelle instance Sound",
@@ -9437,7 +9437,7 @@
           "signature": "Sound.notes",
           "description": {
             "en": "List of notes (0-59). Higher values produce higher pitches. 33 = 'A2' (440 Hz). Rests are -1.",
-            "cn": "音符列表 (0-59)。数值越大音高越高，33为'A2' (440Hz)。休止符为-1。",
+            "cn": "音符列表 (0-59)。数值越大音高越高，33 为 'A2' (440 Hz)。休止符为 -1。",
             "de": "Liste der Noten (0-59). Höhere Werte erzeugen höhere Tonhöhen. 33 = 'A2' (440 Hz). Pausen sind -1.",
             "es": "Lista de notas (0-59). Los valores más altos producen tonos más altos. 33 = 'A2' (440 Hz). Los silencios son -1.",
             "fr": "Liste des notes (0-59). Les valeurs plus élevées produisent des sons plus aigus. 33 = 'A2' (440 Hz). Les silences sont -1.",
@@ -9521,7 +9521,7 @@
           "signature": "Sound.speed",
           "description": {
             "en": "Playback speed. 1 is the fastest, and the larger the number, the slower the playback speed. At 120, one note equals 1 second.",
-            "cn": "播放速度。1最快，数值越大播放越慢。120时一个音符等于1秒。",
+            "cn": "播放速度。1 最快，数值越大播放越慢。120 时一个音符等于 1 秒。",
             "de": "Wiedergabegeschwindigkeit. 1 ist am schnellsten, und je größer die Zahl, desto langsamer die Wiedergabe. Bei 120 entspricht eine Note 1 Sekunde.",
             "es": "Velocidad de reproducción. 1 es la más rápida, y cuanto mayor es el número, más lenta es la reproducción. A 120, una nota equivale a 1 segundo.",
             "fr": "Vitesse de lecture. 1 est le plus rapide, et plus le nombre est grand, plus la lecture est lente. À 120, une note équivaut à 1 seconde.",
@@ -9675,7 +9675,7 @@
               "type": "str",
               "description": {
                 "en": "Notes string",
-                "cn": "notes字符串",
+                "cn": "notes 字符串",
                 "de": "notes-Zeichenkette",
                 "es": "Cadena notes",
                 "fr": "Chaîne de notes",
@@ -9701,7 +9701,7 @@
           "signature": "Sound.set_tones(tones)",
           "description": {
             "en": "Set the tones with a string of TSPN (or 0-9 for custom tone numbers). Case-insensitive, whitespace is ignored.",
-            "cn": "使用TSPN（或0-9表示自定义音色编号）的字符串设置音色。不区分大小写，空白被忽略。",
+            "cn": "使用 TSPN（或 0-9 表示自定义音色编号）的字符串设置音色。不区分大小写，空白被忽略。",
             "de": "Setzt die Töne mit einem String aus TSPN (oder 0-9 für benutzerdefinierte Tonnummern). Groß-/Kleinschreibung wird nicht beachtet, Leerzeichen werden ignoriert.",
             "es": "Establece los tonos con una cadena de TSPN (o 0-9 para números de tono personalizados). No distingue mayúsculas de minúsculas, los espacios se ignoran.",
             "fr": "Définit les timbres avec une chaîne de TSPN (ou 0-9 pour des numéros de timbre personnalisés). Insensible à la casse, les espaces sont ignorés.",
@@ -9719,7 +9719,7 @@
               "type": "str",
               "description": {
                 "en": "Tones string",
-                "cn": "tones字符串",
+                "cn": "tones 字符串",
                 "de": "tones-Zeichenkette",
                 "es": "Cadena tones",
                 "fr": "Chaîne de timbres",
@@ -9745,7 +9745,7 @@
           "signature": "Sound.set_volumes(volumes)",
           "description": {
             "en": "Set the volumes with a string of 01234567. Whitespace is ignored.",
-            "cn": "使用01234567的字符串设置音量。空白被忽略。",
+            "cn": "使用 01234567 的字符串设置音量。空白被忽略。",
             "de": "Setzt die Lautstärken mit einem String aus 01234567. Leerzeichen werden ignoriert.",
             "es": "Establece los volúmenes con una cadena de 01234567. Los espacios se ignoran.",
             "fr": "Définit les volumes avec une chaîne de 01234567. Les espaces sont ignorés.",
@@ -9763,7 +9763,7 @@
               "type": "str",
               "description": {
                 "en": "Volumes string",
-                "cn": "volumes字符串",
+                "cn": "volumes 字符串",
                 "de": "volumes-Zeichenkette",
                 "es": "Cadena volumes",
                 "fr": "Chaîne de volumes",
@@ -9789,7 +9789,7 @@
           "signature": "Sound.set_effects(effects)",
           "description": {
             "en": "Set the effects with a string of NSVFHQ. Case-insensitive, whitespace is ignored.",
-            "cn": "使用NSVFHQ的字符串设置效果。不区分大小写，空白被忽略。",
+            "cn": "使用 NSVFHQ 的字符串设置效果。不区分大小写，空白被忽略。",
             "de": "Setzt die Effekte mit einem String aus NSVFHQ. Groß-/Kleinschreibung wird nicht beachtet, Leerzeichen werden ignoriert.",
             "es": "Establece los efectos con una cadena de NSVFHQ. No distingue mayúsculas de minúsculas, los espacios se ignoran.",
             "fr": "Définit les effets avec une chaîne de NSVFHQ. Insensible à la casse, les espaces sont ignorés.",
@@ -9807,7 +9807,7 @@
               "type": "str",
               "description": {
                 "en": "Effects string",
-                "cn": "effects字符串",
+                "cn": "effects 字符串",
                 "de": "effects-Zeichenkette",
                 "es": "Cadena effects",
                 "fr": "Chaîne d'effets",
@@ -9851,7 +9851,7 @@
               "type": "str",
               "description": {
                 "en": "MML string",
-                "cn": "MML字符串",
+                "cn": "MML 字符串",
                 "de": "MML-String",
                 "es": "Cadena MML",
                 "fr": "Chaîne MML",
@@ -9879,7 +9879,7 @@
           "signature": "Sound.mml()",
           "description": {
             "en": "Exit MML mode and return to normal mode.",
-            "cn": "退出MML模式，返回普通模式。",
+            "cn": "退出 MML 模式，返回普通模式。",
             "de": "Verlässt den MML-Modus und kehrt zum normalen Modus zurück.",
             "es": "Sale del modo MML y vuelve al modo normal.",
             "fr": "Quitte le mode MML et revient au mode normal.",
@@ -9947,7 +9947,7 @@
           "signature": "Sound.pcm()",
           "description": {
             "en": "Exit PCM mode and return to normal mode.",
-            "cn": "退出PCM模式，返回普通模式。",
+            "cn": "退出 PCM 模式，返回普通模式。",
             "de": "Verlässt den PCM-Modus und kehrt zum normalen Modus zurück.",
             "es": "Sale del modo PCM y vuelve al modo normal.",
             "fr": "Quitte le mode PCM et revient au mode normal.",
@@ -9971,7 +9971,7 @@
           "signature": "Sound.save(filename, sec, ffmpeg=False)",
           "description": {
             "en": "Create a WAV file of the sound for the specified duration in seconds.",
-            "cn": "创建指定秒数时长的声音WAV文件。",
+            "cn": "创建指定秒数时长的声音 WAV 文件。",
             "de": "Erstellt eine WAV-Datei des Sounds für die angegebene Dauer in Sekunden.",
             "es": "Crea un archivo WAV del sonido con la duración especificada en segundos.",
             "fr": "Crée un fichier WAV du son pour la durée spécifiée en secondes.",
@@ -9989,7 +9989,7 @@
               "type": "str",
               "description": {
                 "en": "Output WAV file name",
-                "cn": "输出WAV文件名",
+                "cn": "输出 WAV 文件名",
                 "de": "Ausgabe-WAV-Dateiname",
                 "es": "Nombre del archivo WAV de salida",
                 "fr": "Nom du fichier WAV de sortie",
@@ -10025,7 +10025,7 @@
               "type": "bool",
               "description": {
                 "en": "Also create MP4 file (requires FFmpeg). Defaults to False.",
-                "cn": "同时创建MP4文件（需要FFmpeg）。默认为 False。",
+                "cn": "同时创建 MP4 文件（需要 FFmpeg）。默认为 False。",
                 "de": "Auch MP4-Datei erstellen (erfordert FFmpeg). Standard ist False.",
                 "es": "También crear archivo MP4 (requiere FFmpeg). Por defecto es False.",
                 "fr": "Créer aussi un fichier MP4 (nécessite FFmpeg). Par défaut : False.",
@@ -10050,7 +10050,7 @@
           "signature": "Sound.total_sec()",
           "description": {
             "en": "Return the playback time in seconds. Return None for infinite loops.",
-            "cn": "返回播放时间（秒）。无限循环时返回None。",
+            "cn": "返回播放时间（秒）。无限循环时返回 None。",
             "de": "Gibt die Wiedergabezeit in Sekunden zurück. Gibt None für Endlosschleifen zurück.",
             "es": "Devuelve el tiempo de reproducción en segundos. Devuelve None para bucles infinitos.",
             "fr": "Renvoie la durée de lecture en secondes. Renvoie None pour les boucles infinies.",
@@ -10066,7 +10066,7 @@
             "type": "float/None",
             "description": {
               "en": "Playback time in seconds, or None for infinite loops",
-              "cn": "播放时间（秒），无限循环时为None",
+              "cn": "播放时间（秒），无限循环时为 None",
               "de": "Wiedergabezeit in Sekunden, oder None bei Endlosschleifen",
               "es": "Tiempo de reproducción en segundos, o None para bucles infinitos",
               "fr": "Durée de lecture en secondes, ou None pour les boucles infinies",
@@ -10087,7 +10087,7 @@
       "id": "music",
       "title": {
         "en": "Music Class",
-        "cn": "Music类",
+        "cn": "Music 类",
         "de": "Music-Klasse",
         "es": "Clase Music",
         "fr": "Classe Music",
@@ -10106,7 +10106,7 @@
           "signature": "Music()",
           "description": {
             "en": "Create a new Music instance.",
-            "cn": "创建新的Music实例。",
+            "cn": "创建新的 Music 实例。",
             "de": "Erstellt eine neue Music-Instanz.",
             "es": "Crea una nueva instancia de Music.",
             "fr": "Crée une nouvelle instance Music.",
@@ -10122,7 +10122,7 @@
             "type": "Music",
             "description": {
               "en": "New Music instance",
-              "cn": "新Music实例",
+              "cn": "新 Music 实例",
               "de": "Neue Music-Instanz",
               "es": "Nueva instancia Music",
               "fr": "Nouvelle instance Music",
@@ -10208,7 +10208,7 @@
           "signature": "Music.save(filename, sec, ffmpeg=False)",
           "description": {
             "en": "Create a WAV file of the music for the specified duration in seconds.",
-            "cn": "创建指定秒数时长的音乐WAV文件。",
+            "cn": "创建指定秒数时长的音乐 WAV 文件。",
             "de": "Erstellt eine WAV-Datei der Musik für die angegebene Dauer in Sekunden.",
             "es": "Crea un archivo WAV de la música con la duración especificada en segundos.",
             "fr": "Crée un fichier WAV de la musique pour la durée spécifiée en secondes.",
@@ -10226,7 +10226,7 @@
               "type": "str",
               "description": {
                 "en": "Output WAV file name",
-                "cn": "输出WAV文件名",
+                "cn": "输出 WAV 文件名",
                 "de": "Ausgabe-WAV-Dateiname",
                 "es": "Nombre del archivo WAV de salida",
                 "fr": "Nom du fichier WAV de sortie",
@@ -10262,7 +10262,7 @@
               "type": "bool",
               "description": {
                 "en": "Also create MP4 file (requires FFmpeg). Defaults to False.",
-                "cn": "同时创建MP4文件（需要FFmpeg）。默认为 False。",
+                "cn": "同时创建 MP4 文件（需要 FFmpeg）。默认为 False。",
                 "de": "Auch MP4-Datei erstellen (erfordert FFmpeg). Standard ist False.",
                 "es": "También crear archivo MP4 (requiere FFmpeg). Por defecto es False.",
                 "fr": "Créer aussi un fichier MP4 (nécessite FFmpeg). Par défaut : False.",
@@ -10287,7 +10287,7 @@
       "id": "channel",
       "title": {
         "en": "Channel Class",
-        "cn": "Channel类",
+        "cn": "Channel 类",
         "de": "Channel-Klasse",
         "es": "Clase Channel",
         "fr": "Classe Channel",
@@ -10306,7 +10306,7 @@
           "signature": "Channel()",
           "description": {
             "en": "Create a new Channel instance.",
-            "cn": "创建新的Channel实例。",
+            "cn": "创建新的 Channel 实例。",
             "de": "Erstellt eine neue Channel-Instanz.",
             "es": "Crea una nueva instancia de Channel.",
             "fr": "Crée une nouvelle instance Channel.",
@@ -10322,7 +10322,7 @@
             "type": "Channel",
             "description": {
               "en": "New Channel instance",
-              "cn": "新Channel实例",
+              "cn": "新 Channel 实例",
               "de": "Neue Channel-Instanz",
               "es": "Nueva instancia Channel",
               "fr": "Nouvelle instance Channel",
@@ -10385,7 +10385,7 @@
           "signature": "Channel.play(snd, sec=0, loop=False, resume=False)",
           "description": {
             "en": "Play the sound snd on this channel. snd can be a sound number, a list, a Sound instance, a list of Sounds, or an MML string.",
-            "cn": "在此通道上播放声音snd。snd可以是声音编号、列表、Sound实例、Sound列表或MML字符串。",
+            "cn": "在此通道上播放声音 snd。snd 可以是声音编号、列表、Sound 实例、Sound 列表或 MML 字符串。",
             "de": "Spielt den Sound snd auf diesem Kanal ab. snd kann eine Soundnummer, eine Liste, eine Sound-Instanz, eine Liste von Sounds oder ein MML-String sein.",
             "es": "Reproduce el sonido snd en este canal. snd puede ser un número de sonido, una lista, una instancia de Sound, una lista de Sounds o una cadena MML.",
             "fr": "Joue le son snd sur ce canal. snd peut être un numéro de son, une liste, une instance Sound, une liste de Sounds ou une chaîne MML.",
@@ -10403,7 +10403,7 @@
               "type": "int/list/Sound/str",
               "description": {
                 "en": "Sound number (0-63), list of numbers, Sound instance, list of Sounds, or MML string",
-                "cn": "音效编号 (0-63)、编号列表、Sound实例、Sound列表或MML字符串",
+                "cn": "音效编号 (0-63)、编号列表、Sound 实例、Sound 列表或 MML 字符串",
                 "de": "Soundnummer (0-63), Nummernliste, Sound-Instanz, Sound-Liste oder MML-String",
                 "es": "Número de sonido (0-63), lista de números, instancia Sound, lista de Sounds o cadena MML",
                 "fr": "Numéro de son (0-63), liste de numéros, instance Sound, liste de Sounds ou chaîne MML",
@@ -10505,7 +10505,7 @@
           "signature": "Channel.play_pos()",
           "description": {
             "en": "Get the playback position as a tuple of (sound_index, sec). Return None when playback has stopped.",
-            "cn": "以 (sound_index, sec) 元组形式获取播放位置。播放停止时返回None。",
+            "cn": "以 (sound_index, sec) 元组形式获取播放位置。播放停止时返回 None。",
             "de": "Gibt die Wiedergabeposition als Tupel (sound_index, sec) zurück. Gibt None zurück, wenn die Wiedergabe gestoppt wurde.",
             "es": "Obtiene la posición de reproducción como una tupla (sound_index, sec). Devuelve None cuando la reproducción se ha detenido.",
             "fr": "Récupère la position de lecture sous forme de tuple (sound_index, sec). Renvoie None lorsque la lecture est arrêtée.",
@@ -10542,7 +10542,7 @@
       "id": "tone",
       "title": {
         "en": "Tone Class",
-        "cn": "Tone类",
+        "cn": "Tone 类",
         "de": "Tone-Klasse",
         "es": "Clase Tone",
         "fr": "Classe Tone",
@@ -10561,7 +10561,7 @@
           "signature": "Tone()",
           "description": {
             "en": "Create a new Tone instance.",
-            "cn": "创建新的Tone实例。",
+            "cn": "创建新的 Tone 实例。",
             "de": "Erstellt eine neue Tone-Instanz.",
             "es": "Crea una nueva instancia de Tone.",
             "fr": "Crée une nouvelle instance Tone.",
@@ -10577,7 +10577,7 @@
             "type": "Tone",
             "description": {
               "en": "New Tone instance",
-              "cn": "新Tone实例",
+              "cn": "新 Tone 实例",
               "de": "Neue Tone-Instanz",
               "es": "Nueva instancia Tone",
               "fr": "Nouvelle instance Tone",
@@ -10640,7 +10640,7 @@
           "signature": "Tone.wavetable",
           "description": {
             "en": "Wavetable data as a list of sample values. Each value must be in range 0 to (2^sample_bits - 1).",
-            "cn": "波表数据，为样本值列表。每个值必须在0到 (2^sample_bits - 1) 范围内。",
+            "cn": "波表数据，为样本值列表。每个值必须在 0 到 (2^sample_bits - 1) 范围内。",
             "de": "Wavetable-Daten als Liste von Samplewerten. Jeder Wert muss im Bereich 0 bis (2^sample_bits - 1) liegen.",
             "es": "Datos de tabla de ondas como una lista de valores de muestra. Cada valor debe estar en el rango de 0 a (2^sample_bits - 1).",
             "fr": "Données de table d'ondes sous forme de liste de valeurs d'échantillon. Chaque valeur doit être comprise entre 0 et (2^sample_bits - 1).",

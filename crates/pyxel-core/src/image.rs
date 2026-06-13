@@ -653,6 +653,7 @@ impl Image {
         transparent: Option<Color>,
     ) {
         let image = rc_ref!(image);
+        // Clone self before perspective blit to avoid read-write aliasing.
         let src_canvas = if ptr::eq(image, self) {
             Some(self.canvas.clone())
         } else {

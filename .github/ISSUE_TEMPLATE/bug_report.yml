@@ -14,14 +14,14 @@ body:
     id: os
     attributes:
       label: "OS"
-      description: "Include your browser if using the web version / Web版の場合はブラウザも記入してください"
+      description: "Include your browser if using the web version / Web 版の場合はブラウザーも記入してください"
       placeholder: "e.g. Windows 11 / macOS 15 / Android 15, Chrome 130"
     validations:
       required: true
   - type: input
     id: version
     attributes:
-      label: "Pyxel Version / Pyxelバージョン"
+      label: "Pyxel Version / Pyxel バージョン"
       description: "Run `pyxel` to check. If unknown, leave blank. / `pyxel` コマンドで確認できます。不明な場合は空欄で構いません。"
       placeholder: "e.g. 2.8.7"
     validations:
@@ -29,8 +29,8 @@ body:
   - type: input
     id: python
     attributes:
-      label: "Python Version / Pythonバージョン"
-      description: "Run `python --version` to check. Not required for web version. / `python --version` で確認できます。Web版の場合は不要です。"
+      label: "Python Version / Python バージョン"
+      description: "Run `python --version` to check. Not required for web version. / `python --version` で確認できます。Web 版の場合は不要です。"
       placeholder: "e.g. 3.12.0"
     validations:
       required: false

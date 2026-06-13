@@ -78,8 +78,8 @@ impl PlatformSdl2 {
 
         let sdl_flags = SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER;
 
-        // Prefer Wayland driver on Wayland sessions (workaround for bundled
-        // SDL2 failing to auto-detect Wayland). Falls back to auto-detection.
+        // Prefer Wayland driver on Wayland sessions because bundled SDL2 fails
+        // to auto-detect Wayland. Falls back to auto-detection.
         let initialized = if std::env::var("XDG_SESSION_TYPE").is_ok_and(|v| v == "wayland")
             && std::env::var("SDL_VIDEODRIVER").is_err()
         {
