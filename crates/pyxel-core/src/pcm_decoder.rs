@@ -1,14 +1,12 @@
 use std::fs::File;
-use std::io::ErrorKind;
 use std::path::Path;
 
-use symphonia::core::audio::SampleBuffer;
-use symphonia::core::codecs::DecoderOptions;
+use symphonia::core::codecs::audio::AudioDecoderOptions;
 use symphonia::core::errors::Error as SymphoniaError;
-use symphonia::core::formats::FormatOptions;
+use symphonia::core::formats::probe::Hint;
+use symphonia::core::formats::{FormatOptions, TrackType};
 use symphonia::core::io::{MediaSourceStream, MediaSourceStreamOptions};
 use symphonia::core::meta::MetadataOptions;
-use symphonia::core::probe::Hint;
 use symphonia::default::{get_codecs, get_probe};
 
 #[derive(Clone)]
@@ -26,23 +24,28 @@ pub fn load_pcm(filename: &str, target_rate: u32) -> Result<PcmData, String> {
         hint.with_extension(ext);
     }
 
-    let probed = get_probe()
-        .format(
+    let mut format_reader = get_probe()
+        .probe(
             &hint,
             media_stream,
-            &FormatOptions::default(),
-            &MetadataOptions::default(),
+            FormatOptions::default(),
+            MetadataOptions::default(),
         )
         .map_err(|_| format!("Failed to probe file '{filename}'"))?;
-    let mut format_reader = probed.format;
 
     let track = format_reader
-        .default_track()
+        .default_track(TrackType::Audio)
         .ok_or_else(|| format!("No audio track found in file '{filename}'"))?;
     let track_id = track.id;
-    let codec_params = track.codec_params.clone();
+    let codec_params = track
+        .codec_params
+        .as_ref()
+        .and_then(|params| params.audio())
+        .ok_or_else(|| format!("No audio track found in file '{filename}'"))?
+        .clone();
+    // Trim encoder delay/padding (gapless); pinned so a default change can't shift decoded length
     let mut decoder = get_codecs()
-        .make(&codec_params, &DecoderOptions::default())
+        .make_audio_decoder(&codec_params, &AudioDecoderOptions::default().gapless(true))
         .map_err(|_| format!("Failed to decode file '{filename}'"))?;
 
     // Decode audio packets into mono samples
@@ -50,19 +53,16 @@ pub fn load_pcm(filename: &str, target_rate: u32) -> Result<PcmData, String> {
         .sample_rate
         .ok_or_else(|| format!("Unknown sample rate in file '{filename}'"))?;
     let mut mono_samples: Vec<f32> = Vec::new();
-    let mut sample_buf: Option<SampleBuffer<f32>> = None;
+    let mut sample_buf: Vec<f32> = Vec::new();
 
     loop {
         let packet = match format_reader.next_packet() {
-            Ok(packet) => packet,
-            Err(SymphoniaError::IoError(e)) if e.kind() == ErrorKind::UnexpectedEof => break,
-            Err(SymphoniaError::ResetRequired) => {
-                return Err(format!("Failed to read file '{filename}'"));
-            }
+            Ok(Some(packet)) => packet,
+            Ok(None) => break,
             Err(_) => return Err(format!("Failed to read file '{filename}'")),
         };
 
-        if packet.track_id() != track_id {
+        if packet.track_id != track_id {
             continue;
         }
 
@@ -74,18 +74,15 @@ pub fn load_pcm(filename: &str, target_rate: u32) -> Result<PcmData, String> {
             }
         };
 
-        let spec = *decoded.spec();
-        sample_rate = spec.rate;
-        let sample_buf = sample_buf
-            .get_or_insert_with(|| SampleBuffer::<f32>::new(decoded.capacity() as u64, spec));
-        sample_buf.copy_interleaved_ref(decoded);
+        let spec = decoded.spec();
+        sample_rate = spec.rate();
+        let channels = spec.channels().count();
+        decoded.copy_to_vec_interleaved::<f32>(&mut sample_buf);
 
-        let channels = spec.channels.count();
-        let data = sample_buf.samples();
         if channels == 1 {
-            mono_samples.extend_from_slice(data);
+            mono_samples.extend_from_slice(&sample_buf);
         } else {
-            for frame in data.chunks(channels) {
+            for frame in sample_buf.chunks(channels) {
                 let sum: f32 = frame.iter().sum();
                 mono_samples.push(sum / channels as f32);
             }

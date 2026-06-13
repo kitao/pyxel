@@ -56,12 +56,15 @@ endif
 CARGO_OPTS := --release --target $(TARGET)
 
 ifeq ($(TARGET),$(WASM_TARGET))
+# Link SDL2 from the PIC cache so the relocatable side module resolves it statically
+EM_SDL2_PIC_DIR := $(shell em-config CACHE)/sysroot/lib/wasm32-emscripten/pic
 RUSTFLAGS += \
 	$(RUST_REMAP_FLAGS) \
 	-C panic=abort \
 	-C target-feature=+simd128 \
 	-C link-arg=-fwasm-exceptions \
 	-C link-arg=-sSIDE_MODULE=2 \
+	-C link-arg=-L$(EM_SDL2_PIC_DIR) \
 	-C link-arg=-lSDL2 \
 	-C link-arg=-lhtml5
 CFLAGS += $(WASM_PREFIX_MAP_FLAGS)
@@ -129,6 +132,7 @@ build:
 	@$(SCRIPTS_DIR)/generate_pyi_docstrings
 	@$(SCRIPTS_DIR)/generate_docs
 	@cp LICENSE $(PYTHON_DIR)/pyxel
+	@cp README.md $(PYTHON_DIR)/pyxel
 	@cd $(PYTHON_DIR); \
 		RUSTFLAGS="$(RUSTFLAGS)" \
 		CFLAGS="$(CFLAGS)" \
