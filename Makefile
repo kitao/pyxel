@@ -76,6 +76,9 @@ endif
 
 # Tool options
 CLIPPY_OPTS := -q -- --no-deps
+ifneq ($(TARGET),$(WASM_TARGET))
+CLIPPY_OPTS := --all-targets $(CLIPPY_OPTS)
+endif
 MATURIN_OPTS := --manylinux off
 
 # PyO3 environment

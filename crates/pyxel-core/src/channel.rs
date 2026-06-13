@@ -672,7 +672,7 @@ mod tests {
     fn note_sound(num_notes: usize) -> RcSound {
         let sound = Sound::new();
         {
-            let mut sound = rc_mut!(sound);
+            let sound = rc_mut!(sound);
             sound.notes = vec![0; num_notes];
             sound.speed = 1;
         }
@@ -692,7 +692,7 @@ mod tests {
         // A PCM sound after a note sound must not be skipped when the note
         // sound ends in the middle of a processing chunk
         let channel = Channel::new();
-        let mut channel = rc_mut!(channel);
+        let channel = rc_mut!(channel);
         channel.play(vec![note_sound(1), pcm_sound(1000)], None, false, false);
         channel.process(None, NOTE_CLOCKS + 5000);
 
@@ -707,7 +707,7 @@ mod tests {
         // Seeking beyond the PCM part must seek into the following note
         // sound instead of restarting it from the head
         let channel = Channel::new();
-        let mut channel = rc_mut!(channel);
+        let channel = rc_mut!(channel);
         let pcm_samples = 1000;
         let extra_samples = 500;
         let start_sec = (pcm_samples + extra_samples) as f32 / AUDIO_SAMPLE_RATE as f32;
@@ -737,7 +737,7 @@ mod tests {
         // Resuming PCM playback after an interrupting note sound must not
         // re-execute the finished sound's commands as a ghost note
         let channel = Channel::new();
-        let mut channel = rc_mut!(channel);
+        let channel = rc_mut!(channel);
         channel.play(vec![pcm_sound(1000)], None, false, false);
         channel.play(vec![note_sound(1)], None, false, true);
         channel.process(None, NOTE_CLOCKS + 5000);

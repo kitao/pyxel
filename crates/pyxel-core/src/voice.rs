@@ -792,7 +792,7 @@ mod tests {
             .iter()
             .map(|&s| Oscillator::quantize_sample(s) as i32)
             .collect();
-        for i in 0..waveform.len() + 1 {
+        for i in 0..=waveform.len() {
             assert_eq!(osc.sample(), expected[i % waveform.len()], "sample {i}");
             osc.advance_sample();
         }
