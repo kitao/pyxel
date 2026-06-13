@@ -75,10 +75,7 @@ CARGO_OPTS += --features sdl2_dynamic
 endif
 
 # Tool options
-CLIPPY_OPTS := -q -- --no-deps
-ifneq ($(TARGET),$(WASM_TARGET))
-CLIPPY_OPTS := --all-targets $(CLIPPY_OPTS)
-endif
+CLIPPY_OPTS := --all-targets -q -- --no-deps
 MATURIN_OPTS := --manylinux off
 
 # PyO3 environment
