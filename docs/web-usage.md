@@ -79,7 +79,7 @@ Example URL for the `edit` command:
 https://kitao.github.io/pyxel/web/launcher/?edit=taro/my_repo/main/assets/shooter&editor=tilemap
 ```
 
-For apps consisting of multiple Python files, bundling them into a `.pyxapp` file with `pyxel package` and running with `play` will load faster.
+Apps consisting of multiple Python files load faster when bundled into a `.pyxapp` file with `pyxel package` and run with `play`.
 
 ## app2html Command
 

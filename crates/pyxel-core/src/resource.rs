@@ -54,7 +54,6 @@ impl Pyxel {
             println!("An old Pyxel resource file '{filename}' is loaded. Please re-save it with the latest Pyxel.");
             self.load_old_resource(
                 &mut archive,
-                filename,
                 !exclude_images.unwrap_or(false),
                 !exclude_tilemaps.unwrap_or(false),
                 !exclude_sounds.unwrap_or(false),

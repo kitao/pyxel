@@ -52,9 +52,7 @@ class SoundEditor(EditorBase):
         self.new_var("octave_var", 2)
 
         self.new_var("is_playing_var", None)
-        self.add_var_event_listener(
-            "is_playing_var", "get", self.__on_is_playing_var_get
-        )
+        self.add_var_event_listener("is_playing_var", "get", self.__on_is_playing_get)
 
         # Initialize sound picker
         self._sound_picker = NumberPicker(
@@ -199,11 +197,11 @@ class SoundEditor(EditorBase):
 
     # Event handlers
 
-    def __on_is_playing_var_get(self, value):
+    def __on_is_playing_get(self, value):
         return pyxel.play_pos(0) is not None
 
     def __on_sound_picker_change(self, value):
-        self._speed_picker.value = pyxel.sounds[value].speed
+        self._speed_picker.value_var = pyxel.sounds[value].speed
 
     def __on_sound_picker_mouse_hover(self, _x, _y):
         self.help_message_var = "COPY_ALL:CTRL+SHIFT+C/X/V"

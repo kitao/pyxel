@@ -27,6 +27,8 @@ pub struct Canvas<T: Copy + PartialEq + Default + ToIndex> {
 }
 
 impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
+    // Constructors
+
     pub fn new(width: u32, height: u32) -> Self {
         Self {
             self_rect: RectArea::new(0, 0, width, height),
@@ -37,6 +39,8 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
             data: vec![T::default(); (width * height) as usize],
         }
     }
+
+    // Public accessors
 
     pub const fn width(&self) -> u32 {
         self.self_rect.width()
@@ -49,6 +53,8 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
     pub fn data_ptr(&mut self) -> *mut T {
         self.data.as_mut_ptr()
     }
+
+    // Clip and offset
 
     pub fn set_clip_rect(&mut self, x: f32, y: f32, width: f32, height: f32) {
         let x = f32_to_i32(x);
@@ -74,9 +80,13 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         self.camera_y = 0;
     }
 
+    // Dithering
+
     pub fn set_dithering(&mut self, alpha: f32) {
         self.alpha = alpha;
     }
+
+    // Public data operations
 
     pub fn clear(&mut self, value: T) {
         self.data.fill(value);
@@ -106,8 +116,10 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         let x2 = f32_to_i32(x2) - self.camera_x;
         let y2 = f32_to_i32(y2) - self.camera_y;
 
-        if x1 == x2 && y1 == y2 {
-            self.write_data_with_clipping(x1, y1, value);
+        if y1 == y2 {
+            self.fill_row_with_dither(x1.min(x2), x1.max(x2), y1, value);
+        } else if x1 == x2 {
+            self.fill_column_with_dither(y1.min(y2), y1.max(y2), x1, value);
         } else if (x1 - x2).abs() > (y1 - y2).abs() {
             let (start_x, start_y, end_x, end_y) = if x1 < x2 {
                 (x1, y1, x2, y2)
@@ -184,14 +196,10 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         let top = rect.top();
         let right = rect.right();
         let bottom = rect.bottom();
-        for x in left..=right {
-            self.write_data_with_clipping(x, top, value);
-            self.write_data_with_clipping(x, bottom, value);
-        }
-        for y in top..=bottom {
-            self.write_data_with_clipping(left, y, value);
-            self.write_data_with_clipping(right, y, value);
-        }
+        self.fill_row_with_dither(left, right, top, value);
+        self.fill_row_with_dither(left, right, bottom, value);
+        self.fill_column_with_dither(top, bottom, left, value);
+        self.fill_column_with_dither(top, bottom, right, value);
     }
 
     pub fn draw_circle(&mut self, x: f32, y: f32, radius: f32, value: T) {
@@ -202,10 +210,8 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
 
         for xi in 0..=radius as i32 {
             let (x1, y1, x2, y2) = Self::ellipse_area(0.0, 0.0, r, r, xi);
-            for yi in y1..=y2 {
-                self.write_data_with_clipping(x + x1, y + yi, value);
-                self.write_data_with_clipping(x + x2, y + yi, value);
-            }
+            self.fill_column_with_dither(y + y1, y + y2, x + x1, value);
+            self.fill_column_with_dither(y + y1, y + y2, x + x2, value);
             self.fill_row_with_dither(x + y1, x + y2, y + x1, value);
             self.fill_row_with_dither(x + y1, x + y2, y + x2, value);
         }
@@ -236,14 +242,15 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         let y = f32_to_i32(y) - self.camera_y;
         let width = f32_to_u32(width);
         let height = f32_to_u32(height);
+        if width == 0 || height == 0 {
+            return;
+        }
         let (ra, rb, cx, cy) = Self::ellipse_params(x, y, width, height);
 
         for xi in x..=(x + width as i32 / 2) {
             let (x1, y1, x2, y2) = Self::ellipse_area(cx, cy, ra, rb, xi);
-            for yi in y1..=y2 {
-                self.write_data_with_clipping(x1, yi, value);
-                self.write_data_with_clipping(x2, yi, value);
-            }
+            self.fill_column_with_dither(y1, y2, x1, value);
+            self.fill_column_with_dither(y1, y2, x2, value);
         }
 
         for yi in y..=(y + height as i32 / 2) {
@@ -258,6 +265,9 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         let y = f32_to_i32(y) - self.camera_y;
         let width = f32_to_u32(width);
         let height = f32_to_u32(height);
+        if width == 0 || height == 0 {
+            return;
+        }
         let (ra, rb, cx, cy) = Self::ellipse_params(x, y, width, height);
 
         for xi in x..=(x + width as i32 / 2) {
@@ -305,6 +315,12 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         if y2 > y3 {
             swap(&mut y2, &mut y3);
             swap(&mut x2, &mut x3);
+        }
+
+        // All vertices on one row: the split fill below would drop the x3 span
+        if y1 == y3 {
+            self.fill_row_with_dither(x1.min(x2).min(x3), x1.max(x2).max(x3), y1, value);
+            return;
         }
 
         let slope12 = if y2 == y1 {
@@ -857,9 +873,41 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
             return;
         }
         for x in left..=right {
-            if self.should_write(x, y) {
-                self.write_data(x as usize, y as usize, value);
-            }
+            self.write_data(x as usize, y as usize, value);
+        }
+    }
+
+    fn fill_column(&mut self, y1: i32, y2: i32, x: i32, value: T) {
+        if x < self.clip_rect.left() || x > self.clip_rect.right() {
+            return;
+        }
+        let top = y1.max(self.clip_rect.top());
+        let bottom = y2.min(self.clip_rect.bottom());
+        if top > bottom {
+            return;
+        }
+        let w = self.width() as usize;
+        let x = x as usize;
+        for data in self.data[w * top as usize + x..=w * bottom as usize + x]
+            .iter_mut()
+            .step_by(w)
+        {
+            *data = value;
+        }
+    }
+
+    fn fill_column_with_dither(&mut self, y1: i32, y2: i32, x: i32, value: T) {
+        if self.alpha >= 1.0 {
+            self.fill_column(y1, y2, x, value);
+            return;
+        }
+        if x < self.clip_rect.left() || x > self.clip_rect.right() {
+            return;
+        }
+        let top = y1.max(self.clip_rect.top());
+        let bottom = y2.min(self.clip_rect.bottom());
+        for y in top..=bottom {
+            self.write_data(x as usize, y as usize, value);
         }
     }
 
@@ -927,15 +975,24 @@ impl CopyArea {
         let width = width.abs();
         let height = height.abs();
 
-        let left_cut = (src_rect.left() - src_x)
-            .max(dst_rect.left() - dst_x)
+        let src_left_cut = src_rect.left() - src_x;
+        let src_top_cut = src_rect.top() - src_y;
+        let src_right_cut = src_x + width - 1 - src_rect.right();
+        let src_bottom_cut = src_y + height - 1 - src_rect.bottom();
+
+        // A flipped blit reads the source backwards, so a source overhang
+        // trims the opposite edge of the copy window
+        let left_cut = (dst_rect.left() - dst_x)
+            .max(if flip_x { src_right_cut } else { src_left_cut })
             .max(0);
-        let top_cut = (src_rect.top() - src_y).max(dst_rect.top() - dst_y).max(0);
-        let right_cut = (src_x + width - 1 - src_rect.right())
-            .max(dst_x + width - 1 - dst_rect.right())
+        let top_cut = (dst_rect.top() - dst_y)
+            .max(if flip_y { src_bottom_cut } else { src_top_cut })
             .max(0);
-        let bottom_cut = (src_y + height - 1 - src_rect.bottom())
-            .max(dst_y + height - 1 - dst_rect.bottom())
+        let right_cut = (dst_x + width - 1 - dst_rect.right())
+            .max(if flip_x { src_left_cut } else { src_right_cut })
+            .max(0);
+        let bottom_cut = (dst_y + height - 1 - dst_rect.bottom())
+            .max(if flip_y { src_top_cut } else { src_bottom_cut })
             .max(0);
 
         let width = (width - left_cut - right_cut).max(0);
@@ -1077,5 +1134,67 @@ impl PerspectiveProjection {
             self.r10 * vx2 + self.r11 * vy2 - self.r12,
             self.r21 * vy2 - self.r22,
         )
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::image::Color;
+
+    // CopyArea clipping
+
+    #[test]
+    fn test_copy_area_unflipped_overhangs() {
+        let rect = RectArea::new(0, 0, 16, 16);
+
+        // Source overhang on the right shrinks the window in place
+        let area = CopyArea::new(0, 0, rect, 12, 0, rect, 8, 1);
+        assert_eq!((area.dst_x, area.src_x, area.width), (0, 12, 4));
+
+        // Destination overhang on the left advances both windows
+        let area = CopyArea::new(-3, 0, rect, 0, 0, rect, 8, 1);
+        assert_eq!((area.dst_x, area.src_x, area.width), (0, 3, 5));
+    }
+
+    #[test]
+    fn test_copy_area_flip_source_overhang() {
+        // Source columns 12-19 overhang a 16-wide source by 4; with flip_x the
+        // lost columns must disappear from the LEFT of the destination window
+        let rect = RectArea::new(0, 0, 16, 16);
+        let area = CopyArea::new(0, 0, rect, 12, 0, rect, -8, 1);
+        assert_eq!((area.dst_x, area.src_x, area.width), (4, 12, 4));
+        // Reads run right-to-left from the last kept source column (15)
+        assert_eq!((area.sign_x, area.offset_x), (-1, 3));
+    }
+
+    #[test]
+    fn test_copy_area_flip_dst_overhang() {
+        // Destination overhang on the left trims the source's RIGHT edge
+        let rect = RectArea::new(0, 0, 16, 16);
+        let area = CopyArea::new(-3, 0, rect, 0, 0, rect, -8, 1);
+        assert_eq!((area.dst_x, area.src_x, area.width), (0, 0, 5));
+        assert_eq!((area.sign_x, area.offset_x), (-1, 4));
+    }
+
+    // Degenerate draw inputs
+
+    #[test]
+    fn test_draw_ellipse_zero_size_draws_nothing() {
+        let mut canvas: Canvas<Color> = Canvas::new(16, 16);
+        canvas.draw_ellipse(4.0, 4.0, 0.0, 5.0, 7);
+        canvas.draw_ellipse_border(4.0, 4.0, 5.0, 0.0, 7);
+        assert!(canvas.data.iter().all(|&value| value == 0));
+    }
+
+    #[test]
+    fn test_draw_triangle_collinear_horizontal() {
+        // All vertices on one row must fill the full extent including x3
+        let mut canvas: Canvas<Color> = Canvas::new(24, 8);
+        canvas.draw_triangle(0.0, 3.0, 10.0, 3.0, 20.0, 3.0, 7);
+        for x in 0..=20 {
+            assert_eq!(canvas.read_data(x, 3), 7, "x={x}");
+        }
+        assert_eq!(canvas.read_data(21, 3), 0);
     }
 }

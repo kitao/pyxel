@@ -16,7 +16,7 @@ from .settings import (
 from .widgets import ScrollBar, Widget
 from .widgets.settings import WIDGET_HOLD_TIME, WIDGET_PANEL_COLOR, WIDGET_REPEAT_TIME
 
-# Sentinel tile for cells that tilemap-mode drawing primitives leave untouched
+# Sentinel tile that marks cells touched by tilemap-mode drawing primitives
 _EMPTY_TILE = (255, 255)
 
 
@@ -76,6 +76,7 @@ class CanvasPanel(Widget):
         self.copy_var("focus_y_var", parent)
         self.copy_var("help_message_var", parent)
 
+        # Initialize horizontal scroll bar
         self._h_scroll_bar = ScrollBar(
             self,
             0,
@@ -88,6 +89,7 @@ class CanvasPanel(Widget):
         self._h_scroll_bar.add_event_listener("change", self.__on_h_scroll_bar_change)
         self.add_var_event_listener("focus_x_var", "change", self.__on_focus_x_change)
 
+        # Initialize vertical scroll bar
         self._v_scroll_bar = ScrollBar(
             self,
             129,
@@ -211,8 +213,9 @@ class CanvasPanel(Widget):
     def __on_mouse_down(self, key, x, y):
         # Color pick (right click)
         if key == pyxel.MOUSE_BUTTON_RIGHT:
-            x = self.focus_x_var * 8 + (x - self.x) // 8
-            y = self.focus_y_var * 8 + (y - self.y) // 8
+            x, y = self._screen_to_focus(x, y)
+            x += self.focus_x_var * 8
+            y += self.focus_y_var * 8
             if self._is_tilemap_mode:
                 (self.tile_x_var, self.tile_y_var) = self.canvas_var.pget(x, y)
             else:
@@ -387,7 +390,7 @@ class CanvasPanel(Widget):
             if pyxel.btnp(pyxel.KEY_X):
                 self._add_pre_history(bank_copy=True)
                 if self._is_tilemap_mode:
-                    pyxel.tilemaps[self.tilemap_index_var].rect(0, 0, 256, 256, 0)
+                    pyxel.tilemaps[self.tilemap_index_var].rect(0, 0, 256, 256, (0, 0))
                 else:
                     pyxel.images[self.image_index_var].rect(0, 0, 256, 256, 0)
                 self._add_post_history(bank_copy=True)

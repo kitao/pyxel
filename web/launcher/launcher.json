@@ -85,10 +85,10 @@
       "en": "Enable Virtual Gamepad",
       "cn": "启用虚拟游戏手柄",
       "de": "Virtuelles Gamepad aktivieren",
-      "es": "Activar mando virtual",
+      "es": "Activar gamepad virtual",
       "fr": "Activer la manette virtuelle",
       "it": "Abilita gamepad virtuale",
-      "ja": "仮想ゲームパッドを有効にする",
+      "ja": "バーチャルゲームパッドを有効にする",
       "ko": "가상 게임패드 활성화",
       "pt": "Ativar gamepad virtual",
       "ru": "Включить виртуальный геймпад",
@@ -117,7 +117,7 @@
       "fr": "Le type du fichier de démarrage doit être {0}, {1} ou {2}.",
       "it": "Il tipo di file di avvio deve essere {0}, {1} o {2}.",
       "ja": "起動ファイルの形式は {0}、{1}、または {2}。",
-      "ko": "시작 파일 형식은 {0}, {1} 또는 {2}이어야 합니다.",
+      "ko": "시작 파일 형식은 {0}, {1} 또는 {2}여야 합니다.",
       "pt": "O tipo do arquivo de inicialização deve ser {0}, {1} ou {2}.",
       "ru": "Тип файла запуска должен быть {0}, {1} или {2}.",
       "tr": "Başlangıç dosya türü {0}, {1} veya {2} olmalıdır.",
@@ -158,7 +158,7 @@
       "es": "Editor de imágenes",
       "fr": "Éditeur d'images",
       "it": "Editor immagini",
-      "ja": "イメージエディタ",
+      "ja": "イメージエディター",
       "ko": "이미지 에디터",
       "pt": "Editor de imagem",
       "ru": "Редактор изображений",
@@ -172,12 +172,12 @@
       "es": "Editor de tilemaps",
       "fr": "Éditeur de tilemap",
       "it": "Editor tilemap",
-      "ja": "タイルマップエディタ",
+      "ja": "タイルマップエディター",
       "ko": "타일맵 에디터",
       "pt": "Editor de tilemap",
       "ru": "Редактор тайловых карт",
       "tr": "Karo Haritası Düzenleyici",
-      "uk": "Редактор тайлових мап"
+      "uk": "Редактор тайлових карт"
     },
     "editor_screen_sound": {
       "en": "Sound Editor",
@@ -186,7 +186,7 @@
       "es": "Editor de sonido",
       "fr": "Éditeur de sons",
       "it": "Editor suoni",
-      "ja": "サウンドエディタ",
+      "ja": "サウンドエディター",
       "ko": "사운드 에디터",
       "pt": "Editor de som",
       "ru": "Редактор звуков",
@@ -200,7 +200,7 @@
       "es": "Editor de música",
       "fr": "Éditeur de musique",
       "it": "Editor musica",
-      "ja": "ミュージックエディタ",
+      "ja": "ミュージックエディター",
       "ko": "뮤직 에디터",
       "pt": "Editor de música",
       "ru": "Редактор музыки",
@@ -208,18 +208,18 @@
       "uk": "Редактор музики"
     },
     "footer": {
-      "en": "For specific instructions, please refer to {0}.",
+      "en": "For detailed instructions, please refer to {0}.",
       "cn": "详细说明请参考{0}。",
       "de": "Für detaillierte Anweisungen siehe {0}.",
       "es": "Para instrucciones detalladas, consulte {0}.",
       "fr": "Pour des instructions détaillées, veuillez consulter {0}.",
       "it": "Per istruzioni dettagliate, consultare {0}.",
       "ja": "詳しい使い方は{0}をご参照ください。",
-      "ko": "자세한 사용법은 {0}을 참조하세요.",
+      "ko": "자세한 사용법은 {0}를 참조하세요.",
       "pt": "Para instruções detalhadas, consulte {0}.",
-      "ru": "Подробные инструкции см. на {0}.",
-      "tr": "Ayrıntılı talimatlar için {0} sayfasına bakın.",
-      "uk": "Докладні інструкції див. на {0}."
+      "ru": "Подробные инструкции см. {0}.",
+      "tr": "Ayrıntılı talimatlar için {0} bakın.",
+      "uk": "Докладні інструкції див. {0}."
     },
     "footer_link": {
       "en": "here",
@@ -232,7 +232,7 @@
       "ko": "여기",
       "pt": "aqui",
       "ru": "здесь",
-      "tr": "burada",
+      "tr": "buraya",
       "uk": "тут"
     }
   }

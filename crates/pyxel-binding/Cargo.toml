@@ -13,7 +13,7 @@ crate-type = ["cdylib"]
 # abi3-py311 matches the package's minimum supported Python
 # (pyproject requires-python >= 3.11); multiple-pymethods lets
 # binding modules split #[pymethods] across files
-pyo3 = { version = "0.28", features = ["abi3-py311", "extension-module", "multiple-pymethods"] }
+pyo3 = { version = "0.29", features = ["abi3-py311", "extension-module", "multiple-pymethods"] }
 pyxel-core = { path = "../pyxel-core" }
 
 # sysinfo has no Emscripten target; exclude from WASM builds

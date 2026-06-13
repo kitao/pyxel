@@ -54,9 +54,9 @@
       "en": "Pyxel User Guide",
       "cn": "Pyxel 用户指南",
       "de": "Pyxel Benutzerhandbuch",
-      "es": "Guía de Usuario de Pyxel",
-      "fr": "Guide Utilisateur de Pyxel",
-      "it": "Guida Utente di Pyxel",
+      "es": "Guía de usuario de Pyxel",
+      "fr": "Guide utilisateur de Pyxel",
+      "it": "Guida utente di Pyxel",
       "ja": "Pyxel ユーザーガイド",
       "ko": "Pyxel 사용자 가이드",
       "pt": "Guia do Usuário Pyxel",
@@ -66,10 +66,10 @@
     },
     "subtitle": {
       "en": "User guide for {0}, a retro game engine for Python.",
-      "cn": "{0} 的用户指南，一个针对 Python 的复古游戏引擎。",
+      "cn": "Python 复古游戏引擎 {0} 的用户指南",
       "de": "Benutzerhandbuch für {0}, eine Retro-Spielengine für Python.",
       "es": "Guía de usuario de {0}, un motor de juegos retro para Python.",
-      "fr": "Guide utilisateur de {0}, un moteur de jeu rétro pour Python.",
+      "fr": "Guide utilisateur de {0}, un moteur de jeux rétro pour Python.",
       "it": "Guida utente di {0}, un motore di gioco retrò per Python.",
       "ja": "Python 向けレトロゲームエンジン {0} のユーザーガイド",
       "ko": "Python용 레트로 게임 엔진 {0}의 사용자 가이드",
@@ -81,14 +81,14 @@
     "overview_body": {
       "en": "{0} (/ˈpɪksəl/) is a retro game engine for Python. With simple specifications inspired by retro gaming consoles, such as displaying only 16 colors and supporting 4 sound channels, you can easily enjoy making pixel-art-style games.",
       "cn": "{0}（/ˈpɪksəl/）是一个针对 Python 的复古游戏引擎。其规格受到复古游戏机的启发，例如仅支持 16 种颜色和 4 个声道，同时可以轻松享受制作像素艺术风格游戏的乐趣。",
-      "de": "{0} (/ˈpɪksəl/) ist eine Retro-Spielengine für Python. Die Spezifikationen sind von Retro-Spielkonsolen inspiriert, wie z. B. der Unterstützung von nur 16 Farben und 4 Sound-Kanälen, sodass Sie ganz einfach pixelartige Spiele erstellen können.",
+      "de": "{0} (/ˈpɪksəl/) ist eine Retro-Spielengine für Python. Die Spezifikationen sind von Retro-Spielkonsolen inspiriert – z. B. werden nur 16 Farben und 4 Sound-Kanäle unterstützt –, sodass Sie ganz einfach Spiele im Pixel-Art-Stil erstellen können.",
       "es": "{0} (/ˈpɪksəl/) es un motor de juegos retro para Python. Las especificaciones están inspiradas en las consolas de juegos retro, como el soporte para solo 16 colores y 4 canales de sonido, lo que te permite disfrutar fácilmente de la creación de juegos con estilo de arte en píxeles.",
-      "fr": "{0} (/ˈpɪksəl/) est un moteur de jeu rétro pour Python. Les spécifications sont inspirées des consoles de jeux rétro, comme le fait de n'afficher que 16 couleurs et de prendre en charge 4 canaux audio, vous permettant ainsi de profiter facilement de la création de jeux au style pixel art.",
+      "fr": "{0} (/ˈpɪksəl/) est un moteur de jeux rétro pour Python. Les spécifications sont inspirées des consoles de jeux rétro, comme le fait de n'afficher que 16 couleurs et de prendre en charge 4 canaux audio, vous permettant ainsi de profiter facilement de la création de jeux au style pixel art.",
       "it": "{0} (/ˈpɪksəl/) è un motore di gioco retrò per Python. Le specifiche sono ispirate alle console di gioco retro, come il supporto di solo 16 colori e 4 canali audio, permettendoti di divertirti facilmente a creare giochi in stile pixel art.",
       "ja": "{0}（ピクセル）は Python 向けのレトロゲームエンジンです。使える色は 16 色のみ、同時に再生できる音は 4 音までなど、レトロゲーム機を意識したシンプルな仕様で、Python を使ってドット絵スタイルのゲームづくりが気軽に楽しめます。",
       "ko": "{0} (/ˈpɪksəl/)은 Python을 위한 복고풍 게임 엔진입니다. 사양은 복고풍 게임 콘솔에서 영감을 받아 16색만 지원하고 4개의 사운드 채널을 사용할 수 있어 픽셀 아트 스타일의 게임 제작을 쉽게 즐길 수 있습니다.",
       "pt": "{0} (/ˈpɪksəl/) é um motor de jogos retrô para Python. As especificações são inspiradas em consoles de jogos retrô, como o suporte para apenas 16 cores e 4 canais de som, permitindo que você desfrute facilmente da criação de jogos em estilo pixel art.",
-      "ru": "{0} (/ˈpɪksəl/) — это ретро-игровой движок для Python. Спецификации вдохновлены ретро-игровыми консолями, такими как поддержка только 16 цветов и 4 звуковых канала, что позволяет легко наслаждаться созданием игр в стиле пиксельной графики.",
+      "ru": "{0} (/ˈpɪksəl/) — это ретро-игровой движок для Python. Простые спецификации, вдохновлённые ретро-игровыми консолями, — например, только 16 цветов и 4 звуковых канала, — позволяют легко наслаждаться созданием игр в стиле пиксельной графики.",
       "tr": "{0} (/ˈpɪksəl/), Python için bir retro oyun motorudur. Yalnızca 16 renk desteği ve 4 ses kanalı gibi retro oyun konsollarından ilham alınan sade özellikleriyle piksel sanat tarzı oyunlar yapmanın keyfini kolayca çıkarabilirsiniz.",
       "uk": "{0} (/ˈpɪksəl/) — це ретро-ігровий рушій для Python. Специфікації натхнені ретро-ігровими консолями, зокрема обмеженням до 16 кольорів і 4 звукових каналів, що дозволяє легко насолоджуватися створенням ігор у стилі піксельної графіки."
     },
@@ -96,7 +96,7 @@
       "en": "{0}'s specifications and APIs are inspired by {1} and {2}.",
       "cn": "{0} 的规格和 API 参考了 {1} 和 {2}。",
       "de": "Die Spezifikationen und APIs von {0} sind inspiriert von {1} und {2}.",
-      "es": "Las especificaciones y APIs de {0} están inspiradas en {1} y {2}.",
+      "es": "Las especificaciones y API de {0} están inspiradas en {1} y {2}.",
       "fr": "Les spécifications et les API de {0} s'inspirent de {1} et de {2}.",
       "it": "Le specifiche e le API di {0} sono ispirate a {1} e {2}.",
       "ja": "{0} の仕様や API は、{1} や {2} を参考にしています。",
@@ -122,7 +122,7 @@
     },
     "overview_star": {
       "en": "Also, this project is developed by one person, kept going by your {0} stars. If you enjoy it, please give it a star!",
-      "cn": "另外，这个项目由一人开发，{0} 上的星标是持续开发的动力。如果您喜欢，请给它一个 Star！",
+      "cn": "另外，这个项目由一人开发，{0} 上的星标是持续开发的动力。如果您喜欢，请给它一个星标！",
       "de": "Außerdem wird dieses Projekt von einer einzelnen Person entwickelt und durch Ihre Sterne auf {0} am Leben erhalten. Wenn es Ihnen gefällt, geben Sie ihm bitte einen Stern!",
       "es": "Además, este proyecto es desarrollado por una sola persona, impulsado por tus estrellas en {0}. Si te gusta, ¡por favor dale una estrella!",
       "fr": "De plus, ce projet est développé par une seule personne, soutenu par vos étoiles sur {0}. Si vous l'aimez, n'hésitez pas à lui donner une étoile !",
@@ -188,7 +188,7 @@
       "pt": "Tamanho de tela personalizável",
       "ru": "Настраиваемый размер экрана",
       "tr": "Özelleştirilebilir ekran boyutu",
-      "uk": "Налаштовуваний розмір екрану"
+      "uk": "Налаштовуваний розмір екрана"
     },
     "specs_colors": {
       "en": "16-color palette",
@@ -210,10 +210,10 @@
       "de": "3 256x256 Bildbanken",
       "es": "3 bancos de imágenes de 256x256",
       "fr": "3 banques d'images 256x256",
-      "it": "3 banche di immagini 256x256",
+      "it": "3 banchi immagini 256x256",
       "ja": "256x256 サイズ、3 イメージバンク",
       "ko": "256x256 이미지 뱅크 3개",
-      "pt": "3 bancos de imagem 256x256",
+      "pt": "3 bancos de imagens 256x256",
       "ru": "3 банка изображений 256x256",
       "tr": "3 adet 256x256 görüntü bankası",
       "uk": "3 банки зображень 256x256"
@@ -222,15 +222,15 @@
       "en": "8 256x256 tilemaps",
       "cn": "8 个 256x256 瓦片地图",
       "de": "8 256x256 Tilemaps",
-      "es": "8 mapas de teselas de 256x256",
+      "es": "8 tilemaps de 256x256",
       "fr": "8 cartes de tuiles 256x256",
-      "it": "8 mappe a tessere 256x256",
+      "it": "8 tilemap 256x256",
       "ja": "256x256 サイズ、8 タイルマップ",
       "ko": "256x256 타일맵 8개",
-      "pt": "8 mapas de ladrilhos 256x256",
+      "pt": "8 tilemaps 256x256",
       "ru": "8 тайловых карт 256x256",
       "tr": "8 adet 256x256 karo haritası",
-      "uk": "8 тайлмапів 256x256"
+      "uk": "8 тайлових карт 256x256"
     },
     "specs_sounds": {
       "en": "4 channels with 64 definable sounds",
@@ -270,9 +270,9 @@
       "ja": "キーボード、マウス、ゲームパッド入力",
       "ko": "키보드, 마우스 및 게임패드 입력",
       "pt": "Entradas de teclado, mouse e gamepad",
-      "ru": "Ввод с клавиатуры, мыши и игрового контроллера",
+      "ru": "Ввод с клавиатуры, мыши и геймпада",
       "tr": "Klavye, fare ve gamepad girişi",
-      "uk": "Введення з клавіатури, миші та ігрового контролера"
+      "uk": "Введення з клавіатури, миші та геймпада"
     },
     "specs_tools": {
       "en": "Image and sound editing tools",
@@ -294,7 +294,7 @@
       "de": "Benutzererweiterbare Farben, Sound-Kanäle und Banken",
       "es": "Colores, canales de sonido y bancos ampliables por el usuario",
       "fr": "Couleurs, canaux audio et banques extensibles par l'utilisateur",
-      "it": "Colori, canali audio e banche estensibili dall'utente",
+      "it": "Colori, canali audio e banchi estensibili dall'utente",
       "ja": "パレット、同時発音数、各種バンクのユーザー拡張",
       "ko": "사용자 확장 가능한 색상, 사운드 채널 및 뱅크",
       "pt": "Cores, canais de som e bancos extensíveis pelo usuário",
@@ -351,12 +351,12 @@
       "es": "Después de instalar {0} (versión 3.11 o superior), ejecuta el siguiente comando:",
       "fr": "Après avoir installé {0} (version 3.11 ou supérieure), exécutez la commande suivante :",
       "it": "Dopo aver installato {0} (versione 3.11 o superiore), esegui il seguente comando:",
-      "ja": "{0} (バージョン 3.11 以上) をインストールした後、次のコマンドを実行します。",
+      "ja": "{0}（バージョン 3.11 以上）をインストールした後、次のコマンドを実行します。",
       "ko": "{0} (버전 3.11 이상)을 설치한 후, 다음 명령어를 실행하세요.",
       "pt": "Após instalar o {0} (versão 3.11 ou superior), execute o seguinte comando.",
       "ru": "После установки {0} (версии 3.11 или выше) выполните следующую команду.",
       "tr": "{0} (3.11 veya daha yüksek sürüm) kurduktan sonra, aşağıdaki komutu çalıştırın.",
-      "uk": "Після встановлення {0} (версія 3.11 або вища) виконайте наступну команду."
+      "uk": "Після встановлення {0} (версія 3.11 або вища) виконайте таку команду."
     },
     "install_desktop_note": {
       "en": "<strong>Note:</strong> On Windows, if installing Python using the installer from python.org, make sure to check {0} to enable the {1} command.",
@@ -407,7 +407,7 @@
       "es": "El entorno de desarrollo web {0} está listo para usar simplemente abriéndolo en tu navegador.",
       "fr": "L'environnement de développement web {0} est prêt à l'emploi en l'ouvrant simplement dans votre navigateur.",
       "it": "L'ambiente di sviluppo web {0} è pronto all'uso semplicemente aprendolo nel browser.",
-      "ja": "Web 版開発環境の {0} は、ブラウザで開くだけですぐに使えます。",
+      "ja": "Web 版開発環境の {0} は、ブラウザーで開くだけですぐに使えます。",
       "ko": "웹 기반 개발 환경 {0}는 브라우저에서 열기만 하면 바로 사용할 수 있습니다.",
       "pt": "O ambiente de desenvolvimento web {0} está pronto para uso, basta abri-lo no navegador.",
       "ru": "Веб-среда разработки {0} готова к использованию — просто откройте её в браузере.",
@@ -422,11 +422,11 @@
       "fr": "Pour d'autres utilisations, comme l'intégration d'applications Pyxel sur votre propre site, veuillez consulter {0}.",
       "it": "Per altri utilizzi, come l'incorporamento di app Pyxel nel proprio sito, fai riferimento a {0}.",
       "ja": "自分のサイトに Pyxel アプリを埋め込むなど、その他の利用方法については {0} を参照してください。",
-      "ko": "자신의 사이트에 Pyxel 앱을 임베딩하는 등의 다른 사용 방법에 대해서는 {0}를 참조하세요.",
+      "ko": "자신의 사이트에 Pyxel 앱을 임베딩하는 등의 다른 사용 방법에 대해서는 {0}을 참조하세요.",
       "pt": "Para outros usos, como incorporar aplicativos Pyxel em seu próprio site, consulte {0}.",
       "ru": "Для других вариантов использования, таких как встраивание приложений Pyxel на ваш собственный сайт, обратитесь к {0}.",
-      "tr": "Kendi sitenizde Pyxel uygulamalarını gömme gibi diğer kullanımlar için lütfen {0} bakın.",
-      "uk": "Для інших варіантів використання, таких як вбудовування додатків Pyxel на ваш власний сайт, зверніться до {0}."
+      "tr": "Kendi sitenizde Pyxel uygulamalarını gömme gibi diğer kullanımlar için lütfen {0} sayfasına bakın.",
+      "uk": "Для інших варіантів використання, таких як вбудовування застосунків Pyxel на ваш власний сайт, зверніться до {0}."
     },
     "install_vscode_title": {
       "en": "VS Code",
@@ -454,11 +454,11 @@
       "pt": "Adicionando a extensão Pyxel ao {0} (VS Code), você pode desenvolver e executar aplicativos Pyxel sem instalar Python ou Pyxel.",
       "ru": "Добавив расширение Pyxel в {0} (VS Code), вы можете разрабатывать и запускать приложения Pyxel без установки Python или Pyxel.",
       "tr": "{0} (VS Code) uygulamasına Pyxel eklentisini ekleyerek, Python veya Pyxel yüklemeden Pyxel uygulamalarını geliştirebilir ve çalıştırabilirsiniz.",
-      "uk": "Додавши розширення Pyxel до {0} (VS Code), ви можете розробляти та запускати додатки Pyxel без встановлення Python або Pyxel."
+      "uk": "Додавши розширення Pyxel до {0} (VS Code), ви можете розробляти та запускати застосунки Pyxel без встановлення Python або Pyxel."
     },
     "install_vscode_howto": {
       "en": "To add the Pyxel extension, search for \"{0}\" in the VS Code Extensions view and click the install button.",
-      "cn": "添加 Pyxel 扩展的方法是，在 VS Code 的扩展视图中搜索「{0}」，然后点击安装按钮。",
+      "cn": "添加 Pyxel 扩展的方法是，在 VS Code 的扩展视图中搜索“{0}”，然后点击安装按钮。",
       "de": "Um die Pyxel-Erweiterung hinzuzufügen, suchen Sie in der VS Code-Erweiterungsansicht nach „{0}“ und klicken Sie auf die Schaltfläche „Installieren“.",
       "es": "Para añadir la extensión Pyxel, busca \"{0}\" en la vista de extensiones de VS Code y haz clic en el botón de instalación.",
       "fr": "Pour ajouter l'extension Pyxel, recherchez « {0} » dans la vue Extensions de VS Code et cliquez sur le bouton d'installation.",
@@ -502,7 +502,7 @@
       "en": "Installing Pyxel adds the {0} command. Specify a command name after {0} to perform various operations.",
       "cn": "安装 Pyxel 后即可使用 {0} 命令。在 {0} 后指定命令名称来执行各种操作。",
       "de": "Durch die Installation von Pyxel wird der Befehl {0} verfügbar. Geben Sie nach {0} einen Befehlsnamen an, um verschiedene Operationen auszuführen.",
-      "es": "Al instalar Pyxel, se añade el comando {0}. Especifique un nombre de comando después de {0} para realizar diversas operaciones.",
+      "es": "Al instalar Pyxel, se añade el comando {0}. Especifica un nombre de comando después de {0} para realizar diversas operaciones.",
       "fr": "L'installation de Pyxel ajoute la commande {0}. Spécifiez un nom de commande après {0} pour effectuer diverses opérations.",
       "it": "L'installazione di Pyxel aggiunge il comando {0}. Specificare un nome di comando dopo {0} per eseguire varie operazioni.",
       "ja": "Pyxel をインストールすると {0} コマンドが使えるようになります。{0} の後にコマンド名を指定して、さまざまな操作を行います。",
@@ -516,7 +516,7 @@
       "en": "Run it without arguments to see the list of available commands:",
       "cn": "不带参数运行可查看可用命令列表：",
       "de": "Führen Sie ihn ohne Argumente aus, um die Liste der verfügbaren Befehle anzuzeigen:",
-      "es": "Ejecútelo sin argumentos para ver la lista de comandos disponibles:",
+      "es": "Ejecútalo sin argumentos para ver la lista de comandos disponibles:",
       "fr": "Exécutez-la sans arguments pour afficher la liste des commandes disponibles :",
       "it": "Eseguirlo senza argomenti per visualizzare l'elenco dei comandi disponibili:",
       "ja": "引数なしで実行すると、利用可能なコマンドの一覧を確認できます。",
@@ -548,11 +548,11 @@
       "fr": "La commande suivante copie les exemples Pyxel dans le répertoire actuel :",
       "it": "Il seguente comando copia gli esempi di Pyxel nella directory corrente:",
       "ja": "次のコマンドでカレントディレクトリに Pyxel のサンプルをコピーできます。",
-      "ko": "다음 명령어로 예제를 현재 디렉토리로 복사할 수 있습니다.",
+      "ko": "다음 명령어로 예제를 현재 디렉터리로 복사할 수 있습니다.",
       "pt": "O seguinte comando copia os exemplos do Pyxel para o diretório atual.",
-      "ru": "Следующая команда копирует примеры Pyxel в текущую директорию.",
+      "ru": "Следующая команда копирует примеры Pyxel в текущий каталог.",
       "tr": "Aşağıdaki komutla örnekleri geçerli dizine kopyalayabilirsiniz.",
-      "uk": "Наступна команда копіює приклади Pyxel у поточний каталог."
+      "uk": "Така команда копіює приклади Pyxel у поточний каталог."
     },
     "usage_examples_run": {
       "en": "You can run examples locally with the following commands:",
@@ -566,7 +566,7 @@
       "pt": "No ambiente local, os exemplos podem ser executados com os seguintes comandos.",
       "ru": "В локальной среде примеры можно выполнить с помощью следующих команд.",
       "tr": "Yerel ortamda örnekler aşağıdaki komutlarla çalıştırılabilir.",
-      "uk": "У локальному середовищі приклади можна виконати за допомогою наступних команд."
+      "uk": "У локальному середовищі приклади можна виконати за допомогою таких команд."
     },
     "usage_examples_run_comment1": {
       "en": "Run example in examples directory",
@@ -603,10 +603,10 @@
       "es": "Los ejemplos también se pueden ver y ejecutar en el navegador desde {0}.",
       "fr": "Les exemples peuvent également être consultés et exécutés dans le navigateur depuis {0}.",
       "it": "Gli esempi possono anche essere visualizzati ed eseguiti nel browser da {0}.",
-      "ja": "サンプル一覧は {0} からブラウザでも確認・実行できます。",
+      "ja": "サンプル一覧は {0} からブラウザーでも確認・実行できます。",
       "ko": "예제 목록은 {0}에서 브라우저로도 확인하고 실행할 수 있습니다.",
       "pt": "Os exemplos também podem ser visualizados e executados no navegador a partir do {0}.",
-      "ru": "Список примеров также можно просмотреть и запустить в браузере на {0}.",
+      "ru": "Примеры также можно просмотреть и запустить в браузере на {0}.",
       "tr": "Örnek listesi {0} üzerinden tarayıcıda da görüntülenebilir ve çalıştırılabilir.",
       "uk": "Список прикладів також можна переглянути та запустити у браузері на {0}."
     },
@@ -622,7 +622,7 @@
       "pt": "Criação de aplicações",
       "ru": "Создание приложений",
       "tr": "Uygulama Oluşturma",
-      "uk": "Створення додатків"
+      "uk": "Створення застосунків"
     },
     "creating_program_title": {
       "en": "Create a Program",
@@ -742,7 +742,7 @@
       "de": "Darüber hinaus überwacht der Befehl {0} Änderungen in einem angegebenen Verzeichnis und führt das Programm automatisch erneut aus, wenn Änderungen erkannt werden:",
       "es": "Además, el comando {0} supervisa los cambios en un directorio especificado y vuelve a ejecutar automáticamente el programa cuando se detectan cambios:",
       "fr": "De plus, la commande {0} surveille les modifications dans un répertoire spécifié et relance automatiquement le programme lorsque des changements sont détectés :",
-      "it": "Inoltre, il comando {0} monitora le modifiche in una directory specificata e ri-esegue automaticamente il programma quando vengono rilevati cambiamenti:",
+      "it": "Inoltre, il comando {0} monitora le modifiche in una directory specificata e riesegue automaticamente il programma quando vengono rilevati cambiamenti:",
       "ja": "また、{0} コマンドを使うと、指定したディレクトリ内の変更を監視し、変化があった際に自動でプログラムを再実行します。",
       "ko": "또한, {0} 명령어를 사용하면 지정한 디렉터리의 변경 사항을 모니터링하고, 변경 사항이 감지되면 프로그램을 자동으로 재실행합니다.",
       "pt": "Além disso, o comando {0} monitora alterações em um diretório especificado e executa automaticamente o programa quando mudanças são detectadas.",
@@ -790,7 +790,7 @@
       "pt": "Durante a execução de uma aplicação Pyxel, as seguintes operações de teclas especiais podem ser realizadas.",
       "ru": "Во время выполнения приложения Pyxel можно выполнить следующие специальные действия с клавишами.",
       "tr": "Bir Pyxel uygulaması çalışırken, aşağıdaki özel tuş işlemleri gerçekleştirilebilir.",
-      "uk": "Під час виконання програми Pyxel можна виконати наступні спеціальні дії з клавішами."
+      "uk": "Під час виконання програми Pyxel можна виконати такі спеціальні дії з клавішами."
     },
     "th_key": {
       "en": "Key",
@@ -869,7 +869,7 @@
       "es": "Los datos creados se guardan como un archivo de recursos de Pyxel (.pyxres).",
       "fr": "Les données créées sont enregistrées sous forme de fichier de ressources Pyxel (.pyxres).",
       "it": "I dati creati vengono salvati come file di risorse Pyxel (.pyxres).",
-      "ja": "作成したデータは Pyxel リソースファイル（.pyxres）として保存されます。",
+      "ja": "作成したデータは Pyxel リソースファイル (.pyxres) として保存されます。",
       "ko": "생성된 데이터는 Pyxel 리소스 파일(.pyxres)로 저장됩니다.",
       "pt": "Os dados criados são salvos como um arquivo de recursos Pyxel (.pyxres).",
       "ru": "Созданные данные сохраняются в файле ресурсов Pyxel (.pyxres).",
@@ -880,14 +880,14 @@
       "en": "For detailed usage instructions, see the {0}.",
       "cn": "详细操作方法请参阅 {0}。",
       "de": "Eine ausführliche Bedienungsanleitung finden Sie im {0}.",
-      "es": "Para instrucciones detalladas, consulte el {0}.",
+      "es": "Para instrucciones detalladas, consulta el {0}.",
       "fr": "Pour des instructions détaillées, consultez le {0}.",
       "it": "Per istruzioni dettagliate, consultare il {0}.",
       "ja": "操作方法の詳細は {0} を参照してください。",
       "ko": "자세한 사용법은 {0}을 참조하세요.",
       "pt": "Para instruções detalhadas, consulte o {0}.",
-      "ru": "Подробные инструкции см. в {0}.",
-      "tr": "Ayrıntılı kullanım talimatları için {0} bakın.",
+      "ru": "Подробные инструкции см. на странице {0}.",
+      "tr": "Ayrıntılı kullanım talimatları için {0} sayfasına bakın.",
       "uk": "Детальні інструкції див. у {0}."
     },
     "resources_other_title": {
@@ -908,29 +908,29 @@
       "en": "Pyxel images and tilemaps can also be created using the following methods:",
       "cn": "Pyxel 图像和瓦片地图还可以通过以下方法创建：",
       "de": "Pyxel-Bilder und Tilemaps können auch mit folgenden Methoden erstellt werden:",
-      "es": "Las imágenes y los mapas de teselas de Pyxel también se pueden crear utilizando los siguientes métodos:",
+      "es": "Las imágenes y los tilemaps de Pyxel también se pueden crear utilizando los siguientes métodos:",
       "fr": "Les images et les cartes de tuiles Pyxel peuvent également être créées en utilisant les méthodes suivantes :",
-      "it": "Le immagini e le mappe a tessere di Pyxel possono anche essere create utilizzando i seguenti metodi:",
+      "it": "Le immagini e le tilemap di Pyxel possono anche essere create utilizzando i seguenti metodi:",
       "ja": "Pyxel 用の画像やタイルマップは、以下の方法で作成することもできます。",
       "ko": "Pyxel 이미지와 타일맵은 다음 방법을 사용하여 생성할 수도 있습니다.",
-      "pt": "Imagens e mapas de ladrilhos do Pyxel também podem ser criados usando os seguintes métodos.",
+      "pt": "Imagens e tilemaps do Pyxel também podem ser criados usando os seguintes métodos.",
       "ru": "Изображения и тайловые карты Pyxel также можно создавать с помощью следующих методов.",
       "tr": "Pyxel resimleri ve karo haritaları aşağıdaki yöntemlerle de oluşturulabilir.",
-      "uk": "Зображення та тайлмапи Pyxel також можна створювати за допомогою таких методів."
+      "uk": "Зображення та тайлові карти Pyxel також можна створювати за допомогою таких методів."
     },
     "resources_other_image_set": {
       "en": "Create images or tilemaps from lists of strings with the {0} or {1} functions",
       "cn": "使用 {0} 或 {1} 函数，从字符串列表创建图像或瓦片地图",
       "de": "Erstellen Sie Bilder oder Tilemaps aus Listen von Zeichenfolgen mit den Funktionen {0} oder {1}",
-      "es": "Crear imágenes o mapas de teselas a partir de listas de cadenas con las funciones {0} o {1}",
+      "es": "Crear imágenes o tilemaps a partir de listas de cadenas con las funciones {0} o {1}",
       "fr": "Créer des images ou des cartes de tuiles à partir de listes de chaînes avec les fonctions {0} ou {1}",
-      "it": "Crea immagini o mappe a tessere da elenchi di stringhe con le funzioni {0} o {1}",
+      "it": "Crea immagini o tilemap da elenchi di stringhe con le funzioni {0} o {1}",
       "ja": "{0} や {1} 関数を使って、文字列のリストから作成する",
       "ko": "{0} 함수 또는 {1} 함수를 사용해 문자열 목록에서 이미지나 타일맵을 만듭니다",
-      "pt": "Crie imagens ou mapas de ladrilhos a partir de listas de strings com as funções {0} ou {1}",
+      "pt": "Crie imagens ou tilemaps a partir de listas de strings com as funções {0} ou {1}",
       "ru": "Создавайте изображения или тайловые карты из списков строк с помощью функций {0} или {1}",
       "tr": "{0} veya {1} fonksiyonlarıyla dize listelerinden resim veya karo haritası oluşturun",
-      "uk": "Створюйте зображення або тайлмапи зі списків рядків за допомогою функцій {0} або {1}"
+      "uk": "Створюйте зображення або тайлові карти зі списків рядків за допомогою функцій {0} або {1}"
     },
     "resources_other_image_load": {
       "en": "Load palette-ready image files (PNG/GIF/JPEG) with the {0} function",
@@ -956,9 +956,9 @@
       "ja": "Pyxel 用のサウンドやミュージックは、以下の方法で作成することもできます。",
       "ko": "Pyxel 사운드와 음악은 다음 방법을 사용하여 생성할 수도 있습니다.",
       "pt": "Os sons e as músicas do Pyxel também podem ser criados usando o seguinte método.",
-      "ru": "Звуки и музыка Pyxel также можно создать с помощью следующего метода.",
+      "ru": "Звуки и музыку Pyxel также можно создать с помощью следующего метода.",
       "tr": "Pyxel sesleri ve müzikleri de aşağıdaki yöntemle oluşturulabilir.",
-      "uk": "Звуки та музику Pyxel також можна створити за допомогою наступного методу."
+      "uk": "Звуки та музику Pyxel також можна створити за допомогою такого методу."
     },
     "resources_other_sound_set": {
       "en": "Create them from strings with the {0} or {1} functions",
@@ -982,7 +982,7 @@
       "fr": "Référez-vous à la documentation de l'API pour l'utilisation de ces fonctions.",
       "it": "Fai riferimento alla documentazione dell'API per l'uso di queste funzioni.",
       "ja": "各関数の使い方については API リファレンスを参照してください。",
-      "ko": "이 함수의 사용법은 API 참조를 참조하십시오.",
+      "ko": "이 함수의 사용법은 API 레퍼런스를 참조하세요.",
       "pt": "Consulte a referência da API para o uso dessas funções.",
       "ru": "См. справочник API, чтобы узнать, как использовать эти функции.",
       "tr": "Bu fonksiyonların kullanımı için API referansına bakın.",
@@ -1000,7 +1000,7 @@
       "pt": "Distribuição de aplicações",
       "ru": "Распространение приложений",
       "tr": "Uygulama Dağıtımı",
-      "uk": "Розповсюдження додатків"
+      "uk": "Розповсюдження застосунків"
     },
     "dist_body": {
       "en": "Pyxel supports a cross-platform distribution format called a Pyxel application file.",
@@ -1009,12 +1009,12 @@
       "es": "Pyxel admite un formato de distribución multiplataforma llamado archivo de aplicación Pyxel.",
       "fr": "Pyxel prend en charge un format de distribution multiplateforme appelé fichier d'application Pyxel.",
       "it": "Pyxel supporta un formato di distribuzione multipiattaforma chiamato file dell'applicazione Pyxel.",
-      "ja": "Pyxel ではプラットフォームによらず動作する、専用のアプリケーション配布ファイル形式 (Pyxel アプリケーションファイル) をサポートしています。",
+      "ja": "Pyxel ではプラットフォームによらず動作する、専用のアプリケーション配布ファイル形式（Pyxel アプリケーションファイル）をサポートしています。",
       "ko": "Pyxel은 플랫폼에 관계없이 작동하는 전용 배포 형식인 Pyxel 애플리케이션 파일을 지원합니다.",
       "pt": "O Pyxel suporta um formato de distribuição multiplataforma chamado arquivo de aplicativo Pyxel.",
       "ru": "Pyxel поддерживает кроссплатформенный формат распространения под названием файл приложения Pyxel.",
       "tr": "Pyxel, platformlar arası çalışan özel bir uygulama dağıtım dosyası formatını destekler.",
-      "uk": "Pyxel підтримує кросплатформений формат розповсюдження, який називається файлом програми Pyxel."
+      "uk": "Pyxel підтримує кросплатформений формат розповсюдження, який називається файлом застосунку Pyxel."
     },
     "dist_create": {
       "en": "Create a Pyxel application file (.pyxapp) with the {0} command:",
@@ -1028,7 +1028,7 @@
       "pt": "Crie um arquivo de aplicativo Pyxel (.pyxapp) com o comando {0}.",
       "ru": "Создайте файл приложения Pyxel (.pyxapp) с помощью команды {0}.",
       "tr": "Bir Pyxel uygulama dosyası (.pyxapp) {0} komutu kullanılarak oluşturulur.",
-      "uk": "Створіть файл програми Pyxel (.pyxapp) за допомогою команди {0}."
+      "uk": "Створіть файл застосунку Pyxel (.pyxapp) за допомогою команди {0}."
     },
     "dist_include": {
       "en": "If you need to include resources or additional modules, place them in the application directory.",
@@ -1038,7 +1038,7 @@
       "fr": "Si vous avez besoin d'inclure des ressources ou des modules supplémentaires, placez-les dans le répertoire de l'application.",
       "it": "Se hai bisogno di includere risorse o moduli aggiuntivi, posizionali nella directory dell'applicazione.",
       "ja": "リソースや追加モジュールを同梱する場合は、アプリケーションのディレクトリ内に配置します。",
-      "ko": "리소스나 추가 모듈을 포함해야 하는 경우, 애플리케이션 디렉토리에 배치하십시오.",
+      "ko": "리소스나 추가 모듈을 포함해야 하는 경우, 애플리케이션 디렉터리에 배치하세요.",
       "pt": "Se você precisar incluir recursos ou módulos adicionais, coloque-os no diretório do aplicativo.",
       "ru": "Если вам нужно включить ресурсы или дополнительные модули, разместите их в каталоге приложения.",
       "tr": "Kaynakları veya ek modülleri dahil etmeniz gerekiyorsa, bunları uygulama dizinine yerleştirin.",
@@ -1056,7 +1056,7 @@
       "pt": "Os metadados podem ser exibidos em tempo de execução, especificando-os no seguinte formato dentro do script de inicialização. Os campos além de {0} e {1} são opcionais.",
       "ru": "Метаданные могут отображаться во время выполнения, если указать их в следующем формате в стартовом скрипте. Поля, кроме {0} и {1}, являются необязательными.",
       "tr": "Başlatma betiği içinde aşağıdaki formatla belirtilen meta veriler çalışma zamanında görüntülenebilir. {0} ve {1} dışında diğer alanlar isteğe bağlıdır.",
-      "uk": "Метадані можна відображати під час виконання, вказуючи їх у наступному форматі в скрипті запуску. Поля, крім {0} і {1}, є необов'язковими."
+      "uk": "Метадані можна відображати під час виконання, вказуючи їх у такому форматі в скрипті запуску. Поля, крім {0} і {1}, є необов'язковими."
     },
     "dist_play": {
       "en": "The created application file can be run using the {0} command:",
@@ -1070,7 +1070,7 @@
       "pt": "O arquivo de aplicativo criado pode ser executado usando o comando {0}.",
       "ru": "Созданный файл приложения можно запустить с помощью команды {0}.",
       "tr": "Oluşturulan uygulama dosyası {0} komutu kullanılarak çalıştırılabilir.",
-      "uk": "Створений файл програми можна запустити за допомогою команди {0}."
+      "uk": "Створений файл застосунку можна запустити за допомогою команди {0}."
     },
     "dist_convert": {
       "en": "A Pyxel application file can also be converted to an executable or an HTML file using the {0} or {1} commands.",
@@ -1084,7 +1084,7 @@
       "pt": "Um arquivo de aplicativo Pyxel também pode ser convertido em um executável ou um arquivo HTML usando os comandos {0} ou {1}.",
       "ru": "Файл приложения Pyxel также можно преобразовать в исполняемый файл или HTML-файл командами {0} или {1}.",
       "tr": "Bir Pyxel uygulama dosyası ayrıca {0} veya {1} komutları kullanılarak çalıştırılabilir bir dosya veya HTML dosyasına dönüştürülebilir.",
-      "uk": "Файл програми Pyxel також можна конвертувати у виконуваний файл або HTML-файл за допомогою команд {0} або {1}."
+      "uk": "Файл застосунку Pyxel також можна конвертувати у виконуваний файл або HTML-файл за допомогою команд {0} або {1}."
     },
     "apiref_title": {
       "en": "API Reference",
@@ -1118,19 +1118,19 @@
       "en": "Pyxel also includes advanced APIs that require specialized knowledge. You can view them by checking the \"Advanced\" checkbox on the reference page.",
       "cn": "Pyxel 还包含需要专业知识的高级 API。在参考页面勾选“高级”复选框即可查看。",
       "de": "Pyxel enthält auch erweiterte APIs, die Fachwissen erfordern. Sie können sie anzeigen, indem Sie auf der Referenzseite das Kontrollkästchen \"Fortgeschritten\" aktivieren.",
-      "es": "Pyxel también incluye APIs avanzadas que requieren conocimientos especializados. Puede verlas marcando la casilla \"Avanzado\" en la página de referencia.",
+      "es": "Pyxel también incluye API avanzadas que requieren conocimientos especializados. Puedes verlas marcando la casilla \"Avanzado\" en la página de referencia.",
       "fr": "Pyxel comprend également des API avancées qui nécessitent des connaissances spécialisées. Vous pouvez les consulter en cochant la case « Avancé » sur la page de référence.",
       "it": "Pyxel include anche API avanzate che richiedono conoscenze specializzate. Puoi visualizzarle selezionando la casella \"Avanzato\" nella pagina di riferimento.",
       "ja": "Pyxel には、専門知識が必要な上級者向けの API もあります。リファレンスページで「上級者向け」にチェックを入れると表示されます。",
       "ko": "Pyxel에는 전문 지식이 필요한 고급 API도 포함되어 있습니다. 레퍼런스 페이지에서 \"고급\" 체크박스를 선택하면 확인할 수 있습니다.",
       "pt": "O Pyxel também inclui APIs avançadas que requerem conhecimento especializado. Você pode visualizá-las marcando a caixa \"Avançado\" na página de referência.",
       "ru": "Pyxel также включает расширенные API, для использования которых требуются специальные знания. Их можно просмотреть, установив флажок «Продвинутые» на странице справочника.",
-      "tr": "Pyxel ayrıca uzmanlık bilgisi gerektiren gelişmiş API'ler içerir. Referans sayfasında \"İleri\" onay kutusunu işaretleyerek görüntüleyebilirsiniz.",
-      "uk": "Pyxel також містить розширені API, для використання яких потрібні спеціальні знання. Їх можно переглянути, встановивши прапорець «Просунуті» на сторінці довідника."
+      "tr": "Pyxel ayrıca uzmanlık bilgisi gerektiren gelişmiş API'ler içerir. Referans sayfasında \"Gelişmiş\" onay kutusunu işaretleyerek görüntüleyebilirsiniz.",
+      "uk": "Pyxel також містить розширені API, для використання яких потрібні спеціальні знання. Їх можна переглянути, встановивши прапорець «Розширені» на сторінці довідника."
     },
     "apiref_challenge": {
       "en": "If you're confident in your skills, try using the Advanced API to create truly amazing works!",
-      "cn": "如果你对自己的技术有信心，不妨尝试使用高级 API 来创作令人惊叹的作品！",
+      "cn": "如果您对自己的技术有信心，不妨尝试使用高级 API 来创作令人惊叹的作品！",
       "de": "Wenn Sie Ihren Fähigkeiten vertrauen, versuchen Sie, mit der Advanced API beeindruckende Werke zu erstellen!",
       "es": "Si confías en tus habilidades, ¡intenta usar la API avanzada para crear obras verdaderamente sorprendentes!",
       "fr": "Si vous êtes confiant dans vos compétences, essayez d'utiliser l'API avancée pour créer des œuvres vraiment impressionnantes !",
@@ -1146,9 +1146,9 @@
       "en": "How to Contribute",
       "cn": "如何贡献",
       "de": "Wie man beiträgt",
-      "es": "Cómo Contribuir",
-      "fr": "Comment Contribuer",
-      "it": "Come Contribuire",
+      "es": "Cómo contribuir",
+      "fr": "Comment contribuer",
+      "it": "Come contribuire",
       "ja": "コントリビューション方法",
       "ko": "기여 방법",
       "pt": "Como Contribuir",
@@ -1160,9 +1160,9 @@
       "en": "Submitting Issues",
       "cn": "提交问题",
       "de": "Probleme melden",
-      "es": "Informar Problemas",
-      "fr": "Soumettre des Problèmes",
-      "it": "Segnalare Problemi",
+      "es": "Informar problemas",
+      "fr": "Soumettre des problèmes",
+      "it": "Segnalare problemi",
       "ja": "問題の報告",
       "ko": "문제 신고",
       "pt": "Enviando Problemas",
@@ -1175,12 +1175,12 @@
       "cn": "使用 {0} 提交 bug 报告和功能或增强请求。在提交新问题之前，请确保没有类似的开放问题。",
       "de": "Verwenden Sie den {0}, um Fehlerberichte und Funktions- oder Verbesserungsanfragen einzureichen. Stellen Sie sicher, dass es vor der Einreichung eines neuen Problems keine ähnlichen offenen Probleme gibt.",
       "es": "Utiliza el {0} para enviar informes de errores y solicitudes de funciones o mejoras. Antes de enviar un nuevo problema, asegúrate de que no haya problemas abiertos similares.",
-      "fr": "Utilisez le {0} pour soumettre des rapports de bugs et des demandes de fonctionnalités ou d'améliorations. Avant de soumettre un nouveau problème, assurez-vous qu'il n'y a pas de problèmes ouverts similaires.",
-      "it": "Utilizza il {0} per inviare rapporti di bug e richieste di funzionalità o miglioramenti. Prima di inviare un nuovo problema, assicurati che non ci siano problemi aperti simili.",
+      "fr": "Utilisez l'{0} pour soumettre des rapports de bugs et des demandes de fonctionnalités ou d'améliorations. Avant de soumettre un nouveau problème, assurez-vous qu'il n'y a pas de problèmes ouverts similaires.",
+      "it": "Utilizza l'{0} per inviare rapporti di bug e richieste di funzionalità o miglioramenti. Prima di inviare un nuovo problema, assicurati che non ci siano problemi aperti simili.",
       "ja": "不具合の報告や機能の要望は {0} で受け付けています。新しいレポートを作成する前に、同じ内容のものがないか確認をお願いします。",
-      "ko": "버그 보고서 및 기능 또는 개선 요청을 제출하려면 {0}를 사용하세요. 새로운 문제를 제출하기 전에 유사한 열린 문제가 없는지 확인해 주세요.",
+      "ko": "버그 보고서 및 기능 또는 개선 요청을 제출하려면 {0}를 사용하세요. 새 이슈를 제출하기 전에 유사한 이슈가 열려 있지 않은지 확인해 주세요.",
       "pt": "Use o {0} para enviar relatórios de bugs e solicitações de recursos ou melhorias. Antes de enviar um novo problema, verifique se não há problemas semelhantes abertos.",
-      "ru": "Используйте {0} для подачи отчетов об ошибках и запросов на функции или улучшения. Перед отправкой новой проблемы убедитесь, что нет похожих открытых вопросов.",
+      "ru": "Используйте {0} для подачи отчетов об ошибках и запросов на функции или улучшения. Перед отправкой новой проблемы убедитесь, что нет похожих открытых проблем.",
       "tr": "Hata raporları ve özellik veya iyileştirme talepleri göndermek için {0} kullanın. Yeni bir sorun göndermeden önce, benzer açık sorunlar olmadığından emin olun.",
       "uk": "Використовуйте {0} для подання звітів про помилки та запитів на функції або покращення. Перед поданням нової проблеми переконайтеся, що немає подібних відкритих проблем."
     },
@@ -1188,9 +1188,9 @@
       "en": "Functional Testing",
       "cn": "功能测试",
       "de": "Funktionstest",
-      "es": "Pruebas Funcionales",
-      "fr": "Tests Fonctionnels",
-      "it": "Test Funzionali",
+      "es": "Pruebas funcionales",
+      "fr": "Tests fonctionnels",
+      "it": "Test funzionali",
       "ja": "動作確認",
       "ko": "기능 테스트",
       "pt": "Testes Funcionais",
@@ -1203,22 +1203,22 @@
       "cn": "任何手动测试代码并在 {0} 中报告 bug 或增强建议的人都非常欢迎！",
       "de": "Jeder, der den Code manuell testet und Fehler oder Verbesserungsvorschläge im {0} meldet, ist sehr willkommen!",
       "es": "¡Cualquier persona que pruebe manualmente el código y reporte errores o sugerencias de mejoras en el {0} es muy bienvenida!",
-      "fr": "Toute personne qui teste manuellement le code et signale des bugs ou des suggestions d'améliorations dans le {0} est la bienvenue !",
-      "it": "Chiunque testi manualmente il codice e segnali bug o suggerimenti per miglioramenti nel {0} è molto benvenuto!",
+      "fr": "Toute personne qui teste manuellement le code et signale des bugs ou des suggestions d'améliorations dans l'{0} est la bienvenue !",
+      "it": "Chiunque testi manualmente il codice e segnali bug o suggerimenti per miglioramenti nell'{0} è molto benvenuto!",
       "ja": "動作確認を行い、{0} で不具合の報告や改善の提案をしていただける方は大歓迎です！",
-      "ko": "코드를 수동으로 테스트하고 {0}에서 버그 또는 개선 사항을 제안하는 분은 언제든지 환영합니다!",
+      "ko": "코드를 수동으로 테스트하고 {0}에서 버그를 보고하거나 개선 사항을 제안해 주시는 분은 언제든지 환영합니다!",
       "pt": "Qualquer pessoa que teste manualmente o código e relate bugs ou sugestões de melhorias no {0} é muito bem-vinda!",
       "ru": "Любой, кто вручную тестирует код и сообщает об ошибках или предлагает улучшения в {0}, очень приветствуется!",
-      "tr": "Kodu manuel olarak test eden ve {0} üzerinden hata veya iyileştirme önerileri bildiren herkes çok memnun karşılanır!",
+      "tr": "Kodu manuel olarak test eden ve {0} üzerinden hata veya iyileştirme önerileri bildiren herkes memnuniyetle karşılanır!",
       "uk": "Будь-хто, хто тестує код вручну та повідомляє про помилки або пропозиції щодо покращення в {0}, дуже вітається!"
     },
     "contrib_pr_title": {
       "en": "Submitting Pull Requests",
       "cn": "提交拉取请求",
       "de": "Pull-Requests einreichen",
-      "es": "Enviar Solicitudes de Extracción",
-      "fr": "Soumettre des Demandes de Tirage",
-      "it": "Inviare Richieste di Pull",
+      "es": "Enviar solicitudes de extracción",
+      "fr": "Soumettre des demandes de tirage",
+      "it": "Inviare richieste di pull",
       "ja": "プルリクエスト",
       "ko": "풀 리퀘스트 제출",
       "pt": "Enviando Pull Requests",
@@ -1231,13 +1231,13 @@
       "cn": "补丁和修复以拉取请求 (PR) 的形式接受。请确保拉取请求所针对的问题在问题跟踪器中是开放的。",
       "de": "Patches und Fixes werden in Form von Pull-Requests (PRs) akzeptiert. Stellen Sie sicher, dass das Problem, das der Pull-Request behandelt, im Issue Tracker offen ist.",
       "es": "Los parches y correcciones se aceptan en forma de solicitudes de extracción (PRs). Asegúrate de que el problema que aborda la solicitud de extracción esté abierto en el Issue Tracker.",
-      "fr": "Les correctifs et modifications sont acceptés sous forme de demandes de tirage (PRs). Assurez-vous que le problème que la demande de tirage aborde est ouvert dans le Issue Tracker.",
-      "it": "Le patch e le correzioni sono accettate sotto forma di richieste di pull (PR). Assicurati che il problema a cui si riferisce la richiesta di pull sia aperto nel Issue Tracker.",
+      "fr": "Les correctifs et modifications sont acceptés sous forme de demandes de tirage (PR). Assurez-vous que le problème que la demande de tirage aborde est ouvert dans l'Issue Tracker.",
+      "it": "Le patch e le correzioni sono accettate sotto forma di richieste di pull (PR). Assicurati che il problema a cui si riferisce la richiesta di pull sia aperto nell'Issue Tracker.",
       "ja": "パッチや修正はプルリクエスト (PR) として受け付けています。提出前に、問題がすでに解決済みでないか Issue Tracker で確認をお願いします。",
-      "ko": "패치 및 수정 사항은 풀 리퀘스트(PR) 형식으로 수락됩니다. 풀 리퀘스트가 해결하는 문제는 문제 추적기에서 열려 있어야 합니다.",
+      "ko": "패치 및 수정 사항은 풀 리퀘스트(PR) 형식으로 수락됩니다. 풀 리퀘스트가 해결하는 이슈는 이슈 트래커에 열려 있어야 합니다.",
       "pt": "Patches e correções são aceitos na forma de pull requests (PRs). Certifique-se de que o problema que o pull request aborda está aberto no Rastreador de Problemas.",
       "ru": "Патчи и исправления принимаются в форме запросов на изменение (PR). Убедитесь, что проблема, на которую ссылается запрос на изменение, открыта в Трекере проблем.",
-      "tr": "Yamanlar ve düzeltmeler, pull isteği (PR) şeklinde kabul edilmektedir. Pull isteğinin ele aldığı sorunun Sorun Takip Sistemi'nde açık olduğundan emin olun.",
+      "tr": "Yamalar ve düzeltmeler, pull isteği (PR) şeklinde kabul edilmektedir. Pull isteğinin ele aldığı sorunun Sorun Takip Sistemi'nde açık olduğundan emin olun.",
       "uk": "Патчі та виправлення приймаються у вигляді запитів на витягування (PR). Переконайтеся, що проблема, яку вирішує запит на витягування, відкрита в Трекері проблем."
     },
     "contrib_pr_license": {
@@ -1248,7 +1248,7 @@
       "fr": "Soumettre une demande de tirage implique que vous acceptez de licencier votre contribution sous la {0}.",
       "it": "Inviare una richiesta di pull implica che accetti di concedere in licenza il tuo contributo sotto la {0}.",
       "ja": "提出されたプルリクエストは、{0} で公開することに同意したものと見なされます。",
-      "ko": "풀 리퀘스트를 제출하면 {0} 아래에서 기여 내용을 라이센스하는 데 동의하는 것으로 간주됩니다.",
+      "ko": "풀 리퀘스트를 제출하면 {0} 아래에서 기여 내용을 라이선스하는 데 동의하는 것으로 간주됩니다.",
       "pt": "Enviar um pull request implica que você concorda em licenciar sua contribuição sob a {0}.",
       "ru": "Подача запроса на изменение подразумевает, что вы соглашаетесь лицензировать свой вклад по {0}.",
       "tr": "Pull isteği göndermek, katkınızı {0} altında lisanslamayı kabul ettiğiniz anlamına gelir.",
@@ -1286,9 +1286,9 @@
       "en": "Examples & Tools",
       "cn": "示例与工具",
       "de": "Beispiele & Tools",
-      "es": "Ejemplos y Herramientas",
-      "fr": "Exemples et Outils",
-      "it": "Esempi e Strumenti",
+      "es": "Ejemplos y herramientas",
+      "fr": "Exemples et outils",
+      "it": "Esempi e strumenti",
       "ja": "サンプル＆ツール",
       "ko": "예제 및 도구",
       "pt": "Exemplos e Ferramentas",
@@ -1336,7 +1336,7 @@
       "pt": "Manual do Pyxel Editor",
       "ru": "Руководство по Pyxel Editor",
       "tr": "Pyxel Editor Kılavuzu",
-      "uk": "Посібник з Pyxel Editor"
+      "uk": "Посібник Pyxel Editor"
     },
     "tool_vscode": {
       "en": "VS Code Extension",
@@ -1384,9 +1384,9 @@
       "en": "Other Information",
       "cn": "其他信息",
       "de": "Weitere Informationen",
-      "es": "Otra Información",
-      "fr": "Autres Informations",
-      "it": "Altre Informazioni",
+      "es": "Otra información",
+      "fr": "Autres informations",
+      "it": "Altre informazioni",
       "ja": "その他の情報",
       "ko": "기타 정보",
       "pt": "Outras Informações",
@@ -1441,8 +1441,8 @@
       "cn": "用户示例",
       "de": "Benutzerbeispiele",
       "es": "Ejemplos de Usuarios",
-      "fr": "Exemples d'Utilisateurs",
-      "it": "Esempi degli Utenti",
+      "fr": "Exemples d'utilisateurs",
+      "it": "Esempi degli utenti",
       "ja": "ユーザー作品集",
       "ko": "사용자 예제",
       "pt": "Exemplos de Usuários",
@@ -1452,11 +1452,11 @@
     },
     "other_x": {
       "en": "Developer's X Account",
-      "cn": "开发者的 X 帐号",
-      "de": "Entwicklers X-Konto",
-      "es": "Cuenta X del Desarrollador",
-      "fr": "Compte X du Développeur",
-      "it": "Account X dello Sviluppatore",
+      "cn": "开发者的 X 账号",
+      "de": "X-Konto des Entwicklers",
+      "es": "Cuenta X del desarrollador",
+      "fr": "Compte X du développeur",
+      "it": "Account X dello sviluppatore",
       "ja": "開発者 X アカウント",
       "ko": "개발자의 X 계정",
       "pt": "Conta X do Desenvolvedor",
@@ -1468,19 +1468,19 @@
       "en": "Discord Server (English)",
       "cn": "Discord 服务器（英文）",
       "de": "Discord-Server (Englisch)",
-      "es": "Servidor de Discord (Inglés)",
-      "fr": "Serveur Discord (Anglais)",
-      "it": "Server Discord (Inglese)",
+      "es": "Servidor de Discord (inglés)",
+      "fr": "Serveur Discord (anglais)",
+      "it": "Server Discord (inglese)",
       "ja": "Discord サーバー（英語）",
       "ko": "디스코드 서버 (영어)",
-      "pt": "Servidor do Discord (Inglês)",
-      "ru": "Сервер Discord (Английский)",
+      "pt": "Servidor do Discord (inglês)",
+      "ru": "Сервер Discord (английский)",
       "tr": "Discord Sunucusu (İngilizce)",
-      "uk": "Сервер Discord (Англійська)"
+      "uk": "Сервер Discord (англійська)"
     },
     "other_book": {
       "en": "Official Guidebook (Japanese)",
-      "cn": "官方指南书（日语）",
+      "cn": "官方指南书（日文）",
       "de": "Offizielles Handbuch (Japanisch)",
       "es": "Guía oficial (japonés)",
       "fr": "Guide officiel (japonais)",
@@ -1496,15 +1496,15 @@
       "en": "Discord Server (Japanese)",
       "cn": "Discord 服务器（日文）",
       "de": "Discord-Server (Japanisch)",
-      "es": "Servidor de Discord (Japonés)",
-      "fr": "Serveur Discord (Japonais)",
-      "it": "Server Discord (Giapponese)",
+      "es": "Servidor de Discord (japonés)",
+      "fr": "Serveur Discord (japonais)",
+      "it": "Server Discord (giapponese)",
       "ja": "Discord サーバー（日本語）",
       "ko": "디스코드 서버 (일본어)",
-      "pt": "Servidor do Discord (Japonês)",
-      "ru": "Сервер Discord (Японский)",
+      "pt": "Servidor do Discord (japonês)",
+      "ru": "Сервер Discord (японский)",
       "tr": "Discord Sunucusu (Japonca)",
-      "uk": "Сервер Discord (Японська)"
+      "uk": "Сервер Discord (японська)"
     },
     "license_title": {
       "en": "License",
@@ -1514,7 +1514,7 @@
       "fr": "Licence",
       "it": "Licenza",
       "ja": "ライセンス",
-      "ko": "라이센스",
+      "ko": "라이선스",
       "pt": "Licença",
       "ru": "Лицензия",
       "tr": "Lisans",
@@ -1528,7 +1528,7 @@
       "fr": "Pyxel est sous la {0}. Il peut être réutilisé dans des logiciels propriétaires, à condition que toutes les copies du logiciel ou de ses parties substantielles incluent une copie des termes de la Licence MIT et un avis de droit d'auteur.",
       "it": "Pyxel è concesso in licenza sotto la {0}. Può essere riutilizzato in software proprietari, a condizione che tutte le copie del software o delle sue parti sostanziali includano una copia dei termini della Licenza MIT e un avviso di copyright.",
       "ja": "Pyxel は {0} です。ソースコードやライセンス表示用のファイル等で、著作権とライセンス全文の表示をすれば、自由に販売や配布できます。",
-      "ko": "Pyxel은 {0} 하에 라이센스가 부여됩니다. 소스 코드 및 라이센스 표시용 파일에 저작권 및 라이센스 조건을 표시하면 자유롭게 판매 및 배포할 수 있습니다.",
+      "ko": "Pyxel은 {0} 하에 라이선스가 부여됩니다. 소프트웨어 또는 그 상당 부분의 모든 사본에 MIT 라이선스 조항 사본과 저작권 고지를 포함하면 독점 소프트웨어에서도 재사용할 수 있습니다.",
       "pt": "O Pyxel é licenciado sob a {0}. Pode ser reutilizado em software proprietário, desde que todas as cópias do software ou suas partes substanciais incluam uma cópia dos termos da Licença MIT e um aviso de copyright.",
       "ru": "Pyxel лицензируется по {0}. Его можно использовать в проприетарном программном обеспечении, при условии, что все копии программного обеспечения или его значительные части содержат копию условий лицензии MIT и уведомление об авторских правах.",
       "tr": "Pyxel, {0} ile lisanslanmıştır. Tüm kopyalardaki yazılım veya onun önemli bölümleri, MIT Lisansı koşullarını ve telif hakkı bildirimini içermesi koşuluyla özel yazılımda kullanılabilir.",
@@ -1538,9 +1538,9 @@
       "en": "Recruiting Sponsors",
       "cn": "征募赞助者",
       "de": "Sponsoren suchen",
-      "es": "Búsqueda de Patrocinadores",
-      "fr": "Recherche de Sponsors",
-      "it": "Ricerca di Sponsor",
+      "es": "Búsqueda de patrocinadores",
+      "fr": "Recherche de sponsors",
+      "it": "Ricerca di sponsor",
       "ja": "スポンサー募集",
       "ko": "스폰서 모집",
       "pt": "Recrutamento de Patrocinadores",
@@ -1551,14 +1551,14 @@
     "sponsors_body": {
       "en": "Pyxel is looking for sponsors on GitHub Sponsors. Please consider sponsoring Pyxel to support its continued maintenance and feature development. As a benefit, sponsors can consult directly with the Pyxel developer. For more details, please visit {0}.",
       "cn": "Pyxel 在 GitHub Sponsors 上寻找赞助者。请考虑赞助 Pyxel，以支持其持续维护和功能开发。作为一种福利，赞助者可以直接咨询 Pyxel 开发者。有关更多详细信息，请访问 {0}。",
-      "de": "Pyxel sucht Sponsoren auf GitHub Sponsors. Bitte ziehen Sie in Betracht, Pyxel zu sponsern, um dessen fortlaufende Wartung und Funktionsentwicklung zu unterstützen. Als Vorteil können Sponsoren direkt mit dem Pyxel-Entwickler beraten. Für weitere Details besuchen Sie bitte {0}.",
+      "de": "Pyxel sucht Sponsoren auf GitHub Sponsors. Bitte ziehen Sie in Betracht, Pyxel zu sponsern, um dessen fortlaufende Wartung und Funktionsentwicklung zu unterstützen. Als Vorteil können sich Sponsoren direkt mit dem Pyxel-Entwickler beraten. Für weitere Details besuchen Sie bitte {0}.",
       "es": "Pyxel está buscando patrocinadores en GitHub Sponsors. Por favor, considera patrocinar a Pyxel para apoyar su mantenimiento continuo y desarrollo de funciones. Como beneficio, los patrocinadores pueden consultar directamente con el desarrollador de Pyxel. Para más detalles, visita {0}.",
       "fr": "Pyxel recherche des sponsors sur GitHub Sponsors. Veuillez envisager de soutenir Pyxel pour soutenir sa maintenance continue et le développement de fonctionnalités. En tant qu'avantage, les sponsors peuvent consulter directement le développeur de Pyxel. Pour plus de détails, veuillez visiter {0}.",
       "it": "Pyxel sta cercando sponsor su GitHub Sponsors. Ti preghiamo di considerare l'idea di sponsorizzare Pyxel per supportarne la manutenzione continua e lo sviluppo di nuove funzionalità. Come beneficio, gli sponsor possono consultare direttamente lo sviluppatore di Pyxel. Per ulteriori dettagli, visita {0}.",
       "ja": "Pyxel は GitHub Sponsors でスポンサーを募っています。Pyxel のメンテナンスと機能追加の継続のために、スポンサーになることをご検討ください。スポンサーは特典として Pyxel についての相談が可能です。詳細は {0} をご覧ください。",
       "ko": "Pyxel은 GitHub Sponsors에서 스폰서를 모집하고 있습니다. Pyxel의 지속적인 유지 관리 및 기능 개발을 지원하기 위해 스폰서를 고려해 주세요. 스폰서에게는 Pyxel 개발자와 직접 상담할 수 있는 혜택이 제공됩니다. 자세한 내용은 {0}를 참조하세요.",
       "pt": "O Pyxel está buscando patrocinadores no GitHub Sponsors. Considere patrocinar o Pyxel para apoiar sua manutenção contínua e desenvolvimento de recursos. Como benefício, os patrocinadores podem consultar diretamente o desenvolvedor do Pyxel. Para mais detalhes, por favor, visite {0}.",
-      "ru": "Pyxel ищет спонсоров на GitHub Sponsors. Пожалуйста, подумайте о том, чтобы стать спонсором Pyxel, чтобы поддержать его дальнейшую поддержку и развитие функций. В качестве преимущества спонсоры могут консультироваться непосредственно с разработчиком Pyxel. Для получения дополнительной информации посетите {0}.",
+      "ru": "Pyxel ищет спонсоров на GitHub Sponsors. Пожалуйста, подумайте о том, чтобы стать спонсором Pyxel и поддержать его дальнейшее сопровождение и развитие функций. В качестве преимущества спонсоры могут консультироваться непосредственно с разработчиком Pyxel. Для получения дополнительной информации см. {0}.",
       "tr": "Pyxel, GitHub Sponsors üzerinde sponsorlar arıyor. Pyxel'in sürdürülebilir bakımı ve özellik geliştirmesi için sponsor olmayı düşünün. Bir avantaj olarak, sponsorlar Pyxel geliştiricisiyle doğrudan danışma imkânına sahip olabilirler. Daha fazla bilgi için {0} ziyaret edin.",
       "uk": "Pyxel шукає спонсорів на GitHub Sponsors. Розгляньте можливість спонсорування Pyxel, щоб підтримати його подальше обслуговування та розвиток функцій. Як перевага, спонсори можуть безпосередньо консультуватися з розробником Pyxel. Для отримання додаткової інформації відвідайте {0}."
     },
@@ -1573,7 +1573,7 @@
       "ko": "여기",
       "pt": "aqui",
       "ru": "здесь",
-      "tr": "burada",
+      "tr": "burayı",
       "uk": "тут"
     }
   },
@@ -1635,11 +1635,11 @@
         "fr": "Enregistrer la capture d'écran sur le bureau",
         "it": "Salvare lo screenshot sul desktop",
         "ja": "スクリーンショットをデスクトップに保存する",
-        "ko": "화면 캡처를 데스크탑에 저장",
+        "ko": "화면 캡처를 데스크톱에 저장",
         "pt": "Salvar a captura de tela na área de trabalho",
         "ru": "Сохранить снимок экрана на рабочий стол",
         "tr": "Ekran görüntüsünü masaüstüne kaydet",
-        "uk": "Зберегти знімок екрану на робочий стіл"
+        "uk": "Зберегти знімок екрана на робочий стіл"
       }
     },
     {
@@ -1656,7 +1656,7 @@
         "pt": "Reiniciar o tempo de início da gravação do vídeo de captura de tela",
         "ru": "Сбросить время начала записи видео с экрана",
         "tr": "Ekran kaydı videosunun başlangıç zamanını sıfırla",
-        "uk": "Скинути час початку запису відео з екрану"
+        "uk": "Скинути час початку запису відео з екрана"
       }
     },
     {
@@ -1668,12 +1668,12 @@
         "es": "Guardar un video de captura de pantalla en el escritorio (hasta 10 segundos)",
         "fr": "Enregistrer une vidéo de capture d'écran sur le bureau (jusqu'à 10 secondes)",
         "it": "Salvare un video di cattura dello schermo sul desktop (fino a 10 secondi)",
-        "ja": "画面キャプチャ動画をデスクトップに保存する (最大 10 秒)",
-        "ko": "화면 캡처 비디오를 데스크탑에 저장 (최대 10초)",
+        "ja": "画面キャプチャ動画をデスクトップに保存する（最大 10 秒）",
+        "ko": "화면 캡처 비디오를 데스크톱에 저장 (최대 10초)",
         "pt": "Salvar um vídeo de captura de tela na área de trabalho (até 10 segundos)",
         "ru": "Сохранить видео захвата экрана на рабочий стол (до 10 секунд)",
         "tr": "Ekran kaydı videosunu masaüstüne kaydet (maksimum 10 saniye)",
-        "uk": "Зберегти відео захоплення екрану на робочий стіл (до 10 секунд)"
+        "uk": "Зберегти відео захоплення екрана на робочий стіл (до 10 секунд)"
       }
     },
     {
@@ -1695,7 +1695,7 @@
         "en": "Toggle screen scaling between maximum and integer",
         "cn": "在最大和整数倍缩放之间切换屏幕缩放",
         "de": "Die Bildschirmskalierung zwischen maximal und ganzzahlig umschalten",
-        "es": "Alternar el escalado de pantalla entre máximo e entero",
+        "es": "Alternar el escalado de pantalla entre máximo y entero",
         "fr": "Alterner le mode de mise à l'échelle de l'écran entre maximal et entier",
         "it": "Cambiare la scala dello schermo tra massima e intera",
         "ja": "画面の拡大方法を最大と整数倍で切り替える",
@@ -1703,7 +1703,7 @@
         "pt": "Alternar o modo de escala da tela entre máximo e inteiro",
         "ru": "Переключить масштаб экрана между максимальным и целочисленным",
         "tr": "Ekran ölçeğini maksimum ve tam sayı arasında değiştir",
-        "uk": "Перемикати масштаб екрану між максимальним та цілим"
+        "uk": "Перемикати масштаб екрана між максимальним та цілим"
       }
     },
     {
@@ -1733,7 +1733,7 @@
         "pt": "Alternar entre os modos de tela (Crisp/Smooth/Retro)",
         "ru": "Переключить режим экрана (Crisp/Smooth/Retro)",
         "tr": "Ekran modları arasında geçiş yap (Crisp/Smooth/Retro)",
-        "uk": "Перемикати режими екрану (Crisp/Smooth/Retro)"
+        "uk": "Перемикати режими екрана (Crisp/Smooth/Retro)"
       }
     },
     {
@@ -1758,7 +1758,7 @@
         "es": "Alternar el monitor de rendimiento (FPS/tiempo de `update`/tiempo de `draw`)",
         "fr": "Basculer le moniteur de performance (FPS/temps de `update`/temps de `draw`)",
         "it": "Attivare/disattivare il monitor delle prestazioni (FPS/tempo di `update`/tempo di `draw`)",
-        "ja": "パフォーマンスモニタ (FPS/`update` 時間/`draw` 時間) の表示を切り替える",
+        "ja": "パフォーマンスモニター（FPS/`update` 時間/`draw` 時間）の表示を切り替える",
         "ko": "성능 모니터 (FPS/`update` 시간/`draw` 시간) 전환",
         "pt": "Alternar o monitor de desempenho (FPS/tempo de `update`/tempo de `draw`)",
         "ru": "Переключить монитор производительности (FPS/время `update`/время `draw`)",
@@ -1787,7 +1787,7 @@
         "de": "Den Vollbildmodus umschalten",
         "es": "Alternar pantalla completa",
         "fr": "Basculer en plein écran",
-        "it": "Visualizzare a schermo intero",
+        "it": "Attivare/disattivare lo schermo intero",
         "ja": "フルスクリーン表示を切り替える",
         "ko": "전체 화면 전환",
         "pt": "Alternar para tela cheia",
@@ -1804,9 +1804,9 @@
         "de": "Bildbank 0, 1 oder 2 auf dem Desktop speichern",
         "es": "Guardar el banco de imágenes 0, 1 o 2 en el escritorio",
         "fr": "Enregistrer la banque d'images 0, 1 ou 2 sur le bureau",
-        "it": "Salvare la banca di immagini 0, 1 o 2 sul desktop",
+        "it": "Salvare il banco immagini 0, 1 o 2 sul desktop",
         "ja": "イメージバンク 0, 1, 2 をデスクトップに保存する",
-        "ko": "이미지 뱅크 0, 1 또는 2를 데스크탑에 저장",
+        "ko": "이미지 뱅크 0, 1 또는 2를 데스크톱에 저장",
         "pt": "Salvar o banco de imagens 0, 1 ou 2 na área de trabalho",
         "ru": "Сохранить банк изображений 0, 1 или 2 на рабочий стол",
         "tr": "Görüntü bankası 0, 1 veya 2'yi masaüstüne kaydet",
@@ -1823,7 +1823,7 @@
         "fr": "Enregistrer la palette de couleurs actuelle sur le bureau",
         "it": "Salvare la palette di colori corrente sul desktop",
         "ja": "現在のカラーパレットをデスクトップに保存する",
-        "ko": "현재 색상 팔레트를 데스크탑에 저장",
+        "ko": "현재 색상 팔레트를 데스크톱에 저장",
         "pt": "Salvar a paleta de cores atual na área de trabalho",
         "ru": "Сохранить текущую цветовую палитру на рабочий стол",
         "tr": "Geçerli renk paletini masaüstüne kaydet",

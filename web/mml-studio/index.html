@@ -304,14 +304,18 @@
         return b64urlEncode(compressed);
       }
 
-      // Decoder: detect legacy lz-string by presence of characters it uses
-      // that base64url does not: `+`, `$`, and ` ` (the `+` in a URL query
-      // becomes a space after URLSearchParams decoding).
+      // Decoder: `+` (or its space form after URLSearchParams decoding) marks
+      // legacy lz-string. Short legacy values may consist of base64url
+      // characters only, so try the new format first and fall back on failure.
       async function decodeMmlFromUrl(value) {
-        if (value.includes("+") || value.includes("$") || value.includes(" ")) {
+        if (value.includes("+") || value.includes(" ")) {
           return LZString.decompressFromEncodedURIComponent(value);
         }
-        return await decompressDeflateRaw(b64urlDecode(value));
+        try {
+          return await decompressDeflateRaw(b64urlDecode(value));
+        } catch {
+          return LZString.decompressFromEncodedURIComponent(value);
+        }
       }
 
       function setButtonStyle(button, isActive) {
@@ -342,12 +346,22 @@
         }
       }
 
+      // Defer the URL/QR refresh so typing does not regenerate the QR code
+      // and rewrite the history entry on every keystroke
+      let urlUpdateTimer = null;
+
+      function scheduleUrlUpdate() {
+        clearTimeout(urlUpdateTimer);
+        urlUpdateTimer = setTimeout(updateUrl, 300);
+      }
+
       function handleMmlInput(textarea) {
         runtimeScreen.contentWindow[`js_${textarea.id}_mml`] = textarea.value;
-        updateUrl();
+        scheduleUrlUpdate();
       }
 
       async function updateUrl() {
+        clearTimeout(urlUpdateTimer);
         let mmlStr = "";
         for (let i = 1; i <= 4; i++) {
           const textarea = document.getElementById(`ch${i}`);
