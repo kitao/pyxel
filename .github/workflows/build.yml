@@ -83,7 +83,8 @@ jobs:
       matrix:
         include:
           - target: x86_64-unknown-linux-gnu
-            image: messense/manylinux_2_28-cross:x86_64
+            # Pinned: the floating tag no longer ships the x86_64 cross toolchain
+            image: messense/manylinux_2_28-cross@sha256:8057009635dc8d87abdd376f143aa07b452a52737d6b28a8b1368842bf704ab7
 
           - target: aarch64-unknown-linux-gnu
             image: messense/manylinux_2_28-cross:aarch64
