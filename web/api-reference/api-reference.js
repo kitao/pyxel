@@ -5,6 +5,38 @@ let lang = "en";
 let showAdvanced = false;
 let searchQuery = "";
 
+// Element lookup maps built once after buildPage; per-keystroke
+// visibility updates must not scan the whole document per entry.
+const domCache = {};
+
+function cacheDomRefs() {
+  for (const attr of [
+    "item-key",
+    "desc-key",
+    "detail-key",
+    "const-key",
+    "const-grid",
+    "items-card",
+    "cg-id",
+    "cg-label",
+    "sec-label",
+    "sec-details",
+    "cat-id",
+    "cat-title",
+    "cat-title2",
+  ]) {
+    const prop = attr.replace(/-([a-z])/g, (_, c) => c.toUpperCase());
+    const map = new Map();
+    document.querySelectorAll(`[data-${attr}]`).forEach((el) => {
+      map.set(el.dataset[prop], el);
+    });
+    domCache[attr] = map;
+  }
+  domCache.advMarks = [...document.querySelectorAll(".adv-mark")];
+}
+
+const cached = (attr, key) => domCache[attr].get(key);
+
 function badgeColor(type) {
   switch (type) {
     case "function":
@@ -381,6 +413,7 @@ function buildPage() {
     app.appendChild(section);
   }
 
+  cacheDomRefs();
   updateTexts();
   updateVisibility();
 }
@@ -405,9 +438,9 @@ function updateTexts() {
 
   // Category titles
   for (const cat of data.categories) {
-    const el = document.querySelector(`[data-cat-title="${cat.id}"]`);
+    const el = cached("cat-title", cat.id);
     if (el) el.textContent = t(cat.title);
-    const el2 = document.querySelector(`[data-cat-title2="${cat.id}"]`);
+    const el2 = cached("cat-title2", cat.id);
     if (el2) el2.textContent = t(cat.title);
   }
 
@@ -416,9 +449,9 @@ function updateTexts() {
     if (cat.items) {
       for (let i = 0; i < cat.items.length; i++) {
         const key = `${cat.id}-${i}`;
-        const descEl = document.querySelector(`[data-desc-key="${key}"]`);
+        const descEl = cached("desc-key", key);
         if (descEl) descEl.textContent = t(cat.items[i].description);
-        const detailEl = document.querySelector(`[data-detail-key="${key}"]`);
+        const detailEl = cached("detail-key", key);
         if (detailEl) buildDetailContent(detailEl, cat.items[i]);
       }
     }
@@ -426,7 +459,7 @@ function updateTexts() {
       for (let g = 0; g < cat.constant_groups.length; g++) {
         const group = cat.constant_groups[g];
         const gid = `${cat.id}-cg-${g}`;
-        const labelEl = document.querySelector(`[data-cg-label="${gid}"]`);
+        const labelEl = cached("cg-label", gid);
         if (labelEl) labelEl.textContent = t(group.label);
         // Section labels and details
         if (group.sections) {
@@ -434,13 +467,11 @@ function updateTexts() {
             const sec = group.sections[s];
             const sid = `${gid}-s-${s}`;
             if (sec.label) {
-              const sl = document.querySelector(`[data-sec-label="${sid}"]`);
+              const sl = cached("sec-label", sid);
               if (sl) sl.textContent = t(sec.label);
             }
             if (sec.details) {
-              const listEl = document.querySelector(
-                `[data-sec-details="${sid}"]`,
-              );
+              const listEl = cached("sec-details", sid);
               if (listEl) {
                 let html = "";
                 for (let i = 0; i < sec.constants.length; i++) {
@@ -463,7 +494,7 @@ function updateTexts() {
 }
 
 function updateVisibility() {
-  document.querySelectorAll(".adv-mark").forEach((el) => {
+  domCache.advMarks.forEach((el) => {
     el.classList.toggle("hidden", !showAdvanced);
   });
 
@@ -477,13 +508,13 @@ function updateVisibility() {
     if (cat.items) {
       for (let i = 0; i < cat.items.length; i++) {
         const key = `${cat.id}-${i}`;
-        const row = document.querySelector(`[data-item-key="${key}"]`);
+        const row = cached("item-key", key);
         if (!row) continue;
         const visible = isVisible(cat.items[i]);
         row.style.display = visible ? "" : "none";
         if (visible) itemsVisible++;
       }
-      const itemsCard = document.querySelector(`[data-items-card="${cat.id}"]`);
+      const itemsCard = cached("items-card", cat.id);
       if (itemsCard) itemsCard.style.display = itemsVisible > 0 ? "" : "none";
     }
     catVisible += itemsVisible;
@@ -492,14 +523,14 @@ function updateVisibility() {
     if (cat.constants) {
       const q = searchQuery.toLowerCase();
       for (let i = 0; i < cat.constants.length; i++) {
-        const el = document.querySelector(`[data-const-key="${cat.id}-${i}"]`);
+        const el = cached("const-key", `${cat.id}-${i}`);
         if (!el) continue;
         const visible =
           !searchQuery || cat.constants[i].toLowerCase().includes(q);
         el.style.display = visible ? "" : "none";
         if (visible) catVisible++;
       }
-      const grid = document.querySelector(`[data-const-grid="${cat.id}"]`);
+      const grid = cached("const-grid", cat.id);
       if (grid) grid.style.display = catVisible > 0 ? "" : "none";
     }
 
@@ -516,9 +547,7 @@ function updateVisibility() {
             const sec = group.sections[s];
             const sid = `${gid}-s-${s}`;
             for (let i = 0; i < sec.constants.length; i++) {
-              const el = document.querySelector(
-                `[data-const-key="${sid}-${i}"]`,
-              );
+              const el = cached("const-key", `${sid}-${i}`);
               if (!el) continue;
               const visible =
                 !searchQuery || sec.constants[i].toLowerCase().includes(q);
@@ -526,11 +555,11 @@ function updateVisibility() {
               if (visible) groupVisible++;
             }
           }
-          const grid = document.querySelector(`[data-const-grid="${gid}"]`);
+          const grid = cached("const-grid", gid);
           if (grid) grid.style.display = groupVisible > 0 ? "" : "none";
         }
 
-        const groupEl = document.querySelector(`[data-cg-id="${gid}"]`);
+        const groupEl = cached("cg-id", gid);
         if (groupEl) groupEl.style.display = groupVisible > 0 ? "" : "none";
         catVisible += groupVisible;
       }
@@ -538,7 +567,7 @@ function updateVisibility() {
 
     totalVisible += catVisible;
 
-    const section = document.querySelector(`details[data-cat-id="${cat.id}"]`);
+    const section = cached("cat-id", cat.id);
     if (section) section.style.display = catVisible > 0 ? "" : "none";
   }
 

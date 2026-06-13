@@ -281,6 +281,8 @@ impl Vibrato {
     }
 
     fn reset_tick(&mut self) {
+        // A delayed vibrato restarts per note; without a delay the phase
+        // free-runs across notes so the modulation stays continuous
         if self.delay_ticks > 0 {
             self.elapsed_ticks = 0;
         }
@@ -620,11 +622,13 @@ impl Voice {
 
     #[inline]
     fn apply_gain_fixed(sample: i32, gain: i32) -> i32 {
+        // Round half away from zero; negating before the shift keeps the
+        // floor-division rounding symmetric for negative products
         let product = sample as i64 * gain as i64;
         if product >= 0 {
             ((product + VOICE_GAIN_ROUND_BIAS) >> AUDIO_GAIN_SHIFT) as i32
         } else {
-            ((product - VOICE_GAIN_ROUND_BIAS) >> AUDIO_GAIN_SHIFT) as i32
+            -(((-product + VOICE_GAIN_ROUND_BIAS) >> AUDIO_GAIN_SHIFT) as i32)
         }
     }
 
@@ -788,7 +792,7 @@ mod tests {
             .iter()
             .map(|&s| Oscillator::quantize_sample(s) as i32)
             .collect();
-        for i in 0..waveform.len() + 1 {
+        for i in 0..=waveform.len() {
             assert_eq!(osc.sample(), expected[i % waveform.len()], "sample {i}");
             osc.advance_sample();
         }
@@ -835,12 +839,9 @@ mod tests {
         osc.set_noise(false);
         assert_eq!(osc.samples_per_cycle(), 1);
 
+        // set_noise(true) deterministically seeds the LFSR to 0x0201 (bit 0 set)
         osc.set_noise(true);
-        let s = osc.sample();
-        assert!(
-            s == i16::MAX as i32 || s == -(i16::MAX as i32),
-            "noise sample should be +/-MAX, got {s}"
-        );
+        assert_eq!(osc.sample(), -(i16::MAX as i32));
     }
 
     #[test]
@@ -865,7 +866,17 @@ mod tests {
             })
             .collect();
 
-        assert_ne!(short_samples, long_samples);
+        // Both sequences follow exactly from the documented LFSR seeds and taps;
+        // a silent seed/tap change would alter existing users' sound assets
+        let max = i16::MAX as i32;
+        assert_eq!(
+            short_samples,
+            [-max, max, max, max, max, max, max, max, max, -max]
+        );
+        assert_eq!(
+            long_samples,
+            [-max, max, max, max, max, max, max, max, max, max]
+        );
     }
 
     #[test]
@@ -981,11 +992,11 @@ mod tests {
         env.advance_tick(1);
         assert!(approx_eq(env.level(), 1.0), "disabled: {}", env.level());
 
-        // Re-enable -> continues from where it was
+        // Re-enable -> continues from elapsed=5, one more tick gives 0.6
         env.enable();
         env.advance_tick(1);
         assert!(
-            env.level() > 0.5,
+            approx_eq(env.level(), 0.6),
             "re-enabled should continue: {}",
             env.level()
         );
@@ -1041,9 +1052,11 @@ mod tests {
         );
 
         vib.advance_tick(10);
+        // Quarter period is the triangle peak: full +2 semitone depth
+        let expected = 2.0_f32.powf(2.0 / 12.0);
         assert!(
-            vib.pitch_multiplier() > 1.0,
-            "at quarter period should be > 1.0: {}",
+            approx_eq(vib.pitch_multiplier(), expected),
+            "at quarter period: expected {expected}, got {}",
             vib.pitch_multiplier()
         );
     }
@@ -1069,6 +1082,23 @@ mod tests {
         assert!(
             approx_eq(vib.pitch_multiplier(), 1.0),
             "half period: {}",
+            vib.pitch_multiplier()
+        );
+
+        // At three-quarter period: trough of the triangle = full -2 semitone depth
+        vib.advance_tick(period / 4);
+        let expected = 2.0_f32.powf(-2.0 / 12.0);
+        assert!(
+            approx_eq(vib.pitch_multiplier(), expected),
+            "three-quarter period: expected {expected}, got {}",
+            vib.pitch_multiplier()
+        );
+
+        // Back at the zero crossing after a full period
+        vib.advance_tick(period / 4);
+        assert!(
+            approx_eq(vib.pitch_multiplier(), 1.0),
+            "full period: {}",
             vib.pitch_multiplier()
         );
     }
@@ -1279,17 +1309,32 @@ mod tests {
         let result = Voice::apply_gain_fixed(1000, gain);
         assert_eq!(result, 0);
 
+        // Rounding is symmetric around zero
         let gain = Voice::gain_to_fixed(1.0);
         let result = Voice::apply_gain_fixed(-1000, gain);
-        assert!((result + 1000).abs() <= 1, "expected ~-1000, got {result}");
+        assert_eq!(result, -1000);
+
+        // Half-unit products round away from zero on both sides
+        let gain = Voice::gain_to_fixed(0.5);
+        assert_eq!(Voice::apply_gain_fixed(1, gain), 1);
+        assert_eq!(Voice::apply_gain_fixed(-1, gain), -1);
     }
 
     #[test]
     fn test_voice_process_without_note_is_noop() {
+        // With no note playing, processing must add no deltas to the blip buffer
         let mut voice = Voice::new(44100, 60, 512);
         voice.set_tone(make_tone(1, vec![1, 0]));
-        voice.process(None, 0, 1000);
-        assert_eq!(voice.last_amplitude, 0);
+        let mut blip_buf = BlipBuf::new(4096);
+        blip_buf.set_rates(44100.0, 22050.0);
+        voice.process(Some(&mut blip_buf), 0, 1000);
+        blip_buf.end_frame(1000);
+        let mut samples = [0_i16; 4096];
+        let count = blip_buf.read_samples(&mut samples, false);
+        assert!(
+            samples[..count].iter().all(|&s| s == 0),
+            "expected silence without a note"
+        );
     }
 
     #[test]
@@ -1298,15 +1343,9 @@ mod tests {
         voice.set_tone(make_tone(1, vec![1, 0]));
         voice.play_note(69.0, 1.0, 10000);
 
-        let before = voice.remaining_note_clocks;
         voice.cancel_note();
-        assert!(
-            voice.remaining_note_clocks <= voice.interp_clocks,
-            "after cancel: {} should be <= {}",
-            voice.remaining_note_clocks,
-            voice.interp_clocks
-        );
-        assert!(voice.remaining_note_clocks < before);
+        // cancel_note clamps the remainder to exactly the fade-out interpolation window
+        assert_eq!(voice.remaining_note_clocks, voice.interp_clocks);
     }
 
     #[test]
@@ -1320,9 +1359,13 @@ mod tests {
 
         // Process enough clocks to finish the note
         voice.process(None, 0, 100 + voice.interp_clocks + 1);
-        // After processing, remaining_note_clocks should be 0
-        // and if last_amplitude is also 0, needs_processing is false
+        // The note duration is exhausted but sub-sample carryover is still pending
         assert_eq!(voice.remaining_note_clocks, 0);
+        assert!(voice.needs_processing(), "carryover still pending");
+
+        // Flushing the carryover returns the voice to idle
+        voice.process(None, 0, voice.sample_clocks);
+        assert!(!voice.needs_processing(), "should be idle after carryover");
     }
 
     #[test]
@@ -1425,9 +1468,10 @@ mod tests {
             gains.windows(2).all(|w| w[0] <= w[1]),
             "gains not monotonic: {gains:?}"
         );
-        assert!(
-            *gains.first().unwrap() < target / 4,
-            "first gain too high: {gains:?}"
+        assert_eq!(
+            *gains.first().unwrap(),
+            0,
+            "head crossfade must start from silence: {gains:?}"
         );
         assert_eq!(
             *gains.last().unwrap(),

@@ -5,7 +5,7 @@ import pyxel
 
 class TestSeqLen:
     def test_colors_len(self):
-        assert len(pyxel.colors) >= 16
+        assert len(pyxel.colors) == pyxel.NUM_COLORS
 
     def test_images_len(self):
         assert len(pyxel.images) == pyxel.NUM_IMAGES
@@ -17,7 +17,7 @@ class TestSeqLen:
         assert len(pyxel.tilemaps) == pyxel.NUM_TILEMAPS
 
     def test_channels_len(self):
-        assert len(pyxel.channels) >= pyxel.NUM_CHANNELS
+        assert len(pyxel.channels) == pyxel.NUM_CHANNELS
 
     def test_tones_len(self):
         assert len(pyxel.tones) == pyxel.NUM_TONES
@@ -66,9 +66,9 @@ class TestSeqGetitem:
 class TestSeqSetitem:
     def test_images_set_by_index(self):
         original = pyxel.images[0]
-        new_img = pyxel.Image(256, 256)
+        new_img = pyxel.Image(64, 64)
         pyxel.images[0] = new_img
-        assert pyxel.images[0].width == 256
+        assert pyxel.images[0].width == 64
         pyxel.images[0] = original
 
 
@@ -133,7 +133,7 @@ class TestSeqAppendPop:
 
 
 class TestSeqIteration:
-    def test_iter(self):
+    def test_iter_images(self):
         count = 0
         for img in pyxel.images:
             assert isinstance(img, pyxel.Image)
@@ -263,9 +263,8 @@ class TestSeqReversed:
 
 class TestSeqRepr:
     def test_colors_repr(self):
-        r = repr(pyxel.colors)
-        assert isinstance(r, str)
-        assert len(r) > 0
+        # Value-type sequences have a deterministic wrapper-name + list repr
+        assert repr(pyxel.colors) == f"Colors{list(pyxel.colors)!r}"
 
     def test_images_repr(self):
         r = repr(pyxel.images)

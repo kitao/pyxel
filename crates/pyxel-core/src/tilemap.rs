@@ -9,6 +9,7 @@ use crate::utils::{f32_to_u32, parse_hex_string, simplify_string};
 pub type ImageTileCoord = u16;
 pub type Tile = (ImageTileCoord, ImageTileCoord);
 
+// Unused: tilemap blits never pass a palette, so Canvas never consults this index
 impl ToIndex for Tile {
     fn to_index(&self) -> usize {
         0

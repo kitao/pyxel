@@ -7,6 +7,8 @@ use pyxel::{Pyxel, PyxelCallback};
 
 use crate::pyxel_singleton::pyxel;
 
+// Lifecycle
+
 #[pyfunction]
 #[pyo3(
     signature = (width, height, title=None, fps=None, quit_key=None, display_scale=None, capture_scale=None, capture_sec=None, headless=None)
@@ -63,6 +65,7 @@ fn init(
             let script = CString::new(
                 r"
 import os, subprocess, sys
+# 0x52 = WATCH_RESET_EXIT_CODE in settings.rs, checked by cli.py watch mode
 if os.environ.get('PYXEL_WATCH_STATE_FILE'):
     os._exit(0x52)
 if sys.platform == 'darwin':
@@ -144,6 +147,8 @@ fn quit() {
 fn reset() {
     pyxel().restart();
 }
+
+// Window settings
 
 #[pyfunction]
 fn title(title: &str) {

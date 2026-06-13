@@ -1,16 +1,14 @@
-use std::fmt;
 use std::fs::File;
 use std::io::Read;
-use std::path::Path;
 
 use zip::ZipArchive;
 
-use crate::image::{Color, Image, Rgb24};
+use crate::image::{Color, Image};
 use crate::music::Music;
 use crate::pyxel::{self, Pyxel};
 use crate::settings::{
     DEFAULT_SOUND_SPEED, NUM_CHANNELS, NUM_IMAGES, NUM_MUSICS, NUM_SOUNDS, NUM_TILEMAPS,
-    PALETTE_FILE_EXTENSION, TILEMAP_SIZE, VERSION,
+    TILEMAP_SIZE, VERSION,
 };
 use crate::sound::{Sound, SoundEffect, SoundNote, SoundTone, SoundVolume};
 use crate::tilemap::{ImageSource, ImageTileCoord, Tilemap};
@@ -22,15 +20,6 @@ trait ResourceItem {
     fn resource_name(item_index: u32) -> String;
     fn clear(&mut self);
     fn deserialize(&mut self, version: u32, input: &str);
-}
-
-impl fmt::Display for ImageSource {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            ImageSource::Index(index) => write!(f, "{index}"),
-            ImageSource::Image(_) => write!(f, "0"),
-        }
-    }
 }
 
 impl ResourceItem for Image {
@@ -162,7 +151,6 @@ impl Pyxel {
     pub fn load_old_resource(
         &mut self,
         archive: &mut ZipArchive<File>,
-        filename: &str,
         include_images: bool,
         include_tilemaps: bool,
         include_sounds: bool,
@@ -207,26 +195,6 @@ impl Pyxel {
         }
         if include_musics {
             deserialize!(Music, pyxel::musics(), NUM_MUSICS);
-        }
-
-        // Try to load Pyxel palette file
-        let filename = filename
-            .rfind('.')
-            .map_or(filename, |i| &filename[..i])
-            .to_string()
-            + PALETTE_FILE_EXTENSION;
-
-        if let Ok(mut file) = File::open(Path::new(&filename)) {
-            let mut contents = String::new();
-            file.read_to_string(&mut contents).unwrap();
-
-            let colors: Vec<Rgb24> = contents
-                .lines()
-                .filter(|s| !s.is_empty())
-                .map(|s| u32::from_str_radix(s.trim(), 16).unwrap() as Rgb24)
-                .collect();
-
-            *pyxel::colors() = colors;
         }
     }
 }

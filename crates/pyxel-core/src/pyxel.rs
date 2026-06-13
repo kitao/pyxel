@@ -24,6 +24,13 @@ use crate::system::System;
 use crate::tilemap::{ImageSource, RcTilemap, Tilemap};
 use crate::tone::{RcTone, Tone};
 
+pub struct Pyxel {
+    pub(crate) system: System,
+    pub(crate) resource: Resource,
+    pub(crate) input: Input,
+    pub(crate) graphics: Option<Graphics>,
+}
+
 static IS_INITIALIZED: AtomicBool = AtomicBool::new(false);
 
 // Singleton
@@ -41,6 +48,8 @@ fn set_pyxel(instance: Pyxel) {
         PYXEL = Box::into_raw(Box::new(instance));
     }
 }
+
+// Lifecycle callbacks
 
 static mut RESET_CALLBACK: Option<Box<dyn FnMut() + Send>> = None;
 
@@ -105,13 +114,6 @@ define_global!(channels, CHANNELS, Vec<RcChannel>, init_channels());
 define_global!(tones, TONES, Vec<RcTone>, init_tones());
 define_global!(sounds, SOUNDS, Vec<RcSound>, init_sounds());
 define_global!(musics, MUSICS, Vec<RcMusic>, init_musics());
-
-pub struct Pyxel {
-    pub(crate) system: System,
-    pub(crate) resource: Resource,
-    pub(crate) input: Input,
-    pub(crate) graphics: Option<Graphics>,
-}
 
 pub fn init(
     w: u32,
@@ -283,6 +285,7 @@ fn init_font_image() -> RcImage {
         palette_is_identity: true,
     });
     let image = rc_mut!(rc);
+    // Each u32 packs one 4x6 glyph MSB-first in its low 24 bits (bit 23 = top-left)
     for (i, data) in FONT_DATA.iter().enumerate() {
         let row = i as u32 / NUM_FONT_COLS;
         let col = i as u32 % NUM_FONT_COLS;

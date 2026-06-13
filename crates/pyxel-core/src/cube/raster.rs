@@ -838,10 +838,10 @@ mod tests {
             [0.0, 0.0, 0.0, 1.0],
         ];
         let result = matmul(&identity, &identity);
-        for i in 0..4 {
-            for j in 0..4 {
+        for (i, row) in result.iter().enumerate() {
+            for (j, &val) in row.iter().enumerate() {
                 let expected = if i == j { 1.0 } else { 0.0 };
-                assert!((result[i][j] - expected).abs() < 1e-6);
+                assert!((val - expected).abs() < 1e-6);
             }
         }
     }

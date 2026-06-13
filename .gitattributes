@@ -20,6 +20,6 @@
 
 # Pyxel assets
 *.pyxapp binary
-# Pyxel palette is a plain-text INI-style file.
+# Pyxel palette is a plain-text file with one hex color per line.
 *.pyxpal text
 *.pyxres binary

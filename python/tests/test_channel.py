@@ -6,8 +6,8 @@ import pyxel
 class TestChannel:
     def test_new_defaults(self):
         ch = pyxel.Channel()
-        assert isinstance(ch.gain, float)
-        assert isinstance(ch.detune, int)
+        assert ch.gain == 0.125
+        assert ch.detune == 0
 
     def test_gain_read_write(self):
         ch = pyxel.Channel()
@@ -27,7 +27,7 @@ class TestChannel:
         pyxel.sounds[0].set("c2e2g2", "sss", "777", "nnn", 10)
         ch = pyxel.Channel()
         ch.play(0)
-        # After play, play_pos should return a tuple
+        # play_pos may be None immediately after play (audio thread timing)
         pos = ch.play_pos()
         assert pos is None or isinstance(pos, tuple)
         ch.stop()

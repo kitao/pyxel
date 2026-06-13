@@ -246,7 +246,7 @@ mod tests {
         let n = &p.normals;
         // 1 face slot allocated, but the out-of-range index leaves it zero.
         assert_eq!(n.len(), 3);
-        for v in n.iter() {
+        for v in n {
             assert_eq!(*v, 0.0);
         }
     }

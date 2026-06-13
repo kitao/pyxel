@@ -185,6 +185,10 @@ impl PlatformSdl2 {
             self.gl_context = Box::into_raw(Box::new(Context::from_loader_function(|s| {
                 SDL_GL_GetProcAddress(s.as_ptr().cast()).cast_const()
             })));
+
+            // Grab input focus, which CLI-launched windows don't reliably get on their own
+            #[cfg(not(target_os = "emscripten"))]
+            SDL_RaiseWindow(self.window);
         }
     }
 

@@ -9,6 +9,7 @@
     clippy::cast_sign_loss,
     clippy::float_cmp,
     clippy::fn_params_excessive_bools,
+    clippy::manual_midpoint,
     clippy::missing_errors_doc,
     clippy::missing_panics_doc,
     clippy::missing_safety_doc,
@@ -18,6 +19,7 @@
     clippy::struct_field_names,
     clippy::too_many_arguments,
     clippy::too_many_lines,
+    clippy::unreadable_literal,
     clippy::unused_self
 )]
 

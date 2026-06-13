@@ -66,8 +66,8 @@ class TilemapEditor(EditorBase):
 
         # Initialize tilemap viewer
         self._tilemap_viewer = TilemapViewer(self)
-        self.copy_var("focus_x_var", self._tilemap_viewer, "focus_x_var")
-        self.copy_var("focus_y_var", self._tilemap_viewer, "focus_y_var")
+        self.copy_var("focus_x_var", self._tilemap_viewer)
+        self.copy_var("focus_y_var", self._tilemap_viewer)
 
         # Initialize image picker
         self._image_picker = NumberPicker(
@@ -122,7 +122,7 @@ class TilemapEditor(EditorBase):
     def __on_tilemap_picker_change(self, value):
         self.image_index_var = pyxel.tilemaps[value].imgsrc
 
-    def __on_tilemap_picker_mouse_hover(self, x, y):
+    def __on_tilemap_picker_mouse_hover(self, _x, _y):
         self.help_message_var = "COPY_ALL:CTRL+SHIFT+C/X/V"
 
     def __on_image_picker_change(self, value):

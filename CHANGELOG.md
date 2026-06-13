@@ -6,17 +6,45 @@
 
 ## 2.9.6
 
-- Updated Pyodide to version 0.29.4
-- Updated Rust to version nightly-2026-05-08
+- Updated Pyodide to version 314.0
+- Updated Emscripten to version 5.0.3
+- Updated SDL2 to version 2.32.10
+- Fixed WASM SDL2 PIC linking and wheel README packaging
+- Updated Rust to version nightly-2026-06-12
+- Updated pyo3 crate to version 0.29
+- Updated symphonia crate to version 0.6
 - Updated sysinfo crate to version 0.39
+- Trimmed encoder delay and padding from decoded PCM audio
 - Fixed mistyped notes in Pyxel MML Studio sample tune A URL
 - Raised the minimum Python version to 3.11
 - Reorganized .gitignore and added AI tool ignore entries
 - Avoided Rc clone when refreshing voice tone state
-- Refined README intro and user-guide star request wording
 - Made MML parser reject unresolved ties, invalid lengths, and unmatched repeats
 - Fixed profiler frame time on tick counter wraparound
-- Added testing and pyi default standards to the coding policy
+- Added testing, pyi defaults, and Japanese typography to the coding policy
+- Optimized line, rectb, circ, and elli drawing with span fills
+- Lazy-loaded below-the-fold images in the web user guide
+- Cached API reference element lookups for search input
+- Debounced Pyxel MML Studio URL and QR updates while typing
+- Fixed old MML parser panic on zero tempo or note length
+- Fixed Pyxel Editor crash when cutting a bank in tilemap mode
+- Fixed sound editor speed display not updating when switching sounds
+- Fixed negative sample rounding bias in voice gain processing
+- Removed unused semver dependency, constants, and dead code
+- Fixed flipped blt and bltm clipping when the source overhangs
+- Fixed elli and ellib drawing with zero width or height
+- Fixed tri fill when all three vertices share one row
+- Fixed PCM sounds being skipped after note sounds in a playlist
+- Fixed seek into sounds following a PCM sound in a playlist
+- Fixed ghost notes when resuming PCM playback after an interrupting sound
+- Fixed BGM generator hang on custom chords without tones
+- Fixed old MML parser panic on trailing whitespace
+- Fixed old resource load crashing on malformed palette files
+- Fixed BDF font parse crash on overlong bitmap rows
+- Fixed Pyxel Editor color pick offset at pixel boundaries
+- Fixed Pyxel MML Studio legacy share URLs failing to load
+- Fixed doubled HTML escaping in web user guide link labels
+- Refined wording, translations, and data across web pages and docs
 
 ## 2.9.5
 
@@ -27,8 +55,7 @@
 - Reduced WASM virtual gamepad input from 10 JS calls per frame to 1
 - Cached WASM keyboard scancode correction scripts per scancode
 - Prefetched WASM wheel and import hook in parallel with Pyodide load
-- Enabled WASM SIMD128 in Rust build flags for autovectorization
-- Gated -Zbuild-std by the WASM target
+- Enabled WASM SIMD128 and gated -Zbuild-std by the WASM target
 - Switched shared types to Rc-based ownership and resolved sound leaks
 - Fixed missing audio lock in several audio API call paths
 - Fixed audio_bgm2 sample using off-palette colors
@@ -36,10 +63,8 @@
 - Fixed Tone.sample_bits range allowing zero or shift-overflow values
 - Fixed vibrato modulation skipped when MML period equals initial value
 - Made Tone wavetable, sample_bits, and gain take effect mid-note
-- Removed deprecated Tone.waveform from API reference and type hints
-- Replaced Seq[T] with list[T] in type hints
-- Added Tone.sample_bits range and Channel.detune unit to docs
-- Refined API reference and user-guide translations
+- Removed Tone.waveform and replaced Seq[T] with list[T] in type hints
+- Added Tone.sample_bits and Channel.detune docs and refined translations
 
 ## 2.9.4
 
@@ -265,11 +290,9 @@
 
 ## 2.7.2
 
-- Added manual page for Pyxel Code Maker
-- Added manual page for Pyxel MML Studio
+- Added manual pages for Pyxel Code Maker and Pyxel MML Studio
 - Removed the version number from the pyxel command in the README files
-- Revamped Pyxel Web documentation for clarity and accuracy
-- Revamped the FAQ with updated content and improved clarity
+- Revamped Pyxel Web documentation and the FAQ for clarity
 
 ## 2.7.1
 
@@ -543,7 +566,7 @@
 - Updated Pyodide to version 0.27.5
 - Added a Q&A about saving application data to the FAQ
 - Updated zip crate to version 4.0
-- Updated serde-xml-rs to version 0.8
+- Updated serde-xml-rs crate to version 0.8
 - Updated pyo3 crate to version 0.25
 - Updated sysinfo crate to version 0.35
 - Updated bindgen crate to version 0.72
@@ -604,7 +627,7 @@
 
 - Added a Q&A about file loading to the FAQ
 - Added support for overriding screen position and size in the web version
-- Updated pyo3 crate to version 2.4
+- Updated pyo3 crate to version 0.24
 
 ## 2.3.11
 
@@ -696,7 +719,7 @@
 
 ## 2.2.10
 
-- Updated pyo3 crate to version 2.3
+- Updated pyo3 crate to version 0.23
 - Reduced sound clock rate from 120MHz to 2.048MHz
 
 ## 2.2.9
@@ -748,10 +771,8 @@
 ## 2.2.4
 
 - Fixed a bug when playing a pyxapp with the same process ID
-- Updated sysinfo crate to version 0.25
-- Updated license description in the README files
-- Updated instructions for using the web version of Pyxel
-- Updated Q&A
+- Updated sysinfo crate to version 0.32
+- Updated README license, web instructions, and Q&A
 
 ## 2.2.3
 
@@ -902,7 +923,7 @@
 
 ## 2.0.7
 
-- Turned off the high DPI mode for performance perspective
+- Turned off the high DPI mode for performance
 - Added a shortcut to output the current color palette
 - Added the load_tmx and load methods to Tilemap
 - Enabled importing a TMX file via drag and drop in the tilemap editor

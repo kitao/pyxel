@@ -5,7 +5,7 @@ from pathlib import Path
 import pytest
 
 import pyxel
-from pyxel import editor as _editor  # noqa: F401
+from pyxel import editor as _editor
 
 from _capture import (  # type: ignore[reportMissingImports]
     EDITOR_REFS_DIR,
