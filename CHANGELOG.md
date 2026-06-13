@@ -2,9 +2,11 @@
 
 ## 2.9.6
 
-- Updated the WASM stack to Pyodide 314.0, Emscripten 5.0.3, and SDL2 2.32.10
+- Updated Pyodide to version 314.0
+- Updated Emscripten to version 5.0.3
+- Updated SDL2 to version 2.32.10
 - Fixed WASM SDL2 PIC linking and wheel README packaging
-- Updated Rust to version nightly-2026-05-08
+- Updated Rust to version nightly-2026-06-12
 - Updated pyo3 crate to version 0.29
 - Updated symphonia crate to version 0.6
 - Updated sysinfo crate to version 0.39
