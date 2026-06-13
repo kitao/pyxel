@@ -5,6 +5,10 @@ __pycache__/
 dist/
 dist-*/
 
+# Copied into the package at build time
+python/pyxel/LICENSE
+python/pyxel/README.md
+
 # Rust
 *.pdb
 *.so

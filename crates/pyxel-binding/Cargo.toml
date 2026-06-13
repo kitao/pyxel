@@ -12,7 +12,7 @@ crate-type = ["cdylib"]
 [dependencies]
 # abi3-py311 ships a single wheel for Python 3.11+; multiple-pymethods
 # lets binding modules split #[pymethods] across files
-pyo3 = { version = "0.28", features = [
+pyo3 = { version = "0.29", features = [
     "abi3-py311",
     "extension-module",
     "multiple-pymethods",

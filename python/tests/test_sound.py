@@ -161,8 +161,8 @@ class TestSoundPcm:
     def test_pcm(self, assets_dir):
         snd = pyxel.Sound()
         snd.pcm(str(assets_dir / "audio_bgm1.ogg"))
-        # The bundled asset decodes to a fixed length at 22050 Hz
-        assert snd.total_sec() == pytest.approx(53.359455, abs=1e-4)
+        # The bundled asset decodes to a fixed gapless-trimmed length at 22050 Hz
+        assert snd.total_sec() == pytest.approx(53.333332, abs=1e-4)
 
     def test_pcm_none_exits_pcm_mode(self, assets_dir):
         snd = pyxel.Sound()
