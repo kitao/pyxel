@@ -2,9 +2,9 @@
 
 ## 2.9.7
 
-- Added prose formatter for Japanese and Chinese typography
-- Reduced overhead in audio, BGM, MML, and resource save paths
-- Reduced overhead in web encoding and editor shortcuts
+- Added prose formatter for Japanese and Chinese documentation typography
+- Reduced audio, MML, BGM, and resource saving overhead
+- Reduced web Base64 encoding and Pyxel Editor shortcut overhead
 
 ## 2.9.6
 
