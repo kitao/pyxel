@@ -24,6 +24,8 @@ class TextButton(Button):
 
         self.add_event_listener("draw", self.__on_draw)
 
+    # Event handlers
+
     def __on_draw(self):
         x = self.x
         y = self.y

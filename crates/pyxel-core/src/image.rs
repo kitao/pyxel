@@ -363,7 +363,7 @@ impl Image {
             None
         };
         let (src, sx, sy) = match &src_canvas {
-            Some(tmp) => (tmp, 0.0, 0.0),
+            Some(copied_canvas) => (copied_canvas, 0.0, 0.0),
             None => (&image.canvas, image_x, image_y),
         };
 
@@ -477,7 +477,7 @@ impl Image {
             None
         };
         let image_canvas = match &src_canvas {
-            Some(tmp) => tmp,
+            Some(cloned_canvas) => cloned_canvas,
             None => &resolved.canvas,
         };
 
@@ -604,12 +604,12 @@ impl Image {
         let tilemap_pixel_h = tilemap_inner.height() as f32 * TILE_SIZE as f32;
 
         // Render tilemap region into a temporary image
-        let tmp = Self::new(
+        let rendered_tilemap = Self::new(
             utils::f32_to_u32(width.abs()),
             utils::f32_to_u32(height.abs()),
         );
-        let tmp_ref = rc_mut!(tmp);
-        tmp_ref.draw_tilemap(
+        let rendered_tilemap = rc_mut!(rendered_tilemap);
+        rendered_tilemap.draw_tilemap(
             0.0,
             0.0,
             tilemap,
@@ -621,13 +621,13 @@ impl Image {
             None,
             None,
         );
-        tmp_ref.set_clip_rect(-tilemap_x, -tilemap_y, tilemap_pixel_w, tilemap_pixel_h);
+        rendered_tilemap.set_clip_rect(-tilemap_x, -tilemap_y, tilemap_pixel_w, tilemap_pixel_h);
 
         let palette = palette_opt!(self);
         self.canvas.blit_with_transform(
             x,
             y,
-            &tmp_ref.canvas,
+            &rendered_tilemap.canvas,
             0.0,
             0.0,
             width,
@@ -660,7 +660,7 @@ impl Image {
             None
         };
         let src = match &src_canvas {
-            Some(tmp) => tmp,
+            Some(cloned_canvas) => cloned_canvas,
             None => &image.canvas,
         };
         let palette = palette_opt!(self);
@@ -718,7 +718,7 @@ impl Image {
             None
         };
         let image_canvas = match &src_canvas {
-            Some(tmp) => tmp,
+            Some(cloned_canvas) => cloned_canvas,
             None => &resolved.canvas,
         };
         let img_w = image_canvas.width() as i32;

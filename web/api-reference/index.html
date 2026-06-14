@@ -399,9 +399,9 @@
                     html += `<code class="const-chip" data-const-key="${sid}-${i}">${esc(sec.constants[i])}</code>`;
                   }
                   html += "</div>";
-                  const chipDiv = document.createElement("div");
-                  chipDiv.innerHTML = html;
-                  secWrap.appendChild(chipDiv.firstElementChild);
+                  const chipWrap = document.createElement("div");
+                  chipWrap.innerHTML = html;
+                  secWrap.appendChild(chipWrap.firstElementChild);
 
                   if (sec.details && sec.details.length > 0) {
                     const det = document.createElement("details");
