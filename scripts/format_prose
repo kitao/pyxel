@@ -39,7 +39,7 @@ def main():
 def _target_files():
     listing = subprocess.run(
         ["git", "ls-files"], cwd=_ROOT, capture_output=True, text=True, check=True
-    ).stdout.split()
+    ).stdout.splitlines()
     for rel in listing:
         if _is_target(rel):
             yield _ROOT / rel
@@ -47,6 +47,7 @@ def _target_files():
 
 def _is_target(rel):
     if rel == "docs/coding-policy.md":
+        # Keep policy examples literal; several intentionally show anti-patterns.
         return False
     if rel.startswith("web/") and rel.endswith(".json"):
         return True
