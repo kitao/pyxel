@@ -486,7 +486,7 @@
     },
     "param_gamepad": {
       "en": "Display a virtual gamepad on touch devices (smartphones and tablets)",
-      "cn": "在触控设备（智能手机和平板电脑）上显示虚拟游戏手柄",
+      "cn": "在触控设备 (智能手机和平板电脑) 上显示虚拟游戏手柄",
       "de": "Ein virtuelles Gamepad auf Touch-Geräten (Smartphones und Tablets) anzeigen",
       "es": "Mostrar un gamepad virtual en dispositivos táctiles (smartphones y tablets)",
       "fr": "Afficher une manette virtuelle sur les appareils tactiles (smartphones et tablettes)",
@@ -766,7 +766,7 @@
     },
     "custom_elements_run_root_omit": {
       "en": "If {0} is the current directory ({1}), the {2} attribute can be omitted.",
-      "cn": "如果 {0} 为当前目录（{1}），则可以省略 {2} 属性。",
+      "cn": "如果 {0} 为当前目录 ({1})，则可以省略 {2} 属性。",
       "de": "Wenn {0} das aktuelle Verzeichnis ({1}) ist, kann das Attribut {2} weggelassen werden.",
       "es": "Si {0} es el directorio actual ({1}), el atributo {2} se puede omitir.",
       "fr": "Si {0} est le répertoire courant ({1}), l'attribut {2} peut être omis.",
@@ -892,7 +892,7 @@
     },
     "custom_elements_attr_gamepad": {
       "en": "Enable the virtual gamepad (automatically displayed on touch devices)",
-      "cn": "启用虚拟游戏手柄（在触控设备上自动显示）",
+      "cn": "启用虚拟游戏手柄 (在触控设备上自动显示)",
       "de": "Das virtuelle Gamepad aktivieren (wird auf Touch-Geräten automatisch angezeigt)",
       "es": "Habilitar el gamepad virtual (se muestra automáticamente en dispositivos táctiles)",
       "fr": "Activer la manette virtuelle (affichée automatiquement sur les appareils tactiles)",

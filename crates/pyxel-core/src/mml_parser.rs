@@ -278,12 +278,12 @@ pub fn parse_mml(mml: &str) -> Result<Vec<MmlCommand>, String> {
 
 pub fn total_duration_sec(commands: &[MmlCommand]) -> Option<f32> {
     let mut total_clocks = 0;
-    let mut command_index: u32 = 0;
-    let mut repeat_points: Vec<(u32, u32)> = Vec::new();
+    let mut command_index = 0;
+    let mut repeat_points: Vec<(usize, u32)> = Vec::new();
     let mut clocks_per_tick = bpm_to_clocks_per_tick(DEFAULT_TEMPO);
 
-    while command_index < commands.len() as u32 {
-        let command = &commands[command_index as usize];
+    while command_index < commands.len() {
+        let command = &commands[command_index];
         command_index += 1;
         match command {
             MmlCommand::Tempo {
