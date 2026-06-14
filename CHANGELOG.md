@@ -1,5 +1,11 @@
 # Change Log
 
+## 2.9.7
+
+- Added prose formatter for Japanese and Chinese typography
+- Reduced overhead in audio, BGM, MML, and resource save paths
+- Reduced overhead in web encoding and editor shortcuts
+
 ## 2.9.6
 
 - Updated Pyodide to version 314.0

@@ -146,7 +146,7 @@
       "cmd": "@ <tone>",
       "desc": {
         "en": "Sets the tone. Range: 0-3 (by default: 0:Triangle / 1:Square / 2:Pulse / 3:Noise). Default is 0.",
-        "cn": "设置音色。范围：0-3（默认：0:Triangle / 1:Square / 2:Pulse / 3:Noise）。默认值为 0。",
+        "cn": "设置音色。范围：0-3 (默认：0:Triangle / 1:Square / 2:Pulse / 3:Noise)。默认值为 0。",
         "de": "Setzt den Klang. Bereich: 0-3 (Standard: 0:Triangle / 1:Square / 2:Pulse / 3:Noise). Standard ist 0.",
         "es": "Establece el tono. Rango: 0-3 (por defecto: 0:Triangle / 1:Square / 2:Pulse / 3:Noise). Por defecto es 0.",
         "fr": "Définit le timbre. Plage : 0-3 (par défaut : 0:Triangle / 1:Square / 2:Pulse / 3:Noise). Par défaut : 0.",
@@ -214,7 +214,7 @@
       "cmd": "@ENV <slot>",
       "desc": {
         "en": "Switches the envelope (volume curve) slot. Range: 0-. 0 turns it off.",
-        "cn": "切换包络（音量曲线）插槽。范围：0-。0 为关闭。",
+        "cn": "切换包络 (音量曲线) 插槽。范围：0-。0 为关闭。",
         "de": "Wechselt den Hüllkurven-Slot (Lautstärkekurve). Bereich: 0-. 0 deaktiviert ihn.",
         "es": "Cambia la ranura de envolvente (curva de volumen). Rango: 0-. 0 lo desactiva.",
         "fr": "Change le slot d'enveloppe (courbe de volume). Plage : 0-. 0 le désactive.",
@@ -231,7 +231,7 @@
       "cmd": "@ENV <slot> { init_vol, dur_ticks1, vol1, dur_ticks2, vol2, ... }",
       "desc": {
         "en": "Slot range: 1-. Sets and switches to the specified envelope slot. Slot 0 cannot be specified.\\nInside `{ }`, specify \"initial volume (once)\", then repeat \"duration (tick), volume (vol)\". 1 tick is 1/48 of a quarter note.",
-        "cn": "插槽范围：1-。设置并切换到指定的包络插槽。不能指定插槽 0。\\n在 `{ }` 内，先指定「初始音量（仅一次）」，然后重复指定「持续时间 (tick)、音量 (vol)」。1 tick 为四分音符的 1/48。",
+        "cn": "插槽范围：1-。设置并切换到指定的包络插槽。不能指定插槽 0。\\n在 `{ }` 内，先指定「初始音量 (仅一次)」，然后重复指定「持续时间 (tick)、音量 (vol)」。1 tick 为四分音符的 1/48。",
         "de": "Slot-Bereich: 1-. Setzt und wechselt zum angegebenen Hüllkurven-Slot. Slot 0 kann nicht angegeben werden.\\nIn `{ }` erst \"Anfangslautstärke (einmal)\" angeben, dann \"Dauer (Tick), Lautstärke (Vol)\" wiederholen. 1 Tick ist 1/48 einer Viertelnote.",
         "es": "Rango de ranura: 1-. Configura y cambia a la ranura de envolvente especificada. No se puede especificar la ranura 0.\\nDentro de `{ }`, especificar \"volumen inicial (una vez)\", luego repetir \"duración (tick), volumen (vol)\". 1 tick es 1/48 de una negra.",
         "fr": "Plage de slot : 1-. Définit et active le slot d'enveloppe spécifié. Le slot 0 ne peut pas être spécifié.\\nDans `{ }`, spécifier « volume initial (une fois) », puis répéter « durée (tick), volume (vol) ». 1 tick vaut 1/48 d'une noire.",
@@ -249,7 +249,7 @@
       "cmd": "@VIB <slot>",
       "desc": {
         "en": "Switches the vibrato (pitch modulation) slot. Range: 0-. 0 turns it off.",
-        "cn": "切换颤音（音高调制）插槽。范围：0-。0 为关闭。",
+        "cn": "切换颤音 (音高调制) 插槽。范围：0-。0 为关闭。",
         "de": "Wechselt den Vibrato-Slot (Tonhöhenmodulation). Bereich: 0-. 0 deaktiviert ihn.",
         "es": "Cambia la ranura de vibrato (modulación de tono). Rango: 0-. 0 lo desactiva.",
         "fr": "Change le slot de vibrato (modulation de hauteur). Plage : 0-. 0 le désactive.",
@@ -284,7 +284,7 @@
       "cmd": "@GLI <slot>",
       "desc": {
         "en": "Switches the glide (pitch slide) slot. Range: 0-. 0 turns it off.",
-        "cn": "切换滑音（音高滑动）插槽。范围：0-。0 为关闭。",
+        "cn": "切换滑音 (音高滑动) 插槽。范围：0-。0 为关闭。",
         "de": "Wechselt den Glide-Slot (Tonhöhengleiten). Bereich: 0-. 0 deaktiviert ihn.",
         "es": "Cambia la ranura de glide (deslizamiento de tono). Rango: 0-. 0 lo desactiva.",
         "fr": "Change le slot de glide (glissement de hauteur). Plage : 0-. 0 le désactive.",
@@ -301,7 +301,7 @@
       "cmd": "@GLI <slot> { offset_cents, dur_ticks }",
       "desc": {
         "en": "Slot range: 1-. Sets and switches to the specified glide (pitch slide) slot. Slot 0 cannot be specified.\\nInside `{ }`, specify \"initial pitch offset (cent), time to return to 0 (tick)\". 1 tick is 1/48 of a quarter note.\\nSpecifying `*` for each parameter automatically applies the pitch offset as the difference from the previous note and the return time as the playback duration of each note, respectively.",
-        "cn": "插槽范围：1-。设置并切换到指定的滑音（音高滑动）插槽。不能指定插槽 0。\\n在 `{ }` 内指定「初始音高偏移 (cent)、归零时间 (tick)」。1 tick 为四分音符的 1/48。\\n各参数指定 `*` 时，音高偏移自动使用与前一个音符的差值，归零时间自动使用各音符的播放时长。",
+        "cn": "插槽范围：1-。设置并切换到指定的滑音 (音高滑动) 插槽。不能指定插槽 0。\\n在 `{ }` 内指定「初始音高偏移 (cent)、归零时间 (tick)」。1 tick 为四分音符的 1/48。\\n各参数指定 `*` 时，音高偏移自动使用与前一个音符的差值，归零时间自动使用各音符的播放时长。",
         "de": "Slot-Bereich: 1-. Setzt und wechselt zum angegebenen Glide-Slot (Tonhöhengleiten). Slot 0 kann nicht angegeben werden.\\nIn `{ }` \"Anfangs-Tonhöhenversatz (Cent), Zeit bis Rückkehr auf 0 (Tick)\" angeben. 1 Tick ist 1/48 einer Viertelnote.\\nBei `*` für einen Parameter wird der Tonhöhenversatz automatisch als Differenz zur vorherigen Note und die Rückkehrzeit als Wiedergabedauer jeder Note angewendet.",
         "es": "Rango de ranura: 1-. Configura y cambia a la ranura de glide (deslizamiento de tono) especificada. No se puede especificar la ranura 0.\\nDentro de `{ }`, especificar \"desplazamiento de tono inicial (cent), tiempo de retorno a 0 (tick)\". 1 tick es 1/48 de una negra.\\nAl especificar `*` para cada parámetro, el desplazamiento se aplica como la diferencia con la nota anterior y el tiempo de retorno como la duración de cada nota.",
         "fr": "Plage de slot : 1-. Définit et active le slot de glide (glissement de hauteur) spécifié. Le slot 0 ne peut pas être spécifié.\\nDans `{ }`, spécifier « décalage de hauteur initial (cent), temps de retour à 0 (tick) ». 1 tick vaut 1/48 d'une noire.\\nEn spécifiant `*` pour chaque paramètre, le décalage est automatiquement la différence avec la note précédente et le temps de retour est la durée de chaque note.",
@@ -336,7 +336,7 @@
       "cmd": ">",
       "desc": {
         "en": "Raises the octave by 1 (max 9).",
-        "cn": "将八度提高 1（最大 9）。",
+        "cn": "将八度提高 1 (最大 9)。",
         "de": "Erhöht die Oktave um 1 (max. 9).",
         "es": "Sube la octava en 1 (máx. 9).",
         "fr": "Monte l'octave de 1 (max. 9).",
@@ -353,7 +353,7 @@
       "cmd": "<",
       "desc": {
         "en": "Lowers the octave by 1 (min -1).",
-        "cn": "将八度降低 1（最小 -1）。",
+        "cn": "将八度降低 1 (最小 -1)。",
         "de": "Senkt die Oktave um 1 (min. -1).",
         "es": "Baja la octava en 1 (mín. -1).",
         "fr": "Baisse l'octave de 1 (min. -1).",
@@ -489,7 +489,7 @@
       "cmd": "&",
       "desc": {
         "en": "Tie/Slur. When connecting the same pitch, it ties the notes into one. When connecting different pitches, it plays them legato (no gap). You can also specify only the length, e.g., `C4&16`.",
-        "cn": "延音/圆滑线。连接相同音高时为延音（合并为一个音），连接不同音高时为圆滑奏（无间隔）。也可以只指定长度，如 `C4&16`。",
+        "cn": "延音/圆滑线。连接相同音高时为延音 (合并为一个音)，连接不同音高时为圆滑奏 (无间隔)。也可以只指定长度，如 `C4&16`。",
         "de": "Haltebogen/Bindebogen. Bei gleicher Tonhöhe werden die Noten gebunden. Bei verschiedenen Tonhöhen werden sie legato gespielt (ohne Lücke). Es kann auch nur die Länge angegeben werden, z. B. `C4&16`.",
         "es": "Ligadura. Al conectar la misma altura, une las notas en una. Al conectar alturas diferentes, las toca legato (sin espacio). También se puede especificar solo la duración, p. ej., `C4&16`.",
         "fr": "Liaison. Quand elle relie la même hauteur, elle lie les notes en une. Quand elle relie des hauteurs différentes, elle les joue legato (sans coupure). On peut aussi ne spécifier que la longueur, par ex. `C4&16`.",

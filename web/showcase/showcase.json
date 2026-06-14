@@ -111,12 +111,12 @@
     },
     "footer": {
       "en": "Web version HTML files are available {0}. For detailed usage instructions, see {1}.",
-      "cn": "Web 版 HTML 文件可在{0}查看，详细使用方法请参考{1}。",
+      "cn": "Web 版 HTML 文件可在 {0} 查看，详细使用方法请参考 {1}。",
       "de": "HTML-Dateien der Web-Version sind {0} verfügbar. Detaillierte Anleitungen finden Sie {1}.",
       "es": "Los archivos HTML de la versión web están disponibles {0}. Para instrucciones detalladas, consulte {1}.",
       "fr": "Les fichiers HTML de la version web sont disponibles {0}. Pour les instructions détaillées, consultez {1}.",
       "it": "I file HTML della versione web sono disponibili {0}. Per istruzioni dettagliate, consultare {1}.",
-      "ja": "Web 版の HTML ファイルは{0}、詳しい使い方は{1}をご参照ください。",
+      "ja": "Web 版の HTML ファイルは {0}、詳しい使い方は {1} をご参照ください。",
       "ko": "웹 버전 HTML 파일은 {0}에서, 자세한 사용법은 {1}를 참조하세요.",
       "pt": "Os arquivos HTML da versão web estão disponíveis {0}. Para instruções detalhadas, consulte {1}.",
       "ru": "HTML-файлы веб-версии доступны {0}. Подробные инструкции см. {1}.",
@@ -407,7 +407,7 @@
           },
           "details": {
             "en": "A demo of the tri function (filled triangles) and trib function (triangle outlines). Demonstrates triangle drawing APIs through recursive generation of a Sierpinski triangle.",
-            "cn": "tri 函数（填充三角形）和 trib 函数（三角形轮廓）的绘制演示。通过递归生成谢尔宾斯基三角形展示三角形绘图 API 的用法。",
+            "cn": "tri 函数 (填充三角形) 和 trib 函数 (三角形轮廓) 的绘制演示。通过递归生成谢尔宾斯基三角形展示三角形绘图 API 的用法。",
             "de": "Demo der tri-Funktion (gefüllte Dreiecke) und trib-Funktion (Dreiecksumrisse). Demonstriert die Dreiecks-Zeichen-APIs durch rekursive Erzeugung eines Sierpinski-Dreiecks.",
             "es": "Demo de la función tri (triángulos rellenos) y la función trib (contornos de triángulos). Presenta las API de dibujo de triángulos mediante la generación recursiva de un triángulo de Sierpinski.",
             "fr": "Démo de la fonction tri (triangles pleins) et de la fonction trib (contours de triangles). Présente les API de dessin de triangles par la génération récursive d'un triangle de Sierpinski.",
@@ -789,7 +789,7 @@
           "code": "https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/99_flip_animation.py",
           "description": {
             "en": "Animation with flip function (non-web platforms only)",
-            "cn": "使用 flip 函数的动画（仅限非 Web 平台）",
+            "cn": "使用 flip 函数的动画 (仅限非 Web 平台)",
             "de": "Animation mit der flip-Funktion (nur für Nicht-Web-Plattformen)",
             "es": "Animación con la función flip (solo para plataformas que no son web)",
             "fr": "Animation avec la fonction flip (uniquement pour les plateformes non web)",
@@ -1020,7 +1020,7 @@
           },
           "details": {
             "en": "A sample game from the Pyxel Official Book (Gijutsu-Hyoron Publishing). A simple yet deep one-button game where you rescue astronauts, covering the basics of game development.",
-            "cn": "收录于 Pyxel 官方书籍（技术评论社出版）的示例游戏。通过单键操作救出宇航员的简单而有深度的游戏，学习游戏开发基础。",
+            "cn": "收录于 Pyxel 官方书籍 (技术评论社出版) 的示例游戏。通过单键操作救出宇航员的简单而有深度的游戏，学习游戏开发基础。",
             "de": "Ein Beispielspiel aus dem offiziellen Pyxel-Buch (Gijutsu-Hyoron-Verlag). Ein einfaches, aber tiefgründiges Ein-Tasten-Spiel zur Rettung von Astronauten, das die Grundlagen der Spieleentwicklung vermittelt.",
             "es": "Juego de ejemplo del Libro Oficial de Pyxel (editorial Gijutsu-Hyoron). Un juego simple pero profundo de un solo botón donde rescatas astronautas, cubriendo los fundamentos del desarrollo de juegos.",
             "fr": "Jeu exemple du Livre Officiel Pyxel (éditions Gijutsu-Hyoron). Un jeu à un seul bouton, simple mais profond, où vous sauvez des astronautes, couvrant les bases du développement de jeux.",
@@ -1053,7 +1053,7 @@
           },
           "details": {
             "en": "A sample game from the Pyxel Official Book (Gijutsu-Hyoron Publishing). A full-fledged bullet-heavy shooter for learning enemy pattern and score system implementation.",
-            "cn": "收录于 Pyxel 官方书籍（技术评论社出版）的示例游戏。弹幕飞舞的正统射击游戏，学习敌人模式和分数系统的实现。",
+            "cn": "收录于 Pyxel 官方书籍 (技术评论社出版) 的示例游戏。弹幕飞舞的正统射击游戏，学习敌人模式和分数系统的实现。",
             "de": "Ein Beispielspiel aus dem offiziellen Pyxel-Buch (Gijutsu-Hyoron-Verlag). Ein vollwertiger Bullet-Hell-Shooter zum Erlernen der Implementierung von Feindmustern und Punktesystemen.",
             "es": "Juego de ejemplo del Libro Oficial de Pyxel (editorial Gijutsu-Hyoron). Un shooter completo con lluvia de balas para aprender la implementación de patrones de enemigos y sistemas de puntuación.",
             "fr": "Jeu exemple du Livre Officiel Pyxel (éditions Gijutsu-Hyoron). Un shooter complet à pluie de balles pour apprendre l'implémentation de patterns d'ennemis et de systèmes de score.",
@@ -1086,7 +1086,7 @@
           },
           "details": {
             "en": "A sample game from the Pyxel Official Book (Gijutsu-Hyoron Publishing). A platformer where you collect gems in caves while dodging traps, covering map design and collision detection.",
-            "cn": "收录于 Pyxel 官方书籍（技术评论社出版）的示例游戏。在洞窟中避开陷阱收集宝石的平台游戏，学习地图设计和碰撞检测。",
+            "cn": "收录于 Pyxel 官方书籍 (技术评论社出版) 的示例游戏。在洞窟中避开陷阱收集宝石的平台游戏，学习地图设计和碰撞检测。",
             "de": "Ein Beispielspiel aus dem offiziellen Pyxel-Buch (Gijutsu-Hyoron-Verlag). Ein Plattformspiel, in dem man Edelsteine in Höhlen sammelt und Fallen ausweicht – mit Fokus auf Kartendesign und Kollisionserkennung.",
             "es": "Juego de ejemplo del Libro Oficial de Pyxel (editorial Gijutsu-Hyoron). Un plataformas donde recoges gemas en cuevas esquivando trampas, cubriendo diseño de mapas y detección de colisiones.",
             "fr": "Jeu exemple du Livre Officiel Pyxel (éditions Gijutsu-Hyoron). Un platformer où vous collectez des gemmes dans des grottes en évitant les pièges, couvrant le design de cartes et la détection de collisions.",

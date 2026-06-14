@@ -67,10 +67,16 @@ impl Audio {
     }
 
     pub fn render_samples(channels: &[RcChannel], blip_buf: &mut BlipBuf, out: &mut [i16]) {
-        let needs_blip = channels
-            .iter()
-            .any(|ch| rc_ref!(ch).needs_blip_processing());
-        let needs_pcm = channels.iter().any(|ch| rc_ref!(ch).is_playing_pcm());
+        let mut needs_blip = false;
+        let mut needs_pcm = false;
+        for ch in channels {
+            let channel = rc_ref!(ch);
+            needs_blip |= channel.needs_blip_processing();
+            needs_pcm |= channel.is_playing_pcm();
+            if needs_blip && needs_pcm {
+                break;
+            }
+        }
         let mut written = blip_buf.read_samples(out, false);
 
         if needs_blip {

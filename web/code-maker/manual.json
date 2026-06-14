@@ -94,7 +94,7 @@
     },
     "overview_body": {
       "en": "Pyxel Code Maker is a browser-based online development environment for Pyxel. It allows you to write Python code, create game resources (images, tilemaps, sounds, music), and run your application — all in the browser without any installation.",
-      "cn": "Pyxel Code Maker 是基于浏览器的 Pyxel 在线开发环境。无需安装，即可在浏览器中编写 Python 代码、创建游戏资源（图像、瓦片地图、声音、音乐）并运行应用程序。",
+      "cn": "Pyxel Code Maker 是基于浏览器的 Pyxel 在线开发环境。无需安装，即可在浏览器中编写 Python 代码、创建游戏资源 (图像、瓦片地图、声音、音乐) 并运行应用程序。",
       "de": "Pyxel Code Maker ist eine browserbasierte Online-Entwicklungsumgebung für Pyxel. Sie können Python-Code schreiben, Spielressourcen (Bilder, Tilemaps, Sounds, Musik) erstellen und Ihre Anwendung ausführen — alles im Browser ohne Installation.",
       "es": "Pyxel Code Maker es un entorno de desarrollo en línea basado en navegador para Pyxel. Permite escribir código Python, crear recursos de juego (imágenes, tilemaps, sonidos, música) y ejecutar su aplicación, todo en el navegador sin instalación.",
       "fr": "Pyxel Code Maker est un environnement de développement en ligne basé sur le navigateur pour Pyxel. Il vous permet d'écrire du code Python, de créer des ressources de jeu (images, tilemaps, sons, musique) et d'exécuter votre application, le tout dans le navigateur sans installation.",
@@ -220,7 +220,7 @@
     },
     "layout_editing_area_hint": {
       "en": "(Code / Resource)",
-      "cn": "（代码 / 资源）",
+      "cn": "(代码 / 资源)",
       "de": "(Code / Ressource)",
       "es": "(Código / Recurso)",
       "fr": "(Code / Ressource)",

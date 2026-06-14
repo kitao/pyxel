@@ -38,29 +38,23 @@ impl Music {
             return Ok(());
         }
 
-        let pyxel_sounds = pyxel::sounds();
-        let seqs: Vec<Vec<_>> = self
-            .seqs
-            .iter()
-            .map(|seq| {
-                seq.iter()
-                    .map(|&index| pyxel_sounds[index as usize].clone())
-                    .collect()
-            })
-            .collect();
-
         let mut samples = vec![0; num_samples as usize];
         let mut blip_buf = BlipBuf::new(num_samples);
         blip_buf.set_rates(AUDIO_CLOCK_RATE as f64, AUDIO_SAMPLE_RATE as f64);
 
         {
             let _lock = crate::audio::AudioLock::lock();
+            let pyxel_sounds = pyxel::sounds();
             let channels = pyxel::channels();
             for ch in channels.iter() {
                 rc_mut!(ch).stop();
             }
-            for (ch, seq) in channels.iter().zip(seqs.iter()) {
-                rc_mut!(ch).play(seq.clone(), None, true, false);
+            for (ch, seq) in channels.iter().zip(self.seqs.iter()) {
+                let sounds = seq
+                    .iter()
+                    .map(|&index| pyxel_sounds[index as usize].clone())
+                    .collect();
+                rc_mut!(ch).play(sounds, None, true, false);
             }
 
             Audio::render_samples(channels.as_slice(), &mut blip_buf, &mut samples);

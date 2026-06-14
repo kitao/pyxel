@@ -24,14 +24,14 @@ pub struct Channel {
     is_playing: bool,
     should_loop: bool,
     should_resume: bool,
-    sound_index: u32,
+    sound_index: usize,
     note_duration_clocks: u32,
     sound_elapsed_clocks: u32,
     total_elapsed_clocks: u32,
 
     commands: Vec<MmlCommand>,
-    command_index: u32,
-    repeat_points: Vec<(u32, u32)>,
+    command_index: usize,
+    repeat_points: Vec<(usize, u32)>,
     clocks_per_tick: u32,
     gate_ratio: f32,
     volume_level: f32,
@@ -221,7 +221,7 @@ impl Channel {
     pub fn play_position(&mut self) -> Option<(u32, f32)> {
         if self.is_playing {
             let elapsed_sec = self.sound_elapsed_clocks as f32 / AUDIO_CLOCK_RATE as f32;
-            Some((self.sound_index, elapsed_sec))
+            Some((self.sound_index as u32, elapsed_sec))
         } else {
             None
         }
@@ -267,7 +267,7 @@ impl Channel {
                 self.repeat_points.clear();
 
                 {
-                    let sound = rc_ref!(self.sounds[self.sound_index as usize]);
+                    let sound = rc_ref!(self.sounds[self.sound_index]);
                     if sound.commands.is_empty() {
                         sound.emit_commands(&mut self.commands);
                     } else {
@@ -300,7 +300,7 @@ impl Channel {
                 self.sound_index += 1;
                 self.sound_elapsed_clocks = 0;
 
-                if self.sound_index < self.sounds.len() as u32 {
+                if self.sound_index < self.sounds.len() {
                     self.update_playing_pcm();
                 } else if self.should_loop && clock_count < start_clock_count {
                     self.sound_index = 0;
@@ -336,8 +336,8 @@ impl Channel {
         }
 
         // Execute MML commands until the next note, rest, or end of stream
-        while self.command_index < self.commands.len() as u32 {
-            let command = &self.commands[self.command_index as usize];
+        while self.command_index < self.commands.len() {
+            let command = &self.commands[self.command_index];
             self.command_index += 1;
 
             match command {
@@ -520,7 +520,7 @@ impl Channel {
             let mut should_advance = false;
 
             {
-                let sound = rc_ref!(self.sounds[self.sound_index as usize]);
+                let sound = rc_ref!(self.sounds[self.sound_index]);
                 let Some(pcm) = &sound.pcm else {
                     return;
                 };
@@ -574,7 +574,7 @@ impl Channel {
         self.sound_elapsed_clocks = 0;
         self.pcm_position = 0;
 
-        if self.sound_index >= self.sounds.len() as u32 {
+        if self.sound_index >= self.sounds.len() {
             if self.should_loop {
                 self.sound_index = 0;
                 self.pcm_position = 0;
@@ -603,9 +603,9 @@ impl Channel {
             (start_clock as u64 * AUDIO_SAMPLE_RATE as u64 / AUDIO_CLOCK_RATE as u64) as usize;
         let mut remaining = sample_offset;
 
-        while remaining > 0 && (self.sound_index as usize) < self.sounds.len() {
+        while remaining > 0 && self.sound_index < self.sounds.len() {
             let len = {
-                let sound = rc_ref!(self.sounds[self.sound_index as usize]);
+                let sound = rc_ref!(self.sounds[self.sound_index]);
                 match &sound.pcm {
                     Some(pcm) => pcm.samples.len(),
                     None => break,
@@ -627,7 +627,7 @@ impl Channel {
         let remaining_clocks = remaining as u32 * AUDIO_CLOCKS_PER_SAMPLE;
         self.total_elapsed_clocks += start_clock - remaining_clocks;
 
-        if (self.sound_index as usize) >= self.sounds.len() {
+        if self.sound_index >= self.sounds.len() {
             self.is_playing = false;
             self.playing_pcm = false;
         } else {
@@ -644,7 +644,7 @@ impl Channel {
     fn update_playing_pcm(&mut self) {
         self.playing_pcm = self
             .sounds
-            .get(self.sound_index as usize)
+            .get(self.sound_index)
             .is_some_and(|sound| rc_ref!(sound).pcm.is_some());
     }
 

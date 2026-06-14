@@ -787,7 +787,7 @@ fn format_tokens(tokens: &[String]) -> String {
         out.push_str(tok);
         last = tok;
     }
-    out.trim().to_string()
+    out
 }
 
 // Chord resolution
@@ -892,6 +892,7 @@ fn resolve_entry_notes(progressions: &[OwnedChordEntry], idx: usize) -> Option<&
 
 fn chord_bits_per_step(progression: &[OwnedChordEntry]) -> Vec<[i32; 12]> {
     let mut out = vec![[0; 12]; TOTAL_STEPS];
+    let default_bits = parse_notes_bits(I_MAJOR_NOTES_BITS);
 
     for (loc, slot) in out.iter_mut().enumerate().take(TOTAL_STEPS) {
         let mut entry_idx = 0usize;
@@ -909,7 +910,7 @@ fn chord_bits_per_step(progression: &[OwnedChordEntry]) -> Vec<[i32; 12]> {
         *slot = if bits.iter().any(|kind| matches!(kind, 1 | 2 | 3 | 9)) {
             bits
         } else {
-            parse_notes_bits(I_MAJOR_NOTES_BITS)
+            default_bits
         };
     }
     out

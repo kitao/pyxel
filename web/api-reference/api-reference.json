@@ -818,7 +818,7 @@
               "type": "int",
               "description": {
                 "en": "New screen width in pixels",
-                "cn": "新的屏幕宽度（像素）",
+                "cn": "新的屏幕宽度 (像素)",
                 "de": "Neue Bildschirmbreite in Pixeln",
                 "es": "Nuevo ancho de pantalla en píxeles",
                 "fr": "Nouvelle largeur d'écran en pixels",
@@ -836,7 +836,7 @@
               "type": "int",
               "description": {
                 "en": "New screen height in pixels",
-                "cn": "新的屏幕高度（像素）",
+                "cn": "新的屏幕高度 (像素)",
                 "de": "Neue Bildschirmhöhe in Pixeln",
                 "es": "Nuevo alto de pantalla en píxeles",
                 "fr": "Nouvelle hauteur d'écran en pixels",
@@ -1818,7 +1818,7 @@
               "type": "int",
               "description": {
                 "en": "Repeat interval in frames. If 0, no repeat.",
-                "cn": "重复间隔（帧数）。为 0 时不重复。",
+                "cn": "重复间隔 (帧数)。为 0 时不重复。",
                 "de": "Wiederholungsintervall in Frames. Bei 0 keine Wiederholung.",
                 "es": "Intervalo de repetición en fotogramas. Si es 0, no se repite.",
                 "fr": "Intervalle de répétition en frames. Si 0, pas de répétition.",
@@ -1957,7 +1957,7 @@
           "signature": "btnv(key)",
           "description": {
             "en": "Return the analog value of the specified key (e.g., gamepad axis value).",
-            "cn": "返回指定键的模拟值（如游戏手柄轴的值）。",
+            "cn": "返回指定键的模拟值 (如游戏手柄轴的值)。",
             "de": "Gibt den analogen Wert der angegebenen Taste zurück (z.B. Gamepad-Achsenwert).",
             "es": "Devuelve el valor analógico de la tecla especificada (p.ej., valor del eje del gamepad).",
             "fr": "Renvoie la valeur analogique de la touche spécifiée (ex. valeur de l'axe de la manette).",
@@ -3070,12 +3070,12 @@
           "signature": "clip(x, y, w, h)",
           "description": {
             "en": "Set the drawing area of the screen from (x, y) with a width of w and a height of h. Call clip() to reset to full screen.",
-            "cn": "将画面的绘制区域设置为从 (x, y) 开始、宽 w、高 h。调用 clip() 重置为全屏。",
+            "cn": "将画面的绘制区域设置为从 (x, y) 开始、宽 w、高 h。调用 clip () 重置为全屏。",
             "de": "Setzt den Zeichenbereich des Bildschirms ab (x, y) mit Breite w und Höhe h. clip() setzt auf Vollbild zurück.",
             "es": "Establece el área de dibujo de la pantalla desde (x, y) con ancho w y alto h. Llame a clip() para restablecer a pantalla completa.",
             "fr": "Définit la zone de dessin de l'écran à partir de (x, y) avec une largeur w et une hauteur h. Appeler clip() pour réinitialiser en plein écran.",
             "it": "Imposta l'area di disegno dello schermo da (x, y) con larghezza w e altezza h. Chiamare clip() per reimpostare a schermo intero.",
-            "ja": "画面の描画領域を (x, y) から幅 w、高さ h に設定する。clip() で全画面にリセットする。",
+            "ja": "画面の描画領域を (x, y) から幅 w、高さ h に設定する。clip () で全画面にリセットする。",
             "ko": "화면의 그리기 영역을 (x, y)부터 폭w, 높이h로 설정한다. clip()으로 전체 화면으로 리셋한다.",
             "pt": "Define a área de desenho da tela a partir de (x, y) com largura w e altura h. Chame clip() para redefinir para tela cheia.",
             "ru": "Устанавливает область рисования экрана от (x, y) шириной w и высотой h. Вызов clip() сбрасывает на полный экран.",
@@ -3376,7 +3376,7 @@
               "type": "float",
               "description": {
                 "en": "Opacity (0.0: transparent, 1.0: opaque)",
-                "cn": "不透明度（0.0: 透明, 1.0: 不透明）",
+                "cn": "不透明度 (0.0: 透明, 1.0: 不透明)",
                 "de": "Deckkraft (0.0: transparent, 1.0: deckend)",
                 "es": "Opacidad (0.0: transparente, 1.0: opaco)",
                 "fr": "Opacité (0.0: transparent, 1.0: opaque)",
@@ -4856,7 +4856,7 @@
               "type": "float",
               "description": {
                 "en": "Width (negative to flip)",
-                "cn": "宽度（负值则翻转）",
+                "cn": "宽度 (负值则翻转)",
                 "de": "Breite (negativ zum Spiegeln)",
                 "es": "Ancho (negativo para invertir)",
                 "fr": "Largeur (négatif pour inverser)",
@@ -4874,7 +4874,7 @@
               "type": "float",
               "description": {
                 "en": "Height (negative to flip)",
-                "cn": "高度（负值则翻转）",
+                "cn": "高度 (负值则翻转)",
                 "de": "Höhe (negativ zum Spiegeln)",
                 "es": "Alto (negativo para invertir)",
                 "fr": "Hauteur (négatif pour inverser)",
@@ -4910,7 +4910,7 @@
               "type": "float",
               "description": {
                 "en": "Rotation angle in degrees (centered on the copy region). Defaults to 0.",
-                "cn": "旋转角度（度）（以复制区域为中心）。默认为 0。",
+                "cn": "旋转角度 (度)(以复制区域为中心)。默认为 0。",
                 "de": "Rotationswinkel in Grad (zentriert auf den Kopierbereich). Standard ist 0.",
                 "es": "Ángulo de rotación en grados (centrado en la región de copia). Por defecto es 0.",
                 "fr": "Angle de rotation en degrés (centré sur la région de copie). Par défaut : 0.",
@@ -4928,7 +4928,7 @@
               "type": "float",
               "description": {
                 "en": "Scale factor (centered on the copy region). Defaults to 1.",
-                "cn": "缩放倍率（以复制区域为中心）。默认为 1。",
+                "cn": "缩放倍率 (以复制区域为中心)。默认为 1。",
                 "de": "Skalierungsfaktor (zentriert auf den Kopierbereich). Standard ist 1.",
                 "es": "Factor de escala (centrado en la región de copia). Por defecto es 1.",
                 "fr": "Facteur d'échelle (centré sur la région de copie). Par défaut : 1.",
@@ -5061,7 +5061,7 @@
               "type": "float",
               "description": {
                 "en": "Width (negative to flip)",
-                "cn": "宽度（负值则翻转）",
+                "cn": "宽度 (负值则翻转)",
                 "de": "Breite (negativ zum Spiegeln)",
                 "es": "Ancho (negativo para invertir)",
                 "fr": "Largeur (négatif pour inverser)",
@@ -5079,7 +5079,7 @@
               "type": "float",
               "description": {
                 "en": "Height (negative to flip)",
-                "cn": "高度（负值则翻转）",
+                "cn": "高度 (负值则翻转)",
                 "de": "Höhe (negativ zum Spiegeln)",
                 "es": "Alto (negativo para invertir)",
                 "fr": "Hauteur (négatif pour inverser)",
@@ -5115,7 +5115,7 @@
               "type": "float",
               "description": {
                 "en": "Rotation angle in degrees (centered on the copy region). Defaults to 0.",
-                "cn": "旋转角度（度）（以复制区域为中心）。默认为 0。",
+                "cn": "旋转角度 (度)(以复制区域为中心)。默认为 0。",
                 "de": "Rotationswinkel in Grad (zentriert auf den Kopierbereich). Standard ist 0.",
                 "es": "Ángulo de rotación en grados (centrado en la región de copia). Por defecto es 0.",
                 "fr": "Angle de rotation en degrés (centré sur la région de copie). Par défaut : 0.",
@@ -5133,7 +5133,7 @@
               "type": "float",
               "description": {
                 "en": "Scale factor (centered on the copy region). Defaults to 1.",
-                "cn": "缩放倍率（以复制区域为中心）。默认为 1。",
+                "cn": "缩放倍率 (以复制区域为中心)。默认为 1。",
                 "de": "Skalierungsfaktor (zentriert auf den Kopierbereich). Standard ist 1.",
                 "es": "Factor de escala (centrado en la región de copia). Por defecto es 1.",
                 "fr": "Facteur d'échelle (centré sur la région de copie). Par défaut : 1.",
@@ -5284,7 +5284,7 @@
               "type": "(float, float, float)",
               "description": {
                 "en": "Rotation in degrees. rot_x is vertical, rot_y is horizontal, rot_z is tilt",
-                "cn": "旋转角度（度）。rot_x 为上下，rot_y 为水平方向，rot_z 为倾斜",
+                "cn": "旋转角度 (度)。rot_x 为上下，rot_y 为水平方向，rot_z 为倾斜",
                 "de": "Rotation in Grad. rot_x ist vertikal, rot_y horizontal, rot_z ist Neigung",
                 "es": "Rotación en grados. rot_x es vertical, rot_y es horizontal, rot_z es inclinación",
                 "fr": "Rotation en degrés. rot_x est vertical, rot_y horizontal, rot_z est l'inclinaison",
@@ -5471,7 +5471,7 @@
               "type": "(float, float, float)",
               "description": {
                 "en": "Rotation in degrees. rot_x is vertical, rot_y is horizontal, rot_z is tilt",
-                "cn": "旋转角度（度）。rot_x 为上下，rot_y 为水平方向，rot_z 为倾斜",
+                "cn": "旋转角度 (度)。rot_x 为上下，rot_y 为水平方向，rot_z 为倾斜",
                 "de": "Rotation in Grad. rot_x ist vertikal, rot_y horizontal, rot_z ist Neigung",
                 "es": "Rotación en grados. rot_x es vertical, rot_y es horizontal, rot_z es inclinación",
                 "fr": "Rotation en degrés. rot_x est vertical, rot_y horizontal, rot_z est l'inclinaison",
@@ -6009,7 +6009,7 @@
                 },
                 {
                   "en": "8 — Tile size in pixels",
-                  "cn": "8 — 瓦片大小（像素）",
+                  "cn": "8 — 瓦片大小 (像素)",
                   "de": "8 — Kachelgröße in Pixeln",
                   "es": "8 — Tamaño de tile en píxeles",
                   "fr": "8 — Taille de tuile en pixels",
@@ -6217,7 +6217,7 @@
               "type": "float",
               "description": {
                 "en": "Playback start position in seconds. Defaults to 0.",
-                "cn": "播放起始位置（秒）。默认为 0。",
+                "cn": "播放起始位置 (秒)。默认为 0。",
                 "de": "Wiedergabe-Startposition in Sekunden. Standard ist 0.",
                 "es": "Posición de inicio de reproducción en segundos. Por defecto es 0.",
                 "fr": "Position de début de lecture en secondes. Par défaut : 0.",
@@ -6314,7 +6314,7 @@
               "type": "float",
               "description": {
                 "en": "Playback start position in seconds. Defaults to 0.",
-                "cn": "播放起始位置（秒）。默认为 0。",
+                "cn": "播放起始位置 (秒)。默认为 0。",
                 "de": "Wiedergabe-Startposition in Sekunden. Standard ist 0.",
                 "es": "Posición de inicio de reproducción en segundos. Por defecto es 0.",
                 "fr": "Position de début de lecture en secondes. Par défaut : 0.",
@@ -6498,7 +6498,7 @@
               "type": "int",
               "description": {
                 "en": "Preset number (0-7). 0-1: title, departure (medium tempo), 2-3: town, peaceful (slow tempo), 4-5: field, adventure (medium tempo), 6-7: battle, crisis (fast tempo)",
-                "cn": "预设编号 (0-7)。0-1: 标题、出发（中速）, 2-3: 城镇、和平（慢速）, 4-5: 原野、冒险（中速）, 6-7: 战斗、危机（快速）",
+                "cn": "预设编号 (0-7)。0-1: 标题、出发 (中速), 2-3: 城镇、和平 (慢速), 4-5: 原野、冒险 (中速), 6-7: 战斗、危机 (快速)",
                 "de": "Presetnummer (0-7). 0-1: Titel, Aufbruch (mittleres Tempo), 2-3: Stadt, friedlich (langsames Tempo), 4-5: Feld, Abenteuer (mittleres Tempo), 6-7: Kampf, Krise (schnelles Tempo)",
                 "es": "Número de preset (0-7). 0-1: título, partida (tempo medio), 2-3: pueblo, pacífico (tempo lento), 4-5: campo, aventura (tempo medio), 6-7: batalla, crisis (tempo rápido)",
                 "fr": "Numéro de preset (0-7). 0-1: titre, départ (tempo moyen), 2-3: ville, paisible (tempo lent), 4-5: terrain, aventure (tempo moyen), 6-7: combat, crise (tempo rapide)",
@@ -7263,7 +7263,7 @@
               "type": "float",
               "description": {
                 "en": "Angle in degrees",
-                "cn": "角度（度）",
+                "cn": "角度 (度)",
                 "de": "Winkel in Grad",
                 "es": "Ángulo en grados",
                 "fr": "Angle en degrés",
@@ -7320,7 +7320,7 @@
               "type": "float",
               "description": {
                 "en": "Angle in degrees",
-                "cn": "角度（度）",
+                "cn": "角度 (度)",
                 "de": "Winkel in Grad",
                 "es": "Ángulo en grados",
                 "fr": "Angle en degrés",
@@ -7359,7 +7359,7 @@
           "signature": "atan2(y, x)",
           "description": {
             "en": "Return the arctangent of y/x in degrees.",
-            "cn": "返回 y/x 的反正切值（以度为单位）。",
+            "cn": "返回 y/x 的反正切值 (以度为单位)。",
             "de": "Gibt den Arkustangens von y/x in Grad zurück.",
             "es": "Devuelve la arcotangente de y/x en grados.",
             "fr": "Renvoie l'arctangente de y/x en degrés.",
@@ -7413,7 +7413,7 @@
             "type": "float",
             "description": {
               "en": "Angle in degrees",
-              "cn": "角度（度）",
+              "cn": "角度 (度)",
               "de": "Winkel in Grad",
               "es": "Ángulo en grados",
               "fr": "Angle en degrés",
@@ -7452,7 +7452,7 @@
               "type": "int",
               "description": {
                 "en": "Seed value (non-negative integer)",
-                "cn": "种子值（非负整数）",
+                "cn": "种子值 (非负整数)",
                 "de": "Seed-Wert (nicht-negative Ganzzahl)",
                 "es": "Valor de semilla (entero no negativo)",
                 "fr": "Valeur de graine (entier non négatif)",
@@ -7477,7 +7477,7 @@
           "signature": "rndi(a, b)",
           "description": {
             "en": "Return a random integer from a to b (inclusive).",
-            "cn": "返回 a 到 b 之间的随机整数（含两端）。",
+            "cn": "返回 a 到 b 之间的随机整数 (含两端)。",
             "de": "Gibt eine zufällige Ganzzahl von a bis b (einschließlich) zurück.",
             "es": "Devuelve un entero aleatorio de a a b (inclusive).",
             "fr": "Renvoie un entier aléatoire de a à b (inclus).",
@@ -7495,7 +7495,7 @@
               "type": "int",
               "description": {
                 "en": "Minimum value (inclusive)",
-                "cn": "最小值（含）",
+                "cn": "最小值 (含)",
                 "de": "Minimalwert (einschließlich)",
                 "es": "Valor mínimo (inclusive)",
                 "fr": "Valeur minimale (incluse)",
@@ -7513,7 +7513,7 @@
               "type": "int",
               "description": {
                 "en": "Maximum value (inclusive)",
-                "cn": "最大值（含）",
+                "cn": "最大值 (含)",
                 "de": "Maximalwert (einschließlich)",
                 "es": "Valor máximo (inclusive)",
                 "fr": "Valeur maximale (incluse)",
@@ -7552,7 +7552,7 @@
           "signature": "rndf(a, b)",
           "description": {
             "en": "Return a random float from a to b (inclusive).",
-            "cn": "返回 a 到 b 之间的随机浮点数（含两端）。",
+            "cn": "返回 a 到 b 之间的随机浮点数 (含两端)。",
             "de": "Gibt eine zufällige Gleitkommazahl von a bis b (einschließlich) zurück.",
             "es": "Devuelve un número de punto flotante aleatorio de a a b (inclusive).",
             "fr": "Renvoie un nombre à virgule flottante aléatoire de a à b (inclus).",
@@ -7570,7 +7570,7 @@
               "type": "float",
               "description": {
                 "en": "Minimum value (inclusive)",
-                "cn": "最小值（含）",
+                "cn": "最小值 (含)",
                 "de": "Minimalwert (einschließlich)",
                 "es": "Valor mínimo (inclusive)",
                 "fr": "Valeur minimale (incluse)",
@@ -7588,7 +7588,7 @@
               "type": "float",
               "description": {
                 "en": "Maximum value (inclusive)",
-                "cn": "最大值（含）",
+                "cn": "最大值 (含)",
                 "de": "Maximalwert (einschließlich)",
                 "es": "Valor máximo (inclusive)",
                 "fr": "Valeur maximale (incluse)",
@@ -7645,7 +7645,7 @@
               "type": "int",
               "description": {
                 "en": "Seed value (non-negative integer)",
-                "cn": "种子值（非负整数）",
+                "cn": "种子值 (非负整数)",
                 "de": "Seed-Wert (nicht-negative Ganzzahl)",
                 "es": "Valor de semilla (entero no negativo)",
                 "fr": "Valeur de graine (entier non négatif)",
@@ -9344,7 +9344,7 @@
           "signature": "Tilemap.data_ptr()",
           "description": {
             "en": "Return the raw data pointer of the tilemap as a ctypes c_uint16 array (4 bytes per tile: image_tx, image_ty).",
-            "cn": "以 ctypes c_uint16 数组形式返回瓦片地图的原始数据指针（每个瓦片 4 字节：image_tx, image_ty）。",
+            "cn": "以 ctypes c_uint16 数组形式返回瓦片地图的原始数据指针 (每个瓦片 4 字节：image_tx, image_ty)。",
             "de": "Gibt den Rohdatenzeiger der Tilemap als ctypes c_uint16-Array zurück (4 Bytes pro Kachel: image_tx, image_ty).",
             "es": "Devuelve el puntero de datos brutos del tilemap como un array ctypes c_uint16 (4 bytes por tile: image_tx, image_ty).",
             "fr": "Renvoie le pointeur de données brutes de la tilemap sous forme de tableau ctypes c_uint16 (4 octets par tuile : image_tx, image_ty).",
@@ -9701,7 +9701,7 @@
           "signature": "Sound.set_tones(tones)",
           "description": {
             "en": "Set the tones with a string of TSPN (or 0-9 for custom tone numbers). Case-insensitive, whitespace is ignored.",
-            "cn": "使用 TSPN（或 0-9 表示自定义音色编号）的字符串设置音色。不区分大小写，空白被忽略。",
+            "cn": "使用 TSPN (或 0-9 表示自定义音色编号) 的字符串设置音色。不区分大小写，空白被忽略。",
             "de": "Setzt die Töne mit einem String aus TSPN (oder 0-9 für benutzerdefinierte Tonnummern). Groß-/Kleinschreibung wird nicht beachtet, Leerzeichen werden ignoriert.",
             "es": "Establece los tonos con una cadena de TSPN (o 0-9 para números de tono personalizados). No distingue mayúsculas de minúsculas, los espacios se ignoran.",
             "fr": "Définit les timbres avec une chaîne de TSPN (ou 0-9 pour des numéros de timbre personnalisés). Insensible à la casse, les espaces sont ignorés.",
@@ -10007,7 +10007,7 @@
               "type": "float",
               "description": {
                 "en": "Duration in seconds",
-                "cn": "持续时间（秒）",
+                "cn": "持续时间 (秒)",
                 "de": "Dauer in Sekunden",
                 "es": "Duración en segundos",
                 "fr": "Durée en secondes",
@@ -10025,7 +10025,7 @@
               "type": "bool",
               "description": {
                 "en": "Also create MP4 file (requires FFmpeg). Defaults to False.",
-                "cn": "同时创建 MP4 文件（需要 FFmpeg）。默认为 False。",
+                "cn": "同时创建 MP4 文件 (需要 FFmpeg)。默认为 False。",
                 "de": "Auch MP4-Datei erstellen (erfordert FFmpeg). Standard ist False.",
                 "es": "También crear archivo MP4 (requiere FFmpeg). Por defecto es False.",
                 "fr": "Créer aussi un fichier MP4 (nécessite FFmpeg). Par défaut : False.",
@@ -10050,7 +10050,7 @@
           "signature": "Sound.total_sec()",
           "description": {
             "en": "Return the playback time in seconds. Return None for infinite loops.",
-            "cn": "返回播放时间（秒）。无限循环时返回 None。",
+            "cn": "返回播放时间 (秒)。无限循环时返回 None。",
             "de": "Gibt die Wiedergabezeit in Sekunden zurück. Gibt None für Endlosschleifen zurück.",
             "es": "Devuelve el tiempo de reproducción en segundos. Devuelve None para bucles infinitos.",
             "fr": "Renvoie la durée de lecture en secondes. Renvoie None pour les boucles infinies.",
@@ -10066,7 +10066,7 @@
             "type": "float/None",
             "description": {
               "en": "Playback time in seconds, or None for infinite loops",
-              "cn": "播放时间（秒），无限循环时为 None",
+              "cn": "播放时间 (秒)，无限循环时为 None",
               "de": "Wiedergabezeit in Sekunden, oder None bei Endlosschleifen",
               "es": "Tiempo de reproducción en segundos, o None para bucles infinitos",
               "fr": "Durée de lecture en secondes, ou None pour les boucles infinies",
@@ -10143,7 +10143,7 @@
           "signature": "Music.seqs",
           "description": {
             "en": "A two-dimensional list of sounds (0-63) across multiple channels.",
-            "cn": "跨多个通道的声音（0-63）二维列表",
+            "cn": "跨多个通道的声音 (0-63) 二维列表",
             "de": "Eine zweidimensionale Liste von Sounds (0-63) über mehrere Kanäle.",
             "es": "Una lista bidimensional de sonidos (0-63) a través de múltiples canales.",
             "fr": "Une liste bidimensionnelle de sons (0-63) sur plusieurs canaux.",
@@ -10164,7 +10164,7 @@
           "signature": "Music.set(seq0, seq1, seq2, ...)",
           "description": {
             "en": "Set the lists of sounds (0-63) for each channel. An empty list means the channel is not used.",
-            "cn": "设置各通道的声音（0-63）列表。空列表表示该通道不被使用。",
+            "cn": "设置各通道的声音 (0-63) 列表。空列表表示该通道不被使用。",
             "de": "Setzt die Soundlisten (0-63) für jeden Kanal. Eine leere Liste bedeutet, dass der Kanal nicht verwendet wird.",
             "es": "Establece las listas de sonidos (0-63) para cada canal. Una lista vacía significa que el canal no se usa.",
             "fr": "Définit les listes de sons (0-63) pour chaque canal. Une liste vide signifie que le canal n'est pas utilisé.",
@@ -10244,7 +10244,7 @@
               "type": "float",
               "description": {
                 "en": "Duration in seconds",
-                "cn": "持续时间（秒）",
+                "cn": "持续时间 (秒)",
                 "de": "Dauer in Sekunden",
                 "es": "Duración en segundos",
                 "fr": "Durée en secondes",
@@ -10262,7 +10262,7 @@
               "type": "bool",
               "description": {
                 "en": "Also create MP4 file (requires FFmpeg). Defaults to False.",
-                "cn": "同时创建 MP4 文件（需要 FFmpeg）。默认为 False。",
+                "cn": "同时创建 MP4 文件 (需要 FFmpeg)。默认为 False。",
                 "de": "Auch MP4-Datei erstellen (erfordert FFmpeg). Standard ist False.",
                 "es": "También crear archivo MP4 (requiere FFmpeg). Por defecto es False.",
                 "fr": "Créer aussi un fichier MP4 (nécessite FFmpeg). Par défaut : False.",
@@ -10343,7 +10343,7 @@
           "signature": "Channel.gain",
           "description": {
             "en": "The gain (volume) of the channel. Defaults to 0.125.",
-            "cn": "通道的增益（音量）。默认为 0.125。",
+            "cn": "通道的增益 (音量)。默认为 0.125。",
             "de": "Die Verstärkung (Lautstärke) des Kanals. Standard ist 0.125.",
             "es": "La ganancia (volumen) del canal. Por defecto es 0.125.",
             "fr": "Le gain (volume) du canal. Par défaut : 0.125.",
@@ -10364,7 +10364,7 @@
           "signature": "Channel.detune",
           "description": {
             "en": "Pitch detune in cents (100 cents = 1 semitone). Defaults to 0.",
-            "cn": "音高失谐值（音分；100 音分 = 1 个半音）。默认为 0。",
+            "cn": "音高失谐值 (音分；100 音分 = 1 个半音)。默认为 0。",
             "de": "Tonhöhen-Detune in Cent (100 Cent = 1 Halbton). Standard ist 0.",
             "es": "Detune de tono en cents (100 cents = 1 semitono). Por defecto es 0.",
             "fr": "Detune de hauteur en cents (100 cents = 1 demi-ton). Par défaut : 0.",
@@ -10421,7 +10421,7 @@
               "type": "float",
               "description": {
                 "en": "Playback start position in seconds. Defaults to 0.",
-                "cn": "播放起始位置（秒）。默认为 0。",
+                "cn": "播放起始位置 (秒)。默认为 0。",
                 "de": "Wiedergabe-Startposition in Sekunden. Standard ist 0.",
                 "es": "Posición de inicio de reproducción en segundos. Por defecto es 0.",
                 "fr": "Position de début de lecture en secondes. Par défaut : 0.",
