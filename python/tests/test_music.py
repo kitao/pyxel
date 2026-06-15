@@ -50,6 +50,7 @@ class TestMusic:
         result = msc.snds_list  # type: ignore[attr-defined]
         # snds_list returns Seqs (same as seqs)
         assert len(result) == len(msc.seqs)
+        assert list(result[0]) == [0, 1]
         out = capfd.readouterr().out
         assert "deprecated" in out.lower()
 
@@ -125,13 +126,21 @@ class TestMusicSeqs:
         assert len(msc.seqs) == original_len + 1
         assert list(msc.seqs[1]) == [5, 6]
 
+    def test_seqs_reversed_step_one_slice_assignment_inserts(self):
+        msc = pyxel.Music()
+        msc.set([0], [1], [2])
+
+        msc.seqs[2:0] = [[7]]  # type: ignore[assignment]
+
+        assert [list(seq) for seq in msc.seqs] == [[0], [1], [7], [2], []]
+
     def test_seqs_pop(self):
         msc = pyxel.Music()
         msc.set([0], [1], [2])
         original_len = len(msc.seqs)
         popped = msc.seqs.pop()
         assert len(msc.seqs) == original_len - 1
-        assert isinstance(popped, list)
+        assert popped == []
 
     def test_seqs_clear(self):
         msc = pyxel.Music()
@@ -145,13 +154,14 @@ class TestMusicSeqs:
         original_len = len(msc.seqs)
         msc.seqs.extend([[1, 2], [3, 4]])  # type: ignore[arg-type]
         assert len(msc.seqs) == original_len + 2
+        assert list(msc.seqs[-2]) == [1, 2]
+        assert list(msc.seqs[-1]) == [3, 4]
 
     def test_seqs_slice_access(self):
         msc = pyxel.Music()
         msc.set([0], [1], [2])
         sliced = msc.seqs[0:2]
-        assert isinstance(sliced, list)
-        assert len(sliced) == 2
+        assert sliced == [[0], [1]]
 
     def test_seqs_reversed(self):
         msc = pyxel.Music()

@@ -4,9 +4,9 @@ import pyxel
 class TestTone:
     def test_new_defaults(self):
         tone = pyxel.Tone()
-        assert isinstance(tone.mode, int)
-        assert isinstance(tone.gain, float)
-        assert isinstance(tone.sample_bits, int)
+        assert tone.mode == 0
+        assert tone.gain == 1.0
+        assert tone.sample_bits == 4
         assert len(tone.wavetable) == 0
 
     def test_mode_read_write(self):
@@ -53,11 +53,12 @@ class TestTone:
         pyxel.tones.append(tone)
         try:
             assert len(pyxel.tones) == original_len + 1
+            assert pyxel.tones[-1].mode == 1
         finally:
             pyxel.tones.pop()
         assert len(pyxel.tones) == original_len
 
-    def test_waveform_aliases_wavetable(self, capfd):
+    def test_waveform_aliases_wavetable_deprecated(self, capfd):
         tone = pyxel.Tone()
         tone.wavetable.append(64)
         tone.wavetable.append(128)

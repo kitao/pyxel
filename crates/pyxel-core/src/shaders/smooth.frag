@@ -1,4 +1,11 @@
 /*
+   Based on xBR shaders from:
+   https://github.com/libretro/common-shaders/tree/master/xbr/shaders
+
+   Pyxel-specific changes are marked with "Modified for Pyxel".
+*/
+
+/*
    Hyllian's xBR-vertex code and texel mapping
 
    Copyright (C) 2011/2016 Hyllian - sergiogdb@gmail.com

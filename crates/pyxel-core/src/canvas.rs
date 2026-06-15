@@ -5,6 +5,7 @@ use crate::rect_area::RectArea;
 use crate::utils::{f32_to_i32, f32_to_u32};
 
 const ELLIPSE_ROUNDING_BIAS: f32 = 0.01;
+// Pyxel's historical dither uses eight thresholds repeated over a 4x4 footprint.
 const DITHERING_MATRIX: [[f32; 4]; 4] = [
     [1.0 / 16.0, 9.0 / 16.0, 3.0 / 16.0, 11.0 / 16.0],
     [13.0 / 16.0, 5.0 / 16.0, 15.0 / 16.0, 7.0 / 16.0],

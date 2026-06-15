@@ -1,4 +1,6 @@
 use std::ffi::{CStr, CString};
+#[cfg(any(target_os = "emscripten", test))]
+use std::fmt::Write as _;
 use std::mem::MaybeUninit;
 use std::os::raw::{c_int, c_void};
 use std::ptr::{copy_nonoverlapping, null_mut};
@@ -15,6 +17,39 @@ use super::sdl2_sys::*;
 static AUDIO_DEVICE_ID: AtomicU32 = AtomicU32::new(0);
 
 #[cfg(target_os = "emscripten")]
+// Browser callbacks do not provide elapsed time, so use Pyxel's nominal frame step.
+const EMSCRIPTEN_FRAME_DELTA_MS: f32 = 10.0;
+
+#[cfg(any(target_os = "emscripten", test))]
+fn browser_save_script(filename: &str) -> CString {
+    let mut quoted_filename = String::from("\"");
+    for c in filename.chars() {
+        match c {
+            '"' => quoted_filename.push_str("\\\""),
+            '\\' => quoted_filename.push_str("\\\\"),
+            '\n' => quoted_filename.push_str("\\n"),
+            '\r' => quoted_filename.push_str("\\r"),
+            '\t' => quoted_filename.push_str("\\t"),
+            '\u{08}' => quoted_filename.push_str("\\b"),
+            '\u{0c}' => quoted_filename.push_str("\\f"),
+            '\u{2028}' => quoted_filename.push_str("\\u2028"),
+            '\u{2029}' => quoted_filename.push_str("\\u2029"),
+            '\0'..='\u{1f}' => write!(&mut quoted_filename, "\\u{:04x}", c as u32)
+                .expect("writing to String cannot fail"),
+            _ => quoted_filename.push(c),
+        }
+    }
+    quoted_filename.push('"');
+    CString::new(format!("_savePyxelFile({quoted_filename});"))
+        .expect("browser save script is built from escaped filename text")
+}
+
+fn window_title_c_string(title: &str) -> CString {
+    let title = title.replace('\0', " ");
+    CString::new(title).expect("window title NUL bytes are replaced")
+}
+
+#[cfg(target_os = "emscripten")]
 extern "C" {
     fn emscripten_run_script(script: *const std::os::raw::c_char);
     fn emscripten_set_main_loop_arg(
@@ -28,7 +63,9 @@ extern "C" {
 
 #[cfg(target_os = "emscripten")]
 unsafe extern "C" fn main_loop_callback<F: FnMut(f32)>(arg: *mut c_void) {
-    (*arg.cast::<F>())(10.0);
+    // Emscripten schedules the loop by fps, so pass a small fixed delta that
+    // keeps the core catch-up path from replaying updates on browser frames.
+    (*arg.cast::<F>())(EMSCRIPTEN_FRAME_DELTA_MS);
 }
 
 extern "C" fn audio_callback(userdata: *mut c_void, stream: *mut u8, len: c_int) {
@@ -78,8 +115,8 @@ impl PlatformSdl2 {
 
         let sdl_flags = SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER;
 
-        // Prefer Wayland driver on Wayland sessions (workaround for bundled
-        // SDL2 failing to auto-detect Wayland). Falls back to auto-detection.
+        // Prefer Wayland driver on Wayland sessions because bundled SDL2 fails
+        // to auto-detect Wayland. Falls back to auto-detection.
         let initialized = if std::env::var("XDG_SESSION_TYPE").is_ok_and(|v| v == "wayland")
             && std::env::var("SDL_VIDEODRIVER").is_err()
         {
@@ -131,14 +168,14 @@ impl PlatformSdl2 {
 
     #[cfg(target_os = "emscripten")]
     pub fn export_browser_file(&self, filename: &str) {
-        let script = CString::new(format!("_savePyxelFile('{filename}');")).unwrap();
+        let script = browser_save_script(filename);
         unsafe { emscripten_run_script(script.as_ptr()) };
     }
 
     // Window
 
     pub fn init_window(&mut self, title: &str, width: u32, height: u32) {
-        let title = CString::new(title).unwrap();
+        let title = window_title_c_string(title);
         unsafe {
             self.window = SDL_CreateWindow(
                 title.as_ptr(),
@@ -154,10 +191,9 @@ impl PlatformSdl2 {
                 CStr::from_ptr(SDL_GetError()).to_string_lossy()
             );
 
-            let hint_value = CString::new("1").unwrap();
             SDL_SetHint(
                 SDL_HINT_MOUSE_FOCUS_CLICKTHROUGH.as_ptr().cast(),
-                hint_value.as_ptr(),
+                c"1".as_ptr(),
             );
 
             // Try OpenGL 2.1, fall back to OpenGL ES 2.0
@@ -213,7 +249,7 @@ impl PlatformSdl2 {
     }
 
     pub fn set_window_title(&mut self, title: &str) {
-        let title = CString::new(title).unwrap();
+        let title = window_title_c_string(title);
         unsafe { SDL_SetWindowTitle(self.window, title.as_ptr()) };
     }
 
@@ -425,5 +461,27 @@ impl PlatformSdl2 {
 
     pub fn gl_context(&mut self) -> &'static mut Context {
         unsafe { &mut *self.gl_context }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{browser_save_script, window_title_c_string};
+
+    #[test]
+    fn test_browser_save_script_escapes_filename_as_javascript_string() {
+        let script = browser_save_script("quote'and\n\"slash\\\0.pyxres");
+
+        assert_eq!(
+            script.to_str().unwrap(),
+            r#"_savePyxelFile("quote'and\n\"slash\\\u0000.pyxres");"#
+        );
+    }
+
+    #[test]
+    fn test_window_title_c_string_replaces_nul_bytes() {
+        let title = window_title_c_string("Py\0xel");
+
+        assert_eq!(title.to_str().unwrap(), "Py xel");
     }
 }

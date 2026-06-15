@@ -1,5 +1,6 @@
 import base64
 import importlib.util
+import json
 import multiprocessing
 import os
 import re
@@ -224,6 +225,10 @@ def _make_metadata_comment(startup_script_file):
     return metadata_comment
 
 
+def _js_string_literal(value):
+    return json.dumps(value, ensure_ascii=True)
+
+
 # CLI commands
 
 
@@ -351,24 +356,25 @@ def package_pyxel_app(app_dir: str, startup_script_file: str) -> None:
     pyxel_app_file = app_dir.name + pyxel.APP_FILE_EXTENSION
     app_parent_dir = app_dir.parent
 
-    with zipfile.ZipFile(
-        pyxel_app_file,
-        "w",
-        compression=zipfile.ZIP_DEFLATED,
-    ) as zf:
-        zf.comment = metadata_comment.encode(encoding="utf-8")
-        for file in _files_in_dir(app_dir):
-            if (
-                Path(file).name == pyxel_app_file
-                or "__pycache__" in file
-                or file.lower().endswith(_PACKAGE_SKIP_EXTENSIONS)
-            ):
-                continue
-            arcname = str(Path(file).relative_to(app_parent_dir))
-            zf.write(file, arcname)
-            print(f"added '{arcname}'")
-
-    setting_file.unlink()
+    try:
+        with zipfile.ZipFile(
+            pyxel_app_file,
+            "w",
+            compression=zipfile.ZIP_DEFLATED,
+        ) as zf:
+            zf.comment = metadata_comment.encode(encoding="utf-8")
+            for file in _files_in_dir(app_dir):
+                if (
+                    Path(file).name == pyxel_app_file
+                    or "__pycache__" in file
+                    or file.lower().endswith(_PACKAGE_SKIP_EXTENSIONS)
+                ):
+                    continue
+                arcname = str(Path(file).relative_to(app_parent_dir))
+                zf.write(file, arcname)
+                print(f"added '{arcname}'")
+    finally:
+        setting_file.unlink(missing_ok=True)
 
 
 def create_executable_from_pyxel_app(pyxel_app_file: str) -> None:
@@ -433,12 +439,13 @@ def create_html_from_pyxel_app(pyxel_app_file: str) -> None:
     base64_string = base64.b64encode(Path(pyxel_app_file).read_bytes()).decode()
 
     pyxel_app_name = Path(pyxel_app_file).stem
+    pyxel_app_filename = pyxel_app_name + pyxel.APP_FILE_EXTENSION
     Path(f"{pyxel_app_name}.html").write_text(
         "<!doctype html>\n"
         f'<script src="https://cdn.jsdelivr.net/gh/kitao/pyxel@{pyxel.VERSION}/wasm/pyxel.js">'
         "</script>\n"
         "<script>\n"
-        f'launchPyxel({{ command: "play", name: "{pyxel_app_name}{pyxel.APP_FILE_EXTENSION}", '
+        f'launchPyxel({{ command: "play", name: {_js_string_literal(pyxel_app_filename)}, '
         f'gamepad: "enabled", base64: "{base64_string}" }});\n'
         "</script>\n",
         encoding="utf-8",

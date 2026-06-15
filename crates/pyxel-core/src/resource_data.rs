@@ -225,32 +225,17 @@ impl ResourceData {
         exclude_sounds: bool,
         exclude_musics: bool,
     ) -> String {
-        let empty_images = Vec::new();
-        let empty_tilemaps = Vec::new();
-        let empty_sounds = Vec::new();
-        let empty_musics = Vec::new();
+        // Serialize excluded banks as empty arrays without cloning retained banks.
         let view = ResourceDataView {
             format_version: self.format_version,
-            images: if exclude_images {
-                &empty_images
-            } else {
-                &self.images
-            },
+            images: if exclude_images { &[] } else { &self.images },
             tilemaps: if exclude_tilemaps {
-                &empty_tilemaps
+                &[]
             } else {
                 &self.tilemaps
             },
-            sounds: if exclude_sounds {
-                &empty_sounds
-            } else {
-                &self.sounds
-            },
-            musics: if exclude_musics {
-                &empty_musics
-            } else {
-                &self.musics
-            },
+            sounds: if exclude_sounds { &[] } else { &self.sounds },
+            musics: if exclude_musics { &[] } else { &self.musics },
         };
         toml::to_string(&view).unwrap()
     }

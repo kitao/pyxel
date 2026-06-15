@@ -79,7 +79,11 @@ class EditorBase(Widget):
         )
 
     def check_tool_button_shortcuts(self):
-        if any(pyxel.btn(k) for k in (pyxel.KEY_CTRL, pyxel.KEY_ALT, pyxel.KEY_GUI)):
+        if (
+            pyxel.btn(pyxel.KEY_CTRL)
+            or pyxel.btn(pyxel.KEY_ALT)
+            or pyxel.btn(pyxel.KEY_GUI)
+        ):
             return
 
         if pyxel.btnp(pyxel.KEY_S):

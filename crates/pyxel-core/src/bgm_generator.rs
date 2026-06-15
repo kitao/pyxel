@@ -787,7 +787,7 @@ fn format_tokens(tokens: &[String]) -> String {
         out.push_str(tok);
         last = tok;
     }
-    out.trim().to_string()
+    out
 }
 
 // Chord resolution
@@ -798,11 +798,11 @@ const I_MAJOR_NOTES_BITS: &str = "209019030909";
 
 // Notes-bits strings encode per-semitone weights (one digit per semitone in
 // [0, 12)):
-//   0 — non-chord; excluded from every pool
-//   1 — chord tone (required for the coverage check, melody-selectable)
-//   2 — root (exactly one per chord; drives the chord base)
-//   3 — chord tone (melody-selectable, counted as "important" in harmony)
-//   9 — tension (harmony pool only, not melody-selectable)
+//   0: non-chord; excluded from every pool
+//   1: chord tone (required for the coverage check, melody-selectable)
+//   2: root (exactly one per chord; drives the chord base)
+//   3: chord tone (melody-selectable, counted as "important" in harmony)
+//   9: tension (harmony pool only, not melody-selectable)
 fn parse_notes_bits(s: &str) -> [i32; 12] {
     let mut out = [0; 12];
     for (i, ch) in s.bytes().take(12).enumerate() {
@@ -892,6 +892,7 @@ fn resolve_entry_notes(progressions: &[OwnedChordEntry], idx: usize) -> Option<&
 
 fn chord_bits_per_step(progression: &[OwnedChordEntry]) -> Vec<[i32; 12]> {
     let mut out = vec![[0; 12]; TOTAL_STEPS];
+    let default_bits = parse_notes_bits(I_MAJOR_NOTES_BITS);
 
     for (loc, slot) in out.iter_mut().enumerate().take(TOTAL_STEPS) {
         let mut entry_idx = 0usize;
@@ -909,7 +910,7 @@ fn chord_bits_per_step(progression: &[OwnedChordEntry]) -> Vec<[i32; 12]> {
         *slot = if bits.iter().any(|kind| matches!(kind, 1 | 2 | 3 | 9)) {
             bits
         } else {
-            parse_notes_bits(I_MAJOR_NOTES_BITS)
+            default_bits
         };
     }
     out

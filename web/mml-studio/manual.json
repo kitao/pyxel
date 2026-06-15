@@ -94,7 +94,7 @@
     },
     "overview_body": {
       "en": "Pyxel MML Studio is a browser-based chiptune music creation tool powered by Pyxel's NES-style sound engine. Enter melodies using MML (Music Macro Language) across up to 4 channels, and share your music via URL or QR code — all without installation.",
-      "cn": "Pyxel MML Studio 是基于 Pyxel 的 FC 风格音频引擎的浏览器芯片音乐制作工具。使用 MML（Music Macro Language）在最多 4 个通道中输入旋律，并通过 URL 或二维码分享作品，无需安装。",
+      "cn": "Pyxel MML Studio 是基于 Pyxel 的 FC 风格音频引擎的浏览器芯片音乐制作工具。使用 MML (Music Macro Language) 在最多 4 个通道中输入旋律，并通过 URL 或二维码分享作品，无需安装。",
       "de": "Pyxel MML Studio ist ein browserbasiertes Chiptune-Musikerstellungstool, das auf Pyxels NES-Soundengine basiert. Geben Sie Melodien mit MML (Music Macro Language) auf bis zu 4 Kanälen ein und teilen Sie Ihre Musik per URL oder QR-Code — ganz ohne Installation.",
       "es": "Pyxel MML Studio es una herramienta de creación de música chiptune basada en navegador, impulsada por el motor de sonido estilo NES de Pyxel. Ingresa melodías usando MML (Music Macro Language) en hasta 4 canales y comparte tu música mediante URL o código QR, todo sin instalación.",
       "fr": "Pyxel MML Studio est un outil de création musicale chiptune dans le navigateur, basé sur le moteur sonore style NES de Pyxel. Entrez des mélodies en MML (Music Macro Language) sur jusqu'à 4 canaux et partagez votre musique par URL ou QR code, le tout sans installation.",
@@ -192,7 +192,7 @@
     },
     "layout_channels_desc": {
       "en": "Four channels (CH1–CH4) for entering MML, each with SOLO and MUTE buttons.",
-      "cn": "四个通道（CH1–CH4）用于输入 MML，每个通道有 SOLO 和 MUTE 按钮。",
+      "cn": "四个通道 (CH1–CH4) 用于输入 MML，每个通道有 SOLO 和 MUTE 按钮。",
       "de": "Vier Kanäle (CH1–CH4) zur MML-Eingabe, jeweils mit SOLO- und MUTE-Schaltflächen.",
       "es": "Cuatro canales (CH1–CH4) para ingresar MML, cada uno con botones SOLO y MUTE.",
       "fr": "Quatre canaux (CH1–CH4) pour saisir le MML, chacun avec des boutons SOLO et MUTE.",
@@ -388,7 +388,7 @@
     },
     "mml_ref_body": {
       "en": "For the complete list of MML commands supported by Pyxel, see {0}.",
-      "cn": "有关 Pyxel 支持的完整 MML 命令列表，请参阅{0}。",
+      "cn": "有关 Pyxel 支持的完整 MML 命令列表，请参阅 {0}。",
       "de": "Die vollständige Liste der von Pyxel unterstützten MML-Befehle finden Sie unter {0}.",
       "es": "Para la lista completa de comandos MML soportados por Pyxel, consulta {0}.",
       "fr": "Pour la liste complète des commandes MML prises en charge par Pyxel, consultez {0}.",

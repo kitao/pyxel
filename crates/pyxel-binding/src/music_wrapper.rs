@@ -112,7 +112,7 @@ impl Seqs {
             let new_values: Vec<Vec<u32>> = value.extract()?;
             if indices.step == 1 {
                 let start = indices.start as usize;
-                let end = indices.stop as usize;
+                let end = indices.stop.max(indices.start) as usize;
                 music.seqs.splice(start..end, new_values);
             } else {
                 let idx_list = collect_slice_indices!(indices.start, indices.stop, indices.step);

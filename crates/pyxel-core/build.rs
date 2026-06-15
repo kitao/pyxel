@@ -135,6 +135,7 @@ impl SDL2BindingsBuilder {
             }
 
             if self.target_os.contains("windows") {
+                // Static SDL2 needs platform libraries that dynamic SDL2 brings in transitively.
                 println!("cargo::rustc-link-lib=shell32");
                 println!("cargo::rustc-link-lib=user32");
                 println!("cargo::rustc-link-lib=gdi32");
@@ -148,6 +149,7 @@ impl SDL2BindingsBuilder {
                 println!("cargo::rustc-link-lib=dxguid");
                 println!("cargo::rustc-link-lib=setupapi");
             } else if self.target_os == "darwin" {
+                // Static SDL2 needs platform frameworks that dynamic SDL2 brings in transitively.
                 println!("cargo::rustc-link-lib=framework=Cocoa");
                 println!("cargo::rustc-link-lib=framework=IOKit");
                 println!("cargo::rustc-link-lib=framework=Carbon");

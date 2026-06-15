@@ -31,8 +31,10 @@ class TestResize:
     def test_draw_at_new_bounds(self):
         pyxel.resize(320, 240)
         pyxel.pset(319, 239, 7)
+        assert pyxel.pget(319, 239) == 7
         pyxel.resize(64, 48)
         pyxel.pset(63, 47, 7)
+        assert pyxel.pget(63, 47) == 7
 
     def test_clears_screen_contents(self):
         pyxel.cls(7)

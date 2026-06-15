@@ -50,6 +50,7 @@ if (
   /safari/i.test(navigator.userAgent) &&
   !/chrome/i.test(navigator.userAgent)
 ) {
+  // Normalize Safari's numpad arrow events before SDL2 handles them.
   const fixArrowEvent = (event) => {
     if (
       event.isTrusted &&
@@ -187,6 +188,7 @@ async function launchPyxel(params) {
   }
 }
 
+// Reset runtime state and relaunch the current Pyxel command.
 async function resetPyxel() {
   if (!window.pyxelContext.initialized) {
     return;
@@ -392,6 +394,7 @@ const _waitForEvent = (target, ...events) =>
     }
   });
 
+// Create the screen container, drop area, SDL2 canvas, and logo.
 const _createScreenElements = async () => {
   let pyxelScreen = document.querySelector("div#pyxel-screen");
   if (!pyxelScreen) {
@@ -455,6 +458,7 @@ const _loadScript = async (scriptSrc) => {
   await _waitForEvent(script, "load");
 };
 
+// Bootstrap Pyodide, install Pyxel, and prepare its working directory.
 const _loadPyodideAndPyxel = async (canvas) => {
   // Prefetch wheel and import hook in parallel with pyodide.js download and
   // runtime init. Consuming the wheel body populates the HTTP cache, so
@@ -513,6 +517,7 @@ const _hookPythonError = (pyodide) => {
   });
 };
 
+// Render Python exceptions over the canvas without replacing the page.
 const _displayErrorOverlay = (message) => {
   console.error(message);
   const pyxelScreen = document.getElementById("pyxel-screen");
@@ -561,6 +566,7 @@ const _displayFatalErrorOverlay = (error) => {
 
 // File operations
 
+// Mirror requested files from the hosting page into Pyodide's filesystem.
 const _hookFileOperations = (pyodide, root) => {
   const fs = pyodide.FS;
 
@@ -579,6 +585,7 @@ const _hookFileOperations = (pyodide, root) => {
     }
   };
 
+  // Copy a requested host-side path into Pyodide on first read access.
   const copyPath = (path) => {
     if (path.startsWith("<") || path.endsWith(PYXEL_WATCH_INFO_FILE)) {
       return;
@@ -663,6 +670,7 @@ const _hookFileOperations = (pyodide, root) => {
 
 const _isTouchDevice = () => window.matchMedia("(pointer: coarse)").matches;
 
+// Gate startup until the browser receives the user gesture required for audio.
 const _waitForInput = async () => {
   const pyxelScreen = document.querySelector("div#pyxel-screen");
   const logoImage = document.querySelector("img#pyxel-logo");
@@ -749,6 +757,7 @@ const _updateGamepadStateFromTouch = (
   }
 };
 
+// Add touch controls and keep their hit areas stable across resets.
 const _addVirtualGamepad = (mode) => {
   if (mode !== "enabled" || !_isTouchDevice()) {
     return;
@@ -859,6 +868,7 @@ const _copyFileFromBase64 = (pyodide, name, base64) => {
   pyodide.FS.writeFile(filename, binary, { encoding: "binary" });
 };
 
+// Translate custom-element parameters into the corresponding Python command.
 const _executePyxelCommand = async (pyodide, params) => {
   if (params.command === "run" || params.command === "play") {
     await _installBuiltinPackages(pyodide, params.packages);

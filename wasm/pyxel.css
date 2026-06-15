@@ -1,4 +1,5 @@
 :root {
+  /* Pyxel's 16-color palette plus the web runtime background. */
   --pyxel-black: #000;
   --pyxel-navy: #2b335f;
   --pyxel-purple: #7e2072;
@@ -18,6 +19,7 @@
   --pyxel-bg: #202224;
 }
 
+/* Shared page theme used by generated Pyxel web pages. */
 .pyxel-scheme {
   color: #fff;
   background-color: var(--pyxel-bg);
@@ -41,6 +43,7 @@
   font-size: large;
 }
 
+/* Full-screen Pyxel canvas and startup affordances. */
 div#pyxel-screen {
   position: absolute;
   left: 0;
@@ -79,6 +82,7 @@ img#pyxel-prompt {
   pointer-events: none;
 }
 
+/* Touch controls overlaid by wasm/pyxel.js on coarse-pointer devices. */
 img#pyxel-gamepad-cross {
   --min-width-ratio: 0.2;
   position: absolute;
