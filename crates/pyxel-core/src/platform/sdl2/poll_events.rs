@@ -44,9 +44,14 @@ static SCAN_CORRECTION_SCRIPTS: OnceLock<[CString; SCAN_CORRECTION_SCRIPT_COUNT]
 #[cfg(target_os = "emscripten")]
 fn scan_correction_scripts() -> &'static [CString; SCAN_CORRECTION_SCRIPT_COUNT] {
     SCAN_CORRECTION_SCRIPTS.get_or_init(|| {
-        std::array::from_fn(|i| CString::new(format!("_scanCorrection[{i}]||0;")).unwrap())
+        std::array::from_fn(|i| {
+            CString::new(format!("_scanCorrection[{i}]||0;"))
+                .expect("scan correction script is built from a numeric index")
+        })
     })
 }
+
+// Gamepad lifecycle helpers
 
 pub fn open_gamepad(device_index: i32) -> Option<(i32, *mut SDL_GameController)> {
     let controller = unsafe { SDL_GameControllerOpen(device_index) };
@@ -272,6 +277,8 @@ impl PlatformSdl2 {
             })
     }
 }
+
+// SDL-to-Pyxel event conversion helpers
 
 fn mouse_button_to_key(button: u32) -> Key {
     match button {
