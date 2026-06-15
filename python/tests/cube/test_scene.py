@@ -73,6 +73,20 @@ class _CollisionCounter(Node):
         self.collide_count += 1
 
 
+class _StaticCollisionCounter(Node):
+    def __init__(self, pos: Vec3, *, trigger: bool = False):
+        super().__init__()
+        self.transform = Mat4.from_translation(pos)
+        self.collider = Collider(radius=0.5, mass=0.0, trigger=trigger)
+        self.collide_count = 0
+        self.depths = []
+
+    def on_collide(self, other, contact):
+        del other
+        self.collide_count += 1
+        self.depths.append(contact.depth)
+
+
 class TestCollisionPipeline:
     def test_overlapping_spheres_fire_on_collide(self):
         # Two spheres at distance 0.5 with radius 0.5 each → overlap.
@@ -95,6 +109,18 @@ class TestCollisionPipeline:
         assert a.collide_count == 0
         assert b.collide_count == 0
 
+    def test_static_trigger_still_notifies_without_response(self):
+        root = Node()
+        sensor = _StaticCollisionCounter(Vec3(0, 0, 0), trigger=True)
+        wall = _StaticCollisionCounter(Vec3(0.5, 0, 0))
+        root.add_child(sensor)
+        root.add_child(wall)
+        root.update()
+        assert sensor.collide_count == 1
+        assert wall.collide_count == 1
+        assert sensor.depths == [0.0]
+        assert wall.depths == [0.0]
+
 
 class TestRaycast:
     def test_raycast_hits_nearer_sphere(self):
@@ -112,6 +138,14 @@ class TestRaycast:
         # (binding mirrors the overlap_* identity path).
         assert hit.node is near
         del far  # silence unused-variable lint
+
+    def test_raycast_distance_uses_world_units_for_non_unit_direction(self):
+        root = Node()
+        root.add_child(_ball(Vec3(0, 0, 0)))
+        hit = root.raycast(Vec3(0, 0, 5), Vec3(0, 0, -2))
+        assert hit is not None
+        assert hit.distance == pytest.approx(4.5)
+        assert root.raycast(Vec3(0, 0, 5), Vec3(0, 0, -2), max_distance=3.0) is None
 
     def test_raycast_returns_none_when_miss(self):
         root = Node()

@@ -131,6 +131,35 @@ class TestHierarchy:
         assert len(p1.children) == 0
         assert len(p2.children) == 1
 
+    def test_remove_child_rejects_non_child(self):
+        p1 = Node()
+        p2 = Node()
+        c = Node()
+        p2.add_child(c)
+        with pytest.raises(ValueError):
+            p1.remove_child(c)
+        assert c.parent is p2
+        assert p2.children == (c,)
+
+    def test_add_child_rejects_self_parenting(self):
+        n = Node()
+        with pytest.raises(ValueError):
+            n.add_child(n)
+        assert n.parent is None
+        assert n.children == ()
+
+    def test_add_child_rejects_ancestor_cycle(self):
+        root = Node()
+        mid = Node()
+        leaf = Node()
+        root.add_child(mid)
+        mid.add_child(leaf)
+        with pytest.raises(ValueError):
+            leaf.add_child(root)
+        assert root.parent is None
+        assert mid.parent is root
+        assert leaf.parent is mid
+
     def test_find_by_name(self):
         root = Node()
         head = Node()

@@ -52,15 +52,24 @@ impl Node {
 
     // Hierarchy operations
 
-    pub fn add_child(parent: &RcNode, child: &RcNode) {
+    pub fn add_child(parent: &RcNode, child: &RcNode) -> bool {
+        if Rc::ptr_eq(parent, child) || Self::is_ancestor_of(child, parent) {
+            return false;
+        }
         Self::detach(child);
         rc_mut!(child).parent = Some(Rc::downgrade(parent));
         rc_mut!(parent).children.push(child.clone());
+        true
     }
 
-    pub fn remove_child(parent: &RcNode, child: &RcNode) {
+    pub fn remove_child(parent: &RcNode, child: &RcNode) -> bool {
+        let is_direct_child = Self::parent(child).is_some_and(|p| Rc::ptr_eq(&p, parent));
+        if !is_direct_child {
+            return false;
+        }
         rc_mut!(child).parent = None;
         rc_mut!(parent).children.retain(|c| !Rc::ptr_eq(c, child));
+        true
     }
 
     pub fn detach(child: &RcNode) {
@@ -86,6 +95,17 @@ impl Node {
         for child in &children {
             Self::mark_destroyed_recursive(child);
         }
+    }
+
+    fn is_ancestor_of(candidate: &RcNode, node: &RcNode) -> bool {
+        let mut current = Self::parent(node);
+        while let Some(parent) = current {
+            if Rc::ptr_eq(&parent, candidate) {
+                return true;
+            }
+            current = Self::parent(&parent);
+        }
+        false
     }
 
     pub fn parent(node: &RcNode) -> Option<RcNode> {
@@ -255,6 +275,27 @@ mod tests {
     }
 
     #[test]
+    fn test_add_child_rejects_self_parenting() {
+        let n = Node::new();
+        Node::add_child(&n, &n);
+        assert!(rc_ref!(&n).children.is_empty());
+        assert!(Node::parent(&n).is_none());
+    }
+
+    #[test]
+    fn test_add_child_rejects_ancestor_cycle() {
+        let root = Node::new();
+        let mid = Node::new();
+        let leaf = Node::new();
+        Node::add_child(&root, &mid);
+        Node::add_child(&mid, &leaf);
+        Node::add_child(&leaf, &root);
+        assert!(Node::parent(&root).is_none());
+        assert!(Rc::ptr_eq(&Node::parent(&mid).unwrap(), &root));
+        assert!(Rc::ptr_eq(&Node::parent(&leaf).unwrap(), &mid));
+    }
+
+    #[test]
     fn test_destroy_marks_subtree_without_detaching() {
         let root = Node::new();
         let mid = Node::new();
@@ -292,6 +333,18 @@ mod tests {
         Node::remove_child(&p, &c);
         assert!(rc_ref!(&p).children.is_empty());
         assert!(Node::parent(&c).is_none());
+    }
+
+    #[test]
+    fn test_remove_child_rejects_non_child() {
+        let p1 = Node::new();
+        let p2 = Node::new();
+        let c = Node::new();
+        Node::add_child(&p2, &c);
+        Node::remove_child(&p1, &c);
+        assert!(rc_ref!(&p1).children.is_empty());
+        assert_eq!(rc_ref!(&p2).children.len(), 1);
+        assert!(Rc::ptr_eq(&Node::parent(&c).unwrap(), &p2));
     }
 
     #[test]

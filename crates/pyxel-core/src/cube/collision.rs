@@ -1149,7 +1149,7 @@ pub fn capsule_vs_triangle(
 // Closest point on triangle to p (Ericson, Real-Time Collision
 // Detection §5.1.5). Returns the barycentric point on the triangle
 // or its nearest edge / vertex.
-fn closest_point_on_triangle(p: Vec3, a: Vec3, b: Vec3, c: Vec3) -> Vec3 {
+pub(crate) fn closest_point_on_triangle(p: Vec3, a: Vec3, b: Vec3, c: Vec3) -> Vec3 {
     let ab = Vec3 {
         x: b.x - a.x,
         y: b.y - a.y,
@@ -1253,7 +1253,12 @@ fn closest_point_on_segment(p: Vec3, a: Vec3, b: Vec3) -> Vec3 {
 
 // Closest points between segments [p1, q1] and [p2, q2]
 // (Ericson § 5.1.9, ClosestPtSegmentSegment).
-fn closest_points_segment_segment(p1: Vec3, q1: Vec3, p2: Vec3, q2: Vec3) -> (Vec3, Vec3) {
+pub(crate) fn closest_points_segment_segment(
+    p1: Vec3,
+    q1: Vec3,
+    p2: Vec3,
+    q2: Vec3,
+) -> (Vec3, Vec3) {
     let d1 = Vec3 {
         x: q1.x - p1.x,
         y: q1.y - p1.y,
@@ -1324,7 +1329,7 @@ fn closest_points_segment_segment(p1: Vec3, q1: Vec3, p2: Vec3, q2: Vec3) -> (Ve
 // in the box-local frame. Alternating projection between the two
 // convex sets (clamp to box, project back to segment) converges to the
 // global minimum pair; 8 rounds are ample for f32 contact resolution.
-fn closest_points_segment_aabb(a: Vec3, b: Vec3, half: Vec3) -> (Vec3, Vec3) {
+pub(crate) fn closest_points_segment_aabb(a: Vec3, b: Vec3, half: Vec3) -> (Vec3, Vec3) {
     let mut on_seg = Vec3 {
         x: (a.x + b.x) * 0.5,
         y: (a.y + b.y) * 0.5,
