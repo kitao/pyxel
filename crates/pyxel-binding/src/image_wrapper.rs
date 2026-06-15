@@ -64,7 +64,7 @@ impl Image {
             inner.width() * inner.height(),
             inner.data_ptr()
         ))
-        .unwrap();
+        .expect("data pointer script is built from numeric values");
         let locals = PyDict::new(py);
         py.run(python_code.as_c_str(), None, Some(&locals))?;
         let array = locals

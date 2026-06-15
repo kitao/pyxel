@@ -9,6 +9,9 @@ from _capture import compare_or_update_all  # type: ignore[reportMissingImports]
 ASSETS_DIR = Path(__file__).parent.parent / "pyxel" / "examples" / "assets"
 
 
+# Pytest hooks
+
+
 def pytest_addoption(parser):
     parser.addoption(
         "--update-references",
@@ -28,6 +31,9 @@ def pytest_collection_modifyitems(items):
         else:
             others.append(item)
     items[:] = others + regression
+
+
+# Fixtures
 
 
 @pytest.fixture(scope="session")

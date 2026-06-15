@@ -37,13 +37,13 @@ class TestTypeErrors:
             pyxel.Tilemap(8, 8, "bad")  # type: ignore[arg-type]
 
     def test_sound_set_wrong_speed_type(self):
+        snd = pyxel.Sound()
         with pytest.raises(TypeError):
-            snd = pyxel.Sound()
             snd.set("c2", "s", "7", "n", "fast")  # type: ignore[arg-type]
 
     def test_image_set_wrong_data_type(self):
+        img = pyxel.Image(8, 8)
         with pytest.raises(TypeError):
-            img = pyxel.Image(8, 8)
             img.set(0, 0, 12345)  # type: ignore[arg-type]
 
     def test_btnp_wrong_type(self):
