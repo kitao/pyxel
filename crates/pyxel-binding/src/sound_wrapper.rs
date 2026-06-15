@@ -14,11 +14,7 @@ macro_rules! wrap_sound_as_python_list {
             (|inner: &pyxel::RcSound| -> &mut Vec<$value_type> { &mut rc_mut!(inner).$field_name }),
             Vec<$value_type>,
             (|inner: &pyxel::RcSound, list| rc_mut!(inner).$field_name = list),
-            (|inner: &pyxel::RcSound| rc_ref!(inner)
-                .$field_name
-                .iter()
-                .copied()
-                .collect::<Vec<$value_type>>())
+            (|inner: &pyxel::RcSound| rc_ref!(inner).$field_name.clone())
         );
     };
 }

@@ -211,6 +211,24 @@ class TestTilemapIO:
         has_nonzero = any(tm.pget(x, 0) != (0, 0) for x in range(tm.width))
         assert has_nonzero
 
+    def test_from_tmx_masks_tile_flip_flags(self, tmp_path):
+        tmx_path = tmp_path / "flipped.tmx"
+        tmx_path.write_text(
+            """<?xml version="1.0" encoding="UTF-8"?>
+<map tilewidth="8" tileheight="8">
+  <tileset firstgid="1" columns="3"/>
+  <layer width="1" height="1">
+    <data encoding="csv">2147483650</data>
+  </layer>
+</map>
+""",
+            encoding="utf-8",
+        )
+
+        tm = pyxel.Tilemap.from_tmx(str(tmx_path), 0)
+
+        assert tm.pget(0, 0) == (1, 0)
+
     def test_load_tmx(self, assets_dir):
         tm = pyxel.Tilemap(32, 32, 0)
         tm.load(0, 0, str(assets_dir / "urban_rpg.tmx"), 0)

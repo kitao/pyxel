@@ -11,7 +11,7 @@ use crate::profiler::Profiler;
 use crate::pyxel::{self, Pyxel};
 #[cfg(not(target_os = "emscripten"))]
 use crate::settings::WINDOW_TO_DISPLAY_RATIO;
-use crate::settings::{MAX_FRAME_DELAY_MS, NUM_MEASURE_FRAMES, NUM_SCREEN_TYPES};
+use crate::settings::{MAX_FRAME_DELAY_MS, NUM_MEASURE_FRAMES, NUM_SCREEN_MODES};
 use crate::utils;
 use crate::window_watcher::WindowWatcher;
 
@@ -158,7 +158,6 @@ impl Pyxel {
 
         #[cfg(target_os = "emscripten")]
         {
-            use std::ffi::CString;
             use std::os::raw::c_char;
 
             extern "C" {
@@ -166,8 +165,7 @@ impl Pyxel {
             }
 
             unsafe {
-                let script = CString::new("resetPyxel();").unwrap();
-                emscripten_run_script(script.as_ptr());
+                emscripten_run_script(c"resetPyxel();".as_ptr());
             }
         }
     }
@@ -346,7 +344,7 @@ impl Pyxel {
                 self.set_integer_scale(!self.system.integer_scale_enabled);
             } else if self.is_button_pressed(KEY_9, None, None) {
                 self.reset_key(KEY_9);
-                self.set_screen_mode((self.system.screen_mode + 1) % NUM_SCREEN_TYPES);
+                self.set_screen_mode((self.system.screen_mode + 1) % NUM_SCREEN_MODES);
             } else if self.is_button_pressed(KEY_0, None, None) {
                 self.reset_key(KEY_0);
                 self.set_perf_monitor(!self.system.perf_monitor_enabled);
@@ -370,7 +368,7 @@ impl Pyxel {
                 self.set_integer_scale(!self.system.integer_scale_enabled);
             } else if self.is_button_pressed(GAMEPAD1_BUTTON_DPAD_RIGHT, None, None) {
                 self.reset_key(GAMEPAD1_BUTTON_DPAD_RIGHT);
-                self.set_screen_mode((self.system.screen_mode + 1) % NUM_SCREEN_TYPES);
+                self.set_screen_mode((self.system.screen_mode + 1) % NUM_SCREEN_MODES);
             } else if self.is_button_pressed(GAMEPAD1_BUTTON_DPAD_UP, None, None) {
                 self.reset_key(GAMEPAD1_BUTTON_DPAD_UP);
                 self.set_perf_monitor(!self.system.perf_monitor_enabled);

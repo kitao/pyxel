@@ -172,6 +172,7 @@ impl Envelope {
             slope: 0.0,
         });
 
+        // Store newest segments first so playback can walk backward by start tick.
         self.segments.reverse();
 
         self.segment_index = self.segments.len() - 1;
@@ -413,6 +414,7 @@ pub struct Voice {
 impl Voice {
     pub fn new(clock_rate: u32, control_rate: u32, interp_clocks: u32) -> Self {
         assert!(clock_rate > 0 && control_rate > 0 && interp_clocks > 0);
+        // Build the pitch-ratio table before audio processing can reach it.
         let _ = pitch_ratio_lut();
 
         let control_interval_clocks = clock_rate / control_rate;
