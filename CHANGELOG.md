@@ -3,6 +3,7 @@
 ## 2.9.7
 
 - Added prose formatter for Japanese and Chinese documentation typography
+- Refined web docs, translations, and issue template wording
 - Reduced audio, MML, BGM, and resource saving overhead
 - Reduced web Base64 encoding and Pyxel Editor shortcut overhead
 

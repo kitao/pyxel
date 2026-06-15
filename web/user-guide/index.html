@@ -35,6 +35,7 @@
         return html + "</tbody></table></div>";
       }
 
+      // Build the user guide shell and section containers.
       function buildPage() {
         const app = document.getElementById("app");
         app.innerHTML = "";
@@ -87,6 +88,7 @@
         updateTexts();
       }
 
+      // Populate every user guide section from localized JSON content.
       function updateTexts() {
         const pyxelLink = link("https://github.com/kitao/pyxel", "Pyxel");
 

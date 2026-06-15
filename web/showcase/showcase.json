@@ -51,7 +51,18 @@
   ],
   "ui": {
     "title": {
-      "en": "Pyxel Showcase"
+      "en": "Pyxel Showcase",
+      "cn": "Pyxel Showcase",
+      "de": "Pyxel Showcase",
+      "es": "Pyxel Showcase",
+      "fr": "Pyxel Showcase",
+      "it": "Pyxel Showcase",
+      "ja": "Pyxel Showcase",
+      "ko": "Pyxel Showcase",
+      "pt": "Pyxel Showcase",
+      "ru": "Pyxel Showcase",
+      "tr": "Pyxel Showcase",
+      "uk": "Pyxel Showcase"
     },
     "subtitle": {
       "en": "A collection of demos for {0}, a retro game engine for Python.",

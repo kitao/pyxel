@@ -19,6 +19,7 @@ class FieldCursor:
     ):
         self.parent = parent
         self._max_field_length = max_field_length
+        # Use an impossible wrap length to make vertical moves clamp on one row.
         self._field_wrap_length = (
             field_wrap_length
             if field_wrap_length < max_field_length
