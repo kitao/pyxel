@@ -2,10 +2,13 @@
 
 ## 2.9.7
 
-- Added prose formatter for Japanese and Chinese documentation typography
-- Refined web docs, translations, and issue template wording
-- Reduced audio, MML, BGM, and resource saving overhead
-- Reduced web Base64 encoding and Pyxel Editor shortcut overhead
+- Fixed TMX imports with flipped tiles
+- Fixed reversed slice assignment for Pyxel sequence objects
+- Fixed possible channel desync when starting music playback
+- Fixed escaping for generated HTML and browser file exports
+- Improved audio/MML/BGM processing and resource save performance
+- Improved web export and Pyxel Editor shortcut performance
+- Refined Japanese, Chinese, and web documentation wording and typography
 
 ## 2.9.6
 
@@ -20,11 +23,9 @@
 - Trimmed encoder delay and padding from decoded PCM audio
 - Fixed mistyped notes in Pyxel MML Studio sample tune A URL
 - Raised the minimum Python version to 3.11
-- Reorganized .gitignore and added AI tool ignore entries
 - Avoided Rc clone when refreshing voice tone state
 - Rejected unresolved ties, invalid lengths, and unmatched repeats in MML
 - Fixed profiler frame time on tick counter wraparound
-- Added testing, pyi defaults, and Japanese typography to the coding policy
 - Optimized line, rectb, circ, and elli drawing with span fills
 - Lazy-loaded below-the-fold images in the web user guide
 - Cached API reference element lookups for search input
@@ -74,8 +75,6 @@
 - Fixed Pyxel Editor mismapping user palettes with more than 16 colors
 - Fixed Pyxel Editor color picker cursor shape across palette sizes
 - Fixed missing id attributes on web pages
-- Reorganized Python test suite for broader pyxel-binding API coverage
-- Added Pyxel coding policy with determinism principle and audit procedure
 - Added cfg(pyxel_core) gates to audio save APIs
 - Reused waveform buffer when updating tone wavetable
 - Gated reset_statics and pid_exists by target OS
@@ -106,8 +105,6 @@
 - Fixed relative path handling in the package command
 - Fixed duplicate startup script entry in packaged Pyxel apps
 - Fixed app2exe output colliding with the Pyxel app source directory
-- Added CLI unit tests for dispatcher, error handling, and all commands
-- Reorganized make targets into make test / run / run-wasm
 - Renamed get_pixel/tile/value accessor methods to pixel/tile/value
 - Added custom chord progression support to bgm_generator
 - Added Pyxel Web Launcher to the showcase
@@ -141,7 +138,6 @@
 - Fixed memory leak in MML playback on channels
 - Fixed tilemap editor selection
 - Fixed tilemap viewer rendering
-- Added Python API and Rust unit tests
 - Removed undefined constants from type hints and API reference
 - Added frame pipeline and input injection to headless mode
 
@@ -203,9 +199,8 @@
 
 - Added URL loading support to Pyxel Code Maker
 - Changed Pyxel Code Maker to load default project from zip file
-- Added script to generate type hint docstrings
-- Added docstrings to type hints from API reference
 - Moved WASM-only images from docs/images to wasm/images
+- Added docstrings to type hints from API reference
 - Added multilingual editor manual with 12 language support
 - Unified default width of WASM tool pages
 
@@ -254,7 +249,6 @@
 
 - Unified README installation instructions across platforms
 - Simplified venv setup with --upgrade-deps
-- Updated CI to setup-python v5
 - Fixed inconsistent naming and return types in Rust and Python
 - Added console.error output for WASM runtime errors
 - Added Example 19 for perspective rendering
@@ -285,7 +279,6 @@
 ## 2.7.3
 
 - Improved error handling and unified error messages
-- Expanded Rust unit tests across 10 modules
 - Rewrote examples 06 and 07 for consistency
 - Added VS Code extension
 - Added MCP server for AI-assisted development
@@ -311,7 +304,6 @@
 - Renamed internal Python module to pyxel_binding
 - Optimized drawing performance with bulk fills and reduced overhead
 - Renamed the pyxel-core public API to idiomatic Rust names
-- Improved test script with cleanup and app2exe/app2html
 - Refactored imports and cleanup across Rust, Python, and JS
 
 ## 2.6.9
@@ -332,8 +324,6 @@
 
 - Refined the Makefile for safer WASM builds
 - Renamed and simplified tools scripts
-- Synced CI Rust version with rust-toolchain.toml
-- Updated CI Python version to 3.14
 - Updated Pyxel thanks image
 - Fixed keyboard input for non-US layouts on the web version
 - Removed the version update check from the pyxel command
@@ -367,7 +357,6 @@
 
 - Adjusted initialization order for the web version
 - Normalized HTML doctypes to lowercase
-- Enabled local Pyxel for the test web server
 - Added the pcm method to Sound for audio playback
 - Added Example 18 for audio playback
 - Renamed incl_colors to include_colors in Image
