@@ -358,9 +358,11 @@ impl Node {
         Ok(out)
     }
 
-    fn add_child(slf: Bound<'_, Self>, py: Python<'_>, child: Py<Node>) {
+    fn add_child(slf: Bound<'_, Self>, py: Python<'_>, child: Py<Node>) -> PyResult<()> {
         let child_inner = child.bind(py).borrow().inner.clone();
-        InnerNode::add_child(&slf.borrow().inner, &child_inner);
+        if !InnerNode::add_child(&slf.borrow().inner, &child_inner) {
+            return Err(PyValueError::new_err("add_child would create a cycle"));
+        }
         // Detach from any previous parent's wrapper cache.
         let prev_parent: Option<Py<Node>> = child.bind(py).borrow().parent.borrow_mut().take();
         if let Some(prev) = prev_parent {
@@ -372,16 +374,22 @@ impl Node {
         let self_py: Py<Node> = slf.clone().unbind();
         *child.bind(py).borrow().parent.borrow_mut() = Some(self_py);
         slf.borrow().children.borrow_mut().push(child);
+        Ok(())
     }
 
-    fn remove_child(slf: Bound<'_, Self>, py: Python<'_>, child: Py<Node>) {
+    fn remove_child(slf: Bound<'_, Self>, py: Python<'_>, child: Py<Node>) -> PyResult<()> {
         let child_inner = child.bind(py).borrow().inner.clone();
-        InnerNode::remove_child(&slf.borrow().inner, &child_inner);
+        if !InnerNode::remove_child(&slf.borrow().inner, &child_inner) {
+            return Err(PyValueError::new_err(
+                "remove_child requires a direct child",
+            ));
+        }
         slf.borrow()
             .children
             .borrow_mut()
             .retain(|c| !std::rc::Rc::ptr_eq(&c.bind(py).borrow().inner, &child_inner));
         *child.bind(py).borrow().parent.borrow_mut() = None;
+        Ok(())
     }
 
     // Flag-only destroy (cube-design.md § 16 step 8). Scene.update
@@ -775,7 +783,7 @@ impl Node {
         });
     }
 
-    // Frame-level pipeline (motion integration -> on_update traversal
+    // Frame-level pipeline (on_update traversal -> motion integration
     // -> collision -> on_destroy traversal + detachment) starting from
     // this Node's subtree.
     fn update(slf: PyRef<'_, Self>, py: Python<'_>) -> PyResult<()> {
