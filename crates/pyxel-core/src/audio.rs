@@ -244,9 +244,29 @@ impl Pyxel {
 
     pub fn play_music(&self, music_index: u32, start_sec: Option<f32>, should_loop: bool) {
         let music = rc_ref!(pyxel::musics()[music_index as usize]);
+        let channels = pyxel::channels();
+        let channel_count = channels.len();
+        let pyxel_sounds = pyxel::sounds();
 
-        for (i, seq) in music.seqs.iter().enumerate().take(pyxel::channels().len()) {
-            self.play(i as u32, seq, start_sec, should_loop, false);
+        let channel_sounds: Vec<_> = music
+            .seqs
+            .iter()
+            .enumerate()
+            .take(channel_count)
+            .filter(|(_, seq)| !seq.is_empty())
+            .map(|(i, seq)| {
+                (
+                    i,
+                    seq.iter()
+                        .map(|&index| pyxel_sounds[index as usize].clone())
+                        .collect(),
+                )
+            })
+            .collect();
+
+        let _lock = AudioLock::lock();
+        for (i, sounds) in channel_sounds {
+            rc_mut!(channels[i]).play(sounds, start_sec, should_loop, false);
         }
     }
 

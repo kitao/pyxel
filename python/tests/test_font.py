@@ -49,7 +49,7 @@ class TestFont:
         font = pyxel.Font(str(assets_dir / "umplus_j10r.bdf"))
         w1 = font.text_width("A")
         w2 = font.text_width("AA")
-        # Two chars should be roughly double one char
+        # This BDF has fixed-width Latin glyphs.
         assert w2 == w1 * 2
 
     def test_bdf_renders_text(self, assets_dir):

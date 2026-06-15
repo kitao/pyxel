@@ -66,6 +66,7 @@ impl Image {
         let (width, height) = file_image.dimensions();
         let rc = Self::new(width, height);
 
+        // Quantize each source RGB once, then reuse the mapped palette index.
         {
             let image = rc_mut!(rc);
             let mut color_table = HashMap::<(u8, u8, u8), Color>::with_capacity(256);
