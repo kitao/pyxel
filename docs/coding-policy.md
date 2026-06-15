@@ -164,10 +164,13 @@ The authoritative Pyxel product names are: Pyxel, Pyxel Editor, Pyxel Showcase, 
 
 - A `CHANGELOG.md` entry exists when the change carries (a) a concrete user benefit, or (b) a debugger breadcrumb a future maintainer can follow. Changes that match neither are not recorded.
   - User benefits include: feature addition, bug fix, visible behavior change, performance improvement.
-  - Breadcrumbs include: build-config change (e.g., a new `cfg(...)` gate); feature flag addition; internal runtime change; scoped refactor or cleanup; public API rename; release-process change.
+  - Breadcrumbs include: dependency update; shipped runtime update; build-toolchain update that affects release artifacts; build-config change (e.g., a new `cfg(...)` gate); feature flag addition; internal runtime change; scoped refactor or cleanup; public API rename; release-process change.
+
+- A breadcrumb names a concrete investigation surface; test-only, policy-only, and ignore-file changes are omitted unless they also change product, build, or release behavior.
+  - e.g., `Updated pyo3 crate to version 0.29` remains useful, `Updated dependencies` is too broad, and adding tests or `.gitignore` entries is not a breadcrumb by itself.
 
 - Sub-changes within a single commit are evaluated separately under the rule above.
-  - e.g., a commit that fixes a bug and renames a public type produces two entries (or confirms the rename is not user-visible and merges them).
+  - e.g., a commit that fixes a bug and renames a public type produces two entries; a sub-change that is neither a user benefit nor a breadcrumb is omitted.
 
 - Each entry's verb, grammar form, and object specificity match prior entries of the same change category.
   - e.g., for an audio fix, the entry mirrors prior `Fixed` entries' tense and object specificity.
