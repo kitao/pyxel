@@ -37,13 +37,13 @@ class TestTypeErrors:
             pyxel.Tilemap(8, 8, "bad")  # type: ignore[arg-type]
 
     def test_sound_set_wrong_speed_type(self):
+        snd = pyxel.Sound()
         with pytest.raises(TypeError):
-            snd = pyxel.Sound()
             snd.set("c2", "s", "7", "n", "fast")  # type: ignore[arg-type]
 
     def test_image_set_wrong_data_type(self):
+        img = pyxel.Image(8, 8)
         with pytest.raises(TypeError):
-            img = pyxel.Image(8, 8)
             img.set(0, 0, 12345)  # type: ignore[arg-type]
 
     def test_btnp_wrong_type(self):
@@ -90,16 +90,16 @@ class TestIndexErrors:
 
     def test_images_boundary_valid(self):
         # Last valid index should not raise
-        _ = pyxel.images[pyxel.NUM_IMAGES - 1]
-        _ = pyxel.images[-1]
+        assert isinstance(pyxel.images[pyxel.NUM_IMAGES - 1], pyxel.Image)
+        assert isinstance(pyxel.images[-1], pyxel.Image)
 
     def test_sounds_boundary_valid(self):
-        _ = pyxel.sounds[pyxel.NUM_SOUNDS - 1]
-        _ = pyxel.sounds[-1]
+        assert isinstance(pyxel.sounds[pyxel.NUM_SOUNDS - 1], pyxel.Sound)
+        assert isinstance(pyxel.sounds[-1], pyxel.Sound)
 
     def test_tilemaps_boundary_valid(self):
-        _ = pyxel.tilemaps[pyxel.NUM_TILEMAPS - 1]
-        _ = pyxel.tilemaps[-1]
+        assert isinstance(pyxel.tilemaps[pyxel.NUM_TILEMAPS - 1], pyxel.Tilemap)
+        assert isinstance(pyxel.tilemaps[-1], pyxel.Tilemap)
 
 
 class TestAttributeErrors:

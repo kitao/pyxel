@@ -44,9 +44,14 @@ static SCAN_CORRECTION_SCRIPTS: OnceLock<[CString; SCAN_CORRECTION_SCRIPT_COUNT]
 #[cfg(target_os = "emscripten")]
 fn scan_correction_scripts() -> &'static [CString; SCAN_CORRECTION_SCRIPT_COUNT] {
     SCAN_CORRECTION_SCRIPTS.get_or_init(|| {
-        std::array::from_fn(|i| CString::new(format!("_scanCorrection[{i}]||0;")).unwrap())
+        std::array::from_fn(|i| {
+            CString::new(format!("_scanCorrection[{i}]||0;"))
+                .expect("scan correction script is built from a numeric index")
+        })
     })
 }
+
+// Gamepad lifecycle helpers
 
 pub fn open_gamepad(device_index: i32) -> Option<(i32, *mut SDL_GameController)> {
     let controller = unsafe { SDL_GameControllerOpen(device_index) };
@@ -273,6 +278,8 @@ impl PlatformSdl2 {
     }
 }
 
+// SDL-to-Pyxel event conversion helpers
+
 fn mouse_button_to_key(button: u32) -> Key {
     match button {
         SDL_BUTTON_LEFT => MOUSE_BUTTON_LEFT,
@@ -286,9 +293,9 @@ fn mouse_button_to_key(button: u32) -> Key {
 
 // Correct SDL2 keycode on Emscripten for non-US keyboard layouts.
 // Emscripten's SDL2 maps physical keys through a US-layout table, producing
-// incorrect keycodes for JIS and other non-US keyboards. This function looks
-// up the actual character from a persistent per-scancode correction map
-// (populated by keydown listeners in pyxel.js).
+// incorrect keycodes for JIS and other non-US keyboards. Look up the actual
+// character from a persistent per-scancode correction map (populated by keydown
+// listeners in pyxel.js).
 //
 // Using a persistent map keyed by SDL scancode (physical key) instead of a
 // per-event queue ensures that keydown and keyup for the same physical key

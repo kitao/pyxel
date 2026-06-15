@@ -80,7 +80,7 @@
     },
     "overview_body": {
       "en": "{0} (/ˈpɪksəl/) is a retro game engine for Python. With simple specifications inspired by retro gaming consoles, such as displaying only 16 colors and supporting 4 sound channels, you can easily enjoy making pixel-art-style games.",
-      "cn": "{0}（/ˈpɪksəl/）是一个针对 Python 的复古游戏引擎。其规格受到复古游戏机的启发，例如仅支持 16 种颜色和 4 个声道，同时可以轻松享受制作像素艺术风格游戏的乐趣。",
+      "cn": "{0} (/ˈpɪksəl/) 是一个针对 Python 的复古游戏引擎。其规格受到复古游戏机的启发，例如仅支持 16 种颜色和 4 个声道，同时可以轻松享受制作像素艺术风格游戏的乐趣。",
       "de": "{0} (/ˈpɪksəl/) ist eine Retro-Spielengine für Python. Die Spezifikationen sind von Retro-Spielkonsolen inspiriert – z. B. werden nur 16 Farben und 4 Sound-Kanäle unterstützt –, sodass Sie ganz einfach Spiele im Pixel-Art-Stil erstellen können.",
       "es": "{0} (/ˈpɪksəl/) es un motor de juegos retro para Python. Las especificaciones están inspiradas en las consolas de juegos retro, como el soporte para solo 16 colores y 4 canales de sonido, lo que te permite disfrutar fácilmente de la creación de juegos con estilo de arte en píxeles.",
       "fr": "{0} (/ˈpɪksəl/) est un moteur de jeux rétro pour Python. Les spécifications sont inspirées des consoles de jeux rétro, comme le fait de n'afficher que 16 couleurs et de prendre en charge 4 canaux audio, vous permettant ainsi de profiter facilement de la création de jeux au style pixel art.",
@@ -223,7 +223,7 @@
       "cn": "8 个 256x256 瓦片地图",
       "de": "8 256x256 Tilemaps",
       "es": "8 tilemaps de 256x256",
-      "fr": "8 cartes de tuiles 256x256",
+      "fr": "8 tilemaps 256x256",
       "it": "8 tilemap 256x256",
       "ja": "256x256 サイズ、8 タイルマップ",
       "ko": "256x256 타일맵 8개",
@@ -346,7 +346,7 @@
     },
     "install_desktop_body": {
       "en": "After installing {0} (version 3.11 or higher), run the following command:",
-      "cn": "安装 {0}（版本 3.11 或更高）后，运行以下命令：",
+      "cn": "安装 {0} (版本 3.11 或更高) 后，运行以下命令：",
       "de": "Nachdem Sie {0} (Version 3.11 oder höher) installiert haben, führen Sie den folgenden Befehl aus:",
       "es": "Después de instalar {0} (versión 3.11 o superior), ejecuta el siguiente comando:",
       "fr": "Après avoir installé {0} (version 3.11 ou supérieure), exécutez la commande suivante :",
@@ -444,7 +444,7 @@
     },
     "install_vscode_body": {
       "en": "By adding the Pyxel extension to {0} (VS Code), you can develop and run Pyxel apps without installing Python or Pyxel.",
-      "cn": "在 {0}（VS Code）中添加 Pyxel 扩展后，无需安装 Python 或 Pyxel 即可开发和运行 Pyxel 应用。",
+      "cn": "在 {0} (VS Code) 中添加 Pyxel 扩展后，无需安装 Python 或 Pyxel 即可开发和运行 Pyxel 应用。",
       "de": "Durch Hinzufügen der Pyxel-Erweiterung zu {0} (VS Code) können Sie Pyxel-Apps ohne Installation von Python oder Pyxel entwickeln und ausführen.",
       "es": "Al añadir la extensión Pyxel a {0} (VS Code), puedes desarrollar y ejecutar aplicaciones Pyxel sin instalar Python ni Pyxel.",
       "fr": "En ajoutant l'extension Pyxel à {0} (VS Code), vous pouvez développer et exécuter des applications Pyxel sans installer Python ni Pyxel.",
@@ -864,7 +864,7 @@
     },
     "resources_editor_save": {
       "en": "The created data is saved as a Pyxel resource file (.pyxres).",
-      "cn": "创建的数据将保存为 Pyxel 资源文件（.pyxres）。",
+      "cn": "创建的数据将保存为 Pyxel 资源文件 (.pyxres)。",
       "de": "Die erstellten Daten werden als Pyxel-Ressourcendatei (.pyxres) gespeichert.",
       "es": "Los datos creados se guardan como un archivo de recursos de Pyxel (.pyxres).",
       "fr": "Les données créées sont enregistrées sous forme de fichier de ressources Pyxel (.pyxres).",
@@ -909,7 +909,7 @@
       "cn": "Pyxel 图像和瓦片地图还可以通过以下方法创建：",
       "de": "Pyxel-Bilder und Tilemaps können auch mit folgenden Methoden erstellt werden:",
       "es": "Las imágenes y los tilemaps de Pyxel también se pueden crear utilizando los siguientes métodos:",
-      "fr": "Les images et les cartes de tuiles Pyxel peuvent également être créées en utilisant les méthodes suivantes :",
+      "fr": "Les images et les tilemaps Pyxel peuvent également être créées en utilisant les méthodes suivantes :",
       "it": "Le immagini e le tilemap di Pyxel possono anche essere create utilizzando i seguenti metodi:",
       "ja": "Pyxel 用の画像やタイルマップは、以下の方法で作成することもできます。",
       "ko": "Pyxel 이미지와 타일맵은 다음 방법을 사용하여 생성할 수도 있습니다.",
@@ -923,7 +923,7 @@
       "cn": "使用 {0} 或 {1} 函数，从字符串列表创建图像或瓦片地图",
       "de": "Erstellen Sie Bilder oder Tilemaps aus Listen von Zeichenfolgen mit den Funktionen {0} oder {1}",
       "es": "Crear imágenes o tilemaps a partir de listas de cadenas con las funciones {0} o {1}",
-      "fr": "Créer des images ou des cartes de tuiles à partir de listes de chaînes avec les fonctions {0} ou {1}",
+      "fr": "Créer des images ou des tilemaps à partir de listes de chaînes avec les fonctions {0} ou {1}",
       "it": "Crea immagini o tilemap da elenchi di stringhe con le funzioni {0} o {1}",
       "ja": "{0} や {1} 関数を使って、文字列のリストから作成する",
       "ko": "{0} 함수 또는 {1} 함수를 사용해 문자열 목록에서 이미지나 타일맵을 만듭니다",
@@ -1466,7 +1466,7 @@
     },
     "other_discord_en": {
       "en": "Discord Server (English)",
-      "cn": "Discord 服务器（英文）",
+      "cn": "Discord 服务器 (英文)",
       "de": "Discord-Server (Englisch)",
       "es": "Servidor de Discord (inglés)",
       "fr": "Serveur Discord (anglais)",
@@ -1480,7 +1480,7 @@
     },
     "other_book": {
       "en": "Official Guidebook (Japanese)",
-      "cn": "官方指南书（日文）",
+      "cn": "官方指南书 (日文)",
       "de": "Offizielles Handbuch (Japanisch)",
       "es": "Guía oficial (japonés)",
       "fr": "Guide officiel (japonais)",
@@ -1494,7 +1494,7 @@
     },
     "other_discord_ja": {
       "en": "Discord Server (Japanese)",
-      "cn": "Discord 服务器（日文）",
+      "cn": "Discord 服务器 (日文)",
       "de": "Discord-Server (Japanisch)",
       "es": "Servidor de Discord (japonés)",
       "fr": "Serveur Discord (japonais)",
@@ -1663,7 +1663,7 @@
       "key": "Alt(Option)+3",
       "action": {
         "en": "Save a screen capture video to the desktop (up to 10 seconds)",
-        "cn": "将屏幕录像视频保存到桌面（最多 10 秒）",
+        "cn": "将屏幕录像视频保存到桌面 (最多 10 秒)",
         "de": "Ein Bildschirmaufnahmevideo auf dem Desktop speichern (bis zu 10 Sekunden)",
         "es": "Guardar un video de captura de pantalla en el escritorio (hasta 10 segundos)",
         "fr": "Enregistrer une vidéo de capture d'écran sur le bureau (jusqu'à 10 secondes)",

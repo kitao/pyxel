@@ -114,6 +114,7 @@ class ImageEditor(EditorBase):
     def __on_drop(self, filename):
         colors = list(pyxel.colors)
         user_colors = colors[pyxel.NUM_COLORS :]
+        # Load dropped images against the user sub-palette instead of system colors.
         pyxel.colors[:] = user_colors
         try:
             pyxel.images[self.image_index_var].load(

@@ -273,9 +273,24 @@ class TestPackage:
         assert "added 'my_app/assets/data.txt'" in out
         assert f"added 'my_app/{pyxel.APP_STARTUP_SCRIPT_FILE}'" in out
 
+    def test_removes_startup_pointer_if_packaging_fails(self, tmp_path, monkeypatch):
+        app_dir = _make_app(tmp_path)
+        monkeypatch.chdir(tmp_path)
+
+        def raise_on_write(*_args, **_kwargs):
+            raise RuntimeError("zip write failed")
+
+        monkeypatch.setattr(zipfile.ZipFile, "write", raise_on_write)
+
+        with pytest.raises(RuntimeError):
+            pyxel.cli.package_pyxel_app("my_app", "my_app/main.py")
+
+        assert not (app_dir / pyxel.APP_STARTUP_SCRIPT_FILE).exists()
+
 
 class TestApp2exe:
     def test_exe_runs_with_resource(self, tmp_path, monkeypatch):
+        # Optional integration check runs only when PyInstaller is installed.
         pytest.importorskip("PyInstaller")
         app_dir = tmp_path / "my_app"
         (app_dir / "assets").mkdir(parents=True)
@@ -356,6 +371,16 @@ class TestApp2html:
         assert "my_app/main.py" in names
         assert "my_app/assets/data.txt" in names
         assert f"my_app/{pyxel.APP_STARTUP_SCRIPT_FILE}" in names
+
+    def test_html_escapes_app_name_as_javascript_string(self, tmp_path, monkeypatch):
+        pyxel_app_file = tmp_path / 'bad"name\\line.pyxapp'
+        pyxel_app_file.write_bytes(b"payload")
+        monkeypatch.chdir(tmp_path)
+
+        pyxel.cli.create_html_from_pyxel_app(str(pyxel_app_file))
+
+        html = (tmp_path / 'bad"name\\line.html').read_text(encoding="utf-8")
+        assert 'name: "bad\\"name\\\\line.pyxapp"' in html
 
     def test_missing_pyxapp_exits_with_error(self, capsys, tmp_path):
         with pytest.raises(SystemExit):

@@ -214,8 +214,8 @@ impl Sound {
                 rc_mut!(ch).stop();
             }
 
-            let temp_sound = new_rc_type!(self.clone());
-            rc_mut!(channels[0]).play(vec![temp_sound], None, true, false);
+            let render_sound = new_rc_type!(self.clone());
+            rc_mut!(channels[0]).play(vec![render_sound], None, true, false);
             Audio::render_samples(channels.as_slice(), &mut blip_buf, &mut samples);
             for ch in channels.iter() {
                 rc_mut!(ch).stop();

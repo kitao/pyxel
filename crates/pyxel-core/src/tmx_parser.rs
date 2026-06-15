@@ -7,6 +7,8 @@ use crate::settings::TILE_SIZE;
 use crate::tilemap::{ImageSource, ImageTileCoord, RcTilemap, Tilemap};
 use crate::utils::remove_whitespace;
 
+const TMX_TILE_FLAG_MASK: u32 = 0xf000_0000;
+
 #[derive(Debug, Deserialize)]
 struct Tileset {
     #[serde(rename = "@firstgid")]
@@ -84,7 +86,7 @@ pub fn parse_tmx(path: &str, layer_index: u32) -> Result<RcTilemap, String> {
     let tilemap_ref = rc_mut!(tilemap);
     for (y, row) in tile_ids.chunks(layer.width as usize).enumerate() {
         for (x, &id) in row.iter().enumerate() {
-            let id = id.saturating_sub(tileset.firstgid);
+            let id = (id & !TMX_TILE_FLAG_MASK).saturating_sub(tileset.firstgid);
             tilemap_ref.canvas.write_data(
                 x,
                 y,

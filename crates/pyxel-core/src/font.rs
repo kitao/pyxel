@@ -259,7 +259,7 @@ impl Font {
         }
     }
 
-    // Private methods
+    // Helpers
 
     fn is_invisible(c: char) -> bool {
         let cp = c as u32;

@@ -273,7 +273,7 @@ macro_rules! impl_python_sequence_write {
                     let new_values: Vec<$set_type> = value.extract()?;
                     if indices.step == 1 {
                         let start = indices.start as usize;
-                        let end = indices.stop as usize;
+                        let end = indices.stop.max(indices.start) as usize;
                         let vec = $list_mut(&self.inner);
                         vec.splice(start..end, new_values.into_iter().map($to_raw));
                     } else {

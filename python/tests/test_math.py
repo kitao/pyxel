@@ -152,8 +152,7 @@ class TestRandom:
     def test_rndi_includes_boundaries(self):
         pyxel.rseed(0)
         values = {pyxel.rndi(0, 1) for _ in range(100)}
-        assert 0 in values
-        assert 1 in values
+        assert values == {0, 1}
 
     def test_rndf_in_range(self):
         for _ in range(100):

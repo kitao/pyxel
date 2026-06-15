@@ -6,7 +6,7 @@ use crate::font::RcFont;
 use crate::image::{rgb24_to_rgb8, Color, Rgb24};
 use crate::platform::{self, GlProfile};
 use crate::pyxel::{self, Pyxel};
-use crate::settings::{BACKGROUND_COLOR, MAX_COLORS, NUM_SCREEN_TYPES};
+use crate::settings::{BACKGROUND_COLOR, MAX_COLORS, NUM_SCREEN_MODES};
 
 #[cfg(target_os = "macos")]
 const GL_VERSION: &str = include_str!("shaders/gles_version.glsl");
@@ -16,7 +16,7 @@ const GL_VERSION: &str = include_str!("shaders/gl_version.glsl");
 const GLES_VERSION: &str = include_str!("shaders/gles_version.glsl");
 const COMMON_VERT: &str = include_str!("shaders/common.vert");
 const COMMON_FRAG: &str = include_str!("shaders/common.frag");
-const SCREEN_FRAGS: [&str; NUM_SCREEN_TYPES as usize] = [
+const SCREEN_FRAGS: [&str; NUM_SCREEN_MODES as usize] = [
     include_str!("shaders/crisp.frag"),
     include_str!("shaders/smooth.frag"),
     include_str!("shaders/retro.frag"),

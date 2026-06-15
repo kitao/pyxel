@@ -59,6 +59,8 @@ class TilemapViewer(Widget):
     def __on_update(self):
         tilemap = pyxel.tilemaps[self.tilemap_index_var]
         image = pyxel.images[tilemap.imgsrc]
+
+        # Refresh a slice of the preview each frame by sampling representative pixels.
         start_y = pyxel.frame_count % 8 * 8
 
         for y in range(start_y, start_y + 8):

@@ -90,6 +90,7 @@
         return `<img src="images/${editor}_${a.id}.png" alt="" class="pix rounded border border-gray-700 my-2" style="width:${pct}%">`;
       }
 
+      // Render a manual screenshot with labeled area annotations.
       function annotatedImg(src, annotations) {
         let svg = "";
         const colors = ANNOTATION_COLORS;
@@ -127,6 +128,7 @@
         return `<div class="relative my-3"><img src="${src}" alt="" class="w-full rounded-lg border border-gray-700 block pix"><svg class="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 480 360" preserveAspectRatio="xMidYMid meet">${svg}</svg></div>`;
       }
 
+      // Render the piano keyboard diagram and octave guide.
       function keyboardDiagram() {
         const kl = data.sound_keyboard_layout;
         const notes = t(kl.notes);
@@ -169,6 +171,7 @@
         return html;
       }
 
+      // Render the image editor tool icon reference grid.
       function toolIcons() {
         return iconTable([
           {
@@ -209,7 +212,7 @@
         ]);
       }
 
-      // Build page
+      // Build the manual shell and editor section containers.
       function buildPage() {
         const app = document.getElementById("app");
         app.innerHTML = "";
@@ -290,6 +293,7 @@
         updateTexts();
       }
 
+      // Populate all manual sections from localized JSON content.
       function updateTexts() {
         // Header
         document.title = t("title");

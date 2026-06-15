@@ -7,7 +7,7 @@ permissions:
 
 env:
   PYTHON_VERSION: "3.14"
-  SDL2_VERSION: "2.32.0"
+  SDL2_VERSION: "2.32.10"
 
 jobs:
   build-winmac:
@@ -293,15 +293,23 @@ jobs:
         include:
           - target: x86_64-pc-windows-msvc
             os: windows-2022
+            arch: x64
+
+          - target: i686-pc-windows-msvc
+            os: windows-2022
+            arch: x86
 
           - target: x86_64-apple-darwin
             os: macos-15-intel
+            arch: x64
 
           - target: aarch64-apple-darwin
             os: macos-15
+            arch: arm64
 
           - target: x86_64-unknown-linux-gnu
             os: ubuntu-24.04
+            arch: x64
 
           - target: aarch64-unknown-linux-gnu
             os: ubuntu-24.04
@@ -318,6 +326,7 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
+          architecture: ${{ matrix.arch }}
 
       - name: Download wheel
         uses: actions/download-artifact@v4

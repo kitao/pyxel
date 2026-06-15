@@ -25,7 +25,7 @@ font12 = pyxel.Font("assets/PixelMplus12-Regular.ttf", 12)
 pyxel.cls(1)
 pyxel.blt(0, 0, 1, 0, 0, 128, 128)
 
-s = "▲Pyxel︎▲"
+s = "▲Pyxel▲"
 w = font10.text_width(s)
 pyxel.rect(21, 18, w, 1, 15)
 pyxel.text(21, 8, s, 8, font10)

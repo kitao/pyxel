@@ -11,7 +11,7 @@ from _capture import (  # type: ignore[reportMissingImports]
 )
 
 CAPTURE_PLANS = {
-    # pyxel.run() without asset loading
+    # pyxel.run()-based examples
     "01_hello_pyxel": [{"frame": 8}],
     "04_sound_api": [{"frame": 1}],
     "06_click_game": [
@@ -26,7 +26,7 @@ CAPTURE_PLANS = {
     ],
     "12_perlin_noise": [{"frame": 1}, {"frame": 40}],
     "14_synthesizer": [{"frame": 1}],
-    # pyxel.run() with asset loading
+    # Asset-loading examples
     "02_jump_game": [{"frame": 10}],
     "10_platformer": [
         {"frame": 1},
@@ -47,7 +47,7 @@ CAPTURE_PLANS = {
         {"frame": 1},
         {"frame": 20, "press": [pyxel.KEY_RIGHT, pyxel.KEY_W]},
     ],
-    # pyxel.show()-based (no update/draw loop)
+    # Static-screen and launcher captures
     "05_color_palette": [{"frame": 0}],
     "13_custom_font": [{"frame": 0}],
     "17_app_launcher": [{"frame": 1}],

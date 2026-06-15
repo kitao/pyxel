@@ -1,4 +1,3 @@
-use std::ffi::CString;
 use std::process::exit;
 
 use pyo3::prelude::*;
@@ -30,6 +29,7 @@ fn init(
     let os_mod = py.import("os")?;
     let exec_path: String = sys.getattr("executable")?.extract()?;
     let cwd: String = os_mod.call_method0("getcwd")?.extract()?;
+    // Prefer Python's original argv so reset can restart the same command line.
     let orig_argv: Vec<String> = sys
         .getattr("orig_argv")
         .or_else(|_| sys.getattr("argv"))?
@@ -39,9 +39,11 @@ fn init(
     let locals = PyDict::new(py);
     locals.set_item("os", os_mod)?;
     locals.set_item("inspect", py.import("inspect")?)?;
-    let script =
-        CString::new(r#"os.chdir(os.path.dirname(inspect.stack()[1].filename) or ".")"#).unwrap();
-    py.run(script.as_c_str(), None, Some(&locals))?;
+    py.run(
+        c"os.chdir(os.path.dirname(inspect.stack()[1].filename) or \".\")",
+        None,
+        Some(&locals),
+    )?;
 
     pyxel::init(
         width,
@@ -58,17 +60,19 @@ fn init(
     // Register reset callback
     *pyxel::reset_callback() = Some(Box::new(move || {
         Python::attach(|py| {
-            let locals = PyDict::new(py);
-            locals.set_item("exec_path", &exec_path).unwrap();
-            locals.set_item("cwd", &cwd).unwrap();
-            locals.set_item("orig_argv", &orig_argv).unwrap();
-            let script = CString::new(
-                r"
+            let result: PyResult<()> = (|| {
+                let locals = PyDict::new(py);
+                locals.set_item("exec_path", &exec_path)?;
+                locals.set_item("cwd", &cwd)?;
+                locals.set_item("orig_argv", &orig_argv)?;
+                py.run(
+                    c"
 import os, subprocess, sys
 # 0x52 = WATCH_RESET_EXIT_CODE in settings.rs, checked by cli.py watch mode
 if os.environ.get('PYXEL_WATCH_STATE_FILE'):
     os._exit(0x52)
 if sys.platform == 'darwin':
+    # Silence child stderr while the parent process is being replaced.
     try:
         f = open(os.devnull, 'wb')
         os.dup2(f.fileno(), 2)
@@ -82,9 +86,11 @@ subprocess.Popen(
 )
 sys.exit(0)
 ",
-            )
-            .unwrap();
-            if let Err(err) = py.run(script.as_c_str(), None, Some(&locals)) {
+                    None,
+                    Some(&locals),
+                )
+            })();
+            if let Err(err) = result {
                 err.print(py);
                 exit(1);
             }

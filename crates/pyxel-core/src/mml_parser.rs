@@ -278,12 +278,12 @@ pub fn parse_mml(mml: &str) -> Result<Vec<MmlCommand>, String> {
 
 pub fn total_duration_sec(commands: &[MmlCommand]) -> Option<f32> {
     let mut total_clocks = 0;
-    let mut command_index: u32 = 0;
-    let mut repeat_points: Vec<(u32, u32)> = Vec::new();
+    let mut command_index = 0;
+    let mut repeat_points: Vec<(usize, u32)> = Vec::new();
     let mut clocks_per_tick = bpm_to_clocks_per_tick(DEFAULT_TEMPO);
 
-    while command_index < commands.len() as u32 {
-        let command = &commands[command_index as usize];
+    while command_index < commands.len() {
+        let command = &commands[command_index];
         command_index += 1;
         match command {
             MmlCommand::Tempo {
@@ -299,6 +299,7 @@ pub fn total_duration_sec(commands: &[MmlCommand]) -> Option<f32> {
             }
             MmlCommand::RepeatEnd { play_count } => {
                 if *play_count == 0 {
+                    // Repeat count 0 is infinite, so total duration is unbounded.
                     return None;
                 }
                 if let Some((start_index, count)) = repeat_points.pop() {
@@ -313,6 +314,8 @@ pub fn total_duration_sec(commands: &[MmlCommand]) -> Option<f32> {
     }
     Some(total_clocks as f32 / AUDIO_CLOCK_RATE as f32)
 }
+
+// Stream primitives
 
 fn skip_whitespace(stream: &mut CharStream) {
     while stream.peek().is_some_and(char::is_whitespace) {
@@ -416,6 +419,8 @@ fn parse_command<T: TryFrom<i32>>(
     }
     Ok(None)
 }
+
+// Command parsers
 
 fn parse_length_ticks(stream: &mut CharStream, note_ticks: u32) -> Result<u32, String> {
     const WHOLE_NOTE_TICKS: u32 = TICKS_PER_QUARTER_NOTE * 4;
@@ -603,6 +608,8 @@ fn parse_glide(stream: &mut CharStream) -> Result<Option<MmlCommand>, String> {
         duration_ticks,
     }))
 }
+
+// Unit conversions
 
 fn bpm_to_clocks_per_tick(bpm: u32) -> u32 {
     (AUDIO_CLOCK_RATE as f32 * 60.0 / (bpm as f32 * TICKS_PER_QUARTER_NOTE as f32)).round() as u32

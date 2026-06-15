@@ -101,9 +101,13 @@ const linkChip = (s) => `<span class="link-chip">${esc(s)}</span>`;
 
 // Base64 <-> Uint8Array conversion
 
+const BASE64_CHUNK_SIZE = 0x8000;
+
 const uint8ToBase64 = (u8) => {
   let bin = "";
-  for (const b of u8) bin += String.fromCharCode(b);
+  for (let i = 0; i < u8.length; i += BASE64_CHUNK_SIZE) {
+    bin += String.fromCharCode(...u8.subarray(i, i + BASE64_CHUNK_SIZE));
+  }
   return btoa(bin);
 };
 

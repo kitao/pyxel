@@ -180,6 +180,17 @@ class TestSeqSliceOperations:
         assert pyxel.colors[1] == 0xFFFFFF
         pyxel.colors[0:2] = original[0:2]
 
+    def test_reversed_step_one_slice_assignment_inserts(self):
+        original = list(pyxel.colors)
+        pyxel.colors[2:0] = [0x123456]
+        assert list(pyxel.colors[:4]) == [
+            original[0],
+            original[1],
+            0x123456,
+            original[2],
+        ]
+        pyxel.colors[:] = original
+
     def test_delitem_slice(self):
         for _ in range(3):
             pyxel.sounds.append(pyxel.Sound())

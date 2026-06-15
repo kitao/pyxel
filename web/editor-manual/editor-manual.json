@@ -150,7 +150,7 @@
     },
     "starting_body": {
       "en": "Launch Pyxel Editor with the following command:\n{0}\nIf the specified Pyxel resource file (.pyxres) exists, it will be loaded. If it does not exist, a new file with the specified name will be created. If the filename is omitted, {1} will be created.",
-      "cn": "Pyxel Editor 通过以下命令启动：\n{0}\n如果指定的 Pyxel 资源文件（.pyxres）已存在，则加载该文件；不存在则以指定名称新建。省略文件名时将创建 {1}。",
+      "cn": "Pyxel Editor 通过以下命令启动：\n{0}\n如果指定的 Pyxel 资源文件 (.pyxres) 已存在，则加载该文件；不存在则以指定名称新建。省略文件名时将创建 {1}。",
       "de": "Pyxel Editor wird mit folgendem Befehl gestartet:\n{0}\nFalls die angegebene Pyxel-Ressourcendatei (.pyxres) existiert, wird sie geladen. Andernfalls wird eine neue Datei mit dem angegebenen Namen erstellt. Wird kein Dateiname angegeben, wird {1} erstellt.",
       "es": "Pyxel Editor se inicia con el siguiente comando:\n{0}\nSi el archivo de recursos Pyxel (.pyxres) especificado existe, se cargará; si no existe, se creará uno nuevo con el nombre indicado. Si se omite el nombre del archivo, se creará {1}.",
       "fr": "Pyxel Editor se lance avec la commande suivante :\n{0}\nSi le fichier de ressources Pyxel (.pyxres) spécifié existe, il sera chargé. Sinon, un nouveau fichier sera créé avec le nom indiqué. Si aucun nom de fichier n'est spécifié, {1} sera créé.",
@@ -458,7 +458,7 @@
     },
     "tilemap_tmx_body": {
       "en": "Drag and drop a TMX file created with Tiled Map Editor ({0}) onto the Tilemap Editor to load the contents of layer 0 at the editing area position.",
-      "cn": "将 Tiled Map Editor（{0}）创建的 TMX 文件拖放到瓦片地图编辑器，即可在编辑区域的位置加载图层 0 的内容。",
+      "cn": "将 Tiled Map Editor ({0}) 创建的 TMX 文件拖放到瓦片地图编辑器，即可在编辑区域的位置加载图层 0 的内容。",
       "de": "Durch Drag & Drop einer mit Tiled Map Editor ({0}) erstellten TMX-Datei in den Tilemap-Editor wird der Inhalt von Layer 0 an der Position des Bearbeitungsbereichs geladen.",
       "es": "Al arrastrar y soltar un archivo TMX creado con Tiled Map Editor ({0}) en el editor de tilemaps, el contenido de la capa 0 se carga en la posición del área de edición.",
       "fr": "Glissez-déposez un fichier TMX créé avec Tiled Map Editor ({0}) dans l'éditeur de tilemap pour charger le contenu du calque 0 à la position de la zone d'édition.",
@@ -556,7 +556,7 @@
     },
     "sound_keyboard_body": {
       "en": "You can input notes using the PC keyboard. The upper row (QWE row + number row) and the lower row (ZXC row + ASD row) each correspond to one octave of piano keys, covering two octaves simultaneously. White keys are assigned to natural notes and gray keys to sharps. Select the starting octave (0–3) with the octave bar.",
-      "cn": "可以使用 PC 键盘输入音符。键盘上排（QWE 行 + 数字行）和下排（ZXC 行 + ASD 行）分别对应一个八度的钢琴键盘，同时覆盖 2 个八度。白键对应 Do Re Mi Fa Sol La Si，灰色键对应升半音。通过八度条选择起始八度（0~3）。",
+      "cn": "可以使用 PC 键盘输入音符。键盘上排 (QWE 行 + 数字行) 和下排 (ZXC 行 + ASD 行) 分别对应一个八度的钢琴键盘，同时覆盖 2 个八度。白键对应 Do Re Mi Fa Sol La Si，灰色键对应升半音。通过八度条选择起始八度 (0~3)。",
       "de": "Töne können über die PC-Tastatur eingegeben werden. Die obere Reihe (QWE-Reihe + Ziffernreihe) und die untere Reihe (ZXC-Reihe + ASD-Reihe) entsprechen jeweils einer Oktave einer Klaviertastatur und decken zusammen zwei Oktaven ab. Weiße Tasten sind den Stammtönen, graue Tasten den Halbtönen zugeordnet. Die Startoktave (0–3) wird über den Oktavbalken gewählt.",
       "es": "Puede introducir notas usando el teclado del PC. Las filas superior (QWE + números) e inferior (ZXC + ASD) corresponden a una octava de piano cada una, cubriendo 2 octavas simultáneamente. Las teclas blancas son Do Re Mi Fa Sol La Si y las grises son los sostenidos. Seleccione la octava inicial (0~3) con la barra de octavas.",
       "fr": "Les notes peuvent être saisies via le clavier PC. Les rangées supérieures (QWE + chiffres) et inférieures (ZXC + ASD) correspondent chacune à une octave de piano, couvrant 2 octaves simultanément. Les touches blanches correspondent aux notes naturelles, les touches grises aux dièses. La barre d'octave permet de sélectionner l'octave de départ (0~3).",
@@ -570,7 +570,7 @@
     },
     "sound_speed_body": {
       "en": "Sets the playback duration per note. This is a common setting for all notes, specified in the range 1–99. Smaller values result in faster playback (1 speed unit = 1/120 second; e.g., speed 60 = 0.5 seconds per note). For sound effects, 1–9 is typical; for melodies, 10 or higher is recommended.",
-      "cn": "设置每个音符的播放时长。所有音符共用此设置，范围为 1~99。值越小播放越快（每 1 速度为 1/120 秒，例如速度 60 时每音 0.5 秒）。音效建议设为 1~9，旋律建议设为 10 以上。",
+      "cn": "设置每个音符的播放时长。所有音符共用此设置，范围为 1~99。值越小播放越快 (每 1 速度为 1/120 秒，例如速度 60 时每音 0.5 秒)。音效建议设为 1~9，旋律建议设为 10 以上。",
       "de": "Legt die Wiedergabedauer pro Ton fest. Diese Einstellung gilt für alle Töne und kann von 1 bis 99 eingestellt werden. Kleinere Werte bedeuten schnellere Wiedergabe (1 Speed-Einheit = 1/120 Sekunde, z.B. Speed 60 = 0,5 Sekunden pro Ton). Für Soundeffekte empfohlen: 1–9, für Melodien: 10 oder höher.",
       "es": "Establece el tiempo de reproducción por nota. Es una configuración común para todas las notas, con un rango de 1~99. Cuanto menor sea el valor, más rápida será la reproducción (1/120 segundos por unidad de speed; por ejemplo, speed 60 = 0.5 segundos por nota). Para efectos de sonido se recomienda 1~9, para melodías 10 o más.",
       "fr": "Définit la durée de lecture par note. Ce réglage est commun à toutes les notes, de 1 à 99. Plus la valeur est faible, plus la lecture est rapide (1 unité = 1/120 s ; ex. : speed 60 = 0,5 s par note). Valeur recommandée : 1~9 pour les effets sonores, 10+ pour les mélodies.",
@@ -584,7 +584,7 @@
     },
     "sound_tone_title": {
       "en": "Tone",
-      "cn": "Tone（音色）",
+      "cn": "Tone (音色)",
       "de": "Tone (Klangfarbe)",
       "es": "Tone (tono)",
       "fr": "Tone (timbre)",
@@ -598,7 +598,7 @@
     },
     "sound_tone_body": {
       "en": "With the cursor on the TON row, press the following keys to set the tone. The default when not set is T (Triangle).",
-      "cn": "将光标移至 TON 行，按以下按键设置音色。未设置时默认为 T（Triangle）。",
+      "cn": "将光标移至 TON 行，按以下按键设置音色。未设置时默认为 T (Triangle)。",
       "de": "Bei Cursor in der TON-Zeile die folgenden Tasten drücken, um die Klangfarbe einzustellen. Standard ist T (Triangle).",
       "es": "Con el cursor en la fila TON, presione las siguientes teclas para configurar el tono. El valor predeterminado es T (Triangle).",
       "fr": "Lorsque le curseur est sur la ligne TON, appuyez sur les touches suivantes pour définir le timbre. La valeur par défaut est T (Triangle).",
@@ -612,7 +612,7 @@
     },
     "sound_volume_title": {
       "en": "Volume",
-      "cn": "Volume（音量）",
+      "cn": "Volume (音量)",
       "de": "Volume (Lautstärke)",
       "es": "Volume (volumen)",
       "fr": "Volume",
@@ -626,7 +626,7 @@
     },
     "sound_volume_body": {
       "en": "With the cursor on the VOL row, press number keys 0–7 to set the volume (0 = silent, 7 = maximum). The default when not set is 7. Using maximum volume on multiple channels simultaneously may result in excessive loudness.",
-      "cn": "将光标移至 VOL 行，按 0~7 数字键设置音量（0=静音，7=最大）。未设置时默认为 7。多通道同时使用最大音量时，音量可能过大。",
+      "cn": "将光标移至 VOL 行，按 0~7 数字键设置音量 (0=静音，7=最大)。未设置时默认为 7。多通道同时使用最大音量时，音量可能过大。",
       "de": "Bei Cursor in der VOL-Zeile die Zifferntasten 0–7 drücken, um die Lautstärke einzustellen (0=stumm, 7=maximal). Standard ist 7. Bei gleichzeitiger Maximallautstärke auf mehreren Kanälen kann der Ton übersteuern.",
       "es": "Con el cursor en la fila VOL, presione las teclas numéricas 0~7 para configurar el volumen (0=silencio, 7=máximo). El valor predeterminado es 7. Al usar volumen máximo en varios canales simultáneamente, el sonido puede distorsionarse.",
       "fr": "Lorsque le curseur est sur la ligne VOL, appuyez sur les touches 0~7 pour définir le volume (0 = silence, 7 = maximum). La valeur par défaut est 7. L'utilisation du volume maximum sur plusieurs canaux simultanément peut provoquer une saturation.",
@@ -640,7 +640,7 @@
     },
     "sound_effect_title": {
       "en": "Effect",
-      "cn": "Effect（效果）",
+      "cn": "Effect (效果)",
       "de": "Effect (Effekt)",
       "es": "Effect (efecto)",
       "fr": "Effect (effet)",
@@ -654,7 +654,7 @@
     },
     "sound_effect_body": {
       "en": "With the cursor on the EFX row, press the following keys to set the effect. The default when not set is N (None).",
-      "cn": "将光标移至 EFX 行，按以下按键设置效果。未设置时默认为 N（None）。",
+      "cn": "将光标移至 EFX 行，按以下按键设置效果。未设置时默认为 N (None)。",
       "de": "Bei Cursor in der EFX-Zeile die folgenden Tasten drücken, um den Effekt einzustellen. Standard ist N (None).",
       "es": "Con el cursor en la fila EFX, presione las siguientes teclas para configurar el efecto. El valor predeterminado es N (None).",
       "fr": "Lorsque le curseur est sur la ligne EFX, appuyez sur les touches suivantes pour définir l'effet. La valeur par défaut est N (None).",
@@ -780,7 +780,7 @@
     },
     "image_banknum_body": {
       "en": "Switch the target image bank (0–2).",
-      "cn": "切换编辑对象的图像库（0~2）。",
+      "cn": "切换编辑对象的图像库 (0~2)。",
       "de": "Wechselt die zu bearbeitende Bildbank (0–2).",
       "es": "Cambie el banco de imágenes a editar (0~2).",
       "fr": "Change la banque d'images à éditer (0~2).",
@@ -794,7 +794,7 @@
     },
     "tilemap_canvas_body": {
       "en": "The editing area selected in the tilemap view is displayed magnified. Place tile images selected in the tile image view. Drawing tools and selection shortcuts are shared with the Image Editor. Note that all cells default to tile (0,0), so it is recommended to keep image bank position (0,0) empty.",
-      "cn": "在瓦片地图视图中选择的编辑区域以放大形式显示。放置在图块图像视图中选择的图块图像。绘制工具和范围选择的快捷键与图像编辑器通用。注意：所有单元格的初始值为图块(0,0)，建议将图像库的(0,0)留空。",
+      "cn": "在瓦片地图视图中选择的编辑区域以放大形式显示。放置在图块图像视图中选择的图块图像。绘制工具和范围选择的快捷键与图像编辑器通用。注意：所有单元格的初始值为图块 (0,0)，建议将图像库的 (0,0) 留空。",
       "de": "Der in der Tilemap-Ansicht ausgewählte Bearbeitungsbereich wird vergrößert dargestellt. Platzieren Sie das in der Kachelbild-Ansicht gewählte Kachelbild. Zeichenwerkzeuge und Bereichsauswahl-Kürzel sind mit dem Bildeditor identisch. Hinweis: Da alle Zellen initial Kachel (0,0) sind, wird empfohlen, Position (0,0) der Bildbank leer zu lassen.",
       "es": "El área de edición seleccionada en la vista del tilemap se muestra ampliada. Coloque la imagen de tile seleccionada en la vista de imagen de tiles. Los atajos de herramientas de dibujo y selección de rango son los mismos que en el editor de imágenes. El valor inicial de todas las celdas es el tile (0,0), por lo que se recomienda dejar vacía la posición (0,0) del banco de imágenes.",
       "fr": "La zone d'édition sélectionnée dans la vue de la tilemap est affichée en zoom. Placez les tuiles sélectionnées dans la vue des tuiles. Les raccourcis des outils de dessin et de sélection sont les mêmes que dans l'éditeur d'images. La valeur initiale de toutes les cellules étant la tuile (0,0), il est recommandé de laisser la position (0,0) de la banque d'images vide.",
@@ -836,7 +836,7 @@
     },
     "tilemap_tmnum_body": {
       "en": "Switch the target tilemap (0–7).",
-      "cn": "切换编辑对象的瓦片地图（0~7）。",
+      "cn": "切换编辑对象的瓦片地图 (0~7)。",
       "de": "Wechselt die zu bearbeitende Tilemap (0–7).",
       "es": "Cambie el tilemap a editar (0~7).",
       "fr": "Change la tilemap à éditer (0~7).",
@@ -850,7 +850,7 @@
     },
     "tilemap_imgnum_body": {
       "en": "Switch the image bank (0–2) referenced for tile images.",
-      "cn": "切换图块图像参照的图像库（0~2）。",
+      "cn": "切换图块图像参照的图像库 (0~2)。",
       "de": "Wechselt die referenzierte Bildbank für Kachelbilder (0–2).",
       "es": "Cambie el banco de imágenes de referencia para tiles (0~2).",
       "fr": "Change la banque d'images de référence pour les tuiles (0~2).",
@@ -864,7 +864,7 @@
     },
     "sound_sndnum_body": {
       "en": "Switch the target sound (0–63).",
-      "cn": "切换编辑对象的声音（0~63）。",
+      "cn": "切换编辑对象的声音 (0~63)。",
       "de": "Wechselt den zu bearbeitenden Sound (0–63).",
       "es": "Cambie el sonido a editar (0~63).",
       "fr": "Change le son à éditer (0~63).",
@@ -892,7 +892,7 @@
     },
     "sound_octave_body": {
       "en": "Displays the starting octave (0–3) for keyboard input. The keyboard covers two octaves from the selected octave.",
-      "cn": "显示键盘输入时的起始八度（0~3）。键盘覆盖从所选八度起的 2 个八度。",
+      "cn": "显示键盘输入时的起始八度 (0~3)。键盘覆盖从所选八度起的 2 个八度。",
       "de": "Zeigt die Startoktave (0–3) für die Tastatureingabe. Die Tastatur deckt zwei Oktaven ab der gewählten Oktave ab.",
       "es": "Muestra la octava inicial (0~3) para la entrada por teclado. El teclado cubre 2 octavas desde la octava seleccionada.",
       "fr": "Affiche l'octave de départ (0~3) pour la saisie au clavier. Le clavier couvre 2 octaves à partir de l'octave sélectionnée.",
@@ -906,7 +906,7 @@
     },
     "sound_property_body": {
       "en": "Set the tone (TON), volume (VOL), and effect (EFX) for each note. Press the ↓ key or click the TON row during piano roll editing to move to the property area. Cursor movement, range selection, copy & paste, and other operations are shared with the piano roll. Press a key on each row to input the corresponding value. For example, pressing P on the TON row sets Pulse. To change the tone partway through, set the value for all notes from the desired position onward. The same applies to VOL and EFX.",
-      "cn": "设置每个音符的音色（TON）、音量（VOL）、效果（EFX）。编辑钢琴卷帘时按 ↓ 键或点击 TON 行可移至属性区域。光标移动、范围选择、复制粘贴等操作与钢琴卷帘通用。在各行按键即可输入对应值。例如在 TON 行按 P 键设置为 Pulse。如需中途更改音色，需对更改位置之后的所有音符进行设置。VOL 和 EFX 同理。",
+      "cn": "设置每个音符的音色 (TON)、音量 (VOL)、效果 (EFX)。编辑钢琴卷帘时按 ↓ 键或点击 TON 行可移至属性区域。光标移动、范围选择、复制粘贴等操作与钢琴卷帘通用。在各行按键即可输入对应值。例如在 TON 行按 P 键设置为 Pulse。如需中途更改音色，需对更改位置之后的所有音符进行设置。VOL 和 EFX 同理。",
       "de": "Stellt Klangfarbe (TON), Lautstärke (VOL) und Effekt (EFX) pro Ton ein. Vom Pianoroll aus mit ↓-Taste oder Klick auf die TON-Zeile zum Eigenschaftsbereich wechseln. Cursorbewegung, Bereichsauswahl und Kopieren/Einfügen funktionieren wie im Pianoroll. In jeder Zeile wird durch Tastendruck der entsprechende Wert gesetzt. Z.B. setzt P in der TON-Zeile Pulse. Um die Klangfarbe ab einer bestimmten Position zu ändern, müssen alle nachfolgenden Töne einzeln gesetzt werden. Gleiches gilt für VOL und EFX.",
       "es": "Configure el tono (TON), volumen (VOL) y efecto (EFX) de cada nota. Presione ↓ o haga clic en la fila TON durante la edición del piano roll para moverse al área de propiedades. Las operaciones de movimiento del cursor, selección de rango, copiar y pegar son las mismas que en el piano roll. Presione teclas en cada fila para introducir el valor correspondiente. Por ejemplo, presione P en la fila TON para establecer Pulse. Para cambiar el tono a partir de cierta posición, configure todas las notas desde esa posición en adelante. Lo mismo aplica para VOL y EFX.",
       "fr": "Définit le timbre (TON), le volume (VOL) et l'effet (EFX) pour chaque note. Appuyez sur la touche ↓ ou cliquez sur la ligne TON pendant l'édition du piano roll pour accéder à la zone de propriétés. Les déplacements du curseur, la sélection, le copier-coller fonctionnent comme dans le piano roll. Appuyez sur une touche dans chaque ligne pour saisir la valeur correspondante (ex. : P sur la ligne TON définit Pulse). Pour changer le timbre en cours de séquence, définissez la valeur pour toutes les notes à partir de la position souhaitée. Idem pour VOL et EFX.",
@@ -920,7 +920,7 @@
     },
     "music_mscnum_body": {
       "en": "Switch the target music (0–7).",
-      "cn": "切换编辑对象的音乐（0~7）。",
+      "cn": "切换编辑对象的音乐 (0~7)。",
       "de": "Wechselt das zu bearbeitende Musikstück (0–7).",
       "es": "Cambie la música a editar (0~7).",
       "fr": "Change la musique à éditer (0~7).",
@@ -934,7 +934,7 @@
     },
     "music_sequence_body": {
       "en": "Place sound numbers in playback order across four channels (CH0–CH3). Copy and paste between channels is also supported.",
-      "cn": "在 4 个通道（CH0~CH3）中按播放顺序放置声音编号。支持通道间的复制粘贴。",
+      "cn": "在 4 个通道 (CH0~CH3) 中按播放顺序放置声音编号。支持通道间的复制粘贴。",
       "de": "Ordnet Soundnummern in Wiedergabereihenfolge den vier Kanälen (CH0–CH3) zu. Kopieren und Einfügen zwischen Kanälen ist möglich.",
       "es": "Coloque números de sonido en orden de reproducción en los 4 canales (CH0~CH3). También puede copiar y pegar entre canales.",
       "fr": "Place les numéros de sons dans l'ordre de lecture sur 4 canaux (CH0~CH3). Le copier-coller entre canaux est possible.",
@@ -948,7 +948,7 @@
     },
     "music_buttons_body": {
       "en": "Buttons for inserting sound numbers (0–63). Pressing a button inserts the sound number at the editing cursor position. Created sounds are shown in blue, uncreated ones in gray. Hovering over a button previews the sound.",
-      "cn": "插入声音编号的按钮（0~63）。按下按钮可在编辑光标位置插入声音编号。已创建的声音显示为蓝色，未创建显示为灰色。鼠标悬停在按钮上可预览播放该声音。",
+      "cn": "插入声音编号的按钮 (0~63)。按下按钮可在编辑光标位置插入声音编号。已创建的声音显示为蓝色，未创建显示为灰色。鼠标悬停在按钮上可预览播放该声音。",
       "de": "Schaltflächen zum Einfügen von Soundnummern (0–63). Durch Klicken wird die Soundnummer an der Cursorposition eingefügt. Erstellte Sounds werden blau, nicht erstellte grau angezeigt. Beim Überfahren mit der Maus wird eine Vorschau abgespielt.",
       "es": "Botones para insertar números de sonido (0~63). Al presionar un botón, el número de sonido se inserta en la posición del cursor de edición. Los sonidos creados se muestran en azul y los no creados en gris. Al pasar el ratón sobre un botón, se reproduce una vista previa del sonido.",
       "fr": "Boutons d'insertion de numéros de sons (0~63). Appuyez pour insérer un numéro de son à la position du curseur. Les sons créés sont affichés en bleu, les non créés en gris. Survolez un bouton pour pré-écouter le son.",
@@ -1386,7 +1386,7 @@
       {
         "label": {
           "en": "Property Area (TON / VOL / EFX)",
-          "cn": "属性区域（TON / VOL / EFX）",
+          "cn": "属性区域 (TON / VOL / EFX)",
           "de": "Eigenschaftsbereich (TON / VOL / EFX)",
           "es": "Área de propiedades (TON / VOL / EFX)",
           "fr": "Zone de propriétés (TON / VOL / EFX)",
@@ -1454,7 +1454,7 @@
       {
         "label": {
           "en": "Sequence Editor (CH0–CH3)",
-          "cn": "序列编辑器（CH0~CH3）",
+          "cn": "序列编辑器 (CH0~CH3)",
           "de": "Sequenzeditor (CH0–CH3)",
           "es": "Editor de secuencia (CH0~CH3)",
           "fr": "Éditeur de séquence (CH0~CH3)",
@@ -1476,7 +1476,7 @@
       {
         "label": {
           "en": "Sound Buttons (0–63)",
-          "cn": "声音按钮（0~63）",
+          "cn": "声音按钮 (0~63)",
           "de": "Soundschaltflächen (0–63)",
           "es": "Botones de sonido (0~63)",
           "fr": "Boutons de sons (0~63)",
@@ -1515,7 +1515,7 @@
       },
       "value": {
         "en": "0–2 (3 banks)",
-        "cn": "0~2（3 个）",
+        "cn": "0~2 (3 个)",
         "de": "0–2 (3 Stück)",
         "es": "0–2 (3 bancos)",
         "fr": "0–2 (3 banques)",
@@ -1575,7 +1575,7 @@
       },
       "value": {
         "en": "Origin (0,0) at top-left, X+ rightward, Y+ downward",
-        "cn": "左上角为(0,0)，向右为X+，向下为Y+",
+        "cn": "左上角为 (0,0)，向右为 X+，向下为 Y+",
         "de": "Ursprung (0,0) oben links, X+ nach rechts, Y+ nach unten",
         "es": "(0,0) en la esquina superior izquierda, X+ hacia la derecha, Y+ hacia abajo",
         "fr": "(0,0) en haut à gauche, X+ vers la droite, Y+ vers le bas",
@@ -1749,7 +1749,7 @@
       "key": "Ctrl(Cmd)+X",
       "action": {
         "en": "Cut the selection (copy and clear)",
-        "cn": "剪切选择范围（复制并清除）",
+        "cn": "剪切选择范围 (复制并清除)",
         "de": "Auswahl ausschneiden (Kopieren und Löschen)",
         "es": "Cortar la selección (copiar y borrar)",
         "fr": "Couper la sélection (copier et effacer)",
@@ -1819,7 +1819,7 @@
       "key": "Right Click",
       "action": {
         "en": "Pick the color at the cursor position (color pick)",
-        "cn": "获取光标位置的颜色（取色）",
+        "cn": "获取光标位置的颜色 (取色)",
         "de": "Farbe an der Cursorposition aufnehmen (Farbpipette)",
         "es": "Obtener el color en la posición del cursor (selector de color)",
         "fr": "Prélever la couleur à la position du curseur (pipette)",
@@ -1891,7 +1891,7 @@
       "key": "Arrow Keys",
       "action": {
         "en": "Move the editing area (white frame)",
-        "cn": "移动编辑区域（白色边框）",
+        "cn": "移动编辑区域 (白色边框)",
         "de": "Bearbeitungsbereich (weißer Rahmen) verschieben",
         "es": "Mover el área de edición (marco blanco)",
         "fr": "Déplacer la zone d'édition (cadre blanc)",
@@ -1957,7 +1957,7 @@
       },
       "value": {
         "en": "0–7 (8 maps)",
-        "cn": "0~7（8 个）",
+        "cn": "0~7 (8 个)",
         "de": "0–7 (8 Stück)",
         "es": "0–7 (8 mapas)",
         "fr": "0–7 (8 cartes)",
@@ -2066,7 +2066,7 @@
       "key": "Right Click",
       "action": {
         "en": "Pick the tile at the cursor position (tile pick)",
-        "cn": "获取光标位置的图块（取图块）",
+        "cn": "获取光标位置的图块 (取图块)",
         "de": "Kachel an der Cursorposition aufnehmen (Kachelpipette)",
         "es": "Obtener el tile en la posición del cursor (selector de tile)",
         "fr": "Prélever la tuile à la position du curseur (pipette de tuile)",
@@ -2102,7 +2102,7 @@
       "key": "Arrow Keys",
       "action": {
         "en": "Move the editing area (white frame)",
-        "cn": "移动编辑区域（白色边框）",
+        "cn": "移动编辑区域 (白色边框)",
         "de": "Bearbeitungsbereich (weißer Rahmen) verschieben",
         "es": "Mover el área de edición (marco blanco)",
         "fr": "Déplacer la zone d'édition (cadre blanc)",
@@ -2204,7 +2204,7 @@
       },
       "value": {
         "en": "0–63 (64 sounds)",
-        "cn": "0~63（64 种）",
+        "cn": "0~63 (64 种)",
         "de": "0–63 (64 Stück)",
         "es": "0–63 (64 sonidos)",
         "fr": "0–63 (64 sons)",
@@ -2281,7 +2281,7 @@
       },
       "value": {
         "en": "1 note (or rest)",
-        "cn": "1 个音符（或休止符）",
+        "cn": "1 个音符 (或休止符)",
         "de": "1 Ton (oder Pause)",
         "es": "1 nota (o silencio)",
         "fr": "1 note (ou silence)",
@@ -2347,7 +2347,7 @@
       "key": "1",
       "action": {
         "en": "Cycle the preview tone for keyboard input (4 types)",
-        "cn": "切换按键时的预览音色（4 种循环切换）",
+        "cn": "切换按键时的预览音色 (4 种循环切换)",
         "de": "Vorschau-Klangfarbe bei Tastendruck umschalten (4 Klangfarben rotierend)",
         "es": "Cambiar el tono de vista previa al presionar teclas (rotación de 4 tipos)",
         "fr": "Changer le timbre de prévisualisation (rotation parmi 4 timbres)",
@@ -2512,7 +2512,7 @@
     },
     "upper_label": {
       "en": "Upper Octave (QWE row + number row)",
-      "cn": "上排八度（QWE 行 + 数字行）",
+      "cn": "上排八度 (QWE 行 + 数字行)",
       "de": "Obere Oktave (QWE-Reihe + Ziffernreihe)",
       "es": "Octava superior (fila QWE + números)",
       "fr": "Octave supérieure (rangée QWE + chiffres)",
@@ -2526,7 +2526,7 @@
     },
     "lower_label": {
       "en": "Lower Octave (ZXC row + ASD row)",
-      "cn": "下排八度（ZXC 行 + ASD 行）",
+      "cn": "下排八度 (ZXC 行 + ASD 行)",
       "de": "Untere Oktave (ZXC-Reihe + ASD-Reihe)",
       "es": "Octava inferior (fila ZXC + ASD)",
       "fr": "Octave inférieure (rangée ZXC + ASD)",
@@ -2544,7 +2544,7 @@
       "key": "T",
       "label": {
         "en": "Triangle",
-        "cn": "Triangle（三角波）",
+        "cn": "Triangle (三角波)",
         "de": "Triangle",
         "es": "Triangle",
         "fr": "Triangle",
@@ -2575,7 +2575,7 @@
       "key": "S",
       "label": {
         "en": "Square",
-        "cn": "Square（方波）",
+        "cn": "Square (方波)",
         "de": "Square",
         "es": "Square",
         "fr": "Square",
@@ -2606,7 +2606,7 @@
       "key": "P",
       "label": {
         "en": "Pulse",
-        "cn": "Pulse（脉冲波）",
+        "cn": "Pulse (脉冲波)",
         "de": "Pulse",
         "es": "Pulse",
         "fr": "Pulse",
@@ -2637,7 +2637,7 @@
       "key": "N",
       "label": {
         "en": "Noise",
-        "cn": "Noise（噪声）",
+        "cn": "Noise (噪声)",
         "de": "Noise",
         "es": "Noise",
         "fr": "Noise",
@@ -2670,7 +2670,7 @@
       "key": "N",
       "label": {
         "en": "None",
-        "cn": "None（无）",
+        "cn": "None (无)",
         "de": "None",
         "es": "None",
         "fr": "None",
@@ -2701,7 +2701,7 @@
       "key": "S",
       "label": {
         "en": "Slide",
-        "cn": "Slide（滑音）",
+        "cn": "Slide (滑音)",
         "de": "Slide",
         "es": "Slide",
         "fr": "Slide",
@@ -2732,7 +2732,7 @@
       "key": "V",
       "label": {
         "en": "Vibrato",
-        "cn": "Vibrato（颤音）",
+        "cn": "Vibrato (颤音)",
         "de": "Vibrato",
         "es": "Vibrato",
         "fr": "Vibrato",
@@ -2763,7 +2763,7 @@
       "key": "F",
       "label": {
         "en": "FadeOut",
-        "cn": "FadeOut（淡出）",
+        "cn": "FadeOut (淡出)",
         "de": "FadeOut",
         "es": "FadeOut",
         "fr": "FadeOut",
@@ -2794,7 +2794,7 @@
       "key": "H",
       "label": {
         "en": "Half-FadeOut",
-        "cn": "Half-FadeOut（半淡出）",
+        "cn": "Half-FadeOut (半淡出)",
         "de": "Half-FadeOut",
         "es": "Half-FadeOut",
         "fr": "Half-FadeOut",
@@ -2814,7 +2814,7 @@
         "fr": "Diminution progressive du volume sur la seconde moitié. Durée de son plus longue que F",
         "it": "Diminuisce gradualmente il volume nella seconda metà della nota. Durata di emissione più lunga di FadeOut",
         "ja": "音の後半で徐々に音量を下げる。F より発音時間が長い",
-        "ko": "음의 후반부에서 점차 음량을 줄임. FadeOut보다 발음 시간이 김",
+        "ko": "음의 후반부에서 점차 음량을 줄임. FadeOut보다 지속 시간이 김",
         "pt": "Diminui gradualmente o volume na segunda metade. Duração mais longa que F",
         "ru": "Half-FadeOut. Постепенное затухание во второй половине ноты. Звучание длиннее, чем у FadeOut",
         "tr": "Half-FadeOut. Notanın ikinci yarısında ses yavaşça azalır. FadeOut'tan daha uzun çalma süresi",
@@ -2825,7 +2825,7 @@
       "key": "Q",
       "label": {
         "en": "Quarter-FadeOut",
-        "cn": "Quarter-FadeOut（四分淡出）",
+        "cn": "Quarter-FadeOut (四分淡出)",
         "de": "Quarter-FadeOut",
         "es": "Quarter-FadeOut",
         "fr": "Quarter-FadeOut",
@@ -2845,7 +2845,7 @@
         "fr": "Diminution progressive du volume sur le dernier quart. Durée de son plus longue que H",
         "it": "Diminuisce gradualmente il volume nell'ultimo quarto della nota. Durata di emissione più lunga di Half-FadeOut",
         "ja": "音の最後の 1/4 で徐々に音量を下げる。H より発音時間が長い",
-        "ko": "음의 마지막 1/4에서 점차 음량을 줄임. Half-FadeOut보다 발음 시간이 김",
+        "ko": "음의 마지막 1/4에서 점차 음량을 줄임. Half-FadeOut보다 지속 시간이 김",
         "pt": "Diminui gradualmente o volume no último 1/4. Duração mais longa que H",
         "ru": "Quarter-FadeOut. Постепенное затухание в последней четверти ноты. Звучание длиннее, чем у Half-FadeOut",
         "tr": "Quarter-FadeOut. Notanın son çeyreğinde ses yavaşça azalır. Half-FadeOut'tan daha uzun çalma süresi",
@@ -2871,7 +2871,7 @@
       },
       "value": {
         "en": "0–7 (8 tracks)",
-        "cn": "0~7（8 首）",
+        "cn": "0~7 (8 首)",
         "de": "0–7 (8 Stücke)",
         "es": "0–7 (8 pistas)",
         "fr": "0–7 (8 morceaux)",
@@ -2951,7 +2951,7 @@
       },
       "desc": {
         "en": "Edit images (image banks) used for sprites and tiles",
-        "cn": "编辑用于精灵和图块的图像（图像库）",
+        "cn": "编辑用于精灵和图块的图像 (图像库)",
         "de": "Bilder (Bildbanken) für Sprites und Kacheln bearbeiten",
         "es": "Editar imágenes (bancos de imágenes) para sprites y tiles",
         "fr": "Éditer les images (banques d'images) utilisées pour les sprites et les tuiles",
@@ -3136,7 +3136,7 @@
       "key": "Ctrl(Cmd)+Z",
       "desc": {
         "en": "Undo",
-        "cn": "撤销（Undo）",
+        "cn": "撤销 (Undo)",
         "de": "Undo (Rückgängig)",
         "es": "Undo",
         "fr": "Annuler (Undo)",
@@ -3154,7 +3154,7 @@
       "key": "Ctrl(Cmd)+Y",
       "desc": {
         "en": "Redo",
-        "cn": "重做（Redo）",
+        "cn": "重做 (Redo)",
         "de": "Redo (Wiederherstellen)",
         "es": "Redo",
         "fr": "Rétablir (Redo)",
@@ -3225,7 +3225,7 @@
       "key": "Shift+Ctrl(Cmd)+X",
       "action": {
         "en": "Cut the entire editing target (copy and clear)",
-        "cn": "剪切整个编辑对象（复制并清除）",
+        "cn": "剪切整个编辑对象 (复制并清除)",
         "de": "Gesamtes Bearbeitungsobjekt ausschneiden (Kopieren und Löschen)",
         "es": "Cortar todo el contenido editado (copiar y borrar)",
         "fr": "Couper l'intégralité de l'objet en cours d'édition (copier et effacer)",
@@ -3414,7 +3414,7 @@
       "key": "Ctrl(Cmd)+X",
       "action": {
         "en": "Cut the selection (copy and clear)",
-        "cn": "剪切选择范围（复制并清除）",
+        "cn": "剪切选择范围 (复制并清除)",
         "de": "Auswahl ausschneiden (Kopieren und Löschen)",
         "es": "Cortar la selección (copiar y borrar)",
         "fr": "Couper la sélection (copier et effacer)",
@@ -3431,7 +3431,7 @@
       "key": "Ctrl(Cmd)+V",
       "action": {
         "en": "Paste the selection (also across channels)",
-        "cn": "粘贴选择范围（支持跨通道）",
+        "cn": "粘贴选择范围 (支持跨通道)",
         "de": "Auswahl einfügen (auch kanalübergreifend)",
         "es": "Pegar la selección (también entre canales)",
         "fr": "Coller la sélection (possible entre canaux)",
@@ -3622,7 +3622,7 @@
       "key": "Ctrl(Cmd)+X",
       "action": {
         "en": "Cut the selection (copy and clear)",
-        "cn": "剪切选择范围（复制并清除）",
+        "cn": "剪切选择范围 (复制并清除)",
         "de": "Auswahl ausschneiden (Kopieren und Löschen)",
         "es": "Cortar la selección (copiar y borrar)",
         "fr": "Couper la sélection (copier et effacer)",
@@ -3711,7 +3711,7 @@
       "key": "Space",
       "desc": {
         "en": "Stop (press Space during playback to stop)",
-        "cn": "停止（播放中按 Space 停止）",
+        "cn": "停止 (播放中按 Space 停止)",
         "de": "Stopp (Space drücken während der Wiedergabe)",
         "es": "Detener (Space durante la reproducción para detener)",
         "fr": "Arrêter (Space pendant la lecture pour arrêter)",
