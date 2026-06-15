@@ -397,8 +397,18 @@ pub fn sphere_vs_rounded_obb(
     box_r: f32,
 ) -> Option<ContactGeom> {
     let box_r = box_r.max(0.0);
+    if !vec_is_finite(c_sphere)
+        || !vec_is_finite(half)
+        || !r_sphere.is_finite()
+        || !box_r.is_finite()
+    {
+        return None;
+    }
     let inv = box_world.inverse_value();
     let p = inv.mul_vec_value(&c_sphere);
+    if !vec_is_finite(p) {
+        return None;
+    }
     let q = Vec3 {
         x: p.x.clamp(-half.x, half.x),
         y: p.y.clamp(-half.y, half.y),
@@ -487,11 +497,14 @@ pub fn sphere_vs_rounded_obb(
             },
         ),
     ];
-    let (margin, n_local) = margins
-        .iter()
-        .copied()
-        .min_by(|a, b| a.0.partial_cmp(&b.0).unwrap())
-        .unwrap();
+    let mut margin = margins[0].0;
+    let mut n_local = margins[0].1;
+    for (candidate_margin, candidate_normal) in &margins[1..] {
+        if *candidate_margin < margin {
+            margin = *candidate_margin;
+            n_local = *candidate_normal;
+        }
+    }
     let n_world = box_world.mul_dir_value(&n_local);
     let point = box_world.mul_vec_value(&p);
     Some(ContactGeom {
@@ -1543,6 +1556,10 @@ fn sat_overlap(
         return None;
     }
     Some((tri_max.min(r) - tri_min.max(-r)).max(0.0))
+}
+
+fn vec_is_finite(v: Vec3) -> bool {
+    v.x.is_finite() && v.y.is_finite() && v.z.is_finite()
 }
 
 #[cfg(test)]
@@ -2826,6 +2843,27 @@ mod tests {
         assert!(approx_eq(geom.normal.x, 1.0));
         // Interior margin to +X face = 0.1; depth = 0.1 + 0.3.
         assert!(approx_eq(geom.depth, 0.4));
+    }
+
+    #[test]
+    fn test_sphere_vs_rounded_obb_nan_center_misses_without_panic() {
+        let m = Mat4::identity_value();
+        let result = sphere_vs_rounded_obb(
+            Vec3 {
+                x: f32::NAN,
+                y: 0.0,
+                z: 0.0,
+            },
+            0.3,
+            &m,
+            Vec3 {
+                x: 1.0,
+                y: 1.0,
+                z: 1.0,
+            },
+            0.0,
+        );
+        assert!(result.is_none());
     }
 
     #[test]
