@@ -345,6 +345,7 @@
         window._project.code = window._codeEditor.getValue();
       }
 
+      // Persist the resource editor's current file into the project model.
       async function copyResourceToProject() {
         if (!resourceEditor.contentWindow?.pyxelContext?.pyodide) {
           return;
@@ -389,6 +390,7 @@
         resourceEditor.contentWindow?.resetPyxel?.();
       }
 
+      // Load a project archive into the in-memory project model and panes.
       async function loadProjectFromZip(buf, name) {
         const zip = await JSZip.loadAsync(buf);
         const files = {};
@@ -519,6 +521,7 @@
         return archive.generateAsync({ type: "blob" });
       }
 
+      // Save the current project through the browser file API or download.
       async function saveToFile() {
         if (window._isCopyingResource) {
           return;
@@ -580,6 +583,7 @@
         showModal("modal-save-gist");
       }
 
+      // Configure the code editor and its visual integration.
       function initAceEditor() {
         const codeEditor = ace.edit("code-editor");
         // ACE's hidden textarea has no id by default; set one so browser
@@ -681,6 +685,7 @@
         }
       }
 
+      // Wire toolbar, dropdown, modal, tab, and run button interactions.
       function setupButtonHandlers() {
         const loadButton = document.getElementById("load-button");
         const loadFileInput = document.getElementById("load-file");
@@ -915,6 +920,7 @@
         );
       }
 
+      // Track whether keyboard focus belongs to the editor or runtime pane.
       function setupFocusIndicator() {
         const leftPane = document.getElementById("left-pane");
         const rightPane =
@@ -967,6 +973,7 @@
         }
       }
 
+      // Manage the resizable split between editor and runtime panes.
       function setupSplitter() {
         const mainSplitter = document.getElementById("main-splitter");
         const leftPane = document.getElementById("left-pane");
@@ -1052,7 +1059,9 @@
         window.addEventListener("resize", updateFocusLineLayout);
       }
 
+      // Bind global keyboard shortcuts across the window and embedded panes.
       function setupShortcuts() {
+        // Dispatch command shortcuts to load, save, focus, tab, and run actions.
         function handleShortcutKeydown(event) {
           // Ctrl(Cmd)+L: Load file
           if ((event.ctrlKey || event.metaKey) && event.key === "l") {

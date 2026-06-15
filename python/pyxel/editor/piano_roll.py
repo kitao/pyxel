@@ -121,7 +121,7 @@ class PianoRoll(Widget):
 
     def __on_draw(self):
         # Draw frame
-        pyxel.rect(self.x, self.y, self.width, self.height, 7)
+        pyxel.rect(self.x, self.y, self.width, self.height, PIANO_ROLL_BACKGROUND_COLOR)
 
         # Draw cursor or playback position
         play_pos = pyxel.play_pos(0)

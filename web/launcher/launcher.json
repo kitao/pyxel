@@ -51,7 +51,18 @@
   ],
   "ui": {
     "title": {
-      "en": "Pyxel Web Launcher"
+      "en": "Pyxel Web Launcher",
+      "cn": "Pyxel Web Launcher",
+      "de": "Pyxel Web Launcher",
+      "es": "Pyxel Web Launcher",
+      "fr": "Pyxel Web Launcher",
+      "it": "Pyxel Web Launcher",
+      "ja": "Pyxel Web Launcher",
+      "ko": "Pyxel Web Launcher",
+      "pt": "Pyxel Web Launcher",
+      "ru": "Pyxel Web Launcher",
+      "tr": "Pyxel Web Launcher",
+      "uk": "Pyxel Web Launcher"
     },
     "subtitle": {
       "en": "Launch tool for the web version of {0}, a retro game engine for Python.",

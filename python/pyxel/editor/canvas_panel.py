@@ -549,7 +549,7 @@ class CanvasPanel(Widget):
         )
 
         # Draw selection area
-        if self.tool_var == TOOL_SELECT and self._select_x1 >= 0:
+        if self.tool_var == TOOL_SELECT:
             x = self.x + 1 + self._select_x1 * 8
             y = self.y + 1 + self._select_y1 * 8
             w = (self._select_x2 - self._select_x1 + 1) * 8

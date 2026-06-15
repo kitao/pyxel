@@ -99,7 +99,7 @@ class MusicField(Widget):
             for i in range(data_len + 1):
                 if cursor_x <= i < cursor_x + cursor_width:
                     x = self.x + (i % 16) * 12 + 21
-                    y = self.y + (cursor_y - self._ch + i // 16) * 10 + 2
+                    y = self.y + (i // 16) * 10 + 2
                     pyxel.rect(x, y, 9, 7, cursor_col)
 
         # Draw sound indices

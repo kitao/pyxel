@@ -96,6 +96,7 @@
         );
       }
 
+      // Render the expandable detail body for one API entry.
       function buildDetailContent(container, item) {
         container.innerHTML = "";
         const wrap = document.createElement("div");
@@ -164,6 +165,7 @@
         container.appendChild(wrap);
       }
 
+      // Build the searchable API reference shell and category sections.
       function buildPage() {
         const app = document.getElementById("app");
         app.innerHTML = "";
@@ -436,6 +438,7 @@
         updateVisibility();
       }
 
+      // Apply localized labels to headers, controls, categories, and details.
       function updateTexts() {
         document.title = t("title");
         document.getElementById("page-title").textContent = t("title");
@@ -511,6 +514,7 @@
         setDocLang(lang);
       }
 
+      // Filter API entries by search text and advanced visibility state.
       function updateVisibility() {
         domCache.advMarks.forEach((el) => {
           el.classList.toggle("hidden", !showAdvanced);
