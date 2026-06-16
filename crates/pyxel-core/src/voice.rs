@@ -324,6 +324,7 @@ pub struct Glide {
 }
 
 impl Glide {
+    // Constructors
     fn new() -> Self {
         Self {
             semitone_offset: 0.0,
@@ -336,6 +337,7 @@ impl Glide {
         }
     }
 
+    // Glide controls
     pub fn set(&mut self, semitone_offset: f32, duration_ticks: u32) {
         if semitone_offset != self.semitone_offset || duration_ticks != self.duration_ticks {
             self.semitone_offset = semitone_offset;
@@ -356,6 +358,7 @@ impl Glide {
         self.enabled = false;
     }
 
+    // Tick progression
     fn pitch_multiplier(&self) -> f32 {
         self.pitch_multiplier
     }
