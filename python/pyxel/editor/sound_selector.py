@@ -9,6 +9,9 @@ class SoundSelector(Widget):
     # Variables:
     #   is_playing_var
     #   help_message_var
+    #
+    # Events:
+    #   none
 
     def __init__(self, parent):
         super().__init__(parent, 11, 129, 218, 44)

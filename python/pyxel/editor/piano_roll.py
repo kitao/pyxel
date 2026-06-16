@@ -21,6 +21,9 @@ class PianoRoll(Widget):
     #   note_var
     #   is_playing_var
     #   help_message_var
+    #
+    # Events:
+    #   none
 
     def __init__(self, parent):
         super().__init__(parent, 30, 25, 193, 123)

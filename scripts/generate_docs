@@ -925,7 +925,9 @@ def generate_mml_commands():
     lines.append("")
 
     path = DOCS_DIR / "mml-commands.md"
-    path.write_text(generated_header(MML_COMMANDS_JSON) + "\n".join(lines), encoding="utf-8")
+    path.write_text(
+        generated_header(MML_COMMANDS_JSON) + "\n".join(lines), encoding="utf-8"
+    )
     print(f"Generated {path.relative_to(ROOT_DIR)}")
 
 
