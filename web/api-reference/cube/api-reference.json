@@ -80,12 +80,12 @@
     },
     "search_placeholder": {
       "en": "Search APIs...",
-      "cn": "搜索API...",
+      "cn": "搜索 API...",
       "de": "APIs durchsuchen...",
       "es": "Buscar APIs...",
       "fr": "Rechercher des API...",
       "it": "Cerca API...",
-      "ja": "APIを検索...",
+      "ja": "API を検索...",
       "ko": "API 검색...",
       "pt": "Pesquisar APIs...",
       "ru": "Поиск API...",
@@ -108,12 +108,12 @@
     },
     "no_results": {
       "en": "No matching APIs found.",
-      "cn": "未找到匹配的API。",
+      "cn": "未找到匹配的 API。",
       "de": "Keine passenden APIs gefunden.",
       "es": "No se encontraron APIs coincidentes.",
       "fr": "Aucune API correspondante trouvée.",
       "it": "Nessuna API corrispondente trovata.",
-      "ja": "一致するAPIが見つかりません。",
+      "ja": "一致する API が見つかりません。",
       "ko": "일치하는 API를 찾을 수 없습니다.",
       "pt": "Nenhuma API correspondente encontrada.",
       "ru": "Подходящие API не найдены.",
@@ -934,7 +934,7 @@
           "signature": "rot",
           "description": {
             "en": "The rotation part of the matrix as a Quat. Assumes a translation-rotation-scale composition.",
-            "ja": "行列の回転成分（Quat）。平行移動・回転・スケールの合成を前提とする。"
+            "ja": "行列の回転成分 (Quat)。平行移動・回転・スケールの合成を前提とする。"
           },
           "value_type": "Quat",
           "advanced": false
@@ -2124,7 +2124,7 @@
           ],
           "notes": {
             "en": "The list attributes are live proxies: edit elements or assign slices (positions[:] = ...); whole-attribute assignment is not supported.",
-            "ja": "リスト属性はライブプロキシで、要素の変更やスライス代入（positions[:] = ...）で編集する。属性全体の再代入はできない。"
+            "ja": "リスト属性はライブプロキシで、要素の変更やスライス代入 (positions[:] = ...) で編集する。属性全体の再代入はできない。"
           },
           "advanced": false
         },
@@ -2288,7 +2288,7 @@
           "signature": "MeshData(primitives=None, transforms=None, parents=None, col_img=7, colkey=None)",
           "description": {
             "en": "A hierarchical 3D model asset. primitives, transforms, and parents are parallel arrays of the same length describing the part tree; parents must come before children (parents[i] < i). Draw it with Node.mesh(), or set it on Collider.mesh as static terrain.",
-            "ja": "階層構造を持つ 3D モデルアセット。primitives・transforms・parents は同じ長さの並列配列でパーツの木を表し、親は子より先に並べる（parents[i] < i）。Node.mesh() で描画するほか、Collider.mesh に設定して静的な地形にもできる。"
+            "ja": "階層構造を持つ 3D モデルアセット。primitives・transforms・parents は同じ長さの並列配列でパーツの木を表し、親は子より先に並べる (parents[i] < i)。Node.mesh() で描画するほか、Collider.mesh に設定して静的な地形にもできる。"
           },
           "params": [
             {

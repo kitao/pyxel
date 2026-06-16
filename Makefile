@@ -33,6 +33,7 @@ CRATES_DIR := $(ROOT_DIR)/crates
 DIST_DIR := $(ROOT_DIR)/dist
 PYTHON_DIR := $(ROOT_DIR)/python
 SCRIPTS_DIR := $(ROOT_DIR)/scripts
+WEB_DIR := $(ROOT_DIR)/web
 
 # Build targets
 TARGET ?= $(shell rustc -vV | awk '/^host:/ {print $$2}')
@@ -116,7 +117,7 @@ update:
 format:
 	@cd $(CRATES_DIR); cargo fmt -- --emit=files
 	@ruff format $(ROOT_DIR)
-	@npx prettier --write --log-level warn "$(ROOT_DIR)/**/*.{css,html,js,json}"
+	@npm --prefix $(WEB_DIR) exec -- prettier --write --log-level warn "$(ROOT_DIR)/**/*.{css,html,js,json}"
 	@$(SCRIPTS_DIR)/format_prose
 
 lint:
