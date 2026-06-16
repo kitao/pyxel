@@ -58,7 +58,7 @@
 
 - Every comment is in English.
 
-- A comment exists only when it adds intent the code cannot show. Required cases: a mechanical or non-obvious operation (bit-twiddling, format-specific encoding); a non-local invariant.
+- A comment exists only when it adds intent the code cannot show. Required cases are mechanical or non-obvious operations (bit-twiddling, format-specific encoding) and non-local invariants.
   - e.g., `i += 1  # increment i` — anti-pattern (stated by the code); `i += 1  # wrap at frame boundary` — typical (states intent).
 
 - A block of 30 or more statement lines is preceded by a one-line comment naming the block's role.
@@ -144,7 +144,7 @@ Tests cover the product in four layers: Rust unit tests for platform-independent
 - Each target language follows its own technical-writing conventions and retains established English loanwords where the target language conventionally uses them.
   - e.g., German and Romance languages (de, es, it, pt) keep "Editor", "Launcher", "Gamepad", and similar technical terms in English; French keeps "Editor" and "Launcher" but conventionally uses "manette" for gamepad.
 
-- Comparison (including audit) is made against the English version, not the Japanese.
+- A target-language translation is compared against the English version, not the Japanese source.
   - e.g., a German `"Installation des Pakets Anleitung"` mirrors a Japanese compound-noun chain and is rewritten as `"Paket-Installationsanleitung"`.
 
 #### Proper Nouns
@@ -183,22 +183,22 @@ The authoritative Pyxel product names are: Pyxel, Pyxel Editor, Pyxel Showcase, 
 - Documentation wording and translation touch-ups bundle into a single summary line.
   - e.g., `Update web titles and docs wording` covers a commit touching many doc strings.
 
-- Every rule above is reapplied on every revision. An earlier draft is not rubber-stamped.
+- Every rule in this section is reapplied on every revision. Earlier drafts are not accepted without rechecking.
 
 ## Verification
 
 ### Scope
 
-- This policy and its audit cover every git-tracked file that `.gitattributes` does not mark as `binary`. This policy file (`docs/coding-policy.md`) is in scope.
+- This policy applies to every git-tracked file that `.gitattributes` does not mark as `binary`, including this file.
 
-- Excluded by tool-chain origin:
+- Files excluded because they are toolchain output:
   - `*.tmx` (Tiled tilemap editor output)
   - `*.bdf` (font tooling output)
   - `Cargo.lock` and `*-lock.json` (package-manager lockfiles)
   - `web/styles.css` (a Tailwind CSS build artifact)
   - `.md` files whose first line begins with `<!-- This file is generated` (output of `scripts/generate_docs`)
 
-- A file's code-side aspects (structure, syntax, identifiers, non-prose elements) remain in scope even when its prose content has been handed off for separate work.
+- A file's code-side aspects (structure, syntax, identifiers, non-prose elements) remain in scope even when its prose content is reviewed separately.
 
 ### Format, Lint, and Test
 
@@ -209,74 +209,15 @@ The authoritative Pyxel product names are: Pyxel, Pyxel Editor, Pyxel Showcase, 
 
 - After a code change, `make test` passes before completion is claimed. A flaky failure does not waive the rule; the failure is reproduced and the underlying cause fixed.
 
-### Audit (primarily for AI agents)
-
-#### When to Run
-
-The audit runs:
-- when an audit is explicitly requested;
-- before a release tag, as part of the release checklist;
-- after a substantive revision of this policy, on the files affected by the revision.
-
-#### Phases
-
-The audit runs as ordered phases. Each phase gates the next; the meta-rules apply throughout.
-
-A *false positive* in this procedure is a fix candidate that, on closer inspection, follows the policy's intent and is therefore not modified.
-
-1. Build a (file × criterion) matrix using `superpowers:writing-plans`, listing every cell.
-   - Each cell resolves to `pass`, `fix`, or `pending`, with one line of evidence (one line per field × language for translations). Aggregate summaries are not evidence; no cell is dropped silently.
-   - Each cell's evidence verifies both (a) the rule body's broader intent and (b) the `e.g.` line's specific patterns. A cell addressing only (b) is marked `pending`, not `pass`.
-   - e.g., one row per file, one column per criterion; each cell carries evidence such as `(a) the file's comments contain no unstated intent; (b) grep '^\s*///' returns no match` (pass), or the concrete problem (fix).
-
-2. Run the cross-file consistency check.
-   - Every file pair or group sharing a concern appears as an explicit matrix row with evidence; an unrepresented pair counts as a skipped check.
-   - Each row's evidence verifies both (a) the cross-file dependency's broader intent and (b) the specific items compared. A row addressing only (b) is marked `pending`, not `pass`.
-   - The auditor expands each category below into the concrete file pairs in the repo and identifies any pair not listed.
-   - Cross-file pairs in this repo include:
-     - sibling files (`*_wrapper.rs`, editor widgets, `web/*/index.html`);
-     - HTML ↔ i18n JSON key sets;
-     - Rust core ↔ binding ↔ `python/pyxel/__init__.pyi` signatures;
-     - widget convention markers (`# Variables:` / `# Events:`) ↔ `copy_var` / `new_var` usage in `python/pyxel/editor/widgets/widget.py`;
-     - the `languages` array across `web/**/*.json`.
-
-3. Verify every matrix cell by reading its evidence and assessing the verdict. Format checks (row count, regex, banned-word grep) cannot substitute. When a phase has been delegated, read the delegated work's per-cell evidence, not its overall self-verification summary.
-   - e.g., an evidence line `line 12: no issue` passes a regex but fails substance unless it names what was examined and why it is clean.
-
-4. Run the design-intent self-check on every fix candidate. A candidate that hits any of the following intents is a false positive. Standards-derived intents come first; design-derived intents follow.
-   - product name casing (Standards > Documentation > Proper Nouns);
-   - section-context label substitution for a product name (Standards > Documentation > Proper Nouns);
-   - wording reused intentionally from prior entries of the same change category, including generic phrasing repeated across versions (Standards > Release Notes);
-   - parallel-mirror design (Standards > Source Code > Consistency);
-   - effective-default divergence between a `.pyi` stub and its binding (Standards > Source Code > Consistency);
-   - intentional platform-conditional code (`cfg(...)` gates);
-   - code duplicated for self-contained distribution (e.g., samples);
-   - defensive code at system boundaries.
-
-5. Gate completion in two stages.
-   - (a) The auditor runs `superpowers:verification-before-completion` to re-run Phases 1-4 against its own matrix and confirm consistency.
-   - (b) The auditor delegates to `superpowers:requesting-code-review` to re-audit the in-scope files against the policy, independently of the matrix. If the reviewer reports zero findings — or only judgment-call findings whose fix is not clearly net-positive — completion is granted. Otherwise the auditor incorporates the findings and a new code-reviewer cycle is run; the loop repeats until the gating condition is met.
-
-#### Meta-rules
-
-- Every criterion applies to every in-scope file. Sampling, spot-check, and ad-hoc scope narrowing are not permitted, whether during the audit itself or during verification of delegated work.
-  - e.g., for "Comments in English", every `.rs` and `.py` file is checked — not "a representative sample". The same applies to verifying delegated per-cell verdicts: every cell is read, not a chosen subset.
-
-- Finding imbalance is a non-execution signal. When findings concentrate in one category while structurally comparable categories return zero, the imbalance triggers a re-run on the zero-finding categories with stricter probing before proceeding.
-  - e.g., if a documentation pass surfaces every fix candidate while every code-side group returns zero, the imbalance is the signal — the zero groups are re-inspected; the distribution is not accepted as-is.
-
-- When a phase or pair-check is delegated, the rule text is passed verbatim, the file list is passed in full, and every cross-file dependency the group must cover is named explicitly. Shortening any of these causes silent sampling.
-  - e.g., the HTML ↔ i18n JSON pairing, the Rust core ↔ binding ↔ pyi pairing, and the translation JSON keys across languages each pass as explicit pair lists with file paths.
-
 ## Conventions of This File
 
 - A new concern joins an existing section before a new section is added. A new section is warranted only when no existing section fits.
   - e.g., a wording guideline for CHANGELOG entries belongs under `Standards > Release Notes`, not as a top-level section.
 
 - Individual past incidents are not recorded. The lesson folds into the nearest existing rule or its example.
-  - e.g., a one-off false-positive audit finding belongs in a commit message or the contributor's working notes, not as a named bullet here.
+  - e.g., a one-off false-positive finding belongs in a commit message or the contributor's working notes, not as a named bullet here.
 
-- A section that carries an authoritative enumeration separates the enumeration from the rules: either as intro-prose stating the enumeration followed by rule-bullets, or as a rule with sub-bullets or a numbered list enumerating the items when each needs detail.
+- A section with an authoritative enumeration separates the list from the rules. The list appears either in the introductory prose, followed by rule bullets, or as sub-bullets or numbered items under the rule that needs the detail.
   - e.g., `Standards > Documentation > Proper Nouns` lists product names and abbreviations in its intro and uses bullets for casing rules; `Standards > Source Code > Performance` enumerates hot paths as sub-bullets under the rule that introduces them.
 
 - Each rule may be followed by an `e.g.,` sub-bullet that lists typical examples and, when useful, boundary cases or hypothetical anti-patterns.
