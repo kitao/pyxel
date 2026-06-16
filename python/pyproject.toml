@@ -31,9 +31,9 @@ classifiers = [
 ]
 
 [project.urls]
+Changelog = "https://github.com/kitao/pyxel/blob/main/CHANGELOG.md"
 Homepage = "https://github.com/kitao/pyxel"
 Repository = "https://github.com/kitao/pyxel.git"
-Changelog = "https://github.com/kitao/pyxel/blob/main/CHANGELOG.md"
 
 [project.scripts]
 pyxel = "pyxel.cli:cli"
