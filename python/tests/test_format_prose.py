@@ -69,6 +69,23 @@ class TestCodeSpan:
         text = "Alt(Option)+2で保存"
         assert format_prose.format_text(text, "ja") == "Alt(Option)+2 で保存"
 
+    def test_preserves_api_call_parentheses(self):
+        assert (
+            format_prose.format_text("Node.draw()が呼ばれる", "ja")
+            == "Node.draw() が呼ばれる"
+        )
+
+    def test_preserves_api_call_inside_code_span(self):
+        assert (
+            format_prose.format_text("`Node.draw ()`の例", "ja")
+            == "`Node.draw ()` の例"
+        )
+
+    def test_repairs_api_call_spacing(self):
+        assert (
+            format_prose.format_text("length () より軽い", "ja") == "length() より軽い"
+        )
+
 
 class TestParentheses:
     def test_halfwidth_for_ascii_content(self):

@@ -1,3 +1,5 @@
+import inspect
+
 import pytest
 
 import pyxel
@@ -35,6 +37,22 @@ class TestAttributes:
         assert n.collider is None
         assert n.parent is None
         assert n.children == ()
+
+    def test_constructor_rejects_unused_arguments(self):
+        assert str(inspect.signature(Node)) == "()"
+        with pytest.raises(TypeError):
+            Node(1)
+        with pytest.raises(TypeError):
+            Node(name="player")
+
+    def test_subclass_constructor_keeps_python_arguments(self):
+        class Player(Node):
+            def __init__(self, name):
+                super().__init__()
+                self.name = name
+
+        player = Player("hero")
+        assert player.name == "hero"
 
     def test_set_name(self):
         n = Node()

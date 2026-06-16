@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import pytest
 
 import pyxel
@@ -47,6 +49,22 @@ CAPTURE_PLANS = {
         {"frame": 1},
         {"frame": 20, "press": [pyxel.KEY_RIGHT, pyxel.KEY_W]},
     ],
+    # Cube examples
+    "c01_hello_cube": [{"frame": 8}],
+    "c02_basic_shapes": [
+        {"frame": 1},
+        {"frame": 30, "press": [pyxel.KEY_SPACE]},
+    ],
+    "c03_custom_shapes": [
+        {"frame": 1},
+        {
+            "frame": 20,
+            "mouse": (128, 96),
+            "press": [pyxel.MOUSE_BUTTON_LEFT],
+            "capture": False,
+        },
+        {"frame": 40},
+    ],
     # Static-screen and launcher captures
     "05_color_palette": [{"frame": 0}],
     "13_custom_font": [{"frame": 0}],
@@ -64,6 +82,28 @@ FLIP_EXAMPLES = {"99_flip_animation"}
 
 
 class TestExamples:
+    def test_top_level_examples_have_capture_plans(self):
+        planned = set(CAPTURE_PLANS)
+        examples = {
+            script.stem
+            for script in EXAMPLES_DIR.glob("*.py")
+            if not script.name.startswith("__")
+        }
+        assert planned == examples
+
+    def test_packaged_examples_do_not_contain_audit_scripts(self):
+        audit_scripts = sorted(
+            script.relative_to(EXAMPLES_DIR)
+            for script in EXAMPLES_DIR.rglob("*.py")
+            if "_audit" in script.stem
+        )
+        assert audit_scripts == []
+
+    def test_root_has_no_unintegrated_python_test_scripts(self):
+        root_dir = Path(__file__).parents[2]
+        stray_tests = sorted(script.name for script in root_dir.glob("*_test.py"))
+        assert stray_tests == []
+
     @pytest.mark.parametrize(
         "name", list(CAPTURE_PLANS.keys()), ids=list(CAPTURE_PLANS.keys())
     )

@@ -1,8 +1,8 @@
 use std::cell::RefCell;
 
-use pyo3::exceptions::PyValueError;
+use pyo3::exceptions::{PyTypeError, PyValueError};
 use pyo3::prelude::*;
-use pyo3::types::{PyDict, PyTuple};
+use pyo3::types::{PyDict, PyTuple, PyType};
 use pyxel::cube::draw::DrawState;
 use pyxel::cube::raster::{compute_clip_rect, matmul, projection_matrix, view_matrix};
 use pyxel::cube::scene::{
@@ -168,9 +168,20 @@ impl Node {
     // Constructor
 
     #[new]
-    #[pyo3(signature = (*_args, **_kwargs))]
-    fn new(_args: &Bound<'_, PyTuple>, _kwargs: Option<&Bound<'_, PyDict>>) -> Self {
-        Self::wrap(InnerNode::new())
+    #[classmethod]
+    #[pyo3(signature = (*args, **kwargs), text_signature = "()")]
+    fn new(
+        cls: &Bound<'_, PyType>,
+        args: &Bound<'_, PyTuple>,
+        kwargs: Option<&Bound<'_, PyDict>>,
+    ) -> PyResult<Self> {
+        let node_type = cls.py().get_type::<Node>();
+        let is_exact_node = cls.as_ptr() == node_type.as_ptr();
+        let has_kwargs = kwargs.is_some_and(|kwargs| !kwargs.is_empty());
+        if is_exact_node && (!args.is_empty() || has_kwargs) {
+            return Err(PyTypeError::new_err("Node() takes no arguments"));
+        }
+        Ok(Self::wrap(InnerNode::new()))
     }
 
     // Data attributes
