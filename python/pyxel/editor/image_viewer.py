@@ -18,6 +18,9 @@ class ImageViewer(Widget):
     #   viewport_x_var
     #   viewport_y_var
     #   help_message_var
+    #
+    # Events:
+    #   none
 
     def __init__(self, parent):
         if hasattr(parent, "tilemap_index_var"):

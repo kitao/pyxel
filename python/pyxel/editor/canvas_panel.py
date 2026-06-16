@@ -35,6 +35,9 @@ class CanvasPanel(Widget):
     #   tile_y_var
     #   tile_w_var
     #   tile_h_var
+    #
+    # Events:
+    #   none
 
     def __init__(self, parent):
         super().__init__(parent, 11, 16, 130, 130)

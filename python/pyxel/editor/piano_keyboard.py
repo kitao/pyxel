@@ -66,6 +66,9 @@ class PianoKeyboard(Widget):
     #   octave_var
     #   is_playing_var
     #   help_message_var
+    #
+    # Events:
+    #   none
 
     def __init__(self, parent):
         super().__init__(parent, 17, 25, 12, 123)

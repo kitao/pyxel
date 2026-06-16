@@ -22,6 +22,7 @@ struct CharStream<'a> {
 }
 
 impl<'a> CharStream<'a> {
+    // Constructors
     fn new(input: &'a str) -> Self {
         Self {
             bytes: input.as_bytes(),
@@ -29,6 +30,7 @@ impl<'a> CharStream<'a> {
         }
     }
 
+    // Cursor access
     fn peek(&self) -> Option<char> {
         self.bytes.get(self.pos).map(|&b| b as char)
     }
@@ -41,6 +43,7 @@ impl<'a> CharStream<'a> {
         c
     }
 
+    // Error reporting
     fn error(&self, message: &str) -> String {
         format!("MML:{}: {}", self.pos, message)
     }

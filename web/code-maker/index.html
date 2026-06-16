@@ -341,6 +341,7 @@
 
       // uint8ToBase64 and base64ToUint8 provided by shared.js
 
+      // Project state helpers
       function copyCodeToProject() {
         window._project.code = window._codeEditor.getValue();
       }
@@ -382,6 +383,7 @@
         }
       }
 
+      // Pane reset helpers
       function resetRuntimeScreen() {
         runtimeScreen.contentWindow?.resetPyxel?.();
       }
@@ -507,6 +509,7 @@
         updateShareUrl("url", url);
       }
 
+      // Archive helpers
       async function buildArchiveBlob() {
         const archive = new JSZip();
         const prefix = window._project.name;
@@ -627,6 +630,7 @@
         window._codeEditor = codeEditor;
       }
 
+      // Share URL helpers
       function updateShareUrl(param, value) {
         const base = location.href.split("?")[0];
         if (param && value) {
@@ -639,6 +643,7 @@
         }
       }
 
+      // Button feedback
       function animateButton(button) {
         button.classList.add("active");
         setTimeout(() => button.classList.remove("active"), 150);
@@ -700,14 +705,14 @@
         const runButton = document.getElementById("run-button");
 
         // Load dropdown
-        loadButton.addEventListener("click", (event) => {
-          event.stopPropagation();
+        loadButton.addEventListener("click", (e) => {
+          e.stopPropagation();
           toggleDropdown("load-menu");
         });
 
         // Save dropdown
-        saveButton.addEventListener("click", (event) => {
-          event.stopPropagation();
+        saveButton.addEventListener("click", (e) => {
+          e.stopPropagation();
           toggleDropdown("save-menu");
         });
 
@@ -721,8 +726,8 @@
 
         // Dropdown actions
         document.querySelectorAll(".dropdown-item").forEach((item) => {
-          item.addEventListener("click", (event) => {
-            event.stopPropagation();
+          item.addEventListener("click", (e) => {
+            e.stopPropagation();
             closeAllDropdowns();
             const action = item.dataset.action;
             switch (action) {
@@ -749,8 +754,8 @@
           });
         });
 
-        loadFileInput.addEventListener("change", async (event) => {
-          const file = event.target.files?.[0];
+        loadFileInput.addEventListener("change", async (e) => {
+          const file = e.target.files?.[0];
           if (file) {
             loadProject(file);
           }
@@ -763,16 +768,16 @@
 
         // Close modal on overlay click
         document.querySelectorAll(".modal-overlay").forEach((overlay) => {
-          overlay.addEventListener("click", (event) => {
-            if (event.target === overlay) {
+          overlay.addEventListener("click", (e) => {
+            if (e.target === overlay) {
               overlay.classList.add("hidden");
             }
           });
         });
 
         // Close modal on Escape
-        document.addEventListener("keydown", (event) => {
-          if (event.key === "Escape") {
+        document.addEventListener("keydown", (e) => {
+          if (e.key === "Escape") {
             document
               .querySelectorAll(".modal-overlay:not(.hidden)")
               .forEach((m) => {
@@ -807,8 +812,8 @@
 
         // Enter key submits modals
         document.querySelectorAll(".modal-input").forEach((input) => {
-          input.addEventListener("keydown", (event) => {
-            if (event.key === "Enter") {
+          input.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") {
               const modal = input.closest(".modal");
               const primaryButton = modal.querySelector(".modal-btn-primary");
               if (primaryButton) {
@@ -857,12 +862,14 @@
         });
       }
 
+      // Startup loading
       async function loadInitialFiles() {
         const res = await fetch("pyxel-project.zip");
         await loadProjectFromZip(await res.arrayBuffer(), "pyxel-project");
         window._codeEditor.focus();
       }
 
+      // Frame setup
       async function setupIframes() {
         const screenLoaded = new Promise((resolve) => {
           runtimeScreen.onload = () => resolve();
@@ -884,6 +891,7 @@
         await Promise.all([screenLoaded, editorLoaded]);
       }
 
+      // Runtime readiness
       function onPyxelReady() {
         waitForPyxelReady(
           () =>
@@ -909,6 +917,7 @@
         );
       }
 
+      // Focus indicators
       function updateFocusLine(state) {
         focusLineLeft.classList.toggle(
           "focus-line-segment-active",
@@ -930,8 +939,8 @@
 
         document.addEventListener(
           "pointerdown",
-          (event) => {
-            const target = event.target;
+          (e) => {
+            const target = e.target;
 
             if (toolbar && toolbar.contains(target)) {
               return;
@@ -1011,11 +1020,11 @@
         let startX = 0;
         let startWidth = 0;
 
-        function onMove(event) {
+        function onMove(e) {
           if (!dragging) {
             return;
           }
-          const dx = event.clientX - startX;
+          const dx = e.clientX - startX;
           let newW = startWidth + dx;
           const containerW = mainSplitter.getBoundingClientRect().width;
           const minW = Math.min(200, containerW / 2);
@@ -1040,9 +1049,9 @@
           resourceEditor.style.display = "";
         }
 
-        function onDown(event) {
+        function onDown(e) {
           dragging = true;
-          startX = event.clientX;
+          startX = e.clientX;
           startWidth = leftPane.getBoundingClientRect().width;
           document.body.style.cursor = "col-resize";
           document.body.style.userSelect = "none";
@@ -1051,7 +1060,7 @@
           window.addEventListener("pointermove", onMove);
           window.addEventListener("pointerup", onUp);
           window.addEventListener("pointercancel", onUp);
-          event.preventDefault();
+          e.preventDefault();
         }
 
         splitterHandle.addEventListener("pointerdown", onDown);
@@ -1062,11 +1071,11 @@
       // Bind global keyboard shortcuts across the window and embedded panes.
       function setupShortcuts() {
         // Dispatch command shortcuts to load, save, focus, tab, and run actions.
-        function handleShortcutKeydown(event) {
+        function handleShortcutKeydown(e) {
           // Ctrl(Cmd)+L: Load file
-          if ((event.ctrlKey || event.metaKey) && event.key === "l") {
-            event.preventDefault();
-            event.stopPropagation();
+          if ((e.ctrlKey || e.metaKey) && e.key === "l") {
+            e.preventDefault();
+            e.stopPropagation();
             const loadFileInput = document.getElementById("load-file");
             loadFileInput.value = "";
             loadFileInput.click();
@@ -1074,17 +1083,17 @@
           }
 
           // Ctrl(Cmd)+S: Save file
-          if ((event.ctrlKey || event.metaKey) && event.key === "s") {
-            event.preventDefault();
-            event.stopPropagation();
+          if ((e.ctrlKey || e.metaKey) && e.key === "s") {
+            e.preventDefault();
+            e.stopPropagation();
             saveToFile();
             return;
           }
 
           // Ctrl(Cmd)+,: Toggle Code/Res
-          if ((event.ctrlKey || event.metaKey) && event.key === ",") {
-            event.preventDefault();
-            event.stopPropagation();
+          if ((e.ctrlKey || e.metaKey) && e.key === ",") {
+            e.preventDefault();
+            e.stopPropagation();
             const codeTabButton = document.getElementById("code-tab-button");
             const resourceTabButton = document.getElementById(
               "resource-tab-button",
@@ -1101,9 +1110,9 @@
           }
 
           // Ctrl(Cmd)+.: Toggle focus between left and right panes
-          if ((event.ctrlKey || event.metaKey) && event.key === ".") {
-            event.preventDefault();
-            event.stopPropagation();
+          if ((e.ctrlKey || e.metaKey) && e.key === ".") {
+            e.preventDefault();
+            e.stopPropagation();
 
             const codeTabButton = document.getElementById("code-tab-button");
             const resourceTabButton = document.getElementById(
@@ -1142,9 +1151,9 @@
           }
 
           // Ctrl(Cmd)+Enter: Run
-          if ((event.ctrlKey || event.metaKey) && event.key === "Enter") {
-            event.preventDefault();
-            event.stopPropagation();
+          if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+            e.preventDefault();
+            e.stopPropagation();
             const runButton = document.getElementById("run-button");
             if (!runButton?.disabled) {
               runButton.click();
@@ -1169,20 +1178,19 @@
         bindTarget(resourceEditor.contentWindow);
       }
 
+      // File drop
       function setupFileDrop() {
-        document.addEventListener("dragover", (event) =>
-          event.preventDefault(),
-        );
-        document.addEventListener("drop", (event) => event.preventDefault());
+        document.addEventListener("dragover", (e) => e.preventDefault());
+        document.addEventListener("drop", (e) => e.preventDefault());
 
         const codeEditorEl = document.getElementById("code-editor");
-        codeEditorEl.addEventListener("dragover", (event) => {
-          event.preventDefault();
-          event.dataTransfer.dropEffect = "copy";
+        codeEditorEl.addEventListener("dragover", (e) => {
+          e.preventDefault();
+          e.dataTransfer.dropEffect = "copy";
         });
-        codeEditorEl.addEventListener("drop", (event) => {
-          event.preventDefault();
-          const file = event.dataTransfer.files?.[0];
+        codeEditorEl.addEventListener("drop", (e) => {
+          e.preventDefault();
+          const file = e.dataTransfer.files?.[0];
           if (file && file.name.endsWith(".py")) {
             file.text().then((text) => {
               text = text.replace(
@@ -1199,6 +1207,7 @@
         });
       }
 
+      // Runtime input
       function setupPyxelInput() {
         const eventNames = ["click", "touchstart", "keydown"];
         function resolvePyxelInput() {

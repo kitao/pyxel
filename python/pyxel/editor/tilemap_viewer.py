@@ -10,6 +10,9 @@ class TilemapViewer(Widget):
     #   focus_x_var
     #   focus_y_var
     #   help_message_var
+    #
+    # Events:
+    #   none
 
     def __init__(self, parent):
         super().__init__(parent, 157, 16, 66, 65)

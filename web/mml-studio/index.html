@@ -318,6 +318,7 @@
         }
       }
 
+      // Button helpers
       function setButtonStyle(button, isActive) {
         button.classList.toggle("active", isActive);
       }
@@ -407,26 +408,26 @@
         });
 
         // Keyboard shortcuts
-        window.addEventListener("keydown", (event) => {
+        window.addEventListener("keydown", (e) => {
           resolvePyxelInput();
-          if ((event.ctrlKey || event.metaKey) && event.key === "Enter") {
+          if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
             const playButton = document.querySelector(
               'button[data-action="play"]',
             );
             if (playButton && !playButton.disabled) {
-              event.preventDefault();
+              e.preventDefault();
               handleButtonPress(playButton);
             }
-          } else if (event.key === "Escape") {
+          } else if (e.key === "Escape") {
             const stopButton = document.querySelector(
               'button[data-action="stop"]',
             );
             if (stopButton && !stopButton.disabled) {
-              event.preventDefault();
+              e.preventDefault();
               handleButtonPress(stopButton);
             }
-          } else if ((event.ctrlKey || event.metaKey) && event.key === "l") {
-            event.preventDefault();
+          } else if ((e.ctrlKey || e.metaKey) && e.key === "l") {
+            e.preventDefault();
             const loopButton = document.querySelector(
               'button[data-action="loop"]',
             );
