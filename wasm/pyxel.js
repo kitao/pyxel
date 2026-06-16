@@ -51,25 +51,21 @@ if (
   !/chrome/i.test(navigator.userAgent)
 ) {
   // Normalize Safari's numpad arrow events before SDL2 handles them.
-  const fixArrowEvent = (event) => {
-    if (
-      event.isTrusted &&
-      event.location === 3 &&
-      event.key.startsWith("Arrow")
-    ) {
-      event.stopImmediatePropagation();
-      event.preventDefault();
+  const fixArrowEvent = (e) => {
+    if (e.isTrusted && e.location === 3 && e.key.startsWith("Arrow")) {
+      e.stopImmediatePropagation();
+      e.preventDefault();
       document.dispatchEvent(
-        new KeyboardEvent(event.type, {
-          key: event.key,
-          code: event.code,
+        new KeyboardEvent(e.type, {
+          key: e.key,
+          code: e.code,
           location: 0,
-          keyCode: event.keyCode,
-          repeat: event.repeat,
-          ctrlKey: event.ctrlKey,
-          shiftKey: event.shiftKey,
-          altKey: event.altKey,
-          metaKey: event.metaKey,
+          keyCode: e.keyCode,
+          repeat: e.repeat,
+          ctrlKey: e.ctrlKey,
+          shiftKey: e.shiftKey,
+          altKey: e.altKey,
+          metaKey: e.metaKey,
           bubbles: true,
           cancelable: true,
         }),
@@ -140,17 +136,17 @@ const _CODE_TO_SCANCODE = {
 };
 document.addEventListener(
   "keydown",
-  (event) => {
+  (e) => {
     if (
-      event.key.length === 1 &&
-      !event.shiftKey &&
-      !event.ctrlKey &&
-      !event.altKey &&
-      !event.metaKey
+      e.key.length === 1 &&
+      !e.shiftKey &&
+      !e.ctrlKey &&
+      !e.altKey &&
+      !e.metaKey
     ) {
-      const scancode = _CODE_TO_SCANCODE[event.code];
+      const scancode = _CODE_TO_SCANCODE[e.code];
       if (scancode !== undefined) {
-        _scanCorrection[scancode] = event.key.charCodeAt(0);
+        _scanCorrection[scancode] = e.key.charCodeAt(0);
       }
     }
   },
@@ -319,18 +315,18 @@ const _registerCustomElements = () => {
 };
 
 const _hookGlobalErrors = () => {
-  window.addEventListener("error", (event) => {
-    _displayFatalErrorOverlay(event.error || event.message || event);
+  window.addEventListener("error", (e) => {
+    _displayFatalErrorOverlay(e.error || e.message || e);
   });
 
-  window.addEventListener("unhandledrejection", (event) => {
-    _displayFatalErrorOverlay(event.reason || event);
+  window.addEventListener("unhandledrejection", (e) => {
+    _displayFatalErrorOverlay(e.reason || e);
   });
 };
 
 const _allowGamepadConnection = () => {
-  window.addEventListener("gamepadconnected", (event) => {
-    console.log(`Connected '${event.gamepad.id}'`);
+  window.addEventListener("gamepadconnected", (e) => {
+    console.log(`Connected '${e.gamepad.id}'`);
   });
 };
 
@@ -346,9 +342,9 @@ const _suppressTouchZoomGestures = () => {
     "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no";
 
   // Suppress pinch-to-zoom by preventing multi-touch gestures
-  const pinchHandler = (event) => {
-    if (event.touches && event.touches.length > 1) {
-      event.preventDefault();
+  const pinchHandler = (e) => {
+    if (e.touches && e.touches.length > 1) {
+      e.preventDefault();
     }
   };
   document.addEventListener("touchstart", pinchHandler, { passive: false });
@@ -381,6 +377,7 @@ const _updateScreenElementsSize = () => {
   _setMinWidthFromRatio("img#pyxel-gamepad-menu", screenSize);
 };
 
+// Event helpers
 const _waitForEvent = (target, ...events) =>
   new Promise((resolve) => {
     const listener = (...args) => {
@@ -406,7 +403,7 @@ const _createScreenElements = async () => {
     document.body.appendChild(pyxelScreen);
   }
 
-  pyxelScreen.oncontextmenu = (event) => event.preventDefault();
+  pyxelScreen.oncontextmenu = (e) => e.preventDefault();
   if (!window._pyxelResizeListenerAttached) {
     let resizeTimer;
     window.addEventListener("resize", () => {
@@ -417,13 +414,13 @@ const _createScreenElements = async () => {
   }
 
   // Handle file drop
-  pyxelScreen.addEventListener("dragover", (event) => {
-    event.preventDefault();
-    event.dataTransfer.dropEffect = "copy";
+  pyxelScreen.addEventListener("dragover", (e) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "copy";
   });
-  pyxelScreen.addEventListener("drop", (event) => {
-    event.preventDefault();
-    const file = event.dataTransfer.files?.[0];
+  pyxelScreen.addEventListener("drop", (e) => {
+    e.preventDefault();
+    const file = e.dataTransfer.files?.[0];
     if (file) {
       file.arrayBuffer().then((buf) => dropFileToPyxel(file.name, buf));
     }
@@ -821,7 +818,7 @@ const _addVirtualGamepad = (mode) => {
   window.addEventListener("resize", invalidateRects);
 
   // Set touch event handler
-  const touchHandler = (event) => {
+  const touchHandler = (e) => {
     if (!cachedRects) {
       const cross = gamepadCrossImage.getBoundingClientRect();
       const button = gamepadButtonImage.getBoundingClientRect();
@@ -837,11 +834,11 @@ const _addVirtualGamepad = (mode) => {
       cachedRects?.button ?? gamepadButtonImage.getBoundingClientRect();
     const menu = cachedRects?.menu ?? gamepadMenuImage.getBoundingClientRect();
     _virtualGamepadStates.fill(false);
-    for (const touch of event.touches) {
+    for (const touch of e.touches) {
       const { clientX, clientY } = touch;
       _updateGamepadStateFromTouch(clientX, clientY, cross, button, menu);
     }
-    event.preventDefault();
+    e.preventDefault();
   };
   _addVirtualGamepad._handler = touchHandler;
 
@@ -899,9 +896,9 @@ const _executePyxelCommand = async (pyodide, params) => {
 
     case "edit":
       if (!window._pyxelEditKeyHandler) {
-        window._pyxelEditKeyHandler = (event) => {
-          if ((event.ctrlKey || event.metaKey) && event.key === "s") {
-            event.preventDefault();
+        window._pyxelEditKeyHandler = (e) => {
+          if ((e.ctrlKey || e.metaKey) && e.key === "s") {
+            e.preventDefault();
           }
         };
         document.addEventListener("keydown", window._pyxelEditKeyHandler);

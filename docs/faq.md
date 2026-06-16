@@ -34,7 +34,7 @@ The `update` function is called every frame, but the `draw` function may be skip
 </details>
 
 <details>
-<summary>How do I use Pyxel's MML?</summary>
+<summary>How do I use Pyxel MML?</summary>
 
 MML (Music Macro Language) is a language for defining sounds by describing notes, tempo, and other parameters as a string.
 
@@ -117,7 +117,7 @@ To make your code compatible with version 2.4, please make the following changes
 - Change the `excl_*` option in the `save` and `load` functions to `exclude_*`
 - Remove the `incl_*` option from the `save` and `load` functions
 
-For details on the new MML syntax, see "[How do I use Pyxel's MML?](#api-specification-and-usage)" above.
+For details on the new MML syntax, see "[How do I use Pyxel MML?](#api-specification-and-usage)" above.
 
 </details>
 

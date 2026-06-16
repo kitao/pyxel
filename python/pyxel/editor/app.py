@@ -24,6 +24,9 @@ class App(Widget):
     # Variables:
     #   editor_type_var
     #   help_message_var
+    #
+    # Events:
+    #   none
 
     def __init__(self, resource_file, starting_editor):
         # Resolve the absolute path before pyxel.init changes the working directory

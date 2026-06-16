@@ -8,6 +8,9 @@ class OctaveBar(Widget):
     # Variables:
     #   octave_var
     #   help_message_var
+    #
+    # Events:
+    #   none
 
     def __init__(self, parent, x, y):
         super().__init__(parent, x, y, 4, 123)
