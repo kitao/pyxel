@@ -31,21 +31,6 @@ def is_wall(x, y):
     return tile == TILE_FLOOR or tile[0] >= WALL_TILE_X
 
 
-def spawn_enemy(left_x, right_x):
-    left_x = pyxel.ceil(left_x / 8)
-    right_x = pyxel.floor(right_x / 8)
-
-    for x in range(left_x, right_x + 1):
-        for y in range(16):
-            tile = get_tile(x, y)
-            if tile == TILE_SPAWN1:
-                enemies.append(Enemy1(x * 8, y * 8))
-            elif tile == TILE_SPAWN2:
-                enemies.append(Enemy2(x * 8, y * 8))
-            elif tile == TILE_SPAWN3:
-                enemies.append(Enemy3(x * 8, y * 8))
-
-
 def cleanup_entities(entities):
     entities[:] = [e for e in entities if e.is_alive]
 
@@ -203,6 +188,21 @@ class Enemy3Bullet:
     def draw(self):
         u = pyxel.frame_count // 2 % 2 * 8 + 16
         pyxel.blt(self.x, self.y, 0, u, 32, 8, 8, TRANSPARENT_COLOR)
+
+
+def spawn_enemy(left_x, right_x):
+    left_x = pyxel.ceil(left_x / 8)
+    right_x = pyxel.floor(right_x / 8)
+
+    for x in range(left_x, right_x + 1):
+        for y in range(16):
+            tile = get_tile(x, y)
+            if tile == TILE_SPAWN1:
+                enemies.append(Enemy1(x * 8, y * 8))
+            elif tile == TILE_SPAWN2:
+                enemies.append(Enemy2(x * 8, y * 8))
+            elif tile == TILE_SPAWN3:
+                enemies.append(Enemy3(x * 8, y * 8))
 
 
 class App:
