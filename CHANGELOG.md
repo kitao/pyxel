@@ -10,6 +10,7 @@
 - Fixed reversed slice assignment for Pyxel sequence objects
 - Fixed possible channel desync when starting music playback
 - Fixed escaping for generated HTML and browser file exports
+- Fixed startup script cleanup after failed Pyxel app packaging
 - Improved audio/MML/BGM processing and resource save performance
 - Improved web export and Pyxel Editor shortcut performance
 - Refined Japanese, Chinese, and web documentation wording and typography
