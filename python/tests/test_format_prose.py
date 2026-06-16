@@ -58,11 +58,11 @@ class TestCodeSpan:
         assert format_prose.format_text("`ＡＢＣ`の例", "ja") == "`ＡＢＣ` の例"
 
     def test_preserves_markdown_link_target(self):
-        text = "「[Pyxel の MML の使い方](#api-仕様と使い方)」を参照"
+        text = "「[Pyxel MML の使い方](#api-仕様と使い方)」を参照"
         assert format_prose.format_text(text, "ja") == text
 
     def test_preserves_markdown_link_target_after_fullwidth_parentheses(self):
-        text = "「[Pyxel の MML の使い方]（#api-仕様と使い方）」を参照"
+        text = "「[Pyxel MML の使い方]（#api-仕様と使い方）」を参照"
         assert format_prose.format_text(text, "ja") == text
 
     def test_preserves_keyboard_shortcut_parentheses(self):
