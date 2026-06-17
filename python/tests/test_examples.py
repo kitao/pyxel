@@ -59,11 +59,13 @@ CAPTURE_PLANS = {
         {"frame": 1},
         {
             "frame": 20,
-            "mouse": (128, 96),
+            "mouse": (135, 115),
             "press": [pyxel.MOUSE_BUTTON_LEFT],
             "capture": False,
         },
+        {"frame": 32},
         {"frame": 40},
+        {"frame": 48},
     ],
     # Static-screen and launcher captures
     "05_color_palette": [{"frame": 0}],

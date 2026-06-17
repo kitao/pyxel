@@ -6,6 +6,7 @@ use crate::cube::shading::{Shading, LEVEL_COUNT};
 use crate::cube::vec3::Vec3;
 use crate::image::{Image, RcImage};
 use crate::tilemap::RcTilemap;
+use crate::utils::{f32_to_i32, f32_to_u32};
 
 // 4x4 matrix in row-major form (m[i][j] is row i, column j). Used as the
 // combined view-projection matrix applied to every world-space point.
@@ -333,6 +334,7 @@ pub fn screen_circle(
 // only flat or 50:50 checker, which `dither_pick` handles directly via
 // the 2x2 parity (no Bayer matrix needed for that case).
 pub const BAYER4: [[u8; 4]; 4] = [[0, 8, 2, 10], [12, 4, 14, 6], [3, 11, 1, 9], [15, 7, 13, 5]];
+const CIRCLE_ROUNDING_BIAS: f32 = 0.01;
 
 // Pick between primary and secondary for the LUT cell at pixel (x, y).
 // `primary == secondary` is a flat fill; otherwise a 2x2 checker.
@@ -643,41 +645,73 @@ pub fn rasterize_circle_filled(
     depth_test: bool,
     depth_write: bool,
 ) {
-    let r_int = radius.ceil() as i32;
-    let r2 = radius * radius;
-    let cx_int = cx.round() as i32;
-    let cy_int = cy.round() as i32;
-    let bx_min = (cx_int - r_int).max(clip.left);
-    let bx_max = (cx_int + r_int).min(clip.right);
-    let by_min = (cy_int - r_int).max(clip.top);
-    let by_max = (cy_int + r_int).min(clip.bottom);
-    for y in by_min..=by_max {
-        let dy = y as f32 + 0.5 - cy;
-        let dy2 = dy * dy;
-        // A row's inside run on a disc is one contiguous span; skip the
-        // rest of the row once the span has been entered and exited.
-        let mut was_inside = false;
-        for x in bx_min..=bx_max {
-            let dx = x as f32 + 0.5 - cx;
-            if dx * dx + dy2 <= r2 {
-                was_inside = true;
-                let col = dither_pick(primary as i32, secondary as i32, x, y);
-                write_pixel(
-                    target,
-                    depth,
-                    depth_w,
-                    x,
-                    y,
-                    z,
-                    col,
-                    dither_alpha,
-                    depth_test,
-                    depth_write,
-                );
-            } else if was_inside {
-                break;
-            }
-        }
+    let x = f32_to_i32(cx);
+    let y = f32_to_i32(cy);
+    let radius = f32_to_u32(radius);
+    let r = radius as f32;
+
+    for xi in 0..=radius as i32 {
+        let (x1, y1, x2, y2) = circle_area(0.0, 0.0, r, r, xi);
+        rasterize_circle_column(
+            target,
+            depth,
+            depth_w,
+            y + y1,
+            y + y2,
+            x + x1,
+            z,
+            primary,
+            secondary,
+            clip,
+            dither_alpha,
+            depth_test,
+            depth_write,
+        );
+        rasterize_circle_column(
+            target,
+            depth,
+            depth_w,
+            y + y1,
+            y + y2,
+            x + x2,
+            z,
+            primary,
+            secondary,
+            clip,
+            dither_alpha,
+            depth_test,
+            depth_write,
+        );
+        rasterize_circle_row(
+            target,
+            depth,
+            depth_w,
+            x + y1,
+            x + y2,
+            y + x1,
+            z,
+            primary,
+            secondary,
+            clip,
+            dither_alpha,
+            depth_test,
+            depth_write,
+        );
+        rasterize_circle_row(
+            target,
+            depth,
+            depth_w,
+            x + y1,
+            x + y2,
+            y + x2,
+            z,
+            primary,
+            secondary,
+            clip,
+            dither_alpha,
+            depth_test,
+            depth_write,
+        );
     }
 }
 
@@ -699,40 +733,256 @@ pub fn rasterize_circle_border(
     depth_test: bool,
     depth_write: bool,
 ) {
-    let r_int = radius.ceil() as i32;
-    let outer = radius + 0.5;
-    let inner = (radius - 0.5).max(0.0);
-    let outer2 = outer * outer;
-    let inner2 = inner * inner;
-    let cx_int = cx.round() as i32;
-    let cy_int = cy.round() as i32;
-    let bx_min = (cx_int - r_int).max(clip.left);
-    let bx_max = (cx_int + r_int).min(clip.right);
-    let by_min = (cy_int - r_int).max(clip.top);
-    let by_max = (cy_int + r_int).min(clip.bottom);
-    for y in by_min..=by_max {
-        let dy = y as f32 + 0.5 - cy;
-        let dy2 = dy * dy;
-        // No span early-out here: a ring row splits into two runs.
-        for x in bx_min..=bx_max {
-            let dx = x as f32 + 0.5 - cx;
-            let d2 = dx * dx + dy2;
-            if d2 <= outer2 && d2 >= inner2 {
-                let col = dither_pick(primary as i32, secondary as i32, x, y);
-                write_pixel(
-                    target,
-                    depth,
-                    depth_w,
-                    x,
-                    y,
-                    z,
-                    col,
-                    dither_alpha,
-                    depth_test,
-                    depth_write,
-                );
-            }
-        }
+    let x = f32_to_i32(cx);
+    let y = f32_to_i32(cy);
+    let radius = f32_to_u32(radius);
+    let r = radius as f32;
+
+    for xi in 0..=radius as i32 {
+        let (x1, y1, x2, y2) = circle_area(0.0, 0.0, r, r, xi);
+        rasterize_circle_pixel(
+            target,
+            depth,
+            depth_w,
+            x + x1,
+            y + y1,
+            z,
+            primary,
+            secondary,
+            clip,
+            dither_alpha,
+            depth_test,
+            depth_write,
+        );
+        rasterize_circle_pixel(
+            target,
+            depth,
+            depth_w,
+            x + x2,
+            y + y1,
+            z,
+            primary,
+            secondary,
+            clip,
+            dither_alpha,
+            depth_test,
+            depth_write,
+        );
+        rasterize_circle_pixel(
+            target,
+            depth,
+            depth_w,
+            x + x1,
+            y + y2,
+            z,
+            primary,
+            secondary,
+            clip,
+            dither_alpha,
+            depth_test,
+            depth_write,
+        );
+        rasterize_circle_pixel(
+            target,
+            depth,
+            depth_w,
+            x + x2,
+            y + y2,
+            z,
+            primary,
+            secondary,
+            clip,
+            dither_alpha,
+            depth_test,
+            depth_write,
+        );
+        rasterize_circle_pixel(
+            target,
+            depth,
+            depth_w,
+            x + y1,
+            y + x1,
+            z,
+            primary,
+            secondary,
+            clip,
+            dither_alpha,
+            depth_test,
+            depth_write,
+        );
+        rasterize_circle_pixel(
+            target,
+            depth,
+            depth_w,
+            x + y1,
+            y + x2,
+            z,
+            primary,
+            secondary,
+            clip,
+            dither_alpha,
+            depth_test,
+            depth_write,
+        );
+        rasterize_circle_pixel(
+            target,
+            depth,
+            depth_w,
+            x + y2,
+            y + x1,
+            z,
+            primary,
+            secondary,
+            clip,
+            dither_alpha,
+            depth_test,
+            depth_write,
+        );
+        rasterize_circle_pixel(
+            target,
+            depth,
+            depth_w,
+            x + y2,
+            y + x2,
+            z,
+            primary,
+            secondary,
+            clip,
+            dither_alpha,
+            depth_test,
+            depth_write,
+        );
+    }
+}
+
+#[inline]
+fn circle_area(cx: f32, cy: f32, ra: f32, rb: f32, x: i32) -> (i32, i32, i32, i32) {
+    let dx = x as f32 - cx;
+    let dy = if ra > 0.0 {
+        rb * (1.0 - dx * dx / (ra * ra)).sqrt()
+    } else {
+        rb
+    };
+
+    let x1 = f32_to_i32(cx - dx - CIRCLE_ROUNDING_BIAS);
+    let y1 = f32_to_i32(cy - dy - CIRCLE_ROUNDING_BIAS);
+    let x2 = f32_to_i32(cx + dx + CIRCLE_ROUNDING_BIAS);
+    let y2 = f32_to_i32(cy + dy + CIRCLE_ROUNDING_BIAS);
+
+    (x1, y1, x2, y2)
+}
+
+#[inline]
+#[allow(clippy::too_many_arguments)]
+fn rasterize_circle_pixel(
+    target: &mut Image,
+    depth: &mut [f32],
+    depth_w: u32,
+    x: i32,
+    y: i32,
+    z: f32,
+    primary: u8,
+    secondary: u8,
+    clip: ClipRect,
+    dither_alpha: f32,
+    depth_test: bool,
+    depth_write: bool,
+) {
+    if !clip.contains(x, y) {
+        return;
+    }
+    let col = dither_pick(primary as i32, secondary as i32, x, y);
+    write_pixel(
+        target,
+        depth,
+        depth_w,
+        x,
+        y,
+        z,
+        col,
+        dither_alpha,
+        depth_test,
+        depth_write,
+    );
+}
+
+#[inline]
+#[allow(clippy::too_many_arguments)]
+fn rasterize_circle_row(
+    target: &mut Image,
+    depth: &mut [f32],
+    depth_w: u32,
+    x1: i32,
+    x2: i32,
+    y: i32,
+    z: f32,
+    primary: u8,
+    secondary: u8,
+    clip: ClipRect,
+    dither_alpha: f32,
+    depth_test: bool,
+    depth_write: bool,
+) {
+    if y < clip.top || y > clip.bottom {
+        return;
+    }
+    let left = x1.max(clip.left);
+    let right = x2.min(clip.right);
+    for x in left..=right {
+        rasterize_circle_pixel(
+            target,
+            depth,
+            depth_w,
+            x,
+            y,
+            z,
+            primary,
+            secondary,
+            clip,
+            dither_alpha,
+            depth_test,
+            depth_write,
+        );
+    }
+}
+
+#[inline]
+#[allow(clippy::too_many_arguments)]
+fn rasterize_circle_column(
+    target: &mut Image,
+    depth: &mut [f32],
+    depth_w: u32,
+    y1: i32,
+    y2: i32,
+    x: i32,
+    z: f32,
+    primary: u8,
+    secondary: u8,
+    clip: ClipRect,
+    dither_alpha: f32,
+    depth_test: bool,
+    depth_write: bool,
+) {
+    if x < clip.left || x > clip.right {
+        return;
+    }
+    let top = y1.max(clip.top);
+    let bottom = y2.min(clip.bottom);
+    for y in top..=bottom {
+        rasterize_circle_pixel(
+            target,
+            depth,
+            depth_w,
+            x,
+            y,
+            z,
+            primary,
+            secondary,
+            clip,
+            dither_alpha,
+            depth_test,
+            depth_write,
+        );
     }
 }
 
@@ -827,6 +1077,10 @@ mod tests {
             bottom: h as i32 - 1,
         };
         (img, depth, clip)
+    }
+
+    fn image_data(img: &RcImage) -> Vec<u8> {
+        rc_ref!(img).canvas.data.clone()
     }
 
     #[test]
@@ -1237,6 +1491,29 @@ mod tests {
     }
 
     #[test]
+    fn test_rasterize_line_matches_2d_line_pixels() {
+        let expected = Image::new(32, 32);
+        rc_mut!(&expected).draw_line(4.0, 5.0, 27.0, 16.0, 7);
+
+        let (actual, mut depth, clip) = make_target_and_depth(32, 32);
+        rasterize_line(
+            rc_mut!(&actual),
+            &mut depth,
+            32,
+            (4.0, 5.0, 0.0),
+            (27.0, 16.0, 0.5),
+            7,
+            7,
+            clip,
+            1.0,
+            true,
+            true,
+        );
+
+        assert_eq!(image_data(&actual), image_data(&expected));
+    }
+
+    #[test]
     fn test_rasterize_triangle_fills_interior() {
         let (img, mut depth, clip) = make_target_and_depth(16, 16);
         let img_mut = rc_mut!(&img);
@@ -1484,16 +1761,66 @@ mod tests {
     }
 
     #[test]
+    fn test_rasterize_circle_filled_matches_2d_circle_pixels() {
+        let expected = Image::new(32, 32);
+        rc_mut!(&expected).draw_circle(16.0, 16.0, 6.0, 7);
+
+        let (actual, mut depth, clip) = make_target_and_depth(32, 32);
+        rasterize_circle_filled(
+            rc_mut!(&actual),
+            &mut depth,
+            32,
+            16.0,
+            16.0,
+            6.0,
+            0.0,
+            7,
+            7,
+            clip,
+            1.0,
+            true,
+            true,
+        );
+
+        assert_eq!(image_data(&actual), image_data(&expected));
+    }
+
+    #[test]
     fn test_rasterize_circle_border_thin_ring() {
         let (img, mut depth, clip) = make_target_and_depth(32, 32);
         let img_mut = rc_mut!(&img);
         rasterize_circle_border(
-            img_mut, &mut depth, 32, 16.0, 16.0, 5.0, 0.0, 8, 0, clip, 1.0, true, true,
+            img_mut, &mut depth, 32, 16.0, 16.0, 5.0, 0.0, 8, 8, clip, 1.0, true, true,
         );
         // Center pixel is NOT filled (border only).
         assert_eq!(img_mut.canvas.read_data(16, 16), 0);
-        // Pixel near the rim is filled.
-        assert_eq!(img_mut.canvas.read_data(20, 16), 8);
+        // 2D circb-style rim pixel.
+        assert_eq!(img_mut.canvas.read_data(21, 16), 8);
+    }
+
+    #[test]
+    fn test_rasterize_circle_border_matches_2d_circb_pixels() {
+        let expected = Image::new(32, 32);
+        rc_mut!(&expected).draw_circle_border(16.0, 16.0, 6.0, 8);
+
+        let (actual, mut depth, clip) = make_target_and_depth(32, 32);
+        rasterize_circle_border(
+            rc_mut!(&actual),
+            &mut depth,
+            32,
+            16.0,
+            16.0,
+            6.0,
+            0.0,
+            8,
+            8,
+            clip,
+            1.0,
+            true,
+            true,
+        );
+
+        assert_eq!(image_data(&actual), image_data(&expected));
     }
 
     #[test]
