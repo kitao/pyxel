@@ -3,6 +3,9 @@
 ## 3.0.0
 
 - Added Pyxel Cube — a software-rendered 3D extension module
+- Added Example C01 for a basic Pyxel Cube scene
+- Added Example C02 for Pyxel Cube drawing primitives
+- Added Example C03 for custom Pyxel Cube drawing primitives
 
 ## 2.9.7
 
