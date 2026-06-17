@@ -100,7 +100,8 @@ class Slime(Node):
         positions = []
         for direction in self.sphere_dirs:
             radius = wobble_radius(direction, t, self.phase)
-            positions += [direction[0] * radius, direction[1] * radius, direction[2] * radius]
+            x, y, z = direction
+            positions += [x * radius, y * radius, z * radius]
         return positions
 
     def trigger_hit(self):
@@ -199,7 +200,6 @@ class Weapon(Node):
         if not self.locked_slimes:
             return
 
-        self.fan_offsets = []
         self.firing_slimes = self.locked_slimes
         self.fan_offsets = [
             self.laser_fan_offset(s.center, i) for i, s in enumerate(self.firing_slimes)
@@ -271,7 +271,9 @@ class Weapon(Node):
             amount = extent * i / (point_count - 1)
             segment = min(int(amount * (point_count - 1)), point_count - 2)
             blend = amount * (point_count - 1) - segment
-            points.append(full_path[segment] * (1.0 - blend) + full_path[segment + 1] * blend)
+            points.append(
+                full_path[segment] * (1.0 - blend) + full_path[segment + 1] * blend
+            )
         return points
 
     def hit_slimes(self):
@@ -314,15 +316,13 @@ class Weapon(Node):
     def draw_marker(self, center, size):
         _, right, up = self.camera_axes()
         color = (8, 14)[pyxel.frame_count % 2]
-        top_right = center + right * size + up * size
-        bottom_right = center + right * size - up * size
-        bottom_left = center - right * size - up * size
-        top_left = center - right * size + up * size
-
-        for p, q in (
-            (top_right, bottom_right), (bottom_right, bottom_left),
-            (bottom_left, top_left), (top_left, top_right),
-        ):
+        corners = [
+            center + right * size + up * size,
+            center + right * size - up * size,
+            center - right * size - up * size,
+            center - right * size + up * size,
+        ]
+        for p, q in zip(corners, corners[1:] + corners[:1]):
             self.line(p, q, color)
 
     def update_beam_prim(self, beam, slime_center, index, extent, width=BEAM_WIDTH):
