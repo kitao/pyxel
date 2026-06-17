@@ -3,291 +3,345 @@ import math
 import pyxel
 from pyxel.cube import Camera, Mat4, Node, PrimData, Shading, Vec3
 
-ENEMY_COUNT = 5
-ENEMY_COLORS = [11, 3, 14, 12, 10]
-RINGS = 6
-SEGS = 10
-SIZE = 1.0
-DRIFT_R = 3.5
-FLOAT_Y = 2.5
-GRID_LINES = 12
-GRID_HALF = 7.0
-FLOOR_COLOR = 5
+SLIME_COLORS = [8, 9, 10, 12, 14]
+SLIME_COUNT = len(SLIME_COLORS)
 
-EYE = Vec3(0.0, 12.0, 10.0)
-TARGET = Vec3(0.0, 1.0, 0.0)
-EMITTER = Vec3(0.0, 0.5, 7.0)
-AIM_W = 9.0
-AIM_H = 7.0
-LOCK_DIST = 1.6
-FIRE_FRAMES = 14
-HOLD_FRAMES = 8
-FLASH_FRAMES = 6
-FAN = 0.35
-LAUNCH = 6.0
-N_PTS = 12
-BEAM_W = 0.25
-RETICLE_SIZE = 0.7
-MARK_SIZE = 1.0
-RETICLE_COLOR = 7
-MARK_COLOR = 8
-FLASH_COLOR = 7
+CAMERA_EYE = Vec3(0.0, 12.0, 10.0)
+AIM_CENTER = Vec3(0.0, 1.0, 0.0)
+LASER_ORIGIN = Vec3(0.0, 0.5, 10.0)
+
+FIRE_DURATION = 14
+LASER_FAN_WIDTH = 1.2
+HOMING_STRENGTH = 0.35
+BEAM_WIDTH = 0.22
+LASER_COLOR = 11
+LASER_CORE_COLOR = 7
 
 
-def build_sphere(rings, segs):
-    dirs = []
+# Build a PrimData body once, then move only its vertex positions each frame.
+def build_sphere(rings, segments):
+    directions = []
     for i in range(rings + 1):
         lat = math.pi * i / rings - math.pi / 2
-        for j in range(segs + 1):
-            lon = 2 * math.pi * j / segs
-            dirs.append(
+        for j in range(segments + 1):
+            lon = math.tau * j / segments
+            directions.append(
                 (
                     math.cos(lat) * math.cos(lon),
                     math.sin(lat),
                     math.cos(lat) * math.sin(lon),
                 )
             )
+
     indices = []
     for i in range(rings):
-        for j in range(segs):
-            a = i * (segs + 1) + j
-            b = a + 1
-            c = a + (segs + 1)
-            d = c + 1
-            indices += [a, b, d, a, d, c]
+        for j in range(segments):
+            a = i * (segments + 1) + j
+            c = a + segments + 1
+            indices += [a, a + 1, c + 1, a, c + 1, c]
+
     normals = []
-    for f in range(0, len(indices), 3):
-        i0, i1, i2 = indices[f], indices[f + 1], indices[f + 2]
-        nx = dirs[i0][0] + dirs[i1][0] + dirs[i2][0]
-        ny = dirs[i0][1] + dirs[i1][1] + dirs[i2][1]
-        nz = dirs[i0][2] + dirs[i1][2] + dirs[i2][2]
+    for i in range(0, len(indices), 3):
+        d0 = directions[indices[i]]
+        d1 = directions[indices[i + 1]]
+        d2 = directions[indices[i + 2]]
+        nx = d0[0] + d1[0] + d2[0]
+        ny = d0[1] + d1[1] + d2[1]
+        nz = d0[2] + d1[2] + d2[2]
         length = math.sqrt(nx * nx + ny * ny + nz * nz) or 1.0
         normals += [nx / length, ny / length, nz / length]
-    return dirs, indices, normals
+    return directions, indices, normals
 
 
-def wobble_radius(d, t, phase):
-    r = 1.0
-    r += 0.25 * math.sin(3.0 * d[0] + 1.7 * t + phase)
-    r += 0.22 * math.sin(3.5 * d[1] + 1.3 * t + phase * 1.7)
-    r += 0.20 * math.sin(4.0 * d[2] + 2.1 * t + phase * 0.6)
-    return r
-
-
-def make_laser_texture():
-    tex = pyxel.Image(8, 8)
-    tex.set(
-        0,
-        0,
-        [
-            "00000000",
-            "cccccccc",
-            "77777777",
-            "77777777",
-            "77777777",
-            "77777777",
-            "cccccccc",
-            "00000000",
-        ],
+def wobble_radius(direction, time, phase):
+    return (
+        1.0
+        + 0.25 * math.sin(3.0 * direction[0] + 1.7 * time + phase)
+        + 0.22 * math.sin(3.5 * direction[1] + 1.3 * time + phase * 1.7)
+        + 0.20 * math.sin(4.0 * direction[2] + 2.1 * time + phase * 0.6)
     )
-    return tex
 
 
-class Enemy(Node):
+def smoothstep(edge0, edge1, x):
+    if x <= edge0:
+        return 0.0
+    if x >= edge1:
+        return 1.0
+    x = (x - edge0) / (edge1 - edge0)
+    return x * x * (3.0 - 2.0 * x)
+
+
+def init_sounds():
+    pyxel.sounds[0].set("c4g4", "t", "46", "nn", 5)
+    pyxel.sounds[1].set("c3g3c4e4g4", "s", "76543", "nnnff", 4)
+    pyxel.sounds[2].set("c2g1c1", "n", "765", "fff", 5)
+
+
+class Slime(Node):
     def __init__(self, index):
         super().__init__()
         self.phase = index * 1.3
-        self.orbit = index * (2 * math.pi / ENEMY_COUNT)
-        self.color = ENEMY_COLORS[index % len(ENEMY_COLORS)]
-        self.center = Vec3(0.0, FLOAT_Y, 0.0)
-        self.locked = False
-        self.flash = 0
-        self.dirs, indices, normals = build_sphere(RINGS, SEGS)
+        self.orbit = index * math.tau / SLIME_COUNT
+        self.color = SLIME_COLORS[index]
+        self.center = Vec3.ZERO
+        self.is_locked = False
+        self.flash_timer = 0
+
+        self.sphere_dirs, indices, normals = build_sphere(6, 10)
         self.body = PrimData(
             PrimData.MODE_TRIANGLES,
-            self.wobbled(0.0),
+            self.make_body_positions(0.0),
             indices,
             normals=normals,
             cull=PrimData.CULL_NONE,
         )
 
-    def wobbled(self, t):
-        pos = []
-        for d in self.dirs:
-            r = SIZE * wobble_radius(d, t, self.phase)
-            pos += [d[0] * r, d[1] * r, d[2] * r]
-        return pos
+    def make_body_positions(self, t):
+        positions = []
+        for direction in self.sphere_dirs:
+            radius = wobble_radius(direction, t, self.phase)
+            positions += [direction[0] * radius, direction[1] * radius, direction[2] * radius]
+        return positions
+
+    def trigger_hit(self):
+        self.flash_timer = 12
 
     def on_update(self):
-        self.body.positions[:] = self.wobbled(pyxel.frame_count * 0.06)
-        cx = DRIFT_R * math.cos(self.orbit + pyxel.frame_count * 0.01)
-        cz = DRIFT_R * math.sin(self.orbit + pyxel.frame_count * 0.01)
-        cy = FLOAT_Y + 0.5 * math.sin(pyxel.frame_count * 0.02 + self.phase)
-        self.center = Vec3(cx, cy, cz)
+        t = pyxel.frame_count
+        self.body.positions[:] = self.make_body_positions(t * 0.06)
+        self.center = Vec3(
+            3.5 * math.cos(self.orbit + t * 0.01),
+            2.5 + 0.5 * math.sin(t * 0.02 + self.phase),
+            3.5 * math.sin(self.orbit + t * 0.01),
+        )
         self.transform = Mat4.from_translation(self.center)
-        if self.flash > 0:
-            self.flash -= 1
+        self.flash_timer = max(0, self.flash_timer - 1)
 
     def on_draw(self):
-        self.prim(
-            Mat4.IDENTITY, self.body, FLASH_COLOR if self.flash > 0 else self.color
-        )
+        color = 7 if self.flash_timer % 2 == 0 and self.flash_timer else self.color
+        self.prim(Mat4.IDENTITY, self.body, color)
 
 
 class Floor(Node):
-    def __init__(self):
-        super().__init__()
-        pos = []
-        for k in range(GRID_LINES + 1):
-            u = -GRID_HALF + 2 * GRID_HALF * k / GRID_LINES
-            pos += [u, 0.0, -GRID_HALF, u, 0.0, GRID_HALF]
-            pos += [-GRID_HALF, 0.0, u, GRID_HALF, 0.0, u]
-        self.grid = PrimData(
-            PrimData.MODE_LINES,
-            pos,
-            list(range(len(pos) // 3)),
-            cull=PrimData.CULL_NONE,
-        )
-
     def on_draw(self):
-        self.prim(Mat4.IDENTITY, self.grid, FLOOR_COLOR)
+        for i in range(13):
+            u = -7.0 + 14.0 * i / 12
+            self.line(Vec3(u, 0, -7.0), Vec3(u, 0, 7.0), 5)
+            self.line(Vec3(-7.0, 0, u), Vec3(7.0, 0, u), 5)
 
 
 class Weapon(Node):
-    def __init__(self, enemies):
+    def __init__(self, slimes):
         super().__init__()
-        self.enemies = enemies
-        forward = (TARGET - EYE).normalize()
-        self.cam_right = forward.cross(Vec3(0.0, 1.0, 0.0)).normalize()
-        self.cam_up = self.cam_right.cross(forward)
-        self.reticle = TARGET
-        self.locked = []
-        self.firing = []
-        self.fire_t = 0
-        self.laser_tex = make_laser_texture()
-        self.beams = [self.make_ribbon() for _ in range(ENEMY_COUNT)]
-        self.marker = PrimData(
-            PrimData.MODE_LINES,
-            [0.0] * 12,
-            [0, 1, 1, 2, 2, 3, 3, 0],
-            cull=PrimData.CULL_NONE,
-        )
+        self.slimes = slimes
+        self.reticle = AIM_CENTER
+        self.locked_slimes = []
+        self.firing_slimes = []
+        self.fan_offsets = []
+        self.fire_frame = 0
+        self.hit_done = False
 
-    def make_ribbon(self):
-        uvs = []
+        self.beams = [self.make_beam_prim() for _ in range(SLIME_COUNT)]
+
+    def make_beam_prim(self):
+        point_count = 24
         indices = []
-        for k in range(N_PTS):
-            u = k / (N_PTS - 1)
-            uvs += [u, 0.07, u, 0.93]
-        for k in range(N_PTS - 1):
-            a = 2 * k
+        for i in range(point_count - 1):
+            a = i * 2
             indices += [a, a + 1, a + 2, a + 1, a + 3, a + 2]
         return PrimData(
             PrimData.MODE_TRIANGLES,
-            [0.0] * (2 * N_PTS * 3),
+            [0.0] * (point_count * 2 * 3),
             indices,
-            uvs=uvs,
             cull=PrimData.CULL_NONE,
         )
 
     def clear_locks(self):
-        for e in self.enemies:
-            e.locked = False
-        self.locked = []
+        for slime in self.slimes:
+            slime.is_locked = False
+        self.locked_slimes = []
+
+    def lock_slime(self, slime):
+        if slime.is_locked:
+            return
+        slime.is_locked = True
+        self.locked_slimes.append(slime)
+        pyxel.play(0, 0)
+
+    def camera_axes(self):
+        mat = self.effective_camera.transform
+        return mat.pos, Vec3.RIGHT.to_world_dir(mat), Vec3.UP.to_world_dir(mat)
+
+    def update_aim_ray(self):
+        eye, right, up = self.camera_axes()
+        mat = self.effective_camera.transform
+        forward = Vec3.FORWARD.to_world_dir(mat)
+        aspect = pyxel.width / pyxel.height
+        scale = math.tan(math.radians(self.effective_camera.fov) * 0.5)
+        x = (pyxel.mouse_x / pyxel.width * 2.0 - 1.0) * aspect * scale
+        y = (1.0 - pyxel.mouse_y / pyxel.height * 2.0) * scale
+        ray = (right * x + up * y + forward).normalize()
+        depth = (AIM_CENTER - eye).dot(forward) / ray.dot(forward)
+        self.reticle = eye + ray * depth
+        return eye, ray
+
+    def can_lock(self, slime, eye, ray):
+        forward = Vec3.FORWARD.to_world_dir(self.effective_camera.transform)
+        depth = (slime.center - eye).dot(forward)
+        if depth <= 0.0:
+            return False
+
+        aim = eye + ray * (depth / ray.dot(forward))
+        cursor_radius = 0.7 * depth / (AIM_CENTER - eye).dot(forward)
+        return slime.center.distance_to(aim) < 1.8 + cursor_radius
+
+    def start_fire(self):
+        if not self.locked_slimes:
+            return
+
+        self.fan_offsets = []
+        self.firing_slimes = self.locked_slimes
+        self.fan_offsets = [
+            self.laser_fan_offset(s.center, i) for i, s in enumerate(self.firing_slimes)
+        ]
+        self.locked_slimes = []
+        self.fire_frame = 1
+        self.hit_done = False
+        pyxel.play(1, 1)
 
     def on_update(self):
-        u = (pyxel.mouse_x / pyxel.width - 0.5) * AIM_W
-        v = -(pyxel.mouse_y / pyxel.height - 0.5) * AIM_H
-        self.reticle = TARGET + self.cam_right * u + self.cam_up * v
-
-        if self.fire_t > 0:
-            self.fire_t += 1
-            if self.fire_t > FIRE_FRAMES + HOLD_FRAMES:
-                for e in self.firing:
-                    e.flash = FLASH_FRAMES
-                    e.locked = False
-                self.firing = []
-                self.fire_t = 0
+        eye, ray = self.update_aim_ray()
+        if self.fire_frame:
+            self.fire_frame += 1
+            if self.fire_frame >= FIRE_DURATION:
+                self.hit_slimes()
+            if self.fire_frame > FIRE_DURATION + 8:
+                self.finish_fire()
             return
 
         if pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT):
             self.clear_locks()
         if pyxel.btn(pyxel.MOUSE_BUTTON_LEFT):
-            ray = self.reticle - EYE
-            for e in self.enemies:
-                if not e.locked:
-                    w = e.center - EYE
-                    if (w - w.project(ray)).length() < LOCK_DIST:
-                        e.locked = True
-                        self.locked.append(e)
-        elif pyxel.btnr(pyxel.MOUSE_BUTTON_LEFT) and self.locked:
-            self.firing = self.locked
-            self.locked = []
-            self.fire_t = 1
+            for slime in self.slimes:
+                if not slime.is_locked and self.can_lock(slime, eye, ray):
+                    self.lock_slime(slime)
+        elif pyxel.btnr(pyxel.MOUSE_BUTTON_LEFT) and self.locked_slimes:
+            self.start_fire()
 
-    def update_beam(self, beam, target, idx, extent):
-        angle = (idx - (len(self.firing) - 1) * 0.5) * FAN
-        launch = self.cam_up * math.cos(angle) + self.cam_right * math.sin(angle)
-        ctrl = EMITTER + launch * LAUNCH
-        pts = []
-        for k in range(N_PTS):
-            s = extent * k / (N_PTS - 1)
-            inv = 1.0 - s
-            pts.append(
-                EMITTER * (inv * inv) + ctrl * (2.0 * inv * s) + target * (s * s)
-            )
-        pos = []
-        for k in range(N_PTS):
-            if k == 0:
-                d = pts[1] - pts[0]
-            elif k == N_PTS - 1:
-                d = pts[k] - pts[k - 1]
-            else:
-                d = pts[k + 1] - pts[k - 1]
-            perp = d.cross(pts[k] - EYE)
-            length = perp.length()
-            perp = (
-                perp * (BEAM_W / length) if length > 1e-6 else self.cam_right * BEAM_W
-            )
-            left = pts[k] - perp
-            right = pts[k] + perp
-            pos += [left.x, left.y, left.z, right.x, right.y, right.z]
-        beam.positions[:] = pos
+    def laser_fan_offset(self, slime_center, index):
+        if index < len(self.fan_offsets):
+            return self.fan_offsets[index]
 
-    def square(self, center, s):
-        a = center + self.cam_right * s + self.cam_up * s
-        b = center + self.cam_right * s - self.cam_up * s
-        c = center - self.cam_right * s - self.cam_up * s
-        d = center - self.cam_right * s + self.cam_up * s
-        self.marker.positions[:] = [
-            a.x,
-            a.y,
-            a.z,
-            b.x,
-            b.y,
-            b.z,
-            c.x,
-            c.y,
-            c.z,
-            d.x,
-            d.y,
-            d.z,
-        ]
+        _, right, _ = self.camera_axes()
+        count = len(self.firing_slimes) or 1
+        spread = index - (count - 1) * 0.5
+        spread_unit = spread / max((count - 1) * 0.5, 1.0)
+        side = (slime_center - AIM_CENTER).dot(right)
+        if abs(side) <= 0.4:
+            side = spread_unit or 1.0
+        side_sign = 1.0 if side >= 0.0 else -1.0
+        return right * (side_sign * LASER_FAN_WIDTH * (0.7 + 0.3 * abs(spread_unit)))
+
+    def make_laser_path(self, slime_center, index, extent):
+        point_count = 24
+        extent = max(0.0, min(1.0, extent))
+        to_slime = slime_center - LASER_ORIGIN
+        direction = self.laser_fan_offset(slime_center, index)
+        direction = (direction + to_slime.normalize()).normalize()
+        speed = to_slime.length() * 1.15 / (point_count - 1)
+        point = LASER_ORIGIN
+        full_path = [point]
+        for i in range(1, point_count):
+            t = (i - 1) / (point_count - 2)
+            steer = smoothstep(0.3, 1.0, t) * HOMING_STRENGTH
+            direction = (
+                direction * (1.0 - steer) + (slime_center - point).normalize() * steer
+            ).normalize()
+            point += direction * speed
+            full_path.append(point)
+
+        correction = slime_center - full_path[-1]
+        for i, point in enumerate(full_path):
+            amount = i / (point_count - 1)
+            full_path[i] = point + correction * (amount**2.5)
+        full_path[-1] = slime_center
+
+        points = []
+        for i in range(point_count):
+            amount = extent * i / (point_count - 1)
+            segment = min(int(amount * (point_count - 1)), point_count - 2)
+            blend = amount * (point_count - 1) - segment
+            points.append(full_path[segment] * (1.0 - blend) + full_path[segment + 1] * blend)
+        return points
+
+    def hit_slimes(self):
+        if not self.firing_slimes or self.hit_done:
+            return
+        self.hit_done = True
+        pyxel.play(2, 2)
+        for slime in self.firing_slimes:
+            slime.trigger_hit()
+            slime.is_locked = False
+
+    def finish_fire(self):
+        if self.firing_slimes and not self.hit_done:
+            self.hit_slimes()
+        for slime in self.firing_slimes:
+            slime.is_locked = False
+        self.firing_slimes = []
+        self.fan_offsets = []
+        self.fire_frame = 0
+        self.hit_done = False
 
     def on_draw(self):
         self.depth_test(False)
         self.shaded(False)
-        self.square(self.reticle, RETICLE_SIZE)
-        self.prim(Mat4.IDENTITY, self.marker, RETICLE_COLOR)
-        for e in self.enemies:
-            if e.locked:
-                self.square(e.center, MARK_SIZE)
-                self.prim(Mat4.IDENTITY, self.marker, MARK_COLOR)
-        if self.fire_t > 0:
-            extent = min(1.0, self.fire_t / FIRE_FRAMES)
-            for i, e in enumerate(self.firing):
-                self.update_beam(self.beams[i], e.center, i, extent)
-                self.prim(Mat4.IDENTITY, self.beams[i], self.laser_tex, colkey=0)
+        self.circb(self.reticle, 0.7, 7)
+
+        for slime in self.slimes:
+            if slime.is_locked:
+                self.draw_marker(slime.center, 0.55)
+        if self.fire_frame:
+            extent = min(1.0, self.fire_frame / FIRE_DURATION)
+            for i, slime in enumerate(self.firing_slimes):
+                self.update_beam_prim(self.beams[i], slime.center, i, extent)
+                self.prim(Mat4.IDENTITY, self.beams[i], LASER_COLOR)
+                self.update_beam_prim(
+                    self.beams[i], slime.center, i, extent, BEAM_WIDTH * 0.35
+                )
+                self.prim(Mat4.IDENTITY, self.beams[i], LASER_CORE_COLOR)
+
+    def draw_marker(self, center, size):
+        _, right, up = self.camera_axes()
+        color = (8, 14)[pyxel.frame_count % 2]
+        top_right = center + right * size + up * size
+        bottom_right = center + right * size - up * size
+        bottom_left = center - right * size - up * size
+        top_left = center - right * size + up * size
+
+        for p, q in (
+            (top_right, bottom_right), (bottom_right, bottom_left),
+            (bottom_left, top_left), (top_left, top_right),
+        ):
+            self.line(p, q, color)
+
+    def update_beam_prim(self, beam, slime_center, index, extent, width=BEAM_WIDTH):
+        eye, right, _ = self.camera_axes()
+        points = self.make_laser_path(slime_center, index, extent)
+        positions = []
+        for i, point in enumerate(points):
+            if i == 0:
+                tangent = points[1] - point
+            elif i == len(points) - 1:
+                tangent = point - points[i - 1]
+            else:
+                tangent = points[i + 1] - points[i - 1]
+
+            side = tangent.cross(point - eye)
+            side = side.normalize() * width if side.length() > 1e-6 else right * width
+            for p in (point - side, point + side):
+                positions += [p.x, p.y, p.z]
+        beam.positions[:] = positions
 
 
 class Scene(Node):
@@ -299,19 +353,22 @@ class Scene(Node):
 
         self.camera = Camera()
         self.camera.clear_color = 0
-        self.camera.transform = Mat4.look_at(EYE, TARGET)
+        self.camera.transform = Mat4.look_at(CAMERA_EYE, AIM_CENTER)
 
         self.add_child(Floor())
-        enemies = [Enemy(i) for i in range(ENEMY_COUNT)]
-        for e in enemies:
-            self.add_child(e)
-        self.add_child(Weapon(enemies))
+        slimes = [Slime(i) for i in range(SLIME_COUNT)]
+        for slime in slimes:
+            self.add_child(slime)
+        self.add_child(Weapon(slimes))
 
 
 class App:
     def __init__(self):
         pyxel.init(256, 192, title="Custom Shapes")
+
+        init_sounds()
         self.scene = Scene()
+
         pyxel.run(self.update, self.draw)
 
     def update(self):

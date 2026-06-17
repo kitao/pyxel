@@ -28,6 +28,9 @@ use crate::font::Font;
 use crate::image::{Image, RcImage};
 use crate::settings::{FONT_HEIGHT, FONT_WIDTH, MAX_FONT_CODE, MIN_FONT_CODE, NUM_FONT_COLS};
 
+const CLIP_W_EPSILON: f32 = 1e-4;
+type ScreenPoint = (f32, f32, f32);
+
 // PrimData draw modes are owned by `PrimData` (see prim_data.rs); this
 // file imports them at the top. Values follow OpenGL ordering
 // (GL_POINTS=0, GL_LINES=1, GL_TRIANGLES=4 — cube uses 0/1/2 internally
@@ -147,6 +150,49 @@ fn project_offset(
         Some(d) => Some((p.0, p.1, d.2)),
         None => Some(p),
     }
+}
+
+fn clip_w(pos: &Vec3, vp: &[[f32; 4]; 4]) -> f32 {
+    vp[3][0] * pos.x + vp[3][1] * pos.y + vp[3][2] * pos.z + vp[3][3]
+}
+
+fn lerp_world(a: &Vec3, b: &Vec3, t: f32) -> Vec3 {
+    Vec3 {
+        x: a.x + (b.x - a.x) * t,
+        y: a.y + (b.y - a.y) * t,
+        z: a.z + (b.z - a.z) * t,
+    }
+}
+
+fn project_line_segment(
+    p0: &Vec3,
+    p1: &Vec3,
+    ctx: &DrawContext,
+    z_shift: &Vec3,
+) -> Option<(ScreenPoint, ScreenPoint)> {
+    let w0 = clip_w(p0, &ctx.vp);
+    let w1 = clip_w(p1, &ctx.vp);
+    if w0 <= CLIP_W_EPSILON && w1 <= CLIP_W_EPSILON {
+        return None;
+    }
+
+    let mut q0 = *p0;
+    let mut q1 = *p1;
+    if w0 <= CLIP_W_EPSILON {
+        let t = (CLIP_W_EPSILON - w0) / (w1 - w0);
+        q0 = lerp_world(p0, p1, t);
+    } else if w1 <= CLIP_W_EPSILON {
+        let t = (CLIP_W_EPSILON - w0) / (w1 - w0);
+        q1 = lerp_world(p0, p1, t);
+    }
+
+    let s0 = project_offset(
+        &q0, &ctx.vp, ctx.vp_x, ctx.vp_y, ctx.vp_w, ctx.vp_h, z_shift,
+    )?;
+    let s1 = project_offset(
+        &q1, &ctx.vp, ctx.vp_x, ctx.vp_y, ctx.vp_w, ctx.vp_h, z_shift,
+    )?;
+    Some((s0, s1))
 }
 
 fn apply_billboard(world_mat: &Mat4, ctx: &DrawContext, mode: i32) -> Mat4 {
@@ -465,15 +511,15 @@ pub fn prim(
                 return Err("LINES requires step count to be a multiple of 2");
             }
             let line_count = step_count / 2;
-            let target_mut = rc_mut!(&ctx.target);
             let depth_w = ctx.depth_w;
-            let depth = ctx.depth.as_mut_slice();
             for l in 0..line_count {
                 let i0 = resolve_vertex_index(l * 2)?;
                 let i1 = resolve_vertex_index(l * 2 + 1)?;
-                let (_, p0) = ctx.vertex_cache[i0];
-                let (_, p1) = ctx.vertex_cache[i1];
-                if let (Some(p0), Some(p1)) = (p0, p1) {
+                let (w0, _) = ctx.vertex_cache[i0];
+                let (w1, _) = ctx.vertex_cache[i1];
+                if let Some((p0, p1)) = project_line_segment(&w0, &w1, ctx, &z_shift) {
+                    let target_mut = rc_mut!(&ctx.target);
+                    let depth = ctx.depth.as_mut_slice();
                     rasterize_line(
                         target_mut,
                         depth,
@@ -1709,6 +1755,61 @@ mod tests {
         let zero = depth_offset_shift(&camera, 0.0);
         let same = project_offset(&pos, &vp, 0.0, 0.0, 256.0, 192.0, &zero).unwrap();
         assert_eq!(base, same);
+    }
+
+    #[test]
+    fn line_clips_endpoint_behind_camera_instead_of_dropping() {
+        use crate::cube::camera::Camera;
+        use crate::cube::raster::{compute_clip_rect, matmul, projection_matrix, view_matrix};
+        use crate::cube::scene::DrawContext;
+
+        let target = Image::new(64, 64);
+        rc_mut!(&target).clear(2);
+        let camera = Camera::new();
+        let vp = matmul(
+            &projection_matrix(rc_ref!(&camera), 64.0, 64.0),
+            &view_matrix(rc_ref!(&camera)),
+        );
+        let clip = compute_clip_rect(0.0, 0.0, 64.0, 64.0, 64, 64);
+        let mut ctx = DrawContext {
+            target: target.clone(),
+            vp,
+            vp_x: 0.0,
+            vp_y: 0.0,
+            vp_w: 64.0,
+            vp_h: 64.0,
+            clip,
+            camera,
+            depth: vec![f32::INFINITY; 64 * 64],
+            depth_w: 64,
+            depth_h: 64,
+            vertex_cache: Vec::new(),
+            dither_alpha: 1.0,
+            depth_test: true,
+            depth_write: true,
+            depth_offset: 0.0,
+            shaded: false,
+        };
+        let state = DrawState::unshaded();
+        let positions = [0.0, 0.0, -2.0, 0.5, 0.0, 1.0];
+
+        prim(
+            &mut ctx,
+            &Mat4::identity_value(),
+            MODE_LINES,
+            CULL_NONE,
+            &positions,
+            None,
+            None,
+            None,
+            7,
+            None,
+            None,
+            state,
+        )
+        .unwrap();
+
+        assert_eq!(rc_ref!(&target).pixel(32.0, 32.0), 7);
     }
 
     #[test]
