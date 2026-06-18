@@ -4,18 +4,11 @@ import pyxel
 from pyxel.cube import Camera, Mat4, Node, Primitive, Shading, Vec3
 
 SLIME_COLORS = [8, 9, 10, 12, 14]
-SLIME_COUNT = len(SLIME_COLORS)
-
 CAMERA_EYE = Vec3(0.0, 12.0, 10.0)
 AIM_CENTER = Vec3(0.0, 1.0, 0.0)
 LASER_ORIGIN = Vec3(0.0, 0.5, 10.0)
-
 FIRE_DURATION = 14
-LASER_FAN_WIDTH = 1.2
-HOMING_STRENGTH = 0.35
-BEAM_WIDTH = 0.22
-LASER_COLOR = 11
-LASER_CORE_COLOR = 7
+LASER_WIDTH = 0.22
 
 
 # Build a Primitive body once, then move only its vertex positions each frame.
@@ -81,7 +74,7 @@ class Slime(Node):
     def __init__(self, index):
         super().__init__()
         self.phase = index * 1.3
-        self.orbit = index * math.tau / SLIME_COUNT
+        self.orbit = index * math.tau / len(SLIME_COLORS)
         self.color = SLIME_COLORS[index]
         self.center = Vec3.ZERO
         self.is_locked = False
@@ -135,16 +128,15 @@ class Weapon(Node):
     def __init__(self, slimes):
         super().__init__()
         self.slimes = slimes
-        self.reticle = AIM_CENTER
         self.locked_slimes = []
         self.firing_slimes = []
         self.fan_offsets = []
         self.fire_frame = 0
         self.hit_done = False
 
-        self.beams = [self.make_beam_prim() for _ in range(SLIME_COUNT)]
+        self.laser_prims = [self.make_laser_prim() for _ in slimes]
 
-    def make_beam_prim(self):
+    def make_laser_prim(self):
         point_count = 24
         indices = []
         for i in range(point_count - 1):
@@ -173,28 +165,21 @@ class Weapon(Node):
         mat = self.effective_camera.transform
         return mat.pos, Vec3.RIGHT.to_world_dir(mat), Vec3.UP.to_world_dir(mat)
 
-    def update_aim_ray(self):
+    def can_lock(self, slime):
         eye, right, up = self.camera_axes()
-        mat = self.effective_camera.transform
-        forward = Vec3.FORWARD.to_world_dir(mat)
-        aspect = pyxel.width / pyxel.height
-        scale = math.tan(math.radians(self.effective_camera.fov) * 0.5)
-        x = (pyxel.mouse_x / pyxel.width * 2.0 - 1.0) * aspect * scale
-        y = (1.0 - pyxel.mouse_y / pyxel.height * 2.0) * scale
-        ray = (right * x + up * y + forward).normalize()
-        depth = (AIM_CENTER - eye).dot(forward) / ray.dot(forward)
-        self.reticle = eye + ray * depth
-        return eye, ray
-
-    def can_lock(self, slime, eye, ray):
         forward = Vec3.FORWARD.to_world_dir(self.effective_camera.transform)
-        depth = (slime.center - eye).dot(forward)
+        to_slime = slime.center - eye
+        depth = to_slime.dot(forward)
         if depth <= 0.0:
             return False
 
-        aim = eye + ray * (depth / ray.dot(forward))
-        cursor_radius = 0.7 * depth / (AIM_CENTER - eye).dot(forward)
-        return slime.center.distance_to(aim) < 1.8 + cursor_radius
+        scale = math.tan(math.radians(self.effective_camera.fov) * 0.5)
+        aspect = pyxel.width / pyxel.height
+        x = pyxel.width * (
+            0.5 + to_slime.dot(right) / (2.0 * depth * aspect * scale)
+        )
+        y = pyxel.height * (0.5 - to_slime.dot(up) / (2.0 * depth * scale))
+        return math.hypot(pyxel.mouse_x - x, pyxel.mouse_y - y) < 13.0
 
     def start_fire(self):
         if not self.locked_slimes:
@@ -210,20 +195,23 @@ class Weapon(Node):
         pyxel.play(1, 1)
 
     def on_update(self):
-        eye, ray = self.update_aim_ray()
+        drag_started = pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT)
+
         if self.fire_frame:
             self.fire_frame += 1
             if self.fire_frame >= FIRE_DURATION:
                 self.hit_slimes()
             if self.fire_frame > FIRE_DURATION + 8:
                 self.finish_fire()
-            return
+            if not drag_started:
+                return
+            self.finish_fire()
 
-        if pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT):
+        if drag_started:
             self.clear_locks()
         if pyxel.btn(pyxel.MOUSE_BUTTON_LEFT):
             for slime in self.slimes:
-                if not slime.is_locked and self.can_lock(slime, eye, ray):
+                if not slime.is_locked and self.can_lock(slime):
                     self.lock_slime(slime)
         elif pyxel.btnr(pyxel.MOUSE_BUTTON_LEFT) and self.locked_slimes:
             self.start_fire()
@@ -240,7 +228,7 @@ class Weapon(Node):
         if abs(side) <= 0.4:
             side = spread_unit or 1.0
         side_sign = 1.0 if side >= 0.0 else -1.0
-        return right * (side_sign * LASER_FAN_WIDTH * (0.7 + 0.3 * abs(spread_unit)))
+        return right * (side_sign * 1.2 * (0.7 + 0.3 * abs(spread_unit)))
 
     def make_laser_path(self, slime_center, index, extent):
         point_count = 24
@@ -253,7 +241,7 @@ class Weapon(Node):
         full_path = [point]
         for i in range(1, point_count):
             t = (i - 1) / (point_count - 2)
-            steer = smoothstep(0.3, 1.0, t) * HOMING_STRENGTH
+            steer = smoothstep(0.3, 1.0, t) * 0.35
             direction = (
                 direction * (1.0 - steer) + (slime_center - point).normalize() * steer
             ).normalize()
@@ -298,24 +286,26 @@ class Weapon(Node):
     def on_draw(self):
         self.depth_test(False)
         self.shaded(False)
-        self.circb(self.reticle, 0.7, 7)
 
         for slime in self.slimes:
             if slime.is_locked:
-                self.draw_marker(slime.center, 0.55)
+                self.draw_marker(slime.center)
         if self.fire_frame:
             extent = min(1.0, self.fire_frame / FIRE_DURATION)
             for i, slime in enumerate(self.firing_slimes):
-                self.update_beam_prim(self.beams[i], slime.center, i, extent)
-                self.prim(Mat4.IDENTITY, self.beams[i], LASER_COLOR)
-                self.update_beam_prim(
-                    self.beams[i], slime.center, i, extent, BEAM_WIDTH * 0.35
+                self.update_laser_prim(self.laser_prims[i], slime.center, i, extent)
+                self.prim(Mat4.IDENTITY, self.laser_prims[i], 11)
+                self.update_laser_prim(
+                    self.laser_prims[i], slime.center, i, extent, LASER_WIDTH * 0.35
                 )
-                self.prim(Mat4.IDENTITY, self.beams[i], LASER_CORE_COLOR)
+                self.prim(Mat4.IDENTITY, self.laser_prims[i], 7)
 
-    def draw_marker(self, center, size):
+        pyxel.circb(pyxel.mouse_x, pyxel.mouse_y, 9, 7)
+
+    def draw_marker(self, center):
         _, right, up = self.camera_axes()
         color = (8, 14)[pyxel.frame_count % 2]
+        size = 0.55
         corners = [
             center + right * size + up * size,
             center + right * size - up * size,
@@ -325,7 +315,7 @@ class Weapon(Node):
         for p, q in zip(corners, corners[1:] + corners[:1]):
             self.line(p, q, color)
 
-    def update_beam_prim(self, beam, slime_center, index, extent, width=BEAM_WIDTH):
+    def update_laser_prim(self, laser_prim, slime_center, index, extent, width=LASER_WIDTH):
         eye, right, _ = self.camera_axes()
         points = self.make_laser_path(slime_center, index, extent)
         positions = []
@@ -341,7 +331,7 @@ class Weapon(Node):
             side = side.normalize() * width if side.length() > 1e-6 else right * width
             for p in (point - side, point + side):
                 positions += [p.x, p.y, p.z]
-        beam.positions[:] = positions
+        laser_prim.positions[:] = positions
 
 
 class Scene(Node):
@@ -356,7 +346,7 @@ class Scene(Node):
         self.camera.transform = Mat4.look_at(CAMERA_EYE, AIM_CENTER)
 
         self.add_child(Floor())
-        slimes = [Slime(i) for i in range(SLIME_COUNT)]
+        slimes = [Slime(i) for i in range(len(SLIME_COLORS))]
         for slime in slimes:
             self.add_child(slime)
         self.add_child(Weapon(slimes))
@@ -365,6 +355,7 @@ class Scene(Node):
 class App:
     def __init__(self):
         pyxel.init(256, 192, title="Custom Shapes")
+        pyxel.mouse(False)
 
         init_sounds()
         self.scene = Scene()
@@ -380,7 +371,7 @@ class App:
     def draw(self):
         self.scene.draw(0, 0, pyxel.width, pyxel.height)
 
-        pyxel.text(4, 4, "Drag: lock   Release: fire", 7)
+        pyxel.text(76, 5, "Drag: Lock   Release: Fire", 6)
 
 
 App()

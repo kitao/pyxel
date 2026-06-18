@@ -2,14 +2,13 @@ import pyxel
 from pyxel.cube import Camera, Mat4, Node, Shading, Vec3
 
 CUBE_COLORS = [8, 9, 10, 11, 12, 14]
-CUBE_COUNT = len(CUBE_COLORS)
 
 
 class Cube(Node):
     def __init__(self, index):
         super().__init__()
         self.color = CUBE_COLORS[index]
-        self.phase = index * (360.0 / CUBE_COUNT)
+        self.phase = index * 360.0 / len(CUBE_COLORS)
 
     def on_update(self):
         t = pyxel.frame_count
@@ -37,7 +36,7 @@ class Scene(Node):
         self.camera.clear_color = 0
         self.camera.transform = Mat4.look_at(Vec3(0.0, 3.0, 4.0), Vec3.ZERO)
 
-        for i in range(CUBE_COUNT):
+        for i in range(len(CUBE_COLORS)):
             self.add_child(Cube(i))
 
     def on_draw(self):
