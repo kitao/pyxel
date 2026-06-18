@@ -343,13 +343,17 @@ class Scene(Node):
 
         self.camera = Camera()
         self.camera.clear_color = 0
-        self.camera.transform = Mat4.look_at(CAMERA_EYE, AIM_CENTER)
 
         self.add_child(Floor())
         slimes = [Slime(i) for i in range(len(SLIME_COLORS))]
         for slime in slimes:
             self.add_child(slime)
         self.add_child(Weapon(slimes))
+
+    def on_update(self):
+        my = pyxel.mouse_y / pyxel.height - 0.5
+        eye = Vec3(CAMERA_EYE.x, CAMERA_EYE.y - my * 8.0, CAMERA_EYE.z)
+        self.camera.transform = Mat4.look_at(eye, AIM_CENTER)
 
 
 class App:
