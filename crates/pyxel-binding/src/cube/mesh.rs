@@ -1,16 +1,16 @@
 use pyo3::exceptions::{PyTypeError, PyValueError};
 use pyo3::prelude::*;
 use pyo3::types::PyList;
-use pyxel::cube::mesh_data::ColImage;
+use pyxel::cube::mesh::ColImage;
 
 use super::mat4::Mat4;
-use super::prim_data::PrimData;
+use super::primitive::Primitive;
 use crate::image_wrapper::Image;
 
-define_wrapper!(MeshData, pyxel::cube::MeshData);
+define_wrapper!(Mesh, pyxel::cube::Mesh);
 
 #[pymethods]
-impl MeshData {
+impl Mesh {
     // Constructor
 
     #[new]
@@ -18,17 +18,19 @@ impl MeshData {
         primitives=None,
         transforms=None,
         parents=None,
+        names=None,
         col_img=None,
         colkey=None,
     ))]
     fn new(
-        primitives: Option<Vec<Option<PyRef<'_, PrimData>>>>,
+        primitives: Option<Vec<Option<PyRef<'_, Primitive>>>>,
         transforms: Option<Vec<PyRef<'_, Mat4>>>,
         parents: Option<Vec<i32>>,
+        names: Option<Vec<String>>,
         col_img: Option<Bound<'_, PyAny>>,
         colkey: Option<i32>,
     ) -> PyResult<Self> {
-        let mesh = pyxel::cube::MeshData::new();
+        let mesh = pyxel::cube::Mesh::new();
         {
             let m = rc_mut!(&mesh);
             if let Some(ps) = primitives {
@@ -39,6 +41,11 @@ impl MeshData {
             }
             if let Some(ps) = parents {
                 m.parents = ps;
+            }
+            if let Some(ns) = names {
+                m.names = ns;
+            } else if !m.primitives.is_empty() {
+                m.names = vec![String::new(); m.primitives.len()];
             }
             if let Some(ci) = col_img {
                 m.col_img = parse_col_img(&ci)?;
@@ -58,7 +65,7 @@ impl MeshData {
             .primitives
             .iter()
             .map(|p| match p {
-                Some(p) => match PrimData::wrap(p.clone()).into_pyobject(py) {
+                Some(p) => match Primitive::wrap(p.clone()).into_pyobject(py) {
                     Ok(b) => b.into_any().unbind(),
                     Err(_) => py.None(),
                 },
@@ -69,7 +76,7 @@ impl MeshData {
     }
 
     #[setter]
-    fn set_primitives(&self, v: Vec<Option<PyRef<'_, PrimData>>>) -> PyResult<()> {
+    fn set_primitives(&self, v: Vec<Option<PyRef<'_, Primitive>>>) -> PyResult<()> {
         self.inner_mut().primitives = v.into_iter().map(|p| p.map(|p| p.inner.clone())).collect();
         self.inner_ref().validate().map_err(PyValueError::new_err)
     }
@@ -97,6 +104,22 @@ impl MeshData {
     #[setter]
     fn set_parents(&self, v: Vec<i32>) -> PyResult<()> {
         self.inner_mut().parents = v;
+        self.inner_ref().validate().map_err(PyValueError::new_err)
+    }
+
+    #[getter]
+    fn names(&self) -> Vec<String> {
+        let inner = self.inner_ref();
+        if inner.names.is_empty() && !inner.primitives.is_empty() {
+            vec![String::new(); inner.primitives.len()]
+        } else {
+            inner.names.clone()
+        }
+    }
+
+    #[setter]
+    fn set_names(&self, v: Vec<String>) -> PyResult<()> {
+        self.inner_mut().names = v;
         self.inner_ref().validate().map_err(PyValueError::new_err)
     }
 
@@ -133,7 +156,7 @@ impl MeshData {
 
     fn __repr__(&self) -> String {
         let m = self.inner_ref();
-        format!("MeshData(parts={})", m.primitives.len())
+        format!("Mesh(parts={})", m.primitives.len())
     }
 
     // Methods
@@ -153,7 +176,7 @@ fn parse_col_img(v: &Bound<'_, PyAny>) -> PyResult<ColImage> {
     Err(PyTypeError::new_err("col_img must be int or Image"))
 }
 
-pub fn add_mesh_data_class(m: &Bound<'_, PyModule>) -> PyResult<()> {
-    m.add_class::<MeshData>()?;
+pub fn add_mesh_class(m: &Bound<'_, PyModule>) -> PyResult<()> {
+    m.add_class::<Mesh>()?;
     Ok(())
 }

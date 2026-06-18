@@ -4,15 +4,15 @@ from cube_physics_camera import OrbitCamera
 from pyxel.cube import (
     Collider,
     Mat4,
-    MeshData,
+    Mesh,
     Node,
-    PrimData,
+    Primitive,
     Shading,
     Vec3,
 )
 
 
-def _stage_mesh() -> MeshData:
+def _stage_mesh() -> Mesh:
     verts = [
         -8.0,
         0.0,
@@ -28,9 +28,9 @@ def _stage_mesh() -> MeshData:
         8.0,
     ]
     indices = [0, 1, 2, 1, 3, 2]
-    prim_data = PrimData(PrimData.MODE_TRIANGLES, verts, indices)
-    return MeshData(
-        primitives=[prim_data],
+    primitive = Primitive(Primitive.MODE_TRIANGLES, verts, indices)
+    return Mesh(
+        primitives=[primitive],
         transforms=[Mat4.IDENTITY],
         parents=[-1],
         col_img=11,
@@ -42,9 +42,7 @@ class Stage(Node):
         super().__init__()
         self.mesh_asset = _stage_mesh()
         self.collider = Collider(mesh=self.mesh_asset, mass=0.0, friction=0.5)
-
-    def on_draw(self):
-        self.mesh(Mat4.IDENTITY, self.mesh_asset)
+        self.add_child(Node.from_mesh(self.mesh_asset))
 
 
 class Wall(Node):

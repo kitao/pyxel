@@ -38,8 +38,8 @@ signatures live in `python/pyxel/cube/__init__.pyi`.
 | `Quat` | Immutable quaternion rotation |
 | `Camera` | View information (transform, fov, near, far, optional ortho size) plus the clear color |
 | `Shading` | Color lookup table (palette × levels) plus scene-wide light direction |
-| `PrimData` | Static vertex-data asset (positions / normals / uvs / indices / mode / cull); shareable across Node draws and MeshData parts |
-| `MeshData` | Hierarchical 3D model asset (parallel arrays of primitives / transforms / parents) with shared col_img and colkey |
+| `Primitive` | Static vertex-data asset (positions / normals / uvs / indices / mode / cull); shareable across Node draws and Mesh parts |
+| `Mesh` | Hierarchical 3D model asset (parallel arrays of primitives / transforms / parents) with shared col_img and colkey |
 | `Collider` | Unified collider holding shape + behavior flags + physical coefficients + motion state |
 | `Contact` | Collision-pipeline payload (contact geometry + engine-resolved motion deltas) |
 | `RaycastHit` | Result payload returned by `Node.raycast` / `Node.raycast_all` |
@@ -511,23 +511,23 @@ needing two parallel tables.
 
 ---
 
-## 9. PrimData
+## 9. Primitive
 
-Static vertex-data asset. `PrimData` carries the vertex attributes
+Static vertex-data asset. `Primitive` carries the vertex attributes
 (positions / normals / uvs), the topology (indices, prim mode), and
 the back-face cull mode. It is shareable across many `Node` draws and
-across `MeshData` parts.
+across `Mesh` parts.
 
 ### 9.1 Class-level Constants
 
 | Name | Value | Attribute |
 |---|---|---|
-| `PrimData.MODE_POINTS` | `0` | `mode` |
-| `PrimData.MODE_LINES` | `1` | `mode` |
-| `PrimData.MODE_TRIANGLES` | `2` | `mode` |
-| `PrimData.CULL_NONE` | `0` | `cull` |
-| `PrimData.CULL_BACK` | `1` | `cull` |
-| `PrimData.CULL_FRONT` | `2` | `cull` |
+| `Primitive.MODE_POINTS` | `0` | `mode` |
+| `Primitive.MODE_LINES` | `1` | `mode` |
+| `Primitive.MODE_TRIANGLES` | `2` | `mode` |
+| `Primitive.CULL_NONE` | `0` | `cull` |
+| `Primitive.CULL_BACK` | `1` | `cull` |
+| `Primitive.CULL_FRONT` | `2` | `cull` |
 
 Mode values follow OpenGL ordering. Cull values use a small `CULL_` enum
 because raw `BACK` / `FRONT` would be ambiguous against other directional
@@ -547,15 +547,15 @@ constants.
 ### 9.3 Construction and Mutation
 
 ```python
-prim_data = PrimData(
-    PrimData.MODE_TRIANGLES,
+primitive = Primitive(
+    Primitive.MODE_TRIANGLES,
     [0, 1, 0,  -1, -1, 0,  1, -1, 0],
     [0, 1, 2],
     uvs=[0.5, 0,  0, 1,  1, 1],
-    cull=PrimData.CULL_NONE,
+    cull=Primitive.CULL_NONE,
 )
-prim_data.positions[0:3] = [0, 2, 0]    # in-place mutation (live view)
-prim_data.compute_normals()             # explicit per-face flat normals
+primitive.positions[0:3] = [0, 2, 0]    # in-place mutation (live view)
+primitive.compute_normals()             # explicit per-face flat normals
 ```
 
 `mode`, `positions`, and `indices` are required positional arguments;
@@ -565,7 +565,7 @@ prim_data.compute_normals()             # explicit per-face flat normals
 The vertex-attribute lists are live views backed by the internal
 buffer (the `Sound.notes` pattern): index and slice mutation write
 through to the buffer, and replacing the whole content is spelled
-`prim_data.positions[:] = [...]`. The attributes themselves cannot be
+`primitive.positions[:] = [...]`. The attributes themselves cannot be
 reassigned.
 
 ### 9.4 Normal Computation
@@ -575,9 +575,9 @@ per-face flat normals on the fly for that draw (one `(nx, ny, nz)` per
 triangle, from each triangle's world-space vertices). This recomputes
 every draw — it is **not** cached back onto the attribute. For static
 geometry redrawn each frame, call `compute_normals()` once to compute
-and store the per-face normals on `prim_data.normals`, so later draws
+and store the per-face normals on `primitive.normals`, so later draws
 reuse the stored set instead of recomputing. Mutating `positions` does
-not invalidate stored normals; clear them (`prim_data.normals[:] = []`)
+not invalidate stored normals; clear them (`primitive.normals[:] = []`)
 to return to on-the-fly computation, or call `compute_normals()` again
 to refresh.
 
@@ -594,43 +594,44 @@ are grouped:
 - `MODE_LINES`: 2 indices per line segment.
 - `MODE_TRIANGLES`: 3 indices per triangle.
 
-A `PrimData`'s `mode` is part of the asset's identity — switching the
+A `Primitive`'s `mode` is part of the asset's identity — switching the
 mode at draw time is not supported. To draw the same vertices as both
-a solid mesh and a wireframe, create two separate `PrimData` instances.
+a solid mesh and a wireframe, create two separate `Primitive` instances.
 
-### 9.6 Per-PrimData Cull Mode
+### 9.6 Per-Primitive Cull Mode
 
-`cull` is held on `PrimData` (not per draw) because it is a geometric
+`cull` is held on `Primitive` (not per draw) because it is a geometric
 property: planar grass billboards need `CULL_NONE` (two-sided), solid
 boxes need `CULL_BACK` (single-sided), independent of the draw
-context. If a shape has mixed cull regions, split it into two `PrimData`
-instances and combine them through `MeshData` parts or a `Node` hierarchy.
+context. If a shape has mixed cull regions, split it into two `Primitive`
+instances and combine them through `Mesh` parts or a `Node` hierarchy.
 
 ---
 
-## 10. MeshData
+## 10. Mesh
 
-A hierarchical 3D model asset. `MeshData` bundles multiple `PrimData`
+A hierarchical 3D model asset. `Mesh` bundles multiple `Primitive`
 parts (positions / topology / cull) with a shared texture or flat
 color (`col_img`) and parent-child relationships between parts (held
-as parallel arrays). Drawing routes through `Node.mesh(mat, mesh)`,
-which composes per-part world transforms and emits each part through
-the same internal path as `Node.prim`.
+as parallel arrays). `Node.from_mesh(mesh)` creates a `Node` tree from
+the asset; each generated drawable node emits its part through the same
+internal path as `Node.prim`.
 
 ### 10.1 Members
 
 | Field | Type | Meaning |
 |---|---|---|
-| `primitives` | `list[PrimData \| None]` | part i's `PrimData`, or `None` for a pure group (transform-only, no draw) |
+| `primitives` | `list[Primitive \| None]` | part i's `Primitive`, or `None` for a pure group (transform-only, no draw) |
 | `transforms` | `list[Mat4]` | part i's local transform in its parent's frame |
 | `parents` | `list[int]` | part i's parent index; `-1` marks a root; `parents[i] < i` always |
+| `names` | `list[str]` | part i's node name; imported model node names live here |
 | `col_img` | `int \| Image` | flat color (when `int`) or shared texture (when `Image`) for all parts |
 | `colkey` | `int \| None` | transparent color when `col_img` is `Image` |
 
 ### 10.2 Parallel Arrays
 
-The three lists `primitives`, `transforms`, and `parents` are parallel:
-all three index the same set of mesh parts and must have the same
+The four lists `primitives`, `transforms`, `parents`, and `names` are
+parallel: all four index the same set of mesh parts and must have the same
 length. The constructor validates the length match and raises
 `ValueError` on mismatch.
 
@@ -652,7 +653,7 @@ for i in range(len(transforms)):
 ### 10.4 Construction
 
 ```python
-character = MeshData(
+character = Mesh(
     primitives=[prim_body, prim_hair, prim_sword, None],
     transforms=[
         Mat4.IDENTITY,
@@ -661,9 +662,12 @@ character = MeshData(
         Mat4.from_translation(Vec3(0.5, 0, 0)),
     ],
     parents=[-1, 0, 3, 0],
+    names=["body", "hair", "sword", "hand"],
     col_img=pyxel.images[0],
     colkey=0,
 )
+
+character_node = Node.from_mesh(character)
 ```
 
 `__init__` is all-optional. Parts can be added by reassigning the three
@@ -684,9 +688,9 @@ forward sweep using the topological-order invariant.
 ### 10.6 Shared `col_img` and `colkey`
 
 `col_img` is shared across every part of the mesh. Mixed-texture models
-split into separate `MeshData` instances combined through a `Node` hierarchy.
+split into separate `Mesh` instances combined through a `Node` hierarchy.
 
-Internally, `MeshData` also carries a private collision BVH cache. It is
+Internally, `Mesh` also carries a private collision BVH cache. It is
 built on the first collision query that touches the mesh and is reused
 thereafter; the cache is not exposed through the public surface and
 does not affect equality or repr.
@@ -695,14 +699,15 @@ does not affect equality or repr.
 
 | Use case | Pattern |
 |---|---|
-| Reusable mesh on an actor | hold one `MeshData` and call `self.mesh(mat, mesh_asset)` in `on_draw` |
-| Same model, different transform per instance | one `MeshData` referenced from many `Node` instances |
-| Dynamic mesh (per-frame deform) | mutate the deformed part's `prim_data.positions[:]` per frame |
+| Reusable mesh on an actor | hold one `Mesh` and create one actor tree with `Node.from_mesh(mesh_asset)` |
+| Same model, different transform per instance | one `Mesh` referenced from many generated `Node` trees |
+| Dynamic mesh (per-frame deform) | mutate the deformed part's `primitive.positions[:]` per frame |
 | Many small line / triangle draws | use `self.line` / `self.tri` in `on_draw` directly |
-| Custom raw draw | construct a `PrimData` directly and call `self.prim(mat, prim_data)` |
+| Custom raw draw | construct a `Primitive` directly and call `self.prim(mat, primitive)` |
 
-`MeshData` is asset-only — drawing routes through `Node.mesh` (or `Node.prim`
-for a single `PrimData` without the hierarchical container).
+`Mesh` is asset-only. It is instantiated into a per-actor `Node` tree;
+`Node.prim` remains the explicit low-level draw path for a single
+`Primitive` without the hierarchical container.
 
 ---
 
@@ -721,14 +726,14 @@ Three shape inputs combine to form the rounded-box family:
 |---|---|---|---|
 | `size` | `Vec3` | `Vec3.ZERO` | full size of the inner box (width, height, depth) |
 | `radius` | `float` | `0.0` | corner / surface rounding radius (= sphere radius when size is zero) |
-| `mesh` | `MeshData \| None` | `None` | static mesh collider; when set, `size` / `radius` are ignored |
+| `mesh` | `Mesh \| None` | `None` | static mesh collider; when set, `size` / `radius` are ignored |
 
 - `size=Vec3.ZERO, radius=r` → sphere of radius `r`.
 - `size=Vec3(0, h, 0), radius=r` → capsule of total height `h + 2r` and radius `r`.
 - `size=Vec3(w, h, d), radius=r` → rounded box of inner size `(w, h, d)` and corner radius `r`.
-- `mesh=MeshData(...)` → static triangle mesh terrain. Dynamic / animated mesh
+- `mesh=Mesh(...)` → static triangle mesh terrain. Dynamic / animated mesh
   colliders are not supported (the implementation builds an internal
-  AABB-tree BVH on the MeshData asset at the first collision query and
+  AABB-tree BVH on the Mesh asset at the first collision query and
   caches it). When `mesh` is set, the collider is treated as
   `mass = 0.0` (immovable) regardless of the value the user passed, and
   collision resolution routes the full correction to the other side.
@@ -1062,11 +1067,8 @@ self.sphereb(pos, r, col)
 self.sprite(pos, img, uvs, w, h, *, colkey=None, angle=0.0)   # always camera-facing
 self.plane(mat, img, uvs, w, h, *, colkey=None)               # free orientation
 
-# MeshData asset draw (hierarchical; see § 10)
-self.mesh(mat, mesh_asset)
-
-# Generic primitive draw (low-level, takes a PrimData; see § 9)
-self.prim(mat, prim_data, col_img=7, *, colkey=None)
+# Generic primitive draw (low-level, takes a Primitive; see § 9)
+self.prim(mat, primitive, col_img=7, *, colkey=None)
 
 # Text (Vec3 anchor, screen-space glyphs; always camera-facing)
 self.text(pos, s, col, *, font=None)
@@ -1078,7 +1080,7 @@ self.text(pos, s, col, *, font=None)
   primitives, screen-aligned shapes, `sprite`, `text`, and `sphere`.
 - **Mat4-positioned** (`mat`): used by primitives that need full
   orientation — plane shapes, 3D solids with a directional axis,
-  `plane`, `mesh`, and `prim`.
+  `plane` and `prim`.
 
 #### Per-`on_draw` render state
 
@@ -1123,7 +1125,7 @@ commands:
 
 | Argument | Type | Default | Commands | Meaning |
 |---|---|---|---|---|
-| `col_img` | `int \| Image` | `7` | `box`, `sphere`, `prim` | flat color when `int`, texture when `Image` (`mesh` reads the `MeshData`'s own `col_img`) |
+| `col_img` | `int \| Image` | `7` | `box`, `sphere`, `prim` | flat color when `int`, texture when `Image` |
 | `colkey` | `int \| None` | `None` | `box` / `sphere` / `plane` / `sprite` / `prim` | transparent palette index for textures |
 | `angle` | `float` | `0.0` | `sprite` only | screen-space rotation in degrees |
 | `font` | `Font \| None` | `None` | `text` only | overrides default font |
@@ -1147,13 +1149,9 @@ commands:
   rotates the quad in screen space, in degrees.
 - **`plane`**: free-oriented quad. `mat` carries position, rotation,
   and scale; `(w, h)` is the quad's local width and height.
-- **`mesh`**: draws the given `MeshData` asset's geometry, transformed by
-  `mat` in node-local space. The mesh's parts each carry their own
-  local transform, prim mode, and cull mode; the renderer composes
-  them in topological order. `col_img` and `colkey` live on the `MeshData`.
 - **`prim`**: low-level entry that most higher-level commands route
   through (`circ` / `circb` / `text` take dedicated screen-space paths).
-  Takes a single `PrimData` argument. `col_img` accepts `int | Image`
+  Takes a single `Primitive` argument. `col_img` accepts `int | Image`
   (integer = flat color, Image = textured triangles); `colkey` is the
   transparent palette index when `col_img` is an Image.
 
@@ -1413,7 +1411,7 @@ phase begins.
 4. **Broad phase**: candidate pairs are enumerated by AABB overlap.
    The structure is implementation-defined; the v1 implementation uses
    an `O(N²)` AABB-overlap sweep, which is in budget at PS1 scale
-   (~100 movable bodies). MeshData colliders carry a lazily-built internal
+   (~100 movable bodies). Mesh colliders carry a lazily-built internal
    BVH that the narrow phase queries with the dynamic body's mesh-local
    AABB.
 
@@ -1423,7 +1421,7 @@ phase begins.
    combinations) is supported, plus each of the three against a static
    mesh. Pairs are solved shape-exactly in the box side's body frame
    (or on capsule segments), so collider rotation is honored — the
-   world AABB stays a broad-phase-only construct. MeshData-vs-mesh is
+   world AABB stays a broad-phase-only construct. Mesh-vs-mesh is
    unsupported (both sides are static and need no resolution payload)
    and is silently skipped. Two bounded approximations remain: the
    rounding radius enters the box-vs-triangle SAT as a uniform axis
@@ -1475,7 +1473,7 @@ or constraint chains are out of scope.
   call re-runs the subtree's `on_draw` traversal and rasterizes afresh
   (cube is immediate-mode, with no retained draw-command cache between
   calls). At PS1 scale a few views per frame stay in budget.
-- `MeshData` is loaded once; `Node` trees built from it carry per-instance
+- `Mesh` is loaded once; `Node` trees built from it carry per-instance
   poses without copying mesh data.
 - `Vec3` / `Mat4` / `Quat` are immutable; their constants are shared
   singletons. Arithmetic methods return fresh instances. The
@@ -1531,10 +1529,7 @@ recognize and which they will need to translate.
 - **Joint animation system**: `Node.transform` is the per-frame
   surface; whether a higher-level `Motion` / animation player class is
   also needed is to be decided alongside the first real-game
-  implementation. A `MeshData.names` parallel array (string identifiers
-  for each part, with a `find(name) -> int` lookup) is also deferred
-  to this work, since the primary value of part names is binding them
-  to animation channels.
+  implementation.
 - **Camera world ↔ screen helpers**: `Camera.world_to_screen(pos, ...)` /
   `screen_to_ray(...)` would help HUD coordinates and mouse picking.
   Deferred because viewport size is not held by `Camera` in cube (it
@@ -1637,7 +1632,7 @@ evidence.
 
 - **Retained-mode scene graph with registered per-Node draw
   primitives** — replaced by per-`on_draw` immediate-mode draw commands.
-- **`PrimData` class** (multi-shape aggregate registered into a node).
+- **`Primitive` class** (multi-shape aggregate registered into a node).
 - **Specialized Node subclasses** (`SpriteNode`, `LineNode`,
   `MeshNode`, `TextNode`, etc.). One Node class is enough; per-shape
   behavior is in the `Node` draw commands.
@@ -1670,10 +1665,10 @@ evidence.
 - **`col_tex` argument name for asset draws** — `tex` lacks language
   fit without a `Texture` class.
 - **`col_image` argument name** — `col_img` is internally consistent.
-- **`prim` as the topology attribute name on `PrimData`** — `mode`
+- **`prim` as the topology attribute name on `Primitive`** — `mode`
   pairs with the `MODE_*` constant prefixes and avoids overloading the
   `Node.prim` command name.
-- **`PrimData.MODE_LINES` / `DRAW_LINES` constant prefixes** —
+- **`Primitive.MODE_LINES` / `DRAW_LINES` constant prefixes** —
   `MODE_LINES` matches the OpenGL `GL_LINES` style.
 - **`FloatBuffer` / `IntBuffer` typed-buffer classes** — replaced by
   native Python `list[float]` / `list[int]`.
@@ -1689,14 +1684,12 @@ evidence.
 - **Module-level functions in `pyxel.cube`** — the namespace stays
   classes-only.
 - **`MeshPart` / `MeshNode` as a separate class for parts** — rejected
-  in favor of parallel arrays on `MeshData`.
-- **Recursive `MeshData` tree** — rejected.
-- **`names: list[str]` on `MeshData`** — deferred until a joint-animation
-  system lands (§ 19).
-- **`MeshData` holding `image` as an asset attribute (pre-redesign)** —
-  split into `PrimData` (shape) + `MeshData.col_img` (texture).
-- **Per-part `image` override inside `MeshData`** — mixed-image models
-  split into multiple `MeshData` instances combined via a `Node`
+  in favor of parallel arrays on `Mesh`.
+- **Recursive `Mesh` tree** — rejected.
+- **`Mesh` holding `image` as an asset attribute (pre-redesign)** —
+  split into `Primitive` (shape) + `Mesh.col_img` (texture).
+- **Per-part `image` override inside `Mesh`** — mixed-image models
+  split into multiple `Mesh` instances combined via a `Node`
   hierarchy.
 
 ### 20.6 Collision and physics

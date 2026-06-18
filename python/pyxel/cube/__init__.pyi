@@ -168,8 +168,8 @@ class Shading:
     def __setitem__(self, key: tuple[int, int], value: tuple[int, int]) -> None: ...
     def build(self, colors: list[int]) -> None: ...
 
-# PrimData class — vertex-data asset; mode/cull are indices-intrinsic, shareable across Node draws and MeshData parts.
-class PrimData:
+# Primitive class — vertex-data asset; mode/cull are indices-intrinsic, shareable across Node draws and Mesh parts.
+class Primitive:
     MODE_POINTS: int
     MODE_LINES: int
     MODE_TRIANGLES: int
@@ -197,19 +197,21 @@ class PrimData:
     def __repr__(self) -> str: ...
     def compute_normals(self) -> None: ...
 
-# MeshData class — hierarchical 3D model asset (parallel arrays of primitives / transforms / parents).
-class MeshData:
-    primitives: list[PrimData | None]  # None = pure group (transform-only)
+# Mesh class — hierarchical 3D model asset (parallel arrays of primitives / transforms / parents / names).
+class Mesh:
+    primitives: list[Primitive | None]  # None = pure group (transform-only)
     transforms: list[Mat4]
     parents: list[int]  # -1 = root; parents[i] < i invariant
+    names: list[str]
     col_img: int | Image  # int = flat color, Image = texture for all parts
     colkey: int | None  # transparent color when col_img is Image
 
     def __init__(
         self,
-        primitives: list[PrimData | None] | None = None,
+        primitives: list[Primitive | None] | None = None,
         transforms: list[Mat4] | None = None,
         parents: list[int] | None = None,
+        names: list[str] | None = None,
         col_img: int | Image = 7,
         colkey: int | None = None,
     ) -> None: ...
@@ -220,7 +222,7 @@ class MeshData:
 class Collider:
     size: Vec3
     radius: float
-    mesh: MeshData | None
+    mesh: Mesh | None
     trigger: bool
     rolls: bool
     mass: float
@@ -233,7 +235,7 @@ class Collider:
         self,
         size: Vec3 = Vec3.ZERO,
         radius: float = 0.0,
-        mesh: MeshData | None = None,
+        mesh: Mesh | None = None,
         trigger: bool = False,
         rolls: bool = False,
         mass: float = 1.0,
@@ -298,6 +300,8 @@ class Node:
 
     # Constructor
     def __init__(self) -> None: ...
+    @staticmethod
+    def from_mesh(mesh: Mesh) -> Node: ...
     def __repr__(self) -> str: ...
 
     # Hierarchy management
@@ -391,12 +395,10 @@ class Node:
         angle: float = 0.0,
     ) -> None: ...
 
-    # Asset-based
-    def mesh(self, mat: Mat4, mesh_data: MeshData) -> None: ...
     def prim(
         self,
         mat: Mat4,
-        prim_data: PrimData,
+        primitive: Primitive,
         col_img: int | Image = 7,
         *,
         colkey: int | None = None,

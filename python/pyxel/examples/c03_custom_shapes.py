@@ -1,7 +1,7 @@
 import math
 
 import pyxel
-from pyxel.cube import Camera, Mat4, Node, PrimData, Shading, Vec3
+from pyxel.cube import Camera, Mat4, Node, Primitive, Shading, Vec3
 
 SLIME_COLORS = [8, 9, 10, 12, 14]
 SLIME_COUNT = len(SLIME_COLORS)
@@ -18,7 +18,7 @@ LASER_COLOR = 11
 LASER_CORE_COLOR = 7
 
 
-# Build a PrimData body once, then move only its vertex positions each frame.
+# Build a Primitive body once, then move only its vertex positions each frame.
 def build_sphere(rings, segments):
     directions = []
     for i in range(rings + 1):
@@ -88,12 +88,12 @@ class Slime(Node):
         self.flash_timer = 0
 
         self.sphere_dirs, indices, normals = build_sphere(6, 10)
-        self.body = PrimData(
-            PrimData.MODE_TRIANGLES,
+        self.body = Primitive(
+            Primitive.MODE_TRIANGLES,
             self.make_body_positions(0.0),
             indices,
             normals=normals,
-            cull=PrimData.CULL_NONE,
+            cull=Primitive.CULL_NONE,
         )
 
     def make_body_positions(self, t):
@@ -150,11 +150,11 @@ class Weapon(Node):
         for i in range(point_count - 1):
             a = i * 2
             indices += [a, a + 1, a + 2, a + 1, a + 3, a + 2]
-        return PrimData(
-            PrimData.MODE_TRIANGLES,
+        return Primitive(
+            Primitive.MODE_TRIANGLES,
             [0.0] * (point_count * 2 * 3),
             indices,
-            cull=PrimData.CULL_NONE,
+            cull=Primitive.CULL_NONE,
         )
 
     def clear_locks(self):
