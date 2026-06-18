@@ -5,9 +5,9 @@ import pyxel
 from pyxel.cube import (
     Camera,
     Mat4,
-    MeshData,
+    Mesh,
     Node,
-    PrimData,
+    Primitive,
     Quat,
     Shading,
     Vec3,
@@ -117,7 +117,7 @@ _ICOSA_TRI_INDICES = [
     8,
     1,
 ]
-# Box vertices: 8 corners of a unit cube centered at origin (the MeshData
+# Box vertices: 8 corners of a unit cube centered at origin (the Mesh
 # variant scales by `size`). Indices match the cube/draw.rs winding.
 _UNIT_BOX_VERTICES = [
     -0.5,
@@ -226,12 +226,12 @@ def _load_texture():
 
 
 def _make_box_mesh(size, color):
-    # Scale the unit cube; the MeshData wraps a single PrimData carrying the
+    # Scale the unit cube; the Mesh wraps a single Primitive carrying the
     # flat color through col_img.
     pos = [v * size for v in _UNIT_BOX_VERTICES]
-    prim_data = PrimData(PrimData.MODE_TRIANGLES, pos, _BOX_TRI_INDICES)
-    return MeshData(
-        primitives=[prim_data],
+    primitive = Primitive(Primitive.MODE_TRIANGLES, pos, _BOX_TRI_INDICES)
+    return Mesh(
+        primitives=[primitive],
         transforms=[Mat4.IDENTITY],
         parents=[-1],
         col_img=color,
@@ -299,9 +299,9 @@ def _make_sphere_mesh(radius, color):
         )
 
     scaled = [v * radius for v in pos]
-    prim_data = PrimData(PrimData.MODE_TRIANGLES, scaled, tri_indices)
-    return MeshData(
-        primitives=[prim_data],
+    primitive = Primitive(Primitive.MODE_TRIANGLES, scaled, tri_indices)
+    return Mesh(
+        primitives=[primitive],
         transforms=[Mat4.IDENTITY],
         parents=[-1],
         col_img=color,
@@ -332,9 +332,9 @@ def _make_textured_box(size):
         # Wind each face CCW so the surface normal points outward (matches
         # the colored-box mesh and gives correct Lambert shading).
         idx_list.extend([base, base + 2, base + 1, base + 1, base + 2, base + 3])
-    prim_data = PrimData(PrimData.MODE_TRIANGLES, pos_list, idx_list, uvs=uv_list)
-    return MeshData(
-        primitives=[prim_data],
+    primitive = Primitive(Primitive.MODE_TRIANGLES, pos_list, idx_list, uvs=uv_list)
+    return Mesh(
+        primitives=[primitive],
         transforms=[Mat4.IDENTITY],
         parents=[-1],
         col_img=pyxel.images[0],
@@ -344,13 +344,26 @@ def _make_textured_box(size):
 class Showcase(Node):
     def __init__(self):
         super().__init__()
-        self.box_mesh = _make_box_mesh(3.6, 8)
-        self.tex_box = _make_textured_box(4.0)
-        self.sphere_mesh = _make_sphere_mesh(2.2, 11)
+        self.mesh_nodes = {
+            "mesh-box": Node.from_mesh(_make_box_mesh(3.6, 8)),
+            "mesh-tex-box": Node.from_mesh(_make_textured_box(4.0)),
+            "mesh-sphere": Node.from_mesh(_make_sphere_mesh(2.2, 11)),
+        }
+        for node in self.mesh_nodes.values():
+            self.add_child(node)
         self.frame = 0
 
     def spin_deg(self) -> float:
         return self.frame * 1.5
+
+    def on_update(self):
+        spin = self.spin_deg()
+        for name, x, y in LAYOUT_3D:
+            self.mesh_nodes[name].transform = Mat4.compose(
+                Vec3(x, y, 0),
+                Quat.from_euler(Vec3(spin * 1.5 + 30.0, spin * 1.2 + 45.0, spin * 0.8)),
+                Vec3.ONE,
+            )
 
     def on_draw(self):
         spin = self.spin_deg()
@@ -362,18 +375,6 @@ class Showcase(Node):
                 Vec3.ONE,
             )
             self._draw_2d(name, x, y, mat, spin)
-        for name, x, y in LAYOUT_3D:
-            spin_mat = Mat4.compose(
-                Vec3(x, y, 0),
-                Quat.from_euler(Vec3(spin * 1.5 + 30.0, spin * 1.2 + 45.0, spin * 0.8)),
-                Vec3.ONE,
-            )
-            if name == "mesh-box":
-                self.mesh(spin_mat, self.box_mesh)
-            elif name == "mesh-tex-box":
-                self.mesh(spin_mat, self.tex_box)
-            elif name == "mesh-sphere":
-                self.mesh(spin_mat, self.sphere_mesh)
 
     def _draw_2d(self, name, x, y, mat, spin):
         if name == "pset":

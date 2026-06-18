@@ -2,7 +2,7 @@ use std::cell::RefCell;
 
 use crate::cube::bvh::Bvh;
 use crate::cube::mat4::{Mat4, RcMat4};
-use crate::cube::prim_data::RcPrimData;
+use crate::cube::primitive::RcPrimitive;
 use crate::image::RcImage;
 
 // Asset container for a hierarchical 3D model. primitives / transforms /
@@ -25,10 +25,11 @@ impl ColImage {
     }
 }
 
-pub struct MeshData {
-    pub primitives: Vec<Option<RcPrimData>>,
+pub struct Mesh {
+    pub primitives: Vec<Option<RcPrimitive>>,
     pub transforms: Vec<RcMat4>,
     pub parents: Vec<i32>,
+    pub names: Vec<String>,
     pub col_img: ColImage,
     pub colkey: Option<i32>,
     // Lazy collision BVH. Built on first mesh-collider query; never
@@ -37,14 +38,15 @@ pub struct MeshData {
     pub bvh: RefCell<Option<Bvh>>,
 }
 
-define_rc_type!(RcMeshData, MeshData);
+define_rc_type!(RcMesh, Mesh);
 
-impl MeshData {
-    pub fn new() -> RcMeshData {
-        new_rc_type!(MeshData {
+impl Mesh {
+    pub fn new() -> RcMesh {
+        new_rc_type!(Mesh {
             primitives: Vec::new(),
             transforms: Vec::new(),
             parents: Vec::new(),
+            names: Vec::new(),
             col_img: ColImage::Color(7),
             colkey: None,
             bvh: RefCell::new(None),
@@ -74,7 +76,7 @@ impl MeshData {
                 continue;
             };
             let prim = rc_ref!(prim_rc);
-            if prim.mode != crate::cube::prim_data::MODE_TRIANGLES {
+            if prim.mode != crate::cube::primitive::MODE_TRIANGLES {
                 continue;
             }
             let world = world_per_part[i];
@@ -109,21 +111,25 @@ impl MeshData {
 
     pub fn validate(&self) -> Result<(), String> {
         let n = self.primitives.len();
-        if self.transforms.len() != n || self.parents.len() != n {
+        if self.transforms.len() != n
+            || self.parents.len() != n
+            || (!self.names.is_empty() && self.names.len() != n)
+        {
             return Err(format!(
-                "MeshData parallel arrays length mismatch: primitives={}, transforms={}, parents={}",
+                "Mesh parallel arrays length mismatch: primitives={}, transforms={}, parents={}, names={}",
                 n,
                 self.transforms.len(),
                 self.parents.len(),
+                self.names.len(),
             ));
         }
         for (i, &p) in self.parents.iter().enumerate() {
             if p < -1 {
-                return Err(format!("MeshData.parents[{i}] = {p} < -1"));
+                return Err(format!("Mesh.parents[{i}] = {p} < -1"));
             }
             if p >= i as i32 {
                 return Err(format!(
-                    "MeshData.parents[{i}] = {p} violates topological order (must be < {i})"
+                    "Mesh.parents[{i}] = {p} violates topological order (must be < {i})"
                 ));
             }
         }
@@ -172,12 +178,12 @@ impl MeshData {
 mod tests {
     use super::*;
     use crate::cube::mat4::Mat4;
-    use crate::cube::prim_data::PrimData;
+    use crate::cube::primitive::Primitive;
     use crate::cube::vec3::Vec3;
 
     #[test]
     fn test_new_empty() {
-        let m = MeshData::new();
+        let m = Mesh::new();
         let m = rc_ref!(&m);
         assert!(m.primitives.is_empty());
         assert!(m.transforms.is_empty());
@@ -188,10 +194,10 @@ mod tests {
 
     #[test]
     fn test_validate_topological_order_ok() {
-        let m = MeshData::new();
+        let m = Mesh::new();
         {
             let m = rc_mut!(&m);
-            m.primitives = vec![Some(PrimData::new()), Some(PrimData::new())];
+            m.primitives = vec![Some(Primitive::new()), Some(Primitive::new())];
             m.transforms = vec![Mat4::identity(), Mat4::identity()];
             m.parents = vec![-1, 0];
         }
@@ -200,10 +206,10 @@ mod tests {
 
     #[test]
     fn test_validate_rejects_forward_parent() {
-        let m = MeshData::new();
+        let m = Mesh::new();
         {
             let m = rc_mut!(&m);
-            m.primitives = vec![Some(PrimData::new()), Some(PrimData::new())];
+            m.primitives = vec![Some(Primitive::new()), Some(Primitive::new())];
             m.transforms = vec![Mat4::identity(), Mat4::identity()];
             m.parents = vec![1, -1];
         }
@@ -212,10 +218,10 @@ mod tests {
 
     #[test]
     fn test_validate_rejects_length_mismatch() {
-        let m = MeshData::new();
+        let m = Mesh::new();
         {
             let m = rc_mut!(&m);
-            m.primitives = vec![Some(PrimData::new()), Some(PrimData::new())];
+            m.primitives = vec![Some(Primitive::new()), Some(Primitive::new())];
             m.transforms = vec![Mat4::identity()];
             m.parents = vec![-1, 0];
         }
@@ -224,10 +230,10 @@ mod tests {
 
     #[test]
     fn test_validate_rejects_invalid_parent_index() {
-        let m = MeshData::new();
+        let m = Mesh::new();
         {
             let m = rc_mut!(&m);
-            m.primitives = vec![Some(PrimData::new())];
+            m.primitives = vec![Some(Primitive::new())];
             m.transforms = vec![Mat4::identity()];
             m.parents = vec![-2];
         }
@@ -236,7 +242,7 @@ mod tests {
 
     #[test]
     fn test_descendants() {
-        let m = MeshData::new();
+        let m = Mesh::new();
         {
             let m = rc_mut!(&m);
             m.primitives = vec![None, None, None, None];
@@ -256,10 +262,10 @@ mod tests {
 
     #[test]
     fn test_descendants_out_of_range() {
-        let m = MeshData::new();
+        let m = Mesh::new();
         {
             let m = rc_mut!(&m);
-            m.primitives = vec![Some(PrimData::new())];
+            m.primitives = vec![Some(Primitive::new())];
             m.transforms = vec![Mat4::identity()];
             m.parents = vec![-1];
         }
@@ -290,7 +296,7 @@ mod tests {
     fn test_compose_world_transforms_with_rotation() {
         // Parent rotates 90° around Y, child translates +X by 1.
         // Child's world position should land at -Z=1 in world.
-        let m = MeshData::new();
+        let m = Mesh::new();
         {
             let m = rc_mut!(&m);
             m.primitives = vec![None, None];
@@ -323,7 +329,7 @@ mod tests {
 
     #[test]
     fn test_compose_world_transforms_single_root() {
-        let m = MeshData::new();
+        let m = Mesh::new();
         {
             let m = rc_mut!(&m);
             m.primitives = vec![None];
@@ -354,7 +360,7 @@ mod tests {
         // Three-deep chain: root -> 0 -> 1 -> 2, each adds (1, 0, 0)
         // translation. The final part 2 should end at (3, 0, 0) when
         // the outer root is identity.
-        let m = MeshData::new();
+        let m = Mesh::new();
         {
             let m = rc_mut!(&m);
             m.primitives = vec![None, None, None];
@@ -384,10 +390,10 @@ mod tests {
 
     #[test]
     fn test_with_collision_bvh_builds_lazily_and_caches() {
-        let m = MeshData::new();
+        let m = Mesh::new();
         {
             let m = rc_mut!(&m);
-            let prim = PrimData::new();
+            let prim = Primitive::new();
             {
                 let g = rc_mut!(&prim);
                 g.positions = vec![0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0];
@@ -408,7 +414,7 @@ mod tests {
     #[test]
     fn test_compose_world_transforms_branching() {
         // Tree: 0 (root) -> 1, 0 -> 2. parts 1 and 2 are siblings.
-        let m = MeshData::new();
+        let m = Mesh::new();
         {
             let m = rc_mut!(&m);
             m.primitives = vec![None, None, None];

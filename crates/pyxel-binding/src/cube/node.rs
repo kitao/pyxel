@@ -4,6 +4,7 @@ use pyo3::exceptions::{PyTypeError, PyValueError};
 use pyo3::prelude::*;
 use pyo3::types::{PyDict, PyTuple, PyType};
 use pyxel::cube::draw::DrawState;
+use pyxel::cube::mesh::ColImage;
 use pyxel::cube::raster::{compute_clip_rect, matmul, projection_matrix, view_matrix};
 use pyxel::cube::scene::{
     reset_draw_state, set_draw_context, take_draw_context, with_draw_context, DrawContext,
@@ -20,6 +21,13 @@ use super::vec3::Vec3;
 
 type Uvs = ((f32, f32), (f32, f32), (f32, f32), (f32, f32));
 
+#[derive(Clone)]
+struct DrawablePrimitive {
+    primitive: pyxel::cube::RcPrimitive,
+    col_img: ColImage,
+    colkey: Option<i32>,
+}
+
 // Python-facing Node wrapper. Holds the core hierarchy state (RcNode) plus
 // a list of `Py<Node>` for the children so that user-defined subclasses
 // (`class Player(Node):`) keep their identity through the scene tree —
@@ -30,6 +38,7 @@ type Uvs = ((f32, f32), (f32, f32), (f32, f32), (f32, f32));
 pub struct Node {
     pub(crate) inner: pyxel::cube::RcNode,
     children: RefCell<Vec<Py<Node>>>,
+    drawable_primitive: RefCell<Option<DrawablePrimitive>>,
     // Strong ref back to the parent wrapper; the cyclic ref is resolved
     // by __traverse__ / __clear__ so Python's gc can collect detached
     // subtrees.
@@ -47,6 +56,7 @@ impl Clone for Node {
                     .map(|c| c.clone_ref(py))
                     .collect(),
             ),
+            drawable_primitive: RefCell::new(self.drawable_primitive.borrow().clone()),
             parent: RefCell::new(self.parent.borrow().as_ref().map(|p| p.clone_ref(py))),
         })
         .expect("Node clone requires the Python GIL to be attached")
@@ -58,6 +68,7 @@ impl Node {
         Self {
             inner,
             children: RefCell::new(Vec::new()),
+            drawable_primitive: RefCell::new(None),
             parent: RefCell::new(None),
         }
     }
@@ -125,6 +136,41 @@ impl Node {
         });
     }
 
+    fn draw_attached_primitive(&self) -> PyResult<()> {
+        let Some(drawable) = self.drawable_primitive.borrow().clone() else {
+            return Ok(());
+        };
+
+        let world_mat = self.world_mat();
+        let p = rc_ref!(&drawable.primitive);
+        let indices_opt = (!p.indices.is_empty()).then_some(p.indices.as_slice());
+        let normals_opt = (!p.normals.is_empty()).then_some(p.normals.as_slice());
+        let uvs_opt = (!p.uvs.is_empty()).then_some(p.uvs.as_slice());
+        let (col_flat, col_image) = drawable.col_img.as_flat_and_image();
+        let mut inner_result: Option<Result<(), &str>> = None;
+        self.with_state_from_ctx(pyxel::cube::draw::BILLBOARD_OFF, |ctx, state| {
+            inner_result = Some(pyxel::cube::draw::prim(
+                ctx,
+                &world_mat,
+                p.mode,
+                p.cull,
+                &p.positions,
+                indices_opt,
+                normals_opt,
+                uvs_opt,
+                col_flat,
+                col_image.as_ref(),
+                drawable.colkey,
+                state,
+            ));
+        });
+
+        match inner_result {
+            Some(Err(msg)) => Err(PyValueError::new_err(msg)),
+            Some(Ok(())) | None => Ok(()),
+        }
+    }
+
     fn collect_by_name(node: &Py<Node>, py: Python<'_>, name: &str, out: &mut Vec<Py<Node>>) {
         let bound = node.bind(py);
         let n = bound.borrow();
@@ -182,6 +228,58 @@ impl Node {
             return Err(PyTypeError::new_err("Node() takes no arguments"));
         }
         Ok(Self::wrap(InnerNode::new()))
+    }
+
+    #[staticmethod]
+    fn from_mesh(py: Python<'_>, mesh: PyRef<'_, super::mesh::Mesh>) -> PyResult<Py<Node>> {
+        let mesh_inner = mesh.inner_ref();
+        mesh_inner.validate().map_err(PyValueError::new_err)?;
+
+        let count = mesh_inner.primitives.len();
+        if count == 0 {
+            return Py::new(py, Self::wrap(InnerNode::new()));
+        }
+
+        let mut nodes: Vec<Py<Node>> = Vec::with_capacity(count);
+        for i in 0..count {
+            let inner = InnerNode::new();
+            {
+                let node_inner = rc_mut!(&inner);
+                node_inner.name = mesh_inner.names.get(i).cloned().unwrap_or_default();
+                node_inner.transform = mesh_inner.transforms[i].clone();
+            }
+
+            let node = Self::wrap(inner);
+            if let Some(primitive) = &mesh_inner.primitives[i] {
+                *node.drawable_primitive.borrow_mut() = Some(DrawablePrimitive {
+                    primitive: primitive.clone(),
+                    col_img: mesh_inner.col_img.clone(),
+                    colkey: mesh_inner.colkey,
+                });
+            }
+            nodes.push(Py::new(py, node)?);
+        }
+
+        let mut root_indices = Vec::new();
+        for (i, &parent) in mesh_inner.parents.iter().enumerate() {
+            if parent == -1 {
+                root_indices.push(i);
+            } else {
+                let parent_node = nodes[parent as usize].bind(py).clone();
+                let child_node = nodes[i].clone_ref(py);
+                Self::add_child(parent_node, py, child_node)?;
+            }
+        }
+
+        if root_indices.len() == 1 {
+            Ok(nodes[root_indices[0]].clone_ref(py))
+        } else {
+            let root = Py::new(py, Self::wrap(InnerNode::new()))?;
+            for index in root_indices {
+                Self::add_child(root.bind(py).clone(), py, nodes[index].clone_ref(py))?;
+            }
+            Ok(root)
+        }
     }
 
     // Data attributes
@@ -702,21 +800,11 @@ impl Node {
 
     // Asset-based
 
-    #[pyo3(signature = (mat, mesh_data))]
-    fn mesh(&self, mat: PyRef<'_, Mat4>, mesh_data: PyRef<'_, super::mesh_data::MeshData>) {
-        let world_mat = self.world_mat_compose(*mat.inner_ref());
-        let mesh_inner = mesh_data.inner.clone();
-        self.with_state_from_ctx(pyxel::cube::draw::BILLBOARD_OFF, |ctx, state| {
-            let m = rc_ref!(&mesh_inner);
-            pyxel::cube::draw::mesh(ctx, &world_mat, m, state);
-        });
-    }
-
-    #[pyo3(signature = (mat, prim_data, col_img=None, *, colkey=None))]
+    #[pyo3(signature = (mat, primitive, col_img=None, *, colkey=None))]
     fn prim(
         &self,
         mat: PyRef<'_, Mat4>,
-        prim_data: PyRef<'_, super::prim_data::PrimData>,
+        primitive: PyRef<'_, super::primitive::Primitive>,
         col_img: Option<&Bound<'_, PyAny>>,
         colkey: Option<i32>,
     ) -> PyResult<()> {
@@ -725,8 +813,8 @@ impl Node {
         let world_mat = self.world_mat_compose(*mat.inner_ref());
         // Borrowed for the duration of the draw; the closure below runs
         // Rust-only code, so the proxy-backed arrays cannot change
-        // mid-draw (mirrors the mesh() path).
-        let p = rc_ref!(&prim_data.inner);
+        // mid-draw.
+        let p = rc_ref!(&primitive.inner);
 
         let (col_flat, col_image) = match col_img {
             Some(c) => {
@@ -746,7 +834,7 @@ impl Node {
         // the active DrawContext like every other primitive. The closure
         // returns (), so we capture the rasterizer result in an outer
         // variable and propagate any error after the call returns.
-        // Empty attribute Vecs mean "absent" on the PrimData; the
+        // Empty attribute Vecs mean "absent" on the Primitive; the
         // rasterizer still takes Option<&[..]>, so map empty -> None.
         let indices_opt = (!p.indices.is_empty()).then_some(p.indices.as_slice());
         let normals_opt = (!p.normals.is_empty()).then_some(p.normals.as_slice());
@@ -1037,6 +1125,9 @@ fn traverse_draw(node: &Bound<'_, PyAny>) -> PyResult<()> {
     }
     reset_draw_state();
     node.call_method0("on_draw")?;
+    if let Ok(node_bound) = node.cast::<Node>() {
+        node_bound.borrow().draw_attached_primitive()?;
+    }
     let children = node.getattr("children")?;
     let children_iter = children.try_iter()?;
     for child in children_iter {

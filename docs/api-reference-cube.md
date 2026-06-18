@@ -788,11 +788,11 @@ Rebuild the lookup table from a palette. Manual edits through shading[(col, leve
 
 - `colors` (*list*) — Display colors as 24-bit values.
 
-## PrimData
+## Primitive
 
-### `PrimData(mode, positions, indices, normals=[], uvs=[], cull=PrimData.CULL_BACK)` — class
+### `Primitive(mode, positions, indices, normals=[], uvs=[], cull=Primitive.CULL_BACK)` — class
 
-A vertex-data asset: positions, optional normals and UVs, plus the topology (indices and draw mode). One PrimData can be shared by many Node.prim() draws and MeshData parts.
+A vertex-data asset: positions, optional normals and UVs, plus the topology (indices and draw mode). One Primitive can be shared by many Node.prim() draws and Mesh parts.
 
 **Parameters:**
 
@@ -801,49 +801,49 @@ A vertex-data asset: positions, optional normals and UVs, plus the topology (ind
 - `indices` (*list*) — Vertex indices. An empty list consumes the vertices in order 0, 1, 2, ...
 - `normals` (*list*) — Per-face normals as a flat list. Defaults to empty (= derived from the vertices while drawing).
 - `uvs` (*list*) — Per-vertex UVs as a flat list of u, v repeats. Required for textured draws. Defaults to empty.
-- `cull` (*int*) — Face culling mode. Defaults to PrimData.CULL_BACK.
+- `cull` (*int*) — Face culling mode. Defaults to Primitive.CULL_BACK.
 
 **Example:**
 
 ```python
-from pyxel.cube import PrimData
-prim = PrimData(PrimData.MODE_TRIANGLES, [0, 1, 0, -1, -1, 0, 1, -1, 0], [])
+from pyxel.cube import Primitive
+prim = Primitive(Primitive.MODE_TRIANGLES, [0, 1, 0, -1, -1, 0, 1, -1, 0], [])
 node.prim(Mat4.IDENTITY, prim, 11)
 ```
 
 **Note:** The list attributes are live proxies: edit elements or assign slices (positions[:] = ...); whole-attribute assignment is not supported.
 
-### `PrimData.MODE_POINTS` — constant
+### `Primitive.MODE_POINTS` — constant
 
 Draw each vertex as a point.
 
 - **Type:** `int`
 
-### `PrimData.MODE_LINES` — constant
+### `Primitive.MODE_LINES` — constant
 
 Draw every 2 vertices as a line segment.
 
 - **Type:** `int`
 
-### `PrimData.MODE_TRIANGLES` — constant
+### `Primitive.MODE_TRIANGLES` — constant
 
 Draw every 3 vertices as a filled triangle.
 
 - **Type:** `int`
 
-### `PrimData.CULL_NONE` — constant
+### `Primitive.CULL_NONE` — constant
 
 Draw both sides of each face.
 
 - **Type:** `int`
 
-### `PrimData.CULL_BACK` — constant
+### `Primitive.CULL_BACK` — constant
 
 Skip faces seen from the back (counterclockwise winding is the front).
 
 - **Type:** `int`
 
-### `PrimData.CULL_FRONT` — constant
+### `Primitive.CULL_FRONT` — constant
 
 Skip faces seen from the front.
 
@@ -889,31 +889,32 @@ Face culling mode: CULL_NONE, CULL_BACK, or CULL_FRONT.
 
 Compute flat per-face normals from positions and indices and store them in normals. Only meaningful for MODE_TRIANGLES.
 
-## MeshData
+## Mesh
 
-### `MeshData(primitives=None, transforms=None, parents=None, col_img=7, colkey=None)` — class
+### `Mesh(primitives=None, transforms=None, parents=None, names=None, col_img=7, colkey=None)` — class
 
-A hierarchical 3D model asset. primitives, transforms, and parents are parallel arrays of the same length describing the part tree; parents must come before children (parents[i] < i). Draw it with Node.mesh(), or set it on Collider.mesh as static terrain.
+A hierarchical 3D model asset. primitives, transforms, parents, and names are parallel arrays describing the part tree; parents must come before children (parents[i] < i). Instantiate it with Node.from_mesh(), or set it on Collider.mesh as static terrain.
 
 **Parameters:**
 
-- `primitives` (*list*) — PrimData per part, or None for a transform-only group part. Defaults to empty.
+- `primitives` (*list*) — Primitive per part, or None for a transform-only group part. Defaults to empty.
 - `transforms` (*list*) — Local transform of each part relative to its parent. Defaults to empty.
 - `parents` (*list*) — Parent index of each part. -1 is a root. Defaults to empty.
+- `names` (*list*) — Node name per part. Defaults to empty strings.
 - `col_img` (*int | Image*) — Flat color number, or a texture Image shared by every part. Defaults to 7.
 - `colkey` (*int | None*) — Transparent color when col_img is an Image. Defaults to None.
 
 **Example:**
 
 ```python
-from pyxel.cube import Mat4, MeshData, PrimData
-mesh = MeshData(primitives=[prim], transforms=[Mat4.IDENTITY], parents=[-1], col_img=8)
-node.mesh(Mat4.IDENTITY, mesh)
+from pyxel.cube import Mat4, Mesh, Node, Primitive
+mesh = Mesh(primitives=[prim], transforms=[Mat4.IDENTITY], parents=[-1], col_img=8)
+node = Node.from_mesh(mesh)
 ```
 
 ### `primitives` — variable
 
-PrimData per part. None means a transform-only group part.
+Primitive per part. None means a transform-only group part.
 
 - **Type:** `list`
 
@@ -926,6 +927,12 @@ Local transform of each part relative to its parent.
 ### `parents` — variable
 
 Parent index of each part. -1 is a root; parents[i] < i is required.
+
+- **Type:** `list`
+
+### `names` — variable
+
+Node name per part.
 
 - **Type:** `list`
 
@@ -961,7 +968,7 @@ Collision shape, physical coefficients, and motion state for a Node. The shape f
 
 - `size` (*Vec3*) — Core dimensions of the shape. Defaults to Vec3.ZERO (a sphere).
 - `radius` (*float*) — Sphere or capsule radius, and the corner rounding of a box. Defaults to 0.0.
-- `mesh` (*MeshData | None*) — Static terrain mesh. Defaults to None.
+- `mesh` (*Mesh | None*) — Static terrain mesh. Defaults to None.
 - `trigger` (*bool*) — When True, reports contacts without any push-back. Defaults to False.
 - `rolls` (*bool*) — When True, contacts also produce delta_angular_velocity. Defaults to False.
 - `mass` (*float*) — Mass for contact resolution. 0.0 makes the body immovable. Defaults to 1.0.
@@ -994,7 +1001,7 @@ Sphere or capsule radius, and the corner rounding of a box.
 
 Static terrain mesh. A mesh collider never moves.
 
-- **Type:** `MeshData | None`
+- **Type:** `Mesh | None`
 
 ### `trigger` — variable
 
@@ -1249,6 +1256,16 @@ Add a node as a child. A node that already has a parent is reparented.
 **Parameters:**
 
 - `node` (*Node*) — The node to add.
+
+### `from_mesh(mesh)` — function
+
+Create a Node tree from a Mesh and return its root node.
+
+**Parameters:**
+
+- `mesh` (*Mesh*) — The mesh asset to instantiate.
+
+**Returns:** `Node` — The generated root node.
 
 ### `remove_child(node)` — function
 
@@ -1523,23 +1540,14 @@ Draw a textured rectangle that always faces the camera. Sprites render unshaded.
 - `colkey` (*int | None*) — Transparent color. Defaults to None.
 - `angle` (*float*) — Screen-space rotation in degrees. Defaults to 0.0.
 
-### `mesh(mat, mesh_data)` — function
+### `prim(mat, primitive, col_img=7, colkey=None)` — function
 
-Draw a MeshData asset, composing each part's transform down the part tree.
-
-**Parameters:**
-
-- `mat` (*Mat4*) — Placement relative to the node.
-- `mesh_data` (*MeshData*) — The model to draw.
-
-### `prim(mat, prim_data, col_img=7, colkey=None)` — function
-
-Draw a PrimData asset with its own mode and culling.
+Draw a Primitive asset with its own mode and culling.
 
 **Parameters:**
 
 - `mat` (*Mat4*) — Placement relative to the node.
-- `prim_data` (*PrimData*) — The vertex data to draw.
+- `primitive` (*Primitive*) — The vertex data to draw.
 - `col_img` (*int | Image*) — Flat color number or a texture Image. Defaults to 7.
 - `colkey` (*int | None*) — Transparent color of the texture. Defaults to None.
 

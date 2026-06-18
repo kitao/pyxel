@@ -1,4 +1,4 @@
-use crate::cube::mesh_data::RcMeshData;
+use crate::cube::mesh::RcMesh;
 use crate::cube::vec3::RcVec3;
 
 // Unified collider: rounded-box family (size + radius) or static mesh
@@ -9,7 +9,7 @@ use crate::cube::vec3::RcVec3;
 pub struct Collider {
     pub size: RcVec3,
     pub radius: f32,
-    pub mesh: Option<RcMeshData>,
+    pub mesh: Option<RcMesh>,
     pub trigger: bool,
     pub rolls: bool,
     pub mass: f32,
@@ -26,7 +26,7 @@ impl Collider {
     pub fn new(
         size: RcVec3,
         radius: f32,
-        mesh: Option<RcMeshData>,
+        mesh: Option<RcMesh>,
         trigger: bool,
         rolls: bool,
         mass: f32,

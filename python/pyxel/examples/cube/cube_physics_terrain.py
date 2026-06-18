@@ -4,15 +4,15 @@ from cube_physics_camera import OrbitCamera
 from pyxel.cube import (
     Collider,
     Mat4,
-    MeshData,
+    Mesh,
     Node,
-    PrimData,
+    Primitive,
     Shading,
     Vec3,
 )
 
 
-def _slope_mesh() -> MeshData:
+def _slope_mesh() -> Mesh:
     # 6x6 grid sloped along +X. Y drops as X increases.
     verts: list[float] = []
     indices: list[int] = []
@@ -29,9 +29,9 @@ def _slope_mesh() -> MeshData:
         for ix in range(nx - 1):
             i = iz * nx + ix
             indices.extend([i, i + nx, i + 1, i + 1, i + nx, i + nx + 1])
-    prim_data = PrimData(PrimData.MODE_TRIANGLES, verts, indices)
-    return MeshData(
-        primitives=[prim_data],
+    primitive = Primitive(Primitive.MODE_TRIANGLES, verts, indices)
+    return Mesh(
+        primitives=[primitive],
         transforms=[Mat4.IDENTITY],
         parents=[-1],
         col_img=3,
@@ -43,9 +43,7 @@ class Floor(Node):
         super().__init__()
         self.mesh_asset = _slope_mesh()
         self.collider = Collider(mesh=self.mesh_asset, mass=0.0, friction=0.6)
-
-    def on_draw(self):
-        self.mesh(Mat4.IDENTITY, self.mesh_asset)
+        self.add_child(Node.from_mesh(self.mesh_asset))
 
 
 class Ball(Node):

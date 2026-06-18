@@ -10,9 +10,9 @@ from pyxel.cube import (
     Collider,
     Contact,
     Mat4,
-    MeshData,
+    Mesh,
     Node,
-    PrimData,
+    Primitive,
     Shading,
     Vec3,
 )
@@ -328,28 +328,65 @@ class TestImmediateDrawSafety:
         # construct one easily — verify the method is callable.
         assert callable(Node().sprite)
 
-    def test_mesh_renames_argument_to_mesh_asset(self):
-        prim = PrimData(
-            PrimData.MODE_TRIANGLES,
+    def test_mesh_draw_method_removed(self):
+        assert not hasattr(Node(), "mesh")
+
+    def test_from_mesh_builds_named_node_tree(self):
+        prim = Primitive(
+            Primitive.MODE_TRIANGLES,
             [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0],
             [0, 1, 2],
         )
-        m = MeshData(primitives=[prim], transforms=[Mat4()], parents=[-1], col_img=8)
-        Node().mesh(Mat4.IDENTITY, m)
+        m = Mesh(
+            primitives=[None, prim, prim],
+            transforms=[
+                Mat4.IDENTITY,
+                Mat4.from_translation(Vec3(1, 0, 0)),
+                Mat4.from_translation(Vec3(0, 1, 0)),
+            ],
+            parents=[-1, 0, 0],
+            names=["rig", "body", "arm"],
+            col_img=8,
+        )
+
+        root = Node.from_mesh(m)
+
+        assert root.name == "rig"
+        assert [child.name for child in root.children] == ["body", "arm"]
+        assert root.children[0].parent is root
+        assert root.find_by_name("arm")[0].transform.pos == Vec3(0, 1, 0)
+
+    def test_from_mesh_generated_nodes_draw_attached_primitives(self):
+        prim = Primitive(
+            Primitive.MODE_TRIANGLES,
+            [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0],
+            [0, 1, 2],
+        )
+        mesh = Mesh(
+            primitives=[prim],
+            transforms=[Mat4.IDENTITY],
+            parents=[-1],
+            col_img=8,
+        )
+        root = Node()
+        root.camera = Camera()
+        root.add_child(Node.from_mesh(mesh))
+
+        root.draw(0, 0, 64, 64)
 
     def test_prim_with_primitive(self):
-        prim = PrimData(
-            PrimData.MODE_TRIANGLES,
+        prim = Primitive(
+            Primitive.MODE_TRIANGLES,
             [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0],
             [0, 1, 2],
-            cull=PrimData.CULL_BACK,
+            cull=Primitive.CULL_BACK,
         )
-        Node().prim(Mat4.IDENTITY, prim, col_img=7)
+        Node().prim(Mat4.IDENTITY, primitive=prim, col_img=7)
 
     def test_prim_col_img_accepts_image(self):
         img = pyxel.images[0]
-        prim = PrimData(
-            PrimData.MODE_TRIANGLES,
+        prim = Primitive(
+            Primitive.MODE_TRIANGLES,
             [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0],
             [0, 1, 2],
             uvs=[0.0, 0.0, 1.0, 0.0, 0.0, 1.0],
@@ -358,13 +395,13 @@ class TestImmediateDrawSafety:
 
     def test_mesh_col_img_accepts_image(self):
         img = pyxel.images[0]
-        prim = PrimData(
-            PrimData.MODE_TRIANGLES,
+        prim = Primitive(
+            Primitive.MODE_TRIANGLES,
             [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0],
             [0, 1, 2],
             uvs=[0.0, 0.0, 1.0, 0.0, 0.0, 1.0],
         )
-        m = MeshData(
+        m = Mesh(
             primitives=[prim],
             transforms=[Mat4()],
             parents=[-1],
@@ -372,7 +409,7 @@ class TestImmediateDrawSafety:
             colkey=0,
         )
         assert isinstance(m.col_img, Image)
-        Node().mesh(Mat4.IDENTITY, m)
+        assert isinstance(Node.from_mesh(m), Node)
 
 
 # Setter methods on Node that mutate the active DrawContext state.
@@ -483,8 +520,8 @@ class TestAlwaysBillboard:
         n.text(Vec3.ZERO, "X", 7)
 
 
-_TRIANGLE_PRIMITIVE = PrimData(
-    PrimData.MODE_TRIANGLES,
+_TRIANGLE_PRIMITIVE = Primitive(
+    Primitive.MODE_TRIANGLES,
     [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0],
     [0, 1, 2],
 )
@@ -507,16 +544,6 @@ class TestBillboardKwargRemoved:
             lambda n: n.boxb(Mat4.IDENTITY, Vec3(1, 1, 1), 7, billboard=1),
             lambda n: n.plane(
                 Mat4.IDENTITY, pyxel.images[0], _UNIT_QUAD_UVS, 1.0, 1.0, billboard=1
-            ),
-            lambda n: n.mesh(
-                Mat4.IDENTITY,
-                MeshData(
-                    primitives=[_TRIANGLE_PRIMITIVE],
-                    transforms=[Mat4()],
-                    parents=[-1],
-                    col_img=8,
-                ),
-                billboard=1,
             ),
             lambda n: n.prim(Mat4.IDENTITY, _TRIANGLE_PRIMITIVE, billboard=1),
         ],

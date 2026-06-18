@@ -11,7 +11,7 @@ use crate::cube::collision::{
 };
 use crate::cube::contact::{Contact, RcContact};
 use crate::cube::mat4::Mat4;
-use crate::cube::mesh_data::RcMeshData;
+use crate::cube::mesh::RcMesh;
 use crate::cube::node::{Node, RcNode};
 use crate::cube::quat::Quat;
 use crate::cube::raster::{ClipRect, Mat4x4};
@@ -342,7 +342,7 @@ impl Scene {
                 b.mesh.clone(),
             )
         };
-        // MeshData-vs-mesh is unsupported: both sides are static terrain
+        // Mesh-vs-mesh is unsupported: both sides are static terrain
         // with no resolution payload.
         if has_mesh_a && has_mesh_b {
             return None;
@@ -812,7 +812,7 @@ impl Scene {
 
     fn swept_sphere_vs_mesh(
         world_mesh: &Mat4,
-        mesh: &RcMeshData,
+        mesh: &RcMesh,
         world_sphere: &Mat4,
         size_sphere: Vec3,
         r_sphere: f32,
@@ -879,7 +879,7 @@ impl Scene {
 
     fn swept_capsule_vs_mesh(
         world_mesh: &Mat4,
-        mesh: &RcMeshData,
+        mesh: &RcMesh,
         world_capsule: &Mat4,
         size_capsule: Vec3,
         r_capsule: f32,
@@ -961,7 +961,7 @@ impl Scene {
 
     fn swept_rounded_obb_vs_mesh(
         world_mesh: &Mat4,
-        mesh: &RcMeshData,
+        mesh: &RcMesh,
         world_box: &Mat4,
         size_box: Vec3,
         r_box: f32,
@@ -1019,7 +1019,7 @@ impl Scene {
     ) -> ContactPair {
         let a = rc_ref!(coll_a);
         let b = rc_ref!(coll_b);
-        // MeshData colliders are always immovable terrain (cube-design.md
+        // Mesh colliders are always immovable terrain (cube-design.md
         // § 11.1); ignore any user-set mass on the mesh side.
         let mass_a = if a.mesh.is_some() { 0.0 } else { a.mass };
         let mass_b = if b.mesh.is_some() { 0.0 } else { b.mass };
@@ -1393,12 +1393,7 @@ impl Scene {
         out
     }
 
-    fn mesh_overlaps_sphere(
-        world_mesh: &Mat4,
-        mesh: &RcMeshData,
-        center: Vec3,
-        radius: f32,
-    ) -> bool {
+    fn mesh_overlaps_sphere(world_mesh: &Mat4, mesh: &RcMesh, center: Vec3, radius: f32) -> bool {
         let mut probe = Mat4::identity_value();
         probe.data[0][3] = center.x;
         probe.data[1][3] = center.y;
@@ -1417,12 +1412,7 @@ impl Scene {
         .is_some()
     }
 
-    fn mesh_overlaps_box(
-        world_mesh: &Mat4,
-        mesh: &RcMeshData,
-        transform: &Mat4,
-        size: Vec3,
-    ) -> bool {
+    fn mesh_overlaps_box(world_mesh: &Mat4, mesh: &RcMesh, transform: &Mat4, size: Vec3) -> bool {
         narrow_phase_mesh_vs_dynamic(world_mesh, mesh, transform, size, 0.0).is_some()
     }
 
@@ -1726,14 +1716,14 @@ fn set_nearer_hit(best: &mut Option<(f32, Vec3, Vec3)>, hit: (f32, Vec3, Vec3)) 
     }
 }
 
-// MeshData-vs-dynamic narrow phase. `world_mesh` is the mesh collider's
+// Mesh-vs-dynamic narrow phase. `world_mesh` is the mesh collider's
 // world transform; `mesh` is the static terrain. `world_dyn` is the
 // dynamic body's world transform; `size_dyn` / `r_dyn` describe its
 // rounded-box family. Returns ContactGeom with normal pointing FROM
 // the mesh TOWARD the dynamic body.
 fn narrow_phase_mesh_vs_dynamic(
     world_mesh: &Mat4,
-    mesh: &RcMeshData,
+    mesh: &RcMesh,
     world_dyn: &Mat4,
     size_dyn: Vec3,
     r_dyn: f32,
@@ -2922,13 +2912,13 @@ mod tests {
     #[test]
     fn test_sphere_above_mesh_floor_generates_contact() {
         use crate::cube::collider::Collider;
-        use crate::cube::mesh_data::MeshData;
-        use crate::cube::prim_data::PrimData;
+        use crate::cube::mesh::Mesh;
+        use crate::cube::primitive::Primitive;
 
-        let floor_mesh = MeshData::new();
+        let floor_mesh = Mesh::new();
         {
             let m = rc_mut!(&floor_mesh);
-            let geom = PrimData::new();
+            let geom = Primitive::new();
             {
                 let g = rc_mut!(&geom);
                 g.positions = vec![
@@ -3758,13 +3748,13 @@ mod tests {
     // fixture for the mesh raycast tests below.
     fn mesh_floor_root() -> RcNode {
         use crate::cube::collider::Collider;
-        use crate::cube::mesh_data::MeshData;
-        use crate::cube::prim_data::PrimData;
+        use crate::cube::mesh::Mesh;
+        use crate::cube::primitive::Primitive;
 
-        let floor_mesh = MeshData::new();
+        let floor_mesh = Mesh::new();
         {
             let m = rc_mut!(&floor_mesh);
-            let geom = PrimData::new();
+            let geom = Primitive::new();
             {
                 let g = rc_mut!(&geom);
                 g.positions = vec![
@@ -3796,13 +3786,13 @@ mod tests {
 
     fn mesh_wall_root() -> RcNode {
         use crate::cube::collider::Collider;
-        use crate::cube::mesh_data::MeshData;
-        use crate::cube::prim_data::PrimData;
+        use crate::cube::mesh::Mesh;
+        use crate::cube::primitive::Primitive;
 
-        let wall_mesh = MeshData::new();
+        let wall_mesh = Mesh::new();
         {
             let m = rc_mut!(&wall_mesh);
-            let geom = PrimData::new();
+            let geom = Primitive::new();
             {
                 let g = rc_mut!(&geom);
                 g.positions = vec![-0.5, -0.5, 0.0, 0.5, -0.5, 0.0, 0.0, 0.5, 0.0];
@@ -3832,13 +3822,13 @@ mod tests {
 
     fn sparse_triangle_mesh_root() -> (RcNode, RcNode) {
         use crate::cube::collider::Collider;
-        use crate::cube::mesh_data::MeshData;
-        use crate::cube::prim_data::PrimData;
+        use crate::cube::mesh::Mesh;
+        use crate::cube::primitive::Primitive;
 
-        let mesh = MeshData::new();
+        let mesh = Mesh::new();
         {
             let m = rc_mut!(&mesh);
-            let geom = PrimData::new();
+            let geom = Primitive::new();
             {
                 let g = rc_mut!(&geom);
                 g.positions = vec![0.0, 0.0, 0.0, 10.0, 0.0, 0.0, 0.0, 0.0, 10.0];

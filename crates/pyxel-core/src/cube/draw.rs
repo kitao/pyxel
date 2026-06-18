@@ -12,8 +12,8 @@ use std::sync::OnceLock;
 
 use crate::cube::camera::RcCamera;
 use crate::cube::mat4::Mat4;
-use crate::cube::mesh_data::MeshData;
-use crate::cube::prim_data::{
+use crate::cube::mesh::Mesh;
+use crate::cube::primitive::{
     CULL_BACK, CULL_FRONT, CULL_NONE, MODE_LINES, MODE_POINTS, MODE_TRIANGLES,
 };
 use crate::cube::raster::{
@@ -31,7 +31,7 @@ use crate::settings::{FONT_HEIGHT, FONT_WIDTH, MAX_FONT_CODE, MIN_FONT_CODE, NUM
 const CLIP_W_EPSILON: f32 = 1e-4;
 type ScreenPoint = (f32, f32, f32);
 
-// PrimData draw modes are owned by `PrimData` (see prim_data.rs); this
+// Primitive draw modes are owned by `Primitive` (see primitive.rs); this
 // file imports them at the top. Values follow OpenGL ordering
 // (GL_POINTS=0, GL_LINES=1, GL_TRIANGLES=4 — cube uses 0/1/2 internally
 // but keeps the relative ordering so future MODE_LINE_STRIP / LINE_LOOP
@@ -418,7 +418,7 @@ pub fn prim(
                 let face_normal = || -> Vec3 {
                     match normals {
                         // Stored normals are model-space (e.g. from
-                        // PrimData::compute_normals). Carry them into world
+                        // Primitive::compute_normals). Carry them into world
                         // space so shading matches the world-space light
                         // direction; the auto path below already yields a
                         // world-space normal from the world vertices.
@@ -1478,12 +1478,12 @@ pub fn plane(
     );
 }
 
-// Draw a hierarchical MeshData asset. Each part's world transform is
-// composed in topological order (parents[i] < i is validated at MeshData
+// Draw a hierarchical Mesh asset. Each part's world transform is
+// composed in topological order (parents[i] < i is validated at Mesh
 // construction). Per-part vertex / index / uv / normal data and the
-// prim / cull mode come from the part's PrimData; col_img and colkey
+// prim / cull mode come from the part's Primitive; col_img and colkey
 // are shared across the whole mesh.
-pub fn mesh(ctx: &mut DrawContext, world_mat: &Mat4, mesh: &MeshData, state: DrawState) {
+pub fn mesh(ctx: &mut DrawContext, world_mat: &Mat4, mesh: &Mesh, state: DrawState) {
     if mesh.primitives.is_empty() {
         return;
     }
@@ -1820,7 +1820,7 @@ mod tests {
         // world-space normal from the rotated vertices). Without the
         // transform a rotated mesh keeps its unrotated lighting.
         use crate::cube::camera::Camera;
-        use crate::cube::prim_data::PrimData;
+        use crate::cube::primitive::Primitive;
         use crate::cube::raster::{compute_clip_rect, matmul, projection_matrix, view_matrix};
         use crate::cube::scene::DrawContext;
 
@@ -1833,7 +1833,7 @@ mod tests {
 
         // A 4×4 quad in the model XY plane (two triangles). compute_normals
         // fills per-face model-space normals.
-        let geom = PrimData::new();
+        let geom = Primitive::new();
         {
             let g = rc_mut!(&geom);
             g.positions = vec![
