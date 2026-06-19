@@ -5,6 +5,7 @@ Collider = _binding_cube.Collider
 Contact = _binding_cube.Contact
 Mat4 = _binding_cube.Mat4
 Mesh = _binding_cube.Mesh
+Motion = _binding_cube.Motion
 Node = _binding_cube.Node
 Primitive = _binding_cube.Primitive
 Quat = _binding_cube.Quat
@@ -18,6 +19,7 @@ __all__ = [
     "Contact",
     "Mat4",
     "Mesh",
+    "Motion",
     "Node",
     "Primitive",
     "Quat",

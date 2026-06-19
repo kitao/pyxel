@@ -4,6 +4,7 @@ use pyo3::types::PyList;
 use pyxel::cube::mesh::ColImage;
 
 use super::mat4::Mat4;
+use super::motion::Motion;
 use super::primitive::Primitive;
 use crate::image_wrapper::Image;
 
@@ -54,6 +55,14 @@ impl Mesh {
         }
         rc_ref!(&mesh).validate().map_err(PyValueError::new_err)?;
         Ok(Self::wrap(mesh))
+    }
+
+    #[staticmethod]
+    #[pyo3(signature = (filename, *, colkey=None, fps=30.0))]
+    fn from_glb(filename: &str, colkey: Option<i32>, fps: f32) -> PyResult<Self> {
+        pyxel::cube::Mesh::from_glb(filename, colkey, fps)
+            .map(Self::wrap)
+            .map_err(PyValueError::new_err)
     }
 
     // Parts (parallel arrays)
@@ -115,6 +124,15 @@ impl Mesh {
         } else {
             inner.names.clone()
         }
+    }
+
+    #[getter]
+    fn motions(&self) -> Vec<Motion> {
+        self.inner_ref()
+            .motions
+            .iter()
+            .map(|m| Motion::wrap_with_source(m.clone(), self.inner.clone()))
+            .collect()
     }
 
     #[setter]

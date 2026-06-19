@@ -893,7 +893,7 @@ Compute flat per-face normals from positions and indices and store them in norma
 
 ### `Mesh(primitives=None, transforms=None, parents=None, names=None, col_img=7, colkey=None)` — class
 
-A hierarchical 3D model asset. primitives, transforms, parents, and names are parallel arrays describing the part tree; parents must come before children (parents[i] < i). Instantiate it with Node.from_mesh(), or set it on Collider.mesh as static terrain.
+A hierarchical 3D model asset. primitives, transforms, parents, and names are parallel arrays describing the part tree; parents must come before children (parents[i] < i). Instantiate it with Node.from_mesh(), load it with Mesh.from_glb(), or set it on Collider.mesh as static terrain.
 
 **Parameters:**
 
@@ -909,6 +909,7 @@ A hierarchical 3D model asset. primitives, transforms, parents, and names are pa
 ```python
 from pyxel.cube import Mat4, Mesh, Node, Primitive
 mesh = Mesh(primitives=[prim], transforms=[Mat4.IDENTITY], parents=[-1], col_img=8)
+mesh = Mesh.from_glb("actor.glb", colkey=0)
 node = Node.from_mesh(mesh)
 ```
 
@@ -936,6 +937,12 @@ Node name per part.
 
 - **Type:** `list`
 
+### `motions` — variable
+
+Transform animation clips imported with the mesh.
+
+- **Type:** `list[Motion]`
+
 ### `col_img` — variable
 
 Flat color number, or a texture Image shared by every part.
@@ -948,6 +955,27 @@ Transparent color when col_img is an Image.
 
 - **Type:** `int | None`
 
+### `from_glb(filename, *, colkey=None, fps=30.0)` — function
+
+Load a binary glTF (.glb) file into a Mesh. Embedded buffers and a single embedded texture are supported; imported transform animations are exposed through motions.
+
+**Parameters:**
+
+- `filename` (*str*) — Path to the .glb file.
+- `colkey` (*int | None*) — Transparent palette color for the imported texture. Defaults to None.
+- `fps` (*float*) — Frames per second used to convert glTF animation times into Pyxel frames. Defaults to 30.0.
+
+**Returns:** `Mesh` — The loaded mesh.
+
+**Example:**
+
+```python
+mesh = Mesh.from_glb("actor.glb", colkey=0)
+actor = Node.from_mesh(mesh)
+```
+
+**Note:** Texture pixels must be fully opaque; use colkey for transparency. Multiple textures, external files, skins, morph targets, and material animation are rejected.
+
 ### `descendants(i)` — function *(Advanced)*
 
 Return the indices of every part under part i.
@@ -957,6 +985,32 @@ Return the indices of every part under part i.
 - `i` (*int*) — The root part index.
 
 **Returns:** `list` — Descendant part indices.
+
+## Motion
+
+### `Motion` — class
+
+An imported transform animation clip owned by a Mesh. Use Node.apply_motion() for one-shot sampling or Node.play_motion() for per-update playback.
+
+**Example:**
+
+```python
+motion = mesh.motions[0]
+actor.apply_motion(motion, frame=0)
+actor.play_motion(motion)
+```
+
+### `name` — variable
+
+Animation name from the GLB file.
+
+- **Type:** `str`
+
+### `length` — variable
+
+Clip length in Pyxel frames.
+
+- **Type:** `float`
 
 ## Collider
 
@@ -1138,7 +1192,7 @@ The distance from the ray origin to the hit.
 
 ### `Node()` — class
 
-A scene-graph node. Subclass it and implement on_update / on_draw, then drive the whole tree with update() and draw() on the root. Draw commands render relative to the node's world transform.
+A scene-graph node. Subclass it and implement on_update / on_draw, instantiate Mesh assets with Node.from_mesh(), then drive the whole tree with update() and draw() on the root. Draw commands render relative to the node's world transform.
 
 **Example:**
 
@@ -1278,6 +1332,31 @@ Remove a child node.
 ### `destroy()` — function
 
 Flag this node and its descendants for destruction. At the end of update(), on_destroy() fires on each flagged node and it is detached from the tree.
+
+### `apply_motion(motion, frame, *, loop=True)` — function
+
+Sample a Motion at the given frame and immediately apply it to this Node.from_mesh() subtree.
+
+**Parameters:**
+
+- `motion` (*Motion*) — Motion clip imported with the same Mesh as this subtree.
+- `frame` (*float*) — Frame to sample.
+- `loop` (*bool*) — When True, wrap the frame inside the clip length. Defaults to True.
+
+### `play_motion(motion, *, loop=True, speed=1.0, start_frame=0.0)` — function
+
+Start per-update playback of a Motion on this Node.from_mesh() subtree.
+
+**Parameters:**
+
+- `motion` (*Motion*) — Motion clip imported with the same Mesh as this subtree.
+- `loop` (*bool*) — When True, wrap playback inside the clip length. Defaults to True.
+- `speed` (*float*) — Frames advanced per update. Defaults to 1.0.
+- `start_frame` (*float*) — Initial frame sampled when playback starts. Defaults to 0.0.
+
+### `stop_motion()` — function
+
+Stop the active Motion playback cursor on this node.
 
 ### `find_by_name(name)` — function
 
@@ -1564,7 +1643,7 @@ Draw a screen-space string centered at the projected position. Glyphs keep their
 
 ### `update()` — function
 
-Advance this subtree by one frame: on_update hooks, collider motion, collision detection, on_collide hooks, then on_destroy and detachment of destroyed nodes.
+Advance this subtree by one frame: on_update hooks, node motion playback, collider motion, collision detection, on_collide hooks, then on_destroy and detachment of destroyed nodes.
 
 ### `draw(x, y, w, h, target=None)` — function
 

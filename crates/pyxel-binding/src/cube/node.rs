@@ -15,6 +15,7 @@ use super::camera::Camera;
 use super::collider::Collider;
 use super::contact::Contact;
 use super::mat4::Mat4;
+use super::motion::Motion;
 use super::raycast_hit::RaycastHit;
 use super::shading::Shading;
 use super::vec3::Vec3;
@@ -26,6 +27,14 @@ struct DrawablePrimitive {
     primitive: pyxel::cube::RcPrimitive,
     col_img: ColImage,
     colkey: Option<i32>,
+}
+
+#[derive(Clone)]
+struct MotionPlayer {
+    motion: pyxel::cube::RcMotion,
+    frame: f32,
+    looping: bool,
+    speed: f32,
 }
 
 // Python-facing Node wrapper. Holds the core hierarchy state (RcNode) plus
@@ -43,6 +52,9 @@ pub struct Node {
     // by __traverse__ / __clear__ so Python's gc can collect detached
     // subtrees.
     parent: RefCell<Option<Py<Node>>>,
+    mesh_source: RefCell<Option<pyxel::cube::RcMesh>>,
+    mesh_part_index: RefCell<Option<usize>>,
+    motion_player: RefCell<Option<MotionPlayer>>,
 }
 
 impl Clone for Node {
@@ -58,6 +70,9 @@ impl Clone for Node {
             ),
             drawable_primitive: RefCell::new(self.drawable_primitive.borrow().clone()),
             parent: RefCell::new(self.parent.borrow().as_ref().map(|p| p.clone_ref(py))),
+            mesh_source: RefCell::new(self.mesh_source.borrow().clone()),
+            mesh_part_index: RefCell::new(*self.mesh_part_index.borrow()),
+            motion_player: RefCell::new(self.motion_player.borrow().clone()),
         })
         .expect("Node clone requires the Python GIL to be attached")
     }
@@ -70,6 +85,9 @@ impl Node {
             children: RefCell::new(Vec::new()),
             drawable_primitive: RefCell::new(None),
             parent: RefCell::new(None),
+            mesh_source: RefCell::new(None),
+            mesh_part_index: RefCell::new(None),
+            motion_player: RefCell::new(None),
         }
     }
 
@@ -207,6 +225,78 @@ impl Node {
             Self::collect_by_tags(child, py, tags, out);
         }
     }
+
+    fn validate_motion_source(&self, motion: &Motion) -> PyResult<pyxel::cube::RcMesh> {
+        let Some(node_source) = self.mesh_source.borrow().clone() else {
+            return Err(PyValueError::new_err(
+                "Node motion methods require a tree created by Node.from_mesh",
+            ));
+        };
+        let Some(motion_source) = motion.source_mesh() else {
+            return Err(PyValueError::new_err(
+                "motion must come from the same Mesh as the Node.from_mesh tree",
+            ));
+        };
+        if !std::rc::Rc::ptr_eq(&node_source, &motion_source) {
+            return Err(PyValueError::new_err(
+                "motion must come from the same Mesh as the Node.from_mesh tree",
+            ));
+        }
+        Ok(node_source)
+    }
+
+    fn collect_mesh_nodes(
+        root: &Py<Node>,
+        py: Python<'_>,
+        source: &pyxel::cube::RcMesh,
+        out: &mut Vec<(usize, Py<Node>)>,
+    ) {
+        let bound = root.bind(py);
+        let node = bound.borrow();
+        let node_source = node.mesh_source.borrow().clone();
+        let node_index = *node.mesh_part_index.borrow();
+        let children: Vec<Py<Node>> = node
+            .children
+            .borrow()
+            .iter()
+            .map(|c| c.clone_ref(py))
+            .collect();
+        drop(node);
+
+        if node_source
+            .as_ref()
+            .is_some_and(|node_source| std::rc::Rc::ptr_eq(node_source, source))
+        {
+            if let Some(index) = node_index {
+                out.push((index, root.clone_ref(py)));
+            }
+        }
+
+        for child in &children {
+            Self::collect_mesh_nodes(child, py, source, out);
+        }
+    }
+
+    fn apply_motion_inner(
+        root: &Py<Node>,
+        py: Python<'_>,
+        source: &pyxel::cube::RcMesh,
+        motion: &pyxel::cube::RcMotion,
+        frame: f32,
+        looping: bool,
+    ) {
+        let sampled = rc_ref!(motion).sample(frame, looping);
+        let mut nodes = Vec::new();
+        Self::collect_mesh_nodes(root, py, source, &mut nodes);
+        for (part_index, transform) in sampled {
+            for (node_index, node) in &nodes {
+                if *node_index == part_index {
+                    node.bind(py).borrow().inner_mut().transform =
+                        pyxel::cube::Mat4::from_rows(transform.data);
+                }
+            }
+        }
+    }
 }
 
 #[pymethods]
@@ -237,7 +327,9 @@ impl Node {
 
         let count = mesh_inner.primitives.len();
         if count == 0 {
-            return Py::new(py, Self::wrap(InnerNode::new()));
+            let node = Self::wrap(InnerNode::new());
+            *node.mesh_source.borrow_mut() = Some(mesh.inner.clone());
+            return Py::new(py, node);
         }
 
         let mut nodes: Vec<Py<Node>> = Vec::with_capacity(count);
@@ -250,6 +342,8 @@ impl Node {
             }
 
             let node = Self::wrap(inner);
+            *node.mesh_source.borrow_mut() = Some(mesh.inner.clone());
+            *node.mesh_part_index.borrow_mut() = Some(i);
             if let Some(primitive) = &mesh_inner.primitives[i] {
                 *node.drawable_primitive.borrow_mut() = Some(DrawablePrimitive {
                     primitive: primitive.clone(),
@@ -274,7 +368,9 @@ impl Node {
         if root_indices.len() == 1 {
             Ok(nodes[root_indices[0]].clone_ref(py))
         } else {
-            let root = Py::new(py, Self::wrap(InnerNode::new()))?;
+            let synthetic_root = Self::wrap(InnerNode::new());
+            *synthetic_root.mesh_source.borrow_mut() = Some(mesh.inner.clone());
+            let root = Py::new(py, synthetic_root)?;
             for index in root_indices {
                 Self::add_child(root.bind(py).clone(), py, nodes[index].clone_ref(py))?;
             }
@@ -283,6 +379,54 @@ impl Node {
     }
 
     // Data attributes
+
+    #[pyo3(signature = (motion, frame, *, r#loop=true))]
+    fn apply_motion(
+        slf: PyRef<'_, Self>,
+        py: Python<'_>,
+        motion: PyRef<'_, Motion>,
+        frame: f32,
+        r#loop: bool,
+    ) -> PyResult<()> {
+        let source = slf.validate_motion_source(&motion)?;
+        let motion_inner = motion.inner.clone();
+        let self_py: Py<Node> = slf.into_pyobject(py)?.unbind();
+        Self::apply_motion_inner(&self_py, py, &source, &motion_inner, frame, r#loop);
+        Ok(())
+    }
+
+    #[pyo3(signature = (motion, *, r#loop=true, speed=1.0, start_frame=0.0))]
+    fn play_motion(
+        slf: PyRef<'_, Self>,
+        py: Python<'_>,
+        motion: PyRef<'_, Motion>,
+        r#loop: bool,
+        speed: f32,
+        start_frame: f32,
+    ) -> PyResult<()> {
+        if !speed.is_finite() {
+            return Err(PyValueError::new_err("speed must be finite"));
+        }
+        if !start_frame.is_finite() {
+            return Err(PyValueError::new_err("start_frame must be finite"));
+        }
+
+        let source = slf.validate_motion_source(&motion)?;
+        let motion_inner = motion.inner.clone();
+        let self_py: Py<Node> = slf.into_pyobject(py)?.unbind();
+        Self::apply_motion_inner(&self_py, py, &source, &motion_inner, start_frame, r#loop);
+        *self_py.bind(py).borrow().motion_player.borrow_mut() = Some(MotionPlayer {
+            motion: motion_inner,
+            frame: start_frame,
+            looping: r#loop,
+            speed,
+        });
+        Ok(())
+    }
+
+    fn stop_motion(&self) {
+        *self.motion_player.borrow_mut() = None;
+    }
 
     #[getter]
     fn name(&self) -> String {
@@ -889,6 +1033,7 @@ impl Node {
         let root_inner = slf.inner.clone();
         let any = slf.into_pyobject(py)?.into_any();
         traverse_update(&any)?;
+        traverse_motion_players(&any)?;
         pyxel::cube::Scene::integrate_motion(&root_inner);
         let pairs = pyxel::cube::Scene::detect_contacts(&root_inner);
         for pair in pairs {
@@ -1112,6 +1257,49 @@ fn traverse_update(node: &Bound<'_, PyAny>) -> PyResult<()> {
     let children_iter = children.try_iter()?;
     for child in children_iter {
         traverse_update(&child?)?;
+    }
+    Ok(())
+}
+
+// Pre-order playback traversal that follows the same `active` cascade as
+// update hooks. A player on an inactive node or inactive descendant does not
+// advance for that frame.
+fn traverse_motion_players(node: &Bound<'_, PyAny>) -> PyResult<()> {
+    let active: bool = node.getattr("active")?.extract()?;
+    if !active {
+        return Ok(());
+    }
+
+    if let Ok(node_bound) = node.cast::<Node>() {
+        let node_ref = node_bound.borrow();
+        let source = node_ref.mesh_source.borrow().clone();
+        let player = node_ref.motion_player.borrow().clone();
+        drop(node_ref);
+
+        if let Some(mut player) = player {
+            let Some(source) = source else {
+                return Err(PyValueError::new_err(
+                    "Node motion methods require a tree created by Node.from_mesh",
+                ));
+            };
+            player.frame += player.speed;
+            let node_py = node_bound.clone().unbind();
+            Node::apply_motion_inner(
+                &node_py,
+                node.py(),
+                &source,
+                &player.motion,
+                player.frame,
+                player.looping,
+            );
+            *node_py.bind(node.py()).borrow().motion_player.borrow_mut() = Some(player);
+        }
+    }
+
+    let children = node.getattr("children")?;
+    let children_iter = children.try_iter()?;
+    for child in children_iter {
+        traverse_motion_players(&child?)?;
     }
     Ok(())
 }

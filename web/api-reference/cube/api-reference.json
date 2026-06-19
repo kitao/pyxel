@@ -2287,8 +2287,8 @@
           "type": "class",
           "signature": "Mesh(primitives=None, transforms=None, parents=None, names=None, col_img=7, colkey=None)",
           "description": {
-            "en": "A hierarchical 3D model asset. primitives, transforms, parents, and names are parallel arrays describing the part tree; parents must come before children (parents[i] < i). Instantiate it with Node.from_mesh(), or set it on Collider.mesh as static terrain.",
-            "ja": "階層構造を持つ 3D モデルアセット。primitives・transforms・parents・names はパーツの木を表す並列配列で、親は子より先に並べる (parents[i] < i)。Node.from_mesh() で実体化するほか、Collider.mesh に設定して静的な地形にもできる。"
+            "en": "A hierarchical 3D model asset. primitives, transforms, parents, and names are parallel arrays describing the part tree; parents must come before children (parents[i] < i). Instantiate it with Node.from_mesh(), load it with Mesh.from_glb(), or set it on Collider.mesh as static terrain.",
+            "ja": "階層構造を持つ 3D モデルアセット。primitives・transforms・parents・names はパーツの木を表す並列配列で、親は子より先に並べる (parents[i] < i)。Node.from_mesh() で実体化するほか、Mesh.from_glb() で読み込んだり、Collider.mesh に設定して静的な地形にしたりできる。"
           },
           "params": [
             {
@@ -2343,6 +2343,7 @@
           "examples": [
             "from pyxel.cube import Mat4, Mesh, Node, Primitive",
             "mesh = Mesh(primitives=[prim], transforms=[Mat4.IDENTITY], parents=[-1], col_img=8)",
+            "mesh = Mesh.from_glb(\"actor.glb\", colkey=0)",
             "node = Node.from_mesh(mesh)"
           ],
           "advanced": false
@@ -2392,6 +2393,17 @@
           "advanced": false
         },
         {
+          "name": "motions",
+          "type": "variable",
+          "signature": "motions",
+          "description": {
+            "en": "Transform animation clips imported with the mesh.",
+            "ja": "メッシュと一緒に読み込まれた変換アニメーションクリップ。"
+          },
+          "value_type": "list[Motion]",
+          "advanced": false
+        },
+        {
           "name": "col_img",
           "type": "variable",
           "signature": "col_img",
@@ -2411,6 +2423,57 @@
             "ja": "col_img が Image のときの透明色。"
           },
           "value_type": "int | None",
+          "advanced": false
+        },
+        {
+          "name": "from_glb",
+          "type": "function",
+          "signature": "from_glb(filename, *, colkey=None, fps=30.0)",
+          "description": {
+            "en": "Load a binary glTF (.glb) file into a Mesh. Embedded buffers and a single embedded texture are supported; imported transform animations are exposed through motions.",
+            "ja": "バイナリ glTF（.glb）ファイルを Mesh として読み込む。埋め込みバッファと単一の埋め込みテクスチャに対応し、読み込んだ変換アニメーションは motions から参照できる。"
+          },
+          "params": [
+            {
+              "name": "filename",
+              "type": "str",
+              "description": {
+                "en": "Path to the .glb file.",
+                "ja": ".glb ファイルのパス。"
+              }
+            },
+            {
+              "name": "colkey",
+              "type": "int | None",
+              "description": {
+                "en": "Transparent palette color for the imported texture. Defaults to None.",
+                "ja": "読み込んだテクスチャの透明色にするパレット番号。デフォルトは None。"
+              }
+            },
+            {
+              "name": "fps",
+              "type": "float",
+              "description": {
+                "en": "Frames per second used to convert glTF animation times into Pyxel frames. Defaults to 30.0.",
+                "ja": "glTF のアニメーション時刻を Pyxel のフレーム数へ変換するための FPS。デフォルトは 30.0。"
+              }
+            }
+          ],
+          "returns": {
+            "type": "Mesh",
+            "description": {
+              "en": "The loaded mesh.",
+              "ja": "読み込んだメッシュ。"
+            }
+          },
+          "examples": [
+            "mesh = Mesh.from_glb(\"actor.glb\", colkey=0)",
+            "actor = Node.from_mesh(mesh)"
+          ],
+          "notes": {
+            "en": "Texture pixels must be fully opaque; use colkey for transparency. Multiple textures, external files, skins, morph targets, and material animation are rejected.",
+            "ja": "テクスチャの画素は完全に不透明である必要がある。透明表現には colkey を使う。複数テクスチャ、外部ファイル、スキン、モーフターゲット、マテリアルアニメーションは非対応。"
+          },
           "advanced": false
         },
         {
@@ -2439,6 +2502,52 @@
             }
           },
           "advanced": true
+        }
+      ]
+    },
+    {
+      "id": "motion",
+      "title": {
+        "en": "Motion",
+        "ja": "Motion"
+      },
+      "items": [
+        {
+          "name": "Motion",
+          "type": "class",
+          "signature": "Motion",
+          "description": {
+            "en": "An imported transform animation clip owned by a Mesh. Use Node.apply_motion() for one-shot sampling or Node.play_motion() for per-update playback.",
+            "ja": "Mesh が持つ、読み込み済みの変換アニメーションクリップ。Node.apply_motion() で一度だけ適用し、Node.play_motion() で update ごとに再生する。"
+          },
+          "examples": [
+            "motion = mesh.motions[0]",
+            "actor.apply_motion(motion, frame=0)",
+            "actor.play_motion(motion)"
+          ],
+          "advanced": false
+        },
+        {
+          "name": "name",
+          "type": "variable",
+          "signature": "name",
+          "description": {
+            "en": "Animation name from the GLB file.",
+            "ja": "GLB ファイル内のアニメーション名。"
+          },
+          "value_type": "str",
+          "advanced": false
+        },
+        {
+          "name": "length",
+          "type": "variable",
+          "signature": "length",
+          "description": {
+            "en": "Clip length in Pyxel frames.",
+            "ja": "Pyxel のフレーム単位でのクリップ長。"
+          },
+          "value_type": "float",
+          "advanced": false
         }
       ]
     },
@@ -2829,8 +2938,8 @@
           "type": "class",
           "signature": "Node()",
           "description": {
-            "en": "A scene-graph node. Subclass it and implement on_update / on_draw, then drive the whole tree with update() and draw() on the root. Draw commands render relative to the node's world transform.",
-            "ja": "シーングラフのノード。継承して on_update / on_draw を実装し、ルートの update() / draw() で木全体を駆動する。描画コマンドはノードのワールド変換を基準に描かれる。"
+            "en": "A scene-graph node. Subclass it and implement on_update / on_draw, instantiate Mesh assets with Node.from_mesh(), then drive the whole tree with update() and draw() on the root. Draw commands render relative to the node's world transform.",
+            "ja": "シーングラフのノード。継承して on_update / on_draw を実装し、Mesh アセットは Node.from_mesh() で実体化して、ルートの update() / draw() で木全体を駆動する。描画コマンドはノードのワールド変換を基準に描かれる。"
           },
           "examples": [
             "from pyxel.cube import Camera, Mat4, Node, Shading, Vec3",
@@ -3100,6 +3209,105 @@
           "description": {
             "en": "Flag this node and its descendants for destruction. At the end of update(), on_destroy() fires on each flagged node and it is detached from the tree.",
             "ja": "自分と子孫に破棄フラグを立てる。update() の最後に各ノードの on_destroy() が呼ばれ、木から外れる。"
+          },
+          "returns": {
+            "type": "None"
+          },
+          "advanced": false
+        },
+        {
+          "name": "apply_motion",
+          "type": "function",
+          "signature": "apply_motion(motion, frame, *, loop=True)",
+          "description": {
+            "en": "Sample a Motion at the given frame and immediately apply it to this Node.from_mesh() subtree.",
+            "ja": "指定フレームで Motion をサンプリングし、この Node.from_mesh() 由来のサブツリーへ即座に適用する。"
+          },
+          "params": [
+            {
+              "name": "motion",
+              "type": "Motion",
+              "description": {
+                "en": "Motion clip imported with the same Mesh as this subtree.",
+                "ja": "このサブツリーと同じ Mesh から読み込まれた Motion クリップ。"
+              }
+            },
+            {
+              "name": "frame",
+              "type": "float",
+              "description": {
+                "en": "Frame to sample.",
+                "ja": "サンプリングするフレーム。"
+              }
+            },
+            {
+              "name": "loop",
+              "type": "bool",
+              "description": {
+                "en": "When True, wrap the frame inside the clip length. Defaults to True.",
+                "ja": "True のとき、フレームをクリップ長でループさせる。デフォルトは True。"
+              }
+            }
+          ],
+          "returns": {
+            "type": "None"
+          },
+          "advanced": false
+        },
+        {
+          "name": "play_motion",
+          "type": "function",
+          "signature": "play_motion(motion, *, loop=True, speed=1.0, start_frame=0.0)",
+          "description": {
+            "en": "Start per-update playback of a Motion on this Node.from_mesh() subtree.",
+            "ja": "この Node.from_mesh() 由来のサブツリーで Motion の update ごとの再生を開始する。"
+          },
+          "params": [
+            {
+              "name": "motion",
+              "type": "Motion",
+              "description": {
+                "en": "Motion clip imported with the same Mesh as this subtree.",
+                "ja": "このサブツリーと同じ Mesh から読み込まれた Motion クリップ。"
+              }
+            },
+            {
+              "name": "loop",
+              "type": "bool",
+              "description": {
+                "en": "When True, wrap playback inside the clip length. Defaults to True.",
+                "ja": "True のとき、再生位置をクリップ長でループさせる。デフォルトは True。"
+              }
+            },
+            {
+              "name": "speed",
+              "type": "float",
+              "description": {
+                "en": "Frames advanced per update. Defaults to 1.0.",
+                "ja": "update ごとに進むフレーム数。デフォルトは 1.0。"
+              }
+            },
+            {
+              "name": "start_frame",
+              "type": "float",
+              "description": {
+                "en": "Initial frame sampled when playback starts. Defaults to 0.0.",
+                "ja": "再生開始時にサンプリングする初期フレーム。デフォルトは 0.0。"
+              }
+            }
+          ],
+          "returns": {
+            "type": "None"
+          },
+          "advanced": false
+        },
+        {
+          "name": "stop_motion",
+          "type": "function",
+          "signature": "stop_motion()",
+          "description": {
+            "en": "Stop the active Motion playback cursor on this node.",
+            "ja": "このノードの Motion 再生カーソルを停止する。"
           },
           "returns": {
             "type": "None"
@@ -4181,8 +4389,8 @@
           "type": "function",
           "signature": "update()",
           "description": {
-            "en": "Advance this subtree by one frame: on_update hooks, collider motion, collision detection, on_collide hooks, then on_destroy and detachment of destroyed nodes.",
-            "ja": "サブツリーを 1 フレーム進める。on_update フック、コライダーの速度適用、衝突検出、on_collide フック、破棄ノードの on_destroy と取り外しの順に実行する。"
+            "en": "Advance this subtree by one frame: on_update hooks, node motion playback, collider motion, collision detection, on_collide hooks, then on_destroy and detachment of destroyed nodes.",
+            "ja": "サブツリーを 1 フレーム進める。on_update フック、ノードの Motion 再生、コライダーの速度適用、衝突検出、on_collide フック、破棄ノードの on_destroy と取り外しの順に実行する。"
           },
           "returns": {
             "type": "None"
