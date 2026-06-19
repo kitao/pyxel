@@ -67,6 +67,7 @@ CAPTURE_PLANS = {
         {"frame": 40},
         {"frame": 48},
     ],
+    "c04_mesh_and_motion": [{"frame": 1}, {"frame": 45}],
     # Static-screen and launcher captures
     "05_color_palette": [{"frame": 0}],
     "13_custom_font": [{"frame": 0}],

@@ -5,6 +5,7 @@ mod collider;
 mod contact;
 mod mat4;
 mod mesh;
+mod motion;
 mod node;
 mod primitive;
 mod quat;
@@ -20,6 +21,7 @@ pub fn add_cube_submodule(parent: &Bound<'_, PyModule>) -> PyResult<()> {
     camera::add_camera_class(&m)?;
     shading::add_shading_class(&m)?;
     primitive::add_primitive_class(&m)?;
+    motion::add_motion_class(&m)?;
     mesh::add_mesh_class(&m)?;
     collider::add_collider_class(&m)?;
     contact::add_contact_class(&m)?;

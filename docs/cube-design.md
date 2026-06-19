@@ -29,7 +29,7 @@ signatures live in `python/pyxel/cube/__init__.pyi`.
 
 ---
 
-## 2. Public Classes (11)
+## 2. Public Classes (12)
 
 | Class | Role |
 |---|---|
@@ -39,11 +39,12 @@ signatures live in `python/pyxel/cube/__init__.pyi`.
 | `Camera` | View information (transform, fov, near, far, optional ortho size) plus the clear color |
 | `Shading` | Color lookup table (palette × levels) plus scene-wide light direction |
 | `Primitive` | Static vertex-data asset (positions / normals / uvs / indices / mode / cull); shareable across Node draws and Mesh parts |
-| `Mesh` | Hierarchical 3D model asset (parallel arrays of primitives / transforms / parents) with shared col_img and colkey |
+| `Mesh` | Hierarchical 3D model asset (parallel arrays of primitives / transforms / parents) with shared col_img, colkey, GLB import, and imported motion clips |
+| `Motion` | Imported transform animation clip attached to a `Mesh` |
 | `Collider` | Unified collider holding shape + behavior flags + physical coefficients + motion state |
 | `Contact` | Collision-pipeline payload (contact geometry + engine-resolved motion deltas) |
 | `RaycastHit` | Result payload returned by `Node.raycast` / `Node.raycast_all` |
-| `Node` | Scene-tree node: transform, hierarchy, immediate-mode draw commands, lifecycle hooks, collision callbacks, and — on the root — the update / draw cycle and spatial queries |
+| `Node` | Scene-tree node: transform, hierarchy, immediate-mode draw commands, motion playback, lifecycle hooks, collision callbacks, and — on the root — the update / draw cycle and spatial queries |
 
 ---
 
@@ -625,6 +626,7 @@ internal path as `Node.prim`.
 | `transforms` | `list[Mat4]` | part i's local transform in its parent's frame |
 | `parents` | `list[int]` | part i's parent index; `-1` marks a root; `parents[i] < i` always |
 | `names` | `list[str]` | part i's node name; imported model node names live here |
+| `motions` | `list[Motion]` | transform animation clips imported with the mesh |
 | `col_img` | `int \| Image` | flat color (when `int`) or shared texture (when `Image`) for all parts |
 | `colkey` | `int \| None` | transparent color when `col_img` is `Image` |
 
@@ -675,7 +677,52 @@ arrays. For load-from-file workflows (e.g., glTF import), the importer
 assembles the arrays in topological order and hands them to the
 constructor.
 
-### 10.5 `descendants` Helper
+### 10.5 GLB Import
+
+```python
+mesh = Mesh.from_glb("actor.glb", colkey=0, fps=30.0)
+actor = Node.from_mesh(mesh)
+```
+
+`Mesh.from_glb` loads binary glTF (`.glb`) files and converts the default
+scene into the same part arrays used by the regular constructor. The first
+implementation is intentionally narrow and predictable:
+
+- Only embedded binary buffers and embedded images are supported.
+- At most one image, one texture, and one material are accepted. The texture
+  becomes the mesh-wide `col_img`; untextured files use the default flat
+  color path.
+- Texture pixels are quantized to the current Pyxel palette. Any pixel whose
+  alpha is not 255 is rejected; transparent texels are represented by the
+  caller-provided `colkey` value, not by alpha conversion.
+- Transform animation channels for translation, rotation, and scale are
+  imported into `mesh.motions`. The `fps` argument converts glTF seconds into
+  Pyxel frame numbers.
+- Skins, morph targets, material animation, external files, multiple
+  textures, and non-triangle mesh primitives are rejected rather than guessed.
+
+This keeps the Blockbench export path explicit: author the palette-indexed
+texture normally, reserve one palette color for transparency, then pass that
+palette index as `colkey` when loading the GLB.
+
+### 10.6 Motion Clips
+
+```python
+motion = mesh.motions[0]
+actor.apply_motion(motion, frame=0)
+actor.play_motion(motion, loop=True, speed=1.0)
+actor.stop_motion()
+```
+
+`Motion` values are immutable clips owned by the `Mesh` they were imported
+with. They target mesh part indices, so a motion can be applied only to a
+`Node` tree created from the same `Mesh` by `Node.from_mesh(mesh)`.
+
+`motion.name` is the glTF animation name and `motion.length` is the clip
+length in Pyxel frames. Missing channels leave the corresponding transform
+component at the mesh bind pose.
+
+### 10.7 `descendants` Helper
 
 ```python
 indices: list[int] = mesh.descendants(i)
@@ -685,7 +732,7 @@ Returns all part indices that are transitive children of part `i`
 (excluding `i` itself), in topological order. Runs in O(N) via a single
 forward sweep using the topological-order invariant.
 
-### 10.6 Shared `col_img` and `colkey`
+### 10.8 Shared `col_img` and `colkey`
 
 `col_img` is shared across every part of the mesh. Mixed-texture models
 split into separate `Mesh` instances combined through a `Node` hierarchy.
@@ -695,7 +742,7 @@ built on the first collision query that touches the mesh and is reused
 thereafter; the cache is not exposed through the public surface and
 does not affect equality or repr.
 
-### 10.7 Drawing patterns
+### 10.9 Drawing patterns
 
 | Use case | Pattern |
 |---|---|
@@ -1175,7 +1222,26 @@ The 4-corner form is the software rasterizer's natural input and lets
 the caller express flips, 90° rotations, and arbitrary trapezoidal
 mapping in one parameter.
 
-### 14.6 Lifecycle Hooks
+### 14.6 Motion Playback
+
+```python
+root = Node.from_mesh(mesh)
+root.apply_motion(mesh.motions[0], frame=12)
+root.play_motion(mesh.motions[0], loop=True, speed=1.0, start_frame=0.0)
+root.stop_motion()
+```
+
+`apply_motion` samples a clip immediately and writes the sampled local
+transforms into the matching generated mesh-part nodes. `play_motion`
+stores a playback cursor on the node; every `update()` advances that cursor
+after user `on_update` hooks and before collider motion integration. The
+stored player belongs to the subtree root it was called on, and
+`stop_motion` clears it.
+
+Motion playback is intentionally transform-only. It does not deform vertex
+buffers, update mesh-collider BVHs, or apply material animation.
+
+### 14.7 Lifecycle Hooks
 
 Subclasses override these hooks to define behavior. Defaults are no-ops.
 
@@ -1389,7 +1455,13 @@ phase begins.
    `collider.velocity` / `collider.angular_velocity` here to express
    movement intent.
 
-2. **Motion integration**: for each Node that owns a `Collider`, the
+2. **Node motion playback**: active `play_motion` cursors sample their
+   `Motion` clips and write local transforms to the generated mesh-part
+   nodes in the subtree. This happens after user code has had a chance to
+   start / stop / replace playback in `on_update`, and before collider
+   velocities are integrated.
+
+3. **Motion integration**: for each Node that owns a `Collider`, the
    engine applies the collider's `velocity` and `angular_velocity` to
    the Node's `transform`. Translation is world-space (left-multiply)
    so the body moves along world axes regardless of its current
@@ -1405,17 +1477,17 @@ phase begins.
    node.transform = t_vel * node.transform * r_avel
    ```
 
-3. **AABB refresh**: each `Collider`'s axis-aligned bounding box is
+4. **AABB refresh**: each `Collider`'s axis-aligned bounding box is
    recomputed from the current transform.
 
-4. **Broad phase**: candidate pairs are enumerated by AABB overlap.
+5. **Broad phase**: candidate pairs are enumerated by AABB overlap.
    The structure is implementation-defined; the v1 implementation uses
    an `O(N²)` AABB-overlap sweep, which is in budget at PS1 scale
    (~100 movable bodies). Mesh colliders carry a lazily-built internal
    BVH that the narrow phase queries with the dynamic body's mesh-local
    AABB.
 
-5. **Narrow phase**: each candidate pair is tested for actual collision.
+6. **Narrow phase**: each candidate pair is tested for actual collision.
    Shapes are classified per § 11.1 (sphere / capsule / rounded box /
    mesh); every sphere / capsule / rounded-box pairing (all six
    combinations) is supported, plus each of the three against a static
@@ -1431,18 +1503,18 @@ phase begins.
    well within its fixed iteration budget). The result is a stream
    of `Contact` records with `point`, `normal`, and `depth` filled in.
 
-6. **Response resolution**: the engine computes the mass-share split
+7. **Response resolution**: the engine computes the mass-share split
    and writes the per-side push-back, rotation, and motion deltas into
    each `Contact`. For trigger colliders, the deltas are zero (the user
    sees the contact geometry but no motion correction).
 
-7. **Notification**: for each pair `(a, b)`, the engine invokes
+8. **Notification**: for each pair `(a, b)`, the engine invokes
    `a.on_collide(b, contact_a)` and `b.on_collide(a, contact_b)`. The
    call order across pairs is deterministic (the tree's pre-order),
    but applies independently to `a` and `b` — neither sees the other's
    updates within the same pair.
 
-8. **Deferred destruction**: Nodes whose `destroy()` was called during
+9. **Deferred destruction**: Nodes whose `destroy()` was called during
    the frame are removed from the tree, and `on_destroy` is invoked on
    each. Removal is deferred to the end of the step so that
    mid-traversal `destroy()` calls do not invalidate the iteration.
@@ -1526,10 +1598,10 @@ recognize and which they will need to translate.
 
 ## 19. Open Items
 
-- **Joint animation system**: `Node.transform` is the per-frame
-  surface; whether a higher-level `Motion` / animation player class is
-  also needed is to be decided alongside the first real-game
-  implementation.
+- **Skeletal / blended animation system**: `Motion` currently samples
+  imported transform channels on `Node.from_mesh` trees. Skinning,
+  joint constraints, inverse kinematics, and animation blending remain
+  deferred until a real game needs them.
 - **Camera world ↔ screen helpers**: `Camera.world_to_screen(pos, ...)` /
   `screen_to_ray(...)` would help HUD coordinates and mouse picking.
   Deferred because viewport size is not held by `Camera` in cube (it

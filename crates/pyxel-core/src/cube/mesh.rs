@@ -2,6 +2,7 @@ use std::cell::RefCell;
 
 use crate::cube::bvh::Bvh;
 use crate::cube::mat4::{Mat4, RcMat4};
+use crate::cube::motion::RcMotion;
 use crate::cube::primitive::RcPrimitive;
 use crate::image::RcImage;
 
@@ -30,6 +31,7 @@ pub struct Mesh {
     pub transforms: Vec<RcMat4>,
     pub parents: Vec<i32>,
     pub names: Vec<String>,
+    pub motions: Vec<RcMotion>,
     pub col_img: ColImage,
     pub colkey: Option<i32>,
     // Lazy collision BVH. Built on first mesh-collider query; never
@@ -47,10 +49,15 @@ impl Mesh {
             transforms: Vec::new(),
             parents: Vec::new(),
             names: Vec::new(),
+            motions: Vec::new(),
             col_img: ColImage::Color(7),
             colkey: None,
             bvh: RefCell::new(None),
         })
+    }
+
+    pub fn from_glb(filename: &str, colkey: Option<i32>, fps: f32) -> Result<RcMesh, String> {
+        crate::cube::glb::load_glb(filename, colkey, fps)
     }
 
     // Build the collision BVH if absent and call `f` with a borrowed
@@ -188,6 +195,7 @@ mod tests {
         assert!(m.primitives.is_empty());
         assert!(m.transforms.is_empty());
         assert!(m.parents.is_empty());
+        assert!(m.motions.is_empty());
         assert!(matches!(m.col_img, ColImage::Color(7)));
         assert!(m.colkey.is_none());
     }

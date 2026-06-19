@@ -203,6 +203,7 @@ class Mesh:
     transforms: list[Mat4]
     parents: list[int]  # -1 = root; parents[i] < i invariant
     names: list[str]
+    motions: list[Motion]
     col_img: int | Image  # int = flat color, Image = texture for all parts
     colkey: int | None  # transparent color when col_img is Image
 
@@ -216,7 +217,21 @@ class Mesh:
         colkey: int | None = None,
     ) -> None: ...
     def __repr__(self) -> str: ...
+    @staticmethod
+    def from_glb(
+        filename: str,
+        *,
+        colkey: int | None = None,
+        fps: float = 30.0,
+    ) -> Mesh: ...
     def descendants(self, i: int) -> list[int]: ...
+
+# Motion class
+class Motion:
+    name: str
+    length: float
+
+    def __repr__(self) -> str: ...
 
 # Collider class — unified shape + behavior flags + physical coefficients + motion state.
 class Collider:
@@ -312,6 +327,16 @@ class Node:
     def add_child(self, node: Node) -> None: ...
     def remove_child(self, node: Node) -> None: ...
     def destroy(self) -> None: ...
+    def apply_motion(self, motion: Motion, frame: float, *, loop: bool = True) -> None: ...
+    def play_motion(
+        self,
+        motion: Motion,
+        *,
+        loop: bool = True,
+        speed: float = 1.0,
+        start_frame: float = 0.0,
+    ) -> None: ...
+    def stop_motion(self) -> None: ...
 
     # Lifecycle hooks
     def on_update(self) -> None: ...
