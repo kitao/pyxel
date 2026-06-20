@@ -10,7 +10,7 @@ use crate::cube::vec3::Vec3;
 use crate::image::{Color, Image, RcImage, Rgb24};
 use crate::settings::MAX_COLORS;
 
-pub fn load_glb(filename: &str, colkey: Option<i32>, fps: f32) -> Result<RcMesh, String> {
+pub(super) fn parse_glb(filename: &str, colkey: Option<i32>, fps: f32) -> Result<RcMesh, String> {
     if !fps.is_finite() || fps <= 0.0 {
         return Err("GLB animation fps must be greater than 0".to_string());
     }
@@ -48,7 +48,7 @@ pub fn load_glb(filename: &str, colkey: Option<i32>, fps: f32) -> Result<RcMesh,
             &mesh,
             &buffers,
             &mut node_parts,
-            node,
+            &node,
             -1,
             images.len() == 1,
         )?;
@@ -269,12 +269,12 @@ fn import_node(
     mesh: &RcMesh,
     buffers: &[gltf::buffer::Data],
     node_parts: &mut HashMap<usize, usize>,
-    node: gltf::Node,
+    node: &gltf::Node,
     parent: i32,
     has_texture: bool,
 ) -> Result<(), String> {
     let node_name = node.name().unwrap_or("").to_string();
-    let node_part = add_part(mesh, None, node_transform(&node), parent, node_name.clone());
+    let node_part = add_part(mesh, None, node_transform(node), parent, node_name.clone());
     node_parts.insert(node.index(), node_part);
 
     if let Some(gltf_mesh) = node.mesh() {
@@ -301,7 +301,7 @@ fn import_node(
             mesh,
             buffers,
             node_parts,
-            child,
+            &child,
             node_part as i32,
             has_texture,
         )?;
@@ -370,7 +370,7 @@ fn import_primitive(
     let positions = reader
         .read_positions()
         .ok_or_else(|| "GLB primitive is missing POSITION".to_string())?
-        .flat_map(|p| p.into_iter())
+        .flat_map(std::iter::IntoIterator::into_iter)
         .collect::<Vec<f32>>();
     if positions.len() % 3 != 0 {
         return Err("GLB primitive POSITION length is not divisible by 3".to_string());
@@ -383,7 +383,7 @@ fn import_primitive(
     let uvs = match reader.read_tex_coords(0) {
         Some(tex_coords) => tex_coords
             .into_f32()
-            .flat_map(|uv| uv.into_iter())
+            .flat_map(std::iter::IntoIterator::into_iter)
             .collect::<Vec<f32>>(),
         None if has_texture => return Err("GLB primitive is missing TEXCOORD_0".to_string()),
         None => Vec::new(),
@@ -400,10 +400,10 @@ fn import_primitive(
         return Err("GLB primitive index exceeds POSITION count".to_string());
     }
     if indices.is_empty() {
-        if vertex_count % 3 != 0 {
+        if !vertex_count.is_multiple_of(3) {
             return Err("GLB triangle vertex count must be a multiple of 3".to_string());
         }
-    } else if indices.len() % 3 != 0 {
+    } else if !indices.len().is_multiple_of(3) {
         return Err("GLB triangle indices count must be a multiple of 3".to_string());
     }
 

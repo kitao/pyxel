@@ -68,6 +68,11 @@ CAPTURE_PLANS = {
         {"frame": 48},
     ],
     "c04_mesh_and_motion": [{"frame": 1}, {"frame": 45}],
+    "c05_3d_collision": [
+        {"frame": 1},
+        {"frame": 70, "press": [pyxel.KEY_UP]},
+        {"frame": 100, "press": [pyxel.KEY_UP, pyxel.KEY_SPACE]},
+    ],
     # Static-screen and launcher captures
     "05_color_palette": [{"frame": 0}],
     "13_custom_font": [{"frame": 0}],

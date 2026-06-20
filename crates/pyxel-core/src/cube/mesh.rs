@@ -57,7 +57,7 @@ impl Mesh {
     }
 
     pub fn from_glb(filename: &str, colkey: Option<i32>, fps: f32) -> Result<RcMesh, String> {
-        crate::cube::glb::load_glb(filename, colkey, fps)
+        crate::cube::glb_parser::parse_glb(filename, colkey, fps)
     }
 
     // Build the collision BVH if absent and call `f` with a borrowed

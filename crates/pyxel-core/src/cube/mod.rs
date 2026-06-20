@@ -4,7 +4,7 @@ pub mod collider;
 pub mod collision;
 pub mod contact;
 pub mod draw;
-pub mod glb;
+mod glb_parser;
 pub mod mat4;
 pub mod mesh;
 pub mod motion;

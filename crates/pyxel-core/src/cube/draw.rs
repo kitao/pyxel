@@ -31,6 +31,30 @@ use crate::settings::{FONT_HEIGHT, FONT_WIDTH, MAX_FONT_CODE, MIN_FONT_CODE, NUM
 const CLIP_W_EPSILON: f32 = 1e-4;
 type ScreenPoint = (f32, f32, f32);
 
+#[derive(Clone, Copy)]
+struct ClipVertex {
+    world: Vec3,
+    uv: (f32, f32),
+}
+
+#[derive(Clone, Copy)]
+struct ProjectedClipVertex {
+    screen: ScreenPoint,
+    uv: (f32, f32),
+}
+
+#[derive(Clone, Copy)]
+struct ClippedTriangle {
+    vertices: [ClipVertex; 4],
+    len: usize,
+}
+
+#[derive(Clone, Copy)]
+struct ProjectedPolygon {
+    vertices: [ProjectedClipVertex; 4],
+    len: usize,
+}
+
 // Primitive draw modes are owned by `Primitive` (see primitive.rs); this
 // file imports them at the top. Values follow OpenGL ordering
 // (GL_POINTS=0, GL_LINES=1, GL_TRIANGLES=4 — cube uses 0/1/2 internally
@@ -161,6 +185,171 @@ fn lerp_world(a: &Vec3, b: &Vec3, t: f32) -> Vec3 {
         x: a.x + (b.x - a.x) * t,
         y: a.y + (b.y - a.y) * t,
         z: a.z + (b.z - a.z) * t,
+    }
+}
+
+fn lerp_clip_vertex(a: ClipVertex, b: ClipVertex, t: f32) -> ClipVertex {
+    ClipVertex {
+        world: lerp_world(&a.world, &b.world, t),
+        uv: (
+            a.uv.0 + (b.uv.0 - a.uv.0) * t,
+            a.uv.1 + (b.uv.1 - a.uv.1) * t,
+        ),
+    }
+}
+
+fn clip_triangle_to_near(vertices: [ClipVertex; 3], vp: &[[f32; 4]; 4]) -> ClippedTriangle {
+    let mut clipped = ClippedTriangle {
+        vertices: [vertices[0]; 4],
+        len: 0,
+    };
+    for i in 0..3 {
+        let prev = vertices[(i + 2) % 3];
+        let curr = vertices[i];
+        let prev_w = clip_w(&prev.world, vp);
+        let curr_w = clip_w(&curr.world, vp);
+        let prev_inside = prev_w > CLIP_W_EPSILON;
+        let curr_inside = curr_w > CLIP_W_EPSILON;
+
+        if prev_inside != curr_inside {
+            let t = (CLIP_W_EPSILON - prev_w) / (curr_w - prev_w);
+            clipped.vertices[clipped.len] = lerp_clip_vertex(prev, curr, t);
+            clipped.len += 1;
+        }
+        if curr_inside {
+            clipped.vertices[clipped.len] = curr;
+            clipped.len += 1;
+        }
+    }
+    clipped
+}
+
+fn project_clipped_vertices(
+    vertices: &ClippedTriangle,
+    ctx: &DrawContext,
+    z_shift: &Vec3,
+) -> Option<ProjectedPolygon> {
+    let empty = ProjectedClipVertex {
+        screen: (0.0, 0.0, 0.0),
+        uv: (0.0, 0.0),
+    };
+    let mut out = ProjectedPolygon {
+        vertices: [empty; 4],
+        len: 0,
+    };
+    for i in 0..vertices.len {
+        let vertex = vertices.vertices[i];
+        let screen = project_offset(
+            &vertex.world,
+            &ctx.vp,
+            ctx.vp_x,
+            ctx.vp_y,
+            ctx.vp_w,
+            ctx.vp_h,
+            z_shift,
+        )?;
+        out.vertices[out.len] = ProjectedClipVertex {
+            screen,
+            uv: vertex.uv,
+        };
+        out.len += 1;
+    }
+    Some(out)
+}
+
+fn draw_projected_triangle(
+    ctx: &mut DrawContext,
+    vertices: [ProjectedClipVertex; 3],
+    cull: i32,
+    normal: Option<&Vec3>,
+    col_flat: i32,
+    col_image: Option<&RcImage>,
+    colkey: Option<i32>,
+    state: DrawState,
+) {
+    let [a, b, c] = vertices;
+    if cull != CULL_NONE {
+        let area = signed_screen_area(a.screen, b.screen, c.screen);
+        if should_cull(area, cull) {
+            return;
+        }
+    }
+
+    let depth_w = ctx.depth_w;
+    let clip = ctx.clip;
+    let dither_alpha = ctx.dither_alpha;
+    let depth_test = ctx.depth_test;
+    let depth_write = ctx.depth_write;
+
+    if let Some(img_rc) = col_image {
+        let img_ref = rc_ref!(img_rc);
+        if let Some(normal) = normal {
+            let shading = state.shading.unwrap();
+            let direction = rc_ref!(&shading.direction);
+            let level = face_shade_level(direction, Some(normal));
+            let sampler = make_shaded_sampler(img_ref, shading, level);
+            let target_mut = rc_mut!(&ctx.target);
+            let depth = ctx.depth.as_mut_slice();
+            rasterize_textured_triangle(
+                target_mut,
+                depth,
+                depth_w,
+                a.screen,
+                b.screen,
+                c.screen,
+                a.uv,
+                b.uv,
+                c.uv,
+                &sampler,
+                colkey,
+                clip,
+                dither_alpha,
+                depth_test,
+                depth_write,
+            );
+        } else {
+            let sampler = make_image_sampler(img_ref);
+            let target_mut = rc_mut!(&ctx.target);
+            let depth = ctx.depth.as_mut_slice();
+            rasterize_textured_triangle(
+                target_mut,
+                depth,
+                depth_w,
+                a.screen,
+                b.screen,
+                c.screen,
+                a.uv,
+                b.uv,
+                c.uv,
+                &sampler,
+                colkey,
+                clip,
+                dither_alpha,
+                depth_test,
+                depth_write,
+            );
+        }
+    } else {
+        let entry = match normal {
+            Some(normal) => lookup_ramp(state.shading.unwrap(), col_flat, Some(normal)),
+            None => (col_flat, col_flat),
+        };
+        let target_mut = rc_mut!(&ctx.target);
+        let depth = ctx.depth.as_mut_slice();
+        rasterize_triangle(
+            target_mut,
+            depth,
+            depth_w,
+            a.screen,
+            b.screen,
+            c.screen,
+            entry.0 as u8,
+            entry.1 as u8,
+            clip,
+            dither_alpha,
+            depth_test,
+            depth_write,
+        );
     }
 }
 
@@ -396,9 +585,6 @@ pub fn prim(
             if col_image.is_some() && uvs.is_none() {
                 return Err("textured prim requires uvs");
             }
-            let target_mut = rc_mut!(&ctx.target);
-            let depth_w = ctx.depth_w;
-            let depth = ctx.depth.as_mut_slice();
             for f in 0..face_count {
                 let i0 = resolve_vertex_index(f * 3)?;
                 let i1 = resolve_vertex_index(f * 3 + 1)?;
@@ -406,15 +592,6 @@ pub fn prim(
                 let (v0, p0) = ctx.vertex_cache[i0];
                 let (v1, p1) = ctx.vertex_cache[i1];
                 let (v2, p2) = ctx.vertex_cache[i2];
-                let (Some(p0), Some(p1), Some(p2)) = (p0, p1, p2) else {
-                    continue;
-                };
-                if cull != CULL_NONE {
-                    let area = signed_screen_area(p0, p1, p2);
-                    if should_cull(area, cull) {
-                        continue;
-                    }
-                }
                 let face_normal = || -> Vec3 {
                     match normals {
                         // Stored normals are model-space (e.g. from
@@ -433,76 +610,66 @@ pub fn prim(
                         None => tri_normal(&v0, &v1, &v2),
                     }
                 };
-                if let Some(img_rc) = col_image {
-                    let uvs = uvs.unwrap();
-                    let uv0 = (uvs[i0 * 2], uvs[i0 * 2 + 1]);
-                    let uv1 = (uvs[i1 * 2], uvs[i1 * 2 + 1]);
-                    let uv2 = (uvs[i2 * 2], uvs[i2 * 2 + 1]);
-                    let img_ref = rc_ref!(img_rc);
-                    if lit {
-                        let normal = face_normal();
-                        let shading = state.shading.unwrap();
-                        let direction = rc_ref!(&shading.direction);
-                        let level = face_shade_level(direction, Some(&normal));
-                        let sampler = make_shaded_sampler(img_ref, shading, level);
-                        rasterize_textured_triangle(
-                            target_mut,
-                            depth,
-                            depth_w,
-                            p0,
-                            p1,
-                            p2,
-                            uv0,
-                            uv1,
-                            uv2,
-                            &sampler,
+                let uv0 = uvs.map_or((0.0, 0.0), |uvs| (uvs[i0 * 2], uvs[i0 * 2 + 1]));
+                let uv1 = uvs.map_or((0.0, 0.0), |uvs| (uvs[i1 * 2], uvs[i1 * 2 + 1]));
+                let uv2 = uvs.map_or((0.0, 0.0), |uvs| (uvs[i2 * 2], uvs[i2 * 2 + 1]));
+                let normal = lit.then(face_normal);
+
+                if let (Some(p0), Some(p1), Some(p2)) = (p0, p1, p2) {
+                    draw_projected_triangle(
+                        ctx,
+                        [
+                            ProjectedClipVertex {
+                                screen: p0,
+                                uv: uv0,
+                            },
+                            ProjectedClipVertex {
+                                screen: p1,
+                                uv: uv1,
+                            },
+                            ProjectedClipVertex {
+                                screen: p2,
+                                uv: uv2,
+                            },
+                        ],
+                        cull,
+                        normal.as_ref(),
+                        col_flat,
+                        col_image,
+                        colkey,
+                        state,
+                    );
+                } else {
+                    let clipped = clip_triangle_to_near(
+                        [
+                            ClipVertex { world: v0, uv: uv0 },
+                            ClipVertex { world: v1, uv: uv1 },
+                            ClipVertex { world: v2, uv: uv2 },
+                        ],
+                        &ctx.vp,
+                    );
+                    if clipped.len < 3 {
+                        continue;
+                    }
+                    let Some(projected) = project_clipped_vertices(&clipped, ctx, &z_shift) else {
+                        continue;
+                    };
+                    for i in 1..projected.len - 1 {
+                        draw_projected_triangle(
+                            ctx,
+                            [
+                                projected.vertices[0],
+                                projected.vertices[i],
+                                projected.vertices[i + 1],
+                            ],
+                            cull,
+                            normal.as_ref(),
+                            col_flat,
+                            col_image,
                             colkey,
-                            ctx.clip,
-                            ctx.dither_alpha,
-                            ctx.depth_test,
-                            ctx.depth_write,
-                        );
-                    } else {
-                        let sampler = make_image_sampler(img_ref);
-                        rasterize_textured_triangle(
-                            target_mut,
-                            depth,
-                            depth_w,
-                            p0,
-                            p1,
-                            p2,
-                            uv0,
-                            uv1,
-                            uv2,
-                            &sampler,
-                            colkey,
-                            ctx.clip,
-                            ctx.dither_alpha,
-                            ctx.depth_test,
-                            ctx.depth_write,
+                            state,
                         );
                     }
-                } else {
-                    let entry = if lit {
-                        let normal = face_normal();
-                        lookup_ramp(state.shading.unwrap(), col_flat, Some(&normal))
-                    } else {
-                        (col_flat, col_flat)
-                    };
-                    rasterize_triangle(
-                        target_mut,
-                        depth,
-                        depth_w,
-                        p0,
-                        p1,
-                        p2,
-                        entry.0 as u8,
-                        entry.1 as u8,
-                        ctx.clip,
-                        ctx.dither_alpha,
-                        ctx.depth_test,
-                        ctx.depth_write,
-                    );
                 }
             }
         }
@@ -747,7 +914,7 @@ pub fn box_solid(
             ctx,
             &scaled,
             MODE_TRIANGLES,
-            CULL_NONE,
+            CULL_BACK,
             &BOX_UNROLLED_POSITIONS,
             Some(&BOX_UNROLLED_TRI_INDICES),
             None,
@@ -764,7 +931,7 @@ pub fn box_solid(
             ctx,
             &scaled,
             MODE_TRIANGLES,
-            CULL_NONE,
+            CULL_BACK,
             &UNIT_BOX_POSITIONS,
             Some(&BOX_TRI_INDICES),
             None,
@@ -1710,6 +1877,84 @@ mod tests {
         assert!(!should_cull(0.0, CULL_NONE));
     }
 
+    fn near_clip_test_vp() -> [[f32; 4]; 4] {
+        let mut vp = [[0.0; 4]; 4];
+        vp[3][2] = -1.0;
+        vp
+    }
+
+    fn clip_vertex(x: f32, y: f32, z: f32, u: f32, v: f32) -> ClipVertex {
+        ClipVertex {
+            world: Vec3 { x, y, z },
+            uv: (u, v),
+        }
+    }
+
+    fn assert_clip_vertices_inside(vertices: &ClippedTriangle, vp: &[[f32; 4]; 4]) {
+        for i in 0..vertices.len {
+            let w = clip_w(&vertices.vertices[i].world, vp);
+            assert!(w >= CLIP_W_EPSILON - 1e-6, "vertex {i} w={w}");
+        }
+    }
+
+    #[test]
+    fn clip_triangle_to_near_keeps_all_inside_vertices() {
+        let vp = near_clip_test_vp();
+        let vertices = [
+            clip_vertex(-1.0, -1.0, -1.0, 0.0, 0.0),
+            clip_vertex(1.0, -1.0, -1.0, 1.0, 0.0),
+            clip_vertex(0.0, 1.0, -1.0, 0.5, 1.0),
+        ];
+        let clipped = clip_triangle_to_near(vertices, &vp);
+
+        assert_eq!(clipped.len, 3);
+        for (actual, expected) in clipped.vertices.iter().zip(vertices) {
+            assert_eq!(actual.world, expected.world);
+            assert_eq!(actual.uv, expected.uv);
+        }
+    }
+
+    #[test]
+    fn clip_triangle_to_near_rejects_all_behind_vertices() {
+        let vp = near_clip_test_vp();
+        let vertices = [
+            clip_vertex(-1.0, -1.0, 1.0, 0.0, 0.0),
+            clip_vertex(1.0, -1.0, 1.0, 1.0, 0.0),
+            clip_vertex(0.0, 1.0, 1.0, 0.5, 1.0),
+        ];
+        let clipped = clip_triangle_to_near(vertices, &vp);
+
+        assert_eq!(clipped.len, 0);
+    }
+
+    #[test]
+    fn clip_triangle_to_near_one_vertex_behind_returns_quad() {
+        let vp = near_clip_test_vp();
+        let vertices = [
+            clip_vertex(-1.0, -1.0, -1.0, 0.0, 0.0),
+            clip_vertex(1.0, -1.0, -1.0, 1.0, 0.0),
+            clip_vertex(0.0, 1.0, 1.0, 0.5, 1.0),
+        ];
+        let clipped = clip_triangle_to_near(vertices, &vp);
+
+        assert_eq!(clipped.len, 4);
+        assert_clip_vertices_inside(&clipped, &vp);
+    }
+
+    #[test]
+    fn clip_triangle_to_near_two_vertices_behind_returns_triangle() {
+        let vp = near_clip_test_vp();
+        let vertices = [
+            clip_vertex(-1.0, -1.0, -1.0, 0.0, 0.0),
+            clip_vertex(1.0, -1.0, 1.0, 1.0, 0.0),
+            clip_vertex(0.0, 1.0, 1.0, 0.5, 1.0),
+        ];
+        let clipped = clip_triangle_to_near(vertices, &vp);
+
+        assert_eq!(clipped.len, 3);
+        assert_clip_vertices_inside(&clipped, &vp);
+    }
+
     #[test]
     fn depth_offset_negative_moves_toward_camera() {
         use crate::cube::camera::Camera;
@@ -1810,6 +2055,112 @@ mod tests {
         .unwrap();
 
         assert_eq!(rc_ref!(&target).pixel(32.0, 32.0), 7);
+    }
+
+    #[test]
+    fn triangle_clips_vertex_behind_camera_instead_of_dropping() {
+        use crate::cube::camera::Camera;
+        use crate::cube::raster::{compute_clip_rect, matmul, projection_matrix, view_matrix};
+        use crate::cube::scene::DrawContext;
+
+        let target = Image::new(64, 64);
+        rc_mut!(&target).clear(2);
+        let camera = Camera::new();
+        let vp = matmul(
+            &projection_matrix(rc_ref!(&camera), 64.0, 64.0),
+            &view_matrix(rc_ref!(&camera)),
+        );
+        let clip = compute_clip_rect(0.0, 0.0, 64.0, 64.0, 64, 64);
+        let mut ctx = DrawContext {
+            target: target.clone(),
+            vp,
+            vp_x: 0.0,
+            vp_y: 0.0,
+            vp_w: 64.0,
+            vp_h: 64.0,
+            clip,
+            camera,
+            depth: vec![f32::INFINITY; 64 * 64],
+            depth_w: 64,
+            depth_h: 64,
+            vertex_cache: Vec::new(),
+            dither_alpha: 1.0,
+            depth_test: true,
+            depth_write: true,
+            depth_offset: 0.0,
+            shaded: false,
+        };
+        let state = DrawState::unshaded();
+        let positions = [-2.0, -1.0, -2.0, 2.0, -1.0, -2.0, 0.0, 2.0, 1.0];
+
+        prim(
+            &mut ctx,
+            &Mat4::identity_value(),
+            MODE_TRIANGLES,
+            CULL_NONE,
+            &positions,
+            None,
+            None,
+            None,
+            7,
+            None,
+            None,
+            state,
+        )
+        .unwrap();
+
+        assert_eq!(rc_ref!(&target).pixel(32.0, 32.0), 7);
+    }
+
+    #[test]
+    fn box_solid_culls_back_faces() {
+        use crate::cube::camera::Camera;
+        use crate::cube::raster::{compute_clip_rect, matmul, projection_matrix, view_matrix};
+        use crate::cube::scene::DrawContext;
+
+        let target = Image::new(64, 64);
+        rc_mut!(&target).clear(2);
+        let camera = Camera::new();
+        let vp = matmul(
+            &projection_matrix(rc_ref!(&camera), 64.0, 64.0),
+            &view_matrix(rc_ref!(&camera)),
+        );
+        let clip = compute_clip_rect(0.0, 0.0, 64.0, 64.0, 64, 64);
+        let mut ctx = DrawContext {
+            target: target.clone(),
+            vp,
+            vp_x: 0.0,
+            vp_y: 0.0,
+            vp_w: 64.0,
+            vp_h: 64.0,
+            clip,
+            camera,
+            depth: vec![f32::INFINITY; 64 * 64],
+            depth_w: 64,
+            depth_h: 64,
+            vertex_cache: Vec::new(),
+            dither_alpha: 1.0,
+            depth_test: true,
+            depth_write: true,
+            depth_offset: 0.0,
+            shaded: false,
+        };
+
+        box_solid(
+            &mut ctx,
+            &Mat4::identity_value(),
+            &Vec3 {
+                x: 4.0,
+                y: 4.0,
+                z: 4.0,
+            },
+            7,
+            None,
+            None,
+            DrawState::unshaded(),
+        );
+
+        assert_eq!(rc_ref!(&target).pixel(32.0, 32.0), 2);
     }
 
     #[test]

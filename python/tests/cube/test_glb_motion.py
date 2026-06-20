@@ -1,4 +1,5 @@
 import inspect
+from pathlib import Path
 
 import pytest
 
@@ -14,6 +15,34 @@ from .glb_fixtures import (
 )
 
 
+EXAMPLES_DIR = Path(__file__).parents[2] / "pyxel" / "examples"
+
+
+def _vec3(values, index):
+    base = index * 3
+    return tuple(values[base : base + 3])
+
+
+def _sub(a, b):
+    return tuple(a[i] - b[i] for i in range(3))
+
+
+def _cross(a, b):
+    return (
+        a[1] * b[2] - a[2] * b[1],
+        a[2] * b[0] - a[0] * b[2],
+        a[0] * b[1] - a[1] * b[0],
+    )
+
+
+def _dot(a, b):
+    return sum(a[i] * b[i] for i in range(3))
+
+
+def _center(a, b, c):
+    return tuple((a[i] + b[i] + c[i]) / 3.0 for i in range(3))
+
+
 def test_from_glb_loads_single_texture_mesh(tmp_path):
     path = write_single_texture_motion_glb(tmp_path / "actor.glb")
     mesh = Mesh.from_glb(str(path), colkey=0)
@@ -24,6 +53,32 @@ def test_from_glb_loads_single_texture_mesh(tmp_path):
     assert mesh.names == ["actor", "actor_primitive_0"]
     assert isinstance(mesh.col_img, Image)
     assert mesh.colkey == 0
+
+
+def test_bundled_actor_cube_is_closed_and_outward_wound():
+    path = EXAMPLES_DIR / "assets" / "cube_actor.glb"
+    mesh = Mesh.from_glb(str(path), colkey=0)
+    primitives = [primitive for primitive in mesh.primitives if primitive is not None]
+
+    assert primitives
+    for primitive in primitives:
+        positions = list(primitive.positions)
+        indices = list(primitive.indices)
+        coord_edges = {}
+
+        for offset in range(0, len(indices), 3):
+            ia, ib, ic = indices[offset : offset + 3]
+            a = _vec3(positions, ia)
+            b = _vec3(positions, ib)
+            c = _vec3(positions, ic)
+            normal = _cross(_sub(b, a), _sub(c, a))
+
+            assert _dot(normal, _center(a, b, c)) > 0.0
+            for edge in ((a, b), (b, c), (c, a)):
+                key = tuple(sorted(edge))
+                coord_edges[key] = coord_edges.get(key, 0) + 1
+
+        assert set(coord_edges.values()) == {2}
 
 
 def test_from_glb_loads_motion(tmp_path):
