@@ -123,10 +123,10 @@ impl MotionChannel {
             let start = self.inputs[index];
             let end = self.inputs[index + 1];
             if frame < end {
-                let t = if end != start {
-                    ((frame - start) / (end - start)).clamp(0.0, 1.0)
-                } else {
+                let t = if end == start {
                     0.0
+                } else {
+                    ((frame - start) / (end - start)).clamp(0.0, 1.0)
                 };
                 return Some((index, index + 1, t));
             }

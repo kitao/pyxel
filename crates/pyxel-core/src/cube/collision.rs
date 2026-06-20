@@ -8,6 +8,8 @@ use crate::cube::mat4::Mat4;
 use crate::cube::mesh::Mesh;
 use crate::cube::vec3::Vec3;
 
+const CONTACT_EPSILON: f32 = 1e-6;
+
 // Axis-aligned bounding box used by the broad phase and by ray hit
 // pre-filtering. Computed per-frame from each collider's current world
 // transform; the result is a value type so callers can stash it in a
@@ -423,7 +425,7 @@ pub fn sphere_vs_rounded_obb(
         // Center outside the core box.
         let dist = dist2.sqrt();
         let depth = reach - dist;
-        if depth <= 0.0 {
+        if depth <= CONTACT_EPSILON {
             return None;
         }
         let n_local = Vec3 {
@@ -1338,25 +1340,186 @@ pub(crate) fn closest_points_segment_segment(
     )
 }
 
-// Closest points between a segment and an origin-centered AABB, both
-// in the box-local frame. Alternating projection between the two
-// convex sets (clamp to box, project back to segment) converges to the
-// global minimum pair; 8 rounds are ample for f32 contact resolution.
-pub(crate) fn closest_points_segment_aabb(a: Vec3, b: Vec3, half: Vec3) -> (Vec3, Vec3) {
-    let mut on_seg = Vec3 {
-        x: (a.x + b.x) * 0.5,
-        y: (a.y + b.y) * 0.5,
-        z: (a.z + b.z) * 0.5,
-    };
-    let mut on_box = on_seg;
-    for _ in 0..8 {
-        on_box = Vec3 {
-            x: on_seg.x.clamp(-half.x, half.x),
-            y: on_seg.y.clamp(-half.y, half.y),
-            z: on_seg.z.clamp(-half.z, half.z),
-        };
-        on_seg = closest_point_on_segment(on_box, a, b);
+fn clip_segment_axis(
+    start: f32,
+    delta: f32,
+    min: f32,
+    max: f32,
+    enter: &mut f32,
+    exit: &mut f32,
+) -> bool {
+    if delta.abs() <= f32::EPSILON {
+        return start >= min && start <= max;
     }
+    let inv_delta = 1.0 / delta;
+    let mut t0 = (min - start) * inv_delta;
+    let mut t1 = (max - start) * inv_delta;
+    if t0 > t1 {
+        std::mem::swap(&mut t0, &mut t1);
+    }
+    *enter = (*enter).max(t0);
+    *exit = (*exit).min(t1);
+    *enter <= *exit
+}
+
+fn segment_point(a: Vec3, d: Vec3, t: f32) -> Vec3 {
+    Vec3 {
+        x: a.x + d.x * t,
+        y: a.y + d.y * t,
+        z: a.z + d.z * t,
+    }
+}
+
+fn clamp_point_to_aabb(p: Vec3, half: Vec3) -> Vec3 {
+    Vec3 {
+        x: p.x.clamp(-half.x, half.x),
+        y: p.y.clamp(-half.y, half.y),
+        z: p.z.clamp(-half.z, half.z),
+    }
+}
+
+fn point_dist2(a: Vec3, b: Vec3) -> f32 {
+    (a.x - b.x).powi(2) + (a.y - b.y).powi(2) + (a.z - b.z).powi(2)
+}
+
+fn push_segment_param(params: &mut [f32; 8], len: &mut usize, t: f32) {
+    if t > 0.0 && t < 1.0 && t.is_finite() {
+        params[*len] = t;
+        *len += 1;
+    }
+}
+
+fn sort_unique_segment_params(params: &mut [f32; 8], len: usize) -> usize {
+    for i in 1..len {
+        let value = params[i];
+        let mut j = i;
+        while j > 0 && params[j - 1] > value {
+            params[j] = params[j - 1];
+            j -= 1;
+        }
+        params[j] = value;
+    }
+    let mut unique_len = 0;
+    for i in 0..len {
+        if unique_len == 0 || (params[i] - params[unique_len - 1]).abs() > 1e-6 {
+            params[unique_len] = params[i];
+            unique_len += 1;
+        }
+    }
+    unique_len
+}
+
+fn consider_segment_aabb_candidate(
+    a: Vec3,
+    d: Vec3,
+    half: Vec3,
+    t: f32,
+    best_t: &mut f32,
+    best_dist2: &mut f32,
+) {
+    let on_seg = segment_point(a, d, t);
+    let on_box = clamp_point_to_aabb(on_seg, half);
+    let dist2 = point_dist2(on_seg, on_box);
+    if dist2 < *best_dist2 - 1e-7 || ((dist2 - *best_dist2).abs() <= 1e-7 && t < *best_t) {
+        *best_dist2 = dist2;
+        *best_t = t;
+    }
+}
+
+fn add_segment_aabb_axis_quadratic(
+    start: f32,
+    delta: f32,
+    mid: f32,
+    half: f32,
+    denom: &mut f32,
+    numer: &mut f32,
+) {
+    let bound = if mid < -half {
+        -half
+    } else if mid > half {
+        half
+    } else {
+        return;
+    };
+    *denom += delta * delta;
+    *numer += delta * (start - bound);
+}
+
+// Exact closest points between a segment and an origin-centered AABB in
+// the box-local frame. Ericson's point/AABB clamp gives the distance at
+// a fixed segment parameter; slab crossings split the parameter range
+// into pieces where that distance is a simple quadratic.
+pub(crate) fn closest_points_segment_aabb(a: Vec3, b: Vec3, half: Vec3) -> (Vec3, Vec3) {
+    let half = Vec3 {
+        x: half.x.max(0.0),
+        y: half.y.max(0.0),
+        z: half.z.max(0.0),
+    };
+    let d = Vec3 {
+        x: b.x - a.x,
+        y: b.y - a.y,
+        z: b.z - a.z,
+    };
+    if d.x * d.x + d.y * d.y + d.z * d.z <= f32::EPSILON {
+        return (a, clamp_point_to_aabb(a, half));
+    }
+
+    let mut enter: f32 = 0.0;
+    let mut exit: f32 = 1.0;
+    if clip_segment_axis(a.x, d.x, -half.x, half.x, &mut enter, &mut exit)
+        && clip_segment_axis(a.y, d.y, -half.y, half.y, &mut enter, &mut exit)
+        && clip_segment_axis(a.z, d.z, -half.z, half.z, &mut enter, &mut exit)
+    {
+        let on_seg = segment_point(a, d, (enter + exit) * 0.5);
+        return (on_seg, on_seg);
+    }
+
+    let mut params = [0.0; 8];
+    let mut param_len = 0;
+    params[param_len] = 0.0;
+    param_len += 1;
+    params[param_len] = 1.0;
+    param_len += 1;
+    if d.x.abs() > f32::EPSILON {
+        push_segment_param(&mut params, &mut param_len, (-half.x - a.x) / d.x);
+        push_segment_param(&mut params, &mut param_len, (half.x - a.x) / d.x);
+    }
+    if d.y.abs() > f32::EPSILON {
+        push_segment_param(&mut params, &mut param_len, (-half.y - a.y) / d.y);
+        push_segment_param(&mut params, &mut param_len, (half.y - a.y) / d.y);
+    }
+    if d.z.abs() > f32::EPSILON {
+        push_segment_param(&mut params, &mut param_len, (-half.z - a.z) / d.z);
+        push_segment_param(&mut params, &mut param_len, (half.z - a.z) / d.z);
+    }
+    let param_len = sort_unique_segment_params(&mut params, param_len);
+
+    let mut best_t = 0.0;
+    let mut best_dist2 = f32::INFINITY;
+    for &t in params.iter().take(param_len) {
+        consider_segment_aabb_candidate(a, d, half, t, &mut best_t, &mut best_dist2);
+    }
+    for i in 0..param_len - 1 {
+        let lo = params[i];
+        let hi = params[i + 1];
+        if hi - lo <= 1e-6 {
+            continue;
+        }
+        let mid_t = (lo + hi) * 0.5;
+        let mid = segment_point(a, d, mid_t);
+        let mut denom = 0.0;
+        let mut numer = 0.0;
+        add_segment_aabb_axis_quadratic(a.x, d.x, mid.x, half.x, &mut denom, &mut numer);
+        add_segment_aabb_axis_quadratic(a.y, d.y, mid.y, half.y, &mut denom, &mut numer);
+        add_segment_aabb_axis_quadratic(a.z, d.z, mid.z, half.z, &mut denom, &mut numer);
+        if denom > f32::EPSILON {
+            let t = (-numer / denom).clamp(lo, hi);
+            consider_segment_aabb_candidate(a, d, half, t, &mut best_t, &mut best_dist2);
+        }
+    }
+
+    let on_seg = segment_point(a, d, best_t);
+    let on_box = clamp_point_to_aabb(on_seg, half);
     (on_seg, on_box)
 }
 
@@ -1568,6 +1731,29 @@ mod tests {
 
     fn approx_eq(a: f32, b: f32) -> bool {
         (a - b).abs() < 1e-4
+    }
+
+    fn assert_vec3_close(actual: Vec3, expected: Vec3) {
+        assert!(
+            approx_eq(actual.x, expected.x)
+                && approx_eq(actual.y, expected.y)
+                && approx_eq(actual.z, expected.z),
+            "actual=({:.6}, {:.6}, {:.6}) expected=({:.6}, {:.6}, {:.6})",
+            actual.x,
+            actual.y,
+            actual.z,
+            expected.x,
+            expected.y,
+            expected.z
+        );
+    }
+
+    fn vec3(x: f32, y: f32, z: f32) -> Vec3 {
+        Vec3 { x, y, z }
+    }
+
+    fn translation(v: Vec3) -> Mat4 {
+        *rc_ref!(&Mat4::from_translation(&v))
     }
 
     #[test]
@@ -2846,6 +3032,24 @@ mod tests {
     }
 
     #[test]
+    fn test_sphere_vs_plate_pushout_resolves_contact() {
+        let plate = Mat4::identity_value();
+        let half = vec3(2.0, 0.1, 2.0);
+        let center = vec3(0.0, 0.55, 0.0);
+        let geom = sphere_vs_rounded_obb(center, 0.5, &plate, half, 0.0).unwrap();
+
+        assert_vec3_close(geom.normal, vec3(0.0, 1.0, 0.0));
+        assert!(approx_eq(geom.depth, 0.05), "depth={}", geom.depth);
+
+        let resolved = vec3(
+            center.x + geom.normal.x * geom.depth,
+            center.y + geom.normal.y * geom.depth,
+            center.z + geom.normal.z * geom.depth,
+        );
+        assert!(sphere_vs_rounded_obb(resolved, 0.5, &plate, half, 0.0).is_none());
+    }
+
+    #[test]
     fn test_sphere_vs_rounded_obb_nan_center_misses_without_panic() {
         let m = Mat4::identity_value();
         let result = sphere_vs_rounded_obb(
@@ -2997,49 +3201,51 @@ mod tests {
     }
 
     #[test]
-    fn test_segment_vs_local_aabb_matches_brute_force() {
-        // Oblique segment near a corner: alternating projection must land
-        // within 1e-3 of a dense parameter sweep.
-        let a = Vec3 {
-            x: 0.5,
-            y: 1.8,
-            z: 1.4,
-        };
-        let b = Vec3 {
-            x: 2.2,
-            y: 0.2,
-            z: 0.6,
-        };
-        let half = Vec3 {
-            x: 1.0,
-            y: 1.0,
-            z: 1.0,
-        };
-        let (on_seg, on_box) = closest_points_segment_aabb(a, b, half);
-        let dist = ((on_seg.x - on_box.x).powi(2)
-            + (on_seg.y - on_box.y).powi(2)
-            + (on_seg.z - on_box.z).powi(2))
-        .sqrt();
-        let mut best = f32::INFINITY;
-        for i in 0..=2000 {
-            let t = i as f32 / 2000.0;
-            let p = Vec3 {
-                x: a.x + (b.x - a.x) * t,
-                y: a.y + (b.y - a.y) * t,
-                z: a.z + (b.z - a.z) * t,
-            };
-            let q = Vec3 {
-                x: p.x.clamp(-half.x, half.x),
-                y: p.y.clamp(-half.y, half.y),
-                z: p.z.clamp(-half.z, half.z),
-            };
-            let d = ((p.x - q.x).powi(2) + (p.y - q.y).powi(2) + (p.z - q.z).powi(2)).sqrt();
-            best = best.min(d);
-        }
-        assert!(
-            (dist - best).abs() < 1e-3,
-            "alt-projection {dist} vs brute {best}"
+    fn test_segment_vs_local_aabb_endpoint_touch_returns_zero_pair() {
+        let (on_seg, on_box) = closest_points_segment_aabb(
+            vec3(0.0, 0.0, 1.0),
+            vec3(-1.0, 0.0, 1.2),
+            vec3(1.0, 1.0, 1.0),
         );
+
+        assert_vec3_close(on_seg, vec3(0.0, 0.0, 1.0));
+        assert_vec3_close(on_box, vec3(0.0, 0.0, 1.0));
+    }
+
+    #[test]
+    fn test_segment_vs_local_aabb_through_box_returns_coincident_midpoint() {
+        let (on_seg, on_box) = closest_points_segment_aabb(
+            vec3(-2.0, 0.25, 0.5),
+            vec3(2.0, 0.25, 0.5),
+            vec3(1.0, 1.0, 1.0),
+        );
+
+        assert_vec3_close(on_seg, vec3(0.0, 0.25, 0.5));
+        assert_vec3_close(on_box, vec3(0.0, 0.25, 0.5));
+    }
+
+    #[test]
+    fn test_segment_vs_local_aabb_edge_region_minimizes_quadratic() {
+        let (on_seg, on_box) = closest_points_segment_aabb(
+            vec3(0.0, 2.0, 1.0),
+            vec3(0.0, 0.0, 2.0),
+            vec3(1.0, 1.0, 1.0),
+        );
+
+        assert_vec3_close(on_seg, vec3(0.0, 1.2, 1.4));
+        assert_vec3_close(on_box, vec3(0.0, 1.0, 1.0));
+    }
+
+    #[test]
+    fn test_segment_vs_local_aabb_degenerate_segment_clamps_point() {
+        let (on_seg, on_box) = closest_points_segment_aabb(
+            vec3(2.0, 0.5, -2.0),
+            vec3(2.0, 0.5, -2.0),
+            vec3(1.0, 1.0, 1.0),
+        );
+
+        assert_vec3_close(on_seg, vec3(2.0, 0.5, -2.0));
+        assert_vec3_close(on_box, vec3(1.0, 0.5, -1.0));
     }
 
     #[test]
@@ -3070,6 +3276,47 @@ mod tests {
         .unwrap();
         assert!(approx_eq(geom.depth, 0.05));
         assert!(approx_eq(geom.normal.y, 1.0));
+    }
+
+    #[test]
+    fn test_capsule_vs_wall_side_pushout_is_horizontal_and_resolves() {
+        let wall = Mat4::identity_value();
+        let wall_half = vec3(0.2, 0.8, 6.0);
+        let capsule = translation(vec3(0.52, 0.75, 0.0));
+        let geom = capsule_vs_rounded_obb(&capsule, 0.4, 0.35, &wall, wall_half, 0.0).unwrap();
+
+        assert_vec3_close(geom.normal, vec3(1.0, 0.0, 0.0));
+        assert!(approx_eq(geom.depth, 0.03), "depth={}", geom.depth);
+
+        let moved = translation(vec3(
+            geom.normal.x * geom.depth,
+            geom.normal.y * geom.depth,
+            geom.normal.z * geom.depth,
+        ));
+        let resolved = *rc_ref!(&moved.mul_mat(&capsule));
+        if let Some(after) = capsule_vs_rounded_obb(&resolved, 0.4, 0.35, &wall, wall_half, 0.0) {
+            panic!(
+                "pushout left contact normal=({:.6}, {:.6}, {:.6}) depth={:.9}",
+                after.normal.x, after.normal.y, after.normal.z, after.depth
+            );
+        }
+    }
+
+    #[test]
+    fn test_capsule_vs_wall_face_normal_stays_horizontal_across_overlap_band() {
+        let wall = Mat4::identity_value();
+        let wall_half = vec3(0.2, 0.8, 6.0);
+        for center_y in [0.45, 0.75, 1.05] {
+            let capsule = translation(vec3(0.52, center_y, 0.0));
+            let geom = capsule_vs_rounded_obb(&capsule, 0.4, 0.35, &wall, wall_half, 0.0).unwrap();
+            assert!(
+                geom.normal.x > 0.999 && geom.normal.y.abs() < 1e-4 && geom.normal.z.abs() < 1e-4,
+                "center_y={center_y} normal=({:.6}, {:.6}, {:.6})",
+                geom.normal.x,
+                geom.normal.y,
+                geom.normal.z
+            );
+        }
     }
 
     #[test]
