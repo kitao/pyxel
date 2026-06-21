@@ -175,9 +175,7 @@ class Weapon(Node):
 
         scale = math.tan(math.radians(self.effective_camera.fov) * 0.5)
         aspect = pyxel.width / pyxel.height
-        x = pyxel.width * (
-            0.5 + to_slime.dot(right) / (2.0 * depth * aspect * scale)
-        )
+        x = pyxel.width * (0.5 + to_slime.dot(right) / (2.0 * depth * aspect * scale))
         y = pyxel.height * (0.5 - to_slime.dot(up) / (2.0 * depth * scale))
         return math.hypot(pyxel.mouse_x - x, pyxel.mouse_y - y) < 13.0
 
@@ -315,7 +313,9 @@ class Weapon(Node):
         for p, q in zip(corners, corners[1:] + corners[:1]):
             self.line(p, q, color)
 
-    def update_laser_prim(self, laser_prim, slime_center, index, extent, width=LASER_WIDTH):
+    def update_laser_prim(
+        self, laser_prim, slime_center, index, extent, width=LASER_WIDTH
+    ):
         eye, right, _ = self.camera_axes()
         points = self.make_laser_path(slime_center, index, extent)
         positions = []
