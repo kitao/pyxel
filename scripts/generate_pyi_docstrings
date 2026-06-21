@@ -89,6 +89,9 @@ def _adapt_for_tilemap(item):
         elif p["name"] == "img":
             p["name"] = "tm"
             p["description"] = {"en": "Tilemap number (0-7) or Tilemap instance"}
+        elif p["name"] in ("u", "v"):
+            axis = "X" if p["name"] == "u" else "Y"
+            p["description"] = {"en": f"Source {axis} in the tilemap"}
 
 
 def _build_doc_map(api_data):

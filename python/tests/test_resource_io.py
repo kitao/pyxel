@@ -198,7 +198,6 @@ class TestScreenshot:
         pyxel.screenshot(path2, scale=2)
         assert Path(path1).exists()
         assert Path(path2).exists()
-        # Scale 2 should produce a larger file
         assert Path(path2).stat().st_size > Path(path1).stat().st_size
 
     def test_screencast(self, tmp_path):

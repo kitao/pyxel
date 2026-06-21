@@ -1101,8 +1101,8 @@ class Tilemap:
             x: Destination X
             y: Destination Y
             tm: Tilemap number (0-7) or Tilemap instance
-            u: Source X in the image bank
-            v: Source Y in the image bank
+            u: Source X in the tilemap
+            v: Source Y in the tilemap
             w: Width (negative to flip)
             h: Height (negative to flip)
             tilekey: Transparent tile
