@@ -80,11 +80,11 @@
     },
     "overview_body": {
       "en": "{0} (/ˈpɪksəl/) is a retro game engine for Python. With simple specifications inspired by retro gaming consoles, such as displaying only 16 colors and supporting 4 sound channels, you can easily enjoy making pixel-art-style games.",
-      "cn": "{0} (/ˈpɪksəl/) 是一个针对 Python 的复古游戏引擎。其规格受到复古游戏机的启发，例如仅支持 16 种颜色和 4 个声道，同时可以轻松享受制作像素艺术风格游戏的乐趣。",
+      "cn": "{0} (/ˈpɪksəl/) 是一个针对 Python 的复古游戏引擎。其规格受到复古游戏机的启发，例如仅支持 16 种颜色和 4 个通道，同时可以轻松享受制作像素艺术风格游戏的乐趣。",
       "de": "{0} (/ˈpɪksəl/) ist eine Retro-Spielengine für Python. Die Spezifikationen sind von Retro-Spielkonsolen inspiriert – z. B. werden nur 16 Farben und 4 Sound-Kanäle unterstützt –, sodass Sie ganz einfach Spiele im Pixel-Art-Stil erstellen können.",
       "es": "{0} (/ˈpɪksəl/) es un motor de juegos retro para Python. Las especificaciones están inspiradas en las consolas de juegos retro, como el soporte para solo 16 colores y 4 canales de sonido, lo que te permite disfrutar fácilmente de la creación de juegos con estilo de arte en píxeles.",
       "fr": "{0} (/ˈpɪksəl/) est un moteur de jeux rétro pour Python. Les spécifications sont inspirées des consoles de jeux rétro, comme le fait de n'afficher que 16 couleurs et de prendre en charge 4 canaux audio, vous permettant ainsi de profiter facilement de la création de jeux au style pixel art.",
-      "it": "{0} (/ˈpɪksəl/) è un motore di gioco retrò per Python. Le specifiche sono ispirate alle console di gioco retro, come il supporto di solo 16 colori e 4 canali audio, permettendoti di divertirti facilmente a creare giochi in stile pixel art.",
+      "it": "{0} (/ˈpɪksəl/) è un motore di gioco retrò per Python. Le specifiche sono ispirate alle console di gioco retrò, come il supporto di solo 16 colori e 4 canali audio, permettendoti di divertirti facilmente a creare giochi in stile pixel art.",
       "ja": "{0}（ピクセル）は Python 向けのレトロゲームエンジンです。使える色は 16 色のみ、同時に再生できる音は 4 音までなど、レトロゲーム機を意識したシンプルな仕様で、Python を使ってドット絵スタイルのゲームづくりが気軽に楽しめます。",
       "ko": "{0} (/ˈpɪksəl/)은 Python을 위한 복고풍 게임 엔진입니다. 사양은 복고풍 게임 콘솔에서 영감을 받아 16색만 지원하고 4개의 사운드 채널을 사용할 수 있어 픽셀 아트 스타일의 게임 제작을 쉽게 즐길 수 있습니다.",
       "pt": "{0} (/ˈpɪksəl/) é um motor de jogos retrô para Python. As especificações são inspiradas em consoles de jogos retrô, como o suporte para apenas 16 cores e 4 canais de som, permitindo que você desfrute facilmente da criação de jogos em estilo pixel art.",
@@ -104,7 +104,7 @@
       "pt": "As especificações e APIs do {0} são inspiradas no {1} e no {2}.",
       "ru": "Спецификации и API {0} вдохновлены {1} и {2}.",
       "tr": "{0}'in spesifikasyonları ve API'leri, {1} ve {2}'den ilham alınarak hazırlanmıştır.",
-      "uk": "Специфікації та API {0} були натхненні {1} та {2}."
+      "uk": "Специфікації та API {0} натхнені {1} та {2}."
     },
     "overview_license": {
       "en": "{0} is open source under the {1} and free to use. Let's start making retro games with {0}!",
@@ -235,7 +235,7 @@
     "specs_sounds": {
       "en": "4 channels with 64 definable sounds",
       "cn": "4 个通道，支持 64 种可定义声音",
-      "de": "4 Kanäle mit 64 definierbaren Klängen",
+      "de": "4 Kanäle mit 64 definierbaren Sounds",
       "es": "4 canales con 64 sonidos definibles",
       "fr": "4 canaux avec 64 sons définissables",
       "it": "4 canali con 64 suoni definibili",
@@ -249,7 +249,7 @@
     "specs_music": {
       "en": "8 music tracks that can combine any sounds",
       "cn": "8 个音乐轨道可组合任意声音",
-      "de": "8 Musiktracks, die beliebige Klänge kombinieren können",
+      "de": "8 Musiktracks, die beliebige Sounds kombinieren können",
       "es": "8 pistas de música que pueden combinar cualquier sonido",
       "fr": "8 pistes de musique capables de combiner n'importe quel son",
       "it": "8 tracce musicali in grado di combinare qualsiasi suono",
@@ -277,7 +277,7 @@
     "specs_tools": {
       "en": "Image and sound editing tools",
       "cn": "图像和声音编辑工具",
-      "de": "Werkzeuge zum Bearbeiten von Bildern und Klängen",
+      "de": "Werkzeuge zum Bearbeiten von Bildern und Sounds",
       "es": "Herramientas de edición de imágenes y sonidos",
       "fr": "Outils d'édition d'images et de sons",
       "it": "Strumenti di editing per immagini e suoni",
@@ -657,8 +657,8 @@
       "cn": "{0} 函数的参数是处理帧更新的 {1} 函数和处理屏幕绘制的 {2} 函数。",
       "de": "Die Argumente der {0}-Funktion sind die {1}-Funktion, die die Frame-Aktualisierungen verarbeitet, und die {2}-Funktion, die das Zeichnen auf dem Bildschirm übernimmt.",
       "es": "Los argumentos de la función {0} son la función {1}, que procesa las actualizaciones de los fotogramas, y la función {2}, que maneja el dibujo en la pantalla.",
-      "fr": "Les arguments de la fonction {0} sont la fonction {1}, qui traite les mises à jour de trames, et la fonction {2}, qui gère le dessin à l'écran.",
-      "it": "Gli argomenti della funzione {0} sono la funzione {1}, che gestisce gli aggiornamenti dei fotogrammi, e la funzione {2}, che gestisce il disegno sullo schermo.",
+      "fr": "Les arguments de la fonction {0} sont la fonction {1}, qui traite les mises à jour de frames, et la fonction {2}, qui gère le dessin à l'écran.",
+      "it": "Gli argomenti della funzione {0} sono la funzione {1}, che gestisce gli aggiornamenti dei frame, e la funzione {2}, che gestisce il disegno sullo schermo.",
       "ja": "{0} 関数の引数には、フレーム更新処理を行う {1} 関数と、描画処理を行う {2} 関数を指定します。",
       "ko": "{0} 함수의 인자는 프레임 업데이트를 처리하는 {1} 함수와 화면 그리기를 처리하는 {2} 함수입니다.",
       "pt": "Os argumentos da função {0} são a função {1}, que processa as atualizações de quadro, e a função {2}, que lida com a exibição na tela.",
@@ -759,7 +759,7 @@
       "it": "Interrompi il monitoraggio della directory premendo {0}.",
       "ja": "ディレクトリの監視は、{0} で終了します。",
       "ko": "디렉터리 모니터링은 {0}를 눌러 중지합니다.",
-      "pt": "Interrompa a vigilância do diretório pressionando {0}.",
+      "pt": "Interrompa o monitoramento do diretório pressionando {0}.",
       "ru": "Остановите наблюдение за каталогом, нажав {0}.",
       "tr": "Dizin izlemeyi {0} tuşlarına basarak durdurun.",
       "uk": "Зупиніть спостереження за каталогом, натиснувши {0}."
@@ -790,7 +790,7 @@
       "pt": "Durante a execução de uma aplicação Pyxel, as seguintes operações de teclas especiais podem ser realizadas.",
       "ru": "Во время выполнения приложения Pyxel можно выполнить следующие специальные действия с клавишами.",
       "tr": "Bir Pyxel uygulaması çalışırken, aşağıdaki özel tuş işlemleri gerçekleştirilebilir.",
-      "uk": "Під час виконання програми Pyxel можна виконати такі спеціальні дії з клавішами."
+      "uk": "Під час виконання застосунку Pyxel можна виконати такі спеціальні дії з клавішами."
     },
     "th_key": {
       "en": "Key",
@@ -851,7 +851,7 @@
     "resources_editor_body": {
       "en": "Pyxel Editor creates images and sounds used in a Pyxel application.",
       "cn": "Pyxel Editor 用于创建 Pyxel 应用程序使用的图像和声音。",
-      "de": "Pyxel Editor erstellt Bilder und Klänge, die in einer Pyxel-Anwendung verwendet werden.",
+      "de": "Pyxel Editor erstellt Bilder und Sounds, die in einer Pyxel-Anwendung verwendet werden.",
       "es": "Pyxel Editor crea imágenes y sonidos utilizados en una aplicación Pyxel.",
       "fr": "Pyxel Editor crée des images et des sons utilisés dans une application Pyxel.",
       "it": "Pyxel Editor crea immagini e suoni utilizzati in un'applicazione Pyxel.",
@@ -860,7 +860,7 @@
       "pt": "O Pyxel Editor cria imagens e sons usados em uma aplicação Pyxel.",
       "ru": "Pyxel Editor позволяет создавать изображения и звуки для приложений Pyxel.",
       "tr": "Pyxel Editor, Pyxel uygulamalarında kullanılan resim ve sesleri oluşturur.",
-      "uk": "Pyxel Editor дозволяє створювати зображення та звуки для програм Pyxel."
+      "uk": "Pyxel Editor дозволяє створювати зображення та звуки для застосунків Pyxel."
     },
     "resources_editor_save": {
       "en": "The created data is saved as a Pyxel resource file (.pyxres).",
@@ -949,7 +949,7 @@
     "resources_other_sounds": {
       "en": "Pyxel sounds and music can also be created using the following method:",
       "cn": "Pyxel 的声音和音乐也可以通过以下方法创建：",
-      "de": "Pyxel-Klänge und -Musik können ebenfalls mit der folgenden Methode erstellt werden:",
+      "de": "Pyxel-Sounds und -Musik können ebenfalls mit der folgenden Methode erstellt werden:",
       "es": "Los sonidos y la música de Pyxel también se pueden crear utilizando el siguiente método:",
       "fr": "Les sons et la musique Pyxel peuvent également être créés en utilisant la méthode suivante :",
       "it": "I suoni e la musica di Pyxel possono anche essere creati utilizzando il seguente metodo:",
@@ -1042,7 +1042,7 @@
       "pt": "Se você precisar incluir recursos ou módulos adicionais, coloque-os no diretório do aplicativo.",
       "ru": "Если вам нужно включить ресурсы или дополнительные модули, разместите их в каталоге приложения.",
       "tr": "Kaynakları veya ek modülleri dahil etmeniz gerekiyorsa, bunları uygulama dizinine yerleştirin.",
-      "uk": "Якщо потрібно включити ресурси або додаткові модулі, розмістіть їх у каталозі програми."
+      "uk": "Якщо потрібно включити ресурси або додаткові модулі, розмістіть їх у каталозі застосунку."
     },
     "dist_metadata": {
       "en": "Metadata can be displayed at runtime by specifying it in the following format within the startup script. Fields other than {0} and {1} are optional.",
@@ -1176,7 +1176,7 @@
       "de": "Verwenden Sie den {0}, um Fehlerberichte und Funktions- oder Verbesserungsanfragen einzureichen. Stellen Sie sicher, dass es vor der Einreichung eines neuen Problems keine ähnlichen offenen Probleme gibt.",
       "es": "Utiliza el {0} para enviar informes de errores y solicitudes de funciones o mejoras. Antes de enviar un nuevo problema, asegúrate de que no haya problemas abiertos similares.",
       "fr": "Utilisez l'{0} pour soumettre des rapports de bugs et des demandes de fonctionnalités ou d'améliorations. Avant de soumettre un nouveau problème, assurez-vous qu'il n'y a pas de problèmes ouverts similaires.",
-      "it": "Utilizza l'{0} per inviare rapporti di bug e richieste di funzionalità o miglioramenti. Prima di inviare un nuovo problema, assicurati che non ci siano problemi aperti simili.",
+      "it": "Utilizza l'{0} per inviare segnalazioni di bug e richieste di funzionalità o miglioramenti. Prima di inviare un nuovo problema, assicurati che non ci siano problemi aperti simili.",
       "ja": "不具合の報告や機能の要望は {0} で受け付けています。新しいレポートを作成する前に、同じ内容のものがないか確認をお願いします。",
       "ko": "버그 보고서 및 기능 또는 개선 요청을 제출하려면 {0}를 사용하세요. 새 이슈를 제출하기 전에 유사한 이슈가 열려 있지 않은지 확인해 주세요.",
       "pt": "Use o {0} para enviar relatórios de bugs e solicitações de recursos ou melhorias. Antes de enviar um novo problema, verifique se não há problemas semelhantes abertos.",
@@ -1217,22 +1217,22 @@
       "cn": "提交拉取请求",
       "de": "Pull-Requests einreichen",
       "es": "Enviar solicitudes de extracción",
-      "fr": "Soumettre des demandes de tirage",
-      "it": "Inviare richieste di pull",
+      "fr": "Soumettre des pull requests",
+      "it": "Inviare pull request",
       "ja": "プルリクエスト",
       "ko": "풀 리퀘스트 제출",
       "pt": "Enviando Pull Requests",
       "ru": "Отправка запросов на изменение",
       "tr": "Pull İsteği Gönderme",
-      "uk": "Подання запитів на витягування"
+      "uk": "Подання пул-реквестів"
     },
     "contrib_pr_body": {
       "en": "Patches and fixes are accepted in the form of pull requests (PRs). Make sure that the issue the pull request addresses is open in the Issue Tracker.",
       "cn": "补丁和修复以拉取请求 (PR) 的形式接受。请确保拉取请求所针对的问题在问题跟踪器中是开放的。",
       "de": "Patches und Fixes werden in Form von Pull-Requests (PRs) akzeptiert. Stellen Sie sicher, dass das Problem, das der Pull-Request behandelt, im Issue Tracker offen ist.",
       "es": "Los parches y correcciones se aceptan en forma de solicitudes de extracción (PRs). Asegúrate de que el problema que aborda la solicitud de extracción esté abierto en el Issue Tracker.",
-      "fr": "Les correctifs et modifications sont acceptés sous forme de demandes de tirage (PR). Assurez-vous que le problème que la demande de tirage aborde est ouvert dans l'Issue Tracker.",
-      "it": "Le patch e le correzioni sono accettate sotto forma di richieste di pull (PR). Assicurati che il problema a cui si riferisce la richiesta di pull sia aperto nell'Issue Tracker.",
+      "fr": "Les correctifs et modifications sont acceptés sous forme de pull requests (PR). Assurez-vous que le problème que la pull request aborde est ouvert dans l'Issue Tracker.",
+      "it": "Le patch e le correzioni sono accettate sotto forma di pull request (PR). Assicurati che il problema a cui si riferisce la pull request sia aperto nell'Issue Tracker.",
       "ja": "パッチや修正はプルリクエスト (PR) として受け付けています。提出前に、問題がすでに解決済みでないか Issue Tracker で確認をお願いします。",
       "ko": "패치 및 수정 사항은 풀 리퀘스트(PR) 형식으로 수락됩니다. 풀 리퀘스트가 해결하는 이슈는 이슈 트래커에 열려 있어야 합니다.",
       "pt": "Patches e correções são aceitos na forma de pull requests (PRs). Certifique-se de que o problema que o pull request aborda está aberto no Rastreador de Problemas.",
@@ -1245,8 +1245,8 @@
       "cn": "提交拉取请求意味着您同意根据 {0} 授权您的贡献。",
       "de": "Die Einreichung eines Pull-Requests impliziert, dass Sie zustimmen, Ihren Beitrag unter der {0} zu lizenzieren.",
       "es": "Enviar una solicitud de extracción implica que aceptas licenciar tu contribución bajo la {0}.",
-      "fr": "Soumettre une demande de tirage implique que vous acceptez de licencier votre contribution sous la {0}.",
-      "it": "Inviare una richiesta di pull implica che accetti di concedere in licenza il tuo contributo sotto la {0}.",
+      "fr": "Soumettre une pull request implique que vous acceptez de licencier votre contribution sous la {0}.",
+      "it": "Inviare una pull request implica che accetti di concedere in licenza il tuo contributo sotto la {0}.",
       "ja": "提出されたプルリクエストは、{0} で公開することに同意したものと見なされます。",
       "ko": "풀 리퀘스트를 제출하면 {0} 아래에서 기여 내용을 라이선스하는 데 동의하는 것으로 간주됩니다.",
       "pt": "Enviar um pull request implica que você concorda em licenciar sua contribuição sob a {0}.",
@@ -1756,7 +1756,7 @@
         "cn": "切换性能监视器 (FPS/`update` 时间/`draw` 时间)",
         "de": "Den Leistungsmonitor (FPS/`update`-Zeit/`draw`-Zeit) umschalten",
         "es": "Alternar el monitor de rendimiento (FPS/tiempo de `update`/tiempo de `draw`)",
-        "fr": "Basculer le moniteur de performance (FPS/temps de `update`/temps de `draw`)",
+        "fr": "Basculer le moniteur de performances (FPS/temps de `update`/temps de `draw`)",
         "it": "Attivare/disattivare il monitor delle prestazioni (FPS/tempo di `update`/tempo di `draw`)",
         "ja": "パフォーマンスモニター（FPS/`update` 時間/`draw` 時間）の表示を切り替える",
         "ko": "성능 모니터 (FPS/`update` 시간/`draw` 시간) 전환",

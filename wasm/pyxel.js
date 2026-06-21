@@ -413,7 +413,6 @@ const _createScreenElements = async () => {
     window._pyxelResizeListenerAttached = true;
   }
 
-  // Handle file drop
   pyxelScreen.addEventListener("dragover", (e) => {
     e.preventDefault();
     e.dataTransfer.dropEffect = "copy";
@@ -426,13 +425,11 @@ const _createScreenElements = async () => {
     }
   });
 
-  // Add canvas for SDL2
   const sdl2Canvas = document.createElement("canvas");
   sdl2Canvas.id = "canvas";
   sdl2Canvas.tabIndex = -1;
   pyxelScreen.appendChild(sdl2Canvas);
 
-  // Add image for logo
   const logoImage = document.createElement("img");
   logoImage.id = "pyxel-logo";
   logoImage.src = `${_scriptDir}${PYXEL_LOGO_PATH}`;
@@ -817,7 +814,6 @@ const _addVirtualGamepad = (mode) => {
   _addVirtualGamepad._invalidateRects = invalidateRects;
   window.addEventListener("resize", invalidateRects);
 
-  // Set touch event handler
   const touchHandler = (e) => {
     if (!cachedRects) {
       const cross = gamepadCrossImage.getBoundingClientRect();

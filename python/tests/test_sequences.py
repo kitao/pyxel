@@ -147,7 +147,6 @@ class TestSeqIteration:
         assert col in pyxel.colors
 
     def test_not_contains(self):
-        # A value not in the palette
         assert 0x999999 not in pyxel.colors
 
     def test_iter_channels(self):
@@ -247,7 +246,6 @@ class TestSeqInsert:
         pyxel.colors.insert(0, 0xABCDEF)
         assert pyxel.colors[0] == 0xABCDEF
         assert len(pyxel.colors) == len(original) + 1
-        # Original first color shifted to index 1
         assert pyxel.colors[1] == original[0]
         del pyxel.colors[0]
         assert len(pyxel.colors) == len(original)
@@ -327,7 +325,6 @@ class TestSeqIadd:
 
 class TestSeqValueOps:
     def test_eq_same_content(self):
-        # Compare a copy of colors list against the sequence
         colors_list = list(pyxel.colors)
         assert pyxel.colors == colors_list
 

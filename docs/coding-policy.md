@@ -142,7 +142,7 @@ Tests cover the product in four layers: Rust unit tests for platform-independent
 - The maintainer writes in Japanese; Japanese is the source of truth for translation. Translations route through English first, then to every other language.
 
 - Each target language follows its own technical-writing conventions and retains established English loanwords where the target language conventionally uses them.
-  - e.g., German and Romance languages (de, es, it, pt) keep "Editor", "Launcher", "Gamepad", and similar technical terms in English; French keeps "Editor" and "Launcher" but conventionally uses "manette" for gamepad.
+  - e.g., German, Spanish, Italian, and Portuguese keep loanwords like "Editor" and "Gamepad" in English; French instead uses native forms such as "éditeur" and "manette", keeping only product names like "Pyxel Editor" in English.
 
 - A target-language translation is compared against the English version, not the Japanese source.
   - e.g., a German `"Installation des Pakets Anleitung"` mirrors a Japanese compound-noun chain and is rewritten as `"Paket-Installationsanleitung"`.

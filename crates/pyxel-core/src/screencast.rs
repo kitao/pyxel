@@ -310,7 +310,8 @@ impl Screencast {
         }
     }
 
-    // Returns true if color overflow occurred (> 256 entries needed).
+    // Returns true if color overflow occurred (> 256 entries needed). The many
+    // arguments thread caller-owned scratch buffers in to avoid per-frame allocation.
     #[allow(clippy::too_many_arguments)]
     fn encode_region(
         src: &[Rgb24],
