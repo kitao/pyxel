@@ -290,7 +290,7 @@
     },
     "image_body": {
       "en": "A mode for editing images in each image bank. You can create pixel art for sprites and tiles.",
-      "cn": "编辑各图像库的图像。可以逐像素创建精灵和图块用的图像。",
+      "cn": "编辑各图像库的图像。可以逐像素创建精灵和瓦片用的图像。",
       "de": "Modus zur Bearbeitung der Bilder in den einzelnen Bildbanken. Sprites und Kachelbilder können pixelgenau erstellt werden.",
       "es": "Modo para editar las imágenes de cada banco de imágenes. Permite crear imágenes para sprites y tiles píxel a píxel.",
       "fr": "Mode d'édition des images de chaque banque d'images. Permet de créer des images pour sprites et tuiles pixel par pixel.",
@@ -374,7 +374,7 @@
     },
     "tilemap_body": {
       "en": "A mode for arranging image bank images as tile patterns and editing tilemaps.",
-      "cn": "将图像库的图像作为图块图案排列，编辑瓦片地图。",
+      "cn": "将图像库的图像作为瓦片图案排列，编辑瓦片地图。",
       "de": "Modus zur Bearbeitung von Tilemaps durch Platzierung von Bildbankgrafiken als Kachelmuster.",
       "es": "Modo para editar tilemaps colocando imágenes del banco de imágenes como patrones de tiles.",
       "fr": "Mode d'édition des tilemaps en plaçant les images de la banque d'images comme motifs de tuiles.",
@@ -416,7 +416,7 @@
     },
     "tilemap_multi_title": {
       "en": "Placing Multiple Tiles",
-      "cn": "放置多个图块",
+      "cn": "放置多个瓦片",
       "de": "Mehrere Kacheln platzieren",
       "es": "Colocación de múltiples tiles",
       "fr": "Placement de tuiles multiples",
@@ -430,7 +430,7 @@
     },
     "tilemap_multi_body": {
       "en": "When you draw with multiple tile images selected by dragging in the tile image view, the selected tiles are placed as a repeating pattern. For example, if you select two tiles vertically and draw with the pen, the two tiles are placed alternately in a repeating pattern. The same applies when selecting multiple tiles both horizontally and vertically. The drawing start position corresponds to the top-left of the selection.",
-      "cn": "在图块图像视图中拖动选择多个图块图像后进行绘制，所选范围的图块将作为重复图案排列。例如，纵向选择 2 个图块后用画笔绘制，2 个图块会交替重复排列。横纵选择多个图块时也同样以该范围重复绘制。绘制起始位置对应选择范围的左上角。",
+      "cn": "在瓦片图像视图中拖动选择多个瓦片图像后进行绘制，所选范围的瓦片将作为重复图案排列。例如，纵向选择 2 个图块后用画笔绘制，2 个图块会交替重复排列。横纵选择多个图块时也同样以该范围重复绘制。绘制起始位置对应选择范围的左上角。",
       "de": "Wenn mehrere Kachelbilder durch Ziehen in der Kachelbild-Ansicht ausgewählt werden, werden sie als sich wiederholendes Muster platziert. Beispiel: Bei Auswahl von zwei vertikal angeordneten Kacheln werden diese abwechselnd gezeichnet. Gleiches gilt für mehrdimensionale Auswahlen. Die Zeichenstartposition entspricht der linken oberen Ecke der Auswahl.",
       "es": "Al seleccionar varios tiles arrastrando en la vista de imagen de tiles y dibujar, los tiles seleccionados se colocan como un patrón repetido. Por ejemplo, al seleccionar 2 tiles verticalmente y dibujar con el lápiz, los 2 tiles se colocan alternadamente. Lo mismo ocurre al seleccionar múltiples tiles horizontal y verticalmente. La posición de inicio del dibujo corresponde a la esquina superior izquierda de la selección.",
       "fr": "Sélectionnez plusieurs tuiles par glisser dans la vue des tuiles, puis dessinez pour placer les tuiles en motif répétitif. Par exemple, en sélectionnant 2 tuiles verticalement et en dessinant avec le stylo, les 2 tuiles alternent de façon répétée. La sélection de tuiles en largeur et hauteur fonctionne de la même manière. La position de début du dessin correspond au coin supérieur gauche de la sélection.",
@@ -627,13 +627,13 @@
     "sound_volume_body": {
       "en": "With the cursor on the VOL row, press number keys 0–7 to set the volume (0 = silent, 7 = maximum). The default when not set is 7. Using maximum volume on multiple channels simultaneously may result in excessive loudness.",
       "cn": "将光标移至 VOL 行，按 0~7 数字键设置音量 (0=静音，7=最大)。未设置时默认为 7。多通道同时使用最大音量时，音量可能过大。",
-      "de": "Bei Cursor in der VOL-Zeile die Zifferntasten 0–7 drücken, um die Lautstärke einzustellen (0=stumm, 7=maximal). Standard ist 7. Bei gleichzeitiger Maximallautstärke auf mehreren Kanälen kann der Ton übersteuern.",
-      "es": "Con el cursor en la fila VOL, presione las teclas numéricas 0~7 para configurar el volumen (0=silencio, 7=máximo). El valor predeterminado es 7. Al usar volumen máximo en varios canales simultáneamente, el sonido puede distorsionarse.",
-      "fr": "Lorsque le curseur est sur la ligne VOL, appuyez sur les touches 0~7 pour définir le volume (0 = silence, 7 = maximum). La valeur par défaut est 7. L'utilisation du volume maximum sur plusieurs canaux simultanément peut provoquer une saturation.",
+      "de": "Bei Cursor in der VOL-Zeile die Zifferntasten 0–7 drücken, um die Lautstärke einzustellen (0=stumm, 7=maximal). Standard ist 7. Bei gleichzeitiger Maximallautstärke auf mehreren Kanälen kann es zu übermäßiger Lautstärke kommen.",
+      "es": "Con el cursor en la fila VOL, presione las teclas numéricas 0~7 para configurar el volumen (0=silencio, 7=máximo). El valor predeterminado es 7. Al usar volumen máximo en varios canales simultáneamente, el sonido puede resultar excesivamente alto.",
+      "fr": "Lorsque le curseur est sur la ligne VOL, appuyez sur les touches 0~7 pour définir le volume (0 = silence, 7 = maximum). La valeur par défaut est 7. L'utilisation du volume maximum sur plusieurs canaux simultanément peut provoquer un volume excessif.",
       "it": "Con il cursore sulla riga VOL, premere i tasti numerici 0–7 per impostare il volume (0=muto, 7=massimo). Il valore predefinito è 7. L'uso del volume massimo su più canali contemporaneamente potrebbe causare un livello sonoro eccessivo.",
       "ja": "VOL 行にカーソルがある状態で、0〜7 の数字キーを押して音量を設定します（0=無音、7=最大）。未設定時のデフォルトは 7 です。複数チャンネルで同時に最大音量を使用すると音量が大きくなりすぎる場合があります。",
       "ko": "VOL행에 커서가 있는 상태에서 0~7 숫자 키를 눌러 음량을 설정합니다(0=무음, 7=최대). 미설정 시 기본값은 7입니다. 여러 채널에서 동시에 최대 음량을 사용하면 음량이 과도하게 커질 수 있습니다.",
-      "pt": "Com o cursor na linha VOL, pressione as teclas numéricas de 0~7 para definir o volume (0=mudo, 7=máximo). O padrão quando não definido é 7. Usar volume máximo em múltiplos canais simultaneamente pode causar distorção.",
+      "pt": "Com o cursor na linha VOL, pressione as teclas numéricas de 0~7 para definir o volume (0=mudo, 7=máximo). O padrão quando não definido é 7. Usar volume máximo em múltiplos canais simultaneamente pode resultar em volume sonoro excessivo.",
       "ru": "При курсоре на строке VOL нажмите клавишу 0–7 для установки громкости (0 = тишина, 7 = максимум). По умолчанию — 7. При одновременном использовании максимальной громкости на нескольких каналах звук может быть слишком громким.",
       "tr": "İmleç VOL satırındayken 0–7 tuşlarına basarak ses düzeyini ayarlayın (0 = sessiz, 7 = maksimum). Varsayılan 7'dir. Birden fazla kanalda aynı anda maksimum ses düzeyi kullanıldığında ses çok yüksek olabilir.",
       "uk": "При курсорі на рядку VOL натисніть клавішу 0–7 для встановлення гучності (0 = тиша, 7 = максимум). За замовчуванням — 7. При одночасному використанні максимальної гучності на кількох каналах звук може бути занадто гучним."
@@ -794,7 +794,7 @@
     },
     "tilemap_canvas_body": {
       "en": "The editing area selected in the tilemap view is displayed magnified. Place tile images selected in the tile image view. Drawing tools and selection shortcuts are shared with the Image Editor. Note that all cells default to tile (0,0), so it is recommended to keep image bank position (0,0) empty.",
-      "cn": "在瓦片地图视图中选择的编辑区域以放大形式显示。放置在图块图像视图中选择的图块图像。绘制工具和范围选择的快捷键与图像编辑器通用。注意：所有单元格的初始值为图块 (0,0)，建议将图像库的 (0,0) 留空。",
+      "cn": "在瓦片地图视图中选择的编辑区域以放大形式显示。放置在瓦片图像视图中选择的瓦片图像。绘制工具和范围选择的快捷键与图像编辑器通用。注意：所有单元格的初始值为图块 (0,0)，建议将图像库的 (0,0) 留空。",
       "de": "Der in der Tilemap-Ansicht ausgewählte Bearbeitungsbereich wird vergrößert dargestellt. Platzieren Sie das in der Kachelbild-Ansicht gewählte Kachelbild. Zeichenwerkzeuge und Bereichsauswahl-Kürzel sind mit dem Bildeditor identisch. Hinweis: Da alle Zellen initial Kachel (0,0) sind, wird empfohlen, Position (0,0) der Bildbank leer zu lassen.",
       "es": "El área de edición seleccionada en la vista del tilemap se muestra ampliada. Coloque la imagen de tile seleccionada en la vista de imagen de tiles. Los atajos de herramientas de dibujo y selección de rango son los mismos que en el editor de imágenes. El valor inicial de todas las celdas es el tile (0,0), por lo que se recomienda dejar vacía la posición (0,0) del banco de imágenes.",
       "fr": "La zone d'édition sélectionnée dans la vue de la tilemap est affichée en zoom. Placez les tuiles sélectionnées dans la vue des tuiles. Les raccourcis des outils de dessin et de sélection sont les mêmes que dans l'éditeur d'images. La valeur initiale de toutes les cellules étant la tuile (0,0), il est recommandé de laisser la position (0,0) de la banque d'images vide.",
@@ -822,7 +822,7 @@
     },
     "tilemap_tileview_body": {
       "en": "Displays the referenced image bank. Select tile images with the white frame.",
-      "cn": "参照图像库的显示。用白色边框选择要放置的图块图像。",
+      "cn": "参照图像库的显示。用白色边框选择要放置的瓦片图像。",
       "de": "Ansicht der referenzierten Bildbank. Das zu platzierende Kachelbild wird mit dem weißen Rahmen ausgewählt.",
       "es": "Vista del banco de imágenes de referencia. Seleccione la imagen de tile a colocar con el marco blanco.",
       "fr": "Affichage de la banque d'images de référence. Sélectionnez la tuile à placer avec le cadre blanc.",
@@ -850,7 +850,7 @@
     },
     "tilemap_imgnum_body": {
       "en": "Switch the image bank (0–2) referenced for tile images.",
-      "cn": "切换图块图像参照的图像库 (0~2)。",
+      "cn": "切换瓦片图像参照的图像库 (0~2)。",
       "de": "Wechselt die referenzierte Bildbank für Kachelbilder (0–2).",
       "es": "Cambie el banco de imágenes de referencia para tiles (0~2).",
       "fr": "Change la banque d'images de référence pour les tuiles (0~2).",
@@ -1164,7 +1164,7 @@
       {
         "label": {
           "en": "Tile Image View",
-          "cn": "图块图像视图",
+          "cn": "瓦片图像视图",
           "de": "Kachelbild-Ansicht",
           "es": "Vista de imagen de tiles",
           "fr": "Vue des tuiles",
@@ -1987,7 +1987,7 @@
       },
       "value": {
         "en": "256×256 tiles each",
-        "cn": "每个 256×256 图块",
+        "cn": "每个 256×256 瓦片",
         "de": "256×256 Kacheln pro Karte",
         "es": "256×256 tiles cada uno",
         "fr": "256×256 tuiles chacune",
@@ -2003,7 +2003,7 @@
     {
       "label": {
         "en": "Tile Image",
-        "cn": "图块图像",
+        "cn": "瓦片图像",
         "de": "Kachelbild",
         "es": "Imagen de tile",
         "fr": "Image de tuile",
@@ -2066,7 +2066,7 @@
       "key": "Right Click",
       "action": {
         "en": "Pick the tile at the cursor position (tile pick)",
-        "cn": "获取光标位置的图块 (取图块)",
+        "cn": "获取光标位置的瓦片 (取瓦片)",
         "de": "Kachel an der Cursorposition aufnehmen (Kachelpipette)",
         "es": "Obtener el tile en la posición del cursor (selector de tile)",
         "fr": "Prélever la tuile à la position du curseur (pipette de tuile)",
@@ -2951,7 +2951,7 @@
       },
       "desc": {
         "en": "Edit images (image banks) used for sprites and tiles",
-        "cn": "编辑用于精灵和图块的图像 (图像库)",
+        "cn": "编辑用于精灵和瓦片的图像 (图像库)",
         "de": "Bilder (Bildbanken) für Sprites und Kacheln bearbeiten",
         "es": "Editar imágenes (bancos de imágenes) para sprites y tiles",
         "fr": "Éditer les images (banques d'images) utilisées pour les sprites et les tuiles",
@@ -2982,7 +2982,7 @@
       },
       "desc": {
         "en": "Arrange image bank images as tiles to compose maps",
-        "cn": "将图像库的图像作为图块排列构成地图",
+        "cn": "将图像库的图像作为瓦片排列构成地图",
         "de": "Bildbankgrafiken als Kacheln anordnen und Karten erstellen",
         "es": "Componer mapas colocando imágenes del banco como tiles",
         "fr": "Composer des cartes en disposant les images de la banque comme tuiles",
@@ -2992,7 +2992,7 @@
         "pt": "Compor mapas organizando imagens do banco de imagens como tiles",
         "ru": "Составление карт из тайлов банка изображений",
         "tr": "Görüntü bankası resimlerini karo olarak dizerek harita oluşturur",
-        "uk": "Складання мап із тайлів банку зображень"
+        "uk": "Складання карт із тайлів банку зображень"
       }
     },
     {

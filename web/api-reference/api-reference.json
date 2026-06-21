@@ -2036,7 +2036,7 @@
                 "de": "Zieltaste",
                 "es": "Tecla objetivo",
                 "fr": "Touche cible",
-                "it": "Tasto obiettivo",
+                "it": "Tasto di destinazione",
                 "ja": "対象キー",
                 "ko": "대상 키",
                 "pt": "Tecla alvo",
@@ -2097,7 +2097,7 @@
                 "de": "Zieltaste",
                 "es": "Tecla objetivo",
                 "fr": "Touche cible",
-                "it": "Tasto obiettivo",
+                "it": "Tasto di destinazione",
                 "ja": "対象キー",
                 "ko": "대상 키",
                 "pt": "Tecla alvo",
@@ -3367,7 +3367,7 @@
             "ko": "그리기 시 디더링 (의사 반투명)을 적용한다. alpha는 0.0-1.0 범위로 설정한다.",
             "pt": "Aplica dithering (pseudo-transparência) ao desenhar. Define alpha no intervalo 0.0-1.0.",
             "ru": "Применяет дизеринг (псевдопрозрачность) при рисовании. Значение alpha задаётся в диапазоне 0.0-1.0.",
-            "tr": "Çizim sırasında renk karıştırma (sözde saydamlık) uygular. alpha değerini 0.0-1.0 aralığında ayarlar.",
+            "tr": "Çizim sırasında dithering (sözde saydamlık) uygular. alpha değerini 0.0-1.0 aralığında ayarlar.",
             "uk": "Застосовує дизеринг (псевдопрозорість) при малюванні. Значення alpha задається в діапазоні 0.0-1.0."
           },
           "params": [
@@ -5704,9 +5704,9 @@
                   "ja": "1 — 紺 (#2b335f)",
                   "ko": "1 — 남색 (#2b335f)",
                   "pt": "1 — Azul-marinho (#2b335f)",
-                  "ru": "1 — Нейви (#2b335f)",
+                  "ru": "1 — Синий (#2b335f)",
                   "tr": "1 — Lacivert (#2b335f)",
-                  "uk": "1 — Нейві (#2b335f)"
+                  "uk": "1 — Темно-синій (#2b335f)"
                 },
                 {
                   "en": "2 — Purple (#7e2072)",
@@ -6106,10 +6106,10 @@
             "it": "Lista delle definizioni di tono (istanze della classe Tone) (0-3).",
             "ja": "トーン定義（Tone クラスのインスタンス）のリスト (0-3)",
             "ko": "톤 정의 (Tone 클래스의 인스턴스) 목록 (0-3)",
-            "pt": "Lista das definições de tom (instâncias da classe Tone) (0-3).",
+            "pt": "Lista das definições de timbre (instâncias da classe Tone) (0-3).",
             "ru": "Список определений тембров (экземпляры класса Tone) (0-3).",
             "tr": "Ton tanımlarının listesi (Tone sınıfının örnekleri) (0-3).",
-            "uk": "Список визначень тонів (екземпляри класу Tone) (0-3)."
+            "uk": "Список визначень тембрів (екземпляри класу Tone) (0-3)."
           },
           "value_type": "list[Tone]",
           "advanced": true
@@ -6535,7 +6535,7 @@
               "description": {
                 "en": "Instrumentation (0-3). 0: melody+reverb+bass (3ch), 1: melody+bass+drums (3ch), 2: melody+sub+bass (3ch), 3: melody+sub+bass+drums (4ch).",
                 "cn": "编制 (0-3)。0: 旋律+混响+贝斯 (3ch), 1: 旋律+贝斯+鼓 (3ch), 2: 旋律+副旋律+贝斯 (3ch), 3: 旋律+副旋律+贝斯+鼓 (4ch)。",
-                "de": "Besetzung (0-3). 0: Melodie+Reverb+Bass (3ch), 1: Melodie+Bass+Drums (3ch), 2: Melodie+Sub+Bass (3ch), 3: Melodie+Sub+Bass+Drums (4ch).",
+                "de": "Instrumentierung (0-3). 0: Melodie+Reverb+Bass (3ch), 1: Melodie+Bass+Drums (3ch), 2: Melodie+Sub+Bass (3ch), 3: Melodie+Sub+Bass+Drums (4ch).",
                 "es": "Instrumentación (0-3). 0: melodía+reverb+bajo (3ch), 1: melodía+bajo+batería (3ch), 2: melodía+sub+bajo (3ch), 3: melodía+sub+bajo+batería (4ch).",
                 "fr": "Instrumentation (0-3). 0: mélodie+reverb+basse (3ch), 1: mélodie+basse+batterie (3ch), 2: mélodie+sub+basse (3ch), 3: mélodie+sub+basse+batterie (4ch).",
                 "it": "Strumentazione (0-3). 0: melodia+reverb+basso (3ch), 1: melodia+basso+batteria (3ch), 2: melodia+sub+basso (3ch), 3: melodia+sub+basso+batteria (4ch).",
@@ -6615,7 +6615,7 @@
             "it": "Costanti di toni ed effetti",
             "ja": "トーン・エフェクト定数",
             "ko": "톤 및 이펙트 상수",
-            "pt": "Constantes de tons e efeitos",
+            "pt": "Constantes de timbres e efeitos",
             "ru": "Константы тембров и эффектов",
             "tr": "Ton ve efekt sabitleri",
             "uk": "Константи тонів та ефектів"
@@ -6632,10 +6632,10 @@
                 "it": "Toni",
                 "ja": "トーン",
                 "ko": "톤",
-                "pt": "Tons",
+                "pt": "Timbres",
                 "ru": "Тембры",
                 "tr": "Tonlar",
-                "uk": "Тони"
+                "uk": "Тембри"
               },
               "constants": [
                 "TONE_TRIANGLE",
@@ -6862,10 +6862,10 @@
                   "it": "4 — Numero di tipi di tono (0-3)",
                   "ja": "4 — トーン種類数 (0-3)",
                   "ko": "4 — 톤 타입 수 (0-3)",
-                  "pt": "4 — Número de tipos de tom (0-3)",
+                  "pt": "4 — Número de tipos de timbre (0-3)",
                   "ru": "4 — Количество типов тембров (0-3)",
                   "tr": "4 — Ton türü sayısı (0-3)",
-                  "uk": "4 — Кількість типів тонів (0-3)"
+                  "uk": "4 — Кількість типів тембрів (0-3)"
                 },
                 {
                   "en": "64 — Number of sounds (0-63)",
@@ -9441,7 +9441,7 @@
             "de": "Liste der Noten (0-59). Höhere Werte erzeugen höhere Tonhöhen. 33 = 'A2' (440 Hz). Pausen sind -1.",
             "es": "Lista de notas (0-59). Los valores más altos producen tonos más altos. 33 = 'A2' (440 Hz). Los silencios son -1.",
             "fr": "Liste des notes (0-59). Les valeurs plus élevées produisent des sons plus aigus. 33 = 'A2' (440 Hz). Les silences sont -1.",
-            "it": "Lista delle note (0-59). Valori più alti producono tonalità più alte. 33 = 'A2' (440 Hz). Le pause sono -1.",
+            "it": "Lista delle note (0-59). Valori più alti producono altezze più alte. 33 = 'A2' (440 Hz). Le pause sono -1.",
             "ja": "音程 (0-59) のリスト。数値が大きいほど音程は高く、33 で 'A2' (440Hz)。休符は -1。",
             "ko": "음정 (0-59) 목록. 값이 클수록 음이 높아지며, 33은 'A2' (440Hz). 쉼표는 -1.",
             "pt": "Lista de notas (0-59). Valores mais altos produzem tons mais altos. 33 = 'A2' (440 Hz). Pausas são -1.",
@@ -9579,7 +9579,7 @@
               "description": {
                 "en": "Tone string",
                 "cn": "音色字符串",
-                "de": "Klangzeichenkette",
+                "de": "Tonzeichenkette",
                 "es": "Cadena de tonos",
                 "fr": "Chaîne de timbres",
                 "it": "Stringa dei toni",
@@ -10366,7 +10366,7 @@
             "en": "Pitch detune in cents (100 cents = 1 semitone). Defaults to 0.",
             "cn": "音高失谐值 (音分；100 音分 = 1 个半音)。默认为 0。",
             "de": "Tonhöhen-Detune in Cent (100 Cent = 1 Halbton). Standard ist 0.",
-            "es": "Detune de tono en cents (100 cents = 1 semitono). Por defecto es 0.",
+            "es": "Desfase de tono en cents (100 cents = 1 semitono). Por defecto es 0.",
             "fr": "Detune de hauteur en cents (100 cents = 1 demi-ton). Par défaut : 0.",
             "it": "Detune del tono in cent (100 cent = 1 semitono). Il valore predefinito è 0.",
             "ja": "ピッチのデチューン値（セント単位、100 セント = 半音 1 つ）。デフォルトは 0。",
@@ -10605,7 +10605,7 @@
             "it": "Modalità del tono (0: Wavetable, 1: ShortPeriodNoise, 2: LongPeriodNoise).",
             "ja": "トーンモード (0: Wavetable, 1: ShortPeriodNoise, 2: LongPeriodNoise)",
             "ko": "톤 모드 (0: Wavetable, 1: ShortPeriodNoise, 2: LongPeriodNoise)",
-            "pt": "Modo de tom (0: Wavetable, 1: ShortPeriodNoise, 2: LongPeriodNoise).",
+            "pt": "Modo de timbre (0: Wavetable, 1: ShortPeriodNoise, 2: LongPeriodNoise).",
             "ru": "Режим тона (0: Wavetable, 1: ShortPeriodNoise, 2: LongPeriodNoise).",
             "tr": "Ton modu (0: Wavetable, 1: ShortPeriodNoise, 2: LongPeriodNoise).",
             "uk": "Режим тону (0: Wavetable, 1: ShortPeriodNoise, 2: LongPeriodNoise)."
@@ -10668,7 +10668,7 @@
             "it": "Guadagno del tono. Il valore predefinito è 1.0.",
             "ja": "トーンゲイン。デフォルトは 1.0。",
             "ko": "톤 게인. 기본값은 1.0.",
-            "pt": "Ganho do tom. O padrão é 1.0.",
+            "pt": "Ganho do timbre. O padrão é 1.0.",
             "ru": "Усиление тона. По умолчанию 1.0.",
             "tr": "Ton kazancı. Varsayılan 1.0.",
             "uk": "Підсилення тону. За замовчуванням 1.0."

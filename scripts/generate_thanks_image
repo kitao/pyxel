@@ -110,7 +110,6 @@ def load_example_image(example_id, frame):
 
 
 def draw_example_images(thanks_image):
-    # Load and resize example images
     example_images = []
     for example_id, frame in EXAMPLE_IMAGES:
         image = load_example_image(example_id, frame)
@@ -119,11 +118,9 @@ def draw_example_images(thanks_image):
         )
         example_images.append(image)
 
-    # Randomize image order
     random.seed(EXAMPLE_RANDOM_SEED)
     random.shuffle(example_images)
 
-    # Draw example images
     example_x = EXAMPLE_X
     while example_x < THANKS_IMAGE_WIDTH and example_images:
         col_height = 0
@@ -144,7 +141,6 @@ def draw_example_images(thanks_image):
 
 
 def draw_message_image(thanks_image):
-    # Create the message image with Pyxel
     base_image = pyxel.Image(BASE_MESSAGE_WIDTH, BASE_MESSAGE_HEIGHT)
     base_image.cls(0)
     base_image.rectb(0, 0, BASE_MESSAGE_WIDTH, BASE_MESSAGE_HEIGHT, 7)
