@@ -73,6 +73,7 @@ CAPTURE_PLANS = {
         {"frame": 70, "press": [pyxel.KEY_UP]},
         {"frame": 100, "press": [pyxel.KEY_UP, pyxel.KEY_SPACE]},
     ],
+    "c06_3d_physics": [{"frame": 1}, {"frame": 70}, {"frame": 140}],
     # Static-screen and launcher captures
     "05_color_palette": [{"frame": 0}],
     "13_custom_font": [{"frame": 0}],

@@ -9,6 +9,7 @@
 - Added Example C03 for custom Pyxel Cube drawing primitives
 - Added Example C04 for Pyxel Cube mesh import and motion playback
 - Added Example C05 for Pyxel Cube 3D collision response
+- Added Example C06 for Pyxel Cube 3D physics
 - Fixed Pyxel Cube near-camera clipping and line rendering slowdown
 - Fixed Pyxel Cube rounded-box push-back precision
 
