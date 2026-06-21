@@ -1,7 +1,8 @@
 #![warn(clippy::pedantic)]
 // Relax pedantic lints that fire pervasively in engine code without flagging real
 // issues: numeric casts in pixel/audio math, the global Pyxel singleton's static-mut
-// access, wide hot-path signatures, and doc/must-use nags.
+// access, wide hot-path signatures, cube's manual geometry midpoints, and
+// doc/must-use nags.
 #![allow(
     static_mut_refs,
     clippy::cast_lossless,
