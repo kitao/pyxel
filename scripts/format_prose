@@ -4,12 +4,12 @@
 # text, so the prose stays uniform without manual review.
 
 import json
+from pathlib import Path
 import re
 import subprocess
 import unicodedata
-from pathlib import Path
 
-_ROOT = Path(__file__).resolve().parent.parent
+ROOT_DIR = Path(__file__).resolve().parent.parent
 
 # Kana and kanji (the middle dot and full-width punctuation excluded) that take a
 # half-width space against adjacent alphanumerics in Japanese and Chinese text.
@@ -38,11 +38,11 @@ def main():
 
 def _target_files():
     listing = subprocess.run(
-        ["git", "ls-files"], cwd=_ROOT, capture_output=True, text=True, check=True
+        ["git", "ls-files"], cwd=ROOT_DIR, capture_output=True, text=True, check=True
     ).stdout.splitlines()
     for rel in listing:
         if _is_target(rel):
-            yield _ROOT / rel
+            yield ROOT_DIR / rel
 
 
 def _is_target(rel):

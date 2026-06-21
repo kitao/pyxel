@@ -1,4 +1,6 @@
 #![warn(clippy::pedantic)]
+// Relax pedantic lints inherent to mirroring the Python API through PyO3: numeric
+// casts, Python-style by-value args and self conventions, and short math names.
 #![allow(
     clippy::cast_possible_wrap,
     clippy::cast_precision_loss,

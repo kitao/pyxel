@@ -24,7 +24,6 @@ use crate::{
 
 // Public types (struct field names form the Composer JSON wire contract)
 
-// Generation parameters.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GeneratorParams {
     pub transpose: i32,        // -5..+5

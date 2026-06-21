@@ -83,7 +83,7 @@ fn save_pal(filename: &str) -> PyResult<()> {
 #[pyo3(signature = (filename=None, scale=None))]
 fn screenshot(filename: Option<&str>, scale: Option<u32>) -> PyResult<()> {
     pyxel()
-        .take_screenshot(filename, scale)
+        .save_screenshot(filename, scale)
         .map_err(PyException::new_err)
 }
 
