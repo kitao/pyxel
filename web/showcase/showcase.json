@@ -493,7 +493,7 @@
             "ko": "타일맵을 사용한 레벨 디자인의 횡스크롤 액션 게임. 맵 스크롤 처리, 타일 충돌 판정, 캐릭터 이동 제어 등을 구현합니다.",
             "pt": "Jogo de ação com rolagem lateral e design de fases usando tilemaps. Implementa rolagem do mapa, detecção de colisão baseada em tiles e controle de movimento do personagem.",
             "ru": "Горизонтальная экшн-игра с дизайном уровней на тайловых картах. Реализует прокрутку карты, обнаружение столкновений с тайлами и управление движением персонажа.",
-            "tr": "Tilemap ile seviye tasarımı yapılmış yatay kaydırmalı aksiyon oyunu. Harita kaydırma, tile tabanlı çarpışma algılama ve karakter hareket kontrolü uygulanmıştır.",
+            "tr": "Tilemap ile seviye tasarımı yapılmış yatay kaydırmalı aksiyon oyunu. Harita kaydırma, karo tabanlı çarpışma algılama ve karakter hareket kontrolü uygulanmıştır.",
             "uk": "Горизонтальна екшн-гра з дизайном рівнів на тайлових картах. Реалізує прокручування карти, виявлення зіткнень з тайлами та керування рухом персонажа."
           }
         },
@@ -1018,7 +1018,7 @@
           "description": {
             "en": "One-key astronaut rescue game (Pyxel Official Book sample)",
             "cn": "单键宇航员救援游戏 (Pyxel 官方书籍示例)",
-            "de": "Einzel-Tasten-Astronautenrettungsspiel (Beispiel aus dem offiziellen Pyxel-Buch)",
+            "de": "Astronauten-Rettungsspiel mit einer Taste (Beispiel aus dem offiziellen Pyxel-Buch)",
             "es": "Juego de rescate de astronautas con una tecla (ejemplo del Libro Oficial de Pyxel)",
             "fr": "Jeu de sauvetage d'astronautes à une touche (exemple du Livre Officiel Pyxel)",
             "it": "Gioco di salvataggio astronauti a un tasto (esempio del Libro Ufficiale Pyxel)",
@@ -1191,7 +1191,7 @@
             "ko": "Pyxel에 내장된 타일맵 에디터. 이미지 뱅크의 타일을 배치하여 게임 맵을 만들 수 있으며, 여러 타일맵을 전환하여 관리할 수 있습니다.",
             "pt": "Editor de tilemaps integrado ao Pyxel. Organize tiles dos bancos de imagens para criar mapas de jogo, com suporte para alternar entre múltiplos tilemaps.",
             "ru": "Встроенный редактор тайловых карт. Размещайте тайлы из банков изображений для создания игровых карт с переключением между несколькими тайловыми картами.",
-            "tr": "Pyxel'in yerleşik tilemap editörü. Görüntü bankalarından tile'ları düzenleyerek oyun haritaları oluşturun, birden fazla tilemap arasında geçiş yaparak yönetin.",
+            "tr": "Pyxel'in yerleşik karo haritası düzenleyicisi. Görüntü bankalarından karoları düzenleyerek oyun haritaları oluşturun, birden fazla karo haritası arasında geçiş yaparak yönetin.",
             "uk": "Вбудований редактор тайлових карт. Розміщуйте тайли з банків зображень для створення ігрових карт із перемиканням між кількома тайловими картами."
           }
         },
@@ -1215,7 +1215,7 @@
           },
           "details": {
             "en": "Pyxel's built-in sound editor. Graphically edit tone, volume, and effects to create sound effects and melody phrases for your games.",
-            "cn": "Pyxel 内置的声音编辑器。以图形化方式编辑音色、音量和效果，创建游戏用的音效和旋律片段。",
+            "cn": "Pyxel 内置的音效编辑器。以图形化方式编辑音色、音量和效果，创建游戏用的音效和旋律片段。",
             "de": "Pyxels integrierter Soundeditor. Bearbeiten Sie Klangfarbe, Lautstärke und Effekte grafisch, um Soundeffekte und Melodiephrasen für Ihre Spiele zu erstellen.",
             "es": "Editor de sonido integrado en Pyxel. Edita gráficamente tono, volumen y efectos para crear efectos de sonido y frases melódicas para tus juegos.",
             "fr": "Éditeur de sons intégré à Pyxel. Éditez graphiquement le timbre, le volume et les effets pour créer des effets sonores et des phrases mélodiques pour vos jeux.",
@@ -1248,14 +1248,14 @@
           },
           "details": {
             "en": "Pyxel's built-in music editor. Combine phrases created in the Sound Editor to compose BGM with up to 4 channels.",
-            "cn": "Pyxel 内置的音乐编辑器。组合声音编辑器中创建的乐句，构成最多 4 个通道的 BGM。",
+            "cn": "Pyxel 内置的音乐编辑器。组合音效编辑器中创建的乐句，构成最多 4 个通道的 BGM。",
             "de": "Pyxels integrierter Musikeditor. Kombinieren Sie im Soundeditor erstellte Phrasen zu BGM mit bis zu 4 Kanälen.",
             "es": "Editor de música integrado en Pyxel. Combina frases creadas en el Editor de Sonido para componer BGM con hasta 4 canales.",
             "fr": "Éditeur de musique intégré à Pyxel. Combinez les phrases créées dans l'éditeur de sons pour composer des BGM jusqu'à 4 canaux.",
-            "it": "Editor musicale integrato in Pyxel. Combina le frasi create nell'Editor di Suoni per comporre BGM fino a 4 canali.",
+            "it": "Editor musicale integrato in Pyxel. Combina le frasi create nell'Editor suoni per comporre BGM fino a 4 canali.",
             "ja": "Pyxel に同梱されているミュージックエディター。サウンドエディターで作成したフレーズを組み合わせて、最大 4 チャンネルの BGM を構成できます。",
             "ko": "Pyxel에 내장된 뮤직 에디터. 사운드 에디터에서 만든 프레이즈를 조합하여 최대 4채널의 BGM을 구성할 수 있습니다.",
-            "pt": "Editor de música integrado ao Pyxel. Combine frases criadas no Editor de Som para compor BGM com até 4 canais.",
+            "pt": "Editor de música integrado ao Pyxel. Combine frases criadas no Editor de som para compor BGM com até 4 canais.",
             "ru": "Встроенный музыкальный редактор. Комбинируйте фразы из звукового редактора для создания BGM с поддержкой до 4 каналов.",
             "tr": "Pyxel'in yerleşik müzik editörü. Ses editöründe oluşturulan cümleleri birleştirerek 4 kanala kadar BGM oluşturun.",
             "uk": "Вбудований музичний редактор. Комбінуйте фрази зі звукового редактора для створення BGM з підтримкою до 4 каналів."

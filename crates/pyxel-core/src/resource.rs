@@ -167,7 +167,7 @@ impl Pyxel {
 
     // Capture Operations
 
-    pub fn take_screenshot(
+    pub fn save_screenshot(
         &mut self,
         filename: Option<&str>,
         scale: Option<u32>,
