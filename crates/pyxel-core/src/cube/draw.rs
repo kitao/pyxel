@@ -113,7 +113,6 @@ fn should_cull(area: f32, cull: i32) -> bool {
     // Pyxel cube uses CCW outward winding (front face from outside).
     // Projecting onto the Y-down screen flips the sign: front faces yield
     // a negative signed_screen_area, back faces yield a positive one.
-    // Degenerate faces (area == 0) are skipped under any non-NONE cull.
     (cull == CULL_BACK && area >= 0.0) || (cull == CULL_FRONT && area <= 0.0)
 }
 

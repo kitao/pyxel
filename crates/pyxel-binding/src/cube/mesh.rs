@@ -126,6 +126,12 @@ impl Mesh {
         }
     }
 
+    #[setter]
+    fn set_names(&self, v: Vec<String>) -> PyResult<()> {
+        self.inner_mut().names = v;
+        self.inner_ref().validate().map_err(PyValueError::new_err)
+    }
+
     #[getter]
     fn motions(&self) -> Vec<Motion> {
         self.inner_ref()
@@ -133,12 +139,6 @@ impl Mesh {
             .iter()
             .map(|m| Motion::wrap_with_source(m.clone(), self.inner.clone()))
             .collect()
-    }
-
-    #[setter]
-    fn set_names(&self, v: Vec<String>) -> PyResult<()> {
-        self.inner_mut().names = v;
-        self.inner_ref().validate().map_err(PyValueError::new_err)
     }
 
     // Shared material

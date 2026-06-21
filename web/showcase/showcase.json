@@ -1367,16 +1367,16 @@
       "title": {
         "en": "Cube Examples",
         "cn": "Cube 示例",
-        "de": "Cube Beispiele",
-        "es": "Cube Ejemplos",
-        "fr": "Cube Exemples",
-        "it": "Cube Esempi",
+        "de": "Cube-Beispiele",
+        "es": "Ejemplos de Cube",
+        "fr": "Exemples de Cube",
+        "it": "Esempi di Cube",
         "ja": "Cube サンプル",
         "ko": "Cube 예제",
-        "pt": "Cube Exemplos",
-        "ru": "Cube Примеры",
-        "tr": "Cube Örnekler",
-        "uk": "Cube Приклади"
+        "pt": "Exemplos de Cube",
+        "ru": "Примеры Cube",
+        "tr": "Cube Örnekleri",
+        "uk": "Приклади Cube"
       },
       "collapsed": true,
       "items": [

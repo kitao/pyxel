@@ -47,7 +47,7 @@ def run_case(label: str, draw_fn) -> None:
     dump(label)
 
 
-# --- case 1: a single unshaded front-facing triangle, identity camera ---
+# Case 1: a single unshaded front-facing triangle, identity camera
 # Unshaded so the test focuses on geometry / projection rather than the
 # scene-wide shading direction.
 def _tri_near(node):
@@ -59,7 +59,7 @@ camera.transform = Mat4.look_at(Vec3(0, 0, 4), Vec3.ZERO, Vec3.UP)
 run_case("triangle (color 8) at z=0, camera at +Z=4 looking at origin", _tri_near)
 
 
-# --- case 2: same triangle, but moved further away ---
+# Case 2: same triangle, but moved further away
 def _tri_far(node):
     node.shaded(False)
     node.tri(Vec3(-1, -1, -2), Vec3(1, -1, -2), Vec3(0, 1, -2), 11)
@@ -68,7 +68,7 @@ def _tri_far(node):
 run_case("triangle (color 11) at z=-2 (further from camera)", _tri_far)
 
 
-# --- case 3: rect on Mat4.IDENTITY, identity camera at +Z=4 ---
+# Case 3: rect on Mat4.IDENTITY, identity camera at +Z=4
 def _rect_identity(node):
     node.shaded(False)
     node.rect(Mat4.IDENTITY, 2.0, 2.0, 12)
@@ -77,7 +77,7 @@ def _rect_identity(node):
 run_case("rect 2x2 on IDENTITY (face normal +Z), color 12", _rect_identity)
 
 
-# --- case 4: crosshair lines at origin ---
+# Case 4: crosshair lines at origin
 def _crosshair(node):
     node.line(Vec3(-1, 0, 0), Vec3(1, 0, 0), 7)
     node.line(Vec3(0, -1, 0), Vec3(0, 1, 0), 7)
@@ -86,14 +86,14 @@ def _crosshair(node):
 run_case("crosshair lines at origin", _crosshair)
 
 
-# --- case 5: screen-space text anchored at origin ---
+# Case 5: screen-space text anchored at origin
 run_case(
     'text "X" at origin (Vec3 anchor, screen-space glyph)',
     lambda node: node.text(Vec3.ZERO, "X", 7),
 )
 
 
-# --- case 6: cube with shaded faces ---
+# Case 6: cube with shaded faces
 # The scene root carries the Shading seeded at the top of this script;
 # box is drawn with shading on (the default state) to exercise the
 # directional shading LUT.
@@ -108,7 +108,7 @@ def _box(node):
 run_case("filled box (size 2) viewed from (3,2,4)", _box)
 
 
-# --- case 7: dither state (50% alpha pattern) ---
+# Case 7: dither state (50% alpha pattern)
 def _rect_dithered(node):
     node.shaded(False)
     node.dither(0.5)
@@ -118,7 +118,7 @@ def _rect_dithered(node):
 run_case("rect with dither(0.5) (50% Bayer dither)", _rect_dithered)
 
 
-# --- case 8: depth_test state off (always on top) ---
+# Case 8: depth_test state off (always on top)
 def _two_rects(node):
     node.shaded(False)
     # Far rect drawn first (color 11, occupies full 2x2 area).
@@ -131,7 +131,7 @@ def _two_rects(node):
 run_case("rect overdraw with depth_test(False)", _two_rects)
 
 
-# --- case 9: camera-facing primitive under an oblique camera ---
+# Case 9: camera-facing primitive under an oblique camera
 # Billboarding is baked into the camera-facing primitives (circ, circb,
 # sprite, text) rather than toggled per call. Viewed from an oblique
 # angle, a billboarded circle still rasterizes as a round disc instead
