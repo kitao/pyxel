@@ -1,5 +1,3 @@
-// Shared utilities for Pyxel Web pages
-
 // Language detection and i18n
 
 const PYXEL_LANG_KEY = "pyxel-lang";
