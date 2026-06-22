@@ -893,7 +893,7 @@
           "signature": "Mat4()",
           "description": {
             "en": "A 4x4 transform matrix. The constructor creates an identity matrix. Values are immutable; transform methods return a new Mat4.",
-            "ja": "4x4 の変換行列。コンストラクターは単位行列を作る。値は不変で、変換メソッドは新しい Mat4 を返す。"
+            "ja": "4x4 の変換行列。コンストラクタは単位行列を作る。値は不変で、変換メソッドは新しい Mat4 を返す。"
           },
           "examples": [
             "from pyxel.cube import Mat4, Quat, Vec3",
@@ -2431,7 +2431,7 @@
           "signature": "from_glb(filename, *, colkey=None, fps=30.0)",
           "description": {
             "en": "Load a binary glTF (.glb) file into a Mesh. Embedded buffers and a single embedded texture are supported; imported transform animations are exposed through motions.",
-            "ja": "バイナリ glTF (.glb) ファイルを Mesh として読み込む。埋め込みバッファーと単一の埋め込みテクスチャに対応し、読み込んだ変換アニメーションは motions から参照できる。"
+            "ja": "バイナリ glTF (.glb) ファイルを Mesh として読み込む。埋め込みバッファと単一の埋め込みテクスチャに対応し、読み込んだ変換アニメーションは motions から参照できる。"
           },
           "params": [
             {
@@ -3498,7 +3498,7 @@
               "type": "bool",
               "description": {
                 "en": "False leaves the depth buffer untouched.",
-                "ja": "False にすると深度バッファーを更新しない。"
+                "ja": "False にすると深度バッファを更新しない。"
               }
             }
           ],
