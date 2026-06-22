@@ -197,10 +197,10 @@ Artifacts must contain explicit rows for at least these probe families:
   manual coverage, test claims that can actually fail, deterministic assertions,
   and test inclusion in `make test`.
 
-- Documentation: natural prose, Japanese spacing, Japanese long-vowel marks,
-  parenthesis width, translation source chains, target-language conventions,
-  product names, other proper nouns, and context labels that stand in for product
-  names.
+- Documentation: natural prose, Japanese spacing, Japanese technical loanword
+  spellings, parenthesis width, translation source chains, target-language
+  conventions, product names, other proper nouns, and context labels that stand
+  in for product names.
 
 - Release notes: user benefit, maintainer breadcrumb, sub-change splitting,
   category-specific wording, line length, diff verification, and documentation
