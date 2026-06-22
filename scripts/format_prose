@@ -15,9 +15,6 @@ ROOT_DIR = Path(__file__).resolve().parent.parent
 # half-width space against adjacent alphanumerics in Japanese and Chinese text.
 _CJK = r"ぁ-ゖァ-ヺー一-鿿"
 
-# Loanwords whose -er/-or/-ar origin takes a trailing long-vowel mark.
-_LONG_VOWEL_WORDS = ("ブラウザ", "エディタ", "パラメータ")
-
 # Spans whose interior is preserved verbatim while the span as a whole still
 # takes a space against adjacent kana/kanji.
 _SHORTCUT_SPAN = r"(?:Ctrl|Alt|Shift|Cmd)\([A-Za-z]+\)"
@@ -129,8 +126,6 @@ def format_text(text, lang):
     text = _normalize_api_call_spacing(text)
     text = _API_CALL_SPAN.sub(lambda m: spans.append(m.group()) or _PLACEHOLDER, text)
     text = _normalize_common(text)
-    if lang == "ja":
-        text = _add_long_vowels(text)
     if lang in ("ja", "cn"):
         text = _normalize_parentheses(text, lang)
         text = _space_around_tokens(text)
@@ -168,15 +163,6 @@ def _halfwidth(char):
     if 0xFF10 <= code <= 0xFF19 or 0xFF21 <= code <= 0xFF3A or 0xFF41 <= code <= 0xFF5A:
         return chr(code - 0xFEE0)
     return char
-
-
-# Japanese rules
-
-
-def _add_long_vowels(text):
-    for word in _LONG_VOWEL_WORDS:
-        text = re.sub(word + r"(?!ー)", word + "ー", text)
-    return text
 
 
 # Japanese and Chinese rules

@@ -28,9 +28,13 @@ class TestChineseSpacing:
         assert format_prose.format_text("搜索API", "cn") == "搜索 API"
 
 
-class TestLongVowel:
-    def test_adds_long_vowel_to_loanword(self):
-        assert format_prose.format_text("ブラウザで確認", "ja") == "ブラウザーで確認"
+class TestTechnicalLoanwords:
+    def test_keeps_short_technical_loanword(self):
+        assert format_prose.format_text("ブラウザで確認", "ja") == "ブラウザで確認"
+        assert (
+            format_prose.format_text("コンストラクタで初期化", "ja")
+            == "コンストラクタで初期化"
+        )
 
     def test_keeps_existing_long_vowel(self):
         assert format_prose.format_text("ブラウザーで確認", "ja") == "ブラウザーで確認"
