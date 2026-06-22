@@ -14,7 +14,7 @@ body:
     id: os
     attributes:
       label: "OS"
-      description: "Include your browser if using the web version / Web 版の場合はブラウザーも記入してください"
+      description: "Include your browser if using the web version / Web 版の場合はブラウザも記入してください"
       placeholder: "e.g. Windows 11 / macOS 15 / Android 15, Chrome 130"
     validations:
       required: true
