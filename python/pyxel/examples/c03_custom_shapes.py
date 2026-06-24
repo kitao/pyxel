@@ -7,6 +7,7 @@ SLIME_COLORS = [8, 9, 10, 12, 14]
 CAMERA_EYE = Vec3(0.0, 12.0, 10.0)
 AIM_CENTER = Vec3(0.0, 1.0, 0.0)
 LASER_ORIGIN = Vec3(0.0, 0.5, 10.0)
+LASER_POINTS = 24
 FIRE_DURATION = 14
 LASER_WIDTH = 0.22
 
@@ -137,14 +138,13 @@ class Weapon(Node):
         self.laser_prims = [self.make_laser_prim() for _ in slimes]
 
     def make_laser_prim(self):
-        point_count = 24
         indices = []
-        for i in range(point_count - 1):
+        for i in range(LASER_POINTS - 1):
             a = i * 2
             indices += [a, a + 1, a + 2, a + 1, a + 3, a + 2]
         return Primitive(
             Primitive.MODE_TRIANGLES,
-            [0.0] * (point_count * 2 * 3),
+            [0.0] * (LASER_POINTS * 2 * 3),
             indices,
             cull=Primitive.CULL_NONE,
         )
@@ -229,16 +229,15 @@ class Weapon(Node):
         return right * (side_sign * 1.2 * (0.7 + 0.3 * abs(spread_unit)))
 
     def make_laser_path(self, slime_center, index, extent):
-        point_count = 24
         extent = max(0.0, min(1.0, extent))
         to_slime = slime_center - LASER_ORIGIN
         direction = self.laser_fan_offset(slime_center, index)
         direction = (direction + to_slime.normalize()).normalize()
-        speed = to_slime.length() * 1.15 / (point_count - 1)
+        speed = to_slime.length() * 1.15 / (LASER_POINTS - 1)
         point = LASER_ORIGIN
         full_path = [point]
-        for i in range(1, point_count):
-            t = (i - 1) / (point_count - 2)
+        for i in range(1, LASER_POINTS):
+            t = (i - 1) / (LASER_POINTS - 2)
             steer = smoothstep(0.3, 1.0, t) * 0.35
             direction = (
                 direction * (1.0 - steer) + (slime_center - point).normalize() * steer
@@ -248,15 +247,15 @@ class Weapon(Node):
 
         correction = slime_center - full_path[-1]
         for i, point in enumerate(full_path):
-            amount = i / (point_count - 1)
+            amount = i / (LASER_POINTS - 1)
             full_path[i] = point + correction * (amount**2.5)
         full_path[-1] = slime_center
 
         points = []
-        for i in range(point_count):
-            amount = extent * i / (point_count - 1)
-            segment = min(int(amount * (point_count - 1)), point_count - 2)
-            blend = amount * (point_count - 1) - segment
+        for i in range(LASER_POINTS):
+            amount = extent * i / (LASER_POINTS - 1)
+            segment = min(int(amount * (LASER_POINTS - 1)), LASER_POINTS - 2)
+            blend = amount * (LASER_POINTS - 1) - segment
             points.append(
                 full_path[segment] * (1.0 - blend) + full_path[segment + 1] * blend
             )
