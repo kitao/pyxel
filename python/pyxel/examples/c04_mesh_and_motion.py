@@ -70,6 +70,7 @@ class App:
 
     def draw(self):
         self.scene.draw(0, 0, pyxel.width, pyxel.height)
+
         pyxel.text(5, 5, f"Mesh.from_glb / Motion: {self.motion_name}", 7)
 
 
