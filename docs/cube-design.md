@@ -873,7 +873,8 @@ class Ball(Node):
 Collision payload passed to `Node.on_collide(other, contact)`. Holds the
 contact geometry (point, normal, depth) plus engine-resolved motion
 deltas that the user applies to push the colliding body back into a
-non-penetrating state.
+non-penetrating state. It is engine-built: not user-constructible, and
+its fields are read-only.
 
 | Field | Type | Meaning |
 |---|---|---|
@@ -951,7 +952,8 @@ correction.
 
 ## 13. RaycastHit
 
-Result payload returned by `Node.raycast` and `Node.raycast_all`.
+Result payload returned by `Node.raycast` and `Node.raycast_all`. It is
+engine-built: not user-constructible, and its fields are read-only.
 
 | Field | Type | Meaning |
 |---|---|---|
@@ -1015,6 +1017,7 @@ class Player(Node):
 | `right` | `Vec3` | normalized right-axis vector derived from `transform` |
 | `up` | `Vec3` | normalized up-axis vector derived from `transform` |
 | `effective_camera` | `Camera \| None` | cascade-resolved active camera (nearest non-`None` `camera` up the tree); read inside `on_draw` |
+| `effective_shading` | `Shading \| None` | cascade-resolved active shading (nearest non-`None` `shading` up the tree); read inside `on_draw` |
 | `world_transform` | `Mat4` | composition of all ancestor transforms (§ 14.4) |
 
 `forward` / `right` / `up` read directly from the (local) transform's
@@ -1350,6 +1353,7 @@ whole scene.
 node.raycast(
     origin, direction,
     max_distance=None,
+    *,
     hit_triggers=False,
     tags=None,
 ) -> RaycastHit | None
@@ -1357,24 +1361,31 @@ node.raycast(
 node.raycast_all(
     origin, direction,
     max_distance=None,
+    *,
     hit_triggers=False,
     tags=None,
 ) -> list[RaycastHit]
 
 node.overlap_sphere(
     center, radius,
+    *,
     hit_triggers=False,
     tags=None,
 ) -> list[Node]
 
 node.overlap_box(
     mat, size,
+    *,
     hit_triggers=False,
     tags=None,
 ) -> list[Node]
 ```
 
 #### Common parameters
+
+`hit_triggers` and `tags` are keyword-only (the `*` in each signature);
+the positional arguments carry the query geometry. This mirrors the
+keyword-only trailing options on the `Node` draw commands (§ 14.5).
 
 - `hit_triggers: bool`: when `False` (default), trigger colliders
   (`collider.trigger == True`) are skipped. When `True`, triggers are
@@ -1786,6 +1797,15 @@ evidence.
   user-driven teleport on contact). The engine now writes the
   resolution into `contact.delta_rotation` / `delta_velocity` /
   `delta_angular_velocity`; the user applies them in `on_collide`.
+- **User-constructible / mutable `Contact` and `RaycastHit`** — earlier
+  drafts gave both payloads a public constructor and per-field setters.
+  Removed: a `Contact` is engine-built and handed to `on_collide`, and a
+  `RaycastHit` is engine-built and returned from `raycast` /
+  `raycast_all`, so user construction and field mutation have no valid
+  use. Both are now constructor-less with read-only properties (§ 12,
+  § 13). `Motion` is likewise engine-built — imported with a `Mesh`,
+  never user-constructed — but applying the same explicit read-only
+  payload treatment to it is deferred.
 - **Iterative constraint solver / sequential impulse loop** —
   out of scope. PS1-scale games run a single resolution pass per
   frame; constraint chains and stable stacks are not targeted.
