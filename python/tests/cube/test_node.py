@@ -96,25 +96,18 @@ class TestAttributes:
         assert n.collider is None
 
 
-# Collider / Contact construction and field round-trips (cube-design.md
-# § 11 / § 12); geometric correctness lives in the Rust unit tests.
+# Collider is user-constructible; Contact is an engine-built payload
+# (cube-design.md § 11 / § 12). Contact is not user-constructible and its
+# fields are read-only; its geometry is verified by the Rust unit tests
+# and the on_collide integration test (test_scene.py).
 class TestColliderContactBasics:
     def test_collider_constructable(self):
         c = Collider()
         assert "Collider(" in repr(c)
 
-    def test_contact_constructable(self):
-        c = Contact()
-        # Default point / normal are Vec3.ZERO.
-        assert c.point == Vec3.ZERO
-        assert c.normal == Vec3.ZERO
-
-    def test_contact_round_trip(self):
-        c = Contact()
-        c.point = Vec3(1, 2, 3)
-        c.normal = Vec3(0, 1, 0)
-        assert c.point == Vec3(1, 2, 3)
-        assert c.normal == Vec3(0, 1, 0)
+    def test_contact_not_user_constructible(self):
+        with pytest.raises(TypeError):
+            Contact()
 
 
 # Node.BILLBOARD_* class constants were removed along with the
@@ -268,12 +261,12 @@ class TestSubclassing:
 
     def test_lifecycle_hooks_default_noop(self):
         # Default implementations are no-op; they must be callable
-        # directly as well as from the pipeline (§ 16).
+        # directly as well as from the pipeline (§ 16). on_collide takes
+        # an engine-built Contact, so its default firing is covered in
+        # test_scene.py rather than by constructing a Contact here.
         n = Node()
-        other = Node()
         n.on_update()
         n.on_draw()
-        n.on_collide(other, Contact())
         n.on_destroy()
 
 
@@ -492,19 +485,15 @@ class TestBoxSphereTexturing:
 
 
 # `on_collide` is invoked by Node.update step 7 once per contact pair
-# (cube-design.md § 16). The signature must accept both positional and
-# keyword forms with the documented argument names so the engine call
-# and direct user calls both work.
+# (cube-design.md § 16). The signature must expose the documented
+# argument names so engine calls and user overrides agree. Contact is
+# engine-built, so the names are checked through the signature rather
+# than by constructing a Contact; real firing is covered in test_scene.py.
 class TestOnCollideSignature:
-    def test_positional(self):
-        n = Node()
-        other = Node()
-        n.on_collide(other, Contact())
-
-    def test_keyword(self):
-        n = Node()
-        other = Node()
-        n.on_collide(other=other, contact=Contact())
+    def test_signature_param_names(self):
+        params = inspect.signature(Node.on_collide).parameters
+        assert "other" in params
+        assert "contact" in params
 
 
 # circ, circb, text, and sprite are always-billboard primitives.

@@ -5,21 +5,13 @@ use super::vec3::Vec3;
 
 define_wrapper!(Contact, pyxel::cube::Contact);
 
+// Contact is an engine-built payload passed to on_collide; it is not
+// user-constructible and its fields are read-only.
 #[pymethods]
 impl Contact {
-    #[new]
-    fn new() -> Self {
-        Self::wrap(pyxel::cube::Contact::new())
-    }
-
     #[getter]
     fn point(&self) -> Vec3 {
         Vec3::wrap(self.inner_ref().point.clone())
-    }
-
-    #[setter]
-    fn set_point(&self, v: PyRef<'_, Vec3>) {
-        self.inner_mut().point = v.inner.clone();
     }
 
     #[getter]
@@ -27,19 +19,9 @@ impl Contact {
         Vec3::wrap(self.inner_ref().normal.clone())
     }
 
-    #[setter]
-    fn set_normal(&self, v: PyRef<'_, Vec3>) {
-        self.inner_mut().normal = v.inner.clone();
-    }
-
     #[getter]
     fn depth(&self) -> f32 {
         self.inner_ref().depth
-    }
-
-    #[setter]
-    fn set_depth(&self, v: f32) {
-        self.inner_mut().depth = v;
     }
 
     #[getter]
@@ -47,29 +29,14 @@ impl Contact {
         Quat::wrap(self.inner_ref().delta_rotation.clone())
     }
 
-    #[setter]
-    fn set_delta_rotation(&self, v: PyRef<'_, Quat>) {
-        self.inner_mut().delta_rotation = v.inner.clone();
-    }
-
     #[getter]
     fn delta_velocity(&self) -> Vec3 {
         Vec3::wrap(self.inner_ref().delta_velocity.clone())
     }
 
-    #[setter]
-    fn set_delta_velocity(&self, v: PyRef<'_, Vec3>) {
-        self.inner_mut().delta_velocity = v.inner.clone();
-    }
-
     #[getter]
     fn delta_angular_velocity(&self) -> Vec3 {
         Vec3::wrap(self.inner_ref().delta_angular_velocity.clone())
-    }
-
-    #[setter]
-    fn set_delta_angular_velocity(&self, v: PyRef<'_, Vec3>) {
-        self.inner_mut().delta_angular_velocity = v.inner.clone();
     }
 
     fn __repr__(&self) -> String {

@@ -575,6 +575,11 @@ impl Node {
         InnerNode::effective_camera(&self.inner).map(Camera::wrap)
     }
 
+    #[getter]
+    fn effective_shading(&self) -> Option<Shading> {
+        InnerNode::effective_shading(&self.inner).map(Shading::wrap)
+    }
+
     // Dunder
 
     fn __repr__(&self) -> String {
@@ -1122,7 +1127,7 @@ impl Node {
 
     // Spatial queries on this Node's subtree
 
-    #[pyo3(signature = (origin, direction, max_distance=None, hit_triggers=false, tags=None))]
+    #[pyo3(signature = (origin, direction, max_distance=None, *, hit_triggers=false, tags=None))]
     fn raycast(
         slf: PyRef<'_, Self>,
         py: Python<'_>,
@@ -1151,7 +1156,7 @@ impl Node {
         }
     }
 
-    #[pyo3(signature = (origin, direction, max_distance=None, hit_triggers=false, tags=None))]
+    #[pyo3(signature = (origin, direction, max_distance=None, *, hit_triggers=false, tags=None))]
     fn raycast_all(
         slf: PyRef<'_, Self>,
         py: Python<'_>,
@@ -1181,7 +1186,7 @@ impl Node {
         Ok(out)
     }
 
-    #[pyo3(signature = (center, radius, hit_triggers=false, tags=None))]
+    #[pyo3(signature = (center, radius, *, hit_triggers=false, tags=None))]
     fn overlap_sphere(
         slf: PyRef<'_, Self>,
         py: Python<'_>,
@@ -1203,7 +1208,7 @@ impl Node {
         wrap_node_results(&root_any, &inner_results)
     }
 
-    #[pyo3(signature = (mat, size, hit_triggers=false, tags=None))]
+    #[pyo3(signature = (mat, size, *, hit_triggers=false, tags=None))]
     fn overlap_box(
         slf: PyRef<'_, Self>,
         py: Python<'_>,

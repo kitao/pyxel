@@ -1,7 +1,7 @@
 import pyxel
 import pytest
 
-from pyxel.cube import Camera, Collider, Mat4, Node, Shading, Vec3
+from pyxel.cube import Camera, Collider, Mat4, Node, RaycastHit, Shading, Vec3
 
 # Frame-level pipeline (update + draw) and spatial queries are tested
 # here against the universal Node API. The camera attaches to the tree
@@ -162,6 +162,12 @@ class TestRaycast:
         assert len(hits) == 3
         for i in range(1, len(hits)):
             assert hits[i].distance >= hits[i - 1].distance
+
+    def test_raycasthit_not_user_constructible(self):
+        # RaycastHit is an engine-built payload (cube-design.md § 13);
+        # it has no public constructor.
+        with pytest.raises(TypeError):
+            RaycastHit()
 
 
 class TestOverlapQueries:
