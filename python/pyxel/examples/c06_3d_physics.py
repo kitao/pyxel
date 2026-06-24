@@ -10,15 +10,15 @@ def make_quad_mesh(corners, color):
     positions = []
     for v in corners:
         positions += [v.x, v.y, v.z]
-    prim = Primitive(
+    primitive = Primitive(
         Primitive.MODE_TRIANGLES,
         positions,
         [0, 1, 2, 1, 3, 2],
         cull=Primitive.CULL_BACK,
     )
-    prim.compute_normals()
+    primitive.compute_normals()
     return Mesh(
-        primitives=[prim],
+        primitives=[primitive],
         transforms=[Mat4.IDENTITY],
         parents=[-1],
         col_img=color,
@@ -123,6 +123,7 @@ class CapsuleBall(Node):
 class Scene(Node):
     def __init__(self):
         super().__init__()
+
         self.shading = Shading(pyxel.colors)
         self.shading.direction = Vec3(0.45, -1.0, -0.35).normalize()
 
@@ -167,10 +168,12 @@ class App:
             pyxel.quit()
         if pyxel.btnp(pyxel.KEY_R) or pyxel.btnp(pyxel.KEY_SPACE):
             self.scene = Scene()
+
         self.scene.update()
 
     def draw(self):
         self.scene.draw(0, 0, WIDTH, HEIGHT)
+
         pyxel.text(8, 8, "Capsule vs. barrel stack  R/Space: Reset", 7)
 
 

@@ -194,6 +194,7 @@ class Player(Node):
 class Scene(Node):
     def __init__(self, player_mesh):
         super().__init__()
+
         self.shading = Shading(pyxel.colors)
         self.shading.direction = Vec3(0.4, -1.0, -0.3).normalize()
 
@@ -211,9 +212,9 @@ class Scene(Node):
         self.update_camera()
 
     def build_stage(self):
-        # Main route
-        self.add_child(
-            TerrainPatch(
+        # Main route: each patch is (4 corners, color)
+        routes = [
+            (
                 [
                     Vec3(-5.6, 0.0, 6.4),
                     Vec3(5.6, 0.0, 6.4),
@@ -221,10 +222,8 @@ class Scene(Node):
                     Vec3(5.6, 0.0, 0.7),
                 ],
                 3,
-            )
-        )
-        self.add_child(
-            TerrainPatch(
+            ),
+            (
                 [
                     Vec3(-1.55, 0.0, 0.7),
                     Vec3(1.55, 0.0, 0.7),
@@ -232,10 +231,8 @@ class Scene(Node):
                     Vec3(1.55, 1.0, -2.4),
                 ],
                 11,
-            )
-        )
-        self.add_child(
-            TerrainPatch(
+            ),
+            (
                 [
                     Vec3(-4.2, 1.0, -2.4),
                     Vec3(4.2, 1.0, -2.4),
@@ -243,10 +240,8 @@ class Scene(Node):
                     Vec3(4.2, 1.0, -5.4),
                 ],
                 5,
-            )
-        )
-        self.add_child(
-            TerrainPatch(
+            ),
+            (
                 [
                     Vec3(-1.8, 1.15, -10.5),
                     Vec3(1.8, 1.15, -10.5),
@@ -254,8 +249,10 @@ class Scene(Node):
                     Vec3(1.8, 1.15, -12.5),
                 ],
                 5,
-            )
-        )
+            ),
+        ]
+        for corners, color in routes:
+            self.add_child(TerrainPatch(corners, color))
 
         # Surface markers
         for z in [5.2, 3.9, 2.6, 1.3]:
@@ -275,9 +272,11 @@ class Scene(Node):
 class App:
     def __init__(self):
         pyxel.init(WIDTH, HEIGHT, title="3D Collision")
+
         pyxel.sounds[0].set("c3g3c4", "t", "654", "nnf", 4)
         mesh = Mesh.from_glb("assets/cube_actor.glb", colkey=0, fps=30.0)
         self.scene = Scene(mesh)
+
         pyxel.run(self.update, self.draw)
 
     def update(self):
