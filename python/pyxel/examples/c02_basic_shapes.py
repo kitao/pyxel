@@ -5,8 +5,7 @@ cat_image = None
 
 
 class Shape(Node):
-    solid_method = ""
-    wire_method = ""
+    solid_method = wire_method = ""
 
     def __init__(self, position):
         super().__init__()
