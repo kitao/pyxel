@@ -4,8 +4,8 @@ import pyxel
 from pyxel.cube import Camera, Mat4, Node, Primitive, Shading, Vec3
 
 ENEMY_COLORS = [8, 9, 10, 12, 14]
-BODY_RINGS = 6
-BODY_SEGMENTS = 10
+ENEMY_RINGS = 6
+ENEMY_SEGMENTS = 10
 
 LASER_ORIGIN = Vec3(0.0, 0.5, 10.0)
 LASER_POINTS = 24
@@ -14,7 +14,7 @@ LASER_WIDTH = 0.22
 LASER_CORE_WIDTH = LASER_WIDTH * 0.35
 
 CAMERA_EYE = Vec3(0.0, 12.0, 10.0)
-AIM_CENTER = Vec3(0.0, 1.0, 0.0)
+AIM_POINT = Vec3(0.0, 1.0, 0.0)
 
 
 class Enemy(Node):
@@ -28,10 +28,10 @@ class Enemy(Node):
         self.flash_timer = 0
 
         self.body_directions = []
-        for i in range(BODY_RINGS + 1):
-            lat = math.pi * i / BODY_RINGS - math.pi / 2
-            for j in range(BODY_SEGMENTS + 1):
-                lon = math.tau * j / BODY_SEGMENTS
+        for i in range(ENEMY_RINGS + 1):
+            lat = math.pi * i / ENEMY_RINGS - math.pi / 2
+            for j in range(ENEMY_SEGMENTS + 1):
+                lon = math.tau * j / ENEMY_SEGMENTS
                 self.body_directions.append(
                     (
                         math.cos(lat) * math.cos(lon),
@@ -41,10 +41,10 @@ class Enemy(Node):
                 )
 
         indices = []
-        for i in range(BODY_RINGS):
-            for j in range(BODY_SEGMENTS):
-                base = i * (BODY_SEGMENTS + 1) + j
-                next_base = base + BODY_SEGMENTS + 1
+        for i in range(ENEMY_RINGS):
+            for j in range(ENEMY_SEGMENTS):
+                base = i * (ENEMY_SEGMENTS + 1) + j
+                next_base = base + ENEMY_SEGMENTS + 1
                 indices += [
                     base,
                     next_base + 1,
@@ -219,7 +219,7 @@ class Laser(Node):
         count = len(self.firing_enemies) or 1
         spread = index - (count - 1) * 0.5
         spread_unit = spread / max((count - 1) * 0.5, 1.0)
-        side = (enemy_center - AIM_CENTER).dot(right)
+        side = (enemy_center - AIM_POINT).dot(right)
         if abs(side) <= 0.4:
             side = spread_unit or 1.0
         side_sign = 1.0 if side >= 0.0 else -1.0
@@ -330,7 +330,7 @@ class Scene(Node):
     def on_update(self):
         mouse_offset = pyxel.mouse_y / pyxel.height - 0.5
         eye = Vec3(CAMERA_EYE.x, CAMERA_EYE.y - mouse_offset * 4.0, CAMERA_EYE.z)
-        self.camera.transform = Mat4.look_at(eye, AIM_CENTER)
+        self.camera.transform = Mat4.look_at(eye, AIM_POINT)
 
     def on_draw(self):
         for i in range(13):
