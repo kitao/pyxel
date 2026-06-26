@@ -8,13 +8,13 @@ class Shape(Node):
     solid_method = ""
     wire_method = ""
 
-    def __init__(self, pos):
+    def __init__(self, position):
         super().__init__()
-        self.pos = pos
+        self.position = position
 
     def on_update(self):
         spin = Mat4.from_euler(Vec3(0, pyxel.frame_count * 2.0, 0))
-        self.transform = Mat4.from_translation(self.pos) * spin
+        self.transform = Mat4.from_translation(self.position) * spin
 
     def on_draw(self):
         if self.wire_method and pyxel.btn(pyxel.KEY_SPACE):
@@ -144,10 +144,11 @@ class Scene(Node):
             BoxShape,
             SphereShape,
         ]
+
         for i, shape_cls in enumerate(shapes):
             angle = i * 360.0 / len(shapes)
-            pos = Vec3(2.5 * pyxel.sin(angle), 2.5 * pyxel.cos(angle), 0)
-            self.add_child(shape_cls(pos))
+            position = Vec3(2.5 * pyxel.sin(angle), 2.5 * pyxel.cos(angle), 0)
+            self.add_child(shape_cls(position))
 
     def update_camera(self):
         target = Vec3(0, 0.2, 0)
@@ -159,13 +160,14 @@ class Scene(Node):
         self.camera.transform = Mat4.look_at(eye, target)
 
     def on_update(self):
-        mx, my = pyxel.mouse_x, pyxel.mouse_y
+        mouse_x, mouse_y = pyxel.mouse_x, pyxel.mouse_y
         if self.mouse_prev is not None:
-            px, py = self.mouse_prev
-            self.yaw = max(-45.0, min(45.0, self.yaw - (mx - px) * 0.5))
-            self.pitch = max(-30.0, min(30.0, self.pitch + (my - py) * 0.5))
+            prev_x, prev_y = self.mouse_prev
+            self.yaw = max(-45.0, min(45.0, self.yaw - (mouse_x - prev_x) * 0.5))
+            self.pitch = max(-30.0, min(30.0, self.pitch + (mouse_y - prev_y) * 0.5))
             self.update_camera()
-        self.mouse_prev = (mx, my)
+
+        self.mouse_prev = (mouse_x, mouse_y)
 
 
 class App:
@@ -188,10 +190,11 @@ class App:
     def draw(self):
         self.scene.draw(0, 0, pyxel.width, pyxel.height)
 
-        x, y = pyxel.width // 2 - 35, pyxel.height // 2 - 10
-        pyxel.rect(x, y, 70, 20, 0)
-        pyxel.text(x + 3, y + 3, "Mouse: Rotate", 7)
-        pyxel.text(x + 3, y + 11, "Space: Wireframe", 7)
+        hud_x, hud_y = pyxel.width // 2 - 35, pyxel.height // 2 - 10
+
+        pyxel.rect(hud_x, hud_y, 70, 20, 0)
+        pyxel.text(hud_x + 3, hud_y + 3, "Mouse: Rotate", 7)
+        pyxel.text(hud_x + 3, hud_y + 11, "Space: Wireframe", 7)
 
 
 App()
