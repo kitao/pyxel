@@ -128,7 +128,7 @@ class Scene(Node):
         self.camera.clear_color = 1
         self.yaw = 0.0
         self.pitch = 0.0
-        self.mouse_prev = None
+        self.prev_mouse_pos = None
         self.update_camera()
 
         shapes = [
@@ -144,10 +144,10 @@ class Scene(Node):
             SphereShape,
         ]
 
-        for i, shape_cls in enumerate(shapes):
-            angle = i * 360.0 / len(shapes)
+        for shape_index, shape_class in enumerate(shapes):
+            angle = shape_index * 360.0 / len(shapes)
             position = Vec3(2.5 * pyxel.sin(angle), 2.5 * pyxel.cos(angle), 0)
-            self.add_child(shape_cls(position))
+            self.add_child(shape_class(position))
 
     def update_camera(self):
         target = Vec3(0, 0.2, 0)
@@ -160,13 +160,13 @@ class Scene(Node):
 
     def on_update(self):
         mouse_x, mouse_y = pyxel.mouse_x, pyxel.mouse_y
-        if self.mouse_prev is not None:
-            prev_x, prev_y = self.mouse_prev
+        if self.prev_mouse_pos is not None:
+            prev_x, prev_y = self.prev_mouse_pos
             self.yaw = max(-45.0, min(45.0, self.yaw - (mouse_x - prev_x) * 0.5))
             self.pitch = max(-30.0, min(30.0, self.pitch + (mouse_y - prev_y) * 0.5))
             self.update_camera()
 
-        self.mouse_prev = (mouse_x, mouse_y)
+        self.prev_mouse_pos = (mouse_x, mouse_y)
 
 
 class App:
