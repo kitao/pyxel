@@ -32,7 +32,7 @@ Also, this project is developed by one person, kept going by your [GitHub](https
 
 ![Palette](images/pyxel_palette.png)
 
-[GIMP palette file](pyxel.gpl)
+[GIMP palette file (.gpl)](pyxel.gpl)
 
 ## How to Install
 
