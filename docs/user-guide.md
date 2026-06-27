@@ -12,22 +12,6 @@ Pyxel is open source under the [MIT License](https://github.com/kitao/pyxel/blob
 
 Also, this project is developed by one person, kept going by your [GitHub](https://github.com/kitao/pyxel) stars. If you enjoy it, please give it a star!
 
-![Pyxel User Examples](images/pyxel_thanks.png)
-
-![Pyxel book](images/pyxel_book.png)
-
-![Jump Game](images/02_jump_game.gif)
-
-![Platformer](images/10_platformer.gif)
-
-![30 Seconds of Daylight](images/30sec_of_daylight.gif)
-
-![Megaball](images/megaball.gif)
-
-![Image and Tilemap Editor](images/image_tilemap_editor.gif)
-
-![Sound and Music Editor](images/sound_music_editor.gif)
-
 ## Specifications
 
 - Runs on Windows, Mac, Linux, and Web
@@ -48,7 +32,7 @@ Also, this project is developed by one person, kept going by your [GitHub](https
 
 ![Palette](images/pyxel_palette.png)
 
-Pyxel's specifications and APIs are inspired by [PICO-8](https://www.lexaloffle.com/pico-8.php) and [TIC-80](https://tic80.com/).
+[GIMP palette file](pyxel.gpl)
 
 ## How to Install
 

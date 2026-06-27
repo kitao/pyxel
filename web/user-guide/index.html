@@ -156,13 +156,7 @@
           <h3 class="sub-title">${esc(t("palette_title"))}</h3>
           <img src="../../docs/images/05_color_palette.png" alt="Color Palette" class="pix my-2 rounded border border-gray-700" loading="lazy">
           <img src="../../docs/images/pyxel_palette.png" alt="Palette" class="my-2 rounded border border-gray-700" loading="lazy">
-          <p class="body mt-3">${t("overview_inspired")
-            .replace("{0}", "Pyxel")
-            .replace(
-              "{1}",
-              link("https://www.lexaloffle.com/pico-8.php", "PICO-8"),
-            )
-            .replace("{2}", link("https://tic80.com/", "TIC-80"))}</p>`;
+          <p class="body mt-2 text-sm">${link("../../docs/pyxel.gpl", t("palette_gimp_palette_file"))}</p>`;
 
         // Install
         document.getElementById("s-install").innerHTML = `
