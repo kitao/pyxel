@@ -18,6 +18,18 @@ EDITOR_MANUAL_JSON = WEB_DIR / "editor-manual" / "editor-manual.json"
 DOCS_DIR = ROOT_DIR / "docs"
 PYXEL_WEB = "https://kitao.github.io/pyxel/web"
 BLOCK_MARKER = "\x00BLK{idx}\x00"
+MARKDOWN_IMAGE_EXCLUDES = {
+    "user-guide": {
+        "images/pyxel_thanks.png",
+        "images/pyxel_book.png",
+        "images/02_jump_game.gif",
+        "images/10_platformer.gif",
+        "images/30sec_of_daylight.gif",
+        "images/megaball.gif",
+        "images/image_tilemap_editor.gif",
+        "images/sound_music_editor.gif",
+    }
+}
 
 
 def generated_header(*source_paths):
@@ -750,9 +762,16 @@ def generate_from_html(html_path, json_path, doc_name):
             lambda m: f"\n#### {_strip_html(m.group(1))}\n",
             evaluated,
         )
+
+        def markdown_image(match):
+            url = _transform_url(match.group(1), doc_name)
+            if url in MARKDOWN_IMAGE_EXCLUDES.get(doc_name, set()):
+                return ""
+            return f"\n![{match.group(2)}]({url})\n"
+
         evaluated = re.sub(
             r'<img\s[^>]*src="([^"]*)"[^>]*alt="([^"]*)"[^>]*/?>',
-            lambda m: f"\n![{m.group(2)}]({_transform_url(m.group(1), doc_name)})\n",
+            markdown_image,
             evaluated,
         )
         evaluated = re.sub(
