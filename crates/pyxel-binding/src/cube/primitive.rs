@@ -1,5 +1,7 @@
 use pyo3::prelude::*;
 
+use super::vec3::Vec3;
+
 // Live proxy sequences onto an RcPrimitive's vertex/topology fields.
 // Mirrors `wrap_sound_as_python_list!` (sound_wrapper.rs): each proxy
 // holds the shared RcPrimitive and projects one of its plain Vec fields,
@@ -88,6 +90,30 @@ impl Primitive {
             p.cull = cull;
         }
         Self::wrap(p)
+    }
+
+    // Factories
+
+    #[staticmethod]
+    #[pyo3(signature = (width=1.0, height=1.0))]
+    fn plane(width: f32, height: f32) -> Self {
+        Self::wrap(pyxel::cube::Primitive::plane(width, height))
+    }
+
+    #[staticmethod]
+    #[pyo3(signature = (size=None))]
+    fn r#box(size: Option<PyRef<'_, Vec3>>) -> Self {
+        let default_size = pyxel::cube::Vec3::one();
+        let size_inner = size
+            .as_ref()
+            .map_or_else(|| rc_ref!(&default_size), |v| v.inner_ref());
+        Self::wrap(pyxel::cube::Primitive::r#box(size_inner))
+    }
+
+    #[staticmethod]
+    #[pyo3(signature = (radius=0.5))]
+    fn sphere(radius: f32) -> Self {
+        Self::wrap(pyxel::cube::Primitive::sphere(radius))
     }
 
     // Vertex attributes (live proxies; no whole-attribute setter, mirror

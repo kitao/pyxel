@@ -14,7 +14,7 @@ use crate::cube::camera::RcCamera;
 use crate::cube::mat4::Mat4;
 use crate::cube::mesh::Mesh;
 use crate::cube::primitive::{
-    CULL_BACK, CULL_FRONT, CULL_NONE, MODE_LINES, MODE_POINTS, MODE_TRIANGLES,
+    self, Primitive, CULL_BACK, CULL_FRONT, CULL_NONE, MODE_LINES, MODE_POINTS, MODE_TRIANGLES,
 };
 use crate::cube::raster::{
     dither_pick, face_shade_level, lookup_ramp, mat_apply, mat_apply_dir, rasterize_circle_border,
@@ -888,13 +888,24 @@ pub fn ellib(ctx: &mut DrawContext, world_mat: &Mat4, w: f32, h: f32, col: i32, 
     );
 }
 
+fn primitive_normals(g: &Primitive) -> Option<&[f32]> {
+    if g.normals.is_empty() {
+        None
+    } else {
+        Some(g.normals.as_slice())
+    }
+}
+
+fn primitive_uvs(g: &Primitive) -> Option<&[f32]> {
+    if g.uvs.is_empty() {
+        None
+    } else {
+        Some(g.uvs.as_slice())
+    }
+}
+
 // Box / boxb: cube faces / edges as 3D solid primitives. Folds `size`
 // into the world matrix as per-axis scale of the cached unit cube.
-//
-// When `col_image` is Some, the textured path is used: each face is
-// rendered with a full-texture UV span (0..1 × 0..1) using the
-// face-aware UV convention defined alongside BOX_UNROLLED_POSITIONS
-// below. The `col_flat` value is ignored in that case.
 pub fn box_solid(
     ctx: &mut DrawContext,
     world_mat: &Mat4,
@@ -905,53 +916,42 @@ pub fn box_solid(
     state: DrawState,
 ) {
     let scaled = scale_axes(world_mat, size.x, size.y, size.z);
-    if col_image.is_some() {
-        // Textured path: use the unrolled 24-vertex layout so each face
-        // has its own UV coordinates (shared-vertex layout cannot assign
-        // different UVs to the same vertex for adjacent faces).
-        let _ = prim(
-            ctx,
-            &scaled,
-            MODE_TRIANGLES,
-            CULL_BACK,
-            &BOX_UNROLLED_POSITIONS,
-            Some(&BOX_UNROLLED_TRI_INDICES),
-            None,
-            Some(&BOX_UNROLLED_UVS),
-            col_flat,
-            col_image,
-            colkey,
-            state,
-        );
+    let g = if col_image.is_some() {
+        primitive::unit_box_textured()
     } else {
-        // Flat-color path: keep the original 8-vertex shared layout so
-        // there is zero per-frame allocation overhead.
-        let _ = prim(
-            ctx,
-            &scaled,
-            MODE_TRIANGLES,
-            CULL_BACK,
-            &UNIT_BOX_POSITIONS,
-            Some(&BOX_TRI_INDICES),
-            None,
-            None,
-            col_flat,
-            None,
-            None,
-            state,
-        );
-    }
+        primitive::unit_box_solid()
+    };
+    let uvs = if col_image.is_some() {
+        primitive_uvs(g)
+    } else {
+        None
+    };
+    let _ = prim(
+        ctx,
+        &scaled,
+        g.mode,
+        g.cull,
+        g.positions.as_slice(),
+        Some(g.indices.as_slice()),
+        primitive_normals(g),
+        uvs,
+        col_flat,
+        col_image,
+        colkey,
+        state,
+    );
 }
 
 pub fn boxb(ctx: &mut DrawContext, world_mat: &Mat4, size: &Vec3, col: i32, state: DrawState) {
     let scaled = scale_axes(world_mat, size.x, size.y, size.z);
+    let g = primitive::unit_box_solid();
     let _ = prim(
         ctx,
         &scaled,
         MODE_LINES,
         CULL_NONE,
-        &UNIT_BOX_POSITIONS,
-        Some(&BOX_EDGE_INDICES),
+        g.positions.as_slice(),
+        Some(&primitive::BOX_EDGE_INDICES),
         None,
         None,
         col,
@@ -966,116 +966,6 @@ pub fn boxb(ctx: &mut DrawContext, world_mat: &Mat4, size: &Vec3, col: i32, stat
 // `size` / `r` / `w` / `h` is folded into the world matrix rather than
 // the vertex data, so per-frame allocation is zero.
 
-// Unit cube: 8 vertices at ±0.5 on each axis. CCW outward winding when
-// viewed from outside.
-const UNIT_BOX_POSITIONS: [f32; 24] = [
-    -0.5, -0.5, -0.5, 0.5, -0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, 0.5, -0.5,
-    0.5, 0.5, 0.5, 0.5, -0.5, 0.5, 0.5,
-];
-const BOX_TRI_INDICES: [i32; 36] = [
-    0, 2, 1, 0, 3, 2, // -Z face
-    4, 5, 6, 4, 6, 7, // +Z face
-    0, 1, 5, 0, 5, 4, // -Y face
-    3, 6, 2, 3, 7, 6, // +Y face
-    0, 4, 7, 0, 7, 3, // -X face
-    1, 2, 6, 1, 6, 5, // +X face
-];
-const BOX_EDGE_INDICES: [i32; 24] = [
-    0, 1, 1, 2, 2, 3, 3, 0, // back face square
-    4, 5, 5, 6, 6, 7, 7, 4, // front face square
-    0, 4, 1, 5, 2, 6, 3, 7, // four connecting edges
-];
-
-// Unrolled box: 24 vertices (4 per face × 6 faces). Each face owns its
-// own copy of its 4 corners so every vertex can have a unique UV without
-// sharing conflicts. Face order mirrors BOX_TRI_INDICES: -Z, +Z, -Y, +Y,
-// -X, +X. Positions are identical to UNIT_BOX_POSITIONS but replicated.
-//
-// UV convention (the sampler maps v=0 to image row 0 / the top, so +V
-// points toward local "down" on the side faces to keep them upright):
-//   +X face: UV +U = local -Z,  UV +V = local -Y
-//   -X face: UV +U = local +Z,  UV +V = local -Y
-//   +Z face: UV +U = local +X,  UV +V = local -Y
-//   -Z face: UV +U = local -X,  UV +V = local -Y
-//   +Y face: UV +U = local +X,  UV +V = local +Z
-//   -Y face: UV +U = local +X,  UV +V = local -Z
-#[rustfmt::skip]
-const BOX_UNROLLED_POSITIONS: [f32; 72] = [
-    // -Z face (z=-0.5): vertices 0-3
-    -0.5, -0.5, -0.5,   0.5, -0.5, -0.5,   0.5, 0.5, -0.5,  -0.5, 0.5, -0.5,
-    // +Z face (z=+0.5): vertices 4-7
-    -0.5, -0.5,  0.5,   0.5, -0.5,  0.5,   0.5, 0.5,  0.5,  -0.5, 0.5,  0.5,
-    // -Y face (y=-0.5): vertices 8-11
-    -0.5, -0.5, -0.5,   0.5, -0.5, -0.5,  -0.5, -0.5, 0.5,   0.5, -0.5, 0.5,
-    // +Y face (y=+0.5): vertices 12-15
-    -0.5,  0.5, -0.5,   0.5,  0.5, -0.5,  -0.5,  0.5, 0.5,   0.5,  0.5, 0.5,
-    // -X face (x=-0.5): vertices 16-19
-    -0.5, -0.5, -0.5,  -0.5,  0.5, -0.5,  -0.5, -0.5, 0.5,  -0.5,  0.5, 0.5,
-    // +X face (x=+0.5): vertices 20-23
-     0.5, -0.5, -0.5,   0.5,  0.5, -0.5,   0.5, -0.5, 0.5,   0.5,  0.5, 0.5,
-];
-
-// UV coordinates for BOX_UNROLLED_POSITIONS. Layout mirrors the
-// per-face convention: U and V each span [0, 1] across the face.
-#[rustfmt::skip]
-const BOX_UNROLLED_UVS: [f32; 48] = [
-    // -Z face: U = (-x+0.5), V = (-y+0.5)
-    //   v0(-0.5,-0.5,-0.5): U=1.0 V=1.0
-    //   v1( 0.5,-0.5,-0.5): U=0.0 V=1.0
-    //   v2( 0.5, 0.5,-0.5): U=0.0 V=0.0
-    //   v3(-0.5, 0.5,-0.5): U=1.0 V=0.0
-    1.0, 1.0,  0.0, 1.0,  0.0, 0.0,  1.0, 0.0,
-    // +Z face: U = (x+0.5), V = (-y+0.5)
-    //   v4(-0.5,-0.5, 0.5): U=0.0 V=1.0
-    //   v5( 0.5,-0.5, 0.5): U=1.0 V=1.0
-    //   v6( 0.5, 0.5, 0.5): U=1.0 V=0.0
-    //   v7(-0.5, 0.5, 0.5): U=0.0 V=0.0
-    0.0, 1.0,  1.0, 1.0,  1.0, 0.0,  0.0, 0.0,
-    // -Y face: U = (x+0.5), V = (-z+0.5)
-    //   v8 (-0.5,-0.5,-0.5): U=0.0 V=1.0
-    //   v9 ( 0.5,-0.5,-0.5): U=1.0 V=1.0
-    //   v10(-0.5,-0.5, 0.5): U=0.0 V=0.0
-    //   v11( 0.5,-0.5, 0.5): U=1.0 V=0.0
-    0.0, 1.0,  1.0, 1.0,  0.0, 0.0,  1.0, 0.0,
-    // +Y face: U = (x+0.5), V = (z+0.5)
-    //   v12(-0.5, 0.5,-0.5): U=0.0 V=0.0
-    //   v13( 0.5, 0.5,-0.5): U=1.0 V=0.0
-    //   v14(-0.5, 0.5, 0.5): U=0.0 V=1.0
-    //   v15( 0.5, 0.5, 0.5): U=1.0 V=1.0
-    0.0, 0.0,  1.0, 0.0,  0.0, 1.0,  1.0, 1.0,
-    // -X face: U = (z+0.5), V = (-y+0.5)
-    //   v16(-0.5,-0.5,-0.5): U=0.0 V=1.0
-    //   v17(-0.5, 0.5,-0.5): U=0.0 V=0.0
-    //   v18(-0.5,-0.5, 0.5): U=1.0 V=1.0
-    //   v19(-0.5, 0.5, 0.5): U=1.0 V=0.0
-    0.0, 1.0,  0.0, 0.0,  1.0, 1.0,  1.0, 0.0,
-    // +X face: U = (-z+0.5), V = (-y+0.5)
-    //   v20( 0.5,-0.5,-0.5): U=1.0 V=1.0
-    //   v21( 0.5, 0.5,-0.5): U=1.0 V=0.0
-    //   v22( 0.5,-0.5, 0.5): U=0.0 V=1.0
-    //   v23( 0.5, 0.5, 0.5): U=0.0 V=0.0
-    1.0, 1.0,  1.0, 0.0,  0.0, 1.0,  0.0, 0.0,
-];
-
-// Triangle indices for BOX_UNROLLED_POSITIONS. Winding order mirrors
-// BOX_TRI_INDICES (CCW outward from outside) but uses the unrolled
-// per-face vertex offsets.
-#[rustfmt::skip]
-const BOX_UNROLLED_TRI_INDICES: [i32; 36] = [
-    // -Z face (verts 0-3): tri (0,2,1), (0,3,2)
-     0,  2,  1,   0,  3,  2,
-    // +Z face (verts 4-7): tri (4,5,6), (4,6,7)
-     4,  5,  6,   4,  6,  7,
-    // -Y face (verts 8-11): tri (8,9,11), (8,11,10)
-     8,  9, 11,   8, 11, 10,
-    // +Y face (verts 12-15): tri (12,15,13), (12,14,15)
-    12, 15, 13,  12, 14, 15,
-    // -X face (verts 16-19): tri (16,18,19), (16,19,17)
-    16, 18, 19,  16, 19, 17,
-    // +X face (verts 20-23): tri (20,21,23), (20,23,22)
-    20, 21, 23,  20, 23, 22,
-];
-
 // Unit rectangle: 4 vertices at ±1 on the XY plane. RECT_TRI_INDICES
 // reproduces the legacy rect / plane winding (top-left, top-right,
 // bottom-left, bottom-right). Shared between rect / rectb / plane.
@@ -1087,150 +977,6 @@ const UNIT_RECT_POSITIONS: [f32; 12] = [
 ];
 const RECT_TRI_INDICES: [i32; 6] = [0, 1, 2, 1, 3, 2];
 const RECT_EDGE_INDICES: [i32; 8] = [0, 1, 1, 3, 3, 2, 2, 0];
-
-// Base icosahedron: 12 vertices on the unit sphere (|v| = 1), 20
-// outward triangles (CCW from outside), 30 edges. Coordinates use
-// (1/n, t/n, 0) permutations where t = (1 + √5) / 2 and n = √(1 + t²)
-// ≈ 1.902. Used as the seed for the level-1 subdivision below.
-const ICOSA_BASE_POSITIONS: [f32; 36] = [
-    -0.525_731_1,
-    0.850_650_8,
-    0.0,
-    0.525_731_1,
-    0.850_650_8,
-    0.0,
-    -0.525_731_1,
-    -0.850_650_8,
-    0.0,
-    0.525_731_1,
-    -0.850_650_8,
-    0.0,
-    0.0,
-    -0.525_731_1,
-    0.850_650_8,
-    0.0,
-    0.525_731_1,
-    0.850_650_8,
-    0.0,
-    -0.525_731_1,
-    -0.850_650_8,
-    0.0,
-    0.525_731_1,
-    -0.850_650_8,
-    0.850_650_8,
-    0.0,
-    -0.525_731_1,
-    0.850_650_8,
-    0.0,
-    0.525_731_1,
-    -0.850_650_8,
-    0.0,
-    -0.525_731_1,
-    -0.850_650_8,
-    0.0,
-    0.525_731_1,
-];
-const ICOSA_BASE_TRI_INDICES: [i32; 60] = [
-    0, 11, 5, 0, 5, 1, 0, 1, 7, 0, 7, 10, 0, 10, 11, 1, 5, 9, 5, 11, 4, 11, 10, 2, 10, 7, 6, 7, 1,
-    8, 3, 9, 4, 3, 4, 2, 3, 2, 6, 3, 6, 8, 3, 8, 9, 4, 9, 5, 2, 4, 11, 6, 2, 10, 8, 6, 7, 9, 8, 1,
-];
-const ICOSA_BASE_EDGE_INDICES: [i32; 60] = [
-    0, 1, 0, 5, 0, 7, 0, 10, 0, 11, 1, 5, 1, 7, 1, 8, 1, 9, 2, 3, 2, 4, 2, 6, 2, 10, 2, 11, 3, 4,
-    3, 6, 3, 8, 3, 9, 4, 5, 4, 9, 4, 11, 5, 9, 5, 11, 6, 7, 6, 8, 6, 10, 7, 8, 7, 10, 8, 9, 10, 11,
-];
-
-// Level-1 subdivision: each base triangle splits into 4 sub-triangles
-// via edge-midpoint insertion; midpoints are re-projected onto the unit
-// sphere. Yields 42 vertices / 80 triangles / 120 edges — bigger than
-// the bare icosahedron but small enough to stay retro and read as a
-// sphere instead of a 6-sided silhouette.
-fn unit_icosa_lv1_positions() -> &'static [f32; 126] {
-    static POSITIONS: OnceLock<[f32; 126]> = OnceLock::new();
-    POSITIONS.get_or_init(|| {
-        let mut p = [0.0_f32; 126];
-        p[..36].copy_from_slice(&ICOSA_BASE_POSITIONS);
-        for (edge_index, edge_pair) in ICOSA_BASE_EDGE_INDICES.chunks(2).enumerate() {
-            let a = edge_pair[0] as usize;
-            let b = edge_pair[1] as usize;
-            let mx = (ICOSA_BASE_POSITIONS[a * 3] + ICOSA_BASE_POSITIONS[b * 3]) * 0.5;
-            let my = (ICOSA_BASE_POSITIONS[a * 3 + 1] + ICOSA_BASE_POSITIONS[b * 3 + 1]) * 0.5;
-            let mz = (ICOSA_BASE_POSITIONS[a * 3 + 2] + ICOSA_BASE_POSITIONS[b * 3 + 2]) * 0.5;
-            let inv_len = (mx * mx + my * my + mz * mz).sqrt().recip();
-            let dst = 36 + edge_index * 3;
-            p[dst] = mx * inv_len;
-            p[dst + 1] = my * inv_len;
-            p[dst + 2] = mz * inv_len;
-        }
-        p
-    })
-}
-
-// Locate the midpoint vertex index for base edge (a, b). 30 entries —
-// a linear scan is fine for the init-time builders.
-fn icosa_midpoint_vertex(a: i32, b: i32) -> i32 {
-    let (lo, hi) = if a < b { (a, b) } else { (b, a) };
-    for (edge_index, edge_pair) in ICOSA_BASE_EDGE_INDICES.chunks(2).enumerate() {
-        let (ea, eb) = (edge_pair[0], edge_pair[1]);
-        let (e_lo, e_hi) = if ea < eb { (ea, eb) } else { (eb, ea) };
-        if e_lo == lo && e_hi == hi {
-            return 12 + edge_index as i32;
-        }
-    }
-    unreachable!("icosa edge ({a}, {b}) not in ICOSA_BASE_EDGE_INDICES")
-}
-
-fn unit_icosa_lv1_tri_indices() -> &'static [i32; 240] {
-    static INDICES: OnceLock<[i32; 240]> = OnceLock::new();
-    INDICES.get_or_init(|| {
-        let mut out = [0_i32; 240];
-        for (tri_index, tri) in ICOSA_BASE_TRI_INDICES.chunks(3).enumerate() {
-            let (a, b, c) = (tri[0], tri[1], tri[2]);
-            let m_ab = icosa_midpoint_vertex(a, b);
-            let m_bc = icosa_midpoint_vertex(b, c);
-            let m_ca = icosa_midpoint_vertex(c, a);
-            // 4 sub-triangles preserve the base triangle's CCW winding.
-            let dst = tri_index * 12;
-            out[dst..dst + 3].copy_from_slice(&[a, m_ab, m_ca]);
-            out[dst + 3..dst + 6].copy_from_slice(&[b, m_bc, m_ab]);
-            out[dst + 6..dst + 9].copy_from_slice(&[c, m_ca, m_bc]);
-            out[dst + 9..dst + 12].copy_from_slice(&[m_ab, m_bc, m_ca]);
-        }
-        out
-    })
-}
-
-fn unit_icosa_lv1_edge_indices() -> &'static [i32; 240] {
-    static INDICES: OnceLock<[i32; 240]> = OnceLock::new();
-    INDICES.get_or_init(|| {
-        let mut out = [0_i32; 240];
-        let mut cursor = 0;
-        // 60 sub-edges: each base edge splits at its midpoint into 2 halves.
-        for (edge_index, edge_pair) in ICOSA_BASE_EDGE_INDICES.chunks(2).enumerate() {
-            let (a, b) = (edge_pair[0], edge_pair[1]);
-            let m = 12 + edge_index as i32;
-            out[cursor] = a;
-            out[cursor + 1] = m;
-            out[cursor + 2] = m;
-            out[cursor + 3] = b;
-            cursor += 4;
-        }
-        // 60 internal edges: 3 mid-mid edges per base triangle.
-        for tri in ICOSA_BASE_TRI_INDICES.chunks(3) {
-            let (a, b, c) = (tri[0], tri[1], tri[2]);
-            let m_ab = icosa_midpoint_vertex(a, b);
-            let m_bc = icosa_midpoint_vertex(b, c);
-            let m_ca = icosa_midpoint_vertex(c, a);
-            out[cursor] = m_ab;
-            out[cursor + 1] = m_bc;
-            out[cursor + 2] = m_bc;
-            out[cursor + 3] = m_ca;
-            out[cursor + 4] = m_ca;
-            out[cursor + 5] = m_ab;
-            cursor += 6;
-        }
-        out
-    })
-}
 
 // Unit ellipse / circle on the XY plane: center vertex 0 + ELLIPSE_SEGMENTS
 // perimeter vertices at radius 1. Per-call (w, h) becomes (hw, hh) and is
@@ -1289,15 +1035,6 @@ fn translate_local(world_mat: &Mat4, local: &Vec3) -> Mat4 {
 // sphere / sphereb: level-1 subdivided icosahedron (42 vertices / 80
 // triangles / 120 edges) centered at `local`, scaled by `r`. Folds the
 // radius into the world matrix as uniform scale.
-//
-// When `col_image` is Some, the textured path is used with equirectangular
-// (lat/long) UV mapping:
-//   u = atan2(z, x) / (2π) + 0.5   (longitude, seam at x<0 meridian)
-//   v = 0.5 - asin(y) / π           (latitude, v=0 north pole, v=1 south pole)
-//
-// Vertices on the seam (u≈0 or u≈1) are duplicated in the textured path so
-// that triangles straddling the seam get the correct u=0/u=1 split. For the
-// flat-color path, no UV computation or vertex duplication is needed.
 pub fn sphere(
     ctx: &mut DrawContext,
     world_mat: &Mat4,
@@ -1310,137 +1047,30 @@ pub fn sphere(
 ) {
     let translated = translate_local(world_mat, local);
     let scaled = scale_axes(&translated, r, r, r);
-
-    if col_image.is_some() {
-        // Textured path: compute per-vertex equirectangular UVs and handle
-        // the seam. Triangles whose vertices span the u=0/u=1 seam are
-        // rebuilt with duplicated vertices so the u coordinate is
-        // consistent on each side (u=0 on the left, u=1 on the right).
-
-        let base_positions = unit_icosa_lv1_positions();
-        let base_indices = unit_icosa_lv1_tri_indices();
-        let vertex_count = base_positions.len() / 3;
-
-        // Compute UV for every base vertex using:
-        //   u = atan2(z, x) / (2π) + 0.5  (lon in [-π, π] → [0, 1])
-        //   v = 0.5 - asin(y) / π          (lat in [-π/2, π/2] → [1, 0])
-        let mut base_uvs = Vec::with_capacity(vertex_count * 2);
-        for i in 0..vertex_count {
-            let bx = base_positions[i * 3];
-            let by = base_positions[i * 3 + 1];
-            let bz = base_positions[i * 3 + 2];
-            let u = bz.atan2(bx) / (2.0 * std::f32::consts::PI) + 0.5;
-            // v=0 at the north pole: the sampler maps v=0 to image row 0
-            // (top), so the texture's top wraps onto the sphere's top.
-            let v = 0.5 - by.asin() / std::f32::consts::PI;
-            base_uvs.push(u);
-            base_uvs.push(v);
-        }
-
-        // Build output buffers, expanding seam-straddling triangles by
-        // duplicating vertices with corrected u coordinates.
-        let face_count = base_indices.len() / 3;
-        let mut out_positions: Vec<f32> = Vec::with_capacity(base_positions.len());
-        let mut out_uvs: Vec<f32> = Vec::with_capacity(base_uvs.len());
-        let mut out_indices: Vec<i32> = Vec::with_capacity(base_indices.len());
-
-        // Map (base_vertex_index, seam_side) → output index.
-        // seam_side: 0 = normal, 1 = duplicated with u adjusted toward 1.
-        let mut vertex_map: Vec<[Option<i32>; 2]> = vec![[None; 2]; vertex_count];
-
-        let get_or_add = |out_positions: &mut Vec<f32>,
-                          out_uvs: &mut Vec<f32>,
-                          vertex_map: &mut Vec<[Option<i32>; 2]>,
-                          base_idx: usize,
-                          seam_side: usize|
-         -> i32 {
-            if let Some(existing) = vertex_map[base_idx][seam_side] {
-                return existing;
-            }
-            let new_idx = (out_positions.len() / 3) as i32;
-            let bx = base_positions[base_idx * 3];
-            let by = base_positions[base_idx * 3 + 1];
-            let bz = base_positions[base_idx * 3 + 2];
-            out_positions.push(bx);
-            out_positions.push(by);
-            out_positions.push(bz);
-            let mut u = base_uvs[base_idx * 2];
-            let v = base_uvs[base_idx * 2 + 1];
-            // seam_side=1 means the vertex should appear on the u=1 side.
-            if seam_side == 1 && u < 0.5 {
-                u += 1.0;
-            }
-            out_uvs.push(u);
-            out_uvs.push(v);
-            vertex_map[base_idx][seam_side] = Some(new_idx);
-            new_idx
-        };
-
-        for f in 0..face_count {
-            let i0 = base_indices[f * 3] as usize;
-            let i1 = base_indices[f * 3 + 1] as usize;
-            let i2 = base_indices[f * 3 + 2] as usize;
-            let u0 = base_uvs[i0 * 2];
-            let u1 = base_uvs[i1 * 2];
-            let u2 = base_uvs[i2 * 2];
-
-            // Check if this triangle straddles the seam. The seam runs
-            // along the atan2 discontinuity (u≈0 / u≈1 boundary at z≈0,
-            // x<0). When the max-min u spread across the three vertices
-            // exceeds 0.5 the triangle must be split at the seam.
-            let u_min = u0.min(u1).min(u2);
-            let u_max = u0.max(u1).max(u2);
-            let straddles_seam = (u_max - u_min) > 0.5;
-
-            let (s0, s1, s2) = if straddles_seam {
-                // Vertices with low u (< 0.5) are on the left side of the
-                // seam; assign them seam_side=1 so u is bumped to ~1.
-                let side = |u: f32| usize::from(u < 0.5);
-                (side(u0), side(u1), side(u2))
-            } else {
-                (0, 0, 0)
-            };
-
-            let o0 = get_or_add(&mut out_positions, &mut out_uvs, &mut vertex_map, i0, s0);
-            let o1 = get_or_add(&mut out_positions, &mut out_uvs, &mut vertex_map, i1, s1);
-            let o2 = get_or_add(&mut out_positions, &mut out_uvs, &mut vertex_map, i2, s2);
-            out_indices.push(o0);
-            out_indices.push(o1);
-            out_indices.push(o2);
-        }
-
-        let _ = prim(
-            ctx,
-            &scaled,
-            MODE_TRIANGLES,
-            CULL_NONE,
-            &out_positions,
-            Some(&out_indices),
-            None,
-            Some(&out_uvs),
-            col_flat,
-            col_image,
-            colkey,
-            state,
-        );
+    let g = if col_image.is_some() {
+        primitive::unit_sphere_textured()
     } else {
-        // Flat-color path: keep the original shared-vertex layout with
-        // zero per-call allocation.
-        let _ = prim(
-            ctx,
-            &scaled,
-            MODE_TRIANGLES,
-            CULL_NONE,
-            unit_icosa_lv1_positions(),
-            Some(unit_icosa_lv1_tri_indices()),
-            None,
-            None,
-            col_flat,
-            None,
-            None,
-            state,
-        );
-    }
+        primitive::unit_sphere_solid()
+    };
+    let uvs = if col_image.is_some() {
+        primitive_uvs(g)
+    } else {
+        None
+    };
+    let _ = prim(
+        ctx,
+        &scaled,
+        g.mode,
+        g.cull,
+        g.positions.as_slice(),
+        Some(g.indices.as_slice()),
+        primitive_normals(g),
+        uvs,
+        col_flat,
+        col_image,
+        colkey,
+        state,
+    );
 }
 
 pub fn sphereb(
@@ -1453,13 +1083,14 @@ pub fn sphereb(
 ) {
     let translated = translate_local(world_mat, local);
     let scaled = scale_axes(&translated, r, r, r);
+    let g = primitive::unit_sphere_wire();
     let _ = prim(
         ctx,
         &scaled,
-        MODE_LINES,
-        CULL_NONE,
-        unit_icosa_lv1_positions(),
-        Some(unit_icosa_lv1_edge_indices()),
+        g.mode,
+        g.cull,
+        g.positions.as_slice(),
+        Some(g.indices.as_slice()),
         None,
         None,
         col,
@@ -1625,17 +1256,18 @@ pub fn plane(
     state: DrawState,
 ) {
     let scaled = scale_axes(world_mat, w * 0.5, h * 0.5, 1.0);
+    let g = primitive::unit_plane();
     let uv_array = [
         uvs.0 .0, uvs.0 .1, uvs.1 .0, uvs.1 .1, uvs.2 .0, uvs.2 .1, uvs.3 .0, uvs.3 .1,
     ];
     let _ = prim(
         ctx,
         &scaled,
-        MODE_TRIANGLES,
-        CULL_NONE,
-        &UNIT_RECT_POSITIONS,
-        Some(&RECT_TRI_INDICES),
-        None,
+        g.mode,
+        g.cull,
+        g.positions.as_slice(),
+        Some(g.indices.as_slice()),
+        primitive_normals(g),
         Some(&uv_array),
         0,
         Some(img),

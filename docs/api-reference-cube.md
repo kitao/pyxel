@@ -813,6 +813,55 @@ node.prim(Mat4.IDENTITY, prim, 11)
 
 **Note:** The list attributes are live proxies: edit elements or assign slices (positions[:] = ...); whole-attribute assignment is not supported.
 
+### `plane(width=1.0, height=1.0)` — function
+
+Create a textured XY-plane Primitive with flat normals.
+
+**Parameters:**
+
+- `width` (*float*) — Full width of the plane.
+- `height` (*float*) — Full height of the plane.
+
+**Returns:** `Primitive`
+
+**Example:**
+
+```python
+prim = Primitive.plane(2, 2)
+```
+
+### `box(size=Vec3.ONE)` — function
+
+Create a textured box Primitive with flat normals.
+
+**Parameters:**
+
+- `size` (*Vec3*) — Full width, height, and depth of the box. Defaults to Vec3.ONE.
+
+**Returns:** `Primitive`
+
+**Example:**
+
+```python
+prim = Primitive.box(Vec3(1, 2, 1))
+```
+
+### `sphere(radius=0.5)` — function
+
+Create a textured low-poly sphere Primitive with flat normals.
+
+**Parameters:**
+
+- `radius` (*float*) — Sphere radius.
+
+**Returns:** `Primitive`
+
+**Example:**
+
+```python
+prim = Primitive.sphere(0.5)
+```
+
 ### `Primitive.MODE_POINTS` — constant
 
 Draw each vertex as a point.

@@ -2129,6 +2129,86 @@
           "advanced": false
         },
         {
+          "name": "plane",
+          "type": "function",
+          "signature": "plane(width=1.0, height=1.0)",
+          "description": {
+            "en": "Create a textured XY-plane Primitive with flat normals.",
+            "ja": "フラット法線を持つテクスチャ対応の XY 平面 Primitive を作成する。"
+          },
+          "params": [
+            {
+              "name": "width",
+              "type": "float",
+              "description": {
+                "en": "Full width of the plane.",
+                "ja": "平面の幅。"
+              }
+            },
+            {
+              "name": "height",
+              "type": "float",
+              "description": {
+                "en": "Full height of the plane.",
+                "ja": "平面の高さ。"
+              }
+            }
+          ],
+          "returns": {
+            "type": "Primitive"
+          },
+          "examples": ["prim = Primitive.plane(2, 2)"],
+          "advanced": false
+        },
+        {
+          "name": "box",
+          "type": "function",
+          "signature": "box(size=Vec3.ONE)",
+          "description": {
+            "en": "Create a textured box Primitive with flat normals.",
+            "ja": "フラット法線を持つテクスチャ対応の箱 Primitive を作成する。"
+          },
+          "params": [
+            {
+              "name": "size",
+              "type": "Vec3",
+              "description": {
+                "en": "Full width, height, and depth of the box. Defaults to Vec3.ONE.",
+                "ja": "箱の幅、高さ、奥行き。デフォルトは Vec3.ONE。"
+              }
+            }
+          ],
+          "returns": {
+            "type": "Primitive"
+          },
+          "examples": ["prim = Primitive.box(Vec3(1, 2, 1))"],
+          "advanced": false
+        },
+        {
+          "name": "sphere",
+          "type": "function",
+          "signature": "sphere(radius=0.5)",
+          "description": {
+            "en": "Create a textured low-poly sphere Primitive with flat normals.",
+            "ja": "フラット法線を持つテクスチャ対応のローポリ球 Primitive を作成する。"
+          },
+          "params": [
+            {
+              "name": "radius",
+              "type": "float",
+              "description": {
+                "en": "Sphere radius.",
+                "ja": "球の半径。"
+              }
+            }
+          ],
+          "returns": {
+            "type": "Primitive"
+          },
+          "examples": ["prim = Primitive.sphere(0.5)"],
+          "advanced": false
+        },
+        {
           "name": "MODE_POINTS",
           "type": "constant",
           "signature": "Primitive.MODE_POINTS",
