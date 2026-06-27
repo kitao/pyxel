@@ -48,7 +48,7 @@ Also, this project is developed by one person, kept going by your [GitHub](https
 
 ![Palette](images/pyxel_palette.png)
 
-Pyxel's specifications and APIs are inspired by [PICO-8](https://www.lexaloffle.com/pico-8.php) and [TIC-80](https://tic80.com/).
+[GIMP palette file](pyxel.gpl)
 
 ## How to Install
 

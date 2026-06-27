@@ -92,20 +92,6 @@
       "tr": "{0} (/ˈpɪksəl/), Python için bir retro oyun motorudur. Yalnızca 16 renk desteği ve 4 ses kanalı gibi retro oyun konsollarından ilham alınan sade özellikleriyle piksel sanat tarzı oyunlar yapmanın keyfini kolayca çıkarabilirsiniz.",
       "uk": "{0} (/ˈpɪksəl/) — це ретро-ігровий рушій для Python. Специфікації натхнені ретро-ігровими консолями, зокрема обмеженням до 16 кольорів і 4 звукових каналів, що дозволяє легко насолоджуватися створенням ігор у стилі піксельної графіки."
     },
-    "overview_inspired": {
-      "en": "{0}'s specifications and APIs are inspired by {1} and {2}.",
-      "cn": "{0} 的规格和 API 参考了 {1} 和 {2}。",
-      "de": "Die Spezifikationen und APIs von {0} sind inspiriert von {1} und {2}.",
-      "es": "Las especificaciones y API de {0} están inspiradas en {1} y {2}.",
-      "fr": "Les spécifications et les API de {0} s'inspirent de {1} et de {2}.",
-      "it": "Le specifiche e le API di {0} sono ispirate a {1} e {2}.",
-      "ja": "{0} の仕様や API は、{1} や {2} を参考にしています。",
-      "ko": "{0}의 사양 및 API는 {1}와 {2}에서 영감을 받았습니다.",
-      "pt": "As especificações e APIs do {0} são inspiradas no {1} e no {2}.",
-      "ru": "Спецификации и API {0} вдохновлены {1} и {2}.",
-      "tr": "{0}'in spesifikasyonları ve API'leri, {1} ve {2}'den ilham alınarak hazırlanmıştır.",
-      "uk": "Специфікації та API {0} натхнені {1} та {2}."
-    },
     "overview_license": {
       "en": "{0} is open source under the {1} and free to use. Let's start making retro games with {0}!",
       "cn": "{0} 在 {1} 下开源并免费使用。让我们开始使用 {0} 制作复古游戏吧！",
@@ -315,6 +301,20 @@
       "ru": "Цветовая палитра",
       "tr": "Renk Paleti",
       "uk": "Кольорова палітра"
+    },
+    "palette_gimp_palette_file": {
+      "en": "GIMP palette file",
+      "cn": "GIMP 调色板文件",
+      "de": "GIMP-Palettendatei",
+      "es": "Archivo de paleta de GIMP",
+      "fr": "Fichier de palette GIMP",
+      "it": "File palette GIMP",
+      "ja": "GIMP パレットファイル",
+      "ko": "GIMP 팔레트 파일",
+      "pt": "Arquivo de paleta do GIMP",
+      "ru": "Файл палитры GIMP",
+      "tr": "GIMP palet dosyası",
+      "uk": "Файл палітри GIMP"
     },
     "install_title": {
       "en": "How to Install",
