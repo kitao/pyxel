@@ -4,14 +4,14 @@ import pyxel
 from pyxel.cube import Camera, Mat4, Node, Primitive, Shading, Vec3
 
 ENEMY_COLORS = [8, 9, 10, 12, 14]
-ENEMY_RINGS = 6
-ENEMY_SEGMENTS = 10
+
+LOCK_RADIUS = 13.0
 
 LASER_ORIGIN = Vec3(0.0, 0.5, 10.0)
 LASER_POINTS = 24
 LASER_DURATION = 14
-LASER_WIDTH = 0.22
-LASER_CORE_WIDTH = LASER_WIDTH * 0.35
+LASER_OUTER_WIDTH = 0.22
+LASER_CORE_WIDTH = 0.08
 
 CAMERA_EYE = Vec3(0.0, 12.0, 10.0)
 AIM_POINT = Vec3(0.0, 1.0, 0.0)
@@ -27,60 +27,27 @@ class Enemy(Node):
         self.is_locked = False
         self.flash_timer = 0
 
-        self.body_directions = []
-        for ring in range(ENEMY_RINGS + 1):
-            latitude = math.pi * ring / ENEMY_RINGS - math.pi / 2
-            for segment in range(ENEMY_SEGMENTS + 1):
-                longitude = math.tau * segment / ENEMY_SEGMENTS
-                self.body_directions.append(
-                    (
-                        math.cos(latitude) * math.cos(longitude),
-                        math.sin(latitude),
-                        math.cos(latitude) * math.sin(longitude),
-                    )
-                )
+        self.body = Primitive.sphere(1.0)
+        self.base_positions = list(self.body.positions)
 
-        indices = []
-        for ring in range(ENEMY_RINGS):
-            for segment in range(ENEMY_SEGMENTS):
-                base_index = ring * (ENEMY_SEGMENTS + 1) + segment
-                next_ring_index = base_index + ENEMY_SEGMENTS + 1
-                indices += [
-                    base_index,
-                    next_ring_index + 1,
-                    base_index + 1,
-                    base_index,
-                    next_ring_index,
-                    next_ring_index + 1,
-                ]
-
-        self.body = Primitive(
-            Primitive.MODE_TRIANGLES,
-            self.make_body_positions(0.0),
-            indices,
-            cull=Primitive.CULL_NONE,
-        )
-
-    def make_body_positions(self, time):
+    def update_body(self, time):
         phase = self.phase
         positions = []
-        for direction in self.body_directions:
+        for i in range(0, len(self.base_positions), 3):
+            x, y, z = self.base_positions[i : i + 3]
             radius = (
                 1.0
-                + 0.25 * math.sin(3.0 * direction[0] + 1.7 * time + phase)
-                + 0.22 * math.sin(3.5 * direction[1] + 1.3 * time + phase * 1.7)
-                + 0.20 * math.sin(4.0 * direction[2] + 2.1 * time + phase * 0.6)
+                + 0.25 * math.sin(3.0 * x + 1.7 * time + phase)
+                + 0.22 * math.sin(3.5 * y + 1.3 * time + phase * 1.7)
+                + 0.20 * math.sin(4.0 * z + 2.1 * time + phase * 0.6)
             )
-            x, y, z = direction
             positions += [x * radius, y * radius, z * radius]
-        return positions
-
-    def trigger_hit(self):
-        self.flash_timer = 12
+        self.body.positions[:] = positions
+        self.body.compute_normals()
 
     def on_update(self):
         frame = pyxel.frame_count
-        self.body.positions[:] = self.make_body_positions(frame * 0.06)
+        self.update_body(frame * 0.06)
 
         self.center = Vec3(
             3.5 * math.cos(self.orbit + frame * 0.01),
@@ -102,18 +69,17 @@ class Laser(Node):
         self.enemies = enemies
         self.locked_enemies = []
         self.firing_enemies = []
-        self.spread_offsets = []
+        self.launch_directions = []
         self.fire_frame = 0
-        self.hit_done = False
 
         self.outer_beams = [self.make_beam() for _ in enemies]
         self.core_beams = [self.make_beam() for _ in enemies]
 
     def make_beam(self):
-        indices = []
+        beam_indices = []
         for point_index in range(LASER_POINTS - 1):
             base_index = point_index * 2
-            indices += [
+            beam_indices += [
                 base_index,
                 base_index + 1,
                 base_index + 2,
@@ -124,7 +90,7 @@ class Laser(Node):
         return Primitive(
             Primitive.MODE_TRIANGLES,
             [0.0] * (LASER_POINTS * 2 * 3),
-            indices,
+            beam_indices,
             cull=Primitive.CULL_NONE,
         )
 
@@ -134,8 +100,6 @@ class Laser(Node):
         self.locked_enemies = []
 
     def lock_enemy(self, enemy):
-        if enemy.is_locked:
-            return
         enemy.is_locked = True
         self.locked_enemies.append(enemy)
         pyxel.play(0, 0)
@@ -170,15 +134,16 @@ class Laser(Node):
             return False
 
         screen_x, screen_y = screen_pos
-        return math.hypot(pyxel.mouse_x - screen_x, pyxel.mouse_y - screen_y) < 13.0
+        mouse_distance = math.hypot(pyxel.mouse_x - screen_x, pyxel.mouse_y - screen_y)
+        return mouse_distance < LOCK_RADIUS
 
     def start_fire(self):
         if not self.locked_enemies:
             return
 
-        self.firing_enemies = self.locked_enemies
-        self.spread_offsets = [
-            self.spread_offset(enemy.center, enemy_index)
+        self.firing_enemies = list(self.locked_enemies)
+        self.launch_directions = [
+            self.make_launch_direction(enemy.center, enemy_index)
             for enemy_index, enemy in enumerate(self.firing_enemies)
         ]
 
@@ -187,71 +152,66 @@ class Laser(Node):
 
         self.locked_enemies = []
         self.fire_frame = 1
-        self.hit_done = False
         pyxel.play(1, 1)
 
     def on_update(self):
         drag_started = pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT)
-        should_update_locks = True
 
         if self.fire_frame:
             self.fire_frame += 1
-            if self.fire_frame >= LASER_DURATION:
+            if self.fire_frame == LASER_DURATION:
                 self.hit_enemies()
-            if self.fire_frame > LASER_DURATION + 8:
+            if drag_started or self.fire_frame > LASER_DURATION + 8:
                 self.finish_fire()
-                should_update_locks = drag_started
-            elif not drag_started:
-                should_update_locks = False
-            else:
-                self.finish_fire()
+                if not drag_started:
+                    return
 
-        if should_update_locks:
-            if drag_started:
-                self.clear_locks()
-            if pyxel.btn(pyxel.MOUSE_BUTTON_LEFT):
-                for enemy in self.enemies:
-                    if not enemy.is_locked and self.can_lock(enemy):
-                        self.lock_enemy(enemy)
-            elif pyxel.btnr(pyxel.MOUSE_BUTTON_LEFT) and self.locked_enemies:
-                self.start_fire()
+            if self.fire_frame:
+                laser_progress = min(1.0, self.fire_frame / LASER_DURATION)
+                for enemy_index, enemy in enumerate(self.firing_enemies):
+                    self.update_beam(
+                        self.outer_beams[enemy_index],
+                        enemy.center,
+                        enemy_index,
+                        laser_progress,
+                    )
+                    self.update_beam(
+                        self.core_beams[enemy_index],
+                        enemy.center,
+                        enemy_index,
+                        laser_progress,
+                        LASER_CORE_WIDTH,
+                    )
+                return
 
-        if self.fire_frame:
-            laser_progress = min(1.0, self.fire_frame / LASER_DURATION)
-            for enemy_index, enemy in enumerate(self.firing_enemies):
-                self.update_beam(
-                    self.outer_beams[enemy_index],
-                    enemy.center,
-                    enemy_index,
-                    laser_progress,
-                )
-                self.update_beam(
-                    self.core_beams[enemy_index],
-                    enemy.center,
-                    enemy_index,
-                    laser_progress,
-                    LASER_CORE_WIDTH,
-                )
+        if drag_started:
+            self.clear_locks()
+        if pyxel.btn(pyxel.MOUSE_BUTTON_LEFT):
+            for enemy in self.enemies:
+                if not enemy.is_locked and self.can_lock(enemy):
+                    self.lock_enemy(enemy)
+        elif pyxel.btnr(pyxel.MOUSE_BUTTON_LEFT) and self.locked_enemies:
+            self.start_fire()
 
-    def spread_offset(self, enemy_center, enemy_index):
-        if enemy_index < len(self.spread_offsets):
-            return self.spread_offsets[enemy_index]
-
+    def make_launch_direction(self, enemy_center, enemy_index):
         _, right, _ = self.camera_axes()
-        enemy_count = len(self.firing_enemies) or 1
-        spread_index = enemy_index - (enemy_count - 1) * 0.5
-        spread_ratio = spread_index / max((enemy_count - 1) * 0.5, 1.0)
-        side_offset = (enemy_center - AIM_POINT).dot(right)
-        if abs(side_offset) <= 0.4:
-            side_offset = spread_ratio or 1.0
-        side_sign = 1.0 if side_offset >= 0.0 else -1.0
-        return right * (side_sign * 1.2 * (0.7 + 0.3 * abs(spread_ratio)))
+        enemy_count = len(self.firing_enemies)
+        center_index = (enemy_count - 1) * 0.5
+        lock_side = (enemy_index - center_index) / max(center_index, 1.0)
+        target_side = (enemy_center - AIM_POINT).dot(right)
+        if abs(target_side) <= 0.4:
+            target_side = lock_side
+            if target_side == 0.0:
+                target_side = 1.0
+        side_sign = 1.0 if target_side >= 0.0 else -1.0
+        target_direction = (enemy_center - LASER_ORIGIN).normalize()
+        fan_strength = side_sign * 1.2 * (0.7 + 0.3 * abs(lock_side))
+        return (target_direction + right * fan_strength).normalize()
 
-    def make_laser_path(self, enemy_center, enemy_index, laser_progress):
+    def make_visible_laser_path(self, enemy_center, enemy_index, laser_progress):
         laser_progress = max(0.0, min(1.0, laser_progress))
         to_enemy = enemy_center - LASER_ORIGIN
-        direction = self.spread_offset(enemy_center, enemy_index)
-        direction = (direction + to_enemy.normalize()).normalize()
+        direction = self.launch_directions[enemy_index]
         step_length = to_enemy.length() * 1.15 / (LASER_POINTS - 1)
         current_point = LASER_ORIGIN
         full_path = [current_point]
@@ -289,23 +249,21 @@ class Laser(Node):
         return visible_path
 
     def hit_enemies(self):
-        if not self.firing_enemies or self.hit_done:
+        if not self.firing_enemies:
             return
-        self.hit_done = True
         pyxel.play(2, 2)
         for enemy in self.firing_enemies:
-            enemy.trigger_hit()
+            enemy.flash_timer = 12
             enemy.is_locked = False
 
     def finish_fire(self):
-        if self.firing_enemies and not self.hit_done:
+        if self.fire_frame < LASER_DURATION:
             self.hit_enemies()
         for enemy in self.firing_enemies:
             enemy.is_locked = False
         self.firing_enemies = []
-        self.spread_offsets = []
+        self.launch_directions = []
         self.fire_frame = 0
-        self.hit_done = False
 
     def on_draw(self):
         self.depth_test(False)
@@ -317,19 +275,17 @@ class Laser(Node):
                 self.prim(Mat4.IDENTITY, self.core_beams[enemy_index], 7)
 
     def update_beam(
-        self, beam, enemy_center, enemy_index, laser_progress, width=LASER_WIDTH
+        self, beam, enemy_center, enemy_index, laser_progress, width=LASER_OUTER_WIDTH
     ):
         camera_pos, right, _ = self.camera_axes()
-        path_points = self.make_laser_path(enemy_center, enemy_index, laser_progress)
-        positions = []
+        path_points = self.make_visible_laser_path(
+            enemy_center, enemy_index, laser_progress
+        )
+        beam_positions = []
         for point_index, point in enumerate(path_points):
-            if point_index == 0:
-                tangent = path_points[1] - point
-            elif point_index == len(path_points) - 1:
-                tangent = point - path_points[point_index - 1]
-            else:
-                tangent = path_points[point_index + 1] - path_points[point_index - 1]
-
+            prev_point = path_points[max(0, point_index - 1)]
+            next_point = path_points[min(len(path_points) - 1, point_index + 1)]
+            tangent = next_point - prev_point
             side_vector = tangent.cross(point - camera_pos)
             side_vector = (
                 side_vector.normalize() * width
@@ -337,8 +293,8 @@ class Laser(Node):
                 else right * width
             )
             for vertex in (point - side_vector, point + side_vector):
-                positions += [vertex.x, vertex.y, vertex.z]
-        beam.positions[:] = positions
+                beam_positions += [vertex.x, vertex.y, vertex.z]
+        beam.positions[:] = beam_positions
 
 
 class Scene(Node):

@@ -547,6 +547,18 @@ constants.
 
 ### 9.3 Construction and Mutation
 
+Built-in shapes can be created without hand-writing vertex arrays:
+
+```python
+plane = Primitive.plane(2, 2)
+box = Primitive.box(Vec3(1, 1, 1))
+sphere = Primitive.sphere(0.5)
+```
+
+These factories return `MODE_TRIANGLES` primitives with UVs and
+precomputed flat normals. `box` and `sphere` use `CULL_BACK`; `plane`
+uses `CULL_NONE` so both sides draw.
+
 ```python
 primitive = Primitive(
     Primitive.MODE_TRIANGLES,
