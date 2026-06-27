@@ -19,10 +19,10 @@ class Actor(Node):
         self.add_child(self.model)
 
     def on_update(self):
-        t = pyxel.frame_count
-        angle = self.phase + t * 0.9
+        frame = pyxel.frame_count
+        angle = self.phase + frame * 0.9
         pos = Vec3(pyxel.sin(angle) * 2.2, 0.0, pyxel.cos(angle) * 2.2)
-        spin = Mat4.from_euler(Vec3(0.0, 180.0 - angle + t * 1.4, 0.0))
+        spin = Mat4.from_euler(Vec3(0.0, 180.0 - angle + frame * 1.4, 0.0))
         scale = Mat4.from_scale(Vec3(0.8, 0.8, 0.8))
         self.transform = Mat4.from_translation(pos) * spin * scale
 
