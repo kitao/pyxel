@@ -164,6 +164,8 @@ def _transform_url(url, doc_name=None):
         return url
     if url.startswith("../../docs/images/"):
         return url.replace("../../docs/images/", "images/")
+    if url.startswith("../../docs/"):
+        return url.replace("../../docs/", "")
     if url.startswith("../"):
         return f"{PYXEL_WEB}/{url[3:]}"
     if doc_name:

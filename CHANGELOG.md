@@ -2,6 +2,7 @@
 
 ## 2.9.7
 
+- Added a GIMP palette file for Pyxel's default colors
 - Fixed TMX imports with flipped tiles
 - Fixed reversed slice assignment for Pyxel sequence objects
 - Fixed possible channel desync when starting music playback
