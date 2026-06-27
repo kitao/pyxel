@@ -303,18 +303,18 @@
       "uk": "Кольорова палітра"
     },
     "palette_gimp_palette_file": {
-      "en": "GIMP palette file",
-      "cn": "GIMP 调色板文件",
-      "de": "GIMP-Palettendatei",
-      "es": "Archivo de paleta de GIMP",
-      "fr": "Fichier de palette GIMP",
-      "it": "File palette GIMP",
-      "ja": "GIMP パレットファイル",
-      "ko": "GIMP 팔레트 파일",
-      "pt": "Arquivo de paleta do GIMP",
-      "ru": "Файл палитры GIMP",
-      "tr": "GIMP palet dosyası",
-      "uk": "Файл палітри GIMP"
+      "en": "GIMP palette file (.gpl)",
+      "cn": "GIMP 调色板文件 (.gpl)",
+      "de": "GIMP-Palettendatei (.gpl)",
+      "es": "Archivo de paleta de GIMP (.gpl)",
+      "fr": "Fichier de palette GIMP (.gpl)",
+      "it": "File palette GIMP (.gpl)",
+      "ja": "GIMP パレットファイル (.gpl)",
+      "ko": "GIMP 팔레트 파일(.gpl)",
+      "pt": "Arquivo de paleta do GIMP (.gpl)",
+      "ru": "Файл палитры GIMP (.gpl)",
+      "tr": "GIMP palet dosyası (.gpl)",
+      "uk": "Файл палітри GIMP (.gpl)"
     },
     "install_title": {
       "en": "How to Install",
