@@ -4,7 +4,6 @@ import pyxel
 from pyxel.cube import Camera, Mat4, Node, Primitive, Shading, Vec3
 
 ENEMY_COLORS = [8, 9, 10, 12, 14]
-
 LOCK_RADIUS = 13.0
 
 LASER_ORIGIN = Vec3(0.0, 0.5, 10.0)
