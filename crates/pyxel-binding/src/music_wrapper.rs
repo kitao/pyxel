@@ -38,6 +38,7 @@ impl Seqs {
         rc_ref!(self.inner)
     }
 
+    // Mirrors the wrapper macro's Rc<UnsafeCell> interior mutability.
     #[allow(clippy::mut_from_ref)]
     fn inner_mut(&self) -> &mut pyxel::Music {
         rc_mut!(self.inner)

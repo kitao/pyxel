@@ -3,6 +3,8 @@ use pyo3::prelude::*;
 
 use crate::pyxel_singleton::pyxel;
 
+// Deprecated option compatibility
+
 fn resolve_exclude(preferred: Option<bool>, deprecated: Option<bool>) -> Option<bool> {
     if deprecated.is_some() {
         deprecation_warning!(
@@ -15,7 +17,7 @@ fn resolve_exclude(preferred: Option<bool>, deprecated: Option<bool>) -> Option<
     }
 }
 
-// Load/Save
+// Resource load and save
 
 #[pyfunction]
 #[pyo3(signature = (filename, exclude_images=None, exclude_tilemaps=None, exclude_sounds=None, exclude_musics=None, excl_images=None, excl_tilemaps=None, excl_sounds=None, excl_musics=None))]
@@ -77,7 +79,7 @@ fn save_pal(filename: &str) -> PyResult<()> {
     pyxel().save_palette(filename).map_err(PyException::new_err)
 }
 
-// Screenshot/Screencast
+// Screenshot and screencast capture
 
 #[pyfunction]
 #[pyo3(signature = (filename=None, scale=None))]
@@ -108,6 +110,8 @@ fn user_data_dir(vendor_name: &str, app_name: &str) -> PyResult<String> {
         .user_data_dir(vendor_name, app_name)
         .map_err(PyException::new_err)
 }
+
+// Module registration
 
 pub fn add_resource_functions(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(load, m)?)?;

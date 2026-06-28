@@ -111,7 +111,6 @@ class PianoKeyboard(Widget):
                 if y_start <= y <= y_end:
                     return octave + offset
 
-        # Then white keys
         for y_start, y_end, offset in _WHITE_KEY_RANGES:
             if y_start <= y < y_end:
                 return octave + offset

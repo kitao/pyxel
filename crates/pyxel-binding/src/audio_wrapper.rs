@@ -32,6 +32,7 @@ fn play(
     let should_loop = r#loop.unwrap_or(false);
     let resume = resume.unwrap_or(false);
 
+    // Dispatch supported sound input forms.
     cast_pyany! {
         snd,
 

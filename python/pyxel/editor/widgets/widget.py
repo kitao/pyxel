@@ -167,6 +167,7 @@ class Widget:
         capture_info.last_pos = None
 
     def _process_capture(self):
+        # Resolve drag, hover, repeat, and release before clearing capture state.
         capture_info = Widget._mouse_capture_info
         last_x, last_y = capture_info.last_pos
         x = pyxel.mouse_x

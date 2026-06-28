@@ -11,7 +11,7 @@ class ImportHook:
         self.main_dir = None
 
     def find_spec(self, fullname, path, target=None):
-        # Skip already-processed, built-in, loaded, or problematic modules
+        # Skip already-processed, built-in, loaded, or problematic modules.
         if (
             fullname in self.imported_modules
             or fullname in sys.builtin_module_names
@@ -21,7 +21,7 @@ class ImportHook:
             return None
         self.imported_modules.add(fullname)
 
-        # Skip standard library or installed packages
+        # Skip standard library or installed packages.
         spec = importlib.util.find_spec(fullname)
         if spec:
             origin = spec.origin
@@ -35,7 +35,7 @@ class ImportHook:
             ):
                 return None
 
-        # Find the script that triggered the import
+        # Find the script that triggered the import.
         caller_file = None
         frame = sys._getframe(1)
         while frame:
@@ -46,7 +46,7 @@ class ImportHook:
         if not caller_file:
             return None
 
-        # Trigger file download for missing modules in the caller's directory
+        # Trigger file download for missing modules in the caller's directory.
         print(f"Attempting to import '{fullname}'")
         caller_dir = os.path.dirname(os.path.abspath(caller_file))
         module_name = fullname.replace(".", os.sep)
@@ -60,7 +60,7 @@ class ImportHook:
         if is_found and self.main_dir is None:
             self.main_dir = caller_dir
 
-        # Trigger file download from the main directory via hooked stat
+        # Trigger file download from the main directory via hooked stat.
         if self.main_dir and self.main_dir != caller_dir:
             main_module_path = os.path.join(self.main_dir, f"{module_name}.py")
             main_package_path = os.path.join(self.main_dir, module_name, "__init__.py")

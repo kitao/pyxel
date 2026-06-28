@@ -130,7 +130,7 @@ impl Screencast {
             .set_repeat(Repeat::Infinite)
             .map_err(|_| save_err())?;
 
-        // Preallocate buffers
+        // Reuse scratch buffers across GIF frames.
         let mut base_rgb = vec![0u32; pixel_count];
         let mut curr_rgb = vec![0u32; pixel_count];
         let mut diff_rgb = vec![0u32; pixel_count];
@@ -139,7 +139,7 @@ impl Screencast {
         let mut scaled_buf = Vec::<u8>::with_capacity((width * scale * height * scale) as usize);
         let mut palette = Vec::<u8>::with_capacity(256 * 3);
 
-        // Write first frame
+        // Write the first frame as a full image baseline.
         self.screen_at(0).write_rgb(&mut base_rgb);
         let full_rect = RectArea::new(0, 0, width, height);
         Self::encode_region(
@@ -170,7 +170,7 @@ impl Screencast {
             })
             .map_err(|_| save_err())?;
 
-        // Write subsequent frames
+        // Write subsequent frames as diffs when their palette fits.
         for i in 1..self.num_captured_screens {
             self.screen_at(i).write_rgb(&mut curr_rgb);
             let diff_rect =
@@ -189,7 +189,7 @@ impl Screencast {
             );
 
             if overflow {
-                // Too many colors for diff; write as full frame
+                // Too many colors for a transparent diff; write a full frame.
                 Self::encode_region(
                     &curr_rgb,
                     width,
@@ -338,7 +338,7 @@ impl Screencast {
         let rect_w = rect.width() as usize;
         let rect_h = rect.height() as usize;
 
-        // Empty region: emit a minimal 1x1 frame
+        // Empty diff region still needs a minimal 1x1 GIF frame.
         if rect_w == 0 || rect_h == 0 {
             let scale_usize = scale as usize;
             scaled_buf.resize(scale_usize * scale_usize, 0);
@@ -346,7 +346,7 @@ impl Screencast {
             return false;
         }
 
-        // Build index buffer from the rect region
+        // Build the indexed-color buffer from the requested rectangle.
         let src_stride = src_width as usize;
         let rx = rect.left() as usize;
         let ry = rect.top() as usize;
@@ -369,7 +369,7 @@ impl Screencast {
             }
         }
 
-        // Scale
+        // Scale the indexed-color buffer to the requested GIF size.
         if scale == 1 {
             std::mem::swap(index_buf, scaled_buf);
         } else {
@@ -385,7 +385,7 @@ impl Screencast {
             }
         }
 
-        // Build palette
+        // Build the per-frame GIF palette.
         for &rgb in color_table.keys() {
             if rgb == TRANSPARENT {
                 palette.extend_from_slice(&[0, 0, 0]);
@@ -543,13 +543,17 @@ mod tests {
         let mut screencast = Screencast::new(2, 1);
         screencast.capture(16, 16, &image, &colors1, 10);
         screencast.capture(16, 16, &image, &colors2, 11);
-        screencast.capture(16, 16, &image, &colors1, 12); // wraps, drops the first
+        // Capacity wraps here, dropping the first captured screen.
+        screencast.capture(16, 16, &image, &colors1, 12);
 
         let path =
             std::env::temp_dir().join(format!("pyxel_screencast_test_{}.gif", std::process::id()));
         let path_str = path.to_str().unwrap();
         screencast.save(path_str, 1).unwrap();
-        assert_eq!(screencast.num_captured_screens, 0); // save resets
+        assert_eq!(
+            screencast.num_captured_screens, 0,
+            "save resets capture state"
+        );
 
         let mut options = gif::DecodeOptions::new();
         options.set_color_output(gif::ColorOutput::Indexed);

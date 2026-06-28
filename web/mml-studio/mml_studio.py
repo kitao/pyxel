@@ -2,6 +2,7 @@ import pyxel
 from js import window  # type: ignore
 
 
+# Runtime visualization app
 class App:
     def __init__(self):
         pyxel.init(100, 20, title="Pyxel MML Studio", quit_key=pyxel.KEY_NONE)
@@ -61,7 +62,8 @@ class App:
                 continue
 
             if total_sec is None:
-                play_sec = play_sec % 5  # Show progress in 5-second window
+                # Show progress in a fixed window for open-ended playback.
+                play_sec = play_sec % 5
                 total_sec = 5
             elif total_sec == 0:
                 continue
@@ -74,8 +76,10 @@ class App:
                 pyxel.rect(x - 1, y - 1, 3, 3, 5)
 
 
+# JavaScript bridge helpers
 def _get_js_var(name, default):
     return getattr(window, name, default)
 
 
+# Browser entry point
 App()

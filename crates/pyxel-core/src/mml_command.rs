@@ -2,6 +2,7 @@ use crate::sound::SoundTone;
 
 #[derive(Debug, Clone)]
 pub enum MmlCommand {
+    // Playback parameters
     Tempo {
         clocks_per_tick: u32,
     },
@@ -9,6 +10,7 @@ pub enum MmlCommand {
         gate_ratio: f32,
     },
 
+    // Voice shaping
     Tone {
         tone: SoundTone,
     },
@@ -16,6 +18,7 @@ pub enum MmlCommand {
         level: f32,
     },
 
+    // Pitch modulation
     Transpose {
         semitone_offset: f32,
     },
@@ -23,6 +26,7 @@ pub enum MmlCommand {
         semitone_offset: f32,
     },
 
+    // Envelope control
     Envelope {
         slot: u32,
     },
@@ -32,6 +36,7 @@ pub enum MmlCommand {
         segments: Vec<(u32, f32)>, // (duration_ticks, level)
     },
 
+    // Vibrato control
     Vibrato {
         slot: u32,
     },
@@ -42,6 +47,7 @@ pub enum MmlCommand {
         semitone_depth: f32,
     },
 
+    // Glide control
     Glide {
         slot: u32,
     },
@@ -51,6 +57,7 @@ pub enum MmlCommand {
         duration_ticks: Option<u32>,
     },
 
+    // Timeline events
     Note {
         midi_note: u32,
         duration_ticks: u32,
@@ -59,6 +66,7 @@ pub enum MmlCommand {
         duration_ticks: u32,
     },
 
+    // Repeat control
     RepeatStart,
     RepeatEnd {
         play_count: u32,

@@ -1,5 +1,7 @@
 use pyo3::prelude::*;
 
+// Python sequence wrapper for the mutable wavetable
+
 wrap_as_python_primitive_sequence!(
     Wavetable,
     pyxel::RcTone,
@@ -91,6 +93,8 @@ impl Tone {
         Wavetable::wrap(self.inner.clone())
     }
 }
+
+// Module registration
 
 pub fn add_tone_class(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<Wavetable>()?;

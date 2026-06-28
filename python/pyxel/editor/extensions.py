@@ -45,7 +45,7 @@ def _set_slice(self, x, y, data):
 
 pyxel.user_pal = _user_pal  # type: ignore
 
-# Attach editor-only drawing extensions to Image and Tilemap
+# Attach editor-only drawing extensions to Image and Tilemap.
 _EXTENSIONS = {
     "rect2": _rect2,
     "rectb2": _rectb2,

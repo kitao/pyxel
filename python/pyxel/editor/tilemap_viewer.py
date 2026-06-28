@@ -75,7 +75,7 @@ class TilemapViewer(Widget):
     def __on_draw(self):
         self.draw_panel(self.x, self.y, self.width, self.height)
 
-        # Draw tilemap
+        # Draw tilemap preview.
         pyxel.user_pal()
         pyxel.blt(
             self.x + 1,
@@ -88,7 +88,7 @@ class TilemapViewer(Widget):
         )
         pyxel.pal()
 
-        # Draw focus
+        # Draw focus outline.
         x = self.x + self.focus_x_var * 2 + 1
         y = self.y + self.focus_y_var * 2 + 1
         pyxel.clip(self.x + 1, self.y + 1, self.width - 2, self.height - 2)

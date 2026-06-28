@@ -10,11 +10,11 @@ EXTENDED_CHANNELS = [
     (0.1, 0),  # Bass Line
     (0.1, 0),  # Drums
 ]
-# [(gain, detune), (gain, detune), ...]
-# 'gain' ranges from 0.0 to 1.0.
-# Ensure that the total gain during simultaneous playback does not exceed 1.0.
-# 'detune' is the amount of detuning in cents (1/100 of a semitone).
-# 'detune' must be set carefully according to the pitch of the notes.
+# Each extended channel entry is (gain, detune).
+# gain ranges from 0.0 to 1.0.
+# Keep the total gain during simultaneous playback at or below 1.0.
+# detune is the amount of detuning in cents (1/100 of a semitone).
+# Set detune carefully according to the pitch of the notes.
 
 EXTENDED_TONES = [
     (  # Sine Wave
@@ -51,11 +51,10 @@ EXTENDED_TONES = [
         0.8,
     ),
 ]
-# [(mode, sample_bits, wavetable, gain), (mode, sample_bits, wavetable, gain), ...]
-# 'mode' corresponds to:
-#  0 for wavetable, 1 for short-period noise, 2 for long-period noise.
-# 'wavetable' can be any length, but all are 32 elements in this example.
-# 'wavetable' value range depends on 'sample_bits'. For 4 bits, the range is 0-15.
+# Each extended tone entry is (mode, sample_bits, wavetable, gain).
+# mode uses 0 for wavetable, 1 for short-period noise, and 2 for long-period noise.
+# Wavetables can be any length; this example uses 32 samples each.
+# Wavetable values follow sample_bits. For 4 bits, the range is 0-15.
 
 WAVETABLE_EDITOR_PARAMS = [
     (8, 8, 0, "Lead Melody"),

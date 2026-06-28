@@ -27,7 +27,7 @@ def _make_app(root: Path) -> Path:
     return app_dir
 
 
-# Public commands
+# Public CLI command tests
 
 
 class TestCliDispatcher:
@@ -203,7 +203,7 @@ class TestPackage:
         assert (tmp_path / "my_app.pyxapp").is_file()
 
     def test_with_relative_paths_from_app_dir(self, tmp_path, monkeypatch):
-        # Regression for `pyxel package . main.py` run from inside app_dir
+        # Regression for `pyxel package . main.py` run from inside app_dir.
         app_dir = _make_app(tmp_path)
         monkeypatch.chdir(app_dir)
         pyxel.cli.package_pyxel_app(".", "main.py")
@@ -428,7 +428,7 @@ class TestCopyExamples:
         assert (dst / "01_hello_pyxel.py").is_file()
 
 
-# Private helpers
+# Private helper tests
 
 
 class TestErrorHelpers:
@@ -505,7 +505,7 @@ class TestWatchHelpers:
         monkeypatch.setattr(tempfile, "gettempdir", lambda: str(tmp_path))
         watch_dir = tmp_path / pyxel.BASE_DIR / "watch"
         watch_dir.mkdir(parents=True)
-        # Use a PID that almost certainly doesn't exist
+        # Use a PID that almost certainly doesn't exist.
         dead_file = watch_dir / "999999"
         dead_file.touch()
         pyxel.cli._create_watch_state_file()

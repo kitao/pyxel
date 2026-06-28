@@ -1,3 +1,4 @@
+// ResourceData owns only plain resource values, so Serde derivation is intentional here.
 #![allow(clippy::unsafe_derive_deserialize)]
 
 use serde::{Deserialize, Serialize};

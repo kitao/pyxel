@@ -11,6 +11,7 @@ use glow::Context;
 
 use super::super::facade::GlProfile;
 use super::poll_events::{open_gamepad, GamepadSlot};
+// This SDL bridge intentionally uses the generated C names directly.
 #[allow(clippy::wildcard_imports)]
 use super::sdl2_sys::*;
 

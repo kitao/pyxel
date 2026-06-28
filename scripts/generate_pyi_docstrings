@@ -54,7 +54,7 @@ def _merge_items(existing, new):
 def _adapt_for_tilemap(item):
     desc = localize(item.get("description"))
 
-    # blt-specific
+    # Adapt blt-specific wording.
     desc = desc.replace(
         "image bank img (0-2 or Image instance)",
         "tilemap tm (0-7 or Tilemap instance)",
@@ -65,11 +65,11 @@ def _adapt_for_tilemap(item):
         "tilekey sets the transparent tile",
     )
 
-    # General
+    # Apply wording shared by drawing functions.
     desc = desc.replace("the screen", "the tilemap")
     desc = desc.replace("full screen", "the full tilemap")
 
-    # Color -> tile
+    # Map color terminology to tile terminology.
     desc = desc.replace("a pixel of color col", "a tile")
     desc = desc.replace("a pixel with the color col", "a tile")
     desc = desc.replace("a string s in color col", "a string s with tile")
@@ -229,7 +229,7 @@ def _add_docstrings(content, doc_map):
         line = lines[i]
         stripped = line.strip()
 
-        # Track class scope
+        # Track the current class scope.
         cm = re.match(r"^class (\w+)", line)
         if cm:
             current_class = cm.group(1)
@@ -240,7 +240,7 @@ def _add_docstrings(content, doc_map):
         ):
             current_class = None
 
-        # Variable annotation (e.g. "width: int" or "    width: int")
+        # Match variable annotations such as "width: int" or "    width: int".
         vm = re.match(r"^(\s*)(\w+)\s*:\s*\S+", line)
         if vm and not stripped.startswith(("def ", "class ")):
             var_indent = vm.group(1)
@@ -254,11 +254,11 @@ def _add_docstrings(content, doc_map):
                     i += 1
                     continue
 
-        # Track decorators
+        # Track decorators for the following function.
         if stripped.startswith("@"):
             last_decorator = stripped
 
-        # Start of def
+        # Locate function definitions.
         dm = re.match(r"^(\s*)def (\w+)\(", line)
         if dm:
             func_indent = dm.group(1)
@@ -267,7 +267,7 @@ def _add_docstrings(content, doc_map):
             is_overload = last_decorator == "@overload"
             last_decorator = None
 
-            # Collect full def signature (may span multiple lines)
+            # Collect the full function signature, including multiline signatures.
             def_lines = []
             j = i
             while j < len(lines):
@@ -285,7 +285,7 @@ def _add_docstrings(content, doc_map):
                     ds = _make_docstring(item, body_indent)
                     if ds:
                         last = def_lines[-1].rstrip()
-                        def_lines[-1] = last[:-4] + "\n"  # remove ' ...'
+                        def_lines[-1] = last[:-4] + "\n"  # Remove the placeholder body.
                         result.extend(def_lines)
                         for dl in ds:
                             result.append(dl + "\n")

@@ -101,7 +101,7 @@ class TestTrig:
         assert pyxel.atan2(-1, 0) == pytest.approx(-90.0, abs=1e-3)
 
     def test_sin_cos_identity(self):
-        # sin^2 + cos^2 = 1 for any angle
+        # sin^2 + cos^2 = 1 for any angle.
         for deg in [0, 30, 45, 60, 90, 120, 180, 270]:
             s = pyxel.sin(deg)
             c = pyxel.cos(deg)
@@ -145,7 +145,7 @@ class TestRandom:
             assert isinstance(val, int)
 
     def test_rndi_single_value(self):
-        # When min == max, always returns that value
+        # When min == max, always returns that value.
         for _ in range(10):
             assert pyxel.rndi(5, 5) == 5
 
@@ -211,7 +211,7 @@ class TestNoise:
         assert -1.0 <= val <= 1.0
 
     def test_noise_continuity(self):
-        # Nearby inputs should produce nearby outputs (Perlin noise is smooth)
+        # Nearby inputs should produce nearby outputs (Perlin noise is smooth).
         pyxel.nseed(0)
         v1 = pyxel.noise(1.0, 0.0, 0.0)
         v2 = pyxel.noise(1.001, 0.0, 0.0)

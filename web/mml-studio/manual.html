@@ -25,7 +25,7 @@
         const app = document.getElementById("app");
         app.innerHTML = "";
 
-        // Header
+        // Header with language selector and localized title text
         const header = document.createElement("header");
         header.className = "flex items-start gap-4 mb-6";
 
@@ -51,7 +51,7 @@
         header.appendChild(titleBlock);
         app.appendChild(header);
 
-        // Sections wrapper
+        // Manual section cards populated by updateTexts
         const sections = document.createElement("div");
         sections.className = "space-y-6";
 
@@ -77,19 +77,19 @@
 
       // Populate every manual section from localized JSON data.
       function updateTexts() {
-        // Title & subtitle
+        // Localized page title and subtitle
         document.title = t("title");
         document.getElementById("page-title").textContent = t("title");
         document.getElementById("page-subtitle").innerHTML = t(
           "subtitle",
         ).replace("{0}", link("https://github.com/kitao/pyxel", "Pyxel"));
 
-        // Overview
+        // Overview text
         document.getElementById("s-overview").innerHTML = `
           <h2 class="section-title">${esc(t("overview_title"))}</h2>
           <p class="body">${esc(t("overview_body"))}</p>`;
 
-        // Screen Layout
+        // Screen layout mockup and legend
         const layoutLegend = [
           { key: "layout_controls", descKey: "layout_controls_desc" },
           { key: "layout_channels", descKey: "layout_channels_desc" },
@@ -107,9 +107,9 @@
           <h2 class="section-title">${esc(t("layout_title"))}</h2>
           <p class="body mb-4">${esc(t("layout_body"))}</p>
 
-          <!-- Layout diagram -->
+          <!-- Layout diagram mockup -->
           <div class="border border-gray-600 rounded-lg overflow-hidden select-none mb-4">
-            <!-- Control area -->
+            <!-- Playback control area -->
             <div class="flex sm:flex-row flex-col items-start sm:items-center gap-3 bg-[#111827] px-3 py-3">
               <div class="flex flex-col gap-1.5 shrink-0">
                 <div class="flex gap-1.5">
@@ -124,7 +124,7 @@
                 <span class="text-gray-500 text-xs">${esc(t("layout_runtime"))}</span>
               </div>
             </div>
-            <!-- Channels -->
+            <!-- Channel input area -->
             <div class="bg-gray-900 px-3 py-2 space-y-2">
               <div class="flex items-center gap-2">
                 <span class="text-gray-300 text-sm font-medium w-8">CH1</span>
@@ -140,7 +140,7 @@
               <div class="bg-gray-900 border border-gray-600 rounded-lg h-8 w-full"></div>
               <div class="text-center text-gray-600 text-xs py-1">CH3, CH4 ...</div>
             </div>
-            <!-- URL / QR -->
+            <!-- Share URL and QR area -->
             <div class="bg-gray-900 border-t border-gray-700 px-3 py-2">
               <div class="text-gray-300 text-sm font-medium mb-1">URL</div>
               <div class="bg-gray-900 border border-gray-600 rounded-lg h-7 w-full mb-2"></div>
@@ -152,10 +152,10 @@
             </div>
           </div>
 
-          <!-- Legend -->
+          <!-- Layout legend -->
           <div class="space-y-2">${layoutLegend}</div>`;
 
-        // Controls
+        // Playback control descriptions
         const controlItems = data.control_items
           .map(
             (item) =>
@@ -170,7 +170,7 @@
           <p class="body mb-3">${esc(t("controls_body"))}</p>
           <div class="space-y-2.5">${controlItems}</div>`;
 
-        // Channel Input
+        // Channel input descriptions
         const channelItems = data.channel_items
           .map(
             (item) =>
@@ -185,12 +185,12 @@
           <p class="body mb-3">${esc(t("channels_body")).replace("{0}", chip("CDE"))}</p>
           <div class="space-y-2.5">${channelItems}</div>`;
 
-        // Sharing
+        // URL sharing description
         document.getElementById("s-sharing").innerHTML = `
           <h2 class="section-title">${esc(t("sharing_title"))}</h2>
           <p class="body">${esc(t("sharing_body"))}</p>`;
 
-        // Keyboard Shortcuts
+        // Keyboard shortcut table
         const shortcutRows = data.shortcuts
           .map(
             (s) =>
@@ -215,7 +215,7 @@
             </table>
           </div>`;
 
-        // MML Command Reference
+        // MML command reference link
         document.getElementById("s-mml-ref").innerHTML = `
           <h2 class="section-title">${esc(t("mml_ref_title"))}</h2>
           <p class="body">${esc(t("mml_ref_body")).replace("{0}", link("mml-commands.html", t("mml_ref_link")))}</p>`;
@@ -223,7 +223,7 @@
         setDocLang(lang);
       }
 
-      // Init
+      // Initialize from the localized MML Studio manual JSON.
       initPage("manual.json", buildPage);
     </script>
   </body>

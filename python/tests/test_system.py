@@ -426,7 +426,7 @@ class TestSystemFlow:
         assert pyxel.frame_count == before + 3
 
     def test_quit(self):
-        # quit() exits the process, so run in a subprocess
+        # quit() exits the process, so run in a subprocess.
         result = subprocess.run(
             [
                 sys.executable,

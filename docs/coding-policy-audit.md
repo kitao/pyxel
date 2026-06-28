@@ -190,8 +190,9 @@ Artifacts must contain explicit rows for at least these probe families:
   effective defaults.
 
 - Comments: English-only comments, intent-bearing comments, required headers for
-  long blocks, group separator symmetry, documentation-comment bans, domain
-  convention comments, and self-contained wording.
+  long blocks, group separator symmetry, label-vs-sentence punctuation,
+  documentation-comment bans, domain convention comments, and self-contained
+  wording.
 
 - Testing: behavior that needs unit coverage, behavior left to screenshot or
   manual coverage, test claims that can actually fail, deterministic assertions,

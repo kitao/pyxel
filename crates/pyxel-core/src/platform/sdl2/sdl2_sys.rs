@@ -1,3 +1,4 @@
+// Bindgen emits C-style SDL2 names and unused constants that mirror the C headers.
 #![allow(
     dead_code,
     non_camel_case_types,

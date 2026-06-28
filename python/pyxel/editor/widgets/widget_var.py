@@ -1,4 +1,7 @@
 class WidgetVar:
+    # Variables:
+    #   none
+    #
     # Events:
     #   get (value) -> value
     #   set (value) -> value

@@ -306,7 +306,7 @@
               d="M5 13l4 4L19 7"
             ></path>
           </svg>
-          Copied project data. Please paste it into a Gist.
+          Copied project data. Paste it into a Gist.
         </p>
         <div class="flex justify-end gap-2">
           <a
@@ -341,7 +341,7 @@
 
       // uint8ToBase64 and base64ToUint8 provided by shared.js
 
-      // Project state helpers
+      // Project state synchronization between editors and the archive model
       function copyCodeToProject() {
         window._project.code = window._codeEditor.getValue();
       }
@@ -383,7 +383,7 @@
         }
       }
 
-      // Pane reset helpers
+      // Pane reset helpers for embedded Pyxel runtimes
       function resetRuntimeScreen() {
         runtimeScreen.contentWindow?.resetPyxel?.();
       }
@@ -557,7 +557,7 @@
           }
         }
 
-        // Fallback: download link
+        // Browser fallback: synthesize and click a temporary download link.
         const blob = await buildArchiveBlob();
         const a = document.createElement("a");
         a.href = URL.createObjectURL(blob);
@@ -630,7 +630,7 @@
         window._codeEditor = codeEditor;
       }
 
-      // Share URL helpers
+      // Share URL helpers keep the current load source in the address bar.
       function updateShareUrl(param, value) {
         const base = location.href.split("?")[0];
         if (param && value) {
@@ -643,13 +643,13 @@
         }
       }
 
-      // Button feedback
+      // Button feedback for short-lived pressed states
       function animateButton(button) {
         button.classList.add("active");
         setTimeout(() => button.classList.remove("active"), 150);
       }
 
-      // Dropdown helpers
+      // Dropdown helpers keep only one toolbar menu open at a time.
       function toggleDropdown(menuId) {
         const menu = document.getElementById(menuId);
         const wasHidden = menu.classList.contains("hidden");
@@ -672,7 +672,7 @@
         });
       }
 
-      // Modal helpers
+      // Modal helpers reset input state and close overlays.
       function showModal(modalId) {
         const modal = document.getElementById(modalId);
         modal.classList.remove("hidden");
@@ -704,19 +704,19 @@
         const leftPane = document.getElementById("left-pane");
         const runButton = document.getElementById("run-button");
 
-        // Load dropdown
+        // Load menu toggle
         loadButton.addEventListener("click", (e) => {
           e.stopPropagation();
           toggleDropdown("load-menu");
         });
 
-        // Save dropdown
+        // Save menu toggle
         saveButton.addEventListener("click", (e) => {
           e.stopPropagation();
           toggleDropdown("save-menu");
         });
 
-        // Close dropdowns on outside click or iframe focus
+        // Close dropdowns on outside click or iframe focus transfer.
         document.addEventListener("click", () => {
           closeAllDropdowns();
         });
@@ -724,7 +724,7 @@
           closeAllDropdowns();
         });
 
-        // Dropdown actions
+        // Dispatch load/save menu actions.
         document.querySelectorAll(".dropdown-item").forEach((item) => {
           item.addEventListener("click", (e) => {
             e.stopPropagation();
@@ -761,12 +761,12 @@
           }
         });
 
-        // Modal cancel/close buttons
+        // Modal cancel and close buttons
         document.querySelectorAll("[data-modal-close]").forEach((btn) => {
           btn.addEventListener("click", () => closeModal(btn));
         });
 
-        // Close modal on overlay click
+        // Close modal when clicking its overlay background.
         document.querySelectorAll(".modal-overlay").forEach((overlay) => {
           overlay.addEventListener("click", (e) => {
             if (e.target === overlay) {
@@ -775,7 +775,7 @@
           });
         });
 
-        // Close modal on Escape
+        // Close modal and dropdown overlays on Escape.
         document.addEventListener("keydown", (e) => {
           if (e.key === "Escape") {
             document
@@ -787,7 +787,7 @@
           }
         });
 
-        // Load modal submit buttons
+        // Load modal submit buttons share URL validation and error handling.
         function setupModalSubmit(buttonId, inputId, loadFn) {
           document
             .getElementById(buttonId)
@@ -810,7 +810,7 @@
         );
         setupModalSubmit("btn-load-url", "input-load-url", loadFromUrl);
 
-        // Enter key submits modals
+        // Enter key submits whichever modal input is active.
         document.querySelectorAll(".modal-input").forEach((input) => {
           input.addEventListener("keydown", (e) => {
             if (e.key === "Enter") {
@@ -862,14 +862,14 @@
         });
       }
 
-      // Startup loading
+      // Load the bundled starter project and focus the code editor.
       async function loadInitialFiles() {
         const res = await fetch("pyxel-project.zip");
         await loadProjectFromZip(await res.arrayBuffer(), "pyxel-project");
         window._codeEditor.focus();
       }
 
-      // Frame setup
+      // Load runtime and resource-editor iframes before binding shortcuts.
       async function setupIframes() {
         const screenLoaded = new Promise((resolve) => {
           runtimeScreen.onload = () => resolve();
@@ -891,7 +891,7 @@
         await Promise.all([screenLoaded, editorLoaded]);
       }
 
-      // Runtime readiness
+      // Enable controls once both embedded Pyxel contexts can accept input.
       function onPyxelReady() {
         waitForPyxelReady(
           () =>
@@ -917,7 +917,7 @@
         );
       }
 
-      // Focus indicators
+      // Focus-line state for editor, resource editor, and runtime panes
       function updateFocusLine(state) {
         focusLineLeft.classList.toggle(
           "focus-line-segment-active",
@@ -1178,7 +1178,7 @@
         bindTarget(resourceEditor.contentWindow);
       }
 
-      // File drop
+      // File-drop import for Python scripts into the code editor
       function setupFileDrop() {
         document.addEventListener("dragover", (e) => e.preventDefault());
         document.addEventListener("drop", (e) => e.preventDefault());
@@ -1207,7 +1207,7 @@
         });
       }
 
-      // Runtime input
+      // Runtime input unlock forwarded to both embedded Pyxel contexts.
       function setupPyxelInput() {
         const eventNames = ["click", "touchstart", "keydown"];
         function resolvePyxelInput() {
@@ -1226,19 +1226,19 @@
       }
 
       window.addEventListener("DOMContentLoaded", async () => {
-        // UI basics
+        // Initialize editor widgets and toolbar interactions.
         initAceEditor();
         setupButtonHandlers();
         setupSplitter();
 
-        // Load project
+        // Load the starter project into code/resource/runtime panes.
         await loadInitialFiles();
         updateFocusLine("left");
 
-        // Prepare iframes and interactions
+        // Prepare iframes before focus tracking and shortcut binding.
         await setupIframes();
 
-        // Load from URL parameters
+        // Restore an externally shared project source from URL parameters.
         const params = new URL(location.href).searchParams;
         const gistParam = params.get("gist");
         const githubParam = params.get("github");
@@ -1261,7 +1261,7 @@
         setupPyxelInput();
         setupFileDrop();
 
-        // Enable Pyxel controls
+        // Enable Pyxel controls after runtime readiness checks pass.
         onPyxelReady();
       });
     </script>

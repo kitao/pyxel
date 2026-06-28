@@ -19,7 +19,7 @@
   --pyxel-bg: #202224;
 }
 
-/* Shared page theme used by generated Pyxel web pages. */
+/* Shared page theme used by generated Pyxel Web pages */
 .pyxel-scheme {
   color: #fff;
   background-color: var(--pyxel-bg);

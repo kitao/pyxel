@@ -10,14 +10,14 @@ from _capture import (  # type: ignore[reportMissingImports]
 )
 
 CAPTURE_PLANS = {
-    # ENTER opens menu, second ENTER starts game
+    # ENTER opens the menu, and the second ENTER starts the game.
     "megaball": [
         {"frame": 30},
         {"frame": 31, "press": [pyxel.KEY_RETURN], "capture": False},
         {"frame": 35, "press": [pyxel.KEY_RETURN], "capture": False},
         {"frame": 90},
     ],
-    # ENTER starts game, capture before game over with enemies visible
+    # ENTER starts the game; capture before game over while enemies are visible.
     "mega_wing": [
         {"frame": 30},
         {"frame": 31, "press": [pyxel.KEY_RETURN], "capture": False},
@@ -28,7 +28,7 @@ CAPTURE_PLANS = {
         {"frame": 31, "press": [pyxel.KEY_RETURN], "capture": False},
         {"frame": 60},
     ],
-    # Title fade-in ~67 frames (alpha += 0.015)
+    # Title fade-in takes about 67 frames (alpha += 0.015).
     "cursed_caverns": [
         {"frame": 70},
         {"frame": 71, "press": [pyxel.KEY_RETURN], "capture": False},
@@ -39,13 +39,13 @@ CAPTURE_PLANS = {
         {"frame": 31, "press": [pyxel.KEY_RETURN], "capture": False},
         {"frame": 60},
     ],
-    # Title animation: TOP(40) + TITLE(70) + BOTTOM(95) = 205 frames
+    # Title animation: TOP(40) + TITLE(70) + BOTTOM(95) = 205 frames.
     "laser-jetman": [
         {"frame": 210},
         {"frame": 211, "press": [pyxel.KEY_RETURN], "capture": False},
         {"frame": 270},
     ],
-    # KEY_Z starts game, wait longer for enemies
+    # KEY_Z starts the game; wait longer for enemies.
     "vortexion": [
         {"frame": 30},
         {"frame": 31, "press": [pyxel.KEY_Z], "capture": False},

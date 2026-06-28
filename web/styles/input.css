@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 @layer components {
-  /* Common */
+  /* Shared layout, card, text, and table primitives */
   .page {
     @apply bg-gray-900 text-gray-100 antialiased;
   }
@@ -61,7 +61,7 @@
     border-bottom: 1px solid rgb(55 65 81 / 0.5);
   }
 
-  /* API Reference */
+  /* API reference search, toggles, badges, and constant chips */
   .search-input {
     @apply bg-gray-800 px-3 py-1.5 border border-gray-600 focus:border-indigo-400 rounded-lg outline-none text-gray-200 text-sm w-full;
   }
@@ -75,7 +75,7 @@
     @apply text-[11px] font-mono text-pink-300 bg-pink-500/10 px-2 py-0.5 rounded whitespace-nowrap;
   }
 
-  /* User Guide */
+  /* User guide code blocks and link lists */
   .code-block {
     @apply bg-[#0d1117] rounded-lg font-mono text-sm leading-5 text-indigo-300 overflow-x-auto whitespace-pre;
     padding: 0.625rem 1rem;
@@ -85,12 +85,12 @@
     @apply text-sm leading-relaxed space-y-1.5;
   }
 
-  /* Editor Manual */
+  /* Editor manual annotated screenshot headings */
   .area-title {
     @apply font-semibold text-base mt-5 mb-2 pl-2 border-l-[3px];
   }
 
-  /* Showcase */
+  /* Showcase action buttons */
   .btn-demo {
     @apply inline-flex items-center justify-center min-w-[4.5rem] bg-indigo-500/20 hover:bg-indigo-500/30 px-3 py-1 border border-indigo-500/40 focus-visible:border-indigo-300 rounded-md outline-none font-medium text-indigo-300 text-xs transition-colors;
   }
@@ -98,7 +98,7 @@
     @apply inline-flex items-center justify-center min-w-[4.5rem] bg-gray-700 hover:bg-gray-600 px-3 py-1 border border-gray-600 focus-visible:border-indigo-300 rounded-md outline-none font-medium text-gray-200 text-xs transition-colors;
   }
 
-  /* Launcher */
+  /* Launcher form controls and generated-link display */
   .link-strong {
     @apply font-semibold text-indigo-400 hover:text-indigo-300 underline underline-offset-2 break-all;
   }
@@ -116,7 +116,7 @@
     @apply accent-indigo-500 w-4 h-4 rounded cursor-pointer outline-none focus-visible:ring-1 focus-visible:ring-indigo-300 focus-visible:ring-offset-1 focus-visible:ring-offset-gray-900;
   }
 
-  /* Code Maker */
+  /* Code Maker toolbar, menus, modals, and focus indicator */
   .toolbar {
     @apply flex items-center gap-4 bg-gray-900 px-4 py-3;
   }
@@ -198,7 +198,7 @@
     @apply bg-cyan-700;
   }
 
-  /* MML Studio */
+  /* MML Studio playback toggles */
   .toggle {
     @apply bg-gray-900 px-2 py-1 border border-gray-600 focus:border-indigo-300 rounded-md outline-none w-14 font-medium text-gray-300 text-xs;
   }
@@ -209,12 +209,12 @@
     @apply bg-gray-700 opacity-50 focus:border-gray-300 text-gray-400 pointer-events-none;
   }
 
-  /* MML Studio Manual */
+  /* MML Studio manual links */
   .link-chip {
     @apply inline-flex items-center text-indigo-400 text-xs font-medium;
   }
 
-  /* MML Commands */
+  /* MML command reference headings, rows, and responsive tables */
   .heading {
     @apply font-semibold text-2xl tracking-tight;
   }

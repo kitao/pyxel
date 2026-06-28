@@ -29,7 +29,7 @@ class App(Widget):
     #   none
 
     def __init__(self, resource_file, starting_editor):
-        # Resolve the absolute path before pyxel.init changes the working directory
+        # Resolve the absolute path before pyxel.init changes the working directory.
         original_resource_file = resource_file
         resource_path = Path(resource_file).absolute()
 
@@ -52,7 +52,7 @@ class App(Widget):
             pyxel.load_pal(resource_file)
 
         # Concatenate system and user palettes so colors[:NUM_COLORS] are the
-        # system set and colors[NUM_COLORS:] are the user set
+        # system set and colors[NUM_COLORS:] are the user set.
         pyxel.num_user_colors = len(pyxel.colors)
         colors += list(pyxel.colors)
         pyxel.colors[:] = colors
@@ -195,7 +195,7 @@ class App(Widget):
             ):
                 self._redo_button.is_pressed_var = True
 
-        # Hidden save shortcut for Pyxel Code Maker
+        # Hidden save shortcut for Pyxel Code Maker.
         if pyxel.btn(pyxel.KEY_F13):
             self._save_button.is_pressed_var = True
 
