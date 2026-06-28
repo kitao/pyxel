@@ -32,6 +32,7 @@
         return ref;
       }
 
+      // Resolve the launch command and startup file kind from query parameters.
       if (params.get("run")) {
         command = "run";
         value = params.get("run");
@@ -51,7 +52,7 @@
       if (command) {
         let root, name;
         if (value.includes("/")) {
-          // New format: user/repo/branch/path/to/file
+          // New path format: user/repo/branch/path/to/file.
           const parts = value.split("/");
           if (parts.length < 4) {
             location.replace("url-builder.html");
@@ -63,7 +64,7 @@
             name = parts.slice(3).join("/") + ext;
           }
         } else {
-          // Legacy format: user.repo.path.to.file
+          // Legacy dotted format: user.repo.path.to.file.
           const parts = value.split(".");
           root = `https://cdn.jsdelivr.net/gh/${parts[0]}/${parts[1]}`;
           name = parts.slice(2).join("/") + ext;

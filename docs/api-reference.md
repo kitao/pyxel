@@ -427,7 +427,7 @@ pyxel.colors[15] = 0x112233
 
 ### `images` — variable
 
-List of the image banks (instances of the Image class) (0-2).
+Image banks (Image instances) (0-2).
 
 - **Type:** `list[Image]`
 
@@ -439,7 +439,7 @@ pyxel.images[0].load(0, 0, "title.png")
 
 ### `tilemaps` — variable
 
-List of the tilemaps (instances of the Tilemap class) (0-7).
+Tilemaps (Tilemap instances) (0-7).
 
 - **Type:** `list[Tilemap]`
 
@@ -771,19 +771,19 @@ Draw a string s in color col at (x, y).
 
 ### `channels` — variable *(Advanced)*
 
-List of the channels (instances of the Channel class) (0-3).
+Audio channels (Channel instances) (0-3).
 
 - **Type:** `list[Channel]`
 
 ### `tones` — variable *(Advanced)*
 
-List of the tone definitions (instances of the Tone class) (0-3).
+Tone definitions (Tone instances) (0-3).
 
 - **Type:** `list[Tone]`
 
 ### `sounds` — variable
 
-List of the sounds (instances of the Sound class) (0-63).
+Sounds (Sound instances) (0-63).
 
 - **Type:** `list[Sound]`
 
@@ -1404,7 +1404,7 @@ Exit PCM mode and return to normal mode.
 
 ### `Sound.save(filename, sec, ffmpeg=False)` — function *(Advanced)*
 
-Create a WAV file of the sound for the specified duration in seconds.
+Create a WAV file from the sound with the specified duration in seconds.
 
 **Parameters:**
 
@@ -1448,7 +1448,7 @@ pyxel.musics[0].set([0, 1], [], [3])
 
 ### `Music.save(filename, sec, ffmpeg=False)` — function *(Advanced)*
 
-Create a WAV file of the music for the specified duration in seconds.
+Create a WAV file from the music with the specified duration in seconds.
 
 **Parameters:**
 

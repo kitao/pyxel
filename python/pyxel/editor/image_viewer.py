@@ -160,7 +160,7 @@ class ImageViewer(Widget):
     def __on_draw(self):
         self.draw_panel(self.x, self.y, self.width, self.height)
 
-        # Draw image
+        # Draw image preview.
         pyxel.user_pal()
         pyxel.blt(
             self.x + 1,
@@ -173,7 +173,7 @@ class ImageViewer(Widget):
         )
         pyxel.pal()
 
-        # Draw focus
+        # Draw focus outline.
         x = self.x + (self.focus_x_var - self.viewport_x_var) * _GRID_SIZE + 1
         y = self.y + (self.focus_y_var - self.viewport_y_var) * _GRID_SIZE + 1
         w = self.focus_w_var * _GRID_SIZE

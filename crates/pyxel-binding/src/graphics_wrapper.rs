@@ -227,7 +227,7 @@ fn bltm3d(
     Ok(())
 }
 
-// Text
+// Text drawing
 
 #[pyfunction]
 #[pyo3(signature = (x, y, s, col, font=None))]
@@ -263,6 +263,8 @@ fn tilemap(tm: u32) -> PyResult<Tilemap> {
         .map(Tilemap::wrap)
         .ok_or_else(|| PyValueError::new_err("Invalid tilemap index"))
 }
+
+// Module registration
 
 pub fn add_graphics_functions(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(clip, m)?)?;

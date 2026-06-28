@@ -31,10 +31,13 @@ class TestChineseSpacing:
 class TestTechnicalLoanwords:
     def test_keeps_short_technical_loanword(self):
         assert format_prose.format_text("ブラウザで確認", "ja") == "ブラウザで確認"
-        assert format_prose.format_text("コンストラクタで初期化", "ja") == "コンストラクタで初期化"
+        assert (
+            format_prose.format_text("コンストラクタで初期化", "ja")
+            == "コンストラクタで初期化"
+        )
 
     def test_keeps_existing_long_vowel(self):
-        assert format_prose.format_text("ブラウザーで確認", "ja") == "ブラウザーで確認"
+        assert format_prose.format_text("ユーザーで確認", "ja") == "ユーザーで確認"
 
 
 class TestLanguageAgnostic:

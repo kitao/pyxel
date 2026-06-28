@@ -27,7 +27,7 @@ class TestChannel:
         pyxel.sounds[0].set("c2e2g2", "sss", "777", "nnn", 10)
         ch = pyxel.Channel()
         ch.play(0)
-        # play_pos may be None immediately after play (audio thread timing)
+        # play_pos may be None immediately after play (audio thread timing).
         pos = ch.play_pos()
         assert pos is None or isinstance(pos, tuple)
         ch.stop()
@@ -104,7 +104,7 @@ class TestChannel:
         snd.set("c2e2g2c3e3g3c4e4", "ssssssss", "77777777", "nnnnnnnn", 10)
         ch = pyxel.Channel()
         ch.play(snd)
-        # play_pos may be None immediately after play (audio thread timing)
+        # play_pos may be None immediately after play (audio thread timing).
         result = ch.play_pos()
         if result is not None:
             assert isinstance(result, tuple), f"Expected tuple, got {type(result)}"

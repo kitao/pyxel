@@ -19,6 +19,7 @@ use super::super::key::{
     MOUSE_POS_Y, MOUSE_WHEEL_X, MOUSE_WHEEL_Y,
 };
 use super::platform_sdl2::PlatformSdl2;
+// This SDL bridge intentionally uses the generated C names directly.
 #[allow(clippy::wildcard_imports)]
 use super::sdl2_sys::*;
 
@@ -208,12 +209,14 @@ impl PlatformSdl2 {
         // Mouse Motion (polling)
 
         let (mouse_x, mouse_y) = if self.is_wayland || cfg!(target_os = "emscripten") {
-            // Wayland: SDL_GetGlobalMouseState is unsupported, so use SDL_GetMouseState which returns window-relative coordinates from SDL's internal event state.
+            // Wayland: SDL_GetGlobalMouseState is unsupported, so use
+            // SDL_GetMouseState which returns SDL's window-relative event state.
             let (mut x, mut y) = (0, 0);
             unsafe { SDL_GetMouseState(&raw mut x, &raw mut y) };
             (x, y)
         } else {
-            // X11: SDL_GetGlobalMouseState tracks the cursor even outside the window, which is useful for drag operations.
+            // X11: SDL_GetGlobalMouseState tracks the cursor even outside the
+            // window, which is useful for drag operations.
             let (mut gx, mut gy) = (0, 0);
             unsafe { SDL_GetGlobalMouseState(&raw mut gx, &raw mut gy) };
             let (wx, wy) = self.window_pos();

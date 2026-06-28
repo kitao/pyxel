@@ -25,7 +25,7 @@
         const app = document.getElementById("app");
         app.innerHTML = "";
 
-        // Header
+        // Header with language selector and localized title text
         const header = document.createElement("header");
         header.className = "flex items-start gap-4 mb-6";
 
@@ -51,7 +51,7 @@
         header.appendChild(titleBlock);
         app.appendChild(header);
 
-        // Sections wrapper
+        // Manual section cards populated by updateTexts
         const sections = document.createElement("div");
         sections.className = "space-y-6";
 
@@ -80,19 +80,19 @@
 
       // Populate every manual section from localized JSON data.
       function updateTexts() {
-        // Title & subtitle
+        // Localized page title and subtitle
         document.title = t("title");
         document.getElementById("page-title").textContent = t("title");
         document.getElementById("page-subtitle").innerHTML = t(
           "subtitle",
         ).replace("{0}", link("https://github.com/kitao/pyxel", "Pyxel"));
 
-        // Overview
+        // Overview text
         document.getElementById("s-overview").innerHTML = `
           <h2 class="section-title">${esc(t("overview_title"))}</h2>
           <p class="body">${esc(t("overview_body"))}</p>`;
 
-        // Screen Layout
+        // Screen layout mockup and legend
         const layoutLegend = [
           { key: "layout_toolbar", descKey: "layout_toolbar_desc" },
           { key: "layout_focus_line", descKey: "layout_focus_line_desc" },
@@ -112,9 +112,9 @@
           <h2 class="section-title">${esc(t("layout_title"))}</h2>
           <p class="body mb-4">${esc(t("layout_body"))}</p>
 
-          <!-- Layout diagram -->
+          <!-- Layout diagram mockup -->
           <div class="border border-gray-600 rounded-lg overflow-hidden select-none mb-4">
-            <!-- Toolbar mockup -->
+            <!-- Toolbar row -->
             <div class="flex items-center gap-2 bg-[#111827] px-3 py-2">
               <span class="font-semibold text-gray-200 text-sm mr-1 truncate">Pyxel Code Maker</span>
               <span class="text-gray-500 text-xs truncate hidden sm:inline">Playground for Pyxel</span>
@@ -128,13 +128,13 @@
                 <span class="btn-chip">Run</span>
               </div>
             </div>
-            <!-- Focus line -->
+            <!-- Focus indicator row -->
             <div class="flex h-[2px]">
               <div class="flex-1 bg-cyan-700"></div>
               <div class="w-3 bg-gray-700"></div>
               <div class="flex-1 bg-gray-700"></div>
             </div>
-            <!-- Main area -->
+            <!-- Editor/runtime split area -->
             <div class="flex" style="height: 140px">
               <div class="flex-1 bg-[#111827] flex items-center justify-center">
                 <div class="text-center text-gray-500 text-xs sm:text-sm">
@@ -149,10 +149,10 @@
             </div>
           </div>
 
-          <!-- Legend -->
+          <!-- Layout legend -->
           <div class="space-y-2">${layoutLegend}</div>`;
 
-        // Toolbar
+        // Toolbar control descriptions
         const toolbarItems = data.toolbar_items
           .map((item) => {
             let html = `<div class="flex items-baseline gap-3">
@@ -178,22 +178,22 @@
           <p class="body mb-3">${esc(t("toolbar_body"))}</p>
           <div class="space-y-2.5">${toolbarItems}</div>`;
 
-        // Code Editor
+        // Code editor pane description
         document.getElementById("s-code").innerHTML = `
           <h2 class="section-title">${esc(t("code_title"))}</h2>
           <p class="body">${esc(t("code_body")).replace("{0}", chip("main.py"))}</p>`;
 
-        // Resource Editor
+        // Resource editor pane description
         document.getElementById("s-resource").innerHTML = `
           <h2 class="section-title">${esc(t("resource_title"))}</h2>
           <p class="body">${esc(t("resource_body")).replace("{0}", chip("my_resource.pyxres"))}</p>`;
 
-        // Runtime Screen
+        // Runtime screen description
         document.getElementById("s-runtime").innerHTML = `
           <h2 class="section-title">${esc(t("runtime_title"))}</h2>
           <p class="body">${esc(t("runtime_body")).replace("{0}", `<span class="key">Ctrl(Cmd)+Enter</span>`)}</p>`;
 
-        // Project Files
+        // Project archive file descriptions
         document.getElementById("s-project").innerHTML = `
           <h2 class="section-title">${esc(t("project_title"))}</h2>
           <div class="body space-y-2">
@@ -202,17 +202,17 @@
             <pre class="bg-gray-900/80 rounded-lg px-3 py-2 font-mono text-xs text-gray-300 mt-2">pyxel play project_name.zip</pre>
           </div>`;
 
-        // Drag & Drop
+        // Drag-and-drop import description
         document.getElementById("s-drag-drop").innerHTML = `
           <h2 class="section-title">${esc(t("drag_drop_title"))}</h2>
           <p class="body">${esc(t("drag_drop_body")).replace("{0}", chip(".py")).replace("{1}", chip(".pyxres"))}</p>`;
 
-        // Sharing via URL
+        // URL sharing description
         document.getElementById("s-sharing").innerHTML = `
           <h2 class="section-title">${esc(t("sharing_title"))}</h2>
           <p class="body">${esc(t("sharing_body"))}</p>`;
 
-        // Keyboard Shortcuts
+        // Keyboard shortcut table
         const shortcutRows = data.shortcuts
           .map(
             (s) =>
@@ -240,7 +240,7 @@
         setDocLang(lang);
       }
 
-      // Init
+      // Initialize from the localized Code Maker manual JSON.
       initPage("manual.json", buildPage);
     </script>
   </body>

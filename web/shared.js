@@ -1,4 +1,4 @@
-// Language detection and i18n
+// Language detection and localized page initialization helpers
 
 const PYXEL_LANG_KEY = "pyxel-lang";
 
@@ -49,7 +49,7 @@ const buildLangSelector = (
   return select;
 };
 
-// HTML helpers
+// Shared HTML string helpers for generated static pages
 
 const esc = (s) =>
   String(s)
@@ -77,8 +77,9 @@ const btnChip = (s) => `<span class="btn-chip">${esc(s)}</span>`;
 
 const linkChip = (s) => `<span class="link-chip">${esc(s)}</span>`;
 
-// Base64 <-> Uint8Array conversion
+// Chunked Base64 and Uint8Array conversion for archive payloads
 
+// Keep spread calls below browser argument limits.
 const BASE64_CHUNK_SIZE = 0x8000;
 
 const uint8ToBase64 = (u8) => {
@@ -94,7 +95,7 @@ const base64ToUint8 = (b64) => {
   return Uint8Array.from(bin, (c) => c.charCodeAt(0));
 };
 
-// Pyxel iframe readiness polling
+// Poll embedded Pyxel frames until their runtime hooks are ready.
 
 const waitForPyxelReady = (
   checkFn,
@@ -113,7 +114,7 @@ const waitForPyxelReady = (
   })();
 };
 
-// Page initialization
+// Fetch localized JSON, select a language, and render the page.
 
 const initPage = (jsonFile, buildFn) => {
   fetch(jsonFile)

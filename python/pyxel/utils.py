@@ -1,11 +1,12 @@
 import ast
 from pathlib import Path
 
-# Keys for the import classification dict
+# Import classification keys
 _SYSTEM = "system"
 _LOCAL = "local"
 
 
+# Module path resolution
 def _to_module_filename(module_path: str) -> str | None:
     filename = Path(f"{module_path}.py")
     if filename.is_file():
@@ -26,6 +27,7 @@ def _resolve_module_path(dir_path: str, level: int, name: str) -> str:
     return str(path)
 
 
+# Recursive import discovery
 def _track_module(
     imports: dict[str, set[str]],
     checked_files: set[str],
@@ -40,7 +42,7 @@ def _track_module(
         imports[_LOCAL].add(str(Path(module_filename).absolute()))
         _list_imported_modules(imports, module_filename, checked_files)
     elif level == 0:
-        # Only top-level imports are considered system modules
+        # Only top-level imports can resolve as system modules.
         imports[_SYSTEM].add(name)
 
 
@@ -72,7 +74,7 @@ def _list_imported_modules(
                     node.module,
                 )
             else:
-                # Relative import without module name (e.g. "from . import foo")
+                # Track relative imports without module names, such as "from . import foo".
                 for alias in node.names:
                     _track_module(
                         imports,
@@ -83,6 +85,7 @@ def _list_imported_modules(
                     )
 
 
+# Import listing entry point
 def list_imported_modules(filename: str) -> dict[str, list[str]]:
     imports: dict[str, set[str]] = {_SYSTEM: set(), _LOCAL: set()}
     checked_files: set[str] = set()

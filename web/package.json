@@ -1,6 +1,7 @@
 {
   "private": true,
   "devDependencies": {
-    "@tailwindcss/cli": "^4"
+    "@tailwindcss/cli": "^4",
+    "prettier": "^3.8.4"
   }
 }

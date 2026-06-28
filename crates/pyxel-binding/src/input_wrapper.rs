@@ -58,6 +58,8 @@ fn set_dropped_files(files: Vec<String>) {
     pyxel().set_dropped_files(&refs);
 }
 
+// Module registration
+
 pub fn add_input_functions(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(btn, m)?)?;
     m.add_function(wrap_pyfunction!(btnp, m)?)?;

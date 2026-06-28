@@ -142,7 +142,7 @@ class TestSeqIteration:
 
     def test_contains_with_value_type(self):
         # Object types (Image etc.) create new wrappers each access,
-        # so test __contains__ with value types (colors) instead
+        # so test __contains__ with value types (colors) instead.
         col = pyxel.colors[0]
         assert col in pyxel.colors
 
@@ -272,7 +272,7 @@ class TestSeqReversed:
 
 class TestSeqRepr:
     def test_colors_repr(self):
-        # Value-type sequences have a deterministic wrapper-name + list repr
+        # Value-type sequences have a deterministic wrapper-name + list repr.
         assert repr(pyxel.colors) == f"Colors{list(pyxel.colors)!r}"
 
     def test_images_repr(self):

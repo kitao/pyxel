@@ -29,7 +29,7 @@ class TestListImportedModules:
         helper.write_text("import json\n", encoding="utf-8")
         result = pyxel.utils.list_imported_modules(str(script))
         assert any("helper.py" in p for p in result["local"])
-        # json from nested helper should be tracked as system
+        # json from nested helper should be tracked as system.
         assert "json" in result["system"]
 
     def test_handles_relative_imports(self, tmp_path):
@@ -43,7 +43,7 @@ class TestListImportedModules:
     def test_handles_syntax_error_gracefully(self, tmp_path):
         script = tmp_path / "main.py"
         script.write_text("import os\nimport (((bad syntax\n", encoding="utf-8")
-        # Syntax error: should not raise, just return empty/partial result
+        # Syntax error should not raise, just return empty/partial result.
         result = pyxel.utils.list_imported_modules(str(script))
         assert "system" in result
         assert "local" in result

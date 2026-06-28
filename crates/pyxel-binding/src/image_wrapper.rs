@@ -7,6 +7,8 @@ use pyo3::types::PyDict;
 use crate::font_wrapper::Font;
 use crate::tilemap_wrapper::Tilemap;
 
+// Deprecated option compatibility
+
 fn resolve_include_colors(preferred: Option<bool>, deprecated: Option<bool>) -> Option<bool> {
     if deprecated.is_some() {
         deprecation_warning!(
@@ -59,6 +61,7 @@ impl Image {
 
     fn data_ptr(&self, py: Python) -> PyResult<Py<PyAny>> {
         let inner = self.inner_mut();
+        // Expose the image buffer as a ctypes array without copying.
         let python_code = CString::new(format!(
             "import ctypes; c_uint8_array = (ctypes.c_uint8 * {}).from_address({:p})",
             inner.width() * inner.height(),
@@ -314,7 +317,7 @@ impl Image {
         Ok(())
     }
 
-    // Text
+    // Text drawing
 
     #[pyo3(signature = (x, y, s, col, font=None))]
     fn text(&self, x: f32, y: f32, s: &str, col: pyxel::Color, font: Option<Font>) {
@@ -322,6 +325,8 @@ impl Image {
         self.inner_mut().draw_text(x, y, s, col, font_ref);
     }
 }
+
+// Module registration
 
 pub fn add_image_class(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<Image>()?;

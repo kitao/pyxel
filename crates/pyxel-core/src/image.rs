@@ -137,6 +137,7 @@ impl Image {
     // Public data operations
 
     pub fn set(&mut self, x: i32, y: i32, data: &[&str]) {
+        // Parse inline pixel data before drawing it into this image.
         let width = utils::simplify_string(data[0]).len() as u32;
         let height = data.len() as u32;
         let rc = Self::new(width, height);
@@ -369,6 +370,7 @@ impl Image {
         };
 
         let palette = palette_opt!(self);
+        // Dispatch transformed blits separately from direct copies.
         if rotate != 0.0 || scale != 1.0 {
             self.canvas.blit_with_transform(
                 x,
@@ -413,6 +415,7 @@ impl Image {
     ) {
         let rotate = rotate.unwrap_or(0.0);
         let scale = scale.unwrap_or(1.0);
+        // Transform path renders the tilemap region before rotation/scale.
         if rotate != 0.0 || scale != 1.0 {
             self.draw_tilemap_with_transform(
                 x,
@@ -733,6 +736,7 @@ impl Image {
         let palette = palette_opt!(self);
         let (wx_step, wy_step, wz_step) = proj.world_step_per_x();
 
+        // Project each screen pixel back into tilemap source space.
         for yi in y1..=y2 {
             let (mut wx, mut wy, mut wz) = proj.world_base(x1, yi);
 
@@ -784,6 +788,7 @@ impl Image {
         let font_data = &font_image.canvas.data;
         let font_w = font_image.canvas.width() as usize;
 
+        // Draw built-in font glyphs from the font image atlas.
         let start_x = x;
         for c in string.chars() {
             if c == '\n' {

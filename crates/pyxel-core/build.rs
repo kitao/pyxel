@@ -218,6 +218,7 @@ impl SDL2BindingsBuilder {
         }
     }
 
+    // Collect include paths for static, Emscripten, or system SDL2.
     fn include_flags(&self) -> Vec<String> {
         let mut include_flags = Vec::new();
 

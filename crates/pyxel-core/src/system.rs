@@ -178,6 +178,7 @@ impl Pyxel {
         platform::set_window_title(title);
     }
 
+    // Convert icon pattern data into scaled RGBA pixels.
     pub fn set_icon(&self, data: &[&str], scale: u32, transparent: Option<Color>) {
         if *pyxel::is_headless() {
             return;
@@ -235,6 +236,7 @@ impl Pyxel {
         platform::set_fullscreen(enabled);
     }
 
+    // Resize screen resources while keeping window scaling coherent.
     pub fn set_screen_size(&mut self, width: u32, height: u32) {
         assert!(
             width > 0 && height > 0,
@@ -275,6 +277,7 @@ impl Pyxel {
 
     // Event & Input Processing
 
+    // Poll platform events and update input/window state.
     fn process_events(&mut self) {
         if platform::is_sigint_received() {
             platform::quit();
@@ -415,6 +418,7 @@ impl Pyxel {
 
     // Rendering & UI
 
+    // Draw frame metrics while preserving the caller's screen state.
     fn draw_perf_monitor(&self) {
         if !self.system.perf_monitor_enabled {
             return;
@@ -454,6 +458,7 @@ impl Pyxel {
         screen.set_dithering(alpha);
     }
 
+    // Draw the custom cursor while preserving screen state.
     fn draw_cursor(&self) {
         let x = *pyxel::mouse_x();
         let y = *pyxel::mouse_y();

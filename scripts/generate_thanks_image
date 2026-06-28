@@ -158,7 +158,7 @@ def draw_message_image(thanks_image):
     base_image.text(15, 37, "and 1,400,000 downloads!", 12)
     base_image.text(15 + 4 * 4, 37, "1,400,000", 9)
 
-    # Draw layout guide lines for alignment
+    # Draw layout guide lines for alignment.
     if DRAW_LAYOUT_GUIDES:
         x1 = 2
         y1 = 2
@@ -185,7 +185,7 @@ def draw_message_image(thanks_image):
         base_image.line(x, y1, x, y1 + h, 8)
         base_image.line(x, y2, x, y2 - h, 8)
 
-    # Convert the Pyxel image to a PIL image
+    # Convert the Pyxel image to a PIL image.
     message_image = PIL.Image.new("RGB", (BASE_MESSAGE_WIDTH, BASE_MESSAGE_HEIGHT))
 
     pixels = []
@@ -203,7 +203,7 @@ def draw_message_image(thanks_image):
         (MESSAGE_WIDTH, MESSAGE_HEIGHT), resample=PIL.Image.NEAREST
     )
 
-    # Draw a black frame around the message as padding
+    # Draw a black frame around the message as padding.
     message_pad_image = PIL.Image.new(
         "RGB",
         (
