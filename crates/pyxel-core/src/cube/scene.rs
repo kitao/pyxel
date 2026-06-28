@@ -136,7 +136,8 @@ pub struct Scene;
 
 // Pipeline + spatial-query implementation. The Python-visible steps
 // (on_update, on_collide, on_destroy) stay in the binding layer; this
-// block covers the deterministic core stages.
+// block covers the deterministic core stages. Several stage helpers keep
+// explicit physics inputs instead of allocating per-frame option structs.
 
 #[allow(clippy::too_many_arguments)]
 impl Scene {
@@ -477,7 +478,7 @@ impl Scene {
         }
     }
 
-    // Continuous collision helpers.
+    // Continuous collision helpers
 
     fn swept_sphere_vs_sphere(
         c_a: Vec3,

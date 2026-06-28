@@ -52,31 +52,101 @@
   "ui": {
     "title": {
       "en": "Pyxel Cube User Guide",
-      "ja": "Pyxel Cube ユーザーガイド"
+      "cn": "Pyxel Cube 用户指南",
+      "de": "Pyxel Cube-Benutzerhandbuch",
+      "es": "Guía del usuario de Pyxel Cube",
+      "fr": "Guide d'utilisation de Pyxel Cube",
+      "it": "Guida utente di Pyxel Cube",
+      "ja": "Pyxel Cube ユーザーガイド",
+      "ko": "Pyxel Cube 사용자 가이드",
+      "pt": "Guia do usuário do Pyxel Cube",
+      "ru": "Руководство пользователя Pyxel Cube",
+      "tr": "Pyxel Cube Kullanıcı Kılavuzu",
+      "uk": "Посібник користувача Pyxel Cube"
     },
     "subtitle": {
       "en": "User guide for the Cube 3D extension of {0}.",
-      "ja": "{0} の 3D 拡張モジュール Cube のユーザーガイド"
+      "cn": "{0} 的 Cube 3D 扩展用户指南",
+      "de": "Benutzerhandbuch für die Cube-3D-Erweiterung von {0}.",
+      "es": "Guía del usuario para la extensión 3D Cube de {0}.",
+      "fr": "Guide d'utilisation de l'extension 3D Cube de {0}.",
+      "it": "Guida utente per l'estensione 3D Cube di {0}.",
+      "ja": "{0} の 3D 拡張モジュール Cube のユーザーガイド",
+      "ko": "{0}의 Cube 3D 확장 사용자 가이드",
+      "pt": "Guia do usuário da extensão 3D Cube do {0}.",
+      "ru": "Руководство пользователя для 3D-расширения Cube в {0}.",
+      "tr": "{0} için Cube 3D uzantısının kullanıcı kılavuzu.",
+      "uk": "Посібник користувача для 3D-розширення Cube у {0}."
     },
     "overview_title": {
       "en": "Overview",
-      "ja": "概要"
+      "cn": "概述",
+      "de": "Überblick",
+      "es": "Descripción general",
+      "fr": "Vue d'ensemble",
+      "it": "Panoramica",
+      "ja": "概要",
+      "ko": "개요",
+      "pt": "Visão geral",
+      "ru": "Обзор",
+      "tr": "Genel Bakış",
+      "uk": "Огляд"
     },
     "overview_body": {
       "en": "{0} is the software-rendered 3D extension of Pyxel.",
-      "ja": "{0} は Pyxel のソフトウェアレンダリングによる 3D 拡張モジュールです。"
+      "cn": "{0} 是 Pyxel 的软件渲染 3D 扩展。",
+      "de": "{0} ist die softwaregerenderte 3D-Erweiterung von Pyxel.",
+      "es": "{0} es la extensión 3D renderizada por software de Pyxel.",
+      "fr": "{0} est l'extension 3D à rendu logiciel de Pyxel.",
+      "it": "{0} è l'estensione 3D di Pyxel con rendering software.",
+      "ja": "{0} は Pyxel のソフトウェアレンダリングによる 3D 拡張モジュールです。",
+      "ko": "{0}는 Pyxel의 소프트웨어 렌더링 3D 확장입니다.",
+      "pt": "{0} é a extensão 3D do Pyxel com renderização por software.",
+      "ru": "{0} — это 3D-расширение Pyxel с программным рендерингом.",
+      "tr": "{0}, Pyxel'in yazılımla işlenen 3D uzantısıdır.",
+      "uk": "{0} — це 3D-розширення Pyxel із програмним рендерингом."
     },
     "wip": {
       "en": "This guide is a work in progress; the Cube API is still being finalized.",
-      "ja": "本ガイドは作成中で、Cube API はまだ確定していません。"
+      "cn": "本指南仍在编写中；Cube API 仍在最终确定。",
+      "de": "Dieses Handbuch ist noch in Arbeit; die Cube API wird noch finalisiert.",
+      "es": "Esta guía está en curso; la API de Cube aún se está finalizando.",
+      "fr": "Ce guide est en cours de rédaction ; l'API Cube est encore en cours de finalisation.",
+      "it": "Questa guida è in lavorazione; l'API Cube è ancora in fase di finalizzazione.",
+      "ja": "本ガイドは作成中で、Cube API はまだ確定していません。",
+      "ko": "이 가이드는 아직 작성 중이며, Cube API는 아직 최종 확정 중입니다.",
+      "pt": "Este guia ainda está em andamento; a API Cube ainda está sendo finalizada.",
+      "ru": "Это руководство еще находится в работе; API Cube все еще дорабатывается.",
+      "tr": "Bu kılavuz hâlâ hazırlanıyor; Cube API henüz son haline getiriliyor.",
+      "uk": "Цей посібник ще в роботі; API Cube досі фіналізується."
     },
     "start_title": {
       "en": "Getting Started",
-      "ja": "はじめに"
+      "cn": "入门",
+      "de": "Erste Schritte",
+      "es": "Primeros pasos",
+      "fr": "Premiers pas",
+      "it": "Primi passi",
+      "ja": "はじめに",
+      "ko": "시작하기",
+      "pt": "Primeiros passos",
+      "ru": "Начало работы",
+      "tr": "Başlarken",
+      "uk": "Початок роботи"
     },
     "start_body": {
       "en": "A minimal Cube program subclasses Node, sets up a camera, and draws inside the scene:",
-      "ja": "最小の Cube プログラムは Node を継承し、カメラを設定してシーン内に描画します："
+      "cn": "最小的 Cube 程序会继承 Node，设置相机，并在场景中绘制：",
+      "de": "Ein minimales Cube-Programm leitet von Node ab, richtet eine Kamera ein und zeichnet innerhalb der Szene:",
+      "es": "Un programa mínimo de Cube hereda de Node, configura una cámara y dibuja dentro de la escena:",
+      "fr": "Un programme Cube minimal hérite de Node, configure une caméra et dessine dans la scène :",
+      "it": "Un programma Cube minimale estende Node, configura una camera e disegna all'interno della scena:",
+      "ja": "最小の Cube プログラムは Node を継承し、カメラを設定してシーン内に描画します：",
+      "ko": "최소한의 Cube 프로그램은 Node를 상속하고, 카메라를 설정한 뒤 장면 안에 그립니다:",
+      "pt": "Um programa Cube mínimo herda de Node, configura uma câmera e desenha dentro da cena:",
+      "ru": "Минимальная программа Cube наследует Node, настраивает камеру и рисует внутри сцены:",
+      "tr": "En küçük Cube programı Node sınıfından türetilir, bir kamera ayarlar ve sahnenin içinde çizim yapar:",
+      "uk": "Мінімальна програма Cube успадковує Node, налаштовує камеру та малює всередині сцени:"
     }
   }
 }

@@ -16,6 +16,7 @@ impl Vec3 {
 
     // Constants
 
+    // Python class attributes intentionally expose uppercase constant names.
     #[classattr]
     #[allow(non_snake_case)]
     fn ZERO() -> Self {

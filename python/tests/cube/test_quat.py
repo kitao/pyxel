@@ -70,7 +70,7 @@ class TestSequence:
         assert q[3] == 4.0
 
     def test_getitem_out_of_range(self):
-        with pytest.raises(IndexError):
+        with pytest.raises(IndexError, match="Quat index out of range"):
             _ = Quat(1, 2, 3, 4)[4]
 
     def test_iter(self):

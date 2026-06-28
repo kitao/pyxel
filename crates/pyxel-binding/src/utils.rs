@@ -532,6 +532,7 @@ macro_rules! define_frozen_wrapper {
                 Self { inner }
             }
 
+            // Frozen wrappers expose one accessor for parity with the mutable wrapper.
             #[allow(dead_code)]
             pub(crate) fn inner_ref(&self) -> &$inner_type {
                 rc_ref!(self.inner)

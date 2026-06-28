@@ -185,7 +185,7 @@ _BOX_TRI_INDICES = [
 ]
 
 
-# Top: 12 small 2D-style primitives in a 4x3 grid.
+# Top: 12 small 2D-style primitives in a 4x3 grid
 LAYOUT_2D = [
     ("pset", -9.0, 7.5),
     ("line", -3.0, 7.5),
@@ -200,7 +200,7 @@ LAYOUT_2D = [
     ("sprite", 3.0, 0.5),
     ("plane", 9.0, 0.5),
 ]
-# Bottom: 3 large 3D mesh primitives — colored box, textured box, sphere.
+# Bottom: 3 large 3D mesh primitives — colored box, textured box, sphere
 LAYOUT_3D = [
     ("mesh-box", -7.0, -5.5),
     ("mesh-tex-box", 0.0, -5.5),

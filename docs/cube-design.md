@@ -2,7 +2,7 @@
 
 3D extension module for Pyxel: `pyxel.cube`.
 
-This document is the narrative reference for the Pyxel cube API — what was
+This document is the narrative reference for the Pyxel Cube API — what was
 decided, why, what was ruled out, and what is deferred. Detailed type
 signatures live in `python/pyxel/cube/__init__.pyi`.
 
@@ -12,11 +12,11 @@ signatures live in `python/pyxel/cube/__init__.pyi`.
 
 - **Import style**: `from pyxel.cube import ...` and bring in only what's
   used.
-- **Separate worldview**: Pyxel cube is treated as an independent 3D
+- **Separate worldview**: Pyxel Cube is treated as an independent 3D
   subsystem. It aligns with mainstream 3D math libraries (pygame, pyrr,
   PyGLM, three.js, Godot, Unity) rather than copying Pyxel 2D conventions
   whenever the two diverge.
-- **Software 3D rendering**: cube is a software 3D renderer designed for
+- **Software 3D rendering**: Pyxel Cube is a software 3D renderer designed for
   retro pixel-art games. GPU integration features (flat-array layout,
   shader programs) are intentionally out of scope.
 - **Performance target**: 60 fps on Raspberry Pi 4 / 5. Pi Zero 2 is
@@ -54,17 +54,17 @@ signatures live in `python/pyxel/cube/__init__.pyi`.
 - Aligned with Godot / pyglet / three.js / OpenGL / glTF.
 - **Origin** for `node.draw(x, y, w, h)` maps the world origin to
   the center of the destination rectangle.
-- **Angles in degrees** throughout the cube API.
+- **Angles in degrees** throughout the Pyxel Cube API.
 - **Euler order**: `XYZ` extrinsic (apply X rotation first about the world
   X axis, then Y about world Y, then Z about world Z; matches three.js /
   Blender / Maya defaults).
-- **Pyxel 2D screen is Y-down; Pyxel cube is Y-up.** The 2D / 3D mismatch
+- **Pyxel 2D screen is Y-down; Pyxel Cube is Y-up.** The 2D / 3D mismatch
   follows the same pattern as Godot's "2D Y-down + 3D Y-up" and is
   intentional.
-- **Per-frame units** for velocity and angular velocity. Pyxel cube is not
+- **Per-frame units** for velocity and angular velocity. Pyxel Cube is not
   a physical simulator; `velocity` is the translation applied per frame
   and `angular_velocity` is the rotation (axis × degrees) applied per
-  frame. No time-based (m/s, rad/s) units anywhere in the cube API.
+  frame. No time-based (m/s, rad/s) units anywhere in the Pyxel Cube API.
 
 ---
 
@@ -595,7 +595,7 @@ to return to on-the-fly computation, or call `compute_normals()` again
 to refresh.
 
 Smooth shading (averaging adjacent face normals at shared vertices) is
-not supported; cube targets flat-shaded retro look and per-face normals
+not supported; Pyxel Cube targets flat-shaded retro look and per-face normals
 match the rasterizer's input layout.
 
 ### 9.5 Topology and `mode` / `indices` Interaction
@@ -813,10 +813,10 @@ corner regions over-report by at most `r·(√3−1)` (§ 16 step 5).
 | `trigger` | `bool` | `False` | `True` = notify only (no push-back). `False` = solid body |
 | `rolls` | `bool` | `False` | `True` = collisions generate angular velocity. `False` = sliding only |
 
-Both flags default `False`, reflecting Pyxel cube's opt-in posture: the
+Both flags default `False`, reflecting Pyxel Cube's opt-in posture: the
 simplest default behavior (solid + no rotation) is automatic, and the
 extra capabilities are enabled per-collider. Industry engines typically
-default to the richer behavior and offer constraint flags; Pyxel cube
+default to the richer behavior and offer constraint flags; Pyxel Cube
 inverts the polarity to keep the no-argument case obvious.
 
 ### 11.3 Physical Coefficients
@@ -834,7 +834,7 @@ a non-zero `velocity` becomes a kinematic mover (engine never pushes it
 back, but its velocity still propagates per frame).
 
 Coefficients are dimensionless tuning knobs, not physically calibrated
-constants. Pyxel cube is not a simulator; `restitution = 0.6` should be
+constants. Pyxel Cube is not a simulator; `restitution = 0.6` should be
 read as "a moderate bounce" rather than as a measured material property.
 
 ### 11.4 Motion State
@@ -1076,7 +1076,7 @@ Both methods perform a depth-first pre-order traversal starting at
 list of strings; a Node matches if it carries any of the listed tags.
 
 The list-returning shape is symmetric across both lookups: even
-`find_by_name` returns a list, because Pyxel cube does not enforce name
+`find_by_name` returns a list, because Pyxel Cube does not enforce name
 uniqueness (e.g. "zako" enemies spawn under the same name). Callers
 that want a single result write `result[0]` or `result[0] if result
 else None`.
@@ -1355,7 +1355,7 @@ node.draw(x, y, w, h, target=None)
 
 ### 15.4 Spatial Queries
 
-Pyxel cube exposes four spatial-query primitives on `Node`, mirroring
+Pyxel Cube exposes four spatial-query primitives on `Node`, mirroring
 Unity Physics's `Raycast`, `RaycastAll`, `OverlapSphere`, and
 `OverlapBox`. Each operates against the colliders in the subtree rooted
 at the node it is called on — call it on the scene root to query the
@@ -1566,7 +1566,7 @@ or constraint chains are out of scope.
   Pyxel 2D's existing per-call overhead.
 - Multi-angle rendering calls `draw` again with a different camera; each
   call re-runs the subtree's `on_draw` traversal and rasterizes afresh
-  (cube is immediate-mode, with no retained draw-command cache between
+  (the cube renderer is immediate-mode, with no retained draw-command cache between
   calls). At PS1 scale a few views per frame stay in budget.
 - `Mesh` is loaded once; `Node` trees built from it carry per-instance
   poses without copying mesh data.
@@ -1582,7 +1582,7 @@ or constraint chains are out of scope.
 
 ## 18. Naming Policy
 
-Pyxel cube's public surface mixes conventions from several 3D engines.
+Pyxel Cube's public surface mixes conventions from several 3D engines.
 The mix is intentional, not accidental, and follows the rules below.
 
 1. **Math primitives** (`Vec3`, `Mat4`, `Quat`): the industry-common
@@ -1603,10 +1603,10 @@ The mix is intentional, not accidental, and follows the rules below.
    Physics conventions, with shared parameter names (`origin`,
    `direction`, `max_distance`, `hit_triggers`, `tags`) across all
    four primitives.
-6. **Opt-in flags**: Pyxel cube's behavior flags (`trigger`, `rolls`)
+6. **Opt-in flags**: Pyxel Cube's behavior flags (`trigger`, `rolls`)
    default `False`, so the "do the simplest thing" case takes no
    arguments. Industry engines typically default to the richer
-   behavior; cube inverts the polarity to keep the no-argument case
+   behavior; Pyxel Cube inverts the polarity to keep the no-argument case
    obvious.
 7. **Per-frame units**: `velocity` / `angular_velocity` are per-frame,
    not time-based. This is the Pyxel-2D-style "one tick at a time"
@@ -1675,7 +1675,7 @@ evidence.
 - **`Vec3.refract(normal, eta)`** — optical refraction; not needed for
   the cube software renderer's lighting model.
 - **`Mat4.orthonormal()`** — drift correction for accumulated
-  rotations. In cube's typical usage, numerical drift is negligible.
+  rotations. In typical Pyxel Cube usage, numerical drift is negligible.
 - **`Mat4.translate` / `Mat4.scale_by` scalar overloads** — replaced
   by `Vec3`-only signatures to match three.js / Godot / pyrr / Unity.
 - **`Quat.__add__` / `Quat.__sub__` / `Quat.__truediv__`** —
@@ -1701,7 +1701,7 @@ evidence.
   idiom uses present tense (`normalize`, `inverse`).
 - **`rotate_axis` / `rotate_arbitrary`** — `Mat4.rotate(axis, deg)` is
   short and unambiguous.
-- **`is_trigger` / `lock_rotation` (with `is_` prefix)** — Pyxel cube
+- **`is_trigger` / `lock_rotation` (with `is_` prefix)** — Pyxel Cube
   bools use no `is_` prefix, paralleling `active` / `visible`. The
   flags are `trigger` and `rolls`.
 
@@ -1752,10 +1752,10 @@ evidence.
 - **A standalone `alpha` modifier name** — the pseudo-alpha control is
   the `dither(alpha)` setter, named to flag that the implementation is
   Bayer dithering rather than true alpha blending.
-- **`draw_text` / `draw_image` / `make_*` prefixes** — cube uses bare
+- **`draw_text` / `draw_image` / `make_*` prefixes** — Pyxel Cube uses bare
   verbs.
 - **GPU-oriented features** (flat 16-element `to_list` / `from_list`
-  on Mat4, OpenGL handles, shader programs) — cube is
+  on Mat4, OpenGL handles, shader programs) — Pyxel Cube is
   software-rendered.
 - **`col_tex` argument name for asset draws** — `tex` lacks language
   fit without a `Texture` class.
@@ -1789,7 +1789,7 @@ evidence.
 
 ### 20.6 Collision and physics
 
-- **`Collider` / `Rigidbody` split (Unity-style)** — Pyxel cube
+- **`Collider` / `Rigidbody` split (Unity-style)** — Pyxel Cube
   collapses shape + body + flags + motion state into a single
   `Collider` class. The split was rejected because it doubles the
   number of objects users have to wire up for every interactive Node,
@@ -1822,9 +1822,9 @@ evidence.
   out of scope. PS1-scale games run a single resolution pass per
   frame; constraint chains and stable stacks are not targeted.
 - **`Collider` body-type enum** (`STATIC` / `KINEMATIC` / `DYNAMIC`)
-  — Pyxel cube uses Bullet-style `mass = 0` as the immovable sentinel
+  — Pyxel Cube uses Bullet-style `mass = 0` as the immovable sentinel
   instead of a separate enum, keeping the field count down.
-- **`Rigidbody.useGravity`-style flag** — Pyxel cube has no
+- **`Rigidbody.useGravity`-style flag** — Pyxel Cube has no
   scene-level gravity; users add `Vec3(0, -g, 0)` to
   `collider.velocity` in `on_update` themselves. Keeps the per-frame
   integration explicit and aligns with the "one tick at a time"

@@ -1,6 +1,8 @@
 #![allow(clippy::many_single_char_names)]
 #![allow(clippy::too_many_arguments)]
 
+// Drawing math uses conventional x/y/z/u/v names and flat hot-path signatures;
+// bundling them into temporary structs would add noise on the render path.
 // High-level cube draw commands. All commands consume the active
 // DrawContext (target image, viewport, clip, scene depth buffer, camera)
 // and a world transform, and ultimately route through `prim` so all
@@ -62,7 +64,7 @@ struct ProjectedPolygon {
 // / TRIANGLE_STRIP / TRIANGLE_FAN additions can interleave the GL
 // numbering as needed).
 
-// Billboard modes (binding mirrors these as Node class attrs).
+// Billboard modes (binding mirrors these as Node class attrs)
 // Mirrors Godot's BillboardMode (DISABLED / ENABLED / FIXED_Y).
 pub const BILLBOARD_OFF: i32 = 0;
 pub const BILLBOARD_ON: i32 = 1;
@@ -471,7 +473,7 @@ fn apply_billboard(world_mat: &Mat4, ctx: &DrawContext, mode: i32) -> Mat4 {
     out
 }
 
-// Image samplers used by textured prim TRIANGLES.
+// Image samplers used by textured prim TRIANGLES
 
 fn make_image_sampler(img: &Image) -> impl Fn(f32, f32, i32, i32) -> i32 + '_ {
     let w = img.width() as f32;
@@ -734,7 +736,7 @@ pub fn prim(
     Ok(())
 }
 
-// Shortcut commands fabricate buffers and route through prim.
+// Shortcut commands fabricate buffers and route through prim
 
 pub fn pset(ctx: &mut DrawContext, world_mat: &Mat4, local: &Vec3, col: i32, state: DrawState) {
     let positions = [local.x, local.y, local.z];
@@ -1330,18 +1332,10 @@ pub fn mesh(ctx: &mut DrawContext, world_mat: &Mat4, mesh: &Mesh, state: DrawSta
 // Always camera-facing; ancestor rotation / scale do not affect
 // glyph layout (cube-design.md § 12.5).
 
-// Compute pixel-space bounding box and emit each visible glyph pixel
-// to `out` in a single pass that borrows `font` only once. Returns
-// (text_w, text_h) of the glyph cluster origin-anchored at (0, 0).
-// Used by `text` to recenter the glyph cluster around the projected
-// screen point.
-fn collect_text_geometry(
-    mut font: Option<&mut Font>,
-    text: &str,
-    out: &mut Vec<(i32, i32)>,
-) -> (i32, i32) {
-    // Phase 1: measure (consumes the borrow only within this block).
-    let (text_w, line_height) = if let Some(font) = font.as_deref_mut() {
+// Measure the glyph cluster origin-anchored at (0, 0). `text` uses the result
+// to center the cluster before walking pixels without allocating a geometry Vec.
+fn measure_text(font: Option<&mut Font>, text: &str) -> (i32, i32) {
+    let (text_w, line_height) = if let Some(font) = font {
         let mut max_w = 0;
         for line in text.split('\n') {
             let w = font.text_width(line);
@@ -1364,41 +1358,38 @@ fn collect_text_geometry(
         (max_chars as i32 * FONT_WIDTH as i32, FONT_HEIGHT as i32)
     };
     let line_count = text.split('\n').count() as i32;
-    let text_h = line_count * line_height;
-    // Phase 2: walk pixels (now we can move `font`).
-    if let Some(font) = font {
-        font.for_each_pixel(0, 0, text, |px, py| out.push((px, py)));
-    } else {
-        let font_image = crate::pyxel::font_image();
-        let img_ref = rc_ref!(&font_image);
-        let font_data = &img_ref.canvas.data;
-        let font_w = img_ref.canvas.width() as usize;
-        let mut cur_x = 0_i32;
-        let mut cur_y = 0_i32;
-        for c in text.chars() {
-            if c == '\n' {
-                cur_x = 0;
-                cur_y += FONT_HEIGHT as i32;
-                continue;
-            }
-            if !(MIN_FONT_CODE..=MAX_FONT_CODE).contains(&c) {
-                continue;
-            }
-            let code = c as i32 - MIN_FONT_CODE as i32;
-            let src_x = (code % NUM_FONT_COLS as i32) as usize * FONT_WIDTH as usize;
-            let src_y = (code / NUM_FONT_COLS as i32) as usize * FONT_HEIGHT as usize;
-            for fy in 0..FONT_HEIGHT as usize {
-                for fx in 0..FONT_WIDTH as usize {
-                    let idx = (src_y + fy) * font_w + (src_x + fx);
-                    if font_data[idx] != 0 {
-                        out.push((cur_x + fx as i32, cur_y + fy as i32));
-                    }
+    (text_w, line_count * line_height)
+}
+
+fn for_each_builtin_text_pixel(text: &str, mut emit: impl FnMut(i32, i32)) {
+    let font_image = crate::pyxel::font_image();
+    let img_ref = rc_ref!(&font_image);
+    let font_data = &img_ref.canvas.data;
+    let font_w = img_ref.canvas.width() as usize;
+    let mut cur_x = 0_i32;
+    let mut cur_y = 0_i32;
+    for c in text.chars() {
+        if c == '\n' {
+            cur_x = 0;
+            cur_y += FONT_HEIGHT as i32;
+            continue;
+        }
+        if !(MIN_FONT_CODE..=MAX_FONT_CODE).contains(&c) {
+            continue;
+        }
+        let code = c as i32 - MIN_FONT_CODE as i32;
+        let src_x = (code % NUM_FONT_COLS as i32) as usize * FONT_WIDTH as usize;
+        let src_y = (code / NUM_FONT_COLS as i32) as usize * FONT_HEIGHT as usize;
+        for fy in 0..FONT_HEIGHT as usize {
+            for fx in 0..FONT_WIDTH as usize {
+                let idx = (src_y + fy) * font_w + (src_x + fx);
+                if font_data[idx] != 0 {
+                    emit(cur_x + fx as i32, cur_y + fy as i32);
                 }
             }
-            cur_x += FONT_WIDTH as i32;
         }
+        cur_x += FONT_WIDTH as i32;
     }
-    (text_w, text_h)
 }
 
 pub fn text(
@@ -1423,9 +1414,9 @@ pub fn text(
     };
     let sx = sx_f.round() as i32;
     let sy = sy_f.round() as i32;
-    let mut pixel_xy: Vec<(i32, i32)> = Vec::new();
-    let (text_w, text_h) = collect_text_geometry(font, text_str, &mut pixel_xy);
-    if text_w == 0 || text_h == 0 || pixel_xy.is_empty() {
+    let mut font = font;
+    let (text_w, text_h) = measure_text(font.as_deref_mut(), text_str);
+    if text_w == 0 || text_h == 0 {
         return;
     }
     // Center pivot: shift glyph cluster so its bounding box centers on
@@ -1436,11 +1427,13 @@ pub fn text(
     let target_mut = rc_mut!(&ctx.target);
     let depth_w = ctx.depth_w;
     let depth = ctx.depth.as_mut_slice();
-    for (px, py) in pixel_xy {
+    let clip = ctx.clip;
+    let col = col as u8;
+    let mut plot_pixel = |px: i32, py: i32| {
         let x = cx + px;
         let y = cy + py;
-        if x < ctx.clip.left || x > ctx.clip.right || y < ctx.clip.top || y > ctx.clip.bottom {
-            continue;
+        if x < clip.left || x > clip.right || y < clip.top || y > clip.bottom {
+            return;
         }
         write_pixel(
             target_mut,
@@ -1449,11 +1442,16 @@ pub fn text(
             x,
             y,
             sz,
-            col as u8,
+            col,
             state.dither_alpha,
             state.depth_test,
             state.depth_write,
         );
+    };
+    if let Some(font) = font {
+        font.for_each_pixel(0, 0, text_str, &mut plot_pixel);
+    } else {
+        for_each_builtin_text_pixel(text_str, &mut plot_pixel);
     }
 }
 

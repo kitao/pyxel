@@ -1386,11 +1386,31 @@
           "code": "https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/c01_hello_cube.py",
           "description": {
             "en": "Hello, Pyxel Cube",
-            "ja": "Pyxel Cube 入門"
+            "cn": "你好，Pyxel Cube",
+            "de": "Hallo, Pyxel Cube",
+            "es": "Hola, Pyxel Cube",
+            "fr": "Bonjour, Pyxel Cube",
+            "it": "Ciao, Pyxel Cube",
+            "ja": "Pyxel Cube 入門",
+            "ko": "안녕, Pyxel Cube",
+            "pt": "Olá, Pyxel Cube",
+            "ru": "Привет, Pyxel Cube",
+            "tr": "Merhaba, Pyxel Cube",
+            "uk": "Привіт, Pyxel Cube"
           },
           "details": {
             "en": "A minimal 3D scene with orbiting shaded cubes, a camera, and a light direction.",
-            "ja": "カメラと光方向を設定し、陰影付きの立方体が周回する最小の 3D シーン。"
+            "cn": "一个包含环绕运动的带阴影立方体、相机和光照方向的最小 3D 场景。",
+            "de": "Eine minimale 3D-Szene mit kreisenden schattierten Würfeln, einer Kamera und einer Lichtrichtung.",
+            "es": "Una escena 3D mínima con cubos sombreados en órbita, una cámara y una dirección de luz.",
+            "fr": "Une scène 3D minimale avec des cubes ombrés en orbite, une caméra et une direction de lumière.",
+            "it": "Una scena 3D minimale con cubi ombreggiati in orbita, una camera e una direzione della luce.",
+            "ja": "カメラと光方向を設定し、陰影付きの立方体が周回する最小の 3D シーン。",
+            "ko": "궤도 운동하는 음영 처리된 큐브, 카메라, 빛 방향을 갖춘 최소 3D 장면.",
+            "pt": "Uma cena 3D mínima com cubos sombreados em órbita, uma câmera e uma direção de luz.",
+            "ru": "Минимальная 3D-сцена с вращающимися затенёнными кубами, камерой и направлением света.",
+            "tr": "Yörüngede dönen gölgeli küpler, bir kamera ve ışık yönü içeren minimal bir 3D sahne.",
+            "uk": "Мінімальна 3D-сцена з орбітальними затіненими кубами, камерою та напрямком світла."
           }
         },
         {
@@ -1399,11 +1419,31 @@
           "code": "https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/c02_basic_shapes.py",
           "description": {
             "en": "Basic 3D shapes",
-            "ja": "基本的な 3D 形状"
+            "cn": "基本 3D 形状",
+            "de": "Grundlegende 3D-Formen",
+            "es": "Formas 3D básicas",
+            "fr": "Formes 3D de base",
+            "it": "Forme 3D di base",
+            "ja": "基本的な 3D 形状",
+            "ko": "기본 3D 도형",
+            "pt": "Formas 3D básicas",
+            "ru": "Базовые 3D-фигуры",
+            "tr": "Temel 3D şekiller",
+            "uk": "Базові 3D-фігури"
           },
           "details": {
             "en": "Draws the built-in 3D primitives such as boxes and spheres.",
-            "ja": "box や sphere などの組み込み 3D プリミティブを描画する。"
+            "cn": "绘制内置 3D 图元，例如盒子和球体。",
+            "de": "Zeichnet integrierte 3D-Primitive wie Boxen und Kugeln.",
+            "es": "Dibuja primitivas 3D integradas como cajas y esferas.",
+            "fr": "Dessine des primitives 3D intégrées comme des boîtes et des sphères.",
+            "it": "Disegna primitive 3D integrate come box e sfere.",
+            "ja": "box や sphere などの組み込み 3D プリミティブを描画する。",
+            "ko": "상자와 구체 같은 내장 3D 프리미티브를 그립니다.",
+            "pt": "Desenha primitivas 3D integradas, como caixas e esferas.",
+            "ru": "Рисует встроенные 3D-примитивы, такие как коробки и сферы.",
+            "tr": "Kutular ve küreler gibi yerleşik 3D ilkel şekilleri çizer.",
+            "uk": "Малює вбудовані 3D-примітиви, як-от коробки та сфери."
           }
         }
       ]

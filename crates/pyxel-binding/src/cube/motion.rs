@@ -8,14 +8,6 @@ pub struct Motion {
 }
 
 impl Motion {
-    #[allow(dead_code)]
-    pub fn wrap(inner: pyxel::cube::RcMotion) -> Self {
-        Self {
-            inner,
-            source_mesh: None,
-        }
-    }
-
     pub(crate) fn wrap_with_source(
         inner: pyxel::cube::RcMotion,
         source_mesh: pyxel::cube::RcMesh,

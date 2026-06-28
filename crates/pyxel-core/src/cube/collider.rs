@@ -21,6 +21,8 @@ pub struct Collider {
 
 define_rc_type!(RcCollider, Collider);
 
+// The constructor mirrors the public collider fields and avoids a temporary
+// options struct on the Rust-Python boundary.
 #[allow(clippy::too_many_arguments)]
 impl Collider {
     pub fn new(

@@ -4,7 +4,9 @@ from pyxel.cube import Primitive, Vec3
 
 
 def test_required_args():
-    with pytest.raises(TypeError):
+    with pytest.raises(
+        TypeError, match="missing 1 required positional argument: 'mode'"
+    ):
         Primitive(positions=[0.0, 0.0, 0.0], indices=[0])
 
 
@@ -23,7 +25,7 @@ def test_positions_proxy_in_place_write():
 
 def test_positions_whole_assign_rejected():
     p = Primitive(Primitive.MODE_TRIANGLES, [0.0] * 9, [0, 1, 2])
-    with pytest.raises(AttributeError):
+    with pytest.raises(AttributeError, match="attribute 'positions'.*not writable"):
         p.positions = [1.0, 2.0, 3.0]
 
 
@@ -70,7 +72,7 @@ def test_sphere_factory_builds_low_poly_sphere():
 
 
 def test_sphere_factory_has_fixed_shape():
-    with pytest.raises(TypeError):
+    with pytest.raises(TypeError, match="unexpected keyword argument 'segments'"):
         Primitive.sphere(2.0, segments=4)
 
 
