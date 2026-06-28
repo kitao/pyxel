@@ -20,6 +20,8 @@ impl Collider {
         velocity=None,
         angular_velocity=None,
     ))]
+    // The constructor mirrors the Python Collider API instead of bundling
+    // arguments into a Rust-only options struct.
     #[allow(clippy::too_many_arguments)]
     fn new(
         size: Option<PyRef<'_, Vec3>>,

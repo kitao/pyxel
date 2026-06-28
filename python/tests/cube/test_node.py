@@ -40,9 +40,9 @@ class TestAttributes:
 
     def test_constructor_rejects_unused_arguments(self):
         assert str(inspect.signature(Node)) == "()"
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeError, match="takes no arguments"):
             Node(1)
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeError, match="takes no arguments"):
             Node(name="player")
 
     def test_subclass_constructor_keeps_python_arguments(self):
@@ -106,7 +106,7 @@ class TestColliderContactBasics:
         assert "Collider(" in repr(c)
 
     def test_contact_not_user_constructible(self):
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeError, match="cannot create .*Contact.* instances"):
             Contact()
 
 
@@ -128,7 +128,7 @@ class TestHierarchy:
         p = Node()
         c = Node()
         p.add_child(c)
-        assert p.children == (c,) or p.children[0] is c
+        assert p.children == (c,)
         p.remove_child(c)
         assert p.children == ()
 
@@ -147,14 +147,14 @@ class TestHierarchy:
         p2 = Node()
         c = Node()
         p2.add_child(c)
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="remove_child requires a direct child"):
             p1.remove_child(c)
         assert c.parent is p2
         assert p2.children == (c,)
 
     def test_add_child_rejects_self_parenting(self):
         n = Node()
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="add_child would create a cycle"):
             n.add_child(n)
         assert n.parent is None
         assert n.children == ()
@@ -165,7 +165,7 @@ class TestHierarchy:
         leaf = Node()
         root.add_child(mid)
         mid.add_child(leaf)
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="add_child would create a cycle"):
             leaf.add_child(root)
         assert root.parent is None
         assert mid.parent is root
@@ -538,7 +538,7 @@ class TestBillboardKwargRemoved:
         ],
     )
     def test_billboard_kwarg_rejected(self, call):
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeError, match="unexpected keyword argument 'billboard'"):
             call(Node())
 
 
@@ -567,7 +567,7 @@ class TestCameraCascade:
 
     def test_draw_without_camera_raises(self):
         n = Node()
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="draw: no camera set"):
             n.draw(0, 0, 64, 64)
 
     def test_camera_clear_color_roundtrip(self):

@@ -42,7 +42,7 @@ class TestConstruction:
 
     def test_topological_order_violation_rejected(self):
         p = _square_prim()
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="violates topological order"):
             Mesh(
                 primitives=[p, p],
                 transforms=[Mat4(), Mat4()],
@@ -51,7 +51,7 @@ class TestConstruction:
 
     def test_parallel_array_length_mismatch_rejected(self):
         p = _square_prim()
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="parallel arrays length mismatch"):
             Mesh(
                 primitives=[p, p],
                 transforms=[Mat4()],  # one short
@@ -60,7 +60,7 @@ class TestConstruction:
 
     def test_invalid_parent_index_rejected(self):
         p = _square_prim()
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="Mesh\\.parents\\[0\\] = -2 < -1"):
             Mesh(
                 primitives=[p],
                 transforms=[Mat4()],
@@ -89,7 +89,7 @@ class TestConstruction:
 
     def test_names_length_mismatch_rejected(self):
         p = _square_prim()
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="parallel arrays length mismatch"):
             Mesh(
                 primitives=[p, p],
                 transforms=[Mat4(), Mat4()],
@@ -120,7 +120,7 @@ class TestAttributes:
         )
         # Reassigning primitives to a different length without also updating
         # transforms / parents must raise.
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="parallel arrays length mismatch"):
             m.primitives = [p, p]
 
     def test_set_names_revalidates(self):
@@ -130,7 +130,7 @@ class TestAttributes:
             transforms=[Mat4()],
             parents=[-1],
         )
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="parallel arrays length mismatch"):
             m.names = ["root", "extra"]
 
 

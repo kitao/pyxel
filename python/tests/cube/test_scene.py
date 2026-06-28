@@ -166,7 +166,7 @@ class TestRaycast:
     def test_raycasthit_not_user_constructible(self):
         # RaycastHit is an engine-built payload (cube-design.md § 13);
         # it has no public constructor.
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeError, match="cannot create .*RaycastHit.* instances"):
             RaycastHit()
 
 

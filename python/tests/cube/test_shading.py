@@ -27,22 +27,22 @@ class TestIndexing:
 
     def test_out_of_range_col(self):
         s = Shading(palette())
-        with pytest.raises(IndexError):
+        with pytest.raises(IndexError, match="Shading index out of range"):
             _ = s[100, 0]
 
     def test_out_of_range_level(self):
         s = Shading(palette())
-        with pytest.raises(IndexError):
+        with pytest.raises(IndexError, match="Shading index out of range"):
             _ = s[0, 4]
 
     def test_negative_col_raises(self):
         s = Shading(palette())
-        with pytest.raises((IndexError, OverflowError)):
+        with pytest.raises((IndexError, OverflowError), match="negative int"):
             _ = s[-1, 0]
 
     def test_negative_level_raises(self):
         s = Shading(palette())
-        with pytest.raises((IndexError, OverflowError)):
+        with pytest.raises((IndexError, OverflowError), match="negative int"):
             _ = s[0, -1]
 
 

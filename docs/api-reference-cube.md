@@ -1150,9 +1150,9 @@ Axis times angle (in degrees) applied as a local spin every update.
 
 ## Contact
 
-### `Contact()` — class
+### `Contact` — class
 
-Collision payload passed to Node.on_collide(). Carries the contact geometry and the engine-resolved motion corrections for the receiving side.
+Collision payload passed to Node.on_collide(). It is engine-built and not user-constructible, and carries the contact geometry and engine-resolved motion corrections for the receiving side.
 
 **Example:**
 
@@ -1201,9 +1201,9 @@ Suggested additive angular velocity correction. Non-zero only when the collider 
 
 ## RaycastHit
 
-### `RaycastHit()` — class
+### `RaycastHit` — class
 
-Hit information returned by Node.raycast() and Node.raycast_all().
+Hit information returned by Node.raycast() and Node.raycast_all(). It is engine-built and not user-constructible.
 
 **Example:**
 
@@ -1345,6 +1345,12 @@ The transform's up direction (+Y axis) as a unit vector.
 The camera after cascade resolution: this node's camera, or the closest ancestor's.
 
 - **Type:** `Camera | None`
+
+### `effective_shading` — variable *(Advanced)*
+
+The shading table after cascade resolution: this node's shading, or the closest ancestor's.
+
+- **Type:** `Shading | None`
 
 ### `world_transform` — variable *(Advanced)*
 

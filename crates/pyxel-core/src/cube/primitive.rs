@@ -93,7 +93,7 @@ impl Primitive {
     }
 }
 
-// Factory geometry helpers.
+// Factory geometry helpers
 
 pub(crate) fn unit_plane() -> &'static Primitive {
     static PRIMITIVE: OnceLock<Primitive> = OnceLock::new();

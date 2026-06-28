@@ -77,7 +77,7 @@ class TestSequence:
 
     def test_getitem_out_of_range(self):
         v = Vec3(1, 2, 3)
-        with pytest.raises(IndexError):
+        with pytest.raises(IndexError, match="Vec3 index out of range"):
             _ = v[3]
 
     def test_iter(self):

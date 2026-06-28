@@ -65,7 +65,7 @@ class TestElementAccess:
         assert m[2, 3] == 7.0
 
     def test_getitem_out_of_range(self):
-        with pytest.raises(IndexError):
+        with pytest.raises(IndexError, match="Mat4 index out of range"):
             _ = Mat4.IDENTITY[4, 0]
 
 

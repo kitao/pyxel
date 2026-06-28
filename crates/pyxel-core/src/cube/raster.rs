@@ -1,5 +1,7 @@
 #![allow(clippy::many_single_char_names)]
 
+// Raster math uses conventional x/y/z/u/v names in tight loops; expanding them
+// would obscure coordinate formulas on the per-pixel path.
 use crate::cube::camera::Camera;
 use crate::cube::mat4::Mat4;
 use crate::cube::shading::{Shading, LEVEL_COUNT};
@@ -401,11 +403,12 @@ pub fn shade(shading: &Shading, base_col: i32, normal: Option<&Vec3>) -> u8 {
     primary as u8
 }
 
-// Pixel write with depth test. Callers are responsible for clip
-// containment; bbox-driven rasterizers below already drop out-of-clip
-// pixels at the loop bounds, so this hot-path function does not re-check.
-#[inline]
+// Pixel write with depth test. Callers are responsible for clip containment;
+// bbox-driven rasterizers below already drop out-of-clip pixels at the loop
+// bounds, so this hot-path function does not re-check. The scalar signature
+// avoids a per-pixel parameter object.
 #[allow(clippy::too_many_arguments)]
+#[inline]
 pub fn write_pixel(
     target: &mut Image,
     depth: &mut [f32],
@@ -475,7 +478,8 @@ fn edge_inside(w: f32, include_boundary: bool, pos_area: bool) -> bool {
 // Filled triangle with linear z interpolation. Both windings draw — cube
 // has no back-face culling. Per-pixel dither between `primary` and
 // `secondary` based on `ratio` (0..16); `primary == secondary` or
-// `ratio == 0` collapses to a flat fill.
+// `ratio == 0` collapses to a flat fill. The scalar signature keeps this
+// hot path free of temporary argument structs.
 #[allow(clippy::too_many_arguments)]
 pub fn rasterize_triangle(
     target: &mut Image,
@@ -566,7 +570,8 @@ pub fn rasterize_triangle(
 // Filled triangle with linear UV + z interpolation. The sampler receives
 // `(u, v, x, y)` so it can mix in screen-space dither when shading a
 // textured face. colkey drops pixels whose source matches the key.
-// Interpolation is affine — good enough for cube's pixel-art scale.
+// Interpolation is affine — good enough for cube's pixel-art scale. The
+// scalar signature keeps this hot path free of temporary argument structs.
 #[allow(clippy::too_many_arguments)]
 pub fn rasterize_textured_triangle<F>(
     target: &mut Image,
@@ -661,7 +666,8 @@ pub fn rasterize_textured_triangle<F>(
 }
 
 // Filled screen-space circle at constant depth. cx / cy / radius are in
-// pixels (project a world-space circle through `screen_circle` first).
+// pixels (project a world-space circle through `screen_circle` first). The
+// scalar signature keeps this hot path free of temporary argument structs.
 #[allow(clippy::too_many_arguments)]
 pub fn rasterize_circle_filled(
     target: &mut Image,
@@ -749,7 +755,8 @@ pub fn rasterize_circle_filled(
 }
 
 // 1-pixel-thick screen-space circle outline. The band [radius - 0.5,
-// radius + 0.5] keeps the ring isotropic at any distance.
+// radius + 0.5] keeps the ring isotropic at any distance. The scalar
+// signature keeps this hot path free of temporary argument structs.
 #[allow(clippy::too_many_arguments)]
 pub fn rasterize_circle_border(
     target: &mut Image,
@@ -905,8 +912,9 @@ fn circle_area(cx: f32, cy: f32, ra: f32, rb: f32, x: i32) -> (i32, i32, i32, i3
     (x1, y1, x2, y2)
 }
 
-#[inline]
+// Private circle helpers keep the same flat scalar state as their callers.
 #[allow(clippy::too_many_arguments)]
+#[inline]
 fn rasterize_circle_pixel(
     target: &mut Image,
     depth: &mut [f32],
@@ -939,8 +947,9 @@ fn rasterize_circle_pixel(
     );
 }
 
-#[inline]
+// Private circle helpers keep the same flat scalar state as their callers.
 #[allow(clippy::too_many_arguments)]
+#[inline]
 fn rasterize_circle_row(
     target: &mut Image,
     depth: &mut [f32],
@@ -979,8 +988,9 @@ fn rasterize_circle_row(
     }
 }
 
-#[inline]
+// Private circle helpers keep the same flat scalar state as their callers.
 #[allow(clippy::too_many_arguments)]
+#[inline]
 fn rasterize_circle_column(
     target: &mut Image,
     depth: &mut [f32],
@@ -1080,7 +1090,8 @@ fn line_depth(z: f32) -> f32 {
 // Bresenham-style 3D line with linear z interpolation. Width is fixed at
 // 1 pixel regardless of distance. The line span is clipped before
 // stepping so near-plane clipped edges do not iterate over invisible
-// off-screen pixels.
+// off-screen pixels. The scalar signature keeps this hot path free of
+// temporary argument structs.
 #[allow(clippy::too_many_arguments)]
 pub fn rasterize_line(
     target: &mut Image,

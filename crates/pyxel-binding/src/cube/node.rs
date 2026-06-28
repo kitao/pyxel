@@ -103,11 +103,14 @@ impl Node {
         }
     }
 
+    // Some paths use only the mutable accessor, but keeping both accessors
+    // mirrors the wrapper macro and keeps call sites uniform.
     #[allow(dead_code)]
     pub(crate) fn inner_ref(&self) -> &pyxel::cube::Node {
         rc_ref!(self.inner)
     }
 
+    // Python methods mutate shared engine resources through PyO3 &self receivers.
     #[allow(clippy::mut_from_ref)]
     pub(crate) fn inner_mut(&self) -> &mut pyxel::cube::Node {
         rc_mut!(self.inner)
@@ -660,6 +663,8 @@ impl Node {
     }
 
     // Lifecycle hooks
+    // PyO3 requires these Python override points to be instance methods even
+    // when the default implementation does not read self or its arguments.
 
     #[allow(clippy::unused_self)]
     fn on_update(&self) {}

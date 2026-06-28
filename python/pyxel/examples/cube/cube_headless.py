@@ -1,8 +1,12 @@
+from pathlib import Path
+from tempfile import gettempdir
+
 import pyxel
 from pyxel.cube import Camera, Mat4, Node, Shading, Vec3
 
 W, H = 40, 30
-LOG = open("/tmp/cube_check.log", "w")
+LOG_PATH = Path(gettempdir()) / "cube_check.log"
+LOG = LOG_PATH.open("w", encoding="utf-8")
 
 
 def dump(label: str) -> None:
@@ -148,3 +152,4 @@ run_case("circ r=1 from oblique camera (billboards to a disc)", _circ_billboard)
 
 
 pyxel.quit()
+LOG.close()
