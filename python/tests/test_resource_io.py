@@ -11,7 +11,7 @@ class TestSaveLoad:
         pyxel.load(str(assets_dir / "sample.pyxres"))
 
     def test_load_old_format_pyxres(self, tmp_path):
-        # Legacy text format: hex grids per bank under pyxel_resource/
+        # Legacy text format: hex grids per bank under pyxel_resource/.
         path = tmp_path / "legacy.pyxres"
         with zipfile.ZipFile(path, "w") as zf:
             zf.writestr("pyxel_resource/version", "1.9.0")
@@ -137,7 +137,7 @@ class TestSaveLoad:
 
         pyxel.images[0].cls(0)
         pyxel.load(path, excl_images=True)  # type: ignore[call-arg]
-        # excl_images=True excluded images on save, so load brings back nothing
+        # excl_images=True excluded images on save, so load brings back nothing.
         assert pyxel.images[0].pget(0, 0) == 0
 
 
@@ -146,7 +146,7 @@ class TestPalette:
         original_colors = list(pyxel.colors)
         try:
             pyxel.load_pal(str(assets_dir / "audio_bgm.pyxpal"))
-            # The bundled palette carries 32 colors, one hex value per line
+            # The bundled palette carries 32 colors, one hex value per line.
             assert len(pyxel.colors) == 32
         finally:
             pyxel.colors[:] = original_colors

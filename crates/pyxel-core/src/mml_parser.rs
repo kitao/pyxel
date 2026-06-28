@@ -285,6 +285,7 @@ pub fn total_duration_sec(commands: &[MmlCommand]) -> Option<f32> {
     let mut repeat_points: Vec<(usize, u32)> = Vec::new();
     let mut clocks_per_tick = bpm_to_clocks_per_tick(DEFAULT_TEMPO);
 
+    // Walk repeat commands while accumulating finite playback clocks.
     while command_index < commands.len() {
         let command = &commands[command_index];
         command_index += 1;
@@ -298,7 +299,8 @@ pub fn total_duration_sec(commands: &[MmlCommand]) -> Option<f32> {
                 total_clocks += clocks_per_tick * *duration_ticks;
             }
             MmlCommand::RepeatStart => {
-                repeat_points.push((command_index, 0)); // Index after RepeatStart
+                // Store the command index after RepeatStart for loopback.
+                repeat_points.push((command_index, 0));
             }
             MmlCommand::RepeatEnd { play_count } => {
                 if *play_count == 0 {
@@ -693,9 +695,9 @@ mod tests {
     fn test_sharp_and_flat() {
         let cmds = parse("C+ C# C-");
         let notes = note_commands(&cmds);
-        assert_eq!(notes[0].0, 61); // C#
-        assert_eq!(notes[1].0, 61); // C#
-        assert_eq!(notes[2].0, 59); // Cb = B3
+        assert_eq!(notes[0].0, 61, "C+");
+        assert_eq!(notes[1].0, 61, "C#");
+        assert_eq!(notes[2].0, 59, "C- maps to B3");
     }
 
     // Octave
@@ -704,25 +706,27 @@ mod tests {
     fn test_octave() {
         let cmds = parse("O3 C O5 C");
         let notes = note_commands(&cmds);
-        assert_eq!(notes[0].0, 48); // C3
-        assert_eq!(notes[1].0, 72); // C5
+        assert_eq!(notes[0].0, 48, "C3");
+        assert_eq!(notes[1].0, 72, "C5");
     }
 
     #[test]
     fn test_octave_shift() {
         let cmds = parse("O4 C > C < C");
         let notes = note_commands(&cmds);
-        assert_eq!(notes[0].0, 60); // C4
-        assert_eq!(notes[1].0, 72); // C5
-        assert_eq!(notes[2].0, 60); // C4
+        assert_eq!(notes[0].0, 60, "C4");
+        assert_eq!(notes[1].0, 72, "C5 after octave up");
+        assert_eq!(notes[2].0, 60, "C4 after octave down");
     }
 
     #[test]
     fn test_octave_boundaries() {
         let cmds = parse("O-1 C O9 B");
         let notes = note_commands(&cmds);
-        assert_eq!(notes[0].0, 0); // C at O-1: (-1+1)*12+0 = 0
-        assert_eq!(notes[1].0, 131); // B at O9: (9+1)*12+11 = 131
+        // O-1 maps C to MIDI 0.
+        assert_eq!(notes[0].0, 0);
+        // O9 maps B to MIDI 131.
+        assert_eq!(notes[1].0, 131);
     }
 
     // Note length
@@ -740,8 +744,8 @@ mod tests {
     fn test_note_length_boundaries() {
         let cmds = parse("C1 C192");
         let notes = note_commands(&cmds);
-        assert_eq!(notes[0].1, 192); // whole note (longest)
-        assert_eq!(notes[1].1, 1); // shortest possible
+        assert_eq!(notes[0].1, 192, "whole note is the longest length");
+        assert_eq!(notes[1].1, 1, "C192 is the shortest length");
     }
 
     #[test]
@@ -765,7 +769,7 @@ mod tests {
         let cmds = parse("L8 C D E");
         let notes = note_commands(&cmds);
         for (_, ticks) in &notes {
-            assert_eq!(*ticks, 24); // eighth note
+            assert_eq!(*ticks, 24, "L8 sets eighth-note ticks");
         }
     }
 
@@ -775,7 +779,7 @@ mod tests {
     fn test_rest() {
         let cmds = parse("C R C");
         let rests = rest_commands(&cmds);
-        assert_eq!(rests, [48]); // default quarter note rest
+        assert_eq!(rests, [48], "R uses the default quarter-note length");
     }
 
     #[test]
@@ -823,8 +827,8 @@ mod tests {
         let cmds = parse("C4& D4");
         let notes = note_commands(&cmds);
         assert_eq!(notes.len(), 2);
-        assert_eq!(notes[0], (60, 48)); // C4
-        assert_eq!(notes[1], (62, 48)); // D4
+        assert_eq!(notes[0], (60, 48), "C4 remains separate");
+        assert_eq!(notes[1], (62, 48), "D4 remains separate");
     }
 
     #[test]
@@ -1230,7 +1234,8 @@ mod tests {
 
     #[test]
     fn test_total_duration_sec_infinite_loop() {
-        let cmds = parse("[C]0"); // 0 = infinite repeat
+        // Repeat count 0 means an infinite repeat.
+        let cmds = parse("[C]0");
         assert!(total_duration_sec(&cmds).is_none());
     }
 

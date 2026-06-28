@@ -25,7 +25,7 @@ fn is_headless() -> bool {
     HEADLESS.load(Ordering::Relaxed)
 }
 
-// SIGINT
+// SIGINT handling
 
 static SIGINT_RECEIVED: AtomicBool = AtomicBool::new(false);
 
@@ -43,7 +43,7 @@ pub fn is_sigint_received() -> bool {
 pub fn init(headless: bool) {
     HEADLESS.store(headless, Ordering::Relaxed);
 
-    // Drop the previous platform if init() is called again
+    // Repeated init() replaces the previous platform instance.
     unsafe {
         if !PLATFORM.is_null() {
             drop(Box::from_raw(PLATFORM));

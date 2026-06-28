@@ -8,6 +8,8 @@ pub struct Profiler {
 }
 
 impl Profiler {
+    // Construction
+
     pub fn new(measure_frame_count: u32) -> Self {
         assert!(measure_frame_count >= 1, "invalid measure frame count");
         Self {
@@ -20,6 +22,8 @@ impl Profiler {
         }
     }
 
+    // Metrics
+
     pub const fn average_time(&self) -> f32 {
         self.average_time
     }
@@ -27,6 +31,8 @@ impl Profiler {
     pub const fn average_fps(&self) -> f32 {
         self.average_fps
     }
+
+    // Measurement
 
     pub fn start(&mut self, tick_count: u32) {
         self.start_time = tick_count;
@@ -119,12 +125,12 @@ mod tests {
 
     #[test]
     fn test_zero_time_frame() {
-        // start and end at the same tick -> 0ms frame time
+        // Starting and ending at the same tick produces a zero millisecond frame.
         let mut p = Profiler::new(1);
         p.start(100);
         p.end(100);
         assert_eq!(p.average_time(), 0.0);
-        // fps = 1000/0 = +inf
+        // Dividing by zero frame time yields positive infinity.
         assert_eq!(p.average_fps(), f32::INFINITY);
     }
 

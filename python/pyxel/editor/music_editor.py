@@ -91,7 +91,7 @@ class MusicEditor(EditorBase):
         if index >= pyxel.NUM_CHANNELS:
             return None
         # Resource load may leave music.seqs shorter than NUM_CHANNELS,
-        # so normalize on every access
+        # so normalize on every access.
         music = pyxel.musics[self.music_index_var]
         seqs_len = len(music.seqs)
         if seqs_len < pyxel.NUM_CHANNELS:

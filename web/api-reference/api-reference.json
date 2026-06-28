@@ -2963,7 +2963,7 @@
           "type": "variable",
           "signature": "images",
           "description": {
-            "en": "List of the image banks (instances of the Image class) (0-2).",
+            "en": "Image banks (Image instances) (0-2).",
             "cn": "图像库 (Image 类的实例) 的列表 (0-2)",
             "de": "Liste der Bildbanken (Instanzen der Image-Klasse) (0-2).",
             "es": "Lista de bancos de imágenes (instancias de la clase Image) (0-2).",
@@ -2985,7 +2985,7 @@
           "type": "variable",
           "signature": "tilemaps",
           "description": {
-            "en": "List of the tilemaps (instances of the Tilemap class) (0-7).",
+            "en": "Tilemaps (Tilemap instances) (0-7).",
             "cn": "瓦片地图 (Tilemap 类的实例) 的列表 (0-7)",
             "de": "Liste der Tilemaps (Instanzen der Tilemap-Klasse) (0-7).",
             "es": "Lista de tilemaps (instancias de la clase Tilemap) (0-7).",
@@ -6077,7 +6077,7 @@
           "type": "variable",
           "signature": "channels",
           "description": {
-            "en": "List of the channels (instances of the Channel class) (0-3).",
+            "en": "Audio channels (Channel instances) (0-3).",
             "cn": "通道 (Channel 类的实例) 的列表 (0-3)",
             "de": "Liste der Kanäle (Instanzen der Channel-Klasse) (0-3).",
             "es": "Lista de los canales (instancias de la clase Channel) (0-3).",
@@ -6098,7 +6098,7 @@
           "type": "variable",
           "signature": "tones",
           "description": {
-            "en": "List of the tone definitions (instances of the Tone class) (0-3).",
+            "en": "Tone definitions (Tone instances) (0-3).",
             "cn": "音色定义 (Tone 类的实例) 的列表 (0-3)",
             "de": "Liste der Tondefinitionen (Instanzen der Tone-Klasse) (0-3).",
             "es": "Lista de las definiciones de tono (instancias de la clase Tone) (0-3).",
@@ -6119,7 +6119,7 @@
           "type": "variable",
           "signature": "sounds",
           "description": {
-            "en": "List of the sounds (instances of the Sound class) (0-63).",
+            "en": "Sounds (Sound instances) (0-63).",
             "cn": "声音 (Sound 类的实例) 的列表 (0-63)",
             "de": "Liste der Sounds (Instanzen der Sound-Klasse) (0-63).",
             "es": "Lista de los sonidos (instancias de la clase Sound) (0-63).",
@@ -9970,7 +9970,7 @@
           "type": "function",
           "signature": "Sound.save(filename, sec, ffmpeg=False)",
           "description": {
-            "en": "Create a WAV file of the sound for the specified duration in seconds.",
+            "en": "Create a WAV file from the sound with the specified duration in seconds.",
             "cn": "创建指定秒数时长的声音 WAV 文件。",
             "de": "Erstellt eine WAV-Datei des Sounds für die angegebene Dauer in Sekunden.",
             "es": "Crea un archivo WAV del sonido con la duración especificada en segundos.",
@@ -10207,7 +10207,7 @@
           "type": "function",
           "signature": "Music.save(filename, sec, ffmpeg=False)",
           "description": {
-            "en": "Create a WAV file of the music for the specified duration in seconds.",
+            "en": "Create a WAV file from the music with the specified duration in seconds.",
             "cn": "创建指定秒数时长的音乐 WAV 文件。",
             "de": "Erstellt eine WAV-Datei der Musik für die angegebene Dauer in Sekunden.",
             "es": "Crea un archivo WAV de la música con la duración especificada en segundos.",

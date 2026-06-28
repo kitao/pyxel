@@ -112,6 +112,7 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
     // Drawing primitives
 
     pub fn draw_line(&mut self, x1: f32, y1: f32, x2: f32, y2: f32, value: T) {
+        // Rasterize horizontal, vertical, and sloped line paths.
         let x1 = f32_to_i32(x1) - self.camera_x;
         let y1 = f32_to_i32(y1) - self.camera_y;
         let x2 = f32_to_i32(x2) - self.camera_x;
@@ -298,6 +299,7 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         y3: f32,
         value: T,
     ) {
+        // Sort vertices and split the triangle into scanline spans.
         let mut x1 = f32_to_i32(x1) - self.camera_x;
         let mut y1 = f32_to_i32(y1) - self.camera_y;
         let mut x2 = f32_to_i32(x2) - self.camera_x;
@@ -389,6 +391,7 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
     // Flood fill
 
     pub fn flood_fill(&mut self, x: f32, y: f32, value: T) {
+        // Grow horizontal spans and enqueue adjacent scanline segments.
         let x = f32_to_i32(x) - self.camera_x;
         let y = f32_to_i32(y) - self.camera_y;
         if !self.clip_rect.contains(x, y) {
@@ -472,6 +475,7 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         let width = f32_to_i32(width);
         let height = f32_to_i32(height);
 
+        // Clip source and destination before choosing the row-copy path.
         let CopyArea {
             dst_x,
             dst_y,
@@ -601,6 +605,7 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
             return;
         }
 
+        // Build inverse transform bounds before scanning destination pixels.
         let x = f32_to_i32(x) - self.camera_x;
         let y = f32_to_i32(y) - self.camera_y;
         let canvas_x = f32_to_i32(canvas_x);
@@ -628,7 +633,8 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         let dst_cy = y as f32 + half_height;
 
         let rotate = rotate * PI / 180.0;
-        let sin = -f32::sin(rotate); // Clockwise
+        // Positive rotation is clockwise in screen space.
+        let sin = -f32::sin(rotate);
         let cos = f32::cos(rotate);
         let bound_x = (half_width * cos.abs() + half_height * sin.abs() + 1.0) * scale;
         let bound_y = (half_width * sin.abs() + half_height * cos.abs() + 1.0) * scale;
@@ -746,6 +752,7 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
 
         let (wx_step, wy_step, wz_step) = proj.world_step_per_x();
 
+        // Project destination pixels back through the camera plane.
         // Fast path: no dithering
         if self.alpha >= 1.0 {
             let dst_w = self.width() as usize;
@@ -947,6 +954,8 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
     }
 }
 
+// Copy clipping
+
 pub(crate) struct CopyArea {
     pub(crate) dst_x: i32,
     pub(crate) dst_y: i32,
@@ -971,6 +980,7 @@ impl CopyArea {
         width: i32,
         height: i32,
     ) -> Self {
+        // Clip flipped copies against source and destination rectangles.
         let flip_x = width < 0;
         let flip_y = height < 0;
         let width = width.abs();
@@ -1016,6 +1026,8 @@ impl CopyArea {
     }
 }
 
+// Perspective projection
+
 pub(crate) struct PerspectiveProjection {
     pub(crate) cam_x: f32,
     pub(crate) cam_y: f32,
@@ -1052,6 +1064,7 @@ impl PerspectiveProjection {
         rot: (f32, f32, f32),
         fov: Option<f32>,
     ) -> Option<Self> {
+        // Build the camera transform used by perspective blits.
         let (cam_x, cam_y, cam_z) = pos;
         if cam_z.abs() < f32::EPSILON {
             return None;
@@ -1115,11 +1128,10 @@ impl PerspectiveProjection {
         let vx_step = self.tan_hfov * self.aspect / self.half_width;
         let vx2_step = vx_step * self.cos_z;
         let vy2_step = -vx_step * self.sin_z;
-        (
-            self.r00 * vx2_step + self.r01 * vy2_step, // wx_step
-            self.r10 * vx2_step + self.r11 * vy2_step, // wy_step
-            self.r21 * vy2_step,                       // wz_step
-        )
+        let wx_step = self.r00 * vx2_step + self.r01 * vy2_step;
+        let wy_step = self.r10 * vx2_step + self.r11 * vy2_step;
+        let wz_step = self.r21 * vy2_step;
+        (wx_step, wy_step, wz_step)
     }
 
     // Base world-space values for a given (xi, yi)

@@ -23,6 +23,7 @@ _PACKAGE_SKIP_EXTENSIONS = (".gif", ".zip")
 
 
 def cli() -> None:
+    # Pair command signatures with their handlers for usage and dispatch.
     commands = [
         (["run", "PYTHON_SCRIPT_FILE(.py)"], run_python_script),
         (
@@ -248,6 +249,7 @@ def watch_and_run_python_script(watch_dir: str, python_script_file: str) -> None
 
     os.environ[pyxel.WATCH_STATE_FILE_ENV] = _create_watch_state_file()
 
+    # Watch timestamps and restart the worker process on source changes.
     try:
         print(f"start watching '{watch_dir}' (Ctrl+C to stop)")
         cur_time = last_time = time.time()
@@ -346,6 +348,7 @@ def package_pyxel_app(app_dir: str, startup_script_file: str) -> None:
     if metadata_comment:
         print(metadata_comment)
 
+    # Write the startup marker while archiving the app directory.
     app_dir = Path(app_dir).resolve()
     setting_file = app_dir / pyxel.APP_STARTUP_SCRIPT_FILE
     setting_file.write_text(
@@ -388,6 +391,7 @@ def create_executable_from_pyxel_app(pyxel_app_file: str) -> None:
         shutil.rmtree(app2exe_dir)
     app2exe_dir.mkdir(parents=True, exist_ok=True)
 
+    # Generate a temporary PyInstaller bootstrap around the Pyxel app.
     pyxel_app_name = Path(pyxel_app_file).stem
     bootstrap_script_file = str(app2exe_dir / f"{pyxel_app_name}.py")
     app_filename = f"{pyxel_app_name}{pyxel.APP_FILE_EXTENSION}"

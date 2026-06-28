@@ -118,7 +118,7 @@ class TestTilemapDrawing:
         tm = pyxel.Tilemap(32, 32, 0)
         tm.cls((0, 0))
         tm.trib(8, 0, 0, 15, 15, 15, (4, 4))
-        # Vertices
+        # Border vertices stay set.
         assert tm.pget(8, 0) == (4, 4)
         assert tm.pget(0, 15) == (4, 4)
         assert tm.pget(15, 15) == (4, 4)
@@ -179,7 +179,7 @@ class TestTilemapBlt:
         dst = pyxel.Tilemap(16, 16, 0)
         dst.cls((0, 0))
         dst.blt(0, 0, src, 0, 0, 1, 1, scale=4)
-        # A 1x1 source with scale=4 deterministically paints a 2x2 block
+        # A 1x1 source with scale=4 deterministically paints a 2x2 block.
         drawn = sum(1 for x in range(8) for y in range(8) if dst.pget(x, y) == (5, 5))
         assert drawn == 4
 
@@ -258,7 +258,7 @@ class TestTilemapDataPtr:
         tm.cls((0, 0))
         tm.pset(0, 1, (7, 8))
         ptr = tm.data_ptr()
-        # Each tile is 2 u16 values, row stride = width * 2
+        # Each tile is 2 u16 values, row stride = width * 2.
         offset = 4 * 2  # width=4, each tile=2 entries
         assert ptr[offset] == 7
         assert ptr[offset + 1] == 8
@@ -287,9 +287,9 @@ class TestTilemapCollide:
         wall_tile = (1, 0)
         tm.pset(2, 0, wall_tile)  # Wall at tile (2, 0) = pixel x=16
         dx, dy = tm.collide(0, 0, 8, 8, 100.0, 0.0, [wall_tile])
-        # Should stop before the wall
+        # Collision should stop before the wall.
         assert 0 < dx < 100.0
-        # Precise: entity width=8, wall at x=16, so dx should be 8.0
+        # The entity width is 8 and the wall starts at x=16, so dx should be 8.0.
         assert dx == 8.0
         assert dy == 0.0  # No vertical movement
 
@@ -328,7 +328,7 @@ class TestTilemapCollide:
         tm.cls((0, 0))
         wall_tile = (1, 0)
         tm.pset(0, 0, wall_tile)  # Wall at origin
-        # Moving left into wall from position (24, 0)
+        # Moving left into the wall starts from position (24, 0).
         dx, dy = tm.collide(24, 0, 8, 8, -100.0, 0.0, [wall_tile])
         assert dx == -16.0  # Stopped at the wall's right edge (8)
         assert dy == 0.0

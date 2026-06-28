@@ -10,6 +10,8 @@ pub struct WindowWatcher {
 }
 
 impl WindowWatcher {
+    // Construction
+
     pub fn new() -> Self {
         let (watch_state_file, raw_state) = if let Ok(path) = var(WATCH_STATE_FILE_ENV) {
             let content = read_to_string(&path).unwrap_or_default();
@@ -39,6 +41,8 @@ impl WindowWatcher {
         }
     }
 
+    // State capture
+
     pub fn update(&mut self) {
         if platform::is_fullscreen() {
             return;
@@ -59,6 +63,8 @@ impl WindowWatcher {
             }
         }
     }
+
+    // Parsing
 
     fn parse_window_state(raw_state: &str) -> Option<(i32, i32, u32, u32)> {
         let mut fields = raw_state.split_whitespace();

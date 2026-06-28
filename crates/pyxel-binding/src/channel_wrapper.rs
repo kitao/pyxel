@@ -60,6 +60,7 @@ impl Channel {
         let resume = resume.unwrap_or(false);
         let _lock = pyxel::AudioLock::lock();
 
+        // Dispatch supported sound input forms.
         cast_pyany! {
             snd,
 

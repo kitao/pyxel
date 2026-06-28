@@ -68,6 +68,7 @@ impl Tilemap {
 
     // Public data operations
 
+    // Parse inline tile data before drawing it into the map.
     pub fn set(&mut self, x: i32, y: i32, data: &[&str]) {
         let width = simplify_string(data[0]).len() as u32 / 4;
         let height = data.len() as u32;
@@ -207,6 +208,7 @@ impl Tilemap {
 
     // Blit operations
 
+    // Dispatch plain blits, transforms, and self-blits.
     pub fn draw_tilemap(
         &mut self,
         x: f32,
@@ -302,6 +304,7 @@ impl Tilemap {
         canvas
     }
 
+    // Copy self-blits before applying tilemap transforms.
     fn draw_tilemap_with_transform(
         &mut self,
         x: f32,
@@ -350,6 +353,7 @@ impl Tilemap {
         }
     }
 
+    // Sweep one axis against wall tiles.
     fn collide_resolve_axis(
         &self,
         pos: f32,

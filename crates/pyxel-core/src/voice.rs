@@ -8,7 +8,8 @@ use crate::tone::{RcTone, ToneMode};
 const A4_MIDI_NOTE: f32 = 69.0;
 const A4_FREQUENCY: f32 = 440.0;
 // Fixed-point Q14 scaling for voice gain multiplication
-const VOICE_GAIN_ROUND_BIAS: i64 = 1_i64 << (AUDIO_GAIN_SHIFT - 1); // Half-unit bias for rounding
+// Half-unit bias rounds fixed-point gain away from zero.
+const VOICE_GAIN_ROUND_BIAS: i64 = 1_i64 << (AUDIO_GAIN_SHIFT - 1);
 const PITCH_LUT_MIN_SEMITONE: f32 = -96.0;
 const PITCH_LUT_MAX_SEMITONE: f32 = 96.0;
 const PITCH_LUT_STEPS_PER_SEMITONE: usize = 64;
@@ -27,6 +28,8 @@ pub struct Oscillator {
 }
 
 impl Oscillator {
+    // Constructors
+
     fn new() -> Self {
         Self {
             waveform_samples: Vec::new(),
@@ -38,6 +41,8 @@ impl Oscillator {
             sample: 0,
         }
     }
+
+    // Waveform setup
 
     pub fn set(&mut self, waveform: &[f32]) {
         if self.waveform_samples.len() == waveform.len() {
@@ -72,6 +77,8 @@ impl Oscillator {
         self.update();
     }
 
+    // Sample generation
+
     fn sample(&self) -> i32 {
         self.sample
     }
@@ -96,6 +103,8 @@ impl Oscillator {
         }
         self.update();
     }
+
+    // Helpers
 
     fn update(&mut self) {
         self.sample = if self.tap_bit == 0 {
@@ -133,6 +142,8 @@ pub struct Envelope {
 }
 
 impl Envelope {
+    // Constructors
+
     fn new() -> Self {
         Self {
             segments: Vec::new(),
@@ -142,6 +153,8 @@ impl Envelope {
             level: 0.0,
         }
     }
+
+    // Envelope shape
 
     pub fn set(&mut self, initial_level: f32, segments: &[(u32, f32)]) {
         self.segments.clear();
@@ -183,6 +196,8 @@ impl Envelope {
         }
     }
 
+    // State controls
+
     pub fn enable(&mut self) {
         self.enabled = true;
     }
@@ -194,6 +209,8 @@ impl Envelope {
     fn level(&self) -> f32 {
         self.level
     }
+
+    // Tick progression
 
     pub fn reset_tick(&mut self) {
         self.elapsed_ticks = 0;
@@ -242,6 +259,8 @@ pub struct Vibrato {
 }
 
 impl Vibrato {
+    // Constructors
+
     fn new() -> Self {
         Self {
             delay_ticks: 0,
@@ -254,6 +273,8 @@ impl Vibrato {
             pitch_multiplier: 1.0,
         }
     }
+
+    // Vibrato controls
 
     pub fn set(&mut self, delay_ticks: u32, period_ticks: u32, semitone_depth: f32) {
         self.delay_ticks = delay_ticks;
@@ -280,6 +301,8 @@ impl Vibrato {
     fn pitch_multiplier(&self) -> f32 {
         self.pitch_multiplier
     }
+
+    // Tick progression
 
     fn reset_tick(&mut self) {
         // A delayed vibrato restarts per note; without a delay the phase
@@ -415,6 +438,8 @@ pub struct Voice {
 }
 
 impl Voice {
+    // Constructors
+
     pub fn new(clock_rate: u32, control_rate: u32, interp_clocks: u32) -> Self {
         assert!(clock_rate > 0 && control_rate > 0 && interp_clocks > 0);
         // Build the pitch-ratio table before audio processing can reach it.
@@ -449,6 +474,8 @@ impl Voice {
         }
     }
 
+    // Tone controls
+
     pub fn set_tone(&mut self, tone: RcTone) {
         self.current_tone = Some(tone);
         self.refresh_tone_state();
@@ -471,6 +498,8 @@ impl Voice {
 
         self.clocks_per_tick = clocks_per_tick;
     }
+
+    // Playback controls
 
     pub fn play_note(&mut self, midi_note: f32, velocity_base: f32, duration_clocks: u32) {
         self.base_frequency = A4_FREQUENCY * ((midi_note - A4_MIDI_NOTE) / 12.0).exp2();
@@ -497,6 +526,8 @@ impl Voice {
             || self.last_amplitude != 0
     }
 
+    // Audio processing
+
     pub fn process(&mut self, blip_buf: Option<&mut BlipBuf>, clock_offset: u32, clock_count: u32) {
         if clock_count == 0 {
             return;
@@ -506,6 +537,7 @@ impl Voice {
         let mut clock_offset = clock_offset + self.carryover_sample_clocks;
         let mut clock_count = clock_count;
 
+        // Finish a split oscillator sample from the previous process chunk.
         if self.carryover_sample_clocks > 0 {
             let process_clocks = self.carryover_sample_clocks.min(clock_count);
             self.remaining_note_clocks = self.remaining_note_clocks.saturating_sub(process_clocks);
@@ -620,6 +652,8 @@ impl Voice {
         }
     }
 
+    // Fixed-point helpers
+
     #[inline]
     fn gain_to_fixed(gain: f32) -> i32 {
         (gain * AUDIO_GAIN_SCALE as f32).round() as i32
@@ -636,6 +670,8 @@ impl Voice {
             -(((-product + VOICE_GAIN_ROUND_BIAS) >> AUDIO_GAIN_SHIFT) as i32)
         }
     }
+
+    // Control clock
 
     fn reset_control_clock(&mut self) {
         self.envelope.reset_tick();
@@ -673,6 +709,8 @@ impl Voice {
                 .round() as u32;
     }
 
+    // Blip output
+
     fn write_sample(&mut self, blip_buf: Option<&mut BlipBuf>, clock_offset: u32, amplitude: i32) {
         if let Some(blip_buf) = blip_buf {
             if amplitude != self.last_amplitude {
@@ -682,6 +720,8 @@ impl Voice {
         }
     }
 }
+
+// Pitch helpers
 
 fn pitch_ratio_lut() -> &'static [f32] {
     PITCH_RATIO_LUT
@@ -926,11 +966,11 @@ mod tests {
         let mut env = Envelope::new();
         env.set(0.0, &[(10, 1.0)]);
 
-        // Disabled returns 1.0
+        // Disabled envelope level returns 1.0.
         env.reset_tick();
         assert!(approx_eq(env.level(), 1.0), "disabled: {}", env.level());
 
-        // Enable and verify attack ramp
+        // Enabled envelope follows the attack ramp.
         env.enable();
         env.reset_tick();
         assert!(approx_eq(env.level(), 0.0), "start: {}", env.level());
@@ -941,7 +981,7 @@ mod tests {
         env.advance_tick(5);
         assert!(approx_eq(env.level(), 1.0), "end: {}", env.level());
 
-        // Reset restarts from beginning
+        // Envelope reset restarts from the beginning.
         env.reset_tick();
         assert!(approx_eq(env.level(), 0.0), "after reset: {}", env.level());
     }
@@ -992,12 +1032,12 @@ mod tests {
         env.advance_tick(5);
         assert!(approx_eq(env.level(), 0.5), "mid: {}", env.level());
 
-        // Disable -> level returns to 1.0
+        // Disabled envelope level returns to 1.0.
         env.disable();
         env.advance_tick(1);
         assert!(approx_eq(env.level(), 1.0), "disabled: {}", env.level());
 
-        // Re-enable -> continues from elapsed=5, one more tick gives 0.6
+        // Re-enabled envelope continues from elapsed=5, so one more tick gives 0.6.
         env.enable();
         env.advance_tick(1);
         assert!(
@@ -1027,14 +1067,14 @@ mod tests {
         let mut vib = Vibrato::new();
         vib.set(0, 10, 1.0);
 
-        // Disabled returns 1.0
+        // Disabled vibrato multiplier returns 1.0.
         assert!(
             approx_eq(vib.pitch_multiplier(), 1.0),
             "disabled: {}",
             vib.pitch_multiplier()
         );
 
-        // Within delay returns 1.0
+        // Vibrato stays neutral within its delay.
         vib.set(10, 20, 2.0);
         vib.enable();
         vib.reset_tick();
@@ -1045,7 +1085,7 @@ mod tests {
             vib.pitch_multiplier()
         );
 
-        // Modulates after delay
+        // Vibrato modulates after its delay.
         let mut vib = Vibrato::new();
         vib.set(0, 40, 2.0);
         vib.enable();
@@ -1127,7 +1167,8 @@ mod tests {
     #[test]
     fn test_vibrato_zero_depth() {
         let mut vib = Vibrato::new();
-        vib.set(0, 20, 0.0); // zero depth = no modulation
+        // Zero depth disables modulation even while vibrato is enabled.
+        vib.set(0, 20, 0.0);
         vib.enable();
         vib.reset_tick();
         vib.advance_tick(10);
@@ -1145,14 +1186,14 @@ mod tests {
         let mut glide = Glide::new();
         glide.set(12.0, 100);
 
-        // Disabled returns 1.0
+        // Disabled glide multiplier returns 1.0.
         assert!(
             approx_eq(glide.pitch_multiplier(), 1.0),
             "disabled: {}",
             glide.pitch_multiplier()
         );
 
-        // Starts at offset and converges to 1.0
+        // Glide starts at its offset and converges to 1.0.
         glide.enable();
         glide.reset_tick();
         assert!(
@@ -1219,7 +1260,8 @@ mod tests {
         glide.enable();
         glide.reset_tick();
 
-        glide.advance_tick(100); // well past duration
+        // Advancing past duration leaves glide at the target pitch.
+        glide.advance_tick(100);
         assert!(
             approx_eq(glide.pitch_multiplier(), 1.0),
             "past duration: {}",

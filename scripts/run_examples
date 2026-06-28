@@ -24,7 +24,7 @@ cleanup() {
 }
 trap cleanup EXIT
 
-# Display command with basenames for readability
+# Display commands with basenames for readability.
 echo_cmd() {
     local display=()
     for arg in "$@"; do
@@ -37,7 +37,7 @@ example_name() {
     basename "$EXAMPLES_DIR"/$1_*.py .py
 }
 
-# Echo and run a GUI command in background; Ctrl+C sends SIGTERM
+# Echo and run a GUI command in the background; Ctrl+C sends SIGTERM.
 run_bg() {
     echo_cmd "$@"
     "$@" &
@@ -48,20 +48,20 @@ run_bg() {
     BG_PID=0
 }
 
-# Example scripts
+# Run example scripts.
 for f in "$EXAMPLES_DIR"/*.py; do
     run_bg pyxel run "$f"
 done
 
-# Example apps
+# Run bundled example apps.
 for f in "$EXAMPLES_DIR"/apps/*.pyxapp; do
     run_bg pyxel play "$f"
 done
 
-# Editor
+# Open the resource editor.
 run_bg pyxel edit "$EXAMPLES_DIR/assets/sample.pyxres"
 
-# Watch (inject error, restore, auto-exit after showing 'Watch Passed!')
+# Exercise watch mode by injecting an error, restoring the file, and auto-exiting.
 # Inline background instead of run_bg: auto-exit here, not driven by Ctrl+C.
 WATCH_EXAMPLE=$(example_name 01)
 WORK_DIR="$(mktemp -d)"

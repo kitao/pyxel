@@ -66,7 +66,7 @@ fn pyxel_binding(_py: Python, m: Bound<'_, PyModule>) -> PyResult<()> {
     constant_wrapper::add_module_constants(&m)?;
     variable_wrapper::add_module_variables(&m)?;
 
-    // API functions
+    // Module-level API functions
     system_wrapper::add_system_functions(&m)?;
     resource_wrapper::add_resource_functions(&m)?;
     input_wrapper::add_input_functions(&m)?;

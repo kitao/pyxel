@@ -104,6 +104,8 @@ pub fn load_pcm(filename: &str, target_rate: u32) -> Result<PcmData, String> {
     Ok(PcmData { samples })
 }
 
+// Helpers
+
 fn resample_linear(input: &[f32], src_rate: u32, dst_rate: u32) -> Vec<f32> {
     if input.is_empty() || src_rate == dst_rate {
         return input.to_vec();

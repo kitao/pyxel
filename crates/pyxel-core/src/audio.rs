@@ -26,6 +26,8 @@ struct AudioStreamRenderer {
     blip_buf: BlipBuf,
 }
 
+// Audio locking
+
 impl AudioLock {
     pub fn lock() -> Self {
         platform::lock_audio();
@@ -38,6 +40,8 @@ impl Drop for AudioLock {
         platform::unlock_audio();
     }
 }
+
+// Stream rendering
 
 impl AudioStreamRenderer {
     fn new() -> Self {
@@ -53,6 +57,8 @@ impl AudioStreamRenderer {
     }
 }
 
+// Audio output
+
 impl Audio {
     pub fn start() {
         let mut stream_renderer = AudioStreamRenderer::new();
@@ -66,6 +72,7 @@ impl Audio {
         );
     }
 
+    // Render generated samples and mix PCM playback.
     pub fn render_samples(channels: &[RcChannel], blip_buf: &mut BlipBuf, out: &mut [i16]) {
         let mut needs_blip = false;
         let mut needs_pcm = false;
@@ -111,6 +118,7 @@ impl Audio {
         }
     }
 
+    // File export
     #[cfg(pyxel_core)]
     pub fn save_samples(filename: &str, samples: &[i16], use_ffmpeg: bool) -> Result<(), String> {
         // Save WAV file

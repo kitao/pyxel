@@ -186,7 +186,7 @@ class App:
         pyxel.run(self.update, self.draw)
 
     def init_image(self):
-        # Set player image
+        # Create the player sprite.
         pyxel.images[0].set(
             0,
             0,
@@ -202,7 +202,7 @@ class App:
             ],
         )
 
-        # Set enemy image
+        # Create the enemy sprite.
         pyxel.images[0].set(
             8,
             0,
@@ -219,11 +219,11 @@ class App:
         )
 
     def init_sound(self):
-        # Set sound effects
+        # Define sound effects.
         pyxel.sounds[0].set("a3a2c1a1", "p", "7", "s", 5)
         pyxel.sounds[1].set("a3a2c2c2", "n", "7742", "s", 10)
 
-        # Set title music
+        # Define title music.
         a1 = "T128 Q96 @2 @ENV1{127,6,96} O4 L16 @VIB1{36,18,25} K-2"
         a2 = "D8.C8.D4G8AB->CD C8.<F2R FFGA B-8.A8.B-4.GGAB-"
         a3 = "RR>CC<B->C8 D8.D8CD8.<"
@@ -239,7 +239,7 @@ class App:
         pyxel.sounds[4].mml(c1 + c2)
         pyxel.musics[0].set([2], [3], [4])
 
-        # Set play music
+        # Define gameplay music.
         a1 = "T150 Q96 @1 @ENV1{127,12,64} O4 L16"
         a4 = "RR>CC<B->C8 D8.D8C<A8G&1"
 
@@ -280,6 +280,7 @@ class App:
         if pyxel.frame_count % 6 == 0:
             Enemy(pyxel.rndi(0, pyxel.width - ENEMY_WIDTH), 0)
 
+        # Resolve bullet-enemy collisions.
         for enemy in enemies:
             for bullet in bullets:
                 if (
@@ -294,6 +295,7 @@ class App:
                     pyxel.play(2, 1, resume=True)
                     self.score += 10
 
+        # Resolve player-enemy collisions.
         for enemy in enemies:
             if (
                 self.player.x + self.player.w > enemy.x

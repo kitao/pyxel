@@ -10,7 +10,7 @@ use crate::tone_wrapper::Tone;
 
 wrap_as_python_primitive_sequence!(
     Colors,
-    u32, // Dummy
+    u32, // Global sequence handle has no per-instance state
     (|_| pyxel::colors().len()),
     pyxel::Rgb24,
     (|_, index| pyxel::colors()[index]),
@@ -26,7 +26,7 @@ macro_rules! wrap_ptr_vec_as_python_object_sequence {
     ($wrapper_name:ident, $value_type:ident, $rc_type:path, $global_fn:path) => {
         wrap_as_python_object_sequence!(
             $wrapper_name,
-            u32, // Dummy
+            u32, // Global sequence handle has no per-instance state
             (|_| $global_fn().len()),
             $value_type,
             (|_, index: usize| $value_type::wrap($global_fn()[index].clone())),

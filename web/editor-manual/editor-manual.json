@@ -177,7 +177,7 @@
       "uk": "Перемикання файлу ресурсів"
     },
     "starting_load_body": {
-      "en": "While the editor is running, you can drag and drop another .pyxres file onto the window to load its contents. This operation overwrites all current edits, so please be careful if you have unsaved changes.",
+      "en": "While the editor is running, you can drag and drop another .pyxres file onto the window to load its contents. This operation overwrites all current edits, so be careful if you have unsaved changes.",
       "cn": "编辑器运行时，将其他 .pyxres 文件拖放到窗口即可加载该文件内容。此操作会覆盖当前所有编辑内容，如有未保存的更改请注意。",
       "de": "Durch Drag & Drop einer anderen .pyxres-Datei in das Editor-Fenster wird deren Inhalt geladen. Dieser Vorgang überschreibt alle aktuellen Bearbeitungen. Seien Sie daher vorsichtig, wenn Sie ungespeicherte Änderungen haben.",
       "es": "Durante la ejecución del editor, puede arrastrar y soltar otro archivo .pyxres en la ventana para cargar su contenido. Esta operación sobrescribe toda la edición actual, así que tenga cuidado si tiene cambios sin guardar.",

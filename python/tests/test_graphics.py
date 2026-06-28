@@ -160,7 +160,7 @@ class TestDrawingState:
         pyxel.rect(0, 0, 20, 20, 7)
         pyxel.dither(1.0)
         drawn = sum(1 for x in range(20) for y in range(20) if pyxel.pget(x, y) == 7)
-        # dither(0.5) deterministically draws exactly half of the 400 pixels
+        # dither(0.5) deterministically draws exactly half of the 400 pixels.
         assert drawn == 200
 
 
@@ -303,7 +303,7 @@ class TestBlt3d:
         pyxel.blt3d(0, 0, 160, 120, 0, (0, 0, 10), (0, 30, 0), fov=90.0)
         wide = [pyxel.pget(x, y) for x in range(160) for y in range(120)]
         assert 9 in narrow
-        # A wider field of view must change the projection
+        # A wider field of view must change the projection.
         assert wide != narrow
 
     def test_blt3d_with_colkey(self):
@@ -361,7 +361,7 @@ class TestText:
     def test_text_empty_string(self):
         pyxel.cls(0)
         pyxel.text(0, 0, "", 7)
-        # No pixels should be drawn
+        # No pixels should be drawn.
         drawn = sum(1 for x in range(10) for y in range(10) if pyxel.pget(x, y) == 7)
         assert drawn == 0
 
