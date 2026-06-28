@@ -9,6 +9,17 @@ const GAMEPAD_MENU_PATH = "images/gamepad_menu_92x26.png";
 const PYXEL_WORKING_DIRECTORY = "/pyxel_working_directory";
 const PYXEL_WATCH_INFO_FILE = ".pyxel_watch_info";
 const IMPORT_HOOK_PATH = "import_hook.py";
+const VIRTUAL_GAMEPAD_UP = 0;
+const VIRTUAL_GAMEPAD_DOWN = 1;
+const VIRTUAL_GAMEPAD_LEFT = 2;
+const VIRTUAL_GAMEPAD_RIGHT = 3;
+const VIRTUAL_GAMEPAD_A = 4;
+const VIRTUAL_GAMEPAD_B = 5;
+const VIRTUAL_GAMEPAD_X = 6;
+const VIRTUAL_GAMEPAD_Y = 7;
+const VIRTUAL_GAMEPAD_START = 8;
+const VIRTUAL_GAMEPAD_BACK = 9;
+const VIRTUAL_GAMEPAD_BUTTON_COUNT = 10;
 
 const _escapePythonString = (s) => JSON.stringify(s).slice(1, -1);
 
@@ -21,24 +32,13 @@ window.pyxelContext = {
   hasFatalError: false,
 };
 
-const _virtualGamepadStates = [
-  false, // Up
-  false, // Down
-  false, // Left
-  false, // Right
-  false, // A
-  false, // B
-  false, // X
-  false, // Y
-  false, // Start
-  false, // Back
-];
+const _virtualGamepadStates = Array(VIRTUAL_GAMEPAD_BUTTON_COUNT).fill(false);
 
 // Pack the 10 button states into a single int so Rust can fetch them in
 // one emscripten_run_script_int call instead of ten per frame.
 const _readVirtualGamepadBitmask = () => {
   let bits = 0;
-  for (let i = 0; i < 10; i++) {
+  for (let i = 0; i < VIRTUAL_GAMEPAD_BUTTON_COUNT; i++) {
     if (_virtualGamepadStates[i]) bits |= 1 << i;
   }
   return bits;
@@ -81,7 +81,8 @@ if (
 // incorrect keycodes for non-US keyboards. This builds a persistent per-key
 // correction map from SDL scancode to the actual character, using the browser's
 // KeyboardEvent.key (which reflects the true layout).
-const _scanCorrection = {}; // Maps SDL scancode to unshifted char code
+// Map SDL scancodes to unshifted character codes.
+const _scanCorrection = {};
 
 // SDL scancodes for printable ASCII keys (USB HID usage codes)
 const _CODE_TO_SCANCODE = {
@@ -597,7 +598,7 @@ const _hookFileOperations = (pyodide, root) => {
       return;
     }
 
-    // Download path
+    // Download the missing host-side path synchronously for Pyodide.
     console.log(`Attempting to fetch '${path}'`);
     const request = new XMLHttpRequest();
     request.overrideMimeType("text/plain; charset=x-user-defined");
@@ -614,7 +615,7 @@ const _hookFileOperations = (pyodide, root) => {
       c.charCodeAt(0),
     );
 
-    // Write path
+    // Write fetched content as a directory marker or binary file.
     const contentType = request.getResponseHeader("Content-Type") || "";
     if (contentType.includes("text/html") && !path.includes(".")) {
       console.log(`Created directory '${dstPath}'`);
@@ -626,8 +627,9 @@ const _hookFileOperations = (pyodide, root) => {
     }
   };
 
-  // Hook file operations
-  const O_RDONLY_STAT = 557056; // SDL2 open flags: O_RDONLY | O_STAT
+  // Hook read-only open/stat calls so files are mirrored lazily.
+  // SDL2 open flags: O_RDONLY | O_STAT
+  const O_RDONLY_STAT = 557056;
   const open = fs.open.bind(fs);
   fs.open = (path, flags, mode) => {
     if (flags === O_RDONLY_STAT) {
@@ -641,7 +643,7 @@ const _hookFileOperations = (pyodide, root) => {
     return stat(path);
   };
 
-  // Save file helper
+  // Expose a browser download helper used by the Python-side save path.
   window._savePyxelFile = (filename) => {
     const a = document.createElement("a");
     a.download = filename.split(/[\\/]/).pop();
@@ -695,6 +697,7 @@ const _waitForInput = async () => {
 
 // Virtual gamepad
 
+// Map touch positions onto virtual button states.
 const _updateGamepadStateFromTouch = (
   clientX,
   clientY,
@@ -713,40 +716,40 @@ const _updateGamepadStateFromTouch = (
   if (crossX ** 2 + crossY ** 2 <= 0.5 ** 2) {
     const angle = (Math.atan2(-crossY, crossX) * 180) / Math.PI;
     if (angle > 22.5 && angle < 157.5) {
-      _virtualGamepadStates[0] = true; // Up
+      _virtualGamepadStates[VIRTUAL_GAMEPAD_UP] = true;
     }
     if (angle > -157.5 && angle < -22.5) {
-      _virtualGamepadStates[1] = true; // Down
+      _virtualGamepadStates[VIRTUAL_GAMEPAD_DOWN] = true;
     }
     if (Math.abs(angle) >= 112.5) {
-      _virtualGamepadStates[2] = true; // Left
+      _virtualGamepadStates[VIRTUAL_GAMEPAD_LEFT] = true;
     }
     if (Math.abs(angle) <= 67.5) {
-      _virtualGamepadStates[3] = true; // Right
+      _virtualGamepadStates[VIRTUAL_GAMEPAD_RIGHT] = true;
     }
   }
 
   if (buttonX ** 2 + buttonY ** 2 <= 0.5 ** 2) {
     const angle = (Math.atan2(-buttonY, buttonX) * 180) / Math.PI;
     if (angle > -135 && angle < -45) {
-      _virtualGamepadStates[4] = true; // A
+      _virtualGamepadStates[VIRTUAL_GAMEPAD_A] = true;
     }
     if (Math.abs(angle) <= 45) {
-      _virtualGamepadStates[5] = true; // B
+      _virtualGamepadStates[VIRTUAL_GAMEPAD_B] = true;
     }
     if (Math.abs(angle) >= 135) {
-      _virtualGamepadStates[6] = true; // X
+      _virtualGamepadStates[VIRTUAL_GAMEPAD_X] = true;
     }
     if (angle > 45 && angle < 135) {
-      _virtualGamepadStates[7] = true; // Y
+      _virtualGamepadStates[VIRTUAL_GAMEPAD_Y] = true;
     }
   }
 
   if (menuX >= 0.0 && menuX <= 1.0 && menuY >= 0.2 && menuY <= 0.5) {
     if (menuX >= 0.5) {
-      _virtualGamepadStates[8] = true; // Start
+      _virtualGamepadStates[VIRTUAL_GAMEPAD_START] = true;
     } else {
-      _virtualGamepadStates[9] = true; // Back
+      _virtualGamepadStates[VIRTUAL_GAMEPAD_BACK] = true;
     }
   }
 };
@@ -765,7 +768,7 @@ const _addVirtualGamepad = (mode) => {
     return;
   }
 
-  // Make canvas smaller
+  // Reserve vertical space for the touch controls.
   document.querySelector("canvas#canvas").style.height = "80%";
 
   const pyxelScreen = document.querySelector("div#pyxel-screen");
@@ -806,7 +809,7 @@ const _addVirtualGamepad = (mode) => {
     window.removeEventListener("resize", _addVirtualGamepad._invalidateRects);
   }
 
-  // Cache bounding rects; invalidate on resize
+  // Cache bounding rects and invalidate them on resize.
   let cachedRects = null;
   const invalidateRects = () => {
     cachedRects = null;
@@ -819,7 +822,7 @@ const _addVirtualGamepad = (mode) => {
       const cross = gamepadCrossImage.getBoundingClientRect();
       const button = gamepadButtonImage.getBoundingClientRect();
       const menu = gamepadMenuImage.getBoundingClientRect();
-      // Don't cache zero rects (elements not yet in DOM)
+      // Avoid caching zero rects before the controls enter the DOM.
       if (cross.width > 0 && button.width > 0 && menu.width > 0) {
         cachedRects = { cross, button, menu };
       }

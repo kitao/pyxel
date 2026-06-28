@@ -28,7 +28,7 @@ class TestSound:
     def test_set_notes_values(self):
         snd = pyxel.Sound()
         snd.set_notes("c2d2e2f2g2a2b2")
-        # C major scale at octave 2: note = letter offset + octave * 12
+        # C major scale at octave 2: note = letter offset + octave * 12.
         assert list(snd.notes) == [24, 26, 28, 29, 31, 33, 35]
 
     def test_set_notes_rest(self):
@@ -99,7 +99,7 @@ class TestSound:
     def test_total_sec(self):
         snd = pyxel.Sound()
         snd.set("c2e2g2c3", "ssss", "7654", "nnnn", 30)
-        # 4 notes x 30 ticks at 120 ticks per second
+        # 4 notes x 30 ticks at 120 ticks per second.
         assert snd.total_sec() == 1.0
 
     def test_speed_setter(self):
@@ -121,7 +121,7 @@ class TestSoundMml:
     def test_mml(self):
         snd = pyxel.Sound()
         snd.mml("T120 O4 L4 CDEF")
-        # 4 quarter notes at 120 BPM = 2 s (within clock rounding)
+        # 4 quarter notes at 120 BPM = 2 s (within clock rounding).
         assert snd.total_sec() == pytest.approx(2.0, abs=1e-3)
 
     def test_mml_none_exits_mml_mode(self):
@@ -129,23 +129,23 @@ class TestSoundMml:
         snd.mml("T120 O4 CDEF")
         assert snd.total_sec() > 0.0
         snd.mml(None)
-        # Back on the notes-based path, which is empty for a fresh sound
+        # Back on the notes-based path, which is empty for a fresh sound.
         assert snd.total_sec() == 0.0
 
     def test_mml_after_set(self):
         snd = pyxel.Sound()
         snd.set("c2e2g2", "sss", "777", "nnn", 10)
         snd.mml("T120 O4 L4 CDEF")
-        # MML mode takes over: 2 s instead of the notes-based 0.25 s
+        # MML mode takes over: 2 s instead of the notes-based 0.25 s.
         assert snd.total_sec() == pytest.approx(2.0, abs=1e-3)
 
     def test_mml_old_syntax_emits_deprecation(self, capfd):
         snd = pyxel.Sound()
-        # 'x' character triggers old MML syntax detection
+        # 'x' character triggers old MML syntax detection.
         snd.mml("T120 X1 O4 CDEF")
         out = capfd.readouterr().out
         assert "deprecated" in out.lower()
-        # Old syntax: 4 notes x 4 steps (default l8) x 7 ticks (t120)
+        # Old syntax: 4 notes x 4 steps (default l8) x 7 ticks (t120).
         assert snd.total_sec() == pytest.approx(16 * 7 / 120, abs=1e-3)
 
     def test_old_mml_emits_deprecation(self, capfd):
@@ -153,7 +153,7 @@ class TestSoundMml:
         snd.old_mml("T120 O4 L4 CDEF")  # type: ignore[attr-defined]
         out = capfd.readouterr().out
         assert "deprecated" in out.lower()
-        # 4 notes x 8 steps (l4) x 7 ticks (t120)
+        # 4 notes x 8 steps (l4) x 7 ticks (t120).
         assert snd.total_sec() == pytest.approx(32 * 7 / 120, abs=1e-3)
 
 
@@ -161,7 +161,7 @@ class TestSoundPcm:
     def test_pcm(self, assets_dir):
         snd = pyxel.Sound()
         snd.pcm(str(assets_dir / "audio_bgm1.ogg"))
-        # The bundled asset decodes to a fixed gapless-trimmed length at 22050 Hz
+        # The bundled asset decodes to a fixed gapless-trimmed length at 22050 Hz.
         assert snd.total_sec() == pytest.approx(53.333332, abs=1e-4)
 
     def test_pcm_none_exits_pcm_mode(self, assets_dir):
@@ -169,7 +169,7 @@ class TestSoundPcm:
         snd.pcm(str(assets_dir / "audio_bgm1.ogg"))
         assert snd.total_sec() > 0.0
         snd.pcm(None)
-        # Back on the notes-based path, which is empty for a fresh sound
+        # Back on the notes-based path, which is empty for a fresh sound.
         assert snd.total_sec() == 0.0
 
 

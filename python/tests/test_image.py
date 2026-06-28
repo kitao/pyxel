@@ -183,7 +183,7 @@ class TestImageBlt:
         dst = pyxel.Image(32, 32)
         dst.cls(0)
         dst.blt(0, 0, src, 0, 0, 1, 1, scale=4)
-        # A 1x1 source with scale=4 deterministically paints a 2x2 block
+        # A 1x1 source with scale=4 deterministically paints a 2x2 block.
         drawn = sum(1 for x in range(8) for y in range(8) if dst.pget(x, y) == 7)
         assert drawn == 4
 
@@ -261,7 +261,7 @@ class TestImageState:
         img.rect(0, 0, 16, 16, 7)
         img.dither(1.0)
         drawn = sum(1 for x in range(16) for y in range(16) if img.pget(x, y) == 7)
-        # dither(0.5) deterministically draws exactly half of the 256 pixels
+        # dither(0.5) deterministically draws exactly half of the 256 pixels.
         assert drawn == 128
 
 
@@ -294,11 +294,11 @@ class TestImageIO:
         path2 = str(tmp_path / "scale4.png")
         img.save(path1, 1)
         img.save(path2, 4)
-        # Scale 4 produces a 4x larger image, so its file size must exceed scale 1
+        # Scale 4 produces a 4x larger image, so its file size must exceed scale 1.
         assert Path(path2).stat().st_size > Path(path1).stat().st_size
 
     def test_from_image_with_include_colors(self, assets_dir):
-        # include_colors replaces the whole global palette; restore it fully
+        # include_colors replaces the whole global palette; restore it fully.
         original_colors = list(pyxel.colors)
         try:
             img = pyxel.Image.from_image(
@@ -362,5 +362,5 @@ class TestImageDataPtr:
         img.cls(0)
         img.pset(0, 1, 9)
         ptr = img.data_ptr()
-        # Second row starts at offset = width
+        # Second row starts at offset = width.
         assert ptr[8] == 9

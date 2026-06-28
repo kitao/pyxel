@@ -133,7 +133,7 @@
 
       <section class="mt-4">
         <p id="footer-text" class="mt-4 text-gray-300 text-sm">
-          For specific instructions, please refer to
+          For specific instructions, see
           <a
             class="link"
             href="../web-usage/"
@@ -158,6 +158,7 @@
         return `<span class="inline-block" style="width:50px">${chip(name)}</span>`;
       }
 
+      // Apply localized launcher copy and example links.
       function updateTexts() {
         // Title and subtitle
         document.title = t("title");
@@ -166,12 +167,12 @@
           "subtitle",
         ).replace("{0}", link("https://github.com/kitao/pyxel", "Pyxel"));
 
-        // Labels
+        // Form labels
         document.querySelectorAll("[data-i18n]").forEach((el) => {
           el.textContent = t(el.dataset.i18n);
         });
 
-        // Help: file type + examples
+        // File-type help and example GitHub URLs
         document.getElementById("help-file-type").innerHTML = t(
           "help_file_type",
         )
@@ -193,7 +194,7 @@
         document.getElementById("help-example-pyxres").innerHTML =
           cmdChip("edit") + link(pyxresUrl, pyxresUrl);
 
-        // Footer
+        // Footer documentation link
         const docUrl = "../web-usage/";
         document.getElementById("footer-text").innerHTML = t("footer").replace(
           "{0}",
@@ -203,6 +204,7 @@
         setDocLang(lang);
       }
 
+      // Show only the options that apply to the selected startup file type.
       function updateOptions() {
         const ext = getFileExt(document.getElementById("startup-file").value);
         const isEdit = ext === "pyxres";
@@ -214,6 +216,7 @@
           : "none";
       }
 
+      // Convert a GitHub blob URL into the compact launcher URL format.
       function buildLaunchUrl() {
         const startupFile = document.getElementById("startup-file").value;
         const virtualGamepad =
@@ -264,7 +267,7 @@
         .getElementById("editor-screen")
         .addEventListener("change", buildLaunchUrl);
 
-      // Init
+      // Initialize localized text and event-driven URL updates.
       initPage("launcher.json", () => {
         buildLangSelector(
           data.languages,

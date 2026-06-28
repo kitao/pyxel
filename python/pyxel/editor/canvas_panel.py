@@ -16,7 +16,7 @@ from .settings import (
 from .widgets import ScrollBar, Widget
 from .widgets.settings import WIDGET_HOLD_TIME, WIDGET_PANEL_COLOR, WIDGET_REPEAT_TIME
 
-# Sentinel tile that marks cells touched by tilemap-mode drawing primitives
+# Sentinel tile that marks cells touched by tilemap-mode drawing primitives.
 _EMPTY_TILE = (255, 255)
 
 
@@ -214,7 +214,7 @@ class CanvasPanel(Widget):
         self._v_scroll_bar.value_var = value
 
     def __on_mouse_down(self, key, x, y):
-        # Color pick (right click)
+        # Right click picks the current color or tile.
         if key == pyxel.MOUSE_BUTTON_RIGHT:
             x, y = self._screen_to_focus(x, y)
             x += self.focus_x_var * 8

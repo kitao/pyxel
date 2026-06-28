@@ -1,5 +1,7 @@
 use pyo3::prelude::*;
 
+// Font class
+
 define_wrapper!(Font, pyxel::Font);
 
 #[pymethods]
@@ -16,6 +18,8 @@ impl Font {
         self.inner_mut().text_width(s)
     }
 }
+
+// Module registration
 
 pub fn add_font_class(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<Font>()?;

@@ -37,7 +37,7 @@ class TestTechnicalLoanwords:
         )
 
     def test_keeps_existing_long_vowel(self):
-        assert format_prose.format_text("ブラウザーで確認", "ja") == "ブラウザーで確認"
+        assert format_prose.format_text("ユーザーで確認", "ja") == "ユーザーで確認"
 
 
 class TestLanguageAgnostic:

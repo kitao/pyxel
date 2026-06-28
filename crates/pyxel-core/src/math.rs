@@ -67,6 +67,8 @@ impl Pyxel {
     }
 }
 
+// Helpers
+
 fn rng() -> &'static mut Xoshiro256StarStar {
     unsafe {
         if RNG.is_null() {

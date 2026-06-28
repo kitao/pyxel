@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-# Paths
+# Reference paths
 
 REFERENCES_DIR = Path(__file__).parent / "references"
 EXAMPLES_DIR = Path(__file__).parent.parent / "pyxel" / "examples"
@@ -18,7 +18,7 @@ EDITOR_REFS_DIR = REFERENCES_DIR / "editor"
 _RUNNER = Path(__file__).parent / "_runner.py"
 
 
-# Subprocess wrappers
+# Capture subprocess wrappers
 
 
 def _run_subprocess(*args):
@@ -41,7 +41,7 @@ def run_editor_subprocess(editor, resource_file, out_dir):
     _run_subprocess("editor", editor, str(resource_file), str(out_dir))
 
 
-# Result collection
+# Captured-result collection
 
 
 def collect_plan_results(plan, out_dir):
@@ -59,7 +59,7 @@ def collect_editor_results(out_dir):
     ]
 
 
-# Compare
+# Screenshot reference comparison
 
 
 def compare_or_update_all(name, results, refs_dir, update_references):

@@ -104,7 +104,7 @@ class TestPlayPos:
         snd = pyxel.Sound()
         snd.set("c2e2g2c3e3g3c4e4", "ssssssss", "77777777", "nnnnnnnn", 10)
         pyxel.play(3, snd)
-        # play_pos may be None immediately after play (audio thread timing)
+        # play_pos may be None immediately after play (audio thread timing).
         result = pyxel.play_pos(3)
         if result is not None:
             assert isinstance(result, tuple), f"Expected tuple, got {type(result)}"

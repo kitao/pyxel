@@ -16,11 +16,15 @@ use crate::utils::{parse_hex_string, simplify_string};
 
 pub const RESOURCE_ARCHIVE_DIRNAME: &str = "pyxel_resource/";
 
+// Legacy archive item adapters
+
 trait ResourceItem {
     fn resource_name(item_index: u32) -> String;
     fn clear(&mut self);
     fn deserialize(&mut self, version: u32, input: &str);
 }
+
+// Image data
 
 impl ResourceItem for Image {
     fn resource_name(item_index: u32) -> String {
@@ -40,6 +44,8 @@ impl ResourceItem for Image {
         }
     }
 }
+
+// Tilemap data
 
 impl ResourceItem for Tilemap {
     fn resource_name(item_index: u32) -> String {
@@ -79,6 +85,8 @@ impl ResourceItem for Tilemap {
         }
     }
 }
+
+// Sound data
 
 impl ResourceItem for Sound {
     fn resource_name(item_index: u32) -> String {
@@ -124,6 +132,8 @@ impl ResourceItem for Sound {
     }
 }
 
+// Music data
+
 impl ResourceItem for Music {
     fn resource_name(item_index: u32) -> String {
         format!("{RESOURCE_ARCHIVE_DIRNAME}music{item_index}")
@@ -148,6 +158,7 @@ impl ResourceItem for Music {
 }
 
 impl Pyxel {
+    // Load legacy archive entries.
     pub fn load_old_resource(
         &mut self,
         archive: &mut ZipArchive<File>,
@@ -156,6 +167,7 @@ impl Pyxel {
         include_sounds: bool,
         include_musics: bool,
     ) {
+        // Read and validate archive version.
         let version_name = format!("{RESOURCE_ARCHIVE_DIRNAME}version");
         let contents = {
             let mut file = archive.by_name(&version_name).unwrap();
@@ -169,6 +181,7 @@ impl Pyxel {
             "Unsupported resource file version '{contents}'"
         );
 
+        // Deserialize selected resource banks.
         macro_rules! deserialize {
             ($type: ty, $accessor: expr, $count: expr) => {
                 for i in 0..$count {
@@ -198,6 +211,8 @@ impl Pyxel {
         }
     }
 }
+
+// Helpers
 
 fn parse_version_string(string: &str) -> Result<u32, &str> {
     let mut version = 0u32;

@@ -77,12 +77,13 @@ function hasDetails(item) {
   );
 }
 
+// Render the expandable detail body for one API entry.
 function buildDetailContent(container, item) {
   container.innerHTML = "";
   const wrap = document.createElement("div");
   wrap.className = "mt-2 pl-3 border-l-2 border-gray-700 space-y-2.5";
 
-  // Variable type
+  // Value type block for variable entries
   if (item.value_type) {
     const sec = document.createElement("div");
     sec.innerHTML =
@@ -91,7 +92,7 @@ function buildDetailContent(container, item) {
     wrap.appendChild(sec);
   }
 
-  // Parameters
+  // Parameter rows preserve declared order from api-reference.json.
   if (item.params && item.params.length > 0) {
     const sec = document.createElement("div");
     let html = `<div class="text-gray-500 text-xs font-medium uppercase tracking-wide mb-1">${esc(t("parameters"))}</div>`;
@@ -110,7 +111,7 @@ function buildDetailContent(container, item) {
     wrap.appendChild(sec);
   }
 
-  // Return (skip None)
+  // Return block is hidden for None-returning APIs.
   if (item.returns && item.returns.type !== "None") {
     const sec = document.createElement("div");
     let html = `<div class="text-gray-500 text-xs font-medium uppercase tracking-wide mb-1">${esc(t("returns"))}</div>`;
@@ -123,7 +124,7 @@ function buildDetailContent(container, item) {
     wrap.appendChild(sec);
   }
 
-  // Examples
+  // Example snippets are shown as a single preformatted block.
   if (item.examples && item.examples.length > 0) {
     const sec = document.createElement("div");
     const exampleCode = item.examples.join("\n");
@@ -133,7 +134,7 @@ function buildDetailContent(container, item) {
     wrap.appendChild(sec);
   }
 
-  // Notes
+  // Optional notes stay separate from the main description.
   if (item.notes) {
     const sec = document.createElement("div");
     sec.innerHTML =
@@ -145,11 +146,12 @@ function buildDetailContent(container, item) {
   container.appendChild(wrap);
 }
 
+// Build the searchable API reference shell and category sections.
 function buildPage() {
   const app = document.getElementById("app");
   app.innerHTML = "";
 
-  // Header
+  // Header with language selector and localized title text
   const header = document.createElement("header");
   header.className = "flex items-start gap-4 mb-6";
 
@@ -176,7 +178,7 @@ function buildPage() {
   header.appendChild(titleBlock);
   app.appendChild(header);
 
-  // Toolbar: search + advanced toggle
+  // Toolbar for text search and advanced API visibility
   const toolbar = document.createElement("div");
   toolbar.className = "flex items-center gap-3 mb-4";
 
@@ -223,13 +225,13 @@ function buildPage() {
   if (hasAdvanced) toolbar.appendChild(toggleWrap);
   app.appendChild(toolbar);
 
-  // No results message
+  // Empty-state message toggled by updateVisibility
   const noResults = document.createElement("div");
   noResults.id = "no-results";
   noResults.className = "hidden py-8 text-center text-gray-500 text-sm";
   app.appendChild(noResults);
 
-  // Categories
+  // Category sections, API rows, and constant groups
   for (const cat of data.categories) {
     const section = document.createElement("details");
     section.open = !cat.collapsed;
@@ -265,7 +267,7 @@ function buildPage() {
         row.className = "py-3";
         row.dataset.itemKey = `${cat.id}-${i}`;
 
-        // Signature line
+        // Signature line with API kind badge and optional advanced mark
         const sigLine = document.createElement("div");
         sigLine.className = "flex items-baseline gap-2";
 
@@ -291,13 +293,13 @@ function buildPage() {
 
         row.appendChild(sigLine);
 
-        // Description
+        // Localized one-line description
         const desc = document.createElement("p");
         desc.className = "mt-1 text-gray-400 text-sm pl-0.5";
         desc.dataset.descKey = `${cat.id}-${i}`;
         row.appendChild(desc);
 
-        // Details (collapsible)
+        // Collapsible parameter, return, example, and note details
         if (hasDetails(item)) {
           const details = document.createElement("details");
           details.className = "mt-1";
@@ -321,7 +323,7 @@ function buildPage() {
       section.appendChild(card);
     }
 
-    // Constants grid (compact chip display)
+    // Flat constant chip grid
     if (cat.constants && cat.constants.length > 0) {
       const grid = document.createElement("div");
       grid.className = "card py-3 px-4";
@@ -335,7 +337,7 @@ function buildPage() {
       section.appendChild(grid);
     }
 
-    // Constant groups (sub-sections within category)
+    // Nested constant groups and section-level details
     if (cat.constant_groups) {
       for (let g = 0; g < cat.constant_groups.length; g++) {
         const group = cat.constant_groups[g];
@@ -358,7 +360,7 @@ function buildPage() {
         groupHeader.appendChild(labelSpan);
         groupWrap.appendChild(groupHeader);
 
-        // Sections within group
+        // Labeled subsections inside one constant group
         if (group.sections && group.sections.length > 0) {
           const card = document.createElement("div");
           card.className = "card py-3 px-4 space-y-3";
@@ -418,6 +420,7 @@ function buildPage() {
   updateVisibility();
 }
 
+// Apply localized labels to headers, controls, categories, and details.
 function updateTexts() {
   document.title = t("title");
   document.getElementById("page-title").textContent = t("title");
@@ -431,12 +434,12 @@ function updateTexts() {
   if (advLabel) advLabel.textContent = t("show_advanced");
   document.getElementById("no-results").textContent = t("no_results");
 
-  // UI labels (Details toggle text)
+  // Static UI labels such as details toggles
   document.querySelectorAll("[data-ui-key]").forEach((el) => {
     el.textContent = t(el.dataset.uiKey);
   });
 
-  // Category titles
+  // Category titles and card headings
   for (const cat of data.categories) {
     const el = cached("cat-title", cat.id);
     if (el) el.textContent = t(cat.title);
@@ -444,7 +447,7 @@ function updateTexts() {
     if (el2) el2.textContent = t(cat.title);
   }
 
-  // Descriptions, detail content, and constant groups
+  // Entry descriptions, detail bodies, and constant-group labels
   for (const cat of data.categories) {
     if (cat.items) {
       for (let i = 0; i < cat.items.length; i++) {
@@ -461,7 +464,7 @@ function updateTexts() {
         const gid = `${cat.id}-cg-${g}`;
         const labelEl = cached("cg-label", gid);
         if (labelEl) labelEl.textContent = t(group.label);
-        // Section labels and details
+        // Section labels and per-constant detail text
         if (group.sections) {
           for (let s = 0; s < group.sections.length; s++) {
             const sec = group.sections[s];
@@ -493,6 +496,7 @@ function updateTexts() {
   setDocLang(lang);
 }
 
+// Filter API entries by search text and advanced visibility state.
 function updateVisibility() {
   domCache.advMarks.forEach((el) => {
     el.classList.toggle("hidden", !showAdvanced);
@@ -503,7 +507,7 @@ function updateVisibility() {
   for (const cat of data.categories) {
     let catVisible = 0;
 
-    // Items
+    // API entry rows and their parent item card
     let itemsVisible = 0;
     if (cat.items) {
       for (let i = 0; i < cat.items.length; i++) {
@@ -519,7 +523,7 @@ function updateVisibility() {
     }
     catVisible += itemsVisible;
 
-    // Constants
+    // Flat constant chips and grid visibility
     if (cat.constants) {
       const q = searchQuery.toLowerCase();
       for (let i = 0; i < cat.constants.length; i++) {
@@ -534,7 +538,7 @@ function updateVisibility() {
       if (grid) grid.style.display = catVisible > 0 ? "" : "none";
     }
 
-    // Constant groups
+    // Nested constant-group chips and wrapper visibility
     if (cat.constant_groups) {
       for (let g = 0; g < cat.constant_groups.length; g++) {
         const group = cat.constant_groups[g];

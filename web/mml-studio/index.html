@@ -265,13 +265,13 @@
     </main>
 
     <script>
-      // Cache elements
+      // Cache frequently used screen, share-link, and QR elements.
       const runtimeScreen = document.getElementById("runtime-screen");
       const shareUrl = document.getElementById("share-url");
       const qrCodeImage = document.getElementById("qr-code-image");
 
-      // URL compression helpers
-      // Base conversion (uint8ToBase64, base64ToUint8) provided by shared.js
+      // URL compression helpers for compact share links
+      // Base conversion helpers are provided by shared.js.
       function b64urlEncode(bytes) {
         return uint8ToBase64(bytes)
           .replace(/\+/g, "-")
@@ -318,7 +318,7 @@
         }
       }
 
-      // Button helpers
+      // Playback button state helpers
       function setButtonStyle(button, isActive) {
         button.classList.toggle("active", isActive);
       }
@@ -394,7 +394,7 @@
       }
 
       window.addEventListener("DOMContentLoaded", async () => {
-        // Bind inline-style handlers via data attributes
+        // Bind data-attribute handlers declared in the static markup.
         document.querySelectorAll("[data-click]").forEach((el) => {
           el.addEventListener("click", () => handleButtonPress(el));
         });
@@ -402,12 +402,12 @@
           el.addEventListener("input", () => handleMmlInput(el));
         });
 
-        // Forward input to runtime
+        // Forward user gestures so the embedded Pyxel runtime can unlock input.
         ["click", "touchstart"].forEach((ev) => {
           window.addEventListener(ev, resolvePyxelInput);
         });
 
-        // Keyboard shortcuts
+        // Keyboard shortcuts for play, stop, and loop
         window.addEventListener("keydown", (e) => {
           resolvePyxelInput();
           if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
@@ -437,7 +437,7 @@
           }
         });
 
-        // Load MML from URL
+        // Restore shared MML from the URL before generating a fresh share link.
         const mmlParam = new URL(document.location).searchParams.get("mml");
         if (mmlParam) {
           const raw = await decodeMmlFromUrl(mmlParam);
@@ -451,7 +451,7 @@
 
         updateUrl();
 
-        // Set initial button states
+        // Push initial button states into the runtime after the iframe loads.
         runtimeScreen.addEventListener("load", () => {
           document.querySelectorAll("button[data-action]").forEach((button) => {
             const varName = `js_${button.dataset.action}`;
@@ -460,7 +460,7 @@
           });
         });
 
-        // Enable buttons when ready
+        // Enable playback controls after the runtime context is ready.
         waitForPyxelReady(
           () => runtimeScreen.contentWindow?.pyxelContext?.resolveInput,
           () => {

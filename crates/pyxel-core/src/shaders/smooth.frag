@@ -30,13 +30,13 @@
 
 */
 
-// Modified for Pyxel
+// Map the original shader outputs and sizes to Pyxel's uniforms.
 #define FragColor gl_FragColor
 #define OutputSize u_screenSize
 #define TextureSize (u_screenSize / u_screenScale)
 #define vTexCoord screenTexCoord
 
-#define SourceSize vec4(TextureSize, 1.0 / TextureSize) //either TextureSize or InputSize
+#define SourceSize vec4(TextureSize, 1.0 / TextureSize) // Original xBR source-size layout.
 #define OutSize vec4(OutputSize, 1.0 / OutputSize)
 
 #define BLEND_NONE 0
@@ -77,11 +77,11 @@ float get_left_ratio(vec2 center, vec2 origin, vec2 direction, vec2 scale) {
 #define eq(a, b) (a == b)
 #define neq(a, b) (a != b)
 
-// Modified for Pyxel
+// Sample through Pyxel's indexed-color screen texture.
 #define P(x,y) getScreenColor(coord + SourceSize.zw * vec2(x, y))
 
 void main() {
-    // Modified for Pyxel
+    // Resolve Pyxel screen coordinates before the xBR pass.
     vec2 screenFragCoord, screenTexCoord;
     getScreenParams(screenFragCoord, screenTexCoord);
     if (!isInScreen(screenTexCoord)) {

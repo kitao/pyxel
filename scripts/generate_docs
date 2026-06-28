@@ -45,6 +45,8 @@ API_REFERENCE_DOCS = (
 )
 
 
+# Shared helpers
+
 def generated_header(*source_paths):
     sources = " and ".join(str(p.relative_to(ROOT_DIR)) for p in source_paths)
     return f"<!-- This file is generated from {sources}. -->\n\n"
@@ -83,6 +85,7 @@ def _find_matching(text, start, open_ch, close_ch):
     return i
 
 
+# Parse one JavaScript argument while preserving nested strings, regexes, arrays, and groups.
 def _parse_arg(text):
     text = text.lstrip()
     if not text:
@@ -198,12 +201,16 @@ def _transform_url(url, web_path=None):
     return url
 
 
+# JavaScript template evaluator
+
 class JsEval:
     def __init__(self, ui, data, web_path=None):
         self._ui = ui
         self._data = data
         self._web_path = web_path
         self._vars = {}
+
+    # Template evaluation
 
     def _localize(self, key):
         val = self._ui.get(key)
@@ -226,6 +233,7 @@ class JsEval:
                 i += 1
         return "".join(result)
 
+    # Evaluate the supported JavaScript expression subset into Markdown text.
     def eval(self, expr):
         expr = expr.strip()
         if not expr:
@@ -439,6 +447,8 @@ class JsEval:
 
         return expr
 
+    # Expression helpers
+
     def _replace_chain(self, expr):
         # Handle t("key").replace/replaceAll(...) and esc(t("key")).replace/replaceAll(...)
         m = re.match(r'(?:esc\()?t\("([^"]+)"\)\)?', expr)
@@ -506,6 +516,8 @@ class JsEval:
             return val
         return val
 
+    # Markdown render helpers
+
     def _shortcut_table(self, inner):
         items = self._resolve_data_ref(inner)
         if not isinstance(items, list):
@@ -564,6 +576,8 @@ class JsEval:
                 rows.append(f"- {img}{desc}")
         return "\n" + "\n".join(rows) + "\n"
 
+    # Data lookup helpers
+
     def _resolve_data_ref(self, inner):
         inner = inner.strip()
         m = re.match(r"data\.(\w+)$", inner)
@@ -584,7 +598,7 @@ class JsEval:
         rest = _skip_comma(rest)
         rows_s, _ = _parse_arg(rest)
         headers = self._parse_array(headers_s)
-        # Parse 2d array for rows (remove only the outermost brackets)
+        # Parse the row matrix by removing only the outermost brackets.
         rows_stripped = rows_s.strip()
         if rows_stripped.startswith("[") and rows_stripped.endswith("]"):
             rows_stripped = rows_stripped[1:-1]
@@ -604,10 +618,11 @@ class JsEval:
             md += "| " + " | ".join(row) + " |\n"
         return md
 
+    # Evaluate JavaScript map/join template expressions used by manual sections.
     def _map_join(self, expr):
         arr_end = expr.index(".map(")
         arr_str = expr[:arr_end].strip()
-        # Destructured: ([u,n]) => `...`
+        # Handle destructured map callbacks such as ([u, n]) => `...`.
         m = re.search(
             r"\.map\(\(\[(\w+),\s*(\w+)\]\)\s*=>\s*`(.*?)`\)"
             r'\s*\.join\(["\'].*?["\']\)',
@@ -632,7 +647,7 @@ class JsEval:
                 else:
                     break
             return "".join(items)
-        # Simple: k => `...` or (k) => `...`
+        # Handle single-argument map callbacks such as k => `...` or (k) => `...`.
         m = re.search(
             r"\.map\(\(?(\w+)\)?\s*=>\s*`(.*?)`\)"
             r'\s*\.join\(["\'].*?["\']\)',
@@ -650,8 +665,9 @@ class JsEval:
             return "".join(items)
         return expr
 
+    # Extract JavaScript variables and simple template loops from updateTexts().
     def extract_variables(self, body):
-        # const/let x = expr;
+        # Extract const/let initializers such as const x = expr.
         for m in re.finditer(r"(?:const|let)\s+(\w+)\s*=\s*", body):
             expr_start = m.end()
             j = expr_start
@@ -680,7 +696,7 @@ class JsEval:
                 j += 1
             self._vars[m.group(1)] = self.eval(body[expr_start:j].strip())
 
-        # for (const x of data.yyy) { varName += `...`; } -> list
+        # Expand for-of template loops into accumulated list text.
         for m in re.finditer(
             r"for\s*\(\s*const\s+(\w+)\s+of\s+data\.(\w+)\s*\)\s*\{[^}]*?"
             r"(\w+)\s*\+=\s*`(.*?)`",
@@ -703,6 +719,8 @@ class JsEval:
             self._vars[target_var] = "".join(result)
 
 
+# Markdown conversion helpers
+
 def _strip_html(text):
     text = re.sub(r"<strong>(.*?)</strong>", r"**\1**", text)
     text = re.sub(
@@ -714,6 +732,9 @@ def _strip_html(text):
     return html.unescape(text).strip()
 
 
+# Document generators
+
+# Convert localized web page templates into generated Markdown documents.
 def generate_from_html(html_path, json_path, output_name, web_path=None):
     web_path = web_path or output_name
     html_text = html_path.read_text(encoding="utf-8")
@@ -803,7 +824,7 @@ def generate_from_html(html_path, json_path, output_name, web_path=None):
         evaluated = re.sub(r"<strong>(.*?)</strong>", r"**\1**", evaluated)
         lines.append(evaluated)
 
-    # Assemble
+    # Assemble the generated Markdown document.
     title = localize(data["ui"].get("title", ""))
     url = f"{PYXEL_WEB}/{web_path}/"
     header = (
@@ -846,6 +867,7 @@ def generate_from_html(html_path, json_path, output_name, web_path=None):
     print(f"Generated {path.relative_to(ROOT_DIR)}")
 
 
+# Render the API reference JSON into the generated Markdown manual.
 def generate_api_reference(json_path, output_name, web_path):
     api_data = json.loads(json_path.read_text(encoding="utf-8"))
     lines = []
@@ -928,6 +950,7 @@ def generate_api_reference(json_path, output_name, web_path):
     print(f"Generated {path.relative_to(ROOT_DIR)}")
 
 
+# Render MML command metadata into a generated Markdown table.
 def generate_mml_commands():
     mml_data = json.loads(MML_COMMANDS_JSON.read_text(encoding="utf-8"))
     lines = []
@@ -965,6 +988,8 @@ def generate_mml_commands():
     )
     print(f"Generated {path.relative_to(ROOT_DIR)}")
 
+
+# Command entry point
 
 if __name__ == "__main__":
     for html_path, json_path, output_name, web_path in HTML_DOCS:

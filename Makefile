@@ -117,7 +117,7 @@ update:
 format:
 	@cd $(CRATES_DIR); cargo fmt -- --emit=files
 	@ruff format $(ROOT_DIR)
-	@npm --prefix $(WEB_DIR) exec -- prettier --write --log-level warn "$(ROOT_DIR)/**/*.{css,html,js,json}"
+	@npx --no-install --prefix $(ROOT_DIR)/web prettier --write --log-level warn "$(ROOT_DIR)/**/*.{css,html,js,json}"
 	@$(SCRIPTS_DIR)/format_prose
 
 lint:

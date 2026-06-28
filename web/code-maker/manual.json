@@ -93,7 +93,7 @@
       "uk": "Огляд"
     },
     "overview_body": {
-      "en": "Pyxel Code Maker is a browser-based online development environment for Pyxel. It allows you to write Python code, create game resources (images, tilemaps, sounds, music), and run your application — all in the browser without any installation.",
+      "en": "Pyxel Code Maker is a browser-based online development environment for Pyxel. You can write Python code, create game resources (images, tilemaps, sounds, music), and run your application in the browser without installing anything.",
       "cn": "Pyxel Code Maker 是基于浏览器的 Pyxel 在线开发环境。无需安装，即可在浏览器中编写 Python 代码、创建游戏资源 (图像、瓦片地图、声音、音乐) 并运行应用程序。",
       "de": "Pyxel Code Maker ist eine browserbasierte Online-Entwicklungsumgebung für Pyxel. Sie können Python-Code schreiben, Spielressourcen (Bilder, Tilemaps, Sounds, Musik) erstellen und Ihre Anwendung ausführen — alles im Browser ohne Installation.",
       "es": "Pyxel Code Maker es un entorno de desarrollo en línea basado en navegador para Pyxel. Permite escribir código Python, crear recursos de juego (imágenes, tilemaps, sonidos, música) y ejecutar su aplicación, todo en el navegador sin instalación.",
@@ -359,7 +359,7 @@
       "uk": "Редактор ресурсів"
     },
     "resource_body": {
-      "en": "The resource editor is the same as Pyxel's built-in editor. It allows you to create and edit images, tilemaps, sounds, and music. The resource file name is fixed to {0}. The editor operates the same way as in a local Pyxel environment.",
+      "en": "The resource editor is the same as Pyxel's built-in editor. You can create and edit images, tilemaps, sounds, and music. The resource file name is fixed to {0}. The editor operates the same way as in a local Pyxel environment.",
       "cn": "资源编辑器与 Pyxel 内置编辑器相同。可以创建和编辑图像、瓦片地图、声音和音乐。资源文件名固定为 {0}。操作方式与本地 Pyxel 环境相同。",
       "de": "Der Ressourcen-Editor ist identisch mit Pyxels integriertem Editor. Er ermöglicht das Erstellen und Bearbeiten von Bildern, Tilemaps, Sounds und Musik. Der Ressourcen-Dateiname ist auf {0} festgelegt. Der Editor funktioniert wie in einer lokalen Pyxel-Umgebung.",
       "es": "El editor de recursos es el mismo que el editor integrado de Pyxel. Permite crear y editar imágenes, tilemaps, sonidos y música. El nombre del archivo de recursos es fijo: {0}. El editor funciona igual que en un entorno local de Pyxel.",

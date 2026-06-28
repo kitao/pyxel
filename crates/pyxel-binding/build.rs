@@ -4,8 +4,8 @@ use std::process::Command;
 fn main() {
     let target = env::var("TARGET").unwrap();
     if target.contains("apple") {
-        // On (older) OSX we need to link against the clang runtime,
-        // which is hidden in some non-default path.
+        // Older macOS toolchains keep the clang runtime outside the default
+        // linker search path.
         //
         // More details at https://github.com/alexcrichton/curl-rust/issues/279.
         if let Some(path) = macos_link_search_path() {

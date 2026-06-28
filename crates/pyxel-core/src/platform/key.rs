@@ -3,7 +3,7 @@ use paste::paste;
 pub type Key = u32;
 pub type KeyValue = i32;
 
-// Keyboard (https://wiki.libsdl.org/SDL2/SDLKeycodeLookup)
+// SDL keyboard keycodes (https://wiki.libsdl.org/SDL2/SDLKeycodeLookup)
 pub const KEY_UNKNOWN: Key = 0x00;
 pub const KEY_BACKSPACE: Key = 0x08;
 pub const KEY_TAB: Key = 0x09;
@@ -215,7 +215,7 @@ pub const KEY_RSHIFT: Key = 0x4000_00E5;
 pub const KEY_RALT: Key = 0x4000_00E6;
 pub const KEY_RGUI: Key = 0x4000_00E7;
 
-// Virtual keys
+// Pyxel virtual keys
 pub const VIRTUAL_KEY_START_INDEX: Key = 0x5000_0000;
 pub const KEY_NONE: Key = VIRTUAL_KEY_START_INDEX;
 pub const KEY_SHIFT: Key = VIRTUAL_KEY_START_INDEX + 1;
@@ -223,7 +223,7 @@ pub const KEY_CTRL: Key = VIRTUAL_KEY_START_INDEX + 2;
 pub const KEY_ALT: Key = VIRTUAL_KEY_START_INDEX + 3;
 pub const KEY_GUI: Key = VIRTUAL_KEY_START_INDEX + 4;
 
-// Mouse
+// Mouse input keys
 pub const MOUSE_KEY_START_INDEX: Key = 0x5000_0100;
 pub const MOUSE_POS_X: Key = MOUSE_KEY_START_INDEX;
 pub const MOUSE_POS_Y: Key = MOUSE_KEY_START_INDEX + 1;
@@ -235,7 +235,7 @@ pub const MOUSE_BUTTON_RIGHT: Key = MOUSE_KEY_START_INDEX + 6;
 pub const MOUSE_BUTTON_X1: Key = MOUSE_KEY_START_INDEX + 7;
 pub const MOUSE_BUTTON_X2: Key = MOUSE_KEY_START_INDEX + 8;
 
-// Gamepad
+// Gamepad input keys
 pub const GAMEPAD_KEY_START_INDEX: Key = 0x5000_0200;
 pub const GAMEPAD_KEY_STRIDE: Key = 0x100;
 pub const GAMEPAD_AXIS_COUNT: Key = 6;

@@ -490,7 +490,8 @@ impl Channel {
                 }
 
                 MmlCommand::RepeatStart => {
-                    self.repeat_points.push((self.command_index, 0)); // Index after RepeatStart
+                    // Store the command index after RepeatStart for loopback.
+                    self.repeat_points.push((self.command_index, 0));
                 }
                 MmlCommand::RepeatEnd { play_count } => {
                     if let Some((index, count)) = self.repeat_points.pop() {

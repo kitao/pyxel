@@ -5,7 +5,7 @@ class App:
     def __init__(self):
         pyxel.init(200, 150, title="Pyxel Sound API")
 
-        # Set note image
+        # Create the note icon sprite.
         pyxel.images[0].set(
             0,
             0,
@@ -21,7 +21,7 @@ class App:
             ],
         )
 
-        # Set sounds
+        # Populate the sounds used by the playback controls.
         pyxel.sounds[0].set(
             "e2e2c2g1 g1g1c2e2 d2d2d2g2 g2g2rr c2c2a1e1 e1e1a1c2 b1b1b1e2 e2e2rr",
             "p",

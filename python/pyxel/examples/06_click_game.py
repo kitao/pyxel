@@ -62,7 +62,7 @@ class App:
 
         num_bubbles = len(self.bubbles)
 
-        # Explode clicked bubble
+        # Split a clicked bubble into smaller moving bubbles.
         if pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT):
             for i, b in enumerate(self.bubbles[:num_bubbles]):
                 dx = b.x - pyxel.mouse_x
@@ -87,7 +87,7 @@ class App:
                     del self.bubbles[i]
                     break
 
-        # Update and merge bubbles
+        # Advance bubbles and merge overlapping pairs.
         for i in reversed(range(num_bubbles)):
             bi = self.bubbles[i]
             bi.update()

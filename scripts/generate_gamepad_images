@@ -40,7 +40,7 @@ def draw_gamepad_cross(x, y, color):
     x3 = x2 + CROSS_ARM_WIDTH - 1
     x4 = x3 + CROSS_ARM_LENGTH
 
-    # Cross is symmetric, reuse x coordinates as y
+    # Cross is symmetric; reuse x coordinates as y.
     y1 = x1
     y2 = x2
     y3 = x3
@@ -114,7 +114,7 @@ def draw_gamepad_button(x, y, color):
     x2 = BUTTON_X
     x3 = x1 + BUTTON_WIDTH + BUTTON_INNER_GAP
 
-    # Button cluster is symmetric, reuse x coordinates as y
+    # Button cluster is symmetric; reuse x coordinates as y.
     y1 = x1
     y2 = x2
     y3 = x3
@@ -140,7 +140,7 @@ class App:
         if pyxel.btnp(pyxel.KEY_SPACE):
             self.show_guide = not self.show_guide
 
-        # Save each pad area as a separate image
+        # Save each pad area as a separate image.
         if pyxel.btnp(pyxel.KEY_RETURN):
             cross_image = pyxel.Image(CROSS_AREA_WIDTH, CROSS_AREA_WIDTH)
             cross_image.blt(
@@ -217,7 +217,7 @@ class App:
         )
         pyxel.rect(BUTTON_AREA_X - 1, 0, 1, SCREEN_HEIGHT, 3)
 
-        # Draw margin and corner guide rectangles for each pad area
+        # Draw margin and corner guide rectangles for each pad area.
         if self.show_guide:
             pyxel.camera(-CROSS_AREA_X, 0)
 

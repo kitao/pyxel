@@ -45,14 +45,14 @@ class TestResize:
     def test_resets_clip_rect(self):
         pyxel.clip(10, 10, 20, 20)
         pyxel.resize(80, 60)
-        # After resize, clip is reset to full screen, so pset at (0,0) takes effect
+        # After resize, clip is reset to full screen, so pset at (0, 0) takes effect.
         pyxel.pset(0, 0, 7)
         assert pyxel.pget(0, 0) == 7
 
     def test_resets_camera(self):
         pyxel.camera(50, 50)
         pyxel.resize(80, 60)
-        # After resize, camera offset is reset, so pset(0,0) draws at (0,0)
+        # After resize, camera offset is reset, so pset(0, 0) draws at (0, 0).
         pyxel.pset(0, 0, 7)
         assert pyxel.pget(0, 0) == 7
 

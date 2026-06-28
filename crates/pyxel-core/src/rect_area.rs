@@ -9,6 +9,8 @@ pub struct RectArea {
 }
 
 impl RectArea {
+    // Construction
+
     pub const fn new(left: i32, top: i32, width: u32, height: u32) -> Self {
         Self {
             left,
@@ -19,6 +21,8 @@ impl RectArea {
             height,
         }
     }
+
+    // Accessors
 
     pub const fn left(&self) -> i32 {
         self.left
@@ -43,6 +47,8 @@ impl RectArea {
     pub const fn height(&self) -> u32 {
         self.height
     }
+
+    // Queries
 
     pub const fn is_empty(&self) -> bool {
         self.width == 0 || self.height == 0
@@ -125,7 +131,7 @@ mod tests {
         assert!(!rect.contains(6, 5));
     }
 
-    // is_empty
+    // Empty-area queries
 
     #[test]
     fn test_is_empty() {
@@ -135,7 +141,7 @@ mod tests {
         assert!(RectArea::new(0, 0, 0, 0).is_empty());
     }
 
-    // contains
+    // Containment queries
 
     #[test]
     fn test_contains() {
@@ -167,7 +173,7 @@ mod tests {
         assert!(!rect.contains(5, 0));
     }
 
-    // intersection
+    // Intersection cases
 
     #[test]
     fn test_intersection() {
@@ -216,7 +222,8 @@ mod tests {
     fn test_intersection_adjacent_no_overlap() {
         // Adjacent rects with no shared pixels
         let a = RectArea::new(0, 0, 10, 10);
-        let b = RectArea::new(10, 0, 10, 10); // starts at right+1 of a
+        // The second rect starts just past the first rect's right edge.
+        let b = RectArea::new(10, 0, 10, 10);
         assert!(a.intersection(b).is_empty());
     }
 }

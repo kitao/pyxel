@@ -60,6 +60,8 @@ pub struct Graphics {
 }
 
 impl Graphics {
+    // OpenGL resources
+
     pub fn new() -> Self {
         unsafe {
             let gl = platform::gl_context();
@@ -88,6 +90,8 @@ impl Graphics {
     pub(crate) fn invalidate_screen_texture(&mut self) {
         self.screen_texture_initialized = false;
     }
+
+    // Shader setup
 
     unsafe fn create_screen_shaders(gl: &mut glow::Context) -> Vec<ScreenShader> {
         let glsl_version = if platform::gl_profile() == GlProfile::Gles {
@@ -183,6 +187,8 @@ impl Graphics {
 
         screen_shaders
     }
+
+    // Texture setup
 
     unsafe fn set_texture_nearest_clamp(gl: &mut glow::Context) {
         gl.tex_parameter_i32(
@@ -471,6 +477,7 @@ impl Pyxel {
         gl.use_program(Some(shader.program));
         let uniforms = &shader.uniform_locations;
 
+        // Screen placement and size uniforms
         if let Some(location) = &uniforms[U_SCREEN_POS] {
             let (_, window_height) = platform::window_size();
             gl.uniform_2_f32(
@@ -495,6 +502,7 @@ impl Pyxel {
             gl.uniform_1_f32(Some(location), self.system.screen_scale);
         }
 
+        // Palette and texture uniforms
         if let Some(location) = &uniforms[U_NUM_COLORS] {
             gl.uniform_1_i32(Some(location), pyxel::colors().len() as i32);
         }
@@ -536,6 +544,7 @@ impl Pyxel {
         let screen_height = *pyxel::height() as i32;
         let data = &rc_ref!(pyxel::screen()).canvas.data;
 
+        // Upload or refresh the screen color-index texture.
         if graphics.screen_texture_initialized {
             gl.tex_sub_image_2d(
                 glow::TEXTURE_2D,
@@ -583,6 +592,7 @@ impl Pyxel {
 
         let pixels = &mut graphics.color_pixels;
         pixels.clear();
+        // Pack RGB palette entries for the 1D color texture.
         for &c in colors.iter() {
             let (r, g, b) = rgb24_to_rgb8(c);
             pixels.push(r);

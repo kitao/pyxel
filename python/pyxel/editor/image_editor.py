@@ -128,7 +128,7 @@ class ImageEditor(EditorBase):
     def __on_update(self):
         self.check_tool_button_shortcuts()
 
-        # Check color shortcuts
+        # Handle color shortcut keys.
         if not pyxel.btn(pyxel.KEY_ALT):
             for key in _COLOR_SHORTCUT_KEYS:
                 if pyxel.btnp(key):

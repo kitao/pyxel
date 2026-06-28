@@ -51,7 +51,7 @@ def _capture_frames(captured, plan, out_dir):
                 pyxel.set_btn(key, False)
 
 
-# Example mode
+# pyxel.run() example capture
 
 
 def _run_example(script_path, plan, out_dir):
@@ -64,11 +64,11 @@ def _run_example(script_path, plan, out_dir):
     _capture_frames(captured, plan, out_dir)
 
 
-# Flip-example mode
+# while+flip() example capture
 
 
 class _FlipCapture(Exception):
-    # Raised inside patched flip() to break out of a while+flip() loop at the target frame.
+    # Patched flip() raises this at the target frame to exit the while+flip() loop.
     pass
 
 
@@ -95,7 +95,7 @@ def _run_flip_example(script_path, plan, out_dir):
         pass
 
 
-# App mode
+# Packaged app capture
 
 
 def _extract_pyxapp(pyxapp_path, extract_dir):
@@ -124,7 +124,7 @@ def _run_app(pyxapp_path, plan, out_dir):
     _capture_frames(captured, plan, out_dir)
 
 
-# Editor mode
+# Editor capture
 
 
 def _editor_frame(captured):
@@ -186,7 +186,7 @@ def _run_editor(editor, resource_file, out_dir):
     _editor_capture(captured, out_dir / "fedit.png")
 
 
-# Dispatch
+# Command dispatch
 
 
 def main():

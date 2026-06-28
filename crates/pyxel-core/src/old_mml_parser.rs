@@ -38,7 +38,8 @@ pub fn parse_old_mml(mml: &str) -> Result<Vec<MmlCommand>, String> {
     let mut vol_env = VolEnv::Constant(7);
     let mut envelopes: [EnvData; 8] = array::from_fn(|_| vec![7]);
     let mut note_info = NoteInfo::default();
-    sound.speed = 9; // T=100
+    // Old MML T=100 maps to Pyxel speed 9 by default.
+    sound.speed = 9;
 
     // Parse old MML commands
     while chars.peek().is_some() {
@@ -145,6 +146,8 @@ pub fn parse_old_mml(mml: &str) -> Result<Vec<MmlCommand>, String> {
     let commands = sound.to_commands();
     Ok(commands)
 }
+
+// Parser helpers
 
 fn skip_whitespace<T: Iterator<Item = char>>(chars: &mut Peekable<T>) {
     while chars.peek().is_some_and(|c| c.is_whitespace()) {
@@ -292,27 +295,29 @@ fn parse_rest<T: Iterator<Item = char>>(
     parse_note_length(chars, cur_length).map(Some)
 }
 
+// Note emission
+
 fn add_note(sound: &mut Sound, note_info: &NoteInfo) {
-    // Handle empty note
+    // Skip the initial empty accumulator before the first parsed note.
     if note_info.length == 0 {
         return;
     }
 
-    // Add tones and volumes
+    // Expand tone and envelope data over the note length.
     repeat_extend!(&mut sound.tones, note_info.tone, note_info.length);
     for i in 0..note_info.length {
         let env_start = ((note_info.env_start + i) as usize).min(note_info.env_data.len() - 1);
         sound.volumes.push(note_info.env_data[env_start]);
     }
 
-    // Handle rest note
+    // Encode rests as silent note/effect spans.
     if note_info.note == -1 {
         repeat_extend!(&mut sound.notes, -1, note_info.length);
         repeat_extend!(&mut sound.effects, EFFECT_NONE, note_info.length);
         return;
     }
 
-    // Add full-length notes
+    // Emit gated full-length note steps.
     let duration = note_info.length * note_info.quantize;
     let num_notes = duration / 8;
     let note_effect = if note_info.vibrato {
@@ -327,7 +332,7 @@ fn add_note(sound: &mut Sound, note_info: &NoteInfo) {
         return;
     }
 
-    // Add fade-out note
+    // Select a fade-out tier for the remaining gated step.
     sound.notes.push(note_info.note);
     if num_notes > 0 {
         sound.effects.push(EFFECT_FADEOUT);
@@ -339,7 +344,7 @@ fn add_note(sound: &mut Sound, note_info: &NoteInfo) {
         sound.effects.push(EFFECT_FADEOUT);
     }
 
-    // Add rests
+    // Pad the ungated tail with rests.
     let num_rests = note_info.length - num_notes - 1;
     repeat_extend!(&mut sound.notes, -1, num_rests);
     repeat_extend!(&mut sound.effects, EFFECT_NONE, num_rests);

@@ -67,6 +67,7 @@ impl Sound {
         Ok(())
     }
 
+    // Parse note symbols into semitone offsets.
     pub fn set_notes(&mut self, note_str: &str) -> Result<(), String> {
         let note_str = simplify_string(note_str);
         let mut chars = note_str.chars();
@@ -187,6 +188,7 @@ impl Sound {
 
     // Serialization
 
+    // Render this sound into an isolated buffer before export.
     #[cfg(pyxel_core)]
     pub fn save(
         &self,
@@ -325,6 +327,7 @@ impl Sound {
         }
     }
 
+    // Emit note commands while tracking per-note state changes.
     fn emit_notes(&self, commands: &mut Vec<MmlCommand>) {
         let tones = pyxel::tones();
         let duration_ticks = self.speed as u32;
