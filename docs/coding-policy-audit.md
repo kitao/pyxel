@@ -15,7 +15,8 @@ An auditor reads both files in this order:
 ## Operating Rules
 
 - No sampling. Every in-scope file, policy rule, sibling group, cross-file
-  dependency, and required verification gate is represented by an artifact row.
+  dependency, hot-path surface, and required verification gate is represented by
+  an artifact row.
 
 - No cherry-picking. A local fix is incomplete until comparable files and the
   affected group rows are checked to the same depth.
@@ -53,8 +54,10 @@ temporary, but it must be named in the final report. Every TSV has a header row,
 uses one row per checked unit, and avoids multi-line fields. Lists inside a
 field use JSON arrays or a stable comma-separated format.
 
-Every countable row has a stable id. Missing ids, duplicate ids, empty evidence,
-and row-count mismatches are audit failures.
+Every countable row has a stable id. Fields named `criterion_id` or
+`criterion_ids` reference existing `criteria.tsv` rows. Missing ids, duplicate
+ids, empty evidence, unknown criteria, and row-count mismatches are audit
+failures.
 
 ## Required Artifacts
 
@@ -70,6 +73,8 @@ and row-count mismatches are audit failures.
     `evidence`.
   - Maps every non-blank line in `docs/coding-policy.md` to one or more
     criteria, or marks it as structural text.
+  - Structural coverage is allowed only for headings or explanatory text that
+    imposes no checkable requirement.
   - A policy line with neither a criterion nor a structural explanation blocks
     completion.
 
@@ -90,20 +95,34 @@ and row-count mismatches are audit failures.
     API, translated content, generated/manual relationship, or domain
     convention.
 
+- `hot_path_inventory.tsv`
+  - Columns: `hot_path_id`, `policy_lines`, `hot_path_kind`, `paths`,
+    `entry_points`, `cost_risks_checked`, `verdict`, `evidence_ref`.
+  - Enumerates every implementation surface for each hot-path family listed in
+    `docs/coding-policy.md`.
+  - `cost_risks_checked` names the concrete risks inspected, such as allocation,
+    copying, conversion, bounds-check, dispatch, SIMD, inlining, or lock costs.
+  - A hot-path family with no current implementation surface records a row with
+    repository-wide evidence for that absence; silence is not evidence.
+
 - `cross_dependencies.tsv`
   - Columns: `dependency_id`, `dependency_kind`, `paths`, `criterion_ids`,
     `policy_lines`, `derivation`.
   - Expands every cross-file concern into concrete file paths before checking
     begins.
+  - `criterion_ids` is non-empty and names the exact criteria the dependency
+    exercises.
   - Required families include, when present: sibling files, binding/API/stub
-    mirrors, HTML-to-i18n key sets, translation source chains, localized
-    `languages` arrays, generated/manual pairs, widget conventions, proper-noun
-    usage, release notes against code diffs, and test coverage against changed
-    behavior.
+    mirrors, file and directory naming patterns, HTML-to-i18n key sets,
+    translation source chains, localized `languages` arrays, generated/manual
+    pairs, widget conventions, proper-noun usage, release notes against code
+    diffs, and test coverage against changed behavior.
 
 - `file_matrix.tsv`
   - Columns: `path`, `criterion_id`, `verdict`, `evidence`, `evidence_ref`.
   - Contains every included file crossed with every criterion.
+  - For each included file, the `criterion_id` set matches `criteria.tsv`
+    exactly: no omissions, extras, or duplicates.
   - If a criterion has no local surface in a file, use `pass` only when the
     evidence explains why the file cannot violate the criterion and names the
     artifact row that carries the authoritative check.
@@ -112,16 +131,21 @@ and row-count mismatches are audit failures.
   - Columns: `dependency_id`, `criterion_id`, `verdict`, `evidence`,
     `evidence_ref`.
   - Contains every cross-file dependency crossed with the criteria it exercises.
+  - For each dependency, the `criterion_id` set matches that dependency's
+    `cross_dependencies.tsv` row exactly.
 
 - `group_uniformity.tsv`
   - Columns: `group_id`, `criterion_id`, `verdict`, `evidence`,
     `evidence_ref`.
+  - Contains every group crossed with every group criterion, plus any file or
+    cross-file criterion whose evidence depends on sibling comparison.
   - Records whether each group was checked evenly and whether comparable files
     were fixed to the same degree.
 
 - `process_matrix.tsv`
-  - Columns: `gate_id`, `policy_lines`, `verdict`, `evidence`,
+  - Columns: `gate_id`, `criterion_id`, `policy_lines`, `verdict`, `evidence`,
     `evidence_ref`.
+  - Contains every process and command criterion from `criteria.tsv`.
   - Records repository-level checks such as policy self-applicability, release
     note evaluation, generated-file exclusions, command selection, and rerun
     requirements.
@@ -131,6 +155,16 @@ and row-count mismatches are audit failures.
     `path_or_dependency`, `criterion_id`, `finding`, `proposed_fix`.
   - Contains every `fix`, `review`, or `pending` verdict ever discovered in the
     run.
+
+- `finding_distribution.tsv`
+  - Columns: `probe_family`, `criterion_ids`, `finding_ids`, `finding_count`,
+    `coverage_evidence_ref`, `imbalance_verdict`, `rationale`.
+  - Summarizes the finding distribution across every named probe in the Minimum
+    Probe Families. A top-level family row does not replace its named probes.
+  - `coverage_evidence_ref` names the concrete artifact rows or commands that
+    performed the comparable probe; this is required even when `finding_count`
+    is zero.
+  - `imbalance_verdict` is `pass`, `review`, or `pending`.
 
 - `classifications.tsv`
   - Columns: `finding_id`, `disposition`, `design_intent`, `rationale`,
@@ -152,11 +186,12 @@ and row-count mismatches are audit failures.
 - `audit_summary.json`
   - Contains counts for criteria, policy coverage, included scope, excluded
     scope, expected matrix rows, actual matrix rows, findings by disposition,
-    command results, and artifact-level errors.
+    hot-path inventory, cross and group criterion-pair coverage, findings by
+    probe family, command results, and artifact-level errors.
 
 ## Verdicts
 
-Every matrix verdict is one of:
+Every artifact verdict is one of:
 
 - `pass`: the criterion is satisfied, with concrete evidence.
 - `fix`: the criterion is violated and the file or group must change.
@@ -185,9 +220,9 @@ new category is still required through `policy_coverage.tsv`.
 
 Artifacts must contain explicit rows for at least these probe families:
 
-- Source code: hot-path performance, naming, ordering, comments, formatting,
-  sibling-group consistency, exception groups, parallel mirrors, and `.pyi`
-  effective defaults.
+- Source code: hot-path inventory, hot-path performance, symbol naming, file and
+  directory naming, ordering, comments, formatting, sibling-group consistency,
+  exception groups, parallel mirrors, and `.pyi` effective defaults.
 
 - Comments: English-only comments, intent-bearing comments, required headers for
   long blocks, group separator symmetry, label-vs-sentence punctuation,
@@ -250,14 +285,22 @@ verification and completion remain blocked until they are resolved.
    - If a dependency family is suspected but not yet enumerated, mark the
      related rows `pending`.
 
-5. Fill the file matrix.
+5. Build the hot-path inventory.
+   - Create one row for every implementation surface of each policy-listed hot
+     path family.
+   - For each row, inspect the operation shape and name the concrete cost risks
+     checked before recording a performance verdict.
+   - A file-matrix performance pass may cite `hot_path_inventory.tsv`, but it
+     does not replace the inventory row.
+
+6. Fill the file matrix.
    - Cross every included file with every criterion.
-   - Inspect the file itself for local surfaces: names, ordering, comments,
-     formatting, tests, documentation prose, release-note relevance, and
-     verification impact.
+   - Inspect the file itself for local surfaces: symbol names, path names,
+     ordering, comments, formatting, tests, documentation prose, release-note
+     relevance, and verification impact.
    - Record a verdict and evidence for every cell before aggregating results.
 
-6. Fill the cross-file and group matrices.
+7. Fill the cross-file and group matrices.
    - Check naming agreement, sibling style, exception-group rules, parallel
      mirrors, generated/manual relationships, translation chains, and API/stub
      defaults.
@@ -265,15 +308,22 @@ verification and completion remain blocked until they are resolved.
      group.
    - A local pass does not override a failing cross-file or group row.
 
-7. Probe for imbalance.
+8. Probe for imbalance.
+   - Build or update `finding_distribution.tsv`.
    - Compare finding distribution across structurally similar groups and
      criteria.
+   - Compare distribution across the Minimum Probe Families; a concentration in
+     comments, documentation, or any other family does not prove other families
+     clean by itself.
    - When one group produces findings and a comparable group produces none,
      re-run the same probes on the zero-finding group before accepting the
      result.
+   - When one probe family produces findings and a related family produces none,
+     cite the file, cross-file, group, process, or command rows that prove the
+     zero-finding family was checked to comparable depth.
    - Treat unexplained imbalance as `pending`.
 
-8. Classify and fix findings.
+9. Classify and fix findings.
    - Fix clear violations.
    - For `review` findings, decide whether the current state follows policy
      intent or needs a change.
@@ -285,13 +335,14 @@ verification and completion remain blocked until they are resolved.
      conditionals, self-contained distribution code, and defensive boundary
      code.
 
-9. Regenerate artifacts after fixes.
+10. Regenerate artifacts after fixes.
    - Rebuild criteria if the policy changed.
    - Rebuild scope if files were added, removed, generated, or renamed.
-   - Rebuild file, cross-file, group, process, findings, classifications, and
-     command artifacts after every meaningful fix batch.
+   - Rebuild hot-path inventory, file, cross-file, group, process, findings,
+     finding distribution, classifications, and command artifacts after every
+     meaningful fix batch.
 
-10. Run verification commands.
+11. Run verification commands.
     - Run `make format` after code or formatter-managed document changes.
     - Run `make lint` and `make lint-wasm` after code or web changes.
     - Run `make test` after code changes.
@@ -303,7 +354,7 @@ verification and completion remain blocked until they are resolved.
     - Record command names, working directories, exit statuses, and key output
       in `command_evidence.tsv`.
 
-11. Run independent review.
+12. Run independent review.
     - Give the reviewer the full policy, this procedure, the complete file
       list, all cross-file dependencies, the current diff, and all artifacts.
     - Ask for actionable findings in the edited files and in the audit design.
@@ -339,17 +390,25 @@ The audit is complete only when all conditions are true:
   `docs/coding-policy.md`.
 - `scope.tsv` contains every tracked file and every intended untracked file,
   either included or excluded with a policy-backed reason.
+- `group_inventory.tsv` assigns every included file to a group or singleton.
 - `file_matrix.tsv` row count equals included-file count multiplied by criteria
-  count.
-- `cross_matrix.tsv` covers every dependency in `cross_dependencies.tsv`.
-- `group_uniformity.tsv` covers every group in `group_inventory.tsv`.
+  count, and every included file has exactly the criterion set from
+  `criteria.tsv`.
+- `hot_path_inventory.tsv` covers every policy-listed hot-path family, and every
+  row verdict is `pass`.
+- `cross_matrix.tsv` covers every dependency and exact dependency/criterion pair
+  in `cross_dependencies.tsv`.
+- `group_uniformity.tsv` covers every group and every required group/criterion
+  pair.
 - `process_matrix.tsv` covers every repository-level and command-level policy
-  requirement.
+  requirement, and every process or command criterion in `criteria.tsv`.
 - `command_evidence.tsv` records every required and targeted command with its
   working directory, exit status, and key output.
 - `current-diff.patch` includes every changed tracked file and every intended
   untracked file.
 - Every row in `findings.tsv` has a resolved row in `classifications.tsv`.
+- `finding_distribution.tsv` covers every named probe in the Minimum Probe
+  Families, and every `imbalance_verdict` is `pass`.
 - `classifications.tsv` contains no `deferred_blocker`.
 - `audit_summary.json` reports zero row-count mismatches, zero duplicate ids,
   zero empty evidence fields, and zero stale artifacts.
