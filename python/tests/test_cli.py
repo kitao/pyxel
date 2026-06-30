@@ -249,20 +249,24 @@ class TestPackage:
         assert metadata["title"] == "My App"
         assert metadata["author"] == "Me"
 
-    def test_rejects_non_py_startup_script(self, tmp_path, monkeypatch):
+    def test_rejects_non_py_startup_script(self, capsys, tmp_path, monkeypatch):
         app_dir = _make_app(tmp_path)
         (app_dir / "main.txt").write_text("", encoding="utf-8")
         monkeypatch.chdir(tmp_path)
         with pytest.raises(SystemExit):
             pyxel.cli.package_pyxel_app("my_app", "my_app/main.txt")
+        assert "'package' command only accepts .py files" in capsys.readouterr().out
 
-    def test_rejects_startup_script_outside_app_dir(self, tmp_path, monkeypatch):
+    def test_rejects_startup_script_outside_app_dir(
+        self, capsys, tmp_path, monkeypatch
+    ):
         _make_app(tmp_path)
         outside = tmp_path / "outside.py"
         outside.write_text("", encoding="utf-8")
         monkeypatch.chdir(tmp_path)
         with pytest.raises(SystemExit):
             pyxel.cli.package_pyxel_app("my_app", str(outside))
+        assert "specified file is not under the directory" in capsys.readouterr().out
 
     def test_stdout_shows_added_files(self, capsys, tmp_path, monkeypatch):
         _make_app(tmp_path)
@@ -282,7 +286,7 @@ class TestPackage:
 
         monkeypatch.setattr(zipfile.ZipFile, "write", raise_on_write)
 
-        with pytest.raises(RuntimeError):
+        with pytest.raises(RuntimeError, match="zip write failed"):
             pyxel.cli.package_pyxel_app("my_app", "my_app/main.py")
 
         assert not (app_dir / pyxel.APP_STARTUP_SCRIPT_FILE).exists()

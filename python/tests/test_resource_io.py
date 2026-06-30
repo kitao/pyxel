@@ -115,7 +115,7 @@ class TestSaveLoad:
         assert list(pyxel.sounds[0].notes) == modified_notes
 
     def test_load_nonexistent_file_raises(self):
-        with pytest.raises(Exception):
+        with pytest.raises(Exception, match="Failed to open file"):
             pyxel.load("/nonexistent/path/file.pyxres")
 
     def test_save_creates_file(self, tmp_path):
