@@ -42,7 +42,7 @@ class TestSeqGetitem:
         assert all(isinstance(img, pyxel.Image) for img in imgs)
 
     def test_images_out_of_range_raises(self):
-        with pytest.raises(IndexError):
+        with pytest.raises(IndexError, match="list index out of range"):
             _ = pyxel.images[999]
 
     def test_channels_index_access(self):

@@ -5,87 +5,97 @@ import pyxel
 
 class TestTypeErrors:
     def test_sin_wrong_deg_type(self):
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeError, match="must be real number, not str"):
             pyxel.sin("abc")  # type: ignore[arg-type]
 
     def test_pset_wrong_x_type(self):
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeError, match="must be real number, not str"):
             pyxel.pset("a", 0, 0)  # type: ignore[arg-type]
 
     def test_clamp_wrong_x_type(self):
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeError, match="must be real number, not str"):
             pyxel.clamp("a", 0, 10)  # type: ignore[arg-type]
 
     def test_rect_wrong_types(self):
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeError, match="must be real number, not str"):
             pyxel.rect("a", "b", "c", "d", "e")  # type: ignore[arg-type]
 
     def test_blt_wrong_img_type(self):
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeError, match="must be u32, Image"):
             pyxel.blt(0, 0, "not_an_image", 0, 0, 8, 8)  # type: ignore[arg-type]
 
     def test_play_wrong_snd_type(self):
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeError, match="must be u32, Vec<u32>, Sound"):
             pyxel.play(0, 3.14)  # type: ignore[arg-type]
 
     def test_btn_wrong_type(self):
-        with pytest.raises(TypeError):
+        with pytest.raises(
+            TypeError, match="'str' object cannot be interpreted as an integer"
+        ):
             pyxel.btn("not_a_key")  # type: ignore[arg-type]
 
     def test_tilemap_wrong_imgsrc_type(self):
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeError, match="must be u32, Image"):
             pyxel.Tilemap(8, 8, "bad")  # type: ignore[arg-type]
 
     def test_sound_set_wrong_speed_type(self):
         snd = pyxel.Sound()
-        with pytest.raises(TypeError):
+        with pytest.raises(
+            TypeError, match="'str' object cannot be interpreted as an integer"
+        ):
             snd.set("c2", "s", "7", "n", "fast")  # type: ignore[arg-type]
 
     def test_image_set_wrong_data_type(self):
         img = pyxel.Image(8, 8)
-        with pytest.raises(TypeError):
+        with pytest.raises(
+            TypeError, match="'int' object is not an instance of 'Sequence'"
+        ):
             img.set(0, 0, 12345)  # type: ignore[arg-type]
 
     def test_btnp_wrong_type(self):
-        with pytest.raises(TypeError):
+        with pytest.raises(
+            TypeError, match="'str' object cannot be interpreted as an integer"
+        ):
             pyxel.btnp("not_a_key")  # type: ignore[arg-type]
 
     def test_btnr_wrong_type(self):
-        with pytest.raises(TypeError):
+        with pytest.raises(
+            TypeError, match="'str' object cannot be interpreted as an integer"
+        ):
             pyxel.btnr("not_a_key")  # type: ignore[arg-type]
 
 
 class TestIndexErrors:
     def test_images_out_of_range(self):
-        with pytest.raises(IndexError):
+        with pytest.raises(IndexError, match="list index out of range"):
             _ = pyxel.images[999]
 
     def test_images_negative_out_of_range(self):
-        with pytest.raises(IndexError):
+        with pytest.raises(IndexError, match="list index out of range"):
             _ = pyxel.images[-999]
 
     def test_sounds_out_of_range(self):
-        with pytest.raises(IndexError):
+        with pytest.raises(IndexError, match="list index out of range"):
             _ = pyxel.sounds[999]
 
     def test_tilemaps_out_of_range(self):
-        with pytest.raises(IndexError):
+        with pytest.raises(IndexError, match="list index out of range"):
             _ = pyxel.tilemaps[999]
 
     def test_colors_negative_out_of_range(self):
-        with pytest.raises(IndexError):
+        with pytest.raises(IndexError, match="list index out of range"):
             _ = pyxel.colors[-9999]
 
     def test_channels_out_of_range(self):
-        with pytest.raises(IndexError):
+        with pytest.raises(IndexError, match="list index out of range"):
             _ = pyxel.channels[999]
 
     def test_tones_out_of_range(self):
-        with pytest.raises(IndexError):
+        with pytest.raises(IndexError, match="list index out of range"):
             _ = pyxel.tones[999]
 
     def test_musics_out_of_range(self):
-        with pytest.raises(IndexError):
+        with pytest.raises(IndexError, match="list index out of range"):
             _ = pyxel.musics[999]
 
     def test_images_boundary_valid(self):
@@ -104,55 +114,60 @@ class TestIndexErrors:
 
 class TestAttributeErrors:
     def test_nonexistent_attribute(self):
-        with pytest.raises(AttributeError):
+        with pytest.raises(
+            AttributeError,
+            match="module 'pyxel' has no attribute 'nonexistent_attribute'",
+        ):
             _ = pyxel.nonexistent_attribute  # type: ignore[attr-defined]
 
     def test_nonexistent_constant(self):
-        with pytest.raises(AttributeError):
+        with pytest.raises(
+            AttributeError, match="module 'pyxel' has no attribute 'FAKE_CONSTANT'"
+        ):
             _ = pyxel.FAKE_CONSTANT  # type: ignore[attr-defined]
 
 
 class TestPartialArgErrors:
     def test_clip_partial_args(self):
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeError, match=r"clip\(\) takes 0 or 4 arguments"):
             pyxel.clip(10, 20)  # type: ignore[call-overload]
 
     def test_clip_three_args(self):
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeError, match=r"clip\(\) takes 0 or 4 arguments"):
             pyxel.clip(10, 20, 30)  # type: ignore[call-overload]
 
     def test_camera_one_arg(self):
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeError, match=r"camera\(\) takes 0 or 2 arguments"):
             pyxel.camera(10)  # type: ignore[call-overload]
 
     def test_pal_one_arg(self):
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeError, match=r"pal\(\) takes 0 or 2 arguments"):
             pyxel.pal(1)  # type: ignore[call-overload]
 
 
 class TestValueErrors:
     def test_play_invalid_channel(self):
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="Invalid channel index"):
             pyxel.play(999, 0)
 
     def test_play_invalid_sound_index(self):
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="Invalid sound index"):
             pyxel.play(0, 9999)
 
     def test_playm_invalid_music_index(self):
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="Invalid music index"):
             pyxel.playm(9999)
 
     def test_stop_invalid_channel(self):
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="Invalid channel index"):
             pyxel.stop(999)
 
     def test_play_pos_invalid_channel(self):
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="Invalid channel index"):
             pyxel.play_pos(999)
 
     def test_play_invalid_sound_list(self):
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="Invalid sound index"):
             pyxel.play(0, [0, 9999])  # type: ignore[arg-type]
 
 
