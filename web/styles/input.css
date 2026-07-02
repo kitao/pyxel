@@ -282,7 +282,7 @@ summary:focus-visible .tri {
   border-radius: 2px;
 }
 
-/* User Guide: highlight.js overrides */
+/* User guide: highlight.js overrides */
 .code-block code {
   font-size: inherit;
   padding: 0;

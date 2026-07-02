@@ -795,7 +795,7 @@ pyxel.sounds[0].speed = 60
 
 ### `musics` — variable
 
-List of music tracks (instances of the Music class) (0-7).
+Music tracks (Music instances) (0-7).
 
 - **Type:** `list[Music]`
 

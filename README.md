@@ -47,7 +47,7 @@ Pyxel は [MIT License](https://github.com/kitao/pyxel/blob/main/LICENSE) のオ
 <img src="https://raw.githubusercontent.com/kitao/pyxel/main/docs/images/10_platformer.gif" alt="Platformer" width="222">
 </a>
 <a href="https://kitao.github.io/pyxel/web/showcase/apps/30sec-of-daylight.html">
-<img src="https://raw.githubusercontent.com/kitao/pyxel/main/docs/images/30sec_of_daylight.gif" alt="30sec of daylight" width="268">
+<img src="https://raw.githubusercontent.com/kitao/pyxel/main/docs/images/30sec_of_daylight.gif" alt="30 Seconds of Daylight" width="268">
 </a>
 <a href="https://kitao.github.io/pyxel/web/showcase/apps/megaball.html">
 <img src="https://raw.githubusercontent.com/kitao/pyxel/main/docs/images/megaball.gif" alt="Megaball" width="231">

@@ -43,7 +43,7 @@
         const app = document.getElementById("app");
         app.innerHTML = "";
 
-        // Header
+        // Header with language selector and localized title text
         const header = document.createElement("header");
         header.className = "flex items-start gap-4 mb-6";
 
@@ -69,7 +69,7 @@
         header.appendChild(titleBlock);
         app.appendChild(header);
 
-        // Content
+        // Web usage section containers populated by updateTexts
         const wrap = document.createElement("div");
         wrap.className = "space-y-6";
         wrap.id = "content";
@@ -90,14 +90,14 @@
         const pyxelLink = link("https://github.com/kitao/pyxel", "Pyxel");
         const launcherLink = link("../launcher/", "Pyxel Web Launcher");
 
-        // Header
+        // Localized page title and subtitle
         document.title = t("title");
         document.getElementById("page-title").textContent = t("title");
         document.getElementById("page-subtitle").innerHTML = t(
           "subtitle",
         ).replace("{0}", pyxelLink);
 
-        // Intro
+        // Introduction paragraph
         document.getElementById("s-intro").innerHTML = `
           <p class="body">${esc(t("intro_body"))}</p>`;
 
@@ -299,7 +299,7 @@ pyxel.show()
         hljs.highlightAll();
       }
 
-      // Init
+      // Initialize from the localized web usage JSON.
       initPage("web-usage.json", buildPage);
     </script>
   </body>

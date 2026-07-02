@@ -83,7 +83,7 @@ fn rgba8_to_pyxel_image(
     if colors.len() > MAX_COLORS as usize {
         return Err(format!("Palette must contain at most {MAX_COLORS} colors"));
     }
-    if rgba.chunks_exact(4).any(|p| p[3] != 255) {
+    if rgba.as_chunks::<4>().0.iter().any(|p| p[3] != 255) {
         return Err(
             "GLB texture alpha is not supported; paint a visible colkey color instead".to_string(),
         );
@@ -242,14 +242,14 @@ fn image_to_rgba8(img: &gltf::image::Data) -> Result<Vec<u8>, String> {
         gltf::image::Format::R8G8B8A8 => Ok(img.pixels.clone()),
         gltf::image::Format::R8G8B8 => {
             let mut rgba = Vec::with_capacity((img.width as usize) * (img.height as usize) * 4);
-            for rgb in img.pixels.chunks_exact(3) {
+            for rgb in img.pixels.as_chunks::<3>().0 {
                 rgba.extend_from_slice(&[rgb[0], rgb[1], rgb[2], 255]);
             }
             Ok(rgba)
         }
         gltf::image::Format::R8G8 => {
             let mut rgba = Vec::with_capacity((img.width as usize) * (img.height as usize) * 4);
-            for rg in img.pixels.chunks_exact(2) {
+            for rg in img.pixels.as_chunks::<2>().0 {
                 rgba.extend_from_slice(&[rg[0], rg[0], rg[0], rg[1]]);
             }
             Ok(rgba)

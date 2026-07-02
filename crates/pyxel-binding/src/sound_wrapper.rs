@@ -165,6 +165,8 @@ impl Sound {
             .map_err(PyException::new_err)
     }
 
+    // Playback duration
+
     fn total_sec(&self) -> Option<f32> {
         self.inner_ref().total_seconds()
     }

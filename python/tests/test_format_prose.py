@@ -90,6 +90,18 @@ class TestCodeSpan:
             format_prose.format_text("length () より軽い", "ja") == "length() より軽い"
         )
 
+    def test_preserves_function_call_token(self):
+        assert (
+            format_prose.format_text("画面をclip()で戻す", "ja")
+            == "画面を clip() で戻す"
+        )
+
+    def test_repairs_api_call_spacing_flush_against_kana(self):
+        assert (
+            format_prose.format_text("画面をclip ()で戻す", "ja")
+            == "画面を clip() で戻す"
+        )
+
 
 class TestParentheses:
     def test_halfwidth_for_ascii_content(self):

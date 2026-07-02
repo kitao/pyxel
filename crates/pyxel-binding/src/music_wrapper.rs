@@ -2,6 +2,8 @@ use pyo3::exceptions::PyException;
 use pyo3::prelude::*;
 use pyo3::types::{PyList, PySlice, PyTuple};
 
+// Python sequence wrappers for the mutable music sequences
+
 #[derive(Clone)]
 pub struct SeqRef {
     inner: pyxel::RcMusic,
@@ -274,6 +276,8 @@ impl Music {
         Seqs::wrap(self.inner.clone())
     }
 }
+
+// Module registration
 
 pub fn add_music_class(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<Seqs>()?;

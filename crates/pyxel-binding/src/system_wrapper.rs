@@ -214,6 +214,8 @@ fn _pid_exists(pid: u32) -> bool {
     system.process(sysinfo::Pid::from_u32(pid)).is_some()
 }
 
+// Module registration
+
 pub fn add_system_functions(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(init, m)?)?;
     m.add_function(wrap_pyfunction!(run, m)?)?;

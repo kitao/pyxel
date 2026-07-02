@@ -57,15 +57,19 @@ class TestResize:
         assert pyxel.pget(0, 0) == 7
 
     def test_zero_width_raises(self):
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="width and height must be greater than 0"):
             pyxel.resize(0, 120)
 
     def test_zero_height_raises(self):
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="width and height must be greater than 0"):
             pyxel.resize(160, 0)
 
     def test_negative_raises_overflow(self):
-        with pytest.raises(OverflowError):
+        with pytest.raises(
+            OverflowError, match="out of range integral type conversion attempted"
+        ):
             pyxel.resize(-1, 120)
-        with pytest.raises(OverflowError):
+        with pytest.raises(
+            OverflowError, match="out of range integral type conversion attempted"
+        ):
             pyxel.resize(160, -1)

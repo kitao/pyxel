@@ -391,7 +391,7 @@ impl Sound {
             }
 
             // Note
-            let tone_data = rc_ref!(tones[tone as usize]);
+            let tone_data = rc_ref!(tones.get(tone as usize).unwrap_or(&tones[0]));
             let base_note = if tone_data.mode == ToneMode::Wavetable {
                 36
             } else {

@@ -306,7 +306,7 @@
           "description": {
             "en": "Color palette list",
             "cn": "颜色调色板列表",
-            "de": "Farbenpalettenliste",
+            "de": "Farbpalettenliste",
             "es": "Lista de paletas de colores",
             "fr": "Liste de palettes de couleurs",
             "it": "Elenco delle palette di colori",
@@ -1191,7 +1191,7 @@
             "ko": "Pyxel에 내장된 타일맵 에디터. 이미지 뱅크의 타일을 배치하여 게임 맵을 만들 수 있으며, 여러 타일맵을 전환하여 관리할 수 있습니다.",
             "pt": "Editor de tilemaps integrado ao Pyxel. Organize tiles dos bancos de imagens para criar mapas de jogo, com suporte para alternar entre múltiplos tilemaps.",
             "ru": "Встроенный редактор тайловых карт. Размещайте тайлы из банков изображений для создания игровых карт с переключением между несколькими тайловыми картами.",
-            "tr": "Pyxel'in yerleşik karo haritası düzenleyicisi. Görüntü bankalarından karoları düzenleyerek oyun haritaları oluşturun, birden fazla karo haritası arasında geçiş yaparak yönetin.",
+            "tr": "Pyxel'in yerleşik tilemap düzenleyicisi. Görüntü bankalarından karoları düzenleyerek oyun haritaları oluşturun, birden fazla tilemap arasında geçiş yaparak yönetin.",
             "uk": "Вбудований редактор тайлових карт. Розміщуйте тайли з банків зображень для створення ігрових карт із перемиканням між кількома тайловими картами."
           }
         },

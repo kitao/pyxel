@@ -154,7 +154,7 @@ class App(Widget):
 
     def __on_update(self):
         # pyxel._dropped_files is the legacy path for drop events injected by
-        # the WASM runtime; drain it each frame and prefer native dropped_files
+        # the WASM runtime; drain it each frame and prefer native dropped_files.
         wasm_dropped_files = getattr(pyxel, "_dropped_files", [])
         pyxel._dropped_files = []
         if pyxel.dropped_files:

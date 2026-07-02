@@ -43,7 +43,7 @@
   font-size: large;
 }
 
-/* Full-screen Pyxel canvas and startup affordances. */
+/* Full-screen Pyxel canvas and startup affordances */
 div#pyxel-screen {
   position: absolute;
   left: 0;
@@ -82,7 +82,7 @@ img#pyxel-prompt {
   pointer-events: none;
 }
 
-/* Touch controls overlaid by wasm/pyxel.js on coarse-pointer devices. */
+/* Touch controls overlaid by wasm/pyxel.js on coarse-pointer devices */
 img#pyxel-gamepad-cross {
   --min-width-ratio: 0.2;
   position: absolute;

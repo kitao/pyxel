@@ -109,6 +109,8 @@ impl Channel {
     }
 }
 
+// Module registration
+
 pub fn add_channel_class(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<Channel>()?;
     Ok(())

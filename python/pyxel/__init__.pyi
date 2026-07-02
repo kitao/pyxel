@@ -2011,7 +2011,7 @@ tones: list[Tone]
 sounds: list[Sound]
 """Sounds (Sound instances) (0-63)."""
 musics: list[Music]
-"""List of music tracks (instances of the Music class) (0-7)."""
+"""Music tracks (Music instances) (0-7)."""
 
 def play(
     ch: int,

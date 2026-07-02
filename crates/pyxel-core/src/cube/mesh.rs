@@ -88,7 +88,7 @@ impl Mesh {
             }
             let world = world_per_part[i];
             let base_index = positions.len() as u32;
-            for chunk in prim.positions.chunks_exact(3) {
+            for chunk in prim.positions.as_chunks::<3>().0 {
                 let local = crate::cube::vec3::Vec3 {
                     x: chunk[0],
                     y: chunk[1],
@@ -104,7 +104,7 @@ impl Mesh {
                     t += 3;
                 }
             } else {
-                for tri in prim.indices.chunks_exact(3) {
+                for tri in prim.indices.as_chunks::<3>().0 {
                     triangles.push([
                         base_index + tri[0] as u32,
                         base_index + tri[1] as u32,

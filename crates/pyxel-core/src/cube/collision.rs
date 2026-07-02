@@ -129,7 +129,7 @@ impl Aabb {
             };
             let geom = rc_ref!(geom_rc);
             let positions = &geom.positions;
-            for chunk in positions.chunks_exact(3) {
+            for chunk in positions.as_chunks::<3>().0 {
                 let p = Vec3 {
                     x: chunk[0],
                     y: chunk[1],
