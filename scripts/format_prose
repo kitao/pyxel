@@ -18,10 +18,16 @@ _CJK = r"ぁ-ゖァ-ヺー一-鿿"
 # Spans whose interior is preserved verbatim while the span as a whole still
 # takes a space against adjacent kana/kanji.
 _SHORTCUT_SPAN = r"(?:Ctrl|Alt|Shift|Cmd)\([A-Za-z]+\)"
-_API_CALL_SPAN = re.compile(r"\b[A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)?\(\)")
+# Empty parens only: "word(content)" may be a prose annotation, which the
+# parenthesis rules must keep handling. The ASCII lookbehind stands in for \b,
+# which Unicode word characters (kana/kanji) would defeat.
+_API_CALL_SPAN = re.compile(
+    r"(?<![0-9A-Za-z_])[A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)?\(\)"
+)
 _STRUCTURAL_SPAN = re.compile(
     rf"{_SHORTCUT_SPAN}|`[^`]*`|\{{[^}}]*\}}|!?\[[^\]]*\][(（][^)）]*[)）]"
 )
+# The invisible literal is U+F8FF (private use); target prose never contains it.
 _PLACEHOLDER = ""
 _PLACEHOLDER_RE = re.compile(_PLACEHOLDER)
 
@@ -147,7 +153,7 @@ def _normalize_common(text):
 
 def _normalize_api_call_spacing(text):
     return re.sub(
-        r"\b([A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)?) \(\)",
+        r"(?<![0-9A-Za-z_])([A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)?) \(\)",
         r"\1()",
         text,
     )

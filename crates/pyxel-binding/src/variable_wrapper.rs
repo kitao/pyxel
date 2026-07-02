@@ -8,6 +8,8 @@ use crate::sound_wrapper::Sound;
 use crate::tilemap_wrapper::Tilemap;
 use crate::tone_wrapper::Tone;
 
+// Python sequence wrappers for the global resource lists
+
 wrap_as_python_primitive_sequence!(
     Colors,
     u32, // Global sequence handle has no per-instance state
@@ -54,6 +56,8 @@ wrap_ptr_vec_as_python_object_sequence!(Tones, Tone, pyxel::RcTone, pyxel::tones
 wrap_ptr_vec_as_python_object_sequence!(Sounds, Sound, pyxel::RcSound, pyxel::sounds);
 wrap_ptr_vec_as_python_object_sequence!(Musics, Music, pyxel::RcMusic, pyxel::musics);
 
+// Module attribute dispatch
+
 #[pyfunction]
 fn __getattr__(py: Python, name: &str) -> PyResult<Py<PyAny>> {
     let value = match name {
@@ -93,6 +97,8 @@ fn __getattr__(py: Python, name: &str) -> PyResult<Py<PyAny>> {
     };
     Ok(value)
 }
+
+// Module registration
 
 pub fn add_module_variables(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<Colors>()?;

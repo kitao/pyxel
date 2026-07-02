@@ -154,6 +154,8 @@ fn music(msc: u32) -> PyResult<Music> {
         .ok_or_else(|| PyValueError::new_err("Invalid music index"))
 }
 
+// Module registration
+
 pub fn add_audio_functions(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(play, m)?)?;
     m.add_function(wrap_pyfunction!(playm, m)?)?;

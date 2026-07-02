@@ -103,7 +103,7 @@
       "ko": "가상 게임패드 활성화",
       "pt": "Ativar gamepad virtual",
       "ru": "Включить виртуальный геймпад",
-      "tr": "Sanal oyun kumandasını etkinleştir",
+      "tr": "Sanal gamepad'i etkinleştir",
       "uk": "Увімкнути віртуальний геймпад"
     },
     "label_launch_url": {
@@ -187,7 +187,7 @@
       "ko": "타일맵 에디터",
       "pt": "Editor de tilemap",
       "ru": "Редактор тайловых карт",
-      "tr": "Karo Haritası Düzenleyici",
+      "tr": "Tilemap Düzenleyici",
       "uk": "Редактор тайлових карт"
     },
     "editor_screen_sound": {

@@ -14,6 +14,7 @@
       }
     </style>
   </head>
+
   <body class="page h-full">
     <div class="page-container">
       <div
@@ -57,7 +58,7 @@
 
       // Render localized headers and command rows from the command list.
       function updateTexts() {
-        // Title and subtitle
+        // Localized page title and subtitle
         document.title = t("title");
         document.getElementById("page-title").textContent = t("title");
         document.getElementById("page-subtitle").innerHTML = t(
@@ -104,7 +105,7 @@
         setDocLang(lang);
       }
 
-      // Init
+      // Initialize from the localized MML command reference JSON.
       initPage("mml-commands.json", () => {
         buildLangSelector(
           data.languages,

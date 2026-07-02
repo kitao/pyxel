@@ -6141,7 +6141,7 @@
           "type": "variable",
           "signature": "musics",
           "description": {
-            "en": "List of music tracks (instances of the Music class) (0-7).",
+            "en": "Music tracks (Music instances) (0-7).",
             "cn": "音乐 (Music 类的实例) 的列表 (0-7)",
             "de": "Liste der Musikstücke (Instanzen der Music-Klasse) (0-7).",
             "es": "Lista de las pistas de música (instancias de la clase Music) (0-7).",

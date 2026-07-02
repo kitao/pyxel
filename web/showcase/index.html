@@ -25,7 +25,7 @@
         const app = document.getElementById("app");
         app.innerHTML = "";
 
-        // Page header with language selector and localized title text
+        // Header with language selector and localized title text
         const header = document.createElement("header");
         header.className = "flex items-start gap-4 mb-6";
 
@@ -159,6 +159,7 @@
 
       // Apply localized strings to static labels and generated showcase rows.
       function updateTexts() {
+        // Localized page title and subtitle
         document.title = t("title");
         document.getElementById("page-title").textContent = t("title");
         document.getElementById("page-subtitle").innerHTML = t(

@@ -246,12 +246,16 @@ impl Font {
             }
             Font::Fontdue { font, cache, size } => {
                 let (metrics, bitmap) = cache.entry(c).or_insert_with(|| font.rasterize(c, *size));
-                for (i, &alpha) in bitmap.iter().enumerate() {
-                    if alpha >= ALPHA_THRESHOLD {
-                        let px = x + metrics.xmin + (i % metrics.width) as i32;
-                        let py = (y + ascent) - (metrics.ymin + metrics.height as i32)
-                            + (i / metrics.width) as i32;
-                        f(px, py);
+                if metrics.width > 0 {
+                    let gx = x + metrics.xmin;
+                    let gy = (y + ascent) - (metrics.ymin + metrics.height as i32);
+                    for (i, row) in bitmap.chunks_exact(metrics.width).enumerate() {
+                        let py = gy + i as i32;
+                        for (j, &alpha) in row.iter().enumerate() {
+                            if alpha >= ALPHA_THRESHOLD {
+                                f(gx + j as i32, py);
+                            }
+                        }
                     }
                 }
                 metrics.advance_width.ceil() as i32

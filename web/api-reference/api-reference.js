@@ -422,6 +422,7 @@ function buildPage() {
 
 // Apply localized labels to headers, controls, categories, and details.
 function updateTexts() {
+  // Localized page title and subtitle
   document.title = t("title");
   document.getElementById("page-title").textContent = t("title");
   document.getElementById("page-subtitle").innerHTML = t("subtitle").replace(

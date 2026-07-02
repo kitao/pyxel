@@ -20,6 +20,9 @@ CLASS_CATEGORIES = {
 }
 
 
+# Shared helpers
+
+
 def localize(obj):
     if not obj:
         return ""
@@ -30,6 +33,9 @@ def localize(obj):
 
 def _lowercase_first(s):
     return s[0].lower() + s[1:] if s else s
+
+
+# Doc-map construction
 
 
 def _merge_items(existing, new):
@@ -133,6 +139,9 @@ def _fallback_item(class_name, func_name, doc_map):
         _adapt_for_tilemap(item)
         return item
     return None
+
+
+# Docstring rendering and rewriting
 
 
 def _make_docstring(item, indent):
@@ -304,6 +313,9 @@ def _add_docstrings(content, doc_map):
         i += 1
 
     return "".join(result)
+
+
+# Command entry point
 
 
 def generate_pyi_docstrings():

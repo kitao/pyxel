@@ -11,7 +11,7 @@ body:
     attributes:
       label: "Description / 作品の説明"
       description: "Brief one-line description of your work / 作品を一行で説明してください"
-      placeholder: "e.g. Side-scrolling action game / 横スクロールアクションゲーム"
+      placeholder: "e.g. Side-scrolling action game / 例: 横スクロールアクションゲーム"
     validations:
       required: true
   - type: input

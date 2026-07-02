@@ -495,7 +495,7 @@
       "ko": "터치 기기(스마트폰 및 태블릿)에서 가상 게임패드 표시",
       "pt": "Exibir um gamepad virtual em dispositivos touch (smartphones e tablets)",
       "ru": "Отображать виртуальный геймпад на сенсорных устройствах (смартфонах и планшетах)",
-      "tr": "Dokunmatik cihazlarda (akıllı telefonlar ve tabletler) sanal bir oyun kumandası görüntüle",
+      "tr": "Dokunmatik cihazlarda (akıllı telefonlar ve tabletler) sanal bir gamepad görüntüle",
       "uk": "Відображати віртуальний геймпад на сенсорних пристроях (смартфонах та планшетах)"
     },
     "launcher_params_run_example": {
@@ -621,7 +621,7 @@
       "ko": "가상 게임패드는 기본적으로 활성화되어 있으며, 터치 기기에서 자동으로 표시됩니다. 비활성화하려면 생성된 HTML에서 {0}를 제거하세요.",
       "pt": "O gamepad virtual é habilitado por padrão e exibido automaticamente em dispositivos touch. Para desabilitá-lo, remova {0} do HTML gerado.",
       "ru": "Виртуальный геймпад включён по умолчанию и автоматически отображается на сенсорных устройствах. Чтобы отключить его, удалите {0} из сгенерированного HTML.",
-      "tr": "Sanal oyun kumandası varsayılan olarak etkindir ve dokunmatik cihazlarda otomatik olarak görüntülenir. Devre dışı bırakmak için oluşturulan HTML'den {0} öğesini kaldırın.",
+      "tr": "Sanal gamepad varsayılan olarak etkindir ve dokunmatik cihazlarda otomatik olarak görüntülenir. Devre dışı bırakmak için oluşturulan HTML'den {0} öğesini kaldırın.",
       "uk": "Віртуальний геймпад увімкнений за замовчуванням і автоматично відображається на сенсорних пристроях. Щоб вимкнути його, видаліть {0} зі згенерованого HTML."
     },
     "custom_elements_title": {
@@ -901,7 +901,7 @@
       "ko": "가상 게임패드 활성화 (터치 기기에서 자동 표시)",
       "pt": "Habilitar o gamepad virtual (exibido automaticamente em dispositivos touch)",
       "ru": "Включить виртуальный геймпад (автоматически отображается на сенсорных устройствах)",
-      "tr": "Sanal oyun kumandasını etkinleştir (dokunmatik cihazlarda otomatik olarak görüntülenir)",
+      "tr": "Sanal gamepad'i etkinleştir (dokunmatik cihazlarda otomatik olarak görüntülenir)",
       "uk": "Увімкнути віртуальний геймпад (автоматично відображається на сенсорних пристроях)"
     },
     "custom_elements_screen_title": {

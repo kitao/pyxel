@@ -56,13 +56,15 @@ impl Image {
 
     pub fn from_image(filename: &str, include_colors: Option<bool>) -> Result<RcImage, String> {
         let include_colors = include_colors.unwrap_or(false);
+        let file_image = image::open(Path::new(&filename))
+            .map_err(|_| format!("Failed to open file '{filename}'"))?
+            .to_rgb8();
+
+        // Reset the palette only after the file is readable so a failed load keeps it intact.
         let colors = pyxel::colors();
         if include_colors {
             colors.clear();
         }
-        let file_image = image::open(Path::new(&filename))
-            .map_err(|_| format!("Failed to open file '{filename}'"))?
-            .to_rgb8();
         let (width, height) = file_image.dimensions();
         let rc = Self::new(width, height);
 
