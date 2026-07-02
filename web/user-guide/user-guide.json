@@ -215,7 +215,7 @@
       "ko": "256x256 타일맵 8개",
       "pt": "8 tilemaps 256x256",
       "ru": "8 тайловых карт 256x256",
-      "tr": "8 adet 256x256 karo haritası",
+      "tr": "8 adet 256x256 tilemap",
       "uk": "8 тайлових карт 256x256"
     },
     "specs_sounds": {
@@ -915,7 +915,7 @@
       "ko": "Pyxel 이미지와 타일맵은 다음 방법을 사용하여 생성할 수도 있습니다.",
       "pt": "Imagens e tilemaps do Pyxel também podem ser criados usando os seguintes métodos.",
       "ru": "Изображения и тайловые карты Pyxel также можно создавать с помощью следующих методов.",
-      "tr": "Pyxel resimleri ve karo haritaları aşağıdaki yöntemlerle de oluşturulabilir.",
+      "tr": "Pyxel resimleri ve tilemap'ler aşağıdaki yöntemlerle de oluşturulabilir.",
       "uk": "Зображення та тайлові карти Pyxel також можна створювати за допомогою таких методів."
     },
     "resources_other_image_set": {
@@ -929,7 +929,7 @@
       "ko": "{0} 함수 또는 {1} 함수를 사용해 문자열 목록에서 이미지나 타일맵을 만듭니다",
       "pt": "Crie imagens ou tilemaps a partir de listas de strings com as funções {0} ou {1}",
       "ru": "Создавайте изображения или тайловые карты из списков строк с помощью функций {0} или {1}",
-      "tr": "{0} veya {1} fonksiyonlarıyla dize listelerinden resim veya karo haritası oluşturun",
+      "tr": "{0} veya {1} fonksiyonlarıyla dize listelerinden resim veya tilemap oluşturun",
       "uk": "Створюйте зображення або тайлові карти зі списків рядків за допомогою функцій {0} або {1}"
     },
     "resources_other_image_load": {

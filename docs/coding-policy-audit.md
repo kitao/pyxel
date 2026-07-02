@@ -336,11 +336,11 @@ verification and completion remain blocked until they are resolved.
      code.
 
 10. Regenerate artifacts after fixes.
-   - Rebuild criteria if the policy changed.
-   - Rebuild scope if files were added, removed, generated, or renamed.
-   - Rebuild hot-path inventory, file, cross-file, group, process, findings,
-     finding distribution, classifications, and command artifacts after every
-     meaningful fix batch.
+    - Rebuild criteria if the policy changed.
+    - Rebuild scope if files were added, removed, generated, or renamed.
+    - Rebuild hot-path inventory, file, cross-file, group, process, findings,
+      finding distribution, classifications, and command artifacts after every
+      meaningful fix batch.
 
 11. Run verification commands.
     - Run `make format` after code or formatter-managed document changes.

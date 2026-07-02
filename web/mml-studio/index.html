@@ -10,6 +10,7 @@
     <script src="https://cdn.jsdelivr.net/npm/lz-string@1.4.4/libs/lz-string.min.js"></script>
     <script src="../shared.js"></script>
   </head>
+
   <body class="page h-full">
     <main class="mx-auto p-6 max-w-4xl">
       <h1 class="mb-2 font-semibold text-2xl tracking-tight">
@@ -348,7 +349,7 @@
       }
 
       // Defer the URL/QR refresh so typing does not regenerate the QR code
-      // and rewrite the history entry on every keystroke
+      // and rewrite the history entry on every keystroke.
       let urlUpdateTimer = null;
 
       function scheduleUrlUpdate() {

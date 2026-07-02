@@ -314,13 +314,19 @@ impl Font {
         bitmap: &[u8],
         color: Color,
     ) {
-        for (i, &alpha) in bitmap.iter().enumerate() {
-            if alpha >= ALPHA_THRESHOLD {
-                let px = x + metrics.xmin + (i % metrics.width) as i32;
-                let py = (y + ascent) - (metrics.ymin + metrics.height as i32)
-                    + (i / metrics.width) as i32;
-                if canvas.clip_rect.contains(px, py) {
-                    canvas.write_data(px as usize, py as usize, color);
+        if metrics.width == 0 {
+            return;
+        }
+        let x = x + metrics.xmin;
+        let y = (y + ascent) - (metrics.ymin + metrics.height as i32);
+        for (i, row) in bitmap.chunks_exact(metrics.width).enumerate() {
+            let py = y + i as i32;
+            for (j, &alpha) in row.iter().enumerate() {
+                if alpha >= ALPHA_THRESHOLD {
+                    let px = x + j as i32;
+                    if canvas.clip_rect.contains(px, py) {
+                        canvas.write_data(px as usize, py as usize, color);
+                    }
                 }
             }
         }

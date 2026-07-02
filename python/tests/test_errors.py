@@ -192,6 +192,16 @@ class TestMmlErrors:
         with pytest.raises(Exception, match="Invalid sound tone"):
             snd.set_tones("ZZZZZZ!!!")
 
+    def test_sound_set_volumes_invalid(self):
+        snd = pyxel.Sound()
+        with pytest.raises(Exception, match="Invalid sound volume"):
+            snd.set_volumes("ZZZZZZ!!!")
+
+    def test_sound_set_effects_invalid(self):
+        snd = pyxel.Sound()
+        with pytest.raises(Exception, match="Invalid sound effect"):
+            snd.set_effects("ZZZZZZ!!!")
+
 
 class TestFileErrors:
     def test_load_nonexistent_pyxres(self):
@@ -202,9 +212,21 @@ class TestFileErrors:
         with pytest.raises(Exception, match="Failed to open file"):
             pyxel.Image.from_image("/nonexistent/path/image.png")
 
+    def test_failed_from_image_keeps_palette(self):
+        # A failed load must not clear the shared palette even with include_colors.
+        colors_before = list(pyxel.colors)
+        with pytest.raises(Exception, match="Failed to open file"):
+            pyxel.Image.from_image("/nonexistent/path/image.png", include_colors=True)
+        assert list(pyxel.colors) == colors_before
+
     def test_load_nonexistent_font(self):
         with pytest.raises(Exception, match="Failed to open file"):
             pyxel.Font("/nonexistent/path/font.bdf")
+
+    def test_load_nonexistent_pcm(self):
+        snd = pyxel.Sound()
+        with pytest.raises(Exception, match="Failed to open file"):
+            snd.pcm("/nonexistent/path/sound.wav")
 
 
 class TestPanicErrors:

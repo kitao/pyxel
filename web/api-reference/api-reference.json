@@ -3070,12 +3070,12 @@
           "signature": "clip(x, y, w, h)",
           "description": {
             "en": "Set the drawing area of the screen from (x, y) with a width of w and a height of h. Call clip() to reset to full screen.",
-            "cn": "将画面的绘制区域设置为从 (x, y) 开始、宽 w、高 h。调用 clip () 重置为全屏。",
+            "cn": "将画面的绘制区域设置为从 (x, y) 开始、宽 w、高 h。调用 clip() 重置为全屏。",
             "de": "Setzt den Zeichenbereich des Bildschirms ab (x, y) mit Breite w und Höhe h. clip() setzt auf Vollbild zurück.",
             "es": "Establece el área de dibujo de la pantalla desde (x, y) con ancho w y alto h. Llame a clip() para restablecer a pantalla completa.",
             "fr": "Définit la zone de dessin de l'écran à partir de (x, y) avec une largeur w et une hauteur h. Appeler clip() pour réinitialiser en plein écran.",
             "it": "Imposta l'area di disegno dello schermo da (x, y) con larghezza w e altezza h. Chiamare clip() per reimpostare a schermo intero.",
-            "ja": "画面の描画領域を (x, y) から幅 w、高さ h に設定する。clip () で全画面にリセットする。",
+            "ja": "画面の描画領域を (x, y) から幅 w、高さ h に設定する。clip() で全画面にリセットする。",
             "ko": "화면의 그리기 영역을 (x, y)부터 폭w, 높이h로 설정한다. clip()으로 전체 화면으로 리셋한다.",
             "pt": "Define a área de desenho da tela a partir de (x, y) com largura w e altura h. Chame clip() para redefinir para tela cheia.",
             "ru": "Устанавливает область рисования экрана от (x, y) шириной w и высотой h. Вызов clip() сбрасывает на полный экран.",
@@ -6141,7 +6141,7 @@
           "type": "variable",
           "signature": "musics",
           "description": {
-            "en": "List of music tracks (instances of the Music class) (0-7).",
+            "en": "Music tracks (Music instances) (0-7).",
             "cn": "音乐 (Music 类的实例) 的列表 (0-7)",
             "de": "Liste der Musikstücke (Instanzen der Music-Klasse) (0-7).",
             "es": "Lista de las pistas de música (instancias de la clase Music) (0-7).",

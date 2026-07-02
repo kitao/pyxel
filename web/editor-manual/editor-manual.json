@@ -369,7 +369,7 @@
       "ko": "타일맵 에디터",
       "pt": "Editor de tilemap",
       "ru": "Редактор тайловых карт",
-      "tr": "Karo Haritası Düzenleyici",
+      "tr": "Tilemap Düzenleyici",
       "uk": "Редактор тайлових карт"
     },
     "tilemap_body": {
@@ -383,7 +383,7 @@
       "ko": "이미지 뱅크의 이미지를 타일 패턴으로 배치하여 타일맵을 편집하는 모드입니다.",
       "pt": "Modo para editar tilemaps posicionando imagens do banco de imagens como padrões de tiles.",
       "ru": "Режим редактирования тайловых карт с использованием изображений из банков в качестве тайлов.",
-      "tr": "Görüntü bankalarındaki resimleri karo desenleri olarak yerleştirerek karo haritası düzenleme modu.",
+      "tr": "Görüntü bankalarındaki resimleri karo desenleri olarak yerleştirerek tilemap düzenleme modu.",
       "uk": "Режим редагування тайлових карт із використанням зображень з банків як тайлів."
     },
     "tilemap_ui_title": {
@@ -467,7 +467,7 @@
       "ko": "Tiled Map Editor({0})에서 작성한 TMX 파일을 타일맵 에디터에 드래그 앤 드롭하면 편집 영역 위치에 레이어 0의 내용이 불러와집니다.",
       "pt": "Ao arrastar e soltar um arquivo TMX criado com o Tiled Map Editor ({0}) no editor de tilemap, o conteúdo da camada 0 será carregado na posição da área de edição.",
       "ru": "Перетащите файл TMX, созданный в Tiled Map Editor ({0}), в редактор тайловых карт — содержимое слоя 0 будет загружено в область редактирования.",
-      "tr": "Tiled Map Editor ({0}) ile oluşturulan TMX dosyasını karo haritası düzenleyicisine sürükleyip bırakarak, katman 0 içeriğini düzenleme alanına yükleyebilirsiniz.",
+      "tr": "Tiled Map Editor ({0}) ile oluşturulan TMX dosyasını tilemap düzenleyicisine sürükleyip bırakarak, katman 0 içeriğini düzenleme alanına yükleyebilirsiniz.",
       "uk": "Перетягніть файл TMX, створений у Tiled Map Editor ({0}), у редактор тайлових карт — вміст шару 0 буде завантажено в область редагування."
     },
     "sound_title": {
@@ -803,7 +803,7 @@
       "ko": "타일맵 뷰에서 선택한 편집 영역이 확대 표시됩니다. 타일 이미지 뷰에서 선택한 타일 이미지를 배치합니다. 그리기 도구와 범위 선택 단축키는 이미지 에디터와 공통입니다. 모든 셀의 초기값은 타일(0,0)이므로, 이미지 뱅크의 (0,0)은 비워두는 것을 권장합니다.",
       "pt": "A área de edição selecionada na visualização do tilemap é exibida ampliada. Posicione a imagem de tile selecionada na visualização de tiles. Os atalhos de ferramentas de desenho e seleção de intervalo são os mesmos do editor de imagem. O valor inicial de todas as células é o tile (0,0), por isso recomenda-se deixar a posição (0,0) do banco de imagens vazia.",
       "ru": "Область редактирования, выбранная в виде тайловой карты, отображается в увеличенном масштабе. Выбранное в виде тайлов изображение размещается здесь. Горячие клавиши для инструментов рисования и выделения общие с редактором изображений. Начальное значение всех ячеек — тайл (0,0), поэтому рекомендуется оставлять позицию (0,0) банка изображений пустой.",
-      "tr": "Karo haritası görünümünde seçilen düzenleme alanı büyütülerek gösterilir. Karo görüntü görünümünde seçilen karo resmi yerleştirilir. Çizim araçları ve aralık seçimi kısayolları görüntü düzenleyiciyle ortaktır. Tüm hücrelerin başlangıç değeri karo (0,0) olduğundan, görüntü bankasında (0,0) konumunu boş bırakmanız önerilir.",
+      "tr": "Tilemap görünümünde seçilen düzenleme alanı büyütülerek gösterilir. Karo görüntü görünümünde seçilen karo resmi yerleştirilir. Çizim araçları ve aralık seçimi kısayolları görüntü düzenleyiciyle ortaktır. Tüm hücrelerin başlangıç değeri karo (0,0) olduğundan, görüntü bankasında (0,0) konumunu boş bırakmanız önerilir.",
       "uk": "Область редагування, обрана у виді тайлової карти, відображається у збільшеному масштабі. Обране у виді тайлів зображення розміщується тут. Гарячі клавіші для інструментів малювання та виділення спільні з редактором зображень. Початкове значення всіх комірок — тайл (0,0), тому рекомендується залишати позицію (0,0) банку зображень порожньою."
     },
     "tilemap_mapview_body": {
@@ -817,7 +817,7 @@
       "ko": "타일맵 전체의 축소 표시입니다. 흰 테두리가 현재 편집 영역을 나타냅니다.",
       "pt": "Visualização reduzida de todo o tilemap. A moldura branca indica a área de edição atual.",
       "ru": "Уменьшенный вид всей тайловой карты. Белая рамка показывает текущую область редактирования.",
-      "tr": "Karo haritasının tamamının küçültülmüş görünümü. Beyaz çerçeve mevcut düzenleme alanını gösterir.",
+      "tr": "Tilemap'in tamamının küçültülmüş görünümü. Beyaz çerçeve mevcut düzenleme alanını gösterir.",
       "uk": "Зменшений вид усієї тайлової карти. Біла рамка показує поточну область редагування."
     },
     "tilemap_tileview_body": {
@@ -845,7 +845,7 @@
       "ko": "편집 대상 타일맵(0~7)을 전환합니다.",
       "pt": "Alterna o tilemap em edição (0~7).",
       "ru": "Переключение редактируемой тайловой карты (0–7).",
-      "tr": "Düzenlenecek karo haritasını (0~7) değiştirir.",
+      "tr": "Düzenlenecek tilemap'i (0~7) değiştirir.",
       "uk": "Перемикання тайлової карти для редагування (0–7)."
     },
     "tilemap_imgnum_body": {
@@ -1129,7 +1129,7 @@
           "ko": "타일맵 캔버스",
           "pt": "Canvas de tilemap",
           "ru": "Холст тайловой карты",
-          "tr": "Karo haritası tuvali",
+          "tr": "Tilemap tuvali",
           "uk": "Полотно тайлової карти"
         },
         "x": 20,
@@ -1151,7 +1151,7 @@
           "ko": "타일맵 뷰",
           "pt": "Visualização do tilemap",
           "ru": "Вид тайловой карты",
-          "tr": "Karo haritası görünümü",
+          "tr": "Tilemap görünümü",
           "uk": "Вид тайлової карти"
         },
         "x": 312,
@@ -1195,7 +1195,7 @@
           "ko": "타일맵 번호",
           "pt": "Número do tilemap",
           "ru": "Номер тайловой карты",
-          "tr": "Karo haritası numarası",
+          "tr": "Tilemap numarası",
           "uk": "Номер тайлової карти"
         },
         "x": 20,
@@ -1952,7 +1952,7 @@
         "ko": "타일맵 수",
         "pt": "Número de tilemaps",
         "ru": "Количество тайловых карт",
-        "tr": "Karo haritası sayısı",
+        "tr": "Tilemap sayısı",
         "uk": "Кількість тайлових карт"
       },
       "value": {
@@ -2056,7 +2056,7 @@
         "ko": "타일맵 1개당 1개",
         "pt": "Um por tilemap",
         "ru": "Один на каждую тайловую карту",
-        "tr": "Her karo haritası için bir tane",
+        "tr": "Her tilemap için bir tane",
         "uk": "Один на кожну тайлову карту"
       }
     }
@@ -2977,7 +2977,7 @@
         "ko": "타일맵 에디터",
         "pt": "Editor de tilemap",
         "ru": "Редактор тайловых карт",
-        "tr": "Karo Haritası Düzenleyici",
+        "tr": "Tilemap Düzenleyici",
         "uk": "Редактор тайлових карт"
       },
       "desc": {
@@ -3091,7 +3091,7 @@
         "ko": "타일맵 에디터로 전환",
         "pt": "Alternar para o editor de tilemap",
         "ru": "Переключиться на редактор тайловых карт",
-        "tr": "Karo haritası düzenleyicisine geçer",
+        "tr": "Tilemap düzenleyicisine geçer",
         "uk": "Перемкнутися на редактор тайлових карт"
       }
     },

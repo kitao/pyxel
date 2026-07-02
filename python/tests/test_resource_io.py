@@ -33,6 +33,15 @@ class TestSaveLoad:
         assert pyxel.sounds[0].speed == 20
         assert list(pyxel.musics[0].seqs[0]) == [0, 1]
 
+    def test_load_unsupported_format_version(self, tmp_path):
+        # A pyxres written by a newer Pyxel must be rejected, not silently misread.
+        path = tmp_path / "future.pyxres"
+        with zipfile.ZipFile(path, "w") as zf:
+            zf.writestr("pyxel_resource.toml", "format_version = 99\n")
+
+        with pytest.raises(Exception, match="Unsupported resource format version"):
+            pyxel.load(str(path))
+
     def test_save_load_roundtrip(self, tmp_path):
         img = pyxel.images[0]
         img.cls(0)

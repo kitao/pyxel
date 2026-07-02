@@ -96,6 +96,14 @@ class TestSound:
         assert Path(path).exists()
         assert Path(path).stat().st_size > 0
 
+    def test_save_out_of_range_tone_falls_back(self, tmp_path):
+        # Tone numbers beyond the tone list fall back to tone 0, like playback.
+        snd = pyxel.Sound()
+        snd.set("c2e2g2", "9", "7", "n", 30)
+        path = str(tmp_path / "test_snd_tone9.wav")
+        snd.save(path, 0.5)
+        assert Path(path).stat().st_size > 0
+
     def test_total_sec(self):
         snd = pyxel.Sound()
         snd.set("c2e2g2c3", "ssss", "7654", "nnnn", 30)

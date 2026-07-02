@@ -440,6 +440,7 @@
 
       // Apply localized labels to headers, controls, categories, and details.
       function updateTexts() {
+        // Localized page title and subtitle
         document.title = t("title");
         document.getElementById("page-title").textContent = t("title");
         document.getElementById("page-subtitle").innerHTML = t(
@@ -601,7 +602,7 @@
           .classList.toggle("hidden", totalVisible > 0);
       }
 
-      // Initialize from the generated API reference JSON.
+      // Initialize from the localized API reference JSON.
       showAdvanced = localStorage.getItem(PYXEL_API_REF_ADVANCED_KEY) === "1";
 
       initPage("api-reference.json", buildPage);

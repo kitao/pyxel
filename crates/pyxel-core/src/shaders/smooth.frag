@@ -2,7 +2,7 @@
    Based on xBR shaders from:
    https://github.com/libretro/common-shaders/tree/master/xbr/shaders
 
-   Pyxel-specific changes are marked with "Modified for Pyxel".
+   Pyxel-specific changes are commented in place.
 */
 
 /*

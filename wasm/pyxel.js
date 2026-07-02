@@ -207,6 +207,7 @@ async function resetPyxel() {
     const audioContext =
       window.pyxelContext.pyodide?._module?.SDL2?.audioContext;
     if (audioContext && audioContext.state === "running") {
+      // Let pending audio callbacks finish after quit before suspending.
       await new Promise((resolve) => setTimeout(resolve, 50));
       await audioContext.suspend();
     }
@@ -256,6 +257,7 @@ async function resetPyxel() {
 
     await _executePyxelCommand(pyodide, window.pyxelContext.params);
 
+    // Undo the earlier suspend so the restarted app has audio.
     setTimeout(() => {
       if (audioContext && audioContext.state === "suspended") {
         audioContext.resume();
@@ -332,7 +334,7 @@ const _allowGamepadConnection = () => {
 };
 
 const _suppressTouchZoomGestures = () => {
-  // Ensure viewport disables pinch/double-tap zoom
+  // Ensure viewport disables pinch/double-tap zoom.
   let meta = document.querySelector('meta[name="viewport"]');
   if (!meta) {
     meta = document.createElement("meta");
@@ -342,7 +344,7 @@ const _suppressTouchZoomGestures = () => {
   meta.content =
     "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no";
 
-  // Suppress pinch-to-zoom by preventing multi-touch gestures
+  // Suppress pinch-to-zoom by preventing multi-touch gestures.
   const pinchHandler = (e) => {
     if (e.touches && e.touches.length > 1) {
       e.preventDefault();
@@ -379,6 +381,7 @@ const _updateScreenElementsSize = () => {
 };
 
 // Event helpers
+
 const _waitForEvent = (target, ...events) =>
   new Promise((resolve) => {
     const listener = (...args) => {
@@ -436,6 +439,7 @@ const _createScreenElements = async () => {
   logoImage.src = `${_scriptDir}${PYXEL_LOGO_PATH}`;
   logoImage.tabIndex = -1;
   await _waitForEvent(logoImage, "load");
+  // Wait briefly; appending the logo right after load has caused issues.
   await new Promise((resolve) => setTimeout(resolve, 50));
   pyxelScreen.appendChild(logoImage);
   _updateScreenElementsSize();
@@ -464,6 +468,7 @@ const _loadPyodideAndPyxel = async (canvas) => {
 
   await _loadScript(PYODIDE_URL);
   const pyodide = await loadPyodide();
+  // Keep Pyodide from treating Emscripten's main-loop unwind as a fatal error.
   pyodide._api._skip_unwind_fatal_error = true;
   pyodide.canvas.setCanvas2D(canvas);
 
@@ -501,6 +506,7 @@ const _hookPythonError = (pyodide) => {
         errorText += `${msg}\n`;
 
         if (!flushTimer) {
+          // Batch stderr lines for 100 ms so a multi-line traceback shows as one overlay.
           flushTimer = setTimeout(() => {
             _displayErrorOverlay(errorText);
             errorText = "";
@@ -605,7 +611,7 @@ const _hookFileOperations = (pyodide, root) => {
     request.open("GET", srcPath, false);
     try {
       request.send();
-    } catch (error) {
+    } catch {
       return;
     }
     if (request.status !== 200) {
@@ -655,6 +661,7 @@ const _hookFileOperations = (pyodide, root) => {
     a.style.display = "none";
     document.body.appendChild(a);
     a.click();
+    // Revoke only after the click-initiated download has had time to start.
     setTimeout(() => {
       document.body.removeChild(a);
       URL.revokeObjectURL(a.href);
@@ -692,6 +699,7 @@ const _waitForInput = async () => {
   });
 
   promptImage.remove();
+  // Yield one task so the prompt removal is rendered before execution resumes.
   await new Promise((resolve) => setTimeout(resolve, 1));
 };
 
@@ -798,7 +806,7 @@ const _addVirtualGamepad = (mode) => {
     GAMEPAD_MENU_PATH,
   );
 
-  // Remove previous handlers if any (prevents accumulation on reset)
+  // Remove previous handlers if any (prevents accumulation on reset).
   if (_addVirtualGamepad._handler) {
     const prev = _addVirtualGamepad._handler;
     document.removeEventListener("touchstart", prev);

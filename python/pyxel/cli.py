@@ -394,10 +394,10 @@ def create_executable_from_pyxel_app(pyxel_app_file: str) -> None:
     # Generate a temporary PyInstaller bootstrap around the Pyxel app.
     pyxel_app_name = Path(pyxel_app_file).stem
     bootstrap_script_file = str(app2exe_dir / f"{pyxel_app_name}.py")
-    app_filename = f"{pyxel_app_name}{pyxel.APP_FILE_EXTENSION}"
+    pyxel_app_filename = f"{pyxel_app_name}{pyxel.APP_FILE_EXTENSION}"
     Path(bootstrap_script_file).write_text(
         "import pyxel.cli; from pathlib import Path; pyxel.cli.play_pyxel_app("
-        f"str(Path(__file__).parent / {repr(app_filename)}))",
+        f"str(Path(__file__).parent / {repr(pyxel_app_filename)}))",
         encoding="utf-8",
     )
 
@@ -443,7 +443,7 @@ def create_html_from_pyxel_app(pyxel_app_file: str) -> None:
     base64_string = base64.b64encode(Path(pyxel_app_file).read_bytes()).decode()
 
     pyxel_app_name = Path(pyxel_app_file).stem
-    pyxel_app_filename = pyxel_app_name + pyxel.APP_FILE_EXTENSION
+    pyxel_app_filename = f"{pyxel_app_name}{pyxel.APP_FILE_EXTENSION}"
     Path(f"{pyxel_app_name}.html").write_text(
         "<!doctype html>\n"
         f'<script src="https://cdn.jsdelivr.net/gh/kitao/pyxel@{pyxel.VERSION}/wasm/pyxel.js">'

@@ -160,7 +160,7 @@
 
       // Apply localized launcher copy and example links.
       function updateTexts() {
-        // Title and subtitle
+        // Localized page title and subtitle
         document.title = t("title");
         document.getElementById("page-title").textContent = t("title");
         document.getElementById("page-subtitle").innerHTML = t(
@@ -267,7 +267,7 @@
         .getElementById("editor-screen")
         .addEventListener("change", buildLaunchUrl);
 
-      // Initialize localized text and event-driven URL updates.
+      // Initialize from the localized launcher JSON.
       initPage("launcher.json", () => {
         buildLangSelector(
           data.languages,

@@ -73,6 +73,12 @@ class TestCodeSpan:
         text = "Alt(Option)+2で保存"
         assert format_prose.format_text(text, "ja") == "Alt(Option)+2 で保存"
 
+    def test_preserves_function_call_token(self):
+        assert (
+            format_prose.format_text("画面をclip()で戻す", "ja")
+            == "画面を clip() で戻す"
+        )
+
 
 class TestParentheses:
     def test_halfwidth_for_ascii_content(self):

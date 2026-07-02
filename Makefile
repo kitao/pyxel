@@ -34,6 +34,9 @@ DIST_DIR := $(ROOT_DIR)/dist
 PYTHON_DIR := $(ROOT_DIR)/python
 SCRIPTS_DIR := $(ROOT_DIR)/scripts
 
+# Extensionless Python scripts, passed to ruff explicitly since it only discovers *.py files
+PYTHON_SCRIPTS = $(shell grep -sl '^\#!/usr/bin/env python3' $(SCRIPTS_DIR)/*)
+
 # Build targets
 TARGET ?= $(shell rustc -vV | awk '/^host:/ {print $$2}')
 WASM_TARGET := wasm32-unknown-emscripten
@@ -115,13 +118,13 @@ update:
 
 format:
 	@cd $(CRATES_DIR); cargo fmt -- --emit=files
-	@ruff format $(ROOT_DIR)
+	@ruff format $(ROOT_DIR) $(PYTHON_SCRIPTS)
 	@npx --no-install --prefix $(ROOT_DIR)/web prettier --write --log-level warn "$(ROOT_DIR)/**/*.{css,html,js,json}"
 	@$(SCRIPTS_DIR)/format_prose
 
 lint:
 	@cd $(CRATES_DIR); cargo clippy $(CARGO_OPTS) $(CLIPPY_OPTS)
-	@ruff check $(ROOT_DIR)
+	@ruff check $(ROOT_DIR) $(PYTHON_SCRIPTS)
 
 build:
 	@rustup component add rust-src
