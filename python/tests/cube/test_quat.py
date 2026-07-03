@@ -60,6 +60,16 @@ class TestHash:
         s = {Quat.IDENTITY, Quat(1, 0, 0, 0), Quat.IDENTITY}
         assert len(s) == 2
 
+    def test_hash_equal_for_signed_zero(self):
+        # -0.0 == +0.0, so the eq/hash contract requires equal hashes
+        # (the binding normalizes -0.0 to +0.0 before hashing).
+        assert Quat(0.0, 0, 0, 1) == Quat(-0.0, 0, 0, 1)
+        assert hash(Quat(0.0, 0, 0, 1)) == hash(Quat(-0.0, 0, 0, 1))
+
+    def test_signed_zero_interchangeable_as_dict_key(self):
+        d = {Quat(0.0, 0, 0, 1): "identity"}
+        assert d[Quat(-0.0, 0, 0, 1)] == "identity"
+
 
 class TestSequence:
     def test_getitem(self):

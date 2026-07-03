@@ -1,8 +1,6 @@
 import pyxel
 from pyxel.cube import Camera, Collider, Mat4, Mesh, Node, Primitive, Shading, Vec3
 
-WIDTH = 240
-HEIGHT = 180
 GRAVITY = Vec3(0.0, -0.025, 0.0)
 
 
@@ -42,8 +40,8 @@ class QuadSurface(Node):
         self.add_child(Node.from_mesh(self.mesh))
 
     def on_draw(self):
-        points = [self.corners[i] for i in [0, 1, 3, 2]]
-        for p, q in zip(points, points[1:] + points[:1]):
+        edge_points = [self.corners[i] for i in [0, 1, 3, 2]]
+        for p, q in zip(edge_points, edge_points[1:] + edge_points[:1]):
             self.line(p, q, 1)
 
 
@@ -80,7 +78,6 @@ class Barrel(Node):
         self.collider.angular_velocity *= 0.985
 
     def on_collide(self, other, contact):
-        del other
         apply_contact(self, contact)
 
     def on_draw(self):
@@ -109,7 +106,6 @@ class CapsuleBall(Node):
         self.collider.velocity += GRAVITY
 
     def on_collide(self, other, contact):
-        del other
         apply_contact(self, contact)
 
     def on_draw(self):
@@ -159,7 +155,7 @@ class Scene(Node):
 
 class App:
     def __init__(self):
-        pyxel.init(WIDTH, HEIGHT, title="3D Physics")
+        pyxel.init(240, 180, title="3D Physics")
         self.scene = Scene()
         pyxel.run(self.update, self.draw)
 
@@ -172,7 +168,7 @@ class App:
         self.scene.update()
 
     def draw(self):
-        self.scene.draw(0, 0, WIDTH, HEIGHT)
+        self.scene.draw(0, 0, pyxel.width, pyxel.height)
 
         pyxel.text(8, 8, "Capsule vs. barrel stack  R/Space: Reset", 7)
 

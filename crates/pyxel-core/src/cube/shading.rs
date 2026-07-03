@@ -405,6 +405,8 @@ impl Shading {
     }
 }
 
+// Color-space helpers
+
 // sRGB transfer curve (per-channel gamma decode). Input/output in 0..1.
 #[inline]
 fn srgb_to_linear(c: f32) -> f32 {
@@ -480,8 +482,9 @@ mod tests {
         let r_mut = rc_mut!(&r);
         r_mut.set(0, 0, (99, 99));
         r_mut.build(&pyxel_default());
-        let (p, s) = r_mut.get(0, 0);
-        assert!(p != 99 || s != 99);
+        // Rebuild recomputes the deterministic default-palette entry:
+        // black has no darker shade, so lv 0 stays flat black.
+        assert_eq!(r_mut.get(0, 0), (0, 0));
     }
 
     #[test]

@@ -260,11 +260,12 @@ class Mesh:
     ) -> Mesh: ...
     def descendants(self, i: int) -> list[int]: ...
 
-# Motion class
+# Motion class — engine-built animation clip exposed through Mesh.motions; not user-constructible, fields are read-only.
 class Motion:
-    name: str
-    length: float
-
+    @property
+    def name(self) -> str: ...
+    @property
+    def length(self) -> float: ...
     def __repr__(self) -> str: ...
 
 # Collider class — unified shape + behavior flags + physical coefficients + motion state.

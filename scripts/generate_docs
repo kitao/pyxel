@@ -595,6 +595,7 @@ class JsEval:
             return self._data.get(m.group(1), [])
         return self._resolve_data_ref(inner)
 
+    # Render a table(headers, rows) call into a Markdown table.
     def _table(self, inner):
         headers_s, rest = _parse_arg(inner.strip())
         rest = _skip_comma(rest)

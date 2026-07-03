@@ -2,8 +2,9 @@ use crate::cube::node::RcNode;
 use crate::cube::vec3::{RcVec3, Vec3};
 
 // Result payload returned by Scene.raycast / raycast_all
-// (cube-design.md § 13). A user-constructed RaycastHit() leaves `node`
-// unset; the engine fills it before exposing the hit.
+// (cube-design.md § 13). Engine-built, never user-constructed: new()
+// leaves `node` unset and the binding fills every field before
+// exposing the hit.
 
 pub struct RaycastHit {
     pub node: Option<RcNode>,

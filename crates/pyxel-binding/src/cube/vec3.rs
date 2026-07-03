@@ -65,7 +65,7 @@ impl Vec3 {
         Self::wrap(pyxel::cube::Vec3::back())
     }
 
-    // Attributes (read-only)
+    // Attributes
 
     #[getter]
     fn x(&self) -> f32 {
@@ -82,7 +82,7 @@ impl Vec3 {
         self.inner_ref().z
     }
 
-    // Dunder methods
+    // Dunder
 
     fn __repr__(&self) -> String {
         let v = self.inner_ref();
@@ -97,9 +97,10 @@ impl Vec3 {
         use std::hash::{Hash, Hasher};
         let mut hasher = std::collections::hash_map::DefaultHasher::new();
         let v = self.inner_ref();
-        v.x.to_bits().hash(&mut hasher);
-        v.y.to_bits().hash(&mut hasher);
-        v.z.to_bits().hash(&mut hasher);
+        // Adding 0.0 folds -0.0 into +0.0 so values equal under __eq__ hash equally.
+        (v.x + 0.0).to_bits().hash(&mut hasher);
+        (v.y + 0.0).to_bits().hash(&mut hasher);
+        (v.z + 0.0).to_bits().hash(&mut hasher);
         hasher.finish()
     }
 
@@ -153,7 +154,7 @@ impl Vec3 {
         Self::wrap(self.inner_ref().neg())
     }
 
-    // Math methods
+    // Math
 
     fn dot(&self, other: &Self) -> f32 {
         self.inner_ref().dot(other.inner_ref())
@@ -233,6 +234,8 @@ impl Vec3 {
         Self::wrap(self.inner_ref().to_world_dir(mat.inner_ref()))
     }
 }
+
+// Module registration
 
 pub fn add_vec3_class(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<Vec3>()?;

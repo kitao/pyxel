@@ -431,7 +431,7 @@ mod tests {
         };
         assert!((a.angle_to(&b) - 90.0).abs() < 1e-3);
         assert!((a.angle_to(&a) - 0.0).abs() < 1e-3);
-        // Zero-length input returns 0 instead of NaN
+        // Zero-length input returns 0 instead of NaN.
         let z = Vec3 {
             x: 0.0,
             y: 0.0,
@@ -451,7 +451,7 @@ mod tests {
         assert!((n.length() - 1.0).abs() < 1e-6);
         assert!((n.x - 0.6).abs() < 1e-6);
         assert!((n.y - 0.8).abs() < 1e-6);
-        // Zero-length input returns zero vector instead of NaN
+        // Zero-length input returns zero vector instead of NaN.
         let z = Vec3 {
             x: 0.0,
             y: 0.0,
@@ -476,7 +476,7 @@ mod tests {
         };
         let clamped = deref(&v.clamp_length(2.5));
         assert!((clamped.length() - 2.5).abs() < 1e-6);
-        // Already shorter than max returns same value
+        // Already shorter than max returns same value.
         let short = Vec3 {
             x: 1.0,
             y: 0.0,
@@ -602,7 +602,7 @@ mod tests {
                 z: 0.0
             }
         );
-        // Project onto zero vector returns zero
+        // Project onto zero vector returns zero.
         let z = Vec3 {
             x: 0.0,
             y: 0.0,

@@ -25,11 +25,12 @@
       let data = null;
       let lang = "en";
 
+      // Build the user guide shell and section containers.
       function buildPage() {
         const app = document.getElementById("app");
         app.innerHTML = "";
 
-        // Header
+        // Header with language selector and localized title text
         const header = document.createElement("header");
         header.className = "flex items-start gap-4 mb-6";
 
@@ -56,7 +57,7 @@
         header.appendChild(titleBlock);
         app.appendChild(header);
 
-        // Content
+        // User guide section containers populated by updateTexts
         const wrap = document.createElement("div");
         wrap.className = "space-y-6";
         wrap.id = "content";
@@ -68,23 +69,24 @@
         updateTexts();
       }
 
+      // Populate every user guide section from localized JSON content.
       function updateTexts() {
         const pyxelLink = link("https://github.com/kitao/pyxel", "Pyxel");
 
-        // Header
+        // Localized page title and subtitle
         document.title = t("title");
         document.getElementById("page-title").textContent = t("title");
         document.getElementById("page-subtitle").innerHTML = t(
           "subtitle",
         ).replace("{0}", pyxelLink);
 
-        // Overview
+        // Overview summary and work-in-progress note
         document.getElementById("s-overview").innerHTML = `
           <h2 class="section-title">${esc(t("overview_title"))}</h2>
           <p class="body">${t("overview_body").replace("{0}", "<strong>Pyxel Cube</strong>")}</p>
           <p class="body mt-2">${esc(t("wip"))}</p>`;
 
-        // Getting Started
+        // Getting-started introduction and minimal sample code
         document.getElementById("s-getting-started").innerHTML = `
           <h2 class="section-title">${esc(t("start_title"))}</h2>
           <p class="body">${esc(t("start_body"))}</p>
@@ -118,7 +120,7 @@ pyxel.run(update, draw)`,
         hljs.highlightAll();
       }
 
-      // Init
+      // Initialize from the localized user guide JSON.
       initPage("user-guide.json", buildPage);
     </script>
   </body>

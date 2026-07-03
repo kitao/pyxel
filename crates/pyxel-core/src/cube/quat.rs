@@ -108,7 +108,7 @@ impl Quat {
             return Self::identity();
         }
         if cos_theta < -0.999_999 {
-            // Opposite vectors: pick any perpendicular axis and rotate 180 deg
+            // Opposite vectors: pick any perpendicular axis and rotate 180°.
             let axis = if a.x.abs() < 0.9 {
                 Vec3 {
                     x: 1.0,
@@ -138,6 +138,8 @@ impl Quat {
     }
 
     pub fn from_matrix(mat: &Mat4) -> RcQuat {
+        // Shepperd's method: branch on trace / largest diagonal so the
+        // extraction divides by the largest quaternion component.
         let m = &mat.data;
         let trace = m[0][0] + m[1][1] + m[2][2];
         if trace > 0.0 {
@@ -223,7 +225,7 @@ impl Quat {
         Self::from_matrix(&mat)
     }
 
-    // Unary
+    // Unary operations
 
     pub fn conjugate(&self) -> RcQuat {
         Self::new(-self.x, -self.y, -self.z, self.w)
@@ -258,7 +260,7 @@ impl Quat {
         self.x * self.x + self.y * self.y + self.z * self.z + self.w * self.w
     }
 
-    // Binary
+    // Binary operations
 
     pub fn dot(&self, other: &Self) -> f32 {
         self.x * other.x + self.y * other.y + self.z * other.z + self.w * other.w
@@ -447,7 +449,7 @@ mod tests {
             z: 0.0,
         };
         let r = deref_v(&rc_ref!(&q).mul_vec(&v));
-        // (1, 0, 0) rotated 90 deg around Y-axis (right-handed) -> (0, 0, -1)
+        // (1, 0, 0) rotated 90° around Y-axis (right-handed) → (0, 0, -1).
         assert!(approx_eq_v(
             &r,
             &Vec3 {
@@ -746,25 +748,28 @@ mod tests {
 
     #[test]
     fn test_to_euler_gimbal_lock_positive_pitch() {
-        // 90° rotation around X axis hits the gimbal-lock branch
-        // (sy = sin(±90°) = ±1). The branch must still recover the
-        // requested rotation when re-mul'd onto a probe vector.
+        // A 90° rotation around Y drives sy = -r20 to 1, entering the
+        // gimbal-lock branch, which pins z = 0 and must recover the
+        // input angles exactly.
         let in_euler = Vec3 {
-            x: 90.0,
-            y: 0.0,
+            x: 0.0,
+            y: 90.0,
             z: 0.0,
         };
         let q = Quat::from_euler(&in_euler);
-        let recovered_euler = deref_v(&rc_ref!(&q).to_euler());
-        let q_back = Quat::from_euler(&recovered_euler);
-        let probe = Vec3 {
-            x: 0.0,
-            y: 1.0,
-            z: 0.0,
-        };
-        let r1 = deref_v(&rc_ref!(&q).mul_vec(&probe));
-        let r2 = deref_v(&rc_ref!(&q_back).mul_vec(&probe));
-        assert!(approx_eq_v(&r1, &r2));
+        // Confirm the input reaches the branch condition |sy| >= 0.999999.
+        let qn = deref(&rc_ref!(&q).normalize());
+        let sy = -2.0 * (qn.x * qn.z - qn.w * qn.y);
+        assert!(sy.abs() >= 0.999_999);
+        let out_euler = deref_v(&rc_ref!(&q).to_euler());
+        assert!(approx_eq_v(
+            &out_euler,
+            &Vec3 {
+                x: 0.0,
+                y: 90.0,
+                z: 0.0,
+            }
+        ));
     }
 
     #[test]
@@ -807,28 +812,27 @@ mod tests {
     #[test]
     fn test_slerp_near_endpoints_uses_lerp_fallback() {
         // Two nearly-identical rotations trigger the cos > 0.9995 branch
-        // that lerps and normalizes. The interpolated rotation must
-        // still produce a probe close to the starting orientation.
-        let a = Quat::from_axis_angle(
-            &Vec3 {
-                x: 0.0,
-                y: 1.0,
-                z: 0.0,
-            },
-            10.0,
-        );
-        let b = Quat::from_axis_angle(
-            &Vec3 {
-                x: 0.0,
-                y: 1.0,
-                z: 0.0,
-            },
-            10.01,
-        );
+        // that lerps and normalizes. The interpolated rotation must be a
+        // unit quaternion representing the midpoint orientation.
+        let axis = Vec3 {
+            x: 0.0,
+            y: 1.0,
+            z: 0.0,
+        };
+        let a = Quat::from_axis_angle(&axis, 10.0);
+        let b = Quat::from_axis_angle(&axis, 10.01);
         let mid = deref(&rc_ref!(&a).slerp(rc_ref!(&b), 0.5));
-        // Result must be a unit quaternion.
         let len = mid.x * mid.x + mid.y * mid.y + mid.z * mid.z + mid.w * mid.w;
         assert!((len - 1.0).abs() < 1e-4);
+        let expected = Quat::from_axis_angle(&axis, 10.005);
+        let probe = Vec3 {
+            x: 1.0,
+            y: 0.0,
+            z: 0.0,
+        };
+        let r_mid = deref_v(&mid.mul_vec(&probe));
+        let r_expected = deref_v(&rc_ref!(&expected).mul_vec(&probe));
+        assert!(approx_eq_v(&r_mid, &r_expected));
     }
 
     #[test]

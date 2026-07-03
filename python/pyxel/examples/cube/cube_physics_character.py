@@ -1,15 +1,7 @@
 import pyxel
-from cube_physics_camera import OrbitCamera
+from pyxel.cube import Collider, Mat4, Mesh, Node, Primitive, Shading, Vec3
 
-from pyxel.cube import (
-    Collider,
-    Mat4,
-    Mesh,
-    Node,
-    Primitive,
-    Shading,
-    Vec3,
-)
+from cube_physics_camera import OrbitCamera
 
 
 def _stage_mesh() -> Mesh:

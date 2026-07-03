@@ -40,7 +40,7 @@ impl Mat4 {
         Vec3::wrap(self.inner_ref().scale_vec())
     }
 
-    // Dunder methods
+    // Dunder
 
     fn __repr__(&self) -> String {
         let m = self.inner_ref();
@@ -73,9 +73,10 @@ impl Mat4 {
         use std::hash::{Hash, Hasher};
         let mut hasher = std::collections::hash_map::DefaultHasher::new();
         let m = self.inner_ref();
+        // Adding 0.0 folds -0.0 into +0.0 so values equal under __eq__ hash equally.
         for row in 0..4 {
             for col in 0..4 {
-                m.get(row, col).to_bits().hash(&mut hasher);
+                (m.get(row, col) + 0.0).to_bits().hash(&mut hasher);
             }
         }
         hasher.finish()
@@ -155,7 +156,7 @@ impl Mat4 {
         ))
     }
 
-    // Mutate methods
+    // Transforms
 
     fn translate(&self, v: PyRef<'_, Vec3>) -> Self {
         Self::wrap(self.inner_ref().translate(v.inner_ref()))
@@ -213,6 +214,8 @@ impl Mat4 {
         Self::wrap(self.inner_ref().to_world_dir(mat.inner_ref()))
     }
 }
+
+// Module registration
 
 pub fn add_mat4_class(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<Mat4>()?;

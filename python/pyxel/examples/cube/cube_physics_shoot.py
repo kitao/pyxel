@@ -1,13 +1,7 @@
 import pyxel
-from cube_physics_camera import OrbitCamera
+from pyxel.cube import Collider, Mat4, Node, Shading, Vec3
 
-from pyxel.cube import (
-    Collider,
-    Mat4,
-    Node,
-    Shading,
-    Vec3,
-)
+from cube_physics_camera import OrbitCamera
 
 
 class Target(Node):
@@ -22,8 +16,7 @@ class Target(Node):
         self.destroy()
 
     def on_draw(self):
-        col = 7 if not self.destroyed else 5
-        self.box(Mat4.IDENTITY, self.size, col)
+        self.box(Mat4.IDENTITY, self.size, 7)
 
 
 class Bullet(Node):

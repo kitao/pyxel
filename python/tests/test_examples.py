@@ -74,6 +74,7 @@ CAPTURE_PLANS = {
         {"frame": 100, "press": [pyxel.KEY_UP, pyxel.KEY_SPACE]},
     ],
     "c06_3d_physics": [{"frame": 1}, {"frame": 70}, {"frame": 140}],
+    "cube_demo": [{"frame": 1}, {"frame": 45}],
     # Static-screen and launcher captures
     "05_color_palette": [{"frame": 0}],
     "13_custom_font": [{"frame": 0}],
@@ -87,12 +88,15 @@ CAPTURE_PLANS = {
     "99_flip_animation": [{"frame": 1}, {"frame": 30}],
 }
 
+# Examples living in the examples/cube subdirectory rather than the top level
+CUBE_DIR_EXAMPLES = {"cube_demo"}
+
 FLIP_EXAMPLES = {"99_flip_animation"}
 
 
 class TestExamples:
     def test_top_level_examples_have_capture_plans(self):
-        planned = set(CAPTURE_PLANS)
+        planned = set(CAPTURE_PLANS) - CUBE_DIR_EXAMPLES
         examples = {
             script.stem
             for script in EXAMPLES_DIR.glob("*.py")
@@ -117,7 +121,10 @@ class TestExamples:
         "name", list(CAPTURE_PLANS.keys()), ids=list(CAPTURE_PLANS.keys())
     )
     def test_example(self, name, tmp_path, compare_screenshots):
-        script = EXAMPLES_DIR / f"{name}.py"
+        script_dir = (
+            EXAMPLES_DIR / "cube" if name in CUBE_DIR_EXAMPLES else EXAMPLES_DIR
+        )
+        script = script_dir / f"{name}.py"
         assert script.exists(), f"Example not found: {script}"
 
         plan = CAPTURE_PLANS[name]

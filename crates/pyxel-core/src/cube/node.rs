@@ -24,7 +24,7 @@ pub struct Node {
     pub tags: Vec<String>,
     pub parent: Option<WeakNode>,
     pub children: Vec<RcNode>,
-    // Set by destroy() and cascaded to the subtree. Scene.update step 8
+    // Set by destroy() and cascaded to the subtree. Node.update step 9
     // (cube-design.md § 16) collects flagged nodes post-order, fires
     // on_destroy, and detaches them. The flag is exposed read-only as
     // Node.destroyed so user hooks can early-return after a destroy().
@@ -83,7 +83,7 @@ impl Node {
     }
 
     // Flag this node and every descendant as destroyed without
-    // touching parent / child links. Scene.update step 8 collects
+    // touching parent / child links. Node.update step 9 collects
     // the flagged nodes post-order, fires on_destroy, then detaches.
     pub fn destroy(node: &RcNode) {
         Self::mark_destroyed_recursive(node);
@@ -151,7 +151,7 @@ impl Node {
         }
     }
 
-    // Local transform basis columns, normalized. Pyxel cube convention:
+    // Local transform basis columns, normalized. Pyxel Cube convention:
     // forward = -Z axis, right = +X axis, up = +Y axis.
     pub fn forward(node: &RcNode) -> RcVec3 {
         let t_rc = rc_ref!(node).transform.clone();
@@ -308,7 +308,7 @@ mod tests {
         assert!(rc_ref!(&mid).destroyed);
         assert!(rc_ref!(&leaf).destroyed);
         // Tree links untouched (deferred removal happens in Scene
-        // step 8, not in destroy()).
+        // step 9, not in destroy()).
         assert_eq!(Node::children(&root).len(), 1);
         assert_eq!(Node::children(&mid).len(), 1);
     }
@@ -354,7 +354,7 @@ mod tests {
         Node::add_child(&p, &c);
         Node::destroy(&c);
         // Deferred semantics: the flag is set, but parent / child
-        // links survive until Scene step 8 detaches them.
+        // links survive until Node.update step 9 detaches them.
         assert!(rc_ref!(&c).destroyed);
         assert_eq!(rc_ref!(&p).children.len(), 1);
         assert!(Node::parent(&c).is_some());
@@ -573,7 +573,7 @@ mod tests {
         Node::add_child(&mid, &leaf);
         // leaf has shading=None; effective should resolve to root's.
         let resolved = Node::effective_shading(&leaf).unwrap();
-        assert!(std::rc::Rc::ptr_eq(&resolved, &shading));
+        assert!(Rc::ptr_eq(&resolved, &shading));
     }
 
     #[test]
@@ -588,7 +588,7 @@ mod tests {
         rc_mut!(&leaf).shading = Some(leaf_shading.clone());
         Node::add_child(&root, &leaf);
         let resolved = Node::effective_shading(&leaf).unwrap();
-        assert!(std::rc::Rc::ptr_eq(&resolved, &leaf_shading));
+        assert!(Rc::ptr_eq(&resolved, &leaf_shading));
     }
 
     #[test]
@@ -601,7 +601,7 @@ mod tests {
         rc_mut!(&root).camera = Some(camera.clone());
         // leaf has camera=None; effective should resolve to root's.
         let resolved = Node::effective_camera(&leaf).unwrap();
-        assert!(std::rc::Rc::ptr_eq(&resolved, &camera));
+        assert!(Rc::ptr_eq(&resolved, &camera));
     }
 
     #[test]
@@ -615,7 +615,7 @@ mod tests {
         rc_mut!(&root).camera = Some(root_camera);
         rc_mut!(&leaf).camera = Some(leaf_camera.clone());
         let resolved = Node::effective_camera(&leaf).unwrap();
-        assert!(std::rc::Rc::ptr_eq(&resolved, &leaf_camera));
+        assert!(Rc::ptr_eq(&resolved, &leaf_camera));
     }
 
     #[test]

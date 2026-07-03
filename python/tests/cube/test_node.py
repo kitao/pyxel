@@ -29,7 +29,7 @@ class TestAttributes:
         assert n.active is True
         assert n.visible is True
         # transform reads as Mat4.IDENTITY by default.
-        assert isinstance(n.transform, Mat4)
+        assert n.transform == Mat4.IDENTITY
         # Cascade attributes are None on a freshly constructed Node so
         # they inherit from the closest non-None ancestor; the root node
         # provides the camera / shading (cube-design.md § 15).
@@ -185,7 +185,7 @@ class TestHierarchy:
         assert root.find_by_name("missing") == []
 
     def test_find_by_name_multiple_matches(self):
-        # Pyxel cube does not enforce unique names; find_by_name returns
+        # Pyxel Cube does not enforce unique names; find_by_name returns
         # every match (e.g. multiple "zako" enemies under the same root).
         root = Node()
         a = Node()
@@ -216,9 +216,9 @@ class TestHierarchy:
         c = Node()
         p.add_child(c)
         c.destroy()
-        # Deferred semantics (cube-design.md § 16 step 8): destroy()
+        # Deferred semantics (cube-design.md § 16 step 9): destroy()
         # sets the flag but the parent / child links survive until
-        # Scene.update detaches the node at the end of the frame.
+        # Node.update detaches the node at the end of the frame.
         assert c.destroyed is True
         assert len(p.children) == 1
 
@@ -255,9 +255,13 @@ class TestSubclassing:
             def __init__(self, depth):
                 super().__init__()
                 self.name = f"level-{depth}"
+                if depth > 0:
+                    self.add_child(Level(depth - 1))
 
         s = Level(3)
         assert s.name == "level-3"
+        assert s.children[0].name == "level-2"
+        assert len(s.find_by_name("level-0")) == 1
 
     def test_lifecycle_hooks_default_noop(self):
         # Default implementations are no-op; they must be callable
@@ -316,10 +320,9 @@ class TestImmediateDrawSafety:
         Node().text(Vec3.ZERO, "X", 7)
         Node().text(Vec3(0, 1, 0), "Hi", 6, font=None)
 
-    def test_sprite_takes_image(self):
-        # sprite needs an Image; the no-window environment cannot
-        # construct one easily — verify the method is callable.
-        assert callable(Node().sprite)
+    def test_sprite(self):
+        uvs = ((0.0, 0.0), (1.0, 0.0), (1.0, 1.0), (0.0, 1.0))
+        Node().sprite(Vec3.ZERO, pyxel.images[0], uvs, 1.0, 1.0, colkey=0)
 
     def test_mesh_draw_method_removed(self):
         assert not hasattr(Node(), "mesh")
@@ -484,7 +487,7 @@ class TestBoxSphereTexturing:
         Node().sphere(Vec3.ZERO, 1.0, img, colkey=0)
 
 
-# `on_collide` is invoked by Node.update step 7 once per contact pair
+# `on_collide` is invoked by Node.update step 8 once per contact pair
 # (cube-design.md § 16). The signature must expose the documented
 # argument names so engine calls and user overrides agree. Contact is
 # engine-built, so the names are checked through the signature rather
@@ -498,8 +501,8 @@ class TestOnCollideSignature:
 
 # circ, circb, text, and sprite are always-billboard primitives.
 # Pixel-level verification that the geometry faces the camera is
-# covered by manual visual inspection of c01_hello_cube (the Label text
-# must stay readable as the scene rotates). This unit test only
+# covered by manual visual inspection of c01_hello_cube (the greeting
+# text drawn in Scene.on_draw must stay readable). This unit test only
 # confirms the plain positional shape continues to work.
 class TestAlwaysBillboard:
     def test_circ_circb_text_plain_call(self):

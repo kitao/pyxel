@@ -8,14 +8,24 @@ from pyxel.cube import Mesh, Motion, Node, Vec3
 
 from .glb_fixtures import (
     write_alpha_texture_glb,
+    write_external_buffer_glb,
+    write_external_image_glb,
+    write_gray_alpha_texture_glb,
+    write_gray_texture_glb,
+    write_line_mode_glb,
     write_morph_target_glb,
+    write_non_indexed_glb,
+    write_rgb_texture_glb,
     write_single_texture_motion_glb,
     write_skin_glb,
+    write_two_material_glb,
     write_two_texture_glb,
 )
 
-
 EXAMPLES_DIR = Path(__file__).parents[2] / "pyxel" / "examples"
+
+
+# Geometry helpers
 
 
 def _vec3(values, index):
@@ -41,6 +51,9 @@ def _dot(a, b):
 
 def _center(a, b, c):
     return tuple((a[i] + b[i] + c[i]) / 3.0 for i in range(3))
+
+
+# Tests
 
 
 def test_from_glb_loads_single_texture_mesh(tmp_path):
@@ -81,6 +94,37 @@ def test_bundled_actor_cube_is_closed_and_outward_wound():
         assert set(coord_edges.values()) == {2}
 
 
+def test_from_glb_converts_rgb_texture(tmp_path):
+    path = write_rgb_texture_glb(tmp_path / "rgb.glb")
+    mesh = Mesh.from_glb(str(path), colkey=0)
+
+    assert isinstance(mesh.col_img, Image)
+
+
+def test_from_glb_converts_gray_texture(tmp_path):
+    path = write_gray_texture_glb(tmp_path / "gray.glb")
+    mesh = Mesh.from_glb(str(path), colkey=0)
+
+    assert isinstance(mesh.col_img, Image)
+
+
+def test_from_glb_converts_gray_alpha_texture(tmp_path):
+    path = write_gray_alpha_texture_glb(tmp_path / "gray_alpha.glb")
+    mesh = Mesh.from_glb(str(path), colkey=0)
+
+    assert isinstance(mesh.col_img, Image)
+
+
+def test_from_glb_loads_non_indexed_primitive(tmp_path):
+    path = write_non_indexed_glb(tmp_path / "non_indexed.glb")
+    mesh = Mesh.from_glb(str(path))
+    primitive = next(p for p in mesh.primitives if p is not None)
+
+    # Two triangles read straight from POSITION; no indices accessor.
+    assert len(primitive.positions) == 18
+    assert len(primitive.indices) == 0
+
+
 def test_from_glb_loads_motion(tmp_path):
     path = write_single_texture_motion_glb(tmp_path / "actor.glb")
     mesh = Mesh.from_glb(str(path), fps=30.0)
@@ -102,6 +146,44 @@ def test_from_glb_rejects_multiple_textures(tmp_path):
     path = write_two_texture_glb(tmp_path / "two_textures.glb")
 
     with pytest.raises(ValueError, match="multiple textures"):
+        Mesh.from_glb(str(path))
+
+
+def test_from_glb_rejects_multiple_materials(tmp_path):
+    path = write_two_material_glb(tmp_path / "two_materials.glb")
+
+    with pytest.raises(ValueError, match="multiple materials"):
+        Mesh.from_glb(str(path))
+
+
+def test_from_glb_rejects_external_buffer(tmp_path):
+    path = write_external_buffer_glb(tmp_path / "external_buffer.glb")
+
+    with pytest.raises(ValueError, match="external buffers"):
+        Mesh.from_glb(str(path))
+
+
+def test_from_glb_rejects_external_image(tmp_path):
+    path = write_external_image_glb(tmp_path / "external_image.glb")
+
+    # The gltf import of a GLB slice rejects any image URI itself, so
+    # the failure surfaces as an import error rather than the parser's
+    # own external-image message.
+    with pytest.raises(ValueError, match="external reference"):
+        Mesh.from_glb(str(path))
+
+
+def test_from_glb_rejects_non_triangle_mode(tmp_path):
+    path = write_line_mode_glb(tmp_path / "lines.glb")
+
+    with pytest.raises(ValueError, match="only triangle primitives"):
+        Mesh.from_glb(str(path))
+
+
+def test_from_glb_rejects_non_indexed_vertex_count_not_multiple_of_3(tmp_path):
+    path = write_non_indexed_glb(tmp_path / "ragged.glb", vertex_count=4)
+
+    with pytest.raises(ValueError, match="multiple of 3"):
         Mesh.from_glb(str(path))
 
 
@@ -137,7 +219,9 @@ def test_play_motion_advances_during_update(tmp_path):
     root.play_motion(mesh.motions[0], start_frame=0.0)
     root.update()
 
-    assert root.transform.pos.x > 0.0
+    # One update advances the playhead by the default speed (1.0), so
+    # the linear 0-to-1 slide over 30 frames sits at x = 1 / 30.
+    assert root.transform.pos == Vec3(1.0 / 30.0, 0.0, 0.0)
 
 
 def test_stop_motion_leaves_current_pose(tmp_path):

@@ -1,4 +1,5 @@
 use crate::cube::mat4::{Mat4, RcMat4};
+use crate::cube::scene::ProjectedVertex;
 
 // View information held independently from Scene so multiple cameras can
 // be swapped per render call. Mutable.
@@ -13,6 +14,9 @@ pub struct Camera {
     pub depth: Vec<f32>,
     pub depth_w: u32,
     pub depth_h: u32,
+    // Prim scratch cache kept here for the same reason as depth: the draw
+    // context borrows it per draw, so its capacity survives across frames.
+    pub vertex_scratch: Vec<ProjectedVertex>,
 }
 
 define_rc_type!(RcCamera, Camera);
@@ -29,6 +33,7 @@ impl Camera {
             depth: Vec::new(),
             depth_w: 0,
             depth_h: 0,
+            vertex_scratch: Vec::new(),
         })
     }
 
@@ -54,12 +59,15 @@ mod tests {
         let c = Camera::new();
         rc_mut!(&c).ensure_depth(4, 4);
         assert_eq!(rc_ref!(&c).depth.len(), 16);
-        // Same size: still 16, no panic.
+        // Same size: the buffer is kept, so a written value survives (a
+        // spurious realloc would reset it to INFINITY).
+        rc_mut!(&c).depth[0] = 5.0;
         rc_mut!(&c).ensure_depth(4, 4);
-        assert_eq!(rc_ref!(&c).depth.len(), 16);
-        // New size: reallocated.
+        assert_eq!(rc_ref!(&c).depth[0], 5.0);
+        // New size: reallocated and reset even though the length stays 16.
         rc_mut!(&c).ensure_depth(2, 8);
         assert_eq!(rc_ref!(&c).depth.len(), 16);
+        assert_eq!(rc_ref!(&c).depth[0], f32::INFINITY);
         assert_eq!(rc_ref!(&c).depth_w, 2);
         assert_eq!(rc_ref!(&c).depth_h, 8);
     }
@@ -81,7 +89,7 @@ mod tests {
         assert_eq!(c.near, 0.1);
         assert_eq!(c.far, 1000.0);
         assert!(c.ortho_size.is_none());
-        // transform defaults to identity
+        // transform defaults to identity.
         let m = rc_ref!(&c.transform);
         for i in 0..4 {
             for j in 0..4 {

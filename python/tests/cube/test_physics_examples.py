@@ -51,6 +51,9 @@ def test_character_and_capsule_settle_on_stage_mesh():
     for _ in range(120):
         scene.update()
 
+    # Byte-exact determinism is pinned by the screenshot regression
+    # (python/tests/references/examples); these bands assert the semantic
+    # property that both bodies settle just above the stage surface.
     assert 0.4 < char.transform.pos.y < 0.9
     assert 0.7 < capsule.transform.pos.y < 0.9
 
@@ -91,6 +94,9 @@ def test_stack_example_settles_then_reacts_to_bullet():
         )
         for can, start in zip(cans, CAN_LAYOUT)
     ]
+    # Byte-exact determinism is pinned by the screenshot regression
+    # (python/tests/references/examples); this band asserts the semantic
+    # property that the settled pyramid stays in place.
     assert max(drifts) < 0.25
 
     scene.add_child(StackBullet(Vec3(0, 1.0, 8), Vec3(0, 0, -0.4)))
@@ -103,6 +109,9 @@ def test_stack_example_settles_then_reacts_to_bullet():
         if max(abs(can.transform.pos.x - start.x), abs(can.transform.pos.z - start.z))
         > 0.5
     )
+    # Byte-exact determinism is pinned by the screenshot regression
+    # (python/tests/references/examples); this band asserts the semantic
+    # property that the bullet knocks at least one can away.
     assert moved >= 1
 
 
@@ -117,4 +126,7 @@ def test_terrain_example_ball_rolls_down_slope():
     for _ in range(240):
         scene.update()
 
+    # Byte-exact determinism is pinned by the screenshot regression
+    # (python/tests/references/examples); this band asserts the semantic
+    # property that the ball rolls down the slope.
     assert ball.transform.pos.y < initial_y - 0.5

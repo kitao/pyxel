@@ -8,6 +8,10 @@ license.workspace = true
 [lib]
 name = "pyxel"
 
+[[bench]]
+name = "cube"
+harness = false
+
 [dependencies]
 blip_buf = "0.1"
 # wasmbind routes time queries through js-sys for Emscripten/WASM builds
@@ -15,8 +19,8 @@ chrono = { version = "0.4", features = ["wasmbind"] }
 directories = "6.0"
 fontdue = "0.9"
 gif = "0.14"
-gltf = { version = "1", features = ["import"] }
 glow = "0.17"
+gltf = { version = "1", features = ["import"] }
 hound = "3.5"
 image = "0.25"
 indexmap = "2.7"

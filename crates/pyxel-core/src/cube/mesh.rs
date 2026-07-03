@@ -1,9 +1,11 @@
 use std::cell::RefCell;
 
 use crate::cube::bvh::Bvh;
+use crate::cube::collision::Aabb;
 use crate::cube::mat4::{Mat4, RcMat4};
 use crate::cube::motion::RcMotion;
-use crate::cube::primitive::RcPrimitive;
+use crate::cube::primitive::{RcPrimitive, MODE_TRIANGLES};
+use crate::cube::vec3::Vec3;
 use crate::image::RcImage;
 
 // Asset container for a hierarchical 3D model. primitives / transforms /
@@ -38,6 +40,12 @@ pub struct Mesh {
     // refit (cube-design.md § 11.1: dynamic mesh colliders are out of
     // scope). Not exposed through the binding.
     pub bvh: RefCell<Option<Bvh>>,
+    // Lazy mesh-local AABB (union of every part's positions composed
+    // with the identity outer transform). Cached under the same
+    // static-mesh assumption as `bvh`; Aabb::from_mesh lifts its 8
+    // corners by the collider's world transform instead of
+    // re-transforming every vertex per frame.
+    pub local_aabb: RefCell<Option<Aabb>>,
 }
 
 define_rc_type!(RcMesh, Mesh);
@@ -53,6 +61,7 @@ impl Mesh {
             col_img: ColImage::Color(7),
             colkey: None,
             bvh: RefCell::new(None),
+            local_aabb: RefCell::new(None),
         })
     }
 
@@ -73,23 +82,79 @@ impl Mesh {
         f(guard.as_ref().unwrap())
     }
 
-    fn collect_triangles(&self) -> (Vec<crate::cube::vec3::Vec3>, Vec<[u32; 3]>) {
+    // Return the mesh-local AABB, computing it on first use. The box
+    // spans every part's positions (any primitive mode) composed with
+    // the identity outer transform; a mesh without positions yields a
+    // degenerate box at the local origin.
+    pub fn local_aabb(&self) -> Aabb {
+        if let Some(aabb) = *self.local_aabb.borrow() {
+            return aabb;
+        }
         let identity = Mat4::identity_value();
         let world_per_part = self.compose_world_transforms(&identity);
-        let mut positions: Vec<crate::cube::vec3::Vec3> = Vec::new();
+        let mut min = Vec3 {
+            x: f32::INFINITY,
+            y: f32::INFINITY,
+            z: f32::INFINITY,
+        };
+        let mut max = Vec3 {
+            x: f32::NEG_INFINITY,
+            y: f32::NEG_INFINITY,
+            z: f32::NEG_INFINITY,
+        };
+        let mut any = false;
+        for (i, prim_opt) in self.primitives.iter().enumerate() {
+            let Some(prim_rc) = prim_opt else {
+                continue;
+            };
+            let prim = rc_ref!(prim_rc);
+            let world = world_per_part[i];
+            for chunk in prim.positions.as_chunks::<3>().0 {
+                let p = world.mul_vec_value(&Vec3 {
+                    x: chunk[0],
+                    y: chunk[1],
+                    z: chunk[2],
+                });
+                min.x = min.x.min(p.x);
+                min.y = min.y.min(p.y);
+                min.z = min.z.min(p.z);
+                max.x = max.x.max(p.x);
+                max.y = max.y.max(p.y);
+                max.z = max.z.max(p.z);
+                any = true;
+            }
+        }
+        if !any {
+            let origin = Vec3 {
+                x: 0.0,
+                y: 0.0,
+                z: 0.0,
+            };
+            min = origin;
+            max = origin;
+        }
+        let aabb = Aabb { min, max };
+        *self.local_aabb.borrow_mut() = Some(aabb);
+        aabb
+    }
+
+    fn collect_triangles(&self) -> (Vec<Vec3>, Vec<[u32; 3]>) {
+        let identity = Mat4::identity_value();
+        let world_per_part = self.compose_world_transforms(&identity);
+        let mut positions: Vec<Vec3> = Vec::new();
         let mut triangles: Vec<[u32; 3]> = Vec::new();
         for (i, prim_opt) in self.primitives.iter().enumerate() {
             let Some(prim_rc) = prim_opt else {
                 continue;
             };
             let prim = rc_ref!(prim_rc);
-            if prim.mode != crate::cube::primitive::MODE_TRIANGLES {
+            if prim.mode != MODE_TRIANGLES {
                 continue;
             }
             let world = world_per_part[i];
             let base_index = positions.len() as u32;
             for chunk in prim.positions.as_chunks::<3>().0 {
-                let local = crate::cube::vec3::Vec3 {
+                let local = Vec3 {
                     x: chunk[0],
                     y: chunk[1],
                     z: chunk[2],
@@ -341,7 +406,7 @@ mod tests {
         {
             let m = rc_mut!(&m);
             m.primitives = vec![None];
-            m.transforms = vec![Mat4::from_translation(&crate::cube::vec3::Vec3 {
+            m.transforms = vec![Mat4::from_translation(&Vec3 {
                 x: 5.0,
                 y: 0.0,
                 z: 0.0,
@@ -349,7 +414,7 @@ mod tests {
             m.parents = vec![-1];
         }
         let m = rc_ref!(&m);
-        let root_rc = Mat4::from_translation(&crate::cube::vec3::Vec3 {
+        let root_rc = Mat4::from_translation(&Vec3 {
             x: 10.0,
             y: 0.0,
             z: 0.0,
@@ -372,7 +437,7 @@ mod tests {
         {
             let m = rc_mut!(&m);
             m.primitives = vec![None, None, None];
-            let t = Mat4::from_translation(&crate::cube::vec3::Vec3 {
+            let t = Mat4::from_translation(&Vec3 {
                 x: 1.0,
                 y: 0.0,
                 z: 0.0,
@@ -428,12 +493,12 @@ mod tests {
             m.primitives = vec![None, None, None];
             m.transforms = vec![
                 Mat4::identity(),
-                Mat4::from_translation(&crate::cube::vec3::Vec3 {
+                Mat4::from_translation(&Vec3 {
                     x: 1.0,
                     y: 0.0,
                     z: 0.0,
                 }),
-                Mat4::from_translation(&crate::cube::vec3::Vec3 {
+                Mat4::from_translation(&Vec3 {
                     x: 0.0,
                     y: 1.0,
                     z: 0.0,

@@ -1,10 +1,17 @@
-use crate::cube::{Mat4, Quat, Vec3};
+use crate::cube::mat4::Mat4;
+use crate::cube::quat::Quat;
+use crate::cube::vec3::Vec3;
+
+// Keyframe interpolation mode (the glTF sampler modes cube supports).
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum MotionInterpolation {
     Step,
     Linear,
 }
+
+// Keyframe payload of a channel. The variant must match the channel's
+// target; sampling skips mismatched channels.
 
 #[derive(Clone, Debug, PartialEq)]
 pub enum MotionValues {
@@ -13,12 +20,18 @@ pub enum MotionValues {
     Scales(Vec<Vec3>),
 }
 
+// Transform component a channel animates.
+
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum MotionTarget {
     Translation,
     Rotation,
     Scale,
 }
+
+// Keyframe track animating one transform component of one mesh part.
+// `inputs` holds the key times in Pyxel frames (glTF seconds × fps at
+// import).
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct MotionChannel {
@@ -29,6 +42,9 @@ pub struct MotionChannel {
     pub interpolation: MotionInterpolation,
 }
 
+// Animation clip imported from a GLB: per-part base transforms plus the
+// keyframe channels that override them while the clip plays.
+
 #[derive(Clone, Debug, PartialEq)]
 pub struct Motion {
     pub name: String,
@@ -38,6 +54,8 @@ pub struct Motion {
 }
 
 define_rc_type!(RcMotion, Motion);
+
+// Clip sampling
 
 impl Motion {
     pub fn new(name: String, length: f32, base_transforms: Vec<Mat4>) -> RcMotion {
@@ -63,7 +81,7 @@ impl Motion {
             };
             let (pos, rot, scale) = sampled_parts[channel.part_index].get_or_insert_with(|| {
                 (
-                    *rc_ref!(&base.pos()),
+                    base.pos_value(),
                     *rc_ref!(&base.rot()),
                     *rc_ref!(&base.scale_vec()),
                 )
@@ -80,7 +98,7 @@ impl Motion {
             .enumerate()
             .filter_map(|(part_index, components)| {
                 components.map(|(pos, rot, scale)| {
-                    let transform = *rc_ref!(&Mat4::compose(&pos, &rot, &scale));
+                    let transform = compose_value(&pos, &rot, &scale);
                     (part_index, transform)
                 })
             })
@@ -99,6 +117,8 @@ impl Motion {
     }
 }
 
+// Channel keyframe sampling
+
 impl MotionChannel {
     fn is_usable(&self) -> bool {
         self.inputs.len().min(self.value_len()) > 0
@@ -110,6 +130,8 @@ impl MotionChannel {
             )
     }
 
+    // Assumes `inputs` ascend — the glTF sampler contract, upheld by
+    // glb_parser (the only channel producer).
     fn key_span(&self, frame: f32) -> Option<(usize, usize, f32)> {
         let key_count = self.inputs.len().min(self.value_len());
         if key_count == 0 {
@@ -184,6 +206,27 @@ impl MotionChannel {
     }
 }
 
+// Non-Rc transform composition for the per-frame sampling path
+
+// Mirrors Mat4::compose (T * R * S) through the value-typed operator
+// cores, computing a bit-identical transform without the factory
+// chain's Rc temporaries. The quaternion-to-matrix factor keeps its Rc:
+// Quat exposes no value-typed core to build on.
+fn compose_value(pos: &Vec3, rot: &Quat, scale: &Vec3) -> Mat4 {
+    let mut t = Mat4::identity_value();
+    t.data[0][3] = pos.x;
+    t.data[1][3] = pos.y;
+    t.data[2][3] = pos.z;
+    let r = *rc_ref!(&rot.to_matrix());
+    let mut s = Mat4::identity_value();
+    s.data[0][0] = scale.x;
+    s.data[1][1] = scale.y;
+    s.data[2][2] = scale.z;
+    t.mul_mat_value(&r).mul_mat_value(&s)
+}
+
+// Fallback value helpers
+
 fn zero_vec3() -> Vec3 {
     Vec3 {
         x: 0.0,
@@ -245,7 +288,7 @@ mod tests {
     }
 
     #[test]
-    fn mismatched_channel_value_type_is_skipped() {
+    fn test_mismatched_channel_value_type_is_skipped() {
         let base = *rc_ref!(&Mat4::from_translation(&Vec3 {
             x: 2.0,
             y: 0.0,
@@ -268,7 +311,7 @@ mod tests {
     }
 
     #[test]
-    fn linear_translation_sampling_interpolates_midpoint() {
+    fn test_linear_translation_sampling_interpolates_midpoint() {
         let motion = Motion {
             name: String::from("move"),
             length: 30.0,
@@ -280,7 +323,7 @@ mod tests {
     }
 
     #[test]
-    fn step_translation_sampling_holds_previous_key() {
+    fn test_step_translation_sampling_holds_previous_key() {
         let motion = Motion {
             name: String::from("move"),
             length: 30.0,
@@ -292,7 +335,7 @@ mod tests {
     }
 
     #[test]
-    fn non_looping_frame_clamps_to_end() {
+    fn test_non_looping_frame_clamps_to_end() {
         let motion = Motion {
             name: String::from("move"),
             length: 30.0,
@@ -304,7 +347,7 @@ mod tests {
     }
 
     #[test]
-    fn looping_frame_wraps_into_motion_length() {
+    fn test_looping_frame_wraps_into_motion_length() {
         let motion = Motion {
             name: String::from("move"),
             length: 30.0,
@@ -316,7 +359,7 @@ mod tests {
     }
 
     #[test]
-    fn scale_sampling_interpolates_midpoint() {
+    fn test_scale_sampling_interpolates_midpoint() {
         let motion = Motion {
             name: String::from("scale"),
             length: 30.0,
@@ -350,7 +393,7 @@ mod tests {
     }
 
     #[test]
-    fn rotation_sampling_slerps_midpoint() {
+    fn test_rotation_sampling_slerps_midpoint() {
         let y_axis = Vec3 {
             x: 0.0,
             y: 1.0,
@@ -376,7 +419,9 @@ mod tests {
         let rot = sampled.rot();
         let (axis, angle) = rc_ref!(&rot).to_axis_angle();
         let axis = rc_ref!(&axis);
-        assert!((axis.y.abs() - 1.0).abs() < 1e-5);
+        // The midpoint is deterministically +Y (w = cos 22.5° > 0, so
+        // to_axis_angle cannot flip the axis to -Y).
+        assert!((axis.y - 1.0).abs() < 1e-5);
         assert!((angle - 45.0).abs() < 1e-4);
     }
 }

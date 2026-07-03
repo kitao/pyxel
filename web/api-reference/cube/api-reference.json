@@ -65,18 +65,18 @@
       "uk": "Довідник API Pyxel Cube"
     },
     "subtitle": {
-      "en": "API reference for {0}, a retro game engine for Python.",
-      "cn": "Python 复古游戏引擎 {0} 的 API 参考",
-      "de": "API-Referenz für {0}, eine Retro-Spielengine für Python.",
-      "es": "Referencia de API de {0}, un motor de juegos retro para Python.",
-      "fr": "Référence API de {0}, un moteur de jeux rétro pour Python.",
-      "it": "Riferimento API di {0}, un motore di giochi retrò per Python.",
-      "ja": "Python 向けレトロゲームエンジン {0} の API リファレンス",
-      "ko": "Python용 레트로 게임 엔진 {0}의 API 레퍼런스",
-      "pt": "Referência de API do {0}, um motor de jogos retrô para Python.",
-      "ru": "Справочник API {0}, ретро-игрового движка для Python.",
-      "tr": "Python için retro oyun motoru {0} API referansı.",
-      "uk": "Довідник API {0}, ретро-ігрового рушія для Python."
+      "en": "API reference for the Cube 3D extension of {0}.",
+      "cn": "{0} 的 Cube 3D 扩展 API 参考",
+      "de": "API-Referenz für die Cube-3D-Erweiterung von {0}.",
+      "es": "Referencia de API para la extensión 3D Cube de {0}.",
+      "fr": "Référence API de l'extension 3D Cube de {0}.",
+      "it": "Riferimento API per l'estensione 3D Cube di {0}.",
+      "ja": "{0} の 3D 拡張モジュール Cube の API リファレンス",
+      "ko": "{0}의 Cube 3D 확장 API 레퍼런스",
+      "pt": "Referência de API da extensão 3D Cube do {0}.",
+      "ru": "Справочник API для 3D-расширения Cube в {0}.",
+      "tr": "{0} için Cube 3D uzantısının API referansı.",
+      "uk": "Довідник API для 3D-розширення Cube у {0}."
     },
     "search_placeholder": {
       "en": "Search APIs...",
@@ -4039,9 +4039,9 @@
           "advanced": false
         },
         {
-          "name": "plane",
-          "type": "function",
-          "signature": "plane(width=1.0, height=1.0)",
+          "name": "Primitive.plane",
+          "type": "class",
+          "signature": "Primitive.plane(width=1.0, height=1.0)",
           "description": {
             "en": "Create a textured XY-plane Primitive with flat normals.",
             "cn": "创建带纹理的 XY 平面 Primitive，并使用平面法线。",
@@ -4101,9 +4101,9 @@
           "advanced": false
         },
         {
-          "name": "box",
-          "type": "function",
-          "signature": "box(size=Vec3.ONE)",
+          "name": "Primitive.box",
+          "type": "class",
+          "signature": "Primitive.box(size=Vec3.ONE)",
           "description": {
             "en": "Create a textured box Primitive with flat normals.",
             "cn": "创建带纹理的盒体 Primitive，并使用平面法线。",
@@ -4145,9 +4145,9 @@
           "advanced": false
         },
         {
-          "name": "sphere",
-          "type": "function",
-          "signature": "sphere(radius=0.5)",
+          "name": "Primitive.sphere",
+          "type": "class",
+          "signature": "Primitive.sphere(radius=0.5)",
           "description": {
             "en": "Create a textured low-poly sphere Primitive with flat normals.",
             "cn": "创建带纹理的低多边形球体 Primitive，并使用平面法线。",
@@ -4766,9 +4766,9 @@
           "advanced": false
         },
         {
-          "name": "from_glb",
-          "type": "function",
-          "signature": "from_glb(filename, *, colkey=None, fps=30.0)",
+          "name": "Mesh.from_glb",
+          "type": "class",
+          "signature": "Mesh.from_glb(filename, *, colkey=None, fps=30.0)",
           "description": {
             "en": "Load a binary glTF (.glb) file into a Mesh. Embedded buffers and a single embedded texture are supported; imported transform animations are exposed through motions.",
             "cn": "将二进制 glTF (.glb) 文件加载为 Mesh。支持嵌入缓冲区和单个嵌入纹理；导入的变换动画会通过 motions 暴露。",
@@ -6204,9 +6204,9 @@
           "advanced": false
         },
         {
-          "name": "from_mesh",
-          "type": "function",
-          "signature": "from_mesh(mesh)",
+          "name": "Node.from_mesh",
+          "type": "class",
+          "signature": "Node.from_mesh(mesh)",
           "description": {
             "en": "Create a Node tree from a Mesh and return its root node.",
             "cn": "从 Mesh 创建 Node 树，并返回其根节点。",
@@ -7867,7 +7867,7 @@
         {
           "name": "box",
           "type": "function",
-          "signature": "box(mat, size, col_img=7, colkey=None)",
+          "signature": "box(mat, size, col_img=7, *, colkey=None)",
           "description": {
             "en": "Draw a filled box. When col_img is an Image, every face is textured with the whole image.",
             "cn": "绘制填充盒体。当 col_img 为 Image 时，每个面都会使用整张图像作为纹理。",
@@ -8044,7 +8044,7 @@
         {
           "name": "sphere",
           "type": "function",
-          "signature": "sphere(pos, r, col_img=7, colkey=None)",
+          "signature": "sphere(pos, r, col_img=7, *, colkey=None)",
           "description": {
             "en": "Draw a filled sphere (a subdivided icosahedron of 80 faces). When col_img is an Image, it is wrapped with an equirectangular mapping.",
             "cn": "绘制填充球体 (细分后的 80 面二十面体)。当 col_img 为 Image 时，会用等距圆柱映射包裹它。",
@@ -8220,7 +8220,7 @@
         {
           "name": "plane",
           "type": "function",
-          "signature": "plane(mat, img, uvs, w, h, colkey=None)",
+          "signature": "plane(mat, img, uvs, w, h, *, colkey=None)",
           "description": {
             "en": "Draw a textured rectangle of size w x h on mat's local XY plane.",
             "cn": "在 mat 的局部 XY 平面上绘制大小为 w x h 的纹理矩形。",
@@ -8353,7 +8353,7 @@
         {
           "name": "sprite",
           "type": "function",
-          "signature": "sprite(pos, img, uvs, w, h, colkey=None, angle=0.0)",
+          "signature": "sprite(pos, img, uvs, w, h, *, colkey=None, angle=0.0)",
           "description": {
             "en": "Draw a textured rectangle that always faces the camera. Sprites render unshaded.",
             "cn": "绘制始终面向相机的纹理矩形。Sprite 不进行明暗处理。",
@@ -8504,7 +8504,7 @@
         {
           "name": "prim",
           "type": "function",
-          "signature": "prim(mat, primitive, col_img=7, colkey=None)",
+          "signature": "prim(mat, primitive, col_img=7, *, colkey=None)",
           "description": {
             "en": "Draw a Primitive asset with its own mode and culling.",
             "cn": "按 Primitive 自身的模式和剔除设置绘制 Primitive 资产。",
@@ -8601,7 +8601,7 @@
         {
           "name": "text",
           "type": "function",
-          "signature": "text(pos, s, col, font=None)",
+          "signature": "text(pos, s, col, *, font=None)",
           "description": {
             "en": "Draw a screen-space string centered at the projected position. Glyphs keep their pixel size at any distance; the depth test still applies.",
             "cn": "在投影位置居中绘制屏幕空间字符串。字形在任何距离都保持像素大小；深度测试仍然适用。",
@@ -8837,7 +8837,7 @@
         {
           "name": "raycast",
           "type": "function",
-          "signature": "raycast(origin, direction, max_distance=None, hit_triggers=False, tags=None)",
+          "signature": "raycast(origin, direction, max_distance=None, *, hit_triggers=False, tags=None)",
           "description": {
             "en": "Cast a ray against the colliders in this subtree and return the closest hit.",
             "cn": "向此子树中的碰撞体发射射线，并返回最近的命中。",
@@ -8969,7 +8969,7 @@
         {
           "name": "raycast_all",
           "type": "function",
-          "signature": "raycast_all(origin, direction, max_distance=None, hit_triggers=False, tags=None)",
+          "signature": "raycast_all(origin, direction, max_distance=None, *, hit_triggers=False, tags=None)",
           "description": {
             "en": "Cast a ray and return every hit sorted by distance.",
             "cn": "发射射线，并返回按距离排序的所有命中。",
@@ -9098,7 +9098,7 @@
         {
           "name": "overlap_sphere",
           "type": "function",
-          "signature": "overlap_sphere(center, radius, hit_triggers=False, tags=None)",
+          "signature": "overlap_sphere(center, radius, *, hit_triggers=False, tags=None)",
           "description": {
             "en": "Return every node in this subtree whose collider overlaps the given sphere.",
             "cn": "返回此子树中其碰撞体与给定球体重叠的所有节点。",
@@ -9209,7 +9209,7 @@
         {
           "name": "overlap_box",
           "type": "function",
-          "signature": "overlap_box(mat, size, hit_triggers=False, tags=None)",
+          "signature": "overlap_box(mat, size, *, hit_triggers=False, tags=None)",
           "description": {
             "en": "Return every node in this subtree whose collider overlaps the given box.",
             "cn": "返回此子树中其碰撞体与给定盒体重叠的所有节点。",

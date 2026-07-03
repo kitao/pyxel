@@ -1,13 +1,12 @@
-#![allow(clippy::many_single_char_names)]
-
 // Raster math uses conventional x/y/z/u/v names in tight loops; expanding them
 // would obscure coordinate formulas on the per-pixel path.
+#![allow(clippy::many_single_char_names)]
+
 use crate::cube::camera::Camera;
 use crate::cube::mat4::Mat4;
 use crate::cube::shading::{Shading, LEVEL_COUNT};
 use crate::cube::vec3::Vec3;
-use crate::image::{Image, RcImage};
-use crate::tilemap::RcTilemap;
+use crate::image::Image;
 use crate::utils::{f32_to_i32, f32_to_u32};
 
 // 4x4 matrix in row-major form (m[i][j] is row i, column j). Used as the
@@ -15,13 +14,6 @@ use crate::utils::{f32_to_i32, f32_to_u32};
 pub type Mat4x4 = [[f32; 4]; 4];
 
 type ScreenPoint = (f32, f32, f32);
-
-// Texture source for textured draw commands. Mirrors the cube `sprite` /
-// `plane` argument, which accepts either an Image or a Tilemap.
-pub enum Texture {
-    Image(RcImage),
-    Tilemap(RcTilemap),
-}
 
 // Pixel-aligned destination rectangle that bounds rasterizer output.
 #[derive(Clone, Copy, Debug)]
@@ -1168,6 +1160,7 @@ pub fn rasterize_line(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::image::RcImage;
 
     fn vec3(x: f32, y: f32, z: f32) -> Vec3 {
         Vec3 { x, y, z }
@@ -1366,7 +1359,9 @@ mod tests {
         let (sx, sy, sr, _z) = result.expect("circle in view should project");
         assert!((sx - 128.0).abs() < 1e-3);
         assert!((sy - 96.0).abs() < 1e-3);
-        assert!(sr > 0.0);
+        // r = 0.5 at z = 2 under fov 60 / aspect 4:3 spans
+        // 0.25 · cot(30°) / (4/3) in NDC-x = 24√3 px of the 256-wide viewport.
+        assert!((sr - 24.0 * 3.0_f32.sqrt()).abs() < 1e-3);
     }
 
     #[test]
@@ -1397,11 +1392,12 @@ mod tests {
 
     #[test]
     fn test_shade_no_normal_returns_lv0() {
-        // No normal → directional factor = 0 → level 0 (= darkest plateau).
+        // No normal → directional factor = 0 → level 0. The default
+        // palette's lv-0 LUT entry for col 7 (white) is flat col 13 (gray).
         let shading = Shading::new(&pyxel_default_palette());
         let shading = rc_ref!(&shading);
         let col = shade(shading, 7, None);
-        assert!(col < 16);
+        assert_eq!(col, 13);
     }
 
     #[test]

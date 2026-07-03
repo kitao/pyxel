@@ -86,7 +86,7 @@ impl Primitive {
             let pa = read_vec3(&self.positions, a);
             let pb = read_vec3(&self.positions, b);
             let pc = read_vec3(&self.positions, c);
-            let face_normal = vec3_normalize(vec3_cross(vec3_sub(pb, pa), vec3_sub(pc, pa)));
+            let face_normal = vec_normalize(vec_cross(vec_sub(pb, pa), vec_sub(pc, pa)));
             write_vec3(&mut out, f, face_normal);
         }
         self.normals = out;
@@ -263,43 +263,20 @@ const UNIT_PLANE_POSITIONS: [f32; 12] = [
 const PLANE_TRI_INDICES: [i32; 6] = [0, 1, 2, 1, 3, 2];
 const PLANE_UVS: [f32; 8] = [0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 1.0, 1.0];
 
+#[rustfmt::skip]
 const ICOSA_BASE_POSITIONS: [f32; 36] = [
-    -0.525_731_1,
-    0.850_650_8,
-    0.0,
-    0.525_731_1,
-    0.850_650_8,
-    0.0,
-    -0.525_731_1,
-    -0.850_650_8,
-    0.0,
-    0.525_731_1,
-    -0.850_650_8,
-    0.0,
-    0.0,
-    -0.525_731_1,
-    0.850_650_8,
-    0.0,
-    0.525_731_1,
-    0.850_650_8,
-    0.0,
-    -0.525_731_1,
-    -0.850_650_8,
-    0.0,
-    0.525_731_1,
-    -0.850_650_8,
-    0.850_650_8,
-    0.0,
-    -0.525_731_1,
-    0.850_650_8,
-    0.0,
-    0.525_731_1,
-    -0.850_650_8,
-    0.0,
-    -0.525_731_1,
-    -0.850_650_8,
-    0.0,
-    0.525_731_1,
+    -0.525_731_1,  0.850_650_8,  0.0,
+     0.525_731_1,  0.850_650_8,  0.0,
+    -0.525_731_1, -0.850_650_8,  0.0,
+     0.525_731_1, -0.850_650_8,  0.0,
+     0.0, -0.525_731_1,  0.850_650_8,
+     0.0,  0.525_731_1,  0.850_650_8,
+     0.0, -0.525_731_1, -0.850_650_8,
+     0.0,  0.525_731_1, -0.850_650_8,
+     0.850_650_8,  0.0, -0.525_731_1,
+     0.850_650_8,  0.0,  0.525_731_1,
+    -0.850_650_8,  0.0, -0.525_731_1,
+    -0.850_650_8,  0.0,  0.525_731_1,
 ];
 
 const ICOSA_BASE_TRI_INDICES: [i32; 60] = [
@@ -496,7 +473,7 @@ fn write_vec3(buf: &mut [f32], i: usize, v: Vec3) {
     buf[base + 2] = v.z;
 }
 
-fn vec3_sub(a: Vec3, b: Vec3) -> Vec3 {
+fn vec_sub(a: Vec3, b: Vec3) -> Vec3 {
     Vec3 {
         x: a.x - b.x,
         y: a.y - b.y,
@@ -504,7 +481,7 @@ fn vec3_sub(a: Vec3, b: Vec3) -> Vec3 {
     }
 }
 
-fn vec3_cross(a: Vec3, b: Vec3) -> Vec3 {
+fn vec_cross(a: Vec3, b: Vec3) -> Vec3 {
     Vec3 {
         x: a.y * b.z - a.z * b.y,
         y: a.z * b.x - a.x * b.z,
@@ -512,7 +489,7 @@ fn vec3_cross(a: Vec3, b: Vec3) -> Vec3 {
     }
 }
 
-fn vec3_normalize(v: Vec3) -> Vec3 {
+fn vec_normalize(v: Vec3) -> Vec3 {
     let len_sq = v.x * v.x + v.y * v.y + v.z * v.z;
     if len_sq < 1e-20 {
         return Vec3 {

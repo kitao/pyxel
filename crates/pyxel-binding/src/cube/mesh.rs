@@ -74,13 +74,13 @@ impl Mesh {
             .primitives
             .iter()
             .map(|p| match p {
-                Some(p) => match Primitive::wrap(p.clone()).into_pyobject(py) {
-                    Ok(b) => b.into_any().unbind(),
-                    Err(_) => py.None(),
-                },
-                None => py.None(),
+                Some(p) => Ok(Primitive::wrap(p.clone())
+                    .into_pyobject(py)?
+                    .into_any()
+                    .unbind()),
+                None => Ok(py.None()),
             })
-            .collect();
+            .collect::<PyResult<_>>()?;
         Ok(PyList::new(py, items)?.unbind())
     }
 
@@ -184,7 +184,9 @@ impl Mesh {
     }
 }
 
-fn parse_col_img(v: &Bound<'_, PyAny>) -> PyResult<ColImage> {
+// Internal helpers
+
+pub(crate) fn parse_col_img(v: &Bound<'_, PyAny>) -> PyResult<ColImage> {
     if let Ok(c) = v.extract::<i32>() {
         return Ok(ColImage::Color(c));
     }
@@ -193,6 +195,8 @@ fn parse_col_img(v: &Bound<'_, PyAny>) -> PyResult<ColImage> {
     }
     Err(PyTypeError::new_err("col_img must be int or Image"))
 }
+
+// Module registration
 
 pub fn add_mesh_class(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<Mesh>()?;

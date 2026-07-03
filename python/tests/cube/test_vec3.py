@@ -5,7 +5,7 @@ import pytest
 from pyxel.cube import Mat4, Vec3
 
 
-def approx(a, b, tol=1e-5):
+def approx_v(a, b, tol=1e-5):
     return (
         isclose(a.x, b.x, abs_tol=tol)
         and isclose(a.y, b.y, abs_tol=tol)
@@ -66,6 +66,16 @@ class TestHash:
     def test_usable_in_set(self):
         s = {Vec3(0, 0, 0), Vec3(1, 0, 0), Vec3(0, 0, 0)}
         assert len(s) == 2
+
+    def test_hash_equal_for_signed_zero(self):
+        # -0.0 == +0.0, so the eq/hash contract requires equal hashes
+        # (the binding normalizes -0.0 to +0.0 before hashing).
+        assert Vec3(0.0, 0, 0) == Vec3(-0.0, 0, 0)
+        assert hash(Vec3(0.0, 0, 0)) == hash(Vec3(-0.0, 0, 0))
+
+    def test_signed_zero_interchangeable_as_dict_key(self):
+        d = {Vec3(0.0, 0, 0): "origin"}
+        assert d[Vec3(-0.0, 0, 0)] == "origin"
 
 
 class TestSequence:
@@ -146,7 +156,7 @@ class TestTransform:
     def test_normalize_unit(self):
         n = Vec3(3, 4, 0).normalize()
         assert isclose(n.length(), 1.0, abs_tol=1e-6)
-        assert approx(n, Vec3(0.6, 0.8, 0))
+        assert approx_v(n, Vec3(0.6, 0.8, 0))
 
     def test_normalize_zero(self):
         assert Vec3.ZERO.normalize() == Vec3.ZERO
@@ -177,7 +187,7 @@ class TestTransform:
     def test_slerp_unit(self):
         v = Vec3.RIGHT.slerp(Vec3.UP, 0.5)
         s = sqrt(0.5)
-        assert approx(v, Vec3(s, s, 0), tol=1e-3)
+        assert approx_v(v, Vec3(s, s, 0), tol=1e-3)
 
     def test_reflect(self):
         assert Vec3(1, -1, 0).reflect(Vec3.UP) == Vec3(1, 1, 0)
