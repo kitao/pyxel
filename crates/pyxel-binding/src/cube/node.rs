@@ -3,7 +3,7 @@ use std::cell::RefCell;
 use pyo3::exceptions::{PyTypeError, PyValueError};
 use pyo3::prelude::*;
 use pyo3::types::{PyDict, PyTuple, PyType};
-use pyxel::cube::draw::DrawState;
+use pyxel::cube::draw::{DrawState, Uvs as QuadUvs};
 use pyxel::cube::mesh::ColImage;
 use pyxel::cube::raster::{compute_clip_rect, matmul, projection_matrix, view_matrix};
 use pyxel::cube::scene::{
@@ -19,8 +19,6 @@ use super::motion::Motion;
 use super::raycast_hit::RaycastHit;
 use super::shading::Shading;
 use super::vec3::Vec3;
-
-type Uvs = ((f32, f32), (f32, f32), (f32, f32), (f32, f32));
 
 #[derive(Clone)]
 struct DrawablePrimitive {
@@ -92,7 +90,7 @@ impl Node {
     }
 
     // Detach this node from its Python-side parent wrapper. Used by
-    // Scene.update step 8 to finalize a destroyed node's removal.
+    // Node.update step 9 to finalize a destroyed node's removal.
     pub(crate) fn detach_from_parent_py(&self, py: Python<'_>) {
         let parent = self.parent.borrow_mut().take();
         if let Some(parent_py) = parent {
@@ -383,54 +381,6 @@ impl Node {
 
     // Data attributes
 
-    #[pyo3(signature = (motion, frame, *, r#loop=true))]
-    fn apply_motion(
-        slf: PyRef<'_, Self>,
-        py: Python<'_>,
-        motion: PyRef<'_, Motion>,
-        frame: f32,
-        r#loop: bool,
-    ) -> PyResult<()> {
-        let source = slf.validate_motion_source(&motion)?;
-        let motion_inner = motion.inner.clone();
-        let self_py: Py<Node> = slf.into_pyobject(py)?.unbind();
-        Self::apply_motion_inner(&self_py, py, &source, &motion_inner, frame, r#loop);
-        Ok(())
-    }
-
-    #[pyo3(signature = (motion, *, r#loop=true, speed=1.0, start_frame=0.0))]
-    fn play_motion(
-        slf: PyRef<'_, Self>,
-        py: Python<'_>,
-        motion: PyRef<'_, Motion>,
-        r#loop: bool,
-        speed: f32,
-        start_frame: f32,
-    ) -> PyResult<()> {
-        if !speed.is_finite() {
-            return Err(PyValueError::new_err("speed must be finite"));
-        }
-        if !start_frame.is_finite() {
-            return Err(PyValueError::new_err("start_frame must be finite"));
-        }
-
-        let source = slf.validate_motion_source(&motion)?;
-        let motion_inner = motion.inner.clone();
-        let self_py: Py<Node> = slf.into_pyobject(py)?.unbind();
-        Self::apply_motion_inner(&self_py, py, &source, &motion_inner, start_frame, r#loop);
-        *self_py.bind(py).borrow().motion_player.borrow_mut() = Some(MotionPlayer {
-            motion: motion_inner,
-            frame: start_frame,
-            looping: r#loop,
-            speed,
-        });
-        Ok(())
-    }
-
-    fn stop_motion(&self) {
-        *self.motion_player.borrow_mut() = None;
-    }
-
     #[getter]
     fn name(&self) -> String {
         self.inner_ref().name.clone()
@@ -531,24 +481,48 @@ impl Node {
         self.parent.borrow().as_ref().map(|p| p.clone_ref(py))
     }
 
+    // Short child lists resolve faster by linear scan than by hashing;
+    // the measured crossover is around 16 children.
+    const CHILD_INDEX_LINEAR_MAX: usize = 16;
+
     #[getter]
     fn children<'py>(&self, py: Python<'py>) -> PyResult<Bound<'py, pyo3::types::PyTuple>> {
         let core_children = InnerNode::children(&self.inner);
         let mut cache = self.children.borrow_mut();
-        cache.retain(|cached| {
-            let cached_inner = cached.bind(py).borrow().inner.clone();
-            core_children
-                .iter()
-                .any(|c| std::rc::Rc::ptr_eq(&cached_inner, c))
-        });
+        // Resolve each core child to its cached wrapper; wrappers whose
+        // core node left the tree drop out when the cache is rebuilt
+        // below. Wide nodes use a pointer-keyed index so the frame
+        // walkers stay O(children) instead of O(children^2).
         let mut items: Vec<Py<Node>> = Vec::with_capacity(core_children.len());
-        for c_inner in &core_children {
-            if let Some(cached) = cache
-                .iter()
-                .find(|cached| std::rc::Rc::ptr_eq(&cached.bind(py).borrow().inner, c_inner))
-            {
-                items.push(cached.clone_ref(py));
+        if core_children.len() <= Self::CHILD_INDEX_LINEAR_MAX {
+            for c_inner in &core_children {
+                if let Some(cached) = cache
+                    .iter()
+                    .find(|cached| std::rc::Rc::ptr_eq(&cached.bind(py).borrow().inner, c_inner))
+                {
+                    items.push(cached.clone_ref(py));
+                }
             }
+        } else {
+            let by_ptr: std::collections::HashMap<*const _, &Py<Node>> = cache
+                .iter()
+                .map(|cached| (std::rc::Rc::as_ptr(&cached.bind(py).borrow().inner), cached))
+                .collect();
+            for c_inner in &core_children {
+                if let Some(cached) = by_ptr.get(&std::rc::Rc::as_ptr(c_inner)) {
+                    items.push(cached.clone_ref(py));
+                }
+            }
+        }
+        // Rebuild the cache only when the resolved set differs, so the
+        // steady state (unchanged children) allocates nothing here.
+        let unchanged = items.len() == cache.len()
+            && items
+                .iter()
+                .zip(cache.iter())
+                .all(|(a, b)| a.as_ptr() == b.as_ptr());
+        if !unchanged {
+            *cache = items.iter().map(|p| p.clone_ref(py)).collect();
         }
         pyo3::types::PyTuple::new(py, items)
     }
@@ -653,13 +627,61 @@ impl Node {
         Ok(())
     }
 
-    // Flag-only destroy (cube-design.md § 16 step 8). Scene.update
+    // Flag-only destroy (cube-design.md § 16 step 9). Node.update
     // walks the tree post-order, fires on_destroy, and detaches the
     // flagged nodes at the end of the frame. Parent / child links
     // stay intact for the rest of the current frame so traversal
     // remains safe.
     fn destroy(slf: PyRef<'_, Self>) {
         InnerNode::destroy(&slf.inner);
+    }
+
+    #[pyo3(signature = (motion, frame, *, r#loop=true))]
+    fn apply_motion(
+        slf: PyRef<'_, Self>,
+        py: Python<'_>,
+        motion: PyRef<'_, Motion>,
+        frame: f32,
+        r#loop: bool,
+    ) -> PyResult<()> {
+        let source = slf.validate_motion_source(&motion)?;
+        let motion_inner = motion.inner.clone();
+        let self_py: Py<Node> = slf.into_pyobject(py)?.unbind();
+        Self::apply_motion_inner(&self_py, py, &source, &motion_inner, frame, r#loop);
+        Ok(())
+    }
+
+    #[pyo3(signature = (motion, *, r#loop=true, speed=1.0, start_frame=0.0))]
+    fn play_motion(
+        slf: PyRef<'_, Self>,
+        py: Python<'_>,
+        motion: PyRef<'_, Motion>,
+        r#loop: bool,
+        speed: f32,
+        start_frame: f32,
+    ) -> PyResult<()> {
+        if !speed.is_finite() {
+            return Err(PyValueError::new_err("speed must be finite"));
+        }
+        if !start_frame.is_finite() {
+            return Err(PyValueError::new_err("start_frame must be finite"));
+        }
+
+        let source = slf.validate_motion_source(&motion)?;
+        let motion_inner = motion.inner.clone();
+        let self_py: Py<Node> = slf.into_pyobject(py)?.unbind();
+        Self::apply_motion_inner(&self_py, py, &source, &motion_inner, start_frame, r#loop);
+        *self_py.bind(py).borrow().motion_player.borrow_mut() = Some(MotionPlayer {
+            motion: motion_inner,
+            frame: start_frame,
+            looping: r#loop,
+            speed,
+        });
+        Ok(())
+    }
+
+    fn stop_motion(&self) {
+        *self.motion_player.borrow_mut() = None;
     }
 
     // Lifecycle hooks
@@ -722,7 +744,6 @@ impl Node {
 
     // Linework
 
-    #[pyo3(signature = (pos, col))]
     fn pset(&self, pos: PyRef<'_, Vec3>, col: i32) {
         let world_mat = self.world_mat();
         let local = *pos.inner_ref();
@@ -731,7 +752,6 @@ impl Node {
         });
     }
 
-    #[pyo3(signature = (p1, p2, col))]
     fn line(&self, p1: PyRef<'_, Vec3>, p2: PyRef<'_, Vec3>, col: i32) {
         let world_mat = self.world_mat();
         let v1 = *p1.inner_ref();
@@ -743,7 +763,6 @@ impl Node {
 
     // 2D polygons
 
-    #[pyo3(signature = (p1, p2, p3, col))]
     fn tri(&self, p1: PyRef<'_, Vec3>, p2: PyRef<'_, Vec3>, p3: PyRef<'_, Vec3>, col: i32) {
         let world_mat = self.world_mat();
         let v1 = *p1.inner_ref();
@@ -754,7 +773,6 @@ impl Node {
         });
     }
 
-    #[pyo3(signature = (p1, p2, p3, col))]
     fn trib(&self, p1: PyRef<'_, Vec3>, p2: PyRef<'_, Vec3>, p3: PyRef<'_, Vec3>, col: i32) {
         let world_mat = self.world_mat();
         let v1 = *p1.inner_ref();
@@ -765,7 +783,6 @@ impl Node {
         });
     }
 
-    #[pyo3(signature = (mat, w, h, col))]
     fn rect(&self, mat: PyRef<'_, Mat4>, w: f32, h: f32, col: i32) {
         let world_mat = self.world_mat_compose(*mat.inner_ref());
         self.with_state_from_ctx(pyxel::cube::draw::BILLBOARD_OFF, |ctx, state| {
@@ -773,7 +790,6 @@ impl Node {
         });
     }
 
-    #[pyo3(signature = (mat, w, h, col))]
     fn rectb(&self, mat: PyRef<'_, Mat4>, w: f32, h: f32, col: i32) {
         let world_mat = self.world_mat_compose(*mat.inner_ref());
         self.with_state_from_ctx(pyxel::cube::draw::BILLBOARD_OFF, |ctx, state| {
@@ -783,7 +799,6 @@ impl Node {
 
     // 2D curves
 
-    #[pyo3(signature = (pos, r, col))]
     fn circ(&self, pos: PyRef<'_, Vec3>, r: f32, col: i32) {
         let world_mat = self.world_mat();
         let local = *pos.inner_ref();
@@ -792,7 +807,6 @@ impl Node {
         });
     }
 
-    #[pyo3(signature = (pos, r, col))]
     fn circb(&self, pos: PyRef<'_, Vec3>, r: f32, col: i32) {
         let world_mat = self.world_mat();
         let local = *pos.inner_ref();
@@ -801,7 +815,6 @@ impl Node {
         });
     }
 
-    #[pyo3(signature = (mat, w, h, col))]
     fn elli(&self, mat: PyRef<'_, Mat4>, w: f32, h: f32, col: i32) {
         let world_mat = self.world_mat_compose(*mat.inner_ref());
         self.with_state_from_ctx(pyxel::cube::draw::BILLBOARD_OFF, |ctx, state| {
@@ -809,7 +822,6 @@ impl Node {
         });
     }
 
-    #[pyo3(signature = (mat, w, h, col))]
     fn ellib(&self, mat: PyRef<'_, Mat4>, w: f32, h: f32, col: i32) {
         let world_mat = self.world_mat_compose(*mat.inner_ref());
         self.with_state_from_ctx(pyxel::cube::draw::BILLBOARD_OFF, |ctx, state| {
@@ -827,19 +839,10 @@ impl Node {
         col_img: Option<&Bound<'_, PyAny>>,
         colkey: Option<i32>,
     ) -> PyResult<()> {
-        use pyo3::exceptions::PyTypeError;
         let world_mat = self.world_mat_compose(*mat.inner_ref());
         let size_v = *size.inner_ref();
         let (col_flat, col_image) = match col_img {
-            Some(c) => {
-                if let Ok(i) = c.extract::<i32>() {
-                    (i, None)
-                } else if let Ok(img_ref) = c.cast::<crate::image_wrapper::Image>() {
-                    (0, Some(img_ref.borrow().inner.clone()))
-                } else {
-                    return Err(PyTypeError::new_err("col_img must be int or Image"));
-                }
-            }
+            Some(c) => super::mesh::parse_col_img(c)?.as_flat_and_image(),
             None => (7, None),
         };
         self.with_state_from_ctx(pyxel::cube::draw::BILLBOARD_OFF, |ctx, state| {
@@ -856,7 +859,6 @@ impl Node {
         Ok(())
     }
 
-    #[pyo3(signature = (mat, size, col))]
     fn boxb(&self, mat: PyRef<'_, Mat4>, size: PyRef<'_, Vec3>, col: i32) {
         let world_mat = self.world_mat_compose(*mat.inner_ref());
         let size_v = *size.inner_ref();
@@ -873,19 +875,10 @@ impl Node {
         col_img: Option<&Bound<'_, PyAny>>,
         colkey: Option<i32>,
     ) -> PyResult<()> {
-        use pyo3::exceptions::PyTypeError;
         let world_mat = self.world_mat();
         let local = *pos.inner_ref();
         let (col_flat, col_image) = match col_img {
-            Some(c) => {
-                if let Ok(i) = c.extract::<i32>() {
-                    (i, None)
-                } else if let Ok(img_ref) = c.cast::<crate::image_wrapper::Image>() {
-                    (0, Some(img_ref.borrow().inner.clone()))
-                } else {
-                    return Err(PyTypeError::new_err("col_img must be int or Image"));
-                }
-            }
+            Some(c) => super::mesh::parse_col_img(c)?.as_flat_and_image(),
             None => (7, None),
         };
         self.with_state_from_ctx(pyxel::cube::draw::BILLBOARD_OFF, |ctx, state| {
@@ -903,7 +896,6 @@ impl Node {
         Ok(())
     }
 
-    #[pyo3(signature = (pos, r, col))]
     fn sphereb(&self, pos: PyRef<'_, Vec3>, r: f32, col: i32) {
         let world_mat = self.world_mat();
         let local = *pos.inner_ref();
@@ -919,7 +911,7 @@ impl Node {
         &self,
         mat: PyRef<'_, Mat4>,
         img: PyRef<'_, crate::image_wrapper::Image>,
-        uvs: Uvs,
+        uvs: QuadUvs,
         w: f32,
         h: f32,
         colkey: Option<i32>,
@@ -936,7 +928,7 @@ impl Node {
         &self,
         pos: PyRef<'_, Vec3>,
         img: PyRef<'_, crate::image_wrapper::Image>,
-        uvs: Uvs,
+        uvs: QuadUvs,
         w: f32,
         h: f32,
         colkey: Option<i32>,
@@ -962,8 +954,6 @@ impl Node {
         col_img: Option<&Bound<'_, PyAny>>,
         colkey: Option<i32>,
     ) -> PyResult<()> {
-        use pyo3::exceptions::{PyTypeError, PyValueError};
-
         let world_mat = self.world_mat_compose(*mat.inner_ref());
         // Borrowed for the duration of the draw; the closure below runs
         // Rust-only code, so the proxy-backed arrays cannot change
@@ -971,15 +961,7 @@ impl Node {
         let p = rc_ref!(&primitive.inner);
 
         let (col_flat, col_image) = match col_img {
-            Some(c) => {
-                if let Ok(i) = c.extract::<i32>() {
-                    (i, None)
-                } else if let Ok(img_ref) = c.cast::<crate::image_wrapper::Image>() {
-                    (0, Some(img_ref.borrow().inner.clone()))
-                } else {
-                    return Err(PyTypeError::new_err("col_img must be int or Image"));
-                }
-            }
+            Some(c) => super::mesh::parse_col_img(c)?.as_flat_and_image(),
             None => (7, None),
         };
 
@@ -1074,14 +1056,14 @@ impl Node {
 
     #[pyo3(signature = (x, y, w, h, target=None))]
     fn draw(
-        self_: Bound<'_, Self>,
+        slf: Bound<'_, Self>,
         x: i32,
         y: i32,
         w: i32,
         h: i32,
         target: Option<PyRef<'_, crate::image_wrapper::Image>>,
     ) -> PyResult<()> {
-        let node_inner = self_.borrow().inner.clone();
+        let node_inner = slf.borrow().inner.clone();
         let cam_inner = InnerNode::effective_camera(&node_inner).ok_or_else(|| {
             PyValueError::new_err("draw: no camera set on this node or any ancestor")
         })?;
@@ -1094,11 +1076,12 @@ impl Node {
         if let Some(col) = rc_ref!(&cam_inner).clear_color {
             rc_mut!(&target_rc).clear(col as u8);
         }
-        // Resize cache if needed, then clear; move the buffer out for the
-        // duration of the traversal and put it back when ctx is taken.
+        // Resize cache if needed, then clear; move the buffers out for the
+        // duration of the traversal and put them back when ctx is taken.
         rc_mut!(&cam_inner).ensure_depth(target_w, target_h);
         rc_mut!(&cam_inner).clear_depth();
         let depth = std::mem::take(&mut rc_mut!(&cam_inner).depth);
+        let vertex_cache = std::mem::take(&mut rc_mut!(&cam_inner).vertex_scratch);
         let view = view_matrix(rc_ref!(&cam_inner));
         let proj = projection_matrix(rc_ref!(&cam_inner), w as f32, h as f32);
         let vp = matmul(&proj, &view);
@@ -1115,17 +1098,18 @@ impl Node {
             depth,
             depth_w: target_w,
             depth_h: target_h,
-            vertex_cache: Vec::new(),
+            vertex_cache,
             dither_alpha: 1.0,
             depth_test: true,
             depth_write: true,
             depth_offset: 0.0,
             shaded: true,
         });
-        let any = self_.into_any();
+        let any = slf.into_any();
         let result = traverse_draw(&any);
         if let Some(ctx) = take_draw_context() {
             rc_mut!(&cam_inner).depth = ctx.depth;
+            rc_mut!(&cam_inner).vertex_scratch = ctx.vertex_cache;
         }
         result
     }
@@ -1390,6 +1374,8 @@ fn wrap_node_results(
     }
     Ok(out)
 }
+
+// Module registration
 
 pub fn add_node_class(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<Node>()?;

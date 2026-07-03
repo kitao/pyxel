@@ -1,15 +1,7 @@
 import pyxel
-from cube_physics_camera import OrbitCamera
+from pyxel.cube import Collider, Mat4, Mesh, Node, Primitive, Shading, Vec3
 
-from pyxel.cube import (
-    Collider,
-    Mat4,
-    Mesh,
-    Node,
-    Primitive,
-    Shading,
-    Vec3,
-)
+from cube_physics_camera import OrbitCamera
 
 
 def _slope_mesh() -> Mesh:
@@ -96,7 +88,7 @@ class App:
         self.scene.draw(0, 0, 160, 120)
 
 
-# `if __name__` guard so the headless audit script can import the
+# `if __name__` guard so test_physics_examples.py can import the
 # Ball / Floor classes without triggering pyxel.run.
 if __name__ == "__main__":
     App()

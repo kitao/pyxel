@@ -51,6 +51,8 @@ impl RaycastHit {
 
 #[pymethods]
 impl RaycastHit {
+    // Attributes
+
     #[getter]
     fn node(&self, py: Python<'_>) -> PyResult<Py<Node>> {
         if let Some(p) = self.py_node.borrow().as_ref() {
@@ -79,6 +81,8 @@ impl RaycastHit {
         self.inner_ref().distance
     }
 
+    // Dunder
+
     fn __repr__(&self) -> String {
         let h = self.inner_ref();
         let p = rc_ref!(&h.point);
@@ -89,6 +93,8 @@ impl RaycastHit {
         )
     }
 }
+
+// Module registration
 
 pub fn add_raycast_hit_class(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<RaycastHit>()?;

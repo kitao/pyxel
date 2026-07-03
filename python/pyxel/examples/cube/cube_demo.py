@@ -14,48 +14,49 @@ from pyxel.cube import (
 )
 
 # Unit icosahedron table (12 vertices on |v|=1, 20 outward triangles).
-# Mirrors `ICOSA_POSITIONS` / `ICOSA_TRI_INDICES` in pyxel-core/src/cube/draw.rs.
-_ICOSA_O = 0.5257311
-_ICOSA_T = 0.8506508
-_UNIT_ICOSA_VERTICES = [
-    -_ICOSA_O,
-    _ICOSA_T,
+# Mirrors `ICOSA_BASE_POSITIONS` / `ICOSA_BASE_TRI_INDICES` in
+# pyxel-core/src/cube/primitive.rs.
+ICOSA_O = 0.5257311
+ICOSA_T = 0.8506508
+UNIT_ICOSA_VERTICES = [
+    -ICOSA_O,
+    ICOSA_T,
     0.0,
-    _ICOSA_O,
-    _ICOSA_T,
+    ICOSA_O,
+    ICOSA_T,
     0.0,
-    -_ICOSA_O,
-    -_ICOSA_T,
+    -ICOSA_O,
+    -ICOSA_T,
     0.0,
-    _ICOSA_O,
-    -_ICOSA_T,
+    ICOSA_O,
+    -ICOSA_T,
     0.0,
     0.0,
-    -_ICOSA_O,
-    _ICOSA_T,
+    -ICOSA_O,
+    ICOSA_T,
     0.0,
-    _ICOSA_O,
-    _ICOSA_T,
+    ICOSA_O,
+    ICOSA_T,
     0.0,
-    -_ICOSA_O,
-    -_ICOSA_T,
+    -ICOSA_O,
+    -ICOSA_T,
     0.0,
-    _ICOSA_O,
-    -_ICOSA_T,
-    _ICOSA_T,
+    ICOSA_O,
+    -ICOSA_T,
+    ICOSA_T,
     0.0,
-    -_ICOSA_O,
-    _ICOSA_T,
+    -ICOSA_O,
+    ICOSA_T,
     0.0,
-    _ICOSA_O,
-    -_ICOSA_T,
+    ICOSA_O,
+    -ICOSA_T,
     0.0,
-    -_ICOSA_O,
-    -_ICOSA_T,
+    -ICOSA_O,
+    -ICOSA_T,
     0.0,
-    _ICOSA_O,
+    ICOSA_O,
 ]
-_ICOSA_TRI_INDICES = [
+ICOSA_TRI_INDICES = [
     0,
     11,
     5,
@@ -117,9 +118,11 @@ _ICOSA_TRI_INDICES = [
     8,
     1,
 ]
+
 # Box vertices: 8 corners of a unit cube centered at origin (the Mesh
-# variant scales by `size`). Indices match the cube/draw.rs winding.
-_UNIT_BOX_VERTICES = [
+# variant scales by `size`). Mirrors `UNIT_BOX_POSITIONS` /
+# `BOX_SOLID_TRI_INDICES` in pyxel-core/src/cube/primitive.rs.
+UNIT_BOX_VERTICES = [
     -0.5,
     -0.5,
     -0.5,
@@ -145,7 +148,7 @@ _UNIT_BOX_VERTICES = [
     0.5,
     0.5,
 ]
-_BOX_TRI_INDICES = [
+BOX_TRI_INDICES = [
     0,
     2,
     1,
@@ -184,7 +187,6 @@ _BOX_TRI_INDICES = [
     5,  # +X face
 ]
 
-
 # Top: 12 small 2D-style primitives in a 4x3 grid
 LAYOUT_2D = [
     ("pset", -9.0, 7.5),
@@ -207,7 +209,7 @@ LAYOUT_3D = [
     ("mesh-sphere", 7.0, -5.5),
 ]
 
-_CAT_UVS = (
+CAT_UVS = (
     (0.0, 0.0),
     (16.0 / 256.0, 0.0),
     (0.0, 16.0 / 256.0),
@@ -228,8 +230,8 @@ def _load_texture():
 def _make_box_mesh(size, color):
     # Scale the unit cube; the Mesh wraps a single Primitive carrying the
     # flat color through col_img.
-    pos = [v * size for v in _UNIT_BOX_VERTICES]
-    primitive = Primitive(Primitive.MODE_TRIANGLES, pos, _BOX_TRI_INDICES)
+    pos = [v * size for v in UNIT_BOX_VERTICES]
+    primitive = Primitive(Primitive.MODE_TRIANGLES, pos, BOX_TRI_INDICES)
     return Mesh(
         primitives=[primitive],
         transforms=[Mat4.IDENTITY],
@@ -239,9 +241,9 @@ def _make_box_mesh(size, color):
 
 
 def _make_sphere_mesh(radius, color):
-    # Level-1 subdivided icosahedron (42 vertices / 80 triangles). Mirrors
-    # `unit_icosa_lv1_*` in pyxel-core/src/cube/draw.rs so the mesh-asset
-    # path matches the immediate-mode `node.sphere()` look.
+    # Level-1 subdivided icosahedron (42 vertices / 80 triangles).
+    # Mirrors `unit_icosa_lv1_*` in pyxel-core/src/cube/primitive.rs so
+    # the mesh-asset path matches the immediate-mode `node.sphere()` look.
     edges = [
         (0, 1),
         (0, 5),
@@ -275,7 +277,7 @@ def _make_sphere_mesh(radius, color):
         (10, 11),
     ]
     edge_index = {pair: 12 + i for i, pair in enumerate(edges)}
-    pos: list[float] = list(_UNIT_ICOSA_VERTICES)
+    pos: list[float] = list(UNIT_ICOSA_VERTICES)
     for a, b in edges:
         mx = (pos[a * 3] + pos[b * 3]) * 0.5
         my = (pos[a * 3 + 1] + pos[b * 3 + 1]) * 0.5
@@ -287,10 +289,10 @@ def _make_sphere_mesh(radius, color):
         return edge_index[(a, b) if a < b else (b, a)]
 
     tri_indices: list[int] = []
-    for i in range(0, len(_ICOSA_TRI_INDICES), 3):
-        a = _ICOSA_TRI_INDICES[i]
-        b = _ICOSA_TRI_INDICES[i + 1]
-        c = _ICOSA_TRI_INDICES[i + 2]
+    for i in range(0, len(ICOSA_TRI_INDICES), 3):
+        a = ICOSA_TRI_INDICES[i]
+        b = ICOSA_TRI_INDICES[i + 1]
+        c = ICOSA_TRI_INDICES[i + 2]
         m_ab = midpoint(a, b)
         m_bc = midpoint(b, c)
         m_ca = midpoint(c, a)
@@ -415,14 +417,14 @@ class Showcase(Node):
             self.sprite(
                 Vec3(x, y, 0),
                 pyxel.images[0],
-                _CAT_UVS,
+                CAT_UVS,
                 3.0,
                 3.0,
                 colkey=0,
                 angle=spin,
             )
         elif name == "plane":
-            self.plane(mat, pyxel.images[0], _CAT_UVS, 3.0, 3.0, colkey=0)
+            self.plane(mat, pyxel.images[0], CAT_UVS, 3.0, 3.0, colkey=0)
 
 
 def _palette() -> list[int]:

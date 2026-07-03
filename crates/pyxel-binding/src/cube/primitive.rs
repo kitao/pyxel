@@ -116,8 +116,7 @@ impl Primitive {
         Self::wrap(pyxel::cube::Primitive::sphere(radius))
     }
 
-    // Vertex attributes (live proxies; no whole-attribute setter, mirror
-    // Sound.notes — write elements in place or reassign via slice).
+    // Vertex attributes (live proxies)
 
     #[getter]
     fn positions(&self) -> Positions {
@@ -181,6 +180,8 @@ impl Primitive {
         self.inner_mut().compute_normals();
     }
 }
+
+// Module registration
 
 pub fn add_primitive_class(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<Positions>()?;

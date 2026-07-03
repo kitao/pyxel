@@ -14,7 +14,7 @@ use crate::cube::mat4::Mat4;
 use crate::cube::mesh::RcMesh;
 use crate::cube::node::{Node, RcNode};
 use crate::cube::quat::Quat;
-use crate::cube::raster::{ClipRect, Mat4x4};
+use crate::cube::raster::{mat_apply, ClipRect, Mat4x4};
 use crate::cube::vec3::Vec3;
 use crate::image::RcImage;
 
@@ -45,7 +45,8 @@ pub struct DrawContext {
     pub depth_h: u32,
     // Per-draw scratch holding each vertex's world position and screen
     // projection. Cleared (not reallocated) at every prim call, so
-    // indexed tables with shared vertices project each vertex once.
+    // indexed tables with shared vertices project each vertex once; the
+    // effective camera caches the allocation between frames like depth.
     pub vertex_cache: Vec<ProjectedVertex>,
     // Per-on_draw state modifiers, mutated via Node.dither / depth_test /
     // depth_write / depth_offset / shaded setters; reset to defaults before
@@ -110,7 +111,7 @@ pub fn with_draw_context<R>(f: impl FnOnce(&mut DrawContext) -> R) -> Option<R> 
     })
 }
 
-// Pipeline data types passed across the binding boundary.
+// Pipeline data types passed across the binding boundary
 
 pub struct ContactPair {
     pub node_a: RcNode,
@@ -141,7 +142,7 @@ pub struct Scene;
 
 #[allow(clippy::too_many_arguments)]
 impl Scene {
-    // Step 8 (cube-design.md § 16): collect every destroyed node in
+    // Step 9 (cube-design.md § 16): collect every destroyed node in
     // the subtree in post-order (= leaf first), so that callers can
     // run on_destroy + detach in dependency order. The collector is
     // pure (no detachment); the binding wires the actual on_destroy
@@ -168,7 +169,7 @@ impl Scene {
         Node::detach(node);
     }
 
-    // Step 2: motion integration. Walks the active subtree and applies
+    // Step 3: motion integration. Walks the active subtree and applies
     // each collider's velocity / angular_velocity to its node transform.
     pub fn integrate_motion(scene_root: &RcNode) {
         let mut stack: Vec<RcNode> = vec![scene_root.clone()];
@@ -217,7 +218,7 @@ impl Scene {
         }
     }
 
-    // Steps 3-6: AABB refresh, broad phase, narrow phase, response
+    // Steps 4-7: AABB refresh, broad phase, narrow phase, response
     // resolution. Returns the contact pairs the binding layer feeds to
     // on_collide.
     pub fn detect_contacts(scene_root: &RcNode) -> Vec<ContactPair> {
@@ -861,9 +862,9 @@ impl Scene {
         let mut best: Option<(f32, ContactGeom)> = None;
         m.with_collision_bvh(|bvh| {
             bvh.query_aabb(&query_local, |tri| {
-                let v0 = mul_point(world_mesh, bvh.positions[tri[0] as usize]);
-                let v1 = mul_point(world_mesh, bvh.positions[tri[1] as usize]);
-                let v2 = mul_point(world_mesh, bvh.positions[tri[2] as usize]);
+                let v0 = mat_apply(world_mesh, &bvh.positions[tri[0] as usize]);
+                let v1 = mat_apply(world_mesh, &bvh.positions[tri[1] as usize]);
+                let v2 = mat_apply(world_mesh, &bvh.positions[tri[2] as usize]);
                 let Some((toi, geom)) = swept_sphere_vs_triangle(previous, rel_vel, r, v0, v1, v2)
                 else {
                     return;
@@ -942,9 +943,9 @@ impl Scene {
         let mut best: Option<(f32, ContactGeom)> = None;
         m.with_collision_bvh(|bvh| {
             bvh.query_aabb(&query_local, |tri| {
-                let v0 = mul_point(world_mesh, bvh.positions[tri[0] as usize]);
-                let v1 = mul_point(world_mesh, bvh.positions[tri[1] as usize]);
-                let v2 = mul_point(world_mesh, bvh.positions[tri[2] as usize]);
+                let v0 = mat_apply(world_mesh, &bvh.positions[tri[0] as usize]);
+                let v1 = mat_apply(world_mesh, &bvh.positions[tri[1] as usize]);
+                let v2 = mat_apply(world_mesh, &bvh.positions[tri[2] as usize]);
                 let Some((toi, geom)) =
                     swept_segment_vs_triangle(prev_top, prev_bot, rel_vel, r, v0, v1, v2)
                 else {
@@ -993,9 +994,9 @@ impl Scene {
         let mut best: Option<(f32, ContactGeom)> = None;
         m.with_collision_bvh(|bvh| {
             bvh.query_aabb(&query_local, |tri| {
-                let v0 = mul_point(world_mesh, bvh.positions[tri[0] as usize]);
-                let v1 = mul_point(world_mesh, bvh.positions[tri[1] as usize]);
-                let v2 = mul_point(world_mesh, bvh.positions[tri[2] as usize]);
+                let v0 = mat_apply(world_mesh, &bvh.positions[tri[0] as usize]);
+                let v1 = mat_apply(world_mesh, &bvh.positions[tri[1] as usize]);
+                let v2 = mat_apply(world_mesh, &bvh.positions[tri[2] as usize]);
                 let Some((toi, geom)) =
                     swept_obb_vs_triangle(world_box, half, r, rel_vel, v0, v1, v2)
                 else {
@@ -1146,7 +1147,7 @@ impl Scene {
         (depth, dv, dav)
     }
 
-    // Spatial queries (§ 15.4).
+    // Spatial queries (cube-design.md § 15.4)
 
     pub fn raycast(
         scene_root: &RcNode,
@@ -1491,6 +1492,7 @@ impl Scene {
                 }
             }
         }
+        // Side wall: infinite-cylinder solve in local XZ, hits clamped to the cap span.
         let a = local_direction.x * local_direction.x + local_direction.z * local_direction.z;
         if a > 1e-12 {
             let b = 2.0 * (local_origin.x * local_direction.x + local_origin.z * local_direction.z);
@@ -1554,6 +1556,8 @@ impl Scene {
         ))
     }
 }
+
+// Ray-vs-collider intersection helpers
 
 fn ray_vs_rounded_box(
     origin: Vec3,
@@ -1717,6 +1721,8 @@ fn set_nearer_hit(best: &mut Option<(f32, Vec3, Vec3)>, hit: (f32, Vec3, Vec3)) 
     }
 }
 
+// Mesh narrow-phase helpers
+
 // Mesh-vs-dynamic narrow phase. `world_mesh` is the mesh collider's
 // world transform; `mesh` is the static terrain. `world_dyn` is the
 // dynamic body's world transform; `size_dyn` / `r_dyn` describe its
@@ -1753,9 +1759,9 @@ fn narrow_phase_mesh_vs_dynamic(
             let v2_local = bvh.positions[tri[2] as usize];
             // Lift the triangle into world space for the actual hit
             // test.
-            let v0 = mul_point(world_mesh, v0_local);
-            let v1 = mul_point(world_mesh, v1_local);
-            let v2 = mul_point(world_mesh, v2_local);
+            let v0 = mat_apply(world_mesh, &v0_local);
+            let v1 = mat_apply(world_mesh, &v1_local);
+            let v2 = mat_apply(world_mesh, &v2_local);
             let hit = match shape_dyn {
                 ColliderShape::Sphere { r } => sphere_vs_triangle(dyn_center, r, v0, v1, v2),
                 ColliderShape::Capsule { half_h, r } => {
@@ -1765,11 +1771,11 @@ fn narrow_phase_mesh_vs_dynamic(
                     // Solve in the body-local frame where the box is
                     // axis-aligned, then map the contact back to world
                     // (rotation + translation only, so depth carries).
-                    let l0 = mul_point(&dyn_inv, v0);
-                    let l1 = mul_point(&dyn_inv, v1);
-                    let l2 = mul_point(&dyn_inv, v2);
+                    let l0 = mat_apply(&dyn_inv, &v0);
+                    let l1 = mat_apply(&dyn_inv, &v1);
+                    let l2 = mat_apply(&dyn_inv, &v2);
                     local_box_vs_triangle(half, r, l0, l1, l2).map(|g| ContactGeom {
-                        point: mul_point(world_dyn, g.point),
+                        point: mat_apply(world_dyn, &g.point),
                         normal: world_dyn.mul_dir_value(&g.normal),
                         depth: g.depth,
                     })
@@ -1785,10 +1791,6 @@ fn narrow_phase_mesh_vs_dynamic(
         });
     });
     best
-}
-
-fn mul_point(m: &Mat4, v: Vec3) -> Vec3 {
-    m.mul_vec_value(&v)
 }
 
 fn transform_aabb_to_local(inv: &Mat4, aabb: &Aabb) -> Aabb {
@@ -1845,7 +1847,7 @@ fn transform_aabb_to_local(inv: &Mat4, aabb: &Aabb) -> Aabb {
         z: f32::NEG_INFINITY,
     };
     for c in &corners {
-        let local = mul_point(inv, *c);
+        let local = mat_apply(inv, c);
         min.x = min.x.min(local.x);
         min.y = min.y.min(local.y);
         min.z = min.z.min(local.z);
@@ -1900,6 +1902,8 @@ fn rounded_obb_corners(world: &Mat4, half: Vec3) -> [Vec3; 8] {
         }),
     ]
 }
+
+// Swept segment / OBB intersection helpers
 
 fn swept_points_aabb(points: &[Vec3], velocity: Vec3, radius: f32) -> Aabb {
     let mut min = Vec3 {
@@ -2353,6 +2357,8 @@ fn swept_obb_vs_triangle(
     ))
 }
 
+// SAT axis and projection helpers
+
 fn swept_obb_axes(ax: &[Vec3; 3], bx: &[Vec3; 3]) -> [Vec3; 15] {
     [
         ax[0],
@@ -2442,6 +2448,8 @@ fn axis_normal(axis: usize, sign: f32) -> Vec3 {
     }
 }
 
+// File-private raw Vec3 math
+
 fn normalized_or(v: Vec3, fallback: Vec3) -> Option<Vec3> {
     normalize_axis(v).or_else(|| normalize_axis(fallback))
 }
@@ -2497,6 +2505,8 @@ fn vec_len(v: Vec3) -> f32 {
 fn vec_len_sq(v: Vec3) -> f32 {
     vec_dot(v, v)
 }
+
+// Swept-sphere intersection helpers
 
 fn swept_sphere_vs_triangle(
     previous_center: Vec3,
@@ -2903,7 +2913,7 @@ mod tests {
     }
 
     #[test]
-    fn reset_draw_state_outside_scope_is_noop() {
+    fn test_reset_draw_state_outside_scope_is_noop() {
         // No context set: reset_draw_state must not panic, and
         // with_draw_context still returns None.
         reset_draw_state();

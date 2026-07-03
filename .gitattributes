@@ -18,6 +18,9 @@
 *.jpeg binary
 *.png binary
 
+# Models
+*.glb binary
+
 # Pyxel assets
 *.pyxapp binary
 # Pyxel palette is a plain-text file with one hex color per line.

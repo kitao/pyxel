@@ -7,6 +7,8 @@ define_wrapper!(Collider, pyxel::cube::Collider);
 
 #[pymethods]
 impl Collider {
+    // Constructor
+
     #[new]
     #[pyo3(signature = (
         size=None,
@@ -22,7 +24,6 @@ impl Collider {
     ))]
     // The constructor mirrors the Python Collider API instead of bundling
     // arguments into a Rust-only options struct.
-    #[allow(clippy::too_many_arguments)]
     fn new(
         size: Option<PyRef<'_, Vec3>>,
         radius: f32,
@@ -58,6 +59,8 @@ impl Collider {
             angular_velocity_rc,
         ))
     }
+
+    // Attributes
 
     #[getter]
     fn size(&self) -> Vec3 {
@@ -162,6 +165,8 @@ impl Collider {
         self.inner_mut().angular_velocity = v.inner.clone();
     }
 
+    // Dunder
+
     fn __repr__(&self) -> String {
         let c = self.inner_ref();
         let s = rc_ref!(&c.size);
@@ -171,6 +176,8 @@ impl Collider {
         )
     }
 }
+
+// Module registration
 
 pub fn add_collider_class(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<Collider>()?;

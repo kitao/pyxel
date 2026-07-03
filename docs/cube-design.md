@@ -21,8 +21,10 @@ signatures live in `python/pyxel/cube/__init__.pyi`.
   shader programs) are intentionally out of scope.
 - **Performance target**: 60 fps on Raspberry Pi 4 / 5. Pi Zero 2 is
   best-effort.
-- **No global state**: the cube module must not hold global mutable
-  variables.
+- **No persistent global state**: the cube module holds no global
+  mutable state that outlives a single call. The one global slot is the
+  per-draw context, which lives in a thread-local for the duration of
+  one draw call and is emptied on exit.
 - **Implementation locality**: core / bindings / python sources live under
   `cube/` subfolders. Modifications to existing (non-cube) Pyxel code are
   minimized.
@@ -39,7 +41,7 @@ signatures live in `python/pyxel/cube/__init__.pyi`.
 | `Camera` | View information (transform, fov, near, far, optional ortho size) plus the clear color |
 | `Shading` | Color lookup table (palette × levels) plus scene-wide light direction |
 | `Primitive` | Static vertex-data asset (positions / normals / uvs / indices / mode / cull); shareable across Node draws and Mesh parts |
-| `Mesh` | Hierarchical 3D model asset (parallel arrays of primitives / transforms / parents) with shared col_img, colkey, GLB import, and imported motion clips |
+| `Mesh` | Hierarchical 3D model asset (parallel arrays of primitives / transforms / parents / names) with shared col_img, colkey, GLB import, and imported motion clips |
 | `Motion` | Imported transform animation clip attached to a `Mesh` |
 | `Collider` | Unified collider holding shape + behavior flags + physical coefficients + motion state |
 | `Contact` | Collision-pipeline payload (contact geometry + engine-resolved motion deltas) |
@@ -194,8 +196,10 @@ m[i, j]                  # __getitem__(key: tuple[int, int]) -> float
                          # i = row, j = column (math notation M_{ij})
 ```
 
-`__getitem__` raises `IndexError` for keys outside `0..3 × 0..3`. Mat4 is
-immutable, so there is no `__setitem__`.
+`__getitem__` raises `IndexError` for non-negative keys outside
+`0..3 × 0..3`; a negative component raises `OverflowError` from the
+binding's unsigned `(usize, usize)` extraction before the range check
+is reached. Mat4 is immutable, so there is no `__setitem__`.
 
 ### 5.4 Operators
 
@@ -490,7 +494,9 @@ hue with no darker neighbors), that level falls back to a flat of the
 source color, so the ramp degrades gracefully on sparse palettes.
 
 The full algorithm lives in `crates/pyxel-core/src/cube/shading.rs` and
-is exercised by snapshot tests there.
+is exercised by property tests (monotone luma ramps and related
+invariants) in both Rust and Python, plus exact pins of individual
+table entries.
 
 ### 8.5 Indexing
 
@@ -499,8 +505,10 @@ shading[col, level]          # tuple[int, int] (primary, secondary)
 shading[col, level] = pair   # overwrite the cell with a (primary, secondary) tuple
 ```
 
-Out-of-range keys raise `IndexError`. Setting `primary == secondary`
-collapses the cell to a flat fill (no dither).
+Non-negative out-of-range keys raise `IndexError`; a negative component
+raises `OverflowError` from the binding's unsigned `(usize, usize)`
+extraction before the range check is reached. Setting
+`primary == secondary` collapses the cell to a flat fill (no dither).
 
 ### 8.6 Palette Substitution
 
@@ -684,7 +692,7 @@ character = Mesh(
 character_node = Node.from_mesh(character)
 ```
 
-`__init__` is all-optional. Parts can be added by reassigning the three
+`__init__` is all-optional. Parts can be added by reassigning the four
 arrays. For load-from-file workflows (e.g., glTF import), the importer
 assembles the arrays in topological order and hands them to the
 constructor.
@@ -721,7 +729,7 @@ palette index as `colkey` when loading the GLB.
 
 ```python
 motion = mesh.motions[0]
-actor.apply_motion(motion, frame=0)
+actor.apply_motion(motion, frame=0, loop=True)
 actor.play_motion(motion, loop=True, speed=1.0)
 actor.stop_motion()
 ```
@@ -804,7 +812,7 @@ collision shape of the same dimensions via `Collider(size=...)`. The
 narrow phase honors the collider's rotation exactly — shapes are solved
 in the body's local frame, not as world-axis-aligned boxes — and the
 only rounding-radius approximation is in the mesh triangle test, whose
-corner regions over-report by at most `r·(√3−1)` (§ 16 step 5).
+corner regions over-report by at most `r·(√3−1)` (§ 16 step 6).
 
 ### 11.2 Behavior Flags (opt-in)
 
@@ -1241,13 +1249,15 @@ mapping in one parameter.
 
 ```python
 root = Node.from_mesh(mesh)
-root.apply_motion(mesh.motions[0], frame=12)
+root.apply_motion(mesh.motions[0], frame=12, loop=True)
 root.play_motion(mesh.motions[0], loop=True, speed=1.0, start_frame=0.0)
 root.stop_motion()
 ```
 
 `apply_motion` samples a clip immediately and writes the sampled local
-transforms into the matching generated mesh-part nodes. `play_motion`
+transforms into the matching generated mesh-part nodes; the keyword-only
+`loop` flag (default `True`) wraps `frame` into the clip length, while
+`loop=False` clamps it at the clip ends. `play_motion`
 stores a playback cursor on the node; every `update()` advances that cursor
 after user `on_update` hooks and before collider motion integration. The
 stored player belongs to the subtree root it was called on, and
@@ -1273,9 +1283,9 @@ def on_destroy(self): ...                      # called when destroy() runs
   `self.collider.velocity` and `self.collider.angular_velocity`; the
   engine then integrates them into `self.transform` between
   `on_update` and collision detection (see § 16).
-- `on_draw`: drawing calls (immediate-mode + `self.mesh`). The driver
-  visits subtrees with `visible = True` and runs each node's `on_draw`
-  with draw state reset to defaults at entry.
+- `on_draw`: immediate-mode drawing calls. The driver visits subtrees
+  with `visible = True` and runs each node's `on_draw` with draw state
+  reset to defaults at entry.
 - `on_collide`: invoked once per contact for each side (`a` then `b`).
   `other` is the colliding Node; `contact` is the engine-resolved
   payload (§ 12). The user typically applies push-back and motion
@@ -1506,9 +1516,11 @@ phase begins.
 5. **Broad phase**: candidate pairs are enumerated by AABB overlap.
    The structure is implementation-defined; the v1 implementation uses
    an `O(N²)` AABB-overlap sweep, which is in budget at PS1 scale
-   (~100 movable bodies). Mesh colliders carry a lazily-built internal
-   BVH that the narrow phase queries with the dynamic body's mesh-local
-   AABB.
+   (~100 movable bodies). Each non-mesh collider's AABB is swept by its
+   per-frame velocity (the union of the previous and current position
+   boxes), so a fast mover still overlaps everything along its path.
+   Mesh colliders carry a lazily-built internal BVH that the narrow
+   phase queries with the dynamic body's mesh-local AABB.
 
 6. **Narrow phase**: each candidate pair is tested for actual collision.
    Shapes are classified per § 11.1 (sphere / capsule / rounded box /
@@ -1516,15 +1528,20 @@ phase begins.
    combinations) is supported, plus each of the three against a static
    mesh. Pairs are solved shape-exactly in the box side's body frame
    (or on capsule segments), so collider rotation is honored — the
-   world AABB stays a broad-phase-only construct. Mesh-vs-mesh is
-   unsupported (both sides are static and need no resolution payload)
-   and is silently skipped. Two bounded approximations remain: the
-   rounding radius enters the box-vs-triangle SAT as a uniform axis
-   extension (exact on faces and edges, over-reporting by at most
-   `r·(√3−1)` in corner regions), and the capsule-vs-box closest point
-   uses alternating projection between the two convex sets (converges
-   well within its fixed iteration budget). The result is a stream
-   of `Contact` records with `point`, `normal`, and `depth` filled in.
+   world AABB stays a broad-phase-only construct. When the overlap
+   test finds no contact, a swept (time-of-impact) fallback re-tests
+   the pair along the bodies' relative per-frame motion, so fast
+   movers cannot tunnel; the fallback exists for every supported pair
+   family, including the three shapes against a static mesh.
+   Mesh-vs-mesh is unsupported (both sides are static and need no
+   resolution payload) and is silently skipped. Two bounded
+   approximations remain: the rounding radius enters the
+   box-vs-triangle SAT as a uniform axis extension (exact on faces and
+   edges, over-reporting by at most `r·(√3−1)` in corner regions), and
+   the capsule-vs-box closest point uses alternating projection between
+   the two convex sets (converges well within its fixed iteration
+   budget). The result is a stream of `Contact` records with `point`,
+   `normal`, and `depth` filled in.
 
 7. **Response resolution**: the engine computes the mass-share split
    and writes the per-side push-back, rotation, and motion deltas into

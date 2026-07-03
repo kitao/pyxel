@@ -7,7 +7,6 @@ ACTOR_COUNT = 3
 class Actor(Node):
     def __init__(self, mesh, index):
         super().__init__()
-        self.index = index
         self.phase = index * 360.0 / ACTOR_COUNT
 
         self.model = Node.from_mesh(mesh)

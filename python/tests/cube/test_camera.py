@@ -54,9 +54,8 @@ class TestRepr:
         c.fov = 75.0
         c.ortho_size = 5.0
         r = repr(c)
-        assert "75" in r
-        assert "5" in r
-        assert "ortho_size=" in r
+        assert "fov=75" in r
+        assert "ortho_size=5" in r
 
     def test_none_ortho_size(self):
         r = repr(Camera())

@@ -27,6 +27,13 @@ pub struct BvhNode {
 // (~1000 triangles) without the bookkeeping cost of a larger leaf.
 const MAX_LEAF_TRIANGLES: usize = 1;
 
+// Fixed-size traversal stack for the per-frame queries, avoiding a heap
+// allocation per query. The median split halves each subtree, so tree
+// depth is at most ceil(log2(triangle count)) <= 32 (triangle indices
+// are u32), and the pop-one / push-two walk holds at most depth + 1
+// entries at once; 64 leaves ample margin.
+const QUERY_STACK_CAPACITY: usize = 64;
+
 impl Bvh {
     pub fn build(positions: Vec<Vec3>, triangles: Vec<[u32; 3]>) -> Self {
         if triangles.is_empty() {
@@ -107,9 +114,12 @@ impl Bvh {
         if self.nodes.is_empty() {
             return;
         }
-        let mut stack: Vec<i32> = vec![0];
-        while let Some(idx) = stack.pop() {
-            let node = self.nodes[idx as usize];
+        // stack[0] == 0 seeds the root.
+        let mut stack = [0_i32; QUERY_STACK_CAPACITY];
+        let mut top = 1_usize;
+        while top > 0 {
+            top -= 1;
+            let node = self.nodes[stack[top] as usize];
             if !node.aabb.overlaps(query) {
                 continue;
             }
@@ -120,8 +130,9 @@ impl Bvh {
                     visit(*tri);
                 }
             } else {
-                stack.push(node.left);
-                stack.push(node.right);
+                stack[top] = node.left;
+                stack[top + 1] = node.right;
+                top += 2;
             }
         }
     }
@@ -145,9 +156,12 @@ impl Bvh {
             y: 1.0 / direction.y,
             z: 1.0 / direction.z,
         };
-        let mut stack: Vec<i32> = vec![0];
-        while let Some(idx) = stack.pop() {
-            let node = self.nodes[idx as usize];
+        // stack[0] == 0 seeds the root.
+        let mut stack = [0_i32; QUERY_STACK_CAPACITY];
+        let mut top = 1_usize;
+        while top > 0 {
+            top -= 1;
+            let node = self.nodes[stack[top] as usize];
             if !ray_reaches_aabb(origin, inv_dir, &node.aabb, max_t) {
                 continue;
             }
@@ -158,8 +172,9 @@ impl Bvh {
                     visit(*tri);
                 }
             } else {
-                stack.push(node.left);
-                stack.push(node.right);
+                stack[top] = node.left;
+                stack[top + 1] = node.right;
+                top += 2;
             }
         }
     }

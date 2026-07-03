@@ -1,5 +1,6 @@
-import pyxel
 import pytest
+
+import pyxel
 
 from pyxel.cube import Camera, Collider, Mat4, Node, RaycastHit, Shading, Vec3
 
@@ -137,7 +138,6 @@ class TestRaycast:
         # RaycastHit.node preserves the tree's Py<Node> instance
         # (binding mirrors the overlap_* identity path).
         assert hit.node is near
-        del far  # silence unused-variable lint
 
     def test_raycast_distance_uses_world_units_for_non_unit_direction(self):
         root = Node()

@@ -1,5 +1,5 @@
 // Collision routines follow the standard short-letter notation
-// (Moeller-Trumbore: h/a/f/s/q/u/v/t). Renaming hurts traceability
+// (Möller-Trumbore: h/a/f/s/q/u/v/t). Renaming hurts traceability
 // against the reference formulation.
 #![allow(clippy::many_single_char_names)]
 
@@ -87,6 +87,64 @@ impl Aabb {
                 z: hz,
             },
         ];
+        Self::from_transformed_corners(transform, &corners)
+    }
+
+    // Mesh-collider AABB: the mesh-local AABB (cached on the Mesh)
+    // lifted by transforming its 8 corners. For rotated meshes this is
+    // the bounding box of the rotated local box — conservative, so the
+    // broad phase stays correct without re-transforming every vertex
+    // per frame.
+    pub fn from_mesh(mesh: &Mesh, transform: &Mat4) -> Self {
+        let local = mesh.local_aabb();
+        let corners = [
+            Vec3 {
+                x: local.min.x,
+                y: local.min.y,
+                z: local.min.z,
+            },
+            Vec3 {
+                x: local.max.x,
+                y: local.min.y,
+                z: local.min.z,
+            },
+            Vec3 {
+                x: local.min.x,
+                y: local.max.y,
+                z: local.min.z,
+            },
+            Vec3 {
+                x: local.max.x,
+                y: local.max.y,
+                z: local.min.z,
+            },
+            Vec3 {
+                x: local.min.x,
+                y: local.min.y,
+                z: local.max.z,
+            },
+            Vec3 {
+                x: local.max.x,
+                y: local.min.y,
+                z: local.max.z,
+            },
+            Vec3 {
+                x: local.min.x,
+                y: local.max.y,
+                z: local.max.z,
+            },
+            Vec3 {
+                x: local.max.x,
+                y: local.max.y,
+                z: local.max.z,
+            },
+        ];
+        Self::from_transformed_corners(transform, &corners)
+    }
+
+    // Transform 8 local-space corners and take the world-space min /
+    // max.
+    fn from_transformed_corners(transform: &Mat4, corners: &[Vec3; 8]) -> Self {
         let mut min = Vec3 {
             x: f32::INFINITY,
             y: f32::INFINITY,
@@ -97,7 +155,7 @@ impl Aabb {
             y: f32::NEG_INFINITY,
             z: f32::NEG_INFINITY,
         };
-        for c in &corners {
+        for c in corners {
             let wc = transform.mul_vec_value(c);
             min.x = min.x.min(wc.x);
             min.y = min.y.min(wc.y);
@@ -105,54 +163,6 @@ impl Aabb {
             max.x = max.x.max(wc.x);
             max.y = max.y.max(wc.y);
             max.z = max.z.max(wc.z);
-        }
-        Self { min, max }
-    }
-
-    // Mesh-collider AABB: union of every part's transformed positions.
-    pub fn from_mesh(mesh: &Mesh, transform: &Mat4) -> Self {
-        let world_per_part = mesh.compose_world_transforms(transform);
-        let mut min = Vec3 {
-            x: f32::INFINITY,
-            y: f32::INFINITY,
-            z: f32::INFINITY,
-        };
-        let mut max = Vec3 {
-            x: f32::NEG_INFINITY,
-            y: f32::NEG_INFINITY,
-            z: f32::NEG_INFINITY,
-        };
-        let mut any = false;
-        for (idx, world_t) in world_per_part.iter().enumerate() {
-            let Some(geom_rc) = &mesh.primitives[idx] else {
-                continue;
-            };
-            let geom = rc_ref!(geom_rc);
-            let positions = &geom.positions;
-            for chunk in positions.as_chunks::<3>().0 {
-                let p = Vec3 {
-                    x: chunk[0],
-                    y: chunk[1],
-                    z: chunk[2],
-                };
-                let wp = world_t.mul_vec_value(&p);
-                min.x = min.x.min(wp.x);
-                min.y = min.y.min(wp.y);
-                min.z = min.z.min(wp.z);
-                max.x = max.x.max(wp.x);
-                max.y = max.y.max(wp.y);
-                max.z = max.z.max(wp.z);
-                any = true;
-            }
-        }
-        if !any {
-            let p = transform.mul_vec_value(&Vec3 {
-                x: 0.0,
-                y: 0.0,
-                z: 0.0,
-            });
-            min = p;
-            max = p;
         }
         Self { min, max }
     }
@@ -177,7 +187,8 @@ impl Aabb {
 }
 
 // World-space contact record produced by the narrow phase. The normal
-// points from `b` toward `a`, matching the user-facing § 12 convention.
+// points from `b` toward `a`, matching the user-facing convention
+// (cube-design.md § 12).
 
 #[derive(Clone, Copy, Debug)]
 pub struct ContactGeom {
@@ -186,7 +197,9 @@ pub struct ContactGeom {
     pub depth: f32,
 }
 
-// Shape classification per cube-design.md § 11.1: size == 0 → sphere,
+// Shape classification
+
+// Classification per cube-design.md § 11.1: size == 0 → sphere,
 // size = (0, h, 0) → capsule along local Y (segment half-length h/2),
 // anything else → rounded box with core half-extents size/2. The
 // rounding radius applies to every family (sphere radius when the core
@@ -224,6 +237,8 @@ pub fn classify_shape(size: Vec3, radius: f32) -> ColliderShape {
     }
 }
 
+// Collider AABB resolution
+
 // Resolve a Collider's world-space AABB. The collider may carry a
 // rounded-box family shape or a static mesh; sphere falls out of the
 // rounded-box path with size = Vec3::ZERO.
@@ -235,6 +250,8 @@ pub fn collider_aabb(collider: &Collider, transform: &Mat4) -> Aabb {
     let size = *rc_ref!(&collider.size);
     Aabb::from_rounded_box(transform, size, collider.radius)
 }
+
+// Pair narrow-phase tests
 
 // Sphere vs sphere intersection. Returns Some(ContactGeom) when the
 // spheres overlap. The normal points from b toward a, and the contact
@@ -683,10 +700,8 @@ pub fn rounded_obb_vs_rounded_obb(
     ];
     let ha = [half_a.x, half_a.y, half_a.z];
     let hb = [half_b.x, half_b.y, half_b.z];
-    let ca_rc = world_a.pos();
-    let ca = *rc_ref!(&ca_rc);
-    let cb_rc = world_b.pos();
-    let cb = *rc_ref!(&cb_rc);
+    let ca = world_a.pos_value();
+    let cb = world_b.pos_value();
     let delta = Vec3 {
         x: ca.x - cb.x,
         y: ca.y - cb.y,
@@ -836,6 +851,8 @@ pub fn aabb_vs_aabb(a: &Aabb, b: &Aabb) -> Option<ContactGeom> {
         depth,
     })
 }
+
+// Ray intersections
 
 // Ray-sphere intersection. Returns the (t, point, normal) of the
 // closest hit in [0, max_distance], or None.
@@ -1059,6 +1076,8 @@ pub fn ray_vs_triangle(
     ))
 }
 
+// Shape-vs-triangle tests
+
 // Sphere-vs-triangle: find the closest point on the triangle to the
 // sphere center, then accept the hit when that point is inside the
 // sphere. Returns ContactGeom with normal pointing from the triangle
@@ -1160,6 +1179,8 @@ pub fn capsule_vs_triangle(
     // handles the depth/normal conventions (incl. the interior case).
     sphere_vs_triangle(best_on_seg, cap_r.max(0.0), v0, v1, v2)
 }
+
+// Closest-point helpers
 
 // Closest point on triangle to p (Ericson, Real-Time Collision
 // Detection §5.1.5). Returns the barycentric point on the triangle
@@ -1523,6 +1544,8 @@ pub(crate) fn closest_points_segment_aabb(a: Vec3, b: Vec3, half: Vec3) -> (Vec3
     (on_seg, on_box)
 }
 
+// Box-triangle SAT core
+
 // AABB vs triangle: thin wrapper over the box-local SAT core. Shifts
 // the triangle into the AABB-centered frame, runs the sharp-box (r=0)
 // test, and shifts the contact point back to world.
@@ -1720,6 +1743,8 @@ fn sat_overlap(
     }
     Some((tri_max.min(r) - tri_min.max(-r)).max(0.0))
 }
+
+// Numeric guards
 
 fn vec_is_finite(v: Vec3) -> bool {
     v.x.is_finite() && v.y.is_finite() && v.z.is_finite()

@@ -9,6 +9,8 @@ define_wrapper!(Contact, pyxel::cube::Contact);
 // user-constructible and its fields are read-only.
 #[pymethods]
 impl Contact {
+    // Attributes
+
     #[getter]
     fn point(&self) -> Vec3 {
         Vec3::wrap(self.inner_ref().point.clone())
@@ -39,6 +41,8 @@ impl Contact {
         Vec3::wrap(self.inner_ref().delta_angular_velocity.clone())
     }
 
+    // Dunder
+
     fn __repr__(&self) -> String {
         let c = self.inner_ref();
         let p = rc_ref!(&c.point);
@@ -49,6 +53,8 @@ impl Contact {
         )
     }
 }
+
+// Module registration
 
 pub fn add_contact_class(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<Contact>()?;

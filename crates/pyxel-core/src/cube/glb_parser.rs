@@ -1,10 +1,10 @@
 use std::collections::HashMap;
 use std::fs;
 
-use crate::cube::mat4::Mat4;
+use crate::cube::mat4::{Mat4, RcMat4};
 use crate::cube::mesh::{ColImage, Mesh, RcMesh};
 use crate::cube::motion::{Motion, MotionChannel, MotionInterpolation, MotionTarget, MotionValues};
-use crate::cube::primitive::{Primitive, MODE_TRIANGLES};
+use crate::cube::primitive::{Primitive, RcPrimitive, MODE_TRIANGLES};
 use crate::cube::quat::Quat;
 use crate::cube::vec3::Vec3;
 use crate::image::{Color, Image, RcImage, Rgb24};
@@ -58,6 +58,8 @@ pub(super) fn parse_glb(filename: &str, colkey: Option<i32>, fps: f32) -> Result
     rc_ref!(&mesh).validate()?;
     Ok(mesh)
 }
+
+// Image conversion helpers
 
 fn rgba8_to_pyxel_image(
     width: u32,
@@ -132,6 +134,8 @@ fn color_distance_sq(a: (u8, u8, u8), b: (u8, u8, u8)) -> f32 {
     let db = a.2 as f32 - b.2 as f32;
     dr * dr + dg * dg + db * db
 }
+
+// Validation helpers
 
 fn validate_glb_header(bytes: &[u8]) -> Result<(), String> {
     if bytes.len() < 4 || &bytes[0..4] != b"glTF" {
@@ -237,6 +241,8 @@ fn validate_texture_usage(document: &gltf::Document, image_count: usize) -> Resu
     Ok(())
 }
 
+// Image conversion helpers (continued)
+
 fn image_to_rgba8(img: &gltf::image::Data) -> Result<Vec<u8>, String> {
     match img.format {
         gltf::image::Format::R8G8B8A8 => Ok(img.pixels.clone()),
@@ -264,6 +270,8 @@ fn image_to_rgba8(img: &gltf::image::Data) -> Result<Vec<u8>, String> {
         _ => Err("GLB unsupported image format".to_string()),
     }
 }
+
+// Scene import
 
 fn import_node(
     mesh: &RcMesh,
@@ -311,8 +319,8 @@ fn import_node(
 
 fn add_part(
     mesh: &RcMesh,
-    primitive: Option<crate::cube::primitive::RcPrimitive>,
-    transform: crate::cube::mat4::RcMat4,
+    primitive: Option<RcPrimitive>,
+    transform: RcMat4,
     parent: i32,
     name: String,
 ) -> usize {
@@ -325,7 +333,7 @@ fn add_part(
     index
 }
 
-fn node_transform(node: &gltf::Node) -> crate::cube::mat4::RcMat4 {
+fn node_transform(node: &gltf::Node) -> RcMat4 {
     let (translation, rotation, scale) = node.transform().decomposed();
     let pos = Vec3 {
         x: translation[0],
@@ -346,11 +354,13 @@ fn node_transform(node: &gltf::Node) -> crate::cube::mat4::RcMat4 {
     Mat4::compose(&pos, &rot, &scale)
 }
 
+// Primitive import
+
 fn import_primitive(
     primitive: &gltf::Primitive,
     buffers: &[gltf::buffer::Data],
     has_texture: bool,
-) -> Result<crate::cube::primitive::RcPrimitive, String> {
+) -> Result<RcPrimitive, String> {
     if primitive.mode() != gltf::mesh::Mode::Triangles {
         return Err("GLB only triangle primitives are supported".to_string());
     }
@@ -419,6 +429,8 @@ fn import_primitive(
     Ok(prim)
 }
 
+// Animation import
+
 fn import_animations(
     mesh: &RcMesh,
     buffers: &[gltf::buffer::Data],
@@ -466,6 +478,8 @@ fn import_animations(
                 let part_index = *node_parts.get(&node_index).ok_or_else(|| {
                     format!("GLB animation targets node {node_index} outside imported scene")
                 })?;
+                // Property dispatch: read each channel's outputs as the value
+                // kind its glTF target property declares.
                 let (target, values) = match channel.target().property() {
                     gltf::animation::Property::Translation => {
                         let values = match reader.read_outputs() {
@@ -523,7 +537,7 @@ fn import_animations(
                         return Err("GLB morph target animation is not supported".to_string());
                     }
                 };
-                let value_count = motion_value_len(&values);
+                let value_count = value_len(&values);
                 if value_count != inputs.len() {
                     return Err(format!(
                         "GLB animation input/output counts mismatch: inputs={}, outputs={}",
@@ -545,7 +559,7 @@ fn import_animations(
     Ok(())
 }
 
-fn motion_value_len(values: &MotionValues) -> usize {
+fn value_len(values: &MotionValues) -> usize {
     match values {
         MotionValues::Translations(values) | MotionValues::Scales(values) => values.len(),
         MotionValues::Rotations(values) => values.len(),

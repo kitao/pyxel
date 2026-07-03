@@ -1,8 +1,6 @@
 import pyxel
 from pyxel.cube import Camera, Collider, Mat4, Mesh, Node, Primitive, Shading, Vec3
 
-WIDTH = 240
-HEIGHT = 180
 GRAVITY = -0.03
 JUMP_SPEED = 0.42
 MOVE_SPEED = 0.13
@@ -37,7 +35,7 @@ def make_quad_mesh(corners, color):
     )
 
 
-class TerrainPatch(Node):
+class QuadSurface(Node):
     def __init__(self, corners, color, outline=1):
         super().__init__()
         self.corners = corners
@@ -252,7 +250,7 @@ class Scene(Node):
             ),
         ]
         for corners, color in routes:
-            self.add_child(TerrainPatch(corners, color))
+            self.add_child(QuadSurface(corners, color))
 
         # Surface markers
         for z in [5.2, 3.9, 2.6, 1.3]:
@@ -271,7 +269,7 @@ class Scene(Node):
 
 class App:
     def __init__(self):
-        pyxel.init(WIDTH, HEIGHT, title="3D Collision")
+        pyxel.init(240, 180, title="3D Collision")
 
         pyxel.sounds[0].set("c3g3c4", "t", "654", "nnf", 4)
         mesh = Mesh.from_glb("assets/cube_actor.glb", colkey=0, fps=30.0)
@@ -289,7 +287,7 @@ class App:
         self.scene.update_camera()
 
     def draw(self):
-        self.scene.draw(0, 0, WIDTH, HEIGHT)
+        self.scene.draw(0, 0, pyxel.width, pyxel.height)
 
         if self.scene.player.reached_goal:
             pyxel.text(8, 8, "GOAL! Press R", 10)

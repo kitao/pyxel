@@ -6,6 +6,8 @@ define_wrapper!(Camera, pyxel::cube::Camera);
 
 #[pymethods]
 impl Camera {
+    // Constructor
+
     #[new]
     fn new() -> Self {
         Self::wrap(pyxel::cube::Camera::new())
@@ -19,8 +21,8 @@ impl Camera {
     }
 
     #[setter]
-    fn set_transform(&self, mat: PyRef<'_, Mat4>) {
-        self.inner_mut().transform = mat.inner.clone();
+    fn set_transform(&self, v: PyRef<'_, Mat4>) {
+        self.inner_mut().transform = v.inner.clone();
     }
 
     #[getter]
@@ -86,6 +88,8 @@ impl Camera {
         )
     }
 }
+
+// Module registration
 
 pub fn add_camera_class(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<Camera>()?;

@@ -110,6 +110,68 @@ impl Mat4 {
         Quat::from_matrix(&rot_only)
     }
 
+    // Operators
+
+    pub fn mul_mat(&self, other: &Self) -> RcMat4 {
+        Self::from_rows(self.mul_mat_value(other).data)
+    }
+
+    // Plain (non-Rc) operator cores for internal hot paths (raster, draw,
+    // scene, collision): per-vertex and per-triangle work must not heap-
+    // allocate. The Rc operators delegate here, so both paths compute
+    // bit-identical results.
+
+    #[must_use]
+    pub fn mul_mat_value(&self, other: &Self) -> Self {
+        let mut result = [[0.0; 4]; 4];
+        for i in 0..4 {
+            for j in 0..4 {
+                let mut sum = 0.0;
+                for k in 0..4 {
+                    sum += self.data[i][k] * other.data[k][j];
+                }
+                result[i][j] = sum;
+            }
+        }
+        Self { data: result }
+    }
+
+    pub fn mul_vec(&self, v: &Vec3) -> RcVec3 {
+        let r = self.mul_vec_value(v);
+        Vec3::new(r.x, r.y, r.z)
+    }
+
+    pub fn mul_vec_value(&self, v: &Vec3) -> Vec3 {
+        Vec3 {
+            x: self.data[0][0] * v.x
+                + self.data[0][1] * v.y
+                + self.data[0][2] * v.z
+                + self.data[0][3],
+            y: self.data[1][0] * v.x
+                + self.data[1][1] * v.y
+                + self.data[1][2] * v.z
+                + self.data[1][3],
+            z: self.data[2][0] * v.x
+                + self.data[2][1] * v.y
+                + self.data[2][2] * v.z
+                + self.data[2][3],
+        }
+    }
+
+    pub fn mul_dir(&self, v: &Vec3) -> RcVec3 {
+        let r = self.mul_dir_value(v);
+        Vec3::new(r.x, r.y, r.z)
+    }
+
+    // Transform direction vector (ignore translation row).
+    pub fn mul_dir_value(&self, v: &Vec3) -> Vec3 {
+        Vec3 {
+            x: self.data[0][0] * v.x + self.data[0][1] * v.y + self.data[0][2] * v.z,
+            y: self.data[1][0] * v.x + self.data[1][1] * v.y + self.data[1][2] * v.z,
+            z: self.data[2][0] * v.x + self.data[2][1] * v.y + self.data[2][2] * v.z,
+        }
+    }
+
     // Class-method factories
 
     pub fn from_translation(pos: &Vec3) -> RcMat4 {
@@ -191,68 +253,6 @@ impl Mat4 {
             [s.z, u.z, -f.z, eye.z],
             [0.0, 0.0, 0.0, 1.0],
         ])
-    }
-
-    // Operators
-
-    pub fn mul_mat(&self, other: &Self) -> RcMat4 {
-        Self::from_rows(self.mul_mat_value(other).data)
-    }
-
-    // Plain (non-Rc) operator cores for internal hot paths (raster, draw,
-    // scene, collision): per-vertex and per-triangle work must not heap-
-    // allocate. The Rc operators delegate here, so both paths compute
-    // bit-identical results.
-
-    #[must_use]
-    pub fn mul_mat_value(&self, other: &Self) -> Self {
-        let mut result = [[0.0; 4]; 4];
-        for i in 0..4 {
-            for j in 0..4 {
-                let mut sum = 0.0;
-                for k in 0..4 {
-                    sum += self.data[i][k] * other.data[k][j];
-                }
-                result[i][j] = sum;
-            }
-        }
-        Self { data: result }
-    }
-
-    pub fn mul_vec(&self, v: &Vec3) -> RcVec3 {
-        let r = self.mul_vec_value(v);
-        Vec3::new(r.x, r.y, r.z)
-    }
-
-    pub fn mul_vec_value(&self, v: &Vec3) -> Vec3 {
-        Vec3 {
-            x: self.data[0][0] * v.x
-                + self.data[0][1] * v.y
-                + self.data[0][2] * v.z
-                + self.data[0][3],
-            y: self.data[1][0] * v.x
-                + self.data[1][1] * v.y
-                + self.data[1][2] * v.z
-                + self.data[1][3],
-            z: self.data[2][0] * v.x
-                + self.data[2][1] * v.y
-                + self.data[2][2] * v.z
-                + self.data[2][3],
-        }
-    }
-
-    pub fn mul_dir(&self, v: &Vec3) -> RcVec3 {
-        let r = self.mul_dir_value(v);
-        Vec3::new(r.x, r.y, r.z)
-    }
-
-    // Transform direction vector (ignore translation row).
-    pub fn mul_dir_value(&self, v: &Vec3) -> Vec3 {
-        Vec3 {
-            x: self.data[0][0] * v.x + self.data[0][1] * v.y + self.data[0][2] * v.z,
-            y: self.data[1][0] * v.x + self.data[1][1] * v.y + self.data[1][2] * v.z,
-            z: self.data[2][0] * v.x + self.data[2][1] * v.y + self.data[2][2] * v.z,
-        }
     }
 
     // Mutate methods (return new Mat4)
@@ -628,7 +628,7 @@ mod tests {
             z: 0.0,
         };
         let m = deref(&Mat4::from_euler(&v));
-        // Rotating (1, 0, 0) by 90 deg around Y -> (0, 0, -1) in right-handed.
+        // Rotating (1, 0, 0) by 90° around Y → (0, 0, -1) in right-handed.
         let p = Vec3 {
             x: 1.0,
             y: 0.0,
@@ -797,7 +797,7 @@ mod tests {
             z: 0.0,
         };
         let r = deref_v(&rc_ref!(&result).mul_vec(&v));
-        // (0,1,0) rotated 90 deg around X -> (0, 0, 1)
+        // (0, 1, 0) rotated 90° around X → (0, 0, 1).
         assert!(approx_eq_vec(
             &r,
             &Vec3 {
@@ -907,12 +907,15 @@ mod tests {
         assert_eq!(m.data[0][3], 0.0);
         assert_eq!(m.data[1][3], 5.0);
         assert_eq!(m.data[2][3], 0.0);
-        // The basis must be non-degenerate (determinant of the 3x3
-        // upper-left ≠ 0). For an orthonormal rotation it should be ±1.
+        // The fallback deterministically yields a proper orthonormal
+        // rotation: the 3x3 upper-left determinant is exactly +1.
         let det = m.data[0][0] * (m.data[1][1] * m.data[2][2] - m.data[1][2] * m.data[2][1])
             - m.data[0][1] * (m.data[1][0] * m.data[2][2] - m.data[1][2] * m.data[2][0])
             + m.data[0][2] * (m.data[1][0] * m.data[2][1] - m.data[1][1] * m.data[2][0]);
-        assert!(det.abs() > 0.5, "look_at basis collapsed (det={det})");
+        assert!(
+            (det - 1.0).abs() < 1e-5,
+            "look_at basis collapsed (det={det})"
+        );
     }
 
     #[test]
@@ -935,10 +938,14 @@ mod tests {
             z: 0.0,
         };
         let m = deref(&Mat4::look_at(&eye, &target, &up));
+        // Same exact pin as above: a proper rotation has det +1.
         let det = m.data[0][0] * (m.data[1][1] * m.data[2][2] - m.data[1][2] * m.data[2][1])
             - m.data[0][1] * (m.data[1][0] * m.data[2][2] - m.data[1][2] * m.data[2][0])
             + m.data[0][2] * (m.data[1][0] * m.data[2][1] - m.data[1][1] * m.data[2][0]);
-        assert!(det.abs() > 0.5, "look_at basis collapsed (det={det})");
+        assert!(
+            (det - 1.0).abs() < 1e-5,
+            "look_at basis collapsed (det={det})"
+        );
     }
 
     #[test]

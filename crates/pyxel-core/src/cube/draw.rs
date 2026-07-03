@@ -1,8 +1,8 @@
+// Drawing math uses conventional x/y/z/u/v names and flat hot-path signatures;
+// bundling them into temporary structs would add noise on the render path.
 #![allow(clippy::many_single_char_names)]
 #![allow(clippy::too_many_arguments)]
 
-// Drawing math uses conventional x/y/z/u/v names and flat hot-path signatures;
-// bundling them into temporary structs would add noise on the render path.
 // High-level cube draw commands. All commands consume the active
 // DrawContext (target image, viewport, clip, scene depth buffer, camera)
 // and a world transform, and ultimately route through `prim` so all
@@ -14,7 +14,6 @@ use std::sync::OnceLock;
 
 use crate::cube::camera::RcCamera;
 use crate::cube::mat4::Mat4;
-use crate::cube::mesh::Mesh;
 use crate::cube::primitive::{
     self, Primitive, CULL_BACK, CULL_FRONT, CULL_NONE, MODE_LINES, MODE_POINTS, MODE_TRIANGLES,
 };
@@ -64,11 +63,11 @@ struct ProjectedPolygon {
 // / TRIANGLE_STRIP / TRIANGLE_FAN additions can interleave the GL
 // numbering as needed).
 
-// Billboard modes (binding mirrors these as Node class attrs)
-// Mirrors Godot's BillboardMode (DISABLED / ENABLED / FIXED_Y).
+// Billboard modes, chosen internally per draw command (sprite and
+// text pass ON; the geometry commands pass OFF).
+// Mirrors Godot's BillboardMode (DISABLED / ENABLED).
 pub const BILLBOARD_OFF: i32 = 0;
 pub const BILLBOARD_ON: i32 = 1;
-pub const BILLBOARD_FIXED_Y: i32 = 2;
 
 pub type Uvs = ((f32, f32), (f32, f32), (f32, f32), (f32, f32));
 
@@ -112,7 +111,7 @@ fn signed_screen_area(p0: (f32, f32, f32), p1: (f32, f32, f32), p2: (f32, f32, f
 // convention that they have no front side to draw.
 #[inline]
 fn should_cull(area: f32, cull: i32) -> bool {
-    // Pyxel cube uses CCW outward winding (front face from outside).
+    // Pyxel Cube uses CCW outward winding (front face from outside).
     // Projecting onto the Y-down screen flips the sign: front faces yield
     // a negative signed_screen_area, back faces yield a positive one.
     (cull == CULL_BACK && area >= 0.0) || (cull == CULL_FRONT && area <= 0.0)
@@ -426,46 +425,17 @@ fn apply_billboard(world_mat: &Mat4, ctx: &DrawContext, mode: i32) -> Mat4 {
         + world_mat.data[1][2].powi(2)
         + world_mat.data[2][2].powi(2))
     .sqrt();
-    let (rx, ry, rz) = if mode == BILLBOARD_FIXED_Y {
-        // Cylindrical: keep world Y; rebuild X / Z from camera horizontal.
-        let world_up = Vec3 {
-            x: 0.0,
-            y: 1.0,
-            z: 0.0,
-        };
-        // Project camera Z onto the horizontal plane to derive new forward.
-        let mut forward = Vec3 {
-            x: cam_z.x,
-            y: 0.0,
-            z: cam_z.z,
-        };
-        let len = (forward.x * forward.x + forward.z * forward.z).sqrt();
-        if len > 1e-6 {
-            forward.x /= len;
-            forward.z /= len;
-        } else {
-            forward.z = 1.0;
-        }
-        let right = Vec3 {
-            x: world_up.y * forward.z - world_up.z * forward.y,
-            y: world_up.z * forward.x - world_up.x * forward.z,
-            z: world_up.x * forward.y - world_up.y * forward.x,
-        };
-        (right, world_up, forward)
-    } else {
-        // Spherical (BILLBOARD_ON): adopt camera basis directly.
-        (cam_x, cam_y, cam_z)
-    };
+    // Spherical (BILLBOARD_ON): adopt camera basis directly.
     let mut out = Mat4::identity_value();
-    out.data[0][0] = rx.x * scale_x;
-    out.data[1][0] = rx.y * scale_x;
-    out.data[2][0] = rx.z * scale_x;
-    out.data[0][1] = ry.x * scale_y;
-    out.data[1][1] = ry.y * scale_y;
-    out.data[2][1] = ry.z * scale_y;
-    out.data[0][2] = rz.x * scale_z;
-    out.data[1][2] = rz.y * scale_z;
-    out.data[2][2] = rz.z * scale_z;
+    out.data[0][0] = cam_x.x * scale_x;
+    out.data[1][0] = cam_x.y * scale_x;
+    out.data[2][0] = cam_x.z * scale_x;
+    out.data[0][1] = cam_y.x * scale_y;
+    out.data[1][1] = cam_y.y * scale_y;
+    out.data[2][1] = cam_y.z * scale_y;
+    out.data[0][2] = cam_z.x * scale_z;
+    out.data[1][2] = cam_z.y * scale_z;
+    out.data[2][2] = cam_z.z * scale_z;
     out.data[0][3] = pos.x;
     out.data[1][3] = pos.y;
     out.data[2][3] = pos.z;
@@ -483,7 +453,9 @@ fn make_image_sampler(img: &Image) -> impl Fn(f32, f32, i32, i32) -> i32 + '_ {
     move |u, v, _x, _y| {
         let xi = ((u * w).floor() as i32).clamp(0, max_x);
         let yi = ((v * h).floor() as i32).clamp(0, max_y);
-        i32::from(img.pixel(xi as f32, yi as f32))
+        // Indices are already clamped; read directly instead of re-rounding
+        // and re-clipping through pixel().
+        i32::from(img.canvas.read_data(xi as usize, yi as usize))
     }
 }
 
@@ -500,7 +472,9 @@ fn make_shaded_sampler<'a>(
     move |u, v, x, y| {
         let xi = ((u * w).floor() as i32).clamp(0, max_x);
         let yi = ((v * h).floor() as i32).clamp(0, max_y);
-        let base = i32::from(img.pixel(xi as f32, yi as f32));
+        // Indices are already clamped; read directly instead of re-rounding
+        // and re-clipping through pixel().
+        let base = i32::from(img.canvas.read_data(xi as usize, yi as usize));
         if palette_size == 0 {
             base
         } else {
@@ -568,7 +542,7 @@ pub fn prim(
             None => step as i32,
         };
         if raw < 0 || (raw as usize) >= vertex_count {
-            return Err("index out of vertex range");
+            return Err("Index out of vertex range");
         }
         Ok(raw as usize)
     };
@@ -584,7 +558,7 @@ pub fn prim(
                 }
             }
             if col_image.is_some() && uvs.is_none() {
-                return Err("textured prim requires uvs");
+                return Err("Textured prim requires uvs");
             }
             for f in 0..face_count {
                 let i0 = resolve_vertex_index(f * 3)?;
@@ -731,7 +705,7 @@ pub fn prim(
                 }
             }
         }
-        _ => return Err("invalid prim mode"),
+        _ => return Err("Invalid prim mode"),
     }
     Ok(())
 }
@@ -1278,59 +1252,11 @@ pub fn plane(
     );
 }
 
-// Draw a hierarchical Mesh asset. Each part's world transform is
-// composed in topological order (parents[i] < i is validated at Mesh
-// construction). Per-part vertex / index / uv / normal data and the
-// prim / cull mode come from the part's Primitive; col_img and colkey
-// are shared across the whole mesh.
-pub fn mesh(ctx: &mut DrawContext, world_mat: &Mat4, mesh: &Mesh, state: DrawState) {
-    if mesh.primitives.is_empty() {
-        return;
-    }
-    let world = mesh.compose_world_transforms(world_mat);
-    let (col_flat, col_image) = mesh.col_img.as_flat_and_image();
-    for (i, prim_opt) in mesh.primitives.iter().enumerate() {
-        let Some(prim_rc) = prim_opt.as_ref() else {
-            continue;
-        };
-        let g = rc_ref!(prim_rc);
-        if g.positions.is_empty() {
-            continue;
-        }
-        let _ = prim(
-            ctx,
-            &world[i],
-            g.mode,
-            g.cull,
-            &g.positions,
-            if g.indices.is_empty() {
-                None
-            } else {
-                Some(g.indices.as_slice())
-            },
-            if g.normals.is_empty() {
-                None
-            } else {
-                Some(g.normals.as_slice())
-            },
-            if g.uvs.is_empty() {
-                None
-            } else {
-                Some(g.uvs.as_slice())
-            },
-            col_flat,
-            col_image.as_ref(),
-            mesh.colkey,
-            state,
-        );
-    }
-}
-
 // Text rendering uses Vec3-positioned, screen-space glyphs.
 // `pos` is projected to screen, then each visible glyph pixel
 // is plotted through `write_pixel` at the glyph's screen offset.
 // Always camera-facing; ancestor rotation / scale do not affect
-// glyph layout (cube-design.md § 12.5).
+// glyph layout (cube-design.md § 14.5).
 
 // Measure the glyph cluster origin-anchored at (0, 0). `text` uses the result
 // to center the cluster before walking pixels without allocating a geometry Vec.
@@ -1527,7 +1453,7 @@ mod tests {
     }
 
     #[test]
-    fn clip_triangle_to_near_keeps_all_inside_vertices() {
+    fn test_clip_triangle_to_near_keeps_all_inside_vertices() {
         let vp = near_clip_test_vp();
         let vertices = [
             clip_vertex(-1.0, -1.0, -1.0, 0.0, 0.0),
@@ -1544,7 +1470,7 @@ mod tests {
     }
 
     #[test]
-    fn clip_triangle_to_near_rejects_all_behind_vertices() {
+    fn test_clip_triangle_to_near_rejects_all_behind_vertices() {
         let vp = near_clip_test_vp();
         let vertices = [
             clip_vertex(-1.0, -1.0, 1.0, 0.0, 0.0),
@@ -1557,7 +1483,7 @@ mod tests {
     }
 
     #[test]
-    fn clip_triangle_to_near_one_vertex_behind_returns_quad() {
+    fn test_clip_triangle_to_near_one_vertex_behind_returns_quad() {
         let vp = near_clip_test_vp();
         let vertices = [
             clip_vertex(-1.0, -1.0, -1.0, 0.0, 0.0),
@@ -1571,7 +1497,7 @@ mod tests {
     }
 
     #[test]
-    fn clip_triangle_to_near_two_vertices_behind_returns_triangle() {
+    fn test_clip_triangle_to_near_two_vertices_behind_returns_triangle() {
         let vp = near_clip_test_vp();
         let vertices = [
             clip_vertex(-1.0, -1.0, -1.0, 0.0, 0.0),
@@ -1585,7 +1511,7 @@ mod tests {
     }
 
     #[test]
-    fn depth_offset_negative_moves_toward_camera() {
+    fn test_depth_offset_negative_moves_toward_camera() {
         use crate::cube::camera::Camera;
         use crate::cube::raster::{matmul, projection_matrix, view_matrix};
         let camera = Camera::new();
@@ -1613,7 +1539,7 @@ mod tests {
     }
 
     #[test]
-    fn depth_offset_zero_is_identity() {
+    fn test_depth_offset_zero_is_identity() {
         use crate::cube::camera::Camera;
         use crate::cube::raster::{matmul, projection_matrix, view_matrix};
         let camera = Camera::new();
@@ -1632,7 +1558,7 @@ mod tests {
     }
 
     #[test]
-    fn line_clips_endpoint_behind_camera_instead_of_dropping() {
+    fn test_line_clips_endpoint_behind_camera_instead_of_dropping() {
         use crate::cube::camera::Camera;
         use crate::cube::raster::{compute_clip_rect, matmul, projection_matrix, view_matrix};
         use crate::cube::scene::DrawContext;
@@ -1687,7 +1613,7 @@ mod tests {
     }
 
     #[test]
-    fn triangle_clips_vertex_behind_camera_instead_of_dropping() {
+    fn test_triangle_clips_vertex_behind_camera_instead_of_dropping() {
         use crate::cube::camera::Camera;
         use crate::cube::raster::{compute_clip_rect, matmul, projection_matrix, view_matrix};
         use crate::cube::scene::DrawContext;
@@ -1742,7 +1668,7 @@ mod tests {
     }
 
     #[test]
-    fn box_solid_culls_back_faces() {
+    fn test_box_solid_culls_back_faces() {
         use crate::cube::camera::Camera;
         use crate::cube::raster::{compute_clip_rect, matmul, projection_matrix, view_matrix};
         use crate::cube::scene::DrawContext;
@@ -1793,7 +1719,7 @@ mod tests {
     }
 
     #[test]
-    fn shaded_stored_normals_track_rotation() {
+    fn test_shaded_stored_normals_track_rotation() {
         // Regression: stored (model-space) normals must be rotated into
         // world space before shading, so a shaded draw on a rotated
         // transform lights the same as the auto path (which derives a

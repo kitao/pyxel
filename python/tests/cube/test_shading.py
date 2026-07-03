@@ -1,5 +1,6 @@
-import pyxel
 import pytest
+
+import pyxel
 
 from pyxel.cube import Shading, Vec3
 
@@ -14,9 +15,9 @@ class TestDefault:
         assert repr(s).startswith("Shading(")
 
     def test_direction_default(self):
-        # Default direction points downward: Vec3(0, -1, 0).
+        # Default direction points straight down.
         s = Shading(palette())
-        assert s.direction.y == pytest.approx(-1.0)
+        assert s.direction == Vec3(0, -1, 0)
 
 
 class TestIndexing:
@@ -36,13 +37,15 @@ class TestIndexing:
             _ = s[0, 4]
 
     def test_negative_col_raises(self):
+        # The binding key is (usize, usize); a negative int always fails
+        # unsigned extraction before the range check.
         s = Shading(palette())
-        with pytest.raises((IndexError, OverflowError), match="negative int"):
+        with pytest.raises(OverflowError, match="negative int"):
             _ = s[-1, 0]
 
     def test_negative_level_raises(self):
         s = Shading(palette())
-        with pytest.raises((IndexError, OverflowError), match="negative int"):
+        with pytest.raises(OverflowError, match="negative int"):
             _ = s[0, -1]
 
 
@@ -70,8 +73,9 @@ class TestBuild:
 
 # Algorithm invariants. The pickers in compute() select per-cell
 # (primary, secondary) entries under three rules every palette must
-# satisfy: ramp brightness is monotone, the dither pair (when not flat)
-# reads as one color, and lv 0 / lv 1 don't share luma with the source.
+# satisfy: ramp luma is monotone, the shade levels (lv 0 / lv 1) never
+# read brighter than the base color, and the highlight (lv 3) never
+# reads darker than it (base-flat collapse is the allowed fallback).
 
 GB_PALETTE = [0x000000, 0x555555, 0xAAAAAA, 0xFFFFFF]
 

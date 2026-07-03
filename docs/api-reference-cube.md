@@ -813,7 +813,7 @@ node.prim(Mat4.IDENTITY, prim, 11)
 
 **Note:** The list attributes are live proxies: edit elements or assign slices (positions[:] = ...); whole-attribute assignment is not supported.
 
-### `plane(width=1.0, height=1.0)` — function
+### `Primitive.plane(width=1.0, height=1.0)` — class
 
 Create a textured XY-plane Primitive with flat normals.
 
@@ -830,7 +830,7 @@ Create a textured XY-plane Primitive with flat normals.
 prim = Primitive.plane(2, 2)
 ```
 
-### `box(size=Vec3.ONE)` — function
+### `Primitive.box(size=Vec3.ONE)` — class
 
 Create a textured box Primitive with flat normals.
 
@@ -846,7 +846,7 @@ Create a textured box Primitive with flat normals.
 prim = Primitive.box(Vec3(1, 2, 1))
 ```
 
-### `sphere(radius=0.5)` — function
+### `Primitive.sphere(radius=0.5)` — class
 
 Create a textured low-poly sphere Primitive with flat normals.
 
@@ -1004,7 +1004,7 @@ Transparent color when col_img is an Image.
 
 - **Type:** `int | None`
 
-### `from_glb(filename, *, colkey=None, fps=30.0)` — function
+### `Mesh.from_glb(filename, *, colkey=None, fps=30.0)` — class
 
 Load a binary glTF (.glb) file into a Mesh. Embedded buffers and a single embedded texture are supported; imported transform animations are exposed through motions.
 
@@ -1366,7 +1366,7 @@ Add a node as a child. A node that already has a parent is reparented.
 
 - `node` (*Node*) — The node to add.
 
-### `from_mesh(mesh)` — function
+### `Node.from_mesh(mesh)` — class
 
 Create a Node tree from a Mesh and return its root node.
 
@@ -1599,7 +1599,7 @@ Draw an ellipse outline on mat's local XY plane.
 - `h` (*float*) — Height in world units.
 - `col` (*int*) — Color number.
 
-### `box(mat, size, col_img=7, colkey=None)` — function
+### `box(mat, size, col_img=7, *, colkey=None)` — function
 
 Draw a filled box. When col_img is an Image, every face is textured with the whole image.
 
@@ -1626,7 +1626,7 @@ Draw the 12 edges of a box.
 - `size` (*Vec3*) — Edge lengths along each axis.
 - `col` (*int*) — Color number.
 
-### `sphere(pos, r, col_img=7, colkey=None)` — function
+### `sphere(pos, r, col_img=7, *, colkey=None)` — function
 
 Draw a filled sphere (a subdivided icosahedron of 80 faces). When col_img is an Image, it is wrapped with an equirectangular mapping.
 
@@ -1647,7 +1647,7 @@ Draw the wireframe edges of a sphere.
 - `r` (*float*) — Radius in world units.
 - `col` (*int*) — Color number.
 
-### `plane(mat, img, uvs, w, h, colkey=None)` — function
+### `plane(mat, img, uvs, w, h, *, colkey=None)` — function
 
 Draw a textured rectangle of size w x h on mat's local XY plane.
 
@@ -1660,7 +1660,7 @@ Draw a textured rectangle of size w x h on mat's local XY plane.
 - `h` (*float*) — Height in world units.
 - `colkey` (*int | None*) — Transparent color. Defaults to None.
 
-### `sprite(pos, img, uvs, w, h, colkey=None, angle=0.0)` — function
+### `sprite(pos, img, uvs, w, h, *, colkey=None, angle=0.0)` — function
 
 Draw a textured rectangle that always faces the camera. Sprites render unshaded.
 
@@ -1674,7 +1674,7 @@ Draw a textured rectangle that always faces the camera. Sprites render unshaded.
 - `colkey` (*int | None*) — Transparent color. Defaults to None.
 - `angle` (*float*) — Screen-space rotation in degrees. Defaults to 0.0.
 
-### `prim(mat, primitive, col_img=7, colkey=None)` — function
+### `prim(mat, primitive, col_img=7, *, colkey=None)` — function
 
 Draw a Primitive asset with its own mode and culling.
 
@@ -1685,7 +1685,7 @@ Draw a Primitive asset with its own mode and culling.
 - `col_img` (*int | Image*) — Flat color number or a texture Image. Defaults to 7.
 - `colkey` (*int | None*) — Transparent color of the texture. Defaults to None.
 
-### `text(pos, s, col, font=None)` — function
+### `text(pos, s, col, *, font=None)` — function
 
 Draw a screen-space string centered at the projected position. Glyphs keep their pixel size at any distance; the depth test still applies.
 
@@ -1718,7 +1718,7 @@ Render this subtree into the viewport (x, y, w, h). A camera must be set on this
 scene.draw(0, 0, pyxel.width, pyxel.height)
 ```
 
-### `raycast(origin, direction, max_distance=None, hit_triggers=False, tags=None)` — function
+### `raycast(origin, direction, max_distance=None, *, hit_triggers=False, tags=None)` — function
 
 Cast a ray against the colliders in this subtree and return the closest hit.
 
@@ -1738,7 +1738,7 @@ Cast a ray against the colliders in this subtree and return the closest hit.
 hit = scene.raycast(self.transform.pos, Vec3.DOWN, max_distance=2.0)
 ```
 
-### `raycast_all(origin, direction, max_distance=None, hit_triggers=False, tags=None)` — function
+### `raycast_all(origin, direction, max_distance=None, *, hit_triggers=False, tags=None)` — function
 
 Cast a ray and return every hit sorted by distance.
 
@@ -1752,7 +1752,7 @@ Cast a ray and return every hit sorted by distance.
 
 **Returns:** `list` — Every hit sorted by distance.
 
-### `overlap_sphere(center, radius, hit_triggers=False, tags=None)` — function
+### `overlap_sphere(center, radius, *, hit_triggers=False, tags=None)` — function
 
 Return every node in this subtree whose collider overlaps the given sphere.
 
@@ -1765,7 +1765,7 @@ Return every node in this subtree whose collider overlaps the given sphere.
 
 **Returns:** `list` — The overlapping nodes.
 
-### `overlap_box(mat, size, hit_triggers=False, tags=None)` — function
+### `overlap_box(mat, size, *, hit_triggers=False, tags=None)` — function
 
 Return every node in this subtree whose collider overlaps the given box.
 

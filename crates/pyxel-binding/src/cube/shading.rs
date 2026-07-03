@@ -7,11 +7,15 @@ define_wrapper!(Shading, pyxel::cube::Shading);
 
 #[pymethods]
 impl Shading {
+    // Constructor
+
     #[new]
     fn new(colors: Vec<u32>) -> Self {
         let palette: Vec<pyxel::Rgb24> = colors.into_iter().map(|c| c as pyxel::Rgb24).collect();
         Self::wrap(pyxel::cube::Shading::new(&palette))
     }
+
+    // Attributes
 
     #[getter]
     fn direction(&self) -> Vec3 {
@@ -22,6 +26,8 @@ impl Shading {
     fn set_direction(&self, v: PyRef<'_, Vec3>) {
         self.inner_mut().direction = v.inner.clone();
     }
+
+    // Dunder
 
     fn __repr__(&self) -> String {
         let r = self.inner_ref();
@@ -51,11 +57,15 @@ impl Shading {
         Ok(())
     }
 
+    // Methods
+
     fn build(&self, colors: Vec<u32>) {
         let palette: Vec<pyxel::Rgb24> = colors.into_iter().map(|c| c as pyxel::Rgb24).collect();
         self.inner_mut().build(&palette);
     }
 }
+
+// Module registration
 
 pub fn add_shading_class(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<Shading>()?;

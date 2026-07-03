@@ -46,7 +46,7 @@ impl Quat {
         self.inner_ref().w
     }
 
-    // Dunder methods
+    // Dunder
 
     fn __repr__(&self) -> String {
         let q = self.inner_ref();
@@ -61,10 +61,11 @@ impl Quat {
         use std::hash::{Hash, Hasher};
         let mut hasher = std::collections::hash_map::DefaultHasher::new();
         let q = self.inner_ref();
-        q.x.to_bits().hash(&mut hasher);
-        q.y.to_bits().hash(&mut hasher);
-        q.z.to_bits().hash(&mut hasher);
-        q.w.to_bits().hash(&mut hasher);
+        // Adding 0.0 folds -0.0 into +0.0 so values equal under __eq__ hash equally.
+        (q.x + 0.0).to_bits().hash(&mut hasher);
+        (q.y + 0.0).to_bits().hash(&mut hasher);
+        (q.z + 0.0).to_bits().hash(&mut hasher);
+        (q.w + 0.0).to_bits().hash(&mut hasher);
         hasher.finish()
     }
 
@@ -204,6 +205,8 @@ impl Quat {
         Self::wrap(self.inner_ref().slerp(other.inner_ref(), t))
     }
 }
+
+// Module registration
 
 pub fn add_quat_class(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<Quat>()?;
