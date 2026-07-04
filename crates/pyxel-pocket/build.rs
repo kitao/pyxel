@@ -23,14 +23,22 @@ fn main() {
         .warnings(false)
         .compile("pocketpy");
 
-    let bindings = bindgen::Builder::default()
+    let mut builder = bindgen::Builder::default()
         .header(pocketpy_h.to_string_lossy().into_owned())
         .allowlist_function("py_.*")
         .allowlist_type("py_.*")
         .allowlist_var("py_.*|tp_.*|PY_.*")
         .use_core()
         .generate_comments(false)
-        .layout_tests(false)
+        .layout_tests(false);
+
+    // PocketPy leaves PK_API empty on Emscripten, so parse the header as the host
+    // target while compiling the C implementation for the real Cargo target.
+    if env::var("TARGET").unwrap().contains("emscripten") {
+        builder = builder.clang_arg(format!("--target={}", env::var("HOST").unwrap()));
+    }
+
+    let bindings = builder
         .generate()
         .expect("failed to generate PocketPy bindings");
 
