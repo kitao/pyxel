@@ -1,0 +1,24 @@
+[package]
+name = "pyxel-pocket"
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[lib]
+name = "pyxel_pocket"
+
+[[bin]]
+name = "pyxel-pocket"
+path = "src/main.rs"
+
+[dependencies]
+pyxel-core = { path = "../pyxel-core" }
+
+[build-dependencies]
+bindgen = "0.72"
+cc = "1.2"
+
+[features]
+sdl2_dynamic = ["pyxel-core/sdl2_dynamic"]
+sdl2_static = ["pyxel-core/sdl2_static"]
