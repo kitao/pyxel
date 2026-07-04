@@ -414,6 +414,102 @@ pyxel.playm(0, tick=0, loop=True)
 }
 
 #[test]
+fn reset_restarts_current_script_once() {
+    let marker = unique_temp_path("pyxel-pocket-reset-marker", "txt");
+    let script = unique_temp_path("pyxel-pocket-reset", "py");
+    fs::write(
+        &script,
+        format!(
+            "\
+import os
+import pyxel
+
+marker = '{}'
+if os.path.exists(marker):
+    with open(marker, 'a') as file:
+        file.write('child\\n')
+else:
+    with open(marker, 'w') as file:
+        file.write('parent\\n')
+    pyxel.init(8, 8, headless=True)
+    pyxel.reset()
+",
+            escape_python_path(&marker.to_string_lossy()),
+        ),
+    )
+    .unwrap();
+
+    let output = run_with_timeout(
+        Command::new(env!("CARGO_BIN_EXE_pyxel-pocket")).arg(&script),
+        Duration::from_secs(10),
+    )
+    .unwrap();
+
+    let marker_contents = fs::read_to_string(&marker).unwrap_or_default();
+    let _ = fs::remove_file(script);
+    let _ = fs::remove_file(marker);
+
+    assert!(
+        output.status.success(),
+        "stdout:\n{}\nstderr:\n{}",
+        String::from_utf8_lossy(&output.stdout),
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert_eq!(marker_contents, "parent\nchild\n");
+}
+
+#[test]
+fn os_environ_updates_are_inherited_after_reset() {
+    let marker = unique_temp_path("pyxel-pocket-env-reset-marker", "txt");
+    let script = unique_temp_path("pyxel-pocket-env-reset", "py");
+    fs::write(
+        &script,
+        format!(
+            "\
+import os
+import pyxel
+
+marker = '{}'
+if os.path.exists(marker):
+    with open(marker, 'a') as file:
+        file.write(os.environ.get('PYXEL_POCKET_ENV_WRITE', 'missing') + '\\n')
+        file.write(os.environ.get('PYXEL_POCKET_ENV_READ', 'removed') + '\\n')
+else:
+    assert os.environ['PYXEL_POCKET_ENV_READ'] == 'from-parent'
+    with open(marker, 'w') as file:
+        file.write('parent\\n')
+    os.environ['PYXEL_POCKET_ENV_WRITE'] = 'from-script'
+    os.environ.pop('PYXEL_POCKET_ENV_READ', None)
+    pyxel.init(8, 8, headless=True)
+    pyxel.reset()
+",
+            escape_python_path(&marker.to_string_lossy()),
+        ),
+    )
+    .unwrap();
+
+    let output = run_with_timeout(
+        Command::new(env!("CARGO_BIN_EXE_pyxel-pocket"))
+            .arg(&script)
+            .env("PYXEL_POCKET_ENV_READ", "from-parent"),
+        Duration::from_secs(10),
+    )
+    .unwrap();
+
+    let marker_contents = fs::read_to_string(&marker).unwrap_or_default();
+    let _ = fs::remove_file(script);
+    let _ = fs::remove_file(marker);
+
+    assert!(
+        output.status.success(),
+        "stdout:\n{}\nstderr:\n{}",
+        String::from_utf8_lossy(&output.stdout),
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert_eq!(marker_contents, "parent\nfrom-script\nremoved\n");
+}
+
+#[test]
 fn pyxel_cli_metadata_reads_pyxapp_comments() {
     let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
         .parent()
@@ -631,7 +727,15 @@ import os
 
 assert os.environ.pop('PYXEL_POCKET_MISSING', None) == None
 os.environ['PYXEL_POCKET_VALUE'] = 'ok'
+assert os.getenv('PYXEL_POCKET_VALUE') == 'ok'
 assert os.environ.pop('PYXEL_POCKET_VALUE', None) == 'ok'
+raised = False
+try:
+    os.environ.pop('PYXEL_POCKET_MISSING')
+except KeyError:
+    raised = True
+if not raised:
+    raise AssertionError('missing pop did not raise')
 ",
             "<test>",
         )

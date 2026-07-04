@@ -86,6 +86,7 @@ unsafe extern "C" fn pyxel_init(_argc: i32, argv: ffi::py_StackRef) -> bool {
         capture_sec,
         headless,
     );
+    crate::runner::install_reset_callback();
     crate::module::sync_variables();
     value::return_none();
     true
@@ -185,6 +186,26 @@ unsafe extern "C" fn pyxel_resize(_argc: i32, argv: ffi::py_StackRef) -> bool {
     true
 }
 
+unsafe extern "C" fn pyxel_get_env(_argc: i32, argv: ffi::py_StackRef) -> bool {
+    match std::env::var(value::str_arg(argv, 0)) {
+        Ok(value) => value::return_str(&value),
+        Err(_) => value::return_none(),
+    }
+    true
+}
+
+unsafe extern "C" fn pyxel_set_env(_argc: i32, argv: ffi::py_StackRef) -> bool {
+    std::env::set_var(value::str_arg(argv, 0), value::str_arg(argv, 1));
+    value::return_none();
+    true
+}
+
+unsafe extern "C" fn pyxel_remove_env(_argc: i32, argv: ffi::py_StackRef) -> bool {
+    std::env::remove_var(value::str_arg(argv, 0));
+    value::return_none();
+    true
+}
+
 pub unsafe fn add_functions(module: ffi::py_GlobalRef) {
     ffi::py_bind(
         module,
@@ -226,5 +247,16 @@ pub unsafe fn add_functions(module: ffi::py_GlobalRef) {
         module,
         c"resize(width, height)".as_ptr(),
         Some(pyxel_resize),
+    );
+    ffi::py_bind(module, c"_get_env(name)".as_ptr(), Some(pyxel_get_env));
+    ffi::py_bind(
+        module,
+        c"_set_env(name, value)".as_ptr(),
+        Some(pyxel_set_env),
+    );
+    ffi::py_bind(
+        module,
+        c"_remove_env(name)".as_ptr(),
+        Some(pyxel_remove_env),
     );
 }

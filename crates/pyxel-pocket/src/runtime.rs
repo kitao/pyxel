@@ -9,6 +9,7 @@ const PYTHON_COMPAT_SOURCE: &str = r#"
 from collections import deque as __pyxel_pocket_deque
 import enum as __pyxel_pocket_enum
 import os as __pyxel_pocket_os
+import pyxel as __pyxel_pocket_pyxel
 import random as __pyxel_pocket_random
 
 def __pyxel_pocket_deque_getitem(self, index):
@@ -52,9 +53,48 @@ if not hasattr(__pyxel_pocket_enum, 'auto'):
     del __pyxel_pocket_enum_auto
 del __pyxel_pocket_enum
 
-if not hasattr(__pyxel_pocket_os, 'environ'):
-    __pyxel_pocket_os.environ = {}
-del __pyxel_pocket_os
+class __pyxel_pocket_Environ:
+    def __getitem__(self, key):
+        value = __pyxel_pocket_pyxel._get_env(str(key))
+        if value is None:
+            raise KeyError(key)
+        return value
+
+    def __setitem__(self, key, value):
+        __pyxel_pocket_pyxel._set_env(str(key), str(value))
+
+    def __delitem__(self, key):
+        value = __pyxel_pocket_pyxel._get_env(str(key))
+        if value is None:
+            raise KeyError(key)
+        __pyxel_pocket_pyxel._remove_env(str(key))
+
+    def get(self, key, default=None):
+        value = __pyxel_pocket_pyxel._get_env(str(key))
+        if value is None:
+            return default
+        return value
+
+    def pop(self, key, *defaults):
+        value = __pyxel_pocket_pyxel._get_env(str(key))
+        if value is None:
+            if len(defaults) > 0:
+                return defaults[0]
+            raise KeyError(key)
+        __pyxel_pocket_pyxel._remove_env(str(key))
+        return value
+
+    def __contains__(self, key):
+        return __pyxel_pocket_pyxel._get_env(str(key)) is not None
+
+__pyxel_pocket_os.environ = __pyxel_pocket_Environ()
+
+def __pyxel_pocket_getenv(key, default=None):
+    return __pyxel_pocket_os.environ.get(key, default)
+
+__pyxel_pocket_os.getenv = __pyxel_pocket_getenv
+del __pyxel_pocket_getenv
+del __pyxel_pocket_Environ
 
 if not hasattr(__pyxel_pocket_random, 'sample'):
     def __pyxel_pocket_random_sample(population, k):
