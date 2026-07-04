@@ -424,3 +424,141 @@ App()
         String::from_utf8_lossy(&output.stderr)
     );
 }
+
+#[test]
+fn real_asset_loading_script_runs_headless() {
+    let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+        .parent()
+        .and_then(std::path::Path::parent)
+        .unwrap();
+    let assets = root.join("examples/assets");
+    let cat = assets.join("cat_16x16.png").to_string_lossy().into_owned();
+    let audio_image = assets.join("audio_bgm1.png").to_string_lossy().into_owned();
+    let audio_pcm = assets.join("audio_bgm1.ogg").to_string_lossy().into_owned();
+    let palette = assets
+        .join("audio_bgm.pyxpal")
+        .to_string_lossy()
+        .into_owned();
+    let tmx = assets.join("urban_rpg.tmx").to_string_lossy().into_owned();
+    let sample = assets.join("sample.pyxres").to_string_lossy().into_owned();
+    let script = std::env::temp_dir().join("pyxel-pocket-real-assets.py");
+    fs::write(
+        &script,
+        format!(
+            "\
+import pyxel
+
+CAT = '{}'
+AUDIO_IMAGE = '{}'
+AUDIO_PCM = '{}'
+PALETTE = '{}'
+TMX = '{}'
+SAMPLE = '{}'
+
+pyxel.init(64, 64, headless=True)
+pyxel.load_pal(PALETTE)
+
+pyxel.images[0].load(0, 0, CAT, include_colors=True)
+seen_pixel = False
+for y in range(16):
+    for x in range(16):
+        if pyxel.images[0].pget(x, y) != 0:
+            seen_pixel = True
+assert seen_pixel
+
+image = pyxel.Image.from_image(AUDIO_IMAGE)
+assert image.width > 0
+assert image.height > 0
+pyxel.images[1] = image
+
+tilemap = pyxel.Tilemap.from_tmx(TMX, 0)
+assert tilemap.width > 0
+assert tilemap.height > 0
+pyxel.tilemaps[0] = tilemap
+tile = pyxel.tilemaps[0].pget(0, 0)
+assert len(tile) == 2
+
+pyxel.sounds[0].pcm(AUDIO_PCM)
+assert pyxel.sounds[0].total_sec() > 0
+pyxel.channels[0].gain = 0.5
+assert pyxel.channels[0].gain == 0.5
+pyxel.play(0, 0)
+pos = pyxel.play_pos(0)
+assert pos == None or pos[0] == 0
+pyxel.stop()
+
+pyxel.load(SAMPLE)
+pyxel.blt(0, 0, 0, 0, 0, 8, 8)
+print('real-assets-ok')
+",
+            escape_python_path(&cat),
+            escape_python_path(&audio_image),
+            escape_python_path(&audio_pcm),
+            escape_python_path(&palette),
+            escape_python_path(&tmx),
+            escape_python_path(&sample),
+        ),
+    )
+    .unwrap();
+
+    let output = Command::new(env!("CARGO_BIN_EXE_pyxel-pocket"))
+        .arg(&script)
+        .output()
+        .unwrap();
+
+    let _ = fs::remove_file(script);
+
+    assert!(
+        output.status.success(),
+        "stdout:\n{}\nstderr:\n{}",
+        String::from_utf8_lossy(&output.stdout),
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert!(
+        String::from_utf8_lossy(&output.stdout).contains("real-assets-ok"),
+        "stdout:\n{}\nstderr:\n{}",
+        String::from_utf8_lossy(&output.stdout),
+        String::from_utf8_lossy(&output.stderr)
+    );
+}
+
+#[test]
+fn keyword_init_script_runs_headless() {
+    let script = std::env::temp_dir().join("pyxel-pocket-keywords.py");
+    fs::write(
+        &script,
+        "\
+import pyxel
+
+pyxel.init(width=16, height=16, title='Keyword Init', headless=True)
+assert pyxel.width == 16
+assert pyxel.height == 16
+print('keyword-init-ok')
+",
+    )
+    .unwrap();
+
+    let output = Command::new(env!("CARGO_BIN_EXE_pyxel-pocket"))
+        .arg(&script)
+        .output()
+        .unwrap();
+
+    let _ = fs::remove_file(script);
+
+    assert!(
+        output.status.success(),
+        "stdout:\n{}\nstderr:\n{}",
+        String::from_utf8_lossy(&output.stdout),
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert!(
+        String::from_utf8_lossy(&output.stdout).contains("keyword-init-ok"),
+        "stdout:\n{}\nstderr:\n{}",
+        String::from_utf8_lossy(&output.stdout),
+        String::from_utf8_lossy(&output.stderr)
+    );
+}
+
+fn escape_python_path(path: &str) -> String {
+    path.replace('\\', "\\\\").replace('\'', "\\'")
+}
