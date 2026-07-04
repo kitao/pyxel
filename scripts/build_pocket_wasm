@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+CRATES_DIR="$ROOT_DIR/crates"
+WASM_DIR="$ROOT_DIR/wasm"
+TARGET="wasm32-unknown-emscripten"
+OUT_DIR="$CRATES_DIR/target/$TARGET/release"
+CORE_JS="$OUT_DIR/pyxel-pocket-core.js"
+CORE_WASM="$OUT_DIR/pyxel-pocket-core.wasm"
+
+command -v emcc >/dev/null
+command -v rustc >/dev/null
+
+export RUSTFLAGS="${RUSTFLAGS:-} \
+-C panic=abort \
+-C target-feature=+simd128 \
+-C link-arg=-sMODULARIZE=1 \
+-C link-arg=-sEXPORT_NAME=createPyxelPocketModule \
+-C link-arg=-sENVIRONMENT=web \
+-C link-arg=-sALLOW_MEMORY_GROWTH=1 \
+-C link-arg=-sEXPORTED_RUNTIME_METHODS=['UTF8ToString','stringToUTF8','lengthBytesUTF8'] \
+-C link-arg=-sEXPORTED_FUNCTIONS=['_main','_pyxel_pocket_run_script','_pyxel_pocket_last_error','_malloc','_free'] \
+-C link-arg=-o \
+-C link-arg=$CORE_JS"
+
+cd "$CRATES_DIR"
+cargo build \
+  -p pyxel-pocket \
+  --bin pyxel-pocket \
+  --release \
+  --target "$TARGET" \
+  -Zbuild-std=std,panic_abort \
+  --features sdl2_static
+
+test -f "$CORE_JS"
+test -f "$CORE_WASM"
+mkdir -p "$WASM_DIR"
+cp -f "$CORE_JS" "$WASM_DIR/pyxel-pocket-core.js"
+cp -f "$CORE_WASM" "$WASM_DIR/pyxel-pocket-core.wasm"
+chmod 644 "$WASM_DIR/pyxel-pocket-core.js" "$WASM_DIR/pyxel-pocket-core.wasm"
