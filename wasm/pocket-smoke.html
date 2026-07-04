@@ -1,0 +1,26 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>Pyxel Pocket Smoke</title>
+<script src="pyxel-pocket.js"></script>
+<script>
+  const shouldFail = new URLSearchParams(location.search).has("fail");
+  launchPyxelPocket({
+    command: "run",
+    name: "pocket-smoke.py",
+    script: shouldFail
+      ? 'raise RuntimeError("pocket smoke failure")'
+      : `
+import pyxel
+
+pyxel.init(64, 64, title="Pocket Web Smoke")
+
+def draw():
+    pyxel.cls(1)
+    pyxel.rect(8, 8, 48, 48, 11)
+    pyxel.text(14, 28, "Pocket", 7)
+
+draw()
+pyxel.flip()
+`,
+  });
+</script>

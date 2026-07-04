@@ -442,7 +442,8 @@ impl PlatformSdl2 {
 
     #[cfg(target_os = "emscripten")]
     pub fn step_frame(&mut self, _fps: u32) {
-        panic!("pyxel.flip is not supported on Pyxel Web");
+        // The browser frame loop is driven by requestAnimationFrame; a manual
+        // flip can present the frame, but it cannot block for pacing here.
     }
 
     // OpenGL
