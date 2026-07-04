@@ -239,3 +239,98 @@ assert bool(music.seqs)
     assert!(status.success());
     let _ = fs::remove_file(script);
 }
+
+#[test]
+fn integrated_app_script_runs_headless() {
+    let dir = std::env::temp_dir();
+    let script = dir.join("pyxel-pocket-integrated-app.py");
+    let resource = dir.join("pyxel-pocket-integrated-app.pyxres");
+    let palette = dir.join("pyxel-pocket-integrated-app.pyxpal");
+    let resource_path = resource.to_string_lossy();
+    fs::write(
+        &script,
+        format!(
+            "\
+import pyxel
+
+RESOURCE = '{}'
+
+pyxel.init(32, 32, headless=True)
+
+pyxel.colors[0] = 0x010203
+pyxel.images[0].cls(0)
+pyxel.images[0].pset(1, 1, 7)
+pyxel.tilemaps[0].refimg = 0
+pyxel.tilemaps[0].pset(0, 0, (1, 0))
+pyxel.sounds[0].set('c0d0', 'p', '7', 's', 8)
+pyxel.musics[0].set([0], [0])
+pyxel.save(RESOURCE)
+pyxel.save_pal(RESOURCE)
+
+pyxel.colors[0] = 0xffffff
+pyxel.images[0].cls(0)
+pyxel.tilemaps[0].pset(0, 0, (0, 0))
+pyxel.sounds[0].notes.clear()
+pyxel.musics[0].seqs.clear()
+pyxel.load(RESOURCE)
+
+assert pyxel.colors[0] == 0x010203
+assert pyxel.images[0].pget(1, 1) == 7
+tile = pyxel.tilemaps[0].pget(0, 0)
+assert tile[0] == 1
+assert tile[1] == 0
+assert pyxel.sounds[0].notes[0] == 0
+assert pyxel.sounds[0].notes[1] == 2
+assert pyxel.musics[0].seqs[0][0] == 0
+
+state = [False, False]
+
+def update():
+    state[0] = True
+    if pyxel.frame_count == 0:
+        pyxel.play(0, 0)
+        pyxel.playm(0)
+        pos = pyxel.play_pos(0)
+        assert pos == None or pos[0] == 0
+        pyxel.stop()
+    if pyxel.frame_count >= 2:
+        pyxel.quit()
+
+def draw():
+    state[1] = True
+    pyxel.cls(0)
+    pyxel.blt(0, 0, 0, 0, 0, 4, 4)
+    assert pyxel.pget(1, 1) == 7
+    pyxel.bltm(8, 0, 0, 0, 0, 1, 1)
+    pyxel.text(0, 8, 'ok', 7)
+    print('integrated-ok')
+
+pyxel.run(update, draw)
+",
+            resource_path.replace('\\', "\\\\").replace('\'', "\\'")
+        ),
+    )
+    .unwrap();
+
+    let output = Command::new(env!("CARGO_BIN_EXE_pyxel-pocket"))
+        .arg(&script)
+        .output()
+        .unwrap();
+
+    let _ = fs::remove_file(script);
+    let _ = fs::remove_file(resource);
+    let _ = fs::remove_file(palette);
+
+    assert!(
+        output.status.success(),
+        "stdout:\n{}\nstderr:\n{}",
+        String::from_utf8_lossy(&output.stdout),
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert!(
+        String::from_utf8_lossy(&output.stdout).contains("integrated-ok"),
+        "stdout:\n{}\nstderr:\n{}",
+        String::from_utf8_lossy(&output.stdout),
+        String::from_utf8_lossy(&output.stderr)
+    );
+}
