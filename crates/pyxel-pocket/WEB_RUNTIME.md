@@ -49,6 +49,31 @@ launchPyxelPocket({
 This keeps the existing `launchPyxel()` contract Pyodide-only until the PocketPy
 runtime proves its canvas, input, audio, filesystem, reset, and error paths.
 
+## JavaScript Sharing
+
+Do not make JavaScript sharing a prerequisite for the first PocketPy Web proof.
+The first `pyxel-pocket.js` may duplicate small browser-shell pieces from
+`wasm/pyxel.js` when that keeps the PocketPy smoke test isolated and easier to
+debug.
+
+The PocketPy launcher must not import or depend on `wasm/pyxel.js`, because that
+file carries Pyodide-specific loading, filesystem, and command-execution
+behavior. Early duplication is acceptable only for runtime-neutral browser
+behavior such as screen setup, the startup prompt, error overlays, keyboard
+normalization, and virtual gamepad handling.
+
+After the PocketPy browser smoke test works, duplicated browser-shell behavior
+can be extracted into a small shared helper if all of these are true:
+
+- the helper has no Pyodide or PocketPy dependency;
+- both launchers can use it without changing their public entry points;
+- extracting it reduces real maintenance risk rather than making the first
+  runtime proof harder to reason about.
+
+Runtime-specific work remains separate even after any shared helper exists:
+Pyodide loading, wheel installation, Pyodide filesystem mirroring, Python command
+execution, PocketPy WASM loading, PocketPy virtual files, and reset behavior.
+
 ## Rust Runtime Boundary
 
 The native `pyxel-pocket` runner currently owns host-specific behavior:
@@ -118,7 +143,8 @@ small examples that exercise drawing, input, resource loading, and audio setup.
 - The current Pyodide runtime owns several browser helpers that are not
   Pyodide-specific in concept, such as screen creation, startup prompt, virtual
   gamepad, and error overlays. Reusing them may require a small shared JS helper,
-  but that refactor should wait until duplication is proven.
+  but that refactor should wait until the independent PocketPy browser smoke
+  test works.
 - Emscripten main-loop ownership must be checked carefully so PocketPy, SDL2,
   and Pyxel reset behavior do not fight each other.
 - `.pyxapp` support needs an in-memory extraction model before it can be called
