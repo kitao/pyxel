@@ -68,7 +68,7 @@ unsafe fn rc_ref<T>(rc: &Rc<UnsafeCell<T>>) -> &T {
     &*rc.get()
 }
 
-unsafe fn rc_mut<T>(rc: &Rc<UnsafeCell<T>>) -> &mut T {
+pub(crate) unsafe fn rc_mut<T>(rc: &Rc<UnsafeCell<T>>) -> &mut T {
     &mut *rc.get()
 }
 
@@ -167,7 +167,7 @@ unsafe fn tile_arg(argv: ffi::py_StackRef, index: usize) -> pyxel::Tile {
     tile_from_ref(value::arg(argv, index))
 }
 
-unsafe fn image_arg(object: ffi::py_Ref) -> Option<pyxel::RcImage> {
+pub(crate) unsafe fn image_arg(object: ffi::py_Ref) -> Option<pyxel::RcImage> {
     if value::is_int(object) {
         pyxel::images().get(ffi::py_toint(object) as usize).cloned()
     } else if ffi::py_isinstance(object, TP_IMAGE) {
@@ -177,7 +177,7 @@ unsafe fn image_arg(object: ffi::py_Ref) -> Option<pyxel::RcImage> {
     }
 }
 
-unsafe fn tilemap_arg(object: ffi::py_Ref) -> Option<pyxel::RcTilemap> {
+pub(crate) unsafe fn tilemap_arg(object: ffi::py_Ref) -> Option<pyxel::RcTilemap> {
     if value::is_int(object) {
         pyxel::tilemaps()
             .get(ffi::py_toint(object) as usize)
@@ -1768,9 +1768,15 @@ macro_rules! collection_fns {
     (
         $getitem:ident,
         $setitem:ident,
+        $delitem:ident,
         $len:ident,
         $iter:ident,
         $bool_fn:ident,
+        $append:ident,
+        $extend:ident,
+        $insert:ident,
+        $pop:ident,
+        $clear:ident,
         $global:expr,
         $make:ident,
         $type:ty
@@ -1794,6 +1800,16 @@ macro_rules! collection_fns {
             true
         }
 
+        unsafe extern "C" fn $delitem(_argc: i32, argv: ffi::py_StackRef) -> bool {
+            let items = $global();
+            let Some(index) = normalize_index(value::int_arg(argv, 1), items.len()) else {
+                return value::raise_index_error("collection index out of range");
+            };
+            items.remove(index);
+            value::return_none();
+            true
+        }
+
         unsafe extern "C" fn $len(_argc: i32, _argv: ffi::py_StackRef) -> bool {
             value::return_int($global().len() as i64);
             true
@@ -1812,15 +1828,66 @@ macro_rules! collection_fns {
             value::return_bool(!$global().is_empty());
             true
         }
+
+        unsafe extern "C" fn $append(_argc: i32, argv: ffi::py_StackRef) -> bool {
+            $global().push(userdata::<$type>(value::arg(argv, 1)).clone());
+            value::return_none();
+            true
+        }
+
+        unsafe extern "C" fn $extend(_argc: i32, argv: ffi::py_StackRef) -> bool {
+            let values = value::arg(argv, 1);
+            for i in 0..ffi::py_list_len(values) {
+                $global().push(userdata::<$type>(ffi::py_list_getitem(values, i)).clone());
+            }
+            value::return_none();
+            true
+        }
+
+        unsafe extern "C" fn $insert(_argc: i32, argv: ffi::py_StackRef) -> bool {
+            let index = normalize_insert_index(value::int_arg(argv, 1), $global().len());
+            $global().insert(index, userdata::<$type>(value::arg(argv, 2)).clone());
+            value::return_none();
+            true
+        }
+
+        unsafe extern "C" fn $pop(argc: i32, argv: ffi::py_StackRef) -> bool {
+            let items = $global();
+            if items.is_empty() {
+                return value::raise_index_error("pop from empty sequence");
+            }
+            let index = if argc <= 1 || value::is_none(value::arg(argv, 1)) {
+                -1
+            } else {
+                value::int_arg(argv, 1)
+            };
+            let Some(index) = normalize_index(index, items.len()) else {
+                return value::raise_index_error("pop index out of range");
+            };
+            $make(ffi::py_retval(), items.remove(index));
+            true
+        }
+
+        unsafe extern "C" fn $clear(_argc: i32, _argv: ffi::py_StackRef) -> bool {
+            $global().clear();
+            value::return_none();
+            true
+        }
     };
 }
 
 collection_fns!(
     images_getitem,
     images_setitem,
+    images_delitem,
     images_len,
     images_iter,
     images_bool,
+    images_append,
+    images_extend,
+    images_insert,
+    images_pop,
+    images_clear,
     pyxel::images,
     make_image,
     pyxel::RcImage
@@ -1828,9 +1895,15 @@ collection_fns!(
 collection_fns!(
     tilemaps_getitem,
     tilemaps_setitem,
+    tilemaps_delitem,
     tilemaps_len,
     tilemaps_iter,
     tilemaps_bool,
+    tilemaps_append,
+    tilemaps_extend,
+    tilemaps_insert,
+    tilemaps_pop,
+    tilemaps_clear,
     pyxel::tilemaps,
     make_tilemap,
     pyxel::RcTilemap
@@ -1838,9 +1911,15 @@ collection_fns!(
 collection_fns!(
     channels_getitem,
     channels_setitem,
+    channels_delitem,
     channels_len,
     channels_iter,
     channels_bool,
+    channels_append,
+    channels_extend,
+    channels_insert,
+    channels_pop,
+    channels_clear,
     pyxel::channels,
     make_channel,
     pyxel::RcChannel
@@ -1848,9 +1927,15 @@ collection_fns!(
 collection_fns!(
     tones_getitem,
     tones_setitem,
+    tones_delitem,
     tones_len,
     tones_iter,
     tones_bool,
+    tones_append,
+    tones_extend,
+    tones_insert,
+    tones_pop,
+    tones_clear,
     pyxel::tones,
     make_tone,
     pyxel::RcTone
@@ -1858,9 +1943,15 @@ collection_fns!(
 collection_fns!(
     sounds_getitem,
     sounds_setitem,
+    sounds_delitem,
     sounds_len,
     sounds_iter,
     sounds_bool,
+    sounds_append,
+    sounds_extend,
+    sounds_insert,
+    sounds_pop,
+    sounds_clear,
     pyxel::sounds,
     make_sound,
     pyxel::RcSound
@@ -1868,9 +1959,15 @@ collection_fns!(
 collection_fns!(
     musics_getitem,
     musics_setitem,
+    musics_delitem,
     musics_len,
     musics_iter,
     musics_bool,
+    musics_append,
+    musics_extend,
+    musics_insert,
+    musics_pop,
+    musics_clear,
     pyxel::musics,
     make_music,
     pyxel::RcMusic
@@ -1880,15 +1977,31 @@ unsafe fn register_collection_type(
     type_: ffi::py_Type,
     getitem: ffi::py_CFunction,
     setitem: ffi::py_CFunction,
+    delitem: ffi::py_CFunction,
     len: ffi::py_CFunction,
     iter: ffi::py_CFunction,
     bool_fn: ffi::py_CFunction,
+    append: ffi::py_CFunction,
+    extend: ffi::py_CFunction,
+    insert: ffi::py_CFunction,
+    pop: ffi::py_CFunction,
+    clear: ffi::py_CFunction,
 ) {
     value::bind_magic(type_, c"__getitem__", getitem);
     value::bind_magic(type_, c"__setitem__", setitem);
+    value::bind_magic(type_, c"__delitem__", delitem);
     value::bind_magic(type_, c"__len__", len);
     value::bind_magic(type_, c"__iter__", iter);
     value::bind_magic(type_, c"__bool__", bool_fn);
+    ffi::py_bindmethod(type_, c"append".as_ptr(), append);
+    ffi::py_bindmethod(type_, c"extend".as_ptr(), extend);
+    ffi::py_bindmethod(type_, c"insert".as_ptr(), insert);
+    ffi::py_bindmethod(type_, c"clear".as_ptr(), clear);
+    ffi::py_bind(
+        ffi::py_tpobject(type_),
+        c"pop(self, index=None)".as_ptr(),
+        pop,
+    );
 }
 
 unsafe fn register_classes(module: ffi::py_GlobalRef) {
@@ -2253,54 +2366,90 @@ unsafe fn register_collections(module: ffi::py_GlobalRef) {
         TP_IMAGES,
         Some(images_getitem),
         Some(images_setitem),
+        Some(images_delitem),
         Some(images_len),
         Some(images_iter),
         Some(images_bool),
+        Some(images_append),
+        Some(images_extend),
+        Some(images_insert),
+        Some(images_pop),
+        Some(images_clear),
     );
     TP_TILEMAPS = value::new_type(module, c"Tilemaps", None);
     register_collection_type(
         TP_TILEMAPS,
         Some(tilemaps_getitem),
         Some(tilemaps_setitem),
+        Some(tilemaps_delitem),
         Some(tilemaps_len),
         Some(tilemaps_iter),
         Some(tilemaps_bool),
+        Some(tilemaps_append),
+        Some(tilemaps_extend),
+        Some(tilemaps_insert),
+        Some(tilemaps_pop),
+        Some(tilemaps_clear),
     );
     TP_CHANNELS = value::new_type(module, c"Channels", None);
     register_collection_type(
         TP_CHANNELS,
         Some(channels_getitem),
         Some(channels_setitem),
+        Some(channels_delitem),
         Some(channels_len),
         Some(channels_iter),
         Some(channels_bool),
+        Some(channels_append),
+        Some(channels_extend),
+        Some(channels_insert),
+        Some(channels_pop),
+        Some(channels_clear),
     );
     TP_TONES = value::new_type(module, c"Tones", None);
     register_collection_type(
         TP_TONES,
         Some(tones_getitem),
         Some(tones_setitem),
+        Some(tones_delitem),
         Some(tones_len),
         Some(tones_iter),
         Some(tones_bool),
+        Some(tones_append),
+        Some(tones_extend),
+        Some(tones_insert),
+        Some(tones_pop),
+        Some(tones_clear),
     );
     TP_SOUNDS = value::new_type(module, c"Sounds", None);
     register_collection_type(
         TP_SOUNDS,
         Some(sounds_getitem),
         Some(sounds_setitem),
+        Some(sounds_delitem),
         Some(sounds_len),
         Some(sounds_iter),
         Some(sounds_bool),
+        Some(sounds_append),
+        Some(sounds_extend),
+        Some(sounds_insert),
+        Some(sounds_pop),
+        Some(sounds_clear),
     );
     TP_MUSICS = value::new_type(module, c"Musics", None);
     register_collection_type(
         TP_MUSICS,
         Some(musics_getitem),
         Some(musics_setitem),
+        Some(musics_delitem),
         Some(musics_len),
         Some(musics_iter),
         Some(musics_bool),
+        Some(musics_append),
+        Some(musics_extend),
+        Some(musics_insert),
+        Some(musics_pop),
+        Some(musics_clear),
     );
 
     value::set_module_object(module, c"colors", TP_COLORS);

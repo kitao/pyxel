@@ -1,11 +1,183 @@
-use std::fs;
-use std::process::Command;
+use std::process::{Command, Output, Stdio};
+use std::time::{Duration, Instant};
+use std::{fs, thread};
 
 #[test]
 fn exec_source_accepts_simple_python() {
     pyxel_pocket::Runtime::new()
         .exec_source("x = 1 + 2", "<test>")
         .unwrap();
+}
+
+#[test]
+fn exec_source_accepts_parenthesized_boolean_continuation() {
+    pyxel_pocket::Runtime::new()
+        .exec_source(
+            "\
+ok = (
+    True
+    and True
+    and not False
+)
+assert ok
+",
+            "<test>",
+        )
+        .unwrap();
+}
+
+#[test]
+fn exec_source_accepts_parenthesized_adjacent_strings() {
+    pyxel_pocket::Runtime::new()
+        .exec_source(
+            "\
+value = 2
+text = (
+    f'value={value}'
+    ' ok'
+)
+assert text == 'value=2 ok'
+",
+            "<test>",
+        )
+        .unwrap();
+}
+
+#[test]
+fn exec_source_accepts_upper_hex_format_specifier() {
+    pyxel_pocket::Runtime::new()
+        .exec_source("assert f'{255:06X}' == '0000FF'", "<test>")
+        .unwrap();
+}
+
+#[test]
+fn exec_source_accepts_parenthesized_leading_plus_continuation() {
+    pyxel_pocket::Runtime::new()
+        .exec_source(
+            "\
+text = (
+    'hello'
+    + ' pocket'
+)
+assert text == 'hello pocket'
+",
+            "<test>",
+        )
+        .unwrap();
+}
+
+#[test]
+fn exec_source_accepts_for_loop_unpacking() {
+    pyxel_pocket::Runtime::new()
+        .exec_source(
+            "\
+total = 0
+for i, (x, y) in enumerate([(2, 3)]):
+    total += i + x + y
+assert total == 5
+",
+            "<test>",
+        )
+        .unwrap();
+}
+
+#[test]
+fn exec_source_accepts_deque_indexing() {
+    pyxel_pocket::Runtime::new()
+        .exec_source(
+            "\
+from collections import deque
+
+d = deque([(1, 2), (3, 4)])
+assert d[0] == (1, 2)
+assert d[-1] == (3, 4)
+",
+            "<test>",
+        )
+        .unwrap();
+}
+
+#[test]
+fn exec_source_accepts_nested_list_comprehension_assignment() {
+    pyxel_pocket::Runtime::new()
+        .exec_source(
+            "\
+pairs = [(x, y) for x in range(2) for y in range(2)]
+assert len(pairs) == 4
+assert pairs[0] == (0, 0)
+assert pairs[3] == (1, 1)
+",
+            "<test>",
+        )
+        .unwrap();
+}
+
+#[test]
+fn exec_source_accepts_whole_list_slice_assignment() {
+    pyxel_pocket::Runtime::new()
+        .exec_source(
+            "\
+items = [1, 2, 3]
+items[:] = [item for item in items if item > 1]
+assert items == [2, 3]
+",
+            "<test>",
+        )
+        .unwrap();
+}
+
+#[test]
+fn exec_source_accepts_float_floor_division() {
+    pyxel_pocket::Runtime::new()
+        .exec_source(
+            "\
+assert 5.5 // 2 == 2.0
+assert 5 // 2.0 == 2.0
+assert -1.0 // 2 == -1.0
+",
+            "<test>",
+        )
+        .unwrap();
+}
+
+#[test]
+fn module_blit_functions_accept_resource_instances() {
+    let script = std::env::temp_dir().join("pyxel-pocket-module-blit-resources.py");
+    fs::write(
+        &script,
+        "\
+import pyxel
+
+pyxel.init(8, 8, headless=True)
+image = pyxel.Image(8, 8)
+image.pset(0, 0, 7)
+pyxel.blt(0, 0, image, 0, 0, 1, 1)
+assert pyxel.pget(0, 0) == 7
+
+tilemap = pyxel.Tilemap(8, 8, image)
+tilemap.pset(0, 0, (0, 0))
+pyxel.bltm(1, 0, tilemap, 0, 0, 1, 1)
+assert pyxel.pget(1, 0) == 7
+
+pyxel.blt3d(0, 1, 4, 4, image, (0, 0, 1), (0, 0, 0))
+pyxel.bltm3d(4, 1, 4, 4, tilemap, (0, 0, 1), (0, 0, 0))
+",
+    )
+    .unwrap();
+
+    let output = Command::new(env!("CARGO_BIN_EXE_pyxel-pocket"))
+        .arg(&script)
+        .output()
+        .unwrap();
+
+    let _ = fs::remove_file(script);
+
+    assert!(
+        output.status.success(),
+        "stdout:\n{}\nstderr:\n{}",
+        String::from_utf8_lossy(&output.stdout),
+        String::from_utf8_lossy(&output.stderr)
+    );
 }
 
 #[test]
@@ -238,6 +410,55 @@ assert bool(music.seqs)
 
     assert!(status.success());
     let _ = fs::remove_file(script);
+}
+
+#[test]
+fn object_collection_sequence_methods_run_headless() {
+    let script = std::env::temp_dir().join("pyxel-pocket-object-collections.py");
+    fs::write(
+        &script,
+        "\
+import pyxel
+
+pyxel.init(16, 16, headless=True)
+
+ch0 = pyxel.Channel()
+ch0.gain = 0.25
+ch1 = pyxel.Channel()
+ch1.gain = 0.75
+pyxel.channels[:] = [ch0, ch1]
+assert len(pyxel.channels) == 2
+assert pyxel.channels[0].gain == 0.25
+assert pyxel.channels[1].gain == 0.75
+
+ch2 = pyxel.Channel()
+ch2.gain = 0.5
+pyxel.channels.insert(1, ch2)
+assert pyxel.channels[1].gain == 0.5
+assert pyxel.channels.pop(1).gain == 0.5
+
+tone = pyxel.Tone()
+tone.wavetable[:] = [1, 2, 3]
+pyxel.tones[:] = [tone]
+assert len(pyxel.tones) == 1
+assert list(pyxel.tones[0].wavetable) == [1, 2, 3]
+",
+    )
+    .unwrap();
+
+    let output = Command::new(env!("CARGO_BIN_EXE_pyxel-pocket"))
+        .arg(&script)
+        .output()
+        .unwrap();
+
+    let _ = fs::remove_file(script);
+
+    assert!(
+        output.status.success(),
+        "stdout:\n{}\nstderr:\n{}",
+        String::from_utf8_lossy(&output.stdout),
+        String::from_utf8_lossy(&output.stderr)
+    );
 }
 
 #[test]
@@ -557,6 +778,80 @@ print('keyword-init-ok')
         String::from_utf8_lossy(&output.stdout),
         String::from_utf8_lossy(&output.stderr)
     );
+}
+
+#[test]
+fn shipped_examples_run_headless_with_runner_limits() {
+    let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+        .parent()
+        .and_then(std::path::Path::parent)
+        .unwrap();
+    for name in [
+        "01_hello_pyxel.py",
+        "02_jump_game.py",
+        "03_draw_api.py",
+        "04_sound_api.py",
+        "05_color_palette.py",
+        "06_click_game.py",
+        "07_snake.py",
+        "08_triangle_api.py",
+        "09_shooter.py",
+        "10_platformer.py",
+        "11_offscreen.py",
+        "12_perlin_noise.py",
+        "13_custom_font.py",
+        "14_synthesizer.py",
+        "15_tiled_map_file.py",
+        "16_transform.py",
+        "18_audio_playback.py",
+        "19_perspective.py",
+        "99_flip_animation.py",
+    ] {
+        let example = root.join("python/pyxel/examples").join(name);
+        let mut command = Command::new(env!("CARGO_BIN_EXE_pyxel-pocket"));
+        command
+            .arg(&example)
+            .env("PYXEL_POCKET_HEADLESS", "1")
+            .env("PYXEL_POCKET_MAX_FRAMES", "3");
+
+        let output = run_with_timeout(&mut command, Duration::from_secs(4))
+            .unwrap_or_else(|err| panic!("{name}: {err}"));
+
+        assert!(
+            output.status.success(),
+            "{name}\nstdout:\n{}\nstderr:\n{}",
+            String::from_utf8_lossy(&output.stdout),
+            String::from_utf8_lossy(&output.stderr)
+        );
+    }
+}
+
+fn run_with_timeout(command: &mut Command, timeout: Duration) -> Result<Output, String> {
+    command.stdout(Stdio::piped()).stderr(Stdio::piped());
+    let mut child = command
+        .spawn()
+        .map_err(|err| format!("failed to spawn command: {err}"))?;
+    let start = Instant::now();
+
+    loop {
+        match child.try_wait() {
+            Ok(Some(_)) => return child.wait_with_output().map_err(|err| err.to_string()),
+            Ok(None) if start.elapsed() >= timeout => {
+                let _ = child.kill();
+                let output = child
+                    .wait_with_output()
+                    .map_err(|err| format!("failed to collect timed-out command: {err}"))?;
+                return Err(format!(
+                    "command timed out after {:?}\nstdout:\n{}\nstderr:\n{}",
+                    timeout,
+                    String::from_utf8_lossy(&output.stdout),
+                    String::from_utf8_lossy(&output.stderr)
+                ));
+            }
+            Ok(None) => thread::sleep(Duration::from_millis(10)),
+            Err(err) => return Err(format!("failed to wait for command: {err}")),
+        }
+    }
 }
 
 fn escape_python_path(path: &str) -> String {

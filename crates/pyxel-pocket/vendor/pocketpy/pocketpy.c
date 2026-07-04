@@ -8120,6 +8120,8 @@ static bool stack_format_object(VM* self, c11_sv spec) {
     switch(spec.data[spec.size - 1]) {
         case 'f':
         case 'd':
+        case 'x':
+        case 'X':
         case 's':
             type = spec.data[spec.size - 1];
             spec.size--;  // remove last char
@@ -8189,6 +8191,17 @@ static bool stack_format_object(VM* self, c11_sv spec) {
             return false;
         }
         c11_sbuf__write_i64(&buf, py_toint(val));
+    } else if(type == 'x' || type == 'X') {
+        if(!py_checkint(val)) {
+            c11_sbuf__dtor(&buf);
+            return false;
+        }
+        py_i64 x = py_toint(val);
+        uint64_t magnitude = x < 0 ? (uint64_t)(-(x + 1)) + 1 : (uint64_t)x;
+        char hex[17];
+        snprintf(hex, sizeof(hex), type == 'X' ? "%llX" : "%llx", (unsigned long long)magnitude);
+        if(x < 0) c11_sbuf__write_char(&buf, '-');
+        c11_sbuf__write_cstr(&buf, hex);
     } else if(type == 's') {
         if(!py_checkstr(val)) {
             c11_sbuf__dtor(&buf);
@@ -18786,6 +18799,23 @@ static bool int__floordiv__(int argc, py_Ref argv) {
         py_i64 rhs = py_toint(&argv[1]);
         if(rhs == 0) return ZeroDivisionError("integer division by zero");
         py_newint(py_retval(), cpy11__fast_floor_div(lhs, rhs));
+    } else if(py_isfloat(&argv[1])) {
+        py_f64 rhs = py_tofloat(&argv[1]);
+        if(rhs == 0.0) return ZeroDivisionError("float floor division by zero");
+        py_newfloat(py_retval(), floor(lhs / rhs));
+    } else {
+        py_newnotimplemented(py_retval());
+    }
+    return true;
+}
+
+static bool float__floordiv__(int argc, py_Ref argv) {
+    PY_CHECK_ARGC(2);
+    py_f64 lhs = py_tofloat(&argv[0]);
+    py_f64 rhs;
+    if(try_castfloat(&argv[1], &rhs)) {
+        if(rhs == 0.0) return ZeroDivisionError("float floor division by zero");
+        py_newfloat(py_retval(), floor(lhs / rhs));
     } else {
         py_newnotimplemented(py_retval());
     }
@@ -19152,6 +19182,7 @@ void pk_number__register() {
 
     // __floordiv__ & __mod__ & __divmod__
     py_bindmagic(tp_int, __floordiv__, int__floordiv__);
+    py_bindmagic(tp_float, __floordiv__, float__floordiv__);
     py_bindmagic(tp_int, __mod__, int__mod__);
     py_bindmagic(tp_int, __divmod__, int__divmod__);
 
