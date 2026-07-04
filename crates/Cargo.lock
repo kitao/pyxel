@@ -1246,6 +1246,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "pyxel-pocket"
+version = "2.9.6"
+dependencies = [
+ "bindgen",
+ "cc",
+ "pyxel-core",
+]
+
+[[package]]
 name = "qoi"
 version = "0.4.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
