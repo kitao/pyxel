@@ -106,10 +106,35 @@ unsafe fn normalize_index(index: i64, len: usize) -> Option<usize> {
     }
 }
 
+unsafe fn normalize_insert_index(index: i64, len: usize) -> usize {
+    if index < 0 {
+        (index + len as i64).clamp(0, len as i64) as usize
+    } else {
+        (index as usize).min(len)
+    }
+}
+
 unsafe fn int_list_from_ref(object: ffi::py_Ref) -> Vec<u32> {
     (0..ffi::py_list_len(object))
         .map(|i| ffi::py_toint(ffi::py_list_getitem(object, i)) as u32)
         .collect()
+}
+
+unsafe fn int_nested_list_from_ref(object: ffi::py_Ref) -> Vec<Vec<u32>> {
+    (0..ffi::py_list_len(object))
+        .map(|i| int_list_from_ref(ffi::py_list_getitem(object, i)))
+        .collect()
+}
+
+unsafe fn make_int_list(out: ffi::py_OutRef, values: &[u32]) {
+    ffi::py_newlist(out);
+    for value in values {
+        ffi::py_newint(ffi::py_list_emplace(out), *value as i64);
+    }
+}
+
+unsafe fn return_int_list(values: &[u32]) {
+    make_int_list(ffi::py_retval(), values);
 }
 
 unsafe fn str_list_from_arg(argv: ffi::py_StackRef, index: usize) -> Vec<String> {
@@ -1283,6 +1308,22 @@ unsafe fn int_seq_remove(seq: &IntSeq, index: usize) -> i64 {
     }
 }
 
+unsafe fn int_seq_insert_at(seq: &IntSeq, index: usize, value: i64) {
+    match seq {
+        IntSeq::ToneWavetable(tone) => rc_mut(tone).wavetable.insert(index, value as u32),
+        IntSeq::SoundNotes(sound) => rc_mut(sound).notes.insert(index, value as i8),
+        IntSeq::SoundTones(sound) => rc_mut(sound).tones.insert(index, value as u8),
+        IntSeq::SoundVolumes(sound) => rc_mut(sound).volumes.insert(index, value as u8),
+        IntSeq::SoundEffects(sound) => rc_mut(sound).effects.insert(index, value as u8),
+    }
+}
+
+unsafe fn int_seq_values(seq: &IntSeq) -> Vec<i64> {
+    (0..int_seq_len(seq))
+        .map(|index| int_seq_get(seq, index))
+        .collect()
+}
+
 unsafe fn make_int_seq(out: ffi::py_OutRef, seq: IntSeq) {
     new_userdata(out, TP_INT_SEQ, seq);
 }
@@ -1295,7 +1336,7 @@ unsafe extern "C" fn int_seq_len_fn(_argc: i32, argv: ffi::py_StackRef) -> bool 
 unsafe extern "C" fn int_seq_getitem(_argc: i32, argv: ffi::py_StackRef) -> bool {
     let seq = userdata::<IntSeq>(value::arg(argv, 0));
     let Some(index) = normalize_index(value::int_arg(argv, 1), int_seq_len(seq)) else {
-        return value::raise_exception("sequence index out of range");
+        return value::raise_index_error("sequence index out of range");
     };
     value::return_int(int_seq_get(seq, index));
     true
@@ -1304,9 +1345,19 @@ unsafe extern "C" fn int_seq_getitem(_argc: i32, argv: ffi::py_StackRef) -> bool
 unsafe extern "C" fn int_seq_setitem(_argc: i32, argv: ffi::py_StackRef) -> bool {
     let seq = userdata::<IntSeq>(value::arg(argv, 0));
     let Some(index) = normalize_index(value::int_arg(argv, 1), int_seq_len(seq)) else {
-        return value::raise_exception("sequence index out of range");
+        return value::raise_index_error("sequence index out of range");
     };
     int_seq_set(seq, index, value::int_arg(argv, 2));
+    value::return_none();
+    true
+}
+
+unsafe extern "C" fn int_seq_delitem(_argc: i32, argv: ffi::py_StackRef) -> bool {
+    let seq = userdata::<IntSeq>(value::arg(argv, 0));
+    let Some(index) = normalize_index(value::int_arg(argv, 1), int_seq_len(seq)) else {
+        return value::raise_index_error("sequence index out of range");
+    };
+    int_seq_remove(seq, index);
     value::return_none();
     true
 }
@@ -1330,6 +1381,24 @@ unsafe extern "C" fn int_seq_append(_argc: i32, argv: ffi::py_StackRef) -> bool 
     true
 }
 
+unsafe extern "C" fn int_seq_extend(_argc: i32, argv: ffi::py_StackRef) -> bool {
+    let seq = userdata::<IntSeq>(value::arg(argv, 0));
+    let values = value::arg(argv, 1);
+    for i in 0..ffi::py_list_len(values) {
+        int_seq_push(seq, ffi::py_toint(ffi::py_list_getitem(values, i)));
+    }
+    value::return_none();
+    true
+}
+
+unsafe extern "C" fn int_seq_insert(_argc: i32, argv: ffi::py_StackRef) -> bool {
+    let seq = userdata::<IntSeq>(value::arg(argv, 0));
+    let index = normalize_insert_index(value::int_arg(argv, 1), int_seq_len(seq));
+    int_seq_insert_at(seq, index, value::int_arg(argv, 2));
+    value::return_none();
+    true
+}
+
 unsafe extern "C" fn int_seq_clear(_argc: i32, argv: ffi::py_StackRef) -> bool {
     let seq = userdata::<IntSeq>(value::arg(argv, 0));
     while int_seq_len(seq) > 0 {
@@ -1347,9 +1416,46 @@ unsafe extern "C" fn int_seq_pop(_argc: i32, argv: ffi::py_StackRef) -> bool {
         value::int_arg(argv, 1)
     };
     let Some(index) = normalize_index(index, int_seq_len(seq)) else {
-        return value::raise_exception("pop index out of range");
+        return value::raise_index_error("pop index out of range");
     };
     value::return_int(int_seq_remove(seq, index));
+    true
+}
+
+unsafe extern "C" fn int_seq_contains(_argc: i32, argv: ffi::py_StackRef) -> bool {
+    let seq = userdata::<IntSeq>(value::arg(argv, 0));
+    let value = value::int_arg(argv, 1);
+    value::return_bool((0..int_seq_len(seq)).any(|index| int_seq_get(seq, index) == value));
+    true
+}
+
+unsafe extern "C" fn int_seq_eq(_argc: i32, argv: ffi::py_StackRef) -> bool {
+    let seq = userdata::<IntSeq>(value::arg(argv, 0));
+    let other = value::arg(argv, 1);
+    let values = int_seq_values(seq);
+
+    if value::is_list(other) {
+        if values.len() != ffi::py_list_len(other) as usize {
+            value::return_bool(false);
+            return true;
+        }
+        value::return_bool(values.iter().enumerate().all(|(index, value)| {
+            *value == ffi::py_toint(ffi::py_list_getitem(other, index as i32))
+        }));
+        return true;
+    }
+
+    if ffi::py_isinstance(other, TP_INT_SEQ) {
+        value::return_bool(values == int_seq_values(userdata::<IntSeq>(other)));
+        return true;
+    }
+
+    value::return_bool(false);
+    true
+}
+
+unsafe extern "C" fn int_seq_bool(_argc: i32, argv: ffi::py_StackRef) -> bool {
+    value::return_bool(int_seq_len(userdata::<IntSeq>(value::arg(argv, 0))) > 0);
     true
 }
 
@@ -1399,7 +1505,7 @@ unsafe extern "C" fn music_seqs_getitem(_argc: i32, argv: ffi::py_StackRef) -> b
     let seqs = userdata::<MusicSeqs>(value::arg(argv, 0));
     let len = rc_ref(&seqs.music).seqs.len();
     let Some(index) = normalize_index(value::int_arg(argv, 1), len) else {
-        return value::raise_exception("sequence index out of range");
+        return value::raise_index_error("sequence index out of range");
     };
     new_userdata(
         ffi::py_retval(),
@@ -1412,11 +1518,101 @@ unsafe extern "C" fn music_seqs_getitem(_argc: i32, argv: ffi::py_StackRef) -> b
     true
 }
 
+unsafe extern "C" fn music_seqs_setitem(_argc: i32, argv: ffi::py_StackRef) -> bool {
+    let seqs = userdata::<MusicSeqs>(value::arg(argv, 0));
+    let len = rc_ref(&seqs.music).seqs.len();
+    let Some(index) = normalize_index(value::int_arg(argv, 1), len) else {
+        return value::raise_index_error("sequence index out of range");
+    };
+    rc_mut(&seqs.music).seqs[index] = int_list_from_ref(value::arg(argv, 2));
+    value::return_none();
+    true
+}
+
+unsafe extern "C" fn music_seqs_delitem(_argc: i32, argv: ffi::py_StackRef) -> bool {
+    let seqs = userdata::<MusicSeqs>(value::arg(argv, 0));
+    let len = rc_ref(&seqs.music).seqs.len();
+    let Some(index) = normalize_index(value::int_arg(argv, 1), len) else {
+        return value::raise_index_error("sequence index out of range");
+    };
+    rc_mut(&seqs.music).seqs.remove(index);
+    value::return_none();
+    true
+}
+
+unsafe extern "C" fn music_seqs_iter(_argc: i32, argv: ffi::py_StackRef) -> bool {
+    let seqs = userdata::<MusicSeqs>(value::arg(argv, 0));
+    let len = rc_ref(&seqs.music).seqs.len();
+    ffi::py_newlist(ffi::py_retval());
+    for index in 0..len {
+        new_userdata(
+            ffi::py_list_emplace(ffi::py_retval()),
+            TP_MUSIC_SEQ,
+            MusicSeq {
+                music: seqs.music.clone(),
+                index,
+            },
+        );
+    }
+    ffi::py_iter(ffi::py_retval());
+    true
+}
+
+unsafe extern "C" fn music_seqs_bool(_argc: i32, argv: ffi::py_StackRef) -> bool {
+    let seqs = userdata::<MusicSeqs>(value::arg(argv, 0));
+    value::return_bool(!rc_ref(&seqs.music).seqs.is_empty());
+    true
+}
+
 unsafe extern "C" fn music_seqs_append(_argc: i32, argv: ffi::py_StackRef) -> bool {
     let seqs = userdata::<MusicSeqs>(value::arg(argv, 0));
     rc_mut(&seqs.music)
         .seqs
         .push(int_list_from_ref(value::arg(argv, 1)));
+    value::return_none();
+    true
+}
+
+unsafe extern "C" fn music_seqs_extend(_argc: i32, argv: ffi::py_StackRef) -> bool {
+    let seqs = userdata::<MusicSeqs>(value::arg(argv, 0));
+    rc_mut(&seqs.music)
+        .seqs
+        .extend(int_nested_list_from_ref(value::arg(argv, 1)));
+    value::return_none();
+    true
+}
+
+unsafe extern "C" fn music_seqs_insert(_argc: i32, argv: ffi::py_StackRef) -> bool {
+    let seqs = userdata::<MusicSeqs>(value::arg(argv, 0));
+    let index = normalize_insert_index(value::int_arg(argv, 1), rc_ref(&seqs.music).seqs.len());
+    rc_mut(&seqs.music)
+        .seqs
+        .insert(index, int_list_from_ref(value::arg(argv, 2)));
+    value::return_none();
+    true
+}
+
+unsafe extern "C" fn music_seqs_pop(argc: i32, argv: ffi::py_StackRef) -> bool {
+    let seqs = userdata::<MusicSeqs>(value::arg(argv, 0));
+    let len = rc_ref(&seqs.music).seqs.len();
+    if len == 0 {
+        return value::raise_index_error("pop from empty sequence");
+    }
+    let index = if argc <= 1 || value::is_none(value::arg(argv, 1)) {
+        -1
+    } else {
+        value::int_arg(argv, 1)
+    };
+    let Some(index) = normalize_index(index, len) else {
+        return value::raise_index_error("pop index out of range");
+    };
+    return_int_list(&rc_mut(&seqs.music).seqs.remove(index));
+    true
+}
+
+unsafe extern "C" fn music_seqs_clear(_argc: i32, argv: ffi::py_StackRef) -> bool {
+    let seqs = userdata::<MusicSeqs>(value::arg(argv, 0));
+    rc_mut(&seqs.music).seqs.clear();
     value::return_none();
     true
 }
@@ -1431,9 +1627,33 @@ unsafe extern "C" fn music_seq_getitem(_argc: i32, argv: ffi::py_StackRef) -> bo
     let seq = userdata::<MusicSeq>(value::arg(argv, 0));
     let values = &rc_ref(&seq.music).seqs[seq.index];
     let Some(index) = normalize_index(value::int_arg(argv, 1), values.len()) else {
-        return value::raise_exception("sequence index out of range");
+        return value::raise_index_error("sequence index out of range");
     };
     value::return_int(values[index] as i64);
+    true
+}
+
+unsafe extern "C" fn music_seq_setitem(_argc: i32, argv: ffi::py_StackRef) -> bool {
+    let seq = userdata::<MusicSeq>(value::arg(argv, 0));
+    let len = rc_ref(&seq.music).seqs[seq.index].len();
+    let Some(index) = normalize_index(value::int_arg(argv, 1), len) else {
+        return value::raise_index_error("sequence index out of range");
+    };
+    rc_mut(&seq.music).seqs[seq.index][index] = value::int_arg(argv, 2) as u32;
+    value::return_none();
+    true
+}
+
+unsafe extern "C" fn music_seq_iter(_argc: i32, argv: ffi::py_StackRef) -> bool {
+    let seq = userdata::<MusicSeq>(value::arg(argv, 0));
+    make_int_list(ffi::py_retval(), &rc_ref(&seq.music).seqs[seq.index]);
+    ffi::py_iter(ffi::py_retval());
+    true
+}
+
+unsafe extern "C" fn music_seq_bool(_argc: i32, argv: ffi::py_StackRef) -> bool {
+    let seq = userdata::<MusicSeq>(value::arg(argv, 0));
+    value::return_bool(!rc_ref(&seq.music).seqs[seq.index].is_empty());
     true
 }
 
@@ -1447,7 +1667,7 @@ unsafe extern "C" fn colors_len(_argc: i32, _argv: ffi::py_StackRef) -> bool {
 unsafe extern "C" fn colors_getitem(_argc: i32, argv: ffi::py_StackRef) -> bool {
     let colors = pyxel::colors();
     let Some(index) = normalize_index(value::int_arg(argv, 1), colors.len()) else {
-        return value::raise_exception("color index out of range");
+        return value::raise_index_error("color index out of range");
     };
     value::return_int(colors[index] as i64);
     true
@@ -1456,16 +1676,79 @@ unsafe extern "C" fn colors_getitem(_argc: i32, argv: ffi::py_StackRef) -> bool 
 unsafe extern "C" fn colors_setitem(_argc: i32, argv: ffi::py_StackRef) -> bool {
     let colors = pyxel::colors();
     let Some(index) = normalize_index(value::int_arg(argv, 1), colors.len()) else {
-        return value::raise_exception("color index out of range");
+        return value::raise_index_error("color index out of range");
     };
     colors[index] = value::int_arg(argv, 2) as pyxel::Rgb24;
     value::return_none();
     true
 }
 
+unsafe extern "C" fn colors_delitem(_argc: i32, argv: ffi::py_StackRef) -> bool {
+    let colors = pyxel::colors();
+    let Some(index) = normalize_index(value::int_arg(argv, 1), colors.len()) else {
+        return value::raise_index_error("color index out of range");
+    };
+    colors.remove(index);
+    value::return_none();
+    true
+}
+
+unsafe extern "C" fn colors_iter(_argc: i32, _argv: ffi::py_StackRef) -> bool {
+    ffi::py_newlist(ffi::py_retval());
+    for color in pyxel::colors() {
+        ffi::py_newint(ffi::py_list_emplace(ffi::py_retval()), *color as i64);
+    }
+    ffi::py_iter(ffi::py_retval());
+    true
+}
+
+unsafe extern "C" fn colors_contains(_argc: i32, argv: ffi::py_StackRef) -> bool {
+    let color = value::int_arg(argv, 1) as pyxel::Rgb24;
+    value::return_bool(pyxel::colors().iter().any(|value| *value == color));
+    true
+}
+
+unsafe extern "C" fn colors_bool(_argc: i32, _argv: ffi::py_StackRef) -> bool {
+    value::return_bool(!pyxel::colors().is_empty());
+    true
+}
+
 unsafe extern "C" fn colors_append(_argc: i32, argv: ffi::py_StackRef) -> bool {
     pyxel::colors().push(value::int_arg(argv, 1) as pyxel::Rgb24);
     value::return_none();
+    true
+}
+
+unsafe extern "C" fn colors_extend(_argc: i32, argv: ffi::py_StackRef) -> bool {
+    let values = value::arg(argv, 1);
+    for i in 0..ffi::py_list_len(values) {
+        pyxel::colors().push(ffi::py_toint(ffi::py_list_getitem(values, i)) as pyxel::Rgb24);
+    }
+    value::return_none();
+    true
+}
+
+unsafe extern "C" fn colors_insert(_argc: i32, argv: ffi::py_StackRef) -> bool {
+    let index = normalize_insert_index(value::int_arg(argv, 1), pyxel::colors().len());
+    pyxel::colors().insert(index, value::int_arg(argv, 2) as pyxel::Rgb24);
+    value::return_none();
+    true
+}
+
+unsafe extern "C" fn colors_pop(argc: i32, argv: ffi::py_StackRef) -> bool {
+    let colors = pyxel::colors();
+    if colors.is_empty() {
+        return value::raise_index_error("pop from empty sequence");
+    }
+    let index = if argc <= 1 || value::is_none(value::arg(argv, 1)) {
+        -1
+    } else {
+        value::int_arg(argv, 1)
+    };
+    let Some(index) = normalize_index(index, colors.len()) else {
+        return value::raise_index_error("pop index out of range");
+    };
+    value::return_int(colors.remove(index) as i64);
     true
 }
 
@@ -1476,11 +1759,20 @@ unsafe extern "C" fn colors_clear(_argc: i32, _argv: ffi::py_StackRef) -> bool {
 }
 
 macro_rules! collection_fns {
-    ($getitem:ident, $setitem:ident, $len:ident, $global:expr, $make:ident, $type:ty) => {
+    (
+        $getitem:ident,
+        $setitem:ident,
+        $len:ident,
+        $iter:ident,
+        $bool_fn:ident,
+        $global:expr,
+        $make:ident,
+        $type:ty
+    ) => {
         unsafe extern "C" fn $getitem(_argc: i32, argv: ffi::py_StackRef) -> bool {
             let items = $global();
             let Some(index) = normalize_index(value::int_arg(argv, 1), items.len()) else {
-                return value::raise_exception("collection index out of range");
+                return value::raise_index_error("collection index out of range");
             };
             $make(ffi::py_retval(), items[index].clone());
             true
@@ -1489,7 +1781,7 @@ macro_rules! collection_fns {
         unsafe extern "C" fn $setitem(_argc: i32, argv: ffi::py_StackRef) -> bool {
             let items = $global();
             let Some(index) = normalize_index(value::int_arg(argv, 1), items.len()) else {
-                return value::raise_exception("collection index out of range");
+                return value::raise_index_error("collection index out of range");
             };
             items[index] = userdata::<$type>(value::arg(argv, 2)).clone();
             value::return_none();
@@ -1500,6 +1792,20 @@ macro_rules! collection_fns {
             value::return_int($global().len() as i64);
             true
         }
+
+        unsafe extern "C" fn $iter(_argc: i32, _argv: ffi::py_StackRef) -> bool {
+            ffi::py_newlist(ffi::py_retval());
+            for item in $global().iter() {
+                $make(ffi::py_list_emplace(ffi::py_retval()), item.clone());
+            }
+            ffi::py_iter(ffi::py_retval());
+            true
+        }
+
+        unsafe extern "C" fn $bool_fn(_argc: i32, _argv: ffi::py_StackRef) -> bool {
+            value::return_bool(!$global().is_empty());
+            true
+        }
     };
 }
 
@@ -1507,6 +1813,8 @@ collection_fns!(
     images_getitem,
     images_setitem,
     images_len,
+    images_iter,
+    images_bool,
     pyxel::images,
     make_image,
     pyxel::RcImage
@@ -1515,6 +1823,8 @@ collection_fns!(
     tilemaps_getitem,
     tilemaps_setitem,
     tilemaps_len,
+    tilemaps_iter,
+    tilemaps_bool,
     pyxel::tilemaps,
     make_tilemap,
     pyxel::RcTilemap
@@ -1523,6 +1833,8 @@ collection_fns!(
     channels_getitem,
     channels_setitem,
     channels_len,
+    channels_iter,
+    channels_bool,
     pyxel::channels,
     make_channel,
     pyxel::RcChannel
@@ -1531,6 +1843,8 @@ collection_fns!(
     tones_getitem,
     tones_setitem,
     tones_len,
+    tones_iter,
+    tones_bool,
     pyxel::tones,
     make_tone,
     pyxel::RcTone
@@ -1539,6 +1853,8 @@ collection_fns!(
     sounds_getitem,
     sounds_setitem,
     sounds_len,
+    sounds_iter,
+    sounds_bool,
     pyxel::sounds,
     make_sound,
     pyxel::RcSound
@@ -1547,6 +1863,8 @@ collection_fns!(
     musics_getitem,
     musics_setitem,
     musics_len,
+    musics_iter,
+    musics_bool,
     pyxel::musics,
     make_music,
     pyxel::RcMusic
@@ -1557,10 +1875,14 @@ unsafe fn register_collection_type(
     getitem: ffi::py_CFunction,
     setitem: ffi::py_CFunction,
     len: ffi::py_CFunction,
+    iter: ffi::py_CFunction,
+    bool_fn: ffi::py_CFunction,
 ) {
     value::bind_magic(type_, c"__getitem__", getitem);
     value::bind_magic(type_, c"__setitem__", setitem);
     value::bind_magic(type_, c"__len__", len);
+    value::bind_magic(type_, c"__iter__", iter);
+    value::bind_magic(type_, c"__bool__", bool_fn);
 }
 
 unsafe fn register_classes(module: ffi::py_GlobalRef) {
@@ -1762,8 +2084,14 @@ unsafe fn register_classes(module: ffi::py_GlobalRef) {
     value::bind_magic(TP_INT_SEQ, c"__len__", Some(int_seq_len_fn));
     value::bind_magic(TP_INT_SEQ, c"__getitem__", Some(int_seq_getitem));
     value::bind_magic(TP_INT_SEQ, c"__setitem__", Some(int_seq_setitem));
+    value::bind_magic(TP_INT_SEQ, c"__delitem__", Some(int_seq_delitem));
     value::bind_magic(TP_INT_SEQ, c"__iter__", Some(int_seq_iter));
+    value::bind_magic(TP_INT_SEQ, c"__contains__", Some(int_seq_contains));
+    value::bind_magic(TP_INT_SEQ, c"__eq__", Some(int_seq_eq));
+    value::bind_magic(TP_INT_SEQ, c"__bool__", Some(int_seq_bool));
     ffi::py_bindmethod(TP_INT_SEQ, c"append".as_ptr(), Some(int_seq_append));
+    ffi::py_bindmethod(TP_INT_SEQ, c"extend".as_ptr(), Some(int_seq_extend));
+    ffi::py_bindmethod(TP_INT_SEQ, c"insert".as_ptr(), Some(int_seq_insert));
     ffi::py_bindmethod(TP_INT_SEQ, c"clear".as_ptr(), Some(int_seq_clear));
     ffi::py_bind(
         ffi::py_tpobject(TP_INT_SEQ),
@@ -1860,11 +2188,26 @@ unsafe fn register_classes(module: ffi::py_GlobalRef) {
     TP_MUSIC_SEQS = value::new_type(module, c"Seqs", Some(drop_music_seqs));
     value::bind_magic(TP_MUSIC_SEQS, c"__len__", Some(music_seqs_len));
     value::bind_magic(TP_MUSIC_SEQS, c"__getitem__", Some(music_seqs_getitem));
+    value::bind_magic(TP_MUSIC_SEQS, c"__setitem__", Some(music_seqs_setitem));
+    value::bind_magic(TP_MUSIC_SEQS, c"__delitem__", Some(music_seqs_delitem));
+    value::bind_magic(TP_MUSIC_SEQS, c"__iter__", Some(music_seqs_iter));
+    value::bind_magic(TP_MUSIC_SEQS, c"__bool__", Some(music_seqs_bool));
     ffi::py_bindmethod(TP_MUSIC_SEQS, c"append".as_ptr(), Some(music_seqs_append));
+    ffi::py_bindmethod(TP_MUSIC_SEQS, c"extend".as_ptr(), Some(music_seqs_extend));
+    ffi::py_bindmethod(TP_MUSIC_SEQS, c"insert".as_ptr(), Some(music_seqs_insert));
+    ffi::py_bindmethod(TP_MUSIC_SEQS, c"clear".as_ptr(), Some(music_seqs_clear));
+    ffi::py_bind(
+        ffi::py_tpobject(TP_MUSIC_SEQS),
+        c"pop(self, index=None)".as_ptr(),
+        Some(music_seqs_pop),
+    );
 
     TP_MUSIC_SEQ = value::new_type(module, c"Seq", Some(drop_music_seq));
     value::bind_magic(TP_MUSIC_SEQ, c"__len__", Some(music_seq_len));
     value::bind_magic(TP_MUSIC_SEQ, c"__getitem__", Some(music_seq_getitem));
+    value::bind_magic(TP_MUSIC_SEQ, c"__setitem__", Some(music_seq_setitem));
+    value::bind_magic(TP_MUSIC_SEQ, c"__iter__", Some(music_seq_iter));
+    value::bind_magic(TP_MUSIC_SEQ, c"__bool__", Some(music_seq_bool));
 
     TP_MUSIC = value::new_type(module, c"Music", Some(drop_music));
     let music_type = ffi::py_tpobject(TP_MUSIC);
@@ -1885,8 +2228,19 @@ unsafe fn register_collections(module: ffi::py_GlobalRef) {
     value::bind_magic(TP_COLORS, c"__len__", Some(colors_len));
     value::bind_magic(TP_COLORS, c"__getitem__", Some(colors_getitem));
     value::bind_magic(TP_COLORS, c"__setitem__", Some(colors_setitem));
+    value::bind_magic(TP_COLORS, c"__delitem__", Some(colors_delitem));
+    value::bind_magic(TP_COLORS, c"__iter__", Some(colors_iter));
+    value::bind_magic(TP_COLORS, c"__contains__", Some(colors_contains));
+    value::bind_magic(TP_COLORS, c"__bool__", Some(colors_bool));
     ffi::py_bindmethod(TP_COLORS, c"append".as_ptr(), Some(colors_append));
+    ffi::py_bindmethod(TP_COLORS, c"extend".as_ptr(), Some(colors_extend));
+    ffi::py_bindmethod(TP_COLORS, c"insert".as_ptr(), Some(colors_insert));
     ffi::py_bindmethod(TP_COLORS, c"clear".as_ptr(), Some(colors_clear));
+    ffi::py_bind(
+        ffi::py_tpobject(TP_COLORS),
+        c"pop(self, index=None)".as_ptr(),
+        Some(colors_pop),
+    );
 
     TP_IMAGES = value::new_type(module, c"Images", None);
     register_collection_type(
@@ -1894,6 +2248,8 @@ unsafe fn register_collections(module: ffi::py_GlobalRef) {
         Some(images_getitem),
         Some(images_setitem),
         Some(images_len),
+        Some(images_iter),
+        Some(images_bool),
     );
     TP_TILEMAPS = value::new_type(module, c"Tilemaps", None);
     register_collection_type(
@@ -1901,6 +2257,8 @@ unsafe fn register_collections(module: ffi::py_GlobalRef) {
         Some(tilemaps_getitem),
         Some(tilemaps_setitem),
         Some(tilemaps_len),
+        Some(tilemaps_iter),
+        Some(tilemaps_bool),
     );
     TP_CHANNELS = value::new_type(module, c"Channels", None);
     register_collection_type(
@@ -1908,6 +2266,8 @@ unsafe fn register_collections(module: ffi::py_GlobalRef) {
         Some(channels_getitem),
         Some(channels_setitem),
         Some(channels_len),
+        Some(channels_iter),
+        Some(channels_bool),
     );
     TP_TONES = value::new_type(module, c"Tones", None);
     register_collection_type(
@@ -1915,6 +2275,8 @@ unsafe fn register_collections(module: ffi::py_GlobalRef) {
         Some(tones_getitem),
         Some(tones_setitem),
         Some(tones_len),
+        Some(tones_iter),
+        Some(tones_bool),
     );
     TP_SOUNDS = value::new_type(module, c"Sounds", None);
     register_collection_type(
@@ -1922,6 +2284,8 @@ unsafe fn register_collections(module: ffi::py_GlobalRef) {
         Some(sounds_getitem),
         Some(sounds_setitem),
         Some(sounds_len),
+        Some(sounds_iter),
+        Some(sounds_bool),
     );
     TP_MUSICS = value::new_type(module, c"Musics", None);
     register_collection_type(
@@ -1929,6 +2293,8 @@ unsafe fn register_collections(module: ffi::py_GlobalRef) {
         Some(musics_getitem),
         Some(musics_setitem),
         Some(musics_len),
+        Some(musics_iter),
+        Some(musics_bool),
     );
 
     value::set_module_object(module, c"colors", TP_COLORS);
