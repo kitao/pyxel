@@ -1,12 +1,37 @@
+use std::ffi::OsString;
 use std::fs::{self, File};
 use std::io::{self, Read};
 use std::path::{Path, PathBuf};
+use std::process::{self, Command};
 use std::sync::atomic::{AtomicU64, Ordering};
+use std::sync::Mutex;
 use std::time::{SystemTime, UNIX_EPOCH};
 
 use crate::runtime::{exec_source_in_current_runtime, normalize_source, Runtime};
 
 static NEXT_EXTRACT_ID: AtomicU64 = AtomicU64::new(0);
+static RESTART_COMMAND: Mutex<Option<RestartCommand>> = Mutex::new(None);
+
+#[derive(Clone)]
+struct RestartCommand {
+    program: PathBuf,
+    args: Vec<OsString>,
+    cwd: PathBuf,
+}
+
+impl RestartCommand {
+    fn spawn_and_exit(&self) {
+        if let Err(err) = Command::new(&self.program)
+            .args(&self.args)
+            .current_dir(&self.cwd)
+            .spawn()
+        {
+            eprintln!("failed to restart Pyxel app: {err}");
+            process::exit(1);
+        }
+        process::exit(0);
+    }
+}
 
 struct ExtractedApp {
     dir: PathBuf,
@@ -20,6 +45,7 @@ impl Drop for ExtractedApp {
 }
 
 pub fn run_path(path: &Path) -> Result<(), String> {
+    capture_restart_command()?;
     let _runtime = Runtime::new();
     if is_pyxapp_path(path) {
         play_pyxapp_in_current_runtime(path)
@@ -31,6 +57,35 @@ pub fn run_path(path: &Path) -> Result<(), String> {
 pub(crate) fn play_pyxapp_in_current_runtime(path: &Path) -> Result<(), String> {
     let app = extract_pyxapp(path)?;
     run_script_in_current_runtime(&app.startup_script)
+}
+
+pub(crate) fn install_reset_callback() {
+    let restart_command = RESTART_COMMAND
+        .lock()
+        .expect("PocketPy restart command lock poisoned")
+        .clone();
+    if let Some(restart_command) = restart_command {
+        *pyxel::reset_callback() = Some(Box::new(move || restart_command.spawn_and_exit()));
+    }
+}
+
+fn capture_restart_command() -> Result<(), String> {
+    let mut raw_args = std::env::args_os();
+    let Some(raw_program) = raw_args.next() else {
+        return Ok(());
+    };
+    let program = std::env::current_exe()
+        .unwrap_or_else(|_| PathBuf::from(raw_program))
+        .into();
+    let command = RestartCommand {
+        program,
+        args: raw_args.collect(),
+        cwd: std::env::current_dir().map_err(|err| format!("cannot read current dir: {err}"))?,
+    };
+    *RESTART_COMMAND
+        .lock()
+        .expect("PocketPy restart command lock poisoned") = Some(command);
+    Ok(())
 }
 
 fn run_script_in_current_runtime(path: &Path) -> Result<(), String> {
