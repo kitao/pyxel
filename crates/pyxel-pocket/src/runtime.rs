@@ -7,7 +7,9 @@ static RUNTIME_LOCK: Mutex<()> = Mutex::new(());
 
 const PYTHON_COMPAT_SOURCE: &str = r#"
 from collections import deque as __pyxel_pocket_deque
+import enum as __pyxel_pocket_enum
 import os as __pyxel_pocket_os
+import random as __pyxel_pocket_random
 
 def __pyxel_pocket_deque_getitem(self, index):
     length = len(self)
@@ -35,9 +37,38 @@ def __pyxel_pocket_str_capitalize(self):
 str.capitalize = __pyxel_pocket_str_capitalize
 del __pyxel_pocket_str_capitalize
 
+if not hasattr(__pyxel_pocket_enum, 'IntEnum'):
+    __pyxel_pocket_enum.IntEnum = __pyxel_pocket_enum.Enum
+
+if not hasattr(__pyxel_pocket_enum, 'auto'):
+    __pyxel_pocket_enum_auto_value = 0
+
+    def __pyxel_pocket_enum_auto():
+        global __pyxel_pocket_enum_auto_value
+        __pyxel_pocket_enum_auto_value += 1
+        return __pyxel_pocket_enum_auto_value
+
+    __pyxel_pocket_enum.auto = __pyxel_pocket_enum_auto
+    del __pyxel_pocket_enum_auto
+del __pyxel_pocket_enum
+
 if not hasattr(__pyxel_pocket_os, 'environ'):
     __pyxel_pocket_os.environ = {}
 del __pyxel_pocket_os
+
+if not hasattr(__pyxel_pocket_random, 'sample'):
+    def __pyxel_pocket_random_sample(population, k):
+        pool = list(population)
+        if k < 0 or k > len(pool):
+            raise ValueError('Sample larger than population or is negative')
+        result = []
+        for _ in range(k):
+            index = __pyxel_pocket_random.randint(0, len(pool) - 1)
+            result.append(pool.pop(index))
+        return result
+
+    __pyxel_pocket_random.sample = __pyxel_pocket_random_sample
+    del __pyxel_pocket_random_sample
 "#;
 
 const PATHLIB_COMPAT_SOURCE: &str = r#"
@@ -105,6 +136,13 @@ class Path:
         return "Path('" + self._path + "')"
 "#;
 
+const ITERTOOLS_COMPAT_SOURCE: &str = r#"
+def filterfalse(predicate, iterable):
+    if predicate is None:
+        predicate = bool
+    return [item for item in iterable if not predicate(item)]
+"#;
+
 pub struct Runtime {
     _guard: MutexGuard<'static, ()>,
 }
@@ -118,30 +156,34 @@ impl Runtime {
         module::register();
         install_python_compat();
         install_pathlib_compat();
+        install_itertools_compat();
         Self { _guard: guard }
     }
 
     pub fn exec_source(&self, source: &str, filename: &str) -> Result<(), String> {
-        let source = normalize_source(source);
-        let source = CString::new(source).map_err(|_| "source contains NUL byte".to_owned())?;
-        let filename =
-            CString::new(filename).map_err(|_| "filename contains NUL byte".to_owned())?;
-        let ok = unsafe {
-            ffi::py_exec(
-                source.as_ptr(),
-                filename.as_ptr(),
-                ffi::py_CompileMode_EXEC_MODE,
-                std::ptr::null_mut(),
-            )
-        };
-        if ok {
-            Ok(())
-        } else {
-            unsafe {
-                ffi::py_printexc();
-            }
-            Err(format!("PocketPy failed to execute {filename:?}"))
+        exec_source_in_current_runtime(source, filename)
+    }
+}
+
+pub(crate) fn exec_source_in_current_runtime(source: &str, filename: &str) -> Result<(), String> {
+    let source = normalize_source(source);
+    let source = CString::new(source).map_err(|_| "source contains NUL byte".to_owned())?;
+    let filename = CString::new(filename).map_err(|_| "filename contains NUL byte".to_owned())?;
+    let ok = unsafe {
+        ffi::py_exec(
+            source.as_ptr(),
+            filename.as_ptr(),
+            ffi::py_CompileMode_EXEC_MODE,
+            std::ptr::null_mut(),
+        )
+    };
+    if ok {
+        Ok(())
+    } else {
+        unsafe {
+            ffi::py_printexc();
         }
+        Err(format!("PocketPy failed to execute {filename:?}"))
     }
 }
 
@@ -184,7 +226,27 @@ fn install_pathlib_compat() {
     }
 }
 
-fn normalize_source(source: &str) -> String {
+fn install_itertools_compat() {
+    let source = CString::new(ITERTOOLS_COMPAT_SOURCE).expect("itertools source contains NUL byte");
+    let filename = CString::new("<pyxel-pocket-itertools>").unwrap();
+    let module = unsafe { ffi::py_newmodule(c"itertools".as_ptr()) };
+    let ok = unsafe {
+        ffi::py_exec(
+            source.as_ptr(),
+            filename.as_ptr(),
+            ffi::py_CompileMode_EXEC_MODE,
+            module,
+        )
+    };
+    if !ok {
+        unsafe {
+            ffi::py_printexc();
+        }
+        panic!("failed to install PocketPy itertools compatibility module");
+    }
+}
+
+pub(crate) fn normalize_source(source: &str) -> String {
     let mut normalized = String::with_capacity(source.len());
     let mut open_delimiters = 0i32;
     let mut unpack_index = 0usize;
@@ -194,11 +256,23 @@ fn normalize_source(source: &str) -> String {
     let mut line_index = 0usize;
 
     while line_index < lines.len() {
-        let line = lines[line_index];
-        if line.trim() == "import pyxel.cli" {
-            let indent_len = line.len() - line.trim_start().len();
-            normalized.push_str(&line[..indent_len]);
+        let raw_line = lines[line_index];
+        if raw_line.trim() == "import pyxel.cli" {
+            let indent_len = raw_line.len() - raw_line.trim_start().len();
+            normalized.push_str(&raw_line[..indent_len]);
             normalized.push_str("import pyxel\n");
+            line_index += 1;
+            continue;
+        }
+
+        if let Some((expanded, next_index)) = parenthesized_from_import(&lines, line_index) {
+            normalized.push_str(&expanded);
+            line_index = next_index;
+            continue;
+        }
+
+        if let Some(expanded) = named_default_arguments(&lines, line_index) {
+            normalized.push_str(&expanded);
             line_index += 1;
             continue;
         }
@@ -214,6 +288,16 @@ fn normalize_source(source: &str) -> String {
         if let Some((expanded, next_index)) = multiline_enumerate_generator(&lines, line_index) {
             normalized.push_str(&expanded);
             line_index = next_index;
+            continue;
+        }
+
+        let normalized_line = normalize_unary_plus(raw_line);
+        let line = normalized_line.as_str();
+
+        if let Some(expanded) = one_line_generator_call(line) {
+            normalized.push_str(&expanded);
+            normalized.push('\n');
+            line_index += 1;
             continue;
         }
 
@@ -263,24 +347,30 @@ fn normalize_source(source: &str) -> String {
         }
 
         let trimmed = line.trim_start();
+        let joins_after_trailing_operator = open_delimiters > 0 && !normalized.ends_with('\n');
         let joins_leading_operator = open_delimiters > 0 && is_leading_operator(trimmed);
         let joins_adjacent_string = open_delimiters > 0
             && is_leading_string_literal(trimmed)
             && matches!(last_significant_char(&normalized), Some('\'' | '"'));
+        let continues_trailing_join = open_delimiters > 0
+            && (is_trailing_operator(trimmed) || is_trailing_value_colon(trimmed));
 
-        if joins_leading_operator || joins_adjacent_string {
+        if joins_after_trailing_operator || joins_leading_operator || joins_adjacent_string {
             if normalized.ends_with('\n') {
                 normalized.pop();
             }
             if joins_adjacent_string {
                 normalized.push_str(" + ");
-            } else {
+            } else if !joins_after_trailing_operator {
                 normalized.push(' ');
             }
             normalized.push_str(trimmed);
-            normalized.push('\n');
         } else {
             normalized.push_str(line);
+        }
+        if continues_trailing_join {
+            normalized.push(' ');
+        } else {
             normalized.push('\n');
         }
 
@@ -292,6 +382,143 @@ fn normalize_source(source: &str) -> String {
         normalized.pop();
     }
     normalized
+}
+
+fn parenthesized_from_import(lines: &[&str], index: usize) -> Option<(String, usize)> {
+    let line = *lines.get(index)?;
+    let trimmed = line.trim_start();
+    let prefix = trimmed.strip_suffix(" import (")?;
+    if !prefix.starts_with("from ") {
+        return None;
+    }
+
+    let indent = &line[..line.len() - trimmed.len()];
+    let mut names = Vec::new();
+    let mut next_index = index + 1;
+    while next_index < lines.len() {
+        let name = lines[next_index].trim();
+        if name == ")" {
+            let mut expanded = String::new();
+            expanded.push_str(indent);
+            expanded.push_str(prefix);
+            expanded.push_str(" import ");
+            expanded.push_str(&names.join(", "));
+            expanded.push('\n');
+            return Some((expanded, next_index + 1));
+        }
+        names.push(name.trim_end_matches(',').to_owned());
+        next_index += 1;
+    }
+    None
+}
+
+fn named_default_arguments(lines: &[&str], index: usize) -> Option<String> {
+    let line = *lines.get(index)?;
+    let trimmed = line.trim_start();
+    if !trimmed.starts_with("def ") || !trimmed.ends_with("):") {
+        return None;
+    }
+
+    let open = trimmed.find('(')?;
+    let close = trimmed.rfind("):")?;
+    let params = &trimmed[open + 1..close];
+    let mut new_params = Vec::new();
+    let mut defaults = Vec::new();
+    for param in split_top_level_commas(params) {
+        let param_trimmed = param.trim();
+        if let Some((name, default_value)) = param_trimmed.split_once('=') {
+            let name = name.trim();
+            let default_value = default_value.trim();
+            if needs_runtime_default(default_value) {
+                new_params.push(format!("{name}=None"));
+                defaults.push((name.to_owned(), default_value.to_owned()));
+                continue;
+            }
+        }
+        new_params.push(param_trimmed.to_owned());
+    }
+    if defaults.is_empty() {
+        return None;
+    }
+
+    let indent = &line[..line.len() - trimmed.len()];
+    let body_indent = next_body_indent(lines, index).unwrap_or_else(|| format!("{indent}    "));
+    let mut expanded = String::new();
+    expanded.push_str(indent);
+    expanded.push_str(&trimmed[..open + 1]);
+    expanded.push_str(&new_params.join(", "));
+    expanded.push_str("):\n");
+    for (name, default_value) in defaults {
+        expanded.push_str(&body_indent);
+        expanded.push_str("if ");
+        expanded.push_str(&name);
+        expanded.push_str(" is None:\n");
+        expanded.push_str(&body_indent);
+        expanded.push_str("    ");
+        expanded.push_str(&name);
+        expanded.push_str(" = ");
+        expanded.push_str(&default_value);
+        expanded.push('\n');
+    }
+    Some(expanded)
+}
+
+fn needs_runtime_default(default_value: &str) -> bool {
+    if matches!(default_value, "None" | "True" | "False") {
+        return false;
+    }
+    default_value
+        .chars()
+        .all(|ch| ch == '_' || ch == '.' || ch.is_ascii_alphanumeric())
+        && default_value
+            .chars()
+            .next()
+            .is_some_and(|ch| ch == '_' || ch.is_ascii_alphabetic())
+}
+
+fn split_top_level_commas(value: &str) -> Vec<&str> {
+    let mut parts = Vec::new();
+    let mut start = 0usize;
+    let mut depth = 0i32;
+    let mut quote = None;
+    let mut escaped = false;
+
+    for (index, ch) in value.char_indices() {
+        if let Some(quote_char) = quote {
+            if escaped {
+                escaped = false;
+            } else if ch == '\\' {
+                escaped = true;
+            } else if ch == quote_char {
+                quote = None;
+            }
+            continue;
+        }
+
+        match ch {
+            '\'' | '"' => quote = Some(ch),
+            '(' | '[' | '{' => depth += 1,
+            ')' | ']' | '}' => depth -= 1,
+            ',' if depth == 0 => {
+                parts.push(&value[start..index]);
+                start = index + ch.len_utf8();
+            }
+            _ => {}
+        }
+    }
+    parts.push(&value[start..]);
+    parts
+}
+
+fn next_body_indent(lines: &[&str], index: usize) -> Option<String> {
+    for line in lines.iter().skip(index + 1) {
+        if line.trim().is_empty() {
+            continue;
+        }
+        let trimmed = line.trim_start();
+        return Some(line[..line.len() - trimmed.len()].to_owned());
+    }
+    None
 }
 
 fn multiline_any_generator(
@@ -384,6 +611,51 @@ fn multiline_enumerate_generator(lines: &[&str], index: usize) -> Option<(String
     Some((expanded, index + 3))
 }
 
+fn one_line_generator_call(line: &str) -> Option<String> {
+    for function in ["sum", "any", "all", "min", "max", "enumerate"] {
+        let needle = format!("{function}(");
+        let Some(start) = line.find(&needle) else {
+            continue;
+        };
+        if start > 0 && line[..start].chars().last().is_some_and(is_identifier_char) {
+            continue;
+        }
+
+        let body_start = start + needle.len();
+        let body_end = body_start + line[body_start..].rfind(')')?;
+        let body = &line[body_start..body_end];
+        if !body.contains(" for ") || body.trim_start().starts_with('[') {
+            continue;
+        }
+
+        let mut expanded = String::new();
+        expanded.push_str(&line[..body_start]);
+        expanded.push('[');
+        expanded.push_str(body);
+        expanded.push_str("])");
+        expanded.push_str(&line[body_end + 1..]);
+        return Some(expanded);
+    }
+    None
+}
+
+fn normalize_unary_plus(line: &str) -> String {
+    let mut normalized = line.to_owned();
+    for (from, to) in [
+        ("assert +", "assert "),
+        ("return +", "return "),
+        ("(+", "("),
+        ("[+", "["),
+        ("{+", "{"),
+        (", +", ", "),
+        ("= +", "= "),
+        (": +", ": "),
+    ] {
+        normalized = normalized.replace(from, to);
+    }
+    normalized
+}
+
 fn nested_list_comprehension_assignment(line: &str) -> Option<String> {
     let trimmed = line.trim_start();
     let indent = &line[..line.len() - trimmed.len()];
@@ -452,10 +724,21 @@ fn unpacking_for_loop(line: &str) -> Option<(String, String, String)> {
 }
 
 fn is_leading_operator(line: &str) -> bool {
-    line.strip_prefix("and ")
-        .or_else(|| line.strip_prefix("or "))
-        .or_else(|| line.strip_prefix("+ "))
-        .is_some()
+    ["and ", "or ", "+ ", "== ", "!= ", "<= ", ">= ", "< ", "> "]
+        .iter()
+        .any(|operator| line.starts_with(operator))
+}
+
+fn is_trailing_operator(line: &str) -> bool {
+    let line = line.trim_end();
+    [" and", " or", " +", " ==", " !=", " <=", " >=", " <", " >"]
+        .iter()
+        .any(|operator| line.ends_with(operator))
+}
+
+fn is_trailing_value_colon(line: &str) -> bool {
+    let line = line.trim_end();
+    line.ends_with(':') && !line.ends_with("):")
 }
 
 fn is_leading_string_literal(line: &str) -> bool {
@@ -473,6 +756,10 @@ fn is_leading_string_literal(line: &str) -> bool {
             .chars()
             .next()
             .is_some_and(|ch| ch == '\'' || ch == '"')
+}
+
+fn is_identifier_char(ch: char) -> bool {
+    ch == '_' || ch.is_ascii_alphanumeric()
 }
 
 fn last_significant_char(text: &str) -> Option<char> {

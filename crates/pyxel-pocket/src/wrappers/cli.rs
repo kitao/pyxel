@@ -1,7 +1,8 @@
 use std::ffi::CString;
 use std::fs::File;
+use std::path::Path;
 
-use crate::{ffi, value};
+use crate::{ffi, runner, value};
 
 fn pyxel_app_metadata(filename: &str) -> Result<Vec<(String, String)>, String> {
     let file = File::open(filename).map_err(|_| format!("no such file: '{filename}'"))?;
@@ -52,8 +53,15 @@ unsafe extern "C" fn get_pyxel_app_metadata(_argc: i32, argv: ffi::py_StackRef) 
     true
 }
 
-unsafe extern "C" fn play_pyxel_app(_argc: i32, _argv: ffi::py_StackRef) -> bool {
-    value::raise_exception("pyxel.cli.play_pyxel_app is not supported by pyxel-pocket yet")
+unsafe extern "C" fn play_pyxel_app(_argc: i32, argv: ffi::py_StackRef) -> bool {
+    let filename = value::str_arg(argv, 0);
+    match runner::play_pyxapp_in_current_runtime(Path::new(&filename)) {
+        Ok(()) => {
+            value::return_none();
+            true
+        }
+        Err(err) => value::raise_exception(&err),
+    }
 }
 
 pub unsafe fn register(parent_module: ffi::py_GlobalRef) {
