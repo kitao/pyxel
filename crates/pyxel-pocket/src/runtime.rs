@@ -96,19 +96,180 @@ __pyxel_pocket_os.getenv = __pyxel_pocket_getenv
 del __pyxel_pocket_getenv
 del __pyxel_pocket_Environ
 
-if not hasattr(__pyxel_pocket_random, 'sample'):
-    def __pyxel_pocket_random_sample(population, k):
-        pool = list(population)
-        if k < 0 or k > len(pool):
-            raise ValueError('Sample larger than population or is negative')
-        result = []
-        for _ in range(k):
-            index = __pyxel_pocket_random.randint(0, len(pool) - 1)
-            result.append(pool.pop(index))
-        return result
+__pyxel_pocket_random_N = 624
+__pyxel_pocket_random_M = 397
+__pyxel_pocket_random_MATRIX_A = 0x9908b0df
+__pyxel_pocket_random_UPPER_MASK = 0x80000000
+__pyxel_pocket_random_LOWER_MASK = 0x7fffffff
+__pyxel_pocket_random_mt = [0] * __pyxel_pocket_random_N
+__pyxel_pocket_random_index = __pyxel_pocket_random_N + 1
 
-    __pyxel_pocket_random.sample = __pyxel_pocket_random_sample
-    del __pyxel_pocket_random_sample
+def __pyxel_pocket_random_u32(value):
+    return value & 0xffffffff
+
+def __pyxel_pocket_random_init_genrand(seed):
+    global __pyxel_pocket_random_index
+    __pyxel_pocket_random_mt[0] = __pyxel_pocket_random_u32(seed)
+    i = 1
+    while i < __pyxel_pocket_random_N:
+        value = __pyxel_pocket_random_mt[i - 1]
+        __pyxel_pocket_random_mt[i] = __pyxel_pocket_random_u32(
+            1812433253 * (value ^ (value >> 30)) + i
+        )
+        i += 1
+    __pyxel_pocket_random_index = __pyxel_pocket_random_N
+
+def __pyxel_pocket_random_init_by_array(keys):
+    global __pyxel_pocket_random_index
+    __pyxel_pocket_random_init_genrand(19650218)
+    i = 1
+    j = 0
+    k = __pyxel_pocket_random_N
+    if len(keys) > k:
+        k = len(keys)
+    while k > 0:
+        value = __pyxel_pocket_random_mt[i - 1]
+        mixed = __pyxel_pocket_random_mt[i] ^ (
+            (value ^ (value >> 30)) * 1664525
+        )
+        __pyxel_pocket_random_mt[i] = __pyxel_pocket_random_u32(mixed + keys[j] + j)
+        i += 1
+        j += 1
+        if i >= __pyxel_pocket_random_N:
+            __pyxel_pocket_random_mt[0] = __pyxel_pocket_random_mt[__pyxel_pocket_random_N - 1]
+            i = 1
+        if j >= len(keys):
+            j = 0
+        k -= 1
+    k = __pyxel_pocket_random_N - 1
+    while k > 0:
+        value = __pyxel_pocket_random_mt[i - 1]
+        mixed = __pyxel_pocket_random_mt[i] ^ (
+            (value ^ (value >> 30)) * 1566083941
+        )
+        __pyxel_pocket_random_mt[i] = __pyxel_pocket_random_u32(mixed - i)
+        i += 1
+        if i >= __pyxel_pocket_random_N:
+            __pyxel_pocket_random_mt[0] = __pyxel_pocket_random_mt[__pyxel_pocket_random_N - 1]
+            i = 1
+        k -= 1
+    __pyxel_pocket_random_mt[0] = 0x80000000
+    __pyxel_pocket_random_index = __pyxel_pocket_random_N
+
+def __pyxel_pocket_random_seed(seed=None):
+    if seed is None:
+        seed = 5489
+    if seed < 0:
+        seed = -seed
+    keys = []
+    while seed > 0:
+        keys.append(seed & 0xffffffff)
+        seed = seed >> 32
+    if len(keys) == 0:
+        keys.append(0)
+    __pyxel_pocket_random_init_by_array(keys)
+
+def __pyxel_pocket_random_genrand_u32():
+    global __pyxel_pocket_random_index
+    mag01 = [0, __pyxel_pocket_random_MATRIX_A]
+    if __pyxel_pocket_random_index >= __pyxel_pocket_random_N:
+        kk = 0
+        while kk < __pyxel_pocket_random_N - __pyxel_pocket_random_M:
+            y = (__pyxel_pocket_random_mt[kk] & __pyxel_pocket_random_UPPER_MASK) | (__pyxel_pocket_random_mt[kk + 1] & __pyxel_pocket_random_LOWER_MASK)
+            mixed = __pyxel_pocket_random_mt[kk + __pyxel_pocket_random_M] ^ (y >> 1) ^ mag01[y & 1]
+            __pyxel_pocket_random_mt[kk] = __pyxel_pocket_random_u32(mixed)
+            kk += 1
+        while kk < __pyxel_pocket_random_N - 1:
+            y = (__pyxel_pocket_random_mt[kk] & __pyxel_pocket_random_UPPER_MASK) | (__pyxel_pocket_random_mt[kk + 1] & __pyxel_pocket_random_LOWER_MASK)
+            mixed = __pyxel_pocket_random_mt[kk + (__pyxel_pocket_random_M - __pyxel_pocket_random_N)] ^ (y >> 1) ^ mag01[y & 1]
+            __pyxel_pocket_random_mt[kk] = __pyxel_pocket_random_u32(mixed)
+            kk += 1
+        y = (__pyxel_pocket_random_mt[__pyxel_pocket_random_N - 1] & __pyxel_pocket_random_UPPER_MASK) | (__pyxel_pocket_random_mt[0] & __pyxel_pocket_random_LOWER_MASK)
+        mixed = __pyxel_pocket_random_mt[__pyxel_pocket_random_M - 1] ^ (y >> 1) ^ mag01[y & 1]
+        __pyxel_pocket_random_mt[__pyxel_pocket_random_N - 1] = __pyxel_pocket_random_u32(mixed)
+        __pyxel_pocket_random_index = 0
+    y = __pyxel_pocket_random_mt[__pyxel_pocket_random_index]
+    __pyxel_pocket_random_index += 1
+    y = y ^ (y >> 11)
+    y = y ^ ((y << 7) & 0x9d2c5680)
+    y = y ^ ((y << 15) & 0xefc60000)
+    y = y ^ (y >> 18)
+    return __pyxel_pocket_random_u32(y)
+
+def __pyxel_pocket_random_random():
+    a = __pyxel_pocket_random_genrand_u32() >> 5
+    b = __pyxel_pocket_random_genrand_u32() >> 6
+    return (a * 67108864.0 + b) / 9007199254740992.0
+
+def __pyxel_pocket_random_getrandbits(k):
+    result = 0
+    while k >= 32:
+        result = (result << 32) | __pyxel_pocket_random_genrand_u32()
+        k -= 32
+    if k > 0:
+        result = (result << k) | (__pyxel_pocket_random_genrand_u32() >> (32 - k))
+    return result
+
+def __pyxel_pocket_random_randbelow(n):
+    if n <= 0:
+        raise ValueError('n must be greater than 0')
+    k = 0
+    value = n
+    while value > 0:
+        k += 1
+        value = value >> 1
+    r = __pyxel_pocket_random_getrandbits(k)
+    while r >= n:
+        r = __pyxel_pocket_random_getrandbits(k)
+    return r
+
+def __pyxel_pocket_random_randrange(start, stop=None, step=1):
+    if stop is None:
+        stop = start
+        start = 0
+    width = stop - start
+    if step == 1:
+        return start + __pyxel_pocket_random_randbelow(width)
+    count = (width + step - 1) // step
+    return start + step * __pyxel_pocket_random_randbelow(count)
+
+def __pyxel_pocket_random_randint(a, b):
+    return a + __pyxel_pocket_random_randbelow(b - a + 1)
+
+def __pyxel_pocket_random_uniform(a, b):
+    return a + (b - a) * __pyxel_pocket_random_random()
+
+def __pyxel_pocket_random_choice(seq):
+    return seq[__pyxel_pocket_random_randbelow(len(seq))]
+
+def __pyxel_pocket_random_shuffle(seq):
+    i = len(seq) - 1
+    while i > 0:
+        j = __pyxel_pocket_random_randbelow(i + 1)
+        tmp = seq[i]
+        seq[i] = seq[j]
+        seq[j] = tmp
+        i -= 1
+
+def __pyxel_pocket_random_sample(population, k):
+    pool = list(population)
+    if k < 0 or k > len(pool):
+        raise ValueError('Sample larger than population or is negative')
+    result = []
+    for _ in range(k):
+        index = __pyxel_pocket_random_randbelow(len(pool))
+        result.append(pool.pop(index))
+    return result
+
+__pyxel_pocket_random.seed = __pyxel_pocket_random_seed
+__pyxel_pocket_random.random = __pyxel_pocket_random_random
+__pyxel_pocket_random.randrange = __pyxel_pocket_random_randrange
+__pyxel_pocket_random.randint = __pyxel_pocket_random_randint
+__pyxel_pocket_random.uniform = __pyxel_pocket_random_uniform
+__pyxel_pocket_random.choice = __pyxel_pocket_random_choice
+__pyxel_pocket_random.shuffle = __pyxel_pocket_random_shuffle
+__pyxel_pocket_random.sample = __pyxel_pocket_random_sample
+__pyxel_pocket_random_seed()
 "#;
 
 const PATHLIB_COMPAT_SOURCE: &str = r#"

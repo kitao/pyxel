@@ -775,6 +775,27 @@ assert values[0] != values[1]
 }
 
 #[test]
+fn exec_source_matches_cpython_random_seed_zero() {
+    pyxel_pocket::Runtime::new()
+        .exec_source(
+            "\
+import random
+
+random.seed(0)
+assert [random.choice([-1, 1]) for _ in range(8)] == [1, 1, -1, 1, 1, 1, 1, 1]
+random.seed(0)
+assert [random.randint(-3, 3) for _ in range(8)] == [3, 0, 3, 0, -3, -1, 1, 0]
+random.seed(0)
+assert abs(random.random() - 0.8444218515250481) < 0.000000000000001
+assert abs(random.random() - 0.7579544029403025) < 0.000000000000001
+assert abs(random.random() - 0.420571580830845) < 0.000000000000001
+",
+            "<test>",
+        )
+        .unwrap();
+}
+
+#[test]
 fn exec_source_accepts_enum_auto() {
     pyxel_pocket::Runtime::new()
         .exec_source(
@@ -1453,6 +1474,286 @@ fn shipped_examples_run_headless_with_runner_limits() {
             String::from_utf8_lossy(&output.stderr)
         );
     }
+}
+
+struct CaptureStep<'a> {
+    frame: u32,
+    presses: &'a [&'a str],
+    capture: bool,
+}
+
+fn assert_example_reference_screenshots(name: &str, steps: &[CaptureStep<'_>]) {
+    let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+        .parent()
+        .and_then(std::path::Path::parent)
+        .unwrap();
+    let example = root.join(format!("python/pyxel/examples/{name}.py"));
+    let refs_dir = root.join("python/tests/references/examples");
+    let script = unique_temp_path(&format!("pyxel-pocket-capture-{name}"), "py");
+    let actuals = steps
+        .iter()
+        .map(|step| {
+            (
+                step.frame,
+                unique_temp_path(
+                    &format!("pyxel-pocket-capture-{name}-f{}", step.frame),
+                    "png",
+                ),
+            )
+        })
+        .collect::<Vec<_>>();
+
+    let mut source = format!(
+        r#"import os
+import pyxel
+
+__captured = {{}}
+__original_init = pyxel.init
+
+def __patched_init(width=None, height=None, title=None, fps=None, quit_key=None, display_scale=None, capture_scale=None, capture_sec=None, headless=None):
+    __original_init(width, height, title, 1000000, quit_key, display_scale, capture_scale, capture_sec, True)
+    os.chdir('{}')
+    pyxel.rseed(0)
+    pyxel.nseed(0)
+
+def __patched_run(update, draw):
+    __captured['update'] = update
+    __captured['draw'] = draw
+
+def __patched_show():
+    pass
+
+pyxel.init = __patched_init
+pyxel.run = __patched_run
+pyxel.show = __patched_show
+os.chdir('{}')
+__file__ = '{}'
+"#,
+        escape_python_path(&example.parent().unwrap().to_string_lossy()),
+        escape_python_path(&example.parent().unwrap().to_string_lossy()),
+        escape_python_path(&example.to_string_lossy()),
+    );
+    source.push_str(&fs::read_to_string(&example).unwrap());
+    source.push_str("\n__current_frame = 0\n");
+    for (index, step) in steps.iter().enumerate() {
+        append_capture_step(&mut source, step, &actuals[index].1);
+    }
+    fs::write(&script, source).unwrap();
+
+    let output = Command::new(env!("CARGO_BIN_EXE_pyxel-pocket"))
+        .arg(&script)
+        .output()
+        .unwrap();
+
+    assert!(
+        output.status.success(),
+        "stdout:\n{}\nstderr:\n{}",
+        String::from_utf8_lossy(&output.stdout),
+        String::from_utf8_lossy(&output.stderr)
+    );
+    for (frame, actual) in &actuals {
+        let expected = refs_dir.join(format!("{name}_f{frame}.png"));
+        assert_capture_matches_reference(actual, &expected);
+    }
+
+    let _ = fs::remove_file(script);
+    for (_, actual) in actuals {
+        let _ = fs::remove_file(actual);
+    }
+}
+
+fn assert_capture_matches_reference(actual: &std::path::Path, expected: &std::path::Path) {
+    let actual_bytes = fs::read(actual).unwrap();
+    let expected_bytes = fs::read(expected).unwrap();
+    assert!(
+        actual_bytes == expected_bytes,
+        "PocketPy capture differed from {} (actual: {}, {} bytes; expected: {} bytes)",
+        expected.display(),
+        actual.display(),
+        actual_bytes.len(),
+        expected_bytes.len()
+    );
+}
+
+fn assert_app_reference_screenshots(name: &str, steps: &[CaptureStep<'_>]) {
+    let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+        .parent()
+        .and_then(std::path::Path::parent)
+        .unwrap();
+    let pyxapp = root.join(format!("python/pyxel/examples/apps/{name}.pyxapp"));
+    let refs_dir = root.join("python/tests/references/apps");
+    let script = unique_temp_path(&format!("pyxel-pocket-capture-{name}"), "py");
+    let actuals = steps
+        .iter()
+        .filter(|step| step.capture)
+        .map(|step| {
+            (
+                step.frame,
+                unique_temp_path(
+                    &format!("pyxel-pocket-capture-{name}-f{}", step.frame),
+                    "png",
+                ),
+            )
+        })
+        .collect::<Vec<_>>();
+
+    let mut source = format!(
+        r#"import os
+import pyxel
+import pyxel.cli
+import random
+
+__captured = {{}}
+__original_init = pyxel.init
+
+def __patched_init(width=None, height=None, title=None, fps=None, quit_key=None, display_scale=None, capture_scale=None, capture_sec=None, headless=None):
+    __original_init(width, height, title, 1000000, quit_key, display_scale, capture_scale, capture_sec, True)
+    pyxel.rseed(0)
+    pyxel.nseed(0)
+    random.seed(0)
+
+def __patched_run(update, draw):
+    __captured['update'] = update
+    __captured['draw'] = draw
+
+def __patched_show():
+    pass
+
+pyxel.init = __patched_init
+pyxel.run = __patched_run
+pyxel.show = __patched_show
+pyxel.cli.play_pyxel_app('{}')
+__current_frame = 0
+"#,
+        escape_python_path(&pyxapp.to_string_lossy()),
+    );
+    let mut actual_index = 0usize;
+    for step in steps {
+        let actual = if step.capture {
+            let path = &actuals[actual_index].1;
+            actual_index += 1;
+            Some(path.as_path())
+        } else {
+            None
+        };
+        append_capture_step_optional(&mut source, step, actual);
+    }
+    fs::write(&script, source).unwrap();
+
+    let output = Command::new(env!("CARGO_BIN_EXE_pyxel-pocket"))
+        .arg(&script)
+        .output()
+        .unwrap();
+
+    assert!(
+        output.status.success(),
+        "stdout:\n{}\nstderr:\n{}",
+        String::from_utf8_lossy(&output.stdout),
+        String::from_utf8_lossy(&output.stderr)
+    );
+    for (frame, actual) in &actuals {
+        let expected = refs_dir.join(format!("{name}_f{frame}.png"));
+        assert_capture_matches_reference(actual, &expected);
+    }
+
+    let _ = fs::remove_file(script);
+    for (_, actual) in actuals {
+        let _ = fs::remove_file(actual);
+    }
+}
+
+fn append_capture_step(source: &mut String, step: &CaptureStep<'_>, actual: &std::path::Path) {
+    append_capture_step_optional(source, step, Some(actual));
+}
+
+fn append_capture_step_optional(
+    source: &mut String,
+    step: &CaptureStep<'_>,
+    actual: Option<&std::path::Path>,
+) {
+    for key in step.presses {
+        source.push_str(&format!("pyxel.set_btn({key}, True)\n"));
+    }
+    source.push_str(&format!(
+        "\
+__target_frame = {}
+while __current_frame < __target_frame:
+    __captured['update']()
+    __captured['draw']()
+    pyxel.flip()
+    __current_frame += 1
+",
+        step.frame,
+    ));
+    if let Some(actual) = actual {
+        source.push_str(&format!(
+            "pyxel.screenshot('{}')\n",
+            escape_python_path(&actual.to_string_lossy()),
+        ));
+    }
+    for key in step.presses {
+        source.push_str(&format!("pyxel.set_btn({key}, False)\n"));
+    }
+}
+
+#[test]
+fn hello_example_matches_reference_screenshot() {
+    assert_example_reference_screenshots(
+        "01_hello_pyxel",
+        &[CaptureStep {
+            frame: 8,
+            presses: &[],
+            capture: true,
+        }],
+    );
+}
+
+#[test]
+fn draw_api_example_matches_reference_screenshots() {
+    assert_example_reference_screenshots(
+        "03_draw_api",
+        &[
+            CaptureStep {
+                frame: 1,
+                presses: &[],
+                capture: true,
+            },
+            CaptureStep {
+                frame: 155,
+                presses: &["pyxel.KEY_SPACE"],
+                capture: true,
+            },
+        ],
+    );
+}
+
+#[test]
+fn megaball_app_matches_reference_screenshots() {
+    assert_app_reference_screenshots(
+        "megaball",
+        &[
+            CaptureStep {
+                frame: 30,
+                presses: &[],
+                capture: true,
+            },
+            CaptureStep {
+                frame: 31,
+                presses: &["pyxel.KEY_RETURN"],
+                capture: false,
+            },
+            CaptureStep {
+                frame: 35,
+                presses: &["pyxel.KEY_RETURN"],
+                capture: false,
+            },
+            CaptureStep {
+                frame: 90,
+                presses: &[],
+                capture: true,
+            },
+        ],
+    );
 }
 
 #[test]
