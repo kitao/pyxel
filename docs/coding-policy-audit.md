@@ -29,6 +29,11 @@ An auditor reads both files in this order:
   summaries do not prove a cell unless the underlying row names what was
   inspected and why the verdict follows.
 
+- Use precise result labels. A run is an exhaustive audit only when the
+  Completion Gate is satisfied. Until then, or when the requested scope is
+  intentionally narrower, report the work as a targeted review, fix pass, gate
+  check, or pending audit according to the artifacts actually produced.
+
 - The worktree under review is the audit target. Start from `git ls-files`, then
   add any untracked files intended for the audited change set. Apply the
   policy's Scope section to that combined file set.
@@ -51,13 +56,19 @@ Run this procedure:
 
 Each audit run writes artifacts to a single run directory. The directory can be
 temporary, but it must be named in the final report. Every TSV has a header row,
-uses one row per checked unit, and avoids multi-line fields. Lists inside a
-field use JSON arrays or a stable comma-separated format.
+uses one row per checked unit, and has the declared column count on every row.
+Fields contain no literal tabs or newlines; do not use CSV quoting as an escape
+mechanism. Lists inside a field use JSON arrays or a stable comma-separated
+format.
 
-Every countable row has a stable id. Fields named `criterion_id` or
-`criterion_ids` reference existing `criteria.tsv` rows. Missing ids, duplicate
-ids, empty evidence, unknown criteria, and row-count mismatches are audit
-failures.
+Every countable row has a stable key. The key is either an explicit id column or
+the declared natural key for that artifact, such as `path` plus `criterion_id`
+in `file_matrix.tsv`. Fields named `criterion_id` or `criterion_ids` reference
+existing `criteria.tsv` rows. Missing keys, duplicate keys, unknown criteria,
+invalid enum values, empty evidence, broken evidence references, missing
+expected keys, unexpected keys, column-count mismatches, and row-count
+mismatches are audit failures. Expected matrix keys are derived before verdicts
+are written, not inferred from the produced rows afterward.
 
 ## Required Artifacts
 
@@ -73,6 +84,8 @@ failures.
     `evidence`.
   - Maps every non-blank line in `docs/coding-policy.md` to one or more
     criteria, or marks it as structural text.
+  - `coverage_kind` is `criterion` or `structural`. Criterion rows name one or
+    more criteria; structural rows explain why no criterion is needed.
   - Structural coverage is allowed only for headings or explanatory text that
     imposes no checkable requirement.
   - A policy line with neither a criterion nor a structural explanation blocks
@@ -153,8 +166,15 @@ failures.
 - `findings.tsv`
   - Columns: `finding_id`, `source_artifact`, `source_row`, `severity`,
     `path_or_dependency`, `criterion_id`, `finding`, `proposed_fix`.
+  - `severity` is one of `blocker`, `high`, `medium`, or `low`. Use `blocker`
+    when completion cannot be trusted, `high` for broad or user-visible policy
+    risk, `medium` for localized policy violations, and `low` for narrow
+    cleanup. Severity is not based on fix size.
   - Contains every `fix`, `review`, or `pending` verdict ever discovered in the
     run.
+  - A non-`pass` matrix row without a corresponding finding row is an artifact
+    failure. Fixed findings remain in this file and are resolved through
+    `classifications.tsv`.
 
 - `finding_distribution.tsv`
   - Columns: `probe_family`, `criterion_ids`, `finding_ids`, `finding_count`,
@@ -169,8 +189,10 @@ failures.
 - `classifications.tsv`
   - Columns: `finding_id`, `disposition`, `design_intent`, `rationale`,
     `action_ref`.
-  - Resolves every finding as `fixed`, `accepted_false_positive`, or
-    `deferred_blocker`.
+  - Resolves every finding as `fixed`, `accepted`, or `deferred_blocker`.
+  - `accepted` covers both false positives and true findings kept by a
+    documented rationale; the rationale requirements are defined in the
+    classification phase.
   - A `deferred_blocker` disposition blocks completion.
 
 - `command_evidence.tsv`
@@ -178,6 +200,9 @@ failures.
     `key_output`, `artifact_ref`.
   - Records formatter, lint, test, structured-file, and targeted verification
     commands.
+  - `exit_status` is a process exit code when the command ran, or `not_run` when
+    user direction or the environment prevents execution. `not_run` rows name
+    the blocker in `key_output`, and the related process gate remains `pending`.
 
 - `current-diff.patch`
   - The exact diff being audited after the final fix batch, including intended
@@ -185,9 +210,9 @@ failures.
 
 - `audit_summary.json`
   - Contains counts for criteria, policy coverage, included scope, excluded
-    scope, expected matrix rows, actual matrix rows, findings by disposition,
-    hot-path inventory, cross and group criterion-pair coverage, findings by
-    probe family, command results, and artifact-level errors.
+    scope, expected matrix rows and keys, actual matrix rows and keys, findings
+    by disposition, hot-path inventory, cross and group criterion-pair coverage,
+    findings by probe family, command results, and artifact-level errors.
 
 ## Verdicts
 
@@ -211,6 +236,21 @@ Evidence is substantive only when it:
   patterns;
 - is specific to the file, dependency, group, or process gate;
 - avoids bare phrases such as "no issue", "checked", or "matches policy".
+
+Search output, file inventories, formatter success, test success, and reviewer
+summaries are probes or command evidence, not findings by themselves. A finding
+names the inspected line or artifact row, the policy criterion, and, for
+cross-file or group concerns, the peer or dependency evidence that makes the
+issue actionable.
+
+`evidence_ref` holds one or more references separated by semicolons. Each
+reference is a `path:line` or `path:first-last` location, a bare `path` for a
+whole-file check, or an artifact-row reference — `process:<gate_id>`,
+`cross:<dependency_id>`, `group:<group_id>`, `command:<command_id>`, or
+`hotpath:<hot_path_id>` — naming the row that carries the authoritative check.
+Any other form, or a reference to a row that does not exist, is a broken
+evidence reference. After fixes, line references are rechecked against the
+current file content before completion is claimed.
 
 ## Minimum Probe Families
 
@@ -239,8 +279,8 @@ Artifacts must contain explicit rows for at least these probe families:
   in for product names.
 
 - Release notes: user benefit, maintainer breadcrumb, sub-change splitting,
-  category-specific wording, line length, diff verification, and documentation
-  wording bundles.
+  release-relative grouping, unshipped-change folding, category-specific
+  wording, line length, diff verification, and documentation wording bundles.
 
 - Verification: scope exclusions, generated or toolchain-output files, code-side
   aspects of prose files, formatter/lint/test triggers, targeted structured-file
@@ -250,11 +290,19 @@ Artifacts must contain explicit rows for at least these probe families:
   authoritative enumerations, `e.g.` sub-bullet usage, language-specific rule
   statements, and whole-file balance after policy revisions.
 
+- Enumeration freshness: every authoritative enumeration in the policy (hot
+  paths, adopted spellings, product names, scope exclusions) is checked against
+  the current repository for members the code has added but the list has not.
+  Policy-named sibling and exception group examples are checked for current
+  paths and rationales, but exhaustive group coverage comes from
+  `group_inventory.tsv`, not from the examples.
+
 ## Phases
 
-Run phases in order. A phase cannot close with `pending`, stale artifacts, or
-row-count errors. `fix` and `review` verdicts move to classification and repair;
-verification and completion remain blocked until they are resolved.
+Run phases in order. A phase cannot close with `pending`, stale artifacts,
+schema errors, or row-count errors. `fix` and `review` verdicts move to
+classification and repair; verification and completion remain blocked until they
+are resolved.
 
 1. Freeze the audit target.
    - Record the current branch, comparison base commit, head commit,
@@ -327,13 +375,12 @@ verification and completion remain blocked until they are resolved.
    - Fix clear violations.
    - For `review` findings, decide whether the current state follows policy
      intent or needs a change.
-   - Accepted false positives require a policy-derived or design-derived
-     rationale in `classifications.tsv`.
-   - False-positive categories include product-name casing, context labels that
-     intentionally replace product names, intentional wording reuse in release
-     notes, parallel mirrors, `.pyi` effective-default divergence, platform
-     conditionals, self-contained distribution code, and defensive boundary
-     code.
+   - An `accepted` disposition requires a policy-derived rationale, or a design
+     rationale that does not contradict the policy, in `classifications.tsv`. A
+     category name alone is not evidence.
+   - Do not add reusable acceptance categories here. If a recurring pattern
+     should be generally allowed, update `docs/coding-policy.md` first;
+     otherwise keep the rationale local to the finding.
 
 10. Regenerate artifacts after fixes.
     - Rebuild criteria if the policy changed.
@@ -341,6 +388,7 @@ verification and completion remain blocked until they are resolved.
     - Rebuild hot-path inventory, file, cross-file, group, process, findings,
       finding distribution, classifications, and command artifacts after every
       meaningful fix batch.
+    - Validate regenerated artifacts against the Artifact Rules.
 
 11. Run verification commands.
     - Run `make format` after code or formatter-managed document changes.
@@ -353,6 +401,9 @@ verification and completion remain blocked until they are resolved.
     - Run `git diff --check`.
     - Record command names, working directories, exit statuses, and key output
       in `command_evidence.tsv`.
+    - If a required command is forbidden by the user or unavailable in the
+      current environment, record the gate as `pending` with the reason; do not
+      infer `pass` from file inspection or neighboring commands.
 
 12. Run independent review.
     - Give the reviewer the full policy, this procedure, the complete file
@@ -391,27 +442,31 @@ The audit is complete only when all conditions are true:
 - `scope.tsv` contains every tracked file and every intended untracked file,
   either included or excluded with a policy-backed reason.
 - `group_inventory.tsv` assigns every included file to a group or singleton.
-- `file_matrix.tsv` row count equals included-file count multiplied by criteria
-  count, and every included file has exactly the criterion set from
-  `criteria.tsv`.
+- `file_matrix.tsv` covers every included-file and criterion pair exactly once;
+  its row count equals included-file count multiplied by criteria count, and
+  every included file has exactly the criterion set from `criteria.tsv`.
 - `hot_path_inventory.tsv` covers every policy-listed hot-path family, and every
   row verdict is `pass`.
 - `cross_matrix.tsv` covers every dependency and exact dependency/criterion pair
-  in `cross_dependencies.tsv`.
+  declared by `cross_dependencies.tsv` exactly once.
 - `group_uniformity.tsv` covers every group and every required group/criterion
-  pair.
+  pair exactly once, plus any file or cross-file criterion routed to a group
+  row.
 - `process_matrix.tsv` covers every repository-level and command-level policy
   requirement, and every process or command criterion in `criteria.tsv`.
 - `command_evidence.tsv` records every required and targeted command with its
   working directory, exit status, and key output.
 - `current-diff.patch` includes every changed tracked file and every intended
   untracked file.
+- Every non-`pass` matrix verdict has a corresponding row in `findings.tsv`.
 - Every row in `findings.tsv` has a resolved row in `classifications.tsv`.
 - `finding_distribution.tsv` covers every named probe in the Minimum Probe
   Families, and every `imbalance_verdict` is `pass`.
 - `classifications.tsv` contains no `deferred_blocker`.
-- `audit_summary.json` reports zero row-count mismatches, zero duplicate ids,
-  zero empty evidence fields, and zero stale artifacts.
+- `audit_summary.json` reports zero row-count mismatches, zero column-count
+  mismatches, zero invalid enum values, zero duplicate keys, zero missing
+  expected keys, zero unexpected keys, zero empty evidence fields, zero broken
+  evidence references, and zero stale artifacts.
 - Required commands have passed, or a documented reproducible environment
   failure is followed by a successful approved rerun.
 - Independent review reports no blocker, high, or medium actionable findings.
