@@ -17,7 +17,9 @@ pub unsafe extern "C" fn pyxel_pocket_run_script(
     let result = catch_unwind(AssertUnwindSafe(|| {
         let source = unsafe { read_required_c_str(source, "source") }?;
         let filename = unsafe { read_optional_c_str(filename, "<pyxel-pocket-web>") }?;
-        let runtime = Runtime::new();
+        // pyxel.run() unwinds into Emscripten after installing the browser main
+        // loop, so the PocketPy runtime must live for the rest of the page.
+        let runtime = Box::leak(Box::new(Runtime::new()));
         runtime.exec_source(source, filename)
     }));
 
