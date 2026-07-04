@@ -21,6 +21,10 @@ impl pyxel::PyxelCallback for PocketPyCallback {
 }
 
 unsafe extern "C" fn pyxel_init(_argc: i32, argv: ffi::py_StackRef) -> bool {
+    if value::is_none(value::arg(argv, 0)) || value::is_none(value::arg(argv, 1)) {
+        return value::raise_exception("init() missing required width or height");
+    }
+
     let width = value::int_arg(argv, 0) as u32;
     let height = value::int_arg(argv, 1) as u32;
     let title = value::opt_str_arg(argv, 2);
@@ -139,7 +143,7 @@ unsafe extern "C" fn pyxel_resize(_argc: i32, argv: ffi::py_StackRef) -> bool {
 pub unsafe fn add_functions(module: ffi::py_GlobalRef) {
     ffi::py_bind(
         module,
-        c"init(width, height, title=None, fps=None, quit_key=None, display_scale=None, capture_scale=None, capture_sec=None, headless=None)".as_ptr(),
+        c"init(width=None, height=None, title=None, fps=None, quit_key=None, display_scale=None, capture_scale=None, capture_sec=None, headless=None)".as_ptr(),
         Some(pyxel_init),
     );
     ffi::py_bind(module, c"run(update, draw)".as_ptr(), Some(pyxel_run));
