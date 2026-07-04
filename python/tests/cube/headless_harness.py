@@ -150,6 +150,5 @@ def _circ_billboard(node):
 
 run_case("circ r=1 from oblique camera (billboards to a disc)", _circ_billboard)
 
-
 pyxel.quit()
 LOG.close()
