@@ -1,15 +1,22 @@
 use std::ffi::CString;
+use std::sync::{Mutex, MutexGuard};
 
-use crate::ffi;
+use crate::{ffi, module};
 
-pub struct Runtime;
+static RUNTIME_LOCK: Mutex<()> = Mutex::new(());
+
+pub struct Runtime {
+    _guard: MutexGuard<'static, ()>,
+}
 
 impl Runtime {
     pub fn new() -> Self {
+        let guard = RUNTIME_LOCK.lock().expect("PocketPy runtime lock poisoned");
         unsafe {
             ffi::py_initialize();
         }
-        Self
+        module::register();
+        Self { _guard: guard }
     }
 
     pub fn exec_source(&self, source: &str, filename: &str) -> Result<(), String> {
