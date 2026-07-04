@@ -14,9 +14,8 @@ small Pyxel script through PocketPy:
 pyxel-pocket app.py
 ```
 
-The design keeps a future web PocketPy runtime possible, but the initial scope
-is native. Runtime selection is an entrypoint choice, not a hot swap inside an
-already-running Pyxel process.
+The scope is native only. Runtime selection is an entrypoint choice, not a hot
+swap inside an already-running Pyxel process.
 
 ## Background
 
@@ -45,17 +44,17 @@ for a refined, maintainable Pyxel feature.
 - Share the engine through `pyxel-core` instead of duplicating engine behavior.
 - Keep PocketPy integration explicit, vendored, and reproducible.
 - Avoid patching PocketPy for MVP behavior.
-- Establish a runtime boundary that can later support a web PocketPy loader.
 
 ## Non-Goals
 
 - Do not replace the `pyxel` Python package.
 - Do not change `pyxel run`, `pyxel play`, `pyxel edit`, or `pyxel app2html`.
+- Do not change the Pyodide web runtime.
 - Do not make PocketPy fully CPython-compatible.
 - Do not run Pyxel Editor on PocketPy in the MVP.
 - Do not support complete `.pyxapp` compatibility in the MVP.
 - Do not add broad `os`, `sys`, `pathlib`, `importlib`, or `zipfile` shims.
-- Do not patch PocketPy unless a later review finds a small, well-justified
+- Do not patch PocketPy unless a dedicated review finds a small, well-justified
   blocker.
 - Do not hot-swap between CPython and PocketPy inside one running process.
 
@@ -72,24 +71,13 @@ The command initializes PocketPy, registers a `pyxel` module backed by
 `__file__`, executes the script, and exits with a non-zero status on runtime
 errors.
 
-A future CLI integration may add an explicit runtime option:
-
-```console
-pyxel run --runtime pocket app.py
-```
-
-That option is not part of the MVP because it would couple the existing Python
-package CLI to the experimental runtime. Keeping the first command separate
-protects the stable user-facing API while the PocketPy surface is still being
-validated.
-
 ## Runtime Selection
 
-Runtime selection happens before the script starts:
+The only PocketPy entrypoint in this design is:
 
-- Native MVP: `pyxel-pocket app.py`.
-- Possible native follow-up: `pyxel run --runtime pocket app.py`.
-- Possible web follow-up: `launchPyxel({ runtime: "pocket", ... })`.
+```console
+pyxel-pocket app.py
+```
 
 Runtime selection does not happen after `pyxel.init()` or during the frame loop.
 CPython/PyO3 and PocketPy own different VMs, object models, exception types,
@@ -140,9 +128,8 @@ Builds must not download source code. Network access during normal build,
 lint, and test creates reproducibility problems and makes CI failures harder to
 diagnose.
 
-The vendored directory records the upstream version in `VERSION`. A later
-update script may refresh `pocketpy.c` and `pocketpy.h` from an audited upstream
-release, but ordinary builds consume only checked-in files.
+The vendored directory records the upstream version in `VERSION`. Ordinary
+builds consume only checked-in files.
 
 No PocketPy patches are part of the MVP. If a patch becomes unavoidable, it
 must be isolated under `crates/pyxel-pocket/patches`, documented with the
@@ -243,23 +230,6 @@ are outside the MVP. If PocketPy can import sibling `.py` files without extra
 Pyxel code, that behavior can be left intact, but Pyxel should not add a custom
 import system in the first milestone.
 
-## Web Follow-Up Shape
-
-The web follow-up should be designed after the native runtime is usable. The
-target shape is a second runtime path, not a replacement for Pyodide:
-
-```javascript
-launchPyxel({ runtime: "pocket", command: "run", name: "app.py" });
-```
-
-The loader may share screen creation, virtual gamepad, file-drop UI, and error
-overlay code with the current web runtime. It should load a separate
-`pyxel_pocket.js` and `pyxel_pocket.wasm` artifact, then dispatch commands
-through exported PocketPy runtime functions.
-
-The web follow-up should not be implemented until the native wrapper boundary,
-error path, and smoke tests are stable.
-
 ## Build Integration
 
 MVP build integration is narrow:
@@ -268,18 +238,7 @@ MVP build integration is narrow:
 - Add a targeted build command or documented cargo command for the native
   binary.
 - Keep `make build`, `make test`, `make lint`, `make build-wasm`, and
-  `make lint-wasm` behavior unchanged unless the user explicitly chooses to
-  promote PocketPy into those gates.
-
-A later promotion can add:
-
-- `make build-pocket`
-- `make test-pocket`
-- `make lint-pocket`
-- `make build-pocket-wasm`
-
-Those targets should stay separate from the stable product gates until the
-runtime is no longer experimental.
+  `make lint-wasm` behavior unchanged.
 
 ## Testing
 
@@ -307,12 +266,10 @@ The initial documentation should stay close to the experimental runtime:
 
 - crate-level README or module comment for `pyxel-pocket`;
 - a short development note under the design or plan docs;
-- no user-guide or README promotion until the runtime supports a meaningful
-  subset and its limitations are stable.
+- no user-guide or root README changes.
 
-The public Pyxel documentation should not imply CPython compatibility for
-PocketPy. Any later user-facing docs must call it an alternate runtime with a
-limited API surface.
+The public Pyxel documentation should not mention the PocketPy runtime in this
+MVP.
 
 ## Risks
 
@@ -322,12 +279,8 @@ limited API surface.
 - PocketPy behavior may differ from CPython in visible ways.
   - Mitigation: define examples as PocketPy-compatible scripts, not CPython
     compatibility tests.
-- Web support may pressure the native design into loader-specific shortcuts.
-  - Mitigation: keep web out of the MVP and expose a small runtime API from
-    native first.
-- Vendoring PocketPy may add maintenance work.
-  - Mitigation: record the version, avoid local patches, and update through an
-    explicit script later.
+- Vendoring PocketPy adds maintenance work.
+  - Mitigation: record the version and avoid local patches.
 
 ## Milestones
 
@@ -337,14 +290,8 @@ limited API surface.
    `pyxel.init`.
 3. Add the system, graphics, input, variable, and constant MVP wrappers.
 4. Add native smoke tests for successful execution and error handling.
-5. Evaluate whether the wrapper boundary is clean enough to plan the web
-   follow-up.
 
 ## Open Decisions
 
-- The binary name is `pyxel-pocket` for the MVP. A later product decision can
-  rename it or hide it behind `pyxel run --runtime pocket`.
-- PocketPy remains experimental until explicitly promoted. Promotion requires a
-  separate decision about docs, CI gates, release notes, and support policy.
-- Web runtime support is a follow-up milestone, not part of the native-first
-  MVP.
+- The binary name is `pyxel-pocket`.
+- PocketPy remains an experimental native runtime in this branch.
