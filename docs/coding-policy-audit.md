@@ -282,9 +282,9 @@ Artifacts must contain explicit rows for at least these probe families:
   release-relative grouping, unshipped-change folding, category-specific
   wording, line length, diff verification, and documentation wording bundles.
 
-- Verification: scope exclusions, generated or toolchain-output files, code-side
-  aspects of prose files, formatter/lint/test triggers, targeted structured-file
-  checks, and rerun requirements.
+- Verification: scope exclusions, generated, toolchain-output, or third-party
+  vendored files, code-side aspects of prose files, formatter/lint/test
+  triggers, targeted structured-file checks, and rerun requirements.
 
 - Policy-document conventions: section placement, incident folding,
   authoritative enumerations, `e.g.` sub-bullet usage, language-specific rule

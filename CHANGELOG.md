@@ -2,6 +2,7 @@
 
 ## 2.9.7
 
+- Added an experimental PocketPy runtime crate
 - Added a GIMP palette file for Pyxel's default colors
 - Updated Pyodide to version 314.0.2
 - Updated Rust to version nightly-2026-06-30

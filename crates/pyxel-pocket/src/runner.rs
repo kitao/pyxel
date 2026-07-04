@@ -89,9 +89,7 @@ fn capture_restart_command() -> Result<(), String> {
     let Some(raw_program) = raw_args.next() else {
         return Ok(());
     };
-    let program = std::env::current_exe()
-        .unwrap_or_else(|_| PathBuf::from(raw_program))
-        .into();
+    let program = std::env::current_exe().unwrap_or_else(|_| PathBuf::from(raw_program));
     let command = RestartCommand {
         program,
         args: raw_args.collect(),

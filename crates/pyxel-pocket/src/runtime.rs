@@ -443,12 +443,12 @@ class Path:
         return "Path('" + self._path + "')"
 "#;
 
-const ITERTOOLS_COMPAT_SOURCE: &str = r#"
+const ITERTOOLS_COMPAT_SOURCE: &str = r"
 def filterfalse(predicate, iterable):
     if predicate is None:
         predicate = bool
     return [item for item in iterable if not predicate(item)]
-"#;
+";
 
 pub struct Runtime {
     _guard: MutexGuard<'static, ()>,
@@ -752,7 +752,7 @@ fn named_default_arguments(lines: &[&str], index: usize) -> Option<String> {
     let body_indent = next_body_indent(lines, index).unwrap_or_else(|| format!("{indent}    "));
     let mut expanded = String::new();
     expanded.push_str(indent);
-    expanded.push_str(&trimmed[..open + 1]);
+    expanded.push_str(&trimmed[..=open]);
     expanded.push_str(&new_params.join(", "));
     expanded.push_str("):\n");
     for (name, default_value) in defaults {
