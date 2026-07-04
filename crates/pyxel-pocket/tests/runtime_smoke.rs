@@ -67,3 +67,37 @@ assert pyxel.btnr(pyxel.KEY_Q) == False
     assert!(status.success());
     let _ = fs::remove_file(script);
 }
+
+#[test]
+fn run_executes_update_and_draw_callbacks() {
+    let script = std::env::temp_dir().join("pyxel-pocket-run.py");
+    fs::write(
+        &script,
+        "\
+import pyxel
+
+pyxel.init(16, 16, headless=True)
+
+def update():
+    if pyxel.frame_count >= 2:
+        pyxel.quit()
+
+def draw():
+    pyxel.cls(pyxel.COLOR_BLACK)
+    pyxel.text(0, 0, 'ok', pyxel.COLOR_WHITE)
+    print('draw-called')
+
+pyxel.run(update, draw)
+",
+    )
+    .unwrap();
+
+    let output = Command::new(env!("CARGO_BIN_EXE_pyxel-pocket"))
+        .arg(&script)
+        .output()
+        .unwrap();
+
+    assert!(output.status.success());
+    assert!(String::from_utf8_lossy(&output.stdout).contains("draw-called"));
+    let _ = fs::remove_file(script);
+}

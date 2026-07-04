@@ -2,9 +2,11 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Build a native `pyxel-pocket` binary that runs small Pyxel scripts through PocketPy without changing the existing CPython/PyO3, Python CLI, or Pyodide paths.
+**Goal:** Build a native `pyxel-pocket` binary that can reproduce the public Pyxel Python API through PocketPy without changing the existing CPython/PyO3, Python CLI, or Pyodide paths.
 
-**Architecture:** Add a new `crates/pyxel-pocket` workspace member. It vendors PocketPy C source, generates a small Rust FFI layer, registers a native PocketPy `pyxel` module backed by `pyxel-core`, and exposes a `pyxel-pocket app.py` command.
+**Architecture:** Add a new `crates/pyxel-pocket` workspace member. It vendors PocketPy C source, generates a small Rust FFI layer, registers a native PocketPy `pyxel` module backed by `pyxel-core`, and exposes a `pyxel-pocket app.py` command. The branch stays separate from the existing runtime paths.
+
+**Current acceptance target:** This is not validated by calling a small subset of functions. The meaningful gate is public API parity against `python/pyxel/__init__.pyi`: module constants/variables/functions, public classes, and public class methods must be present on the PocketPy `pyxel` module. The old `pocketpy` branch should be used as the wrapper coverage baseline, while editor modules, pyxapp execution, and Python standard-library compatibility shims remain out of this native API parity slice unless they are required by the Pyxel API itself.
 
 **Tech Stack:** Rust 2021, Cargo workspace, `cc`, `bindgen`, PocketPy C API, existing `pyxel-core`.
 
@@ -43,6 +45,12 @@
   - Bind `btn`, `btnp`, and `btnr`.
 - Create `crates/pyxel-pocket/src/wrappers/variables.rs`
   - Bind MVP constants and synchronize `width`, `height`, `frame_count`, `mouse_x`, and `mouse_y`.
+- Create `crates/pyxel-pocket/tests/api_parity.rs`
+  - Parse `python/pyxel/__init__.pyi` for the public API surface.
+  - Probe the PocketPy `pyxel` module for every expected module path and class method path.
+  - Report missing paths by default; fail when `PYXEL_POCKET_REQUIRE_API_PARITY=1` is set.
+
+The MVP wrapper list above is only a bootstrap sequence. It is not the completion target.
 - Create `crates/pyxel-pocket/src/wrappers/mod.rs`
   - Re-export wrapper modules.
 - Create `crates/pyxel-pocket/src/lib.rs`
