@@ -68,6 +68,8 @@ unsafe fn rc_ref<T>(rc: &Rc<UnsafeCell<T>>) -> &T {
     &*rc.get()
 }
 
+// PocketPy methods mutate shared engine resources through C ABI receivers.
+#[allow(clippy::mut_from_ref)]
 pub(crate) unsafe fn rc_mut<T>(rc: &Rc<UnsafeCell<T>>) -> &mut T {
     &mut *rc.get()
 }
@@ -1734,7 +1736,7 @@ unsafe extern "C" fn colors_iter(_argc: i32, _argv: ffi::py_StackRef) -> bool {
 
 unsafe extern "C" fn colors_contains(_argc: i32, argv: ffi::py_StackRef) -> bool {
     let color = value::int_arg(argv, 1) as pyxel::Rgb24;
-    value::return_bool(pyxel::colors().iter().any(|value| *value == color));
+    value::return_bool(pyxel::colors().contains(&color));
     true
 }
 

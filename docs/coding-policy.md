@@ -97,6 +97,7 @@
 - A sibling group may be an *exception group*: a deliberate deviation from the language's default conventions for an interface or other self-contained reason. Within an exception group, the group's internal style, its cross-file naming choices toward the mirrored interface, and the framework-level binding conventions it relies on govern.
   - Exception groups in this repo include:
     - `crates/pyxel-binding/src/*_wrapper.rs`: mirrors the Python API rather than Rust conventions (snake_case names, Python-style argument ordering, and Pyxel-historical short names like `blt`/`cls`/`pset` rather than the Rust-idiomatic counterparts in `pyxel-core`) and adopts the PyO3 binding conventions (`#[new]` for `__init__`, `#[getter]`/`#[setter]` for Python attributes);
+    - `crates/pyxel-pocket/src/`: bridges the PocketPy C ABI and the Python API rather than pure Rust conventions (unsafe `extern "C"` entrypoints, PocketPy stack arguments, Python-style function names, and Pyxel-historical short names);
     - SDL2 call sites: C-style names;
     - samples in `python/pyxel/examples/`: direct control flow, example-local names, and one-blank-line chunks may stay when production-style decomposition or abstraction would make the sample harder to follow.
 
@@ -210,6 +211,11 @@ The authoritative Pyxel product names are: Pyxel, Pyxel Editor, Pyxel Showcase, 
   - `Cargo.lock` and `*-lock.json` (package-manager lockfiles)
   - `web/styles.css` (a Tailwind CSS build artifact)
   - `.md` files whose first line begins with `<!-- This file is generated` (output of `scripts/generate_docs`)
+
+- Third-party vendored source payloads under `crates/*/vendor/` are excluded
+  from Pyxel style rules when they are kept for upstream traceability.
+  Pyxel-authored wrappers, manifests, patch notes, and build integration around
+  them remain in scope.
 
 - A file's code-side aspects (structure, syntax, identifiers, non-prose elements) remain in scope even when its prose content is reviewed separately.
 

@@ -140,11 +140,7 @@ fn pyxel_public_api_parity_report() {
         return;
     }
 
-    let preview = missing_paths
-        .iter()
-        .cloned()
-        .collect::<Vec<_>>()
-        .join("\n  ");
+    let preview = missing_paths.to_vec().join("\n  ");
     let message = format!(
         "PocketPy pyxel API parity is incomplete: {} expected paths, {} missing paths.\n  {}",
         expected_paths.len(),

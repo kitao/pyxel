@@ -124,6 +124,9 @@ format:
 
 lint:
 	@cd $(CRATES_DIR); cargo clippy $(CARGO_OPTS) $(CLIPPY_OPTS)
+ifneq ($(TARGET),$(WASM_TARGET))
+	@cd $(CRATES_DIR); cargo clippy -p pyxel-pocket $(CARGO_OPTS) $(CLIPPY_OPTS)
+endif
 	@ruff check $(ROOT_DIR) $(PYTHON_SCRIPTS)
 
 build:
@@ -145,6 +148,9 @@ install: build
 test: install
 	@cd $(ROOT_DIR); python -m pytest python/tests/ -v
 	@cd $(CRATES_DIR); cargo test -p pyxel-core $(CARGO_OPTS)
+ifneq ($(TARGET),$(WASM_TARGET))
+	@cd $(CRATES_DIR); cargo test -p pyxel-pocket $(CARGO_OPTS)
+endif
 
 run: install
 	@$(SCRIPTS_DIR)/run_examples
