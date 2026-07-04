@@ -14,6 +14,7 @@ path = "src/main.rs"
 
 [dependencies]
 pyxel-core = { path = "../pyxel-core" }
+zip = { version = "8.1", default-features = false, features = ["deflate"] }
 
 [build-dependencies]
 bindgen = "0.72"

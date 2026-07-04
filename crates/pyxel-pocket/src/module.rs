@@ -11,6 +11,7 @@ pub fn register() {
         wrappers::audio::add_functions(module);
         wrappers::input::add_functions(module);
         wrappers::math::add_functions(module);
+        wrappers::cli::register(module);
         wrappers::variables::sync(module);
     }
 }

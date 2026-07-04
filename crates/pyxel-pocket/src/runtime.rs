@@ -7,6 +7,7 @@ static RUNTIME_LOCK: Mutex<()> = Mutex::new(());
 
 const PYTHON_COMPAT_SOURCE: &str = r#"
 from collections import deque as __pyxel_pocket_deque
+import os as __pyxel_pocket_os
 
 def __pyxel_pocket_deque_getitem(self, index):
     length = len(self)
@@ -19,6 +20,89 @@ def __pyxel_pocket_deque_getitem(self, index):
 __pyxel_pocket_deque.__getitem__ = __pyxel_pocket_deque_getitem
 del __pyxel_pocket_deque_getitem
 del __pyxel_pocket_deque
+
+def __pyxel_pocket_dict_iter(self):
+    return iter(self.keys())
+
+dict.__iter__ = __pyxel_pocket_dict_iter
+del __pyxel_pocket_dict_iter
+
+def __pyxel_pocket_str_capitalize(self):
+    if len(self) == 0:
+        return self
+    return self[0].upper() + self[1:].lower()
+
+str.capitalize = __pyxel_pocket_str_capitalize
+del __pyxel_pocket_str_capitalize
+
+if not hasattr(__pyxel_pocket_os, 'environ'):
+    __pyxel_pocket_os.environ = {}
+del __pyxel_pocket_os
+"#;
+
+const PATHLIB_COMPAT_SOURCE: &str = r#"
+import os
+
+def __pyxel_pocket_norm(path):
+    parts = []
+    is_abs = path.startswith('/')
+    for part in path.split('/'):
+        if part == '' or part == '.':
+            continue
+        if part == '..':
+            if parts:
+                parts.pop()
+            continue
+        parts.append(part)
+    result = '/'.join(parts)
+    if is_abs:
+        result = '/' + result
+    return result or ('/' if is_abs else '.')
+
+def __pyxel_pocket_join(left, right):
+    right = str(right)
+    if right.startswith('/'):
+        return __pyxel_pocket_norm(right)
+    return __pyxel_pocket_norm(str(left).rstrip('/') + '/' + right)
+
+def __pyxel_pocket_parent(path):
+    path = __pyxel_pocket_norm(str(path))
+    if path == '/':
+        return '/'
+    if '/' not in path:
+        return '.'
+    parts = path.split('/')
+    parts.pop()
+    result = '/'.join(parts)
+    return result or ('/' if path.startswith('/') else '.')
+
+class Path:
+    def __init__(self, *parts):
+        if not parts:
+            path = '.'
+        else:
+            path = str(parts[0])
+            for part in parts[1:]:
+                path = __pyxel_pocket_join(path, part)
+        self._path = __pyxel_pocket_norm(path)
+
+    @property
+    def parent(self):
+        return Path(__pyxel_pocket_parent(self._path))
+
+    def resolve(self):
+        if self._path.startswith('/'):
+            return Path(self._path)
+        return Path(__pyxel_pocket_join(os.getcwd(), self._path))
+
+    def __truediv__(self, other):
+        return Path(__pyxel_pocket_join(self._path, other))
+
+    def __str__(self):
+        return self._path
+
+    def __repr__(self):
+        return "Path('" + self._path + "')"
 "#;
 
 pub struct Runtime {
@@ -33,6 +117,7 @@ impl Runtime {
         }
         module::register();
         install_python_compat();
+        install_pathlib_compat();
         Self { _guard: guard }
     }
 
@@ -79,15 +164,62 @@ fn install_python_compat() {
     }
 }
 
+fn install_pathlib_compat() {
+    let source = CString::new(PATHLIB_COMPAT_SOURCE).expect("pathlib source contains NUL byte");
+    let filename = CString::new("<pyxel-pocket-pathlib>").unwrap();
+    let module = unsafe { ffi::py_newmodule(c"pathlib".as_ptr()) };
+    let ok = unsafe {
+        ffi::py_exec(
+            source.as_ptr(),
+            filename.as_ptr(),
+            ffi::py_CompileMode_EXEC_MODE,
+            module,
+        )
+    };
+    if !ok {
+        unsafe {
+            ffi::py_printexc();
+        }
+        panic!("failed to install PocketPy pathlib compatibility module");
+    }
+}
+
 fn normalize_source(source: &str) -> String {
     let mut normalized = String::with_capacity(source.len());
     let mut open_delimiters = 0i32;
     let mut unpack_index = 0usize;
     let mut slice_assign_index = 0usize;
+    let mut any_index = 0usize;
+    let lines = source.lines().collect::<Vec<_>>();
+    let mut line_index = 0usize;
 
-    for line in source.lines() {
+    while line_index < lines.len() {
+        let line = lines[line_index];
+        if line.trim() == "import pyxel.cli" {
+            let indent_len = line.len() - line.trim_start().len();
+            normalized.push_str(&line[..indent_len]);
+            normalized.push_str("import pyxel\n");
+            line_index += 1;
+            continue;
+        }
+
+        if let Some((expanded, next_index)) = multiline_any_generator(&lines, line_index, any_index)
+        {
+            normalized.push_str(&expanded);
+            any_index += 1;
+            line_index = next_index;
+            continue;
+        }
+
+        if let Some((expanded, next_index)) = multiline_enumerate_generator(&lines, line_index) {
+            normalized.push_str(&expanded);
+            line_index = next_index;
+            continue;
+        }
+
         if let Some(expanded) = nested_list_comprehension_assignment(line) {
             normalized.push_str(&expanded);
+            line_index += 1;
             continue;
         }
 
@@ -107,6 +239,7 @@ fn normalize_source(source: &str) -> String {
             normalized.push_str(&temp);
             normalized.push_str(")\n");
             slice_assign_index += 1;
+            line_index += 1;
             continue;
         }
 
@@ -125,6 +258,7 @@ fn normalize_source(source: &str) -> String {
             normalized.push_str(&temp);
             normalized.push('\n');
             unpack_index += 1;
+            line_index += 1;
             continue;
         }
 
@@ -151,12 +285,103 @@ fn normalize_source(source: &str) -> String {
         }
 
         open_delimiters = (open_delimiters + delimiter_delta(line)).max(0);
+        line_index += 1;
     }
 
     if !source.ends_with('\n') && normalized.ends_with('\n') {
         normalized.pop();
     }
     normalized
+}
+
+fn multiline_any_generator(
+    lines: &[&str],
+    index: usize,
+    any_index: usize,
+) -> Option<(String, usize)> {
+    let line = *lines.get(index)?;
+    let trimmed = line.trim_start();
+    if trimmed != "if any(" {
+        return None;
+    }
+
+    let indent = &line[..line.len() - trimmed.len()];
+    let condition = lines.get(index + 1)?.trim();
+    let for_line = lines.get(index + 2)?.trim();
+    if !for_line.starts_with("for ") || !for_line.contains(" in ") {
+        return None;
+    }
+
+    let mut end_index = index + 3;
+    while end_index < lines.len() && lines[end_index].trim() != "):" {
+        end_index += 1;
+    }
+    if end_index >= lines.len() {
+        return None;
+    }
+
+    let temp = format!("__pyxel_pocket_any_{any_index}");
+    let mut expanded = String::new();
+    expanded.push_str(indent);
+    expanded.push_str(&temp);
+    expanded.push_str(" = False\n");
+    expanded.push_str(indent);
+    expanded.push_str(for_line);
+
+    if end_index == index + 3 {
+        expanded.push_str(":\n");
+    } else {
+        expanded.push('\n');
+        for iterable_line in &lines[index + 3..end_index] {
+            expanded.push_str(iterable_line);
+            if iterable_line.trim() == "]" || iterable_line.trim() == ")" {
+                expanded.push(':');
+            }
+            expanded.push('\n');
+        }
+    }
+
+    expanded.push_str(indent);
+    expanded.push_str("    if ");
+    expanded.push_str(condition);
+    expanded.push_str(":\n");
+    expanded.push_str(indent);
+    expanded.push_str("        ");
+    expanded.push_str(&temp);
+    expanded.push_str(" = True\n");
+    expanded.push_str(indent);
+    expanded.push_str("        break\n");
+    expanded.push_str(indent);
+    expanded.push_str("if ");
+    expanded.push_str(&temp);
+    expanded.push_str(":\n");
+
+    Some((expanded, end_index + 1))
+}
+
+fn multiline_enumerate_generator(lines: &[&str], index: usize) -> Option<(String, usize)> {
+    let line = *lines.get(index)?;
+    let trimmed = line.trim_start();
+    if !trimmed.starts_with("for ") || !trimmed.ends_with(" in enumerate(") {
+        return None;
+    }
+
+    let generator = lines.get(index + 1)?.trim();
+    if !generator.contains(" for ") {
+        return None;
+    }
+    if lines.get(index + 2)?.trim() != "):" {
+        return None;
+    }
+
+    let indent = &line[..line.len() - trimmed.len()];
+    let mut expanded = String::new();
+    expanded.push_str(indent);
+    expanded.push_str(trimmed);
+    expanded.push('[');
+    expanded.push_str(generator);
+    expanded.push_str("]):\n");
+    Some((expanded, index + 3))
 }
 
 fn nested_list_comprehension_assignment(line: &str) -> Option<String> {
