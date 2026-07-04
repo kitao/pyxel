@@ -334,3 +334,93 @@ pyxel.run(update, draw)
         String::from_utf8_lossy(&output.stderr)
     );
 }
+
+#[test]
+fn example_style_class_app_script_runs_headless() {
+    let script = std::env::temp_dir().join("pyxel-pocket-class-app.py");
+    fs::write(
+        &script,
+        "\
+import pyxel
+
+class App:
+    def __init__(self):
+        pyxel.init(48, 32, title='Pocket Class App', headless=True)
+        pyxel.mouse(True)
+        pyxel.images[0].set(0, 0, [
+            '0770',
+            '7667',
+            '7667',
+            '0770',
+        ])
+        pyxel.tilemaps[0].set(0, 0, [
+            '0000 0100',
+            '0100 0000',
+        ])
+        pyxel.tilemaps[0].imgsrc = 0
+        pyxel.sounds[0].set(
+            notes='c0d0',
+            tones='p',
+            volumes='7',
+            effects='s',
+            speed=8,
+        )
+        self.did_update = False
+        self.did_draw = False
+        pyxel.run(self.update, self.draw)
+
+    def update(self):
+        self.did_update = True
+        if pyxel.frame_count == 0:
+            pyxel.play(0, 0)
+        if pyxel.frame_count >= 2:
+            pyxel.stop()
+            pyxel.quit()
+
+    def draw(self):
+        self.did_draw = True
+        pyxel.cls(0)
+        pyxel.clip()
+        pyxel.camera()
+        pyxel.pal(7, 10)
+        pyxel.dither(1.0)
+        pyxel.rect(1, 1, 6, 4, 1)
+        pyxel.rectb(0, 0, 10, 8, 7)
+        pyxel.circ(18, 4, 3, 8)
+        pyxel.circb(28, 4, 3, 9)
+        pyxel.line(0, 12, 12, 20, 11)
+        pyxel.tri(16, 16, 20, 10, 24, 16, 12)
+        pyxel.trib(28, 16, 32, 10, 36, 16, 13)
+        pyxel.blt(2, 22, 0, 0, 0, 4, 4, 0)
+        pyxel.bltm(12, 22, 0, 0, 0, 2, 2)
+        pyxel.text(22, 22, 'ok', 7)
+        assert pyxel.sin(90) == 1
+        assert pyxel.cos(0) == 1
+        if self.did_update and self.did_draw:
+            print('class-app-ok')
+
+App()
+",
+    )
+    .unwrap();
+
+    let output = Command::new(env!("CARGO_BIN_EXE_pyxel-pocket"))
+        .arg(&script)
+        .output()
+        .unwrap();
+
+    let _ = fs::remove_file(script);
+
+    assert!(
+        output.status.success(),
+        "stdout:\n{}\nstderr:\n{}",
+        String::from_utf8_lossy(&output.stdout),
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert!(
+        String::from_utf8_lossy(&output.stdout).contains("class-app-ok"),
+        "stdout:\n{}\nstderr:\n{}",
+        String::from_utf8_lossy(&output.stdout),
+        String::from_utf8_lossy(&output.stderr)
+    );
+}

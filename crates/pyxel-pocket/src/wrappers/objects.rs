@@ -1116,6 +1116,12 @@ unsafe extern "C" fn sound_speed_set(_argc: i32, argv: ffi::py_StackRef) -> bool
 }
 
 unsafe extern "C" fn sound_set(_argc: i32, argv: ffi::py_StackRef) -> bool {
+    for index in 1..=5 {
+        if value::is_none(value::arg(argv, index)) {
+            return value::raise_exception("Sound.set() missing required argument");
+        }
+    }
+
     let sound = userdata::<pyxel::RcSound>(value::arg(argv, 0));
     match rc_mut(sound).set(
         &value::str_arg(argv, 1),
@@ -2156,7 +2162,7 @@ unsafe fn register_classes(module: ffi::py_GlobalRef) {
     );
     ffi::py_bind(
         sound_type,
-        c"set(self, notes, tones, volumes, effects, speed)".as_ptr(),
+        c"set(self, notes=None, tones=None, volumes=None, effects=None, speed=None)".as_ptr(),
         Some(sound_set),
     );
     ffi::py_bindmethod(TP_SOUND, c"set_notes".as_ptr(), Some(sound_set_notes));
