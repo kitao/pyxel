@@ -5,6 +5,8 @@ pub fn register() {
         let module = ffi::py_newmodule(c"pyxel".as_ptr());
         wrappers::variables::add_constants(module);
         wrappers::system::add_functions(module);
+        wrappers::graphics::add_functions(module);
+        wrappers::input::add_functions(module);
         wrappers::variables::sync(module);
     }
 }

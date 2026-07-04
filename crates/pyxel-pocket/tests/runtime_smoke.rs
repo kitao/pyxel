@@ -35,3 +35,35 @@ fn binary_runs_script_file() {
     assert!(status.success());
     let _ = fs::remove_file(script);
 }
+
+#[test]
+fn mvp_api_script_runs_headless() {
+    let script = std::env::temp_dir().join("pyxel-pocket-mvp.py");
+    fs::write(
+        &script,
+        "\
+import pyxel
+pyxel.init(16, 16, headless=True)
+pyxel.cls(pyxel.COLOR_BLACK)
+pyxel.pset(1, 2, pyxel.COLOR_WHITE)
+pyxel.line(0, 0, 3, 3, pyxel.COLOR_RED)
+pyxel.rect(1, 1, 4, 4, pyxel.COLOR_WHITE)
+pyxel.rectb(0, 0, 8, 8, pyxel.COLOR_RED)
+pyxel.text(0, 0, 'ok', pyxel.COLOR_WHITE)
+assert pyxel.width == 16
+assert pyxel.height == 16
+assert pyxel.btn(pyxel.KEY_Q) == False
+assert pyxel.btnp(pyxel.KEY_Q) == False
+assert pyxel.btnr(pyxel.KEY_Q) == False
+",
+    )
+    .unwrap();
+
+    let status = Command::new(env!("CARGO_BIN_EXE_pyxel-pocket"))
+        .arg(&script)
+        .status()
+        .unwrap();
+
+    assert!(status.success());
+    let _ = fs::remove_file(script);
+}

@@ -16,6 +16,15 @@ pub unsafe fn int_arg(argv: ffi::py_StackRef, index: usize) -> i64 {
     ffi::py_toint(arg(argv, index))
 }
 
+pub unsafe fn float_arg(argv: ffi::py_StackRef, index: usize) -> Option<f32> {
+    let mut out = 0.0;
+    if ffi::py_castfloat32(arg(argv, index), &mut out) {
+        Some(out)
+    } else {
+        None
+    }
+}
+
 pub unsafe fn opt_int_arg(argv: ffi::py_StackRef, index: usize) -> Option<i64> {
     let value = arg(argv, index);
     if is_none(value) {
@@ -47,6 +56,10 @@ pub unsafe fn opt_str_arg(argv: ffi::py_StackRef, index: usize) -> Option<String
 
 pub unsafe fn return_none() {
     ffi::py_newnone(ffi::py_retval());
+}
+
+pub unsafe fn return_bool(value: bool) {
+    ffi::py_newbool(ffi::py_retval(), value);
 }
 
 pub unsafe fn set_module_int(module: ffi::py_GlobalRef, name: &CStr, value: i64) {
