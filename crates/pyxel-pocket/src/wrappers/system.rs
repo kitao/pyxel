@@ -1,13 +1,34 @@
 use crate::{ffi, value};
 
-struct PocketPyCallback;
+const ENV_HEADLESS: &str = "PYXEL_POCKET_HEADLESS";
+const ENV_MAX_FRAMES: &str = "PYXEL_POCKET_MAX_FRAMES";
+
+struct PocketPyCallback {
+    max_frames: Option<u32>,
+}
+
+impl PocketPyCallback {
+    fn new() -> Self {
+        Self {
+            max_frames: max_frames(),
+        }
+    }
+
+    fn reached_max_frame(&self) -> bool {
+        self.max_frames
+            .is_some_and(|max_frames| *pyxel::frame_count() >= max_frames)
+    }
+}
 
 impl pyxel::PyxelCallback for PocketPyCallback {
-    fn update(&mut self, _pyxel: &mut pyxel::Pyxel) {
+    fn update(&mut self, pyxel: &mut pyxel::Pyxel) {
         unsafe {
             let module = ffi::py_getmodule(c"pyxel".as_ptr());
             crate::module::sync_variables();
             value::call_module_function(module, c"_update");
+        }
+        if self.reached_max_frame() {
+            pyxel.quit();
         }
     }
 
@@ -18,6 +39,21 @@ impl pyxel::PyxelCallback for PocketPyCallback {
             value::call_module_function(module, c"_draw");
         }
     }
+}
+
+fn env_flag(name: &str) -> bool {
+    std::env::var(name).is_ok_and(|value| {
+        matches!(
+            value.as_str(),
+            "1" | "true" | "TRUE" | "yes" | "YES" | "on" | "ON"
+        )
+    })
+}
+
+fn max_frames() -> Option<u32> {
+    std::env::var(ENV_MAX_FRAMES)
+        .ok()
+        .and_then(|value| value.parse().ok())
 }
 
 unsafe extern "C" fn pyxel_init(_argc: i32, argv: ffi::py_StackRef) -> bool {
@@ -33,7 +69,11 @@ unsafe extern "C" fn pyxel_init(_argc: i32, argv: ffi::py_StackRef) -> bool {
     let display_scale = value::opt_int_arg(argv, 5).map(|v| v as u32);
     let capture_scale = value::opt_int_arg(argv, 6).map(|v| v as u32);
     let capture_sec = value::opt_int_arg(argv, 7).map(|v| v as u32);
-    let headless = value::opt_bool_arg(argv, 8);
+    let headless = if env_flag(ENV_HEADLESS) {
+        Some(true)
+    } else {
+        value::opt_bool_arg(argv, 8)
+    };
 
     pyxel::init(
         width,
@@ -56,13 +96,15 @@ unsafe extern "C" fn pyxel_run(_argc: i32, argv: ffi::py_StackRef) -> bool {
     value::set_module_value(module, c"_update", value::arg(argv, 0));
     value::set_module_value(module, c"_draw", value::arg(argv, 1));
 
-    pyxel::pyxel().run(PocketPyCallback);
+    pyxel::pyxel().run(PocketPyCallback::new());
     value::return_none();
     true
 }
 
 unsafe extern "C" fn pyxel_show(_argc: i32, _argv: ffi::py_StackRef) -> bool {
-    pyxel::pyxel().show_screen();
+    if max_frames().is_none() {
+        pyxel::pyxel().show_screen();
+    }
     value::return_none();
     true
 }
@@ -70,6 +112,9 @@ unsafe extern "C" fn pyxel_show(_argc: i32, _argv: ffi::py_StackRef) -> bool {
 unsafe extern "C" fn pyxel_flip(_argc: i32, _argv: ffi::py_StackRef) -> bool {
     pyxel::pyxel().flip_screen();
     crate::module::sync_variables();
+    if max_frames().is_some_and(|max_frames| *pyxel::frame_count() >= max_frames) {
+        pyxel::pyxel().quit();
+    }
     value::return_none();
     true
 }

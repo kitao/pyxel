@@ -1,3 +1,4 @@
+use crate::wrappers::objects;
 use crate::{ffi, value};
 
 unsafe extern "C" fn clip(_argc: i32, argv: ffi::py_StackRef) -> bool {
@@ -294,7 +295,9 @@ unsafe extern "C" fn blt(_argc: i32, argv: ffi::py_StackRef) -> bool {
     let Some(y) = value::float_arg(argv, 1) else {
         return false;
     };
-    let image = value::int_arg(argv, 2) as u32;
+    let Some(image) = objects::image_arg(value::arg(argv, 2)) else {
+        return value::raise_exception("Invalid image");
+    };
     let Some(u) = value::float_arg(argv, 3) else {
         return false;
     };
@@ -307,10 +310,10 @@ unsafe extern "C" fn blt(_argc: i32, argv: ffi::py_StackRef) -> bool {
     let Some(height) = value::float_arg(argv, 6) else {
         return false;
     };
-    pyxel::pyxel().draw_image(
+    objects::rc_mut(pyxel::screen()).draw_image(
         x,
         y,
-        image,
+        &image,
         u,
         v,
         width,
@@ -330,7 +333,9 @@ unsafe extern "C" fn bltm(_argc: i32, argv: ffi::py_StackRef) -> bool {
     let Some(y) = value::float_arg(argv, 1) else {
         return false;
     };
-    let tilemap = value::int_arg(argv, 2) as u32;
+    let Some(tilemap) = objects::tilemap_arg(value::arg(argv, 2)) else {
+        return value::raise_exception("Invalid tilemap");
+    };
     let Some(u) = value::float_arg(argv, 3) else {
         return false;
     };
@@ -343,10 +348,10 @@ unsafe extern "C" fn bltm(_argc: i32, argv: ffi::py_StackRef) -> bool {
     let Some(height) = value::float_arg(argv, 6) else {
         return false;
     };
-    pyxel::pyxel().draw_tilemap(
+    objects::rc_mut(pyxel::screen()).draw_tilemap(
         x,
         y,
-        tilemap,
+        &tilemap,
         u,
         v,
         width,
@@ -372,19 +377,21 @@ unsafe extern "C" fn blt3d(_argc: i32, argv: ffi::py_StackRef) -> bool {
     let Some(height) = value::float_arg(argv, 3) else {
         return false;
     };
-    let image = value::int_arg(argv, 4) as u32;
+    let Some(image) = objects::image_arg(value::arg(argv, 4)) else {
+        return value::raise_exception("Invalid image");
+    };
     let Some(pos) = value::tuple3_float_arg(argv, 5) else {
         return false;
     };
     let Some(rot) = value::tuple3_float_arg(argv, 6) else {
         return false;
     };
-    pyxel::pyxel().draw_image_3d(
+    objects::rc_mut(pyxel::screen()).draw_image_3d(
         x,
         y,
         width,
         height,
-        image,
+        &image,
         pos,
         rot,
         value::opt_float_arg(argv, 7),
@@ -407,19 +414,21 @@ unsafe extern "C" fn bltm3d(_argc: i32, argv: ffi::py_StackRef) -> bool {
     let Some(height) = value::float_arg(argv, 3) else {
         return false;
     };
-    let tilemap = value::int_arg(argv, 4) as u32;
+    let Some(tilemap) = objects::tilemap_arg(value::arg(argv, 4)) else {
+        return value::raise_exception("Invalid tilemap");
+    };
     let Some(pos) = value::tuple3_float_arg(argv, 5) else {
         return false;
     };
     let Some(rot) = value::tuple3_float_arg(argv, 6) else {
         return false;
     };
-    pyxel::pyxel().draw_tilemap_3d(
+    objects::rc_mut(pyxel::screen()).draw_tilemap_3d(
         x,
         y,
         width,
         height,
-        tilemap,
+        &tilemap,
         pos,
         rot,
         value::opt_float_arg(argv, 7),
