@@ -8,8 +8,28 @@ pub unsafe fn arg(argv: ffi::py_StackRef, index: usize) -> ffi::py_Ref {
     argv.cast::<u8>().add(index * VALUE_SIZE).cast()
 }
 
+unsafe fn tuple_item(tuple: ffi::py_ObjectRef, index: usize) -> ffi::py_Ref {
+    tuple.cast::<u8>().add(index * VALUE_SIZE).cast()
+}
+
 pub unsafe fn is_none(value: ffi::py_Ref) -> bool {
     ffi::py_istype(value, ffi::py_PredefinedTypes_tp_NoneType as ffi::py_Type)
+}
+
+pub unsafe fn is_int(value: ffi::py_Ref) -> bool {
+    ffi::py_istype(value, ffi::py_PredefinedTypes_tp_int as ffi::py_Type)
+}
+
+pub unsafe fn is_list(value: ffi::py_Ref) -> bool {
+    ffi::py_istype(value, ffi::py_PredefinedTypes_tp_list as ffi::py_Type)
+}
+
+pub unsafe fn is_str(value: ffi::py_Ref) -> bool {
+    ffi::py_istype(value, ffi::py_PredefinedTypes_tp_str as ffi::py_Type)
+}
+
+pub unsafe fn is_tuple(value: ffi::py_Ref) -> bool {
+    ffi::py_istype(value, ffi::py_PredefinedTypes_tp_tuple as ffi::py_Type)
 }
 
 pub unsafe fn int_arg(argv: ffi::py_StackRef, index: usize) -> i64 {
@@ -141,8 +161,8 @@ pub unsafe fn return_optional_play_pos(value: Option<(u32, f32)>) {
     match value {
         Some((sound_index, sec)) => {
             let tuple = ffi::py_newtuple(ffi::py_retval(), 2);
-            ffi::py_newint(ffi::py_tuple_getitem(tuple, 0), sound_index as i64);
-            ffi::py_newfloat(ffi::py_tuple_getitem(tuple, 1), sec as f64);
+            ffi::py_newint(tuple_item(tuple, 0), sound_index as i64);
+            ffi::py_newfloat(tuple_item(tuple, 1), sec as f64);
         }
         None => return_none(),
     }
@@ -166,6 +186,26 @@ pub unsafe fn raise_value_error(message: &str) -> bool {
 
 pub unsafe fn set_module_value(module: ffi::py_GlobalRef, name: &CStr, value: ffi::py_Ref) {
     ffi::py_setdict(module, ffi::py_name(name.as_ptr()), value);
+}
+
+pub unsafe fn bind_magic(type_: ffi::py_Type, name: &CStr, function: ffi::py_CFunction) {
+    ffi::py_newnativefunc(
+        ffi::py_tpgetmagic(type_, ffi::py_name(name.as_ptr())),
+        function,
+    );
+}
+
+pub unsafe fn new_type(
+    module: ffi::py_GlobalRef,
+    name: &CStr,
+    destructor: ffi::py_Dtor,
+) -> ffi::py_Type {
+    ffi::py_newtype(
+        name.as_ptr(),
+        ffi::py_PredefinedTypes_tp_object as ffi::py_Type,
+        module,
+        destructor,
+    )
 }
 
 pub unsafe fn call_module_function(module: ffi::py_GlobalRef, name: &CStr) {
@@ -243,4 +283,25 @@ pub unsafe fn set_const_int_list(module: ffi::py_GlobalRef, name: &str, values: 
     for value in values {
         ffi::py_newint(ffi::py_list_emplace(list), *value);
     }
+}
+
+pub unsafe fn set_module_object(module: ffi::py_GlobalRef, name: &CStr, type_: ffi::py_Type) {
+    ffi::py_newobject(
+        ffi::py_emplacedict(module, ffi::py_name(name.as_ptr())),
+        type_,
+        0,
+        0,
+    );
+}
+
+pub unsafe fn return_tile(value: pyxel::Tile) {
+    let tuple = ffi::py_newtuple(ffi::py_retval(), 2);
+    ffi::py_newint(tuple_item(tuple, 0), value.0 as i64);
+    ffi::py_newint(tuple_item(tuple, 1), value.1 as i64);
+}
+
+pub unsafe fn return_float_pair(value: (f32, f32)) {
+    let tuple = ffi::py_newtuple(ffi::py_retval(), 2);
+    ffi::py_newfloat(tuple_item(tuple, 0), value.0 as f64);
+    ffi::py_newfloat(tuple_item(tuple, 1), value.1 as f64);
 }
