@@ -39,5 +39,6 @@ flate2 = "1.0"
 tar = "0.4"
 
 [features]
+emscripten_unwind_main_loop = []
 sdl2_dynamic = []
 sdl2_static = []

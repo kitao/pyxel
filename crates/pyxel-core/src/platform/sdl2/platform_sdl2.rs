@@ -404,12 +404,13 @@ impl PlatformSdl2 {
 
     #[cfg(target_os = "emscripten")]
     pub fn run_frame_loop<F: FnMut(f32)>(&mut self, fps: u32, callback: F) {
+        let simulate_infinite_loop = cfg!(feature = "emscripten_unwind_main_loop") as c_int;
         unsafe {
             emscripten_set_main_loop_arg(
                 main_loop_callback::<F>,
                 Box::into_raw(Box::new(callback)).cast::<c_void>(),
                 fps as c_int,
-                1,
+                simulate_infinite_loop,
             );
         }
     }

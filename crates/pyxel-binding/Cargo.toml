@@ -24,5 +24,5 @@ pyxel-core = { path = "../pyxel-core" }
 sysinfo = "0.39"
 
 [features]
-sdl2_dynamic = ["pyxel-core/sdl2_dynamic"]
-sdl2_static = ["pyxel-core/sdl2_static"]
+sdl2_dynamic = ["pyxel-core/emscripten_unwind_main_loop", "pyxel-core/sdl2_dynamic"]
+sdl2_static = ["pyxel-core/emscripten_unwind_main_loop", "pyxel-core/sdl2_static"]
