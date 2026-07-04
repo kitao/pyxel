@@ -8,6 +8,8 @@
 
 **Current acceptance target:** This is not validated by calling a small subset of functions. The meaningful gate is public API parity against `python/pyxel/__init__.pyi`: module constants/variables/functions, public classes, and public class methods must be present on the PocketPy `pyxel` module. The old `pocketpy` branch should be used as the wrapper coverage baseline, while editor modules, pyxapp execution, and Python standard-library compatibility shims remain out of this native API parity slice unless they are required by the Pyxel API itself.
 
+**Current implementation status:** The PocketPy module now registers all public paths from `python/pyxel/__init__.pyi`, including core-backed `Font`, `Image`, `Tilemap`, `Channel`, `Tone`, `Sound`, and `Music` wrappers plus the global object collections. Wrapper userdata stores cloned `Rc*` handles from `pyxel-core`, so constructors and global collections operate on real core objects instead of presence-only stubs. `data_ptr()` currently returns the backing address as an integer because PocketPy does not provide CPython `ctypes`; exact CPython-compatible buffer exposure remains a separate compatibility decision.
+
 **Tech Stack:** Rust 2021, Cargo workspace, `cc`, `bindgen`, PocketPy C API, existing `pyxel-core`.
 
 ---
@@ -45,6 +47,8 @@
   - Bind `btn`, `btnp`, and `btnr`.
 - Create `crates/pyxel-pocket/src/wrappers/variables.rs`
   - Bind MVP constants and synchronize `width`, `height`, `frame_count`, `mouse_x`, and `mouse_y`.
+- Create `crates/pyxel-pocket/src/wrappers/objects.rs`
+  - Register public Pyxel classes, core-backed object wrappers, global object collections, and mutable sequence views used by audio objects.
 - Create `crates/pyxel-pocket/tests/api_parity.rs`
   - Parse `python/pyxel/__init__.pyi` for the public API surface.
   - Probe the PocketPy `pyxel` module for every expected module path and class method path.
