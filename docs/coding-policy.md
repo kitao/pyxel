@@ -97,7 +97,7 @@
 - A sibling group may be an *exception group*: a deliberate deviation from the language's default conventions for an interface or other self-contained reason. Within an exception group, the group's internal style, its cross-file naming choices toward the mirrored interface, and the framework-level binding conventions it relies on govern.
   - Exception groups in this repo include:
     - `crates/pyxel-binding/src/*_wrapper.rs`: mirrors the Python API rather than Rust conventions (snake_case names, Python-style argument ordering, and Pyxel-historical short names like `blt`/`cls`/`pset` rather than the Rust-idiomatic counterparts in `pyxel-core`) and adopts the PyO3 binding conventions (`#[new]` for `__init__`, `#[getter]`/`#[setter]` for Python attributes);
-    - `crates/pyxel-pocket/src/`: bridges the PocketPy C ABI and the Python API rather than pure Rust conventions (unsafe `extern "C"` entrypoints, PocketPy stack arguments, Python-style function names, and Pyxel-historical short names);
+    - `crates/pyxel-pocket/src/ffi.rs`, `crates/pyxel-pocket/src/value.rs`, and `crates/pyxel-pocket/src/wrappers/*.rs`: bridge the PocketPy C ABI and the Python API rather than pure Rust conventions (unsafe `extern "C"` entrypoints, PocketPy stack arguments, Python-style wrapper signatures, and Pyxel-historical short names);
     - SDL2 call sites: C-style names;
     - samples in `python/pyxel/examples/`: direct control flow, example-local names, and one-blank-line chunks may stay when production-style decomposition or abstraction would make the sample harder to follow.
 
