@@ -189,8 +189,10 @@ are written, not inferred from the produced rows afterward.
 - `classifications.tsv`
   - Columns: `finding_id`, `disposition`, `design_intent`, `rationale`,
     `action_ref`.
-  - Resolves every finding as `fixed`, `accepted_false_positive`, or
-    `deferred_blocker`.
+  - Resolves every finding as `fixed`, `accepted`, or `deferred_blocker`.
+  - `accepted` covers both false positives and true findings kept by a
+    documented rationale; the rationale requirements are defined in the
+    classification phase.
   - A `deferred_blocker` disposition blocks completion.
 
 - `command_evidence.tsv`
@@ -241,10 +243,14 @@ names the inspected line or artifact row, the policy criterion, and, for
 cross-file or group concerns, the peer or dependency evidence that makes the
 issue actionable.
 
-For line-local findings, `evidence_ref` uses an exact `path:line` reference.
-File-only references are acceptable only for whole-file or process checks. After
-fixes, line references are rechecked against the current file content before
-completion is claimed.
+`evidence_ref` holds one or more references separated by semicolons. Each
+reference is a `path:line` or `path:first-last` location, a bare `path` for a
+whole-file check, or an artifact-row reference — `process:<gate_id>`,
+`cross:<dependency_id>`, `group:<group_id>`, `command:<command_id>`, or
+`hotpath:<hot_path_id>` — naming the row that carries the authoritative check.
+Any other form, or a reference to a row that does not exist, is a broken
+evidence reference. After fixes, line references are rechecked against the
+current file content before completion is claimed.
 
 ## Minimum Probe Families
 
@@ -273,8 +279,8 @@ Artifacts must contain explicit rows for at least these probe families:
   in for product names.
 
 - Release notes: user benefit, maintainer breadcrumb, sub-change splitting,
-  category-specific wording, line length, diff verification, and documentation
-  wording bundles.
+  release-relative grouping, unshipped-change folding, category-specific
+  wording, line length, diff verification, and documentation wording bundles.
 
 - Verification: scope exclusions, generated or toolchain-output files, code-side
   aspects of prose files, formatter/lint/test triggers, targeted structured-file
@@ -283,6 +289,13 @@ Artifacts must contain explicit rows for at least these probe families:
 - Policy-document conventions: section placement, incident folding,
   authoritative enumerations, `e.g.` sub-bullet usage, language-specific rule
   statements, and whole-file balance after policy revisions.
+
+- Enumeration freshness: every authoritative enumeration in the policy (hot
+  paths, adopted spellings, product names, scope exclusions) is checked against
+  the current repository for members the code has added but the list has not.
+  Policy-named sibling and exception group examples are checked for current
+  paths and rationales, but exhaustive group coverage comes from
+  `group_inventory.tsv`, not from the examples.
 
 ## Phases
 
@@ -362,10 +375,10 @@ are resolved.
    - Fix clear violations.
    - For `review` findings, decide whether the current state follows policy
      intent or needs a change.
-   - Accepted false positives require a policy-derived rationale, or a design
+   - An `accepted` disposition requires a policy-derived rationale, or a design
      rationale that does not contradict the policy, in `classifications.tsv`. A
      category name alone is not evidence.
-   - Do not add reusable false-positive categories here. If a recurring pattern
+   - Do not add reusable acceptance categories here. If a recurring pattern
      should be generally allowed, update `docs/coding-policy.md` first;
      otherwise keep the rationale local to the finding.
 
@@ -375,9 +388,7 @@ are resolved.
     - Rebuild hot-path inventory, file, cross-file, group, process, findings,
       finding distribution, classifications, and command artifacts after every
       meaningful fix batch.
-    - Validate regenerated artifacts for schema, stable keys, expected key
-      coverage, enum values, row counts, non-empty evidence, and live
-      `evidence_ref` targets.
+    - Validate regenerated artifacts against the Artifact Rules.
 
 11. Run verification commands.
     - Run `make format` after code or formatter-managed document changes.
