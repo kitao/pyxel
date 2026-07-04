@@ -166,3 +166,76 @@ assert len(tone.wavetable) == 1
     assert!(status.success());
     let _ = fs::remove_file(script);
 }
+
+#[test]
+fn collection_sequence_api_script_runs_headless() {
+    let script = std::env::temp_dir().join("pyxel-pocket-sequences.py");
+    fs::write(
+        &script,
+        "\
+import pyxel
+
+pyxel.init(16, 16, headless=True)
+
+base = len(pyxel.colors)
+first = pyxel.colors[0]
+pyxel.colors[0] = 0x123456
+assert pyxel.colors[0] == 0x123456
+pyxel.colors.append(0xabcdef)
+assert pyxel.colors[-1] == 0xabcdef
+pyxel.colors.insert(1, 0x111111)
+assert pyxel.colors.pop(1) == 0x111111
+pyxel.colors.extend([0x222222, 0x333333])
+assert 0x222222 in pyxel.colors
+del pyxel.colors[-1]
+assert len(pyxel.colors) == base + 2
+pyxel.colors[0] = first
+
+image_count = 0
+for _ in pyxel.images:
+    image_count += 1
+assert image_count == pyxel.NUM_IMAGES
+assert bool(pyxel.images)
+assert pyxel.images[-1].width == pyxel.IMAGE_SIZE
+
+snd = pyxel.Sound()
+snd.notes.extend([1, 2])
+snd.notes.insert(1, 9)
+assert list(snd.notes) == [1, 9, 2]
+assert 9 in snd.notes
+assert snd.notes == [1, 9, 2]
+del snd.notes[1]
+assert list(snd.notes) == [1, 2]
+assert snd.notes.pop() == 2
+assert list(snd.notes) == [1]
+snd.notes.clear()
+assert not snd.notes
+
+tone = pyxel.Tone()
+tone.wavetable.extend([1, 2, 3])
+tone.wavetable[1] = 4
+assert list(tone.wavetable) == [1, 4, 3]
+
+music = pyxel.Music()
+music.set([0], [1])
+music.seqs[0] = [2, 3]
+assert list(music.seqs[0]) == [2, 3]
+music.seqs.insert(1, [4])
+assert list(music.seqs[1]) == [4]
+assert music.seqs.pop(1)[0] == 4
+music.seqs.append([5])
+assert music.seqs[-1][0] == 5
+del music.seqs[-1]
+assert bool(music.seqs)
+",
+    )
+    .unwrap();
+
+    let status = Command::new(env!("CARGO_BIN_EXE_pyxel-pocket"))
+        .arg(&script)
+        .status()
+        .unwrap();
+
+    assert!(status.success());
+    let _ = fs::remove_file(script);
+}

@@ -184,6 +184,14 @@ pub unsafe fn raise_value_error(message: &str) -> bool {
     )
 }
 
+pub unsafe fn raise_index_error(message: &str) -> bool {
+    let message = CString::new(message).unwrap();
+    ffi::py_exception(
+        ffi::py_PredefinedTypes_tp_IndexError as ffi::py_Type,
+        message.as_ptr(),
+    )
+}
+
 pub unsafe fn set_module_value(module: ffi::py_GlobalRef, name: &CStr, value: ffi::py_Ref) {
     ffi::py_setdict(module, ffi::py_name(name.as_ptr()), value);
 }
