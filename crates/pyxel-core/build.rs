@@ -222,6 +222,10 @@ impl SDL2BindingsBuilder {
     fn include_flags(&self) -> Vec<String> {
         let mut include_flags = Vec::new();
 
+        if self.target_os == "emscripten" {
+            include_flags.extend(self.emscripten_bindgen_flags());
+        }
+
         if is_sdl2_static() {
             include_flags.push(format!("-I{}/include", self.sdl2_dir));
         } else if self.target_os == "emscripten" {
@@ -229,6 +233,10 @@ impl SDL2BindingsBuilder {
                 .args(["--cflags", "--use-port=sdl2"])
                 .output()
                 .expect("Failed to execute emcc");
+            assert!(
+                output.status.success(),
+                "Failed to read Emscripten SDL2 flags"
+            );
             let cflags = str::from_utf8(&output.stdout).unwrap();
             let sdl2_include_flag = cflags
                 .split_whitespace()
@@ -250,6 +258,33 @@ impl SDL2BindingsBuilder {
         }
 
         include_flags
+    }
+
+    fn emscripten_bindgen_flags(&self) -> Vec<String> {
+        let output = Command::new("emcc")
+            .arg("--cflags")
+            .output()
+            .expect("Failed to execute emcc");
+        assert!(output.status.success(), "Failed to read Emscripten C flags");
+        let cflags = str::from_utf8(&output.stdout).unwrap();
+
+        let mut flags = Vec::new();
+        let mut parts = cflags.split_whitespace();
+        while let Some(flag) = parts.next() {
+            if flag.starts_with("--sysroot=") || flag == "-DEMSCRIPTEN" {
+                flags.push(flag.to_string());
+            } else if flag == "-Xclang" {
+                let Some(next) = parts.next() else {
+                    break;
+                };
+                if next.starts_with("-iwithsysroot") {
+                    flags.push(flag.to_string());
+                    flags.push(next.to_string());
+                }
+            }
+        }
+
+        flags
     }
 }
 
