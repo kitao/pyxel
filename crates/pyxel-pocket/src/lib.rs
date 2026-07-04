@@ -7,10 +7,12 @@
 
 mod ffi;
 mod module;
+mod runner;
 mod runtime;
 mod value;
 mod wrappers;
 
+pub use runner::run_path;
 pub use runtime::Runtime;
 
 pub fn version_marker() -> &'static str {

@@ -2,6 +2,8 @@ use std::process::{Command, Output, Stdio};
 use std::time::{Duration, Instant};
 use std::{fs, thread};
 
+use zip::write::SimpleFileOptions;
+
 #[test]
 fn exec_source_accepts_simple_python() {
     pyxel_pocket::Runtime::new()
@@ -60,6 +62,64 @@ text = (
     + ' pocket'
 )
 assert text == 'hello pocket'
+",
+            "<test>",
+        )
+        .unwrap();
+}
+
+#[test]
+fn exec_source_accepts_parenthesized_leading_comparison_continuation() {
+    pyxel_pocket::Runtime::new()
+        .exec_source(
+            "\
+ok = (
+    1
+    == 1
+)
+assert ok
+",
+            "<test>",
+        )
+        .unwrap();
+}
+
+#[test]
+fn exec_source_accepts_parenthesized_trailing_boolean_continuation() {
+    pyxel_pocket::Runtime::new()
+        .exec_source(
+            "\
+ok = (
+    True and
+    True and
+    not False
+)
+assert ok
+",
+            "<test>",
+        )
+        .unwrap();
+}
+
+#[test]
+fn exec_source_accepts_parenthesized_trailing_boolean_continuation_with_space() {
+    pyxel_pocket::Runtime::new()
+        .exec_source("ok = (\n    True and \n    True\n)\nassert ok\n", "<test>")
+        .unwrap();
+}
+
+#[test]
+fn exec_source_accepts_dict_key_value_continuation() {
+    pyxel_pocket::Runtime::new()
+        .exec_source(
+            "\
+data = {
+    'notes':
+        'ab'
+        'cd'
+        ,
+}
+assert data['notes'] == 'abcd'
 ",
             "<test>",
         )
@@ -179,6 +239,70 @@ assert values == [(0, 'title'), (1, 'author')]
 }
 
 #[test]
+fn exec_source_accepts_sum_generator_expression() {
+    pyxel_pocket::Runtime::new()
+        .exec_source(
+            "\
+values = [1, 2, 3]
+total = sum(value for value in values)
+assert total == 6
+",
+            "<test>",
+        )
+        .unwrap();
+}
+
+#[test]
+fn exec_source_accepts_parenthesized_from_import() {
+    pyxel_pocket::Runtime::new()
+        .exec_source(
+            "\
+from math import (
+    sin,
+    cos,
+)
+assert sin(0) == 0
+assert cos(0) == 1
+",
+            "<test>",
+        )
+        .unwrap();
+}
+
+#[test]
+fn exec_source_accepts_unary_plus_identifier() {
+    pyxel_pocket::Runtime::new()
+        .exec_source(
+            "\
+value = 3
+assert +value == 3
+pair = (-value, +value)
+assert pair == (-3, 3)
+",
+            "<test>",
+        )
+        .unwrap();
+}
+
+#[test]
+fn exec_source_accepts_named_default_arguments() {
+    pyxel_pocket::Runtime::new()
+        .exec_source(
+            "\
+DEFAULT_COLOR = 7
+
+def color(value=DEFAULT_COLOR):
+    return value
+
+assert color() == 7
+assert color(3) == 3
+",
+            "<test>",
+        )
+        .unwrap();
+}
+
+#[test]
 fn module_blit_functions_accept_resource_instances() {
     let script = std::env::temp_dir().join("pyxel-pocket-module-blit-resources.py");
     fs::write(
@@ -199,6 +323,77 @@ assert pyxel.pget(1, 0) == 7
 
 pyxel.blt3d(0, 1, 4, 4, image, (0, 0, 1), (0, 0, 0))
 pyxel.bltm3d(4, 1, 4, 4, tilemap, (0, 0, 1), (0, 0, 0))
+",
+    )
+    .unwrap();
+
+    let output = Command::new(env!("CARGO_BIN_EXE_pyxel-pocket"))
+        .arg(&script)
+        .output()
+        .unwrap();
+
+    let _ = fs::remove_file(script);
+
+    assert!(
+        output.status.success(),
+        "stdout:\n{}\nstderr:\n{}",
+        String::from_utf8_lossy(&output.stdout),
+        String::from_utf8_lossy(&output.stderr)
+    );
+}
+
+#[test]
+fn image_set_accepts_tuple_of_strings() {
+    let script = unique_temp_path("pyxel-pocket-image-set-tuple", "py");
+    fs::write(
+        &script,
+        "\
+import pyxel
+
+pyxel.init(8, 8, headless=True)
+image = pyxel.Image(8, 8)
+image.set(0, 0, (
+    '10000000',
+    '01000000',
+    '00100000',
+    '00010000',
+    '00001000',
+    '00000100',
+    '00000010',
+    '00000001',
+))
+assert image.pget(0, 0) == 1
+assert image.pget(7, 7) == 1
+",
+    )
+    .unwrap();
+
+    let output = Command::new(env!("CARGO_BIN_EXE_pyxel-pocket"))
+        .arg(&script)
+        .output()
+        .unwrap();
+
+    let _ = fs::remove_file(script);
+
+    assert!(
+        output.status.success(),
+        "stdout:\n{}\nstderr:\n{}",
+        String::from_utf8_lossy(&output.stdout),
+        String::from_utf8_lossy(&output.stderr)
+    );
+}
+
+#[test]
+fn audio_play_accepts_deprecated_tick_keyword() {
+    let script = unique_temp_path("pyxel-pocket-play-tick", "py");
+    fs::write(
+        &script,
+        "\
+import pyxel
+
+pyxel.init(8, 8, headless=True)
+pyxel.play(0, 0, tick=0, loop=True)
+pyxel.playm(0, tick=0, loop=True)
 ",
     )
     .unwrap();
@@ -263,6 +458,155 @@ assert metadata['license'] == 'MIT'
 }
 
 #[test]
+fn pyxel_cli_play_pyxapp_runs_startup_script() {
+    let pyxapp = unique_temp_path("pyxel-pocket-play", "pyxapp");
+    write_test_pyxapp(
+        &pyxapp,
+        &[
+            ("sample/.pyxapp_startup_script", "sample/main.py"),
+            ("sample/sample/helper.py", "VALUE = 'from-helper'\n"),
+            (
+                "sample/sample/main.py",
+                "\
+import helper
+import pyxel
+
+pyxel.init(8, 8, headless=True)
+print('pyxapp-started:' + helper.VALUE)
+",
+            ),
+        ],
+    );
+
+    let script = unique_temp_path("pyxel-pocket-play-script", "py");
+    fs::write(
+        &script,
+        format!(
+            "\
+import pyxel
+import pyxel.cli
+
+pyxel.cli.play_pyxel_app('{}')
+",
+            escape_python_path(&pyxapp.to_string_lossy()),
+        ),
+    )
+    .unwrap();
+
+    let output = Command::new(env!("CARGO_BIN_EXE_pyxel-pocket"))
+        .arg(&script)
+        .env("PYXEL_POCKET_HEADLESS", "1")
+        .output()
+        .unwrap();
+
+    let _ = fs::remove_file(script);
+    let _ = fs::remove_file(pyxapp);
+
+    assert!(
+        output.status.success(),
+        "stdout:\n{}\nstderr:\n{}",
+        String::from_utf8_lossy(&output.stdout),
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert!(
+        String::from_utf8_lossy(&output.stdout).contains("pyxapp-started:from-helper"),
+        "stdout:\n{}",
+        String::from_utf8_lossy(&output.stdout)
+    );
+}
+
+#[test]
+fn binary_runs_pyxapp_file() {
+    let pyxapp = unique_temp_path("pyxel-pocket-binary-play", "pyxapp");
+    write_test_pyxapp(
+        &pyxapp,
+        &[
+            ("direct/.pyxapp_startup_script", "direct/main.py"),
+            (
+                "direct/direct/main.py",
+                "\
+import pyxel
+
+pyxel.init(8, 8, headless=True)
+print('direct-pyxapp-started')
+",
+            ),
+        ],
+    );
+
+    let output = Command::new(env!("CARGO_BIN_EXE_pyxel-pocket"))
+        .arg(&pyxapp)
+        .env("PYXEL_POCKET_HEADLESS", "1")
+        .output()
+        .unwrap();
+
+    let _ = fs::remove_file(pyxapp);
+
+    assert!(
+        output.status.success(),
+        "stdout:\n{}\nstderr:\n{}",
+        String::from_utf8_lossy(&output.stdout),
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert!(
+        String::from_utf8_lossy(&output.stdout).contains("direct-pyxapp-started"),
+        "stdout:\n{}",
+        String::from_utf8_lossy(&output.stdout)
+    );
+}
+
+#[test]
+fn pyxapp_imported_modules_are_normalized_before_execution() {
+    let pyxapp = unique_temp_path("pyxel-pocket-normalized-import", "pyxapp");
+    write_test_pyxapp(
+        &pyxapp,
+        &[
+            ("normalized/.pyxapp_startup_script", "normalized/main.py"),
+            (
+                "normalized/normalized/helper.py",
+                "\
+OK = (
+    False
+    or True
+)
+",
+            ),
+            (
+                "normalized/normalized/main.py",
+                "\
+import helper
+import pyxel
+
+pyxel.init(8, 8, headless=True)
+assert helper.OK
+print('normalized-import-started')
+",
+            ),
+        ],
+    );
+
+    let output = Command::new(env!("CARGO_BIN_EXE_pyxel-pocket"))
+        .arg(&pyxapp)
+        .env("PYXEL_POCKET_HEADLESS", "1")
+        .output()
+        .unwrap();
+
+    let _ = fs::remove_file(pyxapp);
+
+    assert!(
+        output.status.success(),
+        "stdout:\n{}\nstderr:\n{}",
+        String::from_utf8_lossy(&output.stdout),
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert!(
+        String::from_utf8_lossy(&output.stdout).contains("normalized-import-started"),
+        "stdout:\n{}",
+        String::from_utf8_lossy(&output.stdout)
+    );
+}
+
+#[test]
 fn exec_source_accepts_minimal_pathlib_path() {
     pyxel_pocket::Runtime::new()
         .exec_source(
@@ -302,6 +646,58 @@ fn exec_source_accepts_str_capitalize() {
 assert 'title'.capitalize() == 'Title'
 assert 'tITLE'.capitalize() == 'Title'
 assert ''.capitalize() == ''
+",
+            "<test>",
+        )
+        .unwrap();
+}
+
+#[test]
+fn exec_source_accepts_random_sample() {
+    pyxel_pocket::Runtime::new()
+        .exec_source(
+            "\
+from random import sample
+
+values = sample([1, 2, 3], 2)
+assert len(values) == 2
+assert values[0] in [1, 2, 3]
+assert values[1] in [1, 2, 3]
+assert values[0] != values[1]
+",
+            "<test>",
+        )
+        .unwrap();
+}
+
+#[test]
+fn exec_source_accepts_enum_auto() {
+    pyxel_pocket::Runtime::new()
+        .exec_source(
+            "\
+from enum import IntEnum, auto
+
+class Kind(IntEnum):
+    A = auto()
+    B = auto()
+
+assert Kind.A != Kind.B
+",
+            "<test>",
+        )
+        .unwrap();
+}
+
+#[test]
+fn exec_source_accepts_itertools_filterfalse() {
+    pyxel_pocket::Runtime::new()
+        .exec_source(
+            "\
+from itertools import filterfalse
+
+values = [1, 2, 3]
+values[:] = filterfalse(lambda value: value == 2, values)
+assert values == [1, 3]
 ",
             "<test>",
         )
@@ -978,6 +1374,40 @@ fn app_launcher_example_runs_headless_with_runner_limits() {
     );
 }
 
+#[test]
+fn shipped_pyxapps_run_headless_with_runner_limits() {
+    let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+        .parent()
+        .and_then(std::path::Path::parent)
+        .unwrap();
+    for name in [
+        "30sec_of_daylight.pyxapp",
+        "cursed_caverns.pyxapp",
+        "laser-jetman.pyxapp",
+        "mega_wing.pyxapp",
+        "megaball.pyxapp",
+        "space_rescue.pyxapp",
+        "vortexion.pyxapp",
+    ] {
+        let app = root.join("python/pyxel/examples/apps").join(name);
+        let mut command = Command::new(env!("CARGO_BIN_EXE_pyxel-pocket"));
+        command
+            .arg(&app)
+            .env("PYXEL_POCKET_HEADLESS", "1")
+            .env("PYXEL_POCKET_MAX_FRAMES", "3");
+
+        let output = run_with_timeout(&mut command, Duration::from_secs(5))
+            .unwrap_or_else(|err| panic!("{name}: {err}"));
+
+        assert!(
+            output.status.success(),
+            "{name}\nstdout:\n{}\nstderr:\n{}",
+            String::from_utf8_lossy(&output.stdout),
+            String::from_utf8_lossy(&output.stderr)
+        );
+    }
+}
+
 fn run_with_timeout(command: &mut Command, timeout: Duration) -> Result<Output, String> {
     command.stdout(Stdio::piped()).stderr(Stdio::piped());
     let mut child = command
@@ -1008,4 +1438,25 @@ fn run_with_timeout(command: &mut Command, timeout: Duration) -> Result<Output, 
 
 fn escape_python_path(path: &str) -> String {
     path.replace('\\', "\\\\").replace('\'', "\\'")
+}
+
+fn unique_temp_path(prefix: &str, extension: &str) -> std::path::PathBuf {
+    let nanos = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .unwrap()
+        .as_nanos();
+    std::env::temp_dir().join(format!(
+        "{prefix}-{}-{nanos}.{extension}",
+        std::process::id()
+    ))
+}
+
+fn write_test_pyxapp(path: &std::path::Path, files: &[(&str, &str)]) {
+    let file = fs::File::create(path).unwrap();
+    let mut zip = zip::ZipWriter::new(file);
+    for (name, content) in files {
+        zip.start_file(*name, SimpleFileOptions::default()).unwrap();
+        std::io::Write::write_all(&mut zip, content.as_bytes()).unwrap();
+    }
+    zip.finish().unwrap();
 }

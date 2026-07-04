@@ -115,14 +115,14 @@ unsafe fn normalize_insert_index(index: i64, len: usize) -> usize {
 }
 
 unsafe fn int_list_from_ref(object: ffi::py_Ref) -> Vec<u32> {
-    (0..ffi::py_list_len(object))
-        .map(|i| ffi::py_toint(ffi::py_list_getitem(object, i)) as u32)
+    (0..sequence_len(object))
+        .map(|i| ffi::py_toint(sequence_getitem(object, i)) as u32)
         .collect()
 }
 
 unsafe fn int_nested_list_from_ref(object: ffi::py_Ref) -> Vec<Vec<u32>> {
-    (0..ffi::py_list_len(object))
-        .map(|i| int_list_from_ref(ffi::py_list_getitem(object, i)))
+    (0..sequence_len(object))
+        .map(|i| int_list_from_ref(sequence_getitem(object, i)))
         .collect()
 }
 
@@ -138,14 +138,30 @@ unsafe fn return_int_list(values: &[u32]) {
 }
 
 unsafe fn str_list_from_arg(argv: ffi::py_StackRef, index: usize) -> Vec<String> {
-    let list = value::arg(argv, index);
-    (0..ffi::py_list_len(list))
+    let sequence = value::arg(argv, index);
+    (0..sequence_len(sequence))
         .map(|i| {
-            let sv = ffi::py_tosv(ffi::py_list_getitem(list, i));
+            let sv = ffi::py_tosv(sequence_getitem(sequence, i));
             let bytes = std::slice::from_raw_parts(sv.data.cast::<u8>(), sv.size as usize);
             String::from_utf8_lossy(bytes).into_owned()
         })
         .collect()
+}
+
+unsafe fn sequence_len(object: ffi::py_Ref) -> i32 {
+    if value::is_tuple(object) {
+        ffi::py_tuple_len(object)
+    } else {
+        ffi::py_list_len(object)
+    }
+}
+
+unsafe fn sequence_getitem(object: ffi::py_Ref, index: i32) -> ffi::py_Ref {
+    if value::is_tuple(object) {
+        ffi::py_tuple_getitem(object, index)
+    } else {
+        ffi::py_list_getitem(object, index)
+    }
 }
 
 unsafe fn tile_from_ref(object: ffi::py_Ref) -> pyxel::Tile {

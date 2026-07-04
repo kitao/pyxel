@@ -3,7 +3,9 @@ use crate::{ffi, value};
 unsafe extern "C" fn play(_argc: i32, argv: ffi::py_StackRef) -> bool {
     let channel = value::int_arg(argv, 0) as u32;
     let sound_arg = value::arg(argv, 1);
-    let start_sec = value::opt_float_arg(argv, 2);
+    let start_sec = value::opt_int_arg(argv, 5)
+        .map(|tick| tick as f32 / 120.0)
+        .or_else(|| value::opt_float_arg(argv, 2));
     let should_loop = value::opt_bool_arg(argv, 3).unwrap_or(false);
     let should_resume = value::opt_bool_arg(argv, 4).unwrap_or(false);
 
@@ -40,9 +42,12 @@ unsafe extern "C" fn play(_argc: i32, argv: ffi::py_StackRef) -> bool {
 }
 
 unsafe extern "C" fn playm(_argc: i32, argv: ffi::py_StackRef) -> bool {
+    let start_sec = value::opt_int_arg(argv, 3)
+        .map(|tick| tick as f32 / 120.0)
+        .or_else(|| value::opt_float_arg(argv, 1));
     pyxel::pyxel().play_music(
         value::int_arg(argv, 0) as u32,
-        value::opt_float_arg(argv, 1),
+        start_sec,
         value::opt_bool_arg(argv, 2).unwrap_or(false),
     );
     value::return_none();
@@ -79,12 +84,12 @@ unsafe extern "C" fn gen_bgm(_argc: i32, argv: ffi::py_StackRef) -> bool {
 pub unsafe fn add_functions(module: ffi::py_GlobalRef) {
     ffi::py_bind(
         module,
-        c"play(ch, snd, sec=None, loop=None, resume=None)".as_ptr(),
+        c"play(ch, snd, sec=None, loop=None, resume=None, tick=None)".as_ptr(),
         Some(play),
     );
     ffi::py_bind(
         module,
-        c"playm(msc, sec=None, loop=None)".as_ptr(),
+        c"playm(msc, sec=None, loop=None, tick=None)".as_ptr(),
         Some(playm),
     );
     ffi::py_bind(module, c"stop(ch=None)".as_ptr(), Some(stop));
