@@ -141,6 +141,44 @@ assert -1.0 // 2 == -1.0
 }
 
 #[test]
+fn exec_source_accepts_multiline_any_generator_expression() {
+    pyxel_pocket::Runtime::new()
+        .exec_source(
+            "\
+values = [1, 2, 3]
+if any(
+    value == 2
+    for value in values
+):
+    matched = True
+else:
+    matched = False
+assert matched
+",
+            "<test>",
+        )
+        .unwrap();
+}
+
+#[test]
+fn exec_source_accepts_multiline_enumerate_generator_expression() {
+    pyxel_pocket::Runtime::new()
+        .exec_source(
+            "\
+metadata = {'name': 'skip', 'title': 'Hello', 'author': 'Pyxel'}
+values = []
+for i, key in enumerate(
+    key for key in metadata if key != 'name'
+):
+    values.append((i, key))
+assert values == [(0, 'title'), (1, 'author')]
+",
+            "<test>",
+        )
+        .unwrap();
+}
+
+#[test]
 fn module_blit_functions_accept_resource_instances() {
     let script = std::env::temp_dir().join("pyxel-pocket-module-blit-resources.py");
     fs::write(
@@ -178,6 +216,96 @@ pyxel.bltm3d(4, 1, 4, 4, tilemap, (0, 0, 1), (0, 0, 0))
         String::from_utf8_lossy(&output.stdout),
         String::from_utf8_lossy(&output.stderr)
     );
+}
+
+#[test]
+fn pyxel_cli_metadata_reads_pyxapp_comments() {
+    let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+        .parent()
+        .and_then(std::path::Path::parent)
+        .unwrap();
+    let app = root
+        .join("python/pyxel/examples/apps")
+        .join("megaball.pyxapp")
+        .to_string_lossy()
+        .into_owned();
+    let script = std::env::temp_dir().join("pyxel-pocket-cli-metadata.py");
+    fs::write(
+        &script,
+        format!(
+            "\
+import pyxel
+import pyxel.cli
+
+metadata = pyxel.cli.get_pyxel_app_metadata('{}')
+assert metadata['title'] == 'Megaball'
+assert metadata['author'] == 'Adam'
+assert metadata['license'] == 'MIT'
+",
+            escape_python_path(&app),
+        ),
+    )
+    .unwrap();
+
+    let output = Command::new(env!("CARGO_BIN_EXE_pyxel-pocket"))
+        .arg(&script)
+        .output()
+        .unwrap();
+
+    let _ = fs::remove_file(script);
+
+    assert!(
+        output.status.success(),
+        "stdout:\n{}\nstderr:\n{}",
+        String::from_utf8_lossy(&output.stdout),
+        String::from_utf8_lossy(&output.stderr)
+    );
+}
+
+#[test]
+fn exec_source_accepts_minimal_pathlib_path() {
+    pyxel_pocket::Runtime::new()
+        .exec_source(
+            "\
+from pathlib import Path
+
+base = Path('/tmp/app/main.py').parent / 'assets'
+assert str(base) == '/tmp/app/assets'
+assert str(Path('relative').resolve()).endswith('/relative')
+",
+            "<test>",
+        )
+        .unwrap();
+}
+
+#[test]
+fn exec_source_accepts_os_environ_mapping() {
+    pyxel_pocket::Runtime::new()
+        .exec_source(
+            "\
+import os
+
+assert os.environ.pop('PYXEL_POCKET_MISSING', None) == None
+os.environ['PYXEL_POCKET_VALUE'] = 'ok'
+assert os.environ.pop('PYXEL_POCKET_VALUE', None) == 'ok'
+",
+            "<test>",
+        )
+        .unwrap();
+}
+
+#[test]
+fn exec_source_accepts_str_capitalize() {
+    pyxel_pocket::Runtime::new()
+        .exec_source(
+            "\
+assert 'title'.capitalize() == 'Title'
+assert 'tITLE'.capitalize() == 'Title'
+assert ''.capitalize() == ''
+",
+            "<test>",
+        )
+        .unwrap();
 }
 
 #[test]
@@ -803,6 +931,7 @@ fn shipped_examples_run_headless_with_runner_limits() {
         "14_synthesizer.py",
         "15_tiled_map_file.py",
         "16_transform.py",
+        "17_app_launcher.py",
         "18_audio_playback.py",
         "19_perspective.py",
         "99_flip_animation.py",
@@ -824,6 +953,29 @@ fn shipped_examples_run_headless_with_runner_limits() {
             String::from_utf8_lossy(&output.stderr)
         );
     }
+}
+
+#[test]
+fn app_launcher_example_runs_headless_with_runner_limits() {
+    let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+        .parent()
+        .and_then(std::path::Path::parent)
+        .unwrap();
+    let example = root.join("python/pyxel/examples/17_app_launcher.py");
+    let mut command = Command::new(env!("CARGO_BIN_EXE_pyxel-pocket"));
+    command
+        .arg(&example)
+        .env("PYXEL_POCKET_HEADLESS", "1")
+        .env("PYXEL_POCKET_MAX_FRAMES", "3");
+
+    let output = run_with_timeout(&mut command, Duration::from_secs(4)).unwrap();
+
+    assert!(
+        output.status.success(),
+        "stdout:\n{}\nstderr:\n{}",
+        String::from_utf8_lossy(&output.stdout),
+        String::from_utf8_lossy(&output.stderr)
+    );
 }
 
 fn run_with_timeout(command: &mut Command, timeout: Duration) -> Result<Output, String> {

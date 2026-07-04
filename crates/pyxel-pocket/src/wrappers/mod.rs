@@ -1,4 +1,5 @@
 pub mod audio;
+pub mod cli;
 pub mod graphics;
 pub mod input;
 pub mod math;

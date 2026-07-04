@@ -1252,6 +1252,7 @@ dependencies = [
  "bindgen",
  "cc",
  "pyxel-core",
+ "zip",
 ]
 
 [[package]]
