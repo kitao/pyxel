@@ -2,8 +2,10 @@ use std::ffi::{CStr, CString};
 
 use crate::ffi;
 
+const VALUE_SIZE: usize = 16;
+
 pub unsafe fn arg(argv: ffi::py_StackRef, index: usize) -> ffi::py_Ref {
-    argv.add(index)
+    argv.cast::<u8>().add(index * VALUE_SIZE).cast()
 }
 
 pub unsafe fn is_none(value: ffi::py_Ref) -> bool {
