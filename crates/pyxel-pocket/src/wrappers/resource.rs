@@ -109,12 +109,12 @@ pub unsafe fn add_functions(module: ffi::py_GlobalRef) {
     ffi::py_bind(module, c"save_pal(filename)".as_ptr(), Some(save_pal));
     ffi::py_bind(
         module,
-        c"screenshot(filename=None, scale=2)".as_ptr(),
+        c"screenshot(filename=None, scale=None)".as_ptr(),
         Some(screenshot),
     );
     ffi::py_bind(
         module,
-        c"screencast(filename=None, scale=2)".as_ptr(),
+        c"screencast(filename=None, scale=None)".as_ptr(),
         Some(screencast),
     );
     ffi::py_bind(

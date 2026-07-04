@@ -205,6 +205,14 @@ pub(crate) unsafe fn tilemap_arg(object: ffi::py_Ref) -> Option<pyxel::RcTilemap
     }
 }
 
+pub(crate) unsafe fn font_arg(object: ffi::py_Ref) -> Option<pyxel::RcFont> {
+    if ffi::py_isinstance(object, TP_FONT) {
+        Some(font_from_ref(object))
+    } else {
+        None
+    }
+}
+
 unsafe fn sound_arg(object: ffi::py_Ref) -> Option<pyxel::RcSound> {
     if value::is_int(object) {
         pyxel::sounds().get(ffi::py_toint(object) as usize).cloned()

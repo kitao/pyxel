@@ -20,6 +20,9 @@ zip = { version = "8.1", default-features = false, features = ["deflate"] }
 bindgen = "0.72"
 cc = "1.2"
 
+[dev-dependencies]
+image = "0.25"
+
 [features]
 sdl2_dynamic = ["pyxel-core/sdl2_dynamic"]
 sdl2_static = ["pyxel-core/sdl2_static"]
