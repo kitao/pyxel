@@ -1251,6 +1251,7 @@ version = "2.9.6"
 dependencies = [
  "bindgen",
  "cc",
+ "image",
  "pyxel-core",
  "zip",
 ]

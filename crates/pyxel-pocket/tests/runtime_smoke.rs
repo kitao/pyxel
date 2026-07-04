@@ -201,6 +201,39 @@ assert -1.0 // 2 == -1.0
 }
 
 #[test]
+fn exec_source_accepts_float_modulo() {
+    pyxel_pocket::Runtime::new()
+        .exec_source(
+            "\
+assert 5.5 % 2 == 1.5
+assert 5 % 2.0 == 1.0
+assert -1.0 % 2 == 1.0
+",
+            "<test>",
+        )
+        .unwrap();
+}
+
+#[test]
+fn exec_source_matches_cpython_math_floor_and_ceil_types() {
+    pyxel_pocket::Runtime::new()
+        .exec_source(
+            "\
+import math
+
+assert math.floor(3.9) == 3
+assert math.floor(-3.1) == -4
+assert isinstance(math.floor(3.9), int)
+assert math.ceil(3.1) == 4
+assert math.ceil(-3.9) == -3
+assert isinstance(math.ceil(3.1), int)
+",
+            "<test>",
+        )
+        .unwrap();
+}
+
+#[test]
 fn exec_source_accepts_multiline_any_generator_expression() {
     pyxel_pocket::Runtime::new()
         .exec_source(
@@ -786,6 +819,10 @@ assert [random.choice([-1, 1]) for _ in range(8)] == [1, 1, -1, 1, 1, 1, 1, 1]
 random.seed(0)
 assert [random.randint(-3, 3) for _ in range(8)] == [3, 0, 3, 0, -3, -1, 1, 0]
 random.seed(0)
+assert random.sample(range(100), 10) == [49, 97, 53, 5, 33, 65, 62, 51, 38, 61]
+random.seed(0)
+assert random.sample(range(10), 5) == [6, 9, 0, 2, 4]
+random.seed(0)
 assert abs(random.random() - 0.8444218515250481) < 0.000000000000001
 assert abs(random.random() - 0.7579544029403025) < 0.000000000000001
 assert abs(random.random() - 0.420571580830845) < 0.000000000000001
@@ -807,6 +844,31 @@ class Kind(IntEnum):
     B = auto()
 
 assert Kind.A != Kind.B
+",
+            "<test>",
+        )
+        .unwrap();
+}
+
+#[test]
+fn exec_source_accepts_int_enum_arithmetic() {
+    pyxel_pocket::Runtime::new()
+        .exec_source(
+            "\
+from enum import IntEnum, auto
+
+class StageNum(IntEnum):
+    STAGE_1 = auto()
+    STAGE_2 = auto()
+    STAGE_3 = auto()
+
+assert StageNum.STAGE_2 % 2 == 0
+assert StageNum.STAGE_1 + 1 == 2
+assert StageNum.STAGE_1 < StageNum.STAGE_3
+assert StageNum(StageNum.STAGE_1 + 1) == StageNum.STAGE_2
+lookup = {StageNum.STAGE_2: 'two'}
+assert lookup[StageNum(StageNum.STAGE_1 + 1)] == 'two'
+assert str(StageNum.STAGE_1) == '1'
 ",
             "<test>",
         )
@@ -1479,7 +1541,50 @@ fn shipped_examples_run_headless_with_runner_limits() {
 struct CaptureStep<'a> {
     frame: u32,
     presses: &'a [&'a str],
+    mouse: Option<(i32, i32)>,
     capture: bool,
+}
+
+impl<'a> CaptureStep<'a> {
+    fn capture(frame: u32) -> Self {
+        Self {
+            frame,
+            presses: &[],
+            mouse: None,
+            capture: true,
+        }
+    }
+
+    fn capture_with_presses(frame: u32, presses: &'a [&'a str]) -> Self {
+        Self {
+            frame,
+            presses,
+            mouse: None,
+            capture: true,
+        }
+    }
+
+    fn capture_with_mouse_and_presses(
+        frame: u32,
+        mouse: (i32, i32),
+        presses: &'a [&'a str],
+    ) -> Self {
+        Self {
+            frame,
+            presses,
+            mouse: Some(mouse),
+            capture: true,
+        }
+    }
+
+    fn skip_with_presses(frame: u32, presses: &'a [&'a str]) -> Self {
+        Self {
+            frame,
+            presses,
+            mouse: None,
+            capture: false,
+        }
+    }
 }
 
 fn assert_example_reference_screenshots(name: &str, steps: &[CaptureStep<'_>]) {
@@ -1492,6 +1597,7 @@ fn assert_example_reference_screenshots(name: &str, steps: &[CaptureStep<'_>]) {
     let script = unique_temp_path(&format!("pyxel-pocket-capture-{name}"), "py");
     let actuals = steps
         .iter()
+        .filter(|step| step.capture)
         .map(|step| {
             (
                 step.frame,
@@ -1510,8 +1616,10 @@ import pyxel
 __captured = {{}}
 __original_init = pyxel.init
 
-def __patched_init(width=None, height=None, title=None, fps=None, quit_key=None, display_scale=None, capture_scale=None, capture_sec=None, headless=None):
-    __original_init(width, height, title, 1000000, quit_key, display_scale, capture_scale, capture_sec, True)
+def __patched_init(*args, **kwargs):
+    kwargs['headless'] = True
+    kwargs['fps'] = 1000000
+    __original_init(*args, **kwargs)
     os.chdir('{}')
     pyxel.rseed(0)
     pyxel.nseed(0)
@@ -1535,8 +1643,16 @@ __file__ = '{}'
     );
     source.push_str(&fs::read_to_string(&example).unwrap());
     source.push_str("\n__current_frame = 0\n");
-    for (index, step) in steps.iter().enumerate() {
-        append_capture_step(&mut source, step, &actuals[index].1);
+    let mut actual_index = 0usize;
+    for step in steps {
+        let actual = if step.capture {
+            let path = &actuals[actual_index].1;
+            actual_index += 1;
+            Some(path.as_path())
+        } else {
+            None
+        };
+        append_capture_step_optional(&mut source, step, actual);
     }
     fs::write(&script, source).unwrap();
 
@@ -1563,16 +1679,124 @@ __file__ = '{}'
 }
 
 fn assert_capture_matches_reference(actual: &std::path::Path, expected: &std::path::Path) {
-    let actual_bytes = fs::read(actual).unwrap();
-    let expected_bytes = fs::read(expected).unwrap();
+    let actual_bytes =
+        fs::read(actual).unwrap_or_else(|err| panic!("failed to read {}: {err}", actual.display()));
+    let expected_bytes = fs::read(expected)
+        .unwrap_or_else(|err| panic!("failed to read {}: {err}", expected.display()));
+    let actual_image = image::load_from_memory(&actual_bytes)
+        .unwrap_or_else(|err| panic!("failed to decode {}: {err}", actual.display()))
+        .to_rgba8();
+    let expected_image = image::load_from_memory(&expected_bytes)
+        .unwrap_or_else(|err| panic!("failed to decode {}: {err}", expected.display()))
+        .to_rgba8();
+    assert_eq!(
+        actual_image.dimensions(),
+        expected_image.dimensions(),
+        "PocketPy capture size differed from {} (actual: {}; expected: {})",
+        expected.display(),
+        actual.display(),
+        expected.display(),
+    );
     assert!(
-        actual_bytes == expected_bytes,
-        "PocketPy capture differed from {} (actual: {}, {} bytes; expected: {} bytes)",
+        actual_image.as_raw() == expected_image.as_raw(),
+        "PocketPy capture pixels differed from {} (actual: {}, {} bytes; expected: {} bytes)",
         expected.display(),
         actual.display(),
         actual_bytes.len(),
         expected_bytes.len()
     );
+}
+
+fn assert_flip_example_reference_screenshots(name: &str, steps: &[CaptureStep<'_>]) {
+    let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+        .parent()
+        .and_then(std::path::Path::parent)
+        .unwrap();
+    let example = root.join(format!("python/pyxel/examples/{name}.py"));
+    let refs_dir = root.join("python/tests/references/examples");
+    let script = unique_temp_path(&format!("pyxel-pocket-flip-capture-{name}"), "py");
+    let actuals = steps
+        .iter()
+        .filter(|step| step.capture)
+        .map(|step| {
+            (
+                step.frame,
+                unique_temp_path(
+                    &format!("pyxel-pocket-flip-capture-{name}-f{}", step.frame),
+                    "png",
+                ),
+            )
+        })
+        .collect::<Vec<_>>();
+    let max_frame = steps.iter().map(|step| step.frame).max().unwrap_or(0);
+
+    let mut source = format!(
+        r#"import os
+import pyxel
+
+class __FlipCapture(Exception):
+    pass
+
+__frame_count = 0
+__original_init = pyxel.init
+__original_flip = pyxel.flip
+
+def __patched_init(*args, **kwargs):
+    kwargs['headless'] = True
+    kwargs['fps'] = 1000000
+    __original_init(*args, **kwargs)
+    os.chdir('{}')
+    pyxel.rseed(0)
+    pyxel.nseed(0)
+
+def __patched_flip():
+    global __frame_count
+    __original_flip()
+    __frame_count += 1
+"#,
+        escape_python_path(&example.parent().unwrap().to_string_lossy()),
+    );
+    for (frame, actual) in &actuals {
+        source.push_str(&format!(
+            "    if __frame_count == {}:\n        pyxel.screenshot('{}')\n",
+            frame,
+            escape_python_path(&actual.to_string_lossy()),
+        ));
+    }
+    source.push_str(&format!(
+        "\n    if __frame_count >= {}:\n        raise __FlipCapture()\n\npyxel.init = __patched_init\npyxel.flip = __patched_flip\nos.chdir('{}')\n__file__ = '{}'\ntry:\n",
+        max_frame,
+        escape_python_path(&example.parent().unwrap().to_string_lossy()),
+        escape_python_path(&example.to_string_lossy()),
+    ));
+    for line in fs::read_to_string(&example).unwrap().lines() {
+        source.push_str("    ");
+        source.push_str(line);
+        source.push('\n');
+    }
+    source.push_str("except __FlipCapture:\n    pass\n");
+    fs::write(&script, source).unwrap();
+
+    let output = Command::new(env!("CARGO_BIN_EXE_pyxel-pocket"))
+        .arg(&script)
+        .output()
+        .unwrap();
+
+    assert!(
+        output.status.success(),
+        "stdout:\n{}\nstderr:\n{}",
+        String::from_utf8_lossy(&output.stdout),
+        String::from_utf8_lossy(&output.stderr)
+    );
+    for (frame, actual) in &actuals {
+        let expected = refs_dir.join(format!("{name}_f{frame}.png"));
+        assert_capture_matches_reference(actual, &expected);
+    }
+
+    let _ = fs::remove_file(script);
+    for (_, actual) in actuals {
+        let _ = fs::remove_file(actual);
+    }
 }
 
 fn assert_app_reference_screenshots(name: &str, steps: &[CaptureStep<'_>]) {
@@ -1606,8 +1830,10 @@ import random
 __captured = {{}}
 __original_init = pyxel.init
 
-def __patched_init(width=None, height=None, title=None, fps=None, quit_key=None, display_scale=None, capture_scale=None, capture_sec=None, headless=None):
-    __original_init(width, height, title, 1000000, quit_key, display_scale, capture_scale, capture_sec, True)
+def __patched_init(*args, **kwargs):
+    kwargs['headless'] = True
+    kwargs['fps'] = 1000000
+    __original_init(*args, **kwargs)
     pyxel.rseed(0)
     pyxel.nseed(0)
     random.seed(0)
@@ -1662,15 +1888,14 @@ __current_frame = 0
     }
 }
 
-fn append_capture_step(source: &mut String, step: &CaptureStep<'_>, actual: &std::path::Path) {
-    append_capture_step_optional(source, step, Some(actual));
-}
-
 fn append_capture_step_optional(
     source: &mut String,
     step: &CaptureStep<'_>,
     actual: Option<&std::path::Path>,
 ) {
+    if let Some((x, y)) = step.mouse {
+        source.push_str(&format!("pyxel.set_mouse_pos({}, {})\n", x, y));
+    }
     for key in step.presses {
         source.push_str(&format!("pyxel.set_btn({key}, True)\n"));
     }
@@ -1698,14 +1923,7 @@ while __current_frame < __target_frame:
 
 #[test]
 fn hello_example_matches_reference_screenshot() {
-    assert_example_reference_screenshots(
-        "01_hello_pyxel",
-        &[CaptureStep {
-            frame: 8,
-            presses: &[],
-            capture: true,
-        }],
-    );
+    assert_example_reference_screenshots("01_hello_pyxel", &[CaptureStep::capture(8)]);
 }
 
 #[test]
@@ -1713,17 +1931,111 @@ fn draw_api_example_matches_reference_screenshots() {
     assert_example_reference_screenshots(
         "03_draw_api",
         &[
-            CaptureStep {
-                frame: 1,
-                presses: &[],
-                capture: true,
-            },
-            CaptureStep {
-                frame: 155,
-                presses: &["pyxel.KEY_SPACE"],
-                capture: true,
-            },
+            CaptureStep::capture(1),
+            CaptureStep::capture_with_presses(155, &["pyxel.KEY_SPACE"]),
         ],
+    );
+}
+
+#[test]
+fn click_game_example_matches_reference_screenshots() {
+    assert_example_reference_screenshots(
+        "06_click_game",
+        &[
+            CaptureStep::capture(1),
+            CaptureStep::capture_with_mouse_and_presses(
+                10,
+                (110, 146),
+                &["pyxel.MOUSE_BUTTON_LEFT"],
+            ),
+        ],
+    );
+}
+
+#[test]
+fn shipped_run_examples_match_reference_screenshots() {
+    assert_example_reference_screenshots("01_hello_pyxel", &[CaptureStep::capture(8)]);
+    assert_example_reference_screenshots("02_jump_game", &[CaptureStep::capture(10)]);
+    assert_example_reference_screenshots(
+        "03_draw_api",
+        &[
+            CaptureStep::capture(1),
+            CaptureStep::capture_with_presses(155, &["pyxel.KEY_SPACE"]),
+        ],
+    );
+    assert_example_reference_screenshots("04_sound_api", &[CaptureStep::capture(1)]);
+    assert_example_reference_screenshots("05_color_palette", &[CaptureStep::capture(0)]);
+    assert_example_reference_screenshots(
+        "06_click_game",
+        &[
+            CaptureStep::capture(1),
+            CaptureStep::capture_with_mouse_and_presses(
+                10,
+                (110, 146),
+                &["pyxel.MOUSE_BUTTON_LEFT"],
+            ),
+        ],
+    );
+    assert_example_reference_screenshots("07_snake", &[CaptureStep::capture(1)]);
+    assert_example_reference_screenshots(
+        "08_triangle_api",
+        &[CaptureStep::capture(1), CaptureStep::capture(200)],
+    );
+    assert_example_reference_screenshots(
+        "09_shooter",
+        &[
+            CaptureStep::capture_with_presses(1, &["pyxel.KEY_RETURN"]),
+            CaptureStep::capture(120),
+        ],
+    );
+
+    let mut platformer_steps = vec![CaptureStep::capture(1)];
+    for frame in (2..80).step_by(2) {
+        platformer_steps.push(CaptureStep::skip_with_presses(
+            frame,
+            &["pyxel.KEY_RIGHT", "pyxel.KEY_SPACE"],
+        ));
+    }
+    platformer_steps.push(CaptureStep::capture(80));
+    assert_example_reference_screenshots("10_platformer", &platformer_steps);
+
+    assert_example_reference_screenshots(
+        "11_offscreen",
+        &[CaptureStep::capture(1), CaptureStep::capture(121)],
+    );
+    assert_example_reference_screenshots(
+        "12_perlin_noise",
+        &[CaptureStep::capture(1), CaptureStep::capture(40)],
+    );
+    assert_example_reference_screenshots("13_custom_font", &[CaptureStep::capture(0)]);
+    assert_example_reference_screenshots("14_synthesizer", &[CaptureStep::capture(1)]);
+    assert_example_reference_screenshots("15_tiled_map_file", &[CaptureStep::capture(1)]);
+    assert_example_reference_screenshots(
+        "16_transform",
+        &[CaptureStep::capture(1), CaptureStep::capture(45)],
+    );
+    assert_example_reference_screenshots("17_app_launcher", &[CaptureStep::capture(1)]);
+    assert_example_reference_screenshots(
+        "18_audio_playback",
+        &[
+            CaptureStep::capture(1),
+            CaptureStep::capture_with_presses(3, &["pyxel.KEY_RETURN"]),
+        ],
+    );
+    assert_example_reference_screenshots(
+        "19_perspective",
+        &[
+            CaptureStep::capture(1),
+            CaptureStep::capture_with_presses(20, &["pyxel.KEY_RIGHT", "pyxel.KEY_W"]),
+        ],
+    );
+}
+
+#[test]
+fn flip_animation_example_matches_reference_screenshots() {
+    assert_flip_example_reference_screenshots(
+        "99_flip_animation",
+        &[CaptureStep::capture(1), CaptureStep::capture(30)],
     );
 }
 
@@ -1732,26 +2044,71 @@ fn megaball_app_matches_reference_screenshots() {
     assert_app_reference_screenshots(
         "megaball",
         &[
-            CaptureStep {
-                frame: 30,
-                presses: &[],
-                capture: true,
-            },
-            CaptureStep {
-                frame: 31,
-                presses: &["pyxel.KEY_RETURN"],
-                capture: false,
-            },
-            CaptureStep {
-                frame: 35,
-                presses: &["pyxel.KEY_RETURN"],
-                capture: false,
-            },
-            CaptureStep {
-                frame: 90,
-                presses: &[],
-                capture: true,
-            },
+            CaptureStep::capture(30),
+            CaptureStep::skip_with_presses(31, &["pyxel.KEY_RETURN"]),
+            CaptureStep::skip_with_presses(35, &["pyxel.KEY_RETURN"]),
+            CaptureStep::capture(90),
+        ],
+    );
+}
+
+#[test]
+fn shipped_apps_match_reference_screenshots() {
+    assert_app_reference_screenshots(
+        "megaball",
+        &[
+            CaptureStep::capture(30),
+            CaptureStep::skip_with_presses(31, &["pyxel.KEY_RETURN"]),
+            CaptureStep::skip_with_presses(35, &["pyxel.KEY_RETURN"]),
+            CaptureStep::capture(90),
+        ],
+    );
+    assert_app_reference_screenshots(
+        "mega_wing",
+        &[
+            CaptureStep::capture(30),
+            CaptureStep::skip_with_presses(31, &["pyxel.KEY_RETURN"]),
+            CaptureStep::capture(150),
+        ],
+    );
+    assert_app_reference_screenshots(
+        "space_rescue",
+        &[
+            CaptureStep::capture(30),
+            CaptureStep::skip_with_presses(31, &["pyxel.KEY_RETURN"]),
+            CaptureStep::capture(60),
+        ],
+    );
+    assert_app_reference_screenshots(
+        "cursed_caverns",
+        &[
+            CaptureStep::capture(70),
+            CaptureStep::skip_with_presses(71, &["pyxel.KEY_RETURN"]),
+            CaptureStep::capture(100),
+        ],
+    );
+    assert_app_reference_screenshots(
+        "30sec_of_daylight",
+        &[
+            CaptureStep::capture(30),
+            CaptureStep::skip_with_presses(31, &["pyxel.KEY_RETURN"]),
+            CaptureStep::capture(60),
+        ],
+    );
+    assert_app_reference_screenshots(
+        "laser-jetman",
+        &[
+            CaptureStep::capture(210),
+            CaptureStep::skip_with_presses(211, &["pyxel.KEY_RETURN"]),
+            CaptureStep::capture(270),
+        ],
+    );
+    assert_app_reference_screenshots(
+        "vortexion",
+        &[
+            CaptureStep::capture(30),
+            CaptureStep::skip_with_presses(31, &["pyxel.KEY_Z"]),
+            CaptureStep::capture(200),
         ],
     );
 }

@@ -446,7 +446,18 @@ unsafe extern "C" fn text(_argc: i32, argv: ffi::py_StackRef) -> bool {
         return false;
     };
     let text = value::opt_str_arg(argv, 2).unwrap_or_default();
-    pyxel::pyxel().draw_text(x, y, &text, value::int_arg(argv, 3) as pyxel::Color, None);
+    let font = if value::is_none(value::arg(argv, 4)) {
+        None
+    } else {
+        objects::font_arg(value::arg(argv, 4))
+    };
+    pyxel::pyxel().draw_text(
+        x,
+        y,
+        &text,
+        value::int_arg(argv, 3) as pyxel::Color,
+        font.as_ref(),
+    );
     value::return_none();
     true
 }

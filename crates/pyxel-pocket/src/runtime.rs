@@ -8,6 +8,7 @@ static RUNTIME_LOCK: Mutex<()> = Mutex::new(());
 const PYTHON_COMPAT_SOURCE: &str = r#"
 from collections import deque as __pyxel_pocket_deque
 import enum as __pyxel_pocket_enum
+import math as __pyxel_pocket_math
 import os as __pyxel_pocket_os
 import pyxel as __pyxel_pocket_pyxel
 import random as __pyxel_pocket_random
@@ -41,6 +42,76 @@ del __pyxel_pocket_str_capitalize
 if not hasattr(__pyxel_pocket_enum, 'IntEnum'):
     __pyxel_pocket_enum.IntEnum = __pyxel_pocket_enum.Enum
 
+    def __pyxel_pocket_intenum_value(value):
+        if isinstance(value, __pyxel_pocket_enum.Enum):
+            return value.value
+        return value
+
+    def __pyxel_pocket_enum_eq(self, other):
+        if isinstance(other, __pyxel_pocket_enum.Enum):
+            return type(self) == type(other) and self.value == other.value
+        return self.value == other
+
+    def __pyxel_pocket_enum_hash(self):
+        return hash(self.value)
+
+    def __pyxel_pocket_enum_str(self):
+        if isinstance(self.value, int):
+            return str(self.value)
+        return type(self).__name__ + '.' + self.name
+
+    def __pyxel_pocket_intenum_add(self, other):
+        return self.value + __pyxel_pocket_intenum_value(other)
+
+    def __pyxel_pocket_intenum_radd(self, other):
+        return __pyxel_pocket_intenum_value(other) + self.value
+
+    def __pyxel_pocket_intenum_sub(self, other):
+        return self.value - __pyxel_pocket_intenum_value(other)
+
+    def __pyxel_pocket_intenum_rsub(self, other):
+        return __pyxel_pocket_intenum_value(other) - self.value
+
+    def __pyxel_pocket_intenum_mod(self, other):
+        return self.value % __pyxel_pocket_intenum_value(other)
+
+    def __pyxel_pocket_intenum_lt(self, other):
+        return self.value < __pyxel_pocket_intenum_value(other)
+
+    def __pyxel_pocket_intenum_le(self, other):
+        return self.value <= __pyxel_pocket_intenum_value(other)
+
+    def __pyxel_pocket_intenum_gt(self, other):
+        return self.value > __pyxel_pocket_intenum_value(other)
+
+    def __pyxel_pocket_intenum_ge(self, other):
+        return self.value >= __pyxel_pocket_intenum_value(other)
+
+    __pyxel_pocket_enum.Enum.__eq__ = __pyxel_pocket_enum_eq
+    __pyxel_pocket_enum.Enum.__hash__ = __pyxel_pocket_enum_hash
+    __pyxel_pocket_enum.Enum.__str__ = __pyxel_pocket_enum_str
+    __pyxel_pocket_enum.Enum.__add__ = __pyxel_pocket_intenum_add
+    __pyxel_pocket_enum.Enum.__radd__ = __pyxel_pocket_intenum_radd
+    __pyxel_pocket_enum.Enum.__sub__ = __pyxel_pocket_intenum_sub
+    __pyxel_pocket_enum.Enum.__rsub__ = __pyxel_pocket_intenum_rsub
+    __pyxel_pocket_enum.Enum.__mod__ = __pyxel_pocket_intenum_mod
+    __pyxel_pocket_enum.Enum.__lt__ = __pyxel_pocket_intenum_lt
+    __pyxel_pocket_enum.Enum.__le__ = __pyxel_pocket_intenum_le
+    __pyxel_pocket_enum.Enum.__gt__ = __pyxel_pocket_intenum_gt
+    __pyxel_pocket_enum.Enum.__ge__ = __pyxel_pocket_intenum_ge
+    del __pyxel_pocket_enum_eq
+    del __pyxel_pocket_enum_hash
+    del __pyxel_pocket_enum_str
+    del __pyxel_pocket_intenum_add
+    del __pyxel_pocket_intenum_radd
+    del __pyxel_pocket_intenum_sub
+    del __pyxel_pocket_intenum_rsub
+    del __pyxel_pocket_intenum_mod
+    del __pyxel_pocket_intenum_lt
+    del __pyxel_pocket_intenum_le
+    del __pyxel_pocket_intenum_gt
+    del __pyxel_pocket_intenum_ge
+
 if not hasattr(__pyxel_pocket_enum, 'auto'):
     __pyxel_pocket_enum_auto_value = 0
 
@@ -51,7 +122,24 @@ if not hasattr(__pyxel_pocket_enum, 'auto'):
 
     __pyxel_pocket_enum.auto = __pyxel_pocket_enum_auto
     del __pyxel_pocket_enum_auto
-del __pyxel_pocket_enum
+
+def __pyxel_pocket_math_floor(x):
+    value = int(x)
+    if value > x:
+        return value - 1
+    return value
+
+def __pyxel_pocket_math_ceil(x):
+    value = int(x)
+    if value < x:
+        return value + 1
+    return value
+
+__pyxel_pocket_math.floor = __pyxel_pocket_math_floor
+__pyxel_pocket_math.ceil = __pyxel_pocket_math_ceil
+del __pyxel_pocket_math_floor
+del __pyxel_pocket_math_ceil
+del __pyxel_pocket_math
 
 class __pyxel_pocket_Environ:
     def __getitem__(self, key):
@@ -255,10 +343,28 @@ def __pyxel_pocket_random_sample(population, k):
     pool = list(population)
     if k < 0 or k > len(pool):
         raise ValueError('Sample larger than population or is negative')
+    n = len(pool)
     result = []
-    for _ in range(k):
-        index = __pyxel_pocket_random_randbelow(len(pool))
-        result.append(pool.pop(index))
+    setsize = 21
+    if k > 5:
+        size = k * 3
+        power = 1
+        while power < size:
+            power *= 4
+        setsize += power
+    if n <= setsize:
+        for i in range(k):
+            index = __pyxel_pocket_random_randbelow(n - i)
+            result.append(pool[index])
+            pool[index] = pool[n - i - 1]
+    else:
+        selected = []
+        for i in range(k):
+            index = __pyxel_pocket_random_randbelow(n)
+            while index in selected:
+                index = __pyxel_pocket_random_randbelow(n)
+            selected.append(index)
+            result.append(pool[index])
     return result
 
 __pyxel_pocket_random.seed = __pyxel_pocket_random_seed
@@ -1004,6 +1110,7 @@ impl Default for Runtime {
 
 impl Drop for Runtime {
     fn drop(&mut self) {
+        crate::runner::clear_extracted_apps();
         unsafe {
             ffi::py_finalize();
         }

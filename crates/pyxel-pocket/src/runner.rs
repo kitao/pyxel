@@ -11,6 +11,7 @@ use crate::runtime::{exec_source_in_current_runtime, normalize_source, Runtime};
 
 static NEXT_EXTRACT_ID: AtomicU64 = AtomicU64::new(0);
 static RESTART_COMMAND: Mutex<Option<RestartCommand>> = Mutex::new(None);
+static LIVE_EXTRACTED_APPS: Mutex<Vec<ExtractedApp>> = Mutex::new(Vec::new());
 
 #[derive(Clone)]
 struct RestartCommand {
@@ -56,7 +57,14 @@ pub fn run_path(path: &Path) -> Result<(), String> {
 
 pub(crate) fn play_pyxapp_in_current_runtime(path: &Path) -> Result<(), String> {
     let app = extract_pyxapp(path)?;
-    run_script_in_current_runtime(&app.startup_script)
+    let result = run_script_in_current_runtime(&app.startup_script);
+    if result.is_ok() {
+        LIVE_EXTRACTED_APPS
+            .lock()
+            .expect("PocketPy extracted app lock poisoned")
+            .push(app);
+    }
+    result
 }
 
 pub(crate) fn install_reset_callback() {
@@ -67,6 +75,13 @@ pub(crate) fn install_reset_callback() {
     if let Some(restart_command) = restart_command {
         *pyxel::reset_callback() = Some(Box::new(move || restart_command.spawn_and_exit()));
     }
+}
+
+pub(crate) fn clear_extracted_apps() {
+    LIVE_EXTRACTED_APPS
+        .lock()
+        .expect("PocketPy extracted app lock poisoned")
+        .clear();
 }
 
 fn capture_restart_command() -> Result<(), String> {
