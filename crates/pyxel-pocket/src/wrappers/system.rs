@@ -52,13 +52,6 @@ impl pyxel::PyxelCallback for PocketPyCallback {
     }
 }
 
-#[cfg(target_os = "emscripten")]
-fn handle_callback_error(pyxel: &mut pyxel::Pyxel, message: &str) {
-    crate::web::report_runtime_error(message);
-    pyxel.quit();
-}
-
-#[cfg(not(target_os = "emscripten"))]
 fn handle_callback_error(_pyxel: &mut pyxel::Pyxel, message: &str) {
     eprintln!("{message}");
     std::process::exit(1);
