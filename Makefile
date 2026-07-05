@@ -15,6 +15,12 @@
 #   - Test: make test
 #   - Run: make run
 #
+# Pocket:
+#   - Lint: make lint-pocket
+#   - Build: make build-pocket
+#   - Test: make test-pocket
+#   - Run: make run-pocket
+#
 # WASM:
 #   - Requires Emscripten 5.0.3 (the version Pyodide uses)
 #   - Each new shell before WASM commands: source the emsdk environment
@@ -77,6 +83,12 @@ else
 CARGO_OPTS += --features sdl2_dynamic
 endif
 
+ifneq (,$(findstring windows,$(TARGET)))
+EXE_SUFFIX := .exe
+endif
+
+POCKET_BIN := $(CRATES_DIR)/target/$(TARGET)/release/pyxel-pocket$(EXE_SUFFIX)
+
 # Tool options
 CLIPPY_OPTS := --all-targets -q -- --no-deps
 MATURIN_OPTS := --manylinux off
@@ -96,6 +108,7 @@ endif
 
 .PHONY: \
 	all clean distclean update format lint build install test run \
+	lint-pocket build-pocket test-pocket run-pocket \
 	clean-wasm lint-wasm build-wasm run-wasm \
 	pages
 
@@ -125,9 +138,16 @@ format:
 lint:
 	@cd $(CRATES_DIR); cargo clippy $(CARGO_OPTS) $(CLIPPY_OPTS)
 ifneq ($(TARGET),$(WASM_TARGET))
-	@cd $(CRATES_DIR); cargo clippy -p pyxel-pocket $(CARGO_OPTS) $(CLIPPY_OPTS)
+	@$(MAKE) lint-pocket TARGET=$(TARGET)
 endif
 	@ruff check $(ROOT_DIR) $(PYTHON_SCRIPTS)
+
+lint-pocket:
+ifeq ($(TARGET),$(WASM_TARGET))
+	$(error pyxel-pocket is native-only; use a native TARGET)
+else
+	@cd $(CRATES_DIR); cargo clippy -p pyxel-pocket $(CARGO_OPTS) $(CLIPPY_OPTS)
+endif
 
 build:
 	@rustup component add rust-src
@@ -142,6 +162,14 @@ build:
 		CXXFLAGS="$(CXXFLAGS)" \
 		maturin build -o ../$(DIST_DIR) $(CARGO_OPTS) $(MATURIN_OPTS)
 
+build-pocket:
+ifeq ($(TARGET),$(WASM_TARGET))
+	$(error pyxel-pocket is native-only; use a native TARGET)
+else
+	@rustup target add $(TARGET)
+	@cd $(CRATES_DIR); cargo build -p pyxel-pocket $(CARGO_OPTS)
+endif
+
 install: build
 	@pip3 install --force-reinstall "$$(ls -rt $(DIST_DIR)/*.whl | tail -n 1)"
 
@@ -149,11 +177,21 @@ test: install
 	@cd $(ROOT_DIR); python -m pytest python/tests/ -v
 	@cd $(CRATES_DIR); cargo test -p pyxel-core $(CARGO_OPTS)
 ifneq ($(TARGET),$(WASM_TARGET))
+	@$(MAKE) test-pocket TARGET=$(TARGET)
+endif
+
+test-pocket:
+ifeq ($(TARGET),$(WASM_TARGET))
+	$(error pyxel-pocket is native-only; use a native TARGET)
+else
 	@cd $(CRATES_DIR); cargo test -p pyxel-pocket $(CARGO_OPTS)
 endif
 
 run: install
 	@$(SCRIPTS_DIR)/run_examples
+
+run-pocket: build-pocket
+	@$(SCRIPTS_DIR)/run_pocket_examples $(POCKET_BIN)
 
 clean-wasm:
 	@$(MAKE) clean TARGET=$(WASM_TARGET)

@@ -5,6 +5,7 @@ use crate::{ffi, module, value};
 
 static RUNTIME_LOCK: Mutex<()> = Mutex::new(());
 
+// Embedded compatibility modules
 const PYTHON_COMPAT_SOURCE: &str = r#"
 from collections import deque as __pyxel_pocket_deque
 import enum as __pyxel_pocket_enum
@@ -450,6 +451,7 @@ def filterfalse(predicate, iterable):
     return [item for item in iterable if not predicate(item)]
 ";
 
+// Runtime lifecycle
 pub struct Runtime {
     _guard: MutexGuard<'static, ()>,
 }
@@ -491,6 +493,7 @@ pub(crate) fn exec_source_in_current_runtime(source: &str, filename: &str) -> Re
     }
 }
 
+// Compatibility installers
 fn install_python_compat() {
     let source = CString::new(PYTHON_COMPAT_SOURCE).expect("compat source contains NUL byte");
     let filename = CString::new("<pyxel-pocket-compat>").unwrap();
@@ -550,6 +553,7 @@ fn install_itertools_compat() {
     }
 }
 
+// Source normalization
 pub(crate) fn normalize_source(source: &str) -> String {
     let mut normalized = String::with_capacity(source.len());
     let mut open_delimiters = 0i32;

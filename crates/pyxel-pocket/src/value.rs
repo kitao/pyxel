@@ -8,6 +8,7 @@ extern "C" {
     fn free(ptr: *mut c_void);
 }
 
+// Argument readers
 pub unsafe fn arg(argv: ffi::py_StackRef, index: usize) -> ffi::py_Ref {
     argv.cast::<u8>().add(index * VALUE_SIZE).cast()
 }
@@ -124,6 +125,7 @@ pub unsafe fn tuple3_float_arg(argv: ffi::py_StackRef, index: usize) -> Option<(
     Some((out[0], out[1], out[2]))
 }
 
+// Return values
 pub unsafe fn return_none() {
     ffi::py_newnone(ffi::py_retval());
 }
@@ -165,6 +167,7 @@ pub unsafe fn return_optional_play_pos(value: Option<(u32, f32)>) {
     }
 }
 
+// Exceptions
 pub unsafe fn raise_exception(message: &str) -> bool {
     let message = CString::new(message).unwrap();
     ffi::py_exception(
@@ -238,6 +241,7 @@ pub(crate) unsafe fn format_exception() -> String {
     result
 }
 
+// Module values
 pub unsafe fn set_module_int(module: ffi::py_GlobalRef, name: &CStr, value: i64) {
     let temp = ffi::py_pushtmp();
     ffi::py_newint(temp, value);
@@ -274,6 +278,7 @@ pub unsafe fn set_module_str_list(module: ffi::py_GlobalRef, name: &CStr, values
     ffi::py_pop();
 }
 
+// Constants
 pub unsafe fn set_const_int(module: ffi::py_GlobalRef, name: &str, value: i64) {
     let name = CString::new(name).unwrap();
     ffi::py_newint(
@@ -300,6 +305,7 @@ pub unsafe fn set_const_int_list(module: ffi::py_GlobalRef, name: &str, values: 
     }
 }
 
+// Object helpers
 pub unsafe fn set_module_object(module: ffi::py_GlobalRef, name: &CStr, type_: ffi::py_Type) {
     ffi::py_newobject(
         ffi::py_emplacedict(module, ffi::py_name(name.as_ptr())),

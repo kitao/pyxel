@@ -17,6 +17,7 @@ macro_rules! add_str_constants {
 }
 
 pub unsafe fn add_constants(module: ffi::py_GlobalRef) {
+    // Settings
     add_str_constants!(
         module,
         VERSION,
@@ -31,6 +32,7 @@ pub unsafe fn add_constants(module: ffi::py_GlobalRef) {
 
     add_int_constants!(module, WATCH_RESET_EXIT_CODE,);
 
+    // Graphics
     add_int_constants!(
         module,
         NUM_COLORS,
@@ -70,6 +72,7 @@ pub unsafe fn add_constants(module: ffi::py_GlobalRef) {
         FONT_HEIGHT,
     );
 
+    // Audio
     add_int_constants!(
         module,
         NUM_CHANNELS,
@@ -88,6 +91,7 @@ pub unsafe fn add_constants(module: ffi::py_GlobalRef) {
         EFFECT_QUARTER_FADEOUT,
     );
 
+    // Keyboard
     add_int_constants!(
         module,
         KEY_UNKNOWN,
@@ -302,8 +306,10 @@ pub unsafe fn add_constants(module: ffi::py_GlobalRef) {
         KEY_RGUI,
     );
 
+    // Virtual keys
     add_int_constants!(module, KEY_NONE, KEY_SHIFT, KEY_CTRL, KEY_ALT, KEY_GUI,);
 
+    // Mouse
     add_int_constants!(
         module,
         MOUSE_POS_X,
@@ -317,6 +323,7 @@ pub unsafe fn add_constants(module: ffi::py_GlobalRef) {
         MOUSE_BUTTON_X2,
     );
 
+    // Gamepad 1
     add_int_constants!(
         module,
         GAMEPAD1_AXIS_LEFTX,
@@ -342,6 +349,7 @@ pub unsafe fn add_constants(module: ffi::py_GlobalRef) {
         GAMEPAD1_BUTTON_DPAD_RIGHT,
     );
 
+    // Gamepad 2
     add_int_constants!(
         module,
         GAMEPAD2_AXIS_LEFTX,
@@ -367,6 +375,7 @@ pub unsafe fn add_constants(module: ffi::py_GlobalRef) {
         GAMEPAD2_BUTTON_DPAD_RIGHT,
     );
 
+    // Gamepad 3
     add_int_constants!(
         module,
         GAMEPAD3_AXIS_LEFTX,
@@ -392,6 +401,7 @@ pub unsafe fn add_constants(module: ffi::py_GlobalRef) {
         GAMEPAD3_BUTTON_DPAD_RIGHT,
     );
 
+    // Gamepad 4
     add_int_constants!(
         module,
         GAMEPAD4_AXIS_LEFTX,

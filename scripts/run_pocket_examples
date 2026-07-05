@@ -1,0 +1,59 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+shopt -s failglob
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+EXAMPLES_DIR="$ROOT_DIR/python/pyxel/examples"
+
+if [[ $# -ne 1 ]]; then
+    echo "Usage: run_pocket_examples PYXEL_POCKET_BIN" >&2
+    exit 1
+fi
+
+PYXEL_POCKET_BIN="$1"
+BG_PID=0
+
+if [[ ! -x "$PYXEL_POCKET_BIN" ]]; then
+    echo "pyxel-pocket binary not found or not executable: $PYXEL_POCKET_BIN" >&2
+    exit 1
+fi
+
+cleanup() {
+    if [[ "$BG_PID" -ne 0 ]]; then
+        kill "$BG_PID" 2>/dev/null || true
+        wait "$BG_PID" 2>/dev/null || true
+    fi
+}
+trap cleanup EXIT
+
+# Display commands with basenames for readability.
+echo_cmd() {
+    local display=()
+    for arg in "$@"; do
+        display+=("${arg##*/}")
+    done
+    echo "${display[*]}"
+}
+
+# Echo and run a GUI command in the background; Ctrl+C sends SIGTERM.
+run_bg() {
+    echo_cmd "$@"
+    "$@" &
+    BG_PID=$!
+    trap 'kill "$BG_PID" 2>/dev/null; exit 130' INT
+    wait "$BG_PID" || true
+    trap - INT
+    BG_PID=0
+}
+
+# Run example scripts.
+for f in "$EXAMPLES_DIR"/*.py; do
+    run_bg "$PYXEL_POCKET_BIN" "$f"
+done
+
+# Run bundled example apps.
+for f in "$EXAMPLES_DIR"/apps/*.pyxapp; do
+    run_bg "$PYXEL_POCKET_BIN" "$f"
+done

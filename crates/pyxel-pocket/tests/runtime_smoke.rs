@@ -347,7 +347,7 @@ assert color(3) == 3
 
 #[test]
 fn module_blit_functions_accept_resource_instances() {
-    let script = std::env::temp_dir().join("pyxel-pocket-module-blit-resources.py");
+    let script = unique_temp_path("pyxel-pocket-module-blit-resources", "py");
     fs::write(
         &script,
         "\
@@ -605,7 +605,7 @@ fn pyxel_cli_metadata_reads_pyxapp_comments() {
         .join("megaball.pyxapp")
         .to_string_lossy()
         .into_owned();
-    let script = std::env::temp_dir().join("pyxel-pocket-cli-metadata.py");
+    let script = unique_temp_path("pyxel-pocket-cli-metadata", "py");
     fs::write(
         &script,
         format!(
@@ -959,7 +959,7 @@ assert pyxel.COLOR_WHITE >= 0
 
 #[test]
 fn binary_runs_script_file() {
-    let script = std::env::temp_dir().join("pyxel-pocket-smoke.py");
+    let script = unique_temp_path("pyxel-pocket-smoke", "py");
     fs::write(&script, "import pyxel\npyxel.init(8, 8, headless=True)\n").unwrap();
 
     let status = Command::new(env!("CARGO_BIN_EXE_pyxel-pocket"))
@@ -973,7 +973,7 @@ fn binary_runs_script_file() {
 
 #[test]
 fn mvp_api_script_runs_headless() {
-    let script = std::env::temp_dir().join("pyxel-pocket-mvp.py");
+    let script = unique_temp_path("pyxel-pocket-mvp", "py");
     fs::write(
         &script,
         "\
@@ -1005,7 +1005,7 @@ assert pyxel.btnr(pyxel.KEY_Q) == False
 
 #[test]
 fn run_executes_update_and_draw_callbacks() {
-    let script = std::env::temp_dir().join("pyxel-pocket-run.py");
+    let script = unique_temp_path("pyxel-pocket-run", "py");
     fs::write(
         &script,
         "\
@@ -1072,7 +1072,7 @@ pyxel.run(update, draw)
 
 #[test]
 fn class_and_collection_api_script_runs_headless() {
-    let script = std::env::temp_dir().join("pyxel-pocket-objects.py");
+    let script = unique_temp_path("pyxel-pocket-objects", "py");
     fs::write(
         &script,
         "\
@@ -1137,7 +1137,7 @@ assert len(tone.wavetable) == 1
 
 #[test]
 fn collection_sequence_api_script_runs_headless() {
-    let script = std::env::temp_dir().join("pyxel-pocket-sequences.py");
+    let script = unique_temp_path("pyxel-pocket-sequences", "py");
     fs::write(
         &script,
         "\
@@ -1210,7 +1210,7 @@ assert bool(music.seqs)
 
 #[test]
 fn object_collection_sequence_methods_run_headless() {
-    let script = std::env::temp_dir().join("pyxel-pocket-object-collections.py");
+    let script = unique_temp_path("pyxel-pocket-object-collections", "py");
     fs::write(
         &script,
         "\
@@ -1259,10 +1259,9 @@ assert list(pyxel.tones[0].wavetable) == [1, 2, 3]
 
 #[test]
 fn integrated_app_script_runs_headless() {
-    let dir = std::env::temp_dir();
-    let script = dir.join("pyxel-pocket-integrated-app.py");
-    let resource = dir.join("pyxel-pocket-integrated-app.pyxres");
-    let palette = dir.join("pyxel-pocket-integrated-app.pyxpal");
+    let script = unique_temp_path("pyxel-pocket-integrated-app", "py");
+    let resource = unique_temp_path("pyxel-pocket-integrated-app", "pyxres");
+    let palette = unique_temp_path("pyxel-pocket-integrated-app", "pyxpal");
     let resource_path = resource.to_string_lossy();
     fs::write(
         &script,
@@ -1354,7 +1353,7 @@ pyxel.run(update, draw)
 
 #[test]
 fn example_style_class_app_script_runs_headless() {
-    let script = std::env::temp_dir().join("pyxel-pocket-class-app.py");
+    let script = unique_temp_path("pyxel-pocket-class-app", "py");
     fs::write(
         &script,
         "\
@@ -1458,7 +1457,7 @@ fn real_asset_loading_script_runs_headless() {
         .into_owned();
     let tmx = assets.join("urban_rpg.tmx").to_string_lossy().into_owned();
     let sample = assets.join("sample.pyxres").to_string_lossy().into_owned();
-    let script = std::env::temp_dir().join("pyxel-pocket-real-assets.py");
+    let script = unique_temp_path("pyxel-pocket-real-assets", "py");
     fs::write(
         &script,
         format!(
@@ -1541,7 +1540,7 @@ print('real-assets-ok')
 
 #[test]
 fn keyword_init_script_runs_headless() {
-    let script = std::env::temp_dir().join("pyxel-pocket-keywords.py");
+    let script = unique_temp_path("pyxel-pocket-keywords", "py");
     fs::write(
         &script,
         "\
@@ -2007,37 +2006,6 @@ while __current_frame < __target_frame:
 }
 
 #[test]
-fn hello_example_matches_reference_screenshot() {
-    assert_example_reference_screenshots("01_hello_pyxel", &[CaptureStep::capture(8)]);
-}
-
-#[test]
-fn draw_api_example_matches_reference_screenshots() {
-    assert_example_reference_screenshots(
-        "03_draw_api",
-        &[
-            CaptureStep::capture(1),
-            CaptureStep::capture_with_presses(155, &["pyxel.KEY_SPACE"]),
-        ],
-    );
-}
-
-#[test]
-fn click_game_example_matches_reference_screenshots() {
-    assert_example_reference_screenshots(
-        "06_click_game",
-        &[
-            CaptureStep::capture(1),
-            CaptureStep::capture_with_mouse_and_presses(
-                10,
-                (110, 146),
-                &["pyxel.MOUSE_BUTTON_LEFT"],
-            ),
-        ],
-    );
-}
-
-#[test]
 fn shipped_run_examples_match_reference_screenshots() {
     assert_example_reference_screenshots("01_hello_pyxel", &[CaptureStep::capture(8)]);
     assert_example_reference_screenshots("02_jump_game", &[CaptureStep::capture(10)]);
@@ -2121,19 +2089,6 @@ fn flip_animation_example_matches_reference_screenshots() {
     assert_flip_example_reference_screenshots(
         "99_flip_animation",
         &[CaptureStep::capture(1), CaptureStep::capture(30)],
-    );
-}
-
-#[test]
-fn megaball_app_matches_reference_screenshots() {
-    assert_app_reference_screenshots(
-        "megaball",
-        &[
-            CaptureStep::capture(30),
-            CaptureStep::skip_with_presses(31, &["pyxel.KEY_RETURN"]),
-            CaptureStep::skip_with_presses(35, &["pyxel.KEY_RETURN"]),
-            CaptureStep::capture(90),
-        ],
     );
 }
 
