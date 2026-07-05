@@ -13,6 +13,7 @@
 - Fixed startup script cleanup after failed Pyxel app packaging
 - Fixed palette loss when Image.from_image fails to load a file
 - Fixed crash when playing or saving sounds with out-of-range tones
+- Fixed audio playback after repeated macOS app restarts
 - Improved audio/MML/BGM processing and resource save performance
 - Improved web export and Pyxel Editor shortcut performance
 - Refined Japanese, Chinese, and web documentation wording and typography
