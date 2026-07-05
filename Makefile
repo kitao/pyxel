@@ -97,7 +97,6 @@ endif
 .PHONY: \
 	all clean distclean update format lint build install test run \
 	clean-wasm lint-wasm build-wasm run-wasm \
-	build-pocket-wasm lint-pocket-wasm \
 	pages
 
 all: build
@@ -168,12 +167,6 @@ build-wasm:
 	@$(MAKE) build TARGET=$(WASM_TARGET)
 	@$(SCRIPTS_DIR)/check_wasm_wheel
 	@$(SCRIPTS_DIR)/install_wasm_wheel
-
-lint-pocket-wasm:
-	@cd $(CRATES_DIR); cargo check -p pyxel-pocket --release --target $(WASM_TARGET) -Zbuild-std=std,panic_abort --features sdl2_static
-
-build-pocket-wasm:
-	@$(SCRIPTS_DIR)/build_pocket_wasm
 
 run-wasm: build-wasm
 	@$(SCRIPTS_DIR)/start_showcase

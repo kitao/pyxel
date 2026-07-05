@@ -22,8 +22,6 @@ mod module;
 mod runner;
 mod runtime;
 mod value;
-#[cfg(target_os = "emscripten")]
-mod web;
 mod wrappers;
 
 pub use runner::run_path;
