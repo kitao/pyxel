@@ -4,7 +4,7 @@
 
 - Added a GIMP palette file for Pyxel's default colors
 - Updated Pyodide to version 314.0.2
-- Updated Rust to version nightly-2026-06-30
+- Updated Rust to version nightly-2026-07-05
 - Updated SDL2 to version 2.32.10 for Linux builds
 - Fixed TMX imports with flipped tiles
 - Fixed reversed slice assignment for Pyxel sequence objects
