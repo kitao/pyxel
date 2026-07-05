@@ -153,6 +153,7 @@ impl Pyxel {
     pub fn restart(&mut self) {
         #[cfg(not(target_os = "emscripten"))]
         if let Some(mut callback) = pyxel::reset_callback().take() {
+            platform::close_audio();
             callback();
         }
 
