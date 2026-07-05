@@ -11,8 +11,22 @@
     name: "pocket-smoke.py",
     script: shouldFail
       ? 'raise RuntimeError("pocket smoke failure")'
-      : mode === "flip"
+      : mode === "callback-fail"
         ? `
+import pyxel
+
+pyxel.init(64, 64, title="Pocket Web Callback Failure")
+
+def update():
+    raise RuntimeError("pocket callback failure")
+
+def draw():
+    pyxel.cls(1)
+
+pyxel.run(update, draw)
+`
+        : mode === "flip"
+          ? `
 import pyxel
 
 pyxel.init(64, 64, title="Pocket Web Smoke")
@@ -25,7 +39,7 @@ def draw():
 draw()
 pyxel.flip()
 `
-        : `
+          : `
 import pyxel
 
 x = 0

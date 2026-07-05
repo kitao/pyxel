@@ -1,3 +1,5 @@
+use std::ffi::CStr;
+
 use crate::{ffi, value};
 
 const ENV_HEADLESS: &str = "PYXEL_POCKET_HEADLESS";
@@ -5,12 +7,29 @@ const ENV_MAX_FRAMES: &str = "PYXEL_POCKET_MAX_FRAMES";
 
 struct PocketPyCallback {
     max_frames: Option<u32>,
+    failed: bool,
 }
 
 impl PocketPyCallback {
     fn new() -> Self {
         Self {
             max_frames: max_frames(),
+            failed: false,
+        }
+    }
+
+    fn call_python_callback(&mut self, pyxel: &mut pyxel::Pyxel, name: &CStr) {
+        if self.failed {
+            return;
+        }
+
+        unsafe {
+            let module = ffi::py_getmodule(c"pyxel".as_ptr());
+            crate::module::sync_variables();
+            if let Err(err) = value::call_module_function(module, name) {
+                self.failed = true;
+                handle_callback_error(pyxel, &err);
+            }
         }
     }
 
@@ -22,23 +41,27 @@ impl PocketPyCallback {
 
 impl pyxel::PyxelCallback for PocketPyCallback {
     fn update(&mut self, pyxel: &mut pyxel::Pyxel) {
-        unsafe {
-            let module = ffi::py_getmodule(c"pyxel".as_ptr());
-            crate::module::sync_variables();
-            value::call_module_function(module, c"_update");
-        }
-        if self.reached_max_frame() {
+        self.call_python_callback(pyxel, c"_update");
+        if !self.failed && self.reached_max_frame() {
             pyxel.quit();
         }
     }
 
-    fn draw(&mut self, _pyxel: &mut pyxel::Pyxel) {
-        unsafe {
-            let module = ffi::py_getmodule(c"pyxel".as_ptr());
-            crate::module::sync_variables();
-            value::call_module_function(module, c"_draw");
-        }
+    fn draw(&mut self, pyxel: &mut pyxel::Pyxel) {
+        self.call_python_callback(pyxel, c"_draw");
     }
+}
+
+#[cfg(target_os = "emscripten")]
+fn handle_callback_error(pyxel: &mut pyxel::Pyxel, message: &str) {
+    crate::web::report_runtime_error(message);
+    pyxel.quit();
+}
+
+#[cfg(not(target_os = "emscripten"))]
+fn handle_callback_error(_pyxel: &mut pyxel::Pyxel, message: &str) {
+    eprintln!("{message}");
+    std::process::exit(1);
 }
 
 fn env_flag(name: &str) -> bool {

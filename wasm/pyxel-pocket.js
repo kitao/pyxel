@@ -1,4 +1,4 @@
-const PYXEL_POCKET_CORE_PATH = "pyxel-pocket-core.js";
+const PYXEL_POCKET_RUNTIME_PATH = "pyxel-pocket-runtime.js";
 
 const _scanCorrection = {};
 const _readVirtualGamepadBitmask = () => 0;
@@ -25,7 +25,7 @@ async function launchPyxelPocket(params) {
     window.pyxelPocketContext.canvas = canvas;
 
     _validatePocketParams(params);
-    await _loadScript(`${_pocketScriptDir}${PYXEL_POCKET_CORE_PATH}`);
+    await _loadScript(`${_pocketScriptDir}${PYXEL_POCKET_RUNTIME_PATH}`);
 
     const module = await createPyxelPocketModule({
       canvas,
@@ -176,7 +176,7 @@ const _runPocketScript = (module, source, filename) => {
       const message = errorPtr
         ? module.UTF8ToString(errorPtr)
         : "PocketPy failed";
-      throw new Error(message);
+      throw _pocketError(message);
     }
   } catch (error) {
     if (!_isPocketMainLoopUnwind(error)) {
@@ -191,6 +191,9 @@ const _runPocketScript = (module, source, filename) => {
 const _isPocketMainLoopUnwind = (error) =>
   error === "unwind" || error?.message === "unwind";
 
+const _pocketError = (message) =>
+  Object.assign(new Error(message), { pocketMessage: message });
+
 const _writePocketString = (module, value) => {
   const length = module.lengthBytesUTF8(value) + 1;
   const ptr = module._malloc(length);
@@ -203,8 +206,9 @@ const _writePocketString = (module, value) => {
 
 const _displayPocketError = (error) => {
   console.error(error);
-  const message =
-    error && error.stack
+  const message = error?.pocketMessage
+    ? error.pocketMessage
+    : error && error.stack
       ? error.stack
       : error
         ? String(error)
@@ -231,4 +235,15 @@ const _displayPocketError = (error) => {
     screen.appendChild(overlay);
   }
   overlay.textContent = message;
+};
+
+window.pyxelPocketDisplayLastError = () => {
+  const module = window.pyxelPocketContext.module;
+  const errorPtr = module?._pyxel_pocket_last_error?.();
+  const message =
+    errorPtr && typeof module.UTF8ToString === "function"
+      ? module.UTF8ToString(errorPtr)
+      : "PocketPy failed";
+  window.pyxelPocketContext.hasFatalError = true;
+  _displayPocketError(message);
 };
