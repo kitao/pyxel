@@ -175,6 +175,11 @@ pub fn pause_audio(paused: bool) {
     platform().pause_audio(paused);
 }
 
+#[cfg(not(target_os = "emscripten"))]
+pub fn close_audio() {
+    platform().close_audio();
+}
+
 pub fn lock_audio() {
     platform().lock_audio();
 }
