@@ -1,8 +1,12 @@
-use std::ffi::{CStr, CString};
+use std::ffi::{c_void, CStr, CString};
 
 use crate::ffi;
 
 const VALUE_SIZE: usize = 16;
+
+extern "C" {
+    fn free(ptr: *mut c_void);
+}
 
 pub unsafe fn arg(argv: ffi::py_StackRef, index: usize) -> ffi::py_Ref {
     argv.cast::<u8>().add(index * VALUE_SIZE).cast()
@@ -99,13 +103,6 @@ pub unsafe fn str_list_arg(argv: ffi::py_StackRef, index: usize) -> Vec<String> 
             let bytes = std::slice::from_raw_parts(sv.data.cast::<u8>(), sv.size as usize);
             String::from_utf8_lossy(bytes).into_owned()
         })
-        .collect()
-}
-
-pub unsafe fn int_list_arg(argv: ffi::py_StackRef, index: usize) -> Vec<u32> {
-    let value = arg(argv, index);
-    (0..ffi::py_list_len(value))
-        .map(|i| ffi::py_toint(ffi::py_list_getitem(value, i)) as u32)
         .collect()
 }
 
@@ -216,19 +213,29 @@ pub unsafe fn new_type(
     )
 }
 
-pub unsafe fn call_module_function(module: ffi::py_GlobalRef, name: &CStr) {
+pub unsafe fn call_module_function(module: ffi::py_GlobalRef, name: &CStr) -> Result<(), String> {
     let function = ffi::py_getdict(module, ffi::py_name(name.as_ptr()));
     if function.is_null() {
-        eprintln!(
+        return Err(format!(
             "PocketPy callback '{}' is not registered",
             name.to_string_lossy()
-        );
-        std::process::exit(1);
+        ));
     }
     if !ffi::py_call(function, 0, std::ptr::null_mut()) {
-        ffi::py_printexc();
-        std::process::exit(1);
+        return Err(format_exception());
     }
+    Ok(())
+}
+
+pub(crate) unsafe fn format_exception() -> String {
+    let message = ffi::py_formatexc();
+    if message.is_null() {
+        return "PocketPy failed without an active exception".to_owned();
+    }
+
+    let result = CStr::from_ptr(message).to_string_lossy().into_owned();
+    free(message.cast::<c_void>());
+    result
 }
 
 pub unsafe fn set_module_int(module: ffi::py_GlobalRef, name: &CStr, value: i64) {

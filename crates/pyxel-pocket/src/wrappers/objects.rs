@@ -215,7 +215,7 @@ pub(crate) unsafe fn font_arg(object: ffi::py_Ref) -> Option<pyxel::RcFont> {
     }
 }
 
-unsafe fn sound_arg(object: ffi::py_Ref) -> Option<pyxel::RcSound> {
+pub(crate) unsafe fn sound_arg(object: ffi::py_Ref) -> Option<pyxel::RcSound> {
     if value::is_int(object) {
         pyxel::sounds().get(ffi::py_toint(object) as usize).cloned()
     } else if ffi::py_isinstance(object, TP_SOUND) {
@@ -225,7 +225,7 @@ unsafe fn sound_arg(object: ffi::py_Ref) -> Option<pyxel::RcSound> {
     }
 }
 
-unsafe fn sound_list_arg(object: ffi::py_Ref) -> Option<Vec<pyxel::RcSound>> {
+pub(crate) unsafe fn sound_list_arg(object: ffi::py_Ref) -> Option<Vec<pyxel::RcSound>> {
     if ffi::py_isinstance(object, TP_SOUND) || value::is_int(object) {
         return sound_arg(object).map(|sound| vec![sound]);
     }

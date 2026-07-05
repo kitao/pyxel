@@ -12,6 +12,16 @@ fn exec_source_accepts_simple_python() {
 }
 
 #[test]
+fn exec_source_reports_python_exception() {
+    let err = pyxel_pocket::Runtime::new()
+        .exec_source("raise RuntimeError('source boom')", "<test>")
+        .unwrap_err();
+
+    assert!(err.contains("Traceback (most recent call last):"));
+    assert!(err.contains("RuntimeError: source boom"));
+}
+
+#[test]
 fn exec_source_accepts_parenthesized_boolean_continuation() {
     pyxel_pocket::Runtime::new()
         .exec_source(
@@ -427,6 +437,48 @@ import pyxel
 pyxel.init(8, 8, headless=True)
 pyxel.play(0, 0, tick=0, loop=True)
 pyxel.playm(0, tick=0, loop=True)
+",
+    )
+    .unwrap();
+
+    let output = Command::new(env!("CARGO_BIN_EXE_pyxel-pocket"))
+        .arg(&script)
+        .output()
+        .unwrap();
+
+    let _ = fs::remove_file(script);
+
+    assert!(
+        output.status.success(),
+        "stdout:\n{}\nstderr:\n{}",
+        String::from_utf8_lossy(&output.stdout),
+        String::from_utf8_lossy(&output.stderr)
+    );
+}
+
+#[test]
+fn audio_play_accepts_sound_instances() {
+    let script = unique_temp_path("pyxel-pocket-play-sound-instances", "py");
+    fs::write(
+        &script,
+        "\
+import pyxel
+
+pyxel.init(8, 8, headless=True)
+
+sound0 = pyxel.Sound()
+sound0.set('c0d0', 'ss', '77', 'nn', 8)
+sound1 = pyxel.Sound()
+sound1.set('e0f0', 'pp', '66', 'ff', 8)
+pyxel.sounds[0] = sound0
+pyxel.sounds[1] = sound1
+
+pyxel.play(0, [0, 1], loop=True)
+assert pyxel.play_pos(0) == None or pyxel.play_pos(0)[0] == 0
+pyxel.play(0, sound0)
+assert pyxel.play_pos(0) == None or pyxel.play_pos(0)[0] == 0
+pyxel.play(0, [sound0, sound1], loop=True)
+assert pyxel.play_pos(0) == None or pyxel.play_pos(0)[0] == 0
 ",
     )
     .unwrap();
@@ -983,6 +1035,39 @@ pyxel.run(update, draw)
     assert!(output.status.success());
     assert!(String::from_utf8_lossy(&output.stdout).contains("draw-called"));
     let _ = fs::remove_file(script);
+}
+
+#[test]
+fn run_reports_update_callback_exception() {
+    let script = unique_temp_path("pyxel-pocket-run-callback-error", "py");
+    fs::write(
+        &script,
+        "\
+import pyxel
+
+pyxel.init(16, 16, headless=True)
+
+def update():
+    raise RuntimeError('callback boom')
+
+def draw():
+    pyxel.cls(pyxel.COLOR_BLACK)
+
+pyxel.run(update, draw)
+",
+    )
+    .unwrap();
+
+    let output = Command::new(env!("CARGO_BIN_EXE_pyxel-pocket"))
+        .arg(&script)
+        .output()
+        .unwrap();
+
+    let _ = fs::remove_file(script);
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    assert!(!output.status.success(), "stderr:\n{stderr}");
+    assert!(stderr.contains("Traceback (most recent call last):"));
+    assert!(stderr.contains("RuntimeError: callback boom"));
 }
 
 #[test]

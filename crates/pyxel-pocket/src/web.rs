@@ -7,6 +7,10 @@ use crate::Runtime;
 
 static LAST_ERROR: Mutex<Option<CString>> = Mutex::new(None);
 
+extern "C" {
+    fn emscripten_run_script(script: *const c_char);
+}
+
 #[no_mangle]
 pub unsafe extern "C" fn pyxel_pocket_run_script(
     source: *const c_char,
@@ -72,11 +76,17 @@ fn clear_last_error() {
     *LAST_ERROR.lock().expect("PocketPy Web error lock poisoned") = None;
 }
 
-fn set_last_error(message: impl Into<String>) {
+pub(crate) fn set_last_error(message: impl Into<String>) {
     let message = CString::new(message.into()).unwrap_or_else(|_| {
         CString::new("PocketPy error message contains NUL byte").expect("static string is valid")
     });
     *LAST_ERROR.lock().expect("PocketPy Web error lock poisoned") = Some(message);
+}
+
+pub(crate) fn report_runtime_error(message: impl Into<String>) {
+    set_last_error(message);
+    let script = c"window.pyxelPocketDisplayLastError && window.pyxelPocketDisplayLastError();";
+    unsafe { emscripten_run_script(script.as_ptr()) };
 }
 
 #[cfg(test)]

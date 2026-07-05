@@ -1,7 +1,7 @@
 use std::ffi::CString;
 use std::sync::{Mutex, MutexGuard};
 
-use crate::{ffi, module};
+use crate::{ffi, module, value};
 
 static RUNTIME_LOCK: Mutex<()> = Mutex::new(());
 
@@ -487,10 +487,7 @@ pub(crate) fn exec_source_in_current_runtime(source: &str, filename: &str) -> Re
     if ok {
         Ok(())
     } else {
-        unsafe {
-            ffi::py_printexc();
-        }
-        Err(format!("PocketPy failed to execute {filename:?}"))
+        Err(unsafe { value::format_exception() })
     }
 }
 

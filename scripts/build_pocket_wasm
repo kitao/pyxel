@@ -7,8 +7,8 @@ CRATES_DIR="$ROOT_DIR/crates"
 WASM_DIR="$ROOT_DIR/wasm"
 TARGET="wasm32-unknown-emscripten"
 OUT_DIR="$CRATES_DIR/target/$TARGET/release"
-CORE_JS="$OUT_DIR/pyxel-pocket-core.js"
-CORE_WASM="$OUT_DIR/pyxel-pocket-core.wasm"
+RUNTIME_JS="$OUT_DIR/pyxel-pocket-runtime.js"
+RUNTIME_WASM="$OUT_DIR/pyxel-pocket-runtime.wasm"
 
 command -v emcc >/dev/null
 command -v rustc >/dev/null
@@ -23,7 +23,7 @@ export RUSTFLAGS="${RUSTFLAGS:-} \
 -C link-arg=-sEXPORTED_RUNTIME_METHODS=['UTF8ToString','stringToUTF8','lengthBytesUTF8'] \
 -C link-arg=-sEXPORTED_FUNCTIONS=['_main','_pyxel_pocket_run_script','_pyxel_pocket_last_error','_malloc','_free'] \
 -C link-arg=-o \
--C link-arg=$CORE_JS"
+-C link-arg=$RUNTIME_JS"
 
 cd "$CRATES_DIR"
 cargo build \
@@ -34,9 +34,9 @@ cargo build \
   -Zbuild-std=std,panic_abort \
   --features sdl2_static
 
-test -f "$CORE_JS"
-test -f "$CORE_WASM"
+test -f "$RUNTIME_JS"
+test -f "$RUNTIME_WASM"
 mkdir -p "$WASM_DIR"
-cp -f "$CORE_JS" "$WASM_DIR/pyxel-pocket-core.js"
-cp -f "$CORE_WASM" "$WASM_DIR/pyxel-pocket-core.wasm"
-chmod 644 "$WASM_DIR/pyxel-pocket-core.js" "$WASM_DIR/pyxel-pocket-core.wasm"
+cp -f "$RUNTIME_JS" "$WASM_DIR/pyxel-pocket-runtime.js"
+cp -f "$RUNTIME_WASM" "$WASM_DIR/pyxel-pocket-runtime.wasm"
+chmod 644 "$WASM_DIR/pyxel-pocket-runtime.js" "$WASM_DIR/pyxel-pocket-runtime.wasm"

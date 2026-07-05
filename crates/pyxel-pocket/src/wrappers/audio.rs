@@ -1,3 +1,4 @@
+use crate::wrappers::objects;
 use crate::{ffi, value};
 
 unsafe extern "C" fn play(_argc: i32, argv: ffi::py_StackRef) -> bool {
@@ -9,15 +10,7 @@ unsafe extern "C" fn play(_argc: i32, argv: ffi::py_StackRef) -> bool {
     let should_loop = value::opt_bool_arg(argv, 3).unwrap_or(false);
     let should_resume = value::opt_bool_arg(argv, 4).unwrap_or(false);
 
-    if ffi::py_istype(sound_arg, ffi::py_PredefinedTypes_tp_list as ffi::py_Type) {
-        pyxel::pyxel().play(
-            channel,
-            &value::int_list_arg(argv, 1),
-            start_sec,
-            should_loop,
-            should_resume,
-        );
-    } else if ffi::py_istype(sound_arg, ffi::py_PredefinedTypes_tp_str as ffi::py_Type) {
+    if value::is_str(sound_arg) {
         if let Err(err) = pyxel::pyxel().play_mml(
             channel,
             &value::str_arg(argv, 1),
@@ -27,14 +20,16 @@ unsafe extern "C" fn play(_argc: i32, argv: ffi::py_StackRef) -> bool {
         ) {
             return value::raise_exception(&err);
         }
-    } else {
-        pyxel::pyxel().play_sound(
-            channel,
-            value::int_arg(argv, 1) as u32,
+    } else if let Some(sounds) = objects::sound_list_arg(sound_arg) {
+        let _lock = pyxel::AudioLock::lock();
+        objects::rc_mut(&pyxel::channels()[channel as usize]).play(
+            sounds,
             start_sec,
             should_loop,
             should_resume,
         );
+    } else {
+        return value::raise_exception("Invalid sound");
     }
 
     value::return_none();
