@@ -1309,6 +1309,9 @@
   .relative {
     position: relative;
   }
+  .static {
+    position: static;
+  }
   .inset-0 {
     inset: calc(var(--spacing) * 0);
   }
@@ -1329,34 +1332,6 @@
   }
   .order-first {
     order: -9999;
-  }
-  .container {
-    width: 100%;
-  }
-  @media (min-width: 40rem) {
-    .container {
-      max-width: 40rem;
-    }
-  }
-  @media (min-width: 48rem) {
-    .container {
-      max-width: 48rem;
-    }
-  }
-  @media (min-width: 64rem) {
-    .container {
-      max-width: 64rem;
-    }
-  }
-  @media (min-width: 80rem) {
-    .container {
-      max-width: 80rem;
-    }
-  }
-  @media (min-width: 96rem) {
-    .container {
-      max-width: 96rem;
-    }
   }
   .mx-0\.5 {
     margin-inline: calc(var(--spacing) * 0.5);
@@ -1387,9 +1362,6 @@
   }
   .mt-4 {
     margin-top: calc(var(--spacing) * 4);
-  }
-  .mt-5 {
-    margin-top: calc(var(--spacing) * 5);
   }
   .mt-6 {
     margin-top: calc(var(--spacing) * 6);
@@ -2015,6 +1987,9 @@
   }
   .pl-0\.5 {
     padding-left: calc(var(--spacing) * 0.5);
+  }
+  .pl-2 {
+    padding-left: calc(var(--spacing) * 2);
   }
   .pl-3 {
     padding-left: calc(var(--spacing) * 3);
