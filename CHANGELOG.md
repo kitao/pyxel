@@ -1,8 +1,11 @@
 # Change Log
 
-## 2.9.7
+## 3.0.0
 
 - Added experimental PocketPy runtime
+
+## 2.9.7
+
 - Added a GIMP palette file for Pyxel's default colors
 - Updated Pyodide to version 314.0.2
 - Updated Rust to version nightly-2026-07-05
