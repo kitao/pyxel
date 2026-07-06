@@ -2,7 +2,7 @@
 
 ## 3.0.0
 
-- Added experimental PocketPy runtime
+- Added pyxel-pocket, a standalone Pyxel Player
 
 ## 2.9.7
 
