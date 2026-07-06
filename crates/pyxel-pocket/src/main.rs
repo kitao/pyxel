@@ -2,17 +2,25 @@ use std::path::Path;
 use std::{env, process};
 
 fn print_usage() {
-    eprintln!("Usage: pyxel-pocket SCRIPT.py|APP.pyxapp");
+    println!("usage:");
+    println!("    pyxel-pocket PYTHON_SCRIPT_FILE(.py)");
+    println!("    pyxel-pocket PYXEL_APP_FILE(.pyxapp)");
+}
+
+fn print_help() {
+    println!("pyxel-pocket {}, a standalone Pyxel Player", pyxel::VERSION);
+    print_usage();
 }
 
 fn main() {
     let mut args = env::args_os();
     let _program = args.next();
     let Some(script) = args.next() else {
-        print_usage();
-        process::exit(1);
+        print_help();
+        return;
     };
     if args.next().is_some() {
+        println!("invalid number of parameters");
         print_usage();
         process::exit(1);
     }
