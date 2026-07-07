@@ -44,3 +44,4 @@ tar = "0.4"
 [features]
 sdl2_dynamic = []
 sdl2_static = []
+no_headless_audio = []

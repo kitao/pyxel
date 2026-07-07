@@ -256,6 +256,14 @@ pub fn init(
         graphics,
     });
 
+    // Audio::start() looks unconditional here even in headless mode —
+    // that's intentional. Default behavior matches v2.8.5's design
+    // (a headless script still gets real audio via SDL2). See
+    // audio.rs's own #[cfg(feature = "no_headless_audio")]-gated
+    // Audio::start() implementations for the opt-in exception, used
+    // by embedders that drive render_samples() externally themselves
+    // (e.g. a libretro core) and don't want this SDL2 callback thread
+    // racing their own manual calls.
     Audio::start();
     if !headless {
         pyxel().update_screen_params();
