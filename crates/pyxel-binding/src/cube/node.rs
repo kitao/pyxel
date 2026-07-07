@@ -346,10 +346,11 @@ impl Node {
             *node.mesh_source.borrow_mut() = Some(mesh.inner.clone());
             *node.mesh_part_index.borrow_mut() = Some(i);
             if let Some(primitive) = &mesh_inner.primitives[i] {
+                let material = mesh_inner.material_for_part(i);
                 *node.drawable_primitive.borrow_mut() = Some(DrawablePrimitive {
                     primitive: primitive.clone(),
-                    col_img: mesh_inner.col_img.clone(),
-                    colkey: mesh_inner.colkey,
+                    col_img: material.col_img,
+                    colkey: material.colkey,
                 });
             }
             nodes.push(Py::new(py, node)?);

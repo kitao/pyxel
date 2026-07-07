@@ -41,7 +41,7 @@ signatures live in `python/pyxel/cube/__init__.pyi`.
 | `Camera` | View information (transform, fov, near, far, optional ortho size) plus the clear color |
 | `Shading` | Color lookup table (palette × levels) plus scene-wide light direction |
 | `Primitive` | Static vertex-data asset (positions / normals / uvs / indices / mode / cull); shareable across Node draws and Mesh parts |
-| `Mesh` | Hierarchical 3D model asset (parallel arrays of primitives / transforms / parents / names) with shared col_img, colkey, GLB import, and imported motion clips |
+| `Mesh` | Hierarchical 3D model asset (parallel arrays of primitives / transforms / parents / names) with default col_img/colkey, GLB material slots, GLB import, and imported motion clips |
 | `Motion` | Imported transform animation clip attached to a `Mesh` |
 | `Collider` | Unified collider holding shape + behavior flags + physical coefficients + motion state |
 | `Contact` | Collision-pipeline payload (contact geometry + engine-resolved motion deltas) |
@@ -632,9 +632,10 @@ instances and combine them through `Mesh` parts or a `Node` hierarchy.
 ## 10. Mesh
 
 A hierarchical 3D model asset. `Mesh` bundles multiple `Primitive`
-parts (positions / topology / cull) with a shared texture or flat
+parts (positions / topology / cull) with a default texture or flat
 color (`col_img`) and parent-child relationships between parts (held
-as parallel arrays). `Node.from_mesh(mesh)` creates a `Node` tree from
+as parallel arrays). Imported GLB parts may override that default with
+their material slot. `Node.from_mesh(mesh)` creates a `Node` tree from
 the asset; each generated drawable node emits its part through the same
 internal path as `Node.prim`.
 
@@ -647,7 +648,7 @@ internal path as `Node.prim`.
 | `parents` | `list[int]` | part i's parent index; `-1` marks a root; `parents[i] < i` always |
 | `names` | `list[str]` | part i's node name; imported model node names live here |
 | `motions` | `list[Motion]` | transform animation clips imported with the mesh |
-| `col_img` | `int \| Image` | flat color (when `int`) or shared texture (when `Image`) for all parts |
+| `col_img` | `int \| Image` | default flat color (when `int`) or texture (when `Image`) for parts without an imported material override |
 | `colkey` | `int \| None` | transparent color when `col_img` is `Image` |
 
 ### 10.2 Parallel Arrays
@@ -709,21 +710,28 @@ scene into the same part arrays used by the regular constructor. The first
 implementation is intentionally narrow and predictable:
 
 - Only embedded binary buffers and embedded images are supported.
-- At most one image, one texture, and one material are accepted. The texture
-  becomes the mesh-wide `col_img`; untextured files use the default flat
-  color path.
-- Texture pixels are quantized to the current Pyxel palette. Any pixel whose
-  alpha is not 255 is rejected; transparent texels are represented by the
-  caller-provided `colkey` value, not by alpha conversion.
+- Multiple materials and multiple embedded base-color textures are accepted.
+  Each GLB primitive keeps its material slot; untextured materials use their
+  `baseColorFactor` quantized to the nearest Pyxel palette color.
+- `NORMAL` attributes are imported as per-face flat normals. When a primitive
+  has no `NORMAL`, flat normals are computed from triangle vertices.
+- Texture pixels are quantized to the current Pyxel palette. Only
+  `pbrMetallicRoughness.baseColorTexture` is accepted, and RGB
+  `baseColorFactor` tint is applied before quantization. Any pixel whose alpha
+  is not 255 is rejected;
+  transparent texels are represented by the caller-provided `colkey` value,
+  not by alpha conversion.
 - Transform animation channels for translation, rotation, and scale are
   imported into `mesh.motions`. The `fps` argument converts glTF seconds into
   Pyxel frame numbers.
-- Skins, morph targets, material animation, external files, multiple
-  textures, and non-triangle mesh primitives are rejected rather than guessed.
+- Skins, morph targets, material animation, external files, alpha materials,
+  non-base-color material textures, and non-triangle mesh primitives are
+  rejected rather than guessed.
 
-This keeps the Blockbench export path explicit: author the palette-indexed
-texture normally, reserve one palette color for transparency, then pass that
-palette index as `colkey` when loading the GLB.
+This keeps the low-poly Blockbench export path explicit: use simple
+base-color materials or embedded base-color textures, reserve one palette
+color for transparency, then pass that palette index as `colkey` when
+loading the GLB.
 
 ### 10.6 Motion Clips
 
@@ -752,10 +760,12 @@ Returns all part indices that are transitive children of part `i`
 (excluding `i` itself), in topological order. Runs in O(N) via a single
 forward sweep using the topological-order invariant.
 
-### 10.8 Shared `col_img` and `colkey`
+### 10.8 Default `col_img` and `colkey`
 
-`col_img` is shared across every part of the mesh. Mixed-texture models
-split into separate `Mesh` instances combined through a `Node` hierarchy.
+For manually constructed meshes, `col_img` and `colkey` apply to every
+part of the mesh. `Mesh.from_glb` additionally stores imported material
+slots internally, so `Node.from_mesh` can draw different GLB primitives
+with different base-color materials or textures.
 
 Internally, `Mesh` also carries a private collision BVH cache. It is
 built on the first collision query that touches the mesh and is reused

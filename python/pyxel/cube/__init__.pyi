@@ -238,7 +238,7 @@ class Mesh:
     parents: list[int]  # -1 = root; parents[i] < i invariant
     names: list[str]
     motions: list[Motion]
-    col_img: int | Image  # int = flat color, Image = texture for all parts
+    col_img: int | Image  # default flat color or texture
     colkey: int | None  # transparent color when col_img is Image
 
     def __init__(

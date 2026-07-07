@@ -3,22 +3,29 @@ from pathlib import Path
 
 import pytest
 
+import pyxel
 from pyxel import Image
-from pyxel.cube import Mesh, Motion, Node, Vec3
+from pyxel.cube import Camera, Mat4, Mesh, Motion, Node, Vec3
 
 from .glb_fixtures import (
     write_alpha_texture_glb,
+    write_authored_normals_glb,
     write_external_buffer_glb,
     write_external_image_glb,
     write_gray_alpha_texture_glb,
     write_gray_texture_glb,
     write_line_mode_glb,
+    write_materialless_primitive_glb,
+    write_material_animation_glb,
     write_morph_target_glb,
+    write_normal_texture_glb,
     write_non_indexed_glb,
     write_rgb_texture_glb,
     write_single_texture_motion_glb,
+    write_tinted_texture_glb,
     write_skin_glb,
     write_two_material_glb,
+    write_two_material_two_texture_glb,
     write_two_texture_glb,
 )
 
@@ -51,6 +58,17 @@ def _dot(a, b):
 
 def _center(a, b, c):
     return tuple((a[i] + b[i] + c[i]) / 3.0 for i in range(3))
+
+
+def _render_mesh_colors(mesh):
+    pyxel.cls(0)
+    scene = Node()
+    scene.camera = Camera()
+    scene.camera.clear_color = 0
+    scene.camera.transform = Mat4.look_at(Vec3(0, 0, 4), Vec3.ZERO, Vec3.UP)
+    scene.add_child(Node.from_mesh(mesh))
+    scene.draw(0, 0, pyxel.width, pyxel.height)
+    return {pyxel.pget(x, y) for y in range(pyxel.height) for x in range(pyxel.width)}
 
 
 # Tests
@@ -125,6 +143,14 @@ def test_from_glb_loads_non_indexed_primitive(tmp_path):
     assert len(primitive.indices) == 0
 
 
+def test_from_glb_uses_authored_normals_when_present(tmp_path):
+    path = write_authored_normals_glb(tmp_path / "authored_normals.glb")
+    mesh = Mesh.from_glb(str(path))
+    primitive = next(p for p in mesh.primitives if p is not None)
+
+    assert tuple(primitive.normals) == pytest.approx((0.0, 0.0, -1.0))
+
+
 def test_from_glb_loads_motion(tmp_path):
     path = write_single_texture_motion_glb(tmp_path / "actor.glb")
     mesh = Mesh.from_glb(str(path), fps=30.0)
@@ -142,17 +168,73 @@ def test_from_glb_rejects_alpha_texture(tmp_path):
         Mesh.from_glb(str(path))
 
 
-def test_from_glb_rejects_multiple_textures(tmp_path):
-    path = write_two_texture_glb(tmp_path / "two_textures.glb")
+def test_from_glb_loads_multiple_flat_materials(tmp_path):
+    path = write_two_material_two_texture_glb(
+        tmp_path / "flat_materials.glb", textured=False
+    )
+    mesh = Mesh.from_glb(str(path))
 
-    with pytest.raises(ValueError, match="multiple textures"):
+    colors = _render_mesh_colors(mesh)
+
+    assert 8 in colors
+    assert 3 in colors
+
+
+def test_from_glb_loads_multiple_base_color_textures(tmp_path):
+    path = write_two_material_two_texture_glb(
+        tmp_path / "two_textures.glb", textured=True
+    )
+    mesh = Mesh.from_glb(str(path), colkey=0)
+
+    colors = _render_mesh_colors(mesh)
+
+    assert 8 in colors
+    assert 3 in colors
+
+
+def test_from_glb_applies_textured_material_factor(tmp_path):
+    path = write_tinted_texture_glb(tmp_path / "tinted_texture.glb")
+    mesh = Mesh.from_glb(str(path), colkey=0)
+
+    assert isinstance(mesh.col_img, Image)
+    assert {mesh.col_img.pget(x, y) for y in range(2) for x in range(2)} == {8}
+
+
+def test_from_glb_uses_default_material_for_materialless_primitive(tmp_path):
+    path = write_materialless_primitive_glb(tmp_path / "materialless.glb")
+    mesh = Mesh.from_glb(str(path), colkey=0)
+
+    colors = _render_mesh_colors(mesh)
+
+    assert 8 in colors
+    assert 7 in colors
+
+
+def test_from_glb_loads_unused_extra_material_and_texture(tmp_path):
+    path = write_two_texture_glb(tmp_path / "two_textures.glb")
+    mesh = Mesh.from_glb(str(path), colkey=0)
+
+    assert isinstance(mesh.col_img, Image)
+
+
+def test_from_glb_loads_unused_extra_material(tmp_path):
+    path = write_two_material_glb(tmp_path / "two_materials.glb")
+    mesh = Mesh.from_glb(str(path), colkey=0)
+
+    assert isinstance(mesh.col_img, Image)
+
+
+def test_from_glb_rejects_unsupported_texture_usage(tmp_path):
+    path = write_normal_texture_glb(tmp_path / "normal_texture.glb")
+
+    with pytest.raises(ValueError, match="unsupported texture usage"):
         Mesh.from_glb(str(path))
 
 
-def test_from_glb_rejects_multiple_materials(tmp_path):
-    path = write_two_material_glb(tmp_path / "two_materials.glb")
+def test_from_glb_rejects_material_animation(tmp_path):
+    path = write_material_animation_glb(tmp_path / "material_animation.glb")
 
-    with pytest.raises(ValueError, match="multiple materials"):
+    with pytest.raises(ValueError, match="animation pointer"):
         Mesh.from_glb(str(path))
 
 

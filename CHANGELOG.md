@@ -3,7 +3,6 @@
 ## 3.0.0
 
 - Added the Pyxel Cube software-rendered 3D extension module
-- Added Pyxel Cube GLB mesh import and motion playback APIs
 - Added Example C01 for a basic Pyxel Cube scene
 - Added Example C02 for Pyxel Cube drawing primitives
 - Added Example C03 for custom Pyxel Cube drawing primitives

@@ -2,13 +2,16 @@ use std::collections::HashMap;
 use std::fs;
 
 use crate::cube::mat4::{Mat4, RcMat4};
-use crate::cube::mesh::{ColImage, Mesh, RcMesh};
+use crate::cube::mesh::{ColImage, Material, Mesh, RcMesh};
 use crate::cube::motion::{Motion, MotionChannel, MotionInterpolation, MotionTarget, MotionValues};
 use crate::cube::primitive::{Primitive, RcPrimitive, MODE_TRIANGLES};
 use crate::cube::quat::Quat;
 use crate::cube::vec3::Vec3;
 use crate::image::{Color, Image, RcImage, Rgb24};
 use crate::settings::MAX_COLORS;
+
+type TextureTint = [f32; 3];
+type TextureTintKey = (u32, u32, u32);
 
 pub(super) fn parse_glb(filename: &str, colkey: Option<i32>, fps: f32) -> Result<RcMesh, String> {
     if !fps.is_finite() || fps <= 0.0 {
@@ -17,24 +20,28 @@ pub(super) fn parse_glb(filename: &str, colkey: Option<i32>, fps: f32) -> Result
 
     let bytes = fs::read(filename).map_err(|_| format!("Failed to open file '{filename}'"))?;
     validate_glb_header(&bytes)?;
+    validate_glb_pre_import_features(&bytes)?;
 
     let (document, buffers, images) = gltf::import_slice(bytes.as_slice())
         .map_err(|e| format!("Failed to read GLB '{filename}': {e}"))?;
     validate_document(&document, images.len())?;
+    let mut materials = import_materials(&document, &images, colkey)?;
+    let default_material_index = if document_uses_default_material(&document) {
+        let index = materials.len();
+        materials.push(default_material(colkey)?);
+        Some(index)
+    } else {
+        None
+    };
 
     let mesh = Mesh::new();
     {
         let m = rc_mut!(&mesh);
         m.colkey = colkey;
-        if let Some(img) = images.first() {
-            let rgba = image_to_rgba8(img)?;
-            m.col_img = ColImage::Image(rgba8_to_pyxel_image(
-                img.width,
-                img.height,
-                &rgba,
-                crate::pyxel::colors(),
-            )?);
+        if let Some(material) = materials.first() {
+            m.col_img = material.col_img.clone();
         }
+        m.materials = materials;
     }
 
     let scene = document
@@ -50,7 +57,7 @@ pub(super) fn parse_glb(filename: &str, colkey: Option<i32>, fps: f32) -> Result
             &mut node_parts,
             &node,
             -1,
-            images.len() == 1,
+            default_material_index,
         )?;
     }
 
@@ -66,6 +73,7 @@ fn rgba8_to_pyxel_image(
     height: u32,
     rgba: &[u8],
     colors: &[Rgb24],
+    color_factor: TextureTint,
 ) -> Result<RcImage, String> {
     let width_usize = width as usize;
     let height_usize = height as usize;
@@ -99,7 +107,11 @@ fn rgba8_to_pyxel_image(
         for y in 0..height_usize {
             for x in 0..width_usize {
                 let base = (y * width_usize + x) * 4;
-                let src_rgb = (rgba[base], rgba[base + 1], rgba[base + 2]);
+                let src_rgb = (
+                    (rgba[base] as f32 * color_factor[0]).round() as u8,
+                    (rgba[base + 1] as f32 * color_factor[1]).round() as u8,
+                    (rgba[base + 2] as f32 * color_factor[2]).round() as u8,
+                );
                 let color = if let Some(color) = color_table.get(&src_rgb) {
                     *color
                 } else {
@@ -135,6 +147,113 @@ fn color_distance_sq(a: (u8, u8, u8), b: (u8, u8, u8)) -> f32 {
     dr * dr + dg * dg + db * db
 }
 
+fn rgb_to_palette_color(rgb: (u8, u8, u8), colors: &[Rgb24]) -> Result<Color, String> {
+    if colors.is_empty() {
+        return Err("Palette must contain at least one color".to_string());
+    }
+    if colors.len() > MAX_COLORS as usize {
+        return Err(format!("Palette must contain at most {MAX_COLORS} colors"));
+    }
+
+    let mut closest_color: Color = 0;
+    let mut closest_dist: f32 = f32::MAX;
+    for (i, pal_color) in colors.iter().enumerate() {
+        let pal_rgb = (
+            (pal_color >> 16) as u8,
+            (pal_color >> 8) as u8,
+            *pal_color as u8,
+        );
+        let dist = color_distance_sq(rgb, pal_rgb);
+        if dist < closest_dist {
+            closest_color = i as Color;
+            closest_dist = dist;
+        }
+    }
+    Ok(closest_color)
+}
+
+fn base_color_factor_to_rgb(factor: [f32; 4]) -> Result<(u8, u8, u8), String> {
+    if factor.iter().any(|component| !component.is_finite()) {
+        return Err("GLB material baseColorFactor must be finite".to_string());
+    }
+    if (factor[3] - 1.0).abs() > f32::EPSILON {
+        return Err("GLB material alpha is not supported".to_string());
+    }
+    Ok((
+        (factor[0].clamp(0.0, 1.0) * 255.0).round() as u8,
+        (factor[1].clamp(0.0, 1.0) * 255.0).round() as u8,
+        (factor[2].clamp(0.0, 1.0) * 255.0).round() as u8,
+    ))
+}
+
+fn base_color_factor_to_tint(factor: [f32; 4]) -> Result<(TextureTint, TextureTintKey), String> {
+    if factor.iter().any(|component| !component.is_finite()) {
+        return Err("GLB material baseColorFactor must be finite".to_string());
+    }
+    if (factor[3] - 1.0).abs() > f32::EPSILON {
+        return Err("GLB material alpha is not supported".to_string());
+    }
+
+    let tint = [
+        factor[0].clamp(0.0, 1.0),
+        factor[1].clamp(0.0, 1.0),
+        factor[2].clamp(0.0, 1.0),
+    ];
+    let key = (tint[0].to_bits(), tint[1].to_bits(), tint[2].to_bits());
+    Ok((tint, key))
+}
+
+fn import_materials(
+    document: &gltf::Document,
+    images: &[gltf::image::Data],
+    colkey: Option<i32>,
+) -> Result<Vec<Material>, String> {
+    let colors = crate::pyxel::colors();
+    let mut image_cache = HashMap::<(usize, TextureTintKey), RcImage>::new();
+    let mut materials = Vec::new();
+
+    for material in document.materials() {
+        let pbr = material.pbr_metallic_roughness();
+        let col_img = if let Some(texture_info) = pbr.base_color_texture() {
+            let (tint, tint_key) = base_color_factor_to_tint(pbr.base_color_factor())?;
+            let image_index = texture_info.texture().source().index();
+            let cache_key = (image_index, tint_key);
+            if let Some(img) = image_cache.get(&cache_key) {
+                ColImage::Image(img.clone())
+            } else {
+                let img = images
+                    .get(image_index)
+                    .ok_or_else(|| "GLB base color texture image is missing".to_string())?;
+                let rgba = image_to_rgba8(img)?;
+                let image = rgba8_to_pyxel_image(img.width, img.height, &rgba, colors, tint)?;
+                image_cache.insert(cache_key, image.clone());
+                ColImage::Image(image)
+            }
+        } else {
+            let rgb = base_color_factor_to_rgb(pbr.base_color_factor())?;
+            ColImage::Color(i32::from(rgb_to_palette_color(rgb, colors)?))
+        };
+        materials.push(Material { col_img, colkey });
+    }
+
+    Ok(materials)
+}
+
+fn default_material(colkey: Option<i32>) -> Result<Material, String> {
+    let color = rgb_to_palette_color((255, 255, 255), crate::pyxel::colors())?;
+    Ok(Material {
+        col_img: ColImage::Color(i32::from(color)),
+        colkey,
+    })
+}
+
+fn document_uses_default_material(document: &gltf::Document) -> bool {
+    document.meshes().any(|mesh| {
+        mesh.primitives()
+            .any(|primitive| primitive.material().index().is_none())
+    })
+}
+
 // Validation helpers
 
 fn validate_glb_header(bytes: &[u8]) -> Result<(), String> {
@@ -150,18 +269,47 @@ fn validate_glb_header(bytes: &[u8]) -> Result<(), String> {
     Ok(())
 }
 
-fn validate_document(document: &gltf::Document, image_count: usize) -> Result<(), String> {
-    if document.textures().count() > 1 {
-        return Err("GLB multiple textures are not supported".to_string());
+fn validate_glb_pre_import_features(bytes: &[u8]) -> Result<(), String> {
+    let Some(json_bytes) = glb_json_chunk(bytes)? else {
+        return Ok(());
+    };
+    if json_bytes
+        .windows(br#""KHR_animation_pointer""#.len())
+        .any(|window| window == br#""KHR_animation_pointer""#)
+    {
+        return Err("GLB animation pointer/material animation is not supported".to_string());
     }
-    if document.materials().count() > 1 {
-        return Err("GLB multiple materials are not supported".to_string());
+    Ok(())
+}
+
+fn glb_json_chunk(bytes: &[u8]) -> Result<Option<&[u8]>, String> {
+    if bytes.len() < 20 {
+        return Ok(None);
+    }
+    let json_len = u32::from_le_bytes([bytes[12], bytes[13], bytes[14], bytes[15]]) as usize;
+    let json_type = [bytes[16], bytes[17], bytes[18], bytes[19]];
+    if json_type != *b"JSON" {
+        return Err("GLB first chunk must be JSON".to_string());
+    }
+    let json_end = 20_usize
+        .checked_add(json_len)
+        .ok_or_else(|| "GLB JSON chunk length overflows".to_string())?;
+    if json_end > bytes.len() {
+        return Err("GLB JSON chunk is truncated".to_string());
+    }
+    Ok(Some(&bytes[20..json_end]))
+}
+
+fn validate_document(document: &gltf::Document, image_count: usize) -> Result<(), String> {
+    if document
+        .extensions_used()
+        .chain(document.extensions_required())
+        .any(|extension| extension == "KHR_animation_pointer")
+    {
+        return Err("GLB animation pointer/material animation is not supported".to_string());
     }
     if document.skins().next().is_some() {
         return Err("GLB skins are not supported".to_string());
-    }
-    if image_count > 1 || document.images().count() > 1 {
-        return Err("GLB multiple textures/images are not supported".to_string());
     }
 
     for buffer in document.buffers() {
@@ -208,34 +356,25 @@ fn validate_mesh_features(document: &gltf::Document) -> Result<(), String> {
 }
 
 fn validate_texture_usage(document: &gltf::Document, image_count: usize) -> Result<(), String> {
-    if document.textures().count() == 0 && image_count == 0 {
-        return Ok(());
-    }
-    if document.textures().count() != 1 || image_count != 1 {
-        return Err("GLB texture/image usage is not supported".to_string());
-    }
-
-    let Some(material) = document.materials().next() else {
-        return Err("GLB embedded image requires a base color texture material".to_string());
-    };
-    if material.normal_texture().is_some()
-        || material.occlusion_texture().is_some()
-        || material.emissive_texture().is_some()
-        || material
-            .pbr_metallic_roughness()
-            .metallic_roughness_texture()
-            .is_some()
-    {
-        return Err("GLB unsupported texture usage".to_string());
-    }
-    if material
-        .pbr_metallic_roughness()
-        .base_color_texture()
-        .is_none()
-    {
-        return Err(
-            "GLB embedded image requires pbrMetallicRoughness.baseColorTexture".to_string(),
-        );
+    for material in document.materials() {
+        if material.alpha_mode() != gltf::material::AlphaMode::Opaque {
+            return Err("GLB material alpha mode is not supported".to_string());
+        }
+        if material.normal_texture().is_some()
+            || material.occlusion_texture().is_some()
+            || material.emissive_texture().is_some()
+            || material
+                .pbr_metallic_roughness()
+                .metallic_roughness_texture()
+                .is_some()
+        {
+            return Err("GLB unsupported texture usage".to_string());
+        }
+        if let Some(texture) = material.pbr_metallic_roughness().base_color_texture() {
+            if texture.texture().source().index() >= image_count {
+                return Err("GLB base color texture image is missing".to_string());
+            }
+        }
     }
 
     Ok(())
@@ -279,10 +418,17 @@ fn import_node(
     node_parts: &mut HashMap<usize, usize>,
     node: &gltf::Node,
     parent: i32,
-    has_texture: bool,
+    default_material_index: Option<usize>,
 ) -> Result<(), String> {
     let node_name = node.name().unwrap_or("").to_string();
-    let node_part = add_part(mesh, None, node_transform(node), parent, node_name.clone());
+    let node_part = add_part(
+        mesh,
+        None,
+        node_transform(node),
+        parent,
+        node_name.clone(),
+        None,
+    );
     node_parts.insert(node.index(), node_part);
 
     if let Some(gltf_mesh) = node.mesh() {
@@ -293,13 +439,15 @@ fn import_node(
             } else {
                 format!("{node_name}_primitive_{primitive_index}")
             };
-            let primitive = import_primitive(&primitive, buffers, has_texture)?;
+            let material_index = primitive.material().index().or(default_material_index);
+            let primitive = import_primitive(&primitive, buffers)?;
             add_part(
                 mesh,
                 Some(primitive),
                 Mat4::identity(),
                 node_part as i32,
                 name,
+                material_index,
             );
         }
     }
@@ -311,7 +459,7 @@ fn import_node(
             node_parts,
             &child,
             node_part as i32,
-            has_texture,
+            default_material_index,
         )?;
     }
     Ok(())
@@ -323,6 +471,7 @@ fn add_part(
     transform: RcMat4,
     parent: i32,
     name: String,
+    material_index: Option<usize>,
 ) -> usize {
     let m = rc_mut!(mesh);
     let index = m.primitives.len();
@@ -330,6 +479,7 @@ fn add_part(
     m.transforms.push(transform);
     m.parents.push(parent);
     m.names.push(name);
+    m.material_indices.push(material_index);
     index
 }
 
@@ -359,21 +509,16 @@ fn node_transform(node: &gltf::Node) -> RcMat4 {
 fn import_primitive(
     primitive: &gltf::Primitive,
     buffers: &[gltf::buffer::Data],
-    has_texture: bool,
 ) -> Result<RcPrimitive, String> {
     if primitive.mode() != gltf::mesh::Mode::Triangles {
         return Err("GLB only triangle primitives are supported".to_string());
     }
 
-    if has_texture
-        && primitive
-            .material()
-            .pbr_metallic_roughness()
-            .base_color_texture()
-            .is_none()
-    {
-        return Err("GLB textured primitive is missing base color texture material".to_string());
-    }
+    let has_texture = primitive
+        .material()
+        .pbr_metallic_roughness()
+        .base_color_texture()
+        .is_some();
 
     let reader =
         primitive.reader(|buffer| buffers.get(buffer.index()).map(|data| data.0.as_slice()));
@@ -401,6 +546,21 @@ fn import_primitive(
     if has_texture && (uvs.len() % 2 != 0 || uvs.len() / 2 != vertex_count) {
         return Err("GLB TEXCOORD_0 and POSITION count mismatch".to_string());
     }
+    let vertex_normals = match reader.read_normals() {
+        Some(normals) => {
+            let normals = normals
+                .flat_map(std::iter::IntoIterator::into_iter)
+                .collect::<Vec<f32>>();
+            if normals.len() % 3 != 0 || normals.len() / 3 != vertex_count {
+                return Err("GLB NORMAL and POSITION count mismatch".to_string());
+            }
+            if normals.iter().any(|normal| !normal.is_finite()) {
+                return Err("GLB NORMAL values must be finite".to_string());
+            }
+            Some(normals)
+        }
+        None => None,
+    };
 
     let indices = reader
         .read_indices()
@@ -425,8 +585,54 @@ fn import_primitive(
         p.indices = indices;
         p.mode = MODE_TRIANGLES;
         p.compute_normals();
+        if let Some(vertex_normals) = vertex_normals {
+            p.normals = authored_normals_to_flat_normals(&vertex_normals, &p.indices, &p.normals)?;
+        }
     }
     Ok(prim)
+}
+
+fn authored_normals_to_flat_normals(
+    vertex_normals: &[f32],
+    indices: &[i32],
+    fallback_normals: &[f32],
+) -> Result<Vec<f32>, String> {
+    let vertex_count = vertex_normals.len() / 3;
+    let face_count = if indices.is_empty() {
+        vertex_count / 3
+    } else {
+        indices.len() / 3
+    };
+    let mut out = Vec::with_capacity(face_count * 3);
+
+    for face_index in 0..face_count {
+        let (a, b, c) = if indices.is_empty() {
+            (face_index * 3, face_index * 3 + 1, face_index * 3 + 2)
+        } else {
+            (
+                indices[face_index * 3] as usize,
+                indices[face_index * 3 + 1] as usize,
+                indices[face_index * 3 + 2] as usize,
+            )
+        };
+        if a >= vertex_count || b >= vertex_count || c >= vertex_count {
+            return Err("GLB primitive index exceeds NORMAL count".to_string());
+        }
+
+        let nx = vertex_normals[a * 3] + vertex_normals[b * 3] + vertex_normals[c * 3];
+        let ny = vertex_normals[a * 3 + 1] + vertex_normals[b * 3 + 1] + vertex_normals[c * 3 + 1];
+        let nz = vertex_normals[a * 3 + 2] + vertex_normals[b * 3 + 2] + vertex_normals[c * 3 + 2];
+        let len = (nx * nx + ny * ny + nz * nz).sqrt();
+
+        if len > f32::EPSILON {
+            out.extend_from_slice(&[nx / len, ny / len, nz / len]);
+        } else {
+            let base = face_index * 3;
+            out.extend_from_slice(&fallback_normals[base..base + 3]);
+        }
+    }
+
+    Ok(out)
 }
 
 // Animation import
