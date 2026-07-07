@@ -9,9 +9,10 @@ use crate::cube::vec3::Vec3;
 use crate::image::RcImage;
 
 // Asset container for a hierarchical 3D model. primitives / transforms /
-// parents are parallel arrays; col_img holds either a flat color
-// (ColImage::Color) or a shared texture (ColImage::Image). parents[i] < i
-// is required (topological order); validate() enforces this.
+// parents are parallel arrays; col_img holds the default flat color or
+// shared texture, and imported GLB parts may override it through material
+// slots. parents[i] < i is required (topological order); validate()
+// enforces this.
 
 #[derive(Clone)]
 pub enum ColImage {
@@ -28,6 +29,12 @@ impl ColImage {
     }
 }
 
+#[derive(Clone)]
+pub struct Material {
+    pub col_img: ColImage,
+    pub colkey: Option<i32>,
+}
+
 pub struct Mesh {
     pub primitives: Vec<Option<RcPrimitive>>,
     pub transforms: Vec<RcMat4>,
@@ -36,6 +43,8 @@ pub struct Mesh {
     pub motions: Vec<RcMotion>,
     pub col_img: ColImage,
     pub colkey: Option<i32>,
+    pub materials: Vec<Material>,
+    pub material_indices: Vec<Option<usize>>,
     // Lazy collision BVH. Built on first mesh-collider query; never
     // refit (cube-design.md § 11.1: dynamic mesh colliders are out of
     // scope). Not exposed through the binding.
@@ -60,6 +69,8 @@ impl Mesh {
             motions: Vec::new(),
             col_img: ColImage::Color(7),
             colkey: None,
+            materials: Vec::new(),
+            material_indices: Vec::new(),
             bvh: RefCell::new(None),
             local_aabb: RefCell::new(None),
         })
@@ -186,13 +197,15 @@ impl Mesh {
         if self.transforms.len() != n
             || self.parents.len() != n
             || (!self.names.is_empty() && self.names.len() != n)
+            || (!self.material_indices.is_empty() && self.material_indices.len() != n)
         {
             return Err(format!(
-                "Mesh parallel arrays length mismatch: primitives={}, transforms={}, parents={}, names={}",
+                "Mesh parallel arrays length mismatch: primitives={}, transforms={}, parents={}, names={}, material_indices={}",
                 n,
                 self.transforms.len(),
                 self.parents.len(),
                 self.names.len(),
+                self.material_indices.len(),
             ));
         }
         for (i, &p) in self.parents.iter().enumerate() {
@@ -205,7 +218,27 @@ impl Mesh {
                 ));
             }
         }
+        for (i, material_index) in self.material_indices.iter().enumerate() {
+            if let Some(material_index) = material_index {
+                if *material_index >= self.materials.len() {
+                    return Err(format!(
+                        "Mesh.material_indices[{i}] = {material_index} exceeds material count {}",
+                        self.materials.len(),
+                    ));
+                }
+            }
+        }
         Ok(())
+    }
+
+    pub fn material_for_part(&self, part_index: usize) -> Material {
+        if let Some(Some(material_index)) = self.material_indices.get(part_index) {
+            return self.materials[*material_index].clone();
+        }
+        Material {
+            col_img: self.col_img.clone(),
+            colkey: self.colkey,
+        }
     }
 
     // Compose per-part world transforms by walking parents forward in
@@ -263,6 +296,8 @@ mod tests {
         assert!(m.motions.is_empty());
         assert!(matches!(m.col_img, ColImage::Color(7)));
         assert!(m.colkey.is_none());
+        assert!(m.materials.is_empty());
+        assert!(m.material_indices.is_empty());
     }
 
     #[test]
@@ -297,6 +332,32 @@ mod tests {
             m.primitives = vec![Some(Primitive::new()), Some(Primitive::new())];
             m.transforms = vec![Mat4::identity()];
             m.parents = vec![-1, 0];
+        }
+        assert!(rc_ref!(&m).validate().is_err());
+    }
+
+    #[test]
+    fn test_validate_rejects_material_index_length_mismatch() {
+        let m = Mesh::new();
+        {
+            let m = rc_mut!(&m);
+            m.primitives = vec![Some(Primitive::new()), Some(Primitive::new())];
+            m.transforms = vec![Mat4::identity(), Mat4::identity()];
+            m.parents = vec![-1, 0];
+            m.material_indices = vec![None];
+        }
+        assert!(rc_ref!(&m).validate().is_err());
+    }
+
+    #[test]
+    fn test_validate_rejects_material_index_out_of_range() {
+        let m = Mesh::new();
+        {
+            let m = rc_mut!(&m);
+            m.primitives = vec![Some(Primitive::new())];
+            m.transforms = vec![Mat4::identity()];
+            m.parents = vec![-1];
+            m.material_indices = vec![Some(0)];
         }
         assert!(rc_ref!(&m).validate().is_err());
     }
@@ -363,6 +424,37 @@ mod tests {
         // Image variant returns flat=0 and the wrapped image.
         assert_eq!(flat, 0);
         assert!(img_opt.is_some());
+    }
+
+    #[test]
+    fn test_material_for_part_defaults_to_mesh_material() {
+        let m = Mesh::new();
+        {
+            let m = rc_mut!(&m);
+            m.col_img = ColImage::Color(5);
+            m.colkey = Some(0);
+        }
+        let material = rc_ref!(&m).material_for_part(0);
+
+        assert!(matches!(material.col_img, ColImage::Color(5)));
+        assert_eq!(material.colkey, Some(0));
+    }
+
+    #[test]
+    fn test_material_for_part_uses_part_material() {
+        let m = Mesh::new();
+        {
+            let m = rc_mut!(&m);
+            m.materials = vec![Material {
+                col_img: ColImage::Color(8),
+                colkey: Some(1),
+            }];
+            m.material_indices = vec![Some(0)];
+        }
+        let material = rc_ref!(&m).material_for_part(0);
+
+        assert!(matches!(material.col_img, ColImage::Color(8)));
+        assert_eq!(material.colkey, Some(1));
     }
 
     #[test]

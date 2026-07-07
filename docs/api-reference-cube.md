@@ -950,7 +950,7 @@ A hierarchical 3D model asset. primitives, transforms, parents, and names are pa
 - `transforms` (*list*) — Local transform of each part relative to its parent. Defaults to empty.
 - `parents` (*list*) — Parent index of each part. -1 is a root. Defaults to empty.
 - `names` (*list*) — Node name per part. Defaults to empty strings.
-- `col_img` (*int | Image*) — Flat color number, or a texture Image shared by every part. Defaults to 7.
+- `col_img` (*int | Image*) — Default flat color number, or texture Image. Defaults to 7.
 - `colkey` (*int | None*) — Transparent color when col_img is an Image. Defaults to None.
 
 **Example:**
@@ -994,7 +994,7 @@ Transform animation clips imported with the mesh.
 
 ### `col_img` — variable
 
-Flat color number, or a texture Image shared by every part.
+Default flat color number, or texture Image.
 
 - **Type:** `int | Image`
 
@@ -1006,7 +1006,7 @@ Transparent color when col_img is an Image.
 
 ### `Mesh.from_glb(filename, *, colkey=None, fps=30.0)` — class
 
-Load a binary glTF (.glb) file into a Mesh. Embedded buffers and a single embedded texture are supported; imported transform animations are exposed through motions.
+Load a binary glTF (.glb) file into a Mesh. Embedded buffers and embedded base-color materials/textures are supported; imported transform animations are exposed through motions.
 
 **Parameters:**
 
@@ -1023,7 +1023,7 @@ mesh = Mesh.from_glb("actor.glb", colkey=0)
 actor = Node.from_mesh(mesh)
 ```
 
-**Note:** Texture pixels must be fully opaque; use colkey for transparency. Multiple textures, external files, skins, morph targets, and material animation are rejected.
+**Note:** GLB NORMAL attributes are imported as per-face flat normals. RGB baseColorFactor tints are applied before palette quantization. Texture pixels must be fully opaque; use colkey for transparency. Non-base-color material textures, alpha materials, external files, skins, morph targets, and material animation are rejected.
 
 ### `descendants(i)` — function *(Advanced)*
 

@@ -80,6 +80,9 @@ def write_single_texture_motion_glb(
     external_image: bool = False,
     morph_target: bool = False,
     skin: bool = False,
+    normal_texture: bool = False,
+    material_animation: bool = False,
+    base_color_factor: list[float] | None = None,
 ) -> Path:
     positions = struct.pack(
         "<ffffffffffff",
@@ -142,16 +145,32 @@ def write_single_texture_motion_glb(
     if skin:
         node["skin"] = 0
 
+    materials = []
+    for _ in range(material_count):
+        pbr = {"baseColorTexture": {"index": 0}}
+        if base_color_factor is not None:
+            pbr["baseColorFactor"] = base_color_factor
+        materials.append({"pbrMetallicRoughness": pbr})
+    if normal_texture:
+        materials[0]["normalTexture"] = {"index": 0}
+
+    animation_target = {"node": 0, "path": "translation"}
+    if material_animation:
+        animation_target = {
+            "extensions": {
+                "KHR_animation_pointer": {
+                    "pointer": "/materials/0/pbrMetallicRoughness/baseColorFactor"
+                }
+            }
+        }
+
     gltf = {
         "asset": {"version": "2.0"},
         "scene": 0,
         "scenes": [{"nodes": [0]}],
         "nodes": [node],
         "meshes": [{"primitives": [primitive]}],
-        "materials": [
-            {"pbrMetallicRoughness": {"baseColorTexture": {"index": 0}}}
-            for _ in range(material_count)
-        ],
+        "materials": materials,
         "textures": [{"source": 0} for _ in range(texture_count)],
         "images": [{"bufferView": 6, "mimeType": "image/png"}],
         "buffers": [{"byteLength": len(bin_blob)}],
@@ -191,9 +210,7 @@ def write_single_texture_motion_glb(
             {
                 "name": "slide",
                 "samplers": [{"input": 3, "output": 4, "interpolation": "LINEAR"}],
-                "channels": [
-                    {"sampler": 0, "target": {"node": 0, "path": "translation"}}
-                ],
+                "channels": [{"sampler": 0, "target": animation_target}],
             }
         ],
     }
@@ -213,6 +230,8 @@ def write_single_texture_motion_glb(
         gltf["images"] = [
             {"uri": "data:image/png;base64," + base64.b64encode(png).decode()}
         ]
+    if material_animation:
+        gltf["extensionsUsed"] = ["KHR_animation_pointer"]
 
     return _write_glb(path, gltf, bin_blob)
 
@@ -241,12 +260,33 @@ def write_gray_alpha_texture_glb(path: Path) -> Path:
     return write_single_texture_motion_glb(path, png_color_type=4)
 
 
+def write_tinted_texture_glb(path: Path) -> Path:
+    return write_single_texture_motion_glb(
+        path,
+        texture_pixels=[
+            (255, 255, 255, 255),
+            (255, 255, 255, 255),
+            (255, 255, 255, 255),
+            (255, 255, 255, 255),
+        ],
+        base_color_factor=[1.0, 0.0, 0.0, 1.0],
+    )
+
+
 def write_two_texture_glb(path: Path) -> Path:
     return write_single_texture_motion_glb(path, texture_count=2)
 
 
 def write_two_material_glb(path: Path) -> Path:
     return write_single_texture_motion_glb(path, material_count=2)
+
+
+def write_normal_texture_glb(path: Path) -> Path:
+    return write_single_texture_motion_glb(path, normal_texture=True)
+
+
+def write_material_animation_glb(path: Path) -> Path:
+    return write_single_texture_motion_glb(path, material_animation=True)
 
 
 def write_line_mode_glb(path: Path) -> Path:
@@ -297,3 +337,232 @@ def write_non_indexed_glb(path: Path, *, vertex_count: int = 6) -> Path:
         ],
     }
     return _write_glb(path, gltf, positions)
+
+
+def write_authored_normals_glb(path: Path) -> Path:
+    positions = struct.pack(
+        "<fffffffff",
+        -0.5,
+        -0.5,
+        0.0,
+        0.5,
+        -0.5,
+        0.0,
+        0.0,
+        0.5,
+        0.0,
+    )
+    normals = struct.pack(
+        "<fffffffff",
+        0.0,
+        0.0,
+        -1.0,
+        0.0,
+        0.0,
+        -1.0,
+        0.0,
+        0.0,
+        -1.0,
+    )
+    chunks: list[bytes] = []
+    offsets: list[int] = []
+    cursor = 0
+    for data in (positions, normals):
+        offsets.append(cursor)
+        chunks.append(data)
+        cursor += len(data)
+        pad = (4 - cursor % 4) % 4
+        if pad:
+            chunks.append(b"\x00" * pad)
+            cursor += pad
+    bin_blob = b"".join(chunks)
+    gltf = {
+        "asset": {"version": "2.0"},
+        "scene": 0,
+        "scenes": [{"nodes": [0]}],
+        "nodes": [{"name": "tri", "mesh": 0}],
+        "meshes": [
+            {"primitives": [{"attributes": {"POSITION": 0, "NORMAL": 1}, "mode": 4}]}
+        ],
+        "buffers": [{"byteLength": len(bin_blob)}],
+        "bufferViews": [
+            {"buffer": 0, "byteOffset": offsets[0], "byteLength": len(positions)},
+            {"buffer": 0, "byteOffset": offsets[1], "byteLength": len(normals)},
+        ],
+        "accessors": [
+            {
+                "bufferView": 0,
+                "componentType": 5126,
+                "count": 3,
+                "type": "VEC3",
+                "min": [-0.5, -0.5, 0.0],
+                "max": [0.5, 0.5, 0.0],
+            },
+            {"bufferView": 1, "componentType": 5126, "count": 3, "type": "VEC3"},
+        ],
+    }
+    return _write_glb(path, gltf, bin_blob)
+
+
+def write_two_material_two_texture_glb(
+    path: Path, *, textured: bool, right_material: bool = True
+) -> Path:
+    left_positions = struct.pack(
+        "<ffffffffffff",
+        -1.2,
+        -0.5,
+        0.0,
+        -0.2,
+        -0.5,
+        0.0,
+        -0.2,
+        0.5,
+        0.0,
+        -1.2,
+        0.5,
+        0.0,
+    )
+    right_positions = struct.pack(
+        "<ffffffffffff",
+        0.2,
+        -0.5,
+        0.0,
+        1.2,
+        -0.5,
+        0.0,
+        1.2,
+        0.5,
+        0.0,
+        0.2,
+        0.5,
+        0.0,
+    )
+    uvs = struct.pack("<ffffffff", 0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0)
+    indices = struct.pack("<HHHHHH", 0, 1, 2, 0, 2, 3)
+    red_png = _png(1, 1, 6, [(255, 0, 0, 255)])
+    green_png = _png(1, 1, 6, [(0, 255, 0, 255)])
+
+    data_chunks = [left_positions, indices, right_positions, indices]
+    if textured:
+        data_chunks.extend([uvs, uvs, red_png, green_png])
+
+    chunks: list[bytes] = []
+    offsets: list[int] = []
+    cursor = 0
+    for data in data_chunks:
+        offsets.append(cursor)
+        chunks.append(data)
+        cursor += len(data)
+        pad = (4 - cursor % 4) % 4
+        if pad:
+            chunks.append(b"\x00" * pad)
+            cursor += pad
+    bin_blob = b"".join(chunks)
+
+    left_attributes = {"POSITION": 0}
+    right_attributes = {"POSITION": 2}
+    accessors = [
+        {
+            "bufferView": 0,
+            "componentType": 5126,
+            "count": 4,
+            "type": "VEC3",
+            "min": [-1.2, -0.5, 0.0],
+            "max": [-0.2, 0.5, 0.0],
+        },
+        {"bufferView": 1, "componentType": 5123, "count": 6, "type": "SCALAR"},
+        {
+            "bufferView": 2,
+            "componentType": 5126,
+            "count": 4,
+            "type": "VEC3",
+            "min": [0.2, -0.5, 0.0],
+            "max": [1.2, 0.5, 0.0],
+        },
+        {"bufferView": 3, "componentType": 5123, "count": 6, "type": "SCALAR"},
+    ]
+    buffer_views = [
+        {"buffer": 0, "byteOffset": offsets[0], "byteLength": len(left_positions)},
+        {"buffer": 0, "byteOffset": offsets[1], "byteLength": len(indices)},
+        {"buffer": 0, "byteOffset": offsets[2], "byteLength": len(right_positions)},
+        {"buffer": 0, "byteOffset": offsets[3], "byteLength": len(indices)},
+    ]
+    materials = [{"pbrMetallicRoughness": {"baseColorFactor": [1.0, 0.0, 0.0, 1.0]}}]
+    if right_material:
+        materials.append(
+            {"pbrMetallicRoughness": {"baseColorFactor": [0.0, 1.0, 0.0, 1.0]}}
+        )
+    images = []
+    textures = []
+
+    if textured:
+        if not right_material:
+            raise ValueError("textured materialless fixture is not supported")
+        left_attributes["TEXCOORD_0"] = 4
+        right_attributes["TEXCOORD_0"] = 5
+        materials = [
+            {"pbrMetallicRoughness": {"baseColorTexture": {"index": 0}}},
+            {"pbrMetallicRoughness": {"baseColorTexture": {"index": 1}}},
+        ]
+        textures = [{"source": 0}, {"source": 1}]
+        images = [
+            {"bufferView": 6, "mimeType": "image/png"},
+            {"bufferView": 7, "mimeType": "image/png"},
+        ]
+        buffer_views.extend(
+            [
+                {"buffer": 0, "byteOffset": offsets[4], "byteLength": len(uvs)},
+                {"buffer": 0, "byteOffset": offsets[5], "byteLength": len(uvs)},
+                {"buffer": 0, "byteOffset": offsets[6], "byteLength": len(red_png)},
+                {"buffer": 0, "byteOffset": offsets[7], "byteLength": len(green_png)},
+            ]
+        )
+        accessors.extend(
+            [
+                {"bufferView": 4, "componentType": 5126, "count": 4, "type": "VEC2"},
+                {"bufferView": 5, "componentType": 5126, "count": 4, "type": "VEC2"},
+            ]
+        )
+
+    right_primitive = {
+        "attributes": right_attributes,
+        "indices": 3,
+        "mode": 4,
+    }
+    if right_material:
+        right_primitive["material"] = 1
+
+    gltf = {
+        "asset": {"version": "2.0"},
+        "scene": 0,
+        "scenes": [{"nodes": [0]}],
+        "nodes": [{"name": "panels", "mesh": 0}],
+        "meshes": [
+            {
+                "primitives": [
+                    {
+                        "attributes": left_attributes,
+                        "indices": 1,
+                        "material": 0,
+                        "mode": 4,
+                    },
+                    right_primitive,
+                ]
+            }
+        ],
+        "materials": materials,
+        "buffers": [{"byteLength": len(bin_blob)}],
+        "bufferViews": buffer_views,
+        "accessors": accessors,
+    }
+    if textured:
+        gltf["textures"] = textures
+        gltf["images"] = images
+
+    return _write_glb(path, gltf, bin_blob)
+
+
+def write_materialless_primitive_glb(path: Path) -> Path:
+    return write_two_material_two_texture_glb(
+        path, textured=False, right_material=False
+    )
