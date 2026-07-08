@@ -1,3 +1,4 @@
+use std::borrow::Cow;
 use std::collections::HashMap;
 use std::fs;
 
@@ -24,9 +25,10 @@ pub(super) fn parse_glb(filename: &str, colkey: Option<i32>, fps: f32) -> Result
 
     let bytes = fs::read(filename).map_err(|_| format!("Failed to open file '{filename}'"))?;
     validate_glb_header(&bytes)?;
-    validate_glb_pre_import_features(&bytes)?;
+    let skip_animations = warn_glb_pre_import_features(&bytes)?;
+    let import_bytes = sanitize_glb_for_import(&bytes)?;
 
-    let (document, buffers, images) = gltf::import_slice(bytes.as_slice())
+    let (document, buffers, images) = gltf::import_slice(import_bytes.as_ref())
         .map_err(|e| format!("Failed to read GLB '{filename}': {e}"))?;
     validate_document(&document, images.len())?;
     let (materials, resolved_colkey) = import_materials(&document, &images, colkey)?;
@@ -51,9 +53,15 @@ pub(super) fn parse_glb(filename: &str, colkey: Option<i32>, fps: f32) -> Result
         import_node(&mesh, &buffers, &mut node_parts, &node, -1)?;
     }
 
-    import_animations(&mesh, &buffers, &node_parts, &document, fps)?;
+    if !skip_animations {
+        import_animations(&mesh, &buffers, &node_parts, &document, fps)?;
+    }
     rc_ref!(&mesh).validate()?;
     Ok(mesh)
+}
+
+fn warn_glb(message: &str) {
+    eprintln!("Pyxel warning: {message}");
 }
 
 // Image conversion helpers
@@ -119,8 +127,13 @@ fn tinted_rgb(rgba: &[u8], base: usize, color_factor: TextureTint) -> (u8, u8, u
 }
 
 fn mask_alpha_cutoff(material: &gltf::Material) -> Result<Option<f32>, String> {
-    if material.alpha_mode() != gltf::material::AlphaMode::Mask {
-        return Ok(None);
+    match material.alpha_mode() {
+        gltf::material::AlphaMode::Opaque => return Ok(None),
+        gltf::material::AlphaMode::Blend => {
+            warn_glb("GLB material alpha mode BLEND is not supported; alpha is ignored");
+            return Ok(None);
+        }
+        gltf::material::AlphaMode::Mask => {}
     }
 
     let cutoff = material.alpha_cutoff().unwrap_or(0.5);
@@ -148,33 +161,45 @@ fn resolve_mask_colkey(
     colkey: Option<i32>,
     used_colors: &[bool],
     needs_colkey: bool,
-) -> Result<Option<i32>, String> {
+) -> Option<i32> {
     let Some(colkey) = colkey else {
         if !needs_colkey {
-            return Ok(None);
+            return None;
         }
-        return used_colors
-            .iter()
-            .position(|used| !*used)
-            .map(|index| Some(index as i32))
-            .ok_or_else(|| "GLB alpha mask requires an unused colkey color".to_string());
+        if let Some(index) = used_colors.iter().position(|used| !*used) {
+            return Some(index as i32);
+        }
+        warn_glb("GLB alpha mask requires an unused colkey color; alpha mask is ignored");
+        return None;
     };
 
     if !needs_colkey {
-        return Ok(Some(colkey));
+        return Some(colkey);
     }
 
     let max_colors = MAX_COLORS as i32;
     if !(0..max_colors).contains(&colkey) {
-        return Err(format!(
-            "GLB alpha mask requires colkey between 0 and {}",
+        warn_glb(&format!(
+            "GLB alpha mask requires colkey between 0 and {}; selecting a fallback colkey",
             max_colors - 1
         ));
+        return select_fallback_mask_colkey(used_colors);
     }
     if used_colors.get(colkey as usize).copied().unwrap_or(false) {
-        return Err("GLB alpha mask colkey collides with an opaque texture color".to_string());
+        warn_glb(
+            "GLB alpha mask colkey collides with an opaque texture color; selecting a fallback colkey",
+        );
+        return select_fallback_mask_colkey(used_colors);
     }
-    Ok(Some(colkey))
+    Some(colkey)
+}
+
+fn select_fallback_mask_colkey(used_colors: &[bool]) -> Option<i32> {
+    if let Some(index) = used_colors.iter().position(|used| !*used) {
+        return Some(index as i32);
+    }
+    warn_glb("GLB alpha mask requires an unused colkey color; alpha mask is ignored");
+    None
 }
 
 fn mark_texture_palette_usage(
@@ -247,7 +272,7 @@ fn base_color_factor_to_rgb(factor: [f32; 4]) -> Result<(u8, u8, u8), String> {
         return Err("GLB material baseColorFactor must be finite".to_string());
     }
     if (factor[3] - 1.0).abs() > f32::EPSILON {
-        return Err("GLB material alpha is not supported".to_string());
+        warn_glb("GLB material baseColorFactor alpha is not supported; alpha is ignored");
     }
     Ok((
         (factor[0].clamp(0.0, 1.0) * 255.0).round() as u8,
@@ -261,7 +286,7 @@ fn base_color_factor_to_tint(factor: [f32; 4]) -> Result<(TextureTint, TextureTi
         return Err("GLB material baseColorFactor must be finite".to_string());
     }
     if (factor[3] - 1.0).abs() > f32::EPSILON {
-        return Err("GLB material alpha is not supported".to_string());
+        warn_glb("GLB material baseColorFactor alpha is not supported; alpha is ignored");
     }
 
     let tint = [
@@ -289,19 +314,23 @@ fn import_materials(
         if let Some(texture_info) = pbr.base_color_texture() {
             let (tint, _) = base_color_factor_to_tint(pbr.base_color_factor())?;
             let image_index = texture_info.texture().source().index();
-            let img = images
-                .get(image_index)
-                .ok_or_else(|| "GLB base color texture image is missing".to_string())?;
-            let rgba = image_to_rgba8(img)?;
-            needs_mask_colkey |= mark_texture_palette_usage(
-                img.width,
-                img.height,
-                &rgba,
-                colors,
-                tint,
-                alpha_cutoff,
-                &mut used_colors,
-            )?;
+            if let Some(img) = images.get(image_index) {
+                let rgba = image_to_rgba8(img)?;
+                needs_mask_colkey |= mark_texture_palette_usage(
+                    img.width,
+                    img.height,
+                    &rgba,
+                    colors,
+                    tint,
+                    alpha_cutoff,
+                    &mut used_colors,
+                )?;
+            } else {
+                warn_glb("GLB base color texture image is missing; using flat material color");
+                let rgb = base_color_factor_to_rgb(pbr.base_color_factor())?;
+                let color = rgb_to_palette_color(rgb, colors)?;
+                used_colors[color as usize] = true;
+            }
         } else {
             let rgb = base_color_factor_to_rgb(pbr.base_color_factor())?;
             let color = rgb_to_palette_color(rgb, colors)?;
@@ -309,7 +338,7 @@ fn import_materials(
         }
     }
 
-    let resolved_colkey = resolve_mask_colkey(colkey, &used_colors, needs_mask_colkey)?;
+    let resolved_colkey = resolve_mask_colkey(colkey, &used_colors, needs_mask_colkey);
     let mut image_cache = HashMap::<ImageCacheKey, RcImage>::new();
     let mut materials = Vec::new();
 
@@ -327,10 +356,7 @@ fn import_materials(
             );
             if let Some(img) = image_cache.get(&cache_key) {
                 ColImage::Image(img.clone())
-            } else {
-                let img = images
-                    .get(image_index)
-                    .ok_or_else(|| "GLB base color texture image is missing".to_string())?;
+            } else if let Some(img) = images.get(image_index) {
                 let rgba = image_to_rgba8(img)?;
                 let image = rgba8_to_pyxel_image(
                     img.width,
@@ -342,6 +368,10 @@ fn import_materials(
                 )?;
                 image_cache.insert(cache_key, image.clone());
                 ColImage::Image(image)
+            } else {
+                warn_glb("GLB base color texture image is missing; using flat material color");
+                let rgb = base_color_factor_to_rgb(pbr.base_color_factor())?;
+                ColImage::Color(i32::from(rgb_to_palette_color(rgb, colors)?))
             }
         } else {
             let rgb = base_color_factor_to_rgb(pbr.base_color_factor())?;
@@ -371,17 +401,19 @@ fn validate_glb_header(bytes: &[u8]) -> Result<(), String> {
     Ok(())
 }
 
-fn validate_glb_pre_import_features(bytes: &[u8]) -> Result<(), String> {
+fn warn_glb_pre_import_features(bytes: &[u8]) -> Result<bool, String> {
     let Some(json_bytes) = glb_json_chunk(bytes)? else {
-        return Ok(());
+        return Ok(false);
     };
-    if json_bytes
+    let has_animation_pointer = json_bytes
         .windows(br#""KHR_animation_pointer""#.len())
-        .any(|window| window == br#""KHR_animation_pointer""#)
-    {
-        return Err("GLB animation pointer/material animation is not supported".to_string());
+        .any(|window| window == br#""KHR_animation_pointer""#);
+    if has_animation_pointer {
+        warn_glb(
+            "GLB animation pointer/material animation is not supported; animations are ignored",
+        );
     }
-    Ok(())
+    Ok(has_animation_pointer)
 }
 
 fn glb_json_chunk(bytes: &[u8]) -> Result<Option<&[u8]>, String> {
@@ -402,16 +434,194 @@ fn glb_json_chunk(bytes: &[u8]) -> Result<Option<&[u8]>, String> {
     Ok(Some(&bytes[20..json_end]))
 }
 
+fn sanitize_glb_for_import(bytes: &[u8]) -> Result<Cow<'_, [u8]>, String> {
+    let Some(json_bytes) = glb_json_chunk(bytes)? else {
+        return Ok(Cow::Borrowed(bytes));
+    };
+    if !json_bytes
+        .windows(br#""KHR_animation_pointer""#.len())
+        .any(|window| window == br#""KHR_animation_pointer""#)
+    {
+        return Ok(Cow::Borrowed(bytes));
+    }
+
+    let json_len = u32::from_le_bytes([bytes[12], bytes[13], bytes[14], bytes[15]]) as usize;
+    let json_start = 20;
+    let json_end = json_start + json_len;
+    let json = std::str::from_utf8(json_bytes)
+        .map_err(|_| "GLB JSON chunk must be UTF-8".to_string())?
+        .trim_end_matches([' ', '\0']);
+    let json = remove_top_level_json_property(json, "animations")?;
+    let json = remove_top_level_json_property(&json, "extensionsUsed")?;
+    let json = remove_top_level_json_property(&json, "extensionsRequired")?;
+    let mut new_json = json.into_bytes();
+    let pad = (4 - new_json.len() % 4) % 4;
+    new_json.extend(std::iter::repeat_n(b' ', pad));
+
+    let total_len = 12 + 8 + new_json.len() + bytes.len() - json_end;
+    let mut out = Vec::with_capacity(total_len);
+    out.extend_from_slice(&bytes[0..8]);
+    out.extend_from_slice(&(total_len as u32).to_le_bytes());
+    out.extend_from_slice(&(new_json.len() as u32).to_le_bytes());
+    out.extend_from_slice(b"JSON");
+    out.extend_from_slice(&new_json);
+    out.extend_from_slice(&bytes[json_end..]);
+    Ok(Cow::Owned(out))
+}
+
+fn remove_top_level_json_property(json: &str, key: &str) -> Result<String, String> {
+    let Some((start, end)) = top_level_json_property_span(json, key)? else {
+        return Ok(json.to_string());
+    };
+    let mut out = String::with_capacity(json.len() - (end - start));
+    out.push_str(&json[..start]);
+    out.push_str(&json[end..]);
+    Ok(out)
+}
+
+fn top_level_json_property_span(json: &str, key: &str) -> Result<Option<(usize, usize)>, String> {
+    let bytes = json.as_bytes();
+    let key_literal = format!("\"{key}\"");
+    let key_bytes = key_literal.as_bytes();
+    let mut depth = 0i32;
+    let mut in_string = false;
+    let mut escape = false;
+    let mut i = 0;
+
+    while i < bytes.len() {
+        let b = bytes[i];
+        if in_string {
+            if escape {
+                escape = false;
+            } else if b == b'\\' {
+                escape = true;
+            } else if b == b'"' {
+                in_string = false;
+            }
+            i += 1;
+            continue;
+        }
+
+        match b {
+            b'"' => {
+                if depth == 1 && bytes[i..].starts_with(key_bytes) {
+                    let mut colon = skip_json_ws(bytes, i + key_bytes.len());
+                    if bytes.get(colon) != Some(&b':') {
+                        i += 1;
+                        continue;
+                    }
+                    colon += 1;
+                    let value_start = skip_json_ws(bytes, colon);
+                    let value_end = skip_json_value(bytes, value_start)?;
+                    let mut end = skip_json_ws(bytes, value_end);
+                    let mut start = i;
+                    let prev = previous_json_non_ws(bytes, start);
+                    if let Some(prev) = prev.filter(|&prev| bytes[prev] == b',') {
+                        start = prev;
+                    } else {
+                        let next = skip_json_ws(bytes, end);
+                        if bytes.get(next) == Some(&b',') {
+                            end = next + 1;
+                        }
+                    }
+                    return Ok(Some((start, end)));
+                }
+                in_string = true;
+            }
+            b'{' | b'[' => depth += 1,
+            b'}' | b']' => depth -= 1,
+            _ => {}
+        }
+        i += 1;
+    }
+    Ok(None)
+}
+
+fn skip_json_ws(bytes: &[u8], mut i: usize) -> usize {
+    while matches!(bytes.get(i), Some(b' ' | b'\n' | b'\r' | b'\t')) {
+        i += 1;
+    }
+    i
+}
+
+fn previous_json_non_ws(bytes: &[u8], i: usize) -> Option<usize> {
+    let mut i = i.checked_sub(1)?;
+    while matches!(bytes[i], b' ' | b'\n' | b'\r' | b'\t') {
+        i = i.checked_sub(1)?;
+    }
+    Some(i)
+}
+
+fn skip_json_value(bytes: &[u8], start: usize) -> Result<usize, String> {
+    let Some(&first) = bytes.get(start) else {
+        return Err("GLB JSON property is missing a value".to_string());
+    };
+    if first == b'"' {
+        return skip_json_string(bytes, start);
+    }
+    if first != b'{' && first != b'[' {
+        let mut i = start;
+        while i < bytes.len() && !matches!(bytes[i], b',' | b'}' | b']') {
+            i += 1;
+        }
+        return Ok(i);
+    }
+
+    let mut depth = 0i32;
+    let mut in_string = false;
+    let mut escape = false;
+    for (i, &b) in bytes.iter().enumerate().skip(start) {
+        if in_string {
+            if escape {
+                escape = false;
+            } else if b == b'\\' {
+                escape = true;
+            } else if b == b'"' {
+                in_string = false;
+            }
+            continue;
+        }
+        match b {
+            b'"' => in_string = true,
+            b'{' | b'[' => depth += 1,
+            b'}' | b']' => {
+                depth -= 1;
+                if depth == 0 {
+                    return Ok(i + 1);
+                }
+            }
+            _ => {}
+        }
+    }
+    Err("GLB JSON property value is truncated".to_string())
+}
+
+fn skip_json_string(bytes: &[u8], start: usize) -> Result<usize, String> {
+    let mut escape = false;
+    for (i, &b) in bytes.iter().enumerate().skip(start + 1) {
+        if escape {
+            escape = false;
+        } else if b == b'\\' {
+            escape = true;
+        } else if b == b'"' {
+            return Ok(i + 1);
+        }
+    }
+    Err("GLB JSON string value is truncated".to_string())
+}
+
 fn validate_document(document: &gltf::Document, image_count: usize) -> Result<(), String> {
     if document
         .extensions_used()
         .chain(document.extensions_required())
         .any(|extension| extension == "KHR_animation_pointer")
     {
-        return Err("GLB animation pointer/material animation is not supported".to_string());
+        warn_glb(
+            "GLB animation pointer/material animation is not supported; animations are ignored",
+        );
     }
     if document.skins().next().is_some() {
-        return Err("GLB skins are not supported".to_string());
+        warn_glb("GLB skins are not supported; skinning is ignored");
     }
 
     for buffer in document.buffers() {
@@ -428,63 +638,62 @@ fn validate_document(document: &gltf::Document, image_count: usize) -> Result<()
         }
     }
 
-    validate_mesh_features(document)?;
-    validate_texture_usage(document, image_count)?;
+    validate_mesh_features(document);
+    validate_texture_usage(document, image_count);
     Ok(())
 }
 
-fn validate_mesh_features(document: &gltf::Document) -> Result<(), String> {
+fn validate_mesh_features(document: &gltf::Document) {
     for mesh in document.meshes() {
         if mesh.weights().is_some() {
-            return Err("GLB mesh morph targets are not supported".to_string());
+            warn_glb("GLB mesh morph targets are not supported; base mesh is used");
         }
         for primitive in mesh.primitives() {
             if primitive.material().index().is_none() {
-                return Err("GLB primitive material is missing".to_string());
+                warn_glb("GLB primitive material is missing; default mesh material is used");
             }
-            validate_primitive_attributes(&primitive)?;
+            validate_primitive_attributes(&primitive);
             if primitive.morph_targets().next().is_some() {
-                return Err("GLB mesh morph targets are not supported".to_string());
+                warn_glb("GLB mesh morph targets are not supported; base mesh is used");
             }
         }
     }
 
     for node in document.nodes() {
         if let gltf::scene::Transform::Matrix { .. } = node.transform() {
-            return Err("GLB matrix node transforms are not supported".to_string());
+            warn_glb("GLB matrix node transforms are not supported; transform is decomposed");
         }
         if node.skin().is_some() {
-            return Err("GLB skins are not supported".to_string());
+            warn_glb("GLB skins are not supported; skinning is ignored");
         }
         if node.weights().is_some() {
-            return Err("GLB node morph target weights are not supported".to_string());
+            warn_glb("GLB node morph target weights are not supported; base mesh is used");
         }
     }
-
-    Ok(())
 }
 
-fn validate_primitive_attributes(primitive: &gltf::Primitive) -> Result<(), String> {
+fn validate_primitive_attributes(primitive: &gltf::Primitive) {
     for (semantic, _) in primitive.attributes() {
         match semantic {
             gltf::mesh::Semantic::Positions
             | gltf::mesh::Semantic::Normals
             | gltf::mesh::Semantic::TexCoords(0) => {}
             _ => {
-                return Err(format!("GLB unsupported vertex attribute: {semantic:?}"));
+                warn_glb(&format!(
+                    "GLB unsupported vertex attribute: {semantic:?}; attribute is ignored"
+                ));
             }
         }
     }
-    Ok(())
 }
 
-fn validate_texture_usage(document: &gltf::Document, image_count: usize) -> Result<(), String> {
+fn validate_texture_usage(document: &gltf::Document, image_count: usize) {
     for material in document.materials() {
         if !matches!(
             material.alpha_mode(),
             gltf::material::AlphaMode::Opaque | gltf::material::AlphaMode::Mask
         ) {
-            return Err("GLB material alpha mode is not supported".to_string());
+            warn_glb("GLB material alpha mode is not supported; alpha is ignored");
         }
         if material.normal_texture().is_some()
             || material.occlusion_texture().is_some()
@@ -494,16 +703,14 @@ fn validate_texture_usage(document: &gltf::Document, image_count: usize) -> Resu
                 .metallic_roughness_texture()
                 .is_some()
         {
-            return Err("GLB unsupported texture usage".to_string());
+            warn_glb("GLB unsupported texture usage; non-base-color textures are ignored");
         }
         if let Some(texture) = material.pbr_metallic_roughness().base_color_texture() {
             if texture.texture().source().index() >= image_count {
-                return Err("GLB base color texture image is missing".to_string());
+                warn_glb("GLB base color texture image is missing; using flat material color");
             }
         }
     }
-
-    Ok(())
 }
 
 // Image conversion helpers (continued)

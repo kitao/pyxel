@@ -280,7 +280,7 @@ def test_from_glb_uses_mask_alpha_cutoff(tmp_path):
     assert mesh.col_img.pget(1, 1) == mesh.colkey
 
 
-def test_from_glb_rejects_mask_colkey_collision(tmp_path):
+def test_from_glb_warns_and_autoselects_mask_colkey_on_collision(tmp_path, capfd):
     path = write_single_texture_motion_glb(
         tmp_path / "mask_colkey_collision.glb",
         texture_pixels=[
@@ -292,11 +292,16 @@ def test_from_glb_rejects_mask_colkey_collision(tmp_path):
         alpha_mode="MASK",
     )
 
-    with pytest.raises(ValueError, match="colkey"):
-        Mesh.from_glb(str(path), colkey=8)
+    mesh = Mesh.from_glb(str(path), colkey=8)
+    _, err = capfd.readouterr()
+
+    assert isinstance(mesh.col_img, Image)
+    assert mesh.colkey != 8
+    assert mesh.col_img.pget(0, 1) == mesh.colkey
+    assert "colkey collides" in err
 
 
-def test_from_glb_rejects_mask_auto_colkey_when_palette_is_full(tmp_path):
+def test_from_glb_warns_and_ignores_mask_when_palette_is_full(tmp_path, capfd):
     path = write_single_texture_motion_glb(
         tmp_path / "mask_full_palette.glb",
         texture_pixels=[
@@ -313,8 +318,38 @@ def test_from_glb_rejects_mask_auto_colkey_when_palette_is_full(tmp_path):
         alpha_mode="MASK",
     )
 
-    with pytest.raises(ValueError, match="unused colkey"):
-        Mesh.from_glb(str(path))
+    mesh = Mesh.from_glb(str(path))
+    _, err = capfd.readouterr()
+
+    assert isinstance(mesh.col_img, Image)
+    assert mesh.colkey is None
+    assert "unused colkey" in err
+
+
+def test_from_glb_warns_when_mask_colkey_collision_has_no_fallback(tmp_path, capfd):
+    path = write_single_texture_motion_glb(
+        tmp_path / "mask_full_palette_colkey.glb",
+        texture_pixels=[
+            (
+                (color >> 16) & 0xFF,
+                (color >> 8) & 0xFF,
+                color & 0xFF,
+                255,
+            )
+            for color in pyxel.DEFAULT_COLORS
+        ]
+        + [(0, 0, 0, 0)],
+        texture_size=(17, 1),
+        alpha_mode="MASK",
+    )
+
+    mesh = Mesh.from_glb(str(path), colkey=0)
+    _, err = capfd.readouterr()
+
+    assert isinstance(mesh.col_img, Image)
+    assert mesh.colkey is None
+    assert "colkey collides" in err
+    assert "alpha mask is ignored" in err
 
 
 def test_from_glb_loads_multiple_flat_materials(tmp_path):
@@ -349,11 +384,15 @@ def test_from_glb_applies_textured_material_factor(tmp_path):
     assert {mesh.col_img.pget(x, y) for y in range(2) for x in range(2)} == {8}
 
 
-def test_from_glb_rejects_materialless_primitive(tmp_path):
+def test_from_glb_warns_and_loads_materialless_primitive(tmp_path, capfd):
     path = write_materialless_primitive_glb(tmp_path / "materialless.glb")
 
-    with pytest.raises(ValueError, match="material"):
-        Mesh.from_glb(str(path), colkey=0)
+    mesh = Mesh.from_glb(str(path), colkey=0)
+    _, err = capfd.readouterr()
+
+    assert len(mesh.primitives) == 3
+    assert 8 in _render_mesh_colors(mesh)
+    assert "material is missing" in err
 
 
 def test_from_glb_loads_unused_extra_material_and_texture(tmp_path):
@@ -370,18 +409,24 @@ def test_from_glb_loads_unused_extra_material(tmp_path):
     assert isinstance(mesh.col_img, Image)
 
 
-def test_from_glb_rejects_unsupported_texture_usage(tmp_path):
+def test_from_glb_warns_and_ignores_unsupported_texture_usage(tmp_path, capfd):
     path = write_normal_texture_glb(tmp_path / "normal_texture.glb")
 
-    with pytest.raises(ValueError, match="unsupported texture usage"):
-        Mesh.from_glb(str(path))
+    mesh = Mesh.from_glb(str(path))
+    _, err = capfd.readouterr()
+
+    assert isinstance(mesh.col_img, Image)
+    assert "unsupported texture usage" in err
 
 
-def test_from_glb_rejects_material_animation(tmp_path):
+def test_from_glb_warns_and_ignores_material_animation(tmp_path, capfd):
     path = write_material_animation_glb(tmp_path / "material_animation.glb")
 
-    with pytest.raises(ValueError, match="animation pointer"):
-        Mesh.from_glb(str(path))
+    mesh = Mesh.from_glb(str(path))
+    _, err = capfd.readouterr()
+
+    assert isinstance(mesh.col_img, Image)
+    assert "animation pointer" in err
 
 
 def test_from_glb_rejects_external_buffer(tmp_path):
@@ -415,32 +460,44 @@ def test_from_glb_rejects_non_indexed_vertex_count_not_multiple_of_3(tmp_path):
         Mesh.from_glb(str(path))
 
 
-def test_from_glb_rejects_morph_targets(tmp_path):
+def test_from_glb_warns_and_loads_base_mesh_for_morph_targets(tmp_path, capfd):
     path = write_morph_target_glb(tmp_path / "morph.glb")
 
-    with pytest.raises(ValueError, match="morph targets"):
-        Mesh.from_glb(str(path))
+    mesh = Mesh.from_glb(str(path))
+    _, err = capfd.readouterr()
+
+    assert isinstance(mesh.col_img, Image)
+    assert "morph targets" in err
 
 
-def test_from_glb_rejects_skins(tmp_path):
+def test_from_glb_warns_and_loads_base_mesh_for_skins(tmp_path, capfd):
     path = write_skin_glb(tmp_path / "skin.glb")
 
-    with pytest.raises(ValueError, match="skins"):
-        Mesh.from_glb(str(path))
+    mesh = Mesh.from_glb(str(path))
+    _, err = capfd.readouterr()
+
+    assert isinstance(mesh.col_img, Image)
+    assert "skins" in err
 
 
-def test_from_glb_rejects_matrix_node_transforms(tmp_path):
+def test_from_glb_warns_and_decomposes_matrix_node_transforms(tmp_path, capfd):
     path = write_matrix_transform_glb(tmp_path / "matrix_transform.glb")
 
-    with pytest.raises(ValueError, match="matrix node transforms"):
-        Mesh.from_glb(str(path))
+    mesh = Mesh.from_glb(str(path))
+    _, err = capfd.readouterr()
+
+    assert isinstance(mesh.col_img, Image)
+    assert "matrix node transforms" in err
 
 
-def test_from_glb_rejects_non_blockbench_vertex_attributes(tmp_path):
+def test_from_glb_warns_and_ignores_extra_vertex_attributes(tmp_path, capfd):
     path = write_tangent_attribute_glb(tmp_path / "tangent_attribute.glb")
 
-    with pytest.raises(ValueError, match="unsupported vertex attribute"):
-        Mesh.from_glb(str(path))
+    mesh = Mesh.from_glb(str(path))
+    _, err = capfd.readouterr()
+
+    assert isinstance(mesh.col_img, Image)
+    assert "unsupported vertex attribute" in err
 
 
 def test_apply_motion_updates_imported_node_tree(tmp_path):

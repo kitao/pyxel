@@ -711,32 +711,37 @@ used by the regular constructor. This is a compatibility profile for simple
 low-poly Blockbench models, not a general glTF loader:
 
 - Only embedded binary buffers and embedded images are supported.
-- Every primitive must reference a material.
+- Primitives may omit a material; missing materials print a console warning and
+  use the default mesh material.
 - Multiple materials and multiple embedded base-color textures are accepted.
   Each GLB primitive keeps its material slot; untextured materials use their
   `baseColorFactor` quantized to the nearest Pyxel palette color.
-- The accepted primitive attributes are `POSITION`, `NORMAL`, and
-  `TEXCOORD_0`; other vertex attributes are rejected rather than ignored.
+- `POSITION`, `NORMAL`, and `TEXCOORD_0` are the supported primitive
+  attributes; other vertex attributes print a console warning and are ignored.
 - `NORMAL` attributes are imported as per-face flat normals. When a primitive
   has no `NORMAL`, flat normals are computed from triangle vertices.
 - Texture pixels are quantized to the current Pyxel palette. Only
   `pbrMetallicRoughness.baseColorTexture` is accepted, and RGB
   `baseColorFactor` tint is applied before quantization. `OPAQUE` and `MASK`
   material modes are accepted. `OPAQUE` ignores the source alpha channel.
-  `MASK` writes pixels below `alphaCutoff` as a resolved `colkey`: a
-  caller-provided `colkey` is rejected if any opaque pixel quantizes to the
-  same palette index; otherwise the importer selects an unused current palette
-  color, or errors if no unused color exists.
-- Node transforms must be decomposed TRS fields. Matrix node transforms are
-  rejected because the Blockbench export path uses TRS.
+  `BLEND` prints a console warning and is treated as opaque. `MASK` writes
+  pixels below `alphaCutoff` as a resolved `colkey`: when a caller-provided
+  `colkey` collides with an opaque pixel, the importer prints a console warning
+  and selects an unused current palette color. If no unused palette color
+  exists, it prints a console warning and ignores the alpha mask.
+- Node transforms should be decomposed TRS fields. Matrix node transforms print
+  a console warning and are decomposed for display.
 - Transform animation channels for translation, rotation, and scale are
   imported into `mesh.motions`. LINEAR, STEP, and CUBICSPLINE interpolation
   are accepted for these transform channels. The `fps` argument converts
   glTF seconds into Pyxel frame numbers.
-- Skins, morph targets, material animation, external files, alpha blending,
-  non-base-color material textures, non-triangle mesh primitives, matrix node
-  transforms, and non-Blockbench vertex attributes are rejected rather than
-  guessed.
+- Skins, morph targets, material animation, non-base-color material textures,
+  alpha blending, matrix node transforms, missing materials, and
+  non-Blockbench vertex attributes print console warnings and fall back to the
+  closest displayable base mesh or material. External files, invalid buffers,
+  missing `POSITION`, missing `TEXCOORD_0` for textured primitives, invalid
+  indices, and malformed triangle data still raise errors because no reliable
+  mesh can be built.
 
 This keeps the low-poly Blockbench export path explicit: use simple
 base-color materials or embedded base-color textures. For cutout textures,
