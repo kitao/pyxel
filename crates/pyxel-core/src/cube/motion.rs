@@ -6,8 +6,23 @@ use crate::cube::vec3::Vec3;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum MotionInterpolation {
+    CubicSpline,
     Step,
     Linear,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct CubicVec3Key {
+    pub in_tangent: Vec3,
+    pub value: Vec3,
+    pub out_tangent: Vec3,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct CubicQuatKey {
+    pub in_tangent: Quat,
+    pub value: Quat,
+    pub out_tangent: Quat,
 }
 
 // Keyframe payload of a channel. The variant must match the channel's
@@ -15,6 +30,9 @@ pub enum MotionInterpolation {
 
 #[derive(Clone, Debug, PartialEq)]
 pub enum MotionValues {
+    CubicTranslations(Vec<CubicVec3Key>),
+    CubicRotations(Vec<CubicQuatKey>),
+    CubicScales(Vec<CubicVec3Key>),
     Translations(Vec<Vec3>),
     Rotations(Vec<Quat>),
     Scales(Vec<Vec3>),
@@ -124,9 +142,16 @@ impl MotionChannel {
         self.inputs.len().min(self.value_len()) > 0
             && matches!(
                 (&self.target, &self.values),
-                (MotionTarget::Translation, MotionValues::Translations(_))
-                    | (MotionTarget::Rotation, MotionValues::Rotations(_))
-                    | (MotionTarget::Scale, MotionValues::Scales(_))
+                (
+                    MotionTarget::Translation,
+                    MotionValues::Translations(_) | MotionValues::CubicTranslations(_),
+                ) | (
+                    MotionTarget::Rotation,
+                    MotionValues::Rotations(_) | MotionValues::CubicRotations(_),
+                ) | (
+                    MotionTarget::Scale,
+                    MotionValues::Scales(_) | MotionValues::CubicScales(_),
+                )
             )
     }
 
@@ -158,26 +183,25 @@ impl MotionChannel {
     }
 
     fn sample_vec3(&self, frame: f32) -> Vec3 {
-        let (MotionValues::Translations(values) | MotionValues::Scales(values)) = &self.values
-        else {
-            return zero_vec3();
-        };
-        self.sample_vec3_values(frame, values)
+        match &self.values {
+            MotionValues::Translations(values) | MotionValues::Scales(values) => {
+                self.sample_vec3_values(frame, values)
+            }
+            MotionValues::CubicTranslations(keys) | MotionValues::CubicScales(keys) => {
+                self.sample_cubic_vec3_keys(frame, keys)
+            }
+            MotionValues::Rotations(_) | MotionValues::CubicRotations(_) => zero_vec3(),
+        }
     }
 
     fn sample_quat(&self, frame: f32) -> Quat {
-        let MotionValues::Rotations(values) = &self.values else {
-            return identity_quat();
-        };
-        let Some((from, to, t)) = self.key_span(frame) else {
-            return identity_quat();
-        };
-        let (Some(from), Some(to)) = (values.get(from), values.get(to)) else {
-            return identity_quat();
-        };
-        match self.interpolation {
-            MotionInterpolation::Step => *from,
-            MotionInterpolation::Linear => *rc_ref!(&from.slerp(to, t)),
+        match &self.values {
+            MotionValues::Rotations(values) => self.sample_quat_values(frame, values),
+            MotionValues::CubicRotations(keys) => self.sample_cubic_quat_keys(frame, keys),
+            MotionValues::Translations(_)
+            | MotionValues::CubicTranslations(_)
+            | MotionValues::Scales(_)
+            | MotionValues::CubicScales(_) => identity_quat(),
         }
     }
 
@@ -185,6 +209,65 @@ impl MotionChannel {
         match &self.values {
             MotionValues::Translations(values) | MotionValues::Scales(values) => values.len(),
             MotionValues::Rotations(values) => values.len(),
+            MotionValues::CubicTranslations(values) | MotionValues::CubicScales(values) => {
+                values.len()
+            }
+            MotionValues::CubicRotations(values) => values.len(),
+        }
+    }
+
+    fn sample_cubic_vec3_keys(&self, frame: f32, keys: &[CubicVec3Key]) -> Vec3 {
+        let Some((from, to, t)) = self.key_span(frame) else {
+            return zero_vec3();
+        };
+        let (Some(from_key), Some(to_key)) = (keys.get(from), keys.get(to)) else {
+            return zero_vec3();
+        };
+        if from == to {
+            return from_key.value;
+        }
+        let dt = self.inputs[to] - self.inputs[from];
+        cubic_vec3(
+            &from_key.value,
+            &from_key.out_tangent,
+            &to_key.value,
+            &to_key.in_tangent,
+            t,
+            dt,
+        )
+    }
+
+    fn sample_cubic_quat_keys(&self, frame: f32, keys: &[CubicQuatKey]) -> Quat {
+        let Some((from, to, t)) = self.key_span(frame) else {
+            return identity_quat();
+        };
+        let (Some(from_key), Some(to_key)) = (keys.get(from), keys.get(to)) else {
+            return identity_quat();
+        };
+        if from == to {
+            return from_key.value;
+        }
+        let dt = self.inputs[to] - self.inputs[from];
+        cubic_quat(
+            &from_key.value,
+            &from_key.out_tangent,
+            &to_key.value,
+            &to_key.in_tangent,
+            t,
+            dt,
+        )
+    }
+
+    fn sample_quat_values(&self, frame: f32, values: &[Quat]) -> Quat {
+        let Some((from, to, t)) = self.key_span(frame) else {
+            return identity_quat();
+        };
+        let (Some(from), Some(to)) = (values.get(from), values.get(to)) else {
+            return identity_quat();
+        };
+        match self.interpolation {
+            MotionInterpolation::CubicSpline | MotionInterpolation::Step => *from,
+            MotionInterpolation::Linear => *rc_ref!(&from.slerp(to, t)),
         }
     }
 
@@ -196,7 +279,7 @@ impl MotionChannel {
             return zero_vec3();
         };
         match self.interpolation {
-            MotionInterpolation::Step => *from,
+            MotionInterpolation::CubicSpline | MotionInterpolation::Step => *from,
             MotionInterpolation::Linear => Vec3 {
                 x: from.x + (to.x - from.x) * t,
                 y: from.y + (to.y - from.y) * t,
@@ -204,6 +287,51 @@ impl MotionChannel {
             },
         }
     }
+}
+
+fn cubic_basis(t: f32) -> (f32, f32, f32, f32) {
+    let t2 = t * t;
+    let t3 = t2 * t;
+    (
+        2.0 * t3 - 3.0 * t2 + 1.0,
+        t3 - 2.0 * t2 + t,
+        -2.0 * t3 + 3.0 * t2,
+        t3 - t2,
+    )
+}
+
+fn cubic_vec3(
+    from: &Vec3,
+    out_tangent: &Vec3,
+    to: &Vec3,
+    in_tangent: &Vec3,
+    t: f32,
+    dt: f32,
+) -> Vec3 {
+    let (h00, h10, h01, h11) = cubic_basis(t);
+    Vec3 {
+        x: h00 * from.x + h10 * dt * out_tangent.x + h01 * to.x + h11 * dt * in_tangent.x,
+        y: h00 * from.y + h10 * dt * out_tangent.y + h01 * to.y + h11 * dt * in_tangent.y,
+        z: h00 * from.z + h10 * dt * out_tangent.z + h01 * to.z + h11 * dt * in_tangent.z,
+    }
+}
+
+fn cubic_quat(
+    from: &Quat,
+    out_tangent: &Quat,
+    to: &Quat,
+    in_tangent: &Quat,
+    t: f32,
+    dt: f32,
+) -> Quat {
+    let (h00, h10, h01, h11) = cubic_basis(t);
+    let quat = Quat {
+        x: h00 * from.x + h10 * dt * out_tangent.x + h01 * to.x + h11 * dt * in_tangent.x,
+        y: h00 * from.y + h10 * dt * out_tangent.y + h01 * to.y + h11 * dt * in_tangent.y,
+        z: h00 * from.z + h10 * dt * out_tangent.z + h01 * to.z + h11 * dt * in_tangent.z,
+        w: h00 * from.w + h10 * dt * out_tangent.w + h01 * to.w + h11 * dt * in_tangent.w,
+    };
+    *rc_ref!(&quat.normalize())
 }
 
 // Non-Rc transform composition for the per-frame sampling path
@@ -266,6 +394,36 @@ mod tests {
                 },
             ]),
             interpolation,
+        }
+    }
+
+    fn cubic_translation_channel() -> MotionChannel {
+        let per_frame = Vec3 {
+            x: 1.0 / 30.0,
+            y: 0.0,
+            z: 0.0,
+        };
+        MotionChannel {
+            part_index: 0,
+            target: MotionTarget::Translation,
+            inputs: vec![0.0, 30.0],
+            values: MotionValues::CubicTranslations(vec![
+                CubicVec3Key {
+                    in_tangent: per_frame,
+                    value: zero_vec3(),
+                    out_tangent: per_frame,
+                },
+                CubicVec3Key {
+                    in_tangent: per_frame,
+                    value: Vec3 {
+                        x: 1.0,
+                        y: 0.0,
+                        z: 0.0,
+                    },
+                    out_tangent: per_frame,
+                },
+            ]),
+            interpolation: MotionInterpolation::CubicSpline,
         }
     }
 
@@ -332,6 +490,18 @@ mod tests {
         };
 
         assert!((sampled_x(&motion, 15.0, false) - 0.0).abs() < 1e-6);
+    }
+
+    #[test]
+    fn test_cubic_translation_sampling_uses_frame_unit_tangents() {
+        let motion = Motion {
+            name: String::from("smooth_move"),
+            length: 30.0,
+            base_transforms: vec![Mat4::identity_value()],
+            channels: vec![cubic_translation_channel()],
+        };
+
+        assert!((sampled_x(&motion, 7.5, false) - 0.25).abs() < 1e-6);
     }
 
     #[test]
