@@ -1006,7 +1006,7 @@ Transparent color when col_img is an Image.
 
 ### `Mesh.from_glb(filename, *, colkey=None, fps=30.0)` — class
 
-Load a binary glTF (.glb) file into a Mesh. Embedded buffers and embedded base-color materials/textures are supported; imported transform animations are exposed through motions.
+Load a Blockbench-exported binary glTF (.glb) file into a Mesh. The Pyxel Cube profile supports embedded buffers/images, base-color materials/textures, and transform animations.
 
 **Parameters:**
 
@@ -1023,7 +1023,7 @@ mesh = Mesh.from_glb("actor.glb", colkey=0)
 actor = Node.from_mesh(mesh)
 ```
 
-**Note:** GLB NORMAL attributes are imported as per-face flat normals. RGB baseColorFactor tints are applied before palette quantization. Texture pixels must be fully opaque; use colkey for transparency. Non-base-color material textures, alpha materials, external files, skins, morph targets, and material animation are rejected.
+**Note:** This targets Blockbench's GLTF Model export with Binary (.glb), embedded textures, and armature off; it is not a general glTF loader. Materials are required. Supported vertex attributes are POSITION, NORMAL, and TEXCOORD_0, and node transforms must be TRS. LINEAR, STEP, and CUBICSPLINE transform animation channels are supported. RGB baseColorFactor tints are applied before palette quantization. OPAQUE ignores texture alpha. MASK converts pixels below alphaCutoff to colkey; if colkey is omitted, an unused current palette color is selected, and collisions with opaque pixels are rejected. Non-base-color material textures, alpha blending, external files, skins, morph targets, material animation, matrix transforms, and other vertex attributes are rejected.
 
 ### `descendants(i)` — function *(Advanced)*
 

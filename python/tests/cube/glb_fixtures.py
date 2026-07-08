@@ -68,10 +68,313 @@ def _write_glb(path: Path, gltf: dict, bin_blob: bytes) -> Path:
 # Fixture writers
 
 
+def write_blockbench_profile_glb(path: Path, *, smooth_motion: bool = False) -> Path:
+    def cuboid(width: float, height: float, depth: float):
+        hx = width / 2.0
+        hy = height / 2.0
+        hz = depth / 2.0
+        faces = [
+            (
+                [(0.0, 0.0, 1.0)] * 4,
+                [(-hx, -hy, hz), (hx, -hy, hz), (hx, hy, hz), (-hx, hy, hz)],
+            ),
+            (
+                [(0.0, 0.0, -1.0)] * 4,
+                [(hx, -hy, -hz), (-hx, -hy, -hz), (-hx, hy, -hz), (hx, hy, -hz)],
+            ),
+            (
+                [(1.0, 0.0, 0.0)] * 4,
+                [(hx, -hy, hz), (hx, -hy, -hz), (hx, hy, -hz), (hx, hy, hz)],
+            ),
+            (
+                [(-1.0, 0.0, 0.0)] * 4,
+                [(-hx, -hy, -hz), (-hx, -hy, hz), (-hx, hy, hz), (-hx, hy, -hz)],
+            ),
+            (
+                [(0.0, 1.0, 0.0)] * 4,
+                [(-hx, hy, hz), (hx, hy, hz), (hx, hy, -hz), (-hx, hy, -hz)],
+            ),
+            (
+                [(0.0, -1.0, 0.0)] * 4,
+                [(-hx, -hy, -hz), (hx, -hy, -hz), (hx, -hy, hz), (-hx, -hy, hz)],
+            ),
+        ]
+        positions: list[float] = []
+        normals: list[float] = []
+        uvs: list[float] = []
+        indices: list[int] = []
+        for face_index, (face_normals, face_positions) in enumerate(faces):
+            base = face_index * 4
+            for position in face_positions:
+                positions.extend(position)
+            for normal in face_normals:
+                normals.extend(normal)
+            uvs.extend([0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0])
+            indices.extend([base, base + 1, base + 2, base, base + 2, base + 3])
+        return (
+            struct.pack("<" + "f" * len(positions), *positions),
+            struct.pack("<" + "f" * len(normals), *normals),
+            struct.pack("<" + "f" * len(uvs), *uvs),
+            struct.pack("<" + "H" * len(indices), *indices),
+        )
+
+    body_positions, body_normals, body_uvs, body_indices = cuboid(1.2, 1.2, 0.8)
+    face_positions, face_normals, face_uvs, face_indices = cuboid(0.55, 0.45, 0.1)
+    times = struct.pack("<fff", 0.0, 0.5, 1.0)
+    if smooth_motion:
+        translation_interpolation = "CUBICSPLINE"
+        translation_accessor_count = 9
+        translations = struct.pack(
+            "<" + "f" * 27,
+            0.5,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.5,
+            0.0,
+            0.0,
+            0.5,
+            0.0,
+            0.0,
+            0.25,
+            0.0,
+            0.0,
+            0.5,
+            0.0,
+            0.0,
+            0.5,
+            0.0,
+            0.0,
+            0.5,
+            0.0,
+            0.0,
+            0.5,
+            0.0,
+            0.0,
+        )
+    else:
+        translation_interpolation = "LINEAR"
+        translation_accessor_count = 3
+        translations = struct.pack(
+            "<fffffffff",
+            0.0,
+            0.0,
+            0.0,
+            0.25,
+            0.0,
+            0.0,
+            0.5,
+            0.0,
+            0.0,
+        )
+    sin_22_5 = 0.3826834323650898
+    cos_22_5 = 0.9238795325112867
+    sin_45 = 0.7071067811865475
+    rotations = struct.pack(
+        "<ffffffffffff",
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        sin_22_5,
+        cos_22_5,
+        0.0,
+        0.0,
+        sin_45,
+        sin_45,
+    )
+    scales = struct.pack(
+        "<fffffffff",
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.5,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+    )
+    red_png = _png(2, 2, 6, [(255, 0, 0, 255)] * 4)
+    yellow_png = _png(2, 2, 6, [(255, 255, 0, 255)] * 4)
+
+    data_chunks = [
+        body_positions,
+        body_normals,
+        body_uvs,
+        body_indices,
+        face_positions,
+        face_normals,
+        face_uvs,
+        face_indices,
+        times,
+        translations,
+        rotations,
+        scales,
+        red_png,
+        yellow_png,
+    ]
+    chunks: list[bytes] = []
+    offsets: list[int] = []
+    cursor = 0
+    for data in data_chunks:
+        offsets.append(cursor)
+        chunks.append(data)
+        cursor += len(data)
+        pad = (4 - cursor % 4) % 4
+        if pad:
+            chunks.append(b"\x00" * pad)
+            cursor += pad
+    bin_blob = b"".join(chunks)
+
+    gltf = {
+        "asset": {"version": "2.0", "generator": "Blockbench"},
+        "scene": 0,
+        "scenes": [{"nodes": [0]}],
+        "nodes": [
+            {"name": "bb_scene", "children": [1, 2]},
+            {"name": "body", "mesh": 0},
+            {"name": "face", "mesh": 1, "translation": [0.0, 0.0, 0.55]},
+        ],
+        "meshes": [
+            {
+                "name": "body",
+                "primitives": [
+                    {
+                        "attributes": {
+                            "POSITION": 0,
+                            "NORMAL": 1,
+                            "TEXCOORD_0": 2,
+                        },
+                        "indices": 3,
+                        "material": 0,
+                        "mode": 4,
+                    }
+                ],
+            },
+            {
+                "name": "face",
+                "primitives": [
+                    {
+                        "attributes": {
+                            "POSITION": 4,
+                            "NORMAL": 5,
+                            "TEXCOORD_0": 6,
+                        },
+                        "indices": 7,
+                        "material": 1,
+                        "mode": 4,
+                    }
+                ],
+            },
+        ],
+        "materials": [
+            {
+                "alphaCutoff": 0.05,
+                "alphaMode": "MASK",
+                "pbrMetallicRoughness": {"baseColorTexture": {"index": 0}},
+            },
+            {
+                "alphaCutoff": 0.05,
+                "alphaMode": "MASK",
+                "pbrMetallicRoughness": {"baseColorTexture": {"index": 1}},
+            },
+        ],
+        "textures": [{"source": 0}, {"source": 1}],
+        "images": [
+            {"bufferView": 12, "mimeType": "image/png"},
+            {"bufferView": 13, "mimeType": "image/png"},
+        ],
+        "buffers": [{"byteLength": len(bin_blob)}],
+        "bufferViews": [
+            {"buffer": 0, "byteOffset": offsets[0], "byteLength": len(body_positions)},
+            {"buffer": 0, "byteOffset": offsets[1], "byteLength": len(body_normals)},
+            {"buffer": 0, "byteOffset": offsets[2], "byteLength": len(body_uvs)},
+            {"buffer": 0, "byteOffset": offsets[3], "byteLength": len(body_indices)},
+            {"buffer": 0, "byteOffset": offsets[4], "byteLength": len(face_positions)},
+            {"buffer": 0, "byteOffset": offsets[5], "byteLength": len(face_normals)},
+            {"buffer": 0, "byteOffset": offsets[6], "byteLength": len(face_uvs)},
+            {"buffer": 0, "byteOffset": offsets[7], "byteLength": len(face_indices)},
+            {"buffer": 0, "byteOffset": offsets[8], "byteLength": len(times)},
+            {"buffer": 0, "byteOffset": offsets[9], "byteLength": len(translations)},
+            {"buffer": 0, "byteOffset": offsets[10], "byteLength": len(rotations)},
+            {"buffer": 0, "byteOffset": offsets[11], "byteLength": len(scales)},
+            {"buffer": 0, "byteOffset": offsets[12], "byteLength": len(red_png)},
+            {"buffer": 0, "byteOffset": offsets[13], "byteLength": len(yellow_png)},
+        ],
+        "accessors": [
+            {
+                "bufferView": 0,
+                "componentType": 5126,
+                "count": 24,
+                "type": "VEC3",
+                "min": [-0.6, -0.6, -0.4],
+                "max": [0.6, 0.6, 0.4],
+            },
+            {"bufferView": 1, "componentType": 5126, "count": 24, "type": "VEC3"},
+            {"bufferView": 2, "componentType": 5126, "count": 24, "type": "VEC2"},
+            {"bufferView": 3, "componentType": 5123, "count": 36, "type": "SCALAR"},
+            {
+                "bufferView": 4,
+                "componentType": 5126,
+                "count": 24,
+                "type": "VEC3",
+                "min": [-0.275, -0.225, -0.05],
+                "max": [0.275, 0.225, 0.05],
+            },
+            {"bufferView": 5, "componentType": 5126, "count": 24, "type": "VEC3"},
+            {"bufferView": 6, "componentType": 5126, "count": 24, "type": "VEC2"},
+            {"bufferView": 7, "componentType": 5123, "count": 36, "type": "SCALAR"},
+            {
+                "bufferView": 8,
+                "componentType": 5126,
+                "count": 3,
+                "type": "SCALAR",
+                "min": [0.0],
+                "max": [1.0],
+            },
+            {
+                "bufferView": 9,
+                "componentType": 5126,
+                "count": translation_accessor_count,
+                "type": "VEC3",
+            },
+            {"bufferView": 10, "componentType": 5126, "count": 3, "type": "VEC4"},
+            {"bufferView": 11, "componentType": 5126, "count": 3, "type": "VEC3"},
+        ],
+        "animations": [
+            {
+                "name": "idle",
+                "samplers": [
+                    {
+                        "input": 8,
+                        "output": 9,
+                        "interpolation": translation_interpolation,
+                    },
+                    {"input": 8, "output": 10, "interpolation": "LINEAR"},
+                    {"input": 8, "output": 11, "interpolation": "STEP"},
+                ],
+                "channels": [
+                    {"sampler": 0, "target": {"node": 0, "path": "translation"}},
+                    {"sampler": 1, "target": {"node": 1, "path": "rotation"}},
+                    {"sampler": 2, "target": {"node": 1, "path": "scale"}},
+                ],
+            }
+        ],
+    }
+
+    return _write_glb(path, gltf, bin_blob)
+
+
 def write_single_texture_motion_glb(
     path: Path,
     *,
     texture_pixels: list[tuple[int, int, int, int]] | None = None,
+    texture_size: tuple[int, int] = (2, 2),
     texture_count: int = 1,
     material_count: int = 1,
     png_color_type: int = 6,
@@ -80,9 +383,13 @@ def write_single_texture_motion_glb(
     external_image: bool = False,
     morph_target: bool = False,
     skin: bool = False,
+    matrix_transform: bool = False,
     normal_texture: bool = False,
     material_animation: bool = False,
     base_color_factor: list[float] | None = None,
+    tangent_attribute: bool = False,
+    alpha_mode: str | None = None,
+    alpha_cutoff: float | None = None,
 ) -> Path:
     positions = struct.pack(
         "<ffffffffffff",
@@ -101,6 +408,7 @@ def write_single_texture_motion_glb(
     )
     uvs = struct.pack("<ffffffff", 0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0)
     indices = struct.pack("<HHHHHH", 0, 1, 2, 0, 2, 3)
+    tangents = struct.pack("<" + "f" * 16, *([0.0, 0.0, 1.0, 1.0] * 4))
     times = struct.pack("<ff", 0.0, 1.0)
     translations = struct.pack("<ffffff", 0.0, 0.0, 0.0, 1.0, 0.0, 0.0)
     morph_positions = struct.pack("<ffffffffffff", *([0.0] * 12))
@@ -111,6 +419,8 @@ def write_single_texture_motion_glb(
             (255, 0, 0, 255),
             (0, 255, 0, 255),
         ]
+    if len(texture_pixels) != texture_size[0] * texture_size[1]:
+        raise ValueError("texture_pixels length must match texture_size")
     if png_color_type == 0:
         pixels = [(p[0],) for p in texture_pixels]
     elif png_color_type == 2:
@@ -119,11 +429,14 @@ def write_single_texture_motion_glb(
         pixels = [(p[0], p[3]) for p in texture_pixels]
     else:
         pixels = list(texture_pixels)
-    png = _png(2, 2, png_color_type, pixels)
+    png = _png(texture_size[0], texture_size[1], png_color_type, pixels)
     chunks: list[bytes] = []
     offsets: list[int] = []
     cursor = 0
-    for data in (positions, uvs, indices, times, translations, morph_positions, png):
+    data_chunks = [positions, uvs, indices, times, translations, morph_positions, png]
+    if tangent_attribute:
+        data_chunks.append(tangents)
+    for data in data_chunks:
         offsets.append(cursor)
         chunks.append(data)
         cursor += len(data)
@@ -140,17 +453,43 @@ def write_single_texture_motion_glb(
     }
     if morph_target:
         primitive["targets"] = [{"POSITION": 5}]
+    if tangent_attribute:
+        primitive["attributes"]["TANGENT"] = 6
 
     node = {"name": "actor", "mesh": 0}
     if skin:
         node["skin"] = 0
+    if matrix_transform:
+        node["matrix"] = [
+            1.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+        ]
 
     materials = []
     for _ in range(material_count):
         pbr = {"baseColorTexture": {"index": 0}}
         if base_color_factor is not None:
             pbr["baseColorFactor"] = base_color_factor
-        materials.append({"pbrMetallicRoughness": pbr})
+        material = {"pbrMetallicRoughness": pbr}
+        if alpha_mode is not None:
+            material["alphaMode"] = alpha_mode
+        if alpha_cutoff is not None:
+            material["alphaCutoff"] = alpha_cutoff
+        materials.append(material)
     if normal_texture:
         materials[0]["normalTexture"] = {"index": 0}
 
@@ -214,6 +553,13 @@ def write_single_texture_motion_glb(
             }
         ],
     }
+    if tangent_attribute:
+        gltf["bufferViews"].append(
+            {"buffer": 0, "byteOffset": offsets[7], "byteLength": len(tangents)}
+        )
+        gltf["accessors"].append(
+            {"bufferView": 7, "componentType": 5126, "count": 4, "type": "VEC4"}
+        )
     if skin:
         gltf["skins"] = [{"joints": [0]}]
     if external_buffer:
@@ -285,6 +631,14 @@ def write_normal_texture_glb(path: Path) -> Path:
     return write_single_texture_motion_glb(path, normal_texture=True)
 
 
+def write_matrix_transform_glb(path: Path) -> Path:
+    return write_single_texture_motion_glb(path, matrix_transform=True)
+
+
+def write_tangent_attribute_glb(path: Path) -> Path:
+    return write_single_texture_motion_glb(path, tangent_attribute=True)
+
+
 def write_material_animation_glb(path: Path) -> Path:
     return write_single_texture_motion_glb(path, material_animation=True)
 
@@ -322,7 +676,12 @@ def write_non_indexed_glb(path: Path, *, vertex_count: int = 6) -> Path:
         "scene": 0,
         "scenes": [{"nodes": [0]}],
         "nodes": [{"name": "tris", "mesh": 0}],
-        "meshes": [{"primitives": [{"attributes": {"POSITION": 0}, "mode": 4}]}],
+        "meshes": [
+            {"primitives": [{"attributes": {"POSITION": 0}, "material": 0, "mode": 4}]}
+        ],
+        "materials": [
+            {"pbrMetallicRoughness": {"baseColorFactor": [1.0, 1.0, 1.0, 1.0]}}
+        ],
         "buffers": [{"byteLength": len(positions)}],
         "bufferViews": [{"buffer": 0, "byteOffset": 0, "byteLength": len(positions)}],
         "accessors": [
@@ -382,7 +741,18 @@ def write_authored_normals_glb(path: Path) -> Path:
         "scenes": [{"nodes": [0]}],
         "nodes": [{"name": "tri", "mesh": 0}],
         "meshes": [
-            {"primitives": [{"attributes": {"POSITION": 0, "NORMAL": 1}, "mode": 4}]}
+            {
+                "primitives": [
+                    {
+                        "attributes": {"POSITION": 0, "NORMAL": 1},
+                        "material": 0,
+                        "mode": 4,
+                    }
+                ]
+            }
+        ],
+        "materials": [
+            {"pbrMetallicRoughness": {"baseColorFactor": [1.0, 1.0, 1.0, 1.0]}}
         ],
         "buffers": [{"byteLength": len(bin_blob)}],
         "bufferViews": [

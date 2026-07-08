@@ -8,6 +8,7 @@ from pyxel import Image
 from pyxel.cube import Camera, Mat4, Mesh, Motion, Node, Vec3
 
 from .glb_fixtures import (
+    write_blockbench_profile_glb,
     write_alpha_texture_glb,
     write_authored_normals_glb,
     write_external_buffer_glb,
@@ -17,6 +18,7 @@ from .glb_fixtures import (
     write_line_mode_glb,
     write_materialless_primitive_glb,
     write_material_animation_glb,
+    write_matrix_transform_glb,
     write_morph_target_glb,
     write_normal_texture_glb,
     write_non_indexed_glb,
@@ -24,6 +26,7 @@ from .glb_fixtures import (
     write_single_texture_motion_glb,
     write_tinted_texture_glb,
     write_skin_glb,
+    write_tangent_attribute_glb,
     write_two_material_glb,
     write_two_material_two_texture_glb,
     write_two_texture_glb,
@@ -84,6 +87,60 @@ def test_from_glb_loads_single_texture_mesh(tmp_path):
     assert mesh.names == ["actor", "actor_primitive_0"]
     assert isinstance(mesh.col_img, Image)
     assert mesh.colkey == 0
+
+
+def test_from_glb_loads_blockbench_profile_textured_model(tmp_path):
+    path = write_blockbench_profile_glb(tmp_path / "blockbench.glb")
+    mesh = Mesh.from_glb(str(path), colkey=0, fps=20.0)
+
+    assert mesh.names == [
+        "bb_scene",
+        "body",
+        "body_primitive_0",
+        "face",
+        "face_primitive_0",
+    ]
+    assert len(mesh.primitives) == 5
+    assert mesh.primitives[0] is None
+    assert mesh.primitives[1] is None
+    assert mesh.primitives[2] is not None
+    assert mesh.primitives[3] is None
+    assert mesh.primitives[4] is not None
+    assert isinstance(mesh.col_img, Image)
+
+    colors = _render_mesh_colors(mesh)
+
+    assert 8 in colors
+    assert 10 in colors
+
+
+def test_from_glb_loads_blockbench_profile_motion(tmp_path):
+    path = write_blockbench_profile_glb(tmp_path / "blockbench_motion.glb")
+    mesh = Mesh.from_glb(str(path), colkey=0, fps=20.0)
+    root = Node.from_mesh(mesh)
+
+    assert len(mesh.motions) == 1
+    assert mesh.motions[0].name == "idle"
+    assert mesh.motions[0].length == 20.0
+
+    root.apply_motion(mesh.motions[0], 10.0)
+
+    body = root.children[0]
+    assert root.transform.pos == Vec3(0.25, 0.0, 0.0)
+    assert body.transform.scale == Vec3(1.0, 1.5, 1.0)
+    assert body.transform.rot.to_euler().z == pytest.approx(45.0)
+
+
+def test_from_glb_loads_blockbench_profile_smooth_motion(tmp_path):
+    path = write_blockbench_profile_glb(
+        tmp_path / "blockbench_smooth.glb", smooth_motion=True
+    )
+    mesh = Mesh.from_glb(str(path), colkey=0, fps=20.0)
+    root = Node.from_mesh(mesh)
+
+    root.apply_motion(mesh.motions[0], 5.0)
+
+    assert root.transform.pos.x == pytest.approx(0.125)
 
 
 def test_bundled_actor_cube_is_closed_and_outward_wound():
@@ -161,10 +218,102 @@ def test_from_glb_loads_motion(tmp_path):
     assert mesh.motions[0].length == 30.0
 
 
-def test_from_glb_rejects_alpha_texture(tmp_path):
+def test_from_glb_ignores_alpha_texture_without_colkey(tmp_path):
     path = write_alpha_texture_glb(tmp_path / "alpha.glb")
+    mesh = Mesh.from_glb(str(path))
 
-    with pytest.raises(ValueError, match="alpha"):
+    assert isinstance(mesh.col_img, Image)
+
+
+def test_from_glb_converts_mask_alpha_texture_pixels_to_auto_colkey(tmp_path):
+    path = write_single_texture_motion_glb(
+        tmp_path / "mask_auto_colkey.glb",
+        texture_pixels=[
+            (255, 255, 255, 255),
+            (255, 0, 0, 255),
+            (0, 255, 0, 0),
+            (0, 0, 255, 255),
+        ],
+        alpha_mode="MASK",
+    )
+    mesh = Mesh.from_glb(str(path))
+
+    assert isinstance(mesh.col_img, Image)
+    assert mesh.col_img.pget(0, 1) == 0
+    assert mesh.colkey == 0
+
+
+def test_from_glb_converts_mask_alpha_texture_pixels_to_requested_colkey(tmp_path):
+    path = write_single_texture_motion_glb(
+        tmp_path / "mask_requested_colkey.glb",
+        texture_pixels=[
+            (255, 255, 255, 255),
+            (255, 0, 0, 255),
+            (0, 255, 0, 0),
+            (0, 0, 255, 255),
+        ],
+        alpha_mode="MASK",
+    )
+    mesh = Mesh.from_glb(str(path), colkey=2)
+
+    assert isinstance(mesh.col_img, Image)
+    assert mesh.col_img.pget(0, 1) == 2
+    assert mesh.colkey == 2
+
+
+def test_from_glb_uses_mask_alpha_cutoff(tmp_path):
+    path = write_single_texture_motion_glb(
+        tmp_path / "mask_alpha_cutoff.glb",
+        texture_pixels=[
+            (255, 255, 255, 255),
+            (255, 0, 0, 255),
+            (0, 255, 0, 20),
+            (0, 0, 255, 0),
+        ],
+        alpha_mode="MASK",
+        alpha_cutoff=0.05,
+    )
+    mesh = Mesh.from_glb(str(path))
+
+    assert isinstance(mesh.col_img, Image)
+    assert mesh.col_img.pget(0, 1) != mesh.colkey
+    assert mesh.col_img.pget(1, 1) == mesh.colkey
+
+
+def test_from_glb_rejects_mask_colkey_collision(tmp_path):
+    path = write_single_texture_motion_glb(
+        tmp_path / "mask_colkey_collision.glb",
+        texture_pixels=[
+            (255, 255, 255, 255),
+            (255, 0, 0, 255),
+            (0, 255, 0, 0),
+            (0, 0, 255, 255),
+        ],
+        alpha_mode="MASK",
+    )
+
+    with pytest.raises(ValueError, match="colkey"):
+        Mesh.from_glb(str(path), colkey=8)
+
+
+def test_from_glb_rejects_mask_auto_colkey_when_palette_is_full(tmp_path):
+    path = write_single_texture_motion_glb(
+        tmp_path / "mask_full_palette.glb",
+        texture_pixels=[
+            (
+                (color >> 16) & 0xFF,
+                (color >> 8) & 0xFF,
+                color & 0xFF,
+                255,
+            )
+            for color in pyxel.DEFAULT_COLORS
+        ]
+        + [(0, 0, 0, 0)],
+        texture_size=(17, 1),
+        alpha_mode="MASK",
+    )
+
+    with pytest.raises(ValueError, match="unused colkey"):
         Mesh.from_glb(str(path))
 
 
@@ -200,14 +349,11 @@ def test_from_glb_applies_textured_material_factor(tmp_path):
     assert {mesh.col_img.pget(x, y) for y in range(2) for x in range(2)} == {8}
 
 
-def test_from_glb_uses_default_material_for_materialless_primitive(tmp_path):
+def test_from_glb_rejects_materialless_primitive(tmp_path):
     path = write_materialless_primitive_glb(tmp_path / "materialless.glb")
-    mesh = Mesh.from_glb(str(path), colkey=0)
 
-    colors = _render_mesh_colors(mesh)
-
-    assert 8 in colors
-    assert 7 in colors
+    with pytest.raises(ValueError, match="material"):
+        Mesh.from_glb(str(path), colkey=0)
 
 
 def test_from_glb_loads_unused_extra_material_and_texture(tmp_path):
@@ -280,6 +426,20 @@ def test_from_glb_rejects_skins(tmp_path):
     path = write_skin_glb(tmp_path / "skin.glb")
 
     with pytest.raises(ValueError, match="skins"):
+        Mesh.from_glb(str(path))
+
+
+def test_from_glb_rejects_matrix_node_transforms(tmp_path):
+    path = write_matrix_transform_glb(tmp_path / "matrix_transform.glb")
+
+    with pytest.raises(ValueError, match="matrix node transforms"):
+        Mesh.from_glb(str(path))
+
+
+def test_from_glb_rejects_non_blockbench_vertex_attributes(tmp_path):
+    path = write_tangent_attribute_glb(tmp_path / "tangent_attribute.glb")
+
+    with pytest.raises(ValueError, match="unsupported vertex attribute"):
         Mesh.from_glb(str(path))
 
 

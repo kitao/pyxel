@@ -694,44 +694,54 @@ character_node = Node.from_mesh(character)
 ```
 
 `__init__` is all-optional. Parts can be added by reassigning the four
-arrays. For load-from-file workflows (e.g., glTF import), the importer
-assembles the arrays in topological order and hands them to the
-constructor.
+arrays. For Blockbench GLB import, the importer assembles the arrays in
+topological order and hands them to the constructor.
 
-### 10.5 GLB Import
+### 10.5 Blockbench GLB Import
 
 ```python
 mesh = Mesh.from_glb("actor.glb", colkey=0, fps=30.0)
 actor = Node.from_mesh(mesh)
 ```
 
-`Mesh.from_glb` loads binary glTF (`.glb`) files and converts the default
-scene into the same part arrays used by the regular constructor. The first
-implementation is intentionally narrow and predictable:
+`Mesh.from_glb` targets the Blockbench GLTF Model exporter with Binary
+(`.glb`) encoding, embedded textures enabled, armature disabled, and
+animations enabled. It converts the default scene into the same part arrays
+used by the regular constructor. This is a compatibility profile for simple
+low-poly Blockbench models, not a general glTF loader:
 
 - Only embedded binary buffers and embedded images are supported.
+- Every primitive must reference a material.
 - Multiple materials and multiple embedded base-color textures are accepted.
   Each GLB primitive keeps its material slot; untextured materials use their
   `baseColorFactor` quantized to the nearest Pyxel palette color.
+- The accepted primitive attributes are `POSITION`, `NORMAL`, and
+  `TEXCOORD_0`; other vertex attributes are rejected rather than ignored.
 - `NORMAL` attributes are imported as per-face flat normals. When a primitive
   has no `NORMAL`, flat normals are computed from triangle vertices.
 - Texture pixels are quantized to the current Pyxel palette. Only
   `pbrMetallicRoughness.baseColorTexture` is accepted, and RGB
-  `baseColorFactor` tint is applied before quantization. Any pixel whose alpha
-  is not 255 is rejected;
-  transparent texels are represented by the caller-provided `colkey` value,
-  not by alpha conversion.
+  `baseColorFactor` tint is applied before quantization. `OPAQUE` and `MASK`
+  material modes are accepted. `OPAQUE` ignores the source alpha channel.
+  `MASK` writes pixels below `alphaCutoff` as a resolved `colkey`: a
+  caller-provided `colkey` is rejected if any opaque pixel quantizes to the
+  same palette index; otherwise the importer selects an unused current palette
+  color, or errors if no unused color exists.
+- Node transforms must be decomposed TRS fields. Matrix node transforms are
+  rejected because the Blockbench export path uses TRS.
 - Transform animation channels for translation, rotation, and scale are
-  imported into `mesh.motions`. The `fps` argument converts glTF seconds into
-  Pyxel frame numbers.
-- Skins, morph targets, material animation, external files, alpha materials,
-  non-base-color material textures, and non-triangle mesh primitives are
-  rejected rather than guessed.
+  imported into `mesh.motions`. LINEAR, STEP, and CUBICSPLINE interpolation
+  are accepted for these transform channels. The `fps` argument converts
+  glTF seconds into Pyxel frame numbers.
+- Skins, morph targets, material animation, external files, alpha blending,
+  non-base-color material textures, non-triangle mesh primitives, matrix node
+  transforms, and non-Blockbench vertex attributes are rejected rather than
+  guessed.
 
 This keeps the low-poly Blockbench export path explicit: use simple
-base-color materials or embedded base-color textures, reserve one palette
-color for transparency, then pass that palette index as `colkey` when
-loading the GLB.
+base-color materials or embedded base-color textures. For cutout textures,
+use `MASK` alpha and either reserve a palette color as `colkey` or let the
+importer select an unused palette color.
 
 ### 10.6 Motion Clips
 
