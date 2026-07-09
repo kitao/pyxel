@@ -146,6 +146,12 @@ class Widget:
                     break
 
             self.trigger_event("mouse_hover", x, y)
+
+            # mouse_wheel
+            wheel_y = pyxel.mouse_wheel
+            if wheel_y != 0:
+                self.trigger_event("mouse_wheel", wheel_y)
+
             return True
 
         return False

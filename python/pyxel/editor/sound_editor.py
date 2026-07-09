@@ -36,6 +36,7 @@ class SoundEditor(EditorBase):
     def __init__(self, parent):
         super().__init__(parent)
         self._history_data = None
+        self._sound_beats = [8] * pyxel.NUM_SOUNDS
 
         # Initialize field cursor
         self.field_cursor = FieldCursor(
@@ -56,7 +57,7 @@ class SoundEditor(EditorBase):
 
         # Initialize sound picker
         self._sound_picker = NumberPicker(
-            self, 45, 17, min_value=0, max_value=pyxel.NUM_SOUNDS - 1, value=0
+            self, 38, 17, min_value=0, max_value=pyxel.NUM_SOUNDS - 1, value=0
         )
         self._sound_picker.add_event_listener("change", self.__on_sound_picker_change)
         self._sound_picker.add_event_listener(
@@ -67,14 +68,22 @@ class SoundEditor(EditorBase):
 
         # Initialize speed picker
         self._speed_picker = NumberPicker(
-            self, 105, 17, min_value=1, max_value=99, value=pyxel.sounds[0].speed
+            self, 96, 17, min_value=1, max_value=99, value=pyxel.sounds[0].speed
         )
         self._speed_picker.add_event_listener("change", self.__on_speed_picker_change)
         self.add_number_picker_help(self._speed_picker)
         self.copy_var("speed_var", self._speed_picker, "value_var")
 
+        # Initialize beat picker
+        self._beats_picker = NumberPicker(
+            self, 154, 17, min_value=1, max_value=16, value=8
+        )
+        self._beats_picker.add_event_listener("change", self.__on_beats_picker_change)
+        self.add_number_picker_help(self._beats_picker)
+        self.copy_var("beats_var", self._beats_picker, "value_var")
+
         # Initialize play button
-        self._play_button = ImageButton(self, 185, 17, img=EDITOR_IMAGE, u=126, v=0)
+        self._play_button = ImageButton(self, 197, 17, img=EDITOR_IMAGE, u=126, v=0)
         self._play_button.add_event_listener("press", self.__on_play_button_press)
         self._play_button.add_event_listener(
             "mouse_hover", self.__on_play_button_mouse_hover
@@ -82,7 +91,7 @@ class SoundEditor(EditorBase):
 
         # Initialize stop button
         self._stop_button = ImageButton(
-            self, 195, 17, img=EDITOR_IMAGE, u=135, v=0, is_enabled=False
+            self, 207, 17, img=EDITOR_IMAGE, u=135, v=0, is_enabled=False
         )
         self._stop_button.add_event_listener("press", self.__on_stop_button_press)
         self._stop_button.add_event_listener(
@@ -91,7 +100,7 @@ class SoundEditor(EditorBase):
 
         # Initialize loop button
         self._loop_button = ImageToggleButton(
-            self, 205, 17, img=EDITOR_IMAGE, u=144, v=0, is_checked=False
+            self, 217, 17, img=EDITOR_IMAGE, u=144, v=0, is_checked=False
         )
         self._loop_button.add_event_listener(
             "mouse_hover", self.__on_loop_button_mouse_hover
@@ -202,12 +211,16 @@ class SoundEditor(EditorBase):
 
     def __on_sound_picker_change(self, value):
         self._speed_picker.value_var = pyxel.sounds[value].speed
+        self._beats_picker.value = self._sound_beats[value]
 
     def __on_sound_picker_mouse_hover(self, _x, _y):
         self.help_message_var = "COPY_ALL:CTRL+SHIFT+C/X/V"
 
     def __on_speed_picker_change(self, value):
         pyxel.sounds[self.sound_index_var].speed = value
+
+    def __on_beats_picker_change(self, value):
+        self._sound_beats[self.sound_index_var] = value
 
     def __on_play_button_press(self):
         self._play(pyxel.btn(pyxel.KEY_SHIFT))
@@ -261,5 +274,6 @@ class SoundEditor(EditorBase):
 
     def __on_draw(self):
         self.draw_panel(11, 16, 218, 157)
-        pyxel.text(23, 18, "SOUND", TEXT_LABEL_COLOR)
-        pyxel.text(83, 18, "SPEED", TEXT_LABEL_COLOR)
+        pyxel.text(16, 18, "SOUND", TEXT_LABEL_COLOR)
+        pyxel.text(74, 18, "SPEED", TEXT_LABEL_COLOR)
+        pyxel.text(132, 18, "BEATS", TEXT_LABEL_COLOR)

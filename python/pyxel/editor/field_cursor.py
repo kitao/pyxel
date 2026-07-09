@@ -275,8 +275,8 @@ class FieldCursor:
             if pyxel.btnp(pyxel.KEY_A):
                 self.select_all()
 
-            # Ctrl+C: Copy
-            if pyxel.btnp(pyxel.KEY_C):
+            # Ctrl+C / Ctrl+Insert: Copy
+            if pyxel.btnp(pyxel.KEY_C) or pyxel.btnp(pyxel.KEY_INSERT):
                 self.copy()
 
             # Ctrl+X: Cut
@@ -299,6 +299,20 @@ class FieldCursor:
             ):
                 self.shift(-1)
             return
+
+        # Shift+Delete / Shift+Insert (alternative Cut / Paste)
+        if pyxel.btn(pyxel.KEY_SHIFT) and not (
+            pyxel.btn(pyxel.KEY_CTRL) or pyxel.btn(pyxel.KEY_GUI)
+        ):
+            # Shift+Delete: Cut
+            if pyxel.btnp(pyxel.KEY_DELETE):
+                self.cut()
+                return
+
+            # Shift+Insert: Paste
+            if pyxel.btnp(pyxel.KEY_INSERT):
+                self.paste()
+                return
 
         with_select_key = pyxel.btn(pyxel.KEY_SHIFT)
         if pyxel.btnp(pyxel.KEY_LEFT, hold=WIDGET_HOLD_TIME, repeat=WIDGET_REPEAT_TIME):

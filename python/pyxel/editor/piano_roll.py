@@ -36,6 +36,7 @@ class PianoRoll(Widget):
         self.get_field_help_message = parent.get_field_help_message
         self.copy_var("speed_var", parent)
         self.copy_var("note_var", parent)
+        self.copy_var("beats_var", parent)
         self.copy_var("is_playing_var", parent)
         self.copy_var("help_message_var", parent)
 
@@ -162,6 +163,39 @@ class PianoRoll(Widget):
             51,
             PIANO_ROLL_BACKGROUND_COLOR,
         )
+
+        # Erase default vertical grid lines
+        for old_x in (32, 64, 96, 128, 160):
+            pyxel.line(
+                self.x + old_x,
+                self.y,
+                self.x + old_x,
+                self.y + self.height - 1,
+                PIANO_ROLL_BACKGROUND_COLOR,
+            )
+
+        # Draw dynamic vertical grid lines
+        if self.beats_var > 0:
+            for i in range(1, 48 // self.beats_var + 1):
+                new_x = i * self.beats_var * 4
+                if new_x < self.width:
+                    pyxel.line(
+                        self.x + new_x,
+                        self.y,
+                        self.x + new_x,
+                        self.y + self.height - 1,
+                        13,
+                    )
+
+        # Restore horizontal grid lines
+        for y_offset in (0, 14, 24, 38, 48, 62, 72, 86, 96, 110, 120):
+            pyxel.line(
+                self.x,
+                self.y + y_offset,
+                self.x + self.width - 1,
+                self.y + y_offset,
+                13,
+            )
 
         # Draw notes
         for i, note in enumerate(self.get_field(0)):

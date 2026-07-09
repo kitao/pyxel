@@ -34,14 +34,15 @@ def _get_slice(self, x, y, width, height):
     return [[self.pget(x + xi, y + yi) for xi in range(width)] for yi in range(height)]
 
 
-def _set_slice(self, x, y, data):
+def _set_slice(self, x, y, data, colkey=None):
     width = len(data[0])
     height = len(data)
 
     for yi in range(height):
         for xi in range(width):
+            if colkey is not None and data[yi][xi] == colkey:
+                continue
             self.pset(x + xi, y + yi, data[yi][xi])
-
 
 pyxel.user_pal = _user_pal  # type: ignore
 

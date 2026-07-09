@@ -46,6 +46,7 @@ class SoundField(Widget):
         self.field_cursor = parent.field_cursor
         self.get_field = parent.get_field
         self.get_field_help_message = parent.get_field_help_message
+        self.copy_var("beats_var", parent)
         self.copy_var("is_playing_var", parent)
         self.copy_var("help_message_var", parent)
 
@@ -93,6 +94,39 @@ class SoundField(Widget):
         pyxel.text(self.x - 13, self.y + 17, "EFX", TEXT_LABEL_COLOR)
         pyxel.blt(self.x, self.y, EDITOR_IMAGE, 0, 79, 193, 23)
 
+        # Erase default vertical grid lines
+        for old_x in (32, 64, 96, 128, 160):
+            pyxel.line(
+                self.x + old_x,
+                self.y,
+                self.x + old_x,
+                self.y + self.height - 1,
+                10,
+            )
+
+        # Draw dynamic vertical grid lines
+        if self.beats_var > 0:
+            for i in range(1, 48 // self.beats_var + 1):
+                new_x = i * self.beats_var * 4
+                if new_x < self.width:
+                    pyxel.line(
+                        self.x + new_x,
+                        self.y,
+                        self.x + new_x,
+                        self.y + self.height - 1,
+                        9,
+                    )
+
+        # Restore horizontal grid lines
+        for y_offset in (7, 15):
+            pyxel.line(
+                self.x,
+                self.y + y_offset,
+                self.x + self.width - 1,
+                self.y + y_offset,
+                9,
+            )
+
         # Draw field data
         data_str = [
             "".join(_FIELD_CHARS[i][v] for v in self.get_field(i + 1)) for i in range(3)
@@ -114,6 +148,8 @@ class SoundField(Widget):
             if self.field_cursor.is_selecting
             else SOUND_FIELD_CURSOR_EDIT_COLOR
         )
+
+        col = pyxel.COLOR_LIME
         pyxel.rect(x, y - 1, w, 7, col)
         if cursor_x < len(data_str[cursor_y - 1]):
             pyxel.text(

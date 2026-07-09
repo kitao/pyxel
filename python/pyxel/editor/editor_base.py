@@ -36,6 +36,7 @@ class EditorBase(Widget):
         self._history_list = []
         self._history_index = 0
         self.copy_var("help_message_var", parent)
+        self.copy_var("secondary_color_var", parent)
 
     # Public methods
 
