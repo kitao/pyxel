@@ -61,8 +61,11 @@
 
 - Every comment is in English.
 
-- A comment exists only when it adds intent the code cannot show. Required cases are mechanical or non-obvious operations (bit-twiddling, format-specific encoding) and non-local invariants.
-  - e.g., `i += 1  # increment i` — anti-pattern (stated by the code); `i += 1  # wrap at frame boundary` — typical (states intent).
+- A comment exists only when it adds intent that neither the code nor an existing comment shows; a shared rationale lives once, at the site that owns the decision, unless another rule requires the repetition. Required cases are mechanical or non-obvious operations (bit-twiddling, format-specific encoding) and non-local invariants.
+  - e.g., `i += 1  # increment i` — anti-pattern (stated by the code); `i += 1  # wrap at frame boundary` — typical (states intent); the same workaround explained at both its deciding site and a dependent site — anti-pattern; nondeterminism sources named at each assertion — typical (required by Testing).
+
+- A comment is as short as its intent allows; comments of the same kind match the granularity prevailing in their sibling group.
+  - e.g., a five-line header on a short helper where sibling files use one-line headers — anti-pattern (surplus wording); a widget's `# Variables:` block matching the convention across widget files — typical.
 
 - A block of 30 or more statement lines is preceded by a one-line comment naming the block's role.
   - e.g., a 40-line `match` with many arms gains a one-line header naming the dispatch.
