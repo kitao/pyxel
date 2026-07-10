@@ -19,8 +19,34 @@ static AUDIO_DEVICE_ID: AtomicU32 = AtomicU32::new(0);
 type AudioCallback = Box<dyn FnMut(&mut [i16])>;
 
 #[cfg(target_os = "emscripten")]
-// Browser callbacks do not provide elapsed time, so use Pyxel's nominal frame step.
-const EMSCRIPTEN_FRAME_DELTA_MS: f32 = 10.0;
+struct MainLoopState<F> {
+    callback: F,
+    frame_ms: f64,
+    last_frame_ms: f64,
+    next_frame_ms: f64,
+}
+
+// Advance the frame schedule and return the delta to report when a frame is
+// due. Frames run up to half a frame early so a display refreshing at the
+// target fps never skips on clock jitter.
+#[cfg(any(target_os = "emscripten", test))]
+fn advance_frame_schedule(
+    now_ms: f64,
+    frame_ms: f64,
+    last_frame_ms: &mut f64,
+    next_frame_ms: &mut f64,
+) -> Option<f32> {
+    if now_ms < *next_frame_ms - frame_ms / 2.0 {
+        return None;
+    }
+    let delta_ms = (*next_frame_ms - *last_frame_ms) as f32;
+    *last_frame_ms = *next_frame_ms;
+    *next_frame_ms += frame_ms;
+    while *next_frame_ms <= now_ms {
+        *next_frame_ms += frame_ms;
+    }
+    Some(delta_ms)
+}
 
 #[cfg(any(target_os = "emscripten", test))]
 fn browser_save_script(filename: &str) -> CString {
@@ -61,13 +87,21 @@ extern "C" {
         simulate_infinite_loop: c_int,
     );
     fn emscripten_cancel_main_loop();
+    fn emscripten_get_now() -> f64;
 }
 
 #[cfg(target_os = "emscripten")]
 unsafe extern "C" fn main_loop_callback<F: FnMut(f32)>(arg: *mut c_void) {
-    // Emscripten schedules the loop by fps, so pass a small fixed delta that
-    // keeps the core catch-up path from replaying updates on browser frames.
-    (*arg.cast::<F>())(EMSCRIPTEN_FRAME_DELTA_MS);
+    let state = &mut *arg.cast::<MainLoopState<F>>();
+    let now_ms = emscripten_get_now();
+    if let Some(delta_ms) = advance_frame_schedule(
+        now_ms,
+        state.frame_ms,
+        &mut state.last_frame_ms,
+        &mut state.next_frame_ms,
+    ) {
+        (state.callback)(delta_ms);
+    }
 }
 
 extern "C" fn audio_callback(userdata: *mut c_void, stream: *mut u8, len: c_int) {
@@ -454,11 +488,20 @@ impl PlatformSdl2 {
 
     #[cfg(target_os = "emscripten")]
     pub fn run_frame_loop<F: FnMut(f32)>(&mut self, fps: u32, callback: F) {
+        // Drive the loop with requestAnimationFrame (fps = 0); browsers keep
+        // rAF running in contexts where they throttle timers to 1 Hz.
+        let now_ms = unsafe { emscripten_get_now() };
+        let state = Box::new(MainLoopState {
+            callback,
+            frame_ms: 1000.0 / f64::from(fps),
+            last_frame_ms: now_ms,
+            next_frame_ms: now_ms,
+        });
         unsafe {
             emscripten_set_main_loop_arg(
                 main_loop_callback::<F>,
-                Box::into_raw(Box::new(callback)).cast::<c_void>(),
-                fps as c_int,
+                Box::into_raw(state).cast::<c_void>(),
+                0,
                 1,
             );
         }
@@ -527,7 +570,7 @@ mod tests {
     #[cfg(not(target_os = "emscripten"))]
     use std::sync::atomic::Ordering;
 
-    use super::{browser_save_script, window_title_c_string};
+    use super::{advance_frame_schedule, browser_save_script, window_title_c_string};
     #[cfg(not(target_os = "emscripten"))]
     use super::{saved_audio_device_id_for_start, AUDIO_DEVICE_ID};
 
@@ -556,5 +599,100 @@ mod tests {
 
         assert_eq!(saved_audio_device_id_for_start(), None);
         assert_eq!(AUDIO_DEVICE_ID.load(Ordering::Relaxed), 0);
+    }
+
+    #[test]
+    fn test_advance_frame_schedule_runs_first_frame_immediately() {
+        let mut last = 100.0;
+        let mut next = 100.0;
+
+        let delta = advance_frame_schedule(100.0, 33.0, &mut last, &mut next);
+
+        assert_eq!(delta, Some(0.0));
+        assert_eq!(last, 100.0);
+        assert_eq!(next, 133.0);
+    }
+
+    #[test]
+    fn test_advance_frame_schedule_waits_outside_tolerance() {
+        let mut last = 0.0;
+        let mut next = 33.0;
+
+        // More than half a frame before the scheduled time is too early.
+        let delta = advance_frame_schedule(16.0, 33.0, &mut last, &mut next);
+
+        assert_eq!(delta, None);
+        assert_eq!(last, 0.0);
+        assert_eq!(next, 33.0);
+    }
+
+    #[test]
+    fn test_advance_frame_schedule_runs_within_half_frame_tolerance() {
+        let mut last = 0.0;
+        let mut next = 33.0;
+
+        // Within half a frame of the scheduled time counts as due, so a
+        // display refreshing at the target fps never skips on clock jitter.
+        let delta = advance_frame_schedule(17.0, 33.0, &mut last, &mut next);
+
+        assert_eq!(delta, Some(33.0));
+        assert_eq!(last, 33.0);
+        assert_eq!(next, 66.0);
+    }
+
+    #[test]
+    fn test_advance_frame_schedule_reports_missed_frames_in_delta() {
+        let mut last = 0.0;
+        let mut next = 33.0;
+
+        // Two scheduled frames were missed; the schedule realigns past `now`
+        // and the following delta covers the gap for the core catch-up path.
+        assert_eq!(
+            advance_frame_schedule(100.0, 33.0, &mut last, &mut next),
+            Some(33.0)
+        );
+        assert_eq!(last, 33.0);
+        assert!(next > 100.0);
+        assert_eq!(
+            advance_frame_schedule(next, 33.0, &mut last, &mut next),
+            Some(99.0)
+        );
+    }
+
+    #[test]
+    fn test_advance_frame_schedule_matched_refresh_runs_every_callback() {
+        // 60 fps on a 60 Hz display with a truncated-millisecond clock must
+        // not drop frames.
+        let frame_ms = 1000.0 / 60.0;
+        let mut last = 0.0;
+        let mut next = 0.0;
+        let mut frames = 0;
+        for i in 0..60 {
+            let now = (i as f64 * frame_ms).floor();
+            if advance_frame_schedule(now, frame_ms, &mut last, &mut next).is_some() {
+                frames += 1;
+            }
+        }
+
+        assert_eq!(frames, 60);
+    }
+
+    #[test]
+    fn test_advance_frame_schedule_halves_rate_on_double_refresh() {
+        // 30 fps on a 60 Hz display runs every second callback once the
+        // schedule is in steady state.
+        let frame_ms = 1000.0 / 30.0;
+        let raf_ms = 1000.0 / 60.0;
+        let mut last = 0.0;
+        let mut next = frame_ms;
+        let mut frames = 0;
+        for i in 1..=60 {
+            let now = i as f64 * raf_ms + 1.0;
+            if advance_frame_schedule(now, frame_ms, &mut last, &mut next).is_some() {
+                frames += 1;
+            }
+        }
+
+        assert_eq!(frames, 30);
     }
 }
