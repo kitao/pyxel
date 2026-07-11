@@ -37,7 +37,6 @@ class SoundEditor(EditorBase):
         super().__init__(parent)
         self._history_data = None
 
-        # Initialize field cursor
         self.field_cursor = FieldCursor(
             self,
             max_field_length=MAX_SOUND_LENGTH,
@@ -54,7 +53,6 @@ class SoundEditor(EditorBase):
         self.new_var("is_playing_var", None)
         self.add_var_event_listener("is_playing_var", "get", self.__on_is_playing_get)
 
-        # Initialize sound picker
         self._sound_picker = NumberPicker(
             self, 45, 17, min_value=0, max_value=pyxel.NUM_SOUNDS - 1, value=0
         )
@@ -65,7 +63,6 @@ class SoundEditor(EditorBase):
         self.add_number_picker_help(self._sound_picker)
         self.copy_var("sound_index_var", self._sound_picker, "value_var")
 
-        # Initialize speed picker
         self._speed_picker = NumberPicker(
             self, 105, 17, min_value=1, max_value=99, value=pyxel.sounds[0].speed
         )
@@ -73,14 +70,12 @@ class SoundEditor(EditorBase):
         self.add_number_picker_help(self._speed_picker)
         self.copy_var("speed_var", self._speed_picker, "value_var")
 
-        # Initialize play button
         self._play_button = ImageButton(self, 185, 17, img=EDITOR_IMAGE, u=126, v=0)
         self._play_button.add_event_listener("press", self.__on_play_button_press)
         self._play_button.add_event_listener(
             "mouse_hover", self.__on_play_button_mouse_hover
         )
 
-        # Initialize stop button
         self._stop_button = ImageButton(
             self, 195, 17, img=EDITOR_IMAGE, u=135, v=0, is_enabled=False
         )
@@ -89,7 +84,6 @@ class SoundEditor(EditorBase):
             "mouse_hover", self.__on_stop_button_mouse_hover
         )
 
-        # Initialize loop button
         self._loop_button = ImageToggleButton(
             self, 205, 17, img=EDITOR_IMAGE, u=144, v=0, is_checked=False
         )
@@ -98,17 +92,13 @@ class SoundEditor(EditorBase):
         )
         self.copy_var("should_loop_var", self._loop_button, "is_checked_var")
 
-        # Initialize piano keyboard
         self._piano_keyboard = PianoKeyboard(self)
         self.copy_var("note_var", self._piano_keyboard)
 
-        # Initialize piano roll
         self._piano_roll = PianoRoll(self)
 
-        # Initialize sound field
         self._sound_field = SoundField(self)
 
-        # Initialize octave bars
         self._left_octave_bar = OctaveBar(self, 12, 25)
         self._right_octave_bar = OctaveBar(self, 224, 25)
 

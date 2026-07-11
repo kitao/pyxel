@@ -37,7 +37,6 @@ class TilemapEditor(EditorBase):
 
         self.new_var("color_var", (255, 255))
 
-        # Initialize tool button
         self._tool_button = RadioButton(
             self,
             81,
@@ -51,7 +50,6 @@ class TilemapEditor(EditorBase):
         self.add_tool_button_help(self._tool_button)
         self.copy_var("tool_var", self._tool_button, "value_var")
 
-        # Initialize tilemap picker
         self._tilemap_picker = NumberPicker(
             self, 48, 161, min_value=0, max_value=pyxel.NUM_TILEMAPS - 1, value=0
         )
@@ -64,12 +62,10 @@ class TilemapEditor(EditorBase):
         self.add_number_picker_help(self._tilemap_picker)
         self.copy_var("tilemap_index_var", self._tilemap_picker, "value_var")
 
-        # Initialize tilemap viewer
         self._tilemap_viewer = TilemapViewer(self)
         self.copy_var("focus_x_var", self._tilemap_viewer)
         self.copy_var("focus_y_var", self._tilemap_viewer)
 
-        # Initialize image picker
         self._image_picker = NumberPicker(
             self,
             192,
@@ -82,14 +78,12 @@ class TilemapEditor(EditorBase):
         self.add_number_picker_help(self._image_picker)
         self.copy_var("image_index_var", self._image_picker, "value_var")
 
-        # Initialize image viewer
         self._image_viewer = ImageViewer(self)
         self.copy_var("tile_x_var", self._image_viewer, "focus_x_var")
         self.copy_var("tile_y_var", self._image_viewer, "focus_y_var")
         self.copy_var("tile_w_var", self._image_viewer, "focus_w_var")
         self.copy_var("tile_h_var", self._image_viewer, "focus_h_var")
 
-        # Initialize canvas panel
         self._canvas_panel = CanvasPanel(self)
 
         # Set event listeners

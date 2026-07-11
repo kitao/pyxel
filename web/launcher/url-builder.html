@@ -267,7 +267,6 @@
         .getElementById("editor-screen")
         .addEventListener("change", buildLaunchUrl);
 
-      // Initialize from the localized launcher JSON.
       initPage("launcher.json", () => {
         buildLangSelector(
           data.languages,

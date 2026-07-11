@@ -158,7 +158,6 @@ impl ResourceItem for Music {
 }
 
 impl Pyxel {
-    // Load legacy archive entries.
     pub fn load_old_resource(
         &mut self,
         archive: &mut ZipArchive<File>,
@@ -167,7 +166,7 @@ impl Pyxel {
         include_sounds: bool,
         include_musics: bool,
     ) {
-        // Read and validate archive version.
+        // Read and validate archive version
         let version_name = format!("{RESOURCE_ARCHIVE_DIRNAME}version");
         let contents = {
             let mut file = archive.by_name(&version_name).unwrap();
@@ -181,7 +180,7 @@ impl Pyxel {
             "Unsupported resource file version '{contents}'"
         );
 
-        // Deserialize selected resource banks.
+        // Deserialize selected resource banks
         macro_rules! deserialize {
             ($type: ty, $accessor: expr, $count: expr) => {
                 for i in 0..$count {

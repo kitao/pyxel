@@ -16,8 +16,10 @@
 
 - Code on the hot paths is shaped around minimum cost. The hot paths are:
   - per-pixel blit and primitive draws (line, circle, rect);
+  - per-pixel 3D rasterization (triangle fill and shading);
   - per-sample voice synthesis;
   - per-frame voice update for MML and BGM;
+  - per-frame 3D collision and BVH queries;
   - the PyO3 FFI boundary (argument marshaling and return paths);
   - SIMD or multi-threaded sections.
 
@@ -162,7 +164,7 @@ Tests cover the product in four layers: Rust unit tests for platform-independent
 
 #### Proper Nouns
 
-The authoritative Pyxel product names are: Pyxel, Pyxel Editor, Pyxel Showcase, Pyxel Code Maker, Pyxel MML Studio, Pyxel Web Launcher, Pyxel User Examples, and Pyxel Composer. The abbreviations Pyxel Web (the web version), Pyxel MML (the MML variant), and Pyxel API (the public API) may stand in for their full forms.
+The authoritative Pyxel product names are: Pyxel, Pyxel Cube, Pyxel Editor, Pyxel Showcase, Pyxel Code Maker, Pyxel MML Studio, Pyxel Web Launcher, Pyxel User Examples, and Pyxel Composer. The abbreviations Pyxel Web (the web version), Pyxel MML (the MML variant), and Pyxel API (the public API) may stand in for their full forms.
 
 - Listed product names are not translated and their casing is not altered.
   - e.g., `Pyxel Editor` in every language — never `pyxel editor`, `Pyxel-Editor`, or `ピクセルエディタ`.

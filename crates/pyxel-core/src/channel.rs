@@ -242,6 +242,7 @@ impl Channel {
         let mut clock_count = clock_count;
         let mut clock_offset = 0;
 
+        // Advance playback across the available clocks
         while clock_count > 0 {
             // Playback has ended
             if !self.is_playing {
@@ -515,6 +516,7 @@ impl Channel {
         let gain_fixed = (self.gain * AUDIO_GAIN_SCALE as f32) as i32;
         let mut offset = 0;
 
+        // Mix source chunks until the output buffer is filled
         while offset < out.len() {
             let mut to_copy = 0;
             let mut end_reached = false;

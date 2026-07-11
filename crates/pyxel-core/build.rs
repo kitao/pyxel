@@ -126,6 +126,7 @@ impl SDL2BindingsBuilder {
     }
 
     fn link_sdl2(&self) {
+        // Static SDL2 and platform dependencies
         if is_sdl2_static() {
             println!("cargo::rustc-link-lib=static=SDL2main");
             if self.target_os.contains("windows") {
