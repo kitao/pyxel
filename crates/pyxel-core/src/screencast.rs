@@ -385,7 +385,7 @@ impl Screencast {
             }
         }
 
-        // Build the per-frame GIF palette.
+        // Build the per-frame GIF palette
         for &rgb in color_table.keys() {
             if rgb == TRANSPARENT {
                 palette.extend_from_slice(&[0, 0, 0]);

@@ -55,7 +55,6 @@ class ImageViewer(Widget):
 
         self.new_var("focus_h_var", 1 if self._is_tilemap_mode else 2)
 
-        # Initialize horizontal scroll bar
         self._h_scroll_bar = ScrollBar(
             self,
             0,
@@ -67,7 +66,6 @@ class ImageViewer(Widget):
         )
         self.copy_var("viewport_x_var", self._h_scroll_bar, "value_var")
 
-        # Initialize vertical scroll bar
         self._v_scroll_bar = ScrollBar(
             self,
             65,
@@ -160,7 +158,7 @@ class ImageViewer(Widget):
     def __on_draw(self):
         self.draw_panel(self.x, self.y, self.width, self.height)
 
-        # Draw image preview.
+        # Draw image preview
         pyxel.user_pal()
         pyxel.blt(
             self.x + 1,
@@ -173,7 +171,7 @@ class ImageViewer(Widget):
         )
         pyxel.pal()
 
-        # Draw focus outline.
+        # Draw focus outline
         x = self.x + (self.focus_x_var - self.viewport_x_var) * _GRID_SIZE + 1
         y = self.y + (self.focus_y_var - self.viewport_y_var) * _GRID_SIZE + 1
         w = self.focus_w_var * _GRID_SIZE

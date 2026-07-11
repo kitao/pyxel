@@ -134,8 +134,7 @@ pub fn parse_old_mml(mml: &str) -> Result<Vec<MmlCommand>, String> {
             note_info.quantize = 8;
             note_info.is_tied = true;
         } else {
-            // The matchers above consume trailing whitespace; end cleanly
-            // when nothing but whitespace remained
+            // Trailing whitespace after the final command ends cleanly
             let Some(c) = chars.peek() else { break };
             return Err(format!("Invalid command '{c}' in MML"));
         }
@@ -317,7 +316,7 @@ fn add_note(sound: &mut Sound, note_info: &NoteInfo) {
         return;
     }
 
-    // Emit gated full-length note steps.
+    // Emit gated full-length note steps
     let duration = note_info.length * note_info.quantize;
     let num_notes = duration / 8;
     let note_effect = if note_info.vibrato {

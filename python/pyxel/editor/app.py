@@ -62,7 +62,6 @@ class App(Widget):
 
         self.new_var("help_message_var", "")
 
-        # Initialize editor button
         self._editor_button = RadioButton(
             self,
             1,
@@ -79,28 +78,24 @@ class App(Widget):
         )
         self.copy_var("editor_type_var", self._editor_button, "value_var")
 
-        # Initialize undo button
         self._undo_button = ImageButton(self, 48, 1, img=EDITOR_IMAGE, u=36, v=0)
         self._undo_button.add_event_listener("press", self.__on_undo_button_press)
         self._undo_button.add_event_listener(
             "mouse_hover", self.__on_undo_button_mouse_hover
         )
 
-        # Initialize redo button
         self._redo_button = ImageButton(self, 57, 1, img=EDITOR_IMAGE, u=45, v=0)
         self._redo_button.add_event_listener("press", self.__on_redo_button_press)
         self._redo_button.add_event_listener(
             "mouse_hover", self.__on_redo_button_mouse_hover
         )
 
-        # Initialize save button
         self._save_button = ImageButton(self, 75, 1, img=EDITOR_IMAGE, u=54, v=0)
         self._save_button.add_event_listener("press", self.__on_save_button_press)
         self._save_button.add_event_listener(
             "mouse_hover", self.__on_save_button_mouse_hover
         )
 
-        # Initialize editors
         self._editors = [
             ImageEditor(self),
             TilemapEditor(self),

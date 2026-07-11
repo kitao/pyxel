@@ -77,7 +77,7 @@ class App:
     def draw(self):
         pyxel.cls(0)
 
-        # Draw control instructions.
+        # Draw control instructions
         pyxel.text(
             61,
             8,
@@ -85,7 +85,7 @@ class App:
             3,
         )
 
-        # Draw the scrollable app list.
+        # Draw the scrollable app list
         self.list_view.cls(0)
         self.list_view.camera(0, ROW_HEIGHT * self.view_pos)
         for i in range(ROW_COUNT + 1):
@@ -110,7 +110,7 @@ class App:
         )
         pyxel.rectb(8, 16, 402, 62, 3)
 
-        # Draw the selection cursor.
+        # Draw the selection cursor
         focus_y = ROW_HEIGHT * (self.cursor_pos - self.view_pos)
         pyxel.pal(0, 10)
         pyxel.pal(9, 0)
@@ -125,7 +125,7 @@ class App:
         )
         pyxel.pal()
 
-        # Draw the selected app metadata.
+        # Draw the selected app metadata
         metadata = self.apps[self.cursor_index]
         for i, key in enumerate(
             key for key in metadata if key not in ("name", "filepath")

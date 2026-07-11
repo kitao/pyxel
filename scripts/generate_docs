@@ -814,7 +814,7 @@ def generate_from_html(html_path, json_path, doc_name):
         evaluated = re.sub(r"<strong>(.*?)</strong>", r"**\1**", evaluated)
         lines.append(evaluated)
 
-    # Assemble the generated Markdown document.
+    # Assemble the generated Markdown document
     title = localize(data["ui"].get("title", ""))
     url = f"{PYXEL_WEB}/{doc_name}/"
     header = (

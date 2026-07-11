@@ -790,7 +790,7 @@ impl Image {
         let font_data = &font_image.canvas.data;
         let font_w = font_image.canvas.width() as usize;
 
-        // Draw built-in font glyphs from the font image atlas.
+        // Draw built-in font glyphs from the font image atlas
         let start_x = x;
         for c in string.chars() {
             if c == '\n' {

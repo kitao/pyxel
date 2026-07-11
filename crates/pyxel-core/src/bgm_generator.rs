@@ -869,6 +869,7 @@ impl OwnedChordEntry {
 // `chord` selector: `0..PRESET_COUNT` = preset, `>=PRESET_COUNT` = custom slot.
 fn resolve_progression(chord: i32, custom: Option<&[CustomChordEntry]>) -> Vec<OwnedChordEntry> {
     let chord_idx = chord as usize;
+    // Validate and normalize a custom progression
     if chord_idx >= PRESET_COUNT {
         if let Some(entries) = custom.filter(|e| !e.is_empty()) {
             let mut out: Vec<OwnedChordEntry> = entries
@@ -938,8 +939,7 @@ fn chord_bits_per_step(progression: &[OwnedChordEntry]) -> Vec<[i32; 12]> {
         }
         let bits = resolve_entry_notes(progression, entry_idx).map_or([0; 12], parse_notes_bits);
 
-        // An entry with no chord tones would make the note-pool loop below
-        // run forever; fall back to I major like the other chord fallbacks
+        // Fall back to I major because an empty chord pool cannot produce a note
         *slot = if bits.iter().any(|kind| matches!(kind, 1 | 2 | 3 | 9)) {
             bits
         } else {
@@ -1016,6 +1016,7 @@ fn build_melody_chord_plan(
     lowest: i32,
 ) -> Vec<MelodyChord> {
     let mut out: Vec<MelodyChord> = Vec::with_capacity(progression.len());
+    // Resolve each progression entry
     for p in progression {
         let mut base = 0;
         if let Some(repeat_idx) = p.repeat {
@@ -1071,6 +1072,7 @@ fn pick_rhythm_events(
     use_16th: bool,
     is_sub: bool,
 ) -> Vec<(usize, i32)> {
+    // Retry until the requested rhythmic constraint is met
     loop {
         let mut results = Vec::new();
         let mut used16 = false;
@@ -1275,6 +1277,7 @@ fn melody_has_required_tones(
     let mut cur_chord_idx: i32 = -1;
     let mut need: Vec<i32> = Vec::new();
 
+    // Track unresolved tones across chord boundaries
     for (loc, note) in notes.iter().enumerate().take(TOTAL_STEPS) {
         let (next_chord_idx, _) = chord_at(chord_plan, loc);
         if next_chord_idx as i32 > cur_chord_idx {
@@ -1385,6 +1388,7 @@ fn generate_melody(
 ) -> (Vec<Option<i32>>, Vec<Option<i32>>) {
     let density = density as usize;
     let chord_plan = build_melody_chord_plan(progression, key_shift, lowest);
+    // Retry until the phrase satisfies the requested chord-tone constraints
     loop {
         let mut note_line = vec![NOTE_UNSET; TOTAL_STEPS];
         let mut melody_view = vec![None; TOTAL_STEPS];
@@ -1489,6 +1493,7 @@ fn generate_bass(base: i32, bits_per_step: &[[i32; 12]], key_shift: i32) -> Vec<
     let (basic, final_pat) = BASS_PATTERNS[bass_idx];
     let adjust_list = [0, -1, 1, -2, 2, -3, 3];
     let base_highest_note = 26i32;
+    // Expand each bar's bass pattern
     for bar in 0..BARS {
         let pat = if bar < 7 {
             basic.as_bytes()
@@ -1692,6 +1697,7 @@ fn generate_submelody(
 
     let mut sub = sub_seed.to_vec();
     let mut prev_note_loc: i32 = -1;
+    // Fill eligible submelody steps
     for loc in 0..TOTAL_STEPS {
         if let Some(n) = sub[loc] {
             if n >= 0 {
@@ -1831,6 +1837,7 @@ fn notes_to_mml(
     let mut bar_tokens: Vec<Vec<String>> = vec![Vec::new()];
     let mut bar_units = 0usize;
     let mut i = 0usize;
+    // Encode note events into bar-aligned MML tokens
     while i < notes.len() {
         let Some(event) = notes[i] else {
             i += 1;
@@ -2042,6 +2049,7 @@ fn generate_bgm(params: &GeneratorParams, seed: u64) -> BgmData {
     );
     let mut submelody = None;
 
+    // Regenerate paired voices until required chord tones are covered
     if instr >= 2 {
         let chord_plan = build_melody_chord_plan(&progression, key_shift, lowest);
         let mut candidate = generate_submelody(

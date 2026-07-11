@@ -73,6 +73,7 @@ impl Sound {
         let mut chars = note_str.chars();
         self.notes.clear();
 
+        // Decode each note token
         while let Some(c) = chars.next() {
             let mut note: SoundNote;
             if ('a'..='g').contains(&c) {
@@ -338,6 +339,7 @@ impl Sound {
         let mut last_vibrato: Option<SoundEffect> = None;
         let mut last_slide: Option<SoundEffect> = None;
 
+        // Emit each note with only its changed state
         for (i, &note) in self.notes.iter().enumerate() {
             if note < 0 {
                 commands.push(MmlCommand::Rest { duration_ticks });
