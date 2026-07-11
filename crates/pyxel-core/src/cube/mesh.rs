@@ -181,11 +181,20 @@ impl Mesh {
                     t += 3;
                 }
             } else {
+                // Out-of-range indices (negative wraps to a huge usize)
+                // are skipped, mirroring Primitive::compute_normals.
+                let vert_count = prim.positions.len() / 3;
                 for tri in prim.indices.as_chunks::<3>().0 {
+                    let i0 = tri[0] as usize;
+                    let i1 = tri[1] as usize;
+                    let i2 = tri[2] as usize;
+                    if i0 >= vert_count || i1 >= vert_count || i2 >= vert_count {
+                        continue;
+                    }
                     triangles.push([
-                        base_index + tri[0] as u32,
-                        base_index + tri[1] as u32,
-                        base_index + tri[2] as u32,
+                        base_index + i0 as u32,
+                        base_index + i1 as u32,
+                        base_index + i2 as u32,
                     ]);
                 }
             }
@@ -575,6 +584,30 @@ mod tests {
             m.with_collision_bvh(|bvh| bvh.nodes.iter().filter(|n| n.left == -1).count());
         assert_eq!(leaf_count, 1);
         assert!(m.bvh.borrow().is_some());
+    }
+
+    #[test]
+    fn test_with_collision_bvh_skips_out_of_range_indices() {
+        // Out-of-range and negative indices in a hand-built primitive are
+        // dropped at BVH build instead of panicking; only the valid
+        // triangle produces a leaf.
+        let m = Mesh::new();
+        {
+            let m = rc_mut!(&m);
+            let prim = Primitive::new();
+            {
+                let g = rc_mut!(&prim);
+                g.positions = vec![0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0];
+                g.indices = vec![0, 1, 2, 0, 1, 99, 0, -1, 2];
+            }
+            m.primitives = vec![Some(prim)];
+            m.transforms = vec![Mat4::identity()];
+            m.parents = vec![-1];
+        }
+        let m = rc_ref!(&m);
+        let leaf_count =
+            m.with_collision_bvh(|bvh| bvh.nodes.iter().filter(|n| n.left == -1).count());
+        assert_eq!(leaf_count, 1);
     }
 
     #[test]

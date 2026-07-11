@@ -163,10 +163,41 @@ impl Vec3 {
     }
 
     pub fn slerp(&self, other: &Self, t: f32) -> RcVec3 {
-        let dot = self.dot(other).clamp(-1.0, 1.0);
+        let len_product = self.length() * other.length();
+        if len_product == 0.0 {
+            return self.lerp(other, t);
+        }
+        let dot = (self.dot(other) / len_product).clamp(-1.0, 1.0);
         let theta = dot.acos();
         if theta.abs() < 1e-6 {
             return self.lerp(other, t);
+        }
+        if std::f32::consts::PI - theta < 1e-6 {
+            // Anti-parallel vectors: rotate through any perpendicular axis.
+            let axis = if self.x.abs() < 0.9 {
+                Vec3 {
+                    x: 1.0,
+                    y: 0.0,
+                    z: 0.0,
+                }
+            } else {
+                Vec3 {
+                    x: 0.0,
+                    y: 1.0,
+                    z: 0.0,
+                }
+            };
+            let perp_rc = self.cross(&axis);
+            let perp = rc_ref!(&perp_rc).normalize();
+            let perp = rc_ref!(&perp);
+            let angle = t * theta;
+            let c = angle.cos();
+            let s = angle.sin() * self.length();
+            return Self::new(
+                self.x * c + perp.x * s,
+                self.y * c + perp.y * s,
+                self.z * c + perp.z * s,
+            );
         }
         let sin_theta = theta.sin();
         let a = ((1.0 - t) * theta).sin() / sin_theta;
@@ -557,6 +588,33 @@ mod tests {
         assert!((mid.x - expected).abs() < 1e-3);
         assert!((mid.y - expected).abs() < 1e-3);
         assert!(mid.z.abs() < 1e-6);
+    }
+
+    #[test]
+    fn test_slerp_antiparallel_rotates_through_perpendicular() {
+        // Anti-parallel unit vectors have no unique interpolation plane;
+        // the fallback rotates through a deterministic perpendicular axis
+        // instead of collapsing to the zero vector.
+        let a = Vec3 {
+            x: 1.0,
+            y: 0.0,
+            z: 0.0,
+        };
+        let b = Vec3 {
+            x: -1.0,
+            y: 0.0,
+            z: 0.0,
+        };
+        let mid = deref(&a.slerp(&b, 0.5));
+        assert!((mid.length() - 1.0).abs() < 1e-5);
+        assert!(mid.x.abs() < 1e-5);
+        assert!((mid.z - 1.0).abs() < 1e-5);
+        let quarter = deref(&a.slerp(&b, 0.25));
+        let expected = (0.5_f32).sqrt();
+        assert!((quarter.x - expected).abs() < 1e-5);
+        assert!((quarter.z - expected).abs() < 1e-5);
+        let end = deref(&a.slerp(&b, 1.0));
+        assert!((end.x - (-1.0)).abs() < 1e-5);
     }
 
     #[test]

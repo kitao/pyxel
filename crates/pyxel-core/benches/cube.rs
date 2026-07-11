@@ -13,7 +13,9 @@ use pyxel::cube::collision::Aabb;
 use pyxel::cube::draw::{self, DrawState, BILLBOARD_OFF};
 use pyxel::cube::motion::{MotionChannel, MotionInterpolation, MotionTarget, MotionValues};
 use pyxel::cube::primitive::{CULL_NONE, MODE_TRIANGLES};
-use pyxel::cube::raster::{compute_clip_rect, matmul, projection_matrix, view_matrix};
+use pyxel::cube::raster::{
+    camera_clip_row, compute_clip_rect, matmul, projection_matrix, view_matrix,
+};
 use pyxel::cube::scene::{DrawContext, Scene};
 use pyxel::cube::{
     Camera, Collider, Mat4, Mesh, Motion, Node, Primitive, Quat, RcMesh, RcNode, Shading, Vec3,
@@ -275,6 +277,7 @@ fn make_draw_context() -> DrawContext {
     DrawContext {
         target: Image::new(TARGET_SIZE, TARGET_SIZE),
         vp: matmul(&projection, &view),
+        clip_row: camera_clip_row(&view),
         vp_x: 0.0,
         vp_y: 0.0,
         vp_w: size,

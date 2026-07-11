@@ -189,6 +189,13 @@ class TestTransform:
         s = sqrt(0.5)
         assert approx_v(v, Vec3(s, s, 0), tol=1e-3)
 
+    def test_slerp_antiparallel_stays_unit_length(self):
+        # Anti-parallel input rotates through a deterministic perpendicular
+        # axis instead of collapsing to the zero vector.
+        v = Vec3.RIGHT.slerp(Vec3.LEFT, 0.5)
+        assert isclose(v.length(), 1.0, abs_tol=1e-5)
+        assert approx_v(v, Vec3(0, 0, 1))
+
     def test_reflect(self):
         assert Vec3(1, -1, 0).reflect(Vec3.UP) == Vec3(1, 1, 0)
 

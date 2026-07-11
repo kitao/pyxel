@@ -126,13 +126,11 @@ fn tinted_rgb(rgba: &[u8], base: usize, color_factor: TextureTint) -> (u8, u8, u
     )
 }
 
+// BLEND falls back to opaque silently here; validate_texture_usage warns
+// once per material before import reaches this resolver.
 fn mask_alpha_cutoff(material: &gltf::Material) -> Result<Option<f32>, String> {
     match material.alpha_mode() {
-        gltf::material::AlphaMode::Opaque => return Ok(None),
-        gltf::material::AlphaMode::Blend => {
-            warn_glb("GLB material alpha mode BLEND is not supported; alpha is ignored");
-            return Ok(None);
-        }
+        gltf::material::AlphaMode::Opaque | gltf::material::AlphaMode::Blend => return Ok(None),
         gltf::material::AlphaMode::Mask => {}
     }
 
@@ -267,12 +265,11 @@ fn rgb_to_palette_color(rgb: (u8, u8, u8), colors: &[Rgb24]) -> Result<Color, St
     Ok(closest_color)
 }
 
+// The factor-alpha warning lives in validate_texture_usage; these
+// converters run in both material passes and stay silent.
 fn base_color_factor_to_rgb(factor: [f32; 4]) -> Result<(u8, u8, u8), String> {
     if factor.iter().any(|component| !component.is_finite()) {
         return Err("GLB material baseColorFactor must be finite".to_string());
-    }
-    if (factor[3] - 1.0).abs() > f32::EPSILON {
-        warn_glb("GLB material baseColorFactor alpha is not supported; alpha is ignored");
     }
     Ok((
         (factor[0].clamp(0.0, 1.0) * 255.0).round() as u8,
@@ -284,9 +281,6 @@ fn base_color_factor_to_rgb(factor: [f32; 4]) -> Result<(u8, u8, u8), String> {
 fn base_color_factor_to_tint(factor: [f32; 4]) -> Result<(TextureTint, TextureTintKey), String> {
     if factor.iter().any(|component| !component.is_finite()) {
         return Err("GLB material baseColorFactor must be finite".to_string());
-    }
-    if (factor[3] - 1.0).abs() > f32::EPSILON {
-        warn_glb("GLB material baseColorFactor alpha is not supported; alpha is ignored");
     }
 
     let tint = [
@@ -696,6 +690,10 @@ fn validate_texture_usage(document: &gltf::Document, image_count: usize) {
             gltf::material::AlphaMode::Opaque | gltf::material::AlphaMode::Mask
         ) {
             warn_glb("GLB material alpha mode is not supported; alpha is ignored");
+        }
+        let factor = material.pbr_metallic_roughness().base_color_factor();
+        if factor[3].is_finite() && (factor[3] - 1.0).abs() > f32::EPSILON {
+            warn_glb("GLB material baseColorFactor alpha is not supported; alpha is ignored");
         }
         if material.normal_texture().is_some()
             || material.occlusion_texture().is_some()

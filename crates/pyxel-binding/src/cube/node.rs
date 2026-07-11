@@ -5,7 +5,9 @@ use pyo3::prelude::*;
 use pyo3::types::{PyDict, PyTuple, PyType};
 use pyxel::cube::draw::{DrawState, Uvs as QuadUvs};
 use pyxel::cube::mesh::ColImage;
-use pyxel::cube::raster::{compute_clip_rect, matmul, projection_matrix, view_matrix};
+use pyxel::cube::raster::{
+    camera_clip_row, compute_clip_rect, matmul, projection_matrix, view_matrix,
+};
 use pyxel::cube::scene::{
     reset_draw_state, set_draw_context, take_draw_context, with_draw_context, DrawContext,
 };
@@ -1076,10 +1078,12 @@ impl Node {
         let view = view_matrix(rc_ref!(&cam_inner));
         let proj = projection_matrix(rc_ref!(&cam_inner), w as f32, h as f32);
         let vp = matmul(&proj, &view);
+        let clip_row = camera_clip_row(&view);
         let clip = compute_clip_rect(x as f32, y as f32, w as f32, h as f32, target_w, target_h);
         set_draw_context(DrawContext {
             target: target_rc,
             vp,
+            clip_row,
             vp_x: x as f32,
             vp_y: y as f32,
             vp_w: w as f32,

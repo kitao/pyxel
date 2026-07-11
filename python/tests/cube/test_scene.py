@@ -2,7 +2,17 @@ import pytest
 
 import pyxel
 
-from pyxel.cube import Camera, Collider, Mat4, Node, RaycastHit, Shading, Vec3
+from pyxel.cube import (
+    Camera,
+    Collider,
+    Mat4,
+    Mesh,
+    Node,
+    Primitive,
+    RaycastHit,
+    Shading,
+    Vec3,
+)
 
 # Frame-level pipeline (update + draw) and spatial queries are tested
 # here against the universal Node API. The camera attaches to the tree
@@ -123,6 +133,33 @@ class TestCollisionPipeline:
         assert wall.depths == [0.0]
 
 
+class TestMeshColliderRobustness:
+    def test_bad_primitive_indices_do_not_crash_collision(self):
+        # Out-of-range and negative indices in a hand-built mesh collider
+        # are dropped at the lazy BVH build; the collision pipeline and
+        # raycast must run without raising instead of panicking.
+        prim = Primitive(
+            Primitive.MODE_TRIANGLES,
+            [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0],
+            [0, 1, 99, 0, -1, 2],
+        )
+        mesh = Mesh(primitives=[prim], transforms=[Mat4.IDENTITY], parents=[-1])
+        root = Node()
+        terrain = Node()
+        terrain.collider = Collider(mesh=mesh, mass=0.0)
+        root.add_child(terrain)
+        ball = _ball(Vec3(0, 0.4, 0))
+        root.add_child(ball)
+
+        root.update()
+
+        # Both mesh triangles are invalid, so the ray passes through the
+        # terrain and hits the ball beneath it.
+        hit = root.raycast(Vec3(0, 5, 0), Vec3(0, -1, 0))
+        assert hit is not None
+        assert hit.node is ball
+
+
 class TestRaycast:
     def test_raycast_hits_nearer_sphere(self):
         root = Node()
@@ -223,6 +260,35 @@ class TestShading:
         n.shading = new_shading
         # Shading.__getitem__ returns (primary, secondary).
         assert n.shading[0, 2] == new_shading[0, 2]
+
+
+class _ColoredBox(Node):
+    def __init__(self, pos: Vec3, col: int):
+        super().__init__()
+        self.transform = Mat4.from_translation(pos)
+        self.col = col
+
+    def on_draw(self):
+        self.shaded(False)
+        self.box(Mat4.IDENTITY, Vec3(4, 4, 4), self.col)
+
+
+class TestOrthoCameraClipping:
+    def test_geometry_behind_ortho_camera_is_not_drawn(self):
+        # The orthographic w row is constant 1, so behind-camera clipping
+        # comes from the camera clip row; the box behind the camera must
+        # not paint over the one in front.
+        scene = Node()
+        camera = Camera()
+        camera.ortho_size = 10.0
+        camera.clear_color = 0
+        scene.camera = camera
+        scene.add_child(_ColoredBox(Vec3(0, 0, -8), 11))
+        scene.add_child(_ColoredBox(Vec3(0, 0, 8), 8))
+
+        scene.draw(0, 0, pyxel.width, pyxel.height)
+
+        assert pyxel.pget(pyxel.width // 2, pyxel.height // 2) == 11
 
 
 # State set in one Node.on_draw must not leak to siblings or children.
