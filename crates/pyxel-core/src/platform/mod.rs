@@ -6,6 +6,8 @@ mod facade;
 mod sdl2;
 
 pub use event::Event;
+#[cfg(not(target_os = "emscripten"))]
+pub use facade::close_audio;
 pub use facade::{
     display_size, export_browser_file, gl_context, gl_profile, init, init_window, is_fullscreen,
     is_sigint_received, lock_audio, pause_audio, poll_events, quit, run_frame_loop, set_fullscreen,

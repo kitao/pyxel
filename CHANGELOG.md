@@ -18,7 +18,7 @@
 
 - Added a GIMP palette file for Pyxel's default colors
 - Updated Pyodide to version 314.0.2
-- Updated Rust to version nightly-2026-06-30
+- Updated Rust to version nightly-2026-07-05
 - Updated SDL2 to version 2.32.10 for Linux builds
 - Fixed TMX imports with flipped tiles
 - Fixed reversed slice assignment for Pyxel sequence objects
@@ -27,6 +27,7 @@
 - Fixed startup script cleanup after failed Pyxel app packaging
 - Fixed palette loss when Image.from_image fails to load a file
 - Fixed crash when playing or saving sounds with out-of-range tones
+- Fixed audio playback after repeated macOS app restarts
 - Improved audio/MML/BGM processing and resource save performance
 - Improved web export and Pyxel Editor shortcut performance
 - Refined Japanese, Chinese, and web documentation wording and typography

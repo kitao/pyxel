@@ -116,7 +116,7 @@ pub struct BgmData {
 
 // JSON interop
 
-#[cfg(not(pyxel_core))]
+#[cfg(any(not(pyxel_core), test))]
 impl GeneratorParams {
     pub fn to_json(&self) -> String {
         serde_json::to_string(self)
@@ -129,7 +129,7 @@ impl GeneratorParams {
     }
 }
 
-#[cfg(not(pyxel_core))]
+#[cfg(any(not(pyxel_core), test))]
 impl BgmData {
     pub fn to_json(&self) -> String {
         serde_json::to_string(self).expect("BgmData serialization cannot fail for plain data")
@@ -2188,20 +2188,20 @@ pub fn generate_bgm_mml(
 // Composer JSON API
 
 // Returns the preset's GeneratorParams as JSON for Composer to populate its UI.
-#[cfg(not(pyxel_core))]
+#[cfg(any(not(pyxel_core), test))]
 pub fn preset_params_json(preset: i32) -> String {
     preset_params(preset).to_json()
 }
 
 // Generates BgmData from Composer-supplied GeneratorParams JSON, returning BgmData JSON.
-#[cfg(not(pyxel_core))]
+#[cfg(any(not(pyxel_core), test))]
 pub fn generate_bgm_json(params_json: &str, seed: u64) -> String {
     let params = GeneratorParams::from_json(params_json);
     generate_bgm(&params, seed).to_json()
 }
 
 // Compiles Composer-supplied BgmData JSON into MML strings (one per channel).
-#[cfg(not(pyxel_core))]
+#[cfg(any(not(pyxel_core), test))]
 pub fn compile_to_mml_json(bgm_json: &str) -> String {
     let data = BgmData::from_json(bgm_json);
     serde_json::to_string(&compile_to_mml(&data)).expect("Vec<String> serialization cannot fail")
@@ -2366,11 +2366,9 @@ mod tests {
         assert!(!build_chord_note_pool(&bits[0], 0, 24).is_empty());
     }
 
-    // The JSON tests below are compiled out of the pyxel-core build (build.rs
-    // sets cfg(pyxel_core) unconditionally) and run only when this shared file
-    // is built inside Pyxel Composer.
+    // The Composer JSON helpers stay out of production pyxel-core builds but
+    // compile in test builds so both integrations exercise the wire format.
 
-    #[cfg(not(pyxel_core))]
     #[test]
     fn test_bgm_data_json_roundtrip() {
         let data = BgmData {
@@ -2396,7 +2394,6 @@ mod tests {
         assert_eq!(data, restored);
     }
 
-    #[cfg(not(pyxel_core))]
     #[test]
     fn test_generator_params_json_roundtrip() {
         let params = preset_params(0);
@@ -2405,7 +2402,6 @@ mod tests {
         assert_eq!(params, restored);
     }
 
-    #[cfg(not(pyxel_core))]
     #[test]
     fn test_json_matches_direct() {
         let params_json = preset_params_json(0);

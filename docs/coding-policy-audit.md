@@ -25,7 +25,7 @@ An auditor reads both files in this order:
   summaries may suggest probes, but they are not evidence until rechecked
   against the current worktree and recorded in the current artifacts.
 
-- No summary-only evidence. Counts, grep success, formatter success, or reviewer
+- No summary-only evidence. Counts, search results, formatter success, or reviewer
   summaries do not prove a cell unless the underlying row names what was
   inspected and why the verdict follows.
 
@@ -61,14 +61,14 @@ Fields contain no literal tabs or newlines; do not use CSV quoting as an escape
 mechanism. Lists inside a field use JSON arrays or a stable comma-separated
 format.
 
-Every countable row has a stable key. The key is either an explicit id column or
-the declared natural key for that artifact, such as `path` plus `criterion_id`
-in `file_matrix.tsv`. Fields named `criterion_id` or `criterion_ids` reference
-existing `criteria.tsv` rows. Missing keys, duplicate keys, unknown criteria,
-invalid enum values, empty evidence, broken evidence references, missing
-expected keys, unexpected keys, column-count mismatches, and row-count
-mismatches are audit failures. Expected matrix keys are derived before verdicts
-are written, not inferred from the produced rows afterward.
+Every artifact data row has a stable key. The key is either an explicit id
+column or the declared natural key for that artifact, such as `path` plus
+`criterion_id` in `file_matrix.tsv`. Fields named `criterion_id` or
+`criterion_ids` reference existing `criteria.tsv` rows. Missing keys, duplicate
+keys, unknown criteria, invalid enum values, empty evidence, broken evidence
+references, missing expected keys, unexpected keys, column-count mismatches, and
+row-count mismatches are audit failures. Expected matrix keys are derived before
+verdicts are written, not inferred from the produced rows afterward.
 
 ## Required Artifacts
 
@@ -109,12 +109,15 @@ are written, not inferred from the produced rows afterward.
     convention.
 
 - `hot_path_inventory.tsv`
-  - Columns: `hot_path_id`, `policy_lines`, `hot_path_kind`, `paths`,
-    `entry_points`, `cost_risks_checked`, `verdict`, `evidence_ref`.
+  - Columns: `hot_path_id`, `policy_lines`, `criterion_ids`, `hot_path_kind`,
+    `paths`, `entry_points`, `cost_risks_checked`, `verdict`, `evidence_ref`.
   - Enumerates every implementation surface for each hot-path family listed in
     `docs/coding-policy.md`.
+  - `criterion_ids` is non-empty and names the exact performance criteria the
+    row exercises.
   - `cost_risks_checked` names the concrete risks inspected, such as allocation,
-    copying, conversion, bounds-check, dispatch, SIMD, inlining, or lock costs.
+    copying, conversion, bounds checking, dispatch, SIMD, inlining, or lock
+    costs.
   - A hot-path family with no current implementation surface records a row with
     repository-wide evidence for that absence; silence is not evidence.
 
@@ -164,36 +167,56 @@ are written, not inferred from the produced rows afterward.
     requirements.
 
 - `findings.tsv`
-  - Columns: `finding_id`, `source_artifact`, `source_row`, `severity`,
-    `path_or_dependency`, `criterion_id`, `finding`, `proposed_fix`.
+  - Columns: `finding_id`, `source_artifact`, `source_key`, `severity`,
+    `target`, `criterion_ids`, `finding`, `proposed_fix`.
+  - `source_artifact` is one of `hot_path_inventory.tsv`, `file_matrix.tsv`,
+    `cross_matrix.tsv`, `group_uniformity.tsv`, `process_matrix.tsv`, or
+    `finding_distribution.tsv`.
+  - `source_key` is a JSON object containing the source artifact's declared
+    stable-key columns and values. It must resolve to exactly one current row
+    unless the source key was removed by the fix and that removal is proved by
+    the finding's classification.
+  - `target` names the concrete file, dependency, group, process gate, hot path,
+    or probe being reported. `criterion_ids` is a non-empty JSON array matching
+    the criteria exercised by the source verdict.
   - `severity` is one of `blocker`, `high`, `medium`, or `low`. Use `blocker`
     when completion cannot be trusted, `high` for broad or user-visible policy
     risk, `medium` for localized policy violations, and `low` for narrow
     cleanup. Severity is not based on fix size.
   - Contains every `fix`, `review`, or `pending` verdict ever discovered in the
     run.
-  - A non-`pass` matrix row without a corresponding finding row is an artifact
-    failure. Fixed findings remain in this file and are resolved through
-    `classifications.tsv`.
+  - A `fix`, `review`, or `pending` verdict in any listed source artifact
+    without a corresponding finding row is an artifact failure. Fixed findings
+    remain in this file and are resolved through `classifications.tsv`.
 
 - `finding_distribution.tsv`
   - Columns: `probe_family`, `criterion_ids`, `finding_ids`, `finding_count`,
     `coverage_evidence_ref`, `imbalance_verdict`, `rationale`.
   - Summarizes the finding distribution across every named probe in the Minimum
     Probe Families. A top-level family row does not replace its named probes.
+  - `criterion_ids` is non-empty and names the exact criteria exercised by the
+    probe.
   - `coverage_evidence_ref` names the concrete artifact rows or commands that
     performed the comparable probe; this is required even when `finding_count`
     is zero.
+  - `finding_ids` and `finding_count` cover findings discovered by the named
+    probe; they do not include a finding whose source is this distribution row
+    itself.
   - `imbalance_verdict` is `pass`, `review`, or `pending`.
 
 - `classifications.tsv`
   - Columns: `finding_id`, `disposition`, `design_intent`, `rationale`,
     `action_ref`.
   - Resolves every finding as `fixed`, `accepted`, or `deferred_blocker`.
-  - `accepted` covers both false positives and true findings kept by a
-    documented rationale; the rationale requirements are defined in the
-    classification phase.
-  - A `deferred_blocker` disposition blocks completion.
+  - `accepted` is used only when semantic review establishes that no change is
+    required under the policy. It cannot waive a policy violation; the
+    rationale requirements are defined in the classification phase.
+  - An `accepted` finding requires its source row to be regenerated as `pass`. A
+    `fixed` finding requires its source row to become `pass` or leave the
+    artifact's expected key set; `action_ref` must prove either result.
+  - `action_ref` uses the `evidence_ref` syntax and names the repository or
+    artifact evidence that proves the disposition. A `deferred_blocker`
+    disposition blocks completion.
 
 - `command_evidence.tsv`
   - Columns: `command_id`, `cwd`, `command`, `trigger`, `exit_status`,
@@ -212,14 +235,19 @@ are written, not inferred from the produced rows afterward.
   - Contains counts for criteria, policy coverage, included scope, excluded
     scope, expected matrix rows and keys, actual matrix rows and keys, findings
     by disposition, hot-path inventory, cross and group criterion-pair coverage,
-    findings by probe family, command results, and artifact-level errors.
+    findings by probe family, finding-source coverage, current non-pass
+    verdicts, command results, and artifact-level errors.
 
 ## Verdicts
 
-Every artifact verdict is one of:
+The verdict-bearing artifacts are `hot_path_inventory.tsv`, `file_matrix.tsv`,
+`cross_matrix.tsv`, `group_uniformity.tsv`, `process_matrix.tsv`, and
+`finding_distribution.tsv`. Unless an artifact definition narrows the allowed
+values, every `verdict` or `imbalance_verdict` field is one of:
 
 - `pass`: the criterion is satisfied, with concrete evidence.
-- `fix`: the criterion is violated and the file or group must change.
+- `fix`: the criterion is violated and requires a repository or audit-artifact
+  change.
 - `review`: the criterion may be violated and needs semantic judgment.
 - `pending`: required evidence, verification, artifact generation, or review is
   incomplete.
@@ -234,7 +262,8 @@ Evidence is substantive only when it:
 - explains why the verdict follows;
 - covers both the rule body's intent and the example family's concrete
   patterns;
-- is specific to the file, dependency, group, or process gate;
+- is specific to the audited file, dependency, group, process gate, hot path, or
+  probe;
 - avoids bare phrases such as "no issue", "checked", or "matches policy".
 
 Search output, file inventories, formatter success, test success, and reviewer
@@ -246,11 +275,11 @@ issue actionable.
 `evidence_ref` holds one or more references separated by semicolons. Each
 reference is a `path:line` or `path:first-last` location, a bare `path` for a
 whole-file check, or an artifact-row reference — `process:<gate_id>`,
-`cross:<dependency_id>`, `group:<group_id>`, `command:<command_id>`, or
-`hotpath:<hot_path_id>` — naming the row that carries the authoritative check.
-Any other form, or a reference to a row that does not exist, is a broken
-evidence reference. After fixes, line references are rechecked against the
-current file content before completion is claimed.
+`cross:<dependency_id>`, `group:<group_id>`, `command:<command_id>`,
+`hotpath:<hot_path_id>`, or `classification:<finding_id>` — naming the row that
+carries the authoritative check. Any other form, or a reference to a row that
+does not exist, is a broken evidence reference. After fixes, line references are
+rechecked against the current file content before completion is claimed.
 
 ## Minimum Probe Families
 
@@ -375,15 +404,26 @@ are resolved.
    - Fix clear violations.
    - For `review` findings, decide whether the current state follows policy
      intent or needs a change.
-   - An `accepted` disposition requires a policy-derived rationale, or a design
+   - An `accepted` disposition requires a policy-derived rationale or a design
      rationale that does not contradict the policy, in `classifications.tsv`. A
      category name alone is not evidence.
-   - Do not add reusable acceptance categories here. If a recurring pattern
-     should be generally allowed, update `docs/coding-policy.md` first;
-     otherwise keep the rationale local to the finding.
+   - After an `accepted` disposition, regenerate the source row as `pass` and
+     cite `classification:<finding_id>` as evidence.
+   - After a `fixed` disposition, regenerate the source row as `pass`, or remove
+     it from the expected key set when the fix removes its file, dependency,
+     group, gate, hot path, or probe. Record evidence of the result in
+     `action_ref`.
+   - Do not add reusable acceptance categories in `classifications.tsv`. If a
+     recurring pattern should be generally allowed, update
+     `docs/coding-policy.md` first; otherwise keep the rationale local to the
+     finding.
 
 10. Regenerate artifacts after fixes.
     - Rebuild criteria if the policy changed.
+    - If a policy change adds, removes, splits, or merges criteria, preserve the
+      current run as `pending` and start a new run directory with a newly frozen
+      target. Do not rewrite historical findings to fit a changed criterion key
+      set.
     - Rebuild scope if files were added, removed, generated, or renamed.
     - Rebuild hot-path inventory, file, cross-file, group, process, findings,
       finding distribution, classifications, and command artifacts after every
@@ -444,21 +484,27 @@ The audit is complete only when all conditions are true:
 - `group_inventory.tsv` assigns every included file to a group or singleton.
 - `file_matrix.tsv` covers every included-file and criterion pair exactly once;
   its row count equals included-file count multiplied by criteria count, and
-  every included file has exactly the criterion set from `criteria.tsv`.
+  every included file has exactly the criterion set from `criteria.tsv`; every
+  verdict is `pass`.
 - `hot_path_inventory.tsv` covers every policy-listed hot-path family, and every
   row verdict is `pass`.
 - `cross_matrix.tsv` covers every dependency and exact dependency/criterion pair
-  declared by `cross_dependencies.tsv` exactly once.
+  declared by `cross_dependencies.tsv` exactly once; every verdict is `pass`.
 - `group_uniformity.tsv` covers every group and every required group/criterion
   pair exactly once, plus any file or cross-file criterion routed to a group
-  row.
+  row; every verdict is `pass`.
 - `process_matrix.tsv` covers every repository-level and command-level policy
-  requirement, and every process or command criterion in `criteria.tsv`.
+  requirement, and every process or command criterion in `criteria.tsv`; every
+  verdict is `pass`.
 - `command_evidence.tsv` records every required and targeted command with its
   working directory, exit status, and key output.
 - `current-diff.patch` includes every changed tracked file and every intended
   untracked file.
-- Every non-`pass` matrix verdict has a corresponding row in `findings.tsv`.
+- Every `fix`, `review`, or `pending` verdict ever discovered in a verdict-bearing
+  artifact has a corresponding row in `findings.tsv`. Every finding's
+  `source_key` resolves to exactly one row in its `source_artifact`, unless a
+  `fixed` classification and its `action_ref` prove that the key correctly left
+  the expected set.
 - Every row in `findings.tsv` has a resolved row in `classifications.tsv`.
 - `finding_distribution.tsv` covers every named probe in the Minimum Probe
   Families, and every `imbalance_verdict` is `pass`.
@@ -466,9 +512,11 @@ The audit is complete only when all conditions are true:
 - `audit_summary.json` reports zero row-count mismatches, zero column-count
   mismatches, zero invalid enum values, zero duplicate keys, zero missing
   expected keys, zero unexpected keys, zero empty evidence fields, zero broken
-  evidence references, and zero stale artifacts.
-- Required commands have passed, or a documented reproducible environment
-  failure is followed by a successful approved rerun.
+  evidence references, zero broken finding-source references, zero current
+  non-pass verdicts, and zero stale artifacts.
+- Required commands have passed; a reproducible environment failure clears the
+  gate only after the same command succeeds in a maintainer-approved
+  environment.
 - Independent review reports no blocker, high, or medium actionable findings.
 
 Do not claim completion before the gate is satisfied. If any condition is
