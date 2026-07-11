@@ -25,7 +25,7 @@ use crate::font::Font;
 use crate::image::{Image, RcImage};
 use crate::settings::{FONT_HEIGHT, FONT_WIDTH, MAX_FONT_CODE, MIN_FONT_CODE, NUM_FONT_COLS};
 
-const CLIP_W_EPSILON: f32 = 1e-4;
+const CLIP_FRONT_EPSILON: f32 = 1e-4;
 type ScreenPoint = (f32, f32, f32);
 
 #[derive(Clone, Copy)]
@@ -138,13 +138,14 @@ fn depth_offset_shift(camera: &RcCamera, offset: f32) -> Vec3 {
 fn project_offset(
     pos: &Vec3,
     vp: &[[f32; 4]; 4],
+    clip_row: &[f32; 4],
     vp_x: f32,
     vp_y: f32,
     vp_w: f32,
     vp_h: f32,
     shift: &Vec3,
 ) -> Option<(f32, f32, f32)> {
-    let p = world_to_screen(pos, vp, vp_x, vp_y, vp_w, vp_h)?;
+    let p = world_to_screen(pos, vp, clip_row, vp_x, vp_y, vp_w, vp_h)?;
     if shift.x == 0.0 && shift.y == 0.0 && shift.z == 0.0 {
         return Some(p);
     }
@@ -153,14 +154,15 @@ fn project_offset(
         y: pos.y + shift.y,
         z: pos.z + shift.z,
     };
-    match world_to_screen(&shifted, vp, vp_x, vp_y, vp_w, vp_h) {
+    match world_to_screen(&shifted, vp, clip_row, vp_x, vp_y, vp_w, vp_h) {
         Some(d) => Some((p.0, p.1, d.2)),
         None => Some(p),
     }
 }
 
-fn clip_w(pos: &Vec3, vp: &[[f32; 4]; 4]) -> f32 {
-    vp[3][0] * pos.x + vp[3][1] * pos.y + vp[3][2] * pos.z + vp[3][3]
+// View-space distance in front of the camera plane (raster::camera_clip_row).
+fn clip_front(pos: &Vec3, clip_row: &[f32; 4]) -> f32 {
+    clip_row[0] * pos.x + clip_row[1] * pos.y + clip_row[2] * pos.z + clip_row[3]
 }
 
 fn lerp_world(a: &Vec3, b: &Vec3, t: f32) -> Vec3 {
@@ -181,7 +183,7 @@ fn lerp_clip_vertex(a: ClipVertex, b: ClipVertex, t: f32) -> ClipVertex {
     }
 }
 
-fn clip_triangle_to_near(vertices: [ClipVertex; 3], vp: &[[f32; 4]; 4]) -> ClippedTriangle {
+fn clip_triangle_to_near(vertices: [ClipVertex; 3], clip_row: &[f32; 4]) -> ClippedTriangle {
     let mut clipped = ClippedTriangle {
         vertices: [vertices[0]; 4],
         len: 0,
@@ -189,13 +191,13 @@ fn clip_triangle_to_near(vertices: [ClipVertex; 3], vp: &[[f32; 4]; 4]) -> Clipp
     for i in 0..3 {
         let prev = vertices[(i + 2) % 3];
         let curr = vertices[i];
-        let prev_w = clip_w(&prev.world, vp);
-        let curr_w = clip_w(&curr.world, vp);
-        let prev_inside = prev_w > CLIP_W_EPSILON;
-        let curr_inside = curr_w > CLIP_W_EPSILON;
+        let prev_front = clip_front(&prev.world, clip_row);
+        let curr_front = clip_front(&curr.world, clip_row);
+        let prev_inside = prev_front > CLIP_FRONT_EPSILON;
+        let curr_inside = curr_front > CLIP_FRONT_EPSILON;
 
         if prev_inside != curr_inside {
-            let t = (CLIP_W_EPSILON - prev_w) / (curr_w - prev_w);
+            let t = (CLIP_FRONT_EPSILON - prev_front) / (curr_front - prev_front);
             clipped.vertices[clipped.len] = lerp_clip_vertex(prev, curr, t);
             clipped.len += 1;
         }
@@ -225,6 +227,7 @@ fn project_clipped_vertices(
         let screen = project_offset(
             &vertex.world,
             &ctx.vp,
+            &ctx.clip_row,
             ctx.vp_x,
             ctx.vp_y,
             ctx.vp_w,
@@ -343,27 +346,41 @@ fn project_line_segment(
     ctx: &DrawContext,
     z_shift: &Vec3,
 ) -> Option<(ScreenPoint, ScreenPoint)> {
-    let w0 = clip_w(p0, &ctx.vp);
-    let w1 = clip_w(p1, &ctx.vp);
-    if w0 <= CLIP_W_EPSILON && w1 <= CLIP_W_EPSILON {
+    let front0 = clip_front(p0, &ctx.clip_row);
+    let front1 = clip_front(p1, &ctx.clip_row);
+    if front0 <= CLIP_FRONT_EPSILON && front1 <= CLIP_FRONT_EPSILON {
         return None;
     }
 
     let mut q0 = *p0;
     let mut q1 = *p1;
-    if w0 <= CLIP_W_EPSILON {
-        let t = (CLIP_W_EPSILON - w0) / (w1 - w0);
+    if front0 <= CLIP_FRONT_EPSILON {
+        let t = (CLIP_FRONT_EPSILON - front0) / (front1 - front0);
         q0 = lerp_world(p0, p1, t);
-    } else if w1 <= CLIP_W_EPSILON {
-        let t = (CLIP_W_EPSILON - w0) / (w1 - w0);
+    } else if front1 <= CLIP_FRONT_EPSILON {
+        let t = (CLIP_FRONT_EPSILON - front0) / (front1 - front0);
         q1 = lerp_world(p0, p1, t);
     }
 
     let s0 = project_offset(
-        &q0, &ctx.vp, ctx.vp_x, ctx.vp_y, ctx.vp_w, ctx.vp_h, z_shift,
+        &q0,
+        &ctx.vp,
+        &ctx.clip_row,
+        ctx.vp_x,
+        ctx.vp_y,
+        ctx.vp_w,
+        ctx.vp_h,
+        z_shift,
     )?;
     let s1 = project_offset(
-        &q1, &ctx.vp, ctx.vp_x, ctx.vp_y, ctx.vp_w, ctx.vp_h, z_shift,
+        &q1,
+        &ctx.vp,
+        &ctx.clip_row,
+        ctx.vp_x,
+        ctx.vp_y,
+        ctx.vp_w,
+        ctx.vp_h,
+        z_shift,
     )?;
     Some((s0, s1))
 }
@@ -516,7 +533,14 @@ pub fn prim(
         };
         let world = mat_apply(&world_mat, &local);
         let screen = project_offset(
-            &world, &ctx.vp, ctx.vp_x, ctx.vp_y, ctx.vp_w, ctx.vp_h, &z_shift,
+            &world,
+            &ctx.vp,
+            &ctx.clip_row,
+            ctx.vp_x,
+            ctx.vp_y,
+            ctx.vp_w,
+            ctx.vp_h,
+            &z_shift,
         );
         ctx.vertex_cache.push((world, screen));
     }
@@ -606,7 +630,7 @@ pub fn prim(
                             ClipVertex { world: v1, uv: uv1 },
                             ClipVertex { world: v2, uv: uv2 },
                         ],
-                        &ctx.vp,
+                        &ctx.clip_row,
                     );
                     if clipped.len < 3 {
                         continue;
@@ -1077,11 +1101,26 @@ pub fn circ(
     let z_shift = depth_offset_shift(&ctx.camera, ctx.depth_offset);
     let camera = rc_ref!(&ctx.camera);
     let projected = screen_circle(
-        &world, r, &ctx.vp, camera, ctx.vp_x, ctx.vp_y, ctx.vp_w, ctx.vp_h,
+        &world,
+        r,
+        &ctx.vp,
+        &ctx.clip_row,
+        camera,
+        ctx.vp_x,
+        ctx.vp_y,
+        ctx.vp_w,
+        ctx.vp_h,
     );
     if let Some((sx, sy, sr, sz)) = projected {
         let sz = project_offset(
-            &world, &ctx.vp, ctx.vp_x, ctx.vp_y, ctx.vp_w, ctx.vp_h, &z_shift,
+            &world,
+            &ctx.vp,
+            &ctx.clip_row,
+            ctx.vp_x,
+            ctx.vp_y,
+            ctx.vp_w,
+            ctx.vp_h,
+            &z_shift,
         )
         .map_or(sz, |p| p.2);
         let target_mut = rc_mut!(&ctx.target);
@@ -1117,11 +1156,26 @@ pub fn circb(
     let z_shift = depth_offset_shift(&ctx.camera, ctx.depth_offset);
     let camera = rc_ref!(&ctx.camera);
     let projected = screen_circle(
-        &world, r, &ctx.vp, camera, ctx.vp_x, ctx.vp_y, ctx.vp_w, ctx.vp_h,
+        &world,
+        r,
+        &ctx.vp,
+        &ctx.clip_row,
+        camera,
+        ctx.vp_x,
+        ctx.vp_y,
+        ctx.vp_w,
+        ctx.vp_h,
     );
     if let Some((sx, sy, sr, sz)) = projected {
         let sz = project_offset(
-            &world, &ctx.vp, ctx.vp_x, ctx.vp_y, ctx.vp_w, ctx.vp_h, &z_shift,
+            &world,
+            &ctx.vp,
+            &ctx.clip_row,
+            ctx.vp_x,
+            ctx.vp_y,
+            ctx.vp_w,
+            ctx.vp_h,
+            &z_shift,
         )
         .map_or(sz, |p| p.2);
         let target_mut = rc_mut!(&ctx.target);
@@ -1318,7 +1372,14 @@ pub fn text(
     let world = mat_apply(world_mat, pos);
     let z_shift = depth_offset_shift(&ctx.camera, ctx.depth_offset);
     let projected = project_offset(
-        &world, &ctx.vp, ctx.vp_x, ctx.vp_y, ctx.vp_w, ctx.vp_h, &z_shift,
+        &world,
+        &ctx.vp,
+        &ctx.clip_row,
+        ctx.vp_x,
+        ctx.vp_y,
+        ctx.vp_w,
+        ctx.vp_h,
+        &z_shift,
     );
     let Some((sx_f, sy_f, sz)) = projected else {
         return;
@@ -1417,10 +1478,8 @@ mod tests {
         assert!(!should_cull(0.0, CULL_NONE));
     }
 
-    fn near_clip_test_vp() -> [[f32; 4]; 4] {
-        let mut vp = [[0.0; 4]; 4];
-        vp[3][2] = -1.0;
-        vp
+    fn near_clip_test_row() -> [f32; 4] {
+        [0.0, 0.0, -1.0, 0.0]
     }
 
     fn clip_vertex(x: f32, y: f32, z: f32, u: f32, v: f32) -> ClipVertex {
@@ -1430,22 +1489,25 @@ mod tests {
         }
     }
 
-    fn assert_clip_vertices_inside(vertices: &ClippedTriangle, vp: &[[f32; 4]; 4]) {
+    fn assert_clip_vertices_inside(vertices: &ClippedTriangle, clip_row: &[f32; 4]) {
         for i in 0..vertices.len {
-            let w = clip_w(&vertices.vertices[i].world, vp);
-            assert!(w >= CLIP_W_EPSILON - 1e-6, "vertex {i} w={w}");
+            let front = clip_front(&vertices.vertices[i].world, clip_row);
+            assert!(
+                front >= CLIP_FRONT_EPSILON - 1e-6,
+                "vertex {i} front={front}"
+            );
         }
     }
 
     #[test]
     fn test_clip_triangle_to_near_keeps_all_inside_vertices() {
-        let vp = near_clip_test_vp();
+        let clip_row = near_clip_test_row();
         let vertices = [
             clip_vertex(-1.0, -1.0, -1.0, 0.0, 0.0),
             clip_vertex(1.0, -1.0, -1.0, 1.0, 0.0),
             clip_vertex(0.0, 1.0, -1.0, 0.5, 1.0),
         ];
-        let clipped = clip_triangle_to_near(vertices, &vp);
+        let clipped = clip_triangle_to_near(vertices, &clip_row);
 
         assert_eq!(clipped.len, 3);
         for (actual, expected) in clipped.vertices.iter().zip(vertices) {
@@ -1456,109 +1518,113 @@ mod tests {
 
     #[test]
     fn test_clip_triangle_to_near_rejects_all_behind_vertices() {
-        let vp = near_clip_test_vp();
+        let clip_row = near_clip_test_row();
         let vertices = [
             clip_vertex(-1.0, -1.0, 1.0, 0.0, 0.0),
             clip_vertex(1.0, -1.0, 1.0, 1.0, 0.0),
             clip_vertex(0.0, 1.0, 1.0, 0.5, 1.0),
         ];
-        let clipped = clip_triangle_to_near(vertices, &vp);
+        let clipped = clip_triangle_to_near(vertices, &clip_row);
 
         assert_eq!(clipped.len, 0);
     }
 
     #[test]
     fn test_clip_triangle_to_near_one_vertex_behind_returns_quad() {
-        let vp = near_clip_test_vp();
+        let clip_row = near_clip_test_row();
         let vertices = [
             clip_vertex(-1.0, -1.0, -1.0, 0.0, 0.0),
             clip_vertex(1.0, -1.0, -1.0, 1.0, 0.0),
             clip_vertex(0.0, 1.0, 1.0, 0.5, 1.0),
         ];
-        let clipped = clip_triangle_to_near(vertices, &vp);
+        let clipped = clip_triangle_to_near(vertices, &clip_row);
 
         assert_eq!(clipped.len, 4);
-        assert_clip_vertices_inside(&clipped, &vp);
+        assert_clip_vertices_inside(&clipped, &clip_row);
     }
 
     #[test]
     fn test_clip_triangle_to_near_two_vertices_behind_returns_triangle() {
-        let vp = near_clip_test_vp();
+        let clip_row = near_clip_test_row();
         let vertices = [
             clip_vertex(-1.0, -1.0, -1.0, 0.0, 0.0),
             clip_vertex(1.0, -1.0, 1.0, 1.0, 0.0),
             clip_vertex(0.0, 1.0, 1.0, 0.5, 1.0),
         ];
-        let clipped = clip_triangle_to_near(vertices, &vp);
+        let clipped = clip_triangle_to_near(vertices, &clip_row);
 
         assert_eq!(clipped.len, 3);
-        assert_clip_vertices_inside(&clipped, &vp);
+        assert_clip_vertices_inside(&clipped, &clip_row);
     }
 
     #[test]
     fn test_depth_offset_negative_moves_toward_camera() {
         use crate::cube::camera::Camera;
-        use crate::cube::raster::{matmul, projection_matrix, view_matrix};
+        use crate::cube::raster::{camera_clip_row, matmul, projection_matrix, view_matrix};
         let camera = Camera::new();
         let v = view_matrix(rc_ref!(&camera));
         let p = projection_matrix(rc_ref!(&camera), 256.0, 192.0);
         let vp = matmul(&p, &v);
+        let clip_row = camera_clip_row(&v);
         // Off-axis point in front of the default (-Z looking) camera.
         let pos = Vec3 {
             x: 1.0,
             y: 0.5,
             z: -3.0,
         };
-        let base = world_to_screen(&pos, &vp, 0.0, 0.0, 256.0, 192.0).unwrap();
+        let base = world_to_screen(&pos, &vp, &clip_row, 0.0, 0.0, 256.0, 192.0).unwrap();
         // Negative offset = toward the camera: depth shrinks, screen x/y
         // stay put (the offset must not move the draw).
         let near = depth_offset_shift(&camera, -0.5);
-        let near_p = project_offset(&pos, &vp, 0.0, 0.0, 256.0, 192.0, &near).unwrap();
+        let near_p = project_offset(&pos, &vp, &clip_row, 0.0, 0.0, 256.0, 192.0, &near).unwrap();
         assert!((near_p.0 - base.0).abs() < 1e-4);
         assert!((near_p.1 - base.1).abs() < 1e-4);
         assert!(near_p.2 < base.2);
         // Positive offset = away: depth grows.
         let far = depth_offset_shift(&camera, 0.5);
-        let far_p = project_offset(&pos, &vp, 0.0, 0.0, 256.0, 192.0, &far).unwrap();
+        let far_p = project_offset(&pos, &vp, &clip_row, 0.0, 0.0, 256.0, 192.0, &far).unwrap();
         assert!(far_p.2 > base.2);
     }
 
     #[test]
     fn test_depth_offset_zero_is_identity() {
         use crate::cube::camera::Camera;
-        use crate::cube::raster::{matmul, projection_matrix, view_matrix};
+        use crate::cube::raster::{camera_clip_row, matmul, projection_matrix, view_matrix};
         let camera = Camera::new();
         let v = view_matrix(rc_ref!(&camera));
         let p = projection_matrix(rc_ref!(&camera), 256.0, 192.0);
         let vp = matmul(&p, &v);
+        let clip_row = camera_clip_row(&v);
         let pos = Vec3 {
             x: 1.0,
             y: 0.5,
             z: -3.0,
         };
-        let base = world_to_screen(&pos, &vp, 0.0, 0.0, 256.0, 192.0).unwrap();
+        let base = world_to_screen(&pos, &vp, &clip_row, 0.0, 0.0, 256.0, 192.0).unwrap();
         let zero = depth_offset_shift(&camera, 0.0);
-        let same = project_offset(&pos, &vp, 0.0, 0.0, 256.0, 192.0, &zero).unwrap();
+        let same = project_offset(&pos, &vp, &clip_row, 0.0, 0.0, 256.0, 192.0, &zero).unwrap();
         assert_eq!(base, same);
     }
 
     #[test]
     fn test_line_clips_endpoint_behind_camera_instead_of_dropping() {
         use crate::cube::camera::Camera;
-        use crate::cube::raster::{compute_clip_rect, matmul, projection_matrix, view_matrix};
+        use crate::cube::raster::{
+            camera_clip_row, compute_clip_rect, matmul, projection_matrix, view_matrix,
+        };
         use crate::cube::scene::DrawContext;
 
         let target = Image::new(64, 64);
         rc_mut!(&target).clear(2);
         let camera = Camera::new();
-        let vp = matmul(
-            &projection_matrix(rc_ref!(&camera), 64.0, 64.0),
-            &view_matrix(rc_ref!(&camera)),
-        );
+        let view = view_matrix(rc_ref!(&camera));
+        let vp = matmul(&projection_matrix(rc_ref!(&camera), 64.0, 64.0), &view);
+        let clip_row = camera_clip_row(&view);
         let clip = compute_clip_rect(0.0, 0.0, 64.0, 64.0, 64, 64);
         let mut ctx = DrawContext {
             target: target.clone(),
             vp,
+            clip_row,
             vp_x: 0.0,
             vp_y: 0.0,
             vp_w: 64.0,
@@ -1600,20 +1666,22 @@ mod tests {
     #[test]
     fn test_triangle_clips_vertex_behind_camera_instead_of_dropping() {
         use crate::cube::camera::Camera;
-        use crate::cube::raster::{compute_clip_rect, matmul, projection_matrix, view_matrix};
+        use crate::cube::raster::{
+            camera_clip_row, compute_clip_rect, matmul, projection_matrix, view_matrix,
+        };
         use crate::cube::scene::DrawContext;
 
         let target = Image::new(64, 64);
         rc_mut!(&target).clear(2);
         let camera = Camera::new();
-        let vp = matmul(
-            &projection_matrix(rc_ref!(&camera), 64.0, 64.0),
-            &view_matrix(rc_ref!(&camera)),
-        );
+        let view = view_matrix(rc_ref!(&camera));
+        let vp = matmul(&projection_matrix(rc_ref!(&camera), 64.0, 64.0), &view);
+        let clip_row = camera_clip_row(&view);
         let clip = compute_clip_rect(0.0, 0.0, 64.0, 64.0, 64, 64);
         let mut ctx = DrawContext {
             target: target.clone(),
             vp,
+            clip_row,
             vp_x: 0.0,
             vp_y: 0.0,
             vp_w: 64.0,
@@ -1655,20 +1723,22 @@ mod tests {
     #[test]
     fn test_box_solid_culls_back_faces() {
         use crate::cube::camera::Camera;
-        use crate::cube::raster::{compute_clip_rect, matmul, projection_matrix, view_matrix};
+        use crate::cube::raster::{
+            camera_clip_row, compute_clip_rect, matmul, projection_matrix, view_matrix,
+        };
         use crate::cube::scene::DrawContext;
 
         let target = Image::new(64, 64);
         rc_mut!(&target).clear(2);
         let camera = Camera::new();
-        let vp = matmul(
-            &projection_matrix(rc_ref!(&camera), 64.0, 64.0),
-            &view_matrix(rc_ref!(&camera)),
-        );
+        let view = view_matrix(rc_ref!(&camera));
+        let vp = matmul(&projection_matrix(rc_ref!(&camera), 64.0, 64.0), &view);
+        let clip_row = camera_clip_row(&view);
         let clip = compute_clip_rect(0.0, 0.0, 64.0, 64.0, 64, 64);
         let mut ctx = DrawContext {
             target: target.clone(),
             vp,
+            clip_row,
             vp_x: 0.0,
             vp_y: 0.0,
             vp_w: 64.0,
@@ -1704,12 +1774,93 @@ mod tests {
     }
 
     #[test]
+    fn test_ortho_camera_clips_geometry_behind_camera() {
+        use crate::cube::camera::Camera;
+        use crate::cube::raster::{
+            camera_clip_row, compute_clip_rect, matmul, projection_matrix, view_matrix,
+        };
+        use crate::cube::scene::DrawContext;
+
+        // The orthographic w row is constant 1, so behind-camera clipping
+        // must come from the camera clip row rather than clip-space w.
+        let target = Image::new(64, 64);
+        rc_mut!(&target).clear(2);
+        let camera = Camera::new();
+        rc_mut!(&camera).ortho_size = Some(10.0);
+        let view = view_matrix(rc_ref!(&camera));
+        let vp = matmul(&projection_matrix(rc_ref!(&camera), 64.0, 64.0), &view);
+        let clip_row = camera_clip_row(&view);
+        let clip = compute_clip_rect(0.0, 0.0, 64.0, 64.0, 64, 64);
+        let mut ctx = DrawContext {
+            target: target.clone(),
+            vp,
+            clip_row,
+            vp_x: 0.0,
+            vp_y: 0.0,
+            vp_w: 64.0,
+            vp_h: 64.0,
+            clip,
+            camera,
+            depth: vec![f32::INFINITY; 64 * 64],
+            depth_w: 64,
+            depth_h: 64,
+            vertex_cache: Vec::new(),
+            dither_alpha: 1.0,
+            depth_test: true,
+            depth_write: true,
+            depth_offset: 0.0,
+            shaded: false,
+        };
+        let state = DrawState::unshaded();
+
+        // A triangle behind the camera (+Z) must not draw.
+        let behind = [-2.0, -2.0, 2.0, 2.0, -2.0, 2.0, 0.0, 2.0, 2.0];
+        prim(
+            &mut ctx,
+            &Mat4::identity_value(),
+            MODE_TRIANGLES,
+            CULL_NONE,
+            &behind,
+            None,
+            None,
+            None,
+            7,
+            None,
+            None,
+            state,
+        )
+        .unwrap();
+        assert_eq!(rc_ref!(&target).pixel(32.0, 32.0), 2);
+
+        // The same triangle in front (-Z) draws as usual.
+        let front = [-2.0, -2.0, -2.0, 2.0, -2.0, -2.0, 0.0, 2.0, -2.0];
+        prim(
+            &mut ctx,
+            &Mat4::identity_value(),
+            MODE_TRIANGLES,
+            CULL_NONE,
+            &front,
+            None,
+            None,
+            None,
+            7,
+            None,
+            None,
+            state,
+        )
+        .unwrap();
+        assert_eq!(rc_ref!(&target).pixel(32.0, 32.0), 7);
+    }
+
+    #[test]
     fn test_shaded_stored_normals_track_rotation() {
         // Stored model-space normals must match the auto-derived world-space
         // normals after the same rotation.
         use crate::cube::camera::Camera;
         use crate::cube::primitive::Primitive;
-        use crate::cube::raster::{compute_clip_rect, matmul, projection_matrix, view_matrix};
+        use crate::cube::raster::{
+            camera_clip_row, compute_clip_rect, matmul, projection_matrix, view_matrix,
+        };
         use crate::cube::scene::DrawContext;
 
         let palette: Vec<crate::image::Rgb24> = vec![
@@ -1765,14 +1916,14 @@ mod tests {
             let target = Image::new(64, 64);
             rc_mut!(&target).clear(2); // sentinel so an undrawn quad is detectable
             let camera = Camera::new();
-            let vp = matmul(
-                &projection_matrix(rc_ref!(&camera), 64.0, 64.0),
-                &view_matrix(rc_ref!(&camera)),
-            );
+            let view = view_matrix(rc_ref!(&camera));
+            let vp = matmul(&projection_matrix(rc_ref!(&camera), 64.0, 64.0), &view);
+            let clip_row = camera_clip_row(&view);
             let clip = compute_clip_rect(0.0, 0.0, 64.0, 64.0, 64, 64);
             let mut ctx = DrawContext {
                 target: target.clone(),
                 vp,
+                clip_row,
                 vp_x: 0.0,
                 vp_y: 0.0,
                 vp_w: 64.0,

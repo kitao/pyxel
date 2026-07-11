@@ -21,12 +21,14 @@ use crate::image::RcImage;
 // Per-frame rasterizer context shared across a Node::draw traversal
 
 // One transformed vertex in the prim scratch cache: world position and
-// screen projection (None = behind the near plane).
+// screen projection (None = at or behind the camera plane).
 pub type ProjectedVertex = (Vec3, Option<(f32, f32, f32)>);
 
 pub struct DrawContext {
     pub target: RcImage,
     pub vp: Mat4x4,
+    // Camera-plane clip row for near clipping (raster::camera_clip_row)
+    pub clip_row: [f32; 4],
     pub vp_x: f32,
     pub vp_y: f32,
     pub vp_w: f32,

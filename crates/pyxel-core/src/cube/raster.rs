@@ -100,6 +100,15 @@ pub fn matmul(a: &Mat4x4, b: &Mat4x4) -> Mat4x4 {
     r
 }
 
+// Camera-plane clip row: dotting it with a world position (w = 1) gives
+// the point's view-space distance in front of the camera. Equals the
+// view-projection matrix's w row under the perspective projection; the
+// orthographic w row is constant 1, so near clipping derives from this
+// row instead.
+pub fn camera_clip_row(view: &Mat4x4) -> [f32; 4] {
+    [-view[2][0], -view[2][1], -view[2][2], -view[2][3]]
+}
+
 // Apply a Mat4 transform to a Vec3 with implicit w=1. Alloc-free (no
 // RcVec3) for the per-vertex hot path.
 pub fn mat_apply(mat: &Mat4, v: &Vec3) -> Vec3 {
@@ -111,25 +120,28 @@ pub fn mat_apply_dir(mat: &Mat4, v: &Vec3) -> Vec3 {
     mat.mul_dir_value(v)
 }
 
-// Project a world position to screen space; None when behind the near
-// plane (cw <= 0). Off-screen and far-plane-overshoot points still
-// project so partially off-screen primitives keep contributing through
-// the viewport clip and z-test, avoiding fp-roundoff flicker at z = 1.
+// Project a world position to screen space; None when at or behind the
+// camera plane (clip_row dot <= 0; see camera_clip_row). Off-screen and
+// far-plane-overshoot points still project so partially off-screen
+// primitives keep contributing through the viewport clip and z-test,
+// avoiding fp-roundoff flicker at z = 1.
 pub fn world_to_screen(
     pos: &Vec3,
     m: &Mat4x4,
+    clip_row: &[f32; 4],
     vp_x: f32,
     vp_y: f32,
     vp_w: f32,
     vp_h: f32,
 ) -> Option<(f32, f32, f32)> {
+    let front = clip_row[0] * pos.x + clip_row[1] * pos.y + clip_row[2] * pos.z + clip_row[3];
+    if front <= 0.0 {
+        return None;
+    }
     let cx = m[0][0] * pos.x + m[0][1] * pos.y + m[0][2] * pos.z + m[0][3];
     let cy = m[1][0] * pos.x + m[1][1] * pos.y + m[1][2] * pos.z + m[1][3];
     let cz = m[2][0] * pos.x + m[2][1] * pos.y + m[2][2] * pos.z + m[2][3];
     let cw = m[3][0] * pos.x + m[3][1] * pos.y + m[3][2] * pos.z + m[3][3];
-    if cw <= 0.0 {
-        return None;
-    }
     let ndc_x = cx / cw;
     let ndc_y = cy / cw;
     let ndc_z = cz / cw;
@@ -177,80 +189,9 @@ pub fn camera_right_up(camera: &Camera) -> (Vec3, Vec3) {
     )
 }
 
-// Project the four corners of a Mat4-positioned rectangle (the rectangle
-// lies in `mat`'s local XY plane, sized w x h, centered at the local
-// origin) into screen space. Row-major corner order: 0=top-left,
-// 1=top-right, 2=bottom-left, 3=bottom-right — matches uv layout used
-// by sprite / plane.
-pub fn project_rect_corners(
-    mat: &Mat4,
-    w: f32,
-    h: f32,
-    vp: &Mat4x4,
-    vp_x: f32,
-    vp_y: f32,
-    vp_w: f32,
-    vp_h: f32,
-) -> [Option<(f32, f32, f32)>; 4] {
-    let hw = w * 0.5;
-    let hh = h * 0.5;
-    let local = [
-        Vec3 {
-            x: -hw,
-            y: hh,
-            z: 0.0,
-        },
-        Vec3 {
-            x: hw,
-            y: hh,
-            z: 0.0,
-        },
-        Vec3 {
-            x: -hw,
-            y: -hh,
-            z: 0.0,
-        },
-        Vec3 {
-            x: hw,
-            y: -hh,
-            z: 0.0,
-        },
-    ];
-    std::array::from_fn(|i| {
-        let world = mat_apply(mat, &local[i]);
-        world_to_screen(&world, vp, vp_x, vp_y, vp_w, vp_h)
-    })
-}
-
 // Number of segments approximating an ellipse perimeter. 24 was chosen
 // for visible smoothness at SD pixel scales.
 pub const ELLIPSE_SEGMENTS: usize = 24;
-
-// Project ELLIPSE_SEGMENTS points along an ellipse perimeter (in mat's
-// local XY plane, axes w/2 and h/2) into screen space.
-pub fn project_ellipse_perimeter(
-    mat: &Mat4,
-    w: f32,
-    h: f32,
-    vp: &Mat4x4,
-    vp_x: f32,
-    vp_y: f32,
-    vp_w: f32,
-    vp_h: f32,
-) -> [Option<(f32, f32, f32)>; ELLIPSE_SEGMENTS] {
-    let hw = w * 0.5;
-    let hh = h * 0.5;
-    std::array::from_fn(|i| {
-        let theta = 2.0 * std::f32::consts::PI * (i as f32) / (ELLIPSE_SEGMENTS as f32);
-        let local = Vec3 {
-            x: hw * theta.cos(),
-            y: hh * theta.sin(),
-            z: 0.0,
-        };
-        let world = mat_apply(mat, &local);
-        world_to_screen(&world, vp, vp_x, vp_y, vp_w, vp_h)
-    })
-}
 
 // Billboard sprite corners: a quad facing the camera, rotated by
 // `angle_deg` in screen space (around view-z). Row-major corner order
@@ -303,6 +244,7 @@ pub fn screen_circle(
     pos: &Vec3,
     radius: f32,
     m: &Mat4x4,
+    clip_row: &[f32; 4],
     camera: &Camera,
     vp_x: f32,
     vp_y: f32,
@@ -310,13 +252,13 @@ pub fn screen_circle(
     vp_h: f32,
 ) -> Option<(f32, f32, f32, f32)> {
     let (right, _up) = camera_right_up(camera);
-    let center = world_to_screen(pos, m, vp_x, vp_y, vp_w, vp_h)?;
+    let center = world_to_screen(pos, m, clip_row, vp_x, vp_y, vp_w, vp_h)?;
     let edge_pos = Vec3 {
         x: pos.x + radius * right.x,
         y: pos.y + radius * right.y,
         z: pos.z + radius * right.z,
     };
-    let edge = world_to_screen(&edge_pos, m, vp_x, vp_y, vp_w, vp_h)?;
+    let edge = world_to_screen(&edge_pos, m, clip_row, vp_x, vp_y, vp_w, vp_h)?;
     let dx = edge.0 - center.0;
     let dy = edge.1 - center.1;
     let screen_r = (dx * dx + dy * dy).sqrt();
@@ -1281,8 +1223,9 @@ mod tests {
         let v = view_matrix(rc_ref!(&camera));
         let p = projection_matrix(rc_ref!(&camera), 256.0, 192.0);
         let vp = matmul(&p, &v);
+        let clip = camera_clip_row(&v);
         // Default camera looks down -Z; pick a point in front.
-        let result = world_to_screen(&vec3(0.0, 0.0, -2.0), &vp, 0.0, 0.0, 256.0, 192.0);
+        let result = world_to_screen(&vec3(0.0, 0.0, -2.0), &vp, &clip, 0.0, 0.0, 256.0, 192.0);
         let (sx, sy, _z) = result.expect("point in front of camera should project");
         assert!((sx - 128.0).abs() < 1e-3);
         assert!((sy - 96.0).abs() < 1e-3);
@@ -1294,8 +1237,9 @@ mod tests {
         let v = view_matrix(rc_ref!(&camera));
         let p = projection_matrix(rc_ref!(&camera), 256.0, 192.0);
         let vp = matmul(&p, &v);
+        let clip = camera_clip_row(&v);
         // A point behind the camera (+Z by default) returns None.
-        let result = world_to_screen(&vec3(0.0, 0.0, 5.0), &vp, 0.0, 0.0, 256.0, 192.0);
+        let result = world_to_screen(&vec3(0.0, 0.0, 5.0), &vp, &clip, 0.0, 0.0, 256.0, 192.0);
         assert!(result.is_none());
     }
 
@@ -1344,10 +1288,12 @@ mod tests {
         let v = view_matrix(rc_ref!(&camera));
         let p = projection_matrix(rc_ref!(&camera), 256.0, 192.0);
         let vp = matmul(&p, &v);
+        let clip = camera_clip_row(&v);
         let result = screen_circle(
             &vec3(0.0, 0.0, -2.0),
             0.5,
             &vp,
+            &clip,
             rc_ref!(&camera),
             0.0,
             0.0,
@@ -1368,10 +1314,12 @@ mod tests {
         let v = view_matrix(rc_ref!(&camera));
         let p = projection_matrix(rc_ref!(&camera), 256.0, 192.0);
         let vp = matmul(&p, &v);
+        let clip = camera_clip_row(&v);
         let result = screen_circle(
             &vec3(0.0, 0.0, 5.0),
             0.5,
             &vp,
+            &clip,
             rc_ref!(&camera),
             0.0,
             0.0,
