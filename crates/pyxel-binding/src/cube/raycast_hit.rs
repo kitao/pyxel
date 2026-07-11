@@ -5,13 +5,8 @@ use pyo3::prelude::*;
 use super::node::Node;
 use super::vec3::Vec3;
 
-// Hand-rolled (rather than `define_wrapper!`) because `node` must keep
-// the same Py<Node> instance the scene tree holds. RaycastHit is an
-// engine-built payload returned by raycast / raycast_all; it is not
-// user-constructible and its fields are read-only. Engine-built hits
-// route through `wrap_with_py_node` so `hit.node is scene_node` holds;
-// `wrap` leaves `py_node` unset and the getter falls back to wrapping
-// the core RcNode.
+// Hand-rolled so engine-built hits can retain the scene tree's Py<Node>
+// instance; fallback wrapping is reserved for hits without that identity.
 
 #[pyclass(unsendable, from_py_object)]
 pub struct RaycastHit {

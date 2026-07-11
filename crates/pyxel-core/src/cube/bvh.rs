@@ -523,8 +523,7 @@ mod tests {
         assert_eq!(hits, 3);
     }
 
-    // Two unit triangles in the z=0 plane, at x≈0 and x≈100, as a
-    // shared fixture for the ray-query tests below.
+    // Two widely separated unit triangles shared by the ray-query tests
     fn two_separated_triangles() -> Bvh {
         let positions = vec![
             Vec3 {

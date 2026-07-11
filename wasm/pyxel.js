@@ -76,12 +76,8 @@ if (
   document.addEventListener("keyup", fixArrowEvent, true);
 }
 
-// Keyboard key correction for non-US layouts (e.g. JIS, AZERTY)
-// Emscripten's SDL2 maps physical keys through a US-layout table, producing
-// incorrect keycodes for non-US keyboards. This builds a persistent per-key
-// correction map from SDL scancode to the actual character, using the browser's
-// KeyboardEvent.key (which reflects the true layout).
-// Map SDL scancodes to unshifted character codes.
+// Preserve browser-reported characters by scancode because Emscripten SDL2
+// otherwise maps non-US layouts through a US-layout table.
 const _scanCorrection = {};
 
 // SDL scancodes for printable ASCII keys (USB HID usage codes)

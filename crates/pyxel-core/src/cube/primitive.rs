@@ -391,6 +391,7 @@ fn build_unit_sphere_textured() -> Primitive {
     let mut indices = Vec::with_capacity(base_indices.len());
     let mut vertex_map: Vec<[Option<i32>; 2]> = vec![[None; 2]; vertex_count];
 
+    // Duplicate seam vertices only on the wrapped UV side
     for f in 0..face_count {
         let i0 = base_indices[f * 3] as usize;
         let i1 = base_indices[f * 3 + 1] as usize;

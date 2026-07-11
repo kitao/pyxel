@@ -79,7 +79,6 @@ class CanvasPanel(Widget):
         self.copy_var("focus_y_var", parent)
         self.copy_var("help_message_var", parent)
 
-        # Initialize horizontal scroll bar
         self._h_scroll_bar = ScrollBar(
             self,
             0,
@@ -92,7 +91,6 @@ class CanvasPanel(Widget):
         self._h_scroll_bar.add_event_listener("change", self.__on_h_scroll_bar_change)
         self.add_var_event_listener("focus_x_var", "change", self.__on_focus_x_change)
 
-        # Initialize vertical scroll bar
         self._v_scroll_bar = ScrollBar(
             self,
             129,
@@ -281,6 +279,7 @@ class CanvasPanel(Widget):
             self._add_post_history()
 
     def __on_mouse_drag(self, key, x, y, dx, dy):
+        # Apply the active tool across the drag
         if key == pyxel.MOUSE_BUTTON_LEFT:
             x1 = self._press_x
             y1 = self._press_y

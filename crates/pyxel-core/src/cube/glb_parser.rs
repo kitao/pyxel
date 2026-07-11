@@ -342,6 +342,7 @@ fn import_materials(
     let mut image_cache = HashMap::<ImageCacheKey, RcImage>::new();
     let mut materials = Vec::new();
 
+    // Resolve materials while reusing identical decoded images
     for material in document.materials() {
         let pbr = material.pbr_metallic_roughness();
         let alpha_cutoff = mask_alpha_cutoff(&material)?;
@@ -488,6 +489,7 @@ fn top_level_json_property_span(json: &str, key: &str) -> Result<Option<(usize, 
     let mut escape = false;
     let mut i = 0;
 
+    // Scan top-level JSON tokens while respecting strings and nesting
     while i < bytes.len() {
         let b = bytes[i];
         if in_string {
@@ -975,6 +977,7 @@ fn import_animations(
         .map(|transform| *rc_ref!(transform))
         .collect::<Vec<_>>();
 
+    // Import each animation and its target-property channels
     for animation in document.animations() {
         let motion = Motion::new(
             animation.name().unwrap_or("").to_string(),

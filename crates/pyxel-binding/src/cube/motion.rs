@@ -1,11 +1,7 @@
 use pyo3::prelude::*;
 
-// Hand-rolled (rather than `define_wrapper!`) because the wrapper also
-// carries `source_mesh`, the Mesh the motion came from. Motion is an
-// engine-built payload exposed through `Mesh.motions`; it is not
-// user-constructible. node.rs `validate_motion_source` compares
-// `source_mesh` against a tree's originating Mesh to enforce the
-// same-Mesh invariant for apply_motion / play_motion.
+// Hand-rolled because engine-built motions retain their source Mesh;
+// node.rs uses it to reject applying a motion to a different Mesh.
 
 #[pyclass(unsendable, from_py_object)]
 #[derive(Clone)]

@@ -25,7 +25,6 @@ class MusicEditor(EditorBase):
 
         self.new_var("is_playing_var", False)
 
-        # Initialize field cursor
         self.field_cursor = FieldCursor(
             self,
             max_field_length=MAX_MUSIC_LENGTH,
@@ -37,7 +36,6 @@ class MusicEditor(EditorBase):
             enable_cross_field_copy=True,
         )
 
-        # Initialize music picker
         self._music_picker = NumberPicker(
             self, 45, 17, min_value=0, max_value=pyxel.NUM_MUSICS - 1, value=0
         )
@@ -47,14 +45,12 @@ class MusicEditor(EditorBase):
         self.add_number_picker_help(self._music_picker)
         self.copy_var("music_index_var", self._music_picker, "value_var")
 
-        # Initialize play button
         self._play_button = ImageButton(self, 185, 17, img=EDITOR_IMAGE, u=126, v=0)
         self._play_button.add_event_listener("press", self.__on_play_button_press)
         self._play_button.add_event_listener(
             "mouse_hover", self.__on_play_button_mouse_hover
         )
 
-        # Initialize stop button
         self._stop_button = ImageButton(
             self, 195, 17, img=EDITOR_IMAGE, u=135, v=0, is_enabled=False
         )
@@ -63,7 +59,6 @@ class MusicEditor(EditorBase):
             "mouse_hover", self.__on_stop_button_mouse_hover
         )
 
-        # Initialize loop button
         self._loop_button = ImageToggleButton(
             self, 205, 17, img=EDITOR_IMAGE, u=144, v=0, is_checked=False
         )
@@ -72,10 +67,8 @@ class MusicEditor(EditorBase):
         )
         self.copy_var("should_loop_var", self._loop_button, "is_checked_var")
 
-        # Initialize music fields
         self._music_fields = [MusicField(self, 11, 29 + i * 25, i) for i in range(4)]
 
-        # Initialize sound selector
         self._sound_selector = SoundSelector(self)
 
         # Set event listeners

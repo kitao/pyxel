@@ -106,9 +106,7 @@ pub fn mat_apply(mat: &Mat4, v: &Vec3) -> Vec3 {
     mat.mul_vec_value(v)
 }
 
-// Apply only the linear (3x3) part of a Mat4 to a direction vector,
-// ignoring translation. Alloc-free (no RcVec3) for the per-face hot path;
-// used to carry model-space normals into world space before shading.
+// Transform model-space directions without translation or hot-path allocation.
 pub fn mat_apply_dir(mat: &Mat4, v: &Vec3) -> Vec3 {
     mat.mul_dir_value(v)
 }
@@ -396,7 +394,7 @@ pub fn shade(shading: &Shading, base_col: i32, normal: Option<&Vec3>) -> u8 {
 }
 
 // Pixel write with depth test. Callers are responsible for clip containment;
-// bbox-driven rasterizers below already drop out-of-clip pixels at the loop
+// bbox-driven rasterizers already drop out-of-clip pixels at their loop
 // bounds, so this hot-path function does not re-check. The scalar signature
 // avoids a per-pixel parameter object.
 #[allow(clippy::too_many_arguments)]
@@ -681,6 +679,7 @@ pub fn rasterize_circle_filled(
     let radius = f32_to_u32(radius);
     let r = radius as f32;
 
+    // Rasterize symmetric columns
     for xi in 0..=radius as i32 {
         let (x1, y1, x2, y2) = circle_area(0.0, 0.0, r, r, xi);
         rasterize_circle_column(
@@ -770,6 +769,7 @@ pub fn rasterize_circle_border(
     let radius = f32_to_u32(radius);
     let r = radius as f32;
 
+    // Rasterize symmetric rim pixels
     for xi in 0..=radius as i32 {
         let (x1, y1, x2, y2) = circle_area(0.0, 0.0, r, r, xi);
         rasterize_circle_pixel(
@@ -904,7 +904,7 @@ fn circle_area(cx: f32, cy: f32, ra: f32, rb: f32, x: i32) -> (i32, i32, i32, i3
     (x1, y1, x2, y2)
 }
 
-// Private circle helpers keep the same flat scalar state as their callers.
+// Circle helpers keep flat scalar arguments to match their hot-path callers.
 #[allow(clippy::too_many_arguments)]
 #[inline]
 fn rasterize_circle_pixel(
@@ -939,7 +939,6 @@ fn rasterize_circle_pixel(
     );
 }
 
-// Private circle helpers keep the same flat scalar state as their callers.
 #[allow(clippy::too_many_arguments)]
 #[inline]
 fn rasterize_circle_row(
@@ -980,7 +979,6 @@ fn rasterize_circle_row(
     }
 }
 
-// Private circle helpers keep the same flat scalar state as their callers.
 #[allow(clippy::too_many_arguments)]
 #[inline]
 fn rasterize_circle_column(

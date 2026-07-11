@@ -379,6 +379,7 @@ class Showcase(Node):
             self._draw_2d(name, x, y, mat, spin)
 
     def _draw_2d(self, name, x, y, mat, spin):
+        # Dispatch the selected 2D primitive
         if name == "pset":
             self.pset(Vec3(x, y, 0), 7)
         elif name == "line":

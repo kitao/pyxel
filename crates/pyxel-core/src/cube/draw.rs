@@ -3,12 +3,8 @@
 #![allow(clippy::many_single_char_names)]
 #![allow(clippy::too_many_arguments)]
 
-// High-level cube draw commands. All commands consume the active
-// DrawContext (target image, viewport, clip, scene depth buffer, camera)
-// and a world transform, and ultimately route through `prim` so all
-// per-pixel decisions (depth, shading, texture sampling, dither) live in
-// one place. Higher-level shortcuts fabricate vertex / index / uv arrays
-// and pass them through prim.
+// High-level draw commands route geometry through `prim`, which owns the
+// shared projection, depth, shading, texture, and dither decisions.
 
 use std::sync::OnceLock;
 
@@ -56,26 +52,13 @@ struct ProjectedPolygon {
     len: usize,
 }
 
-// Primitive draw modes are owned by `Primitive` (see primitive.rs); this
-// file imports them at the top. Values follow OpenGL ordering
-// (GL_POINTS=0, GL_LINES=1, GL_TRIANGLES=4 — cube uses 0/1/2 internally
-// but keeps the relative ordering so future MODE_LINE_STRIP / LINE_LOOP
-// / TRIANGLE_STRIP / TRIANGLE_FAN additions can interleave the GL
-// numbering as needed).
-
-// Billboard modes, chosen internally per draw command (sprite and
-// text pass ON; the geometry commands pass OFF).
-// Mirrors Godot's BillboardMode (DISABLED / ENABLED).
+// Internal billboard modes for camera-facing draw commands
 pub const BILLBOARD_OFF: i32 = 0;
 pub const BILLBOARD_ON: i32 = 1;
 
 pub type Uvs = ((f32, f32), (f32, f32), (f32, f32), (f32, f32));
 
-// Per-call modifier bundle. Bound by each draw command before it calls
-// the rasterizer; the rasterizer reads `ctx.dither_alpha`,
-// `ctx.depth_test`, `ctx.depth_write`. `shaded` decides whether the
-// `shading` is consulted for the per-face brightness; `billboard`
-// rewrites `world_mat` rotation so the surface faces the camera.
+// Per-call shading, depth, dither, and billboard state passed to rasterizers
 #[derive(Clone, Copy)]
 pub struct DrawState<'a> {
     pub shaded: bool,
@@ -281,6 +264,7 @@ fn draw_projected_triangle(
     let depth_test = ctx.depth_test;
     let depth_write = ctx.depth_write;
 
+    // Draw through the textured or flat triangle rasterizer
     if let Some(img_rc) = col_image {
         let img_ref = rc_ref!(img_rc);
         if let Some(normal) = normal {
@@ -546,6 +530,7 @@ pub fn prim(
         }
         Ok(raw as usize)
     };
+    // Dispatch primitive topology
     match mode {
         MODE_TRIANGLES => {
             if !step_count.is_multiple_of(3) {
@@ -572,8 +557,8 @@ pub fn prim(
                         // Stored normals are model-space (e.g. from
                         // Primitive::compute_normals). Carry them into world
                         // space so shading matches the world-space light
-                        // direction; the auto path below already yields a
-                        // world-space normal from the world vertices.
+                        // direction; auto-derived normals already use world
+                        // vertices.
                         Some(n) => mat_apply_dir(
                             &world_mat,
                             &Vec3 {
@@ -1720,11 +1705,8 @@ mod tests {
 
     #[test]
     fn test_shaded_stored_normals_track_rotation() {
-        // Regression: stored (model-space) normals must be rotated into
-        // world space before shading, so a shaded draw on a rotated
-        // transform lights the same as the auto path (which derives a
-        // world-space normal from the rotated vertices). Without the
-        // transform a rotated mesh keeps its unrotated lighting.
+        // Stored model-space normals must match the auto-derived world-space
+        // normals after the same rotation.
         use crate::cube::camera::Camera;
         use crate::cube::primitive::Primitive;
         use crate::cube::raster::{compute_clip_rect, matmul, projection_matrix, view_matrix};

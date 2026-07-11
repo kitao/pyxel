@@ -14,8 +14,7 @@ pub struct Camera {
     pub depth: Vec<f32>,
     pub depth_w: u32,
     pub depth_h: u32,
-    // Prim scratch cache kept here for the same reason as depth: the draw
-    // context borrows it per draw, so its capacity survives across frames.
+    // The camera retains prim scratch capacity across draw traversals.
     pub vertex_scratch: Vec<ProjectedVertex>,
 }
 

@@ -944,9 +944,8 @@ pub fn ray_vs_aabb(
         }
         let t1 = (bmin - o) / d;
         let t2 = (bmax - o) / d;
-        // t1 < t2 iff d > 0 (bmin < bmax guaranteed); the d == 0 case
-        // is handled above. So the entry face's outward normal is the
-        // axis sign opposite the ray's direction.
+        // With nonzero d and bmin < bmax, the entry face's outward normal
+        // has the axis sign opposite the ray direction.
         let (t_near, t_far, sign_near) = if t1 < t2 {
             (t1, t2, -1.0)
         } else {
@@ -1635,7 +1634,7 @@ pub fn local_box_vs_triangle(
     // The overlaps themselves are not used as depth — the triangle
     // is a thin shell, so the SAT face-normal projection collapses
     // to a point and yields zero overlap even when the box straddles
-    // the plane. Depth is computed below along the face normal.
+    // the plane. Penetration depth instead uses the face normal.
     for a in &aabb_axes {
         for e in &edges {
             let axis = Vec3 {
@@ -1672,10 +1671,8 @@ pub fn local_box_vs_triangle(
         return None;
     }
     sat_overlap(&face_normal, &p0, &p1, &p2, &half, r)?;
-    // Orient the normal toward the box center (= origin in this
-    // local frame). Without this, the result depends on the triangle
-    // winding, which the caller cannot guarantee for arbitrary mesh
-    // colliders.
+    // Orient the normal toward the box center so arbitrary mesh winding
+    // cannot change the result.
     let centroid_dot = ((p0.x + p1.x + p2.x) * face_normal.x
         + (p0.y + p1.y + p2.y) * face_normal.y
         + (p0.z + p1.z + p2.z) * face_normal.z)
@@ -2151,11 +2148,8 @@ mod tests {
 
     #[test]
     fn test_sphere_vs_aabb_interior_fallback_depth_covers_radius_plus_pen() {
-        // Sphere center fully inside the box. Pre-fix the depth was
-        // sphere_radius (= 1.0) regardless of how deep the center sat,
-        // so a centred sphere never popped out in one frame. The fix
-        // ensures depth = radius + min_pen so the push-back fully
-        // clears the box.
+        // An interior sphere needs radius + minimum penetration depth to
+        // clear the box in one push-back.
         let aabb = Aabb {
             min: Vec3 {
                 x: -1.0,
@@ -3348,7 +3342,7 @@ mod tests {
     fn test_capsule_vs_rotated_obb_no_corner_inflation() {
         // Box rotated 45° about Y (true diagonal reach 1.0, AABB reach 2.0).
         // Vertical capsule axis at 1.5 along u=(1,0,1)/√2 with r=0.3 →
-        // gap 0.5 - 0.3 = 0.2: no contact. The pre-fix AABB path reported one.
+        // gap 0.5 - 0.3 = 0.2: no contact.
         let rot_rc = Mat4::from_euler(&Vec3 {
             x: 0.0,
             y: 45.0,

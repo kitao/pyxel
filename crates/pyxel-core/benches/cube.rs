@@ -437,6 +437,7 @@ fn make_scene_tree() -> RcNode {
     const LEAVES_PER_GROUP: usize = 19;
     const COLLIDERS_PER_GROUP: usize = 5;
     let root = Node::new();
+    // Build each group and its leaves
     for g in 0..GROUP_COUNT {
         let group = Node::new();
         {

@@ -1,21 +1,13 @@
-// File-level allow: HSV / RGB color math uses single-letter component
-// names (r, g, b, h, s, v) standard in color science; renaming them
-// would hurt the readability of the ramp-building loops.
+// Color math uses the conventional r/g/b and h/s/v component names.
 #![allow(clippy::many_single_char_names)]
 
 use crate::cube::vec3::{RcVec3, Vec3};
 use crate::image::{rgb24_to_rgb8, Rgb24};
 
-// Shading LUT mapping (col, level) to a (primary, secondary) pair plus a
-// scene-wide light direction. Each cell is either flat (primary ==
-// secondary) or a 50:50 checker between primary and secondary on a 2x2
-// pixel pattern. The LUT is built from a palette and an HSV ideal target.
+// Palette-derived shading LUT and scene-wide light direction. Each cell is
+// either flat or a 50:50 dither pair.
 
 pub const LEVEL_COUNT: usize = 4;
-
-// (primary, secondary) — palette indices. primary == secondary collapses
-// to a flat fill; otherwise the rasterizer renders a 2x2 checker between
-// the two.
 
 type Entry = (i32, i32);
 
@@ -52,63 +44,28 @@ impl Shading {
     }
 
     fn compute(palette: &[Rgb24]) -> Vec<Vec<Entry>> {
-        // Per-lv ideal: same hue/saturation as the base, value shifted by
-        // STEP. Candidate quality = weighted-Euclidean HSV distance to
-        // that ideal. The same distance function gates "is this dither
-        // pair too far apart to read as one color" by feeding it the
-        // pair's two constituents instead of (entry, ideal).
-        //
-        // Distance ≥ REJECT_THRESHOLD = "different color". A picker that
-        // can't find anything inside the threshold falls back to base
-        // flat (= the palette has no usable shade for this hue).
-        // STEP keeps the ramp's per-step lightness change at a flavor
-        // level — large enough to read as a visible step in the 4-lv
-        // ramp, small enough that adjacent face brightness levels in 3D
-        // don't read as "neon-sign" abrupt color changes.
+        // Score palette candidates against HSV targets shifted by STEP;
+        // candidates beyond REJECT_THRESHOLD fall back to the source color.
         const STEP: f32 = 0.01;
         const V_DARK_TERMINAL: f32 = 0.05;
-        // distance() axis weights. Saturation and value are neutral so
-        // their full-range deltas (= 1.0) saturate REJECT_THRESHOLD on
-        // their own — pure white vs pure black scores 1.0 in V, gray
-        // vs full-saturation hue scores 1.0 in S. Hue is the sensitive
-        // axis: WH=8 means a hue gap of 1/8 of the color wheel
-        // (= 45°) at full saturation already scores 1.0, i.e. is
-        // treated as a different color. This matches the toon-shading
-        // requirement that the ramp must stay inside the source's
-        // hue band.
+        // A 45-degree hue gap at full saturation reaches the rejection score.
         const WH: f32 = 8.0;
         const WS: f32 = 1.0;
         const WV: f32 = 1.0;
-        // Achromatic ↔ chromatic crossing penalty, asymmetric.
-        //   chromatic source → achromatic candidate (CROSSING_C2A): the
-        //     source's hue is preserved by the ideal, so a gray candidate
-        //     reads as "the ramp dropped its hue" — strong penalty.
-        //   achromatic source → chromatic candidate (CROSSING_A2C): a
-        //     gray/black/white source has no hue to preserve, so a
-        //     chromatic highlight is a deliberate accent (e.g. "black
-        //     lv 3 = navy") — light penalty.
-        // The asymmetry is a direct consequence of HSV's structure: H
-        // is undefined for S=0, so "preserve hue" is one-sided.
-        // distance() expects a = source/ideal side, b = candidate side.
+        // Dropping a source hue is penalized more than adding an accent to an
+        // achromatic source, whose hue is undefined.
         const ACHROMATIC_THRESHOLD: f32 = 0.05;
         const CROSSING_C2A: f32 = 0.80;
         const CROSSING_A2C: f32 = 0.10;
         const REJECT_THRESHOLD: f32 = 1.0;
-        // Pattern C lv 1 quality gate: lv 1 in Pattern C is a flat X
-        // shown directly to the eye, so X must be at least as good as
-        // an independently-picked lv 1 (= Pattern A's lv 1 solo best).
-        // The 1.1 multiplier allows a small slack so a near-best X with
-        // a meaningfully better lv 0 dither can still win — Pattern C
-        // exists precisely to trade off lv 0 quality, but never at the
-        // cost of lv 1 quality.
+        // Permit a slightly weaker flat lv 1 when it enables a better lv 0 pair.
         const PATTERN_C_LV1_SLACK: f32 = 1.1;
 
         let n = palette.len();
         if n == 0 {
             return vec![];
         }
-        // Per-entry sRGB-linear (for physically-correct dither blends)
-        // and HSV (for the distance score).
+        // Precompute linear RGB for optical blends and HSV for scoring.
         let lin: Vec<(f32, f32, f32)> = palette
             .iter()
             .map(|&p| {
@@ -127,11 +84,7 @@ impl Shading {
                 rgb_to_hsv(r as f32 / 255.0, g as f32 / 255.0, b as f32 / 255.0)
             })
             .collect();
-        // sRGB relative luminance (Y, BT.709) per palette entry, used
-        // exclusively to enforce ramp monotonicity. HSV's V channel is
-        // the per-pixel max — it makes pure blue and pure white tie at
-        // V=1, even though their perceived brightness differs by a
-        // factor of nine. Luma is the perceptually-correct ordering.
+        // Use relative luminance rather than HSV value for perceptual ordering.
         let luma: Vec<f32> = lin
             .iter()
             .map(|&(r, g, b)| 0.2126 * r + 0.7152 * g + 0.0722 * b)
@@ -144,13 +97,8 @@ impl Shading {
                 (luma[p as usize] + luma[s as usize]) * 0.5
             }
         };
-        // Weighted-Euclidean HSV distance from a source-side color a to a
-        // candidate-side color b. dH is the circular minimum of the hue
-        // gap, scaled by the lower of the two saturations so a hue gap
-        // collapses to zero whenever one side has no hue (S=0). The
-        // crossing penalty is asymmetric: only the source side decides
-        // whether we're "leaving a hue behind" (= big penalty) or
-        // "adding a hue to a gray" (= small penalty).
+        // Scale the circular hue gap by the lower saturation, then apply the
+        // directional chromatic/achromatic crossing penalty.
         let distance = |a: (f32, f32, f32), b: (f32, f32, f32)| -> f32 {
             let raw_dh = (a.0 - b.0).abs();
             let dh = raw_dh.min(1.0 - raw_dh) * a.1.min(b.1);
@@ -171,12 +119,8 @@ impl Shading {
             };
             raw + crossing
         };
-        // HSV of an entry's visual color. A flat returns the palette
-        // entry's HSV directly. A dither blends the two constituents in
-        // sRGB-linear space (= physically-correct optical mixing) and
-        // re-encodes through the sRGB transfer curve before converting
-        // to HSV. This matches what the eye sees at 2x2-pixel scale: a
-        // single mid-color, not two flickering colors.
+        // Score a dither by its optical blend in linear RGB, not by either
+        // constituent in isolation.
         let entry_hsv = |entry: Entry| -> (f32, f32, f32) {
             let (p, s) = entry;
             if p == s {
@@ -190,33 +134,22 @@ impl Shading {
                 rgb_to_hsv(r, g, b)
             }
         };
-        // Pick two entries (lv 1, lv 0) by enumerating three connectivity
-        // patterns and keeping the lowest-total-distance pair. Returns
-        // None when the cheapest pattern still exceeds 2 × REJECT.
+        // Pick the lowest-total-distance connected pattern for lv 1 and lv 0.
         //
         //   Pattern A: lv 0 flat, lv 1 flat (= no dither at all)
         //   Pattern B: lv 0 flat X, lv 1 dither (source, X)
         //   Pattern C: lv 0 dither (X, Y), lv 1 flat X
         //
-        // All three keep continuity: B/C share X across the two levels;
-        // A's two flats need no shared anchor.
+        // Patterns B and C share X across levels to keep the ramp continuous.
         let pick_two_pattern = |source: usize,
                                 ideal_1: (f32, f32, f32),
                                 ideal_0: (f32, f32, f32)|
          -> Option<(Entry, Entry)> {
             let base_entry: Entry = (source as i32, source as i32);
             let source_luma = luma[source];
-            // Ramp monotonicity: shade-side candidates must sit
-            // strictly below the source's perceived brightness — equal
-            // luma reads as "no shade step" and would let a same-color
-            // duplicate (different palette index, same RGB) collapse
-            // the ramp into a flat repeat.
+            // Reject equal-luma duplicates so each shade is visibly darker.
             let darker_than_source = |entry: Entry| -> bool { entry_luma(entry) < source_luma };
-            // Solo best lv 1 flat score across all candidates. Used
-            // both as Pattern A's inner-loop seed and as Pattern C's
-            // lv 1 quality gate (= the X chosen for Pattern C must be
-            // at least as good a lv 1 as Pattern A would have picked
-            // independently, modulo a small slack).
+            // Use the best independent flat as Pattern C's lv 1 quality gate.
             let mut lv1_solo_best = f32::INFINITY;
             for t in 0..n {
                 if t == source {
@@ -232,9 +165,7 @@ impl Shading {
                 }
             }
             let lv1_gate = lv1_solo_best * PATTERN_C_LV1_SLACK;
-            // Pattern A: independent flat per lv (= no dither). Searched
-            // as a (lv 1, lv 0) pair so the ramp's full monotonicity
-            // (lv 0 ≤ lv 1 ≤ lv 2) is enforced.
+            // Pattern A: two independent flats with monotone luminance
             let mut best_a: (f32, Entry, Entry) = (f32::INFINITY, base_entry, base_entry);
             for t1 in 0..n {
                 if t1 == source {
@@ -257,9 +188,7 @@ impl Shading {
                     }
                 }
             }
-            // Pattern B: lv 1 = (source, X) dither, lv 0 = X flat.
-            // Drop X when its distance from source already reads as a
-            // different color (= dither would flicker, not blend).
+            // Pattern B: lv 1 = (source, X), lv 0 = X
             let mut best_b: (f32, Entry, Entry) = (f32::INFINITY, base_entry, base_entry);
             for x in 0..n {
                 if x == source {
@@ -278,9 +207,7 @@ impl Shading {
                     best_b = (s, lv1, lv0);
                 }
             }
-            // Pattern C: lv 1 = X flat, lv 0 = (X, Y) dither. Y's value
-            // must not exceed X's (keeps the ramp monotone) and (X, Y)
-            // must read as one color.
+            // Pattern C: lv 1 = X, lv 0 = (X, Y), with compatible colors
             let mut best_c: (f32, Entry, Entry) = (f32::INFINITY, base_entry, base_entry);
             for x in 0..n {
                 if x == source {
@@ -325,8 +252,7 @@ impl Shading {
                 Some((lv1, lv0))
             }
         };
-        // lv 3: pick from {flat(X), dither(source, X)} that minimizes
-        // distance to the ideal. Single-lv version of the above.
+        // Pick lv 3 independently from a flat or source/candidate dither.
         let pick_one_pattern = |source: usize, ideal: (f32, f32, f32)| -> Option<Entry> {
             let base_entry: Entry = (source as i32, source as i32);
             let mut best_score = f32::INFINITY;
@@ -366,13 +292,7 @@ impl Shading {
                 let (h, s, v) = hsv[c];
                 let mut row: Vec<Entry> = vec![flat(c); LEVEL_COUNT];
 
-                // lv 3 (= highlight): ideal one STEP brighter. When V is
-                // already saturated, the highlight target moves along the
-                // saturation axis instead — desaturating by STEP is the
-                // pixel-art convention for "highlight on a fully bright
-                // hue" (= bleached toward white). When both V and S are
-                // saturated (= no room to move), the lv stays at base
-                // flat.
+                // Desaturate saturated colors so their highlight moves toward white.
                 let ideal_3 = if v + STEP <= 1.0 {
                     (h, s, v + STEP)
                 } else if s > 0.0 {
@@ -386,8 +306,7 @@ impl Shading {
                     }
                 }
 
-                // lv 0/1 (= shade): ideal_1 one STEP darker, ideal_0 two
-                // STEPs darker.
+                // Target one and two STEP decrements for lv 1 and lv 0.
                 let ideal_1_v = (v - STEP).max(V_DARK_TERMINAL);
                 let ideal_0_v = (v - 2.0 * STEP).max(V_DARK_TERMINAL);
                 if ideal_1_v < v {

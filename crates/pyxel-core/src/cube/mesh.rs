@@ -154,6 +154,7 @@ impl Mesh {
         let world_per_part = self.compose_world_transforms(&identity);
         let mut positions: Vec<Vec3> = Vec::new();
         let mut triangles: Vec<[u32; 3]> = Vec::new();
+        // Merge transformed triangle primitives into one mesh-local stream
         for (i, prim_opt) in self.primitives.iter().enumerate() {
             let Some(prim_rc) = prim_opt else {
                 continue;

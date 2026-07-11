@@ -74,7 +74,7 @@ class App:
     def draw(self):
         pyxel.cls(0)
 
-        # Render perspective views.
+        # Render perspective views
         cam = (self.cam_x, self.cam_y, self.cam_z)
         rot = (self.rot_x, self.rot_y, self.rot_z)
         hw = pyxel.width // 2
@@ -82,11 +82,11 @@ class App:
         pyxel.blt3d(0, HUD_HEIGHT, hw, vh, 0, cam, rot, fov=self.fov)
         pyxel.bltm3d(hw + 2, HUD_HEIGHT, hw, vh, 0, cam, rot, fov=self.fov)
 
-        # Draw the view divider.
+        # Draw the view divider
         pyxel.line(hw, HUD_HEIGHT, hw, pyxel.height - 1, 0)
         pyxel.line(hw + 1, HUD_HEIGHT, hw + 1, pyxel.height - 1, 0)
 
-        # Draw the HUD.
+        # Draw the HUD
         pyxel.text(4, 2, "blt3d", 10)
         pyxel.text(hw + 6, 2, "bltm3d", 10)
         pyxel.text(4, 9, "WASD:Move Arrows:Look RF:Alt QE:Tilt TG:FOV", 13)
