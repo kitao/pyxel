@@ -32,6 +32,9 @@ toml = "1.0"
 # deflate is the only codec needed for .pyxapp / .pyxres
 zip = { version = "8.1", default-features = false, features = ["deflate"] }
 
+[dev-dependencies]
+serde_json = "1.0"
+
 [build-dependencies]
 bindgen = "0.72"
 cmake = "0.1"
