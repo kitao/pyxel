@@ -1,5 +1,5 @@
 const PYODIDE_URL = "https://cdn.jsdelivr.net/pyodide/v314.0.2/full/pyodide.js";
-const PYXEL_WHEEL_PATH = "pyxel-2.9.6-cp311-abi3-emscripten_5_0_3_wasm32.whl";
+const PYXEL_WHEEL_PATH = "pyxel-2.9.7-cp311-abi3-emscripten_5_0_3_wasm32.whl";
 const PYXEL_LOGO_PATH = "images/pyxel_logo_76x32.png";
 const TOUCH_TO_START_PATH = "images/touch_to_start_114x14.png";
 const CLICK_TO_START_PATH = "images/click_to_start_114x14.png";
