@@ -352,7 +352,58 @@ mod tests {
         .unwrap();
 
         let result = Font::parse_bdf(path.to_str().unwrap());
-        assert!(result.is_err());
+        assert_eq!(
+            result.err(),
+            Some(format!("Failed to parse file '{}'", path.to_str().unwrap()))
+        );
+
+        std::fs::remove_file(&path).ok();
+    }
+
+    #[test]
+    fn test_parse_bdf_rejects_overwide_glyph() {
+        // A BBX width over 32 must fail with the explicit width-limit error
+        // because bitmap rows are stored as u32
+        let path = std::env::temp_dir().join(format!(
+            "pyxel_font_test_overwide_glyph_{}.bdf",
+            std::process::id()
+        ));
+        let mut file = File::create(&path).unwrap();
+        writeln!(
+            file,
+            "FONTBOUNDINGBOX 4 6 0 0\nSTARTCHAR A\nENCODING 65\nDWIDTH 4 0\nBBX 33 6 0 0\nBITMAP\n0000\nENDCHAR"
+        )
+        .unwrap();
+
+        let result = Font::parse_bdf(path.to_str().unwrap());
+        assert_eq!(
+            result.err(),
+            Some("BDF glyph width 33 exceeds 32 pixel limit".to_string())
+        );
+
+        std::fs::remove_file(&path).ok();
+    }
+
+    #[test]
+    fn test_parse_bdf_rejects_short_bbx_line() {
+        // A BBX line with fewer than 4 values must fail with the parser's
+        // Err contract instead of panicking on the missing fields
+        let path = std::env::temp_dir().join(format!(
+            "pyxel_font_test_short_bbx_{}.bdf",
+            std::process::id()
+        ));
+        let mut file = File::create(&path).unwrap();
+        writeln!(
+            file,
+            "FONTBOUNDINGBOX 4 6 0 0\nSTARTCHAR A\nENCODING 65\nDWIDTH 4 0\nBBX 4 6 0\nBITMAP\n0000\nENDCHAR"
+        )
+        .unwrap();
+
+        let result = Font::parse_bdf(path.to_str().unwrap());
+        assert_eq!(
+            result.err(),
+            Some(format!("Failed to parse file '{}'", path.to_str().unwrap()))
+        );
 
         std::fs::remove_file(&path).ok();
     }

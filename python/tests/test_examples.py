@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import pytest
 
 import pyxel
@@ -64,6 +66,28 @@ FLIP_EXAMPLES = {"99_flip_animation"}
 
 
 class TestExamples:
+    def test_top_level_examples_have_capture_plans(self):
+        planned = set(CAPTURE_PLANS)
+        examples = {
+            script.stem
+            for script in EXAMPLES_DIR.glob("*.py")
+            if not script.name.startswith("__")
+        }
+        assert planned == examples
+
+    def test_packaged_examples_do_not_contain_audit_scripts(self):
+        audit_scripts = sorted(
+            script.relative_to(EXAMPLES_DIR)
+            for script in EXAMPLES_DIR.rglob("*.py")
+            if "_audit" in script.stem
+        )
+        assert audit_scripts == []
+
+    def test_root_has_no_unintegrated_python_test_scripts(self):
+        root_dir = Path(__file__).parents[2]
+        stray_tests = sorted(script.name for script in root_dir.glob("*_test.py"))
+        assert stray_tests == []
+
     @pytest.mark.parametrize(
         "name", list(CAPTURE_PLANS.keys()), ids=list(CAPTURE_PLANS.keys())
     )

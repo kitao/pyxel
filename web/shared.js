@@ -95,7 +95,7 @@ const base64ToUint8 = (b64) => {
   return Uint8Array.from(bin, (c) => c.charCodeAt(0));
 };
 
-// Poll embedded Pyxel frames until their runtime hooks are ready.
+// Readiness polling for embedded Pyxel frame runtime hooks
 
 const waitForPyxelReady = (
   checkFn,
@@ -114,7 +114,7 @@ const waitForPyxelReady = (
   })();
 };
 
-// Fetch localized JSON, select a language, and render the page.
+// Localized JSON loading, language selection, and page rendering
 
 const initPage = (jsonFile, buildFn) => {
   fetch(jsonFile)
