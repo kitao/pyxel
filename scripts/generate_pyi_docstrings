@@ -60,7 +60,7 @@ def _merge_items(existing, new):
 def _adapt_for_tilemap(item):
     desc = localize(item.get("description"))
 
-    # Adapt blt-specific wording.
+    # Adapt blt-specific wording
     desc = desc.replace(
         "image bank img (0-2 or Image instance)",
         "tilemap tm (0-7 or Tilemap instance)",
@@ -238,7 +238,7 @@ def _add_docstrings(content, doc_map):
         line = lines[i]
         stripped = line.strip()
 
-        # Track the current class scope.
+        # Track the current class scope
         cm = re.match(r"^class (\w+)", line)
         if cm:
             current_class = cm.group(1)
@@ -267,7 +267,7 @@ def _add_docstrings(content, doc_map):
         if stripped.startswith("@"):
             last_decorator = stripped
 
-        # Locate function definitions.
+        # Locate function definitions
         dm = re.match(r"^(\s*)def (\w+)\(", line)
         if dm:
             func_indent = dm.group(1)

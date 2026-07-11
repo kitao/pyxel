@@ -226,10 +226,8 @@ class TestShading:
 
 
 # State set in one Node.on_draw must not leak to siblings or children.
-# Pixel-level verification of the isolation contract is by manual
-# visual inspection. The smoke tests below confirm the dispatch wiring
-# does not raise when state is mutated in mid-on_draw and again in
-# sibling/child on_draw bodies.
+# These smoke tests exercise mid-draw state mutation across sibling and child
+# callbacks; pixel-level isolation is covered by manual visual inspection.
 class TestStateSetterIsolation:
     def test_sibling_isolation_runs_without_error(self):
         class A(Node):

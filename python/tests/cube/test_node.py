@@ -247,10 +247,8 @@ class TestSubclassing:
         assert n.name == "hero"
 
     def test_node_subclass_chained_init_args(self):
-        # Subclass __init__ taking extra positional args must work;
-        # Node.__new__ accepts and ignores the extra args (mirrors the
-        # simpler test_subclass_with_init_args; this variant exercises
-        # the same chain through a deeper hierarchy).
+        # Extra positional arguments must survive recursive subclass
+        # construction through a deeper hierarchy.
         class Level(Node):
             def __init__(self, depth):
                 super().__init__()
@@ -520,7 +518,7 @@ _TRIANGLE_PRIMITIVE = Primitive(
 _UNIT_QUAD_UVS = ((0.0, 0.0), (1.0, 0.0), (1.0, 1.0), (0.0, 1.0))
 
 
-# billboard kwarg is removed from all primitives that previously had it.
+# Geometry primitives reject the unsupported billboard keyword.
 class TestBillboardKwargRemoved:
     @pytest.mark.parametrize(
         "call",

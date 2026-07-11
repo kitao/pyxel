@@ -222,6 +222,7 @@ impl Font {
         ascent: i32,
         f: &mut impl FnMut(i32, i32),
     ) -> i32 {
+        // Dispatch by font backend
         match self {
             Font::Bdf {
                 bounding_box,

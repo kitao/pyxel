@@ -121,6 +121,7 @@ def write_blockbench_profile_glb(path: Path, *, smooth_motion: bool = False) -> 
     body_positions, body_normals, body_uvs, body_indices = cuboid(1.2, 1.2, 0.8)
     face_positions, face_normals, face_uvs, face_indices = cuboid(0.55, 0.45, 0.1)
     times = struct.pack("<fff", 0.0, 0.5, 1.0)
+    # Encode smooth or linear animation samples
     if smooth_motion:
         translation_interpolation = "CUBICSPLINE"
         translation_accessor_count = 9

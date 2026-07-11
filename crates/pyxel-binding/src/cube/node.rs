@@ -35,11 +35,8 @@ struct MotionPlayer {
     speed: f32,
 }
 
-// Python-facing Node wrapper. Holds the core hierarchy state (RcNode) plus
-// a list of `Py<Node>` for the children so that user-defined subclasses
-// (`class Player(Node):`) keep their identity through the scene tree —
-// returning a fresh `Node::wrap(...)` from `children` would strip the
-// Python override and silence on_update / on_draw dispatch.
+// Cache child wrappers so user-defined Node subclasses retain their Python
+// identity and on_update/on_draw overrides throughout the scene tree.
 
 #[pyclass(unsendable, from_py_object, subclass)]
 pub struct Node {
@@ -628,11 +625,8 @@ impl Node {
         Ok(())
     }
 
-    // Flag-only destroy (cube-design.md § 16 step 9). Node.update
-    // walks the tree post-order, fires on_destroy, and detaches the
-    // flagged nodes at the end of the frame. Parent / child links
-    // stay intact for the rest of the current frame so traversal
-    // remains safe.
+    // Defer post-order notification and detachment to Node.update step 9 so
+    // parent/child links remain stable during the current traversal.
     fn destroy(slf: PyRef<'_, Self>) {
         InnerNode::destroy(&slf.inner);
     }
@@ -966,13 +960,9 @@ impl Node {
             None => (7, None),
         };
 
-        // Route the draw through with_state_from_ctx so the shared state
-        // (shaded / dither_alpha / depth_test / depth_write) is read from
-        // the active DrawContext like every other primitive. The closure
-        // returns (), so we capture the rasterizer result in an outer
-        // variable and propagate any error after the call returns.
-        // Empty attribute Vecs mean "absent" on the Primitive; the
-        // rasterizer still takes Option<&[..]>, so map empty -> None.
+        // Read shared draw state from the active context and capture the
+        // closure's rasterizer result for propagation. Empty attributes map
+        // to the rasterizer's None representation.
         let indices_opt = (!p.indices.is_empty()).then_some(p.indices.as_slice());
         let normals_opt = (!p.normals.is_empty()).then_some(p.normals.as_slice());
         let uvs_opt = (!p.uvs.is_empty()).then_some(p.uvs.as_slice());

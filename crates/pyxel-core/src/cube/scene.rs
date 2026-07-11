@@ -18,11 +18,7 @@ use crate::cube::raster::{mat_apply, ClipRect, Mat4x4};
 use crate::cube::vec3::Vec3;
 use crate::image::RcImage;
 
-// Per-frame rasterizer context shared between Node::draw and each Node's
-// draw commands. Built at the start of Node::draw (depth buffer moved out
-// of the effective camera's cache for the duration of the traversal),
-// looked up by Node draw commands through `with_draw_context`, torn down
-// on draw end (depth buffer moved back into the camera).
+// Per-frame rasterizer context shared across a Node::draw traversal
 
 // One transformed vertex in the prim scratch cache: world position and
 // screen projection (None = behind the near plane).
@@ -37,28 +33,17 @@ pub struct DrawContext {
     pub vp_h: f32,
     pub clip: ClipRect,
     pub camera: RcCamera,
-    // Depth buffer (and its dimensions) owned by ctx for the duration of
-    // one draw. The effective camera caches the allocation between frames;
-    // ctx takes it in at draw entry and returns it on exit.
+    // The effective camera caches the depth allocation between frames.
     pub depth: Vec<f32>,
     pub depth_w: u32,
     pub depth_h: u32,
-    // Per-draw scratch holding each vertex's world position and screen
-    // projection. Cleared (not reallocated) at every prim call, so
-    // indexed tables with shared vertices project each vertex once; the
-    // effective camera caches the allocation between frames like depth.
+    // Shared vertices are projected once per prim call without reallocating.
     pub vertex_cache: Vec<ProjectedVertex>,
-    // Per-on_draw state modifiers, mutated via Node.dither / depth_test /
-    // depth_write / depth_offset / shaded setters; reset to defaults before
-    // each Node's on_draw via reset_draw_state(). Rasterizers consult ctx
-    // for these fields directly.
+    // State modifiers reset before each Node.on_draw call
     pub dither_alpha: f32,
     pub depth_test: bool,
     pub depth_write: bool,
-    // World-unit depth bias applied at projection time: a draw's depth is
-    // computed as if it were shifted this many units along the camera's
-    // view direction (negative = toward the camera), while its screen
-    // position is left unchanged. 0.0 = no bias.
+    // View-direction depth bias that leaves screen position unchanged
     pub depth_offset: f32,
     pub shaded: bool,
 }
@@ -127,26 +112,15 @@ pub struct RaycastHitInfo {
     pub distance: f32,
 }
 
-// Zero-sized namespace for the core pipeline + spatial-query functions.
-// Scene used to be a per-frame state container; depth buffer ownership
-// has moved onto the Node receiving draw(), and the Python-visible
-// surface no longer exposes Scene. The methods below remain associated
-// with this type purely for namespacing — they take an `RcNode` subtree
-// root and operate on it.
+// Namespace for stateless pipeline and spatial-query operations on a subtree
 pub struct Scene;
 
-// Pipeline + spatial-query implementation. The Python-visible steps
-// (on_update, on_collide, on_destroy) stay in the binding layer; this
-// block covers the deterministic core stages. Several stage helpers keep
-// explicit physics inputs instead of allocating per-frame option structs.
+// Deterministic core pipeline and spatial queries
 
 #[allow(clippy::too_many_arguments)]
 impl Scene {
-    // Step 9 (cube-design.md § 16): collect every destroyed node in
-    // the subtree in post-order (= leaf first), so that callers can
-    // run on_destroy + detach in dependency order. The collector is
-    // pure (no detachment); the binding wires the actual on_destroy
-    // notification and detachment loop on top of this list.
+    // Collect destroyed nodes leaf-first for binding-layer notification and
+    // detachment in pipeline step 9.
     pub fn collect_destroyed_post_order(scene_root: &RcNode) -> Vec<RcNode> {
         let mut out: Vec<RcNode> = Vec::new();
         Self::collect_destroyed_recursive(scene_root, &mut out);
@@ -403,12 +377,7 @@ impl Scene {
         }
         let c_a = world_a.pos_value();
         let c_b = world_b.pos_value();
-        // Shape-exact dispatch (cube-design.md § 11.1): each pair is
-        // solved in the body frame of the box side (or on segments for
-        // capsules), so rotation is honored instead of being inflated
-        // into a world AABB. Pair helpers document their own normal
-        // orientation; arms that solve with the roles swapped flip back
-        // to the b → a contract.
+        // Normalize swapped solvers back to the b → a normal contract.
         let flip = |g: ContactGeom| ContactGeom {
             point: g.point,
             normal: Vec3 {
@@ -418,6 +387,7 @@ impl Scene {
             },
             depth: g.depth,
         };
+        // Dispatch exact solvers by shape pair
         match (classify_shape(size_a, r_a), classify_shape(size_b, r_b)) {
             (S::Sphere { r: ra }, S::Sphere { r: rb }) => sphere_vs_sphere(c_a, ra, c_b, rb)
                 .or_else(|| Self::swept_sphere_vs_sphere(c_a, ra, coll_a, c_b, rb, coll_b)),
@@ -1296,6 +1266,7 @@ impl Scene {
         let radius = radius.max(0.0);
         let probe = Aabb::from_sphere(center, radius);
         let mut out: Vec<RcNode> = Vec::new();
+        // Test broad-phase candidates against the sphere
         for (node, world, aabb) in &entries {
             let coll_rc_opt = rc_ref!(node).collider.clone();
             let Some(coll_rc) = coll_rc_opt else {
@@ -1352,6 +1323,7 @@ impl Scene {
             z: size.z.abs() * 0.5,
         };
         let mut out: Vec<RcNode> = Vec::new();
+        // Test broad-phase candidates against the box
         for (node, world, aabb) in &entries {
             let coll_rc_opt = rc_ref!(node).collider.clone();
             let Some(coll_rc) = coll_rc_opt else {
@@ -1737,9 +1709,8 @@ fn narrow_phase_mesh_vs_dynamic(
 ) -> Option<ContactGeom> {
     let shape_dyn = classify_shape(size_dyn, r_dyn);
     let mesh_inv = world_mesh.inverse_value();
-    // Dynamic body's AABB in world space, then mapped into the mesh-
-    // local frame where the BVH lives. The AABB stays a broad filter;
-    // the per-triangle test below is shape-exact.
+    // Map the dynamic body's AABB into the mesh-local BVH as a broad filter;
+    // per-triangle tests remain shape-exact.
     let dyn_aabb_world = if matches!(shape_dyn, ColliderShape::Sphere { .. }) {
         Aabb::from_sphere(world_dyn.pos_value(), r_dyn)
     } else {
@@ -1949,6 +1920,7 @@ fn swept_segment_vs_segment(
     }
     let mut lower = 0.0;
     let mut t = 0.0;
+    // Conservatively advance to the segment pair's first contact
     for _ in 0..24 {
         let a0 = vec_add(prev_a0, vec_mul(velocity, t));
         let a1 = vec_add(prev_a1, vec_mul(velocity, t));
@@ -2032,6 +2004,7 @@ fn swept_segment_vs_aabb(
     }
     let mut lower = 0.0;
     let mut t = 0.0;
+    // Conservatively advance to the segment/box first contact
     for _ in 0..24 {
         let a0 = vec_add(prev_a0, vec_mul(velocity, t));
         let a1 = vec_add(prev_a1, vec_mul(velocity, t));
@@ -2226,6 +2199,7 @@ fn swept_obb_vs_obb(
     let mut entry: f32 = 0.0;
     let mut exit: f32 = 1.0;
     let mut entry_normal: Option<Vec3> = None;
+    // Intersect the swept interval across all OBB axes
     for axis in swept_obb_axes(&ax, &bx) {
         let Some(axis) = normalize_axis(axis) else {
             continue;
@@ -2306,6 +2280,7 @@ fn swept_obb_vs_triangle(
     let mut entry: f32 = 0.0;
     let mut exit: f32 = 1.0;
     let mut entry_normal: Option<Vec3> = None;
+    // Intersect the swept interval across box/triangle SAT axes
     for axis in axes {
         let Some(axis) = normalize_axis(axis) else {
             continue;
@@ -3626,9 +3601,7 @@ mod tests {
     fn test_narrow_phase_rotated_wall_no_phantom_contact() {
         // A thin wall (size=(0.4, 4, 4)) rotated 45° about Y and a sphere
         // 1.0 along the wall's world face normal: the true face gap is
-        // 1.0 - 0.2 - 0.5 = 0.3, but the wall's world AABB spans ±1.56
-        // on X/Z and swallows the sphere center — the pre-fix AABB
-        // narrow phase reported a phantom contact here.
+        // 1.0 - 0.2 - 0.5 = 0.3, so exact narrow phase finds no contact.
         let root = Node::new();
         let wall = Node::new();
         rc_mut!(&wall).transform = Mat4::from_axis_angle(
@@ -3681,8 +3654,7 @@ mod tests {
     fn test_narrow_phase_capsule_edge_miss_beyond_box_rim() {
         // Capsule center at (2.2, 1.25, 0), floor rim corner at
         // (2.0, 0.5, 0): segment-to-corner distance √(0.2² + 0.25²)
-        // ≈ 0.32 > radius 0.3 → no contact. The pre-fix AABB path
-        // overlapped on every axis and reported one.
+        // ≈ 0.32 > radius 0.3 → no contact.
         let root = Node::new();
         let capsule = Node::new();
         place_at(&capsule, 2.2, 1.25, 0.0);
@@ -3755,8 +3727,7 @@ mod tests {
         assert!(pairs.is_empty());
     }
 
-    // Two-triangle floor quad at y=0 under a mesh collider, as the
-    // fixture for the mesh raycast tests below.
+    // Two-triangle floor fixture for mesh raycast tests
     fn mesh_floor_root() -> RcNode {
         use crate::cube::collider::Collider;
         use crate::cube::mesh::Mesh;

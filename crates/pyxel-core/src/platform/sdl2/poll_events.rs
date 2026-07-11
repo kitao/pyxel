@@ -294,16 +294,8 @@ fn mouse_button_to_key(button: u32) -> Key {
     }
 }
 
-// Correct SDL2 keycode on Emscripten for non-US keyboard layouts.
-// Emscripten's SDL2 maps physical keys through a US-layout table, producing
-// incorrect keycodes for JIS and other non-US keyboards. Look up the actual
-// character from a persistent per-scancode correction map (populated by keydown
-// listeners in pyxel.js).
-//
-// Using a persistent map keyed by SDL scancode (physical key) instead of a
-// per-event queue ensures that keydown and keyup for the same physical key
-// always receive the same correction, eliminating key sticking caused by
-// queue desynchronization.
+// Apply the persistent per-scancode correction map populated by pyxel.js so
+// keydown and keyup use the same non-US-layout correction.
 #[cfg(target_os = "emscripten")]
 fn correct_emscripten_key(sdl_key: Key, scancode: u32) -> Key {
     let scripts = scan_correction_scripts();

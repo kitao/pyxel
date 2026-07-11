@@ -331,8 +331,9 @@ class Node:
     transform: Mat4
     active: bool  # parent-dominant; False halts update + collision
     visible: bool  # parent-dominant; False halts drawing
-    camera: Camera | None  # None inherits from the closest non-None ancestor
-    shading: Shading | None  # None inherits from the closest non-None ancestor
+    # Camera and shading inherit the closest non-None ancestor value.
+    camera: Camera | None
+    shading: Shading | None
     collider: Collider | None
     tags: list[str]
 

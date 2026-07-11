@@ -30,7 +30,6 @@ class ImageEditor(EditorBase):
         self.new_var("canvas_var", None)
         self.add_var_event_listener("canvas_var", "get", self.__on_canvas_get)
 
-        # Initialize color picker
         self._color_picker = ColorPicker(
             self,
             11,
@@ -43,7 +42,6 @@ class ImageEditor(EditorBase):
         )
         self.copy_var("color_var", self._color_picker, "value_var")
 
-        # Initialize tool button
         self._tool_button = RadioButton(
             self,
             81,
@@ -57,7 +55,6 @@ class ImageEditor(EditorBase):
         self.add_tool_button_help(self._tool_button)
         self.copy_var("tool_var", self._tool_button, "value_var")
 
-        # Initialize image picker
         self._image_picker = NumberPicker(
             self, 192, 161, min_value=0, max_value=pyxel.NUM_IMAGES - 1, value=0
         )
@@ -67,12 +64,10 @@ class ImageEditor(EditorBase):
         self.add_number_picker_help(self._image_picker)
         self.copy_var("image_index_var", self._image_picker, "value_var")
 
-        # Initialize image viewer
         self._image_viewer = ImageViewer(self)
         self.copy_var("focus_x_var", self._image_viewer)
         self.copy_var("focus_y_var", self._image_viewer)
 
-        # Initialize canvas panel
         self._canvas_panel = CanvasPanel(self)
 
         # Set event listeners
@@ -128,7 +123,7 @@ class ImageEditor(EditorBase):
     def __on_update(self):
         self.check_tool_button_shortcuts()
 
-        # Handle color shortcut keys.
+        # Handle color shortcut keys
         if not pyxel.btn(pyxel.KEY_ALT):
             for key in _COLOR_SHORTCUT_KEYS:
                 if pyxel.btnp(key):

@@ -2,12 +2,8 @@ use pyo3::prelude::*;
 
 use super::vec3::Vec3;
 
-// Live proxy sequences onto an RcPrimitive's vertex/topology fields.
-// Mirrors `wrap_sound_as_python_list!` (sound_wrapper.rs): each proxy
-// holds the shared RcPrimitive and projects one of its plain Vec fields,
-// so element writes / append / etc. mutate the Primitive in place. The
-// Primitive getters hand out a fresh proxy carrying an Rc clone (a live
-// view), and there is no whole-attribute setter — matching Sound.notes.
+// Live sequence proxies keep an RcPrimitive clone so element operations mutate
+// its Vec fields in place, matching the Sound.notes binding convention.
 macro_rules! wrap_primitive_as_python_list {
     ($wrapper_name:ident, $value_type:ty, $field_name:ident) => {
         wrap_as_python_primitive_sequence!(

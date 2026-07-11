@@ -446,7 +446,7 @@ impl Mat4 {
     }
 
     pub fn to_local_dir(&self, mat: &Self) -> RcMat4 {
-        // Build a translation-stripped inverse.
+        // Build a translation-stripped inverse
         let r_only = Self::strip_translation(mat);
         let inv_rc = rc_ref!(&r_only).inverse();
         rc_ref!(&inv_rc).mul_mat(self)
@@ -938,7 +938,7 @@ mod tests {
             z: 0.0,
         };
         let m = deref(&Mat4::look_at(&eye, &target, &up));
-        // Same exact pin as above: a proper rotation has det +1.
+        // A proper fallback rotation has determinant +1.
         let det = m.data[0][0] * (m.data[1][1] * m.data[2][2] - m.data[1][2] * m.data[2][1])
             - m.data[0][1] * (m.data[1][0] * m.data[2][2] - m.data[1][2] * m.data[2][0])
             + m.data[0][2] * (m.data[1][0] * m.data[2][1] - m.data[1][1] * m.data[2][0]);

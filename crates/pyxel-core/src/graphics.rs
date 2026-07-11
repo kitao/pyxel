@@ -102,6 +102,7 @@ impl Graphics {
         };
 
         let mut screen_shaders = Vec::new();
+        // Compile one program per fragment shader
         for &screen_frag in &SCREEN_FRAGS {
             // Vertex shader
             let vertex_shader = gl
@@ -178,7 +179,6 @@ impl Graphics {
             );
             gl.enable_vertex_attrib_array(position);
 
-            // Add screen shader
             screen_shaders.push(ScreenShader {
                 program,
                 uniform_locations,
