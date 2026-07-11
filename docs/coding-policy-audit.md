@@ -25,9 +25,9 @@ An auditor reads both files in this order:
   summaries may suggest probes, but they are not evidence until rechecked
   against the current worktree and recorded in the current artifacts.
 
-- No summary-only evidence. Counts, search results, formatter success, or reviewer
-  summaries do not prove a cell unless the underlying row names what was
-  inspected and why the verdict follows.
+- No summary-only evidence. Counts, search results, formatter success, or
+  reviewer summaries do not prove a cell unless the underlying row names what
+  was inspected and why the verdict follows.
 
 - Use precise result labels. A run is an exhaustive audit only when the
   Completion Gate is satisfied. Until then, or when the requested scope is
@@ -276,10 +276,11 @@ issue actionable.
 reference is a `path:line` or `path:first-last` location, a bare `path` for a
 whole-file check, or an artifact-row reference — `process:<gate_id>`,
 `cross:<dependency_id>`, `group:<group_id>`, `command:<command_id>`,
-`hotpath:<hot_path_id>`, or `classification:<finding_id>` — naming the row that
-carries the authoritative check. Any other form, or a reference to a row that
-does not exist, is a broken evidence reference. After fixes, line references are
-rechecked against the current file content before completion is claimed.
+`hotpath:<hot_path_id>`, or `classification:<finding_id>` — naming the row
+that carries the authoritative check. Any other form, or a reference to a row
+that does not exist, is a broken evidence reference. After fixes, line
+references are rechecked against the current file content before completion is
+claimed.
 
 ## Minimum Probe Families
 
@@ -500,11 +501,11 @@ The audit is complete only when all conditions are true:
   working directory, exit status, and key output.
 - `current-diff.patch` includes every changed tracked file and every intended
   untracked file.
-- Every `fix`, `review`, or `pending` verdict ever discovered in a verdict-bearing
-  artifact has a corresponding row in `findings.tsv`. Every finding's
-  `source_key` resolves to exactly one row in its `source_artifact`, unless a
-  `fixed` classification and its `action_ref` prove that the key correctly left
-  the expected set.
+- Every `fix`, `review`, or `pending` verdict ever discovered in a
+  verdict-bearing artifact has a corresponding row in `findings.tsv`. Every
+  finding's `source_key` resolves to exactly one row in its `source_artifact`,
+  unless a `fixed` classification and its `action_ref` prove that the key
+  correctly left the expected set.
 - Every row in `findings.tsv` has a resolved row in `classifications.tsv`.
 - `finding_distribution.tsv` covers every named probe in the Minimum Probe
   Families, and every `imbalance_verdict` is `pass`.
