@@ -1,4 +1,4 @@
-use std::env::{set_var, var};
+use std::env::var;
 use std::fs::{read_to_string, write};
 
 use crate::platform;
@@ -10,7 +10,7 @@ pub struct WindowWatcher {
 }
 
 impl WindowWatcher {
-    // Construction
+    // Constructor
 
     pub fn new() -> Self {
         let (watch_state_file, raw_state) = if let Ok(path) = var(WATCH_STATE_FILE_ENV) {
@@ -20,17 +20,18 @@ impl WindowWatcher {
             (None, var(WINDOW_STATE_ENV).unwrap_or_default())
         };
 
-        let window_state = Self::parse_window_state(&raw_state);
+        let restored_state = Self::parse_window_state(&raw_state);
 
-        if let Some((x, y, w, h)) = window_state {
+        if let Some((x, y, w, h)) = restored_state {
             platform::set_window_pos(x, y);
             platform::set_window_size(w, h);
-            unsafe { set_var(WINDOW_STATE_ENV, &raw_state) };
         }
+        let (x, y) = platform::window_pos();
+        let (w, h) = platform::window_size();
 
         Self {
             watch_state_file,
-            window_state,
+            window_state: Some((x, y, w, h)),
         }
     }
 
@@ -55,13 +56,17 @@ impl WindowWatcher {
         if self.window_state != window_state {
             self.window_state = window_state;
 
-            let raw_state = format!("{x} {y} {w} {h}");
-            unsafe { set_var(WINDOW_STATE_ENV, &raw_state) };
             if let Some(path) = &self.watch_state_file {
                 // Best-effort write; watcher continues even if the state file is unavailable.
-                write(path, &raw_state).ok();
+                write(path, format!("{x} {y} {w} {h}")).ok();
             }
         }
+    }
+
+    #[cfg(not(target_os = "emscripten"))]
+    pub fn state_string(&self) -> Option<String> {
+        self.window_state
+            .map(|(x, y, w, h)| format!("{x} {y} {w} {h}"))
     }
 
     // Parsing
@@ -111,5 +116,16 @@ mod tests {
         assert_eq!(WindowWatcher::parse_window_state("10 20 abc 240"), None);
         // Sizes are unsigned; a negative size is rejected
         assert_eq!(WindowWatcher::parse_window_state("10 20 -320 240"), None);
+    }
+
+    #[cfg(not(target_os = "emscripten"))]
+    #[test]
+    fn test_state_string() {
+        let watcher = WindowWatcher {
+            watch_state_file: None,
+            window_state: Some((-5, 10, 320, 240)),
+        };
+        assert_eq!(watcher.state_string().as_deref(), Some("-5 10 320 240"));
+        assert_eq!(WindowWatcher::new_headless().state_string(), None);
     }
 }

@@ -3,8 +3,7 @@ use crate::cube::vec3::RcVec3;
 
 // Unified collider: rounded-box family (size + radius) or static mesh
 // terrain, plus behavior flags, physical coefficients, and per-frame
-// motion state. Detection and contact resolution live in scene.rs
-// (cube-design.md § 11 and § 16).
+// motion state. Detection and contact resolution live in scene.rs.
 
 pub struct Collider {
     pub size: RcVec3,

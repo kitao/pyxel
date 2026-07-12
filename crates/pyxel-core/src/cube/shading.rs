@@ -390,7 +390,7 @@ mod tests {
     #[test]
     fn test_get_set() {
         let r = Shading::new(&pyxel_default());
-        let r_mut = rc_mut!(&r);
+        let mut r_mut = rc_mut!(&r);
         r_mut.set(0, 0, (5, 7));
         assert_eq!(r_mut.get(0, 0), (5, 7));
     }
@@ -398,7 +398,7 @@ mod tests {
     #[test]
     fn test_build_resets_table() {
         let r = Shading::new(&pyxel_default());
-        let r_mut = rc_mut!(&r);
+        let mut r_mut = rc_mut!(&r);
         r_mut.set(0, 0, (99, 99));
         r_mut.build(&pyxel_default());
         // Rebuild recomputes the deterministic default-palette entry:

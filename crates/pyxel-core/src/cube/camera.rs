@@ -100,7 +100,7 @@ mod tests {
     #[test]
     fn test_mutate() {
         let c = Camera::new();
-        let c_mut = rc_mut!(&c);
+        let mut c_mut = rc_mut!(&c);
         c_mut.fov = 90.0;
         c_mut.ortho_size = Some(10.0);
         assert_eq!(c_mut.fov, 90.0);

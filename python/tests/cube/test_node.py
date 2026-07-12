@@ -31,8 +31,7 @@ class TestAttributes:
         # transform reads as Mat4.IDENTITY by default.
         assert n.transform == Mat4.IDENTITY
         # Cascade attributes are None on a freshly constructed Node so
-        # they inherit from the closest non-None ancestor; the root node
-        # provides the camera / shading (cube-design.md § 15).
+        # they inherit from the closest non-None ancestor.
         assert n.shading is None
         assert n.collider is None
         assert n.parent is None
@@ -96,10 +95,9 @@ class TestAttributes:
         assert n.collider is None
 
 
-# Collider is user-constructible; Contact is an engine-built payload
-# (cube-design.md § 11 / § 12). Contact is not user-constructible and its
-# fields are read-only; its geometry is verified by the Rust unit tests
-# and the on_collide integration test (test_scene.py).
+# Collider is user-constructible; Contact is an engine-built payload with
+# read-only fields. Its geometry is verified by the Rust unit tests and the
+# on_collide integration test in test_scene.py.
 class TestColliderContactBasics:
     def test_collider_constructable(self):
         c = Collider()
@@ -216,9 +214,8 @@ class TestHierarchy:
         c = Node()
         p.add_child(c)
         c.destroy()
-        # Deferred semantics (cube-design.md § 16 step 9): destroy()
-        # sets the flag but the parent / child links survive until
-        # Node.update detaches the node at the end of the frame.
+        # destroy() sets the flag immediately, but Node.update detaches the
+        # node at the end of the frame.
         assert c.destroyed is True
         assert len(p.children) == 1
 
@@ -235,9 +232,8 @@ class TestSubclassing:
         assert isinstance(a, Node)
 
     def test_subclass_with_init_args(self):
-        # A subclass __init__ taking extra positional args must work;
-        # Node.__new__ accepts and ignores the extra args (the § 14
-        # Player sample relies on this).
+        # A subclass __init__ taking extra positional args must work because
+        # Node.__new__ accepts and ignores them.
         class Tagged(Node):
             def __init__(self, label):
                 super().__init__()
@@ -262,10 +258,9 @@ class TestSubclassing:
         assert len(s.find_by_name("level-0")) == 1
 
     def test_lifecycle_hooks_default_noop(self):
-        # Default implementations are no-op; they must be callable
-        # directly as well as from the pipeline (§ 16). on_collide takes
-        # an engine-built Contact, so its default firing is covered in
-        # test_scene.py rather than by constructing a Contact here.
+        # Default implementations are no-op and callable directly or from the
+        # frame pipeline. on_collide is covered with an engine-built Contact in
+        # test_scene.py.
         n = Node()
         n.on_update()
         n.on_draw()
@@ -353,7 +348,7 @@ class TestImmediateDrawSafety:
     def test_from_mesh_generated_nodes_draw_attached_primitives(self):
         prim = Primitive(
             Primitive.MODE_TRIANGLES,
-            [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0],
+            [-1.0, -1.0, 0.0, 1.0, -1.0, 0.0, 0.0, 1.0, 0.0],
             [0, 1, 2],
         )
         mesh = Mesh(
@@ -363,10 +358,16 @@ class TestImmediateDrawSafety:
             col_img=8,
         )
         root = Node()
-        root.camera = Camera()
+        camera = Camera()
+        camera.clear_color = 0
+        camera.transform = Mat4.look_at(Vec3(0, 0, 4), Vec3.ZERO, Vec3.UP)
+        root.camera = camera
         root.add_child(Node.from_mesh(mesh))
 
-        root.draw(0, 0, 64, 64)
+        pyxel.cls(0)
+        root.draw(0, 0, 160, 120)
+
+        assert pyxel.pget(80, 60) == 8
 
     def test_prim_with_primitive(self):
         prim = Primitive(
@@ -411,6 +412,19 @@ class TestImmediateDrawSafety:
 # Inside on_draw, they affect subsequent draws within the same body and
 # reset at the entry of the next Node's on_draw.
 class TestStateSetters:
+    @staticmethod
+    def _draw(probe, shading=None):
+        root = Node()
+        camera = Camera()
+        camera.clear_color = 0
+        camera.transform = Mat4.look_at(Vec3(0, 0, 4), Vec3.ZERO, Vec3.UP)
+        root.camera = camera
+        root.shading = shading
+        root.add_child(probe)
+        pyxel.cls(0)
+        root.draw(0, 0, 160, 120)
+        return pyxel.pget(80, 60)
+
     def test_setters_callable_outside_draw_are_noop(self):
         # Called with no active draw context — should not raise.
         n = Node()
@@ -419,22 +433,43 @@ class TestStateSetters:
         n.depth_write(False)
         n.shaded(False)
 
-    def test_setters_inside_on_draw(self):
-        # Subclass that exercises the setters inside on_draw and draws.
+    def test_dither_inside_on_draw_affects_subsequent_draws(self):
         class Probe(Node):
             def on_draw(self):
-                self.dither(0.5)
-                self.depth_test(False)
-                self.depth_write(False)
-                self.shaded(False)
-                self.box(Mat4.IDENTITY, Vec3(1, 1, 1), 7)
+                self.dither(0.0)
+                self.pset(Vec3.ZERO, 7)
 
-        root = Node()
-        root.camera = Camera()
-        root.add_child(Probe())
-        # No window — Node.draw composes the context and dispatches
-        # on_draw without rasterizing. We only assert no error is raised.
-        root.draw(0, 0, 64, 64)
+        assert self._draw(Probe()) == 0
+
+    def test_depth_test_inside_on_draw_affects_subsequent_draws(self):
+        class Probe(Node):
+            def on_draw(self):
+                self.pset(Vec3.ZERO, 7)
+                self.depth_test(False)
+                self.pset(Vec3(0, 0, -1), 8)
+
+        assert self._draw(Probe()) == 8
+
+    def test_depth_write_inside_on_draw_affects_subsequent_draws(self):
+        class Probe(Node):
+            def on_draw(self):
+                self.depth_write(False)
+                self.pset(Vec3.ZERO, 7)
+                self.depth_write(True)
+                self.pset(Vec3(0, 0, -1), 8)
+
+        assert self._draw(Probe()) == 8
+
+    def test_shaded_inside_on_draw_affects_subsequent_draws(self):
+        class Probe(Node):
+            def on_draw(self):
+                self.shaded(False)
+                self.rect(Mat4.IDENTITY, 2, 2, 7)
+
+        shading = Shading(palette())
+        for level in range(4):
+            shading[7, level] = (3, 3)
+        assert self._draw(Probe(), shading) == 7
 
 
 # Smoke-test that Node exposes the frame-level draw API and queries.
@@ -485,11 +520,9 @@ class TestBoxSphereTexturing:
         Node().sphere(Vec3.ZERO, 1.0, img, colkey=0)
 
 
-# `on_collide` is invoked by Node.update step 8 once per contact pair
-# (cube-design.md § 16). The signature must expose the documented
-# argument names so engine calls and user overrides agree. Contact is
-# engine-built, so the names are checked through the signature rather
-# than by constructing a Contact; real firing is covered in test_scene.py.
+# The signature must expose the public argument names so engine calls and user
+# overrides agree. Contact is engine-built, so real firing is covered in
+# test_scene.py.
 class TestOnCollideSignature:
     def test_signature_param_names(self):
         params = inspect.signature(Node.on_collide).parameters
@@ -568,7 +601,7 @@ class TestCameraCascade:
 
     def test_draw_without_camera_raises(self):
         n = Node()
-        with pytest.raises(ValueError, match="draw: no camera set"):
+        with pytest.raises(ValueError, match="draw requires a camera"):
             n.draw(0, 0, 64, 64)
 
     def test_camera_clear_color_roundtrip(self):

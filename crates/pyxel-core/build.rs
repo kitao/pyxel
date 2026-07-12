@@ -1,12 +1,15 @@
 use std::env::var;
 use std::fs::File;
+use std::io::Read;
 use std::path::Path;
 use std::process::Command;
 use std::str;
 
+use sha2::{Digest, Sha256};
 use tar::Archive;
 
 const SDL2_VERSION: &str = "2.32.10"; // Emscripten 5.0.3 uses SDL 2.32.10
+const SDL2_SHA256: &str = "5f5993c530f084535c65a6879e9b26ad441169b3e25d789d83287040a9ca5165";
 
 struct SDL2BindingsBuilder {
     target: String,
@@ -62,6 +65,7 @@ impl SDL2BindingsBuilder {
             .status()
             .expect("Failed to execute curl command");
         assert!(status.success(), "Failed to download SDL2 source code");
+        verify_sdl2_archive(&sdl2_archive_path);
 
         // Extract SDL2
         let tar_gz = File::open(&sdl2_archive_path).unwrap();
@@ -252,6 +256,24 @@ impl SDL2BindingsBuilder {
 
         include_flags
     }
+}
+
+fn verify_sdl2_archive(path: &str) {
+    let mut archive = File::open(path).expect("Failed to open SDL2 source archive");
+    let mut hasher = Sha256::new();
+    let mut buffer = [0; 8192];
+    loop {
+        let len = archive
+            .read(&mut buffer)
+            .expect("Failed to read SDL2 source archive");
+        if len == 0 {
+            break;
+        }
+        hasher.update(&buffer[..len]);
+    }
+
+    let actual = format!("{:x}", hasher.finalize());
+    assert_eq!(actual, SDL2_SHA256, "SDL2 source archive checksum mismatch");
 }
 
 fn has_sdl2_feature() -> bool {

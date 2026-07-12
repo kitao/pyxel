@@ -39,7 +39,7 @@ impl RaycastHit {
         }
     }
 
-    pub(crate) fn inner_ref(&self) -> &pyxel::cube::RaycastHit {
+    pub(crate) fn inner_ref(&self) -> std::cell::Ref<'_, pyxel::cube::RaycastHit> {
         rc_ref!(self.inner)
     }
 }

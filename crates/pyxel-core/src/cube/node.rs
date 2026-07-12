@@ -1,4 +1,4 @@
-use std::cell::UnsafeCell;
+use std::cell::RefCell;
 use std::rc::{Rc, Weak};
 
 use crate::cube::camera::RcCamera;
@@ -7,7 +7,7 @@ use crate::cube::mat4::{Mat4, RcMat4};
 use crate::cube::shading::RcShading;
 use crate::cube::vec3::{RcVec3, Vec3};
 
-pub type WeakNode = Weak<UnsafeCell<Node>>;
+pub type WeakNode = Weak<RefCell<Node>>;
 
 // Hierarchy instance. Holds local transform, draw / lifecycle state, and
 // child links. Parent is a weak ref to avoid Rc cycles between parent and
@@ -24,10 +24,9 @@ pub struct Node {
     pub tags: Vec<String>,
     pub parent: Option<WeakNode>,
     pub children: Vec<RcNode>,
-    // Set by destroy() and cascaded to the subtree. Node.update step 9
-    // (cube-design.md § 16) collects flagged nodes post-order, fires
-    // on_destroy, and detaches them. The flag is exposed read-only as
-    // Node.destroyed so user hooks can early-return after a destroy().
+    // Set by destroy() and cascaded to the subtree. Node.update collects
+    // flagged nodes post-order, fires on_destroy, and detaches them. The flag
+    // is exposed read-only so hooks can early-return after a destroy().
     pub destroyed: bool,
 }
 
@@ -201,7 +200,7 @@ impl Node {
         let local_rc = &rc_ref!(node).transform;
         let local = rc_ref!(local_rc);
         match Self::parent(node) {
-            Some(parent) => Self::world_transform_value(&parent).mul_mat_value(local),
+            Some(parent) => Self::world_transform_value(&parent).mul_mat_value(&local),
             None => *local,
         }
     }
@@ -460,7 +459,7 @@ mod tests {
     #[test]
     fn test_world_transform_root() {
         let n = Node::new();
-        rc_mut!(&n).transform = Mat4::from_translation(rc_ref!(&Vec3::new(1.0, 2.0, 3.0)));
+        rc_mut!(&n).transform = Mat4::from_translation(&rc_ref!(&Vec3::new(1.0, 2.0, 3.0)));
         let world = Node::world_transform(&n);
         let world = rc_ref!(&world);
         let pos = world.pos();
@@ -474,8 +473,8 @@ mod tests {
     fn test_world_transform_nested() {
         let p = Node::new();
         let c = Node::new();
-        rc_mut!(&p).transform = Mat4::from_translation(rc_ref!(&Vec3::new(1.0, 0.0, 0.0)));
-        rc_mut!(&c).transform = Mat4::from_translation(rc_ref!(&Vec3::new(0.0, 2.0, 0.0)));
+        rc_mut!(&p).transform = Mat4::from_translation(&rc_ref!(&Vec3::new(1.0, 0.0, 0.0)));
+        rc_mut!(&c).transform = Mat4::from_translation(&rc_ref!(&Vec3::new(0.0, 2.0, 0.0)));
         Node::add_child(&p, &c);
         let world = Node::world_transform(&c);
         let world = rc_ref!(&world);

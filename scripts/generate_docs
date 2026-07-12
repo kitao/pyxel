@@ -749,7 +749,7 @@ def generate_from_html(html_path, json_path, output_name, web_path=None):
     # Extract updateTexts() body
     m = re.search(r"function updateTexts\(\)\s*\{", html_text)
     if not m:
-        return
+        raise ValueError(f"{html_path}: required function updateTexts() not found")
     body = html_text[m.end() : _find_matching(html_text, m.end(), "{", "}") - 1]
 
     # Extract variables

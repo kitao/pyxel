@@ -153,10 +153,10 @@ impl Pyxel {
         self.add_input_text(text);
     }
 
-    pub fn set_dropped_files(&mut self, files: &[&str]) {
+    pub fn set_dropped_files<S: AsRef<str>>(&mut self, files: &[S]) {
         pyxel::dropped_files().clear();
         for file in files {
-            self.add_dropped_file(file);
+            self.add_dropped_file(file.as_ref());
         }
     }
 

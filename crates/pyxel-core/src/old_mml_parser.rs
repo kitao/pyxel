@@ -29,7 +29,7 @@ struct NoteInfo {
 
 pub fn parse_old_mml(mml: &str) -> Result<Vec<MmlCommand>, String> {
     let rc = Sound::new();
-    let sound = rc_mut!(rc);
+    let mut sound = audio_mut!(rc);
     let mut chars = mml.chars().peekable();
     let mut length = 4;
     let mut quantize = 7;
@@ -92,7 +92,7 @@ pub fn parse_old_mml(mml: &str) -> Result<Vec<MmlCommand>, String> {
                 envelopes[env_index as usize] = env_data;
             }
         } else if let Some((note, length)) = parse_note(&mut chars, length)? {
-            add_note(sound, &note_info);
+            add_note(&mut sound, &note_info);
 
             let note = note + octave * 12;
             let env_data = match vol_env {
@@ -116,7 +116,7 @@ pub fn parse_old_mml(mml: &str) -> Result<Vec<MmlCommand>, String> {
                 is_tied: false,
             };
         } else if let Some(length) = parse_rest(&mut chars, length)? {
-            add_note(sound, &note_info);
+            add_note(&mut sound, &note_info);
 
             note_info = NoteInfo {
                 length,
@@ -140,7 +140,7 @@ pub fn parse_old_mml(mml: &str) -> Result<Vec<MmlCommand>, String> {
         }
     }
 
-    add_note(sound, &note_info);
+    add_note(&mut sound, &note_info);
 
     let commands = sound.to_commands();
     Ok(commands)
@@ -357,6 +357,10 @@ mod tests {
         parse_old_mml(mml).unwrap()
     }
 
+    fn assert_parse_error(mml: &str, expected: &str) {
+        assert_eq!(parse_old_mml(mml).unwrap_err(), expected);
+    }
+
     fn note_commands(commands: &[MmlCommand]) -> Vec<(u32, u32)> {
         commands
             .iter()
@@ -534,21 +538,21 @@ mod tests {
 
     #[test]
     fn test_err_out_of_range_values() {
-        assert!(parse_old_mml("@4c").is_err());
-        assert!(parse_old_mml("o5c").is_err());
-        assert!(parse_old_mml("q0c").is_err());
-        assert!(parse_old_mml("q9c").is_err());
-        assert!(parse_old_mml("v8c").is_err());
-        assert!(parse_old_mml("x8c").is_err());
-        assert!(parse_old_mml("x1:8c").is_err());
-        assert!(parse_old_mml("l3c").is_err());
-        assert!(parse_old_mml("c32.").is_err());
+        assert_parse_error("@4c", "Invalid tone value '4' in MML");
+        assert_parse_error("o5c", "Invalid octave value '5' in MML");
+        assert_parse_error("q0c", "Invalid quantize value '0' in MML");
+        assert_parse_error("q9c", "Invalid quantize value '9' in MML");
+        assert_parse_error("v8c", "Invalid volume value '8' in MML");
+        assert_parse_error("x8c", "Invalid envelope value '8' in MML");
+        assert_parse_error("x1:8c", "Invalid envelope volume '8' in MML");
+        assert_parse_error("l3c", "Invalid note length '3' in MML");
+        assert_parse_error("c32.", "Length added by dot is too short in MML");
     }
 
     #[test]
     fn test_err_octave_shift_limits() {
-        assert!(parse_old_mml("o4>c").is_err());
-        assert!(parse_old_mml("o0<c").is_err());
+        assert_parse_error("o4>c", "Octave exceeded maximum in MML");
+        assert_parse_error("o0<c", "Octave exceeded minimum in MML");
     }
 
     #[test]
@@ -570,6 +574,6 @@ mod tests {
             parse_old_mml("x1:").unwrap_err(),
             "Missing envelope volumes in MML"
         );
-        assert!(parse_old_mml("z").is_err());
+        assert_parse_error("z", "Invalid command 'z' in MML");
     }
 }

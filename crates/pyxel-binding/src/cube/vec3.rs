@@ -90,7 +90,7 @@ impl Vec3 {
     }
 
     fn __eq__(&self, other: &Self) -> bool {
-        self.inner_ref() == other.inner_ref()
+        *self.inner_ref() == *other.inner_ref()
     }
 
     fn __hash__(&self) -> u64 {
@@ -131,11 +131,11 @@ impl Vec3 {
     }
 
     fn __add__(&self, other: &Self) -> Self {
-        Self::wrap(self.inner_ref().add(other.inner_ref()))
+        Self::wrap(self.inner_ref().add(&other.inner_ref()))
     }
 
     fn __sub__(&self, other: &Self) -> Self {
-        Self::wrap(self.inner_ref().sub(other.inner_ref()))
+        Self::wrap(self.inner_ref().sub(&other.inner_ref()))
     }
 
     fn __mul__(&self, scalar: f32) -> Self {
@@ -157,11 +157,11 @@ impl Vec3 {
     // Math
 
     fn dot(&self, other: &Self) -> f32 {
-        self.inner_ref().dot(other.inner_ref())
+        self.inner_ref().dot(&other.inner_ref())
     }
 
     fn cross(&self, other: &Self) -> Self {
-        Self::wrap(self.inner_ref().cross(other.inner_ref()))
+        Self::wrap(self.inner_ref().cross(&other.inner_ref()))
     }
 
     fn length(&self) -> f32 {
@@ -173,15 +173,15 @@ impl Vec3 {
     }
 
     fn distance_to(&self, other: &Self) -> f32 {
-        self.inner_ref().distance_to(other.inner_ref())
+        self.inner_ref().distance_to(&other.inner_ref())
     }
 
     fn distance_squared_to(&self, other: &Self) -> f32 {
-        self.inner_ref().distance_squared_to(other.inner_ref())
+        self.inner_ref().distance_squared_to(&other.inner_ref())
     }
 
     fn angle_to(&self, other: &Self) -> f32 {
-        self.inner_ref().angle_to(other.inner_ref())
+        self.inner_ref().angle_to(&other.inner_ref())
     }
 
     fn normalize(&self) -> Self {
@@ -193,45 +193,45 @@ impl Vec3 {
     }
 
     fn min(&self, other: &Self) -> Self {
-        Self::wrap(self.inner_ref().min(other.inner_ref()))
+        Self::wrap(self.inner_ref().min(&other.inner_ref()))
     }
 
     fn max(&self, other: &Self) -> Self {
-        Self::wrap(self.inner_ref().max(other.inner_ref()))
+        Self::wrap(self.inner_ref().max(&other.inner_ref()))
     }
 
     fn lerp(&self, other: &Self, t: f32) -> Self {
-        Self::wrap(self.inner_ref().lerp(other.inner_ref(), t))
+        Self::wrap(self.inner_ref().lerp(&other.inner_ref(), t))
     }
 
     fn slerp(&self, other: &Self, t: f32) -> Self {
-        Self::wrap(self.inner_ref().slerp(other.inner_ref(), t))
+        Self::wrap(self.inner_ref().slerp(&other.inner_ref(), t))
     }
 
     fn reflect(&self, normal: &Self) -> Self {
-        Self::wrap(self.inner_ref().reflect(normal.inner_ref()))
+        Self::wrap(self.inner_ref().reflect(&normal.inner_ref()))
     }
 
     fn project(&self, other: &Self) -> Self {
-        Self::wrap(self.inner_ref().project(other.inner_ref()))
+        Self::wrap(self.inner_ref().project(&other.inner_ref()))
     }
 
     // Coordinate system conversions
 
     fn to_local(&self, mat: PyRef<'_, Mat4>) -> Self {
-        Self::wrap(self.inner_ref().to_local(mat.inner_ref()))
+        Self::wrap(self.inner_ref().to_local(&mat.inner_ref()))
     }
 
     fn to_world(&self, mat: PyRef<'_, Mat4>) -> Self {
-        Self::wrap(self.inner_ref().to_world(mat.inner_ref()))
+        Self::wrap(self.inner_ref().to_world(&mat.inner_ref()))
     }
 
     fn to_local_dir(&self, mat: PyRef<'_, Mat4>) -> Self {
-        Self::wrap(self.inner_ref().to_local_dir(mat.inner_ref()))
+        Self::wrap(self.inner_ref().to_local_dir(&mat.inner_ref()))
     }
 
     fn to_world_dir(&self, mat: PyRef<'_, Mat4>) -> Self {
-        Self::wrap(self.inner_ref().to_world_dir(mat.inner_ref()))
+        Self::wrap(self.inner_ref().to_world_dir(&mat.inner_ref()))
     }
 }
 

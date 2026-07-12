@@ -1,4 +1,4 @@
 #[inline]
-pub fn pyxel() -> &'static mut pyxel::Pyxel {
+pub fn pyxel() -> std::cell::RefMut<'static, pyxel::Pyxel> {
     pyxel::pyxel()
 }

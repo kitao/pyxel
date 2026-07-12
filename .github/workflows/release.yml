@@ -12,7 +12,13 @@ env:
   PYTHON_VERSION: "3.14"
 
 jobs:
+  verify:
+    uses: ./.github/workflows/verify.yml
+    with:
+      release_tag: ${{ github.ref_name }}
+
   build:
+    needs: verify
     uses: ./.github/workflows/build.yml
 
   release:
@@ -45,14 +51,6 @@ jobs:
             echo "IS_PRERELEASE=false" >> $GITHUB_ENV
           fi
 
-      - name: Create GitHub release
-        uses: softprops/action-gh-release@v2
-        with:
-          name: Pyxel ${{ env.PYXEL_VERSION }}
-          tag_name: ${{ github.ref }}
-          files: dist/*
-          prerelease: ${{ env.IS_PRERELEASE == 'true' }}
-
       - name: Install Python
         uses: actions/setup-python@v5
         with:
@@ -61,7 +59,15 @@ jobs:
       - name: Publish to PyPI
         run: |
           pip install twine
-          twine upload dist/*
+          twine upload --skip-existing dist/*
         env:
           TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
           TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: Pyxel ${{ env.PYXEL_VERSION }}
+          tag_name: ${{ github.ref }}
+          files: dist/*
+          prerelease: ${{ env.IS_PRERELEASE == 'true' }}

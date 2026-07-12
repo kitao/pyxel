@@ -167,7 +167,7 @@ pub(crate) fn unit_sphere_wire() -> &'static Primitive {
 fn clone_scaled(base: &Primitive, sx: f32, sy: f32, sz: f32) -> RcPrimitive {
     let p = Primitive::new();
     {
-        let p = rc_mut!(&p);
+        let mut p = rc_mut!(&p);
         p.mode = base.mode;
         p.indices.clone_from(&base.indices);
         p.uvs.clone_from(&base.uvs);
@@ -528,7 +528,7 @@ mod tests {
         // Empty indices => vertices consumed 0, 1, 2, ...; 1 triangle, +Z.
         let p = Primitive::new();
         {
-            let p = rc_mut!(&p);
+            let mut p = rc_mut!(&p);
             p.positions = vec![0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0];
             p.compute_normals();
         }
@@ -545,7 +545,7 @@ mod tests {
     fn test_compute_normals_with_indices() {
         let p = Primitive::new();
         {
-            let p = rc_mut!(&p);
+            let mut p = rc_mut!(&p);
             p.positions = vec![0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0];
             p.indices = vec![0, 1, 2];
             p.compute_normals();
@@ -563,7 +563,7 @@ mod tests {
         // disjoint output slots.
         let p = Primitive::new();
         {
-            let p = rc_mut!(&p);
+            let mut p = rc_mut!(&p);
             p.positions = vec![
                 0.0, 0.0, 0.0, // 0
                 1.0, 0.0, 0.0, // 1
@@ -592,7 +592,7 @@ mod tests {
     fn test_compute_normals_empty_positions() {
         let p = Primitive::new();
         {
-            let p = rc_mut!(&p);
+            let mut p = rc_mut!(&p);
             p.compute_normals();
         }
         let p = rc_ref!(&p);
@@ -603,7 +603,7 @@ mod tests {
     fn test_compute_normals_non_triangle_mode() {
         let p = Primitive::new();
         {
-            let p = rc_mut!(&p);
+            let mut p = rc_mut!(&p);
             p.positions = vec![0.0, 0.0, 0.0, 1.0, 0.0, 0.0];
             p.mode = MODE_LINES;
             p.compute_normals();
@@ -617,7 +617,7 @@ mod tests {
     fn test_indices_out_of_range_skipped() {
         let p = Primitive::new();
         {
-            let p = rc_mut!(&p);
+            let mut p = rc_mut!(&p);
             p.positions = vec![0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0];
             p.indices = vec![0, 1, 99]; // 99 is out of range
             p.compute_normals();

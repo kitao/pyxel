@@ -32,7 +32,7 @@ def test_destroyed_flag_set_immediately_but_not_detached():
     assert mid.destroyed is True
     assert leaf.destroyed is True
     assert root.destroyed is False
-    # Tree intact until deferred destruction (cube-design.md § 16 step 9).
+    # Parent and child links remain intact until deferred destruction runs.
     assert len(root.children) == 1
     assert len(mid.children) == 1
 

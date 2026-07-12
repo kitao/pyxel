@@ -273,12 +273,12 @@ fn draw_projected_triangle(
         if let Some(normal) = normal {
             let shading = state.shading.unwrap();
             let direction = rc_ref!(&shading.direction);
-            let level = face_shade_level(direction, Some(normal));
-            let sampler = make_shaded_sampler(img_ref, shading, level);
-            let target_mut = rc_mut!(&ctx.target);
+            let level = face_shade_level(&direction, Some(normal));
+            let sampler = make_shaded_sampler(&img_ref, shading, level);
+            let mut target_mut = rc_mut!(&ctx.target);
             let depth = ctx.depth.as_mut_slice();
             rasterize_textured_triangle(
-                target_mut,
+                &mut target_mut,
                 depth,
                 depth_w,
                 a.screen,
@@ -295,11 +295,11 @@ fn draw_projected_triangle(
                 depth_write,
             );
         } else {
-            let sampler = make_image_sampler(img_ref);
-            let target_mut = rc_mut!(&ctx.target);
+            let sampler = make_image_sampler(&img_ref);
+            let mut target_mut = rc_mut!(&ctx.target);
             let depth = ctx.depth.as_mut_slice();
             rasterize_textured_triangle(
-                target_mut,
+                &mut target_mut,
                 depth,
                 depth_w,
                 a.screen,
@@ -321,10 +321,10 @@ fn draw_projected_triangle(
             Some(normal) => lookup_ramp(state.shading.unwrap(), col_flat, Some(normal)),
             None => (col_flat, col_flat),
         };
-        let target_mut = rc_mut!(&ctx.target);
+        let mut target_mut = rc_mut!(&ctx.target);
         let depth = ctx.depth.as_mut_slice();
         rasterize_triangle(
-            target_mut,
+            &mut target_mut,
             depth,
             depth_w,
             a.screen,
@@ -550,7 +550,7 @@ pub fn prim(
             None => step as i32,
         };
         if raw < 0 || (raw as usize) >= vertex_count {
-            return Err("Index out of vertex range");
+            return Err("indices must be within vertex range");
         }
         Ok(raw as usize)
     };
@@ -567,7 +567,7 @@ pub fn prim(
                 }
             }
             if col_image.is_some() && uvs.is_none() {
-                return Err("Textured prim requires uvs");
+                return Err("textured prim requires uvs");
             }
             for f in 0..face_count {
                 let i0 = resolve_vertex_index(f * 3)?;
@@ -669,10 +669,10 @@ pub fn prim(
                 let (w0, _) = ctx.vertex_cache[i0];
                 let (w1, _) = ctx.vertex_cache[i1];
                 if let Some((p0, p1)) = project_line_segment(&w0, &w1, ctx, &z_shift) {
-                    let target_mut = rc_mut!(&ctx.target);
+                    let mut target_mut = rc_mut!(&ctx.target);
                     let depth = ctx.depth.as_mut_slice();
                     rasterize_line(
-                        target_mut,
+                        &mut target_mut,
                         depth,
                         depth_w,
                         p0,
@@ -688,7 +688,7 @@ pub fn prim(
             }
         }
         MODE_POINTS => {
-            let target_mut = rc_mut!(&ctx.target);
+            let mut target_mut = rc_mut!(&ctx.target);
             let depth_w = ctx.depth_w;
             let depth = ctx.depth.as_mut_slice();
             for s in 0..step_count {
@@ -699,7 +699,7 @@ pub fn prim(
                     let yi = sy.round() as i32;
                     if ctx.clip.contains(xi, yi) {
                         write_pixel(
-                            target_mut,
+                            &mut target_mut,
                             depth,
                             depth_w,
                             xi,
@@ -714,7 +714,7 @@ pub fn prim(
                 }
             }
         }
-        _ => return Err("Invalid prim mode"),
+        _ => return Err("mode must be MODE_TRIANGLES, MODE_LINES, or MODE_POINTS"),
     }
     Ok(())
 }
@@ -1105,7 +1105,7 @@ pub fn circ(
         r,
         &ctx.vp,
         &ctx.clip_row,
-        camera,
+        &camera,
         ctx.vp_x,
         ctx.vp_y,
         ctx.vp_w,
@@ -1123,10 +1123,10 @@ pub fn circ(
             &z_shift,
         )
         .map_or(sz, |p| p.2);
-        let target_mut = rc_mut!(&ctx.target);
+        let mut target_mut = rc_mut!(&ctx.target);
         let depth_w = ctx.depth_w;
         rasterize_circle_filled(
-            target_mut,
+            &mut target_mut,
             ctx.depth.as_mut_slice(),
             depth_w,
             sx,
@@ -1160,7 +1160,7 @@ pub fn circb(
         r,
         &ctx.vp,
         &ctx.clip_row,
-        camera,
+        &camera,
         ctx.vp_x,
         ctx.vp_y,
         ctx.vp_w,
@@ -1178,10 +1178,10 @@ pub fn circb(
             &z_shift,
         )
         .map_or(sz, |p| p.2);
-        let target_mut = rc_mut!(&ctx.target);
+        let mut target_mut = rc_mut!(&ctx.target);
         let depth_w = ctx.depth_w;
         rasterize_circle_border(
-            target_mut,
+            &mut target_mut,
             ctx.depth.as_mut_slice(),
             depth_w,
             sx,
@@ -1214,8 +1214,10 @@ pub fn sprite(
     state: DrawState,
 ) {
     let world = mat_apply(world_mat, local);
-    let camera = rc_ref!(&ctx.camera);
-    let corners = sprite_corners(&world, w, h, angle, camera);
+    let corners = {
+        let camera = rc_ref!(&ctx.camera);
+        sprite_corners(&world, w, h, angle, &camera)
+    };
     let positions = [
         corners[0].x,
         corners[0].y,
@@ -1238,9 +1240,7 @@ pub fn sprite(
     // sprite uses an identity world_mat (corners are already world-space)
     // and disables billboard rewriting (the corners themselves are the
     // billboard). It also forces `shaded = false`: a camera-facing
-    // billboard has no meaningful lit normal, so sprites render unshaded
-    // by spec (decoration / particle default; see cube-design.md shaded
-    // defaults).
+    // billboard has no meaningful lit normal, so sprites render unshaded.
     let mut sprite_state = state;
     sprite_state.billboard = BILLBOARD_OFF;
     sprite_state.shaded = false;
@@ -1295,7 +1295,7 @@ pub fn plane(
 // `pos` is projected to screen, then each visible glyph pixel
 // is plotted through `write_pixel` at the glyph's screen offset.
 // Always camera-facing; ancestor rotation / scale do not affect
-// glyph layout (cube-design.md § 14.5).
+// glyph layout.
 
 // Measure the glyph cluster origin-anchored at (0, 0). `text` uses the result
 // to center the cluster before walking pixels without allocating a geometry Vec.
@@ -1396,7 +1396,7 @@ pub fn text(
     // the projected z so depth_test / depth_write still apply.
     let cx = sx - text_w / 2;
     let cy = sy - text_h / 2;
-    let target_mut = rc_mut!(&ctx.target);
+    let mut target_mut = rc_mut!(&ctx.target);
     let depth_w = ctx.depth_w;
     let depth = ctx.depth.as_mut_slice();
     let clip = ctx.clip;
@@ -1408,7 +1408,7 @@ pub fn text(
             return;
         }
         write_pixel(
-            target_mut,
+            &mut target_mut,
             depth,
             depth_w,
             x,
@@ -1562,8 +1562,8 @@ mod tests {
         use crate::cube::camera::Camera;
         use crate::cube::raster::{camera_clip_row, matmul, projection_matrix, view_matrix};
         let camera = Camera::new();
-        let v = view_matrix(rc_ref!(&camera));
-        let p = projection_matrix(rc_ref!(&camera), 256.0, 192.0);
+        let v = view_matrix(&rc_ref!(&camera));
+        let p = projection_matrix(&rc_ref!(&camera), 256.0, 192.0);
         let vp = matmul(&p, &v);
         let clip_row = camera_clip_row(&v);
         // Off-axis point in front of the default (-Z looking) camera.
@@ -1591,8 +1591,8 @@ mod tests {
         use crate::cube::camera::Camera;
         use crate::cube::raster::{camera_clip_row, matmul, projection_matrix, view_matrix};
         let camera = Camera::new();
-        let v = view_matrix(rc_ref!(&camera));
-        let p = projection_matrix(rc_ref!(&camera), 256.0, 192.0);
+        let v = view_matrix(&rc_ref!(&camera));
+        let p = projection_matrix(&rc_ref!(&camera), 256.0, 192.0);
         let vp = matmul(&p, &v);
         let clip_row = camera_clip_row(&v);
         let pos = Vec3 {
@@ -1617,8 +1617,8 @@ mod tests {
         let target = Image::new(64, 64);
         rc_mut!(&target).clear(2);
         let camera = Camera::new();
-        let view = view_matrix(rc_ref!(&camera));
-        let vp = matmul(&projection_matrix(rc_ref!(&camera), 64.0, 64.0), &view);
+        let view = view_matrix(&rc_ref!(&camera));
+        let vp = matmul(&projection_matrix(&rc_ref!(&camera), 64.0, 64.0), &view);
         let clip_row = camera_clip_row(&view);
         let clip = compute_clip_rect(0.0, 0.0, 64.0, 64.0, 64, 64);
         let mut ctx = DrawContext {
@@ -1674,8 +1674,8 @@ mod tests {
         let target = Image::new(64, 64);
         rc_mut!(&target).clear(2);
         let camera = Camera::new();
-        let view = view_matrix(rc_ref!(&camera));
-        let vp = matmul(&projection_matrix(rc_ref!(&camera), 64.0, 64.0), &view);
+        let view = view_matrix(&rc_ref!(&camera));
+        let vp = matmul(&projection_matrix(&rc_ref!(&camera), 64.0, 64.0), &view);
         let clip_row = camera_clip_row(&view);
         let clip = compute_clip_rect(0.0, 0.0, 64.0, 64.0, 64, 64);
         let mut ctx = DrawContext {
@@ -1731,8 +1731,8 @@ mod tests {
         let target = Image::new(64, 64);
         rc_mut!(&target).clear(2);
         let camera = Camera::new();
-        let view = view_matrix(rc_ref!(&camera));
-        let vp = matmul(&projection_matrix(rc_ref!(&camera), 64.0, 64.0), &view);
+        let view = view_matrix(&rc_ref!(&camera));
+        let vp = matmul(&projection_matrix(&rc_ref!(&camera), 64.0, 64.0), &view);
         let clip_row = camera_clip_row(&view);
         let clip = compute_clip_rect(0.0, 0.0, 64.0, 64.0, 64, 64);
         let mut ctx = DrawContext {
@@ -1787,8 +1787,8 @@ mod tests {
         rc_mut!(&target).clear(2);
         let camera = Camera::new();
         rc_mut!(&camera).ortho_size = Some(10.0);
-        let view = view_matrix(rc_ref!(&camera));
-        let vp = matmul(&projection_matrix(rc_ref!(&camera), 64.0, 64.0), &view);
+        let view = view_matrix(&rc_ref!(&camera));
+        let vp = matmul(&projection_matrix(&rc_ref!(&camera), 64.0, 64.0), &view);
         let clip_row = camera_clip_row(&view);
         let clip = compute_clip_rect(0.0, 0.0, 64.0, 64.0, 64, 64);
         let mut ctx = DrawContext {
@@ -1874,7 +1874,7 @@ mod tests {
         // fills per-face model-space normals.
         let geom = Primitive::new();
         {
-            let g = rc_mut!(&geom);
+            let mut g = rc_mut!(&geom);
             g.positions = vec![
                 -2.0, 2.0, 0.0, 2.0, 2.0, 0.0, -2.0, -2.0, 0.0, 2.0, -2.0, 0.0,
             ];
@@ -1888,9 +1888,9 @@ mod tests {
 
         // world = translate(0, 0, -3) * rotateY(180): the quad sits in front
         // of the camera with its face normal flipped by the spin.
-        let spin = Mat4::from_axis_angle(rc_ref!(&Vec3::new(0.0, 1.0, 0.0)), 180.0);
-        let trans = Mat4::from_translation(rc_ref!(&Vec3::new(0.0, 0.0, -3.0)));
-        let world_rc = rc_ref!(&trans).mul_mat(rc_ref!(&spin));
+        let spin = Mat4::from_axis_angle(&rc_ref!(&Vec3::new(0.0, 1.0, 0.0)), 180.0);
+        let trans = Mat4::from_translation(&rc_ref!(&Vec3::new(0.0, 0.0, -3.0)));
+        let world_rc = rc_ref!(&trans).mul_mat(&rc_ref!(&spin));
         let world = *rc_ref!(&world_rc);
 
         // The model normal and its world-space image must fall on different
@@ -1916,8 +1916,8 @@ mod tests {
             let target = Image::new(64, 64);
             rc_mut!(&target).clear(2); // sentinel so an undrawn quad is detectable
             let camera = Camera::new();
-            let view = view_matrix(rc_ref!(&camera));
-            let vp = matmul(&projection_matrix(rc_ref!(&camera), 64.0, 64.0), &view);
+            let view = view_matrix(&rc_ref!(&camera));
+            let vp = matmul(&projection_matrix(&rc_ref!(&camera), 64.0, 64.0), &view);
             let clip_row = camera_clip_row(&view);
             let clip = compute_clip_rect(0.0, 0.0, 64.0, 64.0, 64, 64);
             let mut ctx = DrawContext {
@@ -1947,7 +1947,7 @@ mod tests {
                 depth_test: true,
                 depth_write: true,
                 billboard: BILLBOARD_OFF,
-                shading: Some(shading_ref),
+                shading: Some(&shading_ref),
             };
             prim(
                 &mut ctx,
@@ -1964,7 +1964,8 @@ mod tests {
                 state,
             )
             .unwrap();
-            rc_ref!(&target).pixel(32.0, 32.0)
+            let pixel = rc_ref!(&target).pixel(32.0, 32.0);
+            pixel
         };
 
         let auto = render(None);

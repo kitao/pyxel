@@ -19,7 +19,7 @@ wrap_as_python_primitive_sequence!(
     (|_, index| pyxel::colors()[index]),
     pyxel::Rgb24,
     (|_, index, value| pyxel::colors()[index] = value),
-    (|_: &u32| -> &mut Vec<pyxel::Rgb24> { pyxel::colors() }),
+    (|_: &u32| pyxel::colors()),
     Vec<pyxel::Rgb24>,
     (|_, list| *pyxel::colors() = list),
     (|_| pyxel::colors().clone())
@@ -36,7 +36,7 @@ macro_rules! wrap_ptr_vec_as_python_object_sequence {
             $value_type,
             (|_, index, value: $value_type| $global_fn()[index] = value.inner),
             $rc_type,
-            (|_: &u32| -> &mut Vec<$rc_type> { $global_fn() }),
+            (|_: &u32| $global_fn()),
             (|v: $value_type| v.inner),
             (|p| $value_type::wrap(p)),
             Vec<$value_type>,

@@ -45,15 +45,13 @@ pub struct Mesh {
     pub colkey: Option<i32>,
     pub materials: Vec<Material>,
     pub material_indices: Vec<Option<usize>>,
-    // Lazy collision BVH. Built on first mesh-collider query; never
-    // refit (cube-design.md § 11.1: dynamic mesh colliders are out of
-    // scope). Not exposed through the binding.
+    // Lazy collision BVH. Built on first mesh-collider query and invalidated
+    // when the binding replaces geometry or transforms.
     pub bvh: RefCell<Option<Bvh>>,
     // Lazy mesh-local AABB (union of every part's positions composed
     // with the identity outer transform). Cached under the same
-    // static-mesh assumption as `bvh`; Aabb::from_mesh lifts its 8
-    // corners by the collider's world transform instead of
-    // re-transforming every vertex per frame.
+    // same invalidation rules as `bvh`; Aabb::from_mesh lifts its 8 corners by
+    // the collider's world transform instead of re-transforming every vertex.
     pub local_aabb: RefCell<Option<Aabb>>,
 }
 
@@ -314,7 +312,7 @@ mod tests {
     fn test_validate_topological_order_ok() {
         let m = Mesh::new();
         {
-            let m = rc_mut!(&m);
+            let mut m = rc_mut!(&m);
             m.primitives = vec![Some(Primitive::new()), Some(Primitive::new())];
             m.transforms = vec![Mat4::identity(), Mat4::identity()];
             m.parents = vec![-1, 0];
@@ -326,69 +324,84 @@ mod tests {
     fn test_validate_rejects_forward_parent() {
         let m = Mesh::new();
         {
-            let m = rc_mut!(&m);
+            let mut m = rc_mut!(&m);
             m.primitives = vec![Some(Primitive::new()), Some(Primitive::new())];
             m.transforms = vec![Mat4::identity(), Mat4::identity()];
             m.parents = vec![1, -1];
         }
-        assert!(rc_ref!(&m).validate().is_err());
+        assert_eq!(
+            rc_ref!(&m).validate().unwrap_err(),
+            "Mesh.parents[0] = 1 violates topological order (must be < 0)"
+        );
     }
 
     #[test]
     fn test_validate_rejects_length_mismatch() {
         let m = Mesh::new();
         {
-            let m = rc_mut!(&m);
+            let mut m = rc_mut!(&m);
             m.primitives = vec![Some(Primitive::new()), Some(Primitive::new())];
             m.transforms = vec![Mat4::identity()];
             m.parents = vec![-1, 0];
         }
-        assert!(rc_ref!(&m).validate().is_err());
+        assert_eq!(
+            rc_ref!(&m).validate().unwrap_err(),
+            "Mesh parallel arrays length mismatch: primitives=2, transforms=1, parents=2, names=0, material_indices=0"
+        );
     }
 
     #[test]
     fn test_validate_rejects_material_index_length_mismatch() {
         let m = Mesh::new();
         {
-            let m = rc_mut!(&m);
+            let mut m = rc_mut!(&m);
             m.primitives = vec![Some(Primitive::new()), Some(Primitive::new())];
             m.transforms = vec![Mat4::identity(), Mat4::identity()];
             m.parents = vec![-1, 0];
             m.material_indices = vec![None];
         }
-        assert!(rc_ref!(&m).validate().is_err());
+        assert_eq!(
+            rc_ref!(&m).validate().unwrap_err(),
+            "Mesh parallel arrays length mismatch: primitives=2, transforms=2, parents=2, names=0, material_indices=1"
+        );
     }
 
     #[test]
     fn test_validate_rejects_material_index_out_of_range() {
         let m = Mesh::new();
         {
-            let m = rc_mut!(&m);
+            let mut m = rc_mut!(&m);
             m.primitives = vec![Some(Primitive::new())];
             m.transforms = vec![Mat4::identity()];
             m.parents = vec![-1];
             m.material_indices = vec![Some(0)];
         }
-        assert!(rc_ref!(&m).validate().is_err());
+        assert_eq!(
+            rc_ref!(&m).validate().unwrap_err(),
+            "Mesh.material_indices[0] = 0 exceeds material count 0"
+        );
     }
 
     #[test]
     fn test_validate_rejects_invalid_parent_index() {
         let m = Mesh::new();
         {
-            let m = rc_mut!(&m);
+            let mut m = rc_mut!(&m);
             m.primitives = vec![Some(Primitive::new())];
             m.transforms = vec![Mat4::identity()];
             m.parents = vec![-2];
         }
-        assert!(rc_ref!(&m).validate().is_err());
+        assert_eq!(
+            rc_ref!(&m).validate().unwrap_err(),
+            "Mesh.parents[0] = -2 < -1"
+        );
     }
 
     #[test]
     fn test_descendants() {
         let m = Mesh::new();
         {
-            let m = rc_mut!(&m);
+            let mut m = rc_mut!(&m);
             m.primitives = vec![None, None, None, None];
             m.transforms = vec![
                 Mat4::identity(),
@@ -408,7 +421,7 @@ mod tests {
     fn test_descendants_out_of_range() {
         let m = Mesh::new();
         {
-            let m = rc_mut!(&m);
+            let mut m = rc_mut!(&m);
             m.primitives = vec![Some(Primitive::new())];
             m.transforms = vec![Mat4::identity()];
             m.parents = vec![-1];
@@ -440,7 +453,7 @@ mod tests {
     fn test_material_for_part_defaults_to_mesh_material() {
         let m = Mesh::new();
         {
-            let m = rc_mut!(&m);
+            let mut m = rc_mut!(&m);
             m.col_img = ColImage::Color(5);
             m.colkey = Some(0);
         }
@@ -454,7 +467,7 @@ mod tests {
     fn test_material_for_part_uses_part_material() {
         let m = Mesh::new();
         {
-            let m = rc_mut!(&m);
+            let mut m = rc_mut!(&m);
             m.materials = vec![Material {
                 col_img: ColImage::Color(8),
                 colkey: Some(1),
@@ -473,7 +486,7 @@ mod tests {
         // Child's world position should land at -Z=1 in world.
         let m = Mesh::new();
         {
-            let m = rc_mut!(&m);
+            let mut m = rc_mut!(&m);
             m.primitives = vec![None, None];
             m.transforms = vec![
                 Mat4::from_axis_angle(
@@ -506,7 +519,7 @@ mod tests {
     fn test_compose_world_transforms_single_root() {
         let m = Mesh::new();
         {
-            let m = rc_mut!(&m);
+            let mut m = rc_mut!(&m);
             m.primitives = vec![None];
             m.transforms = vec![Mat4::from_translation(&Vec3 {
                 x: 5.0,
@@ -537,7 +550,7 @@ mod tests {
         // the outer root is identity.
         let m = Mesh::new();
         {
-            let m = rc_mut!(&m);
+            let mut m = rc_mut!(&m);
             m.primitives = vec![None, None, None];
             let t = Mat4::from_translation(&Vec3 {
                 x: 1.0,
@@ -567,10 +580,10 @@ mod tests {
     fn test_with_collision_bvh_builds_lazily_and_caches() {
         let m = Mesh::new();
         {
-            let m = rc_mut!(&m);
+            let mut m = rc_mut!(&m);
             let prim = Primitive::new();
             {
-                let g = rc_mut!(&prim);
+                let mut g = rc_mut!(&prim);
                 g.positions = vec![0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0];
                 g.indices = vec![0, 1, 2];
             }
@@ -593,10 +606,10 @@ mod tests {
         // triangle produces a leaf.
         let m = Mesh::new();
         {
-            let m = rc_mut!(&m);
+            let mut m = rc_mut!(&m);
             let prim = Primitive::new();
             {
-                let g = rc_mut!(&prim);
+                let mut g = rc_mut!(&prim);
                 g.positions = vec![0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0];
                 g.indices = vec![0, 1, 2, 0, 1, 99, 0, -1, 2];
             }
@@ -615,7 +628,7 @@ mod tests {
         // Tree: 0 (root) -> 1, 0 -> 2. parts 1 and 2 are siblings.
         let m = Mesh::new();
         {
-            let m = rc_mut!(&m);
+            let mut m = rc_mut!(&m);
             m.primitives = vec![None, None, None];
             m.transforms = vec![
                 Mat4::identity(),

@@ -24,6 +24,9 @@ fn init(
     capture_sec: Option<u32>,
     headless: Option<bool>,
 ) -> PyResult<()> {
+    pyxel::validate_init_params(width, height, fps, display_scale, headless)
+        .map_err(pyo3::exceptions::PyValueError::new_err)?;
+
     // Capture reset info before chdir
     let sys = py.import("sys")?;
     let os_mod = py.import("os")?;
@@ -37,13 +40,23 @@ fn init(
 
     // Change to script directory
     let locals = PyDict::new(py);
-    locals.set_item("os", os_mod)?;
+    locals.set_item("os", &os_mod)?;
     locals.set_item("inspect", py.import("inspect")?)?;
     py.run(
         c"os.chdir(os.path.dirname(inspect.stack()[1].filename) or \".\")",
         None,
         Some(&locals),
     )?;
+
+    if !headless.unwrap_or(false) {
+        let environ = os_mod.getattr("environ")?;
+        let has_window_state: bool = environ
+            .call_method1("__contains__", (pyxel::WINDOW_STATE_ENV,))?
+            .extract()?;
+        if !has_window_state {
+            environ.set_item(pyxel::WINDOW_STATE_ENV, "")?;
+        }
+    }
 
     pyxel::init(
         width,
@@ -55,16 +68,19 @@ fn init(
         capture_scale,
         capture_sec,
         headless,
-    );
+    )
+    .map_err(pyo3::exceptions::PyValueError::new_err)?;
 
     // Register reset callback
-    *pyxel::reset_callback() = Some(Box::new(move || {
+    *pyxel::reset_callback() = Some(Box::new(move |window_state| {
         Python::attach(|py| {
             let result: PyResult<()> = (|| {
                 let locals = PyDict::new(py);
                 locals.set_item("exec_path", &exec_path)?;
                 locals.set_item("cwd", &cwd)?;
                 locals.set_item("orig_argv", &orig_argv)?;
+                locals.set_item("window_state", &window_state)?;
+                locals.set_item("window_state_env", pyxel::WINDOW_STATE_ENV)?;
                 py.run(
                     c"
 import os, subprocess, sys
@@ -79,10 +95,13 @@ if sys.platform == 'darwin':
         f.close()
     except OSError:
         pass
+env = os.environ.copy()
+if window_state is not None and window_state_env in env:
+    env[window_state_env] = window_state
 subprocess.Popen(
     [exec_path] + orig_argv[1:],
     cwd=cwd,
-    env=os.environ.copy(),
+    env=env,
 )
 sys.exit(0)
 ",
@@ -116,14 +135,14 @@ fn run<'py>(py: Python, update: Bound<'py, PyAny>, draw: Bound<'py, PyAny>) {
     }
 
     impl PyxelCallback for PythonCallback<'_> {
-        fn update(&mut self, _pyxel: &mut Pyxel) {
+        fn update(&mut self) {
             if let Err(err) = self.update.call0() {
                 err.print(self.py);
                 exit(1);
             }
         }
 
-        fn draw(&mut self, _pyxel: &mut Pyxel) {
+        fn draw(&mut self) {
             if let Err(err) = self.draw.call0() {
                 err.print(self.py);
                 exit(1);
@@ -131,27 +150,27 @@ fn run<'py>(py: Python, update: Bound<'py, PyAny>, draw: Bound<'py, PyAny>) {
         }
     }
 
-    pyxel().run(PythonCallback { py, update, draw });
+    Pyxel::run(PythonCallback { py, update, draw });
 }
 
 #[pyfunction]
 fn show() {
-    pyxel().show_screen();
+    Pyxel::show_screen();
 }
 
 #[pyfunction]
 fn flip() {
-    pyxel().flip_screen();
+    Pyxel::flip_screen();
 }
 
 #[pyfunction]
 fn quit() {
-    pyxel().quit();
+    Pyxel::quit();
 }
 
 #[pyfunction]
 fn reset() {
-    pyxel().restart();
+    Pyxel::restart();
 }
 
 // Window settings
@@ -163,9 +182,10 @@ fn title(title: &str) {
 
 #[pyfunction]
 #[pyo3(signature = (data, scale, colkey=None))]
-fn icon(data: Vec<String>, scale: u32, colkey: Option<pyxel::Color>) {
-    let data_refs: Vec<_> = data.iter().map(String::as_str).collect();
-    pyxel().set_icon(&data_refs, scale, colkey);
+fn icon(data: Vec<String>, scale: u32, colkey: Option<pyxel::Color>) -> PyResult<()> {
+    pyxel()
+        .set_icon(&data, scale, colkey)
+        .map_err(pyo3::exceptions::PyValueError::new_err)
 }
 
 #[pyfunction]
@@ -190,13 +210,9 @@ fn fullscreen(enabled: bool) {
 
 #[pyfunction]
 fn resize(width: u32, height: u32) -> PyResult<()> {
-    if width == 0 || height == 0 {
-        return Err(pyo3::exceptions::PyValueError::new_err(
-            "width and height must be greater than 0",
-        ));
-    }
-    pyxel().set_screen_size(width, height);
-    Ok(())
+    pyxel()
+        .set_screen_size(width, height)
+        .map_err(pyo3::exceptions::PyValueError::new_err)
 }
 
 // Internal helpers

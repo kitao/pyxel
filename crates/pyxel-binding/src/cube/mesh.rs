@@ -33,7 +33,7 @@ impl Mesh {
     ) -> PyResult<Self> {
         let mesh = pyxel::cube::Mesh::new();
         {
-            let m = rc_mut!(&mesh);
+            let mut m = rc_mut!(&mesh);
             if let Some(ps) = primitives {
                 m.primitives = ps.into_iter().map(|p| p.map(|p| p.inner.clone())).collect();
             }
@@ -86,8 +86,16 @@ impl Mesh {
 
     #[setter]
     fn set_primitives(&self, v: Vec<Option<PyRef<'_, Primitive>>>) -> PyResult<()> {
-        self.inner_mut().primitives = v.into_iter().map(|p| p.map(|p| p.inner.clone())).collect();
-        self.inner_ref().validate().map_err(PyValueError::new_err)
+        let value = v.into_iter().map(|p| p.map(|p| p.inner.clone())).collect();
+        let mut mesh = self.inner_mut();
+        let previous = std::mem::replace(&mut mesh.primitives, value);
+        if let Err(error) = mesh.validate() {
+            mesh.primitives = previous;
+            return Err(PyValueError::new_err(error));
+        }
+        *mesh.bvh.borrow_mut() = None;
+        *mesh.local_aabb.borrow_mut() = None;
+        Ok(())
     }
 
     #[getter]
@@ -101,8 +109,16 @@ impl Mesh {
 
     #[setter]
     fn set_transforms(&self, v: Vec<PyRef<'_, Mat4>>) -> PyResult<()> {
-        self.inner_mut().transforms = v.iter().map(|t| t.inner.clone()).collect();
-        self.inner_ref().validate().map_err(PyValueError::new_err)
+        let value = v.iter().map(|t| t.inner.clone()).collect();
+        let mut mesh = self.inner_mut();
+        let previous = std::mem::replace(&mut mesh.transforms, value);
+        if let Err(error) = mesh.validate() {
+            mesh.transforms = previous;
+            return Err(PyValueError::new_err(error));
+        }
+        *mesh.bvh.borrow_mut() = None;
+        *mesh.local_aabb.borrow_mut() = None;
+        Ok(())
     }
 
     #[getter]
@@ -112,8 +128,15 @@ impl Mesh {
 
     #[setter]
     fn set_parents(&self, v: Vec<i32>) -> PyResult<()> {
-        self.inner_mut().parents = v;
-        self.inner_ref().validate().map_err(PyValueError::new_err)
+        let mut mesh = self.inner_mut();
+        let previous = std::mem::replace(&mut mesh.parents, v);
+        if let Err(error) = mesh.validate() {
+            mesh.parents = previous;
+            return Err(PyValueError::new_err(error));
+        }
+        *mesh.bvh.borrow_mut() = None;
+        *mesh.local_aabb.borrow_mut() = None;
+        Ok(())
     }
 
     #[getter]
@@ -128,8 +151,13 @@ impl Mesh {
 
     #[setter]
     fn set_names(&self, v: Vec<String>) -> PyResult<()> {
-        self.inner_mut().names = v;
-        self.inner_ref().validate().map_err(PyValueError::new_err)
+        let mut mesh = self.inner_mut();
+        let previous = std::mem::replace(&mut mesh.names, v);
+        if let Err(error) = mesh.validate() {
+            mesh.names = previous;
+            return Err(PyValueError::new_err(error));
+        }
+        Ok(())
     }
 
     #[getter]

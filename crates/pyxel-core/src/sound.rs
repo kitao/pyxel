@@ -1,6 +1,9 @@
+use std::sync::Arc;
+
 use blip_buf::BlipBuf;
 
 use crate::audio::Audio;
+use crate::channel::Channel;
 use crate::mml_command::MmlCommand;
 use crate::mml_parser::{parse_mml, total_duration_sec};
 use crate::old_mml_parser::parse_old_mml;
@@ -21,6 +24,28 @@ pub type SoundVolume = u8;
 pub type SoundEffect = u8;
 pub type SoundSpeed = u16;
 
+#[derive(Clone, PartialEq)]
+struct LegacyCommandSource {
+    notes: Vec<SoundNote>,
+    tones: Vec<SoundTone>,
+    volumes: Vec<SoundVolume>,
+    effects: Vec<SoundEffect>,
+    speed: SoundSpeed,
+    tone_modes: Vec<ToneMode>,
+}
+
+#[derive(Clone)]
+enum CommandCacheSource {
+    Legacy(LegacyCommandSource),
+    Mml(u64),
+}
+
+#[derive(Clone)]
+struct CommandCache {
+    source: CommandCacheSource,
+    commands: Arc<[MmlCommand]>,
+}
+
 #[derive(Clone)]
 pub struct Sound {
     pub notes: Vec<SoundNote>,
@@ -31,13 +56,15 @@ pub struct Sound {
 
     pub(crate) commands: Vec<MmlCommand>,
     pub(crate) pcm: Option<PcmData>,
+    command_revision: u64,
+    command_cache: Option<CommandCache>,
 }
 
-define_rc_type!(RcSound, Sound);
+define_audio_type!(RcSound, Sound);
 
 impl Sound {
     pub fn new() -> RcSound {
-        new_rc_type!(Self {
+        new_audio_type!(Self {
             notes: Vec::new(),
             tones: Vec::new(),
             volumes: Vec::new(),
@@ -46,6 +73,8 @@ impl Sound {
 
             commands: Vec::new(),
             pcm: None,
+            command_revision: 0,
+            command_cache: None,
         })
     }
 
@@ -162,16 +191,19 @@ impl Sound {
     pub fn set_mml(&mut self, code: &str) -> Result<(), String> {
         self.clear_pcm();
         self.commands = parse_mml(code)?;
+        self.command_revision = self.command_revision.wrapping_add(1);
         Ok(())
     }
 
     pub fn clear_mml(&mut self) {
         self.commands.clear();
+        self.command_revision = self.command_revision.wrapping_add(1);
     }
 
     pub fn old_mml(&mut self, code: &str) -> Result<(), String> {
         self.clear_pcm();
         self.commands = parse_old_mml(code)?;
+        self.command_revision = self.command_revision.wrapping_add(1);
         Ok(())
     }
 
@@ -210,20 +242,10 @@ impl Sound {
         let mut blip_buf = BlipBuf::new(num_samples);
         blip_buf.set_rates(AUDIO_CLOCK_RATE as f64, AUDIO_SAMPLE_RATE as f64);
 
-        {
-            let _lock = crate::audio::AudioLock::lock();
-            let channels = pyxel::channels();
-            for ch in channels.iter() {
-                rc_mut!(ch).stop();
-            }
-
-            let render_sound = new_rc_type!(self.clone());
-            rc_mut!(channels[0]).play(vec![render_sound], None, true, false);
-            Audio::render_samples(channels.as_slice(), &mut blip_buf, &mut samples);
-            for ch in channels.iter() {
-                rc_mut!(ch).stop();
-            }
-        }
+        let render_sound = new_audio_type!(self.clone());
+        let render_channel = Channel::new();
+        audio_mut!(render_channel).play(vec![render_sound], None, true, false);
+        Audio::render_samples(&[render_channel], &mut blip_buf, &mut samples);
         Audio::save_samples(filename, &samples, use_ffmpeg.unwrap_or(false))
     }
 
@@ -237,12 +259,82 @@ impl Sound {
         }
     }
 
-    // Command Emission
+    // Command emission
 
     pub(crate) fn to_commands(&self) -> Vec<MmlCommand> {
         let mut commands = Vec::new();
         self.emit_commands(&mut commands);
         commands
+    }
+
+    pub(crate) fn command_snapshot(&mut self) -> Arc<[MmlCommand]> {
+        if self.commands.is_empty() {
+            if let Some(CommandCache {
+                source: CommandCacheSource::Legacy(source),
+                commands,
+            }) = &self.command_cache
+            {
+                if self.matches_legacy_source(source) {
+                    return commands.clone();
+                }
+            }
+
+            let mut commands = Vec::new();
+            self.emit_commands(&mut commands);
+            let commands: Arc<[MmlCommand]> = Arc::from(commands);
+            self.command_cache = Some(CommandCache {
+                source: CommandCacheSource::Legacy(self.legacy_source()),
+                commands: commands.clone(),
+            });
+            commands
+        } else {
+            if let Some(CommandCache {
+                source: CommandCacheSource::Mml(revision),
+                commands,
+            }) = &self.command_cache
+            {
+                if *revision == self.command_revision {
+                    return commands.clone();
+                }
+            }
+
+            let commands: Arc<[MmlCommand]> = Arc::from(self.commands.clone());
+            self.command_cache = Some(CommandCache {
+                source: CommandCacheSource::Mml(self.command_revision),
+                commands: commands.clone(),
+            });
+            commands
+        }
+    }
+
+    fn matches_legacy_source(&self, source: &LegacyCommandSource) -> bool {
+        if self.notes != source.notes
+            || self.tones != source.tones
+            || self.volumes != source.volumes
+            || self.effects != source.effects
+            || self.speed != source.speed
+        {
+            return false;
+        }
+
+        let tones = pyxel::tones();
+        tones.len() == source.tone_modes.len()
+            && tones
+                .iter()
+                .zip(&source.tone_modes)
+                .all(|(tone, mode)| audio_ref!(tone).mode == *mode)
+    }
+
+    fn legacy_source(&self) -> LegacyCommandSource {
+        let tones = pyxel::tones();
+        LegacyCommandSource {
+            notes: self.notes.clone(),
+            tones: self.tones.clone(),
+            volumes: self.volumes.clone(),
+            effects: self.effects.clone(),
+            speed: self.speed,
+            tone_modes: tones.iter().map(|tone| audio_ref!(tone).mode).collect(),
+        }
     }
 
     pub(crate) fn emit_commands(&self, commands: &mut Vec<MmlCommand>) {
@@ -278,7 +370,7 @@ impl Sound {
             commands.push(MmlCommand::EnvelopeSet {
                 slot: 1,
                 initial_level: 1.0,
-                segments: vec![(self.speed as u32, 0.0)],
+                segments: vec![(self.speed as u32, 0.0)].into(),
             });
         }
 
@@ -288,7 +380,7 @@ impl Sound {
             commands.push(MmlCommand::EnvelopeSet {
                 slot: 2,
                 initial_level: 1.0,
-                segments: vec![(hold_ticks, 1.0), (fade_ticks, 0.0)],
+                segments: vec![(hold_ticks, 1.0), (fade_ticks, 0.0)].into(),
             });
         }
 
@@ -298,7 +390,7 @@ impl Sound {
             commands.push(MmlCommand::EnvelopeSet {
                 slot: 3,
                 initial_level: 1.0,
-                segments: vec![(hold_ticks, 1.0), (fade_ticks, 0.0)],
+                segments: vec![(hold_ticks, 1.0), (fade_ticks, 0.0)].into(),
             });
         }
     }
@@ -393,7 +485,7 @@ impl Sound {
             }
 
             // Note
-            let tone_data = rc_ref!(tones.get(tone as usize).unwrap_or(&tones[0]));
+            let tone_data = audio_ref!(tones.get(tone as usize).unwrap_or(&tones[0]));
             let base_note = if tone_data.mode == ToneMode::Wavetable {
                 36
             } else {
@@ -412,5 +504,40 @@ impl Sound {
         } else {
             values[index % values.len()]
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn command_snapshot_is_reused_until_legacy_sound_changes() {
+        let sound = Sound::new();
+        let mut sound = audio_mut!(sound);
+        sound.set("c2e2", "00", "77", "nn", 6).unwrap();
+
+        let first = sound.command_snapshot();
+        let second = sound.command_snapshot();
+        assert!(std::sync::Arc::ptr_eq(&first, &second));
+
+        sound.notes[0] = 31;
+        let changed = sound.command_snapshot();
+        assert!(!std::sync::Arc::ptr_eq(&first, &changed));
+    }
+
+    #[test]
+    fn command_snapshot_is_reused_until_mml_changes() {
+        let sound = Sound::new();
+        let mut sound = audio_mut!(sound);
+        sound.set_mml("T120 O4 C").unwrap();
+
+        let first = sound.command_snapshot();
+        let second = sound.command_snapshot();
+        assert!(std::sync::Arc::ptr_eq(&first, &second));
+
+        sound.set_mml("T120 O4 D").unwrap();
+        let changed = sound.command_snapshot();
+        assert!(!std::sync::Arc::ptr_eq(&first, &changed));
     }
 }

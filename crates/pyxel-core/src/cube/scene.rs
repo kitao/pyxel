@@ -1,4 +1,4 @@
-use std::cell::Cell;
+use std::cell::{Cell, RefCell};
 
 use crate::cube::camera::RcCamera;
 use crate::cube::collider::RcCollider;
@@ -13,7 +13,6 @@ use crate::cube::contact::{Contact, RcContact};
 use crate::cube::mat4::Mat4;
 use crate::cube::mesh::RcMesh;
 use crate::cube::node::{Node, RcNode};
-use crate::cube::quat::Quat;
 use crate::cube::raster::{mat_apply, ClipRect, Mat4x4};
 use crate::cube::vec3::Vec3;
 use crate::image::RcImage;
@@ -114,6 +113,12 @@ pub struct RaycastHitInfo {
     pub distance: f32,
 }
 
+type ColliderEntry = (RcNode, Mat4, Aabb);
+
+thread_local! {
+    static COLLIDER_ENTRY_SCRATCH: RefCell<Vec<ColliderEntry>> = const { RefCell::new(Vec::new()) };
+}
+
 // Namespace for stateless pipeline and spatial-query operations on a subtree
 pub struct Scene;
 
@@ -148,49 +153,56 @@ impl Scene {
     // Step 3: motion integration. Walks the active subtree and applies
     // each collider's velocity / angular_velocity to its node transform.
     pub fn integrate_motion(scene_root: &RcNode) {
-        let mut stack: Vec<RcNode> = vec![scene_root.clone()];
-        while let Some(node) = stack.pop() {
-            if !Node::effective_active(&node) {
-                continue;
-            }
-            let coll_opt = rc_ref!(&node).collider.clone();
-            if let Some(coll_rc) = coll_opt {
-                let coll = rc_ref!(&coll_rc);
-                let vel = *rc_ref!(&coll.velocity);
-                let avel = *rc_ref!(&coll.angular_velocity);
-                let cur_t = rc_ref!(&node).transform.clone();
-                // Velocity is a world-space displacement: left-multiply
-                // by a translation so the body moves along world axes
-                // regardless of its current orientation. Mat4::translate
-                // (spec § 5.6) applies a local-frame shift and would
-                // bend a rotating ball's path through its own basis.
-                let t_vel = Mat4::from_translation(&vel);
-                let translated = rc_ref!(&t_vel).mul_mat(rc_ref!(&cur_t));
-                let alen_sq = avel.x * avel.x + avel.y * avel.y + avel.z * avel.z;
-                let final_t = if alen_sq > 1e-12 {
-                    let len = alen_sq.sqrt();
-                    let axis = Vec3 {
-                        x: avel.x / len,
-                        y: avel.y / len,
-                        z: avel.z / len,
-                    };
-                    // Spin is applied as a local-frame rotation
-                    // (right-multiplication): the body rotates around
-                    // its own origin and its world position stays where
-                    // `translated` placed it. Left-multiplying R would
-                    // rotate the body about the world origin and drag
-                    // its position along the orbit.
-                    let r = Mat4::from_axis_angle(&axis, len);
-                    rc_ref!(&translated).mul_mat(rc_ref!(&r))
-                } else {
-                    translated
+        if Node::parent(scene_root)
+            .as_ref()
+            .is_some_and(|parent| !Node::effective_active(parent))
+        {
+            return;
+        }
+        Self::integrate_motion_recursive(scene_root);
+    }
+
+    fn integrate_motion_recursive(node: &RcNode) {
+        if !rc_ref!(node).active {
+            return;
+        }
+        let coll_opt = rc_ref!(node).collider.clone();
+        if let Some(coll_rc) = coll_opt {
+            let coll = rc_ref!(&coll_rc);
+            let vel = *rc_ref!(&coll.velocity);
+            let avel = *rc_ref!(&coll.angular_velocity);
+            let cur_t = rc_ref!(node).transform.clone();
+            // Velocity is a world-space displacement: left-multiply
+            // by a translation so the body moves along world axes
+            // regardless of its current orientation. Mat4::translate applies
+            // a local-frame shift and would bend a rotating body's path.
+            let t_vel = Mat4::from_translation(&vel);
+            let translated = rc_ref!(&t_vel).mul_mat(&rc_ref!(&cur_t));
+            let alen_sq = avel.x * avel.x + avel.y * avel.y + avel.z * avel.z;
+            let final_t = if alen_sq > 1e-12 {
+                let len = alen_sq.sqrt();
+                let axis = Vec3 {
+                    x: avel.x / len,
+                    y: avel.y / len,
+                    z: avel.z / len,
                 };
-                rc_mut!(&node).transform = final_t;
-            }
-            let children = rc_ref!(&node).children.clone();
-            for c in children.into_iter().rev() {
-                stack.push(c);
-            }
+                // Spin is applied as a local-frame rotation
+                // (right-multiplication): the body rotates around
+                // its own origin and its world position stays where
+                // `translated` placed it. Left-multiplying R would
+                // rotate the body about the world origin and drag
+                // its position along the orbit.
+                let r = Mat4::from_axis_angle(&axis, len);
+                let result = rc_ref!(&translated).mul_mat(&rc_ref!(&r));
+                result
+            } else {
+                translated
+            };
+            rc_mut!(node).transform = final_t;
+        }
+        let node_ref = rc_ref!(node);
+        for child in &node_ref.children {
+            Self::integrate_motion_recursive(child);
         }
     }
 
@@ -198,73 +210,116 @@ impl Scene {
     // resolution. Returns the contact pairs the binding layer feeds to
     // on_collide.
     pub fn detect_contacts(scene_root: &RcNode) -> Vec<ContactPair> {
-        let mut entries: Vec<(RcNode, Mat4, Aabb)> = Vec::new();
-        Self::collect_collider_entries(scene_root, &mut entries, true);
-        let n = entries.len();
-        let mut pairs: Vec<ContactPair> = Vec::new();
-        // O(N^2) broad phase; PS1-scale (~100 dynamics) is in budget.
-        for i in 0..n {
-            for j in (i + 1)..n {
-                if !entries[i].2.overlaps(&entries[j].2) {
-                    continue;
-                }
-                let coll_a_opt = rc_ref!(&entries[i].0).collider.clone();
-                let coll_b_opt = rc_ref!(&entries[j].0).collider.clone();
-                let (Some(coll_a_rc), Some(coll_b_rc)) = (coll_a_opt, coll_b_opt) else {
-                    continue;
-                };
-                let (mass_a, trigger_a) = {
-                    let coll = rc_ref!(&coll_a_rc);
-                    (
-                        if coll.mesh.is_some() { 0.0 } else { coll.mass },
-                        coll.trigger,
-                    )
-                };
-                let (mass_b, trigger_b) = {
-                    let coll = rc_ref!(&coll_b_rc);
-                    (
-                        if coll.mesh.is_some() { 0.0 } else { coll.mass },
-                        coll.trigger,
-                    )
-                };
-                if mass_a == 0.0 && mass_b == 0.0 && !trigger_a && !trigger_b {
-                    continue;
-                }
-                let contact =
-                    Self::narrow_phase(&entries[i].1, &coll_a_rc, &entries[j].1, &coll_b_rc);
-                if let Some(geom) = contact {
-                    let pair = Self::build_contact_pair(
-                        &entries[i].0,
-                        &coll_a_rc,
-                        &entries[j].0,
-                        &coll_b_rc,
-                        geom,
-                    );
-                    pairs.push(pair);
+        Self::with_collider_entries(scene_root, true, |entries| {
+            let n = entries.len();
+            let mut pairs: Vec<ContactPair> = Vec::new();
+            // O(N^2) broad phase; PS1-scale (~100 dynamics) is in budget.
+            for i in 0..n {
+                for j in (i + 1)..n {
+                    if !entries[i].2.overlaps(&entries[j].2) {
+                        continue;
+                    }
+                    let coll_a_opt = rc_ref!(&entries[i].0).collider.clone();
+                    let coll_b_opt = rc_ref!(&entries[j].0).collider.clone();
+                    let (Some(coll_a_rc), Some(coll_b_rc)) = (coll_a_opt, coll_b_opt) else {
+                        continue;
+                    };
+                    let (mass_a, trigger_a) = {
+                        let coll = rc_ref!(&coll_a_rc);
+                        (
+                            if coll.mesh.is_some() { 0.0 } else { coll.mass },
+                            coll.trigger,
+                        )
+                    };
+                    let (mass_b, trigger_b) = {
+                        let coll = rc_ref!(&coll_b_rc);
+                        (
+                            if coll.mesh.is_some() { 0.0 } else { coll.mass },
+                            coll.trigger,
+                        )
+                    };
+                    if mass_a == 0.0 && mass_b == 0.0 && !trigger_a && !trigger_b {
+                        continue;
+                    }
+                    let contact =
+                        Self::narrow_phase(&entries[i].1, &coll_a_rc, &entries[j].1, &coll_b_rc);
+                    if let Some(geom) = contact {
+                        let pair = Self::build_contact_pair(
+                            &entries[i].0,
+                            &coll_a_rc,
+                            &entries[j].0,
+                            &coll_b_rc,
+                            geom,
+                        );
+                        pairs.push(pair);
+                    }
                 }
             }
-        }
-        pairs
+            pairs
+        })
     }
 
-    fn collect_collider_entries(node: &RcNode, out: &mut Vec<(RcNode, Mat4, Aabb)>, swept: bool) {
-        if !Node::effective_active(node) {
+    fn with_collider_entries<R>(
+        scene_root: &RcNode,
+        swept: bool,
+        f: impl FnOnce(&[ColliderEntry]) -> R,
+    ) -> R {
+        COLLIDER_ENTRY_SCRATCH.with(|scratch| {
+            let mut entries = scratch.borrow_mut();
+            entries.clear();
+            Self::for_each_collider_entry(scene_root, swept, &mut |node, world, aabb| {
+                entries.push((node.clone(), *world, *aabb));
+            });
+            let result = f(&entries);
+            entries.clear();
+            result
+        })
+    }
+
+    #[cfg(test)]
+    fn collider_entry_scratch_capacity() -> usize {
+        COLLIDER_ENTRY_SCRATCH.with(|scratch| scratch.borrow().capacity())
+    }
+
+    fn for_each_collider_entry(
+        node: &RcNode,
+        swept: bool,
+        f: &mut impl FnMut(&RcNode, &Mat4, &Aabb),
+    ) {
+        let parent = Node::parent(node);
+        if parent
+            .as_ref()
+            .is_some_and(|parent| !Node::effective_active(parent))
+        {
             return;
         }
-        let coll_opt = rc_ref!(node).collider.clone();
-        if let Some(coll_rc) = coll_opt {
-            let coll = rc_ref!(&coll_rc);
-            let world = Node::world_transform_value(node);
-            let mut aabb = collider_aabb(coll, &world);
+        let parent_world = parent.as_ref().map(Node::world_transform_value);
+        Self::for_each_collider_entry_recursive(node, parent_world.as_ref(), swept, f);
+    }
+
+    fn for_each_collider_entry_recursive(
+        node: &RcNode,
+        parent_world: Option<&Mat4>,
+        swept: bool,
+        f: &mut impl FnMut(&RcNode, &Mat4, &Aabb),
+    ) {
+        let node_ref = rc_ref!(node);
+        if !node_ref.active {
+            return;
+        }
+        let local = *rc_ref!(&node_ref.transform);
+        let world = parent_world.map_or(local, |parent| parent.mul_mat_value(&local));
+        if let Some(coll_rc) = &node_ref.collider {
+            let coll = rc_ref!(coll_rc);
+            let mut aabb = collider_aabb(&coll, &world);
             if swept && coll.mesh.is_none() {
                 let velocity = *rc_ref!(&coll.velocity);
                 aabb = Self::swept_aabb(aabb, velocity);
             }
-            out.push((node.clone(), world, aabb));
+            f(node, &world, &aabb);
         }
-        let children = rc_ref!(node).children.clone();
-        for c in &children {
-            Self::collect_collider_entries(c, out, swept);
+        for child in &node_ref.children {
+            Self::for_each_collider_entry_recursive(child, Some(&world), swept, f);
         }
     }
 
@@ -304,21 +359,13 @@ impl Scene {
         use ColliderShape as S;
         let (size_a, r_a, has_mesh_a, mesh_a) = {
             let a = rc_ref!(coll_a);
-            (
-                *rc_ref!(&a.size),
-                a.radius.max(0.0),
-                a.mesh.is_some(),
-                a.mesh.clone(),
-            )
+            let size = *rc_ref!(&a.size);
+            (size, a.radius.max(0.0), a.mesh.is_some(), a.mesh.clone())
         };
         let (size_b, r_b, has_mesh_b, mesh_b) = {
             let b = rc_ref!(coll_b);
-            (
-                *rc_ref!(&b.size),
-                b.radius.max(0.0),
-                b.mesh.is_some(),
-                b.mesh.clone(),
-            )
+            let size = *rc_ref!(&b.size);
+            (size, b.radius.max(0.0), b.mesh.is_some(), b.mesh.clone())
         };
         // Mesh-vs-mesh is unsupported: both sides are static terrain
         // with no resolution payload.
@@ -993,8 +1040,7 @@ impl Scene {
     ) -> ContactPair {
         let a = rc_ref!(coll_a);
         let b = rc_ref!(coll_b);
-        // Mesh colliders are always immovable terrain (cube-design.md
-        // § 11.1); ignore any user-set mass on the mesh side.
+        // Mesh colliders are immovable terrain; ignore their configured mass.
         let mass_a = if a.mesh.is_some() { 0.0 } else { a.mass };
         let mass_b = if b.mesh.is_some() { 0.0 } else { b.mass };
         let trigger_a = a.trigger;
@@ -1034,26 +1080,18 @@ impl Scene {
             Self::compute_deltas(geom, share_b, vel_b, vel_a, resti, frict, rolls_b, false)
         };
 
-        let contact_a = Contact::new();
-        {
-            let c = rc_mut!(&contact_a);
-            c.point = Vec3::new(geom.point.x, geom.point.y, geom.point.z);
-            c.normal = Vec3::new(geom.normal.x, geom.normal.y, geom.normal.z);
-            c.depth = depth_a;
-            c.delta_velocity = Vec3::new(dv_a.x, dv_a.y, dv_a.z);
-            c.delta_angular_velocity = Vec3::new(dav_a.x, dav_a.y, dav_a.z);
-            c.delta_rotation = Quat::identity();
-        }
-        let contact_b = Contact::new();
-        {
-            let c = rc_mut!(&contact_b);
-            c.point = Vec3::new(geom.point.x, geom.point.y, geom.point.z);
-            c.normal = Vec3::new(-geom.normal.x, -geom.normal.y, -geom.normal.z);
-            c.depth = depth_b;
-            c.delta_velocity = Vec3::new(dv_b.x, dv_b.y, dv_b.z);
-            c.delta_angular_velocity = Vec3::new(dav_b.x, dav_b.y, dav_b.z);
-            c.delta_rotation = Quat::identity();
-        }
+        let contact_a = Contact::from_values(geom.point, geom.normal, depth_a, dv_a, dav_a);
+        let contact_b = Contact::from_values(
+            geom.point,
+            Vec3 {
+                x: -geom.normal.x,
+                y: -geom.normal.y,
+                z: -geom.normal.z,
+            },
+            depth_b,
+            dv_b,
+            dav_b,
+        );
         ContactPair {
             node_a: node_a.clone(),
             node_b: node_b.clone(),
@@ -1119,7 +1157,7 @@ impl Scene {
         (depth, dv, dav)
     }
 
-    // Spatial queries (cube-design.md § 15.4)
+    // Spatial queries
 
     pub fn raycast(
         scene_root: &RcNode,
@@ -1130,10 +1168,8 @@ impl Scene {
         tags_filter: Option<&[String]>,
     ) -> Option<RaycastHitInfo> {
         let direction = Self::normalize_ray_direction(direction)?;
-        let mut entries: Vec<(RcNode, Mat4, Aabb)> = Vec::new();
-        Self::collect_collider_entries(scene_root, &mut entries, false);
         let mut best: Option<RaycastHitInfo> = None;
-        for (node, world, aabb) in &entries {
+        Self::for_each_collider_entry(scene_root, false, &mut |node, world, aabb| {
             let Some(hit) = Self::ray_test_one(
                 node,
                 world,
@@ -1144,12 +1180,12 @@ impl Scene {
                 hit_triggers,
                 tags_filter,
             ) else {
-                continue;
+                return;
             };
             if best.as_ref().is_none_or(|b| hit.distance < b.distance) {
                 best = Some(hit);
             }
-        }
+        });
         best
     }
 
@@ -1164,10 +1200,8 @@ impl Scene {
         let Some(direction) = Self::normalize_ray_direction(direction) else {
             return Vec::new();
         };
-        let mut entries: Vec<(RcNode, Mat4, Aabb)> = Vec::new();
-        Self::collect_collider_entries(scene_root, &mut entries, false);
         let mut hits: Vec<RaycastHitInfo> = Vec::new();
-        for (node, world, aabb) in &entries {
+        Self::for_each_collider_entry(scene_root, false, &mut |node, world, aabb| {
             if let Some(hit) = Self::ray_test_one(
                 node,
                 world,
@@ -1180,7 +1214,7 @@ impl Scene {
             ) {
                 hits.push(hit);
             }
-        }
+        });
         hits.sort_by(|a, b| {
             a.distance
                 .partial_cmp(&b.distance)
@@ -1263,29 +1297,27 @@ impl Scene {
         hit_triggers: bool,
         tags_filter: Option<&[String]>,
     ) -> Vec<RcNode> {
-        let mut entries: Vec<(RcNode, Mat4, Aabb)> = Vec::new();
-        Self::collect_collider_entries(scene_root, &mut entries, false);
         let radius = radius.max(0.0);
         let probe = Aabb::from_sphere(center, radius);
         let mut out: Vec<RcNode> = Vec::new();
         // Test broad-phase candidates against the sphere
-        for (node, world, aabb) in &entries {
+        Self::for_each_collider_entry(scene_root, false, &mut |node, world, aabb| {
             let coll_rc_opt = rc_ref!(node).collider.clone();
             let Some(coll_rc) = coll_rc_opt else {
-                continue;
+                return;
             };
             let coll = rc_ref!(&coll_rc);
             if !hit_triggers && coll.trigger {
-                continue;
+                return;
             }
             let size = *rc_ref!(&coll.size);
             let r_other = coll.radius.max(0.0);
             let has_mesh = coll.mesh.is_some();
             if !Self::tags_match(node, tags_filter) {
-                continue;
+                return;
             }
             if !probe.overlaps(aabb) {
-                continue;
+                return;
             }
             let hit = if has_mesh {
                 Self::mesh_overlaps_sphere(world, coll.mesh.as_ref().unwrap(), center, radius)
@@ -1305,7 +1337,7 @@ impl Scene {
             if hit {
                 out.push(node.clone());
             }
-        }
+        });
         out
     }
 
@@ -1316,8 +1348,6 @@ impl Scene {
         hit_triggers: bool,
         tags_filter: Option<&[String]>,
     ) -> Vec<RcNode> {
-        let mut entries: Vec<(RcNode, Mat4, Aabb)> = Vec::new();
-        Self::collect_collider_entries(scene_root, &mut entries, false);
         let probe = Aabb::from_rounded_box(transform, size, 0.0);
         let probe_half = Vec3 {
             x: size.x.abs() * 0.5,
@@ -1326,23 +1356,23 @@ impl Scene {
         };
         let mut out: Vec<RcNode> = Vec::new();
         // Test broad-phase candidates against the box
-        for (node, world, aabb) in &entries {
+        Self::for_each_collider_entry(scene_root, false, &mut |node, world, aabb| {
             let coll_rc_opt = rc_ref!(node).collider.clone();
             let Some(coll_rc) = coll_rc_opt else {
-                continue;
+                return;
             };
             let coll = rc_ref!(&coll_rc);
             if !hit_triggers && coll.trigger {
-                continue;
+                return;
             }
             let other_size = *rc_ref!(&coll.size);
             let r_other = coll.radius.max(0.0);
             let has_mesh = coll.mesh.is_some();
             if !Self::tags_match(node, tags_filter) {
-                continue;
+                return;
             }
             if !probe.overlaps(aabb) {
-                continue;
+                return;
             }
             let hit = if has_mesh {
                 Self::mesh_overlaps_box(world, coll.mesh.as_ref().unwrap(), transform, size)
@@ -1365,7 +1395,7 @@ impl Scene {
             if hit {
                 out.push(node.clone());
             }
-        }
+        });
         out
     }
 
@@ -1396,7 +1426,7 @@ impl Scene {
         let Some(tags) = filter else {
             return true;
         };
-        let node_tags = rc_ref!(node).tags.clone();
+        let node_tags = &rc_ref!(node).tags;
         tags.iter().any(|t| node_tags.iter().any(|nt| nt == t))
     }
 
@@ -2905,10 +2935,10 @@ mod tests {
 
         let floor_mesh = Mesh::new();
         {
-            let m = rc_mut!(&floor_mesh);
+            let mut m = rc_mut!(&floor_mesh);
             let geom = Primitive::new();
             {
-                let g = rc_mut!(&geom);
+                let mut g = rc_mut!(&geom);
                 g.positions = vec![
                     -5.0, 0.0, -5.0, 5.0, 0.0, -5.0, -5.0, 0.0, 5.0, 5.0, 0.0, 5.0,
                 ];
@@ -3042,7 +3072,7 @@ mod tests {
             },
             deg,
         );
-        rc_mut!(node).transform = rc_ref!(&translation).mul_mat(rc_ref!(&rotation));
+        rc_mut!(node).transform = rc_ref!(&translation).mul_mat(&rc_ref!(&rotation));
     }
 
     #[test]
@@ -3062,6 +3092,24 @@ mod tests {
         let contact = rc_ref!(&pairs[0].contact_a);
         let normal = rc_ref!(&contact.normal);
         assert!(normal.x < -0.99);
+    }
+
+    #[test]
+    fn test_detect_contacts_reuses_collider_entry_capacity() {
+        let root = Node::new();
+        let a = Node::new();
+        let b = Node::new();
+        rc_mut!(&a).collider = Some(sphere_collider(0.5, 1.0));
+        rc_mut!(&b).collider = Some(sphere_collider(0.5, 1.0));
+        Node::add_child(&root, &a);
+        Node::add_child(&root, &b);
+
+        Scene::detect_contacts(&root);
+        let first_capacity = Scene::collider_entry_scratch_capacity();
+        Scene::detect_contacts(&root);
+
+        assert!(first_capacity >= 2);
+        assert_eq!(Scene::collider_entry_scratch_capacity(), first_capacity);
     }
 
     #[test]
@@ -3443,8 +3491,7 @@ mod tests {
 
     #[test]
     fn test_contact_depth_split_evenly_for_equal_mass() {
-        // Equal-mass overlap splits the penetration depth 50/50 between
-        // the two contacts (mass-share resolution, cube-design.md § 12.3).
+        // Equal masses split the penetration depth evenly between contacts.
         let root = Node::new();
         let a = Node::new();
         let b = Node::new();
@@ -3737,10 +3784,10 @@ mod tests {
 
         let floor_mesh = Mesh::new();
         {
-            let m = rc_mut!(&floor_mesh);
+            let mut m = rc_mut!(&floor_mesh);
             let geom = Primitive::new();
             {
-                let g = rc_mut!(&geom);
+                let mut g = rc_mut!(&geom);
                 g.positions = vec![
                     -5.0, 0.0, -5.0, 5.0, 0.0, -5.0, -5.0, 0.0, 5.0, 5.0, 0.0, 5.0,
                 ];
@@ -3775,10 +3822,10 @@ mod tests {
 
         let wall_mesh = Mesh::new();
         {
-            let m = rc_mut!(&wall_mesh);
+            let mut m = rc_mut!(&wall_mesh);
             let geom = Primitive::new();
             {
-                let g = rc_mut!(&geom);
+                let mut g = rc_mut!(&geom);
                 g.positions = vec![-0.5, -0.5, 0.0, 0.5, -0.5, 0.0, 0.0, 0.5, 0.0];
                 g.indices = vec![0, 1, 2];
             }
@@ -3811,10 +3858,10 @@ mod tests {
 
         let mesh = Mesh::new();
         {
-            let m = rc_mut!(&mesh);
+            let mut m = rc_mut!(&mesh);
             let geom = Primitive::new();
             {
-                let g = rc_mut!(&geom);
+                let mut g = rc_mut!(&geom);
                 g.positions = vec![0.0, 0.0, 0.0, 10.0, 0.0, 0.0, 0.0, 0.0, 10.0];
                 g.indices = vec![0, 1, 2];
             }

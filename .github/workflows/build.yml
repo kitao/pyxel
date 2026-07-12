@@ -7,7 +7,6 @@ permissions:
 
 env:
   PYTHON_VERSION: "3.14"
-  SDL2_VERSION: "2.32.10"
 
 jobs:
   build-winmac:
@@ -97,6 +96,16 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+
+      - name: Resolve SDL2 source
+        shell: bash
+        run: |
+          SDL2_VERSION="$(awk -F'"' '/^const SDL2_VERSION: &str/ { print $2; exit }' crates/pyxel-core/build.rs)"
+          SDL2_SHA256="$(awk -F'"' '/^const SDL2_SHA256: &str/ { print $2; exit }' crates/pyxel-core/build.rs)"
+          test -n "$SDL2_VERSION"
+          test -n "$SDL2_SHA256"
+          echo "SDL2_VERSION=$SDL2_VERSION" >> "$GITHUB_ENV"
+          echo "SDL2_SHA256=$SDL2_SHA256" >> "$GITHUB_ENV"
 
       - *resolve-rust-version
 
@@ -202,7 +211,8 @@ jobs:
 
       - name: Build SDL2
         run: |
-          curl -sqLO https://www.libsdl.org/release/SDL2-${{ env.SDL2_VERSION }}.tar.gz
+          curl -qfsSLO https://www.libsdl.org/release/SDL2-${{ env.SDL2_VERSION }}.tar.gz
+          echo "${{ env.SDL2_SHA256 }}  SDL2-${{ env.SDL2_VERSION }}.tar.gz" | sha256sum --check --strict
           tar xzf SDL2-${{ env.SDL2_VERSION }}.tar.gz
 
           # Create cmake toolchain file for cross-compilation
@@ -295,6 +305,11 @@ jobs:
             os: windows-2022
             arch: x64
 
+          - target: x86_64-pc-windows-msvc
+            os: windows-11-arm
+            arch: x64
+            verify_gui_quit: true
+
           - target: i686-pc-windows-msvc
             os: windows-2022
             arch: x86
@@ -312,8 +327,8 @@ jobs:
             arch: x64
 
           - target: aarch64-unknown-linux-gnu
-            os: ubuntu-24.04
-            skip_import: true
+            os: ubuntu-24.04-arm
+            arch: arm64
 
           - target: armv7-unknown-linux-gnueabihf
             os: ubuntu-24.04
@@ -345,6 +360,14 @@ jobs:
         run: |
           pip install dist/*.whl
           python -c "import pyxel; print(f'Pyxel {pyxel.VERSION} imported successfully')"
+
+      - name: Verify GUI quit on Windows ARM64
+        if: ${{ matrix.verify_gui_quit }}
+        timeout-minutes: 1
+        shell: pwsh
+        run: |
+          python -c "import os, platform, struct; print(platform.machine(), struct.calcsize('P') * 8, os.environ.get('PROCESSOR_ARCHITEW6432', ''))"
+          python -c "import pyxel; pyxel.init(64, 64, title='Pyxel Windows ARM quit smoke'); pyxel.quit()"
 
       - name: Verify SDL2 bundle (Linux)
         if: runner.os == 'Linux'

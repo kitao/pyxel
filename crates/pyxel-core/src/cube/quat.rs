@@ -92,8 +92,9 @@ impl Quat {
         let qx = Self::from_axis_angle(&x_axis, rot.x);
         let qy = Self::from_axis_angle(&y_axis, rot.y);
         let qz = Self::from_axis_angle(&z_axis, rot.z);
-        let zy = rc_ref!(&qz).mul_quat(rc_ref!(&qy));
-        rc_ref!(&zy).mul_quat(rc_ref!(&qx))
+        let zy = rc_ref!(&qz).mul_quat(&rc_ref!(&qy));
+        let result = rc_ref!(&zy).mul_quat(&rc_ref!(&qx));
+        result
     }
 
     pub fn from_two_vectors(a: &Vec3, b: &Vec3) -> RcQuat {
@@ -471,7 +472,7 @@ mod tests {
             45.0,
         );
         let i = Quat::identity();
-        let r = deref(&rc_ref!(&q).mul_quat(rc_ref!(&i)));
+        let r = deref(&rc_ref!(&q).mul_quat(&rc_ref!(&i)));
         let q_val = deref(&q);
         assert!(approx_eq_q(&r, &q_val));
     }
@@ -508,9 +509,9 @@ mod tests {
         );
         let q_ref = rc_ref!(&q);
         let inv = q_ref.inverse();
-        let combined = q_ref.mul_quat(rc_ref!(&inv));
+        let combined = q_ref.mul_quat(&rc_ref!(&inv));
         let i = deref(&Quat::identity());
-        assert!(approx_eq_q(rc_ref!(&combined), &i));
+        assert!(approx_eq_q(&rc_ref!(&combined), &i));
     }
 
     #[test]
@@ -596,7 +597,7 @@ mod tests {
         let q = Quat::from_axis_angle(&axis_in, 60.0);
         let (axis_out, deg_out) = rc_ref!(&q).to_axis_angle();
         assert!((deg_out - 60.0).abs() < 1e-3);
-        assert!(approx_eq_v(rc_ref!(&axis_out), &axis_in));
+        assert!(approx_eq_v(&rc_ref!(&axis_out), &axis_in));
     }
 
     #[test]
@@ -617,10 +618,10 @@ mod tests {
             },
             90.0,
         );
-        let s0 = deref(&rc_ref!(&a).slerp(rc_ref!(&b), 0.0));
-        let s1 = deref(&rc_ref!(&a).slerp(rc_ref!(&b), 1.0));
-        assert!(approx_eq_q(&s0, rc_ref!(&a)));
-        assert!(approx_eq_q(&s1, rc_ref!(&b)));
+        let s0 = deref(&rc_ref!(&a).slerp(&rc_ref!(&b), 0.0));
+        let s1 = deref(&rc_ref!(&a).slerp(&rc_ref!(&b), 1.0));
+        assert!(approx_eq_q(&s0, &rc_ref!(&a)));
+        assert!(approx_eq_q(&s1, &rc_ref!(&b)));
     }
 
     #[test]
@@ -651,7 +652,7 @@ mod tests {
             30.0,
         );
         let m = rc_ref!(&q).to_matrix();
-        let q2 = Quat::from_matrix(rc_ref!(&m));
+        let q2 = Quat::from_matrix(&rc_ref!(&m));
         let v = Vec3 {
             x: 1.0,
             y: 0.0,
@@ -790,7 +791,7 @@ mod tests {
             },
             90.0,
         );
-        let mid = rc_ref!(&a).slerp(rc_ref!(&b), 0.5);
+        let mid = rc_ref!(&a).slerp(&rc_ref!(&b), 0.5);
         let probe = Vec3 {
             x: 1.0,
             y: 0.0,
@@ -821,7 +822,7 @@ mod tests {
         };
         let a = Quat::from_axis_angle(&axis, 10.0);
         let b = Quat::from_axis_angle(&axis, 10.01);
-        let mid = deref(&rc_ref!(&a).slerp(rc_ref!(&b), 0.5));
+        let mid = deref(&rc_ref!(&a).slerp(&rc_ref!(&b), 0.5));
         let len = mid.x * mid.x + mid.y * mid.y + mid.z * mid.z + mid.w * mid.w;
         assert!((len - 1.0).abs() < 1e-4);
         let expected = Quat::from_axis_angle(&axis, 10.005);
@@ -850,7 +851,7 @@ mod tests {
         );
         let a_val = *rc_ref!(&a);
         let neg = Quat::new(-a_val.x, -a_val.y, -a_val.z, -a_val.w);
-        let mid = rc_ref!(&a).slerp(rc_ref!(&neg), 0.5);
+        let mid = rc_ref!(&a).slerp(&rc_ref!(&neg), 0.5);
         let probe = Vec3 {
             x: 1.0,
             y: 0.0,

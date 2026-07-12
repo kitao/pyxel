@@ -21,7 +21,7 @@
       async function resolveRef(user, repo, ref) {
         try {
           const res = await fetch(
-            `https://api.github.com/repos/${user}/${repo}/commits/${ref}`,
+            `https://api.github.com/repos/${user}/${repo}/commits/${encodeURIComponent(ref)}`,
             {
               headers: { Accept: "application/vnd.github.sha" },
               cache: "no-cache",

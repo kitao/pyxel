@@ -9,7 +9,7 @@ pub struct RectArea {
 }
 
 impl RectArea {
-    // Construction
+    // Constructor
 
     pub const fn new(left: i32, top: i32, width: u32, height: u32) -> Self {
         Self {
@@ -78,7 +78,7 @@ impl RectArea {
 mod tests {
     use super::*;
 
-    // Construction
+    // Constructor
 
     #[test]
     fn test_new() {

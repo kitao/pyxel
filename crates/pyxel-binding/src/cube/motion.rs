@@ -21,7 +21,7 @@ impl Motion {
         }
     }
 
-    pub(crate) fn inner_ref(&self) -> &pyxel::cube::Motion {
+    pub(crate) fn inner_ref(&self) -> std::cell::Ref<'_, pyxel::cube::Motion> {
         rc_ref!(self.inner)
     }
 

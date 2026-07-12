@@ -201,8 +201,7 @@ class TestRaycast:
             assert hits[i].distance >= hits[i - 1].distance
 
     def test_raycasthit_not_user_constructible(self):
-        # RaycastHit is an engine-built payload (cube-design.md § 13);
-        # it has no public constructor.
+        # RaycastHit is an engine-built payload with no public constructor.
         with pytest.raises(TypeError, match="cannot create .*RaycastHit.* instances"):
             RaycastHit()
 
@@ -292,40 +291,49 @@ class TestOrthoCameraClipping:
 
 
 # State set in one Node.on_draw must not leak to siblings or children.
-# These smoke tests exercise mid-draw state mutation across sibling and child
-# callbacks; pixel-level isolation is covered by manual visual inspection.
 class TestStateSetterIsolation:
-    def test_sibling_isolation_runs_without_error(self):
+    @staticmethod
+    def _camera():
+        camera = Camera()
+        camera.clear_color = 0
+        camera.transform = Mat4.look_at(Vec3(0, 0, 4), Vec3.ZERO, Vec3.UP)
+        return camera
+
+    def test_sibling_isolation(self):
         class A(Node):
             def on_draw(self):
-                self.dither(0.5)
-                self.depth_test(False)
-                self.box(Mat4.IDENTITY, Vec3(1, 1, 1), 7)
+                self.dither(0.0)
 
         class B(Node):
             def on_draw(self):
                 self.shaded(False)
-                self.box(Mat4.IDENTITY, Vec3(1, 1, 1), 8)
+                self.pset(Vec3.ZERO, 8)
 
         root = Node()
-        root.camera = Camera()
+        root.camera = self._camera()
         root.add_child(A())
         root.add_child(B())
-        root.draw(0, 0, 64, 64)
+        pyxel.cls(0)
+        root.draw(0, 0, 160, 120)
 
-    def test_child_isolation_runs_without_error(self):
+        assert pyxel.pget(80, 60) == 8
+
+    def test_child_isolation(self):
         class Parent(Node):
             def on_draw(self):
-                self.depth_write(False)
-                self.box(Mat4.IDENTITY, Vec3(1, 1, 1), 7)
+                self.dither(0.0)
 
         class Child(Node):
             def on_draw(self):
-                self.box(Mat4.IDENTITY, Vec3(1, 1, 1), 8)
+                self.shaded(False)
+                self.pset(Vec3.ZERO, 8)
 
         root = Node()
-        root.camera = Camera()
+        root.camera = self._camera()
         parent = Parent()
         parent.add_child(Child())
         root.add_child(parent)
-        root.draw(0, 0, 64, 64)
+        pyxel.cls(0)
+        root.draw(0, 0, 160, 120)
+
+        assert pyxel.pget(80, 60) == 8

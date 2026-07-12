@@ -66,7 +66,7 @@ impl Mat4 {
     }
 
     fn __eq__(&self, other: &Self) -> bool {
-        self.inner_ref() == other.inner_ref()
+        *self.inner_ref() == *other.inner_ref()
     }
 
     fn __hash__(&self) -> u64 {
@@ -94,10 +94,10 @@ impl Mat4 {
 
     fn __mul__<'py>(&self, py: Python<'py>, other: &Bound<'py, PyAny>) -> PyResult<Py<PyAny>> {
         if let Ok(mat) = other.extract::<Mat4>() {
-            let result = Mat4::wrap(self.inner_ref().mul_mat(mat.inner_ref()));
+            let result = Mat4::wrap(self.inner_ref().mul_mat(&mat.inner_ref()));
             Ok(result.into_pyobject(py)?.into_any().unbind())
         } else if let Ok(vec) = other.extract::<Vec3>() {
-            let result = Vec3::wrap(self.inner_ref().mul_vec(vec.inner_ref()));
+            let result = Vec3::wrap(self.inner_ref().mul_vec(&vec.inner_ref()));
             Ok(result.into_pyobject(py)?.into_any().unbind())
         } else {
             Err(pyo3::exceptions::PyTypeError::new_err(
@@ -110,35 +110,35 @@ impl Mat4 {
 
     #[staticmethod]
     fn from_translation(pos: PyRef<'_, Vec3>) -> Self {
-        Self::wrap(pyxel::cube::Mat4::from_translation(pos.inner_ref()))
+        Self::wrap(pyxel::cube::Mat4::from_translation(&pos.inner_ref()))
     }
 
     #[staticmethod]
     fn from_euler(euler: PyRef<'_, Vec3>) -> Self {
-        Self::wrap(pyxel::cube::Mat4::from_euler(euler.inner_ref()))
+        Self::wrap(pyxel::cube::Mat4::from_euler(&euler.inner_ref()))
     }
 
     #[staticmethod]
     fn from_quat(rot: PyRef<'_, Quat>) -> Self {
-        Self::wrap(pyxel::cube::Mat4::from_quat(rot.inner_ref()))
+        Self::wrap(pyxel::cube::Mat4::from_quat(&rot.inner_ref()))
     }
 
     #[staticmethod]
     fn from_scale(scale: PyRef<'_, Vec3>) -> Self {
-        Self::wrap(pyxel::cube::Mat4::from_scale(scale.inner_ref()))
+        Self::wrap(pyxel::cube::Mat4::from_scale(&scale.inner_ref()))
     }
 
     #[staticmethod]
     fn from_axis_angle(axis: PyRef<'_, Vec3>, deg: f32) -> Self {
-        Self::wrap(pyxel::cube::Mat4::from_axis_angle(axis.inner_ref(), deg))
+        Self::wrap(pyxel::cube::Mat4::from_axis_angle(&axis.inner_ref(), deg))
     }
 
     #[staticmethod]
     fn compose(pos: PyRef<'_, Vec3>, rot: PyRef<'_, Quat>, scale: PyRef<'_, Vec3>) -> Self {
         Self::wrap(pyxel::cube::Mat4::compose(
-            pos.inner_ref(),
-            rot.inner_ref(),
-            scale.inner_ref(),
+            &pos.inner_ref(),
+            &rot.inner_ref(),
+            &scale.inner_ref(),
         ))
     }
 
@@ -146,24 +146,25 @@ impl Mat4 {
     #[pyo3(signature = (eye, target, up=None))]
     fn look_at(eye: PyRef<'_, Vec3>, target: PyRef<'_, Vec3>, up: Option<PyRef<'_, Vec3>>) -> Self {
         let default_up = pyxel::cube::Vec3::up();
-        let up_inner = up
+        let up_rc = up
             .as_ref()
-            .map_or_else(|| rc_ref!(&default_up), |u| u.inner_ref());
+            .map_or_else(|| default_up.clone(), |u| u.inner.clone());
+        let up_inner = rc_ref!(up_rc);
         Self::wrap(pyxel::cube::Mat4::look_at(
-            eye.inner_ref(),
-            target.inner_ref(),
-            up_inner,
+            &eye.inner_ref(),
+            &target.inner_ref(),
+            &up_inner,
         ))
     }
 
     // Transforms
 
     fn translate(&self, v: PyRef<'_, Vec3>) -> Self {
-        Self::wrap(self.inner_ref().translate(v.inner_ref()))
+        Self::wrap(self.inner_ref().translate(&v.inner_ref()))
     }
 
     fn rotate(&self, axis: PyRef<'_, Vec3>, deg: f32) -> Self {
-        Self::wrap(self.inner_ref().rotate(axis.inner_ref(), deg))
+        Self::wrap(self.inner_ref().rotate(&axis.inner_ref(), deg))
     }
 
     fn rotate_x(&self, deg: f32) -> Self {
@@ -179,7 +180,7 @@ impl Mat4 {
     }
 
     fn scale_by(&self, v: PyRef<'_, Vec3>) -> Self {
-        Self::wrap(self.inner_ref().scale_by(v.inner_ref()))
+        Self::wrap(self.inner_ref().scale_by(&v.inner_ref()))
     }
 
     // Matrix operations
@@ -199,19 +200,19 @@ impl Mat4 {
     // Coordinate system conversions
 
     fn to_local(&self, mat: PyRef<'_, Mat4>) -> Self {
-        Self::wrap(self.inner_ref().to_local(mat.inner_ref()))
+        Self::wrap(self.inner_ref().to_local(&mat.inner_ref()))
     }
 
     fn to_world(&self, mat: PyRef<'_, Mat4>) -> Self {
-        Self::wrap(self.inner_ref().to_world(mat.inner_ref()))
+        Self::wrap(self.inner_ref().to_world(&mat.inner_ref()))
     }
 
     fn to_local_dir(&self, mat: PyRef<'_, Mat4>) -> Self {
-        Self::wrap(self.inner_ref().to_local_dir(mat.inner_ref()))
+        Self::wrap(self.inner_ref().to_local_dir(&mat.inner_ref()))
     }
 
     fn to_world_dir(&self, mat: PyRef<'_, Mat4>) -> Self {
-        Self::wrap(self.inner_ref().to_world_dir(mat.inner_ref()))
+        Self::wrap(self.inner_ref().to_world_dir(&mat.inner_ref()))
     }
 }
 

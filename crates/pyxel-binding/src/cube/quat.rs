@@ -54,7 +54,7 @@ impl Quat {
     }
 
     fn __eq__(&self, other: &Self) -> bool {
-        self.inner_ref() == other.inner_ref()
+        *self.inner_ref() == *other.inner_ref()
     }
 
     fn __hash__(&self) -> u64 {
@@ -98,10 +98,10 @@ impl Quat {
 
     fn __mul__<'py>(&self, py: Python<'py>, other: &Bound<'py, PyAny>) -> PyResult<Py<PyAny>> {
         if let Ok(quat) = other.extract::<Quat>() {
-            let result = Quat::wrap(self.inner_ref().mul_quat(quat.inner_ref()));
+            let result = Quat::wrap(self.inner_ref().mul_quat(&quat.inner_ref()));
             Ok(result.into_pyobject(py)?.into_any().unbind())
         } else if let Ok(vec) = other.extract::<Vec3>() {
-            let result = Vec3::wrap(self.inner_ref().mul_vec(vec.inner_ref()));
+            let result = Vec3::wrap(self.inner_ref().mul_vec(&vec.inner_ref()));
             Ok(result.into_pyobject(py)?.into_any().unbind())
         } else {
             Err(pyo3::exceptions::PyTypeError::new_err(
@@ -118,37 +118,38 @@ impl Quat {
 
     #[staticmethod]
     fn from_axis_angle(axis: PyRef<'_, Vec3>, deg: f32) -> Self {
-        Self::wrap(pyxel::cube::Quat::from_axis_angle(axis.inner_ref(), deg))
+        Self::wrap(pyxel::cube::Quat::from_axis_angle(&axis.inner_ref(), deg))
     }
 
     #[staticmethod]
     fn from_euler(rot: PyRef<'_, Vec3>) -> Self {
-        Self::wrap(pyxel::cube::Quat::from_euler(rot.inner_ref()))
+        Self::wrap(pyxel::cube::Quat::from_euler(&rot.inner_ref()))
     }
 
     #[staticmethod]
     fn from_two_vectors(from_vec: PyRef<'_, Vec3>, to_vec: PyRef<'_, Vec3>) -> Self {
         Self::wrap(pyxel::cube::Quat::from_two_vectors(
-            from_vec.inner_ref(),
-            to_vec.inner_ref(),
+            &from_vec.inner_ref(),
+            &to_vec.inner_ref(),
         ))
     }
 
     #[staticmethod]
     fn from_matrix(mat: PyRef<'_, Mat4>) -> Self {
-        Self::wrap(pyxel::cube::Quat::from_matrix(mat.inner_ref()))
+        Self::wrap(pyxel::cube::Quat::from_matrix(&mat.inner_ref()))
     }
 
     #[staticmethod]
     #[pyo3(signature = (forward, up=None))]
     fn from_direction(forward: PyRef<'_, Vec3>, up: Option<PyRef<'_, Vec3>>) -> Self {
         let default_up = pyxel::cube::Vec3::up();
-        let up_inner = up
+        let up_rc = up
             .as_ref()
-            .map_or_else(|| rc_ref!(&default_up), |u| u.inner_ref());
+            .map_or_else(|| default_up.clone(), |u| u.inner.clone());
+        let up_inner = rc_ref!(up_rc);
         Self::wrap(pyxel::cube::Quat::from_direction(
-            forward.inner_ref(),
-            up_inner,
+            &forward.inner_ref(),
+            &up_inner,
         ))
     }
 
@@ -177,11 +178,11 @@ impl Quat {
     // Binary operations
 
     fn dot(&self, other: &Self) -> f32 {
-        self.inner_ref().dot(other.inner_ref())
+        self.inner_ref().dot(&other.inner_ref())
     }
 
     fn angle_to(&self, other: &Self) -> f32 {
-        self.inner_ref().angle_to(other.inner_ref())
+        self.inner_ref().angle_to(&other.inner_ref())
     }
 
     // Conversions
@@ -202,7 +203,7 @@ impl Quat {
     // Interpolation
 
     fn slerp(&self, other: &Self, t: f32) -> Self {
-        Self::wrap(self.inner_ref().slerp(other.inner_ref(), t))
+        Self::wrap(self.inner_ref().slerp(&other.inner_ref(), t))
     }
 }
 

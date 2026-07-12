@@ -1,3 +1,6 @@
+use std::ops::{Deref, DerefMut};
+use std::sync::MutexGuard;
+
 use pyo3::exceptions::PyException;
 use pyo3::prelude::*;
 use pyo3::types::{PyList, PySlice, PyTuple};
@@ -10,18 +13,44 @@ pub struct SeqRef {
     index: usize,
 }
 
+struct MusicSeqMut<'a> {
+    music: MutexGuard<'a, pyxel::Music>,
+    index: usize,
+}
+
+impl Deref for MusicSeqMut<'_> {
+    type Target = Vec<u32>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.music.seqs[self.index]
+    }
+}
+
+impl DerefMut for MusicSeqMut<'_> {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.music.seqs[self.index]
+    }
+}
+
+fn seq_mut(inner: &SeqRef) -> MusicSeqMut<'_> {
+    MusicSeqMut {
+        music: audio_mut!(inner.inner),
+        index: inner.index,
+    }
+}
+
 wrap_as_python_primitive_sequence!(
     Seq,
     SeqRef,
-    (|inner: &SeqRef| rc_ref!(inner.inner).seqs[inner.index].len()),
+    (|inner: &SeqRef| audio_ref!(inner.inner).seqs[inner.index].len()),
     u32,
-    (|inner: &SeqRef, index| rc_ref!(inner.inner).seqs[inner.index][index]),
+    (|inner: &SeqRef, index| audio_ref!(inner.inner).seqs[inner.index][index]),
     u32,
-    (|inner: &SeqRef, index, value| rc_mut!(inner.inner).seqs[inner.index][index] = value),
-    (|inner: &SeqRef| -> &mut Vec<u32> { &mut rc_mut!(inner.inner).seqs[inner.index] }),
+    (|inner: &SeqRef, index, value| audio_mut!(inner.inner).seqs[inner.index][index] = value),
+    seq_mut,
     Vec<u32>,
-    (|inner: &SeqRef, list| rc_mut!(inner.inner).seqs[inner.index] = list),
-    (|inner: &SeqRef| rc_ref!(inner.inner).seqs[inner.index].clone())
+    (|inner: &SeqRef, list| audio_mut!(inner.inner).seqs[inner.index] = list),
+    (|inner: &SeqRef| audio_ref!(inner.inner).seqs[inner.index].clone())
 );
 
 // Seqs is hand-written because it returns Seq wrapper objects (asymmetric get/set types)
@@ -36,14 +65,12 @@ impl Seqs {
         Self { inner }
     }
 
-    fn inner_ref(&self) -> &pyxel::Music {
-        rc_ref!(self.inner)
+    fn inner_ref(&self) -> MutexGuard<'_, pyxel::Music> {
+        audio_ref!(self.inner)
     }
 
-    // Mirrors the wrapper macro's Rc<UnsafeCell> interior mutability.
-    #[allow(clippy::mut_from_ref)]
-    fn inner_mut(&self) -> &mut pyxel::Music {
-        rc_mut!(self.inner)
+    fn inner_mut(&self) -> MutexGuard<'_, pyxel::Music> {
+        audio_mut!(self.inner)
     }
 
     fn wrap_seq(&self, index: usize) -> Seq {
@@ -65,8 +92,9 @@ impl Seqs {
     fn __getitem__<'py>(&self, py: Python<'py>, key: &Bound<'py, PyAny>) -> PyResult<Py<PyAny>> {
         if let Ok(slice) = key.cast::<PySlice>() {
             let indices = slice.indices(self.__len__() as isize)?;
-            let idx_list = collect_slice_indices!(indices.start, indices.stop, indices.step);
-            let items: Vec<Seq> = idx_list.iter().map(|&i| self.wrap_seq(i)).collect();
+            let items =
+                crate::utils::slice_indices(indices.start, indices.step, indices.slicelength)
+                    .map(|i| self.wrap_seq(i));
             let list = PyList::new(py, items)?;
             Ok(list.into_any().unbind())
         } else {
@@ -77,21 +105,18 @@ impl Seqs {
     }
 
     fn __iter__(&self, py: Python<'_>) -> PyResult<Py<PyAny>> {
-        let items: Vec<Seq> = (0..self.__len__()).map(|i| self.wrap_seq(i)).collect();
+        let items = (0..self.__len__()).map(|i| self.wrap_seq(i));
         items_to_pyiter!(py, items)
     }
 
     fn __reversed__(&self, py: Python<'_>) -> PyResult<Py<PyAny>> {
-        let items: Vec<Seq> = (0..self.__len__())
-            .rev()
-            .map(|i| self.wrap_seq(i))
-            .collect();
+        let items = (0..self.__len__()).rev().map(|i| self.wrap_seq(i));
         items_to_pyiter!(py, items)
     }
 
     fn __repr__(&self, py: Python) -> PyResult<String> {
-        let seqs: Vec<Vec<u32>> = self.inner_ref().seqs.clone();
-        let list = PyList::new(py, seqs)?;
+        let music = self.inner_ref();
+        let list = PyList::new(py, music.seqs.iter().cloned())?;
         Ok(format!(
             "{}{}",
             stringify!(Seqs),
@@ -110,7 +135,7 @@ impl Seqs {
         value: &Bound<'py, PyAny>,
     ) -> PyResult<()> {
         if let Ok(slice) = key.cast::<PySlice>() {
-            let music = self.inner_mut();
+            let mut music = self.inner_mut();
             let indices = slice.indices(music.seqs.len() as isize)?;
             let new_values: Vec<Vec<u32>> = value.extract()?;
             if indices.step == 1 {
@@ -118,22 +143,23 @@ impl Seqs {
                 let end = indices.stop.max(indices.start) as usize;
                 music.seqs.splice(start..end, new_values);
             } else {
-                let idx_list = collect_slice_indices!(indices.start, indices.stop, indices.step);
-                if new_values.len() != idx_list.len() {
+                if new_values.len() != indices.slicelength {
                     return Err(pyo3::exceptions::PyValueError::new_err(format!(
                         "attempt to assign sequence of size {} to extended slice of size {}",
                         new_values.len(),
-                        idx_list.len()
+                        indices.slicelength
                     )));
                 }
-                for (pos, val) in idx_list.into_iter().zip(new_values) {
+                let positions =
+                    crate::utils::slice_indices(indices.start, indices.step, indices.slicelength);
+                for (pos, val) in positions.zip(new_values) {
                     music.seqs[pos] = val;
                 }
             }
             Ok(())
         } else {
             let idx: isize = key.extract()?;
-            let music = self.inner_mut();
+            let mut music = self.inner_mut();
             let i = resolve_index!(idx, music.seqs.len())?;
             music.seqs[i] = value.extract()?;
             Ok(())
@@ -142,9 +168,11 @@ impl Seqs {
 
     fn __delitem__<'py>(&self, _py: Python<'py>, key: &Bound<'py, PyAny>) -> PyResult<()> {
         if let Ok(slice) = key.cast::<PySlice>() {
-            let music = self.inner_mut();
+            let mut music = self.inner_mut();
             let indices = slice.indices(music.seqs.len() as isize)?;
-            let mut idx_list = collect_slice_indices!(indices.start, indices.stop, indices.step);
+            let mut idx_list: Vec<usize> =
+                crate::utils::slice_indices(indices.start, indices.step, indices.slicelength)
+                    .collect();
             // Remove from end to preserve earlier indices
             idx_list.sort_unstable_by(|a, b| b.cmp(a));
             for i in idx_list {
@@ -153,7 +181,7 @@ impl Seqs {
             Ok(())
         } else {
             let idx: isize = key.extract()?;
-            let music = self.inner_mut();
+            let mut music = self.inner_mut();
             let i = resolve_index!(idx, music.seqs.len())?;
             music.seqs.remove(i);
             Ok(())
@@ -176,7 +204,7 @@ impl Seqs {
 
     #[pyo3(signature = (index, value))]
     fn insert(&self, index: isize, value: Vec<u32>) {
-        let music = self.inner_mut();
+        let mut music = self.inner_mut();
         let len = music.seqs.len();
         let i = (if index < 0 {
             index + len as isize
@@ -189,7 +217,7 @@ impl Seqs {
 
     #[pyo3(signature = (index=None))]
     fn pop(&self, py: Python, index: Option<isize>) -> PyResult<Py<PyAny>> {
-        let music = self.inner_mut();
+        let mut music = self.inner_mut();
         let len = music.seqs.len();
         if len == 0 {
             return Err(pyo3::exceptions::PyIndexError::new_err(
@@ -226,7 +254,7 @@ impl Seqs {
     }
 }
 
-define_wrapper!(Music, pyxel::Music);
+define_audio_wrapper!(Music, pyxel::Music, pyxel::RcMusic);
 
 #[pymethods]
 impl Music {
@@ -260,7 +288,8 @@ impl Music {
 
     #[pyo3(signature = (filename, sec, ffmpeg=None))]
     fn save(&self, filename: &str, sec: f32, ffmpeg: Option<bool>) -> PyResult<()> {
-        self.inner_mut()
+        let music = self.inner_ref().clone();
+        music
             .save(filename, sec, ffmpeg)
             .map_err(PyException::new_err)
     }

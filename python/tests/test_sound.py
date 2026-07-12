@@ -88,13 +88,34 @@ class TestSound:
         assert snd.effects[0] == 0  # n=None
         assert snd.effects[2] == 2  # v=Vibrato
 
-    def test_save(self, tmp_path):
-        snd = pyxel.Sound()
-        snd.set("c2e2g2c3", "ssss", "7654", "nnnn", 10)
-        path = str(tmp_path / "test_snd.wav")
-        snd.save(path, 1.0)
-        assert Path(path).exists()
-        assert Path(path).stat().st_size > 0
+    def test_save_is_byte_deterministic(self, tmp_path):
+        tone = pyxel.tones[0]
+        original_tone = (
+            tone.mode,
+            tone.sample_bits,
+            list(tone.wavetable),
+            tone.gain,
+        )
+        try:
+            tone.mode = 0
+            tone.sample_bits = 2
+            tone.wavetable[:] = [0, 3, 3, 0]
+            tone.gain = 0.75
+            snd = pyxel.Sound()
+            snd.set("c2r e2g2", "0000", "7531", "nfhq", 3)
+            first_path = str(tmp_path / "first.wav")
+            second_path = str(tmp_path / "second.wav")
+
+            # The sound lasts 0.1 seconds, so this renders exactly two loops.
+            snd.save(first_path, 0.2)
+            snd.save(second_path, 0.2)
+            actual = Path(first_path).read_bytes()
+            assert Path(second_path).read_bytes() == actual
+        finally:
+            tone.mode = original_tone[0]
+            tone.sample_bits = original_tone[1]
+            tone.wavetable[:] = original_tone[2]
+            tone.gain = original_tone[3]
 
     def test_save_out_of_range_tone_falls_back(self, tmp_path):
         # Tone numbers beyond the tone list fall back to tone 0, like playback.

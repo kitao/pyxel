@@ -188,8 +188,9 @@ impl Mat4 {
         let ry = Self::rotation_y(euler.y);
         let rz = Self::rotation_z(euler.z);
         // XYZ extrinsic: result = Rz * Ry * Rx
-        let zy = rc_ref!(&rz).mul_mat(rc_ref!(&ry));
-        rc_ref!(&zy).mul_mat(rc_ref!(&rx))
+        let zy = rc_ref!(&rz).mul_mat(&rc_ref!(&ry));
+        let result = rc_ref!(&zy).mul_mat(&rc_ref!(&rx));
+        result
     }
 
     pub fn from_axis_angle(axis: &Vec3, deg: f32) -> RcMat4 {
@@ -213,8 +214,9 @@ impl Mat4 {
         let t = Self::from_translation(pos);
         let r = Self::from_quat(rot);
         let s = Self::from_scale(scale);
-        let tr = rc_ref!(&t).mul_mat(rc_ref!(&r));
-        rc_ref!(&tr).mul_mat(rc_ref!(&s))
+        let tr = rc_ref!(&t).mul_mat(&rc_ref!(&r));
+        let result = rc_ref!(&tr).mul_mat(&rc_ref!(&s));
+        result
     }
 
     pub fn look_at(eye: &Vec3, target: &Vec3, up: &Vec3) -> RcMat4 {
@@ -245,7 +247,7 @@ impl Mat4 {
         }
         let s = rc_ref!(&s_rc).normalize();
         let s = rc_ref!(&s);
-        let u_rc = s.cross(f);
+        let u_rc = s.cross(&f);
         let u = rc_ref!(&u_rc);
         Self::from_rows([
             [s.x, u.x, -f.x, eye.x],
@@ -259,32 +261,38 @@ impl Mat4 {
 
     pub fn translate(&self, v: &Vec3) -> RcMat4 {
         let t = Self::from_translation(v);
-        self.mul_mat(rc_ref!(&t))
+        let result = self.mul_mat(&rc_ref!(&t));
+        result
     }
 
     pub fn rotate(&self, axis: &Vec3, deg: f32) -> RcMat4 {
         let r = Self::rotation_axis_angle(axis, deg);
-        self.mul_mat(rc_ref!(&r))
+        let result = self.mul_mat(&rc_ref!(&r));
+        result
     }
 
     pub fn rotate_x(&self, deg: f32) -> RcMat4 {
         let r = Self::rotation_x(deg);
-        self.mul_mat(rc_ref!(&r))
+        let result = self.mul_mat(&rc_ref!(&r));
+        result
     }
 
     pub fn rotate_y(&self, deg: f32) -> RcMat4 {
         let r = Self::rotation_y(deg);
-        self.mul_mat(rc_ref!(&r))
+        let result = self.mul_mat(&rc_ref!(&r));
+        result
     }
 
     pub fn rotate_z(&self, deg: f32) -> RcMat4 {
         let r = Self::rotation_z(deg);
-        self.mul_mat(rc_ref!(&r))
+        let result = self.mul_mat(&rc_ref!(&r));
+        result
     }
 
     pub fn scale_by(&self, v: &Vec3) -> RcMat4 {
         let s = Self::from_scale(v);
-        self.mul_mat(rc_ref!(&s))
+        let result = self.mul_mat(&rc_ref!(&s));
+        result
     }
 
     // Matrix operations
@@ -438,7 +446,8 @@ impl Mat4 {
 
     pub fn to_local(&self, mat: &Self) -> RcMat4 {
         let inv_rc = mat.inverse();
-        rc_ref!(&inv_rc).mul_mat(self)
+        let result = rc_ref!(&inv_rc).mul_mat(self);
+        result
     }
 
     pub fn to_world(&self, mat: &Self) -> RcMat4 {
@@ -449,12 +458,14 @@ impl Mat4 {
         // Build a translation-stripped inverse
         let r_only = Self::strip_translation(mat);
         let inv_rc = rc_ref!(&r_only).inverse();
-        rc_ref!(&inv_rc).mul_mat(self)
+        let result = rc_ref!(&inv_rc).mul_mat(self);
+        result
     }
 
     pub fn to_world_dir(&self, mat: &Self) -> RcMat4 {
         let r_only = Self::strip_translation(mat);
-        rc_ref!(&r_only).mul_mat(self)
+        let result = rc_ref!(&r_only).mul_mat(self);
+        result
     }
 
     // Internal helpers
@@ -682,8 +693,8 @@ mod tests {
         ]);
         let m_ref = rc_ref!(&m);
         let i = Mat4::identity();
-        let result = deref(&m_ref.mul_mat(rc_ref!(&i)));
-        assert!(approx_eq_mat(&result, m_ref));
+        let result = deref(&m_ref.mul_mat(&rc_ref!(&i)));
+        assert!(approx_eq_mat(&result, &m_ref));
     }
 
     #[test]
@@ -748,9 +759,9 @@ mod tests {
         );
         let m_ref = rc_ref!(&m);
         let inv = m_ref.inverse();
-        let identity = m_ref.mul_mat(rc_ref!(&inv));
+        let identity = m_ref.mul_mat(&rc_ref!(&inv));
         let i_default = Mat4::identity();
-        assert!(approx_eq_mat(rc_ref!(&identity), rc_ref!(&i_default)));
+        assert!(approx_eq_mat(&rc_ref!(&identity), &rc_ref!(&i_default)));
     }
 
     #[test]
@@ -1055,8 +1066,7 @@ mod tests {
 
     #[test]
     fn test_inverse_singular_returns_identity() {
-        // Zero matrix has det=0 — the inverse falls back to identity to
-        // keep callers panic-free (cube-design.md performance posture).
+        // A singular inverse falls back to identity to keep callers panic-free.
         let m = Mat4::from_rows([[0.0; 4]; 4]);
         let inv = deref(&rc_ref!(&m).inverse());
         let id = deref(&Mat4::identity());
