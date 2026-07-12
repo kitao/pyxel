@@ -54,8 +54,7 @@ fn set_input_text(text: &str) {
 
 #[pyfunction]
 fn set_dropped_files(files: Vec<String>) {
-    let refs: Vec<&str> = files.iter().map(String::as_str).collect();
-    pyxel().set_dropped_files(&refs);
+    pyxel().set_dropped_files(&files);
 }
 
 // Module registration

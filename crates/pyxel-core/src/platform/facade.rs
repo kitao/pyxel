@@ -1,4 +1,4 @@
-use std::ptr::null_mut;
+use std::cell::RefCell;
 use std::sync::atomic::{AtomicBool, Ordering};
 
 use glow::Context;
@@ -14,11 +14,23 @@ pub enum GlProfile {
     Gles,
 }
 
-static mut PLATFORM: *mut Platform = null_mut();
+thread_local! {
+    static PLATFORM: RefCell<Option<Platform>> = const { RefCell::new(None) };
+}
 static HEADLESS: AtomicBool = AtomicBool::new(false);
 
-fn platform() -> &'static mut Platform {
-    unsafe { &mut *PLATFORM }
+fn with_platform<T>(f: impl FnOnce(&Platform) -> T) -> T {
+    PLATFORM.with(|platform| {
+        let platform = platform.borrow();
+        f(platform.as_ref().expect("Platform not initialized"))
+    })
+}
+
+fn with_platform_mut<T>(f: impl FnOnce(&mut Platform) -> T) -> T {
+    PLATFORM.with(|platform| {
+        let mut platform = platform.borrow_mut();
+        f(platform.as_mut().expect("Platform not initialized"))
+    })
 }
 
 fn is_headless() -> bool {
@@ -43,19 +55,9 @@ pub fn is_sigint_received() -> bool {
 pub fn init(headless: bool) {
     HEADLESS.store(headless, Ordering::Relaxed);
 
-    // Repeated init() replaces the previous platform instance.
-    unsafe {
-        if !PLATFORM.is_null() {
-            drop(Box::from_raw(PLATFORM));
-            PLATFORM = null_mut();
-        }
-    }
-
     let mut platform = Platform::new();
     platform.init(headless);
-    unsafe {
-        PLATFORM = Box::into_raw(Box::new(platform));
-    }
+    PLATFORM.with(|current| *current.borrow_mut() = Some(platform));
 
     #[cfg(not(target_os = "emscripten"))]
     unsafe {
@@ -70,16 +72,16 @@ pub fn quit() {
     if let Some(mut callback) = crate::quit_callback().take() {
         callback();
     }
-    platform().quit();
+    with_platform_mut(Platform::quit);
 }
 
 pub fn ticks() -> u32 {
-    platform().ticks()
+    with_platform(Platform::ticks)
 }
 
 pub fn export_browser_file(filename: &str) {
     if !is_headless() {
-        platform().export_browser_file(filename);
+        with_platform(|platform| platform.export_browser_file(filename));
     }
 }
 
@@ -87,7 +89,7 @@ pub fn export_browser_file(filename: &str) {
 
 pub fn init_window(title: &str, width: u32, height: u32) {
     if !is_headless() {
-        platform().init_window(title, width, height);
+        with_platform_mut(|platform| platform.init_window(title, width, height));
     }
 }
 
@@ -95,12 +97,12 @@ pub fn window_pos() -> (i32, i32) {
     if is_headless() {
         return (0, 0);
     }
-    platform().window_pos()
+    with_platform(Platform::window_pos)
 }
 
 pub fn set_window_pos(x: i32, y: i32) {
     if !is_headless() {
-        platform().set_window_pos(x, y);
+        with_platform_mut(|platform| platform.set_window_pos(x, y));
     }
 }
 
@@ -108,24 +110,24 @@ pub fn window_size() -> (u32, u32) {
     if is_headless() {
         return (0, 0);
     }
-    platform().window_size()
+    with_platform(Platform::window_size)
 }
 
 pub fn set_window_size(width: u32, height: u32) {
     if !is_headless() {
-        platform().set_window_size(width, height);
+        with_platform_mut(|platform| platform.set_window_size(width, height));
     }
 }
 
 pub fn set_window_title(title: &str) {
     if !is_headless() {
-        platform().set_window_title(title);
+        with_platform_mut(|platform| platform.set_window_title(title));
     }
 }
 
 pub fn set_window_icon(width: u32, height: u32, rgba: &[u8]) {
     if !is_headless() {
-        platform().set_window_icon(width, height, rgba);
+        with_platform_mut(|platform| platform.set_window_icon(width, height, rgba));
     }
 }
 
@@ -133,24 +135,24 @@ pub fn is_fullscreen() -> bool {
     if is_headless() {
         return false;
     }
-    platform().is_fullscreen()
+    with_platform(Platform::is_fullscreen)
 }
 
 pub fn set_fullscreen(enabled: bool) {
     if !is_headless() {
-        platform().set_fullscreen(enabled);
+        with_platform_mut(|platform| platform.set_fullscreen(enabled));
     }
 }
 
 pub fn set_mouse_pos(x: i32, y: i32) {
     if !is_headless() {
-        platform().set_mouse_pos(x, y);
+        with_platform_mut(|platform| platform.set_mouse_pos(x, y));
     }
 }
 
 pub fn set_mouse_visible(visible: bool) {
     if !is_headless() {
-        platform().set_mouse_visible(visible);
+        with_platform_mut(|platform| platform.set_mouse_visible(visible));
     }
 }
 
@@ -158,7 +160,7 @@ pub fn display_size() -> (u32, u32) {
     if is_headless() {
         return (0, 0);
     }
-    platform().display_size()
+    with_platform(Platform::display_size)
 }
 
 // Audio
@@ -168,40 +170,45 @@ pub fn start_audio<F: FnMut(&mut [i16]) + 'static>(
     buffer_size: u32,
     callback: F,
 ) {
-    platform().start_audio(sample_rate, buffer_size, callback);
+    with_platform_mut(|platform| platform.start_audio(sample_rate, buffer_size, callback));
 }
 
 pub fn pause_audio(paused: bool) {
-    platform().pause_audio(paused);
+    with_platform_mut(|platform| platform.pause_audio(paused));
 }
 
 #[cfg(not(target_os = "emscripten"))]
 pub fn close_audio() {
-    platform().close_audio();
+    with_platform_mut(Platform::close_audio);
 }
 
 pub fn lock_audio() {
-    platform().lock_audio();
+    with_platform(Platform::lock_audio);
 }
 
 pub fn unlock_audio() {
-    platform().unlock_audio();
+    with_platform(Platform::unlock_audio);
 }
 
 // Frame
 
 pub fn run_frame_loop<F: FnMut(f32)>(fps: u32, callback: F) {
-    platform().run_frame_loop(fps, callback);
+    Platform::run_frame_loop(fps, callback);
 }
 
 pub fn step_frame(fps: u32) {
-    platform().step_frame(fps);
+    with_platform_mut(|platform| platform.step_frame(fps));
+}
+
+#[cfg(not(target_os = "emscripten"))]
+pub(super) fn swap_window() {
+    with_platform(Platform::swap_window);
 }
 
 pub fn poll_events(events: &mut Vec<Event>) {
     events.clear();
     if !is_headless() {
-        platform().poll_events(events);
+        with_platform_mut(|platform| platform.poll_events(events));
     }
 }
 
@@ -211,13 +218,13 @@ pub fn gl_profile() -> GlProfile {
     if is_headless() {
         return GlProfile::None;
     }
-    platform().gl_profile()
+    with_platform(Platform::gl_profile)
 }
 
-pub fn gl_context() -> &'static mut Context {
+pub fn with_gl_context<T>(f: impl FnOnce(&mut Context) -> T) -> T {
     assert!(
         !is_headless(),
         "GL context is not available in headless mode"
     );
-    platform().gl_context()
+    with_platform_mut(|platform| platform.with_gl_context(f))
 }

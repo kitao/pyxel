@@ -232,7 +232,8 @@ impl Vec3 {
 
     pub fn to_local(&self, mat: &Mat4) -> RcVec3 {
         let inv_rc = mat.inverse();
-        rc_ref!(&inv_rc).mul_vec(self)
+        let result = rc_ref!(&inv_rc).mul_vec(self);
+        result
     }
 
     pub fn to_world(&self, mat: &Mat4) -> RcVec3 {
@@ -241,7 +242,8 @@ impl Vec3 {
 
     pub fn to_local_dir(&self, mat: &Mat4) -> RcVec3 {
         let inv_rc = mat.inverse();
-        rc_ref!(&inv_rc).mul_dir(self)
+        let result = rc_ref!(&inv_rc).mul_dir(self);
+        result
     }
 
     pub fn to_world_dir(&self, mat: &Mat4) -> RcVec3 {
@@ -691,7 +693,7 @@ mod tests {
             z: 0.0,
         });
         let mat = rc_ref!(&mat_rc);
-        let r = deref(&v.to_world(mat));
+        let r = deref(&v.to_world(&mat));
         assert_eq!(r.x, 11.0);
         assert_eq!(r.y, 0.0);
         assert_eq!(r.z, 0.0);
@@ -711,8 +713,8 @@ mod tests {
             z: -1.0,
         });
         let mat = rc_ref!(&mat_rc);
-        let world = v.to_world(mat);
-        let back = rc_ref!(&world).to_local(mat);
+        let world = v.to_world(&mat);
+        let back = rc_ref!(&world).to_local(&mat);
         let back = deref(&back);
         assert!((back.x - v.x).abs() < 1e-4);
         assert!((back.y - v.y).abs() < 1e-4);
@@ -733,7 +735,7 @@ mod tests {
             z: 100.0,
         });
         let mat = rc_ref!(&mat_rc);
-        let r = deref(&dir.to_world_dir(mat));
+        let r = deref(&dir.to_world_dir(&mat));
         assert_eq!(r.x, 1.0);
         assert_eq!(r.y, 0.0);
         assert_eq!(r.z, 0.0);
@@ -752,8 +754,8 @@ mod tests {
             z: 0.0,
         });
         let mat = rc_ref!(&mat_rc);
-        let world = dir.to_world_dir(mat);
-        let back = rc_ref!(&world).to_local_dir(mat);
+        let world = dir.to_world_dir(&mat);
+        let back = rc_ref!(&world).to_local_dir(&mat);
         let back = deref(&back);
         assert!((back.x - dir.x).abs() < 1e-4);
         assert!((back.y - dir.y).abs() < 1e-4);

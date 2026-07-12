@@ -1,11 +1,9 @@
-use std::ffi::CString;
-
 use pyo3::exceptions::{PyException, PyValueError};
 use pyo3::prelude::*;
-use pyo3::types::PyDict;
 
 use crate::font_wrapper::Font;
 use crate::tilemap_wrapper::Tilemap;
+use crate::utils::ctypes_array_from_address;
 
 // Deprecated option compatibility
 
@@ -28,8 +26,10 @@ impl Image {
     // Constructors
 
     #[new]
-    fn new(width: u32, height: u32) -> Self {
-        Self::wrap(pyxel::Image::new(width, height))
+    fn new(width: u32, height: u32) -> PyResult<Self> {
+        pyxel::Image::try_new(width, height)
+            .map(Self::wrap)
+            .map_err(PyValueError::new_err)
     }
 
     #[staticmethod]
@@ -60,25 +60,16 @@ impl Image {
     // Data operations
 
     fn data_ptr(&self, py: Python) -> PyResult<Py<PyAny>> {
-        let inner = self.inner_mut();
-        // Expose the image buffer as a ctypes array without copying.
-        let python_code = CString::new(format!(
-            "import ctypes; c_uint8_array = (ctypes.c_uint8 * {}).from_address({:p})",
-            inner.width() * inner.height(),
-            inner.data_ptr()
-        ))
-        .expect("data pointer script is built from numeric values");
-        let locals = PyDict::new(py);
-        py.run(python_code.as_c_str(), None, Some(&locals))?;
-        let array = locals
-            .get_item("c_uint8_array")?
-            .ok_or_else(|| PyException::new_err("Failed to create data pointer"))?;
-        Ok(array.unbind())
+        let mut inner = self.inner_mut();
+        let length = inner.width() as usize * inner.height() as usize;
+        let address = inner.data_ptr() as usize;
+        ctypes_array_from_address(py, "c_uint8", length, address)
     }
 
-    fn set(&self, x: i32, y: i32, data: Vec<String>) {
-        let data_refs: Vec<_> = data.iter().map(String::as_str).collect();
-        self.inner_mut().set(x, y, &data_refs);
+    fn set(&self, x: i32, y: i32, data: Vec<String>) -> PyResult<()> {
+        self.inner_mut()
+            .set(x, y, &data)
+            .map_err(PyValueError::new_err)
     }
 
     #[pyo3(signature = (x, y, filename, include_colors=None, incl_colors=None))]

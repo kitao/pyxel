@@ -323,7 +323,7 @@ pub fn lookup_ramp(shading: &Shading, base_col: i32, normal: Option<&Vec3>) -> (
         return (c, c);
     }
     let direction = rc_ref!(&shading.direction);
-    let level = face_shade_level(direction, normal);
+    let level = face_shade_level(&direction, normal);
     let col = base_col.clamp(0, palette_size as i32 - 1) as usize;
     shading.get(col, level)
 }
@@ -1164,7 +1164,7 @@ mod tests {
     #[test]
     fn test_view_matrix_identity_camera() {
         let camera = Camera::new();
-        let v = view_matrix(rc_ref!(&camera));
+        let v = view_matrix(&rc_ref!(&camera));
         // Identity camera transform yields identity view matrix.
         assert!((v[0][0] - 1.0).abs() < 1e-6);
         assert!((v[1][1] - 1.0).abs() < 1e-6);
@@ -1175,7 +1175,7 @@ mod tests {
     #[test]
     fn test_projection_matrix_perspective_aspect() {
         let camera = Camera::new();
-        let p = projection_matrix(rc_ref!(&camera), 256.0, 192.0);
+        let p = projection_matrix(&rc_ref!(&camera), 256.0, 192.0);
         // Perspective: p[0][0] = f / aspect, p[1][1] = f.
         let f = 1.0 / (rc_ref!(&camera).fov.to_radians() * 0.5).tan();
         let aspect = 256.0 / 192.0;
@@ -1189,7 +1189,7 @@ mod tests {
     fn test_projection_matrix_orthographic() {
         let camera = Camera::new();
         rc_mut!(&camera).ortho_size = Some(10.0);
-        let p = projection_matrix(rc_ref!(&camera), 200.0, 100.0);
+        let p = projection_matrix(&rc_ref!(&camera), 200.0, 100.0);
         // Orthographic: p[0][0] = 1 / (size/2 * aspect), p[1][1] = 1 / (size/2).
         let half_h = 5.0_f32;
         let half_w = half_h * 2.0;
@@ -1201,8 +1201,8 @@ mod tests {
 
     #[test]
     fn test_mat_apply_translation() {
-        let mat = Mat4::from_translation(rc_ref!(&Vec3::new(1.0, 2.0, 3.0)));
-        let result = mat_apply(rc_ref!(&mat), &vec3(0.0, 0.0, 0.0));
+        let mat = Mat4::from_translation(&rc_ref!(&Vec3::new(1.0, 2.0, 3.0)));
+        let result = mat_apply(&rc_ref!(&mat), &vec3(0.0, 0.0, 0.0));
         assert_eq!(result.x, 1.0);
         assert_eq!(result.y, 2.0);
         assert_eq!(result.z, 3.0);
@@ -1211,7 +1211,7 @@ mod tests {
     #[test]
     fn test_mat_apply_identity_preserves_vec3() {
         let mat = Mat4::identity();
-        let result = mat_apply(rc_ref!(&mat), &vec3(4.0, 5.0, 6.0));
+        let result = mat_apply(&rc_ref!(&mat), &vec3(4.0, 5.0, 6.0));
         assert_eq!(result.x, 4.0);
         assert_eq!(result.y, 5.0);
         assert_eq!(result.z, 6.0);
@@ -1220,8 +1220,8 @@ mod tests {
     #[test]
     fn test_world_to_screen_center() {
         let camera = Camera::new();
-        let v = view_matrix(rc_ref!(&camera));
-        let p = projection_matrix(rc_ref!(&camera), 256.0, 192.0);
+        let v = view_matrix(&rc_ref!(&camera));
+        let p = projection_matrix(&rc_ref!(&camera), 256.0, 192.0);
         let vp = matmul(&p, &v);
         let clip = camera_clip_row(&v);
         // Default camera looks down -Z; pick a point in front.
@@ -1234,8 +1234,8 @@ mod tests {
     #[test]
     fn test_world_to_screen_behind_camera() {
         let camera = Camera::new();
-        let v = view_matrix(rc_ref!(&camera));
-        let p = projection_matrix(rc_ref!(&camera), 256.0, 192.0);
+        let v = view_matrix(&rc_ref!(&camera));
+        let p = projection_matrix(&rc_ref!(&camera), 256.0, 192.0);
         let vp = matmul(&p, &v);
         let clip = camera_clip_row(&v);
         // A point behind the camera (+Z by default) returns None.
@@ -1272,7 +1272,7 @@ mod tests {
     #[test]
     fn test_camera_right_up_default() {
         let camera = Camera::new();
-        let (right, up) = camera_right_up(rc_ref!(&camera));
+        let (right, up) = camera_right_up(&rc_ref!(&camera));
         // Identity camera: right = +X, up = +Y.
         assert!((right.x - 1.0).abs() < 1e-6);
         assert_eq!(right.y, 0.0);
@@ -1285,8 +1285,8 @@ mod tests {
     #[test]
     fn test_screen_circle_centered() {
         let camera = Camera::new();
-        let v = view_matrix(rc_ref!(&camera));
-        let p = projection_matrix(rc_ref!(&camera), 256.0, 192.0);
+        let v = view_matrix(&rc_ref!(&camera));
+        let p = projection_matrix(&rc_ref!(&camera), 256.0, 192.0);
         let vp = matmul(&p, &v);
         let clip = camera_clip_row(&v);
         let result = screen_circle(
@@ -1294,7 +1294,7 @@ mod tests {
             0.5,
             &vp,
             &clip,
-            rc_ref!(&camera),
+            &rc_ref!(&camera),
             0.0,
             0.0,
             256.0,
@@ -1311,8 +1311,8 @@ mod tests {
     #[test]
     fn test_screen_circle_behind_camera() {
         let camera = Camera::new();
-        let v = view_matrix(rc_ref!(&camera));
-        let p = projection_matrix(rc_ref!(&camera), 256.0, 192.0);
+        let v = view_matrix(&rc_ref!(&camera));
+        let p = projection_matrix(&rc_ref!(&camera), 256.0, 192.0);
         let vp = matmul(&p, &v);
         let clip = camera_clip_row(&v);
         let result = screen_circle(
@@ -1320,7 +1320,7 @@ mod tests {
             0.5,
             &vp,
             &clip,
-            rc_ref!(&camera),
+            &rc_ref!(&camera),
             0.0,
             0.0,
             256.0,
@@ -1342,7 +1342,7 @@ mod tests {
         // palette's lv-0 LUT entry for col 7 (white) is flat col 13 (gray).
         let shading = Shading::new(&pyxel_default_palette());
         let shading = rc_ref!(&shading);
-        let col = shade(shading, 7, None);
+        let col = shade(&shading, 7, None);
         assert_eq!(col, 13);
     }
 
@@ -1391,8 +1391,8 @@ mod tests {
     #[test]
     fn test_write_pixel_writes_at_coord() {
         let (img, mut depth, _) = make_target_and_depth(8, 8);
-        let img_mut = rc_mut!(&img);
-        write_pixel(img_mut, &mut depth, 8, 3, 3, 0.0, 5, 1.0, true, true);
+        let mut img_mut = rc_mut!(&img);
+        write_pixel(&mut img_mut, &mut depth, 8, 3, 3, 0.0, 5, 1.0, true, true);
         assert_eq!(img_mut.canvas.read_data(3, 3), 5);
         assert_eq!(depth[3 * 8 + 3], 0.0);
     }
@@ -1400,19 +1400,19 @@ mod tests {
     #[test]
     fn test_write_pixel_z_test_blocks_far() {
         let (img, mut depth, _) = make_target_and_depth(8, 8);
-        let img_mut = rc_mut!(&img);
-        write_pixel(img_mut, &mut depth, 8, 4, 4, 0.0, 10, 1.0, true, true);
+        let mut img_mut = rc_mut!(&img);
+        write_pixel(&mut img_mut, &mut depth, 8, 4, 4, 0.0, 10, 1.0, true, true);
         // A farther write attempt is rejected by the depth test.
-        write_pixel(img_mut, &mut depth, 8, 4, 4, 0.5, 11, 1.0, true, true);
+        write_pixel(&mut img_mut, &mut depth, 8, 4, 4, 0.5, 11, 1.0, true, true);
         assert_eq!(img_mut.canvas.read_data(4, 4), 10);
     }
 
     #[test]
     fn test_rasterize_line_horizontal() {
         let (img, mut depth, clip) = make_target_and_depth(32, 32);
-        let img_mut = rc_mut!(&img);
+        let mut img_mut = rc_mut!(&img);
         rasterize_line(
-            img_mut,
+            &mut img_mut,
             &mut depth,
             32,
             (5.0, 10.0, 0.0),
@@ -1432,9 +1432,9 @@ mod tests {
     #[test]
     fn test_rasterize_line_vertical() {
         let (img, mut depth, clip) = make_target_and_depth(32, 32);
-        let img_mut = rc_mut!(&img);
+        let mut img_mut = rc_mut!(&img);
         rasterize_line(
-            img_mut,
+            &mut img_mut,
             &mut depth,
             32,
             (5.0, 5.0, 0.0),
@@ -1454,9 +1454,9 @@ mod tests {
     #[test]
     fn test_rasterize_line_single_point() {
         let (img, mut depth, clip) = make_target_and_depth(8, 8);
-        let img_mut = rc_mut!(&img);
+        let mut img_mut = rc_mut!(&img);
         rasterize_line(
-            img_mut,
+            &mut img_mut,
             &mut depth,
             8,
             (3.0, 3.0, 0.25),
@@ -1475,9 +1475,9 @@ mod tests {
     #[test]
     fn test_rasterize_line_depth_z_test() {
         let (img, mut depth, clip) = make_target_and_depth(8, 8);
-        let img_mut = rc_mut!(&img);
+        let mut img_mut = rc_mut!(&img);
         rasterize_line(
-            img_mut,
+            &mut img_mut,
             &mut depth,
             8,
             (0.0, 0.0, 0.0),
@@ -1490,7 +1490,7 @@ mod tests {
             true,
         );
         rasterize_line(
-            img_mut,
+            &mut img_mut,
             &mut depth,
             8,
             (0.0, 0.0, 0.5),
@@ -1541,10 +1541,10 @@ mod tests {
     #[test]
     fn test_rasterize_line_equal_depth_over_surface_is_visible() {
         let (img, mut depth, clip) = make_target_and_depth(8, 8);
-        let img_mut = rc_mut!(&img);
-        draw_flat_square_surface(img_mut, &mut depth, clip);
+        let mut img_mut = rc_mut!(&img);
+        draw_flat_square_surface(&mut img_mut, &mut depth, clip);
         rasterize_line(
-            img_mut,
+            &mut img_mut,
             &mut depth,
             8,
             (2.0, 2.0, 0.5),
@@ -1565,10 +1565,10 @@ mod tests {
     #[test]
     fn test_rasterize_line_behind_surface_stays_hidden() {
         let (img, mut depth, clip) = make_target_and_depth(8, 8);
-        let img_mut = rc_mut!(&img);
-        draw_flat_square_surface(img_mut, &mut depth, clip);
+        let mut img_mut = rc_mut!(&img);
+        draw_flat_square_surface(&mut img_mut, &mut depth, clip);
         rasterize_line(
-            img_mut,
+            &mut img_mut,
             &mut depth,
             8,
             (2.0, 2.0, 0.51),
@@ -1589,7 +1589,7 @@ mod tests {
     #[test]
     fn test_rasterize_line_clip_rejects_outside() {
         let (img, mut depth, _) = make_target_and_depth(8, 8);
-        let img_mut = rc_mut!(&img);
+        let mut img_mut = rc_mut!(&img);
         let small_clip = ClipRect {
             left: 0,
             top: 0,
@@ -1597,7 +1597,7 @@ mod tests {
             bottom: 3,
         };
         rasterize_line(
-            img_mut,
+            &mut img_mut,
             &mut depth,
             8,
             (0.0, 0.0, 0.0),
@@ -1654,7 +1654,7 @@ mod tests {
 
         let (actual, mut depth, clip) = make_target_and_depth(32, 32);
         rasterize_line(
-            rc_mut!(&actual),
+            &mut rc_mut!(&actual),
             &mut depth,
             32,
             (4.0, 5.0, 0.0),
@@ -1673,9 +1673,9 @@ mod tests {
     #[test]
     fn test_rasterize_triangle_fills_interior() {
         let (img, mut depth, clip) = make_target_and_depth(16, 16);
-        let img_mut = rc_mut!(&img);
+        let mut img_mut = rc_mut!(&img);
         rasterize_triangle(
-            img_mut,
+            &mut img_mut,
             &mut depth,
             16,
             (2.0, 2.0, 0.0),
@@ -1695,9 +1695,9 @@ mod tests {
     #[test]
     fn test_rasterize_triangle_z_interpolated() {
         let (img, mut depth, clip) = make_target_and_depth(16, 16);
-        let img_mut = rc_mut!(&img);
+        let mut img_mut = rc_mut!(&img);
         rasterize_triangle(
-            img_mut,
+            &mut img_mut,
             &mut depth,
             16,
             (0.0, 0.0, 0.0),
@@ -1718,9 +1718,9 @@ mod tests {
     fn test_rasterize_triangle_back_face_also_drawn() {
         // CW winding still rasterizes — cube has no back-face culling.
         let (img, mut depth, clip) = make_target_and_depth(16, 16);
-        let img_mut = rc_mut!(&img);
+        let mut img_mut = rc_mut!(&img);
         rasterize_triangle(
-            img_mut,
+            &mut img_mut,
             &mut depth,
             16,
             (2.0, 2.0, 0.0),
@@ -1738,7 +1738,7 @@ mod tests {
 
     fn draw_split_square(reverse_order: bool) -> Vec<u8> {
         let (img, mut depth, clip) = make_target_and_depth(8, 8);
-        let img_mut = rc_mut!(&img);
+        let mut img_mut = rc_mut!(&img);
         let tri_a = |img_mut: &mut Image, depth: &mut [f32]| {
             rasterize_triangle(
                 img_mut,
@@ -1772,12 +1772,13 @@ mod tests {
             );
         };
         if reverse_order {
-            tri_b(img_mut, &mut depth);
-            tri_a(img_mut, &mut depth);
+            tri_b(&mut img_mut, &mut depth);
+            tri_a(&mut img_mut, &mut depth);
         } else {
-            tri_a(img_mut, &mut depth);
-            tri_b(img_mut, &mut depth);
+            tri_a(&mut img_mut, &mut depth);
+            tri_b(&mut img_mut, &mut depth);
         }
+        drop(img_mut);
         image_data(&img)
     }
 
@@ -1789,9 +1790,9 @@ mod tests {
     #[test]
     fn test_rasterize_triangle_split_square_has_no_shared_edge_holes() {
         let (img, mut depth, clip) = make_target_and_depth(8, 8);
-        let img_mut = rc_mut!(&img);
+        let mut img_mut = rc_mut!(&img);
         rasterize_triangle(
-            img_mut,
+            &mut img_mut,
             &mut depth,
             8,
             (1.0, 1.0, 0.0),
@@ -1805,7 +1806,7 @@ mod tests {
             false,
         );
         rasterize_triangle(
-            img_mut,
+            &mut img_mut,
             &mut depth,
             8,
             (1.0, 1.0, 0.0),
@@ -1829,9 +1830,9 @@ mod tests {
     #[test]
     fn test_rasterize_triangle_split_square_depth_test_has_no_shared_edge_holes() {
         let (img, mut depth, clip) = make_target_and_depth(8, 8);
-        let img_mut = rc_mut!(&img);
+        let mut img_mut = rc_mut!(&img);
         rasterize_triangle(
-            img_mut,
+            &mut img_mut,
             &mut depth,
             8,
             (1.0, 1.0, 0.25),
@@ -1845,7 +1846,7 @@ mod tests {
             true,
         );
         rasterize_triangle(
-            img_mut,
+            &mut img_mut,
             &mut depth,
             8,
             (1.0, 1.0, 0.25),
@@ -1870,10 +1871,10 @@ mod tests {
     #[test]
     fn test_rasterize_triangle_degenerate_skipped() {
         let (img, mut depth, clip) = make_target_and_depth(8, 8);
-        let img_mut = rc_mut!(&img);
+        let mut img_mut = rc_mut!(&img);
         // Three colinear points -> zero area -> skip.
         rasterize_triangle(
-            img_mut,
+            &mut img_mut,
             &mut depth,
             8,
             (0.0, 0.0, 0.0),
@@ -1894,7 +1895,7 @@ mod tests {
     #[test]
     fn test_rasterize_triangle_clip_rejects_outside() {
         let (img, mut depth, _) = make_target_and_depth(16, 16);
-        let img_mut = rc_mut!(&img);
+        let mut img_mut = rc_mut!(&img);
         let small_clip = ClipRect {
             left: 0,
             top: 0,
@@ -1902,7 +1903,7 @@ mod tests {
             bottom: 7,
         };
         rasterize_triangle(
-            img_mut,
+            &mut img_mut,
             &mut depth,
             16,
             (0.0, 0.0, 0.0),
@@ -1922,9 +1923,9 @@ mod tests {
     #[test]
     fn test_rasterize_textured_triangle_constant_sampler() {
         let (img, mut depth, clip) = make_target_and_depth(16, 16);
-        let img_mut = rc_mut!(&img);
+        let mut img_mut = rc_mut!(&img);
         rasterize_textured_triangle(
-            img_mut,
+            &mut img_mut,
             &mut depth,
             16,
             (2.0, 2.0, 0.0),
@@ -1947,9 +1948,9 @@ mod tests {
     #[test]
     fn test_rasterize_textured_triangle_uv_interpolation() {
         let (img, mut depth, clip) = make_target_and_depth(32, 32);
-        let img_mut = rc_mut!(&img);
+        let mut img_mut = rc_mut!(&img);
         rasterize_textured_triangle(
-            img_mut,
+            &mut img_mut,
             &mut depth,
             32,
             (5.0, 5.0, 0.0),
@@ -1973,9 +1974,9 @@ mod tests {
     #[test]
     fn test_rasterize_textured_triangle_colkey_skips() {
         let (img, mut depth, clip) = make_target_and_depth(16, 16);
-        let img_mut = rc_mut!(&img);
+        let mut img_mut = rc_mut!(&img);
         rasterize_textured_triangle(
-            img_mut,
+            &mut img_mut,
             &mut depth,
             16,
             (2.0, 2.0, 0.0),
@@ -1998,9 +1999,9 @@ mod tests {
     #[test]
     fn test_rasterize_textured_triangle_depth_test() {
         let (img, mut depth, clip) = make_target_and_depth(16, 16);
-        let img_mut = rc_mut!(&img);
+        let mut img_mut = rc_mut!(&img);
         rasterize_textured_triangle(
-            img_mut,
+            &mut img_mut,
             &mut depth,
             16,
             (2.0, 2.0, 0.0),
@@ -2017,7 +2018,7 @@ mod tests {
             true,
         );
         rasterize_textured_triangle(
-            img_mut,
+            &mut img_mut,
             &mut depth,
             16,
             (2.0, 2.0, 0.5),
@@ -2039,9 +2040,21 @@ mod tests {
     #[test]
     fn test_rasterize_circle_filled_center_and_edge() {
         let (img, mut depth, clip) = make_target_and_depth(32, 32);
-        let img_mut = rc_mut!(&img);
+        let mut img_mut = rc_mut!(&img);
         rasterize_circle_filled(
-            img_mut, &mut depth, 32, 16.0, 16.0, 5.0, 0.0, 12, 0, clip, 1.0, true, true,
+            &mut img_mut,
+            &mut depth,
+            32,
+            16.0,
+            16.0,
+            5.0,
+            0.0,
+            12,
+            0,
+            clip,
+            1.0,
+            true,
+            true,
         );
         assert_eq!(img_mut.canvas.read_data(16, 16), 12);
         assert_eq!(img_mut.canvas.read_data(20, 16), 12);
@@ -2055,7 +2068,7 @@ mod tests {
 
         let (actual, mut depth, clip) = make_target_and_depth(32, 32);
         rasterize_circle_filled(
-            rc_mut!(&actual),
+            &mut rc_mut!(&actual),
             &mut depth,
             32,
             16.0,
@@ -2076,9 +2089,21 @@ mod tests {
     #[test]
     fn test_rasterize_circle_border_thin_ring() {
         let (img, mut depth, clip) = make_target_and_depth(32, 32);
-        let img_mut = rc_mut!(&img);
+        let mut img_mut = rc_mut!(&img);
         rasterize_circle_border(
-            img_mut, &mut depth, 32, 16.0, 16.0, 5.0, 0.0, 8, 8, clip, 1.0, true, true,
+            &mut img_mut,
+            &mut depth,
+            32,
+            16.0,
+            16.0,
+            5.0,
+            0.0,
+            8,
+            8,
+            clip,
+            1.0,
+            true,
+            true,
         );
         // Center pixel is NOT filled (border only).
         assert_eq!(img_mut.canvas.read_data(16, 16), 0);
@@ -2093,7 +2118,7 @@ mod tests {
 
         let (actual, mut depth, clip) = make_target_and_depth(32, 32);
         rasterize_circle_border(
-            rc_mut!(&actual),
+            &mut rc_mut!(&actual),
             &mut depth,
             32,
             16.0,
@@ -2114,12 +2139,36 @@ mod tests {
     #[test]
     fn test_rasterize_circle_filled_z_test() {
         let (img, mut depth, clip) = make_target_and_depth(32, 32);
-        let img_mut = rc_mut!(&img);
+        let mut img_mut = rc_mut!(&img);
         rasterize_circle_filled(
-            img_mut, &mut depth, 32, 16.0, 16.0, 5.0, 0.0, 10, 0, clip, 1.0, true, true,
+            &mut img_mut,
+            &mut depth,
+            32,
+            16.0,
+            16.0,
+            5.0,
+            0.0,
+            10,
+            0,
+            clip,
+            1.0,
+            true,
+            true,
         );
         rasterize_circle_filled(
-            img_mut, &mut depth, 32, 16.0, 16.0, 5.0, 0.5, 11, 0, clip, 1.0, true, true,
+            &mut img_mut,
+            &mut depth,
+            32,
+            16.0,
+            16.0,
+            5.0,
+            0.5,
+            11,
+            0,
+            clip,
+            1.0,
+            true,
+            true,
         );
         assert_eq!(img_mut.canvas.read_data(16, 16), 10);
     }
@@ -2127,7 +2176,7 @@ mod tests {
     #[test]
     fn test_rasterize_circle_filled_clip_rejects_outside() {
         let (img, mut depth, _) = make_target_and_depth(32, 32);
-        let img_mut = rc_mut!(&img);
+        let mut img_mut = rc_mut!(&img);
         let small_clip = ClipRect {
             left: 0,
             top: 0,
@@ -2135,7 +2184,19 @@ mod tests {
             bottom: 7,
         };
         rasterize_circle_filled(
-            img_mut, &mut depth, 32, 3.0, 3.0, 10.0, 0.0, 5, 0, small_clip, 1.0, true, true,
+            &mut img_mut,
+            &mut depth,
+            32,
+            3.0,
+            3.0,
+            10.0,
+            0.0,
+            5,
+            0,
+            small_clip,
+            1.0,
+            true,
+            true,
         );
         assert_eq!(img_mut.canvas.read_data(3, 3), 5);
         assert_eq!(img_mut.canvas.read_data(16, 16), 0);

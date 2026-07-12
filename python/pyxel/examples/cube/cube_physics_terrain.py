@@ -88,7 +88,5 @@ class App:
         self.scene.draw(0, 0, 160, 120)
 
 
-# `if __name__` guard so test_physics_examples.py can import the
-# Ball / Floor classes without triggering pyxel.run.
 if __name__ == "__main__":
     App()

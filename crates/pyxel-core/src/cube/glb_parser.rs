@@ -35,7 +35,7 @@ pub(super) fn parse_glb(filename: &str, colkey: Option<i32>, fps: f32) -> Result
 
     let mesh = Mesh::new();
     {
-        let m = rc_mut!(&mesh);
+        let mut m = rc_mut!(&mesh);
         m.colkey = resolved_colkey;
         if let Some(material) = materials.first() {
             m.col_img = material.col_img.clone();
@@ -88,9 +88,10 @@ fn rgba8_to_pyxel_image(
     }
     validate_palette(colors)?;
 
-    let rc = Image::new(width, height);
+    let rc =
+        Image::try_new(width, height).map_err(|_| "GLB texture dimensions overflow".to_string())?;
     {
-        let image = rc_mut!(rc);
+        let mut image = rc_mut!(rc);
         let mut color_table = HashMap::<(u8, u8, u8), Color>::with_capacity(256);
 
         for y in 0..height_usize {
@@ -298,7 +299,7 @@ fn import_materials(
     colkey: Option<i32>,
 ) -> Result<(Vec<Material>, Option<i32>), String> {
     let colors = crate::pyxel::colors();
-    validate_palette(colors)?;
+    validate_palette(&colors)?;
 
     let mut used_colors = vec![false; colors.len()];
     let mut needs_mask_colkey = false;
@@ -314,7 +315,7 @@ fn import_materials(
                     img.width,
                     img.height,
                     &rgba,
-                    colors,
+                    &colors,
                     tint,
                     alpha_cutoff,
                     &mut used_colors,
@@ -322,12 +323,12 @@ fn import_materials(
             } else {
                 warn_glb("GLB base color texture image is missing; using flat material color");
                 let rgb = base_color_factor_to_rgb(pbr.base_color_factor())?;
-                let color = rgb_to_palette_color(rgb, colors)?;
+                let color = rgb_to_palette_color(rgb, &colors)?;
                 used_colors[color as usize] = true;
             }
         } else {
             let rgb = base_color_factor_to_rgb(pbr.base_color_factor())?;
-            let color = rgb_to_palette_color(rgb, colors)?;
+            let color = rgb_to_palette_color(rgb, &colors)?;
             used_colors[color as usize] = true;
         }
     }
@@ -357,7 +358,7 @@ fn import_materials(
                     img.width,
                     img.height,
                     &rgba,
-                    colors,
+                    &colors,
                     tint,
                     mask_colkey.map(|(colkey, cutoff)| (colkey as Color, cutoff)),
                 )?;
@@ -366,11 +367,11 @@ fn import_materials(
             } else {
                 warn_glb("GLB base color texture image is missing; using flat material color");
                 let rgb = base_color_factor_to_rgb(pbr.base_color_factor())?;
-                ColImage::Color(i32::from(rgb_to_palette_color(rgb, colors)?))
+                ColImage::Color(i32::from(rgb_to_palette_color(rgb, &colors)?))
             }
         } else {
             let rgb = base_color_factor_to_rgb(pbr.base_color_factor())?;
-            ColImage::Color(i32::from(rgb_to_palette_color(rgb, colors)?))
+            ColImage::Color(i32::from(rgb_to_palette_color(rgb, &colors)?))
         };
         materials.push(Material {
             col_img,
@@ -798,7 +799,7 @@ fn add_part(
     name: String,
     material_index: Option<usize>,
 ) -> usize {
-    let m = rc_mut!(mesh);
+    let mut m = rc_mut!(mesh);
     let index = m.primitives.len();
     m.primitives.push(primitive);
     m.transforms.push(transform);
@@ -904,7 +905,7 @@ fn import_primitive(
 
     let prim = Primitive::new();
     {
-        let p = rc_mut!(&prim);
+        let mut p = rc_mut!(&prim);
         p.positions = positions;
         p.uvs = uvs;
         p.indices = indices;
@@ -983,7 +984,7 @@ fn import_animations(
             base_transforms.clone(),
         );
         {
-            let m = rc_mut!(&motion);
+            let mut m = rc_mut!(&motion);
             for channel in animation.channels() {
                 let interpolation = match channel.sampler().interpolation() {
                     gltf::animation::Interpolation::CubicSpline => MotionInterpolation::CubicSpline,

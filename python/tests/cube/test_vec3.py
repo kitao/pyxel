@@ -47,8 +47,7 @@ class TestConstants:
         assert Vec3.BACK == Vec3(0, 0, 1)
 
     def test_singleton_identity(self):
-        # Shared immutable singletons (cube-design.md § 4.1):
-        # the same instance is returned on every access.
+        # The same shared immutable instance is returned on every access.
         assert Vec3.ZERO is Vec3.ZERO
         assert Vec3.UP is Vec3.UP
         assert Vec3.FORWARD is Vec3.FORWARD

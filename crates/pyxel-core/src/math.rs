@@ -1,5 +1,5 @@
+use std::cell::RefCell;
 use std::f32::consts::PI;
-use std::ptr::null_mut;
 
 use noise::{NoiseFn, Perlin};
 use rand::{RngExt, SeedableRng};
@@ -10,8 +10,10 @@ use crate::pyxel::Pyxel;
 const DEG_TO_RAD: f32 = PI / 180.0;
 const RAD_TO_DEG: f32 = 180.0 / PI;
 
-static mut RNG: *mut Xoshiro256StarStar = null_mut();
-static mut PERLIN: *mut Perlin = null_mut();
+thread_local! {
+    static RNG: RefCell<Xoshiro256StarStar> = RefCell::new(new_rng());
+    static PERLIN: RefCell<Perlin> = RefCell::new(new_perlin());
+}
 
 impl Pyxel {
     // Basic math
@@ -43,47 +45,83 @@ impl Pyxel {
     // Random
 
     pub fn random_seed(seed: u32) {
-        *rng() = Xoshiro256StarStar::seed_from_u64(seed as u64);
+        with_rng(|rng| *rng = Xoshiro256StarStar::seed_from_u64(seed as u64));
     }
 
     pub fn random_int(min: i32, max: i32) -> i32 {
         let (min, max) = if min < max { (min, max) } else { (max, min) };
-        rng().random_range(min..=max)
+        with_rng(|rng| rng.random_range(min..=max))
     }
 
     pub fn random_float(min: f32, max: f32) -> f32 {
         let (min, max) = if min < max { (min, max) } else { (max, min) };
-        rng().random_range(min..=max)
+        with_rng(|rng| rng.random_range(min..=max))
     }
 
     // Noise
 
     pub fn noise_seed(seed: u32) {
-        *perlin() = Perlin::new(seed);
+        with_perlin(|perlin| *perlin = Perlin::new(seed));
     }
 
     pub fn noise(x: f32, y: f32, z: f32) -> f32 {
-        perlin().get([x as f64, y as f64, z as f64]) as f32
+        with_perlin(|perlin| perlin.get([x as f64, y as f64, z as f64]) as f32)
     }
 }
 
 // Helpers
 
-fn rng() -> &'static mut Xoshiro256StarStar {
-    unsafe {
-        if RNG.is_null() {
-            let mut os_rng = rand::rng();
-            RNG = Box::into_raw(Box::new(Xoshiro256StarStar::from_rng(&mut os_rng)));
-        }
-        &mut *RNG
-    }
+fn new_rng() -> Xoshiro256StarStar {
+    Xoshiro256StarStar::from_rng(&mut rand::rng())
 }
 
-fn perlin() -> &'static mut Perlin {
-    unsafe {
-        if PERLIN.is_null() {
-            PERLIN = Box::into_raw(Box::new(Perlin::new(rand::rng().random())));
-        }
-        &mut *PERLIN
+fn with_rng<T>(f: impl FnOnce(&mut Xoshiro256StarStar) -> T) -> T {
+    RNG.with(|rng| f(&mut rng.borrow_mut()))
+}
+
+fn new_perlin() -> Perlin {
+    Perlin::new(rand::rng().random())
+}
+
+fn with_perlin<T>(f: impl FnOnce(&mut Perlin) -> T) -> T {
+    PERLIN.with(|perlin| f(&mut perlin.borrow_mut()))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn random_state_is_isolated_between_threads() {
+        Pyxel::random_seed(123);
+        let expected = Pyxel::random_int(i32::MIN, i32::MAX);
+
+        Pyxel::random_seed(123);
+        std::thread::spawn(|| {
+            Pyxel::random_seed(999);
+            Pyxel::random_int(i32::MIN, i32::MAX);
+        })
+        .join()
+        .unwrap();
+
+        assert_eq!(Pyxel::random_int(i32::MIN, i32::MAX), expected);
+    }
+
+    #[test]
+    fn noise_state_is_isolated_between_threads() {
+        const POINT: (f32, f32, f32) = (1.5, 2.5, 3.5);
+
+        Pyxel::noise_seed(123);
+        let expected = Pyxel::noise(POINT.0, POINT.1, POINT.2);
+
+        Pyxel::noise_seed(123);
+        std::thread::spawn(|| {
+            Pyxel::noise_seed(999);
+            Pyxel::noise(POINT.0, POINT.1, POINT.2);
+        })
+        .join()
+        .unwrap();
+
+        assert_eq!(Pyxel::noise(POINT.0, POINT.1, POINT.2), expected);
     }
 }

@@ -10,6 +10,11 @@ import webbrowser
 from urllib.parse import urlparse
 
 ROOT_DIR = Path(__file__).resolve().parent.parent
+PUBLIC_ROOT_DIRS = (
+    ROOT_DIR / "web",
+    ROOT_DIR / "wasm",
+    ROOT_DIR / "python" / "pyxel" / "examples",
+)
 PORT = 8000
 
 SW_PATH = "/pyxel-sw.js"
@@ -81,8 +86,15 @@ class Handler(SimpleHTTPRequestHandler):
     def send_head(self):
         parsed = urlparse(self.path)
         path = parsed.path
+        full_path = Path(self.translate_path(path)).resolve()
+        if not any(
+            full_path == root_dir or full_path.is_relative_to(root_dir)
+            for root_dir in PUBLIC_ROOT_DIRS
+        ):
+            self.send_error(404, "File not found")
+            return None
+
         if path.endswith(".html"):
-            full_path = Path(self.translate_path(path))
             if not full_path.is_file():
                 return super().send_head()
             try:

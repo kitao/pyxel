@@ -38,7 +38,7 @@ class TestConstants:
                 assert m[i, j] == (1.0 if i == j else 0.0)
 
     def test_singleton_identity(self):
-        # Shared immutable singleton (cube-design.md § 5.1).
+        # The identity constant is a shared immutable instance.
         assert Mat4.IDENTITY is Mat4.IDENTITY
 
 

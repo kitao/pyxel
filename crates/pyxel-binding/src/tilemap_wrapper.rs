@@ -1,10 +1,8 @@
-use std::ffi::CString;
-
 use pyo3::exceptions::{PyException, PyValueError};
 use pyo3::prelude::*;
-use pyo3::types::PyDict;
 
 use crate::image_wrapper::Image;
+use crate::utils::ctypes_array_from_address;
 
 define_wrapper!(Tilemap, pyxel::Tilemap);
 
@@ -21,7 +19,9 @@ impl Tilemap {
 
             (Image, { pyxel::ImageSource::Image(img.inner) })
         };
-        Ok(Self::wrap(pyxel::Tilemap::new(width, height, imgsrc)))
+        pyxel::Tilemap::try_new(width, height, imgsrc)
+            .map(Self::wrap)
+            .map_err(PyValueError::new_err)
     }
 
     #[staticmethod]
@@ -67,25 +67,16 @@ impl Tilemap {
     // Data operations
 
     fn data_ptr(&self, py: Python) -> PyResult<Py<PyAny>> {
-        let inner = self.inner_mut();
-        // Expose the tilemap buffer as a ctypes array without copying.
-        let python_code = CString::new(format!(
-            "import ctypes; c_uint16_array = (ctypes.c_uint16 * {}).from_address({:p})",
-            inner.width() * inner.height() * 2,
-            inner.data_ptr()
-        ))
-        .expect("data pointer script is built from numeric values");
-        let locals = PyDict::new(py);
-        py.run(python_code.as_c_str(), None, Some(&locals))?;
-        let array = locals
-            .get_item("c_uint16_array")?
-            .ok_or_else(|| PyException::new_err("Failed to create data pointer"))?;
-        Ok(array.unbind())
+        let mut inner = self.inner_mut();
+        let length = inner.width() as usize * inner.height() as usize * 2;
+        let address = inner.data_ptr() as usize;
+        ctypes_array_from_address(py, "c_uint16", length, address)
     }
 
-    fn set(&self, x: i32, y: i32, data: Vec<String>) {
-        let data_refs: Vec<_> = data.iter().map(String::as_str).collect();
-        self.inner_mut().set(x, y, &data_refs);
+    fn set(&self, x: i32, y: i32, data: Vec<String>) -> PyResult<()> {
+        self.inner_mut()
+            .set(x, y, &data)
+            .map_err(PyValueError::new_err)
     }
 
     fn load(&self, x: i32, y: i32, filename: &str, layer: u32) -> PyResult<()> {

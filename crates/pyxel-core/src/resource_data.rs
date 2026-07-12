@@ -44,6 +44,10 @@ impl ImageData {
         rc_mut!(image).canvas.data = data.into_iter().flatten().collect();
         image
     }
+
+    fn validate(&self, index: usize) -> Result<(), String> {
+        validate_grid("images", index, self.width, self.height, &self.data, 1)
+    }
 }
 
 #[derive(Clone, Serialize, Deserialize)]
@@ -87,6 +91,66 @@ impl TilemapData {
         rc_mut!(tilemap).canvas.data = flat.chunks(2).map(|c| (c[0], c[1])).collect();
         tilemap
     }
+
+    fn validate(&self, index: usize, image_count: usize) -> Result<(), String> {
+        validate_grid("tilemaps", index, self.width, self.height, &self.data, 2)?;
+        if self.imgsrc as usize >= image_count {
+            return Err(format!(
+                "Invalid resource data: tilemaps[{index}].imgsrc {} is out of range 0..{image_count}",
+                self.imgsrc
+            ));
+        }
+        Ok(())
+    }
+}
+
+fn validate_grid<T>(
+    bank: &str,
+    index: usize,
+    width: u32,
+    height: u32,
+    data: &[Vec<T>],
+    values_per_cell: u32,
+) -> Result<(), String> {
+    if width == 0 || height == 0 {
+        return Err(format!(
+            "Invalid resource data: {bank}[{index}] dimensions must be greater than 0"
+        ));
+    }
+    if width.checked_mul(height).is_none() {
+        return Err(format!(
+            "Invalid resource data: {bank}[{index}] dimensions are too large"
+        ));
+    }
+    let row_width = width
+        .checked_mul(values_per_cell)
+        .ok_or_else(|| format!("Invalid resource data: {bank}[{index}] row width is too large"))?
+        as usize;
+    if data.is_empty() {
+        return Err(format!(
+            "Invalid resource data: {bank}[{index}].data must not be empty"
+        ));
+    }
+    if data.len() > height as usize {
+        return Err(format!(
+            "Invalid resource data: {bank}[{index}].data has {} rows, maximum is {height}",
+            data.len()
+        ));
+    }
+    for (row_index, row) in data.iter().enumerate() {
+        if row.is_empty() {
+            return Err(format!(
+                "Invalid resource data: {bank}[{index}].data[{row_index}] must not be empty"
+            ));
+        }
+        if row.len() > row_width {
+            return Err(format!(
+                "Invalid resource data: {bank}[{index}].data[{row_index}] has {} values, maximum is {row_width}",
+                row.len()
+            ));
+        }
+    }
+    Ok(())
 }
 
 #[derive(Clone, Serialize, Deserialize)]
@@ -100,7 +164,7 @@ struct SoundData {
 
 impl SoundData {
     fn from_sound(sound: &RcSound) -> Self {
-        let sound = rc_ref!(sound);
+        let sound = audio_ref!(sound);
         Self {
             notes: sound.notes.clone(),
             tones: sound.tones.clone(),
@@ -112,12 +176,13 @@ impl SoundData {
 
     fn to_sound(&self) -> RcSound {
         let rc = Sound::new();
-        let sound = rc_mut!(rc);
+        let mut sound = audio_mut!(rc);
         sound.notes.clone_from(&self.notes);
         sound.tones.clone_from(&self.tones);
         sound.volumes.clone_from(&self.volumes);
         sound.effects.clone_from(&self.effects);
         sound.speed = self.speed;
+        drop(sound);
         rc
     }
 }
@@ -129,7 +194,7 @@ struct MusicData {
 
 impl MusicData {
     fn from_music(music: &RcMusic) -> Self {
-        let music = rc_ref!(music);
+        let music = audio_ref!(music);
         let seqs = trim_empty_vec(&music.seqs);
 
         Self { seqs }
@@ -137,7 +202,7 @@ impl MusicData {
 
     fn to_music(&self) -> RcMusic {
         let rc = Music::new();
-        rc_mut!(rc).seqs = trim_empty_vec(&self.seqs);
+        audio_mut!(rc).seqs = trim_empty_vec(&self.seqs);
         rc
     }
 }
@@ -185,38 +250,45 @@ impl ResourceData {
         exclude_tilemaps: bool,
         exclude_sounds: bool,
         exclude_musics: bool,
-    ) {
+    ) -> Result<(), String> {
+        if !exclude_images {
+            for (index, image) in self.images.iter().enumerate() {
+                image.validate(index)?;
+            }
+        }
+
+        let image_count = if !exclude_images && !self.images.is_empty() {
+            self.images.len()
+        } else {
+            pyxel::images().len()
+        };
+        if !exclude_tilemaps {
+            for (index, tilemap) in self.tilemaps.iter().enumerate() {
+                tilemap.validate(index, image_count)?;
+            }
+        }
+
+        let images = (!exclude_images && !self.images.is_empty())
+            .then(|| self.images.iter().map(ImageData::to_image).collect());
+        let tilemaps = (!exclude_tilemaps && !self.tilemaps.is_empty())
+            .then(|| self.tilemaps.iter().map(TilemapData::to_tilemap).collect());
+        let sounds = (!exclude_sounds && !self.sounds.is_empty())
+            .then(|| self.sounds.iter().map(SoundData::to_sound).collect());
+        let musics = (!exclude_musics && !self.musics.is_empty())
+            .then(|| self.musics.iter().map(MusicData::to_music).collect());
+
         macro_rules! restore {
-            ($exclude:expr, $data:expr, $accessor:expr, $converter:path) => {
-                if !$exclude && !$data.is_empty() {
-                    *$accessor() = $data.iter().map($converter).collect();
+            ($data:expr, $accessor:expr) => {
+                if let Some(data) = $data {
+                    *$accessor() = data;
                 }
             };
         }
-        restore!(
-            exclude_images,
-            self.images,
-            pyxel::images,
-            ImageData::to_image
-        );
-        restore!(
-            exclude_tilemaps,
-            self.tilemaps,
-            pyxel::tilemaps,
-            TilemapData::to_tilemap
-        );
-        restore!(
-            exclude_sounds,
-            self.sounds,
-            pyxel::sounds,
-            SoundData::to_sound
-        );
-        restore!(
-            exclude_musics,
-            self.musics,
-            pyxel::musics,
-            MusicData::to_music
-        );
+        restore!(images, pyxel::images);
+        restore!(tilemaps, pyxel::tilemaps);
+        restore!(sounds, pyxel::sounds);
+        restore!(musics, pyxel::musics);
+        Ok(())
     }
 
     pub fn to_toml(

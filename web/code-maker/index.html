@@ -455,6 +455,9 @@
         let content = file.content;
         if (file.truncated) {
           const raw = await fetch(file.raw_url);
+          if (!raw.ok) {
+            throw new Error("Gist file not found");
+          }
           content = await raw.text();
         }
 
@@ -465,15 +468,8 @@
       }
 
       async function loadFromGitHub(input) {
-        // https://github.com/USER/REPO/blob/BRANCH/path/to/project.zip
-        const match = input.match(
-          /github\.com\/([^/]+)\/([^/]+)\/blob\/([^/]+)\/(.+)/,
-        );
-        if (!match) {
-          throw new Error("Invalid GitHub URL");
-        }
-        const [, user, repo, branch, path] = match;
-        const url = `https://raw.githubusercontent.com/${user}/${repo}/${branch}/${path}`;
+        const { user, repo, sha, path } = await resolveGitHubBlobUrl(input);
+        const url = `https://raw.githubusercontent.com/${user}/${repo}/${sha}/${path}`;
         const name =
           path
             .split("/")
@@ -487,7 +483,7 @@
         await loadProjectFromZip(await res.arrayBuffer(), name);
         updateShareUrl(
           "github",
-          `${user}/${repo}/${branch}/${path.replace(/\.zip$/i, "")}`,
+          `${user}/${repo}/${sha}/${path.replace(/\.zip$/i, "")}`,
         );
       }
 
@@ -580,7 +576,7 @@
         try {
           await navigator.clipboard.writeText(b64);
         } catch {
-          alert("Failed to copy to clipboard");
+          alert("Copy failed");
           return;
         }
         showModal("modal-save-gist");
@@ -865,6 +861,9 @@
       // Load the bundled starter project and focus the code editor.
       async function loadInitialFiles() {
         const res = await fetch("pyxel-project.zip");
+        if (!res.ok) {
+          throw new Error("Starter project not found");
+        }
         await loadProjectFromZip(await res.arrayBuffer(), "pyxel-project");
         window._codeEditor.focus();
       }

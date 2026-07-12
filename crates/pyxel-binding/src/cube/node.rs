@@ -1,4 +1,5 @@
 use std::cell::RefCell;
+use std::collections::HashMap;
 
 use pyo3::exceptions::{PyTypeError, PyValueError};
 use pyo3::prelude::*;
@@ -103,13 +104,11 @@ impl Node {
     // Some paths use only the mutable accessor, but keeping both accessors
     // mirrors the wrapper macro and keeps call sites uniform.
     #[allow(dead_code)]
-    pub(crate) fn inner_ref(&self) -> &pyxel::cube::Node {
+    pub(crate) fn inner_ref(&self) -> std::cell::Ref<'_, pyxel::cube::Node> {
         rc_ref!(self.inner)
     }
 
-    // Python methods mutate shared engine resources through PyO3 &self receivers.
-    #[allow(clippy::mut_from_ref)]
-    pub(crate) fn inner_mut(&self) -> &mut pyxel::cube::Node {
+    pub(crate) fn inner_mut(&self) -> std::cell::RefMut<'_, pyxel::cube::Node> {
         rc_mut!(self.inner)
     }
 
@@ -148,7 +147,7 @@ impl Node {
                 depth_test: ctx.depth_test,
                 depth_write: ctx.depth_write,
                 billboard,
-                shading: shading_ref,
+                shading: shading_ref.as_deref(),
             };
             f(ctx, state);
         });
@@ -336,7 +335,7 @@ impl Node {
         for i in 0..count {
             let inner = InnerNode::new();
             {
-                let node_inner = rc_mut!(&inner);
+                let mut node_inner = rc_mut!(&inner);
                 node_inner.name = mesh_inner.names.get(i).cloned().unwrap_or_default();
                 node_inner.transform = mesh_inner.transforms[i].clone();
             }
@@ -1006,7 +1005,8 @@ impl Node {
         let pos_v = *pos.inner_ref();
         let font_rc = font.as_ref().map(|f| f.inner.clone());
         self.with_state_from_ctx(pyxel::cube::draw::BILLBOARD_ON, |ctx, state| {
-            let font_ref: Option<&mut pyxel::Font> = font_rc.as_ref().map(|f| rc_mut!(f));
+            let mut font_guard = font_rc.as_ref().map(|f| rc_mut!(f));
+            let font_ref = font_guard.as_deref_mut();
             pyxel::cube::draw::text(ctx, &world_mat, &pos_v, s, col, font_ref, state);
         });
     }
@@ -1021,28 +1021,34 @@ impl Node {
         traverse_motion_players(&any)?;
         pyxel::cube::Scene::integrate_motion(&root_inner);
         let pairs = pyxel::cube::Scene::detect_contacts(&root_inner);
-        for pair in pairs {
-            let py_a = find_py_node_in_tree(&any, &pair.node_a)?;
-            let py_b = find_py_node_in_tree(&any, &pair.node_b)?;
-            if let (Some(a), Some(b)) = (py_a, py_b) {
-                let contact_a = Contact::wrap(pair.contact_a);
-                let contact_b = Contact::wrap(pair.contact_b);
-                a.bind(py)
-                    .call_method1("on_collide", (b.clone_ref(py), contact_a))?;
-                b.bind(py).call_method1("on_collide", (a, contact_b))?;
+        if !pairs.is_empty() {
+            let node_index = build_py_node_index(&any)?;
+            for pair in pairs {
+                let py_a = find_indexed_py_node(&node_index, &pair.node_a, py);
+                let py_b = find_indexed_py_node(&node_index, &pair.node_b, py);
+                if let (Some(a), Some(b)) = (py_a, py_b) {
+                    let contact_a = Contact::wrap(pair.contact_a);
+                    let contact_b = Contact::wrap(pair.contact_b);
+                    a.bind(py)
+                        .call_method1("on_collide", (b.clone_ref(py), contact_a))?;
+                    b.bind(py).call_method1("on_collide", (a, contact_b))?;
+                }
             }
         }
         let destroyed = pyxel::cube::Scene::collect_destroyed_post_order(&root_inner);
-        for inner in &destroyed {
-            if let Some(py_node) = find_py_node_in_tree(&any, inner)? {
-                py_node.bind(py).call_method0("on_destroy")?;
+        if !destroyed.is_empty() {
+            let node_index = build_py_node_index(&any)?;
+            for inner in &destroyed {
+                if let Some(py_node) = find_indexed_py_node(&node_index, inner, py) {
+                    py_node.bind(py).call_method0("on_destroy")?;
+                }
             }
-        }
-        for inner in &destroyed {
-            if let Some(py_node) = find_py_node_in_tree(&any, inner)? {
-                py_node.bind(py).borrow().detach_from_parent_py(py);
+            for inner in &destroyed {
+                if let Some(py_node) = find_indexed_py_node(&node_index, inner, py) {
+                    py_node.bind(py).borrow().detach_from_parent_py(py);
+                }
+                pyxel::cube::Scene::detach_destroyed(inner);
             }
-            pyxel::cube::Scene::detach_destroyed(inner);
         }
         Ok(())
     }
@@ -1058,7 +1064,7 @@ impl Node {
     ) -> PyResult<()> {
         let node_inner = slf.borrow().inner.clone();
         let cam_inner = InnerNode::effective_camera(&node_inner).ok_or_else(|| {
-            PyValueError::new_err("draw: no camera set on this node or any ancestor")
+            PyValueError::new_err("draw requires a camera on this node or an ancestor")
         })?;
         let target_rc = match target.as_ref() {
             Some(t) => t.inner.clone(),
@@ -1075,8 +1081,8 @@ impl Node {
         rc_mut!(&cam_inner).clear_depth();
         let depth = std::mem::take(&mut rc_mut!(&cam_inner).depth);
         let vertex_cache = std::mem::take(&mut rc_mut!(&cam_inner).vertex_scratch);
-        let view = view_matrix(rc_ref!(&cam_inner));
-        let proj = projection_matrix(rc_ref!(&cam_inner), w as f32, h as f32);
+        let view = view_matrix(&rc_ref!(&cam_inner));
+        let proj = projection_matrix(&rc_ref!(&cam_inner), w as f32, h as f32);
         let vp = matmul(&proj, &view);
         let clip_row = camera_clip_row(&view);
         let clip = compute_clip_rect(x as f32, y as f32, w as f32, h as f32, target_w, target_h);
@@ -1135,7 +1141,10 @@ impl Node {
             tags.as_deref(),
         );
         match hit {
-            Some(info) => Ok(Some(wrap_raycast_hit(&root_any, info)?)),
+            Some(info) => {
+                let node_index = build_py_node_index(&root_any)?;
+                Ok(Some(wrap_raycast_hit(&node_index, py, info)))
+            }
             None => Ok(None),
         }
     }
@@ -1163,9 +1172,13 @@ impl Node {
             hit_triggers,
             tags.as_deref(),
         );
+        if infos.is_empty() {
+            return Ok(Vec::new());
+        }
+        let node_index = build_py_node_index(&root_any)?;
         let mut out: Vec<super::raycast_hit::RaycastHit> = Vec::with_capacity(infos.len());
         for info in infos {
-            out.push(wrap_raycast_hit(&root_any, info)?);
+            out.push(wrap_raycast_hit(&node_index, py, info));
         }
         Ok(out)
     }
@@ -1189,7 +1202,11 @@ impl Node {
             hit_triggers,
             tags.as_deref(),
         );
-        wrap_node_results(&root_any, &inner_results)
+        if inner_results.is_empty() {
+            return Ok(Vec::new());
+        }
+        let node_index = build_py_node_index(&root_any)?;
+        Ok(wrap_node_results(&node_index, py, &inner_results))
     }
 
     #[pyo3(signature = (mat, size, *, hit_triggers=false, tags=None))]
@@ -1212,7 +1229,11 @@ impl Node {
             hit_triggers,
             tags.as_deref(),
         );
-        wrap_node_results(&root_any, &inner_results)
+        if inner_results.is_empty() {
+            return Ok(Vec::new());
+        }
+        let node_index = build_py_node_index(&root_any)?;
+        Ok(wrap_node_results(&node_index, py, &inner_results))
     }
 
     // Python GC integration
@@ -1233,33 +1254,39 @@ impl Node {
     }
 }
 
-// Pre-order tree traversal that respects `active` cascade and dispatches
-// each node's `on_update`. Subtrees rooted at an inactive node are
-// skipped entirely.
-fn traverse_update(node: &Bound<'_, PyAny>) -> PyResult<()> {
-    let active: bool = node.getattr("active")?.extract()?;
-    if !active {
-        return Ok(());
+fn push_children_reverse(node: &Bound<'_, Node>, py: Python<'_>, stack: &mut Vec<Py<PyAny>>) {
+    let node_ref = node.borrow();
+    for child in node_ref.children.borrow().iter().rev() {
+        stack.push(child.clone_ref(py).into_any());
     }
-    node.call_method0("on_update")?;
-    let children = node.getattr("children")?;
-    let children_iter = children.try_iter()?;
-    for child in children_iter {
-        traverse_update(&child?)?;
+}
+
+// Pre-order tree traversal that skips inactive subtrees and dispatches updates.
+fn traverse_update(root: &Bound<'_, PyAny>) -> PyResult<()> {
+    let py = root.py();
+    let mut stack = vec![root.clone().unbind()];
+    while let Some(node) = stack.pop() {
+        let node = node.bind(py);
+        if !node.getattr("active")?.extract::<bool>()? {
+            continue;
+        }
+        node.call_method0("on_update")?;
+        push_children_reverse(node.cast::<Node>()?, py, &mut stack);
     }
     Ok(())
 }
 
-// Pre-order playback traversal that follows the same `active` cascade as
-// update hooks. A player on an inactive node or inactive descendant does not
-// advance for that frame.
-fn traverse_motion_players(node: &Bound<'_, PyAny>) -> PyResult<()> {
-    let active: bool = node.getattr("active")?.extract()?;
-    if !active {
-        return Ok(());
-    }
+// Pre-order playback traversal that follows the active cascade.
+fn traverse_motion_players(root: &Bound<'_, PyAny>) -> PyResult<()> {
+    let py = root.py();
+    let mut stack = vec![root.clone().unbind()];
+    while let Some(node) = stack.pop() {
+        let node = node.bind(py);
+        if !node.getattr("active")?.extract::<bool>()? {
+            continue;
+        }
 
-    if let Ok(node_bound) = node.cast::<Node>() {
+        let node_bound = node.cast::<Node>()?;
         let node_ref = node_bound.borrow();
         let source = node_ref.mesh_source.borrow().clone();
         let player = node_ref.motion_player.borrow().clone();
@@ -1283,91 +1310,95 @@ fn traverse_motion_players(node: &Bound<'_, PyAny>) -> PyResult<()> {
             );
             *node_py.bind(node.py()).borrow().motion_player.borrow_mut() = Some(player);
         }
-    }
-
-    let children = node.getattr("children")?;
-    let children_iter = children.try_iter()?;
-    for child in children_iter {
-        traverse_motion_players(&child?)?;
+        push_children_reverse(node_bound, py, &mut stack);
     }
     Ok(())
 }
 
-// Pre-order tree traversal that respects `visible` cascade and
-// dispatches each node's `on_draw` inside the active draw context.
-fn traverse_draw(node: &Bound<'_, PyAny>) -> PyResult<()> {
-    let visible: bool = node.getattr("visible")?.extract()?;
-    if !visible {
-        return Ok(());
-    }
-    reset_draw_state();
-    node.call_method0("on_draw")?;
-    if let Ok(node_bound) = node.cast::<Node>() {
+// Pre-order tree traversal that skips hidden subtrees and dispatches draws.
+fn traverse_draw(root: &Bound<'_, PyAny>) -> PyResult<()> {
+    let py = root.py();
+    let mut stack = vec![root.clone().unbind()];
+    while let Some(node) = stack.pop() {
+        let node = node.bind(py);
+        if !node.getattr("visible")?.extract::<bool>()? {
+            continue;
+        }
+        reset_draw_state();
+        node.call_method0("on_draw")?;
+        let node_bound = node.cast::<Node>()?;
         node_bound.borrow().draw_attached_primitive()?;
-    }
-    let children = node.getattr("children")?;
-    let children_iter = children.try_iter()?;
-    for child in children_iter {
-        traverse_draw(&child?)?;
+        push_children_reverse(node_bound, py, &mut stack);
     }
     Ok(())
 }
 
-// Resolve an inner RcNode to the matching Py<Node> wrapper by walking
-// the tree. The lookup is O(N) per call; spatial queries are not
-// expected to fire on the hot path.
-fn find_py_node_in_tree(
-    root: &Bound<'_, PyAny>,
+// Map core nodes once per operation so results retain their Python wrapper identity.
+type PyNodeIndex = HashMap<usize, Py<Node>>;
+
+fn node_key(node: &pyxel::cube::RcNode) -> usize {
+    std::rc::Rc::as_ptr(node) as usize
+}
+
+fn build_py_node_index(root: &Bound<'_, PyAny>) -> PyResult<PyNodeIndex> {
+    let py = root.py();
+    let mut index = HashMap::new();
+    let mut stack = vec![root.clone().unbind()];
+
+    while let Some(node) = stack.pop() {
+        let node_bound = node.bind(py).cast::<Node>()?;
+        let node_ref = node_bound.borrow();
+        let key = node_key(&node_ref.inner);
+        for child in node_ref.children.borrow().iter().rev() {
+            stack.push(child.clone_ref(py).into_any());
+        }
+        drop(node_ref);
+        index.insert(key, node_bound.clone().unbind());
+    }
+
+    Ok(index)
+}
+
+fn find_indexed_py_node(
+    index: &PyNodeIndex,
     target: &pyxel::cube::RcNode,
-) -> PyResult<Option<Py<Node>>> {
-    if let Ok(node_bound) = root.cast::<Node>() {
-        if std::rc::Rc::ptr_eq(&node_bound.borrow().inner, target) {
-            return Ok(Some(node_bound.clone().unbind()));
-        }
-    }
-    let children = root.getattr("children")?;
-    let children_iter = children.try_iter()?;
-    for child in children_iter {
-        let child = child?;
-        if let Some(found) = find_py_node_in_tree(&child, target)? {
-            return Ok(Some(found));
-        }
-    }
-    Ok(None)
+    py: Python<'_>,
+) -> Option<Py<Node>> {
+    index.get(&node_key(target)).map(|node| node.clone_ref(py))
 }
 
 fn wrap_raycast_hit(
-    root_any: &Bound<'_, PyAny>,
+    index: &PyNodeIndex,
+    py: Python<'_>,
     info: pyxel::cube::scene::RaycastHitInfo,
-) -> PyResult<RaycastHit> {
-    // Resolve the inner RcNode to its tree Py<Node> so
-    // `hit.node is tree_node` holds (mirrors the overlap_* path).
-    let py_node = find_py_node_in_tree(root_any, &info.node)?;
+) -> RaycastHit {
+    let py_node = find_indexed_py_node(index, &info.node, py);
     let rch = pyxel::cube::RaycastHit::new();
     {
-        let r = rc_mut!(&rch);
+        let mut r = rc_mut!(&rch);
         r.node = Some(info.node);
         r.point = pyxel::cube::Vec3::new(info.point.x, info.point.y, info.point.z);
         r.normal = pyxel::cube::Vec3::new(info.normal.x, info.normal.y, info.normal.z);
         r.distance = info.distance;
     }
-    Ok(match py_node {
+    match py_node {
         Some(p) => RaycastHit::wrap_with_py_node(rch, p),
         None => RaycastHit::wrap(rch),
-    })
+    }
 }
 
 fn wrap_node_results(
-    root_any: &Bound<'_, PyAny>,
+    index: &PyNodeIndex,
+    py: Python<'_>,
     inner: &[pyxel::cube::RcNode],
-) -> PyResult<Vec<Py<Node>>> {
+) -> Vec<Py<Node>> {
     let mut out: Vec<Py<Node>> = Vec::with_capacity(inner.len());
     for rc in inner {
-        if let Some(py_node) = find_py_node_in_tree(root_any, rc)? {
+        if let Some(py_node) = find_indexed_py_node(index, rc, py) {
             out.push(py_node);
         }
     }
-    Ok(out)
+    out
 }
 
 // Module registration

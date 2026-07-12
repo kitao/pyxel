@@ -43,7 +43,7 @@ class TestConstants:
         assert Quat.IDENTITY == Quat(0, 0, 0, 1)
 
     def test_singleton_identity(self):
-        # Shared immutable singleton (cube-design.md § 6.1).
+        # The identity constant is a shared immutable instance.
         assert Quat.IDENTITY is Quat.IDENTITY
 
 

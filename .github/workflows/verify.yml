@@ -1,0 +1,92 @@
+name: verify
+
+on:
+  push:
+    branches:
+      - "**"
+  pull_request:
+  workflow_dispatch:
+  workflow_call:
+    inputs:
+      release_tag:
+        description: Optional release tag to compare with embedded versions
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+env:
+  PYTHON_VERSION: "3.14"
+  EMSCRIPTEN_VERSION: "5.0.3"
+
+jobs:
+  native:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install native dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq --no-install-recommends \
+            libasound2-dev libgl1-mesa-dev libsdl2-dev libudev-dev
+          scripts/setup_venv
+          npm ci --prefix web
+
+      - name: Verify embedded versions
+        env:
+          RELEASE_TAG: ${{ inputs.release_tag }}
+        run: |
+          if [ -n "$RELEASE_TAG" ]; then
+            scripts/update_version --check "$RELEASE_TAG"
+          else
+            scripts/update_version --check
+          fi
+
+      - name: Verify formatting
+        run: |
+          . .venv/bin/activate
+          make format
+          git diff --exit-code
+
+      - name: Lint native code
+        run: |
+          . .venv/bin/activate
+          make lint
+
+      - name: Run native, Python, and web tests
+        run: |
+          . .venv/bin/activate
+          make test
+          git diff --exit-code
+
+  wasm-lint:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install Emscripten
+        uses: emscripten-core/setup-emsdk@4528d102f7230f0e7b276855c01ea1159be0e984 # v16
+        with:
+          version: ${{ env.EMSCRIPTEN_VERSION }}
+
+      - name: Install development dependencies
+        run: scripts/setup_venv
+
+      - name: Lint WebAssembly code
+        run: |
+          . .venv/bin/activate
+          make lint-wasm

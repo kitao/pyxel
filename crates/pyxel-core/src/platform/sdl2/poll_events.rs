@@ -55,6 +55,8 @@ fn scan_correction_scripts() -> &'static [CString; SCAN_CORRECTION_SCRIPT_COUNT]
 // Gamepad lifecycle helpers
 
 pub fn open_gamepad(device_index: i32) -> Option<(i32, *mut SDL_GameController)> {
+    // SAFETY: SDL owns the controller allocation and returns either null or a
+    // live handle that close_gamepad closes exactly once.
     let controller = unsafe { SDL_GameControllerOpen(device_index) };
     if controller.is_null() {
         return None;
@@ -65,6 +67,8 @@ pub fn open_gamepad(device_index: i32) -> Option<(i32, *mut SDL_GameController)>
 
 fn close_gamepad(gamepad: &mut GamepadSlot) {
     if let Some((_, controller)) = gamepad {
+        // SAFETY: slots contain only non-null handles returned by
+        // SDL_GameControllerOpen, and clearing the slot prevents a second close.
         unsafe { SDL_GameControllerClose(*controller) };
         *gamepad = None;
     }
@@ -72,9 +76,12 @@ fn close_gamepad(gamepad: &mut GamepadSlot) {
 
 impl PlatformSdl2 {
     pub fn poll_events(&mut self, pyxel_events: &mut Vec<Event>) {
+        // SAFETY: SDL_Event is a C union used here only as an output buffer.
         let mut sdl_event: SDL_Event = unsafe { zeroed() };
 
         while unsafe { SDL_PollEvent(&raw mut sdl_event) } != 0 {
+            // SAFETY: a successful SDL_PollEvent initializes type_; each match
+            // arm reads only the union member selected by that SDL event tag.
             match unsafe { sdl_event.type_ as SDL_EventType } {
                 // Window
                 SDL_WINDOWEVENT => match unsafe { sdl_event.window.event } as SDL_WindowEventID {
@@ -91,6 +98,8 @@ impl PlatformSdl2 {
 
                 SDL_DROPFILE => {
                     unsafe { SDL_RaiseWindow(self.window) };
+                    // SAFETY: SDL_DROPFILE supplies a non-null, NUL-terminated
+                    // SDL allocation. Copy it before releasing it once with SDL_free.
                     let filename = unsafe { CStr::from_ptr(sdl_event.drop.file) };
                     let filename = filename.to_string_lossy().into_owned();
                     pyxel_events.push(Event::FileDropped { filename });
@@ -119,6 +128,8 @@ impl PlatformSdl2 {
                 }
 
                 SDL_TEXTINPUT => unsafe {
+                    // SAFETY: SDL_TEXTINPUT makes text the active union member;
+                    // SDL guarantees its fixed buffer contains a NUL-terminated string.
                     let c_str = CStr::from_ptr(sdl_event.text.text.as_ptr().cast::<c_char>());
                     if let Ok(text) = c_str.to_str() {
                         let text = text.to_string();

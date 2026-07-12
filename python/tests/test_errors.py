@@ -1,3 +1,6 @@
+import subprocess
+import sys
+
 import pytest
 
 import pyxel
@@ -146,6 +149,26 @@ class TestPartialArgErrors:
 
 
 class TestValueErrors:
+    @pytest.mark.parametrize(
+        ("factory", "args", "message"),
+        [
+            (pyxel.Image, (65536, 65536), "image dimensions are too large"),
+            (
+                pyxel.Tilemap,
+                (65536, 65536, 0),
+                "tilemap dimensions are too large",
+            ),
+        ],
+        ids=["image", "tilemap"],
+    )
+    def test_canvas_constructor_rejects_oversized_dimensions(
+        self, factory, args, message
+    ):
+        with pytest.raises(ValueError) as exc:
+            factory(*args)
+
+        assert str(exc.value) == message
+
     def test_play_invalid_channel(self):
         with pytest.raises(ValueError, match="Invalid channel index"):
             pyxel.play(999, 0)
@@ -171,16 +194,107 @@ class TestValueErrors:
             pyxel.play(0, [0, 9999])  # type: ignore[arg-type]
 
 
+class TestInlineDataErrors:
+    @pytest.mark.parametrize(
+        ("data", "message"),
+        [
+            ([], "Invalid image data: no rows"),
+            (["  "], "Invalid image data at row 0: no pixels"),
+            (
+                ["01", "2"],
+                "Invalid image data at row 1: expected 2 hexadecimal digits, got 1",
+            ),
+            (
+                ["0g"],
+                "Invalid image data at row 0, column 1: "
+                "expected hexadecimal digit, got 'g'",
+            ),
+            (
+                ["0あ"],
+                "Invalid image data at row 0, column 1: "
+                "expected hexadecimal digit, got 'あ'",
+            ),
+        ],
+    )
+    def test_image_set_rejects_malformed_data_without_writing(self, data, message):
+        image = pyxel.Image(2, 2)
+        image.cls(7)
+
+        with pytest.raises(ValueError) as exc:
+            image.set(0, 0, data)
+
+        assert str(exc.value) == message
+        assert [image.pget(x, y) for y in range(2) for x in range(2)] == [7] * 4
+
+    @pytest.mark.parametrize(
+        ("data", "message"),
+        [
+            ([], "Invalid tilemap data: no rows"),
+            (["  "], "Invalid tilemap data at row 0: no tiles"),
+            (
+                ["000"],
+                "Invalid tilemap data at row 0: hexadecimal digit count 3 "
+                "is not divisible by 4",
+            ),
+            (
+                ["00000000", "0000"],
+                "Invalid tilemap data at row 1: expected 8 hexadecimal digits, got 4",
+            ),
+            (
+                ["00z0"],
+                "Invalid tilemap data at row 0, column 2: "
+                "expected hexadecimal digit, got 'z'",
+            ),
+            (
+                ["00あ0"],
+                "Invalid tilemap data at row 0, column 2: "
+                "expected hexadecimal digit, got 'あ'",
+            ),
+        ],
+    )
+    def test_tilemap_set_rejects_malformed_data_without_writing(self, data, message):
+        tilemap = pyxel.Tilemap(2, 2, 0)
+        tilemap.cls((7, 7))
+
+        with pytest.raises(ValueError) as exc:
+            tilemap.set(0, 0, data)
+
+        assert str(exc.value) == message
+        assert [tilemap.pget(x, y) for y in range(2) for x in range(2)] == [(7, 7)] * 4
+
+
 class TestMmlErrors:
     # Binding raises plain Exception; pin via message to verify error specificity.
     def test_sound_mml_invalid_syntax(self):
         snd = pyxel.Sound()
-        with pytest.raises(Exception, match="MML:.*Unexpected character"):
-            snd.mml("ZZZZZZ!!!")
+        with pytest.raises(Exception) as exc:
+            snd.mml("Z")
+        assert str(exc.value) == "MML:0: Unexpected character 'Z'"
 
     def test_play_mml_invalid_syntax(self):
-        with pytest.raises(Exception, match="MML:.*Unexpected character"):
-            pyxel.play(0, "ZZZZZZ!!!")
+        with pytest.raises(Exception) as exc:
+            pyxel.play(0, "Z")
+        assert str(exc.value) == "MML:0: Unexpected character 'Z'"
+
+    def test_sound_mml_old_syntax_uses_legacy_error_contract(self):
+        code = """
+import pyxel
+
+snd = pyxel.Sound()
+try:
+    snd.mml("x8c")
+except Exception as exc:
+    assert str(exc) == "Invalid envelope value '8' in MML"
+else:
+    raise AssertionError("invalid legacy MML succeeded")
+"""
+        result = subprocess.run(
+            [sys.executable, "-c", code],
+            capture_output=True,
+            text=True,
+            timeout=10,
+        )
+        assert result.returncode == 0, result.stderr
 
     def test_sound_set_notes_invalid(self):
         snd = pyxel.Sound()

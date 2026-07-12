@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use blip_buf::BlipBuf;
 
 use crate::mml_command::MmlCommand;
@@ -29,7 +31,7 @@ pub struct Channel {
     sound_elapsed_clocks: u32,
     total_elapsed_clocks: u32,
 
-    commands: Vec<MmlCommand>,
+    commands: Arc<[MmlCommand]>,
     command_index: usize,
     repeat_points: Vec<(usize, u32)>,
     clocks_per_tick: u32,
@@ -39,9 +41,9 @@ pub struct Channel {
     detune_semitones: f32,
     glide_pending_params: Option<(Option<f32>, Option<u32>)>,
     last_midi_note: Option<f32>,
-    envelope_slots: Vec<Option<MmlCommand>>,
-    vibrato_slots: Vec<Option<MmlCommand>>,
-    glide_slots: Vec<Option<MmlCommand>>,
+    envelope_slots: Vec<(u32, MmlCommand)>,
+    vibrato_slots: Vec<(u32, MmlCommand)>,
+    glide_slots: Vec<(u32, MmlCommand)>,
 
     resume_sounds: Vec<RcSound>,
     resume_should_loop: bool,
@@ -51,13 +53,13 @@ pub struct Channel {
     pcm_position: usize,
 }
 
-define_rc_type!(RcChannel, Channel);
+define_audio_type!(RcChannel, Channel);
 
 impl Channel {
     // Constructors
 
     pub fn new() -> RcChannel {
-        new_rc_type!(Self {
+        new_audio_type!(Self {
             sounds: Vec::new(),
             gain: DEFAULT_CHANNEL_GAIN,
             detune: 0,
@@ -71,7 +73,7 @@ impl Channel {
             sound_elapsed_clocks: 0,
             total_elapsed_clocks: 0,
 
-            commands: Vec::new(),
+            commands: Arc::from([]),
             command_index: 0,
             repeat_points: Vec::new(),
             clocks_per_tick: 0,
@@ -94,7 +96,7 @@ impl Channel {
         })
     }
 
-    // Playback Start
+    // Playback start
 
     pub fn play(
         &mut self,
@@ -134,7 +136,7 @@ impl Channel {
         should_resume: bool,
     ) -> Result<(), String> {
         let sound = Sound::new();
-        rc_mut!(sound).set_mml(code)?;
+        audio_mut!(sound).set_mml(code)?;
         self.release_owned_sounds();
         self.owned_sounds.push(sound.clone());
         self.play_from_clock(
@@ -148,9 +150,9 @@ impl Channel {
 
     fn release_owned_sounds(&mut self) {
         for sound in &self.owned_sounds {
-            self.sounds.retain(|s| !std::rc::Rc::ptr_eq(s, sound));
+            self.sounds.retain(|s| !std::sync::Arc::ptr_eq(s, sound));
             self.resume_sounds
-                .retain(|s| !std::rc::Rc::ptr_eq(s, sound));
+                .retain(|s| !std::sync::Arc::ptr_eq(s, sound));
         }
         self.owned_sounds.clear();
     }
@@ -168,7 +170,7 @@ impl Channel {
     ) {
         if sounds.is_empty()
             || sounds.iter().all(|sound| {
-                let sound = rc_ref!(sound);
+                let sound = audio_ref!(sound);
                 sound.notes.is_empty() && sound.commands.is_empty() && sound.pcm.is_none()
             })
         {
@@ -209,7 +211,7 @@ impl Channel {
         }
     }
 
-    // Playback Control
+    // Playback control
 
     pub fn stop(&mut self) {
         self.is_playing = false;
@@ -227,7 +229,7 @@ impl Channel {
         }
     }
 
-    // Core Processing
+    // Core processing
 
     pub(crate) fn process(&mut self, blip_buf: Option<&mut BlipBuf>, clock_count: u32) {
         if self.playing_pcm {
@@ -268,12 +270,8 @@ impl Channel {
                 self.repeat_points.clear();
 
                 {
-                    let sound = rc_ref!(self.sounds[self.sound_index]);
-                    if sound.commands.is_empty() {
-                        sound.emit_commands(&mut self.commands);
-                    } else {
-                        self.commands.clone_from(&sound.commands);
-                    }
+                    let mut sound = audio_mut!(self.sounds[self.sound_index]);
+                    self.commands = sound.command_snapshot();
                 }
 
                 self.advance_command();
@@ -322,19 +320,33 @@ impl Channel {
         }
     }
 
+    // MML command processing
+
+    fn effect_slot(slots: &[(u32, MmlCommand)], slot: u32) -> Option<&MmlCommand> {
+        slots
+            .iter()
+            .find_map(|(stored_slot, command)| (*stored_slot == slot).then_some(command))
+    }
+
+    fn store_effect_slot(
+        slots: &mut Vec<(u32, MmlCommand)>,
+        slot: u32,
+        command: &MmlCommand,
+        name: &str,
+    ) {
+        assert!(slot > 0, "{name} slot 0 is reserved for disable");
+        if let Some((_, stored)) = slots
+            .iter_mut()
+            .find(|(stored_slot, _)| *stored_slot == slot)
+        {
+            stored.clone_from(command);
+        } else {
+            slots.push((slot, command.clone()));
+        }
+    }
+
     fn advance_command(&mut self) {
         let tones = pyxel::tones();
-
-        macro_rules! store_slot {
-            ($slots:expr, $slot:expr, $command:expr, $name:literal) => {{
-                assert!($slot > 0, concat!($name, " slot 0 is reserved for disable"));
-                let slot = $slot as usize;
-                if slot >= $slots.len() {
-                    $slots.resize(slot + 1, None);
-                }
-                $slots[slot] = Some($command.clone());
-            }};
-        }
 
         // Execute MML commands until the next note, rest, or end of stream
         while self.command_index < self.commands.len() {
@@ -366,11 +378,11 @@ impl Channel {
                 }
 
                 MmlCommand::Envelope { slot } => {
-                    if let Some(Some(MmlCommand::EnvelopeSet {
+                    if let Some(MmlCommand::EnvelopeSet {
                         initial_level,
                         segments,
                         ..
-                    })) = self.envelope_slots.get(*slot as usize)
+                    }) = Self::effect_slot(&self.envelope_slots, *slot)
                     {
                         self.voice.envelope.set(*initial_level, segments);
                         self.voice.envelope.enable();
@@ -383,18 +395,18 @@ impl Channel {
                     initial_level,
                     segments,
                 } => {
-                    store_slot!(self.envelope_slots, *slot, command, "Envelope");
+                    Self::store_effect_slot(&mut self.envelope_slots, *slot, command, "Envelope");
                     self.voice.envelope.set(*initial_level, segments);
                     self.voice.envelope.enable();
                 }
 
                 MmlCommand::Vibrato { slot } => {
-                    if let Some(Some(MmlCommand::VibratoSet {
+                    if let Some(MmlCommand::VibratoSet {
                         delay_ticks,
                         period_ticks,
                         semitone_depth,
                         ..
-                    })) = self.vibrato_slots.get(*slot as usize)
+                    }) = Self::effect_slot(&self.vibrato_slots, *slot)
                     {
                         self.voice
                             .vibrato
@@ -410,7 +422,7 @@ impl Channel {
                     period_ticks,
                     semitone_depth,
                 } => {
-                    store_slot!(self.vibrato_slots, *slot, command, "Vibrato");
+                    Self::store_effect_slot(&mut self.vibrato_slots, *slot, command, "Vibrato");
                     self.voice
                         .vibrato
                         .set(*delay_ticks, *period_ticks, *semitone_depth);
@@ -418,11 +430,11 @@ impl Channel {
                 }
 
                 MmlCommand::Glide { slot } => {
-                    if let Some(Some(MmlCommand::GlideSet {
+                    if let Some(MmlCommand::GlideSet {
                         semitone_offset,
                         duration_ticks,
                         ..
-                    })) = self.glide_slots.get(*slot as usize)
+                    }) = Self::effect_slot(&self.glide_slots, *slot)
                     {
                         if let (Some(semitone_offset), Some(duration_ticks)) =
                             (semitone_offset, duration_ticks)
@@ -443,7 +455,7 @@ impl Channel {
                     semitone_offset,
                     duration_ticks,
                 } => {
-                    store_slot!(self.glide_slots, *slot, command, "Glide");
+                    Self::store_effect_slot(&mut self.glide_slots, *slot, command, "Glide");
 
                     if let (Some(semitone_offset), Some(duration_ticks)) =
                         (semitone_offset, duration_ticks)
@@ -506,7 +518,7 @@ impl Channel {
         }
     }
 
-    // PCM Mixing
+    // PCM mixing
 
     pub(crate) fn mix_pcm(&mut self, out: &mut [i16]) {
         if !self.is_playing || !self.playing_pcm {
@@ -523,7 +535,7 @@ impl Channel {
             let mut should_advance = false;
 
             {
-                let sound = rc_ref!(self.sounds[self.sound_index]);
+                let sound = audio_ref!(self.sounds[self.sound_index]);
                 let Some(pcm) = &sound.pcm else {
                     return;
                 };
@@ -570,7 +582,7 @@ impl Channel {
         }
     }
 
-    // Internal Utilities
+    // Internal helpers
 
     fn advance_pcm_sound(&mut self) -> bool {
         self.sound_index += 1;
@@ -608,7 +620,7 @@ impl Channel {
 
         while remaining > 0 && self.sound_index < self.sounds.len() {
             let len = {
-                let sound = rc_ref!(self.sounds[self.sound_index]);
+                let sound = audio_ref!(self.sounds[self.sound_index]);
                 match &sound.pcm {
                     Some(pcm) => pcm.samples.len(),
                     None => break,
@@ -648,7 +660,7 @@ impl Channel {
         self.playing_pcm = self
             .sounds
             .get(self.sound_index)
-            .is_some_and(|sound| rc_ref!(sound).pcm.is_some());
+            .is_some_and(|sound| audio_ref!(sound).pcm.is_some());
     }
 
     pub(crate) fn needs_blip_processing(&self) -> bool {
@@ -675,7 +687,7 @@ mod tests {
     fn note_sound(num_notes: usize) -> RcSound {
         let sound = Sound::new();
         {
-            let sound = rc_mut!(sound);
+            let mut sound = audio_mut!(sound);
             sound.notes = vec![0; num_notes];
             sound.speed = 1;
         }
@@ -684,7 +696,7 @@ mod tests {
 
     fn pcm_sound(num_samples: usize) -> RcSound {
         let sound = Sound::new();
-        rc_mut!(sound).pcm = Some(PcmData {
+        audio_mut!(sound).pcm = Some(PcmData {
             samples: vec![0; num_samples],
         });
         sound
@@ -695,7 +707,7 @@ mod tests {
         // A PCM sound after a note sound must not be skipped when the note
         // sound ends in the middle of a processing chunk
         let channel = Channel::new();
-        let channel = rc_mut!(channel);
+        let mut channel = audio_mut!(channel);
         channel.play(vec![note_sound(1), pcm_sound(1000)], None, false, false);
         channel.process(None, NOTE_CLOCKS + 5000);
 
@@ -710,7 +722,7 @@ mod tests {
         // Seeking beyond the PCM part must seek into the following note
         // sound instead of restarting it from the head
         let channel = Channel::new();
-        let channel = rc_mut!(channel);
+        let mut channel = audio_mut!(channel);
         let pcm_samples = 1000;
         let extra_samples = 500;
         let start_sec = (pcm_samples + extra_samples) as f32 / AUDIO_SAMPLE_RATE as f32;
@@ -740,7 +752,7 @@ mod tests {
         // Resuming PCM playback after an interrupting note sound must not
         // re-execute the finished sound's commands as a ghost note
         let channel = Channel::new();
-        let channel = rc_mut!(channel);
+        let mut channel = audio_mut!(channel);
         channel.play(vec![pcm_sound(1000)], None, false, false);
         channel.play(vec![note_sound(1)], None, false, true);
         channel.process(None, NOTE_CLOCKS + 5000);
@@ -752,5 +764,34 @@ mod tests {
             (NOTE_CLOCKS as u64 * AUDIO_SAMPLE_RATE as u64 / AUDIO_CLOCK_RATE as u64) as usize;
         assert_eq!(channel.pcm_position, expected_position);
         assert_eq!(channel.note_duration_clocks, 0);
+    }
+
+    #[test]
+    fn test_loop_reuses_commands_and_refreshes_after_live_edit() {
+        let sound = note_sound(1);
+        let channel = Channel::new();
+        let mut channel = audio_mut!(channel);
+        channel.play(vec![sound.clone()], None, true, false);
+
+        channel.process(None, 1);
+        let first = channel.commands.clone();
+        channel.process(None, NOTE_CLOCKS);
+        assert!(Arc::ptr_eq(&first, &channel.commands));
+
+        audio_mut!(sound).notes[0] = 1;
+        channel.process(None, NOTE_CLOCKS);
+        assert!(!Arc::ptr_eq(&first, &channel.commands));
+    }
+
+    #[test]
+    fn test_effect_slots_are_sparse() {
+        let sound = Sound::new();
+        audio_mut!(sound).set_mml("@VIB10000{0,1,50} R").unwrap();
+        let channel = Channel::new();
+        let mut channel = audio_mut!(channel);
+        channel.play(vec![sound], None, false, false);
+        channel.process(None, 1);
+
+        assert_eq!(channel.vibrato_slots.len(), 1);
     }
 }

@@ -6,6 +6,51 @@ import pytest
 import pyxel
 
 
+def _write_legacy_resource(path, entries):
+    entries = dict(entries)
+    with zipfile.ZipFile(path, "w") as zf:
+        zf.writestr("pyxel_resource/version", entries.pop("version", "1.9.0"))
+        for name, value in entries.items():
+            zf.writestr(f"pyxel_resource/{name}", value)
+
+
+def _write_resource(path, toml_text):
+    with zipfile.ZipFile(path, "w") as zf:
+        zf.writestr("pyxel_resource.toml", toml_text)
+
+
+def _mark_zip_entry_encrypted(path, entry):
+    data = bytearray(path.read_bytes())
+    entry = entry.encode()
+
+    local_patched = False
+    offset = 0
+    while (offset := data.find(b"PK\x03\x04", offset)) >= 0:
+        name_length = int.from_bytes(data[offset + 26 : offset + 28], "little")
+        name_start = offset + 30
+        if data[name_start : name_start + name_length] == entry:
+            flags = int.from_bytes(data[offset + 6 : offset + 8], "little") | 1
+            data[offset + 6 : offset + 8] = flags.to_bytes(2, "little")
+            local_patched = True
+            break
+        offset += 4
+
+    central_patched = False
+    offset = 0
+    while (offset := data.find(b"PK\x01\x02", offset)) >= 0:
+        name_length = int.from_bytes(data[offset + 28 : offset + 30], "little")
+        name_start = offset + 46
+        if data[name_start : name_start + name_length] == entry:
+            flags = int.from_bytes(data[offset + 8 : offset + 10], "little") | 1
+            data[offset + 8 : offset + 10] = flags.to_bytes(2, "little")
+            central_patched = True
+            break
+        offset += 4
+
+    assert local_patched and central_patched
+    path.write_bytes(data)
+
+
 class TestSaveLoad:
     def test_load_pyxres(self, assets_dir):
         pyxel.load(str(assets_dir / "sample.pyxres"))
@@ -33,6 +78,125 @@ class TestSaveLoad:
         assert pyxel.sounds[0].speed == 20
         assert list(pyxel.musics[0].seqs[0]) == [0, 1]
 
+    @pytest.mark.parametrize(
+        ("entries", "detail"),
+        [
+            (
+                {"version": b"\xff"},
+                "failed to read 'pyxel_resource/version' as UTF-8",
+            ),
+            ({"version": "not-a-version"}, "invalid version 'not-a-version'"),
+            ({"version": "42949673.96"}, "invalid version '42949673.96'"),
+            ({"version": "999.0"}, "unsupported version '999.0'"),
+            (
+                {"image0": b"\xff"},
+                "failed to read 'pyxel_resource/image0' as UTF-8",
+            ),
+            (
+                {"image0": "0g"},
+                "invalid hexadecimal digit 'g' in 'pyxel_resource/image0' "
+                "at line 1, column 2",
+            ),
+            (
+                {"image0": "0あ"},
+                "invalid hexadecimal digit 'あ' in 'pyxel_resource/image0' "
+                "at line 1, column 2",
+            ),
+            (
+                {"image0": "0\n" * 257},
+                "too many image rows in 'pyxel_resource/image0': got 257, maximum 256",
+            ),
+            (
+                {"tilemap0": "000"},
+                "invalid tile width in 'pyxel_resource/tilemap0' at line 1: "
+                "expected groups of 4 hexadecimal digits",
+            ),
+            (
+                {"tilemap0": "00z0"},
+                "invalid hexadecimal digit 'z' in 'pyxel_resource/tilemap0' "
+                "at line 1, column 3",
+            ),
+            (
+                {"tilemap0": "0000" * 257},
+                "too many tiles in 'pyxel_resource/tilemap0' at line 1: "
+                "got 257, maximum 256",
+            ),
+            (
+                {"tilemap0": "0000\n" * 256 + "bad\n"},
+                "invalid decimal value 'bad' in 'pyxel_resource/tilemap0' at line 257",
+            ),
+            (
+                {"tilemap0": "0000\n" * 256 + "9999\n"},
+                "image index 9999 in 'pyxel_resource/tilemap0' at line 257 "
+                "is out of range 0..3",
+            ),
+            (
+                {"sound00": "0g"},
+                "invalid hexadecimal digit 'g' in 'pyxel_resource/sound00' "
+                "at line 1, column 2",
+            ),
+            (
+                {"sound00": "0"},
+                "invalid value width in 'pyxel_resource/sound00' at line 1: "
+                "expected groups of 2 hexadecimal digits",
+            ),
+            (
+                {"sound00": "none\nnone\nnone\nnone\nfast\n"},
+                "invalid decimal value 'fast' in 'pyxel_resource/sound00' at line 5",
+            ),
+            (
+                {"music0": "00\n00\n00\n00\n00\n"},
+                "too many music channels in 'pyxel_resource/music0': got 5, maximum 4",
+            ),
+        ],
+    )
+    def test_malformed_legacy_resource_has_exact_error(self, tmp_path, entries, detail):
+        path = tmp_path / "malformed.pyxres"
+        _write_legacy_resource(path, entries)
+
+        with pytest.raises(Exception) as exc:
+            pyxel.load(str(path))
+
+        assert (
+            str(exc.value) == f"Failed to load legacy resource file '{path}': {detail}"
+        )
+
+    def test_malformed_legacy_resource_does_not_partially_commit(self, tmp_path):
+        path = tmp_path / "partial.pyxres"
+        _write_legacy_resource(path, {"image0": "1", "tilemap0": "g"})
+        pyxel.images[0].cls(7)
+
+        with pytest.raises(Exception):
+            pyxel.load(str(path))
+
+        assert pyxel.images[0].pget(0, 0) == 7
+
+    @pytest.mark.parametrize("entry", ["version", "image0"])
+    def test_unreadable_legacy_entry_is_not_treated_as_missing(self, tmp_path, entry):
+        path = tmp_path / "encrypted-entry.pyxres"
+        _write_legacy_resource(path, {"image0": "1"})
+        archive_entry = f"pyxel_resource/{entry}"
+        _mark_zip_entry_encrypted(path, archive_entry)
+
+        with pytest.raises(Exception) as exc:
+            pyxel.load(str(path))
+
+        assert str(exc.value) == (
+            f"Failed to load legacy resource file '{path}': "
+            f"failed to open '{archive_entry}'"
+        )
+
+    def test_invalid_sidecar_palette_does_not_partially_commit(self, tmp_path):
+        path = tmp_path / "invalid-palette.pyxres"
+        _write_legacy_resource(path, {"image0": "1"})
+        path.with_suffix(".pyxpal").write_text("not-hex\n", encoding="utf-8")
+        pyxel.images[0].cls(7)
+
+        with pytest.raises(Exception):
+            pyxel.load(str(path))
+
+        assert pyxel.images[0].pget(0, 0) == 7
+
     def test_load_unsupported_format_version(self, tmp_path):
         # A pyxres written by a newer Pyxel must be rejected, not silently misread.
         path = tmp_path / "future.pyxres"
@@ -41,6 +205,54 @@ class TestSaveLoad:
 
         with pytest.raises(Exception, match="Unsupported resource format version"):
             pyxel.load(str(path))
+
+    @pytest.mark.parametrize(
+        ("toml_text", "message"),
+        [
+            (
+                "format_version = 1\n"
+                "tilemaps = []\nsounds = []\nmusics = []\n"
+                "[[images]]\nwidth = 1\nheight = 1\ndata = []\n",
+                "Invalid resource data: images[0].data must not be empty",
+            ),
+            (
+                "format_version = 1\n"
+                "images = []\nsounds = []\nmusics = []\n"
+                "[[tilemaps]]\nwidth = 1\nheight = 1\nimgsrc = 0\ndata = []\n",
+                "Invalid resource data: tilemaps[0].data must not be empty",
+            ),
+            (
+                "format_version = 1\n"
+                "images = []\nsounds = []\nmusics = []\n"
+                "[[tilemaps]]\nwidth = 1\nheight = 1\nimgsrc = 3\ndata = [[0, 0]]\n",
+                "Invalid resource data: tilemaps[0].imgsrc 3 is out of range 0..3",
+            ),
+        ],
+    )
+    def test_malformed_resource_has_exact_error(self, tmp_path, toml_text, message):
+        path = tmp_path / "malformed-new.pyxres"
+        _write_resource(path, toml_text)
+
+        with pytest.raises(Exception) as exc:
+            pyxel.load(str(path))
+
+        assert str(exc.value) == message
+
+    def test_malformed_resource_does_not_partially_commit(self, tmp_path):
+        path = tmp_path / "partial-new.pyxres"
+        _write_resource(
+            path,
+            "format_version = 1\n"
+            "sounds = []\nmusics = []\n"
+            "[[images]]\nwidth = 1\nheight = 1\ndata = [[1]]\n"
+            "[[tilemaps]]\nwidth = 1\nheight = 1\nimgsrc = 0\ndata = []\n",
+        )
+        pyxel.images[0].cls(7)
+
+        with pytest.raises(Exception):
+            pyxel.load(str(path))
+
+        assert pyxel.images[0].pget(0, 0) == 7
 
     def test_save_load_roundtrip(self, tmp_path):
         img = pyxel.images[0]

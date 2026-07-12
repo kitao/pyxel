@@ -50,16 +50,20 @@ impl Pyxel {
             ZipArchive::new(file).map_err(|_| format!("Failed to parse file '{filename}'"))?;
 
         // Old resource file
-        if archive.by_name("pyxel_resource/version").is_ok() {
+        if archive.index_for_name("pyxel_resource/version").is_some() {
             println!("An old Pyxel resource file '{filename}' is loaded. Please re-save it with the latest Pyxel.");
+            let palette = Self::read_palette(filename)?;
             self.load_old_resource(
                 &mut archive,
                 !exclude_images.unwrap_or(false),
                 !exclude_tilemaps.unwrap_or(false),
                 !exclude_sounds.unwrap_or(false),
                 !exclude_musics.unwrap_or(false),
-            );
-            self.load_palette(filename)?;
+            )
+            .map_err(|detail| {
+                format!("Failed to load legacy resource file '{filename}': {detail}")
+            })?;
+            Self::apply_palette(palette);
             return Ok(());
         }
 
@@ -79,14 +83,15 @@ impl Pyxel {
         }
 
         let resource_data = ResourceData::from_toml(&toml_text)?;
+        let palette = Self::read_palette(filename)?;
         resource_data.to_runtime(
             self,
             exclude_images.unwrap_or(false),
             exclude_tilemaps.unwrap_or(false),
             exclude_sounds.unwrap_or(false),
             exclude_musics.unwrap_or(false),
-        );
-        self.load_palette(filename)?;
+        )?;
+        Self::apply_palette(palette);
         Ok(())
     }
 
@@ -123,10 +128,18 @@ impl Pyxel {
     // Palette I/O
 
     pub fn load_palette(&mut self, filename: &str) -> Result<(), String> {
+        let palette = Self::read_palette(filename)?;
+        Self::apply_palette(palette);
+        Ok(())
+    }
+
+    fn read_palette(filename: &str) -> Result<Option<Vec<Rgb24>>, String> {
         let filename = Self::palette_filename(filename);
 
-        let Ok(mut file) = File::open(Path::new(&filename)) else {
-            return Ok(());
+        let mut file = match File::open(Path::new(&filename)) {
+            Ok(file) => file,
+            Err(error) if error.kind() == std::io::ErrorKind::NotFound => return Ok(None),
+            Err(_) => return Err(format!("Failed to open file '{filename}'")),
         };
 
         let mut contents = String::new();
@@ -143,12 +156,17 @@ impl Pyxel {
                     .map_err(|_| format!("Failed to parse line {} in '{filename}': '{s}'", i + 1))
             })
             .collect::<Result<_, _>>()?;
-        *pyxel::colors() = if colors.is_empty() {
+        Ok(Some(if colors.is_empty() {
             vec![0x00ff_ffff]
         } else {
             colors
-        };
-        Ok(())
+        }))
+    }
+
+    fn apply_palette(palette: Option<Vec<Rgb24>>) {
+        if let Some(colors) = palette {
+            *pyxel::colors() = colors;
+        }
     }
 
     pub fn save_palette(&self, filename: &str) -> Result<(), String> {
@@ -165,7 +183,7 @@ impl Pyxel {
         Ok(())
     }
 
-    // Capture Operations
+    // Capture operations
 
     pub fn save_screenshot(
         &mut self,
@@ -208,12 +226,12 @@ impl Pyxel {
             *pyxel::width(),
             *pyxel::height(),
             &rc_ref!(pyxel::screen()).canvas.data,
-            pyxel::colors(),
+            &pyxel::colors(),
             *pyxel::frame_count(),
         );
     }
 
-    // User Data
+    // User data
 
     pub fn user_data_dir(&self, vendor_name: &str, app_name: &str) -> Result<String, String> {
         let home_dir = UserDirs::new()
@@ -238,7 +256,7 @@ impl Pyxel {
         Ok(app_data_dir)
     }
 
-    // Debug Dumps
+    // Debug dumps
 
     pub(crate) fn dump_image_bank(&self, image_index: u32) {
         let filename = Self::join_desktop_path(&format!("pyxel-image{image_index}"));
@@ -256,7 +274,7 @@ impl Pyxel {
         let filename = Self::join_desktop_path("pyxel-palette");
         let num_colors = pyxel::colors().len();
         let rc = Image::new(num_colors as u32, 1);
-        let image = rc_mut!(rc);
+        let mut image = rc_mut!(rc);
         for i in 0..num_colors {
             image.set_pixel(i as f32, 0.0, i as Color);
         }

@@ -146,6 +146,7 @@ install: build
 test: install
 	@cd $(ROOT_DIR); python -m pytest python/tests/ -v
 	@cd $(CRATES_DIR); cargo test -p pyxel-core $(CARGO_OPTS)
+	@cd $(WEB_DIR); npm test
 
 run: install
 	@$(SCRIPTS_DIR)/run_examples

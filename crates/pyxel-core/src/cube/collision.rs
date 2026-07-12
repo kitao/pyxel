@@ -187,8 +187,7 @@ impl Aabb {
 }
 
 // World-space contact record produced by the narrow phase. The normal
-// points from `b` toward `a`, matching the user-facing convention
-// (cube-design.md § 12).
+// points from `b` toward `a`, matching the user-facing convention.
 
 #[derive(Clone, Copy, Debug)]
 pub struct ContactGeom {
@@ -199,11 +198,9 @@ pub struct ContactGeom {
 
 // Shape classification
 
-// Classification per cube-design.md § 11.1: size == 0 → sphere,
-// size = (0, h, 0) → capsule along local Y (segment half-length h/2),
-// anything else → rounded box with core half-extents size/2. The
-// rounding radius applies to every family (sphere radius when the core
-// is a point).
+// size == 0 produces a sphere; size = (0, h, 0) produces a local-Y
+// capsule; anything else produces a rounded box. The radius rounds every
+// family and becomes the sphere radius when the core is a point.
 
 #[derive(Clone, Copy, Debug)]
 pub enum ColliderShape {
@@ -245,7 +242,7 @@ pub fn classify_shape(size: Vec3, radius: f32) -> ColliderShape {
 pub fn collider_aabb(collider: &Collider, transform: &Mat4) -> Aabb {
     if let Some(mesh_rc) = &collider.mesh {
         let mesh = rc_ref!(mesh_rc);
-        return Aabb::from_mesh(mesh, transform);
+        return Aabb::from_mesh(&mesh, transform);
     }
     let size = *rc_ref!(&collider.size);
     Aabb::from_rounded_box(transform, size, collider.radius)
@@ -2721,7 +2718,7 @@ mod tests {
             z: 3.0,
         });
         let transform = *rc_ref!(&transform_rc);
-        let aabb = collider_aabb(rc_ref!(&coll), &transform);
+        let aabb = collider_aabb(&rc_ref!(&coll), &transform);
         assert!((aabb.min.x - 0.5).abs() < 1e-4); // 1 - 0.5
         assert!((aabb.max.x - 1.5).abs() < 1e-4);
         assert!((aabb.min.y - 1.5).abs() < 1e-4);
@@ -2770,7 +2767,7 @@ mod tests {
 
     #[test]
     fn test_classify_capsule_local_y() {
-        // size=(0, h, 0) + radius → capsule, half_h = h/2 (cube-design.md § 11.1).
+        // A local-Y core segment plus radius produces a capsule.
         let s = classify_shape(
             Vec3 {
                 x: 0.0,
@@ -3189,7 +3186,7 @@ mod tests {
             y: 0.0,
             z: 0.0,
         });
-        let m_b_rc = rc_ref!(&shift_rc).mul_mat(rc_ref!(&rot_rc));
+        let m_b_rc = rc_ref!(&shift_rc).mul_mat(&rc_ref!(&rot_rc));
         let m_b = *rc_ref!(&m_b_rc);
         assert!(capsule_vs_capsule(&m_a, 1.0, 0.3, &m_b, 1.0, 0.3).is_none());
     }
@@ -3406,7 +3403,7 @@ mod tests {
         });
         let d = 2.2 / std::f32::consts::SQRT_2;
         let shift_rc = Mat4::from_translation(&Vec3 { x: d, y: 0.0, z: d });
-        let m_b_rc = rc_ref!(&shift_rc).mul_mat(rc_ref!(&rot_rc));
+        let m_b_rc = rc_ref!(&shift_rc).mul_mat(&rc_ref!(&rot_rc));
         let m_b = *rc_ref!(&m_b_rc);
         let one = Vec3 {
             x: 1.0,
@@ -3421,7 +3418,7 @@ mod tests {
             y: 0.0,
             z: d2,
         });
-        let m_b2_rc = rc_ref!(&shift2_rc).mul_mat(rc_ref!(&rot_rc));
+        let m_b2_rc = rc_ref!(&shift2_rc).mul_mat(&rc_ref!(&rot_rc));
         let m_b2 = *rc_ref!(&m_b2_rc);
         assert!(rounded_obb_vs_rounded_obb(&m_a, one, 0.0, &m_b2, one, 0.0).is_none());
     }
@@ -3574,7 +3571,7 @@ mod tests {
             y: 0.25,
             z: -2.0,
         });
-        let cap_rc = rc_ref!(&shift_rc).mul_mat(rc_ref!(&rot_rc));
+        let cap_rc = rc_ref!(&shift_rc).mul_mat(&rc_ref!(&rot_rc));
         let cap = *rc_ref!(&cap_rc);
         let v0 = Vec3 {
             x: -2.0,

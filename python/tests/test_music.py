@@ -1,5 +1,3 @@
-from pathlib import Path
-
 import pyxel
 
 
@@ -28,14 +26,43 @@ class TestMusic:
         assert len(msc.seqs) == pyxel.NUM_CHANNELS
         assert list(msc.seqs[0]) == [0, 1, 2]
 
-    def test_save(self, tmp_path):
-        pyxel.sounds[0].set("c2e2g2c3", "ssss", "7654", "nnnn", 10)
-        msc = pyxel.Music()
-        msc.set([0])
-        path = str(tmp_path / "test_music.wav")
-        msc.save(path, 1.0)
-        assert Path(path).exists()
-        assert Path(path).stat().st_size > 0
+    def test_save_is_byte_deterministic(self, tmp_path):
+        tone = pyxel.tones[0]
+        original_tone = (
+            tone.mode,
+            tone.sample_bits,
+            list(tone.wavetable),
+            tone.gain,
+        )
+        original_sound_count = len(pyxel.sounds)
+        try:
+            tone.mode = 0
+            tone.sample_bits = 2
+            tone.wavetable[:] = [0, 3, 3, 0]
+            tone.gain = 0.75
+            first_sound = pyxel.Sound()
+            second_sound = pyxel.Sound()
+            first_sound.set("c2e2", "00", "75", "nf", 6)
+            second_sound.set("g1r", "00", "53", "nq", 6)
+            pyxel.sounds.append(first_sound)
+            pyxel.sounds.append(second_sound)
+            msc = pyxel.Music()
+            msc.set([original_sound_count], [original_sound_count + 1])
+            first_path = tmp_path / "first.wav"
+            second_path = tmp_path / "second.wav"
+
+            # Each channel lasts 0.1 seconds, so this renders exactly two loops.
+            msc.save(str(first_path), 0.2)
+            msc.save(str(second_path), 0.2)
+            actual = first_path.read_bytes()
+            assert second_path.read_bytes() == actual
+        finally:
+            while len(pyxel.sounds) > original_sound_count:
+                pyxel.sounds.pop()
+            tone.mode = original_tone[0]
+            tone.sample_bits = original_tone[1]
+            tone.wavetable[:] = original_tone[2]
+            tone.gain = original_tone[3]
 
     def test_set_overwrites_previous(self):
         msc = pyxel.Music()
@@ -76,7 +103,7 @@ class TestMusicSeqs:
         msc.set([0, 1], [2, 3])
         msc.seqs[0][0] = 5
         assert msc.seqs[0][0] == 5
-        # Other elements unchanged.
+        # Other elements unchanged
         assert msc.seqs[0][1] == 1
 
     def test_seqs_inner_seq_append(self):
@@ -108,7 +135,7 @@ class TestMusicSeqs:
         msc.seqs[0] = [10, 11, 12]  # type: ignore[call-overload]
         assert len(msc.seqs[0]) == 3
         assert list(msc.seqs[0]) == [10, 11, 12]
-        # Other channel unchanged.
+        # Other channel unchanged
         assert list(msc.seqs[1]) == [2, 3]
 
     def test_seqs_delitem(self):

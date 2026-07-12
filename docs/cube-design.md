@@ -677,15 +677,15 @@ for i in range(len(transforms)):
 
 ```python
 character = Mesh(
-    primitives=[prim_body, prim_hair, prim_sword, None],
+    primitives=[prim_body, prim_hair, None, prim_sword],
     transforms=[
         Mat4.IDENTITY,
         Mat4.from_translation(Vec3(0, 1, 0)),
-        Mat4.from_euler(Vec3(0, 0, 90)),
         Mat4.from_translation(Vec3(0.5, 0, 0)),
+        Mat4.from_euler(Vec3(0, 0, 90)),
     ],
-    parents=[-1, 0, 3, 0],
-    names=["body", "hair", "sword", "hand"],
+    parents=[-1, 0, 0, 2],
+    names=["body", "hair", "hand", "sword"],
     col_img=pyxel.images[0],
     colkey=0,
 )
@@ -1641,7 +1641,7 @@ The mix is intentional, not accidental, and follows the rules below.
    (`forward` / `right` / `up`) on Node, Godot-style multi-membership
    tags (`tags: list[str]`), and Unity-style lookup names
    (`find_by_name`, `find_by_tags`).
-5. **Spatial queries** (`Scene.raycast` / `Scene.overlap_*`): Unity
+5. **Spatial queries** (`Node.raycast` / `Node.overlap_*`): Unity
    Physics conventions, with shared parameter names (`origin`,
    `direction`, `max_distance`, `hit_triggers`, `tags`) across all
    four primitives.

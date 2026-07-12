@@ -23,17 +23,16 @@ use pyxel::cube::{
 use pyxel::{Image, RcImage, Rgb24};
 
 // Mirrors of the crate-internal rc_ref! / rc_mut! macros (utils.rs), which
-// are not exported; benches dereference the public Rc<UnsafeCell<T>>
-// aliases the same way the crate does internally.
+// are not exported; benches use the public checked shared-owner aliases.
 macro_rules! rc_ref {
     ($rc:expr) => {
-        unsafe { &*($rc).get() }
+        ($rc).borrow()
     };
 }
 
 macro_rules! rc_mut {
     ($rc:expr) => {
-        unsafe { &mut *($rc).get() }
+        ($rc).borrow_mut()
     };
 }
 
@@ -109,13 +108,14 @@ fn bench_raster_textured_shaded_triangle() {
     let uvs = [0.0, 0.0, 1.0, 0.0, 0.0, 1.0];
     let texture = make_texture();
     let shading = Shading::new(&PALETTE);
+    let shading_ref = rc_ref!(&shading);
     let state = DrawState {
         shaded: true,
         dither_alpha: 1.0,
         depth_test: true,
         depth_write: true,
         billboard: BILLBOARD_OFF,
-        shading: Some(rc_ref!(&shading)),
+        shading: Some(&shading_ref),
     };
     run_bench("raster_textured_shaded_triangle", 3_000, |_| {
         ctx.depth.fill(f32::INFINITY);
@@ -211,9 +211,9 @@ fn bench_mesh_aabb_from_mesh() {
         y: 2.0,
         z: 3.0,
     });
-    let transform = rc_ref!(&translation).mul_mat_value(rc_ref!(&rotation));
+    let transform = rc_ref!(&translation).mul_mat_value(&rc_ref!(&rotation));
     run_bench("mesh_aabb_from_mesh", 20_000, |_| {
-        let aabb = Aabb::from_mesh(rc_ref!(&mesh), black_box(&transform));
+        let aabb = Aabb::from_mesh(&rc_ref!(&mesh), black_box(&transform));
         black_box(aabb.min.x + aabb.max.z);
     });
 }
@@ -272,8 +272,10 @@ fn run_bench(name: &str, iters_per_sample: u32, mut f: impl FnMut(u32)) {
 fn make_draw_context() -> DrawContext {
     let camera = Camera::new();
     let size = TARGET_SIZE as f32;
-    let view = view_matrix(rc_ref!(&camera));
-    let projection = projection_matrix(rc_ref!(&camera), size, size);
+    let camera_ref = rc_ref!(&camera);
+    let view = view_matrix(&camera_ref);
+    let projection = projection_matrix(&camera_ref, size, size);
+    drop(camera_ref);
     DrawContext {
         target: Image::new(TARGET_SIZE, TARGET_SIZE),
         vp: matmul(&projection, &view),
@@ -299,12 +301,13 @@ fn make_draw_context() -> DrawContext {
 // 16x16 texture with a deterministic per-pixel color pattern.
 fn make_texture() -> RcImage {
     let image = Image::new(16, 16);
-    let image_ref = rc_mut!(&image);
+    let mut image_ref = rc_mut!(&image);
     for y in 0..16_u32 {
         for x in 0..16_u32 {
             image_ref.set_pixel(x as f32, y as f32, ((x + y * 3) % 16) as u8);
         }
     }
+    drop(image_ref);
     image
 }
 
@@ -352,7 +355,7 @@ fn make_grid_mesh() -> RcMesh {
     let (positions, triangles) = make_grid_geometry();
     let primitive = Primitive::new();
     {
-        let primitive_ref = rc_mut!(&primitive);
+        let mut primitive_ref = rc_mut!(&primitive);
         primitive_ref.positions = positions.iter().flat_map(|v| [v.x, v.y, v.z]).collect();
         primitive_ref.indices = triangles
             .iter()
@@ -361,7 +364,7 @@ fn make_grid_mesh() -> RcMesh {
     }
     let mesh = Mesh::new();
     {
-        let mesh_ref = rc_mut!(&mesh);
+        let mut mesh_ref = rc_mut!(&mesh);
         mesh_ref.primitives = vec![Some(primitive)];
         mesh_ref.transforms = vec![Mat4::identity()];
         mesh_ref.parents = vec![-1];
@@ -444,18 +447,18 @@ fn make_scene_tree() -> RcNode {
     for g in 0..GROUP_COUNT {
         let group = Node::new();
         {
-            let group_ref = rc_mut!(&group);
+            let mut group_ref = rc_mut!(&group);
             group_ref.transform =
-                Mat4::from_translation(rc_ref!(&Vec3::new(g as f32 * 4.0, 0.0, 0.0)));
+                Mat4::from_translation(&rc_ref!(&Vec3::new(g as f32 * 4.0, 0.0, 0.0)));
             group_ref.tags = vec![String::from("group")];
         }
         Node::add_child(&root, &group);
         for l in 0..LEAVES_PER_GROUP {
             let leaf = Node::new();
             {
-                let leaf_ref = rc_mut!(&leaf);
+                let mut leaf_ref = rc_mut!(&leaf);
                 leaf_ref.transform =
-                    Mat4::from_translation(rc_ref!(&Vec3::new(0.0, 0.0, l as f32 * 0.9)));
+                    Mat4::from_translation(&rc_ref!(&Vec3::new(0.0, 0.0, l as f32 * 0.9)));
                 if l < COLLIDERS_PER_GROUP {
                     leaf_ref.tags = vec![String::from("enemy")];
                     leaf_ref.collider = Some(Collider::new(
