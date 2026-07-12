@@ -6,10 +6,31 @@ import sys
 
 ROOT_DIR = Path(__file__).resolve().parent.parent
 PYTHON_VERSION_REPLACEMENTS = (
-    ("crates/pyxel-core/src/settings.rs", '(VERSION.*)".*"'),
-    ("python/pyproject.toml", '(version.*)".*"'),
+    (
+        "crates/pyxel-core/src/settings.rs",
+        r'(?m)^(pub const VERSION: &str = ")[^"]+(";)$',
+    ),
+    ("python/pyproject.toml", r'(?m)^(version = ")[^"]+(".*)$'),
+    (
+        "wasm/pyxel.js",
+        r'(?m)^(const PYXEL_WHEEL_PATH = "pyxel-)[^-\"]+(-cp[^\"]+";)$',
+    ),
 )
-CARGO_VERSION_REPLACEMENTS = (("crates/Cargo.toml", '(version.*)".*"'),)
+CARGO_VERSION_REPLACEMENTS = (("crates/Cargo.toml", r'(?m)^(version = ")[^"]+(".*)$'),)
+VERSION_PATTERNS = (
+    (
+        "crates/pyxel-core/src/settings.rs",
+        r'(?m)^pub const VERSION: &str = "([^"]+)";$',
+        False,
+    ),
+    ("python/pyproject.toml", r'(?m)^version = "([^"]+)"', False),
+    ("crates/Cargo.toml", r'(?m)^version = "([^"]+)"', True),
+    (
+        "wasm/pyxel.js",
+        r'(?m)^const PYXEL_WHEEL_PATH = "pyxel-([^-\"]+)-cp[^\"]+";$',
+        False,
+    ),
+)
 PRE_RELEASE_MAP = {"a": "alpha", "b": "beta", "rc": "rc"}
 
 
@@ -21,28 +42,90 @@ def pep440_to_semver(version: str) -> str:
     return version
 
 
-def replace_file(path: Path, pattern: str, repl: str) -> None:
+def replace_file(path: Path, pattern: str, version: str) -> None:
     text = path.read_text(encoding="utf-8")
-    new_text, count = re.subn(pattern, repl, text, count=1)
-    if count == 0:
-        print(f"ERROR: pattern not found in {path}", file=sys.stderr)
-        sys.exit(1)
+    new_text, count = re.subn(
+        pattern,
+        lambda match: f"{match.group(1)}{version}{match.group(2)}",
+        text,
+        count=1,
+    )
+    if count != 1:
+        raise ValueError(f"version pattern not found in {path}")
     path.write_text(new_text, encoding="utf-8")
 
 
-def update_version() -> None:
-    if len(sys.argv) != 2:
-        print("Usage: update_version <version>")
-        sys.exit(1)
-
-    version = sys.argv[1]
+def update_version(version: str, root_dir: Path = ROOT_DIR) -> None:
     cargo_version = pep440_to_semver(version)
 
     for relative_path, pattern in PYTHON_VERSION_REPLACEMENTS:
-        replace_file(ROOT_DIR / relative_path, pattern, f'\\1"{version}"')
+        replace_file(root_dir / relative_path, pattern, version)
     for relative_path, pattern in CARGO_VERSION_REPLACEMENTS:
-        replace_file(ROOT_DIR / relative_path, pattern, f'\\1"{cargo_version}"')
+        replace_file(root_dir / relative_path, pattern, cargo_version)
+
+
+def _read_version(root_dir: Path, relative_path: str, pattern: str) -> str:
+    text = (root_dir / relative_path).read_text(encoding="utf-8")
+    match = re.search(pattern, text)
+    if match is None:
+        raise ValueError(f"version pattern not found in {relative_path}")
+    return match.group(1)
+
+
+def version_errors(root_dir: Path = ROOT_DIR, tag: str | None = None) -> list[str]:
+    if tag is None:
+        expected = _read_version(
+            root_dir,
+            "python/pyproject.toml",
+            r'(?m)^version = "([^"]+)"',
+        )
+    else:
+        tag = tag.removeprefix("refs/tags/")
+        if not tag.startswith("v") or len(tag) == 1:
+            return [f"tag: expected v<version>, found {tag}"]
+        expected = tag[1:]
+
+    errors = []
+    for relative_path, pattern, uses_cargo_version in VERSION_PATTERNS:
+        actual = _read_version(root_dir, relative_path, pattern)
+        surface_expected = (
+            pep440_to_semver(expected) if uses_cargo_version else expected
+        )
+        if actual != surface_expected:
+            errors.append(
+                f"{relative_path}: expected {surface_expected}, found {actual}"
+            )
+    return errors
+
+
+def main(argv: list[str] | None = None) -> int:
+    argv = sys.argv[1:] if argv is None else argv
+    if argv and argv[0] == "--check":
+        if len(argv) > 2:
+            print("Usage: update_version --check [v<version>]", file=sys.stderr)
+            return 1
+        try:
+            errors = version_errors(tag=argv[1] if len(argv) == 2 else None)
+        except ValueError as error:
+            print(f"ERROR: {error}", file=sys.stderr)
+            return 1
+        if errors:
+            for error in errors:
+                print(f"ERROR: {error}", file=sys.stderr)
+            return 1
+        print("Version surfaces are consistent")
+        return 0
+
+    if len(argv) != 1:
+        print("Usage: update_version <version>", file=sys.stderr)
+        return 1
+    try:
+        update_version(argv[0])
+    except ValueError as error:
+        print(f"ERROR: {error}", file=sys.stderr)
+        return 1
+    return 0
 
 
 if __name__ == "__main__":
-    update_version()
+    raise SystemExit(main())

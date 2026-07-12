@@ -4,7 +4,7 @@ use crate::canvas::{Canvas, ToIndex};
 use crate::image::RcImage;
 use crate::settings::TILE_SIZE;
 use crate::tmx_parser::parse_tmx;
-use crate::utils::{f32_to_u32, parse_hex_string, simplify_string};
+use crate::utils::{f32_to_u32, simplify_string};
 
 pub type ImageTileCoord = u16;
 pub type Tile = (ImageTileCoord, ImageTileCoord);
@@ -23,14 +23,15 @@ pub enum ImageSource {
 }
 
 impl ImageSource {
-    pub(crate) fn resolve(&self) -> &RcImage {
+    pub(crate) fn resolve(&self) -> RcImage {
         match self {
-            ImageSource::Index(index) => &crate::pyxel::images()[*index as usize],
-            ImageSource::Image(image) => image,
+            ImageSource::Index(index) => crate::pyxel::images()[*index as usize].clone(),
+            ImageSource::Image(image) => image.clone(),
         }
     }
 }
 
+#[derive(Clone)]
 pub struct Tilemap {
     pub imgsrc: ImageSource,
     pub(crate) canvas: Canvas<Tile>,
@@ -42,10 +43,13 @@ impl Tilemap {
     // Constructors
 
     pub fn new(width: u32, height: u32, imgsrc: ImageSource) -> RcTilemap {
-        new_rc_type!(Self {
-            imgsrc,
-            canvas: Canvas::new(width, height),
-        })
+        Self::try_new(width, height, imgsrc).expect("tilemap dimensions are too large")
+    }
+
+    pub fn try_new(width: u32, height: u32, imgsrc: ImageSource) -> Result<RcTilemap, String> {
+        let canvas = Canvas::try_new(width, height)
+            .ok_or_else(|| "tilemap dimensions are too large".to_string())?;
+        Ok(new_rc_type!(Self { imgsrc, canvas }))
     }
 
     pub fn from_tmx(filename: &str, layer_index: u32) -> Result<RcTilemap, String> {
@@ -69,25 +73,58 @@ impl Tilemap {
     // Public data operations
 
     // Parse inline tile data before drawing it into the map.
-    pub fn set(&mut self, x: i32, y: i32, data: &[&str]) {
-        let width = simplify_string(data[0]).len() as u32 / 4;
-        let height = data.len() as u32;
+    pub fn set<S: AsRef<str>>(&mut self, x: i32, y: i32, data: &[S]) -> Result<(), String> {
+        if data.is_empty() {
+            return Err("Invalid tilemap data: no rows".to_string());
+        }
+
+        let rows: Vec<String> = data
+            .iter()
+            .map(|row| simplify_string(row.as_ref()))
+            .collect();
+        let digit_count = rows[0].chars().count();
+        if digit_count == 0 {
+            return Err("Invalid tilemap data at row 0: no tiles".to_string());
+        }
+        if !digit_count.is_multiple_of(4) {
+            return Err(format!(
+                "Invalid tilemap data at row 0: hexadecimal digit count {digit_count} is not divisible by 4"
+            ));
+        }
+        for (row_index, row) in rows.iter().enumerate() {
+            let row_digit_count = row.chars().count();
+            if row_digit_count != digit_count {
+                return Err(format!(
+                    "Invalid tilemap data at row {row_index}: expected {digit_count} hexadecimal digits, got {row_digit_count}"
+                ));
+            }
+        }
+
+        let width = (digit_count / 4) as u32;
+        let height = rows.len() as u32;
         let rc = Self::new(width, height, self.imgsrc.clone());
         {
-            let tilemap = rc_mut!(rc);
-            for y in 0..height {
-                let src_data = simplify_string(data[y as usize]);
-                for x in 0..width {
-                    let index = x as usize * 4;
-                    let tile = parse_hex_string(&src_data[index..index + 4]).unwrap();
-                    tilemap.canvas.write_data(
-                        x as usize,
-                        y as usize,
-                        (
-                            ((tile >> 8) & 0xff) as ImageTileCoord,
-                            (tile & 0xff) as ImageTileCoord,
-                        ),
-                    );
+            let mut tilemap = rc_mut!(rc);
+            for (y, row) in rows.iter().enumerate() {
+                let mut tile = 0u32;
+                for (column, digit) in row.chars().enumerate() {
+                    let value = digit.to_digit(16).ok_or_else(|| {
+                        format!(
+                            "Invalid tilemap data at row {y}, column {column}: expected hexadecimal digit, got '{digit}'"
+                        )
+                    })?;
+                    tile = (tile << 4) | value;
+                    if column % 4 == 3 {
+                        tilemap.canvas.write_data(
+                            column / 4,
+                            y,
+                            (
+                                ((tile >> 8) & 0xff) as ImageTileCoord,
+                                (tile & 0xff) as ImageTileCoord,
+                            ),
+                        );
+                        tile = 0;
+                    }
                 }
             }
         }
@@ -103,6 +140,7 @@ impl Tilemap {
             None,
             None,
         );
+        Ok(())
     }
 
     pub fn load(&mut self, x: i32, y: i32, filename: &str, layer_index: u32) -> Result<(), String> {
@@ -241,7 +279,7 @@ impl Tilemap {
         }
 
         let tilemap = rc_ref!(tilemap);
-        if self.is_self_blit(tilemap) {
+        if self.is_self_blit(&tilemap) {
             let canvas = self.copy_region(tilemap_x, tilemap_y, width, height);
             self.canvas
                 .blit(x, y, &canvas, 0.0, 0.0, width, height, transparent, None);
@@ -319,7 +357,7 @@ impl Tilemap {
         scale: f32,
     ) {
         let tilemap = rc_ref!(tilemap);
-        if self.is_self_blit(tilemap) {
+        if self.is_self_blit(&tilemap) {
             let canvas = self.copy_region(tilemap_x, tilemap_y, width, height);
             self.canvas.blit_with_transform(
                 x,

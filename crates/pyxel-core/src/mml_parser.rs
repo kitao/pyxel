@@ -262,7 +262,11 @@ pub fn parse_mml(mml: &str) -> Result<Vec<MmlCommand>, String> {
                 parse_error!(stream, "Repeat end ']' has no matching '['");
             }
             repeat_depth -= 1;
-            let count = parse_number(&mut stream, "count", RANGE_GE1).unwrap_or(0);
+            let count = match parse_number(&mut stream, "count", RANGE_GE0) {
+                Ok(count) => count,
+                Err(ParseNumberError::Missing(_)) => 0,
+                Err(ParseNumberError::Invalid(error)) => return Err(error),
+            };
             commands.push(MmlCommand::RepeatEnd { play_count: count });
         } else {
             let c = stream.peek().unwrap();
@@ -328,11 +332,16 @@ fn skip_whitespace(stream: &mut CharStream) {
     }
 }
 
+enum ParseNumberError {
+    Missing(String),
+    Invalid(String),
+}
+
 fn parse_number<T: TryFrom<i32>>(
     stream: &mut CharStream,
     name: &str,
     range: (i32, i32),
-) -> Result<T, String> {
+) -> Result<T, ParseNumberError> {
     skip_whitespace(stream);
     let pos = stream.pos;
     let negative = stream.peek() == Some('-');
@@ -355,7 +364,7 @@ fn parse_number<T: TryFrom<i32>>(
     if !has_digit {
         let err_char = stream.peek().map_or(String::new(), |c| c.to_string());
         stream.pos = pos;
-        return Err(err_char);
+        return Err(ParseNumberError::Missing(err_char));
     }
 
     if negative {
@@ -363,13 +372,19 @@ fn parse_number<T: TryFrom<i32>>(
     }
 
     if value < range.0 {
-        parse_error!(stream, "'{name}' is below minimum {}", range.0);
+        return Err(ParseNumberError::Invalid(
+            stream.error(&format!("'{name}' is below minimum {}", range.0)),
+        ));
     }
     if value > range.1 {
-        parse_error!(stream, "'{name}' exceeds maximum {}", range.1);
+        return Err(ParseNumberError::Invalid(
+            stream.error(&format!("'{name}' exceeds maximum {}", range.1)),
+        ));
     }
 
-    T::try_from(value).map_err(|_| stream.error(&format!("Invalid value for '{name}'")))
+    T::try_from(value).map_err(|_| {
+        ParseNumberError::Invalid(stream.error(&format!("Invalid value for '{name}'")))
+    })
 }
 
 fn expect_number<T: TryFrom<i32>>(
@@ -379,7 +394,10 @@ fn expect_number<T: TryFrom<i32>>(
 ) -> Result<T, String> {
     match parse_number(stream, name, range) {
         Ok(value) => Ok(value),
-        Err(actual) => parse_error!(stream, "Expected value for '{name}' but found '{actual}'"),
+        Err(ParseNumberError::Missing(actual)) => {
+            parse_error!(stream, "Expected value for '{name}' but found '{actual}'")
+        }
+        Err(ParseNumberError::Invalid(error)) => Err(error),
     }
 }
 
@@ -549,7 +567,7 @@ fn parse_envelope(stream: &mut CharStream) -> Result<Option<MmlCommand>, String>
     Ok(Some(MmlCommand::EnvelopeSet {
         slot,
         initial_level: volume_to_level(init_vol),
-        segments,
+        segments: segments.into(),
     }))
 }
 
@@ -638,6 +656,10 @@ mod tests {
 
     fn parse(mml: &str) -> Vec<MmlCommand> {
         parse_mml(mml).unwrap()
+    }
+
+    fn assert_parse_error(mml: &str, expected: &str) {
+        assert_eq!(parse_mml(mml).unwrap_err(), expected);
     }
 
     fn note_commands(commands: &[MmlCommand]) -> Vec<(u32, u32)> {
@@ -1130,88 +1152,102 @@ mod tests {
 
     #[test]
     fn test_err_invalid_character() {
-        assert!(parse_mml("X").is_err());
+        assert_parse_error("X", "MML:0: Unexpected character 'X'");
     }
 
     #[test]
     fn test_err_octave_overflow() {
-        assert!(parse_mml("O9 > C").is_err());
+        assert_parse_error("O9 > C", "MML:4: Octave exceeds maximum 9");
     }
 
     #[test]
     fn test_err_octave_underflow() {
-        assert!(parse_mml("O-1 < C").is_err());
+        assert_parse_error("O-1 < C", "MML:5: Octave is below minimum -1");
     }
 
     #[test]
     fn test_err_tempo_missing_number() {
-        assert!(parse_mml("T C").is_err());
+        assert_parse_error("T C", "MML:2: Expected value for 'T' but found 'C'");
     }
 
     #[test]
     fn test_err_volume_missing_number() {
-        assert!(parse_mml("V C").is_err());
+        assert_parse_error("V C", "MML:2: Expected value for 'V' but found 'C'");
     }
 
     #[test]
     fn test_err_envelope_slot_zero_reserved() {
-        assert!(parse_mml("@ENV0{127}").is_err());
+        assert_parse_error(
+            "@ENV0{127}",
+            "MML:6: Envelope slot 0 is reserved for disable",
+        );
     }
 
     #[test]
     fn test_err_vibrato_slot_zero_reserved() {
-        assert!(parse_mml("@VIB0{10, 20, 50}").is_err());
+        assert_parse_error(
+            "@VIB0{10, 20, 50}",
+            "MML:6: Vibrato slot 0 is reserved for disable",
+        );
     }
 
     #[test]
     fn test_err_glide_slot_zero_reserved() {
-        assert!(parse_mml("@GLI0{100, 10}").is_err());
+        assert_parse_error(
+            "@GLI0{100, 10}",
+            "MML:6: Glide slot 0 is reserved for disable",
+        );
     }
 
     #[test]
     fn test_err_note_length_out_of_range() {
-        assert!(parse_mml("L0 C").is_err());
-        assert!(parse_mml("L193 C").is_err());
-        assert!(parse_mml("C0").is_err());
+        assert_parse_error("L0 C", "MML:2: 'Note length' is below minimum 1");
+        assert_parse_error("L193 C", "MML:4: 'Note length' exceeds maximum 192");
+        assert_parse_error("C0", "MML:2: 'Note length' is below minimum 1");
     }
 
     #[test]
     fn test_err_tie_before_rest() {
-        assert!(parse_mml("C4& R4").is_err());
+        assert_parse_error("C4& R4", "MML:6: Tie '&' is not followed by a note");
     }
 
     #[test]
     fn test_err_tie_at_end() {
-        assert!(parse_mml("C4&").is_err());
+        assert_parse_error("C4&", "MML:3: Tie '&' is not followed by a note");
     }
 
     #[test]
     fn test_err_rest_tie_without_length() {
-        assert!(parse_mml("R4& C4").is_err());
+        assert_parse_error("R4& C4", "MML:4: Tie '&' after a rest requires a length");
     }
 
     #[test]
     fn test_err_unmatched_repeat_end() {
-        assert!(parse_mml("]2").is_err());
-        assert!(parse_mml("[C]2 ]").is_err());
+        assert_parse_error("]2", "MML:1: Repeat end ']' has no matching '['");
+        assert_parse_error("[C]2 ]", "MML:6: Repeat end ']' has no matching '['");
     }
 
     #[test]
     fn test_err_unclosed_repeat_start() {
-        assert!(parse_mml("[C").is_err());
-        assert!(parse_mml("[[C]2").is_err());
+        assert_parse_error("[C", "MML:2: Repeat start '[' has no matching ']'");
+        assert_parse_error("[[C]2", "MML:5: Repeat start '[' has no matching ']'");
+    }
+
+    #[test]
+    fn test_err_negative_repeat_count() {
+        assert_parse_error("[C]-1", "MML:5: 'count' is below minimum 0");
     }
 
     #[test]
     fn test_err_note_length_not_divisible() {
         // 192 is not divisible by 7
-        assert!(parse_mml("C7").is_err());
+        assert_parse_error("C7", "MML:2: Invalid note length '7'");
     }
 
     #[test]
     fn test_err_dot_on_odd_tick_length() {
         // L192 = 1 tick, cannot apply dot to odd value
-        assert!(parse_mml("C192.").is_err());
+        assert_parse_error("C192.", "MML:5: Cannot apply dot to odd note length");
     }
 
     // total_duration_sec

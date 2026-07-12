@@ -41,14 +41,15 @@ pub struct Tone {
     cached_wavetable: Vec<ToneSample>,
     cached_sample_bits: u32,
     waveform: Vec<f32>,
+    waveform_revision: u64,
 }
 
-define_rc_type!(RcTone, Tone);
+define_audio_type!(RcTone, Tone);
 
 // Tone lifecycle and cached waveform
 impl Tone {
     pub fn new() -> RcTone {
-        new_rc_type!(Self {
+        new_audio_type!(Self {
             mode: ToneMode::Wavetable,
             sample_bits: DEFAULT_TONE_SAMPLE_BITS,
             wavetable: Vec::new(),
@@ -56,10 +57,11 @@ impl Tone {
             cached_wavetable: Vec::new(),
             cached_sample_bits: 0,
             waveform: Vec::new(),
+            waveform_revision: 0,
         })
     }
 
-    pub(crate) fn waveform(&mut self) -> &[f32] {
+    pub(crate) fn waveform(&mut self) -> (&[f32], u64) {
         if self.wavetable != self.cached_wavetable || self.sample_bits != self.cached_sample_bits {
             self.cached_wavetable.clone_from(&self.wavetable);
             self.cached_sample_bits = self.sample_bits;
@@ -73,7 +75,8 @@ impl Tone {
                         .push((raw as f32 / max_sample as f32) * 2.0 - 1.0);
                 }
             }
+            self.waveform_revision = self.waveform_revision.wrapping_add(1);
         }
-        &self.waveform
+        (&self.waveform, self.waveform_revision)
     }
 }

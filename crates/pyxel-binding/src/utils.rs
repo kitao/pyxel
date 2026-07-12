@@ -1,14 +1,69 @@
+use std::ops::{Deref, DerefMut};
+use std::sync::MutexGuard;
+
+use pyo3::prelude::*;
+
+pub(crate) struct MutexFieldMut<'a, T, U> {
+    owner: MutexGuard<'a, T>,
+    field_ref: fn(&T) -> &U,
+    field_mut: fn(&mut T) -> &mut U,
+}
+
+impl<'a, T, U> MutexFieldMut<'a, T, U> {
+    pub(crate) fn new(
+        owner: MutexGuard<'a, T>,
+        field_ref: fn(&T) -> &U,
+        field_mut: fn(&mut T) -> &mut U,
+    ) -> Self {
+        Self {
+            owner,
+            field_ref,
+            field_mut,
+        }
+    }
+}
+
+impl<T, U> Deref for MutexFieldMut<'_, T, U> {
+    type Target = U;
+
+    fn deref(&self) -> &Self::Target {
+        (self.field_ref)(&self.owner)
+    }
+}
+
+impl<T, U> DerefMut for MutexFieldMut<'_, T, U> {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        (self.field_mut)(&mut self.owner)
+    }
+}
+
 // Rc helpers
 
 macro_rules! rc_ref {
     ($rc:expr) => {
-        unsafe { &*($rc).get() }
+        ($rc).borrow()
     };
 }
 
 macro_rules! rc_mut {
     ($rc:expr) => {
-        unsafe { &mut *($rc).get() }
+        ($rc).borrow_mut()
+    };
+}
+
+macro_rules! audio_ref {
+    ($audio:expr) => {
+        ($audio)
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner)
+    };
+}
+
+macro_rules! audio_mut {
+    ($audio:expr) => {
+        ($audio)
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner)
     };
 }
 
@@ -69,6 +124,21 @@ macro_rules! instance_to_py_any {
     }};
 }
 
+pub(crate) fn ctypes_array_from_address(
+    py: Python<'_>,
+    element_type: &str,
+    length: usize,
+    address: usize,
+) -> PyResult<Py<PyAny>> {
+    let ctypes = py.import("ctypes")?;
+    let array_type = ctypes
+        .getattr(element_type)?
+        .call_method1("__mul__", (length,))?;
+    Ok(array_type
+        .call_method1("from_address", (address,))?
+        .unbind())
+}
+
 // Index / slice helpers
 
 macro_rules! resolve_index {
@@ -90,26 +160,38 @@ macro_rules! resolve_index {
     }};
 }
 
-macro_rules! collect_slice_indices {
-    ($start:expr, $stop:expr, $step:expr) => {{
-        let start: isize = $start;
-        let stop: isize = $stop;
-        let step: isize = $step;
-        let mut indices = Vec::new();
-        let mut i = start;
-        if step > 0 {
-            while i < stop {
-                indices.push(i as usize);
-                i += step;
-            }
-        } else {
-            while i > stop {
-                indices.push(i as usize);
-                i += step;
-            }
+pub(crate) struct SliceIndices {
+    next: isize,
+    step: isize,
+    remaining: usize,
+}
+
+impl Iterator for SliceIndices {
+    type Item = usize;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        if self.remaining == 0 {
+            return None;
         }
-        indices
-    }};
+        let index = self.next as usize;
+        self.next += self.step;
+        self.remaining -= 1;
+        Some(index)
+    }
+
+    fn size_hint(&self) -> (usize, Option<usize>) {
+        (self.remaining, Some(self.remaining))
+    }
+}
+
+impl ExactSizeIterator for SliceIndices {}
+
+pub(crate) fn slice_indices(start: isize, step: isize, len: usize) -> SliceIndices {
+    SliceIndices {
+        next: start,
+        step,
+        remaining: len,
+    }
 }
 
 // Collect items into a PyList and return its iterator
@@ -141,10 +223,12 @@ macro_rules! impl_python_sequence_read {
                 if let Ok(slice) = key.cast::<PySlice>() {
                     let len = $len(&self.inner);
                     let indices = slice.indices(len as isize)?;
-                    let idx_list =
-                        collect_slice_indices!(indices.start, indices.stop, indices.step);
-                    let items: Vec<$get_type> =
-                        idx_list.iter().map(|&i| $get(&self.inner, i)).collect();
+                    let items = $crate::utils::slice_indices(
+                        indices.start,
+                        indices.step,
+                        indices.slicelength,
+                    )
+                    .map(|i| $get(&self.inner, i));
                     let list = pyo3::types::PyList::new(py, items)?;
                     Ok(list.into_any().unbind())
                 } else {
@@ -158,23 +242,18 @@ macro_rules! impl_python_sequence_read {
             }
 
             fn __iter__(&self, py: Python<'_>) -> PyResult<Py<PyAny>> {
-                let items: Vec<$get_type> = (0..$len(&self.inner))
-                    .map(|i| $get(&self.inner, i))
-                    .collect();
+                let items = (0..$len(&self.inner)).map(|i| $get(&self.inner, i));
                 items_to_pyiter!(py, items)
             }
 
             fn __reversed__(&self, py: Python<'_>) -> PyResult<Py<PyAny>> {
-                let items: Vec<$get_type> = (0..$len(&self.inner))
-                    .rev()
-                    .map(|i| $get(&self.inner, i))
-                    .collect();
+                let items = (0..$len(&self.inner)).rev().map(|i| $get(&self.inner, i));
                 items_to_pyiter!(py, items)
             }
 
             fn __repr__(&self, py: Python) -> PyResult<String> {
                 let len = $len(&self.inner);
-                let items: Vec<$get_type> = (0..len).map(|i| $get(&self.inner, i)).collect();
+                let items = (0..len).map(|i| $get(&self.inner, i));
                 let list = pyo3::types::PyList::new(py, items)?;
                 Ok(format!(
                     "{}{}",
@@ -223,23 +302,17 @@ macro_rules! impl_python_sequence_cmp {
                 other: &Bound<'py, PyAny>,
             ) -> PyResult<Py<PyAny>> {
                 let len = $len(&self.inner);
-                let mut items: Vec<$get_type> = (0..len).map(|i| $get(&self.inner, i)).collect();
                 let other_items: Vec<$get_type> = other.extract()?;
-                items.extend(other_items);
+                let items = (0..len).map(|i| $get(&self.inner, i)).chain(other_items);
                 let list = pyo3::types::PyList::new(py, items)?;
                 Ok(list.into_any().unbind())
             }
 
             fn __mul__(&self, py: Python<'_>, n: isize) -> PyResult<Py<PyAny>> {
                 let len = $len(&self.inner);
-                let items: Vec<$get_type> = (0..len).map(|i| $get(&self.inner, i)).collect();
-                let repeated = if n > 0 {
-                    items.repeat(n as usize)
-                } else {
-                    Vec::new()
-                };
-                let list = pyo3::types::PyList::new(py, repeated)?;
-                Ok(list.into_any().unbind())
+                let items = (0..len).map(|i| $get(&self.inner, i));
+                let list = pyo3::types::PyList::new(py, items)?;
+                Ok(list.call_method1("__mul__", (n,))?.unbind())
             }
         }
     };
@@ -274,22 +347,23 @@ macro_rules! impl_python_sequence_write {
                     if indices.step == 1 {
                         let start = indices.start as usize;
                         let end = indices.stop.max(indices.start) as usize;
-                        let vec = $list_mut(&self.inner);
-                        vec.splice(start..end, new_values.into_iter().map($to_raw));
+                        let mut vec = $list_mut(&self.inner);
+                        std::ops::DerefMut::deref_mut(&mut vec)
+                            .splice(start..end, new_values.into_iter().map($to_raw));
                     } else {
-                        let idx_list = collect_slice_indices!(
-                            indices.start,
-                            indices.stop,
-                            indices.step
-                        );
-                        if new_values.len() != idx_list.len() {
+                        if new_values.len() != indices.slicelength {
                             return Err(pyo3::exceptions::PyValueError::new_err(format!(
                                 "attempt to assign sequence of size {} to extended slice of size {}",
                                 new_values.len(),
-                                idx_list.len()
+                                indices.slicelength
                             )));
                         }
-                        for (pos, val) in idx_list.into_iter().zip(new_values) {
+                        let positions = $crate::utils::slice_indices(
+                            indices.start,
+                            indices.step,
+                            indices.slicelength,
+                        );
+                        for (pos, val) in positions.zip(new_values) {
                             $set(&self.inner, pos, val);
                         }
                     }
@@ -312,16 +386,17 @@ macro_rules! impl_python_sequence_write {
                 if let Ok(slice) = key.cast::<PySlice>() {
                     let len = $len(&self.inner);
                     let indices = slice.indices(len as isize)?;
-                    let mut idx_list = collect_slice_indices!(
+                    let mut idx_list: Vec<usize> = $crate::utils::slice_indices(
                         indices.start,
-                        indices.stop,
-                        indices.step
-                    );
+                        indices.step,
+                        indices.slicelength,
+                    )
+                    .collect();
                     // Remove from end to preserve earlier indices
                     idx_list.sort_unstable_by(|a, b| b.cmp(a));
-                    let vec = $list_mut(&self.inner);
+                    let mut vec = $list_mut(&self.inner);
                     for i in idx_list {
-                        vec.remove(i);
+                        std::ops::DerefMut::deref_mut(&mut vec).remove(i);
                     }
                     Ok(())
                 } else {
@@ -346,7 +421,7 @@ macro_rules! impl_python_sequence_write {
 
             #[pyo3(signature = (index, value))]
             fn insert(&self, index: isize, value: $set_type) {
-                let vec = $list_mut(&self.inner);
+                let mut vec = $list_mut(&self.inner);
                 let len = vec.len();
                 let i = if index < 0 {
                     let resolved = index + len as isize;
@@ -356,12 +431,12 @@ macro_rules! impl_python_sequence_write {
                 } else {
                     index as usize
                 };
-                vec.insert(i, $to_raw(value));
+                std::ops::DerefMut::deref_mut(&mut vec).insert(i, $to_raw(value));
             }
 
             #[pyo3(signature = (index=None))]
             fn pop(&self, index: Option<isize>) -> PyResult<$get_type> {
-                let vec = $list_mut(&self.inner);
+                let mut vec = $list_mut(&self.inner);
                 let len = vec.len();
                 if len == 0 {
                     return Err(pyo3::exceptions::PyIndexError::new_err(
@@ -370,7 +445,7 @@ macro_rules! impl_python_sequence_write {
                 }
                 let idx = index.unwrap_or(-1);
                 let i = resolve_index!(idx, len)?;
-                let raw: $raw_item = vec.remove(i);
+                let raw: $raw_item = std::ops::DerefMut::deref_mut(&mut vec).remove(i);
                 Ok($from_raw(raw))
             }
 
@@ -493,24 +568,48 @@ macro_rules! define_wrapper {
         #[pyclass(unsendable, from_py_object)]
         #[derive(Clone)]
         pub struct $wrapper_name {
-            pub(crate) inner: std::rc::Rc<std::cell::UnsafeCell<$inner_type>>,
+            pub(crate) inner: std::rc::Rc<std::cell::RefCell<$inner_type>>,
         }
 
         impl $wrapper_name {
-            pub fn wrap(inner: std::rc::Rc<std::cell::UnsafeCell<$inner_type>>) -> Self {
+            pub fn wrap(inner: std::rc::Rc<std::cell::RefCell<$inner_type>>) -> Self {
                 Self { inner }
             }
 
             // Some wrappers need only one accessor, but keeping both keeps the macro uniform.
             #[allow(dead_code)]
-            fn inner_ref(&self) -> &$inner_type {
+            pub(crate) fn inner_ref(&self) -> std::cell::Ref<'_, $inner_type> {
                 rc_ref!(self.inner)
             }
 
             // Python methods mutate shared engine resources through PyO3 &self receivers.
-            #[allow(clippy::mut_from_ref)]
-            fn inner_mut(&self) -> &mut $inner_type {
+            #[allow(dead_code)]
+            pub(crate) fn inner_mut(&self) -> std::cell::RefMut<'_, $inner_type> {
                 rc_mut!(self.inner)
+            }
+        }
+    };
+}
+
+macro_rules! define_audio_wrapper {
+    ($wrapper_name:ident, $inner_type:ty, $shared_type:ty) => {
+        #[pyclass(unsendable, from_py_object)]
+        #[derive(Clone)]
+        pub struct $wrapper_name {
+            pub(crate) inner: $shared_type,
+        }
+
+        impl $wrapper_name {
+            pub fn wrap(inner: $shared_type) -> Self {
+                Self { inner }
+            }
+
+            pub(crate) fn inner_ref(&self) -> std::sync::MutexGuard<'_, $inner_type> {
+                audio_ref!(self.inner)
+            }
+
+            pub(crate) fn inner_mut(&self) -> std::sync::MutexGuard<'_, $inner_type> {
+                audio_mut!(self.inner)
             }
         }
     };

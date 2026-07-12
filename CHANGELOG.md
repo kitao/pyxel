@@ -1,5 +1,20 @@
 # Change Log
 
+## 2.9.8
+
+- Fixed malformed resource and inline data causing crashes or partial updates
+- Fixed oversized screen, image, and tilemap dimensions creating invalid buffers
+- Fixed invalid MML repeat counts being treated as infinite repeats
+- Fixed high MML effect slot numbers causing excessive memory use
+- Fixed frame callbacks retaining mutable runtime borrows during API re-entry
+- Fixed window state preservation without per-frame environment mutation
+- Fixed Web loaders decoding failed HTTP responses as valid assets
+- Fixed Pyxel Web imports probing unrelated current-directory names
+- Fixed memory retained across Pyxel Web resets
+- Fixed documentation generation silently skipping malformed web pages
+- Fixed example runner masking child process failures
+- Improved transformed tilemap, audio command, wavetable, and PyO3 data access performance
+
 ## 2.9.7
 
 - Added a GIMP palette file for Pyxel's default colors

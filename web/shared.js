@@ -95,6 +95,52 @@ const base64ToUint8 = (b64) => {
   return Uint8Array.from(bin, (c) => c.charCodeAt(0));
 };
 
+// Resolve the ref/path boundary in a GitHub blob URL and pin the result to a
+// commit SHA. Trying the longest ref first supports branch names with slashes.
+const resolveGitHubBlobUrl = async (input, fetchImpl = fetch) => {
+  let url;
+  try {
+    url = new URL(input);
+  } catch {
+    throw new Error("Invalid GitHub blob URL");
+  }
+
+  const parts = url.pathname
+    .split("/")
+    .filter(Boolean)
+    .map((part) => decodeURIComponent(part));
+  if (
+    url.protocol !== "https:" ||
+    url.hostname !== "github.com" ||
+    parts.length < 5 ||
+    parts[2] !== "blob"
+  ) {
+    throw new Error("Invalid GitHub blob URL");
+  }
+
+  const [user, repo] = parts;
+  const refAndPath = parts.slice(3);
+  for (let split = refAndPath.length - 1; split >= 1; split--) {
+    const ref = refAndPath.slice(0, split).join("/");
+    const path = refAndPath.slice(split).join("/");
+    const response = await fetchImpl(
+      `https://api.github.com/repos/${user}/${repo}/commits/${encodeURIComponent(ref)}`,
+      {
+        headers: { Accept: "application/vnd.github.sha" },
+        cache: "no-cache",
+      },
+    );
+    if (!response.ok) continue;
+
+    const sha = (await response.text()).trim();
+    if (/^[0-9a-f]{40}$/i.test(sha)) {
+      return { user, repo, ref, sha, path };
+    }
+  }
+
+  throw new Error("Failed to resolve the GitHub ref and file path");
+};
+
 // Readiness polling for embedded Pyxel frame runtime hooks
 
 const waitForPyxelReady = (
@@ -118,7 +164,12 @@ const waitForPyxelReady = (
 
 const initPage = (jsonFile, buildFn) => {
   fetch(jsonFile)
-    .then((r) => r.json())
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status} while fetching ${jsonFile}`);
+      }
+      return response.json();
+    })
     .then((json) => {
       data = json;
       lang = detectLang(data.languages);

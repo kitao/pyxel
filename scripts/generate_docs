@@ -18,7 +18,7 @@ EDITOR_MANUAL_JSON = WEB_DIR / "editor-manual" / "editor-manual.json"
 DOCS_DIR = ROOT_DIR / "docs"
 PYXEL_WEB = "https://kitao.github.io/pyxel/web"
 BLOCK_MARKER = "\x00BLK{idx}\x00"
-MARKDOWN_IMAGE_EXCLUDES = {
+MARKDOWN_IMAGE_EXCLUDE_URLS = {
     "user-guide": {
         "images/pyxel_thanks.png",
         "images/pyxel_book.png",
@@ -30,6 +30,12 @@ MARKDOWN_IMAGE_EXCLUDES = {
         "images/sound_music_editor.gif",
     }
 }
+HTML_DOCS = (
+    (USER_GUIDE_HTML, USER_GUIDE_JSON, "user-guide", "user-guide"),
+    (EDITOR_MANUAL_HTML, EDITOR_MANUAL_JSON, "editor-manual", "editor-manual"),
+    (WEB_USAGE_HTML, WEB_USAGE_JSON, "web-usage", "web-usage"),
+)
+API_REFERENCE_DOCS = ((API_REF_JSON, "api-reference", "api-reference"),)
 
 
 # Shared helpers
@@ -175,7 +181,7 @@ def _split_plus(expr):
     return parts if len(parts) > 1 else [expr]
 
 
-def _transform_url(url, doc_name=None):
+def _transform_url(url, web_path=None):
     if url.startswith(("http://", "https://")):
         return url
     if url.startswith("../../docs/images/"):
@@ -184,8 +190,8 @@ def _transform_url(url, doc_name=None):
         return url.replace("../../docs/", "")
     if url.startswith("../"):
         return f"{PYXEL_WEB}/{url[3:]}"
-    if doc_name:
-        return f"{PYXEL_WEB}/{doc_name}/{url}"
+    if web_path:
+        return f"{PYXEL_WEB}/{web_path}/{url}"
     return url
 
 
@@ -193,10 +199,10 @@ def _transform_url(url, doc_name=None):
 
 
 class JsEval:
-    def __init__(self, ui, data, doc_name=None):
+    def __init__(self, ui, data, web_path=None):
         self._ui = ui
         self._data = data
-        self._doc_name = doc_name
+        self._web_path = web_path
         self._vars = {}
 
     # Template evaluation
@@ -297,7 +303,7 @@ class JsEval:
             url_s, rest = _parse_arg(inner)
             rest = _skip_comma(rest)
             text_s, _ = _parse_arg(rest)
-            return f"[{self.eval(text_s)}]({_transform_url(self.eval(url_s), self._doc_name)})"
+            return f"[{self.eval(text_s)}]({_transform_url(self.eval(url_s), self._web_path)})"
 
         # code(content, lang) -> code block
         if expr.startswith("code("):
@@ -345,7 +351,7 @@ class JsEval:
         if expr.startswith("annotatedImg("):
             inner = expr[13 : _find_matching(expr, 13, "(", ")") - 1]
             src_s, _ = _parse_arg(inner)
-            url = _transform_url(self.eval(src_s), self._doc_name)
+            url = _transform_url(self.eval(src_s), self._web_path)
             return f"\n![{url}]({url})\n"
 
         # areaCrop(editor, index) -> image from annotations
@@ -359,7 +365,7 @@ class JsEval:
             annotations = self._data.get("annotations", {}).get(editor, [])
             if index < len(annotations):
                 aid = annotations[index].get("id", "")
-                url = _transform_url(f"images/{editor}_{aid}.png", self._doc_name)
+                url = _transform_url(f"images/{editor}_{aid}.png", self._web_path)
                 return f"\n![{url}]({url})\n"
             return ""
 
@@ -380,7 +386,7 @@ class JsEval:
                 icon = tool_icons[i] if i < len(tool_icons) else ""
                 img = ""
                 if icon:
-                    url = _transform_url(f"images/{icon}.png", self._doc_name)
+                    url = _transform_url(f"images/{icon}.png", self._web_path)
                     img = f"![{icon}]({url}) "
                 rows.append(f"- {img}{tool['key']} — {localize(tool['desc'])}")
             return "\n" + "\n".join(rows) + "\n"
@@ -413,7 +419,7 @@ class JsEval:
             inner = expr[5 : _find_matching(expr, 5, "(", ")") - 1]
             src_s, _ = _parse_arg(inner)
             src = self.eval(src_s)
-            url = _transform_url(src, self._doc_name)
+            url = _transform_url(src, self._web_path)
             return f"![{src}]({url})"
 
         # table(headers, rows)
@@ -558,7 +564,7 @@ class JsEval:
             if isinstance(key, dict):
                 key = localize(key)
             desc = localize(item.get("desc", ""))
-            img = f"![{icon}]({_transform_url(icon, self._doc_name)}) " if icon else ""
+            img = f"![{icon}]({_transform_url(icon, self._web_path)}) " if icon else ""
             if key and key != "—":
                 rows.append(f"- {img}{key} — {desc}")
             else:
@@ -582,6 +588,7 @@ class JsEval:
             return self._data.get(m.group(1), [])
         return self._resolve_data_ref(inner)
 
+    # Render a table(headers, rows) call into a Markdown table.
     def _table(self, inner):
         headers_s, rest = _parse_arg(inner.strip())
         rest = _skip_comma(rest)
@@ -726,15 +733,16 @@ def _strip_html(text):
 
 
 # Convert localized web page templates into generated Markdown documents.
-def generate_from_html(html_path, json_path, doc_name):
+def generate_from_html(html_path, json_path, output_name, web_path=None):
+    web_path = web_path or output_name
     html_text = html_path.read_text(encoding="utf-8")
     data = json.loads(json_path.read_text(encoding="utf-8"))
-    ev = JsEval(data["ui"], data, doc_name)
+    ev = JsEval(data["ui"], data, web_path)
 
     # Extract updateTexts() body
     m = re.search(r"function updateTexts\(\)\s*\{", html_text)
     if not m:
-        return
+        raise ValueError(f"{html_path}: required function updateTexts() not found")
     body = html_text[m.end() : _find_matching(html_text, m.end(), "{", "}") - 1]
 
     # Extract variables
@@ -789,8 +797,8 @@ def generate_from_html(html_path, json_path, doc_name):
         )
 
         def markdown_image(match):
-            url = _transform_url(match.group(1), doc_name)
-            if url in MARKDOWN_IMAGE_EXCLUDES.get(doc_name, set()):
+            url = _transform_url(match.group(1), web_path)
+            if url in MARKDOWN_IMAGE_EXCLUDE_URLS.get(output_name, set()):
                 return ""
             return f"\n![{match.group(2)}]({url})\n"
 
@@ -816,7 +824,7 @@ def generate_from_html(html_path, json_path, doc_name):
 
     # Assemble the generated Markdown document
     title = localize(data["ui"].get("title", ""))
-    url = f"{PYXEL_WEB}/{doc_name}/"
+    url = f"{PYXEL_WEB}/{web_path}/"
     header = (
         f"# {title}\n\n"
         f"*This document was auto-generated from the "
@@ -852,18 +860,18 @@ def generate_from_html(html_path, json_path, doc_name):
     for i, block in enumerate(saved_blocks):
         result = result.replace(BLOCK_MARKER.format(idx=i), block.strip())
 
-    path = DOCS_DIR / f"{doc_name}.md"
+    path = DOCS_DIR / f"{output_name}.md"
     path.write_text(generated_header(html_path, json_path) + result, encoding="utf-8")
     print(f"Generated {path.relative_to(ROOT_DIR)}")
 
 
 # Render the API reference JSON into the generated Markdown manual.
-def generate_api_reference():
-    api_data = json.loads(API_REF_JSON.read_text(encoding="utf-8"))
+def generate_api_reference(json_path, output_name, web_path):
+    api_data = json.loads(json_path.read_text(encoding="utf-8"))
     lines = []
 
     title = localize(api_data["ui"]["title"])
-    url = f"{PYXEL_WEB}/api-reference/"
+    url = f"{PYXEL_WEB}/{web_path}/"
     lines.append(f"# {title}")
     lines.append("")
     lines.append(
@@ -935,8 +943,8 @@ def generate_api_reference():
                     lines.append(" ".join(f"`{c}`" for c in constants))
                 lines.append("")
 
-    path = DOCS_DIR / "api-reference.md"
-    path.write_text(generated_header(API_REF_JSON) + "\n".join(lines), encoding="utf-8")
+    path = DOCS_DIR / f"{output_name}.md"
+    path.write_text(generated_header(json_path) + "\n".join(lines), encoding="utf-8")
     print(f"Generated {path.relative_to(ROOT_DIR)}")
 
 
@@ -982,8 +990,8 @@ def generate_mml_commands():
 # Command entry point
 
 if __name__ == "__main__":
-    generate_from_html(USER_GUIDE_HTML, USER_GUIDE_JSON, "user-guide")
-    generate_api_reference()
+    for html_path, json_path, output_name, web_path in HTML_DOCS:
+        generate_from_html(html_path, json_path, output_name, web_path)
+    for json_path, output_name, web_path in API_REFERENCE_DOCS:
+        generate_api_reference(json_path, output_name, web_path)
     generate_mml_commands()
-    generate_from_html(EDITOR_MANUAL_HTML, EDITOR_MANUAL_JSON, "editor-manual")
-    generate_from_html(WEB_USAGE_HTML, WEB_USAGE_JSON, "web-usage")

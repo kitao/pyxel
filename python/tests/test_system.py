@@ -1,6 +1,8 @@
 import subprocess
 import sys
 
+import pytest
+
 import pyxel
 
 _COLOR_NAMES = [
@@ -386,6 +388,46 @@ class TestSystemSetters:
         pyxel.icon(["0000", "0770", "0770", "0000"], 1, colkey=0)
         self._assert_state_unchanged(before)
 
+    @pytest.mark.parametrize(
+        ("data", "scale", "message"),
+        [
+            ([], 1, "Invalid icon data: no rows"),
+            (["  "], 1, "Invalid icon data at row 0: no pixels"),
+            (
+                ["0g"],
+                1,
+                "Invalid icon data at row 0, column 1: "
+                "expected hexadecimal digit, got 'g'",
+            ),
+            (["0"], 0, "scale must be greater than 0"),
+            (["00"], 2**32 - 1, "icon dimensions overflow after scaling"),
+        ],
+    )
+    def test_icon_rejects_invalid_input_without_changing_state(
+        self, data, scale, message
+    ):
+        before = self._capture_state()
+
+        with pytest.raises(ValueError) as exc:
+            pyxel.icon(data, scale)
+
+        assert str(exc.value) == message
+        self._assert_state_unchanged(before)
+
+    def test_icon_rejects_color_outside_palette_without_changing_state(self):
+        original_colors = list(pyxel.colors)
+        pyxel.colors[:] = original_colors[:1]
+        before = self._capture_state()
+        try:
+            with pytest.raises(ValueError) as exc:
+                pyxel.icon(["f"], 1)
+            assert str(exc.value) == (
+                "Invalid icon data at row 0, column 0: color 15 exceeds palette size 1"
+            )
+            self._assert_state_unchanged(before)
+        finally:
+            pyxel.colors[:] = original_colors
+
     def test_perf_monitor_preserves_state(self):
         before = self._capture_state()
         pyxel.perf_monitor(True)
@@ -457,3 +499,62 @@ class TestSystemFlow:
             timeout=10,
         )
         assert result.returncode == 0, result.stderr.decode()
+
+
+@pytest.mark.parametrize(
+    ("args", "message"),
+    [
+        ("0, 8, headless=True", "width and height must be greater than 0"),
+        ("8, 0, headless=True", "width and height must be greater than 0"),
+        ("8, 8, fps=0, headless=True", "fps must be greater than 0"),
+        ("65536, 65536, headless=True", "screen dimensions are too large"),
+        ("65536, 65536", "screen dimensions are too large"),
+        (
+            "8, 8, display_scale=2**32 - 1",
+            "display_scale is too large for the window dimensions",
+        ),
+        ("2**31, 8", "width and height exceed platform window limits"),
+        ("8, 2**31", "width and height exceed platform window limits"),
+    ],
+)
+def test_invalid_init_does_not_consume_singleton_or_change_cwd(args, message):
+    code = f"""
+import os
+import pyxel
+
+before = os.getcwd()
+try:
+    pyxel.init({args})
+except ValueError as exc:
+    assert str(exc) == {message!r}
+else:
+    raise AssertionError("invalid init succeeded")
+assert os.getcwd() == before
+assert pyxel.width == 0 and pyxel.height == 0
+pyxel.init(8, 8, headless=True)
+assert pyxel.width == 8 and pyxel.height == 8
+"""
+    result = subprocess.run(
+        [sys.executable, "-c", code], capture_output=True, text=True, timeout=10
+    )
+    assert result.returncode == 0, result.stderr
+
+
+def test_resize_rejects_oversized_screen_without_changing_state():
+    code = """
+import pyxel
+
+pyxel.init(8, 8, headless=True)
+try:
+    pyxel.resize(65536, 65536)
+except ValueError as exc:
+    assert str(exc) == "screen dimensions are too large"
+else:
+    raise AssertionError("oversized resize succeeded")
+assert pyxel.width == 8 and pyxel.height == 8
+assert pyxel.screen.width == 8 and pyxel.screen.height == 8
+"""
+    result = subprocess.run(
+        [sys.executable, "-c", code], capture_output=True, text=True, timeout=10
+    )
+    assert result.returncode == 0, result.stderr

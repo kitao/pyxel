@@ -3,7 +3,7 @@ use pyo3::prelude::*;
 
 use crate::sound_wrapper::Sound;
 
-define_wrapper!(Channel, pyxel::Channel);
+define_audio_wrapper!(Channel, pyxel::Channel, pyxel::RcChannel);
 
 #[pymethods]
 impl Channel {

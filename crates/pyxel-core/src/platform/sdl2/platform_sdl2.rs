@@ -92,6 +92,8 @@ extern "C" {
 
 #[cfg(target_os = "emscripten")]
 unsafe extern "C" fn main_loop_callback<F: FnMut(f32)>(arg: *mut c_void) {
+    // SAFETY: run_frame_loop passes a non-null Box<MainLoopState<F>> as arg;
+    // Emscripten invokes callbacks serially and retains the allocation for the loop lifetime.
     let state = &mut *arg.cast::<MainLoopState<F>>();
     let now_ms = emscripten_get_now();
     if let Some(delta_ms) = advance_frame_schedule(
@@ -105,6 +107,10 @@ unsafe extern "C" fn main_loop_callback<F: FnMut(f32)>(arg: *mut c_void) {
 }
 
 extern "C" fn audio_callback(userdata: *mut c_void, stream: *mut u8, len: c_int) {
+    // SAFETY: start_audio passes its boxed callback as userdata and keeps it
+    // alive until SDL_CloseAudioDevice has stopped callbacks. AUDIO_S16 makes
+    // stream i16-aligned, len is a non-negative byte count, and SDL gives this
+    // callback exclusive access to the buffer for the duration of the call.
     let callback = unsafe { &mut *userdata.cast::<AudioCallback>() };
     let stream = unsafe { from_raw_parts_mut(stream.cast::<i16>(), len as usize / 2) };
     (*callback)(stream);
@@ -400,6 +406,8 @@ impl PlatformSdl2 {
             SDL_OpenAudioDevice(null_mut(), 0, &raw const desired, obtained.as_mut_ptr(), 0)
         };
         if self.audio_device_id == 0 {
+            // SAFETY: SDL rejected the device and therefore never retained or
+            // invoked userdata; reclaim the Box created immediately above.
             unsafe { drop(Box::from_raw(userdata.cast::<AudioCallback>())) };
             #[cfg(not(target_os = "emscripten"))]
             unsafe {
@@ -429,6 +437,8 @@ impl PlatformSdl2 {
         }
 
         if !self.audio_userdata.is_null() {
+            // SAFETY: SDL_CloseAudioDevice above has quiesced the callback, and
+            // audio_userdata is the still-owned Box pointer from start_audio.
             unsafe { drop(Box::from_raw(self.audio_userdata.cast::<AudioCallback>())) };
             self.audio_userdata = null_mut();
         }
@@ -457,15 +467,15 @@ impl PlatformSdl2 {
     // Frame
 
     #[cfg(not(target_os = "emscripten"))]
-    pub fn run_frame_loop<F: FnMut(f32)>(&mut self, fps: u32, mut callback: F) {
+    pub fn run_frame_loop<F: FnMut(f32)>(fps: u32, mut callback: F) {
         let frame_ms = 1000.0 / fps as f32;
-        let mut next_frame_ms = self.ticks() as f32;
+        let mut next_frame_ms = unsafe { SDL_GetTicks() } as f32;
         let mut last_frame_ms = next_frame_ms;
 
         loop {
             // Busy-wait with short sleeps until the next frame time
             loop {
-                let remaining_ms = next_frame_ms - self.ticks() as f32;
+                let remaining_ms = next_frame_ms - unsafe { SDL_GetTicks() } as f32;
                 if remaining_ms <= 0.0 {
                     break;
                 }
@@ -473,13 +483,11 @@ impl PlatformSdl2 {
             }
 
             callback(next_frame_ms - last_frame_ms);
-            if !self.window.is_null() {
-                unsafe { SDL_GL_SwapWindow(self.window) };
-            }
+            super::super::facade::swap_window();
             last_frame_ms = next_frame_ms;
 
             // Catch up if frames were missed
-            let ticks = self.ticks() as f32;
+            let ticks = unsafe { SDL_GetTicks() } as f32;
             while next_frame_ms <= ticks {
                 next_frame_ms += frame_ms;
             }
@@ -487,7 +495,7 @@ impl PlatformSdl2 {
     }
 
     #[cfg(target_os = "emscripten")]
-    pub fn run_frame_loop<F: FnMut(f32)>(&mut self, fps: u32, callback: F) {
+    pub fn run_frame_loop<F: FnMut(f32)>(fps: u32, callback: F) {
         // Drive the loop with requestAnimationFrame (fps = 0); browsers keep
         // rAF running in contexts where they throttle timers to 1 Hz.
         let now_ms = unsafe { emscripten_get_now() };
@@ -521,9 +529,7 @@ impl PlatformSdl2 {
             unsafe { SDL_Delay((remaining_ms as u32 / 2).max(1)) };
         }
 
-        if !self.window.is_null() {
-            unsafe { SDL_GL_SwapWindow(self.window) };
-        }
+        self.swap_window();
 
         // Catch up if frames were missed
         let ticks = self.ticks() as f32;
@@ -553,8 +559,17 @@ impl PlatformSdl2 {
         }
     }
 
-    pub fn gl_context(&mut self) -> &'static mut Context {
-        unsafe { &mut *self.gl_context }
+    #[cfg(not(target_os = "emscripten"))]
+    pub fn swap_window(&self) {
+        if !self.window.is_null() {
+            unsafe { SDL_GL_SwapWindow(self.window) };
+        }
+    }
+
+    pub fn with_gl_context<T>(&mut self, f: impl FnOnce(&mut Context) -> T) -> T {
+        // SAFETY: init_window creates one boxed Context owned by this platform;
+        // the closure keeps the mutable reference within the platform borrow.
+        unsafe { f(&mut *self.gl_context) }
     }
 }
 

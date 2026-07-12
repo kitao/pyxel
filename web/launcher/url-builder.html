@@ -217,7 +217,10 @@
       }
 
       // Convert a GitHub blob URL into the compact launcher URL format.
-      function buildLaunchUrl() {
+      let launchBuildGeneration = 0;
+
+      async function buildLaunchUrl() {
+        const generation = ++launchBuildGeneration;
         const startupFile = document.getElementById("startup-file").value;
         const virtualGamepad =
           document.getElementById("virtual-gamepad").checked;
@@ -235,17 +238,17 @@
           return;
         }
 
-        // https://github.com/USER/REPO/blob/BRANCH/PATH/TO/FILE.ext
-        const paths = startupFile.split("/");
-        if (paths.length < 8) return;
-        const user = paths[3];
-        const repo = paths[4];
-        const branch = paths[6];
-        const filePath = paths.slice(7).join("/");
-        const filePathNoExt = filePath.replace(/\.[^.]+$/, "");
+        let resolved;
+        try {
+          resolved = await resolveGitHubBlobUrl(startupFile);
+        } catch {
+          return;
+        }
+        if (generation !== launchBuildGeneration) return;
+        const filePathNoExt = resolved.path.replace(/\.[^.]+$/, "");
         const command = isEdit ? "edit" : ext === "py" ? "run" : "play";
         const base = new URL("./", location.href).href;
-        let launchUrl = `${base}?${command}=${user}/${repo}/${branch}/${filePathNoExt}`;
+        let launchUrl = `${base}?${command}=${resolved.user}/${resolved.repo}/${resolved.sha}/${filePathNoExt}`;
 
         if (isEdit) {
           launchUrl += `&editor=${editorScreen}`;

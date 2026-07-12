@@ -1,9 +1,8 @@
 #![warn(clippy::pedantic)]
 // Relax pedantic lints that fire pervasively in engine code without flagging real
-// issues: numeric casts in pixel/audio math, the global Pyxel singleton's static-mut
-// access, wide hot-path signatures, and doc/must-use nags.
+// issues: numeric casts in pixel/audio math, wide hot-path signatures, and
+// doc/must-use nags.
 #![allow(
-    static_mut_refs,
     clippy::cast_lossless,
     clippy::cast_possible_truncation,
     clippy::cast_possible_wrap,
@@ -71,7 +70,8 @@ pub use crate::pyxel::reset_statics;
 pub use crate::pyxel::{
     channels, colors, cursor_image, dropped_files, font_image, frame_count, height, images, init,
     input_keys, input_text, mouse_wheel, mouse_x, mouse_y, musics, pyxel, quit_callback,
-    reset_callback, screen, sounds, tilemaps, tones, width, Pyxel,
+    reset_callback, screen, sounds, tilemaps, tones, validate_init_params, width, AudioGlobalGuard,
+    Pyxel,
 };
 pub use crate::settings::*;
 pub use crate::sound::{

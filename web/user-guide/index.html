@@ -25,6 +25,7 @@
       let data = null;
       let lang = "en";
 
+      // Render the special keys table from localized key / action items.
       function shortcutTable(items) {
         let html = `<div class="overflow-x-auto"><table class="w-full border-collapse">
           <thead><tr><th class="th">${esc(t("th_key"))}</th><th class="th">${esc(t("th_action"))}</th></tr></thead><tbody>`;
