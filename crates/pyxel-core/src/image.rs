@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::f32::consts::PI;
 use std::path::Path;
 use std::{array, ptr};
 
@@ -47,11 +48,17 @@ impl Image {
     // Constructors
 
     pub fn new(width: u32, height: u32) -> RcImage {
-        new_rc_type!(Self {
-            canvas: Canvas::new(width, height),
+        Self::try_new(width, height).expect("image dimensions are too large")
+    }
+
+    pub fn try_new(width: u32, height: u32) -> Result<RcImage, String> {
+        let canvas = Canvas::try_new(width, height)
+            .ok_or_else(|| "image dimensions are too large".to_string())?;
+        Ok(new_rc_type!(Self {
+            canvas,
             palette: array::from_fn(|i| i as Color),
             palette_is_identity: true,
-        })
+        }))
     }
 
     pub fn from_image(filename: &str, include_colors: Option<bool>) -> Result<RcImage, String> {
@@ -61,16 +68,16 @@ impl Image {
             .to_rgb8();
 
         // Reset the palette only after the file is readable so a failed load keeps it intact.
-        let colors = pyxel::colors();
+        let mut colors = pyxel::colors();
         if include_colors {
             colors.clear();
         }
         let (width, height) = file_image.dimensions();
-        let rc = Self::new(width, height);
+        let rc = Self::try_new(width, height)?;
 
         // Quantize each source RGB once, then reuse the mapped palette index.
         {
-            let image = rc_mut!(rc);
+            let mut image = rc_mut!(rc);
             let mut color_table = HashMap::<(u8, u8, u8), Color>::with_capacity(256);
 
             for y in 0..height {
@@ -86,7 +93,7 @@ impl Image {
                         if include_colors {
                             assert!(
                                 colors.len() < MAX_COLORS as usize,
-                                "Number of colors must be between 1 to {MAX_COLORS}"
+                                "Number of colors must be between 1 and {MAX_COLORS}"
                             );
                             closest_color = colors.len() as Color;
                             colors.push(
@@ -138,25 +145,11 @@ impl Image {
 
     // Public data operations
 
-    pub fn set(&mut self, x: i32, y: i32, data: &[&str]) {
-        // Parse inline pixel data before drawing it into this image.
-        let width = utils::simplify_string(data[0]).len() as u32;
-        let height = data.len() as u32;
-        let rc = Self::new(width, height);
-
-        {
-            let image = rc_mut!(rc);
-            for y in 0..height {
-                let src_data = utils::simplify_string(data[y as usize]);
-                for x in 0..width {
-                    let color =
-                        utils::parse_hex_string(&src_data[x as usize..=x as usize]).unwrap();
-                    image
-                        .canvas
-                        .write_data(x as usize, y as usize, color as Color);
-                }
-            }
-        }
+    pub fn set<S: AsRef<str>>(&mut self, x: i32, y: i32, data: &[S]) -> Result<(), String> {
+        let rc = Self::from_data(data, "image")?;
+        let image = rc_ref!(rc);
+        let width = image.width();
+        let height = image.height();
 
         self.draw_image(
             x as f32,
@@ -170,6 +163,47 @@ impl Image {
             None,
             None,
         );
+        Ok(())
+    }
+
+    pub(crate) fn from_data<S: AsRef<str>>(data: &[S], label: &str) -> Result<RcImage, String> {
+        if data.is_empty() {
+            return Err(format!("Invalid {label} data: no rows"));
+        }
+
+        let rows: Vec<String> = data
+            .iter()
+            .map(|row| utils::simplify_string(row.as_ref()))
+            .collect();
+        let width = rows[0].chars().count();
+        if width == 0 {
+            return Err(format!("Invalid {label} data at row 0: no pixels"));
+        }
+
+        for (row_index, row) in rows.iter().enumerate() {
+            let row_width = row.chars().count();
+            if row_width != width {
+                return Err(format!(
+                    "Invalid {label} data at row {row_index}: expected {width} hexadecimal digits, got {row_width}"
+                ));
+            }
+        }
+
+        let rc = Self::new(width as u32, rows.len() as u32);
+        {
+            let mut image = rc_mut!(rc);
+            for (y, row) in rows.iter().enumerate() {
+                for (x, digit) in row.chars().enumerate() {
+                    let color = digit.to_digit(16).ok_or_else(|| {
+                        format!(
+                            "Invalid {label} data at row {y}, column {x}: expected hexadecimal digit, got '{digit}'"
+                        )
+                    })?;
+                    image.canvas.write_data(x, y, color as Color);
+                }
+            }
+        }
+        Ok(rc)
     }
 
     pub fn load(
@@ -361,7 +395,7 @@ impl Image {
 
         // When source and destination are the same image, copy to a
         // temporary canvas first to avoid read-write aliasing.
-        let src_canvas = if ptr::eq(image, self) {
+        let src_canvas = if ptr::eq(&raw const *image, self) {
             Some(self.copy_region(image_x, image_y, width, height))
         } else {
             None
@@ -476,8 +510,9 @@ impl Image {
 
         // When the tilemap's image source aliases self, render through a
         // clone of self's canvas to avoid read-write aliasing.
-        let resolved: &Image = rc_ref!(tilemap.imgsrc.resolve());
-        let src_canvas = if ptr::eq(resolved, self) {
+        let resolved = tilemap.imgsrc.resolve();
+        let resolved = rc_ref!(resolved);
+        let src_canvas = if ptr::eq(&raw const *resolved, self) {
             Some(self.canvas.clone())
         } else {
             None
@@ -605,45 +640,125 @@ impl Image {
         rotate: f32,
         scale: f32,
     ) {
-        let tilemap_inner = rc_ref!(tilemap);
-        let tilemap_pixel_w = tilemap_inner.width() as f32 * TILE_SIZE as f32;
-        let tilemap_pixel_h = tilemap_inner.height() as f32 * TILE_SIZE as f32;
+        if scale < f32::EPSILON {
+            return;
+        }
 
-        // Render tilemap region into a temporary image
-        let rendered_tilemap = Self::new(
-            utils::f32_to_u32(width.abs()),
-            utils::f32_to_u32(height.abs()),
-        );
-        let rendered_tilemap = rc_mut!(rendered_tilemap);
-        rendered_tilemap.draw_tilemap(
-            0.0,
-            0.0,
-            tilemap,
-            tilemap_x,
-            tilemap_y,
-            width.abs(),
-            height.abs(),
-            None,
-            None,
-            None,
-        );
-        rendered_tilemap.set_clip_rect(-tilemap_x, -tilemap_y, tilemap_pixel_w, tilemap_pixel_h);
+        // Build inverse transform bounds in the virtual source region.
+        let x = utils::f32_to_i32(x) - self.canvas.camera_x;
+        let y = utils::f32_to_i32(y) - self.canvas.camera_y;
+        let tilemap_x = utils::f32_to_i32(tilemap_x);
+        let tilemap_y = utils::f32_to_i32(tilemap_y);
+        let sign_x = if width < 0.0 { -1.0 } else { 1.0 };
+        let sign_y = if height < 0.0 { -1.0 } else { 1.0 };
+        let width = utils::f32_to_i32(width).abs();
+        let height = utils::f32_to_i32(height).abs();
+        let tilemap = rc_ref!(tilemap);
+        let source_area =
+            RectArea::new(0, 0, width as u32, height as u32).intersection(RectArea::new(
+                tilemap_x.saturating_neg(),
+                tilemap_y.saturating_neg(),
+                tilemap.width() * TILE_SIZE,
+                tilemap.height() * TILE_SIZE,
+            ));
+        if source_area.is_empty() {
+            return;
+        }
 
+        let half_width = (width - 1) as f32 / 2.0;
+        let half_height = (height - 1) as f32 / 2.0;
+        let src_cx = half_width;
+        let src_cy = half_height;
+        let dst_cx = x as f32 + half_width;
+        let dst_cy = y as f32 + half_height;
+        let rotate = rotate * PI / 180.0;
+        let sin = -f32::sin(rotate);
+        let cos = f32::cos(rotate);
+        let bound_x = (half_width * cos.abs() + half_height * sin.abs() + 1.0) * scale;
+        let bound_y = (half_width * sin.abs() + half_height * cos.abs() + 1.0) * scale;
+        let x1 = utils::f32_to_i32(dst_cx - bound_x).max(self.canvas.clip_rect.left());
+        let x2 = utils::f32_to_i32(dst_cx + bound_x).min(self.canvas.clip_rect.right());
+        let y1 = utils::f32_to_i32(dst_cy - bound_y).max(self.canvas.clip_rect.top());
+        let y2 = utils::f32_to_i32(dst_cy + bound_y).min(self.canvas.clip_rect.bottom());
+        let cos_s = cos / scale;
+        let sin_s = sin / scale;
+        let step_sx = sign_x * cos_s;
+        let step_sy = sign_x * sin_s;
+
+        // Preserve source pixels when the tilemap image aliases the destination.
+        let resolved = tilemap.imgsrc.resolve();
+        let resolved = rc_ref!(resolved);
+        let cloned_canvas = ptr::eq(&raw const *resolved, self).then(|| self.canvas.clone());
+        let image_canvas = cloned_canvas.as_ref().unwrap_or(&resolved.canvas);
+        let image_width = image_canvas.width() as i32;
+        let image_height = image_canvas.height() as i32;
+        let tile_size = TILE_SIZE as i32;
         let palette = palette_opt!(self);
-        self.canvas.blit_with_transform(
-            x,
-            y,
-            &rendered_tilemap.canvas,
-            0.0,
-            0.0,
-            width,
-            height,
-            transparent,
-            palette,
-            rotate,
-            scale,
-            true,
-        );
+
+        // Sample tile and image data directly for each transformed destination pixel.
+        let sample = |vx: i32, vy: i32| -> Option<Color> {
+            if !source_area.contains(vx, vy) {
+                return None;
+            }
+            let source_x = tilemap_x + vx;
+            let source_y = tilemap_y + vy;
+            let tile = tilemap.canvas.read_data(
+                (source_x >> TILE_SHIFT) as usize,
+                (source_y >> TILE_SHIFT) as usize,
+            );
+            let image_x = tile.0 as i32 * tile_size + (source_x & TILE_MASK);
+            let image_y = tile.1 as i32 * tile_size + (source_y & TILE_MASK);
+            let pixel = if image_x >= 0
+                && image_x < image_width
+                && image_y >= 0
+                && image_y < image_height
+            {
+                image_canvas.read_data(image_x as usize, image_y as usize)
+            } else {
+                0
+            };
+            if transparent.is_some_and(|value| value == pixel) {
+                return None;
+            }
+            Some(palette.map_or(pixel, |values| values[pixel as usize]))
+        };
+
+        if self.canvas.alpha >= 1.0 {
+            let dst_width = self.canvas.width() as usize;
+            for yi in y1..=y2 {
+                let oy = (yi as f32 - dst_cy) * sign_y;
+                let ox0 = (x1 as f32 - dst_cx) * sign_x;
+                let mut sx = src_cx + ox0 * cos_s - oy * sin_s;
+                let mut sy = src_cy + ox0 * sin_s + oy * cos_s;
+                let dst_row = dst_width * yi as usize;
+                for xi in x1..=x2 {
+                    let vx = utils::f32_to_i32(sx);
+                    let vy = utils::f32_to_i32(sy);
+                    sx += step_sx;
+                    sy += step_sy;
+                    if let Some(pixel) = sample(vx, vy) {
+                        self.canvas.data[dst_row + xi as usize] = pixel;
+                    }
+                }
+            }
+            return;
+        }
+
+        for yi in y1..=y2 {
+            let oy = (yi as f32 - dst_cy) * sign_y;
+            let ox0 = (x1 as f32 - dst_cx) * sign_x;
+            let mut sx = src_cx + ox0 * cos_s - oy * sin_s;
+            let mut sy = src_cy + ox0 * sin_s + oy * cos_s;
+            for xi in x1..=x2 {
+                let vx = utils::f32_to_i32(sx);
+                let vy = utils::f32_to_i32(sy);
+                sx += step_sx;
+                sy += step_sy;
+                if let Some(pixel) = sample(vx, vy) {
+                    self.canvas.write_data(xi as usize, yi as usize, pixel);
+                }
+            }
+        }
     }
 
     pub fn draw_image_3d(
@@ -660,7 +775,7 @@ impl Image {
     ) {
         let image = rc_ref!(image);
         // Clone self before perspective blit to avoid read-write aliasing.
-        let src_canvas = if ptr::eq(image, self) {
+        let src_canvas = if ptr::eq(&raw const *image, self) {
             Some(self.canvas.clone())
         } else {
             None
@@ -717,8 +832,9 @@ impl Image {
 
         // When the tilemap's image source aliases self, render through a
         // clone of self's canvas to avoid read-write aliasing.
-        let resolved: &Image = rc_ref!(tilemap.imgsrc.resolve());
-        let src_canvas = if ptr::eq(resolved, self) {
+        let resolved = tilemap.imgsrc.resolve();
+        let resolved = rc_ref!(resolved);
+        let src_canvas = if ptr::eq(&raw const *resolved, self) {
             Some(self.canvas.clone())
         } else {
             None
@@ -786,7 +902,8 @@ impl Image {
         let mut x = utils::f32_to_i32(x) - self.canvas.camera_x;
         let mut y = utils::f32_to_i32(y) - self.canvas.camera_y;
         let color = self.palette[color as usize];
-        let font_image = rc_ref!(pyxel::font_image());
+        let font_image_rc = pyxel::font_image().clone();
+        let font_image = rc_ref!(font_image_rc);
         let font_data = &font_image.canvas.data;
         let font_w = font_image.canvas.width() as usize;
 

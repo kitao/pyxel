@@ -64,20 +64,21 @@ impl Graphics {
     // OpenGL resources
 
     pub fn new() -> Self {
-        unsafe {
-            let gl = platform::gl_context();
-
-            if platform::gl_profile() != GlProfile::Gles {
+        // SAFETY: Platform initialization keeps this thread's GL context current.
+        // Graphics owns every created handle, and uploads use complete typed slices.
+        let is_gles = platform::gl_profile() == GlProfile::Gles;
+        platform::with_gl_context(|gl| unsafe {
+            if !is_gles {
                 gl.disable(glow::FRAMEBUFFER_SRGB);
             }
             gl.disable(glow::BLEND);
 
-            let screen_shaders = Self::create_screen_shaders(gl);
+            let screen_shaders = Self::create_screen_shaders(gl, is_gles);
             let screen_texture = Self::create_screen_texture(gl);
             let colors_texture = Self::create_colors_texture(gl);
 
             Self {
-                is_gles: platform::gl_profile() == GlProfile::Gles,
+                is_gles,
                 screen_shaders,
                 screen_texture,
                 screen_texture_initialized: false,
@@ -85,7 +86,7 @@ impl Graphics {
                 cached_colors: Vec::new(),
                 color_pixels: Vec::new(),
             }
-        }
+        })
     }
 
     pub(crate) fn invalidate_screen_texture(&mut self) {
@@ -94,12 +95,8 @@ impl Graphics {
 
     // Shader setup
 
-    unsafe fn create_screen_shaders(gl: &mut glow::Context) -> Vec<ScreenShader> {
-        let glsl_version = if platform::gl_profile() == GlProfile::Gles {
-            GLES_VERSION
-        } else {
-            GL_VERSION
-        };
+    unsafe fn create_screen_shaders(gl: &mut glow::Context, is_gles: bool) -> Vec<ScreenShader> {
+        let glsl_version = if is_gles { GLES_VERSION } else { GL_VERSION };
 
         let mut screen_shaders = Vec::new();
         // Compile one program per fragment shader
@@ -457,22 +454,23 @@ impl Pyxel {
             return;
         }
 
-        unsafe {
-            let gl = platform::gl_context();
-            self.set_viewport(gl);
-            self.use_screen_shader(gl);
+        // SAFETY: The platform keeps the GL context current until shutdown.
+        // Graphics owns the bound handles, and texture dimensions match the slices.
+        let (window_width, window_height) = platform::window_size();
+        platform::with_gl_context(|gl| unsafe {
+            self.set_viewport(gl, window_width, window_height);
+            self.use_screen_shader(gl, window_height);
             self.bind_screen_texture(gl);
             self.bind_colors_texture(gl);
             gl.draw_arrays(glow::TRIANGLE_STRIP, 0, 4);
-        }
+        });
     }
 
-    unsafe fn set_viewport(&self, gl: &mut glow::Context) {
-        let (window_width, window_height) = platform::window_size();
+    unsafe fn set_viewport(&self, gl: &mut glow::Context, window_width: u32, window_height: u32) {
         gl.viewport(0, 0, window_width as i32, window_height as i32);
     }
 
-    unsafe fn use_screen_shader(&self, gl: &mut glow::Context) {
+    unsafe fn use_screen_shader(&self, gl: &mut glow::Context, window_height: u32) {
         let shader =
             &self.graphics.as_ref().unwrap().screen_shaders[self.system.screen_mode as usize];
         gl.use_program(Some(shader.program));
@@ -480,7 +478,6 @@ impl Pyxel {
 
         // Screen placement and size uniforms
         if let Some(location) = &uniforms[U_SCREEN_POS] {
-            let (_, window_height) = platform::window_size();
             gl.uniform_2_f32(
                 Some(location),
                 self.system.screen_x as f32,
@@ -543,7 +540,9 @@ impl Pyxel {
 
         let screen_width = *pyxel::width() as i32;
         let screen_height = *pyxel::height() as i32;
-        let data = &rc_ref!(pyxel::screen()).canvas.data;
+        let screen_rc = pyxel::screen().clone();
+        let screen = rc_ref!(screen_rc);
+        let data = &screen.canvas.data;
 
         // Upload or refresh the screen color-index texture.
         if graphics.screen_texture_initialized {
@@ -578,7 +577,7 @@ impl Pyxel {
         let colors = pyxel::colors();
         assert!(
             !colors.is_empty() && colors.len() <= MAX_COLORS as usize,
-            "Number of colors must be between 1 to {MAX_COLORS}",
+            "Number of colors must be between 1 and {MAX_COLORS}",
         );
 
         let graphics = self.graphics.as_mut().unwrap();
@@ -626,6 +625,6 @@ impl Pyxel {
                 PixelUnpackData::Slice(Some(pixels)),
             );
         }
-        graphics.cached_colors.clone_from(colors);
+        graphics.cached_colors.clone_from(&colors);
     }
 }

@@ -1,22 +1,32 @@
 use pyo3::prelude::*;
 
+use crate::utils::MutexFieldMut;
+
+fn wavetable_mut(inner: &pyxel::RcTone) -> MutexFieldMut<'_, pyxel::Tone, Vec<pyxel::ToneSample>> {
+    MutexFieldMut::new(
+        audio_mut!(inner),
+        |tone| &tone.wavetable,
+        |tone| &mut tone.wavetable,
+    )
+}
+
 // Python sequence wrapper for the mutable wavetable
 
 wrap_as_python_primitive_sequence!(
     Wavetable,
     pyxel::RcTone,
-    (|inner: &pyxel::RcTone| rc_ref!(inner).wavetable.len()),
+    (|inner: &pyxel::RcTone| audio_ref!(inner).wavetable.len()),
     pyxel::ToneSample,
-    (|inner: &pyxel::RcTone, index| rc_ref!(inner).wavetable[index]),
+    (|inner: &pyxel::RcTone, index| audio_ref!(inner).wavetable[index]),
     pyxel::ToneSample,
-    (|inner: &pyxel::RcTone, index, value| rc_mut!(inner).wavetable[index] = value),
-    (|inner: &pyxel::RcTone| -> &mut Vec<pyxel::ToneSample> { &mut rc_mut!(inner).wavetable }),
+    (|inner: &pyxel::RcTone, index, value| audio_mut!(inner).wavetable[index] = value),
+    wavetable_mut,
     Vec<pyxel::ToneSample>,
-    (|inner: &pyxel::RcTone, list| rc_mut!(inner).wavetable = list),
-    (|inner: &pyxel::RcTone| rc_ref!(inner).wavetable.clone())
+    (|inner: &pyxel::RcTone, list| audio_mut!(inner).wavetable = list),
+    (|inner: &pyxel::RcTone| audio_ref!(inner).wavetable.clone())
 );
 
-define_wrapper!(Tone, pyxel::Tone);
+define_audio_wrapper!(Tone, pyxel::Tone, pyxel::RcTone);
 
 #[pymethods]
 impl Tone {

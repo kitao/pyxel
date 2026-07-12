@@ -51,13 +51,18 @@ fn play(
 
         (Sound, {
             let _lock = pyxel::AudioLock::lock();
-            rc_mut!(pyxel::channels()[ch as usize]).play_sound(snd.inner, sec, should_loop, resume);
+            audio_mut!(pyxel::channels()[ch as usize]).play_sound(
+                snd.inner,
+                sec,
+                should_loop,
+                resume,
+            );
         }),
 
         (Vec<Sound>, {
             let sounds = snd.iter().map(|sound| sound.inner.clone()).collect();
             let _lock = pyxel::AudioLock::lock();
-            rc_mut!(pyxel::channels()[ch as usize]).play(sounds, sec, should_loop, resume);
+            audio_mut!(pyxel::channels()[ch as usize]).play(sounds, sec, should_loop, resume);
         }),
 
         (String, {

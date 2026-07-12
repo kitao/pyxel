@@ -84,8 +84,9 @@ pub fn parse_tmx(path: &str, layer_index: u32) -> Result<RcTilemap, String> {
         .collect::<Result<_, _>>()?;
 
     // Convert TMX global tile IDs into Pyxel image tile coordinates.
-    let tilemap = Tilemap::new(layer.width, layer.height, ImageSource::Index(0));
-    let tilemap_ref = rc_mut!(tilemap);
+    let tilemap = Tilemap::try_new(layer.width, layer.height, ImageSource::Index(0))
+        .map_err(|_| err("Layer dimensions are too large in file"))?;
+    let mut tilemap_ref = rc_mut!(tilemap);
     for (y, row) in tile_ids.chunks(layer.width as usize).enumerate() {
         for (x, &id) in row.iter().enumerate() {
             let id = (id & !TMX_TILE_FLAG_MASK).saturating_sub(tileset.firstgid);
@@ -99,5 +100,6 @@ pub fn parse_tmx(path: &str, layer_index: u32) -> Result<RcTilemap, String> {
             );
         }
     }
+    drop(tilemap_ref);
     Ok(tilemap)
 }

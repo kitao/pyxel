@@ -31,14 +31,19 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
     // Constructors
 
     pub fn new(width: u32, height: u32) -> Self {
-        Self {
+        Self::try_new(width, height).expect("canvas dimensions are too large")
+    }
+
+    pub(crate) fn try_new(width: u32, height: u32) -> Option<Self> {
+        let len = width.checked_mul(height)? as usize;
+        Some(Self {
             self_rect: RectArea::new(0, 0, width, height),
             clip_rect: RectArea::new(0, 0, width, height),
             camera_x: 0,
             camera_y: 0,
             alpha: 1.0,
-            data: vec![T::default(); (width * height) as usize],
-        }
+            data: vec![T::default(); len],
+        })
     }
 
     // Public accessors

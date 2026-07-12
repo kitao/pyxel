@@ -12,12 +12,17 @@ use crate::pyxel::{self, Pyxel};
 #[cfg(not(target_os = "emscripten"))]
 use crate::settings::WINDOW_TO_DISPLAY_RATIO;
 use crate::settings::{MAX_FRAME_DELAY_MS, NUM_MEASURE_FRAMES, NUM_SCREEN_MODES};
-use crate::utils;
 use crate::window_watcher::WindowWatcher;
 
 pub trait PyxelCallback {
-    fn update(&mut self, pyxel: &mut Pyxel);
-    fn draw(&mut self, pyxel: &mut Pyxel);
+    fn update(&mut self);
+    fn draw(&mut self);
+}
+
+#[derive(Clone, Copy)]
+enum LifecycleAction {
+    Quit,
+    Restart,
 }
 
 pub struct System {
@@ -65,38 +70,46 @@ impl System {
 }
 
 impl Pyxel {
-    // Main Loop
+    // Main loop
 
-    pub fn run<T: PyxelCallback>(&mut self, mut callback: T) {
-        platform::run_frame_loop(self.system.fps, move |delta_ms| {
+    pub fn run<T: PyxelCallback>(mut callback: T) {
+        let (fps, frame_ms) = {
+            let pyxel = pyxel::pyxel();
+            (pyxel.system.fps, pyxel.system.frame_ms)
+        };
+
+        platform::run_frame_loop(fps, move |delta_ms| {
             let ticks = platform::ticks();
-            self.system.fps_profiler.end(ticks);
-            self.system.fps_profiler.start(ticks);
+            {
+                let mut pyxel = pyxel::pyxel();
+                pyxel.system.fps_profiler.end(ticks);
+                pyxel.system.fps_profiler.start(ticks);
+            }
 
             let update_count = if delta_ms > MAX_FRAME_DELAY_MS as f32 {
                 1
             } else {
-                (delta_ms / self.system.frame_ms) as u32
+                (delta_ms / frame_ms) as u32
             };
             for _ in 1..update_count {
-                self.update_frame(Some(&mut callback));
+                Self::run_update_frame(&mut callback);
                 *pyxel::frame_count() += 1;
             }
 
-            self.update_frame(Some(&mut callback));
-            self.draw_frame(Some(&mut callback));
+            Self::run_update_frame(&mut callback);
+            Self::run_draw_frame(&mut callback);
             *pyxel::frame_count() += 1;
         });
     }
 
-    pub fn show_screen(&mut self) {
+    pub fn show_screen() {
         struct App {
             image: RcImage,
         }
 
         impl PyxelCallback for App {
-            fn update(&mut self, _pyxel: &mut Pyxel) {}
-            fn draw(&mut self, _pyxel: &mut Pyxel) {
+            fn update(&mut self) {}
+            fn draw(&mut self) {
                 rc_mut!(pyxel::screen()).draw_image(
                     0.0,
                     0.0,
@@ -116,7 +129,7 @@ impl Pyxel {
         rc_mut!(image).draw_image(
             0.0,
             0.0,
-            pyxel::screen(),
+            &pyxel::screen(),
             0.0,
             0.0,
             *pyxel::width() as f32,
@@ -126,35 +139,46 @@ impl Pyxel {
             None,
         );
 
-        self.run(App { image });
+        Self::run(App { image });
     }
 
-    // Window & Screen
+    // Window & screen
 
-    pub fn flip_screen(&mut self) {
-        self.system.update_profiler.end(platform::ticks());
-
-        self.draw_frame(None);
+    pub fn flip_screen() {
+        let fps = {
+            let mut pyxel = pyxel::pyxel();
+            pyxel.system.update_profiler.end(platform::ticks());
+            pyxel.draw_frame(None);
+            pyxel.system.fps
+        };
         *pyxel::frame_count() += 1;
 
-        platform::step_frame(self.system.fps);
+        platform::step_frame(fps);
 
         let ticks = platform::ticks();
-        self.system.fps_profiler.end(ticks);
-        self.system.fps_profiler.start(ticks);
+        let action = {
+            let mut pyxel = pyxel::pyxel();
+            pyxel.system.fps_profiler.end(ticks);
+            pyxel.system.fps_profiler.start(ticks);
+            let (_, action) = pyxel.begin_update_frame();
+            action
+        };
 
-        self.update_frame(None);
+        if let Some(action) = action {
+            Self::perform_lifecycle_action(action);
+        }
     }
 
-    pub fn quit(&self) {
+    pub fn quit() {
         platform::quit();
     }
 
-    pub fn restart(&mut self) {
+    pub fn restart() {
         #[cfg(not(target_os = "emscripten"))]
         if let Some(mut callback) = pyxel::reset_callback().take() {
+            let window_state = pyxel::pyxel().system.window_watcher.state_string();
             platform::close_audio();
-            callback();
+            callback(window_state);
         }
 
         #[cfg(target_os = "emscripten")]
@@ -165,9 +189,18 @@ impl Pyxel {
                 fn emscripten_run_script(script: *const c_char);
             }
 
+            // SAFETY: Emscripten provides this symbol, and the C string is static
+            // and NUL-terminated for the duration of the call.
             unsafe {
                 emscripten_run_script(c"resetPyxel();".as_ptr());
             }
+        }
+    }
+
+    fn perform_lifecycle_action(action: LifecycleAction) {
+        match action {
+            LifecycleAction::Quit => Self::quit(),
+            LifecycleAction::Restart => Self::restart(),
         }
     }
 
@@ -180,21 +213,48 @@ impl Pyxel {
     }
 
     // Convert icon pattern data into scaled RGBA pixels.
-    pub fn set_icon(&self, data: &[&str], scale: u32, transparent: Option<Color>) {
-        if *pyxel::is_headless() {
-            return;
+    pub fn set_icon<S: AsRef<str>>(
+        &self,
+        data: &[S],
+        scale: u32,
+        transparent: Option<Color>,
+    ) -> Result<(), String> {
+        let rc = Image::from_data(data, "icon")?;
+        if scale == 0 {
+            return Err("scale must be greater than 0".to_string());
+        }
+        let colors = pyxel::colors();
+        let image = rc_ref!(rc);
+        let width = image.width();
+        let height = image.height();
+        let image_data = &image.canvas.data;
+        let scaled_width = width
+            .checked_mul(scale)
+            .ok_or("icon dimensions overflow after scaling")?;
+        let scaled_height = height
+            .checked_mul(scale)
+            .ok_or("icon dimensions overflow after scaling")?;
+        let rgba_capacity = (scaled_width as usize)
+            .checked_mul(scaled_height as usize)
+            .and_then(|size| size.checked_mul(4))
+            .ok_or("icon dimensions overflow after scaling")?;
+
+        for (index, &color) in image_data.iter().enumerate() {
+            if color as usize >= colors.len() {
+                return Err(format!(
+                    "Invalid icon data at row {}, column {}: color {color} exceeds palette size {}",
+                    index / width as usize,
+                    index % width as usize,
+                    colors.len()
+                ));
+            }
         }
 
-        let colors = pyxel::colors();
-        let width = utils::simplify_string(data[0]).len() as u32;
-        let height = data.len() as u32;
-        let rc = Image::new(width, height);
-        let image = rc_mut!(rc);
-        image.set(0, 0, data);
-        let image_data = &image.canvas.data;
-        let scaled_width = width * scale;
-        let scaled_height = height * scale;
-        let mut rgba: Vec<u8> = Vec::with_capacity((scaled_width * scaled_height * 4) as usize);
+        if *pyxel::is_headless() {
+            return Ok(());
+        }
+
+        let mut rgba: Vec<u8> = Vec::with_capacity(rgba_capacity);
 
         for y in 0..height {
             for _sy in 0..scale {
@@ -213,9 +273,10 @@ impl Pyxel {
         }
 
         platform::set_window_icon(scaled_width, scaled_height, &rgba);
+        Ok(())
     }
 
-    // Screen Configuration
+    // Screen configuration
 
     pub fn set_perf_monitor(&mut self, enabled: bool) {
         self.system.perf_monitor_enabled = enabled;
@@ -238,11 +299,8 @@ impl Pyxel {
     }
 
     // Resize screen resources while keeping window scaling coherent.
-    pub fn set_screen_size(&mut self, width: u32, height: u32) {
-        assert!(
-            width > 0 && height > 0,
-            "width and height must be greater than 0"
-        );
+    pub fn set_screen_size(&mut self, width: u32, height: u32) -> Result<(), String> {
+        pyxel::validate_resize_params(width, height, *pyxel::is_headless())?;
 
         *pyxel::width() = width;
         *pyxel::height() = height;
@@ -274,14 +332,16 @@ impl Pyxel {
             }
             self.update_screen_params();
         }
+        Ok(())
     }
 
-    // Event & Input Processing
+    // Event & input processing
 
     // Poll platform events and update input/window state.
-    fn process_events(&mut self) {
+    fn process_events(&mut self) -> Option<LifecycleAction> {
+        let mut lifecycle_action = None;
         if platform::is_sigint_received() {
-            platform::quit();
+            lifecycle_action = Some(LifecycleAction::Quit);
         }
 
         self.start_input_frame();
@@ -304,19 +364,20 @@ impl Pyxel {
                 Event::KeyValueChanged { key, value } => self.set_key_value(key, value),
                 Event::TextInput { text } => self.add_input_text(&text),
                 Event::FileDropped { filename } => self.add_dropped_file(&filename),
-                Event::Quit => platform::quit(),
+                Event::Quit => lifecycle_action = Some(LifecycleAction::Quit),
             }
         }
 
         // Return the buffer for reuse
         self.system.event_buf = events;
+        lifecycle_action
     }
 
     // Handle hidden capture and display shortcuts before regular update code.
-    fn check_special_input(&mut self) {
+    fn check_special_input(&mut self) -> Option<LifecycleAction> {
         if self.is_button_pressed(self.system.quit_key, None, None) {
             self.reset_key(self.system.quit_key);
-            self.quit();
+            return Some(LifecycleAction::Quit);
         } else if self.is_button_down(KEY_ALT) {
             if self.is_button_down(KEY_SHIFT) {
                 if self.is_button_pressed(KEY_0, None, None) {
@@ -354,7 +415,7 @@ impl Pyxel {
                 self.set_perf_monitor(!self.system.perf_monitor_enabled);
             } else if self.is_button_pressed(KEY_R, None, None) {
                 self.reset_key(KEY_R);
-                self.restart();
+                return Some(LifecycleAction::Restart);
             } else if self.is_button_pressed(KEY_RETURN, None, None) {
                 self.reset_key(KEY_RETURN);
                 self.set_fullscreen(!platform::is_fullscreen());
@@ -366,7 +427,7 @@ impl Pyxel {
         {
             if self.is_button_pressed(GAMEPAD1_BUTTON_BACK, None, None) {
                 self.reset_key(GAMEPAD1_BUTTON_BACK);
-                self.restart();
+                return Some(LifecycleAction::Restart);
             } else if self.is_button_pressed(GAMEPAD1_BUTTON_DPAD_LEFT, None, None) {
                 self.reset_key(GAMEPAD1_BUTTON_DPAD_LEFT);
                 self.set_integer_scale(!self.system.integer_scale_enabled);
@@ -381,9 +442,10 @@ impl Pyxel {
                 self.set_fullscreen(!platform::is_fullscreen());
             }
         }
+        None
     }
 
-    // Frame Lifecycle
+    // Frame lifecycle
 
     pub(crate) fn update_screen_params(&mut self) {
         let (window_width, window_height) = platform::window_size();
@@ -400,21 +462,40 @@ impl Pyxel {
         self.system.screen_y = (window_height as i32 - (h * self.system.screen_scale) as i32) / 2;
     }
 
-    fn update_frame(&mut self, callback: Option<&mut dyn PyxelCallback>) {
-        self.system.update_profiler.start(platform::ticks());
-
-        self.process_events();
-
-        if self.system.paused {
+    fn run_update_frame(callback: &mut dyn PyxelCallback) {
+        let (should_update, action) = pyxel::pyxel().begin_update_frame();
+        if let Some(action) = action {
+            Self::perform_lifecycle_action(action);
+            return;
+        }
+        if !should_update {
             return;
         }
 
-        self.check_special_input();
+        // Public callbacks re-enter Pyxel, so no singleton borrow may span this call.
+        callback.update();
+        pyxel::pyxel().finish_update_frame();
+    }
 
-        if let Some(callback) = callback {
-            callback.update(self);
-            self.system.update_profiler.end(platform::ticks());
+    fn begin_update_frame(&mut self) -> (bool, Option<LifecycleAction>) {
+        self.system.update_profiler.start(platform::ticks());
+
+        if let Some(action) = self.process_events() {
+            return (false, Some(action));
         }
+
+        if self.system.paused {
+            return (false, None);
+        }
+
+        if let Some(action) = self.check_special_input() {
+            return (false, Some(action));
+        }
+        (true, None)
+    }
+
+    fn finish_update_frame(&mut self) {
+        self.system.update_profiler.end(platform::ticks());
     }
 
     // Rendering & UI
@@ -425,7 +506,8 @@ impl Pyxel {
             return;
         }
 
-        let screen = rc_mut!(pyxel::screen());
+        let screen_rc = pyxel::screen().clone();
+        let mut screen = rc_mut!(screen_rc);
         let clip_rect = screen.canvas.clip_rect;
         let camera_x = screen.canvas.camera_x;
         let camera_y = screen.canvas.camera_y;
@@ -483,7 +565,8 @@ impl Pyxel {
             return;
         }
 
-        let screen = rc_mut!(pyxel::screen());
+        let screen_rc = pyxel::screen().clone();
+        let mut screen = rc_mut!(screen_rc);
         let clip_rect = screen.canvas.clip_rect;
         let camera_x = screen.canvas.camera_x;
         let camera_y = screen.canvas.camera_y;
@@ -494,7 +577,7 @@ impl Pyxel {
         screen.draw_image(
             x as f32,
             y as f32,
-            pyxel::cursor_image(),
+            &pyxel::cursor_image(),
             0.0,
             0.0,
             width as f32,
@@ -511,18 +594,40 @@ impl Pyxel {
     }
 
     fn draw_frame(&mut self, callback: Option<&mut dyn PyxelCallback>) {
-        self.system.draw_profiler.start(platform::ticks());
-
-        if self.system.paused {
+        if !self.begin_draw_frame() {
             return;
         }
 
-        self.update_screen_params();
-
         if let Some(callback) = callback {
-            callback.draw(self);
+            callback.draw();
         }
 
+        self.finish_draw_frame();
+    }
+
+    fn run_draw_frame(callback: &mut dyn PyxelCallback) {
+        let should_draw = pyxel::pyxel().begin_draw_frame();
+        if !should_draw {
+            return;
+        }
+
+        // Public callbacks re-enter Pyxel, so no singleton borrow may span this call.
+        callback.draw();
+        pyxel::pyxel().finish_draw_frame();
+    }
+
+    fn begin_draw_frame(&mut self) -> bool {
+        self.system.draw_profiler.start(platform::ticks());
+
+        if self.system.paused {
+            return false;
+        }
+
+        self.update_screen_params();
+        true
+    }
+
+    fn finish_draw_frame(&mut self) {
         self.system.window_watcher.update();
         self.draw_perf_monitor();
         self.draw_cursor();

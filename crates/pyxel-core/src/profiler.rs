@@ -8,7 +8,7 @@ pub struct Profiler {
 }
 
 impl Profiler {
-    // Construction
+    // Constructor
 
     pub fn new(measure_frame_count: u32) -> Self {
         assert!(measure_frame_count >= 1, "invalid measure frame count");

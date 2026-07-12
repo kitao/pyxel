@@ -1,5 +1,8 @@
 {
   "private": true,
+  "scripts": {
+    "test": "node --test tests/*.test.js"
+  },
   "devDependencies": {
     "@tailwindcss/cli": "^4",
     "prettier": "^3.8.4"

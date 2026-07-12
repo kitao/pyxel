@@ -43,9 +43,15 @@ run_bg() {
     "$@" &
     BG_PID=$!
     trap 'kill "$BG_PID" 2>/dev/null; exit 130' INT
-    wait "$BG_PID" || true
+    local status
+    if wait "$BG_PID"; then
+        status=0
+    else
+        status=$?
+    fi
     trap - INT
     BG_PID=0
+    return "$status"
 }
 
 # Run example scripts

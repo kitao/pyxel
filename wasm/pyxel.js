@@ -449,8 +449,23 @@ const _loadScript = async (scriptSrc) => {
   const script = document.createElement("script");
   script.src = scriptSrc;
   const firstScript = document.getElementsByTagName("script")[0];
-  firstScript.parentNode.insertBefore(script, firstScript);
-  await _waitForEvent(script, "load");
+  await new Promise((resolve, reject) => {
+    script.addEventListener("load", resolve, { once: true });
+    script.addEventListener(
+      "error",
+      () => reject(new Error(`Failed to load ${scriptSrc}`)),
+      { once: true },
+    );
+    firstScript.parentNode.insertBefore(script, firstScript);
+  });
+};
+
+const _fetchAsset = async (url, name) => {
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error(`Failed to fetch ${name}: ${response.status}`);
+  }
+  return response;
 };
 
 // Bootstrap Pyodide, install Pyxel, and prepare its working directory.
@@ -459,8 +474,13 @@ const _loadPyodideAndPyxel = async (canvas) => {
   // runtime init. Consuming the wheel body populates the HTTP cache, so
   // pyodide.loadPackage's later fetch of the same URL hits the cache.
   const wheelUrl = `${_scriptDir}${PYXEL_WHEEL_PATH}`;
-  const wheelPrefetch = fetch(wheelUrl).then((r) => r.arrayBuffer());
-  const importHookFetch = fetch(`${_scriptDir}${IMPORT_HOOK_PATH}`);
+  const wheelPrefetch = _fetchAsset(wheelUrl, PYXEL_WHEEL_PATH).then(
+    (response) => response.arrayBuffer(),
+  );
+  const importHookFetch = _fetchAsset(
+    `${_scriptDir}${IMPORT_HOOK_PATH}`,
+    IMPORT_HOOK_PATH,
+  );
 
   await _loadScript(PYODIDE_URL);
   const pyodide = await loadPyodide();
@@ -476,9 +496,6 @@ const _loadPyodideAndPyxel = async (canvas) => {
   fs.chdir(PYXEL_WORKING_DIRECTORY);
 
   const response = await importHookFetch;
-  if (!response.ok) {
-    throw new Error(`Failed to fetch ${IMPORT_HOOK_PATH}: ${response.status}`);
-  }
   const code = await response.text();
   pyodide.runPython(code);
 

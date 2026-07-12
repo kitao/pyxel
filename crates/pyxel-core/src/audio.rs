@@ -53,7 +53,7 @@ impl AudioStreamRenderer {
 
     fn render(&mut self, out: &mut [i16]) {
         let channels = pyxel::channels();
-        Audio::render_samples(channels, &mut self.blip_buf, out);
+        Audio::render_samples(&channels, &mut self.blip_buf, out);
     }
 }
 
@@ -77,7 +77,7 @@ impl Audio {
         let mut needs_blip = false;
         let mut needs_pcm = false;
         for ch in channels {
-            let channel = rc_ref!(ch);
+            let channel = audio_ref!(ch);
             needs_blip |= channel.needs_blip_processing();
             needs_pcm |= channel.is_playing_pcm();
             if needs_blip && needs_pcm {
@@ -95,7 +95,7 @@ impl Audio {
                 };
 
                 for ch in channels {
-                    let channel = rc_mut!(ch);
+                    let mut channel = audio_mut!(ch);
                     if channel.needs_blip_processing() {
                         channel.process(Some(blip_buf), clocks);
                     }
@@ -110,7 +110,7 @@ impl Audio {
 
         if needs_pcm {
             for ch in channels {
-                let channel = rc_mut!(ch);
+                let mut channel = audio_mut!(ch);
                 if channel.is_playing_pcm() {
                     channel.mix_pcm(out);
                 }
@@ -206,7 +206,7 @@ impl Pyxel {
             .collect();
 
         let _lock = AudioLock::lock();
-        rc_mut!(pyxel::channels()[channel_index as usize]).play(
+        audio_mut!(pyxel::channels()[channel_index as usize]).play(
             sounds,
             start_sec,
             should_loop,
@@ -225,7 +225,7 @@ impl Pyxel {
         let sound = pyxel::sounds()[sound_index as usize].clone();
 
         let _lock = AudioLock::lock();
-        rc_mut!(pyxel::channels()[channel_index as usize]).play_sound(
+        audio_mut!(pyxel::channels()[channel_index as usize]).play_sound(
             sound,
             start_sec,
             should_loop,
@@ -242,7 +242,7 @@ impl Pyxel {
         should_resume: bool,
     ) -> Result<(), String> {
         let _lock = AudioLock::lock();
-        rc_mut!(pyxel::channels()[channel_index as usize]).play_mml(
+        audio_mut!(pyxel::channels()[channel_index as usize]).play_mml(
             code,
             start_sec,
             should_loop,
@@ -251,7 +251,8 @@ impl Pyxel {
     }
 
     pub fn play_music(&self, music_index: u32, start_sec: Option<f32>, should_loop: bool) {
-        let music = rc_ref!(pyxel::musics()[music_index as usize]);
+        let music_rc = pyxel::musics()[music_index as usize].clone();
+        let music = audio_ref!(music_rc);
         let channels = pyxel::channels();
         let channel_count = channels.len();
         let pyxel_sounds = pyxel::sounds();
@@ -274,7 +275,7 @@ impl Pyxel {
 
         let _lock = AudioLock::lock();
         for (i, sounds) in channel_sounds {
-            rc_mut!(channels[i]).play(sounds, start_sec, should_loop, false);
+            audio_mut!(channels[i]).play(sounds, start_sec, should_loop, false);
         }
     }
 
@@ -282,13 +283,13 @@ impl Pyxel {
 
     pub fn stop_channel(&self, channel_index: u32) {
         let _lock = AudioLock::lock();
-        rc_mut!(pyxel::channels()[channel_index as usize]).stop();
+        audio_mut!(pyxel::channels()[channel_index as usize]).stop();
     }
 
     pub fn stop_all_channels(&self) {
         let _lock = AudioLock::lock();
         for ch in pyxel::channels().iter() {
-            rc_mut!(ch).stop();
+            audio_mut!(ch).stop();
         }
     }
 
@@ -296,6 +297,6 @@ impl Pyxel {
 
     pub fn play_position(&self, channel_index: u32) -> Option<(u32, f32)> {
         let _lock = AudioLock::lock();
-        rc_mut!(pyxel::channels()[channel_index as usize]).play_position()
+        audio_mut!(pyxel::channels()[channel_index as usize]).play_position()
     }
 }

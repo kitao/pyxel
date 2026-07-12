@@ -1,32 +1,66 @@
 use pyo3::exceptions::PyException;
 use pyo3::prelude::*;
 
+use crate::utils::MutexFieldMut;
+
+fn notes_mut(inner: &pyxel::RcSound) -> MutexFieldMut<'_, pyxel::Sound, Vec<pyxel::SoundNote>> {
+    MutexFieldMut::new(
+        audio_mut!(inner),
+        |sound| &sound.notes,
+        |sound| &mut sound.notes,
+    )
+}
+
+fn tones_mut(inner: &pyxel::RcSound) -> MutexFieldMut<'_, pyxel::Sound, Vec<pyxel::SoundTone>> {
+    MutexFieldMut::new(
+        audio_mut!(inner),
+        |sound| &sound.tones,
+        |sound| &mut sound.tones,
+    )
+}
+
+fn volumes_mut(inner: &pyxel::RcSound) -> MutexFieldMut<'_, pyxel::Sound, Vec<pyxel::SoundVolume>> {
+    MutexFieldMut::new(
+        audio_mut!(inner),
+        |sound| &sound.volumes,
+        |sound| &mut sound.volumes,
+    )
+}
+
+fn effects_mut(inner: &pyxel::RcSound) -> MutexFieldMut<'_, pyxel::Sound, Vec<pyxel::SoundEffect>> {
+    MutexFieldMut::new(
+        audio_mut!(inner),
+        |sound| &sound.effects,
+        |sound| &mut sound.effects,
+    )
+}
+
 // Python sequence wrappers for mutable sound component lists
 
 macro_rules! wrap_sound_as_python_list {
-    ($wrapper_name:ident, $value_type:ty, $field_name:ident) => {
+    ($wrapper_name:ident, $value_type:ty, $field_name:ident, $field_mut:ident) => {
         wrap_as_python_primitive_sequence!(
             $wrapper_name,
             pyxel::RcSound,
-            (|inner: &pyxel::RcSound| rc_ref!(inner).$field_name.len()),
+            (|inner: &pyxel::RcSound| audio_ref!(inner).$field_name.len()),
             $value_type,
-            (|inner: &pyxel::RcSound, index| rc_ref!(inner).$field_name[index]),
+            (|inner: &pyxel::RcSound, index| audio_ref!(inner).$field_name[index]),
             $value_type,
-            (|inner: &pyxel::RcSound, index, value| rc_mut!(inner).$field_name[index] = value),
-            (|inner: &pyxel::RcSound| -> &mut Vec<$value_type> { &mut rc_mut!(inner).$field_name }),
+            (|inner: &pyxel::RcSound, index, value| audio_mut!(inner).$field_name[index] = value),
+            $field_mut,
             Vec<$value_type>,
-            (|inner: &pyxel::RcSound, list| rc_mut!(inner).$field_name = list),
-            (|inner: &pyxel::RcSound| rc_ref!(inner).$field_name.clone())
+            (|inner: &pyxel::RcSound, list| audio_mut!(inner).$field_name = list),
+            (|inner: &pyxel::RcSound| audio_ref!(inner).$field_name.clone())
         );
     };
 }
 
-wrap_sound_as_python_list!(Notes, pyxel::SoundNote, notes);
-wrap_sound_as_python_list!(Tones, pyxel::SoundTone, tones);
-wrap_sound_as_python_list!(Volumes, pyxel::SoundVolume, volumes);
-wrap_sound_as_python_list!(Effects, pyxel::SoundEffect, effects);
+wrap_sound_as_python_list!(Notes, pyxel::SoundNote, notes, notes_mut);
+wrap_sound_as_python_list!(Tones, pyxel::SoundTone, tones, tones_mut);
+wrap_sound_as_python_list!(Volumes, pyxel::SoundVolume, volumes, volumes_mut);
+wrap_sound_as_python_list!(Effects, pyxel::SoundEffect, effects, effects_mut);
 
-define_wrapper!(Sound, pyxel::Sound);
+define_audio_wrapper!(Sound, pyxel::Sound, pyxel::RcSound);
 
 #[pymethods]
 impl Sound {
@@ -160,7 +194,8 @@ impl Sound {
 
     #[pyo3(signature = (filename, sec, ffmpeg=None))]
     fn save(&self, filename: &str, sec: f32, ffmpeg: Option<bool>) -> PyResult<()> {
-        self.inner_mut()
+        let sound = self.inner_ref().clone();
+        sound
             .save(filename, sec, ffmpeg)
             .map_err(PyException::new_err)
     }

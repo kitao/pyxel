@@ -2247,9 +2247,9 @@ impl Pyxel {
         if play.unwrap_or(false) {
             for (ch, mml) in mml_list.iter().enumerate() {
                 let sound = Sound::new();
-                if rc_mut!(sound).set_mml(mml).is_ok() {
+                if audio_mut!(sound).set_mml(mml).is_ok() {
                     let _lock = crate::audio::AudioLock::lock();
-                    rc_mut!(pyxel::channels()[ch]).play_sound(sound, None, true, false);
+                    audio_mut!(pyxel::channels()[ch]).play_sound(sound, None, true, false);
                 }
             }
         }

@@ -33,6 +33,7 @@ CRATES_DIR := $(ROOT_DIR)/crates
 DIST_DIR := $(ROOT_DIR)/dist
 PYTHON_DIR := $(ROOT_DIR)/python
 SCRIPTS_DIR := $(ROOT_DIR)/scripts
+WEB_DIR := $(ROOT_DIR)/web
 
 # Extensionless Python scripts, passed to ruff explicitly since it only discovers *.py files
 PYTHON_SCRIPTS = $(shell grep -sl '^\#!/usr/bin/env python3' $(SCRIPTS_DIR)/*)
@@ -145,6 +146,7 @@ install: build
 test: install
 	@cd $(ROOT_DIR); python -m pytest python/tests/ -v
 	@cd $(CRATES_DIR); cargo test -p pyxel-core $(CARGO_OPTS)
+	@cd $(WEB_DIR); npm test
 
 run: install
 	@$(SCRIPTS_DIR)/run_examples

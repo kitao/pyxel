@@ -295,6 +295,11 @@ jobs:
             os: windows-2022
             arch: x64
 
+          - target: x86_64-pc-windows-msvc
+            os: windows-11-arm
+            arch: x64
+            verify_gui_quit: true
+
           - target: i686-pc-windows-msvc
             os: windows-2022
             arch: x86
@@ -312,8 +317,8 @@ jobs:
             arch: x64
 
           - target: aarch64-unknown-linux-gnu
-            os: ubuntu-24.04
-            skip_import: true
+            os: ubuntu-24.04-arm
+            arch: arm64
 
           - target: armv7-unknown-linux-gnueabihf
             os: ubuntu-24.04
@@ -345,6 +350,14 @@ jobs:
         run: |
           pip install dist/*.whl
           python -c "import pyxel; print(f'Pyxel {pyxel.VERSION} imported successfully')"
+
+      - name: Verify GUI quit on Windows ARM64
+        if: ${{ matrix.verify_gui_quit }}
+        timeout-minutes: 1
+        shell: pwsh
+        run: |
+          python -c "import os, platform, struct; print(platform.machine(), struct.calcsize('P') * 8, os.environ.get('PROCESSOR_ARCHITEW6432', ''))"
+          python -c "import pyxel; pyxel.init(64, 64, title='Pyxel Windows ARM quit smoke'); pyxel.quit()"
 
       - name: Verify SDL2 bundle (Linux)
         if: runner.os == 'Linux'

@@ -1,15 +1,5 @@
 // Shared helper macros
 
-macro_rules! string_loop {
-    ($i: ident, $piece: ident, $s: ident, $step: expr, $block: block) => {
-        for $i in 0..($s.len() / $step) {
-            let _macro_index = $i * $step;
-            let $piece = &$s[_macro_index.._macro_index + $step];
-            $block
-        }
-    };
-}
-
 macro_rules! repeat_extend {
     ($container:expr, $value:expr, $count:expr) => {
         $container.extend(std::iter::repeat($value).take($count as usize));
@@ -18,25 +8,53 @@ macro_rules! repeat_extend {
 
 macro_rules! define_rc_type {
     ($alias:ident, $inner:ty) => {
-        pub type $alias = std::rc::Rc<std::cell::UnsafeCell<$inner>>;
+        pub type $alias = std::rc::Rc<std::cell::RefCell<$inner>>;
+    };
+}
+
+macro_rules! define_audio_type {
+    ($alias:ident, $inner:ty) => {
+        pub type $alias = std::sync::Arc<std::sync::Mutex<$inner>>;
     };
 }
 
 macro_rules! new_rc_type {
     ($e:expr) => {
-        std::rc::Rc::new(std::cell::UnsafeCell::new($e))
+        std::rc::Rc::new(std::cell::RefCell::new($e))
+    };
+}
+
+macro_rules! new_audio_type {
+    ($e:expr) => {
+        std::sync::Arc::new(std::sync::Mutex::new($e))
     };
 }
 
 macro_rules! rc_ref {
     ($rc:expr) => {
-        unsafe { &*($rc).get() }
+        ($rc).borrow()
     };
 }
 
 macro_rules! rc_mut {
     ($rc:expr) => {
-        unsafe { &mut *($rc).get() }
+        ($rc).borrow_mut()
+    };
+}
+
+macro_rules! audio_ref {
+    ($audio:expr) => {
+        ($audio)
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner)
+    };
+}
+
+macro_rules! audio_mut {
+    ($audio:expr) => {
+        ($audio)
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner)
     };
 }
 
@@ -62,20 +80,6 @@ pub fn simplify_string(string: &str) -> String {
         .filter(|c| !c.is_ascii_whitespace())
         .map(|c| c.to_ascii_lowercase())
         .collect()
-}
-
-pub fn parse_hex_string(string: &str) -> Result<u32, &str> {
-    let mut result: u32 = 0;
-    for c in string.bytes() {
-        result *= 0x10;
-        match c {
-            b'0'..=b'9' => result += (c - b'0') as u32,
-            b'a'..=b'f' => result += 10 + (c - b'a') as u32,
-            b'A'..=b'F' => result += 10 + (c - b'A') as u32,
-            _ => return Err("invalid hex string"),
-        }
-    }
-    Ok(result)
 }
 
 pub fn add_file_extension(filename: &str, ext: &str) -> String {
@@ -182,26 +186,6 @@ mod tests {
     }
 
     #[test]
-    fn test_parse_hex_string() {
-        assert_eq!(parse_hex_string("0"), Ok(0));
-        assert_eq!(parse_hex_string("100"), Ok(256));
-        assert_eq!(parse_hex_string("a2"), Ok(162));
-        assert_eq!(parse_hex_string("BC"), Ok(188));
-        assert_eq!(parse_hex_string("ff"), Ok(255));
-        assert_eq!(parse_hex_string("FFFF"), Ok(0xFFFF));
-        assert_eq!(parse_hex_string(" "), Err("invalid hex string"));
-        assert_eq!(parse_hex_string("g0"), Err("invalid hex string"));
-    }
-
-    #[test]
-    fn test_parse_hex_string_edge_cases() {
-        assert_eq!(parse_hex_string(""), Ok(0));
-        assert_eq!(parse_hex_string("F"), Ok(15));
-        assert_eq!(parse_hex_string("FFFFFFFF"), Ok(u32::MAX));
-        assert_eq!(parse_hex_string("aB"), Ok(0xAB));
-    }
-
-    #[test]
     fn test_add_file_extension() {
         assert_eq!(add_file_extension("test", ".png"), "test.png");
         assert_eq!(add_file_extension("test.png", ".png"), "test.png");
@@ -220,16 +204,6 @@ mod tests {
     // Macro behavior tests
 
     #[test]
-    fn test_string_loop() {
-        let s = "ABCDEF";
-        let mut result = Vec::new();
-        string_loop!(_i, piece, s, 2, {
-            result.push(piece);
-        });
-        assert_eq!(result, vec!["AB", "CD", "EF"]);
-    }
-
-    #[test]
     fn test_repeat_extend() {
         let mut v = vec![1, 2];
         repeat_extend!(v, 0, 3);
@@ -238,6 +212,14 @@ mod tests {
         let mut v: Vec<i32> = Vec::new();
         repeat_extend!(v, 42, 0);
         assert!(v.is_empty());
+    }
+
+    #[test]
+    #[should_panic(expected = "already borrowed")]
+    fn test_rc_type_rejects_overlapping_mutable_borrow() {
+        let value = new_rc_type!(1_u8);
+        let _shared = rc_ref!(value);
+        let _mutable = rc_mut!(value);
     }
 
     // Vector shape helper tests

@@ -20,6 +20,8 @@ static PITCH_RATIO_LUT: OnceLock<Box<[f32]>> = OnceLock::new();
 pub struct Oscillator {
     waveform_samples: Vec<i16>,
     waveform_index: usize,
+    #[cfg(test)]
+    waveform_set_count: usize,
 
     lfsr: u16,
     tap_bit: u8,
@@ -34,6 +36,8 @@ impl Oscillator {
         Self {
             waveform_samples: Vec::new(),
             waveform_index: 0,
+            #[cfg(test)]
+            waveform_set_count: 0,
 
             lfsr: 0,
             tap_bit: 0,
@@ -45,6 +49,10 @@ impl Oscillator {
     // Waveform setup
 
     pub fn set(&mut self, waveform: &[f32]) {
+        #[cfg(test)]
+        {
+            self.waveform_set_count += 1;
+        }
         if self.waveform_samples.len() == waveform.len() {
             for (dst, &src) in self.waveform_samples.iter_mut().zip(waveform.iter()) {
                 *dst = Self::quantize_sample(src);
@@ -425,6 +433,8 @@ pub struct Voice {
     base_frequency: f32,
     velocity_base: f32,
     current_tone: Option<RcTone>,
+    current_tone_mode: Option<ToneMode>,
+    current_tone_revision: Option<u64>,
     current_velocity_cache: f32,
     remaining_note_clocks: u32,
     elapsed_note_clocks: u32,
@@ -461,6 +471,8 @@ impl Voice {
             base_frequency: 0.0,
             velocity_base: 0.0,
             current_tone: None,
+            current_tone_mode: None,
+            current_tone_revision: None,
             current_velocity_cache: 0.0,
             remaining_note_clocks: 0,
             elapsed_note_clocks: 0,
@@ -481,17 +493,39 @@ impl Voice {
 
     pub fn set_tone(&mut self, tone: RcTone) {
         self.current_tone = Some(tone);
+        self.current_tone_mode = None;
+        self.current_tone_revision = None;
         self.refresh_tone_state();
     }
 
     fn refresh_tone_state(&mut self) {
         if let Some(tone_rc) = self.current_tone.as_ref() {
-            let tone = rc_mut!(&tone_rc);
-            match tone.mode {
-                ToneMode::Wavetable => self.oscillator.set(tone.waveform()),
-                ToneMode::ShortPeriodNoise => self.oscillator.set_noise(true),
-                ToneMode::LongPeriodNoise => self.oscillator.set_noise(false),
+            let mut tone = audio_mut!(&tone_rc);
+            let mode = tone.mode;
+            match mode {
+                ToneMode::Wavetable => {
+                    let (waveform, revision) = tone.waveform();
+                    if self.current_tone_mode != Some(mode)
+                        || self.current_tone_revision != Some(revision)
+                    {
+                        self.oscillator.set(waveform);
+                        self.current_tone_revision = Some(revision);
+                    }
+                }
+                ToneMode::ShortPeriodNoise => {
+                    if self.current_tone_mode != Some(mode) {
+                        self.oscillator.set_noise(true);
+                    }
+                    self.current_tone_revision = None;
+                }
+                ToneMode::LongPeriodNoise => {
+                    if self.current_tone_mode != Some(mode) {
+                        self.oscillator.set_noise(false);
+                    }
+                    self.current_tone_revision = None;
+                }
             }
+            self.current_tone_mode = Some(mode);
             self.current_velocity_cache = self.velocity_base * tone.gain;
         }
     }
@@ -1279,7 +1313,7 @@ mod tests {
     fn make_tone(sample_bits: u32, wavetable: Vec<ToneSample>) -> RcTone {
         let tone = Tone::new();
         {
-            let t = rc_mut!(&tone);
+            let mut t = audio_mut!(&tone);
             t.sample_bits = sample_bits;
             t.wavetable = wavetable;
         }
@@ -1429,7 +1463,7 @@ mod tests {
         voice.process(None, 0, control_clocks);
         let before = voice.current_velocity_cache;
 
-        rc_mut!(&tone).gain = 0.25;
+        audio_mut!(&tone).gain = 0.25;
         voice.process(None, 0, control_clocks);
 
         assert!(approx_eq(voice.current_velocity_cache, 0.25));
@@ -1447,13 +1481,30 @@ mod tests {
         voice.process(None, 0, control_clocks);
         let before = voice.oscillator.waveform_samples.clone();
 
-        rc_mut!(&tone).wavetable[0] = 8;
+        audio_mut!(&tone).wavetable[0] = 8;
         voice.process(None, 0, control_clocks);
 
         assert_ne!(voice.oscillator.waveform_samples, before);
         let max = ((1u32 << 4) - 1) as f32;
         let expected = Oscillator::quantize_sample((8.0 / max) * 2.0 - 1.0);
         assert_eq!(voice.oscillator.waveform_samples[0], expected);
+    }
+
+    #[test]
+    fn test_voice_skips_unchanged_wavetable_refresh() {
+        let mut voice = Voice::new(44100, 60, 512);
+        let tone = make_tone(4, vec![15, 0]);
+        voice.set_tone(tone.clone());
+        voice.play_note(60.0, 1.0, 44100);
+        assert_eq!(voice.oscillator.waveform_set_count, 1);
+
+        let control_clocks = voice.control_interval_clocks + 1;
+        voice.process(None, 0, control_clocks);
+        assert_eq!(voice.oscillator.waveform_set_count, 1);
+
+        audio_mut!(&tone).wavetable[0] = 8;
+        voice.process(None, 0, control_clocks);
+        assert_eq!(voice.oscillator.waveform_set_count, 2);
     }
 
     fn collect_gain_per_sample(voice: &mut Voice, samples: usize) -> Vec<i32> {

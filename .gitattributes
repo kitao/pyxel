@@ -6,6 +6,7 @@
 
 # Audio
 *.ogg binary
+*.wav binary
 
 # Fonts
 # BDF is a plain-text X11 font definition; keep LF so diffs stay readable across platforms.

@@ -68,7 +68,9 @@ column or the declared natural key for that artifact, such as `path` plus
 keys, unknown criteria, invalid enum values, empty evidence, broken evidence
 references, missing expected keys, unexpected keys, column-count mismatches, and
 row-count mismatches are audit failures. Expected matrix keys are derived before
-verdicts are written, not inferred from the produced rows afterward.
+verdicts are written, not inferred from the produced rows afterward. An
+artifact's hash, fingerprint, or other identity value is not an input, directly
+or transitively, to its own computation.
 
 ## Required Artifacts
 
@@ -223,6 +225,9 @@ verdicts are written, not inferred from the produced rows afterward.
     `key_output`, `artifact_ref`.
   - Records formatter, lint, test, structured-file, and targeted verification
     commands.
+  - Only evidence bound to the current `current-diff.patch` digest clears
+    command gates. Earlier results are historical provenance only and do not
+    clear gates for a later target.
   - `exit_status` is a process exit code when the command ran, or `not_run` when
     user direction or the environment prevents execution. `not_run` rows name
     the blocker in `key_output`, and the related process gate remains `pending`.
