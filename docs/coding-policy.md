@@ -72,7 +72,7 @@
 - A block of 30 or more statement lines is preceded by a one-line comment naming the block's role.
   - e.g., a 40-line `match` with many arms gains a one-line header naming the dispatch.
 
-- A file with multiple groups of functions or methods places a one-line separator comment before each group, using the language's idiomatic single-line comment form (no decorative dashes or banners).
+- A file with multiple groups of functions or methods places a one-line separator comment in sentence case before each group, using the language's idiomatic single-line comment form (no decorative dashes or banners).
   - e.g., Python `# Event handlers`, Rust `// Constructors`, JavaScript `// HTML helpers`.
 
 - A label-style comment does not end with a period; a sentence comment uses normal punctuation.
@@ -107,6 +107,9 @@
 
 - Parallel mirrors — shapes deliberately repeated across sibling files for API symmetry or data-structure parallelism — are preserved as-is.
   - e.g., binding wrappers mirror the Python API one-to-one; image and tilemap drawing primitives mirror each other; the `languages` array is independently loaded by each i18n JSON file.
+
+- Error and warning messages form codebase-wide families by failure kind rather than per-file groups: a message that mirrors a standard Python error keeps CPython's exact wording, a parameter constraint starts with the parameter as written, and any other message reuses the shape and casing of its established family rather than introducing a new form.
+  - e.g., `fps must be greater than 0` and `scale must be greater than 0` — typical (one constraint family across files); a lone `draw: <message>` prefix among sentence-style siblings — anti-pattern.
 
 - The `.pyi` API stub records each parameter's effective default — the value the implementation resolves to — while its binding may take `None` as a sentinel and resolve it internally. The `.pyi` default and the binding-signature default may therefore differ; that divergence is intentional, not an inconsistency.
   - e.g., the `.pyi` writes `init(title="Pyxel", fps=30, ...)` while the binding takes `Option` sentinels and resolves them; `None` stays in the `.pyi` only where `None` is itself the default behavior (`display_scale` auto, `colkey` / `font` none).
