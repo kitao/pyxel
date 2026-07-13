@@ -14,6 +14,7 @@
 - Fixed documentation generation silently skipping malformed web pages
 - Fixed example runner masking child process failures
 - Improved transformed tilemap, audio command, wavetable, and PyO3 data access performance
+- Staggered music channel starts to keep sound effects audible
 
 ## 2.9.7
 
