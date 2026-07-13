@@ -20,10 +20,10 @@ jobs:
     needs: build
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Download wheels
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           path: dist
 
@@ -54,7 +54,7 @@ jobs:
           prerelease: ${{ env.IS_PRERELEASE == 'true' }}
 
       - name: Install Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
