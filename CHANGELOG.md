@@ -13,6 +13,9 @@
 - Added Pyxel Cube API reference page
 - Added Pyxel Cube user guide page with a Base/Cube variant switch
 - Added a Cube Examples category to the showcase
+
+## 2.9.8
+
 - Fixed malformed resource and inline data causing crashes or partial updates
 - Fixed oversized screen, image, and tilemap dimensions creating invalid buffers
 - Fixed invalid MML repeat counts being treated as infinite repeats
@@ -25,6 +28,7 @@
 - Fixed documentation generation silently skipping malformed web pages
 - Fixed example runner masking child process failures
 - Improved transformed tilemap, audio command, wavetable, and PyO3 data access performance
+- Staggered music channel starts to keep sound effects audible
 
 ## 2.9.7
 

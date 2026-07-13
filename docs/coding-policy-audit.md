@@ -304,9 +304,9 @@ Artifacts must contain explicit rows for at least these probe families:
   documentation-comment bans, domain convention comments, and self-contained
   wording.
 
-- Testing: behavior that needs unit coverage, behavior left to screenshot or
-  manual coverage, test claims that can actually fail, deterministic assertions,
-  and test inclusion in `make test`.
+- Testing: behavior that needs unit coverage, behavior left to
+  reference-regression or manual coverage, test claims that can actually fail,
+  deterministic assertions, and test inclusion in `make test`.
 
 - Documentation: natural prose, Japanese spacing, Japanese technical loanword
   spellings, parenthesis width, translation source chains, target-language

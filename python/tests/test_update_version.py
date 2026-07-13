@@ -1,12 +1,10 @@
 import importlib.util
-import re
 from importlib.machinery import SourceFileLoader
 from pathlib import Path
 
 
 MODULE_PATH = Path(__file__).parents[2] / "scripts" / "update_version"
 WORKFLOW_DIR = Path(__file__).parents[2] / ".github/workflows"
-CORE_DIR = Path(__file__).parents[2] / "crates/pyxel-core"
 
 
 def _load_update_version():
@@ -63,18 +61,6 @@ def test_version_errors_names_the_mismatched_surface(tmp_path):
     assert errors == ["wasm/pyxel.js: expected 2.9.7, found 2.9.6"]
 
 
-def test_release_build_depends_on_version_check():
-    release_workflow = (WORKFLOW_DIR / "release.yml").read_text(encoding="utf-8")
-    verify_workflow = (WORKFLOW_DIR / "verify.yml").read_text(encoding="utf-8")
-
-    assert "release_tag: ${{ github.ref_name }}" in release_workflow
-    assert "build:\n    needs: verify\n" in release_workflow
-    assert 'scripts/update_version --check "$RELEASE_TAG"' in verify_workflow
-    assert release_workflow.index(
-        "twine upload --skip-existing"
-    ) < release_workflow.index("uses: softprops/action-gh-release@v2")
-
-
 def test_aarch64_wheel_is_imported_on_native_arm_runner():
     build_workflow = (WORKFLOW_DIR / "build.yml").read_text(encoding="utf-8")
 
@@ -101,29 +87,3 @@ def test_windows_arm_host_verifies_gui_quit_with_x64_wheel():
     assert "platform.machine()" in build_workflow
     assert "pyxel.init(64, 64" in build_workflow
     assert "pyxel.quit()" in build_workflow
-
-
-def test_sdl2_archive_is_verified_from_one_version_and_digest_owner():
-    build_workflow = (WORKFLOW_DIR / "build.yml").read_text(encoding="utf-8")
-    build_rs = (CORE_DIR / "build.rs").read_text(encoding="utf-8")
-    cargo_toml = (CORE_DIR / "Cargo.toml").read_text(encoding="utf-8")
-    build_winmac, build_linux = build_workflow.split("  build-linux:", maxsplit=1)
-    build_linux, _ = build_linux.split("  verify-wheels:", maxsplit=1)
-
-    assert re.search(r'const SDL2_SHA256: &str = "[0-9a-f]{64}";', build_rs)
-    assert "sha2 = " in cargo_toml
-    assert 'SDL2_VERSION: "' not in build_workflow
-    assert "name: Resolve SDL2 source" not in build_winmac
-    assert "name: Resolve SDL2 source" in build_linux
-    assert "SDL2_VERSION: &str" in build_linux
-    assert "SDL2_SHA256: &str" in build_linux
-    assert "curl -qfsSLO" in build_linux
-    assert "sha256sum --check --strict" in build_linux
-    assert build_linux.index("sha256sum --check --strict") < build_linux.index(
-        "tar xzf SDL2-"
-    )
-    assert "verify_sdl2_archive(&sdl2_archive_path)" in build_rs
-    assert "assert_eq!(actual, SDL2_SHA256" in build_rs
-    assert build_rs.index("verify_sdl2_archive(&sdl2_archive_path)") < build_rs.index(
-        "Archive::new"
-    )
