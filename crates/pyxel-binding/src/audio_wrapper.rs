@@ -1,4 +1,4 @@
-use pyo3::exceptions::{PyException, PyValueError};
+use pyo3::exceptions::PyException;
 use pyo3::prelude::*;
 
 use crate::channel_wrapper::Channel;
@@ -28,23 +28,24 @@ fn play(
         sec
     };
 
-    validate_index!(ch, pyxel::channels().len(), "channel");
+    validate_index!(ch, pyxel::channels().len(), "ch", "channel");
     let should_loop = r#loop.unwrap_or(false);
     let resume = resume.unwrap_or(false);
 
     // Dispatch supported sound input forms.
     cast_pyany! {
         snd,
+        "snd must be int, list[int], Sound, list[Sound], or str",
 
         (u32, {
-            validate_index!(snd, pyxel::sounds().len(), "sound");
+            validate_index!(snd, pyxel::sounds().len(), "snd", "sound");
             pyxel().play_sound(ch, snd, sec, should_loop, resume);
         }),
 
         (Vec<u32>, {
             let num_sounds = pyxel::sounds().len();
             for &s in &snd {
-                validate_index!(s, num_sounds, "sound");
+                validate_index!(s, num_sounds, "snd", "sound", list);
             }
             pyxel().play(ch, &snd, sec, should_loop, resume);
         }),
@@ -88,7 +89,7 @@ fn playm(msc: u32, sec: Option<f32>, r#loop: Option<bool>, tick: Option<u32>) ->
         sec
     };
 
-    validate_index!(msc, pyxel::musics().len(), "music");
+    validate_index!(msc, pyxel::musics().len(), "msc", "music");
 
     pyxel().play_music(msc, sec, r#loop.unwrap_or(false));
     Ok(())
@@ -98,7 +99,7 @@ fn playm(msc: u32, sec: Option<f32>, r#loop: Option<bool>, tick: Option<u32>) ->
 #[pyo3(signature = (ch=None))]
 fn stop(ch: Option<u32>) -> PyResult<()> {
     if let Some(ch) = ch {
-        validate_index!(ch, pyxel::channels().len(), "channel");
+        validate_index!(ch, pyxel::channels().len(), "ch", "channel");
         pyxel().stop_channel(ch);
     } else {
         pyxel().stop_all_channels();
@@ -108,7 +109,7 @@ fn stop(ch: Option<u32>) -> PyResult<()> {
 
 #[pyfunction]
 fn play_pos(ch: u32) -> PyResult<Option<(u32, f32)>> {
-    validate_index!(ch, pyxel::channels().len(), "channel");
+    validate_index!(ch, pyxel::channels().len(), "ch", "channel");
     Ok(pyxel().play_position(ch))
 }
 
@@ -130,7 +131,7 @@ fn channel(ch: u32) -> PyResult<Channel> {
         .get(ch as usize)
         .cloned()
         .map(Channel::wrap)
-        .ok_or_else(|| PyValueError::new_err("Invalid channel index"))
+        .ok_or_else(|| invalid_index_error!("ch", "channel"))
 }
 
 #[pyfunction]
@@ -143,7 +144,7 @@ fn sound(snd: u32) -> PyResult<Sound> {
         .get(snd as usize)
         .cloned()
         .map(Sound::wrap)
-        .ok_or_else(|| PyValueError::new_err("Invalid sound index"))
+        .ok_or_else(|| invalid_index_error!("snd", "sound"))
 }
 
 #[pyfunction]
@@ -156,7 +157,7 @@ fn music(msc: u32) -> PyResult<Music> {
         .get(msc as usize)
         .cloned()
         .map(Music::wrap)
-        .ok_or_else(|| PyValueError::new_err("Invalid music index"))
+        .ok_or_else(|| invalid_index_error!("msc", "music"))
 }
 
 // Module registration

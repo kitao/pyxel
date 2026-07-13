@@ -1,4 +1,4 @@
-use pyo3::exceptions::{PyException, PyValueError};
+use pyo3::exceptions::PyException;
 use pyo3::prelude::*;
 
 use crate::sound_wrapper::Sound;
@@ -63,17 +63,18 @@ impl Channel {
         // Dispatch supported sound input forms.
         cast_pyany! {
             snd,
+            "snd must be int, list[int], Sound, list[Sound], or str",
 
             (u32, {
                 let sound = pyxel::sounds().get(snd as usize).cloned()
-                    .ok_or_else(|| PyValueError::new_err("Invalid sound index"))?;
+                    .ok_or_else(|| invalid_index_error!("snd", "sound"))?;
                 self.inner_mut().play_sound(sound, sec, should_loop, resume);
             }),
 
             (Vec<u32>, {
                 let all_sounds = pyxel::sounds();
                 for &i in &snd {
-                    validate_index!(i, all_sounds.len(), "sound");
+                    validate_index!(i, all_sounds.len(), "snd", "sound", list);
                 }
                 let sounds = snd.iter().map(|&i| all_sounds[i as usize].clone()).collect();
                 self.inner_mut().play(sounds, sec, should_loop, resume);

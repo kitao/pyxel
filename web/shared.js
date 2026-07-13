@@ -166,7 +166,7 @@ const initPage = (jsonFile, buildFn) => {
   fetch(jsonFile)
     .then((response) => {
       if (!response.ok) {
-        throw new Error(`HTTP ${response.status} while fetching ${jsonFile}`);
+        throw new Error(`Failed to fetch ${jsonFile}: ${response.status}`);
       }
       return response.json();
     })
