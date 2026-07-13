@@ -1,4 +1,3 @@
-use pyo3::exceptions::PyValueError;
 use pyo3::prelude::*;
 
 use crate::font_wrapper::Font;
@@ -137,9 +136,10 @@ fn blt(
 ) -> PyResult<()> {
     cast_pyany! {
         img,
+        "img must be int or Image",
 
         (u32, {
-            validate_index!(img, pyxel::images().len(), "image");
+            validate_index!(img, pyxel::images().len(), "img", "image");
             pyxel().draw_image(x, y, img, u, v, w, h, colkey, rotate, scale);
         }),
 
@@ -164,9 +164,10 @@ fn bltm(
 ) -> PyResult<()> {
     cast_pyany! {
         tm,
+        "tm must be int or Tilemap",
 
         (u32, {
-            validate_index!(tm, pyxel::tilemaps().len(), "tilemap");
+            validate_index!(tm, pyxel::tilemaps().len(), "tm", "tilemap");
             pyxel().draw_tilemap(x, y, tm, u, v, w, h, colkey, rotate, scale);
         }),
 
@@ -190,9 +191,10 @@ fn blt3d(
 ) -> PyResult<()> {
     cast_pyany! {
         img,
+        "img must be int or Image",
 
         (u32, {
-            validate_index!(img, pyxel::images().len(), "image");
+            validate_index!(img, pyxel::images().len(), "img", "image");
             pyxel().draw_image_3d(x, y, w, h, img, pos, rot, fov, colkey);
         }),
 
@@ -216,9 +218,10 @@ fn bltm3d(
 ) -> PyResult<()> {
     cast_pyany! {
         tm,
+        "tm must be int or Tilemap",
 
         (u32, {
-            validate_index!(tm, pyxel::tilemaps().len(), "tilemap");
+            validate_index!(tm, pyxel::tilemaps().len(), "tm", "tilemap");
             pyxel().draw_tilemap_3d(x, y, w, h, tm, pos, rot, fov, colkey);
         }),
 
@@ -248,7 +251,7 @@ fn image(img: u32) -> PyResult<Image> {
         .get(img as usize)
         .cloned()
         .map(Image::wrap)
-        .ok_or_else(|| PyValueError::new_err("Invalid image index"))
+        .ok_or_else(|| invalid_index_error!("img", "image"))
 }
 
 #[pyfunction]
@@ -261,7 +264,7 @@ fn tilemap(tm: u32) -> PyResult<Tilemap> {
         .get(tm as usize)
         .cloned()
         .map(Tilemap::wrap)
-        .ok_or_else(|| PyValueError::new_err("Invalid tilemap index"))
+        .ok_or_else(|| invalid_index_error!("tm", "tilemap"))
 }
 
 // Module registration

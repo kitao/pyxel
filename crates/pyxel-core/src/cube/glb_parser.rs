@@ -127,6 +127,34 @@ fn tinted_rgb(rgba: &[u8], base: usize, color_factor: TextureTint) -> (u8, u8, u
     )
 }
 
+fn image_to_rgba8(img: &gltf::image::Data) -> Result<Vec<u8>, String> {
+    match img.format {
+        gltf::image::Format::R8G8B8A8 => Ok(img.pixels.clone()),
+        gltf::image::Format::R8G8B8 => {
+            let mut rgba = Vec::with_capacity((img.width as usize) * (img.height as usize) * 4);
+            for rgb in img.pixels.as_chunks::<3>().0 {
+                rgba.extend_from_slice(&[rgb[0], rgb[1], rgb[2], 255]);
+            }
+            Ok(rgba)
+        }
+        gltf::image::Format::R8G8 => {
+            let mut rgba = Vec::with_capacity((img.width as usize) * (img.height as usize) * 4);
+            for rg in img.pixels.as_chunks::<2>().0 {
+                rgba.extend_from_slice(&[rg[0], rg[0], rg[0], rg[1]]);
+            }
+            Ok(rgba)
+        }
+        gltf::image::Format::R8 => {
+            let mut rgba = Vec::with_capacity((img.width as usize) * (img.height as usize) * 4);
+            for &r in &img.pixels {
+                rgba.extend_from_slice(&[r, r, r, 255]);
+            }
+            Ok(rgba)
+        }
+        _ => Err("GLB unsupported image format".to_string()),
+    }
+}
+
 // BLEND falls back to opaque silently here; validate_texture_usage warns
 // once per material before import reaches this resolver.
 fn mask_alpha_cutoff(material: &gltf::Material) -> Result<Option<f32>, String> {
@@ -441,6 +469,9 @@ fn sanitize_glb_for_import(bytes: &[u8]) -> Result<Cow<'_, [u8]>, String> {
         return Ok(Cow::Borrowed(bytes));
     }
 
+    // GLB container layout: 12-byte header (magic, version, total length),
+    // then length-prefixed chunks, each padded to 4-byte alignment (spaces
+    // for JSON, NULs for BIN). The JSON chunk body starts at byte 20.
     let json_len = u32::from_le_bytes([bytes[12], bytes[13], bytes[14], bytes[15]]) as usize;
     let json_start = 20;
     let json_end = json_start + json_len;
@@ -711,36 +742,6 @@ fn validate_texture_usage(document: &gltf::Document, image_count: usize) {
                 warn_glb("GLB base color texture image is missing; using flat material color");
             }
         }
-    }
-}
-
-// Image conversion helpers (continued)
-
-fn image_to_rgba8(img: &gltf::image::Data) -> Result<Vec<u8>, String> {
-    match img.format {
-        gltf::image::Format::R8G8B8A8 => Ok(img.pixels.clone()),
-        gltf::image::Format::R8G8B8 => {
-            let mut rgba = Vec::with_capacity((img.width as usize) * (img.height as usize) * 4);
-            for rgb in img.pixels.as_chunks::<3>().0 {
-                rgba.extend_from_slice(&[rgb[0], rgb[1], rgb[2], 255]);
-            }
-            Ok(rgba)
-        }
-        gltf::image::Format::R8G8 => {
-            let mut rgba = Vec::with_capacity((img.width as usize) * (img.height as usize) * 4);
-            for rg in img.pixels.as_chunks::<2>().0 {
-                rgba.extend_from_slice(&[rg[0], rg[0], rg[0], rg[1]]);
-            }
-            Ok(rgba)
-        }
-        gltf::image::Format::R8 => {
-            let mut rgba = Vec::with_capacity((img.width as usize) * (img.height as usize) * 4);
-            for &r in &img.pixels {
-                rgba.extend_from_slice(&[r, r, r, 255]);
-            }
-            Ok(rgba)
-        }
-        _ => Err("GLB unsupported image format".to_string()),
     }
 }
 

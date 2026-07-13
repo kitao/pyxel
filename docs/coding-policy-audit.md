@@ -7,26 +7,35 @@ and this procedure must be corrected before the audit is accepted.
 
 An auditor reads both files in this order:
 
-- `docs/coding-policy.md`: the source of truth for standards, scope, examples,
-  and completion requirements.
+- `docs/coding-policy.md`: the source of truth for standards, scope, and
+  examples.
 - `docs/coding-policy-audit.md`: the execution protocol used to prove that the
   policy was checked completely and evenly.
 
 ## Operating Rules
 
-- No sampling. Every in-scope file, policy rule, sibling group, cross-file
-  dependency, hot-path surface, and required verification gate is represented by
-  an artifact row.
+- No sampling. Every in-scope file, normative criterion, applicable subject,
+  cross-file relation, hot-path surface, and required verification gate is
+  represented by an artifact row.
 
-- No cherry-picking. A local fix is incomplete until comparable files and the
-  affected group rows are checked to the same depth.
+- No cherry-picking. A local fix is incomplete until every comparable subject
+  and affected relation is checked to the same depth.
 
-- No unstated memory. Previous conversations, old audit notes, and prior
-  summaries may suggest probes, but they are not evidence until rechecked
-  against the current worktree and recorded in the current artifacts.
+- No unstated memory. Previous conversations, old audit notes, prior summaries,
+  and repository prevalence may suggest probes, but they are not evidence until
+  rechecked against the frozen target and recorded in the current artifacts.
 
-- No summary-only evidence. Counts, search results, formatter success, or
-  reviewer summaries do not prove a cell unless the underlying row names what
+- No majority rule. Explicit policy determines departures from the relevant
+  language's established idiom; otherwise that idiom determines the correct
+  form. Existing repetition is used only to discover related subjects and uneven
+  application.
+
+- No example criteria. An example illustrates its parent rule and is recorded
+  as example coverage; matching or differing from the example alone never
+  determines a verdict.
+
+- No summary-only evidence. Counts, search results, formatter success, test
+  success, and reviewer summaries do not prove a check unless its row names what
   was inspected and why the verdict follows.
 
 - Use precise result labels. A run is an exhaustive audit only when the
@@ -34,12 +43,15 @@ An auditor reads both files in this order:
   intentionally narrower, report the work as a targeted review, fix pass, gate
   check, or pending audit according to the artifacts actually produced.
 
-- The worktree under review is the audit target. Start from `git ls-files`, then
-  add any untracked files intended for the audited change set. Apply the
-  policy's Scope section to that combined file set.
+- The worktree under review is the audit target. Start from `git ls-files`, add
+  intended untracked files, and apply the policy's Scope section to that combined
+  set.
 
-- All artifacts are regenerated after meaningful fixes. Stale rows are treated
-  as `pending`, not reused as proof.
+- The frozen target is immutable within a run. If its files, intended additions,
+  policy, or procedure change, preserve the run and start another. Regenerate an
+  artifact when only one of its recorded in-run inputs changes; a stale row is
+  `pending`, never reused as proof. The final report names every preserved run
+  that led to the completed one.
 
 ## When to Run
 
@@ -47,483 +59,485 @@ Run this procedure:
 
 - when an exhaustive coding-policy audit is explicitly requested;
 - before a release tag, as part of the release checklist;
-- after a substantive revision of `docs/coding-policy.md`, on every file whose
-  verdict may change because of the revision;
-- after a substantive revision of this procedure, on this procedure file and
-  any affected audited files.
+- after a substantive revision of `docs/coding-policy.md`, on every subject
+  whose verdict may change because of the revision;
+- after a substantive revision of this procedure, on this procedure and every
+  affected audit artifact or subject.
 
 ## Artifact Rules
 
-Each audit run writes artifacts to a single run directory. The directory can be
-temporary, but it must be named in the final report. Every TSV has a header row,
-uses one row per checked unit, and has the declared column count on every row.
-Fields contain no literal tabs or newlines; do not use CSV quoting as an escape
-mechanism. Lists inside a field use JSON arrays or a stable comma-separated
-format.
+Each run writes artifacts to one directory named in the final report. Every TSV
+has a header, uses one row per declared unit, and has the declared column count
+on every row. Text artifacts use UTF-8 without a BOM, LF line endings, and one
+terminal LF. JSON objects use the declared key order and no insignificant
+whitespace. TSV fields contain no literal tabs or newlines. Lists are compact
+JSON arrays with no duplicate logical entries; an aligned value list retains one
+value per key even when values are equal. Reference lists preserve the defining
+artifact's row order, enum lists preserve this procedure's declaration order,
+and other lists are sorted bytewise unless a recorded source command defines
+their order.
 
-Every artifact data row has a stable key. The key is either an explicit id
-column or the declared natural key for that artifact, such as `path` plus
-`criterion_id` in `file_matrix.tsv`. Fields named `criterion_id` or
-`criterion_ids` reference existing `criteria.tsv` rows. Missing keys, duplicate
-keys, unknown criteria, invalid enum values, empty evidence, broken evidence
-references, missing expected keys, unexpected keys, column-count mismatches, and
-row-count mismatches are audit failures. Expected matrix keys are derived before
-verdicts are written, not inferred from the produced rows afterward. An
-artifact's hash, fingerprint, or other identity value is not an input, directly
-or transitively, to its own computation.
+Path values encode repository-relative Git path bytes: `/` and ASCII letters,
+digits, `.`, `_`, and `-` remain literal; every other byte is `%HH` with uppercase
+hex digits. Plural TSV fields are JSON arrays unless their schema says otherwise;
+`policy_line` is one policy source reference and `policy_lines` is an array of
+them. Artifact rows are sorted bytewise by their identifier.
+
+Every data row has the explicit identifier declared by its artifact. Except for
+the separately defined file and artifact IDs, an ID is its column name without
+`_id`, followed by `-` and the lowercase SHA-256 of its natural-key JSON array.
+That array uses the key values below in listed order, with no whitespace, only
+required JSON escapes, and literal non-ASCII characters. Each
+verdict-independent row ID is assigned before that row's verdict; finding and
+review IDs are computed when those rows are created. IDs use the path-encoding
+alphabet and never contain `:`.
+
+Completeness of verdict-independent sets is validated from natural keys, never
+from IDs or observed verdicts; post-verdict sets follow their declared
+derivations. Natural keys are: policy source lines and normalized rule text for
+criteria; policy line for policy coverage; artifact path for the manifest;
+`path` for target files and scope; kind and family for relations; family for hot
+paths; `cwd`, command, and trigger for commands; criterion and subject for
+applicability and checks; source and target references plus finding text for
+findings; criterion and subject family for balance rows; and review kind and
+subject key for independent-review rows.
+Missing or duplicate identifiers or natural keys, unknown criteria or subjects,
+invalid enum values, empty required fields, and column-count errors are artifact
+failures.
+
+An evidence reference is one of:
+
+- `source:<path>:<line>` or `source:<path>:<first>-<last>`;
+- `source:<path>` for a whole-file check;
+- `row:<artifact>:<row_id>` for a TSV row;
+- `artifact:<artifact>`, optionally followed by `:<line>` or
+  `:<first>-<last>`, for whole-artifact or raw-line evidence.
+
+Source lines are one-based and ranges are inclusive. Paths use the encoding above;
+`artifact` is a required artifact filename. A deleted path is cited through its
+hunk in `current-diff.patch`, not as current source.
+
+Every reference resolves to exactly one current source location, artifact
+location, or row. The evidence graph is acyclic and terminates in current source,
+a frozen-target root artifact, or a successful target-bound command row. Broken,
+cyclic, or unterminated evidence blocks completion.
+
+`manifest.tsv` binds manifested artifacts to their exact inputs and the frozen
+target. A manifested artifact is stale when its current hash, input hashes, or
+`target_sha256` differs from the manifest. The independent review is stale when
+its target or manifest hash differs; the summary is stale when any of its three
+hashes differs. Immediately before completion, the target snapshot and diff are
+independently re-derived from the live worktree; comparing stored artifacts with
+one another is insufficient. No artifact hash, fingerprint, or verdict is an
+input to its own computation. Identifiers only locate units derived from natural
+keys; an observed identifier set never proves its own completeness.
 
 ## Required Artifacts
 
-- `criteria.tsv`
-  - Columns: `criterion_id`, `policy_lines`, `policy_path`,
-    `criterion_type`, `rule_text`, `example_families`.
-  - Contains one row for every policy rule and every required example family.
-  - `criterion_type` is one of `file`, `cross_file`, `group`, `process`, or
-    `command`.
+- `target_files.tsv`
+  - Columns: `file_id`, `path`, `source`, `git_mode`, `content_sha256`.
+  - Contains every tracked path not deleted by the frozen diff, plus every
+    intended untracked file, whether the policy later includes or excludes it.
+    A missing sparse- or skip-worktree path blocks the freeze rather than being
+    treated as a deletion. `source` is `tracked` or `untracked_intended`.
+  - `file_id` equals the encoded `path`. `git_mode` is the six-digit mode the
+    frozen target tree would record. `content_sha256` hashes the working-tree
+    bytes, the link-target bytes for a symlink, or the hexadecimal bytes of the
+    recorded commit ID for a gitlink.
 
-- `policy_coverage.tsv`
-  - Columns: `policy_line`, `line_text`, `coverage_kind`, `criterion_ids`,
-    `evidence`.
-  - Maps every non-blank line in `docs/coding-policy.md` to one or more
-    criteria, or marks it as structural text.
-  - `coverage_kind` is `criterion` or `structural`. Criterion rows name one or
-    more criteria; structural rows explain why no criterion is needed.
-  - Structural coverage is allowed only for headings or explanatory text that
-    imposes no checkable requirement.
-  - A policy line with neither a criterion nor a structural explanation blocks
-    completion.
-
-- `scope.tsv`
-  - Columns: `path`, `source`, `scope_status`, `reason`, `policy_lines`.
-  - Contains every tracked file plus every untracked file intended for the
-    audited change set.
-  - `source` is `tracked` or `untracked_intended`; `scope_status` is
-    `included` or `excluded`.
-  - Exclusions cite the policy's Scope section and the concrete reason.
-
-- `group_inventory.tsv`
-  - Columns: `path`, `group_id`, `group_kind`, `peer_paths`,
-    `singleton_reason`.
-  - Assigns every included file to a sibling group or records why it is a
-    singleton.
-  - Groups are derived from directory, naming pattern, shared role, mirrored
-    API, translated content, generated/manual relationship, or domain
-    convention.
-
-- `hot_path_inventory.tsv`
-  - Columns: `hot_path_id`, `policy_lines`, `criterion_ids`, `hot_path_kind`,
-    `paths`, `entry_points`, `cost_risks_checked`, `verdict`, `evidence_ref`.
-  - Enumerates every implementation surface for each hot-path family listed in
-    `docs/coding-policy.md`.
-  - `criterion_ids` is non-empty and names the exact performance criteria the
-    row exercises.
-  - `cost_risks_checked` names the concrete risks inspected, such as allocation,
-    copying, conversion, bounds checking, dispatch, SIMD, inlining, or lock
-    costs.
-  - A hot-path family with no current implementation surface records a row with
-    repository-wide evidence for that absence; silence is not evidence.
-
-- `cross_dependencies.tsv`
-  - Columns: `dependency_id`, `dependency_kind`, `paths`, `criterion_ids`,
-    `policy_lines`, `derivation`.
-  - Expands every cross-file concern into concrete file paths before checking
-    begins.
-  - `criterion_ids` is non-empty and names the exact criteria the dependency
-    exercises.
-  - Required families include, when present: sibling files, binding/API/stub
-    mirrors, file and directory naming patterns, HTML-to-i18n key sets,
-    translation source chains, localized `languages` arrays, generated/manual
-    pairs, widget conventions, proper-noun usage, release notes against code
-    diffs, and test coverage against changed behavior.
-
-- `file_matrix.tsv`
-  - Columns: `path`, `criterion_id`, `verdict`, `evidence`, `evidence_ref`.
-  - Contains every included file crossed with every criterion.
-  - For each included file, the `criterion_id` set matches `criteria.tsv`
-    exactly: no omissions, extras, or duplicates.
-  - If a criterion has no local surface in a file, use `pass` only when the
-    evidence explains why the file cannot violate the criterion and names the
-    artifact row that carries the authoritative check.
-
-- `cross_matrix.tsv`
-  - Columns: `dependency_id`, `criterion_id`, `verdict`, `evidence`,
-    `evidence_ref`.
-  - Contains every cross-file dependency crossed with the criteria it exercises.
-  - For each dependency, the `criterion_id` set matches that dependency's
-    `cross_dependencies.tsv` row exactly.
-
-- `group_uniformity.tsv`
-  - Columns: `group_id`, `criterion_id`, `verdict`, `evidence`,
-    `evidence_ref`.
-  - Contains every group crossed with every group criterion, plus any file or
-    cross-file criterion whose evidence depends on sibling comparison.
-  - Records whether each group was checked evenly and whether comparable files
-    were fixed to the same degree.
-
-- `process_matrix.tsv`
-  - Columns: `gate_id`, `criterion_id`, `policy_lines`, `verdict`, `evidence`,
-    `evidence_ref`.
-  - Contains every process and command criterion from `criteria.tsv`.
-  - Records repository-level checks such as policy self-applicability, release
-    note evaluation, generated-file exclusions, command selection, and rerun
-    requirements.
-
-- `findings.tsv`
-  - Columns: `finding_id`, `source_artifact`, `source_key`, `severity`,
-    `target`, `criterion_ids`, `finding`, `proposed_fix`.
-  - `source_artifact` is one of `hot_path_inventory.tsv`, `file_matrix.tsv`,
-    `cross_matrix.tsv`, `group_uniformity.tsv`, `process_matrix.tsv`, or
-    `finding_distribution.tsv`.
-  - `source_key` is a JSON object containing the source artifact's declared
-    stable-key columns and values. It must resolve to exactly one current row
-    unless the source key was removed by the fix and that removal is proved by
-    the finding's classification.
-  - `target` names the concrete file, dependency, group, process gate, hot path,
-    or probe being reported. `criterion_ids` is a non-empty JSON array matching
-    the criteria exercised by the source verdict.
-  - `severity` is one of `blocker`, `high`, `medium`, or `low`. Use `blocker`
-    when completion cannot be trusted, `high` for broad or user-visible policy
-    risk, `medium` for localized policy violations, and `low` for narrow
-    cleanup. Severity is not based on fix size.
-  - Contains every `fix`, `review`, or `pending` verdict ever discovered in the
-    run.
-  - A `fix`, `review`, or `pending` verdict in any listed source artifact
-    without a corresponding finding row is an artifact failure. Fixed findings
-    remain in this file and are resolved through `classifications.tsv`.
-
-- `finding_distribution.tsv`
-  - Columns: `probe_family`, `criterion_ids`, `finding_ids`, `finding_count`,
-    `coverage_evidence_ref`, `imbalance_verdict`, `rationale`.
-  - Summarizes the finding distribution across every named probe in the Minimum
-    Probe Families. A top-level family row does not replace its named probes.
-  - `criterion_ids` is non-empty and names the exact criteria exercised by the
-    probe.
-  - `coverage_evidence_ref` names the concrete artifact rows or commands that
-    performed the comparable probe; this is required even when `finding_count`
-    is zero.
-  - `finding_ids` and `finding_count` cover findings discovered by the named
-    probe; they do not include a finding whose source is this distribution row
-    itself.
-  - `imbalance_verdict` is `pass`, `review`, or `pending`.
-
-- `classifications.tsv`
-  - Columns: `finding_id`, `disposition`, `design_intent`, `rationale`,
-    `action_ref`.
-  - Resolves every finding as `fixed`, `accepted`, or `deferred_blocker`.
-  - `accepted` is used only when semantic review establishes that no change is
-    required under the policy. It cannot waive a policy violation; the
-    rationale requirements are defined in the classification phase.
-  - An `accepted` finding requires its source row to be regenerated as `pass`. A
-    `fixed` finding requires its source row to become `pass` or leave the
-    artifact's expected key set; `action_ref` must prove either result.
-  - `action_ref` uses the `evidence_ref` syntax and names the repository or
-    artifact evidence that proves the disposition. A `deferred_blocker`
-    disposition blocks completion.
-
-- `command_evidence.tsv`
-  - Columns: `command_id`, `cwd`, `command`, `trigger`, `exit_status`,
-    `key_output`, `artifact_ref`.
-  - Records formatter, lint, test, structured-file, and targeted verification
-    commands.
-  - Only evidence bound to the current `current-diff.patch` digest clears
-    command gates. Earlier results are historical provenance only and do not
-    clear gates for a later target.
-  - `exit_status` is a process exit code when the command ran, or `not_run` when
-    user direction or the environment prevents execution. `not_run` rows name
-    the blocker in `key_output`, and the related process gate remains `pending`.
+- `freeze.json`
+  - Contains exactly: `schema_version`, `branch`, `base_commit`,
+    `head_commit`, `policy_sha256`, `procedure_sha256`,
+    `target_files_sha256`, `diff_sha256`, `target_sha256`, and `artifact_dir`.
+  - `schema_version` is the integer `1` for this schema and increments whenever a
+    required artifact's fields or meaning change. `branch` is the short branch
+    name using the path-byte encoding above, or null; commits are full object
+    IDs; digests are lowercase SHA-256 strings; and `artifact_dir` is the absolute
+    run-directory path.
+  - `base_commit` is the previous release commit for a release audit; otherwise
+    it is the explicitly requested comparison base, the merge base of `HEAD` and
+    its configured upstream when no base was requested, or `HEAD` when no
+    upstream exists.
+  - `target_sha256` is the SHA-256 of a UTF-8 JSON array containing, in order,
+    `schema_version`, `branch`, `base_commit`, `head_commit`, `policy_sha256`,
+    `procedure_sha256`, and `target_files_sha256`. The serialization uses no
+    whitespace and only required JSON escapes.
+  - The object records the target before any verdict is written.
 
 - `current-diff.patch`
-  - The exact diff being audited after the final fix batch, including intended
-    untracked files as added-file patches.
+  - Contains the exact diff against `base_commit`, including intended untracked
+    files as added-file patches, in Git's binary-capable full-index format.
+    The tracked diff comes first; added-file patches follow in encoded-path order.
+  - Its SHA-256 equals `freeze.json.diff_sha256`.
+
+- `manifest.tsv`
+  - Columns: `artifact_id`, `path`, `sha256`, `input_artifact_ids`,
+    `input_sha256s`, `target_sha256`.
+  - Contains one row for every required artifact except itself,
+    `independent_review.tsv`, and `audit_summary.json`.
+  - `artifact_id` is the artifact filename and `path` is its path relative to the
+    run directory.
+  - Input ID and hash arrays have equal length and preserve dependency order.
+  - The dependency graph is acyclic and contains these direct edges:
+    - `target_files.tsv` and `current-diff.patch` are roots;
+    - `freeze.json` depends on both roots;
+    - `criteria.tsv` and `policy_coverage.tsv` depend on `freeze.json`;
+    - `scope.tsv` depends on `target_files.tsv`, `criteria.tsv`, and
+      `policy_coverage.tsv`;
+    - `relations.tsv`, `hot_paths.tsv`, and `commands.tsv` depend on
+      `criteria.tsv` and `scope.tsv`, with change-driven inventories also
+      depending on `current-diff.patch`;
+    - `applicability.tsv` depends on `criteria.tsv`, `scope.tsv`, `relations.tsv`,
+      `hot_paths.tsv`, and `commands.tsv`;
+    - `checks.tsv` depends on `applicability.tsv` and `commands.tsv`;
+    - `coverage_balance.tsv` depends on `criteria.tsv`, `applicability.tsv`, and
+      `checks.tsv`;
+    - `findings.tsv` depends on `checks.tsv` and `coverage_balance.tsv`.
+  - Each row also names every additional direct artifact input it actually uses.
+
+- `criteria.tsv`
+  - Columns: `criterion_id`, `policy_lines`, `subject_types`,
+    `surface_kinds`, `file_selector`, `rule_text`.
+  - Contains one row for each top-level rule bullet and each normative
+    introductory paragraph in `docs/coding-policy.md`.
+  - Nested authoritative enumerations belong to their parent criterion.
+    `e.g.` bullets and hypothetical anti-patterns never create criteria.
+  - `subject_types` is a non-empty JSON array drawn from `file`, `relation`,
+    `hot_path`, `process`, and `command`.
+  - `file` governs a file surface; `relation` compares files; `hot_path` governs
+    a policy-listed performance family; `process` governs a repository-wide or
+    audit obligation with no narrower subject; and `command` requires execution.
+    Every applicable type is listed.
+  - `surface_kinds` is a JSON array used only by `file` criteria and drawn
+    from `path`, `source`, `test`, `prose`, `translation`,
+    `release_notes`, `policy`, `configuration`, and `structured_data`.
+    It is non-empty exactly when `subject_types` contains `file`.
+  - `file_selector` is empty for a non-file criterion. Otherwise it states the
+    rule-derived predicate that selects governed content within the candidate
+    surface kinds. It is `all` only where the rule governs every candidate file;
+    examples and hand-picked repository paths cannot define it.
+  - `rule_text` is the normative text with internal whitespace collapsed to one
+    ASCII space. Any text change changes the criterion ID; a semantic addition,
+    removal, split, or merge changes the criterion set.
+
+- `policy_coverage.tsv`
+  - Columns: `coverage_id`, `policy_line`, `line_text`, `coverage_kind`,
+    `criterion_ids`, `rationale`.
+  - Contains exactly one row for every non-blank policy line; `line_text` is the
+    exact line content.
+  - `coverage_kind` is `criterion`, `example`, or `structural`.
+    Criterion and example rows name their parent criteria. Structural rows have
+    an empty `criterion_ids` array and explain why the line imposes no
+    requirement.
+
+- `scope.tsv`
+  - Columns: `file_id`, `path`, `source`, `scope_status`,
+    `surface_kinds`, `reason`, `policy_lines`.
+  - Contains exactly the files in `target_files.tsv`, with the same file IDs,
+    paths, and sources.
+  - `source` is `tracked` or `untracked_intended`; `scope_status` is
+    `included` or `excluded`.
+  - Every included file's `surface_kinds` contains `path` plus every applicable
+    kind. Excluded files have an empty surface list. Every row cites the governing
+    policy lines and explains its inclusion or exclusion.
+  - `path` applies to every included file; `source` to syntax, structure,
+    identifiers, comments, or other non-prose content; `test` to verification
+    code or data; `prose` to documentation, descriptive metadata, or user-facing
+    natural language other than code comments; `translation` to content with
+    language variants; `release_notes` to changelog entries; `policy` to these
+    two policy documents; `configuration` to configuration content; and
+    `structured_data` to machine-parsed non-code data. Kinds overlap and follow
+    content and role, not filename extension alone.
+
+- `relations.tsv`
+  - Columns: `relation_id`, `relation_kind`, `family`, `member_file_ids`,
+    `criterion_ids`, `policy_lines`, `rationale`, `derivation_refs`.
+  - Expands every cross-file concern before checking begins. A file may belong
+    to any number of relations.
+  - `member_file_ids` contains unique IDs from included `scope.tsv` rows. It is
+    empty only for a policy-mandated family with no current member, proved by
+    `derivation_refs`.
+  - `relation_kind` is `sibling`, `mirror`, `translation`, `exception`, or
+    `change_dependency`.
+  - `criterion_ids` contains every relation criterion governing the family;
+    `policy_lines` cites those rules.
+  - Required relations include applicable naming and error-message families,
+    API/binding/stub mirrors, translated content, policy exception groups,
+    release notes against code changes, and tests against changed behavior.
+  - A change-dependency relation cites deleted or renamed inputs through the
+    frozen diff; its member IDs still name only current included files.
+  - An exception relation cites the exact policy lines, convention, and reason.
+    Repository prevalence is not a rationale.
+
+- `hot_paths.tsv`
+  - Columns: `hot_path_id`, `family`, `member_file_ids`, `entry_points`,
+    `criterion_ids`, `cost_risks`, `derivation`, `derivation_refs`.
+  - Contains exactly one row for every policy-listed hot-path family and
+    aggregates every implementation surface in that row.
+  - `criterion_ids` contains every hot-path criterion governing the family.
+  - `member_file_ids` contains unique IDs from included scope rows and is empty
+    only in an absence row.
+  - `cost_risks` names every concrete cost implied by the rule and inspected
+    implementation; it is not limited to examples or a fixed category list.
+  - `entry_points` and `derivation_refs` contain evidence references;
+    `derivation` explains how they establish completeness.
+  - A family with no implementation surface has an explicit absence row with
+    repository-wide derivation evidence.
+
+- `commands.tsv`
+  - Columns: `command_id`, `criterion_ids`, `cwd`, `command`, `trigger`,
+    `target_sha256`, `exit_status`, `key_output`.
+  - Declares every required and targeted command before it runs.
+  - `cwd` is `.` or an encoded repository-relative directory; `command` records
+    the exact non-interactive invocation.
+  - `criterion_ids` contains every command criterion the invocation checks. It
+    may be empty only for a procedure-level validation command; such a command
+    remains subject to its trigger and the Completion Gate.
+  - `exit_status` is a non-negative integer or `not_run`; zero passes and any
+    other integer fails. A `not_run` row records the blocker and cannot clear a
+    command criterion.
+  - A successful command is evidence only when its target digest matches
+    `freeze.json.target_sha256`.
+
+- `applicability.tsv`
+  - Columns: `check_id`, `criterion_id`, `subject_ref`,
+    `derivation_refs`.
+  - Contains the complete expected check set, derived before verdicts.
+  - `subject_ref` is `file:<file_id>`, `relation:<relation_id>`,
+    `routing:<criterion_id>`, `hot_path:<hot_path_id>`,
+    `process:<criterion_id>`, `command:<command_id>`, or
+    `absence:<criterion_id>:<subject_type>`.
+  - File candidates are the intersections of criterion and included-file surface
+    kinds. The selector produces the file checks from those candidates, and every
+    file criterion also produces one routing check whose derivation proves that
+    the selector was applied exhaustively. Relation, hot-path, and command checks
+    come from the corresponding `criterion_ids`; each process criterion produces
+    one process check.
+  - Each declared non-file subject type with no concrete subject produces one
+    absence check. Its derivation proves the absence; it passes only when absence
+    satisfies the rule. A criterion missing any required applicability row, or a
+    row not produced by these rules, is an artifact failure.
+
+- `checks.tsv`
+  - Columns: `check_id`, `criterion_id`, `subject_ref`, `verdict`,
+    `evidence`, `evidence_refs`.
+  - Contains exactly one row for every `applicability.tsv` row, with the same
+    ID, criterion, and subject.
+  - A local check does not replace a relation or hot-path check, and one
+    subject's pass does not override another subject's non-pass.
+  - A routing check proves selection completeness only; it never proves that a
+    selected file satisfies the criterion.
+
+- `findings.tsv`
+  - Columns: `finding_id`, `source_ref`, `severity`, `target_ref`,
+    `criterion_ids`, `finding`, `proposed_fix`.
+  - Contains one or more rows for every current `fix` verdict in `checks.tsv` or
+    `coverage_balance.tsv`, one row per distinct target defect, and no rows from
+    any other verdict.
+  - `source_ref` names the originating fix row; `target_ref` names the defective
+    source or artifact; and `criterion_ids` includes the source criterion and any
+    other directly violated criterion.
+  - `severity` is `blocker`, `high`, `medium`, or `low`; severity never
+    changes whether a policy finding must be resolved.
+
+- `coverage_balance.tsv`
+  - Columns: `balance_id`, `criterion_id`, `subject_family`, `check_ids`,
+    `comparator_balance_ids`, `verdict`, `rationale`, `evidence_refs`.
+  - Contains one row for every criterion and subject family represented in
+    `applicability.tsv`. Subject families are `file:<surface_kind>`,
+    `routing`, `relation:<relation_kind>`, `hot_path:<family>`, `process`, and
+    `command`, plus `absence:<subject_type>`.
+  - `verdict` is `pass`, `fix`, `review`, or `pending`.
+  - Comparators are other families for the same criterion and structurally
+    analogous criterion-family rows. The comparator list is empty only when no
+    such row exists and the rationale proves why.
+  - Fix counts need not match. A zero-fix family passes only when its
+    checks and evidence show depth comparable to its named comparator rows.
+
+- `independent_review.tsv`
+  - Columns: `review_id`, `reviewer`, `review_kind`, `subject_key`, `source_ref`,
+    `target_sha256`, `manifest_sha256`, `verdict`, `evidence_refs`.
+  - `review_kind` is `expected_key`, `check`, `balance`, or `artifact`;
+    `subject_key` is a compact JSON array beginning with the artifact filename,
+    followed by that unit's natural-key values. The whole-manifest key is
+    `["manifest.tsv"]`; each manifest-row key adds its artifact path.
+  - Contains one row for every independently expected natural key in target
+    files, policy extraction, scope, subject inventories, and applicability; one
+    row for every check and balance row; and artifact rows for the manifest as a
+    whole and for every manifest row.
+  - `source_ref` resolves to the corresponding current row or artifact. It is
+    empty only when an expected unit is missing, which requires a non-pass
+    verdict.
+  - Every row names the independent reviewer and the reviewed target and manifest
+    hashes. `verdict` is `pass`, `fix`, or `pending`.
 
 - `audit_summary.json`
-  - Contains counts for criteria, policy coverage, included scope, excluded
-    scope, expected matrix rows and keys, actual matrix rows and keys, findings
-    by disposition, hot-path inventory, cross and group criterion-pair coverage,
-    findings by probe family, finding-source coverage, current non-pass
-    verdicts, command results, and artifact-level errors.
+  - Contains exactly: `schema_version`, `target_sha256`, `manifest_sha256`,
+    `review_sha256`, `expected_checks`, `actual_checks`, `verdict_counts`,
+    `finding_counts`, `command_counts`, `balance_counts`, `review_counts`,
+    `validation_errors`, `stale_artifacts`, and `completion_status`.
+  - `schema_version` and `target_sha256` equal the freeze; `manifest_sha256` and
+    `review_sha256` are the lowercase SHA-256 hashes of the current files.
+  - `verdict_counts` has exactly `pass`, `fix`, `review`, and `pending`;
+    `finding_counts` has `blocker`, `high`, `medium`, and `low`;
+    `command_counts` has `passed`, `failed`, and `not_run`;
+    `balance_counts` has `pass`, `fix`, `review`, and `pending`;
+    and `review_counts` has `pass`, `fix`, and `pending`.
+  - `validation_errors` has exactly `schema`, `identifier`, `enum`, `reference`,
+    `expected_key`, `dependency`, `evidence_cycle`, and
+    `evidence_termination`.
+  - `expected_checks`, `actual_checks`, every count member, and every validation
+    member are non-negative integers. `stale_artifacts` is an array of artifact
+    IDs.
+  - `completion_status` is `complete` or `pending` and is derived from the
+    source artifacts; it never overrides them.
 
-## Verdicts
+## Verdicts and Evidence
 
-The verdict-bearing artifacts are `hot_path_inventory.tsv`, `file_matrix.tsv`,
-`cross_matrix.tsv`, `group_uniformity.tsv`, `process_matrix.tsv`, and
-`finding_distribution.tsv`. Unless an artifact definition narrows the allowed
-values, every `verdict` or `imbalance_verdict` field is one of:
+Every `checks.tsv.verdict` is one of:
 
-- `pass`: the criterion is satisfied, with concrete evidence.
-- `fix`: the criterion is violated and requires a repository or audit-artifact
-  change.
-- `review`: the criterion may be violated and needs semantic judgment.
-- `pending`: required evidence, verification, artifact generation, or review is
-  incomplete.
+- `pass`: the governed check obligation is satisfied, with substantive current
+  evidence;
+- `fix`: the governed policy or procedure obligation is violated;
+- `review`: semantic judgment is required;
+- `pending`: required evidence, execution, or review is incomplete.
 
-Do not use `not applicable` as a verdict. If the local file has no surface for a
-criterion, record `pass` with evidence that names the absence and points to the
-cross-file, group, process, or command row that performs the real check.
+Coverage-balance verdicts use the same four meanings for their audit obligation.
+
+Do not use `not applicable`. Applicability is decided before verdicts, and only
+applicable criterion/subject pairs enter `applicability.tsv`.
 
 Evidence is substantive only when it:
 
-- names what was inspected;
-- explains why the verdict follows;
-- covers both the rule body's intent and the example family's concrete
-  patterns;
-- is specific to the audited file, dependency, group, process gate, hot path, or
-  probe;
+- names the exact subject and surface inspected;
+- explains why the verdict follows from the rule rather than an example;
+- records measured or mechanical support where the rule requires it;
+- names peers or dependencies for relation verdicts;
 - avoids bare phrases such as "no issue", "checked", or "matches policy".
 
-Search output, file inventories, formatter success, test success, and reviewer
-summaries are probes or command evidence, not findings by themselves. A finding
-names the inspected line or artifact row, the policy criterion, and, for
-cross-file or group concerns, the peer or dependency evidence that makes the
-issue actionable.
-
-`evidence_ref` holds one or more references separated by semicolons. Each
-reference is a `path:line` or `path:first-last` location, a bare `path` for a
-whole-file check, or an artifact-row reference — `process:<gate_id>`,
-`cross:<dependency_id>`, `group:<group_id>`, `command:<command_id>`,
-`hotpath:<hot_path_id>`, or `classification:<finding_id>` — naming the row
-that carries the authoritative check. Any other form, or a reference to a row
-that does not exist, is a broken evidence reference. After fixes, line
-references are rechecked against the current file content before completion is
-claimed.
-
-## Minimum Probe Families
-
-The criteria extracted from the policy are authoritative. This section is a
-minimum guard against common omissions; if the policy later adds a category, the
-new category is still required through `policy_coverage.tsv`.
-
-Artifacts must contain explicit rows for at least these probe families:
-
-- Source code: hot-path inventory, hot-path performance, symbol naming, file and
-  directory naming, ordering, comments, formatting, sibling-group consistency,
-  exception groups, parallel mirrors, and `.pyi` effective defaults.
-
-- Comments: English-only comments, intent-bearing comments, required headers for
-  long blocks, group separator symmetry, label-vs-sentence punctuation,
-  documentation-comment bans, domain convention comments, and self-contained
-  wording.
-
-- Testing: behavior that needs unit coverage, behavior left to
-  reference-regression or manual coverage, test claims that can actually fail,
-  deterministic assertions, and test inclusion in `make test`.
-
-- Documentation: natural prose, Japanese spacing, Japanese technical loanword
-  spellings, parenthesis width, translation source chains, target-language
-  conventions, product names, other proper nouns, and context labels that stand
-  in for product names.
-
-- Release notes: user benefit, maintainer breadcrumb, sub-change splitting,
-  release-relative grouping, unshipped-change folding, category-specific
-  wording, line length, diff verification, and documentation wording bundles.
-
-- Verification: scope exclusions, generated or toolchain-output files, code-side
-  aspects of prose files, formatter/lint/test triggers, targeted structured-file
-  checks, and rerun requirements.
-
-- Policy-document conventions: section placement, incident folding,
-  authoritative enumerations, `e.g.` sub-bullet usage, language-specific rule
-  statements, and whole-file balance after policy revisions.
-
-- Enumeration freshness: every authoritative enumeration in the policy (hot
-  paths, adopted spellings, product names, scope exclusions) is checked against
-  the current repository for members the code has added but the list has not.
-  Policy-named sibling and exception group examples are checked for current
-  paths and rationales, but exhaustive group coverage comes from
-  `group_inventory.tsv`, not from the examples.
+Search output, inventories, formatter success, test success, finding counts, and
+reviewer summaries are probes or command evidence, not findings by themselves. A
+finding identifies the current source or artifact row, criterion, actionable
+defect, and relevant peer or dependency evidence.
 
 ## Phases
 
-Run phases in order. A phase cannot close with `pending`, stale artifacts,
-schema errors, or row-count errors. `fix` and `review` verdicts move to
-classification and repair; verification and completion remain blocked until they
-are resolved.
+Run phases in order. Missing expected rows, invalid references, stale artifacts,
+or schema errors block the current phase. Non-pass verdicts proceed through
+balance and internal resolution, but block independent review and final
+validation until resolved.
 
-1. Freeze the audit target.
-   - Record the current branch, comparison base commit, head commit,
-     `git status --short`, and artifact directory.
-   - Write `current-diff.patch`, including tracked changes and intended
-     untracked files.
-   - Add intended untracked files to `scope.tsv` even before they are staged.
+1. Freeze the target.
+   - Record every target file's mode and content digest, the branch, base and
+     head commits, policy and procedure digests, artifact directory, and exact
+     diff.
+   - Write `target_files.tsv`, `freeze.json`, and `current-diff.patch` before
+     verdicts.
 
-2. Extract criteria from the policy.
-   - Read `docs/coding-policy.md` from top to bottom.
-   - Create criteria for each normative bullet and each required example
-     family.
-   - Map every non-blank policy line in `policy_coverage.tsv`.
-   - Treat headings and explanatory prose as structural only when they do not
-     impose a checkable requirement.
+2. Extract the policy.
+   - Build `criteria.tsv` from normative units only.
+   - Build `policy_coverage.tsv`, classifying every non-blank line as criterion,
+     example, or structural.
 
-3. Build scope and groups.
-   - Enumerate tracked files with `git ls-files`.
-   - Add intended untracked files from `git status --short`.
-   - Apply the policy's Scope exclusions and record every exclusion reason.
-   - Assign every included file to a group or singleton row.
+3. Build scope.
+   - Classify every target snapshot row.
+   - Apply policy exclusions and assign all applicable surface kinds.
 
-4. Build cross-file dependencies before judging files.
-   - Expand every dependency family into concrete paths.
-   - Include both obvious mirrors and indirect consistency surfaces, such as
-     API signatures, localized strings, proper nouns, release notes, and tests
-     for changed behavior.
-   - If a dependency family is suspected but not yet enumerated, mark the
-     related rows `pending`.
+4. Build subject inventories.
+   - Expand all cross-file relations.
+   - Enumerate every hot-path surface.
+   - Declare required and targeted commands.
 
-5. Build the hot-path inventory.
-   - Create one row for every implementation surface of each policy-listed hot
-     path family.
-   - For each row, inspect the operation shape and name the concrete cost risks
-     checked before recording a performance verdict.
-   - A file-matrix performance pass may cite `hot_path_inventory.tsv`, but it
-     does not replace the inventory row.
+5. Derive applicability.
+   - Generate `applicability.tsv` from criteria and subject inventories.
+   - Validate the complete expected check set before writing verdicts.
 
-6. Fill the file matrix.
-   - Cross every included file with every criterion.
-   - Inspect the file itself for local surfaces: symbol names, path names,
-     ordering, comments, formatting, tests, documentation prose, release-note
-     relevance, and verification impact.
-   - Record a verdict and evidence for every cell before aggregating results.
+6. Perform checks and run commands.
+   - Inspect every applicable subject and write one `checks.tsv` row per
+     expected check.
+   - Inspect source directly; searches and automation remain probes.
+   - Execute every triggered command and record its target-bound result.
+   - Run `make format` after code or formatter-managed document changes.
+   - Run `make lint` and `make lint-wasm` in every exhaustive run.
+   - Run `make test` after code changes.
+   - Run targeted parsers and validators for changed structured files, applicable
+     prose or documentation tests, and `git diff --check`.
+   - If a command changes the frozen target, preserve the run and start another.
 
-7. Fill the cross-file and group matrices.
-   - Check naming agreement, sibling style, exception-group rules, parallel
-     mirrors, generated/manual relationships, translation chains, and API/stub
-     defaults.
-   - Re-check group uniformity after every fix that touches one member of a
-     group.
-   - A local pass does not override a failing cross-file or group row.
+7. Check audit balance.
+   - Compare each criterion-family row with every comparator it names.
+   - Re-run the same probes on an unexplained zero-fix family and keep the
+     balance row `pending` until the difference is justified.
 
-8. Probe for imbalance.
-   - Build or update `finding_distribution.tsv`.
-   - Compare finding distribution across structurally similar groups and
-     criteria.
-   - Compare distribution across the Minimum Probe Families; a concentration in
-     comments, documentation, or any other family does not prove other families
-     clean by itself.
-   - When one group produces findings and a comparable group produces none,
-     re-run the same probes on the zero-finding group before accepting the
-     result.
-   - When one probe family produces findings and a related family produces none,
-     cite the file, cross-file, group, process, or command rows that prove the
-     zero-finding family was checked to comparable depth.
-   - Treat unexplained imbalance as `pending`.
+8. Resolve reviews and record findings.
+   - Resolve every `review` as `pass` or `fix` from current evidence, without
+     inventing exceptions. Keep missing evidence or blocked execution `pending`.
+   - Generate `findings.tsv` from the resulting `fix` rows.
+   - Correct an audit-evidence defect in place and regenerate every dependent
+     artifact. To correct the frozen target, preserve the current pending run and
+     start a new run against the changed target.
+   - Repeat the affected phases until every check and balance row is `pass` and
+     `findings.tsv` is empty.
 
-9. Classify and fix findings.
-   - Fix clear violations.
-   - For `review` findings, decide whether the current state follows policy
-     intent or needs a change.
-   - An `accepted` disposition requires a policy-derived rationale or a design
-     rationale that does not contradict the policy, in `classifications.tsv`. A
-     category name alone is not evidence.
-   - After an `accepted` disposition, regenerate the source row as `pass` and
-     cite `classification:<finding_id>` as evidence.
-   - After a `fixed` disposition, regenerate the source row as `pass`, or remove
-     it from the expected key set when the fix removes its file, dependency,
-     group, gate, hot path, or probe. Record evidence of the result in
-     `action_ref`.
-   - Do not add reusable acceptance categories in `classifications.tsv`. If a
-     recurring pattern should be generally allowed, update
-     `docs/coding-policy.md` first; otherwise keep the rationale local to the
-     finding.
+9. Run independent review.
+    - A reviewer who produced none of the audited artifacts independently derives
+      policy, inventory, and applicability natural keys from the frozen source
+      before opening the run's verdicts or findings.
+    - Give that reviewer both documents, the frozen target, complete inventories,
+      applicability, checks, findings, balance evidence, and manifest for
+      comparison and source review. Record every required review row in
+      `independent_review.tsv`.
+    - The reviewer validates every expected key, verdict, and evidence chain;
+      review sampling cannot clear this gate.
+    - Every actionable review result is `fix` regardless of severity. Propagate
+      source defects to checks and findings, and artifact defects to validation
+      errors.
+    - Correct audit evidence in place; for a target correction, preserve the run
+      and start another. Repeat review after either change.
+    - If independent review is unavailable, completion remains `pending`.
 
-10. Regenerate artifacts after fixes.
-    - Rebuild criteria if the policy changed.
-    - If a policy change adds, removes, splits, or merges criteria, preserve the
-      current run as `pending` and start a new run directory with a newly frozen
-      target. Do not rewrite historical findings to fit a changed criterion key
-      set.
-    - Rebuild scope if files were added, removed, generated, or renamed.
-    - Rebuild hot-path inventory, file, cross-file, group, process, findings,
-      finding distribution, classifications, and command artifacts after every
-      meaningful fix batch.
-    - Validate regenerated artifacts against the Artifact Rules.
-
-11. Run verification commands.
-    - Run `make format` after code or formatter-managed document changes.
-    - Run `make lint` and `make lint-wasm` after code or web changes.
-    - Run `make test` after code changes.
-    - Run targeted checks for touched structured files, such as `jq empty` for
-      JSON.
-    - Run prose or documentation tests when touched documents are covered by
-      them.
-    - Run `git diff --check`.
-    - Record command names, working directories, exit statuses, and key output
-      in `command_evidence.tsv`.
-    - If a required command is forbidden by the user or unavailable in the
-      current environment, record the gate as `pending` with the reason; do not
-      infer `pass` from file inspection or neighboring commands.
-
-12. Run independent review.
-    - Give the reviewer the full policy, this procedure, the complete file
-      list, all cross-file dependencies, the current diff, and all artifacts.
-    - Ask for actionable findings in the edited files and in the audit design.
-    - If the reviewer finds a blocker, high, or medium issue, fix it,
-      regenerate artifacts, and repeat independent review.
-    - If no independent reviewer is available, record `pending`; do not claim
-      completion.
+10. Validate completion.
+    - Validate every schema, enum, identifier, natural key, reference, dependency,
+      evidence chain, count, and manifest hash from its source artifact.
+    - Re-derive the target file snapshot and diff from the live worktree and
+      require exact equality with the freeze.
+    - Require the independent-review set to be exact, every review verdict to be
+      `pass`, and every row to name the current target and manifest hashes.
+    - Write `audit_summary.json` only after the independent review is clean.
 
 ## Delegation Rules
 
-When the audit is split across multiple auditors, the lead auditor gives each
-auditor:
+When an audit is split, the lead auditor gives each auditor both documents, the
+frozen target, complete subject inventories, exact assigned check IDs, and all
+dependencies needed by those checks.
 
-- the full text of `docs/coding-policy.md`;
-- this procedure;
-- the complete scope list;
-- the full criteria list;
-- the complete group inventory;
-- the complete cross-dependency inventory;
-- the assigned artifact rows, not a vague file category;
-- the current diff.
-
-Delegated work is not accepted from summaries. The lead auditor reads the
-delegated rows, checks the evidence, and marks weak or copied evidence
-`pending`. If assignments overlap, conflicting verdicts are resolved by
-re-reading the files and updating the artifacts.
+Delegated summaries are not evidence. The lead reads every returned row,
+validates its references, rejects copied or shallow evidence, and resolves
+conflicting verdicts by re-reading the subjects.
 
 ## Completion Gate
 
-The audit is complete only when all conditions are true:
+The audit is complete only when:
 
-- `policy_coverage.tsv` covers every non-blank line of
-  `docs/coding-policy.md`.
-- `scope.tsv` contains every tracked file and every intended untracked file,
-  either included or excluded with a policy-backed reason.
-- `group_inventory.tsv` assigns every included file to a group or singleton.
-- `file_matrix.tsv` covers every included-file and criterion pair exactly once;
-  its row count equals included-file count multiplied by criteria count, and
-  every included file has exactly the criterion set from `criteria.tsv`; every
-  verdict is `pass`.
-- `hot_path_inventory.tsv` covers every policy-listed hot-path family, and every
-  row verdict is `pass`.
-- `cross_matrix.tsv` covers every dependency and exact dependency/criterion pair
-  declared by `cross_dependencies.tsv` exactly once; every verdict is `pass`.
-- `group_uniformity.tsv` covers every group and every required group/criterion
-  pair exactly once, plus any file or cross-file criterion routed to a group
-  row; every verdict is `pass`.
-- `process_matrix.tsv` covers every repository-level and command-level policy
-  requirement, and every process or command criterion in `criteria.tsv`; every
-  verdict is `pass`.
-- `command_evidence.tsv` records every required and targeted command with its
-  working directory, exit status, and key output.
-- `current-diff.patch` includes every changed tracked file and every intended
-  untracked file.
-- Every `fix`, `review`, or `pending` verdict ever discovered in a
-  verdict-bearing artifact has a corresponding row in `findings.tsv`. Every
-  finding's `source_key` resolves to exactly one row in its `source_artifact`,
-  unless a `fixed` classification and its `action_ref` prove that the key
-  correctly left the expected set.
-- Every row in `findings.tsv` has a resolved row in `classifications.tsv`.
-- `finding_distribution.tsv` covers every named probe in the Minimum Probe
-  Families, and every `imbalance_verdict` is `pass`.
-- `classifications.tsv` contains no `deferred_blocker`.
-- `audit_summary.json` reports zero row-count mismatches, zero column-count
-  mismatches, zero invalid enum values, zero duplicate keys, zero missing
-  expected keys, zero unexpected keys, zero empty evidence fields, zero broken
-  evidence references, zero broken finding-source references, zero current
-  non-pass verdicts, and zero stale artifacts.
-- Required commands have passed; a reproducible environment failure clears the
-  gate only after the same command succeeds in a maintainer-approved
-  environment.
-- Independent review reports no blocker, high, or medium actionable findings.
+- the live target snapshot and diff exactly match the freeze;
+- every required artifact exists, every manifested artifact matches its schema
+  and manifest inputs, and every artifact is bound to the frozen target;
+- policy coverage, scope, subject inventories, and applicability contain exactly
+  their independently derived expected natural keys;
+- `checks.tsv` contains exactly the applicability set and every verdict is
+  `pass`;
+- every `coverage_balance.tsv` verdict is `pass`;
+- `findings.tsv` is empty;
+- `independent_review.tsv` contains exactly its independently derived expected
+  natural keys, every verdict is `pass`, and its target and manifest hashes are
+  current;
+- every evidence reference resolves, the evidence graph is acyclic, and every
+  chain terminates in current source, a frozen-target root artifact, or successful
+  target-bound command evidence;
+- every triggered command succeeded against the frozen target;
+- `audit_summary.json` matches the current target, manifest, and review hashes,
+  reports matching check counts, zero validation errors, zero stale artifacts, and
+  `completion_status: complete`.
 
-Do not claim completion before the gate is satisfied. If any condition is
+Do not claim completion before every condition is proved. If any condition is
 uncertain, the verdict is `pending`.

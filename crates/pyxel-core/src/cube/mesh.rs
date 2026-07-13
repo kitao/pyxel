@@ -50,7 +50,7 @@ pub struct Mesh {
     pub bvh: RefCell<Option<Bvh>>,
     // Lazy mesh-local AABB (union of every part's positions composed
     // with the identity outer transform). Cached under the same
-    // same invalidation rules as `bvh`; Aabb::from_mesh lifts its 8 corners by
+    // invalidation rules as `bvh`; Aabb::from_mesh lifts its 8 corners by
     // the collider's world transform instead of re-transforming every vertex.
     pub local_aabb: RefCell<Option<Aabb>>,
 }

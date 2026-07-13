@@ -81,9 +81,10 @@ impl Node {
         rc_mut!(child).parent = None;
     }
 
-    // Flag this node and every descendant as destroyed without
-    // touching parent / child links. Node.update step 9 collects
-    // the flagged nodes post-order, fires on_destroy, then detaches.
+    // Flag this node and every descendant as destroyed without touching
+    // parent / child links. The deferred-destruction pass at the end of
+    // Node.update collects the flagged nodes post-order, fires on_destroy,
+    // then detaches.
     pub fn destroy(node: &RcNode) {
         Self::mark_destroyed_recursive(node);
     }
@@ -306,8 +307,8 @@ mod tests {
         assert!(!rc_ref!(&root).destroyed);
         assert!(rc_ref!(&mid).destroyed);
         assert!(rc_ref!(&leaf).destroyed);
-        // Tree links untouched (deferred removal happens in Scene
-        // step 9, not in destroy()).
+        // Tree links untouched (deferred removal happens at the end of
+        // Node.update, not in destroy()).
         assert_eq!(Node::children(&root).len(), 1);
         assert_eq!(Node::children(&mid).len(), 1);
     }
@@ -352,8 +353,9 @@ mod tests {
         let c = Node::new();
         Node::add_child(&p, &c);
         Node::destroy(&c);
-        // Deferred semantics: the flag is set, but parent / child
-        // links survive until Node.update step 9 detaches them.
+        // Deferred semantics: the flag is set, but parent / child links
+        // survive until Node.update's deferred-destruction pass detaches
+        // them.
         assert!(rc_ref!(&c).destroyed);
         assert_eq!(rc_ref!(&p).children.len(), 1);
         assert!(Node::parent(&c).is_some());

@@ -515,6 +515,23 @@ pub fn prim(
         Some(idx) => idx.len(),
         None => vertex_count,
     };
+    match mode {
+        MODE_TRIANGLES if !step_count.is_multiple_of(3) => {
+            return Err(if indices.is_some() {
+                "indices length must be a multiple of 3 for MODE_TRIANGLES"
+            } else {
+                "positions vertex count must be a multiple of 3 for MODE_TRIANGLES"
+            });
+        }
+        MODE_LINES if !step_count.is_multiple_of(2) => {
+            return Err(if indices.is_some() {
+                "indices length must be a multiple of 2 for MODE_LINES"
+            } else {
+                "positions vertex count must be a multiple of 2 for MODE_LINES"
+            });
+        }
+        _ => {}
+    }
     let world_mat = prepare_draw(ctx, world_mat, &state);
     let z_shift = depth_offset_shift(&ctx.camera, ctx.depth_offset);
     let lit = state.shaded && state.shading.is_some();
@@ -557,9 +574,6 @@ pub fn prim(
     // Dispatch primitive topology
     match mode {
         MODE_TRIANGLES => {
-            if !step_count.is_multiple_of(3) {
-                return Err("TRIANGLES requires step count to be a multiple of 3");
-            }
             let face_count = step_count / 3;
             if let Some(n) = normals {
                 if lit && n.len() != face_count * 3 {
@@ -658,9 +672,6 @@ pub fn prim(
             }
         }
         MODE_LINES => {
-            if !step_count.is_multiple_of(2) {
-                return Err("LINES requires step count to be a multiple of 2");
-            }
             let line_count = step_count / 2;
             let depth_w = ctx.depth_w;
             for l in 0..line_count {
@@ -1430,6 +1441,79 @@ pub fn text(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn test_prim_topology_errors_name_the_invalid_input() {
+        use crate::cube::camera::Camera;
+        use crate::cube::raster::{
+            camera_clip_row, compute_clip_rect, matmul, projection_matrix, view_matrix,
+        };
+        use crate::cube::scene::DrawContext;
+
+        let target = Image::new(64, 64);
+        let camera = Camera::new();
+        let view = view_matrix(&rc_ref!(&camera));
+        let vp = matmul(&projection_matrix(&rc_ref!(&camera), 64.0, 64.0), &view);
+        let clip_row = camera_clip_row(&view);
+        let clip = compute_clip_rect(0.0, 0.0, 64.0, 64.0, 64, 64);
+        let mut ctx = DrawContext {
+            target,
+            vp,
+            clip_row,
+            vp_x: 0.0,
+            vp_y: 0.0,
+            vp_w: 64.0,
+            vp_h: 64.0,
+            clip,
+            camera,
+            depth: vec![f32::INFINITY; 64 * 64],
+            depth_w: 64,
+            depth_h: 64,
+            vertex_cache: Vec::new(),
+            dither_alpha: 1.0,
+            depth_test: true,
+            depth_write: true,
+            depth_offset: 0.0,
+            shaded: false,
+        };
+        let state = DrawState::unshaded();
+        let identity = Mat4::identity_value();
+        let cases = [
+            (
+                MODE_TRIANGLES,
+                &[0.0; 9][..],
+                Some(&[0, 1][..]),
+                "indices length must be a multiple of 3 for MODE_TRIANGLES",
+            ),
+            (
+                MODE_TRIANGLES,
+                &[0.0; 6][..],
+                None,
+                "positions vertex count must be a multiple of 3 for MODE_TRIANGLES",
+            ),
+            (
+                MODE_LINES,
+                &[0.0; 6][..],
+                Some(&[0][..]),
+                "indices length must be a multiple of 2 for MODE_LINES",
+            ),
+            (
+                MODE_LINES,
+                &[0.0; 9][..],
+                None,
+                "positions vertex count must be a multiple of 2 for MODE_LINES",
+            ),
+        ];
+
+        for (mode, positions, indices, expected) in cases {
+            let result = prim(
+                &mut ctx, &identity, mode, CULL_NONE, positions, indices, None, None, 7, None,
+                None, state,
+            );
+
+            assert_eq!(result, Err(expected));
+        }
+    }
 
     #[test]
     fn test_signed_screen_area_ccw_positive() {

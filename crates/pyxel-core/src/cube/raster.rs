@@ -407,11 +407,11 @@ fn edge_inside(w: f32, include_boundary: bool, pos_area: bool) -> bool {
     }
 }
 
-// Filled triangle with linear z interpolation. Both windings draw — cube
-// has no back-face culling. Per-pixel dither between `primary` and
-// `secondary` based on `ratio` (0..16); `primary == secondary` or
-// `ratio == 0` collapses to a flat fill. The scalar signature keeps this
-// hot path free of temporary argument structs.
+// Filled triangle with linear z interpolation. Both windings draw because
+// back-face culling happens upstream in draw::prim. Each pixel picks
+// `primary` or `secondary` through the `dither_pick` checker pattern;
+// `primary == secondary` collapses to a flat fill. The scalar signature
+// keeps this hot path free of temporary argument structs.
 #[allow(clippy::too_many_arguments)]
 pub fn rasterize_triangle(
     target: &mut Image,
@@ -1716,7 +1716,7 @@ mod tests {
 
     #[test]
     fn test_rasterize_triangle_back_face_also_drawn() {
-        // CW winding still rasterizes — cube has no back-face culling.
+        // CW winding still rasterizes — culling happens upstream in draw::prim.
         let (img, mut depth, clip) = make_target_and_depth(16, 16);
         let mut img_mut = rc_mut!(&img);
         rasterize_triangle(
