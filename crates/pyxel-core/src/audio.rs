@@ -10,6 +10,7 @@ use blip_buf::BlipBuf;
 use hound::{SampleFormat, WavSpec, WavWriter};
 
 use crate::channel::RcChannel;
+use crate::music::channel_stagger_clocks;
 use crate::pyxel::{self, Pyxel};
 use crate::settings::{
     AUDIO_BUFFER_SAMPLES, AUDIO_CLOCKS_PER_SAMPLE, AUDIO_CLOCK_RATE, AUDIO_RENDER_STEP_SAMPLES,
@@ -275,7 +276,13 @@ impl Pyxel {
 
         let _lock = AudioLock::lock();
         for (i, sounds) in channel_sounds {
-            audio_mut!(channels[i]).play(sounds, start_sec, should_loop, false);
+            let stagger_sec = channel_stagger_clocks(i) as f32 / AUDIO_CLOCK_RATE as f32;
+            audio_mut!(channels[i]).play(
+                sounds,
+                Some(start_sec.unwrap_or(0.0) + stagger_sec),
+                should_loop,
+                false,
+            );
         }
     }
 

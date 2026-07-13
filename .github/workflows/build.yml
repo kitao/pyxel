@@ -7,6 +7,7 @@ permissions:
 
 env:
   PYTHON_VERSION: "3.14"
+  SDL2_VERSION: "2.32.10"
 
 jobs:
   build-winmac:
@@ -96,16 +97,6 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
-
-      - name: Resolve SDL2 source
-        shell: bash
-        run: |
-          SDL2_VERSION="$(awk -F'"' '/^const SDL2_VERSION: &str/ { print $2; exit }' crates/pyxel-core/build.rs)"
-          SDL2_SHA256="$(awk -F'"' '/^const SDL2_SHA256: &str/ { print $2; exit }' crates/pyxel-core/build.rs)"
-          test -n "$SDL2_VERSION"
-          test -n "$SDL2_SHA256"
-          echo "SDL2_VERSION=$SDL2_VERSION" >> "$GITHUB_ENV"
-          echo "SDL2_SHA256=$SDL2_SHA256" >> "$GITHUB_ENV"
 
       - *resolve-rust-version
 
@@ -211,8 +202,7 @@ jobs:
 
       - name: Build SDL2
         run: |
-          curl -qfsSLO https://www.libsdl.org/release/SDL2-${{ env.SDL2_VERSION }}.tar.gz
-          echo "${{ env.SDL2_SHA256 }}  SDL2-${{ env.SDL2_VERSION }}.tar.gz" | sha256sum --check --strict
+          curl -sqLO https://www.libsdl.org/release/SDL2-${{ env.SDL2_VERSION }}.tar.gz
           tar xzf SDL2-${{ env.SDL2_VERSION }}.tar.gz
 
           # Create cmake toolchain file for cross-compilation
