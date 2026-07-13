@@ -116,9 +116,9 @@
 
 ### Testing
 
-Tests cover the product in four layers: Rust unit tests for platform-independent pure logic; Python API tests for the public interface surface; screenshot regression over the bundled examples, apps, and editor; and a manual pass on running samples for look, sound, and feel. Test code itself is in scope for every Source Code rule.
+Tests cover the product in four layers: Rust unit tests for platform-independent pure logic; Python API tests for the public interface surface; reference regression of rendered screenshots and audio from the bundled examples, apps, and editor; and a manual pass on running samples for look, sound, and feel. Test code itself is in scope for every Source Code rule.
 
-- A behavior is unit-tested when its breakage would not surface in the screenshot regression or the manual pass. These cases qualify:
+- A behavior is unit-tested when its breakage would not surface in the reference regression or the manual pass. These cases qualify:
   - numeric boundaries and degenerate inputs (zero, empty, maximum, negative);
   - rarely-taken branches (special syntax, edge inputs);
   - determinism contracts whose silent change alters existing users' assets;
@@ -127,8 +127,8 @@ Tests cover the product in four layers: Rust unit tests for platform-independent
   - error paths (exception type and message).
   - e.g., the BGM generator's seed-determinism snapshot — typical (a silent change rewrites existing users' music).
 
-- A behavior whose breakage is plainly visible or audible when running a sample is covered by the screenshot regression and the manual pass rather than by an internal unit test.
-  - e.g., a golden file of synthesized waveform bytes — anti-pattern (audible breakage, already covered by running and listening to samples).
+- A behavior whose breakage is plainly visible or audible when running a sample is covered by the reference regression and the manual pass rather than by an internal unit test.
+  - e.g., a music mixing change is caught by the committed audio renders and the manual pass — typical; a unit test re-asserting the same waveform sample-by-sample — anti-pattern (duplicates the reference regression).
 
 - A test verifies what its name and comments claim; a test that cannot fail for the claimed reason is fixed or removed.
   - e.g., a wraparound test whose inputs never wrap — anti-pattern.
