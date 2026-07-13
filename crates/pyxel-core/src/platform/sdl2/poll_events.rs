@@ -137,7 +137,7 @@ impl PlatformSdl2 {
                     }
                 },
 
-                // Mouse Button
+                // Mouse button
                 SDL_MOUSEBUTTONDOWN => {
                     let key = mouse_button_to_key(unsafe { sdl_event.button.button } as u32);
                     if key != KEY_UNKNOWN {
@@ -217,7 +217,7 @@ impl PlatformSdl2 {
             }
         }
 
-        // Mouse Motion (polling)
+        // Mouse motion (polling)
 
         let (mouse_x, mouse_y) = if self.is_wayland || cfg!(target_os = "emscripten") {
             // Wayland: SDL_GetGlobalMouseState is unsupported, so use
@@ -247,7 +247,7 @@ impl PlatformSdl2 {
             });
         }
 
-        // Virtual Gamepad (Emscripten)
+        // Virtual gamepad (Emscripten)
 
         #[cfg(target_os = "emscripten")]
         {

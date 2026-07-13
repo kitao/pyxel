@@ -14,6 +14,7 @@ impl Tilemap {
     fn new(width: u32, height: u32, img: Bound<'_, PyAny>) -> PyResult<Self> {
         let imgsrc = cast_pyany! {
             img,
+            "img must be int or Image",
 
             (u32, { pyxel::ImageSource::Index(img) }),
 
@@ -55,6 +56,7 @@ impl Tilemap {
     fn set_imgsrc(&self, img: Bound<'_, PyAny>) -> PyResult<()> {
         let imgsrc = cast_pyany! {
             img,
+            "imgsrc must be int or Image",
 
             (u32, { pyxel::ImageSource::Index(img) }),
 
@@ -195,10 +197,11 @@ impl Tilemap {
     ) -> PyResult<()> {
         cast_pyany! {
             tm,
+            "tm must be int or Tilemap",
 
             (u32, {
                 let tilemap = pyxel::tilemaps().get(tm as usize).cloned()
-                    .ok_or_else(|| PyValueError::new_err("Invalid tilemap index"))?;
+                    .ok_or_else(|| invalid_index_error!("tm", "tilemap"))?;
                 self.inner_mut().draw_tilemap(x, y, &tilemap, u, v, w, h, tilekey, rotate, scale);
             }),
 
@@ -222,7 +225,7 @@ impl Tilemap {
                 .get(*index as usize)
                 .cloned()
                 .map(Image::wrap)
-                .ok_or_else(|| PyValueError::new_err("Invalid image index")),
+                .ok_or_else(|| PyValueError::new_err("imgsrc references an invalid image index")),
             pyxel::ImageSource::Image(image) => Ok(Image::wrap(image.clone())),
         }
     }

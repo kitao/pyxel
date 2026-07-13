@@ -221,7 +221,7 @@ impl Seqs {
         let len = music.seqs.len();
         if len == 0 {
             return Err(pyo3::exceptions::PyIndexError::new_err(
-                "pop from empty sequence",
+                "pop from empty list",
             ));
         }
         let i = resolve_index!(index.unwrap_or(-1), len)?;

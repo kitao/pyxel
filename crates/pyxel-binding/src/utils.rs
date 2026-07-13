@@ -76,13 +76,34 @@ macro_rules! deprecation_warning {
     };
 }
 
+macro_rules! invalid_index_error {
+    ($parameter:literal, $resource:literal) => {
+        pyo3::exceptions::PyValueError::new_err(concat!(
+            $parameter,
+            " must be a valid ",
+            $resource,
+            " index"
+        ))
+    };
+    ($parameter:literal, $resource:literal, list) => {
+        pyo3::exceptions::PyValueError::new_err(concat!(
+            $parameter,
+            " must contain only valid ",
+            $resource,
+            " indices"
+        ))
+    };
+}
+
 macro_rules! validate_index {
-    ($index:expr, $len:expr, $label:expr) => {
+    ($index:expr, $len:expr, $parameter:literal, $resource:literal) => {
         if ($index as usize) >= $len {
-            return Err(pyo3::exceptions::PyValueError::new_err(format!(
-                "Invalid {} index",
-                $label
-            )));
+            return Err(invalid_index_error!($parameter, $resource));
+        }
+    };
+    ($index:expr, $len:expr, $parameter:literal, $resource:literal, list) => {
+        if ($index as usize) >= $len {
+            return Err(invalid_index_error!($parameter, $resource, list));
         }
     };
 }
@@ -96,7 +117,7 @@ macro_rules! python_type_error {
 // Type conversion
 
 macro_rules! cast_pyany {
-    ($value:ident, $(($type:ty, $block:block)),*) => {
+    ($value:ident, $expected:literal, $(($type:ty, $block:block)),*) => {
         {
             loop {
                 $(
@@ -106,7 +127,7 @@ macro_rules! cast_pyany {
                         break $block;
                     }
                 )*
-                python_type_error!(format!("must be {}", [$(stringify!($type)),*].join(", ")));
+                python_type_error!($expected);
             }
         }
     };
@@ -440,7 +461,7 @@ macro_rules! impl_python_sequence_write {
                 let len = vec.len();
                 if len == 0 {
                     return Err(pyo3::exceptions::PyIndexError::new_err(
-                        "pop from empty sequence",
+                        "pop from empty list",
                     ));
                 }
                 let idx = index.unwrap_or(-1);

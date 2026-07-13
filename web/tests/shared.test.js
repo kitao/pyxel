@@ -127,7 +127,7 @@ test("initPage rejects an HTTP error before decoding JSON", async () => {
 
   assert.equal(jsonCount, 0);
   assert.equal(buildCount, 0);
-  assert.match(errors[0][1].message, /HTTP 503 while fetching data\.json/);
+  assert.equal(errors[0][1].message, "Failed to fetch data.json: 503");
 });
 
 test("initPage reports malformed JSON without building", async () => {
