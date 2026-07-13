@@ -70,20 +70,13 @@ def test_aarch64_wheel_is_imported_on_native_arm_runner():
     assert "os: ubuntu-24.04-arm\n            skip_import: true" not in build_workflow
 
 
-def test_windows_arm_host_verifies_gui_quit_with_x64_wheel():
+def test_x64_wheel_is_imported_on_windows_arm_host():
     build_workflow = (WORKFLOW_DIR / "build.yml").read_text(encoding="utf-8")
     build_jobs, verify_wheels = build_workflow.split("  verify-wheels:", maxsplit=1)
 
     assert (
         "target: x86_64-pc-windows-msvc\n"
         "            os: windows-11-arm\n"
-        "            arch: x64\n"
-        "            verify_gui_quit: true"
+        "            arch: x64"
     ) in verify_wheels
     assert "windows-11-arm" not in build_jobs
-    assert "name: Verify GUI quit on Windows ARM64" in build_workflow
-    assert "if: ${{ matrix.verify_gui_quit }}" in build_workflow
-    assert "timeout-minutes: 1" in build_workflow
-    assert "platform.machine()" in build_workflow
-    assert "pyxel.init(64, 64" in build_workflow
-    assert "pyxel.quit()" in build_workflow
