@@ -13,6 +13,7 @@
 - Added Pyxel Cube API reference page
 - Added Pyxel Cube user guide page with a Base/Cube variant switch
 - Added a Cube Examples category to the showcase
+- Improved Python API error messages for argument types and indices
 
 ## 2.9.8
 

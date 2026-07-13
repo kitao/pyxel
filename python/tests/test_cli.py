@@ -194,6 +194,23 @@ class TestPlayCommand:
             in capsys.readouterr().out
         )
 
+    def test_missing_startup_marker_exits_with_exact_error(
+        self, capsys, tmp_path, monkeypatch
+    ):
+        app_file = tmp_path / "empty.pyxapp"
+        with zipfile.ZipFile(app_file, "w") as zf:
+            zf.writestr("data.txt", "data")
+        monkeypatch.setattr(tempfile, "gettempdir", lambda: str(tmp_path))
+
+        with pytest.raises(SystemExit) as exc:
+            pyxel.cli.play_pyxel_app(str(app_file))
+
+        assert exc.value.code == 1
+        assert (
+            capsys.readouterr().out
+            == f"no such file: '{pyxel.APP_STARTUP_SCRIPT_FILE}'\n"
+        )
+
 
 class TestPackage:
     def test_with_relative_paths_from_parent(self, tmp_path, monkeypatch):
@@ -339,6 +356,26 @@ class TestApp2exe:
         assert (
             f"'app2exe' command only accepts {pyxel.APP_FILE_EXTENSION} files"
             in capsys.readouterr().out
+        )
+
+    def test_extraction_failure_exits_with_exact_error(
+        self, capsys, tmp_path, monkeypatch
+    ):
+        app_file = tmp_path / "broken.pyxapp"
+        app_file.write_bytes(b"not used")
+        monkeypatch.setattr(tempfile, "gettempdir", lambda: str(tmp_path))
+        monkeypatch.setattr(
+            pyxel.cli.importlib.util, "find_spec", lambda _name: object()
+        )
+        monkeypatch.setattr(pyxel.cli, "_extract_pyxel_app", lambda _path: None)
+
+        with pytest.raises(SystemExit) as exc:
+            pyxel.cli.create_executable_from_pyxel_app(str(app_file))
+
+        assert exc.value.code == 1
+        assert (
+            capsys.readouterr().out
+            == "Failed to extract startup script from Pyxel app\n"
         )
 
 

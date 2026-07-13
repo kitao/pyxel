@@ -206,10 +206,11 @@ impl Image {
     ) -> PyResult<()> {
         cast_pyany! {
             img,
+            "img must be int or Image",
 
             (u32, {
                 let image = pyxel::images().get(img as usize).cloned()
-                    .ok_or_else(|| PyValueError::new_err("Invalid image index"))?;
+                    .ok_or_else(|| invalid_index_error!("img", "image"))?;
                 self.inner_mut().draw_image(x, y, &image, u, v, w, h, colkey, rotate, scale);
             }),
 
@@ -236,10 +237,11 @@ impl Image {
     ) -> PyResult<()> {
         cast_pyany! {
             tm,
+            "tm must be int or Tilemap",
 
             (u32, {
                 let tilemap = pyxel::tilemaps().get(tm as usize).cloned()
-                    .ok_or_else(|| PyValueError::new_err("Invalid tilemap index"))?;
+                    .ok_or_else(|| invalid_index_error!("tm", "tilemap"))?;
                 self.inner_mut().draw_tilemap(x, y, &tilemap, u, v, w, h, colkey, rotate, scale);
             }),
 
@@ -265,10 +267,11 @@ impl Image {
     ) -> PyResult<()> {
         cast_pyany! {
             img,
+            "img must be int or Image",
 
             (u32, {
                 let image = pyxel::images().get(img as usize).cloned()
-                    .ok_or_else(|| PyValueError::new_err("Invalid image index"))?;
+                    .ok_or_else(|| invalid_index_error!("img", "image"))?;
                 self.inner_mut().draw_image_3d(x, y, w, h, &image, pos, rot, fov, colkey);
             }),
 
@@ -294,10 +297,11 @@ impl Image {
     ) -> PyResult<()> {
         cast_pyany! {
             tm,
+            "tm must be int or Tilemap",
 
             (u32, {
                 let tilemap = pyxel::tilemaps().get(tm as usize).cloned()
-                    .ok_or_else(|| PyValueError::new_err("Invalid tilemap index"))?;
+                    .ok_or_else(|| invalid_index_error!("tm", "tilemap"))?;
                 self.inner_mut().draw_tilemap_3d(x, y, w, h, &tilemap, pos, rot, fov, colkey);
             }),
 

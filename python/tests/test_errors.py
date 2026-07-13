@@ -23,23 +23,93 @@ class TestTypeErrors:
         with pytest.raises(TypeError, match="must be real number, not str"):
             pyxel.rect("a", "b", "c", "d", "e")  # type: ignore[arg-type]
 
-    def test_blt_wrong_img_type(self):
-        with pytest.raises(TypeError, match="must be u32, Image"):
-            pyxel.blt(0, 0, "not_an_image", 0, 0, 8, 8)  # type: ignore[arg-type]
+    @pytest.mark.parametrize(
+        ("operation", "message"),
+        [
+            (
+                lambda: pyxel.play(0, 3.14),
+                "snd must be int, list[int], Sound, list[Sound], or str",
+            ),
+            (
+                lambda: pyxel.Channel().play(3.14),
+                "snd must be int, list[int], Sound, list[Sound], or str",
+            ),
+            (
+                lambda: pyxel.blt(0, 0, "bad", 0, 0, 8, 8),
+                "img must be int or Image",
+            ),
+            (
+                lambda: pyxel.bltm(0, 0, "bad", 0, 0, 8, 8),
+                "tm must be int or Tilemap",
+            ),
+            (
+                lambda: pyxel.blt3d(0, 0, 8, 8, "bad", (0, 0, 0), (0, 0, 0)),
+                "img must be int or Image",
+            ),
+            (
+                lambda: pyxel.bltm3d(0, 0, 8, 8, "bad", (0, 0, 0), (0, 0, 0)),
+                "tm must be int or Tilemap",
+            ),
+            (
+                lambda: pyxel.Image(8, 8).blt(0, 0, "bad", 0, 0, 8, 8),
+                "img must be int or Image",
+            ),
+            (
+                lambda: pyxel.Image(8, 8).bltm(0, 0, "bad", 0, 0, 8, 8),
+                "tm must be int or Tilemap",
+            ),
+            (
+                lambda: pyxel.Image(8, 8).blt3d(
+                    0, 0, 8, 8, "bad", (0, 0, 0), (0, 0, 0)
+                ),
+                "img must be int or Image",
+            ),
+            (
+                lambda: pyxel.Image(8, 8).bltm3d(
+                    0, 0, 8, 8, "bad", (0, 0, 0), (0, 0, 0)
+                ),
+                "tm must be int or Tilemap",
+            ),
+            (
+                lambda: pyxel.Tilemap(8, 8, "bad"),
+                "img must be int or Image",
+            ),
+            (
+                lambda: setattr(pyxel.Tilemap(8, 8, 0), "imgsrc", "bad"),
+                "imgsrc must be int or Image",
+            ),
+            (
+                lambda: pyxel.Tilemap(8, 8, 0).blt(0, 0, "bad", 0, 0, 8, 8),
+                "tm must be int or Tilemap",
+            ),
+        ],
+        ids=[
+            "play-snd",
+            "channel-play-snd",
+            "blt-img",
+            "bltm-tm",
+            "blt3d-img",
+            "bltm3d-tm",
+            "image-blt-img",
+            "image-bltm-tm",
+            "image-blt3d-img",
+            "image-bltm3d-tm",
+            "tilemap-constructor-img",
+            "tilemap-imgsrc",
+            "tilemap-blt-tm",
+        ],
+    )
+    def test_polymorphic_argument_rejects_unsupported_type(self, operation, message):
+        with pytest.raises(TypeError) as exc:
+            operation()
 
-    def test_play_wrong_snd_type(self):
-        with pytest.raises(TypeError, match="must be u32, Vec<u32>, Sound"):
-            pyxel.play(0, 3.14)  # type: ignore[arg-type]
+        assert str(exc.value) == message
 
     def test_btn_wrong_type(self):
         with pytest.raises(
             TypeError, match="'str' object cannot be interpreted as an integer"
         ):
             pyxel.btn("not_a_key")  # type: ignore[arg-type]
-
-    def test_tilemap_wrong_imgsrc_type(self):
-        with pytest.raises(TypeError, match="must be u32, Image"):
-            pyxel.Tilemap(8, 8, "bad")  # type: ignore[arg-type]
 
     def test_sound_set_wrong_speed_type(self):
         snd = pyxel.Sound()
@@ -114,6 +184,20 @@ class TestIndexErrors:
         assert isinstance(pyxel.tilemaps[pyxel.NUM_TILEMAPS - 1], pyxel.Tilemap)
         assert isinstance(pyxel.tilemaps[-1], pyxel.Tilemap)
 
+    @pytest.mark.parametrize(
+        "operation",
+        [
+            lambda: pyxel.Sound().notes.pop(),
+            lambda: pyxel.Music().seqs.pop(),
+        ],
+        ids=["generic-sequence", "music-seqs"],
+    )
+    def test_pop_from_empty_sequence(self, operation):
+        with pytest.raises(IndexError) as exc:
+            operation()
+
+        assert str(exc.value) == "pop from empty list"
+
 
 class TestAttributeErrors:
     def test_nonexistent_attribute(self):
@@ -169,29 +253,149 @@ class TestValueErrors:
 
         assert str(exc.value) == message
 
-    def test_play_invalid_channel(self):
-        with pytest.raises(ValueError, match="Invalid channel index"):
-            pyxel.play(999, 0)
+    @pytest.mark.parametrize(
+        ("operation", "message"),
+        [
+            (lambda: pyxel.play(999, 0), "ch must be a valid channel index"),
+            (lambda: pyxel.play(0, 9999), "snd must be a valid sound index"),
+            (
+                lambda: pyxel.play(0, [0, 9999]),
+                "snd must contain only valid sound indices",
+            ),
+            (lambda: pyxel.playm(9999), "msc must be a valid music index"),
+            (lambda: pyxel.stop(999), "ch must be a valid channel index"),
+            (lambda: pyxel.play_pos(999), "ch must be a valid channel index"),
+            (
+                lambda: pyxel.blt(0, 0, 999, 0, 0, 8, 8),
+                "img must be a valid image index",
+            ),
+            (
+                lambda: pyxel.bltm(0, 0, 999, 0, 0, 8, 8),
+                "tm must be a valid tilemap index",
+            ),
+            (
+                lambda: pyxel.blt3d(0, 0, 8, 8, 999, (0, 0, 0), (0, 0, 0)),
+                "img must be a valid image index",
+            ),
+            (
+                lambda: pyxel.bltm3d(0, 0, 8, 8, 999, (0, 0, 0), (0, 0, 0)),
+                "tm must be a valid tilemap index",
+            ),
+            (
+                lambda: pyxel.Channel().play(999),
+                "snd must be a valid sound index",
+            ),
+            (
+                lambda: pyxel.Channel().play([0, 999]),
+                "snd must contain only valid sound indices",
+            ),
+            (
+                lambda: pyxel.Image(8, 8).blt(0, 0, 999, 0, 0, 8, 8),
+                "img must be a valid image index",
+            ),
+            (
+                lambda: pyxel.Image(8, 8).bltm(0, 0, 999, 0, 0, 8, 8),
+                "tm must be a valid tilemap index",
+            ),
+            (
+                lambda: pyxel.Image(8, 8).blt3d(0, 0, 8, 8, 999, (0, 0, 0), (0, 0, 0)),
+                "img must be a valid image index",
+            ),
+            (
+                lambda: pyxel.Image(8, 8).bltm3d(0, 0, 8, 8, 999, (0, 0, 0), (0, 0, 0)),
+                "tm must be a valid tilemap index",
+            ),
+            (
+                lambda: pyxel.Tilemap(8, 8, 0).blt(0, 0, 999, 0, 0, 8, 8),
+                "tm must be a valid tilemap index",
+            ),
+        ],
+        ids=[
+            "play-ch",
+            "play-snd",
+            "play-snd-list",
+            "playm-msc",
+            "stop-ch",
+            "play-pos-ch",
+            "blt-img",
+            "bltm-tm",
+            "blt3d-img",
+            "bltm3d-tm",
+            "channel-play-snd",
+            "channel-play-snd-list",
+            "image-blt-img",
+            "image-bltm-tm",
+            "image-blt3d-img",
+            "image-bltm3d-tm",
+            "tilemap-blt-tm",
+        ],
+    )
+    def test_resource_index_constraint_message(self, operation, message):
+        with pytest.raises(ValueError) as exc:
+            operation()
 
-    def test_play_invalid_sound_index(self):
-        with pytest.raises(ValueError, match="Invalid sound index"):
-            pyxel.play(0, 9999)
+        assert str(exc.value) == message
 
-    def test_playm_invalid_music_index(self):
-        with pytest.raises(ValueError, match="Invalid music index"):
-            pyxel.playm(9999)
+    def test_legacy_resource_index_messages_in_isolated_process(self):
+        code = """
+import pyxel
 
-    def test_stop_invalid_channel(self):
-        with pytest.raises(ValueError, match="Invalid channel index"):
-            pyxel.stop(999)
 
-    def test_play_pos_invalid_channel(self):
-        with pytest.raises(ValueError, match="Invalid channel index"):
-            pyxel.play_pos(999)
+def assert_value_error(operation, expected):
+    try:
+        operation()
+    except ValueError as exc:
+        assert str(exc) == expected
+    else:
+        raise AssertionError(f"ValueError not raised: {expected}")
 
-    def test_play_invalid_sound_list(self):
-        with pytest.raises(ValueError, match="Invalid sound index"):
-            pyxel.play(0, [0, 9999])  # type: ignore[arg-type]
+
+checks = [
+    (lambda: pyxel.channel(999), "ch must be a valid channel index"),
+    (lambda: pyxel.sound(999), "snd must be a valid sound index"),
+    (lambda: pyxel.music(999), "msc must be a valid music index"),
+    (lambda: pyxel.image(999), "img must be a valid image index"),
+    (lambda: pyxel.tilemap(999), "tm must be a valid tilemap index"),
+]
+for operation, expected in checks:
+    assert_value_error(operation, expected)
+
+tilemap = pyxel.Tilemap(8, 8, 0)
+tilemap.refimg = 999
+assert_value_error(
+    lambda: tilemap.image,
+    "imgsrc references an invalid image index",
+)
+"""
+
+        result = subprocess.run(
+            [sys.executable, "-c", code],
+            capture_output=True,
+            text=True,
+        )
+
+        assert result.returncode == 0, result.stdout + result.stderr
+
+    @pytest.mark.parametrize(
+        "dimensions",
+        [{}, {"width": 8, "height": 8}],
+        ids=["neither", "both"],
+    )
+    def test_scroll_bar_requires_exactly_one_dimension(self, dimensions):
+        from pyxel.editor.widgets.scroll_bar import ScrollBar
+
+        with pytest.raises(ValueError) as exc:
+            ScrollBar(
+                None,
+                0,
+                0,
+                scroll_amount=10,
+                slider_amount=1,
+                value=0,
+                **dimensions,
+            )
+
+        assert str(exc.value) == "width or height must be specified, but not both"
 
 
 class TestInlineDataErrors:

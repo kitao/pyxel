@@ -126,8 +126,8 @@ pub struct Scene;
 
 #[allow(clippy::too_many_arguments)]
 impl Scene {
-    // Collect destroyed nodes leaf-first for binding-layer notification and
-    // detachment in pipeline step 9.
+    // Collect destroyed nodes leaf-first for the binding layer's on_destroy
+    // notification and detachment at the end of Node.update.
     pub fn collect_destroyed_post_order(scene_root: &RcNode) -> Vec<RcNode> {
         let mut out: Vec<RcNode> = Vec::new();
         Self::collect_destroyed_recursive(scene_root, &mut out);
@@ -150,8 +150,8 @@ impl Scene {
         Node::detach(node);
     }
 
-    // Step 3: motion integration. Walks the active subtree and applies
-    // each collider's velocity / angular_velocity to its node transform.
+    // Motion integration: walks the active subtree and applies each
+    // collider's velocity / angular_velocity to its node transform.
     pub fn integrate_motion(scene_root: &RcNode) {
         if Node::parent(scene_root)
             .as_ref()
@@ -206,9 +206,9 @@ impl Scene {
         }
     }
 
-    // Steps 4-7: AABB refresh, broad phase, narrow phase, response
-    // resolution. Returns the contact pairs the binding layer feeds to
-    // on_collide.
+    // Collision detection: AABB refresh, broad phase, narrow phase, and
+    // response resolution. Returns the contact pairs the binding layer
+    // feeds to on_collide.
     pub fn detect_contacts(scene_root: &RcNode) -> Vec<ContactPair> {
         Self::with_collider_entries(scene_root, true, |entries| {
             let n = entries.len();

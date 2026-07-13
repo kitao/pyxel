@@ -318,7 +318,7 @@ def play_pyxel_app(pyxel_app_file: str) -> None:
     startup_script_file = _extract_pyxel_app(pyxel_app_file)
 
     if not startup_script_file:
-        _exit_with_error(f"file not found: '{pyxel.APP_STARTUP_SCRIPT_FILE}'")
+        _exit_with_error(f"no such file: '{pyxel.APP_STARTUP_SCRIPT_FILE}'")
 
     sys.path.insert(0, str(Path(startup_script_file).absolute().parent))
     runpy.run_path(startup_script_file, run_name="__main__")
@@ -406,7 +406,7 @@ def create_executable_from_pyxel_app(pyxel_app_file: str) -> None:
 
     startup_script_file = _extract_pyxel_app(pyxel_app_file)
     if startup_script_file is None:
-        _exit_with_error("Failed to extract startup script from Pyxel app.")
+        _exit_with_error("Failed to extract startup script from Pyxel app")
 
     modules = pyxel.utils.list_imported_modules(startup_script_file)["system"]
     hidden_imports = [arg for m in modules for arg in ("--hidden-import", m)]

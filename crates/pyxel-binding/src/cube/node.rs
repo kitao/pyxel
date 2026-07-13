@@ -90,7 +90,8 @@ impl Node {
     }
 
     // Detach this node from its Python-side parent wrapper. Used by
-    // Node.update step 9 to finalize a destroyed node's removal.
+    // Node.update's deferred-destruction pass to finalize a destroyed
+    // node's removal.
     pub(crate) fn detach_from_parent_py(&self, py: Python<'_>) {
         let parent = self.parent.borrow_mut().take();
         if let Some(parent_py) = parent {
@@ -626,8 +627,8 @@ impl Node {
         Ok(())
     }
 
-    // Defer post-order notification and detachment to Node.update step 9 so
-    // parent/child links remain stable during the current traversal.
+    // Defer post-order notification and detachment to the end of Node.update
+    // so parent/child links remain stable during the current traversal.
     fn destroy(slf: PyRef<'_, Self>) {
         InnerNode::destroy(&slf.inner);
     }
@@ -1011,9 +1012,9 @@ impl Node {
         });
     }
 
-    // Frame-level pipeline (on_update traversal -> motion integration
-    // -> collision -> on_destroy traversal + detachment) starting from
-    // this Node's subtree.
+    // Frame-level pipeline (on_update traversal -> motion playback ->
+    // motion integration -> collision -> on_destroy traversal +
+    // detachment) starting from this Node's subtree.
     fn update(slf: PyRef<'_, Self>, py: Python<'_>) -> PyResult<()> {
         let root_inner = slf.inner.clone();
         let any = slf.into_pyobject(py)?.into_any();
