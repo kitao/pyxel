@@ -22,6 +22,7 @@
 
 ## 2.9.8
 
+- Exposed public access to Audio::render_samples() for headless use
 - Updated Rust to version nightly-2026-07-14
 - Updated glow crate to version 0.18
 - Updated GitHub Actions dependencies and wheel verification workflow

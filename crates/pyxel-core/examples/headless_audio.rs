@@ -27,18 +27,14 @@ use pyxel::{
 };
 
 fn main() {
-    // ------------------------------------------------------------------
-    // 1. Tell SDL2 to use the null audio driver so it does not attempt
-    //    to open /dev/snd (or CoreAudio / WASAPI on other platforms).
-    //    This avoids device conflicts when the host process already owns
-    //    the audio device (e.g. a libretro frontend).
-    // ------------------------------------------------------------------
+    // Tell SDL2 to use the null audio driver so it does not attempt to
+    // open /dev/snd (or CoreAudio / WASAPI on other platforms) — this
+    // avoids device conflicts when the host process already owns the
+    // audio device (e.g. a libretro frontend).
     std::env::set_var("SDL_AUDIODRIVER", "dummy");
 
-    // ------------------------------------------------------------------
-    // 2. Initialize Pyxel in headless mode.
-    //    headless = Some(true) skips window creation and GL context setup.
-    // ------------------------------------------------------------------
+    // Initialize Pyxel in headless mode; headless = Some(true) skips
+    // window creation and GL context setup.
     init(
         128, 128,           // width, height (unused in headless mode)
         None,               // title
@@ -48,45 +44,42 @@ fn main() {
         None,               // capture_scale
         None,               // capture_sec
         Some(true),         // headless = true
-    );
+    )
+    .expect("Failed to initialize Pyxel");
 
-    // ------------------------------------------------------------------
-    // 3. Define a short beep in sound bank 0 using MML notation.
-    //    (C4 - E4 - G4, triangle wave, max volume, no effect, speed 20)
-    // ------------------------------------------------------------------
+    // Define a short beep in sound bank 0 using MML notation (C4-E4-G4,
+    // triangle wave, max volume, no effect, speed 20).
     {
         let rc_sound = &sounds()[0];
-        let sound = unsafe { &mut *rc_sound.get() };
+        let mut sound = rc_sound
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
         sound
             .set("c3e3g3", "t", "7", "n", 20)
             .expect("Failed to set sound");
     }
 
-    // ------------------------------------------------------------------
-    // 4. Trigger playback on channel 0.
-    // ------------------------------------------------------------------
-    pyxel().play_sound(0, 0, Some(0.0), false, false);
+    // Trigger playback on channel 0.
+    pyxel()
+        .play_sound(0, 0, Some(0.0), false, false)
+        .expect("Failed to play sound");
 
-    // ------------------------------------------------------------------
-    // 5. Set up a BlipBuf resampler matching Pyxel's internal clock.
-    //    AUDIO_CLOCK_RATE = 1_789_773 (NTSC NES APU clock)
-    //    AUDIO_SAMPLE_RATE = 22_050 Hz
-    // ------------------------------------------------------------------
+    // Set up a BlipBuf resampler matching Pyxel's internal clock
+    // (AUDIO_CLOCK_RATE = 1,789,773, the NTSC NES APU clock;
+    // AUDIO_SAMPLE_RATE = 22,050 Hz).
     let samples_per_frame = (AUDIO_SAMPLE_RATE as f64 / 60.0).ceil() as usize; // ≈ 368
     let mut blip = BlipBuf::new((samples_per_frame * 2) as u32);
     blip.set_rates(AUDIO_CLOCK_RATE as f64, AUDIO_SAMPLE_RATE as f64);
 
-    // ------------------------------------------------------------------
-    // 6. Simulate 10 frames.  Each call to Audio::render_samples() pulls
-    //    the next batch of PCM data — exactly what a libretro core passes
-    //    to retro_audio_sample_batch_t, or a WASM port feeds to
-    //    AudioWorkletProcessor.process().
-    // ------------------------------------------------------------------
+    // Simulate 10 frames. Each call to Audio::render_samples() pulls the
+    // next batch of PCM data — exactly what a libretro core passes to
+    // retro_audio_sample_batch_t, or a WASM port feeds to
+    // AudioWorkletProcessor.process().
     for frame in 1..=10 {
         let mut mono_buf = vec![0i16; samples_per_frame];
 
         // This is the key call exposed by this PR.
-        Audio::render_samples(channels(), &mut blip, &mut mono_buf);
+        Audio::render_samples(&channels(), &mut blip, &mut mono_buf);
 
         println!(
             "frame {:2}: {} samples rendered, first sample = {}",

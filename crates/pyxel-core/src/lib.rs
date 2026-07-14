@@ -59,8 +59,7 @@ mod window_watcher;
 
 use platform::key;
 
-pub use crate::audio::AudioLock;
-pub use crate::audio::Audio;
+pub use crate::audio::{Audio, AudioLock};
 pub use crate::channel::{Channel, ChannelDetune, ChannelGain, RcChannel};
 pub use crate::font::{Font, RcFont};
 pub use crate::image::{Color, Image, RcImage, Rgb24};
