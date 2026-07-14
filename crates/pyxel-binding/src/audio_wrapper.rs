@@ -1,10 +1,14 @@
-use pyo3::exceptions::PyException;
+use pyo3::exceptions::{PyException, PyValueError};
 use pyo3::prelude::*;
 
 use crate::channel_wrapper::Channel;
 use crate::music_wrapper::Music;
 use crate::pyxel_singleton::pyxel;
 use crate::sound_wrapper::Sound;
+
+pub(crate) fn validate_sec(sec: Option<f32>) -> PyResult<()> {
+    pyxel::Channel::validate_sec(sec).map_err(PyValueError::new_err)
+}
 
 // Playback functions
 
@@ -27,6 +31,7 @@ fn play(
     } else {
         sec
     };
+    validate_sec(sec)?;
 
     validate_index!(ch, pyxel::channels().len(), "ch", "channel");
     let should_loop = r#loop.unwrap_or(false);
@@ -39,7 +44,9 @@ fn play(
 
         (u32, {
             validate_index!(snd, pyxel::sounds().len(), "snd", "sound");
-            pyxel().play_sound(ch, snd, sec, should_loop, resume);
+            pyxel()
+                .play_sound(ch, snd, sec, should_loop, resume)
+                .map_err(PyValueError::new_err)?;
         }),
 
         (Vec<u32>, {
@@ -47,23 +54,24 @@ fn play(
             for &s in &snd {
                 validate_index!(s, num_sounds, "snd", "sound", list);
             }
-            pyxel().play(ch, &snd, sec, should_loop, resume);
+            pyxel()
+                .play(ch, &snd, sec, should_loop, resume)
+                .map_err(PyValueError::new_err)?;
         }),
 
         (Sound, {
             let _lock = pyxel::AudioLock::lock();
-            audio_mut!(pyxel::channels()[ch as usize]).play_sound(
-                snd.inner,
-                sec,
-                should_loop,
-                resume,
-            );
+            audio_mut!(pyxel::channels()[ch as usize])
+                .play_sound(snd.inner, sec, should_loop, resume)
+                .map_err(PyValueError::new_err)?;
         }),
 
         (Vec<Sound>, {
             let sounds = snd.iter().map(|sound| sound.inner.clone()).collect();
             let _lock = pyxel::AudioLock::lock();
-            audio_mut!(pyxel::channels()[ch as usize]).play(sounds, sec, should_loop, resume);
+            audio_mut!(pyxel::channels()[ch as usize])
+                .play(sounds, sec, should_loop, resume)
+                .map_err(PyValueError::new_err)?;
         }),
 
         (String, {
@@ -88,10 +96,13 @@ fn playm(msc: u32, sec: Option<f32>, r#loop: Option<bool>, tick: Option<u32>) ->
     } else {
         sec
     };
+    validate_sec(sec)?;
 
     validate_index!(msc, pyxel::musics().len(), "msc", "music");
 
-    pyxel().play_music(msc, sec, r#loop.unwrap_or(false));
+    pyxel()
+        .play_music(msc, sec, r#loop.unwrap_or(false))
+        .map_err(PyException::new_err)?;
     Ok(())
 }
 

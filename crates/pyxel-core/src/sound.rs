@@ -88,11 +88,19 @@ impl Sound {
         effect_str: &str,
         speed: SoundSpeed,
     ) -> Result<(), String> {
+        Self::validate_speed(speed)?;
         self.set_notes(note_str)?;
         self.set_tones(tone_str)?;
         self.set_volumes(volume_str)?;
         self.set_effects(effect_str)?;
         self.speed = speed;
+        Ok(())
+    }
+
+    pub fn validate_speed(speed: SoundSpeed) -> Result<(), String> {
+        if speed == 0 {
+            return Err("speed must be greater than 0".to_string());
+        }
         Ok(())
     }
 
@@ -102,7 +110,6 @@ impl Sound {
         let mut chars = note_str.chars();
         self.notes.clear();
 
-        // Decode each note token
         while let Some(c) = chars.next() {
             let mut note: SoundNote;
             if ('a'..='g').contains(&c) {
@@ -219,9 +226,8 @@ impl Sound {
         self.pcm = None;
     }
 
-    // Serialization
+    // Export and duration
 
-    // Render this sound into an isolated buffer before export.
     #[cfg(pyxel_core)]
     pub fn save(
         &self,
@@ -229,22 +235,16 @@ impl Sound {
         duration_sec: f32,
         use_ffmpeg: Option<bool>,
     ) -> Result<(), String> {
-        if duration_sec <= 0.0 {
-            return Err("duration_sec must be greater than 0".to_string());
-        }
+        let num_samples = Audio::duration_samples(duration_sec)?;
 
-        let num_samples = (duration_sec * AUDIO_SAMPLE_RATE as f32).round() as u32;
-        if num_samples == 0 {
-            return Ok(());
-        }
+        let render_sound = new_audio_type!(self.clone());
+        let render_channel = Channel::new();
+        audio_mut!(render_channel).play(vec![render_sound], None, true, false)?;
 
         let mut samples = vec![0; num_samples as usize];
         let mut blip_buf = BlipBuf::new(num_samples);
         blip_buf.set_rates(AUDIO_CLOCK_RATE as f64, AUDIO_SAMPLE_RATE as f64);
 
-        let render_sound = new_audio_type!(self.clone());
-        let render_channel = Channel::new();
-        audio_mut!(render_channel).play(vec![render_sound], None, true, false);
         Audio::render_samples(&[render_channel], &mut blip_buf, &mut samples);
         Audio::save_samples(filename, &samples, use_ffmpeg.unwrap_or(false))
     }
@@ -307,6 +307,14 @@ impl Sound {
         }
     }
 
+    pub(crate) fn requires_tone(&mut self) -> bool {
+        self.pcm.is_none()
+            && self
+                .command_snapshot()
+                .iter()
+                .any(|command| matches!(command, MmlCommand::Note { .. }))
+    }
+
     fn matches_legacy_source(&self, source: &LegacyCommandSource) -> bool {
         if self.notes != source.notes
             || self.tones != source.tones
@@ -339,16 +347,10 @@ impl Sound {
 
     pub(crate) fn emit_commands(&self, commands: &mut Vec<MmlCommand>) {
         commands.clear();
-
-        // Fixed parameters
         self.emit_fixed_params(commands);
-
-        // Envelope, vibrato, glide slot definitions
         self.emit_envelope_slots(commands);
         self.emit_vibrato_slot(commands);
         self.emit_glide_slot(commands);
-
-        // Note sequence with per-note state changes
         self.emit_notes(commands);
     }
 
@@ -420,7 +422,6 @@ impl Sound {
         }
     }
 
-    // Emit note commands while tracking per-note state changes.
     fn emit_notes(&self, commands: &mut Vec<MmlCommand>) {
         let tones = pyxel::tones();
         let duration_ticks = self.speed as u32;
@@ -431,7 +432,6 @@ impl Sound {
         let mut last_vibrato: Option<SoundEffect> = None;
         let mut last_slide: Option<SoundEffect> = None;
 
-        // Emit each note with only its changed state
         for (i, &note) in self.notes.iter().enumerate() {
             if note < 0 {
                 commands.push(MmlCommand::Rest { duration_ticks });
@@ -442,13 +442,11 @@ impl Sound {
             let volume = self.cycled_or(i, &self.volumes, MAX_VOLUME);
             let effect = self.cycled_or(i, &self.effects, EFFECT_NONE);
 
-            // Tone change
             if last_tone != Some(tone) {
                 last_tone = Some(tone);
                 commands.push(MmlCommand::Tone { tone });
             }
 
-            // Volume change
             if last_volume != Some(volume) {
                 last_volume = Some(volume);
                 commands.push(MmlCommand::Volume {
@@ -456,7 +454,6 @@ impl Sound {
                 });
             }
 
-            // Envelope change
             if last_fadeout != Some(effect) {
                 last_fadeout = Some(effect);
                 let slot = match effect {
@@ -468,7 +465,6 @@ impl Sound {
                 commands.push(MmlCommand::Envelope { slot });
             }
 
-            // Vibrato change
             if last_vibrato != Some(effect) {
                 last_vibrato = Some(effect);
                 commands.push(MmlCommand::Vibrato {
@@ -476,7 +472,6 @@ impl Sound {
                 });
             }
 
-            // Glide change
             if last_slide != Some(effect) {
                 last_slide = Some(effect);
                 commands.push(MmlCommand::Glide {
@@ -484,15 +479,19 @@ impl Sound {
                 });
             }
 
-            // Note
-            let tone_data = audio_ref!(tones.get(tone as usize).unwrap_or(&tones[0]));
-            let base_note = if tone_data.mode == ToneMode::Wavetable {
-                36
-            } else {
-                60
-            };
+            let base_note =
+                tones
+                    .get(tone as usize)
+                    .or_else(|| tones.first())
+                    .map_or(36_u32, |tone| {
+                        if audio_ref!(tone).mode == ToneMode::Wavetable {
+                            36
+                        } else {
+                            60
+                        }
+                    });
             commands.push(MmlCommand::Note {
-                midi_note: (note + base_note) as u32,
+                midi_note: note as u32 + base_note,
                 duration_ticks,
             });
         }
@@ -539,5 +538,20 @@ mod tests {
         sound.set_mml("T120 O4 D").unwrap();
         let changed = sound.command_snapshot();
         assert!(!std::sync::Arc::ptr_eq(&first, &changed));
+    }
+
+    #[test]
+    fn command_snapshot_preserves_maximum_legacy_note() {
+        let sound = Sound::new();
+        let mut sound = audio_mut!(sound);
+        sound.notes = vec![SoundNote::MAX];
+
+        let commands = sound.command_snapshot();
+        let midi_note = commands.iter().find_map(|command| match command {
+            MmlCommand::Note { midi_note, .. } => Some(*midi_note),
+            _ => None,
+        });
+
+        assert_eq!(midi_note, Some(163));
     }
 }

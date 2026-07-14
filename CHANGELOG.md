@@ -15,8 +15,23 @@
 - Fixed memory retained across Pyxel Web resets
 - Fixed documentation generation silently skipping malformed web pages
 - Fixed example runner masking child process failures
-- Improved transformed tilemap, audio command, wavetable, and PyO3 data access performance
-- Staggered music channel starts to keep sound effects audible
+- Fixed fadeout effects silencing short notes
+- Fixed vibrato and glide timing drifting with playback history
+- Fixed sound resume position after 40 minutes of playback
+- Fixed sound dropouts when switching between PCM and notes
+- Fixed play sec option skipping sounds after a PCM part
+- Fixed looping PCM sounds stopping when sec exceeds their length
+- Fixed extreme tempos and pitches hanging audio rendering
+- Fixed zero-duration MML repeats hanging audio playback
+- Fixed empty tone banks causing audio playback and save panics
+- Fixed long-note playback, seek positions, and MML duration calculation
+- Rejected invalid playback start times and zero-sample save durations
+- Rejected zero sound speeds and invalid music sound indexes
+- Rejected out-of-range Tone.sample_bits assignments
+- Fixed FFmpeg failures being reported as successful saves
+- Improved transformed tilemap and audio command performance
+- Improved wavetable and PyO3 data access performance
+- Improved sound attack sharpness by shortening gain interpolation
 
 ## 2.9.7
 
