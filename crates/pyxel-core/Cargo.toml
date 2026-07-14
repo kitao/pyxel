@@ -42,6 +42,6 @@ flate2 = "1.0"
 tar = "0.4"
 
 [features]
+no_headless_audio = []
 sdl2_dynamic = []
 sdl2_static = []
-no_headless_audio = []
